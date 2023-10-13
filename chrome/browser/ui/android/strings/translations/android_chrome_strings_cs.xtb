@@ -250,6 +250,7 @@ Když smažete historii prohlížení (celou nebo na určitém webu), smažou se
 <translation id="235789365079050412">Zásady ochrany soukromí Google</translation>
 <translation id="2359808026110333948">Pokračovat</translation>
 <translation id="2362083820973145409">Jste přihlášeni jako <ph name="USER_NAME" />. <ph name="USER_EMAIL" /> Otevře nastavení.</translation>
+<translation id="2364539095045928896">Tlačítko k zavření upozornění ve věci ochrany soukromí v centru statistik o stránkách.</translation>
 <translation id="2386938421315164605">Skrýt a znovu zobrazit témata</translation>
 <translation id="2390510615457643724">Opravdu soubor <ph name="FILE_NAME" /> (<ph name="FILE_SIZE" />) chcete stáhnout znovu?</translation>
 <translation id="2394602618534698961">Zde se zobrazují stažené soubory</translation>
@@ -873,6 +874,7 @@ Chcete-toto nastavení změnit, <ph name="BEGIN_LINK" />resetujte synchronizaci<
 <translation id="5458366071038729214">Zde najdete weby, které sledujete</translation>
 <translation id="5468068603361015296">Chcete soubor <ph name="FILE_NAME" /> přesto stáhnout?</translation>
 <translation id="548278423535722844">Otevřít v mapové aplikaci</translation>
+<translation id="5486841595534124508">Logo upozornění ve věci ochrany soukromí pro centrum statistik o stránkách, které přesměrovává na mou stránku aktivity.</translation>
 <translation id="5487521232677179737">Vymazat data</translation>
 <translation id="5492637351392383067">Šifrování v zařízení</translation>
 <translation id="5514904542973294328">Zakázáno administrátorem tohoto zařízení</translation>
@@ -1347,6 +1349,7 @@ Některé weby mohou například na tento požadavek reagovat tak, že vám zobr
 <translation id="7810647596859435254">Otevřít v aplikaci…</translation>
 <translation id="7815484226266492798">Dlouhý snímek obrazovky</translation>
 <translation id="7822705602465980873">Když jste přihlášeni, jsou tato data propojena s vaším účtem Google, aby vás ve službách Google bylo možné lépe chránit, například zvýšit ochranu v Gmailu po bezpečnostním incidentu.</translation>
+<translation id="782705168687182233">Vaše aktivita se ukládá do vašeho <ph name="BEGIN_LINK" />účtu Google<ph name="END_LINK" />.</translation>
 <translation id="78270725016672455">Váš počítač chce toto zařízení zaregistrovat k přihlášení na web</translation>
 <translation id="7844171778363018843">Nebyla vybrána žádná data k synchronizaci</translation>
 <translation id="7846296061357476882">Služby Google</translation>

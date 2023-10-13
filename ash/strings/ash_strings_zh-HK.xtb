@@ -704,7 +704,7 @@
 <translation id="385300504083504382">開頭</translation>
 <translation id="3859364108019690">無法以串流方式使用應用程式</translation>
 <translation id="3861651314799684201">㩒 Enter 掣就可以錄全螢幕畫面</translation>
-<translation id="3865912916886104060">未連線到任何裝置。系統將關閉 Wi-Fi，並開始使用無線基地台。</translation>
+<translation id="3865912916886104060">未連接任何裝置。系統將關閉 Wi-Fi，並開始使用熱點。</translation>
 <translation id="3886872229787704059">今天開啟過</translation>
 <translation id="3891340733213178823">按兩下 Ctrl+Shift+Q 鍵即可登出。</translation>
 <translation id="3893630138897523026">ChromeVox (互動朗讀)</translation>
@@ -789,7 +789,7 @@
 <translation id="4197790712631116042">已關閉</translation>
 <translation id="4201033867194214117">「<ph name="FEATURE_NAME" />」無法使用。</translation>
 <translation id="4201051445878709314">顯示上個月</translation>
-<translation id="4202362334312791952">1 部裝置已連線。系統將關閉 Wi-Fi，並開始使用無線基地台。</translation>
+<translation id="4202362334312791952">已連接 1 部裝置。系統將關閉 Wi-Fi，並開始使用熱點。</translation>
 <translation id="4209973997261364186">Wi-Fi 已開啟</translation>
 <translation id="4212472694152630271">改用 PIN</translation>
 <translation id="4215497585250573029">VPN 設定</translation>
@@ -1169,7 +1169,7 @@
 <translation id="5707775774148071965">您的裝置支援比連接線更高的資料傳輸速率。裝置效能可能受到限制。</translation>
 <translation id="5710450975648804523">「請勿騷擾」模式已開啟</translation>
 <translation id="571295407079589142">流動數據已關閉</translation>
-<translation id="5716891621595980681"><ph name="DEVICECOUNT" /> 部裝置已連線。系統將關閉 Wi-Fi，並開始使用無線基地台。</translation>
+<translation id="5716891621595980681">已連接 <ph name="DEVICECOUNT" /> 部裝置。系統將關閉 Wi-Fi，並開始使用熱點。</translation>
 <translation id="5727460725221669831">如果您忘記密碼，或最近曾變更 Google 帳戶密碼，請嘗試復原此使用者密碼。</translation>
 <translation id="573413375004481890">此裝置無法支援所有顯示屏，因此已取消連接其中一個</translation>
 <translation id="5740328398383587084">咫尺共享</translation>

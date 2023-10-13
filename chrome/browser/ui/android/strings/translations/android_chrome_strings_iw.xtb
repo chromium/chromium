@@ -250,6 +250,7 @@
 <translation id="235789365079050412">‏מדיניות הפרטיות של Google</translation>
 <translation id="2359808026110333948">המשך</translation>
 <translation id="2362083820973145409">נכנסת לחשבון בתור <ph name="USER_NAME" />. <ph name="USER_EMAIL" />. ההגדרות ייפתחו.</translation>
+<translation id="2364539095045928896">לחצן לסגירה של הודעת הפרטיות במרכז התובנות לגבי הדף.</translation>
 <translation id="2386938421315164605">הסתרה וביטול הסתרה של נושאים</translation>
 <translation id="2390510615457643724">רוצה להוריד שוב את <ph name="FILE_NAME" /> (<ph name="FILE_SIZE" />)?</translation>
 <translation id="2394602618534698961">קבצים שהורדת מופיעים כאן</translation>
@@ -868,6 +869,7 @@
 <translation id="5458366071038729214">כאן יוצגו האתרים שיתווספו למעקב</translation>
 <translation id="5468068603361015296">רוצה להוריד את <ph name="FILE_NAME" /> בכל זאת?</translation>
 <translation id="548278423535722844">פתיחה באפליקציית מפות</translation>
+<translation id="5486841595534124508">לוגו של הודעת הפרטיות במרכז התובנות לגבי הדף שמפנה לדף 'הפעילות שלי'.</translation>
 <translation id="5487521232677179737">ניקוי נתונים</translation>
 <translation id="5492637351392383067">הצפנה במכשיר</translation>
 <translation id="5514904542973294328">האפשרות הזו הושבתה על-ידי מנהל המערכת של המכשיר</translation>
@@ -1341,6 +1343,7 @@
 <translation id="7810647596859435254">פתיחה באמצעות...</translation>
 <translation id="7815484226266492798">צילום מסך ארוך</translation>
 <translation id="7822705602465980873">‏אחרי הכניסה לחשבון, הנתונים האלה מקושרים לחשבון Google כדי להגן עליך בשירותי Google. לדוגמה, במקרה של אירוע אבטחה, ההגנה ב-Gmail מוגברת.</translation>
+<translation id="782705168687182233">‏הפעילות נשמרת ב<ph name="BEGIN_LINK" />חשבון Google<ph name="END_LINK" /> שלך.</translation>
 <translation id="78270725016672455">התקבלה מהמחשב בקשה לרשום את המכשיר הזה לצורך כניסה לאתר</translation>
 <translation id="7844171778363018843">אין נתונים שנבחרו לסנכרון</translation>
 <translation id="7846296061357476882">‏שירותי Google</translation>
