@@ -7,10 +7,9 @@
 
 import argparse
 import collections
-import json
 import logging
-import os
 import pathlib
+import shlex
 import sys
 from typing import Dict, List, Tuple
 
@@ -117,6 +116,17 @@ def _EnsureDirectClasspathIsComplete(
         # missing_target_names = tuple(sorted(dep_to_target[dep_to]))
         # missing_targets[missing_target_names][dep_to] = dep_from
   if missing_classes:
+    class_lookup_index = dep_utils.ClassLookupIndex(pathlib.Path(output_dir),
+                                                    should_build=False)
+    missing_deps = set()
+    for dep_to in missing_classes:
+      # Using dep_utils.ClassLookupIndex ensures we respect the preferred dep
+      # if any exists for the missing deps.
+      suggested_deps = class_lookup_index.match(dep_to)
+      assert suggested_deps, f'Unable to find target for {dep_to}'
+      suggested_deps = dep_utils.DisambiguateDeps(suggested_deps)
+      missing_deps.add(suggested_deps[0].target)
+    cmd = dep_utils.CreateAddDepsCommand(gn_target, sorted(missing_deps))
 
     def print_and_maybe_exit():
       missing_targets: Dict[Tuple, List[str]] = collections.defaultdict(list)
@@ -134,23 +144,14 @@ def _EnsureDirectClasspathIsComplete(
         for dep_to in deps_to:
           dep_from = missing_classes[dep_to]
           print(f'     ** {dep_to} (needed by {dep_from})')
+      print('\nHint: Run the following command to add the missing deps:')
+      print(f'    {shlex.join(cmd)}\n')
       if warnings_as_errors:
         sys.exit(1)
 
     if not auto_add_deps:
       print_and_maybe_exit()
     else:
-      class_lookup_index = dep_utils.ClassLookupIndex(pathlib.Path(output_dir),
-                                                      should_build=False)
-      missing_deps = set()
-      for dep_to in missing_classes:
-        # Using dep_utils.ClassLookupIndex ensures we respect the preferred dep
-        # if any exists for the missing deps.
-        suggested_deps = class_lookup_index.match(dep_to)
-        assert suggested_deps, f'Unable to find target for {dep_to}'
-        suggested_deps = dep_utils.DisambiguateDeps(suggested_deps)
-        missing_deps.add(suggested_deps[0].target)
-      cmd = dep_utils.CreateAddDepsCommand(gn_target, sorted(missing_deps))
 
       failed = False
       try:

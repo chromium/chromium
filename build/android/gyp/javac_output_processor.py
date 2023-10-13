@@ -92,7 +92,7 @@ class JavacOutputProcessor:
       yield ''
       yield yellow('Hint:') + (' Run the following command to add the missing '
                                'deps:')
-      missing_targets = [targets[0] for targets in self._suggested_targets_list]
+      missing_targets = {targets[0] for targets in self._suggested_targets_list}
       cmd = dep_utils.CreateAddDepsCommand(self._target_name,
                                            sorted(missing_targets))
       yield f'    {shlex.join(cmd)}\n '  # Extra space necessary for new line.
