@@ -59,18 +59,6 @@
 #include "ui/gfx/linux/native_pixmap_dmabuf.h"
 #include "ui/gfx/native_pixmap.h"
 #include "ui/gfx/native_pixmap_handle.h"
-#include "ui/gl/gl_bindings.h"
-#include "ui/gl/gl_implementation.h"
-
-#if BUILDFLAG(USE_VAAPI_X11)
-typedef XID Drawable;
-
-extern "C" {
-#include "media/gpu/vaapi/va_x11.sigs"
-}
-
-#include "ui/gfx/x/connection.h"  // nogncheck
-#endif                            // BUILDFLAG(USE_VAAPI_X11)
 
 #if BUILDFLAG(IS_OZONE)
 #include "ui/ozone/public/ozone_platform.h"
@@ -87,17 +75,11 @@ using media_gpu_vaapi::kModuleVa_prot;
 #include "base/strings/string_split.h"
 #endif
 
+using media_gpu_vaapi::InitializeStubs;
+using media_gpu_vaapi::IsVa_drmInitialized;
+using media_gpu_vaapi::IsVaInitialized;
 using media_gpu_vaapi::kModuleVa;
 using media_gpu_vaapi::kModuleVa_drm;
-#if BUILDFLAG(USE_VAAPI_X11)
-using media_gpu_vaapi::kModuleVa_x11;
-#endif  // BUILDFLAG(USE_VAAPI_X11)
-using media_gpu_vaapi::InitializeStubs;
-using media_gpu_vaapi::IsVaInitialized;
-#if BUILDFLAG(USE_VAAPI_X11)
-using media_gpu_vaapi::IsVa_x11Initialized;
-#endif  // BUILDFLAG(USE_VAAPI_X11)
-using media_gpu_vaapi::IsVa_drmInitialized;
 using media_gpu_vaapi::StubPathMap;
 
 namespace media {
@@ -121,7 +103,7 @@ enum class VaapiFunctions {
   kVAExportSurfaceHandle = 12,
   kVAGetConfigAttributes = 13,
   kVAPutImage = 14,
-  kVAPutSurface = 15,
+  // kVAPutSurface = 15,  // UNUSED.
   kVAQueryConfigAttributes = 16,
   kVAQueryImageFormats = 17,
   kVAQuerySurfaceAttributes = 18,
@@ -792,50 +774,6 @@ bool IsBlockedDriver(VaapiWrapper::CodecMode mode,
 
   return false;
 }
-
-#if BUILDFLAG(USE_VAAPI_X11)
-
-absl::optional<VADisplay> GetVADisplayStateX11(const base::ScopedFD& drm_fd) {
-  switch (gl::GetGLImplementation()) {
-    case gl::kGLImplementationEGLGLES2:
-      return vaGetDisplayDRM(drm_fd.get());
-
-    case gl::kGLImplementationNone: {
-      VADisplay display =
-          vaGetDisplay(x11::Connection::Get()->GetXlibDisplay());
-      if (vaDisplayIsValid(display))
-        return display;
-      return vaGetDisplayDRM(drm_fd.get());
-    }
-
-    case gl::kGLImplementationEGLANGLE:
-      return vaGetDisplay(x11::Connection::Get()->GetXlibDisplay());
-
-    default:
-      LOG(WARNING) << "VAAPI video acceleration not available for "
-                   << gl::GetGLImplementationGLName(
-                          gl::GetGLImplementationParts());
-      return absl::nullopt;
-  }
-}
-
-#else
-
-absl::optional<VADisplay> GetVADisplayState(const base::ScopedFD& drm_fd) {
-  switch (gl::GetGLImplementation()) {
-    case gl::kGLImplementationEGLGLES2:
-    case gl::kGLImplementationEGLANGLE:
-    case gl::kGLImplementationNone:
-      return vaGetDisplayDRM(drm_fd.get());
-    default:
-      LOG(WARNING) << "VAAPI video acceleration not available for "
-                   << gl::GetGLImplementationGLName(
-                          gl::GetGLImplementationParts());
-      return absl::nullopt;
-  }
-}
-
-#endif  // BUILDFLAG(USE_VAAPI_X11)
 
 // Returns all the VAProfiles that the driver lists as supported, regardless of
 // what Chrome supports or not.
@@ -1651,10 +1589,7 @@ VADisplayStateHandle VADisplayStateSingleton::GetHandle() {
   }
 #endif
 
-  bool libraries_initialized = IsVaInitialized() && IsVa_drmInitialized();
-#if BUILDFLAG(USE_VAAPI_X11)
-  libraries_initialized = libraries_initialized && IsVa_x11Initialized();
-#endif
+  const bool libraries_initialized = IsVaInitialized() && IsVa_drmInitialized();
   if (!libraries_initialized) {
     return {};
   }
@@ -1677,17 +1612,7 @@ bool VADisplayStateSingleton::Initialize() {
     env->SetVar(libva_log_level_env, "1");
   }
 
-  absl::optional<VADisplay> display =
-#if BUILDFLAG(USE_VAAPI_X11)
-      GetVADisplayStateX11(drm_fd_);
-#else
-      GetVADisplayState(drm_fd_);
-#endif
-
-  if (!display) {
-    return false;
-  }
-  VADisplay va_display = *display;
+  const VADisplay va_display = vaGetDisplayDRM(drm_fd_.get());
   base::ScopedClosureRunner va_display_cleaner_cb(base::BindOnce(
       [](VADisplay va_display) {
         if (vaDisplayIsValid(va_display)) {
@@ -2843,27 +2768,6 @@ bool VaapiWrapper::MapAndCopyAndExecute(
   return Execute_Locked(va_surface_id, va_buffer_ids);
 }
 
-#if BUILDFLAG(USE_VAAPI_X11)
-bool VaapiWrapper::PutSurfaceIntoPixmap(VASurfaceID va_surface_id,
-                                        x11::Pixmap x_pixmap,
-                                        gfx::Size dest_size) {
-  CHECK(!enforce_sequence_affinity_ ||
-        sequence_checker_.CalledOnValidSequence());
-  base::AutoLockMaybe auto_lock(va_lock_.get());
-
-  VAStatus va_res = vaSyncSurface(va_display_, va_surface_id);
-  VA_SUCCESS_OR_RETURN(va_res, VaapiFunctions::kVASyncSurface, false);
-
-  // Put the data into an X Pixmap.
-  va_res =
-      vaPutSurface(va_display_, va_surface_id, static_cast<uint32_t>(x_pixmap),
-                   0, 0, dest_size.width(), dest_size.height(), 0, 0,
-                   dest_size.width(), dest_size.height(), nullptr, 0, 0);
-  VA_SUCCESS_OR_RETURN(va_res, VaapiFunctions::kVAPutSurface, false);
-  return true;
-}
-#endif  // BUILDFLAG(USE_VAAPI_X11)
-
 std::unique_ptr<ScopedVAImage> VaapiWrapper::CreateVaImage(
     VASurfaceID va_surface_id,
     VAImageFormat* format,
@@ -3252,17 +3156,11 @@ void VaapiWrapper::PreSandboxInitialization(bool allow_disabling_global_lock) {
 
   paths[kModuleVa].push_back(std::string("libva.so.") + va_suffix);
   paths[kModuleVa_drm].push_back(std::string("libva-drm.so.") + va_suffix);
-#if BUILDFLAG(USE_VAAPI_X11)
-  paths[kModuleVa_x11].push_back(std::string("libva-x11.so.") + va_suffix);
-#endif
 #if BUILDFLAG(IS_CHROMEOS_ASH)
   paths[kModuleVa_prot].push_back(std::string("libva.so.") + va_suffix);
 #endif
 
-  // InitializeStubs dlopen() VA-API libraries
-  // libva.so
-  // libva-x11.so (X11)
-  // libva-drm.so (X11 and Ozone).
+  // InitializeStubs dlopen()s VA-API libraries and loads the required symbols.
   static bool result = InitializeStubs(paths);
   if (!result) {
     static const char kErrorMsg[] = "Failed to initialize VAAPI libs";

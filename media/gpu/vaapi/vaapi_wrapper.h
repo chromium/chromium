@@ -36,10 +36,6 @@
 #include "third_party/abseil-cpp/absl/types/optional.h"
 #include "ui/gfx/geometry/size.h"
 
-#if BUILDFLAG(USE_VAAPI_X11)
-#include "ui/gfx/x/xproto.h"  // nogncheck
-#endif                        // BUILDFLAG(USE_VAAPI_X11)
-
 namespace gfx {
 enum class BufferFormat : uint8_t;
 class NativePixmap;
@@ -481,14 +477,6 @@ class MEDIA_GPU_EXPORT VaapiWrapper
   [[nodiscard]] bool MapAndCopyAndExecute(
       VASurfaceID va_surface_id,
       const std::vector<std::pair<VABufferID, VABufferDescriptor>>& va_buffers);
-
-#if BUILDFLAG(USE_VAAPI_X11)
-  // Put data from |va_surface_id| into |x_pixmap| of size
-  // |dest_size|, converting/scaling to it.
-  [[nodiscard]] bool PutSurfaceIntoPixmap(VASurfaceID va_surface_id,
-                                          x11::Pixmap x_pixmap,
-                                          gfx::Size dest_size);
-#endif  // BUILDFLAG(USE_VAAPI_X11)
 
   // Creates a ScopedVAImage from a VASurface |va_surface_id| and map it into
   // memory with the given |format| and |size|. If |format| is not equal to the
