@@ -34,6 +34,11 @@ class AutofillPrivateEventRouter :
       delete;
   ~AutofillPrivateEventRouter() override = default;
 
+  // Rebind and Unbind test PDM when using `TestContentAutofillClient`.
+  void RebindPersonalDataManagerForTesting(
+      autofill::PersonalDataManager* personal_data);
+  void UnbindPersonalDataManagerForTesting();
+
  protected:
   // KeyedService overrides:
   void Shutdown() override;

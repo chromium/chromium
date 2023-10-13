@@ -69,16 +69,23 @@ void TestPersonalDataManager::UpdateProfile(const AutofillProfile& profile) {
 }
 
 void TestPersonalDataManager::RemoveByGUID(const std::string& guid) {
+  RemoveByGuidWithoutNotifications(guid);
+  NotifyPersonalDataObserver();
+}
+
+void TestPersonalDataManager::RemoveByGuidWithoutNotifications(
+    const std::string& guid) {
   if (CreditCard* credit_card = GetCreditCardByGUID(guid)) {
     local_credit_cards_.erase(base::ranges::find(
         local_credit_cards_, credit_card, &std::unique_ptr<CreditCard>::get));
-    NotifyPersonalDataObserver();
   } else if (AutofillProfile* profile = GetProfileByGUID(guid)) {
     std::vector<std::unique_ptr<AutofillProfile>>& profiles =
         GetProfileStorage(profile->source());
     profiles.erase(base::ranges::find(profiles, profile,
                                       &std::unique_ptr<AutofillProfile>::get));
-    NotifyPersonalDataObserver();
+  } else if (Iban* iban = GetIbanByGUID(guid)) {
+    local_ibans_.erase(
+        base::ranges::find(local_ibans_, iban, &std::unique_ptr<Iban>::get));
   }
 }
 
@@ -106,10 +113,20 @@ std::string TestPersonalDataManager::AddIban(Iban iban) {
   return iban.guid();
 }
 
+std::string TestPersonalDataManager::UpdateIban(const Iban& iban) {
+  Iban* old_iban = GetIbanByGUID(iban.guid());
+  CHECK(old_iban);
+  *old_iban = iban;
+  NotifyPersonalDataObserver();
+  return iban.guid();
+}
+
 void TestPersonalDataManager::DeleteLocalCreditCards(
     const std::vector<CreditCard>& cards) {
   for (const auto& card : cards)
-    RemoveByGUID(card.guid());
+    // Removed the cards silently and trigger a single notification to match the
+    // behavior of PersonalDataManager.
+    RemoveByGuidWithoutNotifications(card.guid());
 
   NotifyPersonalDataObserver();
 }
@@ -117,7 +134,10 @@ void TestPersonalDataManager::DeleteLocalCreditCards(
 void TestPersonalDataManager::UpdateCreditCard(const CreditCard& credit_card) {
   CreditCard* existing_credit_card = GetCreditCardByGUID(credit_card.guid());
   if (existing_credit_card) {
-    RemoveByGUID(existing_credit_card->guid());
+    // AddCreditCard will trigger a notification to observers. We remove the old
+    // card without notification so that exactly one notification is sent, which
+    // matches the behavior of the PersonalDataManager.
+    RemoveByGuidWithoutNotifications(existing_credit_card->guid());
     AddCreditCard(credit_card);
   }
 }

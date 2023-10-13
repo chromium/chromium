@@ -13,6 +13,8 @@
 #include "build/build_config.h"
 #include "chrome/browser/autofill/autofill_uitest_util.h"
 #include "chrome/browser/autofill/personal_data_manager_factory.h"
+#include "chrome/browser/extensions/api/autofill_private/autofill_private_event_router.h"
+#include "chrome/browser/extensions/api/autofill_private/autofill_private_event_router_factory.h"
 #include "chrome/browser/extensions/extension_apitest.h"
 #include "chrome/browser/ui/autofill/chrome_autofill_client.h"
 #include "components/autofill/content/browser/test_autofill_client_injector.h"
@@ -45,8 +47,22 @@ class AutofillPrivateApiTest : public ExtensionApiTest {
   void SetUpOnMainThread() override {
     ExtensionApiTest::SetUpOnMainThread();
     content::RunAllPendingInMessageLoop();
+    // Rebinding the `autofill_client()` test PDM on the
+    // `AutofillPrivateEventRouter`. This sets the correct test PDM instance on
+    // the observers under the `AutofillPrivateEventRouter`.
+    AutofillPrivateEventRouterFactory::GetForProfile(browser_context())
+        ->RebindPersonalDataManagerForTesting(
+            autofill_client()->GetPersonalDataManager());
     autofill_client()->GetPersonalDataManager()->SetPrefService(
         autofill_client()->GetPrefs());
+  }
+
+  void TearDownOnMainThread() override {
+    // Unbinding the `autofill_client()` test PDM on the
+    // `AutofillPrivateEventRouter`. This removes the test PDM instance added to
+    // the observers in `SetUpOnMainThread()` for `AutofillPrivateEventRouter`.
+    AutofillPrivateEventRouterFactory::GetForProfile(browser_context())
+        ->UnbindPersonalDataManagerForTesting();
   }
 
  protected:
@@ -65,6 +81,13 @@ class AutofillPrivateApiTest : public ExtensionApiTest {
   }
 
  private:
+  content::BrowserContext* browser_context() {
+    return browser()
+        ->tab_strip_model()
+        ->GetActiveWebContents()
+        ->GetBrowserContext();
+  }
+
   autofill::TestAutofillClientInjector<autofill::TestContentAutofillClient>
       test_autofill_client_injector_;
 };
