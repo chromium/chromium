@@ -19,8 +19,10 @@
 #include "components/compose/proto/compose_metadata.pb.h"
 #include "components/optimization_guide/core/optimization_guide_features.h"
 #include "components/optimization_guide/core/optimization_guide_util.h"
+#include "components/strings/grit/components_strings.h"
 #include "content/public/browser/web_contents_user_data.h"
 #include "mojo/public/cpp/bindings/callback_helpers.h"
+#include "ui/base/l10n/l10n_util.h"
 
 ChromeComposeClient::ChromeComposeClient(content::WebContents* web_contents)
     : content::WebContentsUserData<ChromeComposeClient>(*web_contents),
@@ -43,14 +45,16 @@ void ChromeComposeClient::Compose(compose::mojom::StyleModifiersPtr style,
                                   const std::string& input,
                                   ComposeCallback callback) {
   // TODO(b/300974056): Move this to the overall feature-enabled check.
-  if (!base::FeatureList::IsEnabled(
+  auto* model_executor = GetModelExecutor();
+  if (!model_executor ||
+      !base::FeatureList::IsEnabled(
           optimization_guide::features::kOptimizationGuideModelExecution)) {
     std::move(callback).Run(compose::mojom::ComposeResponse::New(
-        compose::mojom::ComposeStatus::kError, ""));
+        compose::mojom::ComposeStatus::kError,
+        l10n_util::GetStringUTF8(IDS_COMPOSE_CONFIGURATION_ERROR)));
     return;
   }
-  auto* model_executor = GetModelExecutor();
-  DCHECK(model_executor) << "Unable to acquire model executor.";
+
   compose_proto::ComposeRequest request;
   request.set_user_input(input);
   request.set_tone(ComposeTone(style->tone));
@@ -105,17 +109,13 @@ compose::ComposeManager& ChromeComposeClient::GetManager() {
 
 optimization_guide::OptimizationGuideModelExecutor*
 ChromeComposeClient::GetModelExecutor() {
-  if (model_executor_for_test_) {
-    return model_executor_for_test_;
-  }
-
-  return OptimizationGuideKeyedServiceFactory::GetForProfile(
-      Profile::FromBrowserContext(GetWebContents().GetBrowserContext()));
+  return model_executor_for_test_.value_or(
+      OptimizationGuideKeyedServiceFactory::GetForProfile(
+          Profile::FromBrowserContext(GetWebContents().GetBrowserContext())));
 }
 
 void ChromeComposeClient::SetModelExecutorForTest(
     optimization_guide::OptimizationGuideModelExecutor* model_executor) {
-  CHECK(model_executor);
   model_executor_for_test_ = model_executor;
 }
 

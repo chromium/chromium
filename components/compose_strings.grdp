@@ -7,4 +7,7 @@
   <message name="IDS_COMPOSE_SUGGESTION_LABEL" desc="The label beneath the main text in the Autofill suggestion that a user sees adter interacting with a supported text element." translateable="false">
   Powered by Google
   </message>
+  <message name="IDS_COMPOSE_CONFIGURATION_ERROR" desc="The error text shown when Compose is not available due to an internal configuration error." translateable="false">
+  Configuration error. Try again later.
+  </message>
 </grit-part>

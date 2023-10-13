@@ -70,7 +70,7 @@ class ChromeComposeClient
       handler_receiver_;
   std::unique_ptr<mojo::Remote<compose::mojom::ComposeDialog>> dialog_remote_;
 
-  raw_ptr<optimization_guide::OptimizationGuideModelExecutor>
+  std::optional<optimization_guide::OptimizationGuideModelExecutor*>
       model_executor_for_test_;
 
   // The unique renderer ID of the last field the user selected compose on.

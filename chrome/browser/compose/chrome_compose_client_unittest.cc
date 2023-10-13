@@ -189,3 +189,15 @@ TEST_F(ChromeComposeClientTest, TestOptimizationGuideDisabled) {
   compose::mojom::ComposeResponsePtr result = test_future.Take();
   EXPECT_EQ(compose::mojom::ComposeStatus::kError, result->status);
 }
+
+TEST_F(ChromeComposeClientTest, TestNoModelExecutor) {
+  client().SetModelExecutorForTest(nullptr);
+  EXPECT_CALL(model_executor(), ExecuteModel(_, _, _)).Times(0);
+  base::test::TestFuture<compose::mojom::ComposeResponsePtr> test_future;
+  auto style_modifiers = compose::mojom::StyleModifiers::New();
+  page_handler()->Compose(std::move(style_modifiers), "a user typed this",
+                          test_future.GetCallback());
+
+  compose::mojom::ComposeResponsePtr result = test_future.Take();
+  EXPECT_EQ(compose::mojom::ComposeStatus::kError, result->status);
+}
