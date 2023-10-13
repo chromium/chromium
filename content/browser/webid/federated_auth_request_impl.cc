@@ -4,6 +4,8 @@
 
 #include "content/browser/webid/federated_auth_request_impl.h"
 
+#include <random>
+
 #include "base/command_line.h"
 #include "base/containers/contains.h"
 #include "base/containers/cxx20_erase.h"
@@ -67,6 +69,17 @@ namespace content {
 namespace {
 static constexpr base::TimeDelta kDefaultTokenRequestDelay = base::Seconds(3);
 static constexpr base::TimeDelta kMaxRejectionTime = base::Seconds(60);
+
+// Users spend less time on Android to dismiss the UI. Given the difference, we
+// use two set of values. The values are calculated based on UMA data to follow
+// lognormal distribution.
+#if BUILDFLAG(IS_ANDROID)
+static constexpr double kRejectionLogNormalMu = 7.4;
+static constexpr double kRejectionLogNormalSigma = 1.24;
+#else
+static constexpr double kRejectionLogNormalMu = 8.6;
+static constexpr double kRejectionLogNormalSigma = 1.4;
+#endif  // BUILDFLAG(IS_ANDROID)
 
 std::string ComputeUrlEncodedTokenPostData(
     const std::string& client_id,
@@ -268,6 +281,21 @@ FederatedAuthRequestResultToMetricsEndpointErrorCode(
       return IdpNetworkRequestManager::MetricsEndpointErrorCode::kOther;
     }
   }
+}
+
+// The time from when the accounts dialog is shown to when a user explicitly
+// closes it follows normal distribution. To make the random failures
+// indistinguishable from user declines, we use lognormal distribution to
+// generate the random number.
+base::TimeDelta GetRandomRejectionTime() {
+  base::RandomBitGenerator generator;
+  std::lognormal_distribution<double> distribution(kRejectionLogNormalMu,
+                                                   kRejectionLogNormalSigma);
+
+  base::TimeDelta rejection_time =
+      base::Seconds(distribution(generator) / 1000);
+
+  return std::min(kMaxRejectionTime, rejection_time);
 }
 
 std::string FormatOriginForDisplay(const url::Origin& origin) {
@@ -2173,9 +2201,7 @@ void FederatedAuthRequestImpl::CompleteRequest(
         FROM_HERE,
         base::BindOnce(&FederatedAuthRequestImpl::OnRejectRequest,
                        weak_ptr_factory_.GetWeakPtr()),
-        // TODO(crbug.com/1344150): Use normal distribution after sufficient
-        // data is collected.
-        base::RandTimeDeltaUpTo(kMaxRejectionTime));
+        GetRandomRejectionTime());
   }
 }
 
