@@ -75,6 +75,22 @@ public interface PasswordStoreAndroidBackend {
             Callback<Exception> failureCallback);
 
     /**
+     * Triggers an async list call to retrieve all logins with branding info.
+     *
+     * @param syncingAccount Account used to sync passwords. If the syncingAccount is empty local
+     *     account will be used.
+     * @param loginsReply Callback that is called on success with serialized {@link
+     *     org.chromium.components.password_manager.core.browser.proto.ListPasswordsWithUiInfoResult
+     *     } data.
+     * @param failureCallback A callback that is called on failure for any reason. May return sync.
+     *     TODO(crbug.com/1428539): Remove default keyword after downstream implementation.
+     */
+    default void getAllLoginsWithBrandingInfo(
+            Optional<Account> syncingAccount,
+            Callback<byte[]> loginsReply,
+            Callback<Exception> failureCallback) {}
+
+    /**
      * Triggers an async list call to retrieve autofillable logins.
      *
      * @param syncingAccount Account used to sync passwords. If the syncingAccount is empty local
