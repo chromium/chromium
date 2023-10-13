@@ -109,6 +109,7 @@ class ReadAnythingColorsModel : public ReadAnythingMenuModel {
     ColorInfo(ColorInfo&&);
     ColorInfo& operator=(const ColorInfo&);
     ColorInfo& operator=(ColorInfo&&);
+    ~ColorInfo();
 
     // The name of the colors, e.g. Default, Light, Dark.
     std::u16string name;
