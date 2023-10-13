@@ -563,6 +563,12 @@ class NET_EXPORT CanonicalCookie {
                                        bool is_partitioned,
                                        bool partition_has_nonce);
 
+  // Returns whether this cookie is Partitioned and its partition key matches a
+  // a same-site context by checking if the cookies domain site is the same as
+  // the partition key's site.
+  // Returns false if the cookie has no partition key.
+  bool IsFirstPartyPartitioned() const;
+
   // Keep defaults here in sync with
   // services/network/public/interfaces/cookie_manager.mojom.
   std::string name_;

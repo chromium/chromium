@@ -976,6 +976,13 @@ std::unique_ptr<CanonicalCookie> CanonicalCookie::CreateUnsafeCookieForTesting(
       priority, same_party, partition_key, source_scheme, source_port);
 }
 
+bool CanonicalCookie::IsFirstPartyPartitioned() const {
+  return IsPartitioned() && !CookiePartitionKey::HasNonce(partition_key_) &&
+         SchemefulSite(GURL(
+             base::StrCat({url::kHttpsScheme, url::kStandardSchemeSeparator,
+                           DomainWithoutDot()}))) == partition_key_->site();
+}
+
 std::string CanonicalCookie::DomainWithoutDot() const {
   return cookie_util::CookieDomainAsHost(domain_);
 }
@@ -1169,6 +1176,14 @@ CookieAccessResult CanonicalCookie::IncludeForRequestURL(
       break;
     default:
       break;
+  }
+
+  // For the metric, we only want to consider first party partitioned cookies.
+  if (IsFirstPartyPartitioned()) {
+    UMA_HISTOGRAM_BOOLEAN(
+        "Cookie.FirstPartyPartitioned.HasCrossSiteAncestor",
+        cookie_inclusion_context ==
+            CookieOptions::SameSiteCookieContext::ContextType::CROSS_SITE);
   }
 
   // Unless legacy access semantics are in effect, SameSite=None cookies without
