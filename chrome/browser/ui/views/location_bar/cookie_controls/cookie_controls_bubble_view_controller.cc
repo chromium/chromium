@@ -234,19 +234,21 @@ void CookieControlsBubbleViewController::
   // TODO: Log a UserMetricsAction here to count completed page reloads once we
   // have confidence that this callback is properly scoped.  See
   // https://crrev.com/c/4925330 for context.
-  controller_observation_.Reset();
-  bubble_view_->CloseWidget();
-  // View destruction is call asynchronously from the bubble being closed, so we
-  // invalidate the weak pointers here to avoid callbacks happening after
-  // the bubble is closed and before this class is destroyed.
-  weak_factory_.InvalidateWeakPtrs();
+  CloseBubble();
 }
 
 void CookieControlsBubbleViewController::OnReloadingViewTimeout() {
   base::RecordAction(
       base::UserMetricsAction("CookieControls.Bubble.ReloadingTimeout"));
+  CloseBubble();
+}
+
+void CookieControlsBubbleViewController::CloseBubble() {
   controller_observation_.Reset();
   bubble_view_->CloseWidget();
+  // View destruction is call asynchronously from the bubble being closed, so we
+  // invalidate the weak pointers here to avoid callbacks happening after
+  // the bubble is closed and before this class is destroyed.
   weak_factory_.InvalidateWeakPtrs();
 }
 

@@ -58,6 +58,7 @@ class CookieControlsBubbleViewController
   void SwitchToReloadingView();
   void ApplyThirdPartyCookiesAllowedState(base::Time expiration);
   void ApplyThirdPartyCookiesBlockedState();
+  void CloseBubble();
 
   [[nodiscard]] std::unique_ptr<views::View> InitReloadingView(
       content::WebContents* web_contents);
