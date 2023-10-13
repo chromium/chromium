@@ -231,7 +231,7 @@ class Port(object):
     # manifest. However, we reuse this syntax for some non-WPT tests as well.
     WPT_FUZZY_REGEX = re.compile(
         r'<(?:html:)?meta\s+name=(?:fuzzy|"fuzzy")\s+content='
-        r'"(?:(.+):)?(?:maxDifference=)?(?:(\d+)-)?(\d+);(?:totalPixels=)?(?:(\d+)-)?(\d+)"\s*/?>'
+        r'"(?:(.+):)?(?:\s*maxDifference\s*=\s*)?(?:(\d+)-)?(\d+);(?:\s*totalPixels\s*=\s*)?(?:(\d+)-)?(\d+)"\s*/?>'
     )
 
     # Because this is an abstract base class, arguments to functions may be
