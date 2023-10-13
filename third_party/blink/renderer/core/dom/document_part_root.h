@@ -13,8 +13,6 @@
 
 namespace blink {
 
-class PartRootCloneOptions;
-
 // Implementation of the DocumentPartRoot class, which is part of the DOM Parts
 // API. A DocumentPartRoot holds the parts for a Document or DocumentFragment.
 // A Document always owns one DocumentPartRoot.
@@ -41,10 +39,7 @@ class CORE_EXPORT DocumentPartRoot : public ScriptWrappable, public PartRoot {
   void Trace(Visitor*) const override;
 
   // PartRoot API
-  PartRootUnion* clone(ExceptionState& exception_state) {
-    return clone(nullptr, exception_state);
-  }
-  PartRootUnion* clone(PartRootCloneOptions*, ExceptionState&);
+  PartRootUnion* clone(ExceptionState&);
   ContainerNode* rootContainer() const override { return root_container_; }
 
  protected:

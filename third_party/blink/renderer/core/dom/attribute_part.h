@@ -14,8 +14,6 @@
 
 namespace blink {
 
-class ExceptionState;
-
 // Implementation of the AttributePart class, which is part of the DOM Parts
 // API. A AttributePart stores a reference to a single |Node| in the DOM tree.
 class CORE_EXPORT AttributePart : public NodePart {
@@ -24,24 +22,23 @@ class CORE_EXPORT AttributePart : public NodePart {
  public:
   static AttributePart* Create(PartRootUnion* root_union,
                                Node* node,
-                               AtomicString local_name,
+                               String local_name,
                                bool automatic,
-                               const PartInit* init,
-                               ExceptionState& exception_state);
+                               const PartInit* init);
   AttributePart(PartRoot& root,
-                Element& element,
-                AtomicString local_name,
+                Node& node,
+                String local_name,
                 bool automatic,
                 const PartInit* init)
       : AttributePart(root,
-                      element,
+                      node,
                       local_name,
                       automatic,
                       init && init->hasMetadata() ? init->metadata()
                                                   : Vector<String>()) {}
   AttributePart(PartRoot& root,
-                Element& element,
-                AtomicString local_name,
+                Node& node,
+                String local_name,
                 bool automatic,
                 const Vector<String> metadata);
   AttributePart(const AttributePart&) = delete;
@@ -51,11 +48,11 @@ class CORE_EXPORT AttributePart : public NodePart {
   bool IncludeInPartsList() const override { return !automatic_; }
 
   // AttributePart API
-  AtomicString localName() const { return local_name_; }
+  String localName() const { return local_name_; }
   bool automatic() const { return automatic_; }
 
  private:
-  AtomicString local_name_;
+  String local_name_;
   bool automatic_;
 };
 

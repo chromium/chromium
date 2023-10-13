@@ -5,6 +5,7 @@
 #ifndef THIRD_PARTY_BLINK_RENDERER_CORE_DOM_CHILD_NODE_PART_H_
 #define THIRD_PARTY_BLINK_RENDERER_CORE_DOM_CHILD_NODE_PART_H_
 
+#include "third_party/blink/renderer/bindings/core/v8/v8_part_init.h"
 #include "third_party/blink/renderer/bindings/core/v8/v8_union_node_string_trustedscript.h"
 #include "third_party/blink/renderer/core/core_export.h"
 #include "third_party/blink/renderer/core/dom/container_node.h"
@@ -17,9 +18,6 @@
 #include "third_party/blink/renderer/platform/heap/member.h"
 
 namespace blink {
-
-class PartInit;
-class PartRootCloneOptions;
 
 // Implementation of the ChildNodePart class, which is part of the DOM Parts
 // API. A ChildNodePart stores a reference to a range of nodes within the
@@ -64,10 +62,7 @@ class CORE_EXPORT ChildNodePart : public Part, public PartRoot {
 
   // ChildNodePart API
   void disconnect() override;
-  PartRootUnion* clone(ExceptionState& exception_state) {
-    return clone(nullptr, exception_state);
-  }
-  PartRootUnion* clone(PartRootCloneOptions*, ExceptionState&);
+  PartRootUnion* clone(ExceptionState& exception_state);
   ContainerNode* rootContainer() const override;
   ContainerNode* parentNode() const { return previous_sibling_->parentNode(); }
   Node* previousSibling() const { return previous_sibling_; }

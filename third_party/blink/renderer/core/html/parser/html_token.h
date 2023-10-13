@@ -36,7 +36,6 @@
 #include "third_party/blink/renderer/core/html/parser/literal_buffer.h"
 #include "third_party/blink/renderer/platform/runtime_enabled_features.h"
 #include "third_party/blink/renderer/platform/wtf/forward.h"
-#include "third_party/blink/renderer/platform/wtf/text/atomic_string.h"
 
 namespace blink {
 
@@ -75,15 +74,6 @@ struct DOMPartData {
 
   WTF::Vector<String> metadata_;
   DOMPartTokenType type_;
-};
-
-struct DOMPartsNeeded {
- public:
-  bool needs_node_part{false};
-  Vector<AtomicString> needs_attribute_parts{};
-  explicit operator bool() const {
-    return needs_node_part || !needs_attribute_parts.empty();
-  }
 };
 
 static inline Attribute* FindAttributeInVector(base::span<Attribute> attributes,
@@ -159,7 +149,7 @@ class HTMLToken {
     copy->dom_part_data_ = std::move(dom_part_data_);
     copy->type_ = type_;
     copy->self_closing_ = self_closing_;
-    copy->dom_parts_needed_ = dom_parts_needed_;
+    copy->needs_node_part_ = needs_node_part_;
     // Reset to uninitialized.
     Clear();
     return copy;
@@ -287,7 +277,7 @@ class HTMLToken {
     DCHECK_EQ(type_, kUninitialized);
     type_ = kStartTag;
     self_closing_ = false;
-    dom_parts_needed_ = {};
+    needs_node_part_ = false;
     DCHECK(!current_attribute_);
     DCHECK(attributes_.empty());
 
@@ -408,21 +398,14 @@ class HTMLToken {
     return std::move(dom_part_data_);
   }
 
-  DOMPartsNeeded GetDOMPartsNeeded() {
+  bool NeedsNodePart() const {
     DCHECK_EQ(type_, kStartTag);
-    return dom_parts_needed_;
+    return needs_node_part_;
   }
 
   void SetNeedsNodePart() {
     DCHECK_EQ(type_, kStartTag);
-    dom_parts_needed_.needs_node_part = true;
-  }
-
-  void SetNeedsAttributePart() {
-    DCHECK_EQ(type_, kStartTag);
-    DCHECK(!current_attribute_->NameIsEmpty());
-    dom_parts_needed_.needs_attribute_parts.push_back(
-        current_attribute_->GetName());
+    needs_node_part_ = true;
   }
 
  private:
@@ -438,7 +421,7 @@ class HTMLToken {
 
   // For DOM Parts API
   std::unique_ptr<DOMPartData> dom_part_data_;
-  DOMPartsNeeded dom_parts_needed_;
+  bool needs_node_part_;
 
   TokenType type_ = kUninitialized;
 
