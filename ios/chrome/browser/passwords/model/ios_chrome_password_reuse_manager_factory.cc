@@ -12,7 +12,7 @@
 #include "components/password_manager/core/browser/password_store_interface.h"
 #include "components/password_manager/core/common/password_manager_features.h"
 #include "ios/chrome/browser/passwords/model/ios_chrome_account_password_store_factory.h"
-#include "ios/chrome/browser/passwords/model/ios_chrome_password_store_factory.h"
+#include "ios/chrome/browser/passwords/model/ios_chrome_profile_password_store_factory.h"
 #include "ios/chrome/browser/shared/model/browser_state/browser_state_otr_helper.h"
 #include "ios/chrome/browser/shared/model/browser_state/chrome_browser_state.h"
 

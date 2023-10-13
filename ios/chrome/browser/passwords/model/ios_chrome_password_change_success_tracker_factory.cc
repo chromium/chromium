@@ -8,7 +8,7 @@
 #include "components/keyed_service/ios/browser_state_dependency_manager.h"
 #include "components/keyed_service/ios/browser_state_keyed_service_factory.h"
 #include "components/password_manager/core/browser/password_change_success_tracker_impl.h"
-#include "ios/chrome/browser/passwords/model/ios_chrome_password_store_factory.h"
+#include "ios/chrome/browser/passwords/model/ios_chrome_profile_password_store_factory.h"
 #include "ios/chrome/browser/shared/model/browser_state/chrome_browser_state.h"
 
 // static
