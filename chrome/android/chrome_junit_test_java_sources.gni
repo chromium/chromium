@@ -371,4 +371,5 @@ chrome_junit_test_java_sources = [
   "junit/src/org/chromium/chrome/browser/webauth/FakeAndroidPasswordCredential.java",
   "junit/src/org/chromium/chrome/browser/webauth/FakeAndroidPublicKeyCredential.java",
   "junit/src/org/chromium/chrome/browser/webauth/Fido2CredentialRequestRobolectricTest.java",
+  "junit/src/org/chromium/chrome/browser/webauth/ShadowWebContentStatics.java",
 ]

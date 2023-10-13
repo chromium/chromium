@@ -29,6 +29,7 @@ import org.mockito.ArgumentCaptor;
 import org.mockito.Mock;
 import org.mockito.Mockito;
 import org.mockito.MockitoAnnotations;
+import org.robolectric.annotation.Config;
 
 import org.chromium.base.Callback;
 import org.chromium.base.test.BaseRobolectricTestRunner;
@@ -47,10 +48,14 @@ import org.chromium.components.webauthn.CredManMetricsHelper.CredManPrepareReque
 import org.chromium.components.webauthn.Fido2ApiTestHelper;
 import org.chromium.components.webauthn.WebAuthnBrowserBridge;
 import org.chromium.content_public.browser.RenderFrameHost;
+import org.chromium.content_public.browser.WebContents;
 
 import java.util.List;
 
 @RunWith(BaseRobolectricTestRunner.class)
+@Config(
+        manifest = Config.NONE,
+        shadows = {ShadowWebContentStatics.class})
 public class CredManHelperRobolectricTest {
     private CredManHelper mCredManHelper;
     private Fido2ApiTestHelper.AuthenticatorCallback mCallback;
@@ -60,18 +65,13 @@ public class CredManHelperRobolectricTest {
     private String mOriginString = "https://subdomain.coolwebsitekayserispor.com";
     private byte[] mMaybeClientDataHash = new byte[] {1, 2, 3};
 
-    @Mock
-    private Context mContext;
-    @Mock
-    private RenderFrameHost mFrameHost;
-    @Mock
-    private CredManMetricsHelper mMetricsHelper;
-    @Mock
-    private WebAuthnBrowserBridge mBrowserBridge;
-    @Mock
-    private Callback<Integer> mErrorCallback;
-    @Mock
-    private Barrier mBarrier;
+    @Mock private Context mContext;
+    @Mock private RenderFrameHost mFrameHost;
+    @Mock private WebContents mWebContents;
+    @Mock private CredManMetricsHelper mMetricsHelper;
+    @Mock private WebAuthnBrowserBridge mBrowserBridge;
+    @Mock private Callback<Integer> mErrorCallback;
+    @Mock private Barrier mBarrier;
 
     private CredManHelper.BridgeProvider mBridgeProvider = new CredManHelper.BridgeProvider() {
         @Override

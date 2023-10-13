@@ -31,6 +31,8 @@ import org.chromium.components.webauthn.Fido2CredentialRequest.ConditionalUiStat
 import org.chromium.content_public.browser.ClientDataJson;
 import org.chromium.content_public.browser.ClientDataRequestType;
 import org.chromium.content_public.browser.RenderFrameHost;
+import org.chromium.content_public.browser.WebContents;
+import org.chromium.content_public.browser.WebContentsStatics;
 import org.chromium.url.Origin;
 
 import java.lang.reflect.Method;
@@ -53,6 +55,7 @@ public class CredManHelper {
     private static final String CRED_MAN_EXCEPTION_GET_CREDENTIAL_TYPE_NO_CREDENTIAL =
             "android.credentials.GetCredentialException.TYPE_NO_CREDENTIAL";
     private static final String CHANNEL_KEY = "com.android.chrome.CHANNEL";
+    private static final String INCOGNITO_KEY = "com.android.chrome.INCOGNITO";
     private static final String CRED_MAN_PREFIX = "androidx.credentials.";
     private static final ComponentName GPM_COMPONENT_NAME =
             ComponentName.createRelative("com.google.android.gms",
@@ -747,6 +750,7 @@ public class CredManHelper {
         publicKeyCredentialOptionBundle.putByteArray(
                 CRED_MAN_PREFIX + "BUNDLE_KEY_CLIENT_DATA_HASH", clientDataHash);
         publicKeyCredentialOptionBundle.putString(CHANNEL_KEY, getChannel());
+        publicKeyCredentialOptionBundle.putBoolean(INCOGNITO_KEY, isIncognito());
         publicKeyCredentialOptionBundle.putBoolean(IGNORE_GPM, ignoreGpm);
         return publicKeyCredentialOptionBundle;
     }
@@ -755,6 +759,7 @@ public class CredManHelper {
         Object passwordCredentialOption;
         Bundle passwordOptionBundle = new Bundle();
         passwordOptionBundle.putString(CHANNEL_KEY, getChannel());
+        passwordOptionBundle.putBoolean(INCOGNITO_KEY, isIncognito());
         passwordOptionBundle.putBoolean(PASSWORDS_ONLY_FOR_THE_CHANNEL, true);
         passwordOptionBundle.putBoolean(PASSWORDS_WITH_NO_USERNAME_INCLUDED, true);
         passwordOptionBundle.putBoolean(IGNORE_GPM, ignoreGpm);
@@ -771,6 +776,12 @@ public class CredManHelper {
                 credentialOptionBuilderClass.getMethod("build").invoke(credentialOptionBuilder);
 
         return passwordCredentialOption;
+    }
+
+    private final boolean isIncognito() {
+        if (mFrameHost == null) return false;
+        WebContents webContents = WebContentsStatics.fromRenderFrameHost(mFrameHost);
+        return webContents == null ? false : webContents.isIncognito();
     }
 
     private static final String getChannel() {
