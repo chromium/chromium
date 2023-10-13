@@ -2421,8 +2421,7 @@
     "prefix": "fetch-later",
     "platforms": ["Linux", "Mac", "Win"],
     "bases": [
-      "external/wpt/fetch/fetch-later",
-      "wpt_internal/fetch/fetch-later"
+      "external/wpt/fetch/fetch-later"
     ],
     "exclusive_tests": "ALL",
     "args": [

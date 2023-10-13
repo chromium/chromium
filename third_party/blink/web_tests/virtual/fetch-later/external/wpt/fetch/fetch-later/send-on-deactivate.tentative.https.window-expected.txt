@@ -1,7 +1,6 @@
 This is a testharness.js-based test.
-PASS fetchLater() sends on page entering BFCache if BackgroundSync is off.
+PASS fetchLater() does not send on page entering BFCache.
 PASS Call fetchLater() when BFCached with activationTimeout=0 sends immediately.
 PASS fetchLater() sends on navigating away a page w/o BFCache.
-PASS fetchLater() with backgroundTimeout=1m sends on page entering BFCache if BackgroundSync is off.
 Harness: the test ran to completion.
 

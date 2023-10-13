@@ -40,15 +40,12 @@ class CORE_EXPORT FetchManager final
 
   // ExecutionContextLifecycleObserver overrides:
   void ContextDestroyed() override;
-  void ContextEnteredBackForwardCache() override;
 
   void Trace(Visitor*) const override;
 
  private:
   class Loader;
-  // TODO(crbug.com/1465781): Consider hide `DeferredLoader` inside its manager.
   class DeferredLoader;
-  class DeferredLoaderManager;
 
   // Removes loader from `loaders_`.
   void OnLoaderFinished(Loader*);
@@ -57,7 +54,6 @@ class CORE_EXPORT FetchManager final
 
   HeapHashSet<Member<Loader>> loaders_;
   HeapHashSet<Member<DeferredLoader>> deferred_loaders_;
-  Member<DeferredLoaderManager> deferred_loader_manager_;
 };
 
 }  // namespace blink

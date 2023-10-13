@@ -1,8 +1,7 @@
 # FetchLater Virtual Tests
 
 This folder contains virtual test suites for the fetchLater API.
-The suite runs `web_tests/external/wpt/fetch/fetch-later/` with
-`--enable-features=FetchLaterAPI --enable-blink-features=FetchLaterAPI`.
+The suite runs `web_tests/external/wpt/fetch/fetch-later/` with `--enable-features=FetchLaterAPI`.
 
 To manually run the suites, use the following command:
 
