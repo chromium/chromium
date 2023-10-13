@@ -6,6 +6,7 @@
 #define COMPONENTS_WEBAUTHN_ANDROID_WEBAUTHN_CRED_MAN_DELEGATE_H_
 
 #include "base/functional/callback.h"
+#include "base/types/strong_alias.h"
 
 namespace content {
 class WebContents;
@@ -17,6 +18,8 @@ namespace webauthn {
 // only.
 class WebAuthnCredManDelegate {
  public:
+  using RequestPasswords = base::StrongAlias<class RequestPasswordsTag, bool>;
+
   enum State {
     kNotReady,
     kNoPasskeys,
@@ -48,7 +51,9 @@ class WebAuthnCredManDelegate {
 
   // Called when the user focuses a webauthn login form. This will trigger
   // CredMan UI.
-  virtual void TriggerCredManUi();
+  // If |request_passwords|, the UI will also include passwords if there are
+  // any.
+  virtual void TriggerCredManUi(RequestPasswords request_passwords);
 
   // Returns whether there are passkeys in the Android Credential Manager UI.
   // Returns `kNotReady` if Credential Manager has not replied yet.

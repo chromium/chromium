@@ -30,13 +30,15 @@ TEST_F(WebAuthnCredManDelegateTest, ShowCredManUiCallbackNotRunAfterCleanup) {
   delegate()->OnCredManConditionalRequestPending(true, closure.Get());
 
   EXPECT_CALL(closure, Run(false)).Times(1);
-  delegate()->TriggerCredManUi();
+  delegate()->TriggerCredManUi(
+      WebAuthnCredManDelegate::RequestPasswords(false));
 
   EXPECT_CALL(closure, Run(false)).Times(0);
   delegate()->CleanUpConditionalRequest();
 
   EXPECT_CALL(closure, Run(false)).Times(0);
-  delegate()->TriggerCredManUi();
+  delegate()->TriggerCredManUi(
+      WebAuthnCredManDelegate::RequestPasswords(false));
 }
 
 TEST_F(WebAuthnCredManDelegateTest, RequestCompletionCallbackRun) {

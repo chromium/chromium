@@ -9,11 +9,13 @@
 #include "components/password_manager/content/browser/keyboard_replacing_surface_visibility_controller.h"
 #include "components/password_manager/core/browser/password_credential_filler.h"
 #include "components/password_manager/core/browser/password_manager_client.h"
+#include "components/password_manager/core/common/password_manager_features.h"
 #include "components/webauthn/android/webauthn_cred_man_delegate.h"
 
 namespace password_manager {
 
 using ToShowVirtualKeyboard = PasswordManagerDriver::ToShowVirtualKeyboard;
+using webauthn::WebAuthnCredManDelegate;
 
 CredManController::CredManController(
     base::WeakPtr<KeyboardReplacingSurfaceVisibilityController>
@@ -28,16 +30,16 @@ CredManController::~CredManController() {
 }
 
 bool CredManController::Show(
-    raw_ptr<webauthn::WebAuthnCredManDelegate> cred_man_delegate,
+    raw_ptr<WebAuthnCredManDelegate> cred_man_delegate,
     std::unique_ptr<PasswordCredentialFiller> filler,
     base::WeakPtr<password_manager::ContentPasswordManagerDriver> frame_driver,
     bool is_webauthn_form) {
   // webauthn forms without passkeys should show TouchToFill bottom sheet.
   if (!cred_man_delegate || !is_webauthn_form ||
-      webauthn::WebAuthnCredManDelegate::CredManMode() !=
-          webauthn::WebAuthnCredManDelegate::kAllCredMan ||
+      WebAuthnCredManDelegate::CredManMode() !=
+          WebAuthnCredManDelegate::CredManEnabledMode::kAllCredMan ||
       cred_man_delegate->HasPasskeys() !=
-          webauthn::WebAuthnCredManDelegate::kHasPasskeys) {
+          WebAuthnCredManDelegate::State::kHasPasskeys) {
     filler->Dismiss(ToShowVirtualKeyboard(false));
     return false;
   }
@@ -47,7 +49,8 @@ bool CredManController::Show(
       base::BindRepeating(&CredManController::Dismiss, AsWeakPtr()));
   cred_man_delegate->SetFillingCallback(
       base::BindOnce(&CredManController::Fill, AsWeakPtr()));
-  cred_man_delegate->TriggerCredManUi();
+  cred_man_delegate->TriggerCredManUi(WebAuthnCredManDelegate::RequestPasswords(
+      base::FeatureList::IsEnabled(features::kPasswordsInCredMan)));
   return true;
 }
 

@@ -8,7 +8,6 @@
 
 #include "base/android/jni_android.h"
 #include "base/functional/callback.h"
-#include "components/password_manager/core/common/password_manager_features.h"
 #include "components/webauthn/android/cred_man_support.h"
 #include "components/webauthn/android/jni_headers/CredManSupportProvider_jni.h"
 #include "content/public/browser/web_contents.h"
@@ -39,12 +38,12 @@ void WebAuthnCredManDelegate::OnCredManUiClosed(bool success) {
   }
 }
 
-void WebAuthnCredManDelegate::TriggerCredManUi() {
+void WebAuthnCredManDelegate::TriggerCredManUi(
+    RequestPasswords request_passwords) {
   if (show_cred_man_ui_callback_.is_null()) {
     return;
   }
-  show_cred_man_ui_callback_.Run(base::FeatureList::IsEnabled(
-      password_manager::features::kPasswordsInCredMan));
+  show_cred_man_ui_callback_.Run(request_passwords.value());
 }
 
 WebAuthnCredManDelegate::State WebAuthnCredManDelegate::HasPasskeys() {

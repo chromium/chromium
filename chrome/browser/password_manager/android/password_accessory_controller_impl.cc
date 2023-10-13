@@ -14,6 +14,7 @@
 #include "base/memory/ptr_util.h"
 #include "base/memory/scoped_refptr.h"
 #include "base/metrics/histogram_macros.h"
+#include "base/notreached.h"
 #include "base/ranges/algorithm.h"
 #include "base/trace_event/trace_event.h"
 #include "chrome/browser/autofill/manual_filling_controller.h"
@@ -59,6 +60,7 @@ using autofill::UserInfo;
 using autofill::mojom::FocusedFieldType;
 using password_manager::CredentialCache;
 using password_manager::UiCredential;
+using webauthn::WebAuthnCredManDelegate;
 using BlocklistedStatus =
     password_manager::OriginCredentialStore::BlocklistedStatus;
 using FillingSource = ManualFillingController::FillingSource;
@@ -359,9 +361,25 @@ void PasswordAccessoryControllerImpl::OnOptionSelected(
     case autofill::AccessoryAction::CREDMAN_CONDITIONAL_UI_REENTRY:
       if (password_manager::PasswordManagerDriver* driver =
               driver_supplier_.Run(&GetWebContents())) {
-        if (webauthn::WebAuthnCredManDelegate* delegate =
-                password_client_->GetWebAuthnCredManDelegateForDriver(driver)) {
-          delegate->TriggerCredManUi();
+        WebAuthnCredManDelegate* delegate =
+            password_client_->GetWebAuthnCredManDelegateForDriver(driver);
+        if (!delegate) {
+          return;
+        }
+        switch (WebAuthnCredManDelegate::CredManMode()) {
+          case WebAuthnCredManDelegate::CredManEnabledMode::kAllCredMan:
+            delegate->TriggerCredManUi(
+                WebAuthnCredManDelegate::RequestPasswords(
+                    base::FeatureList::IsEnabled(
+                        password_manager::features::kPasswordsInCredMan)));
+            return;
+          case WebAuthnCredManDelegate::CredManEnabledMode::kNonGpmPasskeys:
+            delegate->TriggerCredManUi(
+                WebAuthnCredManDelegate::RequestPasswords(false));
+            return;
+          default:
+            NOTREACHED() << "WebAuthnCredManDelegate should not be used if "
+                            "CredManMode is kNotEnabled!";
         }
       }
       return;
@@ -461,19 +479,18 @@ void PasswordAccessoryControllerImpl::OnGenerationRequested(
 
 void PasswordAccessoryControllerImpl::UpdateCredManReentryUi(
     FocusedFieldType focused_field_type) {
-  if (webauthn::WebAuthnCredManDelegate::CredManMode() ==
-      webauthn::WebAuthnCredManDelegate::kNotEnabled) {
+  if (WebAuthnCredManDelegate::CredManMode() ==
+      WebAuthnCredManDelegate::CredManEnabledMode::kNotEnabled) {
     return;  // No updates required.
   }
   if (password_manager::PasswordManagerDriver* driver =
           driver_supplier_.Run(&GetWebContents())) {
-    if (webauthn::WebAuthnCredManDelegate* delegate =
+    if (WebAuthnCredManDelegate* delegate =
             password_client_->GetWebAuthnCredManDelegateForDriver(driver)) {
       GetManualFillingController()->OnAccessoryActionAvailabilityChanged(
           ShouldShowCredManReentryAction(
               focused_field_type,
-              delegate->HasPasskeys() ==
-                  webauthn::WebAuthnCredManDelegate::kHasPasskeys),
+              delegate->HasPasskeys() == WebAuthnCredManDelegate::kHasPasskeys),
           autofill::AccessoryAction::CREDMAN_CONDITIONAL_UI_REENTRY);
     }
   }

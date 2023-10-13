@@ -66,7 +66,7 @@ void TouchToFillController::Show(
   GURL url = ttf_delegate_->GetFrameUrl();
   int flags = TouchToFillView::kNone;
   if (cred_man_delegate && cred_man_delegate->HasPasskeys() ==
-                               WebAuthnCredManDelegate::kHasPasskeys) {
+                               WebAuthnCredManDelegate::State::kHasPasskeys) {
     cred_man_delegate->SetRequestCompletionCallback(base::BindRepeating(
         &TouchToFillController::OnCredManUiClosed, this->AsWeakPtr()));
     flags |= TouchToFillView::kShouldShowCredManEntry;
@@ -148,7 +148,8 @@ void TouchToFillController::OnHybridSignInSelected() {
 
 void TouchToFillController::OnShowCredManSelected() {
   view_.reset();
-  cred_man_delegate_->TriggerCredManUi();
+  cred_man_delegate_->TriggerCredManUi(
+      WebAuthnCredManDelegate::RequestPasswords(false));
 }
 
 void TouchToFillController::OnCredManUiClosed(bool success) {
