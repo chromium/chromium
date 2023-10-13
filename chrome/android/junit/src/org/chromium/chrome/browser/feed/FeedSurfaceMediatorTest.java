@@ -20,6 +20,7 @@ import static org.mockito.Mockito.verify;
 import static org.mockito.Mockito.when;
 
 import android.app.Activity;
+import android.content.Context;
 
 import androidx.annotation.Px;
 import androidx.recyclerview.widget.RecyclerView;
@@ -36,6 +37,7 @@ import org.mockito.Mock;
 import org.mockito.junit.MockitoJUnit;
 import org.mockito.junit.MockitoRule;
 import org.robolectric.Robolectric;
+import org.robolectric.RuntimeEnvironment;
 import org.robolectric.annotation.Config;
 import org.robolectric.shadows.ShadowLog;
 
@@ -120,8 +122,8 @@ public class FeedSurfaceMediatorTest {
     private FeedStream mForYouStream;
     @Mock
     private FeedStream mFollowingStream;
-    @Mock
-    private HybridListRenderer mHybridListRenderer;
+    @Mock private FeedStream mSupervisedUserStream;
+    @Mock private HybridListRenderer mHybridListRenderer;
     @Mock
     private ListLayoutHelper mListLayoutHelper;
     @Mock
@@ -134,7 +136,7 @@ public class FeedSurfaceMediatorTest {
     @Captor
     private ArgumentCaptor<TemplateUrlServiceObserver> mTemplateUrlServiceObserverCaptor;
     @Captor private ArgumentCaptor<DisplayStyleObserver> mDisplayStyleObserverCaptor;
-
+    private final Context mContext = RuntimeEnvironment.application;
     private Activity mActivity;
     private FeedSurfaceMediator mFeedSurfaceMediator;
 
@@ -161,6 +163,9 @@ public class FeedSurfaceMediatorTest {
         when(mFeedSurfaceCoordinator.createFeedStream(
                      eq(StreamKind.FOR_YOU), any(Stream.StreamsMediator.class)))
                 .thenReturn(mForYouStream);
+        when(mFeedSurfaceCoordinator.createFeedStream(
+                        eq(StreamKind.SUPERVISED_USER), any(Stream.StreamsMediator.class)))
+                .thenReturn(mSupervisedUserStream);
         when(mFeedSurfaceCoordinator.getReliabilityLogger()).thenReturn(mReliabilityLogger);
         when(mFeedSurfaceCoordinator.getHybridListRenderer()).thenReturn(mHybridListRenderer);
         when(mHybridListRenderer.getListLayoutHelper()).thenReturn(mListLayoutHelper);
@@ -173,6 +178,8 @@ public class FeedSurfaceMediatorTest {
         when(mForYouStream.getStreamKind()).thenReturn(StreamKind.FOR_YOU);
         when(mFollowingStream.hasUnreadContent()).thenReturn(hasUnreadContent);
         when(mFollowingStream.getStreamKind()).thenReturn(StreamKind.FOLLOWING);
+        when(mSupervisedUserStream.hasUnreadContent()).thenReturn(hasUnreadContent);
+        when(mSupervisedUserStream.getStreamKind()).thenReturn(StreamKind.SUPERVISED_USER);
 
         FeedSurfaceMediator.setPrefForTest(mPrefChangeRegistrar, mPrefService);
         FeedFeatures.setFakePrefsForTest(mPrefService);
@@ -239,6 +246,8 @@ public class FeedSurfaceMediatorTest {
 
         verify(mForYouStream, never()).bind(any(), any(), any(), any(), any(), any(), anyInt());
         verify(mFollowingStream, times(1)).bind(any(), any(), any(), any(), any(), any(), anyInt());
+        verify(mSupervisedUserStream, never())
+                .bind(any(), any(), any(), any(), any(), any(), anyInt());
         assertEquals(FeedSurfaceCoordinator.StreamTabId.FOLLOWING,
                 sectionHeaderModel.get(SectionHeaderListProperties.CURRENT_TAB_INDEX_KEY));
     }
@@ -256,9 +265,110 @@ public class FeedSurfaceMediatorTest {
 
         verify(mForYouStream, times(1)).bind(any(), any(), any(), any(), any(), any(), anyInt());
         verify(mFollowingStream, never()).bind(any(), any(), any(), any(), any(), any(), anyInt());
+        verify(mSupervisedUserStream, never())
+                .bind(any(), any(), any(), any(), any(), any(), anyInt());
+
         assertEquals(FeedSurfaceCoordinator.StreamTabId.FOR_YOU,
                 sectionHeaderModel.get(SectionHeaderListProperties.CURRENT_TAB_INDEX_KEY));
         assertEquals(2, mFeedSurfaceMediator.getTabToStreamSizeForTesting());
+    }
+
+    @Test
+    public void updateContent_openingTabIdSupervisedUser() {
+        when(mFeedSurfaceCoordinator.shouldDisplaySupervisedFeed()).thenReturn(true);
+        when(mPrefService.getBoolean(Pref.ARTICLES_LIST_VISIBLE)).thenReturn(true);
+        when(mFeedServiceBridgeJniMock.isSignedIn()).thenReturn(true);
+        when(mPrefService.getBoolean(Pref.ENABLE_SNIPPETS)).thenReturn(true);
+
+        PropertyModel model = SectionHeaderListProperties.create(TOOLBAR_HEIGHT);
+        mFeedSurfaceMediator = createMediator(FeedSurfaceCoordinator.StreamTabId.FOR_YOU, model);
+        mFeedSurfaceMediator.updateContent();
+
+        verify(mSupervisedUserStream, times(1))
+                .bind(any(), any(), any(), any(), any(), any(), anyInt());
+        verify(mForYouStream, never()).bind(any(), any(), any(), any(), any(), any(), anyInt());
+        verify(mFollowingStream, never()).bind(any(), any(), any(), any(), any(), any(), anyInt());
+        assertEquals(
+                FeedSurfaceCoordinator.StreamTabId.FOR_YOU,
+                model.get(SectionHeaderListProperties.CURRENT_TAB_INDEX_KEY));
+    }
+
+    @Test
+    public void testHeaderText_supervisedFeedOnWithDefaultSearchEngineGoogle() {
+        when(mFeedSurfaceCoordinator.shouldDisplaySupervisedFeed()).thenReturn(true);
+        when(mPrefService.getBoolean(Pref.ARTICLES_LIST_VISIBLE)).thenReturn(true);
+        when(mFeedServiceBridgeJniMock.isSignedIn()).thenReturn(true);
+        when(mPrefService.getBoolean(Pref.ENABLE_SNIPPETS)).thenReturn(true);
+        doReturn(true).when(mUrlService).isDefaultSearchEngineGoogle();
+
+        PropertyModel model = SectionHeaderListProperties.create(TOOLBAR_HEIGHT);
+        mFeedSurfaceMediator = createMediator(FeedSurfaceCoordinator.StreamTabId.FOR_YOU, model);
+        mFeedSurfaceMediator.updateContent();
+
+        assertEquals(
+                model.get(SectionHeaderListProperties.SECTION_HEADERS_KEY)
+                        .get(0)
+                        .get(SectionHeaderProperties.HEADER_TEXT_KEY),
+                mContext.getResources().getString(R.string.supervised_user_ntp_discover_on));
+    }
+
+    @Test
+    public void testHeaderText_supervisedFeedOffWithDefaultSearchEngineGoogle() {
+        when(mFeedSurfaceCoordinator.shouldDisplaySupervisedFeed()).thenReturn(true);
+        when(mPrefService.getBoolean(Pref.ARTICLES_LIST_VISIBLE)).thenReturn(false);
+        when(mFeedServiceBridgeJniMock.isSignedIn()).thenReturn(true);
+        when(mPrefService.getBoolean(Pref.ENABLE_SNIPPETS)).thenReturn(true);
+        doReturn(true).when(mUrlService).isDefaultSearchEngineGoogle();
+
+        PropertyModel model = SectionHeaderListProperties.create(TOOLBAR_HEIGHT);
+        mFeedSurfaceMediator = createMediator(FeedSurfaceCoordinator.StreamTabId.FOR_YOU, model);
+        mFeedSurfaceMediator.updateContent();
+
+        assertEquals(
+                model.get(SectionHeaderListProperties.SECTION_HEADERS_KEY)
+                        .get(0)
+                        .get(SectionHeaderProperties.HEADER_TEXT_KEY),
+                mContext.getResources().getString(R.string.supervised_user_ntp_discover_off));
+    }
+
+    @Test
+    public void testHeaderText_supervisedFeedOnWithDefaultSearchEngineNotGoogle() {
+        when(mFeedSurfaceCoordinator.shouldDisplaySupervisedFeed()).thenReturn(true);
+        when(mPrefService.getBoolean(Pref.ARTICLES_LIST_VISIBLE)).thenReturn(true);
+        when(mFeedServiceBridgeJniMock.isSignedIn()).thenReturn(true);
+        when(mPrefService.getBoolean(Pref.ENABLE_SNIPPETS)).thenReturn(true);
+        doReturn(false).when(mUrlService).isDefaultSearchEngineGoogle();
+
+        PropertyModel model = SectionHeaderListProperties.create(TOOLBAR_HEIGHT);
+        mFeedSurfaceMediator = createMediator(FeedSurfaceCoordinator.StreamTabId.FOR_YOU, model);
+        mFeedSurfaceMediator.updateContent();
+
+        assertEquals(
+                model.get(SectionHeaderListProperties.SECTION_HEADERS_KEY)
+                        .get(0)
+                        .get(SectionHeaderProperties.HEADER_TEXT_KEY),
+                mContext.getResources()
+                        .getString(R.string.supervised_user_ntp_discover_on_branded));
+    }
+
+    @Test
+    public void testHeaderText_supervisedFeedOffWithDefaultSearchEngineNotGoogle() {
+        when(mFeedSurfaceCoordinator.shouldDisplaySupervisedFeed()).thenReturn(true);
+        when(mPrefService.getBoolean(Pref.ARTICLES_LIST_VISIBLE)).thenReturn(false);
+        when(mFeedServiceBridgeJniMock.isSignedIn()).thenReturn(true);
+        when(mPrefService.getBoolean(Pref.ENABLE_SNIPPETS)).thenReturn(true);
+        doReturn(false).when(mUrlService).isDefaultSearchEngineGoogle();
+
+        PropertyModel model = SectionHeaderListProperties.create(TOOLBAR_HEIGHT);
+        mFeedSurfaceMediator = createMediator(FeedSurfaceCoordinator.StreamTabId.FOR_YOU, model);
+        mFeedSurfaceMediator.updateContent();
+
+        assertEquals(
+                model.get(SectionHeaderListProperties.SECTION_HEADERS_KEY)
+                        .get(0)
+                        .get(SectionHeaderProperties.HEADER_TEXT_KEY),
+                mContext.getResources()
+                        .getString(R.string.supervised_user_ntp_discover_off_branded));
     }
 
     @Test

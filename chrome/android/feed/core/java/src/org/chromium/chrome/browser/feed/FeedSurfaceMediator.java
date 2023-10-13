@@ -512,7 +512,9 @@ public class FeedSurfaceMediator
                 mCoordinator.shouldDisplaySupervisedFeed()
                         ? StreamKind.SUPERVISED_USER
                         : StreamKind.FOR_YOU;
-        addHeaderAndStream(getInterestFeedHeaderText(suggestionsVisible),
+
+        addHeaderAndStream(
+                getInterestFeedHeaderText(suggestionsVisible, streamKind),
                 mCoordinator.createFeedStream(streamKind, new StreamsMediatorImpl()));
         setHeaderIndicatorState(suggestionsVisible);
 
@@ -908,7 +910,8 @@ public class FeedSurfaceMediator
                 .get(PRIMARY_FEED_HEADER_POSITION)
                 .set(
                         SectionHeaderProperties.HEADER_TEXT_KEY,
-                        getInterestFeedHeaderText(suggestionsVisible));
+                        getInterestFeedHeaderText(
+                                suggestionsVisible, mTabToStreamMap.get(0).getStreamKind()));
 
         setHeaderIndicatorState(suggestionsVisible);
 
@@ -972,25 +975,38 @@ public class FeedSurfaceMediator
                            : FeedUserActionType.TAPPED_TURN_OFF);
     }
 
-    /** Returns the interest feed header text based on the selected default search engine */
-    private String getInterestFeedHeaderText(boolean isExpanded) {
+    /**
+     * Returns the interest feed header text based on the type of user (supervised or
+     * non-supervised) and the selected default search engine
+     */
+    private String getInterestFeedHeaderText(boolean isExpanded, @StreamKind int streamKind) {
         Resources res = mContext.getResources();
         final boolean isDefaultSearchEngineGoogle =
                 mTemplateUrlService.isDefaultSearchEngineGoogle();
-        final int sectionHeaderStringId;
+
+        if (streamKind == StreamKind.SUPERVISED_USER) {
+            if (isDefaultSearchEngineGoogle) {
+                return isExpanded
+                        ? res.getString(R.string.supervised_user_ntp_discover_on)
+                        : res.getString(R.string.supervised_user_ntp_discover_off);
+            } else {
+                return isExpanded
+                        ? res.getString(R.string.supervised_user_ntp_discover_on_branded)
+                        : res.getString(R.string.supervised_user_ntp_discover_off_branded);
+            }
+        }
 
         if (ChromeFeatureList.isEnabled(ChromeFeatureList.WEB_FEED)
                 && FeedServiceBridge.isSignedIn() && isExpanded) {
-            sectionHeaderStringId = R.string.ntp_discover_on;
+            return res.getString(R.string.ntp_discover_on);
         } else if (isDefaultSearchEngineGoogle) {
-            sectionHeaderStringId =
-                    isExpanded ? R.string.ntp_discover_on : R.string.ntp_discover_off;
-        } else {
-            sectionHeaderStringId = isExpanded ? R.string.ntp_discover_on_branded
-                                               : R.string.ntp_discover_off_branded;
+            return isExpanded
+                    ? res.getString(R.string.ntp_discover_on)
+                    : res.getString(R.string.ntp_discover_off);
         }
-
-        return res.getString(sectionHeaderStringId);
+        return isExpanded
+                ? res.getString(R.string.ntp_discover_on_branded)
+                : res.getString(R.string.ntp_discover_off_branded);
     }
 
     private ModelList buildMenuItems() {
