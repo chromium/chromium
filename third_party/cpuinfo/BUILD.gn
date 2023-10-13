@@ -57,6 +57,7 @@ target(_cpuinfo_target_type, "cpuinfo") {
     "src/src/api.c",
     "src/src/cache.c",
     "src/src/init.c",
+    "src/src/log.c",
   ]
 
   deps = [
