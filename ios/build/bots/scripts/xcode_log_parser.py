@@ -13,6 +13,7 @@ import shutil
 import subprocess
 import sys
 
+import constants
 import file_util
 from test_result_util import ResultCollection, TestResult, TestStatus
 import test_runner
@@ -209,17 +210,69 @@ class Xcode11LogParser(object):
     return result
 
   @staticmethod
-  def _get_test_statuses(xcresult):
-    """Returns test results from xcresult.
-
-    Also extracts and stores attachments for failed tests.
+  def _parse_app_side_failure(test_name, output_path):
+    """Parses and returns app side failure reason in the event that a test
+    causes the app to crash.
 
     Args:
-      xcresult: (str) A path to xcresult.
+      test_name: (str) The name of the test that crashed. In the format
+          [TestCase/TestMethod]
+      output_path: (str) An output path passed in --resultBundlePath when
+          running xcodebuild.
+
+    Returns:
+      (string) Formatted app side failure message or a message saying failure
+          reason is missing
+    """
+    attempt_num = output_path.split('/')[-1]
+    app_side_failure_message = ''
+    parent_output_dir = os.path.join(output_path, os.pardir)
+    files = os.listdir(parent_output_dir)
+    app_crashed_message = '%s\nShowing logs from application under test. ' + \
+      'For complete logs see %s in CAS outputs, which can be found in the ' + \
+      'swarming task of the shard this test ran on.\n\n%s\n'
+    failure_reason_missing = 'App side failure reason not found for ' + \
+      'crashed test: %s. For complete logs see CAS outputs, which can be ' + \
+      'found in the swarming task of the shard this test ran on.\n'
+
+    for file in files:
+      # the '-' is important since it distinguishes the app side log file from
+      # the test app log file
+      if ('StandardOutputAndStandardError-' in file and
+          file.startswith(attempt_num)):
+        with open(os.path.join(parent_output_dir, file), 'r') as f:
+          fmt_test_name = test_name.replace('/', ' ')
+          lines = f.readlines()
+
+          for line in lines:
+            if 'Starting test: -[%s]' % fmt_test_name in line:
+              app_side_failure_message += line
+            elif app_side_failure_message:
+              # end at start of next test or when app restarts
+              if ('Starting test' in line or
+                  'Standard output and standard error from' in line):
+                # test name is only expected to appear in a single log file
+                # so it's safe to return early
+                return app_crashed_message % (constants.CRASH_MESSAGE,
+                                              file, app_side_failure_message)
+              else:
+                app_side_failure_message += line
+    return failure_reason_missing % test_name
+
+  @staticmethod
+  def _get_test_statuses(output_path):
+    """Returns test results from xcresult.
+
+    Also extracts and stores attachments for failed tests
+
+    Args:
+      output_path: (str) An output path passed in --resultBundlePath when
+          running xcodebuild.
 
     Returns:
       test_result.ResultCollection: Test results.
     """
+    xcresult = output_path + _XCRESULT_SUFFIX
     result = ResultCollection()
     # See TESTS_REF in xcode_log_parser_test.py for an example of |root|.
     root = json.loads(Xcode11LogParser._xcresulttool_get(xcresult, 'testsRef'))
@@ -286,8 +339,14 @@ class Xcode11LogParser(object):
                   failure.get('lineNumber', {}).get('_value', ''))
               failure_location = 'file: %s, line: %s' % (file_name, line_number)
               failure_message += failure_location + '\n'
-              failure_message += _sanitize_str(
-                  failure['message']['_value']) + '\n'
+
+              if (constants.CRASH_MESSAGE in failure['message']['_value']):
+                failure_message += \
+                  Xcode11LogParser._parse_app_side_failure(
+                    test_name, output_path)
+              else:
+                failure_message += _sanitize_str(
+                    failure['message']['_value']) + '\n'
 
             attachments = Xcode11LogParser._extract_artifacts_for_test(
                 test_name, summary_ref, xcresult)
@@ -354,6 +413,7 @@ class Xcode11LogParser(object):
     metrics = root.get('actions', {}).get('_values',
                                           [{}])[0].get('actionResult',
                                                        {}).get('metrics', {})
+    Xcode11LogParser.export_diagnostic_data(output_path)
     # In case of test crash both numbers of run and failed tests are equal to 0.
     if (metrics.get('testsCount', {}).get('_value', 0) == 0 and
         metrics.get('testsFailedCount', {}).get('_value', 0) == 0):
@@ -361,12 +421,11 @@ class Xcode11LogParser(object):
       overall_collected_result.crash_message = '0 tests executed!'
     else:
       overall_collected_result.add_result_collection(
-          Xcode11LogParser._get_test_statuses(xcresult))
+          Xcode11LogParser._get_test_statuses(output_path))
       # For some crashed tests info about error contained only in root node.
       overall_collected_result.add_result_collection(
           Xcode11LogParser._list_of_failed_tests(
               root, excluded=overall_collected_result.all_test_names()))
-    Xcode11LogParser.export_diagnostic_data(output_path)
     # Remove the symbol link file.
     if os.path.islink(output_path):
       os.unlink(output_path)

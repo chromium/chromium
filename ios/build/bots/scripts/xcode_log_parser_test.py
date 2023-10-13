@@ -414,6 +414,54 @@ SINGLE_TEST_SUMMARY_REF = """
   }
 }"""
 
+APP_SIDE_FAILURE_LOG = """Will attempt to recover by breaking constraint
+<NSLayoutConstraint:0x1000444e0e0 H:[UIView:0x100031b0fc0]-(4)-[UIView:0x100031b1180]   (active)>
+
+Make a symbolic breakpoint at UIViewAlertForUnsatisfiableConstraints to catch this in the debugger.
+The methods in the UIConstraintBasedLayoutDebugging category on UIView listed in <UIKitCore/UIView.h> may also be helpful.
+[1009/111922.254778:WARNING:base_earl_grey_test_case_app_interface.mm(21)] *********************************
+Starting test: -[SmokeTestCase testOpenTab]
+[1009/111926.491858:FATAL:chrome_earl_grey_app_interface.mm(147)] Check failed: NO.
+0   ios_chrome_eg2testsMain             0x000000012a31b174 base::debug::CollectStackTrace(void const**, unsigned long) + 48
+1   ios_chrome_eg2testsMain             0x000000012a2ed878 base::debug::StackTrace::StackTrace(unsigned long) + 92
+2   ios_chrome_eg2testsMain             0x000000012a2ed910 base::debug::StackTrace::StackTrace(unsigned long) + 36
+3   ios_chrome_eg2testsMain             0x000000012a2ed8dc base::debug::StackTrace::StackTrace() + 40
+4   ios_chrome_eg2testsMain             0x000000012a03d7e0 logging::LogMessage::~LogMessage() + 204
+5   ios_chrome_eg2testsMain             0x000000012a03e748 logging::LogMessage::~LogMessage() + 28
+6   ios_chrome_eg2testsMain             0x000000012a03e774 logging::LogMessage::~LogMessage() + 28
+7   ios_chrome_eg2testsMain             0x000000012a00bba8 logging::CheckError::~CheckError() + 112
+8   ios_chrome_eg2testsMain             0x000000012a00bc08 logging::CheckError::~CheckError() + 28
+9   ios_chrome_eg2testsMain             0x0000000126745008 +[ChromeEarlGreyAppInterface crashApp] + 104
+more of the stack trace and crash report logs...
+
+Standard output and standard error from com.google.chrome.unittests.dev with process ID 1358 beginning at 2023-10-09 15:19:36 +0000
+
+2023-10-09 11:19:37.449520-0400 ios_chrome_eg2tests[1358:24891823] [User Defaults] Not updating lastKnownShmemState in CFPrefsPlistSource<0x6000030083f0> (Domain: com.apple.keyboard.preferences.plist, User: kCFPreferencesCurrentUser, ByHost: No, Container: (null), Contents Need Refresh: Yes): 0 -> 323
+2023-10-09 11:19:37.449594-0400 ios_chrome_eg2tests[1358:24891823] [User Defaults] Source was stale because shmem was null: CFPrefsPlistSource<0x6000030083f0> (Domain: com.apple.keyboard.preferences.plist, User: kCFPreferencesCurrentUser, ByHost: No, Container: (null), Contents Need Refresh: Yes)
+
+"""
+
+APP_SIDE_FAILURE_LOG_EXPECTED = """App crashed and disconnected.
+Showing logs from application under test. For complete logs see attempt_0_simulator#0_StandardOutputAndStandardError-com.google.chrome.unittests.dev.txt in CAS outputs, which can be found in the swarming task of the shard this test ran on.
+
+Starting test: -[SmokeTestCase testOpenTab]
+[1009/111926.491858:FATAL:chrome_earl_grey_app_interface.mm(147)] Check failed: NO.
+0   ios_chrome_eg2testsMain             0x000000012a31b174 base::debug::CollectStackTrace(void const**, unsigned long) + 48
+1   ios_chrome_eg2testsMain             0x000000012a2ed878 base::debug::StackTrace::StackTrace(unsigned long) + 92
+2   ios_chrome_eg2testsMain             0x000000012a2ed910 base::debug::StackTrace::StackTrace(unsigned long) + 36
+3   ios_chrome_eg2testsMain             0x000000012a2ed8dc base::debug::StackTrace::StackTrace() + 40
+4   ios_chrome_eg2testsMain             0x000000012a03d7e0 logging::LogMessage::~LogMessage() + 204
+5   ios_chrome_eg2testsMain             0x000000012a03e748 logging::LogMessage::~LogMessage() + 28
+6   ios_chrome_eg2testsMain             0x000000012a03e774 logging::LogMessage::~LogMessage() + 28
+7   ios_chrome_eg2testsMain             0x000000012a00bba8 logging::CheckError::~CheckError() + 112
+8   ios_chrome_eg2testsMain             0x000000012a00bc08 logging::CheckError::~CheckError() + 28
+9   ios_chrome_eg2testsMain             0x0000000126745008 +[ChromeEarlGreyAppInterface crashApp] + 104
+more of the stack trace and crash report logs...
+
+
+"""
+
+
 def _xcresulttool_get_side_effect(xcresult_path, ref_id=None):
   """Side effect for _xcresulttool_get in Xcode11LogParser tested."""
   if ref_id is None:
@@ -739,6 +787,22 @@ class XCode11LogParserTest(test_runner_test.TestCase):
     xcode_log_parser.Xcode11LogParser().collect_test_results(OUTPUT_PATH, [])
     mock_export_diagnostic_data.assert_called_with(OUTPUT_PATH)
     mock_extract_artifacts.assert_called()
+
+  @mock.patch('os.listdir')
+  @mock.patch(
+      'builtins.open', new=mock.mock_open(read_data=APP_SIDE_FAILURE_LOG))
+  def testLogAppSideFailureReason(self, mock_listdir):
+    test_name = 'SmokeTestCase/testOpenTab'
+    mock_listdir.return_value = [
+        'run_1696864672.xctestrun', 'attempt_0.xcresult.zip',
+        'attempt_0.xcresult_diagnostic.zip',
+        'attempt_0_simulator#0_StandardOutputAndStandardError.txt',
+        'attempt_0_simulator#0_StandardOutputAndStandardError-com.google.chrome.unittests.dev.txt'
+    ]
+    app_side_failure_message = \
+      xcode_log_parser.Xcode11LogParser()._parse_app_side_failure(
+        test_name, OUTPUT_PATH)
+    self.assertEqual(app_side_failure_message, APP_SIDE_FAILURE_LOG_EXPECTED)
 
 
 if __name__ == '__main__':
