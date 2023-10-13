@@ -12,10 +12,12 @@
 #include "base/component_export.h"
 #include "base/memory/weak_ptr.h"
 #include "base/observer_list.h"
+#include "base/scoped_observation.h"
 #include "base/values.h"
 #include "chromeos/ash/components/dbus/shill/shill_property_changed_observer.h"
 #include "chromeos/ash/components/network/network_handler.h"
 #include "chromeos/ash/components/network/network_state_handler.h"
+#include "chromeos/ash/components/network/network_state_handler_observer.h"
 #include "chromeos/dbus/common/dbus_method_call_status.h"
 #include "third_party/abseil-cpp/absl/types/optional.h"
 
@@ -38,7 +40,8 @@ struct COMPONENT_EXPORT(CHROMEOS_NETWORK) TextMessageData {
 
 // Class to watch sms without Libcros.
 class COMPONENT_EXPORT(CHROMEOS_NETWORK) NetworkSmsHandler
-    : public ShillPropertyChangedObserver {
+    : public ShillPropertyChangedObserver,
+      public NetworkStateHandlerObserver {
  public:
   static const char kNumberKey[];
   static const char kTextKey[];
@@ -72,6 +75,10 @@ class COMPONENT_EXPORT(CHROMEOS_NETWORK) NetworkSmsHandler
   // ShillPropertyChangedObserver
   void OnPropertyChanged(const std::string& name,
                          const base::Value& value) override;
+
+  // NetworkStateHandlerObserver:
+  void ActiveNetworksChanged(
+      const std::vector<const NetworkState*>& active_networks) override;
 
  private:
   friend class NetworkHandler;
@@ -122,13 +129,13 @@ class COMPONENT_EXPORT(CHROMEOS_NETWORK) NetworkSmsHandler
   // a new handler should be created for the device's new object path.
   void OnObjectPathChanged(const base::Value& object_path);
 
-  std::string GetNetworkGuid(absl::optional<std::string> iccid);
-
   base::ObserverList<Observer, true>::Unchecked observers_;
   std::unique_ptr<NetworkSmsDeviceHandler> device_handler_;
   std::vector<base::Value::Dict> received_messages_;
   std::string cellular_device_path_;
   raw_ptr<NetworkStateHandler> network_state_handler_ = nullptr;
+  base::ScopedObservation<NetworkStateHandler, NetworkStateHandlerObserver>
+      network_state_handler_observation_{this};
   base::WeakPtrFactory<NetworkSmsHandler> weak_ptr_factory_{this};
 };
 

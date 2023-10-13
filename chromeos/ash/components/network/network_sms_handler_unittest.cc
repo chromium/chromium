@@ -15,6 +15,7 @@
 #include "base/run_loop.h"
 #include "base/test/scoped_feature_list.h"
 #include "base/test/task_environment.h"
+#include "base/values.h"
 #include "chromeos/ash/components/dbus/shill/fake_sms_client.h"
 #include "chromeos/ash/components/dbus/shill/modem_messaging_client.h"
 #include "chromeos/ash/components/dbus/shill/shill_clients.h"
@@ -135,7 +136,7 @@ class NetworkSmsHandlerTest
         kCellularDevicePath, shill::kDBusObjectProperty,
         base::Value(kCellularDeviceObjectPath1), /*notify_changed=*/false);
     SetupCellularModem(kCellularDeviceObjectPath1, kTestCellularServicePath1,
-                       kTestGuid1, kTestIccid1);
+                       kTestGuid1, kTestIccid1, shill::kStateOnline);
     modem_messaging_test_ = ModemMessagingClient::Get()->GetTestInterface();
 
     // This relies on the stub dbus implementations for ShillManagerClient,
@@ -175,7 +176,8 @@ class NetworkSmsHandlerTest
   void SetupCellularModem(const std::string& object_path,
                           const std::string& service_path,
                           const std::string& guid,
-                          const std::string& iccid) {
+                          const std::string& iccid,
+                          const std::string& state) {
     device_test_->SetDeviceProperty(
         kCellularDevicePath, shill::kDBusObjectProperty,
         base::Value(object_path), /*notify_changed=*/true);
@@ -183,10 +185,16 @@ class NetworkSmsHandlerTest
                                     base::Value(iccid),
                                     /*notify_changed=*/true);
     service_test_->AddService(service_path, guid, "", shill::kTypeCellular,
-                              shill::kStateOnline,
+                              state,
                               /*visible=*/true);
     service_test_->SetServiceProperty(service_path, shill::kIccidProperty,
                                       base::Value(iccid));
+  }
+
+  void UpdateNetworkState(const std::string& service_path,
+                          const std::string& state) {
+    service_test_->SetServiceProperty(service_path, shill::kStateProperty,
+                                      base::Value(state));
   }
 
  protected:
@@ -537,8 +545,9 @@ TEST_P(NetworkSmsHandlerSmsSuppressOnlyTest, NetworkGuidTest) {
   base::RunLoop().RunUntilIdle();
 
   // Switch to a different modem.
+  UpdateNetworkState(kTestCellularServicePath1, shill::kStateDisconnect);
   SetupCellularModem(kCellularDeviceObjectPath2, kTestCellularServicePath2,
-                     kTestGuid2, kTestIccid2);
+                     kTestGuid2, kTestIccid2, shill::kStateOnline);
 
   base::RunLoop().RunUntilIdle();
   network_sms_handler_->RequestUpdate();
@@ -555,6 +564,45 @@ TEST_P(NetworkSmsHandlerSmsSuppressOnlyTest, NetworkGuidTest) {
             test_observer_->messages(kTestGuid2).end());
   EXPECT_EQ(test_observer_->messages(kTestGuid1).find(kMessage2),
             test_observer_->messages(kTestGuid1).end());
+}
+
+TEST_P(NetworkSmsHandlerSmsSuppressOnlyTest, NetworkDelayedActiveNetworkTest) {
+  SetupCellularModem(kCellularDeviceObjectPath2, kTestCellularServicePath2,
+                     kTestGuid2, kTestIccid2, shill::kStateIdle);
+  base::RunLoop().RunUntilIdle();
+  network_sms_handler_->RequestUpdate();
+  EXPECT_EQ(0u, test_observer_->messages().size());
+  ReceiveSms(dbus::ObjectPath(kCellularDeviceObjectPath2),
+             dbus::ObjectPath(kSmsPath));
+  CompleteReceiveSms();
+  base::RunLoop().RunUntilIdle();
+  // The message will be sent with the GUID of the currently connected
+  // network which is kTestGuid1.
+  EXPECT_EQ(1u, test_observer_->messages(kTestGuid1).size());
+  EXPECT_EQ(0u, test_observer_->messages(kTestGuid2).size());
+
+  UpdateNetworkState(kTestCellularServicePath1, shill::kStateDisconnect);
+  base::RunLoop().RunUntilIdle();
+  ReceiveSms(dbus::ObjectPath(kCellularDeviceObjectPath2),
+             dbus::ObjectPath("/SMS/1"));
+  CompleteReceiveSms();
+  base::RunLoop().RunUntilIdle();
+  // No connected network, the GUID of the last connected
+  // network will be used.
+  EXPECT_EQ(2u, test_observer_->messages(kTestGuid1).size());
+  EXPECT_EQ(0u, test_observer_->messages(kTestGuid2).size());
+
+  UpdateNetworkState(kTestCellularServicePath2, shill::kStateOnline);
+  base::RunLoop().RunUntilIdle();
+
+  ReceiveSms(dbus::ObjectPath(kCellularDeviceObjectPath2),
+             dbus::ObjectPath("/SMS/2"));
+  CompleteReceiveSms();
+  base::RunLoop().RunUntilIdle();
+  // After updating the state, we see that the message is sent with the GUID
+  // associated with the last active network.
+  EXPECT_EQ(2u, test_observer_->messages(kTestGuid1).size());
+  EXPECT_EQ(1u, test_observer_->messages(kTestGuid2).size());
 }
 
 }  // namespace ash

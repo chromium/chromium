@@ -12,6 +12,7 @@
 #include <vector>
 
 #include "ash/constants/ash_features.h"
+#include "base/check.h"
 #include "base/containers/circular_deque.h"
 #include "base/functional/bind.h"
 #include "base/logging.h"
@@ -32,9 +33,9 @@
 
 namespace {
 
-// Key for the device ICCID in message data received from the
+// Key for the device GUID in message data received from the
 // NetworkSmsDeviceHandler.
-const char kDeviceIccidKey[] = "ICCID";
+const char kNetworkGuidKey[] = "GUID";
 
 // Maximum number of messages stored for RequestUpdate(true).
 const size_t kMaxReceivedMessages = 100;
@@ -83,6 +84,10 @@ class NetworkSmsHandler::NetworkSmsDeviceHandler {
  public:
   NetworkSmsDeviceHandler() = default;
   virtual ~NetworkSmsDeviceHandler() = default;
+
+  // Updates the last connected network's GUID for the current device handler.
+  // When this is nullptr, the GUID is reset.
+  virtual void SetLastConnectedNetwork(const NetworkState* state) {}
 };
 
 class NetworkSmsHandler::ModemManager1NetworkSmsDeviceHandler
@@ -91,11 +96,6 @@ class NetworkSmsHandler::ModemManager1NetworkSmsDeviceHandler
   ModemManager1NetworkSmsDeviceHandler(NetworkSmsHandler* host,
                                        const std::string& service_name,
                                        const dbus::ObjectPath& object_path);
-
-  ModemManager1NetworkSmsDeviceHandler(NetworkSmsHandler* host,
-                                       const std::string& service_name,
-                                       const dbus::ObjectPath& object_path,
-                                       absl::optional<std::string> iccid);
 
   ModemManager1NetworkSmsDeviceHandler(
       const ModemManager1NetworkSmsDeviceHandler&) = delete;
@@ -114,16 +114,17 @@ class NetworkSmsHandler::ModemManager1NetworkSmsDeviceHandler
   void GetMessages();
   void MessageReceived(const base::Value::Dict& dictionary);
   void OnFetchSmsDetailsTimeout(const dbus::ObjectPath& sms_path);
+  void SetLastConnectedNetwork(const NetworkState* state) override;
 
   raw_ptr<NetworkSmsHandler, ExperimentalAsh> host_;
   std::string service_name_;
   dbus::ObjectPath object_path_;
-  absl::optional<std::string> iccid_;
   base::OneShotTimer fetch_sms_details_timer_;
   bool deleting_messages_ = false;
   bool retrieving_messages_ = false;
   std::vector<dbus::ObjectPath> delete_queue_;
   base::circular_deque<dbus::ObjectPath> retrieval_queue_;
+  std::string last_seen_connected_network_guid_;
   base::WeakPtrFactory<ModemManager1NetworkSmsDeviceHandler> weak_ptr_factory_{
       this};
 };
@@ -131,12 +132,8 @@ class NetworkSmsHandler::ModemManager1NetworkSmsDeviceHandler
 NetworkSmsHandler::ModemManager1NetworkSmsDeviceHandler::
     ModemManager1NetworkSmsDeviceHandler(NetworkSmsHandler* host,
                                          const std::string& service_name,
-                                         const dbus::ObjectPath& object_path,
-                                         absl::optional<std::string> iccid)
-    : host_(host),
-      service_name_(service_name),
-      object_path_(object_path),
-      iccid_(iccid) {
+                                         const dbus::ObjectPath& object_path)
+    : host_(host), service_name_(service_name), object_path_(object_path) {
   NET_LOG(DEBUG)
       << "SMS handler for " << object_path.value()
       << " created, setting SMS receive handler and fetching existing messages";
@@ -156,15 +153,6 @@ NetworkSmsHandler::ModemManager1NetworkSmsDeviceHandler::
                          ListCallback,
                      weak_ptr_factory_.GetWeakPtr()));
 }
-
-NetworkSmsHandler::ModemManager1NetworkSmsDeviceHandler::
-    ModemManager1NetworkSmsDeviceHandler(NetworkSmsHandler* host,
-                                         const std::string& service_name,
-                                         const dbus::ObjectPath& object_path)
-    : ModemManager1NetworkSmsDeviceHandler(host,
-                                           service_name,
-                                           object_path,
-                                           /*iccid=*/absl::nullopt) {}
 
 NetworkSmsHandler::ModemManager1NetworkSmsDeviceHandler::
     ~ModemManager1NetworkSmsDeviceHandler() {
@@ -316,8 +304,8 @@ void NetworkSmsHandler::ModemManager1NetworkSmsDeviceHandler::MessageReceived(
     new_dictionary.Set(kTimestampKey, *timestamp);
   }
 
-  if (features::IsSuppressTextMessagesEnabled() && iccid_.has_value()) {
-    new_dictionary.Set(kDeviceIccidKey, *iccid_);
+  if (features::IsSuppressTextMessagesEnabled()) {
+    new_dictionary.Set(kNetworkGuidKey, last_seen_connected_network_guid_);
   }
 
   host_->MessageReceived(new_dictionary);
@@ -328,6 +316,17 @@ void NetworkSmsHandler::ModemManager1NetworkSmsDeviceHandler::
   NET_LOG(ERROR) << "SMSClient::GetAll() timed out for " << sms_path.value()
                  << ", moving to next message.";
   GetMessages();
+}
+
+void NetworkSmsHandler::ModemManager1NetworkSmsDeviceHandler::
+    SetLastConnectedNetwork(const NetworkState* network_state) {
+  CHECK(features::IsSuppressTextMessagesEnabled());
+  if (!network_state) {
+    return;
+  }
+  NET_LOG(DEBUG) << "Updating last seen network to network with GUID: "
+                 << network_state->guid();
+  last_seen_connected_network_guid_ = network_state->guid();
 }
 
 ///////////////////////////////////////////////////////////////////////////////
@@ -356,6 +355,7 @@ void NetworkSmsHandler::Init() {
 void NetworkSmsHandler::Init(NetworkStateHandler* network_state_handler) {
   CHECK(features::IsSuppressTextMessagesEnabled());
   network_state_handler_ = network_state_handler;
+  network_state_handler_observation_.Observe(network_state_handler_);
   Init();
 }
 
@@ -387,6 +387,17 @@ void NetworkSmsHandler::OnPropertyChanged(const std::string& name,
   }
 }
 
+void NetworkSmsHandler::ActiveNetworksChanged(
+    const std::vector<const NetworkState*>& active_networks) {
+  CHECK(features::IsSuppressTextMessagesEnabled());
+  for (const NetworkState* network : active_networks) {
+    if (network->type() == shill::kTypeCellular && device_handler_) {
+      device_handler_->SetLastConnectedNetwork(network);
+      break;
+    }
+  }
+}
+
 // Private methods
 
 void NetworkSmsHandler::AddReceivedMessage(const base::Value::Dict& message) {
@@ -409,7 +420,7 @@ void NetworkSmsHandler::NotifyMessageReceived(
                                GetStringOptional(message, kTimestampKey)};
 
   const std::string network_guid =
-      GetNetworkGuid(GetStringOptional(message, kDeviceIccidKey));
+      GetStringOptional(message, kNetworkGuidKey).value_or(std::string());
   if (network_guid.empty()) {
     NET_LOG(ERROR) << "Message received with an empty GUID";
   }
@@ -496,13 +507,13 @@ void NetworkSmsHandler::DevicePropertiesCallback(
   // Only one active handler is supported. TODO(crbug.com/1239418): Fix.
   device_handler_.reset();
 
+  device_handler_ = std::make_unique<ModemManager1NetworkSmsDeviceHandler>(
+      this, *service_name, object_path);
+
   if (features::IsSuppressTextMessagesEnabled()) {
-    device_handler_ = std::make_unique<ModemManager1NetworkSmsDeviceHandler>(
-        this, *service_name, object_path,
-        GetStringOptional(*properties, shill::kIccidProperty));
-  } else {
-    device_handler_ = std::make_unique<ModemManager1NetworkSmsDeviceHandler>(
-        this, *service_name, object_path);
+    device_handler_->SetLastConnectedNetwork(
+        network_state_handler_->ConnectedNetworkByType(
+            NetworkTypePattern::Cellular()));
   }
   if (!cellular_device_path_.empty()) {
     ShillDeviceClient::Get()->RemovePropertyChangedObserver(
@@ -529,28 +540,6 @@ void NetworkSmsHandler::OnObjectPathChanged(const base::Value& object_path) {
   ShillManagerClient::Get()->GetProperties(
       base::BindOnce(&NetworkSmsHandler::ManagerPropertiesCallback,
                      weak_ptr_factory_.GetWeakPtr()));
-}
-
-std::string NetworkSmsHandler::GetNetworkGuid(
-    absl::optional<std::string> iccid) {
-  if (!iccid.has_value()) {
-    NET_LOG(ERROR) << "Cannot get the network for a device without an ICCID";
-    return std::string();
-  }
-  NetworkStateHandler::NetworkStateList active_networks;
-  // We also look at non-active networks, to account for networks that are
-  // disconnected and may become connected later.
-  network_state_handler_->GetNetworkListByType(
-      NetworkTypePattern::Cellular(), /*configured_only=*/false,
-      /*visible_only=*/false, /*limit=*/0, &active_networks);
-  for (auto* network : active_networks) {
-    if (network->iccid() == iccid) {
-      return network->guid();
-    }
-  }
-  NET_LOG(ERROR) << "Couldn't get find the matching network for ICCID: "
-                 << *iccid;
-  return std::string();
 }
 
 }  // namespace ash
