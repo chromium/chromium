@@ -729,7 +729,8 @@ IN_PROC_BROWSER_TEST_F(LacrosWebAppsControllerBrowserTest,
   AsAppController(lacros_web_apps_controller)
       .ExecuteContextMenuCommand(app_id, id,
                                  launch_result_future.GetCallback());
-  launch_result_future.Wait();
+  // TODO: handle return value.
+  std::ignore = launch_result_future.Wait();
 
   EXPECT_EQ(BrowserList::GetInstance()
                 ->GetLastActive()
