@@ -9,6 +9,7 @@
 #include "base/base_export.h"
 #include "base/feature_list.h"
 #include "base/threading/platform_thread.h"
+#include "build/build_config.h"
 
 namespace base {
 
@@ -64,7 +65,12 @@ BASE_FEATURE(kExplicitHighResolutionTimerWin,
 
 BASE_FEATURE(kRunTasksByBatches,
              "RunTasksByBatches",
+#if BUILDFLAG(IS_MAC) || BUILDFLAG(IS_CHROMEOS)
+             base::FEATURE_ENABLED_BY_DEFAULT);
+#else
              base::FEATURE_DISABLED_BY_DEFAULT);
+#endif
+
 BASE_FEATURE(kThreadPoolCap2,
              "ThreadPoolCap2",
              base::FEATURE_DISABLED_BY_DEFAULT);
