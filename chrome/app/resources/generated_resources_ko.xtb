@@ -1225,7 +1225,7 @@
 <translation id="1941410638996203291">시작 시간: <ph name="TIME" /></translation>
 <translation id="1941553344801134989">버전: <ph name="APP_VERSION" /></translation>
 <translation id="1941995177877935582">키 매핑 표시</translation>
-<translation id="1942128823046546853">모든 웹사이트의 전체 데이터 읽기 및 변경</translation>
+<translation id="1942128823046546853">모든 웹사이트에 있는 전체 내 데이터 읽기 및 변경</translation>
 <translation id="1944528062465413897">블루투스 페어링 코드:</translation>
 <translation id="1944535645109964458">패스키 없음</translation>
 <translation id="1944921356641260203">사용 가능한 업데이트 있음</translation>
@@ -9584,7 +9584,7 @@ https://support.google.com/chromebook/?p=sm</translation>
 <translation id="8811862054141704416">Crostini 마이크 액세스</translation>
 <translation id="8812593354822910461">인터넷 사용 기록(<ph name="URL" />)도 삭제합니다. 이렇게 하면 <ph name="DOMAIN" />에서 로그아웃됩니다. <ph name="LEARN_MORE" /></translation>
 <translation id="8813698869395535039"><ph name="USERNAME" />에 로그인할 수 없음</translation>
-<translation id="8813872945700551674">부모님에게 ‘<ph name="EXTENSION_NAME" />’ 승인을 요청</translation>
+<translation id="8813872945700551674">부모님에게 ‘<ph name="EXTENSION_NAME" />’ 승인을 요청하세요</translation>
 <translation id="8813937837706331325">메모리 다소 절약</translation>
 <translation id="8814190375133053267">Wi-Fi</translation>
 <translation id="8814319344131658221">맞춤법 검사 언어는 사용자의 언어 환경설정에 따라 지정됩니다.</translation>
