@@ -5715,6 +5715,7 @@ static_library("browser") {
       "//chromeos/lacros/dbus",
       "//chromeos/startup",
       "//chromeos/startup:constants",
+      "//chromeos/startup:startup",
       "//chromeos/ui/base",
       "//chromeos/ui/clipboard_history",
       "//chromeos/ui/frame",

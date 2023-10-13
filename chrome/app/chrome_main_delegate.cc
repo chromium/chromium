@@ -804,8 +804,16 @@ absl::optional<int> ChromeMainDelegate::PostEarlyInitialization(
   // be scheduled in the main browser after taking the process singleton. They
   // cannot be scheduled immediately after InstantiatePersistentHistograms()
   // because ThreadPool is not ready at that time yet.
+  bool immediate_histogram_cleanup = true;
+#if BUILDFLAG(IS_CHROMEOS_LACROS)
+  // When prelaunching Lacros at login screen, we want to postpone the
+  // cleanup of persistent histograms to when the user has logged in
+  // and the cryptohome is accessible.
+  immediate_histogram_cleanup = !chromeos::IsLaunchedWithPostLoginParams();
+#endif
   base::FilePath metrics_dir;
-  if (base::PathService::Get(chrome::DIR_USER_DATA, &metrics_dir)) {
+  if (immediate_histogram_cleanup &&
+      base::PathService::Get(chrome::DIR_USER_DATA, &metrics_dir)) {
     PersistentHistogramsCleanup(metrics_dir);
   }
 #endif  // !BUILDFLAG(IS_FUCHSIA)
@@ -1676,7 +1684,14 @@ void ChromeMainDelegate::SandboxInitialized(const std::string& process_type) {
   // Note: this is done before field trial initialization, so the values of
   // `kPersistentHistogramsFeature` and `kPersistentHistogramsStorage` will
   // not be used. Persist histograms to a memory-mapped file.
-  if (process_type.empty()) {
+  bool immediate_histogram_init = true;
+#if BUILDFLAG(IS_CHROMEOS_LACROS)
+  // For Lacros, when prelaunching at login screen, we want to postpone the
+  // instantiation of persistent histograms to when the user has logged in
+  // and the cryptohome is accessible.
+  immediate_histogram_init = !chromeos::IsLaunchedWithPostLoginParams();
+#endif
+  if (immediate_histogram_init && process_type.empty()) {
     base::FilePath metrics_dir;
     if (base::PathService::Get(chrome::DIR_USER_DATA, &metrics_dir)) {
       InstantiatePersistentHistograms(
