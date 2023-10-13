@@ -4,9 +4,10 @@
 
 package org.chromium.net;
 
+import org.jni_zero.CalledByNative;
+import org.jni_zero.JNINamespace;
+
 import org.chromium.base.Log;
-import org.chromium.base.annotations.CalledByNative;
-import org.chromium.base.annotations.JNINamespace;
 
 import java.security.InvalidKeyException;
 import java.security.NoSuchAlgorithmException;

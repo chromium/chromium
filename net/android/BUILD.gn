@@ -33,10 +33,10 @@ android_library("net_java") {
   deps = [
     ":net_thread_stats_uid_java",
     "//base:base_java",
-    "//base:jni_java",
     "//build/android:build_java",
     "//third_party/android_deps:com_google_code_findbugs_jsr305_java",
     "//third_party/androidx:androidx_annotation_annotation_java",
+    "//third_party/jni_zero:jni_zero_java",
   ]
   srcjar_deps = [
     ":net_android_java_enums_srcjar",
@@ -86,10 +86,10 @@ android_library("net_java_test_support") {
     "//base:base_java",
     "//base:base_java_test_support",
     "//base:base_java_url_utils_for_test",
-    "//base:jni_java",
     "//third_party/androidx:androidx_annotation_annotation_java",
     "//third_party/androidx:androidx_test_monitor_java",
     "//third_party/androidx:androidx_test_uiautomator_uiautomator_java",
+    "//third_party/jni_zero:jni_zero_java",
     "//third_party/junit",
   ]
   srcjar_deps = [
@@ -123,7 +123,7 @@ android_library("net_test_support_provider_java") {
     ":net_java",
     "//base:base_java",
     "//base:base_java_url_utils_for_test",
-    "//base:jni_java",
+    "//third_party/jni_zero:jni_zero_java",
   ]
 
   data_deps = [ "//net:test_support" ]
@@ -215,10 +215,10 @@ android_library("net_tests_java") {
     ":net_java_test_support",
     "//base:base_java",
     "//base:base_java_test_support",
-    "//base:jni_java",
     "//third_party/android_sdk:android_test_mock_java",
     "//third_party/androidx:androidx_test_monitor_java",
     "//third_party/androidx:androidx_test_runner_java",
+    "//third_party/jni_zero:jni_zero_java",
     "//third_party/junit",
     "//third_party/mockito:mockito_java",
   ]
@@ -257,7 +257,7 @@ robolectric_binary("net_junit_tests") {
     "//base:base_java",
     "//base:base_java_test_support",
     "//base:base_junit_test_support",
-    "//base:jni_java",
     "//third_party/hamcrest:hamcrest_java",
+    "//third_party/jni_zero:jni_zero_java",
   ]
 }

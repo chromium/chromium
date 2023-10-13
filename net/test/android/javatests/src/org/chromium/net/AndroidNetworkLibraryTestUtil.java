@@ -4,7 +4,7 @@
 
 package org.chromium.net;
 
-import org.chromium.base.annotations.CalledByNativeForTesting;
+import org.jni_zero.CalledByNativeForTesting;
 
 /**
  * Utility functions for testing features implemented in AndroidNetworkLibrary.
