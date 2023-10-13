@@ -10,7 +10,7 @@
 #import "base/test/task_environment.h"
 #import "components/feature_engagement/public/event_constants.h"
 #import "components/feature_engagement/test/mock_tracker.h"
-#import "ios/chrome/browser/feature_engagement/tracker_factory.h"
+#import "ios/chrome/browser/feature_engagement/model/tracker_factory.h"
 #import "ios/chrome/browser/shared/model/browser/test/test_browser.h"
 #import "ios/chrome/browser/shared/model/browser_state/test_chrome_browser_state.h"
 #import "ios/chrome/browser/ui/default_promo/video_default_browser_promo_view_controller.h"

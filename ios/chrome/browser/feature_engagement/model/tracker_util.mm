@@ -2,11 +2,11 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#import "ios/chrome/browser/feature_engagement/tracker_util.h"
+#import "ios/chrome/browser/feature_engagement/model/tracker_util.h"
 
 #import "components/feature_engagement/public/event_constants.h"
 #import "components/feature_engagement/public/tracker.h"
-#import "ios/chrome/browser/feature_engagement/tracker_factory.h"
+#import "ios/chrome/browser/feature_engagement/model/tracker_factory.h"
 #import "ios/chrome/browser/shared/public/commands/open_new_tab_command.h"
 
 namespace feature_engagement {

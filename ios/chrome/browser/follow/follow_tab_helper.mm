@@ -18,7 +18,7 @@
 #import "components/history/core/browser/history_service.h"
 #import "components/history/core/browser/history_types.h"
 #import "components/keyed_service/core/service_access_type.h"
-#import "ios/chrome/browser/feature_engagement/tracker_factory.h"
+#import "ios/chrome/browser/feature_engagement/model/tracker_factory.h"
 #import "ios/chrome/browser/follow/follow_action_state.h"
 #import "ios/chrome/browser/follow/follow_features.h"
 #import "ios/chrome/browser/follow/follow_iph_presenter.h"

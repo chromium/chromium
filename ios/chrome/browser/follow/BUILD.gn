@@ -61,7 +61,7 @@ source_set("tab_helper") {
     "//components/history/core/browser",
     "//components/keyed_service/core",
     "//ios/chrome/app/strings",
-    "//ios/chrome/browser/feature_engagement",
+    "//ios/chrome/browser/feature_engagement/model",
     "//ios/chrome/browser/follow:enums",
     "//ios/chrome/browser/follow:utils",
     "//ios/chrome/browser/history",

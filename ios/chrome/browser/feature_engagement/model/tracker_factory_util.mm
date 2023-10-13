@@ -2,7 +2,7 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#import "ios/chrome/browser/feature_engagement/tracker_factory_util.h"
+#import "ios/chrome/browser/feature_engagement/model/tracker_factory_util.h"
 
 #import "base/memory/ptr_util.h"
 #import "base/memory/ref_counted.h"

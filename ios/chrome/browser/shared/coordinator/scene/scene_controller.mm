@@ -51,7 +51,7 @@
 #import "ios/chrome/browser/crash_report/model/crash_report_helper.h"
 #import "ios/chrome/browser/default_browser/model/promo_source.h"
 #import "ios/chrome/browser/default_browser/model/utils.h"
-#import "ios/chrome/browser/feature_engagement/tracker_factory.h"
+#import "ios/chrome/browser/feature_engagement/model/tracker_factory.h"
 #import "ios/chrome/browser/first_run/first_run.h"
 #import "ios/chrome/browser/geolocation/geolocation_logger.h"
 #import "ios/chrome/browser/infobars/infobar_manager_impl.h"

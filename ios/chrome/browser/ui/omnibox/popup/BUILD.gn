@@ -73,7 +73,7 @@ source_set("popup") {
     "//ios/chrome/browser/default_browser/model",
     "//ios/chrome/browser/default_browser/model:utils",
     "//ios/chrome/browser/favicon",
-    "//ios/chrome/browser/feature_engagement",
+    "//ios/chrome/browser/feature_engagement/model",
     "//ios/chrome/browser/history",
     "//ios/chrome/browser/net:crurl",
     "//ios/chrome/browser/ntp",

@@ -1,6 +1,6 @@
 include_rules = [
   "+ios/chrome/browser/discover_feed",
-  "+ios/chrome/browser/feature_engagement",
+  "+ios/chrome/browser/feature_engagement/model",
   "+ios/chrome/browser/history",
   "+ios/chrome/browser/ntp/features.h",
   "+ios/chrome/browser/signin",

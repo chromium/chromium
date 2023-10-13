@@ -26,7 +26,7 @@ source_set("bubble") {
     "//components/omnibox/browser",
     "//components/segmentation_platform/embedder/default_model",
     "//ios/chrome/app/strings",
-    "//ios/chrome/browser/feature_engagement",
+    "//ios/chrome/browser/feature_engagement/model",
     "//ios/chrome/browser/flags:system_flags",
     "//ios/chrome/browser/iph_for_new_chrome_user",
     "//ios/chrome/browser/segmentation_platform",

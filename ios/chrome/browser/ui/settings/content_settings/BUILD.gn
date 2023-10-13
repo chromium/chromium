@@ -27,7 +27,7 @@ source_set("content_settings") {
     "//components/strings",
     "//ios/chrome/app/strings",
     "//ios/chrome/browser/content_settings/model",
-    "//ios/chrome/browser/feature_engagement",
+    "//ios/chrome/browser/feature_engagement/model",
     "//ios/chrome/browser/mailto_handler",
     "//ios/chrome/browser/mailto_handler:mailto_handler_factory",
     "//ios/chrome/browser/net:crurl",

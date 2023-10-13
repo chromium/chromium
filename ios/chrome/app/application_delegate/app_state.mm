@@ -32,7 +32,7 @@
 #import "ios/chrome/browser/crash_report/model/crash_loop_detection_util.h"
 #import "ios/chrome/browser/crash_report/model/features.h"
 #import "ios/chrome/browser/device_sharing/device_sharing_manager.h"
-#import "ios/chrome/browser/feature_engagement/tracker_factory.h"
+#import "ios/chrome/browser/feature_engagement/model/tracker_factory.h"
 #import "ios/chrome/browser/metrics/model/web_state_list_metrics_browser_agent.h"
 #import "ios/chrome/browser/ntp/home/features.h"
 #import "ios/chrome/browser/shared/coordinator/scene/scene_delegate.h"

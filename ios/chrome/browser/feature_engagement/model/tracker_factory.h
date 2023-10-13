@@ -2,8 +2,8 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#ifndef IOS_CHROME_BROWSER_FEATURE_ENGAGEMENT_TRACKER_FACTORY_H_
-#define IOS_CHROME_BROWSER_FEATURE_ENGAGEMENT_TRACKER_FACTORY_H_
+#ifndef IOS_CHROME_BROWSER_FEATURE_ENGAGEMENT_MODEL_TRACKER_FACTORY_H_
+#define IOS_CHROME_BROWSER_FEATURE_ENGAGEMENT_MODEL_TRACKER_FACTORY_H_
 
 #include "base/no_destructor.h"
 #include "components/keyed_service/ios/browser_state_keyed_service_factory.h"
@@ -45,4 +45,4 @@ class TrackerFactory : public BrowserStateKeyedServiceFactory {
 
 }  // namespace feature_engagement
 
-#endif  // IOS_CHROME_BROWSER_FEATURE_ENGAGEMENT_TRACKER_FACTORY_H_
+#endif  // IOS_CHROME_BROWSER_FEATURE_ENGAGEMENT_MODEL_TRACKER_FACTORY_H_

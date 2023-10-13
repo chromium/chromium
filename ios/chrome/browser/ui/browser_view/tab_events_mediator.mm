@@ -4,7 +4,7 @@
 
 #import "ios/chrome/browser/ui/browser_view/tab_events_mediator.h"
 
-#import "ios/chrome/browser/feature_engagement/tracker_util.h"
+#import "ios/chrome/browser/feature_engagement/model/tracker_util.h"
 #import "ios/chrome/browser/metrics/new_tab_page_uma.h"
 #import "ios/chrome/browser/ntp/new_tab_page_tab_helper.h"
 #import "ios/chrome/browser/shared/model/browser_state/chrome_browser_state.h"

@@ -10,7 +10,7 @@
 #import "ios/chrome/browser/commerce/model/price_notifications/price_notifications_iph_presenter.h"
 #import "ios/chrome/browser/commerce/model/push_notification/push_notification_feature.h"
 #import "ios/chrome/browser/commerce/model/shopping_service_factory.h"
-#import "ios/chrome/browser/feature_engagement/tracker_factory.h"
+#import "ios/chrome/browser/feature_engagement/model/tracker_factory.h"
 #import "ios/chrome/browser/shared/model/browser_state/chrome_browser_state.h"
 
 // Helper object to weakly bind `presenter` in the callback.
