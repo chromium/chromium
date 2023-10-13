@@ -15,6 +15,8 @@
 #include "chrome/browser/ui/browser_finder.h"
 #include "chrome/browser/ui/webui/profile_info_watcher.h"
 #include "components/signin/public/base/signin_metrics.h"
+#include "components/signin/public/base/signin_switches.h"
+#include "components/signin/public/identity_manager/account_info.h"
 #include "components/signin/public/identity_manager/identity_manager.h"
 #include "content/public/browser/web_contents.h"
 #include "content/public/browser/web_ui.h"
@@ -64,9 +66,16 @@ void HistoryLoginHandler::ProfileInfoChanged() {
 void HistoryLoginHandler::HandleTurnOnSyncFlow(
     const base::Value::List& /*args*/) {
   Profile* profile = Profile::FromWebUI(web_ui());
-  signin_ui_util::EnableSyncFromSingleAccountPromo(
-      profile,
+  CoreAccountInfo account_info =
       IdentityManagerFactory::GetForProfile(profile)->GetPrimaryAccountInfo(
-          signin::ConsentLevel::kSignin),
+          signin::ConsentLevel::kSignin);
+#if !BUILDFLAG(IS_CHROMEOS_ASH)
+  if (base::FeatureList::IsEnabled(switches::kUnoDesktop) &&
+      account_info.IsEmpty()) {
+    account_info = signin_ui_util::GetSingleAccountForPromos(profile);
+  }
+#endif  // !BUILDFLAG(IS_CHROMEOS_ASH)
+  signin_ui_util::EnableSyncFromSingleAccountPromo(
+      profile, account_info,
       signin_metrics::AccessPoint::ACCESS_POINT_RECENT_TABS);
 }
