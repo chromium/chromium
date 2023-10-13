@@ -71,20 +71,6 @@ class LayoutCounter : public LayoutText {
     return counter_node_;
   }
 
-  // These functions are static so that any LayoutObject can call them.
-  // The reason is that any LayoutObject in the tree can have a CounterNode
-  // without a LayoutCounter (e.g. by specifying 'counter-increment' without
-  // a "content: counter(a)" directive)).
-  static void DestroyCounterNodes(LayoutObject&);
-  static void DestroyCounterNode(LayoutObject&, const AtomicString& identifier);
-  static void LayoutObjectSubtreeAttached(LayoutObject*);
-  static void LayoutObjectSubtreeWillBeDetached(LayoutObject*);
-  static void LayoutObjectStyleChanged(LayoutObject&,
-                                       const ComputedStyle* old_style,
-                                       const ComputedStyle& new_style);
-
-  static CounterMap* GetCounterMap(LayoutObject*);
-
   void UpdateCounter();
 
   // Returns true if <counter-style> is "disclosure-open" or
@@ -114,17 +100,10 @@ class LayoutCounter : public LayoutText {
   }
   String OriginalText() const override;
 
-  // Removes the reference to the CounterNode associated with this layoutObject.
-  // This is used to cause a counter display update when the CounterNode tree
-  // changes.
-  void Invalidate();
-
   const CounterStyle* NullableCounterStyle() const;
 
   Member<const CounterContentData> counter_;
   Member<CounterNode> counter_node_;
-  Member<LayoutCounter> next_for_same_counter_;
-  friend class CounterNode;
 };
 
 template <>
@@ -135,10 +114,5 @@ struct DowncastTraits<LayoutCounter> {
 };
 
 }  // namespace blink
-
-#if DCHECK_IS_ON()
-// Outside the blink namespace for ease of invocation from gdb.
-void ShowCounterLayoutTree(const blink::LayoutObject*, const char* counterName);
-#endif
 
 #endif  // THIRD_PARTY_BLINK_RENDERER_CORE_LAYOUT_LAYOUT_COUNTER_H_
