@@ -1,0 +1,30 @@
+# Copyright 2016 The Chromium Authors
+# Use of this source code is governed by a BSD-style license that can be
+# found in the LICENSE file.
+
+import("//ios/build/chrome_build.gni")
+import("//ios/web/public/js_messaging/optimize_ts.gni")
+import("//rlz/buildflags/buildflags.gni")
+
+source_set("model") {
+  sources = [
+    "search_engine_observer_bridge.h",
+    "template_url_service_factory.h",
+    "ui_thread_search_terms_data.h",
+  ]
+  public_deps = [ "//ios/chrome/browser/search_engines" ]
+}
+
+source_set("template_url_service_factory") {
+  sources = [ "template_url_service_factory.h" ]
+  public_deps =
+      [ "//ios/chrome/browser/search_engines:template_url_service_factory" ]
+}
+
+source_set("eg_test_support+eg2") {
+  testonly = true
+
+  sources = [ "search_engines_app_interface.h" ]
+
+  public_deps = [ "//ios/chrome/browser/search_engines:eg_test_support+eg2" ]
+}
