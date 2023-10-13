@@ -558,24 +558,6 @@ class PreflightController::PreflightLoader final {
       return;
     }
 
-    if (!id.has_value()) {
-      FinishHandleResponseHeader(
-          net::ERR_FAILED,
-          CorsErrorStatus(
-              mojom::CorsError::kPreflightMissingPrivateNetworkAccessId),
-          std::move(result));
-      return;
-    }
-
-    if (!name.has_value()) {
-      FinishHandleResponseHeader(
-          net::ERR_FAILED,
-          CorsErrorStatus(
-              mojom::CorsError::kPreflightMissingPrivateNetworkAccessName),
-          std::move(result));
-      return;
-    }
-
     // Ask for private network access permission.
     // base::Unretained() is safe because once HandleResponseHeader is called,
     // PreflightController will at least keep alive until completion being
@@ -584,7 +566,7 @@ class PreflightController::PreflightLoader final {
     (*url_loader_network_service_observer_)
         .OnPrivateNetworkAccessPermissionRequired(
             std::move(original_request_.url),
-            std::move(head.remote_endpoint.address()), *id, *name,
+            std::move(head.remote_endpoint.address()), id, name,
             base::BindOnce(
                 &PreflightLoader::HandlePrivateNetworkAccessPermissionResult,
                 base::Unretained(this), net_error,

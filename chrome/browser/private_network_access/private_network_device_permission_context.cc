@@ -71,7 +71,8 @@ bool PrivateNetworkDevicePermissionContext::HasDevicePermission(
   for (const auto& object : object_list) {
     const base::Value::Dict& value = object->value;
     DCHECK(IsValidObject(value));
-    if (*value.FindString(kDeviceIdKey) == device.id) {
+    if (device.id.has_value() &&
+        *value.FindString(kDeviceIdKey) == device.id.value()) {
       return true;
     }
   }
@@ -88,8 +89,8 @@ PrivateNetworkDevicePermissionContext::AsWeakPtr() {
 base::Value::Dict PrivateNetworkDevicePermissionContext::DeviceInfoToValue(
     const blink::mojom::PrivateNetworkDevice& device) {
   base::Value::Dict device_value;
-  device_value.Set(kDeviceNameKey, device.name);
-  device_value.Set(kDeviceIdKey, device.id);
+  device_value.Set(kDeviceNameKey, device.name.value());
+  device_value.Set(kDeviceIdKey, device.id.value());
   device_value.Set(kIPAddressKey, device.ip_address.ToString());
   return device_value;
 }

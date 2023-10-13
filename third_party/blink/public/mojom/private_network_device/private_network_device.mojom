@@ -13,11 +13,11 @@ import "services/network/public/mojom/ip_address.mojom";
 struct PrivateNetworkDevice {
     // Device ID defined in the HTTP response header `Private-Network-Access-ID`
     // by the device itself.
-    string id;
+    string? id;
 
     // Device name defined in the HTTP response header `Private-Network-Access-Name`
     // by the device itself.
-    string name;
+    string? name;
 
     // The IP address of the device.
     network.mojom.IPAddress ip_address;

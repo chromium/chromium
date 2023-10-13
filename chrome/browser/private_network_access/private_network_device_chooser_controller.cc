@@ -80,9 +80,23 @@ std::u16string PrivateNetworkDeviceChooserController::GetOption(
     size_t index) const {
   // PNA permission prompt only allows one device at once.
   DCHECK(index == 0);
-  return l10n_util::GetStringFUTF16(IDS_DEVICE_CHOOSER_DEVICE_NAME_WITH_ID,
-                                    base::UTF8ToUTF16(device_->name),
-                                    base::UTF8ToUTF16(device_->id));
+  if (device_->name.has_value() && device_->id.has_value()) {
+    return l10n_util::GetStringFUTF16(IDS_DEVICE_CHOOSER_DEVICE_NAME_WITH_ID,
+                                      base::UTF8ToUTF16(device_->name.value()),
+                                      base::UTF8ToUTF16(device_->id.value()));
+  } else if (device_->name.has_value()) {
+    return l10n_util::GetStringFUTF16(
+        IDS_DEVICE_CHOOSER_DEVICE_NAME_WITH_ID,
+        base::UTF8ToUTF16(device_->name.value()),
+        base::UTF8ToUTF16(net::IPAddress(device_->ip_address).ToString()));
+  } else if (device_->id.has_value()) {
+    return l10n_util::GetStringFUTF16(
+        IDS_DEVICE_CHOOSER_DEVICE_NAME_WITH_ID,
+        base::UTF8ToUTF16(device_->id.value()),
+        base::UTF8ToUTF16(net::IPAddress(device_->ip_address).ToString()));
+  } else {
+    return base::UTF8ToUTF16(net::IPAddress(device_->ip_address).ToString());
+  }
 }
 
 void PrivateNetworkDeviceChooserController::Select(

@@ -2160,8 +2160,8 @@ void StoragePartitionImpl::OnAuthRequired(
 void StoragePartitionImpl::OnPrivateNetworkAccessPermissionRequired(
     const GURL& url,
     const net::IPAddress& ip_address,
-    const std::string& private_network_device_id,
-    const std::string& private_network_device_name,
+    const absl::optional<std::string>& private_network_device_id,
+    const absl::optional<std::string>& private_network_device_name,
     OnPrivateNetworkAccessPermissionRequiredCallback callback) {
   if (!base::FeatureList::IsEnabled(
           network::features::kPrivateNetworkAccessPermissionPrompt)) {
