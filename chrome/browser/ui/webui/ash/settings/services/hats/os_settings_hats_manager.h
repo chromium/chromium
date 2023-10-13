@@ -2,8 +2,8 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#ifndef CHROME_BROWSER_UI_WEBUI_SETTINGS_ASH_OS_SETTINGS_HATS_MANAGER_H_
-#define CHROME_BROWSER_UI_WEBUI_SETTINGS_ASH_OS_SETTINGS_HATS_MANAGER_H_
+#ifndef CHROME_BROWSER_UI_WEBUI_ASH_SETTINGS_SERVICES_HATS_OS_SETTINGS_HATS_MANAGER_H_
+#define CHROME_BROWSER_UI_WEBUI_ASH_SETTINGS_SERVICES_HATS_OS_SETTINGS_HATS_MANAGER_H_
 
 #include "base/logging.h"
 #include "base/memory/raw_ptr.h"
@@ -50,4 +50,4 @@ class OsSettingsHatsManager : public KeyedService {
 }  // namespace settings
 }  // namespace ash
 
-#endif  // CHROME_BROWSER_UI_WEBUI_SETTINGS_ASH_OS_SETTINGS_HATS_MANAGER_H_
+#endif  // CHROME_BROWSER_UI_WEBUI_ASH_SETTINGS_SERVICES_HATS_OS_SETTINGS_HATS_MANAGER_H_

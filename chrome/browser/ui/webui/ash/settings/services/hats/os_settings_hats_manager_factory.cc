@@ -3,9 +3,9 @@
 // found in the LICENSE file.
 
 #include "base/no_destructor.h"
-#include "chrome/browser/ui/webui/settings/ash/os_settings_hats_manager_factory.h"
+#include "chrome/browser/ui/webui/ash/settings/services/hats/os_settings_hats_manager_factory.h"
 #include "chrome/browser/profiles/profile.h"
-#include "chrome/browser/ui/webui/settings/ash/os_settings_hats_manager.h"
+#include "chrome/browser/ui/webui/ash/settings/services/hats/os_settings_hats_manager.h"
 
 namespace ash::settings {
 
