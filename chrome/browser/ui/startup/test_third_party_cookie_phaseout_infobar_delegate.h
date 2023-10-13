@@ -12,7 +12,7 @@
 
 namespace content {
 class WebContents;
-};
+}
 
 // An infobar for Chrome for Testing, which displays a message saying that when
 // the --test-third-party-cookie-phaseout switch is enabled that the 3PC

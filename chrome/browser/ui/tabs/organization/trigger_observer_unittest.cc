@@ -21,7 +21,7 @@ namespace {
 class AlwaysTrigger : public TriggerPolicy {
  public:
   AlwaysTrigger() = default;
-  bool ShouldTrigger(float score) override { return true; };
+  bool ShouldTrigger(float score) override { return true; }
 };
 
 std::unique_ptr<TabOrganizationTrigger> MakeTestTrigger() {

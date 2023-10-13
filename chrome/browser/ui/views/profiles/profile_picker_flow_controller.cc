@@ -294,6 +294,7 @@ class ReauthFlowStepController : public ProfileManagementStepController {
   std::unique_ptr<ProfilePickerDiceReauthProvider> reauth_provider_;
 };
 
+#if BUILDFLAG(ENABLE_DICE_SUPPORT)
 std::unique_ptr<ProfileManagementStepController> CreateReauthtep(
     ProfilePickerWebContentsHost* host,
     Profile* profile,
@@ -311,6 +312,7 @@ std::unique_ptr<ProfileManagementStepController> CreateReauthtep(
           std::move(on_reauth_completed)),
       profile);
 }
+#endif
 
 }  // namespace
 

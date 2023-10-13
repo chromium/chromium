@@ -22,11 +22,11 @@ class AutofillCvcSaveMessageDelegateTest
         &message_dispatcher_bridge_);
     autofill_cvc_save_message_delegate_ =
         std::make_unique<AutofillCvcSaveMessageDelegate>(web_contents());
-  };
+  }
   void TearDown() override {
     messages::MessageDispatcherBridge::SetInstanceForTesting(nullptr);
     ChromeRenderViewHostTestHarness::TearDown();
-  };
+  }
 
  protected:
   messages::MockMessageDispatcherBridge message_dispatcher_bridge_;

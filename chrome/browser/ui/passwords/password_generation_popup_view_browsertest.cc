@@ -123,8 +123,9 @@ IN_PROC_BROWSER_TEST_F(PasswordGenerationPopupViewTest, PopupInAxTree) {
 
   views::NamedWidgetShownWaiter waiter(views::test::AnyWidgetTestPasskey{},
                                        "PasswordGenerationPopupViewViews");
-  content::EvalJs(WebContents(),
-                  "document.getElementById('password_field').focus()");
+  // TODO: handle return value.
+  std::ignore = content::EvalJs(
+      WebContents(), "document.getElementById('password_field').focus()");
   auto* client = ChromePasswordManagerClient::FromWebContents(WebContents());
   client->GeneratePassword(
       autofill::password_generation::PasswordGenerationType::kManual);
@@ -187,8 +188,9 @@ IN_PROC_BROWSER_TEST_P(PasswordGenerationPopupViewWithContentExperimentTest,
                        DoesNotCrashShowingGenerationOfferWithModifiedContent) {
   views::NamedWidgetShownWaiter waiter(views::test::AnyWidgetTestPasskey{},
                                        "PasswordGenerationPopupViewViews");
-  content::EvalJs(WebContents(),
-                  "document.getElementById('password_field').focus()");
+  // TODO: handle return value.
+  std::ignore = content::EvalJs(
+      WebContents(), "document.getElementById('password_field').focus()");
   auto* client = ChromePasswordManagerClient::FromWebContents(WebContents());
   client->GeneratePassword(
       autofill::password_generation::PasswordGenerationType::kManual);

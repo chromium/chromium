@@ -12,7 +12,7 @@
 
 namespace content {
 class WebContents;
-};
+}
 
 // An infobar for Chrome for Testing, which displays a message saying that this
 // flavor of chrome is unsupported and does not auto-update.

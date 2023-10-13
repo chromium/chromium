@@ -540,7 +540,8 @@ bool Tab::OnMousePressed(const ui::MouseEvent& event) {
 }
 
 bool Tab::OnMouseDragged(const ui::MouseEvent& event) {
-  controller_->ContinueDrag(this, event);
+  // TODO: ensure ignoring return value is ok.
+  std::ignore = controller_->ContinueDrag(this, event);
   return true;
 }
 

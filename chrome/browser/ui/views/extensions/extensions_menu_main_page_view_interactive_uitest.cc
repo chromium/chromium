@@ -419,7 +419,8 @@ IN_PROC_BROWSER_TEST_F(ExtensionsMenuMainPageViewInteractiveUITest,
   content::TitleWatcher title_watcher(unfocused_tab, u"Updated Title");
   ASSERT_TRUE(
       content::ExecJs(unfocused_tab, "document.title = 'Updated Title';"));
-  title_watcher.WaitAndGetTitle();
+  // TODO: handle return value.
+  std::ignore = title_watcher.WaitAndGetTitle();
   // The browser UI is updated by a PostTask() with a delay of zero seconds.
   // However, the update will be visible when the run loop next idles after the
   // title is updated. To ensure it's ran, lets wait until its idle.

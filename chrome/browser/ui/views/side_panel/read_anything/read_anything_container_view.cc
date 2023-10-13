@@ -21,17 +21,6 @@
 #include "ui/views/controls/separator.h"
 #include "ui/views/layout/flex_layout.h"
 
-namespace {
-
-int GetNormalizedFontScale(double font_scale) {
-  DCHECK(font_scale >= kReadAnythingMinimumFontScale &&
-         font_scale <= kReadAnythingMaximumFontScale);
-  return (font_scale - kReadAnythingMinimumFontScale) *
-         (1 / kReadAnythingFontScaleIncrement);
-}
-
-}  // namespace
-
 ReadAnythingContainerView::ReadAnythingContainerView(
     ReadAnythingCoordinator* coordinator,
     std::unique_ptr<ReadAnythingToolbarView> toolbar,

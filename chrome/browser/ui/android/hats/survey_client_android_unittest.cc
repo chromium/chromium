@@ -56,7 +56,7 @@ class TestSurveyUiDelegate : public SurveyUiDelegateAndroid {
   }
 
   // Dismiss the survey invitation.
-  void Dismiss(JNIEnv* env) override{};
+  void Dismiss(JNIEnv* env) override {}
 
  private:
   raw_ptr<JNIEnv> env_;

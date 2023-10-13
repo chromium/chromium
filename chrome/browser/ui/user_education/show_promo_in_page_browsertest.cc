@@ -125,7 +125,8 @@ IN_PROC_BROWSER_TEST_F(ShowPromoInPageBrowserTest, ShowPromoInSameTab) {
 }
 
 IN_PROC_BROWSER_TEST_F(ShowPromoInPageBrowserTest, ShowPromoInSamePage) {
-  ui_test_utils::NavigateToURL(browser(), GURL(kPageWithAnchorURL));
+  ASSERT_TRUE(
+      ui_test_utils::NavigateToURL(browser(), GURL(kPageWithAnchorURL)));
 
   base::MockCallback<ShowPromoInPage::Callback> bubble_shown;
 

@@ -31,14 +31,14 @@ class TestFlagStorage : public flags_ui::FlagsStorage {
       return "";
     }
     return origin_list_flags_.at(internal_entry_name);
-  };
+  }
   // Sets the serialized |origin_list_value| corresponding to
   // |internal_entry_name|. Does not check if |origin_list_value| is well
   // formed.
   void SetOriginListFlag(const std::string& internal_entry_name,
                          const std::string& origin_list_value) override {
     origin_list_flags_[internal_entry_name] = origin_list_value;
-  };
+  }
 
   std::string GetStringFlag(
       const std::string& internal_entry_name) const override {
@@ -50,7 +50,7 @@ class TestFlagStorage : public flags_ui::FlagsStorage {
   }
 
   // Lands pending changes to disk immediately.
-  void CommitPendingWrites() override{};
+  void CommitPendingWrites() override {}
 
  private:
   std::set<std::string> flags_;

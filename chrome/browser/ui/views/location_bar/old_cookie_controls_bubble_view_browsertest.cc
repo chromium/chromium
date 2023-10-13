@@ -38,7 +38,7 @@ class OldCookieControlsBubbleViewTest : public DialogBrowserTest {
   OldCookieControlsBubbleViewTest() {
     feature_list_.InitAndDisableFeature(
         content_settings::features::kUserBypassUI);
-  };
+  }
 
   OldCookieControlsBubbleViewTest(const OldCookieControlsBubbleViewTest&) =
       delete;

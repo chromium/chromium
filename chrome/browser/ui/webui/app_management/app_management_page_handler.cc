@@ -140,6 +140,7 @@ bool CanShowDefaultAppAssociationsUi() {
 #endif
 }
 
+#if BUILDFLAG(IS_CHROMEOS)
 // Returns a list of intent filters that support http/https given an app ID.
 apps::IntentFilters GetSupportedLinkIntentFilters(Profile* profile,
                                                   const std::string& app_id) {
@@ -174,6 +175,7 @@ std::vector<std::string> GetSupportedLinks(Profile* profile,
   return std::vector<std::string>(supported_links.begin(),
                                   supported_links.end());
 }
+#endif
 
 #if !BUILDFLAG(IS_CHROMEOS)
 std::vector<std::string> GetSupportedLinksForPWAs(

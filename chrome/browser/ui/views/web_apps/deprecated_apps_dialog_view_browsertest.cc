@@ -275,7 +275,9 @@ IN_PROC_BROWSER_TEST_P(DeprecatedAppsDialogViewBrowserTest,
       ui_test_utils::NavigateToURL(browser(), GURL(chrome::kChromeUIAppsURL)));
   auto waiter = views::NamedWidgetShownWaiter(
       views::test::AnyWidgetTestPasskey{}, "DeprecatedAppsDialogView");
-  content::EvalJs(web_contents, ClickDeprecatedDialogLinkString());
+  // TODO: handle return value.
+  std::ignore =
+      content::EvalJs(web_contents, ClickDeprecatedDialogLinkString());
   EXPECT_NE(waiter.WaitIfNeededAndGet(), nullptr);
 }
 

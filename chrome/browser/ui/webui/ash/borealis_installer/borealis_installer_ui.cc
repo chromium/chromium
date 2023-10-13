@@ -114,6 +114,6 @@ bool BorealisInstallerUI::RequestClosePage() {
   return false;
 }
 
-WEB_UI_CONTROLLER_TYPE_IMPL(BorealisInstallerUI);
+WEB_UI_CONTROLLER_TYPE_IMPL(BorealisInstallerUI)
 
 }  // namespace ash

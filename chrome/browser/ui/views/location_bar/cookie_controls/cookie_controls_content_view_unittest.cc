@@ -57,4 +57,4 @@ TEST_F(CookieControlsContentViewUnitTest, ToggleButton_UpdatedSites) {
   EXPECT_THAT(GetToggleButton()->GetAccessibleName(), Eq(expected));
 }
 
-};  // namespace
+}  // namespace

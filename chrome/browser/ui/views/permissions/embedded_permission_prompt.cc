@@ -27,24 +27,6 @@ EmbeddedPermissionPrompt::Variant HigherPriorityVariant(
   return std::max(a, b);
 }
 
-#if BUILDFLAG(IS_MAC)
-void OpenCameraPermissionSystemSettingsMacOS() {
-  if (system_media_permissions::CheckSystemVideoCapturePermission() ==
-      system_media_permissions::SystemPermission::kDenied) {
-    base::mac::OpenSystemSettingsPane(
-        base::mac::SystemSettingsPane::kPrivacySecurity_Camera);
-  }
-}
-
-void OpenMicrophonePermissionSystemSettingsMacOS() {
-  if (system_media_permissions::CheckSystemAudioCapturePermission() ==
-      system_media_permissions::SystemPermission::kDenied) {
-    base::mac::OpenSystemSettingsPane(
-        base::mac::SystemSettingsPane::kPrivacySecurity_Microphone);
-  }
-}
-#endif
-
 bool IsPermissionSetByAdministator(ContentSetting setting,
                                    const content_settings::SettingInfo& info) {
   return ((setting == ContentSetting::CONTENT_SETTING_BLOCK ||

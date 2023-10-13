@@ -117,7 +117,7 @@ class AutofillContextMenuManagerTest : public InProcessBrowserTest {
     autofill_context_menu_manager()->set_params_for_testing(
         CreateContextMenuParams());
 
-    ui_test_utils::NavigateToURL(browser(), GURL("about:blank"));
+    ASSERT_TRUE(ui_test_utils::NavigateToURL(browser(), GURL("about:blank")));
   }
 
   void AddAutofillProfile(const autofill::AutofillProfile& profile) {

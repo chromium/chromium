@@ -135,7 +135,7 @@ IN_PROC_BROWSER_TEST_F(EditorMenuBrowserFeatureDisabledTest,
                        ShouldNotCreateWhenFeatureNotEnabled) {
   EXPECT_FALSE(chromeos::features::IsOrcaEnabled());
   EXPECT_EQ(nullptr, GetControllerImpl());
-};
+}
 
 IN_PROC_BROWSER_TEST_F(EditorMenuBrowserFeatureEnabledTest,
                        ShouldCreateWhenFeatureEnabled) {

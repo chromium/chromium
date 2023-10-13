@@ -483,7 +483,8 @@ IN_PROC_BROWSER_TEST_F(PrerenderBookmarkBarOnPressedNavigationTest,
   {
     ukm::SourceId ukm_source_id = activation_observer.next_page_ukm_source_id();
     // Navigate away to flush the metrics and check.
-    ui_test_utils::NavigateToURL(browser(), GURL(url::kAboutBlankURL));
+    ASSERT_TRUE(
+        ui_test_utils::NavigateToURL(browser(), GURL(url::kAboutBlankURL)));
     auto ukm_entries = test_ukm_recorder()->GetEntries(
         Preloading_Attempt::kEntryName,
         content::test::kPreloadingAttemptUkmMetrics);
@@ -512,7 +513,8 @@ IN_PROC_BROWSER_TEST_F(PrerenderBookmarkBarOnPressedNavigationTest,
       "Preloading.Prerender.Attempt.PointerDownOnBookmarkBar.TriggeringOutcome",
       kPreloadingTriggeringOutcomeSuccess, 1);
   // Navigate away to flush the metrics and check.
-  ui_test_utils::NavigateToURL(browser(), GURL(url::kAboutBlankURL));
+  ASSERT_TRUE(
+      ui_test_utils::NavigateToURL(browser(), GURL(url::kAboutBlankURL)));
   ASSERT_EQ(bookmark_navigation_list().size(), 2u);
   for (int i = 0; i < 2; ++i) {
     EXPECT_EQ(
@@ -647,7 +649,8 @@ IN_PROC_BROWSER_TEST_F(PrerenderBookmarkBarOnHoverNavigationTest,
   {
     ukm::SourceId ukm_source_id = activation_observer.next_page_ukm_source_id();
     // Navigate away to flush the metrics and check.
-    ui_test_utils::NavigateToURL(browser(), GURL(url::kAboutBlankURL));
+    ASSERT_TRUE(
+        ui_test_utils::NavigateToURL(browser(), GURL(url::kAboutBlankURL)));
     auto ukm_entries = test_ukm_recorder()->GetEntries(
         Preloading_Attempt::kEntryName,
         content::test::kPreloadingAttemptUkmMetrics);
@@ -726,7 +729,8 @@ IN_PROC_BROWSER_TEST_F(
   {
     ukm::SourceId ukm_source_id = activation_observer.next_page_ukm_source_id();
     // Navigate away to flush the metrics and check.
-    ui_test_utils::NavigateToURL(browser(), GURL(url::kAboutBlankURL));
+    ASSERT_TRUE(
+        ui_test_utils::NavigateToURL(browser(), GURL(url::kAboutBlankURL)));
     auto ukm_entries = test_ukm_recorder()->GetEntries(
         Preloading_Attempt::kEntryName,
         content::test::kPreloadingAttemptUkmMetrics);
@@ -825,7 +829,8 @@ IN_PROC_BROWSER_TEST_F(PrerenderBookmarkBarOnHoverNavigationTest,
 
   {
     // Navigate away to flush the metrics and check.
-    ui_test_utils::NavigateToURL(browser(), GURL(url::kAboutBlankURL));
+    ASSERT_TRUE(
+        ui_test_utils::NavigateToURL(browser(), GURL(url::kAboutBlankURL)));
     ukm::SourceId ukm_source_id =
         GetActiveWebContents()->GetPrimaryMainFrame()->GetPageUkmSourceId();
     auto attempt_ukm_entries = test_ukm_recorder()->GetEntries(
@@ -901,7 +906,8 @@ IN_PROC_BROWSER_TEST_F(PrerenderBookmarkBarDisabledNavigationTest,
   ClickOnBookmarkBarLink();
 
   // Navigate away to flush the metrics and check.
-  ui_test_utils::NavigateToURL(browser(), GURL(url::kAboutBlankURL));
+  ASSERT_TRUE(
+      ui_test_utils::NavigateToURL(browser(), GURL(url::kAboutBlankURL)));
   ASSERT_EQ(bookmark_navigation_list().size(), 1u);
   for (int i = 0; i < 1; ++i) {
     EXPECT_EQ(

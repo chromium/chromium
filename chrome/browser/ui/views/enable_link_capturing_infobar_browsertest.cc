@@ -254,7 +254,7 @@ IN_PROC_BROWSER_TEST_F(EnableLinkCapturingInfobarBrowserTest,
   const auto [app_id, in_scope_url] = InstallTestApp();
   TurnOnLinkCapturing(app_id);
 
-  ui_test_utils::NavigateToURL(browser(), in_scope_url);
+  ASSERT_TRUE(ui_test_utils::NavigateToURL(browser(), in_scope_url));
   ASSERT_TRUE(ClickIntentPickerAndWaitForBubble());
 
   ui_test_utils::BrowserChangeObserver browser_added_waiter(

@@ -89,7 +89,7 @@ class MockDownloadBubbleSecurityViewDelegate
   virtual ~MockDownloadBubbleSecurityViewDelegate() = default;
 
   void ProcessSecuritySubpageButtonPress(const ContentId&,
-                                         DownloadCommands::Command) override{};
+                                         DownloadCommands::Command) override {}
 
   void AddSecuritySubpageWarningActionEvent(
       const ContentId& id,

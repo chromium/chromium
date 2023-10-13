@@ -207,7 +207,8 @@ bool TabGroupHeader::OnMousePressed(const ui::MouseEvent& event) {
 }
 
 bool TabGroupHeader::OnMouseDragged(const ui::MouseEvent& event) {
-  tab_slot_controller_->ContinueDrag(this, event);
+  // TODO: ensure ignoring return value is ok.
+  std::ignore = tab_slot_controller_->ContinueDrag(this, event);
   return true;
 }
 

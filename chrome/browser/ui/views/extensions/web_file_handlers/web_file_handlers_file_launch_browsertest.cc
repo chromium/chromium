@@ -234,7 +234,9 @@ class WebFileHandlersFileLaunchBrowserTest
     views::NamedWidgetShownWaiter waiter(views::test::AnyWidgetTestPasskey{},
                                          "WebFileHandlersFileLaunchDialogView");
     // Set the checkbox to checked.
-    extensions::file_handlers::SetDefaultRememberSelectionForTesting(true);
+    // TODO: handle return value.
+    std::ignore =
+        extensions::file_handlers::SetDefaultRememberSelectionForTesting(true);
 
     // Run the first time.
     {
@@ -285,7 +287,9 @@ class WebFileHandlersFileLaunchBrowserTest
     views::NamedWidgetShownWaiter waiter(views::test::AnyWidgetTestPasskey{},
                                          "WebFileHandlersFileLaunchDialogView");
     // Set the checkbox to checked.
-    extensions::file_handlers::SetDefaultRememberSelectionForTesting(true);
+    // TODO: handle return value.
+    std::ignore =
+        extensions::file_handlers::SetDefaultRememberSelectionForTesting(true);
 
     // Launch for the first time.
     {
@@ -334,7 +338,9 @@ class WebFileHandlersFileLaunchBrowserTest
     views::NamedWidgetShownWaiter waiter(views::test::AnyWidgetTestPasskey{},
                                          "WebFileHandlersFileLaunchDialogView");
     // Set the checkbox to checked.
-    extensions::file_handlers::SetDefaultRememberSelectionForTesting(true);
+    // TODO: handle return value.
+    std::ignore =
+        extensions::file_handlers::SetDefaultRememberSelectionForTesting(true);
 
     // Launch for the first time.
     {

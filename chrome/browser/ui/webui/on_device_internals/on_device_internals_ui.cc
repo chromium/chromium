@@ -25,7 +25,7 @@ OnDeviceInternalsUI::OnDeviceInternalsUI(content::WebUI* web_ui)
 
 OnDeviceInternalsUI::~OnDeviceInternalsUI() = default;
 
-WEB_UI_CONTROLLER_TYPE_IMPL(OnDeviceInternalsUI);
+WEB_UI_CONTROLLER_TYPE_IMPL(OnDeviceInternalsUI)
 
 void OnDeviceInternalsUI::BindInterface(
     mojo::PendingReceiver<on_device_model::mojom::OnDeviceModelService>
