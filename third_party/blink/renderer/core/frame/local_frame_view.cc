@@ -979,13 +979,15 @@ gfx::SizeF LocalFrameView::ViewportSizeForMediaQueries() const {
   if (!frame_->GetDocument()) {
     return gfx::SizeF(layout_size_);
   }
-  if (frame_->GetDocument()->Printing()) {
+  if (frame_->ShouldUsePrintingLayout()) {
     if (const LayoutView* layout_view = GetLayoutView()) {
       return layout_view->DefaultPageAreaSize();
     }
   }
   gfx::SizeF viewport_size(layout_size_);
-  viewport_size.Scale(1 / GetFrame().PageZoomFactor());
+  if (!frame_->GetDocument()->Printing()) {
+    viewport_size.Scale(1 / GetFrame().PageZoomFactor());
+  }
   return viewport_size;
 }
 
