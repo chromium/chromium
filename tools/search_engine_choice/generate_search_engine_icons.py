@@ -115,6 +115,7 @@ def get_largest_icon_index_and_size(icon_path, name):
 
   Args:
     icon_path: The path to the .ico file.
+    name: Name/keyword of the search engine.
   """
   images_stream = os.popen('identify ' + icon_path).read()
   images_stream_strings = images_stream.splitlines()
