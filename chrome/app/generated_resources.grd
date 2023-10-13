@@ -15747,9 +15747,15 @@ Please help our engineers fix this problem. Tell us what happened right before y
       More details
     </message>
     <message name="IDS_SIGNIN_ERROR_DIALOG_MORE_DETAILS_PROMPT" desc="Prompt user to click on the more details button to get more details about an error that has occurred in their attempt to sign in with an account from an identity provider." translateable="false">
-      If this issue keeps happening, choose "More details" below to get more information from <ph name="IDENTITY_PROVIDER_ETLD_PLUS_ONE">$1<ex>idp.example</ex></ph>.
+      Choose "More details" below to get more information from <ph name="IDENTITY_PROVIDER_ETLD_PLUS_ONE">$1<ex>idp.example</ex></ph>.
     </message>
     <message name="IDS_SIGNIN_ERROR_DIALOG_TRY_OTHER_WAYS_PROMPT" desc="Prompt user to try other ways of signing in after an error has occurred in their attempt to sign in with an account from an identity provider." translateable="false">
+      You can try other ways to continue on <ph name="SITE_ETLD_PLUS_ONE">$1<ex>rp.example</ex></ph>.
+    </message>
+    <message name="IDS_SIGNIN_ERROR_DIALOG_MORE_DETAILS_RETRY_PROMPT" desc="Prompt user to click on the more details button to get more details about an error if it continues to occur after their first attempt to sign in with an account from an identity provider." translateable="false">
+      If this issue keeps happening, choose "More details" below to get more information from <ph name="IDENTITY_PROVIDER_ETLD_PLUS_ONE">$1<ex>idp.example</ex></ph>.
+    </message>
+    <message name="IDS_SIGNIN_ERROR_DIALOG_TRY_OTHER_WAYS_RETRY_PROMPT" desc="Prompt user to try other ways of signing in after an error if it continues to occur after their first attempt to sign in with an account from an identity provider." translateable="false">
       If this issue keeps happening, you can try other ways to continue on <ph name="SITE_ETLD_PLUS_ONE">$1<ex>rp.example</ex></ph>.
     </message>
     <message name="IDS_MULTI_IDP_ACCOUNT_SELECTION_SHEET_TITLE_EXPLICIT" desc="Header for sign in sheet when there are multiple identity providers. Sheet is shown to prompt user for sign in consent." translateable="false">

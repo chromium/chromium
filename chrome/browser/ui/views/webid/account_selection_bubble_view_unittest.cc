@@ -939,70 +939,67 @@ TEST_F(AccountSelectionBubbleViewTest, GenericErrorWithErrorUrl) {
 
 TEST_F(AccountSelectionBubbleViewTest, ErrorWithDifferentErrorCodes) {
   // Invalid request without error URL
-  TestErrorDialog(
-      u"Sign in to top-frame-example.com with idp-example.com",
-      /*expected_subtitle=*/absl::nullopt,
-      u"top-frame-example.com can't continue using idp-example.com",
-      u"This option is unavailable right now. If this issue keeps happening, "
-      u"you can try other ways to continue on top-frame-example.com.",
-      /*expect_idp_brand_icon_in_header=*/true,
-      /*error_code=*/"invalid_request",
-      /*error_url=*/GURL());
-
-  // Invalid request with error URL
   TestErrorDialog(u"Sign in to top-frame-example.com with idp-example.com",
                   /*expected_subtitle=*/absl::nullopt,
                   u"top-frame-example.com can't continue using idp-example.com",
-                  u"This option is unavailable right now. If this issue keeps "
-                  u"happening, choose \"More details\" below to get more "
-                  u"information from idp-example.com.",
+                  u"This option is unavailable right now. You can try other "
+                  u"ways to continue on top-frame-example.com.",
                   /*expect_idp_brand_icon_in_header=*/true,
                   /*error_code=*/"invalid_request",
-                  GURL(u"https://idp-example.com/more-details"));
+                  /*error_url=*/GURL());
 
-  // Unauthorized client without error URL
+  // Invalid request with error URL
   TestErrorDialog(
       u"Sign in to top-frame-example.com with idp-example.com",
       /*expected_subtitle=*/absl::nullopt,
       u"top-frame-example.com can't continue using idp-example.com",
-      u"This option is unavailable right now. If this issue keeps happening, "
-      u"you can try other ways to continue on top-frame-example.com.",
+      u"This option is unavailable right now. Choose \"More "
+      u"details\" below to get more information from idp-example.com.",
       /*expect_idp_brand_icon_in_header=*/true,
-      /*error_code=*/"unauthorized_client",
-      /*error_url=*/GURL());
+      /*error_code=*/"invalid_request",
+      GURL(u"https://idp-example.com/more-details"));
 
-  // Unauthorized client with error URL
+  // Unauthorized client without error URL
   TestErrorDialog(u"Sign in to top-frame-example.com with idp-example.com",
                   /*expected_subtitle=*/absl::nullopt,
                   u"top-frame-example.com can't continue using idp-example.com",
-                  u"This option is unavailable right now. If this issue keeps "
-                  u"happening, choose \"More details\" below to get more "
-                  u"information from idp-example.com.",
+                  u"This option is unavailable right now. You can try other "
+                  u"ways to continue on top-frame-example.com.",
                   /*expect_idp_brand_icon_in_header=*/true,
                   /*error_code=*/"unauthorized_client",
-                  GURL(u"https://idp-example.com/more-details"));
+                  /*error_url=*/GURL());
+
+  // Unauthorized client with error URL
+  TestErrorDialog(
+      u"Sign in to top-frame-example.com with idp-example.com",
+      /*expected_subtitle=*/absl::nullopt,
+      u"top-frame-example.com can't continue using idp-example.com",
+      u"This option is unavailable right now. Choose \"More "
+      u"details\" below to get more information from idp-example.com.",
+      /*expect_idp_brand_icon_in_header=*/true,
+      /*error_code=*/"unauthorized_client",
+      GURL(u"https://idp-example.com/more-details"));
 
   // Access denied without error URL
   TestErrorDialog(u"Sign in to top-frame-example.com with idp-example.com",
                   /*expected_subtitle=*/absl::nullopt,
                   u"Check that you chose the right account",
-                  u"Check if the selected account is supported. If this issue "
-                  u"keeps happening, you can try other ways to continue on "
-                  u"top-frame-example.com.",
+                  u"Check if the selected account is supported. You can try "
+                  u"other ways to continue on top-frame-example.com.",
                   /*expect_idp_brand_icon_in_header=*/true,
                   /*error_code=*/"access_denied",
                   /*error_url=*/GURL());
 
   // Access denied with error URL
-  TestErrorDialog(u"Sign in to top-frame-example.com with idp-example.com",
-                  /*expected_subtitle=*/absl::nullopt,
-                  u"Check that you chose the right account",
-                  u"Check if the selected account is supported. If this issue "
-                  u"keeps happening, choose \"More details\" below to get more "
-                  u"information from idp-example.com.",
-                  /*expect_idp_brand_icon_in_header=*/true,
-                  /*error_code=*/"access_denied",
-                  GURL(u"https://idp-example.com/more-details"));
+  TestErrorDialog(
+      u"Sign in to top-frame-example.com with idp-example.com",
+      /*expected_subtitle=*/absl::nullopt,
+      u"Check that you chose the right account",
+      u"Check if the selected account is supported. Choose \"More "
+      u"details\" below to get more information from idp-example.com.",
+      /*expect_idp_brand_icon_in_header=*/true,
+      /*error_code=*/"access_denied",
+      GURL(u"https://idp-example.com/more-details"));
 
   // Temporarily unavailable without error URL
   TestErrorDialog(u"Sign in to top-frame-example.com with idp-example.com",
@@ -1042,5 +1039,23 @@ TEST_F(AccountSelectionBubbleViewTest, ErrorWithDifferentErrorCodes) {
                   u"try other ways to continue on top-frame-example.com.",
                   /*expect_idp_brand_icon_in_header=*/true,
                   /*error_code=*/"server_error",
+                  GURL(u"https://idp-example.com/more-details"));
+
+  // Error not in our predefined list without error URL
+  TestErrorDialog(u"Sign in to top-frame-example.com with idp-example.com",
+                  /*expected_subtitle=*/absl::nullopt,
+                  u"Can't continue with idp-example.com",
+                  u"Something went wrong",
+                  /*expect_idp_brand_icon_in_header=*/true,
+                  /*error_code=*/"error_we_dont_support",
+                  /*error_url=*/GURL());
+
+  // Error not in our predefined list with error URL
+  TestErrorDialog(u"Sign in to top-frame-example.com with idp-example.com",
+                  /*expected_subtitle=*/absl::nullopt,
+                  u"Can't continue with idp-example.com",
+                  u"Something went wrong",
+                  /*expect_idp_brand_icon_in_header=*/true,
+                  /*error_code=*/"error_we_dont_support",
                   GURL(u"https://idp-example.com/more-details"));
 }
