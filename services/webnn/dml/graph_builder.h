@@ -6,45 +6,110 @@
 #define SERVICES_WEBNN_DML_GRAPH_BUILDER_H_
 
 #include <DirectML.h>
-#include <map>
-#include <memory>
-#include <string>
+#include <list>
 #include <vector>
 
+#include "base/containers/span.h"
+#include "base/memory/raw_ref.h"
 #include "services/webnn/dml/tensor_desc.h"
+#include "third_party/abseil-cpp/absl/types/optional.h"
 
 namespace webnn::dml {
 
 using Microsoft::WRL::ComPtr;
 
-// It represents the info of a node.
-struct NodeInfo {
+class InputNode;
+class OperatorNode;
+
+// Represents a node, which is either an input node or operator node, within a
+// graph.
+class Node {
+ public:
   enum class Type {
-    kInvalid,
     kInput,
     kOperator,
   };
 
-  Type type = Type::kInvalid;
-  // For NodeType::kInput, it indicates the graph's input index within
-  // GraphBuilder::input_count_ and is counted from 0;
-  // For NodeType::kOperator, it indicates the dml operator location in
-  // GraphBuilder::dml_operators_ and is counted from 0.
-  uint32_t index = 0;
+  explicit Node(Type type);
+  virtual ~Node();
+
+  // Not copyable or movable.
+  Node(const Node&) = delete;
+  Node& operator=(const Node&) = delete;
+  Node(Node&&) = delete;
+  Node& operator=(Node&&) = delete;
+
+  Type GetType() const;
+
+  const InputNode* AsInputNode() const;
+  const OperatorNode* AsOperatorNode() const;
+
+ protected:
+  Type type_;
 };
 
-// It represents the info of a node output.
-struct NodeOutputInfo {
-  // It indicates the NodeOutput location in GraphBuilder::node_outputs_ and is
-  // counted from 0.
-  uint32_t index = 0;
+// Represents a graph input node. Created by `GraphBuilder::CreateInputNode()`.
+// Holds the graph input index which is used to set
+// `DML_INPUT_GRAPH_EDGE_DESC::GraphInputIndex`.
+class InputNode final : public Node {
+ public:
+  explicit InputNode(uint32_t graph_input_index);
+  ~InputNode() override;
+
+  uint32_t GetGraphInputIndex() const;
+
+ private:
+  uint32_t graph_input_index_ = 0;
 };
 
-// NodeOutput is created from a node, it represent an output of this node. It
-// mainly consists of the output index and the output tensor of the node.
-struct NodeOutput final {
-  // The node info that provides the node output.
-  NodeInfo node_info = {};
+// Represents a graph operator node. Created by
+// `GraphBuilder::CreateOperatorNode()`. Holds the node index and DirectML
+// operator.
+//
+// The node index is increased from 0 when a new operator node is created. The
+// node index is used to identify an operator node when creating DirectML graph
+// edge structures, e.g. `FromNodeIndex` or `ToNodeIndex` of
+// `DML_INTERMEDIATE_GRAPH_EDGE_DESC`. The operator nodes should be kept in the
+// same order when creating `DML_GRAPH_DESC::Nodes`.
+class OperatorNode final : public Node {
+ public:
+  OperatorNode(uint32_t operator_index, ComPtr<IDMLOperator> dml_operator);
+  ~OperatorNode() override;
+
+  uint32_t GetNodeIndex() const;
+  const DML_OPERATOR_GRAPH_NODE_DESC& GetDMLOperatorNodeDesc() const;
+
+ private:
+  uint32_t node_index_ = 0;
+  ComPtr<IDMLOperator> dml_operator_;
+  DML_OPERATOR_GRAPH_NODE_DESC dml_operator_node_desc_;
+};
+
+// Represents an output (edge) of a node. Created by
+// `GraphBuilder::CreateNodeOutput`. Holds the index and tensor description of
+// this node output.
+//
+// The output index is used to identity the node output when creating DirectML
+// graph edge structures, e.g., `FromNodeOutputIndex` of
+// `DML_INTERMEDIATE_GRAPH_EDGE_DESC`.
+class NodeOutput {
+ public:
+  NodeOutput(const Node& node, uint32_t output_index, TensorDesc tensor_desc);
+  ~NodeOutput();
+
+  // Not copyable or movable.
+  NodeOutput(const NodeOutput&) = delete;
+  NodeOutput& operator=(const NodeOutput&) = delete;
+  NodeOutput(NodeOutput&&) = delete;
+  NodeOutput& operator=(NodeOutput&&) = delete;
+
+  const Node& GetNode() const;
+  uint32_t GetOutputIndex() const;
+  const TensorDesc& GetTensorDesc() const;
+
+ private:
+  // The node that provides the node output.
+  const raw_ref<const Node> node_;
   // An operator node may have multiple outputs. This output index identifies
   // which one of the operator node's outputs this NodeOutput represents. It
   // ranges from 0 to node output count - 1. It would be used by DirectML
@@ -52,8 +117,8 @@ struct NodeOutput final {
   // DML_SPLIT_OPERATOR_DESC:
   // https://learn.microsoft.com/en-us/windows/win32/api/directml/ns-directml-dml_split_operator_desc,
   // if the output count is 3, the output index is in range [0, 2].
-  uint32_t output_index = 0;
-  TensorDesc tensor_desc;
+  uint32_t output_index_ = 0;
+  TensorDesc tensor_desc_;
 };
 
 // GraphBuilder is a helper class to build a DML graph. It provides methods to
@@ -73,8 +138,9 @@ class GraphBuilder final {
 
   ~GraphBuilder();
 
-  // Create constant and non-constant input nodes for the DML graph.
-  NodeInfo CreateInputNode();
+  // Create a constant or non-constant input node stored in
+  // `GraphBuilder::input_nodes_` and returns its pointer.
+  const InputNode* CreateInputNode();
 
   // Create the IDMLOperator for the DML graph, meanwhile, connect multiple node
   // outputs to one node, thus the corresponding input edges and intermediate
@@ -82,44 +148,38 @@ class GraphBuilder final {
   // It's expected to pass an operator desc pointer to parameter 'void*
   // operator_desc' which depends on the DML_OPERATOR_TYPE.
   //
-  // Attention: No guarantee that the operator node will be created
-  // successfully, so the returned NodeInfo must be checked for validity. It
-  // returns an invalid NodeInfo whose type equals to NodeInfo::Type::kInvalid
-  // when it fails to build an operator node.
-  NodeInfo CreateOperatorNode(
-      DML_OPERATOR_TYPE type,
-      const void* operator_desc,
-      const std::vector<NodeOutputInfo>& node_output_infos);
+  // When creation of IDMLOperator succeeds, it creates an operator node
+  // stored in `GraphBuilder::operator_nodes_` and returns its pointer. When it
+  // fails to create IDMLOperator, a nullptr is returned.
+  const OperatorNode* CreateOperatorNode(DML_OPERATOR_TYPE type,
+                                         const void* operator_desc,
+                                         base::span<const NodeOutput*> inputs);
 
-  // Create a node output stored in GraphBuilder::node_outputs_ and return its'
-  // location index in NodeOutputInfo.
-  NodeOutputInfo CreateNodeOutput(const NodeInfo& node_info,
-                                  TensorDesc tensor,
-                                  uint32_t output_index = 0);
+  // Create a node output stored in `GraphBuilder::node_outputs_` and return its
+  // pointer.
+  const NodeOutput* CreateNodeOutput(const Node* node,
+                                     TensorDesc tensor_desc,
+                                     uint32_t output_index = 0);
 
-  // Create an output edge from a node output info, return the graph's output
-  // index.
-  uint32_t CreateOutputEdge(const NodeOutputInfo& node_output_info);
+  // Create an output edge for a node output, return the graph's output index.
+  uint32_t CreateOutputEdge(const NodeOutput* node_output);
 
-  // Notice that IDMLDevice1::CompileGraph may take long time to compile
-  // shaders (if not cached before), so this method may block current thread.
-  // Consider posting this method to thread pool to avoid blocking.
+  // Notice that IDMLDevice1::CompileGraph may take a long time to compile
+  // shaders (if not cached before), so this method may block the current
+  // thread. Consider posting this method to the thread pool to avoid blocking.
   ComPtr<IDMLCompiledOperator> Compile(DML_EXECUTION_FLAGS flags) const;
 
-  const NodeOutput& GetNodeOutput(const NodeOutputInfo& node_output_info) const;
-
  private:
-  std::vector<DML_OPERATOR_GRAPH_NODE_DESC> dml_nodes_;
+  ComPtr<IDMLDevice> dml_device_;
+
   std::vector<DML_INPUT_GRAPH_EDGE_DESC> dml_input_edges_;
   std::vector<DML_INTERMEDIATE_GRAPH_EDGE_DESC> dml_intermediate_edges_;
   std::vector<DML_OUTPUT_GRAPH_EDGE_DESC> dml_output_edges_;
-  // IDMLOperator is referenced by DML_OPERATOR_GRAPH_NODE_DESC. It should
-  // outlive the DML_OPERATOR_GRAPH_NODE_DESC.
-  std::vector<ComPtr<IDMLOperator>> dml_operators_;
-  ComPtr<IDMLDevice> dml_device_;
 
-  uint32_t input_count_ = 0;
-  std::vector<NodeOutput> node_outputs_;
+  // `std::list` never invalidates the pointers to its elements.
+  std::list<InputNode> input_nodes_;
+  std::list<OperatorNode> operator_nodes_;
+  std::list<NodeOutput> node_outputs_;
 };
 
 }  // namespace webnn::dml
