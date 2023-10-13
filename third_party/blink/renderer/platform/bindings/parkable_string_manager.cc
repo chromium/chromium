@@ -326,21 +326,9 @@ size_t ParkableStringManager::Size() const {
 }
 
 void ParkableStringManager::RecordStatisticsAfter5Minutes() const {
-  Statistics stats = ComputeStatistics();
-  base::UmaHistogramCounts100000("Memory.ParkableString.TotalSizeKb.5min",
-                                 static_cast<int>(stats.original_size / 1000));
-  base::UmaHistogramCounts100000(
-      "Memory.ParkableString.CompressedSizeKb.5min",
-      static_cast<int>(stats.compressed_size / 1000));
-  if (stats.compressed_original_size != 0) {
-    int ratio_percentage = static_cast<int>((100 * stats.compressed_size) /
-                                            stats.compressed_original_size);
-    base::UmaHistogramPercentageObsoleteDoNotUse(
-        "Memory.ParkableString.CompressionRatio.5min", ratio_percentage);
-  }
-
   // These metrics only make sense if the disk allocator is used.
   if (data_allocator().may_write()) {
+    Statistics stats = ComputeStatistics();
     base::UmaHistogramTimes("Memory.ParkableString.DiskWriteTime.5min",
                             total_disk_write_time_);
     base::UmaHistogramTimes("Memory.ParkableString.DiskReadTime.5min",

@@ -1699,15 +1699,6 @@ chromium-metrics-reviews@google.com.
   </summary>
 </histogram>
 
-<histogram name="Memory.ParkableString.CompressedSizeKb" units="KB"
-    expires_after="M87">
-  <owner>lizeb@chromium.org</owner>
-  <summary>
-    Total size of compressed ParkableStrings, in KB. Recorded at the same time
-    as &quot;Memory.ParkableString.TotalSizeKb&quot;.
-  </summary>
-</histogram>
-
 <histogram name="Memory.ParkableString.Compression.Latency"
     units="microseconds" expires_after="2024-03-17">
   <owner>lizeb@chromium.org</owner>
@@ -1726,17 +1717,6 @@ chromium-metrics-reviews@google.com.
   <owner>thiabaud@google.com</owner>
   <summary>
     Size of a compressed ParkableString, recorded at compression time.
-  </summary>
-</histogram>
-
-<histogram name="Memory.ParkableString.CompressionRatio.5min" units="%"
-    expires_after="2023-07-02">
-  <owner>lizeb@chromium.org</owner>
-  <owner>pasko@chromium.org</owner>
-  <summary>
-    Average compression ratio, 100 * compressed_size / initial_size, for all
-    compressed ParkableStrings. Recorded at the same time as
-    &quot;Memory.ParkableString.TotalSizeKb.5min&quot;.
   </summary>
 </histogram>
 
@@ -1805,27 +1785,6 @@ chromium-metrics-reviews@google.com.
     reports on clients with low-resolution clocks, which means these reports
     will be biased against a portion of the population on Windows. See
     Windows.HasHighResolutionTimeTicks for the affected sample.
-  </summary>
-</histogram>
-
-<histogram name="Memory.ParkableString.SavingsKb" units="KB"
-    expires_after="M87">
-  <owner>lizeb@chromium.org</owner>
-  <owner>pasko@chromium.org</owner>
-  <summary>
-    Sum of memory saved by compression, in KB. Recorded at the same time as
-    &quot;Memory.ParkableString.TotalSizeKb&quot;.
-  </summary>
-</histogram>
-
-<histogram name="Memory.ParkableString.TotalSizeKb.5min" units="KB"
-    expires_after="2023-08-06">
-  <owner>lizeb@chromium.org</owner>
-  <owner>pasko@chromium.org</owner>
-  <summary>
-    Total size of ParkableStrings assuming no compression, in KB. Recorded once,
-    5 minutes after the first ParkableString is added to a renderer, at the same
-    time as &quot;Memory.ParkableString.MainThreadTime.5min&quot;.
   </summary>
 </histogram>
 

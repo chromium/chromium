@@ -1205,8 +1205,6 @@ TEST_P(ParkableStringTest, DISABLED_OnlyOneAgingTask) {
 }
 
 TEST_P(ParkableStringTest, ReportTotalUnparkingTime) {
-  const size_t kCompressedSize = GetExpectedCompressedSize();
-
   base::ScopedMockElapsedTimersForTest mock_elapsed_timers;
   base::HistogramTester histogram_tester;
 
@@ -1229,14 +1227,6 @@ TEST_P(ParkableStringTest, ReportTotalUnparkingTime) {
   }
 
   task_environment_.FastForwardUntilNoTasksRemain();
-
-  histogram_tester.ExpectUniqueSample("Memory.ParkableString.TotalSizeKb.5min",
-                                      kSizeKb, 1);
-  histogram_tester.ExpectUniqueSample(
-      "Memory.ParkableString.CompressedSizeKb.5min", kCompressedSize / 1000, 1);
-  histogram_tester.ExpectUniqueSample(
-      "Memory.ParkableString.CompressionRatio.5min",
-      (100 * kCompressedSize) / (kSizeKb * 1000), 1);
 }
 
 TEST_P(ParkableStringTest, ReportTotalDiskTime) {
@@ -1272,10 +1262,6 @@ TEST_P(ParkableStringTest, ReportTotalDiskTime) {
   histogram_tester.ExpectUniqueSample(
       "Memory.ParkableString.DiskWriteTime.5min", mock_elapsed_time_ms, 1);
 
-  histogram_tester.ExpectUniqueSample("Memory.ParkableString.TotalSizeKb.5min",
-                                      kSizeKb, 1);
-  histogram_tester.ExpectUniqueSample(
-      "Memory.ParkableString.CompressedSizeKb.5min", 0, 1);
   histogram_tester.ExpectUniqueSample("Memory.ParkableString.OnDiskSizeKb.5min",
                                       kCompressedSize / 1000, 1);
 }
