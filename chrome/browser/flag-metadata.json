@@ -7106,6 +7106,16 @@
     "expiry_milestone": 120
   },
   {
+    "name": "related-website-sets-permission-grants",
+    "owners": [
+      "edwindaniel@google.com",
+      "shuuran@chromium.org",
+      "cfredric@chromium.org"],
+    // This flag is required to make it easier
+    //for web developers to test out their usage of Related Website Sets.
+    "expiry_milestone": -1
+  },
+  {
     "name": "release-notes-notification-all-channels",
     "owners": [ "//ash/webui/help_app_ui/OWNERS" ],
     // This is required by test teams to verify functionality on dev/beta

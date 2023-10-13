@@ -61831,6 +61831,8 @@ from previous Chrome versions.
   <int value="-1615589080" label="EmitHistogramsEarlier:disabled"/>
   <int value="-1615565600"
       label="DownloadNotificationServiceUnifiedAPI:disabled"/>
+  <int value="-1615376061"
+      label="ShowRelatedWebsiteSetsPermissionGrants:disabled"/>
   <int value="-1614912400" label="enable-link-disambiguation-popup"/>
   <int value="-1613833640" label="ClipboardHistoryWebContentsPaste:disabled"/>
   <int value="-1613583483" label="UseNewAcceptLanguageHeader:enabled"/>
@@ -63656,6 +63658,8 @@ from previous Chrome versions.
   <int value="-731967727" label="OmahaMinSdkVersionAndroid:disabled"/>
   <int value="-731502579" label="CupsPrintersUiOverhaul:disabled"/>
   <int value="-731133967" label="AutofillSettingsCardTypeSplit:disabled"/>
+  <int value="-731125936"
+      label="ShowRelatedWebsiteSetsPermissionGrants:enabled"/>
   <int value="-729269661" label="PPAPISharedImagesSwapChain:enabled"/>
   <int value="-728461030" label="AutofillPruneSuggestions:disabled"/>
   <int value="-728187009" label="NtpRealboxSuggestionAnswers:enabled"/>

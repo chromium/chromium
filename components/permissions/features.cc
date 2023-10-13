@@ -140,6 +140,13 @@ BASE_FEATURE(kPermissionStorageAccessAPI,
 // will default to the legacy strings ("window-placement").
 BASE_FEATURE(kWindowPlacementPermissionAlias,
              "WindowPlacementPermissionAlias",
+             base::FEATURE_ENABLED_BY_DEFAULT);
+
+// When enabled, blocks condition to exclude auto granted permissions for
+// storage access exceptions. This will allow RWS permission grants to be
+// visible in the Embedded content settings page.
+BASE_FEATURE(kShowRelatedWebsiteSetsPermissionGrants,
+             "ShowRelatedWebsiteSetsPermissionGrants",
              base::FEATURE_DISABLED_BY_DEFAULT);
 
 // Enables disallowing MIDI permission by default.

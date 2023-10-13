@@ -30,10 +30,12 @@
 #include "chrome/test/base/testing_profile.h"
 #include "components/content_settings/core/browser/content_settings_utils.h"
 #include "components/content_settings/core/browser/host_content_settings_map.h"
+#include "components/content_settings/core/common/content_settings_constraints.h"
 #include "components/content_settings/core/common/content_settings_utils.h"
 #include "components/content_settings/core/common/pref_names.h"
 #include "components/content_settings/core/test/content_settings_mock_provider.h"
 #include "components/content_settings/core/test/content_settings_test_utils.h"
+#include "components/permissions/features.h"
 #include "components/permissions/object_permission_context_base.h"
 #include "components/permissions/permission_decision_auto_blocker.h"
 #include "components/permissions/permissions_client.h"
@@ -831,6 +833,58 @@ TEST_F(SiteSettingsHelperTest, CreateChooserExceptionObject) {
   }
 }
 
+TEST_F(SiteSettingsHelperTest, ShowAutograntedRWSPermissions) {
+  TestingProfile profile;
+  base::test::ScopedFeatureList feature_list;
+  feature_list.InitAndEnableFeature(
+      permissions::features::kShowRelatedWebsiteSetsPermissionGrants);
+  HostContentSettingsMap* map =
+      HostContentSettingsMapFactory::GetForProfile(&profile);
+  content_settings::ContentSettingConstraints constraint;
+  constraint.set_session_model(
+      content_settings::SessionModel::NonRestorableUserSession);
+  constexpr char kToplevelURL[] = "https://firstparty.com";
+  constexpr char kEmbeddedURL[] = "https://embedded.com";
+  map->SetContentSettingDefaultScope(GURL(kEmbeddedURL), GURL(kToplevelURL),
+                                     ContentSettingsType::STORAGE_ACCESS,
+                                     CONTENT_SETTING_BLOCK, constraint);
+
+  base::Value::List exceptions;
+  site_settings::GetExceptionsForContentType(
+      ContentSettingsType::STORAGE_ACCESS, &profile,
+      /*web_ui=*/nullptr,
+      /*incognito=*/false, &exceptions);
+  EXPECT_EQ(1U, exceptions.size());
+  EXPECT_EQ(exceptions[0].GetDict().Find("setting")->GetString(), "block");
+  EXPECT_EQ(exceptions[0].GetDict().Find("origin")->GetString(),
+            "https://[*.]embedded.com");
+  EXPECT_EQ(exceptions[0].GetDict().Find("embeddingOrigin")->GetString(),
+            "https://[*.]firstparty.com");
+}
+
+TEST_F(SiteSettingsHelperTest, HideAutograntedRWSPermissions) {
+  TestingProfile profile;
+  base::test::ScopedFeatureList feature_list;
+  feature_list.InitAndDisableFeature(
+      permissions::features::kShowRelatedWebsiteSetsPermissionGrants);
+  HostContentSettingsMap* map =
+      HostContentSettingsMapFactory::GetForProfile(&profile);
+  content_settings::ContentSettingConstraints constraint;
+  constraint.set_session_model(
+      content_settings::SessionModel::NonRestorableUserSession);
+  constexpr char kToplevelURL[] = "https://firstparty.com";
+  constexpr char kEmbeddedURL[] = "https://embedded.com";
+  map->SetContentSettingDefaultScope(GURL(kEmbeddedURL), GURL(kToplevelURL),
+                                     ContentSettingsType::STORAGE_ACCESS,
+                                     CONTENT_SETTING_BLOCK, constraint);
+
+  base::Value::List exceptions;
+  site_settings::GetExceptionsForContentType(
+      ContentSettingsType::STORAGE_ACCESS, &profile,
+      /*web_ui=*/nullptr,
+      /*incognito=*/false, &exceptions);
+  EXPECT_TRUE(exceptions.empty());
+}
 namespace {
 
 constexpr char kUsbPolicySetting[] = R"(

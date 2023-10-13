@@ -1373,12 +1373,12 @@ void PageInfo::PresentSitePermissions() {
       ContentSetting setting = content_settings->GetContentSetting(
           requester.GetURL(), site_url_, permission_info.type, &info);
 
-      if (type == ContentSettingsType::STORAGE_ACCESS) {
-        if (info.metadata.session_model() ==
-            content_settings::SessionModel::NonRestorableUserSession) {
-          continue;  // Skip auto-granted settings.
-        }
+      if (IsGrantedByRelatedWebsiteSets(type, info.metadata) &&
+          !base::FeatureList::IsEnabled(
+              permissions::features::kShowRelatedWebsiteSetsPermissionGrants)) {
+        continue;
       }
+
       PopulatePermissionInfo(permission_info, content_settings, info, setting);
       if (ShouldShowPermission(permission_info)) {
         permission_info_list.push_back(permission_info);
@@ -1437,9 +1437,10 @@ std::set<net::SchemefulSite> PageInfo::GetTwoSitePermissionRequesters(
       if (setting.primary_pattern.Matches(site_url_)) {
         continue;  // Skip first-party settings.
       }
-      if (setting.metadata.session_model() ==
-          content_settings::SessionModel::NonRestorableUserSession) {
-        continue;  // Skip auto-granted settings.
+      if (IsGrantedByRelatedWebsiteSets(type, setting.metadata) &&
+          !base::FeatureList::IsEnabled(
+              permissions::features::kShowRelatedWebsiteSetsPermissionGrants)) {
+        continue;
       }
     }
     GURL requesting_url = setting.primary_pattern.ToRepresentativeUrl();

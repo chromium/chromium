@@ -2756,6 +2756,13 @@ const char kPermissionStorageAccessAPIName[] =
 const char kPermissionStorageAccessAPIDescription[] =
     "Enables the new Storage Access API permission UI on Desktop";
 
+const char kShowRelatedWebsiteSetsPermissionGrantsName[] =
+    "Show permission grants from Related Website Sets";
+const char kShowRelatedWebsiteSetsPermissionGrantsDescription[] =
+    "Shows permission grants created by Related Website Sets in Chrome "
+    "Settings UI and Page Info Bubble, "
+    "default is hidden";
+
 const char kRecordPermissionExpirationTimestampsName[] =
     "Record permission expiration timestamps";
 const char kRecordPermissionExpirationTimestampsDescription[] =

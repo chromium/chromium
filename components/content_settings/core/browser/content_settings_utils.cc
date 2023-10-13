@@ -15,7 +15,6 @@
 #include "components/content_settings/core/browser/content_settings_registry.h"
 #include "components/content_settings/core/browser/host_content_settings_map.h"
 #include "components/content_settings/core/common/content_settings.h"
-#include "components/content_settings/core/common/content_settings_types.h"
 #include "components/content_settings/core/common/content_settings_utils.h"
 #include "components/content_settings/core/common/features.h"
 
@@ -226,6 +225,13 @@ bool CanBeAutoRevoked(ContentSettingsType type,
   }
 
   return true;
+}
+
+bool IsGrantedByRelatedWebsiteSets(ContentSettingsType type,
+                                   const RuleMetaData& metadata) {
+  return type == ContentSettingsType::STORAGE_ACCESS &&
+         metadata.session_model() ==
+             content_settings::SessionModel::NonRestorableUserSession;
 }
 
 }  // namespace content_settings

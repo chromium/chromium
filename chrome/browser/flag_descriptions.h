@@ -1592,6 +1592,9 @@ extern const char kPermissionQuietChipDescription[];
 extern const char kPermissionStorageAccessAPIName[];
 extern const char kPermissionStorageAccessAPIDescription[];
 
+extern const char kShowRelatedWebsiteSetsPermissionGrantsName[];
+extern const char kShowRelatedWebsiteSetsPermissionGrantsDescription[];
+
 extern const char kRecordPermissionExpirationTimestampsName[];
 extern const char kRecordPermissionExpirationTimestampsDescription[];
 

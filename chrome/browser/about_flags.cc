@@ -11027,6 +11027,13 @@ const FeatureEntry kFeatureEntries[] = {
      FEATURE_VALUE_TYPE(apps::features::kAppToAppLinkCapturingWorkspaceApps)},
 #endif  // BUILDFLAG(IS_CHROMEOS)
 
+    {"related-website-sets-permission-grants",
+     flag_descriptions::kShowRelatedWebsiteSetsPermissionGrantsName,
+     flag_descriptions::kShowRelatedWebsiteSetsPermissionGrantsDescription,
+     kOsDesktop | kOsAndroid,
+     FEATURE_VALUE_TYPE(
+         permissions::features::kShowRelatedWebsiteSetsPermissionGrants)},
+
     // NOTE: Adding a new flag requires adding a corresponding entry to enum
     // "LoginCustomFlags" in tools/metrics/histograms/enums.xml. See "Flag
     // Histograms" in tools/metrics/histograms/README.md (run the
