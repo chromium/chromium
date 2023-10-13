@@ -10,6 +10,8 @@ import org.chromium.components.webapps.R;
 import org.chromium.components.webapps.pwa_restore_ui.PwaRestoreProperties.ViewState;
 import org.chromium.ui.modelutil.PropertyModel;
 
+import java.util.ArrayList;
+
 /**
  * The Mediator for the PWA Restore bottom sheet.
  */
@@ -42,10 +44,22 @@ class PwaRestoreBottomSheetMediator {
                 mActivity.getString(R.string.pwa_restore_title_expanded));
         mModel.set(PwaRestoreProperties.EXPANDED_DESCRIPTION,
                 mActivity.getString(R.string.pwa_restore_description_expanded));
+        mModel.set(
+                PwaRestoreProperties.RECENT_APPS_TITLE,
+                mActivity.getString(R.string.pwa_restore_recent_apps_list));
+        mModel.set(
+                PwaRestoreProperties.OLDER_APPS_TITLE,
+                mActivity.getString(R.string.pwa_restore_older_apps_list));
         mModel.set(PwaRestoreProperties.EXPANDED_BUTTON_LABEL,
                 mActivity.getString(R.string.pwa_restore_button_expanded));
         mModel.set(PwaRestoreProperties.DESELECT_BUTTON_LABEL,
                 mActivity.getString(R.string.pwa_restore_button_deselect));
+
+        // TODO(finnur): Replace with actual apps, queried from profile.
+        ArrayList apps = new ArrayList();
+        apps.add(new PwaRestoreProperties.AppInfo("foo", "bar"));
+        apps.add(new PwaRestoreProperties.AppInfo("bar", "foo"));
+        mModel.set(PwaRestoreProperties.APPS, apps);
     }
 
     protected void setPeekingState() {

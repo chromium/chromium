@@ -51,7 +51,16 @@ found in the LICENSE file.
         app:layout_constraintStart_toStartOf="parent"
         app:layout_constraintEnd_toEndOf="parent"
         app:layout_constraintTop_toBottomOf="@id/description"
-        app:layout_constraintBottom_toTopOf="@id/separator" />
+        app:layout_constraintBottom_toTopOf="@id/separator">
+
+        <LinearLayout
+            android:id="@+id/scroll_view_content"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:orientation="vertical">
+        </LinearLayout>
+
+    </ScrollView>
 
     <View
         android:id="@+id/separator"
