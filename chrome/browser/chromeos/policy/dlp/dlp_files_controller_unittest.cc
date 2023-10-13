@@ -221,6 +221,51 @@ TEST_F(DlpFilesControllerTest, CopyEmptyMetadataTest) {
   EXPECT_TRUE(file_access_future.Get()->is_allowed());
 }
 
+TEST_F(DlpFilesControllerTest, CopyNoMetadataTest) {
+  base::FilePath src_file = my_files_dir_.Append(FILE_PATH_LITERAL("test"));
+  base::File(src_file, base::File::FLAG_CREATE_ALWAYS | base::File::FLAG_WRITE)
+      .Flush();
+
+  base::FilePath dest_file = my_files_dir_.Append(FILE_PATH_LITERAL("dest"));
+
+  auto source = storage::FileSystemURL::CreateForTest(
+      kTestStorageKey, storage::kFileSystemTypeLocal, src_file);
+
+  auto destination = storage::FileSystemURL::CreateForTest(
+      kTestStorageKey, storage::kFileSystemTypeLocal, dest_file);
+
+  base::MockRepeatingCallback<void(
+      const ::dlp::GetFilesSourcesRequest,
+      chromeos::DlpClient::GetFilesSourcesCallback)>
+      get_files_source_call;
+
+  ::dlp::GetFilesSourcesResponse response;
+
+  ::dlp::GetFilesSourcesRequest request;
+  request.add_files_paths(src_file.value());
+
+  EXPECT_CALL(get_files_source_call,
+              Run(EqualsProto(request), base::test::IsNotNullCallback()))
+      .WillOnce(base::test::RunOnceCallback<1>(response));
+
+  chromeos::DlpClient::Get()->GetTestInterface()->SetGetFilesSourceMock(
+      get_files_source_call.Get());
+
+  base::MockRepeatingCallback<void(
+      ::dlp::RequestFileAccessRequest,
+      chromeos::DlpClient::RequestFileAccessCallback)>
+      request_file_access_call;
+
+  EXPECT_CALL(request_file_access_call, Run).Times(0);
+  base::test::TestFuture<std::unique_ptr<file_access::ScopedFileAccess>>
+      file_access_future;
+
+  ASSERT_TRUE(files_controller_);
+  files_controller_->RequestCopyAccess(source, destination,
+                                       file_access_future.GetCallback());
+  EXPECT_TRUE(file_access_future.Get()->is_allowed());
+}
+
 TEST_F(DlpFilesControllerTest, CopyNoClientTest) {
   base::FilePath src_file = my_files_dir_.Append(FILE_PATH_LITERAL("test"));
   base::File(src_file, base::File::FLAG_CREATE_ALWAYS | base::File::FLAG_WRITE)
