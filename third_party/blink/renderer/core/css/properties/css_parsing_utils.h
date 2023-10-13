@@ -217,6 +217,8 @@ CSSValue* ConsumeIntrinsicSizeLonghand(CSSParserTokenRange&,
 CSSIdentifierValue* ConsumeShapeBox(CSSParserTokenRange&);
 CSSIdentifierValue* ConsumeVisualBox(CSSParserTokenRange&);
 
+CSSIdentifierValue* ConsumeCoordBox(CSSParserTokenRange&);
+
 CSSIdentifierValue* ConsumeGeometryBox(CSSParserTokenRange&);
 
 enum class IsImplicitProperty { kNotImplicit, kImplicit };
@@ -374,7 +376,7 @@ bool ParseBackgroundOrMask(bool,
                            const CSSParserLocalContext&,
                            HeapVector<CSSPropertyValue, 64>&);
 
-CSSValue* ConsumeGeometryBoxOrNoClip(CSSParserTokenRange&);
+CSSValue* ConsumeCoordBoxOrNoClip(CSSParserTokenRange&);
 
 bool ConsumeRepeatStyleComponent(CSSParserTokenRange&,
                                  CSSValue*& value1,

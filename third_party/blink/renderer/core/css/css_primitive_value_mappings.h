@@ -369,9 +369,6 @@ inline CSSIdentifierValue::CSSIdentifierValue(EFillBox e)
     case EFillBox::kText:
       value_id_ = CSSValueID::kText;
       break;
-    case EFillBox::kMarginBox:
-      value_id_ = CSSValueID::kMarginBox;
-      break;
     case EFillBox::kFillBox:
       value_id_ = CSSValueID::kFillBox;
       break;
@@ -401,8 +398,6 @@ inline EFillBox CSSIdentifierValue::ConvertTo() const {
       return EFillBox::kContent;
     case CSSValueID::kText:
       return EFillBox::kText;
-    case CSSValueID::kMarginBox:
-      return EFillBox::kMarginBox;
     case CSSValueID::kFillBox:
       return EFillBox::kFillBox;
     case CSSValueID::kStrokeBox:

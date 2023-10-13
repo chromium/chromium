@@ -971,8 +971,7 @@ FloatRoundedRect RoundedBorderRectForClip(
     bool object_has_multiple_boxes,
     const PhysicalSize& flow_box_size,
     BackgroundBleedAvoidance bleed_avoidance,
-    const NGPhysicalBoxStrut& border_padding_insets,
-    const NGPhysicalBoxStrut& margins) {
+    const NGPhysicalBoxStrut& border_padding_insets) {
   if (!info.is_rounded_fill)
     return FloatRoundedRect();
 
@@ -998,11 +997,8 @@ FloatRoundedRect RoundedBorderRectForClip(
   // Clip to the padding or content boxes as necessary.
   // Use FastAndLossyFromRectF because we know it has been pixel snapped.
   PhysicalRect border_rect = PhysicalRect::FastAndLossyFromRectF(border.Rect());
-  if (bg_layer.Clip() == EFillBox::kMarginBox) {
-    border = RoundedBorderGeometry::PixelSnappedRoundedBorderWithMarginOutsets(
-        style, border_rect, margins, info.sides_to_include);
-  } else if (bg_layer.Clip() == EFillBox::kFillBox ||
-             bg_layer.Clip() == EFillBox::kContent) {
+  if (bg_layer.Clip() == EFillBox::kFillBox ||
+      bg_layer.Clip() == EFillBox::kContent) {
     border = RoundedBorderGeometry::PixelSnappedRoundedBorderWithOutsets(
         style, border_rect, border_padding_insets, info.sides_to_include);
     // Background of 'background-attachment: local' without visible/clip
@@ -1141,10 +1137,9 @@ void BoxPainterBase::PaintFillLayer(const PaintInfo& paint_info,
   NGPhysicalBoxStrut border = ComputeSnappedBorders();
   NGPhysicalBoxStrut padding = ComputePadding();
   NGPhysicalBoxStrut border_padding_insets = -(border + padding);
-  NGPhysicalBoxStrut margins = ComputeMargins();
   FloatRoundedRect border_rect = RoundedBorderRectForClip(
       style_, fill_layer_info, bg_layer, rect, object_has_multiple_boxes,
-      flow_box_size, bleed_avoidance, border_padding_insets, margins);
+      flow_box_size, bleed_avoidance, border_padding_insets);
 
   // Fast path for drawing simple color backgrounds. Do not use the fast
   // path with images if the dest rect has been adjusted for scrolling
@@ -1210,7 +1205,6 @@ void BoxPainterBase::PaintFillLayer(const PaintInfo& paint_info,
       // view-box compute to border-box.
       // https://drafts.fxtf.org/css-masking/#the-mask-clip
       case EFillBox::kNoClip:
-      case EFillBox::kMarginBox:
       case EFillBox::kBorder:
         break;
       case EFillBox::kText:  // fall through

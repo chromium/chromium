@@ -169,22 +169,21 @@ enum class EFillAttachment : unsigned { kScroll, kLocal, kFixed };
 // {-webkit-}mask-origin. Not all properties support all of these values.
 //
 // Background-clip (https://drafts.csswg.org/css-backgrounds/#background-clip)
-// supports <box> (border-box, padding-box, content-box), as well as the
+// supports <visual-box> (border-box, padding-box, content-box), as well as the
 // non-standard `text` value.
 //
 // Mask-clip (https://drafts.fxtf.org/css-masking/#the-mask-clip) supports
-// <geometry-box> (border-box, padding-box, content-box, margin-box, fill-box,
-// stroke-box, view-box), `no-clip`, as well as the non-standard `text` value.
+// <coord-box> (border-box, padding-box, content-box, fill-box, stroke-box,
+// view-box), `no-clip`, as well as the non-standard `text` value.
 //
 // Mask-origin (https://drafts.fxtf.org/css-masking/#the-mask-origin) supports
-// <geometry-box> (border-box, padding-box, content-box, margin-box, fill-box,
-// stroke-box, view-box).
+// <coord-box> (border-box, padding-box, content-box, fill-box, stroke-box,
+// view-box).
 enum class EFillBox : unsigned {
   kBorder,
   kPadding,
   kContent,
   kText,
-  kMarginBox,
   kFillBox,
   kStrokeBox,
   kViewBox,
@@ -194,9 +193,6 @@ enum class EFillBox : unsigned {
 inline EFillBox EnclosingFillBox(EFillBox box_a, EFillBox box_b) {
   if (box_a == EFillBox::kNoClip || box_b == EFillBox::kNoClip) {
     return EFillBox::kNoClip;
-  }
-  if (box_a == EFillBox::kMarginBox || box_b == EFillBox::kMarginBox) {
-    return EFillBox::kMarginBox;
   }
   if (box_a == EFillBox::kViewBox || box_b == EFillBox::kViewBox) {
     return EFillBox::kViewBox;

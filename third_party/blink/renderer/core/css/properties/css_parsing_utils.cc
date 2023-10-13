@@ -4247,13 +4247,11 @@ CSSValue* ParseMaskSize(CSSParserTokenRange& range,
                                    negative_size, ParsingStyle::kNotLegacy);
 }
 
-// https://drafts.fxtf.org/css-masking/#the-mask-clip
-// Syntax: [ <geometry-box> | no-clip ]#
-CSSValue* ConsumeGeometryBoxOrNoClip(CSSParserTokenRange& range) {
+CSSValue* ConsumeCoordBoxOrNoClip(CSSParserTokenRange& range) {
   if (range.Peek().Id() == CSSValueID::kNoClip) {
     return css_parsing_utils::ConsumeIdent(range);
   }
-  return css_parsing_utils::ConsumeGeometryBox(range);
+  return css_parsing_utils::ConsumeCoordBox(range);
 }
 
 namespace {
@@ -4296,11 +4294,11 @@ CSSValue* ConsumeBackgroundComponent(CSSPropertyID resolved_property,
     case CSSPropertyID::kBackgroundColor:
       return ConsumeColor(range, context);
     case CSSPropertyID::kMaskClip:
-      return ConsumeGeometryBoxOrNoClip(range);
+      return ConsumeCoordBoxOrNoClip(range);
     case CSSPropertyID::kWebkitMaskClip:
       return ConsumePrefixedBackgroundBox(range, AllowTextValue::kAllow);
     case CSSPropertyID::kMaskOrigin:
-      return ConsumeGeometryBox(range);
+      return ConsumeCoordBox(range);
     case CSSPropertyID::kWebkitMaskOrigin:
       return ConsumePrefixedBackgroundBox(range, AllowTextValue::kForbid);
     default:

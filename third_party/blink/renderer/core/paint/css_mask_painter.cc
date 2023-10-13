@@ -45,9 +45,7 @@ absl::optional<gfx::RectF> CSSMaskPainter::MaskBoundingBox(
   PhysicalRect maximum_mask_region;
   EFillBox maximum_mask_clip = style.MaskLayers().LayersClipMax();
   if (object.IsBox()) {
-    if (maximum_mask_clip == EFillBox::kMarginBox ||
-        maximum_mask_clip == EFillBox::kNoClip) {
-      // We could use a tighter rect for margin-box.
+    if (maximum_mask_clip == EFillBox::kNoClip) {
       maximum_mask_region =
           To<LayoutBox>(object)
               .Layer()
@@ -60,9 +58,7 @@ absl::optional<gfx::RectF> CSSMaskPainter::MaskBoundingBox(
     // For inline elements, depends on the value of box-decoration-break
     // there could be one box in multiple fragments or multiple boxes.
     // Either way here we are only interested in the bounding box of them.
-    if (maximum_mask_clip == EFillBox::kMarginBox ||
-        maximum_mask_clip == EFillBox::kNoClip) {
-      // We could use a tighter rect for margin-box.
+    if (maximum_mask_clip == EFillBox::kNoClip) {
       maximum_mask_region =
           To<LayoutInline>(object)
               .Layer()

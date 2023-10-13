@@ -424,10 +424,6 @@ void BackgroundImageGeometry::ComputeDestRectAdjustments(
       snapped_dest_adjust = unsnapped_dest_adjust;
       return;
     }
-    case EFillBox::kMarginBox:
-      unsnapped_dest_adjust = -positioning_box_->MarginOutsets();
-      snapped_dest_adjust = unsnapped_dest_adjust;
-      return;
     case EFillBox::kFillBox:
     // Spec: For elements with associated CSS layout box, the used values for
     // fill-box compute to content-box.
@@ -533,7 +529,6 @@ void BackgroundImageGeometry::ComputePositioningAreaAdjustments(
     NGPhysicalBoxStrut& unsnapped_box_outset,
     NGPhysicalBoxStrut& snapped_box_outset) const {
   switch (fill_layer.Origin()) {
-    case EFillBox::kMarginBox:
     case EFillBox::kFillBox:
     case EFillBox::kStrokeBox:
     case EFillBox::kViewBox:
@@ -953,10 +948,8 @@ void BackgroundImageGeometry::Calculate(const PaintInfo& paint_info,
     UseFixedAttachment(paint_rect.offset);
 
   // The actual painting area can be bigger than the provided background
-  // geometry (`paint_rect`) for clip values 'margin-box' and 'no-clip', so
-  // avoid clipping in those cases.
-  if (fill_layer.Clip() != EFillBox::kMarginBox &&
-      fill_layer.Clip() != EFillBox::kNoClip) {
+  // geometry (`paint_rect`) for `mask-clip: no-clip`, so avoid clipping.
+  if (fill_layer.Clip() != EFillBox::kNoClip) {
     // Clip the final output rect to the paint rect.
     unsnapped_dest_rect_.Intersect(paint_rect);
     snapped_dest_rect_.Intersect(paint_rect);

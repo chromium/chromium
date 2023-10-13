@@ -9233,7 +9233,7 @@ const CSSValue* MaskClip::ParseSingleValue(
         css_parsing_utils::AllowTextValue::kAllow);
   }
   return css_parsing_utils::ConsumeCommaSeparatedList(
-      css_parsing_utils::ConsumeGeometryBoxOrNoClip, range);
+      css_parsing_utils::ConsumeCoordBoxOrNoClip, range);
 }
 
 const CSSValue* MaskClip::CSSValueFromComputedStyleInternal(
@@ -9331,10 +9331,14 @@ const CSSValue* MaskImage::CSSValueFromComputedStyleInternal(
 const CSSValue* MaskOrigin::ParseSingleValue(
     CSSParserTokenRange& range,
     const CSSParserContext&,
-    const CSSParserLocalContext&) const {
+    const CSSParserLocalContext& local_context) const {
+  if (local_context.UseAliasParsing()) {
+    return css_parsing_utils::ConsumeCommaSeparatedList(
+        css_parsing_utils::ConsumePrefixedBackgroundBox, range,
+        css_parsing_utils::AllowTextValue::kForbid);
+  }
   return css_parsing_utils::ConsumeCommaSeparatedList(
-      css_parsing_utils::ConsumePrefixedBackgroundBox, range,
-      css_parsing_utils::AllowTextValue::kForbid);
+      css_parsing_utils::ConsumeCoordBox, range);
 }
 
 const CSSValue* MaskOrigin::CSSValueFromComputedStyleInternal(
@@ -9353,14 +9357,10 @@ const CSSValue* MaskOrigin::CSSValueFromComputedStyleInternal(
 const CSSValue* WebkitMaskOrigin::ParseSingleValue(
     CSSParserTokenRange& range,
     const CSSParserContext&,
-    const CSSParserLocalContext& local_context) const {
-  if (local_context.UseAliasParsing()) {
-    return css_parsing_utils::ConsumeCommaSeparatedList(
-        css_parsing_utils::ConsumePrefixedBackgroundBox, range,
-        css_parsing_utils::AllowTextValue::kForbid);
-  }
+    const CSSParserLocalContext&) const {
   return css_parsing_utils::ConsumeCommaSeparatedList(
-      css_parsing_utils::ConsumeGeometryBox, range);
+      css_parsing_utils::ConsumePrefixedBackgroundBox, range,
+      css_parsing_utils::AllowTextValue::kForbid);
 }
 
 const CSSValue* WebkitMaskOrigin::CSSValueFromComputedStyleInternal(
