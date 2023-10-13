@@ -46,7 +46,8 @@ public class BookmarkSaveFlowCoordinator {
 
     private final Context mContext;
     private final PropertyModel mPropertyModel;
-    private final PropertyModelChangeProcessor<PropertyModel, View, PropertyKey> mChangeProcessor;
+    private final PropertyModelChangeProcessor<PropertyModel, ? extends View, PropertyKey>
+            mChangeProcessor;
     private final DestroyChecker mDestroyChecker;
     private final Profile mProfile;
 
@@ -59,15 +60,17 @@ public class BookmarkSaveFlowCoordinator {
     private boolean mClosedViaRunnable;
 
     /**
-     * @param context The {@link Context} associated with this cooridnator.
+     * @param context The {@link Context} associated with this coordinator.
      * @param bottomSheetController Allows displaying content in the bottom sheet.
-     * @param shoppingService Allows un/subscribing for product updates, used for
-     *         price-tracking.
+     * @param shoppingService Allows un/subscribing for product updates, used for price-tracking.
      * @param userEducationHelper A means of triggering IPH.
      */
-    public BookmarkSaveFlowCoordinator(@NonNull Context context,
-            @NonNull BottomSheetController bottomSheetController, ShoppingService shoppingService,
-            @NonNull UserEducationHelper userEducationHelper, Profile profile) {
+    public BookmarkSaveFlowCoordinator(
+            @NonNull Context context,
+            @NonNull BottomSheetController bottomSheetController,
+            ShoppingService shoppingService,
+            @NonNull UserEducationHelper userEducationHelper,
+            Profile profile) {
         mContext = context;
         mBottomSheetController = bottomSheetController;
         mUserEducationHelper = userEducationHelper;
@@ -78,10 +81,14 @@ public class BookmarkSaveFlowCoordinator {
 
         if (BookmarkFeatures.isAndroidImprovedBookmarksEnabled()) {
             mPropertyModel = new PropertyModel(ImprovedBookmarkSaveFlowProperties.ALL_KEYS);
-            mBookmarkSaveFlowView = LayoutInflater.from(mContext).inflate(
-                    org.chromium.chrome.R.layout.improved_bookmark_save_flow, /*root=*/null);
-            mChangeProcessor = PropertyModelChangeProcessor.create(mPropertyModel,
-                    mBookmarkSaveFlowView, ImprovedBookmarkSaveFlowViewBinder::bind);
+            mBookmarkSaveFlowView =
+                    LayoutInflater.from(mContext)
+                            .inflate(R.layout.improved_bookmark_save_flow, /* root= */ null);
+            mChangeProcessor =
+                    PropertyModelChangeProcessor.create(
+                            mPropertyModel,
+                            (ImprovedBookmarkSaveFlowView) mBookmarkSaveFlowView,
+                            ImprovedBookmarkSaveFlowViewBinder::bind);
         } else {
             mPropertyModel = new PropertyModel(BookmarkSaveFlowProperties.ALL_KEYS);
             mBookmarkSaveFlowView = LayoutInflater.from(mContext).inflate(
@@ -119,15 +126,19 @@ public class BookmarkSaveFlowCoordinator {
 
     /**
      * Shows the bookmark save flow sheet.
+     *
      * @param bookmarkId The {@link BookmarkId} which was saved.
      * @param fromExplicitTrackUi Whether the bookmark was added via a dedicated tracking entry
-     *         point. This will change the UI of the bookmark save flow, either adding type-specific
-     *         text (e.g. price tracking text) or adding UI bits to allow users to upgrade a regular
-     *         bookmark. This will be false when adding a normal bookmark.
-     * @param wasBookmarkMoved Whether the save flow is shown as a reslult of a moved bookmark.
+     *     point. This will change the UI of the bookmark save flow, either adding type-specific
+     *     text (e.g. price tracking text) or adding UI bits to allow users to upgrade a regular
+     *     bookmark. This will be false when adding a normal bookmark.
+     * @param wasBookmarkMoved Whether the save flow is shown as a result of a moved bookmark.
      * @param isNewBookmark Whether the bookmark is newly created.
      */
-    public void show(BookmarkId bookmarkId, boolean fromExplicitTrackUi, boolean wasBookmarkMoved,
+    public void show(
+            BookmarkId bookmarkId,
+            boolean fromExplicitTrackUi,
+            boolean wasBookmarkMoved,
             boolean isNewBookmark) {
         mBookmarkModel.finishLoadingBookmarkModel(() -> {
             show(bookmarkId, fromExplicitTrackUi, wasBookmarkMoved, isNewBookmark,

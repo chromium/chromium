@@ -4,15 +4,16 @@
 
 package org.chromium.chrome.browser.bookmarks;
 
-import android.view.View;
 
 import org.chromium.ui.modelutil.PropertyKey;
 import org.chromium.ui.modelutil.PropertyModel;
 
 /** ViewBinder for the improved bookmarks save flow. */
 class ImprovedBookmarkSaveFlowViewBinder {
-    static void bind(PropertyModel model, View view, PropertyKey propertyKey) {
-        ImprovedBookmarkSaveFlowView improvedSaveFlow = (ImprovedBookmarkSaveFlowView) view;
+    static void bind(
+            PropertyModel model,
+            ImprovedBookmarkSaveFlowView improvedSaveFlow,
+            PropertyKey propertyKey) {
         if (propertyKey == ImprovedBookmarkSaveFlowProperties.BOOKMARK_ROW_CLICK_LISTENER) {
             improvedSaveFlow.setBookmarkRowClickListener(
                     model.get(ImprovedBookmarkSaveFlowProperties.BOOKMARK_ROW_CLICK_LISTENER));
