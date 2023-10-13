@@ -4,6 +4,7 @@
 
 import {TestRunner} from 'test_runner';
 
+import * as Changes from 'devtools/panels/changes/changes.js';
 import * as Common from 'devtools/core/common/common.js';
 import * as Bindings from 'devtools/models/bindings/bindings.js';
 import * as TextUtils from 'devtools/models/text_utils/text_utils.js';
@@ -12,7 +13,6 @@ import * as WorkspaceDiff from 'devtools/models/workspace_diff/workspace_diff.js
 
 (async function() {
   TestRunner.addResult(`Tests that the changes sidebar contains the changed uisourcecodes.\n`);
-  await TestRunner.loadLegacyModule('changes');
 
   var fulfill = function() {};
   var workspace = new Workspace.Workspace();
@@ -22,7 +22,7 @@ import * as WorkspaceDiff from 'devtools/models/workspace_diff/workspace_diff.js
   TestRunner.addSniffer(
       WorkspaceDiff.WorkspaceDiff.WorkspaceDiffImpl.prototype, 'uiSourceCodeProcessedForTest', modifiedStatusChanged, true);
 
-  var uiSourceCodeList = new Changes.ChangesSidebar(workspaceDiff);
+  var uiSourceCodeList = new Changes.ChangesSidebar.ChangesSidebar(workspaceDiff);
 
   var firstUISC = addUISourceCode('first.css', '.first {color: red}');
   var secondUISC = addUISourceCode('second.css', '.second {color: red}');
