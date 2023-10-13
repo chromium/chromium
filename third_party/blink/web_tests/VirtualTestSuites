@@ -2052,6 +2052,16 @@
     "expires": "Jul 1, 2023"
   },
   {
+    "prefix": "fedcm-login-status",
+    "platforms": ["Linux", "Mac", "Win"],
+    "bases": ["external/wpt/credential-management/fedcm-login-status/"],
+    "exclusive_tests": "ALL",
+    "args": ["--enable-features=FedCmIdpSigninStatusEnabled",
+             "--disable-threaded-compositing", "--disable-threaded-animation"],
+    "owners": ["cbiesinger@chromium.org", "npm@chromium.org"],
+    "expires": "Mar 1, 2024"
+  },
+  {
     "prefix": "fedcm-multi-idp",
     "platforms": ["Linux", "Mac", "Win"],
     "bases": ["external/wpt/credential-management/fedcm-multi-idp/"],
