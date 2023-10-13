@@ -18,6 +18,7 @@
 #import "components/omnibox/browser/autocomplete_controller.h"
 #import "components/omnibox/browser/autocomplete_input.h"
 #import "components/omnibox/browser/autocomplete_match.h"
+#import "components/omnibox/browser/autocomplete_match_classification.h"
 #import "components/omnibox/browser/autocomplete_result.h"
 #import "components/omnibox/browser/remote_suggestions_service.h"
 #import "components/omnibox/common/omnibox_features.h"
@@ -483,6 +484,11 @@ const NSUInteger kMaxSuggestTileTypePosition = 15;
         tileMatch.destination_url = tile.url;
         tileMatch.fill_into_edit = base::UTF8ToUTF16(tile.url.spec());
         tileMatch.description = tile.title;
+        tileMatch.description_class = ClassifyTermMatches(
+            {}, tileMatch.description.length(), 0, ACMatchClassification::NONE);
+#if DCHECK_IS_ON()
+        tileMatch.Validate();
+#endif  // DCHECK_IS_ON()
         AutocompleteMatchFormatter* formatter =
             [self wrapMatch:tileMatch fromResult:autocompleteResult];
         [wrappedMatches addObject:formatter];
