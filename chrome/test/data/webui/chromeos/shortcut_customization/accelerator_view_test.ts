@@ -488,6 +488,17 @@ suite('acceleratorViewTest', function() {
         pendingKey.shadowRoot!.querySelector('#key-icon') as IronIconElement;
     assertEquals(
         'shortcut-customization-keys:microphone-mute', keyIconElement3.icon);
+
+    // Simulate CONTROL + BACKQUOTE.
+    viewElement.dispatchEvent(new KeyboardEvent('keydown', {
+      key: 'Unidentified',
+      code: 'Backquote',
+      keyCode: 192,
+      ctrlKey: true,
+    }));
+    await flush();
+
+    assertEquals('`', pendingKey.key);
   });
 
   test('GetAriaLabels', async () => {
