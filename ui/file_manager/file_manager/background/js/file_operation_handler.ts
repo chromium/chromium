@@ -68,7 +68,8 @@ export class FileOperationHandler {
           item.policyFileCount = event.pauseParams.policyParams.policyFileCount;
           item.policyFileName = event.pauseParams.policyParams.fileName;
           const extraButtonText = getPolicyExtraButtonText(event);
-          if (event.pauseParams.policyParams.policyFileCount === 1) {
+          if (event.pauseParams.policyParams.policyFileCount === 1 &&
+              !event.pauseParams.policyParams.alwaysShowReview) {
             item.setExtraButton(
                 ProgressItemState.PAUSED, extraButtonText, () => {
                   // Proceed/cancel the action directly from the notification.
@@ -140,7 +141,8 @@ export class FileOperationHandler {
             const extraButtonText = getPolicyExtraButtonText(event);
             if (event.policyError.type !==
                     PolicyErrorType.DLP_WARNING_TIMEOUT &&
-                event.policyError.policyFileCount > 1) {
+                (event.policyError.policyFileCount > 1 ||
+                 event.policyError.alwaysShowReview)) {
               item.setExtraButton(
                   ProgressItemState.ERROR, extraButtonText, () => {
                     chrome.fileManagerPrivate.showPolicyDialog(
@@ -281,7 +283,8 @@ function getPolicyExtraButtonText(
     event: chrome.fileManagerPrivate.ProgressStatus): string {
   if (event.state === chrome.fileManagerPrivate.IOTaskState.PAUSED &&
       event.pauseParams && event.pauseParams.policyParams) {
-    if (event.pauseParams.policyParams.policyFileCount > 1) {
+    if (event.pauseParams.policyParams.policyFileCount > 1 ||
+        event.pauseParams.policyParams.alwaysShowReview) {
       return str('DLP_FILES_REVIEW_BUTTON');
     }
     // Single item:
@@ -299,7 +302,8 @@ function getPolicyExtraButtonText(
   if (event.state === chrome.fileManagerPrivate.IOTaskState.ERROR &&
       event.policyError) {
     if (event.policyError.type !== PolicyErrorType.DLP_WARNING_TIMEOUT &&
-        event.policyError.policyFileCount > 1) {
+        (event.policyError.policyFileCount > 1 ||
+         event.policyError.alwaysShowReview)) {
       return str('DLP_FILES_REVIEW_BUTTON');
     } else {
       return str('LEARN_MORE_LABEL');

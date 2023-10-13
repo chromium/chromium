@@ -90,6 +90,10 @@ struct PolicyError {
   // The name of the first file among those under block restriction. Used for
   // notifications.
   std::string file_name;
+  // Normally the review button is only shown when `blocked_files` is >1, this
+  // option allows to force the display of the review button irrespective of
+  // other conditions.
+  bool always_show_review = false;
 
   bool operator==(const PolicyError& other) const;
   bool operator!=(const PolicyError& other) const;
@@ -129,6 +133,10 @@ struct PolicyPauseParams {
   // The name of the first file among those under warning restriction. Used for
   // notifications.
   std::string file_name;
+  // Normally the review button is only shown when `warning_files_count` is >1,
+  // this option allows to force the display of the review button irrespective
+  // of other conditions.
+  bool always_show_review = false;
 
   bool operator==(const PolicyPauseParams& other) const;
 };

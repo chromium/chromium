@@ -126,6 +126,10 @@ class FilesPolicyDialog : public PolicyDialogBase {
     // Overrides the default learn more URL.
     void SetLearnMoreURL(const absl::optional<GURL>& url);
 
+    // Returns whether at least one of the default values (e.g., message, learn
+    // more URL, etc...) has been overridden with a custom value.
+    bool HasCustomDetails() const;
+
    private:
     Info();
 
@@ -141,6 +145,9 @@ class FilesPolicyDialog : public PolicyDialogBase {
 
     // Whether `message_` is a custom message.
     bool is_custom_message_ = false;
+
+    // Whether `learn_more_url_` is a custom url.
+    bool is_custom_learn_more_url_ = false;
 
     // Default, admin defined learn more URL, or none of them.
     absl::optional<GURL> learn_more_url_;

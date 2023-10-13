@@ -296,8 +296,7 @@ class FPNMIOTaskTest : public FilesPolicyNotificationManagerTest {
       std::vector<base::FilePath> blocked_files,
       dlp::FileAction action,
       absl::optional<FilesPolicyDialog::Info> dialog_info = absl::nullopt) {
-    if (block_reason ==
-        FilesPolicyDialog::FilesPolicyDialog::BlockReason::kDlp) {
+    if (block_reason == FilesPolicyDialog::BlockReason::kDlp) {
       fpnm_->ShowDlpBlockedFiles(task_id, std::move(blocked_files), action);
     } else {
       EXPECT_TRUE(dialog_info.has_value());
@@ -309,22 +308,27 @@ class FPNMIOTaskTest : public FilesPolicyNotificationManagerTest {
   // Depending on the policy, calls FPNM::ShowDlpWarning() or
   // FPNM::ShowConnectorsWarning(), both of which store all the info about the
   // task to later show notifications/dialogs.
-  void AddWarnedFiles(Policy policy,
-                      OnDlpRestrictionCheckedWithJustificationCallback cb,
-                      file_manager::io_task::IOTaskId task_id,
-                      std::vector<base::FilePath> warned_files,
-                      dlp::FileAction action) {
+  void AddWarnedFiles(
+      Policy policy,
+      OnDlpRestrictionCheckedWithJustificationCallback cb,
+      file_manager::io_task::IOTaskId task_id,
+      std::vector<base::FilePath> warned_files,
+      dlp::FileAction action,
+      absl::optional<FilesPolicyDialog::Info> dialog_info = absl::nullopt) {
     switch (policy) {
       case Policy::kDlp:
         fpnm_->ShowDlpWarning(std::move(cb), task_id, std::move(warned_files),
                               DlpFileDestination(), action);
         break;
       case Policy::kEnterpriseConnectors:
-        auto dialog_info = FilesPolicyDialog::Info::Warn(
-            FilesPolicyDialog::BlockReason::kEnterpriseConnectorsSensitiveData,
-            warned_files);
+        if (!dialog_info.has_value()) {
+          dialog_info = FilesPolicyDialog::Info::Warn(
+              FilesPolicyDialog::BlockReason::
+                  kEnterpriseConnectorsSensitiveData,
+              warned_files);
+        }
         fpnm_->ShowConnectorsWarning(std::move(cb), task_id, action,
-                                     std::move(dialog_info));
+                                     std::move(dialog_info.value()));
         break;
     }
   }
@@ -411,6 +415,118 @@ TEST_F(FPNMIOTaskTest, OnErrorItemDismissedIgnoresNonTrackedTask) {
   EXPECT_FALSE(fpnm_->HasIOTask(task_id));
   fpnm_->OnErrorItemDismissed(task_id);
   EXPECT_FALSE(fpnm_->HasIOTask(task_id));
+}
+
+// Tests that if custom settings are provided, the notification shows the review
+// button even for a single warned file.
+TEST_F(FPNMIOTaskTest,
+       EnterpriseConnectors_PausedShowsWarningNotification_SingleFile_Review) {
+  NotificationDisplayServiceTester display_service_tester(profile_.get());
+  const std::string notification_id = "notification_id";
+  EXPECT_FALSE(display_service_tester.GetNotification(notification_id));
+
+  file_manager::io_task::IOTaskId task_id = 1;
+  file_manager::io_task::OperationType type =
+      file_manager::io_task::OperationType::kCopy;
+  auto src_file_path = AddCopyOrMoveIOTask(task_id, /*is_copy=*/true);
+  ASSERT_FALSE(src_file_path.empty());
+  EXPECT_TRUE(fpnm_->HasIOTask(task_id));
+
+  auto dialog_info = FilesPolicyDialog::Info::Warn(
+      FilesPolicyDialog::BlockReason::kEnterpriseConnectorsSensitiveData,
+      {base::FilePath(kFile1)});
+  dialog_info.SetMessage(u"Custom message");
+  dialog_info.SetLearnMoreURL(GURL("https://example.com"));
+  AddWarnedFiles(Policy::kEnterpriseConnectors, base::DoNothing(), task_id,
+                 {base::FilePath(kFile1)}, dlp::FileAction::kCopy, dialog_info);
+
+  EXPECT_TRUE(fpnm_->HasWarningTimerForTesting(task_id));
+
+  // Only the task_id field is important.
+  file_manager::io_task::ProgressStatus status;
+  status.task_id = task_id;
+  status.state = file_manager::io_task::State::kPaused;
+  status.type = type;
+  status.sources.emplace_back(
+      CreateFileSystemURL(kTestStorageKey, src_file_path.value()),
+      absl::nullopt);
+  status.pause_params.policy_params = file_manager::io_task::PolicyPauseParams(
+      Policy::kEnterpriseConnectors, /*warning_files_count=*/1);
+
+  fpnm_->ShowFilesPolicyNotification(notification_id, status);
+  auto notification = display_service_tester.GetNotification(notification_id);
+  ASSERT_TRUE(notification.has_value());
+  EXPECT_EQ(notification->title(), GetWarningTitle(dlp::FileAction::kCopy));
+  EXPECT_EQ(notification->message(),
+            base::ReplaceStringPlaceholders(
+                l10n_util::GetPluralStringFUTF16(
+                    IDS_POLICY_DLP_FILES_WARN_MESSAGE, 1),
+                src_file_path.BaseName().LossyDisplayName(),
+                /*offset=*/nullptr));
+  EXPECT_EQ(notification->buttons()[0].title,
+            l10n_util::GetStringUTF16(IDS_POLICY_DLP_WARN_CANCEL_BUTTON));
+  EXPECT_EQ(notification->buttons()[1].title,
+            l10n_util::GetStringUTF16(IDS_POLICY_DLP_FILES_REVIEW_BUTTON));
+
+  EXPECT_TRUE(notification->never_timeout());
+}
+
+// Tests that if custom settings are provided, the notification shows the review
+// button even for a single blocked file.
+TEST_F(FPNMIOTaskTest,
+       EnterpriseConnectors_ErrorShowsBlockNotification_SingleFile_Review) {
+  NotificationDisplayServiceTester display_service_tester(profile_.get());
+  const std::string notification_id = "notification_id";
+  EXPECT_FALSE(display_service_tester.GetNotification(notification_id));
+
+  file_manager::io_task::IOTaskId task_id = 1;
+  file_manager::io_task::OperationType type =
+      file_manager::io_task::OperationType::kCopy;
+  auto src_file_path = AddCopyOrMoveIOTask(task_id, /*is_copy=*/true);
+  ASSERT_FALSE(src_file_path.empty());
+  EXPECT_TRUE(fpnm_->HasIOTask(task_id));
+
+  const std::vector<base::FilePath> files = {base::FilePath(kFile1)};
+  auto dialog_info = FilesPolicyDialog::Info::Error(
+      FilesPolicyDialog::BlockReason::kEnterpriseConnectorsSensitiveData,
+      files);
+  dialog_info.SetMessage(u"Custom message");
+  dialog_info.SetLearnMoreURL(GURL("https://example.com"));
+  AddBlockedFiles(
+      FilesPolicyDialog::BlockReason::kEnterpriseConnectorsSensitiveData,
+      task_id, std::move(files), dlp::FileAction::kCopy,
+      std::move(dialog_info));
+
+  // Only the task_id field is important.
+  file_manager::io_task::ProgressStatus status;
+  status.task_id = task_id;
+  status.state = file_manager::io_task::State::kError;
+  status.type = type;
+  status.sources.emplace_back(
+      CreateFileSystemURL(kTestStorageKey, src_file_path.value()),
+      absl::nullopt);
+  status.policy_error.emplace(
+      file_manager::io_task::PolicyErrorType::kEnterpriseConnectors,
+      /*blocked_files=*/1);
+
+  fpnm_->ShowFilesPolicyNotification(notification_id, status);
+  auto notification = display_service_tester.GetNotification(notification_id);
+  ASSERT_TRUE(notification.has_value());
+  EXPECT_EQ(notification->title(),
+            l10n_util::GetPluralStringFUTF16(
+                IDS_POLICY_DLP_FILES_COPY_BLOCKED_TITLE, 1));
+  EXPECT_EQ(notification->message(),
+            base::ReplaceStringPlaceholders(
+                l10n_util::GetPluralStringFUTF16(
+                    IDS_POLICY_DLP_FILES_CONTENT_BLOCK_MESSAGE, 1),
+                src_file_path.BaseName().LossyDisplayName(),
+                /*offset=*/nullptr));
+  EXPECT_EQ(notification->buttons()[0].title,
+            l10n_util::GetStringUTF16(IDS_POLICY_DLP_FILES_DISMISS_BUTTON));
+  EXPECT_EQ(notification->buttons()[1].title,
+            l10n_util::GetStringUTF16(IDS_POLICY_DLP_FILES_REVIEW_BUTTON));
+
+  EXPECT_TRUE(notification->never_timeout());
 }
 
 class FilesPolicyNotificationManagerDlpAndConnectorsWarningTest

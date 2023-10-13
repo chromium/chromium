@@ -97,11 +97,6 @@ class CopyOrMoveIOTaskPolicyImpl : public CopyOrMoveIOTaskImpl {
   // Returns whether the warning was shown.
   bool MaybeShowConnectorsWarning();
 
-  // Notify FilesPolicyNotificationManager of files that were blocked by
-  // enterprise connectors to show proper blocked dialog.
-  // This is not done if the new UI for enterprise connectors is disabled.
-  void MaybeSendConnectorsBlockedFilesNotification();
-
   // Called after the warning dialog is proceeded or cancelled.
   // This resumes the transfer and allows for the warned files to be transferred
   // if the warning is proceeded.

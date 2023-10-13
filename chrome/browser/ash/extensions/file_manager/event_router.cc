@@ -1327,6 +1327,8 @@ void EventRouter::OnIOTaskStatus(const io_task::ProgressStatus& status) {
     event_status.policy_error->policy_file_count =
         status.policy_error->blocked_files;
     event_status.policy_error->file_name = status.policy_error->file_name;
+    event_status.policy_error->always_show_review =
+        status.policy_error->always_show_review;
   }
   event_status.sources_scanned = status.sources_scanned;
   event_status.destination_volume_id = status.GetDestinationVolumeId();
@@ -1407,6 +1409,8 @@ void EventRouter::OnIOTaskStatus(const io_task::ProgressStatus& status) {
           status.pause_params.policy_params->warning_files_count;
       pause_params.policy_params->file_name =
           status.pause_params.policy_params->file_name;
+      pause_params.policy_params->always_show_review =
+          status.pause_params.policy_params->always_show_review;
     }
     event_status.pause_params = std::move(pause_params);
   }

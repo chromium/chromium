@@ -883,7 +883,8 @@ chrome.fileManagerPrivate.IOTaskParams;
  * @typedef {{
  *   type: !chrome.fileManagerPrivate.PolicyErrorType,
  *   policyFileCount: number,
- *   fileName: string
+ *   fileName: string,
+ *   alwaysShowReview: boolean
  * }}
  */
 chrome.fileManagerPrivate.PolicyError;
@@ -902,7 +903,8 @@ chrome.fileManagerPrivate.ConflictPauseParams;
  * @typedef {{
  *   type: !chrome.fileManagerPrivate.PolicyErrorType,
  *   policyFileCount: number,
- *   fileName: string
+ *   fileName: string,
+ *   alwaysShowReview: boolean
  * }}
  */
 chrome.fileManagerPrivate.PolicyPauseParams;

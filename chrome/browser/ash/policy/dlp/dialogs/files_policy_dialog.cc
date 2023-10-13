@@ -153,6 +153,11 @@ void FilesPolicyDialog::Info::SetLearnMoreURL(const absl::optional<GURL>& url) {
   }
 }
 
+bool FilesPolicyDialog::Info::HasCustomDetails() const {
+  return DoesBypassRequireJustification() || HasCustomMessage() ||
+         is_custom_learn_more_url_;
+}
+
 FilesPolicyDialog::FilesPolicyDialog(size_t file_count,
                                      dlp::FileAction action,
                                      gfx::NativeWindow modal_parent)

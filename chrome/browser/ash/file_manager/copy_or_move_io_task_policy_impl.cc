@@ -111,6 +111,43 @@ void StartReportOnlyScanning(
   DoReportOnlyScanning(nullptr, 0, std::move(settings), std::move(sources),
                        std::move(outputs), profile, file_system_context);
 }
+
+// Notify FilesPolicyNotificationManager of files that were blocked by
+// enterprise connectors to show proper blocked dialog.
+// This is not done if the new UI for enterprise connectors is disabled.
+void MaybeSendConnectorsBlockedFilesNotification(
+    Profile* profile,
+    std::map<policy::FilesPolicyDialog::BlockReason,
+             policy::FilesPolicyDialog::Info> dialog_info_map,
+    IOTaskId task_id,
+    OperationType type) {
+  if (dialog_info_map.empty()) {
+    return;
+  }
+
+  // Blocked files are only added if kFileTransferEnterpriseConnectorUI is
+  // enabled.
+  CHECK(base::FeatureList::IsEnabled(
+      features::kFileTransferEnterpriseConnectorUI));
+
+  auto* files_policy_manager =
+      policy::FilesPolicyNotificationManagerFactory::GetForBrowserContext(
+          profile);
+  if (!files_policy_manager) {
+    LOG(ERROR) << "Couldn't find FilesPolicyNotificationManager";
+    return;
+  }
+
+  for (const auto& [block_reason, dialog_info] : dialog_info_map) {
+    files_policy_manager->SetConnectorsBlockedFiles(
+        task_id,
+        type == file_manager::io_task::OperationType::kMove
+            ? policy::dlp::FileAction::kMove
+            : policy::dlp::FileAction::kCopy,
+        block_reason, std::move(dialog_info));
+  }
+}
+
 }  // namespace
 
 CopyOrMoveIOTaskPolicyImpl::CopyOrMoveIOTaskPolicyImpl(
@@ -186,37 +223,6 @@ void CopyOrMoveIOTaskPolicyImpl::Resume(ResumeParams params) {
   }
 }
 
-void CopyOrMoveIOTaskPolicyImpl::MaybeSendConnectorsBlockedFilesNotification() {
-  if (connectors_blocked_files_.empty()) {
-    return;
-  }
-
-  // Blocked files are only added if kFileTransferEnterpriseConnectorUI is
-  // enabled.
-  CHECK(base::FeatureList::IsEnabled(
-      features::kFileTransferEnterpriseConnectorUI));
-
-  auto* files_policy_manager =
-      policy::FilesPolicyNotificationManagerFactory::GetForBrowserContext(
-          profile_);
-  if (!files_policy_manager) {
-    LOG(ERROR) << "Couldn't find FilesPolicyNotificationManager";
-    return;
-  }
-
-  for (const auto& [block_reason, paths] : connectors_blocked_files_) {
-    auto dialog_settings =
-        policy::GetDialogInfoForEnterpriseConnectorsBlockReason(
-            block_reason, paths, file_transfer_analysis_delegates_);
-    files_policy_manager->SetConnectorsBlockedFiles(
-        progress_->task_id,
-        progress_->type == file_manager::io_task::OperationType::kMove
-            ? policy::dlp::FileAction::kMove
-            : policy::dlp::FileAction::kCopy,
-        block_reason, std::move(dialog_settings));
-  }
-}
-
 void CopyOrMoveIOTaskPolicyImpl::Complete(State state) {
   bool has_dlp_errors = !dlp_blocked_files_.empty();
   bool has_connector_errors = !connectors_blocked_files_.empty();
@@ -236,14 +242,30 @@ void CopyOrMoveIOTaskPolicyImpl::Complete(State state) {
             .value_or(base::FilePath())
             .BaseName()
             .value();
+    bool always_show_review = false;
+
+    std::map<policy::FilesPolicyDialog::BlockReason,
+             policy::FilesPolicyDialog::Info>
+        dialog_info_map;
+    for (const auto& [reason, paths] : connectors_blocked_files_) {
+      if (paths.empty()) {
+        continue;
+      }
+      auto dialog_info =
+          policy::GetDialogInfoForEnterpriseConnectorsBlockReason(
+              reason, paths, file_transfer_analysis_delegates_);
+      always_show_review |= dialog_info.HasCustomDetails();
+      dialog_info_map.insert({reason, std::move(dialog_info)});
+    }
 
     progress_->policy_error.emplace(
         error_type,
         (dlp_blocked_files_.size() + GetConnectorsBlockedFilesNum()),
-        blocked_file_name);
+        blocked_file_name, always_show_review);
     state = State::kError;
 
-    MaybeSendConnectorsBlockedFilesNotification();
+    MaybeSendConnectorsBlockedFilesNotification(
+        profile_, dialog_info_map, progress_->task_id, progress_->type);
   }
 
   CopyOrMoveIOTaskImpl::Complete(state);
