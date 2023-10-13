@@ -676,6 +676,12 @@ suite('NewTabPageModulesHistoryClustersModuleTest', () => {
       for (const discount of moduleElement.discounts) {
         assertEquals('', discount);
       }
+      const contentElement =
+          moduleElement.shadowRoot!.querySelector('ntp-history-clusters-tile')!
+              .shadowRoot!.querySelector('#content')! as HTMLElement;
+      assertEquals(
+          contentElement.getAttribute('aria-label'),
+          'Test Title 1, foo.com, 1 min ago');
       checkInfoDialogContent(moduleElement, 'modulesJourneysInfo');
       assertEquals(0, metrics.count(`NewTabPage.HistoryClusters.HasDiscount`));
     });
@@ -715,13 +721,34 @@ suite('NewTabPageModulesHistoryClustersModuleTest', () => {
         assertEquals(expectedDiscounts[i], visitTiles[i]!.discount);
       }
       assertEquals(
+          'https://www.foo.com/1', visitTiles[0]!.visit.normalizedUrl.url);
+      assertEquals('', visitTiles[0]!.discount);
+      let contentElement =
+          visitTiles[0]!.shadowRoot!.querySelector('#content')! as HTMLElement;
+      assertEquals(
+          contentElement.getAttribute('aria-label'),
+          'Test Title 1, foo.com, 1 min ago');
+
+      assertEquals(
           'https://www.annotated.com/1',
           visitTiles[1]!.visit.normalizedUrl.url);
       assertEquals('15% off', visitTiles[1]!.discount);
+      contentElement =
+          visitTiles[1]!.shadowRoot!.querySelector('#content')! as HTMLElement;
+      assertEquals(
+          contentElement.getAttribute('aria-label'),
+          'Test Title 2, annotated.com, 1 min ago, 15% off');
+
       assertEquals(
           'https://www.annotated.com/2',
           visitTiles[2]!.visit.normalizedUrl.url);
       assertEquals('$10 off', visitTiles[2]!.discount);
+      contentElement =
+          visitTiles[2]!.shadowRoot!.querySelector('#content')! as HTMLElement;
+      assertEquals(
+          contentElement.getAttribute('aria-label'),
+          'Test Title 3, annotated.com, 1 min ago, $10 off');
+
       checkInfoDialogContent(moduleElement, 'modulesHistoryWithDiscountInfo');
     });
 

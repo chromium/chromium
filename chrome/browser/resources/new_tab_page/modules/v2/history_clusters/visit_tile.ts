@@ -75,6 +75,12 @@ export class VisitTileModuleElement extends I18nMixin
         computed: `computeHasDiscount_(discount)`,
         reflectToAttribute: true,
       },
+
+      /* The label of the tile in a11y mode. */
+      tileLabel_: {
+        type: String,
+        computed: `computeTileLabel_(discount, label_)`,
+      },
     };
   }
 
@@ -84,6 +90,7 @@ export class VisitTileModuleElement extends I18nMixin
   discount: string;
   hasDiscount: boolean;
   private imageUrl_: Url|null;
+  private label_: string;
 
   hasImageUrl(): boolean {
     return !!this.imageUrl_;
@@ -124,6 +131,15 @@ export class VisitTileModuleElement extends I18nMixin
       }
     }
     this.imageUrl_ = null;
+  }
+
+  private computeTileLabel_(): string {
+    const labelTexts =
+        [this.visit.pageTitle, this.label_, this.visit.relativeDate];
+    if (!!this.discount && this.discount.length !== 0) {
+      labelTexts.push(this.discount);
+    }
+    return labelTexts.join(', ');
   }
 }
 
