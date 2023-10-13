@@ -306,7 +306,6 @@ class CORE_EXPORT InspectorPageAgent final
       ad_script_identifiers_;
   v8_inspector::V8InspectorSession* v8_session_;
   Client* client_;
-  String pending_script_to_evaluate_on_load_once_;
   String script_to_evaluate_on_load_once_;
   Member<InspectorResourceContentLoader> inspector_resource_content_loader_;
   int resource_content_loader_client_id_;
@@ -315,6 +314,7 @@ class CORE_EXPORT InspectorPageAgent final
   InspectorAgentState::Boolean screencast_enabled_;
   InspectorAgentState::Boolean lifecycle_events_enabled_;
   InspectorAgentState::Boolean bypass_csp_enabled_;
+  InspectorAgentState::String pending_script_to_evaluate_on_load_once_;
   InspectorAgentState::StringMap scripts_to_evaluate_on_load_;
   InspectorAgentState::StringMap worlds_to_evaluate_on_load_;
   InspectorAgentState::BooleanMap
