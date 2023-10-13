@@ -341,7 +341,7 @@ public class BookmarkManagerCoordinator
     }
 
     static @VisibleForTesting View buildSectionHeaderView(ViewGroup parent) {
-        return inflate(parent, org.chromium.chrome.R.layout.bookmark_section_header);
+        return inflate(parent, R.layout.bookmark_section_header);
     }
 
     private static BookmarkFolderRow buildBookmarkFolderView(ViewGroup parent) {
@@ -364,11 +364,11 @@ public class BookmarkManagerCoordinator
     }
 
     static @VisibleForTesting View buildDividerView(ViewGroup parent) {
-        return inflate(parent, org.chromium.chrome.R.layout.horizontal_divider);
+        return inflate(parent, R.layout.horizontal_divider);
     }
 
     static @VisibleForTesting View buildShoppingFilterView(ViewGroup parent) {
-        return inflate(parent, org.chromium.chrome.R.layout.shopping_filter_row);
+        return inflate(parent, R.layout.shopping_filter_row);
     }
 
     ImprovedBookmarkRow buildAndInitCompactImprovedBookmarkRow(ViewGroup parent) {
@@ -384,7 +384,7 @@ public class BookmarkManagerCoordinator
     }
 
     View buildSearchBoxRow(ViewGroup parent) {
-        return inflate(parent, org.chromium.chrome.R.layout.bookmark_search_box_row);
+        return inflate(parent, R.layout.bookmark_search_box_row);
     }
 
     private static View inflate(ViewGroup parent, @LayoutRes int layoutId) {

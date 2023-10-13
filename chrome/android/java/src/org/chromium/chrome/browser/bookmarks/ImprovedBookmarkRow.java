@@ -75,10 +75,12 @@ public class ImprovedBookmarkRow extends SelectableItemViewBase<BookmarkId> {
         row.setLayoutParams(new FrameLayout.LayoutParams(
                 ViewGroup.LayoutParams.MATCH_PARENT, ViewGroup.LayoutParams.WRAP_CONTENT));
 
-        LayoutInflater.from(context).inflate(isVisual
-                        ? org.chromium.chrome.R.layout.improved_bookmark_row_layout_visual
-                        : org.chromium.chrome.R.layout.improved_bookmark_row_layout,
-                row);
+        LayoutInflater.from(context)
+                .inflate(
+                        isVisual
+                                ? R.layout.improved_bookmark_row_layout_visual
+                                : R.layout.improved_bookmark_row_layout,
+                        row);
         row.onFinishInflate();
         row.setStartImageRoundedCornerOutlineProvider(isVisual);
         return row;

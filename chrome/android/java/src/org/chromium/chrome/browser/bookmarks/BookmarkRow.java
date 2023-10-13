@@ -87,10 +87,12 @@ public abstract class BookmarkRow
             BookmarkRow row, Context context, boolean isVisualRefreshEnabled) {
         row.setLayoutParams(new FrameLayout.LayoutParams(
                 ViewGroup.LayoutParams.MATCH_PARENT, ViewGroup.LayoutParams.WRAP_CONTENT));
-        LayoutInflater.from(context).inflate(isVisualRefreshEnabled
-                        ? org.chromium.chrome.R.layout.bookmark_row_layout_visual
-                        : org.chromium.chrome.R.layout.bookmark_row_layout,
-                row);
+        LayoutInflater.from(context)
+                .inflate(
+                        isVisualRefreshEnabled
+                                ? R.layout.bookmark_row_layout_visual
+                                : R.layout.bookmark_row_layout,
+                        row);
         row.onFinishInflate();
     }
 

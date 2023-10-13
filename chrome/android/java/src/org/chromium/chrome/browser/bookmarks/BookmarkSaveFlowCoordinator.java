@@ -91,8 +91,9 @@ public class BookmarkSaveFlowCoordinator {
                             ImprovedBookmarkSaveFlowViewBinder::bind);
         } else {
             mPropertyModel = new PropertyModel(BookmarkSaveFlowProperties.ALL_KEYS);
-            mBookmarkSaveFlowView = LayoutInflater.from(mContext).inflate(
-                    org.chromium.chrome.R.layout.bookmark_save_flow, /*root=*/null);
+            mBookmarkSaveFlowView =
+                    LayoutInflater.from(mContext)
+                            .inflate(R.layout.bookmark_save_flow, /* root= */ null);
             mChangeProcessor = PropertyModelChangeProcessor.create(
                     mPropertyModel, mBookmarkSaveFlowView, new BookmarkSaveFlowViewBinder());
         }

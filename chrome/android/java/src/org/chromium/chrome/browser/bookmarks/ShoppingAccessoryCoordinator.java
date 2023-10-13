@@ -10,6 +10,7 @@ import android.view.View;
 import android.view.ViewGroup;
 import android.widget.FrameLayout;
 
+import org.chromium.chrome.R;
 import org.chromium.chrome.browser.bookmarks.ShoppingAccessoryViewProperties.PriceInfo;
 import org.chromium.components.commerce.core.CommerceSubscription;
 import org.chromium.components.commerce.core.ShoppingService;
@@ -36,8 +37,7 @@ public class ShoppingAccessoryCoordinator {
         view.setLayoutParams(new FrameLayout.LayoutParams(
                 ViewGroup.LayoutParams.WRAP_CONTENT, ViewGroup.LayoutParams.WRAP_CONTENT));
 
-        LayoutInflater.from(context).inflate(
-                org.chromium.chrome.R.layout.shopping_accessory_view_layout, view);
+        LayoutInflater.from(context).inflate(R.layout.shopping_accessory_view_layout, view);
         view.onFinishInflate();
         return view;
     }

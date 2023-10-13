@@ -74,31 +74,41 @@ public class BookmarkSearchBoxRowRenderTest {
         mActivityTestRule.launchActivity(null);
         mActivityTestRule.getActivity().setTheme(R.style.Theme_BrowserUI_DayNight);
 
-        TestThreadUtils.runOnUiThreadBlocking(() -> {
-            mContentView = new LinearLayout(mActivityTestRule.getActivity());
-            mContentView.setBackgroundColor(Color.WHITE);
+        TestThreadUtils.runOnUiThreadBlocking(
+                () -> {
+                    mContentView = new LinearLayout(mActivityTestRule.getActivity());
+                    mContentView.setBackgroundColor(Color.WHITE);
 
-            FrameLayout.LayoutParams params = new FrameLayout.LayoutParams(
-                    ViewGroup.LayoutParams.MATCH_PARENT, ViewGroup.LayoutParams.WRAP_CONTENT);
-            mActivityTestRule.getActivity().setContentView(mContentView, params);
+                    FrameLayout.LayoutParams params =
+                            new FrameLayout.LayoutParams(
+                                    ViewGroup.LayoutParams.MATCH_PARENT,
+                                    ViewGroup.LayoutParams.WRAP_CONTENT);
+                    mActivityTestRule.getActivity().setContentView(mContentView, params);
 
-            LayoutInflater.from(mActivityTestRule.getActivity())
-                    .inflate(org.chromium.chrome.R.layout.bookmark_search_box_row, mContentView);
+                    LayoutInflater.from(mActivityTestRule.getActivity())
+                            .inflate(R.layout.bookmark_search_box_row, mContentView);
 
-            BookmarkSearchBoxRow bookmarkSearchBoxRow =
-                    mContentView.findViewById(R.id.bookmark_toolbar);
-            mPropertyModel =
-                    new PropertyModel.Builder(BookmarkSearchBoxRowProperties.ALL_KEYS)
-                            .with(BookmarkSearchBoxRowProperties.SHOPPING_CHIP_TEXT_RES,
-                                    R.string.price_tracking_bookmarks_filter_title)
-                            .with(BookmarkSearchBoxRowProperties.SHOPPING_CHIP_START_ICON_RES,
-                                    R.drawable.notifications_active)
-                            .with(BookmarkSearchBoxRowProperties.SHOPPING_CHIP_VISIBILITY, false)
-                            .build();
+                    BookmarkSearchBoxRow bookmarkSearchBoxRow =
+                            mContentView.findViewById(R.id.bookmark_toolbar);
+                    mPropertyModel =
+                            new PropertyModel.Builder(BookmarkSearchBoxRowProperties.ALL_KEYS)
+                                    .with(
+                                            BookmarkSearchBoxRowProperties.SHOPPING_CHIP_TEXT_RES,
+                                            R.string.price_tracking_bookmarks_filter_title)
+                                    .with(
+                                            BookmarkSearchBoxRowProperties
+                                                    .SHOPPING_CHIP_START_ICON_RES,
+                                            R.drawable.notifications_active)
+                                    .with(
+                                            BookmarkSearchBoxRowProperties.SHOPPING_CHIP_VISIBILITY,
+                                            false)
+                                    .build();
 
-            PropertyModelChangeProcessor.create(mPropertyModel, bookmarkSearchBoxRow,
-                    BookmarkSearchBoxRowViewBinder.createViewBinder());
-        });
+                    PropertyModelChangeProcessor.create(
+                            mPropertyModel,
+                            bookmarkSearchBoxRow,
+                            BookmarkSearchBoxRowViewBinder.createViewBinder());
+                });
     }
 
     @Test

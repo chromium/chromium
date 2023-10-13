@@ -31,7 +31,7 @@ class BookmarkManagerViewBinder {
     static void bindPersonalizedPromoView(PropertyModel model, View view, PropertyKey key) {
         if (key == BookmarkManagerProperties.BOOKMARK_PROMO_HEADER) {
             PersonalizedSigninPromoView promoView =
-                    view.findViewById(org.chromium.chrome.R.id.signin_promo_view_container);
+                    view.findViewById(R.id.signin_promo_view_container);
             model.get(BookmarkManagerProperties.BOOKMARK_PROMO_HEADER)
                     .setUpSyncPromoView(promoView);
         } else if (key == BookmarkManagerProperties.PROMO_TOP_MARGIN_RES) {
@@ -42,7 +42,7 @@ class BookmarkManagerViewBinder {
                 int topMarginPx = resources.getDimensionPixelSize(topMarginRes);
 
                 PersonalizedSigninPromoView promoView =
-                        view.findViewById(org.chromium.chrome.R.id.signin_promo_view_container);
+                        view.findViewById(R.id.signin_promo_view_container);
                 MarginLayoutParams layoutParams = (MarginLayoutParams) promoView.getLayoutParams();
                 layoutParams.setMargins(layoutParams.leftMargin, topMarginPx,
                         layoutParams.rightMargin, layoutParams.bottomMargin);
