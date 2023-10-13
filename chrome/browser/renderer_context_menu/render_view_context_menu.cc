@@ -1157,17 +1157,10 @@ void RenderViewContextMenu::InitMenu() {
     AppendPlatformEditableItems();
   }
 
+  // Show Read Anything option if it's not already open in the side panel.
   if (features::IsReadAnythingEnabled()) {
-    const bool is_content_type_supported =
-        content_type_->SupportsGroup(ContextMenuContentType::ITEM_GROUP_COPY) ||
-        content_type_->SupportsGroup(
-            ContextMenuContentType::ITEM_GROUP_EDITABLE);
-    const bool should_append_read_anything_item =
-        GetBrowser() && GetBrowser()->is_type_normal() &&
-        !IsReadAnythingEntryShowing(GetBrowser()) &&
-        (is_content_type_supported ||
-         base::FeatureList::IsEnabled(features::kSidePanelPinning));
-    if (should_append_read_anything_item) {
+    if (GetBrowser() && GetBrowser()->is_type_normal() &&
+        !IsReadAnythingEntryShowing(GetBrowser())) {
       AppendReadingModeItem();
     }
   }
