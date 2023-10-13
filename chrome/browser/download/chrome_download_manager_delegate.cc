@@ -1402,6 +1402,11 @@ void ChromeDownloadManagerDelegate::CheckClientDownloadDone(
       case safe_browsing::DownloadCheckResult::DEEP_SCANNED_FAILED:
         danger_type = download::DOWNLOAD_DANGER_TYPE_DEEP_SCANNED_FAILED;
         break;
+      case safe_browsing::DownloadCheckResult::
+          PROMPT_FOR_LOCAL_PASSWORD_SCANNING:
+        danger_type =
+            download::DOWNLOAD_DANGER_TYPE_PROMPT_FOR_LOCAL_PASSWORD_SCANNING;
+        break;
     }
     DCHECK_NE(danger_type,
               download::DOWNLOAD_DANGER_TYPE_MAYBE_DANGEROUS_CONTENT);

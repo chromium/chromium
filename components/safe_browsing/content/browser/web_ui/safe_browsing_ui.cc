@@ -2947,6 +2947,9 @@ std::string SerializeDownloadUrlChecked(const std::vector<GURL>& urls,
     case DownloadCheckResult::DEEP_SCANNED_FAILED:
       url_and_result.Set("result", "DEEP_SCANNED_FAILED");
       break;
+    case DownloadCheckResult::PROMPT_FOR_LOCAL_PASSWORD_SCANNING:
+      url_and_result.Set("result", "PROMPT_FOR_LOCAL_PASSWORD_SCANNING");
+      break;
   }
 
   std::string request_serialized;

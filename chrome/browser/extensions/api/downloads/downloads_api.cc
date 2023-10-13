@@ -53,6 +53,7 @@
 #include "chrome/browser/ui/browser_list.h"
 #include "chrome/browser/ui/browser_window.h"
 #include "chrome/common/extensions/api/downloads.h"
+#include "components/download/public/common/download_danger_type.h"
 #include "components/download/public/common/download_interrupt_reasons.h"
 #include "components/download/public/common/download_item.h"
 #include "components/download/public/common/download_url_parameters.h"
@@ -202,13 +203,16 @@ extensions::api::downloads::DangerType ConvertDangerType(
     case download::DOWNLOAD_DANGER_TYPE_DEEP_SCANNED_OPENED_DANGEROUS:
       return extensions::api::downloads::DANGER_TYPE_DEEPSCANNEDOPENEDDANGEROUS;
     case download::DOWNLOAD_DANGER_TYPE_PROMPT_FOR_SCANNING:
-      return extensions::api::downloads::DANGER_TYPE_PROMPTFORSCANING;
+      return extensions::api::downloads::DANGER_TYPE_PROMPTFORSCANNING;
     case download::DOWNLOAD_DANGER_TYPE_BLOCKED_UNSUPPORTED_FILETYPE:
       return extensions::api::downloads::DANGER_TYPE_UNSUPPORTEDFILETYPE;
     case download::DOWNLOAD_DANGER_TYPE_DANGEROUS_ACCOUNT_COMPROMISE:
       return extensions::api::downloads::DANGER_TYPE_ACCOUNTCOMPROMISE;
     case download::DOWNLOAD_DANGER_TYPE_DEEP_SCANNED_FAILED:
       return extensions::api::downloads::DANGER_TYPE_DEEPSCANNEDFAILED;
+    case download::DOWNLOAD_DANGER_TYPE_PROMPT_FOR_LOCAL_PASSWORD_SCANNING:
+      return extensions::api::downloads::
+          DANGER_TYPE_PROMPTFORLOCALPASSWORDSCANNING;
     case download::DOWNLOAD_DANGER_TYPE_MAX:
       NOTREACHED();
       return extensions::api::downloads::DANGER_TYPE_LAST;

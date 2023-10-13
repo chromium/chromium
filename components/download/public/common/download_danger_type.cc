@@ -53,6 +53,8 @@ const char* GetDownloadDangerTypeString(const DownloadDangerType& danger_type) {
       return "UserValidated";
     case download::DOWNLOAD_DANGER_TYPE_ALLOWLISTED_BY_POLICY:
       return "AllowlistedByPolicy";
+    case download::DOWNLOAD_DANGER_TYPE_PROMPT_FOR_LOCAL_PASSWORD_SCANNING:
+      return "PromptForLocalPasswordScanning";
     case download::DOWNLOAD_DANGER_TYPE_MAX:
       break;
   }

@@ -140,7 +140,8 @@ namespace downloads {
     deepScannedFailed,
     deepScannedSafe,
     deepScannedOpenedDangerous,
-    promptForScaning,
+    promptForScanning,
+    promptForLocalPasswordScanning,
     accountCompromise
   };
 

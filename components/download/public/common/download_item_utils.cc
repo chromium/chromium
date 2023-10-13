@@ -76,6 +76,10 @@ crosapi::mojom::DownloadDangerType ConvertToMojoDownloadDangerType(
     case DownloadDangerType::DOWNLOAD_DANGER_TYPE_DEEP_SCANNED_FAILED:
       return crosapi::mojom::DownloadDangerType::
           kDownloadDangerTypeDeepScannedFailed;
+    case DownloadDangerType::
+        DOWNLOAD_DANGER_TYPE_PROMPT_FOR_LOCAL_PASSWORD_SCANNING:
+      return crosapi::mojom::DownloadDangerType::
+          kDownloadDangerTypePromptForLocalPasswordScanning;
     case DownloadDangerType::DOWNLOAD_DANGER_TYPE_MAX:
       NOTREACHED();
       return crosapi::mojom::DownloadDangerType::kDownloadDangerTypeInvalid;

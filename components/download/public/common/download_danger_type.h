@@ -77,8 +77,8 @@ enum DownloadDangerType {
   // opened by the user.
   DOWNLOAD_DANGER_TYPE_DEEP_SCANNED_OPENED_DANGEROUS = 16,
 
-  // The user is enrolled in the Advanced Protection Program, and the server has
-  // recommended this file be deep scanned.
+  // The user is enrolled in Enhanced Safe Browsing or the Advanced Protection
+  // Program, and the server has recommended this file be deep scanned.
   DOWNLOAD_DANGER_TYPE_PROMPT_FOR_SCANNING = 17,
 
   // The download has a file type that is unsupported for deep scanning, and
@@ -93,6 +93,10 @@ enum DownloadDangerType {
   // The user has chosen to deep scan this file, but the scan has failed. The
   // safety of this download is unknown.
   DOWNLOAD_DANGER_TYPE_DEEP_SCANNED_FAILED = 20,
+
+  // The server has recommend this encrypted archive prompt the user for a
+  // pssword to use locally for further scanning.
+  DOWNLOAD_DANGER_TYPE_PROMPT_FOR_LOCAL_PASSWORD_SCANNING = 21,
 
   // Memory space for histograms is determined by the max.
   // ALWAYS ADD NEW VALUES BEFORE THIS ONE.

@@ -276,6 +276,11 @@ void DownloadBubbleRowViewInfo::PopulateForInProgressOrComplete() {
       has_subpage_ = true;
       return;
     }
+    case download::DOWNLOAD_DANGER_TYPE_PROMPT_FOR_LOCAL_PASSWORD_SCANNING: {
+      // TODO(crbug.com/1491184): Implement UX for this danger type.
+      NOTREACHED();
+      return;
+    }
     case download::DOWNLOAD_DANGER_TYPE_ASYNC_SCANNING:
       has_progress_bar_ = true;
       is_progress_bar_looping_ = true;
@@ -423,6 +428,7 @@ void DownloadBubbleRowViewInfo::PopulateForInterrupted(
     case download::DOWNLOAD_DANGER_TYPE_UNCOMMON_CONTENT:
     case download::DOWNLOAD_DANGER_TYPE_SENSITIVE_CONTENT_WARNING:
     case download::DOWNLOAD_DANGER_TYPE_PROMPT_FOR_SCANNING:
+    case download::DOWNLOAD_DANGER_TYPE_PROMPT_FOR_LOCAL_PASSWORD_SCANNING:
     case download::DOWNLOAD_DANGER_TYPE_ASYNC_SCANNING:
     case download::DOWNLOAD_DANGER_TYPE_BLOCKED_UNSUPPORTED_FILETYPE:
     case download::DOWNLOAD_DANGER_TYPE_DEEP_SCANNED_FAILED:
