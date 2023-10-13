@@ -2192,7 +2192,7 @@ They are used for the ChromeOS.CertProvisioning.* histograms to distinguish
 <histogram name="ChromeOS.Sandboxing.LandlockEnabled" enum="Boolean"
     expires_after="2024-02-04">
   <owner>enlightened@chromium.org</owner>
-  <owner>chromeos-security-core@google.com</owner>
+  <owner>chromeos-hardening@google.com</owner>
   <summary>
     Records the status of the Landlock LSM on the system. Records true if
     Landlock is enabled, and records false if it is disabled (not configured),
@@ -2405,9 +2405,9 @@ They are used for the ChromeOS.CertProvisioning.* histograms to distinguish
 </histogram>
 
 <histogram name="ChromeOS.SecurityAnomaly" enum="SecurityAnomaly"
-    expires_after="2024-02-25">
+    expires_after="2024-03-31">
   <owner>jorgelo@chromium.org</owner>
-  <owner>chromeos-security-core@google.com</owner>
+  <owner>chromeos-hardening@google.com</owner>
   <summary>
     Records when an event representing a deviation from the ChromeOS security
     posture happens.
@@ -2423,9 +2423,9 @@ They are used for the ChromeOS.CertProvisioning.* histograms to distinguish
 </histogram>
 
 <histogram name="ChromeOS.SecurityAnomalyUploadSuccess" enum="Boolean"
-    expires_after="2023-11-12">
+    expires_after="2024-03-31">
   <owner>jorgelo@chromium.org</owner>
-  <owner>chromeos-security-core@google.com</owner>
+  <owner>chromeos-hardening@google.com</owner>
   <summary>
     Records the result (boolean success or failure) of attempting to report a
     Chrome OS system as anomalous via the crash reporting service.
@@ -3539,7 +3539,7 @@ They are used for the ChromeOS.CertProvisioning.* histograms to distinguish
 <histogram name="ChromeOS.WXMountCount" units="count"
     expires_after="2024-02-25">
   <owner>jorgelo@chromium.org</owner>
-  <owner>chromeos-security-core@google.com</owner>
+  <owner>chromeos-hardening@google.com</owner>
   <summary>
     Records the number of writable+executable mounts on the system. The count
     itself is updated every 30 seconds, but this metric is reported every two
