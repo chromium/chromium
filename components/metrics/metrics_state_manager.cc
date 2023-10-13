@@ -187,11 +187,6 @@ class MetricsStateMetricsProvider : public MetricsProvider {
         // of the previous session. This allows better attribution of crashes
         // to earlier behavior. If the previous client id is unknown, leave
         // the current client id.
-#if BUILDFLAG(IS_CHROMEOS_ASH)
-        metrics::structured::NeutrinoDevicesLogWithClientId(
-            previous_client_id_, metrics::structured::NeutrinoDevicesLocation::
-                                     kProvidePreviousSessionData);
-#endif  // BUILDFLAG(IS_CHROMEOS_ASH)
         uma_proto->set_client_id(MetricsLog::Hash(previous_client_id_));
       }
     }
@@ -278,11 +273,6 @@ MetricsStateManager::MetricsStateManager(
   }
 
   if (enabled_state_provider_->IsConsentGiven()) {
-#if BUILDFLAG(IS_CHROMEOS_ASH)
-    metrics::structured::NeutrinoDevicesLogWithClientId(
-        client_id_,
-        metrics::structured::NeutrinoDevicesLocation::kMetricsStateManager);
-#endif  // BUILDFLAG(IS_CHROMEOS_ASH)
     ForceClientIdCreation();
   } else {
 #if BUILDFLAG(IS_ANDROID)
@@ -447,11 +437,6 @@ void MetricsStateManager::ForceClientIdCreation() {
   if (!client_id_.empty()) {
     base::UmaHistogramEnumeration("UMA.ClientIdSource",
                                   ClientIdSource::kClientIdFromLocalState);
-#if BUILDFLAG(IS_CHROMEOS_ASH)
-    LogClientIdChanged(
-        metrics::structured::NeutrinoDevicesLocation::kClientIdFromLocalState,
-        previous_client_id);
-#endif  // BUILDFLAG(IS_CHROMEOS_ASH)
     return;
   }
 
@@ -484,11 +469,6 @@ void MetricsStateManager::ForceClientIdCreation() {
                                   ClientIdSource::kClientIdBackupRecovered);
     base::UmaHistogramCounts10000("UMA.ClientIdBackupRecoveredWithAge",
                                   recovered_installation_age.InHours());
-#if BUILDFLAG(IS_CHROMEOS_ASH)
-    LogClientIdChanged(
-        metrics::structured::NeutrinoDevicesLocation::kClientIdBackupRecovered,
-        previous_client_id);
-#endif  // BUILDFLAG(IS_CHROMEOS_ASH)
 
     // Flush the backup back to persistent storage in case we re-generated
     // missing data above.
@@ -506,21 +486,11 @@ void MetricsStateManager::ForceClientIdCreation() {
     client_id_ = base::Uuid::GenerateRandomV4().AsLowercaseString();
     base::UmaHistogramEnumeration("UMA.ClientIdSource",
                                   ClientIdSource::kClientIdNew);
-#if BUILDFLAG(IS_CHROMEOS_ASH)
-    LogClientIdChanged(
-        metrics::structured::NeutrinoDevicesLocation::kClientIdNew,
-        previous_client_id);
-#endif  // BUILDFLAG(IS_CHROMEOS_ASH)
   } else {
     client_id_ = provisional_client_id;
     local_state_->ClearPref(prefs::kMetricsProvisionalClientID);
     base::UmaHistogramEnumeration("UMA.ClientIdSource",
                                   ClientIdSource::kClientIdFromProvisionalId);
-#if BUILDFLAG(IS_CHROMEOS_ASH)
-    LogClientIdChanged(metrics::structured::NeutrinoDevicesLocation::
-                           kClientIdFromProvisionalId,
-                       previous_client_id);
-#endif  // BUILDFLAG(IS_CHROMEOS_ASH)
   }
   local_state_->SetString(prefs::kMetricsClientID, client_id_);
 
@@ -727,15 +697,5 @@ bool MetricsStateManager::ShouldGenerateProvisionalClientId(bool is_first_run) {
   return true;
 #endif  // BUILDFLAG(IS_WIN)
 }
-
-#if BUILDFLAG(IS_CHROMEOS_ASH)
-void MetricsStateManager::LogClientIdChanged(
-    metrics::structured::NeutrinoDevicesLocation location,
-    std::string previous_client_id) {
-  metrics::structured::NeutrinoDevicesLogClientIdChanged(
-      client_id_, previous_client_id, ReadInstallDate(local_state_),
-      ReadEnabledDate(local_state_), location);
-}
-#endif  // BUILDFLAG(IS_CHROMEOS_ASH)
 
 }  // namespace metrics

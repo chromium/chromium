@@ -4118,8 +4118,6 @@ source_set("ash") {
     "//components/live_caption:utils",
     "//components/manta",
     "//components/metrics:serialization",
-    "//components/metrics/structured:neutrino_logging",
-    "//components/metrics/structured:neutrino_logging_util",
     "//components/omnibox/browser:location_bar",
     "//components/password_manager/core/browser",
     "//components/password_manager/core/browser:hash_password_manager",

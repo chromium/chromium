@@ -17,9 +17,6 @@
 #if BUILDFLAG(IS_CHROMEOS_ASH)
 #include "ash/constants/ash_features.h"
 #include "chrome/browser/metrics/per_user_state_manager_chromeos.h"
-// nogncheck needed for Lacros builds since header checker does not understand
-// preprocessor.
-#include "components/metrics/structured/neutrino_logging.h"  // nogncheck
 #endif
 
 namespace {
@@ -59,11 +56,6 @@ bool ChromeMetricsServiceAccessor::IsMetricsAndCrashReportingEnabled(
   // false.
   if (!local_state) {
     DLOG(WARNING) << "Local state has not been set and pref cannot be read";
-#if BUILDFLAG(IS_CHROMEOS_ASH)
-    metrics::structured::NeutrinoDevicesLog(
-        metrics::structured::NeutrinoDevicesLocation::
-            kIsMetricsAndCrashReportingEnabled);
-#endif  // BUILDFLAG(IS_CHROMEOS_ASH)
     return false;
   }
 

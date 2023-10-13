@@ -57,8 +57,6 @@
 
 #if BUILDFLAG(IS_CHROMEOS_ASH)
 #include "chrome/browser/browser_process.h"
-#include "components/metrics/structured/neutrino_logging.h"       // nogncheck
-#include "components/metrics/structured/neutrino_logging_util.h"  // nogncheck
 #endif  // BUILDFLAG(IS_CHROMEOS_ASH)
 
 namespace {
@@ -156,11 +154,6 @@ class SessionCrashedBubbleDelegate : public ui::DialogModelDelegate {
     if (dialog_model()
             ->GetCheckboxByUniqueId(kUmaConsentCheckboxId)
             ->is_checked()) {
-#if BUILDFLAG(IS_CHROMEOS_ASH)
-      metrics::structured::NeutrinoDevicesLogWithLocalState(
-          g_browser_process->local_state(),
-          metrics::structured::NeutrinoDevicesLocation::kMaybeEnableUma);
-#endif  // BUILDFLAG(IS_CHROMEOS_ASH)
       ChangeMetricsReportingState(true);
       RecordBubbleHistogramValue(SESSION_CRASHED_BUBBLE_UMA_OPTIN);
     }

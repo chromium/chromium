@@ -171,10 +171,6 @@
 #include "components/variations/synthetic_trial_registry.h"
 #include "components/variations/synthetic_trials.h"
 
-#if BUILDFLAG(IS_CHROMEOS_ASH)
-#include "components/metrics/structured/neutrino_logging.h"  // nogncheck
-#endif  // BUILDFLAG(IS_CHROMEOS_ASH)
-
 #if !BUILDFLAG(IS_ANDROID)
 #include "components/keep_alive_registry/keep_alive_types.h"
 #include "components/keep_alive_registry/scoped_keep_alive.h"
@@ -511,13 +507,6 @@ void MetricsService::EnableRecording() {
   }
 
   delegating_provider_.OnRecordingEnabled();
-#if BUILDFLAG(IS_CHROMEOS_ASH)
-  // This must be after OnRecordingEnabled() to ensure that the structured
-  // logging has been enabled.
-  metrics::structured::NeutrinoDevicesLogWithClientId(
-      state_manager_->client_id(),
-      metrics::structured::NeutrinoDevicesLocation::kEnableRecording);
-#endif  // BUILDFLAG(IS_CHROMEOS_ASH)
 
   // Fill in the system profile in the log and persist it (to prefs, .pma
   // and crashpad). This includes running the providers so that information

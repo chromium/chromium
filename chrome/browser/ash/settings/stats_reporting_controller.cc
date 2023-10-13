@@ -8,8 +8,6 @@
 #include "base/logging.h"
 #include "chrome/browser/ash/settings/cros_settings.h"
 #include "chromeos/ash/components/settings/cros_settings_names.h"
-#include "components/metrics/structured/neutrino_logging.h"
-#include "components/metrics/structured/neutrino_logging_util.h"
 #include "components/prefs/pref_registry_simple.h"
 #include "components/prefs/pref_service.h"
 
@@ -61,8 +59,6 @@ void StatsReportingController::SetEnabled(Profile* profile, bool enabled) {
 
 bool StatsReportingController::IsEnabled() const {
   DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
-  metrics::structured::NeutrinoDevicesLogWithLocalState(
-      local_state_, metrics::structured::NeutrinoDevicesLocation::kIsEnabled);
   absl::optional<base::Value> value = GetValue();
   return value.has_value() && value->is_bool() && value->GetBool();
 }
@@ -75,11 +71,6 @@ StatsReportingController::StatsReportingController(PrefService* local_state)
       kStatsReportingPref,
       base::BindRepeating(&StatsReportingController::NotifyObservers,
                           this->as_weak_ptr()));
-  // AddObserver to log NeutrinoDevicesLogWithLocalState every time when
-  // observers are notified.
-  neutrino_logging_subscription_ = AddObserver(base::BindRepeating(
-      &metrics::structured::NeutrinoDevicesLogWithLocalState, local_state_,
-      metrics::structured::NeutrinoDevicesLocation::kNotifyObservers));
 }
 
 StatsReportingController::~StatsReportingController() {

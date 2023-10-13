@@ -21,10 +21,6 @@
 #include "components/metrics/entropy_state.h"
 #include "components/variations/entropy_provider.h"
 
-#if BUILDFLAG(IS_CHROMEOS_ASH)
-#include "components/metrics/structured/neutrino_logging.h"  // nogncheck
-#endif  // BUILDFLAG(IS_CHROMEOS_ASH)
-
 class PrefService;
 class PrefRegistrySimple;
 
@@ -324,12 +320,6 @@ class MetricsStateManager final {
   void ResetMetricsIDsIfNecessary();
 
   bool ShouldGenerateProvisionalClientId(bool is_first_run);
-
-#if BUILDFLAG(IS_CHROMEOS_ASH)
-  // Log to structured metrics when the client id is changed.
-  void LogClientIdChanged(metrics::structured::NeutrinoDevicesLocation location,
-                          std::string previous_client_id);
-#endif  // BUILDFLAG(IS_CHROMEOS_ASH)
 
   // Whether an instance of this class exists. Used to enforce that there aren't
   // multiple instances of this class at a given time.

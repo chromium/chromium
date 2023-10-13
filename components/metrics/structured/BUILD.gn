@@ -196,34 +196,6 @@ static_library("structured_metrics_validator") {
   ]
 }
 
-static_library("neutrino_logging") {
-  sources = [
-    "neutrino_logging.cc",
-    "neutrino_logging.h",
-  ]
-
-  deps = [
-    ":common",
-    ":structured_events",
-    "//base",
-  ]
-}
-
-static_library("neutrino_logging_util") {
-  sources = [
-    "neutrino_logging_util.cc",
-    "neutrino_logging_util.h",
-  ]
-
-  deps = [
-    ":neutrino_logging",
-    ":structured_events",
-    "//base",
-    "//components/metrics",
-    "//components/prefs",
-  ]
-}
-
 static_library("test_support") {
   testonly = true
   sources = [

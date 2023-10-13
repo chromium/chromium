@@ -59,8 +59,6 @@
 
 #if BUILDFLAG(IS_CHROMEOS_ASH)
 #include "chrome/browser/ash/settings/stats_reporting_controller.h"
-#include "components/metrics/structured/neutrino_logging.h"       // nogncheck
-#include "components/metrics/structured/neutrino_logging_util.h"  // nogncheck
 #include "components/metrics/structured/recorder.h"               // nogncheck
 #endif  // BUILDFLAG(IS_CHROMEOS_ASH)
 
@@ -279,11 +277,6 @@ ChromeMetricsServicesManagerClient::GetEnabledStateProviderForTesting() {
 std::unique_ptr<variations::VariationsService>
 ChromeMetricsServicesManagerClient::CreateVariationsService() {
   DCHECK_CALLED_ON_VALID_THREAD(thread_checker_);
-#if BUILDFLAG(IS_CHROMEOS_ASH)
-  metrics::structured::NeutrinoDevicesLogWithLocalState(
-      local_state_,
-      metrics::structured::NeutrinoDevicesLocation::kCreateVariationsService);
-#endif
   return variations::VariationsService::Create(
       std::make_unique<ChromeVariationsServiceClient>(), local_state_,
       GetMetricsStateManager(), switches::kDisableBackgroundNetworking,
@@ -294,11 +287,6 @@ ChromeMetricsServicesManagerClient::CreateVariationsService() {
 std::unique_ptr<metrics::MetricsServiceClient>
 ChromeMetricsServicesManagerClient::CreateMetricsServiceClient() {
   DCHECK_CALLED_ON_VALID_THREAD(thread_checker_);
-#if BUILDFLAG(IS_CHROMEOS_ASH)
-  metrics::structured::NeutrinoDevicesLogWithLocalState(
-      local_state_, metrics::structured::NeutrinoDevicesLocation::
-                        kCreateMetricsServiceClient);
-#endif
   return ChromeMetricsServiceClient::Create(GetMetricsStateManager());
 }
 

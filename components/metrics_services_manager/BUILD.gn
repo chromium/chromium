@@ -20,8 +20,4 @@ static_library("metrics_services_manager") {
     "//components/variations/service",
     "//services/network/public/cpp:cpp",
   ]
-
-  if (is_chromeos_ash) {
-    deps += [ "//components/metrics/structured:neutrino_logging" ]
-  }
 }

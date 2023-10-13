@@ -6144,11 +6144,6 @@ static_library("ui") {
         "views/apps/app_dialog/shortcut_removal_dialog_view.cc",
         "views/apps/app_dialog/shortcut_removal_dialog_view.h",
       ]
-
-      deps += [
-        "//components/metrics/structured:neutrino_logging",
-        "//components/metrics/structured:neutrino_logging_util",
-      ]
     }
 
     if (enable_screen_ai_service) {
