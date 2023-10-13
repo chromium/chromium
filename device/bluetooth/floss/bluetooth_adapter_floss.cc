@@ -734,12 +734,6 @@ void BluetoothAdapterFloss::OnAdapterClientsReady(bool enabled) {
     RemoveAdapterObservers();
   }
 
-  if (enabled && IsPresent()) {
-    // Since the adapter was just powered on, it is also implicitly present.
-    // Notify present observers before powered observers.
-    PresentChanged(true);
-  }
-
   NotifyAdapterPoweredChanged(enabled);
 }
 
