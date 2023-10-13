@@ -428,6 +428,9 @@ NSString* const kScribbleFakeboxElementId = @"fakebox";
 
 - (void)openLens {
   [self.NTPMetricsRecorder recordLensTapped];
+  if (IsIOSLargeFakeboxEnabled()) {
+    TriggerHapticFeedbackForSelectionChange();
+  }
   OpenLensInputSelectionCommand* command = [[OpenLensInputSelectionCommand
       alloc]
           initWithEntryPoint:LensEntrypoint::NewTabPage
@@ -439,6 +442,9 @@ NSString* const kScribbleFakeboxElementId = @"fakebox";
 - (void)loadVoiceSearch:(id)sender {
   DCHECK(self.voiceSearchIsEnabled);
   [self.NTPMetricsRecorder recordVoiceSearchTapped];
+  if (IsIOSLargeFakeboxEnabled()) {
+    TriggerHapticFeedbackForSelectionChange();
+  }
   UIView* voiceSearchButton = base::apple::ObjCCastStrict<UIView>(sender);
   [self.layoutGuideCenter referenceView:voiceSearchButton
                               underName:kVoiceSearchButtonGuide];
@@ -460,6 +466,9 @@ NSString* const kScribbleFakeboxElementId = @"fakebox";
 
 - (void)fakeboxTapped {
   [self.NTPMetricsRecorder recordFakeOmniboxTapped];
+  if (IsIOSLargeFakeboxEnabled()) {
+    TriggerHapticFeedbackForSelectionChange();
+  }
   [self.commandHandler fakeboxTapped];
 }
 
