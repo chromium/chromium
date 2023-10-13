@@ -66,6 +66,7 @@ FlossDBusManager::FlossDBusManager(dbus::Bus* bus, bool use_stubs) : bus_(bus) {
     active_adapter_ = 0;
     object_manager_supported_ = true;
     object_manager_support_known_ = true;
+    mgmt_client_present_ = true;
     InitializeAdapterClients(active_adapter_, base::DoNothing());
     return;
   }
