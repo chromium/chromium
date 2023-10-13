@@ -38,7 +38,7 @@ inline constexpr char kFencedFrameFailedSandboxLoadInTopLevelFrame[] =
     "Blink.FencedFrame.FailedSandboxLoadInTopLevelFrame";
 
 inline constexpr char kFencedFrameTopNavigationHistogram[] =
-    "Navigation.TopNavigationFromFencedFrame";
+    "Navigation.FencedFrameTopNavigation";
 
 inline constexpr char kAutomaticBeaconOutcomeHistogram[] =
     "Navigation.AutomaticBeaconOutcome";
