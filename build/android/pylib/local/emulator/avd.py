@@ -959,7 +959,6 @@ class _AvdInstance:
             wipe_data=False,
             debug_tags=None,
             disk_size=None,
-            enable_network=False,
             require_fast_start=False):
     """Starts the emulator running an instance of the given AVD.
 
@@ -1101,9 +1100,6 @@ class _AvdInstance:
       logging.info('Device fully booted, verifying system settings.')
       _EnsureSystemSettings(self.device)
 
-    if enable_network:
-      _EnableNetwork(self.device)
-
   def Stop(self, force=False):
     """Stops the emulator process.
 
@@ -1210,14 +1206,3 @@ def _EnsureSystemSettings(device):
       ['am', 'broadcast', '-a', 'android.intent.action.TIME_SET'],
       check_return=True,
       as_root=True)
-
-
-def _EnableNetwork(device):
-  logging.info('Enable the network on the emulator.')
-  device.RunShellCommand(
-      ['settings', 'put', 'global', 'airplane_mode_on', '0'], as_root=True)
-  device.RunShellCommand(
-      ['am', 'broadcast', '-a', 'android.intent.action.AIRPLANE_MODE'],
-      as_root=True)
-  device.RunShellCommand(['svc', 'wifi', 'enable'], as_root=True)
-  device.RunShellCommand(['svc', 'data', 'enable'], as_root=True)
