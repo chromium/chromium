@@ -27,17 +27,20 @@ void AutofillSaveCardDelegate::OnUiShown() {
 void AutofillSaveCardDelegate::OnUiAccepted(base::OnceClosure callback) {
   on_finished_gathering_consent_callback_ = std::move(callback);
 
-  // Acceptance can be logged immediately if:
-  // 1. the user is accepting local save.
-  // 2. or when we don't need more info in order to upload.
-  if (!is_for_upload() ||
-      (!options_.should_request_name_from_user &&
-       !options_.should_request_expiration_date_from_user)) {
-    LogSaveCreditCardPromptResult(
-        autofill_metrics::SaveCreditCardPromptResult::kAccepted,
-        is_for_upload(), options_);
+  // TODO (crbug.com/1485194): Add metrics for CVC save.
+  if (options_.card_save_type != AutofillClient::CardSaveType::kCvcSaveOnly) {
+    // Acceptance can be logged immediately if:
+    // 1. the user is accepting local save.
+    // 2. or when we don't need more info in order to upload.
+    if (!is_for_upload() ||
+        (!options_.should_request_name_from_user &&
+         !options_.should_request_expiration_date_from_user)) {
+      LogSaveCreditCardPromptResult(
+          autofill_metrics::SaveCreditCardPromptResult::kAccepted,
+          is_for_upload(), options_);
+    }
+    LogUserAction(AutofillMetrics::INFOBAR_ACCEPTED);
   }
-  LogUserAction(AutofillMetrics::INFOBAR_ACCEPTED);
   GatherAdditionalConsentIfApplicable(/*user_provided_details=*/{});
 }
 
@@ -51,10 +54,13 @@ void AutofillSaveCardDelegate::OnUiCanceled() {
   RunSaveCardPromptCallback(
       AutofillClient::SaveCardOfferUserDecision::kDeclined,
       /*user_provided_details=*/{});
-  LogUserAction(AutofillMetrics::INFOBAR_DENIED);
-  LogSaveCreditCardPromptResult(
-      autofill_metrics::SaveCreditCardPromptResult::kDenied, is_for_upload(),
-      options_);
+  // TODO (crbug.com/1485194): Add metrics for CVC save.
+  if (options_.card_save_type != AutofillClient::CardSaveType::kCvcSaveOnly) {
+    LogUserAction(AutofillMetrics::INFOBAR_DENIED);
+    LogSaveCreditCardPromptResult(
+        autofill_metrics::SaveCreditCardPromptResult::kDenied, is_for_upload(),
+        options_);
+  }
 }
 
 void AutofillSaveCardDelegate::OnUiIgnored() {
@@ -62,10 +68,13 @@ void AutofillSaveCardDelegate::OnUiIgnored() {
     RunSaveCardPromptCallback(
         AutofillClient::SaveCardOfferUserDecision::kIgnored,
         /*user_provided_details=*/{});
-    LogUserAction(AutofillMetrics::INFOBAR_IGNORED);
-    LogSaveCreditCardPromptResult(
-        autofill_metrics::SaveCreditCardPromptResult::kIgnored, is_for_upload(),
-        options_);
+    // TODO (crbug.com/1485194): Add metrics for CVC save.
+    if (options_.card_save_type != AutofillClient::CardSaveType::kCvcSaveOnly) {
+      LogUserAction(AutofillMetrics::INFOBAR_IGNORED);
+      LogSaveCreditCardPromptResult(
+          autofill_metrics::SaveCreditCardPromptResult::kIgnored,
+          is_for_upload(), options_);
+    }
   }
 }
 

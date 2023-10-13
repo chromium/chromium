@@ -11,7 +11,6 @@
 #include "chrome/browser/fast_checkout/fast_checkout_client_impl.h"
 #include "chrome/browser/fast_checkout/fast_checkout_features.h"
 #include "chrome/browser/plus_addresses/plus_address_service_factory.h"
-#include "chrome/browser/ui/android/autofill/autofill_save_card_delegate_android.h"
 #include "chrome/test/base/chrome_render_view_host_test_harness.h"
 #include "components/autofill/content/browser/test_autofill_client_injector.h"
 #include "components/autofill/content/browser/test_autofill_driver_injector.h"
@@ -31,7 +30,7 @@
 #if BUILDFLAG(IS_ANDROID)
 #include "chrome/browser/ui/android/autofill/autofill_cvc_save_message_delegate.h"
 #include "chrome/browser/ui/android/autofill/autofill_save_card_bottom_sheet_bridge.h"
-#include "components/autofill/core/browser/payments/autofill_save_card_delegate.h"
+#include "chrome/browser/ui/android/autofill/autofill_save_card_delegate_android.h"
 #include "components/autofill/core/browser/payments/autofill_save_card_ui_info.h"
 #endif
 
@@ -56,16 +55,6 @@ class MockAutofillSaveCardBottomSheetBridge
                std::unique_ptr<AutofillSaveCardDelegateAndroid>),
               (override));
 };
-
-class MockAutofillCvcSaveMessageDelegate
-    : public AutofillCvcSaveMessageDelegate {
- public:
-  explicit MockAutofillCvcSaveMessageDelegate(
-      content::WebContents* web_contents)
-      : AutofillCvcSaveMessageDelegate(web_contents) {}
-
-  MOCK_METHOD(void, ShowMessage, (), (override));
-};
 #endif
 
 // Exposes the protected constructor.
@@ -86,17 +75,6 @@ class TestChromeAutofillClient : public ChromeAutofillClient {
     auto mock = std::make_unique<MockAutofillSaveCardBottomSheetBridge>();
     auto* pointer = mock.get();
     SetAutofillSaveCardBottomSheetBridgeForTesting(std::move(mock));
-    return pointer;
-  }
-
-  // Inject a new MockAutofillCvcSaveMessageDelegate.
-  // Returns a pointer to the mock.
-  MockAutofillCvcSaveMessageDelegate* InjectMockAutofillCvcSaveMessageDelegate(
-      content::WebContents* web_contents) {
-    auto mock =
-        std::make_unique<MockAutofillCvcSaveMessageDelegate>(web_contents);
-    auto* pointer = mock.get();
-    SetAutofillCvcSaveMessageDelegateForTesting(std::move(mock));
     return pointer;
   }
 
@@ -385,24 +363,6 @@ TEST_F(ChromeAutofillClientTestWithPaymentsAndroidBottomSheetFeature,
       CreditCard(),
       ChromeAutofillClient::SaveCreditCardOptions().with_show_prompt(true),
       base::DoNothing()));
-}
-
-// Verify that the prompt to save the CVC of an existing server card is shown in
-// a Message.
-TEST_F(ChromeAutofillClientTest,
-       ConfirmSaveCreditCardToCloud_CardSaveTypeIsOnlyCvc_RequestsMessage) {
-  TestChromeAutofillClient* autofill_client = client();
-  auto* cvc_save_message_delegate =
-      autofill_client->InjectMockAutofillCvcSaveMessageDelegate(web_contents());
-
-  EXPECT_CALL(*cvc_save_message_delegate, ShowMessage());
-
-  autofill_client->ConfirmSaveCreditCardToCloud(
-      CreditCard(), LegalMessageLines(),
-      ChromeAutofillClient::SaveCreditCardOptions()
-          .with_card_save_type(AutofillClient::CardSaveType::kCvcSaveOnly)
-          .with_show_prompt(true),
-      base::DoNothing());
 }
 #endif
 

@@ -32,12 +32,12 @@ class AutofillSaveCardDelegate {
   void OnUiShown();
   // `on_save_card_completed` will be triggered after the save card flow has
   // finished.
-  void OnUiAccepted(
+  virtual void OnUiAccepted(
       base::OnceClosure on_save_card_completed = base::NullCallback());
   void OnUiUpdatedAndAccepted(
       AutofillClient::UserProvidedCardDetails user_provided_details);
-  void OnUiCanceled();
-  void OnUiIgnored();
+  virtual void OnUiCanceled();
+  virtual void OnUiIgnored();
 
  protected:
   // Called when all of the prerequisites for saving a card have been met.

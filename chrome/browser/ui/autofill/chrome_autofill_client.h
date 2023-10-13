@@ -319,9 +319,6 @@ class ChromeAutofillClient : public ContentAutofillClient,
   void SetAutofillSaveCardBottomSheetBridgeForTesting(
       std::unique_ptr<AutofillSaveCardBottomSheetBridge>
           autofill_save_card_bottom_sheet_bridge);
-  void SetAutofillCvcSaveMessageDelegateForTesting(
-      std::unique_ptr<AutofillCvcSaveMessageDelegate>
-          autofill_cvc_save_message_delegate);
 #endif
 
  private:

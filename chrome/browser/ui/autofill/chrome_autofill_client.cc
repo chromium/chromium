@@ -819,15 +819,17 @@ void ChromeAutofillClient::ConfirmSaveCreditCardToCloud(
     UploadSaveCardPromptCallback callback) {
 #if BUILDFLAG(IS_ANDROID)
   DCHECK(options.show_prompt);
+  auto save_card_delegate = std::make_unique<AutofillSaveCardDelegateAndroid>(
+      std::move(callback), options, web_contents());
+
   // If a CVC is detected for an existing server card in the checkout form, the
   // CVC save prompt is shown in a message.
   if (options.card_save_type == AutofillClient::CardSaveType::kCvcSaveOnly) {
-    if (!autofill_cvc_save_message_delegate_) {
       autofill_cvc_save_message_delegate_ =
           std::make_unique<AutofillCvcSaveMessageDelegate>(web_contents());
-    }
-    autofill_cvc_save_message_delegate_->ShowMessage();
-    return;
+      autofill_cvc_save_message_delegate_->ShowMessage(
+          std::move(save_card_delegate));
+      return;
   }
 
   // For new cards, the save card prompt is shown either in a bottom sheet or in
@@ -838,8 +840,6 @@ void ChromeAutofillClient::ConfirmSaveCreditCardToCloud(
       identity_manager->GetPrimaryAccountInfo(signin::ConsentLevel::kSignin));
   AutofillSaveCardUiInfo ui_info = AutofillSaveCardUiInfo::CreateForUploadSave(
       options, card, legal_message_lines, account_info);
-  auto save_card_delegate = std::make_unique<AutofillSaveCardDelegateAndroid>(
-      std::move(callback), options, web_contents());
   if (base::FeatureList::IsEnabled(
           features::kAutofillEnablePaymentsAndroidBottomSheet)) {
     if (auto* bridge = GetOrCreateAutofillSaveCardBottomSheetBridge()) {
@@ -1374,13 +1374,6 @@ void ChromeAutofillClient::SetAutofillSaveCardBottomSheetBridgeForTesting(
         autofill_save_card_bottom_sheet_bridge) {
   autofill_save_card_bottom_sheet_bridge_ =
       std::move(autofill_save_card_bottom_sheet_bridge);
-}
-
-void ChromeAutofillClient::SetAutofillCvcSaveMessageDelegateForTesting(
-    std::unique_ptr<AutofillCvcSaveMessageDelegate>
-        autofill_cvc_save_message_delegate) {
-  autofill_cvc_save_message_delegate_ =
-      std::move(autofill_cvc_save_message_delegate);
 }
 #endif
 
