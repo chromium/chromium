@@ -20,19 +20,13 @@ GEN_INCLUDE(['//chrome/test/data/webui/polymer_browser_test_base.js']);
 
 GEN('#include "content/public/test/browser_test.h"');
 
-/**
- * @constructor
- * @extends {PolymerTest}
- */
-function FirmwareUpdateAppBrowserTest() {}
-
-FirmwareUpdateAppBrowserTest.prototype = {
-  __proto__: PolymerTest.prototype,
-
-  browsePreload: 'chrome://accessory-update/test_loader.html' +
-      '?module=chromeos/firmware_update/' +
-      'firmware_update_unified_test.js',
-};
+var FirmwareUpdateAppBrowserTest = class extends PolymerTest {
+  get browsePreload() {
+    return 'chrome://accessory-update/test_loader.html' +
+        '?module=chromeos/firmware_update/' +
+        'firmware_update_unified_test.js';
+  }
+}
 
 // List of names of suites in unified test to register for individual debugging.
 // You must register all suites in unified test here as well for consistency,

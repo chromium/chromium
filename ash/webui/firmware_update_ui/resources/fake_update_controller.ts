@@ -5,6 +5,7 @@
 import {FakeObservables} from 'chrome://resources/ash/common/fake_observables.js';
 import {PromiseResolver} from 'chrome://resources/ash/common/promise_resolver.js';
 import {assert} from 'chrome://resources/js/assert.js';
+import {FilePath} from 'chrome://resources/mojo/mojo/public/mojom/base/file_path.mojom-webui.js';
 
 import {fakeFirmwareUpdates, fakeInstallationProgress, fakeInstallationProgressFailure} from './fake_data.js';
 import {FirmwareUpdate, InstallationProgress, UpdateProgressObserverRemote, UpdateProviderInterface, UpdateState} from './firmware_update.mojom-webui.js';
@@ -56,7 +57,9 @@ export class FakeUpdateController implements FakeInstallControllerInterface {
         });
   }
 
-  beginUpdate(): void {
+  beginUpdate(deviceId: string, path: FilePath): void {
+    assert(deviceId);
+    assert(path);
     assert(this.startUpdatePromise);
     this.triggerProgressChangedObserver();
   }

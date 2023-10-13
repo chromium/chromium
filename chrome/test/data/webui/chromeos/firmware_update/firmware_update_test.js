@@ -231,7 +231,7 @@ export function firmwareUpdateAppTest() {
     await flushTasks();
 
     // Simulate InstallProgressChangedObserver being called.
-    controller.beginUpdate();
+    controller.beginUpdate('fakeDeviceId', {path: 'fake.cab'});
     await flushTasks();
     await flushTasks();
     // Check that the update dialog is now opened with an update.
