@@ -424,7 +424,9 @@ def make_accessor_functions(cg_context):
         func_def.set_base_template_vars(cg_context.template_bindings())
         if not member.is_always_present:
             func_def.body.append(F("DCHECK({}());", member.api_has))
-        func_def.body.append(F("return {};", member.value_var))
+        func_def.body.append(
+            F("return {};",
+              member.type_info.member_var_to_ref_expr(member.value_var)))
         return func_def, None
 
     def make_api_get_or(member):
@@ -439,7 +441,8 @@ def make_accessor_functions(cg_context):
         func_def.body.extend([
             CxxUnlikelyIfNode(cond="!{}()".format(member.api_has),
                               body=T("return fallback_value;")),
-            F("return {};", member.value_var),
+            F("return {};",
+              member.type_info.member_var_to_ref_expr(member.value_var)),
         ])
         return func_def, None
 
@@ -463,7 +466,8 @@ def make_accessor_functions(cg_context):
         copy_func_def.body.extend([
             CxxUnlikelyIfNode(cond="!{}()".format(member.api_has),
                               body=T("return fallback_value;")),
-            F("return {};", member.value_var),
+            F("return {};",
+              member.type_info.member_var_to_ref_expr(member.value_var)),
         ])
 
         move_func_decl = CxxFuncDeclNode(
@@ -481,7 +485,8 @@ def make_accessor_functions(cg_context):
         move_func_def.body.extend([
             CxxUnlikelyIfNode(cond="!{}()".format(member.api_has),
                               body=T("return std::move(fallback_value);")),
-            F("return {};", member.value_var),
+            F("return {};",
+              member.type_info.member_var_to_ref_expr(member.value_var)),
         ])
 
         decls = ListNode([copy_func_decl, move_func_decl])
@@ -502,7 +507,8 @@ def make_accessor_functions(cg_context):
         func_def.body.extend([
             CxxUnlikelyIfNode(cond="!{}()".format(member.api_has),
                               body=T("return fallback_value;")),
-            F("return {};", member.value_var),
+            F("return {};",
+              member.type_info.member_var_to_ref_expr(member.value_var)),
         ])
         return func_def, None
 
@@ -793,7 +799,8 @@ def make_blink_to_v8_function(cg_context):
                         "ToV8(${script_state}, {blink_value})"
                         ".ToLocal(&${v8_value})",
                         native_value_tag=native_value_tag(member.idl_type),
-                        blink_value=member.value_var),
+                        blink_value=member.type_info.member_var_to_ref_expr(
+                            member.value_var)),
                     body=T("return false;")),
                 CxxUnlikelyIfNode(  #
                     cond=_format(

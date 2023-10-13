@@ -100,6 +100,7 @@ def blink_type_info(idl_type):
             self._is_move_effective = is_move_effective
             self._is_traceable = (is_gc_type or is_heap_vector_type
                                   or is_traceable)
+            self._is_member_t_cppgc_member = member_fmt == "Member<{}>"
             self._clear_member_var_fmt = clear_member_var_fmt
 
             self._ref_t = ref_fmt.format(typename)
@@ -133,8 +134,8 @@ def blink_type_info(idl_type):
         @property
         def value_t(self):
             """
-            Returns the type of a variable that behaves as a value.  E.g. String =>
-            String
+            Returns the type of a variable that behaves as a value. E.g. String
+            => String
             """
             return self._value_t
 
@@ -197,6 +198,15 @@ def blink_type_info(idl_type):
             E.g. ScriptValue => True and int32_t => False
             """
             return self._is_traceable
+
+        def member_var_to_ref_expr(self, var_name):
+            """
+            Returns an expression to convert the given member variable into
+            a reference type. E.g. Member<T> => var_name.Get()
+            """
+            if self._is_member_t_cppgc_member:
+                return "{}.Get()".format(var_name)
+            return var_name
 
         def clear_member_var_expr(self, var_name):
             """

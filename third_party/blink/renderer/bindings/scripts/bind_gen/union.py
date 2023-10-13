@@ -621,7 +621,8 @@ def make_accessor_functions(cg_context):
         func_def.set_base_template_vars(cg_context.template_bindings())
         func_def.body.extend([
             F("DCHECK_EQ(content_type_, {});", member.content_type()),
-            F("return {};", member.var_name),
+            F("return {};",
+              member.type_info.member_var_to_ref_expr(member.var_name)),
         ])
         return func_def, None
 
@@ -823,8 +824,10 @@ def make_tov8value_function(cg_context):
         if member.is_null:
             text = "return v8::Null(${script_state}->GetIsolate());"
         else:
-            text = _format("return ToV8Traits<{}>::ToV8(${script_state}, {});",
-                           native_value_tag(member.idl_type), member.var_name)
+            text = _format(
+                "return ToV8Traits<{}>::ToV8(${script_state}, {});",
+                native_value_tag(member.idl_type),
+                member.type_info.member_var_to_ref_expr(member.var_name))
         branches.append(case=member.content_type(),
                         body=TextNode(text),
                         should_add_break=False)
