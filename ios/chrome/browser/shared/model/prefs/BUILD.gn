@@ -82,6 +82,7 @@ source_set("browser_prefs") {
     "//ios/chrome/browser/geolocation",
     "//ios/chrome/browser/memory/model",
     "//ios/chrome/browser/metrics",
+    "//ios/chrome/browser/metrics:constants",
     "//ios/chrome/browser/net",
     "//ios/chrome/browser/ntp:set_up_list_prefs",
     "//ios/chrome/browser/ntp_tiles/model/tab_resumption:tab_resumption_prefs",

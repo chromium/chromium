@@ -351,15 +351,18 @@ void IOSChromeMetricsServiceClient::RegisterMetricsServiceProviders() {
           std::make_unique<metrics::ChromeBrowserStateClient>(),
           metrics::MetricsLogUploader::MetricServiceType::UMA));
 
+  // TODO(crbug.com/1491396): Avoid using GetLastUsedBrowserState().
+  ChromeBrowserState* browser_state = GetApplicationContext()
+                                          ->GetChromeBrowserStateManager()
+                                          ->GetLastUsedBrowserState();
+
   metrics_service_->RegisterMetricsProvider(
-      std::make_unique<IOSFeedActivityMetricsProvider>());
+      std::make_unique<IOSFeedActivityMetricsProvider>(
+          browser_state->GetPrefs()));
 
   metrics_service_->RegisterMetricsProvider(
       CreateIOSProfileSessionMetricsProvider());
 
-  ChromeBrowserState* browser_state = GetApplicationContext()
-                                          ->GetChromeBrowserStateManager()
-                                          ->GetLastUsedBrowserState();
   metrics_service_->RegisterMetricsProvider(
       std::make_unique<IOSFeedEnabledMetricsProvider>(
           browser_state->GetPrefs()));

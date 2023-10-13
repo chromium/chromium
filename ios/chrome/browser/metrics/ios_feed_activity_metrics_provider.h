@@ -7,9 +7,11 @@
 
 #include "components/metrics/metrics_provider.h"
 
+class PrefService;
+
 class IOSFeedActivityMetricsProvider : public metrics::MetricsProvider {
  public:
-  explicit IOSFeedActivityMetricsProvider();
+  explicit IOSFeedActivityMetricsProvider(PrefService* pref_service);
   IOSFeedActivityMetricsProvider(const IOSFeedActivityMetricsProvider&) =
       delete;
   IOSFeedActivityMetricsProvider& operator=(
@@ -20,6 +22,9 @@ class IOSFeedActivityMetricsProvider : public metrics::MetricsProvider {
   // metrics::MetricsProvider
   void ProvideCurrentSessionData(
       metrics::ChromeUserMetricsExtension* uma_proto) override;
+
+ private:
+  PrefService* pref_service_;
 };
 
 #endif  // IOS_CHROME_BROWSER_METRICS_IOS_FEED_ACTIVITY_METRICS_PROVIDER_H_

@@ -18,6 +18,7 @@ specific_include_rules = {
   "^browser_prefs.mm": [
     "+ios/chrome/browser/ui",
     "+components/ntp_snippets",
+    "+ios/chrome/browser/metrics/constants.h",
   ],
 }
 

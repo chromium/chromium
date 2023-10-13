@@ -71,6 +71,7 @@
 #import "ios/chrome/app/variations_app_state_agent.h"
 #import "ios/chrome/browser/first_run/first_run.h"
 #import "ios/chrome/browser/memory/model/memory_debugger_manager.h"
+#import "ios/chrome/browser/metrics/constants.h"
 #import "ios/chrome/browser/metrics/ios_chrome_metrics_service_client.h"
 #import "ios/chrome/browser/ntp/set_up_list_prefs.h"
 #import "ios/chrome/browser/ntp_tiles/model/tab_resumption/tab_resumption_prefs.h"
@@ -560,6 +561,8 @@ void RegisterBrowserStatePrefs(user_prefs::PrefRegistrySyncable* registry) {
                                 false);
   // Preference related to feed.
   registry->RegisterTimePref(kActivityBucketLastReportedDateKey, base::Time());
+  registry->RegisterIntegerPref(kActivityBucketKey, 0);
+
   registry->RegisterBooleanPref(kSyncRequested, false);
 }
 
@@ -706,8 +709,8 @@ void MigrateObsoleteBrowserStatePrefs(PrefService* prefs) {
 
   // Added 09/2023.
   // TODO(crbug.com/1486770) To be removed after a few milestones.
+  NSUserDefaults* defaults = [NSUserDefaults standardUserDefaults];
   {
-    NSUserDefaults* defaults = [NSUserDefaults standardUserDefaults];
     NSString* key = @(kActivityBucketLastReportedDateKey);
     NSDate* value = [defaults objectForKey:key];
     if (value != nil) {
@@ -719,6 +722,17 @@ void MigrateObsoleteBrowserStatePrefs(PrefService* prefs) {
 
   // Added 10/2023.
   prefs->ClearPref(kSyncRequested);
+
+  // Added 10/2023.
+  // TODO(crbug.com/1486770) To be removed after a few milestones.
+  {
+    NSString* key = @(kActivityBucketKey);
+    NSInteger value = [defaults integerForKey:key];
+    if (value) {
+      [defaults removeObjectForKey:key];
+      prefs->SetInteger(kActivityBucketKey, value);
+    }
+  }
 }
 
 void MigrateObsoleteUserDefault(void) {

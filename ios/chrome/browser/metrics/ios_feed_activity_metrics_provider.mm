@@ -4,19 +4,22 @@
 
 #import "ios/chrome/browser/metrics/ios_feed_activity_metrics_provider.h"
 
-#import "base/apple/foundation_util.h"
 #import "base/metrics/histogram_functions.h"
+#import "components/prefs/pref_service.h"
 #import "ios/chrome/browser/metrics/constants.h"
 
-IOSFeedActivityMetricsProvider::IOSFeedActivityMetricsProvider() {}
+IOSFeedActivityMetricsProvider::IOSFeedActivityMetricsProvider(
+    PrefService* pref_service)
+    : pref_service_(pref_service) {
+  DCHECK(pref_service_);
+}
 
 IOSFeedActivityMetricsProvider::~IOSFeedActivityMetricsProvider() {}
 
 void IOSFeedActivityMetricsProvider::ProvideCurrentSessionData(
     metrics::ChromeUserMetricsExtension* uma_proto) {
   // Retrieve activity bucket from storage.
-  int activityBucket = (int)[[NSUserDefaults standardUserDefaults]
-      integerForKey:@(kActivityBucketKey)];
+  int activityBucket = pref_service_->GetInteger(kActivityBucketKey);
   base::UmaHistogramExactLinear(kAllFeedsActivityBucketsByProviderHistogram,
                                 activityBucket, 4);
 }

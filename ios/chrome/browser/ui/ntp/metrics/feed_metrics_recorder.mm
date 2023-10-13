@@ -954,10 +954,6 @@ using feed::FeedUserActionType;
     return;
   }
 
-  // Retrieve activity bucket from storage.
-  FeedActivityBucket activityBucket =
-      (FeedActivityBucket)[defaults integerForKey:@(kActivityBucketKey)];
-
   // Calculate activity buckets.
   // Check if the array is initialized.
   NSMutableArray<NSDate*>* lastReportedArray = [[defaults
@@ -987,6 +983,7 @@ using feed::FeedUserActionType;
   [defaults setObject:lastReportedArray
                forKey:kActivityBucketLastReportedDateArrayKey];
 
+  FeedActivityBucket activityBucket = FeedActivityBucket::kNoActivity;
   // Check how many items in array.
   NSUInteger datesActive = lastReportedArray.count;
   switch (datesActive) {
@@ -1007,7 +1004,8 @@ using feed::FeedUserActionType;
       CHECK(NO);
       break;
   }
-  [defaults setInteger:(int)activityBucket forKey:@(kActivityBucketKey)];
+  self.prefService->SetInteger(kActivityBucketKey,
+                               static_cast<int>(activityBucket));
 
   // Activity Buckets Daily Run.
   [self recordActivityBuckets:activityBucket];

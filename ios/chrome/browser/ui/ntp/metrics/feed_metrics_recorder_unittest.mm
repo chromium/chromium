@@ -10,8 +10,10 @@
 #import "base/test/metrics/user_action_tester.h"
 #import "components/feed/core/v2/public/common_enums.h"
 #import "components/sync_preferences/testing_pref_service_syncable.h"
+#import "ios/chrome/browser/metrics/constants.h"
 #import "ios/chrome/browser/shared/model/prefs/browser_prefs.h"
 #import "ios/chrome/browser/ui/ntp/feed_control_delegate.h"
+#import "ios/chrome/browser/ui/ntp/metrics/feed_metrics_constants.h"
 #import "ios/chrome/browser/ui/ntp/metrics/feed_metrics_recorder+testing.h"
 #import "ios/web/public/test/web_task_environment.h"
 #import "testing/gtest/include/gtest/gtest.h"
@@ -632,4 +634,63 @@ TEST_F(FeedMetricsRecorderTest, Actions_ShowFeedSignInOnlyUIWithoutUserId) {
   EXPECT_ACTION(kShowFeedSignInOnlyUIWithoutUserId,
                 recordShowSignInOnlyUIWithUserId
                 : NO);
+}
+
+#pragma mark - ComputeActivityBuckets Tests
+
+// Tests that kNoActivity is correctly saved in kActivityBucketKey.
+TEST_F(FeedMetricsRecorderTest, TestComputeActivityBuckets_kNoActivity) {
+  // Make sure that the activity was not reported recently.
+  base::Time last_activity_bucket = base::Time() - base::Days(10);
+  test_pref_service_.SetTime(kActivityBucketLastReportedDateKey,
+                             last_activity_bucket);
+  // Make sure LastReportedDateArray is empty.
+  NSUserDefaults* defaults = [NSUserDefaults standardUserDefaults];
+  [defaults setObject:[NSMutableArray new]
+               forKey:kActivityBucketLastReportedDateArrayKey];
+
+  [recorder_ recordNTPDidChangeVisibility:YES];
+
+  DCHECK_EQ(test_pref_service_.GetInteger(kActivityBucketKey),
+            static_cast<int>(FeedActivityBucket::kNoActivity));
+}
+
+// Tests that kLowActivity is correctly saved in kActivityBucketKey.
+TEST_F(FeedMetricsRecorderTest, TestComputeActivityBuckets_kLowActivity) {
+  // Make sure that the activity was not reported recently.
+  base::Time last_activity_bucket = base::Time() - base::Days(10);
+  test_pref_service_.SetTime(kActivityBucketLastReportedDateKey,
+                             last_activity_bucket);
+  // Make sure LastReportedDateArray is in range 1 to 7.
+  NSUserDefaults* defaults = [NSUserDefaults standardUserDefaults];
+  NSMutableArray* array = [NSMutableArray array];
+  for (size_t i = 0; i < 5; ++i) {
+    [array addObject:[NSDate date]];
+  }
+  [defaults setObject:array forKey:kActivityBucketLastReportedDateArrayKey];
+
+  [recorder_ recordNTPDidChangeVisibility:YES];
+
+  DCHECK_EQ(test_pref_service_.GetInteger(kActivityBucketKey),
+            static_cast<int>(FeedActivityBucket::kLowActivity));
+}
+
+// Tests that kMediumActivity is correctly saved in kActivityBucketKey.
+TEST_F(FeedMetricsRecorderTest, TestComputeActivityBuckets_kMediumActivity) {
+  // Make sure that the activity was not reported recently.
+  base::Time last_activity_bucket = base::Time() - base::Days(10);
+  test_pref_service_.SetTime(kActivityBucketLastReportedDateKey,
+                             last_activity_bucket);
+  // Make sure LastReportedDateArray is in range 8 to 15.
+  NSUserDefaults* defaults = [NSUserDefaults standardUserDefaults];
+  NSMutableArray* array = [NSMutableArray array];
+  for (size_t i = 0; i < 9; ++i) {
+    [array addObject:[NSDate date]];
+  }
+  [defaults setObject:array forKey:kActivityBucketLastReportedDateArrayKey];
+
+  [recorder_ recordNTPDidChangeVisibility:YES];
+
+  DCHECK_EQ(test_pref_service_.GetInteger(kActivityBucketKey),
+            static_cast<int>(FeedActivityBucket::kMediumActivity));
 }
