@@ -15,6 +15,8 @@
 #include "build/build_config.h"
 #include "build/chromeos_buildflags.h"
 #include "chrome/browser/ui/bookmarks/bookmark_editor.h"
+#include "components/compose/buildflags.h"
+#include "components/compose/core/browser/compose_client.h"
 #include "content/public/browser/bluetooth_delegate.h"
 #include "content/public/browser/login_delegate.h"
 #include "extensions/buildflags/buildflags.h"
@@ -23,6 +25,7 @@
 #include "third_party/skia/include/core/SkColor.h"
 #include "ui/base/interaction/element_identifier.h"
 #include "ui/base/models/dialog_model.h"
+#include "ui/gfx/geometry/rect_f.h"
 #include "ui/gfx/native_widget_types.h"
 
 class Browser;
@@ -205,6 +208,12 @@ std::unique_ptr<ui::DialogModel> CreateWindowNamePromptDialogModelForTesting(
 // provided.
 using OnProceedCallback = base::OnceCallback<
     void(bool accepted, const std::string& address, const std::string& port)>;
+
+#if BUILDFLAG(ENABLE_COMPOSE)
+void ShowComposeDialog(content::WebContents& web_contents,
+                       const gfx::RectF& element_bounds,
+                       compose::ComposeClient::ComposeDialogCallback callback);
+#endif
 
 }  // namespace chrome
 

@@ -546,7 +546,6 @@ class BrowserView : public BrowserWindow,
   bool IsLocationBarVisible() const override;
   bool IsBorderlessModeEnabled() const override;
   void ShowChromeLabs() override;
-
   SharingDialog* ShowSharingDialog(content::WebContents* contents,
                                    SharingDialogData data) override;
   void ShowUpdateChromeDialog() override;

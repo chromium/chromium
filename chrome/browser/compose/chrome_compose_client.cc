@@ -12,6 +12,8 @@
 #include "chrome/browser/optimization_guide/optimization_guide_keyed_service.h"
 #include "chrome/browser/optimization_guide/optimization_guide_keyed_service_factory.h"
 #include "chrome/browser/profiles/profile.h"
+#include "chrome/browser/ui/browser.h"
+#include "chrome/browser/ui/browser_dialogs.h"
 #include "chrome/browser/ui/browser_finder.h"
 #include "chrome/common/compose/type_conversions.h"
 #include "components/autofill/core/common/form_field_data.h"
@@ -23,6 +25,7 @@
 #include "content/public/browser/web_contents_user_data.h"
 #include "mojo/public/cpp/bindings/callback_helpers.h"
 #include "ui/base/l10n/l10n_util.h"
+#include "ui/gfx/geometry/rect_f.h"
 
 ChromeComposeClient::ChromeComposeClient(content::WebContents* web_contents)
     : content::WebContentsUserData<ChromeComposeClient>(*web_contents),
@@ -100,7 +103,9 @@ void ChromeComposeClient::ShowComposeDialog(
         popup_screen_location,
     ComposeDialogCallback callback) {
   last_compose_field_id_ = trigger_field.global_id();
-  // TODO(b/301609035) Add the compose dialog call here.
+  const gfx::RectF element_bounds = trigger_field.bounds;
+  chrome::ShowComposeDialog(GetWebContents(), element_bounds,
+                            std::move(callback));
 }
 
 compose::ComposeManager& ChromeComposeClient::GetManager() {
