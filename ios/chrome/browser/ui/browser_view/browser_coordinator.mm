@@ -2364,8 +2364,11 @@ enum class ToolbarKind {
     (NSArray<CustomTextCheckingResult*>*)parcels {
   // TODO(crbug.com/1473449): Once Shopping Service API is ready, return
   // early if the parcels are already being tracked.
+  commerce::ShoppingService* shopping_service =
+      commerce::ShoppingServiceFactory::GetForBrowserState(
+          self.browser->GetBrowserState());
   if (IsUserEligibleParcelTrackingOptInPrompt(
-          self.browser->GetBrowserState())) {
+          self.browser->GetBrowserState()->GetPrefs(), shopping_service)) {
     [self showParcelTrackingOptInPromptWithParcels:parcels];
   } else {
     [self maybeShowParcelTrackingInfobarWithParcels:parcels];
@@ -2377,6 +2380,11 @@ enum class ToolbarKind {
                                      forStep:(ParcelTrackingStep)step {
   web::WebState* activeWebState = self.activeWebState;
   CHECK(activeWebState);
+  if (!commerce::ShoppingServiceFactory::GetForBrowserState(
+           self.browser->GetBrowserState())
+           ->IsParcelTrackingEligible()) {
+    return;
+  }
   std::unique_ptr<ParcelTrackingInfobarDelegate> delegate =
       std::make_unique<ParcelTrackingInfobarDelegate>(
           activeWebState, step, parcels,

@@ -5,6 +5,7 @@
 #import "ios/chrome/browser/parcel_tracking/parcel_tracking_util.h"
 
 #import "base/test/scoped_feature_list.h"
+#import "components/commerce/core/mock_shopping_service.h"
 #import "ios/chrome/browser/shared/model/application_context/application_context.h"
 #import "ios/chrome/browser/shared/model/browser_state/test_chrome_browser_state.h"
 #import "ios/chrome/browser/shared/model/prefs/pref_names.h"
@@ -28,6 +29,8 @@ class ParcelTrackingUtilTest : public PlatformTest {
     auth_service_ = static_cast<AuthenticationService*>(
         AuthenticationServiceFactory::GetInstance()->GetForBrowserState(
             browser_state_.get()));
+    shopping_service_ = std::make_unique<commerce::MockShoppingService>();
+    shopping_service_->SetIsParcelTrackingEligible(true);
     fake_identity_ = [FakeSystemIdentity fakeIdentity1];
   }
 
@@ -60,6 +63,7 @@ class ParcelTrackingUtilTest : public PlatformTest {
 
  protected:
   web::WebTaskEnvironment task_environment_;
+  std::unique_ptr<commerce::MockShoppingService> shopping_service_;
   IOSChromeScopedTestingLocalState scoped_testing_local_state_;
   std::unique_ptr<TestChromeBrowserState> browser_state_;
   base::test::ScopedFeatureList scoped_feature_list_;
@@ -73,7 +77,8 @@ TEST_F(ParcelTrackingUtilTest, UserIsEligibleForPrompt) {
   scoped_feature_list_.InitAndEnableFeature(kIOSParcelTracking);
   SignIn();
   SetPromptDisplayedStatus(false);
-  EXPECT_TRUE(IsUserEligibleParcelTrackingOptInPrompt(browser_state_.get()));
+  EXPECT_TRUE(IsUserEligibleParcelTrackingOptInPrompt(
+      browser_state_->GetPrefs(), shopping_service_.get()));
 }
 
 // Tests that IsUserEligibleParcelTrackingOptInPrompt returns false when the
@@ -82,7 +87,9 @@ TEST_F(ParcelTrackingUtilTest, NotSignedIn) {
   scoped_feature_list_.InitAndEnableFeature(kIOSParcelTracking);
   SignOut();
   SetPromptDisplayedStatus(false);
-  EXPECT_FALSE(IsUserEligibleParcelTrackingOptInPrompt(browser_state_.get()));
+  shopping_service_->SetIsParcelTrackingEligible(false);
+  EXPECT_FALSE(IsUserEligibleParcelTrackingOptInPrompt(
+      browser_state_->GetPrefs(), shopping_service_.get()));
 }
 
 // Tests that IsUserEligibleParcelTrackingOptInPrompt returns false when the
@@ -91,7 +98,8 @@ TEST_F(ParcelTrackingUtilTest, FeatureDisabled) {
   scoped_feature_list_.InitAndDisableFeature(kIOSParcelTracking);
   SignIn();
   SetPromptDisplayedStatus(false);
-  EXPECT_FALSE(IsUserEligibleParcelTrackingOptInPrompt(browser_state_.get()));
+  EXPECT_FALSE(IsUserEligibleParcelTrackingOptInPrompt(
+      browser_state_->GetPrefs(), shopping_service_.get()));
 }
 
 // Tests that IsUserEligibleParcelTrackingOptInPrompt returns false when the
@@ -100,5 +108,6 @@ TEST_F(ParcelTrackingUtilTest, UserHasSeenPrompt) {
   scoped_feature_list_.InitAndEnableFeature(kIOSParcelTracking);
   SignIn();
   SetPromptDisplayedStatus(true);
-  EXPECT_FALSE(IsUserEligibleParcelTrackingOptInPrompt(browser_state_.get()));
+  EXPECT_FALSE(IsUserEligibleParcelTrackingOptInPrompt(
+      browser_state_->GetPrefs(), shopping_service_.get()));
 }
