@@ -286,25 +286,6 @@ async function setupDynamicColor(): Promise<void> {
   }
 }
 
-function setupNewFeatureToast(
-    cameraManager: CameraManager, cameraView: Camera) {
-  // TODO(b/236800499): Remove the toast around 3 milestones after the feature
-  // is launched.
-  if (loadTimeData.getChromeFlag(Flag.TIME_LAPSE)) {
-    cameraManager.registerCameraUI({
-      onUpdateConfig: () => {
-        if (localStorage.getBool(LocalStorageKey.TIME_LAPSE_DIALOG_SHOWN) ||
-            state.get(Mode.VIDEO)) {
-          return;
-        }
-        customEffect.showTimeLapseIntroToast(cameraView.root);
-        // Do not show the toast to users who has already seen it.
-        localStorage.set(LocalStorageKey.TIME_LAPSE_DIALOG_SHOWN, true);
-      },
-    });
-  }
-}
-
 async function setupMultiWindowHandling(
     cameraManager: CameraManager, cameraView: Camera,
     cameraResourceInitialized: WaitableEvent): Promise<void> {
@@ -530,7 +511,6 @@ async function main() {
   setupToggles();
   localStorage.cleanup();
   setupEffect();
-  setupNewFeatureToast(cameraManager, cameraView);
   setupExperimentalFeatures();
   preloadImages();
   preloadSounds();

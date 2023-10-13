@@ -186,24 +186,3 @@ Use these custom properties to control the feature toasts, for example:
 .ripple.animate {
   animation: ripple-scale var(--duration) cubic-bezier(0.4, 0, 0, 1), ripple-opacity var(--duration) cubic-bezier(0, 0, 0.4, 1);
 }
-
-#modes-group .mode-item {
-  --ripple-start-height: 20px;
-  --ripple-start-width: 54px;
-
-  --toast-ref-x: left;
-  --toast-element-ref-x: left;
-  --toast-offset-x: 0;
-
-  --toast-ref-y: bottom;
-  --toast-element-ref-y: top;
-  --toast-offset-y: -30px;
-
-  --indicator-dot-ref-x: left;
-  --indicator-dot-element-ref-x: center;
-  --indicator-dot-offset-x: 0px;
-
-  --indicator-dot-ref-y: bottom;
-  --indicator-dot-element-ref-y: top;
-  --indicator-dot-offset-y: -14px;
-}

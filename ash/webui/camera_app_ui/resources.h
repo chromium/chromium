@@ -148,7 +148,6 @@ const struct {
     {"msg_processing_image", IDS_MSG_PROCESSING_IMAGE},
     {"msg_processing_video", IDS_MSG_PROCESSING_VIDEO},
     {"name", IDS_NAME},
-    {"new_time_lapse_toast", IDS_NEW_TIME_LAPSE_TOAST},
     {"next_page_count", IDS_NEXT_PAGE_COUNT},
     {"no_document_guide_msg", IDS_NO_DOCUMENT_GUIDE_MSG},
     {"open_grid_panel_button", IDS_OPEN_GRID_PANEL_BUTTON},

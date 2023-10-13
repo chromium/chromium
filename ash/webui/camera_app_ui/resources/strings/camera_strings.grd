@@ -465,9 +465,6 @@
       <message desc="Label for spoken feedback to read out for recording time lapse video." name="IDS_RECORD_TIME_LAPSE_VIDEO_OPTION">
         Record time lapse video
       </message>
-      <message desc="Toast message notifying user about new time lapse mode is available." name="IDS_NEW_TIME_LAPSE_TOAST">
-        Time Lapse mode is now available!
-      </message>
       <message desc="Label for the confirm button to confirm with the reviewed photo or video." name="IDS_CONFIRM_REVIEW_BUTTON">
         Confirm
       </message>

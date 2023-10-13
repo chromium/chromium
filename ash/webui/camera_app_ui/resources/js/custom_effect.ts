@@ -397,12 +397,3 @@ export function focus(): void {
   }
   globalEffectPayload.toast.focus();
 }
-
-/**
- * Show the new feature toast for time-lapse video recording.
- */
-export function showTimeLapseIntroToast(parent: HTMLElement): void {
-  const videoModeButton = dom.get(
-      '.mode-item[i18n-new-feature=new_time_lapse_toast]', HTMLDivElement);
-  showNewFeature(videoModeButton, parent);
-}
