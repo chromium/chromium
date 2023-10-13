@@ -8,8 +8,8 @@
 #include <utility>
 #include <vector>
 
-#include "base/debug/alias.h"
 #include "base/functional/callback.h"
+#include "base/logging.h"
 #include "base/memory/ptr_util.h"
 #include "base/strings/string_number_conversions.h"
 #include "base/task/single_thread_task_runner.h"
@@ -404,9 +404,15 @@ void HeadlessBrowserImpl::CreatePrefService() {
              base::TaskShutdownBehavior::BLOCK_SHUTDOWN}),
         /*read_only=*/true);
     auto result = pref_store->ReadPrefs();
-    base::debug::Alias(&result);
-    if (result != JsonPrefStore::PREF_READ_ERROR_NONE) {
-      CHECK_EQ(result, JsonPrefStore::PREF_READ_ERROR_NO_FILE);
+    if (result != JsonPrefStore::PREF_READ_ERROR_NONE &&
+        result != JsonPrefStore::PREF_READ_ERROR_NO_FILE) {
+      LOG(ERROR) << "Failed to read prefs in '" << local_state_file
+                 << "', error: " << result;
+      BrowserMainThread()->PostTask(
+          FROM_HERE,
+          base::BindOnce(&HeadlessBrowserImpl::ShutdownWithExitCode,
+                         weak_ptr_factory_.GetWeakPtr(), EXIT_FAILURE));
+      return;
     }
   }
 
