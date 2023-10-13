@@ -25,7 +25,7 @@ found in the LICENSE file.
     <dimen name="single_tab_module_lateral_margin">20dp</dimen>
     <dimen name="single_tab_module_padding_top">16dp</dimen>
     <dimen name="single_tab_module_padding_bottom">20dp</dimen>
-    <dimen name="single_tab_module_tab_thumbnail_size">116dp</dimen>
+    <dimen name="single_tab_module_tab_thumbnail_size">106dp</dimen>
     <dimen name="single_tab_thumbnail_margin">1dp</dimen>
     <dimen name="single_tab_thumbnail_radius">12dp</dimen>
     <dimen name="favicon_padding">4dp</dimen>
