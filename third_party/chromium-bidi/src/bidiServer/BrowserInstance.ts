@@ -36,7 +36,7 @@ import {WebSocketTransport} from '../utils/WebsocketTransport.js';
 import {EventEmitter} from '../utils/EventEmitter.js';
 
 import {MapperCdpConnection} from './MapperCdpConnection.js';
-import {readMapperTabFile} from './reader.js';
+import {getMapperTabSource} from './reader.js';
 
 const debugInternal = debug('bidi:mapper:internal');
 
@@ -112,13 +112,13 @@ export class BrowserInstance extends EventEmitter<Record<'message', string>> {
       cdpEndpoint
     );
 
-    // 2. Get `BiDi-CDP` mapper JS binaries using `readMapperTabFile`.
-    const bidiMapperScript = await readMapperTabFile();
+    // 2. Get `BiDi-CDP` mapper JS binaries.
+    const mapperTabSource = await getMapperTabSource();
 
     // 3. Run `BiDi-CDP` mapper in launched browser using `MapperRunner`.
     const mapperCdpConnection = await MapperCdpConnection.create(
       cdpConnection,
-      bidiMapperScript,
+      mapperTabSource,
       verbose
     );
 
