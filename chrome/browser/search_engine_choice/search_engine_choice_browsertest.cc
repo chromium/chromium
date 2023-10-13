@@ -50,6 +50,7 @@
 #include "content/public/test/browser_test.h"
 #include "testing/gmock/include/gmock/gmock.h"
 #include "testing/gtest/include/gtest/gtest.h"
+#include "ui/base/window_open_disposition.h"
 
 // TODO(b/280753754): Convert these tests to interactive ui tests.
 
@@ -251,6 +252,35 @@ IN_PROC_BROWSER_TEST_F(SearchEngineChoiceBrowserTest,
   QuitAndRestoreBrowser(browser());
   ASSERT_TRUE(browser());
   EXPECT_EQ(browser()->tab_strip_model()->count(), 3);
+}
+
+IN_PROC_BROWSER_TEST_F(SearchEngineChoiceBrowserTest, BackgroundTab) {
+  // Navigate the current tab to the settings page.
+  ASSERT_TRUE(ui_test_utils::NavigateToURLWithDisposition(
+      browser(), GURL(chrome::kChromeUISettingsURL),
+      WindowOpenDisposition::CURRENT_TAB,
+      ui_test_utils::BROWSER_TEST_WAIT_FOR_LOAD_STOP));
+  EXPECT_EQ(browser()->tab_strip_model()->count(), 1);
+
+  auto* service = static_cast<MockSearchEngineChoiceService*>(
+      SearchEngineChoiceServiceFactory::GetForProfile(browser()->profile()));
+  ASSERT_TRUE(service);
+  EXPECT_FALSE(service->IsShowingDialog(browser()));
+
+  // Load an eligible tab in the background, the dialog does not open.
+  ASSERT_TRUE(ui_test_utils::NavigateToURLWithDisposition(
+      browser(), GURL(chrome::kChromeUINewTabPageURL),
+      WindowOpenDisposition::NEW_BACKGROUND_TAB,
+      ui_test_utils::BROWSER_TEST_WAIT_FOR_LOAD_STOP));
+  ASSERT_EQ(browser()->tab_strip_model()->count(), 2);
+  EXPECT_FALSE(service->IsShowingDialog(browser()));
+
+  // Switch to the eligible tab after it's loaded, the dialog opens.
+  browser()->tab_strip_model()->ActivateTabAt(1);
+  ASSERT_EQ(
+      browser()->tab_strip_model()->GetActiveWebContents()->GetVisibleURL(),
+      GURL(chrome::kChromeUINewTabPageURL));
+  EXPECT_TRUE(service->IsShowingDialog(browser()));
 }
 
 IN_PROC_BROWSER_TEST_F(SearchEngineChoiceBrowserTest,

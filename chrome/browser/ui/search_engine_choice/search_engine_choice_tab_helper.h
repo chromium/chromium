@@ -7,10 +7,13 @@
 
 #include "content/public/browser/web_contents_observer.h"
 #include "content/public/browser/web_contents_user_data.h"
+#include "third_party/abseil-cpp/absl/types/optional.h"
+#include "ui/gfx/geometry/size.h"
 
 namespace content {
 class WebContents;
 }
+
 class Browser;
 
 // Helper class which watches `web_contents` to determine whether there is an
@@ -32,6 +35,11 @@ class SearchEngineChoiceTabHelper
   // content::WebContentsObserver:
   void DidFinishNavigation(
       content::NavigationHandle* navigation_handle) override;
+  void OnVisibilityChanged(content::Visibility visibility) override;
+
+  // Shows the dialog if the user is eligible and if the tab is in compatible
+  // state (e.g. visible, loaded, suitable URL).
+  void MaybeShowDialog();
 
   WEB_CONTENTS_USER_DATA_KEY_DECL();
 };

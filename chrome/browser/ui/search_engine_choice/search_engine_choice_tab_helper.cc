@@ -5,13 +5,15 @@
 #include "chrome/browser/ui/search_engine_choice/search_engine_choice_tab_helper.h"
 
 #include "base/check_deref.h"
-#include "chrome/browser/profiles/profile.h"
 #include "chrome/browser/search_engine_choice/search_engine_choice_service.h"
 #include "chrome/browser/search_engine_choice/search_engine_choice_service_factory.h"
 #include "chrome/browser/ui/browser.h"
 #include "chrome/browser/ui/browser_finder.h"
 #include "components/search_engines/search_engine_choice_utils.h"
+#include "content/public/browser/navigation_controller.h"
+#include "content/public/browser/navigation_entry.h"
 #include "content/public/browser/navigation_handle.h"
+#include "content/public/browser/visibility.h"
 #include "content/public/browser/web_contents.h"
 
 #if BUILDFLAG(IS_CHROMEOS)
@@ -42,14 +44,35 @@ void SearchEngineChoiceTabHelper::DidFinishNavigation(
     return;
   }
 
-  Browser& browser = CHECK_DEREF(
-      chrome::FindBrowserWithTab(navigation_handle->GetWebContents()));
+  MaybeShowDialog();
+}
+
+void SearchEngineChoiceTabHelper::OnVisibilityChanged(
+    content::Visibility visibility) {
+  MaybeShowDialog();
+}
+
+void SearchEngineChoiceTabHelper::MaybeShowDialog() {
+  // Background tabs are not considered.
+  if (web_contents()->GetVisibility() == content::Visibility::HIDDEN) {
+    return;
+  }
+
+  content::NavigationController& navigation_controller =
+      web_contents()->GetController();
+
+  // Do not show if the page is still loading.
+  if (navigation_controller.GetPendingEntry() != nullptr) {
+    return;
+  }
+
+  Browser& browser = CHECK_DEREF(chrome::FindBrowserWithTab(web_contents()));
   SearchEngineChoiceService* search_engine_choice_service =
       SearchEngineChoiceServiceFactory::GetForProfile(browser.profile());
   if (!search_engine_choice_service ||
       !search_engine_choice_service->CanShowDialog(browser) ||
       !search_engine_choice_service->IsUrlSuitableForDialog(
-          navigation_handle->GetURL())) {
+          navigation_controller.GetLastCommittedEntry()->GetURL())) {
     return;
   }
   ShowSearchEngineChoiceDialog(browser);
