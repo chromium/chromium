@@ -88,6 +88,7 @@ PAK_SECTIONS = (
 )
 
 CONTAINER_MULTIPLE = '*'
+CONTAINER_NAME_EMPTY = '(empty)'
 
 SECTION_NAME_TO_SECTION = {
     SECTION_ARSC: 'a',
@@ -253,6 +254,9 @@ class Container(BaseContainer):
     self.section_sizes = section_sizes  # E.g. {SECTION_TEXT: 0}
     self.metrics_by_file = metrics_by_file
 
+  def IsEmpty(self):
+    return self.name == CONTAINER_NAME_EMPTY
+
   @staticmethod
   def Empty():
     """Returns a placeholder Container that should be read-only.
@@ -261,7 +265,7 @@ class Container(BaseContainer):
     exist, unfortunately). Creating a new instance instead of using a global
     singleton for robustness.
     """
-    return Container(name='(empty)',
+    return Container(name=CONTAINER_NAME_EMPTY,
                      metadata={},
                      section_sizes={},
                      metrics_by_file={})
@@ -438,6 +442,51 @@ class DeltaSizeInfo(BaseSizeInfo):
   @property
   def is_sparse(self):
     return self.before.is_sparse and self.after.is_sparse
+
+  def MergeDeltaSizeInfo(self, other):
+    assert isinstance(other, DeltaSizeInfo), 'Found ' + type(other)
+    # The list of adds/removes might not be accurate anymore, so remove them.
+    # They could be re-computed if the need arises.
+    self.removed_sources = []
+    self.added_sources = []
+
+    # Assumes BUILD_CONFIG_GIT_REVISION is always present.
+    i = 1
+    while f'Merged{i}_{BUILD_CONFIG_GIT_REVISION}' in self.after.build_config:
+      i += 1
+    prefix = f'Merged{i}'
+
+    # TODO(agrieve): Merge container metadata & metrics_by_file.
+    for k, v in other.before.build_config.items():
+      self.before.build_config[f'{prefix}_{k}'] = v
+    for k, v in other.after.build_config.items():
+      self.after.build_config[f'{prefix}_{k}'] = v
+
+    for other_c in other.containers:
+      match = self.ContainerForName(other_c.name)
+      if match is None:
+        match = other_c
+        self.containers.append(other_c)
+      else:
+        if match.before.IsEmpty() and not other_c.before.IsEmpty():
+          match.before = other_c.before
+        if match.after.IsEmpty() and not other_c.after.IsEmpty():
+          match.after = other_c.after
+      if match.before not in self.before.containers:
+        self.before.containers.append(match.before)
+      if match.after and match.after not in self.after.containers:
+        self.after.containers.append(match.after)
+
+    BaseContainer.AssignShortNames(self.before.containers)
+    BaseContainer.AssignShortNames(self.after.containers)
+    BaseContainer.AssignShortNames(self.containers)
+
+    # Not updating symbol container references because doing so is not currently
+    # necessary.
+
+    self.raw_symbols += other.raw_symbols
+    self.before.raw_symbols += other.before.raw_symbols
+    self.after.raw_symbols += other.after.raw_symbols
 
 
 class BaseSymbol:

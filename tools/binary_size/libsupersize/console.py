@@ -556,6 +556,7 @@ def Run(args, on_config_error):
 
   size_infos = []
   for path in args.inputs:
+    logging.warning('Loading %s', path)
     if path.endswith('.sizediff'):
       size_infos.extend(archive.LoadAndPostProcessDeltaSizeInfo(path))
     else:
