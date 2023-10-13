@@ -12,27 +12,42 @@ namespace blink {
 // static
 AttributePart* AttributePart::Create(PartRootUnion* root_union,
                                      Node* node,
-                                     String local_name,
+                                     AtomicString local_name,
                                      bool automatic,
-                                     const PartInit* init) {
+                                     const PartInit* init,
+                                     ExceptionState& exception_state) {
+  Element* element = DynamicTo<Element>(node);
+  if (!element) {
+    exception_state.ThrowDOMException(
+        DOMExceptionCode::kInvalidStateError,
+        "An AttributePart must be constructed on an Element.");
+    return nullptr;
+  }
   return MakeGarbageCollected<AttributePart>(
-      *PartRoot::GetPartRootFromUnion(root_union), *node, local_name, automatic,
-      init);
+      *PartRoot::GetPartRootFromUnion(root_union), *element, local_name,
+      automatic, init);
 }
 
 AttributePart::AttributePart(PartRoot& root,
-                             Node& node,
-                             String local_name,
+                             Element& element,
+                             AtomicString local_name,
                              bool automatic,
                              const Vector<String> metadata)
-    : NodePart(root, node, !automatic, metadata),
+    : NodePart(root, element, !automatic, metadata),
       local_name_(local_name),
       automatic_(automatic) {}
 
 Part* AttributePart::ClonePart(NodeCloningData& data, Node& node_clone) const {
   DCHECK(IsValid());
-  return MakeGarbageCollected<AttributePart>(
-      data.CurrentPartRoot(), node_clone, local_name_, automatic_, metadata());
+  Element& element_clone = To<Element>(node_clone);
+  Part* new_part =
+      MakeGarbageCollected<AttributePart>(data.CurrentPartRoot(), element_clone,
+                                          local_name_, automatic_, metadata());
+  absl::optional<AtomicString> attribute_value = data.NextAttributeValue();
+  if (attribute_value) {
+    element_clone.setAttribute(local_name_, *attribute_value);
+  }
+  return new_part;
 }
 
 }  // namespace blink

@@ -109,6 +109,7 @@ static constexpr uint16_t CreateScanFlags(UChar cc) {
 #define kChildNodePartStartMarker "{{#}}"
 #define kChildNodePartEndMarker "{{/}}"
 #define kNodePartMarker "{{}}"
+#define kAttributePartMarker "{{}}"
 
 // Table of precomputed scan flags for the first 128 ASCII characters.
 static constexpr const uint16_t character_scan_flags_[128] = {
@@ -218,7 +219,7 @@ bool HTMLTokenizer::FlushBufferedEndTag(SegmentedString& source,
 #define FLUSH_AND_ADVANCE_TO_MAY_CONTAIN_NEWLINE(stateName) \
   FLUSH_AND_ADVANCE_TO(stateName, /* current_char_may_be_newline */ true)
 
-#define ADVANCE_PAST_MULTIPLE_NO_NEWLINE(len, currentState)             \
+#define ADVANCE_PAST_MULTIPLE_NO_NEWLINE(len, newState)                 \
   {                                                                     \
     DCHECK(RuntimeEnabledFeatures::DOMPartsAPIEnabled());               \
     for (unsigned i = 1; i < (len); ++i) {                              \
@@ -226,7 +227,11 @@ bool HTMLTokenizer::FlushBufferedEndTag(SegmentedString& source,
           input_stream_preprocessor_.AdvancePastNonNewline(source, cc); \
       DCHECK(success);                                                  \
     }                                                                   \
-    HTML_CONSUME(currentState);                                         \
+    if (state_ == HTMLTokenizer::newState) {                            \
+      HTML_CONSUME(newState);                                           \
+    } else {                                                            \
+      HTML_SWITCH_TO(newState);                                         \
+    }                                                                   \
   }
 
 bool HTMLTokenizer::FlushEmitAndResumeInDataState(SegmentedString& source) {
@@ -854,6 +859,7 @@ bool HTMLTokenizer::NextTokenImpl(SegmentedString& source) {
       } else if (cc == '{' && ShouldAllowDOMParts() &&
                  source.LookAhead(kNodePartMarker) ==
                      SegmentedString::kDidMatch) {
+        static_assert(kNodePartMarker[0] == '{');
         token_.SetNeedsNodePart();
         // Need to skip ahead here so we don't get {{}} as an attribute.
         ADVANCE_PAST_MULTIPLE_NO_NEWLINE(sizeof(kNodePartMarker) - 1,
@@ -969,6 +975,19 @@ bool HTMLTokenizer::NextTokenImpl(SegmentedString& source) {
       } else if (cc == '>') {
         ParseError();
         return EmitAndResumeInDataState(source);
+
+      } else if (cc == '{' && ShouldAllowDOMParts() &&
+                 source.LookAhead(kAttributePartMarker) ==
+                     SegmentedString::kDidMatch) {
+        static_assert(kAttributePartMarker[0] == '{');
+        token_.SetNeedsAttributePart();
+        if (track_attributes_ranges_) {
+          attributes_ranges_.EndAttributeValue(
+              source.NumberOfCharactersConsumed());
+        }
+        // Skip ahead so we don't get {{}} in the attribute value.
+        ADVANCE_PAST_MULTIPLE_NO_NEWLINE(sizeof(kAttributePartMarker) - 1,
+                                         kBeforeAttributeNameState);
       } else if (cc == kEndOfFileMarker) {
         ParseError();
         HTML_RECONSUME_IN(kDataState);
@@ -1744,9 +1763,11 @@ bool HTMLTokenizer::EmitData(SegmentedString& source, UChar cc) {
           return EmitEndOfFile(source);
         break;
       case '{':
+        DCHECK_EQ(strlen(kChildNodePartStartMarker),
+                  strlen(kChildNodePartEndMarker));
+        static_assert(kChildNodePartStartMarker[0] == '{');
+        static_assert(kChildNodePartEndMarker[0] == '{');
         if (ShouldAllowDOMParts()) {
-          DCHECK_EQ(strlen(kChildNodePartStartMarker),
-                    strlen(kChildNodePartEndMarker));
           auto result = source.LookAhead(kChildNodePartStartMarker);
           if (result == SegmentedString::kDidMatch) {
             state_ = kChildNodePartStartState;
