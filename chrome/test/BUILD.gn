@@ -5329,58 +5329,8 @@ if (is_chromeos_lacros) {
     ]
   }
 
-  # TODO(crbug/1474709): Merge lacros_chrome_browsertests with
-  # lacros_chrome_browsertests_run_in_series.
-  # We are in progress with the migration. Please do NOT add any new tests
-  # in lacros_chrome_browsertests.
-  test("lacros_chrome_browsertests") {
-    use_xvfb = use_xvfb_in_this_config
-
-    configs += [ "//build/config:precompiled_headers" ]
-    defines = [
-      "HAS_OUT_OF_PROC_TEST_RUNNER",
-      "CHROME_VERSION_MAJOR=" + chrome_version_major,
-    ]
-
-    sources = []
-
-    deps = [
-      ":browser_tests_runner",
-      ":lacros_test_support_ui",
-      ":sync_integration_test_support",
-      ":test_support",
-      "//chrome/app:command_ids",
-      "//chrome/browser/chromeos",
-      "//chrome/browser/chromeos:test_support",
-      "//chromeos/crosapi/mojom",
-      "//chromeos/lacros",
-      "//chromeos/lacros:test_support",
-      "//chromeos/startup",
-      "//components/proxy_config:proxy_config",
-      "//components/sync:test_support",
-      "//components/user_manager",
-      "//ui/ozone",
-      "//ui/platform_window",
-    ]
-
-    data = [
-      "//content/test/data/",
-      "data/media/",
-      "data/extensions/api_test/shared_storage_private/",
-      "data/extensions/api_test/login_screen_apis/",
-      "data/extensions/platform_apps/minimal/",
-    ]
-
-    data_deps = [
-      "//build:version_metadata",
-      "//chrome:packed_resources",
-      "//testing/buildbot/filters:lacros_chrome_browsertests_filters",
-    ]
-  }
-
   # This test target is intended for lacros chrome specific tests that depend
-  # on crosapi and must run in series, for those that can run in parallel,
-  # please use lacros_chrome_browsertests target instead.
+  # on crosapi.
   test("lacros_chrome_browsertests_run_in_series") {
     use_xvfb = use_xvfb_in_this_config
 
