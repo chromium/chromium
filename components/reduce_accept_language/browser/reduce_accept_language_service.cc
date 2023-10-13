@@ -57,6 +57,10 @@ ReduceAcceptLanguageService::ReduceAcceptLanguageService(
 
 ReduceAcceptLanguageService::~ReduceAcceptLanguageService() = default;
 
+void ReduceAcceptLanguageService::Shutdown() {
+  pref_accept_language_.Destroy();
+}
+
 absl::optional<std::string> ReduceAcceptLanguageService::GetReducedLanguage(
     const url::Origin& origin) {
   const GURL& url = origin.GetURL();
