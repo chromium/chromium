@@ -52,18 +52,13 @@ constexpr int kArtworkCornerRadius = 12;
 constexpr int kSourceLineHeight = 18;
 constexpr int kTitleArtistLineHeight = 20;
 constexpr int kNotMediaActionButtonId = -1;
+constexpr int kFontSize = 12;
 
 constexpr float kFocusRingHaloInset = -3.0f;
 
 constexpr auto kArtworkSize = gfx::Size(80, 80);
 constexpr auto kPlayPauseButtonSize = gfx::Size(48, 48);
 constexpr auto kControlsButtonSize = gfx::Size(32, 32);
-
-const views::Label::CustomFont kTextFont = {
-    .font_list = gfx::FontList(gfx::FontList({"Google Sans", "Roboto"},
-                                             gfx::Font::NORMAL,
-                                             /*font_size=*/12,
-                                             gfx::Font::Weight::NORMAL))};
 
 const char kMediaDisplayPageHistogramName[] = "Media.Notification.DisplayPage";
 
@@ -191,8 +186,12 @@ MediaNotificationViewAshImpl::MediaNotificationViewAshImpl(
       kMediaInfoSeparator));
   main_row_layout->SetFlexForView(media_info_column, 1);
 
+  const views::Label::CustomFont text_fonts = {
+      gfx::FontList({"Google Sans", "Roboto"}, gfx::Font::NORMAL, kFontSize,
+                    gfx::Font::Weight::NORMAL)};
+
   source_label_ = media_info_column->AddChildView(
-      std::make_unique<views::Label>(base::EmptyString16(), kTextFont));
+      std::make_unique<views::Label>(base::EmptyString16(), text_fonts));
   source_label_->SetLineHeight(kSourceLineHeight);
   source_label_->SetHorizontalAlignment(gfx::ALIGN_LEFT);
   source_label_->SetEnabledColorId(theme_.secondary_foreground_color_id);
@@ -204,7 +203,7 @@ MediaNotificationViewAshImpl::MediaNotificationViewAshImpl(
       views::BoxLayout::CrossAxisAlignment::kCenter);
 
   title_label_ = title_row_->AddChildView(
-      std::make_unique<views::Label>(base::EmptyString16(), kTextFont));
+      std::make_unique<views::Label>(base::EmptyString16(), text_fonts));
   title_label_->SetLineHeight(kTitleArtistLineHeight);
   title_label_->SetHorizontalAlignment(gfx::ALIGN_LEFT);
   title_label_->SetEnabledColorId(theme_.primary_foreground_color_id);
@@ -221,7 +220,7 @@ MediaNotificationViewAshImpl::MediaNotificationViewAshImpl(
   }
 
   artist_label_ = media_info_column->AddChildView(
-      std::make_unique<views::Label>(base::EmptyString16(), kTextFont));
+      std::make_unique<views::Label>(base::EmptyString16(), text_fonts));
   artist_label_->SetLineHeight(kTitleArtistLineHeight);
   artist_label_->SetHorizontalAlignment(gfx::ALIGN_LEFT);
   artist_label_->SetEnabledColorId(theme_.secondary_foreground_color_id);
