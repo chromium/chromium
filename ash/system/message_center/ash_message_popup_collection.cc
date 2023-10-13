@@ -28,6 +28,7 @@
 #include "ash/system/tray/tray_utils.h"
 #include "ash/system/unified/unified_system_tray.h"
 #include "ash/wm/tablet_mode/tablet_mode_controller.h"
+#include "ash/wm/window_properties.h"
 #include "ash/wm/work_area_insets.h"
 #include "base/check.h"
 #include "base/i18n/rtl.h"
@@ -347,6 +348,8 @@ void AshMessagePopupCollection::ConfigureWidgetInitParamsForContainer(
   init_params->activatable = views::Widget::InitParams::Activatable::kYes;
   init_params->name = kMessagePopupWidgetName;
   init_params->corner_radius = kMessagePopupCornerRadius;
+  init_params->init_properties_container.SetProperty(
+      kStayInOverviewOnActivationKey, true);
   Shell::Get()->focus_cycler()->AddWidget(widget);
   widget->AddObserver(this);
   tracked_widgets_.insert(widget);

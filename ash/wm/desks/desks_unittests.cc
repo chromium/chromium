@@ -148,6 +148,7 @@
 #include "ui/views/background.h"
 #include "ui/views/controls/button/button.h"
 #include "ui/views/controls/button/label_button.h"
+#include "ui/views/widget/any_widget_observer.h"
 #include "ui/views/widget/widget.h"
 #include "ui/views/widget/widget_delegate.h"
 #include "ui/views/window/client_view.h"
@@ -2719,35 +2720,6 @@ TEST_F(DesksWithMultiDisplayOverview, DropOnOtherDeskInOtherDisplay) {
   EXPECT_TRUE(base::Contains(desk_2->windows(), win.get()));
 }
 
-// DesksBarVisibilityObserver waits for the Desks Bar on the observed root
-// window to become visible.
-class DesksBarVisibilityObserver : public aura::WindowObserver {
- public:
-  explicit DesksBarVisibilityObserver(aura::Window* root_window)
-      : root_window_(root_window) {
-    root_window_->AddObserver(this);
-  }
-  DesksBarVisibilityObserver(const DesksBarVisibilityObserver&) = delete;
-  DesksBarVisibilityObserver& operator=(const DesksBarVisibilityObserver&) =
-      delete;
-  ~DesksBarVisibilityObserver() override {
-    DCHECK(root_window_);
-    root_window_->RemoveObserver(this);
-  }
-
-  void Wait() { run_loop_.Run(); }
-
-  void OnWindowVisibilityChanged(aura::Window* window, bool visible) override {
-    if (visible && window->GetId() == kShellWindowId_DesksBarWindow) {
-      run_loop_.Quit();
-    }
-  }
-
- private:
-  base::RunLoop run_loop_;
-  raw_ptr<aura::Window> root_window_;
-};
-
 // Tests that closing a desk while in overview before the overview starting
 // animation finishes on a second display does not cause a crash. Regression
 // test for https://crbug.com/1346154.
@@ -2786,10 +2758,11 @@ TEST_F(DesksWithMultiDisplayOverview, CloseDeskBeforeAnimationFinishes) {
   // if that miniview can't be found.
   // To prevent flakiness in this test, we wait until `desks_bar_view_2` is
   // initialized and shown before we check the state.
-  DesksBarVisibilityObserver desks_bar_2_observer(root_windows[1]);
+  views::NamedWidgetShownWaiter waiter(views::test::AnyWidgetTestPasskey{},
+                                       "OverviewDeskBarWidget");
   auto* desk_1_mini_view = desks_bar_view_1->mini_views()[0];
   CloseDeskFromMiniView(desk_1_mini_view, GetEventGenerator());
-  desks_bar_2_observer.Wait();
+  waiter.WaitIfNeededAndGet();
 
   // Verify that we are still in overview mode and that both desks bars are in
   // the zero state.

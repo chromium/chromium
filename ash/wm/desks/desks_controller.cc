@@ -15,7 +15,6 @@
 #include "ash/public/cpp/shelf_model.h"
 #include "ash/public/cpp/shelf_prefs.h"
 #include "ash/public/cpp/shelf_types.h"
-#include "ash/public/cpp/shell_window_ids.h"
 #include "ash/public/cpp/system/toast_data.h"
 #include "ash/public/cpp/system/toast_manager.h"
 #include "ash/public/cpp/window_properties.h"
@@ -44,6 +43,7 @@
 #include "ash/wm/switchable_windows.h"
 #include "ash/wm/tablet_mode/tablet_mode_controller.h"
 #include "ash/wm/window_cycle/window_cycle_controller.h"
+#include "ash/wm/window_properties.h"
 #include "ash/wm/window_restore/window_restore_controller.h"
 #include "ash/wm/window_restore/window_restore_util.h"
 #include "ash/wm/window_state.h"
@@ -1304,9 +1304,7 @@ const Desk* DesksController::CreateNewDeskForSavedDesk(
     // list.
     auto active_desk_windows = active_desk_->windows();
     for (aura::Window* window : active_desk_windows) {
-      if (window->GetId() == kShellWindowId_DesksBarWindow ||
-          window->GetId() == kShellWindowId_SaveDeskButtonContainer ||
-          window->GetId() == kShellWindowId_SavedDeskLibraryWindow) {
+      if (window->GetProperty(kOverviewUiKey)) {
         aura::Window* destination_container =
             desk->GetDeskContainerForRoot(window->GetRootWindow());
         destination_container->AddChild(window);

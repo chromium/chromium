@@ -17,6 +17,7 @@
 #include "ash/wm/desks/templates/saved_desk_metrics_util.h"
 #include "ash/wm/overview/overview_controller.h"
 #include "ash/wm/overview/overview_grid.h"
+#include "ash/wm/window_properties.h"
 #include "base/memory/raw_ptr.h"
 #include "chromeos/constants/chromeos_features.h"
 #include "ui/aura/env.h"
@@ -377,6 +378,7 @@ void SavedDeskDialogController::CreateDialogWidget(
     views::Widget::InitParams params;
     params.type = views::Widget::InitParams::Type::TYPE_WINDOW_FRAMELESS;
     params.context = root_window;
+    params.init_properties_container.SetProperty(kOverviewUiKey, true);
     params.delegate = dialog.release();
 
     dialog_widget_ = new views::Widget();
@@ -385,6 +387,7 @@ void SavedDeskDialogController::CreateDialogWidget(
     dialog_widget_ = views::DialogDelegate::CreateDialogWidget(
         std::move(dialog),
         /*context=*/root_window, /*parent=*/nullptr);
+    dialog_widget_->GetNativeWindow()->SetProperty(kOverviewUiKey, true);
   }
   dialog_widget_->GetNativeWindow()->SetName("TemplateDialogForTesting");
   dialog_widget_->Show();

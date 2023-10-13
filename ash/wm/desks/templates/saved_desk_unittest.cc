@@ -1208,35 +1208,6 @@ TEST_F(SavedDeskTest, SaveDeskAsTemplateButtonShowsSavedDeskGrid) {
   EXPECT_TRUE(GetOverviewGridList()[0]->IsShowingSavedDeskLibrary());
 }
 
-// SaveDeskButtonContainerVisibilityObserver waits for the save desk buttons on
-// the observed root window to become visible.
-class SaveDeskButtonContainerVisibilityObserver : public aura::WindowObserver {
- public:
-  explicit SaveDeskButtonContainerVisibilityObserver(aura::Window* root_window)
-      : root_window_(root_window) {
-    root_window_->AddObserver(this);
-  }
-  SaveDeskButtonContainerVisibilityObserver(
-      const SaveDeskButtonContainerVisibilityObserver&) = delete;
-  SaveDeskButtonContainerVisibilityObserver& operator=(
-      const SaveDeskButtonContainerVisibilityObserver&) = delete;
-  ~SaveDeskButtonContainerVisibilityObserver() override {
-    DCHECK(root_window_);
-    root_window_->RemoveObserver(this);
-  }
-
-  void Wait() { run_loop_.Run(); }
-
-  void OnWindowVisibilityChanged(aura::Window* window, bool visible) override {
-    if (visible && window->GetId() == kShellWindowId_SaveDeskButtonContainer)
-      run_loop_.Quit();
-  }
-
- private:
-  base::RunLoop run_loop_;
-  raw_ptr<aura::Window> root_window_;
-};
-
 // Tests that the desks bar is created before the save desk buttons are visible.
 // Regression test for https://crbug.com/1349971.
 TEST_F(SavedDeskTest, DesksBarLoadsBeforeSaveDeskButtons) {
@@ -1250,10 +1221,10 @@ TEST_F(SavedDeskTest, DesksBarLoadsBeforeSaveDeskButtons) {
 
   aura::Window* root_window = Shell::GetPrimaryRootWindow();
 
-  SaveDeskButtonContainerVisibilityObserver button_container_observer(
-      root_window);
+  views::NamedWidgetShownWaiter waiter(views::test::AnyWidgetTestPasskey{},
+                                       "SaveDeskButtonContainerWidget");
   EnterOverview();
-  button_container_observer.Wait();
+  waiter.WaitIfNeededAndGet();
 
   // Ensure we are in overview.
   auto* overview_controller = Shell::Get()->overview_controller();

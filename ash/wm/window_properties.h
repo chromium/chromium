@@ -23,11 +23,6 @@ class WindowState;
 
 // Alphabetical sort.
 
-// A property key indicating a unique WebAuthn request id for ash to locate the
-// window initiating the request.
-ASH_EXPORT extern const aura::WindowProperty<std::string*>* const
-    kWebAuthnRequestId;
-
 // A property key to indicate whether this window is temporarily hidden because
 // of the window dragging.
 ASH_EXPORT extern const aura::WindowProperty<bool>* const
@@ -36,6 +31,22 @@ ASH_EXPORT extern const aura::WindowProperty<bool>* const
 // If this is set to true, the window stays in the same root window even if the
 // bounds outside of its root window is set.
 ASH_EXPORT extern const aura::WindowProperty<bool>* const kLockedToRootKey;
+
+// A property key indicating that this window is created as part of the overview
+// mode UI. These windows will not cause overview to end on activation, will not
+// show up in the MRU tracker and will be moved to the active desk on desk
+// change.
+ASH_EXPORT extern const aura::WindowProperty<bool>* const kOverviewUiKey;
+
+// If we are in overview mode, and then activate a window, we will normally exit
+// overview. Set this property to true if that behavior is not desired.
+ASH_EXPORT extern const aura::WindowProperty<bool>* const
+    kStayInOverviewOnActivationKey;
+
+// A property key indicating a unique WebAuthn request id for ash to locate the
+// window initiating the request.
+ASH_EXPORT extern const aura::WindowProperty<std::string*>* const
+    kWebAuthnRequestId;
 
 // A property key to store WindowState in the window. The window state
 // is owned by the window.

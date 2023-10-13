@@ -57,6 +57,7 @@
 #include "ash/wm/splitview/split_view_divider.h"
 #include "ash/wm/splitview/split_view_utils.h"
 #include "ash/wm/tablet_mode/tablet_mode_controller.h"
+#include "ash/wm/window_properties.h"
 #include "ash/wm/window_state_delegate.h"
 #include "ash/wm/window_util.h"
 #include "ash/wm/workspace/backdrop_controller.h"
@@ -353,7 +354,7 @@ std::unique_ptr<views::Widget> CreateSaveDeskButtonContainerWidget(
   params.init_properties_container.SetProperty(kHideInDeskMiniViewKey, true);
   // This should not show up in the MRU list. Otherwise, it will be treated as
   // unsupported crostini app.
-  params.init_properties_container.SetProperty(kExcludeInMruKey, true);
+  params.init_properties_container.SetProperty(kOverviewUiKey, true);
 
   auto widget = std::make_unique<views::Widget>();
   widget->set_focus_on_creation(false);
@@ -363,7 +364,6 @@ std::unique_ptr<views::Widget> CreateSaveDeskButtonContainerWidget(
 
   aura::Window* window = widget->GetNativeWindow();
   window->parent()->StackChildAtBottom(window);
-  window->SetId(kShellWindowId_SaveDeskButtonContainer);
   return widget;
 }
 
@@ -2024,7 +2024,6 @@ void OverviewGrid::UpdateNoWindowsWidget(bool no_items,
 
     aura::Window* widget_window = no_windows_widget_->GetNativeWindow();
     widget_window->parent()->StackChildAtBottom(widget_window);
-    widget_window->SetId(kShellWindowId_OverviewNoWindowsLabelWindow);
 
     ScopedOverviewAnimationSettings settings(
         animate && !is_continuous_enter ? OVERVIEW_ANIMATION_NO_RECENTS_FADE

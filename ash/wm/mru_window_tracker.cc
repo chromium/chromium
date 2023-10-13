@@ -13,6 +13,7 @@
 #include "ash/wm/desks/desks_util.h"
 #include "ash/wm/float/float_controller.h"
 #include "ash/wm/switchable_windows.h"
+#include "ash/wm/window_properties.h"
 #include "ash/wm/window_restore/window_restore_controller.h"
 #include "ash/wm/window_state.h"
 #include "ash/wm/window_util.h"
@@ -60,8 +61,13 @@ class ScopedWindowClosingObserver : public aura::WindowObserver {
 };
 
 bool IsNonSysModalWindowConsideredActivatable(aura::Window* window) {
-  if (window->GetProperty(ash::kExcludeInMruKey))
+  if (window->GetProperty(kExcludeInMruKey)) {
     return false;
+  }
+
+  if (window->GetProperty(kOverviewUiKey)) {
+    return false;
+  }
 
   ScopedWindowClosingObserver observer(window);
   AshFocusRules* focus_rules = Shell::Get()->focus_rules();
@@ -215,7 +221,8 @@ bool CanIncludeWindowInMruList(aura::Window* window) {
     return true;
 
   return wm::CanActivateWindow(window) &&
-         !window->GetProperty(ash::kExcludeInMruKey);
+         !window->GetProperty(kExcludeInMruKey) &&
+         !window->GetProperty(kOverviewUiKey);
 }
 
 //////////////////////////////////////////////////////////////////////////////

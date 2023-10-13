@@ -23,6 +23,7 @@
 #include "ash/wm/overview/overview_controller.h"
 #include "ash/wm/overview/overview_grid.h"
 #include "ash/wm/overview/overview_grid_event_handler.h"
+#include "ash/wm/window_properties.h"
 #include "base/functional/callback_helpers.h"
 #include "chromeos/constants/chromeos_features.h"
 #include "ui/aura/window_targeter.h"
@@ -251,7 +252,7 @@ SavedDeskLibraryView::CreateSavedDeskLibraryWidget(aura::Window* root) {
       root, desks_controller->GetDeskIndex(desks_controller->active_desk()));
   params.name = "SavedDeskLibraryWidget";
   params.init_properties_container.SetProperty(kHideInDeskMiniViewKey, true);
-  params.init_properties_container.SetProperty(kExcludeInMruKey, true);
+  params.init_properties_container.SetProperty(kOverviewUiKey, true);
 
   auto widget = std::make_unique<views::Widget>(std::move(params));
   widget->SetContentsView(std::make_unique<SavedDeskLibraryView>());
@@ -259,10 +260,8 @@ SavedDeskLibraryView::CreateSavedDeskLibraryWidget(aura::Window* root) {
   // Not opaque since we want to view the contents of the layer behind.
   widget->GetLayer()->SetFillsBoundsOpaquely(false);
 
-  widget->GetNativeWindow()->SetId(kShellWindowId_SavedDeskLibraryWindow);
-
-  ::wm::SetWindowVisibilityAnimationTransition(widget->GetNativeWindow(),
-                                               ::wm::ANIMATE_NONE);
+  wm::SetWindowVisibilityAnimationTransition(widget->GetNativeWindow(),
+                                             wm::ANIMATE_NONE);
   return widget;
 }
 

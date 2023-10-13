@@ -22,6 +22,7 @@
 #include "ash/system/unified/unified_system_tray_bubble.h"
 #include "ash/system/unified/unified_system_tray_controller.h"
 #include "ash/system/unified/unified_system_tray_view.h"
+#include "ash/wm/window_properties.h"
 #include "base/i18n/rtl.h"
 #include "ui/base/l10n/l10n_util.h"
 #include "ui/compositor/layer.h"
@@ -101,11 +102,13 @@ void UnifiedMessageCenterBubble::ShowBubble() {
   bubble_widget_->AddObserver(this);
   TrayBackgroundView::InitializeBubbleAnimations(bubble_widget_);
 
+  aura::Window* bubble_window = bubble_widget_->GetNativeWindow();
+  bubble_window->SetProperty(kStayInOverviewOnActivationKey, true);
+
   // Stack system tray bubble's window above message center's window, such that
   // message center's shadow will not cover on system tray.
   tray_->GetBubbleWindowContainer()->StackChildAbove(
-      tray_->bubble()->GetBubbleWidget()->GetNativeWindow(),
-      bubble_widget_->GetNativeWindow());
+      tray_->bubble()->GetBubbleWidget()->GetNativeWindow(), bubble_window);
 
   if (features::IsSystemTrayShadowEnabled()) {
     // Create a shadow for bubble widget.

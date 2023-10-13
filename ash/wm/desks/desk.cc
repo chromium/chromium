@@ -8,7 +8,6 @@
 #include <utility>
 
 #include "ash/constants/app_types.h"
-#include "ash/public/cpp/shell_window_ids.h"
 #include "ash/public/cpp/window_properties.h"
 #include "ash/scoped_animation_disabler.h"
 #include "ash/shell.h"
@@ -19,6 +18,7 @@
 #include "ash/wm/mru_window_tracker.h"
 #include "ash/wm/overview/overview_controller.h"
 #include "ash/wm/window_positioner.h"
+#include "ash/wm/window_properties.h"
 #include "ash/wm/window_state.h"
 #include "ash/wm/window_util.h"
 #include "ash/wm/workspace/backdrop_controller.h"
@@ -74,10 +74,7 @@ void UpdateBackdropController(aura::Window* desk_container) {
 }
 
 bool IsOverviewUiWindow(aura::Window* window) {
-  return window->GetId() == kShellWindowId_DesksBarWindow ||
-         window->GetId() == kShellWindowId_SaveDeskButtonContainer ||
-         window->GetId() == kShellWindowId_OverviewNoWindowsLabelWindow ||
-         window->GetId() == kShellWindowId_SavedDeskLibraryWindow;
+  return window->GetProperty(kOverviewUiKey);
 }
 
 // Returns true if |window| can be managed by the desk, and therefore can be

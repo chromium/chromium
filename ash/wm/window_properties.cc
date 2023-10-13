@@ -10,11 +10,15 @@ DEFINE_EXPORTED_UI_CLASS_PROPERTY_TYPE(ASH_EXPORT, ash::WindowState*)
 
 namespace ash {
 
-DEFINE_OWNED_UI_CLASS_PROPERTY_KEY(std::string, kWebAuthnRequestId, nullptr)
-
 DEFINE_UI_CLASS_PROPERTY_KEY(bool, kHideDuringWindowDragging, false)
 
 DEFINE_UI_CLASS_PROPERTY_KEY(bool, kLockedToRootKey, false)
+
+DEFINE_UI_CLASS_PROPERTY_KEY(bool, kOverviewUiKey, false)
+
+DEFINE_UI_CLASS_PROPERTY_KEY(bool, kStayInOverviewOnActivationKey, false)
+
+DEFINE_OWNED_UI_CLASS_PROPERTY_KEY(std::string, kWebAuthnRequestId, nullptr)
 
 DEFINE_OWNED_UI_CLASS_PROPERTY_KEY(WindowState, kWindowStateKey, nullptr)
 
