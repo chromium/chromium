@@ -129,12 +129,9 @@
   "android-arm-compile-dbg": {
     "gn_args": {
       "debuggable_apks": false,
-      "ffmpeg_branding": "Chrome",
-      "is_component_build": false,
+      "is_component_build": true,
       "is_debug": true,
-      "proprietary_codecs": true,
       "symbol_level": 1,
-      "system_webview_package_name": "com.google.android.webview",
       "target_os": "android",
       "use_remoteexec": true
     }
