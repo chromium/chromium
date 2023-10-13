@@ -37,6 +37,7 @@ import org.chromium.chrome.test.ChromeTabbedActivityTestRule;
 import org.chromium.chrome.test.util.ChromeRenderTestRule;
 import org.chromium.components.browser_ui.bottomsheet.BottomSheetController;
 import org.chromium.components.browser_ui.bottomsheet.BottomSheetTestSupport;
+import org.chromium.components.prefs.PrefService;
 import org.chromium.ui.KeyboardVisibilityDelegate;
 import org.chromium.ui.test.util.RenderTestRule.Component;
 
@@ -72,6 +73,7 @@ public class TouchToFillPasswordGenerationRenderTest {
 
     @Mock
     private TouchToFillPasswordGenerationCoordinator.Delegate mDelegateMock;
+    @Mock private PrefService mPrefService;
 
     private BottomSheetController mBottomSheetController;
     private TouchToFillPasswordGenerationCoordinator mCoordinator;
@@ -93,15 +95,23 @@ public class TouchToFillPasswordGenerationRenderTest {
         mBottomSheetController = mActivityTestRule.getActivity()
                                          .getRootUiCoordinatorForTesting()
                                          .getBottomSheetController();
-        runOnUiThreadBlocking(() -> {
-            View content = LayoutInflater.from(mActivityTestRule.getActivity())
-                                   .inflate(R.layout.touch_to_fill_password_generation, null);
-            TouchToFillPasswordGenerationView view =
-                    new TouchToFillPasswordGenerationView(mActivityTestRule.getActivity(), content);
-            mCoordinator = new TouchToFillPasswordGenerationCoordinator(
-                    mActivityTestRule.getWebContents(), mBottomSheetController, view,
-                    KeyboardVisibilityDelegate.getInstance(), mDelegateMock);
-        });
+        runOnUiThreadBlocking(
+                () -> {
+                    View content =
+                            LayoutInflater.from(mActivityTestRule.getActivity())
+                                    .inflate(R.layout.touch_to_fill_password_generation, null);
+                    TouchToFillPasswordGenerationView view =
+                            new TouchToFillPasswordGenerationView(
+                                    mActivityTestRule.getActivity(), content);
+                    mCoordinator =
+                            new TouchToFillPasswordGenerationCoordinator(
+                                    mActivityTestRule.getWebContents(),
+                                    mPrefService,
+                                    mBottomSheetController,
+                                    view,
+                                    KeyboardVisibilityDelegate.getInstance(),
+                                    mDelegateMock);
+                });
     }
 
     @After

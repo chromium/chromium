@@ -12,6 +12,7 @@
 #include "chrome/browser/password_manager/android/password_generation_element_data.h"
 #include "chrome/browser/touch_to_fill/password_generation/android/touch_to_fill_password_generation_bridge.h"
 #include "chrome/browser/touch_to_fill/password_generation/android/touch_to_fill_password_generation_delegate.h"
+#include "components/prefs/pref_service.h"
 #include "content/public/browser/render_widget_host.h"
 #include "content/public/browser/web_contents.h"
 #include "content/public/browser/web_contents_user_data.h"
@@ -28,6 +29,10 @@ class TouchToFillPasswordGenerationController
  public:
   using OnDismissedCallback = base::OnceCallback<void()>;
 
+  // If the bottom sheet was shown and dismissed more than
+  // `kMaxAllowedNumberOfDismisses` it must not be displayed.
+  static constexpr int kMaxAllowedNumberOfDismisses = 4;
+
   TouchToFillPasswordGenerationController(
       base::WeakPtr<password_manager::ContentPasswordManagerDriver>
           frame_driver,
@@ -43,7 +48,8 @@ class TouchToFillPasswordGenerationController
   ~TouchToFillPasswordGenerationController() override;
 
   // Shows the password generation bottom sheet.
-  bool ShowTouchToFill(std::string account_display_name);
+  bool ShowTouchToFill(std::string account_display_name,
+                       PrefService* pref_service);
 
   void OnDismissed() override;
 

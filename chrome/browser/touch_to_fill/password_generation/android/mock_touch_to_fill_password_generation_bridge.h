@@ -19,6 +19,7 @@ class MockTouchToFillPasswordGenerationBridge
   MOCK_METHOD(bool,
               Show,
               (content::WebContents*,
+               PrefService*,
                TouchToFillPasswordGenerationDelegate*,
                std::u16string,
                std::string),

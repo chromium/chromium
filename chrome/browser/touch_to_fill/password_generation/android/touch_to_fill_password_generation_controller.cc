@@ -12,6 +12,8 @@
 #include "chrome/browser/touch_to_fill/password_generation/android/touch_to_fill_password_generation_bridge.h"
 #include "chrome/browser/touch_to_fill/password_generation/android/touch_to_fill_password_generation_controller.h"
 #include "components/password_manager/content/browser/content_password_manager_driver.h"
+#include "components/password_manager/core/common/password_manager_pref_names.h"
+#include "components/prefs/pref_service.h"
 #include "content/public/browser/render_view_host.h"
 #include "content/public/browser/web_contents.h"
 
@@ -48,14 +50,16 @@ TouchToFillPasswordGenerationController::
 }
 
 bool TouchToFillPasswordGenerationController::ShowTouchToFill(
-    std::string account_display_name) {
+    std::string account_display_name,
+    PrefService* pref_service) {
   std::u16string generated_password =
       frame_driver_->GetPasswordGenerationHelper()->GeneratePassword(
           web_contents_->GetLastCommittedURL().DeprecatedGetOriginAsURL(),
           generation_element_data_.form_signature,
           generation_element_data_.field_signature,
           generation_element_data_.max_password_length);
-  if (!bridge_->Show(web_contents_, this, std::move(generated_password),
+  if (!bridge_->Show(web_contents_, pref_service, this,
+                     std::move(generated_password),
                      std::move(account_display_name))) {
     return false;
   }

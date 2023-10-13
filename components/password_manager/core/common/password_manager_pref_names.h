@@ -130,6 +130,10 @@ extern const char kLocalPasswordMigrationWarningShownAtStartup[];
 
 // The version of the password migration warning prefs.
 extern const char kLocalPasswordMigrationWarningPrefsVersion[];
+
+// How many times the password generation bottom sheet was dismissed by the user
+// in a row. The counter resets when the user applies password generation.
+extern const char kPasswordGenerationBottomSheetDismissCount[];
 #endif
 
 #if BUILDFLAG(IS_WIN)

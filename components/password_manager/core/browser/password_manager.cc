@@ -331,6 +331,8 @@ void PasswordManager::RegisterProfilePrefs(
       prefs::kLocalPasswordMigrationWarningShownAtStartup, false);
   registry->RegisterIntegerPref(
       prefs::kLocalPasswordMigrationWarningPrefsVersion, 0);
+  registry->RegisterIntegerPref(
+      prefs::kPasswordGenerationBottomSheetDismissCount, 0);
 #endif  // BUILDFLAG(IS_ANDROID)
   // Preferences for |PasswordChangeSuccessTracker|.
   registry->RegisterIntegerPref(prefs::kPasswordChangeSuccessTrackerVersion, 0);

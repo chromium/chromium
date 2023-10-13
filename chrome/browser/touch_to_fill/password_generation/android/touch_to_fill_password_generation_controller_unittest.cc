@@ -14,6 +14,7 @@
 #include "chrome/test/base/chrome_render_view_host_test_harness.h"
 #include "components/password_manager/content/browser/content_password_manager_driver.h"
 #include "components/password_manager/core/browser/stub_password_manager_client.h"
+#include "components/prefs/testing_pref_service.h"
 #include "content/public/test/text_input_test_utils.h"
 #include "ui/base/ime/mojom/text_input_state.mojom.h"
 #include "ui/base/ime/text_input_type.h"
@@ -37,6 +38,8 @@ class TouchToFillPasswordGenerationControllerTest
     return base::AsWeakPtr(password_manager_driver_.get());
   }
 
+  TestingPrefServiceSimple* pref_service() { return &test_pref_service_; }
+
   base::MockCallback<base::OnceCallback<void()>> on_dismissed_callback_;
   const std::string test_user_account_ = "test@email.com";
   MockManualFillingController mock_manual_filling_controller_;
@@ -45,6 +48,7 @@ class TouchToFillPasswordGenerationControllerTest
   std::unique_ptr<password_manager::ContentPasswordManagerDriver>
       password_manager_driver_;
   password_manager::StubPasswordManagerClient client_;
+  TestingPrefServiceSimple test_pref_service_;
 };
 
 TEST_F(TouchToFillPasswordGenerationControllerTest,
@@ -57,7 +61,7 @@ TEST_F(TouchToFillPasswordGenerationControllerTest,
       on_dismissed_callback_.Get(),
       mock_manual_filling_controller_.AsWeakPtr());
   EXPECT_CALL(*bridge_ptr, Show);
-  controller->ShowTouchToFill(test_user_account_);
+  controller->ShowTouchToFill(test_user_account_, pref_service());
 
   ui::mojom::TextInputStatePtr initial_state = ui::mojom::TextInputState::New();
   initial_state->type = ui::TEXT_INPUT_TYPE_PASSWORD;
@@ -89,7 +93,7 @@ TEST_F(TouchToFillPasswordGenerationControllerTest,
       on_dismissed_callback_.Get(),
       mock_manual_filling_controller_.AsWeakPtr());
 
-  controller->ShowTouchToFill(test_user_account_);
+  controller->ShowTouchToFill(test_user_account_, pref_service());
 
   EXPECT_CALL(on_dismissed_callback_, Run);
   controller->OnDismissed();
@@ -105,8 +109,8 @@ TEST_F(TouchToFillPasswordGenerationControllerTest,
       on_dismissed_callback_.Get(),
       mock_manual_filling_controller_.AsWeakPtr());
 
-  EXPECT_CALL(*bridge_ptr, Show(_, _, _, Eq(test_user_account_)));
-  controller->ShowTouchToFill(test_user_account_);
+  EXPECT_CALL(*bridge_ptr, Show(_, _, _, _, Eq(test_user_account_)));
+  controller->ShowTouchToFill(test_user_account_, pref_service());
 
   EXPECT_CALL(*bridge_ptr, Hide);
   controller.reset();
@@ -121,7 +125,7 @@ TEST_F(TouchToFillPasswordGenerationControllerTest,
       on_dismissed_callback_.Get(),
       mock_manual_filling_controller_.AsWeakPtr());
 
-  controller->ShowTouchToFill(test_user_account_);
+  controller->ShowTouchToFill(test_user_account_, pref_service());
 
   EXPECT_CALL(mock_manual_filling_controller_,
               OnAccessoryActionAvailabilityChanged(

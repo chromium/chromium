@@ -8,6 +8,7 @@
 #include <jni.h>
 #include <string>
 
+#include "components/prefs/pref_service.h"
 #include "content/public/browser/web_contents.h"
 
 class TouchToFillPasswordGenerationDelegate;
@@ -17,6 +18,7 @@ class TouchToFillPasswordGenerationBridge {
   virtual ~TouchToFillPasswordGenerationBridge() = default;
 
   virtual bool Show(content::WebContents* web_contents,
+                    PrefService* pref_service,
                     TouchToFillPasswordGenerationDelegate* delegate,
                     std::u16string password,
                     std::string account) = 0;

@@ -22,6 +22,7 @@ import org.chromium.base.test.BaseRobolectricTestRunner;
 import org.chromium.base.test.util.Batch;
 import org.chromium.base.test.util.JniMocker;
 import org.chromium.components.browser_ui.bottomsheet.BottomSheetController;
+import org.chromium.components.prefs.PrefService;
 import org.chromium.content_public.browser.WebContents;
 import org.chromium.ui.base.TestActivity;
 
@@ -43,6 +44,7 @@ public class TouchToFillPasswordGenerationBridgeTest {
     private TouchToFillPasswordGenerationBridge.Natives mBridgeJniMock;
     @Mock
     private WebContents mWebContents;
+    @Mock private PrefService mPrefService;
 
     private static final long sTestNativePointer = 1;
 
@@ -53,10 +55,18 @@ public class TouchToFillPasswordGenerationBridgeTest {
         MockitoAnnotations.openMocks(this);
         mJniMocker.mock(TouchToFillPasswordGenerationBridgeJni.TEST_HOOKS, mBridgeJniMock);
 
-        mActivityScenarioRule.getScenario().onActivity(activity -> {
-            mBridge = new TouchToFillPasswordGenerationBridge(
-                    sTestNativePointer, mBottomSheetController, activity, mWebContents);
-        });
+        mActivityScenarioRule
+                .getScenario()
+                .onActivity(
+                        activity -> {
+                            mBridge =
+                                    new TouchToFillPasswordGenerationBridge(
+                                            sTestNativePointer,
+                                            mBottomSheetController,
+                                            activity,
+                                            mWebContents,
+                                            mPrefService);
+                        });
     }
 
     @Test

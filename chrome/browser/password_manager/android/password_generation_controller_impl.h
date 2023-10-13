@@ -150,6 +150,10 @@ class PasswordGenerationControllerImpl
   // and the generation element data.
   void ResetFocusState();
 
+  // Sets the number of generation bottom sheet rejections in a row to 0.
+  // Expected to be called when user voluntary triggers password generation.
+  void ResetPasswordGenerationDismissBottomSheetCount();
+
   // The PasswordManagerClient associated with the current `web_contents_`.
   // Used to tell the renderer that manual generation was requested.
   const raw_ptr<password_manager::PasswordManagerClient> client_;

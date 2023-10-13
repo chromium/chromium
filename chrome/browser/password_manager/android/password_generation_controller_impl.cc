@@ -32,10 +32,13 @@
 #include "components/password_manager/core/browser/password_manager_client.h"
 #include "components/password_manager/core/browser/password_manager_metrics_util.h"
 #include "components/password_manager/core/common/password_manager_features.h"
+#include "components/password_manager/core/common/password_manager_pref_names.h"
+#include "components/prefs/pref_service.h"
 
 using autofill::mojom::FocusedFieldType;
 using autofill::password_generation::PasswordGenerationType;
 using password_manager::metrics_util::GenerationDialogChoice;
+using password_manager::prefs::kPasswordGenerationBottomSheetDismissCount;
 using ShouldShowAction = ManualFillingController::ShouldShowAction;
 
 PasswordGenerationControllerImpl::~PasswordGenerationControllerImpl() = default;
@@ -131,6 +134,7 @@ void PasswordGenerationControllerImpl::OnGenerationRequested(
   } else {
     ShowDialog(PasswordGenerationType::kAutomatic);
   }
+  ResetPasswordGenerationDismissBottomSheetCount();
 }
 
 void PasswordGenerationControllerImpl::GeneratedPasswordAccepted(
@@ -270,10 +274,16 @@ bool PasswordGenerationControllerImpl::TryToShowGenerationTouchToFill(
     bool has_saved_credentials) {
   CHECK(touch_to_fill_generation_state_ != TouchToFillState::kIsShowing);
 
+  bool dismissed_4_times_in_a_row =
+      client_->GetPrefs()->GetInteger(
+          kPasswordGenerationBottomSheetDismissCount) >=
+      TouchToFillPasswordGenerationController::kMaxAllowedNumberOfDismisses;
+
   if (has_saved_credentials ||
       !base::FeatureList::IsEnabled(
           password_manager::features::kPasswordGenerationBottomSheet) ||
-      touch_to_fill_generation_state_ == TouchToFillState::kWasShown) {
+      touch_to_fill_generation_state_ == TouchToFillState::kWasShown ||
+      dismissed_4_times_in_a_row) {
     return false;
   }
 
@@ -282,7 +292,7 @@ bool PasswordGenerationControllerImpl::TryToShowGenerationTouchToFill(
   std::string account =
       password_manager::GetDisplayableAccountName(&GetWebContents());
   if (!touch_to_fill_generation_controller_->ShowTouchToFill(
-          std::move(account))) {
+          std::move(account), client_->GetPrefs())) {
     return false;
   }
 
@@ -334,6 +344,12 @@ void PasswordGenerationControllerImpl::WebContentsDestroyed() {
   // Avoid invalid pointers to other `WebContentsUserData`, e.g. `client_`.
   GetWebContents().RemoveUserData(UserDataKey());
   // `this` is now destroyed - do not add code here.
+}
+
+void PasswordGenerationControllerImpl::
+    ResetPasswordGenerationDismissBottomSheetCount() {
+  client_->GetPrefs()->SetInteger(kPasswordGenerationBottomSheetDismissCount,
+                                  0);
 }
 
 WEB_CONTENTS_USER_DATA_KEY_IMPL(PasswordGenerationControllerImpl);

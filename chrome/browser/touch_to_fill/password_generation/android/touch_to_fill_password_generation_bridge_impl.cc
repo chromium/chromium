@@ -24,6 +24,7 @@ TouchToFillPasswordGenerationBridgeImpl::
 
 bool TouchToFillPasswordGenerationBridgeImpl::Show(
     content::WebContents* web_contents,
+    PrefService* pref_service,
     TouchToFillPasswordGenerationDelegate* delegate,
     std::u16string password,
     std::string account) {
@@ -37,7 +38,8 @@ bool TouchToFillPasswordGenerationBridgeImpl::Show(
   java_object_.Reset(Java_TouchToFillPasswordGenerationBridge_create(
       base::android::AttachCurrentThread(),
       web_contents->GetNativeView()->GetWindowAndroid()->GetJavaObject(),
-      web_contents->GetJavaWebContents(), reinterpret_cast<intptr_t>(this)));
+      web_contents->GetJavaWebContents(), pref_service->GetJavaObject(),
+      reinterpret_cast<intptr_t>(this)));
 
   JNIEnv* env = base::android::AttachCurrentThread();
   base::android::ScopedJavaLocalRef<jstring> j_password =
@@ -54,7 +56,7 @@ void TouchToFillPasswordGenerationBridgeImpl::Hide() {
     return;
   }
 
-  Java_TouchToFillPasswordGenerationBridge_hide(
+  Java_TouchToFillPasswordGenerationBridge_hideFromNative(
       base::android::AttachCurrentThread(), java_object_);
 }
 

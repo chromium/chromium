@@ -16,6 +16,7 @@ class FakeTouchToFillPasswordGenerationBridge
   ~FakeTouchToFillPasswordGenerationBridge() override;
 
   bool Show(content::WebContents* web_contents,
+            PrefService* pref_service,
             TouchToFillPasswordGenerationDelegate* delegate,
             std::u16string password,
             std::string account) override;

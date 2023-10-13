@@ -10,6 +10,7 @@ import org.chromium.base.annotations.CalledByNative;
 import org.chromium.base.annotations.NativeMethods;
 import org.chromium.components.browser_ui.bottomsheet.BottomSheetController;
 import org.chromium.components.browser_ui.bottomsheet.BottomSheetControllerProvider;
+import org.chromium.components.prefs.PrefService;
 import org.chromium.content_public.browser.WebContents;
 import org.chromium.ui.KeyboardVisibilityDelegate;
 import org.chromium.ui.base.WindowAndroid;
@@ -23,20 +24,37 @@ class TouchToFillPasswordGenerationBridge
     private long mNativeTouchToFillPasswordGenerationBridge;
 
     @CalledByNative
-    private static TouchToFillPasswordGenerationBridge create(WindowAndroid windowAndroid,
-            WebContents webContents, long nativeTouchToFillPasswordGenerationBridge) {
+    private static TouchToFillPasswordGenerationBridge create(
+            WindowAndroid windowAndroid,
+            WebContents webContents,
+            PrefService prefService,
+            long nativeTouchToFillPasswordGenerationBridge) {
         BottomSheetController bottomSheetController =
                 BottomSheetControllerProvider.from(windowAndroid);
         Context context = windowAndroid.getContext().get();
-        return new TouchToFillPasswordGenerationBridge(nativeTouchToFillPasswordGenerationBridge,
-                bottomSheetController, context, webContents);
+        return new TouchToFillPasswordGenerationBridge(
+                nativeTouchToFillPasswordGenerationBridge,
+                bottomSheetController,
+                context,
+                webContents,
+                prefService);
     }
 
-    public TouchToFillPasswordGenerationBridge(long nativeTouchToFillPasswordGenerationBridge,
-            BottomSheetController bottomSheetController, Context context, WebContents webContents) {
+    public TouchToFillPasswordGenerationBridge(
+            long nativeTouchToFillPasswordGenerationBridge,
+            BottomSheetController bottomSheetController,
+            Context context,
+            WebContents webContents,
+            PrefService prefService) {
         mNativeTouchToFillPasswordGenerationBridge = nativeTouchToFillPasswordGenerationBridge;
-        mCoordinator = new TouchToFillPasswordGenerationCoordinator(bottomSheetController, context,
-                webContents, KeyboardVisibilityDelegate.getInstance(), this);
+        mCoordinator =
+                new TouchToFillPasswordGenerationCoordinator(
+                        bottomSheetController,
+                        context,
+                        webContents,
+                        prefService,
+                        KeyboardVisibilityDelegate.getInstance(),
+                        this);
     }
 
     @CalledByNative
@@ -45,8 +63,8 @@ class TouchToFillPasswordGenerationBridge
     }
 
     @CalledByNative
-    public void hide() {
-        mCoordinator.hide();
+    public void hideFromNative() {
+        mCoordinator.hideFromNative();
     }
 
     @Override

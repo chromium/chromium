@@ -13,16 +13,22 @@ import android.content.Context;
 import android.view.LayoutInflater;
 import android.view.View;
 
+import androidx.annotation.IntDef;
 import androidx.annotation.VisibleForTesting;
 
+import org.chromium.chrome.browser.preferences.Pref;
 import org.chromium.components.browser_ui.bottomsheet.BottomSheetController;
 import org.chromium.components.browser_ui.bottomsheet.BottomSheetController.StateChangeReason;
 import org.chromium.components.browser_ui.bottomsheet.BottomSheetObserver;
 import org.chromium.components.browser_ui.bottomsheet.EmptyBottomSheetObserver;
+import org.chromium.components.prefs.PrefService;
 import org.chromium.content_public.browser.WebContents;
 import org.chromium.ui.KeyboardVisibilityDelegate;
 import org.chromium.ui.modelutil.PropertyModel;
 import org.chromium.ui.modelutil.PropertyModelChangeProcessor;
+
+import java.lang.annotation.Retention;
+import java.lang.annotation.RetentionPolicy;
 
 /**
  * Coordinates the password generation bottom sheet functionality. It shows the bottom sheet, fills
@@ -44,23 +50,45 @@ class TouchToFillPasswordGenerationCoordinator {
         void onGeneratedPasswordRejected();
     }
 
+    @IntDef({
+        InteractionResult.USED_GENERATED_PASSWORD,
+        InteractionResult.DISMISSED_GENERATED_PASSWORD,
+        InteractionResult.DISMISSED_FROM_NATIVE
+    })
+    @Retention(RetentionPolicy.SOURCE)
+    private @interface InteractionResult {
+        int USED_GENERATED_PASSWORD = 0;
+        int DISMISSED_GENERATED_PASSWORD = 1;
+        int DISMISSED_FROM_NATIVE = 2;
+    }
+
     private final WebContents mWebContents;
+    private final PrefService mPrefService;
     private final TouchToFillPasswordGenerationView mTouchToFillPasswordGenerationView;
     private final KeyboardVisibilityDelegate mKeyboardVisibilityDelegate;
     private final Delegate mTouchToFillPasswordGenerationDelegate;
     private final BottomSheetController mBottomSheetController;
-    private final BottomSheetObserver mBottomSheetObserver = new EmptyBottomSheetObserver() {
-        @Override
-        public void onSheetClosed(@StateChangeReason int reason) {
-            onDismissed(reason);
-        }
-    };
+    private final BottomSheetObserver mBottomSheetObserver =
+            new EmptyBottomSheetObserver() {
+                @Override
+                public void onSheetClosed(@StateChangeReason int reason) {
+                    onDismissed(sheetStateChangeReasonToInteractionResult(reason));
+                }
+            };
 
-    public TouchToFillPasswordGenerationCoordinator(BottomSheetController bottomSheetController,
-            Context context, WebContents webContents,
+    public TouchToFillPasswordGenerationCoordinator(
+            BottomSheetController bottomSheetController,
+            Context context,
+            WebContents webContents,
+            PrefService prefService,
             KeyboardVisibilityDelegate keyboardVisibilityDelegate,
             Delegate touchToFillPasswordGenerationDelegate) {
-        this(webContents, bottomSheetController, createView(context), keyboardVisibilityDelegate,
+        this(
+                webContents,
+                prefService,
+                bottomSheetController,
+                createView(context),
+                keyboardVisibilityDelegate,
                 touchToFillPasswordGenerationDelegate);
     }
 
@@ -71,22 +99,23 @@ class TouchToFillPasswordGenerationCoordinator {
     }
 
     @VisibleForTesting
-    TouchToFillPasswordGenerationCoordinator(WebContents webContents,
+    TouchToFillPasswordGenerationCoordinator(
+            WebContents webContents,
+            PrefService prefService,
             BottomSheetController bottomSheetController,
             TouchToFillPasswordGenerationView touchToFillPasswordGenerationView,
             KeyboardVisibilityDelegate keyboardVisibilityDelegate,
             Delegate touchToFillPasswordGenerationDelegate) {
         mWebContents = webContents;
+        mPrefService = prefService;
         mKeyboardVisibilityDelegate = keyboardVisibilityDelegate;
         mTouchToFillPasswordGenerationDelegate = touchToFillPasswordGenerationDelegate;
         mBottomSheetController = bottomSheetController;
         mTouchToFillPasswordGenerationView = touchToFillPasswordGenerationView;
     }
 
-    /**
-     *  Displays the bottom sheet.
-     */
-    public boolean show(String generatedPassword, String account) {
+    /** Displays the bottom sheet. */
+    boolean show(String generatedPassword, String account) {
         PropertyModel model =
                 new PropertyModel.Builder(TouchToFillPasswordGenerationProperties.ALL_KEYS)
                         .with(ACCOUNT_EMAIL, account)
@@ -104,24 +133,26 @@ class TouchToFillPasswordGenerationCoordinator {
         return false;
     }
 
-    public void hide() {
-        onDismissed(StateChangeReason.NONE);
+    void hideFromNative() {
+        onDismissed(InteractionResult.DISMISSED_FROM_NATIVE);
     }
 
-    private void onDismissed(@StateChangeReason int reason) {
+    private void onDismissed(@InteractionResult int interactionResult) {
         mBottomSheetController.removeObserver(mBottomSheetObserver);
         mBottomSheetController.hideContent(mTouchToFillPasswordGenerationView, true);
         mTouchToFillPasswordGenerationDelegate.onDismissed();
+
+        setPasswordGenerationBottomSheetDismissCount(interactionResult);
     }
 
     private void onGeneratedPasswordAccepted(String password) {
         mTouchToFillPasswordGenerationDelegate.onGeneratedPasswordAccepted(password);
-        onDismissed(StateChangeReason.INTERACTION_COMPLETE);
+        onDismissed(InteractionResult.USED_GENERATED_PASSWORD);
     }
 
     private void onGeneratedPasswordRejected() {
         mTouchToFillPasswordGenerationDelegate.onGeneratedPasswordRejected();
-        onDismissed(StateChangeReason.INTERACTION_COMPLETE);
+        onDismissed(InteractionResult.DISMISSED_GENERATED_PASSWORD);
         restoreKeyboardFocus();
     }
 
@@ -133,6 +164,31 @@ class TouchToFillPasswordGenerationCoordinator {
         if (webContentView.requestFocus()) {
             mKeyboardVisibilityDelegate.showKeyboard(webContentView);
         }
+    }
+
+    private void setPasswordGenerationBottomSheetDismissCount(
+            @InteractionResult int interactionResult) {
+        if (interactionResult == InteractionResult.DISMISSED_GENERATED_PASSWORD) {
+            mPrefService.setInteger(
+                    Pref.PASSWORD_GENERATION_BOTTOM_SHEET_DISMISS_COUNT,
+                    mPrefService.getInteger(Pref.PASSWORD_GENERATION_BOTTOM_SHEET_DISMISS_COUNT)
+                            + 1);
+        } else if (interactionResult == InteractionResult.USED_GENERATED_PASSWORD) {
+            mPrefService.setInteger(Pref.PASSWORD_GENERATION_BOTTOM_SHEET_DISMISS_COUNT, 0);
+        }
+        // DISMISSED_FROM_NATIVE doesn't stem from a user choice and as such isn't counted as a user
+        // dismissal.
+    }
+
+    private @InteractionResult int sheetStateChangeReasonToInteractionResult(
+            @StateChangeReason int reason) {
+        if (reason == StateChangeReason.SWIPE
+                || reason == StateChangeReason.BACK_PRESS
+                || reason == StateChangeReason.TAP_SCRIM
+                || reason == StateChangeReason.OMNIBOX_FOCUS) {
+            return InteractionResult.DISMISSED_GENERATED_PASSWORD;
+        }
+        return InteractionResult.USED_GENERATED_PASSWORD;
     }
 
     /**
