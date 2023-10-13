@@ -248,7 +248,7 @@ Window::~Window() {
   if (frame_sink_id_.is_valid() && !embeds_external_client_) {
     auto* context_factory = Env::GetInstance()->context_factory();
     auto* host_frame_sink_manager = context_factory->GetHostFrameSinkManager();
-    host_frame_sink_manager->InvalidateFrameSinkId(frame_sink_id_);
+    host_frame_sink_manager->InvalidateFrameSinkId(frame_sink_id_, this);
   }
 }
 

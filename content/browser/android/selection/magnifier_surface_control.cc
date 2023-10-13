@@ -195,7 +195,7 @@ MagnifierSurfaceControl::MagnifierSurfaceControl(
 MagnifierSurfaceControl::~MagnifierSurfaceControl() {
   display_private_.reset();
   if (frame_sink_id_.is_valid()) {
-    GetHostFrameSinkManager()->InvalidateFrameSinkId(frame_sink_id_);
+    GetHostFrameSinkManager()->InvalidateFrameSinkId(frame_sink_id_, this);
   }
   gpu::GpuSurfaceTracker::Get()->RemoveSurface(surface_handle_);
 }

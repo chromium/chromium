@@ -525,7 +525,7 @@ void CompositorImpl::TearDownDisplayAndUnregisterRootFrameSink() {
   // sync IPC. This guards against reentrant code using |display_private_|
   // before it can be reset.
   display_private_.reset();
-  GetHostFrameSinkManager()->InvalidateFrameSinkId(frame_sink_id_);
+  GetHostFrameSinkManager()->InvalidateFrameSinkId(frame_sink_id_, this);
   if (display_client_) {
     display_client_->SetPreferredRefreshRate(0);
   }

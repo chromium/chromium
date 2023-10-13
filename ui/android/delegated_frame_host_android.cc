@@ -109,7 +109,7 @@ DelegatedFrameHostAndroid::DelegatedFrameHostAndroid(
 DelegatedFrameHostAndroid::~DelegatedFrameHostAndroid() {
   EvictDelegatedFrame(frame_evictor_->CollectSurfaceIdsForEviction());
   DetachFromCompositor();
-  host_frame_sink_manager_->InvalidateFrameSinkId(frame_sink_id_);
+  host_frame_sink_manager_->InvalidateFrameSinkId(frame_sink_id_, this);
 }
 
 const viz::FrameSinkId& DelegatedFrameHostAndroid::GetFrameSinkId() const {

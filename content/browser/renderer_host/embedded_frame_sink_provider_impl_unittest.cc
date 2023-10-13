@@ -152,7 +152,8 @@ class EmbeddedFrameSinkProviderImplTest : public testing::Test {
         viz::ReportFirstSurfaceActivation::kYes);
   }
   void TearDown() override {
-    host_frame_sink_manager_->InvalidateFrameSinkId(kFrameSinkParent);
+    host_frame_sink_manager_->InvalidateFrameSinkId(kFrameSinkParent,
+                                                    &host_frame_sink_client_);
     provider_.reset();
     host_frame_sink_manager_.reset();
     frame_sink_manager_.reset();

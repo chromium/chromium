@@ -70,7 +70,7 @@ DelegatedFrameHost::~DelegatedFrameHost() {
   DCHECK(!compositor_);
 
   DCHECK(host_frame_sink_manager_);
-  host_frame_sink_manager_->InvalidateFrameSinkId(frame_sink_id_);
+  host_frame_sink_manager_->InvalidateFrameSinkId(frame_sink_id_, this);
 }
 
 void DelegatedFrameHost::AddObserverForTesting(Observer* observer) {

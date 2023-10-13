@@ -91,7 +91,7 @@ TestRenderWidgetHostView::TestRenderWidgetHostView(RenderWidgetHost* rwh)
 TestRenderWidgetHostView::~TestRenderWidgetHostView() {
   viz::HostFrameSinkManager* manager = GetHostFrameSinkManager();
   if (manager)
-    manager->InvalidateFrameSinkId(frame_sink_id_);
+    manager->InvalidateFrameSinkId(frame_sink_id_, this);
 }
 
 gfx::NativeView TestRenderWidgetHostView::GetNativeView() {

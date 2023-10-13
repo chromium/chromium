@@ -65,7 +65,16 @@ void HostFrameSinkManager::RegisterFrameSinkId(
   DCHECK(client);
 
   FrameSinkData& data = frame_sink_data_map_[frame_sink_id];
-  CHECK(!data.IsFrameSinkRegistered());
+  if (data.IsFrameSinkRegistered()) {
+    // Note that `report_activation` causes dispatch of OnFirstSurfaceActivation
+    // for the first frame associated with each SurfaceId. This means the new
+    // client will receive this notification (if `report_activation` is set)
+    // the next time a new SurfaceId is submitted for this `frame_sink_id`.
+    CHECK_EQ(data.report_activation, report_activation);
+    data.client = client;
+    return;
+  }
+
   DCHECK(!data.has_created_compositor_frame_sink);
   data.client = client;
   data.report_activation = report_activation;
@@ -80,11 +89,13 @@ bool HostFrameSinkManager::IsFrameSinkIdRegistered(
 }
 
 void HostFrameSinkManager::InvalidateFrameSinkId(
-    const FrameSinkId& frame_sink_id) {
+    const FrameSinkId& frame_sink_id,
+    HostFrameSinkClient* client) {
   DCHECK(frame_sink_id.is_valid());
 
   FrameSinkData& data = frame_sink_data_map_[frame_sink_id];
   CHECK(data.IsFrameSinkRegistered());
+  CHECK_EQ(data.client, client);
 
   const bool destroy_synchronously =
       data.has_created_compositor_frame_sink && data.wait_on_destruction;
@@ -121,6 +132,10 @@ void HostFrameSinkManager::SetFrameSinkDebugLabel(
 
   FrameSinkData& data = frame_sink_data_map_[frame_sink_id];
   DCHECK(data.IsFrameSinkRegistered());
+
+  if (data.debug_label == debug_label) {
+    return;
+  }
 
   data.debug_label = debug_label;
   frame_sink_manager_->SetFrameSinkDebugLabel(frame_sink_id, debug_label);

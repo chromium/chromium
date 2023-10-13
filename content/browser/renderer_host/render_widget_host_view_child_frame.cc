@@ -81,7 +81,7 @@ RenderWidgetHostViewChildFrame::~RenderWidgetHostViewChildFrame() {
     DetachFromTouchSelectionClientManagerIfNecessary();
 
   if (GetHostFrameSinkManager())
-    GetHostFrameSinkManager()->InvalidateFrameSinkId(frame_sink_id_);
+    GetHostFrameSinkManager()->InvalidateFrameSinkId(frame_sink_id_, this);
 }
 
 void RenderWidgetHostViewChildFrame::Init() {

@@ -135,7 +135,8 @@ SurfaceTreeHost::~SurfaceTreeHost() {
   if (frame_sink_id_.is_valid()) {
     auto* context_factory = aura::Env::GetInstance()->context_factory();
     auto* host_frame_sink_manager = context_factory->GetHostFrameSinkManager();
-    host_frame_sink_manager->InvalidateFrameSinkId(frame_sink_id_);
+    host_frame_sink_manager->InvalidateFrameSinkId(frame_sink_id_,
+                                                   host_window());
   }
 }
 
