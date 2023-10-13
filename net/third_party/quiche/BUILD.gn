@@ -575,7 +575,6 @@ source_set("quiche_tests") {
     "src/quiche/quic/core/http/quic_spdy_session_test.cc",
     "src/quiche/quic/core/http/quic_spdy_stream_body_manager_test.cc",
     "src/quiche/quic/core/http/quic_spdy_stream_test.cc",
-    "src/quiche/quic/core/http/spdy_server_push_utils_test.cc",
     "src/quiche/quic/core/http/spdy_utils_test.cc",
     "src/quiche/quic/core/http/web_transport_http3_test.cc",
     "src/quiche/quic/core/legacy_quic_stream_id_manager_test.cc",
@@ -818,7 +817,7 @@ component("blind_sign_auth") {
     ":quiche",
     "//base",
     "//third_party/abseil-cpp:absl",
-    "//third_party/anonymous_tokens:proto_utils",
+    "//third_party/anonymous_tokens:rsa_bssa_public_metadata_client",
     "//third_party/boringssl",
     "//url",
   ]
@@ -826,6 +825,9 @@ component("blind_sign_auth") {
   public_deps = [
     ":blind_sign_auth_proto",
     "//third_party/anonymous_tokens:anonymous_tokens_rsa_bssa_client",
+    "//third_party/anonymous_tokens:crypto_utils",
+    "//third_party/anonymous_tokens:proto_utils",
+    "//third_party/anonymous_tokens:tokens_encodings",
   ]
 
   defines = [ "IS_QUICHE_IMPL" ]
