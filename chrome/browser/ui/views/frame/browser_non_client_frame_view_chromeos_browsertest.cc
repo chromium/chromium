@@ -1517,7 +1517,6 @@ IN_PROC_BROWSER_TEST_P(FloatBrowserNonClientFrameViewChromeOSTest,
   EXPECT_FALSE(immersive_controller->IsEnabled());
 }
 
-#if BUILDFLAG(IS_CHROMEOS)
 // Tests that, with the float flag enabled, the accelerator toggles the
 // multitask menu on a browser window.
 IN_PROC_BROWSER_TEST_P(FloatBrowserNonClientFrameViewChromeOSTest,
@@ -1540,7 +1539,6 @@ IN_PROC_BROWSER_TEST_P(FloatBrowserNonClientFrameViewChromeOSTest,
   event_generator.PressAndReleaseKey(ui::VKEY_Z, ui::EF_COMMAND_DOWN);
   ASSERT_FALSE(size_button->IsMultitaskMenuShown());
 }
-#endif
 
 namespace {
 
