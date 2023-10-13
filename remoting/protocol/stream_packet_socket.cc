@@ -310,9 +310,9 @@ void StreamPacketSocket::DoWrite() {
     if (packet.data->BytesConsumed() == 0) {
       // Only apply packet options when we are about to send the head of the
       // packet.
-      packet_processor_->ApplyPacketOptions(
-          reinterpret_cast<uint8_t*>(packet.data->data()), packet.data->size(),
-          packet.options.packet_time_params);
+      packet_processor_->ApplyPacketOptions(packet.data->bytes(),
+                                            packet.data->size(),
+                                            packet.options.packet_time_params);
     }
     int result = socket_->Write(
         packet.data.get(), packet.data->BytesRemaining(),

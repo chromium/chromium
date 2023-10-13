@@ -6,6 +6,7 @@
 #define NET_BASE_IO_BUFFER_H_
 
 #include <stddef.h>
+#include <stdint.h>
 
 #include <memory>
 #include <string>
@@ -81,6 +82,7 @@ class NET_EXPORT IOBuffer : public base::RefCountedThreadSafe<IOBuffer> {
   explicit IOBuffer(size_t buffer_size);
 
   char* data() const { return data_; }
+  uint8_t* bytes() const { return reinterpret_cast<uint8_t*>(data()); }
 
  protected:
   friend class base::RefCountedThreadSafe<IOBuffer>;

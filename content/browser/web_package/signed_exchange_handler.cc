@@ -348,7 +348,7 @@ SignedExchangeHandler::ParsePrologueBeforeFallbackUrl() {
   prologue_before_fallback_url_ =
       signed_exchange_prologue::BeforeFallbackUrl::Parse(
           base::make_span(
-              reinterpret_cast<uint8_t*>(header_buf_->data()),
+              header_buf_->bytes(),
               signed_exchange_prologue::BeforeFallbackUrl::kEncodedSizeInBytes),
           devtools_proxy_.get());
 
@@ -370,7 +370,7 @@ SignedExchangeHandler::ParsePrologueFallbackUrlAndAfter() {
   prologue_fallback_url_and_after_ =
       signed_exchange_prologue::FallbackUrlAndAfter::Parse(
           base::make_span(
-              reinterpret_cast<uint8_t*>(header_buf_->data()),
+              header_buf_->bytes(),
               prologue_before_fallback_url_.ComputeFallbackUrlAndAfterLength()),
           prologue_before_fallback_url_, devtools_proxy_.get());
 

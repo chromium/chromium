@@ -353,9 +353,9 @@ bool P2PSocketUdp::DoSend(const PendingPacket& packet) {
     }
   }
 
-  cricket::ApplyPacketOptions(
-      reinterpret_cast<uint8_t*>(packet.data->data()), packet.size,
-      packet.packet_options.packet_time_params, send_time_us);
+  cricket::ApplyPacketOptions(packet.data->bytes(), packet.size,
+                              packet.packet_options.packet_time_params,
+                              send_time_us);
   auto callback_binding = base::BindRepeating(
       &P2PSocketUdp::OnSend, base::Unretained(this), packet.id,
       packet.packet_options.packet_id, send_time_us / 1000);

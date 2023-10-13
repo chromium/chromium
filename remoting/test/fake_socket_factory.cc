@@ -126,8 +126,8 @@ int FakeUdpSocket::SendTo(const void* data,
       base::MakeRefCounted<net::IOBuffer>(data_size);
   memcpy(buffer->data(), data, data_size);
   base::TimeTicks now = base::TimeTicks::Now();
-  cricket::ApplyPacketOptions(reinterpret_cast<uint8_t*>(buffer->data()),
-                              data_size, options.packet_time_params,
+  cricket::ApplyPacketOptions(buffer->bytes(), data_size,
+                              options.packet_time_params,
                               (now - base::TimeTicks()).InMicroseconds());
   SignalSentPacket(this, rtc::SentPacket(options.packet_id, rtc::TimeMillis()));
   dispatcher_->DeliverPacket(local_address_, address, buffer, data_size);

@@ -316,7 +316,7 @@ void UdpPacketSocket::DoSend() {
 
   PendingPacket& packet = send_queue_.front();
   cricket::ApplyPacketOptions(
-      reinterpret_cast<uint8_t*>(packet.data->data()), packet.data->size(),
+      packet.data->bytes(), packet.data->size(),
       packet.options.packet_time_params,
       (base::TimeTicks::Now() - base::TimeTicks()).InMicroseconds());
   int result =

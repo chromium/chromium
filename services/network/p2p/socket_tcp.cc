@@ -462,8 +462,7 @@ void P2PSocketTcp::DoSend(const net::IPEndPoint& to,
          data.size());
 
   cricket::ApplyPacketOptions(
-      reinterpret_cast<uint8_t*>(send_buffer.buffer->data()) +
-          kPacketHeaderSize,
+      send_buffer.buffer->bytes() + kPacketHeaderSize,
       send_buffer.buffer->BytesRemaining() - kPacketHeaderSize,
       options.packet_time_params, rtc::TimeMicros());
 
@@ -538,9 +537,8 @@ void P2PSocketStunTcp::DoSend(const net::IPEndPoint& to,
           base::MakeRefCounted<net::IOBuffer>(buffer_size), buffer_size));
   memcpy(send_buffer.buffer->data(), data.data(), data.size());
 
-  cricket::ApplyPacketOptions(
-      reinterpret_cast<uint8_t*>(send_buffer.buffer->data()), data.size(),
-      options.packet_time_params, rtc::TimeMicros());
+  cricket::ApplyPacketOptions(send_buffer.buffer->bytes(), data.size(),
+                              options.packet_time_params, rtc::TimeMicros());
 
   if (pad_bytes) {
     char padding[4] = {0};
