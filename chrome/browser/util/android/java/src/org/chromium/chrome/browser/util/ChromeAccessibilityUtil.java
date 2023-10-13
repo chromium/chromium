@@ -30,11 +30,6 @@ public class ChromeAccessibilityUtil extends AccessibilityUtil {
         return AccessibilityState.isAccessibilityEnabled();
     }
 
-    @Deprecated
-    public boolean isAccessibilityEnabledHeavy() {
-        return AccessibilityState.isAccessibilityEnabledHeavy();
-    }
-
     @Override
     public void setAccessibilityEnabledForTesting(@Nullable Boolean isEnabled) {
         AccessibilityState.setIsPerformGesturesEnabledForTesting(Boolean.TRUE.equals(isEnabled));
