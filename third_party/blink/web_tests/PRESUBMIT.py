@@ -131,6 +131,7 @@ def _CheckForRedundantBaselines(input_api, output_api, max_tests: int = 1000):
             input_api.python3_executable,
             path_to_blink_tool,
             'optimize-baselines',
+            '--no-manifest-update',
             '--check',
             f'--test-name-file={test_name_file.name}',
         ]
@@ -513,6 +514,10 @@ def CheckChangeOnUpload(input_api, output_api):
     results.extend(_CheckTestharnessResults(input_api, output_api))
     results.extend(_CheckFilesUsingEventSender(input_api, output_api))
     results.extend(_CheckTestExpectations(input_api, output_api))
+    # `_CheckTestExpectations()` updates the WPT manifests for
+    # `_CheckForRedundantBaselines()`, so they must run in order. (Updating the
+    # manifest is needed to correctly detect tests but takes 10-15s, so try
+    # to only do so once; see crbug.com/1492238.)
     results.extend(_CheckForRedundantBaselines(input_api, output_api))
     results.extend(_CheckForJSTest(input_api, output_api))
     results.extend(_CheckForInvalidPreferenceError(input_api, output_api))
@@ -530,6 +535,10 @@ def CheckChangeOnCommit(input_api, output_api):
     results.extend(_CheckTestharnessResults(input_api, output_api))
     results.extend(_CheckFilesUsingEventSender(input_api, output_api))
     results.extend(_CheckTestExpectations(input_api, output_api))
+    # `_CheckTestExpectations()` updates the WPT manifests for
+    # `_CheckForRedundantBaselines()`, so they must run in order. (Updating the
+    # manifest is needed to correctly detect tests but takes 10-15s, so try
+    # to only do so once; see crbug.com/1492238.)
     results.extend(_CheckForRedundantBaselines(input_api, output_api))
     results.extend(_CheckForUnlistedTestFolder(input_api, output_api))
     results.extend(_CheckForExtraVirtualBaselines(input_api, output_api))
