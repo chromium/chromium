@@ -5,6 +5,8 @@
 import {TestRunner} from 'test_runner';
 import {ApplicationTestRunner} from 'application_test_runner';
 
+import * as Application from 'devtools/panels/application/application.js';
+
 (async function() {
   TestRunner.addResult(`Tests that database names are correctly loaded and saved in IndexedDBModel.\n`);
     //Note: every test that uses a storage API must manually clean-up state from previous tests.
@@ -35,7 +37,7 @@ import {ApplicationTestRunner} from 'application_test_runner';
   }
 
   function step3() {
-    TestRunner.addSniffer(Resources.IndexedDBModel.prototype, 'updateStorageKeyDatabaseNames', step4, false);
+    TestRunner.addSniffer(Application.IndexedDBModel.IndexedDBModel.prototype, 'updateStorageKeyDatabaseNames', step4, false);
     indexedDBModel.refreshDatabaseNames();
   }
 
@@ -45,7 +47,7 @@ import {ApplicationTestRunner} from 'application_test_runner';
   }
 
   function step5() {
-    TestRunner.addSniffer(Resources.IndexedDBModel.prototype, 'updateStorageKeyDatabaseNames', step6, false);
+    TestRunner.addSniffer(Application.IndexedDBModel.IndexedDBModel.prototype, 'updateStorageKeyDatabaseNames', step6, false);
     indexedDBModel.refreshDatabaseNames();
   }
 
@@ -55,7 +57,7 @@ import {ApplicationTestRunner} from 'application_test_runner';
   }
 
   function step7() {
-    TestRunner.addSniffer(Resources.IndexedDBModel.prototype, 'updateStorageKeyDatabaseNames', step8, false);
+    TestRunner.addSniffer(Application.IndexedDBModel.IndexedDBModel.prototype, 'updateStorageKeyDatabaseNames', step8, false);
     indexedDBModel.refreshDatabaseNames();
   }
 
@@ -65,7 +67,7 @@ import {ApplicationTestRunner} from 'application_test_runner';
   }
 
   function step9() {
-    TestRunner.addSniffer(Resources.IndexedDBModel.prototype, 'updateStorageKeyDatabaseNames', step10, false);
+    TestRunner.addSniffer(Application.IndexedDBModel.IndexedDBModel.prototype, 'updateStorageKeyDatabaseNames', step10, false);
     indexedDBModel.refreshDatabaseNames();
   }
 

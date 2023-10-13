@@ -16,13 +16,13 @@ import * as Application from 'devtools/panels/application/application.js';
 
   await TestRunner.showPanel('resources');
 
-  const model = TestRunner.mainTarget.model(Resources.IndexedDBModel);
+  const model = TestRunner.mainTarget.model(Application.IndexedDBModel.IndexedDBModel);
   const view = Application.ResourcesPanel.ResourcesPanel.instance();
 
   function createIndexedDBInMainFrame(callback) {
     var mainFrameId = TestRunner.resourceTreeModel.mainFrame.id;
     ApplicationTestRunner.createDatabase(mainFrameId, 'Database-main-frame', () => {
-      var event = model.addEventListener(Resources.IndexedDBModel.Events.DatabaseAdded, () => {
+      var event = model.addEventListener(Application.IndexedDBModel.Events.DatabaseAdded, () => {
         Common.EventTarget.removeEventListeners([event]);
         callback();
       });

@@ -18,9 +18,9 @@ import * as Application from 'devtools/panels/application/application.js';
 
   function createIndexedDBInMainFrame(callback) {
     var mainFrameId = TestRunner.resourceTreeModel.mainFrame.id;
-    var model = TestRunner.mainTarget.model(Resources.IndexedDBModel);
+    var model = TestRunner.mainTarget.model(Application.IndexedDBModel.IndexedDBModel);
     ApplicationTestRunner.createDatabase(mainFrameId, 'Database-main-frame', () => {
-      var event = model.addEventListener(Resources.IndexedDBModel.Events.DatabaseAdded, () => {
+      var event = model.addEventListener(Application.IndexedDBModel.Events.DatabaseAdded, () => {
         Common.EventTarget.removeEventListeners([event]);
         callback();
       });

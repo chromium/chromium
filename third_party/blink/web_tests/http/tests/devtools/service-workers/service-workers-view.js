@@ -19,9 +19,9 @@ import * as Application from 'devtools/panels/application/application.js';
   var scope1 = 'http://127.0.0.1:8000/devtools/service-workers/resources/scope1/'; // with trailing '/'
   var scope2 = 'http://127.0.0.1:8000/devtools/service-workers/resources/scope2';  // without trailing '/'
   var step = 0;
-  Resources.ServiceWorkersView.setThrottleDisabledForDebugging(true);
+  Application.ServiceWorkersView.setThrottleDisabledForDebugging(true);
 
-  TestRunner.addSniffer(Resources.ServiceWorkersView.prototype, 'updateRegistration', updateRegistration, true);
+  TestRunner.addSniffer(Application.ServiceWorkersView.ServiceWorkersView.prototype, 'updateRegistration', updateRegistration, true);
   function updateRegistration(registration) {
     for (var version of registration.versions.values()) {
       if (step == 0 && registration.scopeURL == scope1 && version.isActivated() && version.isRunning()) {

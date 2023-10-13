@@ -26,7 +26,7 @@ import * as Application from 'devtools/panels/application/application.js';
   var indexName = 'testIndex';
   var keyPath = 'testKey';
 
-  var indexedDBModel = TestRunner.mainTarget.model(Resources.IndexedDBModel);
+  var indexedDBModel = TestRunner.mainTarget.model(Application.IndexedDBModel.IndexedDBModel);
   indexedDBModel.throttler['#timeout'] = 100000;  // Disable live updating.
   var databaseId;
 
@@ -34,7 +34,7 @@ import * as Application from 'devtools/panels/application/application.js';
     var view = Application.ResourcesPanel.ResourcesPanel.instance().sidebar.indexedDBListTreeElement.idbDatabaseTreeElements[0].view;
 
     view.getComponent().refreshDatabaseButtonClicked();
-    return indexedDBModel.once(Resources.IndexedDBModel.Events.DatabaseLoaded);
+    return indexedDBModel.once(Application.IndexedDBModel.Events.DatabaseLoaded);
   }
 
   function waitRefreshDatabaseRightClick() {
@@ -44,19 +44,19 @@ import * as Application from 'devtools/panels/application/application.js';
 
   function waitUpdateDataView() {
     return new Promise((resolve) => {
-      TestRunner.addSniffer(Resources.IDBDataView.prototype, 'updatedDataForTests', resolve, false);
+      TestRunner.addSniffer(Application.IndexedDBViews.IDBDataView.prototype, 'updatedDataForTests', resolve, false);
     });
   }
 
   function waitDatabaseLoaded(callback) {
-    var event = indexedDBModel.addEventListener(Resources.IndexedDBModel.Events.DatabaseLoaded, () => {
+    var event = indexedDBModel.addEventListener(Application.IndexedDBModel.Events.DatabaseLoaded, () => {
       Common.EventTarget.removeEventListeners([event]);
       callback();
     });
   }
 
   function waitDatabaseAdded(callback) {
-    var event = indexedDBModel.addEventListener(Resources.IndexedDBModel.Events.DatabaseAdded, () => {
+    var event = indexedDBModel.addEventListener(Application.IndexedDBModel.Events.DatabaseAdded, () => {
       Common.EventTarget.removeEventListeners([event]);
       callback();
     });
@@ -101,7 +101,7 @@ import * as Application from 'devtools/panels/application/application.js';
   let onUpdate = () => {};
 
   TestRunner.addSniffer(
-      Resources.IDBDataView.prototype, 'updatedDataForTests', function() {
+      Application.IndexedDBViews.IDBDataView.prototype, 'updatedDataForTests', function() {
         onUpdate(this);
       }, true);
 

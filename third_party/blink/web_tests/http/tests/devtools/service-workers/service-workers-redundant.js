@@ -21,9 +21,9 @@ import * as Application from 'devtools/panels/application/application.js';
   let step = 0;
   let firstVersionId = -1;
   let secondVersionId = -1;
-  Resources.ServiceWorkersView.setThrottleDisabledForDebugging(true);
+  Application.ServiceWorkersView.setThrottleDisabledForDebugging(true);
 
-  TestRunner.addSniffer(Resources.ServiceWorkersView.prototype, 'updateRegistration', updateRegistration, true);
+  TestRunner.addSniffer(Application.ServiceWorkersView.ServiceWorkersView.prototype, 'updateRegistration', updateRegistration, true);
   function updateRegistration(registration) {
     if (registration.scopeURL != scope)
       return;

@@ -17,7 +17,7 @@ import * as Application from 'devtools/panels/application/application.js';
   const scriptURL = 'http://127.0.0.1:8000/devtools/service-workers/resources/service-worker-empty.js';
   const scope1 = 'http://127.0.0.1:8000/devtools/service-workers/resources/scope1/';
   const scope2 = 'http://127.0.0.1:8000/devtools/service-workers/resources/scope2/';
-  Resources.ServiceWorkersView.setThrottleDisabledForDebugging = true;
+  Application.ServiceWorkersView.setThrottleDisabledForDebugging(true);
 
   Application.ResourcesPanel.ResourcesPanel.instance().sidebar.serviceWorkersTreeElement.select();
   await ApplicationTestRunner.registerServiceWorker(scriptURL, scope1);

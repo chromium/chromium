@@ -19,9 +19,9 @@ import * as Application from 'devtools/panels/application/application.js';
 
   function createIndexedDB(callback) {
     var mainFrameId = TestRunner.resourceTreeModel.mainFrame.id;
-    var model = TestRunner.mainTarget.model(Resources.IndexedDBModel);
+    var model = TestRunner.mainTarget.model(Application.IndexedDBModel.IndexedDBModel);
     ApplicationTestRunner.createDatabase(mainFrameId, 'Database1', () => {
-      var event = model.addEventListener(Resources.IndexedDBModel.Events.DatabaseAdded, () => {
+      var event = model.addEventListener(Application.IndexedDBModel.Events.DatabaseAdded, () => {
         Common.EventTarget.removeEventListeners([event]);
         callback();
       });
@@ -46,7 +46,7 @@ import * as Application from 'devtools/panels/application/application.js';
         path.push(selected.itemURL);
     }
     TestRunner.addResult('Selection: ' + JSON.stringify(path));
-    TestRunner.addResult('Visible view is a cookie view: ' + (view.visibleView instanceof Resources.CookieItemsView));
+    TestRunner.addResult('Visible view is a cookie view: ' + (view.visibleView instanceof Application.CookieItemsView.CookieItemsView));
   }
 
   await new Promise(createIndexedDB);
