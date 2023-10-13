@@ -171,6 +171,13 @@ export class SettingsSafetyHubPageElement extends
         PasswordManagerPage.CHECKUP);
   }
 
+  private onPasswordsKeyPress_(e: KeyboardEvent) {
+    e.stopPropagation();
+    if (this.isEnterOrSpaceClicked_(e)) {
+      this.onPasswordsClick_();
+    }
+  }
+
   private onVersionClick_() {
     if (this.versionCardData_.state === CardState.WARNING) {
       this.performRestart(RestartType.RELAUNCH);
@@ -181,10 +188,24 @@ export class SettingsSafetyHubPageElement extends
     }
   }
 
+  private onVersionKeyPress_(e: KeyboardEvent) {
+    e.stopPropagation();
+    if (this.isEnterOrSpaceClicked_(e)) {
+      this.onVersionClick_();
+    }
+  }
+
   private onSafeBrowsingClick_() {
     Router.getInstance().navigateTo(
         routes.SECURITY, /* dynamicParams= */ undefined,
         /* removeSearch= */ true);
+  }
+
+  private onSafeBrowsingKeyPress_(e: KeyboardEvent) {
+    e.stopPropagation();
+    if (this.isEnterOrSpaceClicked_(e)) {
+      this.onSafeBrowsingClick_();
+    }
   }
 
   private onNotificationPermissionListChanged_(permissions:
@@ -211,6 +232,10 @@ export class SettingsSafetyHubPageElement extends
 
   private onExtensionsChanged_(numberOfExtensions: number) {
     this.showExtensions_ = !!numberOfExtensions;
+  }
+
+  private isEnterOrSpaceClicked_(e: KeyboardEvent): boolean {
+    return e.key === 'Enter' || e.key === ' ';
   }
 }
 

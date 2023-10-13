@@ -42,13 +42,16 @@
 </div>
 <div class="card-container">
   <settings-safety-hub-card id="passwords" class="card box"
-      data="[[passwordCardData_]]" on-click="onPasswordsClick_">
+      data="[[passwordCardData_]]" on-click="onPasswordsClick_"
+      tabindex="0" on-keydown="onPasswordsKeyPress_">
   </settings-safety-hub-card>
   <settings-safety-hub-card id="version" class="card box"
-      data="[[versionCardData_]]" on-click="onVersionClick_">
+      data="[[versionCardData_]]" on-click="onVersionClick_"
+      tabindex="0" on-keydown="onVersionKeyPress_">
   </settings-safety-hub-card>
   <settings-safety-hub-card id="safeBrowsing" class="card box"
-      data="[[safeBrowsingCardData_]]" on-click="onSafeBrowsingClick_">
+      data="[[safeBrowsingCardData_]]" on-click="onSafeBrowsingClick_"
+      tabindex="0" on-keydown="onSafeBrowsingKeyPress_">
   </settings-safety-hub-card>
 </div>
 <div class="section-header cr-secondary-text">

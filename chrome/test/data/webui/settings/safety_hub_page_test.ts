@@ -228,6 +228,22 @@ suite('SafetyHubPage', function() {
     assertEquals(PasswordManagerPage.CHECKUP, param);
   });
 
+  test('Password Card Clicked via Enter', async function() {
+    testElement.$.passwords.dispatchEvent(
+        new KeyboardEvent('keydown', {key: 'Enter', bubbles: true}));
+    // Ensure the Password Manager Check-up page is shown.
+    const param = await passwordManagerProxy.whenCalled('showPasswordManager');
+    assertEquals(PasswordManagerPage.CHECKUP, param);
+  });
+
+  test('Password Card Clicked via Space', async function() {
+    testElement.$.passwords.dispatchEvent(
+        new KeyboardEvent('keydown', {key: ' ', bubbles: true}));
+    // Ensure the Password Manager Check-up page is shown.
+    const param = await passwordManagerProxy.whenCalled('showPasswordManager');
+    assertEquals(PasswordManagerPage.CHECKUP, param);
+  });
+
   test('Version Card', async function() {
     assertTrue(isChildVisible(testElement, '#version'));
 
@@ -266,6 +282,20 @@ suite('SafetyHubPage', function() {
     return lifetimeBrowserProxy.whenCalled('relaunch');
   });
 
+  test('Version Card Clicked via Enter', async function() {
+    testElement.$.passwords.dispatchEvent(
+        new KeyboardEvent('keydown', {key: 'Enter', bubbles: true}));
+    // Ensure the About page is shown.
+    assertEquals(routes.ABOUT, Router.getInstance().getCurrentRoute());
+  });
+
+  test('Version Card Clicked via Space', async function() {
+    testElement.$.passwords.dispatchEvent(
+        new KeyboardEvent('keydown', {key: ' ', bubbles: true}));
+    // Ensure the About page is shown.
+    assertEquals(routes.ABOUT, Router.getInstance().getCurrentRoute());
+  });
+
   test('Safe Browsing Card', async function() {
     assertTrue(isChildVisible(testElement, '#safeBrowsing'));
 
@@ -283,6 +313,20 @@ suite('SafetyHubPage', function() {
   test('Safe Browsing Card Clicked', function() {
     testElement.$.safeBrowsing.click();
 
+    // Ensure the Security Settings page is shown.
+    assertEquals(routes.SECURITY, Router.getInstance().getCurrentRoute());
+  });
+
+  test('Safe Browsing Card Clicked via Enter', async function() {
+    testElement.$.passwords.dispatchEvent(
+        new KeyboardEvent('keydown', {key: 'Enter', bubbles: true}));
+    // Ensure the Security Settings page is shown.
+    assertEquals(routes.SECURITY, Router.getInstance().getCurrentRoute());
+  });
+
+  test('Safe Browsing Card Clicked via Space', async function() {
+    testElement.$.passwords.dispatchEvent(
+        new KeyboardEvent('keydown', {key: ' ', bubbles: true}));
     // Ensure the Security Settings page is shown.
     assertEquals(routes.SECURITY, Router.getInstance().getCurrentRoute());
   });
