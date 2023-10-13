@@ -18,11 +18,13 @@ class PrefRegistrySyncable;
 }  // namespace user_prefs
 
 namespace apps {
+class AlmanacIconCache;
 
 // This class processes data received from Almanac.
 class AlmanacFetcher : public AppFetcher {
  public:
-  explicit AlmanacFetcher(Profile* profile);
+  AlmanacFetcher(Profile* profile,
+                 std::unique_ptr<AlmanacIconCache> icon_cache);
   AlmanacFetcher(const AlmanacFetcher&) = delete;
   AlmanacFetcher& operator=(const AlmanacFetcher&) = delete;
   ~AlmanacFetcher() override;
@@ -38,6 +40,10 @@ class AlmanacFetcher : public AppFetcher {
 
   // Registers prefs used for calling the Almanac.
   static void RegisterProfilePrefs(user_prefs::PrefRegistrySyncable* registry);
+
+  // Allows tests to skip the check of whether the user has an official Google
+  // API key so that we can trigger an Almanac query.
+  static void SetSkipApiKeyCheckForTesting(bool skip_api_key_check);
 
   // Methods exposed for testing the Almanac server.
 
@@ -76,6 +82,7 @@ class AlmanacFetcher : public AppFetcher {
   std::unique_ptr<DeviceInfoManager> device_info_manager_;
   std::unique_ptr<ProtoFileManager<proto::LauncherAppResponse>>
       proto_file_manager_;
+  std::unique_ptr<AlmanacIconCache> icon_cache_;
 
   base::WeakPtrFactory<AlmanacFetcher> weak_factory_{this};
 };

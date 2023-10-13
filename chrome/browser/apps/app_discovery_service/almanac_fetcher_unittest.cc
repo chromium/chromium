@@ -13,8 +13,10 @@
 #include "base/test/test_future.h"
 #include "base/test/test_proto_loader.h"
 #include "base/time/time.h"
+#include "chrome/browser/apps/almanac_api_client/mock_almanac_icon_cache.h"
 #include "chrome/browser/apps/app_discovery_service/almanac_api/launcher_app.pb.h"
 #include "chrome/browser/apps/app_discovery_service/app_discovery_service.h"
+#include "chrome/browser/apps/app_discovery_service/app_discovery_util.h"
 #include "chrome/browser/apps/app_discovery_service/game_extras.h"
 #include "chrome/browser/apps/app_discovery_service/launcher_app_almanac_connector.h"
 #include "chrome/browser/web_applications/test/web_app_install_test_utils.h"
@@ -25,9 +27,15 @@
 #include "services/network/public/cpp/weak_wrapper_shared_url_loader_factory.h"
 #include "services/network/test/test_url_loader_factory.h"
 #include "testing/gtest/include/gtest/gtest.h"
+#include "ui/base/resource/resource_bundle.h"
+#include "ui/gfx/image/image.h"
+#include "ui/gfx/image/image_unittest_util.h"
+#include "ui/resources/grit/ui_resources.h"
 
 namespace apps {
 namespace {
+using testing::_;
+using ::testing::Invoke;
 
 constexpr char kOneApp[] =
     R"pb(app_groups: {
@@ -104,6 +112,11 @@ void SetServerResponse(network::TestURLLoaderFactory& url_loader_factory,
       status);
 }
 
+gfx::Image& GetTestImage(int resource_id) {
+  return ui::ResourceBundle::GetSharedInstance().GetNativeImageNamed(
+      resource_id);
+}
+
 class AlmanacFetcherTest : public testing::Test {
  public:
   AlmanacFetcherTest() {
@@ -122,12 +135,17 @@ class AlmanacFetcherTest : public testing::Test {
             &url_loader_factory_));
     profile_ = profile_builder.Build();
     web_app::test::AwaitStartWebAppProviderAndSubsystems(profile());
-    almanac_fetcher_ = std::make_unique<AlmanacFetcher>(profile());
-
+    auto icon_cache = std::make_unique<MockAlmanacIconCache>();
+    icon_cache_ = icon_cache.get();
+    AlmanacFetcher::SetSkipApiKeyCheckForTesting(true);
+    almanac_fetcher_ =
+        std::make_unique<AlmanacFetcher>(profile(), std::move(icon_cache));
     proto_loader_ = std::make_unique<base::TestProtoLoader>(
         launcher_app_descriptor_, "apps.proto.LauncherAppResponse");
     SetServerResponse(url_loader_factory_, proto_loader(), kTwoValidApps);
   }
+
+  void TearDown() override { icon_cache_ = nullptr; }
 
   TestingProfile* profile() { return profile_.get(); }
   AlmanacFetcher* almanac_fetcher() { return almanac_fetcher_.get(); }
@@ -137,6 +155,8 @@ class AlmanacFetcherTest : public testing::Test {
   base::FilePath launcher_app_descriptor_;
 
   network::TestURLLoaderFactory url_loader_factory_;
+
+  raw_ptr<MockAlmanacIconCache> icon_cache_;
 
  private:
   // BrowserTaskEnvironment has to be the first member or test will break.
@@ -223,7 +243,7 @@ TEST_F(AlmanacFetcherTest, RegisterForUpdatesReadFromDisk) {
   EXPECT_GT(after_download, before_download);
 
   // Read from disk as we've just successfully finished a download.
-  AlmanacFetcher almanac_fetcher2(profile());
+  AlmanacFetcher almanac_fetcher2(profile(), nullptr);
   base::test::TestFuture<const std::vector<Result>&> waiter2;
   base::CallbackListSubscription subscription2 =
       almanac_fetcher2.RegisterForAppUpdates(waiter2.GetRepeatingCallback());
@@ -246,7 +266,7 @@ TEST_F(AlmanacFetcherTest, RegisterForUpdatesServerCallFails) {
   almanac_fetcher()->SetLastAppsUpdateTime(before_download);
   SetServerResponse(url_loader_factory_, proto_loader(), kOneApp,
                     net::HTTP_INTERNAL_SERVER_ERROR);
-  AlmanacFetcher almanac_fetcher2(profile());
+  AlmanacFetcher almanac_fetcher2(profile(), nullptr);
   base::test::TestFuture<const std::vector<Result>&> waiter2;
   base::CallbackListSubscription subscription2 =
       almanac_fetcher2.RegisterForAppUpdates(waiter2.GetRepeatingCallback());
@@ -301,7 +321,7 @@ TEST_F(AlmanacFetcherTest, GetAppsUpdateOnSecondLogin) {
   // Re-set to initiate a new login.
   almanac_fetcher()->SetLastAppsUpdateTime(before_download);
   SetServerResponse(url_loader_factory_, proto_loader(), kOneApp);
-  AlmanacFetcher almanac_fetcher2(profile());
+  AlmanacFetcher almanac_fetcher2(profile(), nullptr);
   base::test::TestFuture<const std::vector<Result>&> waiter2;
   base::CallbackListSubscription subscription2 =
       almanac_fetcher2.RegisterForAppUpdates(waiter2.GetRepeatingCallback());
@@ -323,6 +343,41 @@ TEST_F(AlmanacFetcherTest, GetAppsUpdateOnSecondLogin) {
                   GURL("https://game-deeplink.com/cf2be56486f11ee"));
         EXPECT_TRUE(game_extras->GetIsIconMaskingAllowed());
       }));
+}
+
+TEST_F(AlmanacFetcherTest, GetIconSuccess) {
+  base::test::TestFuture<gfx::ImageSkia, apps::DiscoveryError> result;
+  std::string icon_url = "https://icon";
+  gfx::Image expected_image = GetTestImage(IDR_DEFAULT_FAVICON);
+  EXPECT_CALL(*icon_cache_, GetIcon(GURL(icon_url), _))
+      .WillOnce(
+          Invoke([&expected_image](
+                     const GURL&,
+                     base::OnceCallback<void(const gfx::Image&)> callback) {
+            std::move(callback).Run(expected_image);
+          }));
+  almanac_fetcher()->GetIcon(
+      icon_url, /*size_hint_in_dip=*/32,
+      result.GetCallback<const gfx::ImageSkia&, apps::DiscoveryError>());
+  EXPECT_TRUE(
+      gfx::test::AreImagesEqual(gfx::Image(result.Get<0>()), expected_image));
+  EXPECT_EQ(result.Get<1>(), DiscoveryError::kSuccess);
+}
+
+TEST_F(AlmanacFetcherTest, GetIconError) {
+  base::test::TestFuture<gfx::ImageSkia, apps::DiscoveryError> result;
+  std::string icon_url = "https://icon";
+  EXPECT_CALL(*icon_cache_, GetIcon(GURL(icon_url), _))
+      .WillOnce(
+          Invoke([&](const GURL&,
+                     base::OnceCallback<void(const gfx::Image&)> callback) {
+            std::move(callback).Run(gfx::Image());
+          }));
+  almanac_fetcher()->GetIcon(
+      icon_url, /*size_hint_in_dip=*/32,
+      result.GetCallback<const gfx::ImageSkia&, apps::DiscoveryError>());
+  EXPECT_TRUE(result.Get<0>().isNull());
+  EXPECT_EQ(result.Get<1>(), DiscoveryError::kErrorRequestFailed);
 }
 }  // namespace
 }  // namespace apps

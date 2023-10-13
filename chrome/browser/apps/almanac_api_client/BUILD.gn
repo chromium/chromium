@@ -42,6 +42,19 @@ source_set("almanac_api_client") {
   ]
 }
 
+source_set("test_support") {
+  testonly = true
+  sources = [
+    "mock_almanac_icon_cache.cc",
+    "mock_almanac_icon_cache.h",
+  ]
+  deps = [
+    ":almanac_api_client",
+    "//base",
+    "//testing/gmock",
+  ]
+}
+
 source_set("unit_tests") {
   testonly = true
 

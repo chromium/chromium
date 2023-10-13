@@ -27,8 +27,8 @@ class AlmanacIconCache {
   virtual ~AlmanacIconCache();
 
   // Downloads the icon for the specified GURL.
-  void GetIcon(const GURL& icon_url,
-               base::OnceCallback<void(const gfx::Image&)> callback);
+  virtual void GetIcon(const GURL& icon_url,
+                       base::OnceCallback<void(const gfx::Image&)> callback);
 
  protected:
   AlmanacIconCache();

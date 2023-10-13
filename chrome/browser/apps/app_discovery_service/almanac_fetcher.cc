@@ -7,6 +7,7 @@
 #include <vector>
 
 #include "base/strings/utf_string_conversions.h"
+#include "chrome/browser/apps/almanac_api_client/almanac_icon_cache.h"
 #include "chrome/browser/apps/app_discovery_service/almanac_api/launcher_app.pb.h"
 #include "chrome/browser/apps/app_discovery_service/app_discovery_service.h"
 #include "chrome/browser/apps/app_discovery_service/game_extras.h"
@@ -15,7 +16,11 @@
 #include "chromeos/constants/chromeos_features.h"
 #include "components/pref_registry/pref_registry_syncable.h"
 #include "components/prefs/pref_service.h"
+#include "google_apis/google_api_keys.h"
 #include "services/network/public/cpp/shared_url_loader_factory.h"
+#include "ui/gfx/image/image.h"
+#include "ui/gfx/image/image_skia.h"
+#include "url/gurl.h"
 
 namespace apps {
 namespace {
@@ -26,6 +31,10 @@ constexpr char kLauncherAppFilePath[] =
 // Launcher App use case.
 constexpr char kLastLauncherAppAlmanacCallTimestamp[] =
     "app_discovery_service.last_launcher_app_almanac_call_timestamp";
+
+// Whether or not to skip the check if the build includes the Google Chrome API
+// key. Used for testing.
+bool skip_api_key_check_for_testing = false;
 
 // Maps the Almanac Launcher App proto response to an app result. The icon
 // url is passed and later handled by the icon cache.
@@ -51,14 +60,27 @@ std::vector<Result> MapToApps(const proto::LauncherAppResponse& proto) {
   return apps;
 }
 
+// Handles the downloaded image and converts it to the right format.
+void OnIconDownloaded(GetIconCallback callback, const gfx::Image& icon) {
+  DiscoveryError status = DiscoveryError::kSuccess;
+  if (icon.IsEmpty()) {
+    status = DiscoveryError::kErrorRequestFailed;
+  }
+  std::move(callback).Run(icon.AsImageSkia(), status);
+}
 }  // namespace
 
-AlmanacFetcher::AlmanacFetcher(Profile* profile)
+AlmanacFetcher::AlmanacFetcher(Profile* profile,
+                               std::unique_ptr<AlmanacIconCache> icon_cache)
     : profile_(profile),
       server_connector_(std::make_unique<LauncherAppAlmanacConnector>()),
-      device_info_manager_(std::make_unique<DeviceInfoManager>(profile)) {
-  // TODO(b/296157719): add an API key check.
-  if (base::FeatureList::IsEnabled(kAlmanacGameMigration) &&
+      device_info_manager_(std::make_unique<DeviceInfoManager>(profile)),
+      icon_cache_(std::move(icon_cache)) {
+  // The whole feature would not work unless the build includes the Google
+  // Chrome API key or this is a test environment as the server call would fail.
+  if ((google_apis::IsGoogleChromeAPIKeyUsed() ||
+       skip_api_key_check_for_testing) &&
+      base::FeatureList::IsEnabled(kAlmanacGameMigration) &&
       chromeos::features::IsCloudGamingDeviceEnabled()) {
     base::FilePath path = profile->GetPath().AppendASCII(kLauncherAppFilePath);
     proto_file_manager_ =
@@ -83,10 +105,19 @@ base::CallbackListSubscription AlmanacFetcher::RegisterForAppUpdates(
   return subscribers_.Add(std::move(callback));
 }
 
-// Method does nothing as all icons are handled by the icon cache.
+// Method calls the icon cache for the given url.
 void AlmanacFetcher::GetIcon(const std::string& app_id,
                              int32_t size_hint_in_dip,
-                             GetIconCallback callback) {}
+                             GetIconCallback callback) {
+  if (!icon_cache_) {
+    std::move(callback).Run(gfx::ImageSkia(),
+                            DiscoveryError::kErrorRequestFailed);
+  }
+  // We ignore the size as it's hard-coded to kAppIconDimension in:
+  // //chrome/browser/ash/app_list/search/common/icon_constants.h
+  icon_cache_->GetIcon(GURL(app_id),
+                       base::BindOnce(&OnIconDownloaded, std::move(callback)));
+}
 
 void AlmanacFetcher::OnAppsUpdate(
     absl::optional<proto::LauncherAppResponse> response) {
@@ -101,6 +132,10 @@ void AlmanacFetcher::RegisterProfilePrefs(
     user_prefs::PrefRegistrySyncable* registry) {
   registry->RegisterTimePref(kLastLauncherAppAlmanacCallTimestamp,
                              base::Time());
+}
+
+void AlmanacFetcher::SetSkipApiKeyCheckForTesting(bool skip_api_key_check) {
+  skip_api_key_check_for_testing = skip_api_key_check;
 }
 
 void AlmanacFetcher::DownloadApps() {

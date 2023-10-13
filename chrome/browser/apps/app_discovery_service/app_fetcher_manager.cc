@@ -4,13 +4,16 @@
 
 #include "chrome/browser/apps/app_discovery_service/app_fetcher_manager.h"
 
+#include <memory>
 #include <utility>
 
 #include "base/notreached.h"
+#include "chrome/browser/apps/almanac_api_client/almanac_icon_cache.h"
 #include "chrome/browser/apps/app_discovery_service/almanac_fetcher.h"
 #include "chrome/browser/apps/app_discovery_service/app_discovery_service.h"
 #include "chrome/browser/apps/app_discovery_service/game_fetcher.h"
 #include "chrome/browser/apps/app_discovery_service/recommended_arc_app_fetcher.h"
+#include "chrome/browser/profiles/profile.h"
 #include "ui/gfx/image/image_skia.h"
 
 namespace apps {
@@ -37,7 +40,9 @@ AppFetcherManager::AppFetcherManager(Profile* profile)
       recommended_arc_app_fetcher_(
           std::make_unique<RecommendedArcAppFetcher>(profile_)),
       game_fetcher_(std::make_unique<GameFetcher>(profile_)),
-      almanac_fetcher_(std::make_unique<AlmanacFetcher>(profile_)) {}
+      almanac_fetcher_(std::make_unique<AlmanacFetcher>(
+          profile_,
+          std::make_unique<AlmanacIconCache>(profile->GetProfileKey()))) {}
 
 AppFetcherManager::~AppFetcherManager() = default;
 

@@ -85,14 +85,13 @@ TEST_F(AlmanacIconCacheTest, DownloadIconSuccess) {
 
 TEST_F(AlmanacIconCacheTest, DownloadIconServerFailure) {
   GURL fake_url = GURL("https://www.example.com/fake_image");
-  gfx::Image expected_image = gfx::Image();
   base::test::TestFuture<const gfx::Image&> received_image;
 
   EXPECT_CALL(*mock_image_fetcher(), FetchImageAndData_(fake_url, _, _, _))
       .WillOnce(PostFetchReply(gfx::Image()));
   almanac_image_fetcher()->GetIcon(fake_url, received_image.GetCallback());
 
-  EXPECT_TRUE(gfx::test::AreImagesEqual(expected_image, received_image.Get()));
+  EXPECT_TRUE(received_image.Get().IsEmpty());
 }
 }  // namespace
 }  // namespace apps
