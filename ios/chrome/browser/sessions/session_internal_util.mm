@@ -132,6 +132,11 @@ enum class PathStatus {
       break;
   }
 
+  // Create parent directory of `dest_dir`.
+  if (!CreateDirectory([dest_dir stringByDeletingLastPathComponent])) {
+    return false;
+  }
+
   // Use hardlink to perform the copy to reduce the impact on storage. The
   // documentation of -linkItemAtPath:toPath:error: explicitly explain that
   // if source is a directory, the method create the destination directory

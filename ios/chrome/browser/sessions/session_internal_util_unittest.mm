@@ -443,6 +443,33 @@ TEST_F(SessionInternalUtilTest, CopyDirectory_OverExistingDirectory) {
   EXPECT_TRUE(PathAreIdentical(from, dest));
 }
 
+// Tests that `CopyDirectory` succeeds even if the destination requires
+// creating the parent directories.
+TEST_F(SessionInternalUtilTest, CopyDirectory_TargetNestedInNonExistentDir) {
+  base::ScopedTempDir scoped_temp_dir;
+  ASSERT_TRUE(scoped_temp_dir.CreateUniqueTempDir());
+  const base::FilePath root = scoped_temp_dir.GetPath();
+
+  // Create the source directory with some sub-directories and files.
+  const base::FilePath from = root.Append(kFromName);
+  const base::FilePath from_dir1 = from.Append(kDirname1);
+  const base::FilePath from_dir2 = from.Append(kDirname2);
+
+  NSData* data0 = [@"data0" dataUsingEncoding:NSUTF8StringEncoding];
+  ASSERT_TRUE(ios::sessions::WriteFile(from_dir1.Append(kFilename), data0));
+  ASSERT_TRUE(ios::sessions::WriteFile(from_dir2.Append(kFilename), data0));
+
+  // Use a destination directory that is deeply nested and change that the
+  // copy succeed (and has the same content as the source).
+  const base::FilePath deep = root.Append(kDirname1).Append(kDirname2);
+  ASSERT_FALSE(ios::sessions::DirectoryExists(deep));
+  ASSERT_FALSE(ios::sessions::DirectoryExists(deep.DirName()));
+
+  const base::FilePath dest = deep.Append(kDestName);
+  EXPECT_TRUE(ios::sessions::CopyDirectory(from, dest));
+  EXPECT_TRUE(PathAreIdentical(from, dest));
+}
+
 // Tests that `CopyDirectory` fails if target is a file.
 TEST_F(SessionInternalUtilTest, CopyDirectory_FailureDestinationIsAFile) {
   base::ScopedTempDir scoped_temp_dir;
@@ -480,6 +507,39 @@ TEST_F(SessionInternalUtilTest, CopyDirectory_FailureSourceNotADirectory) {
   // Check that CopyDirectory fails when the source is a file.
   const base::FilePath dest = root.Append(kDestName);
   EXPECT_FALSE(ios::sessions::CopyDirectory(from, dest));
+}
+
+// Tests that `CopyDirectory` fails if it cannot create the parent of the
+// target directory.
+TEST_F(SessionInternalUtilTest, CopyDirectory_FailureCannotCreateTargetParent) {
+  base::ScopedTempDir scoped_temp_dir;
+  ASSERT_TRUE(scoped_temp_dir.CreateUniqueTempDir());
+  const base::FilePath root = scoped_temp_dir.GetPath();
+
+  // Create the source directory with some sub-directories and files.
+  const base::FilePath from = root.Append(kFromName);
+  const base::FilePath from_dir1 = from.Append(kDirname1);
+  const base::FilePath from_dir2 = from.Append(kDirname2);
+
+  NSData* data = [@"data" dataUsingEncoding:NSUTF8StringEncoding];
+  ASSERT_TRUE(ios::sessions::WriteFile(from_dir1.Append(kFilename), data));
+  ASSERT_TRUE(ios::sessions::WriteFile(from_dir2.Append(kFilename), data));
+
+  // Use a destination directory that is deeply nested.
+  const base::FilePath deep = root.Append(kDirname1).Append(kDirname2);
+  const base::FilePath dest = deep.Append(kDestName);
+  ASSERT_FALSE(ios::sessions::DirectoryExists(deep));
+  ASSERT_FALSE(ios::sessions::DirectoryExists(deep.DirName()));
+
+  // Create a file in the location of the target parent directory. This
+  // should cause the creation of the parent directory to fail and thus
+  // the failure of the copy.
+  ASSERT_TRUE(ios::sessions::WriteFile(deep, data));
+
+  // Check that the copy failed and that the file that was in the way
+  // has not been modified.
+  EXPECT_FALSE(ios::sessions::CopyDirectory(from, dest));
+  EXPECT_NSEQ(ios::sessions::ReadFile(deep), data);
 }
 
 // Tests that `WriteFile` returns success when the file is created and the
