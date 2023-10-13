@@ -167,7 +167,7 @@ class ProfileStatisticsBrowserTest : public InProcessBrowserTest {
                   // thread, which creates a possible race during navigation.
                   // Specifically the PasswordManager will ignore any forms in a
                   // page if the load from the PasswordStore has not completed.
-                  PasswordStoreFactory::GetInstance()->SetTestingFactory(
+                  ProfilePasswordStoreFactory::GetInstance()->SetTestingFactory(
                       context, base::BindRepeating(
                                    &password_manager::BuildPasswordStore<
                                        content::BrowserContext,

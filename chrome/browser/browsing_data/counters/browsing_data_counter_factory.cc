@@ -101,8 +101,8 @@ BrowsingDataCounterFactory::GetForProfileAndPref(Profile* profile,
         nullptr;
 #endif
     return std::make_unique<browsing_data::SigninDataCounter>(
-        PasswordStoreFactory::GetForProfile(profile,
-                                            ServiceAccessType::EXPLICIT_ACCESS),
+        ProfilePasswordStoreFactory::GetForProfile(
+            profile, ServiceAccessType::EXPLICIT_ACCESS),
         AccountPasswordStoreFactory::GetForProfile(
             profile, ServiceAccessType::EXPLICIT_ACCESS),
         SyncServiceFactory::GetForProfile(profile),

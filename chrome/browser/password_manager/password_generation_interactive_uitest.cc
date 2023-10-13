@@ -310,8 +310,8 @@ IN_PROC_BROWSER_TEST_F(
   // Save the credentials since the autofill popup with generation and
   // password suggestion would not appear without stored passwords.
   password_manager::PasswordStoreInterface* password_store =
-      PasswordStoreFactory::GetForProfile(browser()->profile(),
-                                          ServiceAccessType::IMPLICIT_ACCESS)
+      ProfilePasswordStoreFactory::GetForProfile(
+          browser()->profile(), ServiceAccessType::IMPLICIT_ACCESS)
           .get();
   password_manager::PasswordForm signin_form;
   signin_form.signon_realm = embedded_test_server()->base_url().spec();
@@ -435,8 +435,9 @@ IN_PROC_BROWSER_TEST_F(PasswordGenerationInteractiveTest,
                        DISABLED_AutoSavingGeneratedPassword) {
   scoped_refptr<password_manager::TestPasswordStore> password_store =
       static_cast<password_manager::TestPasswordStore*>(
-          PasswordStoreFactory::GetForProfile(
-              browser()->profile(), ServiceAccessType::IMPLICIT_ACCESS).get());
+          ProfilePasswordStoreFactory::GetForProfile(
+              browser()->profile(), ServiceAccessType::IMPLICIT_ACCESS)
+              .get());
 
   FocusPasswordField();
   WaitForGenerationPopupShowing();

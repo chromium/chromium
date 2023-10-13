@@ -225,7 +225,7 @@ PasswordCheckDelegate::PasswordCheckDelegate(
     : profile_(profile),
       saved_passwords_presenter_(presenter),
       insecure_credentials_manager_(presenter,
-                                    PasswordStoreFactory::GetForProfile(
+                                    ProfilePasswordStoreFactory::GetForProfile(
                                         profile,
                                         ServiceAccessType::EXPLICIT_ACCESS),
                                     AccountPasswordStoreFactory::GetForProfile(

@@ -60,7 +60,7 @@ PasswordReuseManagerFactory::PasswordReuseManagerFactory()
               .WithGuest(ProfileSelection::kRedirectedToOriginal)
               .Build()) {
   DependsOn(IdentityManagerFactory::GetInstance());
-  DependsOn(PasswordStoreFactory::GetInstance());
+  DependsOn(ProfilePasswordStoreFactory::GetInstance());
   DependsOn(AccountPasswordStoreFactory::GetInstance());
 }
 
@@ -91,8 +91,8 @@ PasswordReuseManagerFactory::BuildServiceInstanceForBrowserContext(
   Profile* profile = Profile::FromBrowserContext(context);
 
   password_manager::PasswordStoreInterface* store =
-      PasswordStoreFactory::GetForProfile(profile,
-                                          ServiceAccessType::EXPLICIT_ACCESS)
+      ProfilePasswordStoreFactory::GetForProfile(
+          profile, ServiceAccessType::EXPLICIT_ACCESS)
           .get();
   // Incognito, guest, or system profiles doesn't have PasswordStore so
   // PasswordReuseManager shouldn't be created as well.
@@ -102,7 +102,7 @@ PasswordReuseManagerFactory::BuildServiceInstanceForBrowserContext(
   auto reuse_manager =
       std::make_unique<password_manager::PasswordReuseManagerImpl>();
   reuse_manager->Init(profile->GetPrefs(),
-                      PasswordStoreFactory::GetForProfile(
+                      ProfilePasswordStoreFactory::GetForProfile(
                           profile, ServiceAccessType::EXPLICIT_ACCESS)
                           .get(),
                       AccountPasswordStoreFactory::GetForProfile(

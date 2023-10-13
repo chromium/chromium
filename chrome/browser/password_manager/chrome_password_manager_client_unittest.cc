@@ -383,7 +383,7 @@ class ChromePasswordManagerClientTest : public ChromeRenderViewHostTestHarness {
 void ChromePasswordManagerClientTest::SetUp() {
   ChromeRenderViewHostTestHarness::SetUp();
 
-  PasswordStoreFactory::GetInstance()->SetTestingFactory(
+  ProfilePasswordStoreFactory::GetInstance()->SetTestingFactory(
       GetBrowserContext(),
       base::BindRepeating(&password_manager::BuildPasswordStoreInterface<
                           content::BrowserContext,
@@ -805,7 +805,7 @@ class ChromePasswordManagerClientSchemeTest
  public:
   void SetUp() override {
     ChromePasswordManagerClientTest::SetUp();
-    PasswordStoreFactory::GetInstance()->SetTestingFactory(
+    ProfilePasswordStoreFactory::GetInstance()->SetTestingFactory(
         GetBrowserContext(),
         base::BindRepeating(&password_manager::BuildPasswordStoreInterface<
                             content::BrowserContext,
@@ -1116,7 +1116,7 @@ class ChromePasswordManagerClientAndroidTest
 
 void ChromePasswordManagerClientAndroidTest::SetUp() {
   ChromePasswordManagerClientTest::SetUp();
-  PasswordStoreFactory::GetInstance()->SetTestingFactory(
+  ProfilePasswordStoreFactory::GetInstance()->SetTestingFactory(
       GetBrowserContext(),
       base::BindRepeating(
           &password_manager::BuildPasswordStoreInterface<

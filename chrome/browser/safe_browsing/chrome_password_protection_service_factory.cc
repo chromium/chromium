@@ -48,7 +48,7 @@ ChromePasswordProtectionServiceFactory::ChromePasswordProtectionServiceFactory()
   DependsOn(VerdictCacheManagerFactory::GetInstance());
   DependsOn(IdentityManagerFactory::GetInstance());
   DependsOn(SyncServiceFactory::GetInstance());
-  DependsOn(PasswordStoreFactory::GetInstance());
+  DependsOn(ProfilePasswordStoreFactory::GetInstance());
   DependsOn(AccountPasswordStoreFactory::GetInstance());
   DependsOn(PasswordReuseManagerFactory::GetInstance());
   DependsOn(browser_sync::UserEventServiceFactory::GetInstance());

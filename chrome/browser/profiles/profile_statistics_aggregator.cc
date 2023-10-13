@@ -97,8 +97,8 @@ void ProfileStatisticsAggregator::StartAggregator() {
       nullptr;
 #endif
   AddCounter(std::make_unique<browsing_data::SigninDataCounter>(
-      PasswordStoreFactory::GetForProfile(profile_,
-                                          ServiceAccessType::EXPLICIT_ACCESS),
+      ProfilePasswordStoreFactory::GetForProfile(
+          profile_, ServiceAccessType::EXPLICIT_ACCESS),
       /*account_store=*/nullptr, /*sync_service=*/nullptr,
       std::move(credential_store)));
 

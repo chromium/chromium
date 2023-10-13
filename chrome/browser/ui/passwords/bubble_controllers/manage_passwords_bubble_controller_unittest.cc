@@ -65,7 +65,7 @@ class ManagePasswordsBubbleControllerTest : public ::testing::Test {
     ON_CALL(*mock_delegate_, GetPasswordFormMetricsRecorder())
         .WillByDefault(Return(nullptr));
 
-    PasswordStoreFactory::GetInstance()->SetTestingFactoryAndUse(
+    ProfilePasswordStoreFactory::GetInstance()->SetTestingFactoryAndUse(
         profile(), base::BindRepeating(
                        &password_manager::BuildPasswordStoreInterface<
                            content::BrowserContext,
@@ -90,7 +90,7 @@ class ManagePasswordsBubbleControllerTest : public ::testing::Test {
 
   password_manager::MockPasswordStoreInterface* GetStore() {
     return static_cast<password_manager::MockPasswordStoreInterface*>(
-        PasswordStoreFactory::GetInstance()
+        ProfilePasswordStoreFactory::GetInstance()
             ->GetForProfile(profile(), ServiceAccessType::EXPLICIT_ACCESS)
             .get());
   }

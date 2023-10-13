@@ -78,7 +78,7 @@ void ManagePasswordsTest::SetUpInProcessBrowserTestFixture() {
               base::BindRepeating([](content::BrowserContext* context) {
                 // Overwrite the password store early before it's accessed by
                 // safe browsing.
-                PasswordStoreFactory::GetInstance()->SetTestingFactory(
+                ProfilePasswordStoreFactory::GetInstance()->SetTestingFactory(
                     context,
                     base::BindRepeating(&password_manager::BuildPasswordStore<
                                         content::BrowserContext,
@@ -140,8 +140,8 @@ void ManagePasswordsTest::SetupSafeState() {
       (base::Time::Now() - base::Minutes(1)).ToDoubleT());
   SetupPendingPassword();
   scoped_refptr<password_manager::PasswordStoreInterface> password_store =
-      PasswordStoreFactory::GetForProfile(browser()->profile(),
-                                          ServiceAccessType::IMPLICIT_ACCESS);
+      ProfilePasswordStoreFactory::GetForProfile(
+          browser()->profile(), ServiceAccessType::IMPLICIT_ACCESS);
   password_store->AddLogin(password_form_);
   GetController()->SavePassword(password_form_.username_value,
                                 password_form_.password_value);
@@ -157,8 +157,8 @@ void ManagePasswordsTest::SetupMoreToFixState() {
       password_manager::prefs::kLastTimePasswordCheckCompleted,
       (base::Time::Now() - base::Minutes(1)).ToDoubleT());
   scoped_refptr<password_manager::PasswordStoreInterface> password_store =
-      PasswordStoreFactory::GetForProfile(browser()->profile(),
-                                          ServiceAccessType::IMPLICIT_ACCESS);
+      ProfilePasswordStoreFactory::GetForProfile(
+          browser()->profile(), ServiceAccessType::IMPLICIT_ACCESS);
   // This is an unrelated insecure credential that should still be fixed.
   password_manager::PasswordForm to_be_fixed = password_form_;
   to_be_fixed.signon_realm = "https://somesite.com/";

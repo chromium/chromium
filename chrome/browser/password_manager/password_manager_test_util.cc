@@ -15,7 +15,7 @@ using password_manager::TestPasswordStore;
 scoped_refptr<TestPasswordStore> CreateAndUseTestPasswordStore(
     content::BrowserContext* context) {
   TestPasswordStore* store = static_cast<TestPasswordStore*>(
-      PasswordStoreFactory::GetInstance()
+      ProfilePasswordStoreFactory::GetInstance()
           ->SetTestingFactoryAndUse(
               context,
               base::BindRepeating(&password_manager::BuildPasswordStore<

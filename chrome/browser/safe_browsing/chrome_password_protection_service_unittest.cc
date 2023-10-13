@@ -242,7 +242,7 @@ class ChromePasswordProtectionServiceTest
 
     password_store_ = base::WrapRefCounted(
         static_cast<password_manager::MockPasswordStoreInterface*>(
-            PasswordStoreFactory::GetInstance()
+            ProfilePasswordStoreFactory::GetInstance()
                 ->SetTestingFactoryAndUse(
                     profile(),
                     base::BindRepeating(

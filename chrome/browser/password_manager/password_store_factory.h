@@ -15,22 +15,24 @@ class Profile;
 
 // Singleton that owns all PasswordStores and associates them with
 // Profiles.
-class PasswordStoreFactory : public RefcountedProfileKeyedServiceFactory {
+class ProfilePasswordStoreFactory
+    : public RefcountedProfileKeyedServiceFactory {
  public:
   static scoped_refptr<password_manager::PasswordStoreInterface> GetForProfile(
       Profile* profile,
       ServiceAccessType set);
 
-  static PasswordStoreFactory* GetInstance();
+  static ProfilePasswordStoreFactory* GetInstance();
 
-  PasswordStoreFactory(const PasswordStoreFactory&) = delete;
-  PasswordStoreFactory& operator=(const PasswordStoreFactory&) = delete;
+  ProfilePasswordStoreFactory(const ProfilePasswordStoreFactory&) = delete;
+  ProfilePasswordStoreFactory& operator=(const ProfilePasswordStoreFactory&) =
+      delete;
 
  private:
-  friend base::NoDestructor<PasswordStoreFactory>;
+  friend base::NoDestructor<ProfilePasswordStoreFactory>;
 
-  PasswordStoreFactory();
-  ~PasswordStoreFactory() override;
+  ProfilePasswordStoreFactory();
+  ~ProfilePasswordStoreFactory() override;
 
   // RefcountedBrowserContextKeyedServiceFactory:
   scoped_refptr<RefcountedKeyedService> BuildServiceInstanceFor(

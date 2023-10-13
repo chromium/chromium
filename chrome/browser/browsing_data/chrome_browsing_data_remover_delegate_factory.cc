@@ -69,7 +69,7 @@ ChromeBrowsingDataRemoverDelegateFactory::
 #endif  // BUILDFLAG(IS_ANDROID)
   DependsOn(HistoryServiceFactory::GetInstance());
   DependsOn(HostContentSettingsMapFactory::GetInstance());
-  DependsOn(PasswordStoreFactory::GetInstance());
+  DependsOn(ProfilePasswordStoreFactory::GetInstance());
   DependsOn(AccountPasswordStoreFactory::GetInstance());
   DependsOn(prerender::NoStatePrefetchManagerFactory::GetInstance());
   DependsOn(TabRestoreServiceFactory::GetInstance());

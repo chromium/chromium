@@ -232,7 +232,7 @@ ManagePasswordsBubbleController::PasswordStoreForForm(
   return password_form.IsUsingAccountStore()
              ? AccountPasswordStoreFactory::GetForProfile(
                    profile, ServiceAccessType::EXPLICIT_ACCESS)
-             : PasswordStoreFactory::GetForProfile(
+             : ProfilePasswordStoreFactory::GetForProfile(
                    profile, ServiceAccessType::EXPLICIT_ACCESS);
 }
 

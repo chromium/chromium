@@ -70,8 +70,8 @@ metrics_util::UIDisplayDisposition ComputeDisplayDisposition(
 void CleanStatisticsForSite(Profile* profile, const url::Origin& origin) {
   CHECK(profile);
   password_manager::PasswordStoreInterface* password_store =
-      PasswordStoreFactory::GetForProfile(profile,
-                                          ServiceAccessType::IMPLICIT_ACCESS)
+      ProfilePasswordStoreFactory::GetForProfile(
+          profile, ServiceAccessType::IMPLICIT_ACCESS)
           .get();
   password_manager::SmartBubbleStatsStore* stats_store =
       password_store->GetSmartBubbleStatsStore();
@@ -321,7 +321,7 @@ void SaveUpdateBubbleController::ReportInteractions() {
         }
         interaction_stats_.update_time = clock_->Now();
         password_manager::PasswordStoreInterface* password_store =
-            PasswordStoreFactory::GetForProfile(
+            ProfilePasswordStoreFactory::GetForProfile(
                 profile, ServiceAccessType::IMPLICIT_ACCESS)
                 .get();
         password_manager::SmartBubbleStatsStore* stats_store =

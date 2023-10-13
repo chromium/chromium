@@ -126,14 +126,14 @@ void RemoveLogins(PasswordStoreInterface* store) {
                                     /*delete_end=*/base::Time::Max());
 }
 PasswordStoreInterface* GetProfilePasswordStoreInterface(int index) {
-  return PasswordStoreFactory::GetForProfile(test()->GetProfile(index),
-                                             ServiceAccessType::IMPLICIT_ACCESS)
+  return ProfilePasswordStoreFactory::GetForProfile(
+             test()->GetProfile(index), ServiceAccessType::IMPLICIT_ACCESS)
       .get();
 }
 
 PasswordStoreInterface* GetVerifierProfilePasswordStoreInterface() {
-  return PasswordStoreFactory::GetForProfile(test()->verifier(),
-                                             ServiceAccessType::IMPLICIT_ACCESS)
+  return ProfilePasswordStoreFactory::GetForProfile(
+             test()->verifier(), ServiceAccessType::IMPLICIT_ACCESS)
       .get();
 }
 

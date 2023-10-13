@@ -126,7 +126,7 @@ void SharedPasswordsNotificationBubbleController::
         credential->IsUsingAccountStore()
             ? AccountPasswordStoreFactory::GetForProfile(
                   profile, ServiceAccessType::EXPLICIT_ACCESS)
-            : PasswordStoreFactory::GetForProfile(
+            : ProfilePasswordStoreFactory::GetForProfile(
                   profile, ServiceAccessType::EXPLICIT_ACCESS);
 
     PasswordForm updated_credential = *credential;

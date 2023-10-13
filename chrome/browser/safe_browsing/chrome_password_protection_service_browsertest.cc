@@ -334,7 +334,7 @@ class ChromePasswordProtectionServiceBrowserWithFakeBackendPasswordStoreTest
         BrowserContextDependencyManager::GetInstance()
             ->RegisterCreateServicesCallbackForTesting(
                 base::BindRepeating([](content::BrowserContext* context) {
-                  PasswordStoreFactory::GetInstance()->SetTestingFactory(
+                  ProfilePasswordStoreFactory::GetInstance()->SetTestingFactory(
                       context,
                       base::BindRepeating(
                           &password_manager::BuildPasswordStoreWithFakeBackend<
@@ -402,8 +402,8 @@ IN_PROC_BROWSER_TEST_F(
   // Simulate removing the compromised credentials on mark site as legitimate
   // action.
   scoped_refptr<password_manager::PasswordStoreInterface> password_store =
-      PasswordStoreFactory::GetForProfile(browser()->profile(),
-                                          ServiceAccessType::EXPLICIT_ACCESS);
+      ProfilePasswordStoreFactory::GetForProfile(
+          browser()->profile(), ServiceAccessType::EXPLICIT_ACCESS);
 
   // In order to test removal, we need to make sure it was added first.
   const std::string kSignonRealm = "https://example.test";

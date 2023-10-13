@@ -636,7 +636,7 @@ class ClearDomainReliabilityTester {
 class RemovePasswordsTester {
  public:
   explicit RemovePasswordsTester(TestingProfile* testing_profile) {
-    PasswordStoreFactory::GetInstance()->SetTestingFactory(
+    ProfilePasswordStoreFactory::GetInstance()->SetTestingFactory(
         testing_profile,
         base::BindRepeating(
             &password_manager::BuildPasswordStoreInterface<
@@ -645,8 +645,8 @@ class RemovePasswordsTester {
                     password_manager::MockPasswordStoreInterface>>));
 
     profile_store_ = static_cast<password_manager::MockPasswordStoreInterface*>(
-        PasswordStoreFactory::GetForProfile(testing_profile,
-                                            ServiceAccessType::EXPLICIT_ACCESS)
+        ProfilePasswordStoreFactory::GetForProfile(
+            testing_profile, ServiceAccessType::EXPLICIT_ACCESS)
             .get());
 
     if (base::FeatureList::IsEnabled(

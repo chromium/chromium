@@ -328,7 +328,7 @@ class DownloadProtectionServiceTestBase
     // PasswordManager will ignore any forms in a page if the load from the
     // PasswordStore has not completed. ChromePasswordProtectionService uses
     // PasswordStore.
-    PasswordStoreFactory::GetInstance()->SetTestingFactory(
+    ProfilePasswordStoreFactory::GetInstance()->SetTestingFactory(
         profile(),
         base::BindRepeating(
             &password_manager::BuildPasswordStore<

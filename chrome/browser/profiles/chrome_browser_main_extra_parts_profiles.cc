@@ -910,7 +910,7 @@ void ChromeBrowserMainExtraPartsProfiles::
 #if !BUILDFLAG(IS_ANDROID)
   PasswordStatusCheckServiceFactory::GetInstance();
 #endif
-  PasswordStoreFactory::GetInstance();
+  ProfilePasswordStoreFactory::GetInstance();
   payments::CanMakePaymentQueryFactory::GetInstance();
 #if !BUILDFLAG(IS_ANDROID)
   payments::PaymentRequestDisplayManagerFactory::GetInstance();

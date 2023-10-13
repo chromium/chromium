@@ -40,7 +40,7 @@ PasswordStatusCheckServiceFactory::PasswordStatusCheckServiceFactory()
   DependsOn(AccountPasswordStoreFactory::GetInstance());
   DependsOn(AffiliationServiceFactory::GetInstance());
   DependsOn(BulkLeakCheckServiceFactory::GetInstance());
-  DependsOn(PasswordStoreFactory::GetInstance());
+  DependsOn(ProfilePasswordStoreFactory::GetInstance());
 }
 
 PasswordStatusCheckServiceFactory::~PasswordStatusCheckServiceFactory() =

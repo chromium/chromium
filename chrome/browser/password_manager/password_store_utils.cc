@@ -59,8 +59,8 @@ class StoreMetricReporterHelper : public base::SupportsUserData::Data {
  private:
   void StartMetricsReporting() {
     password_manager::PasswordStoreInterface* profile_store =
-        PasswordStoreFactory::GetForProfile(profile_,
-                                            ServiceAccessType::EXPLICIT_ACCESS)
+        ProfilePasswordStoreFactory::GetForProfile(
+            profile_, ServiceAccessType::EXPLICIT_ACCESS)
             .get();
     password_manager::PasswordStoreInterface* account_store =
         AccountPasswordStoreFactory::GetForProfile(

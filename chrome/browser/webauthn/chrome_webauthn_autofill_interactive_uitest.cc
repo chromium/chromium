@@ -186,8 +186,8 @@ class WebAuthnAutofillIntegrationTest : public CertVerifierBrowserTest {
     // Save a credential to the password store. This will let us wait on the
     // popup to appear after aborting the request.
     password_manager::PasswordStoreInterface* password_store =
-        PasswordStoreFactory::GetForProfile(browser()->profile(),
-                                            ServiceAccessType::EXPLICIT_ACCESS)
+        ProfilePasswordStoreFactory::GetForProfile(
+            browser()->profile(), ServiceAccessType::EXPLICIT_ACCESS)
             .get();
     password_manager::PasswordForm signin_form;
     GURL url = https_server_.GetURL(kRpId, "/");

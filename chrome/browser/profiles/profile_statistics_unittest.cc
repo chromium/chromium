@@ -104,7 +104,7 @@ TEST_F(ProfileStatisticsTest, WaitOrCountBookmarks) {
         WebDataServiceFactory::GetDefaultFactory()}});
 
   ASSERT_TRUE(profile);
-  PasswordStoreFactory::GetInstance()->SetTestingFactory(
+  ProfilePasswordStoreFactory::GetInstance()->SetTestingFactory(
       profile,
       base::BindRepeating(
           &password_manager::BuildPasswordStore<

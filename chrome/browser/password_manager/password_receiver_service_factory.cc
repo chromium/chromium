@@ -46,7 +46,7 @@ PasswordReceiverServiceFactory::PasswordReceiverServiceFactory()
               .Build()) {
   DependsOn(AccountPasswordStoreFactory::GetInstance());
   DependsOn(ModelTypeStoreServiceFactory::GetInstance());
-  DependsOn(PasswordStoreFactory::GetInstance());
+  DependsOn(ProfilePasswordStoreFactory::GetInstance());
 }
 
 PasswordReceiverServiceFactory::~PasswordReceiverServiceFactory() = default;
@@ -78,8 +78,8 @@ PasswordReceiverServiceFactory::BuildServiceInstanceForBrowserContext(
 
   return std::make_unique<password_manager::PasswordReceiverServiceImpl>(
       profile->GetPrefs(), std::move(sync_bridge),
-      PasswordStoreFactory::GetForProfile(profile,
-                                          ServiceAccessType::EXPLICIT_ACCESS)
+      ProfilePasswordStoreFactory::GetForProfile(
+          profile, ServiceAccessType::EXPLICIT_ACCESS)
           .get(),
       AccountPasswordStoreFactory::GetForProfile(
           profile, ServiceAccessType::EXPLICIT_ACCESS)

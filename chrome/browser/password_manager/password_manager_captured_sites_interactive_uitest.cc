@@ -89,8 +89,8 @@ class CapturedSitesPasswordManagerBrowserTest
                      const std::string& username,
                      const std::string& password) override {
     scoped_refptr<password_manager::PasswordStoreInterface> password_store =
-        PasswordStoreFactory::GetForProfile(browser()->profile(),
-                                            ServiceAccessType::EXPLICIT_ACCESS);
+        ProfilePasswordStoreFactory::GetForProfile(
+            browser()->profile(), ServiceAccessType::EXPLICIT_ACCESS);
     password_manager::PasswordForm signin_form;
     signin_form.url = GURL(origin);
     signin_form.signon_realm = origin;
@@ -156,8 +156,8 @@ class CapturedSitesPasswordManagerBrowserTest
                                  const std::string& username,
                                  const std::string& password) override {
     scoped_refptr<password_manager::PasswordStoreInterface> password_store =
-        PasswordStoreFactory::GetForProfile(browser()->profile(),
-                                            ServiceAccessType::EXPLICIT_ACCESS);
+        ProfilePasswordStoreFactory::GetForProfile(
+            browser()->profile(), ServiceAccessType::EXPLICIT_ACCESS);
     FakePasswordStoreBackend* fake_backend =
         static_cast<FakePasswordStoreBackend*>(
             password_store->GetBackendForTesting());
@@ -196,7 +196,7 @@ class CapturedSitesPasswordManagerBrowserTest
                   SyncServiceFactory::GetInstance()->SetTestingFactory(
                       context, base::BindRepeating(&BuildTestSyncService));
 
-                  PasswordStoreFactory::GetInstance()->SetTestingFactory(
+                  ProfilePasswordStoreFactory::GetInstance()->SetTestingFactory(
                       context,
                       base::BindRepeating(
                           &password_manager::BuildPasswordStoreWithFakeBackend<

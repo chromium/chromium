@@ -574,7 +574,7 @@ class RenderViewContextMenuPrefsTest
     DownloadCoreServiceFactory::GetForBrowserContext(profile())
         ->SetDownloadManagerDelegateForTesting(
             std::make_unique<ChromeDownloadManagerDelegate>(profile()));
-    PasswordStoreFactory::GetInstance()->SetTestingFactory(
+    ProfilePasswordStoreFactory::GetInstance()->SetTestingFactory(
         GetBrowserContext(),
         base::BindRepeating(&password_manager::BuildPasswordStoreInterface<
                             content::BrowserContext,

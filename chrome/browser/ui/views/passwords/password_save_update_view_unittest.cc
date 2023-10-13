@@ -81,7 +81,7 @@ PasswordSaveUpdateViewTest::PasswordSaveUpdateViewTest() {
   ON_CALL(*model_delegate_mock(), GetCurrentForms)
       .WillByDefault(ReturnRef(current_forms_));
 
-  PasswordStoreFactory::GetInstance()->SetTestingFactoryAndUse(
+  ProfilePasswordStoreFactory::GetInstance()->SetTestingFactoryAndUse(
       profile(),
       base::BindRepeating(&password_manager::BuildPasswordStoreInterface<
                           content::BrowserContext,

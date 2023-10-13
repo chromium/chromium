@@ -173,8 +173,8 @@ base::Value::Dict GetNoPasswordCardData(bool password_saving_allowed) {
 PasswordStatusCheckService::PasswordStatusCheckService(Profile* profile)
     : profile_(profile) {
   scoped_refptr<password_manager::PasswordStoreInterface> profile_store =
-      PasswordStoreFactory::GetForProfile(profile_,
-                                          ServiceAccessType::IMPLICIT_ACCESS);
+      ProfilePasswordStoreFactory::GetForProfile(
+          profile_, ServiceAccessType::IMPLICIT_ACCESS);
 
   scoped_refptr<password_manager::PasswordStoreInterface> account_store =
       AccountPasswordStoreFactory::GetForProfile(
@@ -362,7 +362,7 @@ void PasswordStatusCheckService::InitializePasswordCheckInfrastructure() {
   saved_passwords_presenter_ =
       std::make_unique<password_manager::SavedPasswordsPresenter>(
           AffiliationServiceFactory::GetForProfile(profile_),
-          PasswordStoreFactory::GetForProfile(
+          ProfilePasswordStoreFactory::GetForProfile(
               profile_, ServiceAccessType::IMPLICIT_ACCESS),
           AccountPasswordStoreFactory::GetForProfile(
               profile_, ServiceAccessType::IMPLICIT_ACCESS));

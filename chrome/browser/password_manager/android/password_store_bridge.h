@@ -66,8 +66,9 @@ class PasswordStoreBridge
   base::android::ScopedJavaGlobalRef<jobject> java_bridge_;
 
   scoped_refptr<password_manager::PasswordStoreInterface> profile_store_ =
-      PasswordStoreFactory::GetForProfile(ProfileManager::GetLastUsedProfile(),
-                                          ServiceAccessType::EXPLICIT_ACCESS);
+      ProfilePasswordStoreFactory::GetForProfile(
+          ProfileManager::GetLastUsedProfile(),
+          ServiceAccessType::EXPLICIT_ACCESS);
 
   // Used to fetch and edit passwords.
   // TODO(crbug.com/1442826): Use PasswordStore directly.

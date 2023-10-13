@@ -103,7 +103,7 @@ void SafeBrowsingPrivateApiUnitTest::SetUp() {
   params.window = browser_window_.get();
   browser_ = std::unique_ptr<Browser>(Browser::Create(params));
 
-  PasswordStoreFactory::GetInstance()->SetTestingFactoryAndUse(
+  ProfilePasswordStoreFactory::GetInstance()->SetTestingFactoryAndUse(
       profile(),
       base::BindRepeating(
           &password_manager::BuildPasswordStoreInterface<

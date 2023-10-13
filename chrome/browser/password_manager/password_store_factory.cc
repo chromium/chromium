@@ -37,9 +37,9 @@ using password_manager::PasswordStore;
 using password_manager::PasswordStoreInterface;
 
 // static
-scoped_refptr<PasswordStoreInterface> PasswordStoreFactory::GetForProfile(
-    Profile* profile,
-    ServiceAccessType access_type) {
+scoped_refptr<PasswordStoreInterface>
+ProfilePasswordStoreFactory::GetForProfile(Profile* profile,
+                                           ServiceAccessType access_type) {
   // |profile| gets always redirected to a non-Incognito profile below, so
   // Incognito & IMPLICIT_ACCESS means that incognito browsing session would
   // result in traces in the normal profile without the user knowing it.
@@ -51,12 +51,12 @@ scoped_refptr<PasswordStoreInterface> PasswordStoreFactory::GetForProfile(
 }
 
 // static
-PasswordStoreFactory* PasswordStoreFactory::GetInstance() {
-  static base::NoDestructor<PasswordStoreFactory> instance;
+ProfilePasswordStoreFactory* ProfilePasswordStoreFactory::GetInstance() {
+  static base::NoDestructor<ProfilePasswordStoreFactory> instance;
   return instance.get();
 }
 
-PasswordStoreFactory::PasswordStoreFactory()
+ProfilePasswordStoreFactory::ProfilePasswordStoreFactory()
     : RefcountedProfileKeyedServiceFactory(
           "PasswordStore",
           ProfileSelections::Builder()
@@ -70,10 +70,10 @@ PasswordStoreFactory::PasswordStoreFactory()
   DependsOn(CredentialsCleanerRunnerFactory::GetInstance());
 }
 
-PasswordStoreFactory::~PasswordStoreFactory() = default;
+ProfilePasswordStoreFactory::~ProfilePasswordStoreFactory() = default;
 
 scoped_refptr<RefcountedKeyedService>
-PasswordStoreFactory::BuildServiceInstanceFor(
+ProfilePasswordStoreFactory::BuildServiceInstanceFor(
     content::BrowserContext* context) const {
   Profile* profile = Profile::FromBrowserContext(context);
 
@@ -140,6 +140,6 @@ PasswordStoreFactory::BuildServiceInstanceFor(
   return ps;
 }
 
-bool PasswordStoreFactory::ServiceIsNULLWhileTesting() const {
+bool ProfilePasswordStoreFactory::ServiceIsNULLWhileTesting() const {
   return true;
 }

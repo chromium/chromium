@@ -206,8 +206,9 @@ class PasswordCheckManager
   // passwords.
   password_manager::SavedPasswordsPresenter saved_passwords_presenter_{
       AffiliationServiceFactory::GetForProfile(profile_),
-      PasswordStoreFactory::GetForProfile(profile_,
-                                          ServiceAccessType::EXPLICIT_ACCESS),
+      ProfilePasswordStoreFactory::GetForProfile(
+          profile_,
+          ServiceAccessType::EXPLICIT_ACCESS),
       AccountPasswordStoreFactory::GetForProfile(
           profile_,
           ServiceAccessType::EXPLICIT_ACCESS)};
@@ -215,8 +216,9 @@ class PasswordCheckManager
   // Used to obtain the list of insecure credentials.
   password_manager::InsecureCredentialsManager insecure_credentials_manager_{
       &saved_passwords_presenter_,
-      PasswordStoreFactory::GetForProfile(profile_,
-                                          ServiceAccessType::EXPLICIT_ACCESS),
+      ProfilePasswordStoreFactory::GetForProfile(
+          profile_,
+          ServiceAccessType::EXPLICIT_ACCESS),
       AccountPasswordStoreFactory::GetForProfile(
           profile_,
           ServiceAccessType::EXPLICIT_ACCESS)};

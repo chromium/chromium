@@ -167,7 +167,7 @@ std::unique_ptr<KeyedService> BuildSyncService(
 
   // Notify PasswordStore of complete initialisation to resolve a circular
   // dependency.
-  auto password_store = PasswordStoreFactory::GetForProfile(
+  auto password_store = ProfilePasswordStoreFactory::GetForProfile(
       profile, ServiceAccessType::EXPLICIT_ACCESS);
   // PasswordStoreInterface may be null in tests.
   if (password_store) {
@@ -249,7 +249,7 @@ SyncServiceFactory::SyncServiceFactory()
 #endif  // !BUILDFLAG(IS_ANDROID)
   DependsOn(PasswordReceiverServiceFactory::GetInstance());
   DependsOn(PasswordSenderServiceFactory::GetInstance());
-  DependsOn(PasswordStoreFactory::GetInstance());
+  DependsOn(ProfilePasswordStoreFactory::GetInstance());
   DependsOn(PowerBookmarkServiceFactory::GetInstance());
 #if BUILDFLAG(IS_CHROMEOS) || BUILDFLAG(IS_LINUX) || BUILDFLAG(IS_MAC) || \
     BUILDFLAG(IS_WIN)

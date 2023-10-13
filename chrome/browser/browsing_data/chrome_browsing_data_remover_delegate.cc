@@ -856,7 +856,7 @@ void ChromeBrowsingDataRemoverDelegate::RemoveEmbedderData(
   // Password manager
   if (remove_mask & constants::DATA_TYPE_PASSWORDS) {
     base::RecordAction(UserMetricsAction("ClearBrowsingData_Passwords"));
-    auto password_store = PasswordStoreFactory::GetForProfile(
+    auto password_store = ProfilePasswordStoreFactory::GetForProfile(
         profile_, ServiceAccessType::EXPLICIT_ACCESS);
 
     if (password_store) {
@@ -933,8 +933,8 @@ void ChromeBrowsingDataRemoverDelegate::RemoveEmbedderData(
 
   if (remove_mask & content::BrowsingDataRemover::DATA_TYPE_COOKIES) {
     password_manager::PasswordStoreInterface* password_store =
-        PasswordStoreFactory::GetForProfile(profile_,
-                                            ServiceAccessType::EXPLICIT_ACCESS)
+        ProfilePasswordStoreFactory::GetForProfile(
+            profile_, ServiceAccessType::EXPLICIT_ACCESS)
             .get();
 
     if (password_store &&
@@ -947,8 +947,8 @@ void ChromeBrowsingDataRemoverDelegate::RemoveEmbedderData(
 
   if (remove_mask & constants::DATA_TYPE_HISTORY) {
     password_manager::PasswordStoreInterface* password_store =
-        PasswordStoreFactory::GetForProfile(profile_,
-                                            ServiceAccessType::EXPLICIT_ACCESS)
+        ProfilePasswordStoreFactory::GetForProfile(
+            profile_, ServiceAccessType::EXPLICIT_ACCESS)
             .get();
 
     if (password_store) {

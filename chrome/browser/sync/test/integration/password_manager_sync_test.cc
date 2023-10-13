@@ -1084,8 +1084,8 @@ IN_PROC_BROWSER_TEST_F(PasswordManagerSyncTest,
   ASSERT_EQ(GetAllLoginsFromAccountPasswordStore().size(), 1u);
   password_manager::SavedPasswordsPresenter presenter(
       AffiliationServiceFactory::GetForProfile(GetProfile(0)),
-      PasswordStoreFactory::GetForProfile(GetProfile(0),
-                                          ServiceAccessType::EXPLICIT_ACCESS),
+      ProfilePasswordStoreFactory::GetForProfile(
+          GetProfile(0), ServiceAccessType::EXPLICIT_ACCESS),
       AccountPasswordStoreFactory::GetForProfile(
           GetProfile(0), ServiceAccessType::EXPLICIT_ACCESS));
   presenter.Init();

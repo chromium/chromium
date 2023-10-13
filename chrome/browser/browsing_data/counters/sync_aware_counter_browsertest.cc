@@ -175,8 +175,8 @@ IN_PROC_BROWSER_TEST_F(SyncAwareCounterTest, PasswordCounter) {
   Profile* profile = GetProfile(kFirstProfileIndex);
   // Set up the counter.
   browsing_data::PasswordsCounter counter(
-      PasswordStoreFactory::GetForProfile(profile,
-                                          ServiceAccessType::EXPLICIT_ACCESS),
+      ProfilePasswordStoreFactory::GetForProfile(
+          profile, ServiceAccessType::EXPLICIT_ACCESS),
       AccountPasswordStoreFactory::GetForProfile(
           profile, ServiceAccessType::EXPLICIT_ACCESS),
       sync_service);

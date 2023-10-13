@@ -285,7 +285,7 @@ PasswordsPrivateDelegateImpl::PasswordsPrivateDelegateImpl(Profile* profile)
     : profile_(profile),
       saved_passwords_presenter_(
           AffiliationServiceFactory::GetForProfile(profile),
-          PasswordStoreFactory::GetForProfile(
+          ProfilePasswordStoreFactory::GetForProfile(
               profile,
               ServiceAccessType::EXPLICIT_ACCESS),
           AccountPasswordStoreFactory::GetForProfile(

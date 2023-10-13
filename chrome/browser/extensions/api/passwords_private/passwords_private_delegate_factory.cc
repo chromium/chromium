@@ -84,7 +84,7 @@ PasswordsPrivateDelegateFactory::PasswordsPrivateDelegateFactory()
               .WithGuest(ProfileSelection::kOriginalOnly)
               .Build()) {
   DependsOn(BulkLeakCheckServiceFactory::GetInstance());
-  DependsOn(PasswordStoreFactory::GetInstance());
+  DependsOn(ProfilePasswordStoreFactory::GetInstance());
   DependsOn(AccountPasswordStoreFactory::GetInstance());
   DependsOn(SyncServiceFactory::GetInstance());
   DependsOn(PasswordsPrivateEventRouterFactory::GetInstance());

@@ -489,7 +489,7 @@ void PasswordManagerBrowserTestBase::GetNewTab(
 // static
 void PasswordManagerBrowserTestBase::WaitForPasswordStore(Browser* browser) {
   scoped_refptr<password_manager::PasswordStoreInterface>
-      profile_password_store = PasswordStoreFactory::GetForProfile(
+      profile_password_store = ProfilePasswordStoreFactory::GetForProfile(
           browser->profile(), ServiceAccessType::IMPLICIT_ACCESS);
   PasswordStoreResultsObserver profile_syncer;
   profile_password_store->GetAllLoginsWithAffiliationAndBrandingInformation(
@@ -694,7 +694,7 @@ void PasswordManagerBrowserTestBase::SetUpInProcessBrowserTestFixture() {
                 SyncServiceFactory::GetInstance()->SetTestingFactory(
                     context, base::BindRepeating(&BuildTestSyncService));
 
-                PasswordStoreFactory::GetInstance()->SetTestingFactory(
+                ProfilePasswordStoreFactory::GetInstance()->SetTestingFactory(
                     context,
                     base::BindRepeating(&password_manager::BuildPasswordStore<
                                         content::BrowserContext,
@@ -740,7 +740,7 @@ void PasswordManagerBrowserTestBase::CheckThatCredentialsStored(
   SCOPED_TRACE(::testing::Message() << username << ", " << password);
   scoped_refptr<password_manager::TestPasswordStore> password_store =
       static_cast<password_manager::TestPasswordStore*>(
-          PasswordStoreFactory::GetForProfile(
+          ProfilePasswordStoreFactory::GetForProfile(
               browser()->profile(), ServiceAccessType::IMPLICIT_ACCESS)
               .get());
   auto& passwords_map = password_store->stored_passwords();
