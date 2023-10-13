@@ -52,6 +52,15 @@ config("mediapipe_config") {
   ]
 }
 
+# This target contains compiler warnings that need to be supressed. This
+# config is not public (hence named internal).
+config("mediapipe_internal_config") {
+  cflags = [
+    "-Wno-unused-function",
+    "-Wno-deprecated-declarations",
+  ]
+}
+
 config("mediapipe_flags") {
   cflags = [
     # MediaPipe's CHECK macros are redefined from absl's.
@@ -198,6 +207,7 @@ tflite_source_set("mediapipe_tasks_always_link") {
     "//build/config/compiler:no_chromium_code",
     ":mediapipe_flags",
     ":mediapipe_config",
+    ":mediapipe_internal_config",
   ]
 
   conditional_deps = [
@@ -497,6 +507,7 @@ tflite_static_library("mediapipe_core") {
     "//build/config/compiler:no_chromium_code",
     ":mediapipe_flags",
     ":mediapipe_config",
+    ":mediapipe_internal_config",
   ]
 
   conditional_deps = [
@@ -531,6 +542,7 @@ tflite_static_library("mediapipe_core_api2") {
     "//build/config/compiler:no_chromium_code",
     ":mediapipe_flags",
     ":mediapipe_config",
+    ":mediapipe_internal_config",
   ]
 
   conditional_deps = [
