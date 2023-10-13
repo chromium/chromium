@@ -14,6 +14,7 @@
 #include "base/check_op.h"
 #include "base/containers/checked_iterators.h"
 #include "base/containers/cxx20_erase_vector.h"
+#include "base/containers/map_util.h"
 #include "base/cxx20_to_address.h"
 #include "base/json/json_writer.h"
 #include "base/logging.h"
@@ -420,14 +421,11 @@ void Value::Dict::Merge(Dict dict) {
 
 const Value* Value::Dict::Find(StringPiece key) const {
   DCHECK(IsStringUTF8AllowingNoncharacters(key));
-
-  auto it = storage_.find(key);
-  return it != storage_.end() ? it->second.get() : nullptr;
+  return FindPtrOrNull(storage_, key);
 }
 
 Value* Value::Dict::Find(StringPiece key) {
-  auto it = storage_.find(key);
-  return it != storage_.end() ? it->second.get() : nullptr;
+  return FindPtrOrNull(storage_, key);
 }
 
 absl::optional<bool> Value::Dict::FindBool(StringPiece key) const {

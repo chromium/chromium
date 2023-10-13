@@ -5,6 +5,8 @@
 #include "chrome/browser/ash/printing/printers_map.h"
 
 #include "base/containers/contains.h"
+#include "base/containers/map_util.h"
+#include "base/types/optional_util.h"
 
 namespace ash {
 
@@ -179,11 +181,7 @@ void PrintersMap::SavePrinterStatus(
 
 absl::optional<CupsPrinterStatus> PrintersMap::GetPrinterStatus(
     const std::string& printer_id) const {
-  auto printer_iter = printer_statuses_.find(printer_id);
-  if (printer_iter != printer_statuses_.end()) {
-    return printer_iter->second;
-  }
-  return absl::nullopt;
+  return base::OptionalFromPtr(base::FindOrNull(printer_statuses_, printer_id));
 }
 
 std::set<std::string> PrintersMap::GetPrinterIdsInClass(

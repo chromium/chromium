@@ -5,7 +5,9 @@
 #include "chrome/browser/nearby_sharing/public/cpp/fake_nearby_connections_manager.h"
 
 #include "base/containers/contains.h"
+#include "base/containers/map_util.h"
 #include "base/threading/thread_restrictions.h"
+#include "base/types/optional_util.h"
 
 FakeNearbyConnectionsManager::FakeNearbyConnectionsManager() = default;
 
@@ -120,15 +122,9 @@ void FakeNearbyConnectionsManager::RegisterPayloadPath(
                                    base::File::Flags::FLAG_READ |
                                    base::File::Flags::FLAG_WRITE);
   }
-
-  auto it = payload_path_status_.find(payload_id);
-  if (it == payload_path_status_.end()) {
-    std::move(callback).Run(
-        nearby::connections::mojom::Status::kPayloadUnknown);
-    return;
-  }
-
-  std::move(callback).Run(it->second);
+  auto* status = base::FindOrNull(payload_path_status_, payload_id);
+  std::move(callback).Run(
+      status ? *status : nearby::connections::mojom::Status::kPayloadUnknown);
 }
 
 FakeNearbyConnectionsManager::Payload*
@@ -170,26 +166,16 @@ absl::optional<std::string>
 FakeNearbyConnectionsManager::GetAuthenticationToken(
     const std::string& endpoint_id) {
   DCHECK(!is_shutdown());
-
-  auto iter = endpoint_auth_tokens_.find(endpoint_id);
-  if (iter != endpoint_auth_tokens_.end()) {
-    return iter->second;
-  }
-
-  return absl::nullopt;
+  return base::OptionalFromPtr(
+      base::FindOrNull(endpoint_auth_tokens_, endpoint_id));
 }
 
 absl::optional<std::vector<uint8_t>>
 FakeNearbyConnectionsManager::GetRawAuthenticationToken(
     const std::string& endpoint_id) {
   DCHECK(!is_shutdown());
-
-  auto iter = endpoint_raw_auth_tokens_.find(endpoint_id);
-  if (iter != endpoint_raw_auth_tokens_.end()) {
-    return iter->second;
-  }
-
-  return absl::nullopt;
+  return base::OptionalFromPtr(
+      base::FindOrNull(endpoint_raw_auth_tokens_, endpoint_id));
 }
 
 void FakeNearbyConnectionsManager::SetAuthenticationToken(
@@ -261,11 +247,9 @@ void FakeNearbyConnectionsManager::SetPayloadPathStatus(
 base::WeakPtr<FakeNearbyConnectionsManager::PayloadStatusListener>
 FakeNearbyConnectionsManager::GetRegisteredPayloadStatusListener(
     int64_t payload_id) {
-  auto it = payload_status_listeners_.find(payload_id);
-  if (it != payload_status_listeners_.end()) {
-    return it->second;
+  if (auto* ptr = base::FindOrNull(payload_status_listeners_, payload_id)) {
+    return *ptr;
   }
-
   return nullptr;
 }
 
@@ -281,12 +265,8 @@ bool FakeNearbyConnectionsManager::WasPayloadCanceled(
 
 absl::optional<base::FilePath>
 FakeNearbyConnectionsManager::GetRegisteredPayloadPath(int64_t payload_id) {
-  auto it = registered_payload_paths_.find(payload_id);
-  if (it == registered_payload_paths_.end()) {
-    return absl::nullopt;
-  }
-
-  return it->second;
+  return base::OptionalFromPtr(
+      base::FindOrNull(registered_payload_paths_, payload_id));
 }
 
 void FakeNearbyConnectionsManager::CleanupForProcessStopped() {

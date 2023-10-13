@@ -22,6 +22,7 @@
 #include "base/containers/adapters.h"
 #include "base/containers/contains.h"
 #include "base/containers/flat_map.h"
+#include "base/containers/map_util.h"
 #include "base/debug/alias.h"
 #include "base/debug/crash_logging.h"
 #include "base/debug/dump_without_crashing.h"
@@ -380,10 +381,7 @@ class SiteProcessMap : public base::SupportsUserData::Data {
   }
 
   RenderProcessHost* FindProcess(const SiteInfo& site_info) {
-    auto i = map_.find(site_info);
-    if (i != map_.end())
-      return i->second;
-    return nullptr;
+    return base::FindPtrOrNull(map_, site_info);
   }
 
   void RemoveProcess(RenderProcessHost* host) {

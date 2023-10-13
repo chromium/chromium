@@ -6,6 +6,8 @@
 
 #include "base/check.h"
 #include "base/containers/contains.h"
+#include "base/containers/map_util.h"
+#include "base/types/optional_util.h"
 #include "components/subresource_filter/core/mojom/subresource_filter.mojom.h"
 #include "content/public/browser/navigation_handle.h"
 #include "content/public/browser/render_frame_host.h"
@@ -74,10 +76,7 @@ void TestSubresourceFilterObserver::DidFinishNavigation(
 
 absl::optional<mojom::ActivationLevel>
 TestSubresourceFilterObserver::GetPageActivation(const GURL& url) const {
-  auto it = page_activations_.find(url);
-  if (it != page_activations_.end())
-    return it->second;
-  return absl::nullopt;
+  return base::OptionalFromPtr(base::FindOrNull(page_activations_, url));
 }
 
 bool TestSubresourceFilterObserver::GetIsAdFrame(int frame_tree_node_id) const {
@@ -86,10 +85,8 @@ bool TestSubresourceFilterObserver::GetIsAdFrame(int frame_tree_node_id) const {
 
 absl::optional<LoadPolicy>
 TestSubresourceFilterObserver::GetChildFrameLoadPolicy(const GURL& url) const {
-  auto it = child_frame_load_evaluations_.find(url);
-  if (it != child_frame_load_evaluations_.end())
-    return it->second;
-  return absl::optional<LoadPolicy>();
+  return base::OptionalFromPtr(
+      base::FindOrNull(child_frame_load_evaluations_, url));
 }
 
 absl::optional<mojom::ActivationLevel>
@@ -99,10 +96,7 @@ TestSubresourceFilterObserver::GetPageActivationForLastCommittedLoad() const {
 
 absl::optional<TestSubresourceFilterObserver::SafeBrowsingCheck>
 TestSubresourceFilterObserver::GetSafeBrowsingResult(const GURL& url) const {
-  auto it = safe_browsing_checks_.find(url);
-  if (it != safe_browsing_checks_.end())
-    return it->second;
-  return absl::optional<SafeBrowsingCheck>();
+  return base::OptionalFromPtr(base::FindOrNull(safe_browsing_checks_, url));
 }
 
 }  // namespace subresource_filter
