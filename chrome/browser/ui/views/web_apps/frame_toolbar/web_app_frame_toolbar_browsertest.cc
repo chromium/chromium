@@ -496,8 +496,7 @@ class BorderlessIsolatedWebAppBrowserTest
 
   void GrantWindowManagementPermission() {
     auto* web_contents = browser_view()->GetActiveWebContents();
-    WebAppFrameToolbarTestHelper::GrantWindowManagementPermission(web_contents,
-                                                                  "draggable");
+    WebAppFrameToolbarTestHelper::GrantWindowManagementPermission(web_contents);
 
     // It takes some time to udate the borderless mode state. The title is
     // updated on a change event hooked to the window.matchMedia() function,
@@ -1724,15 +1723,9 @@ IN_PROC_BROWSER_TEST_F(
     WebAppFrameToolbarBrowserTest_AdditionalWindowingControls,
     WindowSetResizableMatches) {
   InstallAndLaunchWebApp();
-  auto* web_contents = helper()->browser_view()->GetActiveWebContents();
+  helper()->GrantWindowManagementPermission();
 
-  // TODO(laurila): Refactor to use GrantWindowManagementPermission when it
-  // doesn't require `element_id` as an input anymore.
-  permissions::PermissionRequestManager::FromWebContents(web_contents)
-      ->set_auto_response_for_test(
-          permissions::PermissionRequestManager::ACCEPT_ALL);
-  EXPECT_TRUE(ExecJs(web_contents, "window.getScreenDetails();"));
-  content::WaitForLoadStop(web_contents);
+  auto* web_contents = helper()->browser_view()->GetActiveWebContents();
 
   auto CheckCanResize = [&](bool browser_view_can_resize_expected,
                             absl::optional<bool> web_api_can_resize_expected) {

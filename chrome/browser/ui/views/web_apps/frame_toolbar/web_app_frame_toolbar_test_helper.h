@@ -86,9 +86,8 @@ class WebAppFrameToolbarTestHelper {
   BrowserView* OpenPopup(const std::string& window_open_script);
 
   static void GrantWindowManagementPermission(
-      content::WebContents* web_contents,
-      base::StringPiece element_id);
-  void GrantWindowManagementPermission(base::StringPiece element_id);
+      content::WebContents* web_contents);
+  void GrantWindowManagementPermission();
 
   Browser* app_browser() { return app_browser_; }
   BrowserView* browser_view() { return browser_view_; }
