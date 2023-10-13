@@ -1014,12 +1014,6 @@ void PasswordFormManager::FillNow() {
     });
   }
 
-#if BUILDFLAG(IS_IOS)
-  // Filling on username first flow is not supported on iOS.
-  if (observed_password_form->IsSingleUsername())
-    return;
-#endif
-
   SendFillInformationToRenderer(
       client_, driver_.get(), *observed_password_form.get(),
       form_fetcher_->GetBestMatches(), form_fetcher_->GetFederatedMatches(),

@@ -50,6 +50,7 @@ data/http_server_files/state_operations.js
 data/http_server_files/tall_page.html
 data/http_server_files/testpage.pdf
 data/http_server_files/two_pages.pdf
+data/http_server_files/uff_login_forms.html
 data/http_server_files/user_agent_test_page.html
 data/http_server_files/username_password_field_form.html
 data/http_server_files/vcard.vcf

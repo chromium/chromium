@@ -36,6 +36,8 @@
 
 constexpr char kFormUsername[] = "un";
 constexpr char kFormPassword[] = "pw";
+constexpr char kSigninUffFormUsername[] = "single_un";
+constexpr char kSigninUffFormPassword[] = "single_pw";
 
 namespace {
 
@@ -129,7 +131,9 @@ BOOL WaitForKeyboardToAppear() {
     config.features_enabled.push_back(
         password_manager::features::kIOSPasswordBottomSheet);
   }
-  if ([self isRunningTest:@selector(testFillPasswordFieldsOnForm)]) {
+  if ([self isRunningTest:@selector(testFillPasswordFieldsOnForm)] ||
+      [self isRunningTest:@selector(testFillFieldOnFormWithSingleUsername)] ||
+      [self isRunningTest:@selector(testFillFieldOnFormWithSinglePassword)]) {
     config.features_disabled.push_back(
         password_manager::features::kIOSPasswordBottomSheet);
   }
@@ -145,20 +149,29 @@ BOOL WaitForKeyboardToAppear() {
   [ChromeEarlGrey waitForWebStateContainingText:"Login form."];
 }
 
+// Load page on localhost to test username first flows.
+- (void)loadUffLoginPage {
+  // Loads simple page. It is on localhost so it is considered a secure context.
+  [ChromeEarlGrey loadURL:self.testServer->GetURL("/uff_login_forms.html")];
+  [ChromeEarlGrey waitForWebStateContainingText:"Single username form."];
+}
+
+// Verifies that field with the html `id` has been filled with `value`.
+- (void)verifyFieldWithIdHasBeenFilled:(std::string)id value:(NSString*)value {
+  NSString* condition = [NSString
+      stringWithFormat:@"window.document.getElementById('%s').value === '%@'",
+                       id.c_str(), value];
+  [ChromeEarlGrey waitForJavaScriptCondition:condition];
+}
+
 // Verifies that the username and password fields are filled.
 - (void)verifyFieldsHaveBeenFilledWithUsername:(NSString*)username
                                       password:(NSString*)password {
   // Verify that the username field has been filled.
-  NSString* condition = [NSString
-      stringWithFormat:@"window.document.getElementById('%s').value === '%@'",
-                       kFormUsername, username];
-  [ChromeEarlGrey waitForJavaScriptCondition:condition];
+  [self verifyFieldWithIdHasBeenFilled:kFormUsername value:username];
 
   // Verify that the password field has been filled.
-  NSString* filledFieldCondition = [NSString
-      stringWithFormat:@"document.getElementById('%s').value === '%@'",
-                       kFormPassword, password];
-  [ChromeEarlGrey waitForJavaScriptCondition:filledFieldCondition];
+  [self verifyFieldWithIdHasBeenFilled:kFormPassword value:password];
 }
 
 #pragma mark - Tests
@@ -280,6 +293,66 @@ BOOL WaitForKeyboardToAppear() {
       selectElementWithMatcher:grey_accessibilityLabel(l10n_util::GetNSString(
                                    IDS_IOS_PASSWORD_BOTTOM_SHEET_USE_PASSWORD))]
       performAction:grey_tap()];
+}
+
+// Tests that the username field is filled when it is the only field in the
+// sign-in form.
+- (void)testFillFieldOnFormWithSingleUsername {
+  [FormInputAccessoryAppInterface setUpMockReauthenticationModule];
+  [FormInputAccessoryAppInterface mockReauthenticationModuleExpectedResult:
+                                      ReauthenticationResult::kSuccess];
+
+  NSString* username = @"user";
+  NSString* password = @"password";
+  [PasswordManagerAppInterface
+      storeCredentialWithUsername:username
+                         password:password
+                              URL:net::NSURLWithGURL(self.testServer->GetURL(
+                                      "/uff_login_forms.html"))];
+  [self loadUffLoginPage];
+  [[EarlGrey selectElementWithMatcher:chrome_test_util::WebViewMatcher()]
+      performAction:chrome_test_util::TapWebElementWithId(
+                        kSigninUffFormUsername)];
+
+  id<GREYMatcher> user_chip = grey_accessibilityLabel(@"user ••••••••");
+
+  [ChromeEarlGrey waitForUIElementToAppearWithMatcher:user_chip];
+
+  [[EarlGrey selectElementWithMatcher:user_chip] performAction:grey_tap()];
+
+  [self verifyFieldWithIdHasBeenFilled:kSigninUffFormUsername value:username];
+
+  [FormInputAccessoryAppInterface removeMockReauthenticationModule];
+}
+
+// Tests that the password field is filled when it is the only field in the
+// sign-in form.
+- (void)testFillFieldOnFormWithSinglePassword {
+  [FormInputAccessoryAppInterface setUpMockReauthenticationModule];
+  [FormInputAccessoryAppInterface mockReauthenticationModuleExpectedResult:
+                                      ReauthenticationResult::kSuccess];
+
+  NSString* username = @"user";
+  NSString* password = @"password";
+  [PasswordManagerAppInterface
+      storeCredentialWithUsername:username
+                         password:password
+                              URL:net::NSURLWithGURL(self.testServer->GetURL(
+                                      "/uff_login_forms.html"))];
+  [self loadUffLoginPage];
+  [[EarlGrey selectElementWithMatcher:chrome_test_util::WebViewMatcher()]
+      performAction:chrome_test_util::TapWebElementWithId(
+                        kSigninUffFormPassword)];
+
+  id<GREYMatcher> user_chip = grey_accessibilityLabel(@"user ••••••••");
+
+  [ChromeEarlGrey waitForUIElementToAppearWithMatcher:user_chip];
+
+  [[EarlGrey selectElementWithMatcher:user_chip] performAction:grey_tap()];
+
+  [self verifyFieldWithIdHasBeenFilled:kSigninUffFormPassword value:password];
+
+  [FormInputAccessoryAppInterface removeMockReauthenticationModule];
 }
 
 - (void)testFillPasswordFieldsOnForm {

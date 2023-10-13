@@ -3186,14 +3186,8 @@ TEST_F(PasswordManagerTest, AutofillPredictionBeforeMultipleFormsParsed) {
       &driver_, form2.form_data,
       CreateServerPredictions(form2.form_data,
                               {{1, ServerFieldType::PASSWORD}}));
-#if !BUILDFLAG(IS_IOS)
-  // Both forms should be filled.
+
   EXPECT_CALL(driver_, SetPasswordFillData).Times(2);
-#else
-  // Only one form should be filled, as username first flow is not supported
-  // yet on iOS.
-  EXPECT_CALL(driver_, SetPasswordFillData);
-#endif
 
   // Simulate that the form is incorrectly marked as sign-up, which means it can
   // not be filled without server predictions.
