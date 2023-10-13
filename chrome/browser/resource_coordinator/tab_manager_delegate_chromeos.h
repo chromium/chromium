@@ -218,6 +218,9 @@ class TabManagerDelegate : public wm::ActivationChangeObserver,
   // The listing is throttled to avoid too frequent reporting.
   void ListProcessesThrottled();
 
+  // Called by |delayed_report_timer_|.
+  void ListProcessesDelayed();
+
   // List the tab processes for reporting.
   void ListProcesses();
 
@@ -251,6 +254,14 @@ class TabManagerDelegate : public wm::ActivationChangeObserver,
 
   // For throttling the renderer process list reporting.
   base::TimeTicks last_pids_report_ = base::TimeTicks::Now();
+
+  // Delay the reporting if it's less than the minimum interval since last
+  // reporting.
+  base::OneShotTimer delayed_report_timer_;
+
+  // Sequences to check if the last tab event is handled.
+  uint64_t tab_event_sequence_ = 0;
+  uint64_t tab_report_sequence_ = 0;
 
   // Weak pointer factory used for posting tasks to other threads.
   base::WeakPtrFactory<TabManagerDelegate> weak_ptr_factory_{this};

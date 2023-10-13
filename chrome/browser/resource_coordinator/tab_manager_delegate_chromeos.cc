@@ -838,7 +838,24 @@ void TabManagerDelegate::DistributeOomScoreInRange(
 }
 
 void TabManagerDelegate::ListProcessesThrottled() {
-  if (base::TimeTicks::Now() - last_pids_report_ > kPidsReportMinimalInterval) {
+  DCHECK_CURRENTLY_ON(BrowserThread::UI);
+  ++tab_event_sequence_;
+  base::TimeTicks now = base::TimeTicks::Now();
+  if (now - last_pids_report_ > kPidsReportMinimalInterval) {
+    ListProcesses();
+  } else if (!delayed_report_timer_.IsRunning()) {
+    // If the delay timer is already scheduled, don't have to reschedule it.
+    base::TimeTicks next_report_time =
+        last_pids_report_ + kPidsReportMinimalInterval;
+    delayed_report_timer_.Start(FROM_HERE, /*delay=*/next_report_time - now,
+                                this,
+                                &TabManagerDelegate::ListProcessesDelayed);
+  }
+}
+
+void TabManagerDelegate::ListProcessesDelayed() {
+  DCHECK_CURRENTLY_ON(BrowserThread::UI);
+  if (tab_report_sequence_ != tab_event_sequence_) {
     ListProcesses();
   }
 }
@@ -849,6 +866,7 @@ void TabManagerDelegate::ListProcesses() {
   }
 
   last_pids_report_ = base::TimeTicks::Now();
+  tab_report_sequence_ = tab_event_sequence_;
 
   std::vector<ash::ResourcedClient::Process> processes;
   for (LifecycleUnit* lifecycle_unit : GetLifecycleUnits()) {
