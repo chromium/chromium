@@ -18,3 +18,5 @@ NSString* const kNTPFeedHeaderSegmentedControlIdentifier =
     @"kNTPFeedHeaderSegmentedControlIdentifier";
 
 NSString* const kNTPFeedHeaderIdentityDisc = @"kNTPFeedHeaderIdentityDisc";
+
+const CGFloat kHomeModuleContainerCornerRadius = 24.0f;

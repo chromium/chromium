@@ -141,6 +141,8 @@ const CGFloat kShiftTilesUpAnimationDuration = 0.1;
 @implementation NewTabPageViewController {
   // Background gradient when Modular Home is enabled.
   GradientView* _backgroundGradientView;
+  // Container view surrounding the feed.
+  UIView* _feedContainer;
 }
 
 - (instancetype)init {
@@ -424,6 +426,26 @@ const CGFloat kShiftTilesUpAnimationDuration = 0.1;
   feedView.translatesAutoresizingMaskIntoConstraints = NO;
   AddSameConstraints(feedView, self.view);
 
+  if (self.isFeedVisible && IsFeedContainmentEnabled()) {
+    _feedContainer = [[UIView alloc] initWithFrame:CGRectZero];
+    _feedContainer.translatesAutoresizingMaskIntoConstraints = NO;
+    _feedContainer.backgroundColor = ntp_home::NTPBackgroundColor();
+
+    // Reduce the zPosition so that the container appears behind the feed
+    // content.
+    _feedContainer.layer.zPosition = -1;
+    _feedContainer.userInteractionEnabled = NO;
+
+    // Add corner radius to the top border.
+    _feedContainer.clipsToBounds = YES;
+    _feedContainer.layer.cornerRadius = kHomeModuleContainerCornerRadius;
+    _feedContainer.layer.maskedCorners =
+        kCALayerMaxXMinYCorner | kCALayerMinXMinYCorner;
+    _feedContainer.layer.masksToBounds = YES;
+
+    [self.view addSubview:_feedContainer];
+  }
+
   // Configures the content suggestions in the view hierarchy.
   // TODO(crbug.com/1262536): Remove this when issue is fixed.
   if (self.contentSuggestionsViewController.parentViewController) {
@@ -525,6 +547,12 @@ const CGFloat kShiftTilesUpAnimationDuration = 0.1;
 }
 
 - (void)resetViewHierarchy {
+  if (_feedContainer) {
+    CHECK(IsFeedContainmentEnabled());
+    [_feedContainer removeFromSuperview];
+    _feedContainer = nil;
+  }
+
   [self removeFromViewHierarchy:self.feedWrapperViewController];
   [self removeFromViewHierarchy:self.contentSuggestionsViewController];
 
@@ -1351,6 +1379,20 @@ const CGFloat kShiftTilesUpAnimationDuration = 0.1;
     ]];
   }
 
+  if (_feedContainer) {
+    CHECK(IsFeedContainmentEnabled());
+    [NSLayoutConstraint activateConstraints:@[
+      [_feedContainer.widthAnchor
+          constraintEqualToAnchor:self.collectionView.widthAnchor],
+      [_feedContainer.centerXAnchor
+          constraintEqualToAnchor:self.collectionView.centerXAnchor],
+      [_feedContainer.topAnchor
+          constraintEqualToAnchor:self.feedHeaderViewController.view.topAnchor],
+      [_feedContainer.bottomAnchor
+          constraintEqualToAnchor:self.view.bottomAnchor],
+    ]];
+  }
+
   [NSLayoutConstraint activateConstraints:@[
     [[self containerView].safeAreaLayoutGuide.leadingAnchor
         constraintEqualToAnchor:self.headerViewController.view.leadingAnchor],
@@ -1488,8 +1530,7 @@ const CGFloat kShiftTilesUpAnimationDuration = 0.1;
 // Height of the feed header, returns 0 if it is not visible.
 - (CGFloat)feedHeaderHeight {
   return self.feedHeaderViewController
-             ? [self.feedHeaderViewController feedHeaderHeight] +
-                   [self.feedHeaderViewController customSearchEngineViewHeight]
+             ? self.feedHeaderViewController.view.frame.size.height
              : 0;
 }
 

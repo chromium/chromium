@@ -55,6 +55,7 @@ source_set("cells") {
     "//ios/chrome/browser/ui/content_suggestions:content_suggestions_ui_util",
     "//ios/chrome/browser/ui/content_suggestions:public",
     "//ios/chrome/browser/ui/content_suggestions/identifier",
+    "//ios/chrome/browser/ui/ntp:constants",
     "//ios/chrome/browser/ui/resources:module_shadow",
     "//ios/chrome/common:string_util",
     "//ios/chrome/common:timing",
