@@ -6,6 +6,7 @@ import {TestRunner} from 'test_runner';
 import {ElementsTestRunner} from 'elements_test_runner';
 import {AccessibilityTestRunner} from 'accessibility_test_runner';
 import * as UI from 'devtools/ui/legacy/legacy.js';
+import * as Accessibility from 'devtools/panels/accessibility/accessibility.js';
 
 (async function() {
   TestRunner.addResult(`Tests that writing an ARIA attribute causes the accessibility node to be updated.\n`);
@@ -26,7 +27,7 @@ import * as UI from 'devtools/ui/legacy/legacy.js';
     treeElement.startEditing();
     treeElement.prompt.element().textContent = 'false';
     treeElement.prompt.element().dispatchEvent(TestRunner.createKeyEvent('Enter'));
-    Accessibility.AccessibilitySidebarView.instance().doUpdate().then(() => {
+    Accessibility.AccessibilitySidebarView.AccessibilitySidebarView.instance().doUpdate().then(() => {
       editRole();
     });
   }
@@ -40,7 +41,7 @@ import * as UI from 'devtools/ui/legacy/legacy.js';
     treeElement.prompt.element().dispatchEvent(TestRunner.createKeyEvent('Enter'));
     // Give the document lifecycle a chance to run before updating the view.
     window.setTimeout(() => {
-      Accessibility.AccessibilitySidebarView.instance().doUpdate().then(() => {
+      Accessibility.AccessibilitySidebarView.AccessibilitySidebarView.instance().doUpdate().then(() => {
         postRoleChange();
       });
     }, 0);
