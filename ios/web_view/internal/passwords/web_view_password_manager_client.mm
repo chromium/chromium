@@ -50,7 +50,7 @@ WebViewPasswordManagerClient::Create(web::WebState* web_state,
   auto log_manager =
       autofill::LogManager::Create(logRouter, base::RepeatingClosure());
   scoped_refptr<password_manager::PasswordStoreInterface> profile_store =
-      ios_web_view::WebViewPasswordStoreFactory::GetForBrowserState(
+      ios_web_view::WebViewProfilePasswordStoreFactory::GetForBrowserState(
           browser_state, ServiceAccessType::EXPLICIT_ACCESS);
   scoped_refptr<password_manager::PasswordStoreInterface> account_store =
       ios_web_view::WebViewAccountPasswordStoreFactory::GetForBrowserState(

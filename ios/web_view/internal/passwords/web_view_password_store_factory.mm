@@ -25,7 +25,7 @@ namespace ios_web_view {
 
 // static
 scoped_refptr<password_manager::PasswordStoreInterface>
-WebViewPasswordStoreFactory::GetForBrowserState(
+WebViewProfilePasswordStoreFactory::GetForBrowserState(
     WebViewBrowserState* browser_state,
     ServiceAccessType access_type) {
   // |profile| gets always redirected to a non-Incognito profile below, so
@@ -41,20 +41,21 @@ WebViewPasswordStoreFactory::GetForBrowserState(
 }
 
 // static
-WebViewPasswordStoreFactory* WebViewPasswordStoreFactory::GetInstance() {
-  static base::NoDestructor<WebViewPasswordStoreFactory> instance;
+WebViewProfilePasswordStoreFactory*
+WebViewProfilePasswordStoreFactory::GetInstance() {
+  static base::NoDestructor<WebViewProfilePasswordStoreFactory> instance;
   return instance.get();
 }
 
-WebViewPasswordStoreFactory::WebViewPasswordStoreFactory()
+WebViewProfilePasswordStoreFactory::WebViewProfilePasswordStoreFactory()
     : RefcountedBrowserStateKeyedServiceFactory(
           "PasswordStore",
           BrowserStateDependencyManager::GetInstance()) {}
 
-WebViewPasswordStoreFactory::~WebViewPasswordStoreFactory() {}
+WebViewProfilePasswordStoreFactory::~WebViewProfilePasswordStoreFactory() {}
 
 scoped_refptr<RefcountedKeyedService>
-WebViewPasswordStoreFactory::BuildServiceInstanceFor(
+WebViewProfilePasswordStoreFactory::BuildServiceInstanceFor(
     web::BrowserState* context) const {
   std::unique_ptr<password_manager::LoginDatabase> login_db(
       password_manager::CreateLoginDatabaseForProfileStorage(
@@ -78,14 +79,14 @@ WebViewPasswordStoreFactory::BuildServiceInstanceFor(
   return store;
 }
 
-web::BrowserState* WebViewPasswordStoreFactory::GetBrowserStateToUse(
+web::BrowserState* WebViewProfilePasswordStoreFactory::GetBrowserStateToUse(
     web::BrowserState* context) const {
   WebViewBrowserState* browser_state =
       WebViewBrowserState::FromBrowserState(context);
   return browser_state->GetRecordingBrowserState();
 }
 
-bool WebViewPasswordStoreFactory::ServiceIsNULLWhileTesting() const {
+bool WebViewProfilePasswordStoreFactory::ServiceIsNULLWhileTesting() const {
   return true;
 }
 

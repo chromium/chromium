@@ -192,7 +192,7 @@ void WebViewBrowserState::RegisterPrefs(
   WebViewWebDataServiceWrapperFactory::GetInstance();
   WebViewPasswordManagerLogRouterFactory::GetInstance();
   WebViewAccountPasswordStoreFactory::GetInstance();
-  WebViewPasswordStoreFactory::GetInstance();
+  WebViewProfilePasswordStoreFactory::GetInstance();
   WebViewPasswordRequirementsServiceFactory::GetInstance();
   WebViewSigninClientFactory::GetInstance();
   WebViewIdentityManagerFactory::GetInstance();

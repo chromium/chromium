@@ -21,24 +21,25 @@ class WebViewBrowserState;
 
 // Singleton that owns all PasswordStores and associates them with
 // WebViewBrowserState.
-class WebViewPasswordStoreFactory
+class WebViewProfilePasswordStoreFactory
     : public RefcountedBrowserStateKeyedServiceFactory {
  public:
   static scoped_refptr<password_manager::PasswordStoreInterface>
   GetForBrowserState(WebViewBrowserState* browser_state,
                      ServiceAccessType access_type);
 
-  static WebViewPasswordStoreFactory* GetInstance();
+  static WebViewProfilePasswordStoreFactory* GetInstance();
 
-  WebViewPasswordStoreFactory(const WebViewPasswordStoreFactory&) = delete;
-  WebViewPasswordStoreFactory& operator=(const WebViewPasswordStoreFactory&) =
-      delete;
+  WebViewProfilePasswordStoreFactory(
+      const WebViewProfilePasswordStoreFactory&) = delete;
+  WebViewProfilePasswordStoreFactory& operator=(
+      const WebViewProfilePasswordStoreFactory&) = delete;
 
  private:
-  friend class base::NoDestructor<WebViewPasswordStoreFactory>;
+  friend class base::NoDestructor<WebViewProfilePasswordStoreFactory>;
 
-  WebViewPasswordStoreFactory();
-  ~WebViewPasswordStoreFactory() override;
+  WebViewProfilePasswordStoreFactory();
+  ~WebViewProfilePasswordStoreFactory() override;
 
   // BrowserStateKeyedServiceFactory:
   scoped_refptr<RefcountedKeyedService> BuildServiceInstanceFor(

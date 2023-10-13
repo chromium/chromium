@@ -43,7 +43,7 @@ WebViewPasswordReuseManagerFactory::WebViewPasswordReuseManagerFactory()
     : BrowserStateKeyedServiceFactory(
           "PasswordReuseManager",
           BrowserStateDependencyManager::GetInstance()) {
-  DependsOn(WebViewPasswordStoreFactory::GetInstance());
+  DependsOn(WebViewProfilePasswordStoreFactory::GetInstance());
 }
 
 WebViewPasswordReuseManagerFactory::~WebViewPasswordReuseManagerFactory() =
@@ -61,7 +61,7 @@ WebViewPasswordReuseManagerFactory::BuildServiceInstanceFor(
       std::make_unique<password_manager::PasswordReuseManagerImpl>();
 
   reuse_manager->Init(browser_state->GetPrefs(),
-                      WebViewPasswordStoreFactory::GetForBrowserState(
+                      WebViewProfilePasswordStoreFactory::GetForBrowserState(
                           browser_state, ServiceAccessType::EXPLICIT_ACCESS)
                           .get(),
                       WebViewAccountPasswordStoreFactory::GetForBrowserState(

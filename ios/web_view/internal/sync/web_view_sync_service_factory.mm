@@ -57,7 +57,7 @@ WebViewSyncServiceFactory::WebViewSyncServiceFactory()
   DependsOn(WebViewIdentityManagerFactory::GetInstance());
   DependsOn(WebViewWebDataServiceWrapperFactory::GetInstance());
   DependsOn(WebViewAccountPasswordStoreFactory::GetInstance());
-  DependsOn(WebViewPasswordStoreFactory::GetInstance());
+  DependsOn(WebViewProfilePasswordStoreFactory::GetInstance());
   DependsOn(WebViewGCMProfileServiceFactory::GetInstance());
   DependsOn(WebViewModelTypeStoreServiceFactory::GetInstance());
   DependsOn(WebViewSyncInvalidationsServiceFactory::GetInstance());
