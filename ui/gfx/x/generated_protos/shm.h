@@ -74,10 +74,6 @@ class COMPONENT_EXPORT(X11) Shm {
     uint8_t major_event{};
     Seg shmseg{};
     uint32_t offset{};
-
-    x11::Window* GetWindow() {
-      return reinterpret_cast<x11::Window*>(&drawable);
-    }
   };
 
   struct BadSegError : public x11::Error {

@@ -284,10 +284,6 @@ class COMPONENT_EXPORT(X11) Glx {
     uint16_t width{};
     uint16_t height{};
     uint16_t count{};
-
-    x11::Window* GetWindow() {
-      return reinterpret_cast<x11::Window*>(&drawable);
-    }
   };
 
   struct BufferSwapCompleteEvent {
@@ -301,10 +297,6 @@ class COMPONENT_EXPORT(X11) Glx {
     uint32_t msc_hi{};
     uint32_t msc_lo{};
     uint32_t sbc{};
-
-    x11::Window* GetWindow() {
-      return reinterpret_cast<x11::Window*>(&drawable);
-    }
   };
 
   struct RenderRequest {

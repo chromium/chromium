@@ -1191,8 +1191,6 @@ class COMPONENT_EXPORT(X11) Xkb {
     uint8_t requestMajor{};
     uint8_t requestMinor{};
     NKNDetail changed{};
-
-    x11::Window* GetWindow() { return nullptr; }
   };
 
   struct MapNotifyEvent {
@@ -1221,8 +1219,6 @@ class COMPONENT_EXPORT(X11) Xkb {
     KeyCode firstVModMapKey{};
     uint8_t nVModMapKeys{};
     VMod virtualMods{};
-
-    x11::Window* GetWindow() { return nullptr; }
   };
 
   struct StateNotifyEvent {
@@ -1251,8 +1247,6 @@ class COMPONENT_EXPORT(X11) Xkb {
     uint8_t eventType{};
     uint8_t requestMajor{};
     uint8_t requestMinor{};
-
-    x11::Window* GetWindow() { return nullptr; }
   };
 
   struct ControlsNotifyEvent {
@@ -1270,8 +1264,6 @@ class COMPONENT_EXPORT(X11) Xkb {
     uint8_t eventType{};
     uint8_t requestMajor{};
     uint8_t requestMinor{};
-
-    x11::Window* GetWindow() { return nullptr; }
   };
 
   struct IndicatorStateNotifyEvent {
@@ -1283,8 +1275,6 @@ class COMPONENT_EXPORT(X11) Xkb {
     uint8_t deviceID{};
     uint32_t state{};
     uint32_t stateChanged{};
-
-    x11::Window* GetWindow() { return nullptr; }
   };
 
   struct IndicatorMapNotifyEvent {
@@ -1296,8 +1286,6 @@ class COMPONENT_EXPORT(X11) Xkb {
     uint8_t deviceID{};
     uint32_t state{};
     uint32_t mapChanged{};
-
-    x11::Window* GetWindow() { return nullptr; }
   };
 
   struct NamesNotifyEvent {
@@ -1319,8 +1307,6 @@ class COMPONENT_EXPORT(X11) Xkb {
     KeyCode firstKey{};
     uint8_t nKeys{};
     uint32_t changedIndicators{};
-
-    x11::Window* GetWindow() { return nullptr; }
   };
 
   struct CompatMapNotifyEvent {
@@ -1334,8 +1320,6 @@ class COMPONENT_EXPORT(X11) Xkb {
     uint16_t firstSI{};
     uint16_t nSI{};
     uint16_t nTotalSI{};
-
-    x11::Window* GetWindow() { return nullptr; }
   };
 
   struct BellNotifyEvent {
@@ -1353,8 +1337,6 @@ class COMPONENT_EXPORT(X11) Xkb {
     Atom name{};
     Window window{};
     uint8_t eventOnly{};
-
-    x11::Window* GetWindow() { return reinterpret_cast<x11::Window*>(&window); }
   };
 
   struct ActionMessageEvent {
@@ -1370,8 +1352,6 @@ class COMPONENT_EXPORT(X11) Xkb {
     ModMask mods{};
     Group group{};
     std::array<String8, 8> message{};
-
-    x11::Window* GetWindow() { return nullptr; }
   };
 
   struct AccessXNotifyEvent {
@@ -1385,8 +1365,6 @@ class COMPONENT_EXPORT(X11) Xkb {
     AXNDetail detailt{};
     uint16_t slowKeysDelay{};
     uint16_t debounceDelay{};
-
-    x11::Window* GetWindow() { return nullptr; }
   };
 
   struct ExtensionDeviceNotifyEvent {
@@ -1405,8 +1383,6 @@ class COMPONENT_EXPORT(X11) Xkb {
     uint8_t nButtons{};
     XIFeature supported{};
     XIFeature unsupported{};
-
-    x11::Window* GetWindow() { return nullptr; }
   };
 
   struct UseExtensionRequest {

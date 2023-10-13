@@ -244,10 +244,6 @@ class COMPONENT_EXPORT(X11) RandR {
     uint16_t height{};
     uint16_t mwidth{};
     uint16_t mheight{};
-
-    x11::Window* GetWindow() {
-      return reinterpret_cast<x11::Window*>(&request_window);
-    }
   };
 
   struct MonitorInfo {
@@ -334,8 +330,6 @@ class COMPONENT_EXPORT(X11) RandR {
     absl::optional<Pp> pp{};
     absl::optional<Rc> rc{};
     absl::optional<Lc> lc{};
-
-    x11::Window* GetWindow() { return nullptr; }
   };
 
   struct QueryVersionRequest {

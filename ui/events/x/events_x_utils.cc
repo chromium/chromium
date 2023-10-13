@@ -162,35 +162,6 @@ int GetEventFlagsFromXState(uint32_t state) {
   return GetEventFlagsFromXState(static_cast<x11::KeyButMask>(state));
 }
 
-int GetEventFlagsFromXKeyEvent(const x11::Event& xev) {
-  auto* key = xev.As<x11::KeyEvent>();
-  DCHECK(key);
-  const auto state = static_cast<int>(key->state);
-
-#if BUILDFLAG(IS_CHROMEOS_ASH)
-  const int ime_fabricated_flag = 0;
-#else
-  // XIM fabricates key events for the character compositions by XK_Multi_key.
-  // For example, when a user hits XK_Multi_key, XK_apostrophe, and XK_e in
-  // order to input "é", then XIM generates a key event with keycode=0 and
-  // state=0 for the composition, and the sequence of X11 key events will be
-  // XK_Multi_key, XK_apostrophe, **NoSymbol**, and XK_e.  If the user used
-  // shift key and/or caps lock key, state can be ShiftMask, LockMask or both.
-  //
-  // We have to send these fabricated key events to XIM so it can correctly
-  // handle the character compositions.
-  const auto detail = static_cast<uint8_t>(key->detail);
-  const auto shift_lock_mask =
-      static_cast<int>(x11::KeyButMask::Shift | x11::KeyButMask::Lock);
-  const bool fabricated_by_xim = detail == 0 && (state & ~shift_lock_mask) == 0;
-  const int ime_fabricated_flag =
-      fabricated_by_xim ? ui::EF_IME_FABRICATED_KEY : 0;
-#endif
-
-  return GetEventFlagsFromXState(state) |
-         (xev.send_event() ? ui::EF_FINAL : 0) | ime_fabricated_flag;
-}
-
 int GetEventFlagsFromXGenericEvent(const x11::Event& x11_event) {
   auto* xievent = x11_event.As<x11::Input::DeviceEvent>();
   DCHECK(xievent);
@@ -491,10 +462,37 @@ EventType EventTypeFromXEvent(const x11::Event& xev) {
   return ET_UNKNOWN;
 }
 
+int GetEventFlagsFromXKeyEvent(const x11::KeyEvent& key, bool send_event) {
+  const auto state = static_cast<int>(key.state);
+
+#if BUILDFLAG(IS_CHROMEOS_ASH)
+  const int ime_fabricated_flag = 0;
+#else
+  // XIM fabricates key events for the character compositions by XK_Multi_key.
+  // For example, when a user hits XK_Multi_key, XK_apostrophe, and XK_e in
+  // order to input "é", then XIM generates a key event with keycode=0 and
+  // state=0 for the composition, and the sequence of X11 key events will be
+  // XK_Multi_key, XK_apostrophe, **NoSymbol**, and XK_e.  If the user used
+  // shift key and/or caps lock key, state can be ShiftMask, LockMask or both.
+  //
+  // We have to send these fabricated key events to XIM so it can correctly
+  // handle the character compositions.
+  const auto detail = static_cast<uint8_t>(key.detail);
+  const auto shift_lock_mask =
+      static_cast<int>(x11::KeyButMask::Shift | x11::KeyButMask::Lock);
+  const bool fabricated_by_xim = detail == 0 && (state & ~shift_lock_mask) == 0;
+  const int ime_fabricated_flag =
+      fabricated_by_xim ? ui::EF_IME_FABRICATED_KEY : 0;
+#endif
+
+  return GetEventFlagsFromXState(state) | (send_event ? ui::EF_FINAL : 0) |
+         ime_fabricated_flag;
+}
+
 int EventFlagsFromXEvent(const x11::Event& xev) {
-  if (xev.As<x11::KeyEvent>()) {
+  if (auto* key = xev.As<x11::KeyEvent>()) {
     XModifierStateWatcher::GetInstance()->UpdateStateFromXEvent(xev);
-    return GetEventFlagsFromXKeyEvent(xev);
+    return GetEventFlagsFromXKeyEvent(*key, xev.send_event());
   }
   if (auto* button = xev.As<x11::ButtonEvent>()) {
     int flags = GetEventFlagsFromXState(button->state);

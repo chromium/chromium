@@ -895,8 +895,6 @@ struct KeyEvent {
   int16_t event_y{};
   KeyButMask state{};
   uint8_t same_screen{};
-
-  x11::Window* GetWindow() { return reinterpret_cast<x11::Window*>(&event); }
 };
 
 struct ButtonEvent {
@@ -917,8 +915,6 @@ struct ButtonEvent {
   int16_t event_y{};
   KeyButMask state{};
   uint8_t same_screen{};
-
-  x11::Window* GetWindow() { return reinterpret_cast<x11::Window*>(&event); }
 };
 
 struct MotionNotifyEvent {
@@ -936,8 +932,6 @@ struct MotionNotifyEvent {
   int16_t event_y{};
   KeyButMask state{};
   uint8_t same_screen{};
-
-  x11::Window* GetWindow() { return reinterpret_cast<x11::Window*>(&event); }
 };
 
 struct CrossingEvent {
@@ -959,8 +953,6 @@ struct CrossingEvent {
   KeyButMask state{};
   NotifyMode mode{};
   uint8_t same_screen_focus{};
-
-  x11::Window* GetWindow() { return reinterpret_cast<x11::Window*>(&event); }
 };
 
 struct FocusEvent {
@@ -973,16 +965,12 @@ struct FocusEvent {
   uint16_t sequence{};
   Window event{};
   NotifyMode mode{};
-
-  x11::Window* GetWindow() { return reinterpret_cast<x11::Window*>(&event); }
 };
 
 struct KeymapNotifyEvent {
   static constexpr int type_id = 49;
   static constexpr uint8_t opcode = 11;
   std::array<uint8_t, 31> keys{};
-
-  x11::Window* GetWindow() { return nullptr; }
 };
 
 struct ExposeEvent {
@@ -995,8 +983,6 @@ struct ExposeEvent {
   uint16_t width{};
   uint16_t height{};
   uint16_t count{};
-
-  x11::Window* GetWindow() { return reinterpret_cast<x11::Window*>(&window); }
 };
 
 struct GraphicsExposureEvent {
@@ -1011,8 +997,6 @@ struct GraphicsExposureEvent {
   uint16_t minor_opcode{};
   uint16_t count{};
   uint8_t major_opcode{};
-
-  x11::Window* GetWindow() { return reinterpret_cast<x11::Window*>(&drawable); }
 };
 
 struct NoExposureEvent {
@@ -1022,8 +1006,6 @@ struct NoExposureEvent {
   Drawable drawable{};
   uint16_t minor_opcode{};
   uint8_t major_opcode{};
-
-  x11::Window* GetWindow() { return reinterpret_cast<x11::Window*>(&drawable); }
 };
 
 struct VisibilityNotifyEvent {
@@ -1032,8 +1014,6 @@ struct VisibilityNotifyEvent {
   uint16_t sequence{};
   Window window{};
   Visibility state{};
-
-  x11::Window* GetWindow() { return reinterpret_cast<x11::Window*>(&window); }
 };
 
 struct CreateNotifyEvent {
@@ -1048,8 +1028,6 @@ struct CreateNotifyEvent {
   uint16_t height{};
   uint16_t border_width{};
   uint8_t override_redirect{};
-
-  x11::Window* GetWindow() { return reinterpret_cast<x11::Window*>(&window); }
 };
 
 struct DestroyNotifyEvent {
@@ -1058,8 +1036,6 @@ struct DestroyNotifyEvent {
   uint16_t sequence{};
   Window event{};
   Window window{};
-
-  x11::Window* GetWindow() { return reinterpret_cast<x11::Window*>(&window); }
 };
 
 struct UnmapNotifyEvent {
@@ -1069,8 +1045,6 @@ struct UnmapNotifyEvent {
   Window event{};
   Window window{};
   uint8_t from_configure{};
-
-  x11::Window* GetWindow() { return reinterpret_cast<x11::Window*>(&window); }
 };
 
 struct MapNotifyEvent {
@@ -1080,8 +1054,6 @@ struct MapNotifyEvent {
   Window event{};
   Window window{};
   uint8_t override_redirect{};
-
-  x11::Window* GetWindow() { return reinterpret_cast<x11::Window*>(&window); }
 };
 
 struct MapRequestEvent {
@@ -1090,8 +1062,6 @@ struct MapRequestEvent {
   uint16_t sequence{};
   Window parent{};
   Window window{};
-
-  x11::Window* GetWindow() { return reinterpret_cast<x11::Window*>(&window); }
 };
 
 struct ReparentNotifyEvent {
@@ -1104,8 +1074,6 @@ struct ReparentNotifyEvent {
   int16_t x{};
   int16_t y{};
   uint8_t override_redirect{};
-
-  x11::Window* GetWindow() { return reinterpret_cast<x11::Window*>(&window); }
 };
 
 struct ConfigureNotifyEvent {
@@ -1121,8 +1089,6 @@ struct ConfigureNotifyEvent {
   uint16_t height{};
   uint16_t border_width{};
   uint8_t override_redirect{};
-
-  x11::Window* GetWindow() { return reinterpret_cast<x11::Window*>(&window); }
 };
 
 struct ConfigureRequestEvent {
@@ -1139,8 +1105,6 @@ struct ConfigureRequestEvent {
   uint16_t height{};
   uint16_t border_width{};
   ConfigWindow value_mask{};
-
-  x11::Window* GetWindow() { return reinterpret_cast<x11::Window*>(&window); }
 };
 
 struct GravityNotifyEvent {
@@ -1151,8 +1115,6 @@ struct GravityNotifyEvent {
   Window window{};
   int16_t x{};
   int16_t y{};
-
-  x11::Window* GetWindow() { return reinterpret_cast<x11::Window*>(&window); }
 };
 
 struct ResizeRequestEvent {
@@ -1162,8 +1124,6 @@ struct ResizeRequestEvent {
   Window window{};
   uint16_t width{};
   uint16_t height{};
-
-  x11::Window* GetWindow() { return reinterpret_cast<x11::Window*>(&window); }
 };
 
 struct CirculateEvent {
@@ -1176,8 +1136,6 @@ struct CirculateEvent {
   Window event{};
   Window window{};
   Place place{};
-
-  x11::Window* GetWindow() { return reinterpret_cast<x11::Window*>(&window); }
 };
 
 struct PropertyNotifyEvent {
@@ -1188,8 +1146,6 @@ struct PropertyNotifyEvent {
   Atom atom{};
   Time time{};
   Property state{};
-
-  x11::Window* GetWindow() { return reinterpret_cast<x11::Window*>(&window); }
 };
 
 struct SelectionClearEvent {
@@ -1199,8 +1155,6 @@ struct SelectionClearEvent {
   Time time{};
   Window owner{};
   Atom selection{};
-
-  x11::Window* GetWindow() { return reinterpret_cast<x11::Window*>(&owner); }
 };
 
 struct SelectionRequestEvent {
@@ -1213,8 +1167,6 @@ struct SelectionRequestEvent {
   Atom selection{};
   Atom target{};
   Atom property{};
-
-  x11::Window* GetWindow() { return reinterpret_cast<x11::Window*>(&owner); }
 };
 
 struct SelectionNotifyEvent {
@@ -1226,10 +1178,6 @@ struct SelectionNotifyEvent {
   Atom selection{};
   Atom target{};
   Atom property{};
-
-  x11::Window* GetWindow() {
-    return reinterpret_cast<x11::Window*>(&requestor);
-  }
 };
 
 struct ColormapNotifyEvent {
@@ -1240,8 +1188,6 @@ struct ColormapNotifyEvent {
   ColorMap colormap{};
   uint8_t c_new{};
   ColormapState state{};
-
-  x11::Window* GetWindow() { return reinterpret_cast<x11::Window*>(&window); }
 };
 
 union ClientMessageData {
@@ -1261,8 +1207,6 @@ struct ClientMessageEvent {
   Window window{};
   Atom type{};
   ClientMessageData data{};
-
-  x11::Window* GetWindow() { return reinterpret_cast<x11::Window*>(&window); }
 };
 
 struct MappingNotifyEvent {
@@ -1272,16 +1216,12 @@ struct MappingNotifyEvent {
   Mapping request{};
   KeyCode first_keycode{};
   uint8_t count{};
-
-  x11::Window* GetWindow() { return nullptr; }
 };
 
 struct GeGenericEvent {
   static constexpr int type_id = 72;
   static constexpr uint8_t opcode = 35;
   uint16_t sequence{};
-
-  x11::Window* GetWindow() { return nullptr; }
 };
 
 struct RequestError : public x11::Error {

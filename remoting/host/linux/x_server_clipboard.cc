@@ -109,25 +109,32 @@ void XServerClipboard::SetClipboard(const std::string& mime_type,
 }
 
 void XServerClipboard::ProcessXEvent(const x11::Event& event) {
-  if (clipboard_window_ == x11::Window::None ||
-      event.window() != clipboard_window_) {
+  if (clipboard_window_ == x11::Window::None) {
     return;
   }
 
   if (auto* property_notify = event.As<x11::PropertyNotifyEvent>()) {
-    OnPropertyNotify(*property_notify);
+    if (property_notify->window == clipboard_window_) {
+      OnPropertyNotify(*property_notify);
+    }
   } else if (auto* selection_notify = event.As<x11::SelectionNotifyEvent>()) {
-    OnSelectionNotify(*selection_notify);
+    if (selection_notify->requestor == clipboard_window_) {
+      OnSelectionNotify(*selection_notify);
+    }
   } else if (auto* selection_request = event.As<x11::SelectionRequestEvent>()) {
-    OnSelectionRequest(*selection_request);
+    if (selection_request->owner == clipboard_window_) {
+      OnSelectionRequest(*selection_request);
+    }
   } else if (auto* selection_clear = event.As<x11::SelectionClearEvent>()) {
-    OnSelectionClear(*selection_clear);
-  }
-
-  if (auto* xfixes_selection_notify =
-          event.As<x11::XFixes::SelectionNotifyEvent>()) {
-    OnSetSelectionOwnerNotify(xfixes_selection_notify->selection,
-                              xfixes_selection_notify->selection_timestamp);
+    if (selection_clear->owner == clipboard_window_) {
+      OnSelectionClear(*selection_clear);
+    }
+  } else if (auto* xfixes_selection_notify =
+                 event.As<x11::XFixes::SelectionNotifyEvent>()) {
+    if (xfixes_selection_notify->window == clipboard_window_) {
+      OnSetSelectionOwnerNotify(xfixes_selection_notify->selection,
+                                xfixes_selection_notify->selection_timestamp);
+    }
   }
 }
 

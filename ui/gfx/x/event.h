@@ -37,7 +37,6 @@ class COMPONENT_EXPORT(X11) Event {
                   delete reinterpret_cast<DecayT*>(e);
                 }
               }};
-    window_ = event->GetWindow();
   }
 
   Event();
@@ -71,12 +70,6 @@ class COMPONENT_EXPORT(X11) Event {
 
   uint32_t sequence() const { return sequence_; }
 
-  Window window() const { return window_ ? *window_ : Window::None; }
-  void set_window(Window window) {
-    if (window_)
-      *window_ = window;
-  }
-
   bool Initialized() const { return !!event_; }
 
  private:
@@ -92,10 +85,6 @@ class COMPONENT_EXPORT(X11) Event {
   // XProto event state.
   int type_id_ = 0;
   std::unique_ptr<void, void (*)(void*)> event_ = {nullptr, nullptr};
-
-  // This member points to a field in |event_|, or may be nullptr if there's no
-  // associated window for the event.  It's owned by |event_|, not us.
-  raw_ptr<Window> window_ = nullptr;
 };
 
 }  // namespace x11

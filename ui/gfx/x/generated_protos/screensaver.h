@@ -91,8 +91,6 @@ class COMPONENT_EXPORT(X11) ScreenSaver {
     Window window{};
     Kind kind{};
     uint8_t forced{};
-
-    x11::Window* GetWindow() { return reinterpret_cast<x11::Window*>(&window); }
   };
 
   struct QueryVersionRequest {

@@ -167,8 +167,6 @@ class COMPONENT_EXPORT(X11) Sync {
     Time timestamp{};
     uint16_t count{};
     uint8_t destroyed{};
-
-    x11::Window* GetWindow() { return nullptr; }
   };
 
   struct AlarmNotifyEvent {
@@ -181,8 +179,6 @@ class COMPONENT_EXPORT(X11) Sync {
     Int64 alarm_value{};
     Time timestamp{};
     Alarmstate state{};
-
-    x11::Window* GetWindow() { return nullptr; }
   };
 
   struct InitializeRequest {

@@ -46,8 +46,6 @@ Event::Event(Event&& event) {
 }
 
 Event& Event::operator=(Event&& event) {
-  // `window_` borrowed from `event_`, so it must be reset first.
-  window_ = std::move(event.window_);
   event_ = std::move(event.event_);
   type_id_ = event.type_id_;
   sequence_ = event.sequence_;

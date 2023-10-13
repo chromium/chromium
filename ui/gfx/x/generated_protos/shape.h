@@ -93,10 +93,6 @@ class COMPONENT_EXPORT(X11) Shape {
     uint16_t extents_height{};
     Time server_time{};
     uint8_t shaped{};
-
-    x11::Window* GetWindow() {
-      return reinterpret_cast<x11::Window*>(&affected_window);
-    }
   };
 
   struct QueryVersionRequest {};

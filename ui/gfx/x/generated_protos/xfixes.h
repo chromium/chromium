@@ -128,8 +128,6 @@ class COMPONENT_EXPORT(X11) XFixes {
     Atom selection{};
     Time timestamp{};
     Time selection_timestamp{};
-
-    x11::Window* GetWindow() { return reinterpret_cast<x11::Window*>(&window); }
   };
 
   struct CursorNotifyEvent {
@@ -141,8 +139,6 @@ class COMPONENT_EXPORT(X11) XFixes {
     uint32_t cursor_serial{};
     Time timestamp{};
     Atom name{};
-
-    x11::Window* GetWindow() { return reinterpret_cast<x11::Window*>(&window); }
   };
 
   struct BadRegionError : public x11::Error {

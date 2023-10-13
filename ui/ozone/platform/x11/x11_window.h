@@ -217,8 +217,10 @@ class X11Window : public PlatformWindow,
 
   void QuitDragLoop();
 
-  // Handles |xevent| as a Atk Key Event
-  bool HandleAsAtkEvent(const x11::Event& xevent, bool transient);
+  // Handles `key_event` as an Atk Key Event
+  bool HandleAsAtkEvent(const x11::KeyEvent& key_event,
+                        bool send_event,
+                        bool transient);
 
   // Adjusts |requested_size_in_pixels| to avoid the WM "feature" where setting
   // the window size to the monitor size causes the WM to set the EWMH for

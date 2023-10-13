@@ -1327,8 +1327,6 @@ class COMPONENT_EXPORT(X11) Input {
     uint8_t num_valuators{};
     uint8_t first_valuator{};
     std::array<int32_t, 6> valuators{};
-
-    x11::Window* GetWindow() { return nullptr; }
   };
 
   struct LegacyDeviceEvent {
@@ -1355,8 +1353,6 @@ class COMPONENT_EXPORT(X11) Input {
     KeyButMask state{};
     uint8_t same_screen{};
     uint8_t device_id{};
-
-    x11::Window* GetWindow() { return reinterpret_cast<x11::Window*>(&event); }
   };
 
   struct DeviceFocusEvent {
@@ -1371,8 +1367,6 @@ class COMPONENT_EXPORT(X11) Input {
     Window window{};
     x11::NotifyMode mode{};
     uint8_t device_id{};
-
-    x11::Window* GetWindow() { return reinterpret_cast<x11::Window*>(&window); }
   };
 
   struct DeviceStateNotifyEvent {
@@ -1388,8 +1382,6 @@ class COMPONENT_EXPORT(X11) Input {
     std::array<uint8_t, 4> buttons{};
     std::array<uint8_t, 4> keys{};
     std::array<uint32_t, 3> valuators{};
-
-    x11::Window* GetWindow() { return nullptr; }
   };
 
   struct DeviceMappingNotifyEvent {
@@ -1401,8 +1393,6 @@ class COMPONENT_EXPORT(X11) Input {
     KeyCode first_keycode{};
     uint8_t count{};
     Time time{};
-
-    x11::Window* GetWindow() { return nullptr; }
   };
 
   struct ChangeDeviceNotifyEvent {
@@ -1412,8 +1402,6 @@ class COMPONENT_EXPORT(X11) Input {
     uint16_t sequence{};
     Time time{};
     ChangeDevice request{};
-
-    x11::Window* GetWindow() { return nullptr; }
   };
 
   struct DeviceKeyStateNotifyEvent {
@@ -1422,8 +1410,6 @@ class COMPONENT_EXPORT(X11) Input {
     uint8_t device_id{};
     uint16_t sequence{};
     std::array<uint8_t, 28> keys{};
-
-    x11::Window* GetWindow() { return nullptr; }
   };
 
   struct DeviceButtonStateNotifyEvent {
@@ -1432,8 +1418,6 @@ class COMPONENT_EXPORT(X11) Input {
     uint8_t device_id{};
     uint16_t sequence{};
     std::array<uint8_t, 28> buttons{};
-
-    x11::Window* GetWindow() { return nullptr; }
   };
 
   struct DevicePresenceNotifyEvent {
@@ -1444,8 +1428,6 @@ class COMPONENT_EXPORT(X11) Input {
     DeviceChange devchange{};
     uint8_t device_id{};
     uint16_t control{};
-
-    x11::Window* GetWindow() { return nullptr; }
   };
 
   struct DevicePropertyNotifyEvent {
@@ -1456,8 +1438,6 @@ class COMPONENT_EXPORT(X11) Input {
     Time time{};
     Atom property{};
     uint8_t device_id{};
-
-    x11::Window* GetWindow() { return nullptr; }
   };
 
   struct DeviceChangedEvent {
@@ -1469,8 +1449,6 @@ class COMPONENT_EXPORT(X11) Input {
     DeviceId sourceid{};
     ChangeReason reason{};
     std::vector<DeviceClass> classes{};
-
-    x11::Window* GetWindow() { return nullptr; }
   };
 
   struct DeviceEvent {
@@ -1503,8 +1481,6 @@ class COMPONENT_EXPORT(X11) Input {
     std::vector<uint32_t> button_mask{};
     std::vector<uint32_t> valuator_mask{};
     std::vector<Fp3232> axisvalues{};
-
-    x11::Window* GetWindow() { return reinterpret_cast<x11::Window*>(&event); }
   };
 
   struct CrossingEvent {
@@ -1533,8 +1509,6 @@ class COMPONENT_EXPORT(X11) Input {
     ModifierInfo mods{};
     GroupInfo group{};
     std::vector<uint32_t> buttons{};
-
-    x11::Window* GetWindow() { return reinterpret_cast<x11::Window*>(&event); }
   };
 
   struct HierarchyInfo {
@@ -1559,8 +1533,6 @@ class COMPONENT_EXPORT(X11) Input {
     Time time{};
     HierarchyMask flags{};
     std::vector<HierarchyInfo> infos{};
-
-    x11::Window* GetWindow() { return nullptr; }
   };
 
   struct PropertyEvent {
@@ -1571,8 +1543,6 @@ class COMPONENT_EXPORT(X11) Input {
     Time time{};
     Atom property{};
     PropertyFlag what{};
-
-    x11::Window* GetWindow() { return nullptr; }
   };
 
   struct RawDeviceEvent {
@@ -1596,8 +1566,6 @@ class COMPONENT_EXPORT(X11) Input {
     std::vector<uint32_t> valuator_mask{};
     std::vector<Fp3232> axisvalues{};
     std::vector<Fp3232> axisvalues_raw{};
-
-    x11::Window* GetWindow() { return nullptr; }
   };
 
   struct TouchOwnershipEvent {
@@ -1612,8 +1580,6 @@ class COMPONENT_EXPORT(X11) Input {
     Window child{};
     DeviceId sourceid{};
     TouchOwnershipFlags flags{};
-
-    x11::Window* GetWindow() { return reinterpret_cast<x11::Window*>(&event); }
   };
 
   struct BarrierEvent {
@@ -1636,8 +1602,6 @@ class COMPONENT_EXPORT(X11) Input {
     Fp1616 root_y{};
     Fp3232 dx{};
     Fp3232 dy{};
-
-    x11::Window* GetWindow() { return reinterpret_cast<x11::Window*>(&event); }
   };
 
   struct GesturePinchEvent {
@@ -1668,8 +1632,6 @@ class COMPONENT_EXPORT(X11) Input {
     ModifierInfo mods{};
     GroupInfo group{};
     GesturePinchEventFlags flags{};
-
-    x11::Window* GetWindow() { return reinterpret_cast<x11::Window*>(&event); }
   };
 
   struct GestureSwipeEvent {
@@ -1698,8 +1660,6 @@ class COMPONENT_EXPORT(X11) Input {
     ModifierInfo mods{};
     GroupInfo group{};
     GestureSwipeEventFlags flags{};
-
-    x11::Window* GetWindow() { return reinterpret_cast<x11::Window*>(&event); }
   };
 
   using EventForSend = std::array<uint8_t, 32>;
