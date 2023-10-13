@@ -307,7 +307,7 @@ void LinkHighlightImpl::Paint(GraphicsContext& context) {
   for (AccompaniedFragmentIterator iterator(*object); !iterator.IsDone();
        index++) {
     const auto* fragment = iterator.GetFragmentData();
-    ScopedDisplayItemFragment scoped_fragment(context, fragment->FragmentID());
+    ScopedDisplayItemFragment scoped_fragment(context, index);
     Vector<PhysicalRect> rects = object->CollectOutlineRectsAndAdvance(
         NGOutlineType::kIncludeBlockVisualOverflow, iterator);
     if (rects.size() > 1)
