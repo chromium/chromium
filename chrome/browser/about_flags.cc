@@ -7197,6 +7197,11 @@ const FeatureEntry kFeatureEntries[] = {
      flag_descriptions::kReadAnythingWithScreen2xDescription, kOsDesktop,
      FEATURE_VALUE_TYPE(features::kReadAnythingWithScreen2x)},
 
+    {"read-anything-webui-toolbar",
+     flag_descriptions::kReadAnythingWebUIToolbarName,
+     flag_descriptions::kReadAnythingWebUIToolbarDescription, kOsDesktop,
+     FEATURE_VALUE_TYPE(features::kReadAnythingWebUIToolbar)},
+
     {"support-tool", flag_descriptions::kSupportTool,
      flag_descriptions::kSupportToolDescription, kOsDesktop,
      FEATURE_VALUE_TYPE(features::kSupportTool)},

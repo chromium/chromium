@@ -64316,6 +64316,7 @@ from previous Chrome versions.
   <int value="-405380243" label="enable-encryption-migration"/>
   <int value="-405321262" label="cast-streaming-force-disable-hardware-vp8"/>
   <int value="-404496301" label="DownloadRange:disabled"/>
+  <int value="-403952505" label="ReadAnythingWebUIToolbar:enabled"/>
   <int value="-403701720" label="DirectActions:enabled"/>
   <int value="-403649153" label="WebViewBrotliSupport:disabled"/>
   <int value="-403473326" label="VCLightIntensity:disabled"/>
@@ -66250,6 +66251,7 @@ from previous Chrome versions.
   <int value="538468149" label="OfflinePagesCT:enabled"/>
   <int value="538600423" label="OmniboxDocumentProvider:enabled"/>
   <int value="538685995" label="InstallableInkDrop:enabled"/>
+  <int value="539924674" label="ReadAnythingWebUIToolbar:disabled"/>
   <int value="540128020" label="WebMidi:disabled"/>
   <int value="541667888" label="ContentLanguagesInLanguagePicker:disabled"/>
   <int value="542029435" label="MediaFoundationClearPlayback:enabled"/>
