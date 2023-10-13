@@ -117,15 +117,16 @@ export abstract class PdfViewerBaseElement extends PolymerElement {
       plugin.toggleAttribute('pdf-viewer-update-enabled', true);
     }
 
-    // Pass the attributes for loading PDF plugin through the
-    // `mimeHandlerPrivate` API.
-    const attributesForLoading:
-        chrome.mimeHandlerPrivate.PdfPluginAttributes = {
-      backgroundColor: this.getBackgroundColor(),
-      allowJavascript: javascript === 'allow',
-    };
-    if (chrome.mimeHandlerPrivate &&
-        chrome.mimeHandlerPrivate.setPdfPluginAttributes) {
+    // PDF viewer only, as Print Preview doesn't use
+    // `chrome.mimeHandlerPrivate`.
+    if (chrome.mimeHandlerPrivate) {
+      // Pass the attributes for loading PDF plugin through the
+      // `mimeHandlerPrivate` API.
+      const attributesForLoading:
+          chrome.mimeHandlerPrivate.PdfPluginAttributes = {
+        backgroundColor: this.getBackgroundColor(),
+        allowJavascript: javascript === 'allow',
+      };
       chrome.mimeHandlerPrivate.setPdfPluginAttributes(attributesForLoading);
     }
 
