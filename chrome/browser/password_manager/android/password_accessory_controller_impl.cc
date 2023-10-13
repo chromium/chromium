@@ -185,6 +185,22 @@ PasswordAccessoryControllerImpl::GetSheetData() const {
     }
   }
 
+  if (password_manager::PasswordManagerDriver* driver =
+          driver_supplier_.Run((&GetWebContents()))) {
+    if (webauthn::WebAuthnCredManDelegate::CredManMode() !=
+        webauthn::WebAuthnCredManDelegate::kNotEnabled) {
+      if (auto* delegate =
+              password_client_->GetWebAuthnCredManDelegateForDriver(driver)) {
+        if (delegate->HasPasskeys()) {
+          footer_commands_to_add.emplace_back(
+              l10n_util::GetStringUTF16(
+                  IDS_PASSWORD_MANAGER_ACCESSORY_SELECT_PASSKEY),
+              autofill::AccessoryAction::CREDMAN_CONDITIONAL_UI_REENTRY);
+        }
+      }
+    }
+  }
+
   if (all_passwords_helper_.available_credentials().has_value() &&
       IsSecureSite() && origin.GetURL().SchemeIsCryptographic() &&
       all_passwords_helper_.available_credentials().value() > 0) {

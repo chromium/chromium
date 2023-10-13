@@ -209,6 +209,11 @@ std::u16string cross_device_passkeys_str() {
       IDS_PASSWORD_MANAGER_ACCESSORY_USE_DEVICE_PASSKEY);
 }
 
+std::u16string select_passkey_str() {
+  return l10n_util::GetStringUTF16(
+      IDS_PASSWORD_MANAGER_ACCESSORY_SELECT_PASSKEY);
+}
+
 // Creates a AccessorySheetDataBuilder object with a "Manage passwords..."
 // footer.
 AccessorySheetData::Builder PasswordAccessorySheetDataBuilder(
@@ -1147,6 +1152,36 @@ TEST_F(PasswordAccessoryControllerTest, OnCredManConditionalUiRequested) {
 
   EXPECT_CALL(cred_man_callback, Run);
 
+  controller()->OnOptionSelected(
+      autofill::AccessoryAction::CREDMAN_CONDITIONAL_UI_REENTRY);
+}
+
+TEST_F(PasswordAccessoryControllerTest, ShowAndSelectCredManReentryOption) {
+  base::MockCallback<base::RepeatingCallback<void(bool)>> cred_man_callback;
+  WebAuthnCredManDelegate::override_cred_man_support_for_testing(
+      CredManSupport::FULL_UNLESS_INAPPLICABLE);
+  CreateSheetController();
+  cred_man_delegate()->OnCredManConditionalRequestPending(
+      /*has_results=*/true, cred_man_callback.Get());
+  cache()->SaveCredentialsAndBlocklistedForOrigin(
+      {}, CredentialCache::IsOriginBlocklisted(false),
+      url::Origin::Create(GURL(kExampleSite)));
+
+  controller()->RefreshSuggestionsForField(
+      FocusedFieldType::kFillableUsernameField,
+      /*is_manual_generation_available=*/false);
+  EXPECT_EQ(
+      controller()->GetSheetData(),
+      AccessorySheetData::Builder(AccessoryTabType::PASSWORDS,
+                                  passwords_empty_str(kExampleDomain))
+          .AppendFooterCommand(
+              select_passkey_str(),
+              autofill::AccessoryAction::CREDMAN_CONDITIONAL_UI_REENTRY)
+          .AppendFooterCommand(manage_passwords_str(),
+                               autofill::AccessoryAction::MANAGE_PASSWORDS)
+          .Build());
+
+  EXPECT_CALL(cred_man_callback, Run);
   controller()->OnOptionSelected(
       autofill::AccessoryAction::CREDMAN_CONDITIONAL_UI_REENTRY);
 }

@@ -9614,6 +9614,9 @@ Check your passwords anytime in <ph name="GOOGLE_PASSWORD_MANAGER">$1<ex>Google 
         <message name="IDS_PASSWORD_MANAGER_ACCESSORY_SELECT_PASSWORD" desc="The text of the link in the password sheet that opens a bottom sheet which shows all saved credentials from any origin if the user is about to fill a password or username field. Allows user to pick one of the saved passwords to be filled in.">
           Select password
         </message>
+        <message name="IDS_PASSWORD_MANAGER_ACCESSORY_SELECT_PASSKEY" desc="The text of the link in the password sheet that opens the system's selection for available Passkeys.">
+          Select passkey
+        </message>
         <message name="IDS_PASSWORD_MANAGER_ACCESSORY_GENERATE_PASSWORD_BUTTON_TITLE" desc="Text for the button used to generate a password.">
           Suggest strong password
         </message>
