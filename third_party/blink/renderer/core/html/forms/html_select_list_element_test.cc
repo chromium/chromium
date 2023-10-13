@@ -11,6 +11,8 @@
 #include "third_party/blink/renderer/core/dom/node_computed_style.h"
 #include "third_party/blink/renderer/core/frame/local_frame.h"
 #include "third_party/blink/renderer/core/frame/settings.h"
+#include "third_party/blink/renderer/core/html/forms/html_button_element.h"
+#include "third_party/blink/renderer/core/html/forms/html_listbox_element.h"
 #include "third_party/blink/renderer/core/html/forms/html_option_element.h"
 #include "third_party/blink/renderer/core/loader/empty_clients.h"
 #include "third_party/blink/renderer/core/script/classic_script.h"
@@ -184,40 +186,29 @@ TEST_F(HTMLSelectListElementTest, NotifyClientListItemRemove) {
 TEST_F(HTMLSelectListElementTest, OwnerSelectList_PartsCustomSlots) {
   SetHtmlInnerHTML(R"HTML(
     <selectlist id='selectlist'>
-      <div behavior="button" slot="button" id="selectlist_button">
+      <button type=selectlist id=selectlist_button>
         Button
-      </div>
-      <div behavior="listbox" slot="listbox" id="selectlist_listbox" popover>
+      </button>
+      <listbox id=selectlist_listbox>
         <b>
           <option id="first_option">First</option>
           <option>Second</option>
         </b>
-      </div>
+      </listbox>
     </selectlist>
   )HTML");
 
   HTMLSelectListElement* select_list_element =
       To<HTMLSelectListElement>(GetElementById("selectlist"));
-  EXPECT_EQ(select_list_element, HTMLSelectListElement::OwnerSelectList(
-                                     GetElementById("selectlist_button")));
-  EXPECT_EQ(select_list_element, HTMLSelectListElement::OwnerSelectList(
-                                     GetElementById("selectlist_listbox")));
-  ASSERT_EQ(select_list_element, HTMLSelectListElement::OwnerSelectList(
-                                     GetElementById("first_option")));
-}
-
-// Test behavior of HTMLSelectListElement::OwnerSelectList() when a node which
-// is not a descendant of the selectlist is passed.
-TEST_F(HTMLSelectListElementTest, OwnerSelectList_NotInSelectList) {
-  SetHtmlInnerHTML(R"HTML(
-    <selectlist id='selectlist'>
-      <option>First</option>
-      <option>Second</option>
-    </selectlist>
-    <div id="Other">other</div>
-  )HTML");
-  EXPECT_EQ(nullptr,
-            HTMLSelectListElement::OwnerSelectList(GetElementById("other")));
+  EXPECT_EQ(select_list_element,
+            To<HTMLButtonElement>(GetElementById("selectlist_button"))
+                ->OwnerSelectList());
+  EXPECT_EQ(select_list_element,
+            To<HTMLListboxElement>(GetElementById("selectlist_listbox"))
+                ->OwnerSelectList());
+  EXPECT_EQ(select_list_element,
+            To<HTMLOptionElement>(GetElementById("first_option"))
+                ->OwnerSelectList());
 }
 
 // Test that HTMLSelectListElement::SetSuggestedValue() does not affect

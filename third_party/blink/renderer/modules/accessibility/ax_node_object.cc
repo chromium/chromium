@@ -1263,16 +1263,6 @@ ax::mojom::blink::Role AXNodeObject::NativeRoleIgnoringAria() const {
   if (GetNode()->IsTextNode())
     return ax::mojom::blink::Role::kStaticText;
 
-  const HTMLSelectListElement* owner_select_list =
-      HTMLSelectListElement::OwnerSelectList(GetNode());
-  if (owner_select_list) {
-    HTMLSelectListElement::PartType part_type =
-        owner_select_list->AssignedPartType(GetNode());
-    if (part_type == HTMLSelectListElement::PartType::kOption) {
-      return ax::mojom::blink::Role::kListBoxOption;
-    }
-  }
-
   if (auto* button = DynamicTo<HTMLButtonElement>(GetNode())) {
     if (button->OwnerSelectList()) {
       return ax::mojom::blink::Role::kComboBoxMenuButton;
@@ -1386,10 +1376,12 @@ ax::mojom::blink::Role AXNodeObject::NativeRoleIgnoringAria() const {
 
   if (auto* option = DynamicTo<HTMLOptionElement>(*GetNode())) {
     HTMLSelectElement* select_element = option->OwnerSelectElement();
-    if (!select_element || select_element->IsMultiple())
+    if (!select_element || select_element->IsMultiple() ||
+        option->OwnerSelectList()) {
       return ax::mojom::blink::Role::kListBoxOption;
-    else
+    } else {
       return ax::mojom::blink::Role::kMenuListOption;
+    }
   }
 
   if (IsA<HTMLTextAreaElement>(*GetNode()))

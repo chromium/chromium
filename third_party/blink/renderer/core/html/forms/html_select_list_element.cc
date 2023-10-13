@@ -334,33 +334,6 @@ void HTMLSelectListElement::ManuallyAssignSlots() {
   options_slot_->Assign(options);
 }
 
-// TODO(http://crbug.com/1121840): Consider removing this method for the new
-// architecture. Each "part" is a distinct element type and has its own way of
-// being selectlist associated, which can be implemented in that element's
-// class. Grouping them all into this one method is not ideal.
-// static
-HTMLSelectListElement* HTMLSelectListElement::OwnerSelectList(Node* node) {
-  // Do some quick checks in order to avoid, in most cases, walking up the
-  // entire tree if `node` does not have a selectlist ancestor.
-  if (!IsA<HTMLOptionElement>(node)) {
-    HTMLElement* html_element = DynamicTo<HTMLElement>(node);
-    if (!html_element ||
-        !html_element->FastHasAttribute(html_names::kBehaviorAttr)) {
-      return nullptr;
-    }
-  }
-
-  HTMLSelectListElement* nearest_select_list_ancestor =
-      SelectListPartTraversal::NearestSelectListAncestor(*node);
-
-  if (nearest_select_list_ancestor &&
-      nearest_select_list_ancestor->AssignedPartType(node) != PartType::kNone) {
-    return nearest_select_list_ancestor;
-  }
-
-  return nullptr;
-}
-
 HTMLSelectListElement::PartType HTMLSelectListElement::AssignedPartType(
     Node* node) const {
   if (node == button_part_) {

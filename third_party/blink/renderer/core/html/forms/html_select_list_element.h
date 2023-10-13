@@ -74,11 +74,6 @@ class CORE_EXPORT HTMLSelectListElement final
 
   enum class PartType { kNone, kButton, kListBox, kOption };
 
-  // If node is a flat tree descendant of an HTMLSelectListElement
-  // and is registered as a part of that HTMLSelectListElement,
-  // returns that HTMLSelectListElement. Else returns null.
-  static HTMLSelectListElement* OwnerSelectList(Node* node);
-
   // For use in the implementation of HTMLOptionElement.
   void OptionSelectionStateChanged(HTMLOptionElement*, bool option_is_selected);
   void OptionElementChildrenChanged(const HTMLOptionElement& option);

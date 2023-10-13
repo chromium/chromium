@@ -222,8 +222,7 @@ void HTMLOptionElement::ParseAttribute(
     if (HTMLDataListElement* data_list = OwnerDataListElement()) {
       data_list->OptionElementChildrenChanged();
     } else if (UNLIKELY(is_descendant_of_select_list_)) {
-      if (HTMLSelectListElement* select_list =
-              HTMLSelectListElement::OwnerSelectList(this)) {
+      if (HTMLSelectListElement* select_list = OwnerSelectList()) {
         select_list->OptionElementValueChanged(*this);
       }
     }
@@ -271,8 +270,7 @@ void HTMLOptionElement::SetSelected(bool selected) {
 
   if (HTMLSelectElement* select = OwnerSelectElement()) {
     select->OptionSelectionStateChanged(this, selected);
-  } else if (HTMLSelectListElement* select_list =
-                 HTMLSelectListElement::OwnerSelectList(this)) {
+  } else if (HTMLSelectListElement* select_list = OwnerSelectList()) {
     select_list->OptionSelectionStateChanged(this, selected);
   }
 }
@@ -353,8 +351,7 @@ void HTMLOptionElement::DidChangeTextContent() {
     data_list->OptionElementChildrenChanged();
   } else if (HTMLSelectElement* select = OwnerSelectElement()) {
     select->OptionElementChildrenChanged(*this);
-  } else if (HTMLSelectListElement* select_list =
-                 HTMLSelectListElement::OwnerSelectList(this)) {
+  } else if (HTMLSelectListElement* select_list = OwnerSelectList()) {
     select_list->OptionElementChildrenChanged(*this);
   }
   UpdateLabel();
@@ -371,6 +368,15 @@ HTMLSelectElement* HTMLOptionElement::OwnerSelectElement() const {
     return select;
   if (IsA<HTMLOptGroupElement>(*parentNode()))
     return DynamicTo<HTMLSelectElement>(parentNode()->parentNode());
+  return nullptr;
+}
+
+HTMLSelectListElement* HTMLOptionElement::OwnerSelectList() const {
+  for (auto& ancestor : FlatTreeTraversal::AncestorsOf(*this)) {
+    if (auto* selectlist = DynamicTo<HTMLSelectListElement>(ancestor)) {
+      return selectlist;
+    }
+  }
   return nullptr;
 }
 

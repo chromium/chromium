@@ -79,6 +79,7 @@ class CORE_EXPORT HTMLOptionElement final : public HTMLElement {
 
   HTMLDataListElement* OwnerDataListElement() const;
   HTMLSelectElement* OwnerSelectElement() const;
+  HTMLSelectListElement* OwnerSelectList() const;
 
   String label() const;
   void setLabel(const AtomicString&);

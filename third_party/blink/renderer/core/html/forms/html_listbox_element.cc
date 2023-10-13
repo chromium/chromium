@@ -16,7 +16,7 @@ HTMLListboxElement::HTMLListboxElement(Document& document)
 
 Node::InsertionNotificationRequest HTMLListboxElement::InsertedInto(
     ContainerNode& parent) {
-  if (IsSelectlistAssociated(this)) {
+  if (OwnerSelectList()) {
     EnsurePopoverData()->setType(PopoverValueType::kAuto);
   }
   return HTMLElement::InsertedInto(parent);
@@ -31,20 +31,19 @@ void HTMLListboxElement::RemovedFrom(ContainerNode& insertion_point) {
   UpdatePopoverAttribute(FastGetAttribute(html_names::kPopoverAttr));
 }
 
-// static
-bool HTMLListboxElement::IsSelectlistAssociated(const Element* node) {
-  if (auto* listbox = DynamicTo<HTMLListboxElement>(node)) {
-    if (IsA<HTMLSelectListElement>(node->parentNode())) {
-      return true;
-    }
-    if (auto* shadowroot = DynamicTo<ShadowRoot>(listbox->GetTreeScope())) {
-      if (IsA<HTMLSelectListElement>(shadowroot->host())) {
-        CHECK_EQ(listbox->ShadowPseudoId(), "-internal-selectlist-listbox");
-        return true;
-      }
+HTMLSelectListElement* HTMLListboxElement::OwnerSelectList() const {
+  if (auto* selectlist = DynamicTo<HTMLSelectListElement>(parentNode())) {
+    return selectlist;
+  }
+  if (auto* shadowroot = DynamicTo<ShadowRoot>(GetTreeScope())) {
+    if (auto* selectlist =
+            DynamicTo<HTMLSelectListElement>(shadowroot->host())) {
+      CHECK(shadowroot->IsUserAgent());
+      CHECK_EQ(ShadowPseudoId(), "-internal-selectlist-listbox");
+      return selectlist;
     }
   }
-  return false;
+  return nullptr;
 }
 
 }  // namespace blink

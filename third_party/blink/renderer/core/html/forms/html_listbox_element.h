@@ -5,18 +5,19 @@
 #ifndef THIRD_PARTY_BLINK_RENDERER_CORE_HTML_FORMS_HTML_LISTBOX_ELEMENT_H_
 #define THIRD_PARTY_BLINK_RENDERER_CORE_HTML_FORMS_HTML_LISTBOX_ELEMENT_H_
 
+#include "third_party/blink/renderer/core/core_export.h"
 #include "third_party/blink/renderer/core/html/html_element.h"
 
 namespace blink {
 
-class HTMLListboxElement : public HTMLElement {
+class CORE_EXPORT HTMLListboxElement : public HTMLElement {
  public:
   explicit HTMLListboxElement(Document&);
 
   InsertionNotificationRequest InsertedInto(ContainerNode&) override;
   void RemovedFrom(ContainerNode& insertion_point) override;
 
-  static bool IsSelectlistAssociated(const Element*);
+  HTMLSelectListElement* OwnerSelectList() const;
 };
 
 }  // namespace blink
