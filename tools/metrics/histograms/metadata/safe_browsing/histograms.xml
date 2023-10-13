@@ -1106,6 +1106,17 @@ chromium-metrics-reviews@google.com.
   </summary>
 </histogram>
 
+<histogram name="SafeBrowsing.HPRT.BackoffReportErrorReason"
+    enum="BackoffReportErrorReason" expires_after="2024-04-12">
+  <owner>xinghuilu@chromium.org</owner>
+  <owner>chrome-counter-abuse-alerts@google.com</owner>
+  <summary>
+    Logs the reason when the backoff operator reports an error during
+    hash-prefix real-time lookup. This histogram is useful to track how much
+    missing OHTTP key contributes to backoff mode.
+  </summary>
+</histogram>
+
 <histogram name="SafeBrowsing.HPRT.BackoffState" enum="BooleanEnabled"
     expires_after="2024-02-04">
   <owner>thefrog@chromium.org</owner>

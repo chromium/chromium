@@ -383,6 +383,8 @@ void HashRealTimeService::OnGetOhttpKey(
   base::UmaHistogramBoolean("SafeBrowsing.HPRT.HasOhttpKey", key.has_value());
   if (!key.has_value()) {
     backoff_operator_->ReportError();
+    base::UmaHistogramEnumeration("SafeBrowsing.HPRT.BackoffReportErrorReason",
+                                  BackoffReportErrorReason::kInvalidKey);
     response_callback_task_runner->PostTask(
         FROM_HERE, base::BindOnce(std::move(response_callback),
                                   /*is_lookup_successful=*/false,
@@ -570,6 +572,8 @@ HashRealTimeService::ParseResponseAndUpdateBackoff(
           "SafeBrowsing.HPRT.Network.Result.WhenEnteringBackoff", net_error,
           response_code);
     }
+    base::UmaHistogramEnumeration("SafeBrowsing.HPRT.BackoffReportErrorReason",
+                                  BackoffReportErrorReason::kResponseError);
   }
   return response;
 }

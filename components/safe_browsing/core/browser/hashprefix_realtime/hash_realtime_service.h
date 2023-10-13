@@ -123,6 +123,8 @@ class HashRealTimeService : public KeyedService {
  private:
   friend class HashRealTimeServiceTest;
   friend class HashRealTimeServiceDirectFetchTest;
+  FRIEND_TEST_ALL_PREFIXES(HashRealTimeServiceTest,
+                           TestLookupFailure_MissingOhttpKey);
   FRIEND_TEST_ALL_PREFIXES(HashRealTimeServiceTest, TestLookupFailure_NetError);
   FRIEND_TEST_ALL_PREFIXES(HashRealTimeServiceTest,
                            TestLookupFailure_RetriableNetError);
@@ -175,6 +177,15 @@ class HashRealTimeService : public KeyedService {
     // There is a bug in the code leading to a NOTREACHED branch.
     kNotReached = 7,
     kMaxValue = kNotReached,
+  };
+
+  // The reason why ReportError is called on backoff operator.
+  // These values are persisted to logs. Entries should not be renumbered and
+  // numeric values should never be reused.
+  enum class BackoffReportErrorReason {
+    kInvalidKey = 0,
+    kResponseError = 1,
+    kMaxValue = kResponseError,
   };
 
   // Returns the traffic annotation tag that is attached in the simple URL

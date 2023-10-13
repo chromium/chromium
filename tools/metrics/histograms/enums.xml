@@ -10526,6 +10526,11 @@ Called by update_autofill_enums.py.-->
       label="Mixed. Some steps failed, but transaction committed successfully"/>
 </enum>
 
+<enum name="BackoffReportErrorReason">
+  <int value="0" label="InvalidKey"/>
+  <int value="1" label="ResponseError"/>
+</enum>
+
 <enum name="BackPressConsumer">
 <!-- Append the new enumerator to the end. Add the label in the format
   of "(value of BackPressHandler.Type) <Name of BackPressHandler.Type>".
