@@ -49,6 +49,8 @@
 #include "base/allocator/partition_allocator/partition_lock.h"
 #include "build/build_config.h"
 
+#include "base/record_replay.h"
+
 namespace partition_alloc::internal::base {
 
 namespace {
@@ -145,6 +147,10 @@ UINT GetIntervalMs() {
 // new request). If there is no change then do nothing.
 void UpdateTimerIntervalLocked() {
   UINT new_interval = GetIntervalMs();
+
+  recordreplay::Assert("[RUN-1916-2636] UpdateTimerIntervalLocked A %u %u",
+                       new_interval, g_last_interval_requested_ms);
+
   if (new_interval == g_last_interval_requested_ms)
     return;
   if (g_last_interval_requested_ms) {

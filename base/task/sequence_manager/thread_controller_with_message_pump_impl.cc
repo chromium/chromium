@@ -536,7 +536,11 @@ bool ThreadControllerWithMessagePumpImpl::DoIdleWork() {
   hang_watch_scope_.emplace();
 
 #if BUILDFLAG(IS_WIN)
+  recordreplay::Assert(
+      "[RUN-1916-2636] ThreadControllerWithMessagePumpImpl::Run A");
   if (!power_monitor_.IsProcessInPowerSuspendState()) {
+    recordreplay::Assert(
+        "[RUN-1916-2636] ThreadControllerWithMessagePumpImpl::Run B");
     // Avoid calling Time::ActivateHighResolutionTimer() between
     // suspend/resume as the system hangs if we do (crbug.com/1074028).
     // OnResume() will generate a task on this thread per the
@@ -546,6 +550,11 @@ bool ThreadControllerWithMessagePumpImpl::DoIdleWork() {
 
     const bool need_high_res_mode =
         main_thread_only().task_source->HasPendingHighResolutionTasks();
+
+    recordreplay::Assert(
+        "[RUN-1916-2636] ThreadControllerWithMessagePumpImpl::Run C %d %d",
+        main_thread_only().in_high_res_mode, need_high_res_mode);
+
     if (main_thread_only().in_high_res_mode != need_high_res_mode) {
       // On Windows we activate the high resolution timer so that the wait
       // _if_ triggered by the timer happens with good resolution. If we don't
