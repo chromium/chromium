@@ -15,6 +15,7 @@
 #include "chrome/browser/android/persisted_tab_data/sensitivity_persisted_tab_data_android.h"
 #include "chrome/browser/android/tab_android.h"
 #include "chrome/browser/bookmarks/bookmark_model_factory.h"
+#include "chrome/browser/flags/android/chrome_feature_list.h"
 #include "chrome/browser/profiles/profile.h"
 #include "chrome/browser/profiles/profile_android.h"
 #include "chrome/browser/profiles/profile_keyed_service_factory.h"
@@ -28,9 +29,6 @@ using bookmarks::BookmarkModel;
 using bookmarks::BookmarkNode;
 
 namespace {
-
-const size_t kMaxBookmarksCount = 100u;
-const size_t kMaxTabsCount = 100u;
 
 using BackToJavaCallback =
     base::OnceCallback<void(std::unique_ptr<std::vector<TabAndroid*>>)>;
@@ -84,6 +82,7 @@ bool IsSchemeAllowed(const GURL& url) {
 void FilterNonSensitiveSearchableTabs(
     std::unique_ptr<std::vector<TabAndroid*>> all_tabs,
     int current_tab_index,
+    size_t max_tab_count,
     std::unique_ptr<std::vector<TabAndroid*>> non_sensitive_tabs,
     BackToJavaCallback callback,
     PersistedTabDataAndroid* persisted_tab_data) {
@@ -96,7 +95,7 @@ void FilterNonSensitiveSearchableTabs(
   }
   int next_tab_index = current_tab_index - 1;
 
-  if (next_tab_index < 0 || kMaxTabsCount <= non_sensitive_tabs->size()) {
+  if (next_tab_index < 0 || max_tab_count <= non_sensitive_tabs->size()) {
     std::move(callback).Run(std::move(non_sensitive_tabs));
     return;
   }
@@ -105,14 +104,19 @@ void FilterNonSensitiveSearchableTabs(
   SensitivityPersistedTabDataAndroid::From(
       next_tab,
       base::BindOnce(&FilterNonSensitiveSearchableTabs, std::move(all_tabs),
-                     next_tab_index, std::move(non_sensitive_tabs),
-                     std::move(callback)));
+                     next_tab_index, max_tab_count,
+                     std::move(non_sensitive_tabs), std::move(callback)));
 }
 
 }  // namespace
 
 AuxiliarySearchProvider::AuxiliarySearchProvider(Profile* profile)
-    : profile_(profile) {}
+    : profile_(profile) {
+  max_bookmark_donation_count_ =
+      chrome::android::kAuxiliarySearchMaxBookmarksCountParam.Get();
+  max_tab_donation_count_ =
+      chrome::android::kAuxiliarySearchMaxTabsCountParam.Get();
+}
 
 AuxiliarySearchProvider::~AuxiliarySearchProvider() = default;
 
@@ -162,7 +166,8 @@ auxiliary_search::AuxiliarySearchBookmarkGroup
 AuxiliarySearchProvider::GetBookmarks(bookmarks::BookmarkModel* model) const {
   auxiliary_search::AuxiliarySearchBookmarkGroup group;
   std::vector<const BookmarkNode*> nodes;
-  bookmarks::GetMostRecentlyUsedEntries(model, kMaxBookmarksCount, &nodes);
+  bookmarks::GetMostRecentlyUsedEntries(model, max_bookmark_donation_count_,
+                                        &nodes);
   for (const BookmarkNode* node : nodes) {
     GURL url = node->url();
     if (!IsSchemeAllowed(url)) {
@@ -211,8 +216,8 @@ void AuxiliarySearchProvider::GetNonSensitiveTabsInternal(
       next_tab,
       base::BindOnce(&FilterNonSensitiveSearchableTabs,
                      std::make_unique<std::vector<TabAndroid*>>(filtered_tabs),
-                     filtered_tabs.size() - 1, std::move(non_sensitive_tabs),
-                     std::move(callback)));
+                     filtered_tabs.size() - 1, max_tab_donation_count_,
+                     std::move(non_sensitive_tabs), std::move(callback)));
 }
 
 // static

@@ -8,6 +8,7 @@
 #include <jni.h>
 
 #include "base/feature_list.h"
+#include "base/metrics/field_trial_params.h"
 
 namespace chrome {
 namespace android {
@@ -30,6 +31,7 @@ BASE_DECLARE_FEATURE(kAndroidNoVisibleHintForTablets);
 BASE_DECLARE_FEATURE(kAndroidVisibleUrlTruncation);
 BASE_DECLARE_FEATURE(kAnimatedImageDragShadow);
 BASE_DECLARE_FEATURE(kAppMenuMobileSiteOption);
+BASE_DECLARE_FEATURE(kAuxiliarySearchDonation);
 BASE_DECLARE_FEATURE(kAvoidSelectedTabFocusOnLayoutDoneShowing);
 BASE_DECLARE_FEATURE(kBackGestureActivityTabProvider);
 BASE_DECLARE_FEATURE(kBackGestureRefactorActivityAndroid);
@@ -214,6 +216,17 @@ BASE_DECLARE_FEATURE(kWebOtpCrossDeviceSimpleString);
 BASE_DECLARE_FEATURE(kWebApkAllowIconUpdate);
 BASE_DECLARE_FEATURE(kWebApkBackupAndRestoreBackend);
 BASE_DECLARE_FEATURE(kWebApkInstallService);
+
+// For FeatureParam, Alphabetical:
+constexpr base::FeatureParam<int> kAuxiliarySearchMaxBookmarksCountParam(
+    &kAuxiliarySearchDonation,
+    "auxiliary_search_max_donation_bookmark",
+    100);
+
+constexpr base::FeatureParam<int> kAuxiliarySearchMaxTabsCountParam(
+    &kAuxiliarySearchDonation,
+    "auxiliary_search_max_donation_tab",
+    100);
 
 }  // namespace android
 }  // namespace chrome

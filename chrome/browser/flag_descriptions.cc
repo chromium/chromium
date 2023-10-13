@@ -115,6 +115,10 @@ const char kAttributionReportingDebugModeDescription[] =
     "reporting delays and noise. Only works if the Attribution Reporting API "
     "is already enabled.";
 
+const char kAuxiliarySearchDonationName[] = "Auxiliary Search Donation";
+const char kAuxiliarySearchDonationDescription[] =
+    "If enabled, override Auxiliary Search donation cap.";
+
 const char kBackgroundResourceFetchName[] = "Background Resource Fetch";
 const char kBackgroundResourceFetchDescription[] =
     "Process resource requests in a background thread inside Blink.";

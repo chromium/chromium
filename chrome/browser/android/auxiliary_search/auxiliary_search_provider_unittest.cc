@@ -6,8 +6,10 @@
 
 #include "base/strings/string_number_conversions.h"
 #include "base/strings/utf_string_conversions.h"
+#include "base/test/scoped_feature_list.h"
 #include "chrome/browser/android/auxiliary_search/proto/auxiliary_search_group.pb.h"
 #include "chrome/browser/bookmarks/bookmark_model_factory.h"
+#include "chrome/browser/flags/android/chrome_feature_list.h"
 #include "chrome/common/webui_url_constants.h"
 #include "chrome/test/base/testing_profile.h"
 #include "components/bookmarks/browser/bookmark_model.h"
@@ -33,12 +35,16 @@ class AuxiliarySearchProviderTest : public ::testing::Test {
     provider = std::make_unique<AuxiliarySearchProvider>(profile_.get());
   }
 
-  void TearDown() override { profile_.reset(nullptr); }
+  void TearDown() override {
+    profile_.reset(nullptr);
+    scoped_feature_list_.Reset();
+  }
 
  protected:
   std::unique_ptr<AuxiliarySearchProvider> provider;
   std::unique_ptr<BookmarkModel> model_;
   std::unique_ptr<TestingProfile> profile_;
+  base::test::ScopedFeatureList scoped_feature_list_;
 
  private:
   content::BrowserTaskEnvironment task_environment_;
@@ -80,6 +86,39 @@ TEST_F(AuxiliarySearchProviderTest, QueryBookmarks) {
     bookmark_titles_int.insert(title_int);
   }
   EXPECT_EQ(100u, bookmark_titles_int.size());
+}
+
+TEST_F(AuxiliarySearchProviderTest, QueryBookmarks_flagTest) {
+  scoped_feature_list_.InitAndEnableFeatureWithParameters(
+      chrome::android::kAuxiliarySearchDonation,
+      {{"auxiliary_search_max_donation_bookmark", "150"}});
+  provider = std::make_unique<AuxiliarySearchProvider>(profile_.get());
+  for (int i = 0; i < 200; i++) {
+    std::string number = base::NumberToString(i);
+    BookmarkNode* node = AsMutable(model_->AddURL(
+        model_->bookmark_bar_node(), i, base::UTF8ToUTF16(number),
+        GURL("http://foo.com/" + number)));
+    node->set_date_last_used(base::Time::FromTimeT(i));
+  }
+  auxiliary_search::AuxiliarySearchBookmarkGroup group =
+      provider->GetBookmarks(model_.get());
+
+  EXPECT_EQ(150, group.bookmark_size());
+
+  std::unordered_set<int> bookmark_titles_int;
+  for (int i = 0; i < 150; i++) {
+    auxiliary_search::AuxiliarySearchEntry bookmark = group.bookmark(i);
+    int title_int;
+
+    EXPECT_TRUE(bookmark.has_creation_timestamp());
+    EXPECT_TRUE(bookmark.has_last_access_timestamp());
+    EXPECT_FALSE(bookmark.has_last_modification_timestamp());
+    EXPECT_TRUE(base::StringToInt(bookmark.title(), &title_int));
+
+    EXPECT_TRUE(title_int >= 50 && title_int <= 199);
+    bookmark_titles_int.insert(title_int);
+  }
+  EXPECT_EQ(150u, bookmark_titles_int.size());
 }
 
 TEST_F(AuxiliarySearchProviderTest, QueryBookmarks_nativePageShouldBeFiltered) {

@@ -99,6 +99,9 @@ extern const char kAttributionReportingDebugModeDescription[];
 extern const char kAppDeduplicationServiceFondueName[];
 extern const char kAppDeduplicationServiceFondueDescription[];
 
+extern const char kAuxiliarySearchDonationName[];
+extern const char kAuxiliarySearchDonationDescription[];
+
 extern const char kBackgroundResourceFetchName[];
 extern const char kBackgroundResourceFetchDescription[];
 
