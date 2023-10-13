@@ -169,6 +169,13 @@ void FakeLorgnetteScannerManager::CancelScan(CancelCallback cancel_callback) {
       FROM_HERE, base::BindOnce(std::move(cancel_callback), true));
 }
 
+void FakeLorgnetteScannerManager::CancelScan(
+    const lorgnette::CancelScanRequest& request,
+    CancelScanCallback callback) {
+  base::SingleThreadTaskRunner::GetCurrentDefault()->PostTask(
+      FROM_HERE, base::BindOnce(std::move(callback), cancel_scan_response_));
+}
+
 void FakeLorgnetteScannerManager::SetGetScannerNamesResponse(
     const std::vector<std::string>& scanner_names) {
   scanner_names_ = scanner_names;
@@ -208,6 +215,11 @@ void FakeLorgnetteScannerManager::SetReadScanDataResponse(
 void FakeLorgnetteScannerManager::SetScanResponse(
     const absl::optional<std::vector<std::string>>& scan_data) {
   scan_data_ = scan_data;
+}
+
+void FakeLorgnetteScannerManager::SetCancelScanResponse(
+    const absl::optional<lorgnette::CancelScanResponse>& response) {
+  cancel_scan_response_ = response;
 }
 
 }  // namespace ash

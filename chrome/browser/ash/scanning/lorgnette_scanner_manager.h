@@ -46,6 +46,8 @@ class LorgnetteScannerManager : public KeyedService {
   using CompletionCallback =
       base::OnceCallback<void(lorgnette::ScanFailureMode failure_mode)>;
   using CancelCallback = base::OnceCallback<void(bool success)>;
+  using CancelScanCallback = base::OnceCallback<void(
+      const absl::optional<lorgnette::CancelScanResponse>& response)>;
 
   ~LorgnetteScannerManager() override = default;
 
@@ -109,6 +111,12 @@ class LorgnetteScannerManager : public KeyedService {
   // Request to cancel the currently running scan job. This function makes the
   // assumption that LorgnetteManagerClient only has one scan running at a time.
   virtual void CancelScan(CancelCallback cancel_callback) = 0;
+
+  // Request to cancel the scan specified by the JobHandle in |request| and
+  // return the result using the provided |callback|.  If an error occurs,
+  // absl::nullopt is returned in the callback.
+  virtual void CancelScan(const lorgnette::CancelScanRequest& request,
+                          CancelScanCallback callback) = 0;
 };
 
 }  // namespace ash

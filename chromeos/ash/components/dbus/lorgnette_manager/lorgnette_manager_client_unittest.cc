@@ -323,6 +323,32 @@ std::unique_ptr<dbus::Response> CreateCancelScanResponse(bool success) {
   return cancel_scan_response;
 }
 
+// Convenience method for creating a lorgnette::CancelScanRequest that uses a
+// JobHandle.
+lorgnette::CancelScanRequest CreateCancelScanJobRequest() {
+  lorgnette::JobHandle handle;
+  handle.set_token(kJobHandle);
+
+  lorgnette::CancelScanRequest request;
+  *request.mutable_job_handle() = std::move(handle);
+
+  return request;
+}
+
+// Convenience method for creating a lorgnette::CancelScanResponse that uses a
+// JobHandle.
+lorgnette::CancelScanResponse CreateCancelScanJobResponse() {
+  lorgnette::JobHandle handle;
+  handle.set_token(kJobHandle);
+
+  lorgnette::CancelScanResponse response;
+  response.set_success(true);
+  *response.mutable_job_handle() = std::move(handle);
+  response.set_result(lorgnette::OPERATION_RESULT_SUCCESS);
+
+  return response;
+}
+
 // Matcher that verifies that a dbus::Message has member |name|.
 MATCHER_P(HasMember, name, "") {
   if (arg->GetMember() != name) {
@@ -532,6 +558,18 @@ class LorgnetteManagerClientTest : public testing::Test {
                 DoCallMethod(HasMember(lorgnette::kCancelScanMethod),
                              dbus::ObjectProxy::TIMEOUT_USE_DEFAULT, _))
         .WillOnce(Invoke(this, &LorgnetteManagerClientTest::OnCallCancelScan));
+  }
+
+  // Adds an expectation to |mock_proxy_| that kCancelScanMethod will be called.
+  // When called, |mock_proxy_| will respond with |response|.  This is expecting
+  // the request and response to use CancelScanRequest and CancelScanResponse.
+  void SetCancelScanJobExpectation(dbus::Response* response) {
+    cancel_scan_response_ = response;
+    EXPECT_CALL(*mock_proxy_.get(),
+                DoCallMethod(HasMember(lorgnette::kCancelScanMethod),
+                             dbus::ObjectProxy::TIMEOUT_USE_DEFAULT, _))
+        .WillOnce(
+            Invoke(this, &LorgnetteManagerClientTest::OnCallCancelScanJob));
   }
 
   // Tells |mock_proxy_| to emit a kScanStatusChangedSignal with the given
@@ -751,6 +789,20 @@ class LorgnetteManagerClientTest : public testing::Test {
     ASSERT_TRUE(
         dbus::MessageReader(method_call).PopArrayOfBytesAsProto(&request));
     EXPECT_THAT(request, EqualsProto(CreateCancelScanRequest()));
+    task_environment_.GetMainThreadTaskRunner()->PostTask(
+        FROM_HERE, base::BindOnce(std::move(*callback), cancel_scan_response_));
+  }
+
+  // Responsible for responding to a kCancelScanMethod call (using a JobHandle)
+  // and verifying that |method_call| was formatted correctly.
+  void OnCallCancelScanJob(dbus::MethodCall* method_call,
+                           int timeout_ms,
+                           dbus::ObjectProxy::ResponseCallback* callback) {
+    // Verify that the cancel scan request was created and sent correctly.
+    lorgnette::CancelScanRequest request;
+    ASSERT_TRUE(
+        dbus::MessageReader(method_call).PopArrayOfBytesAsProto(&request));
+    EXPECT_THAT(request, EqualsProto(CreateCancelScanJobRequest()));
     task_environment_.GetMainThreadTaskRunner()->PostTask(
         FROM_HERE, base::BindOnce(std::move(*callback), cancel_scan_response_));
   }
@@ -1259,6 +1311,64 @@ TEST_F(LorgnetteManagerClientTest, ReadScanDataInvalidResponse) {
       CreateReadScanDataRequest(),
       base::BindLambdaForTesting(
           [&](absl::optional<lorgnette::ReadScanDataResponse> result) {
+            EXPECT_EQ(result, absl::nullopt);
+            run_loop.Quit();
+          }));
+
+  run_loop.Run();
+}
+
+// Test that the client can cancel a scan using a JobHandle.
+TEST_F(LorgnetteManagerClientTest, CancelScan) {
+  std::unique_ptr<dbus::Response> response = dbus::Response::CreateEmpty();
+  const lorgnette::CancelScanResponse kExpectedResponse =
+      CreateCancelScanJobResponse();
+  ASSERT_TRUE(dbus::MessageWriter(response.get())
+                  .AppendProtoAsArrayOfBytes(kExpectedResponse));
+  SetCancelScanJobExpectation(response.get());
+
+  base::RunLoop run_loop;
+  GetClient()->CancelScan(
+      CreateCancelScanJobRequest(),
+      base::BindLambdaForTesting(
+          [&](absl::optional<lorgnette::CancelScanResponse> result) {
+            run_loop.Quit();
+            ASSERT_TRUE(result.has_value());
+            EXPECT_THAT(result.value(), EqualsProto(kExpectedResponse));
+          }));
+
+  run_loop.Run();
+}
+
+// Test that the client handles a null response to a kCancelScanJobMethod
+// D-Bus call (using a JobHandle) when trying to cancel.
+TEST_F(LorgnetteManagerClientTest, CancelScanNullResponse) {
+  SetCancelScanJobExpectation(nullptr);
+
+  base::RunLoop run_loop;
+  GetClient()->CancelScan(
+      CreateCancelScanJobRequest(),
+      base::BindLambdaForTesting(
+          [&](absl::optional<lorgnette::CancelScanResponse> result) {
+            EXPECT_EQ(result, absl::nullopt);
+            run_loop.Quit();
+          }));
+
+  run_loop.Run();
+}
+
+// Test that the client handles the case when it can't parse a response from a
+// kCancelScanJobMethod D-Bus call (using a JobHandle) into an appropriate
+// protobuf.
+TEST_F(LorgnetteManagerClientTest, CancelScanInvalidResponse) {
+  std::unique_ptr<dbus::Response> response = dbus::Response::CreateEmpty();
+  SetCancelScanJobExpectation(response.get());
+
+  base::RunLoop run_loop;
+  GetClient()->CancelScan(
+      CreateCancelScanJobRequest(),
+      base::BindLambdaForTesting(
+          [&](absl::optional<lorgnette::CancelScanResponse> result) {
             EXPECT_EQ(result, absl::nullopt);
             run_loop.Quit();
           }));

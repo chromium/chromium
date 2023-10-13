@@ -45,6 +45,8 @@ class FakeLorgnetteScannerManager final : public LorgnetteScannerManager {
             PageCallback page_callback,
             CompletionCallback completion_callback) override;
   void CancelScan(CancelCallback cancel_callback) override;
+  void CancelScan(const lorgnette::CancelScanRequest& request,
+                  CancelScanCallback callback) override;
 
   // Sets the response returned by GetScannerNames().
   void SetGetScannerNamesResponse(
@@ -79,6 +81,10 @@ class FakeLorgnetteScannerManager final : public LorgnetteScannerManager {
   void SetScanResponse(
       const absl::optional<std::vector<std::string>>& scan_data);
 
+  // Sets the response returned by CancelScan().
+  void SetCancelScanResponse(
+      const absl::optional<lorgnette::CancelScanResponse>& response);
+
  private:
   std::vector<std::string> scanner_names_;
   absl::optional<lorgnette::ListScannersResponse> list_scanners_response_;
@@ -88,6 +94,7 @@ class FakeLorgnetteScannerManager final : public LorgnetteScannerManager {
   absl::optional<lorgnette::StartPreparedScanResponse>
       start_prepared_scan_response_;
   absl::optional<lorgnette::ReadScanDataResponse> read_scan_data_response_;
+  absl::optional<lorgnette::CancelScanResponse> cancel_scan_response_;
   absl::optional<std::vector<std::string>> scan_data_;
 };
 

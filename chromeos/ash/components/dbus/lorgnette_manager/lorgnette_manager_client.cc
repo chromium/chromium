@@ -211,6 +211,24 @@ class LorgnetteManagerClientImpl : public LorgnetteManagerClient {
                                   std::move(cancel_callback)));
   }
 
+  void CancelScan(const lorgnette::CancelScanRequest& request,
+                  chromeos::DBusMethodCallback<lorgnette::CancelScanResponse>
+                      callback) override {
+    dbus::MethodCall method_call(lorgnette::kManagerServiceInterface,
+                                 lorgnette::kCancelScanMethod);
+    dbus::MessageWriter writer(&method_call);
+    if (!writer.AppendProtoAsArrayOfBytes(request)) {
+      LOG(ERROR) << "Failed to encode CancelScanRequest protobuf";
+      base::SingleThreadTaskRunner::GetCurrentDefault()->PostTask(
+          FROM_HERE, base::BindOnce(std::move(callback), absl::nullopt));
+      return;
+    }
+    lorgnette_daemon_proxy_->CallMethod(
+        &method_call, dbus::ObjectProxy::TIMEOUT_USE_DEFAULT,
+        base::BindOnce(&LorgnetteManagerClientImpl::OnCancelScanJobResponse,
+                       weak_ptr_factory_.GetWeakPtr(), std::move(callback)));
+  }
+
   void StartScannerDiscovery(
       const lorgnette::StartScannerDiscoveryRequest& request,
       base::RepeatingCallback<void(lorgnette::ScannerListChangedSignal)>
@@ -445,23 +463,12 @@ class LorgnetteManagerClientImpl : public LorgnetteManagerClient {
     lorgnette::CancelScanRequest request;
     request.set_scan_uuid(uuid);
 
-    dbus::MethodCall method_call(lorgnette::kManagerServiceInterface,
-                                 lorgnette::kCancelScanMethod);
-    dbus::MessageWriter writer(&method_call);
-    if (!writer.AppendProtoAsArrayOfBytes(request)) {
-      LOG(ERROR) << "Failed to encode CancelScanRequest protobuf";
-      base::SingleThreadTaskRunner::GetCurrentDefault()->PostTask(
-          FROM_HERE, base::BindOnce(std::move(cancel_callback), false));
-      return;
-    }
-
     ScanJobState& state = scan_job_state_.begin()->second;
     state.cancel_callback = std::move(cancel_callback);
 
-    lorgnette_daemon_proxy_->CallMethod(
-        &method_call, dbus::ObjectProxy::TIMEOUT_USE_DEFAULT,
-        base::BindOnce(&LorgnetteManagerClientImpl::OnCancelScanResponse,
-                       weak_ptr_factory_.GetWeakPtr(), uuid));
+    CancelScan(request,
+               base::BindOnce(&LorgnetteManagerClientImpl::OnCancelScanResponse,
+                              weak_ptr_factory_.GetWeakPtr(), uuid));
   }
 
   // Called when ListScanners completes.
@@ -652,8 +659,9 @@ class LorgnetteManagerClientImpl : public LorgnetteManagerClient {
     std::move(callback).Run(response_proto);
   }
 
-  void OnCancelScanResponse(const std::string& scan_uuid,
-                            dbus::Response* response) {
+  void OnCancelScanResponse(
+      const std::string& scan_uuid,
+      absl::optional<lorgnette::CancelScanResponse> response) {
     DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
     // If the cancel completed and the scan job has been erased, there's no work
     // to do.
@@ -672,22 +680,35 @@ class LorgnetteManagerClientImpl : public LorgnetteManagerClient {
       return;
     }
 
+    // If the cancel request failed, report the cancel as failed via the
+    // callback. Otherwise, wait for the cancel to complete.
+    if (!response->success()) {
+      LOG(ERROR) << "Cancelling scan failed: " << response->failure_reason();
+      std::move(state.cancel_callback).Run(false);
+      return;
+    }
+  }
+
+  // Handles the response received after calling CancelScan with a
+  // CancelScanRequest.
+  void OnCancelScanJobResponse(
+      chromeos::DBusMethodCallback<lorgnette::CancelScanResponse> callback,
+      dbus::Response* response) {
+    if (!response) {
+      LOG(ERROR) << "Failed to obtain CancelScanResponse";
+      std::move(callback).Run(absl::nullopt);
+      return;
+    }
+
     lorgnette::CancelScanResponse response_proto;
     dbus::MessageReader reader(response);
     if (!reader.PopArrayOfBytesAsProto(&response_proto)) {
       LOG(ERROR) << "Failed to decode CancelScanResponse proto";
-      std::move(state.cancel_callback).Run(false);
+      std::move(callback).Run(absl::nullopt);
       return;
     }
 
-    // If the cancel request failed, report the cancel as failed via the
-    // callback. Otherwise, wait for the cancel to complete.
-    if (!response_proto.success()) {
-      LOG(ERROR) << "Cancelling scan failed: "
-                 << response_proto.failure_reason();
-      std::move(state.cancel_callback).Run(false);
-      return;
-    }
+    std::move(callback).Run(response_proto);
   }
 
   // Called when a response to a GetNextImage request is received from

@@ -292,6 +292,15 @@ class LorgnetteScannerManagerTest : public testing::Test {
                        base::Unretained(this)));
   }
 
+  // Calls LorgnetteScannerManager::CancelScan() with a CancelScanRequest and
+  // binds a callback to process the result.
+  void CancelScanJob() {
+    lorgnette_scanner_manager_->CancelScan(
+        lorgnette::CancelScanRequest(),
+        base::BindOnce(&LorgnetteScannerManagerTest::CancelScanJobCallback,
+                       base::Unretained(this)));
+  }
+
   // Runs all tasks until the ThreadPool's non-delayed queues are empty.
   void CompleteTasks() { task_environment_.RunUntilIdle(); }
 
@@ -340,6 +349,10 @@ class LorgnetteScannerManagerTest : public testing::Test {
   std::vector<std::string> scan_data() const { return scan_data_; }
   lorgnette::ScanFailureMode failure_mode() const { return failure_mode_; }
   bool cancel_scan_success() const { return cancel_scan_success_; }
+
+  absl::optional<lorgnette::CancelScanResponse> cancel_scan_response() const {
+    return cancel_scan_response_;
+  }
 
  private:
   // Handles the result of calling LorgnetteScannerManager::GetScannerNames().
@@ -404,6 +417,14 @@ class LorgnetteScannerManagerTest : public testing::Test {
     run_loop_->Quit();
   }
 
+  // Handles completion of LorgnetteScannerManager::CancelScan() when called
+  // with a CancelScanRequest.
+  void CancelScanJobCallback(
+      const absl::optional<lorgnette::CancelScanResponse>& response) {
+    cancel_scan_response_ = response;
+    run_loop_->Quit();
+  }
+
   base::test::TaskEnvironment task_environment_;
 
   std::unique_ptr<base::RunLoop> run_loop_;
@@ -424,6 +445,7 @@ class LorgnetteScannerManagerTest : public testing::Test {
   lorgnette::ScanFailureMode failure_mode_ =
       lorgnette::SCAN_FAILURE_MODE_NO_FAILURE;
   bool cancel_scan_success_ = false;
+  absl::optional<lorgnette::CancelScanResponse> cancel_scan_response_;
   std::vector<std::string> scan_data_;
 };
 
@@ -1010,6 +1032,23 @@ TEST_F(LorgnetteScannerManagerTest, CancelScan) {
   CancelScan();
   WaitForResult();
   EXPECT_TRUE(cancel_scan_success());
+}
+
+// Test canceling a scan by JobHandle.
+TEST_F(LorgnetteScannerManagerTest, CancelScanByJobHandle) {
+  lorgnette::JobHandle job_handle;
+  job_handle.set_token("job-handle-token");
+
+  lorgnette::CancelScanResponse response;
+  response.set_success(true);
+  response.set_result(lorgnette::OPERATION_RESULT_SUCCESS);
+  *response.mutable_job_handle() = std::move(job_handle);
+
+  GetLorgnetteManagerClient()->SetCancelScanResponse(response);
+  CancelScanJob();
+  WaitForResult();
+  ASSERT_TRUE(cancel_scan_response());
+  EXPECT_THAT(response, EqualsProto(cancel_scan_response().value()));
 }
 
 }  // namespace ash

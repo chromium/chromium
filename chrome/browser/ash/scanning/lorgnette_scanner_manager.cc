@@ -287,6 +287,15 @@ class LorgnetteScannerManagerImpl final : public LorgnetteScannerManager {
     GetLorgnetteManagerClient()->CancelScan(std::move(cancel_callback));
   }
 
+  // LorgnetteScannerManager:
+  void CancelScan(const lorgnette::CancelScanRequest& request,
+                  CancelScanCallback callback) override {
+    GetLorgnetteManagerClient()->CancelScan(
+        request,
+        base::BindOnce(&LorgnetteScannerManagerImpl::OnCancelScanResponse,
+                       weak_ptr_factory_.GetWeakPtr(), std::move(callback)));
+  }
+
  private:
   // Called when scanners are detected by a ScannerDetector.
   void OnScannersDetected(std::vector<Scanner> scanners) {
@@ -510,6 +519,12 @@ class LorgnetteScannerManagerImpl final : public LorgnetteScannerManager {
   void OnReadScanDataResponse(
       ReadScanDataCallback callback,
       absl::optional<lorgnette::ReadScanDataResponse> response) {
+    std::move(callback).Run(response);
+  }
+
+  void OnCancelScanResponse(
+      CancelScanCallback callback,
+      absl::optional<lorgnette::CancelScanResponse> response) {
     std::move(callback).Run(response);
   }
 
