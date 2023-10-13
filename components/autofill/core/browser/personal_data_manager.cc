@@ -814,49 +814,49 @@ void PersonalDataManager::RecordUseOf(
   if (absl::holds_alternative<const CreditCard*>(profile_or_credit_card)) {
     CreditCard* credit_card = GetCreditCardByGUID(
         absl::get<const CreditCard*>(profile_or_credit_card)->guid());
-
-    if (credit_card) {
-      credit_card->RecordAndLogUse();
-
-      if (credit_card->record_type() == CreditCard::RecordType::kLocalCard) {
-        // Fail silently if there's no local database, because we need to
-        // support this for tests.
-        if (database_helper_->GetLocalDatabase()) {
-          database_helper_->GetLocalDatabase()->UpdateCreditCard(*credit_card);
-        }
-      } else {
-        DCHECK(database_helper_->GetServerDatabase())
-            << "Recording use of server card without server storage.";
-        database_helper_->GetServerDatabase()->UpdateServerCardMetadata(
-            *credit_card);
-      }
-
-      Refresh();
+    if (!credit_card) {
       return;
     }
-  }
 
-  if (absl::holds_alternative<const AutofillProfile*>(profile_or_credit_card)) {
+    credit_card->RecordAndLogUse();
+
+    if (credit_card->record_type() == CreditCard::RecordType::kLocalCard) {
+      // Fail silently if there's no local database, because we need to
+      // support this for tests.
+      if (database_helper_->GetLocalDatabase()) {
+        database_helper_->GetLocalDatabase()->UpdateCreditCard(*credit_card);
+      }
+    } else {
+      DCHECK(database_helper_->GetServerDatabase())
+          << "Recording use of server card without server storage.";
+      database_helper_->GetServerDatabase()->UpdateServerCardMetadata(
+          *credit_card);
+    }
+
+    Refresh();
+  } else {
     // TODO(crbug.com/941498): Server profiles are not recorded therefore
     // GetProfileByGUID returns null for them.
     AutofillProfile* profile = GetProfileByGUID(
         absl::get<const AutofillProfile*>(profile_or_credit_card)->guid());
+    if (!profile) {
+      return;
+    }
 
-    if (profile) {
-      profile->RecordAndLogUse();
+    AutofillProfile updated_profile = *profile;
+    updated_profile.RecordAndLogUse();
 
-      switch (profile->record_type()) {
-        case AutofillProfile::LOCAL_PROFILE:
-          UpdateProfileInDB(*profile, /*enforced=*/true);
-          break;
-        case AutofillProfile::SERVER_PROFILE:
-          DCHECK(database_helper_->GetServerDatabase())
-              << "Recording use of server address without server storage.";
-          database_helper_->GetServerDatabase()->UpdateServerAddressMetadata(
-              *profile);
-          Refresh();
-          break;
-      }
+    switch (updated_profile.record_type()) {
+      case AutofillProfile::LOCAL_PROFILE:
+        UpdateProfile(updated_profile);
+        break;
+      case AutofillProfile::SERVER_PROFILE:
+        DCHECK(database_helper_->GetServerDatabase())
+            << "Recording use of server address without server storage.";
+        database_helper_->GetServerDatabase()->UpdateServerAddressMetadata(
+            updated_profile);
+        Refresh();
+        break;
     }
   }
 }
@@ -2457,8 +2457,7 @@ void PersonalDataManager::OnAutofillProfileChanged(
       break;
     case AutofillProfileChange::UPDATE:
       if (profile_exists &&
-          (change.enforced() ||
-           !existing_profile->EqualsForUpdatePurposes(profile))) {
+          !existing_profile->EqualsForUpdatePurposes(profile)) {
         profiles.erase(FindElementByGUID(profiles, guid));
         profiles.push_back(std::make_unique<AutofillProfile>(profile));
       }
@@ -2528,11 +2527,8 @@ void PersonalDataManager::ConvertWalletAddressesAndUpdateWalletCards() {
   AutofillAddressConversionCompleted();
 }
 
-void PersonalDataManager::UpdateProfileInDB(const AutofillProfile& profile,
-                                            bool enforced) {
-  // if the update is enforced, don't check if a similar profile already exists
-  // or not. Otherwise, check if updating the profile makes sense.
-  if (!enforced && !ProfileChangesAreOngoing(profile.guid())) {
+void PersonalDataManager::UpdateProfileInDB(const AutofillProfile& profile) {
+  if (!ProfileChangesAreOngoing(profile.guid())) {
     const auto* existing_profile = GetProfileByGUID(profile.guid());
     bool profile_exists = (existing_profile != nullptr);
     if (!profile_exists || existing_profile->EqualsForUpdatePurposes(profile)) {
@@ -2543,8 +2539,6 @@ void PersonalDataManager::UpdateProfileInDB(const AutofillProfile& profile,
 
   ongoing_profile_changes_[profile.guid()].emplace_back(
       AutofillProfileChange::UPDATE, profile);
-  if (enforced)
-    ongoing_profile_changes_[profile.guid()].back().set_enforced();
   HandleNextProfileChange(profile.guid());
 }
 
@@ -2604,8 +2598,7 @@ void PersonalDataManager::HandleNextProfileChange(const std::string& guid) {
       break;
     case AutofillProfileChange::UPDATE:
       if (!existing_profile ||
-          (!change.enforced() &&
-           existing_profile->EqualsForUpdatePurposes(profile))) {
+          existing_profile->EqualsForUpdatePurposes(profile)) {
         OnProfileChangeDone(guid);
         return;
       }

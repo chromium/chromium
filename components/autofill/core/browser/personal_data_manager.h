@@ -880,8 +880,7 @@ class PersonalDataManager : public KeyedService,
 
   // Add/Update/Removes a profile in AutofillTable asynchronously. The changes
   // only surface in the PDM after the task on the DB sequence has finished.
-  // TODO(crbug.com/1420547): `enforced` should not be used. Remove it.
-  void UpdateProfileInDB(const AutofillProfile& profile, bool enforced = false);
+  void UpdateProfileInDB(const AutofillProfile& profile);
   void RemoveProfileFromDB(const std::string& guid);
 
   // Triggered when a profile is added/updated/removed on db.

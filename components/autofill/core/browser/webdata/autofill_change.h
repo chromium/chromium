@@ -123,17 +123,10 @@ class AutofillProfileDeepChange : public AutofillProfileChange {
     is_ongoing_on_background_ = true;
   }
 
-  void set_enforced() { enforced_ = true; }
-  bool enforced() const { return enforced_; }
-
  private:
   // Is true when the change is taking place on the database side on the
   // background.
   mutable bool is_ongoing_on_background_ = false;
-
-  // Is true when the change should happen regardless of an existing or equal
-  // profile.
-  mutable bool enforced_ = false;
 };
 
 }  // namespace autofill
