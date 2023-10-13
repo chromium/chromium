@@ -142,6 +142,7 @@ enum AcceleratorAction {
   kDebugPrintLayerHierarchy,
   kDebugPrintViewHierarchy,
   kDebugPrintWindowHierarchy,
+  kDebugShowInformedRestore,
   kDebugShowToast,
   kDebugShowSystemNudge,
   kDebugSystemUiStyleViewer,

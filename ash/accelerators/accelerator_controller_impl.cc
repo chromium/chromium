@@ -711,6 +711,7 @@ bool AcceleratorControllerImpl::CanPerformAction(
     case AcceleratorAction::kDebugPrintLayerHierarchy:
     case AcceleratorAction::kDebugPrintViewHierarchy:
     case AcceleratorAction::kDebugPrintWindowHierarchy:
+    case AcceleratorAction::kDebugShowInformedRestore:
     case AcceleratorAction::kDebugShowToast:
     case AcceleratorAction::kDebugShowSystemNudge:
     case AcceleratorAction::kDebugSystemUiStyleViewer:
@@ -995,6 +996,7 @@ void AcceleratorControllerImpl::PerformAction(
     case AcceleratorAction::kDebugPrintLayerHierarchy:
     case AcceleratorAction::kDebugPrintViewHierarchy:
     case AcceleratorAction::kDebugPrintWindowHierarchy:
+    case AcceleratorAction::kDebugShowInformedRestore:
     case AcceleratorAction::kDebugShowToast:
     case AcceleratorAction::kDebugShowSystemNudge:
     case AcceleratorAction::kDebugToggleDarkMode:

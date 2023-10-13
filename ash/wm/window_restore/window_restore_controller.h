@@ -90,6 +90,10 @@ class ASH_EXPORT WindowRestoreController
   // `this`.
   bool IsRestoringWindow(aura::Window* window) const;
 
+  // Starts an overview session with the informed restore dialog if certain
+  // conditions are met.
+  void MaybeStartInformedRestore();
+
   // TabletModeObserver:
   void OnTabletModeStarted() override;
   void OnTabletModeEnded() override;

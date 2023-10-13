@@ -65,6 +65,8 @@ const AcceleratorData kDebugAcceleratorData[] = {
      AcceleratorAction::kDebugKeyboardBacklightToggle},
     {true, ui::VKEY_M, kDebugModifier,
      AcceleratorAction::kDebugMicrophoneMuteToggle},
+    {true, ui::VKEY_9, kDebugModifier,
+     AcceleratorAction::kDebugShowInformedRestore},
     {true, ui::VKEY_O, kDebugModifier, AcceleratorAction::kDebugShowToast},
     {true, ui::VKEY_J, kDebugModifier,
      AcceleratorAction::kDebugShowSystemNudge},

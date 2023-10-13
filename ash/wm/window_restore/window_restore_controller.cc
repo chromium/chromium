@@ -484,6 +484,17 @@ bool WindowRestoreController::IsRestoringWindow(aura::Window* window) const {
   return windows_observation_.IsObservingSource(window);
 }
 
+void WindowRestoreController::MaybeStartInformedRestore() {
+  if (!features::ArePostLoginGlanceablesEnabled()) {
+    return;
+  }
+
+  // TODO(sammiequon|zxdan): Need to check "Ask every time" preference, the pref
+  // needs to be moved to ash_pref_names.h.
+
+  // TODO: Show the informed restore dialog.
+}
+
 void WindowRestoreController::SaveWindowImpl(
     WindowState* window_state,
     absl::optional<int> activation_index) {

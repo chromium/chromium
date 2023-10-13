@@ -287,6 +287,8 @@ EnumTraits<mojom_accelerator_action, ash::AcceleratorAction>::ToMojom(
       return mojom_accelerator_action::kDebugPrintViewHierarchy;
     case ash::AcceleratorAction::kDebugPrintWindowHierarchy:
       return mojom_accelerator_action::kDebugPrintWindowHierarchy;
+    case ash::AcceleratorAction::kDebugShowInformedRestore:
+      return mojom_accelerator_action::kDebugShowInformedRestore;
     case ash::AcceleratorAction::kDebugShowToast:
       return mojom_accelerator_action::kDebugShowToast;
     case ash::AcceleratorAction::kDebugShowSystemNudge:
@@ -741,6 +743,9 @@ bool EnumTraits<mojom_accelerator_action, ash::AcceleratorAction>::FromMojom(
       return true;
     case mojom_accelerator_action::kDebugPrintWindowHierarchy:
       *out = ash::AcceleratorAction::kDebugPrintWindowHierarchy;
+      return true;
+    case mojom_accelerator_action::kDebugShowInformedRestore:
+      *out = ash::AcceleratorAction::kDebugShowInformedRestore;
       return true;
     case mojom_accelerator_action::kDebugShowToast:
       *out = ash::AcceleratorAction::kDebugShowToast;

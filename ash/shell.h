@@ -762,6 +762,9 @@ class ASH_EXPORT Shell : public SessionObserver,
   WindowCycleController* window_cycle_controller() {
     return window_cycle_controller_.get();
   }
+  WindowRestoreController* window_restore_controller() {
+    return window_restore_controller_.get();
+  }
   OverviewController* overview_controller() {
     return overview_controller_.get();
   }

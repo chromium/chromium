@@ -14,9 +14,9 @@ namespace ash {
 namespace {
 
 // The total number of accelerator actions.
-constexpr int kAcceleratorActionsTotalNum = 155;
+constexpr int kAcceleratorActionsTotalNum = 156;
 // The toal number of debug accelerators, these will not be used for hashing.
-constexpr int kDebugAcceleratorActionsNum = 26;
+constexpr int kDebugAcceleratorActionsNum = 27;
 // The hash of accelerator actions. Please update this when adding a new
 // accelerator action.
 constexpr char kAcceleratorActionsHash[] = "69ca25642d0ee9a9cf3eee1c3ac14419";

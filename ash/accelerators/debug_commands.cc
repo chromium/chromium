@@ -37,6 +37,7 @@
 #include "ash/wallpaper/wallpaper_controller_impl.h"
 #include "ash/wm/float/float_controller.h"
 #include "ash/wm/tablet_mode/tablet_mode_controller.h"
+#include "ash/wm/window_restore/window_restore_controller.h"
 #include "ash/wm/window_state.h"
 #include "ash/wm/window_util.h"
 #include "base/command_line.h"
@@ -248,6 +249,10 @@ void HandleToggleVirtualTrackpad() {
   VirtualTrackpadView::Toggle();
 }
 
+void HandleShowInformedRestore() {
+  Shell::Get()->window_restore_controller()->MaybeStartInformedRestore();
+}
+
 // Toast debug shortcut constants.
 const std::u16string oneline_toast_text = u"SystemUI toast text string";
 const std::u16string multiline_toast_text =
@@ -358,6 +363,9 @@ void PerformDebugActionIfEnabled(AcceleratorAction action) {
       break;
     case AcceleratorAction::kDebugPrintWindowHierarchy:
       HandlePrintWindowHierarchy();
+      break;
+    case AcceleratorAction::kDebugShowInformedRestore:
+      HandleShowInformedRestore();
       break;
     case AcceleratorAction::kDebugShowToast:
       HandleShowToast();
