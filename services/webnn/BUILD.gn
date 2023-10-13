@@ -92,6 +92,7 @@ source_set("tests") {
 
   if (is_win) {
     deps += [
+      "//third_party/fp16",
       "//ui/gl",
       "//ui/gl/init",
     ]

@@ -4,6 +4,7 @@
 
 #include <DirectML.h>
 #include <wrl.h>
+#include <type_traits>
 
 #include "base/run_loop.h"
 #include "base/test/bind.h"
@@ -22,10 +23,15 @@
 #include "services/webnn/webnn_context_provider_impl.h"
 #include "services/webnn/webnn_test_utils.h"
 #include "testing/gtest/include/gtest/gtest.h"
+#include "third_party/fp16/src/include/fp16.h"
 
 namespace webnn::dml {
 
 namespace {
+
+// Since there is no float16 data type in C++, use uint16_t to represent the
+// binary data.
+using float16 = uint16_t;
 
 void BuildAndCompute(
     mojom::GraphInfoPtr graph_info,
@@ -116,10 +122,54 @@ std::vector<T> BigBufferToVector(mojo_base::BigBuffer big_buffer) {
 // EXPECT_FLOAT_EQ.
 void VerifyFloatDataIsEqual(const std::vector<float>& data,
                             const std::vector<float>& expected_data) {
-  EXPECT_EQ(data.size(), expected_data.size());
+  ASSERT_EQ(data.size(), expected_data.size());
   for (size_t i = 0; i < data.size(); ++i) {
     EXPECT_FLOAT_EQ(data[i], expected_data[i]);
   }
+}
+
+// Convert a vector of 32-bit floating-point data to a vector of 16-bit
+// floating-point data, both in IEEE precision format.
+std::vector<float16> Float16FromFloat32(const std::vector<float>& fp32_data) {
+  std::vector<float16> fp16_data;
+  fp16_data.reserve(fp32_data.size());
+
+  for (size_t i = 0; i < fp32_data.size(); i++) {
+    fp16_data.push_back(fp16_ieee_from_fp32_value(fp32_data[i]));
+  }
+
+  return fp16_data;
+}
+
+// Convert a vector of 16-bit floating-point data to a vector of 32-bit
+// floating-point data, both in IEEE precision format.
+std::vector<float> Float16ToFloat32(const std::vector<float16>& fp16_data) {
+  std::vector<float> fp32_data;
+  fp32_data.reserve(fp16_data.size());
+
+  for (size_t i = 0; i < fp16_data.size(); i++) {
+    fp32_data.push_back(fp16_ieee_to_fp32_value(fp16_data[i]));
+  }
+
+  return fp32_data;
+}
+
+// Get the output data from a `mojo_base::BigBuffer` as 32-bit floating-point
+// number.
+std::vector<float> GetFloatOutputData(mojo_base::BigBuffer big_buffer,
+                                      mojom::Operand::DataType type) {
+  std::vector<float> output_data;
+  if (type == mojom::Operand::DataType::kFloat16) {
+    output_data =
+        Float16ToFloat32(BigBufferToVector<float16>(std::move(big_buffer)));
+  } else if (type == mojom::Operand::DataType::kFloat32) {
+    output_data = BigBufferToVector<float>(std::move(big_buffer));
+  } else {
+    DLOG(ERROR) << "This data type is not supported.";
+    NOTREACHED_NORETURN();
+  }
+
+  return output_data;
 }
 
 }  // namespace
@@ -198,7 +248,7 @@ struct Conv2dTester {
     absl::optional<ClampAttributes> clamp_attributes;
   };
   Conv2dAttributes attributes;
-  OperandInfo<T> output;
+  OperandInfo<float> output;
 
   void Test() {
     // Build the graph with mojo type.
@@ -230,14 +280,15 @@ struct Conv2dTester {
                     named_outputs);
 
     VerifyFloatDataIsEqual(
-        BigBufferToVector<float>(std::move(named_outputs["output"])),
+        GetFloatOutputData(std::move(named_outputs["output"]), output.type),
         output.values);
   }
 };
 
 // Test building and computing a DML graph with single operator conv2d.
 TEST_F(WebNNGraphDMLImplTest, BuildAndComputeSingleOperatorConv2d) {
-  // Test conv2d with NCHW layout, padding = {1, 1, 1, 1}, fusing with bias.
+  // Test conv2d with NCHW layout, padding = {1, 1, 1, 1}, float 32 data type,
+  // fusing with bias.
   {
     Conv2dTester<float>{
         .input = {.type = mojom::Operand::DataType::kFloat32,
@@ -260,7 +311,33 @@ TEST_F(WebNNGraphDMLImplTest, BuildAndComputeSingleOperatorConv2d) {
                               163, 112, 73,  112, 118, 124, 85}}}
         .Test();
   }
-  // Test conv2d with NCHW layout, padding = {1, 1, 1, 1}, without bias.
+  // Test conv2d with NCHW layout, padding = {1, 1, 1, 1}, float 16 data type,
+  // fusing with bias.
+  {
+    Conv2dTester<float16>{
+        .input = {.type = mojom::Operand::DataType::kFloat16,
+                  .dimensions = {1, 1, 5, 5},
+                  .values = Float16FromFloat32(
+                      {0,  1,  2,  3,  4,  5,  6,  7,  8,  9,  10, 11, 12,
+                       13, 14, 15, 16, 17, 18, 19, 20, 21, 22, 23, 24})},
+        .filter = {.type = mojom::Operand::DataType::kFloat16,
+                   .dimensions = {1, 1, 3, 3},
+                   .values = Float16FromFloat32(std::vector<float>(9, 1))},
+        .attributes = {.padding = {1, 1, 1, 1},
+                       .bias =
+                           OperandInfo<float16>{
+                               .type = mojom::Operand::DataType::kFloat16,
+                               .dimensions = {1},
+                               .values = Float16FromFloat32({1})}},
+        .output = {.type = mojom::Operand::DataType::kFloat16,
+                   .dimensions = {1, 1, 5, 5},
+                   .values = {13,  22,  28,  34,  25,  34,  55, 64,  73,
+                              52,  64,  100, 109, 118, 82,  94, 145, 154,
+                              163, 112, 73,  112, 118, 124, 85}}}
+        .Test();
+  }
+  // Test conv2d with NCHW layout, padding = {1, 1, 1, 1}, float 32 data type,
+  // without bias.
   {
     Conv2dTester<float>{
         .input = {.type = mojom::Operand::DataType::kFloat32,
@@ -278,7 +355,8 @@ TEST_F(WebNNGraphDMLImplTest, BuildAndComputeSingleOperatorConv2d) {
                               162, 111, 72, 111, 117, 123, 84}}}
         .Test();
   }
-  // Test conv2d with NHWC layout, padding = {1, 1, 1, 1}.
+  // Test conv2d with NHWC layout, padding = {1, 1, 1, 1}, float 32 data type,
+  // without bias.
   {
     Conv2dTester<float>{
         .input = {.type = mojom::Operand::DataType::kFloat32,
@@ -298,7 +376,30 @@ TEST_F(WebNNGraphDMLImplTest, BuildAndComputeSingleOperatorConv2d) {
                               162, 111, 72, 111, 117, 123, 84}}}
         .Test();
   }
-  // Test conv2d with NHWC layout, fusing with relu activation.
+  // Test conv2d with NHWC layout, float 16 data type, padding = {1, 1, 1, 1},
+  // without bias.
+  {
+    Conv2dTester<float16>{
+        .input = {.type = mojom::Operand::DataType::kFloat16,
+                  .dimensions = {1, 5, 5, 1},
+                  .values = Float16FromFloat32(
+                      {0,  1,  2,  3,  4,  5,  6,  7,  8,  9,  10, 11, 12,
+                       13, 14, 15, 16, 17, 18, 19, 20, 21, 22, 23, 24})},
+        .filter = {.type = mojom::Operand::DataType::kFloat16,
+                   .dimensions = {1, 1, 3, 3},
+                   .values = Float16FromFloat32(std::vector<float>(9, 1))},
+        .attributes = {.padding = {1, 1, 1, 1},
+                       .input_layout =
+                           mojom::InputOperandLayout::kChannelsLast},
+        .output = {.type = mojom::Operand::DataType::kFloat16,
+                   .dimensions = {1, 5, 5, 1},
+                   .values = {12,  21,  27, 33,  24,  33,  54, 63,  72,
+                              51,  63,  99, 108, 117, 81,  93, 144, 153,
+                              162, 111, 72, 111, 117, 123, 84}}}
+        .Test();
+  }
+  // Test conv2d with NHWC layout, float 32 data type, fusing with bias and relu
+  // activation.
   {
     Conv2dTester<float>{
         .input = {.type = mojom::Operand::DataType::kFloat32,
@@ -322,6 +423,32 @@ TEST_F(WebNNGraphDMLImplTest, BuildAndComputeSingleOperatorConv2d) {
                               17, 0, 0, 44, 53, 62, 11, 0, 11, 17, 23, 0}}}
         .Test();
   }
+  // Test conv2d with NHWC layout, float 16 data type, fusing with bias and relu
+  // activation.
+  {
+    Conv2dTester<float16>{
+        .input = {.type = mojom::Operand::DataType::kFloat16,
+                  .dimensions = {1, 5, 5, 1},
+                  .values = Float16FromFloat32(
+                      {0,  1,  2,  3,  4,  5,  6,  7,  8,  9,  10, 11, 12,
+                       13, 14, 15, 16, 17, 18, 19, 20, 21, 22, 23, 24})},
+        .filter = {.type = mojom::Operand::DataType::kFloat16,
+                   .dimensions = {1, 1, 3, 3},
+                   .values = Float16FromFloat32(std::vector<float>(9, 1))},
+        .attributes = {.padding = {1, 1, 1, 1},
+                       .input_layout = mojom::InputOperandLayout::kChannelsLast,
+                       .bias =
+                           OperandInfo<float16>{
+                               .type = mojom::Operand::DataType::kFloat16,
+                               .dimensions = {1},
+                               .values = Float16FromFloat32({-100})},
+                       .activation = mojom::Operation::Tag::kRelu},
+        .output = {.type = mojom::Operand::DataType::kFloat16,
+                   .dimensions = {1, 5, 5, 1},
+                   .values = {0,  0, 0, 0,  0,  0,  0,  0, 0,  0,  0,  0, 8,
+                              17, 0, 0, 44, 53, 62, 11, 0, 11, 17, 23, 0}}}
+        .Test();
+  }
 }
 
 template <typename T>
@@ -329,7 +456,7 @@ struct ElementWiseBinaryTester {
   OperandInfo<T> lhs;
   OperandInfo<T> rhs;
   mojom::Operator::Kind kind;
-  OperandInfo<T> output;
+  OperandInfo<float> output;
   void Test() {
     // Build the graph with mojo type.
     GraphInfoBuilder builder;
@@ -351,7 +478,7 @@ struct ElementWiseBinaryTester {
                     named_outputs);
 
     VerifyFloatDataIsEqual(
-        BigBufferToVector<float>(std::move(named_outputs["output"])),
+        GetFloatOutputData(std::move(named_outputs["output"]), output.type),
         output.values);
   }
 };
@@ -591,7 +718,7 @@ struct Pool2dTester {
   OperandInfo<T> input;
   Pool2dAttributes attributes;
   mojom::Pool2d::Kind kind;
-  OperandInfo<T> output;
+  OperandInfo<float> output;
 
   void Test() {
     // Build the graph with mojo type.
@@ -610,18 +737,16 @@ struct Pool2dTester {
     BuildAndCompute(builder.CloneGraphInfo(), std::move(named_inputs),
                     named_outputs);
 
-    EXPECT_EQ(BigBufferToVector<float>(std::move(named_outputs["output"])),
-              output.values);
+    VerifyFloatDataIsEqual(
+        GetFloatOutputData(std::move(named_outputs["output"]), output.type),
+        output.values);
   }
 };
 
 // Test building and computing a DML graph with single operator average pool2d.
-//
-// TODO(crbug.com/1484475): Verify the support for
-// mojom::Operand::DataType::kFloat16 data type.
 TEST_F(WebNNGraphDMLImplTest, BuildAndComputeSingleOperatorAveragePool2d) {
   {
-    // Test average pool2d with nchw layout
+    // Test average pool2d with nchw layout, float 32 data type.
     Pool2dTester<float>{
         .input = {.type = mojom::Operand::DataType::kFloat32,
                   .dimensions = {1, 2, 3, 3},
@@ -639,7 +764,26 @@ TEST_F(WebNNGraphDMLImplTest, BuildAndComputeSingleOperatorAveragePool2d) {
         .Test();
   }
   {
-    // Test average pool2d with nhwc layout
+    // Test average pool2d with nchw layout, float 16 data type.
+    Pool2dTester<float16>{
+        .input = {.type = mojom::Operand::DataType::kFloat16,
+                  .dimensions = {1, 2, 3, 3},
+                  .values =
+                      Float16FromFloat32({1, 2, 3, 4, 5, 6, 7, 8, 9, 10, 11, 12,
+                                          13, 14, 15, 16, 17, 18})},
+        .attributes = {.window_dimensions = {2, 2},
+                       .padding = {0, 0, 0, 0},
+                       .strides = {1, 1},
+                       .dilations = {1, 1},
+                       .layout = mojom::InputOperandLayout::kChannelsFirst},
+        .kind = mojom::Pool2d::Kind::kAveragePool2d,
+        .output = {.type = mojom::Operand::DataType::kFloat16,
+                   .dimensions = {1, 2, 2, 2},
+                   .values = {3, 4, 6, 7, 12, 13, 15, 16}}}
+        .Test();
+  }
+  {
+    // Test average pool2d with nhwc layout,, float 32 data type.
     Pool2dTester<float>{
         .input = {.type = mojom::Operand::DataType::kFloat32,
                   .dimensions = {1, 3, 3, 2},
@@ -652,6 +796,25 @@ TEST_F(WebNNGraphDMLImplTest, BuildAndComputeSingleOperatorAveragePool2d) {
                        .layout = mojom::InputOperandLayout::kChannelsLast},
         .kind = mojom::Pool2d::Kind::kAveragePool2d,
         .output = {.type = mojom::Operand::DataType::kFloat32,
+                   .dimensions = {1, 2, 2, 2},
+                   .values = {3, 12, 4, 13, 6, 15, 7, 16}}}
+        .Test();
+  }
+  {
+    // Test average pool2d with nhwc layout,, float 16 data type.
+    Pool2dTester<float16>{
+        .input = {.type = mojom::Operand::DataType::kFloat16,
+                  .dimensions = {1, 3, 3, 2},
+                  .values =
+                      Float16FromFloat32({1, 10, 2, 11, 3, 12, 4, 13, 5, 14, 6,
+                                          15, 7, 16, 8, 17, 9, 18})},
+        .attributes = {.window_dimensions = {2, 2},
+                       .padding = {0, 0, 0, 0},
+                       .strides = {1, 1},
+                       .dilations = {1, 1},
+                       .layout = mojom::InputOperandLayout::kChannelsLast},
+        .kind = mojom::Pool2d::Kind::kAveragePool2d,
+        .output = {.type = mojom::Operand::DataType::kFloat16,
                    .dimensions = {1, 2, 2, 2},
                    .values = {3, 12, 4, 13, 6, 15, 7, 16}}}
         .Test();
@@ -684,7 +847,7 @@ template <typename T>
 struct UnaryOperatorTester {
   mojom::Operation::Tag tag;
   OperandInfo<T> input;
-  OperandInfo<T> output;
+  OperandInfo<float> output;
   void Test() {
     // Build the graph with mojo type.
     GraphInfoBuilder builder;
@@ -711,7 +874,7 @@ struct UnaryOperatorTester {
                     named_outputs);
 
     VerifyFloatDataIsEqual(
-        BigBufferToVector<float>(std::move(named_outputs["output"])),
+        GetFloatOutputData(std::move(named_outputs["output"]), output.type),
         output.values);
   }
 };
@@ -983,7 +1146,7 @@ struct GemmTester {
     bool b_transpose = false;
   };
   GemmAttributes attributes;
-  OperandInfo<T> output;
+  OperandInfo<float> output;
 
   void Test() {
     // Build the graph with mojo type.
@@ -1021,8 +1184,9 @@ struct GemmTester {
     BuildAndCompute(builder.CloneGraphInfo(), std::move(named_inputs),
                     named_outputs);
 
-    EXPECT_EQ(BigBufferToVector<float>(std::move(named_outputs["output"])),
-              output.values);
+    VerifyFloatDataIsEqual(
+        GetFloatOutputData(std::move(named_outputs["output"]), output.type),
+        output.values);
   }
 };
 
