@@ -386,6 +386,10 @@ def AddEmulatorOptions(parser):
       'disable debug messages from specific parts of the emulator, e.g. '
       'init,snapshot. See "emulator -help-debug-tags" '
       'for a full list of tags.')
+  parser.add_argument(
+      '--emulator-enable-network',
+      action='store_true',
+      help='Enable the network (WiFi and mobile data) on the emulator.')
 
 
 def AddGTestOptions(parser):

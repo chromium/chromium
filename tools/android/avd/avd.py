@@ -176,6 +176,10 @@ def main(raw_args):
       '--disk-size',
       help='Override the default disk size for the emulator instance.')
   subparser.add_argument(
+      '--enable-network',
+      action='store_true',
+      help='Enable the network (WiFi and mobile data) on the emulator.')
+  subparser.add_argument(
       '--require-fast-start',
       action='store_true',
       help='Shortens the start-up timeout. Used by bots to avoid startup '
@@ -200,6 +204,7 @@ def main(raw_args):
                wipe_data=args.wipe_data,
                debug_tags=debug_tags,
                disk_size=args.disk_size,
+               enable_network=args.enable_network,
                require_fast_start=args.require_fast_start)
     print('%s started (pid: %d)' % (str(inst), inst._emulator_proc.pid))
     return 0
