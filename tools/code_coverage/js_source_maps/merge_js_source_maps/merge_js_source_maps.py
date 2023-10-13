@@ -19,19 +19,13 @@ import node
 def main(argv):
   parser = argparse.ArgumentParser()
   parser.add_argument('--out-dir', required=True)
-  parser.add_argument('--sources', required=True, nargs="*")
-  parser.add_argument('--outputs', required=True, nargs="*")
-  parser.add_argument('--manifest-files', required=True, nargs="*")
+  parser.add_argument('--response-file-name', required=True, nargs="*")
   args = parser.parse_args(argv)
 
   node.RunNode([
       str(_SOURCE_MAP_MERGER),
-      '--manifest-files',
-      *args.manifest_files,
-      '--sources',
-      *args.sources,
-      '--outputs',
-      *args.outputs,
+      '--response-file-name',
+      *args.response_file_name,
       '--out-dir',
       args.out_dir,
   ])

@@ -15,15 +15,18 @@ template("merge_js_source_maps") {
                              "deps",
                            ])
     script = "//tools/code_coverage/js_source_maps/merge_js_source_maps/merge_js_source_maps.py"
-    args = [ "--manifest-files" ] +
-           rebase_path(invoker.manifest_files, root_out_dir) + [ "--sources" ] +
-           rebase_path(invoker.sources, root_out_dir) + [ "--outputs" ] +
-           rebase_path(invoker.outputs, root_out_dir) +
-           [
-             "--out-dir",
-             rebase_path(invoker.out_dir, root_build_dir),
-           ]
+    args = [
+      "--out-dir",
+      rebase_path(invoker.out_dir, root_build_dir),
+      "--response-file-name",
+      "{{response_file_name}}",
+    ]
     inputs = [ "//tools/code_coverage/js_source_maps/merge_js_source_maps/merge_js_source_maps.js" ]
+    response_file_contents =
+        [ "--manifest-files" ] +
+        rebase_path(invoker.manifest_files, root_out_dir) + [ "--sources" ] +
+        rebase_path(invoker.sources, root_out_dir) + [ "--outputs" ] +
+        rebase_path(invoker.outputs, root_out_dir)
     foreach(manifest, invoker.manifest_files) {
       outputs += [ get_path_info(manifest, "dir") + "/" +
                    get_path_info(manifest, "name") + "__processed." +
