@@ -3621,6 +3621,21 @@
             ]
         }
     ],
+    "ChromeStartAccessibility": [
+        {
+            "platforms": [
+                "android"
+            ],
+            "experiments": [
+                {
+                    "name": "Enabled",
+                    "enable_features": [
+                        "StartSurfaceWithAccessibility"
+                    ]
+                }
+            ]
+        }
+    ],
     "ChromeStartRefactor": [
         {
             "platforms": [
