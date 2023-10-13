@@ -408,6 +408,8 @@ source_set("chromeos") {
       "reporting/metric_reporting_manager_lacros.h",
       "reporting/metric_reporting_manager_lacros_factory.cc",
       "reporting/metric_reporting_manager_lacros_factory.h",
+      "reporting/metric_reporting_manager_lacros_shutdown_notifier_factory.cc",
+      "reporting/metric_reporting_manager_lacros_shutdown_notifier_factory.h",
       "reporting/websites/website_metrics_retriever_lacros.cc",
       "reporting/websites/website_metrics_retriever_lacros.h",
     ]
@@ -663,6 +665,7 @@ source_set("unit_tests") {
       "policy/dlp/dlp_files_controller_lacros_unittest.cc",
       "reporting/device_reporting_settings_lacros_unittest.cc",
       "reporting/metric_reporting_manager_lacros_factory_unittest.cc",
+      "reporting/metric_reporting_manager_lacros_shutdown_notifier_factory_unittest.cc",
       "reporting/metric_reporting_manager_lacros_unittest.cc",
       "reporting/websites/website_metrics_retriever_lacros_unittest.cc",
     ]
