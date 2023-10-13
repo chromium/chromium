@@ -71,23 +71,8 @@ class COMPONENT_EXPORT(CHROMEOS_NETWORK) CellularESimInstaller {
   // a Shill configuration with the given |new_shill_properties|, and and will
   // enable and attempt to connect to the installed profile afterward. Both
   // |is_initial_install| and |install_method| are used for recording eSIM
-  // policy installation metrics. This function expects an inhibit lock of the
-  // cellular device to be provided. Callers should use the corresponding
-  // LockAndInstallProfileFromActivationCode() function if they do not have an
-  // inhibit lock prior to invocation.
+  // policy installation metrics.
   void InstallProfileFromActivationCode(
-      const std::string& activation_code,
-      const std::string& confirmation_code,
-      const dbus::ObjectPath& euicc_path,
-      base::Value::Dict new_shill_properties,
-      InstallProfileFromActivationCodeCallback callback,
-      bool is_initial_install,
-      cellular_setup::mojom::ProfileInstallMethod install_method,
-      std::unique_ptr<CellularInhibitor::InhibitLock> inhibit_lock);
-
-  // This is a helper function that will receive an inhibit lock of the cellular
-  // device before invoking LockAndInstallProfileFromActivationCode().
-  void LockAndInstallProfileFromActivationCode(
       const std::string& activation_code,
       const std::string& confirmation_code,
       const dbus::ObjectPath& euicc_path,

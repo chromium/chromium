@@ -172,7 +172,7 @@ class CellularESimInstallerTest : public testing::Test {
     absl::optional<std::string> out_service_path;
 
     base::RunLoop run_loop;
-    cellular_esim_installer_->LockAndInstallProfileFromActivationCode(
+    cellular_esim_installer_->InstallProfileFromActivationCode(
         activation_code, confirmation_code, euicc_path,
         std::move(new_shill_properties),
         base::BindLambdaForTesting(

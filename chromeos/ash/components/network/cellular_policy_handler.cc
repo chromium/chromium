@@ -361,7 +361,7 @@ void CellularPolicyHandler::PerformInstallESim(
 
     // Remote provisioning of eSIM profiles via SM-DP+ activation code in policy
     // does not require confirmation code.
-    cellular_esim_installer_->LockAndInstallProfileFromActivationCode(
+    cellular_esim_installer_->InstallProfileFromActivationCode(
         GetCurrentActivationCode().value(), /*confirmation_code=*/std::string(),
         euicc_path, std::move(new_shill_properties),
         base::BindOnce(
@@ -568,8 +568,7 @@ void CellularPolicyHandler::CompleteRefreshSmdxProfiles(
           weak_ptr_factory_.GetWeakPtr()),
       is_initial_install,
       is_smds ? ProfileInstallMethod::kViaSmds
-              : ProfileInstallMethod::kViaActivationCodeAfterSmds,
-      std::move(inhibit_lock));
+              : ProfileInstallMethod::kViaActivationCodeAfterSmds);
 }
 
 void CellularPolicyHandler::OnESimProfileInstallAttemptComplete(

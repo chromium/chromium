@@ -216,23 +216,6 @@ void CellularESimInstaller::InstallProfileFromActivationCode(
     base::Value::Dict new_shill_properties,
     InstallProfileFromActivationCodeCallback callback,
     bool is_initial_install,
-    ProfileInstallMethod install_method,
-    std::unique_ptr<CellularInhibitor::InhibitLock> inhibit_lock) {
-  DCHECK(inhibit_lock);
-  PerformInstallProfileFromActivationCode(
-      activation_code, confirmation_code, euicc_path,
-      std::move(new_shill_properties), is_initial_install, install_method,
-      CreateTimedInstallProfileCallback(std::move(callback)),
-      std::move(inhibit_lock));
-}
-
-void CellularESimInstaller::LockAndInstallProfileFromActivationCode(
-    const std::string& activation_code,
-    const std::string& confirmation_code,
-    const dbus::ObjectPath& euicc_path,
-    base::Value::Dict new_shill_properties,
-    InstallProfileFromActivationCodeCallback callback,
-    bool is_initial_install,
     ProfileInstallMethod install_method) {
   cellular_inhibitor_->InhibitCellularScanning(
       CellularInhibitor::InhibitReason::kInstallingProfile,

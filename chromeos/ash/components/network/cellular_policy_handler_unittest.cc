@@ -5,6 +5,7 @@
 #include "chromeos/ash/components/network/cellular_policy_handler.h"
 
 #include <memory>
+#include <queue>
 
 #include "ash/constants/ash_features.h"
 #include "base/logging.h"
@@ -34,6 +35,9 @@
 #include "third_party/cros_system_api/dbus/shill/dbus-constants.h"
 
 namespace ash {
+
+using InhibitReason = CellularInhibitor::InhibitReason;
+
 namespace {
 
 // EUICC constants
@@ -107,21 +111,24 @@ class CellularInhibitorObserver : public CellularInhibitor::Observer {
   }
 
   void OnInhibitStateChanged() override {
-    absl::optional<CellularInhibitor::InhibitReason> inhibit_reason =
+    absl::optional<InhibitReason> inhibit_reason =
         NetworkHandler::Get()->cellular_inhibitor()->GetInhibitReason();
     if (inhibit_reason.has_value()) {
-      last_inhibit_reason_ = inhibit_reason;
+      inhibit_reasons_.push(*inhibit_reason);
     }
   }
 
-  void CheckLastInhibitReason(
-      CellularInhibitor::InhibitReason last_inhibit_reason) {
-    EXPECT_TRUE(last_inhibit_reason_.has_value() &&
-                last_inhibit_reason_.value() == last_inhibit_reason);
+  absl::optional<InhibitReason> PopInhibitReason() {
+    absl::optional<InhibitReason> inhibit_reason;
+    if (!inhibit_reasons_.empty()) {
+      inhibit_reason = inhibit_reasons_.front();
+      inhibit_reasons_.pop();
+    }
+    return inhibit_reason;
   }
 
  private:
-  absl::optional<CellularInhibitor::InhibitReason> last_inhibit_reason_;
+  std::queue<InhibitReason> inhibit_reasons_;
   base::ScopedObservation<CellularInhibitor, CellularInhibitor::Observer>
       session_observation_{this};
 };
@@ -190,12 +197,20 @@ class CellularPolicyHandlerTest : public testing::Test {
 
   void AddEuiccs() {
     HermesManagerClient::Get()->GetTestInterface()->ClearEuiccs();
+
+    // We call FastForwardRefreshDelay() after each time we add an EUICC since
+    // adding an EUICC will trigger an attempt to refresh/request the list of
+    // installed profiles.
     HermesManagerClient::Get()->GetTestInterface()->AddEuicc(
         dbus::ObjectPath(kTestEuiccPath0), kTestEid0, /*is_active=*/true,
         /*physical_slot=*/0);
+    FastForwardRefreshDelay();
+    base::RunLoop().RunUntilIdle();
+
     HermesManagerClient::Get()->GetTestInterface()->AddEuicc(
         dbus::ObjectPath(kTestEuiccPath1), kTestEid1, /*is_active=*/false,
         /*physical_slot=*/1);
+    FastForwardRefreshDelay();
     base::RunLoop().RunUntilIdle();
   }
 
@@ -510,14 +525,17 @@ TEST_F(CellularPolicyHandlerTest_SmdsSupportEnabled_SecondEuiccDisabled,
           GenerateCellularPolicy(activation_code));
   ASSERT_TRUE(onc_config.has_value());
 
-  {
-    CellularInhibitorObserver cellular_inhibitor_observer;
-    InstallProfile(*onc_config);
-    cellular_inhibitor_observer.CheckLastInhibitReason(
-        CellularInhibitor::InhibitReason::kRequestingAvailableProfiles);
-  }
+  CellularInhibitorObserver cellular_inhibitor_observer;
+  InstallProfile(*onc_config);
 
   CompleteShillServiceAutoConnect(*onc_config);
+
+  EXPECT_EQ(InhibitReason::kRefreshingProfileList,
+            cellular_inhibitor_observer.PopInhibitReason());
+  EXPECT_EQ(InhibitReason::kRequestingAvailableProfiles,
+            cellular_inhibitor_observer.PopInhibitReason());
+  EXPECT_EQ(InhibitReason::kInstallingProfile,
+            cellular_inhibitor_observer.PopInhibitReason());
 
   EXPECT_TRUE(IsProfileInstalled(*onc_config, activation_code.value(),
                                  /*check_for_service=*/true));
@@ -571,14 +589,17 @@ TEST_F(CellularPolicyHandlerTest_SmdsSupportEnabled_SecondEuiccDisabled,
           GenerateCellularPolicy(activation_code));
   ASSERT_TRUE(onc_config.has_value());
 
-  {
-    CellularInhibitorObserver cellular_inhibitor_observer;
-    InstallProfile(*onc_config);
-    cellular_inhibitor_observer.CheckLastInhibitReason(
-        CellularInhibitor::InhibitReason::kRequestingAvailableProfiles);
-  }
+  CellularInhibitorObserver cellular_inhibitor_observer;
+  InstallProfile(*onc_config);
 
   CompleteShillServiceAutoConnect(*onc_config);
+
+  EXPECT_EQ(InhibitReason::kRefreshingProfileList,
+            cellular_inhibitor_observer.PopInhibitReason());
+  EXPECT_EQ(InhibitReason::kRequestingAvailableProfiles,
+            cellular_inhibitor_observer.PopInhibitReason());
+  EXPECT_EQ(InhibitReason::kInstallingProfile,
+            cellular_inhibitor_observer.PopInhibitReason());
 
   EXPECT_TRUE(IsProfileInstalled(*onc_config, different_activation_code_value,
                                  /*check_for_service=*/true));
@@ -613,13 +634,9 @@ TEST_F(CellularPolicyHandlerTest_SmdsSupportEnabled_SecondEuiccDisabled,
           GenerateCellularPolicy(activation_code));
   ASSERT_TRUE(onc_config.has_value());
 
-  // Queue a successful result for each time we refresh the installed profiles
-  // (these tests use two EUICCs).
-  for (size_t i = 0;
-       i < HermesManagerClient::Get()->GetAvailableEuiccs().size(); ++i) {
-    HermesEuiccClient::Get()->GetTestInterface()->QueueHermesErrorStatus(
-        HermesResponseStatus::kSuccess);
-  }
+  // Queue a success result for the call to refresh the profile list.
+  HermesEuiccClient::Get()->GetTestInterface()->QueueHermesErrorStatus(
+      HermesResponseStatus::kSuccess);
 
   // Queue a failure result for the SM-DS scan itself.
   HermesEuiccClient::Get()->GetTestInterface()->QueueHermesErrorStatus(
@@ -664,12 +681,15 @@ TEST_F(CellularPolicyHandlerTest_SmdsSupportEnabled_SecondEuiccDisabled,
       ->SetNextEnableCarrierProfileResult(
           HermesResponseStatus::kErrorWrongState);
 
-  {
-    CellularInhibitorObserver cellular_inhibitor_observer;
-    InstallProfile(*onc_config);
-    cellular_inhibitor_observer.CheckLastInhibitReason(
-        CellularInhibitor::InhibitReason::kRequestingAvailableProfiles);
-  }
+  CellularInhibitorObserver cellular_inhibitor_observer;
+  InstallProfile(*onc_config);
+
+  EXPECT_EQ(InhibitReason::kRefreshingProfileList,
+            cellular_inhibitor_observer.PopInhibitReason());
+  EXPECT_EQ(InhibitReason::kRequestingAvailableProfiles,
+            cellular_inhibitor_observer.PopInhibitReason());
+  EXPECT_EQ(InhibitReason::kInstallingProfile,
+            cellular_inhibitor_observer.PopInhibitReason());
 
   EXPECT_TRUE(IsProfileInstalled(*onc_config, activation_code.value(),
                                  /*check_for_service=*/true));
