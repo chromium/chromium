@@ -1692,6 +1692,7 @@ typedef NSDiffableDataSourceSnapshot<NSString*, GridItemIdentifier*> Snapshot;
 
   // Select the collection view item for the selected index.
   NSInteger selectedIndex = self.selectedIndex;
+  CHECK(selectedIndex >= 0);
   // Check `selectedIndex` boundaries in order to filter out possible race
   // conditions while mutating the collection.
   if (selectedIndex == NSNotFound ||
