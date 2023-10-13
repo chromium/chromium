@@ -8,6 +8,7 @@
 #include <utility>
 
 #include "base/command_line.h"
+#include "base/feature_list.h"
 #include "base/files/file_path.h"
 #include "base/functional/bind.h"
 #include "base/json/values_util.h"
@@ -28,6 +29,7 @@
 #include "chrome/browser/web_applications/os_integration/os_integration_manager.h"
 #include "chrome/browser/web_applications/web_app_registrar.h"
 #include "chrome/browser/web_applications/web_app_ui_manager.h"
+#include "chrome/common/chrome_features.h"
 #include "third_party/abseil-cpp/absl/types/optional.h"
 #include "ui/base/window_open_disposition.h"
 #include "url/gurl.h"
@@ -105,6 +107,25 @@ base::Value LaunchWebApp(apps::AppLaunchParams params,
         break;
     }
   }
+
+// TODO(crbug.com/1491299): Support Lacros.
+#if BUILDFLAG(IS_CHROMEOS_ASH)
+  // With Shortstand enabled all browser shortcuts (backed by shortcut web apps)
+  // open in a browser tab and all non-shortcut web apps open in a standalone
+  // window.
+  if (base::FeatureList::IsEnabled(features::kCrosShortstand)) {
+    bool is_shortcut_app = app_lock.registrar().IsShortcutApp(params.app_id);
+    if (is_shortcut_app) {
+      params.container = apps::LaunchContainer::kLaunchContainerTab;
+      params.disposition = WindowOpenDisposition::NEW_FOREGROUND_TAB;
+    } else {
+      params.container = apps::LaunchContainer::kLaunchContainerWindow;
+      params.disposition = WindowOpenDisposition::NEW_WINDOW;
+    }
+    debug_value.Set("is_shortcut", is_shortcut_app);
+  }
+#endif
+
   DCHECK_NE(params.container, apps::LaunchContainer::kLaunchContainerNone);
   DCHECK_NE(params.disposition, WindowOpenDisposition::UNKNOWN);
 

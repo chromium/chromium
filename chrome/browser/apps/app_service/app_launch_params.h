@@ -60,6 +60,11 @@ struct AppLaunchParams {
   std::string launch_id;
 
   // The container type to launch the application in.
+  // With the Shortstand project, this value will be overridden on Chrome OS.
+  // When launching a web app, the container will always be
+  // kLaunchContainerWindow.
+  // When launching browser shortcut backed by the web app system, the container
+  // will always be kLaunchContainerTab.
   LaunchContainer container;
 
   // If container is TAB, this field controls how the tab is opened.
