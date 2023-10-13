@@ -61,6 +61,38 @@ class MockSelectionDelegate : public PopupRowView::SelectionDelegate {
               (override));
 };
 
+class MockPopupCellView : public PopupCellView {
+ public:
+  MOCK_METHOD(bool,
+              HandleKeyPressEvent,
+              (const content::NativeWebKeyboardEvent& event),
+              (override));
+};
+
+class MockingTestPopupRowStrategy : public TestPopupRowStrategy {
+ public:
+  MockingTestPopupRowStrategy(int line_number, bool has_control)
+      : TestPopupRowStrategy(line_number, has_control) {}
+  ~MockingTestPopupRowStrategy() override = default;
+
+  std::unique_ptr<PopupCellView> CreateContent() override {
+    auto content_cell = std::make_unique<NiceMock<MockPopupCellView>>();
+    last_created_mock_content_cell_ = content_cell.get();
+    return content_cell;
+  }
+
+  std::unique_ptr<PopupCellView> CreateControl() override {
+    return std::make_unique<NiceMock<MockPopupCellView>>();
+  }
+
+  MockPopupCellView* last_created_content_cell() {
+    return last_created_mock_content_cell_;
+  }
+
+ private:
+  raw_ptr<MockPopupCellView> last_created_mock_content_cell_ = nullptr;
+};
+
 }  // namespace
 
 class PopupRowViewTest : public ChromeViewsTestBase {
@@ -74,10 +106,13 @@ class PopupRowViewTest : public ChromeViewsTestBase {
   }
 
   void ShowView(int line_number, bool has_control) {
+    ShowView(std::make_unique<TestPopupRowStrategy>(line_number, has_control));
+  }
+
+  void ShowView(std::unique_ptr<TestPopupRowStrategy> strategy) {
     row_view_ = widget_->SetContentsView(std::make_unique<PopupRowView>(
         mock_a11y_selection_delegate_, mock_selection_delegate_,
-        mock_controller_.GetWeakPtr(),
-        std::make_unique<TestPopupRowStrategy>(line_number, has_control)));
+        mock_controller_.GetWeakPtr(), std::move(strategy)));
     ON_CALL(mock_selection_delegate_, SetSelectedCell)
         .WillByDefault([this](absl::optional<CellIndex> cell,
                               PopupCellSelectionSource) {
@@ -179,7 +214,7 @@ TEST_F(PopupRowViewTest, GestureEvents) {
       selection_delegate(),
       SetSelectedCell(absl::make_optional<CellIndex>(0u, CellType::kContent),
                       PopupCellSelectionSource::kMouse));
-  EXPECT_CALL(controller(), AcceptSuggestion(0, _));
+  EXPECT_CALL(controller(), AcceptSuggestion);
   generator().GestureTapAt(
       row_view().GetContentView().GetBoundsInScreen().CenterPoint());
 }
@@ -266,21 +301,35 @@ TEST_F(PopupRowViewTest, NotifyAXSelectionCalledOnChangesOnly) {
 TEST_F(PopupRowViewTest, ReturnKeyEventsAreHandled) {
   ShowView(0, /*has_control=*/true);
   ASSERT_TRUE(row_view().GetControlView());
+
+  row_view().SetSelectedCell(CellType::kContent);
+  EXPECT_CALL(controller(), AcceptSuggestion);
+  EXPECT_TRUE(SimulateKeyPress(ui::VKEY_RETURN));
+
+  row_view().SetSelectedCell(CellType::kControl);
+  EXPECT_CALL(controller(), AcceptSuggestion).Times(0);
+  EXPECT_FALSE(SimulateKeyPress(ui::VKEY_RETURN));
+
+  row_view().SetSelectedCell(CellType::kContent);
+  controller().InvalidateWeakPtrs();
+  EXPECT_FALSE(SimulateKeyPress(ui::VKEY_RETURN));
+}
+
+TEST_F(PopupRowViewTest, KeyboardEventsArePassedToControlCell) {
+  auto strategy = std::make_unique<MockingTestPopupRowStrategy>(0, true);
+  MockingTestPopupRowStrategy* strategy_ref = strategy.get();
+  ShowView(std::move(strategy));
   row_view().SetSelectedCell(CellType::kContent);
 
-  StrictMock<base::MockCallback<PopupCellView::OnAcceptedCallback>>
-      content_callback;
-  StrictMock<base::MockCallback<PopupCellView::OnAcceptedCallback>>
-      control_callback;
+  ASSERT_TRUE(strategy_ref->last_created_content_cell());
 
-  row_view().GetContentView().SetOnAcceptedCallback(content_callback.Get());
-  row_view().GetControlView()->SetOnAcceptedCallback(control_callback.Get());
+  EXPECT_CALL(*strategy_ref->last_created_content_cell(), HandleKeyPressEvent)
+      .WillOnce(Return(true));
+  EXPECT_TRUE(SimulateKeyPress(ui::VKEY_LEFT));
 
-  EXPECT_CALL(content_callback, Run);
-  EXPECT_TRUE(SimulateKeyPress(ui::VKEY_RETURN));
-  row_view().SetSelectedCell(CellType::kControl);
-  EXPECT_CALL(control_callback, Run);
-  EXPECT_TRUE(SimulateKeyPress(ui::VKEY_RETURN));
+  EXPECT_CALL(*strategy_ref->last_created_content_cell(), HandleKeyPressEvent)
+      .WillOnce(Return(false));
+  EXPECT_FALSE(SimulateKeyPress(ui::VKEY_LEFT));
 }
 
 TEST_F(PopupRowViewTest,
@@ -290,7 +339,7 @@ TEST_F(PopupRowViewTest,
   generator().MoveMouseTo(
       row_view().GetContentView().GetBoundsInScreen().CenterPoint());
   Paint();
-  EXPECT_CALL(controller(), AcceptSuggestion(0, _)).Times(0);
+  EXPECT_CALL(controller(), AcceptSuggestion).Times(0);
   generator().ClickLeftButton();
 
   generator().MoveMouseTo(kOutOfBounds);
@@ -298,7 +347,7 @@ TEST_F(PopupRowViewTest,
   generator().MoveMouseTo(
       row_view().GetContentView().GetBoundsInScreen().CenterPoint());
   // If the mouse has been outside before, the accept click is passed through.
-  EXPECT_CALL(controller(), AcceptSuggestion(0, _));
+  EXPECT_CALL(controller(), AcceptSuggestion);
   generator().ClickLeftButton();
 }
 
@@ -311,7 +360,7 @@ TEST_F(PopupRowViewTest,
   generator().MoveMouseTo(
       row_view().GetContentView().GetBoundsInScreen().CenterPoint());
   Paint();
-  EXPECT_CALL(controller(), AcceptSuggestion(0, _));
+  EXPECT_CALL(controller(), AcceptSuggestion);
   generator().ClickLeftButton();
 }
 

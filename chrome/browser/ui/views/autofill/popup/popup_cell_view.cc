@@ -39,16 +39,8 @@ PopupCellView::~PopupCellView() = default;
 
 bool PopupCellView::HandleKeyPressEvent(
     const content::NativeWebKeyboardEvent& event) {
-  switch (event.windows_key_code) {
-    case ui::VKEY_RETURN:
-      if (on_accepted_callback_) {
-        on_accepted_callback_.Run(base::TimeTicks::Now());
-        return true;
-      }
-      return false;
-    default:
-      return false;
-  }
+  // TODO(1491373): Remove when PopupCellWithButtonView gets reworked as a row.
+  return false;
 }
 
 void PopupCellView::SetSelected(bool selected) {

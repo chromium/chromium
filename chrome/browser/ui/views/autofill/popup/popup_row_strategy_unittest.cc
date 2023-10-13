@@ -384,4 +384,14 @@ TEST_F(PopupSuggestionStrategyTest, AutocompleteDeleteButtonSetsAccessibility) {
       node_data.GetString16Attribute(ax::mojom::StringAttribute::kName));
 }
 
+TEST_F(PopupSuggestionStrategyTest, AutocompleteControlsFocusByKeyboardKeys) {
+  ShowAutocompleteSuggestion();
+
+  SimulateKeyPress(ui::VKEY_RIGHT);
+  EXPECT_TRUE(cell_with_button_view().GetCellButtonFocusedForTest());
+
+  SimulateKeyPress(ui::VKEY_LEFT);
+  EXPECT_FALSE(cell_with_button_view().GetCellButtonFocusedForTest());
+}
+
 }  // namespace autofill

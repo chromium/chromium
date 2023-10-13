@@ -76,6 +76,7 @@ class PopupCellWithButtonView : public PopupCellView,
   // and its controller is overwritten.
   void SetCellButton(std::unique_ptr<views::ImageButton> cell_button);
   views::ImageButton* GetCellButtonForTest() { return button_; }
+  bool GetCellButtonFocusedForTest() { return button_focused_; }
 
   // Determines under which conditions the button (if there is one) is visible.
   enum class CellButtonBehavior {

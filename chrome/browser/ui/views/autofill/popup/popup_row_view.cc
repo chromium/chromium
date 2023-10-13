@@ -364,15 +364,25 @@ bool PopupRowView::HandleKeyPressEvent(
     const content::NativeWebKeyboardEvent& event) {
   // Some cells may want to define their own behavior.
   CHECK(GetSelectedCell());
-  if (*GetSelectedCell() == CellType::kControl &&
-      control_view_->HandleKeyPressEvent(event)) {
-    return true;
-  }
+
+  // TODO(1491373): Temporary left over for PopupCellWithButtonView, remove when
+  // it gets reworked as a row.
   if (*GetSelectedCell() == CellType::kContent &&
       content_view_->HandleKeyPressEvent(event)) {
     return true;
   }
-  return false;
+
+  switch (event.windows_key_code) {
+    case ui::VKEY_RETURN:
+      if (*GetSelectedCell() == CellType::kContent && controller_) {
+        controller_->AcceptSuggestion(strategy_->GetLineNumber(),
+                                      base::TimeTicks::Now());
+        return true;
+      }
+      return false;
+    default:
+      return false;
+  }
 }
 
 void PopupRowView::RunOnAcceptedForEvent(const ui::Event& event) {
