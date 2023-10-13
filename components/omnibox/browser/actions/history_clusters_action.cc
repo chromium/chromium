@@ -123,16 +123,6 @@ void HistoryClustersAction::RecordActionShown(size_t position,
   base::UmaHistogramBoolean("Omnibox.SuggestionUsed.ResumeJourneyCTR",
                             executed);
 
-  // Record cluster keyword score UMA metrics.
-  base::UmaHistogramCounts1000(
-      "Omnibox.ResumeJourneyShown.ClusterKeywordScore",
-      TransformKeywordScoreForUma(matched_keyword_data_.score));
-  if (executed) {
-    base::UmaHistogramCounts1000(
-        "Omnibox.SuggestionUsed.ResumeJourney.ClusterKeywordScore",
-        TransformKeywordScoreForUma(matched_keyword_data_.score));
-  }
-
   // Record cluster keyword type UMA metrics.
   RecordShownUsedEnumAndCtrMetrics<
       history::ClusterKeywordData::ClusterKeywordType>(
