@@ -228,14 +228,31 @@ INSTANTIATE_TEST_SUITE_P(
     testing::Values(OfferNotificationBubbleViewsInteractiveUiTestData{
         "GPayPromoCode", AutofillOfferData::OfferType::GPAY_PROMO_CODE_OFFER}));
 
+// TODO(crbug.com/1491942): This fails with the field trial testing config.
+class OfferNotificationBubbleViewsInteractiveUiTestNoTestingConfig
+    : public OfferNotificationBubbleViewsInteractiveUiTest {
+ public:
+  void SetUpCommandLine(base::CommandLine* command_line) override {
+    OfferNotificationBubbleViewsInteractiveUiTest::SetUpCommandLine(
+        command_line);
+    command_line->AppendSwitch("disable-field-trial-config");
+  }
+};
+INSTANTIATE_TEST_SUITE_P(
+    GPayPromoCode,
+    OfferNotificationBubbleViewsInteractiveUiTestNoTestingConfig,
+    testing::Values(OfferNotificationBubbleViewsInteractiveUiTestData{
+        "GPayPromoCode", AutofillOfferData::OfferType::GPAY_PROMO_CODE_OFFER}));
+
 // TODO(https://crbug.com/1289161): Flaky failures.
 #if BUILDFLAG(IS_LINUX)
 #define MAYBE_Navigation DISABLED_Navigation
 #else
 #define MAYBE_Navigation Navigation
 #endif
-IN_PROC_BROWSER_TEST_P(OfferNotificationBubbleViewsInteractiveUiTest,
-                       MAYBE_Navigation) {
+IN_PROC_BROWSER_TEST_P(
+    OfferNotificationBubbleViewsInteractiveUiTestNoTestingConfig,
+    MAYBE_Navigation) {
   GURL::Replacements replace_scheme;
   replace_scheme.SetSchemeStr("http");
 
@@ -881,8 +898,16 @@ IN_PROC_BROWSER_TEST_P(
                 base::ASCIIToUTF16(GetDefaultTestSeeDetailsText()));
 }
 
-using OfferNotificationBubbleViewsWithDiscountOnChromeHistoryClusterTest =
-    OfferNotificationBubbleViewsInteractiveUiTest;
+// TODO(crbug.com/1491942): This fails with the field trial testing config.
+class OfferNotificationBubbleViewsWithDiscountOnChromeHistoryClusterTest
+    : public OfferNotificationBubbleViewsInteractiveUiTest {
+ public:
+  void SetUpCommandLine(base::CommandLine* command_line) override {
+    OfferNotificationBubbleViewsInteractiveUiTest::SetUpCommandLine(
+        command_line);
+    command_line->AppendSwitch("disable-field-trial-config");
+  }
+};
 
 INSTANTIATE_TEST_SUITE_P(
     FreeListingCoupon,
