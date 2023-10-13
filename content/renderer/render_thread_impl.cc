@@ -1102,6 +1102,11 @@ RenderThreadImpl::GetVideoFrameCompositorContextProvider(
 
   bool support_locking = false;
   bool support_gles2_interface = true;
+  // Use RasterInterface if kRasterInterfaceInVideoResourceUpdater is enabled.
+  if (base::FeatureList::IsEnabled(
+          media::kRasterInterfaceInVideoResourceUpdater)) {
+    support_gles2_interface = false;
+  }
   bool support_raster_interface = true;
   bool support_oop_rasterization = false;
   bool support_grcontext = false;
