@@ -314,7 +314,7 @@
   {
     "name": "arc-input-overlay-beta",
     "owners": [ "cuicuiruan@google.com", "arc-gaming@google.com" ],
-    "expiry_milestone": 120
+    "expiry_milestone": 130
   },
   { "name": "arc-instant-response-window-open",
     "owners": [ "sstan", "mduggan" ],
