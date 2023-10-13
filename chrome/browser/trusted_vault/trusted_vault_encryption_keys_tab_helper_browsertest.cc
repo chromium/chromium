@@ -111,38 +111,6 @@ void ExecJsSetClientEncryptionKeys(content::RenderFrameHost* render_frame_host,
   std::ignore = content::ExecJs(render_frame_host, script);
 }
 
-void ExecJsSetClientEncryptionKeysWithMultipleKeys(
-    content::RenderFrameHost* render_frame_host,
-    const std::vector<uint8_t>& key1,
-    const std::vector<uint8_t>& key2) {
-  DCHECK_EQ(key1.size(), 1u);
-  DCHECK_EQ(key2.size(), 1u);
-  const std::string script = base::StringPrintf(
-      R"(
-      if (chrome.setClientEncryptionKeys === undefined) {
-        console.log('%s');
-      } else {
-        let key1 = new ArrayBuffer(1);
-        let view1 = new Uint8Array(key1);
-        view1[0] = %d;
-        let key2 = new ArrayBuffer(1);
-        let view2 = new Uint8Array(key2);
-        view2[0] = %d;
-        chrome.setClientEncryptionKeys(
-            () => {console.log('%s');},
-            "%s",
-            new Map([
-                ['users/me/securitydomains/chromesync',
-                 [{epoch: 1, key: key1}, {epoch: 2, key: key2}]]
-            ]));
-      }
-    )",
-      kConsoleFailureMessage, key1[0], key2[0], kConsoleSuccessMessage,
-      kFakeGaiaId);
-
-  std::ignore = content::ExecJs(render_frame_host, script);
-}
-
 #if !BUILDFLAG(IS_ANDROID)
 void ExecJsSetClientEncryptionKeysForInvalidSecurityDomain(
     content::RenderFrameHost* render_frame_host,
@@ -373,6 +341,38 @@ IN_PROC_BROWSER_TEST_F(TrustedVaultEncryptionKeysTabHelperBrowserTest,
 }
 
 #else
+
+void ExecJsSetClientEncryptionKeysWithMultipleKeys(
+    content::RenderFrameHost* render_frame_host,
+    const std::vector<uint8_t>& key1,
+    const std::vector<uint8_t>& key2) {
+  DCHECK_EQ(key1.size(), 1u);
+  DCHECK_EQ(key2.size(), 1u);
+  const std::string script = base::StringPrintf(
+      R"(
+      if (chrome.setClientEncryptionKeys === undefined) {
+        console.log('%s');
+      } else {
+        let key1 = new ArrayBuffer(1);
+        let view1 = new Uint8Array(key1);
+        view1[0] = %d;
+        let key2 = new ArrayBuffer(1);
+        let view2 = new Uint8Array(key2);
+        view2[0] = %d;
+        chrome.setClientEncryptionKeys(
+            () => {console.log('%s');},
+            "%s",
+            new Map([
+                ['users/me/securitydomains/chromesync',
+                 [{epoch: 1, key: key1}, {epoch: 2, key: key2}]]
+            ]));
+      }
+    )",
+      kConsoleFailureMessage, key1[0], key2[0], kConsoleSuccessMessage,
+      kFakeGaiaId);
+
+  std::ignore = content::ExecJs(render_frame_host, script);
+}
 
 IN_PROC_BROWSER_TEST_F(TrustedVaultEncryptionKeysTabHelperBrowserTest,
                        ShouldBindSyncEncryptionKeysApiInMainFrame) {

@@ -210,7 +210,7 @@ class AppShimListenerBrowserTest : public InProcessBrowserTest,
   void ReopenApp() override {}
   void FilesOpened(const std::vector<base::FilePath>& files) override {}
   void ProfileSelectedFromMenu(const base::FilePath& profile_path) override {}
-  void OpenAppSettings() override{};
+  void OpenAppSettings() override {}
   void UrlsOpened(const std::vector<GURL>& urls) override {}
   void OpenAppWithOverrideUrl(const GURL& override_url) override {}
   void ApplicationWillTerminate() override {}

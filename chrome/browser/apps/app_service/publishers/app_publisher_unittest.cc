@@ -46,7 +46,7 @@ class TestPublisher : public AppPublisher {
               LaunchSource launch_source,
               WindowInfoPtr window_info) override {}
   void LaunchAppWithParams(AppLaunchParams&& params,
-                           LaunchCallback callback) override{};
+                           LaunchCallback callback) override {}
 
   // These methods are private in AppPublisher, we expose them here for unit
   // testing.

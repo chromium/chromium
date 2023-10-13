@@ -562,7 +562,10 @@ class WebContentsCloseWaiter : public content::WebContentsObserver {
   WebContentsCloseWaiter(const WebContentsCloseWaiter&) = delete;
   WebContentsCloseWaiter& operator=(const WebContentsCloseWaiter&) = delete;
 
-  void Wait() { future_.Wait(); }
+  void Wait() {
+    // TODO: handle return value.
+    std::ignore = future_.Wait();
+  }
 
  private:
   // content::WebContentsObserver overrides.

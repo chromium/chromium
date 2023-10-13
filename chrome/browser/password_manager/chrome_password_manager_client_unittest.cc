@@ -614,7 +614,7 @@ TEST_F(ChromePasswordManagerClientTest, ReceivesAutofillPredictions) {
         {autofill::AutofillManagerEvent::kFormsSeen});
     autofill_driver->renderer_events().FormsSeen(/*updated_forms=*/{form},
                                                  /*removed_forms=*/{});
-    waiter.Wait(/*num_awaiting_calls=*/1);
+    ASSERT_TRUE(waiter.Wait(/*num_awaiting_calls=*/1));
   }
 
   // Simulate that the field types have been determined, since server
@@ -673,7 +673,7 @@ TEST_F(ChromePasswordManagerClientTest,
                                              /*removed_forms=*/{});
     child_driver->renderer_events().FormsSeen(/*updated_forms=*/{child_form},
                                               /*removed_forms=*/{});
-    waiter.Wait(/*num_awaiting_calls=*/2);
+    ASSERT_TRUE(waiter.Wait(/*num_awaiting_calls=*/2));
   }
 
   // Simulate that the field types have been determined, since server

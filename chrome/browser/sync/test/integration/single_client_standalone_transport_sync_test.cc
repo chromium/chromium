@@ -30,11 +30,13 @@
 
 namespace {
 
+#if !BUILDFLAG(IS_ANDROID)
 base::FilePath GetTestFilePathForCacheGuid() {
   base::FilePath user_data_path;
   base::PathService::Get(chrome::DIR_USER_DATA, &user_data_path);
   return user_data_path.AppendASCII("SyncTestTmpCacheGuid");
 }
+#endif
 
 #if BUILDFLAG(IS_CHROMEOS_ASH)
 class SyncDisabledViaDashboardChecker : public SingleClientStatusChangeChecker {

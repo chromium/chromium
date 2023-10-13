@@ -42,7 +42,7 @@ StructuredMetricsMixin::StructuredMetricsMixin(
     InProcessBrowserTestMixinHost* host,
     bool setup_profile)
     : InProcessBrowserTestMixin(host), setup_profile_(setup_profile) {
-  temp_dir_.CreateUniqueTempDir();
+  EXPECT_TRUE(temp_dir_.CreateUniqueTempDir());
 }
 
 StructuredMetricsMixin::~StructuredMetricsMixin() {

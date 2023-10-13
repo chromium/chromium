@@ -9,7 +9,7 @@ class Profile;
 
 namespace download {
 class DownloadItem;
-};
+}
 
 // Utilities for determining how to display a download in the desktop UI based
 // on Safe Browsing state and verdict.

@@ -117,10 +117,10 @@ class ChromeBrowsingDataModelDelegateTest : public testing::Test {
     // Get salts for test keys, so that they are stored in the service.
     base::test::TestFuture<const std::string&> future;
     media_device_salt_service()->GetSalt(StorageKey1(), future.GetCallback());
-    future.Wait();
+    ASSERT_TRUE(future.Wait());
     future.Clear();
     media_device_salt_service()->GetSalt(StorageKey2(), future.GetCallback());
-    future.Wait();
+    ASSERT_TRUE(future.Wait());
 
     base::test::TestFuture<std::vector<blink::StorageKey>> all_keys_future;
     media_device_salt_service()->GetAllStorageKeys(
@@ -177,7 +177,7 @@ TEST_F(ChromeBrowsingDataModelDelegateTest, RemoveDataKeyForMediaDeviceSalts) {
       {static_cast<BrowsingDataModel::StorageType>(
           ChromeBrowsingDataModelDelegate::StorageType::kMediaDeviceSalt)},
       done_future.GetCallback());
-  done_future.Wait();
+  ASSERT_TRUE(done_future.Wait());
 
   base::test::TestFuture<std::vector<blink::StorageKey>> all_keys_future;
   media_device_salt_service()->GetAllStorageKeys(all_keys_future.GetCallback());

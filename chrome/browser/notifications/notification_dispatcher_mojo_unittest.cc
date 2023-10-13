@@ -75,17 +75,6 @@ class MockNotificationProvider
       (override));
 };
 
-std::vector<mac_notifications::mojom::NotificationIdentifierPtr>
-CreateOneNotificationList() {
-  std::vector<mac_notifications::mojom::NotificationIdentifierPtr>
-      notifications;
-  auto profile_id = mac_notifications::mojom::ProfileIdentifier::New(
-      kProfileId, /*incognito=*/true);
-  notifications.push_back(mac_notifications::mojom::NotificationIdentifier::New(
-      kNotificationId, std::move(profile_id)));
-  return notifications;
-}
-
 class FakeMacNotificationProviderFactory
     : public MacNotificationProviderFactory,
       public mac_notifications::mojom::MacNotificationProvider {

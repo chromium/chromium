@@ -2606,9 +2606,9 @@ IN_PROC_BROWSER_TEST_F(AutofillInteractiveTest,
   // Hide autofill preview.
   content::RenderWidgetHost* render_widget_host =
       GetWebContents()->GetRenderWidgetHostView()->GetRenderWidgetHost();
-  SendKeyToPopupAndWait(ui::DomKey::ESCAPE,
-                        {ObservedUiEvents::kSuggestionsHidden},
-                        render_widget_host);
+  ASSERT_TRUE(SendKeyToPopupAndWait(ui::DomKey::ESCAPE,
+                                    {ObservedUiEvents::kSuggestionsHidden},
+                                    render_widget_host));
   ASSERT_FALSE(IsPopupShown());
 
   // Select element on `other` and wait for `onchange` event.

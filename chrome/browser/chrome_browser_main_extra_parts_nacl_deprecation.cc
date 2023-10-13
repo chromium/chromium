@@ -16,6 +16,7 @@
 
 namespace {
 
+#if BUILDFLAG(ENABLE_NACL)
 bool ShouldNaClBeAllowed() {
   // Enabled by policy.
   if (g_browser_process->local_state()->GetBoolean(
@@ -24,6 +25,7 @@ bool ShouldNaClBeAllowed() {
   }
   return base::FeatureList::IsEnabled(kNaclAllow);
 }
+#endif
 
 }  // namespace
 

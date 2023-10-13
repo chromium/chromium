@@ -47,6 +47,7 @@ const char* kFirstPartyHost = "a.test";
 const char* kThirdPartyHost1 = "b.test";
 const char* kThirdPartyHost2 = "c.test";
 
+#if !BUILDFLAG(IS_CHROMEOS_ASH)
 // Creates a Original Guest Profile (not OTR Profile) for testing.
 Profile& CreateOriginalGuestProfile() {
   Profile& original_guest_profile = profiles::testing::CreateProfileSync(
@@ -65,6 +66,8 @@ Profile* CreateRegularProfile() {
 
   return profile_manager->GetProfile(new_path);
 }
+#endif
+
 }  // namespace
 
 class UpdaterServiceBrowserTest : public PlatformBrowserTest {

@@ -264,7 +264,7 @@ TEST_P(WebAppInstallFinalizerUnitTest, OnWebAppManifestUpdatedTriggered) {
                          OsHooksErrors>
       update_future;
   finalizer().FinalizeUpdate(*info, update_future.GetCallback());
-  update_future.Wait();
+  ASSERT_TRUE(update_future.Wait());
   EXPECT_TRUE(install_manager_observer_->web_app_manifest_updated_called());
 }
 

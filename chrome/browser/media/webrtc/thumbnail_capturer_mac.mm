@@ -421,7 +421,7 @@ class API_AVAILABLE(macos(13.2)) ThumbnailCapturerMac
     : public ThumbnailCapturer {
  public:
   ThumbnailCapturerMac();
-  ~ThumbnailCapturerMac() override{};
+  ~ThumbnailCapturerMac() override {}
 
   void Start(Consumer* callback) override;
 

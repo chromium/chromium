@@ -883,7 +883,8 @@ class NotificationPlatformBridgeLinuxImpl
                                      kMethodCloseNotification);
         dbus::MessageWriter writer(&method_call);
         writer.AppendUint32(data->dbus_id);
-        notification_proxy_->CallMethodAndBlock(
+        // TODO: resolve if std::ignore is ok.
+        std::ignore = notification_proxy_->CallMethodAndBlock(
             &method_call, dbus::ObjectProxy::TIMEOUT_USE_DEFAULT);
         to_erase.push_back(data);
       }

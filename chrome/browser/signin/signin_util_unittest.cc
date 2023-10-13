@@ -34,12 +34,6 @@ const char kLegacyPolicyPrimaryAccountStrictKeepExistingData[] =
 const char kLegacyPolicyPrimaryAccountKeepExistingData[] =
     "primary_account_keep_existing_data";
 
-std::string FormatForLogging(const std::string& local_policy,
-                             const std::string& intercepted_policy) {
-  return "Local policy : " + local_policy +
-         ", Intercepted policy : " + intercepted_policy;
-}
-
 }  // namespace
 
 class SigninUtilTest : public BrowserWithTestWindowTest {

@@ -1704,7 +1704,7 @@ class PasswordsPrivateDelegateImplMockTaskEnvironmentTest
       : profile_manager_(TestingBrowserProcess::GetGlobal()) {}
 
   void SetUp() override {
-    profile_manager_.SetUp();
+    ASSERT_TRUE(profile_manager_.SetUp());
 
     profile_ = profile_manager_.CreateTestingProfile("test_profile");
     web_contents_ = web_contents_factory_.CreateWebContents(profile_);

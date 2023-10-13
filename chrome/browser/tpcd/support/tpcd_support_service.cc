@@ -122,7 +122,7 @@ void TpcdSupportService::OnStatusChanged(const url::Origin& origin,
 
 void TpcdSupportService::OnPersistedTokensCleared() {
   ClearTpcdSupportSettings();
-};
+}
 
 std::string TpcdSupportService::trial_name() {
   return kTrialName;

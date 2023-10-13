@@ -710,7 +710,7 @@ IN_PROC_BROWSER_TEST_F(IsolatedWebAppBrowsingDataClearingTest,
     // All cookies should be cleared, 0 left.
     EXPECT_EQ(GetAllCookies(partition).size(), 0UL);
   }
-};
+}
 
 IN_PROC_BROWSER_TEST_F(IsolatedWebAppBrowsingDataClearingTest,
                        CrossOriginIframeClearSiteDataHeader) {

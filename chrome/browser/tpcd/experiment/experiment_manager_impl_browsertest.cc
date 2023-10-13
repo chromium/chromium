@@ -185,9 +185,9 @@ const SyntheticTrialTestCase kTestCases[] = {
     },
 };
 
-INSTANTIATE_TEST_CASE_P(All,
-                        ExperimentManagerImplSyntheticTrialTest,
-                        testing::ValuesIn(kTestCases));
+INSTANTIATE_TEST_SUITE_P(All,
+                         ExperimentManagerImplSyntheticTrialTest,
+                         testing::ValuesIn(kTestCases));
 #endif  // !BUILDFLAG(IS_ANDROID)
 
 }  // namespace tpcd::experiment

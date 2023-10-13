@@ -107,7 +107,8 @@ class TwoClientGeneratedIconFixSyncTest : public WebAppsSyncTestBase {
     base::test::TestFuture<void> install_locally_future;
     fake_providers_[destination]->scheduler().InstallAppLocally(
         app_id, install_locally_future.GetCallback());
-    install_locally_future.Wait();
+    // TODO: handle return value.
+    std::ignore = install_locally_future.Wait();
 #endif  // !BUILDFLAG(IS_CHROMEOS)
 
     return app_id;

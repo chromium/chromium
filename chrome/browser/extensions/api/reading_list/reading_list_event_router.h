@@ -33,7 +33,7 @@ class ReadingListEventRouter : public KeyedService,
 
  private:
   // ReadingListModelObserver:
-  void ReadingListModelLoaded(const ReadingListModel* model) override{};
+  void ReadingListModelLoaded(const ReadingListModel* model) override {}
   void ReadingListDidAddEntry(const ReadingListModel* model,
                               const GURL& url,
                               reading_list::EntrySource source) override;

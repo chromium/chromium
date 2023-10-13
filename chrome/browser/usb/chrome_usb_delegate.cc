@@ -46,6 +46,7 @@ UsbChooserContext* GetChooserContext(content::BrowserContext* browser_context) {
   return profile ? UsbChooserContextFactory::GetForProfile(profile) : nullptr;
 }
 
+#if !BUILDFLAG(IS_ANDROID)
 UsbConnectionTracker* GetConnectionTracker(
     content::BrowserContext* browser_context,
     bool create) {
@@ -55,6 +56,7 @@ UsbConnectionTracker* GetConnectionTracker(
   return profile ? UsbConnectionTrackerFactory::GetForProfile(profile, create)
                  : nullptr;
 }
+#endif
 
 #if BUILDFLAG(ENABLE_EXTENSIONS)
 // These extensions can claim the smart card USB class and automatically gain

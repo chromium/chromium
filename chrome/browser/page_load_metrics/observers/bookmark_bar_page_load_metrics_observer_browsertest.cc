@@ -90,7 +90,8 @@ IN_PROC_BROWSER_TEST_F(BookmarkBarPageLoadMetricsBrowserTest,
       /*kFinalStatusActivated*/ 0, 1);
 
   // Navigate away to flush the metrics and check.
-  ui_test_utils::NavigateToURL(browser(), GURL(url::kAboutBlankURL));
+  ASSERT_TRUE(
+      ui_test_utils::NavigateToURL(browser(), GURL(url::kAboutBlankURL)));
   histogram_tester.ExpectTotalCount(
       "Bookmarks.BookmarkBar.PrerenderNavigationToActivation", 0);
 }

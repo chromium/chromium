@@ -57,11 +57,13 @@ gfx::Rect GetControlBoundsInRoot(content::WebContents* web_contents,
   // Use var instead of const or let so that this can be executed many
   // times within a context on different elements without Javascript
   // variable redeclaration errors.
-  content::ExecJs(web_contents, base::StringPrintf(R"(
+  // TODO: handle return value.
+  std::ignore =
+      content::ExecJs(web_contents, base::StringPrintf(R"(
       var element = document.getElementById('%s');
       var bounds = element.getBoundingClientRect();
     )",
-                                                   field_id.c_str()));
+                                                       field_id.c_str()));
   int top = content::EvalJs(web_contents, "bounds.top").ExtractInt();
   int left = content::EvalJs(web_contents, "bounds.left").ExtractInt();
   int width = content::EvalJs(web_contents, "bounds.width").ExtractInt();

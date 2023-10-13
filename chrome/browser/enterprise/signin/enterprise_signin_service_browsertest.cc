@@ -151,8 +151,9 @@ class EnterpriseSigninServiceTest : public InteractiveBrowserTest {
   }
 
   auto Navigate(Browser* browser, GURL dest) {
-    return Steps(
-        Do([browser, dest]() { ui_test_utils::NavigateToURL(browser, dest); }));
+    return Steps(Do([browser, dest]() {
+      ASSERT_TRUE(ui_test_utils::NavigateToURL(browser, dest));
+    }));
   }
 
  private:

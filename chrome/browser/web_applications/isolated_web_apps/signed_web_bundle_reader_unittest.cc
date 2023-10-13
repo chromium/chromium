@@ -897,7 +897,7 @@ TEST_F(SignedWebBundleReaderTest, CloseWhileReadingResponseBody) {
   EXPECT_EQ(buffer.size(), bytes_read);
   EXPECT_EQ(std::string(buffer.data(), bytes_read), kResponseBody);
 
-  close_future.Wait();
+  ASSERT_TRUE(close_future.Wait());
 }
 
 TEST_F(SignedWebBundleReaderTest, ResponseBodyEndDoesntFitInUint64) {
@@ -907,7 +907,7 @@ TEST_F(SignedWebBundleReaderTest, ResponseBodyEndDoesntFitInUint64) {
   parser_factory_->RunIntegrityBlockCallback(integrity_block_->Clone());
   parser_factory_->RunMetadataCallback(integrity_block_->size,
                                        metadata_->Clone());
-  parse_status_future.Wait();
+  ASSERT_TRUE(parse_status_future.Wait());
 
   auto response = web_package::mojom::BundleResponse::New();
   response->response_code = 200;

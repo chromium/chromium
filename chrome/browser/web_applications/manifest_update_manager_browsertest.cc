@@ -1475,7 +1475,7 @@ IN_PROC_BROWSER_TEST_F(ManifestUpdateManagerBrowserTest,
   OverrideManifest(kManifestTemplate, {"Test app name2", kInstallableIconList});
 
   UpdateCheckResultAwaiter awaiter(GetAppURL());
-  ui_test_utils::NavigateToURL(browser(), GetAppURL());
+  ASSERT_TRUE(ui_test_utils::NavigateToURL(browser(), GetAppURL()));
 
   // Wait for the app identity update dialog to show up.
   auto* manifest_update_widget = manifest_waiter.WaitIfNeededAndGet();
@@ -1529,7 +1529,7 @@ IN_PROC_BROWSER_TEST_F(ManifestUpdateManagerBrowserTest,
   OverrideManifest(kManifestTemplate, {"App Name 2", kInstallableIconList});
 
   UpdateCheckResultAwaiter awaiter(GetAppURL());
-  ui_test_utils::NavigateToURL(browser(), GetAppURL());
+  ASSERT_TRUE(ui_test_utils::NavigateToURL(browser(), GetAppURL()));
 
   auto* manifest_update_widget = manifest_waiter.WaitIfNeededAndGet();
   EXPECT_NE(manifest_update_widget, nullptr);

@@ -26,6 +26,9 @@ NavigationPredictorMetricsDocumentData::UserInteractionsData::
     UserInteractionsData() = default;
 NavigationPredictorMetricsDocumentData::UserInteractionsData::
     UserInteractionsData(const UserInteractionsData&) = default;
+NavigationPredictorMetricsDocumentData::UserInteractionsData&
+NavigationPredictorMetricsDocumentData::UserInteractionsData::operator=(
+    const UserInteractionsData&) = default;
 
 NavigationPredictorMetricsDocumentData::NavigationPredictorMetricsDocumentData(
     content::RenderFrameHost* render_frame_host)

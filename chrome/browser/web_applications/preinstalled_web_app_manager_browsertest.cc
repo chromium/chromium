@@ -1154,6 +1154,7 @@ IN_PROC_BROWSER_TEST_F(PreinstalledWebAppManagerBrowserTest, OemInstalled) {
 }
 #endif  // BUILDFLAG(IS_CHROMEOS_ASH)
 
+#if !BUILDFLAG(IS_CHROMEOS_LACROS)
 namespace {
 ui::TouchscreenDevice CreateTouchDevice(ui::InputDeviceType type,
                                         bool stylus_support) {
@@ -1163,6 +1164,7 @@ ui::TouchscreenDevice CreateTouchDevice(ui::InputDeviceType type,
   return touch_device;
 }
 }  // namespace
+#endif
 
 IN_PROC_BROWSER_TEST_F(
     PreinstalledWebAppManagerBrowserTest,

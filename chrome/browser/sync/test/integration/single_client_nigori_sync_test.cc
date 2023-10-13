@@ -902,7 +902,7 @@ IN_PROC_BROWSER_TEST_F(
 IN_PROC_BROWSER_TEST_F(
     SingleClientNigoriCrossUserSharingPublicPrivateKeyPairSyncTest,
     ShouldRecreateKeyPairUponClientServerInconsistency) {
-  SetupClients();
+  ASSERT_TRUE(SetupClients());
   EXPECT_TRUE(CrossUserSharingKeysChecker().Wait());
 }
 

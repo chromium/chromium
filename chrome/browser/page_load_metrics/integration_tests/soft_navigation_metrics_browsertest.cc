@@ -612,7 +612,8 @@ IN_PROC_BROWSER_TEST_P(SoftNavigationTest, LayoutShift) {
           LayoutShiftOnlyInMainFrame,
       /*num_layout_shifts=*/1);
 
-  EvalJs(web_contents(), "triggerLayoutShift()");
+  // TODO: handle return value.
+  std::ignore = EvalJs(web_contents(), "triggerLayoutShift()");
 
   waiter->Wait();
 
@@ -641,8 +642,9 @@ IN_PROC_BROWSER_TEST_P(SoftNavigationTest, LayoutShift) {
           LayoutShiftOnlyInMainFrame,
       /*num_layout_shifts=*/1);
 
-  EvalJs(web_contents(),
-         "triggerLayoutShift(" + base::NumberToString(1.5) + ")");
+  // TODO: handle return value.
+  std::ignore = EvalJs(web_contents(),
+                       "triggerLayoutShift(" + base::NumberToString(1.5) + ")");
 
   waiter->Wait();
 

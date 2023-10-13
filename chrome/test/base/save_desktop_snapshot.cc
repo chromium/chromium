@@ -38,7 +38,7 @@ class FrameHolder : public webrtc::DesktopCapturer::Callback {
 
   // Returns the frame that was captured or null in case of failure.
   std::unique_ptr<webrtc::DesktopFrame> TakeFrame() {
-    signal_.Wait();
+    CHECK(signal_.Wait());
     return std::move(frame_);
   }
 

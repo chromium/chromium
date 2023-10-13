@@ -37,6 +37,7 @@
 namespace apps {
 namespace {
 
+#if BUILDFLAG(IS_MAC)
 std::vector<apps::IntentPickerAppInfo> CombinePossibleMacAppWithOtherApps(
     std::vector<apps::IntentPickerAppInfo> apps,
     absl::optional<apps::IntentPickerAppInfo> mac_app) {
@@ -45,6 +46,7 @@ std::vector<apps::IntentPickerAppInfo> CombinePossibleMacAppWithOtherApps(
   }
   return apps;
 }
+#endif
 
 PickerEntryType GetPickerEntryType(AppType app_type) {
   PickerEntryType picker_entry_type = PickerEntryType::kUnknown;

@@ -356,7 +356,7 @@ class DownloadStatusUpdaterBrowserTest : public DownloadTestBase {
     // TestDownloadManagerDelegate turns it into DANGEROUS_URL.
     GURL url =
         embedded_test_server()->GetURL("/downloads/dangerous/dangerous.swf");
-    ui_test_utils::NavigateToURL(browser, url);
+    EXPECT_TRUE(ui_test_utils::NavigateToURL(browser, url));
     waiter->WaitForFinished();
 
     std::vector<download::DownloadItem*> items;

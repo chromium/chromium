@@ -67,6 +67,7 @@ class NavigationPredictorMetricsDocumentData
   struct UserInteractionsData {
     UserInteractionsData();
     UserInteractionsData(const UserInteractionsData&);
+    UserInteractionsData& operator=(const UserInteractionsData&);
 
     // True if the anchor element is still in viewport, otherwise false.
     bool is_in_viewport = false;

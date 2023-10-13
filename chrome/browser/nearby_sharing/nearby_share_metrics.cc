@@ -268,10 +268,6 @@ std::string GetDirectionSubcategoryName(bool is_incoming) {
   return is_incoming ? ".Receive" : ".Send";
 }
 
-std::string GetIsKnownSubcategoryName(bool is_known) {
-  return is_known ? ".Contact" : ".NonContact";
-}
-
 std::string GetShareTargetTypeSubcategoryName(
     nearby_share::mojom::ShareTargetType type) {
   switch (type) {

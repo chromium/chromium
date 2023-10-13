@@ -116,10 +116,11 @@ void CompareEmfHeaders(const ENHMETAHEADER& expected_header,
   EXPECT_EQ(expected_header.bOpenGL, actual_header.bOpenGL);
 }
 
-std::string HashData(const char* data, size_t len) {
-  auto span = base::make_span(reinterpret_cast<const uint8_t*>(data), len);
-  return base::HexEncode(base::SHA1HashSpan(span));
-}
+// FIXME(cavalcantii): see comment further down.
+// std::string HashData(const char* data, size_t len) {
+//   auto span = base::make_span(reinterpret_cast<const uint8_t*>(data), len);
+//   return base::HexEncode(base::SHA1HashSpan(span));
+// }
 
 class PdfToEmfConverterBrowserTest
     : public InProcessBrowserTest,

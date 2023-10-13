@@ -39,7 +39,7 @@ class ChromeDeviceAuthenticatorFactoryTest : public testing::Test {
             device_reauth::DeviceAuthSource::kPasswordManager) {}
 
   void SetUp() override {
-    profile_manager_.SetUp();
+    ASSERT_TRUE(profile_manager_.SetUp());
 
     profile_ptr1_ = profile_manager_.CreateTestingProfile("test_profile1");
     profile_ptr2_ = profile_manager_.CreateTestingProfile("test_profile2");

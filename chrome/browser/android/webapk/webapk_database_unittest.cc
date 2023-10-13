@@ -62,7 +62,7 @@ class WebApkDatabaseTest : public ::testing::Test {
     database_factory_ = std::make_unique<FakeWebApkDatabaseFactory>();
 
     web_contents_ = web_contents_factory_.CreateWebContents(profile());
-  };
+  }
 
   // Creates a random WebApkProto based off of a suffix.
   static std::unique_ptr<WebApkProto> CreateWebApkProto(

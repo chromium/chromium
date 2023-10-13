@@ -165,7 +165,8 @@ TEST_F(IsolatedWebAppResponseReaderTest, ReadResponseBody) {
 TEST_F(IsolatedWebAppResponseReaderTest, Close) {
   base::FilePath web_bundle_path = CreateSignedBundleAndWriteToDisk();
   auto reader = SignedWebBundleReader::Create(web_bundle_path, base_url_);
-  ReadIntegrityBlockAndMetadata(*reader.get());
+  // TODO: handle return value.
+  std::ignore = ReadIntegrityBlockAndMetadata(*reader.get());
   auto* raw_reader = reader.get();
 
   auto response_reader =
@@ -181,7 +182,7 @@ TEST_F(IsolatedWebAppResponseReaderTest, Close) {
 
   base::test::TestFuture<void> close_future;
   response_reader->Close(close_future.GetCallback());
-  close_future.Wait();
+  ASSERT_TRUE(close_future.Wait());
 
   EXPECT_EQ(raw_reader->GetState(), SignedWebBundleReader::State::kClosed);
 
