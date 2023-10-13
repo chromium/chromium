@@ -62,6 +62,7 @@ namespace blink {
 enum ResizerHitTestType { kResizerForPointer, kResizerForTouch };
 
 class ComputedStyle;
+class Element;
 class HitTestResult;
 class LayoutBox;
 class LayoutCustomScrollbarPart;

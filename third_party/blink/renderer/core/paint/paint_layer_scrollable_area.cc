@@ -1473,19 +1473,16 @@ static inline const LayoutObject& ScrollbarStyleSource(
   if (IsA<LayoutView>(layout_box)) {
     Document& doc = layout_box.GetDocument();
 
-    // If scrollbar properties have been set on the root element, they will be
-    // propagated to the viewport.
-    Element* doc_element = doc.documentElement();
-    if (doc_element && doc_element->GetLayoutObject() &&
-        (doc_element->GetLayoutObject()->StyleRef().ScrollbarWidth() !=
-             EScrollbarWidth::kAuto ||
-         doc_element->GetLayoutObject()
-             ->StyleRef()
-             .ScrollbarColor()
-             .has_value())) {
-      return *doc_element->GetLayoutObject();
+    // If the layout box uses standard scrollbar styles use it as the style
+    // source.
+    if (layout_box.StyleRef().UsesStandardScrollbarStyle()) {
+      return layout_box;
     }
 
+    // Legacy custom scrollbar styles on the document element or the <body> may
+    // apply to the viewport scrollbars. We don't propagate these styles to
+    // LayoutView in StyleResolver like we do for the standard CSS scrollbar
+    // styles because some conditions can only be checked here.
     if (Settings* settings = doc.GetSettings()) {
       LocalFrame* frame = layout_box.GetFrame();
       DCHECK(frame);
@@ -1506,9 +1503,12 @@ static inline const LayoutObject& ScrollbarStyleSource(
       return *body->GetLayoutObject();
 
     // If the <body> didn't have a custom style, then the root element might.
+    Element* doc_element = doc.documentElement();
     if (doc_element && doc_element->GetLayoutObject() &&
-        doc_element->GetLayoutObject()->StyleRef().HasCustomScrollbarStyle())
+        doc_element->GetLayoutObject()->StyleRef().HasCustomScrollbarStyle() &&
+        !layout_box.StyleRef().UsesStandardScrollbarStyle()) {
       return *doc_element->GetLayoutObject();
+    }
   } else if (!layout_box.GetNode() && layout_box.Parent()) {
     return *layout_box.Parent();
   }
@@ -1553,8 +1553,8 @@ int PaintLayerScrollableArea::ComputeHypotheticalScrollbarThickness(
 
   const LayoutObject& style_source = ScrollbarStyleSource(*GetLayoutBox());
   if (style_source.StyleRef().HasCustomScrollbarStyle()) {
-    return CustomScrollbar::HypotheticalScrollbarThickness(
-        this, orientation, To<Element>(style_source.GetNode()));
+    return CustomScrollbar::HypotheticalScrollbarThickness(this, orientation,
+                                                           &style_source);
   }
 
   ScrollbarTheme& theme = GetPageScrollbarTheme();
@@ -1583,8 +1583,7 @@ bool PaintLayerScrollableArea::NeedsScrollbarReconstruction() const {
       return true;
 
     // We have a scrollbar with a stale style source.
-    if (scrollbar->StyleSource() &&
-        scrollbar->StyleSource()->GetLayoutObject() != style_source) {
+    if (scrollbar->StyleSource() != style_source) {
       return true;
     }
 
@@ -2660,12 +2659,10 @@ Scrollbar* PaintLayerScrollableArea::ScrollbarManager::CreateScrollbar(
   if (style_source.StyleRef().HasCustomScrollbarStyle()) {
     DCHECK(style_source.GetNode() && style_source.GetNode()->IsElementNode());
     scrollbar = MakeGarbageCollected<CustomScrollbar>(
-        ScrollableArea(), orientation, To<Element>(style_source.GetNode()));
+        ScrollableArea(), orientation, &style_source);
   } else {
-    Element* style_source_element = nullptr;
-    style_source_element = DynamicTo<Element>(style_source.GetNode());
     scrollbar = MakeGarbageCollected<Scrollbar>(ScrollableArea(), orientation,
-                                                style_source_element);
+                                                &style_source);
   }
   ScrollableArea()->GetLayoutBox()->GetDocument().View()->AddScrollbar(
       scrollbar);

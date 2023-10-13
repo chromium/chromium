@@ -1523,9 +1523,6 @@ crbug.com/1269580 external/wpt/css/css-conditional/at-supports-namespace-001.htm
 crbug.com/1269580 external/wpt/css/css-conditional/at-supports-namespace-002.html [ Failure ]
 crbug.com/1158554 external/wpt/css/css-conditional/css-supports-042.xht [ Failure ]
 
-# CSS Scrollbars
-crbug.com/1490799 external/wpt/css/css-scrollbars/scrollbar-color-dynamic-7.html [ Failure ]
-
 # Failures from CSS3 Text (text-justify and text-indent: hanging/each-line) not being implemented.
 crbug.com/248894 external/wpt/css/css-pseudo/first-letter-allowed-properties.html [ Failure ]
 crbug.com/248894 external/wpt/css/css-pseudo/first-line-allowed-properties.html [ Failure ]
@@ -1987,6 +1984,13 @@ crbug.com/1029069 external/wpt/css/css-fonts/standard-font-family-20.html [ Fail
 
 crbug.com/1058772 external/wpt/css/css-fonts/test-synthetic-italic-2.html [ Failure ]
 crbug.com/1058772 external/wpt/css/css-fonts/test-synthetic-italic-3.html [ Failure ]
+
+# TODO(crbug.com/1492317): Clean up rounded corners of aura vertical scrollbar arrows
+crbug.com/1492317 [ Win ] svg/zoom/page/zoom-mask-with-percentages.svg [ Failure Pass ]
+crbug.com/1492317 [ Win ] virtual/scalefactor200/css3/filters/backdrop-filter-plus-mask-large.html [ Failure Pass ]
+crbug.com/1492317 [ Win ] virtual/scalefactor200/css3/filters/blur-filter-page-scroll-parents.html [ Failure Pass ]
+crbug.com/1492317 [ Win ] virtual/scalefactor200/css3/filters/blur-filter-page-scroll-self.html [ Failure Pass ]
+crbug.com/1492317 [ Win ] virtual/scalefactor200/css3/filters/blur-filter-page-scroll.html [ Failure Pass ]
 
 # CSS Font Feature Resolution is not implemented yet
 crbug.com/450619 external/wpt/css/css-fonts/font-feature-resolution-001.html [ Failure ]

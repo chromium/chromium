@@ -2829,6 +2829,19 @@ void StyleResolver::PropagateStyleToViewport() {
     PROPAGATE_VALUE(overflow_anchor, OverflowAnchor, SetOverflowAnchor);
   }
 
+  // Color
+  {
+    Color color = StyleColor(CSSValueID::kCanvastext).GetColor();
+    if (document_element_style) {
+      color =
+          document_element_style->VisitedDependentColor(GetCSSPropertyColor());
+    }
+    if (viewport_style.VisitedDependentColor(GetCSSPropertyColor()) != color) {
+      changed = true;
+      new_viewport_style_builder.SetColor(StyleColor(color));
+    }
+  }
+
   // Misc
   {
     PROPAGATE_FROM(document_element_style, EffectiveTouchAction,
@@ -2843,6 +2856,8 @@ void StyleResolver::PropagateStyleToViewport() {
                    kScrollbarGutterAuto);
     PROPAGATE_FROM(document_element_style, ScrollbarWidth, SetScrollbarWidth,
                    EScrollbarWidth::kAuto);
+    PROPAGATE_FROM(document_element_style, ScrollbarColor, SetScrollbarColor,
+                   absl::nullopt);
     PROPAGATE_FROM(document_element_style, ForcedColorAdjust,
                    SetForcedColorAdjust, EForcedColorAdjust::kAuto);
   }

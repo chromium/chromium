@@ -36,7 +36,7 @@
 namespace blink {
 
 class ComputedStyle;
-class Element;
+class LayoutObject;
 class LayoutCustomScrollbarPart;
 
 // Custom scrollbars are created when a box has -webkit-scrollbar* pseudo
@@ -46,7 +46,7 @@ class CORE_EXPORT CustomScrollbar final : public Scrollbar {
  public:
   CustomScrollbar(ScrollableArea*,
                   ScrollbarOrientation,
-                  Element* style_source,
+                  const LayoutObject* style_source,
                   bool suppress_use_counters = false);
   ~CustomScrollbar() override;
 
@@ -54,7 +54,7 @@ class CORE_EXPORT CustomScrollbar final : public Scrollbar {
   // constructing the real scrollbar.
   static int HypotheticalScrollbarThickness(const ScrollableArea*,
                                             ScrollbarOrientation,
-                                            Element* style_source);
+                                            const LayoutObject* style_source);
 
   gfx::Rect ButtonRect(ScrollbarPart) const;
   gfx::Rect TrackRect(int start_length, int end_length) const;

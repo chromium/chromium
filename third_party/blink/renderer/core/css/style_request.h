@@ -32,6 +32,7 @@
 namespace blink {
 
 class ComputedStyle;
+class Element;
 
 enum RuleMatchingBehavior { kMatchAllRules, kMatchAllRulesExcludingSMIL };
 

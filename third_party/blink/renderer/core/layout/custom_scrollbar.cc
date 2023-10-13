@@ -39,7 +39,7 @@ namespace blink {
 
 CustomScrollbar::CustomScrollbar(ScrollableArea* scrollable_area,
                                  ScrollbarOrientation orientation,
-                                 Element* style_source,
+                                 const LayoutObject* style_source,
                                  bool suppress_use_counters)
     : Scrollbar(scrollable_area,
                 orientation,
@@ -57,7 +57,7 @@ CustomScrollbar::~CustomScrollbar() {
 int CustomScrollbar::HypotheticalScrollbarThickness(
     const ScrollableArea* scrollable_area,
     ScrollbarOrientation orientation,
-    Element* style_source) {
+    const LayoutObject* style_source) {
   // Create a temporary scrollbar so that we can match style rules like
   // ::-webkit-scrollbar:horizontal according to the scrollbar's orientation.
   auto* scrollbar = MakeGarbageCollected<CustomScrollbar>(
@@ -134,9 +134,9 @@ void CustomScrollbar::SetPressedPart(ScrollbarPart part,
 const ComputedStyle* CustomScrollbar::GetScrollbarPseudoElementStyle(
     ScrollbarPart part_type,
     PseudoId pseudo_id) {
-  Element* element = StyleSource();
-  DCHECK(element);
-  Document& document = element->GetDocument();
+  const LayoutObject* layout_object = StyleSource();
+  DCHECK(layout_object);
+  Document& document = layout_object->GetDocument();
   if (!document.InStyleRecalc()) {
     // We are currently querying style for custom scrollbars on a style-dirty
     // tree outside style recalc. Update active style to make sure we don't
@@ -147,15 +147,16 @@ const ComputedStyle* CustomScrollbar::GetScrollbarPseudoElementStyle(
     // scrollbar styles.
     document.GetStyleEngine().UpdateActiveStyle();
   }
-  if (!element->GetLayoutObject())
-    return nullptr;
-  const ComputedStyle* source_style = StyleSource()->GetLayoutObject()->Style();
-  const ComputedStyle* part_style = element->UncachedStyleForPseudoElement(
-      StyleRequest(pseudo_id, this, part_type, source_style));
+  const ComputedStyle& source_style = layout_object->StyleRef();
+  const ComputedStyle* part_style =
+      layout_object->GetUncachedPseudoElementStyle(
+          StyleRequest(pseudo_id, this, part_type, &source_style));
   if (!part_style)
     return nullptr;
   if (part_style->DependsOnFontMetrics()) {
-    element->SetScrollbarPseudoElementStylesDependOnFontMetrics(true);
+    if (Element* element = DynamicTo<Element>(layout_object->GetNode())) {
+      element->SetScrollbarPseudoElementStylesDependOnFontMetrics(true);
+    }
   }
   return part_style;
 }

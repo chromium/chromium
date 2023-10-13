@@ -314,7 +314,7 @@ void InternalPopupMenu::WriteDocument(SharedBuffer* data) {
   if (box && box->GetScrollableArea()) {
     if (ScrollableArea* scrollable = box->GetScrollableArea()) {
       temp_scrollbar = MakeGarbageCollected<CustomScrollbar>(
-          scrollable, kVerticalScrollbar, &owner_element.InnerElement());
+          scrollable, kVerticalScrollbar, box);
     }
   }
   for (auto target : targets) {

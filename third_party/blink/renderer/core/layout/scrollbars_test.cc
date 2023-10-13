@@ -2861,17 +2861,21 @@ TEST_P(ScrollbarsTest, CustomScrollbarHypotheticalThickness) {
 
   auto* target1 = GetDocument().getElementById(AtomicString("target1"));
   auto* scrollable_area1 = target1->GetLayoutBox()->GetScrollableArea();
-  EXPECT_EQ(33, CustomScrollbar::HypotheticalScrollbarThickness(
-                    scrollable_area1, kHorizontalScrollbar, target1));
-  EXPECT_EQ(22, CustomScrollbar::HypotheticalScrollbarThickness(
-                    scrollable_area1, kVerticalScrollbar, target1));
+  EXPECT_EQ(
+      33, CustomScrollbar::HypotheticalScrollbarThickness(
+              scrollable_area1, kHorizontalScrollbar, target1->GetLayoutBox()));
+  EXPECT_EQ(22,
+            CustomScrollbar::HypotheticalScrollbarThickness(
+                scrollable_area1, kVerticalScrollbar, target1->GetLayoutBox()));
 
   auto* target2 = GetDocument().getElementById(AtomicString("target2"));
   auto* scrollable_area2 = target2->GetLayoutBox()->GetScrollableArea();
-  EXPECT_EQ(13, CustomScrollbar::HypotheticalScrollbarThickness(
-                    scrollable_area2, kHorizontalScrollbar, target2));
-  EXPECT_EQ(21, CustomScrollbar::HypotheticalScrollbarThickness(
-                    scrollable_area2, kVerticalScrollbar, target2));
+  EXPECT_EQ(
+      13, CustomScrollbar::HypotheticalScrollbarThickness(
+              scrollable_area2, kHorizontalScrollbar, target2->GetLayoutBox()));
+  EXPECT_EQ(21,
+            CustomScrollbar::HypotheticalScrollbarThickness(
+                scrollable_area2, kVerticalScrollbar, target2->GetLayoutBox()));
 }
 
 // For infinite scrolling page (load more content when scroll to bottom), user

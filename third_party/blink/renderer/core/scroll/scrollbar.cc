@@ -45,9 +45,16 @@
 
 namespace blink {
 
+Scrollbar* Scrollbar::CreateForTesting(ScrollableArea* scrollable_area,
+                                       ScrollbarOrientation orientation,
+                                       ScrollbarTheme* theme) {
+  return MakeGarbageCollected<Scrollbar>(
+      scrollable_area, orientation, scrollable_area->GetLayoutBox(), theme);
+}
+
 Scrollbar::Scrollbar(ScrollableArea* scrollable_area,
                      ScrollbarOrientation orientation,
-                     Element* style_source,
+                     const LayoutObject* style_source,
                      ScrollbarTheme* theme)
     : scrollable_area_(scrollable_area),
       orientation_(orientation),
@@ -868,40 +875,37 @@ float Scrollbar::ScaleFromDIP() const {
 }
 
 float Scrollbar::EffectiveZoom() const {
-  if (style_source_ && style_source_->GetLayoutObject()) {
-    return style_source_->GetLayoutObject()->Style()->EffectiveZoom();
+  if (style_source_) {
+    return style_source_->StyleRef().EffectiveZoom();
   }
   return 1.0;
 }
 
 bool Scrollbar::ContainerIsRightToLeft() const {
-  if (style_source_ && style_source_->GetLayoutObject()) {
-    TextDirection dir = style_source_->GetLayoutObject()->Style()->Direction();
+  if (style_source_) {
+    TextDirection dir = style_source_->StyleRef().Direction();
     return IsRtl(dir);
   }
   return false;
 }
 
 EScrollbarWidth Scrollbar::CSSScrollbarWidth() const {
-  if (style_source_ && style_source_->GetLayoutObject())
-    return style_source_->GetLayoutObject()->Style()->ScrollbarWidth();
+  if (style_source_) {
+    return style_source_->StyleRef().ScrollbarWidth();
+  }
   return EScrollbarWidth::kAuto;
 }
 
 absl::optional<blink::Color> Scrollbar::ScrollbarThumbColor() const {
-  if (style_source_ && style_source_->GetLayoutObject()) {
-    return style_source_->GetLayoutObject()
-        ->Style()
-        ->ScrollbarThumbColorResolved();
+  if (style_source_) {
+    return style_source_->StyleRef().ScrollbarThumbColorResolved();
   }
   return absl::nullopt;
 }
 
 absl::optional<blink::Color> Scrollbar::ScrollbarTrackColor() const {
-  if (style_source_ && style_source_->GetLayoutObject()) {
-    return style_source_->GetLayoutObject()
-        ->Style()
-        ->ScrollbarTrackColorResolved();
+  if (style_source_) {
+    return style_source_->StyleRef().ScrollbarTrackColorResolved();
   }
   return absl::nullopt;
 }

@@ -45,8 +45,8 @@ class Rect;
 
 namespace blink {
 
-class Element;
 class GraphicsContext;
+class LayoutObject;
 class ScrollableArea;
 class ScrollbarTheme;
 class WebGestureEvent;
@@ -60,14 +60,11 @@ class CORE_EXPORT Scrollbar : public GarbageCollected<Scrollbar>,
   // scrollbar.
   static Scrollbar* CreateForTesting(ScrollableArea* scrollable_area,
                                      ScrollbarOrientation orientation,
-                                     ScrollbarTheme* theme) {
-    return MakeGarbageCollected<Scrollbar>(scrollable_area, orientation,
-                                           nullptr, theme);
-  }
+                                     ScrollbarTheme* theme);
 
   Scrollbar(ScrollableArea*,
             ScrollbarOrientation,
-            Element* style_source,
+            const LayoutObject* style_source,
             ScrollbarTheme* = nullptr);
   ~Scrollbar() override;
 
@@ -216,10 +213,14 @@ class CORE_EXPORT Scrollbar : public GarbageCollected<Scrollbar>,
   absl::optional<blink::Color> ScrollbarThumbColor() const;
   absl::optional<blink::Color> ScrollbarTrackColor() const;
 
-  // The Element that supplies our style information. If the scrollbar is
-  // for a document, this is either the <body> or <html> element. Otherwise, it
-  // is the element that owns our PaintLayerScrollableArea.
-  Element* StyleSource() const { return style_source_.Get(); }
+  // The LayoutObject that supplies our style information. If the scrollbar is
+  // for a document, this is:
+  // 1. the LayoutView (with some scrollbar related styles propagated from the
+  //    document element and/or the <body>), or
+  // 2. the <body> or document element's layout object if it has webkit custom
+  //    scrollbar styles.
+  // Otherwise, it is the LayoutBox that owns our PaintLayerScrollableArea.
+  const LayoutObject* StyleSource() const { return style_source_.Get(); }
 
   mojom::blink::ColorScheme UsedColorScheme() const;
 
@@ -282,7 +283,7 @@ class CORE_EXPORT Scrollbar : public GarbageCollected<Scrollbar>,
   bool scrollbar_manipulation_in_progress_on_cc_thread_;
 
   gfx::Rect frame_rect_;
-  Member<Element> style_source_;
+  WeakMember<const LayoutObject> style_source_;
 
   // Tracks scroll delta that has been injected into the compositor thread as a
   // GestureScrollUpdate but hasn't yet updated the scroll position on main.

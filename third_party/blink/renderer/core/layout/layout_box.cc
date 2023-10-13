@@ -552,18 +552,6 @@ void LayoutBox::StyleWillChange(StyleDifference diff,
       if (diff.NeedsNormalPaintInvalidation() || diff.NeedsLayout()) {
         View()->SetShouldDoFullPaintInvalidation();
       }
-      if (auto* scrollable_area = View()->GetScrollableArea()) {
-        if (old_style->ScrollbarThumbColorResolved() !=
-                new_style.ScrollbarThumbColorResolved() ||
-            old_style->ScrollbarTrackColorResolved() !=
-                new_style.ScrollbarTrackColorResolved()) {
-          // TODO(crbug.com/1481168): For now we duplicate some code in
-          // PaintLayerScrollableArea::UpdateAfterStyleChange() here to
-          // invalidate the LayoutView when the scrollbar styles change on
-          // the document element or the body.
-          scrollable_area->SetScrollControlsNeedFullPaintInvalidation();
-        }
-      }
     }
 
     // When a layout hint happens and an object's position style changes, we
