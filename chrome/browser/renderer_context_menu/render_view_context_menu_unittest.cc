@@ -1758,8 +1758,16 @@ TEST_F(RenderViewContextMenuPrefsTest,
 
 // Verify that the adding the Lens image search option to the menu
 // issues a preconnection request to lens.google.com.
+// TODO(crbug.com/1492349): Test is flaky on ChromeOS.
+#if BUILDFLAG(IS_CHROMEOS)
+#define MAYBE_LensImageSearchIssuesGoogleLensPreconnect \
+  DISABLED_LensImageSearchIssuesGoogleLensPreconnect
+#else
+#define MAYBE_LensImageSearchIssuesGoogleLensPreconnect \
+  LensImageSearchIssuesGoogleLensPreconnect
+#endif
 TEST_F(RenderViewContextMenuPrefsTest,
-       LensImageSearchIssuesGoogleLensPreconnect) {
+       MAYBE_LensImageSearchIssuesGoogleLensPreconnect) {
   BeginPreresolveListening();
   base::test::ScopedFeatureList features;
   features.InitAndEnableFeature(lens::features::kLensStandalone);
