@@ -16,8 +16,6 @@ import org.chromium.base.test.util.Batch;
 import org.chromium.base.test.util.CommandLineFlags;
 import org.chromium.base.test.util.CriteriaHelper;
 import org.chromium.chrome.browser.flags.ChromeFeatureList;
-import org.chromium.chrome.browser.preferences.ChromePreferenceKeys;
-import org.chromium.chrome.browser.preferences.ChromeSharedPreferences;
 import org.chromium.chrome.browser.tab.Tab;
 import org.chromium.chrome.browser.ui.hats.TestSurveyUtils;
 import org.chromium.chrome.test.ChromeJUnit4ClassRunner;
@@ -79,10 +77,10 @@ public class ChromeStartupSurveyIntegrationTest {
     public void dismissSurvey() {
         TestThreadUtils.runOnUiThreadBlocking(
                 () -> mMessageDispatcher.dismissMessage(mSurveyMessage, DismissReason.GESTURE));
-        Assert.assertTrue("Survey displayed not recorded.",
-                ChromeSharedPreferences.getInstance().contains(
-                        ChromePreferenceKeys.CHROME_SURVEY_PROMPT_DISPLAYED_TIMESTAMP.createKey(
-                                TestSurveyUtils.TEST_TRIGGER_ID_FOO)));
+        Assert.assertTrue(
+                "Survey displayed not recorded.",
+                mTestSurveyComponentRule.isPromptShownForTriggerId(
+                        TestSurveyUtils.TEST_TRIGGER_ID_FOO));
     }
 
     private void waitForSurveyMessagePresented() {

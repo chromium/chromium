@@ -108,12 +108,6 @@ public final class ChromePreferenceKeys {
      */
     public static final String CHROME_DEFAULT_BROWSER = "applink.chrome_default_browser";
 
-    /**
-     * Key prefix used to indicate the timestamps when the survey prompt is displayed for a
-     * certain survey.
-     */
-    public static final KeyPrefix CHROME_SURVEY_PROMPT_DISPLAYED_TIMESTAMP =
-            new KeyPrefix("Chrome.Survey.PromptDisplayedTimestamp.*");
 
     /**
      * The ID generated to represent the current browser installation in the DM Server for Cloud
@@ -853,8 +847,6 @@ public final class ChromePreferenceKeys {
 
     public static final String SNAPSHOT_DATABASE_REMOVED = "snapshot_database_removed";
 
-    public static final String SURVEY_DATE_LAST_ROLLED = "last_rolled_for_chrome_survey_key";
-
     // sWAA (Supplemental Web and App Activity) user setting.
     public static final String SWAA_TIMESTAMP = "Chrome.Swaa.Timestamp";
     public static final String SWAA_STATUS = "Chrome.Swaa.Status";
@@ -985,7 +977,6 @@ public final class ChromePreferenceKeys {
                 BLUETOOTH_NOTIFICATION_IDS,
                 BOOKMARKS_SORT_ORDER,
                 BOOKMARKS_VISUALS_PREF,
-                CHROME_SURVEY_PROMPT_DISPLAYED_TIMESTAMP.pattern(),
                 CLIPBOARD_SHARED_URI,
                 CLIPBOARD_SHARED_URI_TIMESTAMP,
                 CLOUD_MANAGEMENT_CLIENT_ID,

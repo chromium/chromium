@@ -17,6 +17,7 @@ android_library("java") {
     "java/src/org/chromium/chrome/browser/ui/hats/SurveyClientBridge.java",
     "java/src/org/chromium/chrome/browser/ui/hats/SurveyClientFactory.java",
     "java/src/org/chromium/chrome/browser/ui/hats/SurveyClientImpl.java",
+    "java/src/org/chromium/chrome/browser/ui/hats/SurveyMetadata.java",
     "java/src/org/chromium/chrome/browser/ui/hats/SurveyThrottler.java",
     "java/src/org/chromium/chrome/browser/ui/hats/SurveyUiDelegateBridge.java",
   ]

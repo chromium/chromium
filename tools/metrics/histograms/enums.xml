@@ -104011,6 +104011,7 @@ would be helpful to identify which type is being sent.
   <int value="6" label="User selected for survey"/>
   <int value="7" label="Survey already exists [removed]"/>
   <int value="8" label="First time user"/>
+  <int value="9" label="User prompted survey"/>
 </enum>
 
 <enum name="SurveyPresentationStatusCode">

@@ -10,11 +10,8 @@ import androidx.annotation.VisibleForTesting;
 import org.chromium.base.CommandLine;
 import org.chromium.base.ThreadUtils;
 import org.chromium.base.metrics.RecordHistogram;
-import org.chromium.base.shared_preferences.SharedPreferencesManager;
 import org.chromium.chrome.browser.firstrun.FirstRunStatus;
 import org.chromium.chrome.browser.flags.ChromeSwitches;
-import org.chromium.chrome.browser.preferences.ChromePreferenceKeys;
-import org.chromium.chrome.browser.preferences.ChromeSharedPreferences;
 
 import java.lang.annotation.Retention;
 import java.lang.annotation.RetentionPolicy;
@@ -23,19 +20,29 @@ import java.util.Random;
 
 /**
  * Class used to check whether survey can be shown based on metadata. The class is also responsible
- * to collect survey related information, and update the metadata for and triggerId.
+ * to collect survey related information, and update the metadata for a triggerId.
+ *
+ * <p>Internally, the class checks criteria(s) for the given trggerId and global state. If all the
+ * throttling checks passed, the instance will perform a dice roll to decide if the survey can show
+ * based on the probability.
  */
 public class SurveyThrottler {
     /**
-     * Reasons that the user was rejected from being selected for a survey
-     * Note: these values cannot change and must match the SurveyFilteringResult enum in enums.xml
-     * because they're written to logs.
+     * Reasons that the user was rejected from being selected for a survey Note: these values cannot
+     * change and must match the SurveyFilteringResult enum in enums.xml because they're written to
+     * logs.
      */
-    @IntDef({FilteringResult.SURVEY_PROMPT_ALREADY_DISPLAYED,
-            FilteringResult.FORCE_SURVEY_ON_COMMAND_PRESENT,
-            FilteringResult.USER_ALREADY_SAMPLED_TODAY, FilteringResult.MAX_NUMBER_MISSING,
-            FilteringResult.ROLLED_NON_ZERO_NUMBER, FilteringResult.USER_SELECTED_FOR_SURVEY,
-            FilteringResult.FIRST_TIME_USER, FilteringResult.NUM_ENTRIES})
+    @IntDef({
+        FilteringResult.SURVEY_PROMPT_ALREADY_DISPLAYED,
+        FilteringResult.FORCE_SURVEY_ON_COMMAND_PRESENT,
+        FilteringResult.USER_ALREADY_SAMPLED_TODAY,
+        FilteringResult.MAX_NUMBER_MISSING,
+        FilteringResult.ROLLED_NON_ZERO_NUMBER,
+        FilteringResult.USER_SELECTED_FOR_SURVEY,
+        FilteringResult.FIRST_TIME_USER,
+        FilteringResult.USER_PROMPT_SURVEY,
+        FilteringResult.NUM_ENTRIES
+    })
     @Retention(RetentionPolicy.SOURCE)
     public @interface FilteringResult {
         int SURVEY_PROMPT_ALREADY_DISPLAYED = 0;
@@ -45,25 +52,20 @@ public class SurveyThrottler {
         int ROLLED_NON_ZERO_NUMBER = 5;
         int USER_SELECTED_FOR_SURVEY = 6;
         int FIRST_TIME_USER = 8;
+        int USER_PROMPT_SURVEY = 9;
+
         // Number of entries
-        int NUM_ENTRIES = 9;
+        int NUM_ENTRIES = 10;
     }
 
-    private final String mTriggerId;
-    private final float mProbability;
-
-    private final String mPrefKeyPromptDisplayed;
+    private final SurveyConfig mSurveyConfig;
+    private SurveyMetadata mMetadata;
 
     /**
-     * @param triggerId The trigger Id for the given survey.
-     * @param probability The rate an eligible user is randomly selected for the survey.
+     * @param config Survey config associated with the throttler.
      */
-    public SurveyThrottler(String triggerId, float probability) {
-        mTriggerId = triggerId;
-        mProbability = probability;
-
-        mPrefKeyPromptDisplayed =
-                ChromePreferenceKeys.CHROME_SURVEY_PROMPT_DISPLAYED_TIMESTAMP.createKey(mTriggerId);
+    SurveyThrottler(SurveyConfig config) {
+        mSurveyConfig = config;
     }
 
     /**
@@ -83,11 +85,10 @@ public class SurveyThrottler {
             return false;
         }
 
-        // TODO(wenyufu): Check SurveyConfig.isUserPrompted
-
-        if (hasPromptBeenDisplayed()) {
-            recordSurveyFilteringResult(FilteringResult.SURVEY_PROMPT_ALREADY_DISPLAYED);
-            return false;
+        // Ignore the random selection since it's a user prompt survey.
+        if (mSurveyConfig.mUserPrompted) {
+            recordSurveyFilteringResult(FilteringResult.USER_PROMPT_SURVEY);
+            return true;
         }
 
         return isRandomlySelectedForSurvey();
@@ -95,34 +96,37 @@ public class SurveyThrottler {
 
     /** Logs in SharedPreferences that the survey prompt was displayed. */
     public void recordSurveyPromptDisplayed() {
-        SharedPreferencesManager preferences = ChromeSharedPreferences.getInstance();
-        preferences.writeLong(mPrefKeyPromptDisplayed, System.currentTimeMillis());
+        getMetadata().setPromptDisplayed();
     }
 
     /**
      * Rolls a random number to see if the user was eligible for the survey. The user will skip the
-     * roll if:
-     *  1. User is a first time user
-     *  2. User as performed the roll today
-     *  3. Max number is not setup correctly
+     * roll if: 1. User is a first time user; 2. User has performed the roll for the survey today; 
+     * 3. Max number is not setup correctly.
      *
      * @return Whether the user is eligible (i.e. the random number rolled was 0).
      */
     private boolean isRandomlySelectedForSurvey() {
-        SharedPreferencesManager preferences = ChromeSharedPreferences.getInstance();
-        int lastDate = preferences.readInt(ChromePreferenceKeys.SURVEY_DATE_LAST_ROLLED, -1);
-        int today = getDayOfYear();
-        if (lastDate == today) {
+        int lastDiceRolledDate = getMetadata().getSurveyLastDiceRolledDate();
+        int today = getMetadata().getCurrentDate();
+        if (lastDiceRolledDate == today) {
             recordSurveyFilteringResult(FilteringResult.USER_ALREADY_SAMPLED_TODAY);
             return false;
         }
 
-        if (mProbability <= 0) {
+        if (mSurveyConfig.mProbability <= 0) {
             recordSurveyFilteringResult(FilteringResult.MAX_NUMBER_MISSING);
             return false;
         }
 
-        preferences.writeInt(ChromePreferenceKeys.SURVEY_DATE_LAST_ROLLED, today);
+        // Do not roll when current survey is displayed previously.
+        // TODO(crbug.com/1195928): Support configure display survey again by the client.
+        if (getMetadata().getLastPromptDisplayedDate() > 0) {
+            recordSurveyFilteringResult(FilteringResult.SURVEY_PROMPT_ALREADY_DISPLAYED);
+            return false;
+        }
+
+        getMetadata().setDiceRolled();
         if (isSelectedWithByRandom()) {
             recordSurveyFilteringResult(FilteringResult.USER_SELECTED_FOR_SURVEY);
             return true;
@@ -132,16 +136,17 @@ public class SurveyThrottler {
         }
     }
 
-    /** @return If the survey info bar for this survey was logged as seen before. */
-    private boolean hasPromptBeenDisplayed() {
-        SharedPreferencesManager preferences = ChromeSharedPreferences.getInstance();
-        // TODO(https://crbug.com/1195928): Get an expiration date from feature flag.
-        return preferences.readLong(mPrefKeyPromptDisplayed, -1L) != -1L;
+    private SurveyMetadata getMetadata() {
+        // Create the metadata lazily since getDayOfYear might be blocking.
+        if (mMetadata == null) {
+            mMetadata = new SurveyMetadata(mSurveyConfig.mTriggerId, this::getDayOfYear);
+        }
+        return mMetadata;
     }
 
     @VisibleForTesting
     boolean isSelectedWithByRandom() {
-        return new Random().nextFloat() <= mProbability;
+        return new Random().nextFloat() <= mSurveyConfig.mProbability;
     }
 
     /** @return The day of the year for today. */
@@ -152,6 +157,7 @@ public class SurveyThrottler {
     }
 
     private static void recordSurveyFilteringResult(@FilteringResult int value) {
+        // TODO(crbug/1487667): Add per-survey metrics.
         RecordHistogram.recordEnumeratedHistogram(
                 "Android.Survey.SurveyFilteringResults", value, FilteringResult.NUM_ENTRIES);
     }

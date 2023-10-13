@@ -38,6 +38,7 @@ public class SurveyClientFactory {
 
         assert sInstance == null : "Instance is already #initialized.";
         sInstance = new SurveyClientFactory(crashUploadPermissionSupplier);
+        SurveyMetadata.initializeInBackground();
         ResettersForTesting.register(() -> sInstance = null);
     }
 

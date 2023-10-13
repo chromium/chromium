@@ -28,7 +28,6 @@ import java.util.Map;
 // TODO(crbug/1400731): Add metrics and refine the logging in this class.
 class SurveyClientImpl implements SurveyClient {
     private static final String TAG = "SurveyClient";
-
     /**
      * When set, bypass the AsyncTask to read throttler in the background, and ignore whether the
      * current activity is alive. Set for unit testing / native tests.
@@ -54,8 +53,7 @@ class SurveyClientImpl implements SurveyClient {
         mUiDelegate = uiDelegate;
         mController = controller;
         mCrashUploadPermissionSupplier = crashUploadPermissionSupplier;
-
-        mThrottler = new SurveyThrottler(mConfig.mTriggerId, (float) mConfig.mProbability);
+        mThrottler = new SurveyThrottler(mConfig);
         mAggregatedSurveyPsd = new HashMap<>();
     }
 

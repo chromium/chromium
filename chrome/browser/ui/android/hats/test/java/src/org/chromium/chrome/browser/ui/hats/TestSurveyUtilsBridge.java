@@ -25,6 +25,7 @@ public class TestSurveyUtilsBridge {
     @CalledByNative
     private static void reset() {
         TestSurveyUtils.forceShowSurveyForTesting(false);
+        SurveyMetadata.initializeForTesting(null, null);
         SurveyClientFactory.setInstanceForTesting(null);
     }
 

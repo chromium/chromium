@@ -15,6 +15,7 @@ android_library("test_support_java") {
   public_deps = [ "//chrome/browser/ui/android/hats:java" ]
   deps = [
     "//base:base_java",
+    "//base:base_java_test_support",
     "//base:jni_java",
     "//chrome/browser/android/lifecycle:java",
     "//chrome/browser/flags:java",

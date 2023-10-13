@@ -30,6 +30,7 @@ import org.chromium.base.supplier.ObservableSupplierImpl;
 import org.chromium.base.task.TaskTraits;
 import org.chromium.base.task.test.ShadowPostTask;
 import org.chromium.base.test.BaseRobolectricTestRunner;
+import org.chromium.base.test.util.InMemorySharedPreferences;
 import org.chromium.chrome.browser.lifecycle.ActivityLifecycleDispatcher;
 import org.chromium.chrome.browser.lifecycle.PauseResumeWithNativeObserver;
 import org.chromium.content_public.browser.test.util.TestThreadUtils;
@@ -63,6 +64,7 @@ public class SurveyClientUnitTest {
         mSurveyUiDelegate = new TestSurveyUtils.TestSurveyUiDelegate();
         mSurveyController = new TestSurveyUtils.TestSurveyController();
         SurveyClientFactory.initialize(mCrashUploadPermissionSupplier);
+        SurveyMetadata.initializeForTesting(new InMemorySharedPreferences(), null);
 
         ShadowPostTask.setTestImpl(new ShadowPostTask.TestImpl() {
             @Override
