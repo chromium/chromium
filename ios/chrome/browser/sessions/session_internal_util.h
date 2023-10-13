@@ -40,6 +40,12 @@ namespace ios::sessions {
 // operation was a success.
 [[nodiscard]] bool DeleteRecursively(const base::FilePath& path);
 
+// Copies content of `from_dir` to `dest_dir` recursively. It is an error
+// if `from_dir` is not an existing directory or if `dest_dir` exists and
+// is not a directory.
+[[nodiscard]] bool CopyDirectory(const base::FilePath& from_dir,
+                                 const base::FilePath& dest_dir);
+
 // Writes `data` to `filename` and returns whether the operation was a success.
 // The file is created with protection until first user authentication.
 [[nodiscard]] bool WriteFile(const base::FilePath& filename, NSData* data);

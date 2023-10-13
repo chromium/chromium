@@ -4,6 +4,7 @@
 
 #import "ios/chrome/browser/sessions/session_internal_util.h"
 
+#import "base/files/file_enumerator.h"
 #import "base/files/scoped_temp_dir.h"
 #import "base/time/time.h"
 #import "ios/chrome/browser/sessions/proto/storage.pb.h"
@@ -24,6 +25,9 @@ namespace {
 const base::FilePath::CharType kFilename[] = FILE_PATH_LITERAL("file");
 const base::FilePath::CharType kDirname1[] = FILE_PATH_LITERAL("dir1");
 const base::FilePath::CharType kDirname2[] = FILE_PATH_LITERAL("dir2");
+const base::FilePath::CharType kDirname3[] = FILE_PATH_LITERAL("dir3");
+const base::FilePath::CharType kFromName[] = FILE_PATH_LITERAL("from");
+const base::FilePath::CharType kDestName[] = FILE_PATH_LITERAL("dest");
 
 // A sub-class of google::protobuf::MessageLite that cannot be serialized.
 //
@@ -87,6 +91,52 @@ SessionWindowIOS* CreateSessionWindowIOS() {
 
   return [[SessionWindowIOS alloc] initWithSessions:@[ session_storage ]
                                       selectedIndex:0];
+}
+
+// Returns the list of item at `path`.
+std::set<base::FilePath> DirectoryContent(const base::FilePath& path) {
+  using FileEnumerator = base::FileEnumerator;
+  constexpr int all_items =
+      FileEnumerator::FileType::FILES | FileEnumerator::FileType::DIRECTORIES;
+
+  std::set<base::FilePath> result;
+  FileEnumerator e(path, false, all_items);
+  for (base::FilePath name = e.Next(); !name.empty(); name = e.Next()) {
+    result.insert(e.GetInfo().GetName());
+  }
+
+  return result;
+}
+
+// Compares the content of two path and check they are identical (recursively).
+bool PathAreIdentical(const base::FilePath& lhs, const base::FilePath& rhs) {
+  // If both path are file, check whether they have the same content.
+  if (ios::sessions::FileExists(lhs) && ios::sessions::FileExists(rhs)) {
+    NSData* lhs_data = ios::sessions::ReadFile(lhs);
+    NSData* rhs_data = ios::sessions::ReadFile(rhs);
+    return [lhs_data isEqualToData:rhs_data];
+  }
+
+  // If either path is not a directory, then they content is not identical.
+  if (!ios::sessions::DirectoryExists(lhs) ||
+      !ios::sessions::DirectoryExists(rhs)) {
+    return false;
+  }
+
+  // Both paths are directory, check the content recursively.
+  const std::set<base::FilePath> lhs_names = DirectoryContent(lhs);
+  const std::set<base::FilePath> rhs_names = DirectoryContent(rhs);
+  if (lhs_names != rhs_names) {
+    return false;
+  }
+
+  // If the list of items are identical, compare them recursively.
+  for (const base::FilePath& name : lhs_names) {
+    if (!PathAreIdentical(lhs.Append(name), rhs.Append(name))) {
+      return false;
+    }
+  }
+  return true;
 }
 
 }  // namespace
@@ -336,6 +386,100 @@ TEST_F(SessionInternalUtilTest, DeleteRecursively_Failure) {
   // Check that trying to delete a non-existent file fails.
   EXPECT_FALSE(ios::sessions::FileExists(file));
   EXPECT_FALSE(ios::sessions::DeleteRecursively(file));
+}
+
+// Tests that `CopyDirectory` correctly copy the directory structure
+// recursively.
+TEST_F(SessionInternalUtilTest, CopyDirectory) {
+  base::ScopedTempDir scoped_temp_dir;
+  ASSERT_TRUE(scoped_temp_dir.CreateUniqueTempDir());
+  const base::FilePath root = scoped_temp_dir.GetPath();
+
+  // Create the source directory with some sub-directories and files.
+  const base::FilePath from = root.Append(kFromName);
+  const base::FilePath from_dir1 = from.Append(kDirname1);
+  const base::FilePath from_dir2 = from.Append(kDirname2);
+
+  NSData* data = [@"data" dataUsingEncoding:NSUTF8StringEncoding];
+  ASSERT_TRUE(ios::sessions::WriteFile(from_dir1.Append(kFilename), data));
+  ASSERT_TRUE(ios::sessions::WriteFile(from_dir2.Append(kFilename), data));
+
+  // Check that copying recursively to inexistent destination works.
+  const base::FilePath dest = root.Append(kDestName);
+  EXPECT_TRUE(ios::sessions::CopyDirectory(from, dest));
+  EXPECT_TRUE(PathAreIdentical(from, dest));
+}
+
+// Tests that `CopyDirectory` correctly replaces the content of the target
+// directory if it exists.
+TEST_F(SessionInternalUtilTest, CopyDirectory_OverExistingDirectory) {
+  base::ScopedTempDir scoped_temp_dir;
+  ASSERT_TRUE(scoped_temp_dir.CreateUniqueTempDir());
+  const base::FilePath root = scoped_temp_dir.GetPath();
+
+  // Create the source directory with some sub-directories and files.
+  const base::FilePath from = root.Append(kFromName);
+  const base::FilePath from_dir1 = from.Append(kDirname1);
+  const base::FilePath from_dir2 = from.Append(kDirname2);
+
+  NSData* data0 = [@"data0" dataUsingEncoding:NSUTF8StringEncoding];
+  ASSERT_TRUE(ios::sessions::WriteFile(from_dir1.Append(kFilename), data0));
+  ASSERT_TRUE(ios::sessions::WriteFile(from_dir2.Append(kFilename), data0));
+
+  // Create the target directory with a different content.
+  const base::FilePath dest = root.Append(kDestName);
+  const base::FilePath dest_dir3 = from.Append(kDirname3);
+
+  NSData* data1 = [@"data1" dataUsingEncoding:NSUTF8StringEncoding];
+  ASSERT_TRUE(ios::sessions::WriteFile(dest_dir3.Append(kFilename), data1));
+  ASSERT_TRUE(ios::sessions::WriteFile(dest.Append(kFilename), data1));
+
+  // Check that both directories have distinct content.
+  ASSERT_FALSE(PathAreIdentical(from, dest));
+
+  // Check that copying recursively to existing directory works and erase
+  // all content in des.
+  EXPECT_TRUE(ios::sessions::CopyDirectory(from, dest));
+  EXPECT_TRUE(PathAreIdentical(from, dest));
+}
+
+// Tests that `CopyDirectory` fails if target is a file.
+TEST_F(SessionInternalUtilTest, CopyDirectory_FailureDestinationIsAFile) {
+  base::ScopedTempDir scoped_temp_dir;
+  ASSERT_TRUE(scoped_temp_dir.CreateUniqueTempDir());
+  const base::FilePath root = scoped_temp_dir.GetPath();
+
+  // Create the source directory with some sub-directories and files.
+  const base::FilePath from = root.Append(kFromName);
+  const base::FilePath from_dir1 = from.Append(kDirname1);
+  const base::FilePath from_dir2 = from.Append(kDirname2);
+
+  NSData* data = [@"data" dataUsingEncoding:NSUTF8StringEncoding];
+  ASSERT_TRUE(ios::sessions::WriteFile(from_dir1.Append(kFilename), data));
+  ASSERT_TRUE(ios::sessions::WriteFile(from_dir2.Append(kFilename), data));
+
+  // Create a file with the same name as target directory.
+  const base::FilePath dest = root.Append(kDestName);
+  ASSERT_TRUE(ios::sessions::WriteFile(dest, data));
+
+  // Check that trying to copy source over a file fails.
+  EXPECT_FALSE(ios::sessions::CopyDirectory(from, dest));
+}
+
+// Tests that `CopyDirectory` fails if source is a file.
+TEST_F(SessionInternalUtilTest, CopyDirectory_FailureSourceNotADirectory) {
+  base::ScopedTempDir scoped_temp_dir;
+  ASSERT_TRUE(scoped_temp_dir.CreateUniqueTempDir());
+  const base::FilePath root = scoped_temp_dir.GetPath();
+
+  // Create a file named like source.
+  const base::FilePath from = root.Append(kFromName);
+  NSData* data = [@"data" dataUsingEncoding:NSUTF8StringEncoding];
+  ASSERT_TRUE(ios::sessions::WriteFile(from, data));
+
+  // Check that CopyDirectory fails when the source is a file.
+  const base::FilePath dest = root.Append(kDestName);
+  EXPECT_FALSE(ios::sessions::CopyDirectory(from, dest));
 }
 
 // Tests that `WriteFile` returns success when the file is created and the

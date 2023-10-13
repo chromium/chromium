@@ -104,6 +104,53 @@ enum class PathStatus {
   return true;
 }
 
+// Copies content of `from_dir` to `dest_dir` recursively. It is an error
+// if `from_dir` is not an existing directory or if `dest_dir` exists and
+// is not a directory.
+[[nodiscard]] bool CopyDirectory(NSString* from_dir, NSString* dest_dir) {
+  if (!DirectoryExists(from_dir)) {
+    DLOG(WARNING) << "Error copying directory: "
+                  << base::SysNSStringToUTF8(from_dir) << " to "
+                  << base::SysNSStringToUTF8(dest_dir) << ": no such directory";
+    return false;
+  }
+
+  switch (GetPathStatus(dest_dir)) {
+    case PathStatus::kDirectory:
+      if (!DeleteRecursively(dest_dir)) {
+        return false;
+      }
+      break;
+
+    case PathStatus::kFile:
+      DLOG(WARNING) << "Error copying directory: "
+                    << base::SysNSStringToUTF8(from_dir) << " to "
+                    << base::SysNSStringToUTF8(dest_dir) << ": file exists";
+      return false;
+
+    case PathStatus::kInexistent:
+      break;
+  }
+
+  // Use hardlink to perform the copy to reduce the impact on storage. The
+  // documentation of -linkItemAtPath:toPath:error: explicitly explain that
+  // if source is a directory, the method create the destination directory
+  // and hard-link the content recursively.
+
+  NSError* error = nil;
+  if (![[NSFileManager defaultManager] linkItemAtPath:from_dir
+                                               toPath:dest_dir
+                                                error:&error]) {
+    DLOG(WARNING) << "Error copying directory: "
+                  << base::SysNSStringToUTF8(from_dir) << " to "
+                  << base::SysNSStringToUTF8(dest_dir) << ": "
+                  << base::SysNSStringToUTF8([error description]);
+    return false;
+  }
+
+  return true;
+}
+
 // Writes `data` to `filename` and returns whether the operation was a success.
 // The file is created with protection until first user authentication.
 [[nodiscard]] bool WriteFile(NSString* filename, NSData* data) {
@@ -168,6 +215,12 @@ bool DirectoryEmpty(const base::FilePath& directory) {
 
 bool DeleteRecursively(const base::FilePath& path) {
   return internal::DeleteRecursively(base::apple::FilePathToNSString(path));
+}
+
+bool CopyDirectory(const base::FilePath& from_dir,
+                   const base::FilePath& dest_dir) {
+  return internal::CopyDirectory(base::apple::FilePathToNSString(from_dir),
+                                 base::apple::FilePathToNSString(dest_dir));
 }
 
 bool WriteFile(const base::FilePath& filename, NSData* data) {
