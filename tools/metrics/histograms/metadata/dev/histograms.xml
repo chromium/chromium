@@ -605,6 +605,16 @@ chromium-metrics-reviews@google.com.
   </summary>
 </histogram>
 
+<histogram name="DevTools.VisualLogging.ProcessingTime" units="ms"
+    expires_after="2024-12-01">
+  <owner>dsv@chromium.org</owner>
+  <owner>hablich@chromium.org</owner>
+  <summary>
+    Clock time elapsed to process changes in DOM and log Visual Elements
+    impressions.
+  </summary>
+</histogram>
+
 <histogram name="DevTools.VMInlineScriptShown"
     enum="DevToolsVMInlineScriptType" expires_after="2024-02-04">
   <owner>yangguo@chromium.org</owner>
