@@ -8,11 +8,14 @@ import static org.chromium.chrome.browser.customtabs.features.minimizedcustomtab
 import static org.chromium.chrome.browser.customtabs.features.minimizedcustomtab.MinimizedCardProperties.TITLE;
 import static org.chromium.chrome.browser.customtabs.features.minimizedcustomtab.MinimizedCardProperties.URL;
 
+import android.graphics.Bitmap;
+import android.graphics.drawable.Drawable;
 import android.view.View;
 import android.widget.ImageView;
 import android.widget.TextView;
 
 import org.chromium.chrome.R;
+import org.chromium.ui.UiUtils;
 import org.chromium.ui.modelutil.PropertyKey;
 import org.chromium.ui.modelutil.PropertyModel;
 
@@ -29,7 +32,17 @@ public class MinimizedCardViewBinder {
             title.setText(model.get(URL));
         } else if (FAVICON == key) {
             ImageView favicon = view.findViewById(R.id.favicon);
-            favicon.setImageBitmap(model.get(FAVICON));
+            Bitmap bitmap = model.get(FAVICON);
+            if (bitmap == null) {
+                Drawable icon =
+                        UiUtils.getTintedDrawable(
+                                view.getContext(),
+                                R.drawable.ic_globe_24dp,
+                                R.color.default_icon_color_tint_list);
+                favicon.setImageDrawable(icon);
+            } else {
+                favicon.setImageBitmap(model.get(FAVICON));
+            }
         }
     }
 }

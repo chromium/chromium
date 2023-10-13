@@ -17,9 +17,10 @@ found in the LICENSE file.
 
     <ImageView
         android:id="@+id/favicon"
-        android:layout_width="wrap_content"
-        android:layout_height="wrap_content"
+        android:layout_width="24dp"
+        android:layout_height="24dp"
         android:src="@drawable/ic_globe_24dp"
+        android:scaleType="fitCenter"
         android:importantForAccessibility="no" />
 
     <TextView

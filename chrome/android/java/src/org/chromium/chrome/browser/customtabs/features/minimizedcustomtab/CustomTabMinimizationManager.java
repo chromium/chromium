@@ -5,6 +5,7 @@
 package org.chromium.chrome.browser.customtabs.features.minimizedcustomtab;
 
 import static org.chromium.chrome.browser.customtabs.features.minimizedcustomtab.MinimizedCardProperties.ALL_KEYS;
+import static org.chromium.chrome.browser.customtabs.features.minimizedcustomtab.MinimizedCardProperties.FAVICON;
 import static org.chromium.chrome.browser.customtabs.features.minimizedcustomtab.MinimizedCardProperties.TITLE;
 import static org.chromium.chrome.browser.customtabs.features.minimizedcustomtab.MinimizedCardProperties.URL;
 import static org.chromium.chrome.browser.tab.TabSelectionType.FROM_USER;
@@ -25,6 +26,7 @@ import androidx.fragment.app.FragmentTransaction;
 
 import org.chromium.chrome.browser.ActivityTabProvider;
 import org.chromium.chrome.browser.tab.Tab;
+import org.chromium.chrome.browser.tab.TabFavicon;
 import org.chromium.chrome.browser.tab.TabHidingType;
 import org.chromium.ui.modelutil.PropertyModel;
 
@@ -73,10 +75,12 @@ public class CustomTabMinimizationManager
 
     private void updateTabForMinimization(Tab tab) {
         if (tab == null) return;
-        PropertyModel model = new PropertyModel.Builder(ALL_KEYS)
-                                      .with(TITLE, tab.getTitle())
-                                      .with(URL, tab.getUrl().getHost())
-                                      .build();
+        PropertyModel model =
+                new PropertyModel.Builder(ALL_KEYS)
+                        .with(TITLE, tab.getTitle())
+                        .with(URL, tab.getUrl().getHost())
+                        .with(FAVICON, TabFavicon.getBitmap(tab))
+                        .build();
         var fragment = MinimizedCardDialogFragment.newInstance(model);
         FragmentTransaction transaction = mActivity.getSupportFragmentManager().beginTransaction();
         transaction.setTransition(FragmentTransaction.TRANSIT_NONE);

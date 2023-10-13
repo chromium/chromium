@@ -11,6 +11,7 @@ import static androidx.test.espresso.matcher.ViewMatchers.withId;
 import static androidx.test.espresso.matcher.ViewMatchers.withText;
 
 import static org.junit.Assert.assertEquals;
+import static org.junit.Assert.assertNotNull;
 
 import static org.chromium.chrome.browser.customtabs.features.minimizedcustomtab.CustomTabMinimizationManager.ASPECT_RATIO;
 
@@ -113,5 +114,12 @@ public class MinimizedCardViewBinderTest extends BlankUiTestActivityTestCase {
         assertEquals(1, mUrl.getLineCount());
         onView(withId(R.id.favicon)).check(matches(isCompletelyDisplayed()));
         assertEquals(favicon, ((BitmapDrawable) mFavicon.getDrawable()).getBitmap());
+    }
+
+    @Test
+    @SmallTest
+    public void testNullFavicon() {
+        onView(withId(R.id.favicon)).check(matches(isCompletelyDisplayed()));
+        assertNotNull(mFavicon.getDrawable());
     }
 }
