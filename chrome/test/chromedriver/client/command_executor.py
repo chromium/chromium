@@ -245,9 +245,6 @@ class Command(object):
   RESET_COOLDOWN = (
       _Method.POST,
       '/session/:sessionId/fedcm/resetcooldown')
-  RUN_BOUNCE_TRACKING_MITIGATIONS = (
-        _Method.DELETE,
-        '/session/:sessionId/storage/run_bounce_tracking_mitigations')
 
   # Custom Chrome commands.
   IS_LOADING = (_Method.GET, '/session/:sessionId/is_loading')

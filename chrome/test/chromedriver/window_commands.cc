@@ -2495,46 +2495,6 @@ Status ExecuteDeleteAllCookies(Session* session,
   return Status(kOk);
 }
 
-Status ExecuteRunBounceTrackingMitigations(Session* session,
-                                           WebView* web_view,
-                                           const base::Value::Dict& params,
-                                           std::unique_ptr<base::Value>* value,
-                                           Timeout* timeout) {
-  // Run command and get result
-  auto result = std::make_unique<base::Value>(base::Value::Type::DICT);
-  Status status = web_view->SendCommandAndGetResult(
-      "Storage.runBounceTrackingMitigations", base::Value::Dict(), &result);
-  if (status.IsError()) {
-    return status;
-  }
-
-  if (result->GetDict().empty()) {
-    // The result dictionary should only be empty if there is no bounce tracking
-    // mitigations service (DIPSService) for the current browser context.
-    return Status(
-        kUnsupportedOperation,
-        "current remote end configuration does not support bounce tracking "
-        "mitigations");
-  }
-
-  const base::Value::List* deleted_sites =
-      result->GetDict().FindList("deletedSites");
-
-  // create copies of items `deleted_sites` and add them to the output list.
-  auto site_list = std::make_unique<base::Value>(base::Value::Type::LIST);
-  for (const base::Value& site : *deleted_sites) {
-    if (!site.is_string()) {
-      return Status(kUnknownError,
-                    "DevTools returns a non-string bounce tracker site");
-    }
-    site_list->GetList().Append(site.GetString());
-  }
-
-  *value = std::move(site_list);
-
-  return Status(kOk);
-}
-
 Status ExecuteSetRPHRegistrationMode(Session* session,
                                      WebView* web_view,
                                      const base::Value::Dict& params,
