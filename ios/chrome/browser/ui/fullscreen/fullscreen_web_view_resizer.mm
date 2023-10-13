@@ -82,8 +82,10 @@
 // fullscreen `progress`. `progress` should be between 0 and 1, 0 meaning that
 // the application is in fullscreen, 1 that it is out of fullscreen.
 - (void)updateForFullscreenProgress:(CGFloat)progress {
-  if (!self.webState || !self.webState->GetView().superview)
+  if (!self.webState || !self.webState->GetView().superview ||
+      self.model->IsForceFullscreenMode()) {
     return;
+  }
 
   [self updateForInsets:self.model->GetToolbarInsetsAtProgress(progress)];
   self.model->SetWebViewSafeAreaInsets(self.webState->GetView().safeAreaInsets);
