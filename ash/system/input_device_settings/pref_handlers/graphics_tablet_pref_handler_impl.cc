@@ -55,9 +55,12 @@ void GraphicsTabletPrefHandlerImpl::UpdateGraphicsTabletSettings(
   DCHECK(graphics_tablet.settings);
   const mojom::GraphicsTabletSettings& settings = *graphics_tablet.settings;
   base::Value::List tablet_button_remappings =
-      ConvertButtonRemappingArrayToList(settings.tablet_button_remappings);
-  base::Value::List pen_button_remappings =
-      ConvertButtonRemappingArrayToList(settings.pen_button_remappings);
+      ConvertButtonRemappingArrayToList(
+          settings.tablet_button_remappings,
+          mojom::CustomizationRestriction::kAllowCustomizations);
+  base::Value::List pen_button_remappings = ConvertButtonRemappingArrayToList(
+      settings.pen_button_remappings,
+      mojom::CustomizationRestriction::kAllowCustomizations);
 
   // Update tablet button remappings dict.
   base::Value::Dict tablet_button_remappings_dict =
@@ -121,13 +124,15 @@ void GraphicsTabletPrefHandlerImpl::UpdateLoginScreenGraphicsTabletSettings(
           account_id,
           prefs::kGraphicsTabletLoginScreenTabletButtonRemappingListPref,
           absl::make_optional<base::Value>(ConvertButtonRemappingArrayToList(
-              graphics_tablet.settings->tablet_button_remappings)));
+              graphics_tablet.settings->tablet_button_remappings,
+              mojom::CustomizationRestriction::kAllowCustomizations)));
   user_manager::KnownUser(local_state)
       .SetPath(
           account_id,
           prefs::kGraphicsTabletLoginScreenPenButtonRemappingListPref,
           absl::make_optional<base::Value>(ConvertButtonRemappingArrayToList(
-              graphics_tablet.settings->pen_button_remappings)));
+              graphics_tablet.settings->pen_button_remappings,
+              mojom::CustomizationRestriction::kAllowCustomizations)));
 }
 
 }  // namespace ash

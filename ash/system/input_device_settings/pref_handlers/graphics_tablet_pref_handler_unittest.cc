@@ -161,12 +161,14 @@ TEST_F(GraphicsTabletPrefHandlerTest,
   known_user().SetPath(
       account_id_1,
       prefs::kGraphicsTabletLoginScreenTabletButtonRemappingListPref,
-      absl::optional<base::Value>(
-          ConvertButtonRemappingArrayToList(tablet_button_remappings)));
+      absl::optional<base::Value>(ConvertButtonRemappingArrayToList(
+          tablet_button_remappings,
+          mojom::CustomizationRestriction::kAllowCustomizations)));
   known_user().SetPath(
       account_id_1, prefs::kGraphicsTabletLoginScreenPenButtonRemappingListPref,
-      absl::optional<base::Value>(
-          ConvertButtonRemappingArrayToList(pen_button_remappings)));
+      absl::optional<base::Value>(ConvertButtonRemappingArrayToList(
+          pen_button_remappings,
+          mojom::CustomizationRestriction::kAllowCustomizations)));
 
   mojom::GraphicsTabletSettingsPtr updated_settings =
       CallInitializeLoginScreenGraphicsTabletSettings(account_id_1,
@@ -370,11 +372,15 @@ TEST_F(GraphicsTabletPrefHandlerTest, InitializeSettings) {
   base::Value::Dict updated_graphics_tablet1_tablet_button_remappings_dict;
   updated_graphics_tablet1_tablet_button_remappings_dict.Set(
       kGraphicsTabletKey1,
-      ConvertButtonRemappingArrayToList(tablet_button_remappings));
+      ConvertButtonRemappingArrayToList(
+          tablet_button_remappings,
+          mojom::CustomizationRestriction::kAllowCustomizations));
   base::Value::Dict updated_graphics_tablet1_pen_button_remappings_dict;
   updated_graphics_tablet1_pen_button_remappings_dict.Set(
       kGraphicsTabletKey1,
-      ConvertButtonRemappingArrayToList(pen_button_remappings));
+      ConvertButtonRemappingArrayToList(
+          pen_button_remappings,
+          mojom::CustomizationRestriction::kAllowCustomizations));
 
   pref_service_->SetDict(
       prefs::kGraphicsTabletTabletButtonRemappingsDictPref,

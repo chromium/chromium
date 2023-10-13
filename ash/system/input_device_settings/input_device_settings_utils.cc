@@ -236,8 +236,17 @@ bool IsKeyboardPretendingToBeMouse(const ui::InputDevice& device) {
 }
 
 base::Value::Dict ConvertButtonRemappingToDict(
-    const mojom::ButtonRemapping& remapping) {
+    const mojom::ButtonRemapping& remapping,
+    mojom::CustomizationRestriction customization_restriction) {
   base::Value::Dict dict;
+
+  if (customization_restriction ==
+          mojom::CustomizationRestriction::kDisallowCustomizations ||
+      (remapping.button->is_vkey() &&
+       customization_restriction ==
+           mojom::CustomizationRestriction::kDisableKeyEventRewrites)) {
+    return dict;
+  }
 
   dict.Set(prefs::kButtonRemappingName, remapping.name);
   if (remapping.button->is_customizable_button()) {
@@ -280,10 +289,17 @@ base::Value::Dict ConvertButtonRemappingToDict(
 }
 
 base::Value::List ConvertButtonRemappingArrayToList(
-    const std::vector<mojom::ButtonRemappingPtr>& remappings) {
+    const std::vector<mojom::ButtonRemappingPtr>& remappings,
+    mojom::CustomizationRestriction customization_restriction) {
   base::Value::List list;
   for (const auto& remapping : remappings) {
-    base::Value::Dict dict = ConvertButtonRemappingToDict(*remapping);
+    base::Value::Dict dict =
+        ConvertButtonRemappingToDict(*remapping, customization_restriction);
+    // Remove empty dicts.
+    if (dict.empty()) {
+      continue;
+    }
+
     list.Append(std::move(dict));
   }
   return list;

@@ -201,8 +201,8 @@ base::Value::Dict ConvertSettingsToDict(
 void UpdateButtonRemappingDictPref(PrefService* pref_service,
                                    const mojom::Mouse& mouse) {
   const mojom::MouseSettings& settings = *mouse.settings;
-  base::Value::List button_remappings =
-      ConvertButtonRemappingArrayToList(settings.button_remappings);
+  base::Value::List button_remappings = ConvertButtonRemappingArrayToList(
+      settings.button_remappings, mouse.customization_restriction);
   base::Value::Dict button_remappings_dict =
       pref_service->GetDict(prefs::kMouseButtonRemappingsDictPref).Clone();
   button_remappings_dict.Set(mouse.device_key, std::move(button_remappings));
@@ -235,9 +235,7 @@ void UpdateMouseSettingsImpl(
   pref_service->SetDict(std::string(prefs::kMouseDeviceSettingsDictPref),
                         std::move(devices_dict));
 
-  if (features::IsPeripheralCustomizationEnabled() &&
-      mouse.customization_restriction ==
-          mojom::CustomizationRestriction::kAllowCustomizations) {
+  if (features::IsPeripheralCustomizationEnabled()) {
     UpdateButtonRemappingDictPref(pref_service, mouse);
   }
 }
@@ -407,16 +405,15 @@ void MousePrefHandlerImpl::UpdateLoginScreenMouseSettings(
           absl::make_optional<base::Value>(ConvertSettingsToDict(
               mouse, mouse_policies, /*force_persistence=*/{}, settings_dict)));
 
-  if (features::IsPeripheralCustomizationEnabled() &&
-      mouse.customization_restriction ==
-          mojom::CustomizationRestriction::kAllowCustomizations) {
+  if (features::IsPeripheralCustomizationEnabled()) {
     const auto* button_remapping_list_pref =
         prefs::kMouseLoginScreenButtonRemappingListPref;
     user_manager::KnownUser(local_state)
         .SetPath(
             account_id, button_remapping_list_pref,
             absl::make_optional<base::Value>(ConvertButtonRemappingArrayToList(
-                mouse.settings->button_remappings)));
+                mouse.settings->button_remappings,
+                mouse.customization_restriction)));
   }
 }
 

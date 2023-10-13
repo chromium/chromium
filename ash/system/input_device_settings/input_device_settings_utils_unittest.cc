@@ -111,8 +111,8 @@ TEST(GetLoginScreenButtonRemappingListTest, RetrieveButtonRemappingList) {
 }
 
 TEST(ConvertButtonRemappingToDict, ConvertButtonRemappingToDict) {
-  const base::Value::Dict dict1 =
-      ConvertButtonRemappingToDict(button_remapping1);
+  const base::Value::Dict dict1 = ConvertButtonRemappingToDict(
+      button_remapping1, mojom::CustomizationRestriction::kAllowCustomizations);
   EXPECT_EQ(button_remapping1.name,
             *dict1.FindString(prefs::kButtonRemappingName));
   EXPECT_EQ(
@@ -122,8 +122,8 @@ TEST(ConvertButtonRemappingToDict, ConvertButtonRemappingToDict) {
                 button_remapping1.remapping_action->get_accelerator_action()),
             *dict1.FindInt(prefs::kButtonRemappingAcceleratorAction));
 
-  const base::Value::Dict dict2 =
-      ConvertButtonRemappingToDict(button_remapping2);
+  const base::Value::Dict dict2 = ConvertButtonRemappingToDict(
+      button_remapping2, mojom::CustomizationRestriction::kAllowCustomizations);
   EXPECT_EQ(button_remapping2.name,
             *dict2.FindString(prefs::kButtonRemappingName));
   EXPECT_EQ(
@@ -147,8 +147,8 @@ TEST(ConvertButtonRemappingToDict, ConvertButtonRemappingToDict) {
             *dict2.FindDict(prefs::kButtonRemappingKeyEvent)
                  ->FindInt(prefs::kButtonRemappingKeyboardCode));
 
-  const base::Value::Dict dict3 =
-      ConvertButtonRemappingToDict(button_remapping3);
+  const base::Value::Dict dict3 = ConvertButtonRemappingToDict(
+      button_remapping3, mojom::CustomizationRestriction::kAllowCustomizations);
   EXPECT_EQ(button_remapping3.name,
             *dict3.FindString(prefs::kButtonRemappingName));
   EXPECT_EQ(static_cast<int>(button_remapping3.button->get_vkey()),
@@ -171,8 +171,8 @@ TEST(ConvertButtonRemappingToDict, ConvertButtonRemappingToDict) {
             *dict3.FindDict(prefs::kButtonRemappingKeyEvent)
                  ->FindInt(prefs::kButtonRemappingKeyboardCode));
 
-  const base::Value::Dict dict4 =
-      ConvertButtonRemappingToDict(button_remapping4);
+  const base::Value::Dict dict4 = ConvertButtonRemappingToDict(
+      button_remapping4, mojom::CustomizationRestriction::kAllowCustomizations);
   EXPECT_EQ(button_remapping4.name,
             *dict4.FindString(prefs::kButtonRemappingName));
   EXPECT_EQ(static_cast<int>(button_remapping4.button->get_vkey()),
@@ -181,8 +181,8 @@ TEST(ConvertButtonRemappingToDict, ConvertButtonRemappingToDict) {
   EXPECT_EQ(absl::nullopt,
             dict4.FindInt(prefs::kButtonRemappingAcceleratorAction));
 
-  const base::Value::Dict dict5 =
-      ConvertButtonRemappingToDict(button_remapping5);
+  const base::Value::Dict dict5 = ConvertButtonRemappingToDict(
+      button_remapping5, mojom::CustomizationRestriction::kAllowCustomizations);
   EXPECT_EQ(button_remapping5.name,
             *dict5.FindString(prefs::kButtonRemappingName));
   EXPECT_EQ(static_cast<int>(button_remapping5.button->get_vkey()),
@@ -194,6 +194,18 @@ TEST(ConvertButtonRemappingToDict, ConvertButtonRemappingToDict) {
       static_cast<int>(
           button_remapping5.remapping_action->get_static_shortcut_action()),
       dict5.FindInt(prefs::kButtonRemappingStaticShortcutAction));
+}
+
+TEST(ConvertButtonRemappingToDict, MouseCustomizationRestriction) {
+  const base::Value::Dict dict1 = ConvertButtonRemappingToDict(
+      button_remapping3,
+      mojom::CustomizationRestriction::kDisallowCustomizations);
+  EXPECT_TRUE(dict1.empty());
+
+  const base::Value::Dict dict2 = ConvertButtonRemappingToDict(
+      button_remapping3,
+      mojom::CustomizationRestriction::kDisableKeyEventRewrites);
+  EXPECT_TRUE(dict2.empty());
 }
 
 TEST(ConvertDictToButtonRemapping, ConvertDictToButtonRemapping) {
@@ -423,11 +435,13 @@ TEST(ConvertButtonRemappingArrayToList, ConvertButtonRemappingArrayToList) {
   std::vector<mojom::ButtonRemappingPtr> remappings;
   remappings.push_back(button_remapping1.Clone());
   remappings.push_back(button_remapping2.Clone());
-  base::Value::List list = ConvertButtonRemappingArrayToList(remappings);
-  EXPECT_EQ(2, static_cast<int>(list.size()));
+  remappings.push_back(button_remapping4.Clone());
+  base::Value::List list1 = ConvertButtonRemappingArrayToList(
+      remappings, mojom::CustomizationRestriction::kAllowCustomizations);
+  EXPECT_EQ(3, static_cast<int>(list1.size()));
 
-  ASSERT_TRUE(list[0].is_dict());
-  const auto& dict1 = list[0].GetDict();
+  ASSERT_TRUE(list1[0].is_dict());
+  const auto& dict1 = list1[0].GetDict();
   EXPECT_EQ(button_remapping1.name,
             *dict1.FindString(prefs::kButtonRemappingName));
   EXPECT_EQ(
@@ -437,8 +451,8 @@ TEST(ConvertButtonRemappingArrayToList, ConvertButtonRemappingArrayToList) {
                 button_remapping1.remapping_action->get_accelerator_action()),
             *dict1.FindInt(prefs::kButtonRemappingAcceleratorAction));
 
-  ASSERT_TRUE(list[1].is_dict());
-  const auto& dict2 = list[1].GetDict();
+  ASSERT_TRUE(list1[1].is_dict());
+  const auto& dict2 = list1[1].GetDict();
   EXPECT_EQ(button_remapping2.name,
             *dict2.FindString(prefs::kButtonRemappingName));
   EXPECT_EQ(
@@ -461,6 +475,34 @@ TEST(ConvertButtonRemappingArrayToList, ConvertButtonRemappingArrayToList) {
                 button_remapping2.remapping_action->get_key_event()->vkey),
             *dict2.FindDict(prefs::kButtonRemappingKeyEvent)
                  ->FindInt(prefs::kButtonRemappingKeyboardCode));
+
+  ASSERT_TRUE(list1[2].is_dict());
+  const auto& dict3 = list1[2].GetDict();
+  EXPECT_EQ(button_remapping4.name,
+            *dict3.FindString(prefs::kButtonRemappingName));
+  EXPECT_EQ(static_cast<int>(button_remapping4.button->get_vkey()),
+            *dict3.FindInt(prefs::kButtonRemappingKeyboardCode));
+  EXPECT_EQ(nullptr, dict3.FindDict(prefs::kButtonRemappingKeyEvent));
+  EXPECT_EQ(absl::nullopt,
+            dict3.FindInt(prefs::kButtonRemappingAcceleratorAction));
+
+  base::Value::List list2 = ConvertButtonRemappingArrayToList(
+      remappings, mojom::CustomizationRestriction::kDisallowCustomizations);
+  EXPECT_EQ(0, static_cast<int>(list2.size()));
+
+  base::Value::List list3 = ConvertButtonRemappingArrayToList(
+      remappings, mojom::CustomizationRestriction::kDisableKeyEventRewrites);
+  EXPECT_EQ(2, static_cast<int>(list3.size()));
+
+  ASSERT_TRUE(list3[0].is_dict());
+  const auto& dict5 = list3[0].GetDict();
+  EXPECT_EQ(button_remapping1.name,
+            *dict5.FindString(prefs::kButtonRemappingName));
+
+  ASSERT_TRUE(list3[1].is_dict());
+  const auto& dict6 = list3[1].GetDict();
+  EXPECT_EQ(button_remapping2.name,
+            *dict6.FindString(prefs::kButtonRemappingName));
 }
 
 TEST(ConvertListToButtonRemappingArray, ConvertListToButtonRemappingArray) {
