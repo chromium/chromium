@@ -255,8 +255,14 @@ class RequestStorageAccessForBaseBrowserTest : public InProcessBrowserTest {
   base::test::ScopedFeatureList features_;
 };
 
+// TODO(crbug.com/1491942): This fails with the field trial testing config.
 class RequestStorageAccessForBrowserTest
-    : public RequestStorageAccessForBaseBrowserTest {};
+    : public RequestStorageAccessForBaseBrowserTest {
+  void SetUpCommandLine(base::CommandLine* command_line) override {
+    RequestStorageAccessForBaseBrowserTest::SetUpCommandLine(command_line);
+    command_line->AppendSwitch("disable-field-trial-config");
+  }
+};
 
 // Validates that expiry data is transferred over IPC to the Network Service.
 IN_PROC_BROWSER_TEST_F(RequestStorageAccessForBrowserTest,
@@ -859,6 +865,12 @@ class RequestStorageAccessForExplicitlyDisabledBrowserTest
  public:
   RequestStorageAccessForExplicitlyDisabledBrowserTest()
       : enable_standard_storage_access_api_(GetParam()) {}
+
+  // TODO(crbug.com/1491942): This fails with the field trial testing config.
+  void SetUpCommandLine(base::CommandLine* command_line) override {
+    RequestStorageAccessForBaseBrowserTest::SetUpCommandLine(command_line);
+    command_line->AppendSwitch("disable-field-trial-config");
+  }
 
  protected:
   std::vector<base::test::FeatureRef> GetDisabledFeatures() override {
