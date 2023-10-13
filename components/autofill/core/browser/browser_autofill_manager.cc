@@ -2583,6 +2583,7 @@ void BrowserAutofillManager::FillOrPreviewDataModelForm(
             .autofill_skipped_status = skip_reasons[i],
             .was_autofilled = OptionalBoolean::kFalse,
             .had_value_after_filling = ToOptionalBoolean(has_value_before),
+            .filling_method = AutofillFillingMethod::kNone,
         });
       }
       continue;
@@ -2631,6 +2632,11 @@ void BrowserAutofillManager::FillOrPreviewDataModelForm(
           .autofill_skipped_status = FieldFillingSkipReason::kNotSkipped,
           .was_autofilled = ToOptionalBoolean(is_autofilled_after),
           .had_value_after_filling = ToOptionalBoolean(has_value_after),
+          .filling_method = base::FeatureList::IsEnabled(
+                                features::kAutofillGranularFillingAvailable)
+                                ? GetFillingMethodFromTargetedFields(
+                                      trigger_details.field_types_to_fill)
+                                : AutofillFillingMethod::kFullForm,
       });
     }
 

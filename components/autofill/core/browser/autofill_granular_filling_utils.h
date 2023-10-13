@@ -11,6 +11,22 @@
 // Helper methods specific for granular filling related behavior.
 namespace autofill {
 
+// Autofill's possible filling methods. A filling method represents the
+// different popup surfaces a user can use to interact with Autofill, which may
+// lead to a different set of fields being filled. These sets/groups can be
+// either the full form, a group of related fields or a single field.
+enum class AutofillFillingMethod {
+  // User chose to fill the whole form. Either from the main suggestion or from
+  // the extended menu `PopupItemId::kFillEverything`.
+  kFullForm = 0,
+  // User chose one of the group filling options, such as name, address or phone
+  // number.
+  kGroupFilling = 1,
+  // User chose to fill a specific field.
+  kFieldByFieldFilling = 2,
+  kNone = 3,
+};
+
 // Helper method that returns all address related fields for the purpose of
 // group filling. Because group filling groups differ from actual
 // Autofill groups for addresses (for group filling we consider company fields
@@ -22,6 +38,10 @@ ServerFieldTypeSet GetAddressFieldsForGroupFilling();
 // FieldTypeGroup::kName fields, FieldTypeGroup::kPhone fields or
 // `GetAddressFieldsForGroupFilling` (from the method above).
 bool AreFieldsGranularFillingGroup(const ServerFieldTypeSet& fields);
+
+// Returns the autofill filling method corresponding to `targeted_fields`.
+AutofillFillingMethod GetFillingMethodFromTargetedFields(
+    const ServerFieldTypeSet& targeted_fields);
 
 // Returns a set of fields to be filled, given the last targeted fields and
 // the current trigger field type. For example, if the last targeted fields
