@@ -105,6 +105,7 @@ public class NetworkChangesTest {
 
         public void connectDefaultNetwork() {
             fakeNetworkConnected(mDefaultNetwork);
+            fakeDefaultNetworkChange(mDefaultNetwork);
         }
 
         private void fakeDefaultNetworkChange(Network network) {
@@ -501,7 +502,6 @@ public class NetworkChangesTest {
 
     @Test
     @MediumTest
-    @DisabledTest(message = "crbug.com/1487204")
     public void
     testDefaultNetworkDisconnectAndReconnect_defaultNetworkMigration_pendingRequestSucceeds()
             throws Exception {
@@ -537,6 +537,87 @@ public class NetworkChangesTest {
         assertThat(callback.getResponseInfoWithChecks())
                 .hasNegotiatedProtocolThat()
                 .isEqualTo("h3");
+    }
+
+    @Test
+    @MediumTest
+    public void testDefaultNetworkDisconnectAndReconnect_goawayOnIpChange_pendingRequestSucceeds()
+            throws Exception {
+        mTestRule.getTestFramework().applyEngineBuilderPatch(
+                (builder) -> { goawayOnIpChange(builder); });
+        mTestRule.getTestFramework().startEngine();
+        ConnectivityManager connectivityManager =
+                (ConnectivityManager) mTestRule.getTestFramework().getContext().getSystemService(
+                        Context.CONNECTIVITY_SERVICE);
+        Networks networks = new Networks(connectivityManager);
+
+        String url = QuicTestServer.getServerURL() + "/simple.txt";
+        // Unfortunately we have no choice but to delay as QuicTestServer doesn't provide any
+        // synchronization control to the caller.
+        // 15 seconds is, hopefully, a good enough tradeoff between test execution speed and
+        // flakiness.
+        QuicTestServer.delayResponse("/simple.txt", 15);
+
+        TestUrlRequestCallback callback = new TestUrlRequestCallback();
+        UrlRequest request = mTestRule.getTestFramework()
+                                     .getEngine()
+                                     .newUrlRequestBuilder(url, callback, callback.getExecutor())
+                                     .build();
+        request.start();
+
+        // Without this synchronization it seems that the default network change can happen before
+        // the underlying QUIC session is created (read: the test would be flaky).
+        waitForStatus(request, UrlRequest.Status.WAITING_FOR_RESPONSE);
+        networks.disconnectDefaultNetwork();
+        networks.connectDefaultNetwork();
+
+        callback.blockForDone();
+        assertThat(callback.mOnErrorCalled).isFalse();
+        assertThat(callback.mError).isNull();
+        assertThat(callback.getResponseInfoWithChecks().getNegotiatedProtocol()).isEqualTo("h3");
+    }
+
+    @Test
+    @SmallTest
+    public void
+    testDefaultNetworkDisconnectAndReconnect_closeSessionsOnIpChange_pendingRequestSucceeds()
+            throws Exception {
+        mTestRule.getTestFramework().applyEngineBuilderPatch(
+                (builder) -> { closeSessionsOnIpChange(builder); });
+        mTestRule.getTestFramework().startEngine();
+        ConnectivityManager connectivityManager =
+                (ConnectivityManager) mTestRule.getTestFramework().getContext().getSystemService(
+                        Context.CONNECTIVITY_SERVICE);
+        Networks networks = new Networks(connectivityManager);
+
+        String url = QuicTestServer.getServerURL() + "/simple.txt";
+        // Unfortunately we have no choice but to delay as QuicTestServer doesn't provide any
+        // synchronization control to the caller.
+        // 15 seconds is, hopefully, a good enough tradeoff between test execution speed and
+        // flakiness.
+        QuicTestServer.delayResponse("/simple.txt", 15);
+
+        TestUrlRequestCallback callback = new TestUrlRequestCallback();
+        UrlRequest request = mTestRule.getTestFramework()
+                                     .getEngine()
+                                     .newUrlRequestBuilder(url, callback, callback.getExecutor())
+                                     .build();
+        request.start();
+
+        // Without this synchronization it seems that the default network change can happen before
+        // the underlying QUIC session is created (read: the test would be flaky).
+        waitForStatus(request, UrlRequest.Status.WAITING_FOR_RESPONSE);
+        networks.disconnectDefaultNetwork();
+        networks.connectDefaultNetwork();
+
+        callback.blockForDone();
+        assertThat(callback.mOnErrorCalled).isTrue();
+        assertThat(callback.mError).isNotNull();
+        assertThat(callback.mError)
+                .hasMessageThat()
+                .contains("Exception in CronetUrlRequest: net::ERR_NETWORK_CHANGED");
+        assertThat(((NetworkException) callback.mError).getCronetInternalErrorCode())
+                .isEqualTo(NetError.ERR_NETWORK_CHANGED);
     }
 
     @Test
