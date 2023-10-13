@@ -15,6 +15,7 @@ import 'chrome://resources/cr_elements/cr_icon_button/cr_icon_button.js';
 import 'chrome://resources/cr_elements/cr_button/cr_button.js';
 import '../settings_shared.css.js';
 import '../i18n_setup.js';
+import '../icons.html.js';
 
 import {CrActionMenuElement} from 'chrome://resources/cr_elements/cr_action_menu/cr_action_menu.js';
 import {CrToastElement} from 'chrome://resources/cr_elements/cr_toast/cr_toast.js';
@@ -86,6 +87,9 @@ export class SettingsSafetyHubNotificationPermissionsModuleElement extends
       // Text below primary header label.
       subheaderString_: String,
 
+      // The icon next to primary header label.
+      headerIconString_: String,
+
       // The text that will be shown in the undo toast element.
       toastText_: String,
 
@@ -118,6 +122,7 @@ export class SettingsSafetyHubNotificationPermissionsModuleElement extends
 
   private headerString_: string;
   private subheaderString_: string;
+  private headerIconString_: string;
   private toastText_: string|null;
   private sites_: NotificationPermissionsDisplay[]|null;
   private shouldShowCompletionInfo_: boolean;
@@ -185,6 +190,7 @@ export class SettingsSafetyHubNotificationPermissionsModuleElement extends
       this.headerString_ =
           this.i18n('safetyCheckNotificationPermissionReviewDoneLabel');
       this.subheaderString_ = '';
+      this.headerIconString_ = 'cr:check';
       return;
     }
 
@@ -196,6 +202,7 @@ export class SettingsSafetyHubNotificationPermissionsModuleElement extends
         await PluralStringProxyImpl.getInstance().getPluralString(
             'safetyCheckNotificationPermissionReviewSecondaryLabel',
             this.sites_.length);
+    this.headerIconString_ = 'settings:notifications-none';
   }
 
   private onBlockClick_(e: CustomEvent<NotificationPermission>) {

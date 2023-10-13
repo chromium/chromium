@@ -67,14 +67,18 @@ export class SettingsSafetyHubModuleElement extends
       // The string for the header label.
       header: String,
 
-      // The strinπg for the subheader label.
+      // The string for the subheader label.
       subheader: String,
 
       // The icon for the module.
       headerIcon: {
         String,
         value: 'cr:error',
+        observer: 'onHeaderIconChanged_',
       },
+
+      // The color of the header-icon.
+      headerIconColor: String,
 
       // The icon for the button of the list item.
       buttonIcon: String,
@@ -101,6 +105,7 @@ export class SettingsSafetyHubModuleElement extends
   header: string;
   subheader: string|TrustedHTML;
   headerIcon: string;
+  headerIconColor: string;
   buttonIcon: string;
   buttonAriaLabelId: string;
   buttonTooltipText: string;
@@ -259,6 +264,14 @@ export class SettingsSafetyHubModuleElement extends
       composed: true,
       detail: item,
     }));
+  }
+
+  private onHeaderIconChanged_() {
+    if (this.headerIcon === 'cr:check') {
+      this.headerIconColor = 'green';
+    } else {
+      this.headerIconColor = '';
+    }
   }
 
   private onShowTooltip_(e: DomRepeatEvent<SiteInfo>) {

@@ -5,6 +5,7 @@ import 'chrome://resources/cr_elements/cr_button/cr_button.js';
 import 'chrome://resources/cr_elements/cr_icon_button/cr_icon_button.js';
 import 'chrome://resources/cr_elements/cr_toast/cr_toast.js';
 import '../i18n_setup.js';
+import '../icons.html.js';
 import './safety_hub_module.js';
 
 import {CrActionMenuElement} from 'chrome://resources/cr_elements/cr_action_menu/cr_action_menu.js';
@@ -75,6 +76,9 @@ export class SettingsSafetyHubUnusedSitePermissionsModuleElement extends
       // Text below primary header label.
       subheaderString_: String,
 
+      // The icon next to primary header label.
+      headerIconString_: String,
+
       // Most recent site permissions the user has allowed again.
       lastUnusedSitePermissionsAllowedAgain_: {
         type: Object,
@@ -122,6 +126,7 @@ export class SettingsSafetyHubUnusedSitePermissionsModuleElement extends
 
   private headerString_: string;
   private subheaderString_: string|null;
+  private headerIconString_: string;
   private toastText_: string|null;
   private sites_: UnusedSitePermissionsDisplay[]|null;
   private shouldShowCompletionInfo_: boolean;
@@ -269,6 +274,7 @@ export class SettingsSafetyHubUnusedSitePermissionsModuleElement extends
       this.headerString_ =
           this.i18n('safetyCheckUnusedSitePermissionsDoneLabel');
       this.subheaderString_ = '';
+      this.headerIconString_ = 'cr:check';
       return;
     }
 
@@ -279,6 +285,7 @@ export class SettingsSafetyHubUnusedSitePermissionsModuleElement extends
         await PluralStringProxyImpl.getInstance().getPluralString(
             'safetyCheckUnusedSitePermissionsSecondaryLabel',
             this.sites_.length);
+    this.headerIconString_ = 'settings:permissions';
   }
 
   private onUndoClick_(e: Event) {

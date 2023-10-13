@@ -30,6 +30,21 @@
     font-weight: 500;
   }
 
+  iron-icon {
+    --iron-icon-height: 20px;
+    --iron-icon-width: 20px;
+  }
+
+  iron-icon.green {
+    --iron-icon-fill-color: var(--google-green-700);
+  }
+
+  @media (prefers-color-scheme: dark) {
+    iron-icon.green {
+      --iron-icon-fill-color: var(--google-green-300);
+    }
+  }
+
   .list-item {
     --cr-icon-button-margin-end: initial;
   }
@@ -123,7 +138,9 @@
 </style>
 
 <div id="header-wrapper">
-  <iron-icon id="header-icon" icon="[[headerIcon]]"></iron-icon>
+  <iron-icon id="header-icon"
+    icon="[[headerIcon]]" class$="[[headerIconColor]]">
+  </iron-icon>
   <div id="header-text-wrapper">
     <div id="header">[[header]]</div>
     <div id="subheader" class="cr-secondary-text">[[subheader]]</div>
