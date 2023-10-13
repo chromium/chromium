@@ -44,18 +44,9 @@ AutofillWebDataService::AutofillWebDataService(
           &AutofillWebDataService::
               NotifyAutofillAddressConversionCompletedOnUISequence,
           weak_ptr_factory_.GetWeakPtr());
-  base::RepeatingCallback<void(syncer::ModelType)> on_sync_started_callback =
-      base::BindRepeating(
-          &AutofillWebDataService::NotifySyncStartedOnUISequence,
-          weak_ptr_factory_.GetWeakPtr());
-  base::RepeatingCallback<void(syncer::ModelType)>
-      on_sync_updates_received_callback = base::BindRepeating(
-          &AutofillWebDataService::NotifyOnSyncUpdatesReceivedOnUISequence,
-          weak_ptr_factory_.GetWeakPtr());
   autofill_backend_ = new AutofillWebDataBackendImpl(
       wdbs_->GetBackend(), ui_task_runner_, db_task_runner_,
-      on_changed_callback, on_address_conversion_completed_callback,
-      on_sync_started_callback, on_sync_updates_received_callback);
+      on_changed_callback, on_address_conversion_completed_callback);
 }
 
 AutofillWebDataService::AutofillWebDataService(
@@ -67,8 +58,6 @@ AutofillWebDataService::AutofillWebDataService(
       autofill_backend_(new AutofillWebDataBackendImpl(nullptr,
                                                        ui_task_runner_,
                                                        db_task_runner_,
-                                                       base::NullCallback(),
-                                                       base::NullCallback(),
                                                        base::NullCallback(),
                                                        base::NullCallback())) {}
 
@@ -475,21 +464,6 @@ void AutofillWebDataService::
   DCHECK(ui_task_runner_->RunsTasksInCurrentSequence());
   for (auto& ui_observer : ui_observer_list_)
     ui_observer.AutofillAddressConversionCompleted();
-}
-
-void AutofillWebDataService::NotifySyncStartedOnUISequence(
-    syncer::ModelType model_type) {
-  DCHECK(ui_task_runner_->RunsTasksInCurrentSequence());
-  for (auto& ui_observer : ui_observer_list_)
-    ui_observer.SyncStarted(model_type);
-}
-
-void AutofillWebDataService::NotifyOnSyncUpdatesReceivedOnUISequence(
-    syncer::ModelType model_type) {
-  CHECK(ui_task_runner_->RunsTasksInCurrentSequence());
-  for (auto& ui_observer : ui_observer_list_) {
-    ui_observer.OnSyncUpdatesReceived(model_type);
-  }
 }
 
 }  // namespace autofill

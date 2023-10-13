@@ -250,8 +250,6 @@ class AutofillWebDataService : public WebDataServiceBase {
 
   void NotifyAutofillMultipleChangedOnUISequence(syncer::ModelType model_type);
   void NotifyAutofillAddressConversionCompletedOnUISequence();
-  void NotifySyncStartedOnUISequence(syncer::ModelType model_type);
-  void NotifyOnSyncUpdatesReceivedOnUISequence(syncer::ModelType model_type);
 
   base::WeakPtr<AutofillWebDataService> AsWeakPtr() {
     return weak_ptr_factory_.GetWeakPtr();

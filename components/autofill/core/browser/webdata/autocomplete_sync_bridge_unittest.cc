@@ -271,7 +271,6 @@ class AutocompleteSyncBridgeTest : public testing::Test {
   }
 
   void ApplyChanges(EntityChangeList changes) {
-    EXPECT_CALL(*backend(), NotifyOnSyncUpdatesReceived(syncer::AUTOFILL));
     const auto error = bridge()->ApplyIncrementalSyncChanges(
         bridge()->CreateMetadataChangeList(), std::move(changes));
     EXPECT_FALSE(error);

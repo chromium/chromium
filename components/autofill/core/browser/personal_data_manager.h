@@ -148,8 +148,6 @@ class PersonalDataManager : public KeyedService,
   // AutofillWebDataServiceObserverOnUISequence:
   void AutofillMultipleChangedBySync(syncer::ModelType model_type) override;
   void AutofillAddressConversionCompleted() override;
-  void SyncStarted(syncer::ModelType model_type) override;
-  void OnSyncUpdatesReceived(syncer::ModelType model_type) override;
 
   // SyncServiceObserver:
   void OnStateChanged(syncer::SyncService* sync) override;

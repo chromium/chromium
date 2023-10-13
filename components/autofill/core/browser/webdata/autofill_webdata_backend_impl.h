@@ -55,11 +55,7 @@ class AutofillWebDataBackendImpl
       scoped_refptr<base::SequencedTaskRunner> db_task_runner,
       const base::RepeatingCallback<void(syncer::ModelType)>&
           on_changed_callback,
-      const base::RepeatingClosure& on_address_conversion_completed_callback,
-      const base::RepeatingCallback<void(syncer::ModelType)>&
-          on_sync_started_callback,
-      const base::RepeatingCallback<void(syncer::ModelType)>&
-          on_sync_updates_received_callback);
+      const base::RepeatingClosure& on_address_conversion_completed_callback);
 
   AutofillWebDataBackendImpl(const AutofillWebDataBackendImpl&) = delete;
   AutofillWebDataBackendImpl& operator=(const AutofillWebDataBackendImpl&) =
@@ -80,8 +76,6 @@ class AutofillWebDataBackendImpl
   void NotifyOfCreditCardChanged(const CreditCardChange& change) override;
   void NotifyOfMultipleAutofillChanges(syncer::ModelType model_type) override;
   void NotifyOfAddressConversionCompleted() override;
-  void NotifyThatSyncHasStarted(syncer::ModelType model_type) override;
-  void NotifyOnSyncUpdatesReceived(syncer::ModelType model_type) override;
   void CommitChanges() override;
 
   // Returns a SupportsUserData object that may be used to store data accessible
@@ -297,9 +291,6 @@ class AutofillWebDataBackendImpl
 
   base::RepeatingCallback<void(syncer::ModelType)> on_changed_callback_;
   base::RepeatingClosure on_address_conversion_completed_callback_;
-  base::RepeatingCallback<void(syncer::ModelType)> on_sync_started_callback_;
-  base::RepeatingCallback<void(syncer::ModelType)>
-      on_sync_updates_received_callback_;
   base::RepeatingCallback<void(const AutofillProfileDeepChange&)>
       on_autofill_profile_changed_cb_;
 };

@@ -81,7 +81,6 @@ absl::optional<syncer::ModelError> ContactInfoSyncBridge::MergeFullSyncData(
                                                std::move(entity_data))) {
     return error;
   }
-  web_data_backend_->NotifyThatSyncHasStarted(syncer::CONTACT_INFO);
   return absl::nullopt;
 }
 
@@ -134,8 +133,6 @@ ContactInfoSyncBridge::ApplyIncrementalSyncChanges(
   // currently doesn't provide a way to detect such cases, we don't distinguish.
   if (!entity_changes.empty())
     web_data_backend_->NotifyOfMultipleAutofillChanges(syncer::CONTACT_INFO);
-
-  web_data_backend_->NotifyOnSyncUpdatesReceived(syncer::CONTACT_INFO);
   return absl::nullopt;
 }
 
