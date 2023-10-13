@@ -264,6 +264,16 @@ bool NetworkServiceNetworkDelegate::
 
   LOG(ERROR) << "Cancelling request to " << target_url
              << " with invalid referrer " << referrer_url;
+  // Record information to help debug issues like http://crbug.com/422871.
+  if (target_url.SchemeIsHTTPOrHTTPS()) {
+    auto referrer_policy = request.referrer_policy();
+    SCOPED_CRASH_KEY_NUMBER("Bug1485060", "referrer_policy",
+                            static_cast<int>(referrer_policy));
+    SCOPED_CRASH_KEY_STRING256("Bug1485060", "target_url", target_url.spec());
+    SCOPED_CRASH_KEY_STRING256("Bug1485060", "referrer_url",
+                               referrer_url.spec());
+    base::debug::DumpWithoutCrashing();
+  }
   return true;
 }
 
