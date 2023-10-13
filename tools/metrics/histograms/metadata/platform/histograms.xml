@@ -593,6 +593,34 @@ chromium-metrics-reviews@google.com.
   </summary>
 </histogram>
 
+<histogram name="Platform.FlexPartitionSize.{Partition}" units="MiB"
+    expires_after="2024-02-01">
+  <owner>nicholasbishop@google.com</owner>
+  <owner>chromeos-flex-eng@google.com</owner>
+  <summary>
+    A sparse histogram of the size (in MiB) of the partition labeled
+    &quot;{Partition}&quot;. This is the size as defined by the partition table,
+    not the size of the filesystem (if any).
+
+    Unlike most ChromeOS boards, ChromeOS Flex occasionally migrates the disk
+    layout of existing installations during the update process, so not all
+    installations have the same layout.
+
+    This metric is only recorded on ChromeOS Flex devices. It is recorded once
+    per boot.
+  </summary>
+<!-- The list of variants must match flex_disk_metrics_main.cc's partition_labels:
+     https://source.chromium.org/chromiumos/chromiumos/codesearch/+/HEAD:src/platform2/flex_hwis/flex_disk_metrics/flex_disk_metrics_main.cc -->
+
+  <token key="Partition">
+    <variant name="EFI-SYSTEM"/>
+    <variant name="KERN-A"/>
+    <variant name="KERN-B"/>
+    <variant name="ROOT-A"/>
+    <variant name="ROOT-B"/>
+  </token>
+</histogram>
+
 <histogram name="Platform.Fwupd.ActivateStatus" enum="FwupdReturnValue"
     expires_after="2023-11-12">
   <owner>campello@google.com</owner>
