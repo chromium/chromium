@@ -32,6 +32,7 @@ import json
 import re
 import six
 import unittest
+from unittest import mock
 
 from blinkpy.common import exit_codes
 from blinkpy.common.host_mock import MockHost
@@ -164,6 +165,7 @@ class StreamTestingMixin(object):
         self.assertTrue(stream.getvalue())
 
 
+@mock.patch('signal.signal', lambda _signum, _handler: None)
 class RunTest(unittest.TestCase, StreamTestingMixin):
     def setUp(self):
         # A real PlatformInfo object is used here instead of a
@@ -347,18 +349,12 @@ class RunTest(unittest.TestCase, StreamTestingMixin):
         ],
                                            tests_included=True,
                                            shared_port=False)
-        if six.PY2:
-            self.assertTrue(
-                any([
-                    'Interrupted, exiting' in line
-                    for line in regular_output.buflist
-                ]))
-        else:
-            self.assertTrue(
-                any([
-                    'Interrupted, exiting' in line
-                    for line in regular_output.getvalue().splitlines()
-                ]))
+
+        self.assertTrue(
+            any([
+                'Interrupted, exiting' in line
+                for line in regular_output.getvalue().splitlines()
+            ]))
 
     def test_no_tests_found(self):
         details, err, _ = logging_run(['resources'], tests_included=True)

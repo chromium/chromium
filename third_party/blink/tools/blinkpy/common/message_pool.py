@@ -38,6 +38,7 @@ If you don't need these features, use multiprocessing.Pool or concurrency.future
 instead.
 """
 
+import contextlib
 import logging
 import multiprocessing
 import pickle
@@ -188,8 +189,10 @@ class _MessagePool(object):
         for worker in self._workers:
             if worker.is_alive():
                 worker.terminate()
-                worker.join()
-        self._workers = []
+        # Flush any remaining results or logs. There may be some stragglers
+        # remaining if this pool context encountered an exception.
+        with contextlib.suppress(Exception):
+            self._loop(block=False)
         if not self._running_inline:
             # FIXME: This is a hack to get multiprocessing to not log tracebacks during shutdown :(.
             multiprocessing.util._exiting = True
@@ -199,6 +202,11 @@ class _MessagePool(object):
             if self._messages_to_manager:
                 self._messages_to_manager.close()
                 self._messages_to_manager = None
+        for worker in self._workers:
+            if worker.is_alive():
+                worker.kill()
+                worker.join(1)
+        self._workers.clear()
 
     def _log_messages(self, messages):
         for message in messages:
@@ -282,6 +290,9 @@ class _WorkerProcess(multiprocessing.Process):
             if hasattr(self._worker, 'stop'):
                 self._worker.stop()
             self._worker = None
+        # Sending `SIGTERM` is safe because the child process inherits the
+        # managing process's handler, which simply re-raises `KeyboardInterrupt`
+        # in the main thread (i.e., `_WorkerProcess.run()`).
         if self.is_alive():
             super().terminate()
 
