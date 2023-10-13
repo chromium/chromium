@@ -88,6 +88,7 @@ class CORE_EXPORT HTMLOptionElement final : public HTMLElement {
 
   bool IsDisabledFormControl() const override;
   String DefaultToolTip() const override;
+  void DefaultEventHandler(Event&) override;
 
   String TextIndentedToRespectGroupLabel() const;
 

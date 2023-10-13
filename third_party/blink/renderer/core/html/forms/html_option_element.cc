@@ -36,6 +36,7 @@
 #include "third_party/blink/renderer/core/dom/node_traversal.h"
 #include "third_party/blink/renderer/core/dom/shadow_root.h"
 #include "third_party/blink/renderer/core/dom/text.h"
+#include "third_party/blink/renderer/core/events/keyboard_event.h"
 #include "third_party/blink/renderer/core/html/forms/html_data_list_element.h"
 #include "third_party/blink/renderer/core/html/forms/html_opt_group_element.h"
 #include "third_party/blink/renderer/core/html/forms/html_select_element.h"
@@ -496,6 +497,18 @@ bool HTMLOptionElement::SpatialNavigationFocused() const {
 bool HTMLOptionElement::IsDisplayNone() const {
   const ComputedStyle* style = GetComputedStyle();
   return !style || style->Display() == EDisplay::kNone;
+}
+
+void HTMLOptionElement::DefaultEventHandler(Event& event) {
+  if (auto* keyboard_event = DynamicTo<KeyboardEvent>(event);
+      keyboard_event && keyboard_event->key() == "Tab" &&
+      event.type() == event_type_names::kKeydown) {
+    if (auto* selectlist = OwnerSelectList()) {
+      selectlist->CloseListbox();
+      event.SetDefaultHandled();
+    }
+  }
+  HTMLElement::DefaultEventHandler(event);
 }
 
 }  // namespace blink
