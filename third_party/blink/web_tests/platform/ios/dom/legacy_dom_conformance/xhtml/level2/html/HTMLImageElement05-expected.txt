@@ -1,0 +1,3 @@
+Test	http://www.w3.org/2001/DOM-Test-Suite/level2/html/HTMLImageElement05
+Status	failure
+Message	heightLink: assertEquals failed, actual 18, expected 47.

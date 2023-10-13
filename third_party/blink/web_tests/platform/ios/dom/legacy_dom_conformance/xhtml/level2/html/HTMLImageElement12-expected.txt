@@ -1,0 +1,3 @@
+Test	http://www.w3.org/2001/DOM-Test-Suite/level2/html/HTMLImageElement12
+Status	failure
+Message	widthLink: assertEquals failed, actual 154, expected 115.
