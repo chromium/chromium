@@ -198,15 +198,12 @@ constexpr const char* kBulkMovePasswordsToAccountConfirmationDialogAccepted =
   self.mediator.consumer = self.passwordSettingsViewController;
   self.passwordSettingsViewController.delegate = self.mediator;
 
-  // Don't animate presentation when content will be covered for authentication.
-  // Otherwise content can be visible during the animation phase.
+  [self startReauthCoordinatorWithAuthOnStart:!_skipAuthenticationOnStart];
+
   [self.baseViewController
       presentViewController:self.settingsNavigationController
-                   animated:_skipAuthenticationOnStart ||
-                            !IsAuthOnEntryV2Enabled()
+                   animated:YES
                  completion:nil];
-
-  [self startReauthCoordinatorWithAuthOnStart:!_skipAuthenticationOnStart];
 }
 
 - (void)stop {
