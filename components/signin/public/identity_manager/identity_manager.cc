@@ -114,9 +114,7 @@ IdentityManager::IdentityManager(IdentityManager::InitParameters&& parameters)
           std::move(parameters.gaia_cookie_manager_service)),
       primary_account_manager_(std::move(parameters.primary_account_manager)),
       account_fetcher_service_(std::move(parameters.account_fetcher_service)),
-#if BUILDFLAG(IS_CHROMEOS_LACROS)
       signin_client_(parameters.signin_client),
-#endif
 #if BUILDFLAG(IS_CHROMEOS)
       account_manager_facade_(parameters.account_manager_facade),
 #endif
@@ -129,6 +127,7 @@ IdentityManager::IdentityManager(IdentityManager::InitParameters&& parameters)
       should_verify_scope_access_(parameters.should_verify_scope_access) {
   DCHECK(account_fetcher_service_);
   DCHECK(diagnostics_provider_);
+  DCHECK(signin_client_);
 
   primary_account_manager_observation_.Observe(primary_account_manager_.get());
   token_service_observation_.Observe(token_service_.get());
@@ -489,6 +488,11 @@ IdentityManager::GetAccountsWithRefreshTokens(JNIEnv* env) const {
     env->SetObjectArrayElement(array.obj(), i, item.obj());
   }
   return array;
+}
+
+jboolean IdentityManager::IsClearPrimaryAccountAllowed(JNIEnv* env) const {
+  return signin_client_->IsClearPrimaryAccountAllowed(
+      HasPrimaryAccount(signin::ConsentLevel::kSync));
 }
 #endif
 

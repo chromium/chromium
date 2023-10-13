@@ -186,9 +186,10 @@ class SigninManagerImpl implements IdentityManager.Observer, SigninManager {
     /** Returns true if sign out can be started now. */
     @Override
     public boolean isSignOutAllowed() {
-        return mSignOutState == null && mSignInState == null
+        return mSignOutState == null
+                && mSignInState == null
                 && mIdentityManager.getPrimaryAccountInfo(ConsentLevel.SIGNIN) != null
-                && !Profile.getLastUsedRegularProfile().isChild();
+                && mIdentityManager.isClearPrimaryAccountAllowed();
     }
 
     /**

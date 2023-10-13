@@ -145,10 +145,16 @@ public class SigninSignoutIntegrationTest {
                 () -> mSigninManager.getIdentityManager().hasPrimaryAccount(ConsentLevel.SYNC));
         verify(mSignInStateObserverMock).onSignedIn();
         verify(mSignInStateObserverMock, never()).onSignedOut();
-        TestThreadUtils.runOnUiThreadBlocking(() -> {
-            Assert.assertEquals(coreAccountInfo,
-                    mSigninManager.getIdentityManager().getPrimaryAccountInfo(ConsentLevel.SYNC));
-        });
+        TestThreadUtils.runOnUiThreadBlocking(
+                () -> {
+                    Assert.assertEquals(
+                            coreAccountInfo,
+                            mSigninManager
+                                    .getIdentityManager()
+                                    .getPrimaryAccountInfo(ConsentLevel.SYNC));
+                    Assert.assertTrue(
+                            mSigninManager.getIdentityManager().isClearPrimaryAccountAllowed());
+                });
         signinHistogram.assertExpected(
                 "Signin should be recorded with the settings page as the access point.");
         syncHistogram.assertExpected(
@@ -275,10 +281,16 @@ public class SigninSignoutIntegrationTest {
 
         CriteriaHelper.pollUiThread(
                 () -> mSigninManager.getIdentityManager().hasPrimaryAccount(ConsentLevel.SYNC));
-        TestThreadUtils.runOnUiThreadBlocking(() -> {
-            Assert.assertEquals(coreChildAccountInfo,
-                    mSigninManager.getIdentityManager().getPrimaryAccountInfo(ConsentLevel.SYNC));
-        });
+        TestThreadUtils.runOnUiThreadBlocking(
+                () -> {
+                    Assert.assertEquals(
+                            coreChildAccountInfo,
+                            mSigninManager
+                                    .getIdentityManager()
+                                    .getPrimaryAccountInfo(ConsentLevel.SYNC));
+                    Assert.assertFalse(
+                            mSigninManager.getIdentityManager().isClearPrimaryAccountAllowed());
+                });
         verify(mSignInStateObserverMock, times(2)).onSignedIn();
         verify(mSignInStateObserverMock, never()).onSignedOut();
         onView(withText(R.string.account_management_sign_out)).check(doesNotExist());

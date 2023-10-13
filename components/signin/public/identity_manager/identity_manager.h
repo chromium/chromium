@@ -359,9 +359,7 @@ class IdentityManager : public KeyedService,
     AccountConsistencyMethod account_consistency =
         AccountConsistencyMethod::kDisabled;
     bool should_verify_scope_access = true;
-#if BUILDFLAG(IS_CHROMEOS_LACROS)
     raw_ptr<SigninClient> signin_client = nullptr;
-#endif
 #if BUILDFLAG(IS_CHROMEOS)
     raw_ptr<account_manager::AccountManagerFacade, DanglingUntriaged>
         account_manager_facade = nullptr;
@@ -452,6 +450,9 @@ class IdentityManager : public KeyedService,
   void RefreshAccountInfoIfStale(
       JNIEnv* env,
       const base::android::JavaParamRef<jobject>& j_core_account_id);
+
+  // Returns true if the browser allows the primary account to be cleared.
+  jboolean IsClearPrimaryAccountAllowed(JNIEnv* env) const;
 #endif
 
  private:
@@ -647,9 +648,7 @@ class IdentityManager : public KeyedService,
   std::unique_ptr<GaiaCookieManagerService> gaia_cookie_manager_service_;
   std::unique_ptr<PrimaryAccountManager> primary_account_manager_;
   std::unique_ptr<AccountFetcherService> account_fetcher_service_;
-#if BUILDFLAG(IS_CHROMEOS_LACROS)
   const raw_ptr<SigninClient> signin_client_;
-#endif
 #if BUILDFLAG(IS_CHROMEOS)
   const raw_ptr<account_manager::AccountManagerFacade, DanglingUntriaged>
       account_manager_facade_;
