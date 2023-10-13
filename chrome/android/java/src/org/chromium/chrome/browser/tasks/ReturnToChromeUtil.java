@@ -542,20 +542,6 @@ public final class ReturnToChromeUtil {
                 && !DeviceFormFactor.isNonMultiDisplayContextOnTablet(context);
     }
 
-    // TODO(mschillaci): Remove this was recreate issue is resolved. See crbug.com/1491862.
-    /** See {@link isStartSurfaceEnabled} */
-    @Deprecated
-    public static boolean isStartSurfaceEnabled_ForToolbarManager(Context context) {
-        // When creating initial tab, i.e. cold start without restored tabs, we should only show
-        // StartSurface as the HomePage if Single Pane is enabled, HomePage is not customized, not
-        // on tablet, accessibility is not enabled or the tab group continuation feature is enabled.
-        return (!DseNewTabUrlManager.isNewTabSearchEngineUrlAndroidEnabled()
-                        || DseNewTabUrlManager.isDefaultSearchEngineGoogle())
-                && StartSurfaceConfiguration.isStartSurfaceFlagEnabled()
-                && !shouldHideStartSurfaceWithAccessibilityOn_ForToolbarManager(context)
-                && !DeviceFormFactor.isNonMultiDisplayContextOnTablet(context);
-    }
-
     /**
      * @return Whether start surface should be hidden when accessibility is enabled. If it's true,
      *         NTP is shown as homepage. Also, when time threshold is reached, grid tab switcher or
@@ -564,16 +550,6 @@ public final class ReturnToChromeUtil {
     public static boolean shouldHideStartSurfaceWithAccessibilityOn(Context context) {
         // TODO(crbug.com/1127732): Move this method back to StartSurfaceConfiguration.
         return ChromeAccessibilityUtil.get().isAccessibilityEnabled()
-                && !(ChromeFeatureList.sStartSurfaceWithAccessibility.isEnabled());
-    }
-
-    // TODO(mschillaci): Remove this when recreate issue is resolved. See crbug.com/1491862.
-    /** See {@link shouldHideStartSurfaceWithAccessibilityOn} */
-    @Deprecated
-    public static boolean shouldHideStartSurfaceWithAccessibilityOn_ForToolbarManager(
-            Context context) {
-        // TODO(crbug.com/1127732): Move this method back to StartSurfaceConfiguration.
-        return ChromeAccessibilityUtil.get().isAccessibilityEnabledHeavy()
                 && !(ChromeFeatureList.sStartSurfaceWithAccessibility.isEnabled());
     }
 

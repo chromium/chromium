@@ -598,8 +598,7 @@ public class ToolbarManager implements UrlFocusChangeListener, ThemeColorObserve
         mCustomTabThemeColorProvider = new SettableThemeColorProvider(/* context= */ mActivity);
 
         mActivityTabProvider = tabProvider;
-        mIsStartSurfaceEnabled =
-                ReturnToChromeUtil.isStartSurfaceEnabled_ForToolbarManager(mActivity);
+        mIsStartSurfaceEnabled = ReturnToChromeUtil.isStartSurfaceEnabled(mActivity);
         mIsStartSurfaceRefactorEnabled =
                 ReturnToChromeUtil.isStartSurfaceRefactorEnabled(mActivity);
 
@@ -664,7 +663,7 @@ public class ToolbarManager implements UrlFocusChangeListener, ThemeColorObserve
                     // logo click events are processed in NewTabPageLayout. This callback passed
                     // into TopToolbarCoordinator will only be used for StartSurfaceToolbar, so add
                     // an assertion here.
-                    assert ReturnToChromeUtil.isStartSurfaceEnabled_ForToolbarManager(mActivity);
+                    assert ReturnToChromeUtil.isStartSurfaceEnabled(mActivity);
                     ReturnToChromeUtil.handleLoadUrlFromStartSurface(urlParams,
                             /*isBackground=*/false,
                             /*incognito=*/false, startSurfaceParentTabSupplier.get());
@@ -1113,7 +1112,7 @@ public class ToolbarManager implements UrlFocusChangeListener, ThemeColorObserve
             mLocationBarModel.setStartSurfaceState(mStartSurfaceState);
             if (!mIsStartSurfaceRefactorEnabled) {
                 mStartSurfaceStateObserver = (newState, shouldShowToolbar) -> {
-                    assert ReturnToChromeUtil.isStartSurfaceEnabled_ForToolbarManager(mActivity);
+                    assert ReturnToChromeUtil.isStartSurfaceEnabled(mActivity);
                     mStartSurfaceState = newState;
                     mLocationBarModel.setStartSurfaceState(mStartSurfaceState);
                     mToolbar.updateStartSurfaceToolbarState(newState, shouldShowToolbar, null);
@@ -1300,7 +1299,7 @@ public class ToolbarManager implements UrlFocusChangeListener, ThemeColorObserve
                     && mLayoutStateProvider.getActiveLayoutType() == LayoutType.START_SURFACE) {
                 return false;
             } else if (mStartSurfaceState == StartSurfaceState.SHOWN_HOMEPAGE
-                    && mIsStartSurfaceEnabled) {
+                    && ReturnToChromeUtil.isStartSurfaceEnabled(mActivity)) {
                 return false;
             }
 
@@ -1750,14 +1749,10 @@ public class ToolbarManager implements UrlFocusChangeListener, ThemeColorObserve
 
     @Override
     public void onAccessibilityModeChanged(boolean enabled) {
-        if (mIsStartSurfaceEnabled
-                        != ReturnToChromeUtil.isStartSurfaceEnabled_ForToolbarManager(mActivity)
-                && !sSkipRecreateForTesting
-                && !mIsCustomTab) {
+        if (mIsStartSurfaceEnabled != ReturnToChromeUtil.isStartSurfaceEnabled(mActivity)
+                && !sSkipRecreateForTesting && !mIsCustomTab) {
             // If Start surface is disabled or re-enabled due to the accessibility change, restarts
             // the activity to create the correct Toolbar from scratch.
-            // Note: Do not use the |enabled| value passes here, since it may disagree with the
-            //       value from ReturnToChromeUtil.
             recreateActivityWithTabReparenting();
             return;
         }
