@@ -285,9 +285,16 @@ export class ShoppingInsightsHistoryGraphElement extends PolymerElement {
       return Math.max(max, value.price);
     }, this.points[0].price);
 
-    // Ensure the line is in the middle of the graph.
-    minPrice = Math.max(minPrice - 1, 0);
-    maxPrice = maxPrice + 1;
+    // To ensure that the Y-axis doesn't reflect trivial changes and that the
+    // line is in the middle of the graph, apply a padding max(median price /
+    // 10, $1) to the minPrice and maxPrice.
+    const medianPrice = ([...this.points].sort(
+        (a, b) => a.price - b.price))[Math.floor(this.points.length / 2)]
+                            .price;
+    const padding = Math.max(medianPrice / 10, 1);
+    minPrice = Math.max(minPrice - padding, 0);
+    maxPrice = maxPrice + padding;
+
     const valueRange = maxPrice - minPrice;
     let tickInterval = valueRange / (TICK_COUNT_Y - 1);
 
