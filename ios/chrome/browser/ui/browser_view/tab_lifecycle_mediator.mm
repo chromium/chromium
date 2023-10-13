@@ -16,9 +16,11 @@
 #import "ios/chrome/browser/lens/lens_tab_helper.h"
 #import "ios/chrome/browser/ntp/new_tab_page_tab_helper.h"
 #import "ios/chrome/browser/overscroll_actions/model/overscroll_actions_tab_helper.h"
+#import "ios/chrome/browser/parcel_tracking/parcel_tracking_prefs.h"
 #import "ios/chrome/browser/parcel_tracking/parcel_tracking_util.h"
 #import "ios/chrome/browser/passwords/model/password_tab_helper.h"
 #import "ios/chrome/browser/prerender/model/prerender_service.h"
+#import "ios/chrome/browser/shared/model/application_context/application_context.h"
 #import "ios/chrome/browser/shared/model/web_state_list/web_state_list.h"
 #import "ios/chrome/browser/shared/public/commands/autofill_bottom_sheet_commands.h"
 #import "ios/chrome/browser/shared/public/commands/command_dispatcher.h"
@@ -150,7 +152,8 @@
         HandlerForProtocol(_commandDispatcher, MiniMapCommands));
     annotationsTabHelper->SetUnitConversionCommands(
         HandlerForProtocol(_commandDispatcher, UnitConversionCommands));
-    if (IsIOSParcelTrackingEnabled()) {
+    if (IsIOSParcelTrackingEnabled() &&
+        !IsParcelTrackingDisabled(GetApplicationContext()->GetLocalState())) {
       annotationsTabHelper->SetParcelTrackingOptInCommands(
           HandlerForProtocol(_commandDispatcher, ParcelTrackingOptInCommands));
     }

@@ -25,14 +25,14 @@ BASE_FEATURE(kIOSParcelTracking,
              base::FEATURE_DISABLED_BY_DEFAULT);
 
 bool IsIOSParcelTrackingEnabled() {
-  return base::FeatureList::IsEnabled(kIOSParcelTracking) &&
-         !IsParcelTrackingDisabled(GetApplicationContext()->GetLocalState());
+  return base::FeatureList::IsEnabled(kIOSParcelTracking);
 }
 
 bool IsUserEligibleParcelTrackingOptInPrompt(
     PrefService* pref_service,
     commerce::ShoppingService* shopping_service) {
   return IsIOSParcelTrackingEnabled() &&
+         !IsParcelTrackingDisabled(GetApplicationContext()->GetLocalState()) &&
          !pref_service->GetBoolean(
              prefs::kIosParcelTrackingOptInPromptDisplayLimitMet) &&
          shopping_service->IsParcelTrackingEligible();

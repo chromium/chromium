@@ -17,7 +17,9 @@
 #import "components/ukm/ios/ukm_url_recorder.h"
 #import "ios/chrome/browser/mailto_handler/mailto_handler_service.h"
 #import "ios/chrome/browser/mailto_handler/mailto_handler_service_factory.h"
+#import "ios/chrome/browser/parcel_tracking/parcel_tracking_prefs.h"
 #import "ios/chrome/browser/parcel_tracking/parcel_tracking_util.h"
+#import "ios/chrome/browser/shared/model/application_context/application_context.h"
 #import "ios/chrome/browser/shared/model/browser_state/chrome_browser_state.h"
 #import "ios/chrome/browser/shared/public/commands/parcel_tracking_opt_in_commands.h"
 #import "ios/chrome/browser/text_selection/model/text_classifier_model_service.h"
@@ -172,7 +174,8 @@ void AnnotationsTabHelper::ApplyDeferredProcessing(
     auto* manager = web::AnnotationsTextManager::FromWebState(web_state_);
     DCHECK(manager);
     std::vector<web::TextAnnotation> annotations(std::move(deferred.value()));
-    if (IsIOSParcelTrackingEnabled()) {
+    if (IsIOSParcelTrackingEnabled() &&
+        !IsParcelTrackingDisabled(GetApplicationContext()->GetLocalState())) {
       AnnotationsTabHelper::ProcessParcelTrackingNumbers(annotations);
     }
     base::Value::List decorations_list;
