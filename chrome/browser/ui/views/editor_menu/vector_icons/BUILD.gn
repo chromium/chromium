@@ -11,6 +11,7 @@ aggregate_vector_icons("editor_menu_vector_icons") {
     "editor_menu_elaborate.icon",
     "editor_menu_emojify.icon",
     "editor_menu_formalize.icon",
+    "editor_menu_pen_spark.icon",
     "editor_menu_rephrase.icon",
     "editor_menu_shorten.icon",
   ]

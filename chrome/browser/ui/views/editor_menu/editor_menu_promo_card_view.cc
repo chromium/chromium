@@ -10,16 +10,16 @@
 #include "chrome/browser/ui/views/editor_menu/editor_menu_view_delegate.h"
 #include "chrome/browser/ui/views/editor_menu/utils/pre_target_handler.h"
 #include "chrome/browser/ui/views/editor_menu/utils/utils.h"
+#include "chrome/browser/ui/views/editor_menu/vector_icons/vector_icons.h"
 #include "chromeos/strings/grit/chromeos_strings.h"
-#include "components/vector_icons/vector_icons.h"
 #include "ui/base/accelerators/accelerator.h"
 #include "ui/base/l10n/l10n_util.h"
 #include "ui/base/metadata/metadata_impl_macros.h"
+#include "ui/base/models/image_model.h"
 #include "ui/color/color_id.h"
 #include "ui/gfx/color_palette.h"
 #include "ui/gfx/geometry/insets.h"
 #include "ui/gfx/geometry/rect.h"
-#include "ui/gfx/paint_vector_icon.h"
 #include "ui/views/accessibility/view_accessibility.h"
 #include "ui/views/background.h"
 #include "ui/views/controls/button/button.h"
@@ -43,7 +43,7 @@ namespace {
 
 constexpr char kWidgetName[] = "EditorMenuPromoCardViewWidget";
 
-constexpr int kPromoCardIconSizeDip = 48;
+constexpr int kPromoCardIconSizeDip = 20;
 
 // Spacing around the main containers in the promo card. This is applied between
 // the icon container, text container and promo card edges.
@@ -176,9 +176,8 @@ void EditorMenuPromoCardView::InitLayout() {
 
   // Icon.
   auto* icon = AddChildView(std::make_unique<views::ImageView>());
-  icon->SetImage(gfx::CreateVectorIcon(vector_icons::kGoogleColorIcon,
-                                       kPromoCardIconSizeDip,
-                                       gfx::kPlaceholderColor));
+  icon->SetImage(ui::ImageModel::FromVectorIcon(
+      kEditorMenuPenSparkIcon, ui::kColorSysOnSurface, kPromoCardIconSizeDip));
 
   // The main view, which shows the promo card text and buttons.
   auto* main_view = AddChildView(std::make_unique<views::FlexLayoutView>());
