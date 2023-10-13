@@ -6799,3 +6799,11 @@ crbug.com/1491918 [ Mac ] fast/scrolling/scroll-animation-on-by-default.html [ F
 # Gardener 2023-10-12
 crbug.com/1491587 [ Mac10.15 ] external/wpt/selection/contenteditable/modifying-selection-with-non-primary-mouse-button.tentative.html?middle [ Failure ]
 crbug.com/1491587 [ Mac10.15 ] external/wpt/selection/contenteditable/modifying-selection-with-non-primary-mouse-button.tentative.html?secondary [ Failure ]
+
+# Gardener 2023-10-13
+crbug.com/1492219 [ Linux ] accessibility/selection-change-notification-on-selection-removed.html [ Failure Pass ]
+crbug.com/1492219 [ Linux ] fast/forms/calendar-picker/date-picker-appearance-step.html [ Failure Pass ]
+crbug.com/1492219 [ Linux ] fast/forms/color-scheme/datetimelocal-picker/datetimelocal-picker-appearance.html [ Failure Pass ]
+crbug.com/1492219 [ Linux ] fast/forms/datetimelocal/datetimelocal-picker-step2.html [ Failure Pass ]
+crbug.com/1492219 [ Linux ] virtual/controls-refresh-hc/fast/forms/color-scheme/calendar-picker/date-picker-appearance-highlight.html [ Failure Pass ]
+crbug.com/1492219 [ Linux ] virtual/dark-color-scheme/datetimelocal-picker/datetimelocal-month-year-selector.html [ Failure Pass ]
