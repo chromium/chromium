@@ -1755,11 +1755,16 @@ BackForwardCacheCanStoreTreeResult::GetWebExposedNotRestoredReasonsInternal(
     // If the subtree's root document is cross-origin from the main frame
     // document, and if this is the randomly selected cross-origin iframe,
     // report whether or not this entire subtree is blocking back/forward cache.
+    // If `kAllowCrossOriginNotRestoredReasons` is disabled, always mask the
+    // blocked value.
     if (index == 0) {
       not_restored_reasons->blocked =
-          (!GetDocumentResult().CanRestore() || !FlattenTree().CanRestore())
-              ? blink::mojom::BFCacheBlocked::kYes
-              : blink::mojom::BFCacheBlocked::kNo;
+          base::FeatureList::IsEnabled(kAllowCrossOriginNotRestoredReasons)
+              ? (!GetDocumentResult().CanRestore() ||
+                 !FlattenTree().CanRestore())
+                    ? blink::mojom::BFCacheBlocked::kYes
+                    : blink::mojom::BFCacheBlocked::kNo
+              : blink::mojom::BFCacheBlocked::kMasked;
     } else {
       not_restored_reasons->blocked = blink::mojom::BFCacheBlocked::kMasked;
     }

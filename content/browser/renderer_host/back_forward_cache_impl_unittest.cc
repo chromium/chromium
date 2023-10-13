@@ -16,6 +16,11 @@ namespace content {
 class BackForwardCacheImplTest : public RenderViewHostImplTestHarness {
  public:
   BackForwardCacheImplTest() = default;
+  void SetUp() override {
+    RenderViewHostImplTestHarness::SetUp();
+    scoped_feature_list_.InitAndDisableFeature(
+        kAllowCrossOriginNotRestoredReasons);
+  }
 
   std::unique_ptr<BackForwardCacheCanStoreTreeResult> SetUpTree() {
     //     (a-1)
@@ -50,6 +55,7 @@ class BackForwardCacheImplTest : public RenderViewHostImplTestHarness {
                                                GURL("https://b.com/test")));
     return tree;
   }
+  base::test::ScopedFeatureList scoped_feature_list_;
 };
 
 TEST_F(BackForwardCacheImplTest, CrossOriginReachableFrameCount) {
@@ -59,7 +65,37 @@ TEST_F(BackForwardCacheImplTest, CrossOriginReachableFrameCount) {
             2);
 }
 
-TEST_F(BackForwardCacheImplTest, FirstCrossOriginReachable) {
+TEST_F(BackForwardCacheImplTest, CrossOriginAllMasked) {
+  auto tree_root = SetUpTree();
+  int index = 0;
+  // All cross origin iframe information should be masked regardless of the
+  // index.
+  auto result = tree_root->GetWebExposedNotRestoredReasonsInternal(index);
+  // b-1 is masked.
+  EXPECT_EQ(result->same_origin_details->children[0]->blocked,
+            blink::mojom::BFCacheBlocked::kMasked);
+  // b-3 is masked.
+  EXPECT_EQ(result->same_origin_details->children[1]
+                ->same_origin_details->children[0]
+                ->blocked,
+            blink::mojom::BFCacheBlocked::kMasked);
+}
+
+class BackForwardCacheImplTestExposeCrossOrigin
+    : public BackForwardCacheImplTest {
+ public:
+  BackForwardCacheImplTestExposeCrossOrigin() = default;
+  void SetUp() override {
+    BackForwardCacheImplTest::SetUp();
+    scoped_feature_list_.InitAndEnableFeature(
+        kAllowCrossOriginNotRestoredReasons);
+  }
+
+ private:
+  base::test::ScopedFeatureList scoped_feature_list_;
+};
+
+TEST_F(BackForwardCacheImplTestExposeCrossOrigin, FirstCrossOriginReachable) {
   auto tree_root = SetUpTree();
   int index = 0;
   // First cross-origin reachable frame (b-1) should be unmasked.
@@ -74,7 +110,7 @@ TEST_F(BackForwardCacheImplTest, FirstCrossOriginReachable) {
             blink::mojom::BFCacheBlocked::kMasked);
 }
 
-TEST_F(BackForwardCacheImplTest, SecondCrossOriginReachable) {
+TEST_F(BackForwardCacheImplTestExposeCrossOrigin, SecondCrossOriginReachable) {
   auto tree_root = SetUpTree();
   int index = 1;
   // Second cross-origin reachable frame (b-3) should be unmasked.

@@ -59,6 +59,11 @@ BASE_FEATURE(kBackForwardCacheNoTimeEviction,
              "BackForwardCacheNoTimeEviction",
              base::FEATURE_DISABLED_BY_DEFAULT);
 
+// Feature to allow exposing cross-origin subframes' NotRestoredReasons.
+BASE_FEATURE(kAllowCrossOriginNotRestoredReasons,
+             "AllowCrossOriginNotRestoredReasons",
+             base::FEATURE_DISABLED_BY_DEFAULT);
+
 CONTENT_EXPORT BASE_DECLARE_FEATURE(kBackForwardCacheSize);
 CONTENT_EXPORT extern const base::FeatureParam<int>
     kBackForwardCacheSizeCacheSize;
@@ -740,8 +745,10 @@ class CONTENT_EXPORT BackForwardCacheCanStoreTreeResult {
   friend class BackForwardCacheImplTest;
   FRIEND_TEST_ALL_PREFIXES(BackForwardCacheImplTest,
                            CrossOriginReachableFrameCount);
-  FRIEND_TEST_ALL_PREFIXES(BackForwardCacheImplTest, FirstCrossOriginReachable);
-  FRIEND_TEST_ALL_PREFIXES(BackForwardCacheImplTest,
+  FRIEND_TEST_ALL_PREFIXES(BackForwardCacheImplTest, CrossOriginAllMasked);
+  FRIEND_TEST_ALL_PREFIXES(BackForwardCacheImplTestExposeCrossOrigin,
+                           FirstCrossOriginReachable);
+  FRIEND_TEST_ALL_PREFIXES(BackForwardCacheImplTestExposeCrossOrigin,
                            SecondCrossOriginReachable);
   // This constructor is for creating a tree for |rfh| as the subtree's root
   // document's frame.
