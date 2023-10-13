@@ -69,6 +69,7 @@ source_set("compatibility_test") {
     ":generated_client_event_receiver_version_tests",
     ":generated_client_helper_headers",
     ":generated_client_helper_impl",
+    "//base",
   ]
 
   public_deps = [
