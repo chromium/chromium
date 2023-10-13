@@ -40,6 +40,7 @@
 #include "chrome/browser/file_system_access/file_system_access_features.h"
 #include "chrome/browser/flag_descriptions.h"
 #include "chrome/browser/follow/follow_features.h"
+#include "chrome/browser/ip_protection/ip_protection_switches.h"
 #include "chrome/browser/login_detection/login_detection_util.h"
 #include "chrome/browser/media/router/discovery/access_code/access_code_cast_constants.h"
 #include "chrome/browser/media/router/discovery/access_code/access_code_cast_feature.h"
@@ -1169,6 +1170,12 @@ const FeatureEntry::Choice kForceTextDirectionChoices[] = {
      switches::kForceDirectionLTR},
     {flag_descriptions::kForceDirectionRtl, switches::kForceTextDirection,
      switches::kForceDirectionRTL},
+};
+
+const FeatureEntry::Choice kIpProtectionProxyOptOutChoices[] = {
+    {flag_descriptions::kIpProtectionProxyOptOutChoiceDefault, "", ""},
+    {flag_descriptions::kIpProtectionProxyOptOutChoiceOptOut,
+     switches::kDisableIpProtectionProxy, ""},
 };
 
 #if BUILDFLAG(IS_CHROMEOS_ASH)
@@ -10801,6 +10808,11 @@ const FeatureEntry kFeatureEntries[] = {
      flag_descriptions::kForgotPasswordFormSupportDescription, kOsAll,
      FEATURE_VALUE_TYPE(
          password_manager::features::kForgotPasswordFormSupport)},
+
+    {"ip-protection-proxy-opt-out",
+     flag_descriptions::kIpProtectionProxyOptOutName,
+     flag_descriptions::kIpProtectionProxyOptOutDescription, kOsAll,
+     MULTI_VALUE_TYPE(kIpProtectionProxyOptOutChoices)},
 
 #if BUILDFLAG(IS_ANDROID)
     {"autofill-enable-android-n-key-for-fido-authentication",

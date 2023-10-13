@@ -1153,6 +1153,11 @@ extern const char kIndexedDBCompressValuesWithSnappyDescription[];
 extern const char kIndexedDBDefaultDurabilityRelaxed[];
 extern const char kIndexedDBDefaultDurabilityRelaxedDescription[];
 
+extern const char kIpProtectionProxyOptOutName[];
+extern const char kIpProtectionProxyOptOutDescription[];
+extern const char kIpProtectionProxyOptOutChoiceDefault[];
+extern const char kIpProtectionProxyOptOutChoiceOptOut[];
+
 extern const char kJapaneseOSSettingsName[];
 extern const char kJapaneseOSSettingsDescription[];
 

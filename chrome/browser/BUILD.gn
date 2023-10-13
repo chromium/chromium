@@ -644,6 +644,8 @@ static_library("browser") {
     "ip_protection/ip_protection_config_provider.h",
     "ip_protection/ip_protection_config_provider_factory.cc",
     "ip_protection/ip_protection_config_provider_factory.h",
+    "ip_protection/ip_protection_switches.cc",
+    "ip_protection/ip_protection_switches.h",
     "k_anonymity_service/k_anonymity_service_client.cc",
     "k_anonymity_service/k_anonymity_service_client.h",
     "k_anonymity_service/k_anonymity_service_factory.cc",

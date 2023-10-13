@@ -4,7 +4,9 @@
 
 #include "chrome/browser/ip_protection/ip_protection_config_provider_factory.h"
 
+#include "base/command_line.h"
 #include "chrome/browser/ip_protection/ip_protection_config_provider.h"
+#include "chrome/browser/ip_protection/ip_protection_switches.h"
 #include "chrome/browser/profiles/profile.h"
 #include "chrome/browser/profiles/profile_selections.h"
 #include "chrome/browser/signin/identity_manager_factory.h"
@@ -27,7 +29,9 @@ IpProtectionConfigProviderFactory::GetInstance() {
 
 // static
 ProfileSelections IpProtectionConfigProviderFactory::CreateProfileSelections() {
-  if (!base::FeatureList::IsEnabled(net::features::kEnableIpProtectionProxy)) {
+  if (!base::FeatureList::IsEnabled(net::features::kEnableIpProtectionProxy) ||
+      base::CommandLine::ForCurrentProcess()->HasSwitch(
+          switches::kDisableIpProtectionProxy)) {
     return ProfileSelections::BuildNoProfilesSelected();
   }
   // IP Protection usage requires that a Gaia account is available when

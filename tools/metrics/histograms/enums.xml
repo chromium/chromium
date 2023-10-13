@@ -64149,6 +64149,7 @@ from previous Chrome versions.
   <int value="-497571337" label="SkipUndecryptablePasswords:enabled"/>
   <int value="-496989565"
       label="DesktopPWAsFlashAppNameInsteadOfOrigin:disabled"/>
+  <int value="-496879081" label="disable-ip-privacy-proxy"/>
   <int value="-496119023" label="WebXR:enabled"/>
   <int value="-495991146" label="CustomizeChromeSidePanel:disabled"/>
   <int value="-495585885" label="enable-spdy-proxy-dev-auth-origin"/>

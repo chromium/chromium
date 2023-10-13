@@ -2029,6 +2029,15 @@ const char kInstantHotspotRebrandName[] = "Instant Hotspot Improvements";
 const char kInstantHotspotRebrandDescription[] =
     "Enables Instant Hotspot rebrand/feature improvements.";
 
+const char kIpProtectionProxyOptOutName[] = "Disable IP Protection Proxy";
+const char kIpProtectionProxyOptOutDescription[] =
+    "When disabled, prevents use of the IP Protection proxy. This is intended "
+    "to help with diagnosing any issues that could be caused by the feature "
+    "being enabled. For the current status of this feature, see: "
+    "https://chromestatus.com/feature/5111460239245312";
+const char kIpProtectionProxyOptOutChoiceDefault[] = "Default";
+const char kIpProtectionProxyOptOutChoiceOptOut[] = "Disabled";
+
 const char kJapaneseOSSettingsName[] = "Japanese OS Settings Page";
 const char kJapaneseOSSettingsDescription[] =
     "Enable OS Settings Page for Japanese input methods";
