@@ -958,11 +958,9 @@ void AudioDetailedView::UpdateScrollableList() {
     }
 
     // Adds a warning message if NBS is selected.
-    if (features::IsAudioHFPNbsWarningEnabled()) {
-      if (audio_handler->GetPrimaryActiveInputNode() == device.id &&
-          device.type == AudioDeviceType::kBluetoothNbMic) {
-        container->AddChildView(AudioDetailedView::CreateNbsWarningView());
-      }
+    if (audio_handler->GetPrimaryActiveInputNode() == device.id &&
+        device.type == AudioDeviceType::kBluetoothNbMic) {
+      container->AddChildView(AudioDetailedView::CreateNbsWarningView());
     }
   }
 

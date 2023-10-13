@@ -202,11 +202,6 @@ BASE_FEATURE(kAsynchronousScannerDiscovery,
              "AsynchronousScannerDiscovery",
              base::FEATURE_DISABLED_BY_DEFAULT);
 
-// Enables warning in the quick settings when NBS device is in use.
-BASE_FEATURE(kAudioHFPNbsWarning,
-             "AudioHFPNbsWarning",
-             base::FEATURE_ENABLED_BY_DEFAULT);
-
 // Enables the ui to show the toggle for controlling hfp-mic-sr.
 BASE_FEATURE(kAudioHFPMicSRToggle,
              "AudioHFPMicSRToggle",
@@ -2974,10 +2969,6 @@ bool AreSideAlignedToastsEnabled() {
 
 bool AreSystemSoundsEnabled() {
   return base::FeatureList::IsEnabled(kSystemSounds);
-}
-
-bool IsAudioHFPNbsWarningEnabled() {
-  return base::FeatureList::IsEnabled(kAudioHFPNbsWarning);
 }
 
 bool IsAudioHFPMicSRToggleEnabled() {

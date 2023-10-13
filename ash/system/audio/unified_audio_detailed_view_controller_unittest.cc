@@ -327,11 +327,9 @@ INSTANTIATE_TEST_SUITE_P(All,
 TEST_P(UnifiedAudioDetailedViewControllerTest, ToggleNbsWarning) {
   scoped_feature_list_.Reset();
   if (!IsQsRevampEnabled()) {
-    scoped_feature_list_.InitWithFeatures({ash::features::kAudioHFPNbsWarning},
-                                          {});
+    scoped_feature_list_.InitWithFeatures({}, {});
   } else {
-    scoped_feature_list_.InitWithFeatures(
-        {ash::features::kAudioHFPNbsWarning, features::kQsRevamp}, {});
+    scoped_feature_list_.InitWithFeatures({features::kQsRevamp}, {});
   }
 
   fake_cras_audio_client()->SetAudioNodesAndNotifyObserversForTesting(

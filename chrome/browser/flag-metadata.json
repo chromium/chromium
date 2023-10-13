@@ -477,11 +477,6 @@
     "expiry_milestone": 130
   },
   {
-    "name": "audio-hfp-nbs-warning",
-    "owners": [ "jrwu", "chromeos-audio@google.com" ],
-    "expiry_milestone": 130
-  },
-  {
     "name": "audio-hfp-offload",
     "owners": [ "johnylin", "jrwu", "chromeos-audio@google.com" ],
     "expiry_milestone": 122
