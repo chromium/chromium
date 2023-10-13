@@ -646,6 +646,8 @@ class SafeBrowsingBlockingPageBrowserTest
     if (testing::get<1>(GetParam())) {
       content::IsolateAllSitesForTesting(command_line);
     }
+    // TODO(crbug.com/1491942): This fails with the field trial testing config.
+    command_line->AppendSwitch("disable-field-trial-config");
   }
 
   void SetUpOnMainThread() override {
@@ -2780,6 +2782,8 @@ class SafeBrowsingBlockingPageDelayedWarningBrowserTest
     if (testing::get<0>(GetParam())) {
       content::IsolateAllSitesForTesting(command_line);
     }
+    // TODO(crbug.com/1491942): This fails with the field trial testing config.
+    command_line->AppendSwitch("disable-field-trial-config");
   }
 
   void SetUpOnMainThread() override {
