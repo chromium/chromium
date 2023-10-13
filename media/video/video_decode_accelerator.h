@@ -124,14 +124,14 @@ class MEDIA_EXPORT VideoDecodeAccelerator {
   // Config structure contains parameters required for the VDA initialization.
   struct MEDIA_EXPORT Config {
     // Specifies the allocation and handling mode for output PictureBuffers.
-    // When set to ALLOCATE, the VDA is expected to allocate backing memory
+    // When set to kAllocate, the VDA is expected to allocate backing memory
     // for PictureBuffers at the time of AssignPictureBuffers() call.
-    // When set to IMPORT, the VDA will not allocate, but after receiving
+    // When set to kImport, the VDA will not allocate, but after receiving
     // AssignPictureBuffers() call, it will expect a call to
     // ImportBufferForPicture() for each PictureBuffer before use.
     enum class OutputMode {
-      ALLOCATE,
-      IMPORT,
+      kAllocate,
+      kImport,
     };
 
     Config();
@@ -166,7 +166,7 @@ class MEDIA_EXPORT VideoDecodeAccelerator {
     // Coded size of the video frame hint, subject to change.
     gfx::Size initial_expected_coded_size = gfx::Size(320, 240);
 
-    OutputMode output_mode = OutputMode::ALLOCATE;
+    OutputMode output_mode = OutputMode::kAllocate;
 
     // The H264 SPS and PPS configuration data. Not all clients populate these
     // fields, so they should be parsed from the bitstream instead, if required.

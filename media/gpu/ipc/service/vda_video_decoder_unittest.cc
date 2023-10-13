@@ -108,7 +108,7 @@ class VdaVideoDecoderTest : public testing::TestWithParam<bool> {
         base::BindRepeating(&VdaVideoDecoderTest::CreateAndInitializeVda,
                             base::Unretained(this)),
         GetCapabilities(),
-        VideoDecodeAccelerator::Config::OutputMode::ALLOCATE);
+        VideoDecodeAccelerator::Config::OutputMode::kAllocate);
     vdavd_ = std::make_unique<AsyncDestroyVideoDecoder<VdaVideoDecoder>>(
         base::WrapUnique(vdavd));
     client_ = vdavd;

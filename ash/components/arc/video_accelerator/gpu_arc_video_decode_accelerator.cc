@@ -87,7 +87,7 @@ media::VideoDecodeAccelerator::Config CreateVdaConfig(
     bool uses_vd) {
   media::VideoDecodeAccelerator::Config vda_config(profile);
   vda_config.output_mode =
-      media::VideoDecodeAccelerator::Config::OutputMode::IMPORT;
+      media::VideoDecodeAccelerator::Config::OutputMode::kImport;
   vda_config.is_deferred_initialization_allowed = uses_vd;
   return vda_config;
 }

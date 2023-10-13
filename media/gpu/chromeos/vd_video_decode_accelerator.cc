@@ -241,7 +241,7 @@ bool VdVideoDecodeAccelerator::Initialize(const Config& config,
     return false;
   }
 #endif  //  !BUILDFLAG(USE_ARC_PROTECTED_MEDIA)
-  if (config.output_mode != Config::OutputMode::IMPORT) {
+  if (config.output_mode != Config::OutputMode::kImport) {
     VLOGF(1) << "Only IMPORT OutputMode is supported.";
     return false;
   }

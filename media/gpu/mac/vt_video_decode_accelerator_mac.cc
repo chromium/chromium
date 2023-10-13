@@ -612,7 +612,7 @@ bool VTVideoDecodeAccelerator::Initialize(const Config& config,
 
   // All of these checks should be handled by the caller inspecting
   // SupportedProfiles(). PPAPI does not do that, however.
-  if (config.output_mode != Config::OutputMode::ALLOCATE) {
+  if (config.output_mode != Config::OutputMode::kAllocate) {
     DVLOG(2) << "Output mode must be ALLOCATE";
     return false;
   }
