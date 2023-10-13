@@ -252,25 +252,7 @@ public class LayoutManagerTest implements MockTabModelDelegate {
     }
 
     private void setUpLayouts() {
-        if (mIsStartSurfaceRefactorEnabled) {
-            verify(mTabSwitcherController)
-                    .addTabSwitcherViewObserver(
-                            mRefactorTabSwitcherViewObserverArgumentCaptor.capture());
-            doAnswer((Answer<Void>) invocation -> {
-                mRefactorTabSwitcherViewObserverArgumentCaptor.getValue().finishedShowing();
-                simulateTime(mManager, 1000);
-                return null;
-            })
-                    .when(mTabSwitcherController)
-                    .showTabSwitcherView(anyBoolean());
-
-            doAnswer((Answer<Void>) invocation -> {
-                mRefactorTabSwitcherViewObserverArgumentCaptor.getValue().finishedHiding();
-                return null;
-            })
-                    .when(mTabSwitcherController)
-                    .hideTabSwitcherView(anyBoolean());
-        } else {
+        if (!mIsStartSurfaceRefactorEnabled) {
             verify(mStartSurface)
                     .addTabSwitcherViewObserver(mTabSwitcherViewObserverArgumentCaptor.capture());
             doAnswer((Answer<Void>) invocation -> {
