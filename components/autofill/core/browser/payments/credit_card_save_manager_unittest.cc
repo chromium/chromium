@@ -701,6 +701,8 @@ TEST_F(CreditCardSaveManagerTest,
   EXPECT_TRUE(autofill_client_.ConfirmSaveCardToCloudWasCalled());
   EXPECT_EQ(AutofillClient::CardSaveType::kCvcSaveOnly,
             autofill_client_.get_save_credit_card_options().card_save_type);
+  EXPECT_TRUE(
+      autofill_client_.get_offer_to_save_credit_card_bubble_was_shown());
 }
 
 // Tests that when triggering AttemptToOfferCvcLocalSave function and user
@@ -776,6 +778,106 @@ TEST_F(CreditCardSaveManagerTest,
 
   // Verify that user decline a offer will add a strike count for that CVC.
   EXPECT_EQ(1, cvc_storage_strike_database.GetStrikes(local_card.guid()));
+}
+
+// Tests that adding a CVC clears all strikes for that card.
+TEST_F(CreditCardSaveManagerTest,
+       AttemptToOfferCvcUploadSave_ClearStrikesOnAdd) {
+  CreditCard server_card = test::WithCvc(test::GetMaskedServerCard());
+
+  // Add 2 strikes for the card and advance the required delay time.
+  TestAutofillClock test_autofill_clock(AutofillClock::Now());
+  CvcStorageStrikeDatabase cvc_storage_strike_database =
+      CvcStorageStrikeDatabase(&strike_database());
+  cvc_storage_strike_database.AddStrikes(
+      2, base::NumberToString(server_card.instrument_id()));
+  EXPECT_EQ(2, cvc_storage_strike_database.GetStrikes(
+                   base::NumberToString(server_card.instrument_id())));
+  test_autofill_clock.Advance(
+      cvc_storage_strike_database.GetRequiredDelaySinceLastStrike().value());
+  autofill_client_.set_save_card_offer_user_decision(
+      AutofillClient::SaveCardOfferUserDecision::kAccepted);
+
+  credit_card_save_manager_->AttemptToOfferCvcUploadSave(server_card);
+
+  // Verify that the CVC prompt is offered and reset the strike count for that
+  // CVC.
+  EXPECT_TRUE(
+      autofill_client_.get_offer_to_save_credit_card_bubble_was_shown());
+  EXPECT_EQ(0, cvc_storage_strike_database.GetStrikes(
+                   base::NumberToString(server_card.instrument_id())));
+}
+
+// Tests that a CVC with max strikes does not offer save at all.
+TEST_F(CreditCardSaveManagerTest,
+       AttemptToOfferCvcUploadSave_NotOfferSaveWithMaxStrikes) {
+  CreditCard server_card = test::WithCvc(test::GetMaskedServerCard());
+
+  // Add 3 strikes to reach StrikeDatabase limit.
+  CvcStorageStrikeDatabase cvc_storage_strike_database =
+      CvcStorageStrikeDatabase(&strike_database());
+  cvc_storage_strike_database.AddStrikes(
+      cvc_storage_strike_database.GetMaxStrikesLimit(),
+      base::NumberToString(server_card.instrument_id()));
+  EXPECT_EQ(cvc_storage_strike_database.GetMaxStrikesLimit(),
+            cvc_storage_strike_database.GetStrikes(
+                base::NumberToString(server_card.instrument_id())));
+
+  credit_card_save_manager_->AttemptToOfferCvcUploadSave(server_card);
+
+  // Verify that CVC prompt is not offered.
+  EXPECT_FALSE(
+      autofill_client_.get_offer_to_save_credit_card_bubble_was_shown());
+}
+
+// Tests that a CVC without required delay does not offer save even strike limit
+// not reach.
+TEST_F(CreditCardSaveManagerTest,
+       AttemptToOfferCvcUploadSave_NotOfferSaveWithoutRequiredDelay) {
+  CreditCard server_card = test::WithCvc(test::GetMaskedServerCard());
+
+  // Add 1 strike and not advance required delay.
+  CvcStorageStrikeDatabase cvc_storage_strike_database =
+      CvcStorageStrikeDatabase(&strike_database());
+  cvc_storage_strike_database.AddStrikes(
+      1, base::NumberToString(server_card.instrument_id()));
+
+  credit_card_save_manager_->AttemptToOfferCvcUploadSave(server_card);
+
+  // Verify that CVC prompt is not offered.
+  EXPECT_FALSE(
+      autofill_client_.get_offer_to_save_credit_card_bubble_was_shown());
+}
+
+// Tests that 1 strike will be added if the user declines or ignores save CVC
+// offer.
+TEST_F(CreditCardSaveManagerTest,
+       AttemptToOfferCvcUploadSave_AddStrikeIfDeclinedOrIgnored) {
+  CreditCard server_card = test::WithCvc(test::GetMaskedServerCard());
+
+  // AttemptToOfferCvcUpload save and user declined.
+  TestAutofillClock test_autofill_clock(AutofillClock::Now());
+  CvcStorageStrikeDatabase cvc_storage_strike_database =
+      CvcStorageStrikeDatabase(&strike_database());
+  autofill_client_.set_save_card_offer_user_decision(
+      AutofillClient::SaveCardOfferUserDecision::kDeclined);
+  credit_card_save_manager_->AttemptToOfferCvcUploadSave(server_card);
+
+  // Verify that user decline a offer will add a strike count for that CVC.
+  EXPECT_EQ(1, cvc_storage_strike_database.GetStrikes(
+                   base::NumberToString(server_card.instrument_id())));
+
+  // Advance the required delay time and AttemptToOfferCvcUpload save and user
+  // ignored.
+  test_autofill_clock.Advance(
+      cvc_storage_strike_database.GetRequiredDelaySinceLastStrike().value());
+  autofill_client_.set_save_card_offer_user_decision(
+      AutofillClient::SaveCardOfferUserDecision::kIgnored);
+  credit_card_save_manager_->AttemptToOfferCvcUploadSave(server_card);
+
+  // Verify that user ignore a offer will add a strike count for that CVC.
+  EXPECT_EQ(2, cvc_storage_strike_database.GetStrikes(
+                   base::NumberToString(server_card.instrument_id())));
 }
 
 // Tests that when triggering AttemptToOfferCvcUploadSave function and user

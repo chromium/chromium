@@ -125,9 +125,9 @@ bool CreditCardSaveManager::AttemptToOfferCvcLocalSave(const CreditCard& card) {
 
   // Query the CvcStorageStrikeDatabase if we should pop up the offer-to-save
   // prompt for this CVC.
-  if (auto* strike_db = GetCvcStorageStrikeDatabase()) {
+  if (auto* cvc_storage_strike_db = GetCvcStorageStrikeDatabase()) {
     show_save_prompt_ =
-        !strike_db->ShouldBlockFeature(card_save_candidate_.guid());
+        !cvc_storage_strike_db->ShouldBlockFeature(card_save_candidate_.guid());
   }
   OfferCvcLocalSave();
   return show_save_prompt_.value_or(false);
@@ -329,8 +329,14 @@ void CreditCardSaveManager::AttemptToOfferCvcUploadSave(
     const CreditCard& card) {
   // TODO(crbug.com/1450749): Resolve duplicate local and server card issue.
   card_save_candidate_ = card;
+  show_save_prompt_.reset();
 
-  // TODO(crbug.com/1450749): Query strike database.
+  // Query the CvcStorageStrikeDatabase if we should pop up the offer-to-save
+  // prompt for this CVC.
+  if (auto* cvc_storage_strike_db = GetCvcStorageStrikeDatabase()) {
+    show_save_prompt_ = !cvc_storage_strike_db->ShouldBlockFeature(
+        base::NumberToString(card_save_candidate_.instrument_id()));
+  }
 #if BUILDFLAG(IS_ANDROID)
   // TODO(crbug.com/1450749): Implement OfferCvcUploadSave for clank.
   NOTIMPLEMENTED();
@@ -340,7 +346,7 @@ void CreditCardSaveManager::AttemptToOfferCvcUploadSave(
   client_->ConfirmSaveCreditCardToCloud(
       card_save_candidate_, legal_message_lines_,
       AutofillClient::SaveCreditCardOptions()
-          .with_show_prompt(true)
+          .with_show_prompt(show_save_prompt_.value_or(false))
           .with_card_save_type(AutofillClient::CardSaveType::kCvcSaveOnly),
       base::BindOnce(&CreditCardSaveManager::OnUserDidDecideOnCvcUploadSave,
                      weak_ptr_factory_.GetWeakPtr()));
@@ -684,21 +690,19 @@ void CreditCardSaveManager::OnUserDidDecideOnCvcLocalSave(
       // If accepted, clear all CvcStorage strikes for this CVC, in case the CVC
       // is later removed and we want to offer local CVC save for this card
       // again.
-      if (auto* strike_db = GetCvcStorageStrikeDatabase()) {
-        strike_db->ClearStrikes(card_save_candidate_.guid());
+      if (auto* cvc_storage_strike_db = GetCvcStorageStrikeDatabase()) {
+        cvc_storage_strike_db->ClearStrikes(card_save_candidate_.guid());
       }
       personal_data_manager_->UpdateLocalCvc(card_save_candidate_.guid(),
                                              card_save_candidate_.cvc());
       break;
     case AutofillClient::SaveCardOfferUserDecision::kDeclined:
     case AutofillClient::SaveCardOfferUserDecision::kIgnored:
-      if (show_save_prompt_.value_or(false)) {
+      if (show_save_prompt_.value_or(false) && GetCvcStorageStrikeDatabase()) {
         // If the user rejected or ignored save and the offer-to-save bubble or
         // infobar was actually shown (NOT just the icon if on desktop), count
         // that as a strike against offering upload in the future.
-        if (auto* strike_db = GetCvcStorageStrikeDatabase()) {
-          strike_db->AddStrike(card_save_candidate_.guid());
-        }
+        GetCvcStorageStrikeDatabase()->AddStrike(card_save_candidate_.guid());
       }
   }
 }
@@ -973,7 +977,13 @@ void CreditCardSaveManager::OnUserDidDecideOnCvcUploadSave(
     const AutofillClient::UserProvidedCardDetails& user_provided_card_details) {
   switch (user_decision) {
     case AutofillClient::SaveCardOfferUserDecision::kAccepted: {
-      // TODO(crbug.com/1450749): Remove strikes.
+      // If accepted, clear all CvcStorage strikes for this CVC, in case the CVC
+      // is later removed and we want to offer upload CVC save for this card
+      // again.
+      if (auto* cvc_storage_strike_db = GetCvcStorageStrikeDatabase()) {
+        cvc_storage_strike_db->ClearStrikes(
+            base::NumberToString(card_save_candidate_.instrument_id()));
+      }
       CHECK(card_save_candidate_.instrument_id());
       if (CreditCard* old_credit_card =
               personal_data_manager_->GetCreditCardByInstrumentId(
@@ -994,7 +1004,13 @@ void CreditCardSaveManager::OnUserDidDecideOnCvcUploadSave(
     }
     case AutofillClient::SaveCardOfferUserDecision::kDeclined:
     case AutofillClient::SaveCardOfferUserDecision::kIgnored:
-      NOTREACHED_NORETURN();
+      if (show_save_prompt_.value_or(false) && GetCvcStorageStrikeDatabase()) {
+        // If the user rejected or ignored save and the offer-to-save bubble or
+        // infobar was actually shown (NOT just the icon if on desktop), count
+        // that as a strike against offering upload in the future.
+        GetCvcStorageStrikeDatabase()->AddStrike(
+            base::NumberToString(card_save_candidate_.instrument_id()));
+      }
   }
 }
 
