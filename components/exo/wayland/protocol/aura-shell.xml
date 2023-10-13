@@ -24,7 +24,7 @@
     DEALINGS IN THE SOFTWARE.
   </copyright>
 
-  <interface name="zaura_shell" version="61">
+  <interface name="zaura_shell" version="62">
     <description summary="aura_shell">
       The global interface exposing aura shell capabilities is used to
       instantiate an interface extension for a wl_surface object.
@@ -805,7 +805,7 @@
     </event>
   </interface>
 
-  <interface name="zaura_toplevel" version="60">
+  <interface name="zaura_toplevel" version="62">
     <description summary="aura shell interface to the toplevel shell">
       An interface to the toplevel shell, which allows the
       client to access shell specific functionality.
@@ -1342,6 +1342,25 @@
       <arg name="lower_right_radius" type="uint"/>
       <arg name="lower_left_radius" type="uint"/>
     </request>
+
+    <!-- Version 62 additions -->
+    <enum name="in_overview">
+      <description summary="Describes whether or not the value is in overview">
+        Binary enum maps to boolean, describes whether or not a value is in
+        overview.
+      </description>
+      <entry name="not_in_overview" value="0" summary="the value is not in overview"/>
+      <entry name="in_overview" value="1" summary="the value is in overview"/>
+    </enum>
+
+    <event name="overview_change" since="62">
+      <description summary="window is in overview">
+        The window is being shown in overview mode. Note that this is
+        different than shell overview state, as not all windows will be
+        part of the overview grid.
+      </description>
+      <arg name="in_overview" type="uint" enum="in_overview" summary="in overview or not"/>
+    </event>
   </interface>
 
   <interface name="zaura_popup" version="46">

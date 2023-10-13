@@ -858,6 +858,14 @@ void AuraToplevel::OnOriginChange(const gfx::Point& origin) {
   wl_client_flush(wl_resource_get_client(aura_toplevel_resource_));
 }
 
+void AuraToplevel::OnOverviewChange(bool in_overview) {
+  zaura_toplevel_send_overview_change(
+      aura_toplevel_resource_,
+      in_overview ? ZAURA_TOPLEVEL_IN_OVERVIEW_IN_OVERVIEW
+                  : ZAURA_TOPLEVEL_IN_OVERVIEW_NOT_IN_OVERVIEW);
+  wl_client_flush(wl_resource_get_client(aura_toplevel_resource_));
+}
+
 void AuraToplevel::SetDecoration(SurfaceFrameType type) {
   shell_surface_->OnSetFrame(type);
 }
@@ -910,6 +918,12 @@ void AuraToplevel::SetClientUsesScreenCoordinates() {
         HandleAuraSurfaceRotateFocusCallback, rotation_serial_tracker_,
         base::BindRepeating(&AuraToplevel::OnRotatePaneFocus,
                             weak_ptr_factory_.GetWeakPtr())));
+  }
+  if (wl_resource_get_version(aura_toplevel_resource_) >=
+      ZAURA_TOPLEVEL_OVERVIEW_CHANGE_SINCE_VERSION) {
+    shell_surface_->set_overview_change_callback(
+        base::BindRepeating(base::BindRepeating(
+            &AuraToplevel::OnOverviewChange, weak_ptr_factory_.GetWeakPtr())));
   }
 }
 

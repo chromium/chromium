@@ -17,6 +17,7 @@
 #include "base/strings/string_piece.h"
 #include "base/strings/utf_string_conversions.h"
 #include "base/trace_event/trace_event.h"
+#include "chromeos/ui/base/window_properties.h"
 #include "chromeos/ui/base/window_state_type.h"
 #include "components/exo/custom_window_state_delegate.h"
 #include "components/exo/shell_surface_util.h"
@@ -535,6 +536,13 @@ void ShellSurface::OnWindowPropertyChanged(aura::Window* window,
                                            intptr_t old_value) {
   ShellSurfaceBase::OnWindowPropertyChanged(window, key, old_value);
   if (IsShellSurfaceWindow(window)) {
+    if (key == chromeos::kIsShowingInOverviewKey) {
+      if (!overview_change_callback_.is_null()) {
+        overview_change_callback_.Run(
+            window->GetProperty(chromeos::kIsShowingInOverviewKey));
+      }
+    }
+
     if (key == aura::client::kRasterScale) {
       float raster_scale = window->GetProperty(aura::client::kRasterScale);
 
