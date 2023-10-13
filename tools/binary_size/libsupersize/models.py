@@ -417,6 +417,31 @@ class SizeInfo(BaseSizeInfo):
       metadata[k] = v
     return metadata
 
+  def MakeSparse(self, filtered_symbols):
+    """Make this SizeInfo contain only a subset of symbols.
+
+    Args:
+      filtered_symbols: Which symbols to include.
+    """
+    self.is_sparse = True
+
+    # Any aliases of sparse symbols must also be included, or else file
+    # parsing will attribute symbols that happen to follow an incomplete alias
+    # group to that alias group.
+    representative_symbols = set()
+    raw_symbols = []
+    logging.debug('Expanding filtered_symbols aliases')
+    for sym in filtered_symbols:
+      if sym.aliases:
+        num_syms = len(representative_symbols)
+        representative_symbols.add(sym.aliases[0])
+        if num_syms < len(representative_symbols):
+          raw_symbols.extend(sym.aliases)
+      else:
+        raw_symbols.append(sym)
+    logging.debug('Done expanding filtered_symbols')
+    self.raw_symbols = SymbolGroup(raw_symbols)
+
 
 class DeltaSizeInfo(BaseSizeInfo):
   """What you get when you Diff() two SizeInfo objects.
@@ -449,7 +474,7 @@ class DeltaSizeInfo(BaseSizeInfo):
 
   @property
   def is_sparse(self):
-    return self.before.is_sparse and self.after.is_sparse
+    return self.before.is_sparse or self.after.is_sparse
 
   def MergeDeltaSizeInfo(self, other):
     assert isinstance(other, DeltaSizeInfo), 'Found ' + type(other)
@@ -495,6 +520,25 @@ class DeltaSizeInfo(BaseSizeInfo):
     self.raw_symbols += other.raw_symbols
     self.before.raw_symbols += other.before.raw_symbols
     self.after.raw_symbols += other.after.raw_symbols
+
+  def MakeSparse(self, filtered_symbols=None):
+    """Make this DeltaSizeInfo contain only a subset of symbols.
+
+    Args:
+      filtered_symbols: Which symbols to include. Defaults to changed symbols.
+    """
+    logging.info('Converting to sparse diff')
+    if filtered_symbols is None:
+      filtered_symbols = self.raw_symbols.WhereDiffStatusIs(
+          DIFF_STATUS_UNCHANGED).Inverted()
+    self.raw_symbols = filtered_symbols
+    self.before.MakeSparse(
+        SymbolGroup([
+            sym.before_symbol for sym in filtered_symbols if sym.before_symbol
+        ]))
+    self.after.MakeSparse(
+        SymbolGroup(
+            [sym.after_symbol for sym in filtered_symbols if sym.after_symbol]))
 
 
 class BaseSymbol:

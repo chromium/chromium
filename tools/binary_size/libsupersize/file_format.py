@@ -192,47 +192,14 @@ Then: {}
         '%r\nprev symbol: %r' % (symbol, prev_symbol))
 
 
-def _ExpandSparseSymbols(sparse_symbols):
-  """Expands a symbol list with all aliases of all symbols in the list.
-
-  Args:
-    sparse_symbols: A list or SymbolGroup to expand.
-  """
-  representative_symbols = set()
-  raw_symbols = []
-  logging.debug('Expanding sparse_symbols with aliases of included symbols')
-  for sym in sparse_symbols:
-    if sym.aliases:
-      num_syms = len(representative_symbols)
-      representative_symbols.add(sym.aliases[0])
-      if num_syms < len(representative_symbols):
-        raw_symbols.extend(sym.aliases)
-    else:
-      raw_symbols.append(sym)
-  logging.debug('Done expanding sparse_symbols')
-  return models.SymbolGroup(raw_symbols)
-
-
-def _SaveSizeInfoToFile(size_info,
-                        file_obj,
-                        include_padding=False,
-                        sparse_symbols=None):
+def _SaveSizeInfoToFile(size_info, file_obj):
   """Saves size info to a .size file.
 
   Args:
     size_info: Data to write to the file
     file_obj: File opened for writing.
-    include_padding: Whether to save padding data, useful if adding a subset of
-      symbols.
-    sparse_symbols: If present, only save these symbols to the file.
   """
-  if sparse_symbols is not None:
-    # Any aliases of sparse symbols must also be included, or else file
-    # parsing will attribute symbols that happen to follow an incomplete alias
-    # group to that alias group.
-    raw_symbols = _ExpandSparseSymbols(sparse_symbols)
-  else:
-    raw_symbols = size_info.raw_symbols
+  raw_symbols = size_info.raw_symbols
 
   num_containers = len(size_info.containers)
   has_multi_containers = (num_containers > 1)
@@ -246,7 +213,7 @@ def _SaveSizeInfoToFile(size_info,
   # JSON header fields
   fields = {
       'has_components': True,
-      'has_padding': include_padding,
+      'has_padding': size_info.is_sparse,
       'has_disassembly': True
   }
 
@@ -331,7 +298,7 @@ def _SaveSizeInfoToFile(size_info,
 
   # Padding for non-padding-only symbols is recalculated from addresses on
   # load, so we only need to write it if we're writing a subset of symbols.
-  if include_padding:
+  if size_info.is_sparse:
     write_groups(lambda s: s.padding)
     w.LogSize('paddings')  # For libchrome, adds 300kb
 
@@ -639,27 +606,17 @@ def _LoadCompressedStringList(file_obj, size):
     return toks[1:]
 
 
-def SaveSizeInfo(size_info,
-                 path,
-                 file_obj=None,
-                 include_padding=False,
-                 sparse_symbols=None):
+def SaveSizeInfo(size_info, path, file_obj=None):
   """Saves |size_info| to |path|."""
   if os.environ.get('SUPERSIZE_MEASURE_GZIP') == '1':
     # Doing serialization and Gzip together.
     with _OpenGzipForWrite(path, file_obj=file_obj) as f:
-      _SaveSizeInfoToFile(size_info,
-                          f,
-                          include_padding=include_padding,
-                          sparse_symbols=sparse_symbols)
+      _SaveSizeInfoToFile(size_info, f)
   else:
     # Doing serizliation and Gzip separately.
     # This turns out to be faster. On Python 3: 40s -> 14s.
     bytesio = io.BytesIO()
-    _SaveSizeInfoToFile(size_info,
-                        bytesio,
-                        include_padding=include_padding,
-                        sparse_symbols=sparse_symbols)
+    _SaveSizeInfoToFile(size_info, bytesio)
 
     logging.debug('Serialization complete. Gzipping...')
     with _OpenGzipForWrite(path, file_obj=file_obj) as f:
@@ -672,19 +629,14 @@ def LoadSizeInfo(filename, file_obj=None, is_sparse=False):
     return _LoadSizeInfoFromFile(f, filename, is_sparse)
 
 
-def SaveDeltaSizeInfo(delta_size_info, path, file_obj=None):
+def SaveDeltaSizeInfo(delta_size_info, path, file_obj=None, make_sparse=True):
   """Saves |delta_size_info| to |path|."""
+  if make_sparse and not delta_size_info.is_sparse:
+    delta_size_info.MakeSparse()
 
   if not file_obj:
     with open(path, 'wb') as f:
       return SaveDeltaSizeInfo(delta_size_info, path, f)
-
-  changed_symbols = delta_size_info.raw_symbols \
-      .WhereDiffStatusIs(models.DIFF_STATUS_UNCHANGED).Inverted()
-  before_symbols = models.SymbolGroup(
-      [sym.before_symbol for sym in changed_symbols if sym.before_symbol])
-  after_symbols = models.SymbolGroup(
-      [sym.after_symbol for sym in changed_symbols if sym.after_symbol])
 
   before_size_file = io.BytesIO()
   after_size_file = io.BytesIO()
@@ -692,15 +644,8 @@ def SaveDeltaSizeInfo(delta_size_info, path, file_obj=None):
   after_promise = parallel.CallOnThread(SaveSizeInfo,
                                         delta_size_info.after,
                                         '',
-                                        file_obj=after_size_file,
-                                        include_padding=True,
-                                        sparse_symbols=after_symbols)
-  SaveSizeInfo(
-      delta_size_info.before,
-      '',
-      file_obj=before_size_file,
-      include_padding=True,
-      sparse_symbols=before_symbols)
+                                        file_obj=after_size_file)
+  SaveSizeInfo(delta_size_info.before, '', file_obj=before_size_file)
 
   removed_sources_file = None
   if delta_size_info.removed_sources:

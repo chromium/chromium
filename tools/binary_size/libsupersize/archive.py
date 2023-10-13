@@ -551,11 +551,6 @@ def _AddContainerArguments(parser, is_top_args=False):
     group.add_argument('--no-output-directory',
                        action='store_true',
                        help='Do not auto-detect --output-directory.')
-    group.add_argument('--include-padding',
-                       action='store_true',
-                       help='Include a padding field for each symbol, '
-                       'instead of rederiving from consecutive symbols '
-                       'on file load.')
     group.add_argument('--check-data-quality',
                        action='store_true',
                        help='Perform sanity checks to ensure there is no '
@@ -1173,9 +1168,7 @@ def Run(top_args, on_config_error):
                  '\n  '.join(describe.DescribeDict(container.metadata)))
 
   logging.info('Saving result to %s', top_args.size_file)
-  file_format.SaveSizeInfo(size_info,
-                           top_args.size_file,
-                           include_padding=top_args.include_padding)
+  file_format.SaveSizeInfo(size_info, top_args.size_file)
   size_in_mb = os.path.getsize(top_args.size_file) / 1024.0 / 1024.0
   logging.info('Done. File size is %.2fMiB.', size_in_mb)
 
