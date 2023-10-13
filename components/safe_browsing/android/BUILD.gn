@@ -183,6 +183,7 @@ source_set("unit_tests_mobile") {
     "//components/safe_browsing/core/browser/db:unit_tests_shared",
     "//components/safe_browsing/core/browser/db:util",
     "//components/safe_browsing/core/browser/db:v4_test_util",
+    "//components/safe_browsing/core/common",
     "//components/variations",
     "//content/test:test_support",
     "//services/network:test_support",

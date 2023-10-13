@@ -213,6 +213,11 @@ BASE_DECLARE_FEATURE(kSafeBrowsingLookupMechanismExperiment);
 extern const base::FeatureParam<bool>
     kUrlLevelValidationForHprtExperimentEnabled;
 
+#if BUILDFLAG(IS_ANDROID)
+// Use new GMSCore API for hash database check on browser URLs.
+BASE_DECLARE_FEATURE(kSafeBrowsingNewGmsApiForBrowseUrlDatabaseCheck);
+#endif
+
 // Run Safe Browsing code on UI thread.
 BASE_DECLARE_FEATURE(kSafeBrowsingOnUIThread);
 

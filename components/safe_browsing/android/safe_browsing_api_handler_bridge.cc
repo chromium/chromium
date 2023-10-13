@@ -66,6 +66,8 @@ void ReportSafeBrowsingJavaResponse(
     SafeBrowsingJavaThreatType threat_type,
     const std::vector<int>& threat_attributes,
     SafeBrowsingJavaResponseStatus response_status) {
+  // TODO(crbug.com/1490736): Break down the below histograms by
+  // SafeBrowsingJavaProtocol.
   base::UmaHistogramSparse("SafeBrowsing.GmsSafeBrowsingApi.LookupResult",
                            static_cast<int>(lookup_result));
   if (lookup_result != SafeBrowsingApiLookupResult::SUCCESS) {
@@ -570,7 +572,17 @@ void SafeBrowsingApiHandlerBridge::StartHashDatabaseUrlCheck(
     std::unique_ptr<ResponseCallback> callback,
     const GURL& url,
     const SBThreatTypeSet& threat_types) {
-  StartUrlCheckBySafetyNet(std::move(callback), url, threat_types);
+  // The SafeBrowsing API currently doesn't have required threat types
+  // (ABUSIVE_EXPERIENCE_VIOLATION, BETTER_ADS_VIOLATION) to perform subresource
+  // filter checks, so only checking the browse URLs.
+  if (SBThreatTypeSetIsValidForCheckBrowseUrl(threat_types) &&
+      base::FeatureList::IsEnabled(
+          kSafeBrowsingNewGmsApiForBrowseUrlDatabaseCheck)) {
+    StartUrlCheckBySafeBrowsing(std::move(callback), url, threat_types,
+                                SafeBrowsingJavaProtocol::LOCAL_BLOCK_LIST);
+  } else {
+    StartUrlCheckBySafetyNet(std::move(callback), url, threat_types);
+  }
 }
 
 void SafeBrowsingApiHandlerBridge::StartHashRealTimeUrlCheck(

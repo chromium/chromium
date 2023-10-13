@@ -229,6 +229,12 @@ const base::FeatureParam<bool> kUrlLevelValidationForHprtExperimentEnabled{
     "UrlLevelValidationForHprtExperimentEnabled",
     /*default_value=*/true};
 
+#if BUILDFLAG(IS_ANDROID)
+BASE_FEATURE(kSafeBrowsingNewGmsApiForBrowseUrlDatabaseCheck,
+             "SafeBrowsingNewGmsApiForBrowseUrlDatabaseCheck",
+             base::FEATURE_DISABLED_BY_DEFAULT);
+#endif
+
 BASE_FEATURE(kSafeBrowsingOnUIThread,
              "SafeBrowsingOnUIThread",
              base::FEATURE_DISABLED_BY_DEFAULT);
