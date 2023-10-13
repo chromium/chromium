@@ -13,12 +13,7 @@
 #import "third_party/protobuf/src/google/protobuf/message_lite.h"
 
 namespace ios::sessions {
-namespace {
-
-// Option for writing data.
-constexpr NSDataWritingOptions kWritingOptions =
-    NSDataWritingAtomic |
-    NSDataWritingFileProtectionCompleteUntilFirstUserAuthentication;
+namespace internal {
 
 // Indicate the status for a path.
 enum class PathStatus {
@@ -28,56 +23,35 @@ enum class PathStatus {
 };
 
 // Checks the status of `path`.
-[[nodiscard]] PathStatus GetPathStatus(const base::FilePath& path) {
+[[nodiscard]] PathStatus GetPathStatus(NSString* path) {
   BOOL is_directory = NO;
-  NSString* name = base::apple::FilePathToNSString(path);
-  if (![[NSFileManager defaultManager] fileExistsAtPath:name
+  if (![[NSFileManager defaultManager] fileExistsAtPath:path
                                             isDirectory:&is_directory]) {
     return PathStatus::kInexistent;
   }
   return is_directory ? PathStatus::kDirectory : PathStatus::kFile;
 }
 
-}  // namespace
-
-bool FileExists(const base::FilePath& filename) {
+// Returns whether a file named `filename` exists.
+[[nodiscard]] bool FileExists(NSString* filename) {
   return GetPathStatus(filename) == PathStatus::kFile;
 }
 
-bool DirectoryExists(const base::FilePath& dirname) {
+// Returns whether a directory named `dirname` exists.
+[[nodiscard]] bool DirectoryExists(NSString* dirname) {
   return GetPathStatus(dirname) == PathStatus::kDirectory;
 }
 
-bool RenameFile(const base::FilePath& from, const base::FilePath& dest) {
-  if (!CreateDirectory(dest.DirName())) {
-    return false;
-  }
-
+// Creates `directory` including all intermediate directories and returns
+// whether the operation was a success. Safe to call if `directory` exists.
+[[nodiscard]] bool CreateDirectory(NSString* directory) {
   NSError* error = nil;
-  NSString* from_path = base::apple::FilePathToNSString(from);
-  NSString* dest_path = base::apple::FilePathToNSString(dest);
-  if (![[NSFileManager defaultManager] moveItemAtPath:from_path
-                                               toPath:dest_path
-                                                error:&error]) {
-    DLOG(WARNING) << "Error moving file from: "
-                  << base::SysNSStringToUTF8(from_path)
-                  << " to: " << base::SysNSStringToUTF8(dest_path) << ": "
-                  << base::SysNSStringToUTF8([error description]);
-    return false;
-  }
-
-  return true;
-}
-
-bool CreateDirectory(const base::FilePath& directory) {
-  NSError* error = nil;
-  NSString* path = base::apple::FilePathToNSString(directory);
-  if (![[NSFileManager defaultManager] createDirectoryAtPath:path
+  if (![[NSFileManager defaultManager] createDirectoryAtPath:directory
                                  withIntermediateDirectories:YES
                                                   attributes:nil
                                                        error:&error]) {
     DLOG(WARNING) << "Error creating directory: "
-                  << base::SysNSStringToUTF8(path) << ": "
+                  << base::SysNSStringToUTF8(directory) << ": "
                   << base::SysNSStringToUTF8([error description]);
     return false;
   }
@@ -85,24 +59,44 @@ bool CreateDirectory(const base::FilePath& directory) {
   return true;
 }
 
-bool DirectoryEmpty(const base::FilePath& directory) {
+// Renames a file from `from` to `dest`.
+[[nodiscard]] bool RenameFile(NSString* from, NSString* dest) {
+  if (!CreateDirectory([dest stringByDeletingLastPathComponent])) {
+    return false;
+  }
+
+  NSError* error = nil;
+  if (![[NSFileManager defaultManager] moveItemAtPath:from
+                                               toPath:dest
+                                                error:&error]) {
+    DLOG(WARNING) << "Error moving file from: " << base::SysNSStringToUTF8(from)
+                  << " to: " << base::SysNSStringToUTF8(dest) << ": "
+                  << base::SysNSStringToUTF8([error description]);
+    return false;
+  }
+
+  return true;
+}
+
+// Returns whether `directory` exists and is empty.
+[[nodiscard]] bool DirectoryEmpty(NSString* directory) {
   if (!DirectoryExists(directory)) {
     return false;
   }
 
-  NSString* path = base::apple::FilePathToNSString(directory);
-  NSDirectoryEnumerator* enumerator =
-      [[NSFileManager defaultManager] enumeratorAtPath:path];
+  NSDirectoryEnumerator<NSString*>* enumerator =
+      [[NSFileManager defaultManager] enumeratorAtPath:directory];
 
   return [enumerator nextObject] == nil;
 }
 
-bool DeleteRecursively(const base::FilePath& path) {
+// Deletes recursively file or directory at `path`. Returns whether the
+// operation was a success.
+[[nodiscard]] bool DeleteRecursively(NSString* path) {
   NSError* error = nil;
-  NSString* name = base::apple::FilePathToNSString(path);
-  if (![[NSFileManager defaultManager] removeItemAtPath:name error:&error]) {
+  if (![[NSFileManager defaultManager] removeItemAtPath:path error:&error]) {
     DLOG(WARNING) << "Error removing file/directory at: "
-                  << base::SysNSStringToUTF8(name) << ": "
+                  << base::SysNSStringToUTF8(path) << ": "
                   << base::SysNSStringToUTF8([error description]);
     return false;
   }
@@ -110,34 +104,78 @@ bool DeleteRecursively(const base::FilePath& path) {
   return true;
 }
 
-bool WriteFile(const base::FilePath& filename, NSData* data) {
-  if (!CreateDirectory(filename.DirName())) {
+// Writes `data` to `filename` and returns whether the operation was a success.
+// The file is created with protection until first user authentication.
+[[nodiscard]] bool WriteFile(NSString* filename, NSData* data) {
+  if (!CreateDirectory([filename stringByDeletingLastPathComponent])) {
     return false;
   }
 
+  // Options for writing data.
+  constexpr NSDataWritingOptions options =
+      NSDataWritingAtomic |
+      NSDataWritingFileProtectionCompleteUntilFirstUserAuthentication;
+
   NSError* error = nil;
-  NSString* path = base::apple::FilePathToNSString(filename);
-  if (![data writeToFile:path options:kWritingOptions error:&error]) {
-    DLOG(WARNING) << "Error writing to file: " << base::SysNSStringToUTF8(path)
-                  << ": " << base::SysNSStringToUTF8([error description]);
+  if (![data writeToFile:filename options:options error:&error]) {
+    DLOG(WARNING) << "Error writing to file: "
+                  << base::SysNSStringToUTF8(filename) << ": "
+                  << base::SysNSStringToUTF8([error description]);
     return false;
   }
 
   return true;
 }
 
-NSData* ReadFile(const base::FilePath& filename) {
+// Reads content of `filename` and returns it as a `NSData*` or nil on error.
+[[nodiscard]] NSData* ReadFile(NSString* filename) {
   NSError* error = nil;
-  NSString* path = base::apple::FilePathToNSString(filename);
-  NSData* data = [NSData dataWithContentsOfFile:path options:0 error:&error];
+  NSData* data = [NSData dataWithContentsOfFile:filename
+                                        options:0
+                                          error:&error];
   if (!data) {
     DLOG(WARNING) << "Error loading from file: "
-                  << base::SysNSStringToUTF8(path) << ": "
+                  << base::SysNSStringToUTF8(filename) << ": "
                   << base::SysNSStringToUTF8([error description]);
     return nil;
   }
 
   return data;
+}
+
+}  // namespace internal
+
+bool FileExists(const base::FilePath& filename) {
+  return internal::FileExists(base::apple::FilePathToNSString(filename));
+}
+
+bool DirectoryExists(const base::FilePath& dirname) {
+  return internal::DirectoryExists(base::apple::FilePathToNSString(dirname));
+}
+
+bool RenameFile(const base::FilePath& from, const base::FilePath& dest) {
+  return internal::RenameFile(base::apple::FilePathToNSString(from),
+                              base::apple::FilePathToNSString(dest));
+}
+
+bool CreateDirectory(const base::FilePath& directory) {
+  return internal::CreateDirectory(base::apple::FilePathToNSString(directory));
+}
+
+bool DirectoryEmpty(const base::FilePath& directory) {
+  return internal::DirectoryEmpty(base::apple::FilePathToNSString(directory));
+}
+
+bool DeleteRecursively(const base::FilePath& path) {
+  return internal::DeleteRecursively(base::apple::FilePathToNSString(path));
+}
+
+bool WriteFile(const base::FilePath& filename, NSData* data) {
+  return internal::WriteFile(base::apple::FilePathToNSString(filename), data);
+}
+
+NSData* ReadFile(const base::FilePath& filename) {
+  return internal::ReadFile(base::apple::FilePathToNSString(filename));
 }
 
 bool WriteProto(const base::FilePath& filename,
