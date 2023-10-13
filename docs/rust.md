@@ -4,107 +4,179 @@
 
 # Why?
 
-Parsing untrustworthy data is a major source of security bugs, and it's
-therefore against Chromium rules [to do it in the browser process](rule-of-2.md)
-unless you can use a memory-safe language.
+Handling untrustworthy data in non-trivial ways is a major source of security
+bugs, and it's therefore against Chromium's security policies
+[to do it in the Browser or Gpu process](../docs/security/rule-of-2.md) unless
+you are working in a memory-safe language.
 
 Rust provides a cross-platform memory-safe language so that all platforms can
 handle untrustworthy data directly from a privileged process, without the
 performance overheads and complexity of a utility process.
 
-# Guidelines
-
-Rust in Chromium is not production-ready. It is guarded behind a GN flag which
-is off by default.
-
-Rust is only used in //third_party/rust, for crates developed outside of the
-Chromium tree.
-
 # Status
 
-The Rust toolchain is still experimental and breaks frequently, but it is
-behind an off-by-default GN argument, so this does not affect our bots or
-developers.
+The Rust toolchain is enabled for and supports all platforms and development
+environments that are supported by the Chromium project. The first milestone
+to include full production-ready support was M119.
 
-We have a working Rust toolchain for Linux x64 and Android targets. We are
-working on support for other platforms.
+Rust is approved by Chrome ATLs for production use in
+[certain third-party scenarios](../docs/adding_to_third_party.md#Rust).
 
 For questions or help, reach out to `rust-dev@chromium.org` or `#rust` on the
 [Chromium Slack](https://www.chromium.org/developers/slack/).
 
-# Building with Rust support
-
-1. Add `"checkout_rust": True` to your `.gclient` file in the `"custom vars"`
-   section. (This is the default on Linux, so you can skip this).
-1. Add `enable_rust = true` in your `gn` arguments, via `gn args <outdir>`.
-
 If you use VSCode, we have [additional advice below](#using-vscode).
 
-# Using a third-party Rust library
+# Adding a third-party Rust library
 
-## Importing a crate from crates.io
-
-See [//tools/crates/README.md](../tools/crates/README.md) for instructions on
-how to import a third-party library and generate GN build rules for it.
+Third-party libraries are pulled from [crates.io](https://crates.io), but
+Chromium does not use Cargo as a build system.
 
 ## Third-party review
-
-**Since the Rust toolchain is still experimental, there is no Rust in production
-and we're not ready to consider approving Rust libraries that aren't part of the
-experiment and stabilization of the Rust toolchain.**
 
 All third-party crates need to go through third-party review. See
 [//docs/adding_to_third_party.md](adding_to_third_party.md) for instructions on
 how to have a library reviewed.
 
+## Importing a crate from crates.io
+
+The `//third_party/rust/third_party.toml` crate defines the set of crates
+depended on from first-party code. Any transitive dependencies will be found
+from those listed there. The file is a subset of a
+[standard `Cargo.toml` file](https://doc.rust-lang.org/cargo/reference/manifest.html),
+but only listing the `[dependencies]` section.
+
+To use a third-party crate "bar" version 3 from first party code, add the
+following to `//third_party/rust/third_party.toml` in `[dependencies]`:
+```toml
+[dependencies]
+bar = "3"
+```
+
+To enable a feature "spaceships" in the crate, change the entry in
+`//third_party/rust/third_party.toml` to include the feature:
+```toml
+[dependencies]
+bar = { version = "3", features = [ "spaceships" ] }
+```
+
+### Generating `BUILD.gn` files for third-party crates
+
+To generate `BUILD.gn` files for all third-party crates, and find missing
+transitive dependencies to download, use the `gnrt` tool:
+
+1. Change directory to the root `src/` dir of Chromium.
+1. Run `vpython3 ./tools/crates/run_gnrt.py gen` to build and run gnrt with the `gen` action.
+
+Or, to directly build and run gnrt with the system Rust toolchain:
+
+1. Change directory to the root `src/` dir of Chromium.
+1. Build and run `gnrt gen`:
+   `cargo run --release --manifest-path tools/crates/gnrt/Cargo.toml --target-dir out/gnrt gen`.
+
+This will generate a `BUILD.gn` file for each third-party crate. The `BUILD.gn`
+file changes will be visible in `git status` and can be added with `git add`.
+
+### Downloading missing third-party crates
+
+To download crate "foo", at version 4.2.3:
+1. Change directory to the root src/ dir of Chromium.
+1. Run `gnrt` with the `download` action. e.g.
+   `vpython3 ./tools/crates/run_gnrt.py download --security-critical=yes --shipped=yes foo 4.2.3`
+
+This will download the crate and unpack it into
+`//third_party/rust/foo/v4/crate`. The entire `v4` directory, which includes the
+`crate` subdirectory as well as a generated `README.chromium` file, should be
+added to the repository with `git add third_party/rust/foo/v4`.
+
+Once all the crates are downloaded and `gnrt gen` completes, a CL can be
+uploaded to go through third-party review.
+
+### Patching third-party crates.
+
+You may patch a crate in tree, but save any changes made into a diff file in
+a `patches/` directory for the crate. The diff file should be generated by
+`git-format-patch` each new patch numbered consecutively so that they can be
+applied in order. For example, these files might exist if the "foo" crate was
+patched with a couple of changes:
+
+```
+//third_party/rust/foo/v4/patches/0001-Edit-the-Cargo-toml.diff
+//third_party/rust/foo/v4/patches/0002-Other-changes.diff
+```
+
+### Updating existing third-party crates
+
+To update a crate "foo" to the latest version you must just re-import it at this
+time. To update from version "1.2.0" to "1.3.2":
+1. Remove the `//third_party/rust/foo/v1/crate` directory, which contains the
+   upstream code.
+1. Re-download the crate at the new version with `out/gnrt/release/gnrt download
+   foo 1.3.2`.
+1. If there are any, re-apply local patches with
+   `for i in $(find third_party/rust/foo/v1/patches/*); do patch -p1 < $i; done`
+1. Run `vpython3 ./tools/crates/run_gnrt.py gen` to re-generate all third-party
+   `BUILD.gn` files.
+1. Build `all_rust` to verify things are working.
+
+### Directory structure for third-party crates
+
+The directory structure for a crate "foo" version 3.4.2 is:
+```
+//third_party/
+    rust/
+        foo/
+            v3/
+                BUILD.gn  (generated by gnrt gen)
+                README.chromium  (generated by gnrt download)
+                crate/
+                    Cargo.toml
+                    src/
+                    ...etc...
+                patches/
+                    0001-Edit-the-Cargo-toml.diff
+                    0002-Other-changes.diff
+```
+
 ## Writing a wrapper for binding generation
 
 Most Rust libraries will need a more C++-friendly API written on top of them in
-order to generate C++ bindings to them. Such wrapper libraries should be written
-in `//third_party/rust/<cratename>/<epoch>/wrapper`.
+order to generate C++ bindings to them. The wrapper library can be placed
+in `//third_party/rust/<cratename>/<epoch>/wrapper` or at another single place
+that all C++ goes through to access the library. The [CXX](https://cxx.rs) is
+used to generate bindings between C++ and Rust.
 
 See
-[`//third_party/rust/serde_json_lenient/v0_1/wrapper/`](https://source.chromium.org/chromium/chromium/src/+/main:third_party/rust/serde_json_lenient/v0_1/wrapper/)
-for an example.
+[`//third_party/rust/serde_json_lenient/v0_1/wrapper/`](
+https://source.chromium.org/chromium/chromium/src/+/main:third_party/rust/serde_json_lenient/v0_1/wrapper/)
+and
+[`//components/qr_code_generator`](
+https://source.chromium.org/chromium/chromium/src/+/main:components/qr_code_generator/;l=1;drc=b185db5d502d4995627e09d62c6934590031a5f2)
+for examples.
 
-Rust libraries should use our
-[`rust_static_library`](https://source.chromium.org/chromium/chromium/src/+/main:build/rust/rust_static_library.gni)
-GN template, in place of built-in GN `rust_library`, in order to integrate
-properly into the build and get the correct compiler options applied to them.
+Rust libraries should use the
+[`rust_static_library`](
+https://source.chromium.org/chromium/chromium/src/+/main:build/rust/rust_static_library.gni)
+GN template (not the built-in `rust_library`) to integrate properly into the
+mixed-language Chromium build and get the correct compiler options applied to
+them.
 
-We provide the [CXX](https://cxx.rs) tool for generating C++ bindings for the
-Rust library (or wrapper library). Add any Rust files with a CXX bridge macro to
-the `cxx_bindings` variable in the `rust_static_library` GN rule to have CXX
-generate C++ a header for that file.
-
-# Building on non-Linux platforms
-
-We only have a working Rust toolchain for Linux and Android at this time. To use
-Rust on other platforms, you will need to provide your own nightly Rust
-toolchain. You can then tell `gn` about it using these `gn` arguments:
-
+The [CXX](https://cxx.rs) tool is used for generating C++ bindings to Rust
+code. Since it requires explicit declarations in Rust, an wrapper shim around a
+pure Rust library is needed. Add these Rust shims that contain the CXX
+`bridge` macro to the `cxx_bindings` GN variable in the `rust_static_library`
+to have CXX generate a C++ header for that file. To include the C++ header
+file, rooted in the `gen` output directory, use
 ```
-enable_rust=true
-rust_sysroot_absolute="/Users/you/.rustup/toolchains/<toolchain name>"
-rustc_version="<your rustc version>" # add output of rustc -V
-# added_rust_stdlib_libs=[]
-# removed_rust_stdlib_libs=[]
+#include "the/path/to/the/rust/file.rs.h"
 ```
-
-The last two arguments are any Rust standard library .rlibs which have been
-added or removed between the version that's distributed for Linux/Android,
-and the version you're using. They should rarely be necessary; if you get errors
-about missing standard libraries then adjust `removed_rust_stdlib_libs`; if
-you get errors about undefined symbols then have a look in your equivalent
-of the `.rustup/toolchains/<toolchain name>/lib/rustlib/<target>/lib`
-directory and add any new libraries which are not listed in
-`//build/rust/std/BUILD.gn` to the `added_rust_stlib_libs` list.
 
 # Using VSCode
 
 1. Ensure you're using the `rust-analyzer` extension for VSCode, rather than
    earlier forms of Rust support.
-2. Run `gn` with this extra flag: `gn gen out/Release --export-rust-project`.
+2. Run `gn` with the `--export-rust-project` flag, such as:
+   `gn gen out/Release --export-rust-project`.
 3. `ln -s out/Release/rust-project.json rust-project.json`
 4. When you run VSCode, or any other IDE that uses
    [rust-analyzer](https://rust-analyzer.github.io/) it should detect the

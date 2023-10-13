@@ -125,7 +125,33 @@ To fix the error:
 * Run `tools/rust/gnrt_stdlib.py` to use gnrt to rebuild the stdlib GN rules
   using the updated config.
 
-### Local development
+### Generating `BUILD.gn` files for stdlib crates
+
+If the build structure changes in any way during a roll, the GN files need
+to be regenerated.
+
+#### Simple way:
+
+Run `tools/rust/gnrt_stdlib.py`.
+
+#### Longer way
+
+This requires Rust to be installed and available in your system, typically
+through [https://rustup.rs](https://rustup.rs).
+
+To generate `BUILD.gn` files for the crates with the `gnrt` tool:
+1. Change directory to the root `src/` dir of Chromium.
+1. Build `gnrt` to run on host machine: `cargo build --release --manifest-path
+   tools/crates/gnrt/Cargo.toml --target-dir out/gnrt`.
+1. Ensure you have a checkout of the Rust source tree in `third_party/rust-src`
+   which can be done with `tools/rust/build_rust.py --sync-for-gnrt`.
+1. Run `gnrt` with the `gen` action:
+   `out/gnrt/release/gnrt gen --for-std third_party/rust-src`.
+
+This will generate the `//build/rust/std/rules/BUILD.gn` file, with the changes
+visible in `git status` and can be added with `git add`.
+
+## Local development
 
 To build the Rust toolchain locally, run `//tools/rust/build_rust.py`. It
 has additional flags to skip steps if you're making local changes and want
