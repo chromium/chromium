@@ -361,6 +361,8 @@ COMPONENT_EXPORT(ASH_CONSTANTS)
 extern const char kCameraEffectsSupportedByHardware[];
 COMPONENT_EXPORT(ASH_CONSTANTS)
 extern const char kPreventKioskAutolaunchForTesting[];
+COMPONENT_EXPORT(ASH_CONSTANTS)
+extern const char kAllowDefaultShelfPinLayoutIgnoringSync[];
 
 ////////////////////////////////////////////////////////////////////////////////
 
