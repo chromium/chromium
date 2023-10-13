@@ -862,13 +862,19 @@ void PersonalDataManager::RecordUseOf(
 }
 
 void PersonalDataManager::AddProfile(const AutofillProfile& profile) {
-  if (!IsAutofillProfileEnabled())
+  if (!IsAutofillProfileEnabled() || !database_helper_->GetLocalDatabase()) {
     return;
-
-  if (!database_helper_->GetLocalDatabase())
+  }
+  if (profile.IsEmpty(app_locale_)) {
+    // TODO(crbug.com/1007974): This call is only used to notify tests to stop
+    // waiting. Since no profile is added, this case shouldn't trigger
+    // `OnPersonalDataChanged()`.
+    NotifyPersonalDataObserver();
     return;
-
-  AddProfileToDB(profile);
+  }
+  ongoing_profile_changes_[profile.guid()].emplace_back(
+      AutofillProfileChange::ADD, profile);
+  HandleNextProfileChange(profile.guid());
 }
 
 void PersonalDataManager::UpdateProfile(const AutofillProfile& profile) {
@@ -2520,26 +2526,6 @@ void PersonalDataManager::ConvertWalletAddressesAndUpdateWalletCards() {
   // notification here.
   // TODO(crbug.com/1348294): Simplify this code.
   AutofillAddressConversionCompleted();
-}
-
-void PersonalDataManager::AddProfileToDB(const AutofillProfile& profile) {
-  if (profile.IsEmpty(app_locale_)) {
-    NotifyPersonalDataObserver();
-    return;
-  }
-
-  if (!ProfileChangesAreOngoing(profile.guid())) {
-    const std::vector<std::unique_ptr<AutofillProfile>>& profiles =
-        GetProfileStorage(profile.source());
-    if (FindByGUID(profiles, profile.guid()) ||
-        FindByContents(profiles, profile)) {
-      NotifyPersonalDataObserver();
-      return;
-    }
-  }
-  ongoing_profile_changes_[profile.guid()].emplace_back(
-      AutofillProfileChange::ADD, profile);
-  HandleNextProfileChange(profile.guid());
 }
 
 void PersonalDataManager::UpdateProfileInDB(const AutofillProfile& profile,
