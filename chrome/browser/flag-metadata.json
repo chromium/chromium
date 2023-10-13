@@ -7131,8 +7131,8 @@
       "edwindaniel@google.com",
       "shuuran@chromium.org",
       "cfredric@chromium.org"],
-    // This flag is required to make it easier
-    //for web developers to test out their usage of Related Website Sets.
+    // This flag is required to make it easier for web developers to test out
+    // their usage of Related Website Sets.
     "expiry_milestone": -1
   },
   {
