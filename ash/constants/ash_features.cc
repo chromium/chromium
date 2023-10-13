@@ -2514,13 +2514,6 @@ BASE_FEATURE(kSmartLockSignInRemoved,
              "SmartLockSignInRemoved",
              base::FEATURE_ENABLED_BY_DEFAULT);
 
-// Replaces Smart Lock UI in lock screen password box with new UI similar to
-// fingerprint auth. Adds Smart Lock to "Lock screen and sign-in" section of
-// settings.
-BASE_FEATURE(kSmartLockUIRevamp,
-             "SmartLockUIRevamp",
-             base::FEATURE_ENABLED_BY_DEFAULT);
-
 // Enables the consumer and enterprise support for provisioning eSIM profiles
 // using Subscription Manager Discovery Service (SM-DS). This flag is a no-op
 // unless the SmdsSupportEuiccUpload and SmdsDbusMigration flags are enabled.

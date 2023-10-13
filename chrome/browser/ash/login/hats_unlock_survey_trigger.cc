@@ -4,9 +4,7 @@
 
 #include "chrome/browser/ash/login/hats_unlock_survey_trigger.h"
 
-#include "ash/constants/ash_features.h"
 #include "ash/public/cpp/tablet_mode.h"
-#include "base/feature_list.h"
 #include "chrome/browser/ash/hats/hats_config.h"
 #include "chrome/browser/ash/login/smart_lock/smart_lock_service.h"
 #include "chrome/browser/ash/login/smart_lock/smart_lock_service_factory.h"
@@ -50,8 +48,9 @@ bool HatsUnlockSurveyTrigger::Impl::ShouldShowSurveyToProfile(
     Profile* profile,
     const HatsConfig& hats_config) {
   // The survey has already been shown and should not be shown again.
-  if (hats_notification_controller_)
+  if (hats_notification_controller_) {
     return false;
+  }
 
   return HatsNotificationController::ShouldShowSurveyToProfile(profile,
                                                                hats_config);
@@ -113,16 +112,12 @@ void HatsUnlockSurveyTrigger::ShowSurveyIfSelected(const AccountId& account_id,
       smart_lock_service
           ? smart_lock_service->GetLastRemoteStatusUnlockForLogging()
           : std::string();
-  const bool smart_lock_revamp_enabled =
-      base::FeatureList::IsEnabled(features::kSmartLockUIRevamp);
 
   base::flat_map<std::string, std::string> product_specific_data = {
       {"authMethod", AuthMethodToString(method)},
       {"tabletMode", TabletMode::Get()->InTabletMode() ? "true" : "false"},
       {"smartLockEnabled", smartlock_enabled ? "true" : "false"},
-      {"smartLockGetRemoteStatusUnlock", smartlock_remotestatus},
-      {"smartLockRevampFeatureEnabled",
-       smart_lock_revamp_enabled ? "true" : "false"}};
+      {"smartLockGetRemoteStatusUnlock", smartlock_remotestatus}};
 
   impl_->ShowSurvey(profile, hats_config, product_specific_data);
 }
@@ -132,8 +127,9 @@ void HatsUnlockSurveyTrigger::SetProfileForTesting(Profile* profile) {
 }
 
 Profile* HatsUnlockSurveyTrigger::GetProfile(const AccountId& account_id) {
-  if (profile_for_testing_)
+  if (profile_for_testing_) {
     return profile_for_testing_;
+  }
 
   return ProfileHelper::Get()->GetProfileByAccountId(account_id);
 }

@@ -644,10 +644,6 @@ void PeopleSection::AddLoadTimeData(content::WebUIDataSource* html_source) {
       "driveSuggestAvailable",
       base::FeatureList::IsEnabled(omnibox::kDocumentProvider));
 
-  html_source->AddBoolean(
-      "smartLockUIRevampEnabled",
-      base::FeatureList::IsEnabled(ash::features::kSmartLockUIRevamp));
-
   AddAccountManagerPageStrings(html_source, profile());
   AddLockScreenPageStrings(html_source, profile()->GetPrefs());
   AddFingerprintListStrings(html_source);

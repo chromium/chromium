@@ -157,17 +157,6 @@ export class SettingsLockScreenElement extends SettingsLockScreenElementBase {
         value: false,
       },
 
-      /**
-       * Alias for the SmartLockUIRevamp feature flag.
-       */
-      smartLockUIRevampEnabled_: {
-        type: Boolean,
-        value() {
-          return loadTimeData.getBoolean('smartLockUIRevampEnabled');
-        },
-        readOnly: true,
-      },
-
       noRecoveryVirtualPref_: Object,
 
       showDisableRecoveryDialog_: Boolean,
@@ -199,7 +188,6 @@ export class SettingsLockScreenElement extends SettingsLockScreenElementBase {
   private noRecoveryVirtualPref_: chrome.settingsPrivate.PrefObject;
   private recoveryChangeInProcess_: boolean;
   private showPasswordSettings_: boolean;
-  private smartLockUIRevampEnabled_: boolean;
   private showDisableRecoveryDialog_: boolean;
   private fingerprintBrowserProxy_: FingerprintBrowserProxy;
 
