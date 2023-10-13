@@ -12,6 +12,7 @@
 #include "base/memory/weak_ptr.h"
 #include "base/task/sequenced_task_runner.h"
 #include "base/test/metrics/histogram_tester.h"
+#include "base/test/scoped_feature_list.h"
 #include "base/timer/elapsed_timer.h"
 #include "components/ukm/test_ukm_recorder.h"
 #include "content/browser/preloading/prefetch/prefetch_container.h"
@@ -1134,6 +1135,9 @@ INSTANTIATE_TEST_SUITE_P(All,
                                          NotServableReason::kAnotherRequest));
 
 TEST_F(PrefetchURLLoaderInterceptorTest, DISABLE_ASAN(HandleRedirects)) {
+  base::test::ScopedFeatureList scoped_feature_list(
+      features::kPrefetchRedirects);
+
   const GURL kTestUrl("https://example.com");
   const GURL kRedirectUrl("https://redirect.com");
 
@@ -1246,6 +1250,8 @@ TEST_F(PrefetchURLLoaderInterceptorTest, DISABLE_ASAN(HandleRedirects)) {
 
 TEST_F(PrefetchURLLoaderInterceptorTest,
        DISABLE_ASAN(HandleRedirectsWithSwitchInNetworkContext)) {
+  base::test::ScopedFeatureList scoped_feature_list(
+      features::kPrefetchRedirects);
   const GURL kTestUrl("https://example.com");
   const GURL kRedirectUrl("https://redirect.com");
 

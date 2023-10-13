@@ -1198,26 +1198,13 @@ void PrefetchService::OnPrefetchRedirect(
       active_prefetches_.find(prefetch_container->GetPrefetchContainerKey()) !=
       active_prefetches_.end());
 
-  prefetch_container->AddRedirectHop(redirect_info);
-
   // Update the prefetch's referrer in case a redirect requires a change in
   // network context and a new request needs to be started.
-  prefetch_container->UpdateReferrer(
-      GURL(redirect_info.new_referrer),
+  const auto new_referrer_policy =
       blink::ReferrerUtils::NetToMojoReferrerPolicy(
-          redirect_info.new_referrer_policy));
-
-  // Check that the prefetch's referrer policy is sufficiently strict to allow
-  // for the redirect to be followed.
-  net::SchemefulSite previous_site =
-      prefetch_container->GetSiteForPreviousRedirectHop(redirect_info.new_url);
-  net::SchemefulSite redirect_site(redirect_info.new_url);
-  bool is_referrer_policy_sufficiently_strict =
-      IsReferrerPolicySufficientlyStrict(
-          prefetch_container->GetReferrer().policy);
+          redirect_info.new_referrer_policy);
 
   absl::optional<PrefetchRedirectResult> failure;
-
   if (!base::FeatureList::IsEnabled(features::kPrefetchRedirects)) {
     failure = PrefetchRedirectResult::kFailedRedirectsDisabled;
   } else if (redirect_info.new_method != "GET") {
@@ -1226,8 +1213,11 @@ void PrefetchService::OnPrefetchRedirect(
              redirect_head->headers->response_code() < 300 ||
              redirect_head->headers->response_code() >= 400) {
     failure = PrefetchRedirectResult::kFailedInvalidResponseCode;
-  } else if (previous_site != redirect_site &&
-             !is_referrer_policy_sufficiently_strict) {
+  } else if (net::SchemefulSite(prefetch_container->GetCurrentURL()) !=
+                 net::SchemefulSite(redirect_info.new_url) &&
+             !IsReferrerPolicySufficientlyStrict(new_referrer_policy)) {
+    // The new referrer policy is not sufficiently strict to allow cross-site
+    // redirects.
     failure = PrefetchRedirectResult::kFailedInsufficientReferrerPolicy;
   }
 
@@ -1242,6 +1232,10 @@ void PrefetchService::OnPrefetchRedirect(
     RecordRedirectResult(*failure);
     return;
   }
+
+  prefetch_container->AddRedirectHop(redirect_info);
+  prefetch_container->UpdateReferrer(GURL(redirect_info.new_referrer),
+                                     new_referrer_policy);
 
   RecordRedirectNetworkContextTransition(
       prefetch_container
@@ -1559,12 +1553,6 @@ std::vector<PrefetchContainer*> PrefetchService::FindPrefetchContainerToServe(
         matches.push_back(prefetch);
         break;
     }
-  }
-  // Filter by prefetch redirect support
-  if (!base::FeatureList::IsEnabled(features::kPrefetchRedirects)) {
-    base::EraseIf(matches, [](const auto* prefetch_container) {
-      return prefetch_container->GetRedirectChainSize() > 1;
-    });
   }
   return matches;
 }

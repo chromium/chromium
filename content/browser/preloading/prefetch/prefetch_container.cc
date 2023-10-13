@@ -14,6 +14,7 @@
 #include "content/browser/preloading/prefetch/no_vary_search_helper.h"
 #include "content/browser/preloading/prefetch/prefetch_cookie_listener.h"
 #include "content/browser/preloading/prefetch/prefetch_document_manager.h"
+#include "content/browser/preloading/prefetch/prefetch_features.h"
 #include "content/browser/preloading/prefetch/prefetch_network_context.h"
 #include "content/browser/preloading/prefetch/prefetch_params.h"
 #include "content/browser/preloading/prefetch/prefetch_probe_result.h"
@@ -593,6 +594,7 @@ bool PrefetchContainer::IsInitialPrefetchEligible() const {
 
 void PrefetchContainer::AddRedirectHop(const net::RedirectInfo& redirect_info) {
   CHECK(resource_request_);
+  CHECK(base::FeatureList::IsEnabled(features::kPrefetchRedirects));
 
   // There are sometimes other headers that are modified during navigation
   // redirects; see |NavigationRequest::OnRedirectChecksComplete| (including
@@ -1070,13 +1072,6 @@ bool PrefetchContainer::Reader::HasPrefetchStatus() const {
 }
 PrefetchStatus PrefetchContainer::Reader::GetPrefetchStatus() const {
   return GetPrefetchContainer()->GetPrefetchStatus();
-}
-
-net::SchemefulSite PrefetchContainer::GetSiteForPreviousRedirectHop(
-    const GURL& url) const {
-  const SinglePrefetch& previous_prefetch =
-      GetPreviousSinglePrefetchToPrefetch();
-  return net::SchemefulSite(previous_prefetch.url_);
 }
 
 bool PrefetchContainer::IsProxyRequiredForURL(const GURL& url) const {

@@ -5,8 +5,10 @@
 #include "content/browser/preloading/prefetch/prefetch_container.h"
 
 #include "base/test/metrics/histogram_tester.h"
+#include "base/test/scoped_feature_list.h"
 #include "components/ukm/test_ukm_recorder.h"
 #include "content/browser/preloading/prefetch/prefetch_document_manager.h"
+#include "content/browser/preloading/prefetch/prefetch_features.h"
 #include "content/browser/preloading/prefetch/prefetch_probe_result.h"
 #include "content/browser/preloading/prefetch/prefetch_status.h"
 #include "content/browser/preloading/prefetch/prefetch_test_utils.h"
@@ -42,6 +44,15 @@ class PrefetchContainerTest : public RenderViewHostTestHarness {
         ->GetDefaultStoragePartition()
         ->GetNetworkContext()
         ->GetCookieManager(cookie_manager_.BindNewPipeAndPassReceiver());
+
+    // Enable `kPrefetchRedirects` here as `PrefetchContainerTest` contains
+    // several redirect-related tests.
+    scoped_feature_list_.InitAndEnableFeature(features::kPrefetchRedirects);
+  }
+
+  void TearDown() override {
+    scoped_feature_list_.Reset();
+    RenderViewHostTestHarness::TearDown();
   }
 
   network::mojom::CookieManager* cookie_manager() {
@@ -92,6 +103,7 @@ class PrefetchContainerTest : public RenderViewHostTestHarness {
 
  private:
   mojo::Remote<network::mojom::CookieManager> cookie_manager_;
+  base::test::ScopedFeatureList scoped_feature_list_;
 };
 
 namespace {

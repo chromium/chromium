@@ -135,9 +135,6 @@ class CONTENT_EXPORT PrefetchContainer {
 
   base::WeakPtr<PrefetchResponseReader> GetResponseReaderForCurrentPrefetch();
 
-  // Gets the site for the previous redirect hop to the given URL.
-  net::SchemefulSite GetSiteForPreviousRedirectHop(const GURL& url) const;
-
   // Whether or not the prefetch proxy would be required to fetch the given url
   // based on |prefetch_type_|.
   bool IsProxyRequiredForURL(const GURL& url) const;
