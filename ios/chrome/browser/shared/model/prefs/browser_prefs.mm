@@ -562,6 +562,7 @@ void RegisterBrowserStatePrefs(user_prefs::PrefRegistrySyncable* registry) {
   // Preference related to feed.
   registry->RegisterTimePref(kActivityBucketLastReportedDateKey, base::Time());
   registry->RegisterIntegerPref(kActivityBucketKey, 0);
+  registry->RegisterDoublePref(kTimeSpentInFeedAggregateKey, 0.0);
 
   registry->RegisterBooleanPref(kSyncRequested, false);
 }
@@ -731,6 +732,17 @@ void MigrateObsoleteBrowserStatePrefs(PrefService* prefs) {
     if (value) {
       [defaults removeObjectForKey:key];
       prefs->SetInteger(kActivityBucketKey, value);
+    }
+  }
+
+  // Added 10/2023.
+  // TODO(crbug.com/1486770) To be removed after a few milestones.
+  {
+    NSString* key = @(kTimeSpentInFeedAggregateKey);
+    double value = [defaults doubleForKey:key];
+    if (value) {
+      [defaults removeObjectForKey:key];
+      prefs->SetDouble(kTimeSpentInFeedAggregateKey, value);
     }
   }
 }

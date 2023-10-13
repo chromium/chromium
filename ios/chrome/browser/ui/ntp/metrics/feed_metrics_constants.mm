@@ -25,7 +25,7 @@ NSString* const kLastInteractionTimeForDiscoverGoodVisits =
 NSString* const kLastInteractionTimeForFollowingGoodVisits =
     @"LastInteractionTimeForGoodVisitsFollowing";
 NSString* const kLastDayTimeInFeedReportedKey = @"LastDayTimeInFeedReported";
-NSString* const kTimeSpentInFeedAggregateKey = @"TimeSpentInFeedAggregate";
+const char kTimeSpentInFeedAggregateKey[] = "TimeSpentInFeedAggregate";
 const char kActivityBucketLastReportedDateKey[] =
     "ActivityBucketLastReportedDate";
 NSString* const kActivityBucketLastReportedDateArrayKey =

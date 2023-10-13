@@ -46,7 +46,7 @@ extern NSString* const kLastInteractionTimeForFollowingGoodVisits;
 // midnight (beginning of the day) of the last interaction.
 extern NSString* const kLastDayTimeInFeedReportedKey;
 // Stores the time spent on the feed for a day.
-extern NSString* const kTimeSpentInFeedAggregateKey;
+extern const char kTimeSpentInFeedAggregateKey[];
 // Stores the last time the activity bucket was reported.
 extern const char kActivityBucketLastReportedDateKey[];
 // Stores the last 28 days of activity bucket reported days.
