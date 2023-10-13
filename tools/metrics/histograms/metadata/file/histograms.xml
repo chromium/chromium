@@ -1038,6 +1038,43 @@ chromium-metrics-reviews@google.com.
   <token key="CloudProvider" variants="CloudProvider"/>
 </histogram>
 
+<histogram name="FileBrowser.OfficeFiles.ODFS.AuthAttempt.{Mode}" units="count"
+    expires_after="M124">
+  <owner>simmonsjosh@google.com</owner>
+  <owner>src/ui/file_manager/OWNERS</owner>
+  <summary>
+    Chrome OS File Browser: OneDrive OAuth flow attempts. Recorded at the start
+    of the flow.
+  </summary>
+  <token key="Mode">
+    <variant name="Interactive"
+        summary="Authentication initiated manually by the user."/>
+    <variant name="NonInteractive"
+        summary="Re-authentication flow initiated internally (when access
+                 token expires)."/>
+  </token>
+</histogram>
+
+<histogram name="FileBrowser.OfficeFiles.ODFS.AuthResult.Interactive"
+    enum="OfficeOneDriveAuthResultInteractive" expires_after="M124">
+  <owner>simmonsjosh@google.com</owner>
+  <owner>src/ui/file_manager/OWNERS</owner>
+  <summary>
+    Chrome OS File Browser: OneDrive interactive OAuth flow result. Recorded at
+    the end of the flow.
+  </summary>
+</histogram>
+
+<histogram name="FileBrowser.OfficeFiles.ODFS.AuthResult.NonInteractive"
+    enum="OfficeOneDriveAuthResultNonInteractive" expires_after="M124">
+  <owner>simmonsjosh@google.com</owner>
+  <owner>src/ui/file_manager/OWNERS</owner>
+  <summary>
+    Chrome OS File Browser: OneDrive non-interactive OAuth flow result. Recorded
+    at the end of the flow.
+  </summary>
+</histogram>
+
 <histogram name="FileBrowser.OfficeFiles.ODFS.FileSize.{Direction}" units="KiB"
     expires_after="M124">
   <owner>simmonsjosh@google.com</owner>

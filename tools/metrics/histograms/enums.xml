@@ -79173,6 +79173,32 @@ Called by update_net_trust_anchors.py.-->
   <int value="505" label="505: HTTP Version Not Supported"/>
 </enum>
 
+<enum name="OfficeOneDriveAuthResultInteractive">
+  <int value="0" label="Success"/>
+  <int value="1" label="Failed to get authorization code: failed to load page"/>
+  <int value="2" label="Failed to get authorization code: page load timed out"/>
+  <int value="3" label="Failed to get authorization code: cancelled"/>
+  <int value="4" label="Failed to get authorization code: other error"/>
+  <int value="5" label="Failed to get access token: fetch error"/>
+  <int value="6" label="Failed to get access token: bad response"/>
+  <int value="7" label="Failed to get access token: other error"/>
+</enum>
+
+<enum name="OfficeOneDriveAuthResultNonInteractive">
+  <int value="0" label="Success using refresh token"/>
+  <int value="1" label="Success using non-interactive auth"/>
+  <int value="2" label="Failed to get authorization code: failed to load page"/>
+  <int value="3" label="Failed to get authorization code: page load timed out"/>
+  <int value="4"
+      label="Failed to get authorization code: interaction required (remote)"/>
+  <int value="5"
+      label="Failed to get authorization code: interaction required (Chrome)"/>
+  <int value="6" label="Failed to get authorization code: other error"/>
+  <int value="7" label="Failed to get access token: fetch error"/>
+  <int value="8" label="Failed to get access token: bad response"/>
+  <int value="9" label="Failed to get access token: other error"/>
+</enum>
+
 <enum name="OfficeOneDriveOpenErrors">
   <int value="0" label="Success"/>
   <int value="1" label="Offline"/>
