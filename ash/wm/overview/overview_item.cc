@@ -842,10 +842,6 @@ void OverviewItem::SetVisibleDuringItemDragging(bool visible, bool animate) {
   }
 }
 
-void OverviewItem::UpdateShadowTypeForDrag(bool is_dragging) {
-  shadow_->SetType(is_dragging ? kDraggedShadowType : kDefaultShadowType);
-}
-
 void OverviewItem::UpdateCannotSnapWarningVisibility(bool animate) {
   // Windows which can snap will never show this warning. Or if the window is
   // the drop target window, also do not show this warning.

@@ -56,19 +56,22 @@ class ASH_EXPORT OverviewItemBase {
   OverviewItemBase& operator=(const OverviewItemBase&) = delete;
   virtual ~OverviewItemBase();
 
-  // Creates an instance of the `OverviewItemBase` based on whether the given
-  // `window` belongs to a snap group or not.
+  // Creates an instance of the `this` based on whether the given `window`
+  // belongs to a snap group or not.
   static std::unique_ptr<OverviewItemBase> Create(
       aura::Window* window,
       OverviewSession* overview_session,
       OverviewGrid* overview_grid);
 
-  // Checks if this item is currently being dragged.
+  // Checks if `this` is currently being dragged.
   bool IsDragItem() const;
 
   // Refreshes visuals of the `shadow_` by setting the visibility and updating
   // the bounds.
   void RefreshShadowVisuals(bool shadow_visible);
+
+  // Updates the type for the `shadow_` while being dragged and dropped.
+  void UpdateShadowTypeForDrag(bool is_dragging);
 
   // Handles events forwarded from the contents view.
   void OnFocusedViewActivated();
@@ -249,9 +252,6 @@ class ASH_EXPORT OverviewItemBase {
   // Shows/Hides window item during window dragging. Used when swiping up a
   // window from shelf.
   virtual void SetVisibleDuringItemDragging(bool visible, bool animate) = 0;
-
-  // Updates the shadow type while being dragged and dropped.
-  virtual void UpdateShadowTypeForDrag(bool is_dragging) = 0;
 
   // Shows the cannot snap warning if currently in splitview, and the associated
   // item cannot be snapped.

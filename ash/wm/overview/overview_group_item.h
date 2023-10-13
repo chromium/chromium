@@ -70,7 +70,6 @@ class OverviewGroupItem : public OverviewItemBase,
   void OnOverviewItemContinuousScroll(const gfx::Transform& target_transform,
                                       float scroll_ratio) override;
   void SetVisibleDuringItemDragging(bool visible, bool animate) override;
-  void UpdateShadowTypeForDrag(bool is_dragging) override;
   void UpdateCannotSnapWarningVisibility(bool animate) override;
   void HideCannotSnapWarning(bool animate) override;
   void OnMovingItemToAnotherDesk() override;

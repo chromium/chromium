@@ -361,8 +361,8 @@ void OverviewWindowDragController::StartNormalDragMode(
 
   // Expand desks bar when normal drag starts and desks bar is in zero state for
   // feature Jellyroll.
-  auto* desks_bar_view = overview_grid->desks_bar_view();
-  if (desks_bar_view && desks_bar_view->IsZeroState() &&
+  if (auto* desks_bar_view = overview_grid->desks_bar_view();
+      desks_bar_view && desks_bar_view->IsZeroState() &&
       chromeos::features::IsJellyrollEnabled()) {
     desks_bar_view->UpdateNewMiniViews(/*initializing_bar_view=*/false,
                                        /*expanding_bar_view=*/true);

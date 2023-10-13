@@ -95,6 +95,10 @@ void OverviewItemBase::RefreshShadowVisuals(bool shadow_visible) {
       is_jellyroll_enabled ? kOverviewItemCornerRadius : 0);
 }
 
+void OverviewItemBase::UpdateShadowTypeForDrag(bool is_dragging) {
+  shadow_->SetType(is_dragging ? kDraggedShadowType : kDefaultShadowType);
+}
+
 void OverviewItemBase::OnFocusedViewActivated() {
   overview_session_->OnFocusedItemActivated(this);
 }

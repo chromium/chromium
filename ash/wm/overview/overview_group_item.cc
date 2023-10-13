@@ -126,6 +126,7 @@ void OverviewGroupItem::SetBounds(const gfx::RectF& target_bounds,
       gfx::SizeF(target_bounds.width() / 2.f, target_bounds.height()));
   sub_bounds2.Inset(kRightItemBoundsInsets);
   overview_items_[1]->SetBounds(sub_bounds2, animation_type);
+  UpdateRoundedCornersAndShadow();
 }
 
 gfx::Transform OverviewGroupItem::ComputeTargetTransform(
@@ -240,8 +241,6 @@ void OverviewGroupItem::OnOverviewItemContinuousScroll(
 
 void OverviewGroupItem::SetVisibleDuringItemDragging(bool visible,
                                                      bool animate) {}
-
-void OverviewGroupItem::UpdateShadowTypeForDrag(bool is_dragging) {}
 
 void OverviewGroupItem::UpdateCannotSnapWarningVisibility(bool animate) {}
 

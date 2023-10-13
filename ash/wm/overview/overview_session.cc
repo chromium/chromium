@@ -788,8 +788,7 @@ bool OverviewSession::IsWindowInOverview(const aura::Window* window) {
 OverviewItemBase* OverviewSession::GetOverviewItemForWindow(
     const aura::Window* window) {
   for (const std::unique_ptr<OverviewGrid>& grid : grid_list_) {
-    OverviewItemBase* item = grid->GetOverviewItemContaining(window);
-    if (item) {
+    if (OverviewItemBase* item = grid->GetOverviewItemContaining(window)) {
       return item;
     }
   }
