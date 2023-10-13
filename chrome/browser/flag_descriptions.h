@@ -2118,6 +2118,9 @@ extern const char kZstdContentEncodingDescription[];
 extern const char kEnableVulkanName[];
 extern const char kEnableVulkanDescription[];
 
+extern const char kResponsiveToolbarName[];
+extern const char kResponsiveToolbarDescription[];
+
 extern const char kSharedHighlightingManagerName[];
 extern const char kSharedHighlightingManagerDescription[];
 

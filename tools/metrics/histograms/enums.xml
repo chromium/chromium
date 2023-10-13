@@ -66676,6 +66676,7 @@ from previous Chrome versions.
   <int value="739938466"
       label="WebPaymentsPerMethodCanMakePaymentQuota:disabled"/>
   <int value="740056959" label="ImeServiceConnectable:enabled"/>
+  <int value="740224525" label="ResponsiveToolbar:disabled"/>
   <int value="740516371" label="ViewTransitionOnNavigation:enabled"/>
   <int value="740619684" label="ExtensionsToolbarMenu:enabled"/>
   <int value="741219332" label="ShareByDefaultInCCT:enabled"/>
@@ -68119,6 +68120,7 @@ from previous Chrome versions.
   <int value="1454295160" label="LensCameraAssistedSearch:disabled"/>
   <int value="1454363479" label="disable-storage-manager"/>
   <int value="1454527518" label="ArcNativeBridgeExperiment:enabled"/>
+  <int value="1454656852" label="ResponsiveToolbar:enabled"/>
   <int value="1455881930" label="V8VmFuture:enabled"/>
   <int value="1455970119" label="MacCoreLocationBackend:disabled"/>
   <int value="1456108837" label="RealboxSecondaryZeroSuggest:disabled"/>

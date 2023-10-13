@@ -7198,6 +7198,11 @@
     "expiry_milestone": 120
   },
   {
+    "name": "responsive-toolbar",
+    "owners": [ "chrome-cros@google.com", "yuhengh", "pengchaocai" ],
+    "expiry_milestone" : 130
+  },
+  {
     "name": "restore-session-from-cache",
     "owners": [ "justincohen", "gambard", "bling-flags@google.com" ],
     // Needed for manual testing of native session restore flow on iOS.
