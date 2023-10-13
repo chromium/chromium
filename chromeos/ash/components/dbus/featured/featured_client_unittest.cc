@@ -267,54 +267,6 @@ TEST_F(FeaturedClientTest, FakeHandleSeedFetched_InvokeSuccessWhenSet) {
   EXPECT_EQ(FakeFeaturedClient::Get(), nullptr);
 }
 
-TEST_F(FeaturedClientTest, ListenForActiveEarlyBootTrials_NewFileCreated) {
-  base::RunLoop run_loop;
-  bool ran_callback = false;
-  FeaturedClient::InitializeForTesting(
-      bus_.get(), active_trials_dir_,
-      base::BindLambdaForTesting(
-          [&ran_callback, &run_loop](const std::string& trial_name,
-                                     const std::string& group_name) {
-            EXPECT_EQ(trial_name, "test_trial");
-            EXPECT_EQ(group_name, "test_group");
-            ran_callback = true;
-            run_loop.Quit();
-          }));
-
-  FeaturedClient* client = FeaturedClient::Get();
-  ASSERT_NE(client, nullptr);
-
-  // Create a new active trial file.
-  EXPECT_TRUE(
-      base::WriteFile(active_trials_dir_.Append("test_trial,test_group"), ""));
-  run_loop.Run();
-  // Ensures the callback was executed.
-  EXPECT_TRUE(ran_callback);
-
-  FeaturedClient::Shutdown();
-
-  EXPECT_EQ(FeaturedClient::Get(), nullptr);
-}
-
-TEST_F(FeaturedClientTest, ListenForActiveEarlyBootTrials_NoFileCreated) {
-  bool ran_callback = false;
-  FeaturedClient::InitializeForTesting(
-      bus_.get(), active_trials_dir_,
-      base::BindLambdaForTesting(
-          [&ran_callback](const std::string& trial_name,
-                          const std::string& group_name) {
-            ran_callback = true;
-          }));
-
-  FeaturedClient* client = FeaturedClient::Get();
-  ASSERT_NE(client, nullptr);
-  EXPECT_FALSE(ran_callback);
-
-  FeaturedClient::Shutdown();
-
-  EXPECT_EQ(FeaturedClient::Get(), nullptr);
-}
-
 TEST_F(FeaturedClientTest, ReadTrialsActivatedBeforeChromeStartup_FilesExist) {
   // Create active trial files before FeaturedClient is initialized.
   EXPECT_TRUE(base::WriteFile(

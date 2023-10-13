@@ -90,7 +90,7 @@ class FeaturedClientImpl : public FeaturedClient {
                             dbus::ObjectPath(::featured::kFeaturedServicePath));
     expected_dir_ = expected_dir;
     listen_callback_ = callback;
-    ListenForActiveEarlyBootTrials();
+    // TODO(b/305042166): Call ListenForActiveEarlyBootTrials() once fixed.
     ReadTrialsActivatedBeforeChromeStartup();
   }
 
