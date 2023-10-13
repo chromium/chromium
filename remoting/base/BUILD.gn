@@ -35,6 +35,8 @@ source_set("base") {
     "buffered_socket_writer.h",
     "capabilities.cc",
     "capabilities.h",
+    "certificate_helpers.cc",
+    "certificate_helpers.h",
     "chromoting_event.cc",
     "chromoting_event.h",
     "compound_buffer.cc",

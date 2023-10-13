@@ -28,6 +28,7 @@
 #include "net/url_request/redirect_info.h"
 #include "net/url_request/url_request.h"
 #include "net/url_request/url_request_context.h"
+#include "remoting/base/certificate_helpers.h"
 #include "remoting/base/logging.h"
 #include "remoting/protocol/authenticator.h"
 #include "url/gurl.h"
@@ -47,70 +48,9 @@ namespace {
 using RejectionReason = protocol::Authenticator::RejectionReason;
 
 constexpr int kBufferSize = 4096;
-constexpr char kCertIssuerWildCard[] = "*";
 constexpr char kJsonSafetyPrefix[] = ")]}'\n";
 constexpr char kForbiddenExceptionToken[] = "ForbiddenException: ";
 constexpr char kLocationAuthzError[] = "Error Code 23:";
-
-// Returns a value from the issuer field for certificate selection, in order of
-// preference.  If the O or OU entries are populated with multiple values, we
-// choose the first one.  This function should not be used for validation, only
-// for logging or determining which certificate to select for validation.
-std::string GetPreferredIssuerFieldValue(const net::X509Certificate* cert) {
-  if (!cert->issuer().common_name.empty()) {
-    return cert->issuer().common_name;
-  }
-  if (!cert->issuer().organization_names.empty() &&
-      !cert->issuer().organization_names[0].empty()) {
-    return cert->issuer().organization_names[0];
-  }
-  if (!cert->issuer().organization_unit_names.empty() &&
-      !cert->issuer().organization_unit_names[0].empty()) {
-    return cert->issuer().organization_unit_names[0];
-  }
-
-  return std::string();
-}
-
-// The certificate is valid if both are true:
-// * The certificate issuer matches exactly |issuer| or the |issuer| is a
-//   wildcard.
-// * |now| is within [valid_start, valid_expiry].
-bool IsCertificateValid(const std::string& issuer,
-                        const base::Time& now,
-                        const net::X509Certificate* cert) {
-  return (issuer == kCertIssuerWildCard ||
-          issuer == GetPreferredIssuerFieldValue(cert)) &&
-         cert->valid_start() <= now && cert->valid_expiry() > now;
-}
-
-// Returns true if the certificate |c1| is worse than |c2|.
-//
-// Criteria:
-// 1. An invalid certificate is always worse than a valid certificate.
-// 2. Invalid certificates are equally bad, in which case false will be
-//    returned.
-// 3. A certificate with earlier |valid_start| time is worse.
-// 4. When |valid_start| are the same, the certificate with earlier
-//    |valid_expiry| is worse.
-bool WorseThan(const std::string& issuer,
-               const base::Time& now,
-               const net::X509Certificate* c1,
-               const net::X509Certificate* c2) {
-  if (!IsCertificateValid(issuer, now, c2)) {
-    return false;
-  }
-
-  if (!IsCertificateValid(issuer, now, c1)) {
-    return true;
-  }
-
-  if (c1->valid_start() != c2->valid_start()) {
-    return c1->valid_start() < c2->valid_start();
-  }
-
-  return c1->valid_expiry() < c2->valid_expiry();
-}
 
 #if BUILDFLAG(IS_WIN)
 crypto::ScopedHCERTSTORE OpenLocalMachineCertStore() {
@@ -251,25 +191,17 @@ void TokenValidatorBase::OnCertificatesSelected(
 
   base::Time now = base::Time::Now();
 
-  auto best_match_position = std::max_element(
-      selected_certs.begin(), selected_certs.end(),
-      [&issuer, now](const std::unique_ptr<net::ClientCertIdentity>& i1,
-                     const std::unique_ptr<net::ClientCertIdentity>& i2) {
-        return WorseThan(issuer, now, i1->certificate(), i2->certificate());
-      });
-
-  if (best_match_position == selected_certs.end()) {
-    LOG(ERROR) << "Failed to find a certificate from the list of candidates ("
-               << selected_certs.size() << ").";
+  auto best_match =
+      GetBestMatchFromCertificateList(issuer, now, selected_certs);
+  if (!best_match) {
     ContinueWithCertificate(nullptr, nullptr);
     return;
   }
 
-  scoped_refptr<net::X509Certificate> cert =
-      (*best_match_position)->certificate();
-  if (!IsCertificateValid(issuer, now, cert.get())) {
+  scoped_refptr<net::X509Certificate> cert = best_match->certificate();
+  if (!IsCertificateValid(issuer, now, *cert.get())) {
     LOG(ERROR) << "Best client certificate match was not valid: " << std::endl
-               << "    issued by: " << GetPreferredIssuerFieldValue(cert.get())
+               << "    issued by: " << GetPreferredIssuerFieldValue(*cert.get())
                << std::endl
                << "    with start date: " << cert->valid_start() << std::endl
                << "    and expiry date: " << cert->valid_expiry();
@@ -278,7 +210,7 @@ void TokenValidatorBase::OnCertificatesSelected(
   }
 
   net::ClientCertIdentity::SelfOwningAcquirePrivateKey(
-      std::move(*best_match_position),
+      std::move(best_match),
       base::BindOnce(&TokenValidatorBase::ContinueWithCertificate,
                      weak_factory_.GetWeakPtr(), std::move(cert)));
 }
@@ -290,7 +222,7 @@ void TokenValidatorBase::ContinueWithCertificate(
     if (client_cert) {
       auto* cert = client_cert.get();
       HOST_LOG << "Using client certificate: " << std::endl
-               << "    issued by: " << GetPreferredIssuerFieldValue(cert)
+               << "    issued by: " << GetPreferredIssuerFieldValue(*cert)
                << std::endl
                << "    with start date: " << cert->valid_start() << std::endl
                << "    and expiry date: " << cert->valid_expiry();
