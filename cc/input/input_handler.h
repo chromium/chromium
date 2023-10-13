@@ -192,13 +192,15 @@ class CC_EXPORT InputHandler : public InputDelegateForCompositor {
   // Note these are used in a histogram. Do not reorder or delete existing
   // entries.
   enum class ScrollThread {
-    kScrollOnMainThread = 0,
+    // kScrollOnMainThread is not used anymore. However we'll keep this entry
+    // as per the comment above.
+    kScrollOnMainThread_NotUsed = 0,
     kScrollOnImplThread,
     kScrollIgnored,
     // kScrollUnknown is not used anymore. However we'll keep this entry as per
     // the comment above.
-    kScrollUnknown,
-    kLastScrollStatus = kScrollUnknown
+    kScrollUnknown_NotUsed,
+    kLastScrollStatus = kScrollUnknown_NotUsed,
   };
 
   explicit InputHandler(CompositorDelegateForInput& compositor_delegate);
@@ -209,24 +211,20 @@ class CC_EXPORT InputHandler : public InputDelegateForCompositor {
 
   struct ScrollStatus {
     ScrollThread thread = ScrollThread::kScrollOnImplThread;
-    // This should be set to nonzero iff `thread` is SCROLL_ON_MAIN_THREAD.
-    uint32_t main_thread_scrolling_reasons =
-        MainThreadScrollingReason::kNotScrollingOnMain;
 
-    // Used only in scroll unification. If nonzero, it tells the caller that
-    // the input handler detected a case where it cannot reliably target a
-    // scroll node and needs the main thread to perform a hit test.
+    // If nonzero, it tells the caller that the input handler detected a case
+    // where it cannot reliably target a scroll node and needs the main thread
+    // to perform a hit test. If nonzero, this will be one or more values from
+    // MainThreadScrollingReason::kHitTestReasons.
     uint32_t main_thread_hit_test_reasons =
         MainThreadScrollingReason::kNotScrollingOnMain;
 
-    // Used only in scroll unification. A nonzero value means we have performed
-    // the scroll (i.e. updated the offset in the scroll tree) on the compositor
-    // thread, but we will need a main thread lifecycle update + commit before
-    // the user will see the new pixels (for example, because the scroller does
-    // not have a composited layer). If nonzero, this will be one or more values
-    // from the MainThreadScrollingReason enum. (Unification avoids setting
-    // main_thread_scrolling_reasons, to keep that field consistent with
-    // semantics of ScrollThread::SCROLL_ON_IMPL_THREAD.)
+    // A nonzero value means we have performed the scroll (i.e. updated the
+    // offset in the scroll tree) on the compositor thread, but we will need a
+    // main thread lifecycle update + commit before the user will see the new
+    // pixels (for example, because the scroller does not have a composited
+    // layer). If nonzero, this will be one or more values from the
+    // MainThreadScrollingReason::kRepaintReasons.
     uint32_t main_thread_repaint_reasons =
         MainThreadScrollingReason::kNotScrollingOnMain;
 

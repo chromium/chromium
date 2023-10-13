@@ -1623,8 +1623,6 @@ class LayerTreeHostScrollTestScrollNonDrawnLayer
     EXPECT_EQ(ScrollThread::kScrollOnImplThread, status.thread);
     EXPECT_EQ(MainThreadScrollingReason::kNotScrollingOnMain,
               status.main_thread_hit_test_reasons);
-    EXPECT_EQ(MainThreadScrollingReason::kNotScrollingOnMain,
-              status.main_thread_scrolling_reasons);
 
     EndTest();
   }

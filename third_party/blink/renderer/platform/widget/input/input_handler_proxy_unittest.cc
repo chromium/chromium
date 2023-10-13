@@ -317,20 +317,18 @@ WebTouchPoint CreateWebTouchPoint(WebTouchPoint::State state,
 }
 
 const cc::InputHandler::ScrollStatus kImplThreadScrollState{
-    cc::InputHandler::ScrollThread::kScrollOnImplThread,
-    cc::MainThreadScrollingReason::kNotScrollingOnMain};
+    cc::InputHandler::ScrollThread::kScrollOnImplThread};
 
 const cc::InputHandler::ScrollStatus kRequiresMainThreadHitTestState{
     cc::InputHandler::ScrollThread::kScrollOnImplThread,
-    cc::MainThreadScrollingReason::kNotScrollingOnMain,
+    /*main_thread_hit_test_reasons*/
     cc::MainThreadScrollingReason::kNonFastScrollableRegion};
 
 constexpr auto kSampleMainThreadScrollingReason =
     cc::MainThreadScrollingReason::kHasBackgroundAttachmentFixedObjects;
 
 const cc::InputHandler::ScrollStatus kScrollIgnoredScrollState{
-    cc::InputHandler::ScrollThread::kScrollIgnored,
-    cc::MainThreadScrollingReason::kNotScrollingOnMain};
+    cc::InputHandler::ScrollThread::kScrollIgnored};
 
 }  // namespace
 
@@ -340,7 +338,9 @@ class TestInputHandlerProxy : public InputHandlerProxy {
                         InputHandlerProxyClient* client)
       : InputHandlerProxy(input_handler, client) {}
   void RecordScrollBeginForTest(WebGestureDevice device, uint32_t reasons) {
-    RecordScrollBegin(device, reasons, false, 0);
+    RecordScrollBegin(device,
+                      reasons & cc::MainThreadScrollingReason::kHitTestReasons,
+                      reasons & cc::MainThreadScrollingReason::kRepaintReasons);
   }
 
   MOCK_METHOD0(SetNeedsAnimateInput, void());

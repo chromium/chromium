@@ -1440,6 +1440,10 @@ bool ScrollTree::CanRealizeScrollsOnCompositor(const ScrollNode& node) const {
 uint32_t ScrollTree::GetMainThreadRepaintReasons(const ScrollNode& node) const {
   uint32_t reasons = node.main_thread_scrolling_reasons;
   if (!reasons && !node.is_composited) {
+    // `reasons` can contain kPopupNoThreadedInput which is not a repaint
+    // reason, but the flag should be set only when there is no threaded input
+    // handler and this function should not be called.
+    CHECK(MainThreadScrollingReason::AreRepaintReasons(reasons));
     return MainThreadScrollingReason::kNoScrollingLayer;
   }
   return reasons;

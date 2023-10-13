@@ -328,7 +328,6 @@ class PLATFORM_EXPORT InputHandlerProxy : public cc::InputHandlerClient,
   }
 
   void RecordScrollBegin(blink::WebGestureDevice device,
-                         uint32_t reasons_from_scroll_begin,
                          uint32_t main_thread_hit_tested_reasons,
                          uint32_t main_thread_repaint_reasons);
 

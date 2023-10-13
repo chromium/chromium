@@ -866,9 +866,12 @@ WebInputEventAttribution InputHandlerProxy::PerformEventAttribution(
 
 void InputHandlerProxy::RecordScrollBegin(
     WebGestureDevice device,
-    uint32_t reasons_from_scroll_begin,
     uint32_t main_thread_hit_tested_reasons,
     uint32_t main_thread_repaint_reasons) {
+  DCHECK(cc::MainThreadScrollingReason::AreHitTestReasons(
+      main_thread_hit_tested_reasons));
+  DCHECK(cc::MainThreadScrollingReason::AreRepaintReasons(
+      main_thread_repaint_reasons));
   if (device != WebGestureDevice::kTouchpad &&
       device != WebGestureDevice::kScrollbar &&
       device != WebGestureDevice::kTouchscreen) {
@@ -879,8 +882,6 @@ void InputHandlerProxy::RecordScrollBegin(
   // threads. Note: scrolls handled on the compositor but blocked on main due
   // to event handlers are still considered compositor scrolls.
   const bool is_compositor_scroll =
-      reasons_from_scroll_begin ==
-          cc::MainThreadScrollingReason::kNotScrollingOnMain &&
       main_thread_repaint_reasons ==
           cc::MainThreadScrollingReason::kNotScrollingOnMain;
 
@@ -902,7 +903,12 @@ void InputHandlerProxy::RecordScrollBegin(
   input_handler_->RecordScrollBegin(GestureScrollInputType(device),
                                     scroll_start_state);
 
-  uint32_t reportable_reasons = reasons_from_scroll_begin;
+  // We never scroll "on main" from the perspective of cc::InputHandler, but we
+  // still want to log reasons if the user will not see new pixels until the
+  // next BeginMainFrame. These reasons are passed as
+  // main_thread_repaint_reasons.
+  uint32_t reportable_reasons =
+      main_thread_hit_tested_reasons | main_thread_repaint_reasons;
   if (blocked_on_main_thread_handler) {
     // We should also collect main thread scrolling reasons if a scroll event
     // scrolls on impl thread but is blocked by main thread event handlers.
@@ -911,13 +917,7 @@ void InputHandlerProxy::RecordScrollBegin(
              ? cc::MainThreadScrollingReason::kWheelEventHandlerRegion
              : cc::MainThreadScrollingReason::kTouchEventHandlerRegion);
   }
-  reportable_reasons |= main_thread_hit_tested_reasons;
 
-  // With scroll unification, we never scroll "on main" from the perspective
-  // of cc::InputHandler, but we still want to log reasons if the user will not
-  // see new pixels until the next BeginMainFrame. These reasons are passed as
-  // main_thread_repaint_reasons instead of reasons_from_scroll_begin.
-  reportable_reasons |= main_thread_repaint_reasons;
   RecordScrollReasonsMetric(device, reportable_reasons);
 }
 
@@ -1003,8 +1003,10 @@ InputHandlerProxy::EventDisposition InputHandlerProxy::HandleGestureScrollBegin(
     scroll_status = input_handler_->ScrollBegin(
         &scroll_state, GestureScrollInputType(gesture_event.SourceDevice()));
   }
-  DCHECK_EQ(scroll_status.thread == ScrollThread::kScrollOnMainThread,
-            !!scroll_status.main_thread_scrolling_reasons);
+  DCHECK(cc::MainThreadScrollingReason::AreHitTestReasons(
+      scroll_status.main_thread_hit_test_reasons));
+  DCHECK(cc::MainThreadScrollingReason::AreRepaintReasons(
+      scroll_status.main_thread_repaint_reasons));
 
   // If we need a hit test from the main thread, we'll reinject this scroll
   // begin event once the hit test is complete so avoid everything below for
@@ -1017,7 +1019,6 @@ InputHandlerProxy::EventDisposition InputHandlerProxy::HandleGestureScrollBegin(
 
   if (scroll_status.thread != ScrollThread::kScrollIgnored) {
     RecordScrollBegin(gesture_event.SourceDevice(),
-                      scroll_status.main_thread_scrolling_reasons,
                       scroll_state.main_thread_hit_tested_reasons(),
                       scroll_status.main_thread_repaint_reasons);
   }
@@ -1037,10 +1038,6 @@ InputHandlerProxy::EventDisposition InputHandlerProxy::HandleGestureScrollBegin(
         result = DROP_EVENT;
       else
         result = DID_HANDLE;
-      break;
-    case ScrollThread::kScrollOnMainThread:
-      TRACE_EVENT_INSTANT0("input", "Handle On Main", TRACE_EVENT_SCOPE_THREAD);
-      result = DID_NOT_HANDLE;
       break;
     case ScrollThread::kScrollIgnored:
       TRACE_EVENT_INSTANT0("input", "Ignore Scroll", TRACE_EVENT_SCOPE_THREAD);

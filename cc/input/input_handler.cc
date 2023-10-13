@@ -74,8 +74,6 @@ InputHandler::ScrollStatus InputHandler::ScrollBegin(ScrollState* scroll_state,
   DCHECK(scroll_state->delta_x() == 0 && scroll_state->delta_y() == 0);
 
   InputHandler::ScrollStatus scroll_status;
-  scroll_status.main_thread_scrolling_reasons =
-      MainThreadScrollingReason::kNotScrollingOnMain;
   TRACE_EVENT0("cc", "InputHandler::ScrollBegin");
 
   // If this ScrollBegin is non-animated then ensure we cancel any ongoing
@@ -174,6 +172,8 @@ InputHandler::ScrollStatus InputHandler::ScrollBegin(ScrollState* scroll_state,
         DCHECK(scroll_hit_test.main_thread_hit_test_reasons);
         scroll_status.main_thread_hit_test_reasons =
             scroll_hit_test.main_thread_hit_test_reasons;
+        CHECK(MainThreadScrollingReason::AreHitTestReasons(
+            scroll_status.main_thread_hit_test_reasons));
         return scroll_status;
       }
 
@@ -208,8 +208,6 @@ InputHandler::ScrollStatus InputHandler::ScrollBegin(ScrollState* scroll_state,
     return scroll_status;
   }
 
-  DCHECK_EQ(scroll_status.main_thread_scrolling_reasons,
-            MainThreadScrollingReason::kNotScrollingOnMain);
   DCHECK_EQ(scroll_status.thread,
             InputHandler::ScrollThread::kScrollOnImplThread);
   DCHECK(scrolling_node);
@@ -217,6 +215,8 @@ InputHandler::ScrollStatus InputHandler::ScrollBegin(ScrollState* scroll_state,
   ActiveTree().SetCurrentlyScrollingNode(scrolling_node);
   scroll_status.main_thread_repaint_reasons =
       scroll_tree.GetMainThreadRepaintReasons(*scrolling_node);
+  CHECK(MainThreadScrollingReason::AreRepaintReasons(
+      scroll_status.main_thread_repaint_reasons));
 
   DidLatchToScroller(*scroll_state, type);
 
