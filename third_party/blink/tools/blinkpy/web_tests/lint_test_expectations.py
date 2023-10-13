@@ -285,38 +285,6 @@ def _check_skip_in_test_expectations(host, path, expectations):
     return failures
 
 
-def _check_no_wpt_lines(host: Host, port: Port, path: str,
-                        expectations: List[Expectation]):
-    """Check that TestExpectations only contain legacy web tests.
-
-    After the switch to wptrunner, this check informs users that metadata files
-    are now the source of truth about WPT expectations.
-    """
-    failures = []
-    for exp in expectations:
-        test_path = _file_path_for_wpt(port, exp.test)
-        if test_path:
-            error = (
-                f'{host.filesystem.basename(path)}:{exp.lineno}: '
-                'TestExpectations no longer set WPT expectations. '
-                f"Create or update a metadata file '{test_path}.ini' instead.")
-            failures.append(error)
-    return failures
-
-
-def _file_path_for_wpt(port: Port, test: str) -> Optional[str]:
-    base_test = port.lookup_virtual_test_base(test) or test
-    for wpt_dir in Port.WPT_DIRS:
-        if base_test.startswith(wpt_dir):
-            manifest = port.wpt_manifest(wpt_dir)
-            prefix = wpt_dir + '/'
-            file_path_from_root = manifest.file_path_for_test_url(
-                base_test[len(prefix):])
-            if file_path_from_root:
-                return prefix + file_path_from_root
-    return None
-
-
 def _check_expectations(host, port, path, test_expectations, options,
                         all_test_expectations):
     # Check for original expectation lines (from get_updated_lines) instead of
@@ -332,23 +300,6 @@ def _check_expectations(host, port, path, test_expectations, options,
     failures.extend(
         _check_stable_webexposed_not_disabled(host, path, expectations))
     failures.extend(_check_skip_in_test_expectations(host, path, expectations))
-    webdriver_port = host.port_factory.get()
-    # `port` already updated the manifest.
-    webdriver_port.set_option_default('manifest_update', False)
-    # TODO(crbug.com/1474771): Enable this rule by default after the switch. For
-    # now, only ban `external/wpt/webdriver/` lines.
-    if not host.project_config.switched_to_wptrunner:
-        webdriver_port.set_option_default('test_types', ['wdspec'])
-    ban_wpt_failures = _check_no_wpt_lines(host, webdriver_port, path,
-                                           expectations)
-    failures.extend(ban_wpt_failures)
-    if ban_wpt_failures:
-        _log.warning(
-            'TestExpectation lines should not be used anymore for WPT. '
-            'Please see this doc for the new way to set WPT expectations '
-            'in `.ini` files: '
-            'https://chromium.googlesource.com/chromium/src/+/HEAD'
-            '/docs/testing/web_platform_tests_wptrunner.md#Expectations')
     # TODO(crbug.com/1080691): Change this to failures once
     # wpt_expectations_updater is fixed.
     warnings.extend(
