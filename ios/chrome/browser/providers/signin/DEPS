@@ -1,10 +1,6 @@
 specific_include_rules = {
   # TODO(crbug.com/1294160): Remove this dependency.
-  "^chromium_signin_resources.mm": [
-    "+ios/chrome/browser/ui/util/uikit_ui_util.h",
-  ],
   "^chromium_choice.mm": [
     "+ios/chrome/browser/ui/promos_manager/standard_promo_display_handler.h",
   ],
 }
-
