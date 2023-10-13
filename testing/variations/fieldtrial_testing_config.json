@@ -16298,6 +16298,21 @@
             ]
         }
     ],
+    "SpotlightIntentDonation": [
+        {
+            "platforms": [
+                "ios"
+            ],
+            "experiments": [
+                {
+                    "name": "Enabled",
+                    "enable_features": [
+                        "SpotlightDonateNewIntents"
+                    ]
+                }
+            ]
+        }
+    ],
     "StartSurfaceSpareTab": [
         {
             "platforms": [
