@@ -8315,7 +8315,14 @@ GlobalRenderFrameHostId NavigationRequest::GetPreviousRenderFrameHostId() {
   // is saved in `current_render_frame_host_id_at_construction_`), if another
   // navigation caused a new RenderFrameHost to be committed while this
   // navigation is in progress.
-  return frame_tree_node_->current_frame_host()->GetGlobalId();
+  if (frame_tree_node_->current_frame_host()) {
+    return frame_tree_node_->current_frame_host()->GetGlobalId();
+  } else {
+    // It's possible for `frame_tree_node_->current_frame_host()` to be null if
+    // we're in the middle of destructing the navigating FrameTreeNode. In this
+    // case, just return `current_render_frame_host_id_at_construction_`.
+    return current_render_frame_host_id_at_construction_;
+  }
 }
 
 int NavigationRequest::GetExpectedRenderProcessHostId() {
