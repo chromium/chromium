@@ -14,6 +14,7 @@
 #include "third_party/blink/renderer/platform/graphics/paint_worklet_paint_dispatcher.h"
 #include "third_party/blink/renderer/platform/graphics/paint_worklet_painter.h"
 #include "third_party/blink/renderer/platform/graphics/platform_paint_worklet_layer_painter.h"
+#include "third_party/blink/renderer/platform/heap/cross_thread_handle.h"
 
 namespace blink {
 
@@ -155,7 +156,7 @@ class MODULES_EXPORT PaintWorkletProxyClient
   // instance input state for the object, etc. We communicate with it via a
   // handle to the PaintWorklet called via a stored task runner.
   scoped_refptr<base::SingleThreadTaskRunner> main_thread_runner_;
-  CrossThreadWeakPersistent<PaintWorklet> paint_worklet_;
+  CrossThreadWeakHandle<PaintWorklet> paint_worklet_;
 
   HashMap<PaintWorkletInput::PaintWorkletInputType,
           CrossThreadPersistent<NativePaintDefinition>>
