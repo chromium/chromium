@@ -802,8 +802,8 @@ IN_PROC_BROWSER_TEST_P(ChromeBackForwardCacheBrowserWithEmbedTest,
             content::RenderFrameHost::LifecycleState::kInBackForwardCache);
 }
 
-// Flaky on Mac: crbug.com/1492026
-#if BUILDFLAG(IS_MAC)
+// Flaky on Mac and Linux: crbug.com/1492026
+#if (BUILDFLAG(IS_MAC) || BUILDFLAG(IS_LINUX))
 #define MAYBE_DoesNotCachePageWithEmbeddedHtmlMutatedIntoPdf DISABLED_DoesNotCachePageWithEmbeddedHtmlMutatedIntoPdf
 #else
 #define MAYBE_DoesNotCachePageWithEmbeddedHtmlMutatedIntoPdf DoesNotCachePageWithEmbeddedHtmlMutatedIntoPdf
