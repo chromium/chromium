@@ -247,7 +247,7 @@ typedef NSDiffableDataSourceSnapshot<NSString*, GridItemIdentifier*> Snapshot;
       };
   collectionView.dataSource = self.diffableDataSource;
 
-  [self reloadCollectionViewData];
+  [self reloadDataSource];
 
   // UICollectionViewDropPlaceholder uses a GridCell and needs the class to be
   // registered.
@@ -484,7 +484,7 @@ typedef NSDiffableDataSourceSnapshot<NSString*, GridItemIdentifier*> Snapshot;
 
 - (void)contentWillAppearAnimated:(BOOL)animated {
   self.gridLayout.animatesItemUpdates = YES;
-  [self reloadCollectionViewData];
+  [self reloadDataSource];
   // Selection is invalid if there are no items.
   if ([self shouldShowEmptyState]) {
     [self animateEmptyStateIn];
@@ -573,7 +573,7 @@ typedef NSDiffableDataSourceSnapshot<NSString*, GridItemIdentifier*> Snapshot;
 
 #pragma mark - UICollectionView Diffable Data Source Helpers
 
-- (void)reloadCollectionViewData {
+- (void)reloadDataSource {
   Snapshot* snapshot = [[Snapshot alloc] init];
   [snapshot appendSectionsWithIdentifiers:@[ kOpenTabsSectionIdentifier ]];
   for (TabSwitcherItem* item in self.items) {
@@ -1263,7 +1263,7 @@ typedef NSDiffableDataSourceSnapshot<NSString*, GridItemIdentifier*> Snapshot;
   _selectedEditingItemIDs.clear();
   _selectedSharableEditingItemIDs.clear();
 
-  [self reloadCollectionViewData];
+  [self reloadDataSource];
 
   [self updateSelectedCollectionViewItemRingAndBringIntoView:YES];
 
