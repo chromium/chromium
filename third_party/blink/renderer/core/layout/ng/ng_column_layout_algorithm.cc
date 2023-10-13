@@ -227,7 +227,7 @@ NGColumnLayoutAlgorithm::NGColumnLayoutAlgorithm(
     if (!marker_node.ListMarkerOccupiesWholeLine() &&
         (!BreakToken() || BreakToken()->HasUnpositionedListMarker())) {
       container_builder_.SetUnpositionedListMarker(
-          NGUnpositionedListMarker(marker_node));
+          UnpositionedListMarker(marker_node));
     }
   }
 }
@@ -1117,7 +1117,7 @@ NGBreakStatus NGColumnLayoutAlgorithm::LayoutSpanner(
 void NGColumnLayoutAlgorithm::AttemptToPositionListMarker(
     const NGPhysicalBoxFragment& child_fragment,
     LayoutUnit block_offset) {
-  const auto marker = container_builder_.UnpositionedListMarker();
+  const auto marker = container_builder_.GetUnpositionedListMarker();
   if (!marker)
     return;
   DCHECK(Node().IsListItem());
@@ -1145,7 +1145,7 @@ void NGColumnLayoutAlgorithm::AttemptToPositionListMarker(
 void NGColumnLayoutAlgorithm::PositionAnyUnclaimedListMarker() {
   if (!Node().IsListItem())
     return;
-  const auto marker = container_builder_.UnpositionedListMarker();
+  const auto marker = container_builder_.GetUnpositionedListMarker();
   if (!marker)
     return;
 

@@ -64,7 +64,7 @@ NGBlockBreakToken::NGBlockBreakToken(PassKey key, NGBoxFragmentBuilder* builder)
   is_caused_by_column_spanner_ = builder->FoundColumnSpanner();
   is_at_block_end_ = builder->is_at_block_end_;
   has_unpositioned_list_marker_ =
-      static_cast<bool>(builder->UnpositionedListMarker());
+      static_cast<bool>(builder->GetUnpositionedListMarker());
   DCHECK(builder->HasBreakTokenData());
   data_ = builder->break_token_data_;
   builder->break_token_data_ = nullptr;

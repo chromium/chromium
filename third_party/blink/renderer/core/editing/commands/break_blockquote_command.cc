@@ -51,7 +51,7 @@ absl::optional<int> GetListItemNumber(const Node* node) {
   // Because of elements with "display:list-item" has list item number,
   // we use layout object instead of checking |HTMLLIElement|.
   if (const auto* list_item =
-          DynamicTo<LayoutNGListItem>(node->GetLayoutObject())) {
+          DynamicTo<LayoutListItem>(node->GetLayoutObject())) {
     return list_item->Value();
   }
   return absl::nullopt;

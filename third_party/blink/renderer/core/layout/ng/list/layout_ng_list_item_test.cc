@@ -10,31 +10,31 @@
 
 namespace blink {
 
-class LayoutNGListItemTest : public RenderingTest {};
+class LayoutListItemTest : public RenderingTest {};
 
 namespace {
 
 // http://crbug.com/1222633
-TEST_F(LayoutNGListItemTest, FindSymbolMarkerLayoutTextWithTextCombine) {
+TEST_F(LayoutListItemTest, FindSymbolMarkerLayoutTextWithTextCombine) {
   InsertStyleElement(
       "li { text-combine-upright: all; writing-mode: vertical-rl; }");
   SetBodyInnerHTML("<li id=target>a</li>");
-  // LayoutNGListItem {LI}
-  //   LayoutNGOutsideListMarker {::marker}
-  //      LayoutNGTextCombine (anonymous)
+  // LayoutListItem {LI}
+  //   LayoutOutsideListMarker {::marker}
+  //      LayoutTextCombine (anonymous)
   //        LayoutText (anonymous) "\x{2022} "
-  //   LayoutNGTextCombine (anonymous)
+  //   LayoutTextCombine (anonymous)
   //     LayoutText {#text} "a"
   const auto& target = *GetElementById("target");
   const auto* const marker_layout_text =
-      LayoutNGListItem::FindSymbolMarkerLayoutText(target.GetLayoutObject());
+      LayoutListItem::FindSymbolMarkerLayoutText(target.GetLayoutObject());
   const auto* const text_combine =
       To<LayoutTextCombine>(marker_layout_text->Parent());
   EXPECT_EQ(marker_layout_text,
-            LayoutNGListItem::FindSymbolMarkerLayoutText(text_combine));
+            LayoutListItem::FindSymbolMarkerLayoutText(text_combine));
 }
 
-TEST_F(LayoutNGListItemTest, InsideWithFirstLine) {
+TEST_F(LayoutListItemTest, InsideWithFirstLine) {
   SetBodyInnerHTML(R"HTML(
     <!DOCTYPE html>
     <style>
@@ -57,7 +57,7 @@ TEST_F(LayoutNGListItemTest, InsideWithFirstLine) {
   GetDocument().UpdateStyleAndLayoutTree();
 
   // The list-item should have a marker.
-  auto* list_item = To<LayoutNGListItem>(GetLayoutObjectByElementId("item"));
+  auto* list_item = To<LayoutListItem>(GetLayoutObjectByElementId("item"));
   LayoutObject* marker = list_item->Marker();
   EXPECT_TRUE(marker);
   // The marker should have only 1 child.

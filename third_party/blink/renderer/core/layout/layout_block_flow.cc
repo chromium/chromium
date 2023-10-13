@@ -175,7 +175,7 @@ void LayoutBlockFlow::AddChild(LayoutObject* new_child,
 
     // LayoutNGOutsideListMarker is out-of-flow for the tree building purpose,
     // and that is not inline level, but IsInline().
-    if (new_child->IsInline() && !new_child->IsLayoutNGOutsideListMarker()) {
+    if (new_child->IsInline() && !new_child->IsLayoutOutsideListMarker()) {
       // No suitable existing anonymous box - create a new one.
       auto* new_block = To<LayoutBlockFlow>(CreateAnonymousBlock());
       LayoutBox::AddChild(new_block, before_child);
@@ -479,8 +479,9 @@ static void GetInlineRun(LayoutObject* start,
 
   // LayoutNGOutsideListMarker is out-of-flow for the tree building purpose.
   // Skip here because it's the first child.
-  if (curr && curr->IsLayoutNGOutsideListMarker())
+  if (curr && curr->IsLayoutOutsideListMarker()) {
     curr = curr->NextSibling();
+  }
 
   bool saw_inline;
   do {
@@ -544,7 +545,7 @@ void LayoutBlockFlow::MakeChildrenNonInline(LayoutObject* insertion_point) {
 
 #if DCHECK_IS_ON()
   for (LayoutObject* c = FirstChild(); c; c = c->NextSibling())
-    DCHECK(!c->IsInline() || c->IsLayoutNGOutsideListMarker());
+    DCHECK(!c->IsInline() || c->IsLayoutOutsideListMarker());
 #endif
 
   SetShouldDoFullPaintInvalidation();

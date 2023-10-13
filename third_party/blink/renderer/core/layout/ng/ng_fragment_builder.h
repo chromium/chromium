@@ -143,15 +143,15 @@ class CORE_EXPORT NGFragmentBuilder {
     lines_until_clamp_ = value;
   }
 
-  const NGUnpositionedListMarker& UnpositionedListMarker() const {
+  const UnpositionedListMarker& GetUnpositionedListMarker() const {
     return unpositioned_list_marker_;
   }
-  void SetUnpositionedListMarker(const NGUnpositionedListMarker& marker) {
+  void SetUnpositionedListMarker(const UnpositionedListMarker& marker) {
     DCHECK(!unpositioned_list_marker_ || !marker);
     unpositioned_list_marker_ = marker;
   }
   void ClearUnpositionedListMarker() {
-    unpositioned_list_marker_ = NGUnpositionedListMarker();
+    unpositioned_list_marker_ = UnpositionedListMarker();
   }
 
   void ReplaceChild(wtf_size_t index,
@@ -582,7 +582,7 @@ class CORE_EXPORT NGFragmentBuilder {
   HeapVector<NGLogicalOutOfFlowPositionedNode> oof_positioned_descendants_;
   MulticolCollection multicols_with_pending_oofs_;
 
-  NGUnpositionedListMarker unpositioned_list_marker_;
+  UnpositionedListMarker unpositioned_list_marker_;
 
   const NGColumnSpannerPath* column_spanner_path_ = nullptr;
 

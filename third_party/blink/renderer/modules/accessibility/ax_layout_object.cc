@@ -811,7 +811,7 @@ AXObject* AXLayoutObject::PreviousOnLine() const {
                                    ? PreviousSiblingIncludingIgnored()
                                    : nullptr;
   if (previous_sibling && previous_sibling->GetLayoutObject() &&
-      previous_sibling->GetLayoutObject()->IsLayoutNGOutsideListMarker()) {
+      previous_sibling->GetLayoutObject()->IsLayoutOutsideListMarker()) {
     // A list item should be preceded by a list marker on the same line.
     return GetDeepestAXChildInLayoutTree(previous_sibling, false);
   }

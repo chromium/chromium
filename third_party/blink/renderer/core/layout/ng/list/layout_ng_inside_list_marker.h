@@ -13,13 +13,13 @@
 namespace blink {
 
 // A LayoutObject subclass for inside-positioned list markers in LayoutNG.
-class CORE_EXPORT LayoutNGInsideListMarker final : public LayoutInline {
+class CORE_EXPORT LayoutInsideListMarker final : public LayoutInline {
  public:
-  explicit LayoutNGInsideListMarker(Element*);
+  explicit LayoutInsideListMarker(Element*);
 
   const char* GetName() const override {
     NOT_DESTROYED();
-    return "LayoutNGInsideListMarker";
+    return "LayoutInsideListMarker";
   }
 
   const ListMarker& Marker() const {
@@ -48,9 +48,9 @@ class CORE_EXPORT LayoutNGInsideListMarker final : public LayoutInline {
 };
 
 template <>
-struct DowncastTraits<LayoutNGInsideListMarker> {
+struct DowncastTraits<LayoutInsideListMarker> {
   static bool AllowFrom(const LayoutObject& object) {
-    return object.IsLayoutNGInsideListMarker();
+    return object.IsLayoutInsideListMarker();
   }
 };
 

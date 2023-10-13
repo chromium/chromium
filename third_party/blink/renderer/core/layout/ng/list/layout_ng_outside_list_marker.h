@@ -12,15 +12,15 @@
 namespace blink {
 
 // A LayoutObject subclass for outside-positioned list markers in LayoutNG.
-class CORE_EXPORT LayoutNGOutsideListMarker final : public LayoutNGBlockFlow {
+class CORE_EXPORT LayoutOutsideListMarker final : public LayoutNGBlockFlow {
  public:
-  explicit LayoutNGOutsideListMarker(Element*);
+  explicit LayoutOutsideListMarker(Element*);
 
   void WillCollectInlines() override;
 
   const char* GetName() const override {
     NOT_DESTROYED();
-    return "LayoutNGOutsideListMarker";
+    return "LayoutOutsideListMarker";
   }
 
   bool NeedsOccupyWholeLine() const;
@@ -44,9 +44,9 @@ class CORE_EXPORT LayoutNGOutsideListMarker final : public LayoutNGBlockFlow {
 };
 
 template <>
-struct DowncastTraits<LayoutNGOutsideListMarker> {
+struct DowncastTraits<LayoutOutsideListMarker> {
   static bool AllowFrom(const LayoutObject& object) {
-    return object.IsLayoutNGOutsideListMarker();
+    return object.IsLayoutOutsideListMarker();
   }
 };
 

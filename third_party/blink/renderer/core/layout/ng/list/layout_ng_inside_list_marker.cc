@@ -9,16 +9,15 @@
 
 namespace blink {
 
-LayoutNGInsideListMarker::LayoutNGInsideListMarker(Element* element)
+LayoutInsideListMarker::LayoutInsideListMarker(Element* element)
     : LayoutInline(element) {}
 
-bool LayoutNGInsideListMarker::IsOfType(LayoutObjectType type) const {
+bool LayoutInsideListMarker::IsOfType(LayoutObjectType type) const {
   NOT_DESTROYED();
-  return type == kLayoutObjectNGInsideListMarker ||
-         LayoutInline::IsOfType(type);
+  return type == kLayoutObjectInsideListMarker || LayoutInline::IsOfType(type);
 }
 
-PositionWithAffinity LayoutNGInsideListMarker::PositionForPoint(
+PositionWithAffinity LayoutInsideListMarker::PositionForPoint(
     const PhysicalOffset&) const {
   NOT_DESTROYED();
   DCHECK_GE(GetDocument().Lifecycle().GetState(),

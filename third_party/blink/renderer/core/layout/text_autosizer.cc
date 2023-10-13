@@ -500,7 +500,7 @@ float TextAutosizer::Inflate(LayoutObject* parent,
     ApplyMultiplier(parent, 1);
   }
 
-  if (parent->IsLayoutNGListItem()) {
+  if (parent->IsLayoutListItem()) {
     float list_item_multiplier = ClusterMultiplier(cluster);
     ApplyMultiplier(parent, list_item_multiplier);
 
@@ -508,7 +508,7 @@ float TextAutosizer::Inflate(LayoutObject* parent,
     // that you have a list item for a form inside it. The list marker then ends
     // up inside the form and when we try to get the clusterMultiplier we have
     // the wrong cluster root to work from and get the wrong value.
-    LayoutObject* marker = To<LayoutNGListItem>(parent)->Marker();
+    LayoutObject* marker = To<LayoutListItem>(parent)->Marker();
 
     // A LayoutNGOutsideListMarker has a text child that needs its font
     // multiplier updated. Just mark the entire subtree, to make sure we get to
@@ -1456,7 +1456,7 @@ TextAutosizer::NGLayoutScope::NGLayoutScope(LayoutBox* box,
   //    typically false, overriding whatever its parent has already correctly
   //    determined).
   if (!text_autosizer_ || !text_autosizer_->ShouldHandleLayout() || !block_ ||
-      block_->IsLayoutNGOutsideListMarker()) {
+      block_->IsLayoutOutsideListMarker()) {
     text_autosizer_ = nullptr;
     return;
   }

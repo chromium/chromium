@@ -595,8 +595,8 @@ TEST_F(LayoutTextCombineTest, ListItemStyleToImage) {
 
   EXPECT_EQ(R"DUMP(
 LayoutNGBlockFlow OL id="root"
-  +--LayoutNGListItem LI
-  |  +--LayoutNGOutsideListMarker ::marker
+  +--LayoutListItem LI
+  |  +--LayoutOutsideListMarker ::marker
   |  |  +--LayoutTextCombine (anonymous)
   |  |  |  +--LayoutTextFragment (anonymous) ("1. ")
 )DUMP",
@@ -616,8 +616,8 @@ LayoutNGBlockFlow OL id="root"
 
   EXPECT_EQ(R"DUMP(
 LayoutNGBlockFlow OL id="root" style="list-style-image: url(\"data:image/gif;base64,R0lGODlhEAAQAMQAAORHHOVSKudfOulrSOp3WOyDZu6QdvCchPGolfO0o/XBs/fNwfjZ0frl3/zy7////wAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAACH5BAkAABAALAAAAAAQABAAAAVVICSOZGlCQAosJ6mu7fiyZeKqNKToQGDsM8hBADgUXoGAiqhSvp5QAnQKGIgUhwFUYLCVDFCrKUE1lBavAViFIDlTImbKC5Gm2hB0SlBCBMQiB0UjIQA7\");"
-  +--LayoutNGListItem LI
-  |  +--LayoutNGOutsideListMarker ::marker
+  +--LayoutListItem LI
+  |  +--LayoutOutsideListMarker ::marker
   |  |  +--LayoutImage (anonymous)
 )DUMP",
             ToSimpleLayoutTree(root_layout_object));
@@ -637,8 +637,8 @@ TEST_F(LayoutTextCombineTest, ListMarkerWidthOfSymbol) {
       *To<LayoutNGBlockFlow>(root.GetLayoutObject());
 
   EXPECT_EQ(R"DUMP(
-LayoutNGListItem LI id="root"
-  +--LayoutNGInsideListMarker ::marker
+LayoutListItem LI id="root"
+  +--LayoutInsideListMarker ::marker
   |  +--LayoutTextCombine (anonymous)
   |  |  +--LayoutTextFragment (anonymous) ("\u2022 ")
   +--LayoutTextCombine (anonymous)
@@ -825,8 +825,8 @@ TEST_F(LayoutTextCombineTest, RebuildLayoutTreeForDetails) {
 
   EXPECT_EQ(R"DUMP(
 LayoutNGBlockFlow DETAILS id="root"
-  +--LayoutNGListItem SUMMARY
-  |  +--LayoutNGInsideListMarker ::marker
+  +--LayoutListItem SUMMARY
+  |  +--LayoutInsideListMarker ::marker
   |  |  +--LayoutTextCombine (anonymous)
   |  |  |  +--LayoutTextFragment (anonymous) ("\u25BE ")
   |  +--LayoutTextCombine (anonymous)
@@ -845,8 +845,8 @@ LayoutNGBlockFlow DETAILS id="root"
 
   EXPECT_EQ(R"DUMP(
 LayoutNGBlockFlow DETAILS id="root" style="color: red !important;"
-  +--LayoutNGListItem SUMMARY
-  |  +--LayoutNGInsideListMarker ::marker
+  +--LayoutListItem SUMMARY
+  |  +--LayoutInsideListMarker ::marker
   |  |  +--LayoutTextCombine (anonymous)
   |  |  |  +--LayoutTextFragment (anonymous) ("\u25BE ")
   |  +--LayoutTextCombine (anonymous)
@@ -1419,8 +1419,8 @@ TEST_F(LayoutTextCombineTest, WithMarker) {
   const auto& root_layout_object =
       *To<LayoutNGBlockFlow>(GetElementById("root")->GetLayoutObject());
   EXPECT_EQ(R"DUMP(
-LayoutNGListItem P id="root"
-  +--LayoutNGOutsideListMarker ::marker
+LayoutListItem P id="root"
+  +--LayoutOutsideListMarker ::marker
   |  +--LayoutTextCombine (anonymous)
   |  |  +--LayoutTextFragment (anonymous) ("<")
   |  |  +--LayoutCounter (anonymous) "1"
@@ -1439,8 +1439,8 @@ TEST_F(LayoutTextCombineTest, WithOrderedList) {
       *To<LayoutNGBlockFlow>(GetElementById("root")->GetLayoutObject());
   EXPECT_EQ(R"DUMP(
 LayoutNGBlockFlow OL id="root"
-  +--LayoutNGListItem LI
-  |  +--LayoutNGOutsideListMarker ::marker
+  +--LayoutListItem LI
+  |  +--LayoutOutsideListMarker ::marker
   |  |  +--LayoutTextCombine (anonymous)
   |  |  |  +--LayoutTextFragment (anonymous) ("1. ")
   |  +--LayoutTextCombine (anonymous)

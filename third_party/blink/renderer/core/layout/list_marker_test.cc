@@ -15,14 +15,14 @@ namespace blink {
 class ListMarkerTest : public RenderingTest {
  protected:
   LayoutObject* GetMarker(const char* list_item_id) {
-    LayoutNGListItem* list_item =
-        To<LayoutNGListItem>(GetLayoutObjectByElementId(list_item_id));
+    auto* list_item =
+        To<LayoutListItem>(GetLayoutObjectByElementId(list_item_id));
     return list_item->Marker();
   }
 
   LayoutObject* GetMarker(TreeScope& scope, const char* list_item_id) {
     Element* list_item = scope.getElementById(AtomicString(list_item_id));
-    return To<LayoutNGListItem>(list_item->GetLayoutObject())->Marker();
+    return To<LayoutListItem>(list_item->GetLayoutObject())->Marker();
   }
 
   String GetMarkerText(TreeScope& scope, const char* list_item_id) {

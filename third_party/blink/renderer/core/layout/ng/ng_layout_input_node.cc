@@ -114,8 +114,9 @@ bool NGLayoutInputNode::IsPaginatedRoot() const {
 }
 
 NGBlockNode NGLayoutInputNode::ListMarkerBlockNodeIfListItem() const {
-  if (auto* list_item = DynamicTo<LayoutNGListItem>(box_.Get()))
+  if (auto* list_item = DynamicTo<LayoutListItem>(box_.Get())) {
     return NGBlockNode(DynamicTo<LayoutBox>(list_item->Marker()));
+  }
   return NGBlockNode(nullptr);
 }
 

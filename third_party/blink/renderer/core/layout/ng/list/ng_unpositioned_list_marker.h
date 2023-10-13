@@ -18,7 +18,7 @@
 namespace blink {
 
 class ComputedStyle;
-class LayoutNGOutsideListMarker;
+class LayoutOutsideListMarker;
 class LayoutUnit;
 class NGBlockNode;
 class NGConstraintSpace;
@@ -48,13 +48,13 @@ class NGPhysicalFragment;
 // LI isn't resolved after layout marker, we'll resolve it. See
 // |NGBlockLayoutAlgorithm::PositionOrPropagateListMarker()| and
 // |NGBlockLayoutAlgorithm::PositionListMarkerWithoutLineBoxes()| for details.
-class CORE_EXPORT NGUnpositionedListMarker final {
+class CORE_EXPORT UnpositionedListMarker final {
   DISALLOW_NEW();
 
  public:
-  NGUnpositionedListMarker() : marker_layout_object_(nullptr) {}
-  explicit NGUnpositionedListMarker(LayoutNGOutsideListMarker*);
-  explicit NGUnpositionedListMarker(const NGBlockNode&);
+  UnpositionedListMarker() : marker_layout_object_(nullptr) {}
+  explicit UnpositionedListMarker(LayoutOutsideListMarker*);
+  explicit UnpositionedListMarker(const NGBlockNode&);
 
   explicit operator bool() const { return marker_layout_object_; }
 
@@ -87,7 +87,7 @@ class CORE_EXPORT NGUnpositionedListMarker final {
                                 LayoutUnit* intrinsic_block_size) const;
   LayoutUnit InlineOffset(const LayoutUnit marker_inline_size) const;
 
-  bool operator==(const NGUnpositionedListMarker& other) const {
+  bool operator==(const UnpositionedListMarker& other) const {
     return marker_layout_object_ == other.marker_layout_object_;
   }
 
@@ -107,7 +107,7 @@ class CORE_EXPORT NGUnpositionedListMarker final {
                                         const NGBoxStrut&,
                                         LayoutUnit) const;
 
-  Member<LayoutNGOutsideListMarker> marker_layout_object_;
+  Member<LayoutOutsideListMarker> marker_layout_object_;
 };
 
 }  // namespace blink

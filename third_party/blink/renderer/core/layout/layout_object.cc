@@ -362,9 +362,9 @@ LayoutObject* LayoutObject::CreateObject(Element* element,
   } else if (element->GetPseudoId() == kPseudoIdMarker) {
     const Node* parent = element->parentNode();
     if (parent->GetComputedStyle()->MarkerShouldBeInside(*parent)) {
-      return MakeGarbageCollected<LayoutNGInsideListMarker>(element);
+      return MakeGarbageCollected<LayoutInsideListMarker>(element);
     }
-    return MakeGarbageCollected<LayoutNGOutsideListMarker>(element);
+    return MakeGarbageCollected<LayoutOutsideListMarker>(element);
   }
 
   switch (style.Display()) {
@@ -374,7 +374,7 @@ LayoutObject* LayoutObject::CreateObject(Element* element,
     case EDisplay::kInline:
       return MakeGarbageCollected<LayoutInline>(element);
     case EDisplay::kInlineListItem:
-      return MakeGarbageCollected<LayoutNGInlineListItem>(element);
+      return MakeGarbageCollected<LayoutInlineListItem>(element);
     case EDisplay::kFlowRootListItem:
     case EDisplay::kInlineFlowRootListItem:
       [[fallthrough]];
@@ -436,7 +436,7 @@ LayoutBlockFlow* LayoutObject::CreateBlockFlowOrListItem(
     // Create a LayoutBlockFlow with a ListItemOrdinal and maybe a ::marker.
     // ::backdrop is excluded since it's not tree-abiding, and ListItemOrdinal
     // needs to traverse the tree.
-    return MakeGarbageCollected<LayoutNGListItem>(element);
+    return MakeGarbageCollected<LayoutListItem>(element);
   }
 
   // Create a plain LayoutBlockFlow

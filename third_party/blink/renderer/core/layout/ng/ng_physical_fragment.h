@@ -219,7 +219,7 @@ class CORE_EXPORT NGPhysicalFragment
   }
   bool IsFrameSet() const { return IsCSSBox() && layout_object_->IsFrameSet(); }
   bool IsListMarker() const {
-    return IsCSSBox() && layout_object_->IsLayoutNGOutsideListMarker();
+    return IsCSSBox() && layout_object_->IsLayoutOutsideListMarker();
   }
   bool IsRubyBase() const { return layout_object_->IsRubyBase(); }
   bool IsRubyColumn() const { return layout_object_->IsRubyColumn(); }

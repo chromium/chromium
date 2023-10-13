@@ -9,14 +9,14 @@
 
 namespace blink {
 
-LayoutNGInlineListItem::LayoutNGInlineListItem(Element* element)
+LayoutInlineListItem::LayoutInlineListItem(Element* element)
     : LayoutInline(element) {
   SetConsumesSubtreeChangeNotification();
   RegisterSubtreeChangeListenerOnDescendants(true);
   View()->AddLayoutListItem();
 }
 
-void LayoutNGInlineListItem::WillBeDestroyed() {
+void LayoutInlineListItem::WillBeDestroyed() {
   NOT_DESTROYED();
   if (View()) {
     View()->RemoveLayoutListItem();
@@ -24,39 +24,39 @@ void LayoutNGInlineListItem::WillBeDestroyed() {
   LayoutInline::WillBeDestroyed();
 }
 
-const char* LayoutNGInlineListItem::GetName() const {
+const char* LayoutInlineListItem::GetName() const {
   NOT_DESTROYED();
-  return "LayoutNGInlineListItem";
+  return "LayoutInlineListItem";
 }
 
-bool LayoutNGInlineListItem::IsOfType(LayoutObjectType type) const {
-  return type == kLayoutObjectNGInlineListItem || LayoutInline::IsOfType(type);
+bool LayoutInlineListItem::IsOfType(LayoutObjectType type) const {
+  return type == kLayoutObjectInlineListItem || LayoutInline::IsOfType(type);
 }
 
-void LayoutNGInlineListItem::InsertedIntoTree() {
+void LayoutInlineListItem::InsertedIntoTree() {
   LayoutInline::InsertedIntoTree();
   ListItemOrdinal::ItemInsertedOrRemoved(this);
 }
 
-void LayoutNGInlineListItem::WillBeRemovedFromTree() {
+void LayoutInlineListItem::WillBeRemovedFromTree() {
   LayoutInline::WillBeRemovedFromTree();
   ListItemOrdinal::ItemInsertedOrRemoved(this);
 }
 
-LayoutObject* LayoutNGInlineListItem::Marker() const {
+LayoutObject* LayoutInlineListItem::Marker() const {
   NOT_DESTROYED();
   return To<Element>(GetNode())->PseudoElementLayoutObject(kPseudoIdMarker);
 }
 
-void LayoutNGInlineListItem::UpdateMarkerTextIfNeeded() {
+void LayoutInlineListItem::UpdateMarkerTextIfNeeded() {
   LayoutObject* marker = Marker();
   if (auto* list_marker = ListMarker::Get(marker)) {
     list_marker->UpdateMarkerTextIfNeeded(*marker);
   }
 }
 
-void LayoutNGInlineListItem::StyleDidChange(StyleDifference diff,
-                                            const ComputedStyle* old_style) {
+void LayoutInlineListItem::StyleDidChange(StyleDifference diff,
+                                          const ComputedStyle* old_style) {
   LayoutInline::StyleDidChange(diff, old_style);
 
   LayoutObject* marker = Marker();
@@ -78,7 +78,7 @@ void LayoutNGInlineListItem::StyleDidChange(StyleDifference diff,
   }
 }
 
-void LayoutNGInlineListItem::UpdateCounterStyle() {
+void LayoutInlineListItem::UpdateCounterStyle() {
   if (!StyleRef().ListStyleType() ||
       StyleRef().ListStyleType()->IsCounterStyleReferenceValid(GetDocument())) {
     return;
@@ -92,12 +92,12 @@ void LayoutNGInlineListItem::UpdateCounterStyle() {
   list_marker->CounterStyleChanged(*marker);
 }
 
-int LayoutNGInlineListItem::Value() const {
+int LayoutInlineListItem::Value() const {
   DCHECK(GetNode());
   return ordinal_.Value(*GetNode());
 }
 
-void LayoutNGInlineListItem::OrdinalValueChanged() {
+void LayoutInlineListItem::OrdinalValueChanged() {
   LayoutObject* marker = Marker();
   if (auto* list_marker = ListMarker::Get(marker)) {
     list_marker->OrdinalValueChanged(*marker);
@@ -106,13 +106,13 @@ void LayoutNGInlineListItem::OrdinalValueChanged() {
   }
 }
 
-void LayoutNGInlineListItem::SubtreeDidChange() {
+void LayoutInlineListItem::SubtreeDidChange() {
   LayoutObject* marker = Marker();
   auto* list_marker = ListMarker::Get(marker);
   if (!list_marker) {
     return;
   }
-  DCHECK(marker->IsLayoutNGInsideListMarker());
+  DCHECK(marker->IsLayoutInsideListMarker());
   list_marker->UpdateMarkerContentIfNeeded(*marker);
 }
 

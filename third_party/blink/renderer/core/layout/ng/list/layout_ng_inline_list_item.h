@@ -11,9 +11,9 @@
 namespace blink {
 
 // A LayoutObject subclass for 'display: inline list-item'.
-class LayoutNGInlineListItem final : public LayoutInline {
+class LayoutInlineListItem final : public LayoutInline {
  public:
-  explicit LayoutNGInlineListItem(Element* element);
+  explicit LayoutInlineListItem(Element* element);
 
   ListItemOrdinal& Ordinal() {
     NOT_DESTROYED();
@@ -40,7 +40,7 @@ class LayoutNGInlineListItem final : public LayoutInline {
 };
 
 template <>
-struct DowncastTraits<LayoutNGInlineListItem> {
+struct DowncastTraits<LayoutInlineListItem> {
   static bool AllowFrom(const LayoutObject& object) {
     return object.IsInlineListItem();
   }

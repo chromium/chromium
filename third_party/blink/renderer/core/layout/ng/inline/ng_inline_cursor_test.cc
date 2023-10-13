@@ -584,8 +584,8 @@ TEST_P(NGInlineCursorTest, NextWithEllipsisInlineBoxOnly) {
 TEST_P(NGInlineCursorTest, NextWithListItem) {
   NGInlineCursor cursor = SetupCursor("<ul><li id=root>abc</li></ul>");
   Vector<String> list = ToDebugStringList(cursor);
-  EXPECT_THAT(list, ElementsAre("LayoutNGOutsideListMarker ::marker",
-                                "#linebox", "abc"));
+  EXPECT_THAT(
+      list, ElementsAre("LayoutOutsideListMarker ::marker", "#linebox", "abc"));
   EXPECT_EQ(GetLayoutObjectByElementId("root"), cursor.GetLayoutBlockFlow());
 }
 

@@ -352,11 +352,11 @@ TEST_F(NGInlineNodeTest, CollectInlinesTextCombineListItemMarker) {
   InsertStyleElement(
       "#t { text-combine-upright: all; writing-mode: vertical-rl; }");
   SetupHtml("t", u"<li id=t>ab</li>");
-  // LayoutNGListItem {LI}
-  //   LayoutNGOutsideListMarker {::marker}
-  //      LayoutNGTextCombine (anonymous)
+  // LayoutListItem {LI}
+  //   LayoutOutsideListMarker {::marker}
+  //      LayoutTextCombine (anonymous)
   //        LayoutText (anonymous) "\x{2022} "
-  //   LayoutNGTextCombine (anonymous)
+  //   LayoutTextCombine (anonymous)
   //     LayoutText {#text} "a"
   NGInlineNodeForTest node =
       CreateInlineNode(To<LayoutTextCombine>(layout_object_->SlowFirstChild()));

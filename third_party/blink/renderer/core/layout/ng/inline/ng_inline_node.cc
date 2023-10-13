@@ -259,7 +259,7 @@ void CollectInlinesInternal(ItemsBuilder* builder,
   LayoutObject* node = GetLayoutObjectForFirstChildNode(block);
 
   const LayoutObject* symbol =
-      LayoutNGListItem::FindSymbolMarkerLayoutText(block);
+      LayoutListItem::FindSymbolMarkerLayoutText(block);
   const LayoutObject* inline_list_item_marker = nullptr;
   while (node) {
     if (auto* counter = DynamicTo<LayoutCounter>(node)) {
@@ -317,7 +317,7 @@ void CollectInlinesInternal(ItemsBuilder* builder,
       builder->ClearInlineFragment(node);
     } else if (node->IsAtomicInlineLevel()) {
       if (node->IsBoxListMarkerIncludingNG()) {
-        // LayoutNGListItem produces the 'outside' list marker as an inline
+        // LayoutListItem produces the 'outside' list marker as an inline
         // block. This is an out-of-flow item whose position is computed
         // automatically.
         builder->AppendOpaque(NGInlineItem::kListMarker, node);
@@ -333,10 +333,10 @@ void CollectInlinesInternal(ItemsBuilder* builder,
       }
       builder->ClearInlineFragment(node);
     } else if (auto* layout_inline = DynamicTo<LayoutInline>(node)) {
-      if (auto* inline_list_item = DynamicTo<LayoutNGInlineListItem>(node)) {
+      if (auto* inline_list_item = DynamicTo<LayoutInlineListItem>(node)) {
         inline_list_item->UpdateMarkerTextIfNeeded();
         inline_list_item_marker =
-            LayoutNGListItem::FindSymbolMarkerLayoutText(inline_list_item);
+            LayoutListItem::FindSymbolMarkerLayoutText(inline_list_item);
       }
       builder->UpdateShouldCreateBoxFragment(layout_inline);
 

@@ -14,19 +14,18 @@
 
 namespace blink {
 
-NGUnpositionedListMarker::NGUnpositionedListMarker(
-    LayoutNGOutsideListMarker* marker)
+UnpositionedListMarker::UnpositionedListMarker(LayoutOutsideListMarker* marker)
     : marker_layout_object_(marker) {}
 
-NGUnpositionedListMarker::NGUnpositionedListMarker(const NGBlockNode& node)
-    : NGUnpositionedListMarker(
-          To<LayoutNGOutsideListMarker>(node.GetLayoutBox())) {}
+UnpositionedListMarker::UnpositionedListMarker(const NGBlockNode& node)
+    : UnpositionedListMarker(To<LayoutOutsideListMarker>(node.GetLayoutBox())) {
+}
 
 // Compute the inline offset of the marker, relative to the list item.
 // The marker is relative to the border box of the list item and has nothing
 // to do with the content offset.
 // Open issue at https://github.com/w3c/csswg-drafts/issues/2361
-LayoutUnit NGUnpositionedListMarker::InlineOffset(
+LayoutUnit UnpositionedListMarker::InlineOffset(
     const LayoutUnit marker_inline_size) const {
   DCHECK(marker_layout_object_);
   LayoutObject* list_item =
@@ -37,7 +36,7 @@ LayoutUnit NGUnpositionedListMarker::InlineOffset(
   return margins.first;
 }
 
-const NGLayoutResult* NGUnpositionedListMarker::Layout(
+const NGLayoutResult* UnpositionedListMarker::Layout(
     const NGConstraintSpace& parent_space,
     const ComputedStyle& parent_style,
     FontBaseline baseline_type) const {
@@ -53,7 +52,7 @@ const NGLayoutResult* NGUnpositionedListMarker::Layout(
   return marker_layout_result;
 }
 
-absl::optional<LayoutUnit> NGUnpositionedListMarker::ContentAlignmentBaseline(
+absl::optional<LayoutUnit> UnpositionedListMarker::ContentAlignmentBaseline(
     const NGConstraintSpace& space,
     FontBaseline baseline_type,
     const NGPhysicalFragment& content) const {
@@ -78,7 +77,7 @@ absl::optional<LayoutUnit> NGUnpositionedListMarker::ContentAlignmentBaseline(
       .FirstBaseline();
 }
 
-void NGUnpositionedListMarker::AddToBox(
+void UnpositionedListMarker::AddToBox(
     const NGConstraintSpace& space,
     FontBaseline baseline_type,
     const NGPhysicalFragment& content,
@@ -123,7 +122,7 @@ void NGUnpositionedListMarker::AddToBox(
   container_builder->AddResult(marker_layout_result, marker_offset);
 }
 
-void NGUnpositionedListMarker::AddToBoxWithoutLineBoxes(
+void UnpositionedListMarker::AddToBoxWithoutLineBoxes(
     const NGConstraintSpace& space,
     FontBaseline baseline_type,
     const NGLayoutResult& marker_layout_result,
@@ -159,7 +158,7 @@ void NGUnpositionedListMarker::AddToBoxWithoutLineBoxes(
 
 // Find the opportunity for marker, and compare it to ListItem, then compute the
 // diff as intruded offset.
-LayoutUnit NGUnpositionedListMarker::ComputeIntrudedFloatOffset(
+LayoutUnit UnpositionedListMarker::ComputeIntrudedFloatOffset(
     const NGConstraintSpace& space,
     const NGBoxFragmentBuilder* container_builder,
     const NGBoxStrut& border_scrollbar_padding,
@@ -202,13 +201,13 @@ LayoutUnit NGUnpositionedListMarker::ComputeIntrudedFloatOffset(
 // in NGBlockLayoutAlgorithm::PositionOrPropagateListMarker and
 // NGBlockLayoutAlgorithm::PositionListMarkerWithoutLineBoxes without consider
 // marker's margin-top.
-void NGUnpositionedListMarker::CheckMargin() const {
+void UnpositionedListMarker::CheckMargin() const {
   DCHECK(marker_layout_object_);
   DCHECK(marker_layout_object_->StyleRef().MarginBefore().IsZero());
 }
 #endif
 
-void NGUnpositionedListMarker::Trace(Visitor* visitor) const {
+void UnpositionedListMarker::Trace(Visitor* visitor) const {
   visitor->Trace(marker_layout_object_);
 }
 

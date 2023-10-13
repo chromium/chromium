@@ -6,10 +6,10 @@
 
 namespace blink {
 
-class LayoutNGInlineListItemTest : public RenderingTest {};
+class LayoutInlineListItemTest : public RenderingTest {};
 
 // crbug.com/1446554
-TEST_F(LayoutNGInlineListItemTest, GetOffsetMappingNoCrash) {
+TEST_F(LayoutInlineListItemTest, GetOffsetMappingNoCrash) {
   SetBodyInnerHTML(R"HTML(
 <ul>
   <li></li>

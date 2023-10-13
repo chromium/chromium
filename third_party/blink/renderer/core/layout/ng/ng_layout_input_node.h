@@ -107,16 +107,16 @@ class CORE_EXPORT NGLayoutInputNode {
   bool ShouldBeConsideredAsReplaced() const {
     return box_->ShouldBeConsideredAsReplaced();
   }
-  bool IsListItem() const { return IsBlock() && box_->IsLayoutNGListItem(); }
+  bool IsListItem() const { return IsBlock() && box_->IsLayoutListItem(); }
   // Returns the list marker if |this.IsListItem()| with an outside list marker.
   // Otherwise |nullptr|.
   NGBlockNode ListMarkerBlockNodeIfListItem() const;
   bool IsListMarker() const {
-    return IsBlock() && box_->IsLayoutNGOutsideListMarker();
+    return IsBlock() && box_->IsLayoutOutsideListMarker();
   }
   bool ListMarkerOccupiesWholeLine() const {
     DCHECK(IsListMarker());
-    return To<LayoutNGOutsideListMarker>(box_.Get())->NeedsOccupyWholeLine();
+    return To<LayoutOutsideListMarker>(box_.Get())->NeedsOccupyWholeLine();
   }
   bool IsButton() const { return IsBlock() && box_->IsButton(); }
   bool IsFieldsetContainer() const { return IsBlock() && box_->IsFieldset(); }

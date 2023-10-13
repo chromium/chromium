@@ -40,14 +40,14 @@ When the content is inline level and therefore generates line boxes:
 
 generates a box tree of:
 
-- LayoutNGListItem
-  - LayoutNGOutsideListMarker
+- LayoutListItem
+  - LayoutOutsideListMarker
     - LayoutText (1.)
   - LayoutText (sample text)
 
 Since children except the list marker are inline-level,
 an inline formatting context is created, and therefore
-[NGInlineLayoutAlgorithm] lays out this [LayoutNGListItem].
+[NGInlineLayoutAlgorithm] lays out this [LayoutListItem].
 
 When the content is block level:
 
@@ -55,14 +55,14 @@ When the content is block level:
 <li><div>sample text</div></li>
 ```
 
-- LayoutNGListItem
-  - LayoutNGOutsideListMarker
+- LayoutListItem
+  - LayoutOutsideListMarker
     - LayoutText (1.)
   - LayoutNGBlockFlow (div)
     - LayoutText (sample text)
 
 Since children except the list marker are block-level,
-[NGBlockLayoutAlgorithm] lays out this [LayoutNGListItem].
+[NGBlockLayoutAlgorithm] lays out this [LayoutListItem].
 
 When the content is mixed:
 
@@ -73,8 +73,8 @@ When the content is mixed:
 </li>
 ```
 
-- LayoutNGListItem
-  - LayoutNGOutsideListMarker
+- LayoutListItem
+  - LayoutOutsideListMarker
     - LayoutText (1.)
   - LayoutNGBlockFlow (anonymous)
     - LayoutText (inline text)
@@ -82,7 +82,7 @@ When the content is mixed:
     - LayoutText (block text)
 
 Children are block-level in this case and therefore
-[NGBlockLayoutAlgorithm] lays out this [LayoutNGListItem].
+[NGBlockLayoutAlgorithm] lays out this [LayoutListItem].
 
 ### Propagating unpositioned list markers
 
@@ -90,10 +90,10 @@ List markers can be processed either in [NGInlineLayoutAlgorithm]
 if it appears within an inline formatting context,
 or in [NGBlockLayoutAlgorithm]
 if it appears within a block formatting context,
-but its positioning is determined when [LayoutNGListItem] is laid out.
+but its positioning is determined when [LayoutListItem] is laid out.
 
 To do this, algorithms can set an unpositioned list marker to [NGLayoutResult],
-which will be propagated to the nearest [LayoutNGListItem],
+which will be propagated to the nearest [LayoutListItem],
 similar to absolute positioned objects propagate to its containing blocks.
 
 ### The spec and other considerations
@@ -133,9 +133,9 @@ and still easy to implement across implementations.
 [list-style-position]: https://drafts.csswg.org/css-lists-3/#propdef-list-style-position
 [marker positioning]: https://drafts.csswg.org/css-lists-3/#positioning
 
-[LayoutNGListItem]: layout_ng_list_item.h
-[LayoutNGInsideListMarker]: layout_ng_inside_list_marker.h
-[LayoutNGOutsideListMarker]: layout_ng_outside_list_marker.h
+[LayoutListItem]: layout_ng_list_item.h
+[LayoutInsideListMarker]: layout_ng_inside_list_marker.h
+[LayoutOutsideListMarker]: layout_ng_outside_list_marker.h
 [NGBlockLayoutAlgorithm]: ../ng_block_layout_algorithm.h
 [NGInlineItem]: ../inline/ng_inline_item.h
 [NGInlineLayoutAlgorithm]: ../inline/ng_inline_layout_algorithm.h

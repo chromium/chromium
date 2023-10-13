@@ -980,8 +980,9 @@ HTMLBRElement* CompositeEditCommand::InsertBlockPlaceholder(
 }
 
 static bool IsEmptyListItem(const LayoutBlockFlow& block_flow) {
-  if (block_flow.IsLayoutNGListItem())
+  if (block_flow.IsLayoutListItem()) {
     return !block_flow.FirstChild();
+  }
   return false;
 }
 

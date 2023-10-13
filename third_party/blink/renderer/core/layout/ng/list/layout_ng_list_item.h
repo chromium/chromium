@@ -12,9 +12,9 @@
 namespace blink {
 
 // A LayoutObject subclass for 'display: list-item' in LayoutNG.
-class CORE_EXPORT LayoutNGListItem final : public LayoutNGBlockFlow {
+class CORE_EXPORT LayoutListItem final : public LayoutNGBlockFlow {
  public:
-  explicit LayoutNGListItem(Element*);
+  explicit LayoutListItem(Element*);
 
   ListItemOrdinal& Ordinal() {
     NOT_DESTROYED();
@@ -39,7 +39,7 @@ class CORE_EXPORT LayoutNGListItem final : public LayoutNGBlockFlow {
 
   const char* GetName() const override {
     NOT_DESTROYED();
-    return "LayoutNGListItem";
+    return "LayoutListItem";
   }
 
  private:
@@ -55,9 +55,9 @@ class CORE_EXPORT LayoutNGListItem final : public LayoutNGBlockFlow {
 };
 
 template <>
-struct DowncastTraits<LayoutNGListItem> {
+struct DowncastTraits<LayoutListItem> {
   static bool AllowFrom(const LayoutObject& object) {
-    return object.IsLayoutNGListItem();
+    return object.IsLayoutListItem();
   }
 };
 

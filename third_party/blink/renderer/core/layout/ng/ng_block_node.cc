@@ -757,7 +757,7 @@ void NGBlockNode::PrepareForLayout() const {
   // TODO(layoutng) Can UpdateMarkerTextIfNeeded call be moved
   // somewhere else? List items need up-to-date markers before layout.
   if (IsListItem())
-    To<LayoutNGListItem>(box_.Get())->UpdateMarkerTextIfNeeded();
+    To<LayoutListItem>(box_.Get())->UpdateMarkerTextIfNeeded();
 }
 
 void NGBlockNode::FinishLayout(
@@ -884,7 +884,7 @@ MinMaxSizesResult NGBlockNode::ComputeMinMaxSizes(
   // TODO(layoutng) Can UpdateMarkerTextIfNeeded call be moved
   // somewhere else? List items need up-to-date markers before layout.
   if (IsListItem())
-    To<LayoutNGListItem>(box_.Get())->UpdateMarkerTextIfNeeded();
+    To<LayoutListItem>(box_.Get())->UpdateMarkerTextIfNeeded();
 
   const bool is_in_perform_layout = box_->GetFrameView()->IsInPerformLayout();
   // In some scenarios, GridNG and FlexNG will run layout on their items during

@@ -12,23 +12,23 @@ namespace blink {
 class HTMLUListElement;
 class HTMLOListElement;
 
-LayoutNGOutsideListMarker::LayoutNGOutsideListMarker(Element* element)
+LayoutOutsideListMarker::LayoutOutsideListMarker(Element* element)
     : LayoutNGBlockFlow(element) {}
 
-bool LayoutNGOutsideListMarker::IsOfType(LayoutObjectType type) const {
-  return type == kLayoutObjectNGOutsideListMarker ||
+bool LayoutOutsideListMarker::IsOfType(LayoutObjectType type) const {
+  return type == kLayoutObjectOutsideListMarker ||
          LayoutNGBlockFlow::IsOfType(type);
 }
 
-void LayoutNGOutsideListMarker::WillCollectInlines() {
+void LayoutOutsideListMarker::WillCollectInlines() {
   list_marker_.UpdateMarkerTextIfNeeded(*this);
 }
 
-bool LayoutNGOutsideListMarker::IsMonolithic() const {
+bool LayoutOutsideListMarker::IsMonolithic() const {
   return true;
 }
 
-bool LayoutNGOutsideListMarker::NeedsOccupyWholeLine() const {
+bool LayoutOutsideListMarker::NeedsOccupyWholeLine() const {
   if (!GetDocument().InQuirksMode())
     return false;
 
@@ -44,7 +44,7 @@ bool LayoutNGOutsideListMarker::NeedsOccupyWholeLine() const {
   return false;
 }
 
-PositionWithAffinity LayoutNGOutsideListMarker::PositionForPoint(
+PositionWithAffinity LayoutOutsideListMarker::PositionForPoint(
     const PhysicalOffset&) const {
   DCHECK_GE(GetDocument().Lifecycle().GetState(),
             DocumentLifecycle::kPrePaintClean);

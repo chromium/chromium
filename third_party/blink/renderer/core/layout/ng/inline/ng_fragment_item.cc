@@ -356,7 +356,7 @@ bool NGFragmentItem::IsFormattingContextRoot() const {
 }
 
 bool NGFragmentItem::IsListMarker() const {
-  return layout_object_ && layout_object_->IsLayoutNGOutsideListMarker();
+  return layout_object_ && layout_object_->IsLayoutOutsideListMarker();
 }
 
 LayoutObject& NGFragmentItem::BlockInInline() const {

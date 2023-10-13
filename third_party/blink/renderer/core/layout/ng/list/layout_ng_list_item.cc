@@ -11,8 +11,7 @@
 
 namespace blink {
 
-LayoutNGListItem::LayoutNGListItem(Element* element)
-    : LayoutNGBlockFlow(element) {
+LayoutListItem::LayoutListItem(Element* element) : LayoutNGBlockFlow(element) {
   SetInline(false);
 
   SetConsumesSubtreeChangeNotification();
@@ -20,31 +19,31 @@ LayoutNGListItem::LayoutNGListItem(Element* element)
   View()->AddLayoutListItem();
 }
 
-void LayoutNGListItem::WillBeDestroyed() {
+void LayoutListItem::WillBeDestroyed() {
   NOT_DESTROYED();
   if (View())
     View()->RemoveLayoutListItem();
   LayoutNGBlockFlow::WillBeDestroyed();
 }
 
-bool LayoutNGListItem::IsOfType(LayoutObjectType type) const {
-  return type == kLayoutObjectNGListItem || LayoutNGBlockFlow::IsOfType(type);
+bool LayoutListItem::IsOfType(LayoutObjectType type) const {
+  return type == kLayoutObjectListItem || LayoutNGBlockFlow::IsOfType(type);
 }
 
-void LayoutNGListItem::InsertedIntoTree() {
+void LayoutListItem::InsertedIntoTree() {
   LayoutNGBlockFlow::InsertedIntoTree();
 
   ListItemOrdinal::ItemInsertedOrRemoved(this);
 }
 
-void LayoutNGListItem::WillBeRemovedFromTree() {
+void LayoutListItem::WillBeRemovedFromTree() {
   LayoutNGBlockFlow::WillBeRemovedFromTree();
 
   ListItemOrdinal::ItemInsertedOrRemoved(this);
 }
 
-void LayoutNGListItem::StyleDidChange(StyleDifference diff,
-                                      const ComputedStyle* old_style) {
+void LayoutListItem::StyleDidChange(StyleDifference diff,
+                                    const ComputedStyle* old_style) {
   LayoutNGBlockFlow::StyleDidChange(diff, old_style);
 
   LayoutObject* marker = Marker();
@@ -64,7 +63,7 @@ void LayoutNGListItem::StyleDidChange(StyleDifference diff,
   }
 }
 
-void LayoutNGListItem::UpdateCounterStyle() {
+void LayoutListItem::UpdateCounterStyle() {
   if (!StyleRef().ListStyleType() ||
       StyleRef().ListStyleType()->IsCounterStyleReferenceValid(GetDocument())) {
     return;
@@ -78,35 +77,35 @@ void LayoutNGListItem::UpdateCounterStyle() {
   list_marker->CounterStyleChanged(*marker);
 }
 
-void LayoutNGListItem::OrdinalValueChanged() {
+void LayoutListItem::OrdinalValueChanged() {
   LayoutObject* marker = Marker();
   if (ListMarker* list_marker = ListMarker::Get(marker))
     list_marker->OrdinalValueChanged(*marker);
 }
 
-void LayoutNGListItem::SubtreeDidChange() {
+void LayoutListItem::SubtreeDidChange() {
   LayoutObject* marker = Marker();
   if (ListMarker* list_marker = ListMarker::Get(marker)) {
     list_marker->UpdateMarkerContentIfNeeded(*marker);
   }
 }
 
-void LayoutNGListItem::WillCollectInlines() {
+void LayoutListItem::WillCollectInlines() {
   UpdateMarkerTextIfNeeded();
 }
 
-void LayoutNGListItem::UpdateMarkerTextIfNeeded() {
+void LayoutListItem::UpdateMarkerTextIfNeeded() {
   LayoutObject* marker = Marker();
   if (ListMarker* list_marker = ListMarker::Get(marker))
     list_marker->UpdateMarkerTextIfNeeded(*marker);
 }
 
-int LayoutNGListItem::Value() const {
+int LayoutListItem::Value() const {
   DCHECK(GetNode());
   return ordinal_.Value(*GetNode());
 }
 
-const LayoutObject* LayoutNGListItem::FindSymbolMarkerLayoutText(
+const LayoutObject* LayoutListItem::FindSymbolMarkerLayoutText(
     const LayoutObject* object) {
   if (!object)
     return nullptr;
@@ -114,11 +113,11 @@ const LayoutObject* LayoutNGListItem::FindSymbolMarkerLayoutText(
   if (const ListMarker* list_marker = ListMarker::Get(object))
     return list_marker->SymbolMarkerLayoutText(*object);
 
-  if (object->IsLayoutNGListItem())
-    return FindSymbolMarkerLayoutText(To<LayoutNGListItem>(object)->Marker());
+  if (object->IsLayoutListItem()) {
+    return FindSymbolMarkerLayoutText(To<LayoutListItem>(object)->Marker());
+  }
 
-  if (const auto* inline_list_item =
-          DynamicTo<LayoutNGInlineListItem>(object)) {
+  if (const auto* inline_list_item = DynamicTo<LayoutInlineListItem>(object)) {
     return FindSymbolMarkerLayoutText(inline_list_item->Marker());
   }
 

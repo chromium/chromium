@@ -437,7 +437,7 @@ void NGInlineLayoutAlgorithm::CreateLine(
     if (item.Type() == NGInlineItem::kText) {
       DCHECK(item.GetLayoutObject());
       DCHECK(item.GetLayoutObject()->IsText() ||
-             item.GetLayoutObject()->IsLayoutNGListItem());
+             item.GetLayoutObject()->IsLayoutListItem());
 
       if (UNLIKELY(!item_result.Length())) {
         // Empty or fully collapsed text isn't needed for layout, but needs

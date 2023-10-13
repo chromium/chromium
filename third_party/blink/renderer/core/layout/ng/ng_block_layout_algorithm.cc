@@ -69,10 +69,10 @@ bool HasLineEvenIfEmpty(LayoutBox* box) {
     for (const auto* child = flow_thread->FirstChild(); child;
          child = child->NextSibling()) {
       if (child->IsInline()) {
-        // Note: |LayoutNGOutsideListMarker| is out-of-flow for the tree
+        // Note: |LayoutOutsideListMarker| is out-of-flow for the tree
         // building purpose in |LayoutBlockFlow::AddChild()|.
         // |MultiColumnRenderingTest.ListItem| reaches here.
-        DCHECK(child->IsLayoutNGOutsideListMarker()) << child;
+        DCHECK(child->IsLayoutOutsideListMarker()) << child;
         return false;
       }
       if (!child->IsFloatingOrOutOfFlowPositioned()) {
@@ -271,7 +271,7 @@ NGBlockLayoutAlgorithm::NGBlockLayoutAlgorithm(
         !marker_node.ListMarkerOccupiesWholeLine() &&
         (!BreakToken() || BreakToken()->HasUnpositionedListMarker())) {
       container_builder_.SetUnpositionedListMarker(
-          NGUnpositionedListMarker(marker_node));
+          UnpositionedListMarker(marker_node));
     }
   }
 }
@@ -1092,7 +1092,7 @@ const NGLayoutResult* NGBlockLayoutAlgorithm::FinishLayout(
   // List markers should have been positioned if we had line boxes, or boxes
   // that have line boxes. If there were no line boxes, position without line
   // boxes.
-  if (container_builder_.UnpositionedListMarker() &&
+  if (container_builder_.GetUnpositionedListMarker() &&
       ShouldPlaceUnpositionedListMarker() &&
       // If the list-item is block-fragmented, leave it unpositioned and expect
       // following fragments have a line box.
@@ -1762,9 +1762,8 @@ const NGLayoutResult* NGBlockLayoutAlgorithm::LayoutNewFormattingContext(
             NGFragment(writing_direction, *marker_fragment.Children().front())
                 .InlineSize();
       }
-      auto_margins.inline_start =
-          NGUnpositionedListMarker(To<NGBlockNode>(child))
-              .InlineOffset(marker_inline_size);
+      auto_margins.inline_start = UnpositionedListMarker(To<NGBlockNode>(child))
+                                      .InlineOffset(marker_inline_size);
       auto_margins.inline_end = opportunity.rect.InlineSize() -
                                 fragment.InlineSize() -
                                 auto_margins.inline_start;
@@ -3133,8 +3132,8 @@ bool NGBlockLayoutAlgorithm::PositionOrPropagateListMarker(
     return true;
 
   // If this is a list item, add the unpositioned list marker as a child.
-  NGUnpositionedListMarker list_marker =
-      container_builder_.UnpositionedListMarker();
+  UnpositionedListMarker list_marker =
+      container_builder_.GetUnpositionedListMarker();
   if (!list_marker)
     return true;
   container_builder_.ClearUnpositionedListMarker();
@@ -3180,10 +3179,9 @@ bool NGBlockLayoutAlgorithm::PositionOrPropagateListMarker(
 bool NGBlockLayoutAlgorithm::PositionListMarkerWithoutLineBoxes(
     NGPreviousInflowPosition* previous_inflow_position) {
   DCHECK(ShouldPlaceUnpositionedListMarker());
-  DCHECK(container_builder_.UnpositionedListMarker());
+  DCHECK(container_builder_.GetUnpositionedListMarker());
 
-  NGUnpositionedListMarker list_marker =
-      container_builder_.UnpositionedListMarker();
+  auto list_marker = container_builder_.GetUnpositionedListMarker();
   const NGConstraintSpace& space = ConstraintSpace();
   FontBaseline baseline_type = Style().GetFontBaseline();
   // Layout the list marker.

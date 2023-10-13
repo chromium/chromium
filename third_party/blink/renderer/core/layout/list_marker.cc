@@ -42,10 +42,12 @@ LayoutUnit DisclosureSymbolSize(const ComputedStyle& style) {
 ListMarker::ListMarker() : marker_text_type_(kNotText) {}
 
 const ListMarker* ListMarker::Get(const LayoutObject* marker) {
-  if (auto* ng_outside_marker = DynamicTo<LayoutNGOutsideListMarker>(marker))
+  if (auto* ng_outside_marker = DynamicTo<LayoutOutsideListMarker>(marker)) {
     return &ng_outside_marker->Marker();
-  if (auto* ng_inside_marker = DynamicTo<LayoutNGInsideListMarker>(marker))
+  }
+  if (auto* ng_inside_marker = DynamicTo<LayoutInsideListMarker>(marker)) {
     return &ng_inside_marker->Marker();
+  }
   return nullptr;
 }
 
@@ -55,9 +57,10 @@ ListMarker* ListMarker::Get(LayoutObject* marker) {
 }
 
 LayoutObject* ListMarker::MarkerFromListItem(const LayoutObject* list_item) {
-  if (auto* ng_list_item = DynamicTo<LayoutNGListItem>(list_item))
+  if (auto* ng_list_item = DynamicTo<LayoutListItem>(list_item)) {
     return ng_list_item->Marker();
-  if (auto* inline_list_item = DynamicTo<LayoutNGInlineListItem>(list_item)) {
+  }
+  if (auto* inline_list_item = DynamicTo<LayoutInlineListItem>(list_item)) {
     return inline_list_item->Marker();
   }
   return nullptr;
@@ -72,9 +75,10 @@ LayoutObject* ListMarker::ListItem(const LayoutObject& marker) const {
 }
 
 int ListMarker::ListItemValue(const LayoutObject& list_item) const {
-  if (auto* ng_list_item = DynamicTo<LayoutNGListItem>(list_item))
+  if (auto* ng_list_item = DynamicTo<LayoutListItem>(list_item)) {
     return ng_list_item->Value();
-  if (auto* inline_list_item = DynamicTo<LayoutNGInlineListItem>(list_item)) {
+  }
+  if (auto* inline_list_item = DynamicTo<LayoutInlineListItem>(list_item)) {
     return inline_list_item->Value();
   }
   NOTREACHED();

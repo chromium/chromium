@@ -1006,10 +1006,10 @@ void LayoutView::UpdateMarkersAndCountersAfterStyleChange(
 
   for (LayoutObject* layout_object = start; layout_object;
        layout_object = layout_object->NextInPreOrder(stay_within)) {
-    if (auto* ng_list_item = DynamicTo<LayoutNGListItem>(layout_object)) {
+    if (auto* ng_list_item = DynamicTo<LayoutListItem>(layout_object)) {
       ng_list_item->UpdateCounterStyle();
     } else if (auto* inline_list_item =
-                   DynamicTo<LayoutNGInlineListItem>(layout_object)) {
+                   DynamicTo<LayoutInlineListItem>(layout_object)) {
       inline_list_item->UpdateCounterStyle();
     } else if (auto* counter = DynamicTo<LayoutCounter>(layout_object)) {
       counter->UpdateCounter();

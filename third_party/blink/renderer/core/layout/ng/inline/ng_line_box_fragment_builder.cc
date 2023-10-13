@@ -23,7 +23,7 @@ void NGLineBoxFragmentBuilder::Reset() {
   child_break_tokens_.Shrink(0);
   last_inline_break_token_ = nullptr;
   oof_positioned_candidates_.Shrink(0);
-  unpositioned_list_marker_ = NGUnpositionedListMarker();
+  unpositioned_list_marker_ = UnpositionedListMarker();
 
   annotation_overflow_ = LayoutUnit();
   bfc_block_offset_.reset();
