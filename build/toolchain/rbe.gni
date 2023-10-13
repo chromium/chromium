@@ -48,6 +48,15 @@ declare_args() {
   rbe_cros_cc_wrapper = "${rbe_bin_dir}/rewrapper"
 }
 
+if (use_remoteexec && current_toolchain == default_toolchain) {
+  # Check existence of reclient configs and show user friendly error message if
+  # it doesn't.
+  exec_script(rebase_path("//build/toolchain/check_rewrapper_cfg.py"),
+              [ rbe_cc_cfg_file ],
+              "",
+              [ rebase_path(rbe_cc_cfg_file, ".", root_build_dir) ])
+}
+
 if (is_win) {
   if (use_remoteexec_links) {
     print("For now, remote linking is not available for Windows.")
