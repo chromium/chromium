@@ -117,7 +117,9 @@ void FakeWebStateDelegate::HandlePermissionsDecisionRequest(
     NSArray<NSNumber*>* permissions,
     WebStatePermissionDecisionHandler handler) {
   last_requested_permissions_ = permissions;
-  handler(permission_decision_);
+  if (should_handle_permission_decision_) {
+    handler(permission_decision_);
+  }
 }
 
 }  // namespace web

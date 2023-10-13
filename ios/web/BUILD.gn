@@ -578,6 +578,7 @@ test("ios_web_inttests") {
     "//ios/web/test:resources",
     "//ios/web/test:test_constants",
     "//ios/web/test:test_support",
+    "//ios/web/test/fakes",
     "//ios/web/web_state",
     "//ios/web/web_state:test_util",
     "//ios/web/web_state:web_state_impl_header",

@@ -164,6 +164,12 @@ class FakeWebStateDelegate : public WebStateDelegate {
     should_allow_app_launching_ = should_allow_apps;
   }
 
+  // Sets whether the delegate should handle permission decision.
+  void SetShouldHandlePermissionDecision(
+      bool should_handle_permission_decision) {
+    should_handle_permission_decision_ = should_handle_permission_decision;
+  }
+
  private:
   std::vector<std::unique_ptr<WebState>> child_windows_;
   // WebStates that were closed via `CloseWebState` callback.
@@ -182,6 +188,7 @@ class FakeWebStateDelegate : public WebStateDelegate {
   NSArray<NSNumber*>* last_requested_permissions_;
   bool should_allow_app_launching_ = false;
   PermissionDecision permission_decision_ = PermissionDecisionDeny;
+  bool should_handle_permission_decision_ = true;
 };
 
 }  // namespace web
