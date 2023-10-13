@@ -6,6 +6,7 @@
 #define BASE_TYPES_OPTIONAL_REF_H_
 
 #include <memory>
+#include <optional>
 #include <type_traits>
 
 #include "base/check.h"
@@ -199,6 +200,16 @@ optional_ref(absl::optional<T>&) -> optional_ref<T>;
 
 template <typename T>
 optional_ref(T*) -> optional_ref<T>;
+
+template <typename T>
+constexpr bool operator==(std::nullopt_t, optional_ref<T> x) {
+  return !x.has_value();
+}
+
+template <typename T>
+constexpr bool operator==(optional_ref<T> x, std::nullopt_t) {
+  return !x.has_value();
+}
 
 }  // namespace base
 

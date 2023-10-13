@@ -5,6 +5,7 @@
 #include "base/types/optional_ref.h"
 
 #include <cstddef>
+#include <optional>
 #include <type_traits>
 #include <utility>
 
@@ -377,6 +378,21 @@ TEST(OptionalRefTest, CopyAsOptional) {
   optional_ref<int> r2(value);
   absl::optional<int> o2 = r2.CopyAsOptional();
   EXPECT_EQ(6, o2);
+}
+
+TEST(OptionalRefTest, EqualityComparisonWithNullOpt) {
+  {
+    optional_ref<int> r;
+    EXPECT_EQ(r, std::nullopt);
+    EXPECT_EQ(std::nullopt, r);
+  }
+
+  {
+    int value = 5;
+    optional_ref<int> r(value);
+    EXPECT_NE(r, std::nullopt);
+    EXPECT_NE(std::nullopt, r);
+  }
 }
 
 TEST(OptionalRefDeathTest, ArrowOnEmpty) {
