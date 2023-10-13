@@ -2,7 +2,7 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#include "chrome/browser/ui/webui/settings/ash/multidevice_section.h"
+#include "chrome/browser/ui/webui/ash/settings/pages/multidevice/multidevice_section.h"
 
 #include "ash/constants/ash_features.h"
 #include "ash/constants/ash_pref_names.h"
@@ -17,7 +17,7 @@
 #include "chrome/browser/ui/ash/session_controller_client_impl.h"
 #include "chrome/browser/ui/webui/ash/settings/search/search_tag_registry.h"
 #include "chrome/browser/ui/webui/nearby_share/shared_resources.h"
-#include "chrome/browser/ui/webui/settings/ash/multidevice_handler.h"
+#include "chrome/browser/ui/webui/ash/settings/pages/multidevice/multidevice_handler.h"
 #include "chrome/browser/ui/webui/settings/shared_settings_localized_strings_provider.h"
 #include "chrome/browser/ui/webui/webui_util.h"
 #include "chrome/common/url_constants.h"
