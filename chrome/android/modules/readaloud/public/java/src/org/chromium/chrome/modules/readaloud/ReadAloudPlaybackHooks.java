@@ -42,10 +42,15 @@ public interface ReadAloudPlaybackHooks {
 
     /**
      * Create the player UI.
-     * @param miniPlayerViewStub View stub that can create the mini player UI.
+     *
      * @param delegate Delegate providing the UI with outside dependencies.
      * @return a Player.
      */
+    default Player createPlayer(Player.Delegate delegate) {
+        return new Player() {};
+    }
+
+    // TODO remove
     default Player createPlayer(ViewStub miniPlayerViewStub, Player.Delegate delegate) {
         return new Player() {};
     }

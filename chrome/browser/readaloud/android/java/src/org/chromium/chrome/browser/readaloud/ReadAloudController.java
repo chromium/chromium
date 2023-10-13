@@ -4,6 +4,7 @@
 
 package org.chromium.chrome.browser.readaloud;
 
+import android.app.Activity;
 import android.content.Context;
 import android.view.ViewStub;
 
@@ -372,6 +373,11 @@ public class ReadAloudController implements Player.Observer, Player.Delegate, Pl
     @Override
     public void navigateToPlayingTab() {
         // TODO: implement
+    }
+
+    @Override
+    public Activity getActivity() {
+        return null;
     }
 
     // Player.Observer

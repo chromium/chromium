@@ -9,6 +9,8 @@ import static org.mockito.Mockito.eq;
 import static org.mockito.Mockito.reset;
 import static org.mockito.Mockito.verify;
 
+import android.app.Activity;
+
 import org.junit.Before;
 import org.junit.Test;
 import org.junit.runner.RunWith;
@@ -133,6 +135,11 @@ public class PlayerMediatorUnitTest {
 
         @Override
         public void navigateToPlayingTab() {}
+
+        @Override
+        public Activity getActivity() {
+            return null;
+        }
     }
 
     private TestPlayer mPlayer;

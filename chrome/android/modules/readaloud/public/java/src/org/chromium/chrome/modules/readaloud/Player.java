@@ -4,6 +4,8 @@
 
 package org.chromium.chrome.modules.readaloud;
 
+import android.app.Activity;
+
 import org.chromium.base.supplier.ObservableSupplier;
 import org.chromium.base.supplier.ObservableSupplierImpl;
 import org.chromium.chrome.modules.readaloud.PlaybackArgs.PlaybackVoice;
@@ -39,6 +41,9 @@ public interface Player {
         void previewVoice(PlaybackVoice voice);
         /** Navigate to the tab associated with the current playback */
         void navigateToPlayingTab();
+
+        /** Returns the Activity in which the player UI should live. */
+        Activity getActivity();
     }
 
     /** Observer interface to provide updates about player UI. */
