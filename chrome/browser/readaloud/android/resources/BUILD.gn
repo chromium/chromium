@@ -1,0 +1,16 @@
+# Copyright 2023 The Chromium Authors
+# Use of this source code is governed by a BSD-style license that can be
+# found in the LICENSE file.
+
+import("//build/config/locales.gni")
+import("//chrome/common/features.gni")
+import("//tools/grit/grit_rule.gni")
+
+java_strings_grd("ui_strings_grd") {
+  defines = chrome_grit_defines
+  grd_file = "android_readaloud_strings.grd"
+  outputs = [ "values/android_readaloud_strings.xml" ] +
+            process_file_template(
+                android_bundle_locales_as_resources,
+                [ "values-{{source_name_part}}/android_readaloud_strings.xml" ])
+}

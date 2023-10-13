@@ -5964,47 +5964,6 @@ To change this setting, <ph name="BEGIN_LINK">&lt;resetlink&gt;</ph>reset sync<p
         Please wait…
       </message>
 
-      <!-- Read Aloud ("Listen to this page") player strings -->
-      <message name="IDS_READALOUD_CLOSE_PLAYER_BUTTON_CONTENT_DESCRIPTION" desc="Accessibility string for the button that closes the 'Listen to this page' player.">
-        Tap to close “Listen to this page”.
-      </message>
-      <message name="IDS_READALOUD_PLAYER_NAME" desc="Name of the Read Aloud player for accessiblity.">
-        “Listen to this page” player.
-      </message>
-      <message name="IDS_READALOUD_PLAYER_OPENED_AT_FULL_HEIGHT" desc="Accessibility string spoken when the 'Listen to this page' player bottom sheet expands to its full height.">
-        “Listen to this page” player opened at full height.
-      </message>
-      <message name="IDS_READALOUD_PLAYER_MINIMIZED" desc="Accessibility string spoken when the 'Listen to this page' player bottom sheet shrinks to its minimized height.">
-        “Listen to this page” player minimized.
-      </message>
-      <message name="IDS_READALOUD_CHROME_NOW_PLAYING" desc="Text in 'Listen to this page' player appearing before the title of the currently playing page.">
-        Chrome now playing
-      </message>
-      <message name="IDS_READALOUD_REPLAY" desc="Accessibility string for the button that rewinds 'Listen to this page' playback by the specified number of seconds.">
-        Back <ph name="NUMBER_OF_SECONDS">%1$s<ex>10</ex></ph> seconds
-      </message>
-      <message name="IDS_READALOUD_FORWARD" desc="Accessibility string for the button that seeks 'Listen to this page' playback forward by the specified number of seconds.">
-        Forward <ph name="NUMBER_OF_SECONDS">%1$s<ex>30</ex></ph> seconds
-      </message>
-      <message name="IDS_READALOUD_PLAY" desc="Accessibility string for the 'Listen to this page' play button.">
-        Play
-      </message>
-      <message name="IDS_READALOUD_PAUSE" desc="Accessibility string for the 'Listen to this page' pause button.">
-        Pause
-      </message>
-      <message name="IDS_READALOUD_SPEED_MENU_BUTTON" desc="Accessibility string for the 'Listen to this page' playback speed menu button.">
-        Playback speed: <ph name="PLAYBACK_SPEED">%1$s<ex>1.0</ex></ph>. Click to change.
-      </message>
-      <message name="IDS_READALOUD_OPTIONS_MENU_BUTTON" desc="Accessibility string for the 'Listen to this page' options menu button.">
-        More options
-      </message>
-      <message name="IDS_READALOUD_PLAYBACK_ERROR" desc="Message displayed when an error occured during 'Listen to this page' playback.">
-        Playback is unavailable for this page.
-      </message>
-       <message name="IDS_READALOUD_PLAYBACK_LOADING" desc="Message displayed when 'Listen to this page' playback is buffering.">
-        Loading…
-      </message>
-
       <!-- Add username dialog -->
       <message name="IDS_ADD_USERNAME_DIALOG_TITLE" desc="Title of the dialog, which proposes the user to add a username when the password is being automatically saved and the username could not be captured.">
         Add your username
