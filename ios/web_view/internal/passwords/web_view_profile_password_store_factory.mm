@@ -2,7 +2,7 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#import "ios/web_view/internal/passwords/web_view_password_store_factory.h"
+#import "ios/web_view/internal/passwords/web_view_profile_password_store_factory.h"
 
 #import <memory>
 #import <utility>

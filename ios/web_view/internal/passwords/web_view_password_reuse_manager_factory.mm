@@ -14,7 +14,7 @@
 #import "components/prefs/pref_service.h"
 #import "ios/web_view/internal/app/application_context.h"
 #import "ios/web_view/internal/passwords/web_view_account_password_store_factory.h"
-#import "ios/web_view/internal/passwords/web_view_password_store_factory.h"
+#import "ios/web_view/internal/passwords/web_view_profile_password_store_factory.h"
 #import "ios/web_view/internal/web_view_browser_state.h"
 
 namespace ios_web_view {

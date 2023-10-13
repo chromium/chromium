@@ -19,7 +19,7 @@
 #import "ios/web/public/thread/web_thread.h"
 #import "ios/web_view/internal/app/application_context.h"
 #import "ios/web_view/internal/passwords/web_view_account_password_store_factory.h"
-#import "ios/web_view/internal/passwords/web_view_password_store_factory.h"
+#import "ios/web_view/internal/passwords/web_view_profile_password_store_factory.h"
 #import "ios/web_view/internal/signin/web_view_identity_manager_factory.h"
 #import "ios/web_view/internal/sync/web_view_device_info_sync_service_factory.h"
 #import "ios/web_view/internal/sync/web_view_gcm_profile_service_factory.h"

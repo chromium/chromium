@@ -2,8 +2,8 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#ifndef IOS_WEB_VIEW_INTERNAL_PASSWORDS_WEB_VIEW_PASSWORD_STORE_FACTORY_H_
-#define IOS_WEB_VIEW_INTERNAL_PASSWORDS_WEB_VIEW_PASSWORD_STORE_FACTORY_H_
+#ifndef IOS_WEB_VIEW_INTERNAL_PASSWORDS_WEB_VIEW_PROFILE_PASSWORD_STORE_FACTORY_H_
+#define IOS_WEB_VIEW_INTERNAL_PASSWORDS_WEB_VIEW_PROFILE_PASSWORD_STORE_FACTORY_H_
 
 #include "base/memory/ref_counted.h"
 #include "base/no_destructor.h"
@@ -51,4 +51,4 @@ class WebViewProfilePasswordStoreFactory
 
 }  // namespace ios_web_view
 
-#endif  // IOS_WEB_VIEW_INTERNAL_PASSWORDS_WEB_VIEW_PASSWORD_STORE_FACTORY_H_
+#endif  // IOS_WEB_VIEW_INTERNAL_PASSWORDS_WEB_VIEW_PROFILE_PASSWORD_STORE_FACTORY_H_

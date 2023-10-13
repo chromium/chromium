@@ -20,7 +20,7 @@
 #import "ios/web_view/internal/passwords/web_view_password_manager_log_router_factory.h"
 #import "ios/web_view/internal/passwords/web_view_password_requirements_service_factory.h"
 #import "ios/web_view/internal/passwords/web_view_password_reuse_manager_factory.h"
-#include "ios/web_view/internal/passwords/web_view_password_store_factory.h"
+#import "ios/web_view/internal/passwords/web_view_profile_password_store_factory.h"
 #include "ios/web_view/internal/signin/web_view_identity_manager_factory.h"
 #import "ios/web_view/internal/sync/web_view_sync_service_factory.h"
 #include "net/cert/cert_status_flags.h"
