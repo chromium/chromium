@@ -89,7 +89,8 @@ std::u16string GetLowBatteryTitle(
     return l10n_util::GetStringUTF16(
         IDS_ASH_STATUS_TRAY_CRITICAL_BATTERY_TITLE);
   } else if (enabling_at_threshold_notification) {
-    return l10n_util::GetStringUTF16(IDS_ASH_STATUS_TRAY_LOW_BATTERY_BSM_TITLE);
+    return l10n_util::GetStringUTF16(
+        IDS_ASH_STATUS_TRAY_LOW_BATTERY_BSM_AUTOENABLED_TITLE);
   }
 
   return l10n_util::GetStringUTF16(IDS_ASH_STATUS_TRAY_LOW_BATTERY_TITLE);
@@ -121,10 +122,10 @@ std::u16string GetLowBatteryMessage(
       enabling_at_threshold_notification) {
     return should_display_time
                ? l10n_util::GetStringFUTF16(
-                     IDS_ASH_STATUS_TRAY_LOW_BATTERY_BSM_MESSAGE, duration,
-                     base::NumberToString16(battery_percentage))
+                     IDS_ASH_STATUS_TRAY_LOW_BATTERY_BSM_AUTOENABLED_MESSAGE,
+                     base::NumberToString16(battery_percentage), duration)
                : l10n_util::GetStringFUTF16(
-                     IDS_ASH_STATUS_TRAY_LOW_BATTERY_BSM_MESSAGE_WITHOUT_TIME,
+                     IDS_ASH_STATUS_TRAY_LOW_BATTERY_BSM_AUTOENABLED_MESSAGE_WITHOUT_TIME,
                      base::NumberToString16(battery_percentage));
   }
 
@@ -133,10 +134,10 @@ std::u16string GetLowBatteryMessage(
        critical_notification)) {
     return should_display_time
                ? l10n_util::GetStringFUTF16(
-                     IDS_ASH_STATUS_TRAY_LOW_BATTERY_MESSAGE, duration,
-                     base::NumberToString16(battery_percentage))
+                     IDS_ASH_STATUS_TRAY_LOW_BATTERY_BSM_GENERIC_MESSAGE,
+                     base::NumberToString16(battery_percentage), duration)
                : l10n_util::GetStringFUTF16(
-                     IDS_ASH_STATUS_TRAY_LOW_BATTERY_MESSAGE_WITHOUT_TIME,
+                     IDS_ASH_STATUS_TRAY_LOW_BATTERY_BSM_GENERIC_MESSAGE_WITHOUT_TIME,
                      base::NumberToString16(battery_percentage));
   }
 

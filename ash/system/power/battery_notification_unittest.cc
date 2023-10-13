@@ -181,10 +181,17 @@ class BatteryNotificationTest : public AshTestBase {
     return GetStringUTF16(IDS_ASH_STATUS_TRAY_LOW_BATTERY_TITLE);
   }
 
-  std::u16string GetLowPowerMessageWithoutTime() {
+  std::u16string GetLowPowerMessageBSMWithoutTime() {
     return GetStringFUTF16(
-        IDS_ASH_STATUS_TRAY_LOW_BATTERY_MESSAGE_WITHOUT_TIME,
+        IDS_ASH_STATUS_TRAY_LOW_BATTERY_BSM_GENERIC_MESSAGE_WITHOUT_TIME,
         base::NumberToString16(PowerStatus::Get()->GetRoundedBatteryPercent()));
+  }
+
+  std::u16string GetLowPowerMessageBSM() {
+    return GetStringFUTF16(
+        IDS_ASH_STATUS_TRAY_LOW_BATTERY_BSM_GENERIC_MESSAGE,
+        base::NumberToString16(PowerStatus::Get()->GetRoundedBatteryPercent()),
+        GetRemainingTimeString());
   }
 
   std::u16string GetLowPowerMessage() {
@@ -194,19 +201,21 @@ class BatteryNotificationTest : public AshTestBase {
   }
 
   std::u16string GetBatterySaverTitle() {
-    return GetStringUTF16(IDS_ASH_STATUS_TRAY_LOW_BATTERY_BSM_TITLE);
+    return GetStringUTF16(
+        IDS_ASH_STATUS_TRAY_LOW_BATTERY_BSM_AUTOENABLED_TITLE);
   }
 
   std::u16string GetBatterySaverMessageWithoutTime() {
     return GetStringFUTF16(
-        IDS_ASH_STATUS_TRAY_LOW_BATTERY_BSM_MESSAGE_WITHOUT_TIME,
+        IDS_ASH_STATUS_TRAY_LOW_BATTERY_BSM_AUTOENABLED_MESSAGE_WITHOUT_TIME,
         base::NumberToString16(PowerStatus::Get()->GetRoundedBatteryPercent()));
   }
 
   std::u16string GetBatterySaverMessage() {
     return GetStringFUTF16(
-        IDS_ASH_STATUS_TRAY_LOW_BATTERY_BSM_MESSAGE, GetRemainingTimeString(),
-        base::NumberToString16(PowerStatus::Get()->GetRoundedBatteryPercent()));
+        IDS_ASH_STATUS_TRAY_LOW_BATTERY_BSM_AUTOENABLED_MESSAGE,
+        base::NumberToString16(PowerStatus::Get()->GetRoundedBatteryPercent()),
+        GetRemainingTimeString());
   }
 
   std::u16string GetBatterySaverOptOutButtonString() {
@@ -321,7 +330,7 @@ TEST_F(BatteryNotificationTest, ThresholdBatterySaverOptInNotification) {
       SystemNotificationWarningLevel::WARNING,
       FullscreenVisibility::OVER_USER,
       GetLowPowerTitle(),
-      GetLowPowerMessage(),
+      GetLowPowerMessageBSM(),
       GetBatterySaverOptInButtonString()};
 
   // Battery Saver should turn on when the button is clicked.
@@ -344,7 +353,7 @@ TEST_F(BatteryNotificationTest,
       SystemNotificationWarningLevel::WARNING,
       FullscreenVisibility::OVER_USER,
       GetLowPowerTitle(),
-      GetLowPowerMessageWithoutTime(),
+      GetLowPowerMessageBSMWithoutTime(),
       GetBatterySaverOptInButtonString()};
 
   // Battery Saver should turn on when the button is clicked.

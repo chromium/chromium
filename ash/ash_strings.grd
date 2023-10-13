@@ -2694,32 +2694,34 @@ Style notes:
         About <ph name="time_left">$1<ex>40 minutes</ex></ph> left (<ph name="percentage">$2<ex>56%</ex></ph>%).
 Connect your device to power.
       </message>
-      <message name="IDS_ASH_STATUS_TRAY_LOW_BATTERY_MESSAGE_WITHOUT_TIME" translateable="false" desc="The label in the tray dialog to show the remaining battery power as a percent.">
-        About <ph name="percentage">$1<ex>56%</ex></ph>% left.
-Connect your device to power.
-      </message>
-      <message name="IDS_ASH_BATTERY_SAVER_DISABLED_TOAST_TEXT" translateable="false" desc="The toast message when battery saver mode is disabled.">
-        Battery Saver has been turned off
-      </message>
-      <message name="IDS_ASH_BATTERY_SAVER_ENABLED_TOAST_TEXT" translateable="false" desc="The toast message when battery saver mode is enabled.">
-        Battery Saver has been turned on
-      </message>
-      <message name="IDS_ASH_STATUS_TRAY_LOW_BATTERY_BSM_TITLE" translateable="false" desc="The title for the notification displayed when device battery level is low, and battery saver mode is enabled.">
+      <message name="IDS_ASH_STATUS_TRAY_LOW_BATTERY_BSM_AUTOENABLED_TITLE" desc="The title for the notification displayed when device battery level is low, and battery saver was just enabled.">
         Low battery. Battery Saver turned on.
       </message>
-      <message name="IDS_ASH_STATUS_TRAY_LOW_BATTERY_BSM_MESSAGE" translateable="false" desc="The label in the tray dialog to show the remaining battery power as a percent, with additional text stating battery saver mode has been enabled.">
-        About <ph name="time_left">$1<ex>40 minutes</ex></ph> left (<ph name="percentage">$2<ex>56%</ex></ph>%).
+      <message name="IDS_ASH_STATUS_TRAY_LOW_BATTERY_BSM_AUTOENABLED_MESSAGE" desc="The notification body text stating features are limited because of battery saver, alongside the remaining battery percentage, and the estimated time remaining.">
+        <ph name="percentage">$1<ex>20%</ex></ph>% battery left (about <ph name="time_left">$2<ex>25 minutes</ex></ph>).
 Some features are limited to increase battery life.
       </message>
-      <message name="IDS_ASH_STATUS_TRAY_LOW_BATTERY_BSM_MESSAGE_WITHOUT_TIME" translateable="false" desc="The notification body text stating features are limited because of battery saver, alongside the remaining battery percentage.">
-        About <ph name="percentage">$1<ex>56%</ex></ph>% left.
+      <message name="IDS_ASH_STATUS_TRAY_LOW_BATTERY_BSM_AUTOENABLED_MESSAGE_WITHOUT_TIME" desc="The notification body text stating features are limited because of battery saver, alongside the remaining battery percentage.">
+        <ph name="percentage">$1<ex>20%</ex></ph>% battery left.
 Some features are limited to increase battery life.
       </message>
-      <message name="IDS_ASH_STATUS_TRAY_LOW_BATTERY_BSM_BUTTON_OPT_OUT" translateable="false" desc="The button text on the low power notification to disable battery saver.">
-        Turn off Battery Saver
+      <message name="IDS_ASH_STATUS_TRAY_LOW_BATTERY_BSM_GENERIC_MESSAGE" desc="The notification body text telling the user their battery is low using both percentage and time remaining estimates.">
+        <ph name="percentage">$1<ex>20%</ex></ph>% battery left (about <ph name="time_left">$2<ex>25 minutes</ex></ph>). Connect your device to power.
+      </message>
+      <message name="IDS_ASH_STATUS_TRAY_LOW_BATTERY_BSM_GENERIC_MESSAGE_WITHOUT_TIME" desc="The notification body text telling the user their battery is low via percentage.">
+        <ph name="percentage">$1<ex>20%</ex></ph>% battery left. Connect your device to power.
+      </message>
+      <message name="IDS_ASH_STATUS_TRAY_LOW_BATTERY_BSM_BUTTON_OPT_OUT" desc="The button text on the low power notification to disable battery saver.">
+        Turn off
       </message>
       <message name="IDS_ASH_STATUS_TRAY_LOW_BATTERY_BSM_BUTTON_OPT_IN" translateable="false" desc="The button text on the low power notification to enable battery saver.">
         Turn on Battery Saver
+      </message>
+      <message name="IDS_ASH_BATTERY_SAVER_DISABLED_TOAST_TEXT" desc="The toast message that appears battery saver is disabled, typically through user interaction like charger plug-in or pressing the notification disable button.">
+        Battery Saver turned off
+      </message>
+      <message name="IDS_ASH_BATTERY_SAVER_ENABLED_TOAST_TEXT" desc="The toast message when battery saver is enabled. This typically appears when there is no notification ">
+        Battery Saver turned on
       </message>
       <message name="IDS_ASH_STATUS_TRAY_BATTERY_PERCENT_TITLE" desc="The title displayed in a battery status notification.">Battery status</message>
       <message name="IDS_ASH_STATUS_TRAY_BATTERY_PERCENT" desc="The label in the tray dialog to show the remaining battery power as a percent.">
@@ -2749,10 +2751,10 @@ Some features are limited to increase battery life.
       <message name="IDS_ASH_STATUS_TRAY_BATTERY_PERCENT_CHARGING_ACCESSIBLE" desc="The message used by accessibility to show battery is being charged.">
         Battery at <ph name="percentage">$1<ex>56</ex></ph>% and charging.
       </message>
-            <message name="IDS_ASH_STATUS_TRAY_BATTERY_PERCENT_BSM_ON_ACCESSIBLE" translateable="false" desc="The message used by accessibility to show battery is discharging with battery saver enabled.">
+      <message name="IDS_ASH_STATUS_TRAY_BATTERY_PERCENT_BSM_ON_ACCESSIBLE" desc="The message used by accessibility to show battery is discharging with battery saver enabled.">
         Battery at <ph name="percentage">$1<ex>56</ex></ph> percent. Battery Saver is on.
       </message>
-      <message name="IDS_ASH_STATUS_TRAY_BATTERY_PERCENT_CHARGING_BSM_ON_ACCESSIBLE" translateable="false" desc="The message used by accessibility to show battery is being charged with battery saver enabled.">
+      <message name="IDS_ASH_STATUS_TRAY_BATTERY_PERCENT_CHARGING_BSM_ON_ACCESSIBLE" desc="The message used by accessibility to show battery is being charged with battery saver enabled.">
         Battery at <ph name="percentage">$1<ex>56</ex></ph>% and charging. Battery Saver is on.
       </message>
       <message name="IDS_ASH_STATUS_TRAY_BATTERY_CALCULATING_ACCESSIBLE" desc="The message used by accessibility to show battery is calculating its time in short message.">
