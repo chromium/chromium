@@ -57,26 +57,21 @@ void StructuredMetricsMixin::SetUpOnMainThread() {
 
   system_profile_provider_ = std::make_unique<TestSystemProfileProvider>();
 
-  base::FilePath local_state_events_path =
-      temp_dir_.GetPath()
-          .Append(FILE_PATH_LITERAL("structured"))
-          .Append(FILE_PATH_LITERAL("local_state_events"));
-
   auto recorder =
       std::unique_ptr<StructuredMetricsRecorder>(new StructuredMetricsRecorder(
-          /*write_delay=*/base::Milliseconds(0), system_profile_provider_.get(),
-          local_state_events_path));
+          /*write_delay=*/base::Milliseconds(0),
+          system_profile_provider_.get()));
 
-  base::FilePath local_state_events_keys_path =
+  base::FilePath device_keys_path =
       temp_dir_.GetPath()
           .Append(FILE_PATH_LITERAL("structured"))
-          .Append(FILE_PATH_LITERAL("local_state_keys"));
+          .Append(FILE_PATH_LITERAL("device_keys"));
   base::FilePath profile_path =
       temp_dir_.GetPath().Append(FILE_PATH_LITERAL("profile"));
 
   // Create test key data provider and initialize key data provider.
   auto test_key_data_provider =
-      std::make_unique<TestKeyDataProvider>(local_state_events_keys_path);
+      std::make_unique<TestKeyDataProvider>(device_keys_path);
   recorder->InitializeKeyDataProvider(std::move(test_key_data_provider));
 
   // TODO(b/282057109): Cleanup provider code once feature is removed.
@@ -119,27 +114,17 @@ std::vector<StructuredEventProto> StructuredMetricsMixin::FindEvents(
     uint64_t project_name_hash,
     uint64_t event_name_hash) {
   std::vector<StructuredEventProto> events_vector;
-
-  if (GetRecorder()->can_provide_local_state_metrics()) {
-    const EventsProto& local_state_events = *GetRecorder()->LocalStateEvents();
-    for (const auto& event : local_state_events.non_uma_events()) {
-      if (event.project_name_hash() == project_name_hash &&
-          event.event_name_hash() == event_name_hash) {
-        events_vector.push_back(event);
-      }
-    }
+  if (!GetRecorder()->can_provide_metrics()) {
+    return events_vector;
   }
 
-  if (GetRecorder()->can_provide_profile_metrics()) {
-    const EventsProto& profile_events = *GetRecorder()->ProfileEvents();
-    for (const auto& event : profile_events.non_uma_events()) {
-      if (event.project_name_hash() == project_name_hash &&
-          event.event_name_hash() == event_name_hash) {
-        events_vector.push_back(event);
-      }
+  const EventsProto& events = *GetRecorder()->events();
+  for (const auto& event : events.non_uma_events()) {
+    if (event.project_name_hash() == project_name_hash &&
+        event.event_name_hash() == event_name_hash) {
+      events_vector.push_back(event);
     }
   }
-
   return events_vector;
 }
 

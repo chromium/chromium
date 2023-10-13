@@ -67,7 +67,7 @@ void StructuredMetricsService::Flush(
   DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
   // The log should not be built if there aren't any events to log.
   // This is mirroring a check in RotateLogsAndSend.
-  if (!recorder_->HasIndependentMetrics()) {
+  if (recorder_->events()->non_uma_events_size() == 0) {
     return;
   }
   BuildAndStoreLog(reason);
@@ -135,7 +135,8 @@ void StructuredMetricsService::RotateLogsAndSend() {
 
   // Verify that the recorder has been initialized and can be providing metrics.
   // And if it is, then see if there are any events ready to be uploaded.
-  if (!recorder_->recording_enabled() || !recorder_->HasIndependentMetrics()) {
+  if (!recorder_->can_provide_metrics() ||
+      recorder_->events()->non_uma_events_size() == 0) {
     return;
   }
 
