@@ -6,10 +6,10 @@ package org.chromium.mojo;
 
 import androidx.annotation.IntDef;
 
+import org.jni_zero.JNINamespace;
+import org.jni_zero.NativeMethods;
 import org.junit.rules.ExternalResource;
 
-import org.chromium.base.annotations.JNINamespace;
-import org.chromium.base.annotations.NativeMethods;
 import org.chromium.base.library_loader.LibraryLoader;
 import org.chromium.base.library_loader.LibraryProcessType;
 
