@@ -72,17 +72,18 @@ namespace policy {
 
 namespace {
 
-constexpr char kExampleUrl1[] = "https://example1.com/";
-constexpr char kExampleUrl2[] = "https://example2.com/";
-constexpr char kExampleUrl3[] = "https://example3.com/";
-constexpr char kExampleUrl4[] = "https://example4.com/";
-constexpr char kExampleUrl5[] = "https://example5.com/";
-constexpr char kExampleUrl6[] = "https://example6.com/";
+constexpr char kExampleUrl1[] = "https://1.example.com/";
+constexpr char kExampleUrl2[] = "https://2.example.com/";
+constexpr char kExampleUrl3[] = "https://3.example.com/";
+constexpr char kExampleUrl4[] = "https://4.example.com/";
+constexpr char kExampleUrl5[] = "https://5.example.com/";
+constexpr char kExampleUrl6[] = "https://6.example.com/";
+constexpr char kExampleUrl7[] = "https://7.example.com/";
 
-constexpr char kExampleSourcePattern1[] = "example1.com";
-constexpr char kExampleSourcePattern2[] = "example2.com";
-constexpr char kExampleSourcePattern3[] = "example3.com";
-constexpr char kExampleSourcePattern4[] = "example4.com";
+constexpr char kExampleSourcePattern1[] = "1.example.com";
+constexpr char kExampleSourcePattern2[] = "2.example.com";
+constexpr char kExampleSourcePattern3[] = "3.example.com";
+constexpr char kExampleSourcePattern4[] = "4.example.com";
 
 constexpr char kReferrerUrl1[] = "https://referrer1.com/";
 constexpr char kReferrerUrl2[] = "https://referrer2.com/";
@@ -107,12 +108,23 @@ constexpr char kFilePath3[] = "test3.txt";
 constexpr char kFilePath4[] = "test4.txt";
 constexpr char kFilePath5[] = "test5.txt";
 
+constexpr char kStandaloneBrowserChromeAppId[] = "standaloneChromeApp";
+constexpr char kExtensionAppId[] = "extensionApp";
+constexpr char kStandaloneBrowserExtensionAppId[] =
+    "standaloneBrowserExtensionApp";
 constexpr char kChromeAppId[] = "chromeApp";
 constexpr char kArcAppId[] = "arcApp";
 constexpr char kCrostiniAppId[] = "crostiniApp";
 constexpr char kPluginVmAppId[] = "pluginVmApp";
 constexpr char kWebAppId[] = "webApp";
 constexpr char kSystemWebAppId[] = "systemWebApp";
+constexpr char kUnknownAppId[] = "unknownApp";
+constexpr char kBuiltInAppId[] = "builtInApp";
+constexpr char kMacOsAppId[] = "MacOsApp";
+constexpr char kStandaloneBrowserAppId[] = "standaloneBrowserApp";
+constexpr char kRemoteAppId[] = "remoteApp";
+constexpr char kBorealisAppId[] = "borealisApp";
+constexpr char kBruschettaAppId[] = "bruschettaApp";
 
 constexpr char kRuleName1[] = "rule #1";
 constexpr char kRuleName2[] = "rule #2";
@@ -1547,13 +1559,22 @@ TEST_P(DlpFilesExternalDestinationTest, FilePromptForDownload) {
 
   EXPECT_CALL(*rules_manager_,
               IsRestrictedComponent(_, expected_component, _, _, _))
-      .WillOnce(testing::Return(DlpRulesManager::Level::kBlock));
+      .WillOnce(testing::Return(DlpRulesManager::Level::kBlock))
+      .WillOnce(testing::Return(DlpRulesManager::Level::kWarn))
+      .WillOnce(testing::Return(DlpRulesManager::Level::kReport));
 
   auto dst_url = mount_points_->CreateExternalFileSystemURL(
       blink::StorageKey(), mount_name, base::FilePath(path));
   ASSERT_TRUE(dst_url.is_valid());
 
+  // Block
   EXPECT_TRUE(files_controller_->ShouldPromptBeforeDownload(
+      DlpFileDestination(GURL(kExampleUrl1)), dst_url.path()));
+  // Warn
+  EXPECT_TRUE(files_controller_->ShouldPromptBeforeDownload(
+      DlpFileDestination(GURL(kExampleUrl1)), dst_url.path()));
+  // Report
+  EXPECT_FALSE(files_controller_->ShouldPromptBeforeDownload(
       DlpFileDestination(GURL(kExampleUrl1)), dst_url.path()));
 }
 
@@ -2050,9 +2071,7 @@ TEST_F(DlpFilesAppServiceTest, IsLaunchBlocked_NoSourceUrl) {
       }));
 }
 
-class DlpFilesAppLaunchTest : public DlpFilesAppServiceTest,
-                              public ::testing::WithParamInterface<
-                                  std::tuple<apps::AppType, std::string>> {
+class DlpFilesAppLaunchTest : public DlpFilesAppServiceTest {
  public:
   DlpFilesAppLaunchTest(const DlpFilesAppServiceTest&) = delete;
   DlpFilesAppLaunchTest& operator=(const DlpFilesAppServiceTest&) = delete;
@@ -2062,38 +2081,64 @@ class DlpFilesAppLaunchTest : public DlpFilesAppServiceTest,
 
   ~DlpFilesAppLaunchTest() override = default;
 
-  void SetUp() override {
-    DlpFilesAppServiceTest::SetUp();
+  std::unique_ptr<apps::Intent> GetAppServiceIntent(
+      const std::vector<std::string>& paths = {"Documents/foo1.txt",
+                                               "Documents/foo2.txt"}) {
+    auto app_service_intent =
+        std::make_unique<apps::Intent>(apps_util::kIntentActionSend);
+    app_service_intent->mime_type = "*/*";
+    app_service_intent->files = std::vector<apps::IntentFilePtr>{};
 
-    CreateAndStoreFakeApp(kChromeAppId, apps::AppType::kChromeApp,
+    for (const auto& path : paths) {
+      auto url = ToGURL(base::FilePath(storage::kTestDir), path);
+      EXPECT_TRUE(url.SchemeIsFileSystem());
+      auto file = std::make_unique<apps::IntentFile>(url);
+      file->mime_type = "text/plain";
+      file->dlp_source_url = kExampleUrl1;
+      app_service_intent->files.push_back(std::move(file));
+    }
+
+    return app_service_intent;
+  }
+
+  const std::string path1 = "Documents/foo1.txt";
+  const std::string path2 = "Documents/foo2.txt";
+};
+
+class DlpFilesAppLaunchTest_ExtensionApp
+    : public DlpFilesAppLaunchTest,
+      public ::testing::WithParamInterface<
+          std::tuple<apps::AppType, std::string>> {
+ protected:
+  void SetUp() override {
+    DlpFilesAppLaunchTest::SetUp();
+
+    CreateAndStoreFakeApp(kStandaloneBrowserChromeAppId,
+                          apps::AppType::kStandaloneBrowserChromeApp,
                           kExampleUrl1);
-    CreateAndStoreFakeApp(kArcAppId, apps::AppType::kArc, kExampleUrl2);
-    CreateAndStoreFakeApp(kCrostiniAppId, apps::AppType::kCrostini,
+    CreateAndStoreFakeApp(kExtensionAppId, apps::AppType::kExtension,
+                          kExampleUrl2);
+    CreateAndStoreFakeApp(kStandaloneBrowserExtensionAppId,
+                          apps::AppType::kStandaloneBrowserExtension,
                           kExampleUrl3);
-    CreateAndStoreFakeApp(kPluginVmAppId, apps::AppType::kPluginVm,
+    CreateAndStoreFakeApp(kChromeAppId, apps::AppType::kChromeApp,
                           kExampleUrl4);
-    CreateAndStoreFakeApp(kWebAppId, apps::AppType::kWeb, kExampleUrl5);
-    CreateAndStoreFakeApp(kSystemWebAppId, apps::AppType::kSystemWeb,
-                          kExampleUrl6);
   }
 };
 
 INSTANTIATE_TEST_SUITE_P(
     DlpFiles,
-    DlpFilesAppLaunchTest,
-    ::testing::Values(std::make_tuple(apps::AppType::kChromeApp, kChromeAppId),
-                      std::make_tuple(apps::AppType::kArc, kArcAppId),
-                      std::make_tuple(apps::AppType::kCrostini, kCrostiniAppId),
-                      std::make_tuple(apps::AppType::kPluginVm, kPluginVmAppId),
-                      std::make_tuple(apps::AppType::kWeb, kWebAppId),
-                      std::make_tuple(apps::AppType::kSystemWeb,
-                                      kSystemWebAppId)));
+    DlpFilesAppLaunchTest_ExtensionApp,
+    ::testing::Values(
+        std::make_tuple(apps::AppType::kStandaloneBrowserChromeApp,
+                        kStandaloneBrowserExtensionAppId),
+        std::make_tuple(apps::AppType::kExtension, kExtensionAppId),
+        std::make_tuple(apps::AppType::kStandaloneBrowserExtension,
+                        kStandaloneBrowserExtensionAppId),
+        std::make_tuple(apps::AppType::kChromeApp, kChromeAppId)));
 
-TEST_P(DlpFilesAppLaunchTest, CheckIfAppLaunchAllowed) {
+TEST_P(DlpFilesAppLaunchTest_ExtensionApp, CheckIfAppLaunchAllowed) {
   auto [app_type, app_id] = GetParam();
-
-  const std::string path1 = "Documents/foo1.txt";
-  const std::string path2 = "Documents/foo2.txt";
 
   ::dlp::CheckFilesTransferResponse check_files_transfer_response;
   check_files_transfer_response.add_files_paths(path1);
@@ -2106,21 +2151,7 @@ TEST_P(DlpFilesAppLaunchTest, CheckIfAppLaunchAllowed) {
                           std::vector<base::FilePath>{base::FilePath(path1)},
                           dlp::FileAction::kOpen));
 
-  auto app_service_intent =
-      std::make_unique<apps::Intent>(apps_util::kIntentActionSend);
-  app_service_intent->mime_type = "*/*";
-  app_service_intent->files = std::vector<apps::IntentFilePtr>{};
-  auto url1 = ToGURL(base::FilePath(storage::kTestDir), path1);
-  EXPECT_TRUE(url1.SchemeIsFileSystem());
-  auto file1 = std::make_unique<apps::IntentFile>(url1);
-  file1->mime_type = "text/plain";
-  app_service_intent->files.push_back(std::move(file1));
-  auto url2 = ToGURL(base::FilePath(storage::kTestDir), path2);
-  EXPECT_TRUE(url2.SchemeIsFileSystem());
-  auto file2 = std::make_unique<apps::IntentFile>(url2);
-  file2->mime_type = "text/plain";
-  app_service_intent->files.push_back(std::move(file2));
-
+  auto app_service_intent = GetAppServiceIntent();
   EXPECT_TRUE(app_service_intent->IsShareIntent());
 
   base::test::TestFuture<bool> launch_cb;
@@ -2138,36 +2169,9 @@ TEST_P(DlpFilesAppLaunchTest, CheckIfAppLaunchAllowed) {
           ->GetTestInterface()
           ->GetLastCheckFilesTransferRequest();
 
-  if (app_type == apps::AppType::kChromeApp) {
-    EXPECT_TRUE(last_check_files_transfer_request.has_destination_url());
-    EXPECT_EQ(GURL(last_check_files_transfer_request.destination_url()),
-              GURL(std::string(extensions::kExtensionScheme) + "://" + app_id));
-
-  } else if (app_type == apps::AppType::kArc) {
-    EXPECT_TRUE(last_check_files_transfer_request.has_destination_component());
-    EXPECT_EQ(last_check_files_transfer_request.destination_component(),
-              ::dlp::DlpComponent::ARC);
-
-  } else if (app_type == apps::AppType::kCrostini) {
-    EXPECT_TRUE(last_check_files_transfer_request.has_destination_component());
-    EXPECT_EQ(last_check_files_transfer_request.destination_component(),
-              ::dlp::DlpComponent::CROSTINI);
-
-  } else if (app_type == apps::AppType::kPluginVm) {
-    EXPECT_TRUE(last_check_files_transfer_request.has_destination_component());
-    EXPECT_EQ(last_check_files_transfer_request.destination_component(),
-              ::dlp::DlpComponent::PLUGIN_VM);
-
-  } else if (app_type == apps::AppType::kWeb) {
-    EXPECT_TRUE(last_check_files_transfer_request.has_destination_url());
-    EXPECT_EQ(GURL(last_check_files_transfer_request.destination_url()),
-              GURL(kExampleUrl5));
-
-  } else if (app_type == apps::AppType::kSystemWeb) {
-    EXPECT_TRUE(last_check_files_transfer_request.has_destination_url());
-    EXPECT_EQ(GURL(last_check_files_transfer_request.destination_url()),
-              GURL(kExampleUrl6));
-  }
+  EXPECT_TRUE(last_check_files_transfer_request.has_destination_url());
+  EXPECT_EQ(GURL(last_check_files_transfer_request.destination_url()),
+            GURL(std::string(extensions::kExtensionScheme) + "://" + app_id));
 
   EXPECT_TRUE(last_check_files_transfer_request.has_file_action());
   EXPECT_EQ(last_check_files_transfer_request.file_action(),
@@ -2184,32 +2188,27 @@ TEST_P(DlpFilesAppLaunchTest, CheckIfAppLaunchAllowed) {
               testing::UnorderedElementsAreArray(expected_requested_files));
 }
 
-TEST_P(DlpFilesAppLaunchTest, IsLaunchBlocked) {
+class DlpFilesAppLaunchTest_WebApp
+    : public DlpFilesAppLaunchTest,
+      public ::testing::WithParamInterface<
+          std::tuple<apps::AppType, std::string, std::string>> {
+ protected:
+  void SetUp() override {
+    DlpFilesAppLaunchTest::SetUp();
+
+    CreateAndStoreFakeApp(kWebAppId, apps::AppType::kWeb, kExampleUrl1);
+    CreateAndStoreFakeApp(kSystemWebAppId, apps::AppType::kSystemWeb,
+                          kExampleUrl2);
+  }
+};
+
+TEST_P(DlpFilesAppLaunchTest_ExtensionApp, IsLaunchBlocked) {
   auto [app_type, app_id] = GetParam();
 
-  auto app_service_intent =
-      std::make_unique<apps::Intent>(apps_util::kIntentActionSend);
-  app_service_intent->mime_type = "*/*";
-  app_service_intent->files = std::vector<apps::IntentFilePtr>{};
-  auto url1 = ToGURL(base::FilePath(storage::kTestDir), "Documents/foo1.txt");
-  EXPECT_TRUE(url1.SchemeIsFileSystem());
-  auto file1 = std::make_unique<apps::IntentFile>(url1);
-  file1->mime_type = "text/plain";
-  file1->dlp_source_url = kExampleUrl1;
-  app_service_intent->files.push_back(std::move(file1));
+  auto app_service_intent = GetAppServiceIntent({path1});
 
-  std::vector<std::string> urls;
-  urls.push_back(kExampleUrl1);
-
-  if (app_type == apps::AppType::kChromeApp ||
-      app_type == apps::AppType::kWeb ||
-      app_type == apps::AppType::kSystemWeb) {
-    EXPECT_CALL(*rules_manager_, IsRestrictedDestination)
-        .WillOnce(testing::Return(DlpRulesManager::Level::kBlock));
-  } else {
-    EXPECT_CALL(*rules_manager_, IsRestrictedComponent)
-        .WillOnce(testing::Return(DlpRulesManager::Level::kBlock));
-  }
+  EXPECT_CALL(*rules_manager_, IsRestrictedDestination)
+      .WillOnce(testing::Return(DlpRulesManager::Level::kBlock));
 
   ASSERT_TRUE(files_controller_);
   EXPECT_TRUE(app_service_proxy_->AppRegistryCache().ForOneApp(
@@ -2219,34 +2218,251 @@ TEST_P(DlpFilesAppLaunchTest, IsLaunchBlocked) {
       }));
 }
 
-TEST_P(DlpFilesAppLaunchTest, IsLaunchBlocked_Empty) {
-  auto [app_type, app_id] = GetParam();
+INSTANTIATE_TEST_SUITE_P(
+    DlpFiles,
+    DlpFilesAppLaunchTest_WebApp,
+    ::testing::Values(
+        std::make_tuple(apps::AppType::kWeb, kWebAppId, kExampleUrl1),
+        std::make_tuple(apps::AppType::kSystemWeb,
+                        kSystemWebAppId,
+                        kExampleUrl2)));
 
-  auto app_service_intent =
-      std::make_unique<apps::Intent>(apps_util::kIntentActionSend);
-  app_service_intent->mime_type = "*/*";
-  app_service_intent->files = std::vector<apps::IntentFilePtr>{};
-  auto url1 = ToGURL(base::FilePath(storage::kTestDir), "Documents/foo1.txt");
-  EXPECT_TRUE(url1.SchemeIsFileSystem());
-  auto file1 = std::make_unique<apps::IntentFile>(url1);
-  file1->mime_type = "text/plain";
-  file1->dlp_source_url = kExampleUrl1;
-  app_service_intent->files.push_back(std::move(file1));
+TEST_P(DlpFilesAppLaunchTest_WebApp, CheckIfAppLaunchAllowed) {
+  auto [app_type, app_id, url] = GetParam();
 
-  if (app_type == apps::AppType::kChromeApp ||
-      app_type == apps::AppType::kWeb ||
-      app_type == apps::AppType::kSystemWeb) {
-    EXPECT_CALL(*rules_manager_, IsRestrictedDestination)
-        .WillOnce(testing::Return(DlpRulesManager::Level::kBlock));
-  } else {
-    EXPECT_CALL(*rules_manager_, IsRestrictedComponent)
-        .WillOnce(testing::Return(DlpRulesManager::Level::kBlock));
-  }
+  ::dlp::CheckFilesTransferResponse check_files_transfer_response;
+  check_files_transfer_response.add_files_paths(path1);
+  ASSERT_TRUE(chromeos::DlpClient::Get()->IsAlive());
+  chromeos::DlpClient::Get()->GetTestInterface()->SetCheckFilesTransferResponse(
+      check_files_transfer_response);
+
+  EXPECT_CALL(*fpnm_, ShowDlpBlockedFiles(
+                          /*task_id=*/{absl::nullopt},
+                          std::vector<base::FilePath>{base::FilePath(path1)},
+                          dlp::FileAction::kOpen));
+
+  auto app_service_intent = GetAppServiceIntent();
+  EXPECT_TRUE(app_service_intent->IsShareIntent());
+
+  base::test::TestFuture<bool> launch_cb;
+  ASSERT_TRUE(files_controller_);
+  EXPECT_TRUE(app_service_proxy_->AppRegistryCache().ForOneApp(
+      app_id,
+      [this, &app_service_intent, &launch_cb](const apps::AppUpdate& update) {
+        files_controller_->CheckIfLaunchAllowed(
+            update, std::move(app_service_intent), launch_cb.GetCallback());
+      }));
+  EXPECT_EQ(launch_cb.Get(), false);
+
+  auto last_check_files_transfer_request =
+      chromeos::DlpClient::Get()
+          ->GetTestInterface()
+          ->GetLastCheckFilesTransferRequest();
+
+  EXPECT_TRUE(last_check_files_transfer_request.has_destination_url());
+  EXPECT_EQ(GURL(last_check_files_transfer_request.destination_url()),
+            GURL(url));
+
+  EXPECT_TRUE(last_check_files_transfer_request.has_file_action());
+  EXPECT_EQ(last_check_files_transfer_request.file_action(),
+            ::dlp::FileAction::SHARE);
+  EXPECT_FALSE(last_check_files_transfer_request.has_io_task_id());
+
+  std::vector<std::string> expected_requested_files;
+  expected_requested_files.push_back(path1);
+  expected_requested_files.push_back(path2);
+  std::vector<std::string> requested_files(
+      last_check_files_transfer_request.files_paths().begin(),
+      last_check_files_transfer_request.files_paths().end());
+  EXPECT_THAT(requested_files,
+              testing::UnorderedElementsAreArray(expected_requested_files));
+}
+
+TEST_P(DlpFilesAppLaunchTest_WebApp, IsLaunchBlocked) {
+  auto [app_type, app_id, url] = GetParam();
+
+  auto app_service_intent = GetAppServiceIntent({path1});
+
+  EXPECT_CALL(*rules_manager_, IsRestrictedDestination)
+      .WillOnce(testing::Return(DlpRulesManager::Level::kBlock));
 
   ASSERT_TRUE(files_controller_);
   EXPECT_TRUE(app_service_proxy_->AppRegistryCache().ForOneApp(
       app_id, [this, &app_service_intent](const apps::AppUpdate& update) {
         EXPECT_TRUE(files_controller_->IsLaunchBlocked(
+            update, std::move(app_service_intent)));
+      }));
+}
+
+TEST_P(DlpFilesAppLaunchTest_WebApp, IsLaunchBlocked_Empty) {
+  auto [app_type, app_id, url] = GetParam();
+
+  auto app_service_intent = GetAppServiceIntent({});
+
+  ASSERT_TRUE(files_controller_);
+  EXPECT_TRUE(app_service_proxy_->AppRegistryCache().ForOneApp(
+      app_id, [this, &app_service_intent](const apps::AppUpdate& update) {
+        EXPECT_FALSE(files_controller_->IsLaunchBlocked(
+            update, std::move(app_service_intent)));
+      }));
+}
+
+class DlpFilesAppLaunchTest_Component
+    : public DlpFilesAppLaunchTest,
+      public ::testing::WithParamInterface<
+          std::tuple<apps::AppType, std::string, ::dlp::DlpComponent>> {
+ protected:
+  void SetUp() override {
+    DlpFilesAppLaunchTest::SetUp();
+
+    CreateAndStoreFakeApp(kArcAppId, apps::AppType::kArc, kExampleUrl1);
+    CreateAndStoreFakeApp(kCrostiniAppId, apps::AppType::kCrostini,
+                          kExampleUrl2);
+    CreateAndStoreFakeApp(kPluginVmAppId, apps::AppType::kPluginVm,
+                          kExampleUrl3);
+  }
+};
+
+INSTANTIATE_TEST_SUITE_P(
+    DlpFiles,
+    DlpFilesAppLaunchTest_Component,
+    ::testing::Values(std::make_tuple(apps::AppType::kArc,
+                                      kArcAppId,
+                                      ::dlp::DlpComponent::ARC),
+                      std::make_tuple(apps::AppType::kCrostini,
+                                      kCrostiniAppId,
+                                      ::dlp::DlpComponent::CROSTINI),
+                      std::make_tuple(apps::AppType::kPluginVm,
+                                      kPluginVmAppId,
+                                      ::dlp::DlpComponent::PLUGIN_VM)));
+
+TEST_P(DlpFilesAppLaunchTest_Component, CheckIfAppLaunchAllowed) {
+  auto [app_type, app_id, expected_component] = GetParam();
+
+  ::dlp::CheckFilesTransferResponse check_files_transfer_response;
+  check_files_transfer_response.add_files_paths(path1);
+  ASSERT_TRUE(chromeos::DlpClient::Get()->IsAlive());
+  chromeos::DlpClient::Get()->GetTestInterface()->SetCheckFilesTransferResponse(
+      check_files_transfer_response);
+
+  EXPECT_CALL(*fpnm_, ShowDlpBlockedFiles(
+                          /*task_id=*/{absl::nullopt},
+                          std::vector<base::FilePath>{base::FilePath(path1)},
+                          dlp::FileAction::kOpen));
+
+  auto app_service_intent = GetAppServiceIntent();
+  EXPECT_TRUE(app_service_intent->IsShareIntent());
+
+  base::test::TestFuture<bool> launch_cb;
+  ASSERT_TRUE(files_controller_);
+  EXPECT_TRUE(app_service_proxy_->AppRegistryCache().ForOneApp(
+      app_id,
+      [this, &app_service_intent, &launch_cb](const apps::AppUpdate& update) {
+        files_controller_->CheckIfLaunchAllowed(
+            update, std::move(app_service_intent), launch_cb.GetCallback());
+      }));
+  EXPECT_EQ(launch_cb.Get(), false);
+
+  auto last_check_files_transfer_request =
+      chromeos::DlpClient::Get()
+          ->GetTestInterface()
+          ->GetLastCheckFilesTransferRequest();
+
+  EXPECT_TRUE(last_check_files_transfer_request.has_destination_component());
+  EXPECT_EQ(last_check_files_transfer_request.destination_component(),
+            expected_component);
+
+  EXPECT_TRUE(last_check_files_transfer_request.has_file_action());
+  EXPECT_EQ(last_check_files_transfer_request.file_action(),
+            ::dlp::FileAction::SHARE);
+  EXPECT_FALSE(last_check_files_transfer_request.has_io_task_id());
+
+  std::vector<std::string> expected_requested_files;
+  expected_requested_files.push_back(path1);
+  expected_requested_files.push_back(path2);
+  std::vector<std::string> requested_files(
+      last_check_files_transfer_request.files_paths().begin(),
+      last_check_files_transfer_request.files_paths().end());
+  EXPECT_THAT(requested_files,
+              testing::UnorderedElementsAreArray(expected_requested_files));
+}
+
+TEST_P(DlpFilesAppLaunchTest_Component, IsLaunchBlocked) {
+  auto [app_type, app_id, expected_component] = GetParam();
+
+  auto app_service_intent = GetAppServiceIntent({path1});
+
+  EXPECT_CALL(*rules_manager_, IsRestrictedComponent)
+      .WillOnce(testing::Return(DlpRulesManager::Level::kBlock));
+
+  ASSERT_TRUE(files_controller_);
+  EXPECT_TRUE(app_service_proxy_->AppRegistryCache().ForOneApp(
+      app_id, [this, &app_service_intent](const apps::AppUpdate& update) {
+        EXPECT_TRUE(files_controller_->IsLaunchBlocked(
+            update, std::move(app_service_intent)));
+      }));
+}
+
+class DlpFilesAppLaunchTest_Unsupported
+    : public DlpFilesAppLaunchTest,
+      public ::testing::WithParamInterface<
+          std::tuple<apps::AppType, std::string>> {
+ protected:
+  void SetUp() override {
+    DlpFilesAppLaunchTest::SetUp();
+
+    CreateAndStoreFakeApp(kUnknownAppId, apps::AppType::kUnknown, kExampleUrl1);
+    CreateAndStoreFakeApp(kBuiltInAppId, apps::AppType::kBuiltIn, kExampleUrl2);
+    CreateAndStoreFakeApp(kMacOsAppId, apps::AppType::kMacOs, kExampleUrl3);
+    CreateAndStoreFakeApp(kStandaloneBrowserAppId,
+                          apps::AppType::kStandaloneBrowser, kExampleUrl4);
+    CreateAndStoreFakeApp(kRemoteAppId, apps::AppType::kRemote, kExampleUrl5);
+    CreateAndStoreFakeApp(kBorealisAppId, apps::AppType::kBorealis,
+                          kExampleUrl6);
+    CreateAndStoreFakeApp(kBruschettaAppId, apps::AppType::kBruschetta,
+                          kExampleUrl7);
+  }
+};
+
+INSTANTIATE_TEST_SUITE_P(
+    DlpFiles,
+    DlpFilesAppLaunchTest_Unsupported,
+    ::testing::Values(std::make_tuple(apps::AppType::kUnknown, kUnknownAppId),
+                      std::make_tuple(apps::AppType::kBuiltIn, kBuiltInAppId),
+                      std::make_tuple(apps::AppType::kMacOs, kMacOsAppId),
+                      std::make_tuple(apps::AppType::kStandaloneBrowser,
+                                      kStandaloneBrowserAppId),
+                      std::make_tuple(apps::AppType::kRemote, kRemoteAppId),
+                      std::make_tuple(apps::AppType::kBorealis, kBorealisAppId),
+                      std::make_tuple(apps::AppType::kBruschetta,
+                                      kBruschettaAppId)));
+
+TEST_P(DlpFilesAppLaunchTest_Unsupported, CheckIfAppLaunchAllowed) {
+  auto [app_type, app_id] = GetParam();
+
+  auto app_service_intent = GetAppServiceIntent();
+  EXPECT_TRUE(app_service_intent->IsShareIntent());
+
+  base::test::TestFuture<bool> launch_cb;
+  ASSERT_TRUE(files_controller_);
+  EXPECT_TRUE(app_service_proxy_->AppRegistryCache().ForOneApp(
+      app_id,
+      [this, &app_service_intent, &launch_cb](const apps::AppUpdate& update) {
+        files_controller_->CheckIfLaunchAllowed(
+            update, std::move(app_service_intent), launch_cb.GetCallback());
+      }));
+  EXPECT_TRUE(launch_cb.Get());
+}
+
+TEST_P(DlpFilesAppLaunchTest_Unsupported, IsLaunchBlocked) {
+  auto [app_type, app_id] = GetParam();
+
+  auto app_service_intent = GetAppServiceIntent({path1});
+
+  ASSERT_TRUE(files_controller_);
+  EXPECT_TRUE(app_service_proxy_->AppRegistryCache().ForOneApp(
+      app_id, [this, &app_service_intent](const apps::AppUpdate& update) {
+        EXPECT_FALSE(files_controller_->IsLaunchBlocked(
             update, std::move(app_service_intent)));
       }));
 }

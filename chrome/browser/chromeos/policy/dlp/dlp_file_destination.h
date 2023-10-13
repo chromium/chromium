@@ -42,6 +42,9 @@ class DlpFileDestination {
   // `data_control::Destination` or MyFiles).
   bool IsFileSystem() const;
 
+  // Returns if the destination is within MyFiles.
+  bool IsMyFiles() const;
+
  private:
   // Destination url or destination path.
   absl::optional<GURL> url_;

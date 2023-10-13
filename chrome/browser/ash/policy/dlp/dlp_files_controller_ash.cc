@@ -612,6 +612,14 @@ void DlpFilesControllerAsh::CheckIfLaunchAllowed(
     std::move(result_callback).Run(/*is_allowed=*/true);
     return;
   }
+  absl::optional<DlpFileDestination> destination =
+      GetFileDestinationForApp(app_update);
+  if (!destination.has_value()) {
+    std::move(result_callback).Run(/*is_allowed=*/true);
+    return;
+  }
+  CHECK(!destination->IsMyFiles());
+
   ::dlp::CheckFilesTransferRequest request;
   for (const auto& file : intent->files) {
     auto file_url = apps::GetFileSystemURL(profile_, file->url);
@@ -621,15 +629,11 @@ void DlpFilesControllerAsh::CheckIfLaunchAllowed(
   request.set_file_action(intent->IsShareIntent() ? ::dlp::FileAction::SHARE
                                                   : ::dlp::FileAction::OPEN);
 
-  absl::optional<DlpFileDestination> destination =
-      GetFileDestinationForApp(app_update);
-  if (destination.has_value()) {
-    if (destination->url().has_value()) {
-      request.set_destination_url(destination->url()->spec());
-    } else if (destination->component().has_value()) {
-      request.set_destination_component(
-          dlp::MapPolicyComponentToProto(destination->component().value()));
-    }
+  if (destination->url().has_value()) {
+    request.set_destination_url(destination->url()->spec());
+  } else {  // component
+    request.set_destination_component(
+        dlp::MapPolicyComponentToProto(destination->component().value()));
   }
 
   chromeos::DlpClient::Get()->CheckFilesTransfer(

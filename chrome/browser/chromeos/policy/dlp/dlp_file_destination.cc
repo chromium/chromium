@@ -71,4 +71,8 @@ bool DlpFileDestination::IsFileSystem() const {
   return !url_.has_value();
 }
 
+bool DlpFileDestination::IsMyFiles() const {
+  return !url_.has_value() && !component_.has_value();
+}
+
 }  // namespace policy
