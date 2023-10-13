@@ -465,10 +465,29 @@ IN_PROC_BROWSER_TEST_P(ChromeKeepAliveURLSafeBrowsingBrowserTest,
   loaders_observer().WaitForTotalOnReceiveResponseProcessed(1);
 }
 
+// TODO(crbug.com/1491942): This fails with the field trial testing config.
+class ChromeKeepAliveURLSafeBrowsingBrowserTestNoTestingConfig
+    : public ChromeKeepAliveURLSafeBrowsingBrowserTest {
+ public:
+  void SetUpCommandLine(base::CommandLine* command_line) override {
+    ChromeKeepAliveURLSafeBrowsingBrowserTest::SetUpCommandLine(command_line);
+    command_line->AppendSwitch("disable-field-trial-config");
+  }
+};
+INSTANTIATE_TEST_SUITE_P(
+    All,
+    ChromeKeepAliveURLSafeBrowsingBrowserTestNoTestingConfig,
+    ::testing::Values(net::HttpRequestHeaders::kGetMethod,
+                      net::HttpRequestHeaders::kPostMethod),
+    [](const testing::TestParamInfo<
+        ChromeKeepAliveURLSafeBrowsingBrowserTest::ParamType>& info) {
+      return info.param;
+    });
+
 // Checks that when a fetch keepalive request's redirect is handled in browser
 // and when the redirect target points to a dangerous URL, the browser will not
 // perform the redirect.
-IN_PROC_BROWSER_TEST_P(ChromeKeepAliveURLSafeBrowsingBrowserTest,
+IN_PROC_BROWSER_TEST_P(ChromeKeepAliveURLSafeBrowsingBrowserTestNoTestingConfig,
                        ReceiveRedirectToMalwareAfterPageUnload) {
   const std::string method = GetParam();
   const char redirect_target[] = "/malware";
