@@ -3,6 +3,7 @@
 # found in the LICENSE file.
 """A utility class for interacting with a local checkout of the Web Platform Tests."""
 
+from collections import namedtuple
 import logging
 
 from blinkpy.common.path_finder import RELATIVE_WPT_TESTS
@@ -19,6 +20,8 @@ from blinkpy.w3c.common import (
 
 _log = logging.getLogger(__name__)
 
+PatchPathRename = namedtuple('PatchPathRename', ['source', 'destination'])
+
 
 class LocalRepo(object):
     def __init__(self,
@@ -29,8 +32,7 @@ class LocalRepo(object):
                  mirror_url,
                  default_committer_email,
                  default_committer_name,
-                 source_relative_tests,
-                 destination_relative_tests,
+                 patch_path_renames,
                  host,
                  gh_token=None,
                  path=None,
@@ -50,8 +52,7 @@ class LocalRepo(object):
         self.mirror_url = mirror_url
         self.default_committer_email = default_committer_email
         self.default_committer_name = default_committer_name
-        self.source_relative_tests = source_relative_tests
-        self.destination_relative_tests = destination_relative_tests
+        self.patch_path_renames = patch_path_renames
         self.host = host
         # TODO(crbug.com/1473716): Support non-Unix temporary paths.
         self.path = path or f'/tmp/{self.name.lower()}'
@@ -152,10 +153,9 @@ class LocalRepo(object):
         """Maps all paths in the patch from the source repo
         to the destination repo.
         """
-        return patch.replace(
-            self.source_relative_tests,
-            self.destination_relative_tests
-        )
+        for source, destination in self.patch_path_renames:
+            patch = patch.replace(source, destination)
+        return patch
 
     def test_patch(self, patch):
         """Tests whether a patch can be cleanly applied against origin/master.
@@ -274,5 +274,6 @@ class LocalWPT(LocalRepo):
         super().__init__('WPT', WPT_GH_ORG, WPT_GH_REPO_NAME,
                          WPT_GH_SSH_URL_TEMPLATE, WPT_MIRROR_URL,
                          DEFAULT_WPT_COMMITTER_EMAIL,
-                         DEFAULT_WPT_COMMITTER_NAME, RELATIVE_WPT_TESTS, '',
+                         DEFAULT_WPT_COMMITTER_NAME,
+                         [PatchPathRename(RELATIVE_WPT_TESTS, '')],
                          host, gh_token, path)
