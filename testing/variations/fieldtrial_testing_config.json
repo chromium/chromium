@@ -16228,25 +16228,6 @@
             ]
         }
     ],
-    "StorageAccessAPIWithPrompts": [
-        {
-            "platforms": [
-                "chromeos",
-                "chromeos_lacros",
-                "linux",
-                "mac",
-                "windows"
-            ],
-            "experiments": [
-                {
-                    "name": "Enabled_20230802",
-                    "enable_features": [
-                        "PermissionStorageAccessAPI"
-                    ]
-                }
-            ]
-        }
-    ],
     "StorageAccessAPIWithPromptsAndroid": [
         {
             "platforms": [
