@@ -65,10 +65,10 @@ AlmanacIconCache::AlmanacIconCache(ProfileKey* key) {
     return;
   }
 
-  // TODO(b/296157719): Verify kDiskCacheOnly works. Otherwise use
-  // kNetworkOnly.
+  // TODO(b/296157719): kDiskCacheOnly changes the icon color so use
+  // kNetworkOnly until that is fixed.
   image_fetcher_ = image_fetcher_service->GetImageFetcher(
-      image_fetcher::ImageFetcherConfig::kDiskCacheOnly);
+      image_fetcher::ImageFetcherConfig::kNetworkOnly);
 }
 
 AlmanacIconCache::AlmanacIconCache() = default;
