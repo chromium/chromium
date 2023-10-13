@@ -6,9 +6,11 @@
 #define IOS_CHROME_BROWSER_UI_UNIT_CONVERSION_UNIT_CONVERSION_COORDINATOR_H_
 
 #import "ios/chrome/browser/shared/coordinator/chrome_coordinator/chrome_coordinator.h"
+#import "ios/chrome/browser/ui/unit_conversion/unit_conversion_view_controller_delegate.h"
 
 // This coordinator presents unit conversion sheet to the user.
-@interface UnitConversionCoordinator : ChromeCoordinator
+@interface UnitConversionCoordinator
+    : ChromeCoordinator <UnitConversionViewControllerDelegate>
 
 // Init UnitConversionCoordinator with the detected unit `sourceUnit`, the
 // detected unit value `sourceUnitValue` and the tap/long press location

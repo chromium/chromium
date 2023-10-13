@@ -5666,6 +5666,9 @@ Your data was encrypted with your passphrase on <ph name="TIME">$2<ex>Sept 1, 20
       <message name="IDS_UNITS_MEASUREMENTS_MASS" desc="Title of the button that allows the user to use and convert mass type units" meaning="Button menu entry that allows the user to change the unit category to Mass.">
         Mass
       </message>
+      <message name="IDS_UNITS_MEASUREMENTS_REPORT_AN_ISSUE" desc="Title for the button on the footer of the unit conversion view controller an issue.">
+        Report an issue
+      </message>
       <message name="IDS_UNITS_MEASUREMENTS_SPEED" desc="Title of the button that allows the user to use and convert speed type units" meaning="Button menu entry that allows the user to change the unit category to Speed.">
         Speed
       </message>

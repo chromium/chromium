@@ -10,15 +10,24 @@
 #import "base/notreached.h"
 #import "ios/chrome/browser/shared/ui/symbols/symbols.h"
 #import "ios/chrome/browser/ui/unit_conversion/unit_conversion_mutator.h"
+#import "ios/chrome/browser/ui/unit_conversion/unit_conversion_view_controller_delegate.h"
 #import "ios/chrome/browser/ui/unit_conversion/unit_type_cell.h"
 #import "ios/chrome/browser/ui/unit_conversion/unit_type_value_field_cell.h"
 #import "ios/chrome/common/ui/colors/semantic_color_names.h"
 #import "ios/chrome/common/ui/util/constraints_ui_util.h"
+#import "ios/chrome/common/ui/util/ui_util.h"
 #import "ios/chrome/grit/ios_strings.h"
 #import "ios/public/provider/chrome/browser/unit_conversion/unit_conversion_api.h"
 #import "ui/base/l10n/l10n_util.h"
 
 namespace {
+
+// The size of the `Report an issue` button icon.
+const CGFloat kReportAnIssueIconSize = 18;
+
+// The trailing and leading offsets of the `Report an issue` button.
+const CGFloat kReportAnIssueButtonTrailingOffset = 8;
+const CGFloat kReportAnIssueButtonLeadingOffset = 8;
 
 // Table's top inset and header/footer heights of its sections.
 const CGFloat kSectionHeaderHeight = 8;
@@ -30,8 +39,11 @@ const CGFloat kCloseButtonIconSize = 30;
 // Size constraint of the title button.
 const CGFloat kTitleIconSize = 15;
 
+// The padding between the icon and the text of the `Report an issue` button.
+const CGFloat kReportAnIssueButtonPadding = 4;
+
 // The padding between the icon and the text of the unit title button.
-const CGFloat kUnitTitlePadding = 4.0;
+const CGFloat kUnitTitlePadding = 4;
 
 // Cells identifiers.
 NSString* kUnitTypeCellIdentifier = @"UnitTypeCell";
@@ -87,6 +99,13 @@ ios::provider::UnitType TypeByUnit(NSUnit* unit) {
   // target values.
   NSString* _sourceUnitValueField;
   NSString* _targetUnitValueField;
+
+  // The view to assign to the tableView's footer, where the `Report an issue`
+  // button is added.
+  UIView* _tableViewFooterView;
+
+  // The `Report an issue` button.
+  UIButton* _reportAnIssueButton;
 }
 
 @property(nonatomic, strong) NSUnit* targetUnit;
@@ -119,6 +138,26 @@ ios::provider::UnitType TypeByUnit(NSUnit* unit) {
   return self;
 }
 
+- (void)viewDidLayoutSubviews {
+  [super viewDidLayoutSubviews];
+
+  // Capture the tableView's width and use it to calculate the footer's size.
+  CGFloat width = self.tableView.bounds.size.width;
+  CGSize size = [_reportAnIssueButton
+      systemLayoutSizeFittingSize:CGSizeMake(
+                                      width,
+                                      UILayoutFittingCompressedSize.height)];
+
+  // Check the height change to avoid triggering a new layout cycle every time
+  // the height is set.
+  if (!AreCGFloatsEqual(_reportAnIssueButton.frame.size.height, size.height)) {
+    CGRect frame = _reportAnIssueButton.frame;
+    frame.size.height = size.height;
+    _tableViewFooterView.frame = frame;
+    self.tableView.tableFooterView = _tableViewFooterView;
+  }
+}
+
 - (void)viewDidLoad {
   [super viewDidLoad];
   _targetUnit = ios::provider::GetDefaultTargetUnit(_sourceUnit);
@@ -140,11 +179,20 @@ ios::provider::UnitType TypeByUnit(NSUnit* unit) {
                                    [UIColor colorNamed:kGrey200Color]
                                  ])
       forState:UIControlStateNormal];
+  [closeButton addTarget:self
+                  action:@selector(closeButtonTapped:)
+        forControlEvents:UIControlEventTouchUpInside];
   self.navigationItem.rightBarButtonItem =
       [[UIBarButtonItem alloc] initWithCustomView:closeButton];
 
   _unitTypeTitleButton = [self createUnitTypeTitleButton];
   self.navigationItem.titleView = _unitTypeTitleButton;
+
+  _tableViewFooterView = [[UIView alloc] init];
+
+  _reportAnIssueButton = [self createReportIssueButton];
+  _reportAnIssueButton.translatesAutoresizingMaskIntoConstraints = NO;
+  [_tableViewFooterView addSubview:_reportAnIssueButton];
 
   self.tableView.sectionHeaderHeight = kSectionHeaderHeight;
   self.tableView.sectionFooterHeight = kSectionFooterHeight;
@@ -166,17 +214,58 @@ ios::provider::UnitType TypeByUnit(NSUnit* unit) {
   self.tableView.delegate = self;
   self.tableView.dataSource = self;
   self.tableView.allowsSelection = NO;
+
+  [NSLayoutConstraint activateConstraints:@[
+    [_reportAnIssueButton.trailingAnchor
+        constraintLessThanOrEqualToAnchor:_tableViewFooterView.trailingAnchor
+                                 constant:-kReportAnIssueButtonTrailingOffset],
+    [_reportAnIssueButton.centerYAnchor
+        constraintEqualToAnchor:_tableViewFooterView.centerYAnchor],
+    [_reportAnIssueButton.leadingAnchor
+        constraintEqualToAnchor:_tableViewFooterView.leadingAnchor
+                       constant:kReportAnIssueButtonLeadingOffset],
+  ]];
 }
 
 #pragma mark - Private
 
-// Creates an attributed string object to set/update the `unitTypeTitle`
-// configuration.
-- (NSAttributedString*)createAttributedString {
-  UIFont* font = [UIFont preferredFontForTextStyle:UIFontTextStyleHeadline];
+- (void)closeButtonTapped:(UIButton*)sender {
+  [self.delegate didTapCloseUnitConversionController:self];
+}
+
+- (void)reportIssueButtonTapped:(UIButton*)sender {
+  [self.delegate didTapReportIssueUnitConversionController:self];
+}
+
+- (UIButton*)createReportIssueButton {
+  UIButton* button = [[UIButton alloc] init];
+  UIButtonConfiguration* buttonConfiguration =
+      [UIButtonConfiguration plainButtonConfiguration];
+  buttonConfiguration.imagePadding = kReportAnIssueButtonPadding;
+  button.configuration = buttonConfiguration;
+  button.contentVerticalAlignment = UIControlContentVerticalAlignmentCenter;
+  [button
+      setTitle:l10n_util::GetNSString(IDS_UNITS_MEASUREMENTS_REPORT_AN_ISSUE)
+      forState:UIControlStateNormal];
+  button.titleLabel.font =
+      [UIFont preferredFontForTextStyle:UIFontTextStyleFootnote];
+  UIImage* reportAnIssueIcon = DefaultSymbolWithPointSize(
+      kExclamationMarkBubbleSymbol, kReportAnIssueIconSize);
+  [button setImage:[reportAnIssueIcon
+                       imageWithTintColor:[UIColor colorNamed:kBlueColor]]
+          forState:UIControlStateNormal];
+  [button addTarget:self
+                action:@selector(reportIssueButtonTapped:)
+      forControlEvents:UIControlEventTouchUpInside];
+  return button;
+}
+
+// Creates an attributed string object for a given title and font.
+- (NSAttributedString*)createAttributedStringWithTitle:(NSString*)title
+                                                  font:(UIFont*)font {
   NSDictionary* attributes = @{NSFontAttributeName : font};
   NSMutableAttributedString* attributedString =
-      [[NSMutableAttributedString alloc] initWithString:[self unitTypeTitle]
+      [[NSMutableAttributedString alloc] initWithString:title
                                              attributes:attributes];
   return attributedString;
 }
@@ -189,7 +278,10 @@ ios::provider::UnitType TypeByUnit(NSUnit* unit) {
   buttonConfiguration.imagePlacement = NSDirectionalRectEdgeTrailing;
   buttonConfiguration.imagePadding = kUnitTitlePadding;
 
-  buttonConfiguration.attributedTitle = [self createAttributedString];
+  buttonConfiguration.attributedTitle = [self
+      createAttributedStringWithTitle:[self unitTypeTitle]
+                                 font:[UIFont preferredFontForTextStyle:
+                                                  UIFontTextStyleHeadline]];
   return buttonConfiguration;
 }
 
@@ -417,7 +509,10 @@ ios::provider::UnitType TypeByUnit(NSUnit* unit) {
   self.unitTypeTitle = [self titleForUnitType:unitType];
   UIButtonConfiguration* buttonConfiguration =
       _unitTypeTitleButton.configuration;
-  buttonConfiguration.attributedTitle = [self createAttributedString];
+  buttonConfiguration.attributedTitle = [self
+      createAttributedStringWithTitle:[self unitTypeTitle]
+                                 font:[UIFont preferredFontForTextStyle:
+                                                  UIFontTextStyleHeadline]];
   _unitTypeTitleButton.configuration = buttonConfiguration;
   [self.tableView reloadData];
 }

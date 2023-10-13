@@ -4,6 +4,9 @@
 
 #import "ios/chrome/browser/ui/unit_conversion/unit_conversion_coordinator.h"
 
+#import "ios/chrome/browser/shared/model/browser/browser.h"
+#import "ios/chrome/browser/shared/public/commands/application_commands.h"
+#import "ios/chrome/browser/shared/public/commands/command_dispatcher.h"
 #import "ios/chrome/browser/ui/unit_conversion/unit_conversion_mediator.h"
 #import "ios/chrome/browser/ui/unit_conversion/unit_conversion_view_controller.h"
 
@@ -60,11 +63,30 @@ const CGFloat kPopOverSourceRectHeight = 1;
 
   _mediator.consumer = _viewController;
   _viewController.mutator = _mediator;
+  _viewController.delegate = self;
+
   [self presentUnitConversionViewController];
 }
 
 - (void)stop {
-  [self dismissUnitConversionViewController];
+  [self dismissViewController];
+}
+
+#pragma mark - UnitConversionViewControllerDelegate
+
+- (void)didTapCloseUnitConversionController:
+    (UnitConversionViewController*)viewController {
+  [self stop];
+}
+
+- (void)didTapReportIssueUnitConversionController:
+    (UnitConversionViewController*)viewController {
+  DCHECK(viewController == _viewController);
+  id<ApplicationCommands> handler = HandlerForProtocol(
+      self.browser->GetCommandDispatcher(), ApplicationCommands);
+  [handler
+      showReportAnIssueFromViewController:_viewController
+                                   sender:UserFeedbackSender::UnitConversion];
 }
 
 #pragma mark - Private
@@ -99,9 +121,10 @@ const CGFloat kPopOverSourceRectHeight = 1;
 }
 
 // Dismisses the UnitConversionCoordinator's view controller.
-- (void)dismissUnitConversionViewController {
+- (void)dismissViewController {
   [_viewController.presentingViewController dismissViewControllerAnimated:YES
                                                                completion:nil];
+  _viewController.delegate = nil;
   _viewController = nil;
 }
 

@@ -33,6 +33,7 @@ source_set("unit_conversion_ui") {
     "unit_conversion_mutator.h",
     "unit_conversion_view_controller.h",
     "unit_conversion_view_controller.mm",
+    "unit_conversion_view_controller_delegate.h",
     "unit_type_cell.h",
     "unit_type_cell.mm",
     "unit_type_value_field_cell.h",

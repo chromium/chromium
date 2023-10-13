@@ -10,6 +10,7 @@
 #import "ios/chrome/browser/ui/unit_conversion/unit_conversion_consumer.h"
 
 @protocol UnitConversionMutator;
+@protocol UnitConversionViewControllerDelegate;
 
 // UnitConversionViewController instantiated by initWithSourceUnit when long
 // pressing and choosing to convert a detected unit or tapping on a detected
@@ -20,6 +21,10 @@
                              UISheetPresentationControllerDelegate>
 
 @property(nonatomic, weak) id<UnitConversionMutator> mutator;
+
+// A delegate to trigger the `Report an issue` UI and to dismiss the VC when
+// tapping on the close button.
+@property(nonatomic, weak) id<UnitConversionViewControllerDelegate> delegate;
 
 // UnitConversionViewController designated init function.
 - (instancetype)initWithSourceUnit:(NSUnit*)sourceUnit
