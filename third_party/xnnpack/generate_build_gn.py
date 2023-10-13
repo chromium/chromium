@@ -5,18 +5,20 @@
 #
 # LOCAL SETUP:
 # Make sure you have bazel installed first.
-#  `sudo apt-get install bazel`
-# This script is designed to work on Linux only, but may work on other platforms
-# with small changes.
+#  For Debian like environments:
+#    `sudo apt-get install bazel`
+#  For others see:
+#    https://bazel.build/start
+# This script assumes a x86-64 execution environment.
 #
 # WHAT:
 # This script creates the BUILD.gn file for XNNPACK by reverse-engineering the
 # bazel build.
 
 # HOW:
-# By setting the -s option on the bazel build command, bazel logs each compiler
-# invocation to the console which is then scraped and put into a configuration
-# that gn will accept.
+# By using the bazel aquery command, the script extracts source files and
+# flags from CppCompile actions. These are then put into a configuration that
+# gn will accept.
 #
 # WHY:
 # The biggest difficulty of this process is that gn expects each source's
@@ -211,7 +213,7 @@ def _ensure_android_ndk_available():
     return g_android_ndk
   logging.info('Downloading new copy of the Android NDK')
   zipfile = '/tmp/{ndk}.zip'.format(ndk=_ANDROID_NDK_VERSION)
-  subprocess.run(['wget', '-O', zipfile, _ANDROID_NDK_URL],
+  subprocess.run(['curl', '-o', zipfile, _ANDROID_NDK_URL],
                  stdout=subprocess.DEVNULL,
                  stderr=subprocess.DEVNULL,
                  check=True)
@@ -254,8 +256,6 @@ def _objectbuild_from_bazel_log(action):
   line. If no invocation is present, None is returned.
   """
   action_args = action["arguments"]
-  if not action_args[0].endswith('gcc'):
-    return None
 
   src = ''
   dir = ''
