@@ -3,7 +3,6 @@
 // found in the LICENSE file.
 
 #include "content/browser/fenced_frame/fenced_frame_config.h"
-#include "base/feature_list.h"
 #include "base/functional/callback.h"
 #include "base/memory/ref_counted.h"
 #include "base/strings/strcat.h"
@@ -11,7 +10,6 @@
 #include "base/uuid.h"
 #include "content/browser/fenced_frame/fenced_frame_reporter.h"
 #include "services/network/public/cpp/attribution_reporting_runtime_features.h"
-#include "third_party/blink/public/common/features.h"
 #include "third_party/blink/public/common/interest_group/ad_auction_constants.h"
 
 namespace content {
