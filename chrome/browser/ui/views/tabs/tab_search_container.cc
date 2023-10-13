@@ -60,7 +60,9 @@ TabSearchContainer::TabSearchContainer(TabStripController* tab_strip_controller,
     tab_organization_button_ =
         AddChildView(std::make_unique<TabOrganizationButton>(
             tab_strip_controller,
-            base::BindRepeating(&TabSearchContainer::HideTabOrganization,
+            // Force hide the button when pressed, bypassing locked expansion
+            // mode.
+            base::BindRepeating(&TabSearchContainer::ExecuteHideTabOrganization,
                                 base::Unretained(this)),
             features::IsTabOrganization() ? GetFlatEdge(false, before_tab_strip)
                                           : Edge::kNone));
