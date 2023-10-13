@@ -4,6 +4,7 @@
 
 #include <surface-augmenter-client-protocol.h>
 #include <xdg-shell-client-protocol.h>
+#include "build/build_config.h"
 
 #include "base/memory/raw_ptr.h"
 #include "components/exo/shell_surface_util.h"
@@ -145,8 +146,16 @@ class ShellClientData : public ClientData {
   std::unique_ptr<zaura_toplevel> aura_toplevel_;
 };
 
+// Flaky on Linux MSan: https://crbug.com/1491391.
+#if BUILDFLAG(IS_LINUX) && defined(MEMORY_SANITIZER)
+#define MAYBE_SubSurfacesOfAugmentedSurfacesAreNotAttachedToLayerTree \
+  DISABLED_SubSurfacesOfAugmentedSurfacesAreNotAttachedToLayerTree
+#else
+#define MAYBE_SubSurfacesOfAugmentedSurfacesAreNotAttachedToLayerTree \
+  SubSurfacesOfAugmentedSurfacesAreNotAttachedToLayerTree
+#endif
 TEST_F(SurfaceAugmenterTest,
-       SubSurfacesOfAugmentedSurfacesAreNotAttachedToLayerTree) {
+       MAYBE_SubSurfacesOfAugmentedSurfacesAreNotAttachedToLayerTree) {
   //----------------------------------------------------------------
   //  Create a surface (top level).
   //----------------------------------------------------------------
