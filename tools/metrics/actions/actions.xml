@@ -12380,6 +12380,16 @@ should be able to be added at any place in this file.
   </description>
 </action>
 
+<action name="IOS.DefaultBrowserVideoPromo.Fullscreen.RemindMeLater">
+  <owner>cheickcisse@google.com</owner>
+  <owner>sebsg@chromium.org</owner>
+  <owner>bling-get-set-up@google.com</owner>
+  <description>
+    The user asked to be reminded later on the full screen default browser video
+    promo. iOS only.
+  </description>
+</action>
+
 <action name="IOS.DefaultBrowserVideoPromo.Halfscreen.Dismiss">
   <owner>cheickcisse@google.com</owner>
   <owner>sebsg@chromium.org</owner>

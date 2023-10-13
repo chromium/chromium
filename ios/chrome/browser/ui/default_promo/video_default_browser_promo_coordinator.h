@@ -16,6 +16,9 @@
 // Add halfscreen view
 @property(nonatomic, assign) BOOL isHalfScreen;
 
+// Whether or not to show the Remind Me Later button.
+@property(nonatomic, assign) BOOL showRemindMeLater;
+
 @end
 
 #endif  // IOS_CHROME_BROWSER_UI_DEFAULT_PROMO_VIDEO_DEFAULT_BROWSER_PROMO_COORDINATOR_H_

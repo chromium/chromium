@@ -6,8 +6,12 @@
 
 #import "base/metrics/histogram_functions.h"
 #import "base/metrics/user_metrics.h"
+#import "components/feature_engagement/public/event_constants.h"
+#import "components/feature_engagement/public/tracker.h"
 #import "ios/chrome/browser/default_browser/utils.h"
+#import "ios/chrome/browser/feature_engagement/tracker_factory.h"
 #import "ios/chrome/browser/shared/model/browser/browser.h"
+#import "ios/chrome/browser/shared/model/browser_state/chrome_browser_state.h"
 #import "ios/chrome/browser/shared/public/commands/command_dispatcher.h"
 #import "ios/chrome/browser/ui/default_promo/default_browser_promo_commands.h"
 #import "ios/chrome/browser/ui/default_promo/half_screen_promo_coordinator.h"
@@ -43,8 +47,7 @@ using base::UserMetricsAction;
 #pragma mark - ChromeCoordinator
 
 - (void)start {
-  LogFullscreenDefaultBrowserPromoDisplayed();
-  RecordAction(UserMetricsAction("IOS.DefaultBrowserVideoPromo.Appear"));
+  [self recordVideoDefaultBrowserPromoShown];
   self.mediator = [[VideoDefaultBrowserPromoMediator alloc] init];
 
   if (self.isHalfScreen) {
@@ -92,6 +95,22 @@ using base::UserMetricsAction;
       IOSDefaultBrowserVideoPromoAction::kSecondaryActionTapped);
   RecordAction(
       UserMetricsAction("IOS.DefaultBrowserVideoPromo.Fullscreen.Dismiss"));
+  [self.handler hidePromo];
+}
+
+- (void)confirmationAlertTertiaryAction {
+  base::UmaHistogramEnumeration(
+      "IOS.DefaultBrowserVideoPromo.Fullscreen",
+      IOSDefaultBrowserVideoPromoAction::kTertiaryActionTapped);
+  RecordAction(UserMetricsAction(
+      "IOS.DefaultBrowserVideoPromo.Fullscreen.RemindMeLater"));
+  ChromeBrowserState* browserState = self.browser->GetBrowserState();
+
+  feature_engagement::Tracker* tracker =
+      feature_engagement::TrackerFactory::GetForBrowserState(browserState);
+  tracker->NotifyEvent(
+      feature_engagement::events::kDefaultBrowserPromoRemindMeLater);
+
   [self.handler hidePromo];
 }
 
@@ -143,9 +162,22 @@ using base::UserMetricsAction;
       UserMetricsAction("IOS.DefaultBrowserVideoPromo.Fullscreen.Impression"));
   self.viewController = [[VideoDefaultBrowserPromoViewController alloc] init];
   self.viewController.actionHandler = self;
+  self.viewController.showRemindMeLater = self.showRemindMeLater;
   [self.baseViewController presentViewController:self.viewController
                                         animated:YES
                                       completion:nil];
+}
+
+#pragma mark - Private
+
+// Records that a default browser promo has been shown.
+- (void)recordVideoDefaultBrowserPromoShown {
+  LogFullscreenDefaultBrowserPromoDisplayed();
+  RecordAction(UserMetricsAction("IOS.DefaultBrowserVideoPromo.Appear"));
+
+  ChromeBrowserState* browserState = self.browser->GetBrowserState();
+  LogToFETDefaultBrowserPromoShown(
+      feature_engagement::TrackerFactory::GetForBrowserState(browserState));
 }
 
 @end
