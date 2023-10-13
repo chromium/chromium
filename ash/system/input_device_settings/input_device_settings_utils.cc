@@ -290,14 +290,16 @@ base::Value::List ConvertButtonRemappingArrayToList(
 }
 
 std::vector<mojom::ButtonRemappingPtr> ConvertListToButtonRemappingArray(
-    const base::Value::List& list) {
+    const base::Value::List& list,
+    mojom::CustomizationRestriction customization_restriction) {
   std::vector<mojom::ButtonRemappingPtr> array;
   for (const auto& element : list) {
     if (!element.is_dict()) {
       continue;
     }
     const auto& dict = element.GetDict();
-    auto remapping = ConvertDictToButtonRemapping(dict);
+    auto remapping =
+        ConvertDictToButtonRemapping(dict, customization_restriction);
     if (remapping) {
       array.push_back(std::move(remapping));
     }
@@ -306,7 +308,13 @@ std::vector<mojom::ButtonRemappingPtr> ConvertListToButtonRemappingArray(
 }
 
 mojom::ButtonRemappingPtr ConvertDictToButtonRemapping(
-    const base::Value::Dict& dict) {
+    const base::Value::Dict& dict,
+    mojom::CustomizationRestriction customization_restriction) {
+  if (customization_restriction ==
+      mojom::CustomizationRestriction::kDisallowCustomizations) {
+    return nullptr;
+  }
+
   const std::string* name = dict.FindString(prefs::kButtonRemappingName);
   if (!name) {
     return nullptr;
@@ -326,12 +334,18 @@ mojom::ButtonRemappingPtr ConvertDictToButtonRemapping(
   if (!customizable_button && !key_code) {
     return nullptr;
   }
-  // Button can be either a keyboard key or a customization button.
+  // Button can be either a keyboard key or a customization button. If
+  // the customization_restriction is not kDisableKeyEventRewrites,
+  // the button is allowed to be a keyboard key.
   if (customizable_button) {
     button = mojom::Button::NewCustomizableButton(
         static_cast<mojom::CustomizableButton>(*customizable_button));
-  } else {
+  } else if (key_code &&
+             customization_restriction !=
+                 mojom::CustomizationRestriction::kDisableKeyEventRewrites) {
     button = mojom::Button::NewVkey(static_cast<::ui::KeyboardCode>(*key_code));
+  } else {
+    return nullptr;
   }
 
   // remapping_action is an optional union.

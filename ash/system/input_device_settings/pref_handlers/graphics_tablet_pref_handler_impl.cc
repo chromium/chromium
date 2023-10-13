@@ -36,10 +36,12 @@ void GraphicsTabletPrefHandlerImpl::InitializeGraphicsTabletSettings(
   // Retrieve the settings if both tablet and pen button remappings lists
   // exist.
   if (tablet_button_remappings_list && pen_button_remappings_list) {
-    settings->tablet_button_remappings =
-        ConvertListToButtonRemappingArray(*tablet_button_remappings_list);
-    settings->pen_button_remappings =
-        ConvertListToButtonRemappingArray(*pen_button_remappings_list);
+    settings->tablet_button_remappings = ConvertListToButtonRemappingArray(
+        *tablet_button_remappings_list,
+        mojom::CustomizationRestriction::kAllowCustomizations);
+    settings->pen_button_remappings = ConvertListToButtonRemappingArray(
+        *pen_button_remappings_list,
+        mojom::CustomizationRestriction::kAllowCustomizations);
   }
   graphics_tablet->settings = std::move(settings);
   DCHECK(graphics_tablet->settings);
@@ -98,10 +100,12 @@ void GraphicsTabletPrefHandlerImpl::InitializeLoginScreenGraphicsTabletSettings(
       local_state, account_id,
       prefs::kGraphicsTabletLoginScreenPenButtonRemappingListPref);
   if (tablet_button_remappings_list && pen_button_remappings_list) {
-    settings->tablet_button_remappings =
-        ConvertListToButtonRemappingArray(*tablet_button_remappings_list);
-    settings->pen_button_remappings =
-        ConvertListToButtonRemappingArray(*pen_button_remappings_list);
+    settings->tablet_button_remappings = ConvertListToButtonRemappingArray(
+        *tablet_button_remappings_list,
+        mojom::CustomizationRestriction::kAllowCustomizations);
+    settings->pen_button_remappings = ConvertListToButtonRemappingArray(
+        *pen_button_remappings_list,
+        mojom::CustomizationRestriction::kAllowCustomizations);
   }
   graphics_tablet->settings = std::move(settings);
 }

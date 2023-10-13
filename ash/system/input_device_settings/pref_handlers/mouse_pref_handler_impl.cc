@@ -319,16 +319,14 @@ void MousePrefHandlerImpl::InitializeMouseSettings(
                    ? SettingsUpdatedMetricsInfo::Category::kDefault
                    : SettingsUpdatedMetricsInfo::Category::kFirstEver;
   }
-  if (features::IsPeripheralCustomizationEnabled() &&
-      mouse->customization_restriction ==
-          mojom::CustomizationRestriction::kAllowCustomizations) {
+  if (features::IsPeripheralCustomizationEnabled()) {
     const auto& button_remappings_dict =
         pref_service->GetDict(prefs::kMouseButtonRemappingsDictPref);
     const auto* button_remappings_list =
         button_remappings_dict.FindList(mouse->device_key);
     if (button_remappings_list) {
-      mouse->settings->button_remappings =
-          ConvertListToButtonRemappingArray(*button_remappings_list);
+      mouse->settings->button_remappings = ConvertListToButtonRemappingArray(
+          *button_remappings_list, mouse->customization_restriction);
     }
   }
   DCHECK(mouse->settings);
@@ -380,15 +378,13 @@ void MousePrefHandlerImpl::InitializeLoginScreenMouseSettings(
     mouse->settings->swap_right = mouse_policies.swap_right_policy->value;
   }
 
-  if (features::IsPeripheralCustomizationEnabled() &&
-      mouse->customization_restriction ==
-          mojom::CustomizationRestriction::kAllowCustomizations) {
+  if (features::IsPeripheralCustomizationEnabled()) {
     const auto* button_remappings_list = GetLoginScreenButtonRemappingList(
         local_state, account_id,
         prefs::kMouseLoginScreenButtonRemappingListPref);
     if (button_remappings_list) {
-      mouse->settings->button_remappings =
-          ConvertListToButtonRemappingArray(*button_remappings_list);
+      mouse->settings->button_remappings = ConvertListToButtonRemappingArray(
+          *button_remappings_list, mouse->customization_restriction);
     }
   }
 }
