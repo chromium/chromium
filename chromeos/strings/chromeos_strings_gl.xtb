@@ -195,6 +195,7 @@
 <translation id="2326139988748364651"><ph name="RESOLUTION_VALUE" /> ppp</translation>
 <translation id="2338501278241028356">Activa o Bluetooth para detectar dispositivos situados nas proximidades</translation>
 <translation id="2346474577291266260">Excelente (<ph name="SIGNAL_STRENGTH" />)</translation>
+<translation id="2358070305000735383">O cadro de diálogo de edición de <ph name="DESCRIPTION" /> está aberto.</translation>
 <translation id="2359808026110333948">Continuar</translation>
 <translation id="2364498172489649528">Aprobou</translation>
 <translation id="2367335866686097760">Tecla de asignación de teclas</translation>
@@ -714,7 +715,6 @@
 <translation id="6423239382391657905">OpenVPN</translation>
 <translation id="6439505561246192797">Feble (<ph name="SIGNAL_STRENGTH" />)</translation>
 <translation id="6447630859861661624">Ir á configuración da conta</translation>
-<translation id="6461047516875166066">Máis información</translation>
 <translation id="6463239094587744704">{PAGE_NUMBER,plural, =0{Queres volver escanear a páxina?}=1{Queres volver escanear a páxina {PAGE_NUMBER}?}other{Queres volver escanear a páxina {PAGE_NUMBER}?}}</translation>
 <translation id="6472207088655375767">OTP</translation>
 <translation id="6480327114083866287">Xestionado por <ph name="MANAGER" /></translation>
@@ -1025,6 +1025,7 @@
 <translation id="8868741746785112895">GUID</translation>
 <translation id="8876270629542503161">O dispositivo é unha tableta.</translation>
 <translation id="8881098542468797602">Superouse a proba</translation>
+<translation id="8892443466059986410">Cancelar a edición do atallo</translation>
 <translation id="8898840733695078011">Intensidade do sinal</translation>
 <translation id="8909114361904403025">frecha cara arriba</translation>
 <translation id="8910721771319628100">A rede predeterminada supera o límite de latencia</translation>

@@ -16,6 +16,7 @@
 <translation id="1729654308190250600">காலி அல்லாத மின்னஞ்சல் முகவரியை உள்ளிடவும்.</translation>
 <translation id="1758486001363313524">மற்றவை…</translation>
 <translation id="1787192514241997742">மொத்த நேரம்: <ph name="REMAINING_TIME" /></translation>
+<translation id="1800494066469288780">கேமரா அணுகலை வழங்கு</translation>
 <translation id="1822429046913737220">AM/PM</translation>
 <translation id="1832974991323546415">தொலைநிலைச் சாதனத்தில் இயக்கு</translation>
 <translation id="1921819250265091946">dd</translation>
@@ -51,6 +52,7 @@
 <translation id="3220661731597678625">தற்போதைய படிநிலை</translation>
 <translation id="3321030238473337787">பிளேபேக் வேகம்</translation>
 <translation id="3329013043687509092">நிறை செறிவு நிலை</translation>
+<translation id="3377518164566272702">மைக்ரோஃபோன் மற்றும் கேமரா அணுகலை வழங்கு</translation>
 <translation id="3450233048674729344">மதிப்பானது கண்டிப்பாக <ph name="MAXIMUM" /> ஐ விடக்குறைவாக அல்லது அதற்குச் சமமாக இருக்க வேண்டும்.</translation>
 <translation id="3732799496749320381">mm</translation>
 <translation id="3754210790023674521">’பிக்ச்சர்-இன்-பிக்ச்சரில்' இருந்து வெளியேறு</translation>
@@ -66,6 +68,7 @@
 <translation id="4718048029184481307">’பிக்ச்சர்-இன்-பிக்ச்சர்' பயன்முறையில் பிளே ஆகிறது</translation>
 <translation id="4748357248530471599">டிஸ்ப்ளே கட்அவுட் முழுத்திரை நிலைமாற்ற பட்டன்</translation>
 <translation id="4763480195061959176">வீடியோ</translation>
+<translation id="4792862212177489858">இருப்பிடத்தைப் பகிர்</translation>
 <translation id="4812940957355064477">எண்ணை உள்ளிடுக.</translation>
 <translation id="4912200001568447310">தற்போதைய மதிப்பு</translation>
 <translation id="4915360478455618802">நேரத் தேர்வுக் கருவியைக் காட்டும்</translation>
@@ -179,6 +182,7 @@
 <translation id="9132465097189459683">மற்றவை…</translation>
 <translation id="9155987714137265666"><ph name="WEEK" />, <ph name="WEEK_START_DATE" /> அன்று தொடங்குவது</translation>
 <translation id="916607977885256133">பிக்ச்சர்-இன்-பிக்ச்சர்</translation>
+<translation id="918430632320614861">மைக்ரோஃபோன் அணுகலை வழங்கு</translation>
 <translation id="945780513535800434">சில மட்டுமே தேர்ந்தெடுக்கப்பட்டுள்ளன</translation>
 <translation id="954003015749068518">பிக்ச்சர்-இன்-பிக்ச்சர் பயன்முறைக்குச் செல்லும்</translation>
 </translationbundle>

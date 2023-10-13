@@ -335,7 +335,6 @@ Vefsvæði geta ekki notað fótsporin þín til að sjá vafranotkun þína á 
 <translation id="2718352093833049315">Aðeins um Wi-Fi</translation>
 <translation id="2738375676495545665">Fela „Nýjungar“</translation>
 <translation id="2747003861858887689">Fyrri reitur</translation>
-<translation id="2749026027885331579">Fjölskyldumeðlimir þínir geta nú notað þitt notandanafn og aðgangsorð þegar þeir nota Google-aðgangsorðastjórnun til að skrá sig inn á <ph name="WEBSITE" />. <ph name="BEGIN_LINK" />Nánar<ph name="END_LINK" /></translation>
 <translation id="2749231692441336879">Fylgir <ph name="CHANNEL_NAME" /></translation>
 <translation id="2754492786623500387">Reikningar í þessu tæki</translation>
 <translation id="2762000892062317888">rétt í þessu</translation>
@@ -576,7 +575,6 @@ Skoðaðu leiðbeiningar leitarvélarinnar um að eyða leitarferlinum ef það 
 <translation id="4018310736049373830">Stjórna virkni</translation>
 <translation id="4038354071007134711">Ekkert forrit í þessu tæki getur opnað skrána.</translation>
 <translation id="4042870976416480368">Finna á síðu</translation>
-<translation id="4043294777772912240"><ph name="USERNAME" /> getur nú notað þitt notandanafn og aðgangsorð þegar viðkomandi notar Google-aðgangsorðastjórnun til að skrá sig inn á <ph name="WEBSITE" />. <ph name="BEGIN_LINK" />Nánar<ph name="END_LINK" /></translation>
 <translation id="40433179647657191">Búðu til og deildu tengli á þann hluta vefsvæðisins sem þú hefur merkt.</translation>
 <translation id="4045648459118332842">Fáðu aðgang að vistuðum aðgangsorðum í hvaða forriti sem er með einum smelli</translation>
 <translation id="4049507953662678203">Gakktu úr skugga um að þú sért tengd(ur) netinu og reyndu svo aftur.</translation>
@@ -713,6 +711,7 @@ Skoðaðu leiðbeiningar leitarvélarinnar um að eyða leitarferlinum ef það 
 <translation id="4808744395915275922">Uppfærslur</translation>
 <translation id="4818522717893377262">Bæta við tungumáli...</translation>
 <translation id="481968316161811770">Fótspor, gögn vefsvæða</translation>
+<translation id="4824480232751123840">Hljóðstyrkur</translation>
 <translation id="4824497107140370669">{count,plural, =0{{domain}}=1{{domain} og 1 í viðbót}one{{domain} og {count} í viðbót}other{{domain} og {count} í viðbót}}</translation>
 <translation id="4826218269716039351">Loka á þriðju aðila</translation>
 <translation id="4826588772550366629">myndavél og hljóðnema</translation>
@@ -850,6 +849,7 @@ Einnig þarf að vera kveikt á Handoff í hlutanum General í Settings og tæki
 <translation id="5556459405103347317">Endurhlaða</translation>
 <translation id="555749644339804659">Athugar aðgangsorð…</translation>
 <translation id="556042886152191864">Hnappur</translation>
+<translation id="5572684875078967866">Upplýsingageymsla</translation>
 <translation id="5597915316964418992">Opna flipayfirlit</translation>
 <translation id="560322036295180549">Fyrirtækið þitt slökkti á þessu</translation>
 <translation id="5614553682702429503">Vista aðgangsorð?</translation>
@@ -911,6 +911,7 @@ Einnig þarf að vera kveikt á Handoff í hlutanum General í Settings og tæki
 <translation id="5896576662943111387">Sniðinn fyrir iOS</translation>
 <translation id="5897749768294722429">Samstilltu flipa og feril til að opna vefsvæði sem þú hefur skoðað áður á skjótan hátt.</translation>
 <translation id="5897956970858271241">Opna afritaðan tengil</translation>
+<translation id="5898848375214731122">Massi</translation>
 <translation id="5899314093904173337">Ef þú vilt deila með fólki í nágrenninu skaltu láta það skanna þennan QR-kóða með myndavélinni sinni eða QR-forriti</translation>
 <translation id="5911030830365207728">Google Translate</translation>
 <translation id="5913600720976431809">Valkostir fyrir þýðingu þessarar síðu</translation>
@@ -928,6 +929,7 @@ Einnig þarf að vera kveikt á Handoff í hlutanum General í Settings og tæki
 <translation id="5981230843984570095">Loka öllum óvirkum</translation>
 <translation id="5982717868370722439">Bæta fyrirliggjandi gögnum við <ph name="USER_EMAIL" />.</translation>
 <translation id="5984222099446776634">Nýlega heimsótt</translation>
+<translation id="598634819525651074">Flatarmál</translation>
 <translation id="5988097621740394599">Sjá verðlækkanir á flipum.</translation>
 <translation id="5988851877894965432">Opna vefslóðir í Chrome</translation>
 <translation id="6006672969046233841">Nýr flipi</translation>
@@ -1364,6 +1366,7 @@ Vefsvæði geta notað fótspor til að sjá vafranotkun þína á mismunandi ve
 <translation id="8156478151976189188">Samstilling aðgangsorða virkar ekki</translation>
 <translation id="8157532349231307196"><ph name="NUMBER_OF_ACCOUNTS" /> reikningar</translation>
 <translation id="8159358225423560600">rétt í þessu</translation>
+<translation id="8173034266693057059">Lengd</translation>
 <translation id="8179976553408161302">Enter</translation>
 <translation id="8182037667962849780">{count,plural, =1{Fyrir {website_1}}=2{Fyrir {website_1}, {website_2}}=3{Fyrir {website_1}, {website_2} og 1 í viðbót}one{Fyrir {website_1}, {website_2} og {more_count} í viðbót}other{Fyrir {website_1}, {website_2} og {more_count} í viðbót}}</translation>
 <translation id="8193953846147532858"><ph name="BEGIN_LINK" />Tækin þín<ph name="END_LINK" /> · <ph name="EMAIL" /></translation>
@@ -1458,6 +1461,7 @@ Gögnin þín voru dulkóðuð með aðgangsorði <ph name="TIME" />. Sláðu þ
 <translation id="8692689525339542358">Verðu þig gegn hættulegum vefsvæðum, niðurhali og viðbótum.</translation>
 <translation id="8693663554456874301">{count,plural, =1{Loka flipa}one{Loka flipum}other{Loka flipum}}</translation>
 <translation id="8703536910991780768">Aðgangsorðin þín virðast traust</translation>
+<translation id="8706253136355675497">Hitastig</translation>
 <translation id="8717864919010420084">Afrita tengil</translation>
 <translation id="8721297211384281569">Verkfæravalmynd</translation>
 <translation id="8725066075913043281">Reyna aftur</translation>
@@ -1563,6 +1567,7 @@ Gögnin þín voru dulkóðuð með aðgangsorði <ph name="TIME" />. Sláðu þ
 <translation id="9188680907066685419">Skrá út af stýrðum reikningi</translation>
 <translation id="9200875785104711666">fyrir <ph name="TIME" /> dögum</translation>
 <translation id="9203116392574189331">Handoff</translation>
+<translation id="9206887540681440657">Hraði</translation>
 <translation id="9219154867334666734">Leita í flipum…</translation>
 <translation id="9223358826628549784">Hrunskýrsla send.</translation>
 <translation id="941747855997058526">Veldu aðgangsorð…</translation>

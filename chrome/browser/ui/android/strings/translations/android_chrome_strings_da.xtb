@@ -166,6 +166,7 @@ Kun personer med din adgangssætning kan læse dine krypterede data. Adgangssæt
 <translation id="1922362554271624559">Foreslåede sprog</translation>
 <translation id="1924255092154549435">Fanen er udvidet</translation>
 <translation id="1925021887439448749">Angiv tilpasset webadresse</translation>
+<translation id="1928618076168182477">Visuel visning anvendes</translation>
 <translation id="1928696683969751773">Opdateringer</translation>
 <translation id="19288952978244135">Åbn Chrome igen.</translation>
 <translation id="1933845786846280168">Valgt fane</translation>
@@ -196,6 +197,7 @@ Kun personer med din adgangssætning kan læse dine krypterede data. Adgangssæt
 <translation id="2065944887543506430">{FILE_COUNT,plural, =1{1 download mislykkedes}one{# download mislykkedes}other{# downloads mislykkedes}}</translation>
 <translation id="2067805253194386918">tekst</translation>
 <translation id="2082238445998314030">Resultat <ph name="RESULT_NUMBER" /> af <ph name="TOTAL_RESULTS" /></translation>
+<translation id="2091863218454846791">Meget tæt visning anvendes</translation>
 <translation id="2093731487903423814">de seneste 15 minutter</translation>
 <translation id="2096012225669085171">Synkroniser og personligt tilpas på flere enheder</translation>
 <translation id="2100273922101894616">Automatisk login</translation>
@@ -363,6 +365,7 @@ Kun personer med din adgangssætning kan læse dine krypterede data. Adgangssæt
 <translation id="2961208450284224863">{READING_LIST_UNREAD_PAGE_COUNT,plural, =1{<ph name="READING_LIST_UNREAD_PAGE_COUNT_ONE" /> ulæst side}one{<ph name="READING_LIST_UNREAD_PAGE_COUNT_MANY" /> ulæst side}other{<ph name="READING_LIST_UNREAD_PAGE_COUNT_MANY" /> ulæste sider}}</translation>
 <translation id="2961210776189273067">Titel</translation>
 <translation id="296370266220139811">Spar tid, og skriv mindre</translation>
+<translation id="2977350910003566746">Sorteres efter sidst åbnet</translation>
 <translation id="297771753501244313">Sortér efter sidst åbnet</translation>
 <translation id="2979025552038692506">Valgt inkognitofane</translation>
 <translation id="2979639724566107830">Åbn i nyt vindue</translation>
@@ -403,6 +406,7 @@ Kun personer med din adgangssætning kan læse dine krypterede data. Adgangssæt
 <translation id="3123734510202723619">Meddelelser</translation>
 <translation id="3134784203083076891">"</translation>
 <translation id="314939179385989105">Chromes startside</translation>
+<translation id="3158667104057012316">Sorteres i manuel rækkefølge</translation>
 <translation id="3166827708714933426">Genveje på faner og i vinduer</translation>
 <translation id="316694332262407393">Chrome kører allerede her.</translation>
 <translation id="3167258285411721858">Du kan anmode om mobilwebsitet for <ph name="HOST_NAME" /></translation>
@@ -530,7 +534,9 @@ Kun personer med din adgangssætning kan læse dine krypterede data. Adgangssæt
 <translation id="3892148308691398805">Kopiér tekst</translation>
 <translation id="3894427358181296146">Tilføj mappe</translation>
 <translation id="3899682235662194879">Luk alle inkognitofaner</translation>
+<translation id="3902562446536395999">Sorteres fra A til Å</translation>
 <translation id="3908308510347173149">Opdater <ph name="PRODUCT_NAME" /></translation>
+<translation id="3911609878849982353">Sorteres fra Å til A</translation>
 <translation id="3924911262913579434"><ph name="SAFE_BROWSING_MODE" /> er aktiveret</translation>
 <translation id="3927692899758076493">Sans serif</translation>
 <translation id="3928666092801078803">Kombiner mine data</translation>
@@ -566,6 +572,7 @@ Kun personer med din adgangssætning kan læse dine krypterede data. Adgangssæt
 <translation id="4084682180776658562">Bogmærke</translation>
 <translation id="4084712963632273211">Fra <ph name="PUBLISHER_ORIGIN" /> – <ph name="BEGIN_DEEMPHASIZED" />leveret af Google<ph name="END_DEEMPHASIZED" /></translation>
 <translation id="409109920254068737">Du kan bruge denne tablet til at logge ind på den enhed, der viser QR-koden.</translation>
+<translation id="4092709865241032354">Tilføj dit brugernavn for dette website for at hjælpe Google Adgangskodeadministrator med at gemme dine loginoplysninger</translation>
 <translation id="4095146165863963773">Vil du slette appdata?</translation>
 <translation id="4095425503313512126">Browsing og søgning er hurtigere</translation>
 <translation id="4096227151372679484">Flow til lagring af bogmærker er åbnet i halv højde</translation>
@@ -943,6 +950,7 @@ Hvis du vil ændre denne indstilling, skal du <ph name="BEGIN_LINK" />nulstille 
 <translation id="6000203700195075278">Følg igen</translation>
 <translation id="6002122790816966947">Dine enheder</translation>
 <translation id="6011308810877101166">Gør søgeforslag bedre</translation>
+<translation id="6013305291643746595">Sorteres efter ældste</translation>
 <translation id="6026538407078977628">Udvid til fuld skærm</translation>
 <translation id="6030719887161080597">Administrer oplysninger, der anvendes af websites til at måle annonceeffektivitet</translation>
 <translation id="6039379616847168523">Gå til den næste fane</translation>
@@ -1389,6 +1397,7 @@ Nogle websites kan f.eks. reagere på denne anmodning ved at vise dig annoncer, 
 <translation id="8110024788458304985">Vær med til at forbedre funktioner og ydeevne i Chrome</translation>
 <translation id="8110087112193408731">Vil du se din Chrome-aktivitet i Digital balance?</translation>
 <translation id="8118117428362942925">Spørg din forælder (<ph name="PARENT_NAME" />), hvis du har brug for hjælp</translation>
+<translation id="8122623268651408616">Sorteres efter nyeste</translation>
 <translation id="8127542551745560481">Rediger startside</translation>
 <translation id="8130309322784422030">Dine gemte loginoplysninger kan være forældede</translation>
 <translation id="813082847718468539">Se websiteoplysninger</translation>

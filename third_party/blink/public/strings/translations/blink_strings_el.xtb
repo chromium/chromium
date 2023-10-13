@@ -16,6 +16,7 @@
 <translation id="1729654308190250600">Καταχωρίστε μια διεύθυνση ηλεκτρονικού ταχυδρομείου.</translation>
 <translation id="1758486001363313524">Άλλες…</translation>
 <translation id="1787192514241997742">συνολικός χρόνος: <ph name="REMAINING_TIME" /></translation>
+<translation id="1800494066469288780">Να επιτρέπεται η χρήση της κάμερας</translation>
 <translation id="1822429046913737220">Π.Μ./Μ.Μ.</translation>
 <translation id="1832974991323546415">αναπαραγωγή σε απομακρυσμένη συσκευή</translation>
 <translation id="1921819250265091946">ηη</translation>
@@ -51,6 +52,7 @@
 <translation id="3220661731597678625">τρέχον βήμα</translation>
 <translation id="3321030238473337787">Ταχύτητα αναπαραγωγής</translation>
 <translation id="3329013043687509092">Κορεσμός</translation>
+<translation id="3377518164566272702">Να επιτρέπεται η χρήση του μικροφώνου και της κάμερας</translation>
 <translation id="3450233048674729344">Η τιμή πρέπει να είναι μικρότερη ή ίση του <ph name="MAXIMUM" />.</translation>
 <translation id="3732799496749320381">μμ</translation>
 <translation id="3754210790023674521">Έξοδος από τη λειτουργία picture-in-picture</translation>
@@ -66,6 +68,7 @@
 <translation id="4718048029184481307">Αναπαραγωγή σε λειτουργία picture-in-picture</translation>
 <translation id="4748357248530471599">εναλλαγή πλήρους οθόνης εγκοπής οθόνης</translation>
 <translation id="4763480195061959176">βίντεο</translation>
+<translation id="4792862212177489858">Κοινοποίηση τοποθεσίας</translation>
 <translation id="4812940957355064477">Εισαγάγετε έναν αριθμό.</translation>
 <translation id="4912200001568447310">τρέχον στοιχείο</translation>
 <translation id="4915360478455618802">Εμφάνιση εργαλείου επιλογής ώρας</translation>
@@ -179,6 +182,7 @@
 <translation id="9132465097189459683">Άλλες…</translation>
 <translation id="9155987714137265666"><ph name="WEEK" />, από τις <ph name="WEEK_START_DATE" /></translation>
 <translation id="916607977885256133">Παράθεση εικόνων</translation>
+<translation id="918430632320614861">Να επιτρέπεται η χρήση του μικροφώνου</translation>
 <translation id="945780513535800434">Μερικώς επιλεγμένο</translation>
 <translation id="954003015749068518">είσοδος στη λειτουργία picture-in-picture</translation>
 </translationbundle>

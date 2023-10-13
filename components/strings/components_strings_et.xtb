@@ -466,6 +466,7 @@ Vastasel korral blokeeritakse see teie privaatsusseadetes. See võimaldab teie k
 <translation id="1875512691959384712">Google'i vormid</translation>
 <translation id="1876399092304384674">Kuupäeva alusel</translation>
 <translation id="187918866476621466">Ava käivitamisel avatavad lehed</translation>
+<translation id="1880901968112404879">Kui soovite järgmisel korral kiiremini maksta, salvestage kaart, krüpteeritud turvakood ja arveldusaadress oma Google’i kontole</translation>
 <translation id="1883255238294161206">Ahenda loend</translation>
 <translation id="1884843295353628214">Džäss</translation>
 <translation id="1890171020361705182">Dinosaurusemäng. Pikslitest dinosaurus jookseb kõrbemaastikul ning väldib kaktuste ja pterodaktülostega kokkupõrkamist. Kui kuulete helimärguannet, siis puudutage, et takistustest üle hüpata.</translation>
@@ -3358,6 +3359,7 @@ Lisateave:
 <translation id="7802989406998618639">Sisestage <ph name="NUMBER_OF_DIGITS" />-kohaline turvakood, mis asub <ph name="SIDE_OF_CARD" />, et pank saaks teie isiku kinnitada</translation>
 <translation id="780301667611848630">Ei, aitäh</translation>
 <translation id="7805768142964895445">Olek</translation>
+<translation id="7810410097247356677">Järgmine kord kiiremini maksmiseks salvestage oma kaart ja krüpteeritud turvakood seadmesse</translation>
 <translation id="7812922009395017822">Mir</translation>
 <translation id="7813600968533626083">Kas eemaldada Chrome'ist vormi soovitus?</translation>
 <translation id="781440967107097262">Kas jagada lõikelauda?</translation>
@@ -3378,7 +3380,6 @@ Lisateave:
 <translation id="7865448901209910068">Suurim kiirus</translation>
 <translation id="7870281855125116701">Leiti allahindlus</translation>
 <translation id="7871445724586827387">Google'i konto parooli muutmine</translation>
-<translation id="7876615279559620350">Kiiremaks maksmiseks salvestage selle kaardi CVC oma Google'i kontol</translation>
 <translation id="7877007680666472091">kaitstud sisu ID-d</translation>
 <translation id="7878562273885520351">Teie parool võib olla ohus</translation>
 <translation id="7880146494886811634">Aadressi salvestamine</translation>
@@ -3603,7 +3604,6 @@ Lisateave:
 <translation id="8308653357438598313">Reaalajas videote voogesitamine</translation>
 <translation id="8311895354659782580">Kinnisvaraloendid</translation>
 <translation id="8316555157357957253">Kasutatakse praegu</translation>
-<translation id="8317570861267063617">Kiiremaks maksmiseks salvestage selle kaardi CVC oma seadmesse</translation>
 <translation id="8319269383395457801">Elamute ja eluruumide müük</translation>
 <translation id="831997045666694187">Õhtu</translation>
 <translation id="8321476692217554900">märguanded</translation>

@@ -715,7 +715,6 @@
 <translation id="6423239382391657905">Отворена VPN</translation>
 <translation id="6439505561246192797">Слаб (<ph name="SIGNAL_STRENGTH" />)</translation>
 <translation id="6447630859861661624">Отворите подешавања налога</translation>
-<translation id="6461047516875166066">Реци ми нешто више</translation>
 <translation id="6463239094587744704">{PAGE_NUMBER,plural, =0{Желите да поново скенирате страницу?}=1{Желите да поново скенирате {PAGE_NUMBER}. страницу?}one{Желите да поново скенирате {PAGE_NUMBER}. страницу?}few{Желите да поново скенирате {PAGE_NUMBER}. страницу?}other{Желите да поново скенирате {PAGE_NUMBER}. страницу?}}</translation>
 <translation id="6472207088655375767">OTP</translation>
 <translation id="6480327114083866287">Управља <ph name="MANAGER" /></translation>

@@ -16,6 +16,7 @@
 <translation id="1729654308190250600">يُرجى إدخال عنوان البريد الإلكتروني وعدم ترك الحق فارغًا.</translation>
 <translation id="1758486001363313524">آخر...</translation>
 <translation id="1787192514241997742">الوقت الإجمالي: <ph name="REMAINING_TIME" /></translation>
+<translation id="1800494066469288780">السماح بالوصول إلى الكاميرا</translation>
 <translation id="1822429046913737220">صباحًا/مساءً</translation>
 <translation id="1832974991323546415">تشغيل على جهاز بعيد</translation>
 <translation id="1921819250265091946">يوم</translation>
@@ -51,6 +52,7 @@
 <translation id="3220661731597678625">الخطوة الحالية</translation>
 <translation id="3321030238473337787">سرعة التشغيل</translation>
 <translation id="3329013043687509092">تشبع اللون</translation>
+<translation id="3377518164566272702">السماح بالوصول إلى الميكروفون والكاميرا</translation>
 <translation id="3450233048674729344">يجب أن تكون القيمة أقل من أو تساوي <ph name="MAXIMUM" />.</translation>
 <translation id="3732799496749320381">شهر</translation>
 <translation id="3754210790023674521">الخروج من وضع "نافذة ضمن نافذة"</translation>
@@ -66,6 +68,7 @@
 <translation id="4718048029184481307">تشغيل في وضع "نافذة ضمن النافذة"</translation>
 <translation id="4748357248530471599">تبديل صورة مقطوعة للشاشة إلى وضع ملء الشاشة</translation>
 <translation id="4763480195061959176">فيديو</translation>
+<translation id="4792862212177489858">مشاركة الموقع الجغرافي</translation>
 <translation id="4812940957355064477">يُرجى إدخال عدد.</translation>
 <translation id="4912200001568447310">العنصر الحالي</translation>
 <translation id="4915360478455618802">عرض منتقي الوقت</translation>
@@ -180,6 +183,7 @@
 <translation id="9132465097189459683">آخر...</translation>
 <translation id="9155987714137265666"><ph name="WEEK" />، ابتداء من <ph name="WEEK_START_DATE" /></translation>
 <translation id="916607977885256133">نافذة ضمن النافذة</translation>
+<translation id="918430632320614861">السماح بالوصول إلى الميكروفون</translation>
 <translation id="945780513535800434">مُحدَّد جزئيًا</translation>
 <translation id="954003015749068518">الدخول في وضع "نافذة ضمن نافذة"</translation>
 </translationbundle>

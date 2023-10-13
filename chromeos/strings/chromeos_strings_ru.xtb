@@ -715,7 +715,6 @@
 <translation id="6423239382391657905">OpenVPN</translation>
 <translation id="6439505561246192797">Слабый (<ph name="SIGNAL_STRENGTH" />)</translation>
 <translation id="6447630859861661624">Перейти к настройкам аккаунта</translation>
-<translation id="6461047516875166066">Подробнее</translation>
 <translation id="6463239094587744704">{PAGE_NUMBER,plural, =0{Повторно сканировать страницу?}=1{Повторно сканировать страницу {PAGE_NUMBER}?}one{Повторно сканировать страницу {PAGE_NUMBER}?}few{Повторно сканировать страницу {PAGE_NUMBER}?}many{Повторно сканировать страницу {PAGE_NUMBER}?}other{Повторно сканировать страницу {PAGE_NUMBER}?}}</translation>
 <translation id="6472207088655375767">Одноразовый код</translation>
 <translation id="6480327114083866287">Под управлением <ph name="MANAGER" /></translation>

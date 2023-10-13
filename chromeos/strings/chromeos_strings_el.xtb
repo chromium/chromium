@@ -195,6 +195,7 @@
 <translation id="2326139988748364651"><ph name="RESOLUTION_VALUE" /> dpi</translation>
 <translation id="2338501278241028356">Ενεργοποιήστε το Bluetooth, για να εντοπίσετε κοντινές συσκευές</translation>
 <translation id="2346474577291266260">Τέλειο (<ph name="SIGNAL_STRENGTH" />)</translation>
+<translation id="2358070305000735383">Το παράθυρο διαλόγου επεξεργασίας για τη λειτουργία <ph name="DESCRIPTION" /> είναι ανοιχτό.</translation>
 <translation id="2359808026110333948">Συνέχεια</translation>
 <translation id="2364498172489649528">Επιτυχία</translation>
 <translation id="2367335866686097760">Πλήκτρο αντιστοίχισης πλήκτρων</translation>
@@ -714,7 +715,6 @@
 <translation id="6423239382391657905">Άνοιγμα VPN</translation>
 <translation id="6439505561246192797">Αδύναμο (<ph name="SIGNAL_STRENGTH" />)</translation>
 <translation id="6447630859861661624">Μετάβαση στις ρυθμίσεις λογαριασμού</translation>
-<translation id="6461047516875166066">Περισσότερα</translation>
 <translation id="6463239094587744704">{PAGE_NUMBER,plural, =0{Επανάληψη σάρωσης σελίδας;}=1{Επανάληψη σάρωσης σελίδας {PAGE_NUMBER};}other{Επανάληψη σάρωσης σελίδας {PAGE_NUMBER};}}</translation>
 <translation id="6472207088655375767">OTP</translation>
 <translation id="6480327114083866287">Διαχείριση από τον τομέα <ph name="MANAGER" /></translation>
@@ -1025,6 +1025,7 @@
 <translation id="8868741746785112895">GUID</translation>
 <translation id="8876270629542503161">Η συσκευή είναι tablet.</translation>
 <translation id="8881098542468797602">Επιτυχία δοκιμής</translation>
+<translation id="8892443466059986410">Ακύρωση επεξεργασίας συντόμευσης</translation>
 <translation id="8898840733695078011">Ισχύς σήματος</translation>
 <translation id="8909114361904403025">επάνω βέλος</translation>
 <translation id="8910721771319628100">Ο λανθάνων χρόνος του προεπιλεγμένου δικτύου έχει υπερβεί το ελάχιστο όριο.</translation>

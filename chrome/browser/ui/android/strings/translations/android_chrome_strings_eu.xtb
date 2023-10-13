@@ -359,6 +359,7 @@ Zure pasaesaldia dakitenek soilik irakur ditzakete zure datu enkriptatuak. Googl
 <translation id="2961208450284224863">{READING_LIST_UNREAD_PAGE_COUNT,plural, =1{Irakurri gabeko <ph name="READING_LIST_UNREAD_PAGE_COUNT_ONE" /> orri}other{Irakurri gabeko <ph name="READING_LIST_UNREAD_PAGE_COUNT_MANY" /> orri}}</translation>
 <translation id="2961210776189273067">Trataera</translation>
 <translation id="296370266220139811">Aurreztu denbora, gutxiago idatzita</translation>
+<translation id="2977350910003566746">Azken irekitze-dataren arabera ordenatzen</translation>
 <translation id="297771753501244313">Ordenatu: azken irekitzea</translation>
 <translation id="2979025552038692506">Hautatutako ezkutuko moduko fitxa</translation>
 <translation id="2979639724566107830">Ireki beste leiho batean</translation>
@@ -399,6 +400,7 @@ Zure pasaesaldia dakitenek soilik irakur ditzakete zure datu enkriptatuak. Googl
 <translation id="3123734510202723619">Iragarpenak</translation>
 <translation id="3134784203083076891">"</translation>
 <translation id="314939179385989105">Chrome-ren hasierako pantaila</translation>
+<translation id="3158667104057012316">Eskuz ordenatzen</translation>
 <translation id="3166827708714933426">Fitxetarako eta leihoetarako lasterbideak</translation>
 <translation id="316694332262407393">Chrome abian da dagoeneko.</translation>
 <translation id="3167258285411721858"><ph name="HOST_NAME" /> webgunearen mugikorretarako bertsioa eska dezakezu</translation>
@@ -525,7 +527,9 @@ Zure pasaesaldia dakitenek soilik irakur ditzakete zure datu enkriptatuak. Googl
 <translation id="3892148308691398805">Kopiatu testua</translation>
 <translation id="3894427358181296146">Gehitu karpeta</translation>
 <translation id="3899682235662194879">Itxi ezkutuko moduko fitxa guztiak</translation>
+<translation id="3902562446536395999">Atik zetara ordenatzen</translation>
 <translation id="3908308510347173149">Eguneratu <ph name="PRODUCT_NAME" /></translation>
+<translation id="3911609878849982353">Zetatik Ara ordenatzen</translation>
 <translation id="3924911262913579434">"<ph name="SAFE_BROWSING_MODE" />" aktibatuta dago</translation>
 <translation id="3927692899758076493">Sans Serif</translation>
 <translation id="3928666092801078803">Bateratu nire datuak</translation>
@@ -561,6 +565,7 @@ Zure pasaesaldia dakitenek soilik irakur ditzakete zure datu enkriptatuak. Googl
 <translation id="4084682180776658562">Laster-marka</translation>
 <translation id="4084712963632273211"><ph name="PUBLISHER_ORIGIN" /> da argitaratzailea <ph name="BEGIN_DEEMPHASIZED" />eta Google-k eskaintzen du<ph name="END_DEEMPHASIZED" /></translation>
 <translation id="409109920254068737">Tableta erabil dezakezu QR kodea erakusten ari den gailuan saioa hasteko.</translation>
+<translation id="4092709865241032354">Google-ren Pasahitz-kudeatzailea zerbitzuari saioa hasteko informazioa gordetzen laguntzeko, gehitu webgune honetarako darabilzun erabiltzaile-izena</translation>
 <translation id="4095146165863963773">Aplikazioko datuak ezabatu nahi dituzu?</translation>
 <translation id="4095425503313512126">Arakatzea eta bilatzea bizkorragoa da</translation>
 <translation id="4096227151372679484">Laster-marka gordetzeko fluxua altuera erdian irekita dago</translation>
@@ -934,6 +939,7 @@ Ezarpena aldatzeko, <ph name="BEGIN_LINK" />berrezarri sinkronizazioa<ph name="E
 <translation id="6000203700195075278">Jarraitu berriro</translation>
 <translation id="6002122790816966947">Zure gailuak</translation>
 <translation id="6011308810877101166">Hobetu bilaketa-iradokizunak</translation>
+<translation id="6013305291643746595">Zaharrenetik hasita ordenatzen</translation>
 <translation id="6026538407078977628">Zabaldu pantaila osoan ikusteko</translation>
 <translation id="6030719887161080597">Kudeatu webguneek iragarkien errendimendua neurtzeko erabiltzen duten informazioa</translation>
 <translation id="6039379616847168523">Saltatu hurrengo fitxara</translation>
@@ -1376,6 +1382,7 @@ Esaterako, bisitatu dituzun webguneetan oinarritzen ez diren iragarkiak bidalita
 <translation id="8110024788458304985">Lagundu Chrome-ren eginbideak eta errendimendua hobetzen</translation>
 <translation id="8110087112193408731">Chrome-ko jarduerak Ongizate digitala programan agertzea nahi duzu?</translation>
 <translation id="8118117428362942925">Laguntza behar baduzu, eskatu gurasoari (<ph name="PARENT_NAME" />)</translation>
+<translation id="8122623268651408616">Berrienetik hasita ordenatzen</translation>
 <translation id="8127542551745560481">Editatu hasierako pantaila</translation>
 <translation id="8130309322784422030">Baliteke saioa hasteko gordeta daukazun informazioa zaharkituta egotea</translation>
 <translation id="813082847718468539">Ikusi webgunearen informazioa</translation>

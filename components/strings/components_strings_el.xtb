@@ -143,6 +143,7 @@
 <translation id="1264309058268477500">Εναλλακτικός</translation>
 <translation id="1264974993859112054">Αθλητικά</translation>
 <translation id="1266469291454105242">Ξεκλείδωμα συσκευής</translation>
+<translation id="126728463333482584">Είστε από τους πρώτους που χρησιμοποιούν την Προστασία από παρακολούθηση, η οποία περιορίζει τη χρήση cookie τρίτου μέρους από ιστοτόπους, προκειμένου να μην σας παρακολουθούν καθώς περιηγείστε.</translation>
 <translation id="1268480293435976622">Κινεζικός φάκελος #7</translation>
 <translation id="1269516672602708785">Γρήγορη δημιουργία νέου ιστοτόπου στους Ιστοτόπους Google</translation>
 <translation id="1270328905573953738">Μετακομίσεις και μετεγκαταστάσεις</translation>
@@ -465,6 +466,7 @@
 <translation id="1875512691959384712">Φόρμες Google</translation>
 <translation id="1876399092304384674">Κατά ημερομηνία</translation>
 <translation id="187918866476621466">Άνοιγμα σελίδων εκκίνησης</translation>
+<translation id="1880901968112404879">Για να πληρώσετε πιο γρήγορα την επόμενη φορά, αποθηκεύστε την κάρτα, τον κρυπτογραφημένο κωδικό ασφαλείας και τη διεύθυνση χρέωσης στον Λογαριασμό σας Google</translation>
 <translation id="1883255238294161206">Σύμπτυξη λίστας</translation>
 <translation id="1884843295353628214">Τζαζ</translation>
 <translation id="1890171020361705182">Παιχνίδι Dino. Ένας δεινόσαυρος με εφέ pixel αποφεύγει κάκτους και πτεροδάκτυλους καθώς τρέχει σε ένα έρημο τοπίο. Όταν ακούσετε ένα ηχητικό σήμα, πατήστε για να πηδήξετε πάνω από τα εμπόδια.</translation>
@@ -692,6 +694,7 @@
 <translation id="2361263712565360498">275 x 395 χλστ.</translation>
 <translation id="236340516568226369">Μενού εναλλαγής μεγέθους</translation>
 <translation id="2365355378251437925">Εισαγάγετε <ph name="FIELD" /></translation>
+<translation id="2365382709349300355">1 αρχείο αποκλείστηκε λόγω πολιτικής</translation>
 <translation id="2365508935344991784">Έπιπλα κήπου</translation>
 <translation id="2366689192918515749">Κρέας και θαλασσινά</translation>
 <translation id="2367567093518048410">Επίπεδο</translation>
@@ -2415,6 +2418,7 @@
 <translation id="5967867314010545767">Κατάργηση από το ιστορικό</translation>
 <translation id="5968022600320704045">Δεν υπάρχουν αποτελέσματα αναζήτησης</translation>
 <translation id="5969199813874624822">Αποθήκευση και παρακολούθηση τιμής</translation>
+<translation id="5973514677932942122"><ph name="EXPIRATION_DATE" /> | <ph name="SECURITY_CODE" /></translation>
 <translation id="5974052231147553524">Έκτο ρολό</translation>
 <translation id="5975083100439434680">Σμίκρυνση</translation>
 <translation id="5979084224081478209">Έλεγχος κωδικών πρόσβασης</translation>
@@ -2906,6 +2910,7 @@
 <translation id="6965382102122355670">OK</translation>
 <translation id="6965978654500191972">Συσκευή</translation>
 <translation id="696703987787944103">Αντιληπτική</translation>
+<translation id="6967851206780867018">1 αρχείο αποκλείστηκε λόγω περιεχομένου</translation>
 <translation id="6970885655016700774">Ύφασμα (Αρχειοθέτησης)</translation>
 <translation id="6971439137020188025">Γρήγορη δημιουργία νέας παρουσίασης Google στις Παρουσιάσεις</translation>
 <translation id="6972629891077993081">Συσκευές HID</translation>
@@ -2958,6 +2963,7 @@
 <translation id="70705239631109039">Η σύνδεσή σας δεν είναι πλήρως ασφαλής</translation>
 <translation id="7075452647191940183">Το αίτημα είναι πολύ μεγάλο</translation>
 <translation id="7078665357168027058">RA3</translation>
+<translation id="7079138647457502205">Περιήγηση με περισσότερες λειτουργίες προστασίας απορρήτου</translation>
 <translation id="7079718277001814089">Ο ιστότοπος περιέχει κακόβουλο πρόγραμμα</translation>
 <translation id="7081308185095828845">Αυτή η λειτουργία δεν είναι διαθέσιμη στη συσκευή σας</translation>
 <translation id="7083258188081898530">Δίσκος 9</translation>
@@ -3354,6 +3360,7 @@
 <translation id="7802989406998618639">Εισαγάγετε τον <ph name="NUMBER_OF_DIGITS" />-ψήφιο κωδικό ασφαλείας στο <ph name="SIDE_OF_CARD" /> για να επαληθεύσει η τράπεζα την ταυτότητά σας</translation>
 <translation id="780301667611848630">Όχι, ευχαριστώ</translation>
 <translation id="7805768142964895445">Κατάσταση</translation>
+<translation id="7810410097247356677">Για να πληρώσετε πιο γρήγορα την επόμενη φορά, αποθηκεύστε την κάρτα και τον κρυπτογραφημένο κωδικό ασφαλείας στη συσκευή σας</translation>
 <translation id="7812922009395017822">Mir</translation>
 <translation id="7813600968533626083">Κατάργηση πρότασης φόρμας από το Chrome;</translation>
 <translation id="781440967107097262">Κοινοποίηση προχείρου;</translation>
@@ -3374,7 +3381,6 @@
 <translation id="7865448901209910068">Βέλτιστη ταχύτητα</translation>
 <translation id="7870281855125116701">Βρέθηκε έκπτωση</translation>
 <translation id="7871445724586827387">Αλλαγή του κωδικού πρόσβασης του Λογαριασμού σας Google</translation>
-<translation id="7876615279559620350">Για πιο γρήγορη ολοκλήρωση αγορών, αποθηκεύστε το CVC αυτής της κάρτας στον Λογαριασμό σας Google</translation>
 <translation id="7877007680666472091">προστατευμένα αναγνωριστικά περιεχομένου</translation>
 <translation id="7878562273885520351">Ο κωδικός πρόσβασής σας μπορεί να έχει παραβιαστεί</translation>
 <translation id="7880146494886811634">Αποθήκευση διεύθυνσης</translation>
@@ -3599,7 +3605,6 @@
 <translation id="8308653357438598313">Βίντεο ζωντανής ροής</translation>
 <translation id="8311895354659782580">Κτηματομεσιτικές καταχωρίσεις</translation>
 <translation id="8316555157357957253">Χρησιμοποιείται τώρα</translation>
-<translation id="8317570861267063617">Για πιο γρήγορη ολοκλήρωση αγοράς, αποθηκεύστε το CVC αυτής της κάρτας στη συσκευή σας</translation>
 <translation id="8319269383395457801">Πωλήσεις κατοικιών</translation>
 <translation id="831997045666694187">Βράδυ</translation>
 <translation id="8321476692217554900">ειδοποιήσεις</translation>

@@ -702,7 +702,6 @@
 <translation id="1558391695376153246">シークレット タブを閉じる</translation>
 <translation id="155865706765934889">タッチパッド</translation>
 <translation id="1558671750917454373"><ph name="DEVICE_NAME" /> へのキャストを再開する</translation>
-<translation id="1561329796773556980">保存容量を確認しています...</translation>
 <translation id="1562119309884184621">この連絡先を追加すると、次回ファイルが共有されたときに表示されます</translation>
 <translation id="1563137369682381456">有効期限</translation>
 <translation id="1563702743503072935">Google アカウントに保存したパスワードをこのデバイスでもログイン中に使用できるようになります</translation>
@@ -2079,6 +2078,7 @@
 <translation id="2609980095400624569">接続を確立できませんでした</translation>
 <translation id="2610157865375787051">スリープモードにする</translation>
 <translation id="2610260699262139870">実寸大(&amp;C)</translation>
+<translation id="2610374175948698697">デバイスのファイルやフォルダを表示できる</translation>
 <translation id="2610780100389066815">Microsoft 信頼リストの署名</translation>
 <translation id="261114180663074524">Microsoft アカウントにログインして、もう一度お試しください</translation>
 <translation id="2611776654555141051">長方形ツール</translation>
@@ -2126,6 +2126,7 @@
 <translation id="264897126871533291">第一色弱</translation>
 <translation id="2649045351178520408">Base64 エンコード ASCII 形式の証明書チェーン</translation>
 <translation id="265156376773362237">標準プリロード</translation>
+<translation id="2652071759203138150">{COUNT,plural, =1{{COUNT} 件のパスワードがこのデバイスのみに保存されています。他のデバイスで使用するには、<ph name="BEGIN_LINK" />Google アカウントに保存<ph name="END_LINK" />してください。}other{{COUNT} 件のパスワードがこのデバイスのみに保存されています。他のデバイスで使用するには、<ph name="BEGIN_LINK" />Google アカウントに保存<ph name="END_LINK" />してください。}}</translation>
 <translation id="2652129567809778422">パスワードの選択</translation>
 <translation id="2653266418988778031">認証局（CA）の証明書を削除すると、ブラウザはその CA が発行するどの証明書も信頼しなくなります。</translation>
 <translation id="2653275834716714682">テキストの置換</translation>
@@ -2575,6 +2576,7 @@
 <translation id="2990583317361835189">サイトにモーション センサーの使用を許可しない</translation>
 <translation id="2992931425024192067">すべての通知内容を表示する</translation>
 <translation id="2993517869960930405">アプリ情報</translation>
+<translation id="2996108796702395498">デバイスのシリアル番号は <ph name="SERIAL_NUMBER" /> です。この番号を使用して、サービスを有効にできます。</translation>
 <translation id="2996286169319737844">データを同期パスフレーズで暗号化します。なお、Google Pay のお支払い方法と住所はこれには含まれません。</translation>
 <translation id="2996722619877761919">長辺とじ</translation>
 <translation id="2996932914629936323">同期しているすべてのデバイスから履歴を削除します</translation>
@@ -2962,6 +2964,7 @@
 <translation id="3320630259304269485">セーフ ブラウジング（危険なサイトからの保護機能）などのセキュリティ設定</translation>
 <translation id="3321460131042519426">ワードラップを有効にする</translation>
 <translation id="3321494112580110651">お使いのプリンタが表示されない場合</translation>
+<translation id="3321776060736518525"><ph name="APP_URL" /> から</translation>
 <translation id="3323521181261657960">ボーナスタイムが加算されました</translation>
 <translation id="3325804108816646710">使用可能なプロファイルを検出しています...</translation>
 <translation id="3325910708063135066">Mac のシステム環境設定でカメラとマイクがオフになっています</translation>
@@ -4010,6 +4013,7 @@
 <translation id="4150201353443180367">表示</translation>
 <translation id="4150569944729499860">画面のコンテキスト</translation>
 <translation id="4151449637210235443">最近のゲームプレイについてお聞かせください</translation>
+<translation id="4151503145138736576">クリーンアップの必要なオフライン ストレージはありません</translation>
 <translation id="4152011295694446843">ブックマークはここに表示されます</translation>
 <translation id="4152670763139331043">{NUM_TABS,plural, =1{1 個のタブ}other{# 個のタブ}}</translation>
 <translation id="4154664944169082762">指紋</translation>
@@ -4220,6 +4224,7 @@
 <translation id="4341577178275615435">カーソル ブラウジングをオンまたはオフにするには、F7 ショートカット キーを使用します</translation>
 <translation id="4341905082470253054">TPM のステータスを確認しています...</translation>
 <translation id="434198521554309404">高速。安全。簡単。</translation>
+<translation id="4342417854108207000">デバイスのファイルやフォルダの編集を許可するサイト</translation>
 <translation id="4343250402091037179">特定のサイトや Chrome のセクションを検索するには、アドレスバーにそれらのショートカットを入力して、設定したキーボード ショートカットを押します。</translation>
 <translation id="434404122609091467">現在のサービス プロバイダを使用する</translation>
 <translation id="4345457680916430965"><ph name="APP" /> で開く(&amp;O)</translation>
@@ -5248,6 +5253,7 @@
 <translation id="5197255632782567636">インターネット</translation>
 <translation id="5198430103906431024">使用状況データや診断データを送信します。このデバイスは現在、診断データやデバイスとアプリの使用状況データを Google に自動送信するように設定されています。この情報は、システムとアプリの安定性の向上やその他の機能の改善に役立てられます。また、Google のアプリやパートナー（Android デベロッパーなど）も、集計データとしてこの情報を活用します。[その他のウェブとアプリのアクティビティ] の設定がオンになっている場合、このデータは Google アカウントに保存されます。</translation>
 <translation id="5199729219167945352">試験運用機能</translation>
+<translation id="5203035663139409780">デバイスのファイルやフォルダを編集できる</translation>
 <translation id="5203920255089865054">{NUM_EXTENSIONS,plural, =1{この拡張機能を確認するには、クリックしてください}other{これらの拡張機能を確認するには、クリックしてください}}</translation>
 <translation id="5204249655833504508">グラフィック タブレット</translation>
 <translation id="5204673965307125349">デバイスで Powerwash を実行してもう一度お試しください。</translation>
@@ -6215,6 +6221,7 @@
 <translation id="5996200702878169822">eSIM プロファイルを<ph name="BEGIN_LINK" />手動で<ph name="END_LINK" />設定することもできます。</translation>
 <translation id="5997337190805127100">サイトアクセスの詳細</translation>
 <translation id="5998458948782718639">自動入力の改善にご協力ください</translation>
+<translation id="5999024481231496910">サードパーティ Cookie の段階的廃止のテストを有効にしています。この設定は、設定ページでオーバーライドできません。サードパーティ Cookie を再度有効にする場合は、この機能を無効にして Chrome を再起動してください。</translation>
 <translation id="5999630716831179808">音声</translation>
 <translation id="6000758707621254961">「<ph name="SEARCH_TEXT" />」に対する <ph name="RESULT_COUNT" /> 件の検索結果</translation>
 <translation id="6001839398155993679">開始する</translation>
@@ -6697,6 +6704,7 @@
 <translation id="6399675241776343019">拒否済み</translation>
 <translation id="6399774419735315745">スパイ</translation>
 <translation id="6400360390396538896"><ph name="ORIGIN" /> では常に許可</translation>
+<translation id="6401118106417399952">デバイスの EID は <ph name="EID_NUMBER" />、デバイスのシリアル番号は <ph name="SERIAL_NUMBER" /> です。これらの番号を使用して、サービスを有効にできます。</translation>
 <translation id="6401458660421980302">このタブを別のデバイスに送信するには、送信先のデバイスで Chrome にログインしてください</translation>
 <translation id="6401597285454423070">ご使用のパソコンには Trusted Platform Module（TPM）セキュリティ デバイスが組み込まれています。これは Chrome OS の多くの重要なセキュリティ機能を実装するために使用されます。詳しくは、Chromebook ヘルプセンター（https://support.google.com/chromebook/?p=tpm）をご覧ください。</translation>
 <translation id="6404511346730675251">ブックマークを編集</translation>
@@ -6745,7 +6753,6 @@
 <translation id="6436778875248895551">拡張機能「<ph name="EXTENSION_NAME" />」は管理者によってブロックされました</translation>
 <translation id="6438234780621650381">設定のリセット</translation>
 <translation id="6438475350605608554">すでに別のタブにパスワードをインポートしています</translation>
-<translation id="6438480100790416671">保存容量を確認しています…</translation>
 <translation id="6438992844451964465"><ph name="WINDOW_TITLE" /> - オーディオ再生中です</translation>
 <translation id="6440291723980579689">ページは開いてから読み込まれます</translation>
 <translation id="6441377161852435370">タブをリーディング リストに追加</translation>
@@ -8212,6 +8219,7 @@
 <translation id="7637272932128132922">このタブがアクティブでないときに、メモリセーバーがメモリを他のタスクに解放しました。これは <ph name="SETTINGS_LINK" /> でいつでも変更できます。</translation>
 <translation id="7637593984496473097">ディスクの空き容量が不足しています</translation>
 <translation id="7639914187072011620">サーバーから SAML リダイレクト URL を取得できませんでした</translation>
+<translation id="7640256527901510478">デバイスの IMEI は <ph name="IMEI_NUMBER" />、デバイスのシリアル番号は <ph name="SERIAL_NUMBER" /> です。これらの番号を使用して、サービスを有効にできます。</translation>
 <translation id="7640308610547854367">ChromeOS を以前のバージョンに戻しました。アップデートを入手するには、次のバージョンが公開されるまでお待ちください。</translation>
 <translation id="7641513591566880111">新しいプロファイル名</translation>
 <translation id="764178579712141045"><ph name="USER_EMAIL" /> を追加しました</translation>
@@ -8553,7 +8561,6 @@
 <translation id="7893008570150657497">パソコンから画像、音楽、その他のメディアにアクセスする</translation>
 <translation id="7893153962594818789">この <ph name="DEVICE_TYPE" /> では Bluetooth がオフになっています。パスワードを入力し、Bluetooth をオンにしてください。</translation>
 <translation id="7893393459573308604"><ph name="ENGINE_NAME" /> (既定)</translation>
-<translation id="7894382333736164977">保存容量を確認しています。<ph name="ITEMS_FOUND" /> 個のアイテムが見つかりました。</translation>
 <translation id="7896292361319775586"><ph name="FILE" /> を保存しますか？</translation>
 <translation id="789722939441020330">サイトに複数のファイルの自動ダウンロードを許可しない</translation>
 <translation id="7897900149154324287">今後、リムーバブル デバイスを取り外す場合はまずファイル アプリで取り外しアイコンをクリックしてください。アイコンをクリックしないで取り外した場合、データを失うことがあります。</translation>
@@ -9711,6 +9718,7 @@
 <translation id="881799181680267069">ほかを隠す</translation>
 <translation id="8818152010000655963">壁紙</translation>
 <translation id="8818958672113348984">スマートフォンを使って確認</translation>
+<translation id="8819510664278523111">デバイスの EID は <ph name="EID_NUMBER" />、デバイスの IMEI は <ph name="IMEI_NUMBER" />、デバイスのシリアル番号は <ph name="SERIAL_NUMBER" /> です。これらの番号を使用して、サービスを有効にできます。</translation>
 <translation id="8820817407110198400">ブックマーク</translation>
 <translation id="8821045908425223359">IP アドレスを自動的に設定</translation>
 <translation id="8821268776955756404"><ph name="APP_NAME" /> を使用できるようになりました。</translation>
@@ -10263,6 +10271,7 @@
 <translation id="956500788634395331">有害な可能性がある拡張機能から保護されています</translation>
 <translation id="957179356621191750">6 点式</translation>
 <translation id="957960681186851048">このサイトで複数ファイルの自動ダウンロードが試行されました</translation>
+<translation id="958571289841636277">スワイプ操作で前後に移動する</translation>
 <translation id="960987915827980018">あと約 1 時間</translation>
 <translation id="962802172452141067">ブックマーク フォルダ ツリー</translation>
 <translation id="963000966785016697"><ph name="VISUAL_SEARCH_PROVIDER" /> で画像を検索</translation>

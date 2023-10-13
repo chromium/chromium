@@ -715,7 +715,6 @@
 <translation id="6423239382391657905">ເປີດVPN</translation>
 <translation id="6439505561246192797">ອ່ອນ (<ph name="SIGNAL_STRENGTH" />)</translation>
 <translation id="6447630859861661624">ໄປຫາການຕັ້ງຄ່າບັນຊີ</translation>
-<translation id="6461047516875166066">ບອກຂ້ອຍເພີ່ມເຕີມ</translation>
 <translation id="6463239094587744704">{PAGE_NUMBER,plural, =0{ສະແກນໜ້າຄືນໃໝ່ບໍ?}=1{ສະແກນ {PAGE_NUMBER} ໜ້າຄືນໃໝ່ບໍ?}other{ສະແກນ {PAGE_NUMBER} ໜ້າຄືນໃໝ່ບໍ?}}</translation>
 <translation id="6472207088655375767">OTP​:</translation>
 <translation id="6480327114083866287">ຈັດການໂດຍ <ph name="MANAGER" /></translation>

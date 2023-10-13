@@ -466,6 +466,7 @@
 <translation id="1875512691959384712">Google ቅጾች</translation>
 <translation id="1876399092304384674">በቀን</translation>
 <translation id="187918866476621466">የመነሻ ገጾችን ክፈት</translation>
+<translation id="1880901968112404879">በሚቀጥለው ጊዜ በፍጥነት ለመክፈል የእርስዎን ካርድ፣ የተመሰጠረ የደህንነት ኮድ እና የሒሳብ መጠየቂያ አድራሻ ወደ Google መለያዎ ያስቀምጡ</translation>
 <translation id="1883255238294161206">ዝርዝር ሰብስብ</translation>
 <translation id="1884843295353628214">ጃዝ</translation>
 <translation id="1890171020361705182">የዳይኖ ጨዋታ። በፒክስሎች የተሰራ የዳይኖሰር በረሃን ሮጦ እያቋረጠ ሳለ ቁልቋሎችን እና ቴሮዳክቲሎችን ያመልጣል። የድምጽ ምልክት ሲሰሙ መሰናክሎችን ለመዝለል መታ ያድርጉ።</translation>
@@ -3357,6 +3358,7 @@
 <translation id="7802989406998618639">ባንክዎ እርስዎ መሆንዎን ማረጋገጥ እንዲችል በ<ph name="SIDE_OF_CARD" /> ላይ ያለውን ባለ <ph name="NUMBER_OF_DIGITS" />-አሃዝ የደህንነት ኮድ ያስገቡ</translation>
 <translation id="780301667611848630">አይ፣ አመሰግናለሁ</translation>
 <translation id="7805768142964895445">ሁኔታ</translation>
+<translation id="7810410097247356677">በሚቀጥለው ጊዜ በበለጠ ፍጥነት ለመክፈል የእርስዎን ካርድ እና የተመሰጠረ የደህንነት ኮድ ወደ መሣሪያዎ ያስቀምጡ</translation>
 <translation id="7812922009395017822">Mir</translation>
 <translation id="7813600968533626083">የአስተያየት ጥቆማ ከChrome ይወገድ?</translation>
 <translation id="781440967107097262">ቅንጥብ ሰሌዳ ይጋራ?</translation>
@@ -3377,7 +3379,6 @@
 <translation id="7865448901209910068">ምርጥ ፍጥነት</translation>
 <translation id="7870281855125116701">የዋጋ ቅናሽ ተገኝቷል</translation>
 <translation id="7871445724586827387">የGoogle መለያ የይለፍ ቃልዎን ይለውጡ</translation>
-<translation id="7876615279559620350">ለፈጣን ክፍያ ማጠናቀቅ ካርድ ማረጋገጫ ኮዱን ለዚህ ካርድ Google መለያዎ ውስጥ ያስቀምጡ</translation>
 <translation id="7877007680666472091">የተጠበቁ የይዘት መታወቂያዎች</translation>
 <translation id="7878562273885520351">የእርስዎ ይለፍ ቃል ተሰርቆ ሊሆን ይችላል</translation>
 <translation id="7880146494886811634">አድራሻን ያስቀምጡ</translation>
@@ -3602,7 +3603,6 @@
 <translation id="8308653357438598313">የቀጥታ ስርጭት የቪድዮ ዥረት</translation>
 <translation id="8311895354659782580">የሪል ስቴት ዝርዝሮች</translation>
 <translation id="8316555157357957253">አሁን ጥቅም ላይ እየወለ ያለ</translation>
-<translation id="8317570861267063617">ይበልጥ ፈጣን ለሆነ ክፍያ ማጠናቀቅ ካርድ ማረጋገጫ ኮዱን ለዚህ ካርድ ወደ መሣሪያዎ ያስቀምጡ</translation>
 <translation id="8319269383395457801">የመኖሪያ ሽያጮች</translation>
 <translation id="831997045666694187">ምሽት</translation>
 <translation id="8321476692217554900">ማሳወቂያዎች</translation>

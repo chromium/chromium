@@ -709,7 +709,6 @@ Permissions that you've already given to apps may apply to this account. You can
 <translation id="1558391695376153246">Close Incognito tabs</translation>
 <translation id="155865706765934889">Touchpad</translation>
 <translation id="1558671750917454373">Resume casting to <ph name="DEVICE_NAME" /></translation>
-<translation id="1561329796773556980">We are in the process of checking storage space…</translation>
 <translation id="1562119309884184621">Adding this contact will remember the next time that they share</translation>
 <translation id="1563137369682381456">Expiry date</translation>
 <translation id="1563702743503072935">Passwords from your Google Account will also be available on this device while you're signed in</translation>
@@ -2105,6 +2104,7 @@ You can manage this account’s settings by installing the Family Link app on yo
 <translation id="2609980095400624569">Could not establish connection</translation>
 <translation id="2610157865375787051">Sleep</translation>
 <translation id="2610260699262139870">A&amp;ctual Size</translation>
+<translation id="2610374175948698697">Can view files or folders on your device</translation>
 <translation id="2610780100389066815">Microsoft Trust List Signing</translation>
 <translation id="261114180663074524">Sign in to your Microsoft account and then try again</translation>
 <translation id="2611776654555141051">Rectangle tool</translation>
@@ -2152,6 +2152,7 @@ You can manage this account’s settings by installing the Family Link app on yo
 <translation id="264897126871533291">Protanomaly</translation>
 <translation id="2649045351178520408">Base64-encoded ASCII, certificate chain</translation>
 <translation id="265156376773362237">Standard preloading</translation>
+<translation id="2652071759203138150">{COUNT,plural, =1{{COUNT} password is saved only to this device. To use it on your other devices, <ph name="BEGIN_LINK" />save it in your Google Account<ph name="END_LINK" />.}other{{COUNT} passwords are saved only to this device. To use them on your other devices, <ph name="BEGIN_LINK" />save them in your Google Account<ph name="END_LINK" />.}}</translation>
 <translation id="2652129567809778422">Select password</translation>
 <translation id="2653266418988778031">If you delete a Certification Authority (CA) certificate, your browser will no longer trust any certificates issued by that CA.</translation>
 <translation id="2653275834716714682">Text Replacement</translation>
@@ -4042,6 +4043,7 @@ This can include information about installed software, files, your browser and t
 <translation id="4150201353443180367">Display</translation>
 <translation id="4150569944729499860">Screen context</translation>
 <translation id="4151449637210235443">Tell us about your recent gameplay</translation>
+<translation id="4151503145138736576">No offline storage to clean up</translation>
 <translation id="4152011295694446843">You'll find your bookmarks here</translation>
 <translation id="4152670763139331043">{NUM_TABS,plural, =1{1 tab}other{# tabs}}</translation>
 <translation id="4154664944169082762">Fingerprints</translation>
@@ -4252,6 +4254,7 @@ This can include information about installed software, files, your browser and t
 <translation id="4341577178275615435">To turn caret browsing on or off, use the shortcut F7</translation>
 <translation id="4341905082470253054">Checking TPM status…</translation>
 <translation id="434198521554309404">Fast. Secure. Effortless.</translation>
+<translation id="4342417854108207000">Not allowed to edit files or folders on your device</translation>
 <translation id="4343250402091037179">To search a specific site or part of Chrome, type its shortcut in the address bar, followed by your preferred keyboard shortcut.</translation>
 <translation id="434404122609091467">With your current service provider</translation>
 <translation id="4345457680916430965">&amp;Open in <ph name="APP" /></translation>
@@ -5286,6 +5289,7 @@ Use Ctrl + Alt + Brightness down to zoom out.</translation>
 <translation id="5197255632782567636">Internet</translation>
 <translation id="5198430103906431024">Send usage and diagnostic data. This device is currently automatically sending diagnostic, device and app usage data to Google. This will help system and app stability and other improvements. Some aggregate data will also help Google apps and partners, such as Android developers. If your additional Web &amp; App Activity setting is turned on, this data may be saved to your Google Account.</translation>
 <translation id="5199729219167945352">Experiments</translation>
+<translation id="5203035663139409780">Can edit files or folders on your device</translation>
 <translation id="5203920255089865054">{NUM_EXTENSIONS,plural, =1{Click to view the extension}other{Click to view these extensions}}</translation>
 <translation id="5204249655833504508">Graphics tablet</translation>
 <translation id="5204673965307125349">Please powerwash the device and try again.</translation>
@@ -6789,7 +6793,6 @@ Permissions that you've already given to websites and apps may apply to this acc
 <translation id="6436778875248895551">The extension '<ph name="EXTENSION_NAME" />' was blocked by your administrator</translation>
 <translation id="6438234780621650381">Reset settings</translation>
 <translation id="6438475350605608554">You're already importing passwords in another tab</translation>
-<translation id="6438480100790416671">Checking storage space…</translation>
 <translation id="6438992844451964465"><ph name="WINDOW_TITLE" /> – Audio playing</translation>
 <translation id="6440291723980579689">Pages load only after you open them</translation>
 <translation id="6441377161852435370">Add tab to reading list</translation>
@@ -8606,7 +8609,6 @@ Press an assigned switch or key to remove assignment.</translation>
 <translation id="7893008570150657497">Access photos, music and other media from your computer</translation>
 <translation id="7893153962594818789">Bluetooth is off on this <ph name="DEVICE_TYPE" />. Enter your password, and turn on Bluetooth.</translation>
 <translation id="7893393459573308604"><ph name="ENGINE_NAME" /> (Default)</translation>
-<translation id="7894382333736164977">We are in the process of checking storage space. <ph name="ITEMS_FOUND" /> items found.</translation>
 <translation id="7896292361319775586">Save <ph name="FILE" />?</translation>
 <translation id="789722939441020330">Don't allow sites to automatically download multiple files</translation>
 <translation id="7897900149154324287">In the future, make sure that you eject your removable device in the Files app before unplugging it. Otherwise, you might lose data.</translation>

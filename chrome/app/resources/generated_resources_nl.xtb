@@ -706,7 +706,6 @@ Rechten die je al hebt gegeven aan apps, kunnen van toepassing zijn op dit accou
 <translation id="1558391695376153246">Incognitotabbladen sluiten</translation>
 <translation id="155865706765934889">Touchpad</translation>
 <translation id="1558671750917454373">Casten naar <ph name="DEVICE_NAME" /> hervatten</translation>
-<translation id="1561329796773556980">De opslagruimte wordt gecheckt…</translation>
 <translation id="1562119309884184621">Als je dit contact toevoegt, wordt hij of zij onthouden voor de volgende keer dat het contact content deelt</translation>
 <translation id="1563137369682381456">Vervaldatum</translation>
 <translation id="1563702743503072935">Wachtwoorden uit je Google-account zijn ook beschikbaar voor gebruik op dit apparaat als je bent ingelogd</translation>
@@ -1113,6 +1112,7 @@ Rechten die je al hebt gegeven aan apps, kunnen van toepassing zijn op dit accou
 <translation id="1861262398884155592">Deze map is leeg</translation>
 <translation id="1862311223300693744">Heb je speciale VPN-, proxy-, firewall- of NAS-software geïnstalleerd?</translation>
 <translation id="1863182668524159459">Geen seriële poorten gevonden</translation>
+<translation id="1863207472175483351">installeren...</translation>
 <translation id="1864111464094315414">Aanmelden</translation>
 <translation id="1864400682872660285">Koeler</translation>
 <translation id="1864454756846565995">USB-C-apparaat (poort aan achterkant)</translation>
@@ -1360,6 +1360,7 @@ Je kunt de instellingen van dit account beheren door de Family Link-app op je ap
 <translation id="2048653237708779538">Actie niet beschikbaar</translation>
 <translation id="204914487372604757">Snelle link maken</translation>
 <translation id="2050339315714019657">Portret</translation>
+<translation id="2051266530792296582">Google Wachtwoordmanager heeft een sterk wachtwoord gemaakt voor deze website</translation>
 <translation id="2051555741181591333">Hotspot automatisch uitzetten</translation>
 <translation id="2052572566310583903">Geïnstalleerd op je andere apparaten</translation>
 <translation id="2053105195397337973">We testen nieuwe manieren om tracking te beperken en tegelijkertijd te zorgen dat sites advertentiespam en fraude kunnen bestrijden.</translation>
@@ -2031,6 +2032,7 @@ Je kunt instellingen beheren via het kaartmenu of meer opties bekijken in het ge
 <translation id="2553340429761841190"><ph name="PRODUCT_NAME" /> kan geen verbinding maken met <ph name="NETWORK_ID" />. Probeer een ander netwerk of probeer het opnieuw.</translation>
 <translation id="2553440850688409052">Deze plugin verbergen</translation>
 <translation id="2554553592469060349">Het geselecteerde bestand is te groot (max. grootte: 3 MB).</translation>
+<translation id="2555802059188792472"><ph name="NUM_ALLOWED_APPS" /> van <ph name="TOTAL_NUM_APPS" /> apps kunnen meldingen sturen</translation>
 <translation id="25568951186001797">Fenced frame: <ph name="FENCEDFRAME_SITE" /></translation>
 <translation id="2558569818338050235">Je browsegeschiedenis heeft invloed op de advertenties die je ziet</translation>
 <translation id="2559889124253841528">Opslaan op apparaat</translation>
@@ -2087,6 +2089,7 @@ Je kunt instellingen beheren via het kaartmenu of meer opties bekijken in het ge
 <translation id="2609980095400624569">Kan geen verbinding maken</translation>
 <translation id="2610157865375787051">Slaapstand</translation>
 <translation id="2610260699262139870">We&amp;rkelijke grootte</translation>
+<translation id="2610374175948698697">Kan bestanden of mappen op je apparaat bekijken</translation>
 <translation id="2610780100389066815">Microsoft-vertrouwenslijsthandtekening</translation>
 <translation id="261114180663074524">Log in op je Microsoft-account en probeer het opnieuw</translation>
 <translation id="2611776654555141051">Tool Rechthoek</translation>
@@ -2134,6 +2137,7 @@ Je kunt instellingen beheren via het kaartmenu of meer opties bekijken in het ge
 <translation id="264897126871533291">Protanomalie</translation>
 <translation id="2649045351178520408">Base64 Encoded ASCII, certificaatketen</translation>
 <translation id="265156376773362237">Standaard vooraf laden</translation>
+<translation id="2652071759203138150">{COUNT,plural, =1{{COUNT} wachtwoord wordt alleen op dit apparaat opgeslagen. Als je het op je andere apparaten wilt gebruiken, <ph name="BEGIN_LINK" />sla je het op in je Google-account<ph name="END_LINK" />.}other{{COUNT} wachtwoorden worden alleen op dit apparaat opgeslagen. Als je ze op je andere apparaten wilt gebruiken, <ph name="BEGIN_LINK" />sla je ze op in je Google-account<ph name="END_LINK" />.}}</translation>
 <translation id="2652129567809778422">Wachtwoord selecteren</translation>
 <translation id="2653266418988778031">Als je een certificaat van een certificeringsinstantie verwijdert, vertrouwt je browser geen certificaten meer die door die certificeringsinstantie zijn verleend.</translation>
 <translation id="2653275834716714682">Tekst vervangen</translation>
@@ -2241,6 +2245,7 @@ Je kunt instellingen beheren via het kaartmenu of meer opties bekijken in het ge
 <translation id="2729327310379176711">Chrome zoekt nieuwe manieren om tracking te verminderen en je nog beter te beschermen terwijl je browst. Chrome <ph name="ESTIMATE_INTERESTS_LINK" /> en biedt je mogelijkheden om ze te beheren. Daarna kunnen sites die je bezoekt Chrome om je interesses vragen, zodat ze je relevante advertenties kunnen laten zien.</translation>
 <translation id="2729577602370119849">Krijg makkelijk toegang tot printers en beheer ze</translation>
 <translation id="2730029791981212295">Een back-up maken van Linux-apps en -bestanden</translation>
+<translation id="2730596696987224099">Zelf een wachtwoord kiezen</translation>
 <translation id="2730647855013151888">Alle persoonlijke informatie opnemen</translation>
 <translation id="2730901670247399077">Emoji-suggesties</translation>
 <translation id="273093730430620027">Deze pagina gebruikt je camera.</translation>
@@ -3468,6 +3473,7 @@ Zichtbaar voor apparaten in de buurt als <ph name="QUICK_START_DEVICE_DISPLAY_NA
 <translation id="3729957991398443677">Als je je wachtwoord wilt bekijken of er een notitie aan wilt toevoegen, selecteer je in de zoek- en adresbalk de optie Je wachtwoorden beheren</translation>
 <translation id="3730076362938942381">App voor schrijven met stylus</translation>
 <translation id="3732078975418297900">Fout op regel <ph name="ERROR_LINE" /></translation>
+<translation id="3732414796052961578">Doorgaan als <ph name="ACCOUNT_NAME" /></translation>
 <translation id="3732530910372558017">Pincode mag maximaal 63 tekens lang zijn</translation>
 <translation id="3732857534841813090">Aan de Google Assistent gerelateerde informatie</translation>
 <translation id="3733296813637058299">We installeren deze apps voor je. In de Play Store vind je nog meer apps voor je <ph name="DEVICE_TYPE" />.</translation>
@@ -3571,6 +3577,7 @@ Zichtbaar voor apparaten in de buurt als <ph name="QUICK_START_DEVICE_DISPLAY_NA
 <translation id="3803345858388753269">Videokwaliteit</translation>
 <translation id="3803367742635802571">Sites die je bezoekt, werken misschien niet meer zoals bedoeld</translation>
 <translation id="380408572480438692">Als je prestatiegegevens verzamelt, help je Google het systeem nog beter te maken. Er worden geen gegevens verstuurd totdat je een feedbackrapport (Alt-Shift-I) indient en prestatiegegevens toevoegt. Je kunt op elk moment teruggaan naar dit scherm om de verzameling uit te zetten.</translation>
+<translation id="3805079316250491151">Nieuwe knopnaam</translation>
 <translation id="3807249107536149332"><ph name="EXTENSION_NAME" /> (extensie-ID <ph name="EXTENSION_ID" />) is niet toegestaan op een inlogscherm.</translation>
 <translation id="3807747707162121253">A&amp;nnuleren</translation>
 <translation id="3808202562160426447">Achtergrondcontent dimmen</translation>
@@ -4020,6 +4027,7 @@ Je kunt instellingen beheren via het kaartmenu of meer opties bekijken in het ge
 <translation id="4150201353443180367">Weergave</translation>
 <translation id="4150569944729499860">Schermcontext</translation>
 <translation id="4151449637210235443">Vertel ons over je recente gameplay</translation>
+<translation id="4151503145138736576">Geen offline opslag om op te schonen</translation>
 <translation id="4152011295694446843">Hier vind je je bookmarks</translation>
 <translation id="4152670763139331043">{NUM_TABS,plural, =1{1 tabblad}other{# tabbladen}}</translation>
 <translation id="4154664944169082762">Vingerafdrukken</translation>
@@ -4160,6 +4168,7 @@ Je kunt instellingen beheren via het kaartmenu of meer opties bekijken in het ge
 <translation id="4279129444466079448">Je kunt maximaal <ph name="PROFILE_LIMIT" /> e-simkaartprofielen installeren op dit apparaat. Als je nog een profiel wilt toevoegen, verwijder je eerst een bestaand profiel.</translation>
 <translation id="4280325816108262082">Het apparaat verbreekt de verbinding automatisch als het wordt uitgezet of niet wordt gebruikt</translation>
 <translation id="4281844954008187215">Servicevoorwaarden</translation>
+<translation id="4281849573951338030">Penknoppen aanpassen</translation>
 <translation id="4282196459431406533">Smart Lock staat aan</translation>
 <translation id="4284903252249997120">ChromeVox-schermlezer en Selecteer om voor te lezen</translation>
 <translation id="4285418559658561636">Wachtwoord updaten</translation>
@@ -4229,6 +4238,7 @@ Je kunt instellingen beheren via het kaartmenu of meer opties bekijken in het ge
 <translation id="4341577178275615435">Gebruik de sneltoets F7 om browsen met navigatietoetsen aan of uit te zetten</translation>
 <translation id="4341905082470253054">TPM-status checken...</translation>
 <translation id="434198521554309404">Snel, beveiligd, makkelijk.</translation>
+<translation id="4342417854108207000">Toestemming om bestanden of mappen op je apparaat te bewerken</translation>
 <translation id="4343250402091037179">Als je een specifieke site of een deel van Chrome wilt doorzoeken, typ je de bijbehorende snelkoppeling in de adresbalk gevolgd door de gewenste sneltoets.</translation>
 <translation id="434404122609091467">Met je huidige serviceprovider</translation>
 <translation id="4345457680916430965">&amp;Openen in <ph name="APP" /></translation>
@@ -4851,6 +4861,7 @@ Gebruik Ctrl + Alt + Helderheid omlaag om uit te zoomen.</translation>
 <translation id="4850669014075537160">Scrollen</translation>
 <translation id="4850886885716139402">Weergave</translation>
 <translation id="485088796993065002">Sites spelen mogelijk geluid af om audio te bieden voor muziek, video's en andere media</translation>
+<translation id="4852383141291180386">App-meldingen beheren</translation>
 <translation id="4852916668365817106">Muiskleur</translation>
 <translation id="4853020600495124913">Openen in &amp;nieuw venster</translation>
 <translation id="4854317507773910281">Kies een ouderaccount voor goedkeuring</translation>
@@ -4988,6 +4999,8 @@ Gebruik Ctrl + Alt + Helderheid omlaag om uit te zoomen.</translation>
 <translation id="4967227914555989138">Notitie toevoegen</translation>
 <translation id="4967360192915400530">Gevaarlijk bestand downloaden</translation>
 <translation id="496742804571665842">E-simkaartprofielen uitzetten</translation>
+<translation id="4967571733817147990">Muisknoppen aanpassen</translation>
+<translation id="4970462793141009561">Toetsencombinatie invoeren</translation>
 <translation id="4971412780836297815">Openen wanneer klaar</translation>
 <translation id="4971735654804503942">Snellere, proactieve beveiliging tegen gevaarlijke websites, downloads en extensies. Stuurt een waarschuwing over wachtwoordlekken. Vereist dat browsegegevens naar Google worden verstuurd.</translation>
 <translation id="4972129977812092092">Printer bewerken</translation>
@@ -5011,6 +5024,7 @@ Gebruik Ctrl + Alt + Helderheid omlaag om uit te zoomen.</translation>
 <translation id="4988526792673242964">Pagina's</translation>
 <translation id="49896407730300355">Linksom &amp;draaien</translation>
 <translation id="4989966318180235467">&amp;Achtergrondpagina controleren</translation>
+<translation id="4990949771467040994">wachten…</translation>
 <translation id="4991420928586866460">Toetsen op de bovenste rij behandelen als functietoetsen</translation>
 <translation id="4992458225095111526">Powerwash bevestigen</translation>
 <translation id="4992473555164495036">Je beheerder heeft de beschikbare invoermethoden beperkt.</translation>
@@ -5192,6 +5206,7 @@ Gebruik Ctrl + Alt + Helderheid omlaag om uit te zoomen.</translation>
 <translation id="5145464978649806571">Als je wegloopt bij je apparaat, wordt het scherm automatisch vergrendeld. Het scherm blijft langer actief als je je voor het apparaat bevindt. Als het vergrendelscherm uitstaat, wordt de slaapstand van je apparaat geactiveerd in plaats van de vergrendeling.</translation>
 <translation id="514575469079499857">Je IP-adres gebruiken om je locatie te bepalen (standaard)</translation>
 <translation id="5145876360421795017">Het apparaat niet inschrijven</translation>
+<translation id="5146235736676876345">Zelf een wachtwoord kiezen</translation>
 <translation id="5146896637028965135">Systeemstem</translation>
 <translation id="5147992672778369947">Aanbevolen wachtwoord gebruiken</translation>
 <translation id="5148277445782867161">De locatieservice van Google maakt gebruik van bronnen zoals wifi, mobiele netwerken en sensoren om de locatie van je apparaat te schatten.</translation>
@@ -5256,7 +5271,9 @@ Gebruik Ctrl + Alt + Helderheid omlaag om uit te zoomen.</translation>
 <translation id="5197255632782567636">Internet</translation>
 <translation id="5198430103906431024">Stuur gebruiks- en diagnostische gegevens. Dit apparaat stuurt momenteel automatisch diagnostische, apparaat- en app-gebruiksgegevens naar Google. Deze gegevens kunnen worden gebruikt om de systeem- en app-stabiliteit te verbeteren en andere optimalisaties mogelijk te maken. Daarnaast zijn bepaalde verzamelde gegevens nuttig voor Google-apps en -partners, zoals Android-ontwikkelaars. Als je de instelling voor aanvullende Web- en app-activiteit hebt aangezet, kunnen deze gegevens worden opgeslagen in je Google-account.</translation>
 <translation id="5199729219167945352">Experimenten</translation>
+<translation id="5203035663139409780">Kan bestanden of mappen op je apparaat bewerken</translation>
 <translation id="5203920255089865054">{NUM_EXTENSIONS,plural, =1{Klik om de extensie te bekijken}other{Klik om deze extensies te bekijken}}</translation>
+<translation id="5204249655833504508">Grafische tablet</translation>
 <translation id="5204673965307125349">Voer een powerwash uit op het apparaat en probeer het opnieuw.</translation>
 <translation id="5204967432542742771">Wachtwoord invoeren</translation>
 <translation id="5205484256512407285">Nooit mobiele data gebruiken voor overdracht</translation>
@@ -5576,6 +5593,7 @@ Rechten die je al hebt gegeven aan websites en apps, kunnen van toepassing zijn 
 <translation id="5467207440419968613">Rechten voor <ph name="PERMISSION_1" />, <ph name="PERMISSION_2" /> geblokkeerd</translation>
 <translation id="5468173180030470402">Zoeken naar fileshares</translation>
 <translation id="5468330507528805311">Tethering-status:</translation>
+<translation id="5468504405124548160">Knopnaam wijzigen</translation>
 <translation id="5469540749878136997">Geheugen vrijmaken op basis van gebruik</translation>
 <translation id="5469852975082458401">Je kunt navigeren op pagina's met een tekstcursor. Druk op F7 om dit uit te zetten.</translation>
 <translation id="5470735824776589490">Opnieuw starten is vereist voordat je apparaat opnieuw kan worden ingesteld met Powerwash. <ph name="LINK_BEGIN" />Meer informatie<ph name="LINK_END" /></translation>
@@ -6218,6 +6236,7 @@ Zichtbaar voor apparaten in de buurt als <ph name="QUICK_START_DEVICE_DISPLAY_NA
 <translation id="5992225669837656567">De verbinding met alle muizen is verbroken</translation>
 <translation id="5992652489368666106">Geen rand</translation>
 <translation id="5993508466487156420">{NUM_SITES,plural, =1{Beoordeling afgerond voor 1 site}other{Beoordeling afgerond voor {NUM_SITES} sites}}</translation>
+<translation id="5996200702878169822">Je kunt ook <ph name="BEGIN_LINK" />handmatig<ph name="END_LINK" /> een e-simkaartprofiel instellen.</translation>
 <translation id="5997337190805127100">Meer informatie over sitetoegang</translation>
 <translation id="5998458948782718639">Help Automatisch invullen te verbeteren</translation>
 <translation id="5999024481231496910">Je hebt uitfasering van het testen van cookies van derden aangezet. Dit kan niet worden overschreven door de instellingenpagina. Als je cookies van derden opnieuw wilt aanzetten, start je Chrome opnieuw terwijl deze functie uitstaat.</translation>
@@ -6752,7 +6771,6 @@ Je kunt instellingen beheren via het kaartmenu of meer opties bekijken in het ge
 <translation id="6436778875248895551">De extensie <ph name="EXTENSION_NAME" /> is geblokkeerd door je beheerder</translation>
 <translation id="6438234780621650381">Instellingen resetten</translation>
 <translation id="6438475350605608554">Je importeert al wachtwoorden op een ander tabblad.</translation>
-<translation id="6438480100790416671">Opslagruimte checken…</translation>
 <translation id="6438992844451964465"><ph name="WINDOW_TITLE" />: audio wordt afgespeeld</translation>
 <translation id="6440291723980579689">Pagina's worden pas geladen nadat je ze opent</translation>
 <translation id="6441377161852435370">Tabblad toevoegen aan leeslijst</translation>
@@ -8565,7 +8583,6 @@ Zichtbaar voor apparaten in de buurt als <ph name="QUICK_START_DEVICE_DISPLAY_NA
 <translation id="7893008570150657497">Foto's, muziek en andere media van je computer openen</translation>
 <translation id="7893153962594818789">Bluetooth staat uit op deze <ph name="DEVICE_TYPE" />. Geef je wachtwoord op en zet Bluetooth aan.</translation>
 <translation id="7893393459573308604"><ph name="ENGINE_NAME" /> (standaard)</translation>
-<translation id="7894382333736164977">De opslagruimte wordt gecheckt. <ph name="ITEMS_FOUND" /> items gevonden.</translation>
 <translation id="7896292361319775586"><ph name="FILE" /> opslaan?</translation>
 <translation id="789722939441020330">Niet toestaan dat sites automatisch meerdere bestanden downloaden</translation>
 <translation id="7897900149154324287">Zorg ervoor dat je je verwijderbare apparaat voortaan in de app Bestanden uitwerpt voordat je deze loskoppelt, anders kun je gegevens verliezen.</translation>
@@ -9632,6 +9649,7 @@ Bewaar je sleutelbestand op een veilige plaats. Je hebt het bestand nodig om nie
 <translation id="8740247629089392745">Je kunt deze Chromebook aan <ph name="SUPERVISED_USER_NAME" /> geven. Het instellen is bijna afgerond. Daarna is het tijd om te verkennen.</translation>
 <translation id="8740672167979365981">Chrome OS Flex-update vereist</translation>
 <translation id="8741944563400125534">Instelgids voor Toegang via schakelaar</translation>
+<translation id="874236987855738343">Toetsencombinatie</translation>
 <translation id="8742395827132970586">Installatie mislukt, bezig met opschonen</translation>
 <translation id="8742998548129056176">Dit is algemene informatie over je apparaat en hoe je het gebruikt (zoals batterijniveau, systeem- en app-activiteit en fouten). De gegevens worden gebruikt om Android te verbeteren voor iedereen. Daarnaast helpen bepaalde verzamelde gegevens Google-apps en -partners, zoals Android-ontwikkelaars, bij de verbetering van hun apps en producten.</translation>
 <translation id="8743357966416354615">Beheerde ontwikkelomgeving (<ph name="GENERAL_NAME" />)</translation>
@@ -9710,11 +9728,12 @@ Bewaar je sleutelbestand op een veilige plaats. Je hebt het bestand nodig om nie
 <translation id="8808478386290700967">Web Store</translation>
 <translation id="8808686172382650546">Kat</translation>
 <translation id="8809147117840417135">Lichtblauwgroen</translation>
+<translation id="881049307637003105">Klik op extra knoppen op je <ph name="DEVICE_NAME" /> om knoppen toe te voegen of te vinden.</translation>
 <translation id="8811862054141704416">Microfoontoegang voor Crostini</translation>
 <translation id="8811923271770626905">Deze extensie kan op de achtergrond worden uitgevoerd</translation>
 <translation id="8812593354822910461">Ook browsegegevens wissen (<ph name="URL" />). Als je dit doet, word je uitgelogd bij <ph name="DOMAIN" />. <ph name="LEARN_MORE" /></translation>
 <translation id="8813698869395535039">Kan niet inloggen bij <ph name="USERNAME" /></translation>
-<translation id="8813872945700551674">Vraag een ouder om <ph name="EXTENSION_NAME" /> goed te keuren</translation>
+<translation id="8813872945700551674">Ga naar een ouder en vraag om <ph name="EXTENSION_NAME" /> goed te keuren</translation>
 <translation id="8813937837706331325">Gemiddelde besparingen</translation>
 <translation id="8814190375133053267">Wifi</translation>
 <translation id="8814319344131658221">De talen voor de spellingcontrole zijn gebaseerd op je taalvoorkeur</translation>
@@ -9733,6 +9752,7 @@ Bewaar je sleutelbestand op een veilige plaats. Je hebt het bestand nodig om nie
 <translation id="8823704566850948458">Wachtwoord voorstellen...</translation>
 <translation id="8823963789776061136">Je kunt ook de PPD van de printer selecteren. <ph name="LINK_BEGIN" />Meer informatie<ph name="LINK_END" /></translation>
 <translation id="8824701697284169214">Pa&amp;gina toevoegen...</translation>
+<translation id="88265931742956713">Tabletknoppen aanpassen</translation>
 <translation id="8827125715368568315">Recht voor <ph name="PERMISSION" /> en <ph name="COUNT" /> andere geblokkeerd</translation>
 <translation id="8827289157496676362">Extensie vastzetten</translation>
 <translation id="8828933418460119530">DNS-naam</translation>
@@ -10178,6 +10198,7 @@ Op <ph name="BEGIN_LINK2" />policies.google.com<ph name="END_LINK2" /> vind je m
 <translation id="9166253503936244008">Scan deze QR-code met het apparaat met de toegangscode die je wilt gebruiken voor <ph name="APP_NAME" /></translation>
 <translation id="9167063903968449027">Leeslijst bekijken</translation>
 <translation id="9167450455589251456">Het profiel wordt niet ondersteund</translation>
+<translation id="9167813284871066981"><ph name="NUM_ACCOUNTS" /> accounts</translation>
 <translation id="9168436347345867845">Later doen</translation>
 <translation id="9169496697824289689">Sneltoetsen bekijken</translation>
 <translation id="916964310188958970">Waarom deze suggestie?</translation>

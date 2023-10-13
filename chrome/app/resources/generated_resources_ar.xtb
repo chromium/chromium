@@ -708,7 +708,6 @@
 <translation id="1558391695376153246">إغلاق علامات تبويب التصفح المتخفي</translation>
 <translation id="155865706765934889">لوحة اللمس</translation>
 <translation id="1558671750917454373">استئناف البث على "<ph name="DEVICE_NAME" />"</translation>
-<translation id="1561329796773556980">جارٍ التحقّق من مساحة التخزين…</translation>
 <translation id="1562119309884184621">عند إضافة جهة الاتصال هذه، سيتم تذكُّرها في المرات القادمة عند مشاركة الملفات.</translation>
 <translation id="1563137369682381456">تاريخ انتهاء الصلاحية</translation>
 <translation id="1563702743503072935">‏ستتوفّر أيضًا كلمات المرور من حسابك على Google على هذا الجهاز طالما أنك مسجّلٌ الدخول إلى الحساب.</translation>
@@ -2037,6 +2036,7 @@
 <translation id="2553340429761841190">تعذر على <ph name="PRODUCT_NAME" /> الاتصال بـ <ph name="NETWORK_ID" />. يُرجى اختيار شبكة أخرى أو إعادة المحاولة.</translation>
 <translation id="2553440850688409052">إخفاء هذا المكون الإضافي</translation>
 <translation id="2554553592469060349">الملف المحدد كبير جدًا (الحد الأقصى للحجم: 3 ميغابايت).</translation>
+<translation id="2555802059188792472">بإمكان <ph name="NUM_ALLOWED_APPS" /> من إجمالي <ph name="TOTAL_NUM_APPS" /> تطبيق إرسال الإشعارات.</translation>
 <translation id="25568951186001797">‏العنصر Fenced Frame: <ph name="FENCEDFRAME_SITE" /></translation>
 <translation id="2558569818338050235">يؤثر سجلّ تصفّحك في الإعلانات التي تظهر لك.</translation>
 <translation id="2559889124253841528">حفظ على الجهاز</translation>
@@ -3477,6 +3477,7 @@
 <translation id="3729957991398443677">لعرض كلمة المرور أو إضافة ملاحظة بشأنها، اختَر "إدارة كلمات المرور" في شريط البحث أو شريط العناوين.</translation>
 <translation id="3730076362938942381">تطبيق الكتابة باستخدام قلم الشاشة</translation>
 <translation id="3732078975418297900">خطأ في السطر رقم <ph name="ERROR_LINE" /></translation>
+<translation id="3732414796052961578">المتابعة باستخدام الحساب "<ph name="ACCOUNT_NAME" />"</translation>
 <translation id="3732530910372558017">يجب ألا يزيد رقم التعريف الشخصي عن 63 حرفًا</translation>
 <translation id="3732857534841813090">‏معلومات ذات صلة بخدمة "مساعد Google"</translation>
 <translation id="3733296813637058299">‏سنثبّت هذه التطبيقات بالنيابة عنك. ويمكنك العثور على المزيد من التطبيقات لجهاز <ph name="DEVICE_TYPE" /> في "متجر Play".</translation>
@@ -4864,6 +4865,7 @@
 <translation id="4850669014075537160">التمرير</translation>
 <translation id="4850886885716139402">عرض</translation>
 <translation id="485088796993065002">قد تُشغِّل المواقع الإلكترونية الصوت لتوفير صوت للموسيقى والفيديوهات والوسائط الأخرى.</translation>
+<translation id="4852383141291180386">إدارة إشعارات التطبيقات</translation>
 <translation id="4852916668365817106">لون مؤشر الماوس</translation>
 <translation id="4853020600495124913">فتح في &amp;نافذة جديدة</translation>
 <translation id="4854317507773910281">اختَر حساب أحد الوالدَين للحصول على موافقة.</translation>
@@ -6241,6 +6243,7 @@
 <translation id="5992225669837656567">انقطع اتصال كل أجهزة الماوس.</translation>
 <translation id="5992652489368666106">بلا حدود</translation>
 <translation id="5993508466487156420">{NUM_SITES,plural, =1{اكتملت مراجعة موقع إلكتروني واحد.}zero{اكتملت مراجعة {NUM_SITES} موقع إلكتروني.}two{اكتملت مراجعة موقعَين إلكترونيَّين ({NUM_SITES}).}few{اكتملت مراجعة {NUM_SITES} مواقع إلكترونية.}many{اكتملت مراجعة {NUM_SITES} موقعًا إلكترونيًا.}other{اكتملت مراجعة {NUM_SITES} موقع إلكتروني.}}</translation>
+<translation id="5996200702878169822">‏يمكنك أيضًا إعداد ملف شخصي لشريحة eSIM <ph name="BEGIN_LINK" />يدويًا<ph name="END_LINK" />.</translation>
 <translation id="5997337190805127100">مزيد من المعلومات عن إمكانية الوصول إلى الموقع الإلكتروني</translation>
 <translation id="5998458948782718639">المساعدة على تحسين ميزة "الملء التلقائي"</translation>
 <translation id="5999024481231496910">‏لقد فعّلت اختبار الإيقاف التدريجي لملفات تعريف الارتباط التابعة لجهات خارجية. لا يمكن إلغاء هذا من خلال صفحة الإعدادات. إذا كنت ترغب في إعادة تفعيل ملفات تعريف الارتباط التابعة لجهات خارجية، يُرجى إعادة تشغيل Chrome مع إيقاف هذه الميزة.</translation>
@@ -6776,7 +6779,6 @@
 <translation id="6436778875248895551">حظر المشرف الإضافة "<ph name="EXTENSION_NAME" />".</translation>
 <translation id="6438234780621650381">إعادة ضبط الإعدادات</translation>
 <translation id="6438475350605608554">يجري حاليًا استيراد كلمات مرور في علامة تبويب أخرى.</translation>
-<translation id="6438480100790416671">جارٍ التحقّق من مساحة التخزين…</translation>
 <translation id="6438992844451964465"><ph name="WINDOW_TITLE" /> - تشغيل الصوت</translation>
 <translation id="6440291723980579689">لا يتم تحميل الصفحات إلّا بعد أن تفتحها.</translation>
 <translation id="6441377161852435370">إضافة علامة التبويب إلى قائمة القراءة</translation>
@@ -8601,7 +8603,6 @@
 <translation id="7893008570150657497">الوصول إلى الصور والموسيقى والوسائط الأخرى من جهاز الكمبيوتر</translation>
 <translation id="7893153962594818789">تم إيقاف البلوتوث في جهاز <ph name="DEVICE_TYPE" /> هذا. أدخل كلمة مرورك، وشغّل البلوتوث.</translation>
 <translation id="7893393459573308604"><ph name="ENGINE_NAME" /> (التلقائي)</translation>
-<translation id="7894382333736164977">جارٍ التحقّق من مساحة التخزين. عدد العناصر التي تم العثور عليها: <ph name="ITEMS_FOUND" />.</translation>
 <translation id="7896292361319775586">هل تريد حفظ <ph name="FILE" />؟</translation>
 <translation id="789722939441020330">عدم السماح للمواقع الإلكترونية بتنزيل عدّة ملفات تلقائيًا</translation>
 <translation id="7897900149154324287">في المستقبل، تأكد من إخراج الجهاز القابل للإزالة في تطبيق الملفات قبل فصله؛ وإلا قد تفقد بيانات.</translation>
@@ -10221,6 +10222,7 @@
 <translation id="9166253503936244008">يمكنك مسح رمز الاستجابة السريعة هذا ضوئيًا باستخدام الجهاز الذي يحتوي على مفتاح المرور الذي تريد استخدامه لتسجيل الدخول إلى "<ph name="APP_NAME" />".</translation>
 <translation id="9167063903968449027">إظهار قائمة القراءة</translation>
 <translation id="9167450455589251456">لا يمكن استخدام الملف الشخصي الحالي.</translation>
+<translation id="9167813284871066981">‫<ph name="NUM_ACCOUNTS" /> حساب</translation>
 <translation id="9168436347345867845">تنفيذ ذلك لاحقًا</translation>
 <translation id="9169496697824289689">عرض اختصارات لوحة المفاتيح</translation>
 <translation id="916964310188958970">لماذا يظهر هذا الاقتراح؟</translation>

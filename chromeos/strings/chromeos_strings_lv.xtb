@@ -195,6 +195,7 @@
 <translation id="2326139988748364651"><ph name="RESOLUTION_VALUE" /> DPI</translation>
 <translation id="2338501278241028356">Ieslēdziet Bluetooth, lai atklātu tuvumā esošas ierīces</translation>
 <translation id="2346474577291266260">Izcils (<ph name="SIGNAL_STRENGTH" />)</translation>
+<translation id="2358070305000735383">Ir atvērts saīsnes “<ph name="DESCRIPTION" />” rediģēšanas dialoglodziņš.</translation>
 <translation id="2359808026110333948">Turpināt</translation>
 <translation id="2364498172489649528">Pārbaude izpildīta</translation>
 <translation id="2367335866686097760">Taustiņu saistīšanas taustiņš</translation>
@@ -714,7 +715,6 @@
 <translation id="6423239382391657905">Atvērt VPN</translation>
 <translation id="6439505561246192797">Vājš (<ph name="SIGNAL_STRENGTH" />)</translation>
 <translation id="6447630859861661624">Pāriet uz konta iestatījumiem</translation>
-<translation id="6461047516875166066">Uzzināt vairāk</translation>
 <translation id="6463239094587744704">{PAGE_NUMBER,plural, =0{Vai atkārtoti skenēt lapu?}=1{Vai atkārtoti skenēt {PAGE_NUMBER}. lapu?}zero{Vai atkārtoti skenēt {PAGE_NUMBER}. lapu?}one{Vai atkārtoti skenēt {PAGE_NUMBER}. lapu?}other{Vai atkārtoti skenēt {PAGE_NUMBER}. lapu?}}</translation>
 <translation id="6472207088655375767">VRP</translation>
 <translation id="6480327114083866287">Pārvalda <ph name="MANAGER" /></translation>
@@ -1025,6 +1025,7 @@
 <translation id="8868741746785112895">GUID</translation>
 <translation id="8876270629542503161">Ierīce ir planšetdators.</translation>
 <translation id="8881098542468797602">Pārbaude sekmīga</translation>
+<translation id="8892443466059986410">Atcelt saīsnes rediģēšanu</translation>
 <translation id="8898840733695078011">Signāla stiprums</translation>
 <translation id="8909114361904403025">augšupvērstais bulttaustiņš</translation>
 <translation id="8910721771319628100">Noklusējuma tīkla latentums pārsniedza slieksni</translation>

@@ -708,7 +708,6 @@ Na tym koncie mogą obowiązywać uprawnienia przyznane wcześniej aplikacjom. U
 <translation id="1558391695376153246">Zamknij karty incognito</translation>
 <translation id="155865706765934889">Touchpad</translation>
 <translation id="1558671750917454373">Wznów przesyłanie na urządzenie <ph name="DEVICE_NAME" /></translation>
-<translation id="1561329796773556980">Sprawdzamy miejsce na dane…</translation>
 <translation id="1562119309884184621">Gdy dodasz ten kontakt, zostanie on rozpoznany, gdy znów będzie Ci coś udostępniać.</translation>
 <translation id="1563137369682381456">Data ważności</translation>
 <translation id="1563702743503072935">Gdy się zalogujesz, uzyskasz na tym urządzeniu dostęp także do haseł z Twojego konta Google</translation>
@@ -6761,7 +6760,6 @@ Domena <ph name="DOMAIN" /> wymaga, by karta inteligentna pozostała w gnieźdz
 <translation id="6436778875248895551">Rozszerzenie „<ph name="EXTENSION_NAME" />” zablokował administrator</translation>
 <translation id="6438234780621650381">Resetowanie ustawień</translation>
 <translation id="6438475350605608554">Importujesz już hasła na innej karcie</translation>
-<translation id="6438480100790416671">Sprawdzam dostępne miejsce…</translation>
 <translation id="6438992844451964465"><ph name="WINDOW_TITLE" /> – odtwarzanie dźwięku</translation>
 <translation id="6440291723980579689">Strony wczytują się po otwarciu</translation>
 <translation id="6441377161852435370">Dodaj kartę do listy Do przeczytania</translation>
@@ -8579,7 +8577,6 @@ Aby usunąć przypisanie, naciśnij przypisany przełącznik lub klawisz.</trans
 <translation id="7893008570150657497">Dostęp do zdjęć, muzyki i innych multimediów na komputerze</translation>
 <translation id="7893153962594818789">Bluetooth jest wyłączony na urządzeniu <ph name="DEVICE_TYPE" />. Wpisz hasło i włącz Bluetooth.</translation>
 <translation id="7893393459573308604"><ph name="ENGINE_NAME" /> (domyślna)</translation>
-<translation id="7894382333736164977">Sprawdzamy miejsce na dane. Liczba znalezionych elementów: <ph name="ITEMS_FOUND" />.</translation>
 <translation id="7896292361319775586">Zapisać <ph name="FILE" />?</translation>
 <translation id="789722939441020330">Nie zezwalaj witrynom na automatyczne pobieranie wielu plików</translation>
 <translation id="7897900149154324287">W przyszłości pamiętaj, by przed odłączeniem urządzenia wymiennego wysunąć je w aplikacji Pliki. W przeciwnym razie możesz stracić dane.</translation>

@@ -258,6 +258,7 @@
 <translation id="5545693483061321551">Websites können deine Cookies nicht verwenden, um deine Browseraktivitäten auf anderen Websites zu sehen und beispielsweise zur Personalisierung von Werbung zu nutzen. Einige Websites funktionieren dann möglicherweise nicht mehr richtig.</translation>
 <translation id="5553374991681107062">Letzte</translation>
 <translation id="5556459405103347317">Neu laden</translation>
+<translation id="5591840828808741583"><ph name="SITE_NAME" /> blockiert</translation>
 <translation id="5649053991847567735">Auto-Downloads</translation>
 <translation id="5668404140385795438">Website-Anfrage zum Verhindern des Vergrößerns übergehen</translation>
 <translation id="5677928146339483299">Blockiert</translation>
@@ -455,6 +456,7 @@
 <translation id="8959122750345127698">Navigation nicht möglich: <ph name="URL" /> ist nicht erreichbar.</translation>
 <translation id="8986362086234534611">Entfernen</translation>
 <translation id="8990043154272859344">Du wirst von allen Websites abgemeldet</translation>
+<translation id="9011903857143958461"><ph name="SITE_NAME" /> zugelassen</translation>
 <translation id="9019902583201351841">Von deinen Eltern verwaltet</translation>
 <translation id="9039697262778250930">Du wirst möglicherweise von diesen Websites abgemeldet</translation>
 <translation id="9074739597929991885">Bluetooth</translation>

@@ -258,6 +258,7 @@
 <translation id="5545693483061321551">Ni all gwefannau ddefnyddio eich cwcis i weld eich gweithgarwch pori ar draws gwahanol wefannau, er enghraifft, i bersonoleiddio hysbysebion. Mae'n bosib na fydd nodweddion ar rai gwefannau yn gweithio.</translation>
 <translation id="5553374991681107062">Diweddaraf</translation>
 <translation id="5556459405103347317">Ail-lwytho</translation>
+<translation id="5591840828808741583">Rhwystrwyd <ph name="SITE_NAME" /></translation>
 <translation id="5649053991847567735">Lawrlwythiadau awtomatig</translation>
 <translation id="5668404140385795438">Diystyru cais gwefan i atal chwyddo</translation>
 <translation id="5677928146339483299">Rhwystrwyd</translation>
@@ -455,6 +456,7 @@
 <translation id="8959122750345127698">Mae llywio yn anghyraeddadwy: <ph name="URL" /></translation>
 <translation id="8986362086234534611">Anghofio</translation>
 <translation id="8990043154272859344">Byddwch yn cael eich allgofnodi o bob gwefan</translation>
+<translation id="9011903857143958461">Caniateir <ph name="SITE_NAME" /></translation>
 <translation id="9019902583201351841">Rheolir gan eich rhieni</translation>
 <translation id="9039697262778250930">Mae'n bosib eich bod wedi'ch allgofnodi o'r gwefannau hyn</translation>
 <translation id="9074739597929991885">Bluetooth</translation>

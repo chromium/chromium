@@ -195,6 +195,7 @@
 <translation id="2326139988748364651"><ph name="RESOLUTION_VALUE" /> dpi</translation>
 <translation id="2338501278241028356">Zet Bluetooth aan om apparaten in de buurt te vinden</translation>
 <translation id="2346474577291266260">Uitstekend (<ph name="SIGNAL_STRENGTH" />)</translation>
+<translation id="2358070305000735383">Dialoogvenster Bewerken voor <ph name="DESCRIPTION" /> is geopend.</translation>
 <translation id="2359808026110333948">Doorgaan</translation>
 <translation id="2364498172489649528">Geslaagd</translation>
 <translation id="2367335866686097760">Sleutel voor toetstoewijzing</translation>
@@ -714,7 +715,6 @@
 <translation id="6423239382391657905">OpenVPN</translation>
 <translation id="6439505561246192797">Zwak (<ph name="SIGNAL_STRENGTH" />)</translation>
 <translation id="6447630859861661624">Naar Accountinstellingen gaan</translation>
-<translation id="6461047516875166066">Meer informatie</translation>
 <translation id="6463239094587744704">{PAGE_NUMBER,plural, =0{Pagina opnieuw scannen?}=1{Pagina {PAGE_NUMBER} opnieuw scannen?}other{Pagina {PAGE_NUMBER} opnieuw scannen?}}</translation>
 <translation id="6472207088655375767">Eenmalig wachtwoord</translation>
 <translation id="6480327114083866287">Beheerd door <ph name="MANAGER" /></translation>
@@ -1025,6 +1025,7 @@
 <translation id="8868741746785112895">GUID</translation>
 <translation id="8876270629542503161">Apparaat is een tablet.</translation>
 <translation id="8881098542468797602">Test geslaagd</translation>
+<translation id="8892443466059986410">Bewerken van snelkoppeling annuleren</translation>
 <translation id="8898840733695078011">Signaalsterkte</translation>
 <translation id="8909114361904403025">pijl-omhoog</translation>
 <translation id="8910721771319628100">Standaardnetwerk overschrijdt drempel voor latentie</translation>

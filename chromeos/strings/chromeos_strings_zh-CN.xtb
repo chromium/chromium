@@ -715,7 +715,6 @@
 <translation id="6423239382391657905">OpenVPN</translation>
 <translation id="6439505561246192797">很弱 (<ph name="SIGNAL_STRENGTH" />)</translation>
 <translation id="6447630859861661624">打开账号设置</translation>
-<translation id="6461047516875166066">了解更多信息</translation>
 <translation id="6463239094587744704">{PAGE_NUMBER,plural, =0{重新扫描页面？}=1{重新扫描第 {PAGE_NUMBER} 页？}other{重新扫描第 {PAGE_NUMBER} 页？}}</translation>
 <translation id="6472207088655375767">动态密码</translation>
 <translation id="6480327114083866287">由 <ph name="MANAGER" /> 管理</translation>

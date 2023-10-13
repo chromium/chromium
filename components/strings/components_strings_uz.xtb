@@ -143,6 +143,7 @@ Aks holda bu maxfiylik sozlamalaringiz tomonidan bloklanadi. Bunda siz ochgan sa
 <translation id="1264309058268477500">Muqobil</translation>
 <translation id="1264974993859112054">Sport</translation>
 <translation id="1266469291454105242">Qurilma kaliti</translation>
+<translation id="126728463333482584">Kuzatuvdan himoyalanish funksiyasidan birinchilar qatorida foydalandingiz, bu saytlarni kezishda sizni kuzatish uchun tashqi cookie fayllaridan foydalanishni cheklaydi.</translation>
 <translation id="1268480293435976622">Envelope Chinese #7</translation>
 <translation id="1269516672602708785">Google Sitesda yangi saytni tez yaratish</translation>
 <translation id="1270328905573953738">Koʻchish va koʻchirish</translation>
@@ -692,6 +693,7 @@ Aks holda bu maxfiylik sozlamalaringiz tomonidan bloklanadi. Bunda siz ochgan sa
 <translation id="2361263712565360498">275 x 395 mm</translation>
 <translation id="236340516568226369">Hajmni oʻzgartirish tugmasi menyusi</translation>
 <translation id="2365355378251437925"><ph name="FIELD" /> axborotini kiriting</translation>
+<translation id="2365382709349300355">Qoidalar tufayli 1 ta fayl bloklandi</translation>
 <translation id="2365508935344991784">Tashqari uchun mebel</translation>
 <translation id="2366689192918515749">Goʻsht va dengiz mahsulotlari</translation>
 <translation id="2367567093518048410">Daraja</translation>
@@ -2410,6 +2412,7 @@ Aks holda bu maxfiylik sozlamalaringiz tomonidan bloklanadi. Bunda siz ochgan sa
 <translation id="5967867314010545767">Tarixdan olib tashlash</translation>
 <translation id="5968022600320704045">Hech narsa topilmadi</translation>
 <translation id="5969199813874624822">Saqlash va narxni kuzatish</translation>
+<translation id="5973514677932942122"><ph name="EXPIRATION_DATE" /> | <ph name="SECURITY_CODE" /></translation>
 <translation id="5974052231147553524">Oltinchi oʻram</translation>
 <translation id="5975083100439434680">Kichiklashtirish</translation>
 <translation id="5979084224081478209">Parollarni tekshiring</translation>
@@ -2900,6 +2903,7 @@ Aks holda bu maxfiylik sozlamalaringiz tomonidan bloklanadi. Bunda siz ochgan sa
 <translation id="6965382102122355670">OK</translation>
 <translation id="6965978654500191972">Qurilma</translation>
 <translation id="696703987787944103">Perseptsion</translation>
+<translation id="6967851206780867018">Kontent tufayli 1 ta fayl bloklandi</translation>
 <translation id="6970885655016700774">Mato (arxiv)</translation>
 <translation id="6971439137020188025">Google Slidesda yangi taqdimotni tez yaratish</translation>
 <translation id="6972629891077993081">HID qurilmalar</translation>
@@ -2952,6 +2956,7 @@ Aks holda bu maxfiylik sozlamalaringiz tomonidan bloklanadi. Bunda siz ochgan sa
 <translation id="70705239631109039">Saytga ulanish butunlay xavfsiz emas</translation>
 <translation id="7075452647191940183">Yuborilgan soʻrov juda katta</translation>
 <translation id="7078665357168027058">RA3</translation>
+<translation id="7079138647457502205">Maxfiyroq tarzda kezing</translation>
 <translation id="7079718277001814089">Ehtiyot bo‘ling! Bu sayt zararli.</translation>
 <translation id="7081308185095828845">Bu funksiya qurilmangizda ishlamaydi</translation>
 <translation id="7083258188081898530">Tarnov 9</translation>
@@ -3369,7 +3374,6 @@ Batafsil axborot:
 <translation id="7865448901209910068">Eng tez</translation>
 <translation id="7870281855125116701">Chegirma mavjud</translation>
 <translation id="7871445724586827387">Google hisobi parolini oʻzgartirish</translation>
-<translation id="7876615279559620350">Tezroq hisob-kitob qilish uchun ushbu kartaning CVC kodini Google hisobingizga saqlang</translation>
 <translation id="7877007680666472091">himoyalangan kontent identifikatori</translation>
 <translation id="7878562273885520351">Parolingiz o‘g‘irlangan bo‘lishi mumkin</translation>
 <translation id="7880146494886811634">Manzilni saqlash</translation>
@@ -3594,7 +3598,6 @@ Batafsil axborot:
 <translation id="8308653357438598313">Jonli video strimingi</translation>
 <translation id="8311895354659782580">Koʻchmas mulk eʼlonlari</translation>
 <translation id="8316555157357957253">Hozir foydalanilmoqda</translation>
-<translation id="8317570861267063617">Tezroq hisob-kitob qilish uchun ushbu kartaning CVC kodini qurilmangizga saqlang</translation>
 <translation id="8319269383395457801">Turarjoy savdosi</translation>
 <translation id="831997045666694187">Kechqurun</translation>
 <translation id="8321476692217554900">bildirishnomalar</translation>

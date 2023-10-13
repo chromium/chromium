@@ -709,7 +709,6 @@
 <translation id="1558391695376153246">시크릿 탭 닫기</translation>
 <translation id="155865706765934889">터치패드</translation>
 <translation id="1558671750917454373"><ph name="DEVICE_NAME" /> 기기로 전송 재개</translation>
-<translation id="1561329796773556980">저장공간을 확인하는 중입니다…</translation>
 <translation id="1562119309884184621">이 연락처를 추가하면 다음번 공유 시 연락처에 내 기기가 표시됩니다.</translation>
 <translation id="1563137369682381456">만료일</translation>
 <translation id="1563702743503072935">로그인한 상태라면 이 기기에서도 Google 계정의 비밀번호를 사용할 수 있습니다.</translation>
@@ -1236,7 +1235,7 @@
 <translation id="1941410638996203291">시작 시간: <ph name="TIME" /></translation>
 <translation id="1941553344801134989">버전: <ph name="APP_VERSION" /></translation>
 <translation id="1941995177877935582">키 매핑 표시</translation>
-<translation id="1942128823046546853">모든 웹사이트의 전체 데이터 읽기 및 변경</translation>
+<translation id="1942128823046546853">모든 웹사이트에 있는 전체 내 데이터 읽기 및 변경</translation>
 <translation id="1944528062465413897">블루투스 페어링 코드:</translation>
 <translation id="1944535645109964458">패스키 없음</translation>
 <translation id="1944921356641260203">사용 가능한 업데이트 있음</translation>
@@ -6789,7 +6788,6 @@ https://support.google.com/chromebook/?p=tpm</translation>
 <translation id="6436778875248895551">관리자가 "<ph name="EXTENSION_NAME" />" 확장 프로그램을 차단했습니다.</translation>
 <translation id="6438234780621650381">설정 초기화</translation>
 <translation id="6438475350605608554">이미 다른 탭에서 비밀번호를 가져오고 있습니다.</translation>
-<translation id="6438480100790416671">저장공간 확인 중…</translation>
 <translation id="6438992844451964465"><ph name="WINDOW_TITLE" /> - 오디오 재생</translation>
 <translation id="6440291723980579689">사용자가 페이지를 열어야 페이지가 로드됩니다.</translation>
 <translation id="6441377161852435370">읽기 목록에 탭 추가</translation>
@@ -8606,7 +8604,6 @@ https://support.google.com/chromebook/?p=sm</translation>
 <translation id="7893008570150657497">컴퓨터에서 사진, 음악, 기타 미디어에 액세스</translation>
 <translation id="7893153962594818789">이 <ph name="DEVICE_TYPE" />에서 블루투스가 사용 중지되어 있습니다. 비밀번호를 입력하고 블루투스를 사용 설정하세요.</translation>
 <translation id="7893393459573308604"><ph name="ENGINE_NAME" />(기본)</translation>
-<translation id="7894382333736164977">저장공간을 확인하는 중입니다. <ph name="ITEMS_FOUND" />개의 항목을 찾았습니다.</translation>
 <translation id="7896292361319775586"><ph name="FILE" /> 파일을 저장하시겠습니까?</translation>
 <translation id="789722939441020330">사이트에서 여러 개의 파일을 자동으로 다운로드하도록 허용하지 않음</translation>
 <translation id="7897900149154324287">이후에 이동식 기기를 분리하기 전에 파일 앱에서 이동식 기기를 꺼내야 합니다. 그렇지 않으면 데이터가 손실될 수 있습니다.</translation>
@@ -9756,7 +9753,7 @@ https://support.google.com/chromebook/?p=sm</translation>
 <translation id="8811923271770626905">이 확장 프로그램은 백그라운드에서 실행될 수 있습니다.</translation>
 <translation id="8812593354822910461">인터넷 사용 기록(<ph name="URL" />)도 삭제합니다. 이렇게 하면 <ph name="DOMAIN" />에서 로그아웃됩니다. <ph name="LEARN_MORE" /></translation>
 <translation id="8813698869395535039"><ph name="USERNAME" />에 로그인할 수 없음</translation>
-<translation id="8813872945700551674">부모님에게 ‘<ph name="EXTENSION_NAME" />’ 승인을 요청</translation>
+<translation id="8813872945700551674">부모님에게 ‘<ph name="EXTENSION_NAME" />’ 승인을 요청하세요</translation>
 <translation id="8813937837706331325">메모리 다소 절약</translation>
 <translation id="8814190375133053267">Wi-Fi</translation>
 <translation id="8814319344131658221">맞춤법 검사 언어는 사용자의 언어 환경설정에 따라 지정됩니다.</translation>

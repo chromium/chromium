@@ -258,6 +258,7 @@
 <translation id="5545693483061321551">سایت‌ها نمی‌توانند از کوکی‌های شما برای دیدن فعالیت مرور شما در سایت‌های مختلف و برای مثال شخصی‌سازی آگهی‌ها استفاده کنند. ممکن است ویژگی‌های برخی‌از سایت‌ها کار نکند.</translation>
 <translation id="5553374991681107062">جدیدترین</translation>
 <translation id="5556459405103347317">بار کردن مجدد</translation>
+<translation id="5591840828808741583">‫<ph name="SITE_NAME" /> مسدود شده است</translation>
 <translation id="5649053991847567735">بارگیری‌های خودکار</translation>
 <translation id="5668404140385795438">لغو درخواست وب‌سایت برای جلوگیری از بزرگ‌نمایی</translation>
 <translation id="5677928146339483299">مسدود است</translation>
@@ -455,6 +456,7 @@
 <translation id="8959122750345127698">پیمایش غیرقابل دسترسی است: <ph name="URL" /></translation>
 <translation id="8986362086234534611">فراموش شود</translation>
 <translation id="8990043154272859344">از سیستم همه سایت‌ها خارج خواهید شد</translation>
+<translation id="9011903857143958461">‫<ph name="SITE_NAME" /> مجاز است</translation>
 <translation id="9019902583201351841">مدیریت شده توسط والدین شما</translation>
 <translation id="9039697262778250930">ممکن است از سیستم این سایت‌ها خارج شوید</translation>
 <translation id="9074739597929991885">بلوتوث</translation>

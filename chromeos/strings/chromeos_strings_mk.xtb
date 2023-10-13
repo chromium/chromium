@@ -195,6 +195,7 @@
 <translation id="2326139988748364651"><ph name="RESOLUTION_VALUE" /> dpi</translation>
 <translation id="2338501278241028356">Вклучете Bluetooth за да откриете места во близина</translation>
 <translation id="2346474577291266260">Одличен (<ph name="SIGNAL_STRENGTH" />)</translation>
+<translation id="2358070305000735383">Дијалогот за изменување за <ph name="DESCRIPTION" /> е отворен.</translation>
 <translation id="2359808026110333948">Продолжи</translation>
 <translation id="2364498172489649528">Помина</translation>
 <translation id="2367335866686097760">Мапирање клуч на копче</translation>
@@ -714,7 +715,6 @@
 <translation id="6423239382391657905">OpenVPN</translation>
 <translation id="6439505561246192797">Слаб (<ph name="SIGNAL_STRENGTH" />)</translation>
 <translation id="6447630859861661624">Одете во поставките за сметката</translation>
-<translation id="6461047516875166066">Кажи ми повеќе</translation>
 <translation id="6463239094587744704">{PAGE_NUMBER,plural, =0{Да се скенира страницата пак?}=1{Да се скенира страницата {PAGE_NUMBER} пак?}one{Да се скенира страницата {PAGE_NUMBER} пак?}other{Да се скенира страницата {PAGE_NUMBER} пак?}}</translation>
 <translation id="6472207088655375767">ОТП</translation>
 <translation id="6480327114083866287">Управува: <ph name="MANAGER" /></translation>
@@ -1025,6 +1025,7 @@
 <translation id="8868741746785112895">GUID</translation>
 <translation id="8876270629542503161">Уредот е таблет.</translation>
 <translation id="8881098542468797602">Тестот успеа</translation>
+<translation id="8892443466059986410">Откажи го изменувањето кратенка</translation>
 <translation id="8898840733695078011">Јачина на сигнал</translation>
 <translation id="8909114361904403025">стрелка нагоре</translation>
 <translation id="8910721771319628100">Стандардната мрежа е над прагот за латентност</translation>

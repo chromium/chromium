@@ -710,7 +710,6 @@
 <translation id="1558391695376153246">ਇਨਕੋਗਨਿਟੋ ਟੈਬਾਂ ਨੂੰ ਬੰਦ ਕਰੋ</translation>
 <translation id="155865706765934889">ਟਚਪੈਡ</translation>
 <translation id="1558671750917454373"><ph name="DEVICE_NAME" /> 'ਤੇ ਕਾਸਟ ਕਰਨਾ ਮੁੜ-ਚਾਲੂ ਕਰੋ</translation>
-<translation id="1561329796773556980">ਅਸੀਂ ਸਟੋਰੇਜ ਜਗ੍ਹਾ ਦੀ ਜਾਂਚ ਕਰਨ ਲਈ ਪ੍ਰਕਿਰਿਆ ਕਰ ਰਹੇ ਹਾਂ…</translation>
 <translation id="1562119309884184621">ਇਸ ਸੰਪਰਕ ਨੂੰ ਸ਼ਾਮਲ ਕਰਨ 'ਤੇ ਅਗਲੀ ਵਾਰ ਸਾਂਝਾ ਕਰਨ 'ਤੇ ਇਸਨੂੰ ਯਾਦ ਰੱਖਿਆ ਜਾਵੇਗਾ</translation>
 <translation id="1563137369682381456">ਮਿਆਦ ਸਮਾਪਤੀ ਦੀ ਤਾਰੀਖ</translation>
 <translation id="1563702743503072935">ਸਾਈਨ-ਇਨ ਹੋਣ ਵੇਲੇ ਤੁਹਾਡੇ Google ਖਾਤੇ ਤੋਂ ਪਾਸਵਰਡ ਇਸ ਡੀਵਾਈਸ 'ਤੇ ਵੀ ਉਪਲਬਧ ਹੋਣਗੇ</translation>
@@ -2049,6 +2048,7 @@
 <translation id="2553340429761841190"><ph name="PRODUCT_NAME" />, <ph name="NETWORK_ID" /> ਨਾਲ ਕਨੈਕਟ ਕਰਨ ਵਿੱਚ ਅਸਮਰੱਥ ਸੀ। ਕਿਰਪਾ ਕਰਕੇ ਦੂਜਾ ਨੈੱਟਵਰਕ ਚੁਣੋ ਜਾਂ ਦੁਬਾਰਾ ਕੋਸ਼ਿਸ਼ ਕਰੋ।</translation>
 <translation id="2553440850688409052">ਇਹ ਪਲੱਗਇਨ ਲੁਕਾਓ</translation>
 <translation id="2554553592469060349">ਚੁਣੀ ਗਈ ਫਾਈਲ ਬਹੁਤ ਜ਼ਿਆਦਾ ਵੱਡੀ ਹੈ (ਅਧਿਕਤਮ ਆਕਾਰ: 3mb).</translation>
+<translation id="2555802059188792472"><ph name="TOTAL_NUM_APPS" /> ਵਿੱਚੋਂ <ph name="NUM_ALLOWED_APPS" /> ਐਪਾਂ ਸੂਚਨਾਵਾਂ ਭੇਜ ਸਕਦੀਆਂ ਹਨ</translation>
 <translation id="25568951186001797">ਫੈਂਸਡ ਫ੍ਰੇਮ: <ph name="FENCEDFRAME_SITE" /></translation>
 <translation id="2558569818338050235">ਤੁਹਾਡਾ ਬ੍ਰਾਊਜ਼ਿੰਗ ਇਤਿਹਾਸ ਤੁਹਾਨੂੰ ਦਿਸਣ ਵਾਲੇ ਵਿਗਿਆਪਨਾਂ ਨੂੰ ਪ੍ਰਭਾਵਿਤ ਕਰਦਾ ਹੈ</translation>
 <translation id="2559889124253841528">ਡੀਵਾਈਸ ਵਿੱਚ ਰੱਖਿਅਤ ਕਰੋ</translation>
@@ -3486,6 +3486,7 @@
 <translation id="3729957991398443677">ਆਪਣਾ ਪਾਸਵਰਡ ਦੇਖਣ ਜਾਂ ਇਸ ਬਾਰੇ ਕੋਈ ਨੋਟ ਸ਼ਾਮਲ ਕਰਨ ਲਈ, ਖੋਜ ਅਤੇ ਪਤਾ ਬਾਰ ਵਿੱਚ 'ਆਪਣੇ ਪਾਸਵਰਡਾਂ ਦਾ ਪ੍ਰਬੰਧਨ ਕਰੋ' ਦੀ ਚੋਣ ਕਰੋ</translation>
 <translation id="3730076362938942381">ਸਟਾਈਲਸ ਲਿਖਾਈ ਸੰਬੰਧੀ ਐਪ</translation>
 <translation id="3732078975418297900"><ph name="ERROR_LINE" /> ਲਾਈਨ 'ਤੇ ਗੜਬੜ ਹੋਈ</translation>
+<translation id="3732414796052961578"><ph name="ACCOUNT_NAME" /> ਵਜੋਂ ਜਾਰੀ ਰੱਖੋ</translation>
 <translation id="3732530910372558017">ਪਿੰਨ ਵੱਧ ਤੋਂ ਵੱਧ 63 ਅੱਖਰ-ਚਿੰਨ੍ਹਾਂ ਦਾ ਹੋਣਾ ਲਾਜ਼ਮੀ ਹੈ</translation>
 <translation id="3732857534841813090">Google Assistant ਨਾਲ ਸੰਬੰਧਿਤ ਜਾਣਕਾਰੀ</translation>
 <translation id="3733296813637058299">ਅਸੀਂ ਤੁਹਾਡੇ ਲਈ ਉਹ ਐਪਾਂ ਸਥਾਪਤ ਕਰਾਂਗੇ। ਤੁਸੀਂ Play Store ਵਿੱਚ ਆਪਣੇ <ph name="DEVICE_TYPE" /> ਲਈ ਹੋਰ ਐਪਾਂ ਲੱਭ ਸਕਦੇ ਹੋ।</translation>
@@ -4874,6 +4875,7 @@
 <translation id="4850669014075537160">ਸਕ੍ਰੋਲਿੰਗ</translation>
 <translation id="4850886885716139402">ਦੇਖੋ</translation>
 <translation id="485088796993065002">ਸੰਗੀਤ, ਵੀਡੀਓ ਅਤੇ ਹੋਰ ਮੀਡੀਆ ਸਮੱਗਰੀ ਲਈ ਆਡੀਓ ਮੁਹੱਈਆ ਕਰਨ ਵਾਸਤੇ, ਸਾਈਟਾਂ ਧੁਨੀ ਵਜਾ ਸਕਦੀਆਂ ਹਨ</translation>
+<translation id="4852383141291180386">ਐਪ ਸੂਚਨਾਵਾਂ ਦਾ ਪ੍ਰਬੰਧਨ ਕਰੋ</translation>
 <translation id="4852916668365817106">ਮਾਊਸ ਦਾ ਰੰਗ</translation>
 <translation id="4853020600495124913">&amp;ਨਵੀਂ window ਵਿੱਚ ਖੋਲ੍ਹੋ</translation>
 <translation id="4854317507773910281">ਮਨਜ਼ੂਰੀ ਲਈ ਮਾਂ-ਪਿਓ ਦਾ ਖਾਤਾ ਚੁਣੋ</translation>
@@ -6250,6 +6252,7 @@
 <translation id="5992225669837656567">ਸਾਰੇ ਮਾਊਸ ਡਿਸਕਨੈਕਟ ਕਰ ਦਿੱਤੇ ਗਏ ਹਨ</translation>
 <translation id="5992652489368666106">ਕੋਈ ਸੀਮਾ ਨਹੀਂ</translation>
 <translation id="5993508466487156420">{NUM_SITES,plural, =1{1 ਸਾਈਟ ਲਈ ਸਮੀਖਿਆ ਪੂਰੀ ਹੋ ਗਈ}one{{NUM_SITES} ਸਾਈਟ ਲਈ ਸਮੀਖਿਆ ਪੂਰੀ ਹੋ ਗਈ}other{{NUM_SITES} ਸਾਈਟਾਂ ਲਈ ਸਮੀਖਿਆ ਪੂਰੀ ਹੋ ਗਈ}}</translation>
+<translation id="5996200702878169822">ਤੁਸੀਂ ਈ-ਸਿਮ ਪ੍ਰੋਫਾਈਲ ਦਾ <ph name="BEGIN_LINK" />ਹੱਥੀਂ<ph name="END_LINK" /> ਵੀ ਸੈੱਟਅੱਪ ਕਰ ਸਕਦੇ ਹੋ।</translation>
 <translation id="5997337190805127100">ਸਾਈਟ ਤੱਕ ਪਹੁੰਚ ਕਰਨ ਬਾਰੇ ਹੋਰ ਜਾਣੋ</translation>
 <translation id="5998458948782718639">ਆਟੋਫਿਲ ਨੂੰ ਬਿਹਤਰ ਬਣਾਉਣ ਵਿੱਚ ਮਦਦ ਕਰੋ</translation>
 <translation id="5999024481231496910">ਤੁਸੀਂ ਤੀਜੀ-ਧਿਰ ਦੀ ਕੁਕੀ ਦੇ ਫੇਜ਼ਆਊਟ ਦੀ ਜਾਂਚ ਕਰਨ ਦੀ ਸੁਵਿਧਾ ਨੂੰ ਚਾਲੂ ਕੀਤਾ ਹੈ। ਇਸਨੂੰ ਸੈਟਿੰਗਾਂ ਪੰਨੇ ਵੱਲੋਂ ਓਵਰਰਾਈਡ ਨਹੀਂ ਕੀਤਾ ਜਾ ਸਕਦਾ। ਜੇ ਤੁਸੀਂ ਤੀਜੀ-ਧਿਰ ਦੀਆਂ ਕੁਕੀਜ਼ ਨੂੰ ਮੁੜ-ਚਾਲੂ ਕਰਨਾ ਚਾਹੁੰਦੇ ਹੋ, ਤਾਂ ਇਸ ਵਿਸ਼ੇਸ਼ਤਾ ਨੂੰ ਬੰਦ ਕਰ ਕੇ Chrome ਨੂੰ ਮੁੜ-ਲਾਂਚ ਕਰੋ।</translation>
@@ -6785,7 +6788,6 @@
 <translation id="6436778875248895551">ਤੁਹਾਡੇ ਪ੍ਰਸ਼ਾਸਕ ਨੇ "<ph name="EXTENSION_NAME" />" ਐਕਸਟੈਂਸ਼ਨ ਨੂੰ ਬਲਾਕ ਕਰ ਦਿੱਤਾ</translation>
 <translation id="6438234780621650381">ਸੈਟਿੰਗਾਂ ਰੀਸੈੱਟ ਕਰੋ</translation>
 <translation id="6438475350605608554">ਤੁਸੀਂ ਪਹਿਲਾਂ ਹੀ ਕਿਸੇ ਹੋਰ ਟੈਬ ਵਿੱਚ ਪਾਸਵਰਡ ਆਯਾਤ ਕਰ ਰਹੇ ਹੋ</translation>
-<translation id="6438480100790416671">ਸਟੋਰੇਜ ਜਗ੍ਹਾ ਦੀ ਜਾਂਚ ਕੀਤੀ ਜਾ ਰਹੀ ਹੈ…</translation>
 <translation id="6438992844451964465"><ph name="WINDOW_TITLE" /> - ਆਡੀਓ ਚਲਾਉਣਾ</translation>
 <translation id="6440291723980579689">ਪੰਨੇ ਤੁਹਾਡੇ ਵੱਲੋਂ ਖੋਲ੍ਹਣ ਤੋਂ ਬਾਅਦ ਹੀ ਲੋਡ ਹੁੰਦੇ ਹਨ</translation>
 <translation id="6441377161852435370">ਪੜ੍ਹਨ ਸੂਚੀ ਵਿੱਚ ਟੈਬ ਸ਼ਾਮਲ ਕਰੋ</translation>
@@ -8603,7 +8605,6 @@
 <translation id="7893008570150657497">ਆਪਣੇ ਕੰਪਿਊਟਰ ਤੋਂ ਫ਼ੋਟੋਆਂ, ਸੰਗੀਤ ਅਤੇ ਹੋਰ ਮੀਡੀਆ ਤੱਕ ਪਹੁੰਚ ਪ੍ਰਾਪਤ ਕਰੋ</translation>
 <translation id="7893153962594818789">ਬਲੂਟੁੱਥ ਇਸ <ph name="DEVICE_TYPE" /> 'ਤੇ ਬੰਦ ਹੈ। ਆਪਣਾ ਪਾਸਵਰਡ ਦਾਖਲ ਕਰੋ, ਅਤੇ ਬਲੂਟੁੱਥ ਨੂੰ ਚਾਲੂ ਕਰੋ।</translation>
 <translation id="7893393459573308604"><ph name="ENGINE_NAME" /> (ਪੂਰਵ-ਨਿਰਧਾਰਤ)</translation>
-<translation id="7894382333736164977">ਅਸੀਂ ਸਟੋਰੇਜ ਜਗ੍ਹਾ ਦੀ ਜਾਂਚ ਕਰਨ ਲਈ ਪ੍ਰਕਿਰਿਆ ਕਰ ਰਹੇ ਹਾਂ। <ph name="ITEMS_FOUND" /> ਆਈਟਮਾਂ ਮਿਲੀਆਂ।</translation>
 <translation id="7896292361319775586">ਕੀ <ph name="FILE" /> ਨੂੰ ਰੱਖਿਅਤ ਕਰਨਾ ਹੈ?</translation>
 <translation id="789722939441020330">ਸਾਈਟਾਂ ਨੂੰ ਇੱਕ ਤੋਂ ਵੱਧ ਫ਼ਾਈਲ ਡਾਊਨਲੋਡ ਕਰਨ ਦੀ ਇਜਾਜ਼ਤ ਨਾ ਦਿਓ</translation>
 <translation id="7897900149154324287">ਭਵਿੱਖ ਵਿੱਚ, ਆਪਣੀ ਹਟਾਉਣਯੋਗ ਡੀਵਾਈਸ ਨੂੰ ਫ਼ਾਈਲਾਂ ਐਪ ਵਿੱਚ ਇਸਨੂੰ ਅਨਪਲੱਗ ਕਰਨ ਤੋਂ ਪਹਿਲਾਂ ਕੱਢਣਾ ਪੱਕਾ ਕਰੋ । ਨਹੀਂ ਤਾਂ, ਤੁੁਹਾਡਾ ਡਾਟਾ ਨਸ਼ਟ ਹੋ ਸਕਦਾ ਹੈ।</translation>
@@ -10218,6 +10219,7 @@
 <translation id="9166253503936244008">ਇਸ QR ਕੋਡ ਨੂੰ ਉਸ ਡੀਵਾਈਸ ਨਾਲ ਸਕੈਨ ਕਰੋ ਜਿਸ ਵਿੱਚ ਉਹ ਪਾਸਕੀ ਹੈ ਜਿਸਨੂੰ ਤੁਸੀਂ <ph name="APP_NAME" /> ਲਈ ਵਰਤਣਾ ਚਾਹੁੰਦੇ ਹੋ</translation>
 <translation id="9167063903968449027">ਪੜ੍ਹਨ-ਸੂਚੀ ਦਿਖਾਓ</translation>
 <translation id="9167450455589251456">ਪ੍ਰੋਫਾਈਲ ਸਮਰਥਿਤ ਨਹੀਂ ਹੈ</translation>
+<translation id="9167813284871066981"><ph name="NUM_ACCOUNTS" /> ਖਾਤੇ</translation>
 <translation id="9168436347345867845">ਇਸਨੂੰ ਬਾਅਦ ਵਿੱਚ ਸੈੱਟਅੱਪ ਕਰੋ</translation>
 <translation id="9169496697824289689">ਕੀ-ਬੋਰਡ ਸ਼ਾਰਟਕੱਟ ਦੇਖੋ</translation>
 <translation id="916964310188958970">ਇਹ ਸੁਝਾਅ ਕਿਉਂ?</translation>

@@ -466,6 +466,7 @@ Kung ayaw mo, iba-block ito ng iyong mga setting ng privacy. Papayagan nito ang 
 <translation id="1875512691959384712">Google Forms</translation>
 <translation id="1876399092304384674">Ayon sa petsa</translation>
 <translation id="187918866476621466">Buksan ang mga page sa pagsisimula</translation>
+<translation id="1880901968112404879">Para mas mabilis na makapagbayad sa susunod, i-save ang iyong card, naka-encrypt na code na panseguridad, at billing address sa Google Account mo</translation>
 <translation id="1883255238294161206">Tiklupin ang listahan</translation>
 <translation id="1884843295353628214">Jazz</translation>
 <translation id="1890171020361705182">Dino game. Umiiwas ang isang pixelated na dinosaur sa mga cactus at pterodactyl habang tumatakbo ito sa isang bakanteng landscape. Kapag may narinig kang audio na cue, mag-tap para tumalon sa mga balakid.</translation>
@@ -3358,6 +3359,7 @@ Mga karagdagang detalye:
 <translation id="7802989406998618639">Ilagay ang <ph name="NUMBER_OF_DIGITS" /> (na) digit na panseguridad na code sa <ph name="SIDE_OF_CARD" /> para ma-verify ng iyong bangko na ikaw ito</translation>
 <translation id="780301667611848630">Hindi salamat</translation>
 <translation id="7805768142964895445">Katayuan</translation>
+<translation id="7810410097247356677">Para mas mabilis na makapagbayad sa susunod, i-save ang iyong card at naka-encrypt na code na panseguridad sa device mo</translation>
 <translation id="7812922009395017822">Mir</translation>
 <translation id="7813600968533626083">Alisin ang suhestyon sa Chrome?</translation>
 <translation id="781440967107097262">Ibahagi ang clipboard?</translation>
@@ -3378,7 +3380,6 @@ Mga karagdagang detalye:
 <translation id="7865448901209910068">Pinakamabilis</translation>
 <translation id="7870281855125116701">May Nakitang Diskwento</translation>
 <translation id="7871445724586827387">Palitan ang password ng iyong Google Account</translation>
-<translation id="7876615279559620350">Para sa mas mabilis na pag-checkout, i-save ang CVC para sa card na ito sa iyong Google Account</translation>
 <translation id="7877007680666472091">mga pinoprotektahang content ID</translation>
 <translation id="7878562273885520351">Maaaring makompromismo ang iyong password</translation>
 <translation id="7880146494886811634">I-save ang Address</translation>
@@ -3603,7 +3604,6 @@ Mga karagdagang detalye:
 <translation id="8308653357438598313">Live na Video Stream</translation>
 <translation id="8311895354659782580">Mga Listing ng Real Estate</translation>
 <translation id="8316555157357957253">Ginagamit ngayon</translation>
-<translation id="8317570861267063617">Para sa mas mabilis na checkout, i-save ang CVC para sa card na ito sa iyong device</translation>
 <translation id="8319269383395457801">Mga Pagbebenta ng Tirahan</translation>
 <translation id="831997045666694187">Gabi</translation>
 <translation id="8321476692217554900">mga notification</translation>

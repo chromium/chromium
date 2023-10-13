@@ -258,6 +258,7 @@
 <translation id="5545693483061321551">Sajtovi ne mogu da koriste kolačiće da bi videli vaše aktivnosti pregledanja na različitim sajtovima, na primer, za personalizaciju oglasa. Funkcije na nekim sajtovima mogu da ne rade.</translation>
 <translation id="5553374991681107062">Najnovije</translation>
 <translation id="5556459405103347317">Učitaj ponovo</translation>
+<translation id="5591840828808741583"><ph name="SITE_NAME" /> je blokiran</translation>
 <translation id="5649053991847567735">Automatska preuzimanja</translation>
 <translation id="5668404140385795438">Odbijanje zahteva veb-sajta da se spreči uvećavanje</translation>
 <translation id="5677928146339483299">Blokirano</translation>
@@ -455,6 +456,7 @@
 <translation id="8959122750345127698">Navigacija je nedostupna: <ph name="URL" /></translation>
 <translation id="8986362086234534611">Zaboravi</translation>
 <translation id="8990043154272859344">Odjavićete se sa svih sajtova</translation>
+<translation id="9011903857143958461"><ph name="SITE_NAME" /> je dozvoljen</translation>
 <translation id="9019902583201351841">Ovim upravljaju tvoji roditelji</translation>
 <translation id="9039697262778250930">Možda ćete biti odjavljeni sa ovih sajtova</translation>
 <translation id="9074739597929991885">Bluetooth</translation>

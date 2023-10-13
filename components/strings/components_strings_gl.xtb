@@ -143,6 +143,7 @@ En caso contrario, a configuración de privacidade impedirao. Se o permites, o c
 <translation id="1264309058268477500">Alternar</translation>
 <translation id="1264974993859112054">Deportes</translation>
 <translation id="1266469291454105242">Desbloqueo do dispositivo</translation>
+<translation id="126728463333482584">Es unha das primeiras persoas en probar Protección contra o rastrexo, que limita a capacidade dos sitios de usar cookies de terceiros para facer un seguimento da túa actividade mentres navegas.</translation>
 <translation id="1268480293435976622">Sobre chinés n.º 7</translation>
 <translation id="1269516672602708785">Crear rapidamente un sitio novo en Google Sites</translation>
 <translation id="1270328905573953738">Mudanzas e traslados</translation>
@@ -692,6 +693,7 @@ En caso contrario, a configuración de privacidade impedirao. Se o permites, o c
 <translation id="2361263712565360498">275 x 395 mm</translation>
 <translation id="236340516568226369">Menú dos botóns do cambio de tamaño</translation>
 <translation id="2365355378251437925">Cubre o campo <ph name="FIELD" /></translation>
+<translation id="2365382709349300355">Bloqueouse 1 ficheiro debido á política</translation>
 <translation id="2365508935344991784">Mobiliario de exterior</translation>
 <translation id="2366689192918515749">Carne e marisco</translation>
 <translation id="2367567093518048410">Nivel</translation>
@@ -2414,6 +2416,7 @@ En caso contrario, a configuración de privacidade impedirao. Se o permites, o c
 <translation id="5967867314010545767">Eliminar do historial</translation>
 <translation id="5968022600320704045">Non hai resultados da busca</translation>
 <translation id="5969199813874624822">Gardar e facer seguimento do prezo</translation>
+<translation id="5973514677932942122"><ph name="EXPIRATION_DATE" /> | <ph name="SECURITY_CODE" /></translation>
 <translation id="5974052231147553524">Sexto rolo</translation>
 <translation id="5975083100439434680">Afastar</translation>
 <translation id="5979084224081478209">Comprobar contrasinais</translation>
@@ -2905,6 +2908,7 @@ En caso contrario, a configuración de privacidade impedirao. Se o permites, o c
 <translation id="6965382102122355670">Aceptar</translation>
 <translation id="6965978654500191972">Dispositivo</translation>
 <translation id="696703987787944103">Percepción</translation>
+<translation id="6967851206780867018">Bloqueouse 1 ficheiro debido ao contido</translation>
 <translation id="6970885655016700774">Tecido (arquivo)</translation>
 <translation id="6971439137020188025">Crear rapidamente unha presentación nova en Presentacións</translation>
 <translation id="6972629891077993081">Dispositivos de interface humana</translation>
@@ -2957,6 +2961,7 @@ En caso contrario, a configuración de privacidade impedirao. Se o permites, o c
 <translation id="70705239631109039">A túa conexión non é completamente segura</translation>
 <translation id="7075452647191940183">A solicitude é demasiado grande</translation>
 <translation id="7078665357168027058">RA3</translation>
+<translation id="7079138647457502205">Navega con máis privacidade</translation>
 <translation id="7079718277001814089">Este sitio contén software malicioso</translation>
 <translation id="7081308185095828845">Esta función non está dispoñible no teu dispositivo</translation>
 <translation id="7083258188081898530">Bandexa 9</translation>
@@ -3373,7 +3378,6 @@ Detalles adicionais:
 <translation id="7865448901209910068">A mellor velocidade</translation>
 <translation id="7870281855125116701">Desconto atopado</translation>
 <translation id="7871445724586827387">Cambiar o contrasinal da Conta de Google</translation>
-<translation id="7876615279559620350">Para tramitar as compras máis rápido, garda o CVC desta tarxeta na túa Conta de Google</translation>
 <translation id="7877007680666472091">códigos de identificación de contido protexido</translation>
 <translation id="7878562273885520351">Pode que o teu contrasinal estea en perigo</translation>
 <translation id="7880146494886811634">Gardar enderezo</translation>
@@ -3598,7 +3602,6 @@ Detalles adicionais:
 <translation id="8308653357438598313">Emisión de vídeo en directo</translation>
 <translation id="8311895354659782580">Listaxes de bens inmobles</translation>
 <translation id="8316555157357957253">En uso agora</translation>
-<translation id="8317570861267063617">Para tramitar as compras máis rápido, garda o CVC desta tarxeta no teu dispositivo</translation>
 <translation id="8319269383395457801">Vendas inmobiliarias</translation>
 <translation id="831997045666694187">Serán</translation>
 <translation id="8321476692217554900">notificacións</translation>

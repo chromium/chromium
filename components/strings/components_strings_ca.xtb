@@ -143,6 +143,7 @@ En cas contrari, la configuració de privadesa el bloquejarà. Això permetrà q
 <translation id="1264309058268477500">Alternatiu</translation>
 <translation id="1264974993859112054">Esports</translation>
 <translation id="1266469291454105242">Desbloqueig del dispositiu</translation>
+<translation id="126728463333482584">Ets una de les primeres persones a experimentar la Protecció antiseguiment, que impedeix que els llocs web utilitzin galetes de tercers per fer un seguiment de la teva activitat mentre navegues.</translation>
 <translation id="1268480293435976622">Sobre xinès número 7</translation>
 <translation id="1269516672602708785">Crea un lloc web a Google Sites ràpidament</translation>
 <translation id="1270328905573953738">Trasllats i mudances</translation>
@@ -465,6 +466,7 @@ En cas contrari, la configuració de privadesa el bloquejarà. Això permetrà q
 <translation id="1875512691959384712">Formularis de Google</translation>
 <translation id="1876399092304384674">Per data</translation>
 <translation id="187918866476621466">Obre les pàgines d'inici</translation>
+<translation id="1880901968112404879">Perquè la propera vegada puguis pagar més ràpidament, desa la targeta, el codi de seguretat encriptat i l'adreça de facturació al teu Compte de Google</translation>
 <translation id="1883255238294161206">Redueix la llista</translation>
 <translation id="1884843295353628214">Jazz</translation>
 <translation id="1890171020361705182">Joc del dinosaure. Un dinosaure pixelat esquiva cactus i pterodàctils tot corrent per un paisatge desolat. Quan sentis un so, toca per saltar per damunt dels obstacles.</translation>
@@ -692,6 +694,7 @@ En cas contrari, la configuració de privadesa el bloquejarà. Això permetrà q
 <translation id="2361263712565360498">275 x 395 mm</translation>
 <translation id="236340516568226369">Menú de commutadors per canviar la mida</translation>
 <translation id="2365355378251437925">Introdueix <ph name="FIELD" /></translation>
+<translation id="2365382709349300355">S'ha bloquejat 1 fitxer a causa de la política</translation>
 <translation id="2365508935344991784">Mobiliari d'exterior</translation>
 <translation id="2366689192918515749">Carn i peix</translation>
 <translation id="2367567093518048410">Nivell</translation>
@@ -2414,6 +2417,7 @@ En cas contrari, la configuració de privadesa el bloquejarà. Això permetrà q
 <translation id="5967867314010545767">Elimina de l'historial</translation>
 <translation id="5968022600320704045">No hi ha cap resultat de la cerca</translation>
 <translation id="5969199813874624822">Desa el preu i fes-ne un seguiment</translation>
+<translation id="5973514677932942122"><ph name="EXPIRATION_DATE" /> | <ph name="SECURITY_CODE" /></translation>
 <translation id="5974052231147553524">Sisè corró</translation>
 <translation id="5975083100439434680">Redueix</translation>
 <translation id="5979084224081478209">Comprova les contrasenyes</translation>
@@ -2905,6 +2909,7 @@ En cas contrari, la configuració de privadesa el bloquejarà. Això permetrà q
 <translation id="6965382102122355670">D'acord</translation>
 <translation id="6965978654500191972">Dispositiu</translation>
 <translation id="696703987787944103">Perceptiu</translation>
+<translation id="6967851206780867018">S'ha bloquejat 1 fitxer a causa del contingut</translation>
 <translation id="6970885655016700774">Tela (arxiu)</translation>
 <translation id="6971439137020188025">Crea una presentació ràpidament a Presentacions de Google</translation>
 <translation id="6972629891077993081">Dispositius d'interfície humana</translation>
@@ -2957,6 +2962,7 @@ En cas contrari, la configuració de privadesa el bloquejarà. Això permetrà q
 <translation id="70705239631109039">La connexió no és del tot segura</translation>
 <translation id="7075452647191940183">La sol·licitud és massa llarga</translation>
 <translation id="7078665357168027058">RA3</translation>
+<translation id="7079138647457502205">Navega amb més privadesa</translation>
 <translation id="7079718277001814089">Aquest lloc web conté programari maliciós</translation>
 <translation id="7081308185095828845">Aquesta funció no està disponible al teu dispositiu</translation>
 <translation id="7083258188081898530">Safata 9</translation>
@@ -3353,6 +3359,7 @@ Detalls addicionals:
 <translation id="7802989406998618639">Introdueix el codi de seguretat de <ph name="NUMBER_OF_DIGITS" /> dígits que es troba <ph name="SIDE_OF_CARD" /> perquè el banc pugui verificar la teva identitat</translation>
 <translation id="780301667611848630">No, gràcies</translation>
 <translation id="7805768142964895445">Estat</translation>
+<translation id="7810410097247356677">Perquè la propera vegada puguis pagar més ràpidament, desa la targeta i el codi de seguretat encriptat al teu dispositiu</translation>
 <translation id="7812922009395017822">Mir</translation>
 <translation id="7813600968533626083">Voleu suprimir el suggeriment de formulari de Chrome?</translation>
 <translation id="781440967107097262">Vols compartir el porta-retalls?</translation>
@@ -3373,7 +3380,6 @@ Detalls addicionals:
 <translation id="7865448901209910068">Velocitat òptima</translation>
 <translation id="7870281855125116701">S'ha trobat un descompte</translation>
 <translation id="7871445724586827387">Canvia la contrasenya del teu Compte de Google.</translation>
-<translation id="7876615279559620350">Per pagar ràpidament, desa el CVC de la targeta al teu Compte de Google</translation>
 <translation id="7877007680666472091">identificadors de contingut protegit</translation>
 <translation id="7878562273885520351">La teva contrasenya pot estar en perill</translation>
 <translation id="7880146494886811634">Desa l'adreça</translation>
@@ -3598,7 +3604,6 @@ Detalls addicionals:
 <translation id="8308653357438598313">Reproducció de vídeo en directe</translation>
 <translation id="8311895354659782580">Anuncis de béns immobles</translation>
 <translation id="8316555157357957253">S'està utilitzant</translation>
-<translation id="8317570861267063617">Per pagar ràpidament, desa el CVC de la targeta al dispositiu</translation>
 <translation id="8319269383395457801">Vendes d'habitatges</translation>
 <translation id="831997045666694187">Tarda</translation>
 <translation id="8321476692217554900">notificacions</translation>

@@ -258,6 +258,7 @@
 <translation id="5545693483061321551">वेगवेगळ्या साइटवरील तुमची ब्राउझिंग ॲक्टिव्हिटी पाहण्यासाठी साइट कुकी वापरू शकत नाहीत. उदाहरणार्थ, जाहिराती पर्सनलाइझ करण्याकरिता. काही साइटवर वैशिष्ट्ये कदाचित काम करणार नाहीत.</translation>
 <translation id="5553374991681107062">नवीनतम</translation>
 <translation id="5556459405103347317">रीलोड करा</translation>
+<translation id="5591840828808741583"><ph name="SITE_NAME" /> ब्लॉक केली आहे</translation>
 <translation id="5649053991847567735">स्वयंचलित डाउनलोड</translation>
 <translation id="5668404140385795438">झूम वाढविणे निर्बंधित करण्याची वेबसाइटची विनंती ओव्हरराइड करा</translation>
 <translation id="5677928146339483299">ब्लॉक केले</translation>
@@ -455,6 +456,7 @@
 <translation id="8959122750345127698">नेव्हिगेशन आवाक्याबाहेर आहे: <ph name="URL" /></translation>
 <translation id="8986362086234534611">विसरा</translation>
 <translation id="8990043154272859344">तुम्हाला सर्व साइटमधून साइन आउट केले जाईल</translation>
+<translation id="9011903857143958461"><ph name="SITE_NAME" /> ला अनुमती दिली आहे</translation>
 <translation id="9019902583201351841">आपल्या पालकांद्वारे व्यवस्थापित करण्यात आले</translation>
 <translation id="9039697262778250930">तुम्हाला या साइटमधून साइन आउट केले जाऊ शकता</translation>
 <translation id="9074739597929991885">ब्लूटूथ</translation>

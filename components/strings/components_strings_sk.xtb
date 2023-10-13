@@ -143,6 +143,7 @@ Ich používanie by bolo inak blokované vašimi nastaveniami ochrany súkromia.
 <translation id="1264309058268477500">Alternatívna</translation>
 <translation id="1264974993859112054">Šport</translation>
 <translation id="1266469291454105242">Odomknutie zariadením</translation>
+<translation id="126728463333482584">Ste medzi prvými používateľmi Ochrany pred sledovaním, ktorá pomocou súborov cookie tretej strany obmedzuje sledovanie vášho prehliadania webmi.</translation>
 <translation id="1268480293435976622">Čínska obálka č. 7</translation>
 <translation id="1269516672602708785">Rýchlo vytvoriť nový web vo Weboch Google</translation>
 <translation id="1270328905573953738">Sťahovanie</translation>
@@ -465,6 +466,7 @@ Ich používanie by bolo inak blokované vašimi nastaveniami ochrany súkromia.
 <translation id="1875512691959384712">Formuláre Google</translation>
 <translation id="1876399092304384674">Podľa dátumu</translation>
 <translation id="187918866476621466">Otvoriť stránky pri spustení</translation>
+<translation id="1880901968112404879">Ak chcete nabudúce platiť rýchlejšie, uložte si kartu, šifrovaný bezpečnostný kód a fakturačnú adresu do účtu Google</translation>
 <translation id="1883255238294161206">Zbaliť zoznam</translation>
 <translation id="1884843295353628214">Jazz</translation>
 <translation id="1890171020361705182">Hra s dinosaurom Pixelovaný dinosaurus beží pustou krajinou a vyhýba sa kaktusom a pterodaktylom. Keď začujete zvuk, klepnutím preskočte cez prekážky.</translation>
@@ -692,6 +694,7 @@ Ich používanie by bolo inak blokované vašimi nastaveniami ochrany súkromia.
 <translation id="2361263712565360498">275 × 395 mm</translation>
 <translation id="236340516568226369">Ponuka prepínača zmeny veľkosti</translation>
 <translation id="2365355378251437925">Zadajte <ph name="FIELD" /></translation>
+<translation id="2365382709349300355">1 súbor bol zablokovaný pre pravidlá</translation>
 <translation id="2365508935344991784">Nábytok do exteriéru</translation>
 <translation id="2366689192918515749">Mäso a morské plody</translation>
 <translation id="2367567093518048410">Úroveň</translation>
@@ -2410,6 +2413,7 @@ Ich používanie by bolo inak blokované vašimi nastaveniami ochrany súkromia.
 <translation id="5967867314010545767">Odstrániť z histórie</translation>
 <translation id="5968022600320704045">Žiadne výsledky vyhľadávania</translation>
 <translation id="5969199813874624822">Uloženie a sledovanie ceny</translation>
+<translation id="5973514677932942122"><ph name="EXPIRATION_DATE" /> | <ph name="SECURITY_CODE" /></translation>
 <translation id="5974052231147553524">Šiesty kotúč</translation>
 <translation id="5975083100439434680">Oddialiť</translation>
 <translation id="5979084224081478209">Skontrolovať heslá</translation>
@@ -2900,6 +2904,7 @@ Ich používanie by bolo inak blokované vašimi nastaveniami ochrany súkromia.
 <translation id="6965382102122355670">OK</translation>
 <translation id="6965978654500191972">Zariadenie</translation>
 <translation id="696703987787944103">Percepčné</translation>
+<translation id="6967851206780867018">1 súbor bol zablokovaný pre obsah</translation>
 <translation id="6970885655016700774">Látka (archivačná)</translation>
 <translation id="6971439137020188025">Rýchlo vytvoriť novú prezentáciu Google v Prezentáciách</translation>
 <translation id="6972629891077993081">Zariadenia HID</translation>
@@ -2952,6 +2957,7 @@ Ich používanie by bolo inak blokované vašimi nastaveniami ochrany súkromia.
 <translation id="70705239631109039">Vaše pripojenie nie je úplne zabezpečené</translation>
 <translation id="7075452647191940183">Žiadosť je príliš veľká</translation>
 <translation id="7078665357168027058">RA3</translation>
+<translation id="7079138647457502205">Prehliadajte s vyššou ochranou súkromia</translation>
 <translation id="7079718277001814089">Tento web obsahuje malvér</translation>
 <translation id="7081308185095828845">Táto funkcia nie je vo vašom zariadení k dispozícii</translation>
 <translation id="7083258188081898530">Priehradka č. 9</translation>
@@ -3348,6 +3354,7 @@ Ich používanie by bolo inak blokované vašimi nastaveniami ochrany súkromia.
 <translation id="7802989406998618639">Zadajte <ph name="NUMBER_OF_DIGITS" />-ciferný bezpečnostný kód zo <ph name="SIDE_OF_CARD" />, aby vaša banka mohla overiť vašu totožnosť</translation>
 <translation id="780301667611848630">Nie, ďakujem</translation>
 <translation id="7805768142964895445">Stav</translation>
+<translation id="7810410097247356677">Ak chcete nabudúce platiť rýchlejšie, uložte si kartu a šifrovaný bezpečnostný kód do zariadenia</translation>
 <translation id="7812922009395017822">Mir</translation>
 <translation id="7813600968533626083">Chcete návrh odstrániť z prehliadača Chrome?</translation>
 <translation id="781440967107097262">Chcete zdieľať schránku?</translation>
@@ -3368,7 +3375,6 @@ Ich používanie by bolo inak blokované vašimi nastaveniami ochrany súkromia.
 <translation id="7865448901209910068">Najlepšia rýchlosť</translation>
 <translation id="7870281855125116701">Bola nájdená zľava</translation>
 <translation id="7871445724586827387">Zmeniť heslo účtu Google</translation>
-<translation id="7876615279559620350">Zrýchlite si platby uložením overovacieho kódu tejto karty v účte Google</translation>
 <translation id="7877007680666472091">identifikátory chráneného obsahu</translation>
 <translation id="7878562273885520351">Vaše heslo mohlo byť napadnuté</translation>
 <translation id="7880146494886811634">Uloženie adresy</translation>
@@ -3593,7 +3599,6 @@ Ich používanie by bolo inak blokované vašimi nastaveniami ochrany súkromia.
 <translation id="8308653357438598313">Priame prenosy</translation>
 <translation id="8311895354659782580">Realitné kancelárie</translation>
 <translation id="8316555157357957253">Používa sa teraz</translation>
-<translation id="8317570861267063617">Zrýchlite si platby uložením overovacieho kódu tejto karty do zariadenia</translation>
 <translation id="8319269383395457801">Predaj nehnuteľností</translation>
 <translation id="831997045666694187">Večer</translation>
 <translation id="8321476692217554900">upozornenia</translation>

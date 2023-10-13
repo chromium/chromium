@@ -335,7 +335,6 @@ Your search engine is <ph name="DSE_NAME" />. See their instructions for deletin
 <translation id="2718352093833049315">Only on Wi-Fi</translation>
 <translation id="2738375676495545665">Hide What's New</translation>
 <translation id="2747003861858887689">Previous field</translation>
-<translation id="2749026027885331579">Your family members can now use your username and password when they use Google Password Manager to sign in to <ph name="WEBSITE" />. <ph name="BEGIN_LINK" />Learn more<ph name="END_LINK" /></translation>
 <translation id="2749231692441336879">Following <ph name="CHANNEL_NAME" /></translation>
 <translation id="2754492786623500387">Accounts on this device</translation>
 <translation id="2762000892062317888">just now</translation>
@@ -576,7 +575,6 @@ See your search engine’s instructions for deleting your search history, if app
 <translation id="4018310736049373830">Manage activity</translation>
 <translation id="4038354071007134711">No application on this device can open the file.</translation>
 <translation id="4042870976416480368">Find in Page</translation>
-<translation id="4043294777772912240"><ph name="USERNAME" /> can now use your username and password when they use Google Password Manager to sign in to <ph name="WEBSITE" />. <ph name="BEGIN_LINK" />Learn more<ph name="END_LINK" /></translation>
 <translation id="40433179647657191">Create and share a direct link to part of a page that you've highlighted.</translation>
 <translation id="4045648459118332842">Get your saved passwords in any app with one tap</translation>
 <translation id="4049507953662678203">Make sure you have a network connection, and try again.</translation>
@@ -713,6 +711,7 @@ See your search engine’s instructions for deleting your search history, if app
 <translation id="4808744395915275922">Updates</translation>
 <translation id="4818522717893377262">Add language…</translation>
 <translation id="481968316161811770">Cookies, Site Data</translation>
+<translation id="4824480232751123840">Volume</translation>
 <translation id="4824497107140370669">{count,plural, =0{{domain}}=1{{domain} and 1 other}other{{domain} and {count} others}}</translation>
 <translation id="4826218269716039351">Block third party</translation>
 <translation id="4826588772550366629">camera and microphone</translation>
@@ -850,6 +849,7 @@ Handoff must also be enabled in the General section of Settings, and your device
 <translation id="5556459405103347317">Reload</translation>
 <translation id="555749644339804659">Checking passwords…</translation>
 <translation id="556042886152191864">Button</translation>
+<translation id="5572684875078967866">Information storage</translation>
 <translation id="5597915316964418992">Open the Tab grid</translation>
 <translation id="560322036295180549">Turned off by your organisation</translation>
 <translation id="5614553682702429503">Save password?</translation>
@@ -911,6 +911,7 @@ Handoff must also be enabled in the General section of Settings, and your device
 <translation id="5896576662943111387">Built for iOS</translation>
 <translation id="5897749768294722429">To quickly get back to sites you've visited, sync your tabs and history.</translation>
 <translation id="5897956970858271241">Visit copied link</translation>
+<translation id="5898848375214731122">Mass</translation>
 <translation id="5899314093904173337">To share with people nearby, let them scan this QR code with their camera or QR scanner app</translation>
 <translation id="5911030830365207728">Google Translate</translation>
 <translation id="5913600720976431809">Options to translate the page</translation>
@@ -928,6 +929,7 @@ Handoff must also be enabled in the General section of Settings, and your device
 <translation id="5981230843984570095">Close all inactive</translation>
 <translation id="5982717868370722439">Add existing data to <ph name="USER_EMAIL" />.</translation>
 <translation id="5984222099446776634">Recently Visited</translation>
+<translation id="598634819525651074">Area</translation>
 <translation id="5988097621740394599">See price drops on your tabs.</translation>
 <translation id="5988851877894965432">Open URLs in Chrome</translation>
 <translation id="6006672969046233841">New tab</translation>
@@ -1364,6 +1366,7 @@ Sites can use cookies to see your browsing activity across different sites, for 
 <translation id="8156478151976189188">Password Sync isn't working</translation>
 <translation id="8157532349231307196"><ph name="NUMBER_OF_ACCOUNTS" /> accounts</translation>
 <translation id="8159358225423560600">just now</translation>
+<translation id="8173034266693057059">Length</translation>
 <translation id="8179976553408161302">Enter</translation>
 <translation id="8182037667962849780">{count,plural, =1{For {website_1}}=2{For {website_1}, {website_2}}=3{For {website_1}, {website_2}, and one more}other{For {website_1}, {website_2}, and {more_count} more}}</translation>
 <translation id="8193953846147532858"><ph name="BEGIN_LINK" />Your devices<ph name="END_LINK" /> · <ph name="EMAIL" /></translation>
@@ -1458,6 +1461,7 @@ Your data was encrypted with your passphrase on <ph name="TIME" />. Enter it to 
 <translation id="8692689525339542358">Get protection from dangerous sites, downloads and extensions.</translation>
 <translation id="8693663554456874301">{count,plural, =1{Close tab}other{Close tabs}}</translation>
 <translation id="8703536910991780768">Your passwords look strong</translation>
+<translation id="8706253136355675497">Temperature</translation>
 <translation id="8717864919010420084">Copy link</translation>
 <translation id="8721297211384281569">Tools Menu</translation>
 <translation id="8725066075913043281">Try again</translation>
@@ -1563,6 +1567,7 @@ Your data was encrypted with your passphrase on <ph name="TIME" />. Enter it to 
 <translation id="9188680907066685419">Sign out of managed account</translation>
 <translation id="9200875785104711666"><ph name="TIME" /> d ago</translation>
 <translation id="9203116392574189331">Handoff</translation>
+<translation id="9206887540681440657">Speed</translation>
 <translation id="9219154867334666734">Search Tabs…</translation>
 <translation id="9223358826628549784">Crash report sent.</translation>
 <translation id="941747855997058526">Select password…</translation>

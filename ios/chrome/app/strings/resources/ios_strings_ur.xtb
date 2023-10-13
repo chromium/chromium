@@ -335,7 +335,6 @@
 <translation id="2718352093833049315">‏صرف Wi-Fi پر</translation>
 <translation id="2738375676495545665">'نیا کیا ہے' کو چھپائیں</translation>
 <translation id="2747003861858887689">پچھلا فیلڈ</translation>
-<translation id="2749026027885331579">‏آپ کے فیملی ممبرز Google پاس ورڈ مینیجر کا استعمال کر کے <ph name="WEBSITE" /> میں سائن ان کرنے کے لیے اب آپ کا صارف نام اور پاس ورڈ استعمال کر سکتے ہیں۔ <ph name="BEGIN_LINK" />مزید جانیں<ph name="END_LINK" /></translation>
 <translation id="2749231692441336879"><ph name="CHANNEL_NAME" /> کی پیروی کی جا رہی ہے</translation>
 <translation id="2754492786623500387">اس آلے پر موجود اکاؤنٹس</translation>
 <translation id="2762000892062317888">ابھی ابھی</translation>
@@ -576,7 +575,6 @@
 <translation id="4018310736049373830">سرگرمی کا نظم کریں</translation>
 <translation id="4038354071007134711">اس آلہ پر کوئی ایپلیکیشن اس فائل کو نہیں کھول سکتی ہے۔</translation>
 <translation id="4042870976416480368">صفحہ میں تلاش کریں</translation>
-<translation id="4043294777772912240">‏<ph name="USERNAME" /> Google پاس ورڈ مینیجر کا استعمال کر کے <ph name="WEBSITE" /> میں سائن ان کرنے کے لیے اب آپ کا صارف نام اور پاس ورڈ استعمال کر سکتے ہیں۔ <ph name="BEGIN_LINK" />مزید جانیں<ph name="END_LINK" /></translation>
 <translation id="40433179647657191">آپ نے جس صفحہ کو نمایاں کیا ہے اس کے حصے کا براہ راست لنک بنائیں اور تخلیق کریں۔</translation>
 <translation id="4045648459118332842">ایک بار تھپتھپا کر کسی بھی ایپ میں اپنے محفوظ کردہ پاس ورڈز پائیں</translation>
 <translation id="4049507953662678203">یقینی بنائیں کہ آپ کے پاس نیٹ ورک کنکشن ہے اور دوبارہ کوشش کریں۔</translation>
@@ -713,6 +711,7 @@
 <translation id="4808744395915275922">اپ ڈیٹس</translation>
 <translation id="4818522717893377262">زبان شامل کریں...</translation>
 <translation id="481968316161811770">کوکیز، سائٹ کا ڈیٹا</translation>
+<translation id="4824480232751123840">والیوم</translation>
 <translation id="4824497107140370669">{count,plural, =0{{domain}}=1{{domain} اور 1 دیگر}other{{domain} اور {count} دیگر}}</translation>
 <translation id="4826218269716039351">فریق ثالث مسدود کریں</translation>
 <translation id="4826588772550366629">کیمرا اور مائیکروفون</translation>
@@ -850,6 +849,7 @@ Handoff ترتیبات کے عام سیکشن میں بھی فعال ہونی ض
 <translation id="5556459405103347317">دوبارہ لوڈ کریں</translation>
 <translation id="555749644339804659">پاس ورڈز چیک ہو رہے ہیں…</translation>
 <translation id="556042886152191864">بٹن</translation>
+<translation id="5572684875078967866">معلوماتی اسٹوریج</translation>
 <translation id="5597915316964418992">ٹیب گرڈ کھولیں</translation>
 <translation id="560322036295180549">آپ کی تنظیم کے ذریعے اف کر دیا گیا</translation>
 <translation id="5614553682702429503">پاس ورڈ کو محفوظ کریں؟</translation>
@@ -911,6 +911,7 @@ Handoff ترتیبات کے عام سیکشن میں بھی فعال ہونی ض
 <translation id="5896576662943111387">‏iOS کیلئے بنایا گیا</translation>
 <translation id="5897749768294722429">تیزی سے اپنی ملاحظہ کردہ سائٹس پر واپس جانے کے لیے اپنے ٹیبز اور سرگزشت کو مطابقت پذیر کریں۔</translation>
 <translation id="5897956970858271241">کاپی کردہ لنک ملاحظہ کریں</translation>
+<translation id="5898848375214731122">کمّیت</translation>
 <translation id="5899314093904173337">‏قریبی لوگوں سے اشتراک کرنے کے لیے، انہیں اس QR کوڈ کو ان کے کیمرے یا QR اسکینر ایپ سے اسکین کرنے دیں</translation>
 <translation id="5911030830365207728">Google Translate</translation>
 <translation id="5913600720976431809">صفحہ کا ترجمہ کرنے کے اختیارات</translation>
@@ -928,6 +929,7 @@ Handoff ترتیبات کے عام سیکشن میں بھی فعال ہونی ض
 <translation id="5981230843984570095">سبھی غیر فعال بند کریں</translation>
 <translation id="5982717868370722439"><ph name="USER_EMAIL" /> میں موجودہ ڈیٹا شامل کریں۔</translation>
 <translation id="5984222099446776634">حال ہی میں ملاحظہ کردہ</translation>
+<translation id="598634819525651074">علاقہ</translation>
 <translation id="5988097621740394599">اپنے ٹیبز پر قیمتوں میں کمی دیکھیں۔</translation>
 <translation id="5988851877894965432">‏URLs کو Chrome میں کھولیں</translation>
 <translation id="6006672969046233841">نیا ٹیب</translation>
@@ -1364,6 +1366,7 @@ Handoff ترتیبات کے عام سیکشن میں بھی فعال ہونی ض
 <translation id="8156478151976189188">پاس ورڈ کی مطابقت پذیری کام نہیں کر رہی ہے</translation>
 <translation id="8157532349231307196"><ph name="NUMBER_OF_ACCOUNTS" /> اکاؤنٹس</translation>
 <translation id="8159358225423560600">ابھی ابھی</translation>
+<translation id="8173034266693057059">لمبائی</translation>
 <translation id="8179976553408161302">انٹر</translation>
 <translation id="8182037667962849780">{count,plural, =1{{website_1} کیلئے}=2{{website_1}، {website_2} کیلئے}=3{{website_1}، {website_2} اور 1 مزید کیلئے}other{{website_1}، {website_2} اور {more_count} مزید کیلئے}}</translation>
 <translation id="8193953846147532858"><ph name="BEGIN_LINK" />آپ کے آلات<ph name="END_LINK" /> · <ph name="EMAIL" /></translation>
@@ -1458,6 +1461,7 @@ Handoff ترتیبات کے عام سیکشن میں بھی فعال ہونی ض
 <translation id="8692689525339542358">خطرناک سائٹس، ڈاؤن لوڈز اور ایکسٹینشنز سے تحفظ حاصل کریں۔</translation>
 <translation id="8693663554456874301">{count,plural, =1{ٹیب بند کریں}other{ٹیبز بند کریں}}</translation>
 <translation id="8703536910991780768">آپ کے پاس ورڈز مضبوط لگ رہے ہیں</translation>
+<translation id="8706253136355675497">درجہ حرارت</translation>
 <translation id="8717864919010420084">لنک کاپی کریں</translation>
 <translation id="8721297211384281569">ٹولز مینیو</translation>
 <translation id="8725066075913043281">دوبارہ کوشش کریں</translation>
@@ -1563,6 +1567,7 @@ Handoff ترتیبات کے عام سیکشن میں بھی فعال ہونی ض
 <translation id="9188680907066685419">نظم کردہ اکاؤنٹ سے سائن آؤٹ کریں</translation>
 <translation id="9200875785104711666"><ph name="TIME" /> دن پہلے</translation>
 <translation id="9203116392574189331">Handoff</translation>
+<translation id="9206887540681440657">رفتار</translation>
 <translation id="9219154867334666734">ٹیبز تلاش کریں…</translation>
 <translation id="9223358826628549784">کریش رپورٹ بھیج دی گئی۔</translation>
 <translation id="941747855997058526">پاس ورڈ منتخب کریں...</translation>

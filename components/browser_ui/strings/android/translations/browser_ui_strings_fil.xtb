@@ -258,6 +258,7 @@
 <translation id="5545693483061321551">Hindi magagamit ng mga site ang cookies mo para makita ang iyong aktibidad sa pag-browse sa iba't ibang site, halimbawa, para mag-personalize ng mga ad. Posibleng hindi gumana ang mga feature sa ilang site.</translation>
 <translation id="5553374991681107062">Pinakabago</translation>
 <translation id="5556459405103347317">I-reload</translation>
+<translation id="5591840828808741583">Naka-block ang <ph name="SITE_NAME" /></translation>
 <translation id="5649053991847567735">Mga awtomatikong pag-download</translation>
 <translation id="5668404140385795438">I-override ang kahilingan ng isang website upang mapigilan ang pagzu-zoom in</translation>
 <translation id="5677928146339483299">Naka-block</translation>
@@ -455,6 +456,7 @@
 <translation id="8959122750345127698">Hindi gumagana ang navigation: <ph name="URL" /></translation>
 <translation id="8986362086234534611">Kalimutan</translation>
 <translation id="8990043154272859344">Masa-sign out ka sa lahat ng site</translation>
+<translation id="9011903857143958461">Pinapayagan ang <ph name="SITE_NAME" /></translation>
 <translation id="9019902583201351841">Pinamamahalaan ng iyong mga magulang</translation>
 <translation id="9039697262778250930">Posibleng ma-sign out ka sa mga site na ito</translation>
 <translation id="9074739597929991885">Bluetooth</translation>

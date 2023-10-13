@@ -715,7 +715,6 @@
 <translation id="6423239382391657905">OpenVPN</translation>
 <translation id="6439505561246192797">బలహీనం (<ph name="SIGNAL_STRENGTH" />)</translation>
 <translation id="6447630859861661624">ఖాతా సెట్టింగ్‌లకు వెళ్లండి</translation>
-<translation id="6461047516875166066">నాకు మరింత సమాచారం తెలియజేయండి</translation>
 <translation id="6463239094587744704">{PAGE_NUMBER,plural, =0{పేజీని మళ్లీ స్కాన్ చేయాలా?}=1{{PAGE_NUMBER}వ పేజీని మళ్లీ స్కాన్ చేయాలా?}other{{PAGE_NUMBER}వ పేజీని మళ్లీ స్కాన్ చేయాలా?}}</translation>
 <translation id="6472207088655375767">OTP</translation>
 <translation id="6480327114083866287"><ph name="MANAGER" /> ద్వారా మేనేజ్ చేయబడుతోంది</translation>

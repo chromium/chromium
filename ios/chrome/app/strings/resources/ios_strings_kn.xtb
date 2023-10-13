@@ -335,7 +335,6 @@
 <translation id="2718352093833049315">ಕೇವಲ ವೈ-ಫೈ ಮಾತ್ರ</translation>
 <translation id="2738375676495545665">ಹೊಸತೇನಿದೆ ಎಂಬುದನ್ನು ಮರೆಮಾಡಿ</translation>
 <translation id="2747003861858887689">ಹಿಂದಿನ ಕ್ಷೇತ್ರ</translation>
-<translation id="2749026027885331579">ನಿಮ್ಮ ಕುಟುಂಬದ ಸದಸ್ಯರು <ph name="WEBSITE" /> ಗೆ ಸೈನ್ ಇನ್ ಮಾಡಲು Google Password Manager ಅನ್ನು ಬಳಸುವಾಗ, ಅವರು ನಿಮ್ಮ ಬಳಕೆದಾರರ ಹೆಸರು ಮತ್ತು ಪಾಸ್‌ವರ್ಡ್ ಅನ್ನು ಬಳಸಬಹುದು. <ph name="BEGIN_LINK" />ಇನ್ನಷ್ಟು ತಿಳಿಯಿರಿ<ph name="END_LINK" /></translation>
 <translation id="2749231692441336879"><ph name="CHANNEL_NAME" /> ಅನ್ನು ಫಾಲೋ ಮಾಡಲಾಗುತ್ತಿದೆ</translation>
 <translation id="2754492786623500387">ಈ ಸಾಧನದಲ್ಲಿನ ಖಾತೆಗಳು</translation>
 <translation id="2762000892062317888">ಈಗತಾನೇ</translation>
@@ -576,7 +575,6 @@
 <translation id="4018310736049373830">ಚಟುವಟಿಕೆ ನಿರ್ವಹಿಸಿ</translation>
 <translation id="4038354071007134711">ಫೈಲ್‌ ತೆರೆಯಬಹುದಾದ ಯಾವುದೇ ಅಪ್ಲಿಕೇಶನ್‌ಗಳು ಈ ಸಾಧನದಲ್ಲಿ ಇಲ್ಲ.</translation>
 <translation id="4042870976416480368">ಪುಟದಲ್ಲಿ ಹುಡುಕಿ</translation>
-<translation id="4043294777772912240"><ph name="USERNAME" /> ಅವರು <ph name="WEBSITE" /> ಗೆ ಸೈನ್ ಇನ್ ಮಾಡಲು Google Password Manager ಅನ್ನು ಬಳಸುವಾಗ, ಅವರು ನಿಮ್ಮ ಬಳಕೆದಾರರ ಹೆಸರು ಮತ್ತು ಪಾಸ್‌ವರ್ಡ್ ಅನ್ನು ಬಳಸಬಹುದು. <ph name="BEGIN_LINK" />ಇನ್ನಷ್ಟು ತಿಳಿಯಿರಿ<ph name="END_LINK" /></translation>
 <translation id="40433179647657191">ನೀವು ಹೈಲೈಟ್ ಮಾಡಿರುವ ಪುಟದ ಭಾಗವೊಂದಕ್ಕೆ ನೇರ ಲಿಂಕ್ ಅನ್ನು ರಚಿಸಿ ಮತ್ತು ಹಂಚಿಕೊಳ್ಳಿ.</translation>
 <translation id="4045648459118332842">ಒಂದೇ ಟ್ಯಾಪ್‌ನಲ್ಲಿ ನಿಮ್ಮ ಉಳಿಸಿದ ಪಾಸ್‌ವರ್ಡ್‌ಗಳನ್ನು ಯಾವುದೇ ಆ್ಯಪ್‌ನಲ್ಲಿ ಪಡೆಯಿರಿ</translation>
 <translation id="4049507953662678203">ನೀವು ನೆಟ್‌‌ವರ್ಕ್ ಸಂಪರ್ಕ ಹೊಂದಿರುವಿರಾ ಎಂಬುದನ್ನು ಖಚಿತಪಡಿಸಿಕೊಳ್ಳಿ ಹಾಗೂ ಮತ್ತೊಮ್ಮೆ ಪ್ರಯತ್ನಿಸಿ.</translation>
@@ -713,6 +711,7 @@
 <translation id="4808744395915275922">ಅಪ್‌ಡೇಟ್‌ಗಳು</translation>
 <translation id="4818522717893377262">ಭಾಷೆ ಸೇರಿಸಿ...</translation>
 <translation id="481968316161811770">ಕುಕೀಗಳು, ಸೈಟ್‌ ಡೇಟಾ</translation>
+<translation id="4824480232751123840">ವಾಲ್ಯೂಮ್</translation>
 <translation id="4824497107140370669">{count,plural, =0{{domain}}=1{{domain} ಮತ್ತು ಇತರೆ 1}one{{domain} ಮತ್ತು ಇತರೆ {count}}other{{domain} ಮತ್ತು ಇತರೆ {count}}}</translation>
 <translation id="4826218269716039351">ಥರ್ಡ್-ಪಾರ್ಟಿಯನ್ನು ನಿರ್ಬಂಧಿಸಿ</translation>
 <translation id="4826588772550366629">ಕ್ಯಾಮರಾ ಮತ್ತು ಮೈಕ್ರೊಫೋನ್</translation>
@@ -850,6 +849,7 @@
 <translation id="5556459405103347317">ಮರುಲೋಡ್‌</translation>
 <translation id="555749644339804659">ಪಾಸ್‌ವರ್ಡ್‌ಗಳನ್ನು ಪರಿಶೀಲಿಸಲಾಗುತ್ತಿದೆ…</translation>
 <translation id="556042886152191864">ಬಟನ್</translation>
+<translation id="5572684875078967866">ಮಾಹಿತಿ ಸಂಗ್ರಹಣೆ</translation>
 <translation id="5597915316964418992">ಟ್ಯಾಬ್ ಗ್ರಿಡ್ ಅನ್ನು ತೆರೆಯಿರಿ</translation>
 <translation id="560322036295180549">ನಿಮ್ಮ ಸಂಸ್ಥೆಯವರು ಆಫ್ ಮಾಡಿದ್ದಾರೆ.</translation>
 <translation id="5614553682702429503">ಪಾಸ್‌ವರ್ಡ್ ಉಳಿಸುವುದೇ?</translation>
@@ -911,6 +911,7 @@
 <translation id="5896576662943111387">iOS ಗಾಗಿ ನಿರ್ಮಿಸಲಾಗಿದೆ</translation>
 <translation id="5897749768294722429">ನೀವು ಭೇಟಿ ನೀಡಿದ ಸೈಟ್‌ಗಳಿಗೆ ತ್ವರಿತವಾಗಿ ಹಿಂತಿರುಗಲು, ನಿಮ್ಮ ಟ್ಯಾಬ್‌ಗಳು ಮತ್ತು ಇತಿಹಾಸವನ್ನು ಸಿಂಕ್ ಮಾಡಿ.</translation>
 <translation id="5897956970858271241">ನಕಲಿಸಿದ ಲಿಂಕ್‌ಗೆ ಭೇಟಿ ನೀಡಿ</translation>
+<translation id="5898848375214731122">ತೂಕ</translation>
 <translation id="5899314093904173337">ಹತ್ತಿರದ ಜನರೊಂದಿಗೆ ಹಂಚಿಕೊಳ್ಳಲು, ಅವರ ಕ್ಯಾಮರಾ ಅಥವಾ QR ಸ್ಕ್ಯಾನರ್ ಆ್ಯಪ್ ಮೂಲಕ ಈ QR ಕೋಡ್ ಅನ್ನು ಸ್ಕ್ಯಾನ್ ಮಾಡಲು ಅವರಿಗೆ ಅನುಮತಿಸಿ</translation>
 <translation id="5911030830365207728">Google Translate</translation>
 <translation id="5913600720976431809">ಪುಟವನ್ನು ಅನುವಾದಿಸಲು ಆಯ್ಕೆಗಳು</translation>
@@ -928,6 +929,7 @@
 <translation id="5981230843984570095">ಎಲ್ಲಾ ನಿಷ್ಕ್ರಿಯ ಟ್ಯಾಬ್‌ಗಳನ್ನು ಮುಚ್ಚಿರಿ</translation>
 <translation id="5982717868370722439">ಪ್ರಸ್ತುತ ಡೇಟಾವನ್ನು <ph name="USER_EMAIL" /> ಗೆ ಸೇರಿಸಿ.</translation>
 <translation id="5984222099446776634">ಇತ್ತೀಚೆಗೆ ಭೇಟಿ ನೀಡಿದವು</translation>
+<translation id="598634819525651074">ಪ್ರದೇಶ</translation>
 <translation id="5988097621740394599">ನಿಮ್ಮ ಟ್ಯಾಬ್‌ಗಳಲ್ಲಿ ಬೆಲೆ ಕುಸಿತಗಳನ್ನು ನೋಡಿ.</translation>
 <translation id="5988851877894965432">Chrome ನಲ್ಲಿ URL ಗಳನ್ನು ತೆರೆಯಿರಿ</translation>
 <translation id="6006672969046233841">ಹೊಸ ಟ್ಯಾಬ್</translation>
@@ -1364,6 +1366,7 @@
 <translation id="8156478151976189188">ಪಾಸ್‌ವರ್ಡ್ ಸಿಂಕ್ ಕಾರ್ಯನಿರ್ವಹಿಸುತ್ತಿಲ್ಲ</translation>
 <translation id="8157532349231307196"><ph name="NUMBER_OF_ACCOUNTS" /> ಖಾತೆಗಳು</translation>
 <translation id="8159358225423560600">ಇದೀಗ</translation>
+<translation id="8173034266693057059">ಉದ್ದ</translation>
 <translation id="8179976553408161302">Enter</translation>
 <translation id="8182037667962849780">{count,plural, =1{{website_1} ಗಾಗಿ}=2{{website_1}, {website_2} ಗಾಗಿ}=3{{website_1}, {website_2} ಮತ್ತು ಇನ್ನೂ 1 ಕ್ಕಾಗಿ}one{{website_1}, {website_2}, ಮತ್ತು ಇನ್ನೂ {more_count} ಕ್ಕಾಗಿ}other{{website_1}, {website_2}, ಮತ್ತು ಇನ್ನೂ {more_count} ಕ್ಕಾಗಿ}}</translation>
 <translation id="8193953846147532858"><ph name="BEGIN_LINK" />ನಿಮ್ಮ ಸಾಧನಗಳು<ph name="END_LINK" /> · <ph name="EMAIL" /></translation>
@@ -1458,6 +1461,7 @@
 <translation id="8692689525339542358">ಅಪಾಯಕಾರಿ ಸೈಟ್‌ಗಳು, ಡೌನ್‌ಲೋಡ್‌ಗಳು ಮತ್ತು ವಿಸ್ತರಣೆಗಳಿಂದ ರಕ್ಷಣೆ ಪಡೆಯಿರಿ.</translation>
 <translation id="8693663554456874301">{count,plural, =1{ಟ್ಯಾಬ್ ಅನ್ನು ಮುಚ್ಚಿ}one{ಟ್ಯಾಬ್‌ಗಳನ್ನು ಮುಚ್ಚಿ}other{ಟ್ಯಾಬ್‌ಗಳನ್ನು ಮುಚ್ಚಿ}}</translation>
 <translation id="8703536910991780768">ನಿಮ್ಮ ಪಾಸ್‌ವರ್ಡ್‌ಗಳು ಸದೃಢವಾಗಿರುವಂತೆ ತೋರುತ್ತಿವೆ</translation>
+<translation id="8706253136355675497">ತಾಪಮಾನ</translation>
 <translation id="8717864919010420084">ಲಿಂಕ್ ನಕಲಿಸಿ</translation>
 <translation id="8721297211384281569">ಪರಿಕರಗಳ ಮೆನು</translation>
 <translation id="8725066075913043281">ಮತ್ತೆ ಪ್ರಯತ್ನಿಸಿ</translation>
@@ -1563,6 +1567,7 @@
 <translation id="9188680907066685419">ನಿರ್ವಹಿಸಲಾದ ಖಾತೆಯಿಂದ ಸೈನ್ ಔಟ್ ಮಾಡಿ</translation>
 <translation id="9200875785104711666"><ph name="TIME" /> ದಿ ಹಿಂದೆ</translation>
 <translation id="9203116392574189331">ಹ್ಯಾಂಡ್ಆಫ್</translation>
+<translation id="9206887540681440657">ವೇಗ</translation>
 <translation id="9219154867334666734">ಟ್ಯಾಬ್‌ಗಳನ್ನು ಹುಡುಕಿ…</translation>
 <translation id="9223358826628549784">ಕ್ರ್ಯಾಶ್ ವರದಿಯನ್ನು ಕಳುಹಿಸಲಾಗಿದೆ.</translation>
 <translation id="941747855997058526">ಪಾಸ್‌ವರ್ಡ್ ಅನ್ನು ಆಯ್ಕೆಮಾಡಿ...</translation>

@@ -709,7 +709,6 @@ Sovelluksille myöntämäsi luvat saattavat koskea tätä tiliä. Voit päättä
 <translation id="1558391695376153246">Sulje incognito-välilehdet</translation>
 <translation id="155865706765934889">Kosketuslevy</translation>
 <translation id="1558671750917454373">Jatka striimausta: <ph name="DEVICE_NAME" /></translation>
-<translation id="1561329796773556980">Tarkistamme parhaillaan tallennustilaa…</translation>
 <translation id="1562119309884184621">Tämän kontaktin lisääminen muistetaan ensi kerralla, kun hän jakaa</translation>
 <translation id="1563137369682381456">Vanhenemispäivä</translation>
 <translation id="1563702743503072935">Google-tilisi salasanat ovat saatavilla myös tällä laitteella, kun olet kirjautuneena sisään</translation>
@@ -2104,6 +2103,7 @@ Voit ylläpitää tilin asetuksia asentamalla laitteellesi Family Link ‑sovell
 <translation id="2609980095400624569">Yhteyttä ei voitu luoda</translation>
 <translation id="2610157865375787051">Siirry virransäästöön</translation>
 <translation id="2610260699262139870">T&amp;odellinen koko</translation>
+<translation id="2610374175948698697">Saa nähdä laitteesi tiedostot tai kansiot</translation>
 <translation id="2610780100389066815">Microsoft-luottamusluettelon allekirjoitus</translation>
 <translation id="261114180663074524">Kirjaudu Microsoft-tilille ja yritä uudelleen</translation>
 <translation id="2611776654555141051">Suorakulmiotyökalu</translation>
@@ -2151,6 +2151,7 @@ Voit ylläpitää tilin asetuksia asentamalla laitteellesi Family Link ‑sovell
 <translation id="264897126871533291">Protanomalia</translation>
 <translation id="2649045351178520408">Base64-koodattu ASCII, varmenneketju</translation>
 <translation id="265156376773362237">Vakioesilataus</translation>
+<translation id="2652071759203138150">{COUNT,plural, =1{{COUNT} salasana tallennetaan vain tälle laitteelle. Jos haluat käyttää sitä muilla laitteillasi, <ph name="BEGIN_LINK" />tallenna se Google-tilillesi<ph name="END_LINK" />.}other{{COUNT} salasanaa tallennetaan vain tälle laitteelle. Jos haluat käyttää niitä muilla laitteilla, <ph name="BEGIN_LINK" />tallenna ne Google-tilillesi<ph name="END_LINK" />.}}</translation>
 <translation id="2652129567809778422">Valitse salasana</translation>
 <translation id="2653266418988778031">Jos poistat varmenteen myöntäjän varmenteen, selaimesi ei enää luota tämän myöntäjän varmenteisiin.</translation>
 <translation id="2653275834716714682">Korvaava teksti</translation>
@@ -4038,6 +4039,7 @@ Tällaisia tietoja voivat olla esimerkiksi asennetut ohjelmistot, tiedostot, sel
 <translation id="4150201353443180367">Näyttö</translation>
 <translation id="4150569944729499860">Näyttökonteksti</translation>
 <translation id="4151449637210235443">Kerro meille äskeisen pelin pelattavuudesta</translation>
+<translation id="4151503145138736576">Ei tyhjennettävää offline-tallennustilaa</translation>
 <translation id="4152011295694446843">Näet kirjanmerkkisi täällä</translation>
 <translation id="4152670763139331043">{NUM_TABS,plural, =1{1 välilehti}other{# välilehteä}}</translation>
 <translation id="4154664944169082762">Tunnistetiedostot</translation>
@@ -4248,6 +4250,7 @@ Tällaisia tietoja voivat olla esimerkiksi asennetut ohjelmistot, tiedostot, sel
 <translation id="4341577178275615435">Voit laittaa näppäimistöselaamisen päälle tai pois päältä pikanäppäimellä F7</translation>
 <translation id="4341905082470253054">Tarkistetaan TPM:n tilaa…</translation>
 <translation id="434198521554309404">Nopea. Turvallinen. Vaivaton.</translation>
+<translation id="4342417854108207000">Laitteen tiedostojen tai kansioiden muokkaaminen sallittu</translation>
 <translation id="4343250402091037179">Etsi tiettyä sivustoa tai Chromen osaa kirjoittamalla sen pikakomento osoitepalkkiin ja painamalla valitsemaasi pikanäppäintä.</translation>
 <translation id="434404122609091467">Nykyisellä palvelullasi</translation>
 <translation id="4345457680916430965">&amp;Avaa täällä: <ph name="APP" /></translation>
@@ -5282,6 +5285,7 @@ Loitonna painamalla Ctrl + Alt + kirkkauden vähennys.</translation>
 <translation id="5197255632782567636">Internet</translation>
 <translation id="5198430103906431024">Lähetä käyttö- ja diagnostiikkadataa. Laite lähettää tällä hetkellä diagnostiikkadataa sekä laitteen ja sovellusten käyttödataa automaattisesti Googlelle. Datan avulla parannetaan esimerkiksi järjestelmän ja sovellusten vakautta. Kootusta datasta on hyötyä myös Googlen sovelluksille ja kumppaneille, kuten Android-kehittäjille. Jos olet laittanut päälle muun verkko- ja sovellustoiminnan asetuksen, tätä dataa voidaan tallentaa Google-tilillesi.</translation>
 <translation id="5199729219167945352">Kokeilut</translation>
+<translation id="5203035663139409780">Saa muokata laitteen tiedostoja tai kansioita</translation>
 <translation id="5203920255089865054">{NUM_EXTENSIONS,plural, =1{Klikkaa katsellaksesi laajennusta}other{Klikkaa katsellaksesi näitä laajennuksia}}</translation>
 <translation id="5204249655833504508">Grafiikkatabletti</translation>
 <translation id="5204673965307125349">Suorita powerwash ja yritä uudelleen.</translation>
@@ -6785,7 +6789,6 @@ Julkinen eksponentti (<ph name="PUBLIC_EXPONENT_NUM_BITS" /> bittiä):
 <translation id="6436778875248895551">Järjestelmänvalvojasi on estänyt laajennuksen "<ph name="EXTENSION_NAME" />"</translation>
 <translation id="6438234780621650381">Asetusten palauttaminen</translation>
 <translation id="6438475350605608554">Tuot jo salasanoja toisella välilehdellä</translation>
-<translation id="6438480100790416671">Tarkistetaan tallennustilaa…</translation>
 <translation id="6438992844451964465"><ph name="WINDOW_TITLE" /> – toistaa ääntä</translation>
 <translation id="6440291723980579689">Sivut latautuvat vasta, kun avaat ne</translation>
 <translation id="6441377161852435370">Lisää välilehti lukulistalle</translation>
@@ -8601,7 +8604,6 @@ Poista määritys painamalla määritettyä kytkintä tai näppäintä.</transla
 <translation id="7893008570150657497">käyttää kuvia, musiikkia ja muuta tietokoneesi mediaa</translation>
 <translation id="7893153962594818789"><ph name="DEVICE_TYPE" /> ei käytä Bluetoothia tällä hetkellä. Lisää salasana ja laita Bluetooth päälle.</translation>
 <translation id="7893393459573308604"><ph name="ENGINE_NAME" /> (Oletus)</translation>
-<translation id="7894382333736164977">Tarkistamme parhaillaan tallennustilaa. <ph name="ITEMS_FOUND" /> kohdetta löytyi.</translation>
 <translation id="7896292361319775586">Tallennetaanko <ph name="FILE" />?</translation>
 <translation id="789722939441020330">Älä salli sivustojen ladata automaattisesti useita tiedostoja</translation>
 <translation id="7897900149154324287">Muista seuraavilla kerroilla poistaa ulkoinen laitteesi käytöstä Tiedostot-sovelluksessa ennen kuin irrotat sen laitteesta. Muutoin voit menettää tietoja.</translation>

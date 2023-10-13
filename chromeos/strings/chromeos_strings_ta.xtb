@@ -195,6 +195,7 @@
 <translation id="2326139988748364651"><ph name="RESOLUTION_VALUE" /> dpi</translation>
 <translation id="2338501278241028356">அருகிலுள்ள சாதனங்களைக் கண்டறிய, புளூடூத்தை இயக்கவும்</translation>
 <translation id="2346474577291266260">மிக நன்றாக உள்ளது (<ph name="SIGNAL_STRENGTH" />)</translation>
+<translation id="2358070305000735383"><ph name="DESCRIPTION" /> ஐத் திருத்துவதற்கான உரையாடல் திறக்கப்பட்டுள்ளது.</translation>
 <translation id="2359808026110333948">தொடர்க</translation>
 <translation id="2364498172489649528">வெற்றி</translation>
 <translation id="2367335866686097760">கீ பட்டன் ஒதுக்கீடு</translation>
@@ -714,7 +715,6 @@
 <translation id="6423239382391657905">OpenVPN</translation>
 <translation id="6439505561246192797">மோசமாக உள்ளது (<ph name="SIGNAL_STRENGTH" />)</translation>
 <translation id="6447630859861661624">கணக்கு அமைப்புகளுக்குச் செல்லும்</translation>
-<translation id="6461047516875166066">மேலும் காட்டு</translation>
 <translation id="6463239094587744704">{PAGE_NUMBER,plural, =0{பக்கத்தை மீண்டும் ஸ்கேன் செய்யவா?}=1{{PAGE_NUMBER}வது பக்கத்தை மீண்டும் ஸ்கேன் செய்யவா?}other{{PAGE_NUMBER}வது பக்கத்தை மீண்டும் ஸ்கேன் செய்யவா?}}</translation>
 <translation id="6472207088655375767">OTP</translation>
 <translation id="6480327114083866287"><ph name="MANAGER" /> நிர்வகிக்கிறது</translation>
@@ -1025,6 +1025,7 @@
 <translation id="8868741746785112895">GUID</translation>
 <translation id="8876270629542503161">சாதனம் ஒரு டேப்லெட்.</translation>
 <translation id="8881098542468797602">சோதனை நிறைவடைந்தது</translation>
+<translation id="8892443466059986410">ஷார்ட்கட்டைத் திருத்துவதை ரத்துசெய்யும்</translation>
 <translation id="8898840733695078011">சிக்னலின் வலிமை</translation>
 <translation id="8909114361904403025">மேல்நோக்கிய அம்புக்குறி ஐகான்</translation>
 <translation id="8910721771319628100">இயல்புநிலை நெட்வொர்க்கில் ஏற்படும் தாமதம் வரம்பை மீறி உள்ளது</translation>

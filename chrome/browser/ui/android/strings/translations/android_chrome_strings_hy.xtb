@@ -363,6 +363,7 @@
 <translation id="2961208450284224863">{READING_LIST_UNREAD_PAGE_COUNT,plural, =1{<ph name="READING_LIST_UNREAD_PAGE_COUNT_ONE" /> չկարդացված էջ}one{<ph name="READING_LIST_UNREAD_PAGE_COUNT_MANY" /> չկարդացված էջ}other{<ph name="READING_LIST_UNREAD_PAGE_COUNT_MANY" /> չկարդացված էջ}}</translation>
 <translation id="2961210776189273067">Դիմելաձև</translation>
 <translation id="296370266220139811">Քիչ մուտքագրելով՝ ժամանակ խնայեք</translation>
+<translation id="2977350910003566746">Տեսակավորում ըստ վերջին բացվածի</translation>
 <translation id="297771753501244313">Ըստ օգտագործման ամսաթվի</translation>
 <translation id="2979025552038692506">Ընտրված ինկոգնիտո ներդիր</translation>
 <translation id="2979639724566107830">Բացել նոր պատուհանում</translation>
@@ -403,6 +404,7 @@
 <translation id="3123734510202723619">Հայտարարություններ</translation>
 <translation id="3134784203083076891">»</translation>
 <translation id="314939179385989105">Chrome-ի գլխավոր էջ</translation>
+<translation id="3158667104057012316">Ձեռքով տեսակավորում</translation>
 <translation id="3166827708714933426">Ներդիրների և պատուհանների դյուրանցումներ</translation>
 <translation id="316694332262407393">Chrome-ն արդեն գործարկված է։</translation>
 <translation id="3167258285411721858">Դուք կարող եք <ph name="HOST_NAME" /> կայքի բջջային տարբերակը խնդրել</translation>
@@ -530,7 +532,9 @@
 <translation id="3892148308691398805">Պատճենել տեքստը</translation>
 <translation id="3894427358181296146">Պանակի ավելացում</translation>
 <translation id="3899682235662194879">Փակել բոլոր ինկոգնիտո ներդիրները</translation>
+<translation id="3902562446536395999">Ա-ից Ֆ տեսակավորում</translation>
 <translation id="3908308510347173149">Թարմացնել <ph name="PRODUCT_NAME" /> հավելվածը</translation>
+<translation id="3911609878849982353">Ֆ-ից Ա տեսակավորում</translation>
 <translation id="3924911262913579434"><ph name="SAFE_BROWSING_MODE" />ը միացված է</translation>
 <translation id="3927692899758076493">Sans Serif</translation>
 <translation id="3928666092801078803">Իմ տվյալների միավորում</translation>
@@ -566,6 +570,7 @@
 <translation id="4084682180776658562">Էջանիշ</translation>
 <translation id="4084712963632273211">Բովանդակությունը՝ <ph name="PUBLISHER_ORIGIN" /> կայքից։ <ph name="BEGIN_DEEMPHASIZED" />Մատուցվում է Google-ի կողմից<ph name="END_DEEMPHASIZED" /></translation>
 <translation id="409109920254068737">Դուք կարող եք օգտագործել այս պլանշետը՝ հաշիվ մուտք գործելու սարքում, որում ցուցադրված է այս QR կոդը։</translation>
+<translation id="4092709865241032354">Ավելացրեք ձեր օգտանունն այս կայքի համար, որպեսզի Google գաղտնաբառերի կառավարիչը կարողանա պահել ձեր մուտքի տվյալները</translation>
 <translation id="4095146165863963773">Ջնջե՞լ հավելվածների տվյալները:</translation>
 <translation id="4095425503313512126">Դիտարկիչի և որոնման աշխատանքն ավելի արագ է</translation>
 <translation id="4096227151372679484">Էջանիշի պահման էջը բացված է կիսով չափ</translation>
@@ -943,6 +948,7 @@
 <translation id="6000203700195075278">Նորից բաժանորդագրվել</translation>
 <translation id="6002122790816966947">Ձեր սարքերը</translation>
 <translation id="6011308810877101166">Բարելավել որոնման առաջարկները</translation>
+<translation id="6013305291643746595">Սկզբում հները</translation>
 <translation id="6026538407078977628">Ցուցադրել լիաէկրան ռեժիմում</translation>
 <translation id="6030719887161080597">Կառավարեք կայքերի կողմից օգտագործվող տեղեկությունները՝ գովազդի արդյունավետությունը գնահատելու համար</translation>
 <translation id="6039379616847168523">Անցնել հաջորդ ներդիր</translation>
@@ -1389,6 +1395,7 @@
 <translation id="8110024788458304985">Օգնել բարելավել Chrome-ի գործառույթներն ու աշխատանքը</translation>
 <translation id="8110087112193408731">Ցուցադրե՞լ Chrome-ի պատմությունը Թվային բարեկեցության մեջ</translation>
 <translation id="8118117428362942925">Եթե օգնության կարիք ունենաս, դիմիր ծնողիդ (<ph name="PARENT_NAME" />)</translation>
+<translation id="8122623268651408616">Սկզբում նորերը</translation>
 <translation id="8127542551745560481">Փոփոխել գլխավոր էջը</translation>
 <translation id="8130309322784422030">Հնարավոր է՝ մուտքի պահված տվյալները հնացել են</translation>
 <translation id="813082847718468539">Դիտել կայքի տեղեկությունները</translation>

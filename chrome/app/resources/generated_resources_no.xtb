@@ -706,7 +706,6 @@ Tillatelser du allerede har gitt apper, kan gjelde for denne kontoen. Du kan sty
 <translation id="1558391695376153246">Lukk inkognitofaner</translation>
 <translation id="155865706765934889">Styreflate</translation>
 <translation id="1558671750917454373">Fortsett å caste til <ph name="DEVICE_NAME" /></translation>
-<translation id="1561329796773556980">Vi sjekker lagringsplassen …</translation>
 <translation id="1562119309884184621">Hvis du legger til denne kontakten, blir den husket neste gang vedkommende deler</translation>
 <translation id="1563137369682381456">Utløpsdato</translation>
 <translation id="1563702743503072935">Passordene fra Google-kontoen din blir også tilgjengelige på denne enheten mens du er pålogget</translation>
@@ -2100,6 +2099,7 @@ Du kan administrere innstillingene for denne kontoen ved å installere Family Li
 <translation id="2609980095400624569">Kunne ikke koble til</translation>
 <translation id="2610157865375787051">Hvilemodus</translation>
 <translation id="2610260699262139870">Fa&amp;ktisk størrelse</translation>
+<translation id="2610374175948698697">Kan se filer og mapper på enheten</translation>
 <translation id="2610780100389066815">Signering med Microsoft-klareringsliste</translation>
 <translation id="261114180663074524">Logg på Microsoft-kontoen, og prøv igjen</translation>
 <translation id="2611776654555141051">Rektangelverktøy</translation>
@@ -2147,6 +2147,7 @@ Du kan administrere innstillingene for denne kontoen ved å installere Family Li
 <translation id="264897126871533291">Protanomali</translation>
 <translation id="2649045351178520408">Base64-kodet ASCII, sertifikatkjede</translation>
 <translation id="265156376773362237">Standard forhåndslasting</translation>
+<translation id="2652071759203138150">{COUNT,plural, =1{{COUNT} passord er bare lagret på denne enheten. For å bruke det på andre enheter, <ph name="BEGIN_LINK" />lagre det i Google-kontoen din<ph name="END_LINK" />.}other{{COUNT} passord er bare lagret på denne enheten. For å bruke dem på andre enheter, <ph name="BEGIN_LINK" />lagre dem i Google-kontoen din<ph name="END_LINK" />.}}</translation>
 <translation id="2652129567809778422">Velg passord</translation>
 <translation id="2653266418988778031">Hvis du sletter et CA-sertifikat (sertifiseringsinstans), vil nettleseren ikke lenger stole på noen sertifikater som er utstedt av denne sertifiseringsinstansen.</translation>
 <translation id="2653275834716714682">Utskifting av tekst</translation>
@@ -4035,6 +4036,7 @@ Dette kan omfatte informasjon om installert programvare, filer, nettleseren og e
 <translation id="4150201353443180367">Skjerm</translation>
 <translation id="4150569944729499860">Skjermkontekst</translation>
 <translation id="4151449637210235443">Fortell oss hva du synes om gameplayet i spillet du nettopp spilte</translation>
+<translation id="4151503145138736576">Ingen lagring uten nett som kan ryddes opp</translation>
 <translation id="4152011295694446843">Her finner du bokmerkene dine</translation>
 <translation id="4152670763139331043">{NUM_TABS,plural, =1{1 fane}other{# faner}}</translation>
 <translation id="4154664944169082762">Fingeravtrykk</translation>
@@ -4245,6 +4247,7 @@ Dette kan omfatte informasjon om installert programvare, filer, nettleseren og e
 <translation id="4341577178275615435">For å slå markørsurfing på eller av, bruk hurtigtasten F7</translation>
 <translation id="4341905082470253054">Kontrollerer TPM-status …</translation>
 <translation id="434198521554309404">Rask. Sikker. Enkel.</translation>
+<translation id="4342417854108207000">Nettsteder som har lov til å redigere filer og mapper på enheten</translation>
 <translation id="4343250402091037179">For å søke på et spesifikt nettsted eller i en spesifikk del av Chrome, skriv inn den tilhørende snarveien i adressefeltet, etterfulgt av hurtigtasten du foretrekker.</translation>
 <translation id="434404122609091467">Med den nåværende tjenesteleverandøren din</translation>
 <translation id="4345457680916430965">&amp;Åpne i <ph name="APP" /></translation>
@@ -5278,6 +5281,7 @@ Bruk Ctrl + Alt + lysstyrke ned for å zoome ut.</translation>
 <translation id="5197255632782567636">Internett</translation>
 <translation id="5198430103906431024">Send bruks- og diagnostikkdata. Denne enheten sender for øyeblikket diagnostikk-, enhets- og appbruksdata til Google automatisk. Dette bidrar til å gjøre systemet og appene bedre og mer stabile. Noen aggregerte data hjelper også Google-apper og -partnere, for eksempel Android-utviklere. Hvis du har slått på innstillingen for annen nett- og appaktivitet, kan disse dataene bli lagret i Google-kontoen din.</translation>
 <translation id="5199729219167945352">Eksperimenter</translation>
+<translation id="5203035663139409780">Kan redigere filer og mapper på enheten</translation>
 <translation id="5203920255089865054">{NUM_EXTENSIONS,plural, =1{Klikk for å se utvidelsen}other{Klikk for å se disse utvidelsene}}</translation>
 <translation id="5204249655833504508">Tegnebrett</translation>
 <translation id="5204673965307125349">Utfør Powerwash på enheten, og prøv på nytt.</translation>
@@ -6780,7 +6784,6 @@ Tillatelser du allerede har gitt nettsteder og apper, kan gjelde for denne konto
 <translation id="6436778875248895551">Administratoren din har blokkert utvidelsen «<ph name="EXTENSION_NAME" />»</translation>
 <translation id="6438234780621650381">Tilbakestill innstillingene</translation>
 <translation id="6438475350605608554">Du importerer allerede passord på en annen fane</translation>
-<translation id="6438480100790416671">Kontrollerer lagringsplass …</translation>
 <translation id="6438992844451964465"><ph name="WINDOW_TITLE" /> – lyd spilles av</translation>
 <translation id="6440291723980579689">Sider lastes bare inn etter at du har åpnet dem</translation>
 <translation id="6441377161852435370">Legg fanen til på leselisten</translation>
@@ -8597,7 +8600,6 @@ Trykk på en tilordnet bryter eller tast for å fjerne tilordningen.</translatio
 <translation id="7893008570150657497">Åpne bilder, musikk og andre mediefiler fra datamaskinen din</translation>
 <translation id="7893153962594818789">Bluetooth er slått av på denne <ph name="DEVICE_TYPE" />-enheten. Skriv inn passordet ditt, og slå på Bluetooth.</translation>
 <translation id="7893393459573308604"><ph name="ENGINE_NAME" /> (Standard)</translation>
-<translation id="7894382333736164977">Vi sjekker lagringsplassen. Vi har funnet <ph name="ITEMS_FOUND" /> elementer.</translation>
 <translation id="7896292361319775586">Vil du lagre <ph name="FILE" />?</translation>
 <translation id="789722939441020330">Ikke la nettsteder laste ned flere filer automatisk</translation>
 <translation id="7897900149154324287">I fremtiden må du sørge for å løse ut den flyttbare enheten i Filer-appen, før du kobler den fra. Ellers kan du miste data.</translation>

@@ -195,6 +195,7 @@
 <translation id="2326139988748364651"><ph name="RESOLUTION_VALUE" /> ppp</translation>
 <translation id="2338501278241028356">Activa el Bluetooth per detectar dispositius propers</translation>
 <translation id="2346474577291266260">Excel·lent (<ph name="SIGNAL_STRENGTH" />)</translation>
+<translation id="2358070305000735383">El quadre de diàleg d'edició per a <ph name="DESCRIPTION" /> està obert.</translation>
 <translation id="2359808026110333948">Continua</translation>
 <translation id="2364498172489649528">Comprovació superada</translation>
 <translation id="2367335866686097760">Clau del mapatge de teclat</translation>
@@ -714,7 +715,6 @@
 <translation id="6423239382391657905">OpenVPN</translation>
 <translation id="6439505561246192797">Feble (<ph name="SIGNAL_STRENGTH" />)</translation>
 <translation id="6447630859861661624">Ves a la configuració del compte</translation>
-<translation id="6461047516875166066">Dona'm més detalls</translation>
 <translation id="6463239094587744704">{PAGE_NUMBER,plural, =0{Vols tornar a escanejar la pàgina?}=1{Vols tornar a escanejar la pàgina {PAGE_NUMBER}?}other{Vols tornar a escanejar les pàgines {PAGE_NUMBER}?}}</translation>
 <translation id="6472207088655375767">OTP</translation>
 <translation id="6480327114083866287">Gestionat per <ph name="MANAGER" /></translation>
@@ -1025,6 +1025,7 @@
 <translation id="8868741746785112895">GUID</translation>
 <translation id="8876270629542503161">El dispositiu és una tauleta.</translation>
 <translation id="8881098542468797602">La prova s'ha superat</translation>
+<translation id="8892443466059986410">Cancel·la l'edició de la drecera</translation>
 <translation id="8898840733695078011">Intensitat del senyal</translation>
 <translation id="8909114361904403025">fletxa amunt</translation>
 <translation id="8910721771319628100">La xarxa predeterminada supera el llindar de latència</translation>

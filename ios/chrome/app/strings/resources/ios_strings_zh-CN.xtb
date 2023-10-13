@@ -333,7 +333,6 @@
 <translation id="2718352093833049315">仅限使用 Wi-Fi 时</translation>
 <translation id="2738375676495545665">隐藏“新变化”</translation>
 <translation id="2747003861858887689">上一个字段</translation>
-<translation id="2749026027885331579">现在，您的家庭成员可在使用 Google 密码管理工具登录 <ph name="WEBSITE" /> 时使用您的用户名和密码。<ph name="BEGIN_LINK" />了解详情<ph name="END_LINK" /></translation>
 <translation id="2749231692441336879">已关注“<ph name="CHANNEL_NAME" />”</translation>
 <translation id="2754492786623500387">此设备上的账号</translation>
 <translation id="2762000892062317888">刚刚</translation>
@@ -574,7 +573,6 @@
 <translation id="4018310736049373830">管理我的活动记录</translation>
 <translation id="4038354071007134711">此设备上没有可以打开该文件的应用。</translation>
 <translation id="4042870976416480368">在网页中查找</translation>
-<translation id="4043294777772912240">现在，<ph name="USERNAME" />可在使用 Google 密码管理工具登录 <ph name="WEBSITE" /> 时使用您的用户名和密码。<ph name="BEGIN_LINK" />了解详情<ph name="END_LINK" /></translation>
 <translation id="40433179647657191">为您突出显示的部分网页内容创建直接链接并分享。</translation>
 <translation id="4045648459118332842">在任意应用中点按一下即可获取您已保存的密码</translation>
 <translation id="4049507953662678203">请确保已连接到网络，然后重试。</translation>
@@ -711,6 +709,7 @@
 <translation id="4808744395915275922">更新</translation>
 <translation id="4818522717893377262">添加语言…</translation>
 <translation id="481968316161811770">Cookie 和网站数据</translation>
+<translation id="4824480232751123840">体积</translation>
 <translation id="4824497107140370669">{count,plural, =0{{domain}}=1{{domain} 以及另外 1 个}other{{domain} 以及另外 {count} 个}}</translation>
 <translation id="4826218269716039351">阻止第三方 Cookie</translation>
 <translation id="4826588772550366629">摄像头和麦克风</translation>
@@ -848,6 +847,7 @@
 <translation id="5556459405103347317">重新加载</translation>
 <translation id="555749644339804659">正在检查密码…</translation>
 <translation id="556042886152191864">按钮</translation>
+<translation id="5572684875078967866">信息存储空间</translation>
 <translation id="5597915316964418992">打开标签页网格</translation>
 <translation id="560322036295180549">已被贵组织关闭</translation>
 <translation id="5614553682702429503">要保存密码吗？</translation>
@@ -909,6 +909,7 @@
 <translation id="5896576662943111387">专为 iOS 打造</translation>
 <translation id="5897749768294722429">如果想快速重新访问浏览过的网站，请同步您的标签页和历史记录。</translation>
 <translation id="5897956970858271241">访问复制的链接</translation>
+<translation id="5898848375214731122">质量</translation>
 <translation id="5899314093904173337">若要与附近的人分享，请让他们用相机或二维码扫描器应用扫描此二维码</translation>
 <translation id="5911030830365207728">Google 翻译</translation>
 <translation id="5913600720976431809">网页翻译选项</translation>
@@ -926,6 +927,7 @@
 <translation id="5981230843984570095">关闭所有闲置标签页</translation>
 <translation id="5982717868370722439">将现有数据添加到 <ph name="USER_EMAIL" />。</translation>
 <translation id="5984222099446776634">最近访问过的内容</translation>
+<translation id="598634819525651074">面积</translation>
 <translation id="5988097621740394599">查看您打开的标签页上的降价商品。</translation>
 <translation id="5988851877894965432">在 Chrome 中打开网址</translation>
 <translation id="6006672969046233841">打开新的标签页</translation>
@@ -1360,6 +1362,7 @@
 <translation id="8156478151976189188">无法同步密码</translation>
 <translation id="8157532349231307196"><ph name="NUMBER_OF_ACCOUNTS" /> 个账号</translation>
 <translation id="8159358225423560600">刚刚</translation>
+<translation id="8173034266693057059">长度</translation>
 <translation id="8179976553408161302">Enter</translation>
 <translation id="8182037667962849780">{count,plural, =1{对于 {website_1}}=2{对于 {website_1}、{website_2}}=3{对于 {website_1}、{website_2} 和另外 1 个}other{对于 {website_1}、{website_2} 个另外 {more_count} 个}}</translation>
 <translation id="8193953846147532858"><ph name="BEGIN_LINK" />您的设备<ph name="END_LINK" /> · <ph name="EMAIL" /></translation>
@@ -1452,6 +1455,7 @@
 <translation id="8692689525339542358">保护您免受危险的网站、下载内容和扩展程序的侵害。</translation>
 <translation id="8693663554456874301">{count,plural, =1{关闭这个标签页}other{关闭这些标签页}}</translation>
 <translation id="8703536910991780768">您的密码看似安全系数较高</translation>
+<translation id="8706253136355675497">温度</translation>
 <translation id="8717864919010420084">复制链接</translation>
 <translation id="8721297211384281569">工具菜单</translation>
 <translation id="8725066075913043281">重试</translation>
@@ -1557,6 +1561,7 @@
 <translation id="9188680907066685419">退出受管理的账号</translation>
 <translation id="9200875785104711666"><ph name="TIME" /> 天前</translation>
 <translation id="9203116392574189331">Handoff</translation>
+<translation id="9206887540681440657">速度</translation>
 <translation id="9219154867334666734">搜索标签页…</translation>
 <translation id="9223358826628549784">已发送崩溃报告。</translation>
 <translation id="941747855997058526">选择密码…</translation>

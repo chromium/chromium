@@ -707,7 +707,6 @@
 <translation id="1558391695376153246">ማንነት የማያሳውቁ ትሮችን ዝጋ</translation>
 <translation id="155865706765934889">ተችፓድ</translation>
 <translation id="1558671750917454373">ወደ <ph name="DEVICE_NAME" /> cast ማድረግ ከቆመበት ቀጥል</translation>
-<translation id="1561329796773556980">የማከማቻ ቦታ በመፈተሽ ሂደት ላይ ነን…</translation>
 <translation id="1562119309884184621">እኚህን እውቂያ ማከል በሚያጋሩበት ቀጣዩ ጊዜ ላይ እርስዎን ያስታውሳል</translation>
 <translation id="1563137369682381456">ጊዜው የሚያበቃበት ቀን</translation>
 <translation id="1563702743503072935">በመለያ ገብተው ሳለ ከGoogle መለያዎ የመጡ ይለፍ ቃላት እንዲሁም በዚህ መሣሪያ ላይም ይገኛሉ</translation>
@@ -2099,6 +2098,7 @@
 <translation id="2609980095400624569">ግንኙነት መፍጠር አልተቻለም</translation>
 <translation id="2610157865375787051">አንቀላፋ</translation>
 <translation id="2610260699262139870">&amp;ትክክለኛ መጠን</translation>
+<translation id="2610374175948698697">በመሣሪያዎ ላይ ፋይሎችን ወይም አቃፊዎችን መመልከት ይቻላል</translation>
 <translation id="2610780100389066815">Microsoft Trust List Signing</translation>
 <translation id="261114180663074524">በMicrosoft መለያዎ ይግቡ እና በመቀጠል እንደገና ይሞክሩ</translation>
 <translation id="2611776654555141051">የአራት ማዕዘን መሣሪያ</translation>
@@ -2146,6 +2146,7 @@
 <translation id="264897126871533291">ፕሮታኖማሊ</translation>
 <translation id="2649045351178520408">Base64-encoded ASCII፣ የሰርቲፊኬት ሰንሰለት</translation>
 <translation id="265156376773362237">መደበኛ ቅድሚያ መጫን</translation>
+<translation id="2652071759203138150">{COUNT,plural, =1{{COUNT} የይለፍ ቃል ብቻ በዚሀ መሣሪያ ላይ ተቀምጧል። በሌሎች መሣሪያዎችዎ ላይ እሱን ለመጠቀም <ph name="BEGIN_LINK" />ወደ Google መለያዎ ያስቀምጡት<ph name="END_LINK" />።}one{{COUNT} የይለፍ ቃል ብቻ በዚሀ መሣሪያ ላይ ተቀምጧል። በሌሎች መሣሪያዎችዎ ላይ እሱን ለመጠቀም <ph name="BEGIN_LINK" />ወደ Google መለያዎ ያስቀምጡት<ph name="END_LINK" />።}other{{COUNT} የይለፍ ቃላት ብቻ በዚሀ መሣሪያ ላይ ተቀምጠዋል። በሌሎች መሣሪያዎችዎ ላይ እነሱን ለመጠቀም <ph name="BEGIN_LINK" />ወደ Google መለያዎ ያስቀምጧቸው<ph name="END_LINK" />።}}</translation>
 <translation id="2652129567809778422">የይለፍ ቃል ይምረጡ</translation>
 <translation id="2653266418988778031">የአንድ እውቅና ማረጋገጫ ስልጣን (CA) የሆነ የእውቅና ማረጋገጫ ከሰረዙ አሳሽዎ ከአሁን በኋላ በዛ CA የተሰጡ የእውቅና ማረጋገጫዎችን አያምንም።</translation>
 <translation id="2653275834716714682">የጽሑፍ ምትክ</translation>
@@ -4034,6 +4035,7 @@
 <translation id="4150201353443180367">ማሳያ</translation>
 <translation id="4150569944729499860">የማያ ገፅ አውድ</translation>
 <translation id="4151449637210235443">ስለ ቅርብ ጊዜ የጨዋታ ዘዴዎ ይንገሩን</translation>
+<translation id="4151503145138736576">ለማጽዳት ምንም ከመስመር ውጭ የሆነ ማከማቻ የለም</translation>
 <translation id="4152011295694446843">የእርስዎን እልባቶች እዚህ ያገኛሉ</translation>
 <translation id="4152670763139331043">{NUM_TABS,plural, =1{1 ትር}one{# ትሮች}other{# ትሮች}}</translation>
 <translation id="4154664944169082762">የጣት አሻራዎች</translation>
@@ -4244,6 +4246,7 @@
 <translation id="4341577178275615435">የጽሑፍ ጠቋሚ አሰሳን ለማብራት ወይም ለማጥፋት የF7 አቋራጭን ይጠቀሙ</translation>
 <translation id="4341905082470253054">የTPM ሁኔታን በመፈተሽ ላይ...</translation>
 <translation id="434198521554309404">ፈጣን። ደህንነቱ የተጠበቀ ነው። ጥረት የማይጠይቅ</translation>
+<translation id="4342417854108207000">በመሣሪያዎ ላይ ፋይሎችን ወይም አቃፊዎችን ማርትዕ ተፈቅዷል</translation>
 <translation id="4343250402091037179">አንድን የተወሰነ ጣቢያ ወይም የChrome ክፍል ለመፈለግ የእርስዎን ተመራጭ የቁልፍ ሰሌዳ አቋራጭን በማስከተል በአድራሻ አሞሌው ውስጥ አቋራጩን ይተይቡ።</translation>
 <translation id="434404122609091467">ከአሁኑ አገልግሎት አቅራቢዎ ጋር</translation>
 <translation id="4345457680916430965">በ<ph name="APP" /> ውስጥ ይክፈቱ</translation>
@@ -5277,6 +5280,7 @@
 <translation id="5197255632782567636">በይነመረብ</translation>
 <translation id="5198430103906431024">የአጠቃቀም እና የምርመራ ውሂብ ይላኩ። ይህ መሣሪያ በአሁኑ ጊዜ በራስ-ሰር የምርመራ፣ የመሣሪያ እና የመተግበሪያ አጠቃቀም ውሂብ ወደ Google እየላከ ነው። ይህ የሥርዓት እና የመተግበሪያ እርጋታን እና ሌሎች ማሻሻያዎችን ያግዛል። አንዳንድ ውሑድ ውሂብ እንዲሁም የGoogle መተግበሪያዎችን እና እንደ የAndroid ገንቢዎች ያሉ አጋሮችን ያግዛሉ። የእርስዎ የተጨማሪ ድር እና መተግበሪያ እንቅስቃሴ ቅንብር በርቶ ከሆነ ይህ ውሂብ በGoogle መለያዎ ላይ ሊቀመጥ ይችላል።</translation>
 <translation id="5199729219167945352">ሙከራዎች</translation>
+<translation id="5203035663139409780">በመሣሪያዎ ላይ ፋይሎች ወይም አቃፊዎችን ማርትዕ ይቻላል</translation>
 <translation id="5203920255089865054">{NUM_EXTENSIONS,plural, =1{ቅጥያውን ለመመልከት ጠቅ ያድርጉ}one{እነዚህን ቅጥያዎች ለመመልከት ጠቅ ያድርጉ}other{እነዚህን ቅጥያዎች ለመመልከት ጠቅ ያድርጉ}}</translation>
 <translation id="5204249655833504508">ግራፊክስ ጡባዊ</translation>
 <translation id="5204673965307125349">እባክዎ መሣሪያን ፓወርዋሽ ያድርጉትና እንደገና ይሞክሩ።</translation>
@@ -6780,7 +6784,6 @@
 <translation id="6436778875248895551">«<ph name="EXTENSION_NAME" />» ቅጥያ በአስተዳዳሪዎ ታግዷል</translation>
 <translation id="6438234780621650381">ቅንብሮችን ዳግም አስጀምር</translation>
 <translation id="6438475350605608554">አስቀድመው የይለፍ ቃላትዎን በሌላ ትር ውስጥ እያስመጡ ነው</translation>
-<translation id="6438480100790416671">የማከማቻ ቦታን በመፈተሽ ላይ…</translation>
 <translation id="6438992844451964465"><ph name="WINDOW_TITLE" /> - ኦዲዮ በመጫወት ላይ ነው</translation>
 <translation id="6440291723980579689">ገፆች የሚጫኑት እርስዎ ከከፈቷቸው በኋላ ብቻ ነው</translation>
 <translation id="6441377161852435370">ትርን ወደ የንባብ ዝርዝር ያክሉ</translation>
@@ -8599,7 +8602,6 @@
 <translation id="7893008570150657497">የኮምፒውተርዎን ፎቶዎች፣ ሙዚቃ እና ሌላ ማህደረ  መረጃ  ይደርሳል</translation>
 <translation id="7893153962594818789">በዚህ <ph name="DEVICE_TYPE" /> ላይ ብሉቱዝ ጠፍቷል። የእርስዎን የይለፍ ቃል ያስገቡ እና ብሉቱዝን ያብሩ።</translation>
 <translation id="7893393459573308604"><ph name="ENGINE_NAME" /> (ነባሪ)</translation>
-<translation id="7894382333736164977">የማከማቻ ቦታ በመፈተሽ ሂደት ላይ ነን። <ph name="ITEMS_FOUND" /> ንጥሎች ተገኝተዋል።</translation>
 <translation id="7896292361319775586"><ph name="FILE" /> ይቀመጥ?</translation>
 <translation id="789722939441020330">ጣቢያዎች ብዙ ፋይሎችን በራስ-ሰር እንዲያወርዱ አይፍቀዱ</translation>
 <translation id="7897900149154324287">ለወደፊቱ የሚነቀል መሳሪያዎን ከመንቀልዎ በፊት በፋይሎች መተግበሪያው ውስጥ ማላቀቅዎን እርግጠኛ ይኑ። ያለበለዚያ የተወሰነ ውሂብ ሊጠፋብዎ ይችላል።</translation>

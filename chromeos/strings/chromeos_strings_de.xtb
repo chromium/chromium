@@ -194,6 +194,7 @@
 <translation id="2326139988748364651"><ph name="RESOLUTION_VALUE" /> dpi</translation>
 <translation id="2338501278241028356">Aktiviere Bluetooth, damit Geräte in der Nähe gefunden werden</translation>
 <translation id="2346474577291266260">Sehr gut (<ph name="SIGNAL_STRENGTH" />)</translation>
+<translation id="2358070305000735383">Dialogfeld „Bearbeiten“ für <ph name="DESCRIPTION" /> ist geöffnet.</translation>
 <translation id="2359808026110333948">Weiter</translation>
 <translation id="2364498172489649528">Bestanden</translation>
 <translation id="2367335866686097760">Tastenbelegung der Taste</translation>
@@ -711,7 +712,6 @@
 <translation id="6423239382391657905">OpenVPN</translation>
 <translation id="6439505561246192797">Schwach (<ph name="SIGNAL_STRENGTH" />)</translation>
 <translation id="6447630859861661624">Kontoeinstellungen aufrufen</translation>
-<translation id="6461047516875166066">Weitere Informationen</translation>
 <translation id="6463239094587744704">{PAGE_NUMBER,plural, =0{Seite neu scannen?}=1{Seite {PAGE_NUMBER} neu scannen?}other{Seite {PAGE_NUMBER} neu scannen?}}</translation>
 <translation id="6472207088655375767">OTP</translation>
 <translation id="6480327114083866287">Verwaltet von <ph name="MANAGER" /></translation>
@@ -1022,6 +1022,7 @@
 <translation id="8868741746785112895">GUID</translation>
 <translation id="8876270629542503161">Das Gerät ist ein Tablet.</translation>
 <translation id="8881098542468797602">Test abgeschlossen</translation>
+<translation id="8892443466059986410">Bearbeiten der Verknüpfung abbrechen</translation>
 <translation id="8898840733695078011">Signalstärke</translation>
 <translation id="8909114361904403025">Aufwärtspfeil</translation>
 <translation id="8910721771319628100">Das Standardnetzwerk hat den Latenzgrenzwert überschritten</translation>

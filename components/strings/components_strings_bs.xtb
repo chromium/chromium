@@ -466,7 +466,7 @@ To će u suprotnom biti blokirano prema vašim postavkama privatnosti. Ovo će o
 <translation id="1875512691959384712">Google Forms</translation>
 <translation id="1876399092304384674">Po datumu</translation>
 <translation id="187918866476621466">Otvorite stranice za pokretanje</translation>
-<translation id="1880901968112404879">Da biste sljedeći put platili brže, spremite karticu, šifrirani sigurnosni kôd i adresu za naplatu na Google račun</translation>
+<translation id="1880901968112404879">Da sljedeći put platite brže, sačuvajte karticu, šifrirani sigurnosni kôd i adresu za naplatu na Google račun</translation>
 <translation id="1883255238294161206">Suzi spisak</translation>
 <translation id="1884843295353628214">Jazz</translation>
 <translation id="1890171020361705182">Igra s dinosaurom. Pikselizirani dinosaur izbjegava kaktuse i pterodaktile dok trči pustim krajolicima. Kada čujete zvučni signal, dodirnite da preskačete prepreke.</translation>
@@ -3359,7 +3359,7 @@ Dodatni detalji:
 <translation id="7802989406998618639">Unesite <ph name="NUMBER_OF_DIGITS" />-cifreni sigurnosni kôd na <ph name="SIDE_OF_CARD" /> da banka može potvrditi da ste to zaista vi</translation>
 <translation id="780301667611848630">Ne, hvala</translation>
 <translation id="7805768142964895445">Status</translation>
-<translation id="7810410097247356677">Da biste sljedeći put platili brže, spremite karticu i šifrirani sigurnosni kôd na uređaj</translation>
+<translation id="7810410097247356677">Da sljedeći put platite brže, sačuvajte karticu i šifrirani sigurnosni kôd na uređaj</translation>
 <translation id="7812922009395017822">Mir</translation>
 <translation id="7813600968533626083">Ukloniti prijedlog obrasca iz Chromea?</translation>
 <translation id="781440967107097262">Dijeliti međumemoriju?</translation>
@@ -3380,7 +3380,6 @@ Dodatni detalji:
 <translation id="7865448901209910068">Najbolja brzina</translation>
 <translation id="7870281855125116701">Pronađen je popust</translation>
 <translation id="7871445724586827387">Promijenite lozinku za Google račun</translation>
-<translation id="7876615279559620350">Radi bržeg nastavka na plaćanje sačuvajte CVC za karticu na Google račun</translation>
 <translation id="7877007680666472091">ID-ovi zaštićenog sadržaja</translation>
 <translation id="7878562273885520351">Moguće je da je vaša lozinka ugrožena</translation>
 <translation id="7880146494886811634">Sačuvajte adresu</translation>
@@ -3605,7 +3604,6 @@ Dodatni detalji:
 <translation id="8308653357438598313">Prijenos videozapisa uživo</translation>
 <translation id="8311895354659782580">Oglasi za nekretnine</translation>
 <translation id="8316555157357957253">Koristi se sada</translation>
-<translation id="8317570861267063617">Radi bržeg nastavka na plaćanje sačuvajte CVC za karticu na uređaj</translation>
 <translation id="8319269383395457801">Prodaja stanova</translation>
 <translation id="831997045666694187">Večer</translation>
 <translation id="8321476692217554900">obavještenja</translation>

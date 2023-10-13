@@ -335,7 +335,6 @@ Jou soekenjin is <ph name="DSE_NAME" />. Sien hul instruksies om jou soekgeskied
 <translation id="2718352093833049315">Net met Wi-Fi</translation>
 <translation id="2738375676495545665">Versteek wat nuut is</translation>
 <translation id="2747003861858887689">Vorige veld</translation>
-<translation id="2749026027885331579">Jou gesinslede kan nou jou gebruikersnaam en wagwoord gebruik wanneer hulle Google Wagwoordbestuurder gebruik om by <ph name="WEBSITE" /> aan te meld. <ph name="BEGIN_LINK" />Kom meer te wete<ph name="END_LINK" /></translation>
 <translation id="2749231692441336879">Volg <ph name="CHANNEL_NAME" /> tans</translation>
 <translation id="2754492786623500387">Rekeninge op hierdie toestel</translation>
 <translation id="2762000892062317888">sopas</translation>
@@ -576,7 +575,6 @@ Sien jou soekenjin se instruksies om jou soekgeskiedenis uit te vee, indien nodi
 <translation id="4018310736049373830">Bestuur aktiwiteit</translation>
 <translation id="4038354071007134711">Geen program op hierdie toestel kan die lêer oopmaak nie.</translation>
 <translation id="4042870976416480368">Soek in bladsy</translation>
-<translation id="4043294777772912240"><ph name="USERNAME" /> kan nou jou gebruikersnaam en wagwoord gebruik wanneer hulle Google Wagwoordbestuurder gebruik om by <ph name="WEBSITE" /> aan te meld. <ph name="BEGIN_LINK" />Kom meer te wete<ph name="END_LINK" /></translation>
 <translation id="40433179647657191">Skep en deel ’n direkte skakel na ’n deel van ’n bladsy wat jy gemerk het.</translation>
 <translation id="4045648459118332842">Kry jou gestoorde wagwoorde in enige app met een tik</translation>
 <translation id="4049507953662678203">Maak seker jy het 'n netwerkverbinding en probeer weer.</translation>
@@ -713,6 +711,7 @@ Sien jou soekenjin se instruksies om jou soekgeskiedenis uit te vee, indien nodi
 <translation id="4808744395915275922">Opdaterings</translation>
 <translation id="4818522717893377262">Voeg taal by …</translation>
 <translation id="481968316161811770">Webkoekies, werfdata</translation>
+<translation id="4824480232751123840">Volume</translation>
 <translation id="4824497107140370669">{count,plural, =0{{domain}}=1{{domain} en 1 ander persoon}other{{domain} en {count} ander mense}}</translation>
 <translation id="4826218269716039351">Blokkeer derdeparty-webkoekies</translation>
 <translation id="4826588772550366629">kamera en mikrofoon</translation>
@@ -850,6 +849,7 @@ Oorgee moet ook in die Algemene afdeling van Instellings geaktiveer word, en jou
 <translation id="5556459405103347317">Herlaai</translation>
 <translation id="555749644339804659">Gaan tans wagwoorde na …</translation>
 <translation id="556042886152191864">Knoppie</translation>
+<translation id="5572684875078967866">Inligtingberging</translation>
 <translation id="5597915316964418992">Maak die oortjierooster oop</translation>
 <translation id="560322036295180549">Afgeskakel deur jou organisasie</translation>
 <translation id="5614553682702429503">Stoor wagwoord?</translation>
@@ -911,6 +911,7 @@ Oorgee moet ook in die Algemene afdeling van Instellings geaktiveer word, en jou
 <translation id="5896576662943111387">Gebou vir iOS</translation>
 <translation id="5897749768294722429">Sinkroniseer jou oortjies en geskiedenis om vinnig terug te gaan na werwe wat jy besoek het.</translation>
 <translation id="5897956970858271241">Besoek gekopieerde skakel</translation>
+<translation id="5898848375214731122">Massa</translation>
 <translation id="5899314093904173337">Laat mense in die omtrek hierdie QR-kode met hul kamera of QR-skandeerderprogram skandeer om met hulle te deel</translation>
 <translation id="5911030830365207728">Google Vertaal</translation>
 <translation id="5913600720976431809">Opsies om hierdie bladsy te vertaal</translation>
@@ -928,6 +929,7 @@ Oorgee moet ook in die Algemene afdeling van Instellings geaktiveer word, en jou
 <translation id="5981230843984570095">Maak alle onaktiewe oortjies toe</translation>
 <translation id="5982717868370722439">Voeg bestaande data by <ph name="USER_EMAIL" />.</translation>
 <translation id="5984222099446776634">Onlangs besoek</translation>
+<translation id="598634819525651074">Terrein</translation>
 <translation id="5988097621740394599">Sien prysdalings in jou oortjies.</translation>
 <translation id="5988851877894965432">Maak URL'e oop in Chrome</translation>
 <translation id="6006672969046233841">Nuwe oortjie</translation>
@@ -1364,6 +1366,7 @@ Werwe kan webkoekies gebruik om jou blaai-aktiwiteit op verskillende werwe te si
 <translation id="8156478151976189188">Wagwoordsinkronisering werk nie</translation>
 <translation id="8157532349231307196"><ph name="NUMBER_OF_ACCOUNTS" /> rekeninge</translation>
 <translation id="8159358225423560600">sopas</translation>
+<translation id="8173034266693057059">Lengte</translation>
 <translation id="8179976553408161302">Enter</translation>
 <translation id="8182037667962849780">{count,plural, =1{Vir {website_1}}=2{Vir {website_1}, {website_2}}=3{Vir {website_1}, {website_2} en nog 1}other{Vir {website_1}, {website_2} en nog {more_count}}}</translation>
 <translation id="8193953846147532858"><ph name="BEGIN_LINK" />Jou toestelle<ph name="END_LINK" /> · <ph name="EMAIL" /></translation>
@@ -1458,6 +1461,7 @@ Jou data is op <ph name="TIME" /> met jou wagfrase geënkripteer. Voer dit in om
 <translation id="8692689525339542358">Kry beskerming teen gevaarlike werwe, aflaaie en uitbreidings.</translation>
 <translation id="8693663554456874301">{count,plural, =1{Maak oortjie toe}other{Maak oortjies toe}}</translation>
 <translation id="8703536910991780768">Jou wagwoorde lyk sterk</translation>
+<translation id="8706253136355675497">Temperatuur</translation>
 <translation id="8717864919010420084">Kopieer skakel</translation>
 <translation id="8721297211384281569">Nutsgoedkieslys</translation>
 <translation id="8725066075913043281">Probeer weer</translation>
@@ -1563,6 +1567,7 @@ Jou data is op <ph name="TIME" /> met jou wagfrase geënkripteer. Voer dit in om
 <translation id="9188680907066685419">Meld af uit bestuurde rekening</translation>
 <translation id="9200875785104711666"><ph name="TIME" /> d. gelede</translation>
 <translation id="9203116392574189331">Oorgee</translation>
+<translation id="9206887540681440657">Spoed</translation>
 <translation id="9219154867334666734">Soek oortjies …</translation>
 <translation id="9223358826628549784">Omvalverslag is gestuur.</translation>
 <translation id="941747855997058526">Kies wagwoord …</translation>

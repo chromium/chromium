@@ -335,7 +335,6 @@
 <translation id="2718352093833049315">Wi-Fi യിൽ മാത്രം</translation>
 <translation id="2738375676495545665">'പുതിയതെന്താണ്' മറയ്ക്കുക</translation>
 <translation id="2747003861858887689">മുൻ ഫീൽഡ്</translation>
-<translation id="2749026027885331579">നിങ്ങളുടെ കുടുംബാംഗങ്ങൾക്ക് ഇപ്പോൾ, <ph name="WEBSITE" /> എന്നതിലേക്ക് സൈൻ ഇൻ ചെയ്യാൻ Google Password Manager ഉപയോഗിക്കുമ്പോൾ നിങ്ങളുടെ ഉപയോക്തൃനാമവും പാസ്‌വേഡും ഉപയോഗിക്കാനാകും. <ph name="BEGIN_LINK" />കൂടുതലറിയുക<ph name="END_LINK" /></translation>
 <translation id="2749231692441336879"><ph name="CHANNEL_NAME" /> പിന്തുടരുന്നു</translation>
 <translation id="2754492786623500387">ഈ ഉപകരണത്തിലെ അക്കൗണ്ടുകൾ</translation>
 <translation id="2762000892062317888">ഇപ്പോൾ</translation>
@@ -576,7 +575,6 @@
 <translation id="4018310736049373830">ആക്റ്റിവിറ്റി മാനേജ് ചെയ്യുക</translation>
 <translation id="4038354071007134711">ഈ ഉപകരണത്തിലുള്ള ഒരു ആപ്പിനും ഫയൽ തുറക്കാനാകില്ല.</translation>
 <translation id="4042870976416480368">പേജില്‍ കണ്ടെത്തുക</translation>
-<translation id="4043294777772912240"><ph name="USERNAME" /> എന്നയാൾക്ക് ഇപ്പോൾ, <ph name="WEBSITE" /> എന്നതിലേക്ക് സൈൻ ഇൻ ചെയ്യാൻ Google Password Manager ഉപയോഗിക്കുമ്പോൾ നിങ്ങളുടെ ഉപയോക്തൃനാമവും പാസ്‌വേഡും ഉപയോഗിക്കാനാകും. <ph name="BEGIN_LINK" />കൂടുതലറിയുക<ph name="END_LINK" /></translation>
 <translation id="40433179647657191">നിങ്ങൾ ഹൈലൈറ്റ് ചെയ്ത പേജിന്റെ ഒരു ഭാഗത്തേക്ക് നേരിട്ടുള്ള ലിങ്ക് സൃഷ്ടിക്കുക, പങ്കിടുക.</translation>
 <translation id="4045648459118332842">ഒരൊറ്റ ടാപ്പിലൂടെ നിങ്ങളുടെ സംരക്ഷിച്ച പാസ്‌വേഡുകൾ ഏത് ആപ്പിലും നേടൂ</translation>
 <translation id="4049507953662678203">നിങ്ങൾക്ക് നെറ്റ്‌വർക്ക് കണക്ഷനുണ്ടെന്ന് ഉറപ്പാക്കി, വീണ്ടും ശ്രമിക്കുക.</translation>
@@ -713,6 +711,7 @@
 <translation id="4808744395915275922">അപ്ഡേറ്റുകൾ</translation>
 <translation id="4818522717893377262">ഭാഷ ചേർക്കുക...</translation>
 <translation id="481968316161811770">കുക്കികളും സൈറ്റ് ഡാറ്റയും</translation>
+<translation id="4824480232751123840">അളവ്‌</translation>
 <translation id="4824497107140370669">{count,plural, =0{{domain}}=1{{domain} എന്നതും മറ്റൊന്നും}other{{domain} എന്നതും മറ്റ് {count} എണ്ണവും}}</translation>
 <translation id="4826218269716039351">മൂന്നാം കക്ഷി കുക്കികൾ ബ്ലോക്ക് ചെയ്യുക</translation>
 <translation id="4826588772550366629">ക്യാമറയും മൈക്രോഫോണും</translation>
@@ -850,6 +849,7 @@
 <translation id="5556459405103347317">വീണ്ടും ലോഡ് ചെയ്യുക</translation>
 <translation id="555749644339804659">പാസ്‌വേഡ് പരിശോധന…</translation>
 <translation id="556042886152191864">ബട്ടൺ</translation>
+<translation id="5572684875078967866">വിവര സ്റ്റോറേജ്</translation>
 <translation id="5597915316964418992">ടാബ് ഗ്രിഡ് തുറക്കുക</translation>
 <translation id="560322036295180549">നിങ്ങളുടെ സ്ഥാപനം ഓഫാക്കിയിരിക്കുന്നു</translation>
 <translation id="5614553682702429503">പാസ്‌വേഡ് സംരക്ഷിക്കണോ?</translation>
@@ -911,6 +911,7 @@
 <translation id="5896576662943111387">iOS-നായി സൃഷ്‌ടിച്ചത്</translation>
 <translation id="5897749768294722429">നിങ്ങൾ സന്ദർശിച്ച സൈറ്റുകളിലേക്ക് വേഗത്തിൽ മടങ്ങാൻ, ടാബുകളും ചരിത്രവും സമന്വയിപ്പിക്കുക.</translation>
 <translation id="5897956970858271241">പകർത്തിയ ലിങ്ക് സന്ദർശിക്കുക</translation>
+<translation id="5898848375214731122">ഭാരം</translation>
 <translation id="5899314093904173337">സമീപമുള്ള ആളുകളുമായി പങ്കിടുന്നതിന്, അവരുടെ ക്യാമറയോ QR സ്‌കാനർ ആപ്പോ ഉപയോഗിച്ച് ഈ QR കോഡ് സ്‌കാൻ ചെയ്യാൻ അവരെ അനുവദിക്കുക</translation>
 <translation id="5911030830365207728">Google Translate</translation>
 <translation id="5913600720976431809">പേജ് വിവർത്തനം ചെയ്യാനുള്ള ഓപ്ഷനുകൾ</translation>
@@ -928,6 +929,7 @@
 <translation id="5981230843984570095">സജീവമല്ലാത്ത എല്ലാ ടാബുകളും അടയ്ക്കുക</translation>
 <translation id="5982717868370722439">നിലവിലുള്ള വിവരങ്ങളെ <ph name="USER_EMAIL" /> എന്നതിലേക്ക് ചേർക്കുക.</translation>
 <translation id="5984222099446776634">സമീപകാലത്ത് സന്ദർശിച്ചത്</translation>
+<translation id="598634819525651074">വിസ്തീർണ്ണം</translation>
 <translation id="5988097621740394599">നിങ്ങളുടെ ടാബുകളിൽ വിലയിടിവുകൾ കാണൂ.</translation>
 <translation id="5988851877894965432">Chrome-ൽ URL-കൾ തുറക്കുക</translation>
 <translation id="6006672969046233841">പുതിയ ടാബ്</translation>
@@ -1364,6 +1366,7 @@
 <translation id="8156478151976189188">പാസ്‌വേഡ് സമന്വയം പ്രവർത്തിക്കുന്നില്ല</translation>
 <translation id="8157532349231307196"><ph name="NUMBER_OF_ACCOUNTS" /> അക്കൗണ്ടുകൾ</translation>
 <translation id="8159358225423560600">തൊട്ടുമുമ്പ്</translation>
+<translation id="8173034266693057059">നീളം</translation>
 <translation id="8179976553408161302">Enter</translation>
 <translation id="8182037667962849780">{count,plural, =1{{website_1} എന്നതിന്}=2{{website_2}, {website_1} എന്നിവയ്ക്ക്}=3{{website_1}, {website_2} എന്നിവയ്ക്കും മറ്റൊരെണ്ണത്തിനും}other{{website_1}, {website_2} എന്നിവയ്ക്കും മറ്റ് {more_count} എണ്ണത്തിനും}}</translation>
 <translation id="8193953846147532858"><ph name="BEGIN_LINK" />നിങ്ങളുടെ ഉപകരണങ്ങൾ<ph name="END_LINK" /> · <ph name="EMAIL" /></translation>
@@ -1458,6 +1461,7 @@
 <translation id="8692689525339542358">അപകടകരമായ സൈറ്റുകളിൽ നിന്നും ഡൗൺലോഡുകളിൽ നിന്നും വിപുലീകരണങ്ങളിൽ നിന്നും പരിരക്ഷ നേടുക.</translation>
 <translation id="8693663554456874301">{count,plural, =1{ടാബ് അടയ്‌ക്കുക}other{ടാബുകള്‍ അടയ്ക്കുക}}</translation>
 <translation id="8703536910991780768">നിങ്ങളുടെ പാസ്‌വേഡുകൾ ശക്തമാണെന്ന് തോന്നുന്നു</translation>
+<translation id="8706253136355675497">താപനില</translation>
 <translation id="8717864919010420084">ലിങ്ക് പകർത്തുക</translation>
 <translation id="8721297211384281569">ഉപകരണ മെനു</translation>
 <translation id="8725066075913043281">വീണ്ടും ശ്രമിക്കുക</translation>
@@ -1563,6 +1567,7 @@
 <translation id="9188680907066685419">മാനേജ് ചെയ്‌ത അക്കൗണ്ടിൽ നിന്ന് സൈൻ ഔട്ട് ചെയ്യുക</translation>
 <translation id="9200875785104711666"><ph name="TIME" /> ദിവസം മുമ്പ്</translation>
 <translation id="9203116392574189331">ഹാൻഡ്ഓഫ്</translation>
+<translation id="9206887540681440657">വേഗത</translation>
 <translation id="9219154867334666734">ടാബുകൾ തിരയുക…</translation>
 <translation id="9223358826628549784">ക്രാഷ് റിപ്പോർട്ട് അയച്ചു.</translation>
 <translation id="941747855997058526">പാസ്‌വേഡ് തിരഞ്ഞെടുക്കുക...</translation>

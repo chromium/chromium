@@ -143,6 +143,7 @@
 <translation id="1264309058268477500">Alternate</translation>
 <translation id="1264974993859112054">ක්‍රීඩා</translation>
 <translation id="1266469291454105242">උපාංග අගුලු හැරීම</translation>
+<translation id="126728463333482584">ඔබ බ්‍රවුස් කරන විට ඔබව හඹා යාමට තුන්වන පාර්ශ්ව කුකීස් භාවිතා කිරීමෙන් අඩවි සීමා කරන ලුහුබැඳීමේ ආරක්ෂණය අත්විඳින පළමු අයගෙන් ඔබ කෙනෙකි.</translation>
 <translation id="1268480293435976622">ලියුම් කවරය චීන #7</translation>
 <translation id="1269516672602708785">ඉක්මනින් Google Sites තුළ නව අඩවියක් තනන්න</translation>
 <translation id="1270328905573953738">මාරුවීම සහ වෙනතකට යාම</translation>
@@ -465,6 +466,7 @@
 <translation id="1875512691959384712">Google පෝරම</translation>
 <translation id="1876399092304384674">දිනය අනුව</translation>
 <translation id="187918866476621466">ආරම්භක පිටු විවෘත කරන්න</translation>
+<translation id="1880901968112404879">මීළඟ වතාවේ දී වේගවත්ව ගෙවීමට, ඔබේ Google ගිණුම තුළ ඔබේ කාඩ්පත, සංකේතිත ආරක්ෂක කේතය, සහ බිල්පත් ලිපිනය සුරකින්න</translation>
 <translation id="1883255238294161206">ලැයිස්තුව හකුළන්න</translation>
 <translation id="1884843295353628214">ජෑස්</translation>
 <translation id="1890171020361705182">Dino ක්‍රීඩාව. පාළු භූ දර්ශනයක් හරහා දුවන පික්සිලේටඩ් ඩයිනෝසෝරයක් පතොක් සහ ටෙරෝඩැක්ටයිල් තල්ලු කරයි. ඔබට ශ්‍රව්‍ය ශබ්දයක් ඇසෙන විට, බාධක උඩින් පැනීමට තට්ටු කරන්න.</translation>
@@ -692,6 +694,7 @@
 <translation id="2361263712565360498">මිමි 275 x 395</translation>
 <translation id="236340516568226369">ටොගල මෙනුව ප්‍රතිප්‍රමාණ කරන්න</translation>
 <translation id="2365355378251437925"><ph name="FIELD" /> ඇතුළු කරන්න</translation>
+<translation id="2365382709349300355">ප්‍රතිපත්තිය නිසා 1 ගොනුවක් අවහිර කර ඇත</translation>
 <translation id="2365508935344991784">එළිමහන් ගෘහ භාණ්ඩ</translation>
 <translation id="2366689192918515749">මස් සහ මුහුදු ආහාර</translation>
 <translation id="2367567093518048410">මට්ටම</translation>
@@ -2414,6 +2417,7 @@
 <translation id="5967867314010545767">ඉතිහාසයෙන් මකන්න</translation>
 <translation id="5968022600320704045">සෙවීම් ප්‍රතිඵල නැත</translation>
 <translation id="5969199813874624822">සුරැක මිල හඹා යන්න</translation>
+<translation id="5973514677932942122"><ph name="EXPIRATION_DATE" /> | <ph name="SECURITY_CODE" /></translation>
 <translation id="5974052231147553524">Sixth Roll</translation>
 <translation id="5975083100439434680">විශාලනය අඩු කරන්න</translation>
 <translation id="5979084224081478209">මුරපද පරීක්‍ෂා කරන්න</translation>
@@ -2905,6 +2909,7 @@
 <translation id="6965382102122355670">හරි</translation>
 <translation id="6965978654500191972">උපාංගය</translation>
 <translation id="696703987787944103">සංජානක</translation>
+<translation id="6967851206780867018">අන්තර්ගතය නිසා 1 ගොනුවක් අවහිර කර ඇත</translation>
 <translation id="6970885655016700774">රෙදි (ලේඛනාගාරය)</translation>
 <translation id="6971439137020188025">ඉක්මනින් Slides තුළ නව Google ඉදිරිපත් කිරීමක් තනන්න</translation>
 <translation id="6972629891077993081">HID උපාංග</translation>
@@ -2957,6 +2962,7 @@
 <translation id="70705239631109039">ඔබේ සම්බන්ධතාව සම්පූර්ණයෙන් සුරක්‍ෂිත නොවේ</translation>
 <translation id="7075452647191940183">ඉල්ලීම විශාල වැඩියි</translation>
 <translation id="7078665357168027058">RA3</translation>
+<translation id="7079138647457502205">වැඩිපුර පෞද්ගලිකත්වය සමග බ්‍රවුස් කරන්න</translation>
 <translation id="7079718277001814089">මෙම අඩවියෙහි අනිෂ්ට මෘදුකාංග අඩංගුය</translation>
 <translation id="7081308185095828845">මෙම විශේෂාංගය ඔබේ උපාංගයේ නොලැබේ</translation>
 <translation id="7083258188081898530">බඳුන 9</translation>
@@ -3353,6 +3359,7 @@
 <translation id="7802989406998618639">ඔබේ බැංකුවට ඒ ඔබ බව සත්‍යාපනය කර ගත හැකි පරිදි <ph name="SIDE_OF_CARD" /> හි සංඛ්‍යා <ph name="NUMBER_OF_DIGITS" />ක ආරක්ෂක කේතය ඇතුළු කරන්න</translation>
 <translation id="780301667611848630">එපා, ස්තූතියි</translation>
 <translation id="7805768142964895445">තත්වය</translation>
+<translation id="7810410097247356677">මීළඟ වතාවේ වේගයෙන් ගෙවීම සඳහා, ඔබේ කාඩ්පත සහ සංකේතිත ආරක්ෂක කේතය ඔබේ උපාංගයට සුරකින්න</translation>
 <translation id="7812922009395017822">Mir</translation>
 <translation id="7813600968533626083">Chrome වෙතින් වන යෝජනාවලින් ඉවත් කරන්නද?</translation>
 <translation id="781440967107097262">පසුරු පුවරුව බෙදා ගන්නද?</translation>
@@ -3373,7 +3380,6 @@
 <translation id="7865448901209910068">හොඳම වේගය</translation>
 <translation id="7870281855125116701">වට්ටම හමු විය</translation>
 <translation id="7871445724586827387">ඔබගේ Google ගිණුම් මුරපදය වෙනස් කරන්න</translation>
-<translation id="7876615279559620350">වේගවත් ගෙවා පිටවීම සඳහා, ඔබේ Google ගිණුමේ මෙම කාඩ්පත සඳහා CVC සුරකින්න</translation>
 <translation id="7877007680666472091">ආරක්ෂිත අන්තර්ගත ID</translation>
 <translation id="7878562273885520351">ඔබේ මුරපදය අන් සතු වී තිබිය හැකිය</translation>
 <translation id="7880146494886811634">ලිපිනය සුරකින්න</translation>
@@ -3598,7 +3604,6 @@
 <translation id="8308653357438598313">සජීවී වීඩියෝ ප්‍රවාහය</translation>
 <translation id="8311895354659782580">දේපළ වෙළෙඳාම් ලැයිස්තුගත කිරීම්</translation>
 <translation id="8316555157357957253">දැන් භාවිතා කරයි</translation>
-<translation id="8317570861267063617">වේගවත් ගෙවා පිටවීම සඳහා, මෙම කාඩ්පත සඳහා CVC ඔබේ උපාංගයට සුරකින්න</translation>
 <translation id="8319269383395457801">නේවාසික විකුණුම්</translation>
 <translation id="831997045666694187">සවස</translation>
 <translation id="8321476692217554900">දැනුම්දීම්</translation>

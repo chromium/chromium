@@ -195,6 +195,7 @@
 <translation id="2326139988748364651"><ph name="RESOLUTION_VALUE" /> dpi</translation>
 <translation id="2338501278241028356">Skakel Bluetooth aan om toestelle in die omtrek te ontdek</translation>
 <translation id="2346474577291266260">Uitstekend (<ph name="SIGNAL_STRENGTH" />)</translation>
+<translation id="2358070305000735383">Redigeerdialoog vir <ph name="DESCRIPTION" /> is oop.</translation>
 <translation id="2359808026110333948">Gaan voort</translation>
 <translation id="2364498172489649528">Geslaag</translation>
 <translation id="2367335866686097760">Sleutelkarteringsleutel</translation>
@@ -714,7 +715,6 @@
 <translation id="6423239382391657905">OpenVPN</translation>
 <translation id="6439505561246192797">Swak (<ph name="SIGNAL_STRENGTH" />)</translation>
 <translation id="6447630859861661624">Gaan na rekeninginstellings</translation>
-<translation id="6461047516875166066">Vertel my meer</translation>
 <translation id="6463239094587744704">{PAGE_NUMBER,plural, =0{Herskandeer bladsy?}=1{Herskandeer bladsy {PAGE_NUMBER}?}other{Herskandeer bladsy {PAGE_NUMBER}?}}</translation>
 <translation id="6472207088655375767">EW</translation>
 <translation id="6480327114083866287">Bestuur deur <ph name="MANAGER" /></translation>
@@ -1025,6 +1025,7 @@
 <translation id="8868741746785112895">GUID</translation>
 <translation id="8876270629542503161">Toestel is 'n tablet.</translation>
 <translation id="8881098542468797602">Toets was suksesvol</translation>
+<translation id="8892443466059986410">Kanselleer kortpadredigering</translation>
 <translation id="8898840733695078011">Seinsterkte</translation>
 <translation id="8909114361904403025">pyl op</translation>
 <translation id="8910721771319628100">Versteknetwerk is bo traagheiddrempel</translation>

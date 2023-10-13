@@ -215,7 +215,7 @@
 <translation id="2505327257735685095">重新整理目前嘅桌布圖片</translation>
 <translation id="2512979179176933762">顯示視窗</translation>
 <translation id="2513396635448525189">登入圖片</translation>
-<translation id="2515109918609218604">無法使用這組快速鍵。請使用其他快速鍵，而且當中不得有功能鍵和搜尋鍵。</translation>
+<translation id="2515109918609218604">無法使用快速鍵。請使用其他快速鍵，且當中不得有功能鍵和搜尋鍵。</translation>
 <translation id="2517472476991765520">掃瞄</translation>
 <translation id="2521835766824839541">上一首歌</translation>
 <translation id="2526590354069164005">桌面電腦</translation>
@@ -715,7 +715,6 @@
 <translation id="6423239382391657905">OpenVPN</translation>
 <translation id="6439505561246192797">弱 (<ph name="SIGNAL_STRENGTH" />)</translation>
 <translation id="6447630859861661624">去帳戶設定</translation>
-<translation id="6461047516875166066">瞭解詳情</translation>
 <translation id="6463239094587744704">{PAGE_NUMBER,plural, =0{要重新掃瞄頁面嗎？}=1{要重新掃瞄第 {PAGE_NUMBER} 頁嗎？}other{要重新掃瞄第 {PAGE_NUMBER} 頁嗎？}}</translation>
 <translation id="6472207088655375767">一次性密碼</translation>
 <translation id="6480327114083866287">由 <ph name="MANAGER" /> 管理</translation>

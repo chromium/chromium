@@ -335,7 +335,6 @@ Je zoekmachine is <ph name="DSE_NAME" />. Bekijk de instructies van de zoekmachi
 <translation id="2718352093833049315">Alleen via wifi</translation>
 <translation id="2738375676495545665">Wat is er nieuw verbergen</translation>
 <translation id="2747003861858887689">Vorig veld</translation>
-<translation id="2749026027885331579">Je gezinsleden kunnen nu je gebruikersnaam en wachtwoord gebruiken als ze Google Wachtwoordmanager gebruiken om in te loggen bij <ph name="WEBSITE" />. <ph name="BEGIN_LINK" />Meer informatie<ph name="END_LINK" /></translation>
 <translation id="2749231692441336879">Je volgt <ph name="CHANNEL_NAME" /> nu</translation>
 <translation id="2754492786623500387">Accounts op dit apparaat</translation>
 <translation id="2762000892062317888">zojuist</translation>
@@ -576,7 +575,6 @@ Bekijk de instructies van je zoekmachine voor het verwijderen van je zoekgeschie
 <translation id="4018310736049373830">Activiteit beheren</translation>
 <translation id="4038354071007134711">Geen app op dit apparaat kan het bestand openen.</translation>
 <translation id="4042870976416480368">Zoeken op pagina</translation>
-<translation id="4043294777772912240"><ph name="USERNAME" /> kan nu je gebruikersnaam en wachtwoord gebruiken als die Google Wachtwoordmanager gebruikt om in te loggen bij <ph name="WEBSITE" />. <ph name="BEGIN_LINK" />Meer informatie<ph name="END_LINK" /></translation>
 <translation id="40433179647657191">Maak en deel een rechtstreekse link naar een gemarkeerd deel van een pagina.</translation>
 <translation id="4045648459118332842">Gebruik met één tik je opgeslagen wachtwoorden in elke app</translation>
 <translation id="4049507953662678203">Zorg ervoor dat je beschikt over een netwerkverbinding en probeer het opnieuw.</translation>
@@ -713,6 +711,7 @@ Bekijk de instructies van je zoekmachine voor het verwijderen van je zoekgeschie
 <translation id="4808744395915275922">Updates</translation>
 <translation id="4818522717893377262">Taal toevoegen...</translation>
 <translation id="481968316161811770">Cookies en sitegegevens</translation>
+<translation id="4824480232751123840">Volume</translation>
 <translation id="4824497107140370669">{count,plural, =0{{domain}}=1{{domain} en 1 andere}other{{domain} en {count} andere}}</translation>
 <translation id="4826218269716039351">Cookies van derden blokkeren</translation>
 <translation id="4826588772550366629">camera en microfoon</translation>
@@ -850,6 +849,7 @@ Handoff moet ook aanstaan in het gedeelte Algemeen van Instellingen en je appara
 <translation id="5556459405103347317">Opnieuw laden</translation>
 <translation id="555749644339804659">Wachtwoorden checken…</translation>
 <translation id="556042886152191864">Knop</translation>
+<translation id="5572684875078967866">Informatieopslag</translation>
 <translation id="5597915316964418992">Open het tabbladraster</translation>
 <translation id="560322036295180549">Uitgezet door je organisatie</translation>
 <translation id="5614553682702429503">Wachtwoord opslaan?</translation>
@@ -911,6 +911,7 @@ Handoff moet ook aanstaan in het gedeelte Algemeen van Instellingen en je appara
 <translation id="5896576662943111387">Gemaakt voor iOS</translation>
 <translation id="5897749768294722429">Synchroniseer je tabbladen en geschiedenis om snel terug te gaan naar sites die je hebt bezocht.</translation>
 <translation id="5897956970858271241">Gekopieerde link bezoeken</translation>
+<translation id="5898848375214731122">Massa</translation>
 <translation id="5899314093904173337">Als je wilt delen met mensen in de buurt, laat je ze deze QR-code scannen met hun camera of een QR-scannerapp.</translation>
 <translation id="5911030830365207728">Google Translate</translation>
 <translation id="5913600720976431809">Opties om de pagina te vertalen</translation>
@@ -928,6 +929,7 @@ Handoff moet ook aanstaan in het gedeelte Algemeen van Instellingen en je appara
 <translation id="5981230843984570095">Alle inactieve tabbladen sluiten</translation>
 <translation id="5982717868370722439">Bestaande gegevens toevoegen aan <ph name="USER_EMAIL" />.</translation>
 <translation id="5984222099446776634">Recent bezocht</translation>
+<translation id="598634819525651074">Gebied</translation>
 <translation id="5988097621740394599">Prijsdalingen bekijken op je tabbladen</translation>
 <translation id="5988851877894965432">URL's openen in Chrome</translation>
 <translation id="6006672969046233841">Nieuw tabblad</translation>
@@ -1364,6 +1366,7 @@ Sites mogen cookies gebruiken om je browse-activiteit op verschillende sites te 
 <translation id="8156478151976189188">Password Sync werkt niet</translation>
 <translation id="8157532349231307196"><ph name="NUMBER_OF_ACCOUNTS" /> accounts</translation>
 <translation id="8159358225423560600">zojuist</translation>
+<translation id="8173034266693057059">Lengte</translation>
 <translation id="8179976553408161302">Enter</translation>
 <translation id="8182037667962849780">{count,plural, =1{Voor {website_1}}=2{Voor {website_1}, {website_2}}=3{Voor {website_1}, {website_2} en nog 1}other{Voor {website_1}, {website_2} en nog {more_count}}}</translation>
 <translation id="8193953846147532858"><ph name="BEGIN_LINK" />Je apparaten<ph name="END_LINK" /> · <ph name="EMAIL" /></translation>
@@ -1458,6 +1461,7 @@ Je gegevens zijn op <ph name="TIME" /> versleuteld met je wachtwoordzin. Geef de
 <translation id="8692689525339542358">Krijg bescherming tegen gevaarlijke sites, downloads en extensies.</translation>
 <translation id="8693663554456874301">{count,plural, =1{Tabblad sluiten}other{Tabbladen sluiten}}</translation>
 <translation id="8703536910991780768">Je wachtwoorden lijken sterk</translation>
+<translation id="8706253136355675497">Temperatuur</translation>
 <translation id="8717864919010420084">Link kopiëren</translation>
 <translation id="8721297211384281569">Menu Extra</translation>
 <translation id="8725066075913043281">Opnieuw proberen</translation>
@@ -1563,6 +1567,7 @@ Je gegevens zijn op <ph name="TIME" /> versleuteld met je wachtwoordzin. Geef de
 <translation id="9188680907066685419">Uitloggen van beheerd account</translation>
 <translation id="9200875785104711666"><ph name="TIME" /> d geleden</translation>
 <translation id="9203116392574189331">Handoff</translation>
+<translation id="9206887540681440657">Snelheid</translation>
 <translation id="9219154867334666734">Tabbladen doorzoeken…</translation>
 <translation id="9223358826628549784">Crashrapport verzonden.</translation>
 <translation id="941747855997058526">Wachtwoord selecteren…</translation>

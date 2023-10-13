@@ -258,6 +258,7 @@
 <translation id="5545693483061321551">Vefsvæði geta ekki notað fótsporin þín til að sjá vafranotkun þína á vefsvæðum, til dæmis til að sérsníða auglýsingar. Óvíst er að eiginleikar á sumum vefsvæðum virki.</translation>
 <translation id="5553374991681107062">Nýjast</translation>
 <translation id="5556459405103347317">Endurhlaða</translation>
+<translation id="5591840828808741583">Lokað er á <ph name="SITE_NAME" /></translation>
 <translation id="5649053991847567735">Sjálfvirkt niðurhal</translation>
 <translation id="5668404140385795438">Hunsa beiðni vefsvæðis um að koma í veg fyrir aðdrátt</translation>
 <translation id="5677928146339483299">Lokað fyrir aðgang</translation>
@@ -455,6 +456,7 @@
 <translation id="8959122750345127698">Ekki næst samband: <ph name="URL" /></translation>
 <translation id="8986362086234534611">Gleyma</translation>
 <translation id="8990043154272859344">Þú verður skráð(ur) út af öllum vefsvæðum</translation>
+<translation id="9011903857143958461"><ph name="SITE_NAME" /> leyft</translation>
 <translation id="9019902583201351841">Stjórnað af foreldrum þínum</translation>
 <translation id="9039697262778250930">Þú skráist hugsanlega út af þessum vefsvæðum</translation>
 <translation id="9074739597929991885">Bluetooth</translation>

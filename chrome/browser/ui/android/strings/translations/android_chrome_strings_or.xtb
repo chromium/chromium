@@ -166,6 +166,7 @@
 <translation id="1922362554271624559">ପ୍ରସ୍ତାବିତ ଭାଷାଗୁଡ଼ିକ</translation>
 <translation id="1924255092154549435">ଟାବକୁ ବିସ୍ତାର କରାଯାଇଛି</translation>
 <translation id="1925021887439448749">ଏକ କଷ୍ଟମ୍ ୱେବ୍ ଠିକଣା ଲେଖନ୍ତୁ</translation>
+<translation id="1928618076168182477">ଭିଜୁଆଲ ଭ୍ୟୁ ଦେଖାଯାଉଛି</translation>
 <translation id="1928696683969751773">ଅପ୍‌ଡେଟ୍</translation>
 <translation id="19288952978244135">Chrome ପୁଣି ଖୋଲନ୍ତୁ।</translation>
 <translation id="1933845786846280168">ଚୟନ ହୋ‍ଇଥିବା ଟାବ୍‌</translation>
@@ -196,6 +197,7 @@
 <translation id="2065944887543506430">{FILE_COUNT,plural, =1{1ଟି ଡାଉନଲୋଡ୍ ବିଫଳ ହୋଇଛି}other{#ଟି ଡାଉନଲୋଡ୍ ବିଫଳ ହୋଇଛି}}</translation>
 <translation id="2067805253194386918">ଟେକ୍ସଟ୍</translation>
 <translation id="2082238445998314030"><ph name="TOTAL_RESULTS" />ର <ph name="RESULT_NUMBER" />ଟି ଫଳାଫଳ</translation>
+<translation id="2091863218454846791">କମ୍ପାକ୍ଟ ଭ୍ୟୁ ଦେଖାଯାଉଛି</translation>
 <translation id="2093731487903423814">ଗତ 15 ମିନିଟ</translation>
 <translation id="2096012225669085171">ସମସ୍ତ ଡିଭାଇସ୍‌ରେ ସିଙ୍କ୍ ଏବଂ ବ୍ୟକ୍ତିଗତକୃତ କରନ୍ତୁ</translation>
 <translation id="2100273922101894616">ସ୍ୱତଃ ସାଇନ୍-ଇନ୍‌</translation>
@@ -363,6 +365,7 @@
 <translation id="2961208450284224863">{READING_LIST_UNREAD_PAGE_COUNT,plural, =1{<ph name="READING_LIST_UNREAD_PAGE_COUNT_ONE" />ଟି ପଢ଼ାଯାଇନଥିବା ପୃଷ୍ଠା}other{<ph name="READING_LIST_UNREAD_PAGE_COUNT_MANY" />ଟି ପଢ଼ାଯାଇନଥିବା ପୃଷ୍ଠା}}</translation>
 <translation id="2961210776189273067">ଟାଇଟେଲ୍</translation>
 <translation id="296370266220139811">ସମୟ ବଞ୍ଚାନ୍ତୁ ଏବଂ କମ ଟାଇପ କରନ୍ତୁ</translation>
+<translation id="2977350910003566746">ଗତଥର ଖୋଲାଯିବା ଅନୁସାରେ ସର୍ଟ କରାଯାଉଛି</translation>
 <translation id="297771753501244313">ଗତ ଖୋଲିବା କ୍ରମରେ ସର୍ଟ କର</translation>
 <translation id="2979025552038692506">ଚୟନିତ ଇନକଗ୍ନିଟୋ ଟାବ୍</translation>
 <translation id="2979639724566107830">ନୂତନ ୱିଣ୍ଡୋରେ ଖୋଲନ୍ତୁ</translation>
@@ -403,6 +406,7 @@
 <translation id="3123734510202723619">ଘୋଷଣାଗୁଡ଼ିକ</translation>
 <translation id="3134784203083076891">”</translation>
 <translation id="314939179385989105">Chromeର ମୂଳପୃଷ୍ଠା</translation>
+<translation id="3158667104057012316">ମାନୁଆଲ କ୍ରମରେ ସର୍ଟ କରାଯାଉଛି</translation>
 <translation id="3166827708714933426">ଟାବ୍‌ ଏବଂ ୱିଣ୍ଡୋ ସର୍ଟକଟ୍‌</translation>
 <translation id="316694332262407393">Chrome ପୂର୍ବରୁ ଏଠାରେ ଚାଲୁଛି।</translation>
 <translation id="3167258285411721858">ଆପଣ <ph name="HOST_NAME" /> ପାଇଁ ମୋବାଇଲ ସାଇଟ ଅନୁରୋଧ କରିପାରିବେ</translation>
@@ -530,7 +534,9 @@
 <translation id="3892148308691398805">ଟେକ୍ସଟ୍ କପି କରନ୍ତୁ</translation>
 <translation id="3894427358181296146">ଫୋଲ୍ଡର୍‍‍ରେ ଯୋଗ କରନ୍ତୁ</translation>
 <translation id="3899682235662194879">ସମସ୍ତ ଇନକଗ୍ନିଟୋ ଟାବକୁ ବନ୍ଦ କରନ୍ତୁ</translation>
+<translation id="3902562446536395999">Aରୁ Z କ୍ରମରେ ସର୍ଟ କରାଯାଉଛି</translation>
 <translation id="3908308510347173149"><ph name="PRODUCT_NAME" /> ଅପଡେଟ୍ କରନ୍ତୁ</translation>
+<translation id="3911609878849982353">Zରୁ A କ୍ରମରେ ସର୍ଟ କରାଯାଉଛି</translation>
 <translation id="3924911262913579434"><ph name="SAFE_BROWSING_MODE" /> ଚାଲୁ ଅଛି</translation>
 <translation id="3927692899758076493">ସାନ୍ସ-ସେରିଫ୍‌</translation>
 <translation id="3928666092801078803">ମୋର ଡାଟା ଏକାଠି କରନ୍ତୁ</translation>
@@ -566,6 +572,7 @@
 <translation id="4084682180776658562">ବୁକମାର୍କ</translation>
 <translation id="4084712963632273211"><ph name="PUBLISHER_ORIGIN" />ଙ୍କ ଠାରୁ – <ph name="BEGIN_DEEMPHASIZED" />Google ଦ୍ୱାରା ବିତରଣ କରାଯାଇଛି<ph name="END_DEEMPHASIZED" /></translation>
 <translation id="409109920254068737">ଏହି QR କୋଡ ଡିସପ୍ଲେ କରୁଥିବା ଡିଭାଇସରେ ସାଇନ ଇନ କରିବା ପାଇଁ ଆପଣ ଏହି ଟାବଲେଟକୁ ବ୍ୟବହାର କରିପାରିବେ।</translation>
+<translation id="4092709865241032354">Google Password Managerକୁ ଆପଣଙ୍କ ସାଇନ-ଇନ ସୂଚନା ସେଭ କରିବାରେ ସାହାଯ୍ୟ କରିବାକୁ ଏହି ସାଇଟ ପାଇଁ ଆପଣଙ୍କ ୟୁଜରନେମ ଯୋଗ କରନ୍ତୁ</translation>
 <translation id="4095146165863963773">ଆପ୍ ଡାଟା ଡିଲିଟ୍ କରିବେ କି?</translation>
 <translation id="4095425503313512126">ବ୍ରାଉଜ କରିବା ଏବଂ ସର୍ଚ୍ଚ କରିବା ଦ୍ରୁତତର ଅଟେ</translation>
 <translation id="4096227151372679484">ବୁକମାର୍କ ସେଭ ଫ୍ଲୋ ଅଧା ଖୋଲାଯାଇଛି</translation>
@@ -943,6 +950,7 @@
 <translation id="6000203700195075278">ପୁଣି ଅନୁସରଣ କରନ୍ତୁ</translation>
 <translation id="6002122790816966947">ଆପଣଙ୍କ ଡିଭାଇସଗୁଡ଼ିକ</translation>
 <translation id="6011308810877101166">ସର୍ଚ୍ଚ ପରାମର୍ଶଗୁଡ଼ିକୁ ଉନ୍ନତ କରନ୍ତୁ</translation>
+<translation id="6013305291643746595">ସବୁଠାରୁ ପୁରୁଣା ଅନୁସାରେ ସର୍ଟ କରାଯାଉଛି</translation>
 <translation id="6026538407078977628">ପୂର୍ଣ୍ଣ ସ୍କ୍ରିନକୁ ବିସ୍ତାର କରନ୍ତୁ</translation>
 <translation id="6030719887161080597">ବିଜ୍ଞାପନ ପରଫରମାନ୍ସ ମାପିବା ପାଇଁ ସାଇଟଗୁଡ଼ିକ ଦ୍ୱାରା ବ୍ୟବହୃତ ସୂଚନାକୁ ପରିଚାଳନା କରନ୍ତୁ</translation>
 <translation id="6039379616847168523">ପରବର୍ତ୍ତୀ ଟାବ୍‌କୁ ଯାଆନ୍ତୁ</translation>
@@ -1389,6 +1397,7 @@
 <translation id="8110024788458304985">Chromeର ଫିଚର ଏବଂ ପରଫରମାନ୍ସକୁ ଉନ୍ନତ କରିବାରେ ସାହାଯ୍ୟ କରନ୍ତୁ</translation>
 <translation id="8110087112193408731">ଡିଜିଟାଲ୍ ୱେଲ୍‍ବିଂରେ ଆପଣଙ୍କର Chrome କାର୍ଯ୍ୟକଳାପ ଦେଖାଇବେ?</translation>
 <translation id="8118117428362942925">ଯଦି ତୁମେ ସହାୟତା ଆବଶ୍ୟକ କର, ତେବେ ତୁମ ବାପାମା (<ph name="PARENT_NAME" />)ଙ୍କୁ କୁହ</translation>
+<translation id="8122623268651408616">ସବୁଠାରୁ ନୂଆ ଅନୁସାରେ ସର୍ଟ କରାଯାଉଛି</translation>
 <translation id="8127542551745560481">ମୂଳପୃଷ୍ଠାକୁ ସମ୍ପାଦନ କରନ୍ତୁ</translation>
 <translation id="8130309322784422030">ଆପଣ ଷ୍ଟୋର୍ କରିଥିବା ସାଇନ୍-ଇନ୍ ସୂଚନା ପୁରୁଣା ହୋଇଥାଇପାରେ</translation>
 <translation id="813082847718468539">ସାଇଟ୍‍ର ସୂଚନା ଦେଖନ୍ତୁ</translation>

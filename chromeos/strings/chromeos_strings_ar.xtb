@@ -195,6 +195,7 @@
 <translation id="2326139988748364651">‏<ph name="RESOLUTION_VALUE" /> نقطة لكل بوصة (DPI)</translation>
 <translation id="2338501278241028356">تفعيل البلوتوث لاكتشاف الأجهزة القريبة</translation>
 <translation id="2346474577291266260">إشارة ممتازة (<ph name="SIGNAL_STRENGTH" />)</translation>
+<translation id="2358070305000735383">مربع حوار تعديل "<ph name="DESCRIPTION" />" مفتوح حاليًا.</translation>
 <translation id="2359808026110333948">متابعة</translation>
 <translation id="2364498172489649528">تم الاجتياز.</translation>
 <translation id="2367335866686097760">مفتاح تحديد المفاتيح</translation>
@@ -714,7 +715,6 @@
 <translation id="6423239382391657905">OpenVPN</translation>
 <translation id="6439505561246192797">إشارة ضعيفة (<ph name="SIGNAL_STRENGTH" />)</translation>
 <translation id="6447630859861661624">الانتقال إلى إعدادات الحساب</translation>
-<translation id="6461047516875166066">مزيد من المعلومات</translation>
 <translation id="6463239094587744704">{PAGE_NUMBER,plural, =0{هل تريد إعادة مسح الصفحة ضوئيًا؟}=1{هل تريد إعادة مسح الصفحة {PAGE_NUMBER} ضوئيًا؟}two{هل تريد إعادة مسح الصفحة {PAGE_NUMBER} ضوئيًا؟}few{هل تريد إعادة مسح الصفحة {PAGE_NUMBER} ضوئيًا؟}many{هل تريد إعادة مسح الصفحة {PAGE_NUMBER} ضوئيًا؟}other{هل تريد إعادة مسح الصفحة {PAGE_NUMBER} ضوئيًا؟}}</translation>
 <translation id="6472207088655375767">‏كلمة المرور لمرة واحدة (OTP)</translation>
 <translation id="6480327114083866287">تتم الإدارة من خلال <ph name="MANAGER" /></translation>
@@ -1025,6 +1025,7 @@
 <translation id="8868741746785112895">‏المعرّف الفريد العمومي (GUID)</translation>
 <translation id="8876270629542503161">الجهاز هو جهاز لوحي.</translation>
 <translation id="8881098542468797602">نجح الاختبار.</translation>
+<translation id="8892443466059986410">إلغاء تعديل الاختصارات</translation>
 <translation id="8898840733695078011">قوة الإشارة</translation>
 <translation id="8909114361904403025">سهم متّجه للأعلى</translation>
 <translation id="8910721771319628100">وقت استجابة الشبكة التلقائية أعلى من الحدّ الأقصى.</translation>

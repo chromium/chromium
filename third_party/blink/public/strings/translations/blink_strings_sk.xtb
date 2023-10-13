@@ -16,6 +16,7 @@
 <translation id="1729654308190250600">Zadajte e-mailovú adresu, ktorá nie je prázdna hodnota.</translation>
 <translation id="1758486001363313524">Iné...</translation>
 <translation id="1787192514241997742">celkový čas: <ph name="REMAINING_TIME" /></translation>
+<translation id="1800494066469288780">Povoliť kameru</translation>
 <translation id="1822429046913737220">AM / PM</translation>
 <translation id="1832974991323546415">prehrať na vzdialenom zariadení</translation>
 <translation id="1921819250265091946">dd</translation>
@@ -51,6 +52,7 @@
 <translation id="3220661731597678625">aktuálny krok</translation>
 <translation id="3321030238473337787">Rýchlosť prehrávania</translation>
 <translation id="3329013043687509092">Sýtosť</translation>
+<translation id="3377518164566272702">Povoliť mikrofón a kameru</translation>
 <translation id="3450233048674729344">Hodnota musí byť menšia alebo rovná hodnote <ph name="MAXIMUM" />.</translation>
 <translation id="3732799496749320381">mm</translation>
 <translation id="3754210790023674521">Ukončiť obraz v obraze</translation>
@@ -66,6 +68,7 @@
 <translation id="4718048029184481307">Prehráva sa v režime obrazu v obraze</translation>
 <translation id="4748357248530471599">prepnúť výrez obrazovky na celú obrazovku</translation>
 <translation id="4763480195061959176">video</translation>
+<translation id="4792862212177489858">Zdieľať polohu</translation>
 <translation id="4812940957355064477">Zadajte číslo.</translation>
 <translation id="4912200001568447310">aktuálna položka</translation>
 <translation id="4915360478455618802">Zobraziť výber času</translation>
@@ -179,6 +182,7 @@
 <translation id="9132465097189459683">Iné...</translation>
 <translation id="9155987714137265666"><ph name="WEEK" /> začínajúci <ph name="WEEK_START_DATE" /></translation>
 <translation id="916607977885256133">Obraz v obraze</translation>
+<translation id="918430632320614861">Povoliť mikrofón</translation>
 <translation id="945780513535800434">Čiastočne začiarknuté</translation>
 <translation id="954003015749068518">zapnúť obraz v obraze</translation>
 </translationbundle>

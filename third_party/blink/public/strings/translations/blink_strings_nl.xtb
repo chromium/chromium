@@ -16,6 +16,7 @@
 <translation id="1729654308190250600">Geef een e-mailadres op.</translation>
 <translation id="1758486001363313524">Anders...</translation>
 <translation id="1787192514241997742">totale tijd: <ph name="REMAINING_TIME" /></translation>
+<translation id="1800494066469288780">Camera toestaan</translation>
 <translation id="1822429046913737220">a.m./p.m.</translation>
 <translation id="1832974991323546415">afspelen op extern apparaat</translation>
 <translation id="1921819250265091946">dd</translation>
@@ -51,6 +52,7 @@
 <translation id="3220661731597678625">huidige stap</translation>
 <translation id="3321030238473337787">Afspeelsnelheid</translation>
 <translation id="3329013043687509092">Verzadiging</translation>
+<translation id="3377518164566272702">Microfoon en camera toestaan</translation>
 <translation id="3450233048674729344">Waarde moet kleiner dan of gelijk zijn aan <ph name="MAXIMUM" />.</translation>
 <translation id="3732799496749320381">mm</translation>
 <translation id="3754210790023674521">Scherm-in-scherm afsluiten</translation>
@@ -66,6 +68,7 @@
 <translation id="4718048029184481307">Beeld-in-beeld afspelen</translation>
 <translation id="4748357248530471599">volledig scherm met display-cutout aan- of uitzetten</translation>
 <translation id="4763480195061959176">video</translation>
+<translation id="4792862212177489858">Locatie delen</translation>
 <translation id="4812940957355064477">Voer een getal in.</translation>
 <translation id="4912200001568447310">huidig item</translation>
 <translation id="4915360478455618802">Tijdkiezer bekijken</translation>
@@ -179,6 +182,7 @@
 <translation id="9132465097189459683">Anders...</translation>
 <translation id="9155987714137265666"><ph name="WEEK" />, die begint op <ph name="WEEK_START_DATE" /></translation>
 <translation id="916607977885256133">Scherm-in-scherm</translation>
+<translation id="918430632320614861">Microfoon toestaan</translation>
 <translation id="945780513535800434">Gedeeltelijk aangevinkt</translation>
 <translation id="954003015749068518">scherm-in-scherm openen</translation>
 </translationbundle>

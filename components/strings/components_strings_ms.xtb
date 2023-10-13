@@ -966,6 +966,7 @@ Jika tidak, ini akan disekat oleh tetapan privasi anda. Kebenaran ini akan membo
 <translation id="2977665033722899841"><ph name="ROW_NAME" />, dipilih pada masa ini. <ph name="ROW_CONTENT" /></translation>
 <translation id="2978824962390592855">Opera</translation>
 <translation id="2979424420072875974">Sumber Penulis</translation>
+<translation id="2980742331521553164">CVC kad ini akan disulitkan dan disimpan dalam Google Account anda untuk semak keluar yang lebih pantas</translation>
 <translation id="2983666748527428214">Buka Tap Inkognito</translation>
 <translation id="2985306909656435243">Jika didayakan, Chromium akan menyimpan salinan kad anda pada peranti ini untuk pengisian borang yang lebih cepat.</translation>
 <translation id="2985398929374701810">Masukkan alamat yang sah</translation>
@@ -3381,7 +3382,6 @@ Butiran tambahan:
 <translation id="7865448901209910068">Kelajuan terbaik</translation>
 <translation id="7870281855125116701">Diskaun ditemukan</translation>
 <translation id="7871445724586827387">Tukar kata laluan Google Account anda</translation>
-<translation id="7876615279559620350">Untuk semak keluar yang lebih pantas, simpan CVC untuk kad ini pada Google Account anda</translation>
 <translation id="7877007680666472091">ID kandungan yang dilindungi</translation>
 <translation id="7878562273885520351">Kata laluan anda mungkin terjejas</translation>
 <translation id="7880146494886811634">Simpan Alamat</translation>
@@ -3399,6 +3399,7 @@ Butiran tambahan:
 <translation id="79338296614623784">Masukkan nombor telefon yang sah</translation>
 <translation id="7934414805353235750"><ph name="URL" /> mahu memainkan kandungan yang dilindungi. Identiti peranti anda akan disahkan oleh Google.</translation>
 <translation id="7935318582918952113">DOM Distiller</translation>
+<translation id="7937163678541954811">CVC kad ini akan disulitkan dan disimpan pada peranti anda untuk semak keluar yang lebih pantas</translation>
 <translation id="7937554595067888181">Tamat tempoh pada <ph name="EXPIRATION_DATE_ABBR" /></translation>
 <translation id="7938958445268990899">Sijil pelayan masih belum sah.</translation>
 <translation id="7939713744218886332">Masakan taraf dunia</translation>
@@ -3606,7 +3607,6 @@ Butiran tambahan:
 <translation id="8308653357438598313">Penstriman Video Langsung</translation>
 <translation id="8311895354659782580">Penyenaraian Hartanah</translation>
 <translation id="8316555157357957253">Menggunakan sekarang</translation>
-<translation id="8317570861267063617">Untuk semak keluar yang lebih pantas, simpan CVC untuk kad ini pada peranti anda</translation>
 <translation id="8319269383395457801">Jualan Kediaman</translation>
 <translation id="831997045666694187">Petang</translation>
 <translation id="8321476692217554900">pemberitahuan</translation>

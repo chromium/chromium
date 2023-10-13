@@ -195,6 +195,7 @@
 <translation id="2326139988748364651"><ph name="RESOLUTION_VALUE" /> dpi</translation>
 <translation id="2338501278241028356">Yakındaki cihazları keşfetmek için Bluetooth'u aç</translation>
 <translation id="2346474577291266260">Mükemmel (<ph name="SIGNAL_STRENGTH" />)</translation>
+<translation id="2358070305000735383"><ph name="DESCRIPTION" /> için düzenleme iletişim kutusu açık.</translation>
 <translation id="2359808026110333948">Devam et</translation>
 <translation id="2364498172489649528">Başarılı oldu</translation>
 <translation id="2367335866686097760">Tuş eşleme anahtarı</translation>
@@ -714,7 +715,6 @@
 <translation id="6423239382391657905">OpenVPN</translation>
 <translation id="6439505561246192797">Zayıf (<ph name="SIGNAL_STRENGTH" />)</translation>
 <translation id="6447630859861661624">Hesap ayarlarına git</translation>
-<translation id="6461047516875166066">Biraz daha ayrıntı ver</translation>
 <translation id="6463239094587744704">{PAGE_NUMBER,plural, =0{Sayfa yeniden taransın mı?}=1{{PAGE_NUMBER}. sayfa yeniden taransın mı?}other{{PAGE_NUMBER}. sayfa yeniden taransın mı?}}</translation>
 <translation id="6472207088655375767">OTP</translation>
 <translation id="6480327114083866287"><ph name="MANAGER" /> tarafından yönetiliyor</translation>
@@ -1025,6 +1025,7 @@
 <translation id="8868741746785112895">GUID</translation>
 <translation id="8876270629542503161">Cihazın türü tablet.</translation>
 <translation id="8881098542468797602">Test başarılı oldu</translation>
+<translation id="8892443466059986410">Kısayolu düzenlemeyi iptal et</translation>
 <translation id="8898840733695078011">Sinyal gücü</translation>
 <translation id="8909114361904403025">yukarı ok</translation>
 <translation id="8910721771319628100">Varsayılan ağ, gecikme eşiğini aştı</translation>

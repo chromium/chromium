@@ -117,7 +117,7 @@
 <translation id="5389212809648216794">由於另一個應用程式正在使用相機，因此 Google Chrome 暫時無法使用</translation>
 <translation id="5395376160638294582">請確保您可隨時使用 Google 帳戶中的 Chrome 資料</translation>
 <translation id="5439191312780166229">此防護機制分析的網站資料比標準保護多，因此即使是 Google 不知道的網站，此防護機制亦能提供危險網站警告。你可選擇略過 Chrome 警告。</translation>
-<translation id="5442013002200339429">如果隱藏「<ph name="MODULE_NAME" />」，Chrome 將不會再自動追蹤之後的包裹，而且會刪除先前的所有包裹追蹤資料。</translation>
+<translation id="5442013002200339429">如果隱藏「<ph name="MODULE_NAME" />」，Chrome 將不會再自動追蹤之後的包裹，且會刪除先前的所有包裹追蹤資料。</translation>
 <translation id="5460571915754665838">4. 選取 [Chrome]</translation>
 <translation id="546541279759910616">{COUNT,plural, =1{Chrome 將會在「新分頁」上追蹤此包裹。}other{Chrome 將會在「新分頁」上追蹤這些包裹。}}</translation>
 <translation id="5492504007368565877">「Google 密碼管理工具」無法檢查您的密碼。</translation>
@@ -188,7 +188,7 @@
 <translation id="7933491483529363150">在 Chrome 中開啟「我的最新分頁」。</translation>
 <translation id="8022947259858476807">預設使用 Chrome 來開啟連結、從小工具搜尋，以及在其他應用程式中自動填入密碼</translation>
 <translation id="804638182476029347">允許 Chrome 顯示通知才能接收降價快訊</translation>
-<translation id="8069507567842347179">Chrome 已追蹤了這個包裹。</translation>
+<translation id="8069507567842347179">你已使用 Chrome 追蹤此包裹。</translation>
 <translation id="81358522153858150">Chrome 現在支援受管帳戶的使用者政策</translation>
 <translation id="8160472928944011082">Chrome 無法更新</translation>
 <translation id="8174679664544842874">在 Chrome 中開啟新分頁。</translation>

@@ -64,6 +64,7 @@
 <translation id="2120620239521071941">Tindakan ini akan memadamkan <ph name="ITEMS_COUNT" /> item daripada peranti ini. Untuk mendapatkan kembali data anda kemudian, log masuk ke Chrome sebagai <ph name="USER_EMAIL" />.</translation>
 <translation id="2121284319307530122">Lancarkan Semula untuk Mengemas Kini &amp;Chrome</translation>
 <translation id="2123055963409958220">Bantu jadikan Chrome lebih baik dengan melaporkan <ph name="BEGIN_LINK" />tetapan semasa<ph name="END_LINK" /></translation>
+<translation id="2126108037660393668">Pengesahan fail yang dimuat turun gagal.</translation>
 <translation id="2131230230468101642">Untuk melindungi privasi anda, kami memadamkan minat anda yang disimpan melebihi 4 minggu secara automatik. Semasa anda terus menyemak imbas, minat itu mungkin muncul semula dalam senarai. Anda juga boleh mengalih keluar minat yang anda tidak mahu dipertimbangkan oleh Chrome.</translation>
 <translation id="2139300032719313227">Mulakan semula Chrome OS</translation>
 <translation id="2151406531797534936">Sila mulakan semula Chrome sekarang</translation>
@@ -92,6 +93,7 @@
 <translation id="2580411288591421699">Tidak dapat memasang versi Google Chrome yang sama yang kini dijalankan. Sila tutup Google Chrome dan cuba semula.</translation>
 <translation id="2586406160782125153">Tindakan ini akan memadamkan data semakan imbas anda daripada peranti ini. Untuk mendapatkan kembali data anda kemudian, log masuk ke Chrome sebagai <ph name="USER_EMAIL" />.</translation>
 <translation id="2597976513418770460">Dapatkan bahan penyemak imbas Chrome anda daripada <ph name="ACCOUNT_EMAIL" /></translation>
+<translation id="259935314519650377">Gagal mengcache pemasang yang dimuat turun. Ralat: <ph name="UNPACK_CACHING_ERROR_CODE" />.</translation>
 <translation id="2622559029861875898">Chrome tidak dapat menyemak kemas kini. Cuba periksa sambungan Internet anda.</translation>
 <translation id="2645435784669275700">Chrome OS</translation>
 <translation id="2649768380733403658">Chrome sentiasa menyemak untuk memastikan penyemak imbas anda menawarkan tetapan paling selamat. Kami akan memaklumi anda jika ada apa-apa yang memerlukan semakan anda.</translation>
@@ -313,6 +315,7 @@
 <translation id="6676384891291319759">Akses Internet</translation>
 <translation id="6679975945624592337">Biarkan Google Chrome Dijalankan Di Latar Belakang</translation>
 <translation id="6696915334902295848">Chrome memerlukan kebenaran mikrofon untuk laman ini</translation>
+<translation id="6712881677154121168">Ralat muat turun: <ph name="DOWNLOAD_ERROR" />.</translation>
 <translation id="6718739135284199302">Jadikan Chrome lebih pantas</translation>
 <translation id="6735387454586646204">Sistem Chrome OS Flex</translation>
 <translation id="6739177684496155661">Teruskan dalam profil Chrome baharu?</translation>
@@ -327,6 +330,7 @@
 <translation id="6943584222992551122">Data semakan imbas orang ini akan dipadamkan daripada peranti ini. Untuk memulihkan data itu, log masuk ke Chrome sebagai <ph name="USER_EMAIL" />.</translation>
 <translation id="6967962315388095737">Peraturan masuk bagi Google Chrome Beta untuk membenarkan trafik mDNS.</translation>
 <translation id="6989339256997917931">Google Chrome telah dikemas kini, tetapi anda belum menggunakannya untuk sekurang-kurangnya 30 hari.</translation>
+<translation id="7024536598735240744">Ralat penyahpadatan: <ph name="UNPACK_ERROR" />.</translation>
 <translation id="7025789849649390912">Pemasangan Dihentikan.</translation>
 <translation id="7025800014283535195">Anda boleh beralih antara profil Chrome di sini</translation>
 <translation id="7036251913954633326">Jika anda ingin menggunakan akaun ini sekali sahaja, anda boleh menggunakan <ph name="GUEST_LINK_BEGIN" />Mod Tetamu<ph name="GUEST_LINK_END" /> dalam penyemak imbas Chrome. Jika anda ingin menambah akaun untuk orang lain, <ph name="LINK_BEGIN" />tambahkan orang baharu<ph name="LINK_END" /> pada <ph name="DEVICE_TYPE" />.
@@ -420,6 +424,7 @@ Kebenaran yang telah anda berikan kepada laman web dan apl mungkin dikenakan pad
 <translation id="8516431725144212809">Minat anda seperti yang dianggarkan oleh Chrome</translation>
 <translation id="8521348052903287641">Peraturan masuk bagi Google Chrome Dev untuk membenarkan trafik mDNS.</translation>
 <translation id="8550334526674375523">Profil kerja ini terpisah sepenuhnya daripada profil peribadi anda.</translation>
+<translation id="8555465886620020932">Ralat perkhidmatan: <ph name="SERVICE_ERROR" />.</translation>
 <translation id="8556340503434111824">Terdapat versi baharu Google Chrome yang tersedia, dan ia lebih pantas daripada biasa.</translation>
 <translation id="8571790202382503603">Dengan profil Chrome anda dapat mengasingkan semua bahan Chrome anda. Ini akan lebih memudahkan pengasingan antara bahan kerja dengan bahan untuk keseronokan.</translation>
 <translation id="8614913330719544658">Google Chrome tidak responsif. Lancarkan semula sekarang?</translation>

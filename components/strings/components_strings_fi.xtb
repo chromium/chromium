@@ -466,6 +466,7 @@ Muussa tapauksessa tämä estetään tietosuoja-asetuksilla. Jos sallit tämän,
 <translation id="1875512691959384712">Google Forms</translation>
 <translation id="1876399092304384674">Päivän mukaan</translation>
 <translation id="187918866476621466">Avaa aloitussivut</translation>
+<translation id="1880901968112404879">Jos haluat maksaa nopeammin ensi kerralla, tallenna kortti, salattu turvakoodi ja laskutusosoite Google-tilille</translation>
 <translation id="1883255238294161206">Tiivistä luettelo</translation>
 <translation id="1884843295353628214">Jazz</translation>
 <translation id="1890171020361705182">Dino-peli. Pikselöity dinosaurus väistelee kaktuksia ja lentoliskoja juostessaan halki aution maiseman. Kun kuulet äänimerkin, hyppää esteiden yli napauttamalla.</translation>
@@ -3359,6 +3360,7 @@ Lisätietoja:
 <translation id="7802989406998618639">Lisää <ph name="NUMBER_OF_DIGITS" />-numeroinen turvakoodi (<ph name="SIDE_OF_CARD" />). Näin pankkisi voi vahvistaa henkilöllisyytesi</translation>
 <translation id="780301667611848630">Ei kiitos</translation>
 <translation id="7805768142964895445">Tila</translation>
+<translation id="7810410097247356677">Jos haluat maksaa nopeammin ensi kerralla, tallenna kortti ja salattu turvakoodi laitteelle</translation>
 <translation id="7812922009395017822">Mir</translation>
 <translation id="7813600968533626083">Poistetaanko lomake-ehdotus Chromen tiedoista?</translation>
 <translation id="781440967107097262">Jaetaanko leikepöytä?</translation>
@@ -3379,7 +3381,6 @@ Lisätietoja:
 <translation id="7865448901209910068">Paras nopeus</translation>
 <translation id="7870281855125116701">Alennus löydetty</translation>
 <translation id="7871445724586827387">Vaihda Google-tilin salasana</translation>
-<translation id="7876615279559620350">Tallenna kortin CVC Google-tilille nopeampaa maksamista varten</translation>
 <translation id="7877007680666472091">suojatun sisällön tunnukset</translation>
 <translation id="7878562273885520351">Salasanasi on saattanut vaarantua.</translation>
 <translation id="7880146494886811634">Tallenna osoite</translation>
@@ -3604,7 +3605,6 @@ Lisätietoja:
 <translation id="8308653357438598313">Livevideostriimi</translation>
 <translation id="8311895354659782580">Myytävät kiinteistöt</translation>
 <translation id="8316555157357957253">Käytössä nyt</translation>
-<translation id="8317570861267063617">Tallenna kortin CVC laitteelle nopeampaa maksamista varten</translation>
 <translation id="8319269383395457801">Asuntojen myynti</translation>
 <translation id="831997045666694187">Ilta</translation>
 <translation id="8321476692217554900">ilmoitukset</translation>

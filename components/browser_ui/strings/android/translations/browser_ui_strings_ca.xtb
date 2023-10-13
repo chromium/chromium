@@ -258,6 +258,7 @@
 <translation id="5545693483061321551">Els llocs web no poden fer servir les teves galetes per veure la teva activitat de navegació en diferents llocs web, per exemple, per personalitzar els anuncis. Pot ser que les funcions d'alguns llocs web no funcionin.</translation>
 <translation id="5553374991681107062">Més recents</translation>
 <translation id="5556459405103347317">Torna a carregar</translation>
+<translation id="5591840828808741583"><ph name="SITE_NAME" /> bloquejat</translation>
 <translation id="5649053991847567735">Baixades automàtiques</translation>
 <translation id="5668404140385795438">Ignora la sol·licitud d'un lloc web per evitar que s'apropi la imatge</translation>
 <translation id="5677928146339483299">Bloquejat</translation>
@@ -455,6 +456,7 @@
 <translation id="8959122750345127698">No es pot accedir a la navegació: <ph name="URL" /></translation>
 <translation id="8986362086234534611">Oblida</translation>
 <translation id="8990043154272859344">Se't tancarà la sessió de tots els llocs web</translation>
+<translation id="9011903857143958461"><ph name="SITE_NAME" /> permès</translation>
 <translation id="9019902583201351841">Gestionat pels pares</translation>
 <translation id="9039697262778250930">És possible que se't tanqui la sessió d'aquests llocs web</translation>
 <translation id="9074739597929991885">Bluetooth</translation>

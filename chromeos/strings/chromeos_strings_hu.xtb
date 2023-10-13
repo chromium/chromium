@@ -715,7 +715,6 @@
 <translation id="6423239382391657905">OpenVPN</translation>
 <translation id="6439505561246192797">Gyenge (<ph name="SIGNAL_STRENGTH" />)</translation>
 <translation id="6447630859861661624">Ugrás a fiókbeállításokhoz</translation>
-<translation id="6461047516875166066">További információ</translation>
 <translation id="6463239094587744704">{PAGE_NUMBER,plural, =0{Beolvassa újra az oldalt?}=1{Beolvassa újra a(z) {PAGE_NUMBER}. oldalt?}other{Beolvassa újra a(z) {PAGE_NUMBER}. oldalt?}}</translation>
 <translation id="6472207088655375767">Egyszer használatos jelszó</translation>
 <translation id="6480327114083866287">Kezelő: <ph name="MANAGER" /></translation>

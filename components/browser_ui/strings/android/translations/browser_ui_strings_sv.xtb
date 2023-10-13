@@ -258,6 +258,7 @@
 <translation id="5545693483061321551">Webbplatser får inte se din webbaktivitet på olika webbplatser med hjälp av cookies, för att till exempel anpassa annonser. Vissa webbplatsers funktioner kanske inte fungerar.</translation>
 <translation id="5553374991681107062">Senaste</translation>
 <translation id="5556459405103347317">Hämta igen</translation>
+<translation id="5591840828808741583"><ph name="SITE_NAME" /> blockeras</translation>
 <translation id="5649053991847567735">Automatiska nedladdningar</translation>
 <translation id="5668404140385795438">Åsidosätt en webbplats begäran att hindra inzoomning</translation>
 <translation id="5677928146339483299">Blockerat</translation>
@@ -455,6 +456,7 @@
 <translation id="8959122750345127698">Det går inte att nå webbadressen: <ph name="URL" /></translation>
 <translation id="8986362086234534611">Glöm</translation>
 <translation id="8990043154272859344">Du loggas ut från alla webbplatser</translation>
+<translation id="9011903857143958461"><ph name="SITE_NAME" /> tillåts</translation>
 <translation id="9019902583201351841">Hanteras av dina föräldrar</translation>
 <translation id="9039697262778250930">Du kan loggas ut från de här webbplatserna</translation>
 <translation id="9074739597929991885">Bluetooth</translation>

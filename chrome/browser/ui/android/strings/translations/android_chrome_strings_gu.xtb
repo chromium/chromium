@@ -166,6 +166,7 @@
 <translation id="1922362554271624559">સૂચવેલી ભાષાઓ</translation>
 <translation id="1924255092154549435">ટૅબ મોટું કરવામાં આવ્યું છે</translation>
 <translation id="1925021887439448749">કસ્ટમ વેબ ઍડ્રેસ દાખલ કરો</translation>
+<translation id="1928618076168182477">વિઝ્યુઅલ વ્યૂ બતાવી રહ્યાં છે</translation>
 <translation id="1928696683969751773">અપડેટ</translation>
 <translation id="19288952978244135">Chrome ફરીથી ખોલો.</translation>
 <translation id="1933845786846280168">પસંદ કરેલ ટૅબ</translation>
@@ -196,6 +197,7 @@
 <translation id="2065944887543506430">{FILE_COUNT,plural, =1{1 ડાઉનલોડ નિષ્ફળ થયું}one{# ડાઉનલોડ નિષ્ફળ થયું}other{# ડાઉનલોડ નિષ્ફળ થયાં}}</translation>
 <translation id="2067805253194386918">ટેક્સ્ટ</translation>
 <translation id="2082238445998314030"><ph name="TOTAL_RESULTS" /> માંથી <ph name="RESULT_NUMBER" /> પરિણામ</translation>
+<translation id="2091863218454846791">નાનો વ્યૂ બતાવી રહ્યાં છે</translation>
 <translation id="2093731487903423814">છેલ્લી 15 મિનિટ</translation>
 <translation id="2096012225669085171">સમગ્ર ઉપકરણો પર સિંક કરો અને વ્યક્તિગત બનાવો</translation>
 <translation id="2100273922101894616">સ્વતઃ સાઇન-ઇન</translation>

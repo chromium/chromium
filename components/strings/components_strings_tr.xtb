@@ -143,6 +143,7 @@ Aksi halde bu işlem gizlilik ayarlarınız tarafından engellenecek. Buna izin 
 <translation id="1264309058268477500">Alternatif</translation>
 <translation id="1264974993859112054">Spor</translation>
 <translation id="1266469291454105242">Cihazda kilit açma</translation>
+<translation id="126728463333482584">Sitelerin, internette gezinirken sizi izlemek için üçüncü taraf çerezlerini kullanmasını sınırlayan İzlemeye Karşı Koruma özelliğini ilk deneyenlerden birisiniz.</translation>
 <translation id="1268480293435976622">Zarf Chinese #7</translation>
 <translation id="1269516672602708785">Google Sites'ta hızlıca yeni bir site oluşturun</translation>
 <translation id="1270328905573953738">Taşınma ve Yer Değiştirme</translation>
@@ -465,6 +466,7 @@ Aksi halde bu işlem gizlilik ayarlarınız tarafından engellenecek. Buna izin 
 <translation id="1875512691959384712">Google Formlar</translation>
 <translation id="1876399092304384674">Tarihe göre</translation>
 <translation id="187918866476621466">Başlangıç sayfalarını aç</translation>
+<translation id="1880901968112404879">Bir dahaki sefere daha hızlı ödeme yapmak için kartınızı, güvenlik kodunuzu ve fatura adresinizi Google Hesabınıza kaydedin</translation>
 <translation id="1883255238294161206">Listeyi daralt</translation>
 <translation id="1884843295353628214">Caz</translation>
 <translation id="1890171020361705182">Dinozor oyunu. Pikselleşmiş bir dinozor, kaktüslerden ve pterodaktillerden sakınarak terk edilmiş bir düzlükte koşuyor. Sesli ipucu duyduğunuzda engellerin üzerinden atlamak için ekrana dokunun.</translation>
@@ -692,6 +694,7 @@ Aksi halde bu işlem gizlilik ayarlarınız tarafından engellenecek. Buna izin 
 <translation id="2361263712565360498">275 x 395 mm</translation>
 <translation id="236340516568226369">Yeniden boyutlandırma açma/kapatma menüsü</translation>
 <translation id="2365355378251437925"><ph name="FIELD" /> girin</translation>
+<translation id="2365382709349300355">1 dosya, politika nedeniyle engellendi</translation>
 <translation id="2365508935344991784">Bahçe Mobilyaları</translation>
 <translation id="2366689192918515749">Et ve Deniz Ürünleri</translation>
 <translation id="2367567093518048410">Düzey</translation>
@@ -2414,6 +2417,7 @@ Aksi halde bu işlem gizlilik ayarlarınız tarafından engellenecek. Buna izin 
 <translation id="5967867314010545767">Geçmişten kaldır</translation>
 <translation id="5968022600320704045">Arama sonucu yok</translation>
 <translation id="5969199813874624822">Fiyatı kaydet ve takip et</translation>
+<translation id="5973514677932942122"><ph name="EXPIRATION_DATE" /> | <ph name="SECURITY_CODE" /></translation>
 <translation id="5974052231147553524">Altıncı Rulo</translation>
 <translation id="5975083100439434680">Uzaklaştır</translation>
 <translation id="5979084224081478209">Şifreleri kontrol et</translation>
@@ -2905,6 +2909,7 @@ Aksi halde bu işlem gizlilik ayarlarınız tarafından engellenecek. Buna izin 
 <translation id="6965382102122355670">Tamam</translation>
 <translation id="6965978654500191972">Cihaz</translation>
 <translation id="696703987787944103">Algısal</translation>
+<translation id="6967851206780867018">1 dosya, içerik nedeniyle engellendi</translation>
 <translation id="6970885655016700774">Kumaş (Arşiv)</translation>
 <translation id="6971439137020188025">Slaytlar'da hızlıca yeni bir Google sunusu oluşturun</translation>
 <translation id="6972629891077993081">HID cihazlar</translation>
@@ -2957,6 +2962,7 @@ Aksi halde bu işlem gizlilik ayarlarınız tarafından engellenecek. Buna izin 
 <translation id="70705239631109039">Bağlantınız tam olarak güvenli değil</translation>
 <translation id="7075452647191940183">İstek çok büyük</translation>
 <translation id="7078665357168027058">RA3</translation>
+<translation id="7079138647457502205">İnternette gezinirken gizliliğinizi daha fazla koruyun</translation>
 <translation id="7079718277001814089">Bu site kötü amaçlı yazılım içeriyor</translation>
 <translation id="7081308185095828845">Bu özellik cihazınızda kullanılamıyor</translation>
 <translation id="7083258188081898530">Tepsi 9</translation>
@@ -3353,6 +3359,7 @@ Ek ayrıntılar:
 <translation id="7802989406998618639">Bankanızın kimliğinizi doğrulayabilmesi için <ph name="SIDE_OF_CARD" /> yer alan <ph name="NUMBER_OF_DIGITS" /> basamaklı güvenlik kodunu girin</translation>
 <translation id="780301667611848630">Hayır, teşekkürler</translation>
 <translation id="7805768142964895445">Durum</translation>
+<translation id="7810410097247356677">Bir dahaki sefere daha hızlı ödeme yapmak için kartınızı ve güvenlik kodunuzu cihazınıza kaydedin</translation>
 <translation id="7812922009395017822">Mir</translation>
 <translation id="7813600968533626083">Form önerisi Chrome'dan kaldırılsın mı?</translation>
 <translation id="781440967107097262">Pano paylaşılsın mı?</translation>
@@ -3373,7 +3380,6 @@ Ek ayrıntılar:
 <translation id="7865448901209910068">En iyi hız</translation>
 <translation id="7870281855125116701">İndirim Bulundu</translation>
 <translation id="7871445724586827387">Google Hesabınızın şifresini değiştirin</translation>
-<translation id="7876615279559620350">Daha hızlı ödeme yapmak için bu kartın CVC'sini Google Hesabınıza kaydedin</translation>
 <translation id="7877007680666472091">korumalı içerik kimlikleri</translation>
 <translation id="7878562273885520351">Şifrenizin güvenliği ihlal edilmiş olabilir</translation>
 <translation id="7880146494886811634">Adresi Kaydet</translation>
@@ -3598,7 +3604,6 @@ Ek ayrıntılar:
 <translation id="8308653357438598313">Canlı Video Akışı</translation>
 <translation id="8311895354659782580">Gayrimenkul İlanları</translation>
 <translation id="8316555157357957253">Şu anda kullanılıyor</translation>
-<translation id="8317570861267063617">Daha hızlı ödeme yapmak için bu kartın CVC'sini cihazınıza kaydedin</translation>
 <translation id="8319269383395457801">Konut Satışları</translation>
 <translation id="831997045666694187">Akşam</translation>
 <translation id="8321476692217554900">bildirimler</translation>

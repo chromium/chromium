@@ -143,6 +143,7 @@ Ellers vil det blive blokeret af dine privatlivsindstillinger. Det giver det ind
 <translation id="1264309058268477500">Alternativ</translation>
 <translation id="1264974993859112054">Sport</translation>
 <translation id="1266469291454105242">Enhedsoplåsning</translation>
+<translation id="126728463333482584">Du er en af de første, der oplever Sporingsbeskyttelse, som begrænser websites i at bruge tredjepartscookies til at spore dig, når du browser.</translation>
 <translation id="1268480293435976622">Konvolut Kinesisk nr. 7</translation>
 <translation id="1269516672602708785">Opret hurtigt et nyt website i Google Sites</translation>
 <translation id="1270328905573953738">Flytning</translation>
@@ -465,6 +466,7 @@ Ellers vil det blive blokeret af dine privatlivsindstillinger. Det giver det ind
 <translation id="1875512691959384712">Google Analyse</translation>
 <translation id="1876399092304384674">Efter dato</translation>
 <translation id="187918866476621466">Åbn opstartssider</translation>
+<translation id="1880901968112404879">Gem dit kort, din krypterede sikkerhedskode og din faktureringsadresse på din Google-konto, så du hurtigere kan betale næste gang</translation>
 <translation id="1883255238294161206">Skjul liste</translation>
 <translation id="1884843295353628214">Jazz</translation>
 <translation id="1890171020361705182">Dino-spillet. En pixeleret dinosaur suser gennem et øde landskab, hvor den hopper over kaktusser og undviger flyveøgler. Når du hører en lyd, skal du trykke for at hoppe over forhindringer.</translation>
@@ -692,6 +694,7 @@ Ellers vil det blive blokeret af dine privatlivsindstillinger. Det giver det ind
 <translation id="2361263712565360498">275 x 395 mm</translation>
 <translation id="236340516568226369">Menu med skydeknapper til tilpasning af størrelse</translation>
 <translation id="2365355378251437925">Angiv <ph name="FIELD" /></translation>
+<translation id="2365382709349300355">1 fil blev blokeret på grund af en politik</translation>
 <translation id="2365508935344991784">Havemøbler</translation>
 <translation id="2366689192918515749">Kød, fisk og skaldyr</translation>
 <translation id="2367567093518048410">Niveau</translation>
@@ -2414,6 +2417,7 @@ Ellers vil det blive blokeret af dine privatlivsindstillinger. Det giver det ind
 <translation id="5967867314010545767">Fjern fra historik</translation>
 <translation id="5968022600320704045">Ingen søgeresultater</translation>
 <translation id="5969199813874624822">Gem og overvåg pris</translation>
+<translation id="5973514677932942122"><ph name="EXPIRATION_DATE" /> | <ph name="SECURITY_CODE" /></translation>
 <translation id="5974052231147553524">Sjette papirrulle</translation>
 <translation id="5975083100439434680">Zoom ud</translation>
 <translation id="5979084224081478209">Tjek adgangskoder</translation>
@@ -2905,6 +2909,7 @@ Ellers vil det blive blokeret af dine privatlivsindstillinger. Det giver det ind
 <translation id="6965382102122355670">OK</translation>
 <translation id="6965978654500191972">Enhed</translation>
 <translation id="696703987787944103">Perceptuel</translation>
+<translation id="6967851206780867018">1 fil blev blokeret på grund af indhold</translation>
 <translation id="6970885655016700774">Stof (arkiv)</translation>
 <translation id="6971439137020188025">Opret hurtigt en ny Google-præsentation i Slides</translation>
 <translation id="6972629891077993081">HID-enheder</translation>
@@ -2957,6 +2962,7 @@ Ellers vil det blive blokeret af dine privatlivsindstillinger. Det giver det ind
 <translation id="70705239631109039">Din forbindelse er ikke 100 % sikker</translation>
 <translation id="7075452647191940183">Anmodningen er for stor</translation>
 <translation id="7078665357168027058">RA3</translation>
+<translation id="7079138647457502205">En privatlivsvenlig browseroplevelse</translation>
 <translation id="7079718277001814089">Dette website indeholder malware</translation>
 <translation id="7081308185095828845">Denne funktion er ikke tilgængelig på din enhed</translation>
 <translation id="7083258188081898530">Bakke 9</translation>
@@ -3353,6 +3359,7 @@ Yderligere oplysninger:
 <translation id="7802989406998618639">Angiv den <ph name="NUMBER_OF_DIGITS" />-cifrede sikkerhedskode på <ph name="SIDE_OF_CARD" />, så din bank kan verificere din identitet</translation>
 <translation id="780301667611848630">Nej tak</translation>
 <translation id="7805768142964895445">Status</translation>
+<translation id="7810410097247356677">Gem dit kort og din krypterede sikkerhedskode på din enhed, så du hurtigere kan betale næste gang</translation>
 <translation id="7812922009395017822">Mir</translation>
 <translation id="7813600968533626083">Vil du fjerne formularforslaget fra Chrome?</translation>
 <translation id="781440967107097262">Vil du dele din udklipsholder?</translation>
@@ -3373,7 +3380,6 @@ Yderligere oplysninger:
 <translation id="7865448901209910068">Bedste hastighed</translation>
 <translation id="7870281855125116701">Der blev fundet en rabat</translation>
 <translation id="7871445724586827387">Skift adgangskoden til din Google-konto</translation>
-<translation id="7876615279559620350">Klar betalinger hurtigere ved at gemme CVC for dette kort på din Google-konto</translation>
 <translation id="7877007680666472091">beskyttede indholds-id'er</translation>
 <translation id="7878562273885520351">Din adgangskode kan være kompromitteret</translation>
 <translation id="7880146494886811634">Gem adresse</translation>
@@ -3598,7 +3604,6 @@ Yderligere oplysninger:
 <translation id="8308653357438598313">Live videostreaming</translation>
 <translation id="8311895354659782580">Ejendomshandel</translation>
 <translation id="8316555157357957253">Bruges nu</translation>
-<translation id="8317570861267063617">Klar betalinger hurtigere ved at gemme CVC for dette kort på din enhed</translation>
 <translation id="8319269383395457801">Salg af ejendom</translation>
 <translation id="831997045666694187">Aften</translation>
 <translation id="8321476692217554900">notifikationer</translation>

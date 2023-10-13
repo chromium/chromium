@@ -143,6 +143,7 @@
 <translation id="1264309058268477500">Наизменична</translation>
 <translation id="1264974993859112054">Спорт</translation>
 <translation id="1266469291454105242">Отклучување уред</translation>
+<translation id="126728463333482584">Вие сте меѓу првите што ќе ја доживеат „Заштитата од следење“ што ограничува сајтовите да користат колачиња од трети страни за да ве следат додека прелистувате.</translation>
 <translation id="1268480293435976622">Плик Chinese #7</translation>
 <translation id="1269516672602708785">Набрзина создајте нов сајт во Google Sites</translation>
 <translation id="1270328905573953738">Преселување и преместување</translation>
@@ -692,6 +693,7 @@
 <translation id="2361263712565360498">275 x 395 mm</translation>
 <translation id="236340516568226369">Мени со копчиња за менување големина</translation>
 <translation id="2365355378251437925">Внесете <ph name="FIELD" /></translation>
+<translation id="2365382709349300355">1 датотека е блокирана поради правило</translation>
 <translation id="2365508935344991784">Надворешен мебел</translation>
 <translation id="2366689192918515749">Месо и морска храна</translation>
 <translation id="2367567093518048410">Ниво</translation>
@@ -2414,6 +2416,7 @@
 <translation id="5967867314010545767">Отстрани од историјата</translation>
 <translation id="5968022600320704045">Нема резултати од пребарувањето</translation>
 <translation id="5969199813874624822">Зачувајте и следете ја цената</translation>
+<translation id="5973514677932942122"><ph name="EXPIRATION_DATE" /> | <ph name="SECURITY_CODE" /></translation>
 <translation id="5974052231147553524">Шеста ролна</translation>
 <translation id="5975083100439434680">Одзумирај</translation>
 <translation id="5979084224081478209">Провери ги лозинките</translation>
@@ -2905,6 +2908,7 @@
 <translation id="6965382102122355670">Во ред</translation>
 <translation id="6965978654500191972">Уред</translation>
 <translation id="696703987787944103">Перцептивна</translation>
+<translation id="6967851206780867018">1 датотека е блокирана поради содржини</translation>
 <translation id="6970885655016700774">Ткаенина (архивска)</translation>
 <translation id="6971439137020188025">Набрзина создајте нова презентација во Google Slides</translation>
 <translation id="6972629891077993081">HID-уреди</translation>
@@ -2957,6 +2961,7 @@
 <translation id="70705239631109039">Вашата врска не е потполно безбедна</translation>
 <translation id="7075452647191940183">Барањето е предолго</translation>
 <translation id="7078665357168027058">RA3</translation>
+<translation id="7079138647457502205">Прелистувајте со поголема приватност</translation>
 <translation id="7079718277001814089">Сајтов содржи злонамерен софтвер</translation>
 <translation id="7081308185095828845">Функцијава не е достапна на вашиот уред</translation>
 <translation id="7083258188081898530">Фиока 9</translation>
@@ -3373,7 +3378,6 @@
 <translation id="7865448901209910068">Најдобра брзина</translation>
 <translation id="7870281855125116701">Најден е попуст</translation>
 <translation id="7871445724586827387">Променете ја лозинката за сметката на Google</translation>
-<translation id="7876615279559620350">За побрзо плаќање, зачувајте го CVC за картичкава во вашата сметка на Google</translation>
 <translation id="7877007680666472091">ID-броеви на заштитени содржини</translation>
 <translation id="7878562273885520351">Можно е да ви е компромитирана лозинката</translation>
 <translation id="7880146494886811634">Зачувајте ја адресата</translation>
@@ -3598,7 +3602,6 @@
 <translation id="8308653357438598313">Видеострим во живо</translation>
 <translation id="8311895354659782580">Огласи за недвижности</translation>
 <translation id="8316555157357957253">Се користи сега</translation>
-<translation id="8317570861267063617">За побрзо плаќање, зачувајте го CVC за картичкава на уредот</translation>
 <translation id="8319269383395457801">Продажба на живеалишта</translation>
 <translation id="831997045666694187">Приквечер</translation>
 <translation id="8321476692217554900">известувања</translation>

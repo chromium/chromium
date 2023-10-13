@@ -335,7 +335,6 @@
 <translation id="2718352093833049315">Лише у Wi-Fi</translation>
 <translation id="2738375676495545665">Сховати опцію "Що нового"</translation>
 <translation id="2747003861858887689">Попереднє поле</translation>
-<translation id="2749026027885331579">Тепер учасники сімейної групи зможуть використовувати ваші ім’я користувача й пароль, коли входитимуть в обліковий запис <ph name="WEBSITE" /> за допомогою Google Менеджера паролів. <ph name="BEGIN_LINK" />Докладніше<ph name="END_LINK" /></translation>
 <translation id="2749231692441336879">Ви підписалися на канал <ph name="CHANNEL_NAME" /></translation>
 <translation id="2754492786623500387">Облікові записи на цьому пристрої</translation>
 <translation id="2762000892062317888">щойно</translation>
@@ -576,7 +575,6 @@
 <translation id="4018310736049373830">Керувати діями</translation>
 <translation id="4038354071007134711">Немає додатків на пристрої, щоб відкрити цей файл.</translation>
 <translation id="4042870976416480368">Знайти на сторінці</translation>
-<translation id="4043294777772912240">Тепер <ph name="USERNAME" /> зможе використовувати ваші ім’я користувача й пароль, коли входитиме в обліковий запис <ph name="WEBSITE" /> за допомогою Google Менеджера паролів. <ph name="BEGIN_LINK" />Докладніше<ph name="END_LINK" /></translation>
 <translation id="40433179647657191">Створіть пряме посилання на виділену сторінку та поділіться ним.</translation>
 <translation id="4045648459118332842">Входьте одним дотиком у додатки за допомогою збережених паролів</translation>
 <translation id="4049507953662678203">Переконайтеся, що з’єднання з мережею встановлено, і повторіть спробу.</translation>
@@ -713,6 +711,7 @@
 <translation id="4808744395915275922">Оновлення</translation>
 <translation id="4818522717893377262">Додати мову…</translation>
 <translation id="481968316161811770">Файли cookie й дані сайтів</translation>
+<translation id="4824480232751123840">Об’єм</translation>
 <translation id="4824497107140370669">{count,plural, =0{{domain}}=1{{domain} і ще 1}one{{domain} і ще {count}}few{{domain} і ще {count}}many{{domain} і ще {count}}other{{domain} і ще {count}}}</translation>
 <translation id="4826218269716039351">Блокувати файли cookie третіх сторін</translation>
 <translation id="4826588772550366629">камеру та мікрофон</translation>
@@ -850,6 +849,7 @@
 <translation id="5556459405103347317">Перезавантажити</translation>
 <translation id="555749644339804659">Перевірка паролів…</translation>
 <translation id="556042886152191864">Кнопка</translation>
+<translation id="5572684875078967866">Обсяг даних</translation>
 <translation id="5597915316964418992">Відкрийте сітку вкладок</translation>
 <translation id="560322036295180549">Вимкнено адміністратором організації</translation>
 <translation id="5614553682702429503">Зберегти пароль?</translation>
@@ -911,6 +911,7 @@
 <translation id="5896576662943111387">Створено для iOS</translation>
 <translation id="5897749768294722429">Щоб швидко відкривати відвідані сайти, увімкніть синхронізацію вкладок і історії.</translation>
 <translation id="5897956970858271241">Перейти за скопійованим посиланням</translation>
+<translation id="5898848375214731122">Маса</translation>
 <translation id="5899314093904173337">Щоб отримати доступ до контенту, люди поруч можуть зісканувати цей QR-код за допомогою камери або QR-сканера</translation>
 <translation id="5911030830365207728">Google Перекладач</translation>
 <translation id="5913600720976431809">Опції перекладу сторінки</translation>
@@ -928,6 +929,7 @@
 <translation id="5981230843984570095">Закрити всі неактивні</translation>
 <translation id="5982717868370722439">Додати наявні дані в обліковий запис <ph name="USER_EMAIL" />.</translation>
 <translation id="5984222099446776634">Нещодавно відвідані</translation>
+<translation id="598634819525651074">Площа</translation>
 <translation id="5988097621740394599">Переглядайте зниження цін на вкладках.</translation>
 <translation id="5988851877894965432">Відкривати URL-адреси в Chrome</translation>
 <translation id="6006672969046233841">Нова вкладка</translation>
@@ -1364,6 +1366,7 @@
 <translation id="8156478151976189188">Синхронізація паролів не працює</translation>
 <translation id="8157532349231307196">Облікових записів: <ph name="NUMBER_OF_ACCOUNTS" /></translation>
 <translation id="8159358225423560600">щойно</translation>
+<translation id="8173034266693057059">Довжина</translation>
 <translation id="8179976553408161302">Enter</translation>
 <translation id="8182037667962849780">{count,plural, =1{Для веб-сайту {website_1}}=2{Для веб-сайтів {website_1} і {website_2}}=3{Для {website_1}, {website_2} і ще 1 веб-сайту}one{Для {website_1}, {website_2} і ще {more_count} веб-сайту}few{Для {website_1}, {website_2} і ще {more_count} веб-сайтів}many{Для {website_1}, {website_2} і ще {more_count} веб-сайтів}other{Для {website_1}, {website_2} і ще {more_count} веб-сайту}}</translation>
 <translation id="8193953846147532858"><ph name="BEGIN_LINK" />Ваші пристрої<ph name="END_LINK" /> · <ph name="EMAIL" /></translation>
@@ -1458,6 +1461,7 @@
 <translation id="8692689525339542358">Захистіть себе від небезпечних сайтів, завантажень і розширень.</translation>
 <translation id="8693663554456874301">{count,plural, =1{Закрити вкладку}one{Закрити вкладки}few{Закрити вкладки}many{Закрити вкладки}other{Закрити вкладки}}</translation>
 <translation id="8703536910991780768">Ваші паролі надійні</translation>
+<translation id="8706253136355675497">Температура</translation>
 <translation id="8717864919010420084">Скопіювати посилання</translation>
 <translation id="8721297211384281569">Меню інструментів</translation>
 <translation id="8725066075913043281">Повторити спробу</translation>
@@ -1563,6 +1567,7 @@
 <translation id="9188680907066685419">Вийти з керованого облікового запису</translation>
 <translation id="9200875785104711666"><ph name="TIME" /> дн. тому</translation>
 <translation id="9203116392574189331">Handoff</translation>
+<translation id="9206887540681440657">Швидкість</translation>
 <translation id="9219154867334666734">Шукати вкладки…</translation>
 <translation id="9223358826628549784">Звіт про аварійне завершення роботи надіслано.</translation>
 <translation id="941747855997058526">Вибрати пароль…</translation>

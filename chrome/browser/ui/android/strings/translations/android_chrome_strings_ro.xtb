@@ -166,6 +166,7 @@ Numai un utilizator care deține expresia ta de acces îți poate citi datele cr
 <translation id="1922362554271624559">Limbi sugerate</translation>
 <translation id="1924255092154549435">Fila este extinsă</translation>
 <translation id="1925021887439448749">Introdu adresa web personalizată</translation>
+<translation id="1928618076168182477">Apare afișarea vizuală</translation>
 <translation id="1928696683969751773">Actualizări</translation>
 <translation id="19288952978244135">Redeschide Chrome.</translation>
 <translation id="1933845786846280168">Fila selectată</translation>
@@ -196,6 +197,7 @@ Numai un utilizator care deține expresia ta de acces îți poate citi datele cr
 <translation id="2065944887543506430">{FILE_COUNT,plural, =1{O descărcare nu a reușit}few{# descărcări nu au reușit}other{# de descărcări nu au reușit}}</translation>
 <translation id="2067805253194386918">text</translation>
 <translation id="2082238445998314030">Rezultatul <ph name="RESULT_NUMBER" /> din <ph name="TOTAL_RESULTS" /></translation>
+<translation id="2091863218454846791">Se afișează vizualizarea compactă</translation>
 <translation id="2093731487903423814">ultimele 15 minute</translation>
 <translation id="2096012225669085171">Sincronizează și personalizează pe toate dispozitivele</translation>
 <translation id="2100273922101894616">Conectare automată</translation>
@@ -217,6 +219,7 @@ Numai un utilizator care deține expresia ta de acces îți poate citi datele cr
 <translation id="218608176142494674">Trimitere</translation>
 <translation id="2194856509914051091">De reținut</translation>
 <translation id="2200113223741723867">Gestionează accesul la datele de utilizare</translation>
+<translation id="22091350895006575">Adaugă un nume de utilizator</translation>
 <translation id="221494669172414749">Dacă deschizi Chrome fără o blocare a profilului, parolele salvate și metodele de plată vor fi eliminate din mașină. Dacă folosești o blocare a profilului, aceste date sunt păstrate în siguranță.</translation>
 <translation id="2218567645332692482">Doresc actualizarea navigărilor la HTTPS și un avertisment înainte de încărcarea site-urilor care nu acceptă acest protocol</translation>
 <translation id="2227444325776770048">Continuă ca <ph name="USER_FULL_NAME" /></translation>
@@ -244,6 +247,7 @@ Numai un utilizator care deține expresia ta de acces îți poate citi datele cr
 <translation id="235789365079050412">Politica de confidențialitate Google</translation>
 <translation id="2359808026110333948">Continuă</translation>
 <translation id="2362083820973145409">Conectat(ă) ca <ph name="USER_NAME" />. <ph name="USER_EMAIL" />. Deschide setările.</translation>
+<translation id="2364539095045928896">Butonul Închide pentru a închide notificarea privind confidențialitatea din hubul Statistici privind paginile.</translation>
 <translation id="2386938421315164605">Ascunde și reafișează subiecte</translation>
 <translation id="2390510615457643724">Vrei să descarci din nou <ph name="FILE_NAME" /> de <ph name="FILE_SIZE" />?</translation>
 <translation id="2394602618534698961">Fișierele pe care le descarci apar aici</translation>
@@ -312,6 +316,7 @@ Numai un utilizator care deține expresia ta de acces îți poate citi datele cr
 <translation id="2718846868787000099">Site-urile pe care le accesezi îți pot vedea preferințele pentru a afișa conținut în limbile tale preferate</translation>
 <translation id="2722945394406572875">Solicitarea privind Privacy Sandbox a fost închisă</translation>
 <translation id="2723001399770238859">audio</translation>
+<translation id="2760805590727089264">LL / AA</translation>
 <translation id="2760989362628427051">Activează tema întunecată când este activată tema întunecată sau Economisirea bateriei pentru dispozitiv</translation>
 <translation id="2762000892062317888">adineauri</translation>
 <translation id="276969039800130567">Conectat(ă) ca <ph name="USER_EMAIL_ADDRESS" />.</translation>
@@ -845,6 +850,7 @@ Pentru a modifica această setare, <ph name="BEGIN_LINK" />resetează sincroniza
 <translation id="5458366071038729214">Aici vei vedea site-urile pe care le urmărești</translation>
 <translation id="5468068603361015296">Vrei să descarci oricum <ph name="FILE_NAME" />?</translation>
 <translation id="548278423535722844">Deschide în aplicația Maps</translation>
+<translation id="5486841595534124508">Sigla notificării privind confidențialitatea pentru hubul de statistici privind paginile, care redirecționează către pagina Activitatea mea.</translation>
 <translation id="5487521232677179737">Șterge datele</translation>
 <translation id="5492637351392383067">Criptarea pe dispozitiv</translation>
 <translation id="5514904542973294328">Dezactivată de administratorul dispozitivului</translation>
@@ -962,6 +968,7 @@ Pentru a modifica această setare, <ph name="BEGIN_LINK" />resetează sincroniza
 <translation id="6112702117600201073">Se actualizează pagina</translation>
 <translation id="6122831415929794347">Dezactivezi Navigarea sigură?</translation>
 <translation id="6127379762771434464">Elementul a fost eliminat</translation>
+<translation id="6130303040046284160">Minimizează fila</translation>
 <translation id="6137022273846704445">Limba pentru <ph name="APP_NAME" /></translation>
 <translation id="6138832295072039549">Modifică aici setările pentru site</translation>
 <translation id="6140709049082532940">Protecție îmbunătățită:</translation>
@@ -1264,6 +1271,7 @@ De exemplu, unele site-uri pot răspunde la această solicitare afișând anunț
 <translation id="7588219262685291874">Activează tema întunecată când este activată Economisirea bateriei pentru dispozitiv</translation>
 <translation id="7594687499944811403">Permite ca <ph name="EMBEDDED_ORIGIN" /> să-ți verifice identitatea pentru <ph name="TOP_ORIGIN" /></translation>
 <translation id="7596558890252710462">Sistem de operare</translation>
+<translation id="7603168929588204083">Dată nevalidă</translation>
 <translation id="7605594153474022051">Sincronizarea nu funcționează</translation>
 <translation id="7612619742409846846">Conectat(ă) la Google ca</translation>
 <translation id="7612989789287281429">Se conectează…</translation>
@@ -1313,6 +1321,7 @@ De exemplu, unele site-uri pot răspunde la această solicitare afișând anunț
 <translation id="7810647596859435254">Deschide cu…</translation>
 <translation id="7815484226266492798">Captură de ecran lungă</translation>
 <translation id="7822705602465980873">Când te conectezi, aceste date sunt asociate Contului tău Google pentru a te proteja în toate serviciile Google, de exemplu, sporind gradul de protecție în Gmail după un incident de securitate.</translation>
+<translation id="782705168687182233">Activitatea ta este salvată în <ph name="BEGIN_LINK" />Contul Google<ph name="END_LINK" />.</translation>
 <translation id="78270725016672455">Computerul solicită permisiunea de a înregistra dispozitivul pentru conectarea la un site</translation>
 <translation id="7844171778363018843">Nu s-au selectat date pentru sincronizare</translation>
 <translation id="7846296061357476882">Servicii Google</translation>
@@ -1406,6 +1415,7 @@ De exemplu, unele site-uri pot răspunde la această solicitare afișând anunț
 <translation id="8223642481677794647">Meniul cardului din feed</translation>
 <translation id="8236097722223016103">Adaugă la marcaje</translation>
 <translation id="8237871086242677046">Foaia paginii Statistici din partea de jos</translation>
+<translation id="8243077599929149377">Adaugă-ți numele de utilizator</translation>
 <translation id="8250920743982581267">Documente</translation>
 <translation id="8255617931166444521">Site-urile pot folosi cookie-uri numai pentru a-ți vedea activitatea de navigare pe site-ul respectiv</translation>
 <translation id="8259179246279078674">Întrucât paginile preîncărcate sunt criptate, Google nu va afla nimic despre conținutul paginii preîncărcate. Serverele Google vor afla ce site-uri sunt preîncărcate în mod privat. Aceste informații sunt folosite numai la preîncărcarea paginilor și nu sunt conectate cu alte informații din Contul Google.</translation>

@@ -333,7 +333,6 @@ Du hast <ph name="DSE_NAME" /> als Suchmaschine festgelegt. Informationen zum L�
 <translation id="2718352093833049315">Nur bei WLAN</translation>
 <translation id="2738375676495545665">„Das ist neu“ ausblenden</translation>
 <translation id="2747003861858887689">Vorheriges Feld</translation>
-<translation id="2749026027885331579">Deine Familienmitglieder können jetzt deinen Nutzernamen und dein Passwort verwenden, um sich auf <ph name="WEBSITE" /> über den Google Passwortmanager anzumelden. <ph name="BEGIN_LINK" />Weitere Informationen<ph name="END_LINK" /></translation>
 <translation id="2749231692441336879">Du folgst <ph name="CHANNEL_NAME" /></translation>
 <translation id="2754492786623500387">Konten auf diesem Gerät</translation>
 <translation id="2762000892062317888">gerade eben</translation>
@@ -574,7 +573,6 @@ Informationen zum Löschen deines Suchverlaufs findest du in der Anleitung deine
 <translation id="4018310736049373830">Aktivitäten verwalten</translation>
 <translation id="4038354071007134711">Keine App zum Öffnen der Datei auf diesem Gerät</translation>
 <translation id="4042870976416480368">Auf Seite suchen</translation>
-<translation id="4043294777772912240"><ph name="USERNAME" /> kann jetzt deinen Nutzernamen und dein Passwort verwenden, um sich auf <ph name="WEBSITE" /> über den Google Passwortmanager anzumelden. <ph name="BEGIN_LINK" />Weitere Informationen<ph name="END_LINK" /></translation>
 <translation id="40433179647657191">Du kannst einen direkten Link zu einer von dir markierten Seite erstellen und teilen.</translation>
 <translation id="4045648459118332842">Deine gespeicherten Passwörter in allen Apps mit einmal tippen abrufen</translation>
 <translation id="4049507953662678203">Überprüfe deiner Netzwerkverbindung und versuche es noch einmal.</translation>
@@ -711,6 +709,7 @@ Informationen zum Löschen deines Suchverlaufs findest du in der Anleitung deine
 <translation id="4808744395915275922">Updates</translation>
 <translation id="4818522717893377262">Sprache hinzufügen…</translation>
 <translation id="481968316161811770">Cookies, Websitedaten</translation>
+<translation id="4824480232751123840">Lautstärke</translation>
 <translation id="4824497107140370669">{count,plural, =0{{domain}}=1{{domain} und ein weiterer}other{{domain} und {count} weitere}}</translation>
 <translation id="4826218269716039351">Drittanbieter-Cookies blockieren</translation>
 <translation id="4826588772550366629">Kamera und Mikrofon</translation>
@@ -848,6 +847,7 @@ Handoff muss auch im Abschnitt "Allgemein" deiner Einstellungen aktiviert sein u
 <translation id="5556459405103347317">Neu laden</translation>
 <translation id="555749644339804659">Passwörter werden geprüft…</translation>
 <translation id="556042886152191864">Schaltfläche</translation>
+<translation id="5572684875078967866">Datenspeicherung</translation>
 <translation id="5597915316964418992">Tab-Raster öffnen</translation>
 <translation id="560322036295180549">Von deiner Organisation deaktiviert</translation>
 <translation id="5614553682702429503">Passwort speichern?</translation>
@@ -909,6 +909,7 @@ Handoff muss auch im Abschnitt "Allgemein" deiner Einstellungen aktiviert sein u
 <translation id="5896576662943111387">Entwickelt für iOS</translation>
 <translation id="5897749768294722429">Synchronisiere Tabs und Verlauf, um bereits besuchte Websites schnell wieder aufzurufen.</translation>
 <translation id="5897956970858271241">Kopierten Link aufrufen</translation>
+<translation id="5898848375214731122">Gewicht (Masse)</translation>
 <translation id="5899314093904173337">Um diesen Inhalt mit Leuten in deiner Nähe zu teilen, bitte sie, den QR-Code mit ihrer Kamera oder einer entsprechenden App zu scannen.</translation>
 <translation id="5911030830365207728">Google Übersetzer</translation>
 <translation id="5913600720976431809">Optionen zum Übersetzen der Seite</translation>
@@ -926,6 +927,7 @@ Handoff muss auch im Abschnitt "Allgemein" deiner Einstellungen aktiviert sein u
 <translation id="5981230843984570095">Alle inaktiven Tabs schließen</translation>
 <translation id="5982717868370722439">Vorhandene Daten zu <ph name="USER_EMAIL" /> hinzufügen</translation>
 <translation id="5984222099446776634">Kürzlich besucht</translation>
+<translation id="598634819525651074">Bereich</translation>
 <translation id="5988097621740394599">Du siehst Preisnachlässe auf deinen Tabs.</translation>
 <translation id="5988851877894965432">URLs in Chrome öffnen</translation>
 <translation id="6006672969046233841">Neuer Tab</translation>
@@ -1358,6 +1360,7 @@ Websites können Cookies verwenden, um deine Browseraktivitäten auf anderen Web
 <translation id="8156478151976189188">Die Passwortsynchronisierung funktioniert nicht</translation>
 <translation id="8157532349231307196"><ph name="NUMBER_OF_ACCOUNTS" /> Konten</translation>
 <translation id="8159358225423560600">gerade eben</translation>
+<translation id="8173034266693057059">Länge</translation>
 <translation id="8179976553408161302">Eingabetaste</translation>
 <translation id="8182037667962849780">{count,plural, =1{Für {website_1}}=2{Für {website_1} und {website_2}}=3{Für {website_1}, {website_2} und 1 weitere}other{Für {website_1}, {website_2} und {more_count} weitere}}</translation>
 <translation id="8193953846147532858"><ph name="BEGIN_LINK" />Meine Geräte<ph name="END_LINK" /> · <ph name="EMAIL" /></translation>
@@ -1451,6 +1454,7 @@ Deine Daten wurden am <ph name="TIME" /> mit deiner Passphrase verschlüsselt. G
 <translation id="8692689525339542358">Schütze dich bestmöglich vor schädlichen Websites, Downloads und Erweiterungen.</translation>
 <translation id="8693663554456874301">{count,plural, =1{Tab schließen}other{Tabs schließen}}</translation>
 <translation id="8703536910991780768">Deine Passwörter sind stark</translation>
+<translation id="8706253136355675497">Temperatur</translation>
 <translation id="8717864919010420084">Link kopieren</translation>
 <translation id="8721297211384281569">Menü "Tools"</translation>
 <translation id="8725066075913043281">Erneut versuchen</translation>
@@ -1556,6 +1560,7 @@ Deine Daten wurden am <ph name="TIME" /> mit deiner Passphrase verschlüsselt. G
 <translation id="9188680907066685419">Von verwaltetem Konto abmelden</translation>
 <translation id="9200875785104711666">vor <ph name="TIME" /> Tg.</translation>
 <translation id="9203116392574189331">Handoff</translation>
+<translation id="9206887540681440657">Geschwindigkeit</translation>
 <translation id="9219154867334666734">Auf Tabs suchen…</translation>
 <translation id="9223358826628549784">Absturzbericht wurde gesendet.</translation>
 <translation id="941747855997058526">Passwort auswählen…</translation>

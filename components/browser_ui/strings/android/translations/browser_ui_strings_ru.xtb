@@ -258,6 +258,7 @@
 <translation id="5545693483061321551">Сайты не могут использовать файлы cookie, чтобы отслеживать ваши действия в браузере, например для показа персонализированной рекламы. Из-за этого функции некоторых сайтов могут стать недоступными.</translation>
 <translation id="5553374991681107062">Дата</translation>
 <translation id="5556459405103347317">Перезагрузить</translation>
+<translation id="5591840828808741583">Заблокировано для сайта <ph name="SITE_NAME" /></translation>
 <translation id="5649053991847567735">Автоматическое скачивание</translation>
 <translation id="5668404140385795438">Игнорировать запросы сайтов на запрет масштабирования</translation>
 <translation id="5677928146339483299">Заблокировано</translation>
@@ -455,6 +456,7 @@
 <translation id="8959122750345127698">Страница не найдена: <ph name="URL" /></translation>
 <translation id="8986362086234534611">Удалить</translation>
 <translation id="8990043154272859344">Вы выйдете из аккаунта на всех сайтах</translation>
+<translation id="9011903857143958461">Действует для сайта <ph name="SITE_NAME" /></translation>
 <translation id="9019902583201351841">Управляется вашими родителями</translation>
 <translation id="9039697262778250930">Возможно, на этих сайтах вам потребуется повторно войти в аккаунт.</translation>
 <translation id="9074739597929991885">Bluetooth</translation>

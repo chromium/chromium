@@ -258,6 +258,7 @@
 <translation id="5545693483061321551">Site-urile nu pot folosi cookie-uri pentru a vedea activitatea ta de navigare de pe diferite site-uri, de exemplu, pentru a personaliza anunțurile. Este posibil ca funcțiile de pe anumite site-uri să nu funcționeze.</translation>
 <translation id="5553374991681107062">Cele mai recente</translation>
 <translation id="5556459405103347317">Reîncarcă</translation>
+<translation id="5591840828808741583"><ph name="SITE_NAME" /> blocat</translation>
 <translation id="5649053991847567735">Descărcări automate</translation>
 <translation id="5668404140385795438">Ignoră solicitarea unui site de a împiedica mărirea</translation>
 <translation id="5677928146339483299">Blocat</translation>
@@ -455,6 +456,7 @@
 <translation id="8959122750345127698">Navigarea nu este accesibilă: <ph name="URL" /></translation>
 <translation id="8986362086234534611">Șterge</translation>
 <translation id="8990043154272859344">Te vei deconecta de la toate site-urile</translation>
+<translation id="9011903857143958461"><ph name="SITE_NAME" /> permis</translation>
 <translation id="9019902583201351841">Gestionat de părinții tăi</translation>
 <translation id="9039697262778250930">Poți fi deconectat(ă) de pe aceste site-uri</translation>
 <translation id="9074739597929991885">Bluetooth</translation>

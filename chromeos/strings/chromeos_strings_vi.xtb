@@ -195,6 +195,7 @@
 <translation id="2326139988748364651"><ph name="RESOLUTION_VALUE" /> dpi</translation>
 <translation id="2338501278241028356">Bật Bluetooth để khám phá các thiết bị lân cận</translation>
 <translation id="2346474577291266260">Tuyệt vời (<ph name="SIGNAL_STRENGTH" />)</translation>
+<translation id="2358070305000735383">Hộp thoại chỉnh sửa cho <ph name="DESCRIPTION" /> đang mở.</translation>
 <translation id="2359808026110333948">Tiếp tục</translation>
 <translation id="2364498172489649528">Đã đạt</translation>
 <translation id="2367335866686097760">Ánh xạ phím</translation>
@@ -714,7 +715,6 @@
 <translation id="6423239382391657905">OpenVPN</translation>
 <translation id="6439505561246192797">Yếu (<ph name="SIGNAL_STRENGTH" />)</translation>
 <translation id="6447630859861661624">Chuyển đến phần cài đặt tài khoản</translation>
-<translation id="6461047516875166066">Tìm hiểu thêm</translation>
 <translation id="6463239094587744704">{PAGE_NUMBER,plural, =0{Quét lại trang?}=1{Quét lại trang {PAGE_NUMBER}?}other{Quét lại trang {PAGE_NUMBER}?}}</translation>
 <translation id="6472207088655375767">OTP</translation>
 <translation id="6480327114083866287">Do <ph name="MANAGER" /> quản lý</translation>
@@ -1025,6 +1025,7 @@
 <translation id="8868741746785112895">GUID</translation>
 <translation id="8876270629542503161">Thiết bị là máy tính bảng.</translation>
 <translation id="8881098542468797602">Đã kiểm tra thành công</translation>
+<translation id="8892443466059986410">Huỷ chỉnh sửa lối tắt</translation>
 <translation id="8898840733695078011">Cường độ tín hiệu</translation>
 <translation id="8909114361904403025">mũi tên lên</translation>
 <translation id="8910721771319628100">Mạng mặc định vượt ngưỡng độ trễ</translation>

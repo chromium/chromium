@@ -488,7 +488,7 @@
 <translation id="1939059826036755332">自動顯示畫中畫</translation>
 <translation id="1939175642807587452">可要求傳送通知</translation>
 <translation id="1940441167050915935">刪除已儲存的安全碼</translation>
-<translation id="194174710521904357">你已暫時允許這個網站使用第三方 Cookie。換言之，瀏覽防護的強度會降低，但網站功能正常運作的機率會提高。</translation>
+<translation id="194174710521904357">你已暫時允許此網站使用第三方 Cookie。換言之，瀏覽保護程度會降低，但網站功能正常運作的機率會提高。</translation>
 <translation id="1943994668912612445">設計</translation>
 <translation id="1945968466830820669">您有可能會失去機構帳戶存取權，或會遭身份盜用。Chromium 建議您立即變更密碼。</translation>
 <translation id="1946849748901605102">12 x 15 吋</translation>
@@ -666,7 +666,7 @@
 <translation id="2300306941146563769">未上載</translation>
 <translation id="230286397113210245">開無痕式視窗按鈕，啟動之後就可以開新嘅無痕式視窗私下瀏覽</translation>
 <translation id="2312234273148520048">調味料和醬料</translation>
-<translation id="2316087952091171402">低於 <ph name="UPPER_ESTIMATE" />。下次造訪某些網站時，載入速度可能會變慢。</translation>
+<translation id="2316087952091171402">小於 <ph name="UPPER_ESTIMATE" />。下次瀏覽部分網站時，載入速度可能會變慢。</translation>
 <translation id="2316159751672436664">在 Chrome OS 設定中個人化您的無障礙工具</translation>
 <translation id="2316887270356262533">釋出的快取不到 1 MB。在您下次瀏覽部分網站時，載入速度可能會變慢。</translation>
 <translation id="2317259163369394535"><ph name="DOMAIN" /> 要求提供使用者名稱和密碼。</translation>
@@ -1112,7 +1112,7 @@
 <translation id="3271648667212143903"><ph name="ORIGIN" /> 要求連接至</translation>
 <translation id="3272091146646336650">Super B</translation>
 <translation id="3272112314896217187">請輸入 <ph name="NUMBER_OF_DIGITS" /> 位數驗證碼</translation>
-<translation id="3272643614306383237">低於 1 MB。下次造訪某些網站時，載入速度可能會變慢。</translation>
+<translation id="3272643614306383237">小於 1 MB。下次瀏覽部分網站時，載入速度可能會變慢。</translation>
 <translation id="3281350579597955952">{0,plural, =1{管理員政策不建議在<ph name="DESTINATION_NAME" />中開啟這個檔案}other{管理員政策不建議在<ph name="DESTINATION_NAME" />中開啟這些檔案}}</translation>
 <translation id="3282085321714087552">機構 (<ph name="ENROLLMENT_DOMAIN" />) 已將一些資訊 (例如設定或政策) 傳送到以下網站。</translation>
 <translation id="3286372614333682499">直向</translation>
@@ -1893,7 +1893,7 @@
 <translation id="4873616204573862158">眼鏡</translation>
 <translation id="4876188919622883022">簡化檢視</translation>
 <translation id="4876305945144899064">沒有使用者名稱</translation>
-<translation id="4876327226315760474">這表示網站功能應可正常運作，但瀏覽防護的強度可能會降低。</translation>
+<translation id="4876327226315760474">這代表網站功能應可正常運作，但瀏覽保護程度會降低。</translation>
 <translation id="4877047577339061095">家居儲物傢俱和層架</translation>
 <translation id="4877083676943085827">{COUNT,plural, =0{無}=1{<ph name="EXAMPLE_DOMAIN_1" />}=2{<ph name="EXAMPLE_DOMAIN_1" />、<ph name="EXAMPLE_DOMAIN_2" />}other{<ph name="EXAMPLE_DOMAIN_1" />、<ph name="EXAMPLE_DOMAIN_2" /> <ph name="AND_MORE" />}}</translation>
 <translation id="4877422487531841831">搵「<ph name="TEXT" />」</translation>
@@ -2881,7 +2881,7 @@
 <translation id="6934236486840930310"><ph name="BEGIN_BOLD" />預設搜尋引擎可方便你搜尋網站並支援 Chrome 功能<ph name="END_BOLD" />，例如讓你在網址列搜尋，以及在網頁使用圖片搜尋。搜尋引擎不支援的功能將無法使用。</translation>
 <translation id="6934672428414710184">此名稱來自您的 Google 賬戶</translation>
 <translation id="6935082727755903526">會計和財務工作</translation>
-<translation id="6935179587384421592"><ph name="SIZE" />。下次造訪某些網站時，載入速度可能會變慢。</translation>
+<translation id="6935179587384421592"><ph name="SIZE" />。下次瀏覽部分網站時，載入速度可能會變慢。</translation>
 <translation id="6936976777388162184">這是隨附裝置，因此無法註冊 Kiosk &amp; Signage 升級版。</translation>
 <translation id="6939469646605424232">電視劇</translation>
 <translation id="6944692733090228304">您輸入密碼的網站並非由 <ph name="BEGIN_BOLD" /><ph name="ORG_NAME" /><ph name="END_BOLD" /> 管理。為保帳戶安全，請勿在其他應用程式和網站上使用相同的密碼。</translation>
@@ -3149,7 +3149,7 @@
 <translation id="7441864845853794192">美食和特色食品</translation>
 <translation id="7442725080345379071">淺橙色</translation>
 <translation id="7444046173054089907">系統已封鎖此網站</translation>
-<translation id="7444176988908839653">{COUNT,plural, =0{今天將再次封鎖 Cookie}=1{明天將再次封鎖 Cookie}other{# 天後將再次封鎖 Cookie}}</translation>
+<translation id="7444176988908839653">{COUNT,plural, =0{系統將於今天再次封鎖 Cookie}=1{系統將於明天再次封鎖 Cookie}other{系統將於 # 天後再次封鎖 Cookie}}</translation>
 <translation id="7445762425076701745">您所連線的伺服器身分無法完全驗證，該伺服器所使用的名稱只在您的網絡中有效，而外部憑證授權單位無法驗證該伺服器的擁有權。由於某些憑證授權單位可核發憑證，但系統無法確保您所連接的網站正確，因此仍可能會被攻擊。</translation>
 <translation id="7447234474237738389">服裝服務</translation>
 <translation id="7447625772313191651"><ph name="NAME" /> (<ph name="WIDTH" /> x <ph name="HEIGHT" /> 毫米)</translation>
@@ -3379,7 +3379,6 @@
 <translation id="7865448901209910068">最佳速度</translation>
 <translation id="7870281855125116701">已找到折扣</translation>
 <translation id="7871445724586827387">變更 Google 帳戶密碼</translation>
-<translation id="7876615279559620350">在 Google 帳戶中儲存此卡的 CVC 可加快結帳速度</translation>
 <translation id="7877007680666472091">受保護的內容 ID</translation>
 <translation id="7878562273885520351">您的密碼可能會被盜用</translation>
 <translation id="7880146494886811634">儲存地址</translation>
@@ -3517,7 +3516,7 @@
 <translation id="81563721597823545">曲棍球用品</translation>
 <translation id="8161095570253161196">繼續瀏覽</translation>
 <translation id="8163866351304776260">四孔 (左側)</translation>
-<translation id="8164078261547504572">想在商品降價時收到電子郵件嗎？</translation>
+<translation id="8164078261547504572">想在降價時收到電郵嗎？</translation>
 <translation id="8175796834047840627">由於您已登入，因此 Chrome 提議將您的付款卡儲存至 Google 帳戶。您可以在設定中變更此行為。</translation>
 <translation id="8176440868214972690">此裝置的管理員已將一些資訊 (例如設定或政策) 傳送到以下網站。</translation>
 <translation id="817820454357658398">女性衛生產品</translation>
@@ -3604,7 +3603,6 @@
 <translation id="8308653357438598313">直播影片串流</translation>
 <translation id="8311895354659782580">房地產出售</translation>
 <translation id="8316555157357957253">使用中</translation>
-<translation id="8317570861267063617">在裝置上儲存此卡的 CVC 可加快結帳速度</translation>
 <translation id="8319269383395457801">住宅出售</translation>
 <translation id="831997045666694187">傍晚</translation>
 <translation id="8321476692217554900">通知</translation>
@@ -3959,7 +3957,7 @@
 <translation id="9078912659001679888">攪拌器和榨汁機</translation>
 <translation id="9078964945751709336">必須提供更多資料</translation>
 <translation id="9080712759204168376">訂單摘要</translation>
-<translation id="9084304544887760521">設定了追蹤的商品後，如果有任何網站調降了這些商品的價格，系統將傳送電子郵件到 <ph name="EMAIL" />。</translation>
+<translation id="9084304544887760521">你追蹤的產品在任何網站上降價時，系統會傳送電郵至 <ph name="EMAIL" />。</translation>
 <translation id="908796725011587895">大專院校運動</translation>
 <translation id="9089260154716455634">停機時間政策：</translation>
 <translation id="9090243919347147717">附件</translation>

@@ -466,6 +466,7 @@
 <translation id="1875512691959384712">Google Формалар</translation>
 <translation id="1876399092304384674">Күнү боюнча</translation>
 <translation id="187918866476621466">Баштоо бетин ачуу</translation>
+<translation id="1880901968112404879">Кийинки жолу тезирээк төлөө үчүн картаңызды, шифрленген коопсуздук кодун жана эсептешүү дарегин Google аккаунтуңузга сактап коюңуз</translation>
 <translation id="1883255238294161206">Тизмени жыйнап коюу</translation>
 <translation id="1884843295353628214">Джаз</translation>
 <translation id="1890171020361705182">Динозавр оюну. Пикселденген динозавр ээн ландшафтты аралап, кактус менен птеродактилдерден качат. Аудио сигналды укканда тоскоолдуктардан секирип өтүңүз.</translation>
@@ -3357,6 +3358,7 @@
 <translation id="7802989406998618639">Банк сиз экениңизди текшериши үчүн, <ph name="SIDE_OF_CARD" /> картаңыздагы <ph name="NUMBER_OF_DIGITS" /> орундуу коопсуздук кодун киргизиңиз</translation>
 <translation id="780301667611848630">Жок, рахмат</translation>
 <translation id="7805768142964895445">Статусу</translation>
+<translation id="7810410097247356677">Кийинки жолу тезирээк төлөө үчүн картаңызды жана шифрленген коопсуздук кодун түзмөккө сактаңыз</translation>
 <translation id="7812922009395017822">Mir</translation>
 <translation id="7813600968533626083">Форма сунушу Chrome'дон алынып салынсынбы?</translation>
 <translation id="781440967107097262">Буфер бөлүшүлсүнбү?</translation>
@@ -3377,7 +3379,6 @@
 <translation id="7865448901209910068">Мыкты ылдамдык</translation>
 <translation id="7870281855125116701">Арзандатуу табылды</translation>
 <translation id="7871445724586827387">Google аккаунтуңуздун сырсөзүн өзгөртүү</translation>
-<translation id="7876615279559620350">Тез төлөө үчүн бул картанын CVC кодун Google аккаунтуңузга сактап коюңуз</translation>
 <translation id="7877007680666472091">корголгон content ID'лер</translation>
 <translation id="7878562273885520351">Сырсөзүңүздү башка адамдар бузуп кирген окшойт</translation>
 <translation id="7880146494886811634">Даректи сактоо</translation>
@@ -3602,7 +3603,6 @@
 <translation id="8308653357438598313">Камерадан түз берүү</translation>
 <translation id="8311895354659782580">Кыймылсыз мүлк тизмелери</translation>
 <translation id="8316555157357957253">Азыр колдонулуп жатат</translation>
-<translation id="8317570861267063617">Тез төлөө үчүн бул картанын CVC кодун ушул түзмөккө сактап коюңуз</translation>
 <translation id="8319269383395457801">Турак жай сатуу</translation>
 <translation id="831997045666694187">Кече</translation>
 <translation id="8321476692217554900">билдирмелер</translation>

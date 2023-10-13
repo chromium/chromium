@@ -195,6 +195,7 @@
 <translation id="2326139988748364651"><ph name="RESOLUTION_VALUE" /> dpi</translation>
 <translation id="2338501278241028356">नजिकैका डिभाइसहरू पत्ता लगाउन ब्लुटुथ अन गर्नुहोस्</translation>
 <translation id="2346474577291266260">उत्कृष्ट (<ph name="SIGNAL_STRENGTH" />)</translation>
+<translation id="2358070305000735383"><ph name="DESCRIPTION" /> को सम्पादन गर्ने डायलग खुला छ।</translation>
 <translation id="2359808026110333948">जारी राख्नुहोस्</translation>
 <translation id="2364498172489649528">सुरक्षा जाँचमा पास भयो</translation>
 <translation id="2367335866686097760">की किम्याप गरिँदै छ</translation>
@@ -714,7 +715,6 @@
 <translation id="6423239382391657905">खुल्लाVPN</translation>
 <translation id="6439505561246192797">कमजोर (<ph name="SIGNAL_STRENGTH" />)</translation>
 <translation id="6447630859861661624">खाताका सेटिङमा जानुहोस्</translation>
-<translation id="6461047516875166066">मलाई थप कुरा बताउनुहोस्</translation>
 <translation id="6463239094587744704">{PAGE_NUMBER,plural, =0{पेज पुनः स्क्यान गर्ने हो?}=1{{PAGE_NUMBER} नम्बरको पेज पुनः स्क्यान गर्ने हो?}other{{PAGE_NUMBER} नम्बरको पेज पुनः स्क्यान गर्ने हो?}}</translation>
 <translation id="6472207088655375767">OTP</translation>
 <translation id="6480327114083866287"><ph name="MANAGER" /> ले व्यवस्थापन गर्छ</translation>
@@ -1025,6 +1025,7 @@
 <translation id="8868741746785112895">GUID</translation>
 <translation id="8876270629542503161">यो डिभाइस ट्याब्लेट हो।</translation>
 <translation id="8881098542468797602">परीक्षण सफल भयो</translation>
+<translation id="8892443466059986410">सर्टकट सम्पादन गर्ने कार्य रद्द गर्नुहोस्</translation>
 <translation id="8898840733695078011">सिग्नलको क्षमता</translation>
 <translation id="8909114361904403025">"अप एरो" जनाउने आइकन</translation>
 <translation id="8910721771319628100">डिफल्ट नेटवर्कको विलम्बता समयसीमाभन्दा बढी छ</translation>

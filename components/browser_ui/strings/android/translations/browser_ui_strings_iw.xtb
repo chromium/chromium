@@ -258,6 +258,7 @@
 <translation id="5545693483061321551">‏אתרים לא יכולים להשתמש בקובצי cookie כדי לקבל מידע על פעילות הגלישה שלך. המידע הזה דרוש להם לצרכים שונים, כמו למשל הצגה של מודעות בהתאמה אישית. ייתכן שתכונות באתרים מסוימים לא יפעלו.</translation>
 <translation id="5553374991681107062">האחרון</translation>
 <translation id="5556459405103347317">טעינה מחדש</translation>
+<translation id="5591840828808741583"><ph name="SITE_NAME" /> חסום</translation>
 <translation id="5649053991847567735">הורדות אוטומטיות</translation>
 <translation id="5668404140385795438">להתעלם מבקשה של אתר שנועדה למנוע את שינוי המרחק מהתצוגה</translation>
 <translation id="5677928146339483299">חסום</translation>
@@ -455,6 +456,7 @@
 <translation id="8959122750345127698">הניווט לא אפשרי: <ph name="URL" /></translation>
 <translation id="8986362086234534611">לשכוח</translation>
 <translation id="8990043154272859344">תתבצע יציאה מכל האתרים</translation>
+<translation id="9011903857143958461">יש הרשאה לאתר <ph name="SITE_NAME" /></translation>
 <translation id="9019902583201351841">מנוהל על-ידי ההורים שלך</translation>
 <translation id="9039697262778250930">יכול להיות שתבוצע יציאה מהחשבון באתרים האלה</translation>
 <translation id="9074739597929991885">Bluetooth</translation>

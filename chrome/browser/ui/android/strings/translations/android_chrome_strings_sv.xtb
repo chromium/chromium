@@ -166,6 +166,7 @@ Din krypterade data kan endast läsas av en person som har din lösenfras. Löse
 <translation id="1922362554271624559">Föreslagna språk</translation>
 <translation id="1924255092154549435">Fliken är utökad</translation>
 <translation id="1925021887439448749">Ange en anpassad webbadress</translation>
+<translation id="1928618076168182477">Visar visuell vy</translation>
 <translation id="1928696683969751773">Uppdateringar</translation>
 <translation id="19288952978244135">Öppna Chrome igen.</translation>
 <translation id="1933845786846280168">Vald flik</translation>
@@ -196,6 +197,7 @@ Din krypterade data kan endast läsas av en person som har din lösenfras. Löse
 <translation id="2065944887543506430">{FILE_COUNT,plural, =1{1 nedladdning misslyckades}other{# nedladdningar misslyckades}}</translation>
 <translation id="2067805253194386918">text</translation>
 <translation id="2082238445998314030">Resultat <ph name="RESULT_NUMBER" /> av <ph name="TOTAL_RESULTS" /></translation>
+<translation id="2091863218454846791">Visar kompakt vy</translation>
 <translation id="2093731487903423814">de senaste 15 minuterna</translation>
 <translation id="2096012225669085171">Synkronisera och anpassa på alla enheter</translation>
 <translation id="2100273922101894616">Automatisk inloggning</translation>
@@ -363,6 +365,7 @@ Din krypterade data kan endast läsas av en person som har din lösenfras. Löse
 <translation id="2961208450284224863">{READING_LIST_UNREAD_PAGE_COUNT,plural, =1{<ph name="READING_LIST_UNREAD_PAGE_COUNT_ONE" /> oläst sida i listan}other{<ph name="READING_LIST_UNREAD_PAGE_COUNT_MANY" /> olästa sidor i listan}}</translation>
 <translation id="2961210776189273067">Titel</translation>
 <translation id="296370266220139811">Spara tid och skriv mindre</translation>
+<translation id="2977350910003566746">Sorterar efter senast öppnade</translation>
 <translation id="297771753501244313">Sortera efter sist öppnad</translation>
 <translation id="2979025552038692506">Vald inkognitoflik</translation>
 <translation id="2979639724566107830">Öppna i nytt fönster</translation>
@@ -403,6 +406,7 @@ Din krypterade data kan endast läsas av en person som har din lösenfras. Löse
 <translation id="3123734510202723619">Meddelanden</translation>
 <translation id="3134784203083076891">”</translation>
 <translation id="314939179385989105">Chromes startsida</translation>
+<translation id="3158667104057012316">Sorterar efter manuell ordning</translation>
 <translation id="3166827708714933426">Kortkommandon för flikar och fönster</translation>
 <translation id="316694332262407393">Chrome körs redan här.</translation>
 <translation id="3167258285411721858">Du kan begära den mobila webbplatsen för <ph name="HOST_NAME" /></translation>
@@ -531,7 +535,9 @@ Din krypterade data kan endast läsas av en person som har din lösenfras. Löse
 <translation id="3892148308691398805">Kopiera text</translation>
 <translation id="3894427358181296146">Lägg till mapp</translation>
 <translation id="3899682235662194879">Stäng alla inkognitoflikar</translation>
+<translation id="3902562446536395999">Sorterar från A till Ö</translation>
 <translation id="3908308510347173149">Uppdatera <ph name="PRODUCT_NAME" /></translation>
+<translation id="3911609878849982353">Sorterar från Ö till A</translation>
 <translation id="3924911262913579434"><ph name="SAFE_BROWSING_MODE" /> är på</translation>
 <translation id="3927692899758076493">Sans Serif</translation>
 <translation id="3928666092801078803">Slå ihop data</translation>
@@ -567,6 +573,7 @@ Din krypterade data kan endast läsas av en person som har din lösenfras. Löse
 <translation id="4084682180776658562">Lägg till bokmärke</translation>
 <translation id="4084712963632273211">Från <ph name="PUBLISHER_ORIGIN" /> – <ph name="BEGIN_DEEMPHASIZED" />via Google<ph name="END_DEEMPHASIZED" /></translation>
 <translation id="409109920254068737">Du kan logga in med surfplattans hjälp på den enhet där den här QR-koden visas.</translation>
+<translation id="4092709865241032354">Hjälp Google Lösenordshantering att spara dina inloggningsuppgifter genom att lägga till ditt användarnamn för den här webbplatsen</translation>
 <translation id="4095146165863963773">Vill du ta bort appdata?</translation>
 <translation id="4095425503313512126">Det går snabbare att surfa och söka</translation>
 <translation id="4096227151372679484">Flöde för att spara bokmärken har öppnats över halva skärmen</translation>
@@ -944,6 +951,7 @@ Det kan finnas andra former av webbhistorik i Google-kontot på <ph name="BEGIN_
 <translation id="6000203700195075278">Följ på nytt</translation>
 <translation id="6002122790816966947">Dina enheter</translation>
 <translation id="6011308810877101166">Förbättra sökförslag</translation>
+<translation id="6013305291643746595">Sorterar efter äldsta</translation>
 <translation id="6026538407078977628">Utöka till helskärmsläge</translation>
 <translation id="6030719887161080597">Hantera information som används av webbplatser för att mäta annonsresultat</translation>
 <translation id="6039379616847168523">Hoppa till nästa flik</translation>
@@ -1390,6 +1398,7 @@ Vissa webbplatser kan till exempel svara på begäran genom att visa annonser so
 <translation id="8110024788458304985">Hjälp oss att förbättra funktioner och prestanda i Chrome</translation>
 <translation id="8110087112193408731">Vill du att din aktivitet i Chrome ska visas i Digitalt välmående?</translation>
 <translation id="8118117428362942925">Prata med din förälder (<ph name="PARENT_NAME" />) om du behöver hjälp</translation>
+<translation id="8122623268651408616">Sorterar efter senaste</translation>
 <translation id="8127542551745560481">Redigera startsida</translation>
 <translation id="8130309322784422030">Dina sparade inloggningsuppgifter kan vara inaktuella</translation>
 <translation id="813082847718468539">Visa information om webbplatsen</translation>

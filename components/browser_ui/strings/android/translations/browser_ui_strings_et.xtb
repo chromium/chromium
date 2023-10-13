@@ -258,6 +258,7 @@
 <translation id="5545693483061321551">Saidid ei saa reklaamide isikupärastamiseks küpsisefailide abil eri saitidel teie sirvimistegevust jälgida. Funktsioonid ei pruugi mõnel saidil toimida.</translation>
 <translation id="5553374991681107062">Uusimad</translation>
 <translation id="5556459405103347317">Laadi uuesti</translation>
+<translation id="5591840828808741583">Saidi <ph name="SITE_NAME" /> jaoks blokeeritud</translation>
 <translation id="5649053991847567735">Automaatsed allalaadimised</translation>
 <translation id="5668404140385795438">Sissesuumimise takistamiseks veebisaidi taotluse alistamine</translation>
 <translation id="5677928146339483299">Blokeeritud</translation>
@@ -455,6 +456,7 @@
 <translation id="8959122750345127698">Navigeerimine ei ole saadaval: <ph name="URL" /></translation>
 <translation id="8986362086234534611">Unusta</translation>
 <translation id="8990043154272859344">Teid logitakse kõikidelt saitidelt välja</translation>
+<translation id="9011903857143958461">Saidi <ph name="SITE_NAME" /> jaoks lubatud</translation>
 <translation id="9019902583201351841">Vanemate hallatud</translation>
 <translation id="9039697262778250930">Võite olla nendelt saitidelt välja logitud</translation>
 <translation id="9074739597929991885">Bluetooth</translation>

@@ -713,7 +713,6 @@
 <translation id="6423239382391657905">OpenVPN</translation>
 <translation id="6439505561246192797">सिग्नल कमज़ोर है (<ph name="SIGNAL_STRENGTH" />)</translation>
 <translation id="6447630859861661624">खाता सेटिंग पर जाएं</translation>
-<translation id="6461047516875166066">मुझे और जानकारी दें</translation>
 <translation id="6463239094587744704">{PAGE_NUMBER,plural, =0{पेज को दोबारा स्कैन करना चाहते हैं?}=1{पेज {PAGE_NUMBER} को दोबारा स्कैन करना चाहते हैं?}one{पेज {PAGE_NUMBER} को दोबारा स्कैन करना चाहते हैं?}other{पेज {PAGE_NUMBER} को दोबारा स्कैन करना चाहते हैं?}}</translation>
 <translation id="6472207088655375767">एक बार इस्तेमाल होने वाला पासवर्ड (ओटीपी)</translation>
 <translation id="6480327114083866287"><ph name="MANAGER" /> मैनेज करता है</translation>

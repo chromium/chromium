@@ -329,7 +329,7 @@
 <translation id="3619115746895587757">泡沫咖啡</translation>
 <translation id="3619593063686672873">最近沒有任何影片</translation>
 <translation id="3634507049637220048">第 <ph name="NETWORK_INDEX" /> 個網絡，一共有 <ph name="NETWORK_COUNT" /> 個網絡，<ph name="NETWORK_NAME" />，<ph name="CONNECTION_STATUS" />，由管理員管理，詳情</translation>
-<translation id="36451918667380448">已綁定行動網路供應商，請向供應商尋求支援。</translation>
+<translation id="36451918667380448">網絡供應商已鎖定，請向供應商尋求支援。</translation>
 <translation id="3645233063072417428">已移動 <ph name="NUMBER_OF_ITEMS" /> 個項目。</translation>
 <translation id="3658269352872031728">已選取 <ph name="SELECTED_FILE_COUNT" /> 個檔案</translation>
 <translation id="3685122418104378273">使用流動數據時，系統根據預設停用「Google 雲端硬碟」同步功能。</translation>

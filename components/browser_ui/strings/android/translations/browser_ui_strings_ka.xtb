@@ -258,6 +258,7 @@
 <translation id="5545693483061321551">საიტები ვერ გამოიყენებს ქუქი-ჩანაწერებს სხვადასხვა საიტის თქვენ მიერ დათვალიერების აქტივობის სანახავად, მაგალითად, რეკლამის პერსონალიზების მიზნით. ფუნქციებმა, შესაძლოა, არ იმუშაოს ზოგიერთ საიტზე.</translation>
 <translation id="5553374991681107062">უახლესი</translation>
 <translation id="5556459405103347317">ხელახლა ჩატვირთვა</translation>
+<translation id="5591840828808741583"><ph name="SITE_NAME" /> დაბლოკილია</translation>
 <translation id="5649053991847567735">ავტომატური ჩამოტვირთვები</translation>
 <translation id="5668404140385795438">ვებსაიტის მიერ მასშტაბირების აკრძალვის გაუქმება</translation>
 <translation id="5677928146339483299">დაბლოკილი</translation>
@@ -455,6 +456,7 @@
 <translation id="8959122750345127698">ნავიგაცია მიუწვდომელია: <ph name="URL" /></translation>
 <translation id="8986362086234534611">დავიწყება</translation>
 <translation id="8990043154272859344">თქვენ გამოხვალთ ყველა საიტიდან</translation>
+<translation id="9011903857143958461"><ph name="SITE_NAME" /> დაშვებულია</translation>
 <translation id="9019902583201351841">იმართება თქვენი მშობლების მიერ</translation>
 <translation id="9039697262778250930">აღნიშნულ საიტებზე, შესაძლოა, სისტემიდან გამოხვიდეთ</translation>
 <translation id="9074739597929991885">Bluetooth</translation>

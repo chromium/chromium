@@ -715,7 +715,6 @@
 <translation id="6423239382391657905">OpenVPN</translation>
 <translation id="6439505561246192797">Слабкий сигнал (<ph name="SIGNAL_STRENGTH" />)</translation>
 <translation id="6447630859861661624">Перейти до налаштувань облікового запису</translation>
-<translation id="6461047516875166066">Докладніше</translation>
 <translation id="6463239094587744704">{PAGE_NUMBER,plural, =0{Сканувати сторінку ще раз?}=1{Сканувати сторінку {PAGE_NUMBER} ще раз?}one{Сканувати сторінку {PAGE_NUMBER} ще раз?}few{Сканувати сторінку {PAGE_NUMBER} ще раз?}many{Сканувати сторінку {PAGE_NUMBER} ще раз?}other{Сканувати сторінку {PAGE_NUMBER} ще раз?}}</translation>
 <translation id="6472207088655375767">Одноразовий пароль</translation>
 <translation id="6480327114083866287">Керує <ph name="MANAGER" /></translation>

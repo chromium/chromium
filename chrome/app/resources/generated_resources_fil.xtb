@@ -710,7 +710,6 @@ Posibleng malapat sa account na ito ang mga pahintulot na naibigay mo na sa mga 
 <translation id="1558391695376153246">Isara ang mga Incognito tab</translation>
 <translation id="155865706765934889">Touchpad</translation>
 <translation id="1558671750917454373">Ipagpatuloy ang pag-cast sa <ph name="DEVICE_NAME" /></translation>
-<translation id="1561329796773556980">Nasa proseso kami ng pagsusuri sa storage space…</translation>
 <translation id="1562119309884184621">Kapag idinagdag ang contact na ito, makikilala siya sa susunod na magbahagi siya</translation>
 <translation id="1563137369682381456">Petsa ng pag-expire</translation>
 <translation id="1563702743503072935">Magiging available din sa device na ito ang mga password mula sa iyong Google Account habang naka-sign in ka</translation>
@@ -2106,6 +2105,7 @@ Puwede mong pamahalaan ang mga setting ng account na ito sa pamamagitan ng pag-i
 <translation id="2609980095400624569">Hindi makakonekta</translation>
 <translation id="2610157865375787051">Sleep</translation>
 <translation id="2610260699262139870">A&amp;ktwal na Laki</translation>
+<translation id="2610374175948698697">Puwedeng tumingin ng mga file o folder sa iyong device</translation>
 <translation id="2610780100389066815">Microsoft Trust List Signing</translation>
 <translation id="261114180663074524">Mag-sign in sa iyong Microsoft account at subukan ulit</translation>
 <translation id="2611776654555141051">Rectangle Tool</translation>
@@ -2153,6 +2153,7 @@ Puwede mong pamahalaan ang mga setting ng account na ito sa pamamagitan ng pag-i
 <translation id="264897126871533291">Protanomaly</translation>
 <translation id="2649045351178520408">Base64-encoded ASCII, certificate chain</translation>
 <translation id="265156376773362237">Karaniwang pag-preload</translation>
+<translation id="2652071759203138150">{COUNT,plural, =1{Mase-save lang ang {COUNT} password sa device na ito. Para magamit ito sa iba mo pang device, <ph name="BEGIN_LINK" />i-save ito sa iyong Google Account<ph name="END_LINK" />.}one{Mase-save lang ang {COUNT} password sa device na ito. Para magamit ang mga ito sa iba mo pang device, <ph name="BEGIN_LINK" />i-save ang mga ito sa iyong Google Account<ph name="END_LINK" />.}other{Mase-save lang ang {COUNT} na password sa device na ito. Para magamit ang mga ito sa iba mo pang device, <ph name="BEGIN_LINK" />i-save ang mga ito sa iyong Google Account<ph name="END_LINK" />.}}</translation>
 <translation id="2652129567809778422">Pumili ng password</translation>
 <translation id="2653266418988778031">Kapag nagtanggal ka ng certificate ng Certification Authority (CA), hindi na pagkakatiwalaan ng iyong browser ang anumang mga certificate na ibinigay ng CA na iyon.</translation>
 <translation id="2653275834716714682">Kapalit ng Text</translation>
@@ -4043,6 +4044,7 @@ Puwedeng kasama rito ang impormasyon tungkol sa naka-install na software, mga fi
 <translation id="4150201353443180367">Display</translation>
 <translation id="4150569944729499860">Konteksto ng screen</translation>
 <translation id="4151449637210235443">Sabihin sa amin ang tungkol sa iyong kamakailang gameplay</translation>
+<translation id="4151503145138736576">Walang lilinising offline na storage</translation>
 <translation id="4152011295694446843">Makikita mo rito ang iyong mga bookmark</translation>
 <translation id="4152670763139331043">{NUM_TABS,plural, =1{1 tab}one{# tab}other{# na tab}}</translation>
 <translation id="4154664944169082762">Mga fingerprint</translation>
@@ -4253,6 +4255,7 @@ Puwedeng kasama rito ang impormasyon tungkol sa naka-install na software, mga fi
 <translation id="4341577178275615435">Para i-on o i-off ang caret browsing, gamitin ang shortcut na F7</translation>
 <translation id="4341905082470253054">Tinitingnan ang status ng TPM...</translation>
 <translation id="434198521554309404">Mabilis. Secure. Madali.</translation>
+<translation id="4342417854108207000">Pinapayagang mag-edit ng mga file o folder sa iyong device</translation>
 <translation id="4343250402091037179">Para maghanap sa partikular na site o bahagi ng Chrome, i-type ang shortcut nito sa address bar, kasunod ang iyong gustong keyboard shortcut.</translation>
 <translation id="434404122609091467">Gamit ang iyong kasalukuyang service provider</translation>
 <translation id="4345457680916430965">&amp;Buksan sa <ph name="APP" /></translation>
@@ -5287,6 +5290,7 @@ Gamitin ang Ctrl + Alt + Bawasan ang Liwanag para mag-zoom out.</translation>
 <translation id="5197255632782567636">Internet</translation>
 <translation id="5198430103906431024">Magpadala ng data ng paggamit at diagnostic. Sa kasalukuyan, ang device na ito ay awtomatikong nagpapadala ng diagnostic na data, data ng device, at data ng paggamit sa app sa Google. Makakatulong ito sa stability ng system at ng app, at sa iba pang pagpapahusay. Makakatulong din ang ilang pinagsama-samang data sa mga app at partner ng Google, gaya ng mga developer ng Android. Kung naka-on ang iyong karagdagang setting ng Aktibidad sa Web at App, posibleng ma-save ang data na ito sa Google Account mo.</translation>
 <translation id="5199729219167945352">Mga Eksperimento</translation>
+<translation id="5203035663139409780">Puwedeng mag-edit ng mga file o folder sa iyong device</translation>
 <translation id="5203920255089865054">{NUM_EXTENSIONS,plural, =1{I-click para matingnan ang extension}one{I-click para matingnan ang mga extension na ito}other{I-click para matingnan ang mga extension na ito}}</translation>
 <translation id="5204249655833504508">Graphics tablet</translation>
 <translation id="5204673965307125349">Paki-powerwash ang device at subukan ulit.</translation>
@@ -6790,7 +6794,6 @@ Inaatasan ka ng <ph name="DOMAIN" /> na panatilihing nakalagay ang iyong smart c
 <translation id="6436778875248895551">Na-block ng iyong administrator ang extension na "<ph name="EXTENSION_NAME" />"</translation>
 <translation id="6438234780621650381">I-reset ang mga setting</translation>
 <translation id="6438475350605608554">Nag-i-import ka na ng mga password sa ibang tab</translation>
-<translation id="6438480100790416671">Tinitingnan ang storage space…</translation>
 <translation id="6438992844451964465"><ph name="WINDOW_TITLE" /> - May tumutugtog na audio</translation>
 <translation id="6440291723980579689">Maglo-load lang ang mga page pagkatapos mong buksan ang mga ito</translation>
 <translation id="6441377161852435370">Idagdag ang tab sa listahan ng babasahin</translation>
@@ -8609,7 +8612,6 @@ Pumindot ng nakatalagang switch o key para alisin ang pagtatalaga.</translation>
 <translation id="7893008570150657497">Ma-access ang mga larawan, musika, at iba pang media mula sa iyong computer</translation>
 <translation id="7893153962594818789">Naka-off ang Bluetooth sa <ph name="DEVICE_TYPE" /> na ito. Ilagay ang iyong password, at i-on ang Bluetooth.</translation>
 <translation id="7893393459573308604"><ph name="ENGINE_NAME" /> (Default)</translation>
-<translation id="7894382333736164977">Nasa proseso kami ng pagsusuri sa storage space. <ph name="ITEMS_FOUND" /> item ang nakita.</translation>
 <translation id="7896292361319775586">I-save ang <ph name="FILE" />?</translation>
 <translation id="789722939441020330">Huwag payagan ang mga site na awtomatikong mag-download ng maraming file</translation>
 <translation id="7897900149154324287">Sa hinaharap, tiyaking i-eject ang iyong naaalis na device sa Files app bago ito i-unplug. Kung hindi, maaari kang mawalan ng data.</translation>

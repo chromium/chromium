@@ -258,6 +258,7 @@
 <translation id="5545693483061321551">અલગ-અલગ સાઇટ પરની તમારી બ્રાઉઝિંગ પ્રવૃત્તિ જોવા માટે સાઇટ તમારી કુકીનો ઉપયોગ કરી શકશે નહીં, ઉદાહરણ તરીકે, જાહેરાતોને વ્યક્તિગત બનાવવા માટે. અમુક સુવિધાઓ કેટલીક સાઇટ પર કામ કરી શકશે નહીં.</translation>
 <translation id="5553374991681107062">નવીનતમ</translation>
 <translation id="5556459405103347317">ફરીથી લોડ કરો</translation>
+<translation id="5591840828808741583"><ph name="SITE_NAME" /> બ્લૉક કરી</translation>
 <translation id="5649053991847567735">ઑટોમૅટિક રીતે ડાઉનલોડ</translation>
 <translation id="5668404140385795438">ઝૂમ વધારવાનું અટકાવવા માટે વેબસાઇટની વિનંતી ઑવરરાઇડ કરો</translation>
 <translation id="5677928146339483299">બ્લૉક કરેલ</translation>
@@ -455,6 +456,7 @@
 <translation id="8959122750345127698">નેવિગેશન બિનપહોંચ યોગ્ય છે: <ph name="URL" /></translation>
 <translation id="8986362086234534611">ભૂલી જાઓ</translation>
 <translation id="8990043154272859344">બધી સાઇટમાંથી તમને સાઇન આઉટ કરવામાં આવશે</translation>
+<translation id="9011903857143958461"><ph name="SITE_NAME" />ની મંજૂરી આપી</translation>
 <translation id="9019902583201351841">તમારા માતાપિતા દ્વારા મેનેજ થયેલ</translation>
 <translation id="9039697262778250930">આ બધી સાઇટમાંથી તમને સાઇન આઉટ કરવામાં આવશે</translation>
 <translation id="9074739597929991885">બ્લૂટૂથ</translation>

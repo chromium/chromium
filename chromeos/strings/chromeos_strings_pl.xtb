@@ -715,7 +715,6 @@
 <translation id="6423239382391657905">OpenVPN</translation>
 <translation id="6439505561246192797">Słaba (<ph name="SIGNAL_STRENGTH" />)</translation>
 <translation id="6447630859861661624">Otwórz ustawienia konta</translation>
-<translation id="6461047516875166066">Powiedz coś więcej</translation>
 <translation id="6463239094587744704">{PAGE_NUMBER,plural, =0{Przeskanować ponownie stronę?}=1{Przeskanować ponownie stronę {PAGE_NUMBER}?}few{Przeskanować ponownie stronę {PAGE_NUMBER}?}many{Przeskanować ponownie stronę {PAGE_NUMBER}?}other{Przeskanować ponownie stronę {PAGE_NUMBER}?}}</translation>
 <translation id="6472207088655375767">Hasło jednorazowe</translation>
 <translation id="6480327114083866287">Zarządzane przez <ph name="MANAGER" /></translation>

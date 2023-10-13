@@ -143,6 +143,7 @@ De lo contrario, lo impedirá tu configuración de privacidad. Permitirá que el
 <translation id="1264309058268477500">Alternativa</translation>
 <translation id="1264974993859112054">Deportes</translation>
 <translation id="1266469291454105242">Desbloqueo del dispositivo</translation>
+<translation id="126728463333482584">Eres una de las primeras personas en usar Protección Antirastreo, que restringe que los sitios usen cookies de terceros para hacer un seguimiento de tu actividad mientras navegas.</translation>
 <translation id="1268480293435976622">Sobre chino 7</translation>
 <translation id="1269516672602708785">Crea un nuevo sitio con Google Sites rápidamente</translation>
 <translation id="1270328905573953738">Portes y mudanzas</translation>
@@ -465,6 +466,7 @@ De lo contrario, lo impedirá tu configuración de privacidad. Permitirá que el
 <translation id="1875512691959384712">Formularios de Google</translation>
 <translation id="1876399092304384674">Por fecha</translation>
 <translation id="187918866476621466">Abrir páginas de inicio</translation>
+<translation id="1880901968112404879">Para pagar más rápido la próxima vez, guarda tu tarjeta, tu código de seguridad cifrado y tu dirección de facturación en tu cuenta de Google</translation>
 <translation id="1883255238294161206">Contraer lista</translation>
 <translation id="1884843295353628214">Jazz</translation>
 <translation id="1890171020361705182">Juego del dinosaurio. Un dinosaurio pixelado esquiva cactus y pterodáctilos mientras corre por un paisaje desértico. Cuando escuches una señal sonora, toca para saltar los obstáculos.</translation>
@@ -692,6 +694,7 @@ De lo contrario, lo impedirá tu configuración de privacidad. Permitirá que el
 <translation id="2361263712565360498">275x395 mm</translation>
 <translation id="236340516568226369">Menú de interruptores para cambiar tamaño</translation>
 <translation id="2365355378251437925">Introduce <ph name="FIELD" /></translation>
+<translation id="2365382709349300355">1 archivo se ha bloqueado debido a una política</translation>
 <translation id="2365508935344991784">Muebles de exterior</translation>
 <translation id="2366689192918515749">Carne y pescado o marisco</translation>
 <translation id="2367567093518048410">Nivel</translation>
@@ -2414,6 +2417,7 @@ De lo contrario, lo impedirá tu configuración de privacidad. Permitirá que el
 <translation id="5967867314010545767">Eliminar del historial</translation>
 <translation id="5968022600320704045">No hay resultados de búsqueda</translation>
 <translation id="5969199813874624822">Guardar y seguir precio</translation>
+<translation id="5973514677932942122"><ph name="EXPIRATION_DATE" /> | <ph name="SECURITY_CODE" /></translation>
 <translation id="5974052231147553524">Sexto rollo</translation>
 <translation id="5975083100439434680">Reducir</translation>
 <translation id="5979084224081478209">Comprobar contraseñas</translation>
@@ -2905,6 +2909,7 @@ De lo contrario, lo impedirá tu configuración de privacidad. Permitirá que el
 <translation id="6965382102122355670">Aceptar</translation>
 <translation id="6965978654500191972">Dispositivo</translation>
 <translation id="696703987787944103">Perceptual</translation>
+<translation id="6967851206780867018">1 archivo se ha bloqueado debido al contenido</translation>
 <translation id="6970885655016700774">Tela (archivo)</translation>
 <translation id="6971439137020188025">Crea una nueva Presentación de Google rápidamente</translation>
 <translation id="6972629891077993081">Dispositivos HID</translation>
@@ -2957,6 +2962,7 @@ De lo contrario, lo impedirá tu configuración de privacidad. Permitirá que el
 <translation id="70705239631109039">Tu conexión no es completamente segura</translation>
 <translation id="7075452647191940183">La solicitud es demasiado grande</translation>
 <translation id="7078665357168027058">RA3</translation>
+<translation id="7079138647457502205">Navega con más privacidad</translation>
 <translation id="7079718277001814089">Este sitio web contiene malware</translation>
 <translation id="7081308185095828845">Esta función no está disponible en tu dispositivo</translation>
 <translation id="7083258188081898530">Bandeja 9</translation>
@@ -3353,6 +3359,7 @@ Más información:
 <translation id="7802989406998618639">Introduce el código de seguridad de <ph name="NUMBER_OF_DIGITS" /> dígitos que figura en el <ph name="SIDE_OF_CARD" /> para que el banco pueda verificar tu identidad</translation>
 <translation id="780301667611848630">No, gracias</translation>
 <translation id="7805768142964895445">Estado</translation>
+<translation id="7810410097247356677">Para pagar más rápido la próxima vez, guarda tu tarjeta y código de seguridad cifrado en tu dispositivo</translation>
 <translation id="7812922009395017822">Mir</translation>
 <translation id="7813600968533626083">¿Eliminar sugerencia de formulario de Chrome?</translation>
 <translation id="781440967107097262">¿Compartir portapapeles?</translation>
@@ -3373,7 +3380,6 @@ Más información:
 <translation id="7865448901209910068">Mejor velocidad</translation>
 <translation id="7870281855125116701">Descuento encontrado</translation>
 <translation id="7871445724586827387">Cambia la contraseña de tu cuenta de Google</translation>
-<translation id="7876615279559620350">Para tramitar las compras más rápido, guarda el CVC de esta tarjeta en tu cuenta de Google</translation>
 <translation id="7877007680666472091">IDs de contenido protegido</translation>
 <translation id="7878562273885520351">Es posible que tu contraseña se haya vulnerado</translation>
 <translation id="7880146494886811634">Guardar dirección</translation>
@@ -3598,7 +3604,6 @@ Más información:
 <translation id="8308653357438598313">Emisión de vídeo en directo</translation>
 <translation id="8311895354659782580">Anuncios inmobiliarios</translation>
 <translation id="8316555157357957253">Se está usando ahora</translation>
-<translation id="8317570861267063617">Para tramitar compras de forma más rápida, guarda el CVC de esta tarjeta en tu dispositivo</translation>
 <translation id="8319269383395457801">Ventas de viviendas</translation>
 <translation id="831997045666694187">Tarde</translation>
 <translation id="8321476692217554900">notificaciones</translation>

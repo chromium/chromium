@@ -55,6 +55,7 @@ Kebenaran yang telah anda berikan kepada laman web dan apl mungkin dikenakan pad
 <translation id="2086476982681781442">Chromium menyekat muat turun ini kerana fail mengelirukan dan mungkin membuat perubahan tidak dijangka pada peranti anda</translation>
 <translation id="2088953378266246249">Maklumat tentang cara Chromium mengurus sijil akarnya</translation>
 <translation id="2120965832000301375">{COUNT,plural, =1{Organisasi anda akan memadamkan data semakan imbas secara automatik apabila Chromium tidak digunakan selama 1 minit. Pemadaman ini termasuk sejarah, autolengkap dan muat turun. Tab anda akan kekal terbuka.}other{Organisasi anda akan memadamkan data semakan imbas secara automatik apabila Chromium tidak digunakan selama # minit. Pemadaman ini termasuk sejarah, autolengkap dan muat turun. Tab anda akan kekal terbuka.}}</translation>
+<translation id="2126108037660393668">Pengesahan fail yang dimuat turun gagal.</translation>
 <translation id="215352261310130060">Chromium menyekat muat turun ini kerana laman tidak menggunakan sambungan selamat dan fail mungkin telah diubah</translation>
 <translation id="2174178932569897599">Sesuaikan Chromium</translation>
 <translation id="2174917724755363426">Pemasangan belum selesai. Anda pasti ingin membatalkan?</translation>
@@ -79,6 +80,7 @@ Kebenaran yang telah anda berikan kepada laman web dan apl mungkin dikenakan pad
 <translation id="2572494885440352020">Pembantu Chromium</translation>
 <translation id="2583187216237139145">Sebarang data Chromium yang dijana semasa penggunaan profil ini (seperti pembuatan penanda halaman, sejarah, kata laluan dan tetapan lain) boleh dialih keluar oleh pentadbir profil kerja. <ph name="LEARN_MORE" /></translation>
 <translation id="2592940277904433508">Terus menggunakan Chromium</translation>
+<translation id="259935314519650377">Gagal mengcache pemasang yang dimuat turun. Ralat: <ph name="UNPACK_CACHING_ERROR_CODE" />.</translation>
 <translation id="2648074677641340862">Ralat sistem pengendalian berlaku semasa pemasangan. Sila muat turun Chromium semula.</translation>
 <translation id="2661879430930417727">Jika anda berkongsi peranti, rakan dan keluarga boleh menyemak imbas secara terpisah dan menyediakan Chromium sebagaimana yang mereka ingini</translation>
 <translation id="268602741124540128">Selamat datang ke Chromium, <ph name="ACCOUNT_FIRST_NAME" /></translation>
@@ -297,6 +299,7 @@ Kebenaran yang telah anda berikan kepada laman web dan apl mungkin dikenakan pad
 <translation id="6676384891291319759">Akses Internet</translation>
 <translation id="668175097507315160">Chromium OS tidak dapat menyegerakkan data anda disebabkan oleh ralat melog masuk.</translation>
 <translation id="6709350901466051922">Chromium memerlukan kebenaran mikrofon untuk laman ini</translation>
+<translation id="6712881677154121168">Ralat muat turun: <ph name="DOWNLOAD_ERROR" />.</translation>
 <translation id="6717134281241384636">Profil anda tidak boleh digunakan kerana profil anda dihasilkan dari versi Chromium yang lebih baharu.
 
 Beberapa ciri mungkin tidak tersedia. Sila nyatakan direktori profil yang berbeza atau gunakan versi Chromium yang lebih baharu.</translation>
@@ -320,6 +323,7 @@ Beberapa ciri mungkin tidak tersedia. Sila nyatakan direktori profil yang berbez
 <translation id="6981396265751285733">Apabila dihidupkan, Chromium mengosongkan memori daripada tab yang tidak aktif. Ini memberi tab aktif dan apl lain lebih banyak sumber komputer dan memastikan Chromium pantas. Tab anda yang tidak aktif menjadi aktif semula secara automatik apabila anda kembali kepada tab tersebut.</translation>
 <translation id="6985329841647292029">Syarat Chromium OS</translation>
 <translation id="6990124437352146030">Chromium memerlukan kebenaran untuk mengakses mikrofon anda bagi tapak ini</translation>
+<translation id="7024536598735240744">Ralat penyahpadatan: <ph name="UNPACK_ERROR" />.</translation>
 <translation id="7025789849649390912">Pemasangan Dihentikan.</translation>
 <translation id="705851970750939768">Kemas kini Chromium</translation>
 <translation id="7067091210845072982">Jika imej tiada perihalan yang berguna, Chromium akan cuba memberikan perihalan untuk anda. Untuk membuat perihalan, imej dihantar kepada Google.</translation>
@@ -394,6 +398,7 @@ Chromium tidak dapat mengembalikan tetapan anda.</translation>
 <translation id="8493179195440786826">Chromium sudah usang</translation>
 <translation id="8522801943730206384">Chromium boleh menyemak kata laluan anda yang disimpan</translation>
 <translation id="8550334526674375523">Profil kerja ini terpisah sepenuhnya daripada profil peribadi anda.</translation>
+<translation id="8555465886620020932">Ralat perkhidmatan: <ph name="SERVICE_ERROR" />.</translation>
 <translation id="8568283329061645092">Chromium boleh menyemak kata laluan anda apabila anda log masuk menggunakan Akaun Google anda</translation>
 <translation id="8586442755830160949">Hak Cipta <ph name="YEAR" /> Pengarang Chromium. Hak cipta terpelihara.</translation>
 <translation id="8608079656141766906"><ph name="BEGIN_BOLD" />Cara kami menggunakan data ini:<ph name="END_BOLD" /> Laman boleh menyimpan maklumat tentang minat anda menggunakan Chromium. Contohnya, jika anda melawat laman untuk membeli kasut untuk maraton, laman tersebut mungkin mentakrifkan minat anda sebagai larian maraton. Kemudian, jika anda melawati laman lain untuk mendaftar perlumbaan, laman tersebut boleh memaparkan kepada anda iklan kasut untuk berlari berdasarkan minat anda.</translation>

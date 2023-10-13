@@ -715,7 +715,6 @@
 <translation id="6423239382391657905">VPN-г нээх</translation>
 <translation id="6439505561246192797">Сул (<ph name="SIGNAL_STRENGTH" />)</translation>
 <translation id="6447630859861661624">Бүртгэлийн тохиргоо хэсэгт очих</translation>
-<translation id="6461047516875166066">Надад дэлгэрэнгүй ярина уу</translation>
 <translation id="6463239094587744704">{PAGE_NUMBER,plural, =0{Хуудсыг дахин скан хийх үү?}=1{{PAGE_NUMBER}-р хуудсыг дахин скан хийх үү?}other{{PAGE_NUMBER}-р хуудсыг дахин скан хийх үү?}}</translation>
 <translation id="6472207088655375767">OTP</translation>
 <translation id="6480327114083866287"><ph name="MANAGER" /> удирддаг</translation>

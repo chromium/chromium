@@ -258,6 +258,7 @@
 <translation id="5545693483061321551">Siteler, örneğin reklamları kişiselleştirmek amacıyla farklı sitelerde tarama etkinliğinizi görmek için çerezlerinizi kullanamaz. Bazı sitelerdeki özellikler çalışmayabilir.</translation>
 <translation id="5553374991681107062">En son</translation>
 <translation id="5556459405103347317">Yeniden Yükle</translation>
+<translation id="5591840828808741583"><ph name="SITE_NAME" /> engellendi</translation>
 <translation id="5649053991847567735">Otomatik indirmeler</translation>
 <translation id="5668404140385795438">Web sitesinin yakınlaştırmayı önleme isteğini geçersiz kılın</translation>
 <translation id="5677928146339483299">Engelleniyor</translation>
@@ -455,6 +456,7 @@
 <translation id="8959122750345127698">Gezinme işlevine ulaşılamıyor: <ph name="URL" /></translation>
 <translation id="8986362086234534611">Unut</translation>
 <translation id="8990043154272859344">Tüm sitelerdeki oturumunuz kapatılacak</translation>
+<translation id="9011903857143958461"><ph name="SITE_NAME" /> sitesine izin verildi</translation>
 <translation id="9019902583201351841">Ebeveynleriniz tarafından yönetiliyor</translation>
 <translation id="9039697262778250930">Bu sitelerdeki oturumunuz kapatılabilir</translation>
 <translation id="9074739597929991885">Bluetooth</translation>

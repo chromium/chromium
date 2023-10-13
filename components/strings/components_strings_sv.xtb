@@ -143,6 +143,7 @@ Annars blockeras detta av integritetsinställningarna. Om du tillåter detta kan
 <translation id="1264309058268477500">Alternativ</translation>
 <translation id="1264974993859112054">Sport</translation>
 <translation id="1266469291454105242">Enhetsupplåsning</translation>
+<translation id="126728463333482584">Du är en av de första som använder spårningsskydd, vilket begränsar webbplatser från att använda tredjepartscookies för att spåra dig när du surfar.</translation>
 <translation id="1268480293435976622">Kinesiskt nr 7-kuvert</translation>
 <translation id="1269516672602708785">Skapa en ny webbplats i Google Sites snabbt</translation>
 <translation id="1270328905573953738">Flyttjänster</translation>
@@ -465,6 +466,7 @@ Annars blockeras detta av integritetsinställningarna. Om du tillåter detta kan
 <translation id="1875512691959384712">Google Formulär</translation>
 <translation id="1876399092304384674">Efter datum</translation>
 <translation id="187918866476621466">Öppna startsidorna</translation>
+<translation id="1880901968112404879">Spara kortet, den krypterade säkerhetskoden och faktureringsadressen i Google-kontot så går det snabbare att betala nästa gång</translation>
 <translation id="1883255238294161206">Komprimera lista</translation>
 <translation id="1884843295353628214">Jazz</translation>
 <translation id="1890171020361705182">Dino-spelet. En pixelerad dinosaurie springer genom ett ödsligt landskap och hoppar över kaktusar och flygödlor. Tryck för att hoppa över hinder när du hör en ljudsignal.</translation>
@@ -692,6 +694,7 @@ Annars blockeras detta av integritetsinställningarna. Om du tillåter detta kan
 <translation id="2361263712565360498">275 x 395 mm</translation>
 <translation id="236340516568226369">Ändra storlek på menyn för att aktivera och inaktivera</translation>
 <translation id="2365355378251437925">Ange <ph name="FIELD" /></translation>
+<translation id="2365382709349300355">1 fil blockerades på grund av policy</translation>
 <translation id="2365508935344991784">Utemöbler</translation>
 <translation id="2366689192918515749">Kött och fisk</translation>
 <translation id="2367567093518048410">Nivå</translation>
@@ -2414,6 +2417,7 @@ Annars blockeras detta av integritetsinställningarna. Om du tillåter detta kan
 <translation id="5967867314010545767">Ta bort från historiken</translation>
 <translation id="5968022600320704045">Inga sökresultat</translation>
 <translation id="5969199813874624822">Spara och bevaka pris</translation>
+<translation id="5973514677932942122"><ph name="EXPIRATION_DATE" /> | <ph name="SECURITY_CODE" /></translation>
 <translation id="5974052231147553524">Sjätte rullen</translation>
 <translation id="5975083100439434680">Zooma ut</translation>
 <translation id="5979084224081478209">Kontrollera lösenord</translation>
@@ -2905,6 +2909,7 @@ Annars blockeras detta av integritetsinställningarna. Om du tillåter detta kan
 <translation id="6965382102122355670">OK</translation>
 <translation id="6965978654500191972">Enhet</translation>
 <translation id="696703987787944103">Perceptuell</translation>
+<translation id="6967851206780867018">1 fil blockerades på grund av innehåll</translation>
 <translation id="6970885655016700774">Tyg (arkiv)</translation>
 <translation id="6971439137020188025">Skapa en ny Google-presentation i Presentationer snabbt</translation>
 <translation id="6972629891077993081">HID-enheter</translation>
@@ -2957,6 +2962,7 @@ Annars blockeras detta av integritetsinställningarna. Om du tillåter detta kan
 <translation id="70705239631109039">Anslutningen är inte helt säker</translation>
 <translation id="7075452647191940183">Begäran är för stor</translation>
 <translation id="7078665357168027058">RA3</translation>
+<translation id="7079138647457502205">Surfa mer skyddat</translation>
 <translation id="7079718277001814089">Webbplatsen innehåller skadlig programvara.</translation>
 <translation id="7081308185095828845">Funktionen är inte tillgänglig på din enhet</translation>
 <translation id="7083258188081898530">Fack 9</translation>
@@ -3353,6 +3359,7 @@ Mer information.
 <translation id="7802989406998618639">Ange den <ph name="NUMBER_OF_DIGITS" />-siffriga säkerhetskoden på <ph name="SIDE_OF_CARD" /> så att banken kan verifiera din identitet</translation>
 <translation id="780301667611848630">Nej tack</translation>
 <translation id="7805768142964895445">Status</translation>
+<translation id="7810410097247356677">Spara kortet och den krypterade säkerhetskoden på enheten så går det snabbare att betala nästa gång</translation>
 <translation id="7812922009395017822">Mir</translation>
 <translation id="7813600968533626083">Vill du ta bort formulärförslaget från Chrome?</translation>
 <translation id="781440967107097262">Vill du dela urklipp?</translation>
@@ -3373,7 +3380,6 @@ Mer information.
 <translation id="7865448901209910068">Bästa hastighet</translation>
 <translation id="7870281855125116701">En rabatt hittades</translation>
 <translation id="7871445724586827387">Byt lösenord till Google-kontot</translation>
-<translation id="7876615279559620350">Spara CVC-koden för kortet i Google-kontot så att du kan betala snabbare</translation>
 <translation id="7877007680666472091">skyddade innehålls-id:n</translation>
 <translation id="7878562273885520351">Lösenordet kan vara utsatt för risk</translation>
 <translation id="7880146494886811634">Spara adressen</translation>
@@ -3598,7 +3604,6 @@ Mer information.
 <translation id="8308653357438598313">Livestreaming</translation>
 <translation id="8311895354659782580">Fastigheter till salu</translation>
 <translation id="8316555157357957253">Används nu</translation>
-<translation id="8317570861267063617">Spara CVC-koden för kortet på enheten så att du kan betala snabbare.</translation>
 <translation id="8319269383395457801">Bostadsförsäljning</translation>
 <translation id="831997045666694187">kvällen</translation>
 <translation id="8321476692217554900">aviseringar</translation>

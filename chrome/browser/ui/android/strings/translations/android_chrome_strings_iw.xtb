@@ -166,6 +166,7 @@
 <translation id="1922362554271624559">שפות מוצעות</translation>
 <translation id="1924255092154549435">הכרטיסייה מורחבת</translation>
 <translation id="1925021887439448749">יש להזין כתובת אינטרנט מותאמת אישית</translation>
+<translation id="1928618076168182477">מוצגת תצוגה מורחבת</translation>
 <translation id="1928696683969751773">עדכונים</translation>
 <translation id="19288952978244135">‏יש לפתוח מחדש את Chrome.</translation>
 <translation id="1933845786846280168">הכרטיסייה שנבחרה</translation>
@@ -196,6 +197,7 @@
 <translation id="2065944887543506430">{FILE_COUNT,plural, =1{הורדה אחת נכשלה}one{# הורדות נכשלו}two{# הורדות נכשלו}other{# הורדות נכשלו}}</translation>
 <translation id="2067805253194386918">טקסט</translation>
 <translation id="2082238445998314030">תוצאה <ph name="RESULT_NUMBER" /> מתוך <ph name="TOTAL_RESULTS" /></translation>
+<translation id="2091863218454846791">מוצגת תצוגה קומפקטית</translation>
 <translation id="2093731487903423814">15 הדקות האחרונות</translation>
 <translation id="2096012225669085171">סנכרון והתאמה אישית במכשירים שונים</translation>
 <translation id="2100273922101894616">כניסה אוטומטית</translation>
@@ -217,6 +219,7 @@
 <translation id="218608176142494674">שיתוף</translation>
 <translation id="2194856509914051091">מה כדאי לקחת בחשבון</translation>
 <translation id="2200113223741723867">ניהול השיתוף של נתוני השימוש במכשיר</translation>
+<translation id="22091350895006575">הוספה של שם המשתמש</translation>
 <translation id="221494669172414749">‏פתיחת Chrome בלי נעילת פרופיל תגרום להסרת הסיסמאות ואמצעי התשלום השמורים מהמכונית. שימוש בנעילת פרופיל עוזר לשמור על אבטחת הנתונים האלה.</translation>
 <translation id="2218567645332692482">‏הניווטים ישודרגו ל-HTTPS ותוצג אזהרה לפני טעינת אתרים שלא תומכים ב-HTTPS</translation>
 <translation id="2227444325776770048">המשך בשם <ph name="USER_FULL_NAME" /></translation>
@@ -244,6 +247,7 @@
 <translation id="235789365079050412">‏מדיניות הפרטיות של Google</translation>
 <translation id="2359808026110333948">המשך</translation>
 <translation id="2362083820973145409">נכנסת לחשבון בתור <ph name="USER_NAME" />. <ph name="USER_EMAIL" />. ההגדרות ייפתחו.</translation>
+<translation id="2364539095045928896">לחצן לסגירה של הודעת הפרטיות במרכז התובנות לגבי הדף.</translation>
 <translation id="2386938421315164605">הסתרה וביטול הסתרה של נושאים</translation>
 <translation id="2390510615457643724">רוצה להוריד שוב את <ph name="FILE_NAME" /> (<ph name="FILE_SIZE" />)?</translation>
 <translation id="2394602618534698961">קבצים שהורדת מופיעים כאן</translation>
@@ -312,6 +316,7 @@
 <translation id="2718846868787000099">כדי שנוכל להציג תוכן בשפות המועדפות עליך, ההעדפות שלך גלויות לאתרים שביקרת בהם</translation>
 <translation id="2722945394406572875">ההודעה לגבי ארגז החול לפרטיות נסגרה</translation>
 <translation id="2723001399770238859">אודיו</translation>
+<translation id="2760805590727089264">MM/YY</translation>
 <translation id="2760989362628427051">עיצוב כהה מופעל כשבמכשיר פועלת האפשרות 'עיצוב כהה' או 'חיסכון בסוללה'</translation>
 <translation id="2762000892062317888">ברגע זה</translation>
 <translation id="276969039800130567">מחובר באמצעות חשבון <ph name="USER_EMAIL_ADDRESS" />.</translation>
@@ -835,6 +840,7 @@
 <translation id="5458366071038729214">כאן יוצגו האתרים שיתווספו למעקב</translation>
 <translation id="5468068603361015296">רוצה להוריד את <ph name="FILE_NAME" /> בכל זאת?</translation>
 <translation id="548278423535722844">פתיחה באפליקציית מפות</translation>
+<translation id="5486841595534124508">לוגו של הודעת הפרטיות במרכז התובנות לגבי הדף שמפנה לדף 'הפעילות שלי'.</translation>
 <translation id="5487521232677179737">ניקוי נתונים</translation>
 <translation id="5492637351392383067">הצפנה במכשיר</translation>
 <translation id="5514904542973294328">האפשרות הזו הושבתה על-ידי מנהל המערכת של המכשיר</translation>
@@ -951,6 +957,7 @@
 <translation id="6112702117600201073">רענון הדף מתבצע</translation>
 <translation id="6122831415929794347">להשבית את 'גלישה בטוחה'?</translation>
 <translation id="6127379762771434464">הפריט הוסר</translation>
+<translation id="6130303040046284160">מזעור הכרטיסייה</translation>
 <translation id="6137022273846704445">השפה ב-<ph name="APP_NAME" /></translation>
 <translation id="6138832295072039549">כאן אפשר לשנות את הגדרות האתר שלך</translation>
 <translation id="6140709049082532940">הגנה משופרת:</translation>
@@ -1253,6 +1260,7 @@
 <translation id="7588219262685291874">עיצוב כהה מופעל כשהמכשיר עובר לחיסכון בסוללה</translation>
 <translation id="7594687499944811403">צריך לאפשר ל-<ph name="EMBEDDED_ORIGIN" /> לאמת את זהותך עבור <ph name="TOP_ORIGIN" /></translation>
 <translation id="7596558890252710462">מערכת הפעלה</translation>
+<translation id="7603168929588204083">התאריך לא תקין</translation>
 <translation id="7605594153474022051">הסנכרון לא עובד</translation>
 <translation id="7612619742409846846">‏התחברת ל-Google בשם</translation>
 <translation id="7612989789287281429">מתבצעת כניסה לחשבון…</translation>
@@ -1301,6 +1309,7 @@
 <translation id="7810647596859435254">פתיחה באמצעות...</translation>
 <translation id="7815484226266492798">צילום מסך ארוך</translation>
 <translation id="7822705602465980873">‏אחרי הכניסה לחשבון, הנתונים האלה מקושרים לחשבון Google כדי להגן עליך בשירותי Google. לדוגמה, במקרה של אירוע אבטחה, ההגנה ב-Gmail מוגברת.</translation>
+<translation id="782705168687182233">‏הפעילות נשמרת ב<ph name="BEGIN_LINK" />חשבון Google<ph name="END_LINK" /> שלך.</translation>
 <translation id="78270725016672455">התקבלה מהמחשב בקשה לרשום את המכשיר הזה לצורך כניסה לאתר</translation>
 <translation id="7844171778363018843">אין נתונים שנבחרו לסנכרון</translation>
 <translation id="7846296061357476882">‏שירותי Google</translation>
@@ -1393,6 +1402,7 @@
 <translation id="8223642481677794647">תפריט כרטיס הפיד</translation>
 <translation id="8236097722223016103">הוספה לסימניות</translation>
 <translation id="8237871086242677046">הגיליון התחתון של התובנות לגבי הדף</translation>
+<translation id="8243077599929149377">הוספה של שם המשתמש</translation>
 <translation id="8250920743982581267">מסמכים</translation>
 <translation id="8255617931166444521">‏אתרים יכולים להשתמש בקובצי ה-cookie רק כדי לראות את פעילות הגלישה שלך שמתבצעת בהם בלבד, ולא באתרים אחרים</translation>
 <translation id="8259179246279078674">‏מפני שהדפים שנטענים מראש מוצפנים, Google לא תקבל מידע על תוכן הדף שנטען מראש. שרתי Google יגלו אילו אתרים נטענים מראש באופן פרטי. המידע הזה משמש רק לטעינה מראש של הדפים והוא לא מקושר למידע אחר מחשבון Google שלך.</translation>

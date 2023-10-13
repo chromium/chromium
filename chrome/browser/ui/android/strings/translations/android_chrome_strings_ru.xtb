@@ -166,6 +166,7 @@
 <translation id="1922362554271624559">Рекомендуемые языки</translation>
 <translation id="1924255092154549435">Вкладка развернута</translation>
 <translation id="1925021887439448749">Введите веб-адрес</translation>
+<translation id="1928618076168182477">Включен расширенный вид</translation>
 <translation id="1928696683969751773">Обновления</translation>
 <translation id="19288952978244135">Снова запустите браузер Chrome.</translation>
 <translation id="1933845786846280168">Выбранная вкладка</translation>
@@ -196,6 +197,7 @@
 <translation id="2065944887543506430">{FILE_COUNT,plural, =1{Не удалось скачать 1 файл.}one{Не удалось скачать # файл.}few{Не удалось скачать # файла.}many{Не удалось скачать # файлов.}other{Не удалось скачать # файла.}}</translation>
 <translation id="2067805253194386918">текст</translation>
 <translation id="2082238445998314030">Результат <ph name="RESULT_NUMBER" />, всего <ph name="TOTAL_RESULTS" /></translation>
+<translation id="2091863218454846791">Включен компактный вид</translation>
 <translation id="2093731487903423814">за последние 15 минут</translation>
 <translation id="2096012225669085171">Синхронизация и персонализация данных на всех устройствах</translation>
 <translation id="2100273922101894616">Автоматический вход</translation>

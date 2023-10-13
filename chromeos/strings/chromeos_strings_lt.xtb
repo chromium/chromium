@@ -715,7 +715,6 @@
 <translation id="6423239382391657905">Atidaryti virtualųjį privatųjį tinklą</translation>
 <translation id="6439505561246192797">Silpnas (<ph name="SIGNAL_STRENGTH" />)</translation>
 <translation id="6447630859861661624">Eiti į paskyros nustatymus</translation>
-<translation id="6461047516875166066">Noriu sužinoti daugiau</translation>
 <translation id="6463239094587744704">{PAGE_NUMBER,plural, =0{Iš naujo nuskaityti puslapį?}=1{Iš naujo nuskaityti {PAGE_NUMBER} puslapį?}one{Iš naujo nuskaityti {PAGE_NUMBER} puslapį?}few{Iš naujo nuskaityti {PAGE_NUMBER} puslapį?}many{Iš naujo nuskaityti {PAGE_NUMBER} puslapį?}other{Iš naujo nuskaityti {PAGE_NUMBER} puslapį?}}</translation>
 <translation id="6472207088655375767">Vienk. slaptažodis</translation>
 <translation id="6480327114083866287">Tvarko <ph name="MANAGER" /></translation>

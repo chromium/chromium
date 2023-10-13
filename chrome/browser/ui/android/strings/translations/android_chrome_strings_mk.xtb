@@ -363,6 +363,7 @@
 <translation id="2961208450284224863">{READING_LIST_UNREAD_PAGE_COUNT,plural, =1{<ph name="READING_LIST_UNREAD_PAGE_COUNT_ONE" /> непрочитана страница}one{<ph name="READING_LIST_UNREAD_PAGE_COUNT_MANY" /> непрочитана страница}other{<ph name="READING_LIST_UNREAD_PAGE_COUNT_MANY" /> непрочитани страници}}</translation>
 <translation id="2961210776189273067">Наслов</translation>
 <translation id="296370266220139811">Штедење време и пишување помалку</translation>
+<translation id="2977350910003566746">Се подредува според последно отворање</translation>
 <translation id="297771753501244313">Подреди по посл. отвор.</translation>
 <translation id="2979025552038692506">Избрана инкогнито-картичка</translation>
 <translation id="2979639724566107830">Отвори во нов прозорец</translation>
@@ -403,6 +404,7 @@
 <translation id="3123734510202723619">Соопштенија</translation>
 <translation id="3134784203083076891">“</translation>
 <translation id="314939179385989105">Почетна страница на Chrome</translation>
+<translation id="3158667104057012316">Се подредува рачно</translation>
 <translation id="3166827708714933426">Кратенки за картичката и прозорецот</translation>
 <translation id="316694332262407393">Chrome веќе работи тука.</translation>
 <translation id="3167258285411721858">Можете да го побарате сајтот за мобилен за <ph name="HOST_NAME" /></translation>
@@ -530,7 +532,9 @@
 <translation id="3892148308691398805">Копирај текст</translation>
 <translation id="3894427358181296146">Додај папка</translation>
 <translation id="3899682235662194879">Затвори ги сите картички „Инкогнито“</translation>
+<translation id="3902562446536395999">Се подредува од А до Ш</translation>
 <translation id="3908308510347173149">Ажурирај го уредот <ph name="PRODUCT_NAME" /></translation>
+<translation id="3911609878849982353">Се подредува од Ш до А</translation>
 <translation id="3924911262913579434">Режимот „<ph name="SAFE_BROWSING_MODE" />“ е вклучен</translation>
 <translation id="3927692899758076493">Sans Serif</translation>
 <translation id="3928666092801078803">Комбинирај ги моите податоци</translation>
@@ -566,6 +570,7 @@
 <translation id="4084682180776658562">Обележувач</translation>
 <translation id="4084712963632273211">Од <ph name="PUBLISHER_ORIGIN" /> - <ph name="BEGIN_DEEMPHASIZED" />испорачано од Google<ph name="END_DEEMPHASIZED" /></translation>
 <translation id="409109920254068737">Може да го користите таблетов за да се најавите на уредот што го прикажува QR-кодов.</translation>
+<translation id="4092709865241032354">За да му помогнете на Google Password Manager да ги зачува вашите податоци за најавување, додајте го вашето корисничко име за сајтов</translation>
 <translation id="4095146165863963773">Избриши ги податоците на апликацијата?</translation>
 <translation id="4095425503313512126">Прелистувањето и пребарувањето одат побрзо</translation>
 <translation id="4096227151372679484">Текот за зачувување обележувач е отворен на половина екран</translation>
@@ -943,6 +948,7 @@
 <translation id="6000203700195075278">Следете пак</translation>
 <translation id="6002122790816966947">Ваши уреди</translation>
 <translation id="6011308810877101166">Подобрување на предлозите за пребарување</translation>
+<translation id="6013305291643746595">Се подредува според најстари</translation>
 <translation id="6026538407078977628">Прошири на цел екран</translation>
 <translation id="6030719887161080597">Управувајте со податоците што ги користат сајтовите за мерење на перформансите на рекламите</translation>
 <translation id="6039379616847168523">Скокнете на следната картичка</translation>
@@ -1389,6 +1395,7 @@
 <translation id="8110024788458304985">Помогнете да се подобрат функциите и изведбата на Chrome</translation>
 <translation id="8110087112193408731">Да се прикажува вашата активност на Chrome во „Дигитална благосостојба“?</translation>
 <translation id="8118117428362942925">Ако ти треба помош, прашај го родителот (<ph name="PARENT_NAME" />)</translation>
+<translation id="8122623268651408616">Се подредува според најнови</translation>
 <translation id="8127542551745560481">Изменете ја почетната страница</translation>
 <translation id="8130309322784422030">Вашите складирани податоци за најавување можеби се застарени</translation>
 <translation id="813082847718468539">Прикажи информации за локација</translation>

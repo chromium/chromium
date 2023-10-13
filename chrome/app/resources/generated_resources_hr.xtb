@@ -708,7 +708,6 @@ Dopuštenja koja ste već dali aplikacijama mogu se primijeniti na ovaj račun. 
 <translation id="1558391695376153246">Zatvori anonimne kartice</translation>
 <translation id="155865706765934889">Dodirna površina</translation>
 <translation id="1558671750917454373">Nastavi emitiranje na uređaj <ph name="DEVICE_NAME" /></translation>
-<translation id="1561329796773556980">Provjeravamo prostor za pohranu…</translation>
 <translation id="1562119309884184621">Dodani kontakt ostat će zapamćen za sljedeća dijeljenja</translation>
 <translation id="1563137369682381456">Datum isteka</translation>
 <translation id="1563702743503072935">Zaporke s vašeg Google računa bit će dostupne i na ovom uređaju dok ste prijavljeni</translation>
@@ -6778,7 +6777,6 @@ Dopuštenja koja ste već dali web-lokacijama i aplikacijama mogu se primijeniti
 <translation id="6436778875248895551">Administrator je blokirao proširenje <ph name="EXTENSION_NAME" /></translation>
 <translation id="6438234780621650381">Vraćanje postavki na zadano</translation>
 <translation id="6438475350605608554">Već uvozite zaporke na drugu karticu</translation>
-<translation id="6438480100790416671">Provjera prostora za pohranu…</translation>
 <translation id="6438992844451964465"><ph name="WINDOW_TITLE" /> – reprodukcija zvuka</translation>
 <translation id="6440291723980579689">Stranice se učitavaju samo nakon što ih otvorite</translation>
 <translation id="6441377161852435370">Dodaj karticu na popis za čitanje</translation>
@@ -8599,7 +8597,6 @@ Pritisnite dodijeljeni prekidač ili tipku da biste uklonili dodjelu.</translati
 <translation id="7893008570150657497">pristupiti fotografijama, glazbi i drugim medijima s vašeg računala</translation>
 <translation id="7893153962594818789">Bluetooth je isključen na ovom <ph name="DEVICE_TYPE" /> uređaju. Unesite zaporku i uključite Bluetooth.</translation>
 <translation id="7893393459573308604"><ph name="ENGINE_NAME" /> (zadano)</translation>
-<translation id="7894382333736164977">Provjeravamo prostor za pohranu. Pronađeno je ovoliko stavki: <ph name="ITEMS_FOUND" />.</translation>
 <translation id="7896292361319775586">Spremiti <ph name="FILE" />?</translation>
 <translation id="789722939441020330">Ne dopuštaj web-lokacijama automatsko preuzimanje više datoteka</translation>
 <translation id="7897900149154324287">Ubuduće svakako izbacite prijenosni uređaj u aplikaciji Datoteke prije nego što ga uklonite. U suprotnom biste mogli izgubiti podatke.</translation>

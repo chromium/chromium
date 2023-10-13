@@ -715,7 +715,6 @@
 <translation id="6423239382391657905">OpenVPN</translation>
 <translation id="6439505561246192797">Šibka (<ph name="SIGNAL_STRENGTH" />)</translation>
 <translation id="6447630859861661624">Odpri nastavitve računa</translation>
-<translation id="6461047516875166066">Želim izvedeti več</translation>
 <translation id="6463239094587744704">{PAGE_NUMBER,plural, =0{Želite znova optično prebrati stran?}=1{Želite znova optično prebrati {PAGE_NUMBER}. stran?}one{Želite znova optično prebrati {PAGE_NUMBER}. stran?}two{Želite znova optično prebrati {PAGE_NUMBER}. stran?}few{Želite znova optično prebrati {PAGE_NUMBER}. stran?}other{Želite znova optično prebrati {PAGE_NUMBER}. stran?}}</translation>
 <translation id="6472207088655375767">Enkratno geslo</translation>
 <translation id="6480327114083866287">Upravlja domena <ph name="MANAGER" />.</translation>

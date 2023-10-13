@@ -327,6 +327,7 @@
 <translation id="1615402009686901181">בהתאם למדיניות מנהל המערכת, צילום המסך מושבת כשמוצג תוכן סודי</translation>
 <translation id="1617276713587758852">רכבי קרוסאובר</translation>
 <translation id="1618571384971354160">גרירה ושירותי דרך</translation>
+<translation id="1619007254056372606">ניהול נתונים מאתרים במכשיר</translation>
 <translation id="1620510694547887537">מצלמה</translation>
 <translation id="1622571349153632031">מטבח צמחוני</translation>
 <translation id="162285686621567578">האתר הזה נחסם על ידי ההורה שלך.</translation>
@@ -463,6 +464,7 @@
 <translation id="1875512691959384712">Google Forms</translation>
 <translation id="1876399092304384674">לפי תאריך</translation>
 <translation id="187918866476621466">פתיחת דפי פתיחה</translation>
+<translation id="1880901968112404879">‏כדי לשלם מהר יותר בפעם הבאה, אפשר לשמור את פרטי הכרטיס, קוד האבטחה המוצפן והכתובת לחיוב בחשבון Google</translation>
 <translation id="1883255238294161206">כיווץ רשימה</translation>
 <translation id="1884843295353628214">ג'אז</translation>
 <translation id="1890171020361705182">‏משחק Dino. דינוזאור בתצוגת פיקסלים חומק מקטטוסים ומפטרודקטילים בעודו רץ על רקע נוף שומם. כששומעים את האות באודיו, צריך להקיש כדי לדלג מעל מכשולים.</translation>
@@ -1236,6 +1238,7 @@
 <translation id="3552297013052089404">‏גופן Sans-Serif</translation>
 <translation id="3558573058928565255">שעות היום</translation>
 <translation id="355995771319966853">ביטול המילוי האוטומטי</translation>
+<translation id="3560408312959371419">אפשרויות לאמצעי חסימת מעקב ולנתונים מאתרים במכשיר</translation>
 <translation id="3560824484345057728">הצגת האתרים הקשורים</translation>
 <translation id="3566021033012934673">החיבור שלך אינו פרטי</translation>
 <translation id="3566336457819493938">‏215x315 מ"מ</translation>
@@ -3350,6 +3353,7 @@ Del</translation>
 <translation id="7802989406998618639">יש להזין את קוד האבטחה בן <ph name="NUMBER_OF_DIGITS" /> הספרות שמופיע על <ph name="SIDE_OF_CARD" /> כדי שהבנק יוכל לאמת את זהותך</translation>
 <translation id="780301667611848630">לא תודה</translation>
 <translation id="7805768142964895445">סטטוס</translation>
+<translation id="7810410097247356677">רוצה לשלם מהר יותר בפעם הבאה? כדאי לשמור במכשיר את פרטי הכרטיס וקוד האבטחה המוצפן</translation>
 <translation id="7812922009395017822">Mir</translation>
 <translation id="7813600968533626083">‏האם להסיר מ-Chrome הצעות בשביל טפסים?</translation>
 <translation id="781440967107097262">לשתף את הלוח?</translation>
@@ -3370,7 +3374,6 @@ Del</translation>
 <translation id="7865448901209910068">המהירות הטובה ביותר</translation>
 <translation id="7870281855125116701">נמצאה הנחה</translation>
 <translation id="7871445724586827387">‏שינוי הסיסמה לחשבון Google</translation>
-<translation id="7876615279559620350">‏כדי לשלם מהר יותר, כדאי לשמור בחשבון Google את קוד האימות (CVC) של הכרטיס הזה</translation>
 <translation id="7877007680666472091">‏תוכן מוגן ב-Content ID</translation>
 <translation id="7878562273885520351">ייתכן שאבטחת הסיסמה שלך נפגעה</translation>
 <translation id="7880146494886811634">שמירת הכתובת</translation>
@@ -3594,7 +3597,6 @@ Del</translation>
 <translation id="8308653357438598313">וידאו סטרימינג בשידור חי</translation>
 <translation id="8311895354659782580">מודעות נדל"ן</translation>
 <translation id="8316555157357957253">בשימוש עכשיו</translation>
-<translation id="8317570861267063617">‏כדי שהתשלום יהיה מהיר מדי, כדאי לשמור את קוד האימות (CVC) של הכרטיס הזה במכשיר</translation>
 <translation id="8319269383395457801">מכירות נדל"ן למגורים</translation>
 <translation id="831997045666694187">ערב</translation>
 <translation id="8321476692217554900">התראות</translation>
@@ -3881,6 +3883,7 @@ Del</translation>
 <translation id="893332455753468063">הוספת שם</translation>
 <translation id="8942355029279167844">‏מנהל המערכת שלך אפשר לאפליקציה <ph name="APP_NAME" /> לאסוף נתוני אבחון כדי לשפר את חוויית השימוש במוצר. מידע נוסף זמין בכתובת <ph name="BEGIN_LINK" />https://www.parallels.com/pcep<ph name="END_LINK" />.</translation>
 <translation id="8943282376843390568">ליים</translation>
+<translation id="8944485226638699751">יש הגבלה</translation>
 <translation id="8949493680961858543">A1x4</translation>
 <translation id="8951415078585015151">חוק וממשל</translation>
 <translation id="8954252855949068147">הלבשה</translation>

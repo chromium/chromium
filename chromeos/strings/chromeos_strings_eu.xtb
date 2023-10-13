@@ -194,6 +194,7 @@
 <translation id="2326139988748364651"><ph name="RESOLUTION_VALUE" /> dpi</translation>
 <translation id="2338501278241028356">Inguruko gailuak ikusteko, aktibatu Bluetootha</translation>
 <translation id="2346474577291266260">Bikaina (<ph name="SIGNAL_STRENGTH" />)</translation>
+<translation id="2358070305000735383"><ph name="DESCRIPTION" /> editatzeko leihoa irekita dago.</translation>
 <translation id="2359808026110333948">Egin aurrera</translation>
 <translation id="2364498172489649528">Gaindituta</translation>
 <translation id="2367335866686097760">Teklak esleitzeko tekla</translation>
@@ -712,7 +713,6 @@
 <translation id="6423239382391657905">VPN irekia</translation>
 <translation id="6439505561246192797">Ahula (<ph name="SIGNAL_STRENGTH" />)</translation>
 <translation id="6447630859861661624">Joan kontuaren ezarpenetara</translation>
-<translation id="6461047516875166066">Konta iezadazu</translation>
 <translation id="6463239094587744704">{PAGE_NUMBER,plural, =0{Berriro eskaneatu nahi duzu orria?}=1{Berriro eskaneatu nahi duzu {PAGE_NUMBER}. orria?}other{Berriro eskaneatu nahi duzu {PAGE_NUMBER}. orria?}}</translation>
 <translation id="6472207088655375767">EBP</translation>
 <translation id="6480327114083866287">Kudeatzailea: <ph name="MANAGER" /></translation>
@@ -1023,6 +1023,7 @@
 <translation id="8868741746785112895">GUIDa</translation>
 <translation id="8876270629542503161">Gailua tableta bat da.</translation>
 <translation id="8881098542468797602">Gainditu da proba</translation>
+<translation id="8892443466059986410">Utzi lasterbideak editatzeari</translation>
 <translation id="8898840733695078011">Seinalearen indarra</translation>
 <translation id="8909114361904403025">gora egiteko gezi-tekla</translation>
 <translation id="8910721771319628100">Sare lehenetsia latentziaren atalasetik gora dago</translation>

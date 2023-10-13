@@ -715,7 +715,6 @@
 <translation id="6423239382391657905">OpenVPN</translation>
 <translation id="6439505561246192797">I dobët (<ph name="SIGNAL_STRENGTH" />)</translation>
 <translation id="6447630859861661624">Shko te cilësimet e llogarisë</translation>
-<translation id="6461047516875166066">Më thuaj më shumë</translation>
 <translation id="6463239094587744704">{PAGE_NUMBER,plural, =0{Të skanohet përsëri faqja?}=1{Të skanohet përsëri faqja {PAGE_NUMBER}?}other{Të skanohet përsëri faqja {PAGE_NUMBER}?}}</translation>
 <translation id="6472207088655375767">OTP</translation>
 <translation id="6480327114083866287">Menaxhuar nga <ph name="MANAGER" /></translation>

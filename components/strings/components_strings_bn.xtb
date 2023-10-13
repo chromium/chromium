@@ -143,6 +143,7 @@
 <translation id="1264309058268477500">বিকল্প</translation>
 <translation id="1264974993859112054">খেলাধূলা</translation>
 <translation id="1266469291454105242">ডিভাইস আনলক</translation>
+<translation id="126728463333482584">আপনি 'ট্র্যাকিং প্রোটেকশন' ফিচারের অভিজ্ঞতা পাওয়া প্রথম ব্যবহারকারীদের মধ্যে একজন, যা ব্রাউজ করাকালীন আপানকে ট্র্যাক করার জন্য সাইট যে থার্ড-পার্টি কুকি ব্যবহার করে, তা সীমিত করে দেয়।</translation>
 <translation id="1268480293435976622">এনভেলপ চিনা #৭</translation>
 <translation id="1269516672602708785">Google Sites-এ চটপট নতুন সাইট তৈরি করুন</translation>
 <translation id="1270328905573953738">মালপত্র অন্য জায়গায় নিয়ে যাওয়ার পরিষেবা</translation>
@@ -693,6 +694,7 @@
 <translation id="2361263712565360498">২৭৫ x ৩৯৫ মিমি</translation>
 <translation id="236340516568226369">টগল মেনু উইন্ডোর সাইজ পরিবর্তন করুন</translation>
 <translation id="2365355378251437925"><ph name="FIELD" /> লিখুন</translation>
+<translation id="2365382709349300355">নীতির কারণে ১টি ফাইল ব্লক করা হয়েছে</translation>
 <translation id="2365508935344991784">আউটডোর ফার্নিচার</translation>
 <translation id="2366689192918515749">মাংস ও সিফুড</translation>
 <translation id="2367567093518048410">স্তর</translation>
@@ -2415,6 +2417,7 @@
 <translation id="5967867314010545767">ইতিহাস থেকে সরান</translation>
 <translation id="5968022600320704045">কোনও সার্চ ফলাফল নেই</translation>
 <translation id="5969199813874624822">দাম সেভ এবং ট্র্যাক করুন</translation>
+<translation id="5973514677932942122"><ph name="EXPIRATION_DATE" /> | <ph name="SECURITY_CODE" /></translation>
 <translation id="5974052231147553524">Sixth Roll</translation>
 <translation id="5975083100439434680">ছোট করুন</translation>
 <translation id="5979084224081478209">পাসওয়ার্ড চেক করুন</translation>
@@ -2905,6 +2908,7 @@
 <translation id="6965382102122355670">ঠিক আছে</translation>
 <translation id="6965978654500191972">ডিভাইস</translation>
 <translation id="696703987787944103">পারসেপচুয়াল</translation>
+<translation id="6967851206780867018">কন্টেন্টের কারণে ১টি ফাইল ব্লক করা হয়েছে</translation>
 <translation id="6970885655016700774">ফ্যাব্রিক (আর্কাইভাল)</translation>
 <translation id="6971439137020188025">Slides-এ চটপট নতুন Google প্রেজেন্টেশন তৈরি করুন</translation>
 <translation id="6972629891077993081">HID ডিভাইস</translation>
@@ -2957,6 +2961,7 @@
 <translation id="70705239631109039">এই কানেকশন সম্পূর্ণরূপে নিরাপদ নয়</translation>
 <translation id="7075452647191940183">অনুরোধ অত্যন্ত বড়</translation>
 <translation id="7078665357168027058">RA3</translation>
+<translation id="7079138647457502205">আরও গোপনীয়তা সহ ব্রাউজ করুন</translation>
 <translation id="7079718277001814089">এই সাইটটিতে ম্যালওয়্যার আছে</translation>
 <translation id="7081308185095828845">এই ফিচারটি আপনার ডিভাইসে পাওয়া যাবে না</translation>
 <translation id="7083258188081898530">ট্রে ৯</translation>
@@ -3373,7 +3378,6 @@
 <translation id="7865448901209910068">সর্বোচ্চ গতি</translation>
 <translation id="7870281855125116701">প্রোডাক্টে ছাড় খুঁজে পাওয়া গেছে</translation>
 <translation id="7871445724586827387">আপনার Google অ্যাকাউন্টের পাসওয়ার্ড পরিবর্তন করুন</translation>
-<translation id="7876615279559620350">আরও দ্রুত চেক-আউট করতে, আপনার Google অ্যাকাউন্টে এই কার্ডের জন্য CVC সেভ করুন</translation>
 <translation id="7877007680666472091">সুরক্ষিত কন্টেন্ট আইডি</translation>
 <translation id="7878562273885520351">আপনার পাসওয়ার্ড অন্য কেউ পরিবর্তন করার চেষ্টা করেছে</translation>
 <translation id="7880146494886811634">ঠিকানা সেভ করুন</translation>
@@ -3598,7 +3602,6 @@
 <translation id="8308653357438598313">লাইভ ভিডিও স্ট্রিমিং</translation>
 <translation id="8311895354659782580">রিয়েল এস্টেটের তালিকা</translation>
 <translation id="8316555157357957253">এখন ব্যবহার করা হচ্ছে</translation>
-<translation id="8317570861267063617">আরও দ্রুত চেক-আউট করতে, নিজের ডিভাইসে এই কার্ডের জন্য CVC সেভ করুন</translation>
 <translation id="8319269383395457801">আবাসন বিক্রি</translation>
 <translation id="831997045666694187">সন্ধ্যা</translation>
 <translation id="8321476692217554900">বিজ্ঞপ্তি</translation>

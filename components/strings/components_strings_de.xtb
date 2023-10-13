@@ -143,6 +143,7 @@ Du wirst sonst gemäß deinen Datenschutzeinstellungen blockiert. Wenn Cookies u
 <translation id="1264309058268477500">Wechselnd</translation>
 <translation id="1264974993859112054">Sport</translation>
 <translation id="1266469291454105242">Geräteentsperrung</translation>
+<translation id="126728463333482584">Du bist einer der ersten Nutzer, die den Schutz vor Tracking nutzen können. Dadurch wird verhindert, dass Websites Drittanbieter-Cookies verwenden, um deine Aktivitäten während des Surfens zu tracken.</translation>
 <translation id="1268480293435976622">Umschlag Chinesisch Nr. 7</translation>
 <translation id="1269516672602708785">Schnell eine neue Website in Google Sites erstellen</translation>
 <translation id="1270328905573953738">Umzüge</translation>
@@ -464,6 +465,7 @@ Du wirst sonst gemäß deinen Datenschutzeinstellungen blockiert. Wenn Cookies u
 <translation id="1875512691959384712">Google Formulare</translation>
 <translation id="1876399092304384674">Nach Datum</translation>
 <translation id="187918866476621466">"Beim Start"-Seiten öffnen</translation>
+<translation id="1880901968112404879">Damit Zahlungen zukünftig schneller abgewickelt werden können, speichere deine Karte, deinen verschlüsselten Sicherheitscode und deine Rechnungsadresse in deinem Google-Konto</translation>
 <translation id="1883255238294161206">Liste ausblenden</translation>
 <translation id="1884843295353628214">Jazz</translation>
 <translation id="1890171020361705182">Dino-Spiel. Ein verpixelter Dinosaurier weicht Kakteen und kleinen Flugsauriern aus, während er durch eine karge Landschaft läuft. Sobald du einen Ton hörst, tippe, um über Hindernisse zu springen.</translation>
@@ -691,6 +693,7 @@ Du wirst sonst gemäß deinen Datenschutzeinstellungen blockiert. Wenn Cookies u
 <translation id="2361263712565360498">275 x 395 mm</translation>
 <translation id="236340516568226369">Menü für die Größenanpassung</translation>
 <translation id="2365355378251437925"><ph name="FIELD" /> eingeben</translation>
+<translation id="2365382709349300355">1 Datei wurde aufgrund einer Richtlinie blockiert</translation>
 <translation id="2365508935344991784">Gartenmöbel</translation>
 <translation id="2366689192918515749">Fleisch und Meeresfrüchte</translation>
 <translation id="2367567093518048410">Ebene</translation>
@@ -2409,6 +2412,7 @@ Du wirst sonst gemäß deinen Datenschutzeinstellungen blockiert. Wenn Cookies u
 <translation id="5967867314010545767">Aus Verlauf entfernen</translation>
 <translation id="5968022600320704045">Keine Suchergebnisse</translation>
 <translation id="5969199813874624822">Speichern und Preis beobachten</translation>
+<translation id="5973514677932942122"><ph name="EXPIRATION_DATE" /> | <ph name="SECURITY_CODE" /></translation>
 <translation id="5974052231147553524">Sechste Rolle</translation>
 <translation id="5975083100439434680">Verkleinern</translation>
 <translation id="5979084224081478209">Passwörter prüfen</translation>
@@ -2899,6 +2903,7 @@ Du wirst sonst gemäß deinen Datenschutzeinstellungen blockiert. Wenn Cookies u
 <translation id="6965382102122355670">Ok</translation>
 <translation id="6965978654500191972">Gerät</translation>
 <translation id="696703987787944103">Perzeptiv</translation>
+<translation id="6967851206780867018">1 Datei wurde aufgrund des Inhalts blockiert</translation>
 <translation id="6970885655016700774">Stoff (Archiv)</translation>
 <translation id="6971439137020188025">Schnell eine neue Präsentation in Google Präsentationen erstellen</translation>
 <translation id="6972629891077993081">HID-Geräte</translation>
@@ -2951,6 +2956,7 @@ Du wirst sonst gemäß deinen Datenschutzeinstellungen blockiert. Wenn Cookies u
 <translation id="70705239631109039">Deine Verbindung ist nicht uneingeschränkt sicher</translation>
 <translation id="7075452647191940183">Die Anfrage ist zu groß</translation>
 <translation id="7078665357168027058">RA3</translation>
+<translation id="7079138647457502205">Mehr Datenschutz beim Surfen</translation>
 <translation id="7079718277001814089">Diese Website enthält Malware</translation>
 <translation id="7081308185095828845">Diese Funktion ist auf deinem Gerät nicht verfügbar</translation>
 <translation id="7083258188081898530">Fach 9</translation>
@@ -3347,6 +3353,7 @@ Weitere Details:
 <translation id="7802989406998618639">Gib den <ph name="NUMBER_OF_DIGITS" />-stelligen Sicherheitscode auf der <ph name="SIDE_OF_CARD" /> ein, damit deine Bank deine Identität bestätigen kann</translation>
 <translation id="780301667611848630">Nein, danke</translation>
 <translation id="7805768142964895445">Status</translation>
+<translation id="7810410097247356677">Damit Zahlungen zukünftig schneller abgewickelt werden können, speichere deine Karte und den verschlüsselten Sicherheitscode auf deinem Gerät</translation>
 <translation id="7812922009395017822">Mir</translation>
 <translation id="7813600968533626083">Vorschlag für das Formular aus Chrome entfernen?</translation>
 <translation id="781440967107097262">Zwischenablage teilen?</translation>
@@ -3367,7 +3374,6 @@ Weitere Details:
 <translation id="7865448901209910068">Beste Geschwindigkeit</translation>
 <translation id="7870281855125116701">Rabatt gefunden</translation>
 <translation id="7871445724586827387">Passwort des Google-Kontos ändern</translation>
-<translation id="7876615279559620350">Du kannst den CVC für diese Karte in deinem Google-Konto speichern, um schneller zu bezahlen</translation>
 <translation id="7877007680666472091">geschützte Inhalts-IDs</translation>
 <translation id="7878562273885520351">Dein Passwort könnte gefährdet sein</translation>
 <translation id="7880146494886811634">Adresse speichern</translation>
@@ -3592,7 +3598,6 @@ Weitere Details:
 <translation id="8308653357438598313">Live-Videostreaming</translation>
 <translation id="8311895354659782580">Immobilienanzeigen</translation>
 <translation id="8316555157357957253">Wird verwendet</translation>
-<translation id="8317570861267063617">Sie können den CVC für diese Karte auf Ihrem Gerät speichern, um schneller zu bezahlen</translation>
 <translation id="8319269383395457801">Vertrieb von Wohnimmobilien</translation>
 <translation id="831997045666694187">Abends</translation>
 <translation id="8321476692217554900">Benachrichtigungen</translation>

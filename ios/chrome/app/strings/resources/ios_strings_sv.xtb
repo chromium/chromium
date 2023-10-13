@@ -335,7 +335,6 @@ Du använder <ph name="DSE_NAME" /> som sökmotor. Läs anvisningarna för att r
 <translation id="2718352093833049315">Endast på wifi</translation>
 <translation id="2738375676495545665">Dölj Nyheter</translation>
 <translation id="2747003861858887689">Föregående fält</translation>
-<translation id="2749026027885331579">Dina familjemedlemmar kan nu använda ditt användarnamn och lösenord när de loggar in på <ph name="WEBSITE" /> med Google Lösenordshantering. <ph name="BEGIN_LINK" />Läs mer<ph name="END_LINK" /></translation>
 <translation id="2749231692441336879">Följer <ph name="CHANNEL_NAME" /></translation>
 <translation id="2754492786623500387">Konton på den här enheten</translation>
 <translation id="2762000892062317888">nyss</translation>
@@ -576,7 +575,6 @@ Läs sökmotorns anvisningar för att radera sökhistoriken om tillämpligt.</tr
 <translation id="4018310736049373830">Hantera aktivitet</translation>
 <translation id="4038354071007134711">Det går inte att öppna filen med någon av apparna på enheten.</translation>
 <translation id="4042870976416480368">Sök på sidan</translation>
-<translation id="4043294777772912240"><ph name="USERNAME" /> kan nu använda ditt användarnamn och lösenord när hen loggar in på <ph name="WEBSITE" /> med Google Lösenordshantering. <ph name="BEGIN_LINK" />Läs mer<ph name="END_LINK" /></translation>
 <translation id="40433179647657191">Skapa och dela en direktlänk till en del av en sida som du markerat.</translation>
 <translation id="4045648459118332842">Få tillgång till sparade lösenord i alla appar med ett tryck</translation>
 <translation id="4049507953662678203">Kontrollera att du är ansluten till nätverket och försök igen.</translation>
@@ -713,6 +711,7 @@ Läs sökmotorns anvisningar för att radera sökhistoriken om tillämpligt.</tr
 <translation id="4808744395915275922">Uppdateringar</translation>
 <translation id="4818522717893377262">Lägg till språk …</translation>
 <translation id="481968316161811770">Cookies, webbplatsdata</translation>
+<translation id="4824480232751123840">Volym</translation>
 <translation id="4824497107140370669">{count,plural, =0{{domain}}=1{{domain} och 1 till}other{{domain} och {count} till}}</translation>
 <translation id="4826218269716039351">Blockera cookies från tredje part</translation>
 <translation id="4826588772550366629">kamera och mikrofon</translation>
@@ -850,6 +849,7 @@ Du måste även aktivera Handoff i avsnittet Allmänt i inställningarna och sam
 <translation id="5556459405103347317">Hämta igen</translation>
 <translation id="555749644339804659">Kontrollerar lösenord …</translation>
 <translation id="556042886152191864">Knapp</translation>
+<translation id="5572684875078967866">Informationslagring</translation>
 <translation id="5597915316964418992">Öppna rutnätet med flikar</translation>
 <translation id="560322036295180549">Inaktiverat av organisationen</translation>
 <translation id="5614553682702429503">Vill du spara lösenordet?</translation>
@@ -911,6 +911,7 @@ Du måste även aktivera Handoff i avsnittet Allmänt i inställningarna och sam
 <translation id="5896576662943111387">Gjord för iOS</translation>
 <translation id="5897749768294722429">Synkronisera flikar och historik för att snabbt återgå till webbplatser du har besökt.</translation>
 <translation id="5897956970858271241">Besök kopierad länk</translation>
+<translation id="5898848375214731122">Vikt</translation>
 <translation id="5899314093904173337">Om du vill dela med personer i närheten ber du dem att skanna QR-koden med kameran eller en app för att skanna QR-koder</translation>
 <translation id="5911030830365207728">Google Översätt</translation>
 <translation id="5913600720976431809">Alternativ för att översätta sidan</translation>
@@ -928,6 +929,7 @@ Du måste även aktivera Handoff i avsnittet Allmänt i inställningarna och sam
 <translation id="5981230843984570095">Stäng alla inaktiva</translation>
 <translation id="5982717868370722439">Lägg till befintlig data i <ph name="USER_EMAIL" />.</translation>
 <translation id="5984222099446776634">Nyligen besökta</translation>
+<translation id="598634819525651074">Område</translation>
 <translation id="5988097621740394599">Se sänkta priser på flikar</translation>
 <translation id="5988851877894965432">Öppna webbadresser i Chrome</translation>
 <translation id="6006672969046233841">Ny flik</translation>
@@ -1364,6 +1366,7 @@ Webbplatser får se din webbaktivitet på olika webbplatser med hjälp av cookie
 <translation id="8156478151976189188">Det går inte att synkronisera lösenord</translation>
 <translation id="8157532349231307196"><ph name="NUMBER_OF_ACCOUNTS" /> konton</translation>
 <translation id="8159358225423560600">alldeles nyss</translation>
+<translation id="8173034266693057059">Längd</translation>
 <translation id="8179976553408161302">Enter</translation>
 <translation id="8182037667962849780">{count,plural, =1{För {website_1}}=2{För {website_1}, {website_2}}=3{För {website_1}, {website_2} och 1 till}other{För {website_1}, {website_2} och {more_count} till}}</translation>
 <translation id="8193953846147532858"><ph name="BEGIN_LINK" />Dina enheter<ph name="END_LINK" /> · <ph name="EMAIL" /></translation>
@@ -1458,6 +1461,7 @@ Din data krypterades med lösenfrasen den <ph name="TIME" />. Ange den om du vil
 <translation id="8692689525339542358">Få skydd mot farliga webbplatser, nedladdningar och tillägg.</translation>
 <translation id="8693663554456874301">{count,plural, =1{Stäng fliken}other{Stäng flikar}}</translation>
 <translation id="8703536910991780768">Lösenorden ser starka ut</translation>
+<translation id="8706253136355675497">Temperatur</translation>
 <translation id="8717864919010420084">Kopiera länk</translation>
 <translation id="8721297211384281569">Verktyg</translation>
 <translation id="8725066075913043281">Försök igen</translation>
@@ -1563,6 +1567,7 @@ Din data krypterades med lösenfrasen den <ph name="TIME" />. Ange den om du vil
 <translation id="9188680907066685419">Logga ut från hanterat konto</translation>
 <translation id="9200875785104711666"><ph name="TIME" /> d sedan</translation>
 <translation id="9203116392574189331">Handoff</translation>
+<translation id="9206887540681440657">Hastighet</translation>
 <translation id="9219154867334666734">Sök bland flikar …</translation>
 <translation id="9223358826628549784">Felrapporten har skickats.</translation>
 <translation id="941747855997058526">Välj lösenord …</translation>

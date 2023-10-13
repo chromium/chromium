@@ -329,6 +329,7 @@
 <translation id="1615402009686901181">Politica implementată de administrator dezactivează capturarea ecranului atunci când se afișează conținut confidențial</translation>
 <translation id="1617276713587758852">Crossovere</translation>
 <translation id="1618571384971354160">Remorcare și asistență rutieră</translation>
+<translation id="1619007254056372606">Gestionează datele privind site-urile pe dispozitiv</translation>
 <translation id="1620510694547887537">Cameră</translation>
 <translation id="1622571349153632031">Bucătărie pentru vegetarieni</translation>
 <translation id="162285686621567578">Site-ul este blocat de părintele tău.</translation>
@@ -465,6 +466,7 @@
 <translation id="1875512691959384712">Formulare Google</translation>
 <translation id="1876399092304384674">În funcție de dată</translation>
 <translation id="187918866476621466">Deschide paginile de pornire</translation>
+<translation id="1880901968112404879">Pentru a plăti mai rapid data viitoare, salvează cardul, codul de securitate și adresa de facturare în Contul Google</translation>
 <translation id="1883255238294161206">Restrângeți lista</translation>
 <translation id="1884843295353628214">Jazz</translation>
 <translation id="1890171020361705182">Joc cu dinozauri. Un dinozaur pixelat se ferește de cactuși și pterodactili într-un peisaj dezolant. Când auzi semnalul sonor, atinge pentru a sări peste obstacole.</translation>
@@ -1242,6 +1244,7 @@
 <translation id="3552297013052089404">Font Sans Serif</translation>
 <translation id="3558573058928565255">În timpul zilei</translation>
 <translation id="355995771319966853">Anulează completarea automată</translation>
+<translation id="3560408312959371419">Opțiuni pentru protecțiile împotriva urmăririi și datele privind site-urile de pe dispozitiv</translation>
 <translation id="3560824484345057728">Vezi site-urile conexe</translation>
 <translation id="3566021033012934673">Conexiunea nu este privată</translation>
 <translation id="3566336457819493938">215 x 315 mm</translation>
@@ -3356,6 +3359,7 @@ Detalii suplimentare:
 <translation id="7802989406998618639">Introdu codul de securitate din <ph name="NUMBER_OF_DIGITS" /> cifre în <ph name="SIDE_OF_CARD" />, pentru ca banca să-ți poată confirma identitatea</translation>
 <translation id="780301667611848630">Nu, mulțumesc</translation>
 <translation id="7805768142964895445">Stare</translation>
+<translation id="7810410097247356677">Pentru a plăti mai rapid data viitoare, salvează cardul și codul de securitate pe dispozitiv</translation>
 <translation id="7812922009395017822">Mir</translation>
 <translation id="7813600968533626083">Elimini sugestia pentru formular din Chrome?</translation>
 <translation id="781440967107097262">Permiți accesul la clipboard?</translation>
@@ -3376,7 +3380,6 @@ Detalii suplimentare:
 <translation id="7865448901209910068">Viteza optimă</translation>
 <translation id="7870281855125116701">A fost găsită o reducere</translation>
 <translation id="7871445724586827387">Schimbă parola Contului Google</translation>
-<translation id="7876615279559620350">Pentru finalizarea mai rapidă a achiziției, salvează codul CVC pentru acest card în Contul Google</translation>
 <translation id="7877007680666472091">ID-uri de conținut protejat</translation>
 <translation id="7878562273885520351">Este posibil ca parola să fie compromisă</translation>
 <translation id="7880146494886811634">Salvează adresa</translation>
@@ -3601,7 +3604,6 @@ Detalii suplimentare:
 <translation id="8308653357438598313">Streaming video live</translation>
 <translation id="8311895354659782580">Liste de imobiliare</translation>
 <translation id="8316555157357957253">Se folosește acum</translation>
-<translation id="8317570861267063617">Pentru o plată mai rapidă, salvează codul CVC pentru acest card pe dispozitiv</translation>
 <translation id="8319269383395457801">Vânzări de imobile rezidențiale</translation>
 <translation id="831997045666694187">Seara</translation>
 <translation id="8321476692217554900">Notificări</translation>
@@ -3889,6 +3891,7 @@ Detalii suplimentare:
 <translation id="893332455753468063">Adaugă un nume</translation>
 <translation id="8942355029279167844">Administratorul a permis ca <ph name="APP_NAME" /> să colecteze date de diagnosticare pentru a îmbunătăți experiența cu produsul. Consultă <ph name="BEGIN_LINK" />https://www.parallels.com/pcep<ph name="END_LINK" /> pentru mai multe informații.</translation>
 <translation id="8943282376843390568">Verde-gălbui</translation>
+<translation id="8944485226638699751">Limitate</translation>
 <translation id="8949493680961858543">A1x4</translation>
 <translation id="8951415078585015151">Legi și guvernare</translation>
 <translation id="8954252855949068147">Îmbrăcăminte</translation>

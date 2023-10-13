@@ -709,7 +709,6 @@ Kebenaran yang telah anda berikan kepada apl mungkin dikenakan pada akaun ini. A
 <translation id="1558391695376153246">Tutup tab Inkognito</translation>
 <translation id="155865706765934889">Pad sentuh</translation>
 <translation id="1558671750917454373">Sambung semula penghantaran pada <ph name="DEVICE_NAME" /></translation>
-<translation id="1561329796773556980">Kami dalam proses menyemak ruang storan…</translation>
 <translation id="1562119309884184621">Tindakan menambah kenalan ini akan membuatkan peranti mengingat kali seterusnya mereka membuat perkongsian</translation>
 <translation id="1563137369682381456">Tarikh tamat tempoh</translation>
 <translation id="1563702743503072935">Kata laluan daripada Akaun Google anda juga akan tersedia pada peranti ini semasa anda log masuk</translation>
@@ -2056,6 +2055,7 @@ Anda boleh mengurus tetapan akaun ini dengan memasang apl Family Link pada peran
 <translation id="2564520396658920462">Pelaksanaan JavaScript melalui AppleScript dimatikan. Untuk menghidupkannya, daripada bar menu, pergi ke Paparan &gt; Pembangun &gt; Benarkan JavaScript daripada Apple Events. Untuk mendapatkan maklumat lanjut: https://support.google.com/chrome/?p=applescript</translation>
 <translation id="2564653188463346023">Semakan ejaan dipertingkatkan</translation>
 <translation id="256481480019204378">ID Google Account</translation>
+<translation id="256517381556987641">Penyegerakan fail telah menemukan <ph name="ITEMS_FOUND" /> fail setakat ini dan masih menyemak ruang storan. Cuba hidupkan Penyegerakan fail sekali lagi dalam masa beberapa minit.</translation>
 <translation id="2565214867520763227">Hidupkan pembaca skrin</translation>
 <translation id="2568694057933302218">Semasa dalam mod Inkognito, laman tidak boleh menggunakan kuki anda untuk melihat aktiviti penyemakan imbas anda merentas laman. Aktiviti penyemakan imbas anda tidak digunakan untuk perkara seperti memeribadikan iklan. Ciri pada sesetengah laman mungkin tidak berfungsi.</translation>
 <translation id="2568774940984945469">Bekas Bar Maklumat</translation>
@@ -4374,6 +4374,7 @@ Maklumat ini termasuk maklumat tentang perisian yang dipasang, fail, penyemak im
 <translation id="4427365070557649936">Mengesahkan kod pengesahan...</translation>
 <translation id="4429163740524851942">Reka letak papan kekunci fizikal</translation>
 <translation id="4430019312045809116">Kelantangan</translation>
+<translation id="4430204941092622397">Tindakan ini boleh menyebabkan rangkaian mudah alih anda terputus sambungan selama beberapa minit.</translation>
 <translation id="443031431654216610">Gunakan digit berangka sahaja</translation>
 <translation id="4430369329743628066">Penanda halaman ditambahkan</translation>
 <translation id="4430422687972614133">Hidupkan kad maya</translation>
@@ -4586,6 +4587,7 @@ Maklumat ini termasuk maklumat tentang perisian yang dipasang, fail, penyemak im
 <translation id="4610162781778310380"><ph name="PLUGIN_NAME" /> telah mengalami ralat</translation>
 <translation id="4610637590575890427">Adakah anda maksudkan pergi ke <ph name="SITE" />?</translation>
 <translation id="4611114513649582138">Sambungan data tersedia</translation>
+<translation id="4611759022973144129">Anda boleh menggunakan kata laluan ini untuk log masuk ke <ph name="DEVICE_TYPE" /> anda.</translation>
 <translation id="4612841084470706111">Berikan akses kepada semua laman yang diminta.</translation>
 <translation id="4613144866899789710">Membatalkan pemasangan Linux...</translation>
 <translation id="4613271546271159013">Sambungan telah menukar halaman yang ditunjukkan apabila anda membuka halaman baharu.</translation>
@@ -5085,6 +5087,7 @@ Gunakan Ctrl + Alt + Kurangkan kecerahan untuk zum keluar.</translation>
 <translation id="5027550639139316293">Sijil E-mel</translation>
 <translation id="5027562294707732951">Tambahkan sambungan</translation>
 <translation id="5028445315206872221">Sambungan disekat pada laman ini</translation>
+<translation id="5029287942302939687">Kata laluan anda telah ditetapkan</translation>
 <translation id="5029873138381728058">Gagal menyemak VM</translation>
 <translation id="503155457707535043">Apl sedang dimuat turun</translation>
 <translation id="5032430150487044192">Tidak dapat membuat Kod QR</translation>
@@ -5113,6 +5116,7 @@ Gunakan Ctrl + Alt + Kurangkan kecerahan untuk zum keluar.</translation>
 <translation id="5054374119096692193">Lihat semua pilihan kad dalam <ph name="BEGIN_LINK" />Sesuaikan Chrome<ph name="END_LINK" /></translation>
 <translation id="5056950756634735043">Menyambung kepada bekas</translation>
 <translation id="5057110919553308744">Apabila anda mengklik sambungan</translation>
+<translation id="5057127674016624293">Pengimbasan mengambil lebih lama daripada jangkaan</translation>
 <translation id="5059241099014281248">Sekat log masuk</translation>
 <translation id="5059429103770496207">Gaya paparan</translation>
 <translation id="5059526285558225588">Pilih kandungan untuk dikongsi</translation>
@@ -6004,6 +6008,7 @@ Kebenaran yang telah anda berikan kepada laman web dan apl mungkin dikenakan pad
 <translation id="5797521893972859201">Kosongkan sejarah, termasuk item dalam kotak carian</translation>
 <translation id="5797934230382081317">Ketahui cara bermula pada &lt;a target='_blank' href='<ph name="LINK_ANDROID" />'&gt;Android&lt;/a&gt; dan &lt;a target='_blank' href='<ph name="LINK_IOS" />'&gt;iOS&lt;/a&gt;</translation>
 <translation id="5798079537501238810">Laman boleh memasang pengendali pembayaran</translation>
+<translation id="5798086737841799234">Masukkan kod pengesahan</translation>
 <translation id="579915268381781820">Kunci keselamatan anda telah dialih keluar.</translation>
 <translation id="5799478978078236781">Dapatkan petua, tawaran dan kemaskinian <ph name="DEVICE_TYPE" />, serta kongsikan maklum balas.</translation>
 <translation id="5799508265798272974">Mesin Maya Linux: <ph name="LINUX_VM_NAME" /></translation>
@@ -6794,7 +6799,6 @@ Kebenaran yang telah anda berikan kepada laman web dan apl mungkin dikenakan pad
 <translation id="6436778875248895551">Sambungan "<ph name="EXTENSION_NAME" />" disekat oleh pentadbir anda</translation>
 <translation id="6438234780621650381">Tetapkan semula tetapan</translation>
 <translation id="6438475350605608554">Anda sudah mengimport kata laluan dalam tab lain</translation>
-<translation id="6438480100790416671">Menyemak ruang storan…</translation>
 <translation id="6438992844451964465"><ph name="WINDOW_TITLE" /> - Audio sedang dimainkan</translation>
 <translation id="6440291723980579689">Halaman dimuatkan hanya selepas anda membukanya</translation>
 <translation id="6441377161852435370">Tambahkan tab pada senarai bacaan</translation>
@@ -7263,6 +7267,7 @@ Anda mempunyai # lagi kata laluan yang terjejas. Google Password Manager mengesy
 <translation id="6815376457351236663">Buka Juga</translation>
 <translation id="6815787852028615386">Fail ini berunsur penipuan dan mungkin membuat perubahan yang tidak dijangka pada peranti anda</translation>
 <translation id="6816097980753839617">Biru-kuning (Tritanomali)</translation>
+<translation id="6816443526270499804">Mencari profil eSIM yang tersedia</translation>
 <translation id="6818198425579322765">Bahasa Halaman yang Hendak Diterjemahkan</translation>
 <translation id="6818547713623251698">Lihat foto, media, pemberitahuan dan apl telefon anda</translation>
 <translation id="6818802132960437751">Perlindungan virus terbina dalam</translation>
@@ -8071,6 +8076,7 @@ Anda mempunyai # lagi kata laluan yang terjejas. Google Password Manager mengesy
 <translation id="7475742997309661417">Pembaca skrin pada ChromeOS, ChromeVox, biasanya digunakan oleh orang buta atau rabun untuk membaca teks yang dipaparkan pada skrin dengan pensintesis ucapan atau paparan braille. Tekan dan tahan kedua-dua kekunci kelantangan selama lima saat untuk menghidupkan ChromeVox. Apabila ChromeVox diaktifkan, anda akan melalui lawatan pantas.</translation>
 <translation id="7476454130948140105">Bateri terlalu lemah untuk mengemas kini (<ph name="BATTERY_PERCENT" />%)</translation>
 <translation id="7476989672001283112"><ph name="PERMISSION" /> dan <ph name="COUNT" /> lagi disekat secara automatik</translation>
+<translation id="7477460499687558352">Pilih profil eSIM untuk dimuat turun</translation>
 <translation id="7477599578899108080">Penggunaan memori tinggi: <ph name="MEMORY_USAGE" /></translation>
 <translation id="7477748600276493962">Buat Kod QR untuk halaman ini</translation>
 <translation id="7477793887173910789">Kawal muzik, video anda dan banyak lagi</translation>
@@ -8611,7 +8617,6 @@ Tekan suis atau kekunci yang telah ditetapkan untuk mengalih keluar penetapan.</
 <translation id="7893008570150657497">Akses foto, muzik dan media lain dari komputer anda</translation>
 <translation id="7893153962594818789">Bluetooth dimatikan pada <ph name="DEVICE_TYPE" /> ini. Masukkan kata laluan anda dan hidupkan Bluetooth.</translation>
 <translation id="7893393459573308604"><ph name="ENGINE_NAME" /> (Lalai)</translation>
-<translation id="7894382333736164977">Kami dalam proses menyemak ruang storan. <ph name="ITEMS_FOUND" /> item ditemukan.</translation>
 <translation id="7896292361319775586">Simpan <ph name="FILE" />?</translation>
 <translation id="789722939441020330">Jangan benarkan laman memuat turun berbilang fail secara automatik</translation>
 <translation id="7897900149154324287">Pada masa hadapan, pastikan anda melentingkan peranti boleh dialih keluar anda dalam apl Fail sebelum mencabutnya. Jika tidak, anda mungkin kehilangan data.</translation>

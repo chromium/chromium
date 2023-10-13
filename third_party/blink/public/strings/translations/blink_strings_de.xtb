@@ -16,6 +16,7 @@
 <translation id="1729654308190250600">Gib eine E-Mail-Adresse ein.</translation>
 <translation id="1758486001363313524">Andere...</translation>
 <translation id="1787192514241997742">Gesamtzeit: <ph name="REMAINING_TIME" /></translation>
+<translation id="1800494066469288780">Kamera zulassen</translation>
 <translation id="1822429046913737220">AM/PM</translation>
 <translation id="1832974991323546415">auf Remote-Gerät wiedergeben</translation>
 <translation id="1921819250265091946">tt</translation>
@@ -51,6 +52,7 @@
 <translation id="3220661731597678625">aktueller Schritt</translation>
 <translation id="3321030238473337787">Wiedergabegeschwindigkeit</translation>
 <translation id="3329013043687509092">Sättigung</translation>
+<translation id="3377518164566272702">Zugriff auf Mikrofon und Kamera zulassen</translation>
 <translation id="3450233048674729344">Wert muss kleiner als oder gleich <ph name="MAXIMUM" /> sein.</translation>
 <translation id="3732799496749320381">mm</translation>
 <translation id="3754210790023674521">Bild im Bild beenden</translation>
@@ -66,6 +68,7 @@
 <translation id="4718048029184481307">Wird als Bild im Bild abgespielt</translation>
 <translation id="4748357248530471599">Vollbildmodus mit Display-Aussparung ein-/ausschalten</translation>
 <translation id="4763480195061959176">Video</translation>
+<translation id="4792862212177489858">Standort teilen</translation>
 <translation id="4812940957355064477">Gib eine Nummer ein.</translation>
 <translation id="4912200001568447310">aktuelles Element</translation>
 <translation id="4915360478455618802">Uhrzeitauswahl anzeigen</translation>
@@ -179,6 +182,7 @@
 <translation id="9132465097189459683">Andere...</translation>
 <translation id="9155987714137265666"><ph name="WEEK" /> ab dem <ph name="WEEK_START_DATE" /></translation>
 <translation id="916607977885256133">Bild im Bild</translation>
+<translation id="918430632320614861">Mikrofon zulassen</translation>
 <translation id="945780513535800434">Teilweise angeklickt</translation>
 <translation id="954003015749068518">Bild im Bild aktivieren</translation>
 </translationbundle>

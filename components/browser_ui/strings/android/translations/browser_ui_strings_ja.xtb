@@ -258,6 +258,7 @@
 <translation id="5545693483061321551">サイトは、Cookie を使用して別のサイトでのあなたの閲覧アクティビティを確認できず、広告のパーソナライズなどが行えなくなります。一部のサイトで機能を使用できなくなる可能性があります。</translation>
 <translation id="5553374991681107062">最新</translation>
 <translation id="5556459405103347317">再読み込み</translation>
+<translation id="5591840828808741583"><ph name="SITE_NAME" /> をブロックしました</translation>
 <translation id="5649053991847567735">自動ダウンロード</translation>
 <translation id="5668404140385795438">ウェブサイトのズーム防止リクエストを上書きします</translation>
 <translation id="5677928146339483299">ブロック</translation>
@@ -455,6 +456,7 @@
 <translation id="8959122750345127698"><ph name="URL" /> にアクセスできません</translation>
 <translation id="8986362086234534611">削除</translation>
 <translation id="8990043154272859344">すべてのサイトからログアウトします</translation>
+<translation id="9011903857143958461"><ph name="SITE_NAME" /> を許可しました</translation>
 <translation id="9019902583201351841">保護者により管理されています</translation>
 <translation id="9039697262778250930">これらのサイトからログアウトする可能性があります</translation>
 <translation id="9074739597929991885">Bluetooth</translation>

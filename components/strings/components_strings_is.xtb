@@ -143,6 +143,7 @@ Ef þú gerir það ekki loka persónuverndarstillingar þínar á þennan aðga
 <translation id="1264309058268477500">Annað</translation>
 <translation id="1264974993859112054">Íþróttir</translation>
 <translation id="1266469291454105242">Taka tæki úr lás</translation>
+<translation id="126728463333482584">Þú ert meðal þeirra fyrstu til að prófa rakningarvörn sem takmarkar getu vefsvæða til að nota fótspor þriðju aðila til að rekja ferðir þínar um vefinn.</translation>
 <translation id="1268480293435976622">Umslag: kínverskt #7</translation>
 <translation id="1269516672602708785">Búa til nýtt Site í Google Sites á skjótan hátt</translation>
 <translation id="1270328905573953738">Búferlaflutningar</translation>
@@ -465,6 +466,7 @@ Ef þú gerir það ekki loka persónuverndarstillingar þínar á þennan aðga
 <translation id="1875512691959384712">Google-eyðublöð</translation>
 <translation id="1876399092304384674">Eftir dagsetningu</translation>
 <translation id="187918866476621466">Opna ræsisíður</translation>
+<translation id="1880901968112404879">Til að greiða hraðar næst skaltu vista kortið, dulkóðaðan öryggiskóða og heimilisfang greiðanda á Google-reikningnum þínum</translation>
 <translation id="1883255238294161206">Fella saman lista</translation>
 <translation id="1884843295353628214">Djass</translation>
 <translation id="1890171020361705182">Risaeðluleikur. Pixluð risaeðla sneiðir hjá kaktusum og flugeðlum þegar hún hleypur í gegnum eyðimörk. Ýttu til að hoppa yfir hindranir um leið og hljóðmerki heyrist.</translation>
@@ -692,6 +694,7 @@ Ef þú gerir það ekki loka persónuverndarstillingar þínar á þennan aðga
 <translation id="2361263712565360498">275 x 395 mm</translation>
 <translation id="236340516568226369">Breyta stærð breytivalmyndar</translation>
 <translation id="2365355378251437925">Sláðu inn <ph name="FIELD" /></translation>
+<translation id="2365382709349300355">Lokað var á 1 skrá vegna reglu</translation>
 <translation id="2365508935344991784">Útihúsgögn</translation>
 <translation id="2366689192918515749">Kjöt og fiskmeti</translation>
 <translation id="2367567093518048410">Stig</translation>
@@ -2414,6 +2417,7 @@ Ef þú gerir það ekki loka persónuverndarstillingar þínar á þennan aðga
 <translation id="5967867314010545767">Fjarlægja úr ferli</translation>
 <translation id="5968022600320704045">Engar leitarniðurstöður</translation>
 <translation id="5969199813874624822">Vista og fylgjast með verði</translation>
+<translation id="5973514677932942122"><ph name="EXPIRATION_DATE" /> | <ph name="SECURITY_CODE" /></translation>
 <translation id="5974052231147553524">Sjötta rúlla</translation>
 <translation id="5975083100439434680">Minnka aðdrátt</translation>
 <translation id="5979084224081478209">Yfirfara aðgangsorð</translation>
@@ -2905,6 +2909,7 @@ Ef þú gerir það ekki loka persónuverndarstillingar þínar á þennan aðga
 <translation id="6965382102122355670">Í lagi</translation>
 <translation id="6965978654500191972">Tæki</translation>
 <translation id="696703987787944103">Skynjað</translation>
+<translation id="6967851206780867018">Lokað var á 1 skrá vegna efnis</translation>
 <translation id="6970885655016700774">Vefnaður (skjalapappír)</translation>
 <translation id="6971439137020188025">Búa til nýja Google kynningu í Skyggnum á skjótan hátt</translation>
 <translation id="6972629891077993081">HID-tæki</translation>
@@ -2957,6 +2962,7 @@ Ef þú gerir það ekki loka persónuverndarstillingar þínar á þennan aðga
 <translation id="70705239631109039">Tengingin er ekki alveg örugg</translation>
 <translation id="7075452647191940183">Beiðnin er of stór</translation>
 <translation id="7078665357168027058">RA3</translation>
+<translation id="7079138647457502205">Njóttu meiri persónuverndar þegar þú vafrar</translation>
 <translation id="7079718277001814089">Þetta vefsvæði inniheldur spilliforrit</translation>
 <translation id="7081308185095828845">Þessi eiginleiki er ekki í boði í tækinu þínu</translation>
 <translation id="7083258188081898530">Bakki 9</translation>
@@ -3353,6 +3359,7 @@ Ef þú gerir það ekki loka persónuverndarstillingar þínar á þennan aðga
 <translation id="7802989406998618639">Sláðu inn <ph name="NUMBER_OF_DIGITS" /> tölustafa öryggiskóðann á <ph name="SIDE_OF_CARD" /> svo bankinn geti staðfest að þetta sért þú</translation>
 <translation id="780301667611848630">Nei, takk</translation>
 <translation id="7805768142964895445">Staða</translation>
+<translation id="7810410097247356677">Til að greiða hraðar næst skaltu vista kortið og dulkóðaðan öryggiskóða í tækinu þínu</translation>
 <translation id="7812922009395017822">Mir</translation>
 <translation id="7813600968533626083">Fjarlægja eyðublaðstillögu úr Chrome?</translation>
 <translation id="781440967107097262">Deila klippiborði?</translation>
@@ -3373,7 +3380,6 @@ Ef þú gerir það ekki loka persónuverndarstillingar þínar á þennan aðga
 <translation id="7865448901209910068">Mesti hraði</translation>
 <translation id="7870281855125116701">Afsláttur fannst</translation>
 <translation id="7871445724586827387">Breyta aðgangsorði Google reikningsins þíns</translation>
-<translation id="7876615279559620350">Vistaðu CVC-númer kortsins á Google-reikningnum þínum til að flýta fyrir greiðslu</translation>
 <translation id="7877007680666472091">kenni fyrir varið efni</translation>
 <translation id="7878562273885520351">Aðgangsorðinu þínu kann að hafa verið stolið</translation>
 <translation id="7880146494886811634">Vista heimilisfang</translation>
@@ -3598,7 +3604,6 @@ Ef þú gerir það ekki loka persónuverndarstillingar þínar á þennan aðga
 <translation id="8308653357438598313">Myndstraumur í beinni</translation>
 <translation id="8311895354659782580">Fasteignaauglýsingar</translation>
 <translation id="8316555157357957253">Í notkun núna</translation>
-<translation id="8317570861267063617">Vistaðu CVC-númer kortsins í tækinu til að flýta fyrir greiðslu</translation>
 <translation id="8319269383395457801">Sala íbúðarhúsnæðis</translation>
 <translation id="831997045666694187">Kvöld</translation>
 <translation id="8321476692217554900">tilkynningar</translation>

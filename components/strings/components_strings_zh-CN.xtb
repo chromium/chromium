@@ -466,6 +466,7 @@
 <translation id="1875512691959384712">Google 表单</translation>
 <translation id="1876399092304384674">按日期</translation>
 <translation id="187918866476621466">打开启动页</translation>
+<translation id="1880901968112404879">如果想在下次购物时更快捷地付款，请将您的付款卡信息、已加密的安全码以及账单邮寄地址保存到您的 Google 账号中</translation>
 <translation id="1883255238294161206">收起列表</translation>
 <translation id="1884843295353628214">爵士乐</translation>
 <translation id="1890171020361705182">恐龙游戏。在这款游戏中，您要协助一头正在荒野中奔跑的像素化恐龙躲避仙人掌和翼手龙。您只需在听到提示音时点按一下空格键，即可让恐龙跃过障碍物。</translation>
@@ -3353,6 +3354,7 @@
 <translation id="7802989406998618639">输入<ph name="SIDE_OF_CARD" />的 <ph name="NUMBER_OF_DIGITS" /> 位数安全码，以便银行验证您的身份</translation>
 <translation id="780301667611848630">不用了，谢谢</translation>
 <translation id="7805768142964895445">状态</translation>
+<translation id="7810410097247356677">如果想在下次购物时更快捷地付款，请将您的付款卡信息连同已加密的安全码一起保存到您的设备上</translation>
 <translation id="7812922009395017822">Mir</translation>
 <translation id="7813600968533626083">从 Chrome 中移除表单建议？</translation>
 <translation id="781440967107097262">分享剪贴板？</translation>
@@ -3373,7 +3375,6 @@
 <translation id="7865448901209910068">最快的速度</translation>
 <translation id="7870281855125116701">发现了折扣</translation>
 <translation id="7871445724586827387">更改您的 Google 账号密码</translation>
-<translation id="7876615279559620350">为便于更快速结账，请将此卡的银行卡验证码 (CVC) 保存到您的 Google 账号中</translation>
 <translation id="7877007680666472091">受保护内容 ID</translation>
 <translation id="7878562273885520351">您的密码可能会被盗用</translation>
 <translation id="7880146494886811634">保存地址</translation>
@@ -3598,7 +3599,6 @@
 <translation id="8308653357438598313">实时视频直播</translation>
 <translation id="8311895354659782580">房地产信息</translation>
 <translation id="8316555157357957253">正在使用中</translation>
-<translation id="8317570861267063617">为便于更快速结账，请将此卡的银行卡验证码 (CVC) 保存到您的设备上</translation>
 <translation id="8319269383395457801">住宅销售</translation>
 <translation id="831997045666694187">晚上</translation>
 <translation id="8321476692217554900">通知</translation>

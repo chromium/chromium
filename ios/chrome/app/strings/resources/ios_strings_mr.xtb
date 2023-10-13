@@ -335,7 +335,6 @@
 <translation id="2718352093833049315">केवळ वाय-फाय वर</translation>
 <translation id="2738375676495545665">नवीन काय आहे ते लपवा</translation>
 <translation id="2747003861858887689">मागील फील्ड</translation>
-<translation id="2749026027885331579">तुमचे कुटुंब सदस्य हे <ph name="WEBSITE" /> मध्ये साइन इन करण्यासाठी Google Password Manager वापरतात, तेव्हा ते आता तुमचे वापरकर्ता नाव आणि पासवर्ड वापरू शकतात. <ph name="BEGIN_LINK" />अधिक जाणून घ्या<ph name="END_LINK" /></translation>
 <translation id="2749231692441336879"><ph name="CHANNEL_NAME" /> ला फॉलो करत आहे</translation>
 <translation id="2754492786623500387">या डिव्हाइस वरील खाती</translation>
 <translation id="2762000892062317888">आत्ताच</translation>
@@ -576,7 +575,6 @@
 <translation id="4018310736049373830">अ‍ॅक्टिव्हिटी व्यवस्थापित करा</translation>
 <translation id="4038354071007134711">या डिव्हाइसवरील कोणतीही ॲप्लिकेशन फाइल उघडू शकत नाही.</translation>
 <translation id="4042870976416480368">पेजमध्ये शोधा</translation>
-<translation id="4043294777772912240"><ph name="WEBSITE" /> मध्ये साइन इन करण्यासाठी ते Google Password Manager वापरतात, तेव्हा <ph name="USERNAME" /> आता तुमचे वापरकर्ता नाव आणि पासवर्ड वापरू शकतात. <ph name="BEGIN_LINK" />अधिक जाणून घ्या<ph name="END_LINK" /></translation>
 <translation id="40433179647657191">तुम्ही हायलाइट केलेल्या पेजच्या भागाची थेट लिंक तयार करा आणि शेअर करा.</translation>
 <translation id="4045648459118332842">एका टॅपसह तुमचे पासवर्ड कोणत्याही अ‍ॅपमध्ये सेव्ह करा</translation>
 <translation id="4049507953662678203">आपल्याकडे नेटवर्क कनेक्शन आहे हे सुनिश्चित करा आणि पुन्हा प्रयत्न करा.</translation>
@@ -713,6 +711,7 @@
 <translation id="4808744395915275922">अपडेट</translation>
 <translation id="4818522717893377262">भाषा जोडा…</translation>
 <translation id="481968316161811770">कुकीज, साइट डेटा</translation>
+<translation id="4824480232751123840">व्हॉल्यूम</translation>
 <translation id="4824497107140370669">{count,plural, =0{{domain}}=1{{domain} आणि इतर एक}other{{domain} आणि इतर {count}}}</translation>
 <translation id="4826218269716039351">तृतीय पक्ष ब्लॉक करा</translation>
 <translation id="4826588772550366629">कॅमेरा आणि मायक्रोफोन</translation>
@@ -850,6 +849,7 @@
 <translation id="5556459405103347317">रीलोड करा</translation>
 <translation id="555749644339804659">पासवर्ड तपासत आहे…</translation>
 <translation id="556042886152191864">बटण</translation>
+<translation id="5572684875078967866">माहितीचे स्टोरेज</translation>
 <translation id="5597915316964418992">टॅब ग्रिड उघडा</translation>
 <translation id="560322036295180549">तुमच्या संस्थेने बंद केले</translation>
 <translation id="5614553682702429503">पासवर्ड सेव्ह करायचा आहे का?</translation>
@@ -911,6 +911,7 @@
 <translation id="5896576662943111387">iOS साठी तयार केलेला</translation>
 <translation id="5897749768294722429">तुम्ही भेट दिलेल्या साइटवर झटपट परत जाण्यासाठी, तुमचे टॅब आणि इतिहास सिंक करा.</translation>
 <translation id="5897956970858271241">कॉपी केलेल्या लिंकला भेट द्या</translation>
+<translation id="5898848375214731122">वस्तुमान</translation>
 <translation id="5899314093904173337">जवळपासच्या लोकांसोबत शेअर करण्यासाठी, त्यांना त्यांचा कॅमेरा किंवा QR scanner अ‍ॅप वापरून हा QR कोड स्कॅन करू द्या</translation>
 <translation id="5911030830365207728">Google Translate</translation>
 <translation id="5913600720976431809">पेज भाषांतरित करण्यासाठी पर्याय</translation>
@@ -928,6 +929,7 @@
 <translation id="5981230843984570095">सर्व इनॅक्टिव्ह टॅब बंद करा</translation>
 <translation id="5982717868370722439">विद्यमान डेटा <ph name="USER_EMAIL" /> मध्ये जोडा.</translation>
 <translation id="5984222099446776634">अलीकडे भेट दिलेले</translation>
+<translation id="598634819525651074">क्षेत्र</translation>
 <translation id="5988097621740394599">तुमच्या टॅबवर कमी झालेली किंमत पहा.</translation>
 <translation id="5988851877894965432">Chrome URL उघडा</translation>
 <translation id="6006672969046233841">नवीन टॅब</translation>
@@ -1365,6 +1367,7 @@
 <translation id="8156478151976189188">पासवर्ड सिंक काम करत नाही</translation>
 <translation id="8157532349231307196"><ph name="NUMBER_OF_ACCOUNTS" /> खाती</translation>
 <translation id="8159358225423560600">आताच</translation>
+<translation id="8173034266693057059">लांबी</translation>
 <translation id="8179976553408161302">Enter</translation>
 <translation id="8182037667962849780">{count,plural, =1{{website_1} साठी}=2{{website_1}, {website_2} साठी}=3{{website_1}, {website_2} आणि आणखी १ साठी}other{{website_1}, {website_2}, आणि आणखी {more_count} साठी}}</translation>
 <translation id="8193953846147532858"><ph name="BEGIN_LINK" />तुमची डिव्हाइस<ph name="END_LINK" /> · <ph name="EMAIL" /></translation>
@@ -1459,6 +1462,7 @@
 <translation id="8692689525339542358">धोकादायक साइट, डाउनलोड आणि एक्स्टेंशनपासून संरक्षण मिळवा.</translation>
 <translation id="8693663554456874301">{count,plural, =1{टॅब बंद करा}other{टॅब बंद करा}}</translation>
 <translation id="8703536910991780768">तुमचे पासवर्ड क्लिष्ट दिसत आहेत</translation>
+<translation id="8706253136355675497">तापमान</translation>
 <translation id="8717864919010420084">लिंक कॉपी करा</translation>
 <translation id="8721297211384281569">साधने मेनू</translation>
 <translation id="8725066075913043281">पुन्हा प्रयत्न करा</translation>
@@ -1564,6 +1568,7 @@
 <translation id="9188680907066685419">व्यवस्थापित केलेल्या खात्यामधून साइन आउट करा</translation>
 <translation id="9200875785104711666"><ph name="TIME" /> दिवसांपूर्वी</translation>
 <translation id="9203116392574189331">Handoff</translation>
+<translation id="9206887540681440657">वेग</translation>
 <translation id="9219154867334666734">टॅब शोधा…</translation>
 <translation id="9223358826628549784">क्रॅश अहवाल पाठवला.</translation>
 <translation id="941747855997058526">पासवर्ड निवडा...</translation>

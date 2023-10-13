@@ -715,7 +715,6 @@
 <translation id="6423239382391657905">OpenVPN</translation>
 <translation id="6439505561246192797">약함(<ph name="SIGNAL_STRENGTH" />)</translation>
 <translation id="6447630859861661624">계정 설정으로 이동</translation>
-<translation id="6461047516875166066">자세히 설명해 줘</translation>
 <translation id="6463239094587744704">{PAGE_NUMBER,plural, =0{페이지를 다시 스캔하시겠습니까?}=1{{PAGE_NUMBER}페이지를 다시 스캔하시겠습니까?}other{{PAGE_NUMBER}페이지를 다시 스캔하시겠습니까?}}</translation>
 <translation id="6472207088655375767">OTP</translation>
 <translation id="6480327114083866287"><ph name="MANAGER" />에서 관리함</translation>

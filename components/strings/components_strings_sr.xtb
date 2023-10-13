@@ -466,6 +466,7 @@
 <translation id="1875512691959384712">Google упитници</translation>
 <translation id="1876399092304384674">Према датуму</translation>
 <translation id="187918866476621466">Отвори почетне странице</translation>
+<translation id="1880901968112404879">Да бисте следећи пут платили брже, сачувајте картицу, шифровани безбедносни кôд и адресу за обрачун на Google налогу</translation>
 <translation id="1883255238294161206">Скупи листу</translation>
 <translation id="1884843295353628214">Џез</translation>
 <translation id="1890171020361705182">Игра са диносаурусом. Пикселизовани диносаурус избегава кактусе и птеродактиле док трчи пустим пејзажем. Када чујете звучни сигнал додирните да бисте прескакали препреке.</translation>
@@ -3357,6 +3358,7 @@
 <translation id="7802989406998618639">Унесите <ph name="NUMBER_OF_DIGITS" />-цифрени безбедносни кôд на <ph name="SIDE_OF_CARD" /> да би банка могла да потврди да сте то ви</translation>
 <translation id="780301667611848630">Не, хвала</translation>
 <translation id="7805768142964895445">Статус</translation>
+<translation id="7810410097247356677">Да бисте следећи пут платили брже, сачувајте картицу и шифровани безбедносни кôд на уређају</translation>
 <translation id="7812922009395017822">Mir</translation>
 <translation id="7813600968533626083">Желите ли да уклоните предлог из Chrome-а?</translation>
 <translation id="781440967107097262">Дозволићете дељење привремене меморије?</translation>
@@ -3377,7 +3379,6 @@
 <translation id="7865448901209910068">Најбоља брзина</translation>
 <translation id="7870281855125116701">Пронађен је попуст</translation>
 <translation id="7871445724586827387">Промените лозинку за Google налог</translation>
-<translation id="7876615279559620350">Да бисте брже плаћали, сачувајте CVC за ову картицу на Google налогу</translation>
 <translation id="7877007680666472091">ИД-ови заштићеног садржаја</translation>
 <translation id="7878562273885520351">Лозинка је можда компромитована</translation>
 <translation id="7880146494886811634">Сачувајте адресу</translation>
@@ -3602,7 +3603,6 @@
 <translation id="8308653357438598313">Видео стримовање уживо</translation>
 <translation id="8311895354659782580">Регистар некретнина за продају</translation>
 <translation id="8316555157357957253">Тренутно користите</translation>
-<translation id="8317570861267063617">Да бисте брже плаћали, сачувајте CVC за ову картицу на уређају</translation>
 <translation id="8319269383395457801">Продаја некретнина за становање</translation>
 <translation id="831997045666694187">Увече</translation>
 <translation id="8321476692217554900">обавештења</translation>

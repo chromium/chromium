@@ -195,6 +195,7 @@
 <translation id="2326139988748364651"><ph name="RESOLUTION_VALUE" /> dpi</translation>
 <translation id="2338501278241028356">আশেপাশের ডিভাইস খুঁজে পেতে ব্লুটুথ চালু করুন</translation>
 <translation id="2346474577291266260">গড় (<ph name="SIGNAL_STRENGTH" />)</translation>
+<translation id="2358070305000735383"><ph name="DESCRIPTION" />-এর জন্য ডায়ালগ এডিট করার প্রক্রিয়া খোলা আছে।</translation>
 <translation id="2359808026110333948">চালিয়ে যান</translation>
 <translation id="2364498172489649528">পাস করেছে</translation>
 <translation id="2367335866686097760">কীম্যাপ করার 'কী'</translation>
@@ -714,7 +715,6 @@
 <translation id="6423239382391657905">OpenVPN</translation>
 <translation id="6439505561246192797">খারাপ (<ph name="SIGNAL_STRENGTH" />)</translation>
 <translation id="6447630859861661624">অ্যাকাউন্ট সেটিংসে যান</translation>
-<translation id="6461047516875166066">আরও জানতে চাই</translation>
 <translation id="6463239094587744704">{PAGE_NUMBER,plural, =0{পৃষ্ঠাটি আবার স্ক্যান করতে চান?}=1{{PAGE_NUMBER} নম্বর পৃষ্ঠা আবার স্ক্যান করতে চান?}one{{PAGE_NUMBER} নম্বর পৃষ্ঠা আবার স্ক্যান করতে চান?}other{{PAGE_NUMBER} নম্বর পৃষ্ঠা আবার স্ক্যান করতে চান?}}</translation>
 <translation id="6472207088655375767">ওটিপি</translation>
 <translation id="6480327114083866287"><ph name="MANAGER" />-এর মাধ্যমে ম্যানেজ করা হয়</translation>
@@ -1025,6 +1025,7 @@
 <translation id="8868741746785112895">গ্লোবালি ইউনিক আইডেন্টিফায়ার (GUID)</translation>
 <translation id="8876270629542503161">ডিভাইস একটি ট্যাবলেট।</translation>
 <translation id="8881098542468797602">টেস্ট সফল হয়েছে</translation>
+<translation id="8892443466059986410">শর্টকাট এডিটিং বাতিল করুন</translation>
 <translation id="8898840733695078011">সংকেতের ক্ষমতা</translation>
 <translation id="8909114361904403025">উপরের দিকের তীরচিহ্ন</translation>
 <translation id="8910721771319628100">নেটওয়ার্ক লেটেন্সির যে ঊর্ধসীমা রয়েছে, তার চেয়ে ডিফল্ট নেটওয়ার্ক গেটওয়ের লেটেন্সি বেশি</translation>

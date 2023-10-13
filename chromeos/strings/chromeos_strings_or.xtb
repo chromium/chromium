@@ -75,6 +75,7 @@
 <translation id="1499900233129743732"><ph name="MANAGER" /> ଏହି ୟୁଜରଙ୍କୁ ପରିଚାଳନା କରେ ଏବଂ ରିମୋଟ ଭାବେ ସେଟିଂସକୁ ପରିଚାଳନା ଏବଂ ୟୁଜର କାର୍ଯ୍ୟକଳାପକୁ ନିରୀକ୍ଷଣ କରିପାରେ।</translation>
 <translation id="150962533380566081">ଅବୈଧ PUK।</translation>
 <translation id="1510238584712386396">ଲଞ୍ଚର୍</translation>
+<translation id="1515129336378114413">ବ୍ରାଉଜର ହୋମ</translation>
 <translation id="1526389707933164996">ସ୍କ୍ରିନ ସେଭର ଆନିମେସନ</translation>
 <translation id="152892567002884378">ଭଲ୍ୟୁମ୍ ବଢ଼ାନ୍ତୁ</translation>
 <translation id="1555130319947370107">ନୀଳ</translation>
@@ -195,6 +196,7 @@
 <translation id="2326139988748364651"><ph name="RESOLUTION_VALUE" /> dpi</translation>
 <translation id="2338501278241028356">ଆଖପାଖରେ ଥିବା ଡିଭାଇସ୍‌ଗୁଡ଼ିକୁ ଖୋଜିବାକୁ ବ୍ଲୁଟୁଥ୍‌ ଚାଲୁ କରନ୍ତୁ</translation>
 <translation id="2346474577291266260">ସର୍ବୋତ୍ତମ (<ph name="SIGNAL_STRENGTH" />)</translation>
+<translation id="2358070305000735383"><ph name="DESCRIPTION" /> ପାଇଁ ଏଡିଟ ଡାଏଲଗ ଖୋଲା ଅଛି।</translation>
 <translation id="2359808026110333948">ଜାରି ରଖନ୍ତୁ</translation>
 <translation id="2364498172489649528">ପାସ୍ କରିଛି</translation>
 <translation id="2367335866686097760">କୀମେପିଂ କୀ</translation>
@@ -714,7 +716,6 @@
 <translation id="6423239382391657905">OpenVPN</translation>
 <translation id="6439505561246192797">ଦୁର୍ବଳ (<ph name="SIGNAL_STRENGTH" />)</translation>
 <translation id="6447630859861661624">ଆକାଉଣ୍ଟ ସେଟିଂସକୁ ଯାଆନ୍ତୁ</translation>
-<translation id="6461047516875166066">ମୋତେ ଅଧିକ କୁହନ୍ତୁ</translation>
 <translation id="6463239094587744704">{PAGE_NUMBER,plural, =0{ପୃଷ୍ଠାକୁ ପୁଣି ସ୍କାନ୍ କରିବେ?}=1{{PAGE_NUMBER} ନମ୍ବର ପୃଷ୍ଠାକୁ ପୁଣି ସ୍କାନ୍ କରିବେ?}other{{PAGE_NUMBER} ନମ୍ବର ପୃଷ୍ଠାକୁ ପୁଣି ସ୍କାନ୍ କରିବେ?}}</translation>
 <translation id="6472207088655375767">OTP</translation>
 <translation id="6480327114083866287"><ph name="MANAGER" /> ଦ୍ୱାରା ପରିଚାଳିତ ହେଉଛି</translation>
@@ -749,6 +750,7 @@
 <translation id="6659594942844771486">ଟାବ୍</translation>
 <translation id="6673898378497337661">କୀବୋର୍ଡର ଉଜ୍ଜ୍ୱଳତା ବଢ଼ାନ୍ତୁ</translation>
 <translation id="6692996468359469499">ଆପଣଙ୍କ ଚୟନ ସମ୍ବନ୍ଧିତ ସୂଚନା ପାଆନ୍ତୁ</translation>
+<translation id="6694534975463174713">ଲକ୍ କରନ୍ତୁ</translation>
 <translation id="6704062477274546131">DNS ରିଜୋଲ୍ୟୁସନ୍</translation>
 <translation id="6723839937902243910">ପାୱର୍</translation>
 <translation id="6723847290197874913">କୀବୋର୍ଡ ବ୍ୟାକଲାଇଟ</translation>
@@ -793,6 +795,7 @@
 <translation id="7103252855940681301"><ph name="COUNT" />ଟିରୁ <ph name="NAME" /> ନାମ ଥିବା <ph name="INDEX" /> ନମ୍ବର ଡିଭାଇସ।</translation>
 <translation id="7107255225945990211"><ph name="PRODUCT_NAME" /> ଏକ୍ସକ୍ଲୁସିଭ କଳାକୃତି ବାଛନ୍ତୁ</translation>
 <translation id="7108668606237948702">ଏଣ୍ଟର୍</translation>
+<translation id="7119389851461848805">ପାୱାର</translation>
 <translation id="7130438335435247835">ଆକ୍ସେସ ପଏଣ୍ଟ ନାମ (APN)</translation>
 <translation id="7134436342991564651">{0,plural, =1{ନାମ ସର୍ଭର୍}other{ନାମ ସର୍ଭର୍}}</translation>
 <translation id="7135814714616751706">ସର୍ଟକଟ ସର୍ଚ୍ଚ କରନ୍ତୁ</translation>
@@ -833,6 +836,7 @@
 <translation id="7375053625150546623">EAP</translation>
 <translation id="7388959671917308825">ବିଲ୍ଟ-ଇନ ଟଚପେଡ</translation>
 <translation id="7397270852490618635">ହାଲୁକା ଥିମକୁ ବନ୍ଦ କରନ୍ତୁ</translation>
+<translation id="7401543881546089382">ସର୍ଟକଟକୁ ଡିଲିଟ କରନ୍ତୁ</translation>
 <translation id="741244894080940828">କନଭର୍ସନ୍</translation>
 <translation id="7415801143053185905">HTTPର ବହୁତ ଅଧିକ ଲାଟେନ୍ସି</translation>
 <translation id="7425178841057519191">{NUM_ROOL_APPS,plural,offset:2 =1{ଆପଣ ପ୍ରତ୍ୟେକ ଥର ଲଗ ଇନ କରିବା ସମୟରେ <ph name="APP_NAME_1" /> ସ୍ୱତଃ ଆରମ୍ଭ ହେବା ପାଇଁ ଆପଣଙ୍କ ଆଡମିନିଷ୍ଟ୍ରେଟର ସେଟ କରିଛନ୍ତି।}=2{ଆପଣ ପ୍ରତ୍ୟେକ ଥର ଲଗ ଇନ କରିବା ସମୟରେ <ph name="APP_NAME_1" /> ଏବଂ <ph name="APP_NAME_2" /> ସ୍ୱତଃ ଆରମ୍ଭ ହେବା ପାଇଁ ଆପଣଙ୍କ ଆଡମିନିଷ୍ଟ୍ରେଟର ସେଟ କରିଛନ୍ତି।}=3{ଆପଣ ପ୍ରତ୍ୟେକ ଥର ଲଗ ଇନ କରିବା ସମୟରେ <ph name="APP_NAME_1" />, <ph name="APP_NAME_2" /> ଏବଂ <ph name="APP_NAME_3" /> ସ୍ୱତଃ ଆରମ୍ଭ ହେବା ପାଇଁ ଆପଣଙ୍କ ଆଡମିନିଷ୍ଟ୍ରେଟର ସେଟ କରିଛନ୍ତି।}other{ଆପଣ ପ୍ରତ୍ୟେକ ଥର ଲଗ ଇନ କରିବା ସମୟରେ <ph name="APP_NAME_1" />, <ph name="APP_NAME_2" /> ଏବଂ ଅନ୍ୟ #ଟି ଆପ୍ସ ସ୍ୱତଃ ଆରମ୍ଭ ହେବା ପାଇଁ ଆପଣଙ୍କ ଆଡମିନିଷ୍ଟ୍ରେଟର ସେଟ କରିଛନ୍ତି।}}</translation>
@@ -1023,6 +1027,7 @@
 <translation id="8868741746785112895">GUID</translation>
 <translation id="8876270629542503161">ଡିଭାଇସଟି ଏକ ଟାବଲେଟ ଅଟେ।</translation>
 <translation id="8881098542468797602">ଟେଷ୍ଟ ସଫଳ ହୋଇଛି</translation>
+<translation id="8892443466059986410">ସର୍ଟକଟ ଏଡିଟିଂକୁ ବାତିଲ କରନ୍ତୁ</translation>
 <translation id="8898840733695078011">ସିଗନାଲ୍‌ ଦକ୍ଷତା</translation>
 <translation id="8909114361904403025">ଉପର ଆଡ଼କୁ ତୀର</translation>
 <translation id="8910721771319628100">ଡିଫଲ୍ଟ ନେଟୱାର୍କ ଲାଟେନ୍ସି ସୀମାର ଉପରେ ଅଛି</translation>

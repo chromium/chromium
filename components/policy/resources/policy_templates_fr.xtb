@@ -2056,15 +2056,6 @@ Si cette règle n'est pas configurée, la règle <ph name="BLOCK_POPUPS_POLICY_N
 <translation id="2801065672151277034">Paramètres de gestion des certificats</translation>
 <translation id="2801155097555584385">Personnaliser le pourcentage auquel la batterie doit commencer à être rechargée</translation>
 <translation id="2801378553855965587">Désactiver l'intégration de <ph name="GOOGLE_CALENDAR_NAME" />.</translation>
-<translation id="2804129948908818402">Cette règle permet aux administrateurs de spécifier des applis qui agissent en tant que gestionnaires par défaut pour les extensions de fichier correspondantes dans <ph name="PRODUCT_OS_NAME" /> que les utilisateurs ne peuvent pas modifier.
-
-Pour toutes les extensions de fichier non spécifiées dans la règle, les utilisateurs sont libres de définir leurs propres valeurs par défaut par rapport au workflow habituel.
-
-Spécifiez les applis Chrome par leur ID (par exemple, <ph name="DEFAULT_HANDLERS_FOR_FILE_EXTENSIONS_POLICY_CHROME_APP_EXAMPLE" />), les applis Web par l'URL utilisée dans <ph name="WEB_APP_INSTALL_FORCE_LIST_POLICY_NAME" /> (par exemple, <ph name="DEFAULT_HANDLERS_FOR_FILE_EXTENSIONS_POLICY_WEB_APP_EXAMPLE" />), les applis Android par leur nom de package (par exemple, <ph name="DEFAULT_HANDLERS_FOR_FILE_EXTENSIONS_POLICY_ANDROID_APP_EXAMPLE" />) et les applis Web système par leur nom snake case (par exemple, <ph name="DEFAULT_HANDLERS_FOR_FILE_EXTENSIONS_POLICY_SYSTEM_WEB_APP_EXAMPLE" />).
-
-Notez que les applis DOIVENT se déclarer comme gestionnaires de fichiers pour les extensions de fichier spécifiées dans le fichier manifeste afin que cet élément de règle prenne effet (autrement dit, la règle n'étend PAS les fonctionnalités existantes des applis).
-
-Si cette règle n'est pas configurée, <ph name="PRODUCT_OS_NAME" /> peut sélectionner des gestionnaires par défaut en fonction de la logique interne.</translation>
 <translation id="2805707493867224476">Autoriser tous les sites à afficher des fenêtres pop-up</translation>
 <translation id="2806804577787377637">Cette règle est obsolète et non compatible, veuillez utiliser la règle <ph name="PER_APP_TIME_LIMITS_ALLOWLIST" /> à la place.</translation>
 <translation id="2818074121667686266">Si cette règle est activée ou qu'elle n'est pas configurée, l'utilisateur est invité à autoriser ou non l'accès à la capture audio, sauf si l'URL concernée figure dans la liste AudioCaptureAllowedUrls.
@@ -2621,7 +2612,6 @@ Si cette règle n'est pas configurée, le nouveau comportement sera utilisé tou
 <translation id="3240609035816615922">Règle d'accès à la configuration des imprimantes.</translation>
 <translation id="324062325008698789">Configurer une liste d'imprimantes</translation>
 <translation id="3240655340884151271">Adresse MAC de la carte d'interface réseau intégrée de la station d'accueil</translation>
-<translation id="3242480111684005642">L'utilisateur peut utiliser la fonctionnalité de synchronisation des fichiers <ph name="GOOGLE_DRIVE_NAME" />.</translation>
 <translation id="3242756958360374888">Contient une liste de schémas utilisés pour contrôler la visibilité des comptes dans <ph name="PRODUCT_NAME" />.
 
       Chaque compte Google sur l'appareil sera comparé aux schémas enregistrés dans cette règle pour déterminer la visibilité du compte dans <ph name="PRODUCT_NAME" />. Le compte sera visible si son nom correspond à l'un des schémas de la liste. Sinon, il sera masqué.
@@ -2681,7 +2671,6 @@ Ces restrictions s'appliquent aux téléchargements déclenchés à partir du co
 Sous <ph name="MS_WIN_NAME" />, cette règle n'est disponible que sur les instances associées à un domaine <ph name="MS_AD_NAME" />, à <ph name="MS_AAD_NAME" /> ou qui bénéficient de la <ph name="CHROME_BROWSER_CLOUD_MANAGEMENT_NAME" />.</translation>
 <translation id="3300784749135986828">Activer ou désactiver <ph name="USER_AGENT_REDUCTION_FEATURE_NAME" />.</translation>
 <translation id="3301698868852716692">Activer l'extension des insights</translation>
-<translation id="3302723130703323097">Rendre la fonctionnalité de synchronisation des fichiers<ph name="GOOGLE_DRIVE_NAME" /> visible et activable sur les appareils compatibles dans l'appli Fichiers de <ph name="PRODUCT_OS_NAME" /></translation>
 <translation id="3302829897293005699">Si cette règle est activée ou qu'elle n'est pas configurée, les appareils enregistrés communiquent des informations sur la session kiosque active telles que l'ID et la version de l'application.
 
       Si cette règle est désactivée, les appareils enregistrés ne communiquent pas ces informations.</translation>
@@ -2769,13 +2758,6 @@ Si elle est désactivée, la fonctionnalité d'écriture prédictive est désact
       Si elle est configurée sur "masqué", les utilisateurs ne peuvent ni les voir, ni les utiliser.
 
       Si cette règle n'est pas configurée, ou si elle est définie sur une valeur non valide, le mode de désactivation des fonctionnalités du système est défini sur "bloqué".</translation>
-<translation id="3410963889229735344">Sur les appareils compatibles, la synchronisation des fichiers <ph name="GOOGLE_DRIVE_NAME" /> rend les fichiers du dossier Mon Drive automatiquement disponibles hors connexion (si l'espace le permet). Une fois que les fichiers existants sont rendus disponibles hors connexion, il en sera de même automatiquement pour les nouveaux fichiers. Une fois cette fonctionnalité activée, si l'espace disponible est insuffisant, tous les nouveaux fichiers cessent d'être automatiquement accessibles hors connexion. Toutefois, l'utilisateur peut toujours activer/désactiver manuellement des éléments.
-
-Si cette règle est définie sur <ph name="POLICY_VALUE_VISIBLE" />, la fonctionnalité de synchronisation des fichiers est affichée dans l'appli Fichiers et sur la page des paramètres. Cependant, les utilisateurs doivent l'activer ou la désactiver manuellement.
-
-Si cette règle est définie sur <ph name="POLICY_VALUE_DISABLED" />, la synchronisation des fichiers est désactivée si l'utilisateur l'avait activée. Elle est également masquée dans l'appli Fichiers et dans les paramètres afin que l'utilisateur ne puisse pas la réactiver. Si des fichiers existants ont été rendus disponibles hors connexion par l'utilisateur, ils restent disponibles hors connexion, et celui-ci peut rendre manuellement des fichiers individuels disponibles hors connexion (ils ne le sont pas automatiquement).
-
-Si cette règle n'est pas configurée, la valeur <ph name="POLICY_VALUE_VISIBLE" /> est utilisée par défaut.</translation>
 <translation id="341285788698114069">Cette règle contrôle la priorité du processus audio sous Windows.
       Si cette règle est activée, le processus audio s'exécutera avec une priorité supérieure à la normale.
       Si cette règle est désactivée, le processus audio s'exécutera avec une priorité normale.
@@ -4625,7 +4607,6 @@ Cette règle a été supprimée de la version 113 de <ph name="PRODUCT_NAME" />
 <translation id="5039110755072335605">Prise en charge des en-têtes de requêtes CORS sans caractères génériques</translation>
 <translation id="504116558738617678">N'afficher des avertissements de type "espace disque insuffisant" que si l'appareil n'est pas géré ou s'il n'a qu'un seul utilisateur</translation>
 <translation id="5041315457555330432">Autoriser <ph name="PRODUCT_NAME" /> à ne se connecter qu'aux appareils avec une adresse IP privée, sauf si la fonctionnalité CastAllowAllIPs est activée.</translation>
-<translation id="5046376406561077773">L'utilisateur ne peut voir aucune interface utilisateur concernant la fonctionnalité de synchronisation des fichiers <ph name="GOOGLE_DRIVE_NAME" />.</translation>
 <translation id="5055474681190962362">Jour du mois [1-31] (interprété dans le fuseau horaire local de l'appareil) où l'appareil doit redémarrer. Utilisé uniquement quand "frequency" est défini sur "MONTHLY". Si le nombre maximal de jours dans un mois donné est dépassé, le dernier jour de ce mois est sélectionné.</translation>
 <translation id="5056708224511062314">Loupe désactivée</translation>
 <translation id="5058573563327660283">Sélectionner la stratégie utilisée pour libérer de l'espace disque au cours du nettoyage automatique (obsolète)</translation>
@@ -5301,9 +5282,6 @@ Lorsqu'elle est définie pour <ph name="PRODUCT_OS_NAME" /> Kiosk, cette règle
           Si vous désactivez cette règle, le gestionnaire de mots de passe n'autorise pas l'affichage des mots de passe enregistrés en texte clair dans la fenêtre du gestionnaire de mots de passe.
 
           Si vous activez ou si vous ne configurez pas cette règle, les utilisateurs pourront voir leurs mots de passe en texte clair dans le gestionnaire de mots de passe.</translation>
-<translation id="5618908165853580022">Cette règle permet à <ph name="PRODUCT_NAME" /> d'utiliser d'anciens hachages non sécurisés pendant le processus de handshake TLS.
-
-      Si elle n'est pas configurée, <ph name="PRODUCT_NAME" /> applique le processus de déploiement par défaut pour interdire les hachages non sécurisés. Si elle est activée, <ph name="PRODUCT_NAME" /> autorise un serveur à utiliser des hachages non sécurisés lors de la négociation d'un handshake TLS. Si elle est désactivée, <ph name="PRODUCT_NAME" /> interdit à un serveur d'utiliser des hachages non sécurisés lors de la négociation d'un handshake TLS. Cette règle sera supprimée dans la version 119.</translation>
 <translation id="5619498195290770056">Permet de dresser la liste des formats d'URL pour lesquels les sites ne peuvent pas placer de cookies.
 
       Si cette règle n'est pas configurée, la règle <ph name="DEFAULT_COOKIES_SETTINGS_POLICY_NAME" /> est utilisée pour tous les sites (à condition qu'elle soit configurée). Si ce n'est pas le cas, le paramètre défini par l'utilisateur s'applique.

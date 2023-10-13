@@ -258,6 +258,7 @@
 <translation id="5545693483061321551">Сайтууд нь, жишээлбэл зарыг хувийн болгохын тулд өөр сайт дээрх таны хөтчийн үйл ажиллагааг харах зорилгоор таны күүкиг ашиглах боломжгүй. Зарим сайтын онцлогууд ажиллахгүй байж болзошгүй.</translation>
 <translation id="5553374991681107062">Хамгийн сүүлийн үеийн</translation>
 <translation id="5556459405103347317">Дахин ачаал</translation>
+<translation id="5591840828808741583"><ph name="SITE_NAME" />-г блоклосон</translation>
 <translation id="5649053991847567735">Автоматаар татаж  авах файл</translation>
 <translation id="5668404140385795438">Томруулах үйлдлээс урьдчилан сэргийлэхийн тулд вэбсайтны хүсэлтийг хүчингүй болгох</translation>
 <translation id="5677928146339483299">Хаагдсан</translation>
@@ -455,6 +456,7 @@
 <translation id="8959122750345127698">Навигацтай холбогдох боломжгүй байна: <ph name="URL" /></translation>
 <translation id="8986362086234534611">Мартах</translation>
 <translation id="8990043154272859344">Таныг бүх сайтаас гаргана</translation>
+<translation id="9011903857143958461"><ph name="SITE_NAME" />-г зөвшөөрсөн</translation>
 <translation id="9019902583201351841">Эцэг, эх нь хариуцан удирдаж байна</translation>
 <translation id="9039697262778250930">Таныг эдгээр сайтаас гаргаж магадгүй</translation>
 <translation id="9074739597929991885">Bluetooth</translation>

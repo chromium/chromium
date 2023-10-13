@@ -328,6 +328,7 @@
 <translation id="1615402009686901181">管理者のポリシーによって、機密コンテンツが表示されているときは、スクリーン キャプチャが無効になります</translation>
 <translation id="1617276713587758852">クロスオーバー</translation>
 <translation id="1618571384971354160">牽引サービス、ロード アシスタンス</translation>
+<translation id="1619007254056372606">デバイス上のサイトデータを管理</translation>
 <translation id="1620510694547887537">カメラ</translation>
 <translation id="1622571349153632031">ベジタリアン料理</translation>
 <translation id="162285686621567578">このウェブサイトは保護者によってブロックされています。</translation>
@@ -464,6 +465,7 @@
 <translation id="1875512691959384712">Google フォーム</translation>
 <translation id="1876399092304384674">日付別</translation>
 <translation id="187918866476621466">起動ページを開く</translation>
+<translation id="1880901968112404879">カード、暗号化したセキュリティ コード、請求先住所を Google アカウントに保存すると、次回のお支払いが簡単になります</translation>
 <translation id="1883255238294161206">リストを折りたたむ</translation>
 <translation id="1884843295353628214">ジャズ</translation>
 <translation id="1890171020361705182">Dino ゲーム。ピクセル画像の恐竜がサボテンやプテロダクティルスをよけながら、荒地を走り抜けます。合図の音が聞こえたら、タップして障害物を飛び越えましょう。</translation>
@@ -1238,6 +1240,7 @@
 <translation id="3552297013052089404">Sans Serif フォント</translation>
 <translation id="3558573058928565255">日中</translation>
 <translation id="355995771319966853">自動入力を取り消す</translation>
+<translation id="3560408312959371419">トラッキング防止機能とデバイス上のサイトデータのオプション</translation>
 <translation id="3560824484345057728">関連サイトを表示する</translation>
 <translation id="3566021033012934673">この接続ではプライバシーが保護されません</translation>
 <translation id="3566336457819493938">215x315 mm</translation>
@@ -3351,6 +3354,7 @@
 <translation id="7802989406998618639">カード発行会社による本人確認のため、<ph name="SIDE_OF_CARD" />に記載されている <ph name="NUMBER_OF_DIGITS" /> 桁のセキュリティ コードを入力してください</translation>
 <translation id="780301667611848630">同意しない</translation>
 <translation id="7805768142964895445">ステータス</translation>
+<translation id="7810410097247356677">カードと暗号化したセキュリティ コードをデバイスに保存すると、次回のお支払いが簡単になります</translation>
 <translation id="7812922009395017822">Mir</translation>
 <translation id="7813600968533626083">Chrome から候補を削除してもよろしいですか？</translation>
 <translation id="781440967107097262">クリップボードを共有しますか？</translation>
@@ -3371,7 +3375,6 @@
 <translation id="7865448901209910068">最高速度</translation>
 <translation id="7870281855125116701">割引が見つかりました</translation>
 <translation id="7871445724586827387">Google アカウントのパスワードを変更します</translation>
-<translation id="7876615279559620350">購入手続きをすばやく行うには、このカードの CVC を Google アカウントに保存してください</translation>
 <translation id="7877007680666472091">保護されたコンテンツ ID</translation>
 <translation id="7878562273885520351">パスワードが不正使用される可能性があります</translation>
 <translation id="7880146494886811634">住所を保存</translation>
@@ -3595,7 +3598,6 @@
 <translation id="8308653357438598313">ライブ動画ストリーミング</translation>
 <translation id="8311895354659782580">不動産情報</translation>
 <translation id="8316555157357957253">現在使用中</translation>
-<translation id="8317570861267063617">購入手続きをスムーズに行うには、このカードの CVC をデバイスに保存してください</translation>
 <translation id="8319269383395457801">住宅販売</translation>
 <translation id="831997045666694187">夕方</translation>
 <translation id="8321476692217554900">通知</translation>
@@ -3883,6 +3885,7 @@
 <translation id="893332455753468063">名前の追加</translation>
 <translation id="8942355029279167844">管理者は、<ph name="APP_NAME" /> がサービス改善のために診断データを収集することを許可しています。詳しくは、<ph name="BEGIN_LINK" />https://www.parallels.com/pcep<ph name="END_LINK" /> をご覧ください。</translation>
 <translation id="8943282376843390568">ライム</translation>
+<translation id="8944485226638699751">制限付き</translation>
 <translation id="8949493680961858543">A1x4</translation>
 <translation id="8951415078585015151">法律、行政</translation>
 <translation id="8954252855949068147">ファッション</translation>

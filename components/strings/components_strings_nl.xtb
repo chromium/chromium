@@ -143,6 +143,7 @@ Anders wordt dit geblokkeerd door je privacyinstellingen. Hierdoor werkt de cont
 <translation id="1264309058268477500">Alternatief</translation>
 <translation id="1264974993859112054">Sport</translation>
 <translation id="1266469291454105242">Apparaatontgrendeling</translation>
+<translation id="126728463333482584">Je bent een van de eerste gebruikers die de functie Trackingbeveiliging gebruikt. Met deze functie wordt voorkomen dat sites cookies van derden gebruiken om je te volgen terwijl je browst.</translation>
 <translation id="1268480293435976622">Envelop Chinees #7</translation>
 <translation id="1269516672602708785">Snel een nieuwe site in Google Sites maken</translation>
 <translation id="1270328905573953738">Verhuizen</translation>
@@ -465,6 +466,7 @@ Anders wordt dit geblokkeerd door je privacyinstellingen. Hierdoor werkt de cont
 <translation id="1875512691959384712">Google Formulieren</translation>
 <translation id="1876399092304384674">Op datum</translation>
 <translation id="187918866476621466">Startpagina's openen</translation>
+<translation id="1880901968112404879">Sla je kaart, versleutelde beveiligingscode en factuuradres op in je Google-account, zodat je de volgende keer sneller kunt betalen</translation>
 <translation id="1883255238294161206">Lijst samenvouwen</translation>
 <translation id="1884843295353628214">Jazz</translation>
 <translation id="1890171020361705182">Dino-game. Een gepixeleerde dinosaurus ontwijkt cactussen en pterodactylussen terwijl deze door een verlaten landschap rent. Als je een audiosignaal hoort, tik je om over obstakels te springen.</translation>
@@ -692,6 +694,7 @@ Anders wordt dit geblokkeerd door je privacyinstellingen. Hierdoor werkt de cont
 <translation id="2361263712565360498">275 x 395 mm</translation>
 <translation id="236340516568226369">Schakelmenu voor aanpassen van formaat</translation>
 <translation id="2365355378251437925">Vul <ph name="FIELD" /> in</translation>
+<translation id="2365382709349300355">1 bestand is geblokkeerd vanwege het beleid</translation>
 <translation id="2365508935344991784">Buitenmeubilair</translation>
 <translation id="2366689192918515749">Vlees en vis</translation>
 <translation id="2367567093518048410">Niveau</translation>
@@ -2409,6 +2412,7 @@ Het kan langer dan normaal duren voordat je app wordt gestart.</translation>
 <translation id="5967867314010545767">Verwijderen uit geschiedenis</translation>
 <translation id="5968022600320704045">Geen zoekresultaten</translation>
 <translation id="5969199813874624822">Opslaan en prijs volgen</translation>
+<translation id="5973514677932942122"><ph name="EXPIRATION_DATE" /> | <ph name="SECURITY_CODE" /></translation>
 <translation id="5974052231147553524">6e rol</translation>
 <translation id="5975083100439434680">Uitzoomen</translation>
 <translation id="5979084224081478209">Wachtwoorden controleren</translation>
@@ -2869,7 +2873,7 @@ Het kan langer dan normaal duren voordat je app wordt gestart.</translation>
 <translation id="6917795328362592458">Het wachtwoord dat je net hebt gebruikt, is gevonden bij een gegevenslek. Wachtwoordmanager raadt je aan je opgeslagen wachtwoorden te checken om je accounts te beveiligen.</translation>
 <translation id="6925267999184670015">Noord-Amerikaanse B+</translation>
 <translation id="692638818576287323">Bedrijfsvoertuigen</translation>
-<translation id="6934236486840930310"><ph name="BEGIN_BOLD" />Met je standaard zoekmachine kun je op internet zoeken en Chrome-functies gebruiken<ph name="END_BOLD" />, zoals zoeken via de adresbalk en vanuit afbeeldingen op webpagina's. Een functie is misschien niet beschikbaar als je zoekmachine deze niet ondersteunt.</translation>
+<translation id="6934236486840930310"><ph name="BEGIN_BOLD" />Met je standaard zoekmachine kun je op internet zoeken en Chrome-functies gebruiken<ph name="END_BOLD" />, zoals zoeken via de adresbalk en vanuit afbeeldingen op webpagina's. Een functie is mogelijk niet beschikbaar als je zoekmachine deze niet ondersteunt.</translation>
 <translation id="6934672428414710184">Dit is de naam die in je Google-account staat</translation>
 <translation id="6935082727755903526">Financiële en accountancybanen</translation>
 <translation id="6935179587384421592"><ph name="SIZE" />. Sommige sites laden misschien langzamer bij je volgende bezoek.</translation>
@@ -2899,6 +2903,7 @@ Het kan langer dan normaal duren voordat je app wordt gestart.</translation>
 <translation id="6965382102122355670">OK</translation>
 <translation id="6965978654500191972">Apparaat</translation>
 <translation id="696703987787944103">Op waarneming gebaseerd</translation>
+<translation id="6967851206780867018">1 bestand is geblokkeerd vanwege de content</translation>
 <translation id="6970885655016700774">Stof (archief)</translation>
 <translation id="6971439137020188025">Snel een nieuwe Google-presentatie in Presentaties maken</translation>
 <translation id="6972629891077993081">HID-apparaten</translation>
@@ -2951,6 +2956,7 @@ Het kan langer dan normaal duren voordat je app wordt gestart.</translation>
 <translation id="70705239631109039">Je verbinding is niet volledig beveiligd</translation>
 <translation id="7075452647191940183">Verzoek is te groot</translation>
 <translation id="7078665357168027058">RA3</translation>
+<translation id="7079138647457502205">Browsen met meer privacy</translation>
 <translation id="7079718277001814089">Deze site bevat malware</translation>
 <translation id="7081308185095828845">Deze functie is niet beschikbaar op je apparaat</translation>
 <translation id="7083258188081898530">Lade 9</translation>
@@ -3347,6 +3353,7 @@ Aanvullende informatie:
 <translation id="7802989406998618639">Geef de beveiligingscode van <ph name="NUMBER_OF_DIGITS" /> cijfers op de <ph name="SIDE_OF_CARD" /> op, zodat je bank kan verifiëren dat jij het bent</translation>
 <translation id="780301667611848630">Nee, bedankt</translation>
 <translation id="7805768142964895445">Status</translation>
+<translation id="7810410097247356677">Sla je kaart en versleutelde beveiligingscode op je apparaat op, zodat je de volgende keer sneller kunt betalen</translation>
 <translation id="7812922009395017822">Mir</translation>
 <translation id="7813600968533626083">Formuliersuggestie verwijderen uit Chrome?</translation>
 <translation id="781440967107097262">Klembord delen?</translation>
@@ -3367,7 +3374,6 @@ Aanvullende informatie:
 <translation id="7865448901209910068">Beste snelheid</translation>
 <translation id="7870281855125116701">Korting gevonden</translation>
 <translation id="7871445724586827387">Het wachtwoord van je Google-account wijzigen</translation>
-<translation id="7876615279559620350">Sla de CVC voor deze kaart in je Google-account op om sneller te betalen</translation>
 <translation id="7877007680666472091">ID's van beschermde content</translation>
 <translation id="7878562273885520351">Je wachtwoord is mogelijk gehackt</translation>
 <translation id="7880146494886811634">Adres opslaan</translation>
@@ -3592,7 +3598,6 @@ Aanvullende informatie:
 <translation id="8308653357438598313">Live videostreaming</translation>
 <translation id="8311895354659782580">Verkoop van onroerend goed</translation>
 <translation id="8316555157357957253">Nu in gebruik</translation>
-<translation id="8317570861267063617">Sla de CVC voor deze kaart op je apparaat op om sneller te betalen</translation>
 <translation id="8319269383395457801">Particuliere verkoop</translation>
 <translation id="831997045666694187">Avond</translation>
 <translation id="8321476692217554900">meldingen</translation>

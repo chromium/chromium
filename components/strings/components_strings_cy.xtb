@@ -143,6 +143,7 @@ Fel arall, bydd eich gosodiadau preifatrwydd yn rhwystro hyn. Bydd hyn yn caniat
 <translation id="1264309058268477500">Amgen</translation>
 <translation id="1264974993859112054">Chwaraeon</translation>
 <translation id="1266469291454105242">Datgloi dyfais</translation>
+<translation id="126728463333482584">Chi yw un o'r rhai cyntaf i brofi Diogelwch Olrhain, sy'n cyfyngu gwefannau rhag defnyddio cwcis trydydd parti i'ch olrhain wrth i chi bori.</translation>
 <translation id="1268480293435976622">Amlen Chinese #7</translation>
 <translation id="1269516672602708785">Creu gwefan newydd yn Google Sites yn gyflym</translation>
 <translation id="1270328905573953738">Symud ac Adleoli</translation>
@@ -465,6 +466,7 @@ Fel arall, bydd eich gosodiadau preifatrwydd yn rhwystro hyn. Bydd hyn yn caniat
 <translation id="1875512691959384712">Google Forms</translation>
 <translation id="1876399092304384674">Yn ôl dyddiad</translation>
 <translation id="187918866476621466">Agor tudalennau cychwyn</translation>
+<translation id="1880901968112404879">I dalu'n gyflymach y tro nesaf, cadwch eich cerdyn, cod diogelwch sydd wedi'i amgryptio, a'ch cyfeiriad bilio yn eich Cyfrif Google</translation>
 <translation id="1883255238294161206">Crebachu'r rhestr</translation>
 <translation id="1884843295353628214">Jazz</translation>
 <translation id="1890171020361705182">Gêm Dino. Mae deinosor picsel yn osgoi cacti a pterodactyliaid wrth iddo redeg ar draws tirwedd anghyfannedd. Pan fyddwch yn clywed ciw sain, tapiwch i neidio dros rwystrau.</translation>
@@ -692,6 +694,7 @@ Fel arall, bydd eich gosodiadau preifatrwydd yn rhwystro hyn. Bydd hyn yn caniat
 <translation id="2361263712565360498">275 x 395 mm</translation>
 <translation id="236340516568226369">Newidiwch faint y ddewislen toglo</translation>
 <translation id="2365355378251437925">Rhowch <ph name="FIELD" /></translation>
+<translation id="2365382709349300355">Cafodd 1 ffeil ei rhwystro oherwydd polisi</translation>
 <translation id="2365508935344991784">Dodrefn Awyr Agored</translation>
 <translation id="2366689192918515749">Cig a Bwyd Môr</translation>
 <translation id="2367567093518048410">Lefel</translation>
@@ -2414,6 +2417,7 @@ Fel arall, bydd eich gosodiadau preifatrwydd yn rhwystro hyn. Bydd hyn yn caniat
 <translation id="5967867314010545767">Tynnu o'r hanes</translation>
 <translation id="5968022600320704045">Dim canlyniadau chwilio</translation>
 <translation id="5969199813874624822">Cadw ac Olrhain y Pris</translation>
+<translation id="5973514677932942122"><ph name="EXPIRATION_DATE" /> | <ph name="SECURITY_CODE" /></translation>
 <translation id="5974052231147553524">Chweched Rôl</translation>
 <translation id="5975083100439434680">Pellhau</translation>
 <translation id="5979084224081478209">Gwirio cyfrineiriau</translation>
@@ -2905,6 +2909,7 @@ Fel arall, bydd eich gosodiadau preifatrwydd yn rhwystro hyn. Bydd hyn yn caniat
 <translation id="6965382102122355670">Iawn</translation>
 <translation id="6965978654500191972">Dyfais</translation>
 <translation id="696703987787944103">Canfyddiadol</translation>
+<translation id="6967851206780867018">Cafodd 1 ffeil ei rhwystro oherwydd y cynnwys</translation>
 <translation id="6970885655016700774">Ffabrig (Archifal)</translation>
 <translation id="6971439137020188025">Creu cyflwyniad Google newydd yn Slides yn gyflym</translation>
 <translation id="6972629891077993081">Dyfeisiau HID</translation>
@@ -2957,6 +2962,7 @@ Fel arall, bydd eich gosodiadau preifatrwydd yn rhwystro hyn. Bydd hyn yn caniat
 <translation id="70705239631109039">Nid yw'ch cysylltiad yn gwbl ddiogel</translation>
 <translation id="7075452647191940183">Mae'r cais yn rhy fawr</translation>
 <translation id="7078665357168027058">RA3</translation>
+<translation id="7079138647457502205">Pori gyda mwy o breifatrwydd</translation>
 <translation id="7079718277001814089">Mae'r wefan hon yn cynnwys meddalwedd faleisus</translation>
 <translation id="7081308185095828845">Nid yw'r nodwedd hon ar gael ar eich dyfais</translation>
 <translation id="7083258188081898530">Hambwrdd 9</translation>
@@ -3353,6 +3359,7 @@ Manylion ychwanegol:
 <translation id="7802989406998618639">Rhowch y cod diogelwch <ph name="NUMBER_OF_DIGITS" /> digid ar y <ph name="SIDE_OF_CARD" /> fel y gall eich banc gadarnhau mai chi sydd yno</translation>
 <translation id="780301667611848630">Dim diolch</translation>
 <translation id="7805768142964895445">Statws</translation>
+<translation id="7810410097247356677">I dalu'n gyflymach y tro nesaf, cadwch eich cerdyn a'ch cod diogelwch sydd wedi'i amgryptio i'ch dyfais</translation>
 <translation id="7812922009395017822">Mir</translation>
 <translation id="7813600968533626083">Tynnu'r awgrym ffurflen o Chrome?</translation>
 <translation id="781440967107097262">Rhannu'r clipfwrdd?</translation>
@@ -3373,7 +3380,6 @@ Manylion ychwanegol:
 <translation id="7865448901209910068">Cyflymder gorau</translation>
 <translation id="7870281855125116701">Wedi Dod o Hyd i Ostyngiad</translation>
 <translation id="7871445724586827387">Newid cyfrinair eich Cyfrif Google</translation>
-<translation id="7876615279559620350">I dalu'n gyflymach, cadwch y CVC ar gyfer y cerdyn hwn yn eich Cyfrif Google</translation>
 <translation id="7877007680666472091">dulliau adnabod cynnwys gwarchodedig</translation>
 <translation id="7878562273885520351">Mae'n bosib bod eich cyfrinair dan fygythiad</translation>
 <translation id="7880146494886811634">Cadw'r Cyfeiriad</translation>
@@ -3598,7 +3604,6 @@ Manylion ychwanegol:
 <translation id="8308653357438598313">Ffrydio Fideo Byw</translation>
 <translation id="8311895354659782580">Rhestrau Eiddo Tirol</translation>
 <translation id="8316555157357957253">Defnyddio nawr</translation>
-<translation id="8317570861267063617">I dalu'n gyflymach, cadwch y CVC ar gyfer y cerdyn hwn i'ch dyfais</translation>
 <translation id="8319269383395457801">Gwerthiannau Preswyl</translation>
 <translation id="831997045666694187">Nos</translation>
 <translation id="8321476692217554900">hysbysiadau</translation>

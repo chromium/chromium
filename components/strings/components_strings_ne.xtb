@@ -143,6 +143,7 @@
 <translation id="1264309058268477500">वैकल्पिक</translation>
 <translation id="1264974993859112054">खेलकुद</translation>
 <translation id="1266469291454105242">डिभाइस अनलक</translation>
+<translation id="126728463333482584">तपाईं ट्र्याकिङ सुरक्षा सुविधा प्राप्त गर्ने पहिलो व्यक्ति हुनुहुन्छ। यसले तपाईंले ब्राउज गर्दा साइटहरूलाई तपाईंलाई ट्र्याक गर्न तेस्रो पक्षीय कुकीहरू मात्र प्रयोग गर्न दिन्छ।</translation>
 <translation id="1268480293435976622">Envelope Chinese #7</translation>
 <translation id="1269516672602708785">Google Sites प्रयोग गरी तुरुन्तै नयाँ साइट बनाउनुहोस्</translation>
 <translation id="1270328905573953738">स्थानान्तरण र रिलोकेसन</translation>
@@ -692,6 +693,7 @@
 <translation id="2361263712565360498">२७५ x ३९५ मि.मि.</translation>
 <translation id="236340516568226369">आकार बदल्ने टगल मेनु</translation>
 <translation id="2365355378251437925"><ph name="FIELD" /> हाल्नुहोस्</translation>
+<translation id="2365382709349300355">नीतिका कारण एउटा फाइल ब्लक गरिएको छ</translation>
 <translation id="2365508935344991784">घरबाहिरका फर्निचर</translation>
 <translation id="2366689192918515749">मासु र समुद्री खाना</translation>
 <translation id="2367567093518048410">चरण</translation>
@@ -2412,6 +2414,7 @@
 <translation id="5967867314010545767">इतिहासबाट हटाउनुहोस्</translation>
 <translation id="5968022600320704045">कुनै पनि खोज परिणाम भेटिएन</translation>
 <translation id="5969199813874624822">मूल्य सेभ गरी ट्र्याक गर्नुहोस्</translation>
+<translation id="5973514677932942122"><ph name="EXPIRATION_DATE" /> | <ph name="SECURITY_CODE" /></translation>
 <translation id="5974052231147553524">छैठौँ रोल</translation>
 <translation id="5975083100439434680">जुम आउट</translation>
 <translation id="5979084224081478209">पासवर्डहरूको जाँच गर्नुहोस्</translation>
@@ -2903,6 +2906,7 @@
 <translation id="6965382102122355670">ठिक छ</translation>
 <translation id="6965978654500191972">यन्त्र</translation>
 <translation id="696703987787944103">बोधात्मक</translation>
+<translation id="6967851206780867018">सामग्रीका कारण एउटा फाइल ब्लक गरिएको छ</translation>
 <translation id="6970885655016700774">फेब्रिक (अर्काइभल)</translation>
 <translation id="6971439137020188025">Google Slides प्रयोग गरी तुरुन्तै नयाँ प्रेजेन्टेसन बनाउनुहोस्</translation>
 <translation id="6972629891077993081">HID यन्त्रहरू</translation>
@@ -2955,6 +2959,7 @@
 <translation id="70705239631109039">तपाईंको इन्टरनेट पूर्ण रूपमा सुरक्षित छैन</translation>
 <translation id="7075452647191940183">अनुरोध गरिएको सामग्री धेरै ठुलो छ</translation>
 <translation id="7078665357168027058">RA3</translation>
+<translation id="7079138647457502205">थप गोपनीयता प्रदान गरी ब्राउज गर्नुहोस्</translation>
 <translation id="7079718277001814089">यस साइटमा मालवेयर छ</translation>
 <translation id="7081308185095828845">तपाईंको डिभाइसमा यो सुविधा उपलब्ध छैन</translation>
 <translation id="7083258188081898530">ट्रे ९</translation>
@@ -3371,7 +3376,6 @@
 <translation id="7865448901209910068">उत्कृष्ट गति</translation>
 <translation id="7870281855125116701">छुट पाइयो</translation>
 <translation id="7871445724586827387">आफ्नो Google खाताको पासवर्ड बदल्नुहोस्</translation>
-<translation id="7876615279559620350">अझ छिटो चेकआउट गर्न यो कार्डको CVC आफ्नो Google खातामा सेभ गर्नुहोस्</translation>
 <translation id="7877007680666472091">संरक्षित सामग्रीका ID</translation>
 <translation id="7878562273885520351">तपाईंको पासवर्ड जोखिममा पर्न सक्छ</translation>
 <translation id="7880146494886811634">ठेगाना सेभ गर्नुहोस्</translation>
@@ -3596,7 +3600,6 @@
 <translation id="8308653357438598313">लाइभ भिडियो स्ट्रिमिङ</translation>
 <translation id="8311895354659782580">घरजग्गाको सूची</translation>
 <translation id="8316555157357957253">अहिले प्रयोग गरिँदै छ</translation>
-<translation id="8317570861267063617">अझ छिटो चेकआउट गर्नका लागि यो कार्डको CVC आफ्नो डिभाइसमा सेभ गर्नुहोस्</translation>
 <translation id="8319269383395457801">रेसिडेन्सियल सेल</translation>
 <translation id="831997045666694187">साँझ</translation>
 <translation id="8321476692217554900">सूचनाहरू</translation>

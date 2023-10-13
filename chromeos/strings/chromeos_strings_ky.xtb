@@ -715,7 +715,6 @@
 <translation id="6423239382391657905">OpenVPN</translation>
 <translation id="6439505561246192797">Начар (<ph name="SIGNAL_STRENGTH" />)</translation>
 <translation id="6447630859861661624">Аккаунттун параметрлерине өтүү</translation>
-<translation id="6461047516875166066">Кененирээк маалымат</translation>
 <translation id="6463239094587744704">{PAGE_NUMBER,plural, =0{Бет кайра скандалсынбы?}=1{{PAGE_NUMBER} бет кайра скандалсынбы?}other{{PAGE_NUMBER} бет кайра скандалсынбы?}}</translation>
 <translation id="6472207088655375767">OTP</translation>
 <translation id="6480327114083866287"><ph name="MANAGER" /> башкарат</translation>

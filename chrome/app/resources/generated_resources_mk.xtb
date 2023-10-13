@@ -710,7 +710,6 @@
 <translation id="1558391695376153246">Затвори картички „Инкогнито“</translation>
 <translation id="155865706765934889">Подлога за допир</translation>
 <translation id="1558671750917454373">Продолжи со емитување на <ph name="DEVICE_NAME" /></translation>
-<translation id="1561329796773556980">Во моментов го проверуваме просторот за складирање…</translation>
 <translation id="1562119309884184621">Ако го додадете контактов, ќе биде запомнет следниот пат кога ќе споделува</translation>
 <translation id="1563137369682381456">Датум на истекување</translation>
 <translation id="1563702743503072935">Лозинките од сметката на Google ќе бидат достапни и на уредов додека сте најавени</translation>
@@ -2049,6 +2048,7 @@
 <translation id="2553340429761841190"><ph name="PRODUCT_NAME" /> не може да се поврзе на <ph name="NETWORK_ID" />. Изберете друга мрежа или обидете се повторно.</translation>
 <translation id="2553440850688409052">Скриј го приклучокот</translation>
 <translation id="2554553592469060349">Избраната датотека е преголема (максимална големина: 3 MB).</translation>
+<translation id="2555802059188792472"><ph name="NUM_ALLOWED_APPS" /> од <ph name="TOTAL_NUM_APPS" /> апликации може да испраќаат известувања</translation>
 <translation id="25568951186001797">Изолирана рамка: <ph name="FENCEDFRAME_SITE" /></translation>
 <translation id="2558569818338050235">Вашата историја на прелистувањето влијае на рекламите што ги гледате</translation>
 <translation id="2559889124253841528">Зачувај на уредот</translation>
@@ -3487,6 +3487,7 @@
 <translation id="3729957991398443677">За да ја прегледате вашата лозинка или да додадете белешка за неа, изберете да управувате со вашите лозинки во полето за пребарување и лентата за адреси</translation>
 <translation id="3730076362938942381">Апликација за пишување со пенкало</translation>
 <translation id="3732078975418297900">Грешка во редот <ph name="ERROR_LINE" /></translation>
+<translation id="3732414796052961578">Продолжете како <ph name="ACCOUNT_NAME" /></translation>
 <translation id="3732530910372558017">PIN-кодот мора да има најмногу 63 знаци</translation>
 <translation id="3732857534841813090">Прикажување поврзани информации од „Помошникот на Google“</translation>
 <translation id="3733296813637058299">Ќе ги инсталираме тие апликации за вас. Може да најдете уште апликации за вашиот <ph name="DEVICE_TYPE" /> во Play Store.</translation>
@@ -4875,6 +4876,7 @@
 <translation id="4850669014075537160">Лизгање</translation>
 <translation id="4850886885716139402">Приказ</translation>
 <translation id="485088796993065002">Сајтовите може да пуштаат звук за да овозможат аудио за музика, видеа и други аудиовизуелни содржини</translation>
+<translation id="4852383141291180386">Управувајте со известувањата од апликациите</translation>
 <translation id="4852916668365817106">Боја на глувчето</translation>
 <translation id="4853020600495124913">Отвори во &amp;нов прозорец</translation>
 <translation id="4854317507773910281">Избери сметка на родител за одобрување</translation>
@@ -6251,6 +6253,7 @@
 <translation id="5992225669837656567">Врската со сите глувчиња е прекината</translation>
 <translation id="5992652489368666106">Без маргини</translation>
 <translation id="5993508466487156420">{NUM_SITES,plural, =1{Прегледувањето е завршено за 1 сајт}one{Прегледувањето е завршено за {NUM_SITES} сајт}other{Прегледувањето е завршено за {NUM_SITES} сајта}}</translation>
+<translation id="5996200702878169822">Може и да поставите профил на eSIM <ph name="BEGIN_LINK" />рачно<ph name="END_LINK" />.</translation>
 <translation id="5997337190805127100">Дознајте повеќе за пристап до сајтови</translation>
 <translation id="5998458948782718639">Помогнете да се подобри автоматското пополнување</translation>
 <translation id="5999024481231496910">Овозможивте тестирање на исфрлањето од употреба колачиња од трети страни. Тоа не може да се отфрли во поставките. Ако сакате да овозможите колачиња од трети страни повторно, рестартирајте го Chrome откако ќе ја оневозможите функцијава.</translation>
@@ -6786,7 +6789,6 @@
 <translation id="6436778875248895551">Екстензијата „<ph name="EXTENSION_NAME" />“ е блокирана од администраторот</translation>
 <translation id="6438234780621650381">Ресетирај ги поставките</translation>
 <translation id="6438475350605608554">Веќе ги увезувате лозинките во друга картичка</translation>
-<translation id="6438480100790416671">Се проверува просторот за складирање…</translation>
 <translation id="6438992844451964465"><ph name="WINDOW_TITLE" /> - пуштено е аудио</translation>
 <translation id="6440291723980579689">Страниците се вчитуваат само откако ќе ги отворите</translation>
 <translation id="6441377161852435370">Додај ја картичката во списокот за читање</translation>
@@ -8604,7 +8606,6 @@
 <translation id="7893008570150657497">Пристап до фотографии, музика и други медиуми од вашиот компјутер</translation>
 <translation id="7893153962594818789">Bluetooth е исклучен на овој <ph name="DEVICE_TYPE" />. Внесете ја лозинката и вклучете Bluetooth.</translation>
 <translation id="7893393459573308604"><ph name="ENGINE_NAME" /> (Стандардно)</translation>
-<translation id="7894382333736164977">Во моментов го проверуваме просторот за складирање. Најдени се <ph name="ITEMS_FOUND" /> ставки.</translation>
 <translation id="7896292361319775586">Да се зачува <ph name="FILE" />?</translation>
 <translation id="789722939441020330">Не им дозволувај на сајтовите автоматски да преземаат повеќе датотеки</translation>
 <translation id="7897900149154324287">Во иднина, погрижете се да го извадите преносливиот уред во апликацијата Датотеки пред да го исклучите. Во спротивно, може да изгубите податоци.</translation>
@@ -10222,6 +10223,7 @@
 <translation id="9166253503936244008">Скенирајте го QR-кодов со уредот каде што се наоѓа криптографскиот клуч што сакате да го користите за <ph name="APP_NAME" /></translation>
 <translation id="9167063903968449027">Прикажи го списокот за читање</translation>
 <translation id="9167450455589251456">Профилот не е поддржан</translation>
+<translation id="9167813284871066981"><ph name="NUM_ACCOUNTS" /> сметки</translation>
 <translation id="9168436347345867845">Остави за подоцна</translation>
 <translation id="9169496697824289689">Прикажи кратенки на тастатура</translation>
 <translation id="916964310188958970">Зошто овој предлог?</translation>

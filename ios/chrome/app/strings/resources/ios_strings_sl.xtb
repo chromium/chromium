@@ -335,7 +335,6 @@ Vaš iskalnik je <ph name="DSE_NAME" />. Oglejte si navodila iskalnika za brisan
 <translation id="2718352093833049315">Samo v omrežju Wi-Fi</translation>
 <translation id="2738375676495545665">Skrij »Novosti«</translation>
 <translation id="2747003861858887689">Prejšnje polje</translation>
-<translation id="2749026027885331579">Družinski člani lahko zdaj uporabijo vaše uporabniško ime in geslo pri uporabi Googlovega upravitelja gesel za prijavo na <ph name="WEBSITE" />. <ph name="BEGIN_LINK" />Več o tem<ph name="END_LINK" /></translation>
 <translation id="2749231692441336879">Spremljate <ph name="CHANNEL_NAME" /></translation>
 <translation id="2754492786623500387">Računi v tej napravi</translation>
 <translation id="2762000892062317888">pravkar</translation>
@@ -576,7 +575,6 @@ Oglejte si navodila iskalnika za brisanje zgodovine iskanja, če je na voljo.</t
 <translation id="4018310736049373830">Upravljanje dejavnosti</translation>
 <translation id="4038354071007134711">Nobena aplikacija v tej napravi ne more odpreti datoteke.</translation>
 <translation id="4042870976416480368">Najdi na strani</translation>
-<translation id="4043294777772912240"><ph name="USERNAME" /> lahko zdaj uporabi vaše uporabniško ime in geslo pri uporabi Googlovega upravitelja gesel za prijavo na <ph name="WEBSITE" />. <ph name="BEGIN_LINK" />Več o tem<ph name="END_LINK" /></translation>
 <translation id="40433179647657191">Ustvarite in delite neposredno povezavo do dela strani, ki ste ga označili.</translation>
 <translation id="4045648459118332842">Z enim dotikom do shranjenih gesel v poljubni aplikaciji</translation>
 <translation id="4049507953662678203">Make sure you have a network connection, and try again.</translation>
@@ -713,6 +711,7 @@ Oglejte si navodila iskalnika za brisanje zgodovine iskanja, če je na voljo.</t
 <translation id="4808744395915275922">Posodobitve</translation>
 <translation id="4818522717893377262">Dodaj jezik …</translation>
 <translation id="481968316161811770">Cookies, Site Data</translation>
+<translation id="4824480232751123840">Prostornina</translation>
 <translation id="4824497107140370669">{count,plural, =0{{domain}}=1{{domain} in še 1}one{{domain} in še {count}}two{{domain} in še {count}}few{{domain} in še {count}}other{{domain} in še {count}}}</translation>
 <translation id="4826218269716039351">Blokiraj piškotke drugih spletnih mest</translation>
 <translation id="4826588772550366629">kamero in mikrofon</translation>
@@ -850,6 +849,7 @@ Handoff must also be enabled in the General section of Settings, and your device
 <translation id="5556459405103347317">Znova naloži</translation>
 <translation id="555749644339804659">Preverjanje gesel …</translation>
 <translation id="556042886152191864">Gumb</translation>
+<translation id="5572684875078967866">Količina podatkov</translation>
 <translation id="5597915316964418992">Odprite mrežo zavihkov</translation>
 <translation id="560322036295180549">Izklopila organizacija.</translation>
 <translation id="5614553682702429503">Želite shraniti geslo?</translation>
@@ -911,6 +911,7 @@ Handoff must also be enabled in the General section of Settings, and your device
 <translation id="5896576662943111387">Ustvarjeno za iOS</translation>
 <translation id="5897749768294722429">Če se želite hitro vrniti na že obiskana spletna mesta, sinhronizirajte zavihke in zgodovino.</translation>
 <translation id="5897956970858271241">Obisk povezave, ki ste jo kopirali</translation>
+<translation id="5898848375214731122">Masa</translation>
 <translation id="5899314093904173337">Če želite deliti z osebami v bližini, naj s fotoaparatom ali aplikacijo za optično branje kod QR optično preberejo to kodo QR</translation>
 <translation id="5911030830365207728">Google Prevajalnik</translation>
 <translation id="5913600720976431809">Možnosti za prevod strani</translation>
@@ -928,6 +929,7 @@ Handoff must also be enabled in the General section of Settings, and your device
 <translation id="5981230843984570095">Zapri vse neaktivne</translation>
 <translation id="5982717868370722439">Dodajanje obstoječih podatkov v račun <ph name="USER_EMAIL" />.</translation>
 <translation id="5984222099446776634">Nedavno obiskano</translation>
+<translation id="598634819525651074">Površina</translation>
 <translation id="5988097621740394599">Oglejte si znižanja cen na zavihkih.</translation>
 <translation id="5988851877894965432">Odpiranje URL-jev v Chromu</translation>
 <translation id="6006672969046233841">Nov zavihek</translation>
@@ -1364,6 +1366,7 @@ Spletna mesta lahko uporabljajo piškotke za ogled dejavnosti brskanja na razli�
 <translation id="8156478151976189188">Sinhronizacija gesel ne deluje</translation>
 <translation id="8157532349231307196">Število računov: <ph name="NUMBER_OF_ACCOUNTS" /></translation>
 <translation id="8159358225423560600">pravkar</translation>
+<translation id="8173034266693057059">Dolžina</translation>
 <translation id="8179976553408161302">Enter</translation>
 <translation id="8182037667962849780">{count,plural, =1{Za {website_1}}=2{Za {website_1}, {website_2}}=3{Za {website_1}, {website_2} in še 1}one{Za {website_1}, {website_2} in še {more_count}}two{Za {website_1}, {website_2} in še {more_count}}few{Za {website_1}, {website_2} in še {more_count}}other{Za {website_1}, {website_2} in še {more_count}}}</translation>
 <translation id="8193953846147532858"><ph name="BEGIN_LINK" />Vaše naprave<ph name="END_LINK" /> · <ph name="EMAIL" /></translation>
@@ -1458,6 +1461,7 @@ Podatki so bili šifrirani z geslom dne <ph name="TIME" />. Vnesite ga, če žel
 <translation id="8692689525339542358">Zagotovite si zaščito pred nevarnimi spletnimi mesti, prenosi in razširitvami.</translation>
 <translation id="8693663554456874301">{count,plural, =1{Zapiranje zavihka}one{Zapiranje zavihkov}two{Zapiranje zavihkov}few{Zapiranje zavihkov}other{Zapiranje zavihkov}}</translation>
 <translation id="8703536910991780768">Vaša gesla so videti zapletena</translation>
+<translation id="8706253136355675497">Temperatura</translation>
 <translation id="8717864919010420084">Kopiraj povezavo</translation>
 <translation id="8721297211384281569">Meni »Orodja«</translation>
 <translation id="8725066075913043281">Poskusite znova</translation>
@@ -1563,6 +1567,7 @@ Podatki so bili šifrirani z geslom dne <ph name="TIME" />. Vnesite ga, če žel
 <translation id="9188680907066685419">Odjava iz upravljanega računa</translation>
 <translation id="9200875785104711666">pred <ph name="TIME" /> d</translation>
 <translation id="9203116392574189331">Handoff</translation>
+<translation id="9206887540681440657">Hitrost</translation>
 <translation id="9219154867334666734">Iskanje zavihkov …</translation>
 <translation id="9223358826628549784">Poročilo o zrušitvi poslano.</translation>
 <translation id="941747855997058526">Izbira gesla ...</translation>

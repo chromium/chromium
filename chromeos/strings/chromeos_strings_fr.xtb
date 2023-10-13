@@ -715,7 +715,6 @@
 <translation id="6423239382391657905">OpenVPN</translation>
 <translation id="6439505561246192797">Faible (<ph name="SIGNAL_STRENGTH" />)</translation>
 <translation id="6447630859861661624">Accéder aux paramètres du compte</translation>
-<translation id="6461047516875166066">En savoir plus</translation>
 <translation id="6463239094587744704">{PAGE_NUMBER,plural, =0{Rescanner la page ?}=1{Rescanner la page {PAGE_NUMBER} ?}one{Rescanner la page {PAGE_NUMBER} ?}other{Rescanner les pages {PAGE_NUMBER} ?}}</translation>
 <translation id="6472207088655375767">Mot de passe à usage unique</translation>
 <translation id="6480327114083866287">Géré par <ph name="MANAGER" /></translation>

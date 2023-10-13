@@ -715,7 +715,6 @@
 <translation id="6423239382391657905">OpenVPN</translation>
 <translation id="6439505561246192797">कमकुवत (<ph name="SIGNAL_STRENGTH" />)</translation>
 <translation id="6447630859861661624">खाते सेटिंग्ज मध्ये जा</translation>
-<translation id="6461047516875166066">मला आणखी माहिती द्या</translation>
 <translation id="6463239094587744704">{PAGE_NUMBER,plural, =0{Rescan page?}=1{{PAGE_NUMBER} पेज पुन्हा स्कॅन करायचे का?}other{{PAGE_NUMBER} पेज पुन्हा स्कॅन करायची का?}}</translation>
 <translation id="6472207088655375767">OTP</translation>
 <translation id="6480327114083866287"><ph name="MANAGER" /> द्वारे व्यवस्थापित</translation>

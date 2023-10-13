@@ -335,7 +335,6 @@
 <translation id="2718352093833049315">‏فقط در Wi-Fi</translation>
 <translation id="2738375676495545665">پنهان کردن ویژگی‌های جدید</translation>
 <translation id="2747003861858887689">فیلد قبلی</translation>
-<translation id="2749026027885331579">‏اکنون اعضای خانواده‌تان می‌توانند هنگام ورود به سیستم <ph name="WEBSITE" /> بااستفاده از «مدیر گذرواژه Google»، نام کاربری و گذرواژه شما را به‌کار ببرند. <ph name="BEGIN_LINK" />بیشتر بدانید<ph name="END_LINK" /></translation>
 <translation id="2749231692441336879"><ph name="CHANNEL_NAME" /> را دنبال می‌کنید</translation>
 <translation id="2754492786623500387">حساب‌های موجود در این دستگاه</translation>
 <translation id="2762000892062317888">هم‌اکنون</translation>
@@ -576,7 +575,6 @@
 <translation id="4018310736049373830">مدیریت فعالیت</translation>
 <translation id="4038354071007134711">برنامه‌ای در این دستگاه نمی‌تواند فایل را باز کند.</translation>
 <translation id="4042870976416480368">یافتن در صفحه</translation>
-<translation id="4043294777772912240">‏‫<ph name="USERNAME" /> اکنون می‌تواند هنگام ورود به سیستم <ph name="WEBSITE" /> بااستفاده از «مدیر گذرواژه Google»، نام کاربری و گذرواژه شما را به‌کار ببرد. <ph name="BEGIN_LINK" />بیشتر بدانید<ph name="END_LINK" /></translation>
 <translation id="40433179647657191">پیوند مستقیمی به بخشی از صفحه که برجسته کرده‌اید ایجاد و آن را هم‌رسانی کنید.</translation>
 <translation id="4045648459118332842">گذرواژه‌های ذخیره‌شده‌تان را با یک ضربه در هر برنامه‌ای دریافت کنید</translation>
 <translation id="4049507953662678203">مطمئن شوید اتصال شبکه دارید و دوباره امتحان کنید.</translation>
@@ -713,6 +711,7 @@
 <translation id="4808744395915275922">به‌روزرسانی‌ها</translation>
 <translation id="4818522717893377262">افزودن زبان...</translation>
 <translation id="481968316161811770">کوکی‌ها، داده‌های سایت</translation>
+<translation id="4824480232751123840">حجم</translation>
 <translation id="4824497107140370669">{count,plural, =0{{domain}}=1{{domain}، و ۱ مورد دیگر}one{{domain} و {count} مورد دیگر}other{{domain} و {count} مورد دیگر}}</translation>
 <translation id="4826218269716039351">مسدود کردن کوکی‌های شخص ثالث</translation>
 <translation id="4826588772550366629">دوربین و میکروفون</translation>
@@ -850,6 +849,7 @@ Handoff باید در بخش عمومی تنظیمات نیز فعال شود و
 <translation id="5556459405103347317">بار کردن مجدد</translation>
 <translation id="555749644339804659">درحال بررسی گذرواژه‌ها…</translation>
 <translation id="556042886152191864">دکمه</translation>
+<translation id="5572684875078967866">ذخیره‌سازی اطلاعات</translation>
 <translation id="5597915316964418992">باز کردن شبکه برگه</translation>
 <translation id="560322036295180549">سازمانتان آن را خاموش کرده است.</translation>
 <translation id="5614553682702429503">گذرواژه ذخیره شود؟</translation>
@@ -911,6 +911,7 @@ Handoff باید در بخش عمومی تنظیمات نیز فعال شود و
 <translation id="5896576662943111387">‏ساخته‌شده برای iOS</translation>
 <translation id="5897749768294722429">برای برگشتن سریع به سایت‌هایی که بازدید کرده‌اید، برگه‌ها و سابقه را همگام‌سازی کنید.</translation>
 <translation id="5897956970858271241">به پیوندی که کپی کرده‌اید بروید</translation>
+<translation id="5898848375214731122">جرم</translation>
 <translation id="5899314093904173337">‏برای هم‌رسانی کردن با افراد حاضر در اطراف، به‌آن‌ها اجازه دهید این رمزینه پاسخ‌سریع را با دوربین خود یا برنامه اسکنر QR اسکن کنند</translation>
 <translation id="5911030830365207728">‏ترجمه Google</translation>
 <translation id="5913600720976431809">گزینه‌های ترجمه صفحه</translation>
@@ -928,6 +929,7 @@ Handoff باید در بخش عمومی تنظیمات نیز فعال شود و
 <translation id="5981230843984570095">بستن همه برگه‌های غیرفعال</translation>
 <translation id="5982717868370722439">افزودن داده‌های موجود به <ph name="USER_EMAIL" />.</translation>
 <translation id="5984222099446776634">به‌تازگی بازدیدشده</translation>
+<translation id="598634819525651074">مساحت</translation>
 <translation id="5988097621740394599">کاهش قیمت را در برگه‌ها مشاهده کنید.</translation>
 <translation id="5988851877894965432">‏باز کردن نشانی‌های وب در Chrome</translation>
 <translation id="6006672969046233841">برگه جدید</translation>
@@ -1364,6 +1366,7 @@ Handoff باید در بخش عمومی تنظیمات نیز فعال شود و
 <translation id="8156478151976189188">«همگام‌سازی گذرواژه» کار نمی‌کند</translation>
 <translation id="8157532349231307196"><ph name="NUMBER_OF_ACCOUNTS" /> حساب</translation>
 <translation id="8159358225423560600">همین حالا</translation>
+<translation id="8173034266693057059">طول</translation>
 <translation id="8179976553408161302">ورود</translation>
 <translation id="8182037667962849780">{count,plural, =1{برای {website_1}}=2{برای {website_1}، {website_2}}=3{برای {website_1}، {website_2}، و ۱ مورد دیگر}one{برای {website_1}، {website_2}، و {more_count} مورد دیگر}other{برای {website_1}، {website_2}، و {more_count} مورد دیگر}}</translation>
 <translation id="8193953846147532858"><ph name="BEGIN_LINK" />دستگاه‌های شما<ph name="END_LINK" /> · <ph name="EMAIL" /></translation>
@@ -1458,6 +1461,7 @@ Handoff باید در بخش عمومی تنظیمات نیز فعال شود و
 <translation id="8692689525339542358">از خودتان دربرابر سایت‌ها، بارگیری‌ها، و افزونه‌های خطرناک محافظت کنید.</translation>
 <translation id="8693663554456874301">{count,plural, =1{بستن برگه}one{بستن برگه}other{بستن برگه‌ها}}</translation>
 <translation id="8703536910991780768">گذرواژه‌هایتان قوی به‌نظر می‌رسد</translation>
+<translation id="8706253136355675497">دما</translation>
 <translation id="8717864919010420084">کپی پیوند</translation>
 <translation id="8721297211384281569">منوی ابزارها</translation>
 <translation id="8725066075913043281">سعی مجدد</translation>
@@ -1563,6 +1567,7 @@ Handoff باید در بخش عمومی تنظیمات نیز فعال شود و
 <translation id="9188680907066685419">خروج از حساب مدیریت‌شده</translation>
 <translation id="9200875785104711666"><ph name="TIME" /> روز قبل</translation>
 <translation id="9203116392574189331">Handoff</translation>
+<translation id="9206887540681440657">سرعت</translation>
 <translation id="9219154867334666734">برگه‌های جستجو…</translation>
 <translation id="9223358826628549784">گزارش خرابی ارسال شد.</translation>
 <translation id="941747855997058526">انتخاب گذرواژه…</translation>

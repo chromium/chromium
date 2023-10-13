@@ -258,6 +258,7 @@
 <translation id="5545693483061321551">Sites kunnen je cookies niet gebruiken om je browse-activiteit op verschillende sites te bekijken, bijvoorbeeld om advertenties te personaliseren. Functies op bepaalde sites werken misschien niet.</translation>
 <translation id="5553374991681107062">Nieuwste</translation>
 <translation id="5556459405103347317">Opnieuw laden</translation>
+<translation id="5591840828808741583"><ph name="SITE_NAME" /> geblokkeerd</translation>
 <translation id="5649053991847567735">Automatische downloads</translation>
 <translation id="5668404140385795438">Negeer verzoek van website om inzoomen te voorkomen</translation>
 <translation id="5677928146339483299">Geblokkeerd</translation>
@@ -455,6 +456,7 @@
 <translation id="8959122750345127698">Navigatie is onbereikbaar: <ph name="URL" /></translation>
 <translation id="8986362086234534611">Vergeten</translation>
 <translation id="8990043154272859344">Je wordt uitgelogd van alle sites</translation>
+<translation id="9011903857143958461"><ph name="SITE_NAME" /> toegestaan</translation>
 <translation id="9019902583201351841">Beheerd door je ouders</translation>
 <translation id="9039697262778250930">Je wordt misschien uitgelogd van deze sites</translation>
 <translation id="9074739597929991885">Bluetooth</translation>

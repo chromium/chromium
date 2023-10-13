@@ -166,6 +166,7 @@ Solo las personas que tengan tu frase de contraseña podrán leer tus datos cifr
 <translation id="1922362554271624559">Idiomas sugeridos</translation>
 <translation id="1924255092154549435">La pestaña está desplegada</translation>
 <translation id="1925021887439448749">Introduce una dirección web personalizada</translation>
+<translation id="1928618076168182477">Mostrando vista visual</translation>
 <translation id="1928696683969751773">Actualizaciones</translation>
 <translation id="19288952978244135">Vuelve a abrir Chrome.</translation>
 <translation id="1933845786846280168">Pestaña seleccionada</translation>
@@ -196,6 +197,7 @@ Solo las personas que tengan tu frase de contraseña podrán leer tus datos cifr
 <translation id="2065944887543506430">{FILE_COUNT,plural, =1{No se ha podido descargar 1 archivo}other{No se han podido descargar # archivos}}</translation>
 <translation id="2067805253194386918">texto</translation>
 <translation id="2082238445998314030">Resultado <ph name="RESULT_NUMBER" /> de <ph name="TOTAL_RESULTS" /></translation>
+<translation id="2091863218454846791">Mostrando vista compacta</translation>
 <translation id="2093731487903423814">los últimos 15 minutos</translation>
 <translation id="2096012225669085171">Sincroniza y personaliza todos tus dispositivos</translation>
 <translation id="2100273922101894616">Iniciar sesión automáticamente</translation>
@@ -363,6 +365,7 @@ Solo las personas que tengan tu frase de contraseña podrán leer tus datos cifr
 <translation id="2961208450284224863">{READING_LIST_UNREAD_PAGE_COUNT,plural, =1{<ph name="READING_LIST_UNREAD_PAGE_COUNT_ONE" /> página no leída}other{<ph name="READING_LIST_UNREAD_PAGE_COUNT_MANY" /> páginas no leídas}}</translation>
 <translation id="2961210776189273067">Título</translation>
 <translation id="296370266220139811">Ahorra tiempo y escribe menos</translation>
+<translation id="2977350910003566746">Ordenados por última apertura</translation>
 <translation id="297771753501244313">Ordenar: último abierto</translation>
 <translation id="2979025552038692506">Pestaña de incógnito seleccionada</translation>
 <translation id="2979639724566107830">Abrir en una ventana nueva</translation>
@@ -403,6 +406,7 @@ Solo las personas que tengan tu frase de contraseña podrán leer tus datos cifr
 <translation id="3123734510202723619">Anuncios</translation>
 <translation id="3134784203083076891">"</translation>
 <translation id="314939179385989105">Página principal de Chrome</translation>
+<translation id="3158667104057012316">Ordenados manualmente</translation>
 <translation id="3166827708714933426">Combinaciones de teclas de pestañas y ventanas</translation>
 <translation id="316694332262407393">Chrome ya se está ejecutando.</translation>
 <translation id="3167258285411721858">Puedes solicitar el sitio web móvil de <ph name="HOST_NAME" /></translation>
@@ -530,7 +534,9 @@ Solo las personas que tengan tu frase de contraseña podrán leer tus datos cifr
 <translation id="3892148308691398805">Copiar texto</translation>
 <translation id="3894427358181296146">Añadir carpeta</translation>
 <translation id="3899682235662194879">Cerrar todas las pestañas de incógnito</translation>
+<translation id="3902562446536395999">Ordenados de la A a la Z</translation>
 <translation id="3908308510347173149">Actualizar <ph name="PRODUCT_NAME" /></translation>
+<translation id="3911609878849982353">Ordenados de la Z a la A</translation>
 <translation id="3924911262913579434"><ph name="SAFE_BROWSING_MODE" /> activada</translation>
 <translation id="3927692899758076493">Sans Serif</translation>
 <translation id="3928666092801078803">Combinar mis datos</translation>
@@ -566,6 +572,7 @@ Solo las personas que tengan tu frase de contraseña podrán leer tus datos cifr
 <translation id="4084682180776658562">Añadir a marcadores</translation>
 <translation id="4084712963632273211">De <ph name="PUBLISHER_ORIGIN" /> (<ph name="BEGIN_DEEMPHASIZED" />ofrecida por Google<ph name="END_DEEMPHASIZED" />)</translation>
 <translation id="409109920254068737">Puedes usar esta tablet para iniciar sesión en el dispositivo donde se muestra este código QR.</translation>
+<translation id="4092709865241032354">Para ayudar al Gestor de contraseñas de Google a guardar tu información de inicio de sesión, añade tu nombre de usuario para este sitio</translation>
 <translation id="4095146165863963773">¿Eliminar datos de la aplicación?</translation>
 <translation id="4095425503313512126">La navegación y la búsqueda son más rápidas</translation>
 <translation id="4096227151372679484">Flujo para guardar marcador abierto a media altura</translation>
@@ -943,6 +950,7 @@ Para cambiar esta opción, <ph name="BEGIN_LINK" />restablece la sincronización
 <translation id="6000203700195075278">Volver a seguir</translation>
 <translation id="6002122790816966947">Tus dispositivos</translation>
 <translation id="6011308810877101166">Mejorar las sugerencias de búsqueda</translation>
+<translation id="6013305291643746595">Ordenados por más antiguo</translation>
 <translation id="6026538407078977628">Desplegar a pantalla completa</translation>
 <translation id="6030719887161080597">Gestiona la información que usan los sitios para medir el rendimiento de los anuncios</translation>
 <translation id="6039379616847168523">Te dirige a la siguiente pestaña</translation>
@@ -1389,6 +1397,7 @@ Por ejemplo, algunos sitios web pueden responder a la solicitud mostrándote anu
 <translation id="8110024788458304985">Ayudar a mejorar las funciones y el rendimiento de Chrome</translation>
 <translation id="8110087112193408731">¿Mostrar tu actividad de Chrome en Bienestar digital?</translation>
 <translation id="8118117428362942925">Si necesitas ayuda, pídesela a tu padre o madre (<ph name="PARENT_NAME" />)</translation>
+<translation id="8122623268651408616">Ordenados por más reciente</translation>
 <translation id="8127542551745560481">Editar página principal</translation>
 <translation id="8130309322784422030">Es posible que la información de inicio de sesión almacenada esté obsoleta</translation>
 <translation id="813082847718468539">Ver información del sitio</translation>

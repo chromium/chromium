@@ -258,6 +258,7 @@
 <translation id="5545693483061321551">Сайти не можуть використовувати файли cookie для перегляду ваших дій у веб-переглядачі, зокрема, щоб персоналізувати рекламу. Функції на деяких сайтах можуть не працювати.</translation>
 <translation id="5553374991681107062">Останні</translation>
 <translation id="5556459405103347317">Перезавантажити</translation>
+<translation id="5591840828808741583">Сайт <ph name="SITE_NAME" /> заблоковано</translation>
 <translation id="5649053991847567735">Автоматичні завантаження</translation>
 <translation id="5668404140385795438">Відхиляти запит веб-сайту, щоб забороняти масштабування</translation>
 <translation id="5677928146339483299">Заблоковано</translation>
@@ -455,6 +456,7 @@
 <translation id="8959122750345127698">Веб-сторінка <ph name="URL" /> недоступна</translation>
 <translation id="8986362086234534611">Забути</translation>
 <translation id="8990043154272859344">Ви вийдете з облікового запису на всіх сайтах</translation>
+<translation id="9011903857143958461">Сайт <ph name="SITE_NAME" /> дозволено</translation>
 <translation id="9019902583201351841">Керується батьками</translation>
 <translation id="9039697262778250930">Імовірно, ви вийдете з облікового запису на цих сайтах</translation>
 <translation id="9074739597929991885">Bluetooth</translation>

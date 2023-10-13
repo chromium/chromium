@@ -715,7 +715,6 @@
 <translation id="6423239382391657905">VPNതുറക്കുക</translation>
 <translation id="6439505561246192797">ദുർബലം (<ph name="SIGNAL_STRENGTH" />)</translation>
 <translation id="6447630859861661624">അക്കൗണ്ട് ക്രമീകരണത്തിലേക്ക് പോകുക</translation>
-<translation id="6461047516875166066">കൂടുതൽ വിവരങ്ങൾ പറയൂ</translation>
 <translation id="6463239094587744704">{PAGE_NUMBER,plural, =0{പേജ് വീണ്ടും സ്‌കാൻ ചെയ്യണോ?}=1{{PAGE_NUMBER}-ാം പേജ് വീണ്ടും സ്‌കാൻ ചെയ്യണോ?}other{{PAGE_NUMBER}-ാം പേജ് വീണ്ടും സ്‌കാൻ ചെയ്യണോ?}}</translation>
 <translation id="6472207088655375767">OTP</translation>
 <translation id="6480327114083866287"><ph name="MANAGER" /> മാനേജ് ചെയ്യുന്നത്</translation>

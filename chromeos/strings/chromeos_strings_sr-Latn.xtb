@@ -715,7 +715,6 @@
 <translation id="6423239382391657905">Otvorena VPN</translation>
 <translation id="6439505561246192797">Slab (<ph name="SIGNAL_STRENGTH" />)</translation>
 <translation id="6447630859861661624">Otvorite podešavanja naloga</translation>
-<translation id="6461047516875166066">Reci mi nešto više</translation>
 <translation id="6463239094587744704">{PAGE_NUMBER,plural, =0{Želite da ponovo skenirate stranicu?}=1{Želite da ponovo skenirate {PAGE_NUMBER}. stranicu?}one{Želite da ponovo skenirate {PAGE_NUMBER}. stranicu?}few{Želite da ponovo skenirate {PAGE_NUMBER}. stranicu?}other{Želite da ponovo skenirate {PAGE_NUMBER}. stranicu?}}</translation>
 <translation id="6472207088655375767">OTP</translation>
 <translation id="6480327114083866287">Upravlja <ph name="MANAGER" /></translation>

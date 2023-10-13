@@ -715,7 +715,6 @@
 <translation id="6423239382391657905">OpenVPN</translation>
 <translation id="6439505561246192797">Fraco (<ph name="SIGNAL_STRENGTH" />)</translation>
 <translation id="6447630859861661624">Acessar as configurações da conta</translation>
-<translation id="6461047516875166066">Conte-me mais</translation>
 <translation id="6463239094587744704">{PAGE_NUMBER,plural, =0{Digitalizar a página novamente?}=1{Digitalizar a página {PAGE_NUMBER} novamente?}one{Digitalizar a página {PAGE_NUMBER} novamente?}other{Digitalizar a página {PAGE_NUMBER} novamente?}}</translation>
 <translation id="6472207088655375767">OTP</translation>
 <translation id="6480327114083866287">Gerenciado por <ph name="MANAGER" /></translation>

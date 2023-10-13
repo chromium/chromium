@@ -258,6 +258,7 @@
 <translation id="5545693483061321551">网站无法使用 Cookie 查看您在各个不同网站上的浏览活动，因而无法实现某些功能或目的（例如为您展示个性化广告）。某些网站上的功能可能无法正常运行。</translation>
 <translation id="5553374991681107062">最新</translation>
 <translation id="5556459405103347317">重新加载</translation>
+<translation id="5591840828808741583">已为 <ph name="SITE_NAME" /> 禁用此权限</translation>
 <translation id="5649053991847567735">自动下载项</translation>
 <translation id="5668404140385795438">覆盖网站的请求，以防止放大</translation>
 <translation id="5677928146339483299">已禁止</translation>
@@ -455,6 +456,7 @@
 <translation id="8959122750345127698">无法访问 <ph name="URL" /></translation>
 <translation id="8986362086234534611">不保存</translation>
 <translation id="8990043154272859344">您将会从所有网站上自动退出账号</translation>
+<translation id="9011903857143958461">已为 <ph name="SITE_NAME" /> 启用此权限</translation>
 <translation id="9019902583201351841">由您父母管理</translation>
 <translation id="9039697262778250930">您可能会自动从这些网站上退出账号</translation>
 <translation id="9074739597929991885">蓝牙</translation>

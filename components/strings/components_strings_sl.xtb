@@ -466,6 +466,7 @@ V nasprotnem primeru bodo to blokirale nastavitve zasebnosti. S tem bo vsebina, 
 <translation id="1875512691959384712">Google Obrazci</translation>
 <translation id="1876399092304384674">Po datumu</translation>
 <translation id="187918866476621466">Odpiranje strani ob zagonu</translation>
+<translation id="1880901968112404879">Če želite naslednjič hitreje plačati, shranite kartico, šifrirano varnostno kodo in naslov za izstavitev računa v računu Google</translation>
 <translation id="1883255238294161206">Strni seznam</translation>
 <translation id="1884843295353628214">Džez</translation>
 <translation id="1890171020361705182">Igra Dino. Kvadrirani dinozaver se med dirkanjem po neobljudeni pokrajini izogiba kaktusom in pterodaktilom. Ko zaslišite zvok, se dotaknite, da začnete preskakovati ovire.</translation>
@@ -3358,6 +3359,7 @@ Dodatne podrobnosti:
 <translation id="7802989406998618639">Vnesite <ph name="NUMBER_OF_DIGITS" />-mestno varnostno kodo na <ph name="SIDE_OF_CARD" />, da bo lahko vaša banka potrdila vašo identiteto.</translation>
 <translation id="780301667611848630">Ne, hvala</translation>
 <translation id="7805768142964895445">Stanje</translation>
+<translation id="7810410097247356677">Če želite naslednjič hitreje plačati, shranite kartico in šifrirano varnostno kodo v napravi</translation>
 <translation id="7812922009395017822">Mir</translation>
 <translation id="7813600968533626083">Želite odstraniti predlog obrazca iz Chroma?</translation>
 <translation id="781440967107097262">Želite odložišče deliti z drugimi?</translation>
@@ -3378,7 +3380,6 @@ Dodatne podrobnosti:
 <translation id="7865448901209910068">Najboljša hitrost</translation>
 <translation id="7870281855125116701">Popust je bil najden</translation>
 <translation id="7871445724586827387">Sprememba gesla za račun Google</translation>
-<translation id="7876615279559620350">Za hitrejši zaključek nakupa shranite kodo CVC za to kartico v račun Google</translation>
 <translation id="7877007680666472091">ID-ji zaščitene vsebine</translation>
 <translation id="7878562273885520351">Geslo je morda ogroženo</translation>
 <translation id="7880146494886811634">Shranjevanje naslova</translation>
@@ -3603,7 +3604,6 @@ Dodatne podrobnosti:
 <translation id="8308653357438598313">Oddajanje prek videa v živo</translation>
 <translation id="8311895354659782580">Nepremičninski trg</translation>
 <translation id="8316555157357957253">Pravkar se uporablja</translation>
-<translation id="8317570861267063617">Za hitrejši zaključek nakupa shranite kodo CVC za to kartico v napravi</translation>
 <translation id="8319269383395457801">Prodaja stanovanj</translation>
 <translation id="831997045666694187">Večer</translation>
 <translation id="8321476692217554900">obvestila</translation>

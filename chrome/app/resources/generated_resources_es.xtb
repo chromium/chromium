@@ -706,7 +706,6 @@ Los permisos que hayas dado a aplicaciones se pueden aplicar a esta cuenta. Pued
 <translation id="1558391695376153246">Cerrar pestañas incógnito</translation>
 <translation id="155865706765934889">Panel táctil</translation>
 <translation id="1558671750917454373">Reanudar envío a <ph name="DEVICE_NAME" /></translation>
-<translation id="1561329796773556980">Estamos comprobando el espacio de almacenamiento…</translation>
 <translation id="1562119309884184621">Si añades este contacto, se recordará la próxima vez que comparta archivos</translation>
 <translation id="1563137369682381456">Fecha de caducidad</translation>
 <translation id="1563702743503072935">Las contraseñas de tu cuenta de Google también estarán disponibles en este dispositivo cuando hayas iniciado sesión</translation>
@@ -2034,6 +2033,7 @@ Puedes gestionar la configuración de esta cuenta instalando la aplicación Fami
 <translation id="2553340429761841190"><ph name="PRODUCT_NAME" /> no ha podido establecer conexión con <ph name="NETWORK_ID" />. Selecciona otra red o vuelve a intentarlo.</translation>
 <translation id="2553440850688409052">Ocultar este complemento</translation>
 <translation id="2554553592469060349">El archivo seleccionado es demasiado grande (tamaño máximo: 3 MB).</translation>
+<translation id="2555802059188792472"><ph name="NUM_ALLOWED_APPS" /> de <ph name="TOTAL_NUM_APPS" /> aplicaciones pueden enviar notificaciones</translation>
 <translation id="25568951186001797">Marco delimitado: <ph name="FENCEDFRAME_SITE" /></translation>
 <translation id="2558569818338050235">Tu historial de navegación influye en los anuncios que ves</translation>
 <translation id="2559889124253841528">Guardar en el dispositivo</translation>
@@ -2090,6 +2090,7 @@ Puedes gestionar la configuración de esta cuenta instalando la aplicación Fami
 <translation id="2609980095400624569">No se ha podido establecer conexión</translation>
 <translation id="2610157865375787051">Suspensión</translation>
 <translation id="2610260699262139870">Tamaño &amp;real</translation>
+<translation id="2610374175948698697">Puede ver archivos o carpetas de tu dispositivo</translation>
 <translation id="2610780100389066815">Firma de listas de confianza de Microsoft</translation>
 <translation id="261114180663074524">Inicia sesión en tu cuenta de Microsoft y vuelve a intentarlo</translation>
 <translation id="2611776654555141051">Herramienta de rectángulo</translation>
@@ -2137,6 +2138,7 @@ Puedes gestionar la configuración de esta cuenta instalando la aplicación Fami
 <translation id="264897126871533291">Protanomalía</translation>
 <translation id="2649045351178520408">ASCII codificado en Base64, cadena de certificados</translation>
 <translation id="265156376773362237">Precarga estándar</translation>
+<translation id="2652071759203138150">{COUNT,plural, =1{{COUNT} contraseña está guardada solo en este dispositivo. Para usarla en tus otros dispositivos, <ph name="BEGIN_LINK" />guárdala en tu cuenta de Google<ph name="END_LINK" />.}other{{COUNT} contraseñas están guardadas solo en este dispositivo. Para usarlas en tus otros dispositivos, <ph name="BEGIN_LINK" />guárdalas en tu cuenta de Google<ph name="END_LINK" />.}}</translation>
 <translation id="2652129567809778422">Seleccionar contraseña</translation>
 <translation id="2653266418988778031">Si eliminas el certificado AC, el navegador ya no podrá confiar en ningún certificado emitido por esa entidad emisora de certificados.</translation>
 <translation id="2653275834716714682">Reemplazo de texto</translation>
@@ -3472,6 +3474,7 @@ Puedes gestionar la configuración de esta cuenta instalando la aplicación Fami
 <translation id="3729957991398443677">Para ver tu contraseña o añadir una nota sobre ella, selecciona Administra tus contraseñas en la barra de búsqueda y direcciones</translation>
 <translation id="3730076362938942381">Aplicación para escribir con lápiz óptico</translation>
 <translation id="3732078975418297900">Error en la línea <ph name="ERROR_LINE" /></translation>
+<translation id="3732414796052961578">Continuar como <ph name="ACCOUNT_NAME" /></translation>
 <translation id="3732530910372558017">El PIN debe tener 63 caracteres como máximo</translation>
 <translation id="3732857534841813090">Información relacionada con el Asistente de Google</translation>
 <translation id="3733296813637058299">Vamos a instalarte algunas aplicaciones. Puedes buscar más aplicaciones para tu <ph name="DEVICE_TYPE" /> en Play Store.</translation>
@@ -4025,6 +4028,7 @@ Puede tratarse de información sobre el software instalado, los archivos, tu nav
 <translation id="4150201353443180367">Pantalla</translation>
 <translation id="4150569944729499860">Contexto de la pantalla</translation>
 <translation id="4151449637210235443">Cuéntanos qué te ha parecido tu reciente experiencia de juego</translation>
+<translation id="4151503145138736576">No hay almacenamiento sin conexión que liberar</translation>
 <translation id="4152011295694446843">Aquí verás tus marcadores</translation>
 <translation id="4152670763139331043">{NUM_TABS,plural, =1{1 pestaña}other{# pestañas}}</translation>
 <translation id="4154664944169082762">Huellas digitales</translation>
@@ -4235,6 +4239,7 @@ Puede tratarse de información sobre el software instalado, los archivos, tu nav
 <translation id="4341577178275615435">Para activar o desactivar la navegación por cursor de texto, usa la tecla F7</translation>
 <translation id="4341905082470253054">Comprobando estado del TPM...</translation>
 <translation id="434198521554309404">Rápido. Seguro. Sencillo.</translation>
+<translation id="4342417854108207000">Tiene permiso para editar archivos y carpetas de tu dispositivo</translation>
 <translation id="4343250402091037179">Para buscar en un sitio o parte de Chrome en concreto, escribe su atajo en la barra de direcciones y, después, pulsa tu atajo de teclado preferido.</translation>
 <translation id="434404122609091467">Con tu proveedor de servicios actual</translation>
 <translation id="4345457680916430965">&amp;Abrir en <ph name="APP" /></translation>
@@ -4858,6 +4863,7 @@ Usa Ctrl + Alt + Reducir el brillo para reducir la pantalla.</translation>
 <translation id="4850669014075537160">Desplazamiento</translation>
 <translation id="4850886885716139402">Ver</translation>
 <translation id="485088796993065002">Los sitios podrían reproducir sonidos para ofrecer el audio de música, vídeos y otro contenido multimedia.</translation>
+<translation id="4852383141291180386">Gestionar notificaciones de aplicaciones</translation>
 <translation id="4852916668365817106">Color del ratón</translation>
 <translation id="4853020600495124913">Abrir en una ventana &amp;nueva</translation>
 <translation id="4854317507773910281">Elige una cuenta parental para la aprobación</translation>
@@ -5267,6 +5273,7 @@ Usa Ctrl + Alt + Reducir el brillo para reducir la pantalla.</translation>
 <translation id="5197255632782567636">Internet</translation>
 <translation id="5198430103906431024">Envía datos de uso y diagnóstico. Este dispositivo envía automáticamente a Google datos de diagnóstico, del dispositivo y del uso de las aplicaciones. Los datos servirán para aumentar la estabilidad de las aplicaciones y del sistema y realizar otras mejoras. Parte de los datos agregados también ayudarán a las aplicaciones y a los partners de Google, como los desarrolladores de Android. Si la opción Actividad en la Web y en Aplicaciones Adicional está activada, es posible que estos datos se guarden en tu cuenta de Google.</translation>
 <translation id="5199729219167945352">Experimentos</translation>
+<translation id="5203035663139409780">Puede editar archivos o carpetas de tu dispositivo</translation>
 <translation id="5203920255089865054">{NUM_EXTENSIONS,plural, =1{Haz clic para ver la extensión}other{Haz clic para ver las extensiones}}</translation>
 <translation id="5204249655833504508">Tablet gráfica</translation>
 <translation id="5204673965307125349">Realiza un powerwash e inténtalo de nuevo.</translation>
@@ -6234,6 +6241,7 @@ Exponente público (<ph name="PUBLIC_EXPONENT_NUM_BITS" /> bits):
 <translation id="5992225669837656567">Todos los ratones se han desconectado</translation>
 <translation id="5992652489368666106">Sin bordes</translation>
 <translation id="5993508466487156420">{NUM_SITES,plural, =1{Revisión de 1 sitio completada}other{Revisión de {NUM_SITES} sitios completada}}</translation>
+<translation id="5996200702878169822">También puedes configurar un perfil de eSIM <ph name="BEGIN_LINK" />manualmente<ph name="END_LINK" />.</translation>
 <translation id="5997337190805127100">Más información sobre el acceso del sitio web</translation>
 <translation id="5998458948782718639">Ayuda a mejorar Autocompletar</translation>
 <translation id="5999024481231496910">Has habilitado las pruebas de la eliminación gradual de cookies de terceros. Este ajuste no se puede anular en la página de configuración. Si quieres volver a habilitar las cookies de terceros, reinicia Chrome con esta función inhabilitada.</translation>
@@ -6769,7 +6777,6 @@ Exponente público (<ph name="PUBLIC_EXPONENT_NUM_BITS" /> bits):
 <translation id="6436778875248895551">Tu administrador ha bloqueado la extensión "<ph name="EXTENSION_NAME" />"</translation>
 <translation id="6438234780621650381">Restablecer configuración</translation>
 <translation id="6438475350605608554">Ya estás importando contraseñas en otra pestaña</translation>
-<translation id="6438480100790416671">Comprobando espacio de almacenamiento…</translation>
 <translation id="6438992844451964465"><ph name="WINDOW_TITLE" />: reproducción de audio</translation>
 <translation id="6440291723980579689">Las páginas se cargan solo después de que las abras</translation>
 <translation id="6441377161852435370">Añadir pestaña a lista de lectura</translation>
@@ -8586,7 +8593,6 @@ Pulsa un interruptor o una tecla con una acción asignada para quitársela.</tra
 <translation id="7893008570150657497">Acceder a fotos, música y otro contenido multimedia de tu ordenador</translation>
 <translation id="7893153962594818789">El Bluetooth está desactivado en este <ph name="DEVICE_TYPE" />. Introduce la contraseña y activa el Bluetooth.</translation>
 <translation id="7893393459573308604"><ph name="ENGINE_NAME" /> (predeterminado)</translation>
-<translation id="7894382333736164977">Estamos comprobando el espacio de almacenamiento. <ph name="ITEMS_FOUND" /> elementos encontrados.</translation>
 <translation id="7896292361319775586">¿Guardar <ph name="FILE" />?</translation>
 <translation id="789722939441020330">No permitir que los sitios descarguen varios archivos automáticamente</translation>
 <translation id="7897900149154324287">En el futuro, asegúrate de expulsar tu dispositivo extraíble en la aplicación Archivos antes de desconectarlo. De lo contrario, podrías perder datos.</translation>
@@ -10201,6 +10207,7 @@ Los permisos que hayas dado a sitios web y aplicaciones se pueden aplicar a esta
 <translation id="9166253503936244008">Escanea este código QR con el dispositivo que tenga la llave de acceso que quieras usar en <ph name="APP_NAME" /></translation>
 <translation id="9167063903968449027">Mostrar lista de lectura</translation>
 <translation id="9167450455589251456">No se admite el perfil</translation>
+<translation id="9167813284871066981"><ph name="NUM_ACCOUNTS" /> cuentas</translation>
 <translation id="9168436347345867845">Hacerlo luego</translation>
 <translation id="9169496697824289689">Ver combinaciones de teclas</translation>
 <translation id="916964310188958970">¿Por qué aparece esta sugerencia?</translation>

@@ -143,6 +143,7 @@ Dit sal andersins deur jou privaatheidinstellings geblokkeer word. Dit sal die i
 <translation id="1264309058268477500">Afwisselend</translation>
 <translation id="1264974993859112054">Sport</translation>
 <translation id="1266469291454105242">Toestelontsluiting</translation>
+<translation id="126728463333482584">Jy is een van die eerstes wat Nasporing-beskerming ervaar, wat werwe beperk om derdepartywebkoekies te gebruik om jou na te spoor terwyl jy blaai.</translation>
 <translation id="1268480293435976622">Koevert Chinees #7</translation>
 <translation id="1269516672602708785">Skep vinnig 'n nuwe werf in Google Sites</translation>
 <translation id="1270328905573953738">Verhuising en hervestiging</translation>
@@ -465,6 +466,7 @@ Dit sal andersins deur jou privaatheidinstellings geblokkeer word. Dit sal die i
 <translation id="1875512691959384712">Google Vorms</translation>
 <translation id="1876399092304384674">Volgens datum</translation>
 <translation id="187918866476621466">Maak afskopbladsye oop</translation>
+<translation id="1880901968112404879">Stoor jou kaart, geënkripteerde sekuriteitskode en faktureringadres in jou Google-rekening om volgende keer vinniger te betaal</translation>
 <translation id="1883255238294161206">Vou lys in</translation>
 <translation id="1884843295353628214">Jazz</translation>
 <translation id="1890171020361705182">Dinosourusspeletjie. 'n Gepiekseleerde dinosourus systap kaktusse en pterodaktiele terwyl dit oor 'n verlate landskap hardloop. Tik om oor hindernisse te spring wanneer jy 'n oudiowenk hoor.</translation>
@@ -692,6 +694,7 @@ Dit sal andersins deur jou privaatheidinstellings geblokkeer word. Dit sal die i
 <translation id="2361263712565360498">275x395 mm</translation>
 <translation id="236340516568226369">Verander grootte van Wissel-kieslys</translation>
 <translation id="2365355378251437925">Voer <ph name="FIELD" /> in</translation>
+<translation id="2365382709349300355">1 lêer is weens beleid geblokkeer</translation>
 <translation id="2365508935344991784">Buitemeubels</translation>
 <translation id="2366689192918515749">Vleis en seekos</translation>
 <translation id="2367567093518048410">Vlak</translation>
@@ -2414,6 +2417,7 @@ Dit sal andersins deur jou privaatheidinstellings geblokkeer word. Dit sal die i
 <translation id="5967867314010545767">Verwyder uit geskiedenis</translation>
 <translation id="5968022600320704045">Geen soekresultate nie</translation>
 <translation id="5969199813874624822">Stoor en spoor prys na</translation>
+<translation id="5973514677932942122"><ph name="EXPIRATION_DATE" /> | <ph name="SECURITY_CODE" /></translation>
 <translation id="5974052231147553524">Sesde rol</translation>
 <translation id="5975083100439434680">Zoem uit</translation>
 <translation id="5979084224081478209">Gaan wagwoorde na</translation>
@@ -2905,6 +2909,7 @@ Dit sal andersins deur jou privaatheidinstellings geblokkeer word. Dit sal die i
 <translation id="6965382102122355670">OK</translation>
 <translation id="6965978654500191972">Toestel</translation>
 <translation id="696703987787944103">Perseptueel</translation>
+<translation id="6967851206780867018">1 lêer is weens inhoud geblokkeer</translation>
 <translation id="6970885655016700774">Tekstiel (argivalies)</translation>
 <translation id="6971439137020188025">Skep vinnig 'n nuwe Google-aanbieding in Skyfies</translation>
 <translation id="6972629891077993081">HID-toestelle</translation>
@@ -2957,6 +2962,7 @@ Dit sal andersins deur jou privaatheidinstellings geblokkeer word. Dit sal die i
 <translation id="70705239631109039">Jou verbinding is nie heeltemal veilig nie</translation>
 <translation id="7075452647191940183">Versoek is te groot</translation>
 <translation id="7078665357168027058">RA3</translation>
+<translation id="7079138647457502205">Blaai met meer privaatheid</translation>
 <translation id="7079718277001814089">Hierdie werf bevat wanware</translation>
 <translation id="7081308185095828845">Hierdie kenmerk is nie op jou toestel beskikbaar nie</translation>
 <translation id="7083258188081898530">Laai 9</translation>
@@ -3353,6 +3359,7 @@ om uit te vind hoe om die sagteware permanent van jou rekenaar te verwyder&lt;/o
 <translation id="7802989406998618639">Voer die <ph name="NUMBER_OF_DIGITS" />-syfersekuriteitkode op die <ph name="SIDE_OF_CARD" /> in sodat jou bank kan verifieer dat dit jy is</translation>
 <translation id="780301667611848630">Nee, dankie</translation>
 <translation id="7805768142964895445">Status</translation>
+<translation id="7810410097247356677">Stoor jou kaart en geënkripteerde sekuriteitskode op jou toestel om volgende keer vinniger te betaal</translation>
 <translation id="7812922009395017822">Mir</translation>
 <translation id="7813600968533626083">Verwyder vormvoorstel uit Chrome?</translation>
 <translation id="781440967107097262">Deel knipbord?</translation>
@@ -3373,7 +3380,6 @@ om uit te vind hoe om die sagteware permanent van jou rekenaar te verwyder&lt;/o
 <translation id="7865448901209910068">Beste spoed</translation>
 <translation id="7870281855125116701">Afslag gevind</translation>
 <translation id="7871445724586827387">Verander jou Google-rekeningwagwoord</translation>
-<translation id="7876615279559620350">Stoor hierdie kaart se CVC in jou Google-rekening sodat jy vinniger kan betaal</translation>
 <translation id="7877007680666472091">ID's van beskermde inhoud</translation>
 <translation id="7878562273885520351">Jou wagwoord is dalk in gevaar</translation>
 <translation id="7880146494886811634">Stoor adres</translation>
@@ -3598,7 +3604,6 @@ om uit te vind hoe om die sagteware permanent van jou rekenaar te verwyder&lt;/o
 <translation id="8308653357438598313">Regstreekse videostroming</translation>
 <translation id="8311895354659782580">Eiendomslysinskrywings</translation>
 <translation id="8316555157357957253">Gebruik tans</translation>
-<translation id="8317570861267063617">Stoor hierdie kaart se CVC op jou toestel sodat jy vinniger kan betaal</translation>
 <translation id="8319269383395457801">Huisverkope</translation>
 <translation id="831997045666694187">Aand</translation>
 <translation id="8321476692217554900">kennisgewings</translation>

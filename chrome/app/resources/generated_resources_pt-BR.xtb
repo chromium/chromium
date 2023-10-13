@@ -710,7 +710,6 @@ As permissões que você já concedeu a apps podem ser aplicadas a essa conta. V
 <translation id="1558391695376153246">Fechar guias anônimas</translation>
 <translation id="155865706765934889">Touchpad</translation>
 <translation id="1558671750917454373">Retomar a transmissão para <ph name="DEVICE_NAME" /></translation>
-<translation id="1561329796773556980">Estamos verificando o espaço de armazenamento…</translation>
 <translation id="1562119309884184621">Essa ação fará com que o contato seja lembrado no próximo compartilhamento</translation>
 <translation id="1563137369682381456">Data de validade</translation>
 <translation id="1563702743503072935">As senhas da sua Conta do Google também estarão disponíveis neste dispositivo enquanto ela estiver conectada</translation>
@@ -6796,7 +6795,6 @@ Não exponha nenhuma informação confidencial.</translation>
 <translation id="6436778875248895551">A extensão <ph name="EXTENSION_NAME" /> foi bloqueada pelo administrador</translation>
 <translation id="6438234780621650381">Redefinir configurações</translation>
 <translation id="6438475350605608554">Você já está importando senhas em outra guia.</translation>
-<translation id="6438480100790416671">Verificando o espaço de armazenamento…</translation>
 <translation id="6438992844451964465"><ph name="WINDOW_TITLE" /> - Reprodução de áudio</translation>
 <translation id="6440291723980579689">As páginas carregam apenas depois de abertas</translation>
 <translation id="6441377161852435370">Adicionar guia à Lista de leitura</translation>
@@ -8615,7 +8613,6 @@ Pressione um interruptor ou tecla atribuídos para remover a atribuição.</tran
 <translation id="7893008570150657497">Acessar fotos, música e outras mídias em seu computador</translation>
 <translation id="7893153962594818789">O Bluetooth está desativado neste <ph name="DEVICE_TYPE" />. Digite sua senha e ative o Bluetooth.</translation>
 <translation id="7893393459573308604"><ph name="ENGINE_NAME" /> (padrão)</translation>
-<translation id="7894382333736164977">Estamos verificando o espaço de armazenamento. <ph name="ITEMS_FOUND" /> itens encontrados.</translation>
 <translation id="7896292361319775586">Salvar <ph name="FILE" />?</translation>
 <translation id="789722939441020330">Não permitir que os sites façam o download automático de vários arquivos</translation>
 <translation id="7897900149154324287">No futuro, não se esqueça de ejetar o dispositivo removível no aplicativo "Arquivos" antes de desconectá-lo. Caso contrário, você poderá perder dados.</translation>

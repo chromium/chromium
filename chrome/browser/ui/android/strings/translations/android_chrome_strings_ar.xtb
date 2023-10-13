@@ -366,6 +366,7 @@
 <translation id="2961208450284224863">{READING_LIST_UNREAD_PAGE_COUNT,plural, =1{صفحة واحدة (<ph name="READING_LIST_UNREAD_PAGE_COUNT_ONE" />) غير مقروءة}zero{<ph name="READING_LIST_UNREAD_PAGE_COUNT_MANY" /> صفحة غير مقروءة}two{صفحتان (<ph name="READING_LIST_UNREAD_PAGE_COUNT_MANY" />) غير مقروءتَين}few{<ph name="READING_LIST_UNREAD_PAGE_COUNT_MANY" /> صفحات غير مقروءة}many{<ph name="READING_LIST_UNREAD_PAGE_COUNT_MANY" /> صفحة غير مقروءة}other{<ph name="READING_LIST_UNREAD_PAGE_COUNT_MANY" /> صفحة غير مقروءة}}</translation>
 <translation id="2961210776189273067">العنوان</translation>
 <translation id="296370266220139811">توفير الوقت والانتقال سريعًا</translation>
+<translation id="2977350910003566746">جارٍ الترتيب حسب آخِر استخدام</translation>
 <translation id="297771753501244313">الترتيب حسب آخِر استخدام</translation>
 <translation id="2979025552038692506">علامة تبويب محددة للتصفح المتخفي</translation>
 <translation id="2979639724566107830">الفتح في نافذة جديدة</translation>
@@ -407,6 +408,7 @@
 <translation id="3123734510202723619">الإعلامات</translation>
 <translation id="3134784203083076891">"</translation>
 <translation id="314939179385989105">‏الصفحة الرئيسية لمتصفّح Chrome</translation>
+<translation id="3158667104057012316">جارٍ الترتيب يدويًا</translation>
 <translation id="3166827708714933426">اختصارات علامات التبويب والنوافذ</translation>
 <translation id="316694332262407393">‏Chrome قيد التشغيل حاليًا في المقدمة.</translation>
 <translation id="3167258285411721858">يمكنك طلب الإصدار المتوافق مع الأجهزة الجوّالة للموقع الإلكتروني <ph name="HOST_NAME" />.</translation>
@@ -534,7 +536,9 @@
 <translation id="3892148308691398805">نسخ النص</translation>
 <translation id="3894427358181296146">إضافة مجلد</translation>
 <translation id="3899682235662194879">إغلاق جميع علامات التبويب في وضع التصفُّح المتخفي</translation>
+<translation id="3902562446536395999">جارٍ الترتيب أبجديًا من أ إلى ي</translation>
 <translation id="3908308510347173149">تحديث <ph name="PRODUCT_NAME" /></translation>
+<translation id="3911609878849982353">جارٍ الترتيب أبجديًا من ي إلى أ</translation>
 <translation id="3924911262913579434">وضع <ph name="SAFE_BROWSING_MODE" /> مفعّل.</translation>
 <translation id="3927692899758076493">Sans Serif</translation>
 <translation id="3928666092801078803">دمج البيانات التابعة لي</translation>
@@ -570,6 +574,7 @@
 <translation id="4084682180776658562">إشارة</translation>
 <translation id="4084712963632273211">‏من <ph name="PUBLISHER_ORIGIN" /> – <ph name="BEGIN_DEEMPHASIZED" />تعرضه Google<ph name="END_DEEMPHASIZED" /></translation>
 <translation id="409109920254068737">يمكنك استخدام هذا الجهاز اللوحي لتسجيل الدخول على الجهاز الذي يعرض رمز الاستجابة السريعة هذا.</translation>
+<translation id="4092709865241032354">‏لمساعدة "مدير كلمات المرور في Google" على حفظ معلومات تسجيل الدخول، عليك إضافة اسم المستخدم لهذا الموقع الإلكتروني.</translation>
 <translation id="4095146165863963773">هل ترغب في حذف بيانات التطبيق؟</translation>
 <translation id="4095425503313512126">تصفَّح وابحث بشكل أسرع.</translation>
 <translation id="4096227151372679484">تم فتح مسار حفظ الإشارات المرجعية في نصف الشاشة.</translation>
@@ -947,6 +952,7 @@
 <translation id="6000203700195075278">المتابعة مجدّدًا</translation>
 <translation id="6002122790816966947">أجهزتك</translation>
 <translation id="6011308810877101166">تحسين اقتراحات البحث</translation>
+<translation id="6013305291643746595">جارٍ الترتيب حسب الأقدم</translation>
 <translation id="6026538407078977628">التوسيع إلى وضع ملء الشاشة</translation>
 <translation id="6030719887161080597">إدارة المعلومات التي تستخدمها المواقع الإلكترونية لقياس أداء الإعلانات</translation>
 <translation id="6039379616847168523">الانتقال السريع إلى علامة التبويب التالية</translation>
@@ -1393,6 +1399,7 @@
 <translation id="8110024788458304985">‏المساعدة في تحسين ميزات Chrome وأدائه</translation>
 <translation id="8110087112193408731">‏هل تريد عرض نشاط Chrome في الرفاهية الرقمية؟</translation>
 <translation id="8118117428362942925">إذا احتجت للمساعدة، يمكنك طلبها من أحد والدَيك (<ph name="PARENT_NAME" />).</translation>
+<translation id="8122623268651408616">جارٍ الترتيب حسب الأحدث</translation>
 <translation id="8127542551745560481">تعديل الصفحة الرئيسية</translation>
 <translation id="8130309322784422030">معلومات تسجيل الدخول المُخزَّنة الخاصة بك قد تكون قديمة.</translation>
 <translation id="813082847718468539">عرض معلومات الموقع</translation>

@@ -195,6 +195,7 @@
 <translation id="2326139988748364651"><ph name="RESOLUTION_VALUE" /> dpi</translation>
 <translation id="2338501278241028356">Yaqin-atrofdagi qurilmalarni aniqlash uchun Bluetooth adapterini yoqing</translation>
 <translation id="2346474577291266260">Aʼlo (<ph name="SIGNAL_STRENGTH" />)</translation>
+<translation id="2358070305000735383"><ph name="DESCRIPTION" /> uchun tahrirlash oynasi ochiq.</translation>
 <translation id="2359808026110333948">Davom etish</translation>
 <translation id="2364498172489649528">Tugadi</translation>
 <translation id="2367335866686097760">Tugma tayinlash: tugma</translation>
@@ -714,7 +715,6 @@
 <translation id="6423239382391657905">OpenVPN</translation>
 <translation id="6439505561246192797">Zaif (<ph name="SIGNAL_STRENGTH" />)</translation>
 <translation id="6447630859861661624">Hisob sozlamalarini ochish</translation>
-<translation id="6461047516875166066">Batafsil gapirib ber</translation>
 <translation id="6463239094587744704">{PAGE_NUMBER,plural, =0{Sahifa qayta skanerlansinmi?}=1{{PAGE_NUMBER} ta sahifani qayta skanerlansinmi?}other{{PAGE_NUMBER} ta sahifani qayta skanerlansinmi?}}</translation>
 <translation id="6472207088655375767">Bir martalik kod</translation>
 <translation id="6480327114083866287"><ph name="MANAGER" /> tomonidan boshqariladi</translation>
@@ -1025,6 +1025,7 @@
 <translation id="8868741746785112895">GUID</translation>
 <translation id="8876270629542503161">Qurilma — planshet</translation>
 <translation id="8881098542468797602">Tekshiruv yakunlandi</translation>
+<translation id="8892443466059986410">Tahrirlashni bekor qilish</translation>
 <translation id="8898840733695078011">Signal darajasi</translation>
 <translation id="8909114361904403025">tepaga mil</translation>
 <translation id="8910721771319628100">Birlamchi tarmoq kutish vaqti baland</translation>

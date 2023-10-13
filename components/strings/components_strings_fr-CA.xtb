@@ -143,6 +143,7 @@
 <translation id="1264309058268477500">Autre version</translation>
 <translation id="1264974993859112054">Sports</translation>
 <translation id="1266469291454105242">Déverrouillage de l'appareil</translation>
+<translation id="126728463333482584">Vous bénéficiez en primeur de la protection contre le suivi, qui limite l'utilisation par les sites de témoins tiers pour vous suivre lorsque vous naviguez.</translation>
 <translation id="1268480293435976622">Enveloppe chinoise nᵒ 7</translation>
 <translation id="1269516672602708785">Créer rapidement un site dans Google Sites</translation>
 <translation id="1270328905573953738">Déménagement et relocalisation</translation>
@@ -691,6 +692,7 @@
 <translation id="2361263712565360498">275 mm x 395 mm</translation>
 <translation id="236340516568226369">Menu d'activation/de désactivation du redimensionnement</translation>
 <translation id="2365355378251437925">Entrez <ph name="FIELD" /></translation>
+<translation id="2365382709349300355">Un fichier a été bloqué en raison d'une politique</translation>
 <translation id="2365508935344991784">Mobilier de jardin</translation>
 <translation id="2366689192918515749">Viande et fruits de mer</translation>
 <translation id="2367567093518048410">Niveau</translation>
@@ -2411,6 +2413,7 @@
 <translation id="5967867314010545767">Supprimer de l'historique</translation>
 <translation id="5968022600320704045">Aucun résultat de recherche</translation>
 <translation id="5969199813874624822">Enregistrer et suivre le prix</translation>
+<translation id="5973514677932942122"><ph name="EXPIRATION_DATE" /> | <ph name="SECURITY_CODE" /></translation>
 <translation id="5974052231147553524">Sixième rouleau</translation>
 <translation id="5975083100439434680">Zoom arrière</translation>
 <translation id="5979084224081478209">Vérifier les mots de passe</translation>
@@ -2901,6 +2904,7 @@
 <translation id="6965382102122355670">OK</translation>
 <translation id="6965978654500191972">Appareil</translation>
 <translation id="696703987787944103">Perceptuel</translation>
+<translation id="6967851206780867018">Un fichier a été bloqué en raison du contenu</translation>
 <translation id="6970885655016700774">Tissu (archives)</translation>
 <translation id="6971439137020188025">Créer rapidement une présentation Google dans Présentations</translation>
 <translation id="6972629891077993081">Appareils HID</translation>
@@ -2953,6 +2957,7 @@
 <translation id="70705239631109039">Votre connexion n'est pas parfaitement sécurisée</translation>
 <translation id="7075452647191940183">La taille de la requête est trop grande</translation>
 <translation id="7078665357168027058">RA3</translation>
+<translation id="7079138647457502205">Naviguer avec plus de confidentialité</translation>
 <translation id="7079718277001814089">Ce site contient des logiciels malveillants</translation>
 <translation id="7081308185095828845">Cette fonctionnalité n'est pas offerte pour votre appareil.</translation>
 <translation id="7083258188081898530">Bac 9</translation>
@@ -3369,7 +3374,6 @@ Détails supplémentaires :
 <translation id="7865448901209910068">Meilleure vitesse</translation>
 <translation id="7870281855125116701">Rabais trouvé</translation>
 <translation id="7871445724586827387">Modifier le mot de passe de votre compte Google</translation>
-<translation id="7876615279559620350">Pour un paiement plus rapide, enregistrez le code CVC de cette carte dans votre compte Google</translation>
 <translation id="7877007680666472091">identifiants de contenu protégé</translation>
 <translation id="7878562273885520351">Votre mot de passe a peut-être été compromis</translation>
 <translation id="7880146494886811634">Enregistrer l'adresse</translation>
@@ -3594,7 +3598,6 @@ Détails supplémentaires :
 <translation id="8308653357438598313">Diffusion en direct de vidéos</translation>
 <translation id="8311895354659782580">Annonces immobilières</translation>
 <translation id="8316555157357957253">Utiliser maintenant</translation>
-<translation id="8317570861267063617">Pour un paiement plus rapide, enregistrez le code CVC de cette carte sur votre appareil</translation>
 <translation id="8319269383395457801">Ventes résidentielles</translation>
 <translation id="831997045666694187">Soirée</translation>
 <translation id="8321476692217554900">Notifications</translation>

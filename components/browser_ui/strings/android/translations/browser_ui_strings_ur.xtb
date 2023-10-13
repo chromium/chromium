@@ -258,6 +258,7 @@
 <translation id="5545693483061321551">سائٹس کوکیز کے ذریعے مختلف سائٹس پر، مثال کے طور پر، اشتہارات کو ذاتی نوعیت کا بنانے کے لیے، آپ کی براؤزنگ کی سرگرمی نہیں دیکھ سکتی ہیں۔ ہو سکتا ہے کہ کچھ سائٹس پر خصوصیات کام نہ کریں۔</translation>
 <translation id="5553374991681107062">تازہ ترین</translation>
 <translation id="5556459405103347317">دوبارہ لوڈ کریں</translation>
+<translation id="5591840828808741583"><ph name="SITE_NAME" /> مسدود ہے</translation>
 <translation id="5649053991847567735">خود کار ڈاؤن لوڈز</translation>
 <translation id="5668404140385795438">زوم ان کرنے سے بچنے کیلئے کسی ویب سائٹ کی درخواست کو اوور رائیڈ کریں</translation>
 <translation id="5677928146339483299">مسدود کردہ</translation>
@@ -455,6 +456,7 @@
 <translation id="8959122750345127698">نیویگیشن ناقابل رسائی ہے: <ph name="URL" /></translation>
 <translation id="8986362086234534611">بھول جائیں</translation>
 <translation id="8990043154272859344">آپ سبھی سائٹس سے سائن آؤٹ ہو جائیں گے</translation>
+<translation id="9011903857143958461"><ph name="SITE_NAME" /> کی اجازت دی گئی</translation>
 <translation id="9019902583201351841">آپ کے والدین کے زیر انتظام</translation>
 <translation id="9039697262778250930">ہو سکتا ہے کہ آپ ان سائٹس سے سائن آؤٹ ہو جائیں</translation>
 <translation id="9074739597929991885">بلوٹوتھ</translation>

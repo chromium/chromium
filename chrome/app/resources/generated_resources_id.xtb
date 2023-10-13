@@ -709,7 +709,6 @@ Izin yang telah Anda berikan ke aplikasi dapat berlaku untuk akun ini. Anda dapa
 <translation id="1558391695376153246">Tutup tab Samaran</translation>
 <translation id="155865706765934889">Touchpad</translation>
 <translation id="1558671750917454373">Lanjutkan transmisi ke <ph name="DEVICE_NAME" /></translation>
-<translation id="1561329796773556980">Kami sedang dalam proses memeriksa ruang penyimpanan…</translation>
 <translation id="1562119309884184621">Begitu kontak ini ditambahkan, sistem akan mengingatnya saat berbagi pada waktu berikutnya</translation>
 <translation id="1563137369682381456">Tanggal habis masa berlaku</translation>
 <translation id="1563702743503072935">Sandi dari Akun Google Anda juga akan tersedia di perangkat ini saat Anda login</translation>
@@ -2105,6 +2104,7 @@ Anda dapat mengelola setelan akun ini dengan menginstal aplikasi Family Link di 
 <translation id="2609980095400624569">Tidak dapat terhubung</translation>
 <translation id="2610157865375787051">Tidur</translation>
 <translation id="2610260699262139870">Ukuran Se&amp;benarnya</translation>
+<translation id="2610374175948698697">Dapat melihat file atau folder di perangkat Anda</translation>
 <translation id="2610780100389066815">Microsoft Trust List Signing</translation>
 <translation id="261114180663074524">Login ke akun Microsoft, lalu coba lagi</translation>
 <translation id="2611776654555141051">Alat Kotak</translation>
@@ -2152,6 +2152,7 @@ Anda dapat mengelola setelan akun ini dengan menginstal aplikasi Family Link di 
 <translation id="264897126871533291">Protanomali</translation>
 <translation id="2649045351178520408">ASCII bersandiaksara Base64, rantai sertifikat</translation>
 <translation id="265156376773362237">Pramuat standar</translation>
+<translation id="2652071759203138150">{COUNT,plural, =1{{COUNT} sandi hanya disimpan ke perangkat ini. Untuk menggunakannya di perangkat lain, <ph name="BEGIN_LINK" />simpan sandi di Akun Google Anda<ph name="END_LINK" />.}other{{COUNT} sandi hanya disimpan ke perangkat ini. Untuk menggunakannya di perangkat lain, <ph name="BEGIN_LINK" />simpan sandi di Akun Google Anda<ph name="END_LINK" />.}}</translation>
 <translation id="2652129567809778422">Pilih sandi</translation>
 <translation id="2653266418988778031">Jika Anda menghapus sertifikat Otoritas Sertifikasi (CA), browser tidak akan lagi memercayai semua sertifikat yang dikeluarkan oleh CA.</translation>
 <translation id="2653275834716714682">Penggantian Teks</translation>
@@ -4042,6 +4043,7 @@ Informasi ini dapat mencakup informasi tentang software yang diinstal, file, bro
 <translation id="4150201353443180367">Tampilan</translation>
 <translation id="4150569944729499860">Konteks layar</translation>
 <translation id="4151449637210235443">Beri tahu kami mengenai gameplay terbaru Anda</translation>
+<translation id="4151503145138736576">Tidak ada penyimpanan offline yang dapat dikosongkan</translation>
 <translation id="4152011295694446843">Bookmark Anda akan ditampilkan di sini</translation>
 <translation id="4152670763139331043">{NUM_TABS,plural, =1{1 tab}other{# tab}}</translation>
 <translation id="4154664944169082762">Sidik jari</translation>
@@ -4252,6 +4254,7 @@ Informasi ini dapat mencakup informasi tentang software yang diinstal, file, bro
 <translation id="4341577178275615435">Untuk mengaktifkan atau menonaktifkan penjelajahan dengan keyboard, gunakan pintasan F7</translation>
 <translation id="4341905082470253054">Memeriksa status TPM ...</translation>
 <translation id="434198521554309404">Cepat. Aman. Mudah.</translation>
+<translation id="4342417854108207000">Diizinkan mengedit file atau folder di perangkat Anda</translation>
 <translation id="4343250402091037179">Untuk menelusuri situs tertentu atau bagian dari Chrome, ketik pintasannya di kolom URL, lalu tekan pintasan keyboard yang diinginkan.</translation>
 <translation id="434404122609091467">Dengan penyedia layanan saat ini</translation>
 <translation id="4345457680916430965">&amp;Buka di <ph name="APP" /></translation>
@@ -5286,6 +5289,7 @@ Gunakan Ctrl + Alt + Kurangi kecerahan untuk memperkecil.</translation>
 <translation id="5197255632782567636">Internet</translation>
 <translation id="5198430103906431024">Kirimkan data penggunaan dan diagnostik. Perangkat ini saat ini otomatis mengirimkan data diagnostik, perangkat, dan penggunaan aplikasi ke Google. Data ini akan membantu sistem dan stabilitas aplikasi serta penyempurnaan lainnya. Beberapa data gabungan juga akan membantu aplikasi dan partner Google, seperti developer Android. Jika setelan Aktivitas Web &amp; Aplikasi tambahan Anda diaktifkan, data ini mungkin akan disimpan ke Akun Google Anda.</translation>
 <translation id="5199729219167945352">Eksperimen</translation>
+<translation id="5203035663139409780">Dapat mengedit file atau folder di perangkat Anda</translation>
 <translation id="5203920255089865054">{NUM_EXTENSIONS,plural, =1{Klik untuk melihat ekstensi}other{Klik untuk melihat ekstensi}}</translation>
 <translation id="5204249655833504508">Tablet grafis</translation>
 <translation id="5204673965307125349">Harap powerwash perangkat, lalu coba lagi.</translation>
@@ -6789,7 +6793,6 @@ Izin yang telah Anda berikan ke situs dan aplikasi dapat berlaku untuk akun ini.
 <translation id="6436778875248895551">Ekstensi "<ph name="EXTENSION_NAME" />" diblokir oleh administrator Anda</translation>
 <translation id="6438234780621650381">Reset setelan</translation>
 <translation id="6438475350605608554">Anda sudah mengimpor sandi di tab lain</translation>
-<translation id="6438480100790416671">Memeriksa ruang penyimpanan…</translation>
 <translation id="6438992844451964465"><ph name="WINDOW_TITLE" /> - Pemutaran audio</translation>
 <translation id="6440291723980579689">Halaman dimuat hanya setelah Anda membukanya</translation>
 <translation id="6441377161852435370">Tambahkan tab ke daftar bacaan</translation>
@@ -8605,7 +8608,6 @@ Tekan tombol akses atau tombol keyboard yang telah ditetapkan untuk menghapus pe
 <translation id="7893008570150657497">Mengakses foto, musik, dan media lain dari komputer Anda</translation>
 <translation id="7893153962594818789">Bluetooth di <ph name="DEVICE_TYPE" /> dinonaktifkan. Masukkan sandi dan aktifkan Bluetooth.</translation>
 <translation id="7893393459573308604"><ph name="ENGINE_NAME" /> (Default)</translation>
-<translation id="7894382333736164977">Kami sedang dalam proses memeriksa ruang penyimpanan. <ph name="ITEMS_FOUND" /> item ditemukan.</translation>
 <translation id="7896292361319775586">Simpan <ph name="FILE" />?</translation>
 <translation id="789722939441020330">Jangan izinkan situs mendownload beberapa file secara otomatis</translation>
 <translation id="7897900149154324287">Di masa mendatang, pastikan untuk mengeluarkan perangkat yang dapat dilepas di aplikasi File sebelum mencabutnya. Jika tidak, Anda mungkin kehilangan data.</translation>
@@ -10317,7 +10319,7 @@ Izin yang telah Anda berikan ke situs dan aplikasi dapat berlaku untuk akun ini.
 <translation id="956500788634395331">Anda dilindungi dari ekstensi yang berpotensi berbahaya</translation>
 <translation id="957179356621191750">6 titik</translation>
 <translation id="957960681186851048">Situs ini berupaya mendownload beberapa file secara otomatis</translation>
-<translation id="958571289841636277">Navigasi maju dan mundur dengan gestur geser</translation>
+<translation id="958571289841636277">Buka halaman sebelumnya dan berikutnya dengan gestur geser</translation>
 <translation id="960987915827980018">Sekitar 1 jam lagi</translation>
 <translation id="962802172452141067">Cabang folder bookmark</translation>
 <translation id="963000966785016697">Telusuri gambar dengan <ph name="VISUAL_SEARCH_PROVIDER" /></translation>

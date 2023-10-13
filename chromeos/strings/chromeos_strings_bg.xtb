@@ -715,7 +715,6 @@
 <translation id="6423239382391657905">OpenVPN</translation>
 <translation id="6439505561246192797">Слаба (<ph name="SIGNAL_STRENGTH" />)</translation>
 <translation id="6447630859861661624">Към настройките на профила</translation>
-<translation id="6461047516875166066">Кажете ми повече</translation>
 <translation id="6463239094587744704">{PAGE_NUMBER,plural, =0{Да се сканира ли повторно страницата?}=1{Да се сканира ли повторно страница {PAGE_NUMBER}?}other{Да се сканира ли повторно страница {PAGE_NUMBER}?}}</translation>
 <translation id="6472207088655375767">Еднократна парола</translation>
 <translation id="6480327114083866287">Управлява се от <ph name="MANAGER" /></translation>

@@ -335,7 +335,6 @@ Vaš pretraživač je <ph name="DSE_NAME" />. Ako je primjenjivo, pogledajte upu
 <translation id="2718352093833049315">Samo na WiFi mreži</translation>
 <translation id="2738375676495545665">Sakrij "Šta je novo"</translation>
 <translation id="2747003861858887689">Prethodno polje</translation>
-<translation id="2749026027885331579">Članovi vaše porodice sada mogu koristiti vaše korisničko ime i lozinku kada koriste Google upravitelja lozinki da se prijave na web lokaciju <ph name="WEBSITE" />. <ph name="BEGIN_LINK" />Saznajte više<ph name="END_LINK" /></translation>
 <translation id="2749231692441336879">Pratite kanal <ph name="CHANNEL_NAME" /></translation>
 <translation id="2754492786623500387">Računi na uređaju</translation>
 <translation id="2762000892062317888">maloprije</translation>
@@ -576,7 +575,6 @@ Ako je primjenjivo, pogledajte uputstva pretraživača da saznate kako izbrisati
 <translation id="4018310736049373830">Upravljajte aktivnostima</translation>
 <translation id="4038354071007134711">Nijedna aplikacija na ovom uređaju ne može otvoriti ovaj fajl.</translation>
 <translation id="4042870976416480368">Pronađi na ovoj stranici</translation>
-<translation id="4043294777772912240"><ph name="USERNAME" /> sada može koristiti vaše korisničko ime i lozinku kada se pomoću Google upravitelja lozinki prijavljuje na <ph name="WEBSITE" />. <ph name="BEGIN_LINK" />Saznajte više<ph name="END_LINK" /></translation>
 <translation id="40433179647657191">Kreirajte i dijelite direktni link dijela stranice koji ste istaknuli.</translation>
 <translation id="4045648459118332842">Dobijte sačuvane lozinke u bilo kojoj aplikaciji jednim dodirom</translation>
 <translation id="4049507953662678203">Provjerite imate li mrežnu vezu i pokušajte ponovo.</translation>
@@ -851,7 +849,7 @@ Također, Handoff mora biti omogućen u odjeljku Opće u Postavkama, a vaši ure
 <translation id="5556459405103347317">Učitaj ponovo</translation>
 <translation id="555749644339804659">Provjera lozinki…</translation>
 <translation id="556042886152191864">Dugme</translation>
-<translation id="5572684875078967866">Pohrana podataka</translation>
+<translation id="5572684875078967866">Pohrana informacija</translation>
 <translation id="5597915316964418992">Otvorite rešetku kartica</translation>
 <translation id="560322036295180549">Isključila je vaša organizacija</translation>
 <translation id="5614553682702429503">Sačuvati lozinku?</translation>
@@ -931,7 +929,7 @@ Također, Handoff mora biti omogućen u odjeljku Opće u Postavkama, a vaši ure
 <translation id="5981230843984570095">Zatvori sve neaktivne</translation>
 <translation id="5982717868370722439">Dodajte postojeće podatke na <ph name="USER_EMAIL" />.</translation>
 <translation id="5984222099446776634">Nedavno posjećeno</translation>
-<translation id="598634819525651074">Površina</translation>
+<translation id="598634819525651074">Područje</translation>
 <translation id="5988097621740394599">Pregledajte padove cijena na svojim karticama.</translation>
 <translation id="5988851877894965432">Otvori URL-ove u Chromeu</translation>
 <translation id="6006672969046233841">Nova kartica</translation>
@@ -1368,7 +1366,7 @@ Web lokacije mogu koristiti kolačiće da vide vašu aktivnost pregledanja na ra
 <translation id="8156478151976189188">Sinhronizacija lozinki ne funkcionira</translation>
 <translation id="8157532349231307196"><ph name="NUMBER_OF_ACCOUNTS" /> računa</translation>
 <translation id="8159358225423560600">upravo sada</translation>
-<translation id="8173034266693057059">Duljina</translation>
+<translation id="8173034266693057059">Dužina</translation>
 <translation id="8179976553408161302">Enter</translation>
 <translation id="8182037667962849780">{count,plural, =1{Za web lokaciju {website_1}}=2{Za web lokacije {website_1} i {website_2}}=3{Za web lokacije {website_1} i {website_2} i još 1}one{Za web lokacije {website_1} i {website_2} i još {more_count}}few{Za web lokacije {website_1} i {website_2} i još {more_count}}other{Za web lokacije {website_1} i {website_2} i još {more_count}}}</translation>
 <translation id="8193953846147532858"><ph name="BEGIN_LINK" />Vaši uređaji<ph name="END_LINK" /> · <ph name="EMAIL" /></translation>

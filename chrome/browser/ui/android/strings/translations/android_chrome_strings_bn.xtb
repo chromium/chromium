@@ -363,6 +363,7 @@
 <translation id="2961208450284224863">{READING_LIST_UNREAD_PAGE_COUNT,plural, =1{<ph name="READING_LIST_UNREAD_PAGE_COUNT_ONE" />টি পৃষ্ঠা পড়া হয়নি}one{<ph name="READING_LIST_UNREAD_PAGE_COUNT_MANY" />টি পৃষ্ঠা পড়া হয়নি}other{<ph name="READING_LIST_UNREAD_PAGE_COUNT_MANY" />টি পৃষ্ঠা পড়া হয়নি}}</translation>
 <translation id="2961210776189273067">সম্বোধন</translation>
 <translation id="296370266220139811">সময় সাশ্রয় ও কম টাইপ করা</translation>
+<translation id="2977350910003566746">শেষবার খোলা হয়েছে অনুযায়ী সাজানো হচ্ছে</translation>
 <translation id="297771753501244313">আগেরবার খোলার সময় অনুযায়ী সাজান</translation>
 <translation id="2979025552038692506">নির্বাচিত ছদ্মবেশী ট্যাবগুলি</translation>
 <translation id="2979639724566107830">নতুন উইন্ডোতে খুলুন</translation>
@@ -403,6 +404,7 @@
 <translation id="3123734510202723619">ঘোষণা</translation>
 <translation id="3134784203083076891">”</translation>
 <translation id="314939179385989105">Chrome-এর হোমপেজ</translation>
+<translation id="3158667104057012316">ম্যানুয়াল অর্ডার অনুযায়ী সাজানো হচ্ছে</translation>
 <translation id="3166827708714933426">ট্যাব এবং উইন্ডোর শর্টকাটগুলি</translation>
 <translation id="316694332262407393">এখানে আগে থেকেই Chrome চলছে।</translation>
 <translation id="3167258285411721858"><ph name="HOST_NAME" />-এর জন্য আপনি মোবাইল সাইটের অনুরোধ করতে পারেন</translation>
@@ -530,7 +532,9 @@
 <translation id="3892148308691398805">টেক্সট কপি করুন</translation>
 <translation id="3894427358181296146">ফোল্ডার যোগ করুন</translation>
 <translation id="3899682235662194879">সব ছদ্মবেশী ট্যাব বন্ধ করুন</translation>
+<translation id="3902562446536395999">A থেকে Z অনুযায়ী সাজানো হচ্ছে</translation>
 <translation id="3908308510347173149"><ph name="PRODUCT_NAME" /> আপডেট করুন</translation>
+<translation id="3911609878849982353">Z থেকে A অনুযায়ী সাজানো হচ্ছে</translation>
 <translation id="3924911262913579434"><ph name="SAFE_BROWSING_MODE" /> চালু করা আছে</translation>
 <translation id="3927692899758076493">Sans Serif</translation>
 <translation id="3928666092801078803">আমার ডেটা একত্রিত করুন</translation>
@@ -566,6 +570,7 @@
 <translation id="4084682180776658562">বুকমার্ক</translation>
 <translation id="4084712963632273211"><ph name="PUBLISHER_ORIGIN" /> থেকে – <ph name="BEGIN_DEEMPHASIZED" />Google এর মাধ্যমে ডেলিভারি দেওয়া হয়েছে<ph name="END_DEEMPHASIZED" /></translation>
 <translation id="409109920254068737">যে ডিভাইসে এই QR কোড দেখানো হচ্ছে তাতে সাইন-ইন করার জন্য আপনি এই ট্যাবলেট ব্যবহার করতে পারবেন।</translation>
+<translation id="4092709865241032354">এই সাইটের জন্য আপনার ব্যবহারকারীর নাম যোগ করুন, যাতে Google Password Manager আপনার সাইন-ইন সংক্রান্ত তথ্য সেভ করতে পারে</translation>
 <translation id="4095146165863963773">অ্যাপ্লিকেশান ডেটা মুছবেন?</translation>
 <translation id="4095425503313512126">আরও দ্রুত ব্রাউজিং এবং সার্চ করা যেতে পারে</translation>
 <translation id="4096227151372679484">বুকমার্ক সেভ ফ্লো ফোল্ডার অর্ধেক উচ্চতায় খোলা হয়েছে</translation>
@@ -943,6 +948,7 @@
 <translation id="6000203700195075278">আবার ফলো করুন</translation>
 <translation id="6002122790816966947">আপনার ডিভাইসগুলি</translation>
 <translation id="6011308810877101166">সার্চ সাজেশন উন্নত করুন</translation>
+<translation id="6013305291643746595">সবচেয়ে পুরনো অনুযায়ী সাজানো হচ্ছে</translation>
 <translation id="6026538407078977628">'ফুল-স্ক্রিন' মোডে পরিবর্তন করুন</translation>
 <translation id="6030719887161080597">বিজ্ঞাপন সংক্রান্ত পারফর্ম্যান্স পরিমাপ করতে সাইটের মাধ্যমে ব্যবহার করা তথ্য ম্যানেজ করুন</translation>
 <translation id="6039379616847168523">পরবর্তী ট্যাবে চলে যান</translation>
@@ -1389,6 +1395,7 @@
 <translation id="8110024788458304985">Chrome-এর ফিচার ও পারফর্ম্যান্স আরও উন্নত করে তুলতে সাহায্য করুন</translation>
 <translation id="8110087112193408731">ডিজিটাল ওয়েলবিং-এ আপনার Chrome অ্যাক্টিভিটি দেখতে চান?</translation>
 <translation id="8118117428362942925">সাহায্যের প্রয়োজন হলে, অভিভাবককে জিজ্ঞাসা করো (<ph name="PARENT_NAME" />)</translation>
+<translation id="8122623268651408616">সবচেয়ে নতুন অনুযায়ী সাজানো হচ্ছে</translation>
 <translation id="8127542551745560481">হোমপেজ এডিট করুন</translation>
 <translation id="8130309322784422030">আপনার সেভ করা সাইন-ইন সংক্রান্ত তথ্য হয়ত পুরনো হয়ে গেছে</translation>
 <translation id="813082847718468539">সাইটের তথ্য দর্শন করুন</translation>

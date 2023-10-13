@@ -712,7 +712,6 @@ Leidimai, kuriuos jau esate suteikę programoms, gali būti taikomi šiai paskyr
 <translation id="1558391695376153246">Uždaryti inkogn. skirtukus</translation>
 <translation id="155865706765934889">Jutiklinis kilimėlis</translation>
 <translation id="1558671750917454373">Tęsti perdavimą į „<ph name="DEVICE_NAME" />“</translation>
-<translation id="1561329796773556980">Šiuo metu tikriname saugyklos vietą…</translation>
 <translation id="1562119309884184621">Įtrauktas kontaktas bus prisimenamas, kai bendrins kitą kartą</translation>
 <translation id="1563137369682381456">Galiojimo pabaigos data</translation>
 <translation id="1563702743503072935">„Google“ paskyros slaptažodžiai taip pat bus pasiekiami šiame įrenginyje, kol būsite prisijungę</translation>
@@ -6793,7 +6792,6 @@ Leidimai, kuriuos jau esate suteikę svetainėms ir programoms, gali būti taiko
 <translation id="6436778875248895551">Plėtinį „<ph name="EXTENSION_NAME" />“ užblokavo administratorius.</translation>
 <translation id="6438234780621650381">Nustatymų nustatymas iš naujo</translation>
 <translation id="6438475350605608554">Jau importavote slaptažodžius į kitą skirtuką</translation>
-<translation id="6438480100790416671">Tikrinama saugyklos vieta…</translation>
 <translation id="6438992844451964465">„<ph name="WINDOW_TITLE" />“ – garso įrašo paleidimas</translation>
 <translation id="6440291723980579689">Puslapiai įkeliami tik juos atidarius</translation>
 <translation id="6441377161852435370">Pridėti skirtuką prie skaitymo sąrašo</translation>
@@ -8616,7 +8614,6 @@ Paspauskite priskirtą jungiklį ar klavišą, kad pašalintumėte priskyrimą</
 <translation id="7893008570150657497">Pasiekti nuotraukas, muziką ir kitą mediją iš kompiuterio</translation>
 <translation id="7893153962594818789">Šiame „<ph name="DEVICE_TYPE" />“ išjungtas „Bluetooth“. Įveskite slaptažodį ir įjunkite „Bluetooth“.</translation>
 <translation id="7893393459573308604"><ph name="ENGINE_NAME" /> (Numatytasis)</translation>
-<translation id="7894382333736164977">Šiuo metu tikriname saugyklos vietą. Rasta tiek elementų: <ph name="ITEMS_FOUND" />.</translation>
 <translation id="7896292361319775586">Išsaugoti <ph name="FILE" />?</translation>
 <translation id="789722939441020330">Neleisti svetainėms automatiškai atsisiųsti kelių failų</translation>
 <translation id="7897900149154324287">Ateityje būtinai prieš atjungdami keičiamąjį įrenginį išimkite jį naudodami Failų programą. Kitaip galite prarasti duomenis.</translation>

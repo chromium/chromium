@@ -715,7 +715,6 @@
 <translation id="6423239382391657905">เปิด VPN</translation>
 <translation id="6439505561246192797">อ่อน (<ph name="SIGNAL_STRENGTH" />)</translation>
 <translation id="6447630859861661624">ไปที่การตั้งค่าบัญชี</translation>
-<translation id="6461047516875166066">ต้องการข้อมูลเพิ่มเติม</translation>
 <translation id="6463239094587744704">{PAGE_NUMBER,plural, =0{สแกนหน้าอีกครั้งไหม}=1{สแกนหน้าที่ {PAGE_NUMBER} อีกครั้งไหม}other{สแกนหน้าที่ {PAGE_NUMBER} อีกครั้งไหม}}</translation>
 <translation id="6472207088655375767">OTP</translation>
 <translation id="6480327114083866287">จัดการโดย <ph name="MANAGER" /></translation>

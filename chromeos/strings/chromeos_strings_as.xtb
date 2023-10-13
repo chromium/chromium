@@ -715,7 +715,6 @@
 <translation id="6423239382391657905">VPN খোলক</translation>
 <translation id="6439505561246192797">দুৰ্বল (<ph name="SIGNAL_STRENGTH" />)</translation>
 <translation id="6447630859861661624">একাউণ্টৰ ছেটিঙলৈ যাওক</translation>
-<translation id="6461047516875166066">মোক অধিক জনাওক</translation>
 <translation id="6463239094587744704">{PAGE_NUMBER,plural, =0{পৃষ্ঠাখন পুনৰ স্কেন কৰিবনে?}=1{{PAGE_NUMBER} নম্বৰ পৃষ্ঠাখন পুনৰ স্কেন কৰিবনে?}one{{PAGE_NUMBER} নম্বৰ পৃষ্ঠাখন পুনৰ স্কেন কৰিবনে?}other{{PAGE_NUMBER} নম্বৰ পৃষ্ঠাখন পুনৰ স্কেন কৰিবনে?}}</translation>
 <translation id="6472207088655375767">OTP</translation>
 <translation id="6480327114083866287"><ph name="MANAGER" />এ পৰিচালনা কৰে</translation>

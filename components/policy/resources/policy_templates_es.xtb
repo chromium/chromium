@@ -2059,15 +2059,6 @@ Si no se establece, se aplicará la política <ph name="BLOCK_POPUPS_POLICY_NAME
 <translation id="2801065672151277034">Ajustes de gestión de certificados</translation>
 <translation id="2801155097555584385">Define un porcentaje personalizado de inicio de carga de la batería</translation>
 <translation id="2801378553855965587">Inhabilita la integración con <ph name="GOOGLE_CALENDAR_NAME" />.</translation>
-<translation id="2804129948908818402">Esta política permite a los administradores especificar aplicaciones que actúan como controladores predeterminados de las respectivas extensiones de archivo en <ph name="PRODUCT_OS_NAME" /> y que los usuarios no pueden cambiar.
-
-En el caso de todas las extensiones de archivo que no se especifiquen en la política, los usuarios pueden configurar sus propios ajustes predeterminados con respecto al flujo de trabajo habitual.
-
-Especifica las aplicaciones de Chrome por su ID, como <ph name="DEFAULT_HANDLERS_FOR_FILE_EXTENSIONS_POLICY_CHROME_APP_EXAMPLE" />; las aplicaciones web, por la URL usada en <ph name="WEB_APP_INSTALL_FORCE_LIST_POLICY_NAME" />, como <ph name="DEFAULT_HANDLERS_FOR_FILE_EXTENSIONS_POLICY_WEB_APP_EXAMPLE" />; las aplicaciones Android, por su nombre de paquete, como <ph name="DEFAULT_HANDLERS_FOR_FILE_EXTENSIONS_POLICY_ANDROID_APP_EXAMPLE" />; y las aplicaciones web del sistema por su nombre escrito en minúscula y separado por guiones bajos, como <ph name="DEFAULT_HANDLERS_FOR_FILE_EXTENSIONS_POLICY_SYSTEM_WEB_APP_EXAMPLE" />.
-
-Ten en cuenta que las aplicaciones DEBEN declararse a sí mismas como controladores de archivos de las extensiones especificadas en el archivo de manifiesto para que el elemento de la política se aplique (es decir, la política NO amplía las capacidades actuales de las aplicaciones).
-
-Si no se establece la política, <ph name="PRODUCT_OS_NAME" /> podrá seleccionar controladores predeterminados de acuerdo con la lógica interna.</translation>
 <translation id="2805707493867224476">Permitir que todos los sitios muestren ventanas emergentes</translation>
 <translation id="2806804577787377637">Esta política está obsoleta y no se admite. Usa <ph name="PER_APP_TIME_LIMITS_ALLOWLIST" /> en su lugar.</translation>
 <translation id="2818074121667686266">Si se asigna el valor "Habilitada" a esta política o no se le asigna ninguno, significa que, con la excepción de las URL que se hayan incluido en la lista AudioCaptureAllowedUrls, se solicitará a los usuarios acceso a la captura de audio.
@@ -2624,7 +2615,6 @@ Si la política no se establece, se usará el nuevo comportamiento, tal como suc
 <translation id="3240609035816615922">Política de acceso a la configuración de impresoras.</translation>
 <translation id="324062325008698789">Configura una lista de impresoras.</translation>
 <translation id="3240655340884151271">Dirección NIC MAC integrada en la base</translation>
-<translation id="3242480111684005642">El usuario puede utilizar la función de sincronización de archivos de <ph name="GOOGLE_DRIVE_NAME" />.</translation>
 <translation id="3242756958360374888">Contiene una lista de patrones que se utilizan para controlar la visibilidad de las cuentas en <ph name="PRODUCT_NAME" />.
 
       Cada cuenta de Google del dispositivo se comparará con los patrones almacenados en esta política para determinar la visibilidad de la cuenta en <ph name="PRODUCT_NAME" />. La cuenta será visible si su nombre coincide con algún patrón de la lista. Si no, se ocultará.
@@ -2684,7 +2674,6 @@ Estas restricciones se aplican a las descargas activadas desde el contenido de l
 En <ph name="MS_WIN_NAME" />, esta política solo está disponible en instancias que estén vinculadas a un dominio de <ph name="MS_AD_NAME" /> o a <ph name="MS_AAD_NAME" />, o que se hayan registrado en <ph name="CHROME_BROWSER_CLOUD_MANAGEMENT_NAME" />.</translation>
 <translation id="3300784749135986828">Habilita o inhabilita <ph name="USER_AGENT_REDUCTION_FEATURE_NAME" />.</translation>
 <translation id="3301698868852716692">Habilitar extensión de estadísticas</translation>
-<translation id="3302723130703323097">Hacer que la función de sincronización de archivos de <ph name="GOOGLE_DRIVE_NAME" /> sea visible y se pueda activar en dispositivos compatibles desde la aplicación Archivos de <ph name="PRODUCT_OS_NAME" /></translation>
 <translation id="3302829897293005699">Si se habilita la política o no se establece, los dispositivos registrados enviarán información sobre las sesiones activas del kiosko, como el ID de la aplicación o la versión.
 
       Si se inhabilita la política, los dispositivos registrados no enviarán información sobre las sesiones activas del kiosko.</translation>
@@ -2776,13 +2765,6 @@ Si se inhabilita esta política, no se permitirá la función de escritura predi
       Si se le asigna el valor "hidden", los usuarios no podrán utilizar ni ver las funciones inhabilitadas.
 
       Si no se le asigna ningún valor o se le asigna un valor no válido, el modo de inhabilitación de funciones del sistema tendrá el valor "blocked".</translation>
-<translation id="3410963889229735344">La sincronización de archivos de <ph name="GOOGLE_DRIVE_NAME" /> permite que los archivos del usuario que se encuentren en Mi unidad estén disponibles automáticamente sin conexión (si hay espacio) en dispositivos compatibles. Después de activar el acceso sin conexión a todos los archivos, los archivos nuevos también estarán disponibles sin conexión de forma automática. Una vez activada la función, si más adelante no hay espacio suficiente para que la función siga activada, los archivos nuevos dejarán de estar disponibles sin conexión de forma automática. No obstante, los usuarios podrán seguir activando elementos manualmente.
-
-Si se le asigna el valor <ph name="POLICY_VALUE_VISIBLE" /> a esta política, se mostrará la función de sincronización de archivos en la aplicación Archivos y en la página Configuración. Los usuarios tendrán que seguir activando la función de sincronización de archivos.
-
-Si se le asigna el valor <ph name="POLICY_VALUE_DISABLED" /> a esta política, se desactivará la función de sincronización de archivos si el usuario la había activado previamente, y también se ocultará la función en la aplicación Archivos y en Configuración para que el usuario no pueda volver a habilitarla. Si el usuario ha habilitado el acceso sin conexión a algún archivo, seguirá estando disponible sin conexión y el usuario podrá elegir manualmente los archivos que quiera que estén disponibles sin conexión (no estarán disponibles sin conexión de forma automática).
-
-Si no se define esta política, se usará <ph name="POLICY_VALUE_VISIBLE" /> como valor predeterminado.</translation>
 <translation id="341285788698114069">Esta política controla la prioridad del proceso de audio en Windows.
       Si se habilita la política, el proceso de audio se ejecutará con una prioridad superior a la normal.
       Si se inhabilita esta política, el proceso de audio se ejecutará con una prioridad normal.
@@ -4282,6 +4264,7 @@ Tras la configuración inicial, los usuarios podrán activar y desactivar los se
 <translation id="467449052039111439">Abrir una lista de URLs</translation>
 <translation id="4674542060943819878">Habilitar la opción de cerrar alertas de contraseñas vulneradas</translation>
 <translation id="4674871290487541952">Permite los algoritmos no seguros en las comprobaciones de integridad de las actualizaciones e instalaciones de extensiones</translation>
+<translation id="4676118751789104029">Si se habilita esta política, las aplicaciones web de terceros podrán usar la Desk API para controlar los escritorios de ChromeOS. Si esta política no se establece o se inhabilita, la Desk API no estará disponible. La política solo aplica a los dispositivos registrados.</translation>
 <translation id="4680961954980851756">Habilitar Autocompletar</translation>
 <translation id="4685721728282448265">Acuerdo de claves poscuántico CECPQ2 habilitado para TLS</translation>
 <translation id="468822697351680932">Usar la política de lista de sitios de Internet Explorer como fuente de reglas</translation>
@@ -4642,7 +4625,6 @@ Esta política se retiró en la versión 113 de <ph name="PRODUCT_NAME" /> para 
 <translation id="5039110755072335605">Compatibilidad con encabezados de solicitud CORS sin comodín</translation>
 <translation id="504116558738617678">Solor mostrar advertencias de poco espacio en disco si el dispositivo no está gestionado o si únicamente hay 1 usuario</translation>
 <translation id="5041315457555330432">Permitir que <ph name="PRODUCT_NAME" /> solo se conecte a dispositivos con direcciones IP privadas, a menos que la función CastAllowAllIPs esté activada.</translation>
-<translation id="5046376406561077773">El usuario no puede ver la interfaz de usuario relacionada con la función de sincronización de archivos de <ph name="GOOGLE_DRIVE_NAME" />.</translation>
 <translation id="5055474681190962362">Día del mes [1-31] en el que se debe reiniciar, interpretado en la zona horaria local del dispositivo. Solo se utiliza si el valor de "frequency" (frecuencia) es "MONTHLY" (mensual). Si este valor es superior al número máximo de días de un mes concreto, se seleccionará el último día del mes.</translation>
 <translation id="5056708224511062314">Lupa inhabilitada</translation>
 <translation id="5058573563327660283">Seleccionar la estrategia utilizada para liberar espacio en disco durante la limpieza automática (obsoleta)</translation>
@@ -5318,9 +5300,6 @@ Cuando se define para <ph name="PRODUCT_OS_NAME" /> Kiosk, esta política habili
           Si inhabilitas esta opción, no se podrán ver las contraseñas almacenadas sin cifrar en la ventana del gestor de contraseñas.
 
           Si habilitas esta opción o si no asignas un valor a esta política, los usuarios podrán ver sus contraseñas sin cifrar en el gestor de contraseñas.</translation>
-<translation id="5618908165853580022">Esta política permite que <ph name="PRODUCT_NAME" /> use hashes antiguos no seguros durante el proceso de handshake de TLS.
-
-      Si esta política no se configura, <ph name="PRODUCT_NAME" /> seguirá el proceso de lanzamiento predeterminado para bloquear los hashes no seguros. Si se habilita, <ph name="PRODUCT_NAME" /> permitirá que un servidor use hashes no seguros al negociar un handshake de TLS. Si se inhabilita, <ph name="PRODUCT_NAME" /> no permitirá que un servidor use hashes no seguros al negociar un handshake de TLS. Esta política se eliminará en la versión 119.</translation>
 <translation id="5619498195290770056">Si asignas un valor a esta política, podrás crear una lista de patrones de URL donde se especifique qué sitios no podrán establecer cookies.
 
       Si no se le asigna ningún valor, se utilizará <ph name="DEFAULT_COOKIES_SETTINGS_POLICY_NAME" /> en todos los sitios, si se ha definido previamente. Si no se ha definido, se aplicará la configuración personal del usuario.

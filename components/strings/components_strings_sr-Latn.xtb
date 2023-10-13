@@ -466,6 +466,7 @@ To inače blokiraju podešavanja privatnosti. To omogućava da sadržaj sa koji
 <translation id="1875512691959384712">Google upitnici</translation>
 <translation id="1876399092304384674">Prema datumu</translation>
 <translation id="187918866476621466">Otvori početne stranice</translation>
+<translation id="1880901968112404879">Da biste sledeći put platili brže, sačuvajte karticu, šifrovani bezbednosni kôd i adresu za obračun na Google nalogu</translation>
 <translation id="1883255238294161206">Skupi listu</translation>
 <translation id="1884843295353628214">Džez</translation>
 <translation id="1890171020361705182">Igra sa dinosaurusom. Pikselizovani dinosaurus izbegava kaktuse i pterodaktile dok trči pustim pejzažem. Kada čujete zvučni signal dodirnite da biste preskakali prepreke.</translation>
@@ -3357,6 +3358,7 @@ Dodatni detalji:
 <translation id="7802989406998618639">Unesite <ph name="NUMBER_OF_DIGITS" />-cifreni bezbednosni kôd na <ph name="SIDE_OF_CARD" /> da bi banka mogla da potvrdi da ste to vi</translation>
 <translation id="780301667611848630">Ne, hvala</translation>
 <translation id="7805768142964895445">Status</translation>
+<translation id="7810410097247356677">Da biste sledeći put platili brže, sačuvajte karticu i šifrovani bezbednosni kôd na uređaju</translation>
 <translation id="7812922009395017822">Mir</translation>
 <translation id="7813600968533626083">Želite li da uklonite predlog iz Chrome-a?</translation>
 <translation id="781440967107097262">Dozvolićete deljenje privremene memorije?</translation>
@@ -3377,7 +3379,6 @@ Dodatni detalji:
 <translation id="7865448901209910068">Najbolja brzina</translation>
 <translation id="7870281855125116701">Pronađen je popust</translation>
 <translation id="7871445724586827387">Promenite lozinku za Google nalog</translation>
-<translation id="7876615279559620350">Da biste brže plaćali, sačuvajte CVC za ovu karticu na Google nalogu</translation>
 <translation id="7877007680666472091">ID-ovi zaštićenog sadržaja</translation>
 <translation id="7878562273885520351">Lozinka je možda kompromitovana</translation>
 <translation id="7880146494886811634">Sačuvajte adresu</translation>
@@ -3602,7 +3603,6 @@ Dodatni detalji:
 <translation id="8308653357438598313">Video strimovanje uživo</translation>
 <translation id="8311895354659782580">Registar nekretnina za prodaju</translation>
 <translation id="8316555157357957253">Trenutno koristite</translation>
-<translation id="8317570861267063617">Da biste brže plaćali, sačuvajte CVC za ovu karticu na uređaju</translation>
 <translation id="8319269383395457801">Prodaja nekretnina za stanovanje</translation>
 <translation id="831997045666694187">Uveče</translation>
 <translation id="8321476692217554900">obaveštenja</translation>

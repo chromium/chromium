@@ -466,6 +466,7 @@ I motsatt fall blir dette blokkert av personverninnstillingene. Dette gjør at i
 <translation id="1875512691959384712">Google Skjemaer</translation>
 <translation id="1876399092304384674">Etter dato</translation>
 <translation id="187918866476621466">Åpne oppstartssidene</translation>
+<translation id="1880901968112404879">For å betale raskere neste gang, lagre kortet, den krypterte sikkerhetskoden og faktureringsadressen i Google-kontoen din</translation>
 <translation id="1883255238294161206">Skjul liste</translation>
 <translation id="1884843295353628214">Jazz</translation>
 <translation id="1890171020361705182">Dino-spillet. En pikselert dinosaur smetter unna kaktus og pterodaktyler mens den løper gjennom et øde landskap. Når du hører et lydsignal, trykker du for å hoppe over hindringer.</translation>
@@ -3357,6 +3358,7 @@ I motsatt fall blir dette blokkert av personverninnstillingene. Dette gjør at i
 <translation id="7802989406998618639">Skriv inn den <ph name="NUMBER_OF_DIGITS" />-sifrede sikkerhetskoden på <ph name="SIDE_OF_CARD" />, slik at banken kan bekrefte at det er deg</translation>
 <translation id="780301667611848630">Nei takk</translation>
 <translation id="7805768142964895445">Status</translation>
+<translation id="7810410097247356677">For å betale raskere neste gang, lagre kortet og den krypterte sikkerhetskoden på enheten</translation>
 <translation id="7812922009395017822">Mir</translation>
 <translation id="7813600968533626083">Vil du fjerne skjemaforslaget fra Chrome?</translation>
 <translation id="781440967107097262">Vil du dele utklippstavlen din?</translation>
@@ -3377,7 +3379,6 @@ I motsatt fall blir dette blokkert av personverninnstillingene. Dette gjør at i
 <translation id="7865448901209910068">Beste hastighet</translation>
 <translation id="7870281855125116701">Fant en rabatt</translation>
 <translation id="7871445724586827387">Endre passordet for Google-kontoen din</translation>
-<translation id="7876615279559620350">For å betale raskere, lagre verifiseringskoden for dette kortet i Google-kontoen din</translation>
 <translation id="7877007680666472091">ID-er for beskyttet innhold</translation>
 <translation id="7878562273885520351">Passordet ditt kan være kompromittert</translation>
 <translation id="7880146494886811634">Lagre adresse</translation>
@@ -3602,7 +3603,6 @@ I motsatt fall blir dette blokkert av personverninnstillingene. Dette gjør at i
 <translation id="8308653357438598313">Direktesendt videostrøm</translation>
 <translation id="8311895354659782580">Eiendomsannonser</translation>
 <translation id="8316555157357957253">Brukes nå</translation>
-<translation id="8317570861267063617">Lagre verifiseringskoden for dette kortet på enheten din for å kunne betale raskere</translation>
 <translation id="8319269383395457801">Salg av eiendom</translation>
 <translation id="831997045666694187">Kveld</translation>
 <translation id="8321476692217554900">varsler</translation>

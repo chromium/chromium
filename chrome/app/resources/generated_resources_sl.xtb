@@ -712,7 +712,6 @@ Dovoljenja, ki ste jih že odobrili aplikacijam, morda veljajo za ta račun. Dov
 <translation id="1558391695376153246">Zapri anonimne zavihke</translation>
 <translation id="155865706765934889">Sledilna ploščica</translation>
 <translation id="1558671750917454373">Nadaljuj predvajanje v napravi <ph name="DEVICE_NAME" /></translation>
-<translation id="1561329796773556980">Trenutno pregledujemo prostor za shranjevanje …</translation>
 <translation id="1562119309884184621">Če dodate ta stik, se bo nastavitev shranila za naslednjič, ko bo ta oseba delila</translation>
 <translation id="1563137369682381456">Datum poteka</translation>
 <translation id="1563702743503072935">Gesla v računu Google bodo na voljo tudi v tej napravi, ko ste prijavljeni</translation>
@@ -2108,6 +2107,7 @@ Nastavitve tega računa je mogoče upravljati z namestitvijo aplikacije Family L
 <translation id="2609980095400624569">Ni bilo mogoče vzpostaviti povezave</translation>
 <translation id="2610157865375787051">Stanje pripravljenosti</translation>
 <translation id="2610260699262139870">Dejans&amp;ka velikost</translation>
+<translation id="2610374175948698697">Omogočen je ogled datotek ali map v napravi</translation>
 <translation id="2610780100389066815">Podpisovanje Microsoftovega seznama zaupanja</translation>
 <translation id="261114180663074524">Prijavite se v račun Microsoft in poskusite znova</translation>
 <translation id="2611776654555141051">Orodje za pravokotnike</translation>
@@ -2155,6 +2155,7 @@ Nastavitve tega računa je mogoče upravljati z namestitvijo aplikacije Family L
 <translation id="264897126871533291">Protanomalija</translation>
 <translation id="2649045351178520408">Base64 kodiran ASCII, veriga potrdil</translation>
 <translation id="265156376773362237">Standardno vnaprejšnje nalaganje</translation>
+<translation id="2652071759203138150">{COUNT,plural, =1{{COUNT} geslo je shranjeno samo v tej napravi. Če ga želite uporabiti v drugih napravah, <ph name="BEGIN_LINK" />ga shranite v računu Google<ph name="END_LINK" />.}one{{COUNT} geslo je shranjeno samo v tej napravi. Če jih želite uporabljati v drugih napravah, <ph name="BEGIN_LINK" />jih shranite v računu Google<ph name="END_LINK" />.}two{{COUNT} gesli sta shranjeni samo v tej napravi. Če ju želite uporabljati v drugih napravah, <ph name="BEGIN_LINK" />ju shranite v računu Google<ph name="END_LINK" />.}few{{COUNT} gesla so shranjena samo v tej napravi. Če jih želite uporabljati v drugih napravah, <ph name="BEGIN_LINK" />jih shranite v računu Google<ph name="END_LINK" />.}other{{COUNT} gesel je shranjenih samo v tej napravi. Če jih želite uporabljati v drugih napravah, <ph name="BEGIN_LINK" />jih shranite v računu Google<ph name="END_LINK" />.}}</translation>
 <translation id="2652129567809778422">Izbira gesla</translation>
 <translation id="2653266418988778031">Če izbrišete potrdilo overitelja potrdil, brskalnik ne zaupa več potrdilom, ki jih je izdal ta overitelj.</translation>
 <translation id="2653275834716714682">Zamenjava besedila</translation>
@@ -4045,6 +4046,7 @@ To lahko vključuje podatke o nameščeni programski opremi, datotekah, brskalni
 <translation id="4150201353443180367">Prikaz</translation>
 <translation id="4150569944729499860">Vsebina na zaslonu</translation>
 <translation id="4151449637210235443">Povejte nam, kako je potekalo nedavno igranje igre</translation>
+<translation id="4151503145138736576">Ni shrambe brez povezave za čiščenje</translation>
 <translation id="4152011295694446843">Tukaj bodo prikazani zavihki</translation>
 <translation id="4152670763139331043">{NUM_TABS,plural, =1{1 zavihek}one{# zavihek}two{# zavihka}few{# zavihki}other{# zavihkov}}</translation>
 <translation id="4154664944169082762">Prstni odtisi</translation>
@@ -4255,6 +4257,7 @@ To lahko vključuje podatke o nameščeni programski opremi, datotekah, brskalni
 <translation id="4341577178275615435">Če želite vklopiti ali izklopiti brskanje s kazalko, uporabite bližnjico F7</translation>
 <translation id="4341905082470253054">Preverjanje stanja TPM-ja …</translation>
 <translation id="434198521554309404">Hitro. Varno. Preprosto.</translation>
+<translation id="4342417854108207000">Dovoljeno urejanje datotek ali map v napravi</translation>
 <translation id="4343250402091037179">Če želite iskati po določenem spletnem mestu ali delu Chroma, v naslovno vrstico vnesite ustrezno bližnjico in nato želene bližnjične tipke.</translation>
 <translation id="434404122609091467">Prek trenutnega ponudnika storitve</translation>
 <translation id="4345457680916430965">&amp;Odpri v aplikaciji <ph name="APP" /></translation>
@@ -5289,6 +5292,7 @@ Za pomanjšavo pritisnite Ctrl + Alt + tipko za zmanjšanje svetlosti.</translat
 <translation id="5197255632782567636">Internet</translation>
 <translation id="5198430103906431024">Pošiljanje podatkov o uporabi in diagnostičnih podatkov. Ta naprava trenutno Googlu samodejno pošilja diagnostične podatke ter podatke o uporabi naprave in aplikacij. Te podatke uporabljamo za izboljšanje stabilnosti sistema in izvajanja aplikacij ter drugega. Nekateri združeni podatki bodo pomagali tudi Googlovim aplikacijam in partnerjem, na primer razvijalcem za Android. Če ste vklopili dodatno beleženje dejavnosti v spletu in aplikacijah, bodo ti podatki morda shranjeni v vašem računu Google.</translation>
 <translation id="5199729219167945352">Poskusi</translation>
+<translation id="5203035663139409780">Omogočeno je urejanje datotek ali map v napravi</translation>
 <translation id="5203920255089865054">{NUM_EXTENSIONS,plural, =1{Kliknite, če si želite ogledati razširitev}one{Kliknite, če si želite ogledati te razširitve}two{Kliknite, če si želite ogledati te razširitve}few{Kliknite, če si želite ogledati te razširitve}other{Kliknite, če si želite ogledati te razširitve}}</translation>
 <translation id="5204249655833504508">Tablični računalnik za risanje</translation>
 <translation id="5204673965307125349">Opravite postopek »powerwash« v napravi in poskusite znova.</translation>
@@ -6794,7 +6798,6 @@ Domena <ph name="DOMAIN" /> zahteva, da je pametna kartica vstavljena.</translat
 <translation id="6436778875248895551">Razširitev »<ph name="EXTENSION_NAME" />« je blokiral skrbnik.</translation>
 <translation id="6438234780621650381">Ponastavitev nastavitev</translation>
 <translation id="6438475350605608554">Gesla že uvažate na drugem zavihku.</translation>
-<translation id="6438480100790416671">Preverjanje prostora za shranjevanje …</translation>
 <translation id="6438992844451964465"><ph name="WINDOW_TITLE" /> – zvok se predvaja</translation>
 <translation id="6440291723980579689">Strani se naložijo samo, ko jih odprete</translation>
 <translation id="6441377161852435370">Dodaj zavihek na bralni seznam</translation>
@@ -8617,7 +8620,6 @@ Pritisnite dodeljeno stikalo ali tipko, če želite odstraniti dodelitev.</trans
 <translation id="7893008570150657497">Dostop do fotografij, glasbe in druge predstavnosti v računalniku</translation>
 <translation id="7893153962594818789">Bluetooth je izklopljen v tej napravi: <ph name="DEVICE_TYPE" />. Vnesite geslo in vklopite Bluetooth.</translation>
 <translation id="7893393459573308604"><ph name="ENGINE_NAME" /> (privzeto)</translation>
-<translation id="7894382333736164977">Trenutno pregledujemo prostor za shranjevanje. Št. najdenih elementov: <ph name="ITEMS_FOUND" />.</translation>
 <translation id="7896292361319775586">Želite shraniti datoteko <ph name="FILE" />?</translation>
 <translation id="789722939441020330">Spletnim mestom ni dovoljeno samodejno prenašanje več datotek.</translation>
 <translation id="7897900149154324287">Preden odklopite izmenljive naprave, jih v aplikaciji Datoteke izvrzite, sicer lahko izgubite podatke.</translation>

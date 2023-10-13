@@ -166,6 +166,7 @@
 <translation id="1922362554271624559">建议的语言</translation>
 <translation id="1924255092154549435">标签页已展开</translation>
 <translation id="1925021887439448749">输入自定义网址</translation>
+<translation id="1928618076168182477">当前显示的是直观视图</translation>
 <translation id="1928696683969751773">更新</translation>
 <translation id="19288952978244135">重新打开 Chrome。</translation>
 <translation id="1933845786846280168">所选的标签页</translation>
@@ -196,6 +197,7 @@
 <translation id="2065944887543506430">{FILE_COUNT,plural, =1{1 项下载失败}other{# 项下载失败}}</translation>
 <translation id="2067805253194386918">文本</translation>
 <translation id="2082238445998314030">第 <ph name="RESULT_NUMBER" /> 条结果，共 <ph name="TOTAL_RESULTS" /> 条</translation>
+<translation id="2091863218454846791">当前显示的是精简视图</translation>
 <translation id="2093731487903423814">过去 15 分钟</translation>
 <translation id="2096012225669085171">在所有设备上保持同步，获享个性化体验</translation>
 <translation id="2100273922101894616">自动登录</translation>
