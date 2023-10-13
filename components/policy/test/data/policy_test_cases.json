@@ -1123,7 +1123,7 @@
         ],
         "policies": {
           "PrintingAPIExtensionsAllowlist": [
-            "value1"
+            "abcdefghijklmnopabcdefghijklmnop"
           ]
         },
         "prefs": {
