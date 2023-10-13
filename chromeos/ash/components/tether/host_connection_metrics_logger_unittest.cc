@@ -141,7 +141,7 @@ TEST_F(HostConnectionMetricsLoggerTest, RecordConnectionResultSuccess) {
 }
 
 TEST_F(HostConnectionMetricsLoggerTest,
-       DISABLED_RecordConnectionResultSuccess_Background_DifferentDevice) {
+       RecordConnectionResultSuccess_Background_DifferentDevice) {
   SetActiveHostToConnecting(test_devices_[0].GetDeviceId());
 
   metrics_logger_->RecordConnectionToHostResult(
@@ -175,7 +175,7 @@ TEST_F(HostConnectionMetricsLoggerTest, RecordConnectionResultFailure) {
 }
 
 TEST_F(HostConnectionMetricsLoggerTest,
-       DISABLED_RecordConnectionResultFailure_Background_DifferentDevice) {
+       RecordConnectionResultFailure_Background_DifferentDevice) {
   SetActiveHostToConnecting(test_devices_[0].GetDeviceId());
 
   metrics_logger_->RecordConnectionToHostResult(
@@ -194,7 +194,7 @@ TEST_F(HostConnectionMetricsLoggerTest,
 }
 
 TEST_F(HostConnectionMetricsLoggerTest,
-       DISABLED_RecordConnectionResultFailureClientConnection_Timeout) {
+       RecordConnectionResultFailureClientConnection_Timeout) {
   SetActiveHostToConnecting(test_devices_[0].GetDeviceId());
 
   metrics_logger_->RecordConnectionToHostResult(
@@ -216,7 +216,7 @@ TEST_F(HostConnectionMetricsLoggerTest,
 }
 
 TEST_F(HostConnectionMetricsLoggerTest,
-       DISABLED_RecordConnectionResultFailureClientConnection_CanceledByUser) {
+       RecordConnectionResultFailureClientConnection_CanceledByUser) {
   SetActiveHostToConnecting(test_devices_[0].GetDeviceId());
 
   metrics_logger_->RecordConnectionToHostResult(
@@ -239,7 +239,7 @@ TEST_F(HostConnectionMetricsLoggerTest,
 }
 
 TEST_F(HostConnectionMetricsLoggerTest,
-       DISABLED_RecordConnectionResultFailureClientConnection_InternalError) {
+       RecordConnectionResultFailureClientConnection_InternalError) {
   SetActiveHostToConnecting(test_devices_[0].GetDeviceId());
 
   metrics_logger_->RecordConnectionToHostResult(
@@ -262,7 +262,7 @@ TEST_F(HostConnectionMetricsLoggerTest,
 }
 
 TEST_F(HostConnectionMetricsLoggerTest,
-       DISABLED_RecordConnectionResultFailureTetheringTimeout_SetupRequired) {
+       RecordConnectionResultFailureTetheringTimeout_SetupRequired) {
   SetActiveHostToConnecting(test_devices_[0].GetDeviceId());
 
   metrics_logger_->RecordConnectionToHostResult(
@@ -284,9 +284,8 @@ TEST_F(HostConnectionMetricsLoggerTest,
           ConnectionToHostResult_ProvisioningFailureEventType::OTHER);
 }
 
-TEST_F(
-    HostConnectionMetricsLoggerTest,
-    DISABLED_RecordConnectionResultFailureTetheringTimeout_SetupNotRequired) {
+TEST_F(HostConnectionMetricsLoggerTest,
+       RecordConnectionResultFailureTetheringTimeout_SetupNotRequired) {
   SetActiveHostToConnecting(test_devices_[0].GetDeviceId());
 
   metrics_logger_->RecordConnectionToHostResult(
@@ -309,7 +308,7 @@ TEST_F(
 }
 
 TEST_F(HostConnectionMetricsLoggerTest,
-       DISABLED_RecordConnectionResultFailureTetheringUnsupported) {
+       RecordConnectionResultFailureTetheringUnsupported) {
   SetActiveHostToConnecting(test_devices_[0].GetDeviceId());
 
   metrics_logger_->RecordConnectionToHostResult(
@@ -325,7 +324,7 @@ TEST_F(HostConnectionMetricsLoggerTest,
 }
 
 TEST_F(HostConnectionMetricsLoggerTest,
-       DISABLED_RecordConnectionResultFailureNoCellData) {
+       RecordConnectionResultFailureNoCellData) {
   SetActiveHostToConnecting(test_devices_[0].GetDeviceId());
 
   metrics_logger_->RecordConnectionToHostResult(
@@ -340,7 +339,7 @@ TEST_F(HostConnectionMetricsLoggerTest,
 }
 
 TEST_F(HostConnectionMetricsLoggerTest,
-       DISABLED_RecordConnectionResultFailureEnablingHotspotFailed) {
+       RecordConnectionResultFailureEnablingHotspotFailed) {
   SetActiveHostToConnecting(test_devices_[0].GetDeviceId());
 
   metrics_logger_->RecordConnectionToHostResult(
@@ -356,7 +355,7 @@ TEST_F(HostConnectionMetricsLoggerTest,
 }
 
 TEST_F(HostConnectionMetricsLoggerTest,
-       DISABLED_RecordConnectionResultFailureEnablingHotspotTimeout) {
+       RecordConnectionResultFailureEnablingHotspotTimeout) {
   SetActiveHostToConnecting(test_devices_[0].GetDeviceId());
 
   metrics_logger_->RecordConnectionToHostResult(
@@ -376,7 +375,7 @@ TEST_F(HostConnectionMetricsLoggerTest, RecordConnectToHostDuration) {
 }
 
 TEST_F(HostConnectionMetricsLoggerTest,
-       DISABLED_RecordConnectionResultFailureNoResponse) {
+       RecordConnectionResultFailureNoResponse) {
   SetActiveHostToConnecting(test_devices_[0].GetDeviceId());
 
   metrics_logger_->RecordConnectionToHostResult(
@@ -391,7 +390,7 @@ TEST_F(HostConnectionMetricsLoggerTest,
 }
 
 TEST_F(HostConnectionMetricsLoggerTest,
-       DISABLED_RecordConnectionResultFailureInvalidHotspotCredentials) {
+       RecordConnectionResultFailureInvalidHotspotCredentials) {
   SetActiveHostToConnecting(test_devices_[0].GetDeviceId());
 
   metrics_logger_->RecordConnectionToHostResult(
