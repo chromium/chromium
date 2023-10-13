@@ -142,6 +142,8 @@ class TRIVIAL_ABI OnceCallback<R(Args...)> {
   //
   // May not be called on a null callback.
   R Run(Args... args) && {
+    CHECK(!holder_.is_null());
+
     // Move the callback instance into a local variable before the invocation,
     // that ensures the internal state is cleared after the invocation.
     // It's not safe to touch |this| after the invocation, since running the
@@ -149,7 +151,6 @@ class TRIVIAL_ABI OnceCallback<R(Args...)> {
     internal::BindStateHolder holder = std::move(holder_);
     PolymorphicInvoke f =
         reinterpret_cast<PolymorphicInvoke>(holder.polymorphic_invoke());
-    CHECK(f);
     return f(holder.bind_state().get(), std::forward<Args>(args)...);
   }
 
@@ -325,13 +326,14 @@ class TRIVIAL_ABI RepeatingCallback<R(Args...)> {
   //
   // May not be called on a null callback.
   R Run(Args... args) const& {
+    CHECK(!holder_.is_null());
+
     // Keep `bind_state` alive at least until after the invocation to ensure all
     // bound `Unretained` arguments remain protected by MiraclePtr.
     scoped_refptr<internal::BindStateBase> bind_state = holder_.bind_state();
 
     PolymorphicInvoke f =
         reinterpret_cast<PolymorphicInvoke>(holder_.polymorphic_invoke());
-    CHECK(f);
     return f(bind_state.get(), std::forward<Args>(args)...);
   }
 
@@ -340,6 +342,8 @@ class TRIVIAL_ABI RepeatingCallback<R(Args...)> {
   //
   // May not be called on a null callback.
   R Run(Args... args) && {
+    CHECK(!holder_.is_null());
+
     // Move the callback instance into a local variable before the invocation,
     // that ensures the internal state is cleared after the invocation.
     // It's not safe to touch |this| after the invocation, since running the
@@ -347,7 +351,6 @@ class TRIVIAL_ABI RepeatingCallback<R(Args...)> {
     internal::BindStateHolder holder = std::move(holder_);
     PolymorphicInvoke f =
         reinterpret_cast<PolymorphicInvoke>(holder.polymorphic_invoke());
-    CHECK(f);
     return f(holder.bind_state().get(), std::forward<Args>(args)...);
   }
 

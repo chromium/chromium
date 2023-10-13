@@ -14,6 +14,7 @@
 #include "base/notreached.h"
 #include "base/strings/string_number_conversions.h"
 #include "base/test/bind.h"
+#include "base/test/gtest_util.h"
 #include "base/test/test_timeouts.h"
 #include "base/threading/thread.h"
 #include "testing/gtest/include/gtest/gtest.h"
@@ -775,6 +776,27 @@ TEST_F(CallbackTest, CallbackHasLastRefOnContainingObject) {
   CallbackOwner* owner = new CallbackOwner(&deleted);
   owner->Reset();
   ASSERT_TRUE(deleted);
+}
+
+// According to legends, it is good practice to put death tests into their own
+// test suite, so they are grouped separately from regular tests, since death
+// tests are somewhat slow and have quirks that can slow down test running if
+// intermixed.
+TEST(CallbackDeathTest, RunNullCallbackChecks) {
+  {
+    base::OnceClosure closure;
+    EXPECT_CHECK_DEATH(std::move(closure).Run());
+  }
+
+  {
+    base::RepeatingClosure closure;
+    EXPECT_CHECK_DEATH(std::move(closure).Run());
+  }
+
+  {
+    base::RepeatingClosure closure;
+    EXPECT_CHECK_DEATH(closure.Run());
+  }
 }
 
 }  // namespace
