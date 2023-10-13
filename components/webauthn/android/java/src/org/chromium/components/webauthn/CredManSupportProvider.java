@@ -46,7 +46,7 @@ public class CredManSupportProvider {
                                     .getFieldTrialParamByFeatureAsBoolean(
                                             DeviceFeatureList.WEBAUTHN_ANDROID_CRED_MAN,
                                             "gpm_in_cred_man",
-                                            false)
+                                            new CredManUiModeRecommender().recommendsCustomUi())
                             ? CredManSupport.FULL_UNLESS_INAPPLICABLE
                             : CredManSupport.PARALLEL_WITH_FIDO_2;
             return sCredManSupport;

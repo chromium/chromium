@@ -33,6 +33,7 @@ android_library("java") {
     "java/src/org/chromium/components/webauthn/CredManHelper.java",
     "java/src/org/chromium/components/webauthn/CredManMetricsHelper.java",
     "java/src/org/chromium/components/webauthn/CredManSupportProvider.java",
+    "java/src/org/chromium/components/webauthn/CredManUiModeRecommender.java",
     "java/src/org/chromium/components/webauthn/Fido2Api.java",
     "java/src/org/chromium/components/webauthn/Fido2ApiCall.java",
     "java/src/org/chromium/components/webauthn/Fido2ApiCallHelper.java",
@@ -46,6 +47,8 @@ android_library("java") {
     "java/src/org/chromium/components/webauthn/WebAuthnBrowserBridge.java",
     "java/src/org/chromium/components/webauthn/WebAuthnCredentialDetails.java",
   ]
+
+  jar_excluded_patterns = [ "*/CredManUiModeRecommender.class" ]
 
   deps = [
     ":java_resources",
@@ -77,6 +80,12 @@ android_library("java") {
   ]
 
   resources_package = "org.chromium.components.webauthn"
+}
+android_library("delegate_public_java") {
+  sources = [
+    "java/src/org/chromium/components/webauthn/CredManUiModeRecommender.java",
+  ]
+  deps = [ ":java" ]
 }
 
 android_library("test_support_java") {
