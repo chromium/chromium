@@ -48,8 +48,9 @@ export class EmojiCategoryButton extends PolymerElement {
   }
 
   private calculateClassName(active: boolean, searchActive: boolean): string {
+    // Show un-selected category button if user is searching.
     if (searchActive) {
-      return 'category-button-primary';
+      return '';
     }
     return active ? 'category-button-active' : '';
   }
