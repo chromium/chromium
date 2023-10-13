@@ -14,6 +14,7 @@
 #include "chrome/test/base/in_process_browser_test.h"
 #include "chrome/test/base/ui_test_utils.h"
 #include "components/content_settings/core/browser/cookie_settings.h"
+#include "components/content_settings/core/common/content_settings_utils.h"
 #include "components/content_settings/core/common/features.h"
 #include "components/content_settings/core/common/pref_names.h"
 #include "components/prefs/pref_service.h"
@@ -58,16 +59,11 @@ class CookieControlsBubbleViewBrowserTest : public InProcessBrowserTest {
     ASSERT_TRUE(
         ui_test_utils::NavigateToURL(browser(), third_party_cookie_page_url()));
 
-    auto* button =
-        BrowserView::GetBrowserViewForBrowser(browser())
-            ->toolbar_button_provider()
-            ->GetPageActionIconView(PageActionIconType::kCookieControls);
-
     controller_ = std::make_unique<content_settings::CookieControlsController>(
         CookieSettingsFactory::GetForProfile(browser()->profile()), nullptr,
         HostContentSettingsMapFactory::GetForProfile(browser()->profile()));
 
-    coordinator_ = std::make_unique<CookieControlsBubbleCoordinator>(button);
+    coordinator_ = std::make_unique<CookieControlsBubbleCoordinator>();
   }
 
   void TearDownOnMainThread() override {
@@ -108,8 +104,7 @@ class CookieControlsBubbleViewBrowserTest : public InProcessBrowserTest {
     // If it does not exist, it will fall through the default wildcard.
     if (should_exist) {
       EXPECT_EQ(info.secondary_pattern,
-                ContentSettingsPattern::FromURL(first_party_url));
-
+                content_settings::URLToSchemefulSitePattern(first_party_url));
     } else {
       EXPECT_TRUE(info.secondary_pattern.MatchesAllHosts());
     }
@@ -215,7 +210,7 @@ IN_PROC_BROWSER_TEST_F(CookieControlsBubbleViewBrowserTest,
   EXPECT_CALL(observer, DidStartNavigation(testing::_)).Times(0);
 
   SimulateTogglePress(true);
-  SimulateTogglePress(true);
+  SimulateTogglePress(false);
 
   bubble_view()->GetWidget()->CloseWithReason(
       views::Widget::ClosedReason::kLostFocus);

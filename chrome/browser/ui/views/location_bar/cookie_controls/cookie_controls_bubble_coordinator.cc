@@ -65,6 +65,11 @@ CookieControlsBubbleViewImpl* CookieControlsBubbleCoordinator::GetBubble()
   return bubble_view_;
 }
 
+CookieControlsBubbleViewController*
+CookieControlsBubbleCoordinator::GetViewControllerForTesting() {
+  return view_controller_.get();
+}
+
 void CookieControlsBubbleCoordinator::SetDisplayNameForTesting(
     const std::u16string& name) {
   display_name_for_testing_ = name;
