@@ -14,7 +14,6 @@
 #include "components/optimization_guide/core/page_content_annotation_type.h"
 #include "third_party/abseil-cpp/absl/types/optional.h"
 #include "third_party/abseil-cpp/absl/types/variant.h"
-#include "third_party/tflite_support/src/tensorflow_lite_support/cc/task/processor/proto/embedding.pb.h"
 
 namespace optimization_guide {
 
@@ -122,16 +121,11 @@ std::vector<BatchAnnotationResult> CreateEmptyBatchAnnotationResults(
 class PageContentAnnotationsResult {
   // The various type of results.
   typedef float ContentVisibilityScore;
-  typedef tflite::task::processor::EmbeddingResult TextEmbeddingResult;
 
  public:
   // Creates a result for a content visibility annotation.
   static PageContentAnnotationsResult CreateContentVisibilityScoreResult(
       const ContentVisibilityScore& score);
-
-  // Creates a result for a text embedding annotation.
-  static PageContentAnnotationsResult CreateTextEmbeddingResult(
-      const TextEmbeddingResult& embedding);
 
   PageContentAnnotationsResult(const PageContentAnnotationsResult&);
   PageContentAnnotationsResult& operator=(const PageContentAnnotationsResult&);
