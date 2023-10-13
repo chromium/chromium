@@ -250,6 +250,11 @@ class ContentSettingsPattern {
   // Returns true if the pattern has a higher priority than the |other| pattern.
   bool operator>(const ContentSettingsPattern& other) const;
 
+  // Formatter method for Google Test
+  friend void PrintTo(const ContentSettingsPattern& pattern, std::ostream* os) {
+    *os << pattern.ToString();
+  }
+
  private:
   friend class content_settings::PatternParser;
   friend struct mojo::StructTraits<
