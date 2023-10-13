@@ -322,7 +322,7 @@ public class ChromeBaseAppCompatActivity extends AppCompatActivity
                         == AutomotiveToolbarImplementation.WITH_ACTION_BAR) {
             int automotiveOverlay =
                     R.style.ThemeOverlay_BrowserUI_Automotive_PersistentBackButtonToolbar;
-            getTheme().applyStyle(automotiveOverlay, /* force= */ false);
+            getTheme().applyStyle(automotiveOverlay, /* force= */ true);
             mThemeResIds.add(automotiveOverlay);
         }
     }
