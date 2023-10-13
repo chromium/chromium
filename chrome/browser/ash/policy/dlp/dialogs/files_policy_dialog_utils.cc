@@ -12,7 +12,7 @@
 #include "chrome/browser/enterprise/connectors/analysis/file_transfer_analysis_delegate.h"
 #include "ui/views/controls/link.h"
 
-namespace policy {
+namespace policy::files_dialog_utils {
 
 FilesPolicyDialog::BlockReason GetEnterpriseConnectorsBlockReason(
     const enterprise_connectors::FileTransferAnalysisDelegate::
@@ -122,4 +122,4 @@ void AddLearnMoreLink(const std::u16string& text,
           ash::ColorProvider::ContentLayerType::kTextColorURL));
 }
 
-}  // namespace policy
+}  // namespace policy::files_dialog_utils

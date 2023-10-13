@@ -251,8 +251,8 @@ void CopyOrMoveIOTaskPolicyImpl::Complete(State state) {
       if (paths.empty()) {
         continue;
       }
-      auto dialog_info =
-          policy::GetDialogInfoForEnterpriseConnectorsBlockReason(
+      auto dialog_info = policy::files_dialog_utils::
+          GetDialogInfoForEnterpriseConnectorsBlockReason(
               reason, paths, file_transfer_analysis_delegates_);
       always_show_review |= dialog_info.HasCustomDetails();
       dialog_info_map.insert({reason, std::move(dialog_info)});
@@ -502,8 +502,8 @@ void CopyOrMoveIOTaskPolicyImpl::IsTransferAllowed(
 
   if (base::FeatureList::IsEnabled(
           features::kFileTransferEnterpriseConnectorUI)) {
-    auto& paths =
-        connectors_blocked_files_[policy::GetEnterpriseConnectorsBlockReason(
+    auto& paths = connectors_blocked_files_
+        [policy::files_dialog_utils::GetEnterpriseConnectorsBlockReason(
             result)];
     paths.push_back(source_url.path());
   }

@@ -99,8 +99,9 @@ FilesPolicyWarnDialog::FilesPolicyWarnDialog(
 
   AddGeneralInformation();
   if (dialog_info_.GetLearnMoreURL().has_value()) {
-    AddLearnMoreLink(l10n_util::GetStringUTF16(IDS_LEARN_MORE),
-                     dialog_info_.GetLearnMoreURL().value(), upper_panel_);
+    files_dialog_utils::AddLearnMoreLink(
+        l10n_util::GetStringUTF16(IDS_LEARN_MORE),
+        dialog_info_.GetLearnMoreURL().value(), upper_panel_);
   }
   MaybeAddConfidentialRows();
 

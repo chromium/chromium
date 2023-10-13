@@ -251,8 +251,8 @@ void FilesPolicyErrorDialog::AddBlockedFilesSection(
         views::BoxLayout::Orientation::kHorizontal,
         gfx::Insets::TLBR(0, 16, 10, 16), 0));
 
-    AddLearnMoreLink(l10n_util::GetStringUTF16(IDS_LEARN_MORE), url,
-                     learn_more_row);
+    files_dialog_utils::AddLearnMoreLink(
+        l10n_util::GetStringUTF16(IDS_LEARN_MORE), url, learn_more_row);
   }
 
   for (const auto& file : section.files) {
