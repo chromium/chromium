@@ -79,8 +79,6 @@ public class StripTabHoverCardViewUnitTest {
     @Mock
     private Tab mHoveredTab;
     @Mock
-    private StripLayoutTab mHoveredStripTab;
-    @Mock
     private TabModelSelector mTabModelSelector;
     @Mock
     private ObservableSupplier<TabContentManager> mTabContentManagerSupplier;
@@ -88,6 +86,7 @@ public class StripTabHoverCardViewUnitTest {
     private TabContentManager mTabContentManager;
 
     private static final float STRIP_STACK_HEIGHT = 500.f;
+    private static final float TAB_WIDTH = 100f;
 
     private StripTabHoverCardView mTabHoverCardView;
     private TabThumbnailView mThumbnailView;
@@ -131,7 +130,7 @@ public class StripTabHoverCardViewUnitTest {
         when(mHoveredTab.getId()).thenReturn(1);
 
         StripTabHoverCardView cardViewSpy = spy(mTabHoverCardView);
-        cardViewSpy.show(mHoveredTab, mHoveredStripTab, false, STRIP_STACK_HEIGHT);
+        cardViewSpy.show(mHoveredTab, false, 10, 20, STRIP_STACK_HEIGHT);
 
         assertEquals("Card title text is incorrect.", mHoveredTab.getTitle(), mTitleView.getText());
         assertEquals(
@@ -164,7 +163,7 @@ public class StripTabHoverCardViewUnitTest {
         when(mHoveredTab.getUrl()).thenReturn(url);
 
         StripTabHoverCardView cardViewSpy = spy(mTabHoverCardView);
-        cardViewSpy.show(mHoveredTab, mHoveredStripTab, false, STRIP_STACK_HEIGHT);
+        cardViewSpy.show(mHoveredTab, false, 10, 20, STRIP_STACK_HEIGHT);
 
         assertEquals("Card title text is incorrect.", mHoveredTab.getTitle(), mTitleView.getText());
         // Verify chrome:// tab hover card display text.
@@ -185,7 +184,7 @@ public class StripTabHoverCardViewUnitTest {
         when(mHoveredTab.isIncognito()).thenReturn(false);
 
         StripTabHoverCardView cardViewSpy = spy(mTabHoverCardView);
-        cardViewSpy.show(mHoveredTab, mHoveredStripTab, false, STRIP_STACK_HEIGHT);
+        cardViewSpy.show(mHoveredTab, false, 10, 20, STRIP_STACK_HEIGHT);
         verify(mTabContentManager)
                 .getTabThumbnailWithCallback(anyInt(),
                         refEq(new Size(mThumbnailView.getWidth(), mThumbnailView.getHeight())),
@@ -204,7 +203,7 @@ public class StripTabHoverCardViewUnitTest {
         when(mHoveredTab.getId()).thenReturn(1);
 
         StripTabHoverCardView cardViewSpy = spy(mTabHoverCardView);
-        cardViewSpy.show(mHoveredTab, mHoveredStripTab, false, STRIP_STACK_HEIGHT);
+        cardViewSpy.show(mHoveredTab, false, 10, 20, STRIP_STACK_HEIGHT);
         // Assume that the hovered tab has changed before the thumbnail is fetched.
         when(mHoveredTab.getId()).thenReturn(2);
 
@@ -225,7 +224,7 @@ public class StripTabHoverCardViewUnitTest {
         when(mHoveredTab.getUrl()).thenReturn(url);
 
         StripTabHoverCardView cardViewSpy = spy(mTabHoverCardView);
-        cardViewSpy.show(mHoveredTab, mHoveredStripTab, false, STRIP_STACK_HEIGHT);
+        cardViewSpy.show(mHoveredTab, false, 10, 20, STRIP_STACK_HEIGHT);
         // Assume that the hover card is hidden before the thumbnail is fetched.
         cardViewSpy.hide();
         // Verify state is reset on hide.
@@ -248,11 +247,8 @@ public class StripTabHoverCardViewUnitTest {
     public void getHoverCardPosition() {
         // Use TSR detached treatment for additional coverage that includes position adjustments.
         TabManagementFieldTrial.TAB_STRIP_REDESIGN_ENABLE_DETACHED.setForTesting(true);
-        // Set simulated hovered StripLayoutTab drawX for expected hover card position.
-        when(mHoveredStripTab.getDrawX()).thenReturn(10f);
-
-        float[] position =
-                mTabHoverCardView.getHoverCardPosition(mHoveredStripTab, false, STRIP_STACK_HEIGHT);
+        // Set simulated hovered tab drawX for expected hover card position.
+        float[] position = mTabHoverCardView.getHoverCardPosition(false, 10, 0, STRIP_STACK_HEIGHT);
         float detachedCardOffset =
                 mContext.getResources().getDimension(R.dimen.tsr_no_feet_tab_hover_card_x_offset);
         assertEquals("Card x position is incorrect.", 10f + detachedCardOffset, position[0], 0f);
@@ -265,14 +261,13 @@ public class StripTabHoverCardViewUnitTest {
     public void getHoverCardPosition_CardWidthExceedsWindowWidth() {
         // Set window width to be slightly smaller than the default card width.
         mContext.getResources().getDisplayMetrics().widthPixels = (int) (mHoverCardWidth - 1);
-        // Set simulated hovered StripLayoutTab drawX for expected hover card position.
-        when(mHoveredStripTab.getDrawX()).thenReturn(10f);
         var originalLayoutParams = new LayoutParams((int) mHoverCardWidth, 200);
         StripTabHoverCardView cardViewSpy = spy(mTabHoverCardView);
         when(cardViewSpy.getLayoutParams()).thenReturn(originalLayoutParams);
 
+        // Set simulated hovered tab drawX for expected hover card position.
         float[] position =
-                cardViewSpy.getHoverCardPosition(mHoveredStripTab, false, STRIP_STACK_HEIGHT);
+                cardViewSpy.getHoverCardPosition(false, 10f, TAB_WIDTH, STRIP_STACK_HEIGHT);
         ArgumentCaptor<LayoutParams> captor = ArgumentCaptor.forClass(LayoutParams.class);
         verify(cardViewSpy).setLayoutParams(captor.capture());
         assertEquals("Card width is incorrect.", Math.round(0.9f * (mHoverCardWidth - 1)),
@@ -287,17 +282,16 @@ public class StripTabHoverCardViewUnitTest {
                 R.dimen.tab_hover_card_window_horizontal_margin);
 
         // Assume that the tab's hover card is positioned beyond the left edge of the app window.
-        when(mHoveredStripTab.getDrawX()).thenReturn(-1f);
         float[] position =
-                mTabHoverCardView.getHoverCardPosition(mHoveredStripTab, false, STRIP_STACK_HEIGHT);
+                mTabHoverCardView.getHoverCardPosition(false, -1f, TAB_WIDTH, STRIP_STACK_HEIGHT);
         assertEquals("Card should maintain a minimum margin from the left edge of the app window.",
                 windowHorizontalMargin, position[0], 0f);
 
         // Assume that the tab's hover card extends beyond the right edge of the app window.
         int windowWidth = mContext.getResources().getDisplayMetrics().widthPixels;
-        when(mHoveredStripTab.getDrawX()).thenReturn(windowWidth - mHoverCardWidth + 1f);
         position =
-                mTabHoverCardView.getHoverCardPosition(mHoveredStripTab, false, STRIP_STACK_HEIGHT);
+                mTabHoverCardView.getHoverCardPosition(
+                        false, windowWidth - mHoverCardWidth + 1f, TAB_WIDTH, STRIP_STACK_HEIGHT);
         assertEquals("Card should maintain a minimum margin from the right edge of the app window.",
                 windowWidth - mHoverCardWidth - windowHorizontalMargin, position[0], 0f);
     }
@@ -308,12 +302,10 @@ public class StripTabHoverCardViewUnitTest {
         TabManagementFieldTrial.TAB_STRIP_REDESIGN_ENABLE_DETACHED.setForTesting(true);
         LocalizationUtils.setRtlForTesting(true);
 
-        // Set simulated hovered StripLayoutTab drawX and width for expected hover card position.
-        when(mHoveredStripTab.getDrawX()).thenReturn(28f);
-        when(mHoveredStripTab.getWidth()).thenReturn(mHoverCardWidth - 2f);
-
+        // Set simulated hovered tab drawX and width for expected hover card position.
         float[] position =
-                mTabHoverCardView.getHoverCardPosition(mHoveredStripTab, false, STRIP_STACK_HEIGHT);
+                mTabHoverCardView.getHoverCardPosition(
+                        false, 28, mHoverCardWidth - 2f, STRIP_STACK_HEIGHT);
         float detachedCardOffset =
                 mContext.getResources().getDimension(R.dimen.tsr_no_feet_tab_hover_card_x_offset);
         assertEquals("Card x position is incorrect.", 26f - detachedCardOffset, position[0], 0f);

@@ -61,14 +61,16 @@ public class StripTabHoverCardView extends LinearLayout {
 
     /**
      * Show the strip tab hover card.
+     *
      * @param hoveredTab The {@link Tab} instance of the hovered tab.
-     * @param hoveredStripLayoutTab The {@link StripLayoutTab} instance of the hovered tab.
      * @param isSelectedTab Whether the hovered tab is selected, {@code true} if the hovered tab is
-     *         also the selected tab, {@code false} otherwise.
+     *     also the selected tab, {@code false} otherwise.
+     * @param tabX To compute hover card positioning.
+     * @param tabWidth To compute hover card positioning.
      * @param height The height of the tab strip stack.
      */
-    public void show(Tab hoveredTab, StripLayoutTab hoveredStripLayoutTab, boolean isSelectedTab,
-            float height) {
+    public void show(
+            Tab hoveredTab, boolean isSelectedTab, float tabX, float tabWidth, float height) {
         if (hoveredTab == null) return;
         mLastHoveredTabId = hoveredTab.getId();
         mIsShowing = true;
@@ -85,7 +87,7 @@ public class StripTabHoverCardView extends LinearLayout {
         }
         mUrlView.setText(url);
 
-        float[] position = getHoverCardPosition(hoveredStripLayoutTab, isSelectedTab, height);
+        float[] position = getHoverCardPosition(isSelectedTab, tabX, tabWidth, height);
         setX(position[0]);
         setY(position[1]);
 
@@ -152,14 +154,15 @@ public class StripTabHoverCardView extends LinearLayout {
     /**
      * Get the x and y coordinates of the position of the hover card, in px.
      *
-     * @param hoveredTab The {@link StripLayoutTab} that is hovered on.
      * @param isSelectedTab Whether the tab is the selected tab, {@code true} if the hovered tab is
-     *         also the selected tab, {@code false} otherwise.
+     *     also the selected tab, {@code false} otherwise.
+     * @param tabX The tab x-position to compute hover card positioning.
+     * @param tabWidth The tab width to compute hover card positioning.
      * @param height The height of the strip stack, to determine the y position of the card.
      * @return A float array specifying the x (array[0]) and y (array[1]) coordinates of the
-     *         position of the hover card, in px.
+     *     position of the hover card, in px.
      */
-    float[] getHoverCardPosition(StripLayoutTab hoveredTab, boolean isSelectedTab, float height) {
+    float[] getHoverCardPosition(boolean isSelectedTab, float tabX, float tabWidth, float height) {
         boolean isFolioEnabled = TabManagementFieldTrial.isTabStripFolioEnabled();
         boolean isDetachedEnabled = TabManagementFieldTrial.isTabStripDetachedEnabled();
 
@@ -186,9 +189,8 @@ public class StripTabHoverCardView extends LinearLayout {
         }
 
         // 3. Determine the horizontal position of the hover card.
-        float hoverCardXDp = LocalizationUtils.isLayoutRtl()
-                ? (hoveredTab.getDrawX() - (hoverCardWidthDp - hoveredTab.getWidth()))
-                : hoveredTab.getDrawX();
+        float hoverCardXDp =
+                LocalizationUtils.isLayoutRtl() ? (tabX - (hoverCardWidthDp - tabWidth)) : tabX;
         // Adjust the TSR detached and inactive folio tab hover card to align with the tab container
         // edge.
         if (isDetachedEnabled || (isFolioEnabled && !isSelectedTab)) {

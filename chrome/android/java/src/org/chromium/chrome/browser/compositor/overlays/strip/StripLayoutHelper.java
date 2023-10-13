@@ -1555,8 +1555,12 @@ public class StripLayoutHelper implements StripLayoutTab.StripLayoutTabDelegate 
 
         // Show the tab hover card.
         int hoveredTabIndex = findIndexForTab(mLastHoveredTab.getId());
-        mTabHoverCardView.show(mModel.getTabAt(hoveredTabIndex), mLastHoveredTab,
-                hoveredTabIndex == mModel.index(), mHeight);
+        mTabHoverCardView.show(
+                mModel.getTabAt(hoveredTabIndex),
+                hoveredTabIndex == mModel.index(),
+                mLastHoveredTab.getDrawX(),
+                mLastHoveredTab.getWidth(),
+                mHeight);
     }
 
     private void updateHoveredFolioTabState(StripLayoutTab tab, boolean hovered) {

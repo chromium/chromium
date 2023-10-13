@@ -2545,7 +2545,13 @@ public class StripLayoutHelperTest {
         mStripLayoutHelper.updateLastHoveredTab(hoveredTab);
         assertEquals(
                 "Last hovered tab is not set.", hoveredTab, mStripLayoutHelper.getLastHoveredTab());
-        verify(mTabHoverCardView).show(mModel.getTabAt(1), hoveredTab, false, SCREEN_HEIGHT);
+        verify(mTabHoverCardView)
+                .show(
+                        mModel.getTabAt(1),
+                        false,
+                        hoveredTab.getDrawX(),
+                        hoveredTab.getWidth(),
+                        SCREEN_HEIGHT);
     }
 
     @Test
