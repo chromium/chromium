@@ -2,11 +2,18 @@
 # Use of this source code is governed by a BSD-style license that can be
 # found in the LICENSE file.
 
+import("//build/buildflag_header.gni")
 import("//build/config/chromeos/ui_mode.gni")
+import("//remoting/build/config/remoting_build.gni")
 
 source_set("setup") {
   public_deps = [ ":common" ]
   deps = [ "//remoting/host" ]
+}
+
+buildflag_header("buildflags") {
+  header = "buildflags.h"
+  flags = [ "REMOTING_INTERNAL=$remoting_internal" ]
 }
 
 source_set("common") {
@@ -86,6 +93,8 @@ source_set("start_host_main_headers") {
 
 source_set("start_host_main") {
   sources = [
+    "corp_host_starter.cc",
+    "corp_host_starter.h",
     "host_starter.cc",
     "host_starter.h",
     "host_stopper.cc",
@@ -101,6 +110,7 @@ source_set("start_host_main") {
   }
 
   deps = [
+    ":buildflags",
     "//google_apis",
     "//mojo/core/embedder",
     "//net",
@@ -114,6 +124,12 @@ source_set("start_host_main") {
     "//third_party/libjingle_xmpp:rtc_xmllite",
     "//third_party/webrtc_overrides:webrtc_component",
   ]
+
+  if (remoting_internal) {
+    deps += [ "//remoting/internal/proto" ]
+  } else {
+    deps += [ "//remoting/proto:internal_stubs" ]
+  }
 
   configs += [
     "//build/config/compiler:wexit_time_destructors",

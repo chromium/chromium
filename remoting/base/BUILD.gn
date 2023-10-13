@@ -43,6 +43,8 @@ source_set("base") {
     "compound_buffer.h",
     "constants.cc",
     "constants.h",
+    "corp_service_client.cc",
+    "corp_service_client.h",
     "cpu_utils.cc",
     "cpu_utils.h",
     "directory_service_client.cc",
@@ -125,7 +127,12 @@ source_set("base") {
   ]
 
   if (remoting_internal) {
-    deps += [ "//remoting/internal/base" ]
+    deps += [
+      "//remoting/internal/base",
+      "//remoting/internal/proto",
+    ]
+  } else {
+    deps += [ "//remoting/proto:internal_stubs" ]
   }
 
   if (is_win) {

@@ -3,7 +3,6 @@ include_rules = [
   "+google_apis",
   "+mojo/core/embedder",
   "+net",
-  "+remoting/internal/base",
   "+services/network/public/cpp",
   "+services/network/public/mojom",
   "+services/network/test",

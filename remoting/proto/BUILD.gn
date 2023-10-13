@@ -29,3 +29,17 @@ proto_library("proto") {
     "video_stats.proto",
   ]
 }
+
+source_set("internal_stubs") {
+  public = [ "internal_stubs.h" ]
+
+  sources = [
+    "internal_stubs.cc",
+    "internal_stubs.h",
+  ]
+
+  deps = [
+    "//base",
+    "//third_party/protobuf:protobuf_lite",
+  ]
+}

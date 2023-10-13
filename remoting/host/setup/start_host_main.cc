@@ -12,6 +12,7 @@
 #include "base/functional/bind.h"
 #include "base/message_loop/message_pump_type.h"
 #include "base/run_loop.h"
+#include "base/strings/string_util.h"
 #include "base/task/single_thread_task_executor.h"
 #include "base/task/single_thread_task_runner.h"
 #include "base/task/thread_pool/thread_pool_instance.h"
@@ -22,6 +23,7 @@
 #include "remoting/base/breakpad.h"
 #include "remoting/base/logging.h"
 #include "remoting/base/url_request_context_getter.h"
+#include "remoting/host/setup/corp_host_starter.h"
 #include "remoting/host/setup/host_starter.h"
 #include "remoting/host/setup/pin_validator.h"
 #include "remoting/host/usage_stats_consent.h"
@@ -149,7 +151,8 @@ bool InitializeHostStarterParams(HostStarter::Params& params,
   params.pin = command_line->GetSwitchValueASCII("pin");
   params.auth_code = command_line->GetSwitchValueASCII("code");
   params.redirect_url = command_line->GetSwitchValueASCII("redirect-url");
-  params.owner_email = command_line->GetSwitchValueASCII("host-owner");
+  params.owner_email =
+      base::ToLowerASCII(command_line->GetSwitchValueASCII("host-owner"));
   params.enable_crash_reporting =
       !command_line->HasSwitch("disable-crash-reporting");
 
@@ -257,7 +260,22 @@ int StartHostMain(int argc, char** argv) {
   }
 
   HostStarter::Params params;
-  if (!InitializeHostStarterParams(params, command_line)) {
+  bool useCorpMachineFlow = false;
+  if (command_line->HasSwitch("corp-user")) {
+    if (command_line->GetSwitches().size() > 1) {
+      fprintf(
+          stdout,
+          "Too many arguments provided.\n\nOnly one argument is needed when "
+          "setting up a corp machine: `--corp-user=<user_email_address>`\n");
+      return 1;
+    }
+
+    useCorpMachineFlow = true;
+    params.owner_email =
+        base::ToLowerASCII(command_line->GetSwitchValueASCII("corp-user"));
+    // Crash reporting is always enabled for this flow.
+    params.enable_crash_reporting = true;
+  } else if (!InitializeHostStarterParams(params, command_line)) {
     PrintHelpMessage(argv[0]);
     return 1;
   }
@@ -276,8 +294,15 @@ int StartHostMain(int argc, char** argv) {
       url_request_context_getter);
 
   // Start the host.
-  std::unique_ptr<HostStarter> host_starter(
-      HostStarter::Create(url_loader_factory_owner.GetURLLoaderFactory()));
+  std::unique_ptr<HostStarter> host_starter;
+  if (useCorpMachineFlow) {
+    host_starter =
+        ProvisionCorpMachine(url_loader_factory_owner.GetURLLoaderFactory());
+  } else {
+    host_starter =
+        HostStarter::Create(url_loader_factory_owner.GetURLLoaderFactory());
+  }
+
   host_starter->StartHost(std::move(params), base::BindOnce(&OnDone));
 
   // Run the task executor until the StartHost completion callback.
