@@ -1217,6 +1217,35 @@ TEST_F(AshNotificationViewTest, RecordExpandButtonClickAction) {
       metrics_utils::ExpandButtonClickAction::COLLAPSE_GROUP, 1);
 }
 
+TEST_F(AshNotificationViewTest, ExpandButtonAccessibleName) {
+  std::u16string notification_title = u"Test title";
+  auto notification = CreateTestNotification();
+  notification->set_title(notification_title);
+  notification_view()->UpdateWithNotification(*notification);
+  notification_view()->SetExpanded(false);
+
+  auto* expand_button = notification_view()->expand_button_for_test();
+
+  EXPECT_EQ(l10n_util::GetStringFUTF16(IDS_ASH_NOTIFICATION_EXPAND_TOOLTIP,
+                                       notification_title),
+            expand_button->GetAccessibleName());
+
+  notification_view()->ToggleExpand();
+  EXPECT_EQ(l10n_util::GetStringFUTF16(IDS_ASH_NOTIFICATION_COLLAPSE_TOOLTIP,
+                                       notification_title),
+            expand_button->GetAccessibleName());
+
+  // Update the notification title. The expand button tooltip text should be
+  // updated accordingly.
+  notification_title = u"Updated test title";
+  notification->set_title(notification_title);
+  notification_view()->UpdateWithNotification(*notification);
+
+  EXPECT_EQ(l10n_util::GetStringFUTF16(IDS_ASH_NOTIFICATION_COLLAPSE_TOOLTIP,
+                                       notification_title),
+            expand_button->GetAccessibleName());
+}
+
 TEST_F(AshNotificationViewTest, OnThemeChangedWithoutMessageLabel) {
   EXPECT_NE(nullptr, GetMessageLabel(notification_view()));
 

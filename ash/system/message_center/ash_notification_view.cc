@@ -1321,6 +1321,8 @@ void AshNotificationView::CreateOrUpdateTitleView(
     ReorderViewInLeftContent(title_row_);
   }
 
+  expand_button_->SetNotificationTitleForButtonTooltip(title);
+
   int max_available_width = notification.icon().IsEmpty()
                                 ? kTitleRowMinimumWidth
                                 : kTitleRowMinimumWidthWithIcon;

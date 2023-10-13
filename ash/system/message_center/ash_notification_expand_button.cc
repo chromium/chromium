@@ -247,6 +247,15 @@ void AshNotificationExpandButton::SetExpandCollapseEnabled(bool enabled) {
   UpdateTooltip();
 }
 
+void AshNotificationExpandButton::SetNotificationTitleForButtonTooltip(
+    const std::u16string& notification_title) {
+  if (notification_title_ == notification_title) {
+    return;
+  }
+  notification_title_ = notification_title;
+  UpdateTooltip();
+}
+
 void AshNotificationExpandButton::AnimateBoundsChange(
     int duration_in_ms,
     gfx::Tween::Type tween_type,
@@ -310,9 +319,10 @@ void AshNotificationExpandButton::UpdateTooltip() {
     tooltip_text =
         l10n_util::GetStringUTF16(IDS_ASH_NOTIFICATION_EXPAND_DISABLED_TOOLTIP);
   } else {
-    tooltip_text = l10n_util::GetStringUTF16(
+    tooltip_text = l10n_util::GetStringFUTF16(
         expanded_ ? IDS_ASH_NOTIFICATION_COLLAPSE_TOOLTIP
-                  : IDS_ASH_NOTIFICATION_EXPAND_TOOLTIP);
+                  : IDS_ASH_NOTIFICATION_EXPAND_TOOLTIP,
+        notification_title_);
   }
 
   image_->SetTooltipText(tooltip_text);
