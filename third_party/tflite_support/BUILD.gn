@@ -44,6 +44,7 @@ config("tflite_support_flags") {
     "-Wno-sign-compare",
     "-Wno-ignored-attributes",
     "-Wno-deprecated-declarations",
+    "-Wno-unused-function",
     "-Wno-unused-variable",
   ]
   if (!is_win) {
