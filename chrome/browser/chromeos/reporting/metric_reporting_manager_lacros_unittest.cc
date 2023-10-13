@@ -294,14 +294,6 @@ TEST_F(MetricReportingManagerLacrosTest, InitiallyDeprovisioned) {
   EXPECT_THAT(observer_manager_count, Eq(0));
 }
 
-TEST_F(MetricReportingManagerLacrosTest, SecondaryUserProfiles) {
-  auto* const secondary_profile =
-      profile_manager_.CreateTestingProfile("secondary_profile");
-  const auto* const metric_reporting_manager =
-      metrics::MetricReportingManagerLacros::GetForProfile(secondary_profile);
-  EXPECT_THAT(metric_reporting_manager, IsNull());
-}
-
 class MetricReportingManagerLacrosTelemetryTest
     : public MetricReportingManagerLacrosTest {};
 

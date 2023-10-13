@@ -30,7 +30,8 @@ static_assert(BUILDFLAG(IS_CHROMEOS_LACROS), "For Lacros only");
 namespace reporting::metrics {
 
 // Manages the initialization, collection and reporting of certain user event,
-// info and telemetry metrics in Lacros.
+// info and telemetry metrics in Lacros. Normally instantiated via the
+// `MetricReportingManagerLacrosFactory` unless needed for testing purposes.
 class MetricReportingManagerLacros : public KeyedService,
                                      public DeviceSettingsLacros::Observer {
  public:
@@ -61,10 +62,6 @@ class MetricReportingManagerLacros : public KeyedService,
         MetricReportingManagerLacros* const instance);
   };
 
-  // Retrieves the `MetricReportingManagerLacros` for the given
-  // profile.
-  static MetricReportingManagerLacros* GetForProfile(Profile* profile);
-
   MetricReportingManagerLacros(
       Profile* profile,
       std::unique_ptr<MetricReportingManagerLacros::Delegate> delegate);
@@ -76,8 +73,6 @@ class MetricReportingManagerLacros : public KeyedService,
 
   // DeviceSettingsLacros::Observer:
   void OnDeviceSettingsUpdated() override;
-
-  static void EnsureFactoryBuilt();
 
  private:
   void Shutdown() override;

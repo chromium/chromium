@@ -10,7 +10,6 @@
 
 #include "base/functional/bind.h"
 #include "base/location.h"
-#include "base/no_destructor.h"
 #include "base/sequence_checker.h"
 #include "base/time/time.h"
 #include "chrome/browser/browser_process.h"
@@ -22,82 +21,12 @@
 #include "chrome/browser/chromeos/reporting/websites/website_events_observer.h"
 #include "chrome/browser/chromeos/reporting/websites/website_metrics_retriever_lacros.h"
 #include "chrome/browser/policy/chrome_browser_policy_connector.h"
-#include "chrome/browser/profiles/profile_keyed_service_factory.h"
 #include "chromeos/lacros/lacros_service.h"
 #include "components/policy/policy_constants.h"
 #include "components/reporting/proto/synced/record.pb.h"
 #include "components/version_info/version_info.h"
 
 namespace reporting::metrics {
-namespace {
-
-// Factory implementation for the `MetricReportingManagerLacros` for a given
-// `BrowserContext`.
-class MetricReportingManagerLacrosFactory : public ProfileKeyedServiceFactory {
- public:
-  MetricReportingManagerLacrosFactory();
-  MetricReportingManagerLacrosFactory(
-      const MetricReportingManagerLacrosFactory&) = delete;
-  MetricReportingManagerLacrosFactory& operator=(
-      const MetricReportingManagerLacrosFactory&) = delete;
-  ~MetricReportingManagerLacrosFactory() override;
-
-  // Returns an instance of `MetricReportingManagerLacros` for the
-  // given profile.
-  static MetricReportingManagerLacros* GetForProfile(Profile* profile);
-
-  static void EnsureFactoryBuilt();
-
- private:
-  static MetricReportingManagerLacrosFactory* GetInstance();
-
-  KeyedService* BuildServiceInstanceFor(
-      content::BrowserContext* context) const override;
-};
-
-MetricReportingManagerLacrosFactory::MetricReportingManagerLacrosFactory()
-    : ProfileKeyedServiceFactory(
-          "MetricReportingManagerLacros",
-          ProfileSelections::Builder()
-              .WithRegular(ProfileSelection::kOriginalOnly)
-              // TODO(crbug.com/1418376): Check if this service is needed in
-              // Guest mode.
-              .WithGuest(ProfileSelection::kOriginalOnly)
-              .Build()) {}
-
-MetricReportingManagerLacrosFactory::~MetricReportingManagerLacrosFactory() =
-    default;
-
-MetricReportingManagerLacros*
-MetricReportingManagerLacrosFactory::GetForProfile(Profile* profile) {
-  DCHECK(profile);
-  if (!profile->IsMainProfile()) {
-    // We only report metrics and events for main profile today.
-    return nullptr;
-  }
-  return static_cast<MetricReportingManagerLacros*>(
-      GetInstance()->GetServiceForBrowserContext(profile, true));
-}
-
-// static
-void MetricReportingManagerLacrosFactory::EnsureFactoryBuilt() {
-  GetInstance();
-}
-
-// static
-MetricReportingManagerLacrosFactory*
-MetricReportingManagerLacrosFactory::GetInstance() {
-  static base::NoDestructor<MetricReportingManagerLacrosFactory> g_factory;
-  return g_factory.get();
-}
-
-KeyedService* MetricReportingManagerLacrosFactory::BuildServiceInstanceFor(
-    content::BrowserContext* context) const {
-  auto* const profile = Profile::FromBrowserContext(context);
-  return new MetricReportingManagerLacros(
-      profile, std::make_unique<MetricReportingManagerLacros::Delegate>());
-}
-}  // namespace
 
 void MetricReportingManagerLacros::Delegate::CheckDeviceDeprovisioned(
     crosapi::mojom::DeviceSettingsService::IsDeviceDeprovisionedCallback
@@ -126,12 +55,6 @@ void MetricReportingManagerLacros::Delegate::RegisterObserverWithCrosApiClient(
   g_browser_process->browser_policy_connector()
       ->device_settings_lacros()
       ->AddObserver(instance);
-}
-
-// static
-MetricReportingManagerLacros* MetricReportingManagerLacros::GetForProfile(
-    Profile* profile) {
-  return MetricReportingManagerLacrosFactory::GetForProfile(profile);
 }
 
 MetricReportingManagerLacros::MetricReportingManagerLacros(
@@ -315,11 +238,6 @@ void MetricReportingManagerLacros::UploadTelemetry() {
     return;
   }
   telemetry_report_queue_->Upload();
-}
-
-// static
-void MetricReportingManagerLacros::EnsureFactoryBuilt() {
-  MetricReportingManagerLacrosFactory::EnsureFactoryBuilt();
 }
 
 }  // namespace reporting::metrics

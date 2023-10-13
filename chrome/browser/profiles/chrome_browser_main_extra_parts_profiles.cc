@@ -374,7 +374,7 @@
 
 #if BUILDFLAG(IS_CHROMEOS_LACROS)
 #include "chrome/browser/chromeos/extensions/login_screen/login/cleanup/cleanup_manager_lacros_factory.h"
-#include "chrome/browser/chromeos/reporting/metric_reporting_manager_lacros.h"
+#include "chrome/browser/chromeos/reporting/metric_reporting_manager_lacros_factory.h"
 #include "chrome/browser/lacros/account_manager/profile_account_manager_factory.h"
 #include "chrome/browser/lacros/cert/cert_db_initializer_factory.h"
 #include "chrome/browser/lacros/remote_apps/remote_apps_proxy_lacros_factory.h"
@@ -1010,7 +1010,7 @@ void ChromeBrowserMainExtraPartsProfiles::
   reporting::ManualTestHeartbeatEventFactory::GetInstance();
 #endif
 #if BUILDFLAG(IS_CHROMEOS_LACROS)
-  reporting::metrics::MetricReportingManagerLacros::EnsureFactoryBuilt();
+  reporting::metrics::MetricReportingManagerLacrosFactory::GetInstance();
 #endif
 #if !BUILDFLAG(IS_ANDROID)
   ResetReportUploaderFactory::GetInstance();

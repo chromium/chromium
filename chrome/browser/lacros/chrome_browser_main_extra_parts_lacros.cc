@@ -12,7 +12,7 @@
 #include "build/chromeos_buildflags.h"
 #include "chrome/browser/browser_process.h"
 #include "chrome/browser/browser_process_platform_part.h"
-#include "chrome/browser/chromeos/reporting/metric_reporting_manager_lacros.h"
+#include "chrome/browser/chromeos/reporting/metric_reporting_manager_lacros_factory.h"
 #include "chrome/browser/chromeos/smart_reader/smart_reader_client_impl.h"
 #include "chrome/browser/chromeos/tablet_mode/tablet_mode_page_behavior.h"
 #include "chrome/browser/chromeos/video_conference/video_conference_manager_client.h"
@@ -303,7 +303,8 @@ void ChromeBrowserMainExtraPartsLacros::PostProfileInit(
   // telemetry metrics and events on managed devices. The reporting manager
   // checks for profile affiliation, so we do not need any additional checks
   // here.
-  ::reporting::metrics::MetricReportingManagerLacros::GetForProfile(profile);
+  ::reporting::metrics::MetricReportingManagerLacrosFactory::GetForProfile(
+      profile);
 
   if (chromeos::BrowserParamsProxy::Get()->SessionType() ==
       crosapi::mojom::SessionType::kAppKioskSession) {
