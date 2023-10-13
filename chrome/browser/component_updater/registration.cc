@@ -155,6 +155,11 @@ void RegisterComponentsForUpdate() {
       DeletePnaclComponent(path);
     }
 #endif  // BUILDFLAG(IS_CHROMEOS_LACROS)
+#if BUILDFLAG(IS_WIN) || BUILDFLAG(IS_MAC)
+    // NaCl and PNaCl are no longer supported on Windows and Mac, clean up
+    // remaining component.
+    DeletePnaclComponent(path);
+#endif  // BUILDFLAG(IS_WIN) || BUILDFLAG(IS_MAC)
   }
   RegisterSSLErrorAssistantComponent(cus);
 
