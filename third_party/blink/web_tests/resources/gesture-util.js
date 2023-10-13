@@ -183,6 +183,12 @@ function waitForScrollEvent(eventTarget, timeoutMs = 2000) {
   return waitForEvent(eventTarget, 'scroll', timeoutMs);
 }
 
+function scrollendEventTarget(scroller) {
+  const isRootScroller =
+    scroller == scroller.ownerDocument.scrollingElement;
+  return isRootScroller ? scroller.ownerDocument : scroller;
+}
+
 function waitForScrollendEvent(eventTarget, timeoutMs = 2000) {
   return waitForEvent(eventTarget, 'scrollend', timeoutMs);
 }
@@ -808,11 +814,12 @@ async function waitForScrollReset(scroller, x = 0, y = 0) {
         scroller.scrollLeft == x) {
       resolve();
     } else {
-      const eventTarget =
-          scroller == document.scrollingElement ? document : scroller;
       scroller.scrollTop = y;
       scroller.scrollLeft = x;
-      waitForScrollendEvent(eventTarget).then(resolve);
+      // Though setting the scroll position is synchronous, it still triggers a
+      // scrollend event, and we need to wait for this event before continuing
+      // so that it is not mistakenly attributed to a later scroll trigger.
+      waitForScrollendEvent(scrollendEventTarget(scroller)).then(resolve);
     }
   });
 }
@@ -897,8 +904,16 @@ function assert_point_within_viewport(x, y, origin = "viewport") {
 // received. Pointercancel replaces pointerup when scrolling takes place. Thus,
 // any scrolling decisions has been made prior to dispatching either of these
 // events.
-function touchDrag(x, y, deltaX, deltaY, origin = "viewport",
-                   prevent_fling_pause_ms = 100) {
+// Supported options:
+//    origin: May be the string "viewport" or an element.
+//    eventTarget: Indicates the target for the pointerup or pointercancel
+//                 event.
+//    prevent_fling_pause_ms: How long to wait after the move to avoid a
+//                            momentum fling.
+function touchDrag(x, y, deltaX, deltaY, options = {}) {
+  const origin = options.origin || "viewport";
+  const eventTarget = options.eventTarget || document;
+  const prevent_fling_pause_ms = options.prevent_fling_pause_ms || 100;
   verifyTestDriverLoaded();
   assert_point_within_viewport(x, y, origin);
   assert_point_within_viewport(x + deltaX, y + deltaY, origin);
@@ -907,13 +922,13 @@ function touchDrag(x, y, deltaX, deltaY, origin = "viewport",
     // actually took place.
     const pointerListener = (event) => {
       if (event.type == 'pointerup' || event.type == 'pointercancel') {
-        document.removeEventListener('pointerup', pointerListener);
-        document.removeEventListener('pointercancel', pointerListener);
+        eventTarget.removeEventListener('pointerup', pointerListener);
+        eventTarget.removeEventListener('pointercancel', pointerListener);
         resolve(event.type);
       }
     };
-    document.addEventListener('pointerup', pointerListener);
-    document.addEventListener('pointercancel', pointerListener);
+    eventTarget.addEventListener('pointerup', pointerListener);
+    eventTarget.addEventListener('pointercancel', pointerListener);
     new test_driver.Actions()
       .addPointer("pointer1", "touch")
       .pointerMove(x, y, { origin: origin })
@@ -925,11 +940,17 @@ function touchDrag(x, y, deltaX, deltaY, origin = "viewport",
   });
 }
 
-function touchScroll(x, y, deltaX, deltaY, scroller,
-                            origin = "viewport") {
-  const scrollPromise = waitForScrollendEvent(scroller);
+// Performs a touch scroll operations.  The promise is resolved when the
+// pointer cancel and scrollend events are received.
+// The supported options are documented in touchDrag.
+function touchScroll(x, y, deltaX, deltaY, scroller, options = {}) {
+  if (!options.eventTarget) {
+    options.eventTarget = scroller.ownerDocument;
+  }
+  const scrollPromise =
+      waitForScrollendEvent(scrollendEventTarget(scroller));
   const dragGesturePromise =
-      touchDrag(x, y, deltaX, deltaY, origin).then(value => {
+      touchDrag(x, y, deltaX, deltaY, options).then(value => {
          assert_equals(value, 'pointercancel',
                        'Expect scrolling to trigger poitnercancel');
       });

@@ -1,37 +1,28 @@
 <!DOCTYPE html>
-<html>
-<head>
-<style type="text/css">
-#greenbox {
-  width: 100px;
-  height: 100px;
-  background: green;
-  padding: 0px;
-  margin: 0px;
-}
-#redbox {
-  width: 100px;
-  height: 100px;
-  background: red;
-  padding: 0px;
-  margin: 0px;
-}
+<style>
+  body {
+    margin: 0;
+  }
 
-td {
-  padding: 0px;
-}
+  .greenbox {
+    width: 100px;
+    height: 100px;
+    background: green;
+  }
+
+  .redbox {
+    width: 100px;
+    height: 100px;
+    background: red;
+  }
 </style>
-</head>
-<body style="margin:0" onload="parent.iframeLoadResolve()" contenteditable>
-<table id="table_to_fill">
-    <tr><td><div id="greenbox"></div></td></tr>
-    <tr><td><div id="redbox"></div></td></tr>
-    <tr><td><div id="greenbox"></div></td></tr>
-    <tr><td><div id="redbox"></div></td></tr>
-    <tr><td><div id="greenbox"></div></td></tr>
-    <tr><td><div id="redbox"></div></td></tr>
-    <tr><td><div id="greenbox"></div></td></tr>
-    <tr><td><div id="redbox"></div></td></tr>
-</table>
+<body onload="parent.iframeLoadResolve()" contenteditable>
+  <div class="greenbox"></div>
+  <div class="redbox"></div>
+  <div class="greenbox"></div>
+  <div class="redbox"></div>
+  <div class="greenbox"></div>
+  <div class="redbox"></div>
+  <div class="greenbox"></div>
+  <div class="redbox"></div>
 </body>
-</html>
