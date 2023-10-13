@@ -39,6 +39,9 @@ public class BaseCarouselSuggestionItemViewBuilder {
     public @interface ViewType {
         /** Carousel item is a TileView instance. */
         public int TILE_VIEW = 0;
+
+        /** Carousel item is a QueryTile instance. */
+        public int QUERY_TILE = 1;
     }
 
     /**
@@ -51,6 +54,10 @@ public class BaseCarouselSuggestionItemViewBuilder {
         SimpleRecyclerViewAdapter adapter = new SimpleRecyclerViewAdapter(new ModelList());
         adapter.registerType(ViewType.TILE_VIEW,
                 BaseCarouselSuggestionItemViewBuilder::createTileView, TileViewBinder::bind);
+        adapter.registerType(
+                ViewType.QUERY_TILE,
+                BaseCarouselSuggestionItemViewBuilder::createQueryTile,
+                (m, v, p) -> {});
         return new BaseCarouselSuggestionView(parent.getContext(), adapter);
     }
 
@@ -77,6 +84,19 @@ public class BaseCarouselSuggestionItemViewBuilder {
             View iconBackground = tile.findViewById(R.id.tile_view_icon_background);
             iconBackground.setBackground(modernizedBackground);
         }
+        return tile;
+    }
+
+    /**
+     * Create a QueryTile element.
+     *
+     * @param parent ViewGroup that will host the QueryTile.
+     * @return A View element hosting QueryTile.
+     */
+    private static View createQueryTile(ViewGroup parent) {
+        Context context = parent.getContext();
+        View tile = LayoutInflater.from(context).inflate(R.layout.query_tile_view, parent, false);
+        tile.setClickable(true);
         return tile;
     }
 }

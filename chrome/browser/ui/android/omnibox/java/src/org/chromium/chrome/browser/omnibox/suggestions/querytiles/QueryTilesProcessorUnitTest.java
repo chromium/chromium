@@ -82,13 +82,19 @@ public class QueryTilesProcessorUnitTest {
     }
 
     @Test
-    public void populateModel() {
+    public void populateModel_oneTileForEveryMatch() {
         var match =
                 AutocompleteMatchBuilder.searchWithType(OmniboxSuggestionType.TILE_SUGGESTION)
                         .build();
-        mProcessor.populateModel(match, mModel, 0);
-
-        // Currently expected to do nothing.
         assertEquals(0, mTiles.size());
+
+        mProcessor.populateModel(match, mModel, 0);
+        assertEquals(1, mTiles.size());
+
+        mProcessor.populateModel(match, mModel, 0);
+        assertEquals(2, mTiles.size());
+
+        mProcessor.populateModel(match, mModel, 0);
+        assertEquals(3, mTiles.size());
     }
 }

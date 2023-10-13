@@ -11,14 +11,17 @@ import androidx.annotation.Nullable;
 
 import org.chromium.chrome.browser.omnibox.styles.OmniboxImageSupplier;
 import org.chromium.chrome.browser.omnibox.suggestions.SuggestionHost;
+import org.chromium.chrome.browser.omnibox.suggestions.carousel.BaseCarouselSuggestionItemViewBuilder;
 import org.chromium.chrome.browser.omnibox.suggestions.carousel.BaseCarouselSuggestionProcessor;
 import org.chromium.chrome.browser.omnibox.suggestions.carousel.BaseCarouselSuggestionViewProperties;
 import org.chromium.components.omnibox.AutocompleteMatch;
 import org.chromium.components.omnibox.OmniboxSuggestionType;
 import org.chromium.components.omnibox.suggestions.OmniboxSuggestionUiType;
+import org.chromium.ui.modelutil.MVCListAdapter.ListItem;
 import org.chromium.ui.modelutil.PropertyModel;
 
 import java.util.ArrayList;
+import java.util.List;
 
 /** SuggestionProcessor for Query Tiles. */
 public class QueryTilesProcessor extends BaseCarouselSuggestionProcessor {
@@ -67,5 +70,10 @@ public class QueryTilesProcessor extends BaseCarouselSuggestionProcessor {
     @Override
     public void populateModel(AutocompleteMatch match, PropertyModel model, int matchIndex) {
         super.populateModel(match, model, matchIndex);
+
+        List<ListItem> tileList = model.get(BaseCarouselSuggestionViewProperties.TILES);
+        var tileModel = new PropertyModel();
+        tileList.add(
+                new ListItem(BaseCarouselSuggestionItemViewBuilder.ViewType.QUERY_TILE, tileModel));
     }
 }
