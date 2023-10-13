@@ -31,17 +31,44 @@ Observable::Observable(ExecutionContext* execution_context,
   DCHECK(RuntimeEnabledFeatures::ObservableAPIEnabled(execution_context));
 }
 
-void Observable::subscribe(Observer* observer) {
+void Observable::subscribe(ScriptState* script_state, Observer* observer) {
+  // Cannot subscribe to an Observable that was constructed in a detached
+  // context, because this might involve reporting an exception with the global,
+  // which relies on a valid `ScriptState`.
+  if (!script_state->ContextIsValid()) {
+    CHECK(!GetExecutionContext());
+    return;
+  }
+
   // Build and initialize a `Subscriber` with a dictionary of `Observer`
   // callbacks.
   Subscriber* subscriber = MakeGarbageCollected<Subscriber>(
       PassKey(), GetExecutionContext(), observer);
 
   DCHECK(subscribe_callback_);
-  // Exceptions are "reported", per
-  // https://html.spec.whatwg.org/C#report-the-exception, and do not interrupt
-  // the ordinary control flow here.
-  subscribe_callback_->InvokeAndReportException(nullptr, subscriber);
+  // Ordinarily we'd just invoke `subscribe_callback_` with
+  // `InvokeAndReportException()`, so that any exceptions get reported to the
+  // global. However, Observables have special semantics with the error handler
+  // passed in via `observer`. Specifically, if the subscribe callback throws an
+  // exception (that doesn't go through the manual `Subscriber::error()`
+  // pathway), we still give that method a first crack at handling the
+  // exception. This does one of two things:
+  //   1. Lets the provided `Observer#error()` handler run with the thrown
+  //      exception, if such handler was provided
+  //   2. Reports the exception to the global if no such handler was provided.
+  // See `Subscriber::error()` for more details.
+  //
+  // In either case, no exception in this path interrupts the ordinary flow of
+  // control. Therefore, `subscribe()` will never synchronously throw an
+  // exception.
+
+  ScriptState::Scope scope(script_state);
+  v8::TryCatch try_catch(script_state->GetIsolate());
+  std::ignore = subscribe_callback_->Invoke(nullptr, subscriber);
+  if (try_catch.HasCaught()) {
+    subscriber->error(script_state, ScriptValue(script_state->GetIsolate(),
+                                                try_catch.Exception()));
+  }
 }
 
 void Observable::Trace(Visitor* visitor) const {

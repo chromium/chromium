@@ -18,6 +18,6 @@ dictionary Observer {
 [Exposed=(Window,Worker), RuntimeEnabled=ObservableAPI]
 interface Observable {
     [CallWith=ScriptState, MeasureAs=ObservableConstructor] constructor(SubscribeCallback callback);
-    void subscribe(optional Observer observer = {});
+    [CallWith=ScriptState] void subscribe(optional Observer observer = {});
 };
 

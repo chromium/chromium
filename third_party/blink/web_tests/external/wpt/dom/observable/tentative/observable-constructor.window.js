@@ -70,3 +70,31 @@ promise_test(async t => {
   `);
 }, "Subscriber.error() does not \"report the exception\" even when an " +
    "`error()` handler is not present, when it is invoked in a detached document");
+
+promise_test(async t => {
+  // Make this available off the global so the child can reach it.
+  window.results = [];
+  const contentWin = await loadIframeAndReturnContentWindow();
+
+  // Set a global error handler on the iframe document's window, and verify that
+  // it is never called (because the thing triggering the error happens when the
+  // document is detached, and "reporting the exception" relies on an attached
+  // document).
+  contentWin.addEventListener("error",
+      t.unreached_func("Error should not be called"), { once: true });
+
+  contentWin.eval(`
+    const parentResults = parent.results;
+    const source = new Observable((subscriber) => {
+      // This should never run.
+      parentResults.push('subscribe');
+    });
+
+    // Detach the iframe and try to subscribe.
+    window.frameElement.remove();
+    parentResults.push('detached');
+    source.subscribe();
+  `);
+
+  assert_array_equals(results, ["detached"], "Subscribe callback is never invoked");
+}, "Cannot subscribe to an Observable in a detached document");

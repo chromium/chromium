@@ -30,7 +30,7 @@ class CORE_EXPORT Observable final : public ScriptWrappable,
   Observable(ExecutionContext*, V8SubscribeCallback*);
 
   // API methods:
-  void subscribe(Observer*);
+  void subscribe(ScriptState*, Observer*);
 
   void Trace(Visitor*) const override;
 
