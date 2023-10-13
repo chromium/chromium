@@ -7,7 +7,6 @@ import("//build/config/features.gni")
 import("//build/config/python.gni")
 import("//build/config/ui.gni")
 import("//chrome/process_version_rc_template.gni")
-import("//components/nacl/features.gni")
 import("//third_party/dawn/scripts/dawn_features.gni")
 import("//third_party/ffmpeg/ffmpeg_options.gni")
 import("//third_party/icu/config.gni")
@@ -187,18 +186,6 @@ action("mini_installer_archive") {
 
   if (fast_archive_compression) {
     args += [ "--fast_archive_compression" ]
-  }
-
-  if (enable_nacl) {
-    inputs += [ "$root_out_dir/nacl_irt_x86_64.nexe" ]
-    deps += [ "//ppapi/native_client:irt" ]
-    if (current_cpu == "x86") {
-      inputs += [
-        "$root_out_dir/nacl64.exe",
-        "$root_out_dir/nacl_irt_x86_32.nexe",
-      ]
-      deps += [ "//components/nacl/broker:nacl64" ]
-    }
   }
 
   if (icu_use_data_file) {

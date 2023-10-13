@@ -59,8 +59,6 @@ class DeleteOldVersionsTest : public testing::Test {
            base::CreateDirectory(version_dir_path.Append(L"Installer")) &&
            base::WriteFile(version_dir_path.Append(L"chrome.dll"),
                            kDummyContent) &&
-           base::WriteFile(version_dir_path.Append(L"nacl64.exe"),
-                           kDummyContent) &&
            base::WriteFile(version_dir_path.Append(L"icudtl.dat"),
                            kDummyContent) &&
            base::WriteFile(version_dir_path.Append(L"Installer\\setup.exe"),
@@ -90,7 +88,6 @@ class DeleteOldVersionsTest : public testing::Test {
                        FilePathSet* file_path_set) {
     file_path_set->insert(base::FilePath(version));
     file_path_set->insert(base::FilePath(version).Append(L"chrome.dll"));
-    file_path_set->insert(base::FilePath(version).Append(L"nacl64.exe"));
     file_path_set->insert(base::FilePath(version).Append(L"icudtl.dat"));
     file_path_set->insert(base::FilePath(version).Append(L"Installer"));
     file_path_set->insert(
