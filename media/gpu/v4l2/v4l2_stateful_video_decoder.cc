@@ -44,23 +44,34 @@ void* Mmap(int fd,
 }
 
 // This method blocks waiting for an event from either |device_fd| or
-// |wake_event|; then if it's of the type POLLIN (meaning there's data) or
-// POLLPRI (meaning a resolution change event) and from |device_fd|, this
-// function calls |dequeue_callback| or |resolution_change_callback|,
-// respectively. Since it blocks, it needs to work on its own
-// SequencedTaskRunner, in this case |event_task_runner_|.
+// |wake_event|; then if it's from |device_fd| and of the type POLLIN
+// (meaning there's data) or POLLPRI (meaning a resolution change event), this
+// function calls |dequeue_callback| or |resolution_change_callback|.
+
+// If |enqueue_callback| is not null, this function also listens to POLLOUT
+// events (meaning the OUTPUT queue can accept encoded chunks); this event
+// could technically be ignored -- except for Hana MTK8173, where for some
+// reason it must be listened to and acted upon it to avoid events from
+// stopping being produced altogether.
+//
+// Since this function blocks, it needs to work on its own SequencedTaskRunner,
+// in this case |event_task_runner_|.
 // TODO(mcasas): Add an error callback too.
 void WaitOnceForEvents(int device_fd,
                        int wake_event,
                        base::OnceClosure dequeue_callback,
+                       base::OnceClosure enqueue_callback,
                        base::OnceClosure resolution_change_callback) {
   VLOGF(5) << "Going to poll()";
 
   // POLLERR, POLLHUP, or POLLNVAL are always return-able and anyway ignored
   // when set in pollfd.events.
   // https://www.kernel.org/doc/html/v5.15/userspace-api/media/v4l/func-poll.html
-  struct pollfd pollfds[] = {{.fd = device_fd, .events = POLLIN | POLLPRI},
-                             {.fd = wake_event, .events = POLLIN}};
+  const short poll_events_to_listen_for =
+      POLLIN | POLLPRI | (enqueue_callback.is_null() ? 0x0 : POLLOUT);
+  struct pollfd pollfds[] = {
+      {.fd = device_fd, .events = poll_events_to_listen_for},
+      {.fd = wake_event, .events = POLLIN}};
   constexpr int kInfiniteTimeout = -1;
   if (HANDLE_EINTR(poll(pollfds, std::size(pollfds), kInfiniteTimeout)) <
       kIoctlOk) {
@@ -71,12 +82,15 @@ void WaitOnceForEvents(int device_fd,
   const auto events_from_device = pollfds[0].revents;
   const auto other_events = pollfds[1].revents;
   // At least Qualcomm Venus likes to bundle events.
-  const auto pollin_or_pollpri_event = events_from_device & (POLLIN | POLLPRI);
-  if (pollin_or_pollpri_event) {
+  if (events_from_device & poll_events_to_listen_for) {
     // "POLLIN There is data to read."
+    // "POLLOUT Normal data may be written without blocking."
     //  https://man7.org/linux/man-pages/man2/poll.2.html
     if (events_from_device & POLLIN) {
       std::move(dequeue_callback).Run();
+    }
+    if (events_from_device & POLLOUT) {
+      std::move(enqueue_callback).Run();
     }
     // "If an event occurred (see ioctl VIDIOC_DQEVENT) then POLLPRI will be set
     //  in the revents field and poll() will return."
@@ -337,6 +351,17 @@ void V4L2StatefulVideoDecoder::Initialize(const VideoDecoderConfig& config,
       std::move(init_cb).Run(DecoderStatus::Codes::kFailedToCreateDecoder);
       return;
     }
+
+    struct v4l2_capability caps = {};
+    if (HandledIoctl(device_fd_.get(), VIDIOC_QUERYCAP, &caps) != kIoctlOk) {
+      PLOG(ERROR) << "Failed querying caps";
+      std::move(init_cb).Run(DecoderStatus::Codes::kFailedToCreateDecoder);
+      return;
+    }
+
+    is_mtk8173_ = base::Contains(
+        std::string(reinterpret_cast<const char*>(caps.card)), "8173");
+    DVLOGF_IF(1, is_mtk8173_) << "This is an MTK8173 device (Hana, Oak)";
   }
 
   // If we've been Initialize()d before, destroy state members.
@@ -801,6 +826,13 @@ void V4L2StatefulVideoDecoder::RearmCAPTUREQueueMonitoring() {
   auto dequeue_callback = base::BindPostTaskToCurrentDefault(base::BindOnce(
       &V4L2StatefulVideoDecoder::TryAndDequeueCAPTUREQueueBuffers,
       weak_ptr_factory_for_events_.GetWeakPtr()));
+  base::OnceClosure enqueue_callback = base::NullCallback();
+  if (is_mtk8173_) {
+    enqueue_callback = base::BindPostTaskToCurrentDefault(base::BindOnce(
+        base::IgnoreResult(
+            &V4L2StatefulVideoDecoder::TryAndEnqueueOUTPUTQueueBuffers),
+        weak_ptr_factory_for_events_.GetWeakPtr()));
+  }
   // |client_| needs to be told of a hypothetical resolution change (to wait for
   // frames in flight etc). Once that's done they will ping us via
   // ApplyResolutionChange().
@@ -828,7 +860,7 @@ void V4L2StatefulVideoDecoder::RearmCAPTUREQueueMonitoring() {
   cancelable_task_tracker_.PostTask(
       event_task_runner_.get(), FROM_HERE,
       base::BindOnce(&WaitOnceForEvents, device_fd_.get(), wake_event_.get(),
-                     std::move(dequeue_callback),
+                     std::move(dequeue_callback), std::move(enqueue_callback),
                      std::move(resolution_change_callback)));
 }
 
