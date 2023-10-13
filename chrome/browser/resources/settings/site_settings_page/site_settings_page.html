@@ -18,7 +18,8 @@
       <template is="dom-if" if="[[enableSafetyHub_]]">
         <settings-safety-hub-module id="safetyHubModule"
             header="[[unusedSitePermissionsHeader_]]"
-            subheader="[[unusedSitePermissionsSubheader_]]">
+            subheader="[[unusedSitePermissionsSubheader_]]"
+            header-icon="settings:shield-with-heart">
           <cr-button id="safetyHubButton" slot="button-container"
               on-click="onSafetyHubButtonClick_">
             $i18n{safetyHubEntryPointButton}

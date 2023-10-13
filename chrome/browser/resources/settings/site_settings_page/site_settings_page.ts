@@ -13,6 +13,7 @@ import 'chrome://resources/cr_elements/cr_link_row/cr_link_row.js';
 import 'chrome://resources/cr_elements/cr_shared_style.css.js';
 import 'chrome://resources/polymer/v3_0/iron-collapse/iron-collapse.js';
 import '/shared/settings/controls/settings_toggle_button.js';
+import '../icons.html.js';
 import '../settings_shared.css.js';
 import './recent_site_permissions.js';
 import './unused_site_permissions.js';

@@ -267,10 +267,15 @@ export class SettingsSafetyHubModuleElement extends
   }
 
   private onHeaderIconChanged_() {
-    if (this.headerIcon === 'cr:check') {
-      this.headerIconColor = 'green';
-    } else {
-      this.headerIconColor = '';
+    switch (this.headerIcon) {
+      case 'cr:check':
+        this.headerIconColor = 'green';
+        break;
+      case 'settings:shield-with-heart':
+        this.headerIconColor = 'blue';
+        break;
+      default:
+        this.headerIconColor = '';
     }
   }
 
