@@ -51,6 +51,7 @@ class ASH_EXPORT FakeNetworkDetailedNetworkView
   NetworkListWifiHeaderView* AddWifiSectionHeader() override;
   HoverHighlightView* AddConfigureNetworkEntry(NetworkType type) override;
   NetworkListMobileHeaderView* AddMobileSectionHeader() override;
+  NetworkListTetherHostsHeaderView* AddTetherHostsSectionHeader() override;
   void UpdateScanningBarVisibility(bool visible) override;
   void ReorderFirstListView(size_t index) override {}
   void ReorderNetworkTopContainer(size_t index) override {}

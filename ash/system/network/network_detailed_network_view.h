@@ -10,6 +10,7 @@
 #include "ash/system/network/network_list_mobile_header_view_impl.h"
 #include "ash/system/network/network_list_network_header_view.h"
 #include "ash/system/network/network_list_network_item_view.h"
+#include "ash/system/network/network_list_tether_hosts_header_view.h"
 #include "ash/system/network/network_list_wifi_header_view_impl.h"
 #include "ash/system/tray/hover_highlight_view.h"
 #include "base/memory/raw_ptr.h"
@@ -91,6 +92,11 @@ class ASH_EXPORT NetworkDetailedNetworkView {
   // network list. The client is expected to use the returned pointer for
   // removing and rearranging the sub-header.
   virtual NetworkListMobileHeaderView* AddMobileSectionHeader() = 0;
+
+  // Creates, adds and returns a Tether Hosts sticky sub-header to the end
+  // of the network list. The client is expected to use the returned pointer
+  // for removing and rearranging the sub-header.
+  virtual NetworkListTetherHostsHeaderView* AddTetherHostsSectionHeader() = 0;
 
   // Updates the scanning bar visibility.
   virtual void UpdateScanningBarVisibility(bool visible) = 0;

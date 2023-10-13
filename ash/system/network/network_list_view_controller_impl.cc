@@ -309,6 +309,27 @@ void NetworkListViewControllerImpl::OnGetNetworkStateList(
     RemoveAndResetViewIfExists(&mobile_separator_view_);
   }
 
+  if (features::IsInstantHotspotRebrandEnabled()) {
+    if (ShouldTetherHostsSectionBeShown()) {
+      if (!tether_hosts_header_view_) {
+        RecordDetailedViewSection(DetailedViewSection::kTetherHostsSection);
+        tether_hosts_header_view_ =
+            network_detailed_network_view()->AddTetherHostsSectionHeader();
+      }
+
+      network_detailed_network_view()->ReorderTetherHostsTopContainer(index++);
+
+      size_t tether_item_index = 0;
+      tether_item_index = CreateItemViewsIfMissingAndReorder(
+          NetworkType::kTether, tether_item_index, networks,
+          &previous_network_views);
+
+      network_detailed_network_view()->ReorderTetherHostsListView(index++);
+    } else {
+      RemoveAndResetViewIfExists(&tether_hosts_header_view_);
+    }
+  }
+
   if (index > 0 && !features::IsQsRevampEnabled()) {
     index = CreateSeparatorIfMissingAndReorder(index, &wifi_separator_view_);
   } else {
@@ -592,10 +613,39 @@ bool NetworkListViewControllerImpl::ShouldMobileDataSectionBeShown() {
     return true;
   }
 
+  if (features::IsInstantHotspotRebrandEnabled()) {
+    return false;
+  }
+
   const DeviceStateType tether_state =
       model()->GetDeviceState(NetworkType::kTether);
 
   // Hide the section if both Cellular and Tether are UNAVAILABLE.
+  if (tether_state == DeviceStateType::kUnavailable) {
+    return false;
+  }
+
+  // Hide the section if Tether is PROHIBITED.
+  if (tether_state == DeviceStateType::kProhibited) {
+    return false;
+  }
+
+  // Secondary users cannot enable Bluetooth, and Tether is only UNINITIALIZED
+  // if Bluetooth is disabled. Hide the section in this case.
+  if (tether_state == DeviceStateType::kUninitialized && IsSecondaryUser()) {
+    return false;
+  }
+
+  return true;
+}
+
+bool NetworkListViewControllerImpl::ShouldTetherHostsSectionBeShown() {
+  // The section should never be shown if the feature flag is disabled.
+  DCHECK(features::IsInstantHotspotRebrandEnabled());
+  const DeviceStateType tether_state =
+      model()->GetDeviceState(NetworkType::kTether);
+
+  // Hide the section if Tether is UNAVAILABLE.
   if (tether_state == DeviceStateType::kUnavailable) {
     return false;
   }

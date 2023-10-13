@@ -12,6 +12,7 @@
 #include "ash/system/network/network_list_mobile_header_view.h"
 #include "ash/system/network/network_list_network_header_view.h"
 #include "ash/system/network/network_list_network_item_view.h"
+#include "ash/system/network/network_list_tether_hosts_header_view.h"
 #include "ash/system/network/network_list_view_controller.h"
 #include "ash/system/network/network_list_wifi_header_view.h"
 #include "ash/system/network/tray_network_state_observer.h"
@@ -75,7 +76,8 @@ class ASH_EXPORT NetworkListViewControllerImpl
     kWifiSectionHeader = 17,
     kWifiStatusMessage = 18,
     kConnectionWarningSystemIcon = 19,
-    kConnectionWarningManagedIcon = 20
+    kConnectionWarningManagedIcon = 20,
+    kTetherHostsSectionHeader = 21
   };
 
   // Map of network guids and their corresponding list item views.
@@ -112,6 +114,9 @@ class ASH_EXPORT NetworkListViewControllerImpl
 
   // Returns true if mobile data section should be added to view.
   bool ShouldMobileDataSectionBeShown();
+
+  // Returns true if tether hosts section should be added to view.
+  bool ShouldTetherHostsSectionBeShown();
 
   // Creates if missing and adds a Mobile or Wifi separator to the view.
   // Also reorders separator view in network list. A reference to the
@@ -251,6 +256,11 @@ class ASH_EXPORT NetworkListViewControllerImpl
   // for: #addr-of
   RAW_PTR_EXCLUSION TrayInfoLabel* wifi_status_message_ = nullptr;
 
+  // This field is not a raw_ptr<> because it was filtered by the rewriter
+  // for: #addr-of
+  RAW_PTR_EXCLUSION NetworkListTetherHostsHeaderView*
+      tether_hosts_header_view_ = nullptr;
+
   // Owned by views hierarchy.
   // This field is not a raw_ptr<> because it was filtered by the rewriter
   // for: #addr-of
@@ -270,6 +280,7 @@ class ASH_EXPORT NetworkListViewControllerImpl
   bool has_tether_networks_;
   bool is_mobile_network_enabled_;
   bool is_wifi_enabled_;
+  bool is_tether_enabled_;
   std::string connected_vpn_guid_;
 
   // Can be nullopt while the managed properties of the network are being

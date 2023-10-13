@@ -39,10 +39,11 @@ using chromeos::network_config::mojom::InhibitReason;
 
 constexpr auto kMainContainerMargins = gfx::Insets::TLBR(2, 0, 0, 0);
 constexpr auto kTopContainerBorder = gfx::Insets::TLBR(4, 0, 4, 4);
+constexpr auto kBetweenContainerMargins = gfx::Insets::TLBR(6, 0, 0, 0);
 
-// The following getter methods should only be used for `NetworkType::kWiFi`,
-// `NetworkType::kMobile`, or `NetworkType::kCellular` types otherwise a crash
-// will occur.
+// The following getter methods should only be used for
+// `NetworkType::kWiFi`, `NetworkType::kMobile`, or `NetworkType::kCellular`
+// types otherwise a crash will occur.
 std::u16string GetLabelForWifiAndMobileNetwork(NetworkType type) {
   switch (type) {
     case NetworkType::kWiFi:
@@ -158,7 +159,7 @@ NetworkDetailedNetworkViewImpl::AddWifiSectionHeader() {
             RoundedContainer::Behavior::kTopRounded));
     wifi_top_container_->SetBorderInsets(kTopContainerBorder);
     wifi_top_container_->SetProperty(views::kMarginsKey,
-                                     gfx::Insets::TLBR(6, 0, 0, 0));
+                                     kBetweenContainerMargins);
   }
   return (features::IsQsRevampEnabled() ? wifi_top_container_.get()
                                         : scroll_content())
@@ -180,6 +181,22 @@ NetworkDetailedNetworkViewImpl::AddMobileSectionHeader() {
           std::make_unique<NetworkListMobileHeaderViewImpl>(/*delegate=*/this));
 }
 
+NetworkListTetherHostsHeaderView*
+NetworkDetailedNetworkViewImpl::AddTetherHostsSectionHeader() {
+  DCHECK(features::IsInstantHotspotRebrandEnabled());
+  if (!tether_hosts_top_container_) {
+    tether_hosts_top_container_ =
+        scroll_content()->AddChildView(std::make_unique<RoundedContainer>(
+            RoundedContainer::Behavior::kTopRounded));
+    tether_hosts_top_container_->SetBorderInsets(kTopContainerBorder);
+    tether_hosts_top_container_->SetProperty(views::kMarginsKey,
+                                             kBetweenContainerMargins);
+  }
+  return tether_hosts_top_container_.get()->AddChildView(
+      std::make_unique<NetworkListTetherHostsHeaderView>(
+          /*delegate=*/this));
+}
+
 views::View* NetworkDetailedNetworkViewImpl::GetNetworkList(NetworkType type) {
   if (!features::IsQsRevampEnabled()) {
     return scroll_content();
@@ -199,6 +216,19 @@ views::View* NetworkDetailedNetworkViewImpl::GetNetworkList(NetworkType type) {
       return wifi_network_list_view_;
     case NetworkType::kMobile:
     case NetworkType::kTether:
+      if (features::IsInstantHotspotRebrandEnabled()) {
+        if (!tether_hosts_network_list_view_) {
+          tether_hosts_network_list_view_ =
+              scroll_content()->AddChildView(std::make_unique<RoundedContainer>(
+                  RoundedContainer::Behavior::kBottomRounded));
+
+          // Add a small empty space, like a separator, between the containers.
+          tether_hosts_network_list_view_->SetProperty(views::kMarginsKey,
+                                                       kMainContainerMargins);
+        }
+        return tether_hosts_network_list_view_;
+      }
+      [[fallthrough]];
     case NetworkType::kCellular:
       if (!mobile_network_list_view_) {
         mobile_network_list_view_ =

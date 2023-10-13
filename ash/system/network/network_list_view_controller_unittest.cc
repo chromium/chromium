@@ -82,6 +82,7 @@ const std::string kCellularName2 = "cellular_2";
 const char kCellularTestIccid[] = "1234567890";
 
 const char kTetherName[] = "tether";
+const char kTetherName2[] = "tether_2";
 
 const std::string kEthernetName = "ethernet";
 const std::string kEthernetName2 = "ethernet_2";
@@ -227,7 +228,9 @@ class NetworkListViewControllerTest
 
   bool IsQsRevampEnabled() { return std::get<0>(GetParam()); }
 
-  bool IsInstantHotspotRebrandEnabled() { return std::get<1>(GetParam()); }
+  bool IsInstantHotspotRebrandEnabled() {
+    return IsQsRevampEnabled() && std::get<1>(GetParam());
+  }
 
   void TearDown() override {
     network_list_view_controller_impl_.reset();
@@ -303,6 +306,10 @@ class NetworkListViewControllerTest
     return network_list_view_controller_impl_->wifi_separator_view_;
   }
 
+  NetworkListTetherHostsHeaderView* GetTetherHostsSubHeader() {
+    return network_list_view_controller_impl_->tether_hosts_header_view_;
+  }
+
   TrayInfoLabel* GetMobileStatusMessage() {
     return network_list_view_controller_impl_->mobile_status_message_;
   }
@@ -335,8 +342,9 @@ class NetworkListViewControllerTest
   // Checks that network list items are in the right order. Wifi section
   // is always shown.
   void CheckNetworkListOrdering(int ethernet_network_count,
-                                int mobile_network_count,
-                                int wifi_network_count) {
+                                int wifi_network_count,
+                                int cellular_network_count = 0,
+                                int tether_network_count = 0) {
     EXPECT_THAT(GetWifiSubHeader(), NotNull());
 
     if (IsQsRevampEnabled()) {
@@ -361,12 +369,33 @@ class NetworkListViewControllerTest
                              /*guid=*/absl::nullopt);
       }
 
+      if (cellular_network_count == -1 && tether_network_count == -1) {
+        return;
+      }
+
       index = 0;
-      // Expect that the view at `index` is a network item, and that it is an
-      // mobile network.
-      for (int i = 0; i < mobile_network_count; i++) {
-        CheckNetworkListItem(NetworkType::kMobile, index++,
+      // Expect that the view at `index` is a network item, and that it is a
+      // cellular network.
+      const NetworkType type = IsInstantHotspotRebrandEnabled()
+                                   ? NetworkType::kCellular
+                                   : NetworkType::kMobile;
+      // const size_t count = cellular_network_count + tether_network_count;
+      const size_t count =
+          cellular_network_count +
+          (IsInstantHotspotRebrandEnabled() ? 0 : tether_network_count);
+      for (unsigned long i = 0; i < count; i++) {
+        CheckNetworkListItem(type, index++,
                              /*guid=*/absl::nullopt);
+      }
+
+      if (IsInstantHotspotRebrandEnabled()) {
+        index = 0;
+        // Expect that the view at `index` is a network item, and that it is a
+        // tether network.
+        for (int i = 0; i < tether_network_count; i++) {
+          CheckNetworkListItem(NetworkType::kMobile, index++,
+                               /*guid=*/absl::nullopt);
+        }
       }
       return;
     }
@@ -380,9 +409,9 @@ class NetworkListViewControllerTest
                            /*guid=*/absl::nullopt);
     }
 
-    // Mobile data section. If `mobile_network_count` is equal to -1
-    // Mobile device is not available.
-    if (mobile_network_count != -1) {
+    // Mobile data section. If `cellular_network_count` is equal to -1
+    // and tether_network_count is equal to -1 mobile device is not available.
+    if (cellular_network_count != -1 && tether_network_count != -1) {
       ASSERT_THAT(GetMobileSubHeader(), NotNull());
       if (index > 0) {
         // Expect that the mobile network separator exists.
@@ -397,7 +426,7 @@ class NetworkListViewControllerTest
                   GetMobileSubHeader());
       }
 
-      for (int i = 0; i < mobile_network_count; i++) {
+      for (int i = 0; i < cellular_network_count + tether_network_count; i++) {
         CheckNetworkListItem(NetworkType::kMobile, index,
                              /*guid=*/absl::nullopt);
         EXPECT_STREQ(network_list(NetworkType::kMobile)
@@ -407,7 +436,7 @@ class NetworkListViewControllerTest
                      kNetworkListNetworkItemView);
       }
 
-      if (!mobile_network_count) {
+      if (!cellular_network_count && !tether_network_count) {
         // No mobile networks message is shown.
         ASSERT_THAT(GetMobileStatusMessage(), NotNull());
         index++;
@@ -570,6 +599,100 @@ INSTANTIATE_TEST_SUITE_P(All,
                          NetworkListViewControllerTest,
                          testing::Combine(testing::Bool(), testing::Bool()));
 
+TEST_P(NetworkListViewControllerTest, TetherHostsSectionIsShown) {
+  EXPECT_THAT(GetTetherHostsSubHeader(), IsNull());
+
+  histogram_tester.ExpectBucketCount("ChromeOS.SystemTray.Network.SectionShown",
+                                     DetailedViewSection::kTetherHostsSection,
+                                     0);
+
+  auto properties =
+      chromeos::network_config::mojom::DeviceStateProperties::New();
+  properties->type = NetworkType::kTether;
+  properties->device_state = DeviceStateType::kEnabled;
+  cros_network()->SetDeviceProperties(properties.Clone());
+
+  // Add tether network
+  cros_network()->AddNetworkAndDevice(
+      CrosNetworkConfigTestHelper::CreateStandaloneNetworkProperties(
+          kTetherName, NetworkType::kTether, ConnectionStateType::kConnected));
+
+  if (IsInstantHotspotRebrandEnabled()) {
+    ASSERT_THAT(GetTetherHostsSubHeader(), NotNull());
+    histogram_tester.ExpectBucketCount(
+        "ChromeOS.SystemTray.Network.SectionShown",
+        DetailedViewSection::kTetherHostsSection, 1);
+    histogram_tester.ExpectBucketCount(
+        "ChromeOS.SystemTray.Network.SectionShown",
+        DetailedViewSection::kMobileSection, 0);
+  } else {
+    ASSERT_THAT(GetTetherHostsSubHeader(), IsNull());
+    histogram_tester.ExpectBucketCount(
+        "ChromeOS.SystemTray.Network.SectionShown",
+        DetailedViewSection::kTetherHostsSection, 0);
+    histogram_tester.ExpectBucketCount(
+        "ChromeOS.SystemTray.Network.SectionShown",
+        DetailedViewSection::kMobileSection, 1);
+    return;
+  }
+
+  // Add cellular network
+  cros_network()->AddNetworkAndDevice(
+      CrosNetworkConfigTestHelper::CreateStandaloneNetworkProperties(
+          kCellularName, NetworkType::kCellular,
+          ConnectionStateType::kConnected));
+
+  ASSERT_THAT(GetMobileSubHeader(), NotNull());
+  ASSERT_THAT(GetTetherHostsSubHeader(), NotNull());
+  histogram_tester.ExpectBucketCount("ChromeOS.SystemTray.Network.SectionShown",
+                                     DetailedViewSection::kMobileSection, 1);
+  histogram_tester.ExpectBucketCount("ChromeOS.SystemTray.Network.SectionShown",
+                                     DetailedViewSection::kTetherHostsSection,
+                                     1);
+
+  // Tether device is prohibited.
+  properties->type = NetworkType::kTether;
+  properties->device_state = DeviceStateType::kProhibited;
+  cros_network()->SetDeviceProperties(properties.Clone());
+  EXPECT_THAT(GetMobileSubHeader(), NotNull());
+  EXPECT_THAT(GetTetherHostsSubHeader(), IsNull());
+  histogram_tester.ExpectBucketCount("ChromeOS.SystemTray.Network.SectionShown",
+                                     DetailedViewSection::kMobileSection, 1);
+  histogram_tester.ExpectBucketCount("ChromeOS.SystemTray.Network.SectionShown",
+                                     DetailedViewSection::kTetherHostsSection,
+                                     1);
+  // Tether device is uninitialized but is primary user.
+  properties->device_state = DeviceStateType::kUninitialized;
+  cros_network()->SetDeviceProperties(properties.Clone());
+  ASSERT_THAT(GetMobileSubHeader(), NotNull());
+  EXPECT_THAT(GetTetherHostsSubHeader(), NotNull());
+  EXPECT_TRUE(network_list(NetworkType::kMobile)->GetVisible());
+  EXPECT_TRUE(network_list(NetworkType::kTether)->GetVisible());
+  histogram_tester.ExpectBucketCount("ChromeOS.SystemTray.Network.SectionShown",
+                                     DetailedViewSection::kMobileSection, 1);
+  histogram_tester.ExpectBucketCount("ChromeOS.SystemTray.Network.SectionShown",
+                                     DetailedViewSection::kTetherHostsSection,
+                                     2);
+
+  // Simulate login as secondary user.
+  LoginAsSecondaryUser();
+  cros_network()->ClearNetworksAndDevices();
+
+  EXPECT_THAT(GetMobileSubHeader(), IsNull());
+  histogram_tester.ExpectBucketCount("ChromeOS.SystemTray.Network.SectionShown",
+                                     DetailedViewSection::kMobileSection, 1);
+
+  // Add tether networks
+  cros_network()->AddNetworkAndDevice(
+      CrosNetworkConfigTestHelper::CreateStandaloneNetworkProperties(
+          kTetherName, NetworkType::kTether, ConnectionStateType::kConnected));
+
+  ASSERT_THAT(GetMobileSubHeader(), IsNull());
+  ASSERT_THAT(GetTetherHostsSubHeader(), NotNull());
+  histogram_tester.ExpectBucketCount("ChromeOS.SystemTray.Network.SectionShown",
+                                     DetailedViewSection::kMobileSection, 1);
+}
+
 TEST_P(NetworkListViewControllerTest, MobileDataSectionIsShown) {
   EXPECT_THAT(GetMobileSubHeader(), IsNull());
   EXPECT_THAT(GetMobileSeparator(), IsNull());
@@ -596,6 +719,10 @@ TEST_P(NetworkListViewControllerTest, MobileDataSectionIsShown) {
   EXPECT_THAT(GetMobileSubHeader(), IsNull());
   histogram_tester.ExpectBucketCount("ChromeOS.SystemTray.Network.SectionShown",
                                      DetailedViewSection::kMobileSection, 1);
+
+  if (IsInstantHotspotRebrandEnabled()) {
+    return;
+  }
 
   // Add tether networks
   cros_network()->AddNetworkAndDevice(
@@ -821,8 +948,9 @@ TEST_P(NetworkListViewControllerTest, HasCorrectMobileNetworkList) {
   cros_network()->SetDeviceProperties(properties.Clone());
 
   CheckNetworkListOrdering(/*ethernet_network_count=*/0,
-                           /*mobile_network_count=*/0,
-                           /*wifi_network_count=*/0);
+                           /*wifi_network_count=*/0,
+                           /*cellular_network_count=*/0,
+                           /*tether_network_count=*/0);
 
   cros_network()->AddNetworkAndDevice(
       CrosNetworkConfigTestHelper::CreateStandaloneNetworkProperties(
@@ -830,8 +958,9 @@ TEST_P(NetworkListViewControllerTest, HasCorrectMobileNetworkList) {
           ConnectionStateType::kConnected));
 
   CheckNetworkListOrdering(/*ethernet_network_count=*/0,
-                           /*mobile_network_count=*/1,
-                           /*wifi_network_count=*/0);
+                           /*wifi_network_count=*/0,
+                           /*cellular_network_count=*/1,
+                           /*tether_network_count=*/0);
   if (IsQsRevampEnabled()) {
     CheckNetworkListItem(NetworkType::kCellular, /*index=*/0u,
                          /*guid=*/kCellularName);
@@ -846,8 +975,9 @@ TEST_P(NetworkListViewControllerTest, HasCorrectMobileNetworkList) {
           ConnectionStateType::kConnected));
 
   CheckNetworkListOrdering(/*ethernet_network_count=*/0,
-                           /*mobile_network_count=*/2,
-                           /*wifi_network_count=*/0);
+                           /*wifi_network_count=*/0,
+                           /*cellular_network_count=*/2,
+                           /*tether_network_count=*/0);
 
   if (IsQsRevampEnabled()) {
     CheckNetworkListItem(NetworkType::kCellular, /*index=*/1u,
@@ -862,8 +992,10 @@ TEST_P(NetworkListViewControllerTest, HasCorrectMobileNetworkList) {
                                   ConnectionStateType::kNotConnected);
 
   CheckNetworkListOrdering(/*ethernet_network_count=*/0,
-                           /*mobile_network_count=*/2,
-                           /*wifi_network_count=*/0);
+                           /*wifi_network_count=*/0,
+                           /*cellular_network_count=*/2,
+                           /*tether_network_count=*/0);
+
   if (IsQsRevampEnabled()) {
     CheckNetworkListItem(NetworkType::kCellular, /*index=*/0u,
                          /*guid=*/kCellularName);
@@ -886,17 +1018,14 @@ TEST_P(NetworkListViewControllerTest, HasCorrectMobileNetworkList) {
 
   if (IsInstantHotspotRebrandEnabled() && IsQsRevampEnabled()) {
     CheckNetworkListOrdering(/*ethernet_network_count=*/0,
-                             /*mobile_network_count=*/0,
                              /*wifi_network_count=*/0);
   } else {
     CheckNetworkListOrdering(/*ethernet_network_count=*/0,
-                             /*mobile_network_count=*/1,
-                             /*wifi_network_count=*/0);
+                             /*wifi_network_count=*/0,
+                             /*cellular_network_count=*/0,
+                             /*tether_network_count=*/1);
   }
 
-  if (IsInstantHotspotRebrandEnabled()) {
-    return;
-  }
   if (IsQsRevampEnabled()) {
     CheckNetworkListItem(NetworkType::kTether, /*index=*/0u,
                          /*guid=*/kTetherName);
@@ -920,8 +1049,9 @@ TEST_P(NetworkListViewControllerTest, HasCorrectEthernetNetworkList) {
                                      DetailedViewSection::kEthernetSection, 1);
 
   CheckNetworkListOrdering(/*ethernet_network_count=*/1,
-                           /*mobile_network_count=*/-1,
-                           /*wifi_network_count=*/0);
+                           /*wifi_network_count=*/0,
+                           /*cellular_network_count=*/-1,
+                           /*tether_network_count=*/-1);
   CheckNetworkListItem(NetworkType::kEthernet, /*index=*/0u,
                        /*guid=*/kEthernetName);
 
@@ -932,8 +1062,9 @@ TEST_P(NetworkListViewControllerTest, HasCorrectEthernetNetworkList) {
           ConnectionStateType::kConnected));
 
   CheckNetworkListOrdering(/*ethernet_network_count=*/1,
-                           /*mobile_network_count=*/1,
-                           /*wifi_network_count=*/0);
+                           /*wifi_network_count=*/0,
+                           /*cellular_network_count=*/1,
+                           /*tether_network_count=*/0);
 
   if (IsQsRevampEnabled()) {
     CheckNetworkListItem(NetworkType::kCellular, /*index=*/0u,
@@ -957,8 +1088,9 @@ TEST_P(NetworkListViewControllerTest, HasCorrectEthernetNetworkList) {
                                      DetailedViewSection::kEthernetSection, 1);
 
   CheckNetworkListOrdering(/*ethernet_network_count=*/2,
-                           /*mobile_network_count=*/1,
-                           /*wifi_network_count=*/0);
+                           /*wifi_network_count=*/0,
+                           /*cellular_network_count=*/1,
+                           /*tether_network_count*/ 0);
   if (IsQsRevampEnabled()) {
     CheckNetworkListItem(NetworkType::kCellular, /*index=*/0u,
                          /*guid=*/kCellularName);
@@ -970,6 +1102,81 @@ TEST_P(NetworkListViewControllerTest, HasCorrectEthernetNetworkList) {
   }
 }
 
+TEST_P(NetworkListViewControllerTest, HasCorrectTetherHostsNetworkList) {
+  // The TetherHostsSectionIsShown test checks that this section is not shown if
+  // the QsRevamp flag is not enabled.
+  if (!IsQsRevampEnabled()) {
+    return;
+  }
+
+  EXPECT_EQ(0u, network_list(NetworkType::kTether)->children().size());
+  EXPECT_THAT(GetTetherHostsSubHeader(), IsNull());
+
+  auto properties =
+      chromeos::network_config::mojom::DeviceStateProperties::New();
+  properties->type = NetworkType::kTether;
+  properties->device_state = DeviceStateType::kEnabled;
+  cros_network()->SetDeviceProperties(properties.Clone());
+
+  CheckNetworkListOrdering(/*ethernet_network_count=*/0,
+                           /*wifi_network_count=*/0,
+                           /*cellular_network_count=*/0,
+                           /*tether_network_count=*/0);
+
+  // Add tether host.
+  cros_network()->AddNetworkAndDevice(
+      CrosNetworkConfigTestHelper::CreateStandaloneNetworkProperties(
+          kTetherName, NetworkType::kTether, ConnectionStateType::kConnected));
+
+  if (IsInstantHotspotRebrandEnabled()) {
+    EXPECT_THAT(GetMobileSubHeader(), IsNull());
+    CheckNetworkListOrdering(/*ethernet_network_count=*/0,
+                             /*wifi_network_count=*/0,
+                             /*cellular_network_count=*/0,
+                             /*tether_network_count=*/1);
+  } else {
+    CheckNetworkListOrdering(/*ethernet_network_count=*/0,
+                             /*wifi_network_count=*/0,
+                             /*cellular_network_count=*/0,
+                             /*tether_network_count=*/0);
+  }
+
+  // Add mobile network.
+  cros_network()->AddNetworkAndDevice(
+      CrosNetworkConfigTestHelper::CreateStandaloneNetworkProperties(
+          kCellularName, NetworkType::kCellular,
+          ConnectionStateType::kConnected));
+
+  if (features::IsInstantHotspotRebrandEnabled()) {
+    CheckNetworkListOrdering(/*ethernet_network_count=*/0,
+                             /*wifi_network_count=*/0,
+                             /*cellular_network_count=*/1,
+                             /*tether_network_count=*/1);
+  } else {
+    CheckNetworkListOrdering(/*ethernet_network_count=*/0,
+                             /*wifi_network_count=*/0,
+                             /*cellular_network_count=*/0,
+                             /*tether_network_count=*/0);
+  }
+
+  // Add another tether host.
+  cros_network()->AddNetworkAndDevice(
+      CrosNetworkConfigTestHelper::CreateStandaloneNetworkProperties(
+          kTetherName2, NetworkType::kTether, ConnectionStateType::kConnected));
+
+  if (features::IsInstantHotspotRebrandEnabled()) {
+    CheckNetworkListOrdering(/*ethernet_network_count=*/0,
+                             /*wifi_network_count=*/0,
+                             /*cellular_network_count=*/1,
+                             /*tether_network_count=*/2);
+  } else {
+    CheckNetworkListOrdering(/*ethernet_network_count=*/0,
+                             /*wifi_network_count=*/0,
+                             /*cellular_network_count=*/0,
+                             /*tether_network_count=*/0);
+  }
+}
+
 TEST_P(NetworkListViewControllerTest, HasCorrectWifiNetworkList) {
   // Add an enabled wifi device.
   cros_network()->AddNetworkAndDevice(
@@ -977,8 +1184,9 @@ TEST_P(NetworkListViewControllerTest, HasCorrectWifiNetworkList) {
           kWifiName, NetworkType::kWiFi, ConnectionStateType::kNotConnected));
 
   CheckNetworkListOrdering(/*ethernet_network_count=*/0,
-                           /*mobile_network_count=*/-1,
-                           /*wifi_network_count=*/1);
+                           /*wifi_network_count=*/1,
+                           /*cellular_network_count=*/-1,
+                           /*tether_network_count=*/-1);
   if (IsQsRevampEnabled()) {
     EXPECT_EQ(u"Unknown networks",
               static_cast<views::Label*>(
@@ -1001,8 +1209,9 @@ TEST_P(NetworkListViewControllerTest, HasCorrectWifiNetworkList) {
           ConnectionStateType::kConnected));
 
   CheckNetworkListOrdering(/*ethernet_network_count=*/0,
-                           /*mobile_network_count=*/1,
-                           /*wifi_network_count=*/1);
+                           /*wifi_network_count=*/1,
+                           /*cellular_network_count=*/1,
+                           /*tether_network_count=*/0);
 
   if (IsQsRevampEnabled()) {
     EXPECT_EQ(u"Unknown networks",
@@ -1027,8 +1236,9 @@ TEST_P(NetworkListViewControllerTest, HasCorrectWifiNetworkList) {
           kWifiName2, NetworkType::kWiFi, ConnectionStateType::kNotConnected));
 
   CheckNetworkListOrdering(/*ethernet_network_count=*/0,
-                           /*mobile_network_count=*/1,
-                           /*wifi_network_count=*/2);
+                           /*wifi_network_count=*/2,
+                           /*cellular_network_count*/ 1,
+                           /*tether_network_count*/ 0);
   if (IsQsRevampEnabled()) {
     EXPECT_EQ(u"Unknown networks",
               static_cast<views::Label*>(
@@ -1065,8 +1275,9 @@ TEST_P(NetworkListViewControllerTest,
           kWifiName, NetworkType::kWiFi, ConnectionStateType::kNotConnected));
 
   CheckNetworkListOrdering(/*ethernet_network_count=*/0,
-                           /*mobile_network_count=*/-1,
-                           /*wifi_network_count=*/1);
+                           /*wifi_network_count=*/1,
+                           /*cellular_network_count=*/-1,
+                           /*tether_network_count=*/-1);
 
   // Adds mobile network.
   cros_network()->AddNetworkAndDevice(
@@ -1075,8 +1286,9 @@ TEST_P(NetworkListViewControllerTest,
           ConnectionStateType::kConnected));
 
   CheckNetworkListOrdering(/*ethernet_network_count=*/0,
-                           /*mobile_network_count=*/1,
-                           /*wifi_network_count=*/1);
+                           /*wifi_network_count=*/1,
+                           /*cellular_network_count=*/1,
+                           /*tether_network_count=*/0);
 
   // Lets the network list scroll to a random number.
   network_detailed_network_view()->ScrollToPosition(23);
@@ -1116,8 +1328,9 @@ TEST_P(NetworkListViewControllerTest,
           "wifi_6", NetworkType::kWiFi, ConnectionStateType::kNotConnected));
 
   CheckNetworkListOrdering(/*ethernet_network_count=*/0,
-                           /*mobile_network_count=*/1,
-                           /*wifi_network_count=*/4);
+                           /*wifi_network_count=*/4,
+                           /*cellular_network_count=*/1,
+                           /*tether_network_count=*/0);
   EXPECT_EQ(37, network_detailed_network_view()->GetScrollPosition());
 }
 
@@ -1227,11 +1440,13 @@ TEST_P(NetworkListViewControllerTest,
   properties->device_state = DeviceStateType::kDisabled;
   cros_network()->SetDeviceProperties(properties.Clone());
 
-  if (features::IsQsRevampEnabled()) {
+  if (IsInstantHotspotRebrandEnabled()) {
     // No mobile network list is shown when device is disabled.
+    EXPECT_FALSE(network_list(NetworkType::kCellular)->GetVisible());
+  } else if (features::IsQsRevampEnabled()) {
     EXPECT_FALSE(network_list(NetworkType::kMobile)->GetVisible());
   } else {
-    EXPECT_TRUE(network_list(NetworkType::kMobile)->GetVisible());
+    EXPECT_TRUE(network_list(NetworkType::kCellular)->GetVisible());
     // Message is shown when device is disabled.
     ASSERT_THAT(GetMobileStatusMessage(), NotNull());
     EXPECT_EQ(
@@ -1258,6 +1473,12 @@ TEST_P(NetworkListViewControllerTest,
 }
 
 TEST_P(NetworkListViewControllerTest, HasCorrectTetherStatusMessage) {
+  if (IsInstantHotspotRebrandEnabled()) {
+    return;
+  }
+  // TODO(b/295543827):Display error message if Bluetooth is disabled.
+  // TODO(b/298656342): Display error message if no tether devices are found.
+
   // Mobile section is not shown if Tether network is unavailable.
   EXPECT_THAT(GetMobileStatusMessage(), IsNull());
 
@@ -1324,7 +1545,9 @@ TEST_P(NetworkListViewControllerTest, HasCorrectTetherStatusMessage) {
     properties->device_state = DeviceStateType::kDisabled;
     cros_network()->SetDeviceProperties(properties.Clone());
     // No mobile network list is shown when device is disabled.
-    EXPECT_FALSE(network_list(NetworkType::kMobile)->GetVisible());
+    if (!IsInstantHotspotRebrandEnabled()) {
+      EXPECT_FALSE(network_list(NetworkType::kMobile)->GetVisible());
+    }
   }
 }
 
@@ -1360,8 +1583,9 @@ TEST_P(NetworkListViewControllerTest, HasCorrectWifiStatusMessage) {
           kWifiName, NetworkType::kWiFi, ConnectionStateType::kConnected));
 
   CheckNetworkListOrdering(/*ethernet_network_count=*/0,
-                           /*mobile_network_count=*/-1,
-                           /*wifi_network_count=*/1);
+                           /*wifi_network_count=*/1,
+                           /*cellular_network_count=*/-1,
+                           /*tether_network_count=*/-1);
 }
 
 TEST_P(NetworkListViewControllerTest, ConnectionWarningSystemIconVpn) {
