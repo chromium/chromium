@@ -63,7 +63,7 @@ void RecordDeleteAndStartOverResult(DeleteAndStartOverResult result) {
 // possible.
 BASE_FEATURE(kServiceWorkerScopeCache,
              "ServiceWorkerScopeCache",
-             base::FEATURE_DISABLED_BY_DEFAULT);
+             base::FEATURE_ENABLED_BY_DEFAULT);
 
 // The scope URL count limit per the storage key. This must be set less than or
 // equal to 'kServiceWorkerScopeCacheHardLimitPerKey'.
