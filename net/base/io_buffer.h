@@ -81,8 +81,13 @@ class NET_EXPORT IOBuffer : public base::RefCountedThreadSafe<IOBuffer> {
 
   explicit IOBuffer(size_t buffer_size);
 
-  char* data() const { return data_; }
-  uint8_t* bytes() const { return reinterpret_cast<uint8_t*>(data()); }
+  char* data() { return data_; }
+  const char* data() const { return data_; }
+
+  uint8_t* bytes() { return reinterpret_cast<uint8_t*>(data()); }
+  const uint8_t* bytes() const {
+    return reinterpret_cast<const uint8_t*>(data());
+  }
 
  protected:
   friend class base::RefCountedThreadSafe<IOBuffer>;

@@ -27,7 +27,7 @@ namespace {
 
 using ::testing::ElementsAreArray;
 
-std::tuple<char*, size_t> AsTuple(const IOBufferWithSize* buf) {
+std::tuple<const char*, size_t> AsTuple(const IOBufferWithSize* buf) {
   return std::make_tuple(buf->data(), buf->size());
 }
 
