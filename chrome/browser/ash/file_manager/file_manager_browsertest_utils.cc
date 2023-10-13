@@ -170,6 +170,11 @@ TestCase& TestCase::EnableSearchV2() {
   return *this;
 }
 
+TestCase& TestCase::EnableLocalImageSearch() {
+  options.enable_local_image_search = true;
+  return *this;
+}
+
 TestCase& TestCase::EnableFSPsInRecents() {
   options.enable_fsps_in_recents = true;
   return *this;
@@ -207,11 +212,6 @@ TestCase& TestCase::SetTestAccountType(TestAccountType test_account_type) {
 
 TestCase& TestCase::EnableCrosComponents() {
   options.enable_cros_components = true;
-  return *this;
-}
-
-TestCase& TestCase::EnableImageContentSearch() {
-  options.enable_image_content_search = true;
   return *this;
 }
 
@@ -276,6 +276,10 @@ std::string TestCase::GetFullName() const {
 
   if (options.enable_search_v2) {
     full_name += "_SearchV2";
+  }
+
+  if (options.enable_local_image_search) {
+    full_name += "_LocalImageSearch";
   }
 
   if (options.enable_fsps_in_recents) {

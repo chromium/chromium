@@ -1539,7 +1539,8 @@ void FileManagerPrivateInternalSearchFilesFunction::RunImageSearchByQuery(
     OnResultsReadyCallback callback) {
   // If the feature is not enabled or the query is too short return empty match.
   std::u16string q16 = base::UTF8ToUTF16(query);
-  if (!search_features::IsLauncherImageSearchEnabled() ||
+  if (!ash::features::IsFilesLocalImageSearchEnabled() ||
+      !search_features::IsLauncherImageSearchEnabled() ||
       app_list::IsQueryTooShort(q16)) {
     std::move(callback).Run({});
     return;

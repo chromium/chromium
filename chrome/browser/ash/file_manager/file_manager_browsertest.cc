@@ -1494,7 +1494,7 @@ WRAPPED_INSTANTIATE_TEST_SUITE_P(
             .EnableSearchV2(),
         TestCase("searchFileSystemProvider").EnableSearchV2(),
         TestCase("searchImageByContent")
-            .EnableImageContentSearch()
+            .EnableLocalImageSearch()
             .EnableSearchV2()
         // TODO(b/189173190): Enable
         // TestCase("searchQueryLaunchParam")

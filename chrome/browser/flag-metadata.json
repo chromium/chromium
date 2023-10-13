@@ -4488,6 +4488,11 @@
     "expiry_milestone": 120
   },
   {
+    "name": "files-local-image-search",
+    "owners": [ "majewski", "simmonsjosh@google.com" ],
+    "expiry_milestone": 126
+  },
+  {
     "name": "files-new-directory-tree",
     "owners": [ "wenbojie", "simmonsjosh@google.com" ],
     "expiry_milestone": 124

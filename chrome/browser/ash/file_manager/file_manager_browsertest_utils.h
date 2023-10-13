@@ -92,6 +92,8 @@ struct TestCase {
 
   TestCase& EnableSearchV2();
 
+  TestCase& EnableLocalImageSearch();
+
   TestCase& EnableFSPsInRecents();
 
   TestCase& EnableOsFeedback();
@@ -109,8 +111,6 @@ struct TestCase {
   TestCase& SetTestAccountType(TestAccountType test_account_type);
 
   TestCase& EnableCrosComponents();
-
-  TestCase& EnableImageContentSearch();
 
   std::string GetFullName() const;
 

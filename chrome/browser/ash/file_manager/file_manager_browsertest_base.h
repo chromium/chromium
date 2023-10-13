@@ -183,8 +183,8 @@ class FileManagerBrowserTestBase
     // Whether tests should enable V2 of search.
     bool enable_search_v2 = false;
 
-    // Whether tests should enable image content search.
-    bool enable_image_content_search = false;
+    // Whether tests should enable local image search by query.
+    bool enable_local_image_search = false;
 
     // Whether test should run with the fsps-in-recents flag.
     bool enable_fsps_in_recents = false;
