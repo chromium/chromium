@@ -15,6 +15,8 @@
 // Called to close the keyboard when the user did not press the close button
 // directly.
 - (void)closeKeyboardWithoutButtonPress;
+// Called when the omnibox typing shield is tapped by the user.
+- (void)closeKeyboardWithOmniboxTypingShield;
 
 // Called when the previous button is pressed by the user.
 - (void)selectPreviousElementWithButtonPress;

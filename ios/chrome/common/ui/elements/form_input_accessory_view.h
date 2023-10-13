@@ -18,6 +18,8 @@
 - (void)formInputAccessoryViewDidTapCloseButton:(FormInputAccessoryView*)sender;
 - (FormInputAccessoryViewTextData*)textDataforFormInputAccessoryView:
     (FormInputAccessoryView*)sender;
+- (void)fromInputAccessoryViewDidTapOmniboxTypingShield:
+    (FormInputAccessoryView*)sender;
 @end
 
 extern NSString* const kFormInputAccessoryViewAccessibilityID;
@@ -47,6 +49,12 @@ extern NSString* const kFormInputAccessoryViewAccessibilityID;
 // replaced with `customTrailingView`.
 - (void)setUpWithLeadingView:(UIView*)leadingView
           customTrailingView:(UIView*)customTrailingView;
+
+// Sets the height of the omnibox typing shield. Set a height of 0 to hide the
+// typing shield. The omnibox typing shield is a transparent view on the top
+// edge of the input accessory view for the collapsed bottom omnibox
+// (crbug.com/1490601).
+- (void)setOmniboxTypingShieldHeight:(CGFloat)typingShieldHeight;
 
 @end
 

@@ -559,4 +559,9 @@ typedef NS_ENUM(NSInteger, SectionIdentifier) {
               @"Previous field")];
 }
 
+- (void)fromInputAccessoryViewDidTapOmniboxTypingShield:
+    (FormInputAccessoryView*)sender {
+  NOTREACHED() << "The typing shield should only be present on web";
+}
+
 @end
