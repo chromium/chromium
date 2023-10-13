@@ -111,7 +111,6 @@ chrome_java_sources = [
   "java/src/org/chromium/chrome/browser/autofill/AutofillLogger.java",
   "java/src/org/chromium/chrome/browser/autofill/AutofillNameFixFlowBridge.java",
   "java/src/org/chromium/chrome/browser/autofill/AutofillNameFixFlowPrompt.java",
-  "java/src/org/chromium/chrome/browser/autofill/AutofillPopupBridge.java",
   "java/src/org/chromium/chrome/browser/autofill/AutofillSaveCardBottomSheetBridge.java",
   "java/src/org/chromium/chrome/browser/autofill/AutofillSaveCardBottomSheetContent.java",
   "java/src/org/chromium/chrome/browser/autofill/AutofillSaveCardBottomSheetCoordinator.java",
