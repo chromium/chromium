@@ -51,9 +51,11 @@ void ModelLoadManager::Configure(ModelTypeSet preferred_types_without_errors,
     auto dtc_iter = controllers_->find(type);
     if (dtc_iter != controllers_->end()) {
       const DataTypeController* dtc = dtc_iter->second.get();
-      // Controllers in a FAILED state should have been filtered out by the
-      // DataTypeManager.
-      DCHECK_NE(dtc->state(), DataTypeController::FAILED);
+      // Controllers in a FAILED state or with preconditions not met should have
+      // been filtered out by the DataTypeManager.
+      CHECK_NE(dtc->state(), DataTypeController::FAILED);
+      CHECK_EQ(dtc->GetPreconditionState(),
+               DataTypeController::PreconditionState::kPreconditionsMet);
       preferred_types_without_errors_.Put(type);
     }
   }
@@ -81,13 +83,17 @@ void ModelLoadManager::Configure(ModelTypeSet preferred_types_without_errors,
     DVLOG(1) << "ModelLoadManager: Stopping disabled types.";
     for (const auto& [type, dtc] : *controllers_) {
       if (!preferred_types_without_errors_.Has(dtc->type())) {
-        // Call Stop() even on types not running to
-        // allow clearing metadata. This is useful to clear metadata for
-        // types which were disabled during configuration.
+        // Call Stop() even on types not running to allow clearing metadata.
+        // This is useful to clear metadata for types which were disabled during
+        // configuration. Also clear metadata depending on the precondition
+        // state.
         SyncStopMetadataFate metadata_fate =
-            preferred_types.Has(dtc->type())
-                ? SyncStopMetadataFate::KEEP_METADATA
-                : SyncStopMetadataFate::CLEAR_METADATA;
+            SyncStopMetadataFate::KEEP_METADATA;
+        if (!preferred_types.Has(dtc->type()) ||
+            dtc->GetPreconditionState() ==
+                DataTypeController::PreconditionState::kMustStopAndClearData) {
+          metadata_fate = SyncStopMetadataFate::CLEAR_METADATA;
+        }
         DVLOG(1) << "ModelLoadManager: stop " << dtc->name()
                  << " with metadata fate " << static_cast<int>(metadata_fate);
         StopDatatypeImpl(SyncError(), metadata_fate, dtc.get(),

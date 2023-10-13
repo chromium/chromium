@@ -1637,27 +1637,61 @@ TEST_F(SyncDataTypeManagerImplTest, ProvideDebugInfo) {
   ASSERT_EQ(DataTypeManager::CONFIGURED, dtm_->state());
 }
 
-TEST_F(SyncDataTypeManagerImplTest, ShouldDoNothingForAlreadyFailedTypes) {
-  // Bring the type to FAILED state.
+TEST_F(SyncDataTypeManagerImplTest, ShouldDoNothingForAlreadyStoppedTypes) {
   AddController(BOOKMARKS);
+  GetController(BOOKMARKS)->SetPreconditionState(
+      DataTypeController::PreconditionState::kMustStopAndClearData);
+
+  // Bookmarks is never started due to failing preconditions.
+  DataTypeStatusTable::TypeErrorMap error_map;
+  error_map[BOOKMARKS] =
+      SyncError(FROM_HERE, SyncError::DATATYPE_POLICY_ERROR, "", BOOKMARKS);
+  DataTypeStatusTable expected_status_table;
+  expected_status_table.UpdateFailedDataTypes(error_map);
+  SetConfigureStartExpectation();
+  SetConfigureDoneExpectation(DataTypeManager::OK, expected_status_table);
+  Configure({BOOKMARKS});
+  FinishDownload(ModelTypeSet(), ModelTypeSet());  // control types
+  // No need to finish the download of BOOKMARKS since it was never started.
+  ASSERT_EQ(DataTypeController::NOT_RUNNING, GetController(BOOKMARKS)->state());
+
+  dtm_->DataTypePreconditionChanged(BOOKMARKS);
+  EXPECT_FALSE(dtm_->needs_reconfigure_for_test());
+}
+
+TEST_F(SyncDataTypeManagerImplTest, ShouldDoNothingForAlreadyFailedTypes) {
+  AddController(BOOKMARKS);
+
+  SetConfigureStartExpectation();
+  SetConfigureDoneExpectation(DataTypeManager::OK, DataTypeStatusTable());
+  Configure({BOOKMARKS});
+  FinishDownload(ModelTypeSet(), ModelTypeSet());  // control types
+  FinishDownload({BOOKMARKS}, ModelTypeSet());
+  ASSERT_EQ(DataTypeManager::CONFIGURED, dtm_->state());
+  ASSERT_TRUE(dtm_->GetActiveDataTypes().Has(BOOKMARKS));
+
   GetController(BOOKMARKS)->model()->SimulateModelError(
       ModelError(FROM_HERE, "test error"));
+  ASSERT_EQ(DataTypeController::FAILED, GetController(BOOKMARKS)->state());
 
-  // Bookmarks is never started due to hitting a model load error.
-  SetConfigureStartExpectation();
+  observer_.ResetExpectations();
   SetConfigureDoneExpectation(
       DataTypeManager::OK,
       BuildStatusTable(ModelTypeSet(),
                        /*datatype_errors=*/{BOOKMARKS}, ModelTypeSet()));
-  Configure({BOOKMARKS});
-  FinishDownload(ModelTypeSet(), ModelTypeSet());  // control types
-  // No need to finish the download of BOOKMARKS since it was never started.
-  ASSERT_EQ(DataTypeController::FAILED, GetController(BOOKMARKS)->state());
 
-  dtm_->OnSingleDataTypeWillStop(
-      BOOKMARKS,
-      SyncError(FROM_HERE, SyncError::DATATYPE_ERROR, "Test error", BOOKMARKS));
-  EXPECT_FALSE(dtm_->needs_reconfigure_for_test());
+  // Model type error should cause re-configuration.
+  task_environment_.RunUntilIdle();
+  FinishDownload(ModelTypeSet(), ModelTypeSet());  // control types
+  ASSERT_EQ(DataTypeManager::CONFIGURED, dtm_->state());
+  ASSERT_FALSE(dtm_->GetActiveDataTypes().Has(BOOKMARKS));
+
+  // Another error should not trigger re-configuration. This is verified by
+  // `observer_` which checks for OnConfigurationDone() and should fails when
+  // it's called unexpectedly.
+  GetController(BOOKMARKS)->model()->SimulateModelError(
+      ModelError(FROM_HERE, "test error"));
+  task_environment_.RunUntilIdle();
 }
 
 // Tests that data types which time out are ultimately skipped during
@@ -1701,6 +1735,35 @@ TEST_F(SyncDataTypeManagerImplTest, ShouldFinishConfigureIfSomeTypesTimeout) {
   FinishDownload({PREFERENCES}, ModelTypeSet());
   // DataTypeManager finishes configuration.
   EXPECT_EQ(DataTypeManager::CONFIGURED, dtm_->state());
+}
+
+TEST_F(SyncDataTypeManagerImplTest, ShouldUpdateDataTypeStatusWhileStopped) {
+  AddController(BOOKMARKS);
+  GetController(BOOKMARKS)->SetPreconditionState(
+      DataTypeController::PreconditionState::kMustStopAndClearData);
+  dtm_->DataTypePreconditionChanged(BOOKMARKS);
+
+  EXPECT_FALSE(dtm_->needs_reconfigure_for_test());
+  EXPECT_EQ(DataTypeManager::STOPPED, dtm_->state());
+  EXPECT_TRUE(dtm_->GetDataTypesWithPermanentErrors().Has(BOOKMARKS));
+}
+
+TEST_F(SyncDataTypeManagerImplTest, ShouldReconfigureOnPreconditionChanged) {
+  AddController(BOOKMARKS);
+
+  SetConfigureStartExpectation();
+  SetConfigureDoneExpectation(DataTypeManager::OK, DataTypeStatusTable());
+  Configure({BOOKMARKS});
+  FinishDownload(ModelTypeSet(), ModelTypeSet());  // control types
+  FinishDownload({BOOKMARKS}, ModelTypeSet());
+
+  ASSERT_EQ(DataTypeManager::CONFIGURED, dtm_->state());
+  ASSERT_FALSE(dtm_->needs_reconfigure_for_test());
+
+  GetController(BOOKMARKS)->SetPreconditionState(
+      DataTypeController::PreconditionState::kMustStopAndClearData);
+  dtm_->DataTypePreconditionChanged(BOOKMARKS);
+  EXPECT_TRUE(dtm_->needs_reconfigure_for_test());
 }
 
 }  // namespace syncer

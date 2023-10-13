@@ -54,7 +54,6 @@ class DataTypeManagerImpl : public DataTypeManager,
 
   // `ModelLoadManagerDelegate` implementation.
   void OnAllDataTypesReadyForConfigure() override;
-  // No-op if the type is not connected or has already failed.
   void OnSingleDataTypeWillStop(ModelType type,
                                 const SyncError& error) override;
 

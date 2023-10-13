@@ -133,6 +133,9 @@ DataTypeManagerImpl::DataTypeManagerImpl(
           SyncError(FROM_HERE, SyncError::DATATYPE_ERROR,
                     "Preexisting controller error on Sync startup", type);
     }
+
+    // TODO(crbug.com/1430450): query the initial state of preconditions.
+    // Currently it breaks some DCHECKs in SyncServiceImpl.
   }
   data_type_status_table_.UpdateFailedDataTypes(existing_errors);
 }
@@ -149,10 +152,6 @@ void DataTypeManagerImpl::Configure(ModelTypeSet preferred_types,
   // types with controllers. Can we CHECK() this instead?
   for (const auto& [type, controller] : *controllers_) {
     allowed_types.Put(type);
-
-    // Ensure that the initial precondition state is accurate, and clear
-    // existing metadata if necessary.
-    DataTypePreconditionChanged(type);
   }
 
   ConfigureImpl(Intersection(preferred_types, allowed_types), context);
@@ -164,9 +163,9 @@ void DataTypeManagerImpl::DataTypePreconditionChanged(ModelType type) {
     return;
   }
 
-  if (state_ == STOPPING) {
-    // Configuration should not be set while stopping.
-    LOG(ERROR) << "Precondition changed while stopping.";
+  if (state_ == STOPPED || state_ == STOPPING) {
+    // DataTypePreconditionChanged() can be called at any time, ignore any
+    // changes.
     return;
   }
 
@@ -633,25 +632,24 @@ void DataTypeManagerImpl::OnSingleDataTypeWillStop(ModelType type,
   configurer_->DisconnectDataType(type);
   configured_proxy_types_.Remove(type);
 
-  // If the type is newly-failed (i.e. has not already failed before), then
-  // reconfigure.
-  bool should_reconfigure =
-      error.IsSet() && !data_type_status_table_.GetFailedTypes().Has(type);
-  if (error.IsSet()) {
-    // Update the status table with the new error either way.
-    data_type_status_table_.UpdateFailedDataType(type, error);
+  // Reconfigure only if the data type is stopped with an error.
+  if (!error.IsSet()) {
+    return;
   }
-  if (should_reconfigure) {
-    needs_reconfigure_ = true;
-    last_requested_context_.reason =
-        GetReasonForProgrammaticReconfigure(last_requested_context_.reason);
-    // Do this asynchronously so the ModelLoadManager has a chance to
-    // finish stopping this type, otherwise Disconnect() and Stop()
-    // end up getting called twice on the controller.
-    base::SequencedTaskRunner::GetCurrentDefault()->PostTask(
-        FROM_HERE, base::BindOnce(&DataTypeManagerImpl::ProcessReconfigure,
-                                  weak_ptr_factory_.GetWeakPtr()));
-  }
+
+  // When the `type` is stopped due to precondition changes, it should already
+  // be marked failed. Update the status table with the error for the other
+  // cases (which should only be possible when loading models).
+  data_type_status_table_.UpdateFailedDataType(type, error);
+  needs_reconfigure_ = true;
+  last_requested_context_.reason =
+      GetReasonForProgrammaticReconfigure(last_requested_context_.reason);
+  // Do this asynchronously so the ModelLoadManager has a chance to
+  // finish stopping this type, otherwise Disconnect() and Stop()
+  // end up getting called twice on the controller.
+  base::SequencedTaskRunner::GetCurrentDefault()->PostTask(
+      FROM_HERE, base::BindOnce(&DataTypeManagerImpl::ProcessReconfigure,
+                                weak_ptr_factory_.GetWeakPtr()));
 }
 
 void DataTypeManagerImpl::Stop(SyncStopMetadataFate metadata_fate) {
