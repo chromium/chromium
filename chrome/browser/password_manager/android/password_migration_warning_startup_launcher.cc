@@ -7,7 +7,7 @@
 #include "base/notreached.h"
 #include "base/time/time.h"
 #include "chrome/browser/password_manager/android/local_passwords_migration_warning_util.h"
-#include "chrome/browser/password_manager/password_store_factory.h"
+#include "chrome/browser/password_manager/profile_password_store_factory.h"
 #include "components/password_manager/core/browser/password_form.h"
 #include "components/password_manager/core/browser/password_store.h"
 #include "components/password_manager/core/browser/password_store_backend.h"
