@@ -31,7 +31,7 @@ FirmwareUpdateAppBrowserTest.prototype = {
 
   browsePreload: 'chrome://accessory-update/test_loader.html' +
       '?module=chromeos/firmware_update/' +
-      'firmware_update_unified_test.js&host=test',
+      'firmware_update_unified_test.js',
 };
 
 // List of names of suites in unified test to register for individual debugging.
