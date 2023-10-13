@@ -597,13 +597,23 @@ public class PersonalDataManager {
     }
 
     public String getShippingAddressLabelWithCountryForPaymentRequest(AutofillProfile profile) {
-        return PersonalDataManagerJni.get().getShippingAddressLabelWithCountryForPaymentRequest(
-                mPersonalDataManagerAndroid, PersonalDataManager.this, profile);
+        return PersonalDataManagerJni.get()
+                .getShippingAddressLabelForPaymentRequest(
+                        mPersonalDataManagerAndroid,
+                        PersonalDataManager.this,
+                        profile,
+                        profile.getGUID(),
+                        /* includeCountry= */ true);
     }
 
     public String getShippingAddressLabelWithoutCountryForPaymentRequest(AutofillProfile profile) {
-        return PersonalDataManagerJni.get().getShippingAddressLabelWithoutCountryForPaymentRequest(
-                mPersonalDataManagerAndroid, PersonalDataManager.this, profile);
+        return PersonalDataManagerJni.get()
+                .getShippingAddressLabelForPaymentRequest(
+                        mPersonalDataManagerAndroid,
+                        PersonalDataManager.this,
+                        profile,
+                        profile.getGUID(),
+                        /* includeCountry= */ false);
     }
 
     /**
@@ -911,12 +921,12 @@ public class PersonalDataManager {
                 AutofillProfile profile, String guid);
         String setProfileToLocal(long nativePersonalDataManagerAndroid, PersonalDataManager caller,
                 AutofillProfile profile, String guid);
-        String getShippingAddressLabelWithCountryForPaymentRequest(
-                long nativePersonalDataManagerAndroid, PersonalDataManager caller,
-                AutofillProfile profile);
-        String getShippingAddressLabelWithoutCountryForPaymentRequest(
-                long nativePersonalDataManagerAndroid, PersonalDataManager caller,
-                AutofillProfile profile);
+        String getShippingAddressLabelForPaymentRequest(
+                long nativePersonalDataManagerAndroid,
+                PersonalDataManager caller,
+                AutofillProfile profile,
+                String guid,
+                boolean includeCountry);
         String[] getCreditCardGUIDsForSettings(
                 long nativePersonalDataManagerAndroid, PersonalDataManager caller);
         String[] getCreditCardGUIDsToSuggest(
