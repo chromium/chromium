@@ -27,8 +27,6 @@ const dockerArgs = [
     process.env.HOME,
     ".goma_client_oauth2_config"
   )}:/home/ubuntu/.goma_client_oauth2_config`,
-  "-p",
-  "9098:9099",
   "chromium-build-new",
 ];
 
