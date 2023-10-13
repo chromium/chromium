@@ -404,6 +404,14 @@ ShellSurfaceBase::ShellSurfaceBase(Surface* surface,
 }
 
 ShellSurfaceBase::~ShellSurfaceBase() {
+  // For overlapped frames, a relationship is created between the host window
+  // layer and the frame header layer. We need to notify frame header to remove
+  // the relationship before host window to destroyed.
+  if (frame_overlapped()) {
+    auto* frame_header = chromeos::FrameHeader::Get(widget_);
+    frame_header->RemoveLayerBeneath();
+  }
+
   // If the surface was TrustedPinned, we have to unpin first as this might have
   // locked down some system functions.
   if (current_pinned_state_ == chromeos::WindowPinType::kTrustedPinned) {
@@ -1127,6 +1135,7 @@ void ShellSurfaceBase::OnSetFrame(SurfaceFrameType frame_type) {
     case SurfaceFrameType::NORMAL:
     case SurfaceFrameType::AUTOHIDE:
     case SurfaceFrameType::OVERLAY:
+    case SurfaceFrameType::OVERLAP:
     case SurfaceFrameType::SHADOW:
       // Initialize the shadow if it didn't exist. Do not reset if
       // the frame type just switched from another enabled type or
@@ -1145,12 +1154,22 @@ void ShellSurfaceBase::OnSetFrame(SurfaceFrameType frame_type) {
   if (widget_->non_client_view()) {
     CustomFrameView* frame_view =
         static_cast<CustomFrameView*>(widget_->non_client_view()->frame_view());
-    if (frame_view->GetFrameEnabled() == frame_enabled()) {
+    if (frame_view->GetFrameEnabled() == frame_enabled() &&
+        frame_view->GetFrameOverlapped() == frame_overlapped()) {
       return;
     }
 
     frame_view->SetFrameEnabled(frame_enabled());
     frame_view->SetShouldPaintHeader(frame_enabled());
+
+    frame_view->SetFrameOverlapped(frame_overlapped());
+
+    auto* frame_header = chromeos::FrameHeader::Get(widget_);
+    if (frame_overlapped()) {
+      frame_header->AddLayerBeneath(host_window());
+    } else {
+      frame_header->RemoveLayerBeneath();
+    }
   }
 
   widget_->GetRootView()->Layout();
@@ -2047,10 +2066,12 @@ gfx::Rect ShellSurfaceBase::GetVisibleBounds() const {
 }
 
 gfx::Rect ShellSurfaceBase::GetClientViewBounds() const {
-  return widget_->non_client_view()
+  return (widget_->non_client_view() && !frame_overlapped())
              ? widget_->non_client_view()
                    ->frame_view()
                    ->GetBoundsForClientView()
+             // When frame is overlapped with client area, window bounds is the
+             // same as client bounds.
              : gfx::Rect(widget_->GetWindowBoundsInScreen().size());
 }
 

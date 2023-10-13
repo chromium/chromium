@@ -1056,12 +1056,14 @@ gfx::Rect ClientControlledShellSurface::GetShadowBounds() const {
   gfx::Rect shadow_bounds = ShellSurfaceBase::GetShadowBounds();
   const ash::NonClientFrameViewAsh* frame_view = GetFrameView();
   if (frame_view->GetFrameEnabled() && !shadow_bounds_->IsEmpty() &&
-      !geometry_.IsEmpty()) {
+      !geometry_.IsEmpty() && !frame_view->GetFrameOverlapped()) {
     // The client controlled geometry is only for the client
     // area. When the chrome side frame is enabled, the shadow height
     // has to include the height of the frame, and the total height is
     // equals to the window height computed by
     // |GetWindowBoundsForClientBounds|.
+    // But when the frame is overlapped with the client area, shadow bounds
+    // should be the same as the client area bounds.
     shadow_bounds.set_size(
         frame_view->GetWindowBoundsForClientBounds(shadow_bounds).size());
   }
@@ -1125,7 +1127,7 @@ float ClientControlledShellSurface::GetScaleFactor() const {
 absl::optional<gfx::Rect> ClientControlledShellSurface::GetWidgetBounds()
     const {
   const ash::NonClientFrameViewAsh* frame_view = GetFrameView();
-  if (frame_view->GetFrameEnabled()) {
+  if (frame_view->GetFrameEnabled() && !frame_view->GetFrameOverlapped()) {
     gfx::Rect visible_bounds = GetVisibleBounds();
     if (widget_->IsMaximized() && frame_type_ == SurfaceFrameType::NORMAL) {
       // When the widget is maximized in clamshell mode, client sends
@@ -1135,6 +1137,8 @@ absl::optional<gfx::Rect> ClientControlledShellSurface::GetWidgetBounds()
     return frame_view->GetWindowBoundsForClientBounds(visible_bounds);
   }
 
+  // When frame is overlapped with the client window, widget bounds is the same
+  // as the |geometry_| from client.
   return GetVisibleBounds();
 }
 
@@ -1482,7 +1486,9 @@ ClientControlledShellSurface::GetClientBoundsForWindowBoundsAndWindowState(
     return window_bounds;
 
   gfx::Rect client_bounds =
-      GetFrameView()->GetClientBoundsForWindowBounds(window_bounds);
+      GetFrameView()->GetFrameOverlapped()
+          ? window_bounds
+          : GetFrameView()->GetClientBoundsForWindowBounds(window_bounds);
 
   if (is_snapped && tablet_state == display::TabletState::kExitingTabletMode) {
     // Until the next commit, the frame view is in immersive mode, and the above

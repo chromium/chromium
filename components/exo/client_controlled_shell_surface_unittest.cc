@@ -2599,4 +2599,52 @@ TEST_P(ClientControlledShellSurfaceTest,
   }
 }
 
+TEST_P(ClientControlledShellSurfaceTest, FrameOverlap) {
+  gfx::Rect window_bounds(20, 50, 300, 200);
+  // The bounds for views::ClientView, should be window_bounds excluding
+  // caption.
+  gfx::Rect client_view_bounds(20, 82, 300, 168);
+  auto shell_surface = exo::test::ShellSurfaceBuilder({window_bounds.size()})
+                           .SetGeometry(window_bounds)
+                           .BuildClientControlledShellSurface();
+  auto* surface = shell_surface->root_surface();
+  views::Widget* widget = shell_surface->GetWidget();
+  aura::Window* window = widget->GetNativeWindow();
+  ash::NonClientFrameViewAsh* frame_view =
+      static_cast<ash::NonClientFrameViewAsh*>(
+          widget->non_client_view()->frame_view());
+
+  // 1) Initial state, no frame (SurfaceFrameType is NONE). ClientView bounds
+  // should be the same as the window bounds.
+  EXPECT_FALSE(frame_view->GetHeaderView()->GetVisible());
+  EXPECT_FALSE(frame_view->GetFrameEnabled());
+  EXPECT_FALSE(frame_view->GetFrameOverlapped());
+  EXPECT_FALSE(wm::ShadowController::GetShadowForWindow(window));
+  EXPECT_EQ(window_bounds, widget->GetWindowBoundsInScreen());
+  EXPECT_EQ(window_bounds,
+            frame_view->GetWindowBoundsForClientBounds(window_bounds));
+
+  // 2) Set frame to OVERLAP, the frame should be visible. ClientView bounds
+  // should be window bounds excluding caption.
+  surface->SetFrame(SurfaceFrameType::OVERLAP);
+  surface->Commit();
+  EXPECT_TRUE(frame_view->GetHeaderView()->GetVisible());
+  EXPECT_TRUE(frame_view->GetFrameEnabled());
+  EXPECT_TRUE(frame_view->GetFrameOverlapped());
+  EXPECT_TRUE(wm::ShadowController::GetShadowForWindow(window));
+  EXPECT_EQ(window_bounds, widget->GetWindowBoundsInScreen());
+  EXPECT_EQ(window_bounds,
+            frame_view->GetWindowBoundsForClientBounds(client_view_bounds));
+
+  // 3) Maximize the surface, it should be maximized properly.
+  shell_surface->SetMaximized();
+  surface->Commit();
+  EXPECT_TRUE(shell_surface->GetWidget()->IsMaximized());
+
+  // 4) Minimize the surface, it should be maximized properly.
+  shell_surface->SetMinimized();
+  surface->Commit();
+  EXPECT_TRUE(shell_surface->GetWidget()->IsMinimized());
+}
+
 }  // namespace exo

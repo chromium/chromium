@@ -260,6 +260,23 @@ void NonClientFrameViewAsh::SetFrameEnabled(bool enabled) {
   InvalidateLayout();
 }
 
+void NonClientFrameViewAsh::SetFrameOverlapped(bool overlapped) {
+  if (overlapped == frame_overlapped_) {
+    return;
+  }
+
+  if (overlapped) {
+    // When frame is overlapped with the window area, we need to draw header
+    // view in front of client content.
+    // TODO(b/282627319): remove the layer at the right condition.
+    header_view_->SetPaintToLayer();
+    header_view_->layer()->parent()->StackAtTop(header_view_->layer());
+  }
+
+  frame_overlapped_ = overlapped;
+  InvalidateLayout();
+}
+
 void NonClientFrameViewAsh::SetToggleResizeLockMenuCallback(
     base::RepeatingCallback<void()> callback) {
   toggle_resize_lock_menu_callback_ = std::move(callback);
