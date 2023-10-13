@@ -37,6 +37,10 @@ struct NGTextFragmentPaintInfo;
 struct PaintInfo;
 struct PhysicalOffset;
 
+namespace {
+class MarkerRangeMappingContext;
+}
+
 // Highlight overlay painter for LayoutNG. Operates on NGFragmentItem that
 // IsText(). Delegates to NGTextPainter to paint the text itself.
 class CORE_EXPORT NGHighlightPainter {
@@ -196,6 +200,15 @@ class CORE_EXPORT NGHighlightPainter {
                               bool paint_marker_backgrounds,
                               absl::optional<AffineTransform> rotation);
 
+  static void PaintHighlightBackground(
+      GraphicsContext& context,
+      Node* node,
+      const Document& document,
+      const ComputedStyle& style,
+      Color color,
+      const PhysicalRect& rect,
+      const absl::optional<AffineTransform>& rotation);
+
   // Return the text content offset for a particular fragment offset.
   static unsigned GetTextContentOffset(const Text& text, unsigned offset);
 
@@ -230,6 +243,14 @@ class CORE_EXPORT NGHighlightPainter {
 
  private:
   Case ComputePaintCase() const;
+
+  const PhysicalRect ComputeBackgroundRect(StringView text,
+                                           unsigned start_offset,
+                                           unsigned end_offset);
+  Vector<LayoutSelectionStatus> GetHighlights(const LayerPaintState& layer);
+  LayoutSelectionStatus GetSelectionStatusFromMarker(
+      const Member<DocumentMarker>& marker,
+      const MarkerRangeMappingContext* mapping_context);
   void FastPaintSpellingGrammarDecorations(const Text& text_node,
                                            const StringView& text,
                                            const DocumentMarkerVector& markers);

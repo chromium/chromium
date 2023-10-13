@@ -193,28 +193,6 @@ void PaintRect(GraphicsContext& context,
             auto_dark_mode);
 }
 
-Color SelectionBackgroundColor(const Document& document,
-                               const ComputedStyle& style,
-                               Node* node,
-                               Color text_color) {
-  const Color color = HighlightStyleUtils::HighlightBackgroundColor(
-      document, style, node, absl::nullopt, kPseudoIdSelection);
-  if (color.IsFullyTransparent()) {
-    return Color();
-  }
-
-  // If the text color ends up being the same as the selection background,
-  // invert the selection background.
-  if (text_color == color) {
-    if (node) {
-      UseCounter::Count(node->GetDocument(),
-                        WebFeature::kSelectionBackgroundColorInversion);
-    }
-    return Color(0xff - color.Red(), 0xff - color.Green(), 0xff - color.Blue());
-  }
-  return color;
-}
-
 const HighlightRegistry* GetHighlightRegistry(const Node* node) {
   if (!node)
     return nullptr;
@@ -228,33 +206,6 @@ const LayoutSelectionStatus* GetSelectionStatus(
   if (!selection)
     return nullptr;
   return &selection->Status();
-}
-
-const DocumentMarkerVector* SelectMarkers(const HighlightLayer& layer,
-                                          const DocumentMarkerVector& custom,
-                                          const DocumentMarkerVector& grammar,
-                                          const DocumentMarkerVector& spelling,
-                                          const DocumentMarkerVector& target) {
-  switch (layer.type) {
-    case HighlightLayerType::kOriginating:
-      NOTREACHED();
-      break;
-    case HighlightLayerType::kCustom:
-      return &custom;
-    case HighlightLayerType::kGrammar:
-      return &grammar;
-    case HighlightLayerType::kSpelling:
-      return &spelling;
-    case HighlightLayerType::kTargetText:
-      return &target;
-    case HighlightLayerType::kSelection:
-      NOTREACHED();
-      break;
-    default:
-      NOTREACHED();
-  }
-
-  return nullptr;
 }
 
 // Returns true if the styles for the given spelling or grammar pseudo require
@@ -433,25 +384,11 @@ void NGHighlightPainter::SelectionPaintState::PaintSelectionBackground(
     const Document& document,
     const ComputedStyle& style,
     const absl::optional<AffineTransform>& rotation) {
-  const Color color = SelectionBackgroundColor(document, style, node,
-                                               selection_style_.current_color);
-
-  AutoDarkMode auto_dark_mode(
-      PaintAutoDarkMode(style, DarkModeFilter::ElementRole::kSelection));
-
-  if (!rotation) {
-    PaintRect(context, PhysicalSelectionRect(), color, auto_dark_mode);
-    return;
-  }
-
-  // PaintRect tries to pixel-snap the given rect, but if we’re painting in a
-  // non-horizontal writing mode, our context has been transformed, regressing
-  // tests like <paint/invalidation/repaint-across-writing-mode-boundary>. To
-  // fix this, we undo the transformation temporarily, then use the original
-  // physical coordinates (before MapSelectionRectIntoRotatedSpace).
-  context.ConcatCTM(rotation->Inverse());
-  PaintRect(context, PhysicalSelectionRect(), color, auto_dark_mode);
-  context.ConcatCTM(*rotation);
+  const Color color = HighlightStyleUtils::HighlightBackgroundColor(
+      document, style, node, selection_style_.current_color,
+      kPseudoIdSelection);
+  NGHighlightPainter::PaintHighlightBackground(
+      context, node, document, style, color, PhysicalSelectionRect(), rotation);
 }
 
 // Paint the selected text only.
@@ -920,6 +857,76 @@ void NGHighlightPainter::PaintOriginatingText(const TextPaintStyle& text_style,
   }
 }
 
+LayoutSelectionStatus NGHighlightPainter::GetSelectionStatusFromMarker(
+    const Member<DocumentMarker>& marker,
+    const MarkerRangeMappingContext* mapping_context) {
+  const auto [paint_start_offset, paint_end_offset] =
+      mapping_context->MapToTextContent(*marker);
+  return LayoutSelectionStatus{paint_start_offset, paint_end_offset,
+                               SelectSoftLineBreak::kNotSelected};
+}
+
+Vector<LayoutSelectionStatus> NGHighlightPainter::GetHighlights(
+    const LayerPaintState& layer) {
+  Vector<LayoutSelectionStatus> result{};
+
+  switch (layer.id.type) {
+    case HighlightLayerType::kOriginating:
+      NOTREACHED();
+      break;
+    case HighlightLayerType::kCustom: {
+      const MarkerRangeMappingContext mapping_context(fragment_item_);
+      for (const auto& marker : custom_) {
+        // Filter custom highlight markers to one highlight at a time.
+        auto* custom = To<CustomHighlightMarker>(marker.Get());
+        if (custom->GetHighlightName() != layer.id.PseudoArgument()) {
+          continue;
+        }
+        result.push_back(
+            GetSelectionStatusFromMarker(marker, &mapping_context));
+      }
+      break;
+    }
+    case HighlightLayerType::kGrammar: {
+      const MarkerRangeMappingContext mapping_context(fragment_item_);
+      for (const auto& marker : grammar_) {
+        result.push_back(
+            GetSelectionStatusFromMarker(marker, &mapping_context));
+      }
+      break;
+    }
+    case HighlightLayerType::kSpelling: {
+      const MarkerRangeMappingContext mapping_context(fragment_item_);
+      for (const auto& marker : spelling_) {
+        result.push_back(
+            GetSelectionStatusFromMarker(marker, &mapping_context));
+      }
+      break;
+    }
+    case HighlightLayerType::kTargetText: {
+      const MarkerRangeMappingContext mapping_context(fragment_item_);
+      for (const auto& marker : target_) {
+        result.push_back(
+            GetSelectionStatusFromMarker(marker, &mapping_context));
+      }
+      break;
+    }
+    case HighlightLayerType::kSelection:
+      result.push_back(*GetSelectionStatus(selection_));
+      break;
+  }
+  return result;
+}
+
+const PhysicalRect NGHighlightPainter::ComputeBackgroundRect(
+    StringView text,
+    unsigned start_offset,
+    unsigned end_offset) {
+  const PhysicalRect& rect =
+      fragment_item_.LocalRect(text, start_offset, end_offset);
+  return PhysicalRect(rect.offset + PhysicalOffset(box_origin_), rect.size);
+}
+
 void NGHighlightPainter::PaintHighlightOverlays(
     const TextPaintStyle& originating_text_style,
     DOMNodeId node_id,
@@ -937,58 +944,46 @@ void NGHighlightPainter::PaintHighlightOverlays(
   // For each overlay, paint its backgrounds and shadows over every highlighted
   // range in full.
   for (const LayerPaintState& layer : layers_) {
-    if (layer.id.type == HighlightLayerType::kOriginating ||
-        layer.id.type == HighlightLayerType::kSelection)
+    if (layer.id.type == HighlightLayerType::kOriginating) {
       continue;
+    }
 
-    const DocumentMarkerVector* markers =
-        SelectMarkers(layer.id, custom_, grammar_, spelling_, target_);
+    if (layer.id.type == HighlightLayerType::kSelection &&
+        !paint_marker_backgrounds) {
+      continue;
+    }
 
-    const MarkerRangeMappingContext mapping_context(fragment_item_);
-    for (const auto& marker : *markers) {
-      if (layer.id.type == HighlightLayerType::kCustom) {
-        // Filter custom highlight markers to one highlight at a time.
-        auto* custom = To<CustomHighlightMarker>(marker.Get());
-        if (custom->GetHighlightName() != layer.id.PseudoArgument())
-          continue;
-      }
+    Vector<LayoutSelectionStatus> highlights = GetHighlights(layer);
 
-      const auto [paint_start_offset, paint_end_offset] =
-          mapping_context.MapToTextContent(*marker);
-      const unsigned length = paint_end_offset - paint_start_offset;
+    for (const auto& highlight : highlights) {
+      const unsigned length = highlight.end - highlight.start;
       if (length == 0)
         continue;
 
       const StringView text = cursor_.CurrentText();
+
+      // TODO(crbug.com/1480139) ComputeBackgroundRect should use the same logic
+      // as CurrentLocalSelectionRectForText, that is, it should expand
+      // selection to the line height and extend for line breaks.
+      const PhysicalRect& rect =
+          layer.id.type == HighlightLayerType::kSelection
+              ? selection_->PhysicalSelectionRect()
+              : ComputeBackgroundRect(text, highlight.start, highlight.end);
+
       Color background_color = HighlightStyleUtils::HighlightBackgroundColor(
           document, originating_style_, node_, layer.text_style.current_color,
           layer.id.PseudoId(), layer.id.PseudoArgument());
 
-      // TODO(crbug.com/1434114) paint rects pixel-snapped in physical space,
-      // not writing-mode space (SelectionPaintState::PaintSelectionBackground)
-      PaintRect(
-          paint_info_.context, PhysicalOffset(box_origin_),
-          fragment_item_.LocalRect(text, paint_start_offset, paint_end_offset),
-          background_color,
-          PaintAutoDarkMode(originating_style_,
-                            DarkModeFilter::ElementRole::kSelection));
+      PaintHighlightBackground(paint_info_.context, node_, document,
+                               originating_style_, background_color, rect,
+                               rotation);
 
       if (layer.text_style.shadow) {
         text_painter_.Paint(
-            fragment_paint_info_.Slice(paint_start_offset, paint_end_offset),
+            fragment_paint_info_.Slice(highlight.start, highlight.end),
             layer.text_style, node_id, foreground_auto_dark_mode_,
             TextPainterBase::kShadowsOnly);
       }
-    }
-  }
-
-  // Paint ::selection background.
-  // TODO(crbug.com/1434114) generalise ::selection painting logic to support
-  // all highlights, then merge this branch into the loop above
-  if (UNLIKELY(selection_)) {
-    if (paint_marker_backgrounds) {
-      selection_->PaintSelectionBackground(paint_info_.context, node_, document,
-                                           originating_style_, rotation);
     }
   }
 
@@ -1048,6 +1043,32 @@ unsigned NGHighlightPainter::GetTextContentOffset(const Text& text,
       offset_mapping->GetTextContentOffset(position);
   DCHECK(ng_offset.has_value());
   return ng_offset.value();
+}
+
+void NGHighlightPainter::PaintHighlightBackground(
+    GraphicsContext& context,
+    Node* node,
+    const Document& document,
+    const ComputedStyle& style,
+    Color color,
+    const PhysicalRect& rect,
+    const absl::optional<AffineTransform>& rotation) {
+  AutoDarkMode auto_dark_mode(
+      PaintAutoDarkMode(style, DarkModeFilter::ElementRole::kSelection));
+
+  if (!rotation) {
+    PaintRect(context, rect, color, auto_dark_mode);
+    return;
+  }
+
+  // PaintRect tries to pixel-snap the given rect, but if we’re painting in a
+  // non-horizontal writing mode, our context has been transformed, regressing
+  // tests like <paint/invalidation/repaint-across-writing-mode-boundary>. To
+  // fix this, we undo the transformation temporarily, then use the original
+  // physical coordinates (before MapSelectionRectIntoRotatedSpace).
+  context.ConcatCTM(rotation->Inverse());
+  PaintRect(context, rect, color, auto_dark_mode);
+  context.ConcatCTM(*rotation);
 }
 
 PseudoId NGHighlightPainter::PseudoFor(DocumentMarker::MarkerType type) {
