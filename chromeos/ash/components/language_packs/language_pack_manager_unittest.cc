@@ -97,7 +97,6 @@ class LanguagePackManagerTest : public testing::Test {
     session_manager_ = std::make_unique<session_manager::SessionManager>();
 
     manager_ = LanguagePackManager::GetInstance();
-    manager_->Initialize();
     ResetPackResult();
 
     base::RunLoop().RunUntilIdle();

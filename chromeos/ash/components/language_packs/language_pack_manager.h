@@ -239,9 +239,6 @@ class LanguagePackManager : public DlcserviceClient::Observer {
   // Removes an observer from the observer list.
   void RemoveObserver(Observer* observer);
 
-  // Must be called before using the class.
-  void Initialize();
-
   // Testing only: called to free up resources since this object should never
   // be destroyed.
   void ResetForTesting();

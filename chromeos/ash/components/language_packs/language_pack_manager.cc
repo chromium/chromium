@@ -459,11 +459,12 @@ void LanguagePackManager::OnDlcStateChanged(
   NotifyPackStateChanged(kHandwritingFeatureId, *handwriting_locale, dlc_state);
 }
 
-LanguagePackManager::LanguagePackManager() = default;
-LanguagePackManager::~LanguagePackManager() = default;
-
-void LanguagePackManager::Initialize() {
+LanguagePackManager::LanguagePackManager() {
   DlcserviceClient::Get()->AddObserver(this);
+}
+
+LanguagePackManager::~LanguagePackManager() {
+  DlcserviceClient::Get()->RemoveObserver(this);
 }
 
 void LanguagePackManager::ResetForTesting() {
