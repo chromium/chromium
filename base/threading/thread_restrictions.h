@@ -375,6 +375,7 @@ class ScopedBypassIOThreadRestrictions;
 namespace protocol {
 class ScopedAllowSyncPrimitivesForWebRtcDataStreamAdapter;
 class ScopedAllowSyncPrimitivesForWebRtcTransport;
+class ScopedAllowSyncPrimitivesForWebRtcVideoStream;
 class ScopedAllowThreadJoinForWebRtcTransport;
 }  // namespace protocol
 }  // namespace remoting
@@ -866,6 +867,8 @@ class BASE_EXPORT
       ScopedAllowSyncPrimitivesForWebRtcDataStreamAdapter;  // http://b/233844893
   friend class remoting::protocol::
       ScopedAllowSyncPrimitivesForWebRtcTransport;  // http://crbug.com/1198501
+  friend class remoting::protocol::
+      ScopedAllowSyncPrimitivesForWebRtcVideoStream;  // http://b/304681143
   friend class remoting::protocol::
       ScopedAllowThreadJoinForWebRtcTransport;  // http://crbug.com/660081
   // Not used in production yet, https://crbug.com/844078.
