@@ -49,6 +49,16 @@
     --iron-icon-fill-color: var(--cr-secondary-text-color);
     margin-inline-end: 8px;
   }
+
+  .visually-hidden {
+    clip: rect(0 0 0 0);
+    clip-path: inset(50%);
+    height: 1px;
+    overflow: hidden;
+    position: absolute;
+    white-space: nowrap;
+    width: 1px;
+  }
 </style>
 <cr-dialog id="apnDetailDialog" show-on-attach>
   <div id="apnDetailDialogTitle" slot="title">
@@ -154,6 +164,13 @@
               isDefaultApnType_, isAttachApnType_)]]">
         [[getActionButtonTitle_(mode)]]
       </cr-button>
+      <template is="dom-if" if="[[shouldAnnounceA11yActionButtonState_]]"
+          restamp>
+        <span id="actionButtonEnabledA11yText"
+            class="visually-hidden" role="alert">
+          [[actionButtonEnabledA11yText_]]
+        </span>
+      </template>
     </template>
     <template is="dom-if"
         if="[[isUiElementVisible_(UiElement.DONE_BUTTON, mode)]]" restamp>

@@ -122,6 +122,101 @@ suite('<apn-detail-dialog>', () => {
         apnDetailDialog.shadowRoot!.activeElement);
   });
 
+  test(
+      'Add button becoming enabled and disabled uses correct a11y text',
+      async () => {
+        await init();
+
+        let actionButtonEnabledA11yText =
+            apnDetailDialog.shadowRoot!.querySelector<HTMLElement>(
+                '#actionButtonEnabledA11yText');
+
+        // Button state should not be announced when dialog opens initially.
+        // Announcement should only be made when the enabled state changes
+        // from disabled to enabled.
+        assertFalse(!!actionButtonEnabledA11yText);
+
+        const apnInput =
+            apnDetailDialog.shadowRoot!.querySelector<CrInputElement>(
+                '#apnInput');
+        assertTrue(!!apnInput);
+        apnInput.value = TEST_APN.accessPointName;
+        await flushTasks();
+
+        // Button state becomes enabled, announcement should be made.
+        actionButtonEnabledA11yText =
+            apnDetailDialog.shadowRoot!.querySelector<HTMLElement>(
+                '#actionButtonEnabledA11yText');
+        assertTrue(!!actionButtonEnabledA11yText);
+        assertEquals(
+            apnDetailDialog.i18n('apnDetailDialogA11yAddEnabled'),
+            actionButtonEnabledA11yText.innerText);
+
+        apnInput.value = '';
+        await flushTasks();
+
+        // Button state becomes disabled, announcement should be made.
+        actionButtonEnabledA11yText =
+            apnDetailDialog.shadowRoot!.querySelector<HTMLElement>(
+                '#actionButtonEnabledA11yText');
+        assertTrue(!!actionButtonEnabledA11yText);
+        assertEquals(
+            apnDetailDialog.i18n('apnDetailDialogA11yAddDisabled'),
+            actionButtonEnabledA11yText.innerText);
+      });
+
+  test(
+      'Save button becoming disabled and enabled uses correct a11y text',
+      async () => {
+        const apnWithId = TEST_APN;
+        apnWithId.id = '1';
+        apnWithId.apnTypes = [ApnType.kDefault];
+
+        await init(
+            /* mode= */ ApnDetailDialogMode.EDIT,
+            /* apnProperties= */ apnWithId);
+
+        let actionButtonEnabledA11yText =
+            apnDetailDialog.shadowRoot!.querySelector<HTMLElement>(
+                '#actionButtonEnabledA11yText');
+
+        // Button state should not be announced when dialog opens initially.
+        // Announcement should only be made when the enabled state changes
+        // from enabled to disabled.
+        assertFalse(!!actionButtonEnabledA11yText);
+
+        const apnInput =
+            apnDetailDialog.shadowRoot!.querySelector<CrInputElement>(
+                '#apnInput');
+        assertTrue(!!apnInput);
+
+        apnInput.value = '';
+        await flushTasks();
+
+        // Button state becomes disabled, announcement should be made.
+        actionButtonEnabledA11yText =
+            apnDetailDialog.shadowRoot!.querySelector<HTMLElement>(
+                '#actionButtonEnabledA11yText');
+        assertTrue(!!actionButtonEnabledA11yText);
+
+        assertEquals(
+            apnDetailDialog.i18n('apnDetailDialogA11ySaveDisabled'),
+            actionButtonEnabledA11yText.innerText);
+
+        apnInput.value = 'new.apn';
+        await flushTasks();
+
+        // Button state becomes enabled, announcement should be made.
+        actionButtonEnabledA11yText =
+            apnDetailDialog.shadowRoot!.querySelector<HTMLElement>(
+                '#actionButtonEnabledA11yText');
+        assertTrue(!!actionButtonEnabledA11yText);
+
+        assertEquals(
+            apnDetailDialog.i18n('apnDetailDialogA11ySaveEnabled'),
+            actionButtonEnabledA11yText.innerText);
+      });
+
   test('Clicking the cancel button fires the close event', async () => {
     await init();
     const closeEventPromise = eventToPromise('close', window);

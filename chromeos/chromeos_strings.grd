@@ -4523,6 +4523,18 @@
         <message name="IDS_SETTINGS_APN_DIALOG_SAVE" desc="Text used to save a modified APN.">
           Save
         </message>
+        <message name="IDS_SETTINGS_APN_DIALOG_A11Y_ADD_ENABLED" desc="A11y announcement when 'Add' button becomes enabled in the APN detail dialog.">
+          Add APN button is now enabled
+        </message>
+        <message name="IDS_SETTINGS_APN_DIALOG_A11Y_SAVE_ENABLED" desc="A11y announcement when 'Save' button becomes enabled in the APN detail dialog.">
+          Save APN button is now enabled
+        </message>
+        <message name="IDS_SETTINGS_APN_DIALOG_A11Y_ADD_DISABLED" desc="A11y announcement when 'Add' button becomes disabled in the APN detail dialog.">
+          Add APN button is now disabled
+        </message>
+        <message name="IDS_SETTINGS_APN_DIALOG_A11Y_SAVE_DISABLED" desc="A11y announcement when 'Save' button becomes disabled in the APN detail dialog.">
+          Save APN button is now disabled
+        </message>
         <message name="IDS_SETTINGS_APN_DIALOG_CANCEL" desc="Text used to cancel the APN dialog.">
           Cancel
         </message>
