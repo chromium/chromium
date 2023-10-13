@@ -5,11 +5,15 @@
 #ifndef CHROME_BROWSER_NAVIGATION_PREDICTOR_PRELOADING_MODEL_KEYED_SERVICE_H_
 #define CHROME_BROWSER_NAVIGATION_PREDICTOR_PRELOADING_MODEL_KEYED_SERVICE_H_
 
+#include "base/functional/callback.h"
+#include "base/task/cancelable_task_tracker.h"
 #include "base/time/time.h"
-#include "chrome/browser/navigation_predictor/preloading_model_handler.h"
 #include "components/keyed_service/core/keyed_service.h"
+#include "components/optimization_guide/machine_learning_tflite_buildflags.h"
+#include "third_party/abseil-cpp/absl/types/optional.h"
 
 class OptimizationGuideKeyedService;
+class PreloadingModelHandler;
 
 class PreloadingModelKeyedService : public KeyedService {
  public:
@@ -47,10 +51,6 @@ class PreloadingModelKeyedService : public KeyedService {
       OptimizationGuideKeyedService* optimization_guide_keyed_service);
   ~PreloadingModelKeyedService() override;
 
-  PreloadingModelHandler* GetPreloadingModel() const {
-    return preloading_model_handler_.get();
-  }
-
   void Score(base::CancelableTaskTracker* tracker,
              const Inputs& inputs,
              ResultCallback result_callback);
@@ -58,9 +58,11 @@ class PreloadingModelKeyedService : public KeyedService {
   // is called.
   void AddOnModelUpdatedCallback(base::OnceClosure callback);
 
+#if BUILDFLAG(BUILD_WITH_TFLITE_LIB)
  private:
   // preloading ML model
   std::unique_ptr<PreloadingModelHandler> preloading_model_handler_;
+#endif
 };
 
 #endif  // CHROME_BROWSER_NAVIGATION_PREDICTOR_PRELOADING_MODEL_KEYED_SERVICE_H_

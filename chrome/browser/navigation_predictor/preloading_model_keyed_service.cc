@@ -5,11 +5,17 @@
 #include "chrome/browser/navigation_predictor/preloading_model_keyed_service.h"
 
 #include "chrome/browser/optimization_guide/optimization_guide_keyed_service.h"
+#include "components/optimization_guide/machine_learning_tflite_buildflags.h"
+
+#if BUILDFLAG(BUILD_WITH_TFLITE_LIB)
+#include "chrome/browser/navigation_predictor/preloading_model_handler.h"
+#endif
 
 PreloadingModelKeyedService::Inputs::Inputs() = default;
 
 PreloadingModelKeyedService::PreloadingModelKeyedService(
     OptimizationGuideKeyedService* optimization_guide_keyed_service) {
+#if BUILDFLAG(BUILD_WITH_TFLITE_LIB)
   auto* model_provider =
       static_cast<optimization_guide::OptimizationGuideModelProvider*>(
           optimization_guide_keyed_service);
@@ -18,21 +24,25 @@ PreloadingModelKeyedService::PreloadingModelKeyedService(
     preloading_model_handler_ =
         std::make_unique<PreloadingModelHandler>(model_provider);
   }
+#endif
 }
 
 PreloadingModelKeyedService::~PreloadingModelKeyedService() = default;
 
 void PreloadingModelKeyedService::AddOnModelUpdatedCallback(
     base::OnceClosure callback) {
+#if BUILDFLAG(BUILD_WITH_TFLITE_LIB)
   if (!preloading_model_handler_) {
     return;
   }
   preloading_model_handler_->AddOnModelUpdatedCallback(std::move(callback));
+#endif
 }
 
 void PreloadingModelKeyedService::Score(base::CancelableTaskTracker* tracker,
                                         const Inputs& inputs,
                                         ResultCallback result_callback) {
+#if BUILDFLAG(BUILD_WITH_TFLITE_LIB)
   if (!preloading_model_handler_ ||
       !preloading_model_handler_->ModelAvailable()) {
     std::move(result_callback).Run(absl::nullopt);
@@ -65,4 +75,7 @@ void PreloadingModelKeyedService::Score(base::CancelableTaskTracker* tracker,
 
   preloading_model_handler_->ExecuteModelWithInput(
       tracker, std::move(result_callback), model_input);
+#else
+  std::move(result_callback).Run(absl::nullopt);
+#endif
 }
