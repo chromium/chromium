@@ -187,6 +187,7 @@ NSString* const kExclamationMarkBubbleSymbol = @"exclamationmark.bubble";
 NSString* const kShippingBoxFillSymbol = @"shippingbox.fill";
 NSString* const kButtonProgrammableSymbol = @"button.programmable";
 NSString* const kCircleCircleFillSymbol = @"circle.circle.fill";
+NSString* const kLockSymbol = @"lock";
 
 // Names of the default symbol being non-monochrome by default. When using them,
 // you probably want to set their color to monochrome.

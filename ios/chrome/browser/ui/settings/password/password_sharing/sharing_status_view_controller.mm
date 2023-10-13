@@ -29,7 +29,7 @@ const NSInteger kProgressBarCirclesAmount = 20;
 
 // Loaded images size dimensions.
 const CGFloat kProfileImageSize = 60.0;
-const CGFloat kShieldLockSize = 30.0;
+const CGFloat kLockSymbolPointSize = 24.0;
 
 // Spacing and padding constraints.
 const CGFloat kVerticalSpacing = 16.0;
@@ -64,8 +64,8 @@ NSString* const kEndBoldTag = @"[ \t]*END_BOLD";
 @property(nonatomic, strong) UIImageView* recipientImageView;
 @property(nonatomic, strong) UIImage* recipientImage;
 
-// Shield icon with a lock.
-@property(nonatomic, strong) UIImageView* shieldLockImage;
+// Lock image displayed in the animation.
+@property(nonatomic, strong) UIImageView* lockImage;
 
 // Rectangle view with fixed length and height containing fixed amount of
 // circles.
@@ -75,13 +75,13 @@ NSString* const kEndBoldTag = @"[ \t]*END_BOLD";
 // of recipients sliding to the right.
 @property(nonatomic, strong) UIViewPropertyAnimator* imagesSlidingOutAnimation;
 
-// Animates shield lock appearing in the middle between profile images and the
-// progress bar going from the left to right.
+// Animates lock appearing in the middle between profile images and the progress
+// bar going from the left to right.
 @property(nonatomic, strong)
     UIViewPropertyAnimator* progressBarLoadingAnimation;
 
-// Animates progress bar and shield lock disappearing and profile images sliding
-// to the middle.
+// Animates progress bar and lock disappearing and profile images sliding to the
+// middle.
 @property(nonatomic, strong) UIViewPropertyAnimator* imagesSlidingInAnimation;
 
 // Animates profile images sliding to the middle on cancel button tap.
@@ -127,9 +127,9 @@ NSString* const kEndBoldTag = @"[ \t]*END_BOLD";
   UIView* progressBarView = [self createProgressBarView];
   [animationView insertSubview:progressBarView belowSubview:recipientImageView];
 
-  // Add shield lock image.
-  UIImageView* shieldLockImage = [self createShieldLockImage];
-  [progressBarView addSubview:shieldLockImage];
+  // Add lock image.
+  UIImageView* lockImage = [self createLockImage];
+  [progressBarView addSubview:lockImage];
 
   // Add progress bar circles.
   [self createProgressBarSubviews];
@@ -175,10 +175,10 @@ NSString* const kEndBoldTag = @"[ \t]*END_BOLD";
     [progressBarView.widthAnchor constraintEqualToConstant:kProgressBarWidth],
     [progressBarView.heightAnchor constraintEqualToConstant:kProgressBarHeight],
 
-    // Shield lock image constraints.
-    [shieldLockImage.centerYAnchor
+    // Lock image constraints.
+    [lockImage.centerYAnchor
         constraintEqualToAnchor:senderImageView.centerYAnchor],
-    [shieldLockImage.centerXAnchor
+    [lockImage.centerXAnchor
         constraintEqualToAnchor:senderImageView.centerXAnchor],
 
     // Title constraints.
@@ -250,17 +250,16 @@ NSString* const kEndBoldTag = @"[ \t]*END_BOLD";
   return progressBarView;
 }
 
-// Helper for creating the shield lock image view.
-- (UIImageView*)createShieldLockImage {
-  // TODO(crbug.com/1463882): Add correct shield image.
-  UIImageView* shieldLockImage = [[UIImageView alloc]
-      initWithImage:CustomSymbolWithPointSize(kShieldSymbol, kShieldLockSize)];
-  shieldLockImage.translatesAutoresizingMaskIntoConstraints = NO;
-  shieldLockImage.backgroundColor =
-      [UIColor colorNamed:kPrimaryBackgroundColor];
-  shieldLockImage.hidden = YES;
-  self.shieldLockImage = shieldLockImage;
-  return shieldLockImage;
+// Helper for creating the lock image view.
+- (UIImageView*)createLockImage {
+  UIImageView* lockImage = [[UIImageView alloc]
+      initWithImage:DefaultSymbolWithPointSize(kLockSymbol,
+                                               kLockSymbolPointSize)];
+  lockImage.translatesAutoresizingMaskIntoConstraints = NO;
+  lockImage.backgroundColor = [UIColor colorNamed:kPrimaryBackgroundColor];
+  lockImage.hidden = YES;
+  self.lockImage = lockImage;
+  return lockImage;
 }
 
 // Creates `kProgressBarCirclesAmount` blue circles in the progress bar view.
@@ -313,7 +312,7 @@ NSString* const kEndBoldTag = @"[ \t]*END_BOLD";
 - (void)createAnimations {
   UIImageView* senderImageView = self.senderImageView;
   UIImageView* recipientImageView = self.recipientImageView;
-  UIImageView* shieldLockImage = self.shieldLockImage;
+  UIImageView* lockImage = self.lockImage;
   UIView* progressBarView = self.progressBarView;
 
   self.imagesSlidingOutAnimation = [[UIViewPropertyAnimator alloc]
@@ -339,7 +338,7 @@ NSString* const kEndBoldTag = @"[ \t]*END_BOLD";
       initWithDuration:kProgressBarLoadingDuration
                  curve:UIViewAnimationCurveEaseInOut
             animations:^{
-              shieldLockImage.hidden = NO;
+              lockImage.hidden = NO;
 
               for (NSInteger i = 0; i < kProgressBarCirclesAmount; i++) {
                 [UIView animateWithDuration:0
@@ -362,7 +361,7 @@ NSString* const kEndBoldTag = @"[ \t]*END_BOLD";
       initWithDuration:kImagesSlidingInDuration
                  curve:UIViewAnimationCurveEaseInOut
             animations:^{
-              shieldLockImage.hidden = YES;
+              lockImage.hidden = YES;
               progressBarView.hidden = YES;
               senderImageView.center = CGPointMake(
                   senderImageView.center.x + kImagesSlidingInDistance,
@@ -382,7 +381,7 @@ NSString* const kEndBoldTag = @"[ \t]*END_BOLD";
       initWithDuration:kSharingCancelledDuration
                  curve:UIViewAnimationCurveEaseInOut
             animations:^{
-              shieldLockImage.hidden = YES;
+              lockImage.hidden = YES;
               progressBarView.hidden = YES;
               senderImageView.center = CGPointMake(progressBarView.center.x,
                                                    senderImageView.center.y);
