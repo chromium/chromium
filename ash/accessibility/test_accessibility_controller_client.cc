@@ -71,7 +71,8 @@ void TestAccessibilityControllerClient::RequestSelectToSpeakStateChange() {
 }
 
 void TestAccessibilityControllerClient::
-    RequestAutoclickScrollableBoundsForPoint(gfx::Point& point_in_screen) {}
+    RequestAutoclickScrollableBoundsForPoint(
+        const gfx::Point& point_in_screen) {}
 
 void TestAccessibilityControllerClient::MagnifierBoundsChanged(
     const gfx::Rect& bounds_in_screen) {}

@@ -78,7 +78,7 @@ void FakeAccessibilityController::ShowDictationLanguageUpgradedNudge(
     const std::string& application_locale) {}
 
 void FakeAccessibilityController::HandleAutoclickScrollableBoundsFound(
-    gfx::Rect& bounds_in_screen) {}
+    const gfx::Rect& bounds_in_screen) {}
 
 std::u16string FakeAccessibilityController::GetBatteryDescription() const {
   return std::u16string();

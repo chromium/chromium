@@ -35,7 +35,7 @@ class AccessibilityControllerClient
   void PlaySpokenFeedbackToggleCountdown(int tick_count) override;
   void RequestSelectToSpeakStateChange() override;
   void RequestAutoclickScrollableBoundsForPoint(
-      gfx::Point& point_in_screen) override;
+      const gfx::Point& point_in_screen) override;
   void MagnifierBoundsChanged(const gfx::Rect& bounds_in_screen) override;
   void OnSwitchAccessDisabled() override;
   void OnSelectToSpeakPanelAction(ash::SelectToSpeakPanelAction action,

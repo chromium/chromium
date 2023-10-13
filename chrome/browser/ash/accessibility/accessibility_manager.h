@@ -188,7 +188,8 @@ class AccessibilityManager
 
   // Requests the Autoclick extension find the bounds of the nearest scrollable
   // ancestor to the point in the screen, as given in screen coordinates.
-  void RequestAutoclickScrollableBoundsForPoint(gfx::Point& point_in_screen);
+  void RequestAutoclickScrollableBoundsForPoint(
+      const gfx::Point& point_in_screen);
 
   // Dispatches magnifier bounds update to Magnifier (through Accessibility
   // Common extension).

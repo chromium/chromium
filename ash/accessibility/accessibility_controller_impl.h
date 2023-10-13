@@ -258,7 +258,8 @@ class ASH_EXPORT AccessibilityControllerImpl : public AccessibilityController,
   AutoclickEventType GetAutoclickEventType();
   void SetAutoclickMenuPosition(FloatingMenuPosition position);
   FloatingMenuPosition GetAutoclickMenuPosition();
-  void RequestAutoclickScrollableBoundsForPoint(gfx::Point& point_in_screen);
+  void RequestAutoclickScrollableBoundsForPoint(
+      const gfx::Point& point_in_screen);
   void MagnifierBoundsChanged(const gfx::Rect& bounds_in_screen);
 
   void SetFloatingMenuPosition(FloatingMenuPosition position);
@@ -450,7 +451,7 @@ class ASH_EXPORT AccessibilityControllerImpl : public AccessibilityController,
       const std::string& dictation_locale,
       const std::string& application_locale) override;
   void HandleAutoclickScrollableBoundsFound(
-      gfx::Rect& bounds_in_screen) override;
+      const gfx::Rect& bounds_in_screen) override;
   std::u16string GetBatteryDescription() const override;
   void SetVirtualKeyboardVisible(bool is_visible) override;
   void PerformAcceleratorAction(AcceleratorAction accelerator_action) override;

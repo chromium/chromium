@@ -86,7 +86,7 @@ class ASH_PUBLIC_EXPORT AccessibilityControllerClient {
   // Requests that the Accessibility Common extension get the nearest scrollable
   // bounds to the given point in screen coordinates.
   virtual void RequestAutoclickScrollableBoundsForPoint(
-      gfx::Point& point_in_screen) = 0;
+      const gfx::Point& point_in_screen) = 0;
 
   // Dispatches update to Accessibility Common extension when magnifier bounds
   // have changed.

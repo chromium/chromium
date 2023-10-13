@@ -2312,7 +2312,7 @@ FloatingMenuPosition AccessibilityControllerImpl::GetAutoclickMenuPosition() {
 }
 
 void AccessibilityControllerImpl::RequestAutoclickScrollableBoundsForPoint(
-    gfx::Point& point_in_screen) {
+    const gfx::Point& point_in_screen) {
   if (client_)
     client_->RequestAutoclickScrollableBoundsForPoint(point_in_screen);
 }
@@ -2336,7 +2336,7 @@ void AccessibilityControllerImpl::UpdateAutoclickMenuBoundsIfNeeded() {
 }
 
 void AccessibilityControllerImpl::HandleAutoclickScrollableBoundsFound(
-    gfx::Rect& bounds_in_screen) {
+    const gfx::Rect& bounds_in_screen) {
   Shell::Get()->autoclick_controller()->HandleAutoclickScrollableBoundsFound(
       bounds_in_screen);
 }

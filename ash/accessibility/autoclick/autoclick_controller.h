@@ -94,7 +94,7 @@ class ASH_EXPORT AutoclickController
 
   // The Accessibility Common extension has found scrollble bounds at the
   // current scroll point.
-  void HandleAutoclickScrollableBoundsFound(gfx::Rect& bounds_in_screen);
+  void HandleAutoclickScrollableBoundsFound(const gfx::Rect& bounds_in_screen);
 
   // Update the bubble menu bounds if necessary to avoid system UI.
   void UpdateAutoclickMenuBoundsIfNeeded();

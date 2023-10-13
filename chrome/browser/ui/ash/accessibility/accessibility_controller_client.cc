@@ -153,7 +153,7 @@ void AccessibilityControllerClient::RequestSelectToSpeakStateChange() {
 }
 
 void AccessibilityControllerClient::RequestAutoclickScrollableBoundsForPoint(
-    gfx::Point& point_in_screen) {
+    const gfx::Point& point_in_screen) {
   AccessibilityManager::Get()->RequestAutoclickScrollableBoundsForPoint(
       point_in_screen);
 }

@@ -297,7 +297,7 @@ void AutoclickController::OnExitedScrollButton() {
 }
 
 void AutoclickController::HandleAutoclickScrollableBoundsFound(
-    gfx::Rect& bounds_in_screen) {
+    const gfx::Rect& bounds_in_screen) {
   // The very first time scrollable bounds are found, the default first
   // position of the scrollbar to be next to the menu bubble.
   if (is_initial_scroll_location_)

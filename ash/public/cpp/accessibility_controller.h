@@ -132,7 +132,7 @@ class ASH_PUBLIC_EXPORT AccessibilityController {
 
   // Called when the Automatic Clicks extension finds scrollable bounds.
   virtual void HandleAutoclickScrollableBoundsFound(
-      gfx::Rect& bounds_in_screen) = 0;
+      const gfx::Rect& bounds_in_screen) = 0;
 
   // Retrieves a string description of the current battery status.
   virtual std::u16string GetBatteryDescription() const = 0;
