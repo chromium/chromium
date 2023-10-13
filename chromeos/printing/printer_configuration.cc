@@ -160,6 +160,7 @@ bool Printer::RequiresDriverlessUsb() const {
   // IPP-USB evaluation is complete.
   static constexpr auto kDriverlessUsbMakeModels =
       base::MakeFixedFlatSetSorted<base::StringPiece>({
+          "epson et-8550 series",    // b/301387697
           "epson wf-110 series",     // b/287159028
           "hp deskjet 4100 series",  // b/279387801
       });
