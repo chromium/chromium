@@ -891,8 +891,7 @@ const base::TimeDelta kSetUpListHideAnimationDuration = base::Milliseconds(250);
 #pragma mark - ParcelTrackingViewDelegate methods
 
 - (void)loadParcelTrackingPage:(GURL)parcelTrackingURL {
-  self.urlLoadingBrowserAgent->Load(
-      UrlLoadParams::InCurrentTab(parcelTrackingURL));
+  [self.suggestionCommandHandler loadParcelTrackingPage:parcelTrackingURL];
 }
 
 #pragma mark - ContentSuggestionsSelectionActions

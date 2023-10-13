@@ -17,7 +17,9 @@ enum class IOSHomeActionType {
   kFakebox = 4,
   kSetUpList = 5,
   kOmnibox = 6,
-  kMaxValue = kOmnibox,
+  kSafetyCheck = 7,
+  kParcelTracking = 8,
+  kMaxValue = kParcelTracking,
 };
 
 // Logs a Home action and attributes it to the NTP or Start surface.

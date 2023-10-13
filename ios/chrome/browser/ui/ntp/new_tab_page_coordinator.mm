@@ -1274,6 +1274,15 @@
 - (void)setUpListItemOpened {
   RecordHomeAction(IOSHomeActionType::kSetUpList, [self isStartSurface]);
 }
+
+- (void)safetyCheckOpened {
+  RecordHomeAction(IOSHomeActionType::kSafetyCheck, [self isStartSurface]);
+}
+
+- (void)parcelTrackingOpened {
+  RecordHomeAction(IOSHomeActionType::kParcelTracking, [self isStartSurface]);
+}
+
 #pragma mark - OverscrollActionsControllerDelegate
 
 - (void)overscrollActionNewTab:(OverscrollActionsController*)controller {

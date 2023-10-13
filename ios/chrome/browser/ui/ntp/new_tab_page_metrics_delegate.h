@@ -23,6 +23,12 @@
 // A Set Up List item has been tapped.
 - (void)setUpListItemOpened;
 
+// The Safety Check module was tapped.
+- (void)safetyCheckOpened;
+
+// The Parcel Tracking module was tapped.
+- (void)parcelTrackingOpened;
+
 @end
 
 #endif  // IOS_CHROME_BROWSER_UI_NTP_NEW_TAB_PAGE_METRICS_DELEGATE_H_
