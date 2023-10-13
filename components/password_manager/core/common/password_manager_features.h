@@ -43,9 +43,7 @@ BASE_DECLARE_FEATURE(kPasswordGenerationExperiment);
 #endif
 BASE_DECLARE_FEATURE(kPasswordsImportM2);
 BASE_DECLARE_FEATURE(kRecoverFromNeverSaveAndroid);
-#if BUILDFLAG(IS_MAC) || BUILDFLAG(IS_LINUX)
-BASE_DECLARE_FEATURE(kSkipUndecryptablePasswords);
-#endif
+
 #if BUILDFLAG(IS_ANDROID)
 BASE_DECLARE_FEATURE(kPasskeyManagementUsingAccountSettingsAndroid);
 BASE_DECLARE_FEATURE(kPasswordEditDialogWithDetails);
