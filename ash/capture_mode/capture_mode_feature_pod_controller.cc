@@ -61,7 +61,7 @@ std::unique_ptr<FeatureTile> CaptureModeFeaturePodController::CreateTile(
       /*is_togglable=*/false,
       compact ? FeatureTile::TileType::kCompact
               : FeatureTile::TileType::kPrimary);
-  feature_tile->SetID(VIEW_ID_SCREEN_CAPTURE_FEATURE_TILE);
+  feature_tile->SetID(VIEW_ID_FEATURE_TILE_SCREEN_CAPTURE);
 
   const bool target_visibility = CalculateButtonVisibility();
   feature_tile->SetVisible(target_visibility);

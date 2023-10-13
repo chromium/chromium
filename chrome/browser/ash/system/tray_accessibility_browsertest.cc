@@ -196,7 +196,7 @@ class TrayAccessibilityTest : public InProcessBrowserTest,
   bool IsMenuButtonVisible() {
     bool visible = tray_test_api_->IsBubbleViewVisible(
         base::FeatureList::IsEnabled(ash::features::kQsRevamp)
-            ? ash::VIEW_ID_ACCESSIBILITY_FEATURE_TILE
+            ? ash::VIEW_ID_FEATURE_TILE_ACCESSIBILITY
             : ash::VIEW_ID_ACCESSIBILITY_TRAY_ITEM,
         true /* open_tray */);
     tray_test_api_->CloseBubble();

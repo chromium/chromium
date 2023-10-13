@@ -86,7 +86,7 @@ std::unique_ptr<FeatureTile> QuietModeFeaturePodController::CreateTile(
       compact ? FeatureTile::TileType::kCompact
               : FeatureTile::TileType::kPrimary);
   tile_ = tile.get();
-  tile_->SetID(VIEW_ID_DND_FEATURE_TILE);
+  tile_->SetID(VIEW_ID_FEATURE_TILE_DND);
 
   const bool target_visibility = CalculateButtonVisibility();
   tile_->SetVisible(target_visibility);

@@ -18,12 +18,6 @@ enum ViewID {
   // Icon that indicates the virtual keyboard is enabled.
   VIEW_ID_ACCESSIBILITY_VIRTUAL_KEYBOARD_ENABLED,
 
-  // Feature tile ids.
-  VIEW_ID_ACCESSIBILITY_FEATURE_TILE,
-  VIEW_ID_SCREEN_CAPTURE_FEATURE_TILE,
-  VIEW_ID_DND_FEATURE_TILE,
-  VIEW_ID_AUTOROTATE_FEATURE_TILE,
-
   // Accessibility feature pod button in main view.
   VIEW_ID_ACCESSIBILITY_TRAY_ITEM,
   // The entry to add esim in the quick settings network subpage.
@@ -36,6 +30,12 @@ enum ViewID {
   VIEW_ID_CAST_CAST_VIEW_LABEL,
   VIEW_ID_CAST_MAIN_VIEW,
   VIEW_ID_CAST_SELECT_VIEW,
+
+  // Feature tile ids.
+  VIEW_ID_FEATURE_TILE_ACCESSIBILITY,
+  VIEW_ID_FEATURE_TILE_AUTOROTATE,
+  VIEW_ID_FEATURE_TILE_DND,
+  VIEW_ID_FEATURE_TILE_SCREEN_CAPTURE,
 
   // Game Dashboard elements
   VIEW_ID_GD_CONTROLS_DETAILS_ROW,

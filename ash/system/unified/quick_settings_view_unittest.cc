@@ -90,7 +90,7 @@ TEST_F(QuickSettingsViewTest, CastAndAutoRotateCompactTiles) {
   EXPECT_TRUE(cast_tile->GetVisible());
   EXPECT_EQ(cast_tile->tile_type(), FeatureTile::TileType::kPrimary);
 
-  FeatureTile* autorotate_tile = GetTileById(VIEW_ID_AUTOROTATE_FEATURE_TILE);
+  FeatureTile* autorotate_tile = GetTileById(VIEW_ID_FEATURE_TILE_AUTOROTATE);
   EXPECT_FALSE(autorotate_tile->GetVisible());
 
   tray->CloseBubble();
@@ -105,7 +105,7 @@ TEST_F(QuickSettingsViewTest, CastAndAutoRotateCompactTiles) {
   EXPECT_TRUE(cast_tile->GetVisible());
   EXPECT_EQ(cast_tile->tile_type(), FeatureTile::TileType::kCompact);
 
-  autorotate_tile = GetTileById(VIEW_ID_AUTOROTATE_FEATURE_TILE);
+  autorotate_tile = GetTileById(VIEW_ID_FEATURE_TILE_AUTOROTATE);
   EXPECT_TRUE(autorotate_tile->GetVisible());
   EXPECT_EQ(autorotate_tile->tile_type(), FeatureTile::TileType::kCompact);
 
@@ -118,11 +118,11 @@ TEST_F(QuickSettingsViewTest, CaptureAndDNDCompactTiles) {
   auto* tray = GetPrimaryUnifiedSystemTray();
   tray->ShowBubble();
 
-  FeatureTile* capture_tile = GetTileById(VIEW_ID_SCREEN_CAPTURE_FEATURE_TILE);
+  FeatureTile* capture_tile = GetTileById(VIEW_ID_FEATURE_TILE_SCREEN_CAPTURE);
   EXPECT_TRUE(capture_tile->GetVisible());
   EXPECT_EQ(capture_tile->tile_type(), FeatureTile::TileType::kCompact);
 
-  FeatureTile* dnd_tile = GetTileById(VIEW_ID_DND_FEATURE_TILE);
+  FeatureTile* dnd_tile = GetTileById(VIEW_ID_FEATURE_TILE_DND);
   EXPECT_TRUE(dnd_tile->GetVisible());
   EXPECT_EQ(dnd_tile->tile_type(), FeatureTile::TileType::kCompact);
 
