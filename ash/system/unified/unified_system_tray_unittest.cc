@@ -1065,6 +1065,27 @@ TEST_P(UnifiedSystemTrayTest, NoCamOrMicViewWhenVcEnabled) {
   EXPECT_FALSE(tray->camera_view());
 }
 
+// Tests that there's no bubble in the kiosk mode.
+TEST_P(UnifiedSystemTrayTest, NoBubbleAndNoDetailedViewInKioskMode) {
+  SimulateKioskMode(user_manager::USER_TYPE_KIOSK_APP);
+
+  auto* tray = GetPrimaryUnifiedSystemTray();
+  tray->ShowBubble();
+
+  // In the kiosk mode, the bubble doesn't exist.
+  EXPECT_FALSE(IsBubbleShown());
+
+  // Trying to show any of the detailed view will not show the bubble.
+  tray->ShowAudioDetailedViewBubble();
+  EXPECT_FALSE(IsBubbleShown());
+
+  tray->ShowNetworkDetailedViewBubble();
+  EXPECT_FALSE(IsBubbleShown());
+
+  tray->ShowDisplayDetailedViewBubble();
+  EXPECT_FALSE(IsBubbleShown());
+}
+
 // Test suite for the system tray when `kPrivacyIndicators` is enabled.
 class UnifiedSystemTrayPrivacyIndicatorsTest
     : public AshTestBase,
