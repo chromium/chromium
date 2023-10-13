@@ -47,7 +47,7 @@ public class HubLayout extends Layout {
 
     private final LayoutStateProvider mLayoutStateProvider;
 
-    private HubLayoutAnimation mCurrentAnimation;
+    private HubLayoutAnimatorProvider mCurrentAnimatorProvider;
 
     /**
      * The previous {@link LayoutType}, valid between {@link #show(long, boolean)} and
@@ -71,8 +71,9 @@ public class HubLayout extends Layout {
     /** Returns the current {@link HubLayoutAnimationType}. */
     @HubLayoutAnimationType
     int getCurrentAnimationType() {
-        return mCurrentAnimation != null ? mCurrentAnimation.getAnimationType()
-                                         : HubLayoutAnimationType.NONE;
+        return mCurrentAnimatorProvider != null
+                ? mCurrentAnimatorProvider.getPlannedAnimationType()
+                : HubLayoutAnimationType.NONE;
     }
 
     // Layout.java Implementation:
@@ -146,11 +147,14 @@ public class HubLayout extends Layout {
         // TODO(crbug/1487209): Get the animations from a Pane or HubManager and forward some events
         // along so visibility and animation timing are synced.
         if (DeviceFormFactor.isNonMultiDisplayContextOnTablet(getContext())) {
-            mCurrentAnimation = new HubLayoutAnimation(HubLayoutAnimationType.TRANSLATE_UP);
+            mCurrentAnimatorProvider =
+                    new EmptyHubLayoutAnimatorProvider(HubLayoutAnimationType.TRANSLATE_UP);
         } else if (mPreviousLayoutType == LayoutType.START_SURFACE) {
-            mCurrentAnimation = new HubLayoutAnimation(HubLayoutAnimationType.FADE_IN);
+            mCurrentAnimatorProvider =
+                    new EmptyHubLayoutAnimatorProvider(HubLayoutAnimationType.FADE_IN);
         } else {
-            mCurrentAnimation = new HubLayoutAnimation(HubLayoutAnimationType.SHRINK_TAB);
+            mCurrentAnimatorProvider =
+                    new EmptyHubLayoutAnimatorProvider(HubLayoutAnimationType.SHRINK_TAB);
         }
 
         // TODO(crbug/1487209): Make this transition async and play an animation before calling
@@ -162,7 +166,7 @@ public class HubLayout extends Layout {
         super.doneShowing();
         mCurrentSceneLayer = mEmptySceneLayer;
         mPreviousLayoutType = LayoutType.NONE;
-        mCurrentAnimation = null;
+        mCurrentAnimatorProvider = null;
         resetLayoutTabs();
     }
 
@@ -185,11 +189,14 @@ public class HubLayout extends Layout {
         // TODO(crbug/1487209): Get the animations from a Pane or HubManager and forward some events
         // along so visibility and animation timing are synced.
         if (DeviceFormFactor.isNonMultiDisplayContextOnTablet(getContext())) {
-            mCurrentAnimation = new HubLayoutAnimation(HubLayoutAnimationType.TRANSLATE_DOWN);
+            mCurrentAnimatorProvider =
+                    new EmptyHubLayoutAnimatorProvider(HubLayoutAnimationType.TRANSLATE_DOWN);
         } else if (nextLayoutType == LayoutType.START_SURFACE) {
-            mCurrentAnimation = new HubLayoutAnimation(HubLayoutAnimationType.FADE_OUT);
+            mCurrentAnimatorProvider =
+                    new EmptyHubLayoutAnimatorProvider(HubLayoutAnimationType.FADE_OUT);
         } else {
-            mCurrentAnimation = new HubLayoutAnimation(HubLayoutAnimationType.EXPAND_TAB);
+            mCurrentAnimatorProvider =
+                    new EmptyHubLayoutAnimatorProvider(HubLayoutAnimationType.EXPAND_TAB);
         }
 
         // TODO(crbug/1487209): Make this transition async and play an animation before calling
@@ -199,15 +206,12 @@ public class HubLayout extends Layout {
     @Override
     public void doneHiding() {
         super.doneHiding();
-        mCurrentAnimation = null;
+        mCurrentAnimatorProvider = null;
     }
 
     @Override
     protected void forceAnimationToFinish() {
-        if (mCurrentAnimation != null) {
-            mCurrentAnimation.forceAnimationToFinish();
-            mCurrentAnimation = null;
-        }
+        // TODO(crbug/1487209): implement this functionality.
     }
 
     @Override
@@ -232,7 +236,8 @@ public class HubLayout extends Layout {
 
         mCurrentSceneLayer = mEmptySceneLayer;
 
-        mCurrentAnimation = new HubLayoutAnimation(HubLayoutAnimationType.NEW_TAB);
+        mCurrentAnimatorProvider =
+                new EmptyHubLayoutAnimatorProvider(HubLayoutAnimationType.NEW_TAB);
 
         // TODO(crbug/1487209): Make this transition async and play an animation before calling
         // doneHiding().
@@ -241,7 +246,7 @@ public class HubLayout extends Layout {
     @Override
     protected boolean onUpdateAnimation(long time, boolean jumpToEnd) {
         // Return whether an animation is running. Ignore the inputs like TabSwitcherLayout.
-        return mCurrentAnimation != null;
+        return mCurrentAnimatorProvider != null;
     }
 
     @Override
@@ -298,7 +303,7 @@ public class HubLayout extends Layout {
 
     @Override
     public boolean isRunningAnimations() {
-        return mCurrentAnimation != null;
+        return mCurrentAnimatorProvider != null;
     }
 
     // Internal helpers
