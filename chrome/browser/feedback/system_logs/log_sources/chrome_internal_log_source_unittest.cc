@@ -31,6 +31,8 @@
 #include "chromeos/ash/components/login/auth/auth_events_recorder.h"
 #endif
 
+#include "gpu/config/gpu_finch_features.h"
+
 namespace system_logs {
 namespace {
 
@@ -89,6 +91,17 @@ TEST_F(ChromeInternalLogSourceTest, VersionTagContainsExtendedLabel) {
       response->at("CHROME VERSION"));
 }
 #endif  // BUILDFLAG(GOOGLE_CHROME_BRANDING) && !BUILDFLAG(IS_CHROMEOS)
+
+TEST_F(ChromeInternalLogSourceTest, GraphiteEnabledPresentAndValid) {
+  auto response = GetChromeInternalLogs();
+  auto value = response->at("graphite_enabled");
+
+  std::string expected_value =
+      features::IsSkiaGraphiteEnabled(base::CommandLine::ForCurrentProcess())
+          ? "true"
+          : "false";
+  EXPECT_EQ(value, expected_value);
+}
 
 #if BUILDFLAG(IS_MAC) || BUILDFLAG(IS_WIN)
 TEST_F(ChromeInternalLogSourceTest, CpuTypePresentAndValid) {

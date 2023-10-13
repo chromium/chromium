@@ -9,6 +9,7 @@
 #include <utility>
 #include <vector>
 
+#include "base/command_line.h"
 #include "base/functional/bind.h"
 #include "base/functional/callback_helpers.h"
 #include "base/json/json_string_value_serializer.h"
@@ -38,6 +39,7 @@
 #include "extensions/common/api/power.h"
 #include "extensions/common/extension.h"
 #include "extensions/common/extension_set.h"
+#include "gpu/config/gpu_finch_features.h"
 #include "ui/display/types/display_constants.h"
 
 #if BUILDFLAG(IS_CHROMEOS_ASH)
@@ -83,6 +85,7 @@ constexpr char kSyncDataKey[] = "about_sync_data";
 constexpr char kExtensionsListKey[] = "extensions";
 constexpr char kPowerApiListKey[] = "chrome.power extensions";
 constexpr char kChromeVersionTag[] = "CHROME VERSION";
+constexpr char kGraphiteEnabled[] = "graphite_enabled";
 
 #if BUILDFLAG(IS_CHROMEOS_ASH)
 constexpr char kLacrosChromeVersionPrefix[] = "Lacros ";
@@ -437,6 +440,12 @@ void ChromeInternalLogSource::Fetch(SysLogsSourceCallback callback) {
 #elif BUILDFLAG(IS_WIN)
   response->emplace(kCpuArch, WinCpuArchAsString());
 #endif
+
+  std::string graphite_enabled =
+      features::IsSkiaGraphiteEnabled(base::CommandLine::ForCurrentProcess())
+          ? "true"
+          : "false";
+  response->emplace(kGraphiteEnabled, graphite_enabled);
 
   if (ProfileManager::GetLastUsedProfile()->IsChild())
     response->emplace("account_type", "child");
