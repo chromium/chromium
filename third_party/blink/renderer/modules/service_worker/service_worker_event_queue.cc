@@ -20,7 +20,7 @@ namespace blink {
 // See: https://crbug.com/1462568
 BASE_FEATURE(kServiceWorkerEventQueueWaitForScriptEvaluation,
              "ServiceWorkerEventQueueWaitForScriptEvaluation",
-             base::FEATURE_DISABLED_BY_DEFAULT);
+             base::FEATURE_ENABLED_BY_DEFAULT);
 
 // static
 constexpr base::TimeDelta ServiceWorkerEventQueue::kEventTimeout;
