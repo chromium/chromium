@@ -122,6 +122,9 @@ suite('ApnListTest', function() {
     await flushTasks();
     assertFalse(!!getDescriptionWithLink());
     assertTrue(!!getDescriptionWithoutLink());
+    assertEquals(
+        'assertive',
+        apnList.shadowRoot.querySelector('#apnDescription').ariaLive);
   });
 
   test('No managedCellularProperties', async function() {
