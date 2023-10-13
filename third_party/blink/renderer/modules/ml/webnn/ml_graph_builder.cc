@@ -1679,40 +1679,24 @@ HeapVector<Member<const MLOperand>> MLGraphBuilder::split(
     const uint32_t splits,
     const MLSplitOptions* options,
     ExceptionState& exception_state) {
-  const auto& input_shape = input->Dimensions();
-  const auto input_rank = input_shape.size();
-  const auto axis = options->axis();
-  // According to WebNN spec:
-  // https://www.w3.org/TR/webnn/#dom-mlsplitoptions-axis, the axis must be in
-  // the range [0, N-1] where N is the rank of input tensor.
-  if (!ValidateAxis(axis, input_rank, exception_state)) {
-    return {};
-  }
-
-  if (splits == 0) {
-    exception_state.ThrowDOMException(DOMExceptionCode::kDataError,
-                                      "The splits must be greater than 0.");
-    return {};
-  }
-  if (input_shape[axis] % splits != 0) {
-    // According to WebNN spec:
-    // https://www.w3.org/TR/webnn/#dom-mlgraphbuilder-split-input-splits-options-splits,
-    // the splits specifies the number of output tensors along the axis. The
-    // number must evenly divide the dimension size of input along options.axis.
+  auto validated_outputs = webnn::ValidateSplitAndInferOutput(
+      ConvertToComponentOperand(input), {
+                                            .splits = splits,
+                                            .axis = options->axis(),
+                                        });
+  if (!validated_outputs.has_value()) {
     exception_state.ThrowDOMException(
         DOMExceptionCode::kDataError,
-        "The splits must evenly divide the dimension size of input along "
-        "options.axis.");
+        WTF::String::FromUTF8(validated_outputs.error()));
     return {};
   }
 
-  auto output_shape = input_shape;
-  output_shape[axis] = input_shape[axis] / splits;
   auto* split = MakeGarbageCollected<MLSplitOperator>(this, splits, options);
   HeapVector<Member<const MLOperand>> outputs;
-  for (uint32_t i = 0; i < splits; ++i) {
-    auto output = MLOperand::ValidateAndCreateOutput(this, input->Type(),
-                                                     output_shape, split);
+  for (const auto& validated_output : validated_outputs.value()) {
+    auto output = MLOperand::ValidateAndCreateOutput(
+        this, ComponentOperandTypeToBlink(validated_output.data_type),
+        Vector<uint32_t>(validated_output.dimensions), split);
     if (!output.has_value()) {
       exception_state.ThrowDOMException(DOMExceptionCode::kDataError,
                                         output.error());
@@ -1732,44 +1716,24 @@ HeapVector<Member<const MLOperand>> MLGraphBuilder::split(
     const Vector<uint32_t>& splits,
     const MLSplitOptions* options,
     ExceptionState& exception_state) {
-  const auto& input_shape = input->Dimensions();
-  const auto input_rank = input_shape.size();
-  const auto axis = options->axis();
-  // According to WebNN spec:
-  // https://www.w3.org/TR/webnn/#dom-mlsplitoptions-axis, the axis must be in
-  // the range [0, N-1] where N is the rank of input tensor.
-  if (!ValidateAxis(axis, input_rank, exception_state)) {
-    return {};
-  }
-  auto checked_splits_sum = base::MakeCheckedNum<uint32_t>(0);
-  for (auto split_size : splits) {
-    checked_splits_sum += split_size;
-  }
-  if (!checked_splits_sum.IsValid()) {
-    exception_state.ThrowDOMException(DOMExceptionCode::kDataError,
-                                      "The values of splits are too large.");
-    return {};
-  }
-  if (checked_splits_sum.ValueOrDie() != input_shape[axis]) {
-    // According to WebNN spec:
-    // https://www.w3.org/TR/webnn/#dom-mlgraphbuilder-split-input-splits-options-splits,
-    // the splits parameter specifies the sizes of each output tensor along the
-    // options.axis. The sum of sizes must equal to the dimension size of input
-    // along options.axis.
+  auto validated_outputs = webnn::ValidateSplitAndInferOutput(
+      ConvertToComponentOperand(input), {
+                                            .splits = splits,
+                                            .axis = options->axis(),
+                                        });
+  if (!validated_outputs.has_value()) {
     exception_state.ThrowDOMException(
         DOMExceptionCode::kDataError,
-        "The sum of split sizes must equal to the dimension size of input "
-        "along options.axis.");
+        WTF::String::FromUTF8(validated_outputs.error()));
     return {};
   }
 
   auto* split = MakeGarbageCollected<MLSplitOperator>(this, splits, options);
   HeapVector<Member<const MLOperand>> outputs;
-  for (auto split_size : splits) {
-    auto output_shape = input_shape;
-    output_shape[axis] = split_size;
-    auto output = MLOperand::ValidateAndCreateOutput(this, input->Type(),
-                                                     output_shape, split);
+  for (const auto& validated_output : validated_outputs.value()) {
+    auto output = MLOperand::ValidateAndCreateOutput(
+        this, ComponentOperandTypeToBlink(validated_output.data_type),
+        Vector<uint32_t>(validated_output.dimensions), split);
     if (!output.has_value()) {
       exception_state.ThrowDOMException(DOMExceptionCode::kDataError,
                                         output.error());

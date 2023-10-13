@@ -156,6 +156,10 @@ class GraphInfoBuilder final {
 
   void BuildSoftmax(uint64_t input_operand_id, uint64_t output_operand_id);
 
+  void BuildSplit(uint64_t input_operand_id,
+                  const std::vector<uint64_t>& output_operand_ids,
+                  uint32_t axis);
+
   void BuildTranspose(uint64_t input_operand_id,
                       uint64_t output_operand_id,
                       std::vector<uint32_t> permutation);

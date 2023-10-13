@@ -8,6 +8,7 @@
 #include "third_party/blink/renderer/bindings/modules/v8/v8_ml_conv_2d_options.h"
 #include "third_party/blink/renderer/bindings/modules/v8/v8_ml_gemm_options.h"
 #include "third_party/blink/renderer/bindings/modules/v8/v8_ml_pool_2d_options.h"
+#include "third_party/blink/renderer/bindings/modules/v8/v8_ml_split_options.h"
 #include "third_party/blink/renderer/bindings/modules/v8/v8_ml_transpose_options.h"
 #include "third_party/blink/renderer/modules/ml/webnn/ml_activation.h"
 #include "third_party/blink/renderer/modules/ml/webnn/ml_graph_utils.h"
@@ -432,6 +433,28 @@ OperationPtr CreateSoftmaxOperation(const OperandToIdMap& operand_to_id_map,
   return webnn::mojom::blink::Operation::NewSoftmax(std::move(softmax_mojo));
 }
 
+OperationPtr CreateSplitOperation(const OperandToIdMap& operand_to_id_map,
+                                  const MLOperator* split) {
+  const uint64_t input_operand_id =
+      GetOperatorInputId(split, operand_to_id_map);
+
+  auto split_mojo = webnn::mojom::blink::Split::New();
+  split_mojo->input_operand_id = input_operand_id;
+  const wtf_size_t number_of_splits = split->Outputs().size();
+  split_mojo->output_operand_ids.reserve(number_of_splits);
+  for (uint32_t i = 0; i < number_of_splits; ++i) {
+    split_mojo->output_operand_ids.push_back(
+        GetOperatorOutputId(split, operand_to_id_map, i));
+  }
+  const auto* options =
+      static_cast<const blink::MLSplitOptions*>(split->Options());
+  CHECK(options);
+  if (options->hasAxis()) {
+    split_mojo->axis = options->axis();
+  }
+  return webnn::mojom::blink::Operation::NewSplit(std::move(split_mojo));
+}
+
 OperationPtr CreateTransposeOperation(const OperandToIdMap& operand_to_id_map,
                                       const MLOperator* transpose) {
   const uint64_t input_operand_id =
@@ -484,6 +507,8 @@ base::expected<OperationPtr, String> ConvertToMojoOperation(
       return CreateReshapeOperator(operand_to_id_map, op);
     case MLOperator::OperatorKind::kSoftmax:
       return CreateSoftmaxOperation(operand_to_id_map, op);
+    case MLOperator::OperatorKind::kSplit:
+      return CreateSplitOperation(operand_to_id_map, op);
     case MLOperator::OperatorKind::kTranspose:
       return CreateTransposeOperation(operand_to_id_map, op);
     case MLOperator::OperatorKind::kHardSwish:
@@ -502,7 +527,6 @@ base::expected<OperationPtr, String> ConvertToMojoOperation(
     case MLOperator::OperatorKind::kFloor:
     case MLOperator::OperatorKind::kNeg:
     case MLOperator::OperatorKind::kSlice:
-    case MLOperator::OperatorKind::kSplit:
     case MLOperator::OperatorKind::kTanh:
       return base::unexpected(MLOperator::OperatorKindToString(op->Kind()) +
                               " is not implemented.");

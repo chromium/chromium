@@ -436,6 +436,51 @@ bool ValidateSoftmax(const IdToOperandMap& id_to_operand_map,
   return true;
 }
 
+bool ValidateSplit(const IdToOperandMap& id_to_operand_map,
+                   const mojom::SplitPtr& split) {
+  auto* input = GetMojoOperand(id_to_operand_map, split->input_operand_id);
+  if (!input) {
+    // The split operator is invalid.
+    return false;
+  }
+  std::vector<uint32_t> splits;
+  splits.reserve(split->output_operand_ids.size());
+  for (uint64_t output_id : split->output_operand_ids) {
+    auto* output = GetMojoOperand(id_to_operand_map, output_id);
+    if (!output || input == output) {
+      return false;
+    }
+
+    if (split->axis >= output->dimensions.size()) {
+      return false;
+    }
+    splits.push_back(output->dimensions[split->axis]);
+  }
+
+  auto validated_output =
+      ValidateSplitAndInferOutput(ConvertToComponentOperand(input),
+                                  {.splits = splits, .axis = split->axis});
+  if (!validated_output.has_value()) {
+    return false;
+  }
+
+  if (split->output_operand_ids.size() != validated_output->size()) {
+    // The number of specified outputs did not match the expected number of
+    // outputs.
+    return false;
+  }
+
+  for (uint32_t i = 0; i < validated_output->size(); ++i) {
+    auto* output =
+        GetMojoOperand(id_to_operand_map, split->output_operand_ids[i]);
+    if (validated_output->at(i) != ConvertToComponentOperand(output)) {
+      return false;
+    }
+  }
+
+  return true;
+}
+
 bool ValidateTranspose(const IdToOperandMap& id_to_operand_map,
                        const mojom::TransposePtr& transpose) {
   auto* input = GetMojoOperand(id_to_operand_map, transpose->input_operand_id);
@@ -510,6 +555,8 @@ bool ValidateOperation(const IdToOperandMap& id_to_operand_map,
       return ValidateRelu(id_to_operand_map, operation->get_relu());
     case mojom::Operation::Tag::kSoftmax:
       return ValidateSoftmax(id_to_operand_map, operation->get_softmax());
+    case mojom::Operation::Tag::kSplit:
+      return ValidateSplit(id_to_operand_map, operation->get_split());
     case mojom::Operation::Tag::kTranspose:
       return ValidateTranspose(id_to_operand_map, operation->get_transpose());
     case mojom::Operation::Tag::kGenericOperator:

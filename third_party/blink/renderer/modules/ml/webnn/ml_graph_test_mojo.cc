@@ -12,6 +12,7 @@
 #include "services/webnn/public/mojom/webnn_context_provider.mojom-blink.h"
 #include "services/webnn/public/mojom/webnn_graph.mojom-blink.h"
 #include "testing/gtest/include/gtest/gtest.h"
+#include "third_party/abseil-cpp/absl/types/variant.h"
 #include "third_party/blink/public/common/browser_interface_broker_proxy.h"
 #include "third_party/blink/public/common/features.h"
 #include "third_party/blink/renderer/bindings/core/v8/native_value_traits_impl.h"
@@ -1655,6 +1656,95 @@ TEST_P(MLGraphTestMojo, ConstantTest) {
         .expected = {.type = blink_mojom::Operand::DataType::kUint8,
                      .dimensions = {2, 3}},
         .expected_constant_data = {1, 2, 3, 4, 5, 6}}
+        .Test(*this, scope, builder);
+  }
+}
+
+struct SplitTester {
+  OperandInfoBlink input;
+  absl::variant<uint32_t, Vector<uint32_t>> splits;
+  absl::optional<uint32_t> axis;
+  Vector<OperandInfoMojo> expected;
+
+  void Test(MLGraphTestMojo& helper,
+            V8TestingScope& scope,
+            MLGraphBuilder* builder) {
+    auto* input_operand = BuildInput(builder, "input", input.dimensions,
+                                     input.type, scope.GetExceptionState());
+    auto* attributes = MLSplitOptions::Create();
+    if (axis.has_value()) {
+      attributes->setAxis(axis.value());
+    }
+    HeapVector<Member<MLOperand>> output_operands;
+    if (absl::holds_alternative<uint32_t>(splits)) {
+      output_operands.assign(
+          builder->split(input_operand, absl::get<uint32_t>(splits), attributes,
+                         scope.GetExceptionState()));
+    } else if (absl::holds_alternative<Vector<uint32_t>>(splits)) {
+      output_operands.assign(
+          builder->split(input_operand, absl::get<Vector<uint32_t>>(splits),
+                         attributes, scope.GetExceptionState()));
+    }
+    MLNamedOperands output_named_operand;
+    for (wtf_size_t i = 0; i < output_operands.size(); ++i) {
+      output_named_operand.push_back(
+          std::make_pair(String::Format("output%u", i), output_operands.at(i)));
+    }
+    auto [graph, build_exception] =
+        helper.BuildGraph(scope, builder, output_named_operand);
+    ASSERT_NE(graph, nullptr);
+
+    auto graph_info = helper.GetGraphInfo();
+    // Verify the graph information of mojo are as expected.
+    ASSERT_EQ(graph_info->operations.size(), 1u);
+    auto& operation = graph_info->operations[0];
+    EXPECT_TRUE(operation->is_split());
+    EXPECT_EQ(graph_info->output_operands.size(), expected.size());
+    for (wtf_size_t i = 0; i < expected.size(); ++i) {
+      auto output_operand_id = graph_info->output_operands[i];
+      auto output_operand_iter =
+          graph_info->id_to_operand_map.find(output_operand_id);
+      ASSERT_TRUE(output_operand_iter != graph_info->id_to_operand_map.end());
+      EXPECT_EQ(output_operand_iter->value->data_type, expected[i].type);
+      EXPECT_EQ(output_operand_iter->value->dimensions, expected[i].dimensions);
+    }
+  }
+};
+
+TEST_P(MLGraphTestMojo, SplitTest) {
+  V8TestingScope scope;
+  // Bind fake WebNN Context in the service for testing.
+  ScopedWebNNServiceBinder scoped_setup_binder(*this, scope);
+  base::test::ScopedFeatureList scoped_feature_list;
+  scoped_feature_list.InitAndEnableFeature(
+      webnn::features::kEnableMachineLearningNeuralNetworkService);
+  auto* options = MLContextOptions::Create();
+  // Create WebNN Context with GPU device preference.
+  options->setDevicePreference(V8MLDevicePreference::Enum::kGpu);
+  auto* builder = CreateMLGraphBuilder(scope.GetExecutionContext(), options);
+  using v8 = V8MLOperandType::Enum;
+  using blink = blink_mojom::Operand::DataType;
+  {
+    SplitTester{.input = {.type = v8::kFloat32, .dimensions = {2, 2}},
+                .splits = 2,
+                .expected = {{.type = blink::kFloat32, .dimensions = {1, 2}},
+                             {.type = blink::kFloat32, .dimensions = {1, 2}}}}
+        .Test(*this, scope, builder);
+  }
+  {
+    SplitTester{.input = {.type = v8::kFloat32, .dimensions = {2, 2}},
+                .splits = 2,
+                .axis = 1,
+                .expected = {{.type = blink::kFloat32, .dimensions = {2, 1}},
+                             {.type = blink::kFloat32, .dimensions = {2, 1}}}}
+        .Test(*this, scope, builder);
+  }
+  {
+    SplitTester{.input = {.type = v8::kFloat32, .dimensions = {6, 2}},
+                .splits = Vector<uint32_t>{1, 2, 3},
+                .expected = {{.type = blink::kFloat32, .dimensions = {1, 2}},
+                             {.type = blink::kFloat32, .dimensions = {2, 2}},
+                             {.type = blink::kFloat32, .dimensions = {3, 2}}}}
         .Test(*this, scope, builder);
   }
 }

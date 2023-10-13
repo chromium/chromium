@@ -3,6 +3,7 @@
 // found in the LICENSE file.
 
 #include "services/webnn/webnn_graph_impl.h"
+#include "base/strings/string_number_conversions.h"
 #include "base/test/bind.h"
 #include "base/test/task_environment.h"
 #include "components/ml/webnn/graph_validation_utils.h"
@@ -1116,6 +1117,119 @@ TEST_F(WebNNGraphImplTest, SoftmaxTest) {
                              .dimensions = {2, 5}},
                   .expected = false}
         .Test();
+  }
+}
+
+struct SplitTester {
+  OperandInfo input;
+  std::vector<OperandInfo> outputs;
+  uint32_t axis = 0;
+  bool expected;
+
+  void Test() {
+    // Build the graph with mojo type.
+    GraphInfoBuilder builder;
+    uint64_t input_operand_id =
+        builder.BuildInput("input", input.dimensions, input.type);
+
+    std::vector<uint64_t> output_operand_ids;
+    for (size_t i = 0; i < outputs.size(); ++i) {
+      output_operand_ids.push_back(
+          builder.BuildOutput("output" + base::NumberToString(i),
+                              outputs[i].dimensions, outputs[i].type));
+    }
+    builder.BuildSplit(input_operand_id, output_operand_ids, axis);
+    EXPECT_EQ(WebNNGraphImpl::ValidateGraph(builder.GetGraphInfo()), expected);
+  }
+};
+
+TEST_F(WebNNGraphImplTest, ValidateSplitTest) {
+  using mojom::Operand::DataType::kFloat32;
+  {
+    // Tests default axis split.
+    SplitTester{.input = {.type = kFloat32, .dimensions = {2, 2}},
+                .outputs = {{.type = kFloat32, .dimensions = {1, 2}},
+                            {.type = kFloat32, .dimensions = {1, 2}}},
+                .expected = true}
+        .Test();
+  }
+  {
+    // Tests axis=1 split.
+    SplitTester{.input = {.type = kFloat32, .dimensions = {2, 2}},
+                .outputs = {{.type = kFloat32, .dimensions = {2, 1}},
+                            {.type = kFloat32, .dimensions = {2, 1}}},
+                .axis = 1,
+                .expected = true}
+        .Test();
+  }
+  {
+    // Tests for an invalid graph where not all output types match the input
+    // type.
+    SplitTester{.input = {.type = kFloat32, .dimensions = {2, 2}},
+                .outputs = {{.type = kFloat32, .dimensions = {1, 2}},
+                            {.type = mojom::Operand::DataType::kFloat16,
+                             .dimensions = {1, 2}}},
+                .expected = false}
+        .Test();
+  }
+  {
+    // Tests for an invalid graph where the sum of the splits is less than the
+    // input tensor size.
+    SplitTester{.input = {.type = kFloat32, .dimensions = {2, 6}},
+                .outputs = {{.type = kFloat32, .dimensions = {2, 1}},
+                            {.type = kFloat32, .dimensions = {2, 2}},
+                            {.type = kFloat32, .dimensions = {2, 2}}},
+                .axis = 1,
+                .expected = false}
+        .Test();
+  }
+  {
+    // Tests for an invalid graph where the sum of the splits is greater than
+    // the input tensor size.
+    SplitTester{.input = {.type = kFloat32, .dimensions = {2, 6}},
+                .outputs = {{.type = kFloat32, .dimensions = {2, 1}},
+                            {.type = kFloat32, .dimensions = {2, 2}},
+                            {.type = kFloat32, .dimensions = {2, 4}}},
+                .axis = 1,
+                .expected = false}
+        .Test();
+  }
+  {
+    // Tests for an invalid graph where specified axis is greater then the rank
+    // of the input tensor
+    SplitTester{.input = {.type = kFloat32, .dimensions = {2, 2}},
+                .outputs = {{.type = kFloat32, .dimensions = {1, 2}},
+                            {.type = kFloat32, .dimensions = {1, 2}}},
+                .axis = 2,
+                .expected = false}
+        .Test();
+  }
+  {
+    // Tests for an invalid graph where a split of size 0 is specified.
+    SplitTester{.input = {.type = kFloat32, .dimensions = {2, 2}},
+                .outputs = {{.type = kFloat32, .dimensions = {0, 2}},
+                            {.type = kFloat32, .dimensions = {2, 2}}},
+                .expected = false}
+        .Test();
+  }
+  {
+    // Tests for an invalid graph where a split as specified along multiple
+    // axis.
+    SplitTester{.input = {.type = kFloat32, .dimensions = {4, 6}},
+                .outputs = {{.type = kFloat32, .dimensions = {1, 2}},
+                            {.type = kFloat32, .dimensions = {2, 3}},
+                            {.type = kFloat32, .dimensions = {1, 1}}},
+                .expected = false}
+        .Test();
+  }
+  {
+    GraphInfoBuilder builder;
+    uint64_t input_operand_id = builder.BuildInput("input", {4, 6}, kFloat32);
+
+    builder.BuildSplit(input_operand_id, {input_operand_id}, 0);
+    builder.BuildSplit(input_operand_id,
+                       {builder.BuildOutput("output", {4, 6}, kFloat32)}, 0);
+    EXPECT_EQ(WebNNGraphImpl::ValidateGraph(builder.GetGraphInfo()), false);
   }
 }
 

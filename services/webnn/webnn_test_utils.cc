@@ -63,6 +63,19 @@ uint64_t GraphInfoBuilder::BuildOutput(const std::string& name,
   return operand_id;
 }
 
+void GraphInfoBuilder::BuildSplit(
+    uint64_t input_operand_id,
+    const std::vector<uint64_t>& output_operand_ids,
+    uint32_t axis) {
+  mojom::SplitPtr split = mojom::Split::New();
+  split->input_operand_id = input_operand_id;
+  split->output_operand_ids = output_operand_ids;
+  split->axis = axis;
+
+  graph_info_->operations.push_back(
+      mojom::Operation::NewSplit(std::move(split)));
+}
+
 void GraphInfoBuilder::BuildOperator(
     mojom::Operator::Kind kind,
     const std::vector<uint64_t>& inputs,

@@ -10,6 +10,7 @@
 #include "base/containers/span.h"
 #include "base/types/expected.h"
 #include "third_party/abseil-cpp/absl/types/optional.h"
+#include "third_party/abseil-cpp/absl/types/variant.h"
 
 namespace webnn {
 
@@ -163,6 +164,25 @@ struct GemmAttributes {
 // https://www.w3.org/TR/webnn/#api-mlgraphbuilder-softmax
 base::expected<Operand, std::string> ValidateSoftmaxAndInferOutput(
     Operand input);
+
+// Contains the attributes of the split operator.
+struct SplitAttribute {
+  // splits defines how the input tensor will be split.
+  //  uint32_t: The input tensor will be split into splits number of outputs
+  //   with equal sizes.
+  //  base::span<const uint32_t>: The input tensor will be split into
+  //   splits.size() number of outputs with sizes specified in splits.
+  absl::variant<uint32_t, base::span<const uint32_t>> splits;
+  // Axis specifies which input tensor dimension will be split.
+  uint32_t axis = 0;
+};
+
+// Validate and infer the output tensors' ranks and sizes for split operator
+// based on the WebNN WebIDL
+// https://www.w3.org/TR/webnn/#api-mlgraphbuilder-split
+base::expected<std::vector<Operand>, std::string> ValidateSplitAndInferOutput(
+    const Operand& input,
+    const SplitAttribute& attributes);
 
 // Validate and infer output information of 2-D convolution operator defined in
 // WebIDL here https://www.w3.org/TR/webnn/#api-mlgraphbuilder-conv2d

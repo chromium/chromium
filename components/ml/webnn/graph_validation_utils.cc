@@ -5,6 +5,7 @@
 #include "components/ml/webnn/graph_validation_utils.h"
 
 #include <algorithm>
+#include <numeric>
 #include <set>
 
 #include "base/check_op.h"
@@ -190,6 +191,70 @@ base::expected<Operand, std::string> ValidateSoftmaxAndInferOutput(
   }
   // The output tensor of softmax is the same shape as the input tensor.
   return Operand(input.data_type, std::move(input.dimensions));
+}
+
+base::expected<std::vector<Operand>, std::string> ValidateSplitAndInferOutput(
+    const Operand& input,
+    const SplitAttribute& attributes) {
+  std::vector<Operand> outputs;
+
+  if (attributes.axis >= input.dimensions.size()) {
+    return base::unexpected(
+        "The axis must be in the range [0, N-1] where N is the rank of the "
+        "input tensor.");
+  }
+
+  static_assert(absl::variant_size<decltype(attributes.splits)>() == 2,
+                "When adding new variants update the branches below.");
+  if (absl::holds_alternative<uint32_t>(attributes.splits)) {
+    uint32_t splits = absl::get<uint32_t>(attributes.splits);
+    if (splits == 0) {
+      return base::unexpected("The splits must be greater than zero.");
+    }
+
+    if (input.dimensions[attributes.axis] % splits != 0) {
+      return base::unexpected(
+          "The dimension size of the input tensor along "
+          "options.axis must be divisible by splits.");
+    }
+
+    outputs.reserve(splits);
+    for (uint32_t i = 0; i < splits; ++i) {
+      // When splits is of type uint32_t, we create splits number of Operands.
+      // Each Operand will have the same new_dimensions shape.
+      std::vector<uint32_t> new_dimensions = input.dimensions;
+      new_dimensions[attributes.axis] /= splits;
+      outputs.emplace_back(input.data_type, std::move(new_dimensions));
+    }
+  } else if (absl::holds_alternative<base::span<const uint32_t>>(
+                 attributes.splits)) {
+    const auto& splits =
+        absl::get<base::span<const uint32_t>>(attributes.splits);
+    if (base::ranges::any_of(splits,
+                             [](uint32_t split) { return split == 0; })) {
+      return base::unexpected("All splits must be greater than zero.");
+    }
+
+    base::CheckedNumeric<uint32_t> sum = std::accumulate(
+        splits.begin(), splits.end(), base::MakeCheckedNum<uint32_t>(0));
+    if (!sum.IsValid() ||
+        sum.ValueOrDie() != input.dimensions[attributes.axis]) {
+      return base::unexpected(
+          "The sum of all sizes in splits must be equal to the dimension size "
+          "of the input tensor specified by options.axis.");
+    }
+
+    outputs.reserve(splits.size());
+    for (uint32_t split : splits) {
+      std::vector<uint32_t> new_dimensions = input.dimensions;
+      new_dimensions[attributes.axis] = split;
+      outputs.emplace_back(input.data_type, std::move(new_dimensions));
+    }
+  } else {
+    NOTREACHED_NORETURN();
+  }
+
+  return outputs;
 }
 
 Conv2dAttributes::Conv2dAttributes() = default;
