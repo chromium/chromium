@@ -25,6 +25,7 @@
       assert_equals(sharedStorageWritableHeader, "?1");
 
       await verifyKeyValueForOrigin('hello', 'world', sameOrigin);
+      await deleteKeyForOrigin('hello', sameOrigin);
     }, header + ' allows the \'Shared-Storage-Writable\' header to be sent '
               + 'for the same-origin shared storage fetch request.');
 
@@ -45,6 +46,7 @@
       assert_equals(sharedStorageWritableHeader, "?1");
 
       await verifyKeyValueForOrigin('hello', 'world', sameOrigin);
+      await deleteKeyForOrigin('hello', sameOrigin);
     }, header + ' allows the \'Shared-Storage-Writable\' header to be sent '
               + 'for the redirect of a shared storage fetch request, '
               + 'where the redirect has a same-origin URL.');
