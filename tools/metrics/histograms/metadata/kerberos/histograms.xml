@@ -37,7 +37,7 @@ chromium-metrics-reviews@google.com.
   <owner>fsandrade@chromium.org</owner>
   <owner>src/chrome/browser/ash/kerberos/OWNERS</owner>
   <summary>
-    Type of the Chrome OS login user (primary user) who requests Kerberos
+    Type of the ChromeOS login user (primary user) who requests Kerberos
     tickets. Reported at most once a day by the Kerberos daemon when a Kebreros
     ticket is acquired or Kerberos files are requested, which happens e.g. on
     Chrome startup.
@@ -60,9 +60,9 @@ chromium-metrics-reviews@google.com.
   <owner>fsandrade@chromium.org</owner>
   <owner>src/chrome/browser/ash/kerberos/OWNERS</owner>
   <summary>
-    Number of managed Kerberos accounts owned by the current Chrome OS user. A
+    Number of managed Kerberos accounts owned by the current ChromeOS user. A
     managed account is an account that got added via the KerberosAccounts
-    policy. Reported at most once a day similar to Kerberos.DailyActiveUsers.
+    policy. Reported at most once a day, similarly to Kerberos.DailyActiveUsers.
   </summary>
 </histogram>
 
@@ -71,9 +71,9 @@ chromium-metrics-reviews@google.com.
   <owner>fsandrade@chromium.org</owner>
   <owner>src/chrome/browser/ash/kerberos/OWNERS</owner>
   <summary>
-    Number of Kerberos accounts owned by the current Chrome OS user that use the
+    Number of Kerberos accounts owned by the current ChromeOS user that use the
     'Remember password' feature, i.e. the account password is stored by the
-    Kerberos daemon. Reported at most once a day similar to
+    Kerberos daemon. Reported at most once a day, similarly to
     Kerberos.DailyActiveUsers.
   </summary>
 </histogram>
@@ -83,8 +83,8 @@ chromium-metrics-reviews@google.com.
   <owner>fsandrade@chromium.org</owner>
   <owner>src/chrome/browser/ash/kerberos/OWNERS</owner>
   <summary>
-    Total number of Kerberos accounts owned by the current Chrome OS user.
-    Reported at most once a day similar to Kerberos.DailyActiveUsers.
+    Total number of Kerberos accounts owned by the current ChromeOS user.
+    Reported at most once a day, similarly to Kerberos.DailyActiveUsers.
   </summary>
 </histogram>
 
@@ -93,9 +93,9 @@ chromium-metrics-reviews@google.com.
   <owner>fsandrade@chromium.org</owner>
   <owner>src/chrome/browser/ash/kerberos/OWNERS</owner>
   <summary>
-    Number of unmanaged Kerberos accounts owned by the current Chrome OS user.
-    An unmanaged account is an account that was added manually by the user.
-    Reported at most once a day similar to Kerberos.DailyActiveUsers.
+    Number of unmanaged Kerberos accounts owned by the current ChromeOS user. An
+    unmanaged account is an account that was added manually by the user.
+    Reported at most once a day, similarly to Kerberos.DailyActiveUsers.
   </summary>
 </histogram>
 
@@ -104,10 +104,10 @@ chromium-metrics-reviews@google.com.
   <owner>fsandrade@chromium.org</owner>
   <owner>src/chrome/browser/ash/kerberos/OWNERS</owner>
   <summary>
-    Number of Kerberos accounts owned by the current Chrome OS user that use the
+    Number of Kerberos accounts owned by the current ChromeOS user that use the
     login password for authentication. These accounts were added via the
     KerberosAccounts policy, using the '${PASSWORD}' placeholder as password.
-    Reported at most once a day similar to Kerberos.DailyActiveUsers.
+    Reported at most once a day, similarly to Kerberos.DailyActiveUsers.
   </summary>
 </histogram>
 
