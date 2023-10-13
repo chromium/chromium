@@ -63,6 +63,9 @@ AccessibilityProvider::AccessibilityProvider(
   proxy_->SetAccessibilityEnabledStateChangedCallback(base::BindRepeating(
       &AccessibilityProvider::OnAccessibilityEnabledStateChanged,
       weak_ptr_factory_.GetWeakPtr()));
+  proxy_->SetExploreByTouchEnabledStateChangedCallback(base::BindRepeating(
+      &AccessibilityProvider::OnExploreByTouchEnabledStateChanged,
+      weak_ptr_factory_.GetWeakPtr()));
 }
 AccessibilityProvider::~AccessibilityProvider() = default;
 
@@ -253,6 +256,10 @@ void AccessibilityProvider::OnActionResult(const ui::AXActionData& action,
 
 void AccessibilityProvider::OnAccessibilityEnabledStateChanged(bool enabled) {
   observer_remote_->EnableAccessibilityTreeStreaming(enabled);
+}
+
+void AccessibilityProvider::OnExploreByTouchEnabledStateChanged(bool enabled) {
+  observer_remote_->EnableExploreByTouch(enabled);
 }
 
 // Serialization Delegate implementation

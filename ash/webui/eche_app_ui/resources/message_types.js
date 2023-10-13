@@ -120,6 +120,9 @@
   // Enable or disable accessibility tree streaming.
   ACCESSIBILITY_SET_TREE_STREAMING_ENABLED:
       'accessibility_set_tree_streaming_enabled',
+  // Enable or disable explore by touch.
+  ACCESSIBILITY_SET_EXPLORE_BY_TOUCH_ENABLED:
+      'accessibility_set_explore_by_touch_enabled',
   // Message for sending accessibility event data.
   ACCESSIBILITY_EVENT_DATA: 'accessibility_event_data',
   // Message for getting the location of text in android.

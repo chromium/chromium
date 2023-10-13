@@ -28,6 +28,8 @@ class EcheAppAccessibilityProviderProxy : public AccessibilityProviderProxy {
   void OnViewTracked() override;
   void SetAccessibilityEnabledStateChangedCallback(
       base::RepeatingCallback<void(bool)> callback) override;
+  void SetExploreByTouchEnabledStateChangedCallback(
+      base::RepeatingCallback<void(bool)> callback) override;
 
  private:
   void UpdateEnabledFeature();
@@ -37,6 +39,8 @@ class EcheAppAccessibilityProviderProxy : public AccessibilityProviderProxy {
 
   absl::optional<base::RepeatingCallback<void(bool)>>
       accessibility_state_changed_callback_;
+  absl::optional<base::RepeatingCallback<void(bool)>>
+      explore_by_touch_state_changed_callback_;
   base::WeakPtrFactory<EcheAppAccessibilityProviderProxy> weak_ptr_factory_{
       this};
 };

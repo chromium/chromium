@@ -93,6 +93,8 @@ interface AccessibilityObserver {
   // Enable or disable accessibility tree streaming
   // based on state of assistive technologies.
   EnableAccessibilityTreeStreaming(bool enable);
+  // Enable or disable explore by touch based on the state of chromevox.
+  EnableExploreByTouch(bool enable);
   // Sends the accessibility action to the SWA for processing.
   // The proto sent is proto::AccessibilityActionData.
   PerformAction(array<uint8> serialized_proto) => (bool result);

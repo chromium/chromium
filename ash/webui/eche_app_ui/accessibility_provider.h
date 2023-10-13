@@ -35,6 +35,8 @@ class AccessibilityProviderProxy {
   virtual void OnViewTracked() = 0;
   virtual void SetAccessibilityEnabledStateChangedCallback(
       base::RepeatingCallback<void(bool)>) = 0;
+  virtual void SetExploreByTouchEnabledStateChangedCallback(
+      base::RepeatingCallback<void(bool)>) = 0;
 };
 class AccessibilityProvider
     : public mojom::AccessibilityProvider,
@@ -73,6 +75,7 @@ class AccessibilityProvider
   // Handles the result from perform action.
   void OnActionResult(const ui::AXActionData& data, bool result) const;
   void OnAccessibilityEnabledStateChanged(bool enabled);
+  void OnExploreByTouchEnabledStateChanged(bool enabled);
 
   class SerializationDelegate
       : public ax::android::AXTreeSourceAndroid::SerializationDelegate {

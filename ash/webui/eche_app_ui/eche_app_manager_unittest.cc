@@ -86,6 +86,8 @@ class FakeAccessibilityProviderProxy : public AccessibilityProviderProxy {
 
   void SetAccessibilityEnabledStateChangedCallback(
       base::RepeatingCallback<void(bool)> callback) override {}
+  void SetExploreByTouchEnabledStateChangedCallback(
+      base::RepeatingCallback<void(bool)> callback) override {}
 };
 
 }  // namespace

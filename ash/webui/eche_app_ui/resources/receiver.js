@@ -90,6 +90,14 @@ parentMessagePipe.registerHandler(
       }
     });
 
+let setExploreByTouchEnabledCallback = null;
+parentMessagePipe.registerHandler(
+    Message.ACCESSIBILITY_SET_EXPLORE_BY_TOUCH_ENABLED, (enabled) => {
+      if (setExploreByTouchEnabledCallback) {
+        setExploreByTouchEnabledCallback(enabled);
+      }
+    });
+
 // Handle accessibility perform action.
 let performActionCallback = null;
 parentMessagePipe.registerHandler(
@@ -251,6 +259,11 @@ const EcheApiBindingImpl = new (class {
     console.log('echeapi receiver.js registerRefreshWithExtraDataCallback');
     refreshWithExtraDataCallback = callback;
   }
+
+  registerSetExploreByTouchEnabledCallback(callback) {
+    console.log('echeapi receiver.js registerSetExploreByTouchEnabledCallback');
+    setExploreByTouchEnabledCallback = callback;
+  }
 })();
 
 // Declare module echeapi and bind the implementation to echeapi.d.ts
@@ -274,6 +287,9 @@ echeapi.accessibility.isAccessibilityEnabled =
     EcheApiBindingImpl.isAccessibilityEnabled.bind(EcheApiBindingImpl);
 echeapi.accessibility.registerAccessibilityEnabledStateChangedReceiver =
     EcheApiBindingImpl.onAccessibilityEnabledStateChanged.bind(
+        EcheApiBindingImpl);
+echeapi.accessibility.registerExploreByTouchEnabledStateChangedReceiver =
+    EcheApiBindingImpl.registerSetExploreByTouchEnabledCallback.bind(
         EcheApiBindingImpl);
 echeapi.accessibility.registerPerformActionReceiver =
   EcheApiBindingImpl.onPerformAction.bind(EcheApiBindingImpl);

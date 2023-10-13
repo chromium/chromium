@@ -177,6 +177,12 @@ accessibilityObserverRouter.enableAccessibilityTreeStreaming.addListener(
           Message.ACCESSIBILITY_SET_TREE_STREAMING_ENABLED, enabled);
     });
 
+accessibilityObserverRouter.enableExploreByTouch.addListener((enabled) => {
+  console.log('echeapi browser_proxy.js enableExploreByTouch');
+  guestMessagePipe.sendMessage(
+      Message.ACCESSIBILITY_SET_EXPLORE_BY_TOUCH_ENABLED, enabled);
+});
+
 accessibilityObserverRouter.performAction.addListener((action) => {
   return new Promise(async (resolve) => {
     const result = await guestMessagePipe.sendMessage(
