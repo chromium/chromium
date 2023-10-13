@@ -66,7 +66,11 @@ class MEDIA_EXPORT Dav1dVideoDecoder : public OffloadableVideoDecoder {
   scoped_refptr<VideoFrame> BindImageToVideoFrame(const Dav1dPicture* img);
 
   // Used to report error messages to the client.
-  const raw_ptr<MediaLog> media_log_ = nullptr;
+  //
+  // Found to be dangling on `linux-rel` with all-process BRP in
+  // `external/wpt/webcodecs/videoDecoder-codec-specific.https.any.html?av1`
+  // from `blink_wpt_tests`.
+  const raw_ptr<MediaLog, DanglingUntriaged> media_log_ = nullptr;
 
   // Indicates if the decoder is being wrapped by OffloadVideoDecoder; controls
   // whether callbacks are bound to the current loop on calls.

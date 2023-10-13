@@ -50,7 +50,11 @@ class DawnClientMemoryTransferService
   // than once per block.
   void MarkHandleFree(void* ptr);
 
-  raw_ptr<MappedMemoryManager> mapped_memory_;
+  // Found dangling on `linux-rel` in
+  // `gpu_tests.context_lost_integration_test.ContextLostIntegrationTest.
+  // ContextLost_WebGPUStressRequestDeviceAndRemoveLoop`
+  raw_ptr<MappedMemoryManager, DanglingUntriaged> mapped_memory_;
+
   // Pointers to memory allocated by the MappedMemoryManager to free after
   // the next Flush.
   std::vector<void*> free_blocks_;

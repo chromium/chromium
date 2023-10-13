@@ -171,7 +171,10 @@ class CC_EXPORT TextureLayer : public Layer, SharedBitmapIdRegistrar {
   // compositor.
   void UnregisterSharedBitmapId(viz::SharedBitmapId id);
 
-  ProtectedSequenceForbidden<raw_ptr<TextureLayerClient>> client_;
+  // Dangling on `mac-rel` in `blink_web_tests`:
+  // `fast/events/touch/touch-handler-iframe-plugin-assert.html`
+  ProtectedSequenceForbidden<raw_ptr<TextureLayerClient, DanglingUntriaged>>
+      client_;
 
   ProtectedSequenceReadable<bool> flipped_;
   ProtectedSequenceReadable<bool> nearest_neighbor_;

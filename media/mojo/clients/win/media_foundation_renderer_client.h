@@ -157,7 +157,11 @@ class MediaFoundationRendererClient
   mojo::PendingRemote<RendererExtension> pending_renderer_extension_;
   std::unique_ptr<DCOMPTextureWrapper> dcomp_texture_wrapper_;
   ObserveOverlayStateCB observe_overlay_state_cb_;
-  raw_ptr<VideoRendererSink> sink_ = nullptr;
+
+  // Found dangling on `win-rel` in
+  // `virtual/media-foundation-for-clear-dcomp/external/wpt/media-source/
+  // dedicated-worker/mediasource-worker-detach-element.html`
+  raw_ptr<VideoRendererSink, DanglingUntriaged> sink_ = nullptr;
 
   mojo::Remote<RendererExtension> renderer_extension_;
 
