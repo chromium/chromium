@@ -142,15 +142,20 @@ bool CloudOpenMetrics::Metric<MetricType>::Log(MetricType new_value) {
   LogMetric(new_value);
   bool result = true;
   if (state == MetricState::kCorrectlyNotLogged) {
-    state = MetricState::kCorrectlyLogged;
+    set_state(MetricState::kCorrectlyLogged);
   } else {
-    state = MetricState::kIncorrectlyLoggedMultipleTimes;
+    set_state(MetricState::kIncorrectlyLoggedMultipleTimes);
     LOG(ERROR) << metric_name << " being logged with " << new_value
                << " when it was already logged with " << value;
     result = false;
   }
   value = new_value;
   return result;
+}
+
+template <class MetricType>
+void CloudOpenMetrics::Metric<MetricType>::set_state(MetricState new_state) {
+  state = new_state;
 }
 
 template <class MetricType>

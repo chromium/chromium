@@ -92,6 +92,8 @@ class CloudOpenMetrics {
     // state change occurred.
     bool Log(MetricType new_value);
 
+    void set_state(MetricState new_state);
+
     const std::string metric_name;
     MetricState state = MetricState::kCorrectlyNotLogged;
     MetricType value;
