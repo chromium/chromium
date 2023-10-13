@@ -5,7 +5,6 @@
 #ifndef CHROME_BROWSER_ASH_POLICY_REMOTE_COMMANDS_DEVICE_COMMAND_REBOOT_JOB_H_
 #define CHROME_BROWSER_ASH_POLICY_REMOTE_COMMANDS_DEVICE_COMMAND_REBOOT_JOB_H_
 
-#include <memory>
 #include <string>
 
 #include "base/functional/callback.h"
@@ -78,6 +77,8 @@ class DeviceCommandRebootJob : public RemoteCommandJob,
       const base::TickClock* tick_clock,
       GetBootTimeCallback get_boot_time_callback);
 
+  bool ParseCommandPayload(const std::string& command_payload) override;
+
  private:
   // Posts a task with a callback. Command's callbacks cannot be run
   // synchronously from `RunImpl`.
@@ -136,7 +137,7 @@ class DeviceCommandRebootJob : public RemoteCommandJob,
   CallbackWithResult result_callback_;
 
   // Delay between execution start in user session and the reboot.
-  const base::TimeDelta user_session_delay_;
+  base::TimeDelta user_session_delay_;
 
   base::WeakPtrFactory<DeviceCommandRebootJob> weak_factory_{this};
 };

@@ -2915,6 +2915,8 @@ message RemoteCommand {
   // |DEVICE_GET_DIAGNOSTIC_ROUTINE_UPDATE|: {"id" : id_integer, "command" :
   // command, "includeOutput" : include_output_bool}, where command must be a
   // valid `ash::cros_healthd::mojom::DiagnosticRoutineCommandEnum`.
+  // |DEVICE_REBOOT|: {"user_session_delay_s": delay_integer}, where delay value
+  // represents seconds until reboot in user session.
   optional string payload = 4;
 
   // An identifier for the target this command is for. This is the same as

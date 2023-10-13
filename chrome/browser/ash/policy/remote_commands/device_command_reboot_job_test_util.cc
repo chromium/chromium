@@ -4,7 +4,10 @@
 
 #include "chrome/browser/ash/policy/remote_commands/device_command_reboot_job_test_util.h"
 
+#include <utility>
+
 #include "base/check.h"
+#include "base/strings/stringprintf.h"
 #include "base/test/bind.h"
 #include "chromeos/ash/components/dbus/session_manager/session_manager_client.h"
 #include "chromeos/ash/components/dbus/userdataauth/cryptohome_misc_client.h"
@@ -84,12 +87,26 @@ DeviceCommandRebootJobTestBase::~DeviceCommandRebootJobTestBase() {
 
 std::unique_ptr<DeviceCommandRebootJob>
 DeviceCommandRebootJobTestBase::CreateAndInitializeCommand(
-    base::TimeDelta age_of_command) {
+    base::TimeDelta age_of_command,
+    base::TimeDelta user_session_reboot_delay) {
   em::RemoteCommand command_proto;
   command_proto.set_type(em::RemoteCommand_Type_DEVICE_REBOOT);
   command_proto.set_command_id(kUniqueID);
   command_proto.set_age_of_command(age_of_command.InMilliseconds());
 
+  constexpr char kPayloadDictionary[] =
+      R"({"user_session_delay_seconds": %ld})";
+
+  std::string delay_payload = base::StringPrintf(
+      kPayloadDictionary, user_session_reboot_delay.InSeconds());
+  command_proto.set_payload(std::move(delay_payload));
+
+  return CreateAndInitializeCommand(std::move(command_proto));
+}
+
+std::unique_ptr<DeviceCommandRebootJob>
+DeviceCommandRebootJobTestBase::CreateAndInitializeCommand(
+    enterprise_management::RemoteCommand command_proto) {
   // `PowerManagerClient` might be nullptr, use `PowerManagerClient::Get`
   // instead of FakePowerManagerClient::Get which crashes.
   auto job = std::make_unique<DeviceCommandRebootJobForTesting>(
@@ -106,4 +123,5 @@ DeviceCommandRebootJobTestBase::CreateAndInitializeCommand(
 
   return job;
 }
+
 }  // namespace policy

@@ -86,9 +86,6 @@ class DeviceCommandRebootJobWithScheduledRebootPolicyTest
     scoped_command_line_.GetProcessCommandLine()->AppendSwitchASCII(
         ash::switches::kScheduledRebootGracePeriodInSecondsForTesting,
         base::NumberToString(0));
-    scoped_command_line_.GetProcessCommandLine()->AppendSwitchASCII(
-        ash::switches::kRemoteRebootCommandDelayInSecondsForTesting,
-        base::NumberToString(kUserSessionRebootDelay.InSeconds()));
   }
 
   ~DeviceCommandRebootJobWithScheduledRebootPolicyTest() override = default;
@@ -101,6 +98,11 @@ class DeviceCommandRebootJobWithScheduledRebootPolicyTest
             fake_notifications_scheduler_.get());
     device_scheduled_reboot_handler->SetRebootDelayForTest(base::TimeDelta());
     return device_scheduled_reboot_handler;
+  }
+
+  std::unique_ptr<DeviceCommandRebootJob> CreateAndInitializeCommand() {
+    return DeviceCommandRebootJobTestBase::CreateAndInitializeCommand(
+        /*age_of_command=*/base::TimeDelta(), kUserSessionRebootDelay);
   }
 
   ash::ScopedTestingCrosSettings scoped_cros_settings_;
