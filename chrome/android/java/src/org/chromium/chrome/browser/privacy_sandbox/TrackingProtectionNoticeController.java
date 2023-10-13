@@ -10,11 +10,13 @@ import android.content.res.Resources;
 import android.net.Uri;
 import android.provider.Browser;
 
+import androidx.annotation.IntDef;
 import androidx.annotation.NonNull;
 import androidx.browser.customtabs.CustomTabsIntent;
 
 import org.chromium.base.Callback;
 import org.chromium.base.IntentUtils;
+import org.chromium.base.metrics.RecordHistogram;
 import org.chromium.chrome.browser.ActivityTabProvider;
 import org.chromium.chrome.browser.ActivityTabProvider.ActivityTabTabObserver;
 import org.chromium.chrome.browser.LaunchIntentDispatcher;
@@ -54,6 +56,38 @@ public class TrackingProtectionNoticeController {
     // hence we provide a value high enough to maintain the message visible.
     private static final int AUTODISMISS_DURATION_ONE_DAY = 24 * 60 * 60 * 1000;
     private PropertyModel mMessage;
+
+    // These values are persisted to logs. Entries should not be renumbered and
+    // numeric values should never be reused.
+    @IntDef({
+        NoticeControllerEvent.CONTROLLER_CREATED,
+        NoticeControllerEvent.ACTIVE_TAB_CHANGED,
+        NoticeControllerEvent.NAVIGATION_FINISHED,
+        NoticeControllerEvent.CONTROLLER_NO_LONGER_OBSERVING,
+        NoticeControllerEvent.NON_SECURE_CONNECTION,
+        NoticeControllerEvent.NOTICE_ALREADY_SHOWING,
+        NoticeControllerEvent.NOTICE_REQUESTED_AND_SHOWN,
+        NoticeControllerEvent.NOTICE_REQUESTED_BUT_NOT_SHOWN
+    })
+    private @interface NoticeControllerEvent {
+        int CONTROLLER_CREATED = 0;
+        int ACTIVE_TAB_CHANGED = 1;
+        int NAVIGATION_FINISHED = 2;
+        int CONTROLLER_NO_LONGER_OBSERVING = 3;
+        int NON_SECURE_CONNECTION = 4;
+        int NOTICE_ALREADY_SHOWING = 5;
+        int NOTICE_REQUESTED_AND_SHOWN = 6;
+        int NOTICE_REQUESTED_BUT_NOT_SHOWN = 7;
+
+        int COUNT = 8;
+    }
+
+    private static void logNoticeControllerEvent(@NoticeControllerEvent int action) {
+        RecordHistogram.recordEnumeratedHistogram(
+                "PrivacySandbox.TrackingProtection.Onboarding.NoticeControllerEvent",
+                action,
+                NoticeControllerEvent.COUNT);
+    }
 
     /**
      * Checks whether the Tracking Protection Notice should be shown.
@@ -99,6 +133,11 @@ public class TrackingProtectionNoticeController {
         if (mMessageDispatcher == null) return;
 
         Resources resources = mContext.getResources();
+
+        if (mMessage != null) {
+            logNoticeControllerEvent(NoticeControllerEvent.NOTICE_ALREADY_SHOWING);
+        }
+
         mMessage =
                 new PropertyModel.Builder(MessageBannerProperties.ALL_KEYS)
                         .with(
@@ -137,6 +176,10 @@ public class TrackingProtectionNoticeController {
                         .build();
         mMessageDispatcher.enqueueWindowScopedMessage(mMessage, /* highPriority= */ true);
 
+        // TODO(b/295927778): Move to the proper ON_SHOWN callback when implemented
+        //  in crbug.com/1491318.
+        logNoticeControllerEvent(NoticeControllerEvent.NOTICE_REQUESTED_AND_SHOWN);
+
         destroy();
     }
 
@@ -164,11 +207,13 @@ public class TrackingProtectionNoticeController {
                 new ActivityTabTabObserver(mActivityTabProvider) {
                     @Override
                     protected void onObservingDifferentTab(Tab tab, boolean hint) {
+                        logNoticeControllerEvent(NoticeControllerEvent.ACTIVE_TAB_CHANGED);
                         maybeShowNotice(tab);
                     }
 
                     @Override
                     public void onPageLoadFinished(Tab tab, GURL url) {
+                        logNoticeControllerEvent(NoticeControllerEvent.NAVIGATION_FINISHED);
                         maybeShowNotice(tab);
                     }
 
@@ -185,9 +230,17 @@ public class TrackingProtectionNoticeController {
                                                         .TRACKING_PROTECTION_ONBOARDING_SKIP_SECURE_PAGE_CHECK)
                                         || securityLevel == ConnectionSecurityLevel.SECURE)) {
                             showNoticeCallback.onResult(tab);
+                        } else if (shouldShowNotice()) {
+                            if (securityLevel != ConnectionSecurityLevel.SECURE) {
+                                logNoticeControllerEvent(
+                                        NoticeControllerEvent.NON_SECURE_CONNECTION);
+                            }
+                            logNoticeControllerEvent(
+                                    NoticeControllerEvent.NOTICE_REQUESTED_BUT_NOT_SHOWN);
                         }
                     }
                 };
+        logNoticeControllerEvent(NoticeControllerEvent.CONTROLLER_CREATED);
     }
 
     private final class SecondaryMenuButtonDelegate implements ListMenuButtonDelegate {
@@ -266,6 +319,7 @@ public class TrackingProtectionNoticeController {
     public void destroy() {
         if (mActivityTabTabObserver != null) {
             mActivityTabTabObserver.destroy();
+            logNoticeControllerEvent(NoticeControllerEvent.CONTROLLER_NO_LONGER_OBSERVING);
         }
     }
 }

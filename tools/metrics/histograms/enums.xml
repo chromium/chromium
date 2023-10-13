@@ -108319,6 +108319,17 @@ Full version information for the fingerprint enum values:
   <int value="32" label="kMediaCdmOriginData"/>
 </enum>
 
+<enum name="TrackingProtectionNoticeControllerEvent">
+  <int value="0" label="Notice controller created"/>
+  <int value="1" label="Active tab changed"/>
+  <int value="2" label="Navigation finished"/>
+  <int value="3" label="Controller is no longer observing"/>
+  <int value="4" label="Non secure connection page"/>
+  <int value="5" label="Notice is already showing"/>
+  <int value="6" label="Notice requested and shown"/>
+  <int value="7" label="Notice requested and not shown"/>
+</enum>
+
 <enum name="TrafficAnnotationUniqueIdHash">
 <!-- Generated from tools/traffic_annotation/summary/annotations.xml. The traffic annotation audiotor doesn't check if the following entries are in sync with annotations.xml. TODO(crbug.com/1232623): Remove this enum once the field investigation is concluded. -->
 
