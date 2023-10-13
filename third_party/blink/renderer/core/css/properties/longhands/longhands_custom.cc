@@ -1746,7 +1746,11 @@ const CSSValue* ClipPath::ParseSingleValue(CSSParserTokenRange& range,
       list->Append(*basic_shape);
     }
     if (geometry_box) {
-      list->Append(*geometry_box);
+      if (list->length() == 0 ||
+          To<CSSIdentifierValue>(geometry_box)->GetValueID() !=
+              CSSValueID::kBorderBox) {
+        list->Append(*geometry_box);
+      }
     }
     return list;
   }
