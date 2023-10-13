@@ -140,9 +140,14 @@ suite('WallpaperSearchTest', () => {
     });
 
     test('shows mix of filled and empty containers', async () => {
-      const resultPromise = Promise.resolve({results: ['123', '456']});
-      handler.setResultFor('getWallpaperSearchResults', resultPromise);
       createWallpaperSearchElement();
+      const resultPromise = Promise.resolve({
+        results: [
+          {image: '123', id: {high: 10, low: 1}},
+          {image: '456', id: {high: 8, low: 2}},
+        ],
+      });
+      handler.setResultFor('getWallpaperSearchResults', resultPromise);
 
       wallpaperSearchElement.$.submitButton.click();
       await resultPromise;
@@ -162,6 +167,27 @@ suite('WallpaperSearchTest', () => {
           wallpaperSearchElement.shadowRoot!.querySelectorAll('.tile.empty')
               .length,
           4);
+    });
+
+    test('handle result click', async () => {
+      createWallpaperSearchElement();
+      const resultPromise =
+          Promise.resolve({results: [{image: '123', id: {high: 10, low: 1}}]});
+      handler.setResultFor('getWallpaperSearchResults', resultPromise);
+
+      wallpaperSearchElement.$.submitButton.click();
+      await resultPromise;
+      await waitAfterNextRender(wallpaperSearchElement);
+
+      const result = $$(wallpaperSearchElement, '.tile.result');
+      assertTrue(!!result);
+      (result as HTMLElement).click();
+      assertEquals(
+          1, handler.getCallCount('setBackgroundToWallpaperSearchResult'));
+      assertEquals(
+          10, handler.getArgs('setBackgroundToWallpaperSearchResult')[0].high);
+      assertEquals(
+          1, handler.getArgs('setBackgroundToWallpaperSearchResult')[0].low);
     });
   });
 });

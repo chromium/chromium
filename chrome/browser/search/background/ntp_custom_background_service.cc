@@ -40,6 +40,7 @@
 #include "third_party/skia/include/core/SkBitmap.h"
 #include "ui/base/mojom/themes.mojom.h"
 #include "ui/base/ui_base_features.h"
+#include "ui/gfx/codec/png_codec.h"
 #include "ui/gfx/color_analysis.h"
 #include "ui/gfx/image/image.h"
 #include "url/gurl.h"
@@ -384,6 +385,37 @@ void NtpCustomBackgroundService::SelectLocalBackgroundImage(
   if (base::FeatureList::IsEnabled(
           ntp_features::kCustomizeChromeWallpaperSearch)) {
     NtpCustomBackgroundService::ProcessLocalImageData(data);
+  }
+}
+
+void NtpCustomBackgroundService::SetBackgroundToLocalResourceAndExtractColor(
+    const SkBitmap& bitmap) {
+  NtpCustomBackgroundService::SetBackgroundToLocalResource();
+  NtpCustomBackgroundService::UpdateCustomLocalBackgroundColorAsync(
+      gfx::Image::CreateFrom1xBitmap(bitmap));
+}
+
+void NtpCustomBackgroundService::SelectLocalBackgroundImage(
+    const SkBitmap& bitmap) {
+  if (IsCustomBackgroundDisabledByPolicy()) {
+    return;
+  }
+
+  previous_background_info_.reset();
+  previous_local_background_ = true;
+
+  std::vector<unsigned char> encoded;
+  const bool success = gfx::PNGCodec::EncodeBGRASkBitmap(
+      bitmap, /*discard_transparency=*/false, &encoded);
+  if (success) {
+    base::ThreadPool::PostTaskAndReply(
+        FROM_HERE, {base::TaskPriority::USER_VISIBLE, base::MayBlock()},
+        base::BindOnce(&WriteFileToProfilePath,
+                       std::string(encoded.begin(), encoded.end()),
+                       profile_->GetPath()),
+        base::BindOnce(&NtpCustomBackgroundService::
+                           SetBackgroundToLocalResourceAndExtractColor,
+                       weak_ptr_factory_.GetWeakPtr(), bitmap));
   }
 }
 

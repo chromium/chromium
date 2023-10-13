@@ -14,9 +14,9 @@ import {SpHeading} from 'chrome://customize-chrome-side-panel.top-chrome/shared/
 import {CrActionMenuElement} from 'chrome://resources/cr_elements/cr_action_menu/cr_action_menu.js';
 import {CrButtonElement} from 'chrome://resources/cr_elements/cr_button/cr_button.js';
 import {CrInputElement} from 'chrome://resources/cr_elements/cr_input/cr_input.js';
-import {PolymerElement} from 'chrome://resources/polymer/v3_0/polymer/polymer_bundled.min.js';
+import {DomRepeatEvent, PolymerElement} from 'chrome://resources/polymer/v3_0/polymer/polymer_bundled.min.js';
 
-import {CustomizeChromePageHandlerInterface, Descriptors} from './customize_chrome.mojom-webui.js';
+import {CustomizeChromePageHandlerInterface, Descriptors, WallpaperSearchResult} from './customize_chrome.mojom-webui.js';
 import {CustomizeChromeApiProxy} from './customize_chrome_api_proxy.js';
 import {getTemplate} from './wallpaper_search.html.js';
 
@@ -52,7 +52,7 @@ export class WallpaperSearchElement extends PolymerElement {
   private descriptors_: Descriptors|null;
   private emptyContainers_: number[];
   private query_: string;
-  private results_: string[];
+  private results_: WallpaperSearchResult[];
 
   private pageHandler_: CustomizeChromePageHandlerInterface;
 
@@ -94,6 +94,10 @@ export class WallpaperSearchElement extends PolymerElement {
         {length: results.length > 0 ? 6 - results.length : 0}, () => 0);
     this.$.queryInput.invalid = !results.length;
     this.$.queryInput.errorMessage = 'Error';
+  }
+
+  private async onResultClick_(e: DomRepeatEvent<WallpaperSearchResult>) {
+    this.pageHandler_.setBackgroundToWallpaperSearchResult(e.model.item.id);
   }
 }
 

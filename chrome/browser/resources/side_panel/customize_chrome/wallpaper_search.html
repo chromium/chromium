@@ -134,9 +134,10 @@
     <hr class="sp-hr">
     <cr-grid columns="3" disable-arrow-navigation>
       <template is="dom-repeat" id="resultsRepeat" items="[[results_]]">
-        <div class="tile result" tabindex="0" role="button">
+        <div class="tile result" tabindex="0" role="button"
+            on-click="onResultClick_">
           <div class="image-container">
-            <img src="data:image/png;base64,[[item]]">
+            <img src="data:image/png;base64,[[item.image]]">
             </img>
           </div>
         </div>

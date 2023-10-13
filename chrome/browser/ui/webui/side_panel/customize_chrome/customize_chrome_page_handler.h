@@ -7,10 +7,12 @@
 
 #include <vector>
 
+#include "base/containers/flat_map.h"
 #include "base/memory/raw_ptr.h"
 #include "base/memory/raw_ref.h"
 #include "base/memory/weak_ptr.h"
 #include "base/scoped_observation.h"
+#include "base/token.h"
 #include "chrome/browser/search/background/ntp_background_service.h"
 #include "chrome/browser/search/background/ntp_background_service_observer.h"
 #include "chrome/browser/search/background/ntp_custom_background_service.h"
@@ -113,6 +115,8 @@ class CustomizeChromePageHandler
   void GetWallpaperSearchResults(
       const std::string& query,
       GetWallpaperSearchResultsCallback callback) override;
+  void SetBackgroundToWallpaperSearchResult(
+      const base::Token& result_id) override;
 
  private:
   void OnDescriptorsRetrieved(std::unique_ptr<std::string> response_body);
@@ -171,7 +175,7 @@ class CustomizeChromePageHandler
   std::unique_ptr<network::SimpleURLLoader> simple_url_loader_;
   std::unique_ptr<data_decoder::DataDecoder> data_decoder_;
   const raw_ref<image_fetcher::ImageDecoder> image_decoder_;
-  std::vector<SkBitmap> wallpaper_search_results_;
+  base::flat_map<base::Token, SkBitmap> wallpaper_search_results_;
   // Caches a request to scroll to a section in case the front-end queries the
   // last requested section, e.g. during load.
   CustomizeChromeSection last_requested_section_ =

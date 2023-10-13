@@ -14,6 +14,7 @@
 #include "base/metrics/histogram_macros.h"
 #include "base/metrics/user_metrics.h"
 #include "base/metrics/user_metrics_action.h"
+#include "base/token.h"
 #include "chrome/browser/browser_features.h"
 #include "chrome/browser/new_tab_page/modules/new_tab_page_modules.h"
 #include "chrome/browser/new_tab_page/new_tab_page_util.h"
@@ -477,7 +478,8 @@ void CustomizeChromePageHandler::GetWallpaperSearchResults(
     const std::string& query,
     GetWallpaperSearchResultsCallback callback) {
   callback = mojo::WrapCallbackWithDefaultInvokeIfNotRun(
-      std::move(callback), std::vector<std::string>());
+      std::move(callback),
+      std::vector<side_panel::mojom::WallpaperSearchResultPtr>());
   if (!base::FeatureList::IsEnabled(
           ntp_features::kCustomizeChromeWallpaperSearch) ||
       !base::FeatureList::IsEnabled(
@@ -498,6 +500,13 @@ void CustomizeChromePageHandler::GetWallpaperSearchResults(
       base::BindOnce(
           &CustomizeChromePageHandler::OnWallpaperSearchResultsRetrieved,
           weak_ptr_factory_.GetWeakPtr(), std::move(callback)));
+}
+
+void CustomizeChromePageHandler::SetBackgroundToWallpaperSearchResult(
+    const base::Token& result_id) {
+  CHECK(base::Contains(wallpaper_search_results_, result_id));
+  ntp_custom_background_service_->SelectLocalBackgroundImage(
+      wallpaper_search_results_[result_id]);
 }
 
 void CustomizeChromePageHandler::OnDescriptorsRetrieved(
@@ -648,8 +657,7 @@ void CustomizeChromePageHandler::OnWallpaperSearchResultsRetrieved(
 void CustomizeChromePageHandler::OnWallpaperSearchResultsDecoded(
     GetWallpaperSearchResultsCallback callback,
     std::vector<SkBitmap> bitmaps) {
-  std::vector<std::string> thumbnails;
-  wallpaper_search_results_.clear();
+  std::vector<side_panel::mojom::WallpaperSearchResultPtr> thumbnails;
 
   for (auto& bitmap : bitmaps) {
     SkBitmap small_bitmap = skia::ImageOperations::Resize(
@@ -658,12 +666,16 @@ void CustomizeChromePageHandler::OnWallpaperSearchResultsDecoded(
     const bool success = gfx::PNGCodec::EncodeBGRASkBitmap(
         small_bitmap, /*discard_transparency=*/false, &encoded);
     if (success) {
-      thumbnails.push_back(base::Base64Encode(encoded));
-      wallpaper_search_results_.push_back(bitmap);
+      auto thumbnail = side_panel::mojom::WallpaperSearchResult::New();
+      auto id = base::Token::CreateRandom();
+      wallpaper_search_results_[id] = std::move(bitmap);
+      thumbnail->image = base::Base64Encode(encoded);
+      thumbnail->id = std::move(id);
+      thumbnails.push_back(std::move(thumbnail));
     }
   }
 
-  std::move(callback).Run(thumbnails);
+  std::move(callback).Run(std::move(thumbnails));
 }
 
 void CustomizeChromePageHandler::LogEvent(NTPLoggingEventType event) {

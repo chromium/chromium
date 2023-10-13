@@ -18,6 +18,7 @@
 #include "components/keyed_service/core/keyed_service.h"
 #include "components/prefs/pref_change_registrar.h"
 #include "services/network/public/cpp/simple_url_loader.h"
+#include "third_party/skia/include/core/SkBitmap.h"
 #include "ui/gfx/color_utils.h"
 
 class NtpCustomBackgroundServiceObserver;
@@ -72,6 +73,10 @@ class NtpCustomBackgroundService : public KeyedService,
 
   // Invoked by Wallpaper Search to set background image.
   virtual void SelectLocalBackgroundImage(const std::string& data);
+
+  // Invoked by Wallpaper Search to set background image with already decoded
+  // data.
+  virtual void SelectLocalBackgroundImage(const SkBitmap& bitmap);
 
   // Virtual for testing.
   virtual void RefreshBackgroundIfNeeded();
@@ -142,6 +147,10 @@ class NtpCustomBackgroundService : public KeyedService,
   void OnCustomBackgroundURLHeadersReceived(
       const GURL& verified_custom_background_url,
       int headers_response_code);
+
+  // Set background pref info to say that the current background is a local
+  // resource and start color extraction of the associated bitmap.
+  void SetBackgroundToLocalResourceAndExtractColor(const SkBitmap& bitmap);
 
   const raw_ptr<Profile> profile_;
   raw_ptr<PrefService, DanglingUntriaged> pref_service_;
