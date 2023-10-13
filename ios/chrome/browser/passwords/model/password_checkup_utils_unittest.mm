@@ -94,7 +94,7 @@ class PasswordCheckupUtilsTest : public PlatformTest {
   PasswordCheckupUtilsTest() {
     TestChromeBrowserState::Builder builder;
     builder.AddTestingFactory(
-        IOSChromePasswordStoreFactory::GetInstance(),
+        IOSChromeProfilePasswordStoreFactory::GetInstance(),
         base::BindRepeating(
             &password_manager::BuildPasswordStore<web::BrowserState,
                                                   TestPasswordStore>));
@@ -107,7 +107,7 @@ class PasswordCheckupUtilsTest : public PlatformTest {
     browser_state_ = builder.Build();
     store_ =
         base::WrapRefCounted(static_cast<password_manager::TestPasswordStore*>(
-            IOSChromePasswordStoreFactory::GetForBrowserState(
+            IOSChromeProfilePasswordStoreFactory::GetForBrowserState(
                 browser_state_.get(), ServiceAccessType::EXPLICIT_ACCESS)
                 .get()));
     manager_ = IOSChromePasswordCheckManagerFactory::GetForBrowserState(

@@ -56,7 +56,7 @@
         [[PasswordViewController alloc] initWithSearchController:nil];
 
     auto profilePasswordStore =
-        IOSChromePasswordStoreFactory::GetForBrowserState(
+        IOSChromeProfilePasswordStoreFactory::GetForBrowserState(
             browser->GetBrowserState(), ServiceAccessType::EXPLICIT_ACCESS);
     auto accountPasswordStore =
         IOSChromeAccountPasswordStoreFactory::GetForBrowserState(

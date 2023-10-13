@@ -39,7 +39,7 @@ ChromePasswordProtectionServiceFactory::ChromePasswordProtectionServiceFactory()
           "ChromePasswordProtectionService",
           BrowserStateDependencyManager::GetInstance()) {
   DependsOn(IdentityManagerFactory::GetInstance());
-  DependsOn(IOSChromePasswordStoreFactory::GetInstance());
+  DependsOn(IOSChromeProfilePasswordStoreFactory::GetInstance());
   DependsOn(IOSChromeAccountPasswordStoreFactory::GetInstance());
   DependsOn(IOSUserEventServiceFactory::GetInstance());
   DependsOn(SafeBrowsingMetricsCollectorFactory::GetInstance());

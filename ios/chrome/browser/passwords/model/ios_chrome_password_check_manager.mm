@@ -76,7 +76,7 @@ PasswordCheckState ConvertBulkCheckState(State state) {
 IOSChromePasswordCheckManager::IOSChromePasswordCheckManager(
     ChromeBrowserState* browser_state)
     : browser_state_(browser_state),
-      profile_store_(IOSChromePasswordStoreFactory::GetForBrowserState(
+      profile_store_(IOSChromeProfilePasswordStoreFactory::GetForBrowserState(
           browser_state,
           ServiceAccessType::EXPLICIT_ACCESS)),
       account_store_(IOSChromeAccountPasswordStoreFactory::GetForBrowserState(

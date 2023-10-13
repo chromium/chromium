@@ -64,7 +64,7 @@ GetWipeModelUponSyncDisabledBehaviorForProfileStore() {
 
 // static
 scoped_refptr<password_manager::PasswordStoreInterface>
-IOSChromePasswordStoreFactory::GetForBrowserState(
+IOSChromeProfilePasswordStoreFactory::GetForBrowserState(
     ChromeBrowserState* browser_state,
     ServiceAccessType access_type) {
   // `profile` gets always redirected to a non-Incognito profile below, so
@@ -80,12 +80,13 @@ IOSChromePasswordStoreFactory::GetForBrowserState(
 }
 
 // static
-IOSChromePasswordStoreFactory* IOSChromePasswordStoreFactory::GetInstance() {
-  static base::NoDestructor<IOSChromePasswordStoreFactory> instance;
+IOSChromeProfilePasswordStoreFactory*
+IOSChromeProfilePasswordStoreFactory::GetInstance() {
+  static base::NoDestructor<IOSChromeProfilePasswordStoreFactory> instance;
   return instance.get();
 }
 
-IOSChromePasswordStoreFactory::IOSChromePasswordStoreFactory()
+IOSChromeProfilePasswordStoreFactory::IOSChromeProfilePasswordStoreFactory()
     : RefcountedBrowserStateKeyedServiceFactory(
           "PasswordStore",
           BrowserStateDependencyManager::GetInstance()) {
@@ -94,10 +95,10 @@ IOSChromePasswordStoreFactory::IOSChromePasswordStoreFactory()
   DependsOn(IOSChromeAffiliationsPrefetcherFactory::GetInstance());
 }
 
-IOSChromePasswordStoreFactory::~IOSChromePasswordStoreFactory() {}
+IOSChromeProfilePasswordStoreFactory::~IOSChromeProfilePasswordStoreFactory() {}
 
 scoped_refptr<RefcountedKeyedService>
-IOSChromePasswordStoreFactory::BuildServiceInstanceFor(
+IOSChromeProfilePasswordStoreFactory::BuildServiceInstanceFor(
     web::BrowserState* context) const {
   std::unique_ptr<password_manager::LoginDatabase> login_db(
       password_manager::CreateLoginDatabaseForProfileStorage(
@@ -131,11 +132,11 @@ IOSChromePasswordStoreFactory::BuildServiceInstanceFor(
   return store;
 }
 
-web::BrowserState* IOSChromePasswordStoreFactory::GetBrowserStateToUse(
+web::BrowserState* IOSChromeProfilePasswordStoreFactory::GetBrowserStateToUse(
     web::BrowserState* context) const {
   return GetBrowserStateRedirectedInIncognito(context);
 }
 
-bool IOSChromePasswordStoreFactory::ServiceIsNULLWhileTesting() const {
+bool IOSChromeProfilePasswordStoreFactory::ServiceIsNULLWhileTesting() const {
   return true;
 }

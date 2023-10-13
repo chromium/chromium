@@ -186,7 +186,7 @@ const syncer::SyncService* IOSChromePasswordManagerClient::GetSyncService()
 
 PasswordStoreInterface*
 IOSChromePasswordManagerClient::GetProfilePasswordStore() const {
-  return IOSChromePasswordStoreFactory::GetForBrowserState(
+  return IOSChromeProfilePasswordStoreFactory::GetForBrowserState(
              bridge_.browserState, ServiceAccessType::EXPLICIT_ACCESS)
       .get();
 }

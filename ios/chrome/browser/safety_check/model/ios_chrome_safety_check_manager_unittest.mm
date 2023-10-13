@@ -67,7 +67,7 @@ class IOSChromeSafetyCheckManagerTest : public PlatformTest {
     TestChromeBrowserState::Builder builder;
 
     builder.AddTestingFactory(
-        IOSChromePasswordStoreFactory::GetInstance(),
+        IOSChromeProfilePasswordStoreFactory::GetInstance(),
         base::BindRepeating(
             &password_manager::BuildPasswordStore<
                 web::BrowserState, password_manager::TestPasswordStore>));

@@ -99,7 +99,7 @@ class PasswordDetailsMediatorTest : public PlatformTest {
   PasswordDetailsMediatorTest() {
     TestChromeBrowserState::Builder builder;
     builder.AddTestingFactory(
-        IOSChromePasswordStoreFactory::GetInstance(),
+        IOSChromeProfilePasswordStoreFactory::GetInstance(),
         base::BindRepeating(&BuildPasswordStore,
                             password_manager::IsAccountStore(false)));
 
@@ -160,7 +160,7 @@ class PasswordDetailsMediatorTest : public PlatformTest {
   // Returns the profile password store.
   TestPasswordStore& GetTestProfileStore() {
     return *static_cast<TestPasswordStore*>(
-        IOSChromePasswordStoreFactory::GetForBrowserState(
+        IOSChromeProfilePasswordStoreFactory::GetForBrowserState(
             browser_state_.get(), ServiceAccessType::EXPLICIT_ACCESS)
             .get());
   }

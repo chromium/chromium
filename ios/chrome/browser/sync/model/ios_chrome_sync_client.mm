@@ -112,8 +112,9 @@ IOSChromeSyncClient::IOSChromeSyncClient(ChromeBrowserState* browser_state)
   db_thread_ = profile_web_data_service_
                    ? profile_web_data_service_->GetDBTaskRunner()
                    : nullptr;
-  profile_password_store_ = IOSChromePasswordStoreFactory::GetForBrowserState(
-      browser_state_, ServiceAccessType::IMPLICIT_ACCESS);
+  profile_password_store_ =
+      IOSChromeProfilePasswordStoreFactory::GetForBrowserState(
+          browser_state_, ServiceAccessType::IMPLICIT_ACCESS);
   account_password_store_ =
       IOSChromeAccountPasswordStoreFactory::GetForBrowserState(
           browser_state_, ServiceAccessType::IMPLICIT_ACCESS);

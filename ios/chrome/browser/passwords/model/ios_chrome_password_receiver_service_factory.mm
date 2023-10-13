@@ -47,7 +47,7 @@ IOSChromePasswordReceiverServiceFactory::
           BrowserStateDependencyManager::GetInstance()) {
   DependsOn(IOSChromeAccountPasswordStoreFactory::GetInstance());
   DependsOn(ModelTypeStoreServiceFactory::GetInstance());
-  DependsOn(IOSChromePasswordStoreFactory::GetInstance());
+  DependsOn(IOSChromeProfilePasswordStoreFactory::GetInstance());
 }
 
 IOSChromePasswordReceiverServiceFactory::
@@ -79,7 +79,7 @@ IOSChromePasswordReceiverServiceFactory::BuildServiceInstanceFor(
 
   return std::make_unique<password_manager::PasswordReceiverServiceImpl>(
       browser_state->GetPrefs(), std::move(sync_bridge),
-      IOSChromePasswordStoreFactory::GetForBrowserState(
+      IOSChromeProfilePasswordStoreFactory::GetForBrowserState(
           browser_state, ServiceAccessType::EXPLICIT_ACCESS)
           .get(),
       IOSChromeAccountPasswordStoreFactory::GetForBrowserState(

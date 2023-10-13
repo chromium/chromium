@@ -18,24 +18,25 @@ class PasswordStoreInterface;
 
 // Singleton that owns all PasswordStores and associates them with
 // ChromeBrowserState.
-class IOSChromePasswordStoreFactory
+class IOSChromeProfilePasswordStoreFactory
     : public RefcountedBrowserStateKeyedServiceFactory {
  public:
   static scoped_refptr<password_manager::PasswordStoreInterface>
   GetForBrowserState(ChromeBrowserState* browser_state,
                      ServiceAccessType access_type);
 
-  static IOSChromePasswordStoreFactory* GetInstance();
+  static IOSChromeProfilePasswordStoreFactory* GetInstance();
 
-  IOSChromePasswordStoreFactory(const IOSChromePasswordStoreFactory&) = delete;
-  IOSChromePasswordStoreFactory& operator=(
-      const IOSChromePasswordStoreFactory&) = delete;
+  IOSChromeProfilePasswordStoreFactory(
+      const IOSChromeProfilePasswordStoreFactory&) = delete;
+  IOSChromeProfilePasswordStoreFactory& operator=(
+      const IOSChromeProfilePasswordStoreFactory&) = delete;
 
  private:
-  friend class base::NoDestructor<IOSChromePasswordStoreFactory>;
+  friend class base::NoDestructor<IOSChromeProfilePasswordStoreFactory>;
 
-  IOSChromePasswordStoreFactory();
-  ~IOSChromePasswordStoreFactory() override;
+  IOSChromeProfilePasswordStoreFactory();
+  ~IOSChromeProfilePasswordStoreFactory() override;
 
   // BrowserStateKeyedServiceFactory:
   scoped_refptr<RefcountedKeyedService> BuildServiceInstanceFor(

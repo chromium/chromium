@@ -45,7 +45,7 @@ class StoreMetricReporterHelper : public base::SupportsUserData::Data {
  private:
   void StartMetricsReporting() {
     password_manager::PasswordStoreInterface* profile_store =
-        IOSChromePasswordStoreFactory::GetForBrowserState(
+        IOSChromeProfilePasswordStoreFactory::GetForBrowserState(
             browser_state_, ServiceAccessType::EXPLICIT_ACCESS)
             .get();
     password_manager::PasswordStoreInterface* account_store =

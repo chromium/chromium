@@ -49,7 +49,7 @@
       defaultStore == password_manager::PasswordForm::Store::kAccountStore
           ? IOSChromeAccountPasswordStoreFactory::GetForBrowserState(
                 browserState, ServiceAccessType::IMPLICIT_ACCESS)
-          : IOSChromePasswordStoreFactory::GetForBrowserState(
+          : IOSChromeProfilePasswordStoreFactory::GetForBrowserState(
                 browserState, ServiceAccessType::IMPLICIT_ACCESS);
   NSUserDefaults* userDefaults = app_group::GetGroupUserDefaults();
   self.migrator =

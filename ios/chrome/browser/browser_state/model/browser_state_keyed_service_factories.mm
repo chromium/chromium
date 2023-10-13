@@ -156,7 +156,7 @@ void EnsureBrowserStateKeyedServiceFactoriesBuilt() {
   IOSChromeLargeIconCacheFactory::GetInstance();
   IOSChromeLargeIconServiceFactory::GetInstance();
   IOSChromePasswordCheckManagerFactory::GetInstance();
-  IOSChromePasswordStoreFactory::GetInstance();
+  IOSChromeProfilePasswordStoreFactory::GetInstance();
   IOSChromeProfileInvalidationProviderFactory::GetInstance();
   IOSChromeSafetyCheckManagerFactory::GetInstance();
   IOSProfileSessionDurationsServiceFactory::GetInstance();

@@ -166,7 +166,7 @@ constexpr const char* kBulkMovePasswordsToAccountConfirmationDialogAccepted =
   _savedPasswordsPresenter =
       std::make_unique<password_manager::SavedPasswordsPresenter>(
           IOSChromeAffiliationServiceFactory::GetForBrowserState(browserState),
-          IOSChromePasswordStoreFactory::GetForBrowserState(
+          IOSChromeProfilePasswordStoreFactory::GetForBrowserState(
               browserState, ServiceAccessType::EXPLICIT_ACCESS),
           IOSChromeAccountPasswordStoreFactory::GetForBrowserState(
               browserState, ServiceAccessType::EXPLICIT_ACCESS));

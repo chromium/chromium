@@ -120,7 +120,7 @@ class IOSChromePasswordCheckManagerTest : public PlatformTest {
         IOSChromeBulkLeakCheckServiceFactory::GetInstance(),
         base::BindRepeating(&MakeMockPasswordCheckManagerObserver));
     builder.AddTestingFactory(
-        IOSChromePasswordStoreFactory::GetInstance(),
+        IOSChromeProfilePasswordStoreFactory::GetInstance(),
         base::BindRepeating(
             &password_manager::BuildPasswordStore<web::BrowserState,
                                                   TestPasswordStore>));
@@ -137,7 +137,7 @@ class IOSChromePasswordCheckManagerTest : public PlatformTest {
             browser_state_.get()));
     store_ =
         base::WrapRefCounted(static_cast<password_manager::TestPasswordStore*>(
-            IOSChromePasswordStoreFactory::GetForBrowserState(
+            IOSChromeProfilePasswordStoreFactory::GetForBrowserState(
                 browser_state_.get(), ServiceAccessType::EXPLICIT_ACCESS)
                 .get()));
     manager_ = IOSChromePasswordCheckManagerFactory::GetForBrowserState(

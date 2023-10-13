@@ -59,8 +59,9 @@
       initWithSearchController:searchController];
   self.passwordViewController.delegate = self;
 
-  auto profilePasswordStore = IOSChromePasswordStoreFactory::GetForBrowserState(
-      self.browser->GetBrowserState(), ServiceAccessType::EXPLICIT_ACCESS);
+  auto profilePasswordStore =
+      IOSChromeProfilePasswordStoreFactory::GetForBrowserState(
+          self.browser->GetBrowserState(), ServiceAccessType::EXPLICIT_ACCESS);
   auto accountPasswordStore =
       IOSChromeAccountPasswordStoreFactory::GetForBrowserState(
           self.browser->GetBrowserState(), ServiceAccessType::EXPLICIT_ACCESS);

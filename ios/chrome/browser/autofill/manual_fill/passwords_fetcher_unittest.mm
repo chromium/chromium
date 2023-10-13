@@ -125,7 +125,7 @@ class PasswordFetcherTest : public PlatformTest {
     PlatformTest::SetUp();
     TestChromeBrowserState::Builder test_cbs_builder;
     test_cbs_builder.AddTestingFactory(
-        IOSChromePasswordStoreFactory::GetInstance(),
+        IOSChromeProfilePasswordStoreFactory::GetInstance(),
         base::BindRepeating(&BuildPasswordStore,
                             password_manager::IsAccountStore(false)));
     // Despite overriding BuildServiceInstanceFor() for the account factory,
@@ -141,7 +141,7 @@ class PasswordFetcherTest : public PlatformTest {
 
   scoped_refptr<password_manager::PasswordStoreInterface>
   GetProfilePasswordStore() {
-    return IOSChromePasswordStoreFactory::GetForBrowserState(
+    return IOSChromeProfilePasswordStoreFactory::GetForBrowserState(
         chrome_browser_state_.get(), ServiceAccessType::EXPLICIT_ACCESS);
   }
 

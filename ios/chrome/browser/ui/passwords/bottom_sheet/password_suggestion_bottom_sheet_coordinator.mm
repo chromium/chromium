@@ -59,7 +59,7 @@ using PasswordSuggestionBottomSheetExitReason::kShowPasswordManager;
         browser->GetBrowserState()->GetOriginalChromeBrowserState();
 
     auto profilePasswordStore =
-        IOSChromePasswordStoreFactory::GetForBrowserState(
+        IOSChromeProfilePasswordStoreFactory::GetForBrowserState(
             browserState, ServiceAccessType::EXPLICIT_ACCESS);
     auto accountPasswordStore =
         IOSChromeAccountPasswordStoreFactory::GetForBrowserState(

@@ -52,7 +52,7 @@ class ManualFillAllPasswordCoordinatorTest : public PlatformTest {
     // Mediator dependencies.
     // Add test password store.
     builder.AddTestingFactory(
-        IOSChromePasswordStoreFactory::GetInstance(),
+        IOSChromeProfilePasswordStoreFactory::GetInstance(),
         base::BindRepeating(
             &password_manager::BuildPasswordStore<
                 web::BrowserState, password_manager::TestPasswordStore>));

@@ -123,7 +123,7 @@ class ContentSuggestionsMediatorTest : public PlatformTest {
         segmentation_platform::SegmentationPlatformServiceFactory::
             GetDefaultFactory());
     test_cbs_builder.AddTestingFactory(
-        IOSChromePasswordStoreFactory::GetInstance(),
+        IOSChromeProfilePasswordStoreFactory::GetInstance(),
         base::BindRepeating(
             &password_manager::BuildPasswordStore<
                 web::BrowserState, password_manager::TestPasswordStore>));

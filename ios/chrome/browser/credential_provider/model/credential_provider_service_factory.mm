@@ -40,7 +40,7 @@ CredentialProviderServiceFactory::CredentialProviderServiceFactory()
           BrowserStateDependencyManager::GetInstance()) {
   DependsOn(IOSChromeAffiliationServiceFactory::GetInstance());
   DependsOn(IOSChromeAccountPasswordStoreFactory::GetInstance());
-  DependsOn(IOSChromePasswordStoreFactory::GetInstance());
+  DependsOn(IOSChromeProfilePasswordStoreFactory::GetInstance());
   DependsOn(IdentityManagerFactory::GetInstance());
   DependsOn(SyncServiceFactory::GetInstance());
   DependsOn(IOSChromeFaviconLoaderFactory::GetInstance());
@@ -55,7 +55,7 @@ CredentialProviderServiceFactory::BuildServiceInstanceFor(
       ChromeBrowserState::FromBrowserState(context);
   scoped_refptr<password_manager::PasswordStoreInterface>
       profile_password_store =
-          IOSChromePasswordStoreFactory::GetForBrowserState(
+          IOSChromeProfilePasswordStoreFactory::GetForBrowserState(
               browser_state, ServiceAccessType::IMPLICIT_ACCESS);
   scoped_refptr<password_manager::PasswordStoreInterface>
       account_password_store =

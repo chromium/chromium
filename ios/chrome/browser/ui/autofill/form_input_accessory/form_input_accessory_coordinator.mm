@@ -171,8 +171,9 @@ const CGFloat kIPHVerticalOffset = -5;
   self.formInputAccessoryViewController.layoutGuideCenter = layoutGuideCenter;
 
   DCHECK(self.browserState);
-  auto profilePasswordStore = IOSChromePasswordStoreFactory::GetForBrowserState(
-      self.browserState, ServiceAccessType::EXPLICIT_ACCESS);
+  auto profilePasswordStore =
+      IOSChromeProfilePasswordStoreFactory::GetForBrowserState(
+          self.browserState, ServiceAccessType::EXPLICIT_ACCESS);
   auto accountPasswordStore =
       IOSChromeAccountPasswordStoreFactory::GetForBrowserState(
           self.browserState, ServiceAccessType::EXPLICIT_ACCESS);
