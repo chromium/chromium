@@ -1,2 +1,12 @@
+# Unless you want a specific reviewer's expertise, send to the email below.
+# CLs will be automatically reassigned to a reviewer within
+# about 5 minutes. This approach helps our team to load-balance incoming
+# reviews. Googlers can read more about this at go/gwsq-gerrit.
+
+chrome-signin-android-reviews@google.com
+
+# Note: When adding owners here, remember to also update the gwsq config for
+# chrome-signin-android-reviews@google.com!
+
 bsazonov@chromium.org
 triploblastic@chromium.org
