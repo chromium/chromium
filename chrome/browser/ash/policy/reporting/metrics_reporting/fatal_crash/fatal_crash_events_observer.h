@@ -241,7 +241,7 @@ class FatalCrashEventsObserver
     base::Time uploads_log_creation_time_ GUARDED_BY_CONTEXT(sequence_checker_){
         base::Time::Min()};
     // The offset of uploads.log of the last reported crash.
-    uint64_t uploads_log_offset_ GUARDED_BY_CONTEXT(sequence_checker_);
+    uint64_t uploads_log_offset_ GUARDED_BY_CONTEXT(sequence_checker_){0u};
   };
 
   FatalCrashEventsObserver();
