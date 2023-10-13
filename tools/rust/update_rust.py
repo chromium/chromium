@@ -4,11 +4,9 @@
 # found in the LICENSE file.
 '''Update in-tree checkout of Rust toolchain
 
-!!! DO NOT USE IN PRODUCTION
-Some functionality can be used outside of a chromium checkout. For example,
-running with `--print-rust-revision` will succeed. Other functionality requires
-a Chromium checkout to access functions from other scripts.
-
+When run without arguments, it fetches and unzips the Rust toolchain package
+specieid by the `RUST_REVISION` and `RUST_SUB_REVISION` along with the clang
+version specified in //tools/clang/scripts/update.py.
 '''
 
 import argparse
