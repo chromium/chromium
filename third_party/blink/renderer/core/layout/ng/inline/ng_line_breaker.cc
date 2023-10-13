@@ -225,9 +225,9 @@ inline bool HasUnpositionedFloats(const NGInlineItemResults& item_results) {
 LayoutUnit ComputeInlineEndSize(const NGConstraintSpace& space,
                                 const ComputedStyle* style) {
   DCHECK(style);
-  NGBoxStrut margins = ComputeMarginsForSelf(space, *style);
-  NGBoxStrut borders = ComputeBordersForInline(*style);
-  NGBoxStrut paddings = ComputePadding(space, *style);
+  BoxStrut margins = ComputeMarginsForSelf(space, *style);
+  BoxStrut borders = ComputeBordersForInline(*style);
+  BoxStrut paddings = ComputePadding(space, *style);
 
   return margins.inline_end + borders.inline_end + paddings.inline_end;
 }

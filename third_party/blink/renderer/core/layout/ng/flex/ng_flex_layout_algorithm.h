@@ -62,7 +62,7 @@ class CORE_EXPORT NGFlexLayoutAlgorithm
       const NGBlockNode& child,
       LayoutUnit main_size,
       const MinMaxSizes& cross_min_max,
-      const NGBoxStrut& border_padding_in_child_writing_mode);
+      const BoxStrut& border_padding_in_child_writing_mode);
 
   bool IsColumnContainerMainSizeDefinite() const;
   bool IsContainerCrossSizeDefinite() const;

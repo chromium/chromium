@@ -31,7 +31,7 @@ class CORE_EXPORT NGFieldsetLayoutAlgorithm
   static LayoutUnit ComputeLegendInlineOffset(
       const ComputedStyle& legend_style,
       LayoutUnit legend_border_box_inline_size,
-      const NGBoxStrut& legend_margins,
+      const BoxStrut& legend_margins,
       const ComputedStyle& fieldset_style,
       LayoutUnit fieldset_border_padding_inline_start,
       LayoutUnit fieldset_content_inline_size);

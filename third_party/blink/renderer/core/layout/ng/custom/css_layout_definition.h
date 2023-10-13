@@ -19,15 +19,15 @@ class CustomLayoutScope;
 class FragmentResultOptions;
 class IntrinsicSizesResultOptions;
 class LayoutUnit;
-struct LogicalSize;
 class NGBlockNode;
-struct NGBoxStrut;
 class NGConstraintSpace;
 class ScriptState;
 class SerializedScriptValue;
 class V8IntrinsicSizesCallback;
 class V8LayoutCallback;
 class V8NoArgumentConstructor;
+struct BoxStrut;
+struct LogicalSize;
 
 // Represents a javascript class registered on the LayoutWorkletGlobalScope by
 // the author.
@@ -55,15 +55,14 @@ class CSSLayoutDefinition final : public GarbageCollected<CSSLayoutDefinition>,
     // Runs the web developer defined layout, returns true if everything
     // succeeded. It populates the FragmentResultOptions dictionary, and
     // fragment_result_data.
-    bool Layout(
-        const NGConstraintSpace&,
-        const Document&,
-        const NGBlockNode&,
-        const LogicalSize& border_box_size,
-        const NGBoxStrut& border_scrollbar_padding,
-        CustomLayoutScope*,
-        FragmentResultOptions*&,
-        scoped_refptr<SerializedScriptValue>* fragment_result_data);
+    bool Layout(const NGConstraintSpace&,
+                const Document&,
+                const NGBlockNode&,
+                const LogicalSize& border_box_size,
+                const BoxStrut& border_scrollbar_padding,
+                CustomLayoutScope*,
+                FragmentResultOptions*&,
+                scoped_refptr<SerializedScriptValue>* fragment_result_data);
 
     // Runs the web developer defined intrinsicSizes, returns true if everything
     // succeeded. It populates the IntrinsicSizesResultOptions dictionary.
@@ -71,7 +70,7 @@ class CSSLayoutDefinition final : public GarbageCollected<CSSLayoutDefinition>,
                         const Document&,
                         const NGBlockNode&,
                         const LogicalSize& border_box_size,
-                        const NGBoxStrut& border_scrollbar_padding,
+                        const BoxStrut& border_scrollbar_padding,
                         const LayoutUnit child_available_block_size,
                         CustomLayoutScope*,
                         IntrinsicSizesResultOptions**,

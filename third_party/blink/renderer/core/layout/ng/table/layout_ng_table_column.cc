@@ -225,7 +225,7 @@ LayoutPoint LayoutNGTableColumn::LocationInternal() const {
       }
       size.inline_size = geometry.inline_size;
 
-      NGBoxStrut fragment_bp =
+      BoxStrut fragment_bp =
           (fragment.Padding() + fragment.Borders()).ConvertToLogical(direction);
       LogicalSize table_border_spacing = table->StyleRef().TableBorderSpacing();
       size.block_size -=

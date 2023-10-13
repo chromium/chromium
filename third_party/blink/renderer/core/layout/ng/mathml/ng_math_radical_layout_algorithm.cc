@@ -72,7 +72,7 @@ const NGLayoutResult* NGMathRadicalLayoutAlgorithm::Layout() {
   LayoutUnit index_inline_size, index_ascent, index_descent, base_ascent,
       base_descent;
   RadicalHorizontalParameters horizontal;
-  NGBoxStrut index_margins, base_margins;
+  BoxStrut index_margins, base_margins;
   NGBlockNode base = nullptr;
   NGBlockNode index = nullptr;
   GatherChildren(&base, &index, &container_builder_);

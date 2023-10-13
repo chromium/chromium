@@ -35,9 +35,9 @@ struct CORE_EXPORT NGLogicalOutOfFlowDimensions {
     return inset.block_start + size.block_size + margins.block_end;
   }
 
-  NGBoxStrut inset;
+  BoxStrut inset;
   LogicalSize size = {kIndefiniteSize, kIndefiniteSize};
-  NGBoxStrut margins;
+  BoxStrut margins;
 };
 
 struct CORE_EXPORT NGLogicalOutOfFlowInsets {
@@ -85,7 +85,7 @@ CORE_EXPORT bool ComputeOutOfFlowInlineDimensions(
     const ComputedStyle& style,
     const NGConstraintSpace&,
     const NGLogicalOutOfFlowInsets&,
-    const NGBoxStrut& border_padding,
+    const BoxStrut& border_padding,
     const NGLogicalStaticPosition&,
     LogicalSize computed_available_size,
     const absl::optional<LogicalSize>& replaced_size,
@@ -100,7 +100,7 @@ CORE_EXPORT const NGLayoutResult* ComputeOutOfFlowBlockDimensions(
     const ComputedStyle& style,
     const NGConstraintSpace&,
     const NGLogicalOutOfFlowInsets&,
-    const NGBoxStrut& border_padding,
+    const BoxStrut& border_padding,
     const NGLogicalStaticPosition&,
     LogicalSize computed_available_size,
     const absl::optional<LogicalSize>& replaced_size,

@@ -136,7 +136,7 @@ const NGExclusion* CreateExclusionSpaceForInitialLetterBox(
     BfcOffset origin,
     const BfcOffset& border_box_offset,
     const LogicalSize& border_box_size,
-    const NGBoxStrut& margins) {
+    const BoxStrut& margins) {
   // Note: In case of `margins.inline_start` or `margins.line_over` are
   // negative, left top of `NGExclusionSpace` are out of `ConstraintSpace`.
   const BfcOffset local_start_offset(
@@ -246,7 +246,7 @@ LayoutUnit CalculateInitialLetterBoxInlineSize(const NGLineInfo& line_info) {
 
 const NGExclusion* PostPlaceInitialLetterBox(
     const FontHeight& line_box_metrics,
-    const NGBoxStrut& initial_letter_box_margins,
+    const BoxStrut& initial_letter_box_margins,
     NGLogicalLineItems* line_box,
     const BfcOffset& line_origin,
     NGLineInfo* line_info) {

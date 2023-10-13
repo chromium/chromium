@@ -4466,7 +4466,7 @@ LayoutBox::PositionFallbackNonOverflowingRanges() const {
   return layout_results.front()->PositionFallbackNonOverflowingRanges();
 }
 
-const NGBoxStrut& LayoutBox::OutOfFlowInsetsForGetComputedStyle() const {
+const BoxStrut& LayoutBox::OutOfFlowInsetsForGetComputedStyle() const {
   const auto& layout_results = GetLayoutResults();
   // We should call this function only after the node is laid out.
   CHECK(layout_results.size());

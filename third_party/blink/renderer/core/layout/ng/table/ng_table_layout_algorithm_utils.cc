@@ -204,7 +204,7 @@ NGTableTypes::Row ComputeMinimumRowBlockSize(
     colspan_cell_tabulator->FindNextFreeColumn();
     const ComputedStyle& cell_style = cell.Style();
     const auto cell_writing_direction = cell_style.GetWritingDirection();
-    const NGBoxStrut cell_borders = table_borders.CellBorder(
+    const BoxStrut cell_borders = table_borders.CellBorder(
         cell, row_index, colspan_cell_tabulator->CurrentColumn(), section_index,
         table_writing_direction);
 
@@ -271,8 +271,8 @@ NGTableTypes::Row ComputeMinimumRowBlockSize(
       cell_css_percent = cell_specified_block_length.Percent();
     } else if (cell_specified_block_length.IsFixed()) {
       // NOTE: Ignore min/max-height for determining the |cell_css_block_size|.
-      NGBoxStrut cell_padding = ComputePadding(cell_space, cell_style);
-      NGBoxStrut border_padding = cell_borders + cell_padding;
+      BoxStrut cell_padding = ComputePadding(cell_space, cell_style);
+      BoxStrut border_padding = cell_borders + cell_padding;
       // https://quirks.spec.whatwg.org/#the-table-cell-height-box-sizing-quirk
       if (cell.GetDocument().InQuirksMode() ||
           cell_style.BoxSizing() == EBoxSizing::kBorderBox) {
@@ -427,10 +427,10 @@ void ComputeSectionInlineConstraints(
       if (max_column >= cell_inline_constraints->size())
         cell_inline_constraints->Grow(max_column);
       if (!ignore_because_of_fixed_layout) {
-        NGBoxStrut cell_border = table_borders.CellBorder(
+        BoxStrut cell_border = table_borders.CellBorder(
             cell, *row_index, colspan_cell_tabulator.CurrentColumn(),
             section_index, table_writing_direction);
-        NGBoxStrut cell_padding = table_borders.CellPaddingForMeasure(
+        BoxStrut cell_padding = table_borders.CellPaddingForMeasure(
             cell.Style(), table_writing_direction);
         NGTableTypes::CellInlineConstraint cell_constraint =
             NGTableTypes::CreateCellInlineConstraint(
@@ -497,7 +497,7 @@ NGTableAlgorithmUtils::ComputeCellBlockSize(
 void NGTableAlgorithmUtils::SetupTableCellConstraintSpaceBuilder(
     const WritingDirectionMode table_writing_direction,
     const NGBlockNode cell,
-    const NGBoxStrut& cell_borders,
+    const BoxStrut& cell_borders,
     const Vector<NGTableColumnLocation>& column_locations,
     LayoutUnit cell_block_size,
     LayoutUnit percentage_inline_size,
@@ -586,7 +586,7 @@ NGTableAlgorithmUtils::ComputeColumnConstraints(
     const NGBlockNode& table,
     const NGTableGroupedChildren& grouped_children,
     const NGTableBorders& table_borders,
-    const NGBoxStrut& border_padding) {
+    const BoxStrut& border_padding) {
   const auto& table_style = table.Style();
   bool is_fixed_layout = table_style.IsFixedTableLayout();
 

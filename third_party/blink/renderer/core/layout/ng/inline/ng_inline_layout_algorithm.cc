@@ -636,8 +636,8 @@ void NGInlineLayoutAlgorithm::CreateLine(
     // https://wpt.live/css/css-inline/initial-letter/initial-letter-block-position-margins-vlr.html
     const NGExclusion* exclusion = PostPlaceInitialLetterBox(
         line_box_metrics,
-        NGBoxStrut(initial_letter_item_result->margins,
-                   line_info->LineStyle().IsFlippedLinesWritingMode()),
+        BoxStrut(initial_letter_item_result->margins,
+                 line_info->LineStyle().IsFlippedLinesWritingMode()),
         line_box,
         BfcOffset(container_builder_.BfcLineOffset(),
                   line_info->GetBfcOffset().block_offset),

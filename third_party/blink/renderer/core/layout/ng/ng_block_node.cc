@@ -265,7 +265,7 @@ bool CanUseCachedIntrinsicInlineSizes(const NGConstraintSpace& constraint_space,
 
 absl::optional<LayoutUnit> ContentMinimumInlineSize(
     const NGBlockNode& block_node,
-    const NGBoxStrut& border_padding) {
+    const BoxStrut& border_padding) {
   // Table layout is never allowed to go below the min-intrinsic size.
   if (block_node.IsTable())
     return absl::nullopt;
@@ -448,7 +448,7 @@ const NGLayoutResult* NGBlockNode::Layout(
   }
 
   // All these variables may change after layout due to scrollbars changing.
-  NGBoxStrut scrollbars_before = ComputeScrollbars(constraint_space, *this);
+  BoxStrut scrollbars_before = ComputeScrollbars(constraint_space, *this);
   const LayoutUnit inline_size_before =
       fragment_geometry->border_box_size.inline_size;
   const bool intrinsic_logical_widths_dirty_before =
@@ -489,7 +489,7 @@ const NGLayoutResult* NGBlockNode::Layout(
   // Skip this part if side-effects aren't allowed, though. Also skip it if we
   // are resuming layout after a fragmentainer break. Changing the intrinsic
   // inline-size halfway through layout of a node doesn't make sense.
-  NGBoxStrut scrollbars_after = ComputeScrollbars(constraint_space, *this);
+  BoxStrut scrollbars_after = ComputeScrollbars(constraint_space, *this);
   if ((scrollbars_before != scrollbars_after ||
        inline_size_before != fragment_geometry->border_box_size.inline_size) &&
       !NGDisableSideEffectsScope::IsDisabled() && !IsBreakInside(break_token)) {
@@ -897,7 +897,7 @@ MinMaxSizesResult NGBlockNode::ComputeMinMaxSizes(
         CalculateInitialFragmentGeometry(constraint_space, *this,
                                          /* break_token */ nullptr,
                                          /* is_intrinsic */ true);
-    const NGBoxStrut border_padding =
+    const BoxStrut border_padding =
         fragment_geometry.border + fragment_geometry.padding;
     MinMaxSizes sizes;
     sizes.min_size = border_padding.InlineSum();
@@ -952,7 +952,7 @@ MinMaxSizesResult NGBlockNode::ComputeMinMaxSizes(
         CalculateInitialFragmentGeometry(constraint_space, *this,
                                          /* break_token */ nullptr,
                                          /* is_intrinsic */ true);
-    const NGBoxStrut border_padding =
+    const BoxStrut border_padding =
         fragment_geometry.border + fragment_geometry.padding;
     if (fragment_geometry.border_box_size.block_size != kIndefiniteSize) {
       const LayoutUnit inline_size_from_ar = InlineSizeFromAspectRatio(
@@ -1000,7 +1000,7 @@ MinMaxSizesResult NGBlockNode::ComputeMinMaxSizes(
 
   box_->SetIntrinsicLogicalWidthsDirty(kMarkOnlyThis);
 
-  const NGBoxStrut border_padding =
+  const BoxStrut border_padding =
       fragment_geometry.border + fragment_geometry.padding;
 
   MinMaxSizesResult result = ComputeMinMaxSizesWithAlgorithm(
@@ -1282,7 +1282,7 @@ void NGBlockNode::PlaceChildrenInFlowThread(
   // design document for legacy multicol:
   // https://www.chromium.org/developers/design-documents/multi-column-layout
 
-  NGBoxStrut border_scrollbar_padding;
+  BoxStrut border_scrollbar_padding;
   WritingModeConverter converter(space.GetWritingDirection(),
                                  physical_fragment.Size());
   LayoutUnit column_row_inline_size;
@@ -1816,9 +1816,8 @@ void NGBlockNode::UpdateShapeOutsideInfoIfNeeded(
   // model and computing the correct sizes of shapes.
   ShapeOutsideInfo* shape_outside = box_->GetShapeOutsideInfo();
   WritingMode writing_mode = box_->ContainingBlock()->Style()->GetWritingMode();
-  NGBoxStrut margins =
-      ComputePhysicalMargins(constraint_space, Style())
-          .ConvertToLogical({writing_mode, TextDirection::kLtr});
+  BoxStrut margins = ComputePhysicalMargins(constraint_space, Style())
+                         .ConvertToLogical({writing_mode, TextDirection::kLtr});
   shape_outside->SetReferenceBoxLogicalSize(
       box_size.ConvertToLogical(writing_mode),
       LogicalSize(margins.InlineSum(), margins.BlockSum()));

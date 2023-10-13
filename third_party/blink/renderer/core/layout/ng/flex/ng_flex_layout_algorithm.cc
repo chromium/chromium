@@ -275,7 +275,7 @@ void NGFlexLayoutAlgorithm::HandleOutOfFlowPositionedItems(
   using InlineEdge = NGLogicalStaticPosition::InlineEdge;
   using BlockEdge = NGLogicalStaticPosition::BlockEdge;
 
-  NGBoxStrut border_scrollbar_padding = BorderScrollbarPadding();
+  BoxStrut border_scrollbar_padding = BorderScrollbarPadding();
   border_scrollbar_padding.block_start =
       OriginalBorderScrollbarPaddingBlockStart();
 
@@ -680,7 +680,7 @@ void NGFlexLayoutAlgorithm::ConstructAndAppendFlexItems(
       MinMaxSizesResult child_contributions =
           ComputeMinAndMaxContentContribution(Style(), child, space);
       max_content_contribution = child_contributions.sizes.max_size;
-      NGBoxStrut child_margins =
+      BoxStrut child_margins =
           ComputeMarginsFor(space, child.Style(), ConstraintSpace());
       child_contributions.sizes += child_margins.InlineSum();
 
@@ -707,7 +707,7 @@ void NGFlexLayoutAlgorithm::ConstructAndAppendFlexItems(
     NGPhysicalBoxStrut physical_child_margins =
         ComputePhysicalMargins(flex_basis_space, child_style);
 
-    NGBoxStrut border_padding_in_child_writing_mode =
+    BoxStrut border_padding_in_child_writing_mode =
         ComputeBorders(flex_basis_space, child) +
         ComputePadding(flex_basis_space, child_style);
 
@@ -991,7 +991,7 @@ void NGFlexLayoutAlgorithm::ConstructAndAppendFlexItems(
     DCHECK_GE(min_max_sizes_in_main_axis_direction.min_size, 0);
     DCHECK_GE(min_max_sizes_in_main_axis_direction.max_size, 0);
 
-    const NGBoxStrut scrollbars = ComputeScrollbarsForNonAnonymous(child);
+    const BoxStrut scrollbars = ComputeScrollbarsForNonAnonymous(child);
 
     const auto container_writing_direction =
         ConstraintSpace().GetWritingDirection();
@@ -1042,7 +1042,7 @@ NGFlexLayoutAlgorithm::AdjustMainSizeForAspectRatioCrossAxisMinAndMax(
     const NGBlockNode& child,
     LayoutUnit main_axis_size,
     const MinMaxSizes& cross_min_max,
-    const NGBoxStrut& border_padding_in_child_writing_mode) {
+    const BoxStrut& border_padding_in_child_writing_mode) {
   DCHECK(child.HasAspectRatio());
   auto transferred_min_max_func = MainAxisIsInlineAxis(child)
                                       ? ComputeTransferredMinMaxInlineSizes
@@ -1309,9 +1309,8 @@ void NGFlexLayoutAlgorithm::PlaceFlexItems(
       if (DoesItemStretch(flex_item.ng_input_node_) &&
           flex_item.layout_result_) {
         DCHECK(!MainAxisIsInlineAxis(flex_item.ng_input_node_));
-        NGBoxStrut border =
-            ComputeBorders(child_space, flex_item.ng_input_node_);
-        NGBoxStrut padding =
+        BoxStrut border = ComputeBorders(child_space, flex_item.ng_input_node_);
+        BoxStrut padding =
             ComputePadding(child_space, flex_item.ng_input_node_.Style());
         if (flex_item.ng_input_node_.IsReplaced()) {
           LogicalSize logical_border_box_size = ComputeReplacedSize(
@@ -2323,7 +2322,7 @@ MinMaxSizesResult NGFlexLayoutAlgorithm::ComputeMinMaxSizes(
     const NGConstraintSpace space = BuildSpaceForIntrinsicInlineSize(child);
     MinMaxSizesResult child_result =
         ComputeMinAndMaxContentContribution(Style(), child, space);
-    NGBoxStrut child_margins =
+    BoxStrut child_margins =
         ComputeMarginsFor(space, child.Style(), ConstraintSpace());
     child_result.sizes += child_margins.InlineSum();
 

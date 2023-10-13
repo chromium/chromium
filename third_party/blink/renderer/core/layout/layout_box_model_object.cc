@@ -802,7 +802,7 @@ DeprecatedLayoutRect LayoutBoxModelObject::LocalCaretRectForEmptyElement(
 
   LayoutUnit x = BorderLeft() + PaddingLeft();
   LayoutUnit max_x = width - BorderRight() - PaddingRight();
-  NGBoxStrut border_padding;
+  BoxStrut border_padding;
   if (RuntimeEnabledFeatures::EmptyCaretInVerticalEnabled()) {
     border_padding = (BorderOutsets() + PaddingOutsets())
                          .ConvertToLogical({current_style.GetWritingMode(),

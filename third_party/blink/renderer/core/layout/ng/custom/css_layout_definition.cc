@@ -89,7 +89,7 @@ bool CSSLayoutDefinition::Instance::Layout(
     const Document& document,
     const NGBlockNode& node,
     const LogicalSize& border_box_size,
-    const NGBoxStrut& border_scrollbar_padding,
+    const BoxStrut& border_scrollbar_padding,
     CustomLayoutScope* custom_layout_scope,
     FragmentResultOptions*& fragment_result_options,
     scoped_refptr<SerializedScriptValue>* fragment_result_data) {
@@ -231,7 +231,7 @@ bool CSSLayoutDefinition::Instance::IntrinsicSizes(
     const Document& document,
     const NGBlockNode& node,
     const LogicalSize& border_box_size,
-    const NGBoxStrut& border_scrollbar_padding,
+    const BoxStrut& border_scrollbar_padding,
     const LayoutUnit child_available_block_size,
     CustomLayoutScope* custom_layout_scope,
     IntrinsicSizesResultOptions** intrinsic_sizes_result_options,

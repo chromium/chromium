@@ -32,12 +32,12 @@ class CORE_EXPORT LayoutNGTableCell : public LayoutNGBlockFlow {
     return rowspan;
   }
 
-  const NGBoxStrut& IntrinsicLogicalWidthsBorderSizes() const {
+  const BoxStrut& IntrinsicLogicalWidthsBorderSizes() const {
     NOT_DESTROYED();
     return intrinsical_logical_widths_border_sizes_;
   }
 
-  void SetIntrinsicLogicalWidthsBorderSizes(const NGBoxStrut& border_sizes) {
+  void SetIntrinsicLogicalWidthsBorderSizes(const BoxStrut& border_sizes) {
     NOT_DESTROYED();
     intrinsical_logical_widths_border_sizes_ = border_sizes;
   }
@@ -128,7 +128,7 @@ class CORE_EXPORT LayoutNGTableCell : public LayoutNGBlockFlow {
 
   // Cached cell border. Used to invalidate calculation of
   // intrinsic logical width.
-  NGBoxStrut intrinsical_logical_widths_border_sizes_;
+  BoxStrut intrinsical_logical_widths_border_sizes_;
 
   unsigned has_col_span_ : 1;
   unsigned has_rowspan_ : 1;

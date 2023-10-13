@@ -21,7 +21,7 @@ namespace blink {
 
 class ComputedStyle;
 class NGBlockNode;
-struct NGBoxStrut;
+struct BoxStrut;
 
 // When table has collapsed borders, computing borders for table parts is
 // complex, and costly.
@@ -63,7 +63,7 @@ class NGTableBorders : public GarbageCollected<NGTableBorders> {
  public:
   static const NGTableBorders* ComputeTableBorders(const NGBlockNode&);
 
-  NGTableBorders(const NGBoxStrut& table_border, const bool is_collapsed);
+  NGTableBorders(const BoxStrut& table_border, const bool is_collapsed);
 
   void Trace(Visitor* visitor) const { visitor->Trace(edges_); }
 
@@ -187,15 +187,15 @@ class NGTableBorders : public GarbageCollected<NGTableBorders> {
 
   wtf_size_t EdgesPerRow() const { return edges_per_row_; }
 
-  const NGBoxStrut& TableBorder() const { return table_border_; }
+  const BoxStrut& TableBorder() const { return table_border_; }
 
-  NGBoxStrut CellBorder(const NGBlockNode& cell,
-                        wtf_size_t row,
-                        wtf_size_t column,
-                        wtf_size_t section,
-                        WritingDirectionMode table_writing_direction) const;
+  BoxStrut CellBorder(const NGBlockNode& cell,
+                      wtf_size_t row,
+                      wtf_size_t column,
+                      wtf_size_t section,
+                      WritingDirectionMode table_writing_direction) const;
 
-  NGBoxStrut CellPaddingForMeasure(
+  BoxStrut CellPaddingForMeasure(
       const ComputedStyle& cell_style,
       WritingDirectionMode table_writing_direction) const;
 
@@ -275,10 +275,10 @@ class NGTableBorders : public GarbageCollected<NGTableBorders> {
                         (table_row_index - sections_[section_index].start_row));
   }
 
-  NGBoxStrut GetCellBorders(wtf_size_t row,
-                            wtf_size_t column,
-                            wtf_size_t rowspan,
-                            wtf_size_t colspan) const;
+  BoxStrut GetCellBorders(wtf_size_t row,
+                          wtf_size_t column,
+                          wtf_size_t rowspan,
+                          wtf_size_t colspan) const;
 
   void EnsureCellColumnFits(wtf_size_t cell_column);
 
@@ -306,7 +306,7 @@ class NGTableBorders : public GarbageCollected<NGTableBorders> {
   Edges edges_;
   Vector<Section> sections_;
   wtf_size_t edges_per_row_ = 0;
-  NGBoxStrut table_border_;
+  BoxStrut table_border_;
   // Cells cannot extrude beyond table grid size.
   // Rowspan and colspan sizes must be clamped to enforce this.
   wtf_size_t last_column_index_ = UINT_MAX;

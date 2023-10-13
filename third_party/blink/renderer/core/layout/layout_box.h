@@ -896,10 +896,10 @@ class CORE_EXPORT LayoutBox : public LayoutBoxModelObject {
     else
       return ComputeScrollbarsInternal();
   }
-  inline NGBoxStrut ComputeLogicalScrollbars() const {
+  inline BoxStrut ComputeLogicalScrollbars() const {
     NOT_DESTROYED();
     if (CanSkipComputeScrollbars()) {
-      return NGBoxStrut();
+      return BoxStrut();
     } else {
       return ComputeScrollbarsInternal().ConvertToLogical(
           StyleRef().GetWritingDirection());
@@ -1364,7 +1364,7 @@ class CORE_EXPORT LayoutBox : public LayoutBoxModelObject {
   const Vector<NonOverflowingScrollRange>*
   PositionFallbackNonOverflowingRanges() const;
 
-  const NGBoxStrut& OutOfFlowInsetsForGetComputedStyle() const;
+  const BoxStrut& OutOfFlowInsetsForGetComputedStyle() const;
 
   bool NeedsAnchorPositionScrollAdjustmentInX() const;
   bool NeedsAnchorPositionScrollAdjustmentInY() const;

@@ -10,13 +10,13 @@ namespace blink {
 
 namespace {
 
-// Ideally, this would be tested by NGBoxStrut::ConvertToPhysical, but
+// Ideally, this would be tested by BoxStrut::ConvertToPhysical, but
 // this has not been implemented yet.
-TEST(NGGeometryUnitsTest, ConvertPhysicalStrutToLogical) {
+TEST(GeometryUnitsTest, ConvertPhysicalStrutToLogical) {
   LayoutUnit left{5}, right{10}, top{15}, bottom{20};
   NGPhysicalBoxStrut physical{top, right, bottom, left};
 
-  NGBoxStrut logical = physical.ConvertToLogical(
+  BoxStrut logical = physical.ConvertToLogical(
       {WritingMode::kHorizontalTb, TextDirection::kLtr});
   EXPECT_EQ(left, logical.inline_start);
   EXPECT_EQ(top, logical.block_start);
@@ -47,10 +47,10 @@ TEST(NGGeometryUnitsTest, ConvertPhysicalStrutToLogical) {
   EXPECT_EQ(right, logical.block_start);
 }
 
-TEST(NGGeometryUnitsTest, ConvertLogicalStrutToPhysical) {
+TEST(GeometryUnitsTest, ConvertLogicalStrutToPhysical) {
   LayoutUnit left{5}, right{10}, top{15}, bottom{20};
-  NGBoxStrut logical(left, right, top, bottom);
-  NGBoxStrut converted =
+  BoxStrut logical(left, right, top, bottom);
+  BoxStrut converted =
       logical
           .ConvertToPhysical({WritingMode::kHorizontalTb, TextDirection::kLtr})
           .ConvertToLogical({WritingMode::kHorizontalTb, TextDirection::kLtr});

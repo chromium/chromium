@@ -305,8 +305,8 @@ class CORE_EXPORT NGConstraintSpace final {
   }
 
   // Return the borders which should be used for a table-cell.
-  NGBoxStrut TableCellBorders() const {
-    return HasRareData() ? rare_data_->TableCellBorders() : NGBoxStrut();
+  BoxStrut TableCellBorders() const {
+    return HasRareData() ? rare_data_->TableCellBorders() : BoxStrut();
   }
 
   wtf_size_t TableCellColumnIndex() const {
@@ -1153,13 +1153,13 @@ class CORE_EXPORT NGConstraintSpace final {
 
     void SetIsTableCell() { EnsureTableCellData(); }
 
-    NGBoxStrut TableCellBorders() const {
+    BoxStrut TableCellBorders() const {
       return GetDataUnionType() == DataUnionType::kTableCellData
                  ? table_cell_data_.table_cell_borders
-                 : NGBoxStrut();
+                 : BoxStrut();
     }
 
-    void SetTableCellBorders(const NGBoxStrut& table_cell_borders) {
+    void SetTableCellBorders(const BoxStrut& table_cell_borders) {
       EnsureTableCellData()->table_cell_borders = table_cell_borders;
     }
 
@@ -1359,12 +1359,12 @@ class CORE_EXPORT NGConstraintSpace final {
       }
 
       bool IsInitialForMaySkipLayout() const {
-        return table_cell_borders == NGBoxStrut() &&
+        return table_cell_borders == BoxStrut() &&
                table_cell_column_index == kNotFound && !is_hidden_for_paint &&
                !has_collapsed_borders;
       }
 
-      NGBoxStrut table_cell_borders;
+      BoxStrut table_cell_borders;
       wtf_size_t table_cell_column_index = kNotFound;
       absl::optional<LayoutUnit> table_cell_alignment_baseline;
       bool is_hidden_for_paint = false;

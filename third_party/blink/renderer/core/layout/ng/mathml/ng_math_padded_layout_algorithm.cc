@@ -60,7 +60,7 @@ const NGLayoutResult* NGMathPaddedLayoutAlgorithm::Layout() {
   NGBlockNode content = nullptr;
   GetContentAsAnonymousMrow(&content);
   LayoutUnit content_ascent, content_descent;
-  NGBoxStrut content_margins;
+  BoxStrut content_margins;
   const NGLayoutResult* content_layout_result = nullptr;
   if (content) {
     NGConstraintSpace constraint_space = CreateConstraintSpaceForMathChild(

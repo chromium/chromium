@@ -42,7 +42,7 @@ struct NGPreviousInflowPosition {
 struct NGInflowChildData {
   NGInflowChildData(BfcOffset bfc_offset_estimate,
                     const NGMarginStrut& margin_strut,
-                    const NGBoxStrut& margins,
+                    const BoxStrut& margins,
                     bool is_pushed_by_floats = false)
       : bfc_offset_estimate(bfc_offset_estimate),
         margin_strut(margin_strut),
@@ -53,7 +53,7 @@ struct NGInflowChildData {
 
   BfcOffset bfc_offset_estimate;
   NGMarginStrut margin_strut;
-  NGBoxStrut margins;
+  BoxStrut margins;
   bool is_pushed_by_floats = false;
 };
 
@@ -111,9 +111,9 @@ class CORE_EXPORT NGBlockLayoutAlgorithm
            previous_inflow_position.margin_strut.Sum();
   }
 
-  NGBoxStrut CalculateMargins(NGLayoutInputNode child,
-                              bool is_new_fc,
-                              LayoutUnit* additional_line_offset);
+  BoxStrut CalculateMargins(NGLayoutInputNode child,
+                            bool is_new_fc,
+                            LayoutUnit* additional_line_offset);
 
   // Creates a new constraint space for the current child.
   NGConstraintSpace CreateConstraintSpaceForChild(
@@ -200,7 +200,7 @@ class CORE_EXPORT NGBlockLayoutAlgorithm
       BfcOffset origin_offset,
       bool abort_if_cleared,
       BfcOffset* out_child_bfc_offset,
-      NGBoxStrut* out_resolved_margins);
+      BoxStrut* out_resolved_margins);
 
   // Handle an in-flow child.
   // Returns false if we need to abort layout, because a previously unknown BFC
@@ -256,7 +256,7 @@ class CORE_EXPORT NGBlockLayoutAlgorithm
   void PropagateBaselineFromLineBox(const NGPhysicalFragment& child,
                                     LayoutUnit block_offset);
   void PropagateBaselineFromBlockChild(const NGPhysicalFragment& child,
-                                       const NGBoxStrut& margins,
+                                       const BoxStrut& margins,
                                        LayoutUnit block_offset);
 
   // If still unresolved, resolve the fragment's BFC block offset.

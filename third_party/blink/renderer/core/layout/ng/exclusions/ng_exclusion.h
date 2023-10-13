@@ -19,8 +19,8 @@ class LayoutBox;
 struct CORE_EXPORT NGExclusionShapeData final
     : public GarbageCollected<NGExclusionShapeData> {
   NGExclusionShapeData(const LayoutBox* layout_box,
-                       const NGBoxStrut& margins,
-                       const NGBoxStrut& shape_insets)
+                       const BoxStrut& margins,
+                       const BoxStrut& shape_insets)
       : layout_box(layout_box), margins(margins), shape_insets(shape_insets) {}
   NGExclusionShapeData(const NGExclusionShapeData& other)
       : layout_box(other.layout_box),
@@ -30,8 +30,8 @@ struct CORE_EXPORT NGExclusionShapeData final
   void Trace(Visitor*) const;
 
   Member<const LayoutBox> layout_box;
-  const NGBoxStrut margins;
-  const NGBoxStrut shape_insets;
+  const BoxStrut margins;
+  const BoxStrut shape_insets;
 };
 
 // Struct that represents an exclusion for float and initial letter box.

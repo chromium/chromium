@@ -95,7 +95,7 @@ class NGAbsoluteUtilsTest : public RenderingTest {
   void ComputeOutOfFlowInlineDimensions(
       const NGBlockNode& node,
       const NGConstraintSpace& space,
-      const NGBoxStrut& border_padding,
+      const BoxStrut& border_padding,
       const NGLogicalStaticPosition& static_position,
       const WritingDirectionMode container_writing_direction,
       NGLogicalOutOfFlowDimensions* dimensions) {
@@ -131,7 +131,7 @@ class NGAbsoluteUtilsTest : public RenderingTest {
   void ComputeOutOfFlowBlockDimensions(
       const NGBlockNode& node,
       const NGConstraintSpace& space,
-      const NGBoxStrut& border_padding,
+      const BoxStrut& border_padding,
       const NGLogicalStaticPosition& static_position,
       const WritingDirectionMode container_writing_direction,
       NGLogicalOutOfFlowDimensions* dimensions) {
@@ -177,14 +177,14 @@ TEST_F(NGAbsoluteUtilsTest, Horizontal) {
   element_->SetInlineStyleProperty(CSSPropertyID::kContainIntrinsicSize,
                                    "60px 4px");
 
-  NGBoxStrut ltr_border_padding = ComputeBorders(ltr_space_, node) +
-                                  ComputePadding(ltr_space_, node.Style());
-  NGBoxStrut rtl_border_padding = ComputeBorders(rtl_space_, node) +
-                                  ComputePadding(rtl_space_, node.Style());
-  NGBoxStrut vlr_border_padding = ComputeBorders(vlr_space_, node) +
-                                  ComputePadding(vlr_space_, node.Style());
-  NGBoxStrut vrl_border_padding = ComputeBorders(vrl_space_, node) +
-                                  ComputePadding(vrl_space_, node.Style());
+  BoxStrut ltr_border_padding = ComputeBorders(ltr_space_, node) +
+                                ComputePadding(ltr_space_, node.Style());
+  BoxStrut rtl_border_padding = ComputeBorders(rtl_space_, node) +
+                                ComputePadding(rtl_space_, node.Style());
+  BoxStrut vlr_border_padding = ComputeBorders(vlr_space_, node) +
+                                ComputePadding(vlr_space_, node.Style());
+  BoxStrut vrl_border_padding = ComputeBorders(vrl_space_, node) +
+                                ComputePadding(vrl_space_, node.Style());
 
   NGLogicalStaticPosition static_position = {
       {LayoutUnit(), LayoutUnit()},
@@ -339,12 +339,12 @@ TEST_F(NGAbsoluteUtilsTest, Vertical) {
 
   NGBlockNode node(element_->GetLayoutBox());
 
-  NGBoxStrut ltr_border_padding = ComputeBorders(ltr_space_, node) +
-                                  ComputePadding(ltr_space_, node.Style());
-  NGBoxStrut vlr_border_padding = ComputeBorders(vlr_space_, node) +
-                                  ComputePadding(vlr_space_, node.Style());
-  NGBoxStrut vrl_border_padding = ComputeBorders(vrl_space_, node) +
-                                  ComputePadding(vrl_space_, node.Style());
+  BoxStrut ltr_border_padding = ComputeBorders(ltr_space_, node) +
+                                ComputePadding(ltr_space_, node.Style());
+  BoxStrut vlr_border_padding = ComputeBorders(vlr_space_, node) +
+                                ComputePadding(vlr_space_, node.Style());
+  BoxStrut vrl_border_padding = ComputeBorders(vrl_space_, node) +
+                                ComputePadding(vrl_space_, node.Style());
 
   NGLogicalStaticPosition static_position = {
       {LayoutUnit(), LayoutUnit()},
@@ -461,7 +461,7 @@ TEST_F(NGAbsoluteUtilsTest, CenterStaticPosition) {
   SetHorizontalStyle("auto", "auto", "auto", "auto", "auto");
   SetVerticalStyle("auto", "auto", "auto", "auto", "auto");
 
-  NGBoxStrut border_padding;
+  BoxStrut border_padding;
   NGLogicalOutOfFlowDimensions dimensions;
 
   ComputeOutOfFlowInlineDimensions(
@@ -495,8 +495,8 @@ TEST_F(NGAbsoluteUtilsTest, MinMax) {
 
   NGBlockNode node(element_->GetLayoutBox());
 
-  NGBoxStrut ltr_border_padding = ComputeBorders(ltr_space_, node) +
-                                  ComputePadding(ltr_space_, node.Style());
+  BoxStrut ltr_border_padding = ComputeBorders(ltr_space_, node) +
+                                ComputePadding(ltr_space_, node.Style());
 
   NGLogicalStaticPosition static_position = {
       {LayoutUnit(), LayoutUnit()},

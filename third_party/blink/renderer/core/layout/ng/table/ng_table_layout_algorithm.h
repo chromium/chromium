@@ -30,7 +30,7 @@ class CORE_EXPORT NGTableLayoutAlgorithm
 
   static LayoutUnit ComputeTableInlineSize(const NGTableNode& node,
                                            const NGConstraintSpace& space,
-                                           const NGBoxStrut& border_padding);
+                                           const BoxStrut& border_padding);
 
   // Useful when trying to compute table's block sizes.
   // Table's css block size specifies size of the grid, not size
@@ -51,7 +51,7 @@ class CORE_EXPORT NGTableLayoutAlgorithm
 
     NGBlockNode node;
     Member<const NGLayoutResult> layout_result;
-    const NGBoxStrut margins;
+    const BoxStrut margins;
   };
 
  private:
@@ -62,7 +62,7 @@ class CORE_EXPORT NGTableLayoutAlgorithm
                    const Vector<NGTableColumnLocation>& column_locations,
                    const NGTableBorders& table_borders,
                    const LogicalSize& border_spacing,
-                   const NGBoxStrut& table_border_padding,
+                   const BoxStrut& table_border_padding,
                    const LayoutUnit captions_block_size,
                    NGTableTypes::Rows* rows,
                    NGTableTypes::CellBlockConstraints* cell_block_constraints,

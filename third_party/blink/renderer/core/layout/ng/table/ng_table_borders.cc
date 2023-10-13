@@ -249,7 +249,7 @@ const NGTableBorders* NGTableBorders::ComputeTableBorders(
   return table_borders;
 }
 
-NGTableBorders::NGTableBorders(const NGBoxStrut& table_border,
+NGTableBorders::NGTableBorders(const BoxStrut& table_border,
                                const bool is_collapsed)
     : table_border_(table_border), is_collapsed_(is_collapsed) {}
 
@@ -335,11 +335,11 @@ bool NGTableBorders::operator==(const NGTableBorders& other) const {
 
 #endif
 
-NGBoxStrut NGTableBorders::GetCellBorders(wtf_size_t row,
-                                          wtf_size_t column,
-                                          wtf_size_t rowspan,
-                                          wtf_size_t colspan) const {
-  NGBoxStrut border_strut;
+BoxStrut NGTableBorders::GetCellBorders(wtf_size_t row,
+                                        wtf_size_t column,
+                                        wtf_size_t rowspan,
+                                        wtf_size_t colspan) const {
+  BoxStrut border_strut;
   if (edges_per_row_ == 0)
     return border_strut;
   DCHECK_EQ(edges_.size() % edges_per_row_, 0u);
@@ -393,14 +393,14 @@ void NGTableBorders::UpdateTableBorder(wtf_size_t table_row_count,
                                        wtf_size_t table_column_count) {
   DCHECK(is_collapsed_);
   if (edges_per_row_ == 0) {
-    table_border_ = NGBoxStrut();
+    table_border_ = BoxStrut();
     return;
   }
   DCHECK_GE((table_column_count + 1) * 2, edges_per_row_);
   table_border_ = GetCellBorders(0, 0, table_row_count, table_column_count);
 }
 
-NGBoxStrut NGTableBorders::CellBorder(
+BoxStrut NGTableBorders::CellBorder(
     const NGBlockNode& cell,
     wtf_size_t row,
     wtf_size_t column,
@@ -420,11 +420,11 @@ NGBoxStrut NGTableBorders::CellBorder(
 
 // As we are determining the intrinsic size of the table at this stage,
 // %-padding resolves against an indefinite size.
-NGBoxStrut NGTableBorders::CellPaddingForMeasure(
+BoxStrut NGTableBorders::CellPaddingForMeasure(
     const ComputedStyle& cell_style,
     WritingDirectionMode table_writing_direction) const {
   if (!cell_style.MayHavePadding())
-    return NGBoxStrut();
+    return BoxStrut();
   return ComputePadding(
       NGConstraintSpaceBuilder(table_writing_direction.GetWritingMode(),
                                table_writing_direction,

@@ -125,12 +125,12 @@ class CORE_EXPORT NGLayoutAlgorithm : public NGLayoutAlgorithmOperations {
 
   const NGBreakTokenType* BreakToken() const { return break_token_; }
 
-  const NGBoxStrut& Borders() const { return container_builder_.Borders(); }
-  const NGBoxStrut& Padding() const { return container_builder_.Padding(); }
-  const NGBoxStrut& BorderPadding() const {
+  const BoxStrut& Borders() const { return container_builder_.Borders(); }
+  const BoxStrut& Padding() const { return container_builder_.Padding(); }
+  const BoxStrut& BorderPadding() const {
     return container_builder_.BorderPadding();
   }
-  const NGBoxStrut& BorderScrollbarPadding() const {
+  const BoxStrut& BorderScrollbarPadding() const {
     return container_builder_.BorderScrollbarPadding();
   }
   LayoutUnit OriginalBorderScrollbarPaddingBlockStart() const {

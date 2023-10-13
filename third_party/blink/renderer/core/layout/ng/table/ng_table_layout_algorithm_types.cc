@@ -122,8 +122,8 @@ NGTableTypes::CellInlineConstraint NGTableTypes::CreateCellInlineConstraint(
     const NGBlockNode& node,
     WritingDirectionMode table_writing_direction,
     bool is_fixed_layout,
-    const NGBoxStrut& cell_border,
-    const NGBoxStrut& cell_padding) {
+    const BoxStrut& cell_border,
+    const BoxStrut& cell_padding) {
   absl::optional<LayoutUnit> css_inline_size;
   absl::optional<LayoutUnit> css_min_inline_size;
   absl::optional<LayoutUnit> css_max_inline_size;

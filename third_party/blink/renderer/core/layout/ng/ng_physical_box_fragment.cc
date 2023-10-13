@@ -861,8 +861,8 @@ PhysicalRect NGPhysicalBoxFragment::ScrollableOverflowFromChildren(
                 container.GetLayoutObject()->HasNonVisibleOverflow());
       if (container.HasNonVisibleOverflow()) {
         const auto* layout_object = To<LayoutBox>(container.GetLayoutObject());
-        padding_strut = NGBoxStrut(LayoutUnit(), layout_object->PaddingEnd(),
-                                   LayoutUnit(), layout_object->PaddingAfter())
+        padding_strut = BoxStrut(LayoutUnit(), layout_object->PaddingEnd(),
+                                 LayoutUnit(), layout_object->PaddingAfter())
                             .ConvertToPhysical(writing_direction);
       }
     }

@@ -105,7 +105,7 @@ void NGBoxFragmentBuilder::AddBreakBeforeChild(
 void NGBoxFragmentBuilder::AddResult(
     const NGLayoutResult& child_layout_result,
     const LogicalOffset offset,
-    absl::optional<const NGBoxStrut> margins,
+    absl::optional<const BoxStrut> margins,
     absl::optional<LogicalOffset> relative_offset,
     const NGInlineContainer<LogicalOffset>* inline_container) {
   const auto& fragment = child_layout_result.PhysicalFragment();
@@ -221,7 +221,7 @@ void NGBoxFragmentBuilder::AddChild(
       // layout-overflow, but just don't influence where this padding is.
       if (Node().IsScrollContainer() && !IsFragmentainerBoxType() &&
           !child.IsOutOfFlowPositioned()) {
-        NGBoxStrut margins;
+        BoxStrut margins;
         if (child.IsCSSBox()) {
           margins = ComputeMarginsFor(child.Style(),
                                       child_available_size_.inline_size,

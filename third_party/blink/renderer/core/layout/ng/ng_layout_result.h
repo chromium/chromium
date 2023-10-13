@@ -163,7 +163,7 @@ class CORE_EXPORT NGLayoutResult final
   // Returns the absolutized inset property values in the parent's writing mode.
   // Not necessarily the insets of the actual box in the container, but matches
   // the result of the `getComputedStyle()` JavaScript API.
-  const NGBoxStrut& OutOfFlowInsetsForGetComputedStyle() const {
+  const BoxStrut& OutOfFlowInsetsForGetComputedStyle() const {
     CHECK(bitfields_.has_oof_insets_for_get_computed_style);
     return oof_insets_for_get_computed_style_;
   }
@@ -492,7 +492,7 @@ class CORE_EXPORT NGLayoutResult final
     friend class NGOutOfFlowLayoutPart;
 
     void SetOutOfFlowInsetsForGetComputedStyle(
-        const NGBoxStrut& insets,
+        const BoxStrut& insets,
         bool can_use_out_of_flow_positioned_first_tier_cache) {
       // OOF-positioned nodes *must* always have an initial BFC-offset.
       DCHECK(layout_result_->physical_fragment_->IsOutOfFlowPositioned());
@@ -1029,7 +1029,7 @@ class CORE_EXPORT NGLayoutResult final
     // This is the absolutized inset property values of an OOF-positioned object
     // in its parent's writing-mode. This is set by the |NGOutOfFlowLayoutPart|
     // while generating this layout result.
-    NGBoxStrut oof_insets_for_get_computed_style_;
+    BoxStrut oof_insets_for_get_computed_style_;
   };
 
   LayoutUnit intrinsic_block_size_;

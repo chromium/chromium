@@ -85,7 +85,7 @@ class FlexItem {
            LayoutUnit main_axis_border_padding,
            LayoutUnit cross_axis_border_padding,
            NGPhysicalBoxStrut physical_margins,
-           NGBoxStrut scrollbars,
+           BoxStrut scrollbars,
            WritingMode baseline_writing_mode,
            BaselineGroup baseline_group = BaselineGroup::kMajor,
            bool depends_on_min_max_sizes = false);
@@ -159,7 +159,7 @@ class FlexItem {
   const LayoutUnit main_axis_border_padding_;
   const LayoutUnit cross_axis_border_padding_;
   NGPhysicalBoxStrut physical_margins_;
-  const NGBoxStrut scrollbars_;
+  const BoxStrut scrollbars_;
   const WritingDirectionMode baseline_writing_direction_;
   const BaselineGroup baseline_group_;
 

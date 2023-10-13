@@ -304,7 +304,7 @@ const NGLayoutResult* NGMathUnderOverLayoutAlgorithm::Layout() {
   if (over) {
     const auto over_space = CreateConstraintSpaceForUnderOverChild(over);
     const NGLayoutResult* over_layout_result = over.Layout(over_space);
-    NGBoxStrut over_margins =
+    BoxStrut over_margins =
         ComputeMarginsFor(over_space, over.Style(), ConstraintSpace());
     NGBoxFragment over_fragment(
         ConstraintSpace().GetWritingDirection(),
@@ -351,7 +351,7 @@ const NGLayoutResult* NGMathUnderOverLayoutAlgorithm::Layout() {
   if (under) {
     const auto under_space = CreateConstraintSpaceForUnderOverChild(under);
     const NGLayoutResult* under_layout_result = under.Layout(under_space);
-    NGBoxStrut under_margins =
+    BoxStrut under_margins =
         ComputeMarginsFor(under_space, under.Style(), ConstraintSpace());
     NGBoxFragment under_fragment(
         ConstraintSpace().GetWritingDirection(),

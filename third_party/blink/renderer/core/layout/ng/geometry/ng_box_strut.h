@@ -24,17 +24,17 @@ struct NGPhysicalBoxStrut;
 
 // This struct is used for storing margins, borders or padding of a box on all
 // four edges.
-struct CORE_EXPORT NGBoxStrut {
-  NGBoxStrut() = default;
-  NGBoxStrut(LayoutUnit inline_start,
-             LayoutUnit inline_end,
-             LayoutUnit block_start,
-             LayoutUnit block_end)
+struct CORE_EXPORT BoxStrut {
+  BoxStrut() = default;
+  BoxStrut(LayoutUnit inline_start,
+           LayoutUnit inline_end,
+           LayoutUnit block_start,
+           LayoutUnit block_end)
       : inline_start(inline_start),
         inline_end(inline_end),
         block_start(block_start),
         block_end(block_end) {}
-  NGBoxStrut(const NGLineBoxStrut&, bool is_flipped_lines);
+  BoxStrut(const NGLineBoxStrut&, bool is_flipped_lines);
 
   LayoutUnit LineLeft(TextDirection direction) const {
     return IsLtr(direction) ? inline_start : inline_end;
@@ -48,13 +48,13 @@ struct CORE_EXPORT NGBoxStrut {
 
   LogicalOffset StartOffset() const { return {inline_start, block_start}; }
 
-  bool IsEmpty() const { return *this == NGBoxStrut(); }
+  bool IsEmpty() const { return *this == BoxStrut(); }
 
   inline NGPhysicalBoxStrut ConvertToPhysical(WritingDirectionMode) const;
 
   // The following two operators exist primarily to have an easy way to access
   // the sum of border and padding.
-  NGBoxStrut& operator+=(const NGBoxStrut& other) {
+  BoxStrut& operator+=(const BoxStrut& other) {
     inline_start += other.inline_start;
     inline_end += other.inline_end;
     block_start += other.block_start;
@@ -62,13 +62,13 @@ struct CORE_EXPORT NGBoxStrut {
     return *this;
   }
 
-  NGBoxStrut operator+(const NGBoxStrut& other) const {
-    NGBoxStrut result(*this);
+  BoxStrut operator+(const BoxStrut& other) const {
+    BoxStrut result(*this);
     result += other;
     return result;
   }
 
-  NGBoxStrut& operator-=(const NGBoxStrut& other) {
+  BoxStrut& operator-=(const BoxStrut& other) {
     inline_start -= other.inline_start;
     inline_end -= other.inline_end;
     block_start -= other.block_start;
@@ -76,18 +76,18 @@ struct CORE_EXPORT NGBoxStrut {
     return *this;
   }
 
-  NGBoxStrut operator-(const NGBoxStrut& other) const {
-    NGBoxStrut result(*this);
+  BoxStrut operator-(const BoxStrut& other) const {
+    BoxStrut result(*this);
     result -= other;
     return result;
   }
 
-  bool operator==(const NGBoxStrut& other) const {
+  bool operator==(const BoxStrut& other) const {
     return std::tie(other.inline_start, other.inline_end, other.block_start,
                     other.block_end) ==
            std::tie(inline_start, inline_end, block_start, block_end);
   }
-  bool operator!=(const NGBoxStrut& other) const { return !(*this == other); }
+  bool operator!=(const BoxStrut& other) const { return !(*this == other); }
 
   String ToString() const;
 
@@ -97,9 +97,9 @@ struct CORE_EXPORT NGBoxStrut {
   LayoutUnit block_end;
 };
 
-CORE_EXPORT std::ostream& operator<<(std::ostream&, const NGBoxStrut&);
+CORE_EXPORT std::ostream& operator<<(std::ostream&, const BoxStrut&);
 
-// A variant of NGBoxStrut in the line-relative coordinate system.
+// A variant of BoxStrut in the line-relative coordinate system.
 //
 // 'line-over' is 'block-start' and 'line-under' is 'block-end' unless it is in
 // flipped-lines writing-mode (i.e., 'vertical-lr'), in which case they are
@@ -116,7 +116,7 @@ struct CORE_EXPORT NGLineBoxStrut {
         inline_end(inline_end),
         line_over(line_over),
         line_under(line_under) {}
-  NGLineBoxStrut(const NGBoxStrut&, bool is_flipped_lines);
+  NGLineBoxStrut(const BoxStrut&, bool is_flipped_lines);
 
   LayoutUnit InlineSum() const { return inline_start + inline_end; }
   LayoutUnit BlockSum() const { return line_over + line_under; }
@@ -180,8 +180,8 @@ struct CORE_EXPORT NGPhysicalBoxStrut {
 
   // Converts physical dimensions to logical ones per
   // https://drafts.csswg.org/css-writing-modes-3/#logical-to-physical
-  NGBoxStrut ConvertToLogical(WritingDirectionMode writing_direction) const {
-    NGBoxStrut strut;
+  BoxStrut ConvertToLogical(WritingDirectionMode writing_direction) const {
+    BoxStrut strut;
     switch (writing_direction.GetWritingMode()) {
       case WritingMode::kHorizontalTb:
         strut = {left, right, top, bottom};
@@ -274,7 +274,7 @@ struct CORE_EXPORT NGPhysicalBoxStrut {
   LayoutUnit left;
 };
 
-inline NGPhysicalBoxStrut NGBoxStrut::ConvertToPhysical(
+inline NGPhysicalBoxStrut BoxStrut::ConvertToPhysical(
     WritingDirectionMode writing_direction) const {
   LayoutUnit direction_start = inline_start;
   LayoutUnit direction_end = inline_end;

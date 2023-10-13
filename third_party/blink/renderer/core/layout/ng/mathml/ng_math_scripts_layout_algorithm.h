@@ -31,7 +31,7 @@ class CORE_EXPORT NGMathScriptsLayoutAlgorithm
     LayoutUnit descent;
     LayoutUnit inline_size;
     LayoutUnit base_italic_correction;
-    NGBoxStrut margins;
+    BoxStrut margins;
     NGBlockNode node = nullptr;
 
     void Trace(Visitor* visitor) const {
@@ -74,7 +74,7 @@ class CORE_EXPORT NGMathScriptsLayoutAlgorithm
     LayoutUnit sup_shift;
     LayoutUnit ascent;
     LayoutUnit descent;
-    NGBoxStrut margins;
+    BoxStrut margins;
   };
   VerticalMetrics GetVerticalMetrics(
       const ChildAndMetrics& base_metrics,

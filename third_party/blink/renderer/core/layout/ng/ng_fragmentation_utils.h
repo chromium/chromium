@@ -196,7 +196,7 @@ inline LayoutUnit UnclampedFragmentainerSpaceLeft(
 // below). For all other fragments, leading/trailing block margins must be
 // ignored.
 inline void AdjustMarginsForFragmentation(const NGBlockBreakToken* break_token,
-                                          NGBoxStrut* box_strut) {
+                                          BoxStrut* box_strut) {
   if (!break_token)
     return;
 

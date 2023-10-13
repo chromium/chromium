@@ -18,7 +18,7 @@ class CORE_EXPORT NGTableNode final : public NGBlockNode {
  public:
   explicit NGTableNode(LayoutBox* box) : NGBlockNode(box) {}
 
-  const NGBoxStrut& GetTableBordersStrut() const;
+  const BoxStrut& GetTableBordersStrut() const;
 
   const NGTableBorders* GetTableBorders() const;
 
@@ -26,10 +26,10 @@ class CORE_EXPORT NGTableNode final : public NGBlockNode {
 
   scoped_refptr<const NGTableTypes::Columns> GetColumnConstraints(
       const NGTableGroupedChildren&,
-      const NGBoxStrut& border_padding) const;
+      const BoxStrut& border_padding) const;
 
   LayoutUnit ComputeTableInlineSize(const NGConstraintSpace&,
-                                    const NGBoxStrut& border_padding) const;
+                                    const BoxStrut& border_padding) const;
 
   // Tables are special in that their max intrinsic-size can be "infinite"
   // (they should consume as much space as possible). However a lot of layout

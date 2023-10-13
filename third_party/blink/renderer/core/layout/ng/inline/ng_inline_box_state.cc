@@ -830,9 +830,9 @@ const NGLayoutResult* NGInlineLayoutStateStack::BoxData::CreateBoxFragment(
   fragment_geometry.border_box_size = {
       rect.size.inline_size.ClampNegativeToZero(), rect.size.block_size};
   fragment_geometry.border =
-      NGBoxStrut(borders, IsFlippedLinesWritingMode(style.GetWritingMode()));
+      BoxStrut(borders, IsFlippedLinesWritingMode(style.GetWritingMode()));
   fragment_geometry.padding =
-      NGBoxStrut(padding, IsFlippedLinesWritingMode(style.GetWritingMode()));
+      BoxStrut(padding, IsFlippedLinesWritingMode(style.GetWritingMode()));
 
   // Because children are already in the visual order, use LTR for the
   // fragment builder so that it should not transform the coordinates for RTL.

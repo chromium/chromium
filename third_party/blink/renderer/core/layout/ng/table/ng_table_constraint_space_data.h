@@ -65,7 +65,7 @@ class NGTableConstraintSpaceData
 
   // Data needed to layout a single cell.
   struct Cell {
-    Cell(NGBoxStrut borders,
+    Cell(BoxStrut borders,
          LayoutUnit rowspan_block_size,
          wtf_size_t start_column,
          bool is_initial_block_size_indefinite,
@@ -89,7 +89,7 @@ class NGTableConstraintSpaceData
     bool operator!=(const Cell& other) const { return !(*this == other); }
 
     // Size of borders drawn on the inside of the border box.
-    const NGBoxStrut borders;
+    const BoxStrut borders;
     // Size of the cell. Need this for cells that span multiple rows.
     const LayoutUnit rowspan_block_size;
     const wtf_size_t start_column;

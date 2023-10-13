@@ -979,7 +979,7 @@ GridTrackSizingDirection RelativeDirectionInSubgrid(
 }
 
 LayoutUnit GetExtraMarginForBaseline(
-    const NGBoxStrut& margins,
+    const BoxStrut& margins,
     const NGSubgriddedItemData& subgridded_item,
     GridTrackSizingDirection track_direction,
     WritingMode writing_mode) {
@@ -4263,7 +4263,7 @@ LayoutUnit TrackEndOffset(const NGGridLayoutTrackCollection& track_collection,
 void ComputeOutOfFlowOffsetAndSize(
     const GridItemData& out_of_flow_item,
     const NGGridLayoutTrackCollection& track_collection,
-    const NGBoxStrut& borders,
+    const BoxStrut& borders,
     const LogicalSize& border_box_size,
     LayoutUnit* start_offset,
     LayoutUnit* size) {
@@ -4335,7 +4335,7 @@ LogicalRect NGGridLayoutAlgorithm::ComputeOutOfFlowItemContainingRect(
     const NGGridPlacementData& placement_data,
     const NGGridLayoutData& layout_data,
     const ComputedStyle& grid_style,
-    const NGBoxStrut& borders,
+    const BoxStrut& borders,
     const LogicalSize& border_box_size,
     GridItemData* out_of_flow_item) {
   DCHECK(out_of_flow_item && out_of_flow_item->IsOutOfFlow());

@@ -1047,7 +1047,7 @@ NGBreakStatus NGColumnLayoutAlgorithm::LayoutSpanner(
     NGMarginStrut* margin_strut) {
   spanner_path_ = nullptr;
   const ComputedStyle& spanner_style = spanner_node.Style();
-  NGBoxStrut margins =
+  BoxStrut margins =
       ComputeMarginsFor(spanner_style, ChildAvailableSize().inline_size,
                         ConstraintSpace().GetWritingDirection());
   AdjustMarginsForFragmentation(break_token, &margins);

@@ -83,7 +83,7 @@ FlexItem::FlexItem(const FlexLayoutAlgorithm* algorithm,
                    LayoutUnit main_axis_border_padding,
                    LayoutUnit cross_axis_border_padding,
                    NGPhysicalBoxStrut physical_margins,
-                   NGBoxStrut scrollbars,
+                   BoxStrut scrollbars,
                    WritingMode baseline_writing_mode,
                    BaselineGroup baseline_group,
                    bool depends_on_min_max_sizes)
@@ -161,7 +161,7 @@ LayoutUnit FlexItem::FlowAwareMarginAfter() const {
 }
 
 LayoutUnit FlexItem::MarginBlockEnd() const {
-  NGBoxStrut margins = physical_margins_.ConvertToLogical(
+  BoxStrut margins = physical_margins_.ConvertToLogical(
       algorithm_->Style()->GetWritingDirection());
   return margins.block_end;
 }
@@ -1202,7 +1202,7 @@ void FlexLayoutAlgorithm::LayoutColumnReverse(
       FlexItem& flex_item = line_context.line_items_[child_number];
       LayoutUnit item_main_size = flex_item.FlexedBorderBoxSize();
 
-      NGBoxStrut margins = flex_item.physical_margins_.ConvertToLogical(
+      BoxStrut margins = flex_item.physical_margins_.ConvertToLogical(
           Style()->GetWritingDirection());
 
       // We passed 0 as the initial main_axis offset to ComputeLineItemsPosition

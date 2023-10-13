@@ -27,7 +27,7 @@ struct SameSizeAsNGLayoutResult
   Member<void*> rare_data_;
   union {
     BfcOffset bfc_offset;
-    NGBoxStrut oof_insets_for_get_computed_style;
+    BoxStrut oof_insets_for_get_computed_style;
   };
   LayoutUnit intrinsic_block_size;
   unsigned bitfields[1];
@@ -162,7 +162,7 @@ NGLayoutResult::NGLayoutResult(const NGLayoutResult& other,
     DCHECK(physical_fragment_->IsOutOfFlowPositioned());
     DCHECK_EQ(bfc_line_offset, LayoutUnit());
     DCHECK(bfc_block_offset && bfc_block_offset.value() == LayoutUnit());
-    oof_insets_for_get_computed_style_ = NGBoxStrut();
+    oof_insets_for_get_computed_style_ = BoxStrut();
   }
 
   NGExclusionSpace new_exclusion_space = MergeExclusionSpaces(

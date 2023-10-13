@@ -13,7 +13,7 @@ class NGLineInfo;
 class NGLogicalLineItems;
 struct BfcOffset;
 struct FontHeight;
-struct NGBoxStrut;
+struct BoxStrut;
 struct NGExclusion;
 
 // Adjust text position of texts in inline text box and returns adjusted
@@ -29,7 +29,7 @@ LayoutUnit CalculateInitialLetterBoxInlineSize(const NGLineInfo& line_info);
 // box. `initial_letter_box_origin` holds left/right edge.
 const NGExclusion* PostPlaceInitialLetterBox(
     const FontHeight& line_box_metrics,
-    const NGBoxStrut& initial_letter_box_margins,
+    const BoxStrut& initial_letter_box_margins,
     NGLogicalLineItems* line_box,
     const BfcOffset& line_origin,
     NGLineInfo* line_info);

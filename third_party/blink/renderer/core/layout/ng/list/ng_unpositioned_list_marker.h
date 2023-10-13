@@ -71,7 +71,7 @@ class CORE_EXPORT UnpositionedListMarker final {
   void AddToBox(const NGConstraintSpace&,
                 FontBaseline,
                 const NGPhysicalFragment& content,
-                const NGBoxStrut&,
+                const BoxStrut&,
                 const NGLayoutResult& marker_layout_result,
                 LayoutUnit content_baseline,
                 LayoutUnit* block_offset,
@@ -104,7 +104,7 @@ class CORE_EXPORT UnpositionedListMarker final {
  private:
   LayoutUnit ComputeIntrudedFloatOffset(const NGConstraintSpace&,
                                         const NGBoxFragmentBuilder*,
-                                        const NGBoxStrut&,
+                                        const BoxStrut&,
                                         LayoutUnit) const;
 
   Member<LayoutOutsideListMarker> marker_layout_object_;

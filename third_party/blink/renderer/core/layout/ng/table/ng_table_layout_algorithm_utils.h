@@ -51,7 +51,7 @@ class NGTableAlgorithmUtils {
   static void SetupTableCellConstraintSpaceBuilder(
       const WritingDirectionMode table_writing_direction,
       const NGBlockNode cell,
-      const NGBoxStrut& cell_borders,
+      const BoxStrut& cell_borders,
       const Vector<NGTableColumnLocation>& column_locations,
       LayoutUnit cell_block_size,
       LayoutUnit percentage_inline_size,
@@ -71,7 +71,7 @@ class NGTableAlgorithmUtils {
       const NGBlockNode& table,
       const NGTableGroupedChildren&,
       const NGTableBorders& table_borders,
-      const NGBoxStrut& border_padding);
+      const BoxStrut& border_padding);
 
   static void ComputeSectionMinimumRowBlockSizes(
       const NGBlockNode& section,

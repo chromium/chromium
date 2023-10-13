@@ -440,7 +440,7 @@ void SetupFragmentBuilderForFragmentation(
   builder->AdjustBorderScrollbarPaddingForFragmentation(previous_break_token);
 
   if (builder->IsInitialColumnBalancingPass()) {
-    const NGBoxStrut& unbreakable = builder->BorderScrollbarPadding();
+    const BoxStrut& unbreakable = builder->BorderScrollbarPadding();
     builder->PropagateTallestUnbreakableBlockSize(unbreakable.block_start);
     builder->PropagateTallestUnbreakableBlockSize(unbreakable.block_end);
   }

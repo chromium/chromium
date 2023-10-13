@@ -156,8 +156,8 @@ void NGMathRowLayoutAlgorithm::LayoutRowItems(
     NGBoxFragment fragment(ConstraintSpace().GetWritingDirection(),
                            physical_fragment);
 
-    NGBoxStrut margins = ComputeMarginsFor(child_constraint_space,
-                                           child.Style(), ConstraintSpace());
+    BoxStrut margins = ComputeMarginsFor(child_constraint_space, child.Style(),
+                                         ConstraintSpace());
     inline_offset += margins.inline_start;
 
     LayoutUnit ascent =

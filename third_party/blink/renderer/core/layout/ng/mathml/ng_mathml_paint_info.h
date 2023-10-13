@@ -27,7 +27,7 @@ struct CORE_EXPORT NGMathMLPaintInfo {
   LayoutUnit operator_inline_size;
   LayoutUnit operator_ascent;
   LayoutUnit operator_descent;
-  NGBoxStrut radical_base_margins;
+  BoxStrut radical_base_margins;
   absl::optional<LayoutUnit> radical_operator_inline_offset;
 };
 

@@ -96,7 +96,7 @@ NGTableLayoutAlgorithm::CaptionResult LayoutCaption(
     LayoutUnit table_inline_size,
     const NGConstraintSpace& caption_constraint_space,
     const NGBlockNode& caption,
-    NGBoxStrut margins,
+    BoxStrut margins,
     const NGBlockBreakToken* break_token = nullptr,
     const NGEarlyBreak* early_break = nullptr) {
   const NGLayoutResult* layout_result =
@@ -116,12 +116,12 @@ NGTableLayoutAlgorithm::CaptionResult LayoutCaption(
 // aren't actually inside the table, so its the *border-box* size of the table
 // that matters here (not the content-box) when it comes to resolving
 // percentages.
-NGBoxStrut ComputeCaptionMargins(
+BoxStrut ComputeCaptionMargins(
     const NGConstraintSpace& table_constraint_space,
     const NGBlockNode& caption,
     LayoutUnit table_border_box_inline_size,
     const NGBlockBreakToken* caption_break_token = nullptr) {
-  NGBoxStrut margins =
+  BoxStrut margins =
       ComputeMarginsFor(caption.Style(), table_border_box_inline_size,
                         table_constraint_space.GetWritingDirection());
   AdjustMarginsForFragmentation(caption_break_token, &margins);
@@ -139,8 +139,8 @@ void ComputeCaptionFragments(
   const LayoutUnit table_inline_size = table_builder.InlineSize();
   const LogicalSize available_size = {table_inline_size, kIndefiniteSize};
   for (NGBlockNode caption : grouped_children.captions) {
-    NGBoxStrut margins = ComputeCaptionMargins(table_constraint_space, caption,
-                                               table_inline_size);
+    BoxStrut margins = ComputeCaptionMargins(table_constraint_space, caption,
+                                             table_inline_size);
     NGConstraintSpace caption_constraint_space = CreateCaptionConstraintSpace(
         table_constraint_space, table_style, caption, available_size);
 
@@ -197,7 +197,7 @@ LayoutUnit ComputeEmptyTableInlineSize(
     const LayoutUnit assignable_table_inline_size,
     const LayoutUnit undistributable_space,
     const NGTableTypes::Caption& caption_constraint,
-    const NGBoxStrut& table_border_padding,
+    const BoxStrut& table_border_padding,
     const bool has_collapsed_borders) {
   // If table has a css inline size, use that.
   if (space.IsFixedInlineSize() ||
@@ -226,7 +226,7 @@ LayoutUnit ComputeAssignableTableInlineSize(
     const NGTableTypes::Columns& column_constraints,
     const NGTableTypes::Caption& caption_constraint,
     const LayoutUnit undistributable_space,
-    const NGBoxStrut& table_border_padding,
+    const BoxStrut& table_border_padding,
     const bool is_fixed_layout) {
   if (space.IsFixedInlineSize()) {
     return (space.AvailableSize().inline_size - undistributable_space)
@@ -468,7 +468,7 @@ class ColumnGeometriesBuilder {
 
 LayoutUnit ComputeTableSizeFromColumns(
     const Vector<NGTableColumnLocation>& column_locations,
-    const NGBoxStrut& table_border_padding,
+    const BoxStrut& table_border_padding,
     const LogicalSize& border_spacing) {
   return column_locations.back().offset + column_locations.back().size +
          table_border_padding.InlineSum() + border_spacing.inline_size;
@@ -519,7 +519,7 @@ LayoutUnit EndTableBoxLayout(LayoutUnit table_border_padding_block_end,
 LayoutUnit NGTableLayoutAlgorithm::ComputeTableInlineSize(
     const NGTableNode& table,
     const NGConstraintSpace& space,
-    const NGBoxStrut& table_border_padding) {
+    const BoxStrut& table_border_padding) {
   const bool is_fixed_layout = table.Style().IsFixedTableLayout();
   // Tables need autosizer.
   absl::optional<TextAutosizer::TableLayoutScope> text_autosizer;
@@ -582,7 +582,7 @@ const NGLayoutResult* NGTableLayoutAlgorithm::Layout() {
   NGTableGroupedChildren grouped_children(Node());
   const NGTableBorders* table_borders = Node().GetTableBorders();
   DCHECK(table_borders);
-  const NGBoxStrut border_padding = container_builder_.BorderPadding();
+  const BoxStrut border_padding = container_builder_.BorderPadding();
 
   // Algorithm:
   // - Compute inline constraints.
@@ -709,7 +709,7 @@ MinMaxSizesResult NGTableLayoutAlgorithm::ComputeMinMaxSizes(
     text_autosizer.emplace(To<LayoutNGTable>(Node().GetLayoutBox()));
 
   const LogicalSize border_spacing = Style().TableBorderSpacing();
-  const NGBoxStrut border_padding = container_builder_.BorderPadding();
+  const BoxStrut border_padding = container_builder_.BorderPadding();
   NGTableGroupedChildren grouped_children(Node());
 
   const scoped_refptr<const NGTableTypes::Columns> column_constraints =
@@ -761,7 +761,7 @@ void NGTableLayoutAlgorithm::ComputeRows(
     const Vector<NGTableColumnLocation>& column_locations,
     const NGTableBorders& table_borders,
     const LogicalSize& border_spacing,
-    const NGBoxStrut& table_border_padding,
+    const BoxStrut& table_border_padding,
     const LayoutUnit captions_block_size,
     NGTableTypes::Rows* rows,
     NGTableTypes::CellBlockConstraints* cell_block_constraints,
@@ -961,7 +961,7 @@ const NGLayoutResult* NGTableLayoutAlgorithm::GenerateFragment(
       CreateConstraintSpaceData(Style(), column_locations, sections, rows,
                                 cell_block_constraints, border_spacing);
 
-  const NGBoxStrut border_padding = container_builder_.BorderPadding();
+  const BoxStrut border_padding = container_builder_.BorderPadding();
   const bool has_collapsed_borders = table_borders.IsCollapsed();
 
   // The current layout position.
@@ -1238,9 +1238,9 @@ const NGLayoutResult* NGTableLayoutAlgorithm::GenerateFragment(
 
       LogicalSize available_size(container_builder_.InlineSize(),
                                  kIndefiniteSize);
-      NGBoxStrut margins = ComputeCaptionMargins(
-          ConstraintSpace(), child, container_builder_.InlineSize(),
-          child_break_token);
+      BoxStrut margins = ComputeCaptionMargins(ConstraintSpace(), child,
+                                               container_builder_.InlineSize(),
+                                               child_break_token);
       child_block_start_margin = margins.block_start;
       child_block_end_margin = margins.block_end;
 

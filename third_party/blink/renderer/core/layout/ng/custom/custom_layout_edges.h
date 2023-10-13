@@ -17,7 +17,7 @@ class CustomLayoutEdges : public ScriptWrappable {
   DEFINE_WRAPPERTYPEINFO();
 
  public:
-  CustomLayoutEdges(const NGBoxStrut& border_scrollbar_padding)
+  CustomLayoutEdges(const BoxStrut& border_scrollbar_padding)
       : inline_start_(border_scrollbar_padding.inline_start),
         inline_end_(border_scrollbar_padding.inline_end),
         block_start_(border_scrollbar_padding.block_start),

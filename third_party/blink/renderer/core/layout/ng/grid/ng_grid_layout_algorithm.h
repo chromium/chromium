@@ -49,7 +49,7 @@ class CORE_EXPORT NGGridLayoutAlgorithm
       const NGGridPlacementData& placement_data,
       const NGGridLayoutData& layout_data,
       const ComputedStyle& grid_style,
-      const NGBoxStrut& borders,
+      const BoxStrut& borders,
       const LogicalSize& border_box_size,
       GridItemData* out_of_flow_item);
 

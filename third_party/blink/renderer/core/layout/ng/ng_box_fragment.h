@@ -82,10 +82,10 @@ class CORE_EXPORT NGBoxFragment final : public NGFragment {
   // |Baseline()| for when this may occur.
   FontHeight BaselineMetrics(const NGLineBoxStrut& margins, FontBaseline) const;
 
-  NGBoxStrut Borders() const {
+  BoxStrut Borders() const {
     return PhysicalBoxFragment().Borders().ConvertToLogical(writing_direction_);
   }
-  NGBoxStrut Padding() const {
+  BoxStrut Padding() const {
     return PhysicalBoxFragment().Padding().ConvertToLogical(writing_direction_);
   }
 

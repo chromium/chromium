@@ -8,18 +8,17 @@
 
 namespace blink {
 
-String NGBoxStrut::ToString() const {
+String BoxStrut::ToString() const {
   return String::Format("Inline: (%d %d) Block: (%d %d)", inline_start.ToInt(),
                         inline_end.ToInt(), block_start.ToInt(),
                         block_end.ToInt());
 }
 
-std::ostream& operator<<(std::ostream& stream, const NGBoxStrut& value) {
+std::ostream& operator<<(std::ostream& stream, const BoxStrut& value) {
   return stream << value.ToString();
 }
 
-NGBoxStrut::NGBoxStrut(const NGLineBoxStrut& line_relative,
-                       bool is_flipped_lines) {
+BoxStrut::BoxStrut(const NGLineBoxStrut& line_relative, bool is_flipped_lines) {
   if (!is_flipped_lines) {
     *this = {line_relative.inline_start, line_relative.inline_end,
              line_relative.line_over, line_relative.line_under};
@@ -29,7 +28,7 @@ NGBoxStrut::NGBoxStrut(const NGLineBoxStrut& line_relative,
   }
 }
 
-NGLineBoxStrut::NGLineBoxStrut(const NGBoxStrut& flow_relative,
+NGLineBoxStrut::NGLineBoxStrut(const BoxStrut& flow_relative,
                                bool is_flipped_lines) {
   if (!is_flipped_lines) {
     *this = {flow_relative.inline_start, flow_relative.inline_end,

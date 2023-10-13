@@ -73,7 +73,7 @@ class CORE_EXPORT NGSimplifiedLayoutAlgorithm
                         bool is_self_collapsing = false);
 
   const NGLayoutResult& previous_result_;
-  NGBoxStrut border_scrollbar_padding_;
+  BoxStrut border_scrollbar_padding_;
 
   const WritingDirectionMode writing_direction_;
 

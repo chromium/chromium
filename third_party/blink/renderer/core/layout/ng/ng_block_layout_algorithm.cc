@@ -213,7 +213,7 @@ template <typename ChildInlineSizeFunc>
 LayoutUnit WebkitTextAlignOffset(
     const ComputedStyle& style,
     LayoutUnit available_space,
-    const NGBoxStrut& margins,
+    const BoxStrut& margins,
     const ChildInlineSizeFunc& child_inline_size_func) {
   auto FreeSpace = [&]() -> LayoutUnit {
     return (available_space - child_inline_size_func() - margins.InlineSum())
@@ -368,10 +368,9 @@ MinMaxSizesResult NGBlockLayoutAlgorithm::ComputeMinMaxSizes(
         << child.ToString();
 
     // Determine the max inline contribution of the child.
-    NGBoxStrut margins =
-        child.IsInline()
-            ? NGBoxStrut()
-            : ComputeMarginsFor(space, child_style, ConstraintSpace());
+    BoxStrut margins = child.IsInline() ? BoxStrut()
+                                        : ComputeMarginsFor(space, child_style,
+                                                            ConstraintSpace());
     LayoutUnit max_inline_contribution;
 
     if (child.IsFloating()) {
@@ -1524,7 +1523,7 @@ NGLayoutResult::EStatus NGBlockLayoutAlgorithm::HandleNewFormattingContext(
                           !child_margin_got_separated &&
                           child_determined_bfc_offset;
   BfcOffset child_bfc_offset;
-  NGBoxStrut resolved_margins;
+  BoxStrut resolved_margins;
   const NGLayoutResult* layout_result = LayoutNewFormattingContext(
       child, child_break_token, child_data,
       {child_origin_line_offset, child_bfc_offset_estimate}, abort_if_cleared,
@@ -1633,7 +1632,7 @@ const NGLayoutResult* NGBlockLayoutAlgorithm::LayoutNewFormattingContext(
     BfcOffset origin_offset,
     bool abort_if_cleared,
     BfcOffset* out_child_bfc_offset,
-    NGBoxStrut* out_resolved_margins) {
+    BoxStrut* out_resolved_margins) {
   const auto& style = Style();
   const auto& child_style = child.Style();
   const TextDirection direction = ConstraintSpace().Direction();
@@ -1745,7 +1744,7 @@ const NGLayoutResult* NGBlockLayoutAlgorithm::LayoutNewFormattingContext(
       continue;
 
     // Now find the fragment's (final) position calculating the auto margins.
-    NGBoxStrut auto_margins = child_data.margins;
+    BoxStrut auto_margins = child_data.margins;
     LayoutUnit text_align_offset;
     bool has_auto_margins = false;
     if (child.IsListMarker()) {
@@ -1820,7 +1819,7 @@ const NGLayoutResult* NGBlockLayoutAlgorithm::LayoutNewFormattingContext(
     // auto-margins are "fun". To ensure round tripping from getComputedStyle
     // the used values are relative to the content-box edge, rather than the
     // opportunity edge.
-    NGBoxStrut resolved_margins = child_data.margins;
+    BoxStrut resolved_margins = child_data.margins;
     if (has_auto_margins) {
       LayoutUnit inline_offset =
           LogicalFromBfcLineOffset(child_bfc_offset.line_offset,
@@ -2284,7 +2283,7 @@ NGInflowChildData NGBlockLayoutAlgorithm::ComputeChildData(
 
   // Calculate margins in parent's writing mode.
   LayoutUnit additional_line_offset;
-  NGBoxStrut margins =
+  BoxStrut margins =
       CalculateMargins(child, is_new_fc, &additional_line_offset);
 
   // Append the current margin strut with child's block start margin.
@@ -2718,7 +2717,7 @@ void NGBlockLayoutAlgorithm::UpdateEarlyBreakBetweenLines() {
   container_builder_.SetEarlyBreak(breakpoint);
 }
 
-NGBoxStrut NGBlockLayoutAlgorithm::CalculateMargins(
+BoxStrut NGBlockLayoutAlgorithm::CalculateMargins(
     NGLayoutInputNode child,
     bool is_new_fc,
     LayoutUnit* additional_line_offset) {
@@ -2727,7 +2726,7 @@ NGBoxStrut NGBlockLayoutAlgorithm::CalculateMargins(
     return {};
 
   const ComputedStyle& child_style = child.Style();
-  NGBoxStrut margins =
+  BoxStrut margins =
       ComputeMarginsFor(child_style, child_percentage_size_.inline_size,
                         ConstraintSpace().GetWritingDirection());
   if (is_new_fc) {
@@ -2746,8 +2745,8 @@ NGBoxStrut NGBlockLayoutAlgorithm::CalculateMargins(
       NGConstraintSpace space = builder.ToConstraintSpace();
 
       const auto block_child = To<NGBlockNode>(child);
-      NGBoxStrut child_border_padding = ComputeBorders(space, block_child) +
-                                        ComputePadding(space, child_style);
+      BoxStrut child_border_padding = ComputeBorders(space, block_child) +
+                                      ComputePadding(space, child_style);
       child_inline_size = ComputeInlineSizeForFragment(space, block_child,
                                                        child_border_padding);
     }
@@ -2967,7 +2966,7 @@ void NGBlockLayoutAlgorithm::PropagateBaselineFromLineBox(
     const NGLayoutResult* result = items.BlockInInlineLayoutResult();
     DCHECK(result);
     PropagateBaselineFromBlockChild(result->PhysicalFragment(),
-                                    /* margins */ NGBoxStrut(), block_offset);
+                                    /* margins */ BoxStrut(), block_offset);
     return;
   }
 
@@ -2984,7 +2983,7 @@ void NGBlockLayoutAlgorithm::PropagateBaselineFromLineBox(
 
 void NGBlockLayoutAlgorithm::PropagateBaselineFromBlockChild(
     const NGPhysicalFragment& child,
-    const NGBoxStrut& margins,
+    const BoxStrut& margins,
     LayoutUnit block_offset) {
   DCHECK(child.IsBox());
   const auto baseline_algorithm = ConstraintSpace().BaselineAlgorithmType();

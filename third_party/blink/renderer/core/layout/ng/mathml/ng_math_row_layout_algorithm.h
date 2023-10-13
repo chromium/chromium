@@ -25,7 +25,7 @@ class CORE_EXPORT NGMathRowLayoutAlgorithm
   struct ChildWithOffsetAndMargins {
     DISALLOW_NEW();
     ChildWithOffsetAndMargins(const NGBlockNode& child,
-                              const NGBoxStrut& margins,
+                              const BoxStrut& margins,
                               LogicalOffset offset,
                               const NGLayoutResult* result)
         : child(child),
@@ -39,7 +39,7 @@ class CORE_EXPORT NGMathRowLayoutAlgorithm
     }
 
     NGBlockNode child;
-    NGBoxStrut margins;
+    BoxStrut margins;
     LogicalOffset offset;
     Member<const NGLayoutResult> result;
   };

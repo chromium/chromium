@@ -211,8 +211,8 @@ class CORE_EXPORT NGGridLayoutTrackCollection
       wtf_size_t begin_range_index,
       wtf_size_t end_range_index,
       LayoutUnit subgrid_gutter_size,
-      const NGBoxStrut& subgrid_margin,
-      const NGBoxStrut& subgrid_border_scrollbar_padding,
+      const BoxStrut& subgrid_margin,
+      const BoxStrut& subgrid_border_scrollbar_padding,
       GridTrackSizingDirection subgrid_track_direction,
       bool is_opposite_direction_in_root_grid) const;
 

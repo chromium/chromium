@@ -144,16 +144,16 @@ class CORE_EXPORT NGBoxFragmentBuilder final : public NGFragmentBuilder {
     intrinsic_block_size_ = intrinsic_block_size;
   }
   LayoutUnit IntrinsicBlockSize() const { return intrinsic_block_size_; }
-  const NGBoxStrut& Borders() const {
+  const BoxStrut& Borders() const {
     DCHECK(initial_fragment_geometry_);
     DCHECK_NE(BoxType(), NGPhysicalFragment::kInlineBox);
     return initial_fragment_geometry_->border;
   }
-  const NGBoxStrut& Scrollbar() const {
+  const BoxStrut& Scrollbar() const {
     DCHECK(initial_fragment_geometry_);
     return initial_fragment_geometry_->scrollbar;
   }
-  const NGBoxStrut& Padding() const {
+  const BoxStrut& Padding() const {
     DCHECK(initial_fragment_geometry_);
     return initial_fragment_geometry_->padding;
   }
@@ -161,11 +161,11 @@ class CORE_EXPORT NGBoxFragmentBuilder final : public NGFragmentBuilder {
     DCHECK(initial_fragment_geometry_);
     return initial_fragment_geometry_->border_box_size;
   }
-  const NGBoxStrut& BorderPadding() const {
+  const BoxStrut& BorderPadding() const {
     DCHECK(initial_fragment_geometry_);
     return border_padding_;
   }
-  const NGBoxStrut& BorderScrollbarPadding() const {
+  const BoxStrut& BorderScrollbarPadding() const {
     DCHECK(initial_fragment_geometry_);
     return border_scrollbar_padding_;
   }
@@ -212,7 +212,7 @@ class CORE_EXPORT NGBoxFragmentBuilder final : public NGFragmentBuilder {
   void AddResult(
       const NGLayoutResult&,
       const LogicalOffset,
-      absl::optional<const NGBoxStrut> margins,
+      absl::optional<const BoxStrut> margins,
       absl::optional<LogicalOffset> relative_offset = absl::nullopt,
       const NGInlineContainer<LogicalOffset>* inline_container = nullptr);
   // AddResult() with the default margin computation.
@@ -480,7 +480,7 @@ class CORE_EXPORT NGBoxFragmentBuilder final : public NGFragmentBuilder {
       LayoutUnit operator_ascent,
       LayoutUnit operator_descent,
       LayoutUnit radical_operator_inline_offset,
-      const NGBoxStrut& radical_base_margins) {
+      const BoxStrut& radical_base_margins) {
     if (!mathml_paint_info_)
       mathml_paint_info_ = std::make_unique<NGMathMLPaintInfo>();
 
@@ -639,8 +639,8 @@ class CORE_EXPORT NGBoxFragmentBuilder final : public NGFragmentBuilder {
   const NGLayoutResult* ToBoxFragment(WritingMode);
 
   const NGFragmentGeometry* initial_fragment_geometry_ = nullptr;
-  NGBoxStrut border_padding_;
-  NGBoxStrut border_scrollbar_padding_;
+  BoxStrut border_padding_;
+  BoxStrut border_scrollbar_padding_;
   // We clamp the block-start of |border_scrollbar_padding_| after an item
   // fragments. Store the original block-start, as well, for cases where it is
   // needed.

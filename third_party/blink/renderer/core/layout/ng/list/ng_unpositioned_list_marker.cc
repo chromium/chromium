@@ -81,7 +81,7 @@ void UnpositionedListMarker::AddToBox(
     const NGConstraintSpace& space,
     FontBaseline baseline_type,
     const NGPhysicalFragment& content,
-    const NGBoxStrut& border_scrollbar_padding,
+    const BoxStrut& border_scrollbar_padding,
     const NGLayoutResult& marker_layout_result,
     LayoutUnit content_baseline,
     LayoutUnit* block_offset,
@@ -161,7 +161,7 @@ void UnpositionedListMarker::AddToBoxWithoutLineBoxes(
 LayoutUnit UnpositionedListMarker::ComputeIntrudedFloatOffset(
     const NGConstraintSpace& space,
     const NGBoxFragmentBuilder* container_builder,
-    const NGBoxStrut& border_scrollbar_padding,
+    const BoxStrut& border_scrollbar_padding,
     LayoutUnit marker_block_offset) const {
   DCHECK(container_builder);
   // If the BFC block-offset isn't resolved, the intruded offset isn't

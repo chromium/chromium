@@ -40,7 +40,7 @@ BfcOffset AdjustToTopEdgeAlignmentRule(const NGExclusionSpace& exclusion_space,
 NGLayoutOpportunity FindLayoutOpportunityForFloat(
     const NGUnpositionedFloat& unpositioned_float,
     const NGExclusionSpace& exclusion_space,
-    const NGBoxStrut& fragment_margins,
+    const BoxStrut& fragment_margins,
     LayoutUnit inline_size) {
   BfcOffset adjusted_origin_point = AdjustToTopEdgeAlignmentRule(
       exclusion_space, unpositioned_float.origin_bfc_offset);
@@ -64,7 +64,7 @@ NGLayoutOpportunity FindLayoutOpportunityForFloat(
 NGConstraintSpace CreateConstraintSpaceForFloat(
     const NGUnpositionedFloat& unpositioned_float,
     absl::optional<LayoutUnit> origin_block_offset = absl::nullopt,
-    absl::optional<NGBoxStrut> margins = absl::nullopt) {
+    absl::optional<BoxStrut> margins = absl::nullopt) {
   const ComputedStyle& style = unpositioned_float.node.Style();
   const NGConstraintSpace& parent_space = unpositioned_float.parent_space;
   NGConstraintSpaceBuilder builder(parent_space, style.GetWritingDirection(),
@@ -102,7 +102,7 @@ NGConstraintSpace CreateConstraintSpaceForFloat(
 }
 
 NGExclusionShapeData* CreateExclusionShapeData(
-    const NGBoxStrut& margins,
+    const BoxStrut& margins,
     const NGUnpositionedFloat& unpositioned_float) {
   const LayoutBox* layout_box = unpositioned_float.node.GetLayoutBox();
   DCHECK(layout_box->GetShapeOutsideInfo());
@@ -110,10 +110,10 @@ NGExclusionShapeData* CreateExclusionShapeData(
   TextDirection direction = parent_space.Direction();
 
   // We make the margins on the shape-data relative to line-left/line-right.
-  NGBoxStrut new_margins(margins.LineLeft(direction),
-                         margins.LineRight(direction), margins.block_start,
-                         margins.block_end);
-  NGBoxStrut shape_insets;
+  BoxStrut new_margins(margins.LineLeft(direction),
+                       margins.LineRight(direction), margins.block_start,
+                       margins.block_end);
+  BoxStrut shape_insets;
 
   const ComputedStyle& style = unpositioned_float.node.Style();
   switch (style.ShapeOutside()->CssBox()) {
@@ -127,7 +127,7 @@ NGExclusionShapeData* CreateExclusionShapeData(
     case CSSBoxType::kContent:
       const NGConstraintSpace space =
           CreateConstraintSpaceForFloat(unpositioned_float);
-      NGBoxStrut strut = ComputeBorders(space, unpositioned_float.node);
+      BoxStrut strut = ComputeBorders(space, unpositioned_float.node);
       if (style.ShapeOutside()->CssBox() == CSSBoxType::kContent)
         strut += ComputePadding(space, style);
       // |TextDirection::kLtr| is used as this is line relative.
@@ -146,7 +146,7 @@ NGExclusionShapeData* CreateExclusionShapeData(
 const NGExclusion* CreateExclusion(
     const NGFragment& fragment,
     const BfcOffset& float_margin_bfc_offset,
-    const NGBoxStrut& margins,
+    const BoxStrut& margins,
     const NGUnpositionedFloat& unpositioned_float,
     EFloat type) {
   BfcOffset start_offset = float_margin_bfc_offset;
@@ -217,7 +217,7 @@ NGPositionedFloat PositionFloat(NGUnpositionedFloat* unpositioned_float,
       is_same_writing_mode && parent_space.HasBlockFragmentation();
 
   const NGLayoutResult* layout_result = nullptr;
-  NGBoxStrut fragment_margins;
+  BoxStrut fragment_margins;
   NGLayoutOpportunity opportunity;
   bool need_break_before = false;
 

@@ -69,7 +69,7 @@ const NGLayoutResult* NGPageLayoutAlgorithm::Layout() {
 
   // Compute the block-axis size now that we know our content size.
   LayoutUnit block_size = ComputeBlockSizeForFragment(
-      ConstraintSpace(), Style(), /* border_padding */ NGBoxStrut(),
+      ConstraintSpace(), Style(), /* border_padding */ BoxStrut(),
       intrinsic_block_size, absl::nullopt);
   container_builder_.SetFragmentsTotalBlockSize(block_size);
 
