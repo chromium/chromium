@@ -128,6 +128,7 @@
 #include "chrome/browser/ui/ash/holding_space/holding_space_keyed_service_factory.h"
 #include "chrome/browser/web_applications/web_app_utils.h"
 #include "chromeos/ash/components/account_manager/account_manager_factory.h"
+#include "chromeos/ash/components/browser_context_helper/browser_context_helper.h"
 #include "chromeos/components/cdm_factory_daemon/cdm_factory_daemon_proxy_ash.h"
 #include "chromeos/components/sensors/ash/sensor_hal_dispatcher.h"
 #include "chromeos/crosapi/mojom/device_local_account_extension_service.mojom.h"
@@ -957,6 +958,11 @@ void CrosapiAsh::BindVirtualKeyboard(
 
 void CrosapiAsh::BindVolumeManager(
     mojo::PendingReceiver<crosapi::mojom::VolumeManager> receiver) {
+  const user_manager::User* user =
+      user_manager::UserManager::Get()->GetPrimaryUser();
+  Profile* profile = Profile::FromBrowserContext(
+      ash::BrowserContextHelper::Get()->GetBrowserContextByUser(user));
+  volume_manager_ash_->SetProfile(profile);
   volume_manager_ash_->BindReceiver(std::move(receiver));
 }
 

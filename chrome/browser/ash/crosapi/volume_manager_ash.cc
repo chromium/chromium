@@ -10,7 +10,6 @@
 #include "base/memory/weak_ptr.h"
 #include "chrome/browser/ash/file_manager/volume_manager.h"
 #include "chrome/browser/profiles/profile.h"
-#include "chrome/browser/profiles/profile_manager.h"
 
 namespace crosapi {
 
@@ -53,11 +52,9 @@ std::vector<crosapi::mojom::VolumePtr> ConvertVolumeListToMojom(
 }
 
 // Returns volume list converted to crosapi form.
-std::vector<crosapi::mojom::VolumePtr> ReadVolumeList() {
-  content::BrowserContext* browser_context =
-      ProfileManager::GetPrimaryUserProfile();
+std::vector<crosapi::mojom::VolumePtr> ReadVolumeList(Profile* profile) {
   const std::vector<base::WeakPtr<file_manager::Volume>> volume_list =
-      file_manager::VolumeManager::Get(browser_context)->GetVolumeList();
+      file_manager::VolumeManager::Get(profile)->GetVolumeList();
   return ConvertVolumeListToMojom(volume_list);
 }
 
@@ -67,16 +64,28 @@ VolumeManagerAsh::VolumeManagerAsh() = default;
 
 VolumeManagerAsh::~VolumeManagerAsh() = default;
 
+void VolumeManagerAsh::SetProfile(Profile* profile) {
+  CHECK(profile);
+  if (profile_ == profile) {
+    VLOG(1) << "VolumeManagerAsh service is already initialized. Skip init.";
+    return;
+  }
+
+  profile_ = profile;
+  profile_observation_.Observe(profile_);
+}
+
 void VolumeManagerAsh::BindReceiver(
     mojo::PendingReceiver<mojom::VolumeManager> receiver) {
+  // profile_ should be set beforehand.
+  CHECK(profile_);
   receivers_.Add(this, std::move(receiver));
 }
 
 void VolumeManagerAsh::AddVolumeListObserver(
     mojo::PendingRemote<mojom::VolumeListObserver> observer) {
-  if (!is_observing_volume_manager_) {
-    Profile* profile = ProfileManager::GetPrimaryUserProfile();
-    auto* volume_manager = file_manager::VolumeManager::Get(profile);
+  if (!is_observing_volume_manager_ && profile_) {
+    auto* volume_manager = file_manager::VolumeManager::Get(profile_);
     volume_manager->AddObserver(this);
     is_observing_volume_manager_ = true;
   }
@@ -88,19 +97,19 @@ void VolumeManagerAsh::AddVolumeListObserver(
 }
 
 void VolumeManagerAsh::GetFullVolumeList(GetFullVolumeListCallback callback) {
-  std::move(callback).Run(ReadVolumeList());
+  if (profile_) {
+    std::move(callback).Run(ReadVolumeList(profile_));
+  }
 }
 
 void VolumeManagerAsh::GetVolumeMountInfo(const std::string& volume_id,
                                           GetVolumeMountInfoCallback callback) {
-  content::BrowserContext* browser_context =
-      ProfileManager::GetPrimaryUserProfile();
-
-  base::WeakPtr<file_manager::Volume> src_volume =
-      file_manager::VolumeManager::Get(browser_context)
-          ->FindVolumeById(volume_id);
-  std::move(callback).Run(src_volume.get() ? ConvertVolumeToMojom(*src_volume)
-                                           : nullptr);
+  if (profile_) {
+    base::WeakPtr<file_manager::Volume> src_volume =
+        file_manager::VolumeManager::Get(profile_)->FindVolumeById(volume_id);
+    std::move(callback).Run(src_volume.get() ? ConvertVolumeToMojom(*src_volume)
+                                             : nullptr);
+  }
 }
 
 void VolumeManagerAsh::OnVolumeMounted(ash::MountError error_code,
@@ -121,10 +130,17 @@ void VolumeManagerAsh::OnShutdownStart(
   is_observing_volume_manager_ = false;
 }
 
+void VolumeManagerAsh::OnProfileWillBeDestroyed(Profile* profile) {
+  CHECK_EQ(profile_, profile);
+  profile_ = nullptr;
+  profile_observation_.Reset();
+}
+
 void VolumeManagerAsh::DispatchVolumeList() {
-  if (volume_list_observers_.empty())
+  if (volume_list_observers_.empty() || !profile_) {
     return;
-  std::vector<crosapi::mojom::VolumePtr> volume_list = ReadVolumeList();
+  }
+  std::vector<crosapi::mojom::VolumePtr> volume_list = ReadVolumeList(profile_);
   for (auto& observer : volume_list_observers_) {
     std::vector<crosapi::mojom::VolumePtr> volume_list_copy;
     for (auto& volume : volume_list) {
