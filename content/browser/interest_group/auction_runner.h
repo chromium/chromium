@@ -54,8 +54,8 @@ class CONTENT_EXPORT AuctionRunner : public blink::mojom::AbortableAdAuction {
 
   // Invoked when a FLEDGE auction is complete.
   //
-  // `manually_aborted` is true only if the auction was successfully interrupted
-  //  by the call to Abort().
+  // `aborted_by_script` is true only if the auction was successfully
+  // interrupted by the call to Abort().
   //
   // `winning_group_id` owner and name of the winning interest group (if any).
   //
@@ -76,7 +76,7 @@ class CONTENT_EXPORT AuctionRunner : public blink::mojom::AbortableAdAuction {
   //  sensitive for the renderers to see.
   using RunAuctionCallback = base::OnceCallback<void(
       AuctionRunner* auction_runner,
-      bool manually_aborted,
+      bool aborted_by_script,
       absl::optional<blink::InterestGroupKey> winning_group_id,
       absl::optional<blink::AdSize> requested_ad_size,
       absl::optional<blink::AdDescriptor> ad_descriptor,
@@ -196,7 +196,7 @@ class CONTENT_EXPORT AuctionRunner : public blink::mojom::AbortableAdAuction {
   //
   // `interest_groups_that_bid` is a list of the interest groups that bid in the
   // auction.
-  void FailAuction(bool manually_aborted,
+  void FailAuction(bool aborted_by_script,
                    blink::InterestGroupSet interest_groups_that_bid =
                        blink::InterestGroupSet());
 

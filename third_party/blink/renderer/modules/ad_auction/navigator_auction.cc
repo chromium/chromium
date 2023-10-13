@@ -284,7 +284,7 @@ class NavigatorAuction::AuctionHandle final : public AbortSignal::Algorithm {
   void AuctionComplete(
       ScriptPromiseResolver*,
       std::unique_ptr<ScopedAbortState>,
-      bool manually_aborted,
+      bool aborted_by_script,
       const absl::optional<FencedFrame::RedactedFencedFrameConfig>&);
 
   void MaybeResolveAuction();
@@ -3764,7 +3764,7 @@ void NavigatorAuction::CreateAuctionNonceComplete(
 void NavigatorAuction::AuctionHandle::AuctionComplete(
     ScriptPromiseResolver* resolver,
     std::unique_ptr<ScopedAbortState> scoped_abort_state,
-    bool manually_aborted,
+    bool aborted_by_script,
     const absl::optional<FencedFrame::RedactedFencedFrameConfig>&
         result_config) {
   if (!resolver->GetExecutionContext() ||
@@ -3775,7 +3775,7 @@ void NavigatorAuction::AuctionHandle::AuctionComplete(
       scoped_abort_state ? scoped_abort_state->Signal() : nullptr;
   ScriptState* script_state = resolver->GetScriptState();
   ScriptState::Scope script_state_scope(script_state);
-  if (manually_aborted) {
+  if (aborted_by_script) {
     if (abort_signal && abort_signal->aborted()) {
       resolver->Reject(abort_signal->reason(script_state));
     } else {

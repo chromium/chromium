@@ -312,7 +312,7 @@ void AdAuctionServiceImpl::RunAdAuction(
   auto* auction_result_metrics =
       AdAuctionResultMetrics::GetOrCreateForPage(render_frame_host().GetPage());
   if (!auction_result_metrics->ShouldRunAuction()) {
-    std::move(callback).Run(/*manually_aborted=*/false,
+    std::move(callback).Run(/*aborted_by_script=*/false,
                             /*config=*/absl::nullopt);
     return;
   }
@@ -340,7 +340,7 @@ void AdAuctionServiceImpl::RunAdAuction(
   // If pending mapped URN cannot be generated due to number of mappings has
   // reached limit, stop the auction.
   if (!urn_uuid.has_value()) {
-    std::move(callback).Run(/*manually_aborted=*/false,
+    std::move(callback).Run(/*aborted_by_script=*/false,
                             /*config=*/absl::nullopt);
     return;
   }
@@ -625,7 +625,7 @@ AdAuctionServiceImpl::~AdAuctionServiceImpl() {
     // callbacks from the renderers are invoked. Uninvoked Mojo callbacks may
     // not be destroyed before the Mojo pipe is, and the parent DocumentService
     // class owns the pipe, so it may still be open at this point.
-    auctions_.begin()->first->FailAuction(/*manually_aborted=*/false);
+    auctions_.begin()->first->FailAuction(/*aborted_by_script=*/false);
   }
 }
 
@@ -679,7 +679,7 @@ void AdAuctionServiceImpl::OnAuctionComplete(
     GlobalRenderFrameHostId render_frame_host_id,
     const base::WeakPtr<PageImpl> page_impl,
     AuctionRunner* auction,
-    bool manually_aborted,
+    bool aborted_by_script,
     absl::optional<blink::InterestGroupKey> winning_group_key,
     absl::optional<blink::AdSize> requested_ad_size,
     absl::optional<blink::AdDescriptor> ad_descriptor,
@@ -708,7 +708,7 @@ void AdAuctionServiceImpl::OnAuctionComplete(
   if (!ad_descriptor) {
     DCHECK(!reporter);
 
-    std::move(callback).Run(manually_aborted, /*config=*/absl::nullopt);
+    std::move(callback).Run(aborted_by_script, /*config=*/absl::nullopt);
     if (auction_result_metrics) {
       // `auction_result_metrics` can be null since PageUserData like
       // AdAuctionResultMetrics isn't guaranteed to be destroyed after document
@@ -757,7 +757,7 @@ void AdAuctionServiceImpl::OnAuctionComplete(
       auction_result_metrics->ReportAuctionResult(
           AdAuctionResultMetrics::AuctionResult::kFailed);
     }
-    std::move(callback).Run(manually_aborted, /*config=*/absl::nullopt);
+    std::move(callback).Run(aborted_by_script, /*config=*/absl::nullopt);
     return;
   }
 
@@ -774,7 +774,7 @@ void AdAuctionServiceImpl::OnAuctionComplete(
           urn_uuid, requested_ad_size, *ad_descriptor,
           std::move(ad_auction_data), reporter->OnNavigateToWinningAdCallback(),
           ad_component_descriptors, reporter->fenced_frame_reporter());
-  std::move(callback).Run(/*manually_aborted=*/false, std::move(config));
+  std::move(callback).Run(/*aborted_by_script=*/false, std::move(config));
 
   // Start the InterestGroupAuctionReporter. It will run reporting scripts, but
   // nothing will be reported (nor the reporter deleted) until a fenced frame

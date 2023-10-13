@@ -403,12 +403,12 @@ void AuctionRunner::Abort() {
   // Don't abort if the auction already finished (either as success or failure;
   // this includes the case of multiple promise arguments rejecting).
   if (state_ != State::kFailed && state_ != State::kSucceeded) {
-    FailAuction(/*manually_aborted=*/true);
+    FailAuction(/*aborted_by_script=*/true);
   }
 }
 
 void AuctionRunner::FailAuction(
-    bool manually_aborted,
+    bool aborted_by_script,
     blink::InterestGroupSet interest_groups_that_bid) {
   DCHECK(callback_);
   state_ = State::kFailed;
@@ -422,7 +422,7 @@ void AuctionRunner::FailAuction(
   // Shouldn't have any win report URLs if nothing won the auction.
   DCHECK(debug_win_report_urls.empty());
 
-  if (!manually_aborted) {
+  if (!aborted_by_script) {
     interest_group_manager_->RegisterAdKeysAsJoined(
         auction_.GetKAnonKeysToJoin());
     interest_group_manager_->EnqueueReports(
@@ -441,7 +441,7 @@ void AuctionRunner::FailAuction(
 
   // When the auction fails, private aggregation requests of non-reserved event
   // types cannot be triggered anyway, so no need to pass it along.
-  std::move(callback_).Run(this, manually_aborted,
+  std::move(callback_).Run(this, aborted_by_script,
                            /*winning_group_key=*/absl::nullopt,
                            /*requested_ad_size=*/absl::nullopt,
                            /*ad_descriptor=*/absl::nullopt,
@@ -512,7 +512,7 @@ void AuctionRunner::StartAuction() {
 
 void AuctionRunner::OnLoadInterestGroupsComplete(bool success) {
   if (!success) {
-    FailAuction(/*manually_aborted=*/false);
+    FailAuction(/*aborted_by_script=*/false);
     return;
   }
 
@@ -529,7 +529,7 @@ void AuctionRunner::OnBidsGeneratedAndScored(bool success) {
   blink::InterestGroupSet interest_groups_that_bid;
   auction_.GetInterestGroupsThatBidAndReportBidCounts(interest_groups_that_bid);
   if (!success) {
-    FailAuction(/*manually_aborted=*/false,
+    FailAuction(/*aborted_by_script=*/false,
                 std::move(interest_groups_that_bid));
     return;
   }
@@ -557,7 +557,7 @@ void AuctionRunner::OnBidsGeneratedAndScored(bool success) {
 
   state_ = State::kSucceeded;
   std::move(callback_).Run(
-      this, /*manually_aborted=*/false, std::move(winning_group_key),
+      this, /*aborted_by_script=*/false, std::move(winning_group_key),
       std::move(requested_ad_size), auction_.top_bid()->bid->ad_descriptor,
       auction_.top_bid()->bid->ad_component_descriptors, std::move(errors),
       std::move(reporter));
@@ -570,7 +570,7 @@ void AuctionRunner::OnServerResponseAuctionComplete(base::TimeTicks start_time,
   blink::InterestGroupSet interest_groups_that_bid;
   auction_.GetInterestGroupsThatBidAndReportBidCounts(interest_groups_that_bid);
   if (!success) {
-    FailAuction(/*manually_aborted=*/false,
+    FailAuction(/*aborted_by_script=*/false,
                 std::move(interest_groups_that_bid));
     return;
   }
@@ -603,7 +603,7 @@ void AuctionRunner::OnServerResponseAuctionComplete(base::TimeTicks start_time,
 
   state_ = State::kSucceeded;
   std::move(callback_).Run(
-      this, /*manually_aborted=*/false, std::move(winning_group_key),
+      this, /*aborted_by_script=*/false, std::move(winning_group_key),
       std::move(requested_ad_size), auction_.top_bid()->bid->ad_descriptor,
       auction_.top_bid()->bid->ad_component_descriptors, std::move(errors),
       std::move(reporter));

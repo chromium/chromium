@@ -977,10 +977,10 @@ class AdAuctionServiceImplTest : public RenderViewHostTestHarness {
         auction_config, mojo::NullReceiver(),
         base::BindLambdaForTesting(
             [&run_loop, &maybe_config](
-                bool manually_aborted,
+                bool aborted_by_script,
                 const absl::optional<
                     blink::FencedFrame::RedactedFencedFrameConfig>& config) {
-              EXPECT_FALSE(manually_aborted);
+              EXPECT_FALSE(aborted_by_script);
               maybe_config = config;
               run_loop.Quit();
             }));
@@ -4485,7 +4485,7 @@ TEST_F(AdAuctionServiceImplNoNegativeTargetingTest, RunAdAuctionNonceDisabled) {
   ad_auction_service->RunAdAuction(
       auction_config, mojo::NullReceiver(),
       base::BindOnce(
-          [](bool manually_aborted,
+          [](bool aborted_by_script,
              const absl::optional<
                  blink::FencedFrame::RedactedFencedFrameConfig>& config) {
             ADD_FAILURE() << "Callback unexpectedly invoked.";
@@ -4520,7 +4520,7 @@ TEST_F(AdAuctionServiceImplNoNegativeTargetingTest,
   ad_auction_service->RunAdAuction(
       auction_config, mojo::NullReceiver(),
       base::BindOnce(
-          [](bool manually_aborted,
+          [](bool aborted_by_script,
              const absl::optional<
                  blink::FencedFrame::RedactedFencedFrameConfig>& config) {
             ADD_FAILURE() << "Callback unexpectedly invoked.";
@@ -5924,10 +5924,10 @@ TEST_F(AdAuctionServiceImplTest, ReportingWorkletsDoNotBlockCompletion) {
       auction_config, mojo::NullReceiver(),
       base::BindLambdaForTesting(
           [&run_loop, &maybe_config](
-              bool manually_aborted,
+              bool aborted_by_script,
               const absl::optional<
                   blink::FencedFrame::RedactedFencedFrameConfig>& config) {
-            EXPECT_FALSE(manually_aborted);
+            EXPECT_FALSE(aborted_by_script);
             maybe_config = config;
             run_loop.Quit();
           }));
@@ -6723,7 +6723,7 @@ function reportResult() {}
         succeed_auction_config, mojo::NullReceiver(),
         base::BindLambdaForTesting(
             [&one_auction_complete](
-                bool manually_aborted,
+                bool aborted_by_script,
                 const absl::optional<
                     blink::FencedFrame::RedactedFencedFrameConfig>&
                     ignored_config) { one_auction_complete.Run(); }));
@@ -7206,10 +7206,10 @@ TEST_F(AdAuctionServiceImplTest, FencedFrameUrlMappingChangedDuringAuction) {
       auction_config, mojo::NullReceiver(),
       base::BindLambdaForTesting(
           [&run_loop, &maybe_config](
-              bool manually_aborted,
+              bool aborted_by_script,
               const absl::optional<
                   blink::FencedFrame::RedactedFencedFrameConfig>& config) {
-            EXPECT_FALSE(manually_aborted);
+            EXPECT_FALSE(aborted_by_script);
             maybe_config = config;
             run_loop.Quit();
           }));
@@ -8468,10 +8468,10 @@ class AdAuctionServiceImplBAndATest : public AdAuctionServiceImplTest {
         auction_config, abortable_ad_auction.BindNewPipeAndPassReceiver(),
         base::BindLambdaForTesting(
             [&run_loop, &maybe_config](
-                bool manually_aborted,
+                bool aborted_by_script,
                 const absl::optional<
                     blink::FencedFrame::RedactedFencedFrameConfig>& config) {
-              EXPECT_FALSE(manually_aborted);
+              EXPECT_FALSE(aborted_by_script);
               maybe_config = config;
               run_loop.Quit();
             }));
