@@ -307,6 +307,15 @@ export class EmojiPicker extends PolymerElement {
       });
     }
 
+    if (this.jellySupport) {
+      this.updateStyles({
+        '--emoji-picker-top-padding':
+            constants.JELLY_EMOJI_PICKER_TOP_PADDING_PX,
+        '--emoji-picker-search-side-padding':
+            constants.JELLY_EMOJI_PICKER_SEARCH_SIDE_PADDING_PX,
+      });
+    }
+
     // Update UI and relevant features based on the initial data.
     this.updateCategoryData(
         // If we don't have 1 data URL, a crash probably isn't a bad idea

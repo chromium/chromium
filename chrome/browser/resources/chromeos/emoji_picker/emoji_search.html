@@ -18,6 +18,10 @@
       calc(var(--emoji-picker-width) - 2*var(--emoji-picker-search-side-padding));
   }
 
+  :host([jelly-support]) {
+    --emoji-picker-top-bar-bottom-padding: 10px;
+  }
+
   cr-search-field {
     --cr-search-field-clear-icon-fill: var(--emoji-picker-search-field-clear-icon-color);
     --cr-search-field-clear-icon-margin-end: var(--emoji-picker-search-margins);
