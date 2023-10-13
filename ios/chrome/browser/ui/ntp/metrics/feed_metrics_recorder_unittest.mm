@@ -43,8 +43,8 @@ class FeedMetricsRecorderTest : public PlatformTest {
     // Mock Delegate to change currently used feed.
     mocked_delegate_ = OCMProtocolMock(@protocol(FeedControlDelegate));
     recorder_.feedControlDelegate = mocked_delegate_;
-    histogram_tester_.reset(new base::HistogramTester());
-    actions_tester_.reset(new base::UserActionTester());
+    histogram_tester_ = std::make_unique<base::HistogramTester>();
+    actions_tester_ = std::make_unique<base::UserActionTester>();
   }
 
  protected:

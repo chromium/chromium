@@ -21,9 +21,9 @@ class FirstUserActionRecorderTest : public PlatformTest {
  protected:
   void SetUp() override {
     base::TimeDelta delta = base::Seconds(60);
-    recorder_.reset(new FirstUserActionRecorder(delta));
+    recorder_ = std::make_unique<FirstUserActionRecorder>(delta);
 
-    histogram_tester_.reset(new base::HistogramTester());
+    histogram_tester_ = std::make_unique<base::HistogramTester>();
 
     is_pad_ = ui::GetDeviceFormFactor() == ui::DEVICE_FORM_FACTOR_TABLET;
   }

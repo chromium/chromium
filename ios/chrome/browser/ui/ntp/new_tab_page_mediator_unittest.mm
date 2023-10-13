@@ -106,7 +106,7 @@ class NewTabPageMediatorTest : public PlatformTest {
     feed_metrics_recorder_ =
         [[FeedMetricsRecorder alloc] initWithPrefService:prefs];
     mediator_.feedMetricsRecorder = feed_metrics_recorder_;
-    histogram_tester_.reset(new base::HistogramTester());
+    histogram_tester_ = std::make_unique<base::HistogramTester>();
   }
 
   // Explicitly disconnect the mediator.

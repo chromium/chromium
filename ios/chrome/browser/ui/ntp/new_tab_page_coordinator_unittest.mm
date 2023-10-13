@@ -154,7 +154,7 @@ class NewTabPageCoordinatorTest : public PlatformTest {
         std::make_unique<FakeAuthenticationServiceDelegate>());
     toolbar_delegate_ =
         OCMProtocolMock(@protocol(NewTabPageControllerDelegate));
-    histogram_tester_.reset(new base::HistogramTester());
+    histogram_tester_ = std::make_unique<base::HistogramTester>();
 
     std::vector<base::test::FeatureRef> enabled;
     enabled.push_back(kEnableDiscoverFeedTopSyncPromo);

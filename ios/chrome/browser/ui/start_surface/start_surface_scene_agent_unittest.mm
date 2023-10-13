@@ -71,7 +71,7 @@ class StartSurfaceSceneAgentTest : public PlatformTest {
     Browser* browser =
         scene_state_.browserProviderInterface.mainBrowserProvider.browser;
     StartSurfaceRecentTabBrowserAgent::CreateForBrowser(browser);
-    histogram_tester_.reset(new base::HistogramTester());
+    histogram_tester_ = std::make_unique<base::HistogramTester>();
     TestingApplicationContext::GetGlobal()->SetLocalState(&pref_service_);
   }
 

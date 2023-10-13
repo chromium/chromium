@@ -46,7 +46,7 @@ class ContentSuggestionsViewControllerTest : public PlatformTest {
         prefs::kIosMagicStackSegmentationShortcutsImpressionsSinceFreshness,
         -1);
     view_controller_.contentSuggestionsMetricsRecorder = metrics_recorder_;
-    histogram_tester_.reset(new base::HistogramTester());
+    histogram_tester_ = std::make_unique<base::HistogramTester>();
   }
 
   // Iterates a view's subviews recursively, calling the block with each one.

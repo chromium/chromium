@@ -360,7 +360,7 @@ void AutofillControllerTest::SetUp() {
   [accessory_mediator_ injectWebState:web_state()];
   [accessory_mediator_ injectProvider:suggestion_controller_];
 
-  histogram_tester_.reset(new base::HistogramTester());
+  histogram_tester_ = std::make_unique<base::HistogramTester>();
 }
 
 void AutofillControllerTest::TearDown() {
