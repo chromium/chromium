@@ -400,6 +400,10 @@ const base::FeatureParam<bool> kIpPrivacyDirectOnly{
     &kEnableIpProtectionProxy, /*name=*/"IpPrivacyDirectOnly",
     /*default_value=*/false};
 
+const base::FeatureParam<bool> kIpPrivacyBsaEnablePrivacyPass{
+    &kEnableIpProtectionProxy, /*name=*/"IpPrivacyBsaEnablePrivacyPass",
+    /*default_value=*/false};
+
 // Network-change migration requires NetworkHandle support, which are currently
 // only supported on Android (see
 // NetworkChangeNotifier::AreNetworkHandlesSupported).

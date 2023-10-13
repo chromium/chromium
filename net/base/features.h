@@ -421,6 +421,10 @@ NET_EXPORT extern const base::FeatureParam<base::TimeDelta>
 // connections that _would_ have been proxied, but were not.
 NET_EXPORT extern const base::FeatureParam<bool> kIpPrivacyDirectOnly;
 
+// Controls whether the BlindSignAuth library used by IP Protection should use
+// the privacy pass token format.
+NET_EXPORT extern const base::FeatureParam<bool> kIpPrivacyBsaEnablePrivacyPass;
+
 // Whether QuicParams::migrate_sessions_on_network_change_v2 defaults to true or
 // false. This is needed as a workaround to set this value to true on Android
 // but not on WebView (until crbug.com/1430082 has been fixed).

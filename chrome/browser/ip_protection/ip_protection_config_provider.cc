@@ -16,6 +16,7 @@
 #include "google_apis/gaia/gaia_constants.h"
 #include "google_apis/google_api_keys.h"
 #include "mojo/public/cpp/bindings/message.h"
+#include "net/base/features.h"
 #include "net/third_party/quiche/src/quiche/blind_sign_auth/blind_sign_auth.h"
 #include "net/third_party/quiche/src/quiche/blind_sign_auth/proto/blind_sign_auth_options.pb.h"
 
@@ -39,9 +40,17 @@ void IpProtectionConfigProvider::SetUp() {
   }
   if (!bsa_) {
     if (!blind_sign_auth_) {
+      privacy::ppn::BlindSignAuthOptions bsa_options{};
+      // Note: If a substantial number of new options get added to
+      // BlindSignAuthOptions, we could use one feature flag that contains the
+      // base64-encoded proto contents and then initialize `bsa_options` from
+      // that. For now just use individual feature flags for each of the
+      // options.
+      bsa_options.set_enable_privacy_pass(
+          net::features::kIpPrivacyBsaEnablePrivacyPass.Get());
+
       blind_sign_auth_ = std::make_unique<quiche::BlindSignAuth>(
-          ip_protection_config_http_.get(),
-          privacy::ppn::BlindSignAuthOptions());
+          ip_protection_config_http_.get(), std::move(bsa_options));
     }
     bsa_ = blind_sign_auth_.get();
   }
