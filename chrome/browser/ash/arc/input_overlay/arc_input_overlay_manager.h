@@ -103,9 +103,13 @@ class ArcInputOverlayManager : public KeyedService,
       std::unique_ptr<TouchInjector> touch_injector);
   // Called when finishing reading default data.
   void OnFinishReadDefaultData(std::unique_ptr<TouchInjector> touch_injector);
-  // Called after checking if GIO is applicable.
+  // Called after checking if GIO is applicable, which means the app is a game
+  // and doesn't have GIO opt-out.
   void OnDidCheckGioApplicable(std::unique_ptr<TouchInjector> touch_injector,
                                bool is_gio_applicable);
+  // Called after checking if it is an O4C app.
+  void OnDidCheckO4C(std::unique_ptr<TouchInjector> touch_injector,
+                     bool is_o4c);
   // Apply the customized proto data.
   void OnProtoDataAvailable(std::unique_ptr<TouchInjector> touch_injector,
                             std::unique_ptr<AppDataProto> proto);
@@ -136,6 +140,12 @@ class ArcInputOverlayManager : public KeyedService,
   // is available if there is mapping data.
   void MayKeepTouchInjectorAfterError(
       std::unique_ptr<TouchInjector> touch_injector);
+
+  // TODO(b/303282089): Temporary functions before Android new mojom functions
+  // merged.
+  void CheckGioApplicableOld(std::unique_ptr<TouchInjector> touch_injector);
+  void OnDidCheckGioApplicableOld(std::unique_ptr<TouchInjector> touch_injector,
+                                  bool is_gio_applicable);
 
   // Returns the game window if `window` is game dashboard window which is the
   // window of `GameDashboardButton` or `GameDashboardMainMenu`. Otherwise,

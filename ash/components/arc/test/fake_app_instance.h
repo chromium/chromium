@@ -170,6 +170,9 @@ class FakeAppInstance : public mojom::AppInstance {
                      IsInstallableCallback callback) override;
   void GetAppCategory(const std::string& package_name,
                       GetAppCategoryCallback callback) override;
+  void IsGameControlsApplicable(
+      const std::string& package_name,
+      IsGameControlsApplicableCallback callback) override;
 
   // Methods to reply messages.
   void SendRefreshAppList(const std::vector<mojom::AppInfoPtr>& apps);
@@ -257,6 +260,10 @@ class FakeAppInstance : public mojom::AppInstance {
     pkg_name_to_app_category_[std::string(pkg_name)] = category;
   }
 
+  void set_game_control_applicable_pkg(std::string_view pkg_name) {
+    game_control_applicable_pkgs_.emplace_back(std::string(pkg_name));
+  }
+
  private:
   using TaskIdToInfo = std::map<int32_t, std::unique_ptr<Request>>;
 
@@ -290,6 +297,8 @@ class FakeAppInstance : public mojom::AppInstance {
   std::map<int, std::string> icon_responses_;
   // Stores information for serving GetAppCategory calls.
   std::map<std::string, mojom::AppCategory> pkg_name_to_app_category_;
+  // Stores information for serving IsGameControlsApplicable calls.
+  std::vector<std::string> game_control_applicable_pkgs_;
 
   bool is_installable_ = false;
 

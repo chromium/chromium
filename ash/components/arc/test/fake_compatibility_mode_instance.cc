@@ -20,4 +20,15 @@ void FakeCompatibilityModeInstance::IsGioApplicable(
   std::move(callback).Run(is_gio_applicable_);
 }
 
+void FakeCompatibilityModeInstance::IsOptimizedForCrosApp(
+    const std::string& package_name,
+    IsOptimizedForCrosAppCallback callback) {
+  bool is_o4c = false;
+  if (std::find(o4c_pkgs_.begin(), o4c_pkgs_.end(), package_name) !=
+      o4c_pkgs_.end()) {
+    is_o4c = true;
+  }
+  std::move(callback).Run(is_o4c);
+}
+
 }  // namespace arc

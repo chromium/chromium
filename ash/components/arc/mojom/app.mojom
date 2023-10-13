@@ -2,7 +2,7 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 //
-// Next MinVersion: 60
+// Next MinVersion: 61
 
 module arc.mojom;
 
@@ -412,7 +412,7 @@ interface AppHost {
 };
 
 // TODO(lhchavez): Migrate all request/response messages to Mojo.
-// Next method ID: 42
+// Next method ID: 43
 // Deprecated method IDs: 0, 1, 2, 3, 4, 6, 9, 12, 13, 15, 17, 18, 19, 22, 31
 interface AppInstance {
   // Establishes full-duplex communication with the host.
@@ -560,4 +560,9 @@ interface AppInstance {
   // declare an app category.
   [MinVersion=53] GetAppCategory@41(string package_name) =>
       (AppCategory category);
+
+  // Returns true if `package_name` is for a game app and not Game Controls
+  // opt-out.
+  [MinVersion=60] IsGameControlsApplicable@42(string package_name) =>
+      (bool is_gc_applicable);
 };

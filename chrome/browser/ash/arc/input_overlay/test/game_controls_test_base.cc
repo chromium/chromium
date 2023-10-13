@@ -4,6 +4,7 @@
 
 #include "chrome/browser/ash/arc/input_overlay/test/game_controls_test_base.h"
 
+#include "ash/components/arc/test/fake_app_instance.h"
 #include "ash/constants/ash_features.h"
 #include "ash/game_dashboard/game_dashboard_utils.h"
 #include "ash/public/cpp/window_properties.h"
@@ -13,6 +14,7 @@
 #include "chrome/browser/ash/arc/input_overlay/display_overlay_controller.h"
 #include "chrome/browser/ash/arc/input_overlay/test/test_utils.h"
 #include "chrome/browser/ash/arc/input_overlay/util.h"
+#include "chrome/test/base/testing_profile.h"
 #include "content/public/test/browser_task_environment.h"
 #include "ui/lottie/resource.h"
 
@@ -61,6 +63,13 @@ void GameControlsTestBase::SetUp() {
 
   scoped_feature_list_.InitWithFeatures(
       {ash::features::kGameDashboard, ash::features::kArcInputOverlayBeta}, {});
+
+  profile_ = std::make_unique<TestingProfile>();
+  arc_app_test_.set_wait_compatibility_mode(true);
+  arc_app_test_.SetUp(profile_.get());
+  arc_app_test_.app_instance()->set_game_control_applicable_pkg(
+      kEnabledPackageName);
+
   arc_test_input_overlay_manager_ = base::WrapUnique(
       new ArcInputOverlayManager(/*BrowserContext=*/nullptr,
                                  /*ArcBridgeService=*/nullptr));
@@ -80,7 +89,8 @@ void GameControlsTestBase::TearDown() {
 
   arc_test_input_overlay_manager_->Shutdown();
   arc_test_input_overlay_manager_.reset();
-
+  arc_app_test_.TearDown();
+  profile_.reset();
   ash::AshTestBase::TearDown();
 }
 
