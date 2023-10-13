@@ -115,7 +115,7 @@
         # capacity has been deployed.
         'swarming': {
           'dimensions': {
-            'device_type': 'sailfish',
+            'device_type': 'crosshatch',
           },
           'shards': 4,
         },
@@ -281,7 +281,7 @@
         # capacity has been deployed.
         'swarming': {
           'dimensions': {
-            'device_type': 'sailfish',
+            'device_type': 'crosshatch',
           },
         },
       },
@@ -4781,7 +4781,7 @@
         # capacity has been deployed.
         'swarming': {
           'dimensions': {
-            'device_type': 'sailfish',
+            'device_type': 'crosshatch',
           },
         },
       },
@@ -4794,15 +4794,6 @@
         'args': [
           '--test-launcher-filter-file=../../testing/buildbot/filters/android.emulator.webview_cts_tests.filter',
         ],
-      },
-      'android-pie-arm64-rel': {
-        # TODO(crbug.com/1111436): Move this back to walleye if/when additional
-        # capacity has been deployed.
-        'swarming': {
-          'dimensions': {
-            'device_type': 'sailfish',
-          },
-        },
       },
       # Keep this same as android-nougat-x86-rel above
       'android-x86-code-coverage': {
