@@ -530,8 +530,8 @@ bool MaySkipLayoutWithinBlockFormattingContext(
     // TODO(layout-dev): If we track if any margins affected this calculation
     // (with an additional bit on the layout result) we could potentially skip
     // this check.
-    if (old_clearance_offset - old_space.BfcOffset().block_offset >
-        new_clearance_offset - new_space.BfcOffset().block_offset) {
+    if (old_clearance_offset - old_space.GetBfcOffset().block_offset >
+        new_clearance_offset - new_space.GetBfcOffset().block_offset) {
       return false;
     }
   }
@@ -638,8 +638,8 @@ bool MaySkipLayoutWithinBlockFormattingContext(
   } else if (is_margin_strut_equal) {
     // If our incoming margin-strut is equal, we are just shifted by the BFC
     // block-offset amount.
-    *block_offset_delta =
-        new_space.BfcOffset().block_offset - old_space.BfcOffset().block_offset;
+    *block_offset_delta = new_space.GetBfcOffset().block_offset -
+                          old_space.GetBfcOffset().block_offset;
     *bfc_block_offset = **bfc_block_offset + *block_offset_delta;
   } else {
     // If our incoming margin-strut isn't equal, we need to account for the
@@ -647,12 +647,12 @@ bool MaySkipLayoutWithinBlockFormattingContext(
 #if DCHECK_IS_ON()
     DCHECK(!cached_layout_result.SubtreeModifiedMarginStrut());
     LayoutUnit old_bfc_block_offset =
-        old_space.BfcOffset().block_offset + old_space.MarginStrut().Sum();
+        old_space.GetBfcOffset().block_offset + old_space.MarginStrut().Sum();
     DCHECK_EQ(old_bfc_block_offset, **bfc_block_offset);
 #endif
 
     LayoutUnit new_bfc_block_offset =
-        new_space.BfcOffset().block_offset + new_space.MarginStrut().Sum();
+        new_space.GetBfcOffset().block_offset + new_space.MarginStrut().Sum();
     *block_offset_delta = new_bfc_block_offset - **bfc_block_offset;
     *bfc_block_offset = **bfc_block_offset + *block_offset_delta;
   }

@@ -310,7 +310,7 @@ TEST_F(NGBlockLayoutAlgorithmTest, LineOffsetCaching) {
 
   NGConstraintSpace space200 =
       create_space(LogicalSize(LayoutUnit(300), LayoutUnit(100)),
-                   NGBfcOffset(LayoutUnit(50), LayoutUnit()));
+                   BfcOffset(LayoutUnit(50), LayoutUnit()));
 
   const NGLayoutResult* result = nullptr;
   auto* box1 = To<LayoutBlockFlow>(GetLayoutObjectByElementId("box1"));

@@ -140,7 +140,7 @@ struct NGLogicalLineItem {
         bidi_level(bidi_level) {}
   // Create a positioned float.
   NGLogicalLineItem(const NGLayoutResult* layout_result,
-                    NGBfcOffset bfc_offset,
+                    BfcOffset bfc_offset,
                     UBiDiLevel bidi_level)
       : layout_result(layout_result),
         bfc_offset(bfc_offset),
@@ -241,7 +241,7 @@ struct NGLogicalLineItem {
   LogicalRect rect;
   // The offset of a positioned float wrt. the root BFC. This should only be
   // set for positioned floats.
-  NGBfcOffset bfc_offset;
+  BfcOffset bfc_offset;
   // The inline size of the margin box.
   LayoutUnit inline_size;
   LayoutUnit margin_line_left;

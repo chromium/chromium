@@ -10,8 +10,8 @@
 namespace blink {
 
 class ComputedStyle;
-struct NGBfcOffset;
 class NGExclusionSpace;
+struct BfcOffset;
 
 // OOF-positioned nodes which were initially inline-level, however are in a
 // block-level context, pretend they are in an inline-level context. E.g.
@@ -23,7 +23,7 @@ class NGExclusionSpace;
 // TODO(ikilpatrick): Move this back into ng_block_layout_algorithm.cc
 LayoutUnit CalculateOutOfFlowStaticInlineLevelOffset(
     const ComputedStyle& container_style,
-    const NGBfcOffset& origin_bfc_offset,
+    const BfcOffset& origin_bfc_offset,
     const NGExclusionSpace&,
     LayoutUnit child_available_inline_size);
 

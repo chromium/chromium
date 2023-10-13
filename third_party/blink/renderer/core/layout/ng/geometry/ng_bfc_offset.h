@@ -12,9 +12,9 @@
 
 namespace blink {
 
-struct CORE_EXPORT NGBfcDelta {
-  NGBfcDelta() = default;
-  NGBfcDelta(LayoutUnit line_offset_delta, LayoutUnit block_offset_delta)
+struct CORE_EXPORT BfcDelta {
+  BfcDelta() = default;
+  BfcDelta(LayoutUnit line_offset_delta, LayoutUnit block_offset_delta)
       : line_offset_delta(line_offset_delta),
         block_offset_delta(block_offset_delta) {}
 
@@ -22,41 +22,41 @@ struct CORE_EXPORT NGBfcDelta {
   LayoutUnit block_offset_delta;
 };
 
-// NGBfcOffset is the position of a rect (typically a fragment) relative to
+// BfcOffset is the position of a rect (typically a fragment) relative to
 // a block formatting context (BFC). BFCs are agnostic to text direction, and
 // uses line_offset instead of inline_offset.
 //
 // Care must be taken when converting this to a LogicalOffset to respect the
 // text direction.
-struct CORE_EXPORT NGBfcOffset {
-  NGBfcOffset() = default;
-  NGBfcOffset(LayoutUnit line_offset, LayoutUnit block_offset)
+struct CORE_EXPORT BfcOffset {
+  BfcOffset() = default;
+  BfcOffset(LayoutUnit line_offset, LayoutUnit block_offset)
       : line_offset(line_offset), block_offset(block_offset) {}
 
   LayoutUnit line_offset;
   LayoutUnit block_offset;
 
-  NGBfcOffset& operator+=(const NGBfcDelta& delta) {
+  BfcOffset& operator+=(const BfcDelta& delta) {
     *this = *this + delta;
     return *this;
   }
 
-  NGBfcOffset operator+(const NGBfcDelta& delta) {
+  BfcOffset operator+(const BfcDelta& delta) {
     return {line_offset + delta.line_offset_delta,
             block_offset + delta.block_offset_delta};
   }
 
-  bool operator==(const NGBfcOffset& other) const {
+  bool operator==(const BfcOffset& other) const {
     return std::tie(other.line_offset, other.block_offset) ==
            std::tie(line_offset, block_offset);
   }
 
-  bool operator!=(const NGBfcOffset& other) const { return !operator==(other); }
+  bool operator!=(const BfcOffset& other) const { return !operator==(other); }
 
   String ToString() const;
 };
 
-CORE_EXPORT std::ostream& operator<<(std::ostream&, const NGBfcOffset&);
+CORE_EXPORT std::ostream& operator<<(std::ostream&, const BfcOffset&);
 
 }  // namespace blink
 

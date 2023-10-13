@@ -172,7 +172,7 @@ LayoutUnit NGUnpositionedListMarker::ComputeIntrudedFloatOffset(
   // Because opportunity.rect is in the content area of LI, so origin_offset
   // should plus border_scrollbar_padding.inline_start, and available_size
   // should minus border_scrollbar_padding.
-  NGBfcOffset origin_offset = {
+  BfcOffset origin_offset = {
       container_builder->BfcLineOffset() +
           border_scrollbar_padding.inline_start,
       *container_builder->BfcBlockOffset() + marker_block_offset};

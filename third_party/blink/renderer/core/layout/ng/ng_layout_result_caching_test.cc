@@ -131,19 +131,19 @@ TEST_F(NGLayoutResultCachingTest, HitDifferentBFCOffset) {
   EXPECT_EQ(opportunities.size(), 3u);
 
   EXPECT_EQ(opportunities[0].rect.start_offset,
-            NGBfcOffset(LayoutUnit(50), LayoutUnit()));
+            BfcOffset(LayoutUnit(50), LayoutUnit()));
   EXPECT_EQ(opportunities[0].rect.end_offset,
-            NGBfcOffset(LayoutUnit(100), LayoutUnit::Max()));
+            BfcOffset(LayoutUnit(100), LayoutUnit::Max()));
 
   EXPECT_EQ(opportunities[1].rect.start_offset,
-            NGBfcOffset(LayoutUnit(), LayoutUnit(20)));
+            BfcOffset(LayoutUnit(), LayoutUnit(20)));
   EXPECT_EQ(opportunities[1].rect.end_offset,
-            NGBfcOffset(LayoutUnit(100), LayoutUnit(45)));
+            BfcOffset(LayoutUnit(100), LayoutUnit(45)));
 
   EXPECT_EQ(opportunities[2].rect.start_offset,
-            NGBfcOffset(LayoutUnit(), LayoutUnit(65)));
+            BfcOffset(LayoutUnit(), LayoutUnit(65)));
   EXPECT_EQ(opportunities[2].rect.end_offset,
-            NGBfcOffset(LayoutUnit(100), LayoutUnit::Max()));
+            BfcOffset(LayoutUnit(100), LayoutUnit::Max()));
 }
 
 TEST_F(NGLayoutResultCachingTest, HitDifferentBFCOffsetSameMarginStrut) {

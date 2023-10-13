@@ -42,7 +42,8 @@ class NGLineWidthsTest : public RenderingTest {
     algorithm.PositionLeadingFloats(exclusion_space, leading_floats);
     const LayoutOpportunityVector& opportunities =
         exclusion_space.AllLayoutOpportunities(
-            {space.BfcOffset().line_offset, /*bfc_block_offset*/ LayoutUnit()},
+            {space.GetBfcOffset().line_offset,
+             /*bfc_block_offset*/ LayoutUnit()},
             space.AvailableSize().inline_size);
     NGLineWidths line_width;
     if (line_width.Set(node, opportunities)) {

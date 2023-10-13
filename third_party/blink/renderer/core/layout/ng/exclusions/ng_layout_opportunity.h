@@ -24,17 +24,17 @@ struct CORE_EXPORT NGLayoutOpportunity final {
 
  public:
   NGLayoutOpportunity()
-      : rect(NGBfcOffset(LayoutUnit::Min(), LayoutUnit::Min()),
-             NGBfcOffset(LayoutUnit::Max(), LayoutUnit::Max())) {}
+      : rect(BfcOffset(LayoutUnit::Min(), LayoutUnit::Min()),
+             BfcOffset(LayoutUnit::Max(), LayoutUnit::Max())) {}
   explicit NGLayoutOpportunity(
-      const NGBfcRect& rect,
+      const BfcRect& rect,
       const NGShapeExclusions* shape_exclusions = nullptr)
       : rect(rect), shape_exclusions(shape_exclusions) {}
 
   void Trace(Visitor* visitor) const { visitor->Trace(shape_exclusions); }
 
   // Rectangle in BFC coordinates that represents this opportunity.
-  NGBfcRect rect;
+  BfcRect rect;
 
   // The shape exclusions hold all of the adjacent exclusions which may affect
   // the line layout opportunity when queried. May be null if no shapes are

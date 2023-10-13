@@ -1025,7 +1025,7 @@ class CORE_EXPORT NGLayoutResult final
   // *always* the initial value.
   Member<RareData> rare_data_;
   union {
-    NGBfcOffset bfc_offset_;
+    BfcOffset bfc_offset_;
     // This is the absolutized inset property values of an OOF-positioned object
     // in its parent's writing-mode. This is set by the |NGOutOfFlowLayoutPart|
     // while generating this layout result.

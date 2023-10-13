@@ -9,12 +9,12 @@
 
 namespace blink {
 
-struct FontHeight;
-struct NGBfcOffset;
-struct NGBoxStrut;
-struct NGExclusion;
 class NGLineInfo;
 class NGLogicalLineItems;
+struct BfcOffset;
+struct FontHeight;
+struct NGBoxStrut;
+struct NGExclusion;
 
 // Adjust text position of texts in inline text box and returns adjusted
 // `FontHeight` to fit initial letter box in block direction.
@@ -31,7 +31,7 @@ const NGExclusion* PostPlaceInitialLetterBox(
     const FontHeight& line_box_metrics,
     const NGBoxStrut& initial_letter_box_margins,
     NGLogicalLineItems* line_box,
-    const NGBfcOffset& line_origin,
+    const BfcOffset& line_origin,
     NGLineInfo* line_info);
 
 }  // namespace blink

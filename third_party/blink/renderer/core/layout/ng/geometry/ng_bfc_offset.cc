@@ -8,11 +8,11 @@
 
 namespace blink {
 
-String NGBfcOffset::ToString() const {
+String BfcOffset::ToString() const {
   return String::Format("%dx%d", line_offset.ToInt(), block_offset.ToInt());
 }
 
-std::ostream& operator<<(std::ostream& os, const NGBfcOffset& value) {
+std::ostream& operator<<(std::ostream& os, const BfcOffset& value) {
   return os << value.ToString();
 }
 

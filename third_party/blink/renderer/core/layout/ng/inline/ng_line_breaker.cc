@@ -2854,7 +2854,7 @@ void NGLineBreaker::HandleFloat(const NGInlineItem& item,
       constraint_space_.AvailableSize(),
       constraint_space_.PercentageResolutionSize(),
       constraint_space_.ReplacedPercentageResolutionSize(),
-      {constraint_space_.BfcOffset().line_offset, bfc_block_offset},
+      {constraint_space_.GetBfcOffset().line_offset, bfc_block_offset},
       constraint_space_, node_.Style());
 
   bool float_after_line =
@@ -2887,7 +2887,7 @@ void NGLineBreaker::HandleFloat(const NGInlineItem& item,
   }
 
   NGLayoutOpportunity opportunity = exclusion_space_->FindLayoutOpportunity(
-      {constraint_space_.BfcOffset().line_offset, bfc_block_offset},
+      {constraint_space_.GetBfcOffset().line_offset, bfc_block_offset},
       constraint_space_.AvailableSize().inline_size);
 
   DCHECK_EQ(bfc_block_offset, opportunity.rect.BlockStartOffset());

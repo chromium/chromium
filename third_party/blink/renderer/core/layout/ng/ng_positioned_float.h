@@ -22,7 +22,7 @@ struct CORE_EXPORT NGPositionedFloat {
   NGPositionedFloat() = default;
   NGPositionedFloat(const NGLayoutResult* layout_result,
                     const NGBlockBreakToken* break_before_token,
-                    const NGBfcOffset& bfc_offset,
+                    const BfcOffset& bfc_offset,
                     LayoutUnit minimum_space_shortage)
       : layout_result(layout_result),
         break_before_token(break_before_token),
@@ -39,7 +39,7 @@ struct CORE_EXPORT NGPositionedFloat {
 
   Member<const NGLayoutResult> layout_result;
   Member<const NGBlockBreakToken> break_before_token;
-  NGBfcOffset bfc_offset;
+  BfcOffset bfc_offset;
   LayoutUnit minimum_space_shortage;
 };
 

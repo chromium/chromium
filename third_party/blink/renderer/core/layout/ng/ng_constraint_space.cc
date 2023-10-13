@@ -22,7 +22,7 @@ namespace {
 struct SameSizeAsNGConstraintSpace {
   LogicalSize available_size;
   union {
-    NGBfcOffset bfc_offset;
+    BfcOffset bfc_offset;
     void* rare_data;
   };
   NGExclusionSpace exclusion_space;

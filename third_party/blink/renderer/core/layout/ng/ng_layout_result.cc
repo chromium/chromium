@@ -26,7 +26,7 @@ struct SameSizeAsNGLayoutResult
   Member<void*> physical_fragment;
   Member<void*> rare_data_;
   union {
-    NGBfcOffset bfc_offset;
+    BfcOffset bfc_offset;
     NGBoxStrut oof_insets_for_get_computed_style;
   };
   LayoutUnit intrinsic_block_size;
@@ -284,8 +284,8 @@ NGExclusionSpace NGLayoutResult::MergeExclusionSpaces(
     const NGExclusionSpace& new_input_exclusion_space,
     LayoutUnit bfc_line_offset,
     LayoutUnit block_offset_delta) {
-  NGBfcDelta offset_delta = {bfc_line_offset - other.BfcLineOffset(),
-                             block_offset_delta};
+  BfcDelta offset_delta = {bfc_line_offset - other.BfcLineOffset(),
+                           block_offset_delta};
 
   return NGExclusionSpace::MergeExclusionSpaces(
       /* old_output */ other.ExclusionSpace(),

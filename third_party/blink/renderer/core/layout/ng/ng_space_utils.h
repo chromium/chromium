@@ -14,11 +14,11 @@
 namespace blink {
 
 class NGConstraintSpaceBuilder;
-struct NGBfcOffset;
+struct BfcOffset;
 
 // Adjusts {@code offset} to the clearance line.
 CORE_EXPORT bool AdjustToClearance(LayoutUnit clearance_offset,
-                                   NGBfcOffset* offset);
+                                   BfcOffset* offset);
 
 // Calculate and set the available inline fallback size for orthogonal flow
 // children. This size will be used if it's not resolvable via other means [1].

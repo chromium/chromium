@@ -110,7 +110,7 @@ LayoutUnit NGLayoutOpportunity::ComputeLineLeftOffset(
   //
   // We rebuild this offset from the line-left end, checking each exclusion and
   // increasing the line_left when an exclusion intersects.
-  LayoutUnit line_left = space.BfcOffset().line_offset;
+  LayoutUnit line_left = space.GetBfcOffset().line_offset;
   for (auto& exclusion : shape_exclusions->line_left_shapes) {
     if (!IntersectsExclusion(*exclusion, bfc_block_offset, line_block_size))
       continue;
@@ -138,7 +138,7 @@ LayoutUnit NGLayoutOpportunity::ComputeLineRightOffset(
   LayoutUnit bfc_block_offset = rect.BlockStartOffset() + block_delta;
 
   LayoutUnit line_right =
-      space.BfcOffset().line_offset + space.AvailableSize().inline_size;
+      space.GetBfcOffset().line_offset + space.AvailableSize().inline_size;
 
   // Step through each exclusion and re-build the line_right_offset. Without
   // shapes this would be the same as the opportunity offset.

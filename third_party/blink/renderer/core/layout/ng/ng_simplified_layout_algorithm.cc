@@ -58,8 +58,8 @@ NGSimplifiedLayoutAlgorithm::NGSimplifiedLayoutAlgorithm(
     container_builder_.SetEndMarginStrut(result.EndMarginStrut());
 
     // Ensure that the parent layout hasn't asked us to move our BFC position.
-    DCHECK_EQ(ConstraintSpace().BfcOffset(),
-              previous_result_.GetConstraintSpaceForCaching().BfcOffset());
+    DCHECK_EQ(ConstraintSpace().GetBfcOffset(),
+              previous_result_.GetConstraintSpaceForCaching().GetBfcOffset());
     container_builder_.SetBfcLineOffset(result.BfcLineOffset());
     if (result.BfcBlockOffset())
       container_builder_.SetBfcBlockOffset(*result.BfcBlockOffset());
@@ -92,7 +92,7 @@ NGSimplifiedLayoutAlgorithm::NGSimplifiedLayoutAlgorithm(
     DCHECK(!result.SubtreeModifiedMarginStrut());
     DCHECK(result.EndMarginStrut().IsEmpty());
 
-    DCHECK_EQ(ConstraintSpace().BfcOffset(), NGBfcOffset());
+    DCHECK_EQ(ConstraintSpace().GetBfcOffset(), BfcOffset());
     DCHECK_EQ(result.BfcLineOffset(), LayoutUnit());
     DCHECK_EQ(result.BfcBlockOffset().value_or(LayoutUnit()), LayoutUnit());
 

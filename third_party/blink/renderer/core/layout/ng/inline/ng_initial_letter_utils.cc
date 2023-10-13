@@ -133,13 +133,13 @@ LogicalRect ComputeTextInkBounds(const ShapeResultView& shape_result,
 // `origin` holds left-top for LTR, right-top for RTL.
 const NGExclusion* CreateExclusionSpaceForInitialLetterBox(
     EFloat float_type,
-    NGBfcOffset origin,
-    const NGBfcOffset& border_box_offset,
+    BfcOffset origin,
+    const BfcOffset& border_box_offset,
     const LogicalSize& border_box_size,
     const NGBoxStrut& margins) {
   // Note: In case of `margins.inline_start` or `margins.line_over` are
   // negative, left top of `NGExclusionSpace` are out of `ConstraintSpace`.
-  const NGBfcOffset local_start_offset(
+  const BfcOffset local_start_offset(
       border_box_offset.line_offset - margins.inline_start,
       border_box_offset.block_offset - margins.block_start);
 
@@ -164,7 +164,7 @@ const NGExclusion* CreateExclusionSpaceForInitialLetterBox(
   //  |    *    line 5
   //  |    *    line 6
   //  V         line 7
-  const NGBfcOffset start_offset(
+  const BfcOffset start_offset(
       float_type == EFloat::kLeft
           ? origin.line_offset + local_start_offset.line_offset
           : origin.line_offset - margin_box_size.inline_size +
@@ -172,13 +172,13 @@ const NGExclusion* CreateExclusionSpaceForInitialLetterBox(
       origin.block_offset +
           std::min(local_start_offset.block_offset, LayoutUnit()));
 
-  const NGBfcOffset end_offset(
+  const BfcOffset end_offset(
       start_offset.line_offset + margin_box_size.inline_size,
       origin.block_offset + local_start_offset.block_offset +
           margin_box_size.block_size);
 
   return NGExclusion::CreateForInitialLetterBox(
-      NGBfcRect(start_offset, end_offset), float_type);
+      BfcRect(start_offset, end_offset), float_type);
 }
 
 }  // namespace
@@ -248,7 +248,7 @@ const NGExclusion* PostPlaceInitialLetterBox(
     const FontHeight& line_box_metrics,
     const NGBoxStrut& initial_letter_box_margins,
     NGLogicalLineItems* line_box,
-    const NGBfcOffset& line_origin,
+    const BfcOffset& line_origin,
     NGLineInfo* line_info) {
   NGLogicalLineItem* const initial_letter_line_item = std::find_if(
       line_box->begin(), line_box->end(),
@@ -303,7 +303,7 @@ const NGExclusion* PostPlaceInitialLetterBox(
   const LayoutUnit initial_letter_border_box_inline_offset =
       initial_letter_line_item->rect.offset.inline_offset;
 
-  const NGBfcOffset initial_letter_box_origin(
+  const BfcOffset initial_letter_box_origin(
       writing_direction_mode.IsLtr()
           ? line_origin.line_offset
           : line_origin.line_offset + initial_letter_border_box_inline_offset +
@@ -313,9 +313,9 @@ const NGExclusion* PostPlaceInitialLetterBox(
   const NGExclusion* exclusion = CreateExclusionSpaceForInitialLetterBox(
       writing_direction_mode.IsLtr() ? EFloat::kLeft : EFloat::kRight,
       initial_letter_box_origin,
-      NGBfcOffset(initial_letter_border_box_inline_offset,
-                  initial_letter_border_box_block_offset +
-                      line_info->ComputeInitialLetterBoxBlockStartAdjustment()),
+      BfcOffset(initial_letter_border_box_inline_offset,
+                initial_letter_border_box_block_offset +
+                    line_info->ComputeInitialLetterBoxBlockStartAdjustment()),
       initial_letter_box_size, initial_letter_box_margins);
 
   line_info->SetInitialLetterBoxBlockSize(exclusion->rect.BlockSize());

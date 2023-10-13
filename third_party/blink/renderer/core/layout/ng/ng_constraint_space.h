@@ -652,7 +652,7 @@ class CORE_EXPORT NGConstraintSpace final {
   //
   // This is done by:
   //   bfc_block_offset =
-  //     space.BfcOffset().block_offset + space.MarginStrut().Sum();
+  //     space.GetBfcOffset().block_offset + space.MarginStrut().Sum();
   //
   // The BFC offset can get "resolved" in many circumstances (including, but
   // not limited to):
@@ -660,7 +660,7 @@ class CORE_EXPORT NGConstraintSpace final {
   //   - Text content, atomic inlines, (see NGLineBreaker).
   //   - The current layout having a block_size.
   //   - Clearance before a child.
-  NGBfcOffset BfcOffset() const {
+  BfcOffset GetBfcOffset() const {
     return HasRareData() ? rare_data_->bfc_offset : bfc_offset_;
   }
 
@@ -705,7 +705,7 @@ class CORE_EXPORT NGConstraintSpace final {
     }
 
     return ForcedBfcBlockOffset().value_or(
-        OptimisticBfcBlockOffset().value_or(BfcOffset().block_offset));
+        OptimisticBfcBlockOffset().value_or(GetBfcOffset().block_offset));
   }
 
   SerializedScriptValue* CustomLayoutData() const {
@@ -875,7 +875,7 @@ class CORE_EXPORT NGConstraintSpace final {
       kSubgridData        // A nested grid with subgridded columns/rows.
     };
 
-    explicit RareData(const NGBfcOffset bfc_offset)
+    explicit RareData(const BfcOffset bfc_offset)
         : bfc_offset(bfc_offset),
           data_union_type(static_cast<unsigned>(DataUnionType::kNone)),
           is_line_clamp_context(false),
@@ -1300,7 +1300,7 @@ class CORE_EXPORT NGConstraintSpace final {
     LogicalSize percentage_resolution_size;
     LayoutUnit replaced_percentage_resolution_block_size;
     LayoutUnit block_start_annotation_space;
-    NGBfcOffset bfc_offset;
+    BfcOffset bfc_offset;
     MinMaxSizes override_min_max_block_sizes;
 
     AtomicString page_name;
@@ -1652,7 +1652,7 @@ class CORE_EXPORT NGConstraintSpace final {
   // To save a little space, we union these two fields. rare_data_ is valid if
   // the |has_rare_data| bit is set, otherwise bfc_offset_ is valid.
   union {
-    NGBfcOffset bfc_offset_;
+    BfcOffset bfc_offset_;
     RareData* rare_data_;
   };
 

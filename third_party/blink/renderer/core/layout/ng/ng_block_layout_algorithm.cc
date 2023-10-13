@@ -195,8 +195,8 @@ LayoutUnit LogicalFromBfcLineOffset(LayoutUnit child_bfc_line_offset,
   return inline_offset;
 }
 
-LogicalOffset LogicalFromBfcOffsets(const NGBfcOffset& child_bfc_offset,
-                                    const NGBfcOffset& parent_bfc_offset,
+LogicalOffset LogicalFromBfcOffsets(const BfcOffset& child_bfc_offset,
+                                    const BfcOffset& parent_bfc_offset,
                                     LayoutUnit child_inline_size,
                                     LayoutUnit parent_inline_size,
                                     TextDirection direction) {
@@ -579,7 +579,7 @@ inline const NGLayoutResult* NGBlockLayoutAlgorithm::Layout(
   container_builder_.SetIsInlineFormattingContext(inline_child_layout_context);
 
   container_builder_.SetBfcLineOffset(
-      ConstraintSpace().BfcOffset().line_offset);
+      ConstraintSpace().GetBfcOffset().line_offset);
 
   if (NGAdjoiningObjectTypes adjoining_object_types =
           ConstraintSpace().AdjoiningObjectTypes()) {
@@ -1298,8 +1298,8 @@ void NGBlockLayoutAlgorithm::HandleOutOfFlowPositioned(
             ConstraintSpace().ExpectedBfcBlockOffset()) +
         static_offset.block_offset;
 
-    NGBfcOffset origin_bfc_offset = {
-        ConstraintSpace().BfcOffset().line_offset +
+    BfcOffset origin_bfc_offset = {
+        ConstraintSpace().GetBfcOffset().line_offset +
             BorderScrollbarPadding().LineLeft(Style().Direction()),
         origin_bfc_block_offset};
 
@@ -1321,8 +1321,8 @@ void NGBlockLayoutAlgorithm::HandleFloat(
 
   // If we don't have a BFC block-offset yet, the "expected" BFC block-offset
   // is used to optimistically place floats.
-  NGBfcOffset origin_bfc_offset = {
-      ConstraintSpace().BfcOffset().line_offset +
+  BfcOffset origin_bfc_offset = {
+      ConstraintSpace().GetBfcOffset().line_offset +
           BorderScrollbarPadding().LineLeft(ConstraintSpace().Direction()),
       container_builder_.BfcBlockOffset()
           ? NextBorderEdge(previous_inflow_position)
@@ -1395,9 +1395,9 @@ void NGBlockLayoutAlgorithm::HandleFloat(
       NGFragment(ConstraintSpace().GetWritingDirection(), physical_fragment)
           .InlineSize();
 
-  NGBfcOffset bfc_offset = {ConstraintSpace().BfcOffset().line_offset,
-                            container_builder_.BfcBlockOffset().value_or(
-                                ConstraintSpace().ExpectedBfcBlockOffset())};
+  BfcOffset bfc_offset = {ConstraintSpace().GetBfcOffset().line_offset,
+                          container_builder_.BfcBlockOffset().value_or(
+                              ConstraintSpace().ExpectedBfcBlockOffset())};
 
   LogicalOffset logical_offset = LogicalFromBfcOffsets(
       positioned_float.bfc_offset, bfc_offset, float_inline_size,
@@ -1423,7 +1423,7 @@ NGLayoutResult::EStatus NGBlockLayoutAlgorithm::HandleNewFormattingContext(
                        /* is_new_fc */ true);
 
   LayoutUnit child_origin_line_offset =
-      ConstraintSpace().BfcOffset().line_offset +
+      ConstraintSpace().GetBfcOffset().line_offset +
       BorderScrollbarPadding().LineLeft(direction);
 
   // If the child has a block-start margin, and the BFC block offset is still
@@ -1523,7 +1523,7 @@ NGLayoutResult::EStatus NGBlockLayoutAlgorithm::HandleNewFormattingContext(
   bool abort_if_cleared = child_data.margins.block_start != LayoutUnit() &&
                           !child_margin_got_separated &&
                           child_determined_bfc_offset;
-  NGBfcOffset child_bfc_offset;
+  BfcOffset child_bfc_offset;
   NGBoxStrut resolved_margins;
   const NGLayoutResult* layout_result = LayoutNewFormattingContext(
       child, child_break_token, child_data,
@@ -1630,9 +1630,9 @@ const NGLayoutResult* NGBlockLayoutAlgorithm::LayoutNewFormattingContext(
     NGLayoutInputNode child,
     const NGBlockBreakToken* child_break_token,
     const NGInflowChildData& child_data,
-    NGBfcOffset origin_offset,
+    BfcOffset origin_offset,
     bool abort_if_cleared,
-    NGBfcOffset* out_child_bfc_offset,
+    BfcOffset* out_child_bfc_offset,
     NGBoxStrut* out_resolved_margins) {
   const auto& style = Style();
   const auto& child_style = child.Style();
@@ -1788,8 +1788,8 @@ const NGLayoutResult* NGBlockLayoutAlgorithm::LayoutNewFormattingContext(
     // NOTE: |auto_margins| are initialized as a copy of the child's initial
     // margins. To determine the effect of the auto-margins we apply only the
     // difference.
-    NGBfcOffset child_bfc_offset = {LayoutUnit(),
-                                    opportunity.rect.BlockStartOffset()};
+    BfcOffset child_bfc_offset = {LayoutUnit(),
+                                  opportunity.rect.BlockStartOffset()};
     if (direction == TextDirection::kLtr) {
       LayoutUnit auto_margin_line_left =
           auto_margins.LineLeft(direction) - line_left_margin;
@@ -2322,8 +2322,8 @@ NGInflowChildData NGBlockLayoutAlgorithm::ComputeChildData(
   if (child.IsBlock())
     SetSubtreeModifiedMarginStrutIfNeeded(&child.Style().MarginBefore());
 
-  NGBfcOffset child_bfc_offset = {
-      ConstraintSpace().BfcOffset().line_offset +
+  BfcOffset child_bfc_offset = {
+      ConstraintSpace().GetBfcOffset().line_offset +
           BorderScrollbarPadding().LineLeft(ConstraintSpace().Direction()) +
           additional_line_offset +
           margins.LineLeft(ConstraintSpace().Direction()),
@@ -2859,7 +2859,7 @@ NGConstraintSpace NGBlockLayoutAlgorithm::CreateConstraintSpaceForChild(
         // layout.
         LayoutUnit bfc_block_delta =
             child_data.bfc_offset_estimate.block_offset -
-            prev_space.BfcOffset().block_offset;
+            prev_space.GetBfcOffset().block_offset;
         if (prev_space.ForcedBfcBlockOffset()) {
           builder.SetOptimisticBfcBlockOffset(
               *prev_space.ForcedBfcBlockOffset() + bfc_block_delta);
@@ -3120,7 +3120,7 @@ NGBlockLayoutAlgorithm::CalculateQuirkyBodyMarginBlockSum(
   NGMarginStrut body_strut = end_margin_strut;
   body_strut.Append(block_end_margin, Style().HasMarginAfterQuirk());
   return *container_builder_.BfcBlockOffset() -
-         ConstraintSpace().BfcOffset().block_offset + body_strut.Sum();
+         ConstraintSpace().GetBfcOffset().block_offset + body_strut.Sum();
 }
 
 bool NGBlockLayoutAlgorithm::PositionOrPropagateListMarker(

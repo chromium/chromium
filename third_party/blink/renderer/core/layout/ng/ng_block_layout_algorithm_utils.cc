@@ -11,7 +11,7 @@ namespace blink {
 
 LayoutUnit CalculateOutOfFlowStaticInlineLevelOffset(
     const ComputedStyle& container_style,
-    const NGBfcOffset& origin_bfc_offset,
+    const BfcOffset& origin_bfc_offset,
     const NGExclusionSpace& exclusion_space,
     LayoutUnit child_available_inline_size) {
   const TextDirection direction = container_style.Direction();

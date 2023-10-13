@@ -41,7 +41,7 @@ class CORE_EXPORT NGExclusionSpaceInternal final {
   void Add(const NGExclusion* exclusion);
 
   NGLayoutOpportunity FindLayoutOpportunity(
-      const NGBfcOffset& offset,
+      const BfcOffset& offset,
       const LayoutUnit available_inline_size,
       const LayoutUnit minimum_inline_size) const {
     const LayoutUnit max_clear_offset =
@@ -51,10 +51,10 @@ class CORE_EXPORT NGExclusionSpaceInternal final {
     // If the area clears all floats, we can just return the layout opportunity
     // which matches the available space.
     if (offset.block_offset >= max_clear_offset) {
-      NGBfcOffset end_offset(
+      BfcOffset end_offset(
           offset.line_offset + available_inline_size.ClampNegativeToZero(),
           LayoutUnit::Max());
-      return NGLayoutOpportunity(NGBfcRect(offset, end_offset), nullptr);
+      return NGLayoutOpportunity(BfcRect(offset, end_offset), nullptr);
     }
 
     return GetDerivedGeometry(offset.block_offset)
@@ -63,7 +63,7 @@ class CORE_EXPORT NGExclusionSpaceInternal final {
   }
 
   LayoutOpportunityVector AllLayoutOpportunities(
-      const NGBfcOffset& offset,
+      const BfcOffset& offset,
       const LayoutUnit available_inline_size) const {
     const LayoutUnit max_clear_offset =
         std::max({left_clear_offset_, right_clear_offset_,
@@ -72,11 +72,11 @@ class CORE_EXPORT NGExclusionSpaceInternal final {
     // If the area clears all floats, we can just return a single layout
     // opportunity which matches the available space.
     if (offset.block_offset >= max_clear_offset) {
-      NGBfcOffset end_offset(
+      BfcOffset end_offset(
           offset.line_offset + available_inline_size.ClampNegativeToZero(),
           LayoutUnit::Max());
       return LayoutOpportunityVector(
-          {NGLayoutOpportunity(NGBfcRect(offset, end_offset), nullptr)});
+          {NGLayoutOpportunity(BfcRect(offset, end_offset), nullptr)});
     }
 
     return GetDerivedGeometry(offset.block_offset)
@@ -239,7 +239,7 @@ class CORE_EXPORT NGExclusionSpaceInternal final {
   }
 
   // See |NGExclusionSpace::MergeExclusionSpaces|.
-  void MergeExclusionSpaces(const NGBfcDelta& offset_delta,
+  void MergeExclusionSpaces(const BfcDelta& offset_delta,
                             const NGExclusionSpaceInternal& previous_output,
                             const NGExclusionSpaceInternal* previous_input) {
     // We need to copy all the exclusions over which were added by the cached
@@ -487,16 +487,16 @@ class CORE_EXPORT NGExclusionSpaceInternal final {
     void Add(const NGExclusion& exclusion);
 
     NGLayoutOpportunity FindLayoutOpportunity(
-        const NGBfcOffset& offset,
+        const BfcOffset& offset,
         const LayoutUnit available_inline_size,
         const LayoutUnit minimum_inline_size) const;
 
     LayoutOpportunityVector AllLayoutOpportunities(
-        const NGBfcOffset& offset,
+        const BfcOffset& offset,
         const LayoutUnit available_inline_size) const;
 
     template <typename LambdaFunc>
-    void IterateAllLayoutOpportunities(const NGBfcOffset& offset,
+    void IterateAllLayoutOpportunities(const BfcOffset& offset,
                                        const LayoutUnit available_inline_size,
                                        const LambdaFunc&) const;
 
@@ -604,14 +604,14 @@ class CORE_EXPORT NGExclusionSpace {
   // and |available_inline_size|. The layout opportunity must be greater than
   // the given |minimum_inline_size|.
   NGLayoutOpportunity FindLayoutOpportunity(
-      const NGBfcOffset& offset,
+      const BfcOffset& offset,
       const LayoutUnit available_inline_size,
       const LayoutUnit minimum_inline_size = LayoutUnit()) const {
     if (!exclusion_space_) {
-      NGBfcOffset end_offset(
+      BfcOffset end_offset(
           offset.line_offset + available_inline_size.ClampNegativeToZero(),
           LayoutUnit::Max());
-      return NGLayoutOpportunity(NGBfcRect(offset, end_offset), nullptr);
+      return NGLayoutOpportunity(BfcRect(offset, end_offset), nullptr);
     }
     return exclusion_space_->FindLayoutOpportunity(
         offset, available_inline_size, minimum_inline_size);
@@ -619,14 +619,14 @@ class CORE_EXPORT NGExclusionSpace {
 
   // If possible prefer FindLayoutOpportunity over this function.
   LayoutOpportunityVector AllLayoutOpportunities(
-      const NGBfcOffset& offset,
+      const BfcOffset& offset,
       const LayoutUnit available_inline_size) const {
     if (!exclusion_space_) {
-      NGBfcOffset end_offset(
+      BfcOffset end_offset(
           offset.line_offset + available_inline_size.ClampNegativeToZero(),
           LayoutUnit::Max());
       return LayoutOpportunityVector(
-          {NGLayoutOpportunity(NGBfcRect(offset, end_offset), nullptr)});
+          {NGLayoutOpportunity(BfcRect(offset, end_offset), nullptr)});
     }
     return exclusion_space_->AllLayoutOpportunities(offset,
                                                     available_inline_size);
@@ -728,7 +728,7 @@ class CORE_EXPORT NGExclusionSpace {
       const NGExclusionSpace& old_output,
       const NGExclusionSpace& old_input,
       const NGExclusionSpace& new_input,
-      const NGBfcDelta& offset_delta) {
+      const BfcDelta& offset_delta) {
     // We start building the new exclusion space from the new input, this
     // (should) have the derived geometry which will move to |new_output|.
     NGExclusionSpace new_output = new_input;

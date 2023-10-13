@@ -40,7 +40,7 @@ struct NGPreviousInflowPosition {
 // This struct holds information for the current inflow child. The data is not
 // useful outside of handling this single inflow child.
 struct NGInflowChildData {
-  NGInflowChildData(NGBfcOffset bfc_offset_estimate,
+  NGInflowChildData(BfcOffset bfc_offset_estimate,
                     const NGMarginStrut& margin_strut,
                     const NGBoxStrut& margins,
                     bool is_pushed_by_floats = false)
@@ -51,7 +51,7 @@ struct NGInflowChildData {
 
   NGInflowChildData(const NGInflowChildData&) = default;
 
-  NGBfcOffset bfc_offset_estimate;
+  BfcOffset bfc_offset_estimate;
   NGMarginStrut margin_strut;
   NGBoxStrut margins;
   bool is_pushed_by_floats = false;
@@ -100,7 +100,7 @@ class CORE_EXPORT NGBlockLayoutAlgorithm
       return *container_builder_.BfcBlockOffset();
     // Otherwise fall back to the BFC block offset assigned by the parent
     // algorithm.
-    return ConstraintSpace().BfcOffset().block_offset;
+    return ConstraintSpace().GetBfcOffset().block_offset;
   }
 
   // Return the BFC block offset of the next block-start border edge (for some
@@ -197,9 +197,9 @@ class CORE_EXPORT NGBlockLayoutAlgorithm
       NGLayoutInputNode child,
       const NGBlockBreakToken* child_break_token,
       const NGInflowChildData&,
-      NGBfcOffset origin_offset,
+      BfcOffset origin_offset,
       bool abort_if_cleared,
-      NGBfcOffset* out_child_bfc_offset,
+      BfcOffset* out_child_bfc_offset,
       NGBoxStrut* out_resolved_margins);
 
   // Handle an in-flow child.

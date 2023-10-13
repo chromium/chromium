@@ -103,7 +103,7 @@ void CollectSolidEdges(
 // We only need to check the block-end of the opportunity is below the given
 // offset, as the given area extends to a block-end of infinity.
 bool Intersects(const NGLayoutOpportunity& opportunity,
-                const NGBfcOffset& offset,
+                const BfcOffset& offset,
                 const LayoutUnit inline_size) {
   return opportunity.rect.LineEndOffset() >= offset.line_offset &&
          opportunity.rect.LineStartOffset() <=
@@ -114,20 +114,20 @@ bool Intersects(const NGLayoutOpportunity& opportunity,
 // Creates a new layout opportunity. The given layout opportunity *must*
 // intersect with the given area (defined by offset and inline_size).
 NGLayoutOpportunity CreateLayoutOpportunity(const NGLayoutOpportunity& other,
-                                            const NGBfcOffset& offset,
+                                            const BfcOffset& offset,
                                             const LayoutUnit inline_size) {
   DCHECK(Intersects(other, offset, inline_size));
 
-  NGBfcOffset start_offset(
+  BfcOffset start_offset(
       std::max(other.rect.LineStartOffset(), offset.line_offset),
       std::max(other.rect.start_offset.block_offset, offset.block_offset));
 
-  NGBfcOffset end_offset(
+  BfcOffset end_offset(
       std::min(other.rect.LineEndOffset(), offset.line_offset + inline_size),
       other.rect.BlockEndOffset());
 
   return NGLayoutOpportunity(
-      NGBfcRect(start_offset, end_offset),
+      BfcRect(start_offset, end_offset),
       other.shape_exclusions
           ? MakeGarbageCollected<NGShapeExclusions>(*other.shape_exclusions)
           : nullptr);
@@ -137,20 +137,20 @@ NGLayoutOpportunity CreateLayoutOpportunity(const NGLayoutOpportunity& other,
 // given area (defined by offset and inline_size).
 NGLayoutOpportunity CreateLayoutOpportunity(
     const NGExclusionSpaceInternal::NGShelf& shelf,
-    const NGBfcOffset& offset,
+    const BfcOffset& offset,
     const LayoutUnit inline_size) {
-  NGBfcOffset start_offset(std::max(shelf.line_left, offset.line_offset),
-                           std::max(shelf.block_offset, offset.block_offset));
+  BfcOffset start_offset(std::max(shelf.line_left, offset.line_offset),
+                         std::max(shelf.block_offset, offset.block_offset));
 
   // Max with |start_offset.line_offset| in case the shelf has a negative
   // inline-size.
-  NGBfcOffset end_offset(
+  BfcOffset end_offset(
       std::max(std::min(shelf.line_right, offset.line_offset + inline_size),
                start_offset.line_offset),
       LayoutUnit::Max());
 
   return NGLayoutOpportunity(
-      NGBfcRect(start_offset, end_offset),
+      BfcRect(start_offset, end_offset),
       shelf.has_shape_exclusions
           ? MakeGarbageCollected<NGShapeExclusions>(*shelf.shape_exclusions)
           : nullptr);
@@ -457,7 +457,7 @@ void NGExclusionSpaceInternal::DerivedGeometry::Add(
         // Insert a closed-off layout opportunity if needed.
         if (has_solid_edges && is_overlapping) {
           NGLayoutOpportunity opportunity(
-              NGBfcRect(
+              BfcRect(
                   /* start_offset */ {shelf.line_left, shelf.block_offset},
                   /* end_offset */ {shelf.line_right,
                                     exclusion.rect.BlockStartOffset()}),
@@ -614,7 +614,7 @@ void NGExclusionSpaceInternal::DerivedGeometry::Add(
 
 NGLayoutOpportunity
 NGExclusionSpaceInternal::DerivedGeometry::FindLayoutOpportunity(
-    const NGBfcOffset& offset,
+    const BfcOffset& offset,
     const LayoutUnit available_inline_size,
     const LayoutUnit minimum_inline_size) const {
   // TODO(ikilpatrick): Determine what to do for a -ve available_inline_size.
@@ -646,7 +646,7 @@ NGExclusionSpaceInternal::DerivedGeometry::FindLayoutOpportunity(
 
 LayoutOpportunityVector
 NGExclusionSpaceInternal::DerivedGeometry::AllLayoutOpportunities(
-    const NGBfcOffset& offset,
+    const BfcOffset& offset,
     const LayoutUnit available_inline_size) const {
   DCHECK_GE(offset.block_offset, block_offset_limit_);
   LayoutOpportunityVector opportunities;
@@ -664,7 +664,7 @@ NGExclusionSpaceInternal::DerivedGeometry::AllLayoutOpportunities(
 
 template <typename LambdaFunc>
 void NGExclusionSpaceInternal::DerivedGeometry::IterateAllLayoutOpportunities(
-    const NGBfcOffset& offset,
+    const BfcOffset& offset,
     const LayoutUnit available_inline_size,
     const LambdaFunc& lambda) const {
   auto* shelves_it = shelves_.begin();

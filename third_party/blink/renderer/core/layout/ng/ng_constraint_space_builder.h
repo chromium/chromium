@@ -333,7 +333,7 @@ class CORE_EXPORT NGConstraintSpaceBuilder final {
       space_.EnsureRareData()->SetMarginStrut(margin_strut);
   }
 
-  void SetBfcOffset(const NGBfcOffset& bfc_offset) {
+  void SetBfcOffset(const BfcOffset& bfc_offset) {
     if (!is_new_fc_) {
       if (space_.HasRareData())
         space_.rare_data_->bfc_offset = bfc_offset;

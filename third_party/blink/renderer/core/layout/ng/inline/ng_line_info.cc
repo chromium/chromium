@@ -17,7 +17,7 @@ void NGLineInfo::Reset() {
   line_style_ = nullptr;
   results_.Shrink(0);
 
-  bfc_offset_ = NGBfcOffset();
+  bfc_offset_ = BfcOffset();
 
   break_token_ = nullptr;
   parallel_flow_break_tokens_.Shrink(0);

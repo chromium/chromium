@@ -8,7 +8,7 @@
 
 namespace blink {
 
-String NGBfcRect::ToString() const {
+String BfcRect::ToString() const {
   StringBuilder buidler;
   buidler.Append(start_offset.ToString());
   buidler.Append('+');
@@ -16,7 +16,7 @@ String NGBfcRect::ToString() const {
   return buidler.ToString();
 }
 
-std::ostream& operator<<(std::ostream& os, const NGBfcRect& value) {
+std::ostream& operator<<(std::ostream& os, const BfcRect& value) {
   return os << value.ToString();
 }
 

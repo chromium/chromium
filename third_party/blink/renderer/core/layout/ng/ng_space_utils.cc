@@ -14,7 +14,7 @@
 
 namespace blink {
 
-bool AdjustToClearance(LayoutUnit clearance_offset, NGBfcOffset* offset) {
+bool AdjustToClearance(LayoutUnit clearance_offset, BfcOffset* offset) {
   DCHECK(offset);
   if (clearance_offset > offset->block_offset) {
     offset->block_offset = clearance_offset;

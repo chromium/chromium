@@ -125,7 +125,7 @@ class CORE_EXPORT NGLineInfo {
   // that must be called after |SetIsLastLine()|.
   void UpdateTextAlign();
 
-  NGBfcOffset BfcOffset() const { return bfc_offset_; }
+  BfcOffset GetBfcOffset() const { return bfc_offset_; }
   LayoutUnit AvailableWidth() const { return available_width_; }
 
   // The width of this line, including the hanging width from trailing spaces.
@@ -167,7 +167,7 @@ class CORE_EXPORT NGLineInfo {
   // True if this line is hyphenated.
   bool IsHyphenated() const;
 
-  void SetBfcOffset(const NGBfcOffset& bfc_offset) { bfc_offset_ = bfc_offset; }
+  void SetBfcOffset(const BfcOffset& bfc_offset) { bfc_offset_ = bfc_offset; }
   void SetWidth(LayoutUnit available_width, LayoutUnit width) {
     available_width_ = available_width;
     width_ = width;
@@ -264,7 +264,7 @@ class CORE_EXPORT NGLineInfo {
   const ComputedStyle* line_style_{nullptr};
   NGInlineItemResults results_;
 
-  NGBfcOffset bfc_offset_;
+  BfcOffset bfc_offset_;
 
   const NGInlineBreakToken* break_token_ = nullptr;
   HeapVector<Member<const NGBreakToken>> parallel_flow_break_tokens_;

@@ -197,7 +197,7 @@ const NGLayoutResult* LayoutBox::CachedLayoutResult(
       return nullptr;
   }
 
-  LayoutUnit bfc_line_offset = new_space.BfcOffset().line_offset;
+  LayoutUnit bfc_line_offset = new_space.GetBfcOffset().line_offset;
   absl::optional<LayoutUnit> bfc_block_offset =
       cached_layout_result->BfcBlockOffset();
   LayoutUnit block_offset_delta;
@@ -217,7 +217,7 @@ const NGLayoutResult* LayoutBox::CachedLayoutResult(
     // Check the BFC offset. Even if they don't match, there're some cases we
     // can still reuse the fragment.
     are_bfc_offsets_equal =
-        new_space.BfcOffset() == old_space.BfcOffset() &&
+        new_space.GetBfcOffset() == old_space.GetBfcOffset() &&
         new_space.ExpectedBfcBlockOffset() ==
             old_space.ExpectedBfcBlockOffset() &&
         new_space.ForcedBfcBlockOffset() == old_space.ForcedBfcBlockOffset();

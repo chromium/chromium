@@ -13,10 +13,10 @@
 
 namespace blink {
 
-// NGBfcRect is the position and size of a rect (typically a fragment)
+// BfcRect is the position and size of a rect (typically a fragment)
 // relative to a block formatting context.
-struct CORE_EXPORT NGBfcRect {
-  NGBfcRect(const NGBfcOffset& start_offset, const NGBfcOffset& end_offset)
+struct CORE_EXPORT BfcRect {
+  BfcRect(const BfcOffset& start_offset, const BfcOffset& end_offset)
       : start_offset(start_offset), end_offset(end_offset) {
     DCHECK_GE(end_offset.line_offset, start_offset.line_offset);
     DCHECK_GE(end_offset.block_offset, start_offset.block_offset);
@@ -42,19 +42,19 @@ struct CORE_EXPORT NGBfcRect {
     return end_offset.line_offset - start_offset.line_offset;
   }
 
-  bool operator==(const NGBfcRect& other) const {
+  bool operator==(const BfcRect& other) const {
     return start_offset == other.start_offset && end_offset == other.end_offset;
   }
 
-  bool operator!=(const NGBfcRect& other) const { return !(*this == other); }
+  bool operator!=(const BfcRect& other) const { return !(*this == other); }
 
   String ToString() const;
 
-  NGBfcOffset start_offset;
-  NGBfcOffset end_offset;
+  BfcOffset start_offset;
+  BfcOffset end_offset;
 };
 
-CORE_EXPORT std::ostream& operator<<(std::ostream& os, const NGBfcRect& rect);
+CORE_EXPORT std::ostream& operator<<(std::ostream& os, const BfcRect& rect);
 
 }  // namespace blink
 
