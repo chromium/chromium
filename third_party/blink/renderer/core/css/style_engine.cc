@@ -2288,12 +2288,13 @@ void StyleEngine::CollectFeaturesTo(RuleFeatureSet& features) {
   CollectScopedStyleFeaturesTo(features);
 }
 
-void StyleEngine::EnsureUAStyleForFullscreen() {
+void StyleEngine::EnsureUAStyleForFullscreen(const Element& element) {
   DCHECK(global_rule_set_);
   if (global_rule_set_->HasFullscreenUAStyle()) {
     return;
   }
-  CSSDefaultStyleSheets::Instance().EnsureDefaultStyleSheetForFullscreen();
+  CSSDefaultStyleSheets::Instance().EnsureDefaultStyleSheetForFullscreen(
+      element);
   global_rule_set_->MarkDirty();
   UpdateActiveStyle();
 }

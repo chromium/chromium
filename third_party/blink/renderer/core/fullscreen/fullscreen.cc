@@ -72,7 +72,7 @@ void FullscreenElementChanged(Document& document,
                               const FullscreenOptions* new_options) {
   DCHECK_NE(old_element, new_element);
 
-  document.GetStyleEngine().EnsureUAStyleForFullscreen();
+  document.GetStyleEngine().EnsureUAStyleForFullscreen(*new_element);
 
   if (old_element) {
     DCHECK_NE(old_element, Fullscreen::FullscreenElementFrom(document));

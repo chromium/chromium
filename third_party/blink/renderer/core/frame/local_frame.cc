@@ -86,6 +86,7 @@
 #include "third_party/blink/renderer/core/css/background_color_paint_image_generator.h"
 #include "third_party/blink/renderer/core/css/box_shadow_paint_image_generator.h"
 #include "third_party/blink/renderer/core/css/clip_path_paint_image_generator.h"
+#include "third_party/blink/renderer/core/css/css_default_style_sheets.h"
 #include "third_party/blink/renderer/core/css/document_style_environment_variables.h"
 #include "third_party/blink/renderer/core/css/style_change_reason.h"
 #include "third_party/blink/renderer/core/dom/child_frame_disconnector.h"
@@ -141,6 +142,7 @@
 #include "third_party/blink/renderer/core/frame/visual_viewport.h"
 #include "third_party/blink/renderer/core/frame/web_frame_widget_impl.h"
 #include "third_party/blink/renderer/core/frame/web_local_frame_impl.h"
+#include "third_party/blink/renderer/core/fullscreen/fullscreen.h"
 #include "third_party/blink/renderer/core/fullscreen/scoped_allow_fullscreen.h"
 #include "third_party/blink/renderer/core/html/html_frame_element_base.h"
 #include "third_party/blink/renderer/core/html/html_link_element.h"
@@ -1481,6 +1483,15 @@ void LocalFrame::WindowSegmentsChanged(
   // "horizontal-viewport-segments" and "vertical-viewport-segments" features).
   MediaQueryAffectingValueChangedForLocalSubtree(MediaValueChange::kOther);
 
+  // Fullscreen element has its own document and uses the viewport media queries,
+  // so we need to make sure the media queries are re-evaluated.
+  if (Element* fullscreen = Fullscreen::FullscreenElementFrom(*GetDocument())) {
+    GetDocument()->GetStyleEngine().MarkAllElementsForStyleRecalc(
+        StyleChangeReasonForTracing::Create(style_change_reason::kFullscreen));
+    CSSDefaultStyleSheets::Instance()
+        .RebuildFullscreenRuleSetIfMediaQueriesChanged(*fullscreen);
+  }
+
   // Also need to update the environment variables related to window segments.
   UpdateViewportSegmentCSSEnvironmentVariables(window_segments);
 }
@@ -1491,9 +1502,21 @@ void LocalFrame::UpdateViewportSegmentCSSEnvironmentVariables(
 
   // Update the variable values on the root instance so that documents that
   // are created after the values change automatically have the right values.
-  StyleEnvironmentVariables& vars =
-      StyleEnvironmentVariables::GetRootInstance();
+  UpdateViewportSegmentCSSEnvironmentVariables(
+      StyleEnvironmentVariables::GetRootInstance(), window_segments);
 
+  if (Element* fullscreen = Fullscreen::FullscreenElementFrom(*GetDocument())) {
+    // Fullscreen has its own document so we need to update its variables as
+    // well.
+    UpdateViewportSegmentCSSEnvironmentVariables(
+        fullscreen->GetDocument().GetStyleEngine().EnsureEnvironmentVariables(),
+        window_segments);
+  }
+}
+
+void LocalFrame::UpdateViewportSegmentCSSEnvironmentVariables(
+    StyleEnvironmentVariables& vars,
+    const WebVector<gfx::Rect>& window_segments) {
   // Unset all variables, since they will be set as a whole by the code below.
   // Since the number and configurations of the segments can change, and
   // removing variables clears all values that have previously been set,

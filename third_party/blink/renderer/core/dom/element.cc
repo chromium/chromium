@@ -7669,7 +7669,7 @@ void Element::SetContainsFullScreenElement(bool flag) {
   // When exiting fullscreen, the element's document may not be active.
   if (flag) {
     DCHECK(GetDocument().IsActive());
-    GetDocument().GetStyleEngine().EnsureUAStyleForFullscreen();
+    GetDocument().GetStyleEngine().EnsureUAStyleForFullscreen(*this);
   }
   PseudoStateChanged(CSSSelector::kPseudoFullScreenAncestor);
 }

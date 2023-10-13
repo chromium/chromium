@@ -798,8 +798,10 @@ void RenderWidgetHostViewAura::ComputeDisplayFeature() {
 
   const display::Display display =
       display::Screen::GetScreen()->GetDisplayNearestWindow(window_);
-  // Set the display feature only if the browser window is maximized.
-  if (window_->GetRootWindow()->GetBoundsInScreen() != display.work_area()) {
+  // Set the display feature only if the browser window is maximized or
+  // fullscreen.
+  if (window_->GetRootWindow()->GetBoundsInScreen() != display.work_area() &&
+      window_->GetRootWindow()->GetBoundsInScreen() != display.bounds()) {
     return;
   }
 

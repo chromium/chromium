@@ -70,6 +70,7 @@
 #include "third_party/blink/public/platform/web_vector.h"
 #include "third_party/blink/public/web/web_script_execution_callback.h"
 #include "third_party/blink/renderer/core/core_export.h"
+#include "third_party/blink/renderer/core/css/document_style_environment_variables.h"
 #include "third_party/blink/renderer/core/dom/weak_identifier_map.h"
 #include "third_party/blink/renderer/core/editing/forward.h"
 #include "third_party/blink/renderer/core/editing/iterators/text_iterator_behavior.h"
@@ -417,6 +418,9 @@ class CORE_EXPORT LocalFrame final
 
   void WindowSegmentsChanged(const WebVector<gfx::Rect>& window_segments);
   void UpdateViewportSegmentCSSEnvironmentVariables(
+      const WebVector<gfx::Rect>& window_segments);
+  void UpdateViewportSegmentCSSEnvironmentVariables(
+      StyleEnvironmentVariables& vars,
       const WebVector<gfx::Rect>& window_segments);
 
   device::mojom::blink::DevicePostureType GetDevicePosture();

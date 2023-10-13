@@ -871,6 +871,92 @@ class RenderWidgetHostFoldableCSSTest : public RenderWidgetHostBrowserTest {
   }
 };
 
+// Tests that when a video element goes fullscreen and uses the default
+// fullscreen UA stylesheet (in blink/core/css/fullscreen.css) the viewport
+// segments MQs and env variables are correctly working.
+IN_PROC_BROWSER_TEST_F(RenderWidgetHostFoldableCSSTest,
+                       ViewportSegmentsWorksInUAFullscreenCSS) {
+  const char kTestPageURL[] =
+      R"HTML(data:text/html,<!DOCTYPE html>
+      <video id='video'></video>)HTML";
+  EXPECT_TRUE(NavigateToURL(shell(), GURL(kTestPageURL)));
+  // Check initial state before entering fullscreen.
+  ASSERT_FALSE(shell()->IsFullscreenForTabOrPending(web_contents()));
+  ASSERT_FALSE(web_contents()->IsFullscreen());
+  constexpr char kEnterFullscreenScript[] = R"JS(
+    document.querySelector('video').requestFullscreen().then(() => {
+        return !!document.fullscreenElement;
+    });
+  )JS";
+  MockDisplayFeature mock_display_feature(view());
+  // Initial state. This will ensure that no display feature/viewport segments
+  // are coming from the platform.
+  mock_display_feature.SetDisplayFeature(nullptr);
+  host()->SynchronizeVisualProperties();
+  ASSERT_TRUE(EvalJs(web_contents(), kEnterFullscreenScript).ExtractBool());
+
+  // Changing the display feature/viewport segments without leaving fullscreen
+  // should update the video element.
+  const gfx::Size root_view_size = view()->GetVisibleViewportSize();
+  const int kDisplayFeatureLength = 10;
+  int offset = root_view_size.width() / 2 - kDisplayFeatureLength / 2;
+  DisplayFeature emulated_display_feature{
+      DisplayFeature::Orientation::kVertical, offset,
+      /* mask_length */ kDisplayFeatureLength};
+  mock_display_feature.SetDisplayFeature(&emulated_display_feature);
+  host()->SynchronizeVisualProperties();
+  WaitForVisualPropertiesAck();
+  EXPECT_EQ(base::NumberToString(offset) + "px",
+            EvalJs(shell(), "getComputedStyle(video).width").ExtractString());
+  EXPECT_EQ(
+      root_view_size.height(),
+      EvalJs(shell(), "parseInt(getComputedStyle(video).height)").ExtractInt());
+
+  emulated_display_feature.orientation =
+      DisplayFeature::Orientation::kHorizontal;
+  offset = root_view_size.height() / 2 - kDisplayFeatureLength / 2;
+  emulated_display_feature.offset = offset;
+  mock_display_feature.SetDisplayFeature(&emulated_display_feature);
+  host()->SynchronizeVisualProperties();
+  WaitForVisualPropertiesAck();
+  EXPECT_EQ(base::NumberToString(offset) + "px",
+            EvalJs(shell(), "getComputedStyle(video).height").ExtractString());
+  EXPECT_EQ(
+      root_view_size.width(),
+      EvalJs(shell(), "parseInt(getComputedStyle(video).width)").ExtractInt());
+
+  // No display feature/viewport segments are set, the video should go
+  // fullscreen.
+  mock_display_feature.SetDisplayFeature(nullptr);
+  host()->SynchronizeVisualProperties();
+  WaitForVisualPropertiesAck();
+  EXPECT_EQ(
+      root_view_size.height(),
+      EvalJs(shell(), "parseInt(getComputedStyle(video).height)").ExtractInt());
+  EXPECT_EQ(
+      root_view_size.width(),
+      EvalJs(shell(), "parseInt(getComputedStyle(video).width)").ExtractInt());
+
+  constexpr char kExitFullscreenScript[] = R"JS(
+    document.exitFullscreen().then(() => {
+        return !document.fullscreenElement;
+    });
+  )JS";
+  ASSERT_TRUE(EvalJs(web_contents(), kExitFullscreenScript).ExtractBool());
+  ASSERT_FALSE(web_contents()->IsFullscreen());
+
+  // Change the viewport segments/display feature before entering fullscreen.
+  mock_display_feature.SetDisplayFeature(&emulated_display_feature);
+  ASSERT_TRUE(EvalJs(web_contents(), kEnterFullscreenScript).ExtractBool());
+  host()->SynchronizeVisualProperties();
+  WaitForVisualPropertiesAck();
+  EXPECT_EQ(base::NumberToString(offset) + "px",
+            EvalJs(shell(), "getComputedStyle(video).height").ExtractString());
+  EXPECT_EQ(
+      root_view_size.width(),
+      EvalJs(shell(), "parseInt(getComputedStyle(video).width)").ExtractInt());
+}
+
 // Tests that the renderer receives the root widget's window segments and
 // correctly exposes those via CSS.
 // TODO(crbug.com/1098549) Convert this to a WPT once emulation is available

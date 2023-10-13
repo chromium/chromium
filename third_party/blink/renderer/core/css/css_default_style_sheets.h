@@ -57,7 +57,8 @@ class CSSDefaultStyleSheets final
 
   bool EnsureDefaultStyleSheetsForElement(const Element&);
   bool EnsureDefaultStyleSheetsForPseudoElement(PseudoId);
-  void EnsureDefaultStyleSheetForFullscreen();
+  void EnsureDefaultStyleSheetForFullscreen(const Element& element);
+  void RebuildFullscreenRuleSetIfMediaQueriesChanged(const Element& element);
   bool EnsureDefaultStyleSheetForForcedColors();
 
   RuleSet* DefaultHtmlStyle() { return default_html_style_.Get(); }
@@ -132,7 +133,6 @@ class CSSDefaultStyleSheets final
     kMathML,
     kSVG,
     kMediaControls,  // Not exactly a namespace
-    kFullscreen,
   };
   void AddRulesToDefaultStyleSheets(StyleSheetContents* rules,
                                     NamespaceType type);
