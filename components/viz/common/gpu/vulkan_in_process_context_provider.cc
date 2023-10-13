@@ -15,6 +15,7 @@
 #include "gpu/vulkan/vulkan_instance.h"
 #include "gpu/vulkan/vulkan_util.h"
 #include "third_party/skia/include/gpu/GrDirectContext.h"
+#include "third_party/skia/include/gpu/ganesh/vk/GrVkDirectContext.h"
 #include "third_party/skia/include/gpu/vk/GrVkExtensions.h"
 
 namespace {
@@ -177,7 +178,7 @@ bool VulkanInProcessContextProvider::InitializeGrContext(
   backend_context.fGetProc = get_proc;
   backend_context.fProtectedContext = GrProtected::kNo;
 
-  gr_context_ = GrDirectContext::MakeVulkan(backend_context, context_options);
+  gr_context_ = GrDirectContexts::MakeVulkan(backend_context, context_options);
 
   return gr_context_ != nullptr;
 }

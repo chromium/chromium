@@ -21,6 +21,7 @@
 #include "gpu/vulkan/vulkan_function_pointers.h"
 #include "gpu/vulkan/vulkan_util.h"
 #include "third_party/skia/include/gpu/GrDirectContext.h"
+#include "third_party/skia/include/gpu/ganesh/vk/GrVkDirectContext.h"
 #include "third_party/skia/include/gpu/vk/GrVkBackendContext.h"
 #include "third_party/skia/include/gpu/vk/GrVkExtensions.h"
 
@@ -154,7 +155,7 @@ bool AwVulkanContextProvider::Globals::Initialize(
       .fGetProc = get_proc,
       .fOwnsInstanceAndDevice = false,
   };
-  gr_context = GrDirectContext::MakeVulkan(backend_context);
+  gr_context = GrDirectContexts::MakeVulkan(backend_context);
   if (!gr_context) {
     LOG(ERROR) << "Unable to initialize GrContext.";
     return false;
