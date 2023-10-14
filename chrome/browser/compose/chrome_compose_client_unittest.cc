@@ -9,6 +9,7 @@
 #include "base/functional/callback_helpers.h"
 #include "base/memory/raw_ptr.h"
 #include "base/test/bind.h"
+#include "base/test/protobuf_matchers.h"
 #include "base/test/scoped_feature_list.h"
 #include "base/test/task_environment.h"
 #include "base/test/test_future.h"
@@ -28,6 +29,7 @@
 #include "testing/gmock/include/gmock/gmock.h"
 #include "testing/gtest/include/gtest/gtest.h"
 
+using ::base::EqualsProto;
 using testing::_;
 
 namespace {
@@ -56,7 +58,7 @@ class ChromeComposeClientTest : public BrowserWithTestWindowTest {
         {compose::features::kEnableCompose,
          optimization_guide::features::kOptimizationGuideModelExecution},
         {});
-    AddTab(browser(), GURL("http://foo/1"));
+    AddTab(browser(), GetPageUrl());
     content::WebContents* contents =
         browser()->tab_strip_model()->GetWebContentsAt(0);
     client_ = ChromeComposeClient::FromWebContents(contents);
@@ -85,12 +87,30 @@ class ChromeComposeClientTest : public BrowserWithTestWindowTest {
     return page_handler_;
   }
 
+  GURL GetPageUrl() { return GURL("http://foo/1"); }
+
   void TearDown() override {
     client_ = nullptr;
     BrowserWithTestWindowTest::TearDown();
   }
 
  protected:
+  compose_proto::ComposeRequest ComposeRequest(std::string user_input) {
+    compose_proto::ComposePageMetadata page_metadata;
+    page_metadata.set_page_url(GetPageUrl().spec());
+    page_metadata.set_page_title(base::UTF16ToUTF8(
+        browser()->tab_strip_model()->GetWebContentsAt(0)->GetTitle()));
+
+    compose_proto::ComposeRequest request;
+    request.set_user_input(user_input);
+    request.set_tone(compose_proto::ComposeTone::COMPOSE_UNSPECIFIED_TONE);
+    request.set_length(
+        compose_proto::ComposeLength::COMPOSE_UNSPECIFIED_LENGTH);
+    *request.mutable_page_metadata() = std::move(page_metadata);
+
+    return request;
+  }
+
   compose_proto::ComposeResponse ComposeResponse(bool ok) {
     compose_proto::ComposeResponse response;
     response.set_output(ok ? "Cucumbers" : "");
@@ -132,6 +152,27 @@ TEST_F(ChromeComposeClientTest, TestCompose) {
   compose::mojom::ComposeResponsePtr result = test_future.Take();
   EXPECT_EQ(compose::mojom::ComposeStatus::kOk, result->status);
   EXPECT_EQ("Cucumbers", result->result);
+}
+
+TEST_F(ChromeComposeClientTest, TestComposeParams) {
+  std::string user_input = "a user typed this";
+  auto matcher = EqualsProto(ComposeRequest(user_input));
+  EXPECT_CALL(model_executor(), ExecuteModel(_, matcher, _))
+      .WillOnce(testing::WithArg<2>(testing::Invoke(
+          [&](optimization_guide::OptimizationGuideModelExecutionResultCallback
+                  callback) {
+            std::move(callback).Run(
+                OptimizationGuideResponse(ComposeResponse(true)));
+          })));
+
+  base::test::TestFuture<compose::mojom::ComposeResponsePtr> test_future;
+
+  auto style_modifiers = compose::mojom::StyleModifiers::New();
+  page_handler()->Compose(std::move(style_modifiers), user_input,
+                          test_future.GetCallback());
+
+  compose::mojom::ComposeResponsePtr result = test_future.Take();
+  EXPECT_EQ(compose::mojom::ComposeStatus::kOk, result->status);
 }
 
 TEST_F(ChromeComposeClientTest, TestComposeNoResponse) {

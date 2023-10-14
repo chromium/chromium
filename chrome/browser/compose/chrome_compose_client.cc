@@ -8,6 +8,7 @@
 #include <utility>
 
 #include "base/functional/bind.h"
+#include "base/strings/utf_string_conversions.h"
 #include "base/task/thread_pool.h"
 #include "chrome/browser/optimization_guide/optimization_guide_keyed_service.h"
 #include "chrome/browser/optimization_guide/optimization_guide_keyed_service_factory.h"
@@ -58,10 +59,15 @@ void ChromeComposeClient::Compose(compose::mojom::StyleModifiersPtr style,
     return;
   }
 
+  compose_proto::ComposePageMetadata page_metadata;
+  page_metadata.set_page_url(GetWebContents().GetLastCommittedURL().spec());
+  page_metadata.set_page_title(base::UTF16ToUTF8(GetWebContents().GetTitle()));
+
   compose_proto::ComposeRequest request;
   request.set_user_input(input);
   request.set_tone(ComposeTone(style->tone));
   request.set_length(ComposeLength(style->length));
+  *request.mutable_page_metadata() = std::move(page_metadata);
   model_executor->ExecuteModel(
       optimization_guide::proto::ModelExecutionFeature::
           MODEL_EXECUTION_FEATURE_1,
