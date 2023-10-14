@@ -30,6 +30,7 @@ import "third_party/blink/public/mojom/user_agent/user_agent_metadata.mojom";
 import "third_party/blink/public/mojom/worker/subresource_loader_updater.mojom";
 import "third_party/blink/public/mojom/worker/worker_content_settings_proxy.mojom";
 import "third_party/blink/public/mojom/worker/worker_main_script_load_params.mojom";
+import "third_party/blink/public/mojom/storage_key/storage_key.mojom";
 import "url/mojom/url.mojom";
 
 // Parameters to launch a service worker. This is passed from the browser to the
@@ -150,6 +151,9 @@ struct EmbeddedWorkerStartParams {
 
   // A container for several security policies to be applied to the worker.
   PolicyContainer? policy_container;
+
+  // The StorageKey of the scope where the service worker is created.
+  blink.mojom.StorageKey storage_key;
 };
 
 // Holds timing information about the start worker sequence for UMA.

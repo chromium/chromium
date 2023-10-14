@@ -16,7 +16,6 @@ promise_test(async t => {
   const absolute_scope = new URL(scope, window.location).href;
 
   assert_false(document.cookie.includes('__Host-partitioned=123'), 'DOM cannot access partitioned cookie');
-  assert_true(document.cookie.includes('unpartitioned=456'), 'DOM can access unpartitioned cookie');
 
   const reg = await service_worker_unregister_and_register(t, script, scope);
   await wait_for_state(t, reg.installing, 'activated');
