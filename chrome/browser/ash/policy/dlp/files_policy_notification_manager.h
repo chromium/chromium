@@ -360,8 +360,8 @@ class FilesPolicyNotificationManager
 
   // Opens DLP Learn more link and closes the notification having
   // `notification_id`.
-  void OnLearnMoreButtonClicked(const std::string& notification_id,
-                                absl::optional<int> button_index);
+  void OnDlpLearnMoreButtonClicked(const std::string& notification_id,
+                                   absl::optional<int> button_index);
 
   // Calls the IOTaskController to resume the task with `task_id`.
   void Resume(file_manager::io_task::IOTaskId task_id);

@@ -556,7 +556,6 @@ void FilesPolicyNotificationManager::HandleDlpErrorNotificationClick(
 
       if (files.size() == 1 && !always_show_review) {
         // Learn more.
-        // TODO(b/291896216): Open page based on policy.
         dlp::OpenLearnMore();
       } else {
         // Review.
@@ -833,8 +832,9 @@ void FilesPolicyNotificationManager::HandleFilesPolicyErrorNotificationClick(
                .begin()
                ->second.HasCustomDetails()) {
         // Single file, no custom dialog settings - open help page.
-        // TODO(b/291896216): Open page based on policy.
-        dlp::OpenLearnMore();
+        // Note that this can only be DLP, since when custom learn more URL is
+        // available, currently only for EC, we show the review button.
+        dlp::OpenLearnMore(GURL(dlp::kDlpLearnMoreUrl));
         // Only delete if we don't need to show the dialog.
         OnErrorItemDismissed(task_id);
       } else {
@@ -1065,14 +1065,13 @@ void FilesPolicyNotificationManager::OnNonIOTaskWarningDialogClicked(
   non_io_tasks_.erase(notification_id);
 }
 
-void FilesPolicyNotificationManager::OnLearnMoreButtonClicked(
+void FilesPolicyNotificationManager::OnDlpLearnMoreButtonClicked(
     const std::string& notification_id,
     absl::optional<int> button_index) {
   if (!button_index || button_index.value() != 0) {
     return;
   }
 
-  // TODO(b/291896216): Open page based on policy.
   dlp::OpenLearnMore();
 
   Dismiss(context_, notification_id);
@@ -1174,7 +1173,7 @@ void FilesPolicyNotificationManager::ShowDlpBlockNotification(
         notification_id, title, message,
         base::MakeRefCounted<message_center::HandleNotificationClickDelegate>(
             base::BindRepeating(
-                &FilesPolicyNotificationManager::OnLearnMoreButtonClicked,
+                &FilesPolicyNotificationManager::OnDlpLearnMoreButtonClicked,
                 weak_factory_.GetWeakPtr(), notification_id)));
     notification->set_buttons({message_center::ButtonInfo(
         l10n_util::GetStringUTF16(IDS_LEARN_MORE))});
