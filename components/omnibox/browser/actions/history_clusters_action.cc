@@ -60,11 +60,6 @@ void RecordShownUsedEnumAndCtrMetrics(const std::string& metric_name,
   base::UmaHistogramBoolean(ctr_metric_name, executed);
 }
 
-// Multiplies a keyword score by 100, and converts it to int.
-int TransformKeywordScoreForUma(float keyword_score) {
-  return static_cast<int>(keyword_score * 100);
-}
-
 }  // namespace
 
 int TopRelevance(std::vector<AutocompleteMatch>::const_iterator matches_begin,
@@ -122,16 +117,6 @@ void HistoryClustersAction::RecordActionShown(size_t position,
 
   base::UmaHistogramBoolean("Omnibox.SuggestionUsed.ResumeJourneyCTR",
                             executed);
-
-  // Record cluster keyword score UMA metrics.
-  base::UmaHistogramCounts1000(
-      "Omnibox.ResumeJourneyShown.ClusterKeywordScore",
-      TransformKeywordScoreForUma(matched_keyword_data_.score));
-  if (executed) {
-    base::UmaHistogramCounts1000(
-        "Omnibox.SuggestionUsed.ResumeJourney.ClusterKeywordScore",
-        TransformKeywordScoreForUma(matched_keyword_data_.score));
-  }
 
   // Record cluster keyword type UMA metrics.
   RecordShownUsedEnumAndCtrMetrics<
