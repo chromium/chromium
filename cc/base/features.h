@@ -127,6 +127,7 @@ CC_BASE_EXPORT BASE_DECLARE_FEATURE(kReclaimPrepaintTilesWhenIdle);
 CC_BASE_EXPORT BASE_DECLARE_FEATURE(kSmallerInterestArea);
 
 constexpr static int kDefaultInterestAreaSizeInPixels = 3000;
+constexpr static int kDefaultInterestAreaSizeInPixelsWhenEnabled = 500;
 CC_BASE_EXPORT extern const base::FeatureParam<int> kInterestAreaSizeInPixels;
 
 // Whether images marked "no-cache" are cached. When disabled, they are.
