@@ -8,6 +8,7 @@
 #include <string_view>
 #include <vector>
 
+#include "ash/constants/ash_features.h"
 #include "base/check.h"
 #include "base/containers/fixed_flat_map.h"
 #include "base/containers/fixed_flat_set.h"
@@ -691,6 +692,10 @@ void ScalableIph::OverrideTaskRunnerForTesting(
   timer_.Stop();
   timer_.SetTaskRunner(task_runner);
   EnsureTimerStarted();
+}
+
+bool ScalableIph::ShouldPinHelpAppToShelf() {
+  return ash::features::AreHelpAppWelcomeTipsEnabled();
 }
 
 void ScalableIph::PerformActionForHelpApp(ActionType action_type) {

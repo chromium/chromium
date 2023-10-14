@@ -4202,7 +4202,8 @@ AutotestPrivateGetDefaultPinnedAppIdsFunction::
 ExtensionFunction::ResponseAction
 AutotestPrivateGetDefaultPinnedAppIdsFunction::Run() {
   std::vector<std::string> default_pinned_app_ids;
-  for (const char* default_app_id : GetDefaultPinnedAppsForFormFactor()) {
+  for (const char* default_app_id :
+       GetDefaultPinnedAppsForFormFactor(browser_context())) {
     default_pinned_app_ids.emplace_back(default_app_id);
   }
 

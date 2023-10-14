@@ -630,8 +630,10 @@ bool ChromeShelfPrefs::ShouldAddDefaultApps() const {
 void ChromeShelfPrefs::AddDefaultApps() {
   VLOG(1) << "Roll default shelf pin layout " << kDefaultPinnedAppsKey;
   std::vector<std::string> default_app_ids;
-  for (const char* default_app_id : GetDefaultPinnedAppsForFormFactor())
+  for (const char* default_app_id :
+       GetDefaultPinnedAppsForFormFactor(profile_)) {
     default_app_ids.push_back(default_app_id);
+  }
   InsertPinsAfterChromeAndBeforeFirstPinnedApp(
       app_list::AppListSyncableServiceFactory::GetForProfile(profile_),
       default_app_ids, /*is_policy_initiated=*/false);

@@ -156,6 +156,9 @@ class ScalableIph : public KeyedService,
   void MaybeRecordAppListItemActivation(const std::string& id);
   void MaybeRecordShelfItemActivationById(const std::string& id);
 
+  // Returns true if the help app should be pinned to the bottom shelf.
+  bool ShouldPinHelpAppToShelf();
+
  private:
   void EnsureTimerStarted();
   void RecordTimeTickEvent();
