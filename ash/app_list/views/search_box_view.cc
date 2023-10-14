@@ -823,7 +823,9 @@ void SearchBoxView::ShowFilterMenu() {
 
 void SearchBoxView::OnFilterMenuClosed() {
   // Trigger the search while keeping the same query text.
-  TriggerSearch();
+  if (HasSearch()) {
+    TriggerSearch();
+  }
 }
 
 views::MenuItemView* SearchBoxView::GetFilterMenuItemByCategory(
