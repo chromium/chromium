@@ -7,9 +7,11 @@
 #include <algorithm>
 #include <memory>
 #include <string>
+#include <utility>
 #include <vector>
 
 #include "base/command_line.h"
+#include "base/containers/contains.h"
 #include "base/memory/ptr_util.h"
 #include "base/notreached.h"
 #include "base/strings/string_number_conversions.h"
@@ -72,6 +74,44 @@ int PixelsToMillimeters(int pixels, int dpi) {
   // kMillimetersPerInch converts to mm. Multiplication is done first to
   // avoid integer division.
   return static_cast<int>(kMillimetersPerInch * pixels / dpi);
+}
+
+// Returns a physical size in mm that will work well with GNOME's
+// automatic scale-selection algorithm.
+webrtc::DesktopSize CalculateSizeInMmForGnome(
+    const remoting::ScreenResolution& resolution) {
+  int width_mm = PixelsToMillimeters(resolution.dimensions().width(),
+                                     resolution.dpi().x());
+  int height_mm = PixelsToMillimeters(resolution.dimensions().height(),
+                                      resolution.dpi().y());
+
+  // GNOME will, by default, choose an automatic scaling-factor based on the
+  // monitor's physical size (mm) and resolution (pixels). Some versions of
+  // GNOME have a problem when the computed DPI is close to 192. GNOME
+  // calculates the DPI using:
+  // dpi = size_pixels / (size_mm / 25.4)
+  // This is the reverse of PixelsToMillimeters() which should result in
+  // the same values as resolution.dpi() except for any floating-point
+  // truncation errors. GNOME will choose 2x scaling only if both the width and
+  // height DPIs are strictly greater than 192. The problem is that a user might
+  // connect from a 192dpi device and then GNOME's choice of scaling is randomly
+  // subject to rounding errors. If the calculation worked out at exactly
+  // 192dpi, the inequality test would fail and GNOME would choose 1x scaling.
+  // To address this, width_mm/height_mm are decreased slightly (increasing the
+  // calculated DPI) to favor 2x over 1x scaling for 192dpi devices.
+  width_mm--;
+  height_mm--;
+
+  // GNOME treats some pairs of width/height values as untrustworthy and will
+  // always choose 1x scaling for them. These values come from
+  // meta_monitor_has_aspect_as_size() in
+  // https://gitlab.gnome.org/GNOME/mutter/-/blob/main/src/backends/meta-monitor-manager.c
+  constexpr std::pair<int, int> kBadSizes[] = {
+      {16, 9}, {16, 10}, {160, 90}, {160, 100}, {1600, 900}, {1600, 1000}};
+  if (base::Contains(kBadSizes, std::pair(width_mm, height_mm))) {
+    width_mm--;
+  }
+  return {width_mm, height_mm};
 }
 
 // TODO(jamiewalch): Use the correct DPI for the mode: http://crbug.com/172405.
@@ -434,10 +474,9 @@ void DesktopResizerX11::SetResolutionForOutput(
   resizer.UpdateActiveCrtcs(crtc, mode, resolution.dimensions());
   UpdateRootWindow(resizer);
 
-  int width_mm = PixelsToMillimeters(resolution.dimensions().width(),
-                                     resolution.dpi().x());
-  int height_mm = PixelsToMillimeters(resolution.dimensions().height(),
-                                      resolution.dpi().y());
+  webrtc::DesktopSize size_mm = CalculateSizeInMmForGnome(resolution);
+  int width_mm = size_mm.width();
+  int height_mm = size_mm.height();
   HOST_LOG << "Setting physical size in mm: " << width_mm << "x" << height_mm;
   SetOutputPhysicalSizeInMM(connection_, output, width_mm, height_mm);
 }
