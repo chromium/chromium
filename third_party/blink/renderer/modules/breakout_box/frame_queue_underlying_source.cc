@@ -4,6 +4,7 @@
 
 #include "third_party/blink/renderer/modules/breakout_box/frame_queue_underlying_source.h"
 
+#include "base/feature_list.h"
 #include "base/task/bind_post_task.h"
 #include "third_party/blink/renderer/bindings/core/v8/v8_throw_dom_exception.h"
 #include "third_party/blink/renderer/core/dom/dom_exception.h"
@@ -14,9 +15,14 @@
 #include "third_party/blink/renderer/modules/webcodecs/video_frame_monitor.h"
 #include "third_party/blink/renderer/platform/bindings/exception_code.h"
 #include "third_party/blink/renderer/platform/bindings/exception_state.h"
+#include "third_party/blink/renderer/platform/bindings/script_wrappable.h"
 #include "third_party/blink/renderer/platform/scheduler/public/post_cross_thread_task.h"
 #include "third_party/blink/renderer/platform/wtf/cross_thread_functional.h"
 #include "third_party/webrtc/api/frame_transformer_interface.h"
+
+BASE_FEATURE(kBreakoutBoxEnqueueInSeparateTask,
+             "BreakoutBoxEnqueueInSeparateTask",
+             base::FEATURE_ENABLED_BY_DEFAULT);
 
 namespace blink {
 
@@ -316,7 +322,23 @@ void FrameQueueUnderlyingSource<
     media::VideoFrame::ID frame_id = MustUseMonitor()
                                          ? GetFrameId(media_frame.value())
                                          : media::VideoFrame::ID();
-    Controller()->Enqueue(MakeBlinkFrame(std::move(media_frame.value())));
+    if (base::FeatureList::IsEnabled(kBreakoutBoxEnqueueInSeparateTask)) {
+      // It has been observed that if the time between JS read() operations
+      // is longer than the time between new frames, other tasks get delayed
+      // and the page freezes. Enqueuing in a separate task avoids this problem.
+      // See https://crbug.com/1490501
+      realm_task_runner_->PostTask(
+          FROM_HERE,
+          WTF::BindOnce(
+              [](ReadableStreamDefaultControllerWithScriptScope* controller,
+                 ScriptWrappable* blink_frame) {
+                controller->Enqueue(blink_frame);
+              },
+              WrapPersistent(Controller()),
+              WrapPersistent(MakeBlinkFrame(std::move(media_frame.value())))));
+    } else {
+      Controller()->Enqueue(MakeBlinkFrame(std::move(media_frame.value())));
+    }
     // Update the monitor after creating the Blink VideoFrame to avoid
     // temporarily removing the frame from the monitor.
     MaybeMonitorPopFrameId(frame_id);
