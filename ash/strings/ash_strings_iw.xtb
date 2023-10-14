@@ -704,6 +704,7 @@
 <translation id="385300504083504382">התחלה</translation>
 <translation id="3859364108019690">לא ניתן לשדר אפליקציות</translation>
 <translation id="3861651314799684201">‏כדי להקליט את המסך המלא, מקישים על Enter</translation>
+<translation id="3865912916886104060">‏אין מכשירים מחוברים. החיבור ל-Wi-Fi יושבת כדי שניתן יהיה להתחיל להשתמש בנקודה לשיתוף אינטרנט (Hotspot).</translation>
 <translation id="3886872229787704059">נפתח היום</translation>
 <translation id="3891340733213178823">‏יש להקיש פעמיים על Ctrl+Shift+Q כדי לצאת.</translation>
 <translation id="3893630138897523026">‏ChromeVox (משוב קולי)</translation>
@@ -788,6 +789,7 @@
 <translation id="4197790712631116042">כבוי</translation>
 <translation id="4201033867194214117">התכונה <ph name="FEATURE_NAME" /> לא זמינה.</translation>
 <translation id="4201051445878709314">הצגת חודש קודם</translation>
+<translation id="4202362334312791952">‏מכשיר אחד מחובר. החיבור ל-Wi-Fi יושבת כדי שניתן יהיה להתחיל להשתמש בנקודה לשיתוף אינטרנט (Hotspot).</translation>
 <translation id="4209973997261364186">‏Wi-Fi פועל</translation>
 <translation id="4212472694152630271">מעבר לקוד אימות</translation>
 <translation id="4215497585250573029">‏הגדרות VPN</translation>
@@ -1051,6 +1053,7 @@
 <translation id="5258528442992323769">אין שולחנות עבודה וירטואליים שמורים</translation>
 <translation id="5260676007519551770">שולחן עבודה 4</translation>
 <translation id="5268819379131021772">‏רשימת המשימות של Google</translation>
+<translation id="5275923704957843041">תצוגה מקדימה של שולחן העבודה הווירטואלי</translation>
 <translation id="5278086053818066789">‏הפעלה/השבתה של ChromeVox (קורא מסך קולי)</translation>
 <translation id="5283099933536931082">האפליקציה <ph name="APP_ITEM_TITLE" /> מבקשת את תשומת לבך.</translation>
 <translation id="5283198616748585639">הוספת דקה</translation>
@@ -1167,6 +1170,7 @@
 <translation id="5707775774148071965">קצב התקשורת של הכבל נמוך מזה של המכשיר. יכול להיות שביצועי המכשיר יוגבלו.</translation>
 <translation id="5710450975648804523">מצב 'נא לא להפריע' מופעל</translation>
 <translation id="571295407079589142">חבילת הגלישה כבויה</translation>
+<translation id="5716891621595980681">‏<ph name="DEVICECOUNT" /> מכשירים מחוברים. החיבור ל-Wi-Fi יושבת כדי שניתן יהיה להתחיל להשתמש בנקודה לשיתוף אינטרנט (Hotspot).</translation>
 <translation id="5727460725221669831">‏אם שינית לאחרונה את הסיסמה לחשבון Google או ששכחת אותה, אפשר לנסות לשחזר את הגישה למשתמש הזה.</translation>
 <translation id="573413375004481890">המכשיר הזה לא הצליח לתמוך בכל המסכים, ולכן אחד מהם נותק</translation>
 <translation id="5740328398383587084">שיתוף בקרבת מקום</translation>
