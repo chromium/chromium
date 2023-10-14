@@ -5,24 +5,25 @@ Use of this source code is governed by a BSD-style license that can be
 found in the LICENSE file.
 -->
 <resources>
-    <color name="device_lock_illustration_notice_card_background">@color/modern_grey_100</color>
     <color name="device_lock_illustration_yellow">@color/modern_yellow_500</color>
     <color name="device_lock_illustration_red">@color/default_red</color>
     <color name="device_lock_illustration_green">@color/google_green_600</color>
     <color name="device_lock_illustration_blue">@color/modern_blue_600</color>
+    <color name="device_lock_illustration_medium_blue_grey">@color/modern_grey_400</color>
+    <color name="device_lock_illustration_medium_grey">@color/modern_grey_400</color>
     <color name="device_lock_illustration_screen">@color/modern_white</color>
-    <color name="device_lock_illustration_screen_header">@color/modern_grey_400</color>
+    <color name="device_lock_illustration_screen_header">@color/device_lock_illustration_medium_blue_grey</color>
     <color name="device_lock_illustration_screen_outline">@color/modern_grey_200</color>
     <color name="device_lock_illustration_screen_top_line">@color/modern_grey_500</color>
     <color name="device_lock_illustration_screen_middle_line">@color/modern_grey_400</color>
     <color name="device_lock_illustration_screen_bottom_line">@color/modern_grey_200</color>
     <color name="device_lock_illustration_camera_outline">@color/modern_grey_100</color>
-    <color name="device_lock_illustration_left_circle">@color/modern_grey_400</color>
-    <color name="device_lock_illustration_right_hex">@color/modern_grey_400</color>
     <color name="device_lock_illustration_background_polygon">@color/modern_grey_200</color>
     <color name="device_lock_illustration_top_polygon_fill">@color/modern_blue_600</color>
     <color name="device_lock_illustration_top_polygon_border">@color/modern_grey_200</color>
     <color name="device_lock_illustration_burst">@color/modern_grey_400</color>
     <color name="device_lock_illustration_exclamation_point">@color/modern_grey_800</color>
+    <color name="device_lock_illustration_lock_shackle">@color/device_lock_illustration_medium_blue_grey</color>
+    <color name="device_lock_illustration_lock_keyhole">@color/modern_grey_700</color>
     <color name="device_lock_illustration_bottom_dot">@color/modern_white</color>
 </resources>

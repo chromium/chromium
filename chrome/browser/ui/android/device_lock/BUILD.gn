@@ -36,6 +36,7 @@ android_library("java") {
     "//components/device_reauth:device_reauth_java_enums",
     "//components/signin/public/android:java",
     "//third_party/androidx:androidx_annotation_annotation_java",
+    "//third_party/androidx:androidx_appcompat_appcompat_resources_java",
     "//ui/android:ui_java",
   ]
   resources_package = "org.chromium.chrome.browser.ui.device_lock"

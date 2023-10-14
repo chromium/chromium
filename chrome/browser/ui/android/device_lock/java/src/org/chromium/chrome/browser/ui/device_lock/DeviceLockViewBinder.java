@@ -4,8 +4,9 @@
 
 package org.chromium.chrome.browser.ui.device_lock;
 
-import android.content.res.ColorStateList;
 import android.view.View;
+
+import androidx.appcompat.content.res.AppCompatResources;
 
 import org.chromium.ui.modelutil.PropertyKey;
 import org.chromium.ui.modelutil.PropertyModel;
@@ -79,10 +80,12 @@ public class DeviceLockViewBinder {
             view.getProgressBar().setVisibility(View.GONE);
             view.getTitle().setTextAppearance(R.style.TextAppearance_Headline_Primary);
             view.getDescription().setTextAppearance(R.style.TextAppearance_TextMedium_Primary);
-            view.getNoticeText().setTextAppearance(R.style.TextAppearance_TextMedium_Error);
-            view.getNoticeText().setDrawableTintColor(
-                    ColorStateList.valueOf(view.getContext().getResources().getColor(
-                            R.color.device_lock_illustration_red)));
+            view.getNoticeText().setTextAppearance(R.style.TextAppearance_TextMedium_Primary);
+            view.getNoticeText()
+                    .setDrawableTintColor(
+                            AppCompatResources.getColorStateList(
+                                    view.getContext(),
+                                    R.color.default_icon_color_accent1_tint_list));
             view.getContinueButton().setEnabled(true);
             view.getDismissButton().setEnabled(true);
         } else {
@@ -90,9 +93,10 @@ public class DeviceLockViewBinder {
             view.getTitle().setTextAppearance(R.style.TextAppearance_Headline_Disabled);
             view.getDescription().setTextAppearance(R.style.TextAppearance_TextMedium_Disabled);
             view.getNoticeText().setTextAppearance(R.style.TextAppearance_TextMedium_Disabled);
-            view.getNoticeText().setDrawableTintColor(
-                    ColorStateList.valueOf(view.getContext().getResources().getColor(
-                            R.color.default_text_color_disabled_list)));
+            view.getNoticeText()
+                    .setDrawableTintColor(
+                            AppCompatResources.getColorStateList(
+                                    view.getContext(), R.color.default_text_color_disabled_list));
             view.getContinueButton().setEnabled(false);
             view.getDismissButton().setEnabled(false);
         }

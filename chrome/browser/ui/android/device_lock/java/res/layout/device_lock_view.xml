@@ -73,7 +73,7 @@ found in the LICENSE file.
                 android:layout_below="@id/device_lock_description"
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
-                android:layout_margin="16dp"
+                android:layout_margin="20dp"
                 android:padding="16dp"
                 android:layout_gravity="center"
                 android:background="@drawable/rounded_corner_card">
@@ -83,15 +83,14 @@ found in the LICENSE file.
                     android:layout_width="match_parent"
                     android:layout_height="wrap_content"
                     android:gravity="start|center_vertical"
-                    android:maxLines="1"
-                    android:drawableStart="@drawable/ic_error_outline_red_24dp"
-                    android:drawablePadding="4dp"
+                    android:drawableStart="@drawable/ic_error_outline_googblue_24dp"
+                    android:drawablePadding="10dp"
                     android:ellipsize="end"
                     android:text="@string/device_lock_notice"
-                    app:drawableTint="@color/device_lock_illustration_red"
-                    app:drawableWidth="18dp"
-                    app:drawableHeight="18dp"
-                    style="@style/TextAppearance.DeviceLockNotice" />
+                    app:drawableTint="@color/default_icon_color_accent1_tint_list"
+                    app:drawableWidth="20dp"
+                    app:drawableHeight="20dp"
+                    style="@style/TextAppearance.TextMedium.Primary" />
 
             </FrameLayout>
 

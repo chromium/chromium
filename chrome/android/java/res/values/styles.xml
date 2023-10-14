@@ -491,9 +491,4 @@ found in the LICENSE file.
     <style name="ModernToolbarPopupTheme">
         <item name="android:listChoiceIndicatorSingle">@drawable/checkmark_selection_drawable</item>
     </style>
-
-    <!-- Device lock dialog styles -->
-    <style name="TextAppearance.DeviceLockNotice" parent="TextAppearance.TextMedium">
-        <item name="android:textColor">@color/default_text_color_error</item>
-    </style>
 </resources>
