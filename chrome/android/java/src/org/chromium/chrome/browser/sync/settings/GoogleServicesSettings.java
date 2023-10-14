@@ -146,7 +146,7 @@ public class GoogleServicesSettings extends ChromeBaseSettingsFragment
         }
 
         mPriceNotificationSection = findPreference(PREF_PRICE_NOTIFICATION_SECTION);
-        if (ShoppingFeatures.isShoppingListEligible()) {
+        if (ShoppingFeatures.isShoppingListEligible(getProfile())) {
             mPriceNotificationSection.setVisible(true);
         } else {
             removePreference(getPreferenceScreen(), mPriceNotificationSection);

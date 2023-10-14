@@ -56,11 +56,13 @@ public class PowerBookmarkUtils {
      * @return Whether the given tab is eligible for price-tracking.
      */
     public static boolean isPriceTrackingEligible(@Nullable Tab tab) {
-        if (tab == null) return false;
+        if (tab == null || tab.getWebContents() == null) return false;
         if (sPriceTrackingEligibleForTesting != null) return sPriceTrackingEligibleForTesting;
 
-        ShoppingService service =
-                ShoppingServiceFactory.getForProfile(Profile.getLastUsedRegularProfile());
+        Profile profile = Profile.fromWebContents(tab.getWebContents());
+        assert profile != null;
+
+        ShoppingService service = ShoppingServiceFactory.getForProfile(profile);
         if (service == null) return false;
 
         ShoppingService.ProductInfo info = service.getAvailableProductInfoForUrl(tab.getUrl());

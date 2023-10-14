@@ -1510,7 +1510,7 @@ class BookmarkManagerMediator
     // properly.
     @VisibleForTesting
     void updateShoppingFilterVisible() {
-        boolean eligible = ShoppingFeatures.isShoppingListEligible();
+        boolean eligible = ShoppingFeatures.isShoppingListEligible(mProfile);
         if (!eligible) {
             updateFilterAvailability(false);
             return;

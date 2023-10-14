@@ -112,7 +112,7 @@ public class BookmarkManagerCoordinator
         mMainView = (ViewGroup) LayoutInflater.from(context).inflate(R.layout.bookmark_main, null);
         mBookmarkModel = BookmarkModel.getForProfile(profile);
         mBookmarkOpener = new BookmarkOpener(mBookmarkModel, context, openBookmarkComponentName);
-        if (ShoppingFeatures.isShoppingListEligible()) {
+        if (ShoppingFeatures.isShoppingListEligible(profile)) {
             ShoppingServiceFactory.getForProfile(profile).scheduleSavedProductUpdate();
         }
         mBookmarkUiPrefs = bookmarkUiPrefs;
