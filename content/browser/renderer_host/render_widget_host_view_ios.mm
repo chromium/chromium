@@ -570,8 +570,18 @@ void RenderWidgetHostViewIOS::
     RequestSuccessfulPresentationTimeFromHostOrDelegate(
         blink::mojom::RecordContentToVisibleTimeRequestPtr
             visible_time_request) {
-  host()->RequestSuccessfulPresentationTimeForNextFrame(
-      std::move(visible_time_request));
+  // No state transition here so don't use
+  // has_saved_frame_before_state_transition.
+  if (browser_compositor_->GetDelegatedFrameHost()->HasSavedFrame()) {
+    // If the frame for the renderer is already available, then the
+    // tab-switching time is the presentation time for the browser-compositor.
+    browser_compositor_->GetDelegatedFrameHost()
+        ->RequestSuccessfulPresentationTimeForNextFrame(
+            std::move(visible_time_request));
+  } else {
+    host()->RequestSuccessfulPresentationTimeForNextFrame(
+        std::move(visible_time_request));
+  }
 }
 void RenderWidgetHostViewIOS::
     CancelSuccessfulPresentationTimeRequestForHostAndDelegate() {
