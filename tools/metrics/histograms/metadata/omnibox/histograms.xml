@@ -1426,6 +1426,21 @@ chromium-metrics-reviews@google.com.
   </summary>
 </histogram>
 
+<histogram name="Omnibox.ResumeJourneyShown.ClusterKeywordScore" units="count"
+    expires_after="2024-01-14">
+  <owner>junzou@chromium.org</owner>
+  <owner>chrome-intelligence-core@google.com</owner>
+  <summary>
+    Emits the score of matched cluster keyword of any &quot;Resume Journey&quot;
+    omnibox actions shown in the popup.
+
+    Note that these are emitted when the user uses the omnibox to go somewhere.
+    When that happens, one keyword type is emitted per action visible in the
+    popup. These are NOT emitted per-keystroke, in order to make this a suitable
+    denominator for Omnibox.SuggestionUsed.ResumeJourney.ClusterKeywordScore.
+  </summary>
+</histogram>
+
 <histogram name="Omnibox.ResumeJourneyShown.ClusterKeywordType"
     enum="HistoryClusterKeywordType" expires_after="2024-02-25">
   <owner>junzou@chromium.org</owner>
@@ -1848,6 +1863,26 @@ chromium-metrics-reviews@google.com.
     &quot;Resume Journey&quot; can be shown. If multiple actions start being
     shown in the popup, comparing to the total count becomes misleading to
     interpret as a CTR.
+  </summary>
+</histogram>
+
+<histogram name="Omnibox.SuggestionUsed.ResumeJourney.ClusterKeywordScore"
+    units="count" expires_after="2023-11-12">
+  <owner>sophiechang@chromium.org</owner>
+  <owner>chrome-journeys@google.com</owner>
+  <summary>
+    Logs the score of the matched cluster keyword of &quot;Resume Journey&quot;
+    omnibox actions actually selected by the user.
+
+    This can be combined with Omnibox.ResumeJourneyShown.ClusterKeywordScore to
+    compute the precision (or CTR) of the &quot;Resume Journey&quot; omnibox
+    action on a keyword score bucket.
+
+    It's safe to compare the total count of this metric to the total count of
+    Omnibox.ResumeJourneyShown.ClusterKeywordScore because within a single
+    popup, only zero or one &quot;Resume Journey&quot; can be shown. If multiple
+    actions start being shown in the popup, comparing to the total count becomes
+    misleading to interpret as a CTR.
   </summary>
 </histogram>
 
