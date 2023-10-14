@@ -70,7 +70,7 @@ void ChromeComposeClient::Compose(compose::mojom::StyleModifiersPtr style,
   *request.mutable_page_metadata() = std::move(page_metadata);
   model_executor->ExecuteModel(
       optimization_guide::proto::ModelExecutionFeature::
-          MODEL_EXECUTION_FEATURE_1,
+          MODEL_EXECUTION_FEATURE_COMPOSE,
       request,
       base::BindOnce(&ChromeComposeClient::ModelExecutionCallback,
                      weak_ptr_factory_.GetWeakPtr(), std::move(callback)));

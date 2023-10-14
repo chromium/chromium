@@ -31,8 +31,9 @@ std::string_view GetStringNameForModelExecutionFeature(
       return "WallpaperSearch";
     case proto::ModelExecutionFeature::MODEL_EXECUTION_FEATURE_TAB_ORGANIZATION:
       return "TabOrganization";
+    case proto::ModelExecutionFeature::MODEL_EXECUTION_FEATURE_COMPOSE:
+      return "Compose";
     case proto::ModelExecutionFeature::MODEL_EXECUTION_FEATURE_UNSPECIFIED:
-    case proto::ModelExecutionFeature::MODEL_EXECUTION_FEATURE_1:
       return "Unknown";
       // Must be in sync with the ModelExecutionFeature variant in
       // optimization/histograms.xml for metric recording.
