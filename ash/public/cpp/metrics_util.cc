@@ -119,7 +119,6 @@ void StartDataCollection() {
 }
 
 std::vector<AnimationData> StopDataCollection() {
-  DCHECK(g_data_collection_enabled);
   g_data_collection_enabled = false;
 
   return GetCollectedData();
