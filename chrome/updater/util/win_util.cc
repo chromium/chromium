@@ -762,6 +762,11 @@ bool EnableProcessHeapMetadataProtection() {
 }
 
 absl::optional<base::ScopedTempDir> CreateSecureTempDir() {
+  // This function uses `base::CreateNewTempDirectory` and then a
+  // `base::ScopedTempDir` as owner, instead of just
+  // `base::ScopedTempDir::CreateUniqueTempDir`, because the former allows
+  // setting a more recognizable prefix of `COMPANY_SHORTNAME_STRING` on the
+  // temp directory.
   base::FilePath temp_dir;
   if (!base::CreateNewTempDirectory(FILE_PATH_LITERAL(COMPANY_SHORTNAME_STRING),
                                     &temp_dir)) {
