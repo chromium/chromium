@@ -50,7 +50,7 @@ class PageLoadInProcessFuzzer : public InProcessFuzzer {
   base::WeakPtrFactory<PageLoadInProcessFuzzer> weak_ptr_factory_{this};
 };
 
-REGISTER_TEXT_PROTO_IN_PROCESS_FUZZER(PageLoadInProcessFuzzer);
+REGISTER_TEXT_PROTO_IN_PROCESS_FUZZER(PageLoadInProcessFuzzer)
 
 PageLoadInProcessFuzzer::PageLoadInProcessFuzzer()
     : http_test_server_(net::EmbeddedTestServer::TYPE_HTTP),
