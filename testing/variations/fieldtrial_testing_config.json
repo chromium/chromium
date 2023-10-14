@@ -8403,21 +8403,6 @@
             ]
         }
     ],
-    "IOSFeedSyntheticCapabilities": [
-        {
-            "platforms": [
-                "ios"
-            ],
-            "experiments": [
-                {
-                    "name": "Enabled",
-                    "enable_features": [
-                        "EnableFeedSyntheticCapabilities"
-                    ]
-                }
-            ]
-        }
-    ],
     "IOSGhostCards": [
         {
             "platforms": [
