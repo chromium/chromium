@@ -176,7 +176,7 @@
 <translation id="7222373446505536781">F11</translation>
 <translation id="7238427729722629793">{MINUTES,plural, =1{1 min übrig}other{# min übrig}}</translation>
 <translation id="7363164521834647158">Antwort senden</translation>
-<translation id="7365057348334984696">{MINUTES,plural, =1{vor 1 min}other{vor # min}}</translation>
+<translation id="7365057348334984696">{MINUTES,plural, =1{vor 1 Min.}other{vor # Min.}}</translation>
 <translation id="7389409599945284130">– <ph name="MESSAGE" /></translation>
 <translation id="7410957453383678442">{MINUTES,plural, =1{1 Minute übrig}other{# Minuten übrig}}</translation>
 <translation id="7437971918971306061">Spalte <ph name="COLUMN_NAME" /> nicht sortiert.</translation>

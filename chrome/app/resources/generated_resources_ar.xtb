@@ -2,7 +2,7 @@
 <!DOCTYPE translationbundle>
 <translationbundle lang="ar">
 <translation id="1001033507375626788">تمت مشاركة هذه الشبكة معك.</translation>
-<translation id="1002085272681738789">أصبحت علامة التبويب نشطة مرة أخرى</translation>
+<translation id="1002085272681738789">علامة التبويب نشطة مجددًا</translation>
 <translation id="1003088604756913841">فتح الرابط في نافذة جديدة في <ph name="APP" /></translation>
 <translation id="100323615638474026">‏جهاز USB (<ph name="VENDOR_ID" />:<ph name="PRODUCT_ID" />)</translation>
 <translation id="1003917207516838287">سجلّ عمليات التنزيل الأخيرة</translation>
@@ -7471,7 +7471,7 @@
 <translation id="7088434364990739311">تعذّر بدء التحقق من التحديثات (رمز الخطأ <ph name="ERROR" />).</translation>
 <translation id="7088674813905715446">ألغى المشرف إدارة الحسابات لهذا الجهاز. لتمكينه من التسجيل، يُرجى أن تطلب من المشرف وضع الجهاز في حالة في انتظار المراجعة.</translation>
 <translation id="7088960765736518739">الوصول عبر مفتاح تبديل</translation>
-<translation id="7089253021944603172">أصبحت علامة التبويب نشطة مرة أخرى</translation>
+<translation id="7089253021944603172">علامة التبويب نشطة مجددًا</translation>
 <translation id="7090160970140261931">‏يمكنك إضافة حسابات إضافية إلى جهاز <ph name="DEVICE_TYPE" /> لاستخدامها في المواقع الإلكترونية وتطبيقات Android. ويمكنك أيضًا التحكّم في اختيار الحسابات التي يتم استخدامها مع تطبيقات Android.</translation>
 <translation id="7090714929377281710">إيقاف نقطة الاتصال تلقائيًا</translation>
 <translation id="7093220653036489319">معلومات سريعة</translation>
