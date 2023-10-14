@@ -40,7 +40,6 @@ enum SearchResultIcon {
   kLaptop,
   kLock,
   kMagnifyingGlass,
-  kMessages,
   kMicrophone,
   kMouse,
   kNearbyShare,
