@@ -895,7 +895,8 @@ void PasswordAutofillAgent::FillPasswordSuggestion(
     }
   }
 
-  element.SetSelectionRange(element.Value().length(), element.Value().length());
+  auto length = base::checked_cast<unsigned>(element.Value().length());
+  element.SetSelectionRange(length, length);
 }
 
 void PasswordAutofillAgent::FillIntoFocusedField(
@@ -1762,8 +1763,9 @@ void PasswordAutofillAgent::ClearPreview(WebInputElement* username,
   if (!username->IsNull() && !username->SuggestedValue().IsEmpty()) {
     username->SetSuggestedValue(WebString());
     username->SetAutofillState(username_autofill_state_);
-    username->SetSelectionRange(username_query_prefix_.length(),
-                                username->Value().length());
+    username->SetSelectionRange(
+        base::checked_cast<unsigned>(username_query_prefix_.length()),
+        base::checked_cast<unsigned>(username->Value().length()));
   }
   if (!password->IsNull() && !password->SuggestedValue().IsEmpty()) {
     password->SetSuggestedValue(WebString());

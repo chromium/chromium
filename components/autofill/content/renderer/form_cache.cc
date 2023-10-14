@@ -14,6 +14,7 @@
 #include "base/containers/cxx20_erase.h"
 #include "base/feature_list.h"
 #include "base/metrics/histogram_macros.h"
+#include "base/numerics/safe_conversions.h"
 #include "base/strings/strcat.h"
 #include "base/strings/string_number_conversions.h"
 #include "base/strings/string_piece.h"
@@ -254,7 +255,8 @@ void FormCache::ClearElement(WebFormControlElement& control_element,
     // Clearing the value in the focused node (above) can cause the selection
     // to be lost. We force the selection range to restore the text cursor.
     if (trigger_element == web_input_element) {
-      size_t length = web_input_element.Value().length();
+      auto length =
+          base::checked_cast<unsigned>(web_input_element.Value().length());
       web_input_element.SetSelectionRange(length, length);
     }
   } else if (form_util::IsTextAreaElement(control_element)) {

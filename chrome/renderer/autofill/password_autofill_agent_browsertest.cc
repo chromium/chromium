@@ -7,6 +7,7 @@
 #include "base/command_line.h"
 #include "base/containers/cxx20_erase.h"
 #include "base/functional/bind.h"
+#include "base/numerics/safe_conversions.h"
 #include "base/run_loop.h"
 #include "base/strings/strcat.h"
 #include "base/strings/string_number_conversions.h"
@@ -698,7 +699,7 @@ class PasswordAutofillAgentTest : public ChromeRenderViewTest {
     element->SetSelectionRange(value.size(), value.size());
   }
 
-  void CheckUsernameSelection(size_t start, size_t end) {
+  void CheckUsernameSelection(unsigned start, unsigned end) {
     EXPECT_EQ(start, username_element_.SelectionStart());
     EXPECT_EQ(end, username_element_.SelectionEnd());
   }

@@ -25,6 +25,7 @@
 #include "base/metrics/histogram_macros.h"
 #include "base/no_destructor.h"
 #include "base/notreached.h"
+#include "base/numerics/safe_conversions.h"
 #include "base/ranges/algorithm.h"
 #include "base/strings/string_number_conversions.h"
 #include "base/strings/string_split.h"
@@ -1192,9 +1193,9 @@ void FillFormField(const FormFieldData& data,
   }
 
   if (is_initiating_node &&
-      ((IsTextInput(input_element) || IsMonthInput(input_element)) ||
+      (IsTextInput(input_element) || IsMonthInput(input_element) ||
        IsTextAreaElement(*field))) {
-    int length = field->Value().length();
+    auto length = base::checked_cast<unsigned>(field->Value().length());
     field->SetSelectionRange(length, length);
     // selectionchange event is capable of destroying the frame.
     if (!field->GetDocument().GetFrame()) {
@@ -2291,9 +2292,8 @@ void WebFormControlElementToFormField(
   // Constrain the maximum data length to prevent a malicious site from DOS'ing
   // the browser: http://crbug.com/49332
   field->value = std::move(value).substr(0, kMaxStringLength);
-  constexpr auto kMaxLength = static_cast<unsigned>(kMaxStringLength);
-  field->selection_start = std::min(element.SelectionStart(), kMaxLength);
-  field->selection_end = std::min(element.SelectionEnd(), kMaxLength);
+  field->selection_start = std::min(element.SelectionStart(), kMaxStringLength);
+  field->selection_end = std::min(element.SelectionEnd(), kMaxStringLength);
 
   // If the field was autofilled or the user typed into it, check the value
   // stored in |field_data_manager| against the value property of the DOM
@@ -2691,7 +2691,8 @@ void ClearPreviewedElements(
         // Clearing the suggested value in the focused node (above) can cause
         // selection to be lost. We force selection range to restore the text
         // cursor.
-        int length = control_element.Value().length();
+        auto length =
+            base::checked_cast<unsigned>(control_element.Value().length());
         control_element.SetSelectionRange(length, length);
         control_element.SetAutofillState(old_autofill_state);
       } else {
@@ -2760,7 +2761,9 @@ bool IsWebElementEmpty(const blink::WebElement& root) {
 void PreviewSuggestion(const std::u16string& suggestion,
                        const std::u16string& user_input,
                        blink::WebFormControlElement* input_element) {
-  input_element->SetSelectionRange(user_input.length(), suggestion.length());
+  input_element->SetSelectionRange(
+      base::checked_cast<unsigned>(user_input.length()),
+      base::checked_cast<unsigned>(suggestion.length()));
 }
 
 std::u16string FindChildText(const WebNode& node) {
