@@ -5,7 +5,7 @@
 #include "extensions/renderer/api/messaging/send_message_tester.h"
 
 #include "base/strings/stringprintf.h"
-#include "extensions/common/api/messaging/serialization_format.h"
+#include "extensions/common/mojom/message_port.mojom-shared.h"
 #include "extensions/renderer/api/messaging/messaging_util.h"
 #include "extensions/renderer/bindings/api_binding_test_util.h"
 #include "extensions/renderer/native_extension_bindings_system_test_base.h"
@@ -81,11 +81,11 @@ void SendMessageTester::TestConnect(const std::string& args,
   constexpr char kAddPortTemplate[] =
       "(function() { return chrome.%s.connect(%s); })";
   PortId expected_port_id(script_context_->context_id(), next_port_id_++, true,
-                          SerializationFormat::kJson);
+                          mojom::SerializationFormat::kJson);
   EXPECT_CALL(*ipc_sender_,
-              SendOpenMessageChannel(script_context_.get(), expected_port_id,
-                                     expected_target, ChannelType::kConnect,
-                                     expected_channel));
+              SendOpenMessageChannel(
+                  script_context_.get(), expected_port_id, expected_target,
+                  mojom::ChannelType::kConnect, expected_channel));
   v8::Local<v8::Function> add_port = FunctionFromString(
       v8_context, base::StringPrintf(kAddPortTemplate, api_namespace_.c_str(),
                                      args.c_str()));
@@ -109,35 +109,35 @@ void SendMessageTester::TestSendMessageOrRequest(
       "(function() { return chrome.%s.%s(%s); })";
 
   std::string expected_channel;
-  ChannelType channel_type = ChannelType::kSendMessage;
+  mojom::ChannelType channel_type = mojom::ChannelType::kSendMessage;
   const char* method_name = nullptr;
   switch (method) {
     case SEND_MESSAGE:
       method_name = "sendMessage";
       expected_channel = messaging_util::kSendMessageChannel;
-      channel_type = ChannelType::kSendMessage;
+      channel_type = mojom::ChannelType::kSendMessage;
       break;
     case SEND_REQUEST:
       method_name = "sendRequest";
       expected_channel = messaging_util::kSendRequestChannel;
-      channel_type = ChannelType::kSendRequest;
+      channel_type = mojom::ChannelType::kSendRequest;
       break;
     case SEND_NATIVE_MESSAGE:
       method_name = "sendNativeMessage";
-      channel_type = ChannelType::kNative;
+      channel_type = mojom::ChannelType::kNative;
       // sendNativeMessage doesn't have name channels so we don't need to change
       // expected_channel from an empty string.
       break;
   }
 
   PortId expected_port_id(script_context_->context_id(), next_port_id_++, true,
-                          SerializationFormat::kJson);
+                          mojom::SerializationFormat::kJson);
 
   EXPECT_CALL(
       *ipc_sender_,
       SendOpenMessageChannel(script_context_.get(), expected_port_id,
                              expected_target, channel_type, expected_channel));
-  Message message(expected_message, SerializationFormat::kJson, false);
+  Message message(expected_message, mojom::SerializationFormat::kJson, false);
   EXPECT_CALL(*ipc_sender_, SendPostMessageToPort(expected_port_id, message));
 
   if (expected_port_status == CLOSED) {

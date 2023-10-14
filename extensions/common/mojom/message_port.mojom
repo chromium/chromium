@@ -2,13 +2,16 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#ifndef EXTENSIONS_COMMON_API_MESSAGING_CHANNEL_TYPE_H_
-#define EXTENSIONS_COMMON_API_MESSAGING_CHANNEL_TYPE_H_
+module extensions.mojom;
 
-namespace extensions {
+// The serialization format of the message.
+enum SerializationFormat {
+  kStructuredCloned,
+  kJson
+};
 
 // The type of messaging channel.
-enum class ChannelType {
+enum ChannelType {
   // A message channel associated with `runtime.sendMessage()` or
   // `tabs.sendMessage()`.
   kSendMessage,
@@ -20,11 +23,20 @@ enum class ChannelType {
   // A native message channel. Note that unlike above, both one-time and
   // long-lived native message channels use the same type (because they don't
   // have associated channel names).
-  kNative,
-
-  kLast = kNative,
+  kNative
 };
 
-}  // namespace extensions
-
-#endif  // EXTENSIONS_COMMON_API_MESSAGING_CHANNEL_TYPE_H_
+// Type of the messaging source or destination - i.e., the type of the
+// component which talks to a messaging channel.
+enum MessagingEndpointType {
+  // An extension.
+  kExtension,
+  // A web page or a hosted app.
+  kWebPage,
+  // A content script.
+  kContentScript,
+  // A user script.
+  kUserScript,
+  // A native application.
+  kNativeApp
+};

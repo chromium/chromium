@@ -17,8 +17,12 @@ class WebLocalFrame;
 }
 
 namespace extensions {
+
+namespace mojom {
 enum class ChannelType;
 enum class SerializationFormat;
+}  // namespace mojom
+
 class ScriptContext;
 struct Message;
 struct MessagingEndpoint;
@@ -46,7 +50,7 @@ extern const int kNoFrameId;
 // will populate |error_out|.
 std::unique_ptr<Message> MessageFromV8(v8::Local<v8::Context> context,
                                        v8::Local<v8::Value> value,
-                                       SerializationFormat format,
+                                       mojom::SerializationFormat format,
                                        std::string* error);
 
 // Converts a message to a v8 value. This is expected not to fail, since it
@@ -62,7 +66,7 @@ int ExtractIntegerId(v8::Local<v8::Value> value);
 // Returns the preferred serialization format for the given `context`. Note
 // extension native messaging clients shouldn't call this as they should always
 // use JSON.
-SerializationFormat GetSerializationFormat(const ScriptContext& context);
+mojom::SerializationFormat GetSerializationFormat(const ScriptContext& context);
 
 // Flags for ParseMessageOptions().
 enum ParseOptionsFlags {
@@ -112,7 +116,7 @@ bool IsSendRequestDisabled(ScriptContext* script_context);
 // `target_extension_id`, and `channel_name`.
 std::string GetEventForChannel(const MessagingEndpoint& source_endpoint,
                                const ExtensionId& target_extension_id,
-                               ChannelType channel_type);
+                               mojom::ChannelType channel_type);
 
 }  // namespace messaging_util
 }  // namespace extensions

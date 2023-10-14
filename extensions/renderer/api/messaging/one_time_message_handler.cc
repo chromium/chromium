@@ -13,10 +13,10 @@
 #include "base/ranges/algorithm.h"
 #include "base/supports_user_data.h"
 #include "content/public/renderer/render_frame.h"
-#include "extensions/common/api/messaging/channel_type.h"
 #include "extensions/common/api/messaging/message.h"
 #include "extensions/common/api/messaging/port_id.h"
 #include "extensions/common/mojom/event_dispatcher.mojom.h"
+#include "extensions/common/mojom/message_port.mojom-shared.h"
 #include "extensions/renderer/api/messaging/message_target.h"
 #include "extensions/renderer/api/messaging/messaging_util.h"
 #include "extensions/renderer/bindings/api_binding_types.h"
@@ -156,7 +156,7 @@ v8::Local<v8::Promise> OneTimeMessageHandler::SendMessage(
     ScriptContext* script_context,
     const PortId& new_port_id,
     const MessageTarget& target,
-    ChannelType channel_type,
+    mojom::ChannelType channel_type,
     const Message& message,
     binding::AsyncResponseType async_type,
     v8::Local<v8::Function> response_callback) {
@@ -196,16 +196,16 @@ v8::Local<v8::Promise> OneTimeMessageHandler::SendMessage(
   IPCMessageSender* ipc_sender = bindings_system_->GetIPCMessageSender();
   std::string channel_name;
   switch (channel_type) {
-    case ChannelType::kSendRequest:
+    case mojom::ChannelType::kSendRequest:
       channel_name = messaging_util::kSendRequestChannel;
       break;
-    case ChannelType::kSendMessage:
+    case mojom::ChannelType::kSendMessage:
       channel_name = messaging_util::kSendMessageChannel;
       break;
-    case ChannelType::kNative:
+    case mojom::ChannelType::kNative:
       // Native messaging doesn't use channel names.
       break;
-    case ChannelType::kConnect:
+    case mojom::ChannelType::kConnect:
       // connect() calls aren't handled by the OneTimeMessageHandler.
       NOTREACHED_NORETURN();
   }

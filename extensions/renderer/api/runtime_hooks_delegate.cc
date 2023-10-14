@@ -10,14 +10,13 @@
 #include "base/strings/stringprintf.h"
 #include "content/public/renderer/render_frame.h"
 #include "content/public/renderer/v8_value_converter.h"
-#include "extensions/common/api/messaging/channel_type.h"
 #include "extensions/common/api/messaging/message.h"
-#include "extensions/common/api/messaging/serialization_format.h"
 #include "extensions/common/constants.h"
 #include "extensions/common/extension.h"
 #include "extensions/common/extension_features.h"
 #include "extensions/common/manifest.h"
 #include "extensions/common/manifest_handlers/web_accessible_resources_info.h"
+#include "extensions/common/mojom/message_port.mojom-shared.h"
 #include "extensions/renderer/api/messaging/message_target.h"
 #include "extensions/renderer/api/messaging/messaging_util.h"
 #include "extensions/renderer/api/messaging/native_renderer_messaging_service.h"
@@ -325,7 +324,7 @@ RequestResult RuntimeHooksDelegate::HandleSendMessage(
 
   v8::Local<v8::Promise> promise = messaging_service_->SendOneTimeMessage(
       script_context, MessageTarget::ForExtension(target_id),
-      ChannelType::kSendMessage, *message, parse_result.async_type,
+      mojom::ChannelType::kSendMessage, *message, parse_result.async_type,
       response_callback);
   DCHECK_EQ(parse_result.async_type == binding::AsyncResponseType::kPromise,
             !promise.IsEmpty())
@@ -356,7 +355,7 @@ RequestResult RuntimeHooksDelegate::HandleSendNativeMessage(
   // structured cloning serialization.
   std::unique_ptr<Message> message =
       messaging_util::MessageFromV8(script_context->v8_context(), v8_message,
-                                    SerializationFormat::kJson, &error);
+                                    mojom::SerializationFormat::kJson, &error);
   if (!message) {
     RequestResult result(RequestResult::INVALID_INVOCATION);
     result.error = std::move(error);
@@ -369,7 +368,7 @@ RequestResult RuntimeHooksDelegate::HandleSendNativeMessage(
 
   v8::Local<v8::Promise> promise = messaging_service_->SendOneTimeMessage(
       script_context, MessageTarget::ForNativeApp(application_name),
-      ChannelType::kNative, *message, parse_result.async_type,
+      mojom::ChannelType::kNative, *message, parse_result.async_type,
       response_callback);
   DCHECK_EQ(parse_result.async_type == binding::AsyncResponseType::kPromise,
             !promise.IsEmpty())
@@ -432,7 +431,7 @@ RequestResult RuntimeHooksDelegate::HandleConnectNative(
 
   // Native messaging always uses JSON since a native host doesn't understand
   // structured cloning serialization.
-  auto format = SerializationFormat::kJson;
+  auto format = mojom::SerializationFormat::kJson;
   gin::Handle<GinPort> port = messaging_service_->Connect(
       script_context, MessageTarget::ForNativeApp(application_name),
       std::string(), format);

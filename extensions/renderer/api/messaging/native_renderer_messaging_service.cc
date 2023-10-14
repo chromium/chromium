@@ -17,13 +17,13 @@
 #include "content/public/common/content_constants.h"
 #include "content/public/renderer/render_frame.h"
 #include "content/public/renderer/v8_value_converter.h"
-#include "extensions/common/api/messaging/channel_type.h"
 #include "extensions/common/api/messaging/message.h"
 #include "extensions/common/api/messaging/messaging_endpoint.h"
 #include "extensions/common/api/messaging/port_id.h"
 #include "extensions/common/extension_messages.h"
 #include "extensions/common/features/feature.h"
 #include "extensions/common/manifest_handlers/externally_connectable.h"
+#include "extensions/common/mojom/message_port.mojom-shared.h"
 #include "extensions/renderer/api/messaging/message_target.h"
 #include "extensions/renderer/api/messaging/messaging_util.h"
 #include "extensions/renderer/api_activity_logger.h"
@@ -115,7 +115,7 @@ void NativeRendererMessagingService::ValidateMessagePort(
 void NativeRendererMessagingService::DispatchOnConnect(
     ScriptContextSetIterable* context_set,
     const PortId& target_port_id,
-    ChannelType channel_type,
+    mojom::ChannelType channel_type,
     const std::string& channel_name,
     const ExtensionMsg_TabConnectionInfo& source,
     const ExtensionMsg_ExternalConnectionInfo& info,
@@ -169,7 +169,7 @@ gin::Handle<GinPort> NativeRendererMessagingService::Connect(
     ScriptContext* script_context,
     const MessageTarget& target,
     const std::string& channel_name,
-    SerializationFormat format) {
+    mojom::SerializationFormat format) {
   if (!ScriptContextIsValid(script_context))
     return gin::Handle<GinPort>();
 
@@ -184,9 +184,9 @@ gin::Handle<GinPort> NativeRendererMessagingService::Connect(
                  PortId(script_context->context_id(), data->next_port_id++,
                         is_opener, format));
 
-  ChannelType channel_type = target.type == MessageTarget::NATIVE_APP
-                                 ? ChannelType::kNative
-                                 : ChannelType::kConnect;
+  mojom::ChannelType channel_type = target.type == MessageTarget::NATIVE_APP
+                                        ? mojom::ChannelType::kNative
+                                        : mojom::ChannelType::kConnect;
   bindings_system_->GetIPCMessageSender()->SendOpenMessageChannel(
       script_context, port->port_id(), target, channel_type, channel_name);
   return port;
@@ -195,7 +195,7 @@ gin::Handle<GinPort> NativeRendererMessagingService::Connect(
 v8::Local<v8::Promise> NativeRendererMessagingService::SendOneTimeMessage(
     ScriptContext* script_context,
     const MessageTarget& target,
-    ChannelType channel_type,
+    mojom::ChannelType channel_type,
     const Message& message,
     binding::AsyncResponseType async_type,
     v8::Local<v8::Function> response_callback) {
@@ -207,13 +207,13 @@ v8::Local<v8::Promise> NativeRendererMessagingService::SendOneTimeMessage(
 
   bool is_opener = true;
 
-  // TODO(crbug.com/248548): Instead of inferring the SerializationFormat from
-  // Message, it'd be better to have the clients pass it directly. This is
+  // TODO(crbug.com/248548): Instead of inferring the mojom::SerializationFormat
+  // from Message, it'd be better to have the clients pass it directly. This is
   // because, in case of `kStructuredCloned` to `kJson` fallback, the format for
   // the ports will also be `kJson`. This is inconsistent with what we do for
-  // ports for long-lived channels where the port's `SerializationFormat` is
-  // always the same as that passed by messaging clients and is independent of
-  // any fallback behavior.
+  // ports for long-lived channels where the port's `mojom::SerializationFormat`
+  // is always the same as that passed by messaging clients and is independent
+  // of any fallback behavior.
   PortId port_id(script_context->context_id(), data->next_port_id++, is_opener,
                  message.format);
 
@@ -290,7 +290,7 @@ void NativeRendererMessagingService::ValidateMessagePortInContext(
 
 void NativeRendererMessagingService::DispatchOnConnectToScriptContext(
     const PortId& target_port_id,
-    ChannelType channel_type,
+    mojom::ChannelType channel_type,
     const std::string& channel_name,
     const ExtensionMsg_TabConnectionInfo* source,
     const ExtensionMsg_ExternalConnectionInfo& info,
@@ -416,7 +416,7 @@ void NativeRendererMessagingService::DispatchOnConnectToListeners(
     ScriptContext* script_context,
     const PortId& target_port_id,
     const ExtensionId& target_extension_id,
-    ChannelType channel_type,
+    mojom::ChannelType channel_type,
     const std::string& channel_name,
     const ExtensionMsg_TabConnectionInfo* source,
     const ExtensionMsg_ExternalConnectionInfo& info,
@@ -468,13 +468,13 @@ void NativeRendererMessagingService::DispatchOnConnectToListeners(
 
   v8::Local<v8::Object> sender = sender_builder.Build();
 
-  if (channel_type == ChannelType::kSendRequest ||
-      channel_type == ChannelType::kSendMessage) {
+  if (channel_type == mojom::ChannelType::kSendRequest ||
+      channel_type == mojom::ChannelType::kSendMessage) {
     one_time_message_handler_.AddReceiver(script_context, target_port_id,
                                           sender, event_name);
   } else {
-    CHECK(channel_type == ChannelType::kConnect ||
-          channel_type == ChannelType::kNative);
+    CHECK(channel_type == mojom::ChannelType::kConnect ||
+          channel_type == mojom::ChannelType::kNative);
     gin::Handle<GinPort> port =
         CreatePort(script_context, channel_name, target_port_id);
     port->SetSender(v8_context, sender);

@@ -19,10 +19,9 @@
 #include "extensions/browser/api/messaging/native_message_host.h"
 #include "extensions/browser/event_router.h"
 #include "extensions/browser/extension_registry.h"
-#include "extensions/common/api/messaging/channel_type.h"
 #include "extensions/common/api/messaging/messaging_endpoint.h"
 #include "extensions/common/api/messaging/port_id.h"
-#include "extensions/common/api/messaging/serialization_format.h"
+#include "extensions/common/mojom/message_port.mojom-shared.h"
 #include "extensions/common/permissions/permissions_data.h"
 #include "mojo/public/cpp/bindings/receiver.h"
 #include "mojo/public/cpp/bindings/remote.h"
@@ -162,9 +161,10 @@ ConnectToDriveFsNativeMessageExtension(
     return drivefs::mojom::ExtensionConnectionStatus::kExtensionNotFound;
   }
 
-  const extensions::PortId port_id(base::UnguessableToken::Create(),
-                                   /* port_number= */ 1, /* is_opener= */ true,
-                                   extensions::SerializationFormat::kJson);
+  const extensions::PortId port_id(
+      base::UnguessableToken::Create(),
+      /* port_number= */ 1, /* is_opener= */ true,
+      extensions::mojom::SerializationFormat::kJson);
   extensions::MessageService* const message_service =
       extensions::MessageService::Get(profile);
   auto native_message_host = CreateDriveFsInitiatedNativeMessageHostInternal(
@@ -181,7 +181,8 @@ ConnectToDriveFsNativeMessageExtension(
       extensions::MessagingEndpoint::ForNativeApp(
           kDriveFsNativeMessageHostName),
       std::move(native_message_port), extension_id, GURL(),
-      extensions::ChannelType::kNative, /* channel name= */ std::string());
+      extensions::mojom::ChannelType::kNative,
+      /* channel name= */ std::string());
   return drivefs::mojom::ExtensionConnectionStatus::kSuccess;
 }
 

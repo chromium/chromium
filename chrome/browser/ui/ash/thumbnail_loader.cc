@@ -25,11 +25,10 @@
 #include "extensions/browser/api/messaging/channel_endpoint.h"
 #include "extensions/browser/api/messaging/message_service.h"
 #include "extensions/browser/api/messaging/native_message_host.h"
-#include "extensions/common/api/messaging/channel_type.h"
 #include "extensions/common/api/messaging/messaging_endpoint.h"
 #include "extensions/common/api/messaging/port_id.h"
-#include "extensions/common/api/messaging/serialization_format.h"
 #include "extensions/common/extension.h"
+#include "extensions/common/mojom/message_port.mojom-shared.h"
 #include "net/base/data_url.h"
 #include "net/base/mime_util.h"
 #include "net/traffic_annotation/network_traffic_annotation.h"
@@ -429,9 +428,9 @@ void ThumbnailLoader::LoadForFileWithMetadata(
       request_id.ToString(), request_message,
       base::BindOnce(&ThumbnailLoader::OnThumbnailLoaded,
                      weak_factory_.GetWeakPtr(), request_id, request.size));
-  const extensions::PortId port_id(base::UnguessableToken::Create(),
-                                   1 /* port_number */, true /* is_opener */,
-                                   extensions::SerializationFormat::kJson);
+  const extensions::PortId port_id(
+      base::UnguessableToken::Create(), 1 /* port_number */,
+      true /* is_opener */, extensions::mojom::SerializationFormat::kJson);
   auto native_message_port = std::make_unique<extensions::NativeMessagePort>(
       message_service->GetChannelDelegate(), port_id,
       std::move(native_message_host));
@@ -439,7 +438,7 @@ void ThumbnailLoader::LoadForFileWithMetadata(
       extensions::ChannelEndpoint(profile_), port_id,
       extensions::MessagingEndpoint::ForNativeApp(kNativeMessageHostName),
       std::move(native_message_port), file_manager::kImageLoaderExtensionId,
-      GURL(), extensions::ChannelType::kNative,
+      GURL(), extensions::mojom::ChannelType::kNative,
       std::string() /* channel_name */);
 }
 

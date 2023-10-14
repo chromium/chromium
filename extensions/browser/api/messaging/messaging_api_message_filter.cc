@@ -18,9 +18,9 @@
 #include "extensions/browser/content_script_tracker.h"
 #include "extensions/browser/event_router_factory.h"
 #include "extensions/browser/extension_util.h"
-#include "extensions/common/api/messaging/channel_type.h"
 #include "extensions/common/extension_features.h"
 #include "extensions/common/extension_messages.h"
+#include "extensions/common/mojom/message_port.mojom-shared.h"
 #include "extensions/common/trace_util.h"
 #include "third_party/abseil-cpp/absl/types/optional.h"
 
@@ -475,7 +475,7 @@ bool MessagingAPIMessageFilter::OnMessageReceived(const IPC::Message& message) {
 void MessagingAPIMessageFilter::OnOpenChannelToExtension(
     const PortContext& source_context,
     const ExtensionMsg_ExternalConnectionInfo& info,
-    ChannelType channel_type,
+    mojom::ChannelType channel_type,
     const std::string& channel_name,
     const PortId& port_id) {
   DCHECK_CURRENTLY_ON(BrowserThread::UI);
@@ -531,7 +531,7 @@ void MessagingAPIMessageFilter::OnOpenChannelToNativeApp(
 void MessagingAPIMessageFilter::OnOpenChannelToTab(
     const PortContext& source_context,
     const ExtensionMsg_TabTargetConnectionInfo& info,
-    ChannelType channel_type,
+    mojom::ChannelType channel_type,
     const std::string& channel_name,
     const PortId& port_id) {
   DCHECK_CURRENTLY_ON(BrowserThread::UI);

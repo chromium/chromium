@@ -27,11 +27,11 @@
 #include "extensions/browser/extension_host.h"
 #include "extensions/browser/process_manager.h"
 #include "extensions/browser/process_manager_observer.h"
-#include "extensions/common/api/messaging/channel_type.h"
 #include "extensions/common/api/messaging/message.h"
 #include "extensions/common/api/messaging/messaging_endpoint.h"
 #include "extensions/common/extension_messages.h"
 #include "extensions/common/manifest_handlers/background_info.h"
+#include "extensions/common/mojom/message_port.mojom-shared.h"
 #include "services/metrics/public/cpp/ukm_recorder.h"
 #include "services/metrics/public/cpp/ukm_source_id.h"
 
@@ -290,7 +290,7 @@ void ExtensionMessagePort::RevalidatePort() {
 }
 
 void ExtensionMessagePort::DispatchOnConnect(
-    ChannelType channel_type,
+    mojom::ChannelType channel_type,
     const std::string& channel_name,
     absl::optional<base::Value::Dict> source_tab,
     const ExtensionApiFrameIdMap::FrameData& source_frame,
@@ -567,7 +567,7 @@ void ExtensionMessagePort::SendToIPCTarget(const IPCTarget& target,
 }
 
 std::unique_ptr<IPC::Message> ExtensionMessagePort::BuildDispatchOnConnectIPC(
-    ChannelType channel_type,
+    mojom::ChannelType channel_type,
     const std::string& channel_name,
     const base::Value::Dict* source_tab,
     const ExtensionApiFrameIdMap::FrameData& source_frame,

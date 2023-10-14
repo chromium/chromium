@@ -20,12 +20,10 @@
 #include "base/values.h"
 #include "content/public/common/common_param_traits.h"
 #include "content/public/common/socket_permission_request.h"
-#include "extensions/common/api/messaging/channel_type.h"
 #include "extensions/common/api/messaging/message.h"
 #include "extensions/common/api/messaging/messaging_endpoint.h"
 #include "extensions/common/api/messaging/port_context.h"
 #include "extensions/common/api/messaging/port_id.h"
-#include "extensions/common/api/messaging/serialization_format.h"
 #include "extensions/common/common_param_traits.h"
 #include "extensions/common/constants.h"
 #include "extensions/common/draggable_region.h"
@@ -41,6 +39,7 @@
 #include "extensions/common/mojom/host_id.mojom.h"
 #include "extensions/common/mojom/injection_type.mojom-shared.h"
 #include "extensions/common/mojom/manifest.mojom-shared.h"
+#include "extensions/common/mojom/message_port.mojom.h"
 #include "extensions/common/mojom/run_location.mojom-shared.h"
 #include "extensions/common/permissions/socket_permission_data.h"
 #include "extensions/common/permissions/usb_device_permission_data.h"
@@ -62,14 +61,14 @@ IPC_ENUM_TRAITS_MAX_VALUE(content::SocketPermissionRequest::OperationType,
 IPC_ENUM_TRAITS_MAX_VALUE(extensions::mojom::RunLocation,
                           extensions::mojom::RunLocation::kMaxValue)
 
-IPC_ENUM_TRAITS_MAX_VALUE(extensions::MessagingEndpoint::Type,
-                          extensions::MessagingEndpoint::Type::kLast)
+IPC_ENUM_TRAITS_MAX_VALUE(extensions::mojom::MessagingEndpointType,
+                          extensions::mojom::MessagingEndpointType::kMaxValue)
 
-IPC_ENUM_TRAITS_MAX_VALUE(extensions::SerializationFormat,
-                          extensions::SerializationFormat::kLast)
+IPC_ENUM_TRAITS_MAX_VALUE(extensions::mojom::SerializationFormat,
+                          extensions::mojom::SerializationFormat::kMaxValue)
 
-IPC_ENUM_TRAITS_MAX_VALUE(extensions::ChannelType,
-                          extensions::ChannelType::kLast)
+IPC_ENUM_TRAITS_MAX_VALUE(extensions::mojom::ChannelType,
+                          extensions::mojom::ChannelType::kMaxValue)
 
 // Struct containing information about the sender of connect() calls that
 // originate from a tab.
@@ -194,7 +193,7 @@ IPC_STRUCT_END()
 
 IPC_STRUCT_BEGIN(ExtensionMsg_OnConnectData)
   IPC_STRUCT_MEMBER(extensions::PortId, target_port_id)
-  IPC_STRUCT_MEMBER(extensions::ChannelType, channel_type)
+  IPC_STRUCT_MEMBER(extensions::mojom::ChannelType, channel_type)
   IPC_STRUCT_MEMBER(std::string, channel_name)
   IPC_STRUCT_MEMBER(ExtensionMsg_TabConnectionInfo, tab_source)
   IPC_STRUCT_MEMBER(ExtensionMsg_ExternalConnectionInfo,
@@ -257,7 +256,7 @@ IPC_MESSAGE_ROUTED1(ExtensionHostMsg_EventAck, int /* message_id */)
 IPC_MESSAGE_CONTROL5(ExtensionHostMsg_OpenChannelToExtension,
                      extensions::PortContext /* source_context */,
                      ExtensionMsg_ExternalConnectionInfo,
-                     extensions::ChannelType /* channel_type */,
+                     extensions::mojom::ChannelType /* channel_type */,
                      std::string /* channel_name */,
                      extensions::PortId /* port_id */)
 
@@ -271,7 +270,7 @@ IPC_MESSAGE_CONTROL3(ExtensionHostMsg_OpenChannelToNativeApp,
 IPC_MESSAGE_CONTROL5(ExtensionHostMsg_OpenChannelToTab,
                      extensions::PortContext /* source_context */,
                      ExtensionMsg_TabTargetConnectionInfo,
-                     extensions::ChannelType /* channel_type */,
+                     extensions::mojom::ChannelType /* channel_type */,
                      std::string /* channel_name */,
                      extensions::PortId /* port_id */)
 

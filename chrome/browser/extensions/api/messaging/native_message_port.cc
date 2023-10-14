@@ -12,7 +12,7 @@
 #include "chrome/browser/extensions/api/messaging/native_message_process_host.h"
 #include "content/public/browser/browser_thread.h"
 #include "extensions/common/api/messaging/message.h"
-#include "extensions/common/api/messaging/serialization_format.h"
+#include "extensions/common/mojom/message_port.mojom-shared.h"
 
 namespace extensions {
 
@@ -117,8 +117,8 @@ void NativeMessagePort::PostMessageFromNativeHost(const std::string& message) {
     // Native messaging always uses JSON since a native host doesn't understand
     // structured cloning serialization.
     weak_channel_delegate_->PostMessage(
-        port_id_,
-        Message(message, SerializationFormat::kJson, false /* user_gesture */));
+        port_id_, Message(message, mojom::SerializationFormat::kJson,
+                          false /* user_gesture */));
   }
 }
 

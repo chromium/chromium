@@ -9,28 +9,13 @@
 
 #include "base/debug/crash_logging.h"
 #include "extensions/common/extension_id.h"
+#include "extensions/common/mojom/message_port.mojom-shared.h"
 #include "third_party/abseil-cpp/absl/types/optional.h"
 
 namespace extensions {
 
 struct MessagingEndpoint {
-  // Type of the messaging source or destination - i.e., the type of the
-  // component which talks to a messaging channel.
-  enum class Type {
-    // An extension.
-    kExtension = 0,
-    // A web page or a hosted app.
-    kWebPage = 1,
-    // A content script.
-    kContentScript = 2,
-    // A user script.
-    kUserScript = 3,
-    // A native application.
-    kNativeApp = 4,
-
-    // This item must be equal to the last actual enum item.
-    kLast = kNativeApp,
-  };
+  using Type = mojom::MessagingEndpointType;
 
   // The relationship between two messaging endpoints.
   enum class Relationship {

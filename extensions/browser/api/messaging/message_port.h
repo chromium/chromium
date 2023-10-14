@@ -22,7 +22,11 @@ class RenderFrameHost;
 }
 
 namespace extensions {
+
+namespace mojom {
 enum class ChannelType;
+}
+
 struct Message;
 struct MessagingEndpoint;
 struct PortContext;
@@ -69,7 +73,7 @@ class MessagePort {
 
   // Notifies the port that the channel has been opened.
   virtual void DispatchOnConnect(
-      ChannelType channel_type,
+      mojom::ChannelType channel_type,
       const std::string& channel_name,
       absl::optional<base::Value::Dict> source_tab,
       const ExtensionApiFrameIdMap::FrameData& source_frame,
