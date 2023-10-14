@@ -32,7 +32,7 @@ struct SameSizeAsNGPhysicalFragment
     : public GarbageCollected<SameSizeAsNGPhysicalFragment> {
   Member<void*> layout_object;
   PhysicalSize size;
-  unsigned flags;
+  uint8_t flags[4];
   Member<void*> members[3];
 };
 
@@ -327,12 +327,12 @@ NGPhysicalFragment::NGPhysicalFragment(NGFragmentBuilder* builder,
                                        unsigned sub_type)
     : layout_object_(builder->layout_object_),
       size_(ToPhysicalSize(builder->size_, builder->GetWritingMode())),
-      has_floating_descendants_for_paint_(false),
-      children_valid_(true),
       type_(type),
       sub_type_(sub_type),
       style_variant_((unsigned)builder->style_variant_),
       is_hidden_for_paint_(builder->is_hidden_for_paint_),
+      has_floating_descendants_for_paint_(false),
+      children_valid_(true),
       is_opaque_(builder->is_opaque_),
       is_block_in_inline_(builder->is_block_in_inline_),
       is_line_for_parallel_flow_(builder->is_line_for_parallel_flow_),
@@ -420,6 +420,10 @@ NGPhysicalFragment::OutOfFlowData* NGPhysicalFragment::OutOfFlowDataFromBuilder(
 NGPhysicalFragment::NGPhysicalFragment(const NGPhysicalFragment& other)
     : layout_object_(other.layout_object_),
       size_(other.size_),
+      type_(other.type_),
+      sub_type_(other.sub_type_),
+      style_variant_(other.style_variant_),
+      is_hidden_for_paint_(other.is_hidden_for_paint_),
       has_floating_descendants_for_paint_(
           other.has_floating_descendants_for_paint_),
       has_adjoining_object_descendants_(
@@ -429,10 +433,6 @@ NGPhysicalFragment::NGPhysicalFragment(const NGPhysicalFragment& other)
       children_valid_(other.children_valid_),
       has_propagated_descendants_(other.has_propagated_descendants_),
       has_hanging_(other.has_hanging_),
-      type_(other.type_),
-      sub_type_(other.sub_type_),
-      style_variant_(other.style_variant_),
-      is_hidden_for_paint_(other.is_hidden_for_paint_),
       is_opaque_(other.is_opaque_),
       is_block_in_inline_(other.is_block_in_inline_),
       is_line_for_parallel_flow_(other.is_line_for_parallel_flow_),
