@@ -5,6 +5,7 @@
 #include "chromeos/ash/components/carrier_lock/carrier_lock_manager.h"
 #include "chromeos/ash/components/carrier_lock/carrier_lock.pb.h"
 #include "chromeos/ash/components/carrier_lock/fcm_topic_subscriber_impl.h"
+#include "chromeos/ash/components/carrier_lock/metrics.h"
 #include "chromeos/ash/components/carrier_lock/provisioning_config_fetcher_impl.h"
 #include "chromeos/ash/components/carrier_lock/psm_claim_verifier_impl.h"
 
@@ -12,6 +13,7 @@
 #include "base/base64.h"
 #include "base/files/file_util.h"
 #include "base/logging.h"
+#include "base/metrics/histogram_functions.h"
 #include "base/task/single_thread_task_runner.h"
 #include "base/task/task_runner.h"
 #include "chromeos/ash/components/network/device_state.h"
@@ -38,6 +40,7 @@ const char kAndroidId[] = "123";
 
 // const values
 constexpr base::TimeDelta kFcmTimeout = base::Days(30);
+const char kCarrierLockType[] = "network-pin";
 const char kFirmwareVariantPath[] =
     "/run/chromeos-config/v1/modem/firmware-variant";
 
@@ -400,6 +403,43 @@ void CarrierLockManager::DefaultNetworkChanged(const NetworkState* network) {
       retry_backoff_.GetTimeUntilRelease());
 }
 
+void CarrierLockManager::DevicePropertiesUpdated(const DeviceState* device) {
+  if (device->type() != shill::kTypeCellular) {
+    return;
+  }
+  const std::string lock_type = device->sim_lock_type();
+  if (!lock_type.empty() && lock_type != kCarrierLockType) {
+    // SIM card locked, state of carrier lock is unknown.
+    return;
+  }
+
+  bool is_manager_enabled = (ash::features::IsCellularCarrierLockEnabled() &&
+                             !local_state_->GetBoolean(kDisableManagerPref));
+  bool is_modem_configured =
+      local_state_->GetTime(kLastConfigTimePref) != base::Time();
+
+  if (is_manager_enabled) {
+    if (!is_modem_configured) {
+      // Configuration is in progress.
+      base::UmaHistogramEnumeration(kLockState, LockState::kNotConfigured);
+    } else if (lock_type.empty()) {
+      // Modem is carrier-locked and SIM is allowed.
+      base::UmaHistogramEnumeration(kLockState, LockState::kCompatibleSim);
+    } else {
+      // Modem is carrier-locked and SIM is blocked.
+      base::UmaHistogramEnumeration(kLockState, LockState::kIncompatibleSim);
+    }
+  } else if (lock_type.empty()) {
+    if (is_modem_configured) {
+      // Modem was locked and unlocked properly.
+      base::UmaHistogramEnumeration(kLockState, LockState::kProperlyUnlocked);
+    }
+  } else {
+    // Modem is locked but manager is already disabled (invalid state).
+    base::UmaHistogramEnumeration(kLockState, LockState::kIncorrectlyLocked);
+  }
+}
+
 void CarrierLockManager::RunStep(ConfigurationState state) {
   VLOG(2) << "Run step " << ConfigurationStateToStringView(state);
 
@@ -477,7 +517,33 @@ void CarrierLockManager::LogError(Result result) {
   VLOG(2) << "Step " << ConfigurationStateToStringView(configuration_state_)
           << " returned error " << ResultToStringView(result);
 
+  switch (configuration_state_) {
+    case ConfigurationState::kNone:
+    case ConfigurationState::kInitialize:
+      base::UmaHistogramEnumeration(kErrorManagerInitialization, result);
+      break;
+    case ConfigurationState::kPsmCheckClaim:
+      base::UmaHistogramEnumeration(kErrorPsmClaim, result);
+      break;
+    case ConfigurationState::kFcmGetToken:
+    case ConfigurationState::kFcmSubscribe:
+      base::UmaHistogramEnumeration(kErrorFcmTopic, result);
+      break;
+    case ConfigurationState::kRequestConfig:
+      base::UmaHistogramEnumeration(kErrorProvisioning, result);
+      break;
+    case ConfigurationState::kSetupModem:
+      base::UmaHistogramEnumeration(kErrorModemSetup, result);
+      break;
+    default:
+      break;
+  }
+
   local_state_->SetInteger(kErrorCounterPref, ++error_counter_);
+  if (error_counter_ && !(error_counter_ % 10)) {
+    base::UmaHistogramCounts1000(kNumConsecutiveConfigurationFailures,
+                                 error_counter_);
+  }
 }
 
 void CarrierLockManager::CheckState() {
@@ -515,12 +581,16 @@ void CarrierLockManager::CheckState() {
 
   base::Time last_config = local_state_->GetTime(kLastConfigTimePref);
   if (last_config.is_null()) {
+    base::UmaHistogramEnumeration(kConfigurationStateAfterInitialization,
+                                  InitialState::kFirstConfiguration);
     is_first_setup_ = true;
     RunStep(ConfigurationState::kPsmCheckClaim);
     return;
   }
 
   if (base::Time::Now() - last_config >= kFcmTimeout) {
+    base::UmaHistogramEnumeration(kConfigurationStateAfterInitialization,
+                                  InitialState::kObsoleteConfiguration);
     is_first_setup_ = false;
     RunStep(ConfigurationState::kFcmGetToken);
     return;
@@ -530,10 +600,16 @@ void CarrierLockManager::CheckState() {
   std::string signed_config = local_state_->GetString(kSignedConfigPref);
   std::string fcm_topic = local_state_->GetString(kFcmTopicPref);
   if ((imei_ == last_imei) && !signed_config.empty() && !fcm_topic.empty()) {
+    base::UmaHistogramEnumeration(kConfigurationStateAfterInitialization,
+                                  InitialState::kAlreadyConfigured);
     is_first_setup_ = false;
     RunStep(ConfigurationState::kSetupModem);
   } else {
     is_first_setup_ = (imei_ != last_imei);
+    base::UmaHistogramEnumeration(
+        kConfigurationStateAfterInitialization,
+        (is_first_setup_ ? InitialState::kModemImeiChanged
+                         : InitialState::kEmptySignedConfig));
     RunStep(ConfigurationState::kFcmGetToken);
   }
 }
@@ -556,10 +632,15 @@ void CarrierLockManager::PsmCallback(Result result) {
     }
   }
 
-  if (result != Result::kSuccess || psm_->GetMembership()) {
+  if (result != Result::kSuccess) {
+    RunStep(ConfigurationState::kFcmGetToken);
+  } else if (psm_->GetMembership()) {
+    base::UmaHistogramEnumeration(kPsmClaimResponse, PsmResult::kDeviceLocked);
     RunStep(ConfigurationState::kFcmGetToken);
   } else {
     VLOG(2) << "Not a memeber in PSM group, manager will be disabled.";
+    base::UmaHistogramEnumeration(kPsmClaimResponse,
+                                  PsmResult::kDeviceUnlocked);
     RunStep(ConfigurationState::kDeviceUnlocked);
   }
 }
@@ -584,11 +665,24 @@ void CarrierLockManager::ConfigCallback(Result result) {
   bool is_config_unlocked =
       !networks.allowed && !networks.disallowed &&
       (config_->GetRestrictionMode() == ::carrier_lock::DEFAULT_ALLOW);
-  if (config_->GetFcmTopic().empty() && !is_config_unlocked) {
-    // Invalid config (locked but without fcm topic).
-    LogError(Result::kLockedWithoutTopic);
-    RetryStep();
-    return;
+  if (config_->GetFcmTopic().empty()) {
+    // Unlocked or Invalid configuration.
+    base::UmaHistogramEnumeration(kProvisioningServerResponse,
+                                  is_config_unlocked
+                                      ? ProvisioningResult::kConfigUnlocked
+                                      : ProvisioningResult::kConfigInvalid);
+    if (!is_config_unlocked) {
+      // Invalid config (locked but without fcm topic).
+      LogError(Result::kLockedWithoutTopic);
+      RetryStep();
+      return;
+    }
+  } else {
+    // Locked or Temporarily unlocked configuration.
+    base::UmaHistogramEnumeration(kProvisioningServerResponse,
+                                  is_config_unlocked
+                                      ? ProvisioningResult::kConfigTempUnlocked
+                                      : ProvisioningResult::kConfigLocked);
   }
 
   // Check signed configuration and store it.
@@ -626,6 +720,19 @@ void CarrierLockManager::SetupModemCallback(CarrierLockResult result) {
   local_state_->SetTime(kLastConfigTimePref, base::Time::Now());
   local_state_->SetString(kLastImeiPref, imei_);
 
+  if (local_state_->GetString(kFcmTopicPref).empty()) {
+    // Configuration not locked.
+    base::UmaHistogramEnumeration(kModemConfigurationResult,
+                                  is_first_setup_
+                                      ? ConfigurationResult::kModemNotLocked
+                                      : ConfigurationResult::kModemUnlocked);
+  } else {
+    // Configuration carrier-locked.
+    base::UmaHistogramEnumeration(kModemConfigurationResult,
+                                  is_first_setup_
+                                      ? ConfigurationResult::kModemLocked
+                                      : ConfigurationResult::kModemRelocked);
+  }
   is_first_setup_ = false;
 
   RunStep(ConfigurationState::kFcmCheckTopic);
@@ -649,16 +756,23 @@ void CarrierLockManager::FcmTokenCallback(Result result) {
 
   fcm_token_ = fcm_->token();
 
+  base::UmaHistogramEnumeration(kFcmCommunicationResult,
+                                FcmResult::kRegistered);
+
   RunStep(ConfigurationState::kRequestConfig);
 }
 
 void CarrierLockManager::CheckFcmTopic() {
   if (local_state_->GetString(kFcmTopicPref).empty()) {
     VLOG(2) << "FCM topic not provided with config, modem was unlocked.";
+    base::UmaHistogramCounts100(kNumConsecutiveFailuresBeforeUnlock,
+                                error_counter_);
     RunStep(ConfigurationState::kDeviceUnlocked);
     return;
   }
 
+  base::UmaHistogramCounts100(kNumConsecutiveFailuresBeforeLock,
+                              error_counter_);
   RunStep(ConfigurationState::kFcmSubscribe);
 }
 
@@ -681,6 +795,8 @@ void CarrierLockManager::FcmTopicCallback(Result result) {
     return;
   }
 
+  base::UmaHistogramEnumeration(kFcmCommunicationResult,
+                                FcmResult::kSubscribed);
   RunStep(ConfigurationState::kDeviceLocked);
 }
 
@@ -688,6 +804,10 @@ void CarrierLockManager::FcmNotification(bool is_from_topic) {
   // Set LastConfigTime to value older than FCM timeout (usually 30 days)
   // in order to request new configuration in case of failure or reboot.
   local_state_->SetTime(kLastConfigTimePref, base::Time::Now() - kFcmTimeout);
+
+  base::UmaHistogramEnumeration(
+      kFcmNotificationType, (is_from_topic ? FcmNotification::kUpdateProfile
+                                           : FcmNotification::kUnlockDevice));
 
   RunStep(ConfigurationState::kRequestConfig);
 }

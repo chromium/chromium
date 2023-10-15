@@ -7,10 +7,12 @@
 #include "chromeos/ash/components/carrier_lock/fake_fcm_topic_subscriber.h"
 #include "chromeos/ash/components/carrier_lock/fake_provisioning_config_fetcher.h"
 #include "chromeos/ash/components/carrier_lock/fake_psm_claim_verifier.h"
+#include "chromeos/ash/components/carrier_lock/metrics.h"
 
 #include "ash/constants/ash_features.h"
 #include "base/base64.h"
 #include "base/strings/string_util.h"
+#include "base/test/metrics/histogram_tester.h"
 #include "base/test/scoped_feature_list.h"
 #include "base/test/task_environment.h"
 #include "base/time/time.h"
@@ -61,6 +63,7 @@ class CarrierLockManagerTest : public testing::Test {
   std::unique_ptr<FakeFcmTopicSubscriber> fake_fcm_subscriber_;
   std::unique_ptr<FakePsmClaimVerifier> fake_psm_verifier_;
   std::unique_ptr<FakeProvisioningConfigFetcher> fake_config_fetcher_;
+  base::HistogramTester histogram_tester_;
   base::test::TaskEnvironment task_environment_{
       base::test::TaskEnvironment::TimeSource::MOCK_TIME};
   base::test::ScopedFeatureList scoped_feature_list_;
@@ -104,6 +107,19 @@ TEST_F(CarrierLockManagerTest, CarrierLockStartManagerUnlocked) {
   EXPECT_EQ(std::string(), pref_state_->GetString(kFcmTopicPref));
   EXPECT_EQ(std::string(kTestImei), pref_state_->GetString(kLastImeiPref));
   EXPECT_EQ(0, pref_state_->GetInteger(kErrorCounterPref));
+
+  // Check histograms
+  histogram_tester_.ExpectUniqueSample(kPsmClaimResponse,
+                                       PsmResult::kDeviceLocked, 1);
+  histogram_tester_.ExpectUniqueSample(kProvisioningServerResponse,
+                                       ProvisioningResult::kConfigUnlocked, 1);
+  histogram_tester_.ExpectUniqueSample(kModemConfigurationResult,
+                                       ConfigurationResult::kModemNotLocked, 1);
+  histogram_tester_.ExpectUniqueSample(kFcmCommunicationResult,
+                                       FcmResult::kRegistered, 1);
+  histogram_tester_.ExpectUniqueSample(kNumConsecutiveFailuresBeforeLock, 0, 0);
+  histogram_tester_.ExpectUniqueSample(kNumConsecutiveFailuresBeforeUnlock, 0,
+                                       1);
 }
 
 TEST_F(CarrierLockManagerTest, CarrierLockStartManagerNoPsmMember) {
@@ -129,6 +145,19 @@ TEST_F(CarrierLockManagerTest, CarrierLockStartManagerNoPsmMember) {
   EXPECT_EQ(std::string(), pref_state_->GetString(kFcmTopicPref));
   EXPECT_EQ(std::string(), pref_state_->GetString(kLastImeiPref));
   EXPECT_EQ(0, pref_state_->GetInteger(kErrorCounterPref));
+
+  // Check histograms
+  histogram_tester_.ExpectUniqueSample(kPsmClaimResponse,
+                                       PsmResult::kDeviceUnlocked, 1);
+  histogram_tester_.ExpectUniqueSample(kProvisioningServerResponse,
+                                       ProvisioningResult::kConfigUnlocked, 0);
+  histogram_tester_.ExpectUniqueSample(kModemConfigurationResult,
+                                       ConfigurationResult::kModemNotLocked, 0);
+  histogram_tester_.ExpectUniqueSample(kFcmCommunicationResult,
+                                       FcmResult::kRegistered, 0);
+  histogram_tester_.ExpectUniqueSample(kNumConsecutiveFailuresBeforeLock, 0, 0);
+  histogram_tester_.ExpectUniqueSample(kNumConsecutiveFailuresBeforeUnlock, 0,
+                                       0);
 }
 
 TEST_F(CarrierLockManagerTest, CarrierLockStartManagerLocked) {
@@ -154,6 +183,21 @@ TEST_F(CarrierLockManagerTest, CarrierLockStartManagerLocked) {
   EXPECT_EQ(std::string(kTestImei), pref_state_->GetString(kLastImeiPref));
   EXPECT_EQ(false, pref_state_->GetBoolean(kDisableManagerPref));
   EXPECT_EQ(0, pref_state_->GetInteger(kErrorCounterPref));
+
+  // Check histograms
+  histogram_tester_.ExpectUniqueSample(kPsmClaimResponse,
+                                       PsmResult::kDeviceLocked, 1);
+  histogram_tester_.ExpectUniqueSample(kProvisioningServerResponse,
+                                       ProvisioningResult::kConfigLocked, 1);
+  histogram_tester_.ExpectUniqueSample(kModemConfigurationResult,
+                                       ConfigurationResult::kModemLocked, 1);
+  histogram_tester_.ExpectBucketCount(kFcmCommunicationResult,
+                                      FcmResult::kRegistered, 1);
+  histogram_tester_.ExpectBucketCount(kFcmCommunicationResult,
+                                      FcmResult::kSubscribed, 1);
+  histogram_tester_.ExpectUniqueSample(kNumConsecutiveFailuresBeforeLock, 0, 1);
+  histogram_tester_.ExpectUniqueSample(kNumConsecutiveFailuresBeforeUnlock, 0,
+                                       0);
 }
 
 TEST_F(CarrierLockManagerTest, CarrierLockStartManagerTempUnlocked) {
@@ -179,6 +223,21 @@ TEST_F(CarrierLockManagerTest, CarrierLockStartManagerTempUnlocked) {
   EXPECT_EQ(std::string(kTestImei), pref_state_->GetString(kLastImeiPref));
   EXPECT_EQ(false, pref_state_->GetBoolean(kDisableManagerPref));
   EXPECT_EQ(0, pref_state_->GetInteger(kErrorCounterPref));
+
+  // Check histograms
+  histogram_tester_.ExpectUniqueSample(kPsmClaimResponse,
+                                       PsmResult::kDeviceLocked, 1);
+  histogram_tester_.ExpectUniqueSample(
+      kProvisioningServerResponse, ProvisioningResult::kConfigTempUnlocked, 1);
+  histogram_tester_.ExpectUniqueSample(kModemConfigurationResult,
+                                       ConfigurationResult::kModemLocked, 1);
+  histogram_tester_.ExpectBucketCount(kFcmCommunicationResult,
+                                      FcmResult::kRegistered, 1);
+  histogram_tester_.ExpectBucketCount(kFcmCommunicationResult,
+                                      FcmResult::kSubscribed, 1);
+  histogram_tester_.ExpectUniqueSample(kNumConsecutiveFailuresBeforeLock, 0, 1);
+  histogram_tester_.ExpectUniqueSample(kNumConsecutiveFailuresBeforeUnlock, 0,
+                                       0);
 }
 
 TEST_F(CarrierLockManagerTest, CarrierLockStartManagerPsmFailed) {
@@ -203,6 +262,18 @@ TEST_F(CarrierLockManagerTest, CarrierLockStartManagerPsmFailed) {
   EXPECT_EQ(std::string(), pref_state_->GetString(kFcmTopicPref));
   EXPECT_EQ(std::string(), pref_state_->GetString(kLastImeiPref));
   EXPECT_EQ(1, pref_state_->GetInteger(kErrorCounterPref));
+
+  // Check histograms
+  histogram_tester_.ExpectUniqueSample(kPsmClaimResponse,
+                                       PsmResult::kDeviceUnlocked, 0);
+  histogram_tester_.ExpectUniqueSample(kProvisioningServerResponse,
+                                       ProvisioningResult::kConfigLocked, 0);
+  histogram_tester_.ExpectUniqueSample(kModemConfigurationResult,
+                                       ConfigurationResult::kModemNotLocked, 0);
+  histogram_tester_.ExpectUniqueSample(kFcmCommunicationResult,
+                                       FcmResult::kRegistered, 0);
+  histogram_tester_.ExpectUniqueSample(kErrorPsmClaim, Result::kConnectionError,
+                                       1);
 }
 
 TEST_F(CarrierLockManagerTest, CarrierLockStartManagerProvisioningFailed) {
@@ -228,6 +299,18 @@ TEST_F(CarrierLockManagerTest, CarrierLockStartManagerProvisioningFailed) {
   EXPECT_EQ(std::string(), pref_state_->GetString(kLastImeiPref));
   EXPECT_EQ(false, pref_state_->GetBoolean(kDisableManagerPref));
   EXPECT_EQ(1, pref_state_->GetInteger(kErrorCounterPref));
+
+  // Check histograms
+  histogram_tester_.ExpectUniqueSample(kPsmClaimResponse,
+                                       PsmResult::kDeviceLocked, 1);
+  histogram_tester_.ExpectUniqueSample(kProvisioningServerResponse,
+                                       ProvisioningResult::kConfigLocked, 0);
+  histogram_tester_.ExpectUniqueSample(kModemConfigurationResult,
+                                       ConfigurationResult::kModemNotLocked, 0);
+  histogram_tester_.ExpectUniqueSample(kFcmCommunicationResult,
+                                       FcmResult::kRegistered, 1);
+  histogram_tester_.ExpectUniqueSample(kErrorProvisioning,
+                                       Result::kConnectionError, 1);
 }
 
 TEST_F(CarrierLockManagerTest, CarrierLockStartManagerModemFailed) {
@@ -254,6 +337,18 @@ TEST_F(CarrierLockManagerTest, CarrierLockStartManagerModemFailed) {
   EXPECT_EQ(std::string(), pref_state_->GetString(kLastImeiPref));
   EXPECT_EQ(false, pref_state_->GetBoolean(kDisableManagerPref));
   EXPECT_EQ(1, pref_state_->GetInteger(kErrorCounterPref));
+
+  // Check histograms
+  histogram_tester_.ExpectUniqueSample(kPsmClaimResponse,
+                                       PsmResult::kDeviceLocked, 1);
+  histogram_tester_.ExpectUniqueSample(kProvisioningServerResponse,
+                                       ProvisioningResult::kConfigLocked, 1);
+  histogram_tester_.ExpectUniqueSample(kModemConfigurationResult,
+                                       ConfigurationResult::kModemNotLocked, 0);
+  histogram_tester_.ExpectUniqueSample(kFcmCommunicationResult,
+                                       FcmResult::kRegistered, 1);
+  histogram_tester_.ExpectUniqueSample(kErrorModemSetup,
+                                       Result::kModemInternalError, 1);
 }
 
 TEST_F(CarrierLockManagerTest, CarrierLockStartManagerFcmRegistrationFailed) {
@@ -279,6 +374,18 @@ TEST_F(CarrierLockManagerTest, CarrierLockStartManagerFcmRegistrationFailed) {
   EXPECT_EQ(std::string(), pref_state_->GetString(kLastImeiPref));
   EXPECT_EQ(false, pref_state_->GetBoolean(kDisableManagerPref));
   EXPECT_EQ(1, pref_state_->GetInteger(kErrorCounterPref));
+
+  // Check histograms
+  histogram_tester_.ExpectUniqueSample(kPsmClaimResponse,
+                                       PsmResult::kDeviceLocked, 1);
+  histogram_tester_.ExpectUniqueSample(kProvisioningServerResponse,
+                                       ProvisioningResult::kConfigLocked, 0);
+  histogram_tester_.ExpectUniqueSample(kModemConfigurationResult,
+                                       ConfigurationResult::kModemLocked, 0);
+  histogram_tester_.ExpectUniqueSample(kFcmCommunicationResult,
+                                       FcmResult::kRegistered, 0);
+  histogram_tester_.ExpectUniqueSample(kErrorFcmTopic, Result::kConnectionError,
+                                       1);
 }
 
 TEST_F(CarrierLockManagerTest, CarrierLockStartManagerFcmSubscriptionFailed) {
@@ -304,6 +411,21 @@ TEST_F(CarrierLockManagerTest, CarrierLockStartManagerFcmSubscriptionFailed) {
   EXPECT_EQ(std::string(kTestImei), pref_state_->GetString(kLastImeiPref));
   EXPECT_EQ(false, pref_state_->GetBoolean(kDisableManagerPref));
   EXPECT_EQ(1, pref_state_->GetInteger(kErrorCounterPref));
+
+  // Check histograms
+  histogram_tester_.ExpectUniqueSample(kPsmClaimResponse,
+                                       PsmResult::kDeviceLocked, 1);
+  histogram_tester_.ExpectUniqueSample(kProvisioningServerResponse,
+                                       ProvisioningResult::kConfigLocked, 1);
+  histogram_tester_.ExpectUniqueSample(kModemConfigurationResult,
+                                       ConfigurationResult::kModemLocked, 1);
+  histogram_tester_.ExpectUniqueSample(kFcmCommunicationResult,
+                                       FcmResult::kRegistered, 1);
+  histogram_tester_.ExpectUniqueSample(kNumConsecutiveFailuresBeforeLock, 0, 1);
+  histogram_tester_.ExpectUniqueSample(kNumConsecutiveFailuresBeforeUnlock, 0,
+                                       0);
+  histogram_tester_.ExpectUniqueSample(kErrorFcmTopic, Result::kConnectionError,
+                                       1);
 }
 
 TEST_F(CarrierLockManagerTest, CarrierLockStartManagerLockedToUnlocked) {
@@ -342,6 +464,17 @@ TEST_F(CarrierLockManagerTest, CarrierLockStartManagerLockedToUnlocked) {
   // Check local pref values
   EXPECT_EQ(true, pref_state_->GetBoolean(kDisableManagerPref));
   EXPECT_EQ(0, pref_state_->GetInteger(kErrorCounterPref));
+
+  // Check histograms
+  histogram_tester_.ExpectBucketCount(kModemConfigurationResult,
+                                      ConfigurationResult::kModemLocked, 1);
+  histogram_tester_.ExpectBucketCount(kModemConfigurationResult,
+                                      ConfigurationResult::kModemUnlocked, 1);
+  histogram_tester_.ExpectUniqueSample(kFcmNotificationType,
+                                       FcmNotification::kUnlockDevice, 1);
+  histogram_tester_.ExpectUniqueSample(kNumConsecutiveFailuresBeforeLock, 0, 1);
+  histogram_tester_.ExpectUniqueSample(kNumConsecutiveFailuresBeforeUnlock, 0,
+                                       1);
 }
 
 TEST_F(CarrierLockManagerTest, CarrierLockStartManagerPsmRetry) {
@@ -371,6 +504,17 @@ TEST_F(CarrierLockManagerTest, CarrierLockStartManagerPsmRetry) {
   EXPECT_EQ(std::string(kTestTopic), pref_state_->GetString(kFcmTopicPref));
   EXPECT_EQ(std::string(kTestImei), pref_state_->GetString(kLastImeiPref));
   EXPECT_EQ(kMaxRetries + 1, pref_state_->GetInteger(kErrorCounterPref));
+
+  // Check histograms
+  histogram_tester_.ExpectUniqueSample(kPsmClaimResponse,
+                                       PsmResult::kDeviceLocked, 0);
+  histogram_tester_.ExpectUniqueSample(kProvisioningServerResponse,
+                                       ProvisioningResult::kConfigLocked, 1);
+  histogram_tester_.ExpectUniqueSample(kModemConfigurationResult,
+                                       ConfigurationResult::kModemLocked, 1);
+  histogram_tester_.ExpectUniqueSample(kNumConsecutiveFailuresBeforeLock, 3, 1);
+  histogram_tester_.ExpectUniqueSample(kErrorPsmClaim, Result::kConnectionError,
+                                       3);
 }
 
 TEST_F(CarrierLockManagerTest, CarrierLockStartManagerProvisioningRetry) {
@@ -413,6 +557,18 @@ TEST_F(CarrierLockManagerTest, CarrierLockStartManagerProvisioningRetry) {
   EXPECT_EQ(std::string(), pref_state_->GetString(kFcmTopicPref));
   EXPECT_EQ(std::string(kTestImei), pref_state_->GetString(kLastImeiPref));
   EXPECT_EQ(true, pref_state_->GetBoolean(kDisableManagerPref));
+
+  // Check histograms
+  histogram_tester_.ExpectBucketCount(kProvisioningServerResponse,
+                                      ProvisioningResult::kConfigInvalid, 1);
+  histogram_tester_.ExpectBucketCount(kProvisioningServerResponse,
+                                      ProvisioningResult::kConfigUnlocked, 1);
+  histogram_tester_.ExpectUniqueSample(kModemConfigurationResult,
+                                       ConfigurationResult::kModemNotLocked, 1);
+  histogram_tester_.ExpectUniqueSample(kNumConsecutiveFailuresBeforeUnlock, 1,
+                                       1);
+  histogram_tester_.ExpectUniqueSample(kErrorProvisioning,
+                                       Result::kLockedWithoutTopic, 1);
 }
 
 TEST_F(CarrierLockManagerTest, CarrierLockStartManagerSubscriptionRetry) {
@@ -446,6 +602,15 @@ TEST_F(CarrierLockManagerTest, CarrierLockStartManagerSubscriptionRetry) {
   EXPECT_EQ(std::string(kTestImei), pref_state_->GetString(kLastImeiPref));
   EXPECT_EQ(false, pref_state_->GetBoolean(kDisableManagerPref));
   EXPECT_EQ(1, pref_state_->GetInteger(kErrorCounterPref));
+
+  // Check histograms
+  histogram_tester_.ExpectBucketCount(kFcmCommunicationResult,
+                                      FcmResult::kSubscribed, 1);
+  histogram_tester_.ExpectBucketCount(kFcmCommunicationResult,
+                                      FcmResult::kRegistered, 1);
+  histogram_tester_.ExpectUniqueSample(kNumConsecutiveFailuresBeforeLock, 0, 1);
+  histogram_tester_.ExpectUniqueSample(kErrorFcmTopic, Result::kConnectionError,
+                                       1);
 }
 
 }  // namespace ash::carrier_lock

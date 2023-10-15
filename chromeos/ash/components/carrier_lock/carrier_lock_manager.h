@@ -109,6 +109,7 @@ class COMPONENT_EXPORT(CHROMEOS_ASH_COMPONENTS_CARRIER_LOCK) CarrierLockManager
 
   // ash::NetworkStateHandlerObserver:
   void DefaultNetworkChanged(const NetworkState*) override;
+  void DevicePropertiesUpdated(const DeviceState* device) override;
 
   // session_manager::SessionManagerObserver:
   void OnSessionStateChanged() override;

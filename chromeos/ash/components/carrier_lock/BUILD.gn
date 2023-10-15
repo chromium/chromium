@@ -43,6 +43,7 @@ component("carrier_lock") {
     "fcm_topic_subscriber.h",
     "fcm_topic_subscriber_impl.cc",
     "fcm_topic_subscriber_impl.h",
+    "metrics.h",
     "provisioning_config_fetcher.h",
     "provisioning_config_fetcher_impl.cc",
     "provisioning_config_fetcher_impl.h",

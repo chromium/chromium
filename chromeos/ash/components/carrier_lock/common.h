@@ -11,6 +11,7 @@ namespace ash::carrier_lock {
 
 // These values are stored in logs and reported in metrics. Entries must not be
 // reordered or renumbered. New values should be added at the end.
+// Corresponding name in enums.xml: CellularCarrierLockError.
 enum class Result {
   kSuccess = 0,
   /* Modem setup errors */
