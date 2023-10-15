@@ -14,7 +14,6 @@ component("carrier_lock") {
   deps = [
     ":carrier_lock_proto",
     "//base",
-    "//chrome/browser:browser_process",
     "//chromeos/ash/components/dbus/shill",
     "//chromeos/ash/components/network",
     "//chromeos/ash/components/system",
@@ -30,6 +29,10 @@ component("carrier_lock") {
   ]
 
   sources = [
+    "//chromeos/ash/components/network/fake_network_3gpp_handler.cc",
+    "//chromeos/ash/components/network/fake_network_3gpp_handler.h",
+    "carrier_lock_manager.cc",
+    "carrier_lock_manager.h",
     "common.h",
     "fake_fcm_topic_subscriber.cc",
     "fake_fcm_topic_subscriber.h",
@@ -55,6 +58,7 @@ source_set("unit_tests") {
   testonly = true
 
   sources = [
+    "carrier_lock_manager_unittest.cc",
     "fcm_topic_subscriber_unittest.cc",
     "provisioning_config_fetcher_unittest.cc",
     "psm_claim_verifier_unittest.cc",
