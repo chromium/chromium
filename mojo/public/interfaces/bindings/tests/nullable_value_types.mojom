@@ -2,7 +2,8 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-module mojo.test.nullable_numerics_and_enums_unittest.mojom;
+[JavaPackage="org.chromium.mojo.bindings.test.mojom.nullable_value_types"]
+module mojo.test.nullable_value_types.mojom;
 
 // Enumerator values intentionally selected to avoid overlap.
 enum RegularEnum {

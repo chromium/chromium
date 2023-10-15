@@ -61,6 +61,7 @@ mojom("test_interfaces") {
   sources = [
     "math_calculator.mojom",
     "no_module.mojom",
+    "nullable_value_types.mojom",
     "ping_service.mojom",
     "rect.mojom",
     "regression_tests.mojom",
@@ -88,6 +89,18 @@ mojom("test_interfaces") {
   ]
 
   cpp_typemaps = [
+    {
+      types = [
+        {
+          mojom = "mojo.test.nullable_value_types.mojom.TypemappedEnum"
+          cpp = "::mojo::test::nullable_value_types::TypemappedEnum"
+        },
+      ]
+      traits_headers = [
+        "//mojo/public/cpp/bindings/tests/nullable_value_types_mojom_traits.h",
+      ]
+      traits_deps = [ "//mojo/public/cpp/bindings/tests:test_types" ]
+    },
     {
       types = [
         {
