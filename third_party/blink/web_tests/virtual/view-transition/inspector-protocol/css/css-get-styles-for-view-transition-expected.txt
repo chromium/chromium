@@ -338,10 +338,14 @@ The test verifies functionality of querying style information for view-transitio
                                         value : horizontal-tb
                                     }
                                     [5] : {
+                                        name : backdrop-filter
+                                        value : none
+                                    }
+                                    [6] : {
                                         name : color-scheme
                                         value : normal
                                     }
-                                    [6] : {
+                                    [7] : {
                                         name : mix-blend-mode
                                         value : normal
                                     }
@@ -568,10 +572,14 @@ The test verifies functionality of querying style information for view-transitio
                                         value : horizontal-tb
                                     }
                                     [5] : {
+                                        name : backdrop-filter
+                                        value : none
+                                    }
+                                    [6] : {
                                         name : color-scheme
                                         value : normal
                                     }
-                                    [6] : {
+                                    [7] : {
                                         name : mix-blend-mode
                                         value : normal
                                     }
@@ -2084,6 +2092,10 @@ Dumping styles for : ::view-transition-group with id root{
                                     name : height
                                     value : 600px
                                 }
+                                [3] : {
+                                    name : backdrop-filter
+                                    value : none
+                                }
                             ]
                             shorthandEntries : [
                             ]
@@ -2245,10 +2257,14 @@ Dumping styles for : ::view-transition-group with id root{
                                 value : horizontal-tb
                             }
                             [5] : {
+                                name : backdrop-filter
+                                value : none
+                            }
+                            [6] : {
                                 name : color-scheme
                                 value : normal
                             }
-                            [6] : {
+                            [7] : {
                                 name : mix-blend-mode
                                 value : normal
                             }
@@ -3123,6 +3139,10 @@ Dumping styles for : ::view-transition-group with id shared{
                                     name : height
                                     value : 100px
                                 }
+                                [3] : {
+                                    name : backdrop-filter
+                                    value : none
+                                }
                             ]
                             shorthandEntries : [
                             ]
@@ -3284,10 +3304,14 @@ Dumping styles for : ::view-transition-group with id shared{
                                 value : horizontal-tb
                             }
                             [5] : {
+                                name : backdrop-filter
+                                value : none
+                            }
+                            [6] : {
                                 name : color-scheme
                                 value : normal
                             }
-                            [6] : {
+                            [7] : {
                                 name : mix-blend-mode
                                 value : normal
                             }

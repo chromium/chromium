@@ -10,6 +10,7 @@ import "ui/gfx/mojom/transform.mojom";
 import "services/viz/public/mojom/compositing/view_transition_element_resource_id.mojom";
 
 enum ViewTransitionPropertyId {
+  kBackdropFilter,
   kColorScheme,
   kMixBlendMode,
   kTextOrientation,

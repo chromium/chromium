@@ -8,6 +8,7 @@ Dumping CSS keyframed animations:
         transform: matrix(1, 0, 0, 1, 0, 0); @[undefined-undefined]
         width: 800px; @[undefined-undefined]
         height: 600px; @[undefined-undefined]
+        backdrop-filter: none; @[undefined-undefined]
     }
 }
 Dumping animations for : ::view-transition-image-pair with id root
@@ -42,6 +43,7 @@ Dumping CSS keyframed animations:
         transform: matrix(1, 0, 0, 1, 8, 8); @[undefined-undefined]
         width: 100px; @[undefined-undefined]
         height: 100px; @[undefined-undefined]
+        backdrop-filter: none; @[undefined-undefined]
     }
 }
 Dumping animations for : ::view-transition-image-pair with id shared
