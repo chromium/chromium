@@ -258,6 +258,7 @@
 <translation id="5545693483061321551">ເວັບໄຊບໍ່ສາມາດໃຊ້ຄຸກກີ້ຂອງທ່ານເພື່ອເບິ່ງການເຄື່ອນໄຫວການທ່ອງເວັບຂອງທ່ານໃນເວັບໄຊຕ່າງໆໄດ້, ຕົວຢ່າງ: ເພື່ອປັບແຕ່ງໂຄສະນາໃຫ້ເປັນແບບສ່ວນຕົວ. ຄຸນສົມບັດຢູ່ບາງເວັບໄຊອາດບໍ່ເຮັດວຽກ.</translation>
 <translation id="5553374991681107062">ຫຼ້າສຸດ</translation>
 <translation id="5556459405103347317">ໂຫຼດຄືນໃໝ່</translation>
+<translation id="5591840828808741583">ບລັອກ <ph name="SITE_NAME" /> ໄວ້ແລ້ວ</translation>
 <translation id="5649053991847567735">ດາວ​ໂຫຼດ​ອັດ​ຕະ​ໂນ​ມັດ</translation>
 <translation id="5668404140385795438">ແທນ​ທີ່​ຄຳ​ຂໍ​ຂອງ​ເວັບໄຊທ໌​ເພື່ອ​ປ້ອງ​ກັນ​ການ​ຊູມ​ເຂົ້າ</translation>
 <translation id="5677928146339483299">ບລັອກແລ້ວ</translation>
@@ -455,6 +456,7 @@
 <translation id="8959122750345127698">ການນຳທາງແມ່ນບໍ່ສາມາດເຂົ້າເຖິງໄດ້: <ph name="URL" /></translation>
 <translation id="8986362086234534611">ລືມ</translation>
 <translation id="8990043154272859344">ທ່ານຈະຖືກອອກຈາກລະບົບເວັບໄຊທັງໝົດ</translation>
+<translation id="9011903857143958461">ອະນຸຍາດ <ph name="SITE_NAME" /> ແລ້ວ</translation>
 <translation id="9019902583201351841">ຈັດ​ການ​ໂດຍ​ຜູ້​ປົກ​ຄອງ​ຂອງ​ທ່ານ</translation>
 <translation id="9039697262778250930">ທ່ານອາດຖືກພາອອກຈາກລະບົບຈາກເວັບໄຊເຫຼົ່ານີ້</translation>
 <translation id="9074739597929991885">Bluetooth</translation>

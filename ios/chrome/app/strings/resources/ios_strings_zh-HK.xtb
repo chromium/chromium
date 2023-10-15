@@ -786,6 +786,7 @@
 <translation id="5181140330217080051">下載中</translation>
 <translation id="5184329579814168207">在 Chrome 中開啟</translation>
 <translation id="5186185447130319458">私人</translation>
+<translation id="5186634140793586141">管理感興趣的主題和搜尋內容</translation>
 <translation id="5188482106078495165">您的 Cookie 設定會套用至所有分頁。如要為已開啟的分頁套用新設定，請重新載入分頁。</translation>
 <translation id="5190835502935405962">書籤列</translation>
 <translation id="519530786644929958">下載失敗且無法重試。</translation>
@@ -849,7 +850,7 @@
 <translation id="5556459405103347317">重新載入</translation>
 <translation id="555749644339804659">正在檢查密碼…</translation>
 <translation id="556042886152191864">按鈕</translation>
-<translation id="5572684875078967866">資訊儲存空間</translation>
+<translation id="5572684875078967866">資料儲存空間</translation>
 <translation id="5597915316964418992">開啟「分頁網格」</translation>
 <translation id="560322036295180549">已由您的機構停用</translation>
 <translation id="5614553682702429503">要儲存密碼嗎？</translation>
@@ -1163,7 +1164,6 @@
 <translation id="7062545763355031412">接受並切換帳戶</translation>
 <translation id="7063811929043357292">你的帳戶由家長管理。
 <ph name="BEGIN_LINK" />瞭解詳情<ph name="END_LINK" /></translation>
-<translation id="7064619810277839954">系統會根據你在其他裝置的 Google 帳戶瀏覽活動，為你提供分頁建議。你的裝置必須使用相同的 Google 帳戶登入並完成同步。</translation>
 <translation id="7069695992271320873">從此裝置中移除</translation>
 <translation id="7080806333218412752">將網址傳送至「安全瀏覽」功能檢查。同時傳送少量網頁、下載檔案、擴充程式活動及系統資料，以協助探索新威脅。當您登入 Google 帳戶時，這些資料會暫時連結至您的帳戶，保護各個 Google 應用程式的使用安全。</translation>
 <translation id="7082853213442715471">開啟後，系統會封鎖特定網絡技術，這可能會導致部分網站載入速度變慢或無法正常運作。</translation>

@@ -3217,6 +3217,7 @@ Puedes gestionar la configuración de esta cuenta instalando la aplicación Fami
 <translation id="3521405806571557477">Eliminar los datos guardados de <ph name="SITE_NAME" /></translation>
 <translation id="3521606918211282604">Cambiar tamaño de disco</translation>
 <translation id="3522088408596898827">Queda muy poco espacio en el disco. Libera espacio y vuelve a intentarlo.</translation>
+<translation id="3522979239100719575">Buscando perfiles disponibles. Este proceso puede durar unos minutos.</translation>
 <translation id="3524518036046613664">Descubrir dispositivos en tu red local (por ejemplo, impresoras)</translation>
 <translation id="3524965460886318643">Exportar actividades</translation>
 <translation id="3525426269008462093">Revisa la sincronización del dispositivo después de la configuración</translation>
@@ -7808,6 +7809,7 @@ Tienes # contraseñas vulneradas más. El Gestor de contraseñas de Google te re
 <translation id="7283555985781738399">Modo Invitado</translation>
 <translation id="7284307451964417957">{DAYS,plural, =1{Este dispositivo se guardará durante 1 día y podrás conectarte sin un código la próxima vez. Este ajuste lo establece tu administrador.}other{Este dispositivo se guardará durante {DAYS} días y podrás conectarte sin un código la próxima vez. Este ajuste lo establece tu administrador.}}</translation>
 <translation id="7284411326658527427">Cada perfil puede personalizar su cuenta y mantener la privacidad de sus datos.</translation>
+<translation id="7286867818472074330">Seleccionar llave de acceso</translation>
 <translation id="7287143125007575591">Acceso denegado</translation>
 <translation id="7287411021188441799">Recuperar fondo predeterminado</translation>
 <translation id="7288676996127329262"><ph name="HORIZONTAL_DPI" />x<ph name="VERTICAL_DPI" /> PPP</translation>

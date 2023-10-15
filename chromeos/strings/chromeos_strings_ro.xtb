@@ -837,7 +837,6 @@
 <translation id="7401543881546089382">Ștergeți comanda rapidă</translation>
 <translation id="741244894080940828">conversie</translation>
 <translation id="7415801143053185905">Latență foarte mare a solicitărilor HTTP</translation>
-<translation id="7425178841057519191">{NUM_ROOL_APPS,plural,offset:2 =1{Administratorul a setat <ph name="APP_NAME_1" /> să pornească automat de fiecare dată când te conectezi.}=2{Administratorul a setat <ph name="APP_NAME_1" /> și <ph name="APP_NAME_2" /> să pornească automat de fiecare dată când te conectezi.}=3{Administratorul a setat <ph name="APP_NAME_1" />, <ph name="APP_NAME_2" /> și <ph name="APP_NAME_3" /> să pornească automat de fiecare dată când te conectezi.}few{Administratorul a setat <ph name="APP_NAME_1" />, <ph name="APP_NAME_2" /> și încă # aplicații să pornească automat de fiecare dată când te conectezi.}other{Administratorul a setat <ph name="APP_NAME_1" />, <ph name="APP_NAME_2" /> și încă # de aplicații să pornească automat de fiecare dată când te conectezi.}}</translation>
 <translation id="7427315641433634153">MSCHAP</translation>
 <translation id="7458970041932198923">Conectează-te la o rețea și reîncarcă pagina pentru a vedea și a seta avatarele.</translation>
 <translation id="7469648432129124067">S-a detectat un portal</translation>
@@ -1045,7 +1044,6 @@
 <translation id="8983038754672563810">HSPA</translation>
 <translation id="8987565828374052507">{NUMBER_OF_PAGES,plural, =0{Scanează}=1{Scanează {NUMBER_OF_PAGES} pagină}few{Scanează {NUMBER_OF_PAGES} pagini}other{Scanează {NUMBER_OF_PAGES} de pagini}}</translation>
 <translation id="8997710128084572139">Nivelul bateriei dispozitivului este de <ph name="BATTERY_PERCENTAGE" /> %.</translation>
-<translation id="8998156756248178381">{NUM_ROOL_APPS,plural, =1{<ph name="APP_NAME_1" /> a pornit automat}few{# aplicații au pornit automat}other{# de aplicații au pornit automat}}</translation>
 <translation id="8998289560386111590">Nu este disponibil pe dispozitivul tău</translation>
 <translation id="9003704114456258138">Frecvență</translation>
 <translation id="901834265349196618">e-mail</translation>

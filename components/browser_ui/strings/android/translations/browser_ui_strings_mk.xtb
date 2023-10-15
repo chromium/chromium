@@ -258,6 +258,7 @@
 <translation id="5545693483061321551">Сајтовите не може да користат колачиња за да ја гледаат вашата активност од прелистувањето на различни сајтови, на пример, за персонализирање реклами. Функциите на некои сајтови може да не функционираат</translation>
 <translation id="5553374991681107062">Најнови</translation>
 <translation id="5556459405103347317">Повторно вчитај</translation>
+<translation id="5591840828808741583">Блокирано: <ph name="SITE_NAME" /></translation>
 <translation id="5649053991847567735">Автоматски преземања</translation>
 <translation id="5668404140385795438">Отфрли го барањето на веб-локацијата да спречи зумирање</translation>
 <translation id="5677928146339483299">Блокирано</translation>
@@ -455,6 +456,7 @@
 <translation id="8959122750345127698">Навигацијата е недостапна: <ph name="URL" /></translation>
 <translation id="8986362086234534611">Заборави</translation>
 <translation id="8990043154272859344">Ќе ве одјавиме од сите сајтови</translation>
+<translation id="9011903857143958461">Одобрено: <ph name="SITE_NAME" /></translation>
 <translation id="9019902583201351841">Управувано од вашите родители</translation>
 <translation id="9039697262778250930">Можно е да се одјавите од сајтовиве</translation>
 <translation id="9074739597929991885">Bluetooth</translation>

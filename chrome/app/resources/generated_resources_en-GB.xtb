@@ -3231,6 +3231,7 @@ You can manage this account’s settings by installing the Family Link app on yo
 <translation id="3521405806571557477">Delete saved data for <ph name="SITE_NAME" /></translation>
 <translation id="3521606918211282604">Change disk size</translation>
 <translation id="3522088408596898827">Disk space is critically low. Free up disk space and try again.</translation>
+<translation id="3522979239100719575">Looking for available profiles. This may take a few minutes.</translation>
 <translation id="3524518036046613664">Discover devices on your local network, like printers</translation>
 <translation id="3524965460886318643">Export activities</translation>
 <translation id="3525426269008462093">Review device sync after setup</translation>
@@ -7824,6 +7825,7 @@ You have # more compromised passwords. Google Password Manager recommends checki
 <translation id="7283555985781738399">Guest mode</translation>
 <translation id="7284307451964417957">{DAYS,plural, =1{This device will be saved for one day and you can connect without a code next time. This is set by your administrator.}other{This device will be saved for {DAYS} days and you can connect without a code next time. This is set by your administrator.}}</translation>
 <translation id="7284411326658527427">Each person can personalise their account and keep data private.</translation>
+<translation id="7286867818472074330">Select passkey</translation>
 <translation id="7287143125007575591">Access denied</translation>
 <translation id="7287411021188441799">Restore default background</translation>
 <translation id="7288676996127329262"><ph name="HORIZONTAL_DPI" />x<ph name="VERTICAL_DPI" /> dpi</translation>

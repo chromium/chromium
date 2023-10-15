@@ -837,7 +837,6 @@
 <translation id="7401543881546089382">Izbriši prečac</translation>
 <translation id="741244894080940828">pretvaranje</translation>
 <translation id="7415801143053185905">Veoma visoka HTTP latentnost</translation>
-<translation id="7425178841057519191">{NUM_ROOL_APPS,plural,offset:2 =1{Vaš administrator je postavio automatsko pokretanje aplikacije <ph name="APP_NAME_1" /> svaki put kada se prijavite.}=2{Vaš administrator je postavio automatsko pokretanje aplikacija <ph name="APP_NAME_1" /> i <ph name="APP_NAME_2" /> svaki put kada se prijavite.}=3{Vaš administrator je postavio automatsko pokretanje aplikacija <ph name="APP_NAME_1" />, <ph name="APP_NAME_2" /> i <ph name="APP_NAME_3" /> svaki put kada se prijavite.}one{Vaš administrator je postavio automatsko pokretanje aplikacija <ph name="APP_NAME_1" />, <ph name="APP_NAME_2" /> i još # aplikacije svaki put kada se prijavite.}few{Vaš administrator je postavio automatsko pokretanje aplikacija <ph name="APP_NAME_1" />, <ph name="APP_NAME_2" /> i # druge aplikacije svaki put kada se prijavite.}other{Vaš administrator je postavio automatsko pokretanje aplikacija <ph name="APP_NAME_1" />, <ph name="APP_NAME_2" /> i # drugih aplikacija svaki put kada se prijavite.}}</translation>
 <translation id="7427315641433634153">MSCHAP</translation>
 <translation id="7458970041932198923">Povežite se s mrežom i ponovo učitajte stranicu da pregledate i postavite avatare.</translation>
 <translation id="7469648432129124067">Otkriven je portal</translation>
@@ -1045,7 +1044,6 @@
 <translation id="8983038754672563810">HSPA</translation>
 <translation id="8987565828374052507">{NUMBER_OF_PAGES,plural, =0{Skeniraj}=1{Skeniraj {NUMBER_OF_PAGES}. stranicu}one{Skeniraj {NUMBER_OF_PAGES}. stranicu}few{Skeniraj {NUMBER_OF_PAGES}. stranicu}other{Skeniraj {NUMBER_OF_PAGES}. stranicu}}</translation>
 <translation id="8997710128084572139">Uređaj ima <ph name="BATTERY_PERCENTAGE" />% baterije.</translation>
-<translation id="8998156756248178381">{NUM_ROOL_APPS,plural, =1{<ph name="APP_NAME_1" /> je automatski pokrenuta}one{# aplikacija je automatski pokrenuta}few{# aplikacije su automatski pokrenute}other{# applicacija je automatski pokrenuto}}</translation>
 <translation id="8998289560386111590">Nije dostupno na vašem uređaju</translation>
 <translation id="9003704114456258138">Frekvencija</translation>
 <translation id="901834265349196618">e-pošta</translation>

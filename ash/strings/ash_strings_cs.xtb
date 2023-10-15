@@ -353,7 +353,6 @@ Pro začátek můžete vyzkoušet třeba tohle.</translation>
 <translation id="243878895369688216">Otevřeno včera</translation>
 <translation id="2440978926514840421">GIF byl zaznamenán</translation>
 <translation id="2441427462554639370">Nahrávání bylo ukončeno z důvodu kriticky nízkého místa v úložišti</translation>
-<translation id="24452542372838207">Rozbalit oznámení</translation>
 <translation id="2448312741937722512">Typ</translation>
 <translation id="2449089818483227734">Slabá baterie</translation>
 <translation id="2450205753526923158">Režim snímku obrazovky</translation>
@@ -1052,6 +1051,7 @@ Připojte zařízení k napájení.</translation>
 <translation id="5260676007519551770">Plocha 4</translation>
 <translation id="5268819379131021772">Seznam úkolů Google</translation>
 <translation id="5275923704957843041">Náhled plochy</translation>
+<translation id="5277869901083657836">Přepnout nástroje dotykového pera</translation>
 <translation id="5278086053818066789">Zapnout/vypnout funkci ChromeVox (hlasovou odezvu)</translation>
 <translation id="5283099933536931082">Aplikace <ph name="APP_ITEM_TITLE" /> vyžaduje vaši pozornost.</translation>
 <translation id="5283198616748585639">Přidat 1 min</translation>
@@ -1946,7 +1946,6 @@ Pokud zařízení chcete vypnout, znovu podržte tlačítko napájení na zaří
 <translation id="9030665205623277906">Snímek využití procesoru: <ph name="CPU_USEAGE" /> %</translation>
 <translation id="9034924485347205037">Soubory systému Linux</translation>
 <translation id="9047624247355796468">Otevřít nastavení sítě <ph name="NETWORK_NAME" /></translation>
-<translation id="9059834730836941392">Sbalit oznámení</translation>
 <translation id="906458777597946297">Maximalizovat okno</translation>
 <translation id="9065203028668620118">Upravit</translation>
 <translation id="9070640332319875144">Nastavení Asistenta</translation>

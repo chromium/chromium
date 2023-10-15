@@ -6499,13 +6499,6 @@ Als je dit beleid instelt op False, wordt het oude gedrag toegepast.</translatio
       Als je dit beleid niet instelt, is toegestaan de standaardoptie voor zowel zakelijk beheerde gebruikers als niet-beheerde gebruikers.</translation>
 <translation id="6640748114867542396">Beheerde extensies niet toestaan de Enterprise Hardware Platform API te gebruiken</translation>
 <translation id="6641981670621198190">Ondersteuning voor API's voor 3D-beelden uitzetten</translation>
-<translation id="6644480111811011438">Dit beleid wordt aangeboden als een manier om je af te melden voor de functie First-Party Sets.
-
-                  Als je dit beleid toepast of niet instelt, staat de functie First-Party Sets aan.
-
-                  Als je dit beleid niet toepast, staat de functie First-Party Sets uit.
-
-                  Het beleid bepaalt of Chrome aan First-Party Sets gerelateerde integraties ondersteunt.</translation>
 <translation id="6646912445796087001">Zet verschillende functies op het schermtoetsenbord aan of uit. Dit beleid geldt alleen als het beleid VirtualKeyboardEnabled is toegepast.
 
       Als een functie in dit beleid is ingesteld op True, wordt de functie op het schermtoetsenbord aangezet.

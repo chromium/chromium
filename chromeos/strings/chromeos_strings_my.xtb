@@ -168,7 +168,9 @@
 <translation id="2152882202543497059">ဓာတ်ပုံ <ph name="NUMBER" /> ပုံ</translation>
 <translation id="2157660087437850958">အီမိုဂျီ ရွေးချယ်စနစ်</translation>
 <translation id="2157959690810728433">စီထားသည်</translation>
+<translation id="2158450850127366833">{NUM_ROOL_APPS,plural,offset:2 =1{သင်၏စီမံခန့်ခွဲသူက သင်အကောင့်ဝင်ချိန်တိုင်း <ph name="APP_NAME_1" /> ကို အလိုအလျောက် စတင်ရန် သတ်မှတ်ထားသည်။}=2{သင်၏စီမံခန့်ခွဲသူက သင်အကောင့်ဝင်ချိန်တိုင်း <ph name="APP_NAME_1" /> နှင့် <ph name="APP_NAME_2" /> ကို အလိုအလျောက် စတင်ရန် သတ်မှတ်ထားသည်။}=3{သင်၏စီမံခန့်ခွဲသူက သင်အကောင့်ဝင်ချိန်တိုင်း <ph name="APP_NAME_1" />၊ <ph name="APP_NAME_2" /> နှင့် <ph name="APP_NAME_3" /> ကို အလိုအလျောက် စတင်ရန် သတ်မှတ်ထားသည်။}other{သင်၏စီမံခန့်ခွဲသူက သင်အကောင့်ဝင်ချိန်တိုင်း <ph name="APP_NAME_1" />၊ <ph name="APP_NAME_2" /> နှင့် အခြားအက်ပ် # ခုကို အလိုအလျောက် စတင်ရန် သတ်မှတ်ထားသည်။}}</translation>
 <translation id="2158971754079422508"><ph name="DESC_TEXT" />- ထပ်စမ်းကြည့်ရန်</translation>
+<translation id="215916044711630446">‘APN ထည့်ရန်’ ခလုတ်ကို ယခု ပိတ်လိုက်သည်</translation>
 <translation id="2161394479394250669">ပရင့်ထုတ်ရန်ဖိုင် မထုတ်တော့ပါ</translation>
 <translation id="2161656808144014275">စာသား</translation>
 <translation id="2163937499206714165">အမှောင်မုဒ် ဖွင့်ရန်</translation>
@@ -399,6 +401,7 @@
 <translation id="4117637339509843559">အမှောင်မုဒ်</translation>
 <translation id="4130035430755296270">နောက်ထပ် အပြင်အဆင်နည်းလမ်းများအတွက် မောက်စ်ကို ဆက်ပြီးတင်ထားပါ</translation>
 <translation id="4131410914670010031">အမည်း နှင့် အဖြူ</translation>
+<translation id="4143820682073026914">{NUM_ROOL_APPS,plural, =1{<ph name="APP_NAME_1" /> ကို အလိုအလျောက် စတင်လိုက်သည်}other{အက်ပ် # ခုကို အလိုအလျောက် စတင်လိုက်သည်}}</translation>
 <translation id="4145784616224233563">HTTP Firewall</translation>
 <translation id="4147897805161313378">Google Photos</translation>
 <translation id="4150201353443180367">မျက်နှာပြင်ပြသမှု</translation>
@@ -444,6 +447,7 @@
 <translation id="445059817448385655">စကားဝှက်အဟောင်း</translation>
 <translation id="4453205916657964690">ကွန်ရက်ခွဲ နံပါတ်</translation>
 <translation id="4454245904991689773">စကင်သိမ်းရန် နေရာ</translation>
+<translation id="4456812688969919973">‘APN သိမ်းရန်’ ခလုတ်ကို ယခု ပိတ်လိုက်သည်</translation>
 <translation id="4469288414739283461">ပြတ်ရွေ့သွားသည့်မြေ စခရင်နားချိန်ပုံ</translation>
 <translation id="4479639480957787382">အီတာနက်</translation>
 <translation id="4483049906298469269">မူရင်းမဟုတ်သည့် ကွန်ရက်ဂိတ်ဝကို ပင်လုပ်၍မရပါ</translation>
@@ -715,6 +719,7 @@
 <translation id="6423239382391657905">OpenVPN</translation>
 <translation id="6439505561246192797">အားမကောင်းပါ (<ph name="SIGNAL_STRENGTH" />)</translation>
 <translation id="6447630859861661624">အကောင့်ဆက်တင်များသို့ သွားရန်</translation>
+<translation id="6462978824459367242">‘APN ထည့်ရန်’ ခလုတ်ကို ယခု ဖွင့်လိုက်သည်</translation>
 <translation id="6463239094587744704">{PAGE_NUMBER,plural, =0{စာမျက်နှာကို စကင်ပြန်ဖတ်မလား။}=1{စာမျက်နှာ {PAGE_NUMBER} ကို စကင်ပြန်ဖတ်မလား။}other{စာမျက်နှာ {PAGE_NUMBER} ကို စကင်ပြန်ဖတ်မလား။}}</translation>
 <translation id="6472207088655375767">OTP</translation>
 <translation id="6480327114083866287"><ph name="MANAGER" /> က စီမံခန့်ခွဲသည်</translation>
@@ -837,7 +842,6 @@
 <translation id="7401543881546089382">ဖြတ်လမ်းကို ဖျက်ရန်</translation>
 <translation id="741244894080940828">ပြောင်းလဲခြင်း</translation>
 <translation id="7415801143053185905">HTTP တုံ့ပြန်ချိန် အလွန်ကြာနေသည်</translation>
-<translation id="7425178841057519191">{NUM_ROOL_APPS,plural,offset:2 =1{သင်၏စီမံခန့်ခွဲသူက သင်အကောင့်ဝင်ချိန်တိုင်း <ph name="APP_NAME_1" /> ကို အလိုအလျောက် စတင်ရန် သတ်မှတ်ထားသည်။}=2{သင်၏စီမံခန့်ခွဲသူက သင်အကောင့်ဝင်ချိန်တိုင်း <ph name="APP_NAME_1" /> နှင့် <ph name="APP_NAME_2" /> ကို အလိုအလျောက် စတင်ရန် သတ်မှတ်ထားသည်။}=3{သင်၏စီမံခန့်ခွဲသူက သင်အကောင့်ဝင်ချိန်တိုင်း <ph name="APP_NAME_1" />၊ <ph name="APP_NAME_2" /> နှင့် <ph name="APP_NAME_3" /> ကို အလိုအလျောက် စတင်ရန် သတ်မှတ်ထားသည်။}other{သင်၏စီမံခန့်ခွဲသူက သင်အကောင့်ဝင်ချိန်တိုင်း <ph name="APP_NAME_1" />၊ <ph name="APP_NAME_2" /> နှင့် အခြားအက်ပ် # ခုကို အလိုအလျောက် စတင်ရန် သတ်မှတ်ထားသည်။}}</translation>
 <translation id="7427315641433634153">MSCHAP</translation>
 <translation id="7458970041932198923">ချန်နယ်ပုံများကို ကြည့်ရန်နှင့် သတ်မှတ်ရန် ကွန်ရက်ချိတ်ဆက်ပြီး စာမျက်နှာကို ပြန်လည်စတင်ပါ။</translation>
 <translation id="7469648432129124067">စာမျက်နှာကို တွေ့ရှိသည်</translation>
@@ -1045,7 +1049,6 @@
 <translation id="8983038754672563810">HSPA</translation>
 <translation id="8987565828374052507">{NUMBER_OF_PAGES,plural, =0{စကင်ဖတ်ရန်}=1{စာမျက်နှာ {NUMBER_OF_PAGES} ကို စကင်ဖတ်ရန်}other{စာမျက်နှာ {NUMBER_OF_PAGES} ကို စကင်ဖတ်ရန်}}</translation>
 <translation id="8997710128084572139">ကိရိယာတွင် ဘက်ထရီ <ph name="BATTERY_PERCENTAGE" />% ရှိသည်။</translation>
-<translation id="8998156756248178381">{NUM_ROOL_APPS,plural, =1{<ph name="APP_NAME_1" /> ကို အလိုအလျောက် စတင်ထားသည်}other{အက်ပ် # ခုကို အလိုအလျောက် စတင်ထားသည်}}</translation>
 <translation id="8998289560386111590">သင့်စက်တွင် မရနိုင်ပါ</translation>
 <translation id="9003704114456258138">ကြိမ်နှုန်း</translation>
 <translation id="901834265349196618">အီးမေးလ်</translation>
@@ -1054,6 +1057,7 @@
 <translation id="902638246363752736">ကီးဘုတ် ဆက်တင်များ</translation>
 <translation id="9028832514430399253">စကရင်နားချိန်ပုံ ရွေးရန် ခလုတ်ဖွင့်ပါ</translation>
 <translation id="9039663905644212491">PEAP</translation>
+<translation id="9049868303458988905">‘APN သိမ်းရန်’ ခလုတ်ကို ယခု ဖွင့်လိုက်သည်</translation>
 <translation id="9058932992221914855">IPv6</translation>
 <translation id="9062831201344759865">DNS ဖြေရှင်းမှုသည် တုံ့ပြန်ချိန်မြင့်သည်</translation>
 <translation id="9065203028668620118">ပြင်ဆင်ရန်</translation>

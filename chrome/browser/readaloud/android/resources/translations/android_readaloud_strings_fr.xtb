@@ -1,1 +1,17 @@
-<?xml version="1.0" ?><!DOCTYPE translationbundle><translationbundle lang="fr"></translationbundle>
+<?xml version="1.0" ?>
+<!DOCTYPE translationbundle>
+<translationbundle lang="fr">
+<translation id="1178581264944972037">Suspendre</translation>
+<translation id="3523426587027570423">Appuyer pour fermer "Écouter cette page".</translation>
+<translation id="4654641641922242357">Lecteur "Écouter cette page".</translation>
+<translation id="4731877163452936634">Vitesse de lecture : <ph name="PLAYBACK_SPEED" />. Cliquez pour la modifier.</translation>
+<translation id="5234971936051226002">Lecteur "Écouter cette page" réduit.</translation>
+<translation id="5596627076506792578">Plus d'options</translation>
+<translation id="6790428901817661496">Lire</translation>
+<translation id="6846298663435243399">Chargement…</translation>
+<translation id="7587250070160020374">Chrome lit actuellement</translation>
+<translation id="7945822420239537236">Avancer de <ph name="NUMBER_OF_SECONDS" /> secondes</translation>
+<translation id="7972866381678406344">Revenir en arrière de <ph name="NUMBER_OF_SECONDS" /> secondes</translation>
+<translation id="8136852699834914183">La lecture n'est pas disponible pour cette page.</translation>
+<translation id="8953618380150219653">Lecteur "Écouter cette page" ouvert à pleine hauteur.</translation>
+</translationbundle>

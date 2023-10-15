@@ -711,6 +711,7 @@
 <translation id="4808744395915275922">Թարմացումներ</translation>
 <translation id="4818522717893377262">Ավելացնել լեզու…</translation>
 <translation id="481968316161811770">Cookie ֆայլեր, կայքի տվյալներ</translation>
+<translation id="4824480232751123840">Ձայնի ուժգնություն</translation>
 <translation id="4824497107140370669">{count,plural, =0{{domain}}=1{{domain} ու ևս 1}one{{domain} ու ևս {count}}other{{domain} ու ևս {count}}}</translation>
 <translation id="4826218269716039351">Կողմնակի քուքիներն արգելափակված են</translation>
 <translation id="4826588772550366629">տեսախցիկն ու խոսափողը</translation>
@@ -785,6 +786,7 @@
 <translation id="5181140330217080051">Ներբեռնում</translation>
 <translation id="5184329579814168207">Բացել Chrome-ով</translation>
 <translation id="5186185447130319458">Գաղտնի</translation>
+<translation id="5186634140793586141">Կառավարեք ձեզ հետաքրքրող թեմաները և որոնման հարցումները</translation>
 <translation id="5188482106078495165">Ձեր քուքիների կարգավորումները կիրառվում են բոլոր ներդիրներում։ Եթե նոր կարգավորումն ուզում եք կիրառել բացված ներդիրում, վերաբեռնեք այն։</translation>
 <translation id="5190835502935405962">Էջանիշների գոտի</translation>
 <translation id="519530786644929958">Ներբեռնումը ձախողվեց, և այն հնարավոր չէ կրկնել։</translation>
@@ -848,6 +850,7 @@ Handoff-ը պետք է միացված լինի նաև Կարգավորումնե
 <translation id="5556459405103347317">Վերաբեռնել</translation>
 <translation id="555749644339804659">Գաղտնաբառերի ստուգում…</translation>
 <translation id="556042886152191864">Կոճակ</translation>
+<translation id="5572684875078967866">Տեղեկությունների ծավալ</translation>
 <translation id="5597915316964418992">Բացեք ներդիրների ցանցը</translation>
 <translation id="560322036295180549">Անջատվել է կազմակերպության կողմից</translation>
 <translation id="5614553682702429503">Պահե՞լ գաղտնաբառը</translation>
@@ -909,6 +912,7 @@ Handoff-ը պետք է միացված լինի նաև Կարգավորումնե
 <translation id="5896576662943111387">Հատուկ iOS-ի համար</translation>
 <translation id="5897749768294722429">Համաժամացրեք ձեր ներդիրները և պատմությունը, որպեսզի արագ վերադառնաք ձեր այցելած կայքեր։</translation>
 <translation id="5897956970858271241">Անցնել պատճենված հղումով</translation>
+<translation id="5898848375214731122">Զանգված</translation>
 <translation id="5899314093904173337">Մոտակայքում գտնվող մարդկանց հետ կիսվելու համար խնդրեք նրանց սկանավորել այս QR կոդը տեսախցիկի կամ QR սկաների հավելվածի միջոցով</translation>
 <translation id="5911030830365207728">Google Translate</translation>
 <translation id="5913600720976431809">Էջը թարգմանելու տարբերակներ</translation>
@@ -926,6 +930,7 @@ Handoff-ը պետք է միացված լինի նաև Կարգավորումնե
 <translation id="5981230843984570095">Փակել բոլոր ոչ ակտիվ ներդիրները</translation>
 <translation id="5982717868370722439">Առկա տվյալների ավելացում <ph name="USER_EMAIL" /> հաշվում:</translation>
 <translation id="5984222099446776634">Recently Visited</translation>
+<translation id="598634819525651074">Մակերես</translation>
 <translation id="5988097621740394599">Դիտեք ձեր ներդիրներում գների իջեցման մասին ծանուցումները։</translation>
 <translation id="5988851877894965432">Բացել URL-ները Chrome-ում</translation>
 <translation id="6006672969046233841">Նոր ներդիր</translation>
@@ -1161,7 +1166,6 @@ Handoff-ը պետք է միացված լինի նաև Կարգավորումնե
 <translation id="7062545763355031412">Ընդունել և փոխարկել հաշիվները</translation>
 <translation id="7063811929043357292">Ձեր հաշիվը կառավարում է ձեր ծնողը։
 <ph name="BEGIN_LINK" />Իմանալ ավելին<ph name="END_LINK" /></translation>
-<translation id="7064619810277839954">Տալիս է ներդիրների համար հուշումներ՝ հաշվի առնելով դիտարկիչում գործողությունները ձեր մյուս սարքերում, որտեղ մուտք եք գործել ձեր Google հաշիվ։ Դուք պետք է մուտք գործեք ձեր սարքերում և համաժամացնեք դրանք նույն Google հաշվի միջոցով։</translation>
 <translation id="7069695992271320873">Հեռացնել այս սարքից</translation>
 <translation id="7080806333218412752">Ուղարկում է URL-ները Ապահով դիտարկմանը՝ դրանք ստուգելու համար։ Ուղարկվում են նաև էջերի, ներբեռնված ֆայլերի, ընդլայնումների գործողությունների և համակարգի մասին տեղեկություններից որոշ հատվածներ, որոնք օգնում են հայտնաբերել օգտատերերին սպառնացող նոր վտանգներ։ Երբ մտնում եք Google հաշիվ, այդ տվյալները ժամանակավորապես կապվում են տվյալ հաշվի հետ՝ պաշտպանելով ձեզ Google-ի հավելվածներում։</translation>
 <translation id="7082853213442715471">Երբ այս ռեժիմը միացված է, որոշակի վեբ տեխնոլոգիաներ արգելափակված են, ինչի արդյունքում որոշ հավելվածներ կարող են ավելի դանդաղ բեռնվել կամ աշխատել սխալներով։</translation>
@@ -1362,6 +1366,7 @@ Handoff-ը պետք է միացված լինի նաև Կարգավորումնե
 <translation id="8156478151976189188">Գաղտնաբառերի համաժամացումը չի աշխատում</translation>
 <translation id="8157532349231307196"><ph name="NUMBER_OF_ACCOUNTS" /> հաշիվ</translation>
 <translation id="8159358225423560600">հենց նոր</translation>
+<translation id="8173034266693057059">Երկարություն</translation>
 <translation id="8179976553408161302">Enter</translation>
 <translation id="8182037667962849780">{count,plural, =1{{website_1} կայքի համար}=2{{website_1} և {website_2} կայքերի համար}=3{{website_1}, {website_2} ու ևս 1 կայքի համար}one{{website_1}, {website_2} ու ևս {more_count} կայքի համար}other{{website_1}, {website_2} ու ևս {more_count} կայքի համար}}</translation>
 <translation id="8193953846147532858"><ph name="BEGIN_LINK" />Ձեր սարքերը<ph name="END_LINK" /> · <ph name="EMAIL" /></translation>
@@ -1456,6 +1461,7 @@ Handoff-ը պետք է միացված լինի նաև Կարգավորումնե
 <translation id="8692689525339542358">Պաշտպանեք ձեզ վտանգավոր կայքերից, ներբեռնումներից և ընդլայնումներից։</translation>
 <translation id="8693663554456874301">{count,plural, =1{Փակել ներդիրը}one{Փակել ներդիրները}other{Փակել ներդիրները}}</translation>
 <translation id="8703536910991780768">Ձեր գաղտնաբառերը հուսալի են</translation>
+<translation id="8706253136355675497">Ջերմաստիճան</translation>
 <translation id="8717864919010420084">Պատճենել հղումը</translation>
 <translation id="8721297211384281569">Գործիքների ընտրացանկ</translation>
 <translation id="8725066075913043281">Փորձել կրկին</translation>
@@ -1561,6 +1567,7 @@ Handoff-ը պետք է միացված լինի նաև Կարգավորումնե
 <translation id="9188680907066685419">Ելք կառավարվող հաշվից</translation>
 <translation id="9200875785104711666"><ph name="TIME" /> օր առաջ</translation>
 <translation id="9203116392574189331">Handoff</translation>
+<translation id="9206887540681440657">Արագություն</translation>
 <translation id="9219154867334666734">Ներդիրների որոնում…</translation>
 <translation id="9223358826628549784">Խափանման հաշվետվությունն ուղարկվեց:</translation>
 <translation id="941747855997058526">Ընտրել գաղտնաբառ…</translation>

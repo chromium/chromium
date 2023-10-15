@@ -353,7 +353,6 @@
 <translation id="243878895369688216">昨天打开过</translation>
 <translation id="2440978926514840421">已完成 GIF 录制</translation>
 <translation id="2441427462554639370">已停止录制，因为存储空间严重不足</translation>
-<translation id="24452542372838207">展开通知</translation>
 <translation id="2448312741937722512">类型</translation>
 <translation id="2449089818483227734">电池电量低</translation>
 <translation id="2450205753526923158">截屏模式</translation>
@@ -1946,7 +1945,6 @@
 <translation id="9030665205623277906">CPU 用量概况：<ph name="CPU_USEAGE" />%</translation>
 <translation id="9034924485347205037">Linux 文件</translation>
 <translation id="9047624247355796468">打开“<ph name="NETWORK_NAME" />”的设置。</translation>
-<translation id="9059834730836941392">收起通知</translation>
 <translation id="906458777597946297">最大化窗口</translation>
 <translation id="9065203028668620118">编辑</translation>
 <translation id="9070640332319875144">Google 助理设置</translation>

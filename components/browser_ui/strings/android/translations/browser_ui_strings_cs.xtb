@@ -258,6 +258,7 @@
 <translation id="5545693483061321551">Weby nemohou pomocí souborů sledovat vaši aktivitu prohlížení na různých webech, například k personalizaci reklam. Některé weby mohou přestat fungovat.</translation>
 <translation id="5553374991681107062">Nejnovější</translation>
 <translation id="5556459405103347317">Načíst znovu</translation>
+<translation id="5591840828808741583"><ph name="SITE_NAME" /> – blokováno</translation>
 <translation id="5649053991847567735">Automatické stahování</translation>
 <translation id="5668404140385795438">Přepsat požadavek webu na zákaz přiblížení</translation>
 <translation id="5677928146339483299">Zablokováno</translation>
@@ -455,6 +456,7 @@
 <translation id="8959122750345127698">Navigace není dosažitelná: <ph name="URL" /></translation>
 <translation id="8986362086234534611">Odstranit</translation>
 <translation id="8990043154272859344">Budete odhlášeni ze všech webů</translation>
+<translation id="9011903857143958461"><ph name="SITE_NAME" /> – povoleno</translation>
 <translation id="9019902583201351841">Spravováno vašimi rodiči</translation>
 <translation id="9039697262778250930">Z těchto webů můžete být odhlášeni</translation>
 <translation id="9074739597929991885">Bluetooth</translation>

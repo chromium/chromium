@@ -17,6 +17,7 @@
 <translation id="1591119736686995611">‏תיפתח תצוגת הכרטיסיות ב-Chromium.</translation>
 <translation id="1617663976202781617">‏נתונים מסנכרון Chromium</translation>
 <translation id="1647558790457890304">‏ההגדרות של Chromium</translation>
+<translation id="164952285225495380">‏החבילה הזו כבר נוספה למעקב ב-Chromium.</translation>
 <translation id="1722370509450468186">הסיסמה שלך תישמר בחשבון (<ph name="EMAIL" />).</translation>
 <translation id="1736662517232558588">‏נתוני Chromium נמחקו</translation>
 <translation id="1791845338122684020">‏פתיחת הדף 'היסטוריה' ב-Chromium.</translation>
@@ -139,6 +140,7 @@
 1. פותחים את ההגדרות
 2. מקישים על אפליקציית הדפדפן שמוגדרת כברירת מחדל
 3. בוחרים את Chromium.</translation>
+<translation id="6197255575340902638">‏הסתרה של '<ph name="MODULE_NAME" />' תוביל להפסקת המעקב האוטומטי אחר חבילות ב-Chromium בעתיד, ולמחיקה של כל הנתונים הקודמים של המעקב אחר חבילות.</translation>
 <translation id="6247557882553405851">‏מנהל הסיסמאות של Google</translation>
 <translation id="6268381023930128611">‏האם לצאת מ-Chromium?</translation>
 <translation id="6324041800010509197">‏ביקור בתצוגת הכרטיסיות ב-Chromium</translation>

@@ -837,7 +837,6 @@
 <translation id="7401543881546089382">Διαγραφή συντόμευσης</translation>
 <translation id="741244894080940828">μετατροπή</translation>
 <translation id="7415801143053185905">Πολύ υψηλός λανθάνων χρόνος HTTP</translation>
-<translation id="7425178841057519191">{NUM_ROOL_APPS,plural,offset:2 =1{Ο διαχειριστής σας έχει ρυθμίσει την εφαρμογή <ph name="APP_NAME_1" /> να ξεκινάει αυτόματα κάθε φορά που συνδέεστε.}=2{Ο διαχειριστής σας έχει ρυθμίσει τις εφαρμογές <ph name="APP_NAME_1" /> και <ph name="APP_NAME_2" /> να ξεκινούν αυτόματα κάθε φορά που συνδέεστε.}=3{Ο διαχειριστής σας έχει ρυθμίσει τις εφαρμογές <ph name="APP_NAME_1" />, <ph name="APP_NAME_2" /> και <ph name="APP_NAME_3" /> να ξεκινούν αυτόματα κάθε φορά που συνδέεστε.}other{Ο διαχειριστής σας έχει ρυθμίσει τις εφαρμογές <ph name="APP_NAME_1" />, <ph name="APP_NAME_2" /> και # ακόμη εφαρμογές να ξεκινούν αυτόματα κάθε φορά που συνδέεστε.}}</translation>
 <translation id="7427315641433634153">MSCHAP</translation>
 <translation id="7458970041932198923">Συνδεθείτε σε ένα δίκτυο και επαναλάβετε τη φόρτωση της σελίδας για να δείτε και να ορίσετε avatar.</translation>
 <translation id="7469648432129124067">Εντοπίστηκε πύλη</translation>
@@ -1045,7 +1044,6 @@
 <translation id="8983038754672563810">HSPA</translation>
 <translation id="8987565828374052507">{NUMBER_OF_PAGES,plural, =0{Σάρωση}=1{Σάρωση σελίδας {NUMBER_OF_PAGES}}other{Σάρωση σελίδας {NUMBER_OF_PAGES}}}</translation>
 <translation id="8997710128084572139">Η μπαταρία της συσκευής βρίσκεται στο <ph name="BATTERY_PERCENTAGE" />%.</translation>
-<translation id="8998156756248178381">{NUM_ROOL_APPS,plural, =1{Η εφαρμογή <ph name="APP_NAME_1" /> ξεκίνησε αυτόματα}other{# εφαρμογές ξεκίνησαν αυτόματα}}</translation>
 <translation id="8998289560386111590">Δεν διατίθεται στη συσκευή σας</translation>
 <translation id="9003704114456258138">Συχνότητα</translation>
 <translation id="901834265349196618">ηλεκτρονικό ταχυδρομείο</translation>

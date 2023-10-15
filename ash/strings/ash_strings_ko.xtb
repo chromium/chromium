@@ -353,7 +353,6 @@
 <translation id="243878895369688216">어제 열림</translation>
 <translation id="2440978926514840421">GIF 녹화 완료됨</translation>
 <translation id="2441427462554639370">저장공간이 매우 부족하여 녹화가 종료되었습니다.</translation>
-<translation id="24452542372838207">알림 펼치기</translation>
 <translation id="2448312741937722512">유형</translation>
 <translation id="2449089818483227734">배터리 부족</translation>
 <translation id="2450205753526923158">스크린샷 모드</translation>
@@ -1949,7 +1948,6 @@
 <translation id="9030665205623277906">CPU 사용량 개요: <ph name="CPU_USEAGE" />%</translation>
 <translation id="9034924485347205037">Linux 파일</translation>
 <translation id="9047624247355796468"><ph name="NETWORK_NAME" /> 설정 열기</translation>
-<translation id="9059834730836941392">알림 접기</translation>
 <translation id="906458777597946297">창 최대화</translation>
 <translation id="9065203028668620118">수정</translation>
 <translation id="9070640332319875144">어시스턴트 설정</translation>

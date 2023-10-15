@@ -191,6 +191,7 @@
 <translation id="1737078180382804488">သင့်ဖုန်းရှိ အကြောင်းကြားချက်များ ကြည့်ရှုမှုအတွက် စနစ်ထည့်သွင်းခြင်းကို ပယ်ရန်</translation>
 <translation id="174102739345480129">ညွှန်မှတ် ပိတ်ထားသည်။</translation>
 <translation id="1743570585616704562">မသိပါ</translation>
+<translation id="1743927604032653654"><ph name="NOTIFICATION_TITLE" /> အကြောင်းကြားချက် လျှော့ပြပါ</translation>
 <translation id="1746730358044914197">ထည့်သွင်းရန်နည်းလမ်းများကို သင်၏ စီမံခန့်ခွဲသူက စီစဉ်သတ်မှတ်ထားခြင်းဖြစ်သည်။</translation>
 <translation id="1747336645387973286">အလုပ်ပြီးဆုံးရမည့်နေ့ <ph name="DUE_DATE" /></translation>
 <translation id="1747827819627189109">မျက်နှာပြင် ပေါ်က ကီးဘုတ် ဖွင့်ထား</translation>
@@ -353,7 +354,6 @@
 <translation id="243878895369688216">မနေ့က ဖွင့်ထားသည်</translation>
 <translation id="2440978926514840421">GIF ရုပ်သံဖမ်းယူလိုက်သည်</translation>
 <translation id="2441427462554639370">သိုလှောင်ခန်းနေရာ အလွန်နည်းနေသဖြင့် ရိုက်ကူးမှု ရပ်သွားသည်</translation>
-<translation id="24452542372838207">အကြောင်းကြားချက်ကို ချဲ့ရန်</translation>
 <translation id="2448312741937722512">ပုံစံ</translation>
 <translation id="2449089818483227734">ဘက်ထရီ အားနည်းနေသည်</translation>
 <translation id="2450205753526923158">ဖန်သားပြင်ဓာတ်ပုံမုဒ်</translation>
@@ -533,6 +533,7 @@
 <translation id="3217205077783620295">အသံဖွင့်ထားသည်၊ ပိတ်လိုက်ခြင်းဖြင့် အသံကိုတိတ်လိုက်ပါမည်။</translation>
 <translation id="3226991577105957773">+နောက်ထပ် <ph name="COUNT" /> ခု</translation>
 <translation id="3227137524299004712">မိုက်ခရိုဖုန်း</translation>
+<translation id="3233611303007751344">‘ဘက်ထရီ အားထိန်း’ ပိတ်ထားသည်</translation>
 <translation id="324366796737464147">ဆူညံသံဖယ်ရှားခြင်း</translation>
 <translation id="3249513730522716925">ဝင်းဒိုး <ph name="WINDOW_TITLE" /> ကို 'မြင်ကွင်း <ph name="ACTIVE_DESK" />' မှ 'မြင်ကွင်း <ph name="TARGET_DESK" />' သို့ ရွှေ့ထားသည်</translation>
 <translation id="3253743281242075461">အတန်းတွင်းသင်ခန်းစာ အမျိုးအစား- <ph name="GLANCEABLES_CLASSROOM_LIST_NAME" /></translation>
@@ -555,6 +556,7 @@
 <translation id="3308453408813785101"><ph name="USER_EMAIL_ADDRESS" /> သည် နောက်ပိုင်းတွင် လက်မှတ်ထိုး ဝင်နိုင်ပါသေးသည်။</translation>
 <translation id="3321628682574733415">မိဘသုံးခွင့်ကုဒ် မှားနေသည်</translation>
 <translation id="332827762492701193">အကြောင်းကြားချက်များကို ဝှက်ထားသည်</translation>
+<translation id="3333674550998107387"><ph name="NOTIFICATION_TITLE" /> အကြောင်းကြားချက် ပိုပြပါ</translation>
 <translation id="3339826665088060472">ဖန်သားပြင်ဓာတ်ပုံနှင့် ဖန်သားပြင်ရိုက်ကူးခြင်းများအတွက် ဖန်သားပြင် ပုံဖမ်းတူးလ်များ</translation>
 <translation id="3340978935015468852">ဆက်တင်များ</translation>
 <translation id="3341303451326249809">ဖန်သားပြင်ဓာတ်ပုံ ဖမ်းယူပြီးပြီ</translation>
@@ -772,6 +774,8 @@
 <translation id="4146671046252289537">လာမည့်စကားလုံးအဆုံးသို့ ရွှေ့ရန်</translation>
 <translation id="4146833061457621061">တေးဂီတ ဖွင့်ပါ</translation>
 <translation id="4150201353443180367">မျက်နှာပြင်ပြသမှု</translation>
+<translation id="4156293514828496577">ဘက်ထရီ <ph name="PERCENTAGE" />% ကျန်သည် (<ph name="TIME_LEFT" /> ခန့်)။
+ဘက်ထရီသက်တမ်းကြာစေရန် ဝန်ဆောင်မှုအချို့ကို ကန့်သတ်ထားသည်။</translation>
 <translation id="4165275524535002941">ကေဘယ်ကြိုးက ဖန်သားပြင်များကို ပံ့ပိုးမှုမရှိနိုင်ပါ</translation>
 <translation id="4177415338862979658">အသေးစိတ်ကြည့်ရန် နှိပ်ပါ</translation>
 <translation id="4177913004758410636">{0,plural, =1{စက်ကို တစ်ရက်အတွင်း အပ်ဒိတ်လုပ်ပါ}other{စက်ကို # ရက်အတွင်း အပ်ဒိတ်လုပ်ပါ}}</translation>
@@ -902,6 +906,7 @@
 <translation id="4659419629803378708">ChromeVox ကို ဖွင့်ထားပါသည်</translation>
 <translation id="4666911709726371538">အက်ပ်များ ပိုပြပါ</translation>
 <translation id="4667099493359681081"><ph name="FILENAME" /> ကို ဒေါင်းလုဒ်လုပ်နေသည်</translation>
+<translation id="4672539464599646374">‘ဘက်ထရီ အားထိန်း’ ဖွင့်ထားသည်</translation>
 <translation id="468293128311738995">သင့်ဖုန်းမှအက်ပ်များ</translation>
 <translation id="4690510401873698237">စင်ကို အောက်ခြေသို့ ရွှေ့လိုက်ပါပြီ</translation>
 <translation id="4696813013609194136">စက်ပစ္စည်းကို မိဘသုံးကုဒ်ဖြင့် ဖွင့်ပါ</translation>
@@ -1062,6 +1067,8 @@
 <translation id="5297704307811127955">ပိတ်ရန်</translation>
 <translation id="5300589172476337783">ပြရန်</translation>
 <translation id="5302048478445481009">ဘာသာစကား</translation>
+<translation id="5303319262469238330">ဘက်ထရီ <ph name="PERCENTAGE" />% ကျန်သည်။
+ဘက်ထရီသက်တမ်းကြာစေရန် ဝန်ဆောင်မှုအချို့ကို ကန့်သတ်ထားသည်။</translation>
 <translation id="5308380583665731573">ချိတ်ဆက်ရန်</translation>
 <translation id="5313326810920013265">ဘလူးတုသ် ဆက်တင်များ</translation>
 <translation id="5314219114274263156">ဖန်သားပြင်ရိုက်ကူးနေသည်</translation>
@@ -1303,6 +1310,7 @@
 <translation id="6231419273573514727">ချိတ်ဆက်ပစ္စည်း စွမ်းဆောင်ရည်ကို ကန့်သတ်ထားနိုင်သည်</translation>
 <translation id="6232891689835436217"><ph name="APP_NAME" /> က သင့်ကင်မရာနှင့် မိုက်ခရိုဖုန်းကို လက်ရှိသုံးနေသည်</translation>
 <translation id="6237231532760393653">1X</translation>
+<translation id="62380141479352646">ဘက်ထရီ အားနည်းနေသည်။ ‘ဘက်ထရီ အားထိန်း’ ဖွင့်ထားသည်။</translation>
 <translation id="6247728804802644171">အကြောင်းကြားချက် ဖွင့်ရန်</translation>
 <translation id="6254629735336163724">အလျားလိုက်မုဒ်အဖြစ် လော့ခ်ချထားသည်</translation>
 <translation id="6259254695169772643">ရွေးချယ်ရန် သင့်စတိုင်လပ်စ် အသုံးပြုပါ</translation>
@@ -1417,6 +1425,7 @@
 <translation id="6732800389263199929">+<ph name="COUNT" /></translation>
 <translation id="6737983188036277605">ကင်မရာနှင့် မိုက်ခရိုဖုန်း သုံးနေသည်</translation>
 <translation id="6739144137573853180">ဆက်တင်များသို့ သွားရန်</translation>
+<translation id="6747985245839783873">ဘက်ထရီ <ph name="PERCENTAGE" /> ရာခိုင်နှုန်း ရှိသည်။ ‘ဘက်ထရီ အားထိန်း’ ဖွင့်ထားသည်။</translation>
 <translation id="6751052314767925245">သင့်စီမံခန့်ခွဲသူက ထည့်သွင်းအသုံးပြုထားသည်</translation>
 <translation id="6751826523481687655">စွမ်းဆောင်ရည် မှတ်တမ်းတင်ခြင်းကို ဖွင့်ထားသည်</translation>
 <translation id="6752912906630585008">'မြင်ကွင်း <ph name="REMOVED_DESK" />' ကိုဖယ်ရှားပြီး 'မြင်ကွင်း <ph name="RECEIVE_DESK" />' နှင့် ပေါင်းစည်းလိုက်သည်</translation>
@@ -1516,6 +1525,7 @@
 <translation id="7131634465328662194">သင့်ကို အလိုအလျောက် ထွက်လိုက်ပါမည်။</translation>
 <translation id="7143207342074048698">ချိတ်ဆက်နေသည်</translation>
 <translation id="7144942256906679589">ဘက်ထရီ အခြေအနေ</translation>
+<translation id="7145639536026937076">ဘက်ထရီ <ph name="PERCENTAGE" />% ရှိပြီး အားသွင်းနေသည်။ ‘ဘက်ထရီ အားထိန်း’ ဖွင့်ထားသည်။</translation>
 <translation id="7165278925115064263">Alt+Shift+K</translation>
 <translation id="7167913274352523149"><ph name="HOTSPOT" />၊
         <ph name="NETWORK" /></translation>
@@ -1525,6 +1535,7 @@
 <translation id="7189412385142492784">သောကြာဂြိုဟ်က ဘယ်လောက်ဝေးလဲ</translation>
 <translation id="7198435252016571249">ကင်မရာကို အောက်ညာဘက်ထောင့်သို့ ကပ်ထားသည်။ စနစ်မျက်နှာပြင်နှင့် ငြိနေသည်။</translation>
 <translation id="7229029500464092426">မှတ်ဉာဏ် <ph name="AVAILABLE_MEMORY" /> | စုစုပေါင်း <ph name="TOTAL_MEMORY" /></translation>
+<translation id="7244725679040769470">ဘက်ထရီ <ph name="PERCENTAGE" />% ကျန်သည်။ စက်ကို အားသွင်းပါ။</translation>
 <translation id="7246071203293827765"><ph name="UPDATE_TEXT" />။ အပ်ဒိတ် အသုံးပြုနိုင်ရန်အတွက် ဤ Chromebook ကို ပြန်လည်စတင်ရန် လိုအပ်သည်။ ၎င်းက ၁ မိနစ်အထိ ကြာနိုင်သည်။</translation>
 <translation id="7256634071279256947">အနောက်မိုက်ခရိုဖုန်း</translation>
 <translation id="7258828758145722155">မနေ့က ပြင်ဆင်ထားသည်</translation>
@@ -1918,6 +1929,8 @@
 <translation id="8878886163241303700">မျက်နှာပြင်ကို တိုးချဲ့နေ</translation>
 <translation id="888982883502837004">သင့်စက်အတွက် ဖာမ်းဝဲအပ်ဒိတ်များ ရနိုင်ပါပြီ။ ဝင်ကြည့်၍ အပ်ဒိတ်လုပ်ရန် နှိပ်ပါ။</translation>
 <translation id="8896630965521842259"><ph name="DESK_TEMPLATE_NAME" /> ကို အပြီးဖျက်လိုက်ပါမည်</translation>
+<translation id="889790758758811533">ဘက်ထရီ <ph name="PERCENTAGE" />% ကျန်သည် (<ph name="TIME_LEFT" /> ခန့်)။
+စက်ကို အားသွင်းပါ။</translation>
 <translation id="88986195241502842">စာမျက်နှာ အောက်သို့</translation>
 <translation id="8905919797434099235">(ခေါင်းစဉ်မဲ့)</translation>
 <translation id="890616557918890486">အရင်းအမြစ် ပြောင်းရန်</translation>
@@ -1949,7 +1962,6 @@
 <translation id="9030665205623277906">CPU အသုံးပြုမှု လျှပ်တစ်ပြက်ရိုက်ချက် <ph name="CPU_USEAGE" />%</translation>
 <translation id="9034924485347205037">Linux ဖိုင်များ</translation>
 <translation id="9047624247355796468"><ph name="NETWORK_NAME" /> အတွက် ဆက်တင်များကို ဖွင့်ရန်</translation>
-<translation id="9059834730836941392">အကြောင်းကြားချက်ကို လျှော့ပြရန်</translation>
 <translation id="906458777597946297">ဝင်ဒိုးကို အကြီးဆုံး လုပ်ရန်</translation>
 <translation id="9065203028668620118">ပြင်ဆင်ရန်</translation>
 <translation id="9070640332319875144">Assistant ဆက်တင်များ</translation>

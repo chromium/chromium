@@ -837,7 +837,6 @@
 <translation id="7401543881546089382">删除快捷方式</translation>
 <translation id="741244894080940828">换算</translation>
 <translation id="7415801143053185905">HTTPS 延迟时间非常长</translation>
-<translation id="7425178841057519191">{NUM_ROOL_APPS,plural,offset:2 =1{您的管理员已将“<ph name="APP_NAME_1" />”设为在您每次登录时都自动启动。}=2{您的管理员已将“<ph name="APP_NAME_1" />”和“<ph name="APP_NAME_2" />”设为在您每次登录时都自动启动。}=3{您的管理员已将“<ph name="APP_NAME_1" />”“<ph name="APP_NAME_2" />”和“<ph name="APP_NAME_3" />”设为在您每次登录时都自动启动。}other{您的管理员已将“<ph name="APP_NAME_1" />”“<ph name="APP_NAME_2" />”和另外 # 个应用设为在您每次登录时都自动启动。}}</translation>
 <translation id="7427315641433634153">MSCHAP</translation>
 <translation id="7458970041932198923">若要查看和设置头像，请连接到网络并重新加载此页面。</translation>
 <translation id="7469648432129124067">检测到门户</translation>
@@ -1045,7 +1044,6 @@
 <translation id="8983038754672563810">HSPA</translation>
 <translation id="8987565828374052507">{NUMBER_OF_PAGES,plural, =0{扫描}=1{扫描 {NUMBER_OF_PAGES} 个页面}other{扫描 {NUMBER_OF_PAGES} 个页面}}</translation>
 <translation id="8997710128084572139">设备电池电量为 <ph name="BATTERY_PERCENTAGE" />%。</translation>
-<translation id="8998156756248178381">{NUM_ROOL_APPS,plural, =1{“<ph name="APP_NAME_1" />”已自动启动}other{# 个应用已自动启动}}</translation>
 <translation id="8998289560386111590">在您的设备上不可用</translation>
 <translation id="9003704114456258138">频率</translation>
 <translation id="901834265349196618">电子邮件</translation>

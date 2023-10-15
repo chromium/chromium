@@ -2086,6 +2086,7 @@ Para administrar la configuración de esta cuenta, instala la app de Family Lin
 <translation id="2609980095400624569">No se pudo establecer la conexión</translation>
 <translation id="2610157865375787051">Suspender</translation>
 <translation id="2610260699262139870">T&amp;amaño real</translation>
+<translation id="2610374175948698697">Pueden ver archivos o carpetas del dispositivo</translation>
 <translation id="2610780100389066815">Firma de lista de confianza de Microsoft</translation>
 <translation id="261114180663074524">Accede a tu cuenta de Microsoft y vuelve a intentarlo</translation>
 <translation id="2611776654555141051">Herramienta de rectángulo</translation>
@@ -2133,6 +2134,7 @@ Para administrar la configuración de esta cuenta, instala la app de Family Lin
 <translation id="264897126871533291">Protanomalía</translation>
 <translation id="2649045351178520408">Cadena de certificados ASCII con codificación Base64</translation>
 <translation id="265156376773362237">Precarga estándar</translation>
+<translation id="2652071759203138150">{COUNT,plural, =1{{COUNT} contraseña se guarda solo en este dispositivo. Para usarla en tus otros dispositivos, <ph name="BEGIN_LINK" />guárdala en tu Cuenta de Google<ph name="END_LINK" />.}other{{COUNT} contraseñas se guardan solo en este dispositivo. Para usarlas en tus otros dispositivos, <ph name="BEGIN_LINK" />guárdalas en tu Cuenta de Google<ph name="END_LINK" />.}}</translation>
 <translation id="2652129567809778422">Seleccionar contraseña</translation>
 <translation id="2653266418988778031">Si eliminas un certificado de una Entidad de certificación (CA), tu navegador ya no confiará en ningún certificado emitido por esa Entidad.</translation>
 <translation id="2653275834716714682">Reemplazo del texto</translation>
@@ -3211,6 +3213,7 @@ Para administrar la configuración de esta cuenta, instala la app de Family Lin
 <translation id="3521405806571557477">Borrar los datos guardados de <ph name="SITE_NAME" /></translation>
 <translation id="3521606918211282604">Cambiar el tamaño del disco</translation>
 <translation id="3522088408596898827">Hay muy poco espacio disponible en el disco. Libera espacio y vuelve a intentarlo.</translation>
+<translation id="3522979239100719575">Se están buscando perfiles disponibles. Este proceso puede demorar unos minutos.</translation>
 <translation id="3524518036046613664">Mostrar los dispositivos de la red local, como impresoras</translation>
 <translation id="3524965460886318643">Exportar actividades</translation>
 <translation id="3525426269008462093">Revisar la sincronización del dispositivo cuando finaliza la configuración</translation>
@@ -4023,6 +4026,7 @@ Esto puede incluir información sobre el software instalado, los archivos, el na
 <translation id="4150201353443180367">Pantalla</translation>
 <translation id="4150569944729499860">Contexto de pantalla</translation>
 <translation id="4151449637210235443">Cuéntanos acerca de tu experiencia de juego más reciente.</translation>
+<translation id="4151503145138736576">No hay espacio de almacenamiento sin conexión para liberar</translation>
 <translation id="4152011295694446843">Aquí encontrarás tus favoritos</translation>
 <translation id="4152670763139331043">{NUM_TABS,plural, =1{1 pestaña}other{# pestañas}}</translation>
 <translation id="4154664944169082762">Huellas digitales</translation>
@@ -4233,6 +4237,7 @@ Esto puede incluir información sobre el software instalado, los archivos, el na
 <translation id="4341577178275615435">Para activar o desactivar la navegación por cursor de texto, presiona F7</translation>
 <translation id="4341905082470253054">Comprobando el estado del TPM…</translation>
 <translation id="434198521554309404">Rápido. Seguro. Sencillo.</translation>
+<translation id="4342417854108207000">Pueden editar archivos o carpetas del dispositivo</translation>
 <translation id="4343250402091037179">Si quieres realizar una búsqueda en un sitio específico o en una parte de Chrome, escribe el atajo correspondiente en la barra de direcciones seguido de la combinación de teclas que hayas elegido.</translation>
 <translation id="434404122609091467">Con tu proveedor de servicios actual</translation>
 <translation id="4345457680916430965">Abrir en <ph name="APP" /></translation>
@@ -5266,6 +5271,7 @@ Usa Ctrl + Alt + Disminuir brillo para alejarte.</translation>
 <translation id="5197255632782567636">Internet</translation>
 <translation id="5198430103906431024">Envía datos de uso y diagnóstico. De forma automática, este dispositivo está enviando a Google datos de diagnóstico y sobre el uso del dispositivo y las apps. Esta información ayudará a lograr la estabilidad de las apps y el sistema, entre otras mejoras. Algunos datos agregados también ayudarán a las apps y los socios de Google, como los desarrolladores de Android. Si habilitaste la Actividad de web y de aplicaciones adicional, es posible que se almacenen estos datos en tu Cuenta de Google.</translation>
 <translation id="5199729219167945352">Experimentos</translation>
+<translation id="5203035663139409780">Pueden editar archivos o carpetas del dispositivo</translation>
 <translation id="5203920255089865054">{NUM_EXTENSIONS,plural, =1{Haz clic para ver la extensión}other{Haz clic para ver estas extensiones}}</translation>
 <translation id="5204249655833504508">Tablet digitalizadora</translation>
 <translation id="5204673965307125349">Aplica la función "Powerwash" en el dispositivo y vuelve a intentarlo.</translation>
@@ -7800,6 +7806,7 @@ Tienes # contraseñas hackeadas más. El Administrador de contraseñas de Go
 <translation id="7283555985781738399">Modo de invitado</translation>
 <translation id="7284307451964417957">{DAYS,plural, =1{Este dispositivo se guardará por 1 día y no necesitarás un código la próxima vez que te conectes. Esto lo estableció el administrador.}other{Este dispositivo se guardará por {DAYS} días y no necesitarás un código la próxima vez que te conectes. Esto lo estableció el administrador.}}</translation>
 <translation id="7284411326658527427">Cada persona podrá personalizar su cuenta y proteger la privacidad de sus datos.</translation>
+<translation id="7286867818472074330">Seleccionar llave de acceso</translation>
 <translation id="7287143125007575591">Acceso denegado</translation>
 <translation id="7287411021188441799">Restablecer fondo predeterminado</translation>
 <translation id="7288676996127329262"><ph name="HORIZONTAL_DPI" />x<ph name="VERTICAL_DPI" /> ppp</translation>

@@ -2106,6 +2106,7 @@
 <translation id="2609980095400624569">연결을 설정할 수 없음</translation>
 <translation id="2610157865375787051">절전 모드</translation>
 <translation id="2610260699262139870">실제 크기(&amp;C)</translation>
+<translation id="2610374175948698697">기기에 있는 파일 또는 폴더를 볼 수 있음</translation>
 <translation id="2610780100389066815">Microsoft Trust List Signing</translation>
 <translation id="261114180663074524">Microsoft 계정에 로그인한 후 다시 시도해 보세요</translation>
 <translation id="2611776654555141051">직사각형 도구</translation>
@@ -2153,6 +2154,7 @@
 <translation id="264897126871533291">적색약</translation>
 <translation id="2649045351178520408">Base64-인코딩 ASCII, 인증서 체인</translation>
 <translation id="265156376773362237">표준 미리 로드</translation>
+<translation id="2652071759203138150">{COUNT,plural, =1{비밀번호 {COUNT}개가 이 기기에만 저장됩니다. 다른 기기에서 사용하려면 <ph name="BEGIN_LINK" />Google 계정에 저장하세요<ph name="END_LINK" />.}other{비밀번호 {COUNT}개가 이 기기에만 저장됩니다. 다른 기기에서 사용하려면 <ph name="BEGIN_LINK" />Google 계정에 저장하세요<ph name="END_LINK" />.}}</translation>
 <translation id="2652129567809778422">비밀번호 선택</translation>
 <translation id="2653266418988778031">인증 기관(CA) 인증서를 삭제하면 브라우저가 해당 CA에서 발급된 인증서를 더 이상 신뢰하지 않습니다.</translation>
 <translation id="2653275834716714682">텍스트 바꾸기</translation>
@@ -3231,6 +3233,7 @@
 <translation id="3521405806571557477"><ph name="SITE_NAME" />의 저장된 데이터 삭제</translation>
 <translation id="3521606918211282604">디스크 크기 변경</translation>
 <translation id="3522088408596898827">디스크 저장 공간이 매우 부족합니다. 여유 공간을 확보한 후 다시 시도해 보세요.</translation>
+<translation id="3522979239100719575">사용 가능한 프로필을 찾는 중입니다. 몇 분 정도 소요될 수 있습니다</translation>
 <translation id="3524518036046613664">프린터와 같은 로컬 네트워크의 기기 검색</translation>
 <translation id="3524965460886318643">활동 내보내기</translation>
 <translation id="3525426269008462093">설정 후 기기 동기화 검토</translation>
@@ -4041,6 +4044,7 @@
 <translation id="4150201353443180367">디스플레이</translation>
 <translation id="4150569944729499860">화면 컨텍스트</translation>
 <translation id="4151449637210235443">최근 게임플레이에 관해 알려주세요.</translation>
+<translation id="4151503145138736576">정리할 오프라인 저장용량 없음</translation>
 <translation id="4152011295694446843">여기에서 북마크를 확인할 수 있습니다</translation>
 <translation id="4152670763139331043">{NUM_TABS,plural, =1{탭 1개}other{탭 #개}}</translation>
 <translation id="4154664944169082762">지문</translation>
@@ -4251,6 +4255,7 @@
 <translation id="4341577178275615435">캐럿 브라우징을 사용 설정하거나 중지하려면 F7 단축키를 사용합니다.</translation>
 <translation id="4341905082470253054">TPM 상태 확인 중...</translation>
 <translation id="434198521554309404">빠르고 안전하며 편리한 브라우저</translation>
+<translation id="4342417854108207000">기기의 파일 또는 폴더 수정이 허용되지 않음</translation>
 <translation id="4343250402091037179">특정 사이트 또는 Chrome의 일부를 검색하려면 주소 표시줄에 바로가기를 입력한 다음 원하는 단축키를 누르세요.</translation>
 <translation id="434404122609091467">현재 서비스 제공업체 이용</translation>
 <translation id="4345457680916430965"><ph name="APP" />에서 열기(O)</translation>
@@ -5285,6 +5290,7 @@ https://support.google.com/chromebook/?p=tpm</translation>
 <translation id="5197255632782567636">인터넷</translation>
 <translation id="5198430103906431024">사용 및 진단 데이터를 보냅니다. 이 기기는 현재 진단, 기기 및 앱 사용 데이터를 Google에 자동으로 보내고 있습니다. 데이터는 시스템 및 앱 안정성 등을 개선하는 데 활용됩니다. 일부 수집 데이터는 Google 앱과 파트너(Android 개발자 등)에게도 도움을 줍니다. 추가 웹 및 앱 활동이 사용 설정되어 있다면 이 데이터가 Google 계정에 저장될 수 있습니다.</translation>
 <translation id="5199729219167945352">실험실 기능</translation>
+<translation id="5203035663139409780">기기에 있는 파일 또는 폴더를 수정할 수 있음</translation>
 <translation id="5203920255089865054">{NUM_EXTENSIONS,plural, =1{확장 프로그램을 보려면 클릭하세요.}other{확장 프로그램을 보려면 클릭하세요.}}</translation>
 <translation id="5204249655833504508">그래픽 태블릿</translation>
 <translation id="5204673965307125349">기기를 파워워시한 후 다시 시도해 주세요.</translation>
@@ -7819,6 +7825,7 @@ https://support.google.com/chromebook/?p=tpm</translation>
 <translation id="7283555985781738399">게스트 모드</translation>
 <translation id="7284307451964417957">{DAYS,plural, =1{기기는 하루 동안 저장되며 다음번 연결 시 코드가 필요하지 않습니다. 이는 관리자가 설정한 규칙입니다.}other{기기는 {DAYS}일 동안 저장되며 다음번 연결 시 코드가 필요하지 않습니다. 이는 관리자가 설정한 규칙입니다.}}</translation>
 <translation id="7284411326658527427">모든 사용자는 자신의 계정을 맞춤설정하고 데이터를 비공개로 유지할 수 있습니다.</translation>
+<translation id="7286867818472074330">패스키 선택</translation>
 <translation id="7287143125007575591">액세스가 거부되었습니다.</translation>
 <translation id="7287411021188441799">기본 배경 복원</translation>
 <translation id="7288676996127329262"><ph name="HORIZONTAL_DPI" />x<ph name="VERTICAL_DPI" />dpi</translation>

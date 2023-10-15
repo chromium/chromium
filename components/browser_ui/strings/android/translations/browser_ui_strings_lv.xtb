@@ -258,6 +258,7 @@
 <translation id="5545693483061321551">Vietnes nedrīkst izmantot sīkfailus, lai skatītu jūsu pārlūkošanas darbības dažādās vietnēs, piemēram, lai personalizētu reklāmas. Noteiktās vietnēs funkcijas var nedarboties.</translation>
 <translation id="5553374991681107062">jaunākās</translation>
 <translation id="5556459405103347317">Pārlādēt</translation>
+<translation id="5591840828808741583">Bloķēta vietnē <ph name="SITE_NAME" /></translation>
 <translation id="5649053991847567735">Automātiskās lejupielādes</translation>
 <translation id="5668404140385795438">Ignorēt vietnes pieprasījumu, lai novērstu tuvināšanu</translation>
 <translation id="5677928146339483299">Bloķēts</translation>
@@ -455,6 +456,7 @@
 <translation id="8959122750345127698">Navigācija nav sasniedzama: <ph name="URL" /></translation>
 <translation id="8986362086234534611">Aizmirst</translation>
 <translation id="8990043154272859344">Jūs tiksiet izrakstīts no visām vietnēm.</translation>
+<translation id="9011903857143958461">Atļauta vietnē <ph name="SITE_NAME" /></translation>
 <translation id="9019902583201351841">Pārvalda jūsu vecāki</translation>
 <translation id="9039697262778250930">Iespējams, automātiski izrakstīsieties no šīm vietnēm.</translation>
 <translation id="9074739597929991885">Bluetooth</translation>

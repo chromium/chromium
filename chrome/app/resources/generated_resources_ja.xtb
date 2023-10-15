@@ -3205,6 +3205,7 @@
 <translation id="3521405806571557477"><ph name="SITE_NAME" /> の保存済みデータを削除します</translation>
 <translation id="3521606918211282604">ディスクのサイズを変更</translation>
 <translation id="3522088408596898827">ディスクの空き領域が非常に少なくなっています。空き容量を増やしてもう一度お試しください。</translation>
+<translation id="3522979239100719575">使用可能なプロファイルを検出しています。この処理には数分かかることがあります。</translation>
 <translation id="3524518036046613664">プリンタなどのローカル ネットワーク上のデバイスを検出</translation>
 <translation id="3524965460886318643">アクティビティをエクスポート</translation>
 <translation id="3525426269008462093">設定後にデバイスの同期を確認する</translation>
@@ -7778,6 +7779,7 @@
 <translation id="7283555985781738399">ゲストモード</translation>
 <translation id="7284307451964417957">{DAYS,plural, =1{このデバイスは 1 日間保存され、次回はコードなしで接続できます。これは管理者によって設定されています。}other{このデバイスは {DAYS} 日間保存され、次回はコードなしで接続できます。これは管理者によって設定されています。}}</translation>
 <translation id="7284411326658527427">ユーザーごとにアカウントをカスタマイズして、データのプライバシーを確保できます。</translation>
+<translation id="7286867818472074330">パスキーを選択</translation>
 <translation id="7287143125007575591">アクセスが拒否されました。</translation>
 <translation id="7287411021188441799">デフォルトの背景に戻す</translation>
 <translation id="7288676996127329262"><ph name="HORIZONTAL_DPI" />x<ph name="VERTICAL_DPI" /> dpi</translation>

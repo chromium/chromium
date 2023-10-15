@@ -4251,6 +4251,7 @@ Les utilisateurs peuvent activer ou désactiver les services de localisation Goo
 <translation id="467449052039111439">Ouvrir une liste d'URL</translation>
 <translation id="4674542060943819878">Activer la fermeture des alertes de mot de passe compromis</translation>
 <translation id="4674871290487541952">Autoriser les algorithmes non sécurisés dans les vérifications de l'intégrité des mises à jour et des installations d'extension</translation>
+<translation id="4676118751789104029">Si cette règle est activée, les applis Web tierces peuvent utiliser l'API Desk pour contrôler les bureaux Chrome OS. Si elle n'est pas configurée ou est désactivée, l'API Desk ne sera pas disponible. Cette règle ne s'applique qu'aux appareils enregistrés.</translation>
 <translation id="4680961954980851756">Activer la saisie automatique</translation>
 <translation id="4685721728282448265">Algorithme clé-contrat post-quantique CECPQ2 activé pour TLS</translation>
 <translation id="468822697351680932">Utiliser la règle SiteList d'Internet Explorer comme source des règles</translation>
@@ -6528,13 +6529,6 @@ Si cette règle est définie sur "False", l'ancien comportement est activé.</tr
       Si cette règle n'est pas définie, le comportement par défaut sera autorisé pour les utilisateurs gérés par une entreprise et pour les utilisateurs non gérés.</translation>
 <translation id="6640748114867542396">Ne pas autoriser les extensions gérées à utiliser l'API Enterprise Hardware Platform</translation>
 <translation id="6641981670621198190">Désactiver la prise en charge des API 3D graphics</translation>
-<translation id="6644480111811011438">Permet de désactiver ou non la fonctionnalité d'ensembles internes.
-
-                  Si cette règle n'est pas configurée ou qu'elle est activée, la fonctionnalité d'ensembles internes est activée.
-
-                  Si elle est désactivée, la fonctionnalité l'est également.
-
-                  Cela détermine si Chrome accepte ou non les intégrations liées aux ensembles internes.</translation>
 <translation id="6646912445796087001">Permet d'activer ou de désactiver les différentes fonctionnalités du clavier à l'écran. Cette règle s'applique uniquement si la règle "VirtualKeyboardEnabled" est activée.
 
       Si une fonctionnalité de cette règle est définie sur "True", elle sera activée pour le clavier à l'écran.

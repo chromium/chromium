@@ -36,7 +36,6 @@
 <translation id="1173894706177603556">नाम बदलें</translation>
 <translation id="1174479719160874822">स्क्रीन छोटी होने पर Chrome, मोबाइल साइट का अनुरोध करेगा</translation>
 <translation id="1177863135347784049">कस्टम</translation>
-<translation id="1178581264944972037">रोकें</translation>
 <translation id="1181037720776840403">हटाएं</translation>
 <translation id="1181366777303791449"><ph name="MAIN_FRAME_ETLD_PLUS_ONE" /> पर</translation>
 <translation id="1193729455103054076">क्या आपको मज़बूत पासवर्ड बनाना है?</translation>
@@ -166,6 +165,7 @@
 <translation id="1922362554271624559">सुझाई गई भाषाएं</translation>
 <translation id="1924255092154549435">टैब को बड़ा किया गया</translation>
 <translation id="1925021887439448749">पसंद के मुताबिक वेब पता डालें</translation>
+<translation id="1928618076168182477">विज़ुअल व्यू दिखाया जा रहा है</translation>
 <translation id="1928696683969751773">अपडेट</translation>
 <translation id="19288952978244135">Chrome को फिर से खोलें.</translation>
 <translation id="1933845786846280168">चयनित टैब</translation>
@@ -196,6 +196,7 @@
 <translation id="2065944887543506430">{FILE_COUNT,plural, =1{1 डाउनलोड नहीं हो सका}one{# डाउनलोड नहीं हो सके}other{# डाउनलोड नहीं हो सके}}</translation>
 <translation id="2067805253194386918">टेक्स्ट</translation>
 <translation id="2082238445998314030"><ph name="TOTAL_RESULTS" /> में से <ph name="RESULT_NUMBER" /> परिणाम</translation>
+<translation id="2091863218454846791">कॉम्पैक्ट व्यू दिखाया जा रहा है</translation>
 <translation id="2093731487903423814">पिछले 15 मिनट का</translation>
 <translation id="2096012225669085171">सभी डिवाइस में सिंक करना और मनमुताबिक बनाना</translation>
 <translation id="2100273922101894616">अपने-आप साइन इन करने की सुविधा</translation>
@@ -469,7 +470,6 @@
 <translation id="3513704683820682405">ऑगमेंटेड रिएलिटी (AR)</translation>
 <translation id="3518985090088779359">स्‍वीकार करें और जारी रखें</translation>
 <translation id="3522247891732774234">अपडेट उपलब्ध है. ज़्यादा विकल्प</translation>
-<translation id="3523426587027570423">“इस पेज का कॉन्टेंट सुनें” प्लेयर को बंद करने के लिए टैप करें.</translation>
 <translation id="3524138585025253783">डेवलपर यूज़र इंटरफ़ेस (यूआई)</translation>
 <translation id="3524334353996115845"><ph name="ORIGIN" /> को आपकी पहचान की पुष्टि करने दें</translation>
 <translation id="3527085408025491307">फ़ोल्डर</translation>
@@ -671,7 +671,6 @@
 <translation id="4640331037679501949">{NUM_PASSWORDS,plural, =1{1 पासवर्ड या तो हैक हुआ है या चोरी हुआ है}one{# पासवर्ड या तो हैक हुआ है या चोरी हुआ है}other{# पासवर्ड या तो हैक हुए हैं या चोरी हुए हैं}}</translation>
 <translation id="4645146721047390964">गुप्त मोड इस्तेमाल करने पर, साइटें अलग-अलग साइटों पर की गई आपकी ब्राउज़िंग गतिविधि देखने के लिए, कुकी इस्तेमाल नहीं कर सकतीं. जैसे, लोगों के हिसाब से विज्ञापन दिखाने के लिए. मुमकिन है कि कुछ साइटों पर सुविधाएं ठीक से काम न करें.</translation>
 <translation id="4650364565596261010">सिस्टम डिफ़ॉल्ट</translation>
-<translation id="4654641641922242357">“इस पेज का कॉन्टेंट सुनें” प्लेयर.</translation>
 <translation id="465657074423018424">सुरक्षित ब्राउज़िंग की सुविधा, धोखाधड़ी करने वाली वेबसाइटों से आपकी सुरक्षा करती है. अगर आप इसे बंद करते हैं, तो ब्राउज़ करते समय ज़्यादा सावधानी बरतें, खास तौर पर पासवर्ड डालने से पहले.</translation>
 <translation id="4662373422909645029">प्रचलित नाम में अंक शामिल नहीं कर सकते</translation>
 <translation id="4663499661119906179">अपने हिसाब से खास साइटें और खबरें देखें</translation>
@@ -688,7 +687,6 @@
 <translation id="4710167854527459075">नए के क्रम से लगाएं</translation>
 <translation id="4719927025381752090">अनुवाद करना ऑफ़र करें</translation>
 <translation id="47217992755561375">अपने हिसाब से खास साइटें देखें</translation>
-<translation id="4731877163452936634">वीडियो चलाने की स्पीड: <ph name="PLAYBACK_SPEED" />. बदलने के लिए क्लिक करें.</translation>
 <translation id="4732120983431207637">स्टैक अनवाइंडर</translation>
 <translation id="4736934858538408121">वर्चुअल कार्ड</translation>
 <translation id="473775607612524610">अपडेट करें</translation>
@@ -802,7 +800,6 @@
 <translation id="5222676887888702881">साइन आउट करें</translation>
 <translation id="5227554086496586518">खोज नतीजे देखने के लिए टैप करें</translation>
 <translation id="5233638681132016545">नया टैब</translation>
-<translation id="5234971936051226002">“इस पेज का कॉन्टेंट सुनें” प्लेयर को छोटा किया गया.</translation>
 <translation id="5235196193381275927">साइन इन करते समय कोई गड़बड़ी हुई है</translation>
 <translation id="5246093389635966745">टूलबार शॉर्टकट में बदलाव करें</translation>
 <translation id="5264813352784073502">पिछले 24 घंटे का</translation>
@@ -1096,7 +1093,6 @@
 <translation id="6770602306803890733">यह सुविधा, वेब पर आपकी और सभी उपयोगकर्ताओं की सुरक्षा को बेहतर बनाती है</translation>
 <translation id="6775840696761158817">पता बार या खोज बॉक्स में टैप करने या टाइप करने पर, आपको अपने डिफ़ॉल्ट सर्च इंजन से मिलने वाले सुझाव दिखेंगे. यह सुविधा गुप्त मोड में काम नहीं करती.</translation>
 <translation id="6785476624617658922">Chrome और ChromeOS की सेवा की अन्य शर्तें</translation>
-<translation id="6790428901817661496">चलाएं</translation>
 <translation id="6795633245022906657">फटाफट एक नया टैब खोलें. इस शॉर्टकट में बदलाव करने के लिए, सेटिंग पर जाएं.</translation>
 <translation id="6802555630140434547">विंडो बंद हो जाएगी</translation>
 <translation id="6811034713472274749">पेज देखने के लिए तैयार है</translation>
@@ -1255,7 +1251,6 @@
 <translation id="757855969265046257">{FILES,plural, =1{<ph name="FILES_DOWNLOADED_ONE" /> फ़ाइल डाउनलोड की गई}one{<ph name="FILES_DOWNLOADED_MANY" /> फ़ाइलें डाउनलोड की गईं}other{<ph name="FILES_DOWNLOADED_MANY" /> फ़ाइलें डाउनलोड की गईं}}</translation>
 <translation id="7581273696622423628">सर्वेक्षण में भाग लें</translation>
 <translation id="7583262514280211622">आपको अपनी 'पढ़ने की सूची' यहां मिलेगी</translation>
-<translation id="7587250070160020374">Chrome अभी चल रहा है</translation>
 <translation id="7588219262685291874">आपके डिवाइस की 'बैटरी सेवर' सुविधा चालू होने पर 'गहरे रंग वाली थीम' चालू करें</translation>
 <translation id="7594687499944811403"><ph name="TOP_ORIGIN" /> के लिए, <ph name="EMBEDDED_ORIGIN" /> को आपकी पहचान की पुष्टि करने दें</translation>
 <translation id="7596558890252710462">ऑपरेटिंग सिस्टम</translation>
@@ -1331,7 +1326,6 @@
 <translation id="7939485076072265087">हाइलाइट टेक्स्ट के लिए बेहतर कार्ड बनाएं</translation>
 <translation id="7942131818088350342"><ph name="PRODUCT_NAME" /> पुराना है.</translation>
 <translation id="7944772052836377867">सिंक को आपकी पहचान की पुष्टि करनी है</translation>
-<translation id="7945822420239537236">मीडिया को <ph name="NUMBER_OF_SECONDS" /> सेकंड आगे बढ़ाएं</translation>
 <translation id="7947953824732555851">स्वीकार करें और साइन इन करें</translation>
 <translation id="7957413488482743710">वर्चुअल कार्ड आपके असली कार्ड की पहचान ज़ाहिर नहीं होने देता है. इससे, आपको धोखाधड़ी से बचने में मदद मिलती है. <ph name="BEGIN_LINK1" />वर्चुअल कार्ड के बारे में ज़्यादा जानें<ph name="END_LINK1" /></translation>
 <translation id="7960972236129063347">अहम जानकारी वाले पेज का 'वापस जाएं' बटन</translation>
@@ -1340,7 +1334,6 @@
 <translation id="7965838025086216108">सेव किए गए पासवर्ड को किसी भी डिवाइस पर इस्तेमाल किया जा सकता है. <ph name="ACCOUNT" /> के लिए ये पासवर्ड, Google Password Manager में सेव किए गए हैं.</translation>
 <translation id="7968014550143838305">'पढ़ने की सूची' में जोड़ा गया</translation>
 <translation id="7971136598759319605">एक दिन पहले सिंक किया गया</translation>
-<translation id="7972866381678406344"><ph name="NUMBER_OF_SECONDS" /> सेकंड पीछे करें</translation>
 <translation id="7975379999046275268">पेज की झलक देखें <ph name="BEGIN_NEW" />नया<ph name="END_NEW" /></translation>
 <translation id="7977451675950311423">अगर किसी ऐसे पासवर्ड का इस्तेमाल किया जाता है जो डेटा के गलत इस्तेमाल की वजह से हैक हो गया है, तो यह सुविधा आपको चेतावनी दिखाती है.</translation>
 <translation id="7986497153528221272">पासवर्ड देखने के लिए, अपने डिवाइस पर एक स्क्रीन लॉक सेट करें</translation>
@@ -1386,7 +1379,6 @@
 <translation id="8127542551745560481">होम पेज में बदलाव करें</translation>
 <translation id="8130309322784422030">हो सकता है कि आपकी सेव की गई, साइन इन से जुड़ी जानकारी पुरानी हो</translation>
 <translation id="813082847718468539">साइट जानकारी देखें</translation>
-<translation id="8136852699834914183">इस पेज के लिए वीडियो चलाने की सुविधा उपलब्ध नहीं है.</translation>
 <translation id="8137562778192957619">आपको यह पासवर्ड याद नहीं रखना पड़ेगा. यह Google Password Manager में सेव हो जाएगा.</translation>
 <translation id="8186512483418048923"><ph name="FILES" /> फ़ाइलें बची हैं</translation>
 <translation id="8190358571722158785">1 दिन शेष</translation>
@@ -1534,7 +1526,6 @@
 <translation id="8937772741022875483">'डिजिटल वेलबीइंग' से अपनी Chrome गतिविधि हटाना चाहते हैं?</translation>
 <translation id="8942627711005830162">दूसरी विंडो में खोलें</translation>
 <translation id="8945143127965743188"><ph name="LANG" /> - यह भाषा डाउनलोड नहीं की जा सकी. कुछ देर बाद कोशिश करें.</translation>
-<translation id="8953618380150219653">“इस पेज का कॉन्टेंट सुनें” प्लेयर पूरी स्क्रीन पर खुला है.</translation>
 <translation id="8955719471735800169">शीर्ष पर वापस जाएं</translation>
 <translation id="8964479563882643397">नया गुप्त टैब खोलने के लिए, मेन्यू खोलें</translation>
 <translation id="8965591936373831584">डाउनलोड बाकी है</translation>

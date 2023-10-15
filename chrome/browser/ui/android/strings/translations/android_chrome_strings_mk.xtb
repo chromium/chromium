@@ -36,7 +36,6 @@
 <translation id="1173894706177603556">Преименувај</translation>
 <translation id="1174479719160874822">Кога е тесен екранот, Chrome ќе го побара сајтот за мобилен</translation>
 <translation id="1177863135347784049">Приспособено</translation>
-<translation id="1178581264944972037">Пауза</translation>
 <translation id="1181037720776840403">Отстрани</translation>
 <translation id="1181366777303791449">на <ph name="MAIN_FRAME_ETLD_PLUS_ONE" /></translation>
 <translation id="1193729455103054076">Да се користи силна лозинка?</translation>
@@ -166,6 +165,7 @@
 <translation id="1922362554271624559">Предложени јазици</translation>
 <translation id="1924255092154549435">Картичката е проширена</translation>
 <translation id="1925021887439448749">Внесете приспособена веб-адреса</translation>
+<translation id="1928618076168182477">Избран е „Визуелен приказ“</translation>
 <translation id="1928696683969751773">Ажурирања</translation>
 <translation id="19288952978244135">Повторно отворете го Chrome.</translation>
 <translation id="1933845786846280168">Избрана картичка</translation>
@@ -196,6 +196,7 @@
 <translation id="2065944887543506430">{FILE_COUNT,plural, =1{1 неуспешно преземање}one{# неуспешно преземање}other{# неуспешни преземања}}</translation>
 <translation id="2067805253194386918">текст</translation>
 <translation id="2082238445998314030">Резултат <ph name="RESULT_NUMBER" /> од <ph name="TOTAL_RESULTS" /></translation>
+<translation id="2091863218454846791">Избран е „Компактен приказ“</translation>
 <translation id="2093731487903423814">минатите 15 минути</translation>
 <translation id="2096012225669085171">Синхронизирајте и персонализирајте низ уредите</translation>
 <translation id="2100273922101894616">Автоматско најавување</translation>
@@ -474,7 +475,6 @@
 <translation id="3513704683820682405">Проширена реалност</translation>
 <translation id="3518985090088779359">Прифати и продолжи</translation>
 <translation id="3522247891732774234">Достапно е ажурирање. Повеќе опции</translation>
-<translation id="3523426587027570423">Допрете за да се затвори плеерот на “Слушајте ја страницава“.</translation>
 <translation id="3524138585025253783">Кориснички интерфејс за програмери</translation>
 <translation id="3524334353996115845">Дозволете <ph name="ORIGIN" /> да провери дека сте вие</translation>
 <translation id="3527085408025491307">Папка</translation>
@@ -677,7 +677,6 @@
 <translation id="4640331037679501949">{NUM_PASSWORDS,plural, =1{1 компромитирана лозинка}one{# компромитирана лозинка}other{# компромитирани лозинки}}</translation>
 <translation id="4645146721047390964">Додека сте во „Инкогнито“, сајтовите не може да ги користат колачињата за да ја гледаат вашата активност од прелистувањето на различни сајтови, на пример, за персонализирање реклами. Функциите на некои сајтови можеби нема да работат.</translation>
 <translation id="4650364565596261010">Стандардна поставка за системот</translation>
-<translation id="4654641641922242357">Плеер на „Слушајте ја страницава“.</translation>
 <translation id="465657074423018424">„Безбедното прелистување“ ве заштитува од измамнички веб-сајтови. Ако го исклучите, бидете многу внимателни при прелистувањето, особено пред внесување лозинки.</translation>
 <translation id="4662373422909645029">Прекарот не може да содржи броеви</translation>
 <translation id="4663499661119906179">Гледајте најдобри сајтови и стории за вас</translation>
@@ -694,7 +693,6 @@
 <translation id="4710167854527459075">Подредување по најнови</translation>
 <translation id="4719927025381752090">Понудувај превод</translation>
 <translation id="47217992755561375">Видете ги вашите најдобри сајтови</translation>
-<translation id="4731877163452936634">Брзина на репродукција: <ph name="PLAYBACK_SPEED" /> Кликнете за да промените.</translation>
 <translation id="4732120983431207637">Модул за продолжување претходни задачи</translation>
 <translation id="4736934858538408121">Виртуелна картичка</translation>
 <translation id="473775607612524610">Ажурирај</translation>
@@ -810,7 +808,6 @@
 <translation id="5226378907213531272">Екранот ќе се отклучува при секое користење на автомобилот</translation>
 <translation id="5227554086496586518">Допрете за да ги видите резултатите од пребарувањето</translation>
 <translation id="5233638681132016545">Нова картичка</translation>
-<translation id="5234971936051226002">Плеерот на „Слушајте ја страницава“ е минимизиран.</translation>
 <translation id="5235196193381275927">Нешто тргна наопаку при најавувањето</translation>
 <translation id="5246093389635966745">Изменете ја кратенката за алатникот</translation>
 <translation id="5264813352784073502">минатите 24 часа</translation>
@@ -1106,7 +1103,6 @@
 <translation id="6770602306803890733">Ја подобрува безбедноста за вас и сите останати на интернет</translation>
 <translation id="6775840696761158817">Кога ќе допрете или ќе напишете нешто во лентата за адреси или полето за пребарување, ќе гледате предлози од вашиот стандарден пребарувач. Ова е исклучено во „Инкогнито“.</translation>
 <translation id="6785476624617658922">Дополнителни услови за користење на Chrome и Chrome OS</translation>
-<translation id="6790428901817661496">Репродуцирај</translation>
 <translation id="6795633245022906657">Брзо отворете нова картичка. За да ја измените кратенкава, одете во „Поставки“.</translation>
 <translation id="6802555630140434547">Прозорецот ќе се затвори</translation>
 <translation id="6811034713472274749">Страницата е спремна за прикажување</translation>
@@ -1265,7 +1261,6 @@
 <translation id="757855969265046257">{FILES,plural, =1{Преземена е <ph name="FILES_DOWNLOADED_ONE" /> датотека}one{Преземена е <ph name="FILES_DOWNLOADED_MANY" /> датотека}other{Преземени се <ph name="FILES_DOWNLOADED_MANY" /> датотеки}}</translation>
 <translation id="7581273696622423628">Пополнете ја анкетата</translation>
 <translation id="7583262514280211622">Списокот за читање ќе го најдете тука</translation>
-<translation id="7587250070160020374">Сега е пуштен Chrome</translation>
 <translation id="7588219262685291874">Вклучува темна тема кога е вклучен „Штедачот на батерија“ на уредот</translation>
 <translation id="7594687499944811403">Дозволете <ph name="EMBEDDED_ORIGIN" /> да провери дека сте вие за <ph name="TOP_ORIGIN" /></translation>
 <translation id="7596558890252710462">Оперативен систем</translation>
@@ -1344,7 +1339,6 @@
 <translation id="7939485076072265087">Создајте стилизирана картичка со нагласен текст</translation>
 <translation id="7942131818088350342"><ph name="PRODUCT_NAME" /> е застарен.</translation>
 <translation id="7944772052836377867">Синхронизацијата треба да потврди дека сте вие</translation>
-<translation id="7945822420239537236">Премотај напред <ph name="NUMBER_OF_SECONDS" /> секунди</translation>
 <translation id="7947953824732555851">Прифати и најави се</translation>
 <translation id="7957413488482743710">Виртуелната картичка ја сокрива вашата актуелна картичка за да ја заштити од потенцијална измама. <ph name="BEGIN_LINK1" />Дознајте повеќе за виртуелните картички<ph name="END_LINK1" /></translation>
 <translation id="7960972236129063347">Копче за назад на „Увиди за страници“</translation>
@@ -1353,7 +1347,6 @@
 <translation id="7965838025086216108">Зачуваните лозинки може да ги користите на кој било уред. Тие се зачувани во „Управникот со лозинки на Google“ за <ph name="ACCOUNT" />.</translation>
 <translation id="7968014550143838305">Додадено во списокот за читање</translation>
 <translation id="7971136598759319605">Активен пред 1 ден</translation>
-<translation id="7972866381678406344">Премотај назад <ph name="NUMBER_OF_SECONDS" /> секунди</translation>
 <translation id="7975379999046275268">Прегледајте ја страницата <ph name="BEGIN_NEW" />Ново<ph name="END_NEW" /></translation>
 <translation id="7977451675950311423">Ве предупредува ако користите лозинка компромитирана во упад во податоци.</translation>
 <translation id="7986497153528221272">За да ги гледате лозинките, прво поставете заклучување екран на вашиот уред</translation>
@@ -1399,7 +1392,6 @@
 <translation id="8127542551745560481">Изменете ја почетната страница</translation>
 <translation id="8130309322784422030">Вашите складирани податоци за најавување можеби се застарени</translation>
 <translation id="813082847718468539">Прикажи информации за локација</translation>
-<translation id="8136852699834914183">Репродукцијата е недостапна за страницава.</translation>
 <translation id="8137562778192957619">Не треба да ја памтите лозинкава. Ќе се зачува во Google Password Manager.</translation>
 <translation id="8186512483418048923">Преостануваат <ph name="FILES" /> датотеки</translation>
 <translation id="8190358571722158785">Остана 1 ден</translation>
@@ -1548,7 +1540,6 @@
 <translation id="8937772741022875483">Да се отстрани вашата активност на Chrome од „Дигитална благосостојба“?</translation>
 <translation id="8942627711005830162">Отвори во друг прозорец</translation>
 <translation id="8945143127965743188"><ph name="LANG" /> - Овој јазик не можеше да се преземе. Обидете се повторно подоцна.</translation>
-<translation id="8953618380150219653">Плеерот на „Слушајте ја страницава“ се отвори со целосна висина.</translation>
 <translation id="8955719471735800169">Назад на почеток</translation>
 <translation id="8964479563882643397">За да отворите нова картичка „Инкогнито“, отворете го менито</translation>
 <translation id="8965591936373831584">чека на ред</translation>

@@ -75,6 +75,7 @@
 <translation id="1499900233129743732"><ph name="MANAGER" /> алыстан параметрлерди башкарып, колдонуучунун аракеттерин көзөмөлдөй алат.</translation>
 <translation id="150962533380566081">Жараксыз PUK.</translation>
 <translation id="1510238584712386396">Жүргүзгүч</translation>
+<translation id="1515129336378114413">серепчинин башкы бети</translation>
 <translation id="1526389707933164996">Көшөгө анимациясы</translation>
 <translation id="152892567002884378">Катуулатуу</translation>
 <translation id="1555130319947370107">Көк</translation>
@@ -749,6 +750,7 @@
 <translation id="6659594942844771486">Өтмөк</translation>
 <translation id="6673898378497337661">баскычтоптун жарыктыгын көбөйтүү</translation>
 <translation id="6692996468359469499">Сиз тандаган нерсеге тиешелүү маалыматты алуу</translation>
+<translation id="6694534975463174713">кулпулоо</translation>
 <translation id="6704062477274546131">DNS дааналыгы</translation>
 <translation id="6723839937902243910">Кубат</translation>
 <translation id="6723847290197874913">Баскычтоптун жарыгы</translation>
@@ -837,7 +839,6 @@
 <translation id="7401543881546089382">Кыска жолду жок кылуу</translation>
 <translation id="741244894080940828">которуу</translation>
 <translation id="7415801143053185905">HTTP күтүү убакыты өтө жогору</translation>
-<translation id="7425178841057519191">{NUM_ROOL_APPS,plural,offset:2 =1{Администраторуңуз <ph name="APP_NAME_1" /> колдонмосун сиз тутумга кирген сайын автоматтык түрдө ачыла тургандай кылып тууралады.}=2{Администраторуңуз <ph name="APP_NAME_1" /> жана <ph name="APP_NAME_2" /> колдонмолорун сиз тутумга кирген сайын автоматтык түрдө ачыла тургандай кылып тууралады.}=3{Администраторуңуз <ph name="APP_NAME_1" />, <ph name="APP_NAME_2" /> жана <ph name="APP_NAME_3" /> колдонмолорун сиз тутумга кирген сайын автоматтык түрдө ачыла тургандай кылып тууралады.}other{Администраторуңуз <ph name="APP_NAME_1" />, <ph name="APP_NAME_2" /> жана дагы # колдонмону сиз тутумга кирген сайын автоматтык түрдө ачыла тургандай кылып тууралады.}}</translation>
 <translation id="7427315641433634153">MSCHAP</translation>
 <translation id="7458970041932198923">Аватарларды көрүү жана коюу үчүн тармакка туташып, баракты кайра жүктөңүз.</translation>
 <translation id="7469648432129124067">Портал аныкталды</translation>
@@ -1045,7 +1046,6 @@
 <translation id="8983038754672563810">HSPA</translation>
 <translation id="8987565828374052507">{NUMBER_OF_PAGES,plural, =0{Скандоо}=1{{NUMBER_OF_PAGES} бетти скандоо}other{{NUMBER_OF_PAGES} бетти скандоо}}</translation>
 <translation id="8997710128084572139">Түзмөктүн батареясынын деңгээли: <ph name="BATTERY_PERCENTAGE" />%.</translation>
-<translation id="8998156756248178381">{NUM_ROOL_APPS,plural, =1{<ph name="APP_NAME_1" /> автоматтык түрдө ачылды}other{# колдонмо автоматтык түрдө ачылды}}</translation>
 <translation id="8998289560386111590">Түзмөгүңүздө жеткиликтүү эмес</translation>
 <translation id="9003704114456258138">Жыштык</translation>
 <translation id="901834265349196618">электрондук почта</translation>

@@ -6708,13 +6708,6 @@ Se ela for definida como falsa, o comportamento antigo será ativado.</translati
       Se a política for deixada sem definição, o padrão será permitido tanto para usuários gerenciados por empresas quanto para os não gerenciados.</translation>
 <translation id="6640748114867542396">Não permitir que extensões gerenciadas usem a API Enterprise Hardware Platform</translation>
 <translation id="6641981670621198190">Desativar o suporte a APIs para gráficos 3D</translation>
-<translation id="6644480111811011438">Esta política é fornecida como uma forma de desativar o recurso de conjuntos primários.
-
-                  Quando ela é deixada sem definição ou é ativada, os conjuntos primários ficam ativados.
-
-                  Quando ela é desativada, eles também ficam desativados.
-
-                  Essa política controla se o Chrome oferece suporte a integrações relacionadas a conjuntos primários.</translation>
 <translation id="6646912445796087001">Ativa ou desativa vários recursos do teclado na tela. Esta política entra em vigor somente quando a VirtualKeyboardEnabled é ativada.
 
       Se um recurso desta política for definido como verdadeiro, ele será ativado no teclado na tela.

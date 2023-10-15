@@ -6557,13 +6557,6 @@ Se questo criterio viene impostato su Falso, viene attivato il comportamento pre
       Se questo criterio non viene configurato, per impostazione predefinita la funzionalità è consentita sia per gli utenti gestiti a livello aziendale sia per quelli non gestiti.</translation>
 <translation id="6640748114867542396">Non consentire alle estensioni gestite di utilizzare l'API Enterprise Hardware Platform</translation>
 <translation id="6641981670621198190">Disattiva supporto per le API grafiche 3D</translation>
-<translation id="6644480111811011438">Questo criterio consente di disattivare la funzionalità degli insiemi proprietari.
-
-                  Se questo criterio non viene configurato o se viene impostato su Attivato, la funzionalità degli insiemi proprietari viene attivata.
-
-                  Se questo criterio viene impostato su Disattivato, la funzionalità degli insiemi proprietari viene disattivata.
-
-                  Stabilisce inoltre se Chrome supporta o meno le funzionalità correlate agli insiemi proprietari.</translation>
 <translation id="6646912445796087001">Consente di attivare o disattivare diverse funzionalità per la tastiera sullo schermo. Questo criterio viene applicato soltanto se è attivato il criterio "VirtualKeyboardEnabled".
 
       Se una funzionalità in questo criterio viene impostata su True, questa viene attivata per la tastiera sullo schermo.

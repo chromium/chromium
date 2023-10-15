@@ -258,6 +258,7 @@
 <translation id="5545693483061321551">Сайтовете не могат да използват „бисквитките“ ви, за да следят активността ви при сърфиране в различни сайтове, например за да персонализират реклами. Функциите в някои сайтове може да не работят.</translation>
 <translation id="5553374991681107062">Най-новите</translation>
 <translation id="5556459405103347317">Повторно зареждане</translation>
+<translation id="5591840828808741583">Достъпът до <ph name="SITE_NAME" /> е блокиран</translation>
 <translation id="5649053991847567735">Автоматични изтегляния</translation>
 <translation id="5668404140385795438">Отмяна на искането на уебсайта да не се допуска увеличаване на мащаба</translation>
 <translation id="5677928146339483299">Блокирано</translation>
@@ -455,6 +456,7 @@
 <translation id="8959122750345127698">Навигирането не е възможно: <ph name="URL" /></translation>
 <translation id="8986362086234534611">Забравяне</translation>
 <translation id="8990043154272859344">Ще излезете от профила си във всички сайтове</translation>
+<translation id="9011903857143958461">Достъпът до <ph name="SITE_NAME" /> е разрешен</translation>
 <translation id="9019902583201351841">Управлява се от родителите ви</translation>
 <translation id="9039697262778250930">Възможно е да излезете от профила си в тези сайтове</translation>
 <translation id="9074739597929991885">Bluetooth</translation>

@@ -353,7 +353,6 @@
 <translation id="243878895369688216">נפתח אתמול</translation>
 <translation id="2440978926514840421">‏התבצעה הקלטת GIF</translation>
 <translation id="2441427462554639370">ההקלטה הסתיימה כי נפח האחסון כמעט נגמר</translation>
-<translation id="24452542372838207">הרחבת ההודעה</translation>
 <translation id="2448312741937722512">סוג</translation>
 <translation id="2449089818483227734">הסוללה חלשה</translation>
 <translation id="2450205753526923158">מצב צילום מסך</translation>
@@ -703,6 +702,7 @@
 <translation id="385300504083504382">התחלה</translation>
 <translation id="3859364108019690">לא ניתן לשדר אפליקציות</translation>
 <translation id="3861651314799684201">‏כדי להקליט את המסך המלא, מקישים על Enter</translation>
+<translation id="3865912916886104060">‏אין מכשירים מחוברים. החיבור ל-Wi-Fi יושבת כדי שניתן יהיה להתחיל להשתמש בנקודה לשיתוף אינטרנט (Hotspot).</translation>
 <translation id="3886872229787704059">נפתח היום</translation>
 <translation id="3891340733213178823">‏יש להקיש פעמיים על Ctrl+Shift+Q כדי לצאת.</translation>
 <translation id="3893630138897523026">‏ChromeVox (משוב קולי)</translation>
@@ -787,6 +787,7 @@
 <translation id="4197790712631116042">כבוי</translation>
 <translation id="4201033867194214117">התכונה <ph name="FEATURE_NAME" /> לא זמינה.</translation>
 <translation id="4201051445878709314">הצגת חודש קודם</translation>
+<translation id="4202362334312791952">‏מכשיר אחד מחובר. החיבור ל-Wi-Fi יושבת כדי שניתן יהיה להתחיל להשתמש בנקודה לשיתוף אינטרנט (Hotspot).</translation>
 <translation id="4209973997261364186">‏Wi-Fi פועל</translation>
 <translation id="4212472694152630271">מעבר לקוד אימות</translation>
 <translation id="4215497585250573029">‏הגדרות VPN</translation>
@@ -1049,6 +1050,7 @@
 <translation id="5258528442992323769">אין שולחנות עבודה וירטואליים שמורים</translation>
 <translation id="5260676007519551770">שולחן עבודה 4</translation>
 <translation id="5268819379131021772">‏רשימת המשימות של Google</translation>
+<translation id="5275923704957843041">תצוגה מקדימה של שולחן העבודה הווירטואלי</translation>
 <translation id="5277869901083657836">הצגה או הסתרה של כלי הסטיילוס</translation>
 <translation id="5278086053818066789">‏הפעלה/השבתה של ChromeVox (קורא מסך קולי)</translation>
 <translation id="5283099933536931082">האפליקציה <ph name="APP_ITEM_TITLE" /> מבקשת את תשומת לבך.</translation>
@@ -1166,6 +1168,7 @@
 <translation id="5707775774148071965">קצב התקשורת של הכבל נמוך מזה של המכשיר. יכול להיות שביצועי המכשיר יוגבלו.</translation>
 <translation id="5710450975648804523">מצב 'נא לא להפריע' מופעל</translation>
 <translation id="571295407079589142">חבילת הגלישה כבויה</translation>
+<translation id="5716891621595980681">‏<ph name="DEVICECOUNT" /> מכשירים מחוברים. החיבור ל-Wi-Fi יושבת כדי שניתן יהיה להתחיל להשתמש בנקודה לשיתוף אינטרנט (Hotspot).</translation>
 <translation id="5727460725221669831">‏אם שינית לאחרונה את הסיסמה לחשבון Google או ששכחת אותה, אפשר לנסות לשחזר את הגישה למשתמש הזה.</translation>
 <translation id="573413375004481890">המכשיר הזה לא הצליח לתמוך בכל המסכים, ולכן אחד מהם נותק</translation>
 <translation id="5740328398383587084">שיתוף בקרבת מקום</translation>
@@ -1947,7 +1950,6 @@
 <translation id="9030665205623277906">‏תמונת מצב של השימוש במעבד (CPU): %<ph name="CPU_USEAGE" /></translation>
 <translation id="9034924485347205037">‏קובצי Linux</translation>
 <translation id="9047624247355796468">פתיחת ההגדרות של <ph name="NETWORK_NAME" /></translation>
-<translation id="9059834730836941392">כיווץ ההודעה</translation>
 <translation id="906458777597946297">הגדלת החלון</translation>
 <translation id="9065203028668620118">עריכה</translation>
 <translation id="9070640332319875144">‏הגדרות Assistant</translation>

@@ -258,6 +258,7 @@
 <translation id="5545693483061321551">Svetainės negali naudoti slapukų, siekdamos sužinoti apie naršymo veiklą skirtingose svetainėse, pavyzdžiui, kad galėtų suasmeninti skelbimus. Funkcijos gali neveikti kai kuriose svetainėse.</translation>
 <translation id="5553374991681107062">Naujausi</translation>
 <translation id="5556459405103347317">Įkelti iš naujo</translation>
+<translation id="5591840828808741583">Užblokuota: <ph name="SITE_NAME" /></translation>
 <translation id="5649053991847567735">Automatiškai atsisiųsti</translation>
 <translation id="5668404140385795438">Nepaisyti svetainės mastelio keitimo vengimo užklausos</translation>
 <translation id="5677928146339483299">Užblokuoti</translation>
@@ -455,6 +456,7 @@
 <translation id="8959122750345127698">Naršymas nepasiekiamas: <ph name="URL" /></translation>
 <translation id="8986362086234534611">Pamiršti</translation>
 <translation id="8990043154272859344">Būsite atjungti nuo visų svetainių</translation>
+<translation id="9011903857143958461">Leidžiama: <ph name="SITE_NAME" /></translation>
 <translation id="9019902583201351841">Tvarko jūsų tėvai</translation>
 <translation id="9039697262778250930">Galite būti atjungti nuo šių svetainių</translation>
 <translation id="9074739597929991885">Bluetooth</translation>

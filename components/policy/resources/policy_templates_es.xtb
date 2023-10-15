@@ -6563,13 +6563,6 @@ Si se le asigna el valor False a esta política, se habilitará el comportamient
       Si no se establece esta política, el valor predeterminado para los usuarios gestionados por una empresa y para los no gestionados es permitir abrir la aplicación Eche.</translation>
 <translation id="6640748114867542396">No permitir que las extensiones gestionadas utilicen la API Enterprise Hardware Platform</translation>
 <translation id="6641981670621198190">Inhabilitar compatibilidad con API de gráficos 3D</translation>
-<translation id="6644480111811011438">Esta política se proporciona como método para inhabilitar la función de conjuntos propios.
-
-                  Si esta política se habilita o no se define, se habilitará la función de conjuntos propios.
-
-                  Si esta política se inhabilita, se inhabilitará la función de conjuntos propios.
-
-                  Esta función controla si Chrome admite integraciones relacionadas con conjuntos propios.</translation>
 <translation id="6646912445796087001">Habilita o inhabilita distintas funciones en el teclado en pantalla. Esta política solo tiene efecto si la política "VirtualKeyboardEnabled" está habilitada.
 
       Si se le asigna el valor "True" a una función de esta política, se habilitará en el teclado en pantalla.

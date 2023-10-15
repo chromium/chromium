@@ -837,7 +837,6 @@
 <translation id="7401543881546089382">حذف الاختصار</translation>
 <translation id="741244894080940828">التحويل</translation>
 <translation id="7415801143053185905">‏وقت استجابة بروتوكول HTTP طويل جدًا.</translation>
-<translation id="7425178841057519191">{NUM_ROOL_APPS,plural,offset:2 =1{لقد ضبط مشرفك "<ph name="APP_NAME_1" />" للبدء تلقائيًا مع كل تسجيل دخول.}=2{لقد ضبط مشرفك "<ph name="APP_NAME_1" />" و"<ph name="APP_NAME_2" />" للبدء تلقائيًا مع كل تسجيل دخول.}=3{لقد ضبط مشرفك "<ph name="APP_NAME_1" />" و"<ph name="APP_NAME_2" />" و"<ph name="APP_NAME_3" />" للبدء تلقائيًا مع كل تسجيل دخول.}zero{لقد ضبط مشرفك "<ph name="APP_NAME_1" />" و"<ph name="APP_NAME_2" />" و# تطبيق آخر للبدء تلقائيًا مع كل تسجيل دخول.}few{لقد ضبط مشرفك "<ph name="APP_NAME_1" />" و"<ph name="APP_NAME_2" />" و# تطبيقات أخرى للبدء تلقائيًا مع كل تسجيل دخول.}many{لقد ضبط مشرفك "<ph name="APP_NAME_1" />" و"<ph name="APP_NAME_2" />" و# تطبيقًا آخر للبدء تلقائيًا مع كل تسجيل دخول.}other{لقد ضبط مشرفك "<ph name="APP_NAME_1" />" و"<ph name="APP_NAME_2" />" و# تطبيق آخر للبدء تلقائيًا مع كل تسجيل دخول.}}</translation>
 <translation id="7427315641433634153">MSCHAP</translation>
 <translation id="7458970041932198923">يُرجى الاتصال بإحدى الشبكات وإعادة تحميل الصفحة لعرض الصور الرمزية وتحديدها.</translation>
 <translation id="7469648432129124067">تم رصد مدخل.</translation>
@@ -1045,7 +1044,6 @@
 <translation id="8983038754672563810">HSPA</translation>
 <translation id="8987565828374052507">{NUMBER_OF_PAGES,plural, =0{مسح ضوئي}=1{مسح صفحة واحدة ({NUMBER_OF_PAGES}) ضوئيًا}two{مسح صفحتَين ({NUMBER_OF_PAGES}) ضوئيًا}few{مسح {NUMBER_OF_PAGES} صفحات ضوئيًا}many{مسح {NUMBER_OF_PAGES} صفحة ضوئيًا}other{مسح {NUMBER_OF_PAGES} صفحة ضوئيًا}}</translation>
 <translation id="8997710128084572139">مستوى شحن بطارية الجهاز هو %<ph name="BATTERY_PERCENTAGE" />.</translation>
-<translation id="8998156756248178381">{NUM_ROOL_APPS,plural, =1{تم بدء تشغيل "<ph name="APP_NAME_1" />" تلقائيًا}zero{تم بدء تشغيل # تطبيق تلقائيًا}two{تم بدء تشغيل تطبيقَين تلقائيًا}few{تم بدء تشغيل # تطبيقات تلقائيًا}many{تم بدء تشغيل # تطبيقًا تلقائيًا}other{تم بدء تشغيل # تطبيق تلقائيًا}}</translation>
 <translation id="8998289560386111590">الوضع غير متاح على جهازك.</translation>
 <translation id="9003704114456258138">التردد</translation>
 <translation id="901834265349196618">بريد إلكتروني</translation>

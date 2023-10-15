@@ -258,6 +258,7 @@
 <translation id="5545693483061321551">Сайты не могуць выкарыстоўваць файлы cookie для адсочвання вашых дзеянняў у браўзеры на розных сайтах, напрыклад, каб персаналізаваць рэкламу. На некаторых сайтах можа не працаваць частка функцый.</translation>
 <translation id="5553374991681107062">Апошняе</translation>
 <translation id="5556459405103347317">Перазагрузіць</translation>
+<translation id="5591840828808741583">Заблакіравана для сайта <ph name="SITE_NAME" /></translation>
 <translation id="5649053991847567735">Аўтаматычнае спампоўванне</translation>
 <translation id="5668404140385795438">Перавызначаць запыт вэб-сайта на прадухіленне павелічэння маштабу</translation>
 <translation id="5677928146339483299">Заблакіравана</translation>
@@ -455,6 +456,7 @@
 <translation id="8959122750345127698">Пераход па наступным адрасе недаступны: <ph name="URL" /></translation>
 <translation id="8986362086234534611">Забыць</translation>
 <translation id="8990043154272859344">Вы выйдзеце з уліковых запісаў на ўсіх сайтах</translation>
+<translation id="9011903857143958461">Дзейнічае для сайта <ph name="SITE_NAME" /></translation>
 <translation id="9019902583201351841">Пад кіраваннем вашых бацькоў</translation>
 <translation id="9039697262778250930">Будзе выкананы выхад з гэтых сайтаў</translation>
 <translation id="9074739597929991885">Bluetooth</translation>

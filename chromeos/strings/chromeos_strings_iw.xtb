@@ -836,7 +836,6 @@
 <translation id="7401543881546089382">מחק קיצור דרך</translation>
 <translation id="741244894080940828">המרה</translation>
 <translation id="7415801143053185905">‏משך זמן ההמתנה ל-HTTP ארוך מאוד</translation>
-<translation id="7425178841057519191">{NUM_ROOL_APPS,plural,offset:2 =1{האדמין הגדיר הפעלה אוטומטית של <ph name="APP_NAME_1" /> בכל התחברות שלך.}=2{האדמין הגדיר הפעלה אוטומטית של <ph name="APP_NAME_1" /> ושל <ph name="APP_NAME_2" /> בכל התחברות שלך.}=3{האדמין הגדיר הפעלה אוטומטית של <ph name="APP_NAME_1" />,‏ <ph name="APP_NAME_2" /> וגם <ph name="APP_NAME_3" /> בכל התחברות שלך.}one{האדמין הגדיר הפעלה אוטומטית של <ph name="APP_NAME_1" />,‏ <ph name="APP_NAME_2" /> ועוד # אפליקציות בכל התחברות שלך.}other{האדמין הגדיר הפעלה אוטומטית של <ph name="APP_NAME_1" />,‏ <ph name="APP_NAME_2" /> ועוד # אפליקציות בכל התחברות שלך.}}</translation>
 <translation id="7427315641433634153">MSCHAP</translation>
 <translation id="7458970041932198923">כדי לראות ולהגדיר דמויות, צריך להתחבר לרשת ולטעון מחדש את הדף.</translation>
 <translation id="7469648432129124067">זוהה פורטל</translation>
@@ -1043,7 +1042,6 @@
 <translation id="8983038754672563810">HSPA</translation>
 <translation id="8987565828374052507">{NUMBER_OF_PAGES,plural, =0{סריקה}=1{סריקת דף {NUMBER_OF_PAGES}}one{סריקת דף {NUMBER_OF_PAGES}}two{סריקת דף {NUMBER_OF_PAGES}}other{סריקת דף {NUMBER_OF_PAGES}}}</translation>
 <translation id="8997710128084572139">רמת הטעינה של הסוללה במכשיר: %<ph name="BATTERY_PERCENTAGE" />.</translation>
-<translation id="8998156756248178381">{NUM_ROOL_APPS,plural, =1{האפליקציה <ph name="APP_NAME_1" /> הופעלה אוטומטית}one{# אפליקציות הופעלו באופן אוטומטי}two{# אפליקציות הופעלו באופן אוטומטי}other{# אפליקציות הופעלו באופן אוטומטי}}</translation>
 <translation id="8998289560386111590">לא זמין במכשיר שלך</translation>
 <translation id="9003704114456258138">תדר</translation>
 <translation id="901834265349196618">אימייל</translation>

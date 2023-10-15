@@ -36,7 +36,6 @@
 <translation id="1173894706177603556">Перайменаваць</translation>
 <translation id="1174479719160874822">Пры наяўнасці вузкага экрана Chrome будзе кожны раз запытваць мабільны сайт</translation>
 <translation id="1177863135347784049">Карыстальніцкая</translation>
-<translation id="1178581264944972037">Прыпыніць</translation>
 <translation id="1181037720776840403">Выдаліць</translation>
 <translation id="1181366777303791449">на <ph name="MAIN_FRAME_ETLD_PLUS_ONE" /></translation>
 <translation id="1193729455103054076">Выкарыстаць надзейны пароль?</translation>
@@ -166,6 +165,7 @@
 <translation id="1922362554271624559">Прапанаваныя мовы</translation>
 <translation id="1924255092154549435">Укладка разгорнута</translation>
 <translation id="1925021887439448749">Увядзіце карыстальніцкі вэб-адрас</translation>
+<translation id="1928618076168182477">Выбрана нагляднае адлюстраванне</translation>
 <translation id="1928696683969751773">Абнаўленні</translation>
 <translation id="19288952978244135">Адкрыйце Chrome яшчэ раз.</translation>
 <translation id="1933845786846280168">Выбраная ўкладка</translation>
@@ -196,6 +196,7 @@
 <translation id="2065944887543506430">{FILE_COUNT,plural, =1{Збой 1 спампоўкі}one{Збой # спампоўкі}few{Збой # спамповак}many{Збой # спамповак}other{Збой # спампоўкі}}</translation>
 <translation id="2067805253194386918">тэкст</translation>
 <translation id="2082238445998314030">Вынік <ph name="RESULT_NUMBER" /> з <ph name="TOTAL_RESULTS" /></translation>
+<translation id="2091863218454846791">Выбрана кампактнае адлюстраванне</translation>
 <translation id="2093731487903423814">апошнія 15 хвілін</translation>
 <translation id="2096012225669085171">Сінхранізацыя і персаналізацыя на ўсіх прыладах</translation>
 <translation id="2100273922101894616">Аўтаматычны ўваход</translation>
@@ -474,7 +475,6 @@
 <translation id="3513704683820682405">Дапоўненая рэальнасць</translation>
 <translation id="3518985090088779359">Прыняць і працягнуць</translation>
 <translation id="3522247891732774234">З'явілася абнаўленне. Дадатковыя параметры</translation>
-<translation id="3523426587027570423">Дакраніцеся, каб закрыць прайгравальнік "Агучыць гэту старонку".</translation>
 <translation id="3524138585025253783">Інтэрфейс для распрацоўшчыкаў</translation>
 <translation id="3524334353996115845">Дазвольце сайту <ph name="ORIGIN" /> спраўдзіць вашу асобу</translation>
 <translation id="3527085408025491307">Папка</translation>
@@ -677,7 +677,6 @@
 <translation id="4640331037679501949">{NUM_PASSWORDS,plural, =1{Адзін раскрыты пароль}one{# раскрыты пароль}few{# раскрытыя паролі}many{# раскрытых пароляў}other{# раскрытага пароля}}</translation>
 <translation id="4645146721047390964">У рэжыме інкогніта сайты не могуць выкарыстоўваць файлы cookie для адсочвання вашых дзеянняў у браўзеры на розных сайтах у мэтах персаналізацыі рэкламы. Некаторыя функцыі сайтаў могуць перастаць працаваць.</translation>
 <translation id="4650364565596261010">Стандартная сістэмная</translation>
-<translation id="4654641641922242357">Прайгравальнік "Агучыць гэту старонку".</translation>
 <translation id="465657074423018424">"Бяспечны прагляд" абараняе вас ад вэб-сайтаў, вядомых падманнымі паводзінамі. Калі вы выключыце гэту функцыю, будзьце вельмі ўважлівымі пры наведванні сайтаў, асабліва перад уводам пароляў.</translation>
 <translation id="4662373422909645029">Псеўданім не можа ўключаць лічбы</translation>
 <translation id="4663499661119906179">Прагледзьце папулярныя сайты і падабраныя для вас артыкулы</translation>
@@ -694,7 +693,6 @@
 <translation id="4710167854527459075">Спачатку новыя</translation>
 <translation id="4719927025381752090">Прапаноўваць пераклад</translation>
 <translation id="47217992755561375">Прагледзьце папулярныя сайты</translation>
-<translation id="4731877163452936634">Хуткасць прайгравання: <ph name="PLAYBACK_SPEED" />. Націсніце, каб змяніць гэта.</translation>
 <translation id="4732120983431207637">Размотчык стэка</translation>
 <translation id="4736934858538408121">Віртуальная картка</translation>
 <translation id="473775607612524610">Абнавіць</translation>
@@ -810,7 +808,6 @@
 <translation id="5226378907213531272">Вам трэба будзе разблакіраваць экран пры кожным выкарыстанні аўтамабіля</translation>
 <translation id="5227554086496586518">Націсніце, каб праглядзець вынікі пошуку</translation>
 <translation id="5233638681132016545">Новая ўкладка</translation>
-<translation id="5234971936051226002">Прайгравальнік "Агучыць гэту старонку" згорнуты.</translation>
 <translation id="5235196193381275927">Нешта пайшло не так падчас уваходу</translation>
 <translation id="5246093389635966745">Змяніць кнопку-ярлык на панэлі інструментаў</translation>
 <translation id="5264813352784073502">апошнія 24 гадзіны</translation>
@@ -1106,7 +1103,6 @@
 <translation id="6770602306803890733">Павышае бяспеку для вас і іншых карыстальнікаў у інтэрнэце</translation>
 <translation id="6775840696761158817">Пры ўводзе тэксту ў адрасным радку або ў полі пошуку вы будзеце бачыць прапановы вашай стандартнай пошукавай сістэмы. У рэжыме інкогніта гэта функцыя не працуе.</translation>
 <translation id="6785476624617658922">Дадатковыя ўмовы выкарыстання Chrome і Chrome OS</translation>
-<translation id="6790428901817661496">Прайграць</translation>
 <translation id="6795633245022906657">Хуткае адкрыццё новай укладкі. Каб змяніць функцыю гэтай кнопкі, перайдзіце ў Налады.</translation>
 <translation id="6802555630140434547">Акно будзе закрыта</translation>
 <translation id="6811034713472274749">Старонка гатовая да прагляду</translation>
@@ -1265,7 +1261,6 @@
 <translation id="757855969265046257">{FILES,plural, =1{Спампаваны <ph name="FILES_DOWNLOADED_ONE" /> файл}one{Спампаваны <ph name="FILES_DOWNLOADED_MANY" /> файл}few{Спампавана <ph name="FILES_DOWNLOADED_MANY" /> файлы}many{Спампавана <ph name="FILES_DOWNLOADED_MANY" /> файлаў}other{Спампавана <ph name="FILES_DOWNLOADED_MANY" /> файла}}</translation>
 <translation id="7581273696622423628">Прыняць удзел у апытанні</translation>
 <translation id="7583262514280211622">Ваш спіс чытання знаходзіцца тут</translation>
-<translation id="7587250070160020374">Зараз прайграецца ў Chrome</translation>
 <translation id="7588219262685291874">Выкарыстоўваць цёмную тэму, калі на прыладзе ўключаны рэжым эканоміі зараду</translation>
 <translation id="7594687499944811403">Дазвольце сайту <ph name="EMBEDDED_ORIGIN" /> спраўдзіць вашу асобу для сайта <ph name="TOP_ORIGIN" /></translation>
 <translation id="7596558890252710462">Аперацыйная сістэма</translation>
@@ -1344,7 +1339,6 @@
 <translation id="7939485076072265087">Стварыць стылізаваную картку з вылучаным тэкстам</translation>
 <translation id="7942131818088350342"><ph name="PRODUCT_NAME" /> – версія састарэла.</translation>
 <translation id="7944772052836377867">Для сінхранізацыі неабходна спраўдзіць вашу асобу</translation>
-<translation id="7945822420239537236">Пераматаць уперад на <ph name="NUMBER_OF_SECONDS" /> с</translation>
 <translation id="7947953824732555851">Прыняць і ўвайсці</translation>
 <translation id="7957413488482743710">Каб абараніць вас ад патэнцыяльнага махлярства, замест захаванай вамі карткі будзе паказвацца віртуальная. <ph name="BEGIN_LINK1" />Даведацца больш пра віртуальныя карткі<ph name="END_LINK1" /></translation>
 <translation id="7960972236129063347">Кнопка "Назад" на старонцы статыстыкі</translation>
@@ -1353,7 +1347,6 @@
 <translation id="7965838025086216108">Вы можаце выкарыстоўваць захаваныя паролі на любой прыладзе. Паролі захоўваюцца ў Менеджары пароляў Google для ўліковага запісу <ph name="ACCOUNT" />.</translation>
 <translation id="7968014550143838305">Дададзена ў спіс чытання</translation>
 <translation id="7971136598759319605">Апошнія дзеянні: дзень таму</translation>
-<translation id="7972866381678406344">Пераматаць назад на <ph name="NUMBER_OF_SECONDS" /> с</translation>
 <translation id="7975379999046275268">Перадпрагляд старонкі <ph name="BEGIN_NEW" />Навінка<ph name="END_NEW" /></translation>
 <translation id="7977451675950311423">Папярэджвае, калі вы выкарыстоўваеце пароль, які быў раскрыты ў выніку ўцечкі даных.</translation>
 <translation id="7986497153528221272">Каб праглядаць паролі, спачатку наладзьце на прыладзе блакіроўку экрана</translation>
@@ -1399,7 +1392,6 @@
 <translation id="8127542551745560481">Змяніць галоўную старонку</translation>
 <translation id="8130309322784422030">Уліковыя даныя могуць быць устарэлымі</translation>
 <translation id="813082847718468539">Прагляд звестак пра сайт</translation>
-<translation id="8136852699834914183">Прайграванне на гэтай старонцы недаступнае.</translation>
 <translation id="8137562778192957619">Вам не трэба запамінаць гэты пароль. Ён будзе захаваны ў Менеджары пароляў Google.</translation>
 <translation id="8186512483418048923">Засталося файлаў: <ph name="FILES" /></translation>
 <translation id="8190358571722158785">Застаўся 1 дзень</translation>
@@ -1548,7 +1540,6 @@
 <translation id="8937772741022875483">Выдаліць вашы дзеянні ў Chrome са службы лічбавага камфорту?</translation>
 <translation id="8942627711005830162">Адкрыць у іншым акне</translation>
 <translation id="8945143127965743188"><ph name="LANG" /> – не ўдалося спампаваць гэты моўны пакет. Паўтарыце спробу пазней.</translation>
-<translation id="8953618380150219653">Прайгравальнік "Агучыць гэту старонку" адкрыты на ўсю вышыню.</translation>
 <translation id="8955719471735800169">Наверх</translation>
 <translation id="8964479563882643397">Каб адкрыць новую ўкладку ў рэжыме інкогніта, адкрыйце меню</translation>
 <translation id="8965591936373831584">у стане чакання</translation>

@@ -786,6 +786,7 @@ Se din søgemaskines vejledning i, hvordan du sletter din søgehistorik, hvis de
 <translation id="5181140330217080051">Downloader</translation>
 <translation id="5184329579814168207">Åbn i Chrome</translation>
 <translation id="5186185447130319458">Privat</translation>
+<translation id="5186634140793586141">Administrer de emner og søgninger, du er interesseret i</translation>
 <translation id="5188482106078495165">Dine cookieindstillinger gælder for alle faner. Du kan anvende en ny indstilling i en åben fane ved at genindlæse fanen.</translation>
 <translation id="5190835502935405962">Bogmærkelinje</translation>
 <translation id="519530786644929958">Downloaden mislykkedes og kan ikke gentages.</translation>
@@ -1165,7 +1166,6 @@ Når du er i Inkognito, kan websites ikke bruge cookies til at se din browserhis
 <translation id="7062545763355031412">Acceptér, og skift konto</translation>
 <translation id="7063811929043357292">Din konto administreres af din forælder.
 <ph name="BEGIN_LINK" />Få flere oplysninger<ph name="END_LINK" /></translation>
-<translation id="7064619810277839954">Giver dig faneforslag baseret på din browseraktivitet på dine andre enheder ved hjælp af din Google-konto. Dine enheder skal være logget ind og synkroniseret med den samme Google-konto.</translation>
 <translation id="7069695992271320873">Fjern fra denne enhed</translation>
 <translation id="7080806333218412752">Sender webadresser til tjek i Beskyttet browsing. Der sendes også et mindre antal sider, downloads, udvidelsesaktivitet og systemoplysninger for at identificere nye trusler. Disse data knyttes midlertidigt til din Google-konto, når du er logget ind, for at beskytte dig i Google-apps.</translation>
 <translation id="7082853213442715471">Når denne funktion er aktiveret, blokeres visse webteknologier, hvilket kan medføre, at nogle websites indlæses langsommere eller ikke fungerer korrekt.</translation>

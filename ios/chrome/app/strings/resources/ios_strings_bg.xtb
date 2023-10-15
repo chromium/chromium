@@ -711,6 +711,7 @@
 <translation id="4808744395915275922">Актуализации</translation>
 <translation id="4818522717893377262">Добавяне на език...</translation>
 <translation id="481968316161811770">„Бисквитки“ и данни за сайтове</translation>
+<translation id="4824480232751123840">Обем</translation>
 <translation id="4824497107140370669">{count,plural, =0{{domain}}=1{{domain} и още 1}other{{domain} и още {count}}}</translation>
 <translation id="4826218269716039351">Блокиране на трети страни</translation>
 <translation id="4826588772550366629">камерата и микрофона ви</translation>
@@ -785,6 +786,7 @@
 <translation id="5181140330217080051">Изтегля се</translation>
 <translation id="5184329579814168207">Отваряне в Chrome</translation>
 <translation id="5186185447130319458">Частно</translation>
+<translation id="5186634140793586141">Управлявайте темите и търсенията, които ви интересуват</translation>
 <translation id="5188482106078495165">Настройката ви за „бисквитките“ се прилага за всички раздели. За да приложите нова настройка за отворен раздел, презаредете го.</translation>
 <translation id="5190835502935405962">Лента на отметките</translation>
 <translation id="519530786644929958">Изтеглянето не успя и не може да бъде повторено.</translation>
@@ -848,6 +850,7 @@
 <translation id="5556459405103347317">Повторно зареждане</translation>
 <translation id="555749644339804659">Паролите се проверяват…</translation>
 <translation id="556042886152191864">Бутон</translation>
+<translation id="5572684875078967866">Хранилище за информация</translation>
 <translation id="5597915316964418992">Отворете мрежата с раздели.</translation>
 <translation id="560322036295180549">Изключено от организацията ви</translation>
 <translation id="5614553682702429503">Да се запази ли паролата?</translation>
@@ -909,6 +912,7 @@
 <translation id="5896576662943111387">Браузър, създаден за iOS</translation>
 <translation id="5897749768294722429">За да се връщате бързо към посетените от вас сайтове, синхронизирайте разделите и историята си.</translation>
 <translation id="5897956970858271241">Отваряне на копираната връзка</translation>
+<translation id="5898848375214731122">Маса</translation>
 <translation id="5899314093904173337">За да споделите с хората в близост, те трябва да сканират този QR код с камерата си или с приложение за целта</translation>
 <translation id="5911030830365207728">Google Преводач</translation>
 <translation id="5913600720976431809">Опции за превод на страницата</translation>
@@ -926,6 +930,7 @@
 <translation id="5981230843984570095">Затваряне на всички неактивни</translation>
 <translation id="5982717868370722439">Добавяне на съществуващите данни към <ph name="USER_EMAIL" />.</translation>
 <translation id="5984222099446776634">Наскоро посетени</translation>
+<translation id="598634819525651074">Площ</translation>
 <translation id="5988097621740394599">Преглед на пониженията на цените в разделите ви.</translation>
 <translation id="5988851877894965432">Отваряне на URL адреси в Chrome</translation>
 <translation id="6006672969046233841">Нов раздел</translation>
@@ -1161,7 +1166,6 @@
 <translation id="7062545763355031412">Приемане и превключване на профилите</translation>
 <translation id="7063811929043357292">Профилът ви се управлява от родителя ви.
 <ph name="BEGIN_LINK" />Научете повече<ph name="END_LINK" /></translation>
-<translation id="7064619810277839954">Дава ви предложения за раздели въз основа на активността ви при сърфиране на другите ви устройства, на които сте влезли в профила си в Google. Съответните устройства трябва да използват един и същ профил и да са синхронизирани с него.</translation>
 <translation id="7069695992271320873">Премахване от това устройство</translation>
 <translation id="7080806333218412752">Изпраща URL адресите до „Безопасно сърфиране“ за проверка. Също така изпраща малка извадка от страници, изтеглени файлове, активност на разширенията и системна информация, за да помага за откриването на нови заплахи. Временно свързва тези данни с профила ви в Google, докато сте в него, за да ви защитава в приложенията на Google.</translation>
 <translation id="7082853213442715471">Когато режимът е включен, определени уеб технологии се блокират и това може да доведе до по-бавното зареждане или неправилното функциониране на някои уебсайтове.</translation>
@@ -1362,6 +1366,7 @@
 <translation id="8156478151976189188">Синхронизирането на паролите не работи</translation>
 <translation id="8157532349231307196"><ph name="NUMBER_OF_ACCOUNTS" /> профила</translation>
 <translation id="8159358225423560600">току-що</translation>
+<translation id="8173034266693057059">Дължина</translation>
 <translation id="8179976553408161302">Enter</translation>
 <translation id="8182037667962849780">{count,plural, =1{За {website_1}}=2{За {website_1} и {website_2}}=3{За {website_1}, {website_2} и още 1}other{За {website_1}, {website_2} и още {more_count}}}</translation>
 <translation id="8193953846147532858"><ph name="BEGIN_LINK" />Вашите устройства<ph name="END_LINK" /> · <ph name="EMAIL" /></translation>
@@ -1456,6 +1461,7 @@
 <translation id="8692689525339542358">Получете защита срещу опасни сайтове, изтегляния и разширения.</translation>
 <translation id="8693663554456874301">{count,plural, =1{Затваряне на раздела}other{Затваряне на разделите}}</translation>
 <translation id="8703536910991780768">Паролите ви изглеждат надеждни</translation>
+<translation id="8706253136355675497">Температура</translation>
 <translation id="8717864919010420084">Копиране на връзката</translation>
 <translation id="8721297211384281569">Меню „Инструменти“</translation>
 <translation id="8725066075913043281">Опитайте отново</translation>
@@ -1561,6 +1567,7 @@
 <translation id="9188680907066685419">Излизане от управляван профил</translation>
 <translation id="9200875785104711666">Преди <ph name="TIME" /> дни</translation>
 <translation id="9203116392574189331">Handoff</translation>
+<translation id="9206887540681440657">Скорост</translation>
 <translation id="9219154867334666734">Търсене на раздели…</translation>
 <translation id="9223358826628549784">Сигналите за сривове са изпратени.</translation>
 <translation id="941747855997058526">Избиране на парола…</translation>

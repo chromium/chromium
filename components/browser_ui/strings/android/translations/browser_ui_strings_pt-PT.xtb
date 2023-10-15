@@ -7,6 +7,7 @@
 <translation id="1073417869336441572">Ajude-nos a melhorar o Chrome ao dizer-nos o motivo pelo qual permitiu cookies de terceiros. <ph name="BEGIN_LINK" />Envie feedback<ph name="END_LINK" /></translation>
 <translation id="1178581264944972037">Pausa</translation>
 <translation id="1181037720776840403">Remover</translation>
+<translation id="1192844206376121885">Esta ação elimina todos os dados e cookies armazenados por <ph name="ORIGIN" />.</translation>
 <translation id="1201402288615127009">Seguinte</translation>
 <translation id="1242008676835033345">Incorporada em <ph name="WEBSITE_URL" /></translation>
 <translation id="1272079795634619415">Parar</translation>
@@ -59,6 +60,7 @@
 <translation id="216989819110952009">Mesmo com os olhos protegidos pelos óculos verdes, Dorothy e os seus amigos ficaram ofuscados pelo</translation>
 <translation id="2176704795966505152">Mostrar opção de zoom no menu principal</translation>
 <translation id="2182457891543959921">Perguntar antes de permitir que os sites criem um mapa 3D do ambiente à sua volta ou monitorizem a posição da câmara (recomendado)</translation>
+<translation id="2185965788978862351">Esta ação elimina <ph name="DATASIZE" /> de dados e cookies armazenados por sites ou apps no seu ecrã principal.</translation>
 <translation id="2194856509914051091">Aspetos a considerar</translation>
 <translation id="2212565012507486665">Permitir cookies</translation>
 <translation id="2228071138934252756">Para permitir que a app <ph name="APP_NAME" /> aceda à câmara, ative também a câmara nas <ph name="BEGIN_LINK" />Definições do Android<ph name="END_LINK" />.</translation>
@@ -82,6 +84,7 @@
 <translation id="2434158240863470628">Transferência concluída: <ph name="SEPARATOR" /> <ph name="BYTES_DOWNLOADED" /></translation>
 <translation id="244264527810019436">As funcionalidades em alguns sites podem não funcionar no Modo de navegação anónima</translation>
 <translation id="2442870161001914531">Peça sempre o site para computador</translation>
+<translation id="2469312991797799607">Esta ação vai eliminar todos os dados e cookies de <ph name="ORIGIN" /> e de todos os sites associados a este</translation>
 <translation id="2479148705183875116">Aceder às Definições</translation>
 <translation id="2482878487686419369">Notificações</translation>
 <translation id="2485422356828889247">Desinstalar</translation>
@@ -229,6 +232,7 @@
 <translation id="5063480226653192405">Utilização</translation>
 <translation id="5091013926750941408">Site para dispositivos móveis</translation>
 <translation id="509133520954049755">Pedir a vista de computador</translation>
+<translation id="5099358668261120049">Esta ação elimina todos os dados e cookies armazenados por <ph name="ORIGIN" /> ou pela respetiva app no seu ecrã principal.</translation>
 <translation id="5100237604440890931">Reduzido. Clique para expandir.</translation>
 <translation id="5123685120097942451">Separador de navegação anónima</translation>
 <translation id="5186036860380548585">Opção disponível junto à parte superior do ecrã</translation>
@@ -277,6 +281,7 @@
 <translation id="5916664084637901428">Ativado</translation>
 <translation id="5922853908706496913">Partilhar o ecrã</translation>
 <translation id="5922967540311291836">Bloqueie cookies de terceiros:</translation>
+<translation id="5923512600150154850">Esta ação vai eliminar <ph name="DATASIZE" /> de dados e cookies armazenados pelos sites.</translation>
 <translation id="5939518447894949180">Repor</translation>
 <translation id="5964247741333118902">Conteúdo incorporado</translation>
 <translation id="5968921426641056619">Introduza o endereço Web</translation>
@@ -345,6 +350,7 @@
 <translation id="7176368934862295254"><ph name="KILOBYTES" /> KB</translation>
 <translation id="7180611975245234373">Atualizar</translation>
 <translation id="7188508872042490670">Dados de sites no dispositivo</translation>
+<translation id="7201549776650881587">Esta ação vai eliminar todos os dados e cookies armazenados por todos os sites em <ph name="ORIGIN" /> ou pela respetiva app no seu ecrã principal</translation>
 <translation id="7203150201908454328">Expandido</translation>
 <translation id="7219254577985949841">Eliminar dados do site?</translation>
 <translation id="723171743924126238">Selecionar imagens</translation>

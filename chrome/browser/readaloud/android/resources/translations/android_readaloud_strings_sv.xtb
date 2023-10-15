@@ -1,1 +1,17 @@
-<?xml version="1.0" ?><!DOCTYPE translationbundle><translationbundle lang="sv"></translationbundle>
+<?xml version="1.0" ?>
+<!DOCTYPE translationbundle>
+<translationbundle lang="sv">
+<translation id="1178581264944972037">Paus</translation>
+<translation id="3523426587027570423">Tryck för att stänga Lyssna på den här sidan.</translation>
+<translation id="4654641641922242357">Spelaren Lyssna på den här sidan.</translation>
+<translation id="4731877163452936634">Uppspelningshastighet: <ph name="PLAYBACK_SPEED" />. Klicka för att ändra.</translation>
+<translation id="5234971936051226002">Spelaren Lyssna på den här sidan har minimerats.</translation>
+<translation id="5596627076506792578">Fler alternativ</translation>
+<translation id="6790428901817661496">Spela</translation>
+<translation id="6846298663435243399">Läser in …</translation>
+<translation id="7587250070160020374">Spelas upp i Chrome</translation>
+<translation id="7945822420239537236">Spola <ph name="NUMBER_OF_SECONDS" /> sekunder framåt</translation>
+<translation id="7972866381678406344">Spola <ph name="NUMBER_OF_SECONDS" /> sekunder bakåt</translation>
+<translation id="8136852699834914183">Uppspelning är inte tillgängligt på den här sidan.</translation>
+<translation id="8953618380150219653">Spelaren Lyssna på den här sidan har öppnats över hela skärmen.</translation>
+</translationbundle>

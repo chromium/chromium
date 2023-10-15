@@ -353,7 +353,6 @@
 <translation id="243878895369688216">Открыто вчера</translation>
 <translation id="2440978926514840421">Выполнена запись в формате GIF</translation>
 <translation id="2441427462554639370">Запись приостановлена, потому что в хранилище почти нет свободного места.</translation>
-<translation id="24452542372838207">Развернуть уведомление</translation>
 <translation id="2448312741937722512">Тип</translation>
 <translation id="2449089818483227734">Низкий заряд батареи</translation>
 <translation id="2450205753526923158">Режим создания скриншота</translation>
@@ -1949,7 +1948,6 @@
 <translation id="9030665205623277906">Использование процессора: <ph name="CPU_USEAGE" /> %</translation>
 <translation id="9034924485347205037">Файлы Linux</translation>
 <translation id="9047624247355796468">Открыть настройки сети "<ph name="NETWORK_NAME" />"</translation>
-<translation id="9059834730836941392">Свернуть уведомление</translation>
 <translation id="906458777597946297">Развернуть окно</translation>
 <translation id="9065203028668620118">Изменить</translation>
 <translation id="9070640332319875144">Настройки Ассистента</translation>

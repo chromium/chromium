@@ -258,6 +258,7 @@
 <translation id="5545693483061321551">A webhelyek nem használhatnak cookie-kat az Ön böngészési tevékenységeinek megismeréséhez a különböző webhelyeken például arra, hogy a hirdetéseket személyre szabják. Előfordulhat, hogy bizonyos webhelyek funkciói nem működnek majd megfelelően.</translation>
 <translation id="5553374991681107062">Legutóbbi</translation>
 <translation id="5556459405103347317">Újratöltés</translation>
+<translation id="5591840828808741583"><ph name="SITE_NAME" /> letiltva</translation>
 <translation id="5649053991847567735">Automatikus letöltések</translation>
 <translation id="5668404140385795438">Felülbírálja a webhely kérelmét, mely megakadályozná a nagyítást</translation>
 <translation id="5677928146339483299">Letiltva</translation>
@@ -455,6 +456,7 @@
 <translation id="8959122750345127698">Nem érhető el az ide vezető navigáció: <ph name="URL" /></translation>
 <translation id="8986362086234534611">Elfelejt</translation>
 <translation id="8990043154272859344">A rendszer az összes webhelyről kijelentkezteti majd.</translation>
+<translation id="9011903857143958461"><ph name="SITE_NAME" /> engedélyezve</translation>
 <translation id="9019902583201351841">Szülők által kezelt</translation>
 <translation id="9039697262778250930">Előfordulhat, hogy a rendszer kijelentkezteti ezekről a webhelyekről</translation>
 <translation id="9074739597929991885">Bluetooth</translation>
