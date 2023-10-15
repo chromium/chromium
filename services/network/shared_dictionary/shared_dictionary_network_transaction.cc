@@ -195,7 +195,7 @@ void SharedDictionaryNetworkTransaction::ModifyRequestHeaders(
     dictionary_status_ = DictionaryStatus::kReading;
     auto split_callback = base::SplitOnceCallback(base::BindOnce(
         &SharedDictionaryNetworkTransaction::OnReadSharedDictionary,
-        base::Unretained(this), /*read_start_time=*/base::Time::Now()));
+        weak_factory_.GetWeakPtr(), /*read_start_time=*/base::Time::Now()));
     int read_result =
         shared_dictionary_->ReadAll(std::move(split_callback.first));
     if (read_result != net::ERR_IO_PENDING) {
