@@ -53,6 +53,7 @@
 #include "extensions/common/trace_util.h"
 #include "ipc/ipc_message.h"
 #include "ipc/ipc_message_macros.h"
+#include "mojo/public/cpp/bindings/callback_helpers.h"
 #include "mojo/public/cpp/bindings/message.h"
 #include "third_party/abseil-cpp/absl/types/optional.h"
 
@@ -231,59 +232,6 @@ class ScopedRequestParamsCrashKeys {
 
 }  // namespace
 
-class ExtensionFunctionDispatcher::ResponseCallbackWrapper
-    : public content::WebContentsObserver {
- public:
-  ResponseCallbackWrapper(
-      const base::WeakPtr<ExtensionFunctionDispatcher>& dispatcher,
-      content::RenderFrameHost* render_frame_host)
-      : content::WebContentsObserver(
-            content::WebContents::FromRenderFrameHost(render_frame_host)),
-        dispatcher_(dispatcher),
-        render_frame_host_(render_frame_host) {}
-
-  ResponseCallbackWrapper(const ResponseCallbackWrapper&) = delete;
-  ResponseCallbackWrapper& operator=(const ResponseCallbackWrapper&) = delete;
-
-  ~ResponseCallbackWrapper() override = default;
-
-  // content::WebContentsObserver overrides.
-  void RenderFrameDeleted(
-      content::RenderFrameHost* render_frame_host) override {
-    if (render_frame_host != render_frame_host_)
-      return;
-
-    if (dispatcher_.get()) {
-      dispatcher_->response_callback_wrappers_.erase(render_frame_host);
-    }
-  }
-
-  ExtensionFunction::ResponseCallback CreateCallback(
-      mojom::LocalFrameHost::RequestCallback callback) {
-    return base::BindOnce(
-        &ResponseCallbackWrapper::OnExtensionFunctionCompleted,
-        weak_ptr_factory_.GetWeakPtr(), std::move(callback));
-  }
-
- private:
-  // TODO(https://crbug.com/1312686): Change |results| type to
-  // base::Value::List.
-  void OnExtensionFunctionCompleted(
-      mojom::LocalFrameHost::RequestCallback callback,
-      ExtensionFunction::ResponseType type,
-      base::Value::List results,
-      const std::string& error,
-      mojom::ExtraResponseDataPtr response_data) {
-    std::move(callback).Run(type == ExtensionFunction::SUCCEEDED,
-                            std::move(results), error,
-                            std::move(response_data));
-  }
-
-  base::WeakPtr<ExtensionFunctionDispatcher> dispatcher_;
-  raw_ptr<content::RenderFrameHost> render_frame_host_;
-  base::WeakPtrFactory<ResponseCallbackWrapper> weak_ptr_factory_{this};
-};
-
 class ExtensionFunctionDispatcher::WorkerResponseCallbackWrapper
     : public content::RenderProcessHostObserver {
  public:
@@ -419,19 +367,20 @@ void ExtensionFunctionDispatcher::Dispatch(
   }
 
   // TODO(https://crbug.com/1227812): Validate (or remove) `params.source_url`.
-
-  // Extension API from a non Service Worker context, e.g. extension page,
-  // background page, content script.
-  std::unique_ptr<ResponseCallbackWrapper>& callback_wrapper =
-      response_callback_wrappers_[&frame];
-  if (!callback_wrapper) {
-    callback_wrapper = std::make_unique<ResponseCallbackWrapper>(
-        weak_ptr_factory_.GetWeakPtr(), &frame);
-  }
-
   DispatchWithCallbackInternal(
       *params, &frame, *frame.GetProcess(),
-      callback_wrapper->CreateCallback(std::move(callback)));
+      mojo::WrapCallbackWithDefaultInvokeIfNotRun(
+          base::BindOnce(
+              [](mojom::LocalFrameHost::RequestCallback callback,
+                 ExtensionFunction::ResponseType type,
+                 base::Value::List results, const std::string& error,
+                 mojom::ExtraResponseDataPtr response_data) {
+                std::move(callback).Run(type == ExtensionFunction::SUCCEEDED,
+                                        std::move(results), error,
+                                        std::move(response_data));
+              },
+              std::move(callback)),
+          ExtensionFunction::FAILED, base::Value::List(), "Closed", nullptr));
 }
 
 void ExtensionFunctionDispatcher::DispatchForServiceWorker(

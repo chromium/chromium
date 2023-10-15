@@ -114,13 +114,6 @@ class ExtensionFunctionDispatcher {
   }
 
  private:
-  // For a given RenderFrameHost instance, ResponseCallbackWrapper
-  // creates ExtensionFunction::ResponseCallback instances which send responses
-  // to the corresponding render view in ExtensionMsg_Response messages.
-  // This class tracks the lifespan of the RenderFrameHost instance, and will be
-  // destroyed automatically when it goes away.
-  class ResponseCallbackWrapper;
-
   // Same as ResponseCallbackWrapper above, but applies to an extension
   // function from an extension Service Worker.
   class WorkerResponseCallbackWrapper;
@@ -155,14 +148,6 @@ class ExtensionFunctionDispatcher {
       browser_context_;
 
   raw_ptr<Delegate, AcrossTasksDanglingUntriaged> delegate_;
-
-  // This map doesn't own either the keys or the values. When a RenderFrameHost
-  // instance goes away, the corresponding entry in this map (if exists) will be
-  // removed.
-  typedef std::map<content::RenderFrameHost*,
-                   std::unique_ptr<ResponseCallbackWrapper>>
-      ResponseCallbackWrapperMap;
-  ResponseCallbackWrapperMap response_callback_wrappers_;
 
   using WorkerResponseCallbackWrapperMap =
       std::map<WorkerResponseCallbackMapKey,
