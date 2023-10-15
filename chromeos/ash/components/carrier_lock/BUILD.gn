@@ -46,6 +46,8 @@ component("carrier_lock") {
     "psm_claim_verifier.h",
     "psm_claim_verifier_impl.cc",
     "psm_claim_verifier_impl.h",
+    "topic_subscription_request.cc",
+    "topic_subscription_request.h",
   ]
 }
 
@@ -57,6 +59,7 @@ source_set("unit_tests") {
     "provisioning_config_fetcher_unittest.cc",
     "psm_claim_verifier_unittest.cc",
     "psm_claim_verifier_unittest.h",
+    "topic_subscription_request_unittest.cc",
   ]
 
   deps = [

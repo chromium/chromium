@@ -33,6 +33,13 @@ class COMPONENT_EXPORT(CHROMEOS_ASH_COMPONENTS_CARRIER_LOCK)
 
   // Return the Token received in response
   virtual std::string const token() = 0;
+
+ protected:
+  friend class FcmTopicSubscriberTest;
+
+  void set_is_testing(bool testing) { is_testing_ = testing; }
+  bool is_testing() { return is_testing_; }
+  bool is_testing_ = false;
 };
 
 }  // namespace ash::carrier_lock

@@ -11,6 +11,9 @@
 #include "base/test/test_future.h"
 #include "base/time/time.h"
 #include "components/gcm_driver/instance_id/fake_gcm_driver_for_instance_id.h"
+#include "services/network/public/cpp/weak_wrapper_shared_url_loader_factory.h"
+#include "services/network/test/test_url_loader_factory.h"
+#include "services/network/test/test_utils.h"
 #include "testing/gmock/include/gmock/gmock-matchers.h"
 #include "testing/gtest/include/gtest/gtest.h"
 
@@ -22,6 +25,9 @@ const char kEmbeddedAppIdKey[] = "gcmb";
 const char kFcmAppId[] = "com.google.chromeos.carrier_lock";
 const char kFcmSenderId[] = "1067228791894";
 const char kFcmTopic[] = "/topics/testtopic";
+const uint64_t kTestAndroidSecret = 1234;
+const uint64_t kTestAndroidId = 1234;
+const char kFcmUrl[] = "https://android.clients.google.com/c2dm/register3";
 
 }  // namespace
 
@@ -37,14 +43,22 @@ class FcmTopicSubscriberTest : public testing::Test {
  protected:
   // testing::Test:
   void SetUp() override {
-    fcm_ = std::make_unique<FcmTopicSubscriberImpl>(&gcm_driver_, kFcmAppId,
-                                                    kFcmSenderId, nullptr);
+    shared_factory_ =
+        base::MakeRefCounted<network::WeakWrapperSharedURLLoaderFactory>(
+            &test_url_loader_factory_);
+    fcm_ = std::make_unique<FcmTopicSubscriberImpl>(
+        &gcm_driver_, kFcmAppId, kFcmSenderId, shared_factory_);
+    fcm_->android_id_ = kTestAndroidId;
+    fcm_->android_secret_ = kTestAndroidSecret;
+    fcm_->set_is_testing(true);
   }
 
   void TearDown() override { fcm_.reset(); }
 
-  std::unique_ptr<FcmTopicSubscriber> fcm_;
+  std::unique_ptr<FcmTopicSubscriberImpl> fcm_;
   base::test::TaskEnvironment task_environment_;
+  scoped_refptr<network::SharedURLLoaderFactory> shared_factory_;
+  network::TestURLLoaderFactory test_url_loader_factory_;
   instance_id::FakeGCMDriverForInstanceID gcm_driver_;
 };
 
@@ -57,6 +71,9 @@ TEST_F(FcmTopicSubscriberTest, CarrierLockSubscribeTopicSuccess) {
       base::BindRepeating(&FcmTopicSubscriberTest::NotificationCallback,
                           base::Unretained(this)),
       future.GetCallback());
+  EXPECT_TRUE(test_url_loader_factory_.SimulateResponseForPendingRequest(
+      GURL(kFcmUrl), network::URLLoaderCompletionStatus(net::OK),
+      network::CreateURLResponseHead(net::HTTP_OK), std::string("{}")));
 
   // Wait for callback
   EXPECT_EQ(Result::kSuccess, future.Get());
@@ -70,6 +87,9 @@ TEST_F(FcmTopicSubscriberTest, CarrierLockTestNotifications) {
   // Request token and subscribe with valid topic
   fcm_->SubscribeTopic(kFcmTopic, notifications.GetCallback(),
                        future.GetCallback());
+  EXPECT_TRUE(test_url_loader_factory_.SimulateResponseForPendingRequest(
+      GURL(kFcmUrl), network::URLLoaderCompletionStatus(net::OK),
+      network::CreateURLResponseHead(net::HTTP_OK), std::string("{}")));
 
   // Wait for subscription callback
   EXPECT_EQ(Result::kSuccess, future.Take());
@@ -146,6 +166,9 @@ TEST_F(FcmTopicSubscriberTest, CarrierLockGetTokenAndSubscribe) {
       base::BindRepeating(&FcmTopicSubscriberTest::NotificationCallback,
                           base::Unretained(this)),
       future.GetCallback());
+  EXPECT_TRUE(test_url_loader_factory_.SimulateResponseForPendingRequest(
+      GURL(kFcmUrl), network::URLLoaderCompletionStatus(net::OK),
+      network::CreateURLResponseHead(net::HTTP_OK), std::string("{}")));
 
   // Wait for callback
   EXPECT_EQ(Result::kSuccess, future.Take());

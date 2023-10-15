@@ -19,6 +19,7 @@ FcmTopicSubscriberImpl::FcmTopicSubscriberImpl(
     std::string sender_id,
     scoped_refptr<network::SharedURLLoaderFactory> url_loader_factory)
     : gcm_driver_(gcm_driver),
+      url_loader_factory_(url_loader_factory),
       app_id_(app_id),
       sender_id_(sender_id),
       weakptr_factory_(this) {
@@ -101,7 +102,17 @@ void FcmTopicSubscriberImpl::OnGetToken(
     instance_id::InstanceID::Result result) {
   if (result == instance_id::InstanceID::Result::SUCCESS) {
     token_ = token;
-    ReturnSuccess();
+    if (is_testing()) {
+      // The unit tests use FakeGCMDriverForInstanceID which does not implement
+      // GetGCMStatistics method and the call below times out. Returning success
+      // here is needed to continue with the values defined in unit test.
+      ReturnSuccess();
+      return;
+    }
+    gcm_driver_->GetGCMStatistics(
+        base::BindOnce(&FcmTopicSubscriberImpl::OnGetGcmStatistics,
+                       weakptr_factory_.GetWeakPtr()),
+        gcm::GCMDriver::KEEP_LOGS);
     return;
   }
 
@@ -126,47 +137,30 @@ void FcmTopicSubscriberImpl::OnGetToken(
   }
 }
 
+void FcmTopicSubscriberImpl::OnGetGcmStatistics(
+    const gcm::GCMClient::GCMStatistics& statistics) {
+  android_id_ = statistics.android_id;
+  android_secret_ = statistics.android_secret;
+  ReturnSuccess();
+}
+
 void FcmTopicSubscriberImpl::Subscribe(Result request_token_result) {
   request_callback_ = std::move(subscribe_callback_);
   if (request_token_result != Result::kSuccess) {
     ReturnError(request_token_result);
     return;
   }
-  if (topic_.empty()) {
+  if (topic_.empty() || !android_secret_) {
     ReturnError(Result::kInvalidInput);
     return;
   }
 
-  // TODO Implement SubscribeToTopic request in GCM driver
-  ReturnSuccess();
-}
-
-void FcmTopicSubscriberImpl::OnSubscribe(
-    instance_id::InstanceID::Result result) {
-  if (result == instance_id::InstanceID::Result::SUCCESS) {
-    ReturnSuccess();
-    return;
-  }
-
-  LOG(ERROR) << "Failed to subscribe to FCM topic";
-  switch (result) {
-    case instance_id::InstanceID::INVALID_PARAMETER:
-      ReturnError(Result::ERR_INVALID_INPUT);
-      return;
-    case instance_id::InstanceID::DISABLED:
-      ReturnError(Result::ERR_INITIALIZATION);
-      return;
-    case instance_id::InstanceID::NETWORK_ERROR:
-      ReturnError(Result::ERR_CONNECTION);
-      return;
-    case instance_id::InstanceID::SERVER_ERROR:
-      ReturnError(Result::ERR_SERVER_INTERNAL);
-      return;
-    case instance_id::InstanceID::ASYNC_OPERATION_PENDING:
-    case instance_id::InstanceID::UNKNOWN_ERROR:
-    default:
-      ReturnError(Result::ERR_REQUEST_FAILED);
-  }
+  TopicSubscriptionRequest::RequestInfo request_info(
+      android_id_, android_secret_, app_id_, token_, topic_,
+      /*unsubscribe=*/false);
+  subscription_request_ = std::make_unique<TopicSubscriptionRequest>(
+      request_info, url_loader_factory_, std::move(request_callback_));
+  subscription_request_->Start();
 }
 
 void FcmTopicSubscriberImpl::ReturnError(Result err) {
