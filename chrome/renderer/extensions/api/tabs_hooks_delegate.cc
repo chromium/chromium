@@ -5,10 +5,10 @@
 #include "chrome/renderer/extensions/api/tabs_hooks_delegate.h"
 
 #include "content/public/renderer/v8_value_converter.h"
-#include "extensions/common/api/messaging/channel_type.h"
 #include "extensions/common/api/messaging/message.h"
 #include "extensions/common/extension.h"
 #include "extensions/common/manifest.h"
+#include "extensions/common/mojom/message_port.mojom-shared.h"
 #include "extensions/renderer/api/messaging/message_target.h"
 #include "extensions/renderer/api/messaging/messaging_util.h"
 #include "extensions/renderer/api/messaging/native_renderer_messaging_service.h"
@@ -105,7 +105,7 @@ RequestResult TabsHooksDelegate::HandleSendRequest(
 
   messaging_service_->SendOneTimeMessage(
       script_context, MessageTarget::ForTab(tab_id, messaging_util::kNoFrameId),
-      ChannelType::kSendRequest, *message, parse_result.async_type,
+      mojom::ChannelType::kSendRequest, *message, parse_result.async_type,
       response_callback);
 
   return RequestResult(RequestResult::HANDLED);
@@ -145,7 +145,7 @@ RequestResult TabsHooksDelegate::HandleSendMessage(
   v8::Local<v8::Promise> promise = messaging_service_->SendOneTimeMessage(
       script_context,
       MessageTarget::ForTab(tab_id, options.frame_id, options.document_id),
-      ChannelType::kSendMessage, *message, parse_result.async_type,
+      mojom::ChannelType::kSendMessage, *message, parse_result.async_type,
       response_callback);
   DCHECK_EQ(parse_result.async_type == binding::AsyncResponseType::kPromise,
             !promise.IsEmpty())

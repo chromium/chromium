@@ -10,6 +10,7 @@
 #include <string>
 #include <vector>
 
+#include "base/containers/flat_map.h"
 #include "base/functional/callback.h"
 #include "base/memory/raw_ptr.h"
 #include "base/values.h"
@@ -33,7 +34,8 @@ namespace extensions {
 // those scripts. The paths may be an empty set if the script has no path
 // associated with it (e.g. in the case of tabs.executeScript), but there will
 // still be an entry for the extension.
-using ExecutingScriptsMap = std::map<std::string, std::set<std::string>>;
+using ExecutingScriptsMap =
+    base::flat_map<std::string, std::vector<std::string>>;
 
 // Callback that ScriptExecutor uses to notify when content scripts and/or
 // tabs.executeScript calls run on a page.

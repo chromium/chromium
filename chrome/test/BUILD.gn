@@ -11824,12 +11824,27 @@ if (is_chromeos_ash) {
 }
 
 if (is_win) {
+  action("generate_allowed_imports") {
+    testonly = true
+    script = "delayload/generate_allowed_imports.py"
+    sources = [ "delayload/supported_imports_10.0.10240.txt" ]
+    outputs = [ "$target_gen_dir/chrome/test/delayload/supported_imports.inc" ]
+    args = [
+      "--exports-file",
+      rebase_path("delayload/supported_imports_10.0.10240.txt", root_build_dir),
+      "--out-file",
+      rebase_path("$target_gen_dir/chrome/test/delayload/supported_imports.inc",
+                  root_build_dir),
+    ]
+  }
+
   test("delayloads_unittests") {
     output_name = "delayloads_unittests"
     sources = [ "delayload/delayloads_unittest.cc" ]
 
     include_dirs = [ "$target_gen_dir" ]
     deps = [
+      ":generate_allowed_imports",
       "//base",
       "//base/test:test_support",
       "//chrome",

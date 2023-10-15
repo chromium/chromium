@@ -4,6 +4,7 @@
 
 #include "third_party/blink/renderer/modules/imagecapture/image_capture.h"
 
+#include "base/time/time.h"
 #include "testing/gmock/include/gmock/gmock.h"
 #include "testing/gtest/include/gtest/gtest.h"
 #include "third_party/blink/public/web/web_heap.h"
@@ -641,13 +642,16 @@ class ImageCaptureTest : public testing::Test {
             /*execution_context=*/nullptr,
             track_,
             /*pan_tilt_zoom_allowed=*/true,
-            base::DoNothing())) {
+            base::DoNothing(),
+            base::Milliseconds(1))) {
     track_->SetComponent(component_);
   }
 
   void TearDown() override { WebHeap::CollectAllGarbageForTesting(); }
 
-  void SetupTrackMocks(V8TestingScope& scope) {
+  void SetupTrackMocks(V8TestingScope& scope,
+                       bool produce_frame_on_add_sink = true) {
+    produce_frame_on_add_sink_ = produce_frame_on_add_sink;
     source_ = std::make_unique<MediaStreamVideoCapturerSource>(
         scope.GetFrame().GetTaskRunner(TaskType::kInternalMediaRealTime),
         &scope.GetFrame(),
@@ -667,8 +671,10 @@ class ImageCaptureTest : public testing::Test {
                                   MediaStreamVideoSink::IsSecure is_secure,
                                   MediaStreamVideoSink::UsesAlpha uses_alpha) {
           platform_track_->AddSink(sink, callback, is_secure, uses_alpha);
-          callback.Run(media::VideoFrame::CreateBlackFrame(gfx::Size(1, 1)),
-                       /*estimated_capture_time=*/base::TimeTicks());
+          if (produce_frame_on_add_sink_) {
+            callback.Run(media::VideoFrame::CreateBlackFrame(gfx::Size(1, 1)),
+                         /*estimated_capture_time=*/base::TimeTicks());
+          }
         }));
   }
 
@@ -679,6 +685,7 @@ class ImageCaptureTest : public testing::Test {
   ScopedTestingPlatformSupport<IOTaskRunnerTestingPlatformSupport> platform_;
   std::unique_ptr<MediaStreamVideoCapturerSource> source_;
   std::unique_ptr<MediaStreamVideoTrack> platform_track_;
+  bool produce_frame_on_add_sink_ = true;
 };
 
 class ImageCaptureConstraintTest : public ImageCaptureTest {
@@ -1576,9 +1583,23 @@ TEST_F(ImageCaptureTest, GrabFrameOfLiveTrackIsFulfilled) {
   EXPECT_TRUE(tester.IsFulfilled());
 }
 
-TEST_F(ImageCaptureTest, GrabFrameOfMutedTrackRejects) {
+TEST_F(ImageCaptureTest, GrabFrameOfMutedTrackIsFulfilled) {
   V8TestingScope scope;
   SetupTrackMocks(scope);
+  track_->SetReadyState("live");
+  track_->setEnabled(true);
+  track_->SetMuted(true);
+
+  ScriptPromise result = image_capture_->grabFrame(scope.GetScriptState());
+
+  ScriptPromiseTester tester(scope.GetScriptState(), result);
+  tester.WaitUntilSettled();
+  EXPECT_TRUE(tester.IsFulfilled());
+}
+
+TEST_F(ImageCaptureTest, GrabFrameOfMutedTrackWithoutFramesIsRejected) {
+  V8TestingScope scope;
+  SetupTrackMocks(scope, /*produce_frame_on_add_sink=*/false);
   track_->SetReadyState("live");
   track_->setEnabled(true);
   track_->SetMuted(true);

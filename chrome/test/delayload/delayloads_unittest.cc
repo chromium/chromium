@@ -24,9 +24,29 @@
 #include "base/win/pe_image.h"
 #include "build/build_config.h"
 #include "chrome/install_static/test/scoped_install_details.h"
+#include "testing/gmock/include/gmock/gmock-matchers.h"
+#include "testing/gmock/include/gmock/gmock.h"
 #include "testing/gtest/include/gtest/gtest.h"
 
 namespace {
+
+using DetailedImports = std::map<std::string, std::set<std::string>>;
+
+// Generated static data - see `generate_allowed_imports.py` - module must be
+// lowercase as we force imports to lowercase when we read the module.
+// e.g. const DetailedImports kAvailableImports = {
+//     {"kernel32.dll", {"Function1", "Function2"}}};
+const DetailedImports kAvailableImports = {
+#include "chrome/test/delayload/supported_imports.inc"
+// Asan pulls in sync api (e.g. WaitOnAddress) via an apiset - we currently do
+// not expect chrome to pull in apisets so have not included them in the
+// generated allowlist but append them here when needed:
+#if defined(ADDRESS_SANITIZER)
+    ,
+    {"api-ms-win-core-synch-l1-2-0.dll",
+     {"WaitOnAddress", "WakeByAddressAll", "WakeByAddressSingle"}}
+#endif
+};
 
 class DelayloadsTest : public testing::Test {
  protected:
@@ -41,17 +61,83 @@ class DelayloadsTest : public testing::Test {
     return true;
   }
 
-  static void GetImports(const base::FilePath& module_path,
-                         std::vector<std::string>* imports) {
-    ASSERT_TRUE(imports != NULL);
+  static std::vector<std::string> GetImports(
+      const base::FilePath& module_path) {
+    std::vector<std::string> imports;
 
     base::MemoryMappedFile module_mmap;
+    CHECK(module_mmap.Initialize(module_path));
 
-    ASSERT_TRUE(module_mmap.Initialize(module_path));
     base::win::PEImageAsData pe_image_data(
         reinterpret_cast<HMODULE>(const_cast<uint8_t*>(module_mmap.data())));
-    pe_image_data.EnumImportChunks(DelayloadsTest::ImportsCallback, imports,
+    pe_image_data.EnumImportChunks(DelayloadsTest::ImportsCallback, &imports,
                                    nullptr);
+    return imports;
+  }
+
+  static bool DetailedImportsCallback(const base::win::PEImage& image,
+                                      const char* module,
+                                      DWORD ordinal,
+                                      const char* import_name,
+                                      DWORD hint,
+                                      IMAGE_THUNK_DATA* iat,
+                                      void* cookie) {
+    if (!module) {
+      return false;
+    }
+    if (!import_name) {
+      return true;
+    }
+    // Force module name to lowercase here.
+    const std::string mod_str = base::ToLowerASCII(module);
+    DetailedImports* imports = reinterpret_cast<DetailedImports*>(cookie);
+    if (auto fn_names = imports->find(mod_str); fn_names != imports->end()) {
+      fn_names->second.emplace(import_name);
+    } else {
+      std::set<std::string> empty_fn_names;
+      empty_fn_names.emplace(import_name);
+      imports->emplace(std::move(mod_str), std::move(empty_fn_names));
+    }
+    return true;
+  }
+
+  static DetailedImports GetDetailedImports(const base::FilePath& module_path) {
+    base::MemoryMappedFile module_mmap;
+    DetailedImports imports;
+
+    CHECK(module_mmap.Initialize(module_path));
+    base::win::PEImageAsData pe_image_data(
+        reinterpret_cast<HMODULE>(const_cast<uint8_t*>(module_mmap.data())));
+    pe_image_data.EnumAllImports(DelayloadsTest::DetailedImportsCallback,
+                                 &imports, nullptr);
+    return imports;
+  }
+
+  // Validate that any static (non-delayloaded) imported functions are available
+  // in the earliest version of Windows that Chrome supports. If an unsupported
+  // function is added to Chrome's imports Chrome and its crash reporting client
+  // may fail to start.
+  // `mod_path` - exe or dll (e.g. chrome.exe) to check.
+  // `internal_modules` - modules from the build (e.g. chrome.exe can import
+  // chrome_elf.dll).
+  static void ValidateImportsForEarliestWindowsVersion(
+      const base::FilePath& mod_path,
+      const std::set<std::string>& internal_modules) {
+    DetailedImports imports = GetDetailedImports(mod_path);
+
+    for (const auto& imports_entry : imports) {
+      const std::string& module = imports_entry.first;
+      auto available_functions = kAvailableImports.find(module);
+      if (available_functions == kAvailableImports.end()) {
+        // Unlisted modules must be provided by the Chrome build.
+        EXPECT_THAT(internal_modules, testing::Contains(module));
+      } else {
+        // Imported functions must be available in earliest Windows version.
+        for (const auto& function : imports_entry.second) {
+          EXPECT_THAT(available_functions->second, testing::Contains(function));
+        }
+      }
+    }
   }
 };
 
@@ -81,8 +167,7 @@ TEST_F(DelayloadsTest, ChromeDllDelayloadsCheck) {
   base::FilePath dll;
   ASSERT_TRUE(base::PathService::Get(base::DIR_EXE, &dll));
   dll = dll.Append(L"chrome.dll");
-  std::vector<std::string> dll_imports;
-  GetImports(dll, &dll_imports);
+  std::vector<std::string> dll_imports = GetImports(dll);
 
   // Check that the dll has imports.
   ASSERT_LT(0u, dll_imports.size())
@@ -182,8 +267,7 @@ TEST_F(DelayloadsTest, ChromeElfDllDelayloadsCheck) {
   base::FilePath dll;
   ASSERT_TRUE(base::PathService::Get(base::DIR_EXE, &dll));
   dll = dll.Append(L"chrome_elf.dll");
-  std::vector<std::string> dll_imports;
-  GetImports(dll, &dll_imports);
+  std::vector<std::string> dll_imports = GetImports(dll);
 
   // Check that the dll has imports.
   ASSERT_LT(0u, dll_imports.size())
@@ -268,11 +352,10 @@ TEST_F(DelayloadsTest, DISABLED_ChromeElfDllLoadSanityTestImpl) {
 }
 
 TEST_F(DelayloadsTest, ChromeExeDelayloadsCheck) {
-  std::vector<std::string> exe_imports;
   base::FilePath exe;
   ASSERT_TRUE(base::PathService::Get(base::DIR_EXE, &exe));
   exe = exe.Append(L"chrome.exe");
-  GetImports(exe, &exe_imports);
+  std::vector<std::string> exe_imports = GetImports(exe);
 
   // Check that chrome.exe has imports.
   ASSERT_LT(0u, exe_imports.size())
@@ -307,15 +390,25 @@ TEST_F(DelayloadsTest, ChromeExeDelayloadsCheck) {
   }
 }
 
+TEST_F(DelayloadsTest, MinimumSupportedImports) {
+  base::FilePath module_path;
+  ASSERT_TRUE(base::PathService::Get(base::DIR_EXE, &module_path));
+
+  ValidateImportsForEarliestWindowsVersion(module_path.Append(L"chrome.exe"),
+                                           {"chrome_elf.dll"});
+  ValidateImportsForEarliestWindowsVersion(
+      module_path.Append(L"chrome_elf.dll"), {});
+  ValidateImportsForEarliestWindowsVersion(module_path.Append(L"chrome.dll"),
+                                           {"chrome_elf.dll"});
+}
+
 #endif  // NDEBUG && !COMPONENT_BUILD
 
 TEST_F(DelayloadsTest, ChromeExeLoadSanityCheck) {
-  std::vector<std::string> exe_imports;
-
   base::FilePath exe;
   ASSERT_TRUE(base::PathService::Get(base::DIR_EXE, &exe));
   exe = exe.Append(L"chrome.exe");
-  GetImports(exe, &exe_imports);
+  std::vector<std::string> exe_imports = GetImports(exe);
 
   // Check that chrome.exe has imports.
   ASSERT_LT(0u, exe_imports.size())

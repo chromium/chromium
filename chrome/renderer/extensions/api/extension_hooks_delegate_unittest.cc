@@ -8,9 +8,9 @@
 #include "base/strings/stringprintf.h"
 #include "content/public/common/content_constants.h"
 #include "extensions/common/api/messaging/messaging_endpoint.h"
-#include "extensions/common/api/messaging/serialization_format.h"
 #include "extensions/common/extension_builder.h"
 #include "extensions/common/extension_messages.h"
+#include "extensions/common/mojom/message_port.mojom-shared.h"
 #include "extensions/renderer/api/messaging/message_target.h"
 #include "extensions/renderer/api/messaging/messaging_util.h"
 #include "extensions/renderer/api/messaging/native_renderer_messaging_service.h"
@@ -178,7 +178,8 @@ TEST_F(ExtensionHooksDelegateTest, SendRequestChannelLeftOpenToReplyAsync) {
 
   const std::string kChannel = "chrome.extension.sendRequest";
   base::UnguessableToken other_context_id = base::UnguessableToken::Create();
-  const PortId port_id(other_context_id, 0, false, SerializationFormat::kJson);
+  const PortId port_id(other_context_id, 0, false,
+                       mojom::SerializationFormat::kJson);
 
   ExtensionMsg_TabConnectionInfo tab_connection_info;
   tab_connection_info.frame_id = 0;
@@ -199,7 +200,7 @@ TEST_F(ExtensionHooksDelegateTest, SendRequestChannelLeftOpenToReplyAsync) {
   EXPECT_CALL(*ipc_message_sender(),
               SendOpenMessagePort(MSG_ROUTING_NONE, port_id));
   messaging_service()->DispatchOnConnect(
-      script_context_set(), port_id, ChannelType::kSendRequest, kChannel,
+      script_context_set(), port_id, mojom::ChannelType::kSendRequest, kChannel,
       tab_connection_info, external_connection_info, nullptr);
   ::testing::Mock::VerifyAndClearExpectations(ipc_message_sender());
   EXPECT_TRUE(
@@ -209,7 +210,8 @@ TEST_F(ExtensionHooksDelegateTest, SendRequestChannelLeftOpenToReplyAsync) {
   // channel should remain open.
   messaging_service()->DeliverMessage(
       script_context_set(), port_id,
-      Message("\"message\"", SerializationFormat::kJson, false), nullptr);
+      Message("\"message\"", mojom::SerializationFormat::kJson, false),
+      nullptr);
   ::testing::Mock::VerifyAndClearExpectations(ipc_message_sender());
   EXPECT_TRUE(
       messaging_service()->HasPortForTesting(script_context(), port_id));

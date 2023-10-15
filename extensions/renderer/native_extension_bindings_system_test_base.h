@@ -10,13 +10,13 @@
 
 #include "base/memory/raw_ptr.h"
 #include "base/values.h"
-#include "extensions/common/api/messaging/channel_type.h"
 #include "extensions/common/api/messaging/message.h"
 #include "extensions/common/api/messaging/port_id.h"
 #include "extensions/common/extension.h"
 #include "extensions/common/extension_id.h"
 #include "extensions/common/features/feature.h"
 #include "extensions/common/mojom/frame.mojom-forward.h"
+#include "extensions/common/mojom/message_port.mojom-shared.h"
 #include "extensions/renderer/api/messaging/message_target.h"
 #include "extensions/renderer/bindings/api_binding_test.h"
 #include "extensions/renderer/bindings/api_binding_types.h"
@@ -90,7 +90,7 @@ class TestIPCMessageSender : public IPCMessageSender {
                void(ScriptContext* script_context,
                     const PortId& port_id,
                     const MessageTarget& target,
-                    ChannelType channel_type,
+                    mojom::ChannelType channel_type,
                     const std::string& channel_name));
   MOCK_METHOD2(SendOpenMessagePort,
                void(int routing_id, const PortId& port_id));

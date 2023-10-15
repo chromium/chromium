@@ -114,7 +114,9 @@ class ShellSurfacePresentationTimeRecorderTest : public test::ExoTestBase {
         /*flags=*/0);
     recorder_->set_fake_feedback(feedback);
 
-    // Fake damage to ensure that Commit() generates a compositor frame.
+    // Fake damage so that the committed frame will generate a presentation
+    // feedback when the next DrawAndSwap happens. Without damage the
+    // presentation feedback could be delayed till the next frame submission.
     root_surface()->Damage(gfx::Rect(0, 0, 32, 32));
     root_surface()->Commit();
     recorder_->WaitForFramePresented();
@@ -184,6 +186,7 @@ TEST_F(ShellSurfacePresentationTimeRecorderTest,
 
   // Fake frame submission. No FakeFrameSubmitAndPresent() because it depends
   // on `recorder_`.
+  root_surface()->Damage(gfx::Rect(0, 0, 32, 32));
   root_surface()->Commit();
   test::WaitForLastFramePresentation(shell_surface_.get());
 }

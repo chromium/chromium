@@ -9,13 +9,13 @@
 #include "mojo/public/cpp/bindings/pending_receiver.h"
 #include "mojo/public/cpp/bindings/receiver.h"
 #include "mojo/public/cpp/bindings/remote.h"
-#include "mojo/public/cpp/bindings/tests/nullable_numerics_and_enums_unittest.test-mojom.h"
-#include "mojo/public/cpp/bindings/tests/nullable_numerics_and_enums_unittest_mojom_traits.h"
+#include "mojo/public/cpp/bindings/tests/nullable_value_types_enums.h"
 #include "mojo/public/cpp/test_support/test_utils.h"
+#include "mojo/public/interfaces/bindings/tests/nullable_value_types.mojom.h"
 #include "testing/gtest/include/gtest/gtest.h"
 #include "third_party/abseil-cpp/absl/types/optional.h"
 
-namespace mojo::test::nullable_numerics_and_enums_unittest {
+namespace mojo::test::nullable_value_types {
 namespace {
 
 template <typename T>
@@ -437,11 +437,11 @@ class InterfaceV2Impl : public mojom::InterfaceV2 {
   const absl::optional<CallerVersion> caller_version_;
 };
 
-class NullableNumericsAndEnums : public ::testing::Test {
+class NullableValueTypes : public ::testing::Test {
   base::test::SingleThreadTaskEnvironment task_environment;
 };
 
-TEST_F(NullableNumericsAndEnums, StructWithEnums) {
+TEST_F(NullableValueTypes, StructWithEnums) {
   {
     auto input = mojom::StructWithEnums::New();
     input->enum_value = absl::nullopt;
@@ -491,7 +491,7 @@ TEST_F(NullableNumericsAndEnums, StructWithEnums) {
   }
 }
 
-TEST_F(NullableNumericsAndEnums, MethodEnumArgsCompatibility) {
+TEST_F(NullableValueTypes, MethodEnumArgsCompatibility) {
   // Legacy bool+enum calling a receiver using optional<enum>
   {
     mojo::Remote<mojom::InterfaceV1> remote;
@@ -632,7 +632,7 @@ TEST_F(NullableNumericsAndEnums, MethodEnumArgsCompatibility) {
   }
 }
 
-TEST_F(NullableNumericsAndEnums, MethodStructWithEnumsCompatibility) {
+TEST_F(NullableValueTypes, MethodStructWithEnumsCompatibility) {
   // Legacy bool+enum calling a receiver using optional<enum>
   {
     mojo::Remote<mojom::InterfaceV1> remote;
@@ -764,7 +764,7 @@ TEST_F(NullableNumericsAndEnums, MethodStructWithEnumsCompatibility) {
   }
 }
 
-TEST_F(NullableNumericsAndEnums, StructWithNumerics) {
+TEST_F(NullableValueTypes, StructWithNumerics) {
   {
     auto input = mojom::StructWithNumerics::New();
     input->bool_value = true;
@@ -828,7 +828,7 @@ TEST_F(NullableNumericsAndEnums, StructWithNumerics) {
   }
 }
 
-TEST_F(NullableNumericsAndEnums, MethodNumericArgsCompatibility) {
+TEST_F(NullableValueTypes, MethodNumericArgsCompatibility) {
   // Legacy bool+enum calling a receiver using optional<enum>
   {
     mojo::Remote<mojom::InterfaceV1> remote;
@@ -1002,7 +1002,7 @@ TEST_F(NullableNumericsAndEnums, MethodNumericArgsCompatibility) {
   }
 }
 
-TEST_F(NullableNumericsAndEnums, MethodStructWithNumericsCompatibility) {
+TEST_F(NullableValueTypes, MethodStructWithNumericsCompatibility) {
   // Legacy bool+enum calling a receiver using optional<enum>
   {
     mojo::Remote<mojom::InterfaceV1> remote;
@@ -1146,7 +1146,7 @@ TEST_F(NullableNumericsAndEnums, MethodStructWithNumericsCompatibility) {
   }
 }
 
-TEST_F(NullableNumericsAndEnums, Versioning) {
+TEST_F(NullableValueTypes, Versioning) {
   // Baseline: V1 to V1.
   {
     mojo::Remote<mojom::InterfaceV1> remote;
@@ -1355,4 +1355,4 @@ TEST_F(NullableNumericsAndEnums, Versioning) {
 }
 
 }  // namespace
-}  // namespace mojo::test::nullable_numerics_and_enums_unittest
+}  // namespace mojo::test::_and_enums_unittest

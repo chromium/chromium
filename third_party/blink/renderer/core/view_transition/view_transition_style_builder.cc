@@ -50,7 +50,8 @@ void ViewTransitionStyleBuilder::AddRules(const String& selector,
 void ViewTransitionStyleBuilder::AddAnimations(
     AnimationType type,
     const String& tag,
-    const ContainerProperties& source_properties) {
+    const ContainerProperties& source_properties,
+    const CapturedCssProperties& animated_css_properties) {
   switch (type) {
     case AnimationType::kOldOnly:
       AddRules(kOldImageTagName, tag,
@@ -73,7 +74,8 @@ void ViewTransitionStyleBuilder::AddAnimations(
 
       AddRules(kImagePairTagName, tag, "isolation: isolate");
 
-      const String& animation_name = AddKeyframes(tag, source_properties);
+      const String& animation_name =
+          AddKeyframes(tag, source_properties, animated_css_properties);
       StringBuilder rule_builder;
       rule_builder.Append("animation-name: ");
       rule_builder.Append(animation_name);
@@ -89,7 +91,8 @@ void ViewTransitionStyleBuilder::AddAnimations(
 
 String ViewTransitionStyleBuilder::AddKeyframes(
     const String& tag,
-    const ContainerProperties& source_properties) {
+    const ContainerProperties& source_properties,
+    const CapturedCssProperties& animated_css_properties) {
   String keyframe_name = [&tag]() {
     StringBuilder builder;
     builder.Append(kKeyframeNamePrefix);
@@ -105,8 +108,7 @@ String ViewTransitionStyleBuilder::AddKeyframes(
           transform: %s;
           width: %.3fpx;
           height: %3fpx;
-        }
-      })CSS",
+      )CSS",
       ComputedStyleUtils::ValueForTransform(source_properties.snapshot_matrix,
                                             1, false)
           ->CssText()
@@ -114,13 +116,21 @@ String ViewTransitionStyleBuilder::AddKeyframes(
           .c_str(),
       source_properties.border_box_size_in_css_space.width.ToFloat(),
       source_properties.border_box_size_in_css_space.height.ToFloat());
+
+  for (const auto& [id, value] : animated_css_properties) {
+    builder_.AppendFormat(
+        "%s: %s;\n",
+        CSSProperty::Get(id).GetPropertyNameAtomicString().Utf8().c_str(),
+        value.Utf8().c_str());
+  }
+  builder_.Append("}}");
   return keyframe_name;
 }
 
 void ViewTransitionStyleBuilder::AddContainerStyles(
     const String& tag,
     const ContainerProperties& properties,
-    const base::flat_map<CSSPropertyID, String>& css_properties) {
+    const CapturedCssProperties& captured_css_properties) {
   StringBuilder rule_builder;
   rule_builder.AppendFormat(
       R"CSS(
@@ -135,7 +145,7 @@ void ViewTransitionStyleBuilder::AddContainerStyles(
           ->CssText()
           .Utf8()
           .c_str());
-  for (const auto& [id, value] : css_properties) {
+  for (const auto& [id, value] : captured_css_properties) {
     rule_builder.AppendFormat(
         "%s: %s;\n",
         CSSProperty::Get(id).GetPropertyNameAtomicString().Utf8().c_str(),

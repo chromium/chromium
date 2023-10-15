@@ -10,14 +10,13 @@
 #include "base/notreached.h"
 #include "base/strings/stringprintf.h"
 #include "components/crx_file/id_util.h"
-#include "extensions/common/api/messaging/channel_type.h"
 #include "extensions/common/api/messaging/message.h"
 #include "extensions/common/api/messaging/messaging_endpoint.h"
-#include "extensions/common/api/messaging/serialization_format.h"
 #include "extensions/common/extension.h"
 #include "extensions/common/extension_features.h"
 #include "extensions/common/manifest.h"
 #include "extensions/common/manifest_handlers/background_info.h"
+#include "extensions/common/mojom/message_port.mojom-shared.h"
 #include "extensions/renderer/get_script_context.h"
 #include "extensions/renderer/script_context.h"
 #include "gin/converter.h"
@@ -74,7 +73,7 @@ std::unique_ptr<Message> MessageFromJSONString(v8::Isolate* isolate,
   bool has_unrestricted_user_activation =
       web_frame && web_frame->HasTransientUserActivation() &&
       !web_frame->LastActivationWasRestricted();
-  return std::make_unique<Message>(message, SerializationFormat::kJson,
+  return std::make_unique<Message>(message, mojom::SerializationFormat::kJson,
                                    has_unrestricted_user_activation,
                                    privileged_context);
 }
@@ -98,7 +97,7 @@ const int kNoFrameId = -1;
 
 std::unique_ptr<Message> MessageFromV8(v8::Local<v8::Context> context,
                                        v8::Local<v8::Value> value,
-                                       SerializationFormat format,
+                                       mojom::SerializationFormat format,
                                        std::string* error_out) {
   // TODO(crbug.com/248548): Incorporate `format` while serializing the message.
   DCHECK(!value.IsEmpty());
@@ -167,17 +166,17 @@ int ExtractIntegerId(v8::Local<v8::Value> value) {
   return 0;
 }
 
-SerializationFormat GetSerializationFormat(
+mojom::SerializationFormat GetSerializationFormat(
     const ScriptContext& script_context) {
   if (!base::FeatureList::IsEnabled(
           extensions_features::kStructuredCloningForMV3Messaging)) {
-    return SerializationFormat::kJson;
+    return mojom::SerializationFormat::kJson;
   }
 
   const Extension* extension = script_context.extension();
   return extension && extension->manifest_version() >= 3
-             ? SerializationFormat::kStructuredCloned
-             : SerializationFormat::kJson;
+             ? mojom::SerializationFormat::kStructuredCloned
+             : mojom::SerializationFormat::kJson;
 }
 
 MessageOptions ParseMessageOptions(v8::Local<v8::Context> context,
@@ -359,7 +358,7 @@ bool IsSendRequestDisabled(ScriptContext* script_context) {
 
 std::string GetEventForChannel(const MessagingEndpoint& source_endpoint,
                                const ExtensionId& target_extension_id,
-                               ChannelType channel_type) {
+                               mojom::ChannelType channel_type) {
   bool is_external_event =
       MessagingEndpoint::IsExternal(source_endpoint, target_extension_id);
   bool is_user_script_event =
@@ -369,12 +368,12 @@ std::string GetEventForChannel(const MessagingEndpoint& source_endpoint,
 
   std::string event_name;
   switch (channel_type) {
-    case ChannelType::kSendRequest:
+    case mojom::ChannelType::kSendRequest:
       CHECK(!is_user_script_event);
       event_name = is_external_event ? messaging_util::kOnRequestExternalEvent
                                      : messaging_util::kOnRequestEvent;
       break;
-    case ChannelType::kSendMessage:
+    case mojom::ChannelType::kSendMessage:
       if (is_external_event) {
         event_name = messaging_util::kOnMessageExternalEvent;
       } else if (is_user_script_event) {
@@ -383,7 +382,7 @@ std::string GetEventForChannel(const MessagingEndpoint& source_endpoint,
         event_name = messaging_util::kOnMessageEvent;
       }
       break;
-    case ChannelType::kConnect:
+    case mojom::ChannelType::kConnect:
       if (is_external_event) {
         event_name = messaging_util::kOnConnectExternalEvent;
       } else if (is_user_script_event) {
@@ -392,7 +391,7 @@ std::string GetEventForChannel(const MessagingEndpoint& source_endpoint,
         event_name = messaging_util::kOnConnectEvent;
       }
       break;
-    case ChannelType::kNative:
+    case mojom::ChannelType::kNative:
       CHECK(!is_user_script_event);
       event_name = messaging_util::kOnConnectNativeEvent;
       break;

@@ -91,8 +91,10 @@ source_set("test_support") {
 
 generate_jni("mojo_javatests_jni") {
   testonly = true
-  sources =
-      [ "javatests/src/org/chromium/mojo/bindings/ValidationTestUtil.java" ]
+  sources = [
+    "javatests/src/org/chromium/mojo/bindings/NullableValueTypesTestUtil.java",
+    "javatests/src/org/chromium/mojo/bindings/ValidationTestUtil.java",
+  ]
 }
 
 android_library("mojo_javatests") {
@@ -110,6 +112,8 @@ android_library("mojo_javatests") {
     "javatests/src/org/chromium/mojo/bindings/InterfacesTest.java",
     "javatests/src/org/chromium/mojo/bindings/MessageHeaderTest.java",
     "javatests/src/org/chromium/mojo/bindings/NameGeneratorTest.java",
+    "javatests/src/org/chromium/mojo/bindings/NullableValueTypesTest.java",
+    "javatests/src/org/chromium/mojo/bindings/NullableValueTypesTestUtil.java",
     "javatests/src/org/chromium/mojo/bindings/ReadAndDispatchMessageTest.java",
     "javatests/src/org/chromium/mojo/bindings/RouterTest.java",
     "javatests/src/org/chromium/mojo/bindings/SerializationTest.java",
@@ -144,6 +148,7 @@ shared_library_with_jni("mojo_java_unittests") {
 
   sources = [
     "javatests/init_library.cc",
+    "javatests/nullable_value_types_test_util.cc",
     "javatests/validation_test_util.cc",
   ]
 
@@ -155,7 +160,9 @@ shared_library_with_jni("mojo_java_unittests") {
     "//base/test:test_support",
     "//mojo/core/embedder",
     "//mojo/public/cpp/bindings/tests:mojo_public_bindings_test_utils",
+    "//mojo/public/cpp/bindings/tests:test_types",
     "//mojo/public/cpp/test_support:test_utils",
+    "//mojo/public/interfaces/bindings/tests:test_interfaces",
   ]
   defines = [ "UNIT_TEST" ]
   configs -= [ "//build/config/android:hide_all_but_jni_onload" ]

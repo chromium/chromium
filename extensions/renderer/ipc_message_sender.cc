@@ -12,7 +12,6 @@
 #include "content/public/renderer/render_frame.h"
 #include "content/public/renderer/render_thread.h"
 #include "content/public/renderer/worker_thread.h"
-#include "extensions/common/api/messaging/channel_type.h"
 #include "extensions/common/api/messaging/messaging_endpoint.h"
 #include "extensions/common/constants.h"
 #include "extensions/common/extension_messages.h"
@@ -20,6 +19,7 @@
 #include "extensions/common/mojom/automation_registry.mojom.h"
 #include "extensions/common/mojom/event_router.mojom.h"
 #include "extensions/common/mojom/frame.mojom.h"
+#include "extensions/common/mojom/message_port.mojom-shared.h"
 #include "extensions/common/mojom/renderer_host.mojom.h"
 #include "extensions/common/trace_util.h"
 #include "extensions/renderer/api/messaging/message_target.h"
@@ -159,7 +159,7 @@ class MainThreadIPCMessageSender : public IPCMessageSender {
   void SendOpenMessageChannel(ScriptContext* script_context,
                               const PortId& port_id,
                               const MessageTarget& target,
-                              ChannelType channel_type,
+                              mojom::ChannelType channel_type,
                               const std::string& channel_name) override {
     content::RenderFrame* render_frame = script_context->GetRenderFrame();
     DCHECK(render_frame);
@@ -170,7 +170,8 @@ class MainThreadIPCMessageSender : public IPCMessageSender {
     // TODO(https://crbug.com/1430999): We should just avoid passing a
     // channel name in at all for non-connect messages; we no longer need to.
     std::string channel_name_to_use =
-        channel_type == ChannelType::kConnect ? channel_name : std::string();
+        channel_type == mojom::ChannelType::kConnect ? channel_name
+                                                     : std::string();
 
     switch (target.type) {
       case MessageTarget::EXTENSION: {
@@ -227,7 +228,7 @@ class MainThreadIPCMessageSender : public IPCMessageSender {
         break;
       }
       case MessageTarget::NATIVE_APP:
-        CHECK_EQ(ChannelType::kNative, channel_type);
+        CHECK_EQ(mojom::ChannelType::kNative, channel_type);
         render_frame->Send(new ExtensionHostMsg_OpenChannelToNativeApp(
             frame_context, *target.native_application_name, port_id));
         break;
@@ -529,7 +530,7 @@ class WorkerThreadIPCMessageSender : public IPCMessageSender {
   void SendOpenMessageChannel(ScriptContext* script_context,
                               const PortId& port_id,
                               const MessageTarget& target,
-                              ChannelType channel_type,
+                              mojom::ChannelType channel_type,
                               const std::string& channel_name) override {
     DCHECK(!script_context->GetRenderFrame());
     DCHECK(script_context->IsForServiceWorker());
@@ -538,7 +539,8 @@ class WorkerThreadIPCMessageSender : public IPCMessageSender {
     // TODO(https://crbug.com/1430999): We should just avoid passing a
     // channel name in at all for non-connect messages; we no longer need to.
     std::string channel_name_to_use =
-        channel_type == ChannelType::kConnect ? channel_name : std::string();
+        channel_type == mojom::ChannelType::kConnect ? channel_name
+                                                     : std::string();
 
     switch (target.type) {
       case MessageTarget::EXTENSION: {
@@ -568,7 +570,7 @@ class WorkerThreadIPCMessageSender : public IPCMessageSender {
         break;
       }
       case MessageTarget::NATIVE_APP:
-        CHECK_EQ(ChannelType::kNative, channel_type);
+        CHECK_EQ(mojom::ChannelType::kNative, channel_type);
         dispatcher_->Send(new ExtensionHostMsg_OpenChannelToNativeApp(
             PortContextForCurrentWorker(), *target.native_application_name,
             port_id));

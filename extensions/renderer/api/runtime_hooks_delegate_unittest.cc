@@ -10,10 +10,10 @@
 #include "base/strings/stringprintf.h"
 #include "base/values.h"
 #include "components/crx_file/id_util.h"
-#include "extensions/common/api/messaging/serialization_format.h"
 #include "extensions/common/extension.h"
 #include "extensions/common/extension_builder.h"
 #include "extensions/common/extension_messages.h"
+#include "extensions/common/mojom/message_port.mojom-shared.h"
 #include "extensions/renderer/api/messaging/message_target.h"
 #include "extensions/renderer/api/messaging/native_renderer_messaging_service.h"
 #include "extensions/renderer/api/messaging/send_message_tester.h"
@@ -370,13 +370,13 @@ TEST_F(RuntimeHooksDelegateNativeMessagingTest, ConnectNative) {
         "(function() { return chrome.runtime.connectNative(%s); })";
     PortId expected_port_id(script_context()->context_id(),
                             next_context_port_id++, true,
-                            SerializationFormat::kJson);
+                            mojom::SerializationFormat::kJson);
     MessageTarget expected_target(
         MessageTarget::ForNativeApp(expected_app_name));
     EXPECT_CALL(*ipc_message_sender(),
-                SendOpenMessageChannel(script_context(), expected_port_id,
-                                       expected_target, ChannelType::kNative,
-                                       kEmptyExpectedChannel));
+                SendOpenMessageChannel(
+                    script_context(), expected_port_id, expected_target,
+                    mojom::ChannelType::kNative, kEmptyExpectedChannel));
 
     v8::Local<v8::Function> add_port = FunctionFromString(
         context, base::StringPrintf(kAddPortTemplate, args.c_str()));

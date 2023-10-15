@@ -7,6 +7,7 @@
 
 #include <memory>
 
+#include "base/time/time.h"
 #include "media/capture/mojom/image_capture.mojom-blink.h"
 #include "third_party/abseil-cpp/absl/types/optional.h"
 #include "third_party/blink/public/mojom/permissions/permission.mojom-blink.h"
@@ -49,7 +50,8 @@ class MODULES_EXPORT ImageCapture final
   ImageCapture(ExecutionContext*,
                MediaStreamTrack*,
                bool pan_tilt_zoom_allowed,
-               base::OnceClosure initialized_callback);
+               base::OnceClosure initialized_callback,
+               base::TimeDelta grab_frame_timeout = base::Seconds(2));
   ~ImageCapture() override;
 
   // ExecutionContextLifecycleObserver
@@ -191,6 +193,8 @@ class MODULES_EXPORT ImageCapture final
   Member<PhotoCapabilities> photo_capabilities_;
 
   HeapHashSet<Member<ScriptPromiseResolver>> service_requests_;
+
+  const base::TimeDelta grab_frame_timeout_;
 };
 
 }  // namespace blink

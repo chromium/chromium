@@ -41,7 +41,7 @@ source_set("tests") {
     "multiplex_router_unittest.cc",
     "native_struct_unittest.cc",
     "new_endpoint_types_unittest.cc",
-    "nullable_numerics_and_enums_unittest.cc",
+    "nullable_value_types_unittest.cc",
     "receiver_callback_unittest.cc",
     "receiver_set_unittest.cc",
     "receiver_unittest.cc",
@@ -70,7 +70,7 @@ source_set("tests") {
     ":test_extra_cpp_template_mojom",
     ":test_mojom",
     ":test_mojom__generate_message_ids",
-    ":test_mojom_cpp_only",
+    ":test_types",
     "//base/test:test_support",
     "//build:blink_buildflags",
     "//mojo/core/test:test_support",
@@ -105,10 +105,15 @@ source_set("tests") {
     ]
 
     deps += [
-      "//mojo/public/cpp/bindings/tests:struct_with_traits_impl",
+      ":struct_with_traits_impl",
       "//mojo/public/interfaces/bindings/tests:test_interfaces_blink",
     ]
   }
+}
+
+source_set("test_types") {
+  sources = [ "nullable_value_types_enums.h" ]
+  testonly = true
 }
 
 if (use_blink) {
@@ -199,26 +204,6 @@ mojom("test_mojom") {
         },
       ]
       traits_headers = [ "default_construct_unittest_mojom_traits.h" ]
-    },
-  ]
-}
-
-# Temporarily in a separate target since (partial) nullable support for numerics
-# and enums is only implemented for C++ bindings.
-mojom("test_mojom_cpp_only") {
-  testonly = true
-  cpp_only = true
-  sources = [ "nullable_numerics_and_enums_unittest.test-mojom" ]
-
-  cpp_typemaps = [
-    {
-      types = [
-        {
-          mojom = "mojo.test.nullable_numerics_and_enums_unittest.mojom.TypemappedEnum"
-          cpp = "::mojo::test::nullable_numerics_and_enums_unittest::TypemappedEnum"
-        },
-      ]
-      traits_headers = [ "nullable_numerics_and_enums_unittest_mojom_traits.h" ]
     },
   ]
 }

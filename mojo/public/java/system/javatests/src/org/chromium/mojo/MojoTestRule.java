@@ -58,17 +58,33 @@ public class MojoTestRule extends ExternalResource {
     }
 
     /**
+     * Quits the run loop. Unlike the C++ equivalent, may not be called if the run loop is not
+     * running.
+     */
+    public void quitLoop() {
+        MojoTestRuleJni.get().quitLoop(mTestEnvironmentPointer);
+    }
+
+    /**
      * Runs the run loop for the given time.
+     *
+     * @param timeoutMS How long to run the run loop for before timing out, in milliseconds. A
+     *     negative value will run forever; a value of 0 will run until idle.
      */
     public void runLoop(long timeoutMS) {
-        MojoTestRuleJni.get().runLoop(timeoutMS);
+        MojoTestRuleJni.get().runLoop(mTestEnvironmentPointer, timeoutMS);
+    }
+
+    /** Runs the run loop forever. Should be used in conjunction with quitRunLoop(). */
+    public void runLoopForever() {
+        runLoop(-1);
     }
 
     /**
      * Runs the run loop until no handle or task are immediately available.
      */
     public void runLoopUntilIdle() {
-        MojoTestRuleJni.get().runLoop(0);
+        runLoop(0);
     }
 
     @NativeMethods
@@ -76,7 +92,11 @@ public class MojoTestRule extends ExternalResource {
         void init();
         long setupTestEnvironment();
         void tearDownTestEnvironment(long testEnvironment);
-        void runLoop(long timeoutMS);
+
+        void quitLoop(long testEnvironment);
+
+        void runLoop(long testEnvironment, long timeoutMS);
+
         void initCore();
     }
 }

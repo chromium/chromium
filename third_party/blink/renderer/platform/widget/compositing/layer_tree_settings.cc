@@ -95,8 +95,17 @@ bool IsSmallScreen(const gfx::Size& size) {
 #endif
 
 std::pair<int, int> GetTilingInterestAreaSizes() {
-  int interest_area_size_in_pixels =
-      ::features::kInterestAreaSizeInPixels.Get();
+  int interest_area_size_in_pixels;
+
+  if (base::FeatureList::IsEnabled(::features::kSmallerInterestArea) &&
+      ::features::kInterestAreaSizeInPixels.Get() ==
+          ::features::kInterestAreaSizeInPixels.default_value) {
+    interest_area_size_in_pixels =
+        ::features::kDefaultInterestAreaSizeInPixelsWhenEnabled;
+  } else {
+    interest_area_size_in_pixels = ::features::kInterestAreaSizeInPixels.Get();
+  }
+
   if (interest_area_size_in_pixels ==
       ::features::kInterestAreaSizeInPixels.default_value) {
     return {

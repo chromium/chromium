@@ -56,10 +56,13 @@ const char* kDuplicateTagBaseError =
     "Unexpected duplicate view-transition-name: ";
 
 CSSPropertyID kPropertiesToCapture[] = {
-    CSSPropertyID::kColorScheme,
-    CSSPropertyID::kMixBlendMode,
-    CSSPropertyID::kTextOrientation,
+    CSSPropertyID::kBackdropFilter, CSSPropertyID::kColorScheme,
+    CSSPropertyID::kMixBlendMode,   CSSPropertyID::kTextOrientation,
     CSSPropertyID::kWritingMode,
+};
+
+CSSPropertyID kPropertiesToAnimate[] = {
+    CSSPropertyID::kBackdropFilter,
 };
 
 template <typename K, typename V>
@@ -83,6 +86,8 @@ class FlatMapBuilder {
 
 mojom::blink::ViewTransitionPropertyId ToTranstionPropertyId(CSSPropertyID id) {
   switch (id) {
+    case CSSPropertyID::kBackdropFilter:
+      return mojom::blink::ViewTransitionPropertyId::kBackdropFilter;
     case CSSPropertyID::kColorScheme:
       return mojom::blink::ViewTransitionPropertyId::kColorScheme;
     case CSSPropertyID::kMixBlendMode:
@@ -100,6 +105,8 @@ mojom::blink::ViewTransitionPropertyId ToTranstionPropertyId(CSSPropertyID id) {
 CSSPropertyID FromTransitionPropertyId(
     mojom::blink::ViewTransitionPropertyId id) {
   switch (id) {
+    case mojom::blink::ViewTransitionPropertyId::kBackdropFilter:
+      return CSSPropertyID::kBackdropFilter;
     case mojom::blink::ViewTransitionPropertyId::kColorScheme:
       return CSSPropertyID::kColorScheme;
     case mojom::blink::ViewTransitionPropertyId::kMixBlendMode:
@@ -441,7 +448,7 @@ ViewTransitionStyleTracker::ViewTransitionStyleTracker(
     element_data->captured_css_properties =
         std::move(css_property_builder).Finish();
 
-    element_data->CacheGeometryState();
+    element_data->CacheStateForOldSnapshot();
 
     element_data_map_.insert(name, std::move(element_data));
   }
@@ -1134,7 +1141,7 @@ bool ViewTransitionStyleTracker::RunPostPrePaintSteps() {
     // Ensure that the cached state stays in sync with the current state while
     // we're capturing.
     if (state_ == State::kCapturing) {
-      element_data->CacheGeometryState();
+      element_data->CacheStateForOldSnapshot();
     }
 
     needs_style_invalidation = true;
@@ -1649,7 +1656,8 @@ CSSStyleSheet& ViewTransitionStyleTracker::UAStyleSheet() {
       }
 
       builder.AddAnimations(type, view_transition_name,
-                            element_data->cached_container_properties);
+                            element_data->cached_container_properties,
+                            element_data->cached_animated_css_properties);
     }
   }
 
@@ -1716,7 +1724,7 @@ gfx::RectF ViewTransitionStyleTracker::ElementData::GetBorderBoxRect(
   return gfx::RectF(gfx::SizeF(border_box_size_in_layout_space));
 }
 
-void ViewTransitionStyleTracker::ElementData::CacheGeometryState() {
+void ViewTransitionStyleTracker::ElementData::CacheStateForOldSnapshot() {
   // This could be empty if the element was uncontained and was ignored for a
   // transition.
   DCHECK_LT(container_properties.size(), 2u);
@@ -1727,6 +1735,16 @@ void ViewTransitionStyleTracker::ElementData::CacheGeometryState() {
   cached_visual_overflow_rect_in_layout_space =
       visual_overflow_rect_in_layout_space;
   cached_captured_rect_in_layout_space = captured_rect_in_layout_space;
+
+  FlatMapBuilder<CSSPropertyID, String> builder(
+      std::size(kPropertiesToAnimate));
+  for (auto& id : kPropertiesToAnimate) {
+    auto it = captured_css_properties.find(id);
+    if (it != captured_css_properties.end()) {
+      builder.Insert(it->first, it->second);
+    }
+  }
+  cached_animated_css_properties = std::move(builder).Finish();
 }
 
 // TODO(vmpstr): This could be optimized by caching values for individual layout

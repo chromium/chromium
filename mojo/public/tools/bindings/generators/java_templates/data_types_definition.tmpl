@@ -51,6 +51,14 @@ encoder{{level}}.{{kind|encode_method(variable, offset, bit)}};
 {%- endif %}
 {%- endmacro %}
 
+{%- macro decode_nullable_value_packed_field(variable, original_field, has_value_pf, value_pf, level=0) %}
+if (decoder{{level}}.{{has_value_pf.field.kind|decode_method(8+has_value_pf.offset, has_value_pf.bit)}}) {
+  {{variable}} = new {{original_field.kind|java_type}}(decoder{{level}}.{{value_pf.field.kind|decode_method(8+value_pf.offset, value_pf.bit)}});
+} else {
+  {{variable}} = null;
+}
+{%- endmacro %}
+
 {%- macro decode(variable, kind, offset, bit, level=0) %}
 {%- if kind|is_struct_kind or
       kind|is_pointer_array_kind or
@@ -189,9 +197,20 @@ if ({{variable}} != null) {
             if (elementsOrVersion >= {{packed_field.min_version}}) {
 {%-       endif %}
 {%-     endif %}
+{%-     if packed_field|is_nullable_value_kind_packed_field %}
+{%-       if packed_field|is_primary_nullable_value_kind_packed_field %}
+{%-         set original_field = packed_field.original_field %}
+{%-         set has_value_pf = packed_field %}
+{%-         set value_pf = packed_field.linked_value_packed_field %}
+                {
+                    {{decode_nullable_value_packed_field('result.' ~ original_field|name, original_field, has_value_pf, value_pf)|indent(16)}}
+                }
+{%-       endif %}
+{%-     else %}
                 {
                     {{decode('result.' ~ packed_field.field|name, packed_field.field.kind, 8+packed_field.offset, packed_field.bit)|indent(16)}}
                 }
+{%-     endif %}
 {%-   endfor %}
 {%- endfor %}
 {%- if prev_ver[-1] != 0 %}
@@ -214,7 +233,31 @@ if ({{variable}} != null) {
 {%- endif %}
 {%- for byte in struct.bytes %}
 {%-   for packed_field in byte.packed_fields %}
+{%-     if packed_field|is_nullable_value_kind_packed_field %}
+{%-       if packed_field|is_primary_nullable_value_kind_packed_field %}
+{%-         set original_field = packed_field.original_field %}
+{%-         set has_value_pf = packed_field %}
+{%-         set value_pf = packed_field.linked_value_packed_field %}
+        final boolean {{has_value_pf.field|name}} = this.{{original_field|name}} != null;
+{%-         if value_pf.field.kind|is_enum_kind %}
+        final {{value_pf.field.kind|java_type}} {{value_pf.field|name}} = {{has_value_pf.field|name}}
+            ? this.{{original_field|name}}
+            : {{value_pf.field.kind|java_class_for_enum}}.MIN_VALUE;
+{%-         elif value_pf.field.kind|is_bool_kind %}
+        final {{value_pf.field.kind|java_type}} {{value_pf.field|name}} = {{has_value_pf.field|name}}
+            ? this.{{original_field|name}}
+            : false;
+{%-         else %}
+        final {{value_pf.field.kind|java_type}} {{value_pf.field|name}} = {{has_value_pf.field|name}}
+            ? this.{{original_field|name}}
+            : 0;
+{%-         endif %}
+        {{encode(has_value_pf.field|name, has_value_pf.field.kind, 8+has_value_pf.offset, has_value_pf.bit)|indent(8)}}
+        {{encode(value_pf.field|name, value_pf.field.kind, 8+value_pf.offset, value_pf.bit)|indent(8)}}
+{%-       endif %}
+{%-     else %}
         {{encode('this.' ~ packed_field.field|name, packed_field.field.kind, 8+packed_field.offset, packed_field.bit)|indent(8)}}
+{%-     endif %}
 {%-   endfor %}
 {%- endfor %}
     }

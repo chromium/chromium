@@ -61,4 +61,9 @@ void ExtensionFrameHost::DetailedConsoleMessageAdded(
     const StackTrace& stack_trace,
     blink::mojom::ConsoleMessageLevel level) {}
 
+void ExtensionFrameHost::ContentScriptsExecuting(
+    const base::flat_map<std::string, std::vector<std::string>>&
+        extension_id_to_scripts,
+    const GURL& frame_url) {}
+
 }  // namespace extensions

@@ -317,7 +317,7 @@ vars = {
   # Three lines of non-changing comments so that
   # the commit queue can handle CLs rolling Skia
   # and whatever else without interference from each other.
-  'skia_revision': '5bc5b4fdbe54f75bf95a4f9efa86dbf4701ee50e',
+  'skia_revision': 'fc4713797ec1bc2d99e35005e8efab18d4d717c6',
   # Three lines of non-changing comments so that
   # the commit queue can handle CLs rolling V8
   # and whatever else without interference from each other.
@@ -333,7 +333,7 @@ vars = {
   # Three lines of non-changing comments so that
   # the commit queue can handle CLs rolling PDFium
   # and whatever else without interference from each other.
-  'pdfium_revision': 'e6ae0008434492d5bd96b03857b718d901783618',
+  'pdfium_revision': '7ea1798173be9d98d30f4e90b97305f96ec960c4',
   # Three lines of non-changing comments so that
   # the commit queue can handle CLs rolling BoringSSL
   # and whatever else without interference from each other.
@@ -392,7 +392,7 @@ vars = {
   # Three lines of non-changing comments so that
   # the commit queue can handle CLs rolling chromium_variations
   # and whatever else without interference from each other.
-  'chromium_variations_revision': '8d58f752262abceaf01fe2431562512c15b302c0',
+  'chromium_variations_revision': '73f752d0c23652bf1ee8ddef5f8aa77f23e18cfe',
   # Three lines of non-changing comments so that
   # the commit queue can handle CLs rolling CrossBench
   # and whatever else without interference from each other.
@@ -448,7 +448,7 @@ vars = {
   # Three lines of non-changing comments so that
   # the commit queue can handle CLs rolling feed
   # and whatever else without interference from each other.
-  'dawn_revision': '6dae0c4a9f1c301bc46770cd34348b7a56ea7467',
+  'dawn_revision': '3e639ec8ab3bd275d8c12eb25459d3c2e0ee740c',
   # Three lines of non-changing comments so that
   # the commit queue can handle CLs rolling feed
   # and whatever else without interference from each other.
@@ -524,7 +524,7 @@ vars = {
 
   # If you change this, also update the libc++ revision in
   # //buildtools/deps_revisions.gni.
-  'libcxx_revision':       '418adb12bfb637754db19a7ca314a5f87b43df96',
+  'libcxx_revision':       '0a31206d8ad58a779f3bb555095ec21527337f15',
 
   # GN CIPD package version.
   'gn_version': 'git_revision:182a6eb05d15cc76d2302f7928fdb4f645d52c53',
@@ -1938,7 +1938,7 @@ deps = {
       'dep_type': 'cipd',
   },
 
-  'src/third_party/vulkan-deps': '{chromium_git}/vulkan-deps@e9f80c535365ba7ff7ec2d54bb6b52105b40ecfd',
+  'src/third_party/vulkan-deps': '{chromium_git}/vulkan-deps@2545e7b92202f31e0c5ca33ab17d0c8130906b4e',
 
   'src/third_party/vulkan_memory_allocator':
     Var('chromium_git') + '/external/github.com/GPUOpen-LibrariesAndSDKs/VulkanMemoryAllocator.git' + '@' + '56300b29fbfcc693ee6609ddad3fdd5b7a449a21',
@@ -1978,7 +1978,7 @@ deps = {
     Var('chromium_git') + '/external/github.com/gpuweb/cts.git' + '@' + '56e1a2e473ce150fe22e29a5b8788a8be3938cca',
 
   'src/third_party/webrtc':
-    Var('webrtc_git') + '/src.git' + '@' + 'd80d9932470d23b6ec8855d3c52c6c39eca603ea',
+    Var('webrtc_git') + '/src.git' + '@' + '5f78ed6eafa40451b61747978d134afda42ca4d6',
 
   # Wuffs' canonical repository is at github.com/google/wuffs, but we use
   # Skia's mirror of Wuffs, the same as in upstream Skia's DEPS file.
@@ -2101,7 +2101,7 @@ deps = {
     'packages': [
       {
         'package': 'chromeos_internal/apps/help_app/app',
-        'version': 'TWNdiaYjdoYnYImAd5RRjMHIyr4pKFKmVQOy1yUc9fYC',
+        'version': 'frgL7MFQo-1mrvjp2ppklzlo8nxSXpGb6PsWA3BdlD0C',
       },
     ],
     'condition': 'checkout_chromeos and checkout_src_internal',
@@ -2112,7 +2112,7 @@ deps = {
     'packages': [
       {
         'package': 'chromeos_internal/apps/media_app/app',
-        'version': 'ngVIrgGZlD1CaPrbXLERSs8vdauIrCNExOzF8C2slKoC',
+        'version': 'gr1bj5R0H5tXLsXfmvztnKc709Zx-eJvFSuA3hQAXQwC',
       },
     ],
     'condition': 'checkout_chromeos and checkout_src_internal',
@@ -2145,7 +2145,7 @@ deps = {
     'packages': [
       {
         'package': 'chromeos_internal/apps/projector_app/app',
-        'version': 'kcSjLbzMzr3xl1bBj9t9eQCiZxBM_UB6wrWzxA9q0PsC',
+        'version': 'QxvmZn2L9DXaRfcK_iBURlFM9v9wdCeJRSflniHi3RYC',
       },
     ],
     'condition': 'checkout_chromeos and checkout_src_internal',
@@ -4146,7 +4146,7 @@ deps = {
 
   'src/ios_internal':  {
       'url': Var('chrome_git') + '/chrome/ios_internal.git' + '@' +
-        '9fc5bb2384da3d92b67c4eeaed357a8e8995cef5',
+        '24f00a15206b228e3e56df86da032bbddfe029cb',
       'condition': 'checkout_ios and checkout_src_internal',
   },
 

@@ -48,7 +48,6 @@
 #include "extensions/browser/guest_view/web_view/web_view_guest.h"
 #include "extensions/browser/pref_names.h"
 #include "extensions/browser/process_manager.h"
-#include "extensions/common/api/messaging/channel_type.h"
 #include "extensions/common/api/messaging/messaging_endpoint.h"
 #include "extensions/common/api/messaging/port_context.h"
 #include "extensions/common/extension.h"
@@ -56,6 +55,7 @@
 #include "extensions/common/manifest_handlers/background_info.h"
 #include "extensions/common/manifest_handlers/externally_connectable.h"
 #include "extensions/common/manifest_handlers/incognito_info.h"
+#include "extensions/common/mojom/message_port.mojom-shared.h"
 #include "extensions/common/permissions/permissions_data.h"
 #include "url/gurl.h"
 
@@ -209,7 +209,7 @@ struct MessageService::OpenChannelParams {
   std::string target_extension_id;
   GURL source_url;
   absl::optional<url::Origin> source_origin;
-  ChannelType channel_type;
+  mojom::ChannelType channel_type;
   std::string channel_name;
   bool include_guest_process_info;
 
@@ -224,7 +224,7 @@ struct MessageService::OpenChannelParams {
                     const std::string& target_extension_id,
                     const GURL& source_url,
                     absl::optional<url::Origin> source_origin,
-                    ChannelType channel_type,
+                    mojom::ChannelType channel_type,
                     const std::string& channel_name,
                     bool include_guest_process_info)
       : source(source),
@@ -245,8 +245,8 @@ struct MessageService::OpenChannelParams {
   OpenChannelParams& operator=(const OpenChannelParams&) = delete;
 
   bool is_onetime_channel() const {
-    return channel_type == ChannelType::kSendMessage ||
-           channel_type == ChannelType::kSendRequest;
+    return channel_type == mojom::ChannelType::kSendMessage ||
+           channel_type == mojom::ChannelType::kSendRequest;
   }
 };
 
@@ -285,7 +285,7 @@ void MessageService::OpenChannelToExtension(
     std::unique_ptr<MessagePort> opener_port,
     const std::string& target_extension_id,
     const GURL& source_url,
-    ChannelType channel_type,
+    mojom::ChannelType channel_type,
     const std::string& channel_name) {
   DCHECK_CURRENTLY_ON(BrowserThread::UI);
   DCHECK(source_port_id.is_opener);
@@ -555,7 +555,7 @@ void MessageService::OpenChannelToTab(const ChannelEndpoint& source,
                                       int frame_id,
                                       const std::string& document_id,
                                       const std::string& extension_id,
-                                      ChannelType channel_type,
+                                      mojom::ChannelType channel_type,
                                       const std::string& channel_name) {
   DCHECK_CURRENTLY_ON(BrowserThread::UI);
   DCHECK_GE(frame_id, -1);

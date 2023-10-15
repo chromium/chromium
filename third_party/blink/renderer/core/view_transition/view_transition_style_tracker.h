@@ -214,8 +214,8 @@ class ViewTransitionStyleTracker
     gfx::RectF GetBorderBoxRect(bool use_cached_data,
                                 float device_scale_factor) const;
 
-    // Caches the current geometry state for the old snapshot.
-    void CacheGeometryState();
+    // Caches the current state for the old snapshot.
+    void CacheStateForOldSnapshot();
 
     // The element in the current DOM whose state is being tracked and mirrored
     // into the corresponding container pseudo element.
@@ -262,6 +262,10 @@ class ViewTransitionStyleTracker
     // element's value, and then switch to the incoming element's value, if one
     // exists.
     base::flat_map<CSSPropertyID, String> captured_css_properties;
+
+    // This only contains properties that need to be animated, which is a
+    // subset of `captured_css_properties`.
+    base::flat_map<CSSPropertyID, String> cached_animated_css_properties;
   };
 
   // In physical pixels. Returns the snapshot root rect, relative to the

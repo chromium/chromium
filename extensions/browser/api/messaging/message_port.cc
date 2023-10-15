@@ -21,7 +21,7 @@ bool MessagePort::HasFrame(content::RenderFrameHost* render_frame_host) const {
 void MessagePort::RevalidatePort() {}
 
 void MessagePort::DispatchOnConnect(
-    ChannelType channel_type,
+    mojom::ChannelType channel_type,
     const std::string& channel_name,
     absl::optional<base::Value::Dict> source_tab,
     const ExtensionApiFrameIdMap::FrameData& source_frame,
