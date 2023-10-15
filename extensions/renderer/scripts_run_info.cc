@@ -7,7 +7,7 @@
 #include "base/metrics/histogram_macros.h"
 #include "content/public/renderer/render_frame.h"
 #include "content/public/renderer/render_thread.h"
-#include "extensions/common/extension_messages.h"
+#include "extensions/renderer/extension_frame_helper.h"
 #include "extensions/renderer/script_context.h"
 #include "third_party/blink/public/web/web_local_frame.h"
 
@@ -29,9 +29,26 @@ ScriptsRunInfo::~ScriptsRunInfo() {
 void ScriptsRunInfo::LogRun(bool send_script_activity) {
   // Notify the browser if any extensions are now executing scripts.
   if (!executing_scripts.empty() && send_script_activity) {
-    content::RenderThread::Get()->Send(
-        new ExtensionHostMsg_ContentScriptsExecuting(
-            routing_id_, executing_scripts, frame_url_));
+    content::RenderFrame* frame =
+        content::RenderFrame::FromRoutingID(routing_id_);
+    if (!frame) {
+      // We can't convert a map of sets into a flat_map of vectors with mojo
+      // bindings so we need to do it manually. The set property is useful for
+      // this class so we can't convert the class storage type.
+
+      std::vector<std::pair<std::string, std::vector<std::string>>>
+          scripts_vector;
+      for (auto& script : executing_scripts) {
+        scripts_vector.emplace_back(
+            script.first, std::vector<std::string>(script.second.begin(),
+                                                   script.second.end()));
+      }
+      base::flat_map<std::string, std::vector<std::string>> mojo_scripts(
+          std::move(scripts_vector));
+      ExtensionFrameHelper::Get(frame)
+          ->GetLocalFrameHost()
+          ->ContentScriptsExecuting(mojo_scripts, frame_url_);
+    }
   }
 
   base::TimeDelta elapsed = timer.Elapsed();

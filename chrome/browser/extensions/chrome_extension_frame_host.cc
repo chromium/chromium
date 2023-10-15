@@ -4,6 +4,7 @@
 
 #include "chrome/browser/extensions/chrome_extension_frame_host.h"
 
+#include "chrome/browser/extensions/activity_log/activity_log.h"
 #include "chrome/browser/extensions/error_console/error_console.h"
 #include "chrome/browser/extensions/extension_action_runner.h"
 #include "chrome/browser/extensions/tab_helper.h"
@@ -89,6 +90,14 @@ void ChromeExtensionFrameHost::DetailedConsoleMessageAdded(
           blink::ConsoleMessageLevelToLogSeverity(level),
           render_frame_host->GetRoutingID(),
           render_frame_host->GetProcess()->GetID())));
+}
+
+void ChromeExtensionFrameHost::ContentScriptsExecuting(
+    const base::flat_map<std::string, std::vector<std::string>>&
+        extension_id_to_scripts,
+    const GURL& frame_url) {
+  ActivityLog::GetInstance(web_contents_->GetBrowserContext())
+      ->OnScriptsExecuted(web_contents_, extension_id_to_scripts, frame_url);
 }
 
 }  // namespace extensions

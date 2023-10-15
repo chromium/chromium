@@ -200,15 +200,6 @@ IPC_STRUCT_BEGIN(ExtensionMsg_OnConnectData)
                     external_connection_info)
 IPC_STRUCT_END()
 
-// Singly-included section for custom IPC traits.
-#ifndef INTERNAL_EXTENSIONS_COMMON_EXTENSION_MESSAGES_H_
-#define INTERNAL_EXTENSIONS_COMMON_EXTENSION_MESSAGES_H_
-
-// Map of extensions IDs to the executing script paths.
-typedef std::map<std::string, std::set<std::string>> ExecutingScriptsMap;
-
-#endif  // INTERNAL_EXTENSIONS_COMMON_EXTENSION_MESSAGES_H_
-
 // Messages sent from the browser to the renderer:
 
 // The browser's response to the ExtensionMsg_WakeEventPage IPC.
@@ -305,12 +296,6 @@ IPC_SYNC_MESSAGE_CONTROL1_1(
     ExtensionHostMsg_GetMessageBundle,
     std::string /* extension id */,
     extensions::MessageBundle::SubstitutionMap /* message bundle */)
-
-// Sent from the renderer to the browser to notify that content scripts are
-// running in the renderer that the IPC originated from.
-IPC_MESSAGE_ROUTED2(ExtensionHostMsg_ContentScriptsExecuting,
-                    ExecutingScriptsMap,
-                    GURL /* url of the _topmost_ frame */)
 
 // Informs the browser to increment the keepalive count for the lazy background
 // page, keeping it alive.

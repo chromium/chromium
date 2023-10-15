@@ -54,6 +54,10 @@ class ExtensionFrameHost : public mojom::LocalFrameHost {
       const std::u16string& source,
       const StackTrace& stack_trace,
       blink::mojom::ConsoleMessageLevel level) override;
+  void ContentScriptsExecuting(
+      const base::flat_map<std::string, std::vector<std::string>>&
+          extension_id_to_scripts,
+      const GURL& frame_url) override;
 
  protected:
   // This raw pointer is safe to use because ExtensionWebContentsObserver whose
