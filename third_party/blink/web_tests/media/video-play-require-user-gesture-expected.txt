@@ -1,6 +1,6 @@
 CONSOLE ERROR: Uncaught (in promise) NotAllowedError: play() can only be initiated by a user gesture.
 This is a testharness.js-based test.
 Harness Error. harness_status.status = 1 , harness_status.message = Unhandled rejection: play() can only be initiated by a user gesture.
-PASS Test that video play does not work unless a user gesture is involved in playing a video.
+[PASS] Test that video play does not work unless a user gesture is involved in playing a video.
 Harness: the test ran to completion.
 

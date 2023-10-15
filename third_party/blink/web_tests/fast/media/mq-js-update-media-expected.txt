@@ -1,8 +1,8 @@
 This is a testharness.js-based test.
 Harness Error. harness_status.status = 1 , harness_status.message = 2 duplicate test names: "Testing that background color is red. Media query "all and (color)"", "Testing that updated media query doesn't match and background color is not red. Media query "(monochrome) and (color)""
-PASS Testing that background color is red. Media query "all and (color)"
-PASS Testing that updated media query doesn't match and background color is not red. Media query "(monochrome) and (color)"
-PASS Testing that background color is red. Media query "all and (color)"
-PASS Testing that updated media query doesn't match and background color is not red. Media query "(monochrome) and (color)"
+[PASS] Testing that background color is red. Media query "all and (color)"
+[PASS] Testing that updated media query doesn't match and background color is not red. Media query "(monochrome) and (color)"
+[PASS] Testing that background color is red. Media query "all and (color)"
+[PASS] Testing that updated media query doesn't match and background color is not red. Media query "(monochrome) and (color)"
 Harness: the test ran to completion.
 

@@ -1,26 +1,26 @@
 This is a testharness.js-based test.
 Harness Error. harness_status.status = 1 , harness_status.message = 1 duplicate test name: "loadAlgorithmResolveOrdering"
-PASS playBeforeCanPlay
-PASS playWhenCanPlay
-PASS playAfterPlaybackStarted
-PASS playNotSupportedContent
-PASS playDecodeError
-PASS playWithErrorAlreadySet
-PASS playSrcChangedAfterError
-PASS playRaceWithSrcChangeError
-PASS playAndPauseWhenCanplay
-PASS playAndPauseBeforeCanPlay
-PASS loadRejectsPendingPromises
-PASS newSrcRejectPendingPromises
-PASS testEventAndPromiseOrdering
-PASS pausePlayAfterPlaybackStarted
-PASS loadAlgorithmDoesNotCancelTasks
-PASS loadAlgorithmKeepPromisesPendingWhenNotPausing
-PASS loadAlgorithmResolveOrdering
-PASS loadAlgorithmRejectPromisesWhenPausing
-PASS loadAlgorithmRejectPromisesWhenPausingAndPreloadNone
-PASS loadAlgorithmResolveOrdering
-PASS playRequiresUserGestureAndHasIt
-PASS playRequiresUserGestureAndDoesNotHaveIt
+[PASS] playBeforeCanPlay
+[PASS] playWhenCanPlay
+[PASS] playAfterPlaybackStarted
+[PASS] playNotSupportedContent
+[PASS] playDecodeError
+[PASS] playWithErrorAlreadySet
+[PASS] playSrcChangedAfterError
+[PASS] playRaceWithSrcChangeError
+[PASS] playAndPauseWhenCanplay
+[PASS] playAndPauseBeforeCanPlay
+[PASS] loadRejectsPendingPromises
+[PASS] newSrcRejectPendingPromises
+[PASS] testEventAndPromiseOrdering
+[PASS] pausePlayAfterPlaybackStarted
+[PASS] loadAlgorithmDoesNotCancelTasks
+[PASS] loadAlgorithmKeepPromisesPendingWhenNotPausing
+[PASS] loadAlgorithmResolveOrdering
+[PASS] loadAlgorithmRejectPromisesWhenPausing
+[PASS] loadAlgorithmRejectPromisesWhenPausingAndPreloadNone
+[PASS] loadAlgorithmResolveOrdering
+[PASS] playRequiresUserGestureAndHasIt
+[PASS] playRequiresUserGestureAndDoesNotHaveIt
 Harness: the test ran to completion.
 

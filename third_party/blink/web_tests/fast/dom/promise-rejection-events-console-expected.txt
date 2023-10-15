@@ -1,5 +1,5 @@
 This is a testharness.js-based test.
 Harness Error. harness_status.status = 1 , harness_status.message = Unhandled rejection: e
-PASS evt.preventDefault() should suppress console output.
+[PASS] evt.preventDefault() should suppress console output.
 Harness: the test ran to completion.
 

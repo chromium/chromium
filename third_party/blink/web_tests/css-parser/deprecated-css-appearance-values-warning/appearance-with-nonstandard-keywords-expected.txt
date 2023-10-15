@@ -11,6 +11,7 @@ CONSOLE WARNING: The keyword 'sliderthumb-horizontal' used on the 'appearance' p
 CONSOLE WARNING: The keyword 'sliderthumb-vertical' used on the 'appearance' property was deprecated and has now been removed. It will no longer have any effect.
 CONSOLE WARNING: The keyword 'searchfield-cancel-button' used on the 'appearance' property was deprecated and has now been removed. It will no longer have any effect.
 This is a testharness.js-based test.
-FAIL There should be console warnings about non-standard appearance keywords assert_true: This should FAIL so we generate a -expected.txt expected true got false
+[FAIL] There should be console warnings about non-standard appearance keywords
+  assert_true: This should FAIL so we generate a -expected.txt expected true got false
 Harness: the test ran to completion.
 

@@ -1,157 +1,158 @@
 This is a testharness.js-based test.
-PASS "transform: initial;" should parse as "initial"
-PASS "transform: initial;" should be computed to "none"
-PASS "transform: inherit;" should parse as "inherit"
-PASS "transform: 0;" should be invalid
-PASS "transform: none;" should parse as "none"
-PASS "transform: none none;" should be invalid
-PASS "transform: translateX(10px) scale(2);" should parse as "translateX(10px) scale(2)"
-PASS "transform: matrix(0, 1, 2, 3, 4, 5);" should parse as "matrix(0, 1, 2, 3, 4, 5)"
-PASS "transform: matrix(0, 1, 2, 3, 4, 5);" should be computed to "matrix(0, 1, 2, 3, 4, 5)"
-PASS "transform: matrix();" should be invalid
-PASS "transform: matrix(0, 1, 2, 3, 4);" should be invalid
-PASS "transform: matrix(1px, 1, 2, 3, 4, 5);" should be invalid
-PASS "transform: translate(0);" should parse as "translate(0px)"
-PASS "transform: translate(0, 0);" should parse as "translate(0px, 0px)"
-PASS "transform: translate(1px, 2px);" should parse as "translate(1px, 2px)"
-PASS "transform: translate(1px, 2px);" should be computed to "matrix(1, 0, 0, 1, 1, 2)"
-PASS "transform: translate(1px);" should parse as "translate(1px)"
-PASS "transform: translate(20%, 10%);" should parse as "translate(20%, 10%)"
-PASS "transform: translate(20%, 10%);" should be computed to "matrix(1, 0, 0, 1, 40, 10)"
-PASS "transform: translate();" should be invalid
-PASS "transform: translate(1);" should be invalid
-PASS "transform: translate(1, 2);" should be invalid
-PASS "transform: translate(1px,);" should be invalid
-PASS "transform: translate(1px, 2px, 3px);" should be invalid
-PASS "transform: translateX(0);" should parse as "translateX(0px)"
-PASS "transform: translateX(2px);" should parse as "translateX(2px)"
-PASS "transform: translateX(2px);" should be computed to "matrix(1, 0, 0, 1, 2, 0)"
-PASS "transform: translateX(50%);" should parse as "translateX(50%)"
-PASS "transform: translateX(1);" should be invalid
-PASS "transform: translateX();" should be invalid
-PASS "transform: translateX(1px, 2px);" should be invalid
-PASS "transform: translateY(0);" should parse as "translateY(0px)"
-PASS "transform: translateY(2px);" should parse as "translateY(2px)"
-PASS "transform: translateY(2px);" should be computed to "matrix(1, 0, 0, 1, 0, 2)"
-PASS "transform: translateY(50%);" should parse as "translateY(50%)"
-PASS "transform: translateY(1);" should be invalid
-PASS "transform: translateY();" should be invalid
-PASS "transform: translateY(1px, 2px);" should be invalid
-PASS "transform: scale(1);" should parse as "scale(1)"
-PASS "transform: scale(2, 3);" should parse as "scale(2, 3)"
-PASS "transform: scale(2, 3);" should be computed to "matrix(2, 0, 0, 3, 0, 0)"
-PASS "transform: scale(20%, 50%);" should parse as "scale(0.2, 0.5)"
-PASS "transform: scale(20%, 50%);" should be computed to "matrix(0.2, 0, 0, 0.5, 0, 0)"
-PASS "transform: scale();" should be invalid
-PASS "transform: scale(1,);" should be invalid
-PASS "transform: scale(1, 2, 3);" should be invalid
-PASS "transform: scale(1px, 2px);" should be invalid
-PASS "transform: scaleX(2);" should parse as "scaleX(2)"
-PASS "transform: scaleX(2);" should be computed to "matrix(2, 0, 0, 1, 0, 0)"
-PASS "transform: scaleX(50%);" should parse as "scaleX(0.5)"
-PASS "transform: scaleX(50%);" should be computed to "matrix(0.5, 0, 0, 1, 0, 0)"
-PASS "transform: scaleX();" should be invalid
-PASS "transform: scaleX(1, 2);" should be invalid
-PASS "transform: scaleX(1px);" should be invalid
-PASS "transform: scaleY(2);" should parse as "scaleY(2)"
-PASS "transform: scaleY(2);" should be computed to "matrix(1, 0, 0, 2, 0, 0)"
-PASS "transform: scaleY(50%);" should parse as "scaleY(0.5)"
-PASS "transform: scaleY(50%);" should be computed to "matrix(1, 0, 0, 0.5, 0, 0)"
-PASS "transform: scaleY();" should be invalid
-PASS "transform: scaleY(1, 2);" should be invalid
-PASS "transform: scaleY(1px);" should be invalid
-PASS "transform: rotate(0);" should parse as "rotate(0deg)"
-PASS "transform: rotate(1deg);" should parse as "rotate(1deg)"
-PASS "transform: rotate(2grad);" should parse as "rotate(2grad)"
-PASS "transform: rotate(3rad);" should parse as "rotate(3rad)"
-PASS "transform: rotate(4turn);" should parse as "rotate(4turn)"
-PASS "transform: rotate(5px);" should be invalid
-PASS "transform: rotate(6%);" should be invalid
-PASS "transform: rotate(7);" should be invalid
-PASS "transform: rotate(1deg, 1deg);" should be invalid
-PASS "transform: rotate();" should be invalid
-PASS "transform: skew(0);" should parse as "skew(0deg)"
-PASS "transform: skew(45deg);" should parse as "skew(45deg)"
-PASS "transform: skew(10rad, 20turn);" should parse as "skew(10rad, 20turn)"
-PASS "transform: skew(0, 0);" should parse as "skew(0deg, 0deg)"
-PASS "transform: skew(1);" should be invalid
-PASS "transform: skew(2%);" should be invalid
-PASS "transform: skew();" should be invalid
-PASS "transform: skew(45deg,);" should be invalid
-PASS "transform: skew(1deg, 2deg, 3deg);" should be invalid
-PASS "transform: skewX(0);" should parse as "skewX(0deg)"
-PASS "transform: skewX(45deg);" should parse as "skewX(45deg)"
-PASS "transform: skewX(1);" should be invalid
-PASS "transform: skewX(2%);" should be invalid
-PASS "transform: skewX();" should be invalid
-PASS "transform: skewX(1deg, 2deg);" should be invalid
-PASS "transform: skewY(0);" should parse as "skewY(0deg)"
-PASS "transform: skewY(45deg);" should parse as "skewY(45deg)"
-PASS "transform: skewY(1);" should be invalid
-PASS "transform: skewY(2%);" should be invalid
-PASS "transform: skewY();" should be invalid
-PASS "transform: skewY(1deg, 2deg);" should be invalid
-PASS "transform: matrix3d(0, 1, 2, 3, 4, 5, 6, 7, 8, 9, 10, 11, 12, 13, 14, 15);" should parse as "matrix3d(0, 1, 2, 3, 4, 5, 6, 7, 8, 9, 10, 11, 12, 13, 14, 15)"
-PASS "transform: matrix3d(0, 1, 2, 3, 4, 5, 6, 7, 8, 9, 10, 11, 12, 13, 14, 15);" should be computed to "matrix3d(0, 1, 2, 3, 4, 5, 6, 7, 8, 9, 10, 11, 12, 13, 14, 15)"
-PASS "transform: matrix3d(0);" should be invalid
-PASS "transform: matrix3d();" should be invalid
-PASS "transform: matrix3d(0, 1, 2, 3, 4, 5, 6, 7, 8, 9, 10, 11, 12, 13, 14);" should be invalid
-PASS "transform: matrix3d(0, 1, 2, 3, 4, 5, 6, 7, 8, 9, 10, 11, 12, 13, 14, 15, 16);" should be invalid
-PASS "transform: matrix3d(1px, 1, 2, 3, 4, 5, 6, 7, 8, 9, 10, 11, 12, 13, 14, 15);" should be invalid
-PASS "transform: matrix3d(1%, 1, 2, 3, 4, 5, 6, 7, 8, 9, 10, 11, 12, 13, 14, 15);" should be invalid
-PASS "transform: translate3d(0, 0, 0);" should parse as "translate3d(0px, 0px, 0px)"
-PASS "transform: translate3d(2px, 3px, 4px);" should parse as "translate3d(2px, 3px, 4px)"
-PASS "transform: translate3d(2px, 3px, 4px);" should be computed to "matrix3d(1, 0, 0, 0, 0, 1, 0, 0, 0, 0, 1, 0, 2, 3, 4, 1)"
-PASS "transform: translate3d();" should be invalid
-PASS "transform: translate3d(1px, 2px);" should be invalid
-PASS "transform: translate3d(1px, 2px, 3px, 4px);" should be invalid
-PASS "transform: translate3d(1, 1, 1px);" should be invalid
-PASS "transform: translate3d(1, 1, 1);" should be invalid
-PASS "transform: translateZ(0);" should parse as "translateZ(0px)"
-PASS "transform: translateZ(2px);" should parse as "translateZ(2px)"
-PASS "transform: translateZ(2px);" should be computed to "matrix3d(1, 0, 0, 0, 0, 1, 0, 0, 0, 0, 1, 0, 0, 0, 2, 1)"
-PASS "transform: translateZ();" should be invalid
-PASS "transform: translateZ(1);" should be invalid
-PASS "transform: translateZ(50%);" should be invalid
-PASS "transform: translateZ(1px, 2px);" should be invalid
-PASS "transform: scale3d(2, 3, 4);" should parse as "scale3d(2, 3, 4)"
-PASS "transform: scale3d(2, 3, 4);" should be computed to "matrix3d(2, 0, 0, 0, 0, 3, 0, 0, 0, 0, 4, 0, 0, 0, 0, 1)"
-PASS "transform: scale3d(20%, 50%, 60%);" should parse as "scale3d(0.2, 0.5, 0.6)"
-PASS "transform: scale3d(20%, 50%, 60%);" should be computed to "matrix3d(0.2, 0, 0, 0, 0, 0.5, 0, 0, 0, 0, 0.6, 0, 0, 0, 0, 1)"
-PASS "transform: scale3d();" should be invalid
-PASS "transform: scale3d(1, 2, 3, 4);" should be invalid
-PASS "transform: scale3d(1px, 2px, 3px);" should be invalid
-PASS "transform: scaleZ(2);" should parse as "scaleZ(2)"
-PASS "transform: scaleZ(2);" should be computed to "matrix3d(1, 0, 0, 0, 0, 1, 0, 0, 0, 0, 2, 0, 0, 0, 0, 1)"
-PASS "transform: scaleZ(50%);" should parse as "scaleZ(0.5)"
-PASS "transform: scaleZ(50%);" should be computed to "matrix3d(1, 0, 0, 0, 0, 1, 0, 0, 0, 0, 0.5, 0, 0, 0, 0, 1)"
-PASS "transform: scaleZ();" should be invalid
-PASS "transform: scaleZ(1, 2);" should be invalid
-PASS "transform: scaleZ(1px);" should be invalid
-PASS "transform: rotate3d(0, 0, 0, 0);" should parse as "rotate3d(0, 0, 0, 0deg)"
-PASS "transform: rotate3d(1, 2, 3, 4deg);" should parse as "rotate3d(1, 2, 3, 4deg)"
-PASS "transform: rotate3d();" should be invalid
-PASS "transform: rotate3d(1, 2, 3);" should be invalid
-PASS "transform: rotate3d(1, 2, 3, 4deg, 0);" should be invalid
-PASS "transform: rotate3d(1, 2, 3, );" should be invalid
-PASS "transform: rotateX(0);" should parse as "rotateX(0deg)"
-PASS "transform: rotateX(1deg);" should parse as "rotateX(1deg)"
-PASS "transform: rotateX();" should be invalid
-PASS "transform: rotateX(1deg, 1deg);" should be invalid
-PASS "transform: rotateY(0);" should parse as "rotateY(0deg)"
-PASS "transform: rotateY(1deg);" should parse as "rotateY(1deg)"
-PASS "transform: rotateY();" should be invalid
-PASS "transform: rotateY(1deg, 1deg);" should be invalid
-PASS "transform: rotateZ(0);" should parse as "rotateZ(0deg)"
-PASS "transform: rotateZ(1deg);" should parse as "rotateZ(1deg)"
-PASS "transform: rotateZ();" should be invalid
-PASS "transform: rotateZ(1deg, 1deg);" should be invalid
-PASS "transform: perspective(2px);" should parse as "perspective(2px)"
-PASS "transform: perspective(2px);" should be computed to "matrix3d(1, 0, 0, 0, 0, 1, 0, 0, 0, 0, 1, -0.5, 0, 0, 0, 1)"
-FAIL "transform: perspective(0px);" should be invalid assert_false: CSS.supports expected false got true
-PASS "transform: perspective(2);" should be invalid
-PASS "transform: perspective(5%);" should be invalid
-PASS "transform: perspective();" should be invalid
-PASS "transform: perspective(1px, 2px);" should be invalid
+[PASS] "transform: initial;" should parse as "initial"
+[PASS] "transform: initial;" should be computed to "none"
+[PASS] "transform: inherit;" should parse as "inherit"
+[PASS] "transform: 0;" should be invalid
+[PASS] "transform: none;" should parse as "none"
+[PASS] "transform: none none;" should be invalid
+[PASS] "transform: translateX(10px) scale(2);" should parse as "translateX(10px) scale(2)"
+[PASS] "transform: matrix(0, 1, 2, 3, 4, 5);" should parse as "matrix(0, 1, 2, 3, 4, 5)"
+[PASS] "transform: matrix(0, 1, 2, 3, 4, 5);" should be computed to "matrix(0, 1, 2, 3, 4, 5)"
+[PASS] "transform: matrix();" should be invalid
+[PASS] "transform: matrix(0, 1, 2, 3, 4);" should be invalid
+[PASS] "transform: matrix(1px, 1, 2, 3, 4, 5);" should be invalid
+[PASS] "transform: translate(0);" should parse as "translate(0px)"
+[PASS] "transform: translate(0, 0);" should parse as "translate(0px, 0px)"
+[PASS] "transform: translate(1px, 2px);" should parse as "translate(1px, 2px)"
+[PASS] "transform: translate(1px, 2px);" should be computed to "matrix(1, 0, 0, 1, 1, 2)"
+[PASS] "transform: translate(1px);" should parse as "translate(1px)"
+[PASS] "transform: translate(20%, 10%);" should parse as "translate(20%, 10%)"
+[PASS] "transform: translate(20%, 10%);" should be computed to "matrix(1, 0, 0, 1, 40, 10)"
+[PASS] "transform: translate();" should be invalid
+[PASS] "transform: translate(1);" should be invalid
+[PASS] "transform: translate(1, 2);" should be invalid
+[PASS] "transform: translate(1px,);" should be invalid
+[PASS] "transform: translate(1px, 2px, 3px);" should be invalid
+[PASS] "transform: translateX(0);" should parse as "translateX(0px)"
+[PASS] "transform: translateX(2px);" should parse as "translateX(2px)"
+[PASS] "transform: translateX(2px);" should be computed to "matrix(1, 0, 0, 1, 2, 0)"
+[PASS] "transform: translateX(50%);" should parse as "translateX(50%)"
+[PASS] "transform: translateX(1);" should be invalid
+[PASS] "transform: translateX();" should be invalid
+[PASS] "transform: translateX(1px, 2px);" should be invalid
+[PASS] "transform: translateY(0);" should parse as "translateY(0px)"
+[PASS] "transform: translateY(2px);" should parse as "translateY(2px)"
+[PASS] "transform: translateY(2px);" should be computed to "matrix(1, 0, 0, 1, 0, 2)"
+[PASS] "transform: translateY(50%);" should parse as "translateY(50%)"
+[PASS] "transform: translateY(1);" should be invalid
+[PASS] "transform: translateY();" should be invalid
+[PASS] "transform: translateY(1px, 2px);" should be invalid
+[PASS] "transform: scale(1);" should parse as "scale(1)"
+[PASS] "transform: scale(2, 3);" should parse as "scale(2, 3)"
+[PASS] "transform: scale(2, 3);" should be computed to "matrix(2, 0, 0, 3, 0, 0)"
+[PASS] "transform: scale(20%, 50%);" should parse as "scale(0.2, 0.5)"
+[PASS] "transform: scale(20%, 50%);" should be computed to "matrix(0.2, 0, 0, 0.5, 0, 0)"
+[PASS] "transform: scale();" should be invalid
+[PASS] "transform: scale(1,);" should be invalid
+[PASS] "transform: scale(1, 2, 3);" should be invalid
+[PASS] "transform: scale(1px, 2px);" should be invalid
+[PASS] "transform: scaleX(2);" should parse as "scaleX(2)"
+[PASS] "transform: scaleX(2);" should be computed to "matrix(2, 0, 0, 1, 0, 0)"
+[PASS] "transform: scaleX(50%);" should parse as "scaleX(0.5)"
+[PASS] "transform: scaleX(50%);" should be computed to "matrix(0.5, 0, 0, 1, 0, 0)"
+[PASS] "transform: scaleX();" should be invalid
+[PASS] "transform: scaleX(1, 2);" should be invalid
+[PASS] "transform: scaleX(1px);" should be invalid
+[PASS] "transform: scaleY(2);" should parse as "scaleY(2)"
+[PASS] "transform: scaleY(2);" should be computed to "matrix(1, 0, 0, 2, 0, 0)"
+[PASS] "transform: scaleY(50%);" should parse as "scaleY(0.5)"
+[PASS] "transform: scaleY(50%);" should be computed to "matrix(1, 0, 0, 0.5, 0, 0)"
+[PASS] "transform: scaleY();" should be invalid
+[PASS] "transform: scaleY(1, 2);" should be invalid
+[PASS] "transform: scaleY(1px);" should be invalid
+[PASS] "transform: rotate(0);" should parse as "rotate(0deg)"
+[PASS] "transform: rotate(1deg);" should parse as "rotate(1deg)"
+[PASS] "transform: rotate(2grad);" should parse as "rotate(2grad)"
+[PASS] "transform: rotate(3rad);" should parse as "rotate(3rad)"
+[PASS] "transform: rotate(4turn);" should parse as "rotate(4turn)"
+[PASS] "transform: rotate(5px);" should be invalid
+[PASS] "transform: rotate(6%);" should be invalid
+[PASS] "transform: rotate(7);" should be invalid
+[PASS] "transform: rotate(1deg, 1deg);" should be invalid
+[PASS] "transform: rotate();" should be invalid
+[PASS] "transform: skew(0);" should parse as "skew(0deg)"
+[PASS] "transform: skew(45deg);" should parse as "skew(45deg)"
+[PASS] "transform: skew(10rad, 20turn);" should parse as "skew(10rad, 20turn)"
+[PASS] "transform: skew(0, 0);" should parse as "skew(0deg, 0deg)"
+[PASS] "transform: skew(1);" should be invalid
+[PASS] "transform: skew(2%);" should be invalid
+[PASS] "transform: skew();" should be invalid
+[PASS] "transform: skew(45deg,);" should be invalid
+[PASS] "transform: skew(1deg, 2deg, 3deg);" should be invalid
+[PASS] "transform: skewX(0);" should parse as "skewX(0deg)"
+[PASS] "transform: skewX(45deg);" should parse as "skewX(45deg)"
+[PASS] "transform: skewX(1);" should be invalid
+[PASS] "transform: skewX(2%);" should be invalid
+[PASS] "transform: skewX();" should be invalid
+[PASS] "transform: skewX(1deg, 2deg);" should be invalid
+[PASS] "transform: skewY(0);" should parse as "skewY(0deg)"
+[PASS] "transform: skewY(45deg);" should parse as "skewY(45deg)"
+[PASS] "transform: skewY(1);" should be invalid
+[PASS] "transform: skewY(2%);" should be invalid
+[PASS] "transform: skewY();" should be invalid
+[PASS] "transform: skewY(1deg, 2deg);" should be invalid
+[PASS] "transform: matrix3d(0, 1, 2, 3, 4, 5, 6, 7, 8, 9, 10, 11, 12, 13, 14, 15);" should parse as "matrix3d(0, 1, 2, 3, 4, 5, 6, 7, 8, 9, 10, 11, 12, 13, 14, 15)"
+[PASS] "transform: matrix3d(0, 1, 2, 3, 4, 5, 6, 7, 8, 9, 10, 11, 12, 13, 14, 15);" should be computed to "matrix3d(0, 1, 2, 3, 4, 5, 6, 7, 8, 9, 10, 11, 12, 13, 14, 15)"
+[PASS] "transform: matrix3d(0);" should be invalid
+[PASS] "transform: matrix3d();" should be invalid
+[PASS] "transform: matrix3d(0, 1, 2, 3, 4, 5, 6, 7, 8, 9, 10, 11, 12, 13, 14);" should be invalid
+[PASS] "transform: matrix3d(0, 1, 2, 3, 4, 5, 6, 7, 8, 9, 10, 11, 12, 13, 14, 15, 16);" should be invalid
+[PASS] "transform: matrix3d(1px, 1, 2, 3, 4, 5, 6, 7, 8, 9, 10, 11, 12, 13, 14, 15);" should be invalid
+[PASS] "transform: matrix3d(1%, 1, 2, 3, 4, 5, 6, 7, 8, 9, 10, 11, 12, 13, 14, 15);" should be invalid
+[PASS] "transform: translate3d(0, 0, 0);" should parse as "translate3d(0px, 0px, 0px)"
+[PASS] "transform: translate3d(2px, 3px, 4px);" should parse as "translate3d(2px, 3px, 4px)"
+[PASS] "transform: translate3d(2px, 3px, 4px);" should be computed to "matrix3d(1, 0, 0, 0, 0, 1, 0, 0, 0, 0, 1, 0, 2, 3, 4, 1)"
+[PASS] "transform: translate3d();" should be invalid
+[PASS] "transform: translate3d(1px, 2px);" should be invalid
+[PASS] "transform: translate3d(1px, 2px, 3px, 4px);" should be invalid
+[PASS] "transform: translate3d(1, 1, 1px);" should be invalid
+[PASS] "transform: translate3d(1, 1, 1);" should be invalid
+[PASS] "transform: translateZ(0);" should parse as "translateZ(0px)"
+[PASS] "transform: translateZ(2px);" should parse as "translateZ(2px)"
+[PASS] "transform: translateZ(2px);" should be computed to "matrix3d(1, 0, 0, 0, 0, 1, 0, 0, 0, 0, 1, 0, 0, 0, 2, 1)"
+[PASS] "transform: translateZ();" should be invalid
+[PASS] "transform: translateZ(1);" should be invalid
+[PASS] "transform: translateZ(50%);" should be invalid
+[PASS] "transform: translateZ(1px, 2px);" should be invalid
+[PASS] "transform: scale3d(2, 3, 4);" should parse as "scale3d(2, 3, 4)"
+[PASS] "transform: scale3d(2, 3, 4);" should be computed to "matrix3d(2, 0, 0, 0, 0, 3, 0, 0, 0, 0, 4, 0, 0, 0, 0, 1)"
+[PASS] "transform: scale3d(20%, 50%, 60%);" should parse as "scale3d(0.2, 0.5, 0.6)"
+[PASS] "transform: scale3d(20%, 50%, 60%);" should be computed to "matrix3d(0.2, 0, 0, 0, 0, 0.5, 0, 0, 0, 0, 0.6, 0, 0, 0, 0, 1)"
+[PASS] "transform: scale3d();" should be invalid
+[PASS] "transform: scale3d(1, 2, 3, 4);" should be invalid
+[PASS] "transform: scale3d(1px, 2px, 3px);" should be invalid
+[PASS] "transform: scaleZ(2);" should parse as "scaleZ(2)"
+[PASS] "transform: scaleZ(2);" should be computed to "matrix3d(1, 0, 0, 0, 0, 1, 0, 0, 0, 0, 2, 0, 0, 0, 0, 1)"
+[PASS] "transform: scaleZ(50%);" should parse as "scaleZ(0.5)"
+[PASS] "transform: scaleZ(50%);" should be computed to "matrix3d(1, 0, 0, 0, 0, 1, 0, 0, 0, 0, 0.5, 0, 0, 0, 0, 1)"
+[PASS] "transform: scaleZ();" should be invalid
+[PASS] "transform: scaleZ(1, 2);" should be invalid
+[PASS] "transform: scaleZ(1px);" should be invalid
+[PASS] "transform: rotate3d(0, 0, 0, 0);" should parse as "rotate3d(0, 0, 0, 0deg)"
+[PASS] "transform: rotate3d(1, 2, 3, 4deg);" should parse as "rotate3d(1, 2, 3, 4deg)"
+[PASS] "transform: rotate3d();" should be invalid
+[PASS] "transform: rotate3d(1, 2, 3);" should be invalid
+[PASS] "transform: rotate3d(1, 2, 3, 4deg, 0);" should be invalid
+[PASS] "transform: rotate3d(1, 2, 3, );" should be invalid
+[PASS] "transform: rotateX(0);" should parse as "rotateX(0deg)"
+[PASS] "transform: rotateX(1deg);" should parse as "rotateX(1deg)"
+[PASS] "transform: rotateX();" should be invalid
+[PASS] "transform: rotateX(1deg, 1deg);" should be invalid
+[PASS] "transform: rotateY(0);" should parse as "rotateY(0deg)"
+[PASS] "transform: rotateY(1deg);" should parse as "rotateY(1deg)"
+[PASS] "transform: rotateY();" should be invalid
+[PASS] "transform: rotateY(1deg, 1deg);" should be invalid
+[PASS] "transform: rotateZ(0);" should parse as "rotateZ(0deg)"
+[PASS] "transform: rotateZ(1deg);" should parse as "rotateZ(1deg)"
+[PASS] "transform: rotateZ();" should be invalid
+[PASS] "transform: rotateZ(1deg, 1deg);" should be invalid
+[PASS] "transform: perspective(2px);" should parse as "perspective(2px)"
+[PASS] "transform: perspective(2px);" should be computed to "matrix3d(1, 0, 0, 0, 0, 1, 0, 0, 0, 0, 1, -0.5, 0, 0, 0, 1)"
+[FAIL] "transform: perspective(0px);" should be invalid
+  assert_false: CSS.supports expected false got true
+[PASS] "transform: perspective(2);" should be invalid
+[PASS] "transform: perspective(5%);" should be invalid
+[PASS] "transform: perspective();" should be invalid
+[PASS] "transform: perspective(1px, 2px);" should be invalid
 Harness: the test ran to completion.
 

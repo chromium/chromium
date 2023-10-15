@@ -1,5 +1,5 @@
 CONSOLE WARNING: A preload for 'http://127.0.0.1:8000/preload/warning/resources/hello.txt' is found, but is not used because the keepalive flag is set.
 This is a testharness.js-based test.
-PASS Preload match fails because keepalive is set (see the console log).
+[PASS] Preload match fails because keepalive is set (see the console log).
 Harness: the test ran to completion.
 

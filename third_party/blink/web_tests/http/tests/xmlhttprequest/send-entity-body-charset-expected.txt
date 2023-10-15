@@ -1,8 +1,8 @@
 This is a testharness.js-based test.
 Harness Error. harness_status.status = 1 , harness_status.message = 2 duplicate test names: "XMLHttpRequest: send() - data argument (1 requested with charset=UTF-8)", "XMLHttpRequest: send() - data argument (1=2&3=4 requested with charset=UTF-8)"
-PASS XMLHttpRequest: send() - data argument (1 requested with charset=UTF-8)
-PASS XMLHttpRequest: send() - data argument (1 requested with charset=UTF-8)
-PASS XMLHttpRequest: send() - data argument (1=2&3=4 requested with charset=UTF-8)
-PASS XMLHttpRequest: send() - data argument (1=2&3=4 requested with charset=UTF-8)
+[PASS] XMLHttpRequest: send() - data argument (1 requested with charset=UTF-8)
+[PASS] XMLHttpRequest: send() - data argument (1 requested with charset=UTF-8)
+[PASS] XMLHttpRequest: send() - data argument (1=2&3=4 requested with charset=UTF-8)
+[PASS] XMLHttpRequest: send() - data argument (1=2&3=4 requested with charset=UTF-8)
 Harness: the test ran to completion.
 

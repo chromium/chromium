@@ -23,25 +23,25 @@ PingLoader dispatched to 'http://127.0.0.1:8000/security/dangling-markup/are.png
 PingLoader dispatched to 'http://127.0.0.1:8000/resources/squ'.
 PingLoader dispatched to 'http://127.0.0.1:8000/security/dangling-markup/are.png?img=&#10;&amp;14'.
 This is a testharness.js-based test.
-PASS URL: /resources/square.png?1
-PASS URL: /resources/squ\nare.png?2
-PASS URL: /resources/squ\tare.png?3
-PASS URL: /resources/squ\rare.png?4
-PASS URL: /resources/square.png?img=<&amp;5
-PASS URL: /resources/square.png?img=&lt;&amp;6
-PASS URL: /resources/square.png?img=%3C&amp;7
-PASS URL: /resources/squ\nare.png?img=%3C&amp;8
-PASS URL: /resources/squ\rare.png?img=%3C&amp;9
-PASS URL: /resources/squ\tare.png?img=%3C&amp;10
-PASS URL: /resources/square.png?img=&#10;&amp;11
-PASS URL: /resources/squ\nare.png?img=&#10;&amp;12
-PASS URL: /resources/squ\rare.png?img=&#10;&amp;13
-PASS URL: /resources/squ\tare.png?img=&#10;&amp;14
-PASS URL: /resources/squ\nare.png?block=<
-PASS URL: /resources/squ\rare.png?block=<
-PASS URL: /resources/squ\tare.png?block=<
-PASS URL: /resources/square.png?<\n=block
-PASS URL: /resources/square.png?<\r=block
-PASS URL: /resources/square.png?<\t=block
+[PASS] URL: /resources/square.png?1
+[PASS] URL: /resources/squ\nare.png?2
+[PASS] URL: /resources/squ\tare.png?3
+[PASS] URL: /resources/squ\rare.png?4
+[PASS] URL: /resources/square.png?img=<&amp;5
+[PASS] URL: /resources/square.png?img=&lt;&amp;6
+[PASS] URL: /resources/square.png?img=%3C&amp;7
+[PASS] URL: /resources/squ\nare.png?img=%3C&amp;8
+[PASS] URL: /resources/squ\rare.png?img=%3C&amp;9
+[PASS] URL: /resources/squ\tare.png?img=%3C&amp;10
+[PASS] URL: /resources/square.png?img=&#10;&amp;11
+[PASS] URL: /resources/squ\nare.png?img=&#10;&amp;12
+[PASS] URL: /resources/squ\rare.png?img=&#10;&amp;13
+[PASS] URL: /resources/squ\tare.png?img=&#10;&amp;14
+[PASS] URL: /resources/squ\nare.png?block=<
+[PASS] URL: /resources/squ\rare.png?block=<
+[PASS] URL: /resources/squ\tare.png?block=<
+[PASS] URL: /resources/square.png?<\n=block
+[PASS] URL: /resources/square.png?<\r=block
+[PASS] URL: /resources/square.png?<\t=block
 Harness: the test ran to completion.
 

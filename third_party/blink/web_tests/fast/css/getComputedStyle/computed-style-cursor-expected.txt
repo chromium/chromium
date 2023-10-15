@@ -1,48 +1,48 @@
 This is a testharness.js-based test.
 Harness Error. harness_status.status = 1 , harness_status.message = 1 duplicate test name: "Tests that the cursor value 'url("file:///foo.png") 0 0, pointer' is saved correctly in the ComputedStyle."
-PASS Tests that the cursor value 'auto' is saved correctly in the ComputedStyle.
-PASS Tests that the cursor value 'default' is saved correctly in the ComputedStyle.
-PASS Tests that the cursor value 'none' is saved correctly in the ComputedStyle.
-PASS Tests that the cursor value 'context-menu' is saved correctly in the ComputedStyle.
-PASS Tests that the cursor value 'help' is saved correctly in the ComputedStyle.
-PASS Tests that the cursor value 'pointer' is saved correctly in the ComputedStyle.
-PASS Tests that the cursor value 'progress' is saved correctly in the ComputedStyle.
-PASS Tests that the cursor value 'wait' is saved correctly in the ComputedStyle.
-PASS Tests that the cursor value 'cell' is saved correctly in the ComputedStyle.
-PASS Tests that the cursor value 'crosshair' is saved correctly in the ComputedStyle.
-PASS Tests that the cursor value 'text' is saved correctly in the ComputedStyle.
-PASS Tests that the cursor value 'vertical-text' is saved correctly in the ComputedStyle.
-PASS Tests that the cursor value 'alias' is saved correctly in the ComputedStyle.
-PASS Tests that the cursor value 'copy' is saved correctly in the ComputedStyle.
-PASS Tests that the cursor value 'move' is saved correctly in the ComputedStyle.
-PASS Tests that the cursor value 'no-drop' is saved correctly in the ComputedStyle.
-PASS Tests that the cursor value 'not-allowed' is saved correctly in the ComputedStyle.
-PASS Tests that the cursor value 'e-resize' is saved correctly in the ComputedStyle.
-PASS Tests that the cursor value 'n-resize' is saved correctly in the ComputedStyle.
-PASS Tests that the cursor value 'ne-resize' is saved correctly in the ComputedStyle.
-PASS Tests that the cursor value 'nw-resize' is saved correctly in the ComputedStyle.
-PASS Tests that the cursor value 's-resize' is saved correctly in the ComputedStyle.
-PASS Tests that the cursor value 'se-resize' is saved correctly in the ComputedStyle.
-PASS Tests that the cursor value 'sw-resize' is saved correctly in the ComputedStyle.
-PASS Tests that the cursor value 'w-resize' is saved correctly in the ComputedStyle.
-PASS Tests that the cursor value 'ew-resize' is saved correctly in the ComputedStyle.
-PASS Tests that the cursor value 'ns-resize' is saved correctly in the ComputedStyle.
-PASS Tests that the cursor value 'nesw-resize' is saved correctly in the ComputedStyle.
-PASS Tests that the cursor value 'nwse-resize' is saved correctly in the ComputedStyle.
-PASS Tests that the cursor value 'col-resize' is saved correctly in the ComputedStyle.
-PASS Tests that the cursor value 'row-resize' is saved correctly in the ComputedStyle.
-PASS Tests that the cursor value 'all-scroll' is saved correctly in the ComputedStyle.
-PASS Tests that the cursor value 'zoom-in' is saved correctly in the ComputedStyle.
-PASS Tests that the cursor value 'zoom-out' is saved correctly in the ComputedStyle.
-PASS Tests that the cursor value 'url("file:///foo.png"), crosshair' is saved correctly in the ComputedStyle.
-PASS Tests that the cursor value 'url("file:///foo.png"), url("file:///foo2.png"), pointer' is saved correctly in the ComputedStyle.
-PASS Tests that the cursor value 'url("file:///foo.png") 12 3, pointer' is saved correctly in the ComputedStyle.
-PASS Tests that the cursor value 'url("file:///foo.png") 0 0, pointer' is saved correctly in the ComputedStyle.
-PASS Tests that the cursor value 'url("file:///foo.png") 0 0, pointer' is saved correctly in the ComputedStyle.
-PASS Tests that the cursor value 'url("file:///foo.png") 12 3, url("file:///foo2.png"), url("file:///foo3.png") 6 7, crosshair' is saved correctly in the ComputedStyle.
-PASS Tests that the cursor value 'url("file:///foo.png") -2 3, pointer' is saved correctly in the ComputedStyle.
-PASS Tests that the cursor value 'url("file:///foo.png") 2 -3, pointer' is saved correctly in the ComputedStyle.
-PASS Tests that the cursor value 'url("file:///foo.png") -1 -1, pointer' is saved correctly in the ComputedStyle.
-PASS Tests that the cursor value 'url("file:///foo.png") 10 10, auto' is saved correctly in the ComputedStyle.
+[PASS] Tests that the cursor value 'auto' is saved correctly in the ComputedStyle.
+[PASS] Tests that the cursor value 'default' is saved correctly in the ComputedStyle.
+[PASS] Tests that the cursor value 'none' is saved correctly in the ComputedStyle.
+[PASS] Tests that the cursor value 'context-menu' is saved correctly in the ComputedStyle.
+[PASS] Tests that the cursor value 'help' is saved correctly in the ComputedStyle.
+[PASS] Tests that the cursor value 'pointer' is saved correctly in the ComputedStyle.
+[PASS] Tests that the cursor value 'progress' is saved correctly in the ComputedStyle.
+[PASS] Tests that the cursor value 'wait' is saved correctly in the ComputedStyle.
+[PASS] Tests that the cursor value 'cell' is saved correctly in the ComputedStyle.
+[PASS] Tests that the cursor value 'crosshair' is saved correctly in the ComputedStyle.
+[PASS] Tests that the cursor value 'text' is saved correctly in the ComputedStyle.
+[PASS] Tests that the cursor value 'vertical-text' is saved correctly in the ComputedStyle.
+[PASS] Tests that the cursor value 'alias' is saved correctly in the ComputedStyle.
+[PASS] Tests that the cursor value 'copy' is saved correctly in the ComputedStyle.
+[PASS] Tests that the cursor value 'move' is saved correctly in the ComputedStyle.
+[PASS] Tests that the cursor value 'no-drop' is saved correctly in the ComputedStyle.
+[PASS] Tests that the cursor value 'not-allowed' is saved correctly in the ComputedStyle.
+[PASS] Tests that the cursor value 'e-resize' is saved correctly in the ComputedStyle.
+[PASS] Tests that the cursor value 'n-resize' is saved correctly in the ComputedStyle.
+[PASS] Tests that the cursor value 'ne-resize' is saved correctly in the ComputedStyle.
+[PASS] Tests that the cursor value 'nw-resize' is saved correctly in the ComputedStyle.
+[PASS] Tests that the cursor value 's-resize' is saved correctly in the ComputedStyle.
+[PASS] Tests that the cursor value 'se-resize' is saved correctly in the ComputedStyle.
+[PASS] Tests that the cursor value 'sw-resize' is saved correctly in the ComputedStyle.
+[PASS] Tests that the cursor value 'w-resize' is saved correctly in the ComputedStyle.
+[PASS] Tests that the cursor value 'ew-resize' is saved correctly in the ComputedStyle.
+[PASS] Tests that the cursor value 'ns-resize' is saved correctly in the ComputedStyle.
+[PASS] Tests that the cursor value 'nesw-resize' is saved correctly in the ComputedStyle.
+[PASS] Tests that the cursor value 'nwse-resize' is saved correctly in the ComputedStyle.
+[PASS] Tests that the cursor value 'col-resize' is saved correctly in the ComputedStyle.
+[PASS] Tests that the cursor value 'row-resize' is saved correctly in the ComputedStyle.
+[PASS] Tests that the cursor value 'all-scroll' is saved correctly in the ComputedStyle.
+[PASS] Tests that the cursor value 'zoom-in' is saved correctly in the ComputedStyle.
+[PASS] Tests that the cursor value 'zoom-out' is saved correctly in the ComputedStyle.
+[PASS] Tests that the cursor value 'url("file:///foo.png"), crosshair' is saved correctly in the ComputedStyle.
+[PASS] Tests that the cursor value 'url("file:///foo.png"), url("file:///foo2.png"), pointer' is saved correctly in the ComputedStyle.
+[PASS] Tests that the cursor value 'url("file:///foo.png") 12 3, pointer' is saved correctly in the ComputedStyle.
+[PASS] Tests that the cursor value 'url("file:///foo.png") 0 0, pointer' is saved correctly in the ComputedStyle.
+[PASS] Tests that the cursor value 'url("file:///foo.png") 0 0, pointer' is saved correctly in the ComputedStyle.
+[PASS] Tests that the cursor value 'url("file:///foo.png") 12 3, url("file:///foo2.png"), url("file:///foo3.png") 6 7, crosshair' is saved correctly in the ComputedStyle.
+[PASS] Tests that the cursor value 'url("file:///foo.png") -2 3, pointer' is saved correctly in the ComputedStyle.
+[PASS] Tests that the cursor value 'url("file:///foo.png") 2 -3, pointer' is saved correctly in the ComputedStyle.
+[PASS] Tests that the cursor value 'url("file:///foo.png") -1 -1, pointer' is saved correctly in the ComputedStyle.
+[PASS] Tests that the cursor value 'url("file:///foo.png") 10 10, auto' is saved correctly in the ComputedStyle.
 Harness: the test ran to completion.
 

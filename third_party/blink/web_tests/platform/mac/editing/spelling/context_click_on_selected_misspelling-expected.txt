@@ -1,25 +1,25 @@
 This is a testharness.js-based test.
 Harness Error. harness_status.status = 1 , harness_status.message = 1 duplicate test name: "Context clicking on selected "wellcome" gives suggestion "welcome"."
-PASS This test requires internals to set editing behavior.
-PASS This test requires event sender to simulate keyboard and mouse actions.
-PASS Dummy test holder
-PASS Has marker on initial misspelling in "wellcome home.".
-PASS Has marker on initial multi-word misspelling in "It should be upper case.".
-PASS Has marker on initial misspelling in "hello, wellcome home.".
-PASS Has marker on initial misspelling in "Hi, wellcome home.".
-PASS Has marker on initial misspelling in "wellcome!".
-PASS Has marker on initial misspelling in "wellcome home." with "llco" selected.
-PASS Has marker on initial misspelling in "wellcome home." with "wellcome home" selected.
-PASS Has marker on misspelled word "wellcome" after selecting it with double-clicking
-PASS Has marker on misspelled word "wellcome" after selecting it and its trailing underscore with double-clicking
-PASS Context clicking on selected "wellcome" gives suggestion "welcome".
-PASS Context clicking on selected "upper case" gives suggestion "uppercase".
-PASS Context clicking on selected " wellcome " gives suggestion "welcome".
-PASS Context clicking on selected "_wellcome_" gives suggestion "welcome".
-PASS Context clicking on selected "wellcome!" gives suggestion "welcome".
-PASS Context clicking on selected "llco" does not give any suggestion.
-PASS Context clicking on selected "wellcome home" does not give any suggestion.
-PASS Context clicking on selected "wellcome" gives suggestion "welcome".
-PASS Context clicking on selected "wellcome_" gives suggestion "welcome".
+[PASS] This test requires internals to set editing behavior.
+[PASS] This test requires event sender to simulate keyboard and mouse actions.
+[PASS] Dummy test holder
+[PASS] Has marker on initial misspelling in "wellcome home.".
+[PASS] Has marker on initial multi-word misspelling in "It should be upper case.".
+[PASS] Has marker on initial misspelling in "hello, wellcome home.".
+[PASS] Has marker on initial misspelling in "Hi, wellcome home.".
+[PASS] Has marker on initial misspelling in "wellcome!".
+[PASS] Has marker on initial misspelling in "wellcome home." with "llco" selected.
+[PASS] Has marker on initial misspelling in "wellcome home." with "wellcome home" selected.
+[PASS] Has marker on misspelled word "wellcome" after selecting it with double-clicking
+[PASS] Has marker on misspelled word "wellcome" after selecting it and its trailing underscore with double-clicking
+[PASS] Context clicking on selected "wellcome" gives suggestion "welcome".
+[PASS] Context clicking on selected "upper case" gives suggestion "uppercase".
+[PASS] Context clicking on selected " wellcome " gives suggestion "welcome".
+[PASS] Context clicking on selected "_wellcome_" gives suggestion "welcome".
+[PASS] Context clicking on selected "wellcome!" gives suggestion "welcome".
+[PASS] Context clicking on selected "llco" does not give any suggestion.
+[PASS] Context clicking on selected "wellcome home" does not give any suggestion.
+[PASS] Context clicking on selected "wellcome" gives suggestion "welcome".
+[PASS] Context clicking on selected "wellcome_" gives suggestion "welcome".
 Harness: the test ran to completion.
 

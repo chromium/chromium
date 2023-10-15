@@ -799,805 +799,805 @@ CONSOLE ERROR: Error: <marker> attribute orient: Expected angle, "\fe1deg\f".
 CONSOLE ERROR: Error: <marker> attribute orient: Expected angle, "\fe1rad\f".
 CONSOLE ERROR: Error: <marker> attribute orient: Expected angle, "\fe1grad\f".
 This is a testharness.js-based test.
-PASS Test <angle> invalid value: -
-PASS Test <angle> invalid value: -deg
-PASS Test <angle> invalid value: -rad
-PASS Test <angle> invalid value: -grad
-PASS Test <angle> invalid value: +
-PASS Test <angle> invalid value: +deg
-PASS Test <angle> invalid value: +rad
-PASS Test <angle> invalid value: +grad
-PASS Test <angle> invalid value: -.
-PASS Test <angle> invalid value: -.deg
-PASS Test <angle> invalid value: -.rad
-PASS Test <angle> invalid value: -.grad
-PASS Test <angle> invalid value: .-
-PASS Test <angle> invalid value: .-deg
-PASS Test <angle> invalid value: .-rad
-PASS Test <angle> invalid value: .-grad
-PASS Test <angle> invalid value: .
-PASS Test <angle> invalid value: .deg
-PASS Test <angle> invalid value: .rad
-PASS Test <angle> invalid value: .grad
-PASS Test <angle> invalid value: +.
-PASS Test <angle> invalid value: +.deg
-PASS Test <angle> invalid value: +.rad
-PASS Test <angle> invalid value: +.grad
-PASS Test <angle> invalid value: .E0
-PASS Test <angle> invalid value: .E0deg
-PASS Test <angle> invalid value: .E0rad
-PASS Test <angle> invalid value: .E0grad
-PASS Test <angle> invalid value: e1
-PASS Test <angle> invalid value: e1deg
-PASS Test <angle> invalid value: e1rad
-PASS Test <angle> invalid value: e1grad
-PASS Test <angle> invalid value: - 
-PASS Test <angle> invalid value: -deg 
-PASS Test <angle> invalid value: -rad 
-PASS Test <angle> invalid value: -grad 
-PASS Test <angle> invalid value: + 
-PASS Test <angle> invalid value: +deg 
-PASS Test <angle> invalid value: +rad 
-PASS Test <angle> invalid value: +grad 
-PASS Test <angle> invalid value: -. 
-PASS Test <angle> invalid value: -.deg 
-PASS Test <angle> invalid value: -.rad 
-PASS Test <angle> invalid value: -.grad 
-PASS Test <angle> invalid value: .- 
-PASS Test <angle> invalid value: .-deg 
-PASS Test <angle> invalid value: .-rad 
-PASS Test <angle> invalid value: .-grad 
-PASS Test <angle> invalid value: . 
-PASS Test <angle> invalid value: .deg 
-PASS Test <angle> invalid value: .rad 
-PASS Test <angle> invalid value: .grad 
-PASS Test <angle> invalid value: +. 
-PASS Test <angle> invalid value: +.deg 
-PASS Test <angle> invalid value: +.rad 
-PASS Test <angle> invalid value: +.grad 
-PASS Test <angle> invalid value: .E0 
-PASS Test <angle> invalid value: .E0deg 
-PASS Test <angle> invalid value: .E0rad 
-PASS Test <angle> invalid value: .E0grad 
-PASS Test <angle> invalid value: e1 
-PASS Test <angle> invalid value: e1deg 
-PASS Test <angle> invalid value: e1rad 
-PASS Test <angle> invalid value: e1grad 
-PASS Test <angle> invalid value: -   
-PASS Test <angle> invalid value: -deg   
-PASS Test <angle> invalid value: -rad   
-PASS Test <angle> invalid value: -grad   
-PASS Test <angle> invalid value: +   
-PASS Test <angle> invalid value: +deg   
-PASS Test <angle> invalid value: +rad   
-PASS Test <angle> invalid value: +grad   
-PASS Test <angle> invalid value: -.   
-PASS Test <angle> invalid value: -.deg   
-PASS Test <angle> invalid value: -.rad   
-PASS Test <angle> invalid value: -.grad   
-PASS Test <angle> invalid value: .-   
-PASS Test <angle> invalid value: .-deg   
-PASS Test <angle> invalid value: .-rad   
-PASS Test <angle> invalid value: .-grad   
-PASS Test <angle> invalid value: .   
-PASS Test <angle> invalid value: .deg   
-PASS Test <angle> invalid value: .rad   
-PASS Test <angle> invalid value: .grad   
-PASS Test <angle> invalid value: +.   
-PASS Test <angle> invalid value: +.deg   
-PASS Test <angle> invalid value: +.rad   
-PASS Test <angle> invalid value: +.grad   
-PASS Test <angle> invalid value: .E0   
-PASS Test <angle> invalid value: .E0deg   
-PASS Test <angle> invalid value: .E0rad   
-PASS Test <angle> invalid value: .E0grad   
-PASS Test <angle> invalid value: e1   
-PASS Test <angle> invalid value: e1deg   
-PASS Test <angle> invalid value: e1rad   
-PASS Test <angle> invalid value: e1grad   
-PASS Test <angle> invalid value: -\r\n\t 
-PASS Test <angle> invalid value: -deg\r\n\t 
-PASS Test <angle> invalid value: -rad\r\n\t 
-PASS Test <angle> invalid value: -grad\r\n\t 
-PASS Test <angle> invalid value: +\r\n\t 
-PASS Test <angle> invalid value: +deg\r\n\t 
-PASS Test <angle> invalid value: +rad\r\n\t 
-PASS Test <angle> invalid value: +grad\r\n\t 
-PASS Test <angle> invalid value: -.\r\n\t 
-PASS Test <angle> invalid value: -.deg\r\n\t 
-PASS Test <angle> invalid value: -.rad\r\n\t 
-PASS Test <angle> invalid value: -.grad\r\n\t 
-PASS Test <angle> invalid value: .-\r\n\t 
-PASS Test <angle> invalid value: .-deg\r\n\t 
-PASS Test <angle> invalid value: .-rad\r\n\t 
-PASS Test <angle> invalid value: .-grad\r\n\t 
-PASS Test <angle> invalid value: .\r\n\t 
-PASS Test <angle> invalid value: .deg\r\n\t 
-PASS Test <angle> invalid value: .rad\r\n\t 
-PASS Test <angle> invalid value: .grad\r\n\t 
-PASS Test <angle> invalid value: +.\r\n\t 
-PASS Test <angle> invalid value: +.deg\r\n\t 
-PASS Test <angle> invalid value: +.rad\r\n\t 
-PASS Test <angle> invalid value: +.grad\r\n\t 
-PASS Test <angle> invalid value: .E0\r\n\t 
-PASS Test <angle> invalid value: .E0deg\r\n\t 
-PASS Test <angle> invalid value: .E0rad\r\n\t 
-PASS Test <angle> invalid value: .E0grad\r\n\t 
-PASS Test <angle> invalid value: e1\r\n\t 
-PASS Test <angle> invalid value: e1deg\r\n\t 
-PASS Test <angle> invalid value: e1rad\r\n\t 
-PASS Test <angle> invalid value: e1grad\r\n\t 
-PASS Test <angle> invalid value: -\f
-PASS Test <angle> invalid value: -deg\f
-PASS Test <angle> invalid value: -rad\f
-PASS Test <angle> invalid value: -grad\f
-PASS Test <angle> invalid value: +\f
-PASS Test <angle> invalid value: +deg\f
-PASS Test <angle> invalid value: +rad\f
-PASS Test <angle> invalid value: +grad\f
-PASS Test <angle> invalid value: -.\f
-PASS Test <angle> invalid value: -.deg\f
-PASS Test <angle> invalid value: -.rad\f
-PASS Test <angle> invalid value: -.grad\f
-PASS Test <angle> invalid value: .-\f
-PASS Test <angle> invalid value: .-deg\f
-PASS Test <angle> invalid value: .-rad\f
-PASS Test <angle> invalid value: .-grad\f
-PASS Test <angle> invalid value: .\f
-PASS Test <angle> invalid value: .deg\f
-PASS Test <angle> invalid value: .rad\f
-PASS Test <angle> invalid value: .grad\f
-PASS Test <angle> invalid value: +.\f
-PASS Test <angle> invalid value: +.deg\f
-PASS Test <angle> invalid value: +.rad\f
-PASS Test <angle> invalid value: +.grad\f
-PASS Test <angle> invalid value: .E0\f
-PASS Test <angle> invalid value: .E0deg\f
-PASS Test <angle> invalid value: .E0rad\f
-PASS Test <angle> invalid value: .E0grad\f
-PASS Test <angle> invalid value: e1\f
-PASS Test <angle> invalid value: e1deg\f
-PASS Test <angle> invalid value: e1rad\f
-PASS Test <angle> invalid value: e1grad\f
-PASS Test <angle> invalid value:  -
-PASS Test <angle> invalid value:  -deg
-PASS Test <angle> invalid value:  -rad
-PASS Test <angle> invalid value:  -grad
-PASS Test <angle> invalid value:  +
-PASS Test <angle> invalid value:  +deg
-PASS Test <angle> invalid value:  +rad
-PASS Test <angle> invalid value:  +grad
-PASS Test <angle> invalid value:  -.
-PASS Test <angle> invalid value:  -.deg
-PASS Test <angle> invalid value:  -.rad
-PASS Test <angle> invalid value:  -.grad
-PASS Test <angle> invalid value:  .-
-PASS Test <angle> invalid value:  .-deg
-PASS Test <angle> invalid value:  .-rad
-PASS Test <angle> invalid value:  .-grad
-PASS Test <angle> invalid value:  .
-PASS Test <angle> invalid value:  .deg
-PASS Test <angle> invalid value:  .rad
-PASS Test <angle> invalid value:  .grad
-PASS Test <angle> invalid value:  +.
-PASS Test <angle> invalid value:  +.deg
-PASS Test <angle> invalid value:  +.rad
-PASS Test <angle> invalid value:  +.grad
-PASS Test <angle> invalid value:  .E0
-PASS Test <angle> invalid value:  .E0deg
-PASS Test <angle> invalid value:  .E0rad
-PASS Test <angle> invalid value:  .E0grad
-PASS Test <angle> invalid value:  e1
-PASS Test <angle> invalid value:  e1deg
-PASS Test <angle> invalid value:  e1rad
-PASS Test <angle> invalid value:  e1grad
-PASS Test <angle> invalid value:  - 
-PASS Test <angle> invalid value:  -deg 
-PASS Test <angle> invalid value:  -rad 
-PASS Test <angle> invalid value:  -grad 
-PASS Test <angle> invalid value:  + 
-PASS Test <angle> invalid value:  +deg 
-PASS Test <angle> invalid value:  +rad 
-PASS Test <angle> invalid value:  +grad 
-PASS Test <angle> invalid value:  -. 
-PASS Test <angle> invalid value:  -.deg 
-PASS Test <angle> invalid value:  -.rad 
-PASS Test <angle> invalid value:  -.grad 
-PASS Test <angle> invalid value:  .- 
-PASS Test <angle> invalid value:  .-deg 
-PASS Test <angle> invalid value:  .-rad 
-PASS Test <angle> invalid value:  .-grad 
-PASS Test <angle> invalid value:  . 
-PASS Test <angle> invalid value:  .deg 
-PASS Test <angle> invalid value:  .rad 
-PASS Test <angle> invalid value:  .grad 
-PASS Test <angle> invalid value:  +. 
-PASS Test <angle> invalid value:  +.deg 
-PASS Test <angle> invalid value:  +.rad 
-PASS Test <angle> invalid value:  +.grad 
-PASS Test <angle> invalid value:  .E0 
-PASS Test <angle> invalid value:  .E0deg 
-PASS Test <angle> invalid value:  .E0rad 
-PASS Test <angle> invalid value:  .E0grad 
-PASS Test <angle> invalid value:  e1 
-PASS Test <angle> invalid value:  e1deg 
-PASS Test <angle> invalid value:  e1rad 
-PASS Test <angle> invalid value:  e1grad 
-PASS Test <angle> invalid value:  -   
-PASS Test <angle> invalid value:  -deg   
-PASS Test <angle> invalid value:  -rad   
-PASS Test <angle> invalid value:  -grad   
-PASS Test <angle> invalid value:  +   
-PASS Test <angle> invalid value:  +deg   
-PASS Test <angle> invalid value:  +rad   
-PASS Test <angle> invalid value:  +grad   
-PASS Test <angle> invalid value:  -.   
-PASS Test <angle> invalid value:  -.deg   
-PASS Test <angle> invalid value:  -.rad   
-PASS Test <angle> invalid value:  -.grad   
-PASS Test <angle> invalid value:  .-   
-PASS Test <angle> invalid value:  .-deg   
-PASS Test <angle> invalid value:  .-rad   
-PASS Test <angle> invalid value:  .-grad   
-PASS Test <angle> invalid value:  .   
-PASS Test <angle> invalid value:  .deg   
-PASS Test <angle> invalid value:  .rad   
-PASS Test <angle> invalid value:  .grad   
-PASS Test <angle> invalid value:  +.   
-PASS Test <angle> invalid value:  +.deg   
-PASS Test <angle> invalid value:  +.rad   
-PASS Test <angle> invalid value:  +.grad   
-PASS Test <angle> invalid value:  .E0   
-PASS Test <angle> invalid value:  .E0deg   
-PASS Test <angle> invalid value:  .E0rad   
-PASS Test <angle> invalid value:  .E0grad   
-PASS Test <angle> invalid value:  e1   
-PASS Test <angle> invalid value:  e1deg   
-PASS Test <angle> invalid value:  e1rad   
-PASS Test <angle> invalid value:  e1grad   
-PASS Test <angle> invalid value:  -\r\n\t 
-PASS Test <angle> invalid value:  -deg\r\n\t 
-PASS Test <angle> invalid value:  -rad\r\n\t 
-PASS Test <angle> invalid value:  -grad\r\n\t 
-PASS Test <angle> invalid value:  +\r\n\t 
-PASS Test <angle> invalid value:  +deg\r\n\t 
-PASS Test <angle> invalid value:  +rad\r\n\t 
-PASS Test <angle> invalid value:  +grad\r\n\t 
-PASS Test <angle> invalid value:  -.\r\n\t 
-PASS Test <angle> invalid value:  -.deg\r\n\t 
-PASS Test <angle> invalid value:  -.rad\r\n\t 
-PASS Test <angle> invalid value:  -.grad\r\n\t 
-PASS Test <angle> invalid value:  .-\r\n\t 
-PASS Test <angle> invalid value:  .-deg\r\n\t 
-PASS Test <angle> invalid value:  .-rad\r\n\t 
-PASS Test <angle> invalid value:  .-grad\r\n\t 
-PASS Test <angle> invalid value:  .\r\n\t 
-PASS Test <angle> invalid value:  .deg\r\n\t 
-PASS Test <angle> invalid value:  .rad\r\n\t 
-PASS Test <angle> invalid value:  .grad\r\n\t 
-PASS Test <angle> invalid value:  +.\r\n\t 
-PASS Test <angle> invalid value:  +.deg\r\n\t 
-PASS Test <angle> invalid value:  +.rad\r\n\t 
-PASS Test <angle> invalid value:  +.grad\r\n\t 
-PASS Test <angle> invalid value:  .E0\r\n\t 
-PASS Test <angle> invalid value:  .E0deg\r\n\t 
-PASS Test <angle> invalid value:  .E0rad\r\n\t 
-PASS Test <angle> invalid value:  .E0grad\r\n\t 
-PASS Test <angle> invalid value:  e1\r\n\t 
-PASS Test <angle> invalid value:  e1deg\r\n\t 
-PASS Test <angle> invalid value:  e1rad\r\n\t 
-PASS Test <angle> invalid value:  e1grad\r\n\t 
-PASS Test <angle> invalid value:  -\f
-PASS Test <angle> invalid value:  -deg\f
-PASS Test <angle> invalid value:  -rad\f
-PASS Test <angle> invalid value:  -grad\f
-PASS Test <angle> invalid value:  +\f
-PASS Test <angle> invalid value:  +deg\f
-PASS Test <angle> invalid value:  +rad\f
-PASS Test <angle> invalid value:  +grad\f
-PASS Test <angle> invalid value:  -.\f
-PASS Test <angle> invalid value:  -.deg\f
-PASS Test <angle> invalid value:  -.rad\f
-PASS Test <angle> invalid value:  -.grad\f
-PASS Test <angle> invalid value:  .-\f
-PASS Test <angle> invalid value:  .-deg\f
-PASS Test <angle> invalid value:  .-rad\f
-PASS Test <angle> invalid value:  .-grad\f
-PASS Test <angle> invalid value:  .\f
-PASS Test <angle> invalid value:  .deg\f
-PASS Test <angle> invalid value:  .rad\f
-PASS Test <angle> invalid value:  .grad\f
-PASS Test <angle> invalid value:  +.\f
-PASS Test <angle> invalid value:  +.deg\f
-PASS Test <angle> invalid value:  +.rad\f
-PASS Test <angle> invalid value:  +.grad\f
-PASS Test <angle> invalid value:  .E0\f
-PASS Test <angle> invalid value:  .E0deg\f
-PASS Test <angle> invalid value:  .E0rad\f
-PASS Test <angle> invalid value:  .E0grad\f
-PASS Test <angle> invalid value:  e1\f
-PASS Test <angle> invalid value:  e1deg\f
-PASS Test <angle> invalid value:  e1rad\f
-PASS Test <angle> invalid value:  e1grad\f
-PASS Test <angle> invalid value:    -
-PASS Test <angle> invalid value:    -deg
-PASS Test <angle> invalid value:    -rad
-PASS Test <angle> invalid value:    -grad
-PASS Test <angle> invalid value:    +
-PASS Test <angle> invalid value:    +deg
-PASS Test <angle> invalid value:    +rad
-PASS Test <angle> invalid value:    +grad
-PASS Test <angle> invalid value:    -.
-PASS Test <angle> invalid value:    -.deg
-PASS Test <angle> invalid value:    -.rad
-PASS Test <angle> invalid value:    -.grad
-PASS Test <angle> invalid value:    .-
-PASS Test <angle> invalid value:    .-deg
-PASS Test <angle> invalid value:    .-rad
-PASS Test <angle> invalid value:    .-grad
-PASS Test <angle> invalid value:    .
-PASS Test <angle> invalid value:    .deg
-PASS Test <angle> invalid value:    .rad
-PASS Test <angle> invalid value:    .grad
-PASS Test <angle> invalid value:    +.
-PASS Test <angle> invalid value:    +.deg
-PASS Test <angle> invalid value:    +.rad
-PASS Test <angle> invalid value:    +.grad
-PASS Test <angle> invalid value:    .E0
-PASS Test <angle> invalid value:    .E0deg
-PASS Test <angle> invalid value:    .E0rad
-PASS Test <angle> invalid value:    .E0grad
-PASS Test <angle> invalid value:    e1
-PASS Test <angle> invalid value:    e1deg
-PASS Test <angle> invalid value:    e1rad
-PASS Test <angle> invalid value:    e1grad
-PASS Test <angle> invalid value:    - 
-PASS Test <angle> invalid value:    -deg 
-PASS Test <angle> invalid value:    -rad 
-PASS Test <angle> invalid value:    -grad 
-PASS Test <angle> invalid value:    + 
-PASS Test <angle> invalid value:    +deg 
-PASS Test <angle> invalid value:    +rad 
-PASS Test <angle> invalid value:    +grad 
-PASS Test <angle> invalid value:    -. 
-PASS Test <angle> invalid value:    -.deg 
-PASS Test <angle> invalid value:    -.rad 
-PASS Test <angle> invalid value:    -.grad 
-PASS Test <angle> invalid value:    .- 
-PASS Test <angle> invalid value:    .-deg 
-PASS Test <angle> invalid value:    .-rad 
-PASS Test <angle> invalid value:    .-grad 
-PASS Test <angle> invalid value:    . 
-PASS Test <angle> invalid value:    .deg 
-PASS Test <angle> invalid value:    .rad 
-PASS Test <angle> invalid value:    .grad 
-PASS Test <angle> invalid value:    +. 
-PASS Test <angle> invalid value:    +.deg 
-PASS Test <angle> invalid value:    +.rad 
-PASS Test <angle> invalid value:    +.grad 
-PASS Test <angle> invalid value:    .E0 
-PASS Test <angle> invalid value:    .E0deg 
-PASS Test <angle> invalid value:    .E0rad 
-PASS Test <angle> invalid value:    .E0grad 
-PASS Test <angle> invalid value:    e1 
-PASS Test <angle> invalid value:    e1deg 
-PASS Test <angle> invalid value:    e1rad 
-PASS Test <angle> invalid value:    e1grad 
-PASS Test <angle> invalid value:    -   
-PASS Test <angle> invalid value:    -deg   
-PASS Test <angle> invalid value:    -rad   
-PASS Test <angle> invalid value:    -grad   
-PASS Test <angle> invalid value:    +   
-PASS Test <angle> invalid value:    +deg   
-PASS Test <angle> invalid value:    +rad   
-PASS Test <angle> invalid value:    +grad   
-PASS Test <angle> invalid value:    -.   
-PASS Test <angle> invalid value:    -.deg   
-PASS Test <angle> invalid value:    -.rad   
-PASS Test <angle> invalid value:    -.grad   
-PASS Test <angle> invalid value:    .-   
-PASS Test <angle> invalid value:    .-deg   
-PASS Test <angle> invalid value:    .-rad   
-PASS Test <angle> invalid value:    .-grad   
-PASS Test <angle> invalid value:    .   
-PASS Test <angle> invalid value:    .deg   
-PASS Test <angle> invalid value:    .rad   
-PASS Test <angle> invalid value:    .grad   
-PASS Test <angle> invalid value:    +.   
-PASS Test <angle> invalid value:    +.deg   
-PASS Test <angle> invalid value:    +.rad   
-PASS Test <angle> invalid value:    +.grad   
-PASS Test <angle> invalid value:    .E0   
-PASS Test <angle> invalid value:    .E0deg   
-PASS Test <angle> invalid value:    .E0rad   
-PASS Test <angle> invalid value:    .E0grad   
-PASS Test <angle> invalid value:    e1   
-PASS Test <angle> invalid value:    e1deg   
-PASS Test <angle> invalid value:    e1rad   
-PASS Test <angle> invalid value:    e1grad   
-PASS Test <angle> invalid value:    -\r\n\t 
-PASS Test <angle> invalid value:    -deg\r\n\t 
-PASS Test <angle> invalid value:    -rad\r\n\t 
-PASS Test <angle> invalid value:    -grad\r\n\t 
-PASS Test <angle> invalid value:    +\r\n\t 
-PASS Test <angle> invalid value:    +deg\r\n\t 
-PASS Test <angle> invalid value:    +rad\r\n\t 
-PASS Test <angle> invalid value:    +grad\r\n\t 
-PASS Test <angle> invalid value:    -.\r\n\t 
-PASS Test <angle> invalid value:    -.deg\r\n\t 
-PASS Test <angle> invalid value:    -.rad\r\n\t 
-PASS Test <angle> invalid value:    -.grad\r\n\t 
-PASS Test <angle> invalid value:    .-\r\n\t 
-PASS Test <angle> invalid value:    .-deg\r\n\t 
-PASS Test <angle> invalid value:    .-rad\r\n\t 
-PASS Test <angle> invalid value:    .-grad\r\n\t 
-PASS Test <angle> invalid value:    .\r\n\t 
-PASS Test <angle> invalid value:    .deg\r\n\t 
-PASS Test <angle> invalid value:    .rad\r\n\t 
-PASS Test <angle> invalid value:    .grad\r\n\t 
-PASS Test <angle> invalid value:    +.\r\n\t 
-PASS Test <angle> invalid value:    +.deg\r\n\t 
-PASS Test <angle> invalid value:    +.rad\r\n\t 
-PASS Test <angle> invalid value:    +.grad\r\n\t 
-PASS Test <angle> invalid value:    .E0\r\n\t 
-PASS Test <angle> invalid value:    .E0deg\r\n\t 
-PASS Test <angle> invalid value:    .E0rad\r\n\t 
-PASS Test <angle> invalid value:    .E0grad\r\n\t 
-PASS Test <angle> invalid value:    e1\r\n\t 
-PASS Test <angle> invalid value:    e1deg\r\n\t 
-PASS Test <angle> invalid value:    e1rad\r\n\t 
-PASS Test <angle> invalid value:    e1grad\r\n\t 
-PASS Test <angle> invalid value:    -\f
-PASS Test <angle> invalid value:    -deg\f
-PASS Test <angle> invalid value:    -rad\f
-PASS Test <angle> invalid value:    -grad\f
-PASS Test <angle> invalid value:    +\f
-PASS Test <angle> invalid value:    +deg\f
-PASS Test <angle> invalid value:    +rad\f
-PASS Test <angle> invalid value:    +grad\f
-PASS Test <angle> invalid value:    -.\f
-PASS Test <angle> invalid value:    -.deg\f
-PASS Test <angle> invalid value:    -.rad\f
-PASS Test <angle> invalid value:    -.grad\f
-PASS Test <angle> invalid value:    .-\f
-PASS Test <angle> invalid value:    .-deg\f
-PASS Test <angle> invalid value:    .-rad\f
-PASS Test <angle> invalid value:    .-grad\f
-PASS Test <angle> invalid value:    .\f
-PASS Test <angle> invalid value:    .deg\f
-PASS Test <angle> invalid value:    .rad\f
-PASS Test <angle> invalid value:    .grad\f
-PASS Test <angle> invalid value:    +.\f
-PASS Test <angle> invalid value:    +.deg\f
-PASS Test <angle> invalid value:    +.rad\f
-PASS Test <angle> invalid value:    +.grad\f
-PASS Test <angle> invalid value:    .E0\f
-PASS Test <angle> invalid value:    .E0deg\f
-PASS Test <angle> invalid value:    .E0rad\f
-PASS Test <angle> invalid value:    .E0grad\f
-PASS Test <angle> invalid value:    e1\f
-PASS Test <angle> invalid value:    e1deg\f
-PASS Test <angle> invalid value:    e1rad\f
-PASS Test <angle> invalid value:    e1grad\f
-PASS Test <angle> invalid value: \r\n\t -
-PASS Test <angle> invalid value: \r\n\t -deg
-PASS Test <angle> invalid value: \r\n\t -rad
-PASS Test <angle> invalid value: \r\n\t -grad
-PASS Test <angle> invalid value: \r\n\t +
-PASS Test <angle> invalid value: \r\n\t +deg
-PASS Test <angle> invalid value: \r\n\t +rad
-PASS Test <angle> invalid value: \r\n\t +grad
-PASS Test <angle> invalid value: \r\n\t -.
-PASS Test <angle> invalid value: \r\n\t -.deg
-PASS Test <angle> invalid value: \r\n\t -.rad
-PASS Test <angle> invalid value: \r\n\t -.grad
-PASS Test <angle> invalid value: \r\n\t .-
-PASS Test <angle> invalid value: \r\n\t .-deg
-PASS Test <angle> invalid value: \r\n\t .-rad
-PASS Test <angle> invalid value: \r\n\t .-grad
-PASS Test <angle> invalid value: \r\n\t .
-PASS Test <angle> invalid value: \r\n\t .deg
-PASS Test <angle> invalid value: \r\n\t .rad
-PASS Test <angle> invalid value: \r\n\t .grad
-PASS Test <angle> invalid value: \r\n\t +.
-PASS Test <angle> invalid value: \r\n\t +.deg
-PASS Test <angle> invalid value: \r\n\t +.rad
-PASS Test <angle> invalid value: \r\n\t +.grad
-PASS Test <angle> invalid value: \r\n\t .E0
-PASS Test <angle> invalid value: \r\n\t .E0deg
-PASS Test <angle> invalid value: \r\n\t .E0rad
-PASS Test <angle> invalid value: \r\n\t .E0grad
-PASS Test <angle> invalid value: \r\n\t e1
-PASS Test <angle> invalid value: \r\n\t e1deg
-PASS Test <angle> invalid value: \r\n\t e1rad
-PASS Test <angle> invalid value: \r\n\t e1grad
-PASS Test <angle> invalid value: \r\n\t - 
-PASS Test <angle> invalid value: \r\n\t -deg 
-PASS Test <angle> invalid value: \r\n\t -rad 
-PASS Test <angle> invalid value: \r\n\t -grad 
-PASS Test <angle> invalid value: \r\n\t + 
-PASS Test <angle> invalid value: \r\n\t +deg 
-PASS Test <angle> invalid value: \r\n\t +rad 
-PASS Test <angle> invalid value: \r\n\t +grad 
-PASS Test <angle> invalid value: \r\n\t -. 
-PASS Test <angle> invalid value: \r\n\t -.deg 
-PASS Test <angle> invalid value: \r\n\t -.rad 
-PASS Test <angle> invalid value: \r\n\t -.grad 
-PASS Test <angle> invalid value: \r\n\t .- 
-PASS Test <angle> invalid value: \r\n\t .-deg 
-PASS Test <angle> invalid value: \r\n\t .-rad 
-PASS Test <angle> invalid value: \r\n\t .-grad 
-PASS Test <angle> invalid value: \r\n\t . 
-PASS Test <angle> invalid value: \r\n\t .deg 
-PASS Test <angle> invalid value: \r\n\t .rad 
-PASS Test <angle> invalid value: \r\n\t .grad 
-PASS Test <angle> invalid value: \r\n\t +. 
-PASS Test <angle> invalid value: \r\n\t +.deg 
-PASS Test <angle> invalid value: \r\n\t +.rad 
-PASS Test <angle> invalid value: \r\n\t +.grad 
-PASS Test <angle> invalid value: \r\n\t .E0 
-PASS Test <angle> invalid value: \r\n\t .E0deg 
-PASS Test <angle> invalid value: \r\n\t .E0rad 
-PASS Test <angle> invalid value: \r\n\t .E0grad 
-PASS Test <angle> invalid value: \r\n\t e1 
-PASS Test <angle> invalid value: \r\n\t e1deg 
-PASS Test <angle> invalid value: \r\n\t e1rad 
-PASS Test <angle> invalid value: \r\n\t e1grad 
-PASS Test <angle> invalid value: \r\n\t -   
-PASS Test <angle> invalid value: \r\n\t -deg   
-PASS Test <angle> invalid value: \r\n\t -rad   
-PASS Test <angle> invalid value: \r\n\t -grad   
-PASS Test <angle> invalid value: \r\n\t +   
-PASS Test <angle> invalid value: \r\n\t +deg   
-PASS Test <angle> invalid value: \r\n\t +rad   
-PASS Test <angle> invalid value: \r\n\t +grad   
-PASS Test <angle> invalid value: \r\n\t -.   
-PASS Test <angle> invalid value: \r\n\t -.deg   
-PASS Test <angle> invalid value: \r\n\t -.rad   
-PASS Test <angle> invalid value: \r\n\t -.grad   
-PASS Test <angle> invalid value: \r\n\t .-   
-PASS Test <angle> invalid value: \r\n\t .-deg   
-PASS Test <angle> invalid value: \r\n\t .-rad   
-PASS Test <angle> invalid value: \r\n\t .-grad   
-PASS Test <angle> invalid value: \r\n\t .   
-PASS Test <angle> invalid value: \r\n\t .deg   
-PASS Test <angle> invalid value: \r\n\t .rad   
-PASS Test <angle> invalid value: \r\n\t .grad   
-PASS Test <angle> invalid value: \r\n\t +.   
-PASS Test <angle> invalid value: \r\n\t +.deg   
-PASS Test <angle> invalid value: \r\n\t +.rad   
-PASS Test <angle> invalid value: \r\n\t +.grad   
-PASS Test <angle> invalid value: \r\n\t .E0   
-PASS Test <angle> invalid value: \r\n\t .E0deg   
-PASS Test <angle> invalid value: \r\n\t .E0rad   
-PASS Test <angle> invalid value: \r\n\t .E0grad   
-PASS Test <angle> invalid value: \r\n\t e1   
-PASS Test <angle> invalid value: \r\n\t e1deg   
-PASS Test <angle> invalid value: \r\n\t e1rad   
-PASS Test <angle> invalid value: \r\n\t e1grad   
-PASS Test <angle> invalid value: \r\n\t -\r\n\t 
-PASS Test <angle> invalid value: \r\n\t -deg\r\n\t 
-PASS Test <angle> invalid value: \r\n\t -rad\r\n\t 
-PASS Test <angle> invalid value: \r\n\t -grad\r\n\t 
-PASS Test <angle> invalid value: \r\n\t +\r\n\t 
-PASS Test <angle> invalid value: \r\n\t +deg\r\n\t 
-PASS Test <angle> invalid value: \r\n\t +rad\r\n\t 
-PASS Test <angle> invalid value: \r\n\t +grad\r\n\t 
-PASS Test <angle> invalid value: \r\n\t -.\r\n\t 
-PASS Test <angle> invalid value: \r\n\t -.deg\r\n\t 
-PASS Test <angle> invalid value: \r\n\t -.rad\r\n\t 
-PASS Test <angle> invalid value: \r\n\t -.grad\r\n\t 
-PASS Test <angle> invalid value: \r\n\t .-\r\n\t 
-PASS Test <angle> invalid value: \r\n\t .-deg\r\n\t 
-PASS Test <angle> invalid value: \r\n\t .-rad\r\n\t 
-PASS Test <angle> invalid value: \r\n\t .-grad\r\n\t 
-PASS Test <angle> invalid value: \r\n\t .\r\n\t 
-PASS Test <angle> invalid value: \r\n\t .deg\r\n\t 
-PASS Test <angle> invalid value: \r\n\t .rad\r\n\t 
-PASS Test <angle> invalid value: \r\n\t .grad\r\n\t 
-PASS Test <angle> invalid value: \r\n\t +.\r\n\t 
-PASS Test <angle> invalid value: \r\n\t +.deg\r\n\t 
-PASS Test <angle> invalid value: \r\n\t +.rad\r\n\t 
-PASS Test <angle> invalid value: \r\n\t +.grad\r\n\t 
-PASS Test <angle> invalid value: \r\n\t .E0\r\n\t 
-PASS Test <angle> invalid value: \r\n\t .E0deg\r\n\t 
-PASS Test <angle> invalid value: \r\n\t .E0rad\r\n\t 
-PASS Test <angle> invalid value: \r\n\t .E0grad\r\n\t 
-PASS Test <angle> invalid value: \r\n\t e1\r\n\t 
-PASS Test <angle> invalid value: \r\n\t e1deg\r\n\t 
-PASS Test <angle> invalid value: \r\n\t e1rad\r\n\t 
-PASS Test <angle> invalid value: \r\n\t e1grad\r\n\t 
-PASS Test <angle> invalid value: \r\n\t -\f
-PASS Test <angle> invalid value: \r\n\t -deg\f
-PASS Test <angle> invalid value: \r\n\t -rad\f
-PASS Test <angle> invalid value: \r\n\t -grad\f
-PASS Test <angle> invalid value: \r\n\t +\f
-PASS Test <angle> invalid value: \r\n\t +deg\f
-PASS Test <angle> invalid value: \r\n\t +rad\f
-PASS Test <angle> invalid value: \r\n\t +grad\f
-PASS Test <angle> invalid value: \r\n\t -.\f
-PASS Test <angle> invalid value: \r\n\t -.deg\f
-PASS Test <angle> invalid value: \r\n\t -.rad\f
-PASS Test <angle> invalid value: \r\n\t -.grad\f
-PASS Test <angle> invalid value: \r\n\t .-\f
-PASS Test <angle> invalid value: \r\n\t .-deg\f
-PASS Test <angle> invalid value: \r\n\t .-rad\f
-PASS Test <angle> invalid value: \r\n\t .-grad\f
-PASS Test <angle> invalid value: \r\n\t .\f
-PASS Test <angle> invalid value: \r\n\t .deg\f
-PASS Test <angle> invalid value: \r\n\t .rad\f
-PASS Test <angle> invalid value: \r\n\t .grad\f
-PASS Test <angle> invalid value: \r\n\t +.\f
-PASS Test <angle> invalid value: \r\n\t +.deg\f
-PASS Test <angle> invalid value: \r\n\t +.rad\f
-PASS Test <angle> invalid value: \r\n\t +.grad\f
-PASS Test <angle> invalid value: \r\n\t .E0\f
-PASS Test <angle> invalid value: \r\n\t .E0deg\f
-PASS Test <angle> invalid value: \r\n\t .E0rad\f
-PASS Test <angle> invalid value: \r\n\t .E0grad\f
-PASS Test <angle> invalid value: \r\n\t e1\f
-PASS Test <angle> invalid value: \r\n\t e1deg\f
-PASS Test <angle> invalid value: \r\n\t e1rad\f
-PASS Test <angle> invalid value: \r\n\t e1grad\f
-PASS Test <angle> invalid value: \f-
-PASS Test <angle> invalid value: \f-deg
-PASS Test <angle> invalid value: \f-rad
-PASS Test <angle> invalid value: \f-grad
-PASS Test <angle> invalid value: \f+
-PASS Test <angle> invalid value: \f+deg
-PASS Test <angle> invalid value: \f+rad
-PASS Test <angle> invalid value: \f+grad
-PASS Test <angle> invalid value: \f-.
-PASS Test <angle> invalid value: \f-.deg
-PASS Test <angle> invalid value: \f-.rad
-PASS Test <angle> invalid value: \f-.grad
-PASS Test <angle> invalid value: \f.-
-PASS Test <angle> invalid value: \f.-deg
-PASS Test <angle> invalid value: \f.-rad
-PASS Test <angle> invalid value: \f.-grad
-PASS Test <angle> invalid value: \f.
-PASS Test <angle> invalid value: \f.deg
-PASS Test <angle> invalid value: \f.rad
-PASS Test <angle> invalid value: \f.grad
-PASS Test <angle> invalid value: \f+.
-PASS Test <angle> invalid value: \f+.deg
-PASS Test <angle> invalid value: \f+.rad
-PASS Test <angle> invalid value: \f+.grad
-PASS Test <angle> invalid value: \f.E0
-PASS Test <angle> invalid value: \f.E0deg
-PASS Test <angle> invalid value: \f.E0rad
-PASS Test <angle> invalid value: \f.E0grad
-PASS Test <angle> invalid value: \fe1
-PASS Test <angle> invalid value: \fe1deg
-PASS Test <angle> invalid value: \fe1rad
-PASS Test <angle> invalid value: \fe1grad
-PASS Test <angle> invalid value: \f- 
-PASS Test <angle> invalid value: \f-deg 
-PASS Test <angle> invalid value: \f-rad 
-PASS Test <angle> invalid value: \f-grad 
-PASS Test <angle> invalid value: \f+ 
-PASS Test <angle> invalid value: \f+deg 
-PASS Test <angle> invalid value: \f+rad 
-PASS Test <angle> invalid value: \f+grad 
-PASS Test <angle> invalid value: \f-. 
-PASS Test <angle> invalid value: \f-.deg 
-PASS Test <angle> invalid value: \f-.rad 
-PASS Test <angle> invalid value: \f-.grad 
-PASS Test <angle> invalid value: \f.- 
-PASS Test <angle> invalid value: \f.-deg 
-PASS Test <angle> invalid value: \f.-rad 
-PASS Test <angle> invalid value: \f.-grad 
-PASS Test <angle> invalid value: \f. 
-PASS Test <angle> invalid value: \f.deg 
-PASS Test <angle> invalid value: \f.rad 
-PASS Test <angle> invalid value: \f.grad 
-PASS Test <angle> invalid value: \f+. 
-PASS Test <angle> invalid value: \f+.deg 
-PASS Test <angle> invalid value: \f+.rad 
-PASS Test <angle> invalid value: \f+.grad 
-PASS Test <angle> invalid value: \f.E0 
-PASS Test <angle> invalid value: \f.E0deg 
-PASS Test <angle> invalid value: \f.E0rad 
-PASS Test <angle> invalid value: \f.E0grad 
-PASS Test <angle> invalid value: \fe1 
-PASS Test <angle> invalid value: \fe1deg 
-PASS Test <angle> invalid value: \fe1rad 
-PASS Test <angle> invalid value: \fe1grad 
-PASS Test <angle> invalid value: \f-   
-PASS Test <angle> invalid value: \f-deg   
-PASS Test <angle> invalid value: \f-rad   
-PASS Test <angle> invalid value: \f-grad   
-PASS Test <angle> invalid value: \f+   
-PASS Test <angle> invalid value: \f+deg   
-PASS Test <angle> invalid value: \f+rad   
-PASS Test <angle> invalid value: \f+grad   
-PASS Test <angle> invalid value: \f-.   
-PASS Test <angle> invalid value: \f-.deg   
-PASS Test <angle> invalid value: \f-.rad   
-PASS Test <angle> invalid value: \f-.grad   
-PASS Test <angle> invalid value: \f.-   
-PASS Test <angle> invalid value: \f.-deg   
-PASS Test <angle> invalid value: \f.-rad   
-PASS Test <angle> invalid value: \f.-grad   
-PASS Test <angle> invalid value: \f.   
-PASS Test <angle> invalid value: \f.deg   
-PASS Test <angle> invalid value: \f.rad   
-PASS Test <angle> invalid value: \f.grad   
-PASS Test <angle> invalid value: \f+.   
-PASS Test <angle> invalid value: \f+.deg   
-PASS Test <angle> invalid value: \f+.rad   
-PASS Test <angle> invalid value: \f+.grad   
-PASS Test <angle> invalid value: \f.E0   
-PASS Test <angle> invalid value: \f.E0deg   
-PASS Test <angle> invalid value: \f.E0rad   
-PASS Test <angle> invalid value: \f.E0grad   
-PASS Test <angle> invalid value: \fe1   
-PASS Test <angle> invalid value: \fe1deg   
-PASS Test <angle> invalid value: \fe1rad   
-PASS Test <angle> invalid value: \fe1grad   
-PASS Test <angle> invalid value: \f-\r\n\t 
-PASS Test <angle> invalid value: \f-deg\r\n\t 
-PASS Test <angle> invalid value: \f-rad\r\n\t 
-PASS Test <angle> invalid value: \f-grad\r\n\t 
-PASS Test <angle> invalid value: \f+\r\n\t 
-PASS Test <angle> invalid value: \f+deg\r\n\t 
-PASS Test <angle> invalid value: \f+rad\r\n\t 
-PASS Test <angle> invalid value: \f+grad\r\n\t 
-PASS Test <angle> invalid value: \f-.\r\n\t 
-PASS Test <angle> invalid value: \f-.deg\r\n\t 
-PASS Test <angle> invalid value: \f-.rad\r\n\t 
-PASS Test <angle> invalid value: \f-.grad\r\n\t 
-PASS Test <angle> invalid value: \f.-\r\n\t 
-PASS Test <angle> invalid value: \f.-deg\r\n\t 
-PASS Test <angle> invalid value: \f.-rad\r\n\t 
-PASS Test <angle> invalid value: \f.-grad\r\n\t 
-PASS Test <angle> invalid value: \f.\r\n\t 
-PASS Test <angle> invalid value: \f.deg\r\n\t 
-PASS Test <angle> invalid value: \f.rad\r\n\t 
-PASS Test <angle> invalid value: \f.grad\r\n\t 
-PASS Test <angle> invalid value: \f+.\r\n\t 
-PASS Test <angle> invalid value: \f+.deg\r\n\t 
-PASS Test <angle> invalid value: \f+.rad\r\n\t 
-PASS Test <angle> invalid value: \f+.grad\r\n\t 
-PASS Test <angle> invalid value: \f.E0\r\n\t 
-PASS Test <angle> invalid value: \f.E0deg\r\n\t 
-PASS Test <angle> invalid value: \f.E0rad\r\n\t 
-PASS Test <angle> invalid value: \f.E0grad\r\n\t 
-PASS Test <angle> invalid value: \fe1\r\n\t 
-PASS Test <angle> invalid value: \fe1deg\r\n\t 
-PASS Test <angle> invalid value: \fe1rad\r\n\t 
-PASS Test <angle> invalid value: \fe1grad\r\n\t 
-PASS Test <angle> invalid value: \f-\f
-PASS Test <angle> invalid value: \f-deg\f
-PASS Test <angle> invalid value: \f-rad\f
-PASS Test <angle> invalid value: \f-grad\f
-PASS Test <angle> invalid value: \f+\f
-PASS Test <angle> invalid value: \f+deg\f
-PASS Test <angle> invalid value: \f+rad\f
-PASS Test <angle> invalid value: \f+grad\f
-PASS Test <angle> invalid value: \f-.\f
-PASS Test <angle> invalid value: \f-.deg\f
-PASS Test <angle> invalid value: \f-.rad\f
-PASS Test <angle> invalid value: \f-.grad\f
-PASS Test <angle> invalid value: \f.-\f
-PASS Test <angle> invalid value: \f.-deg\f
-PASS Test <angle> invalid value: \f.-rad\f
-PASS Test <angle> invalid value: \f.-grad\f
-PASS Test <angle> invalid value: \f.\f
-PASS Test <angle> invalid value: \f.deg\f
-PASS Test <angle> invalid value: \f.rad\f
-PASS Test <angle> invalid value: \f.grad\f
-PASS Test <angle> invalid value: \f+.\f
-PASS Test <angle> invalid value: \f+.deg\f
-PASS Test <angle> invalid value: \f+.rad\f
-PASS Test <angle> invalid value: \f+.grad\f
-PASS Test <angle> invalid value: \f.E0\f
-PASS Test <angle> invalid value: \f.E0deg\f
-PASS Test <angle> invalid value: \f.E0rad\f
-PASS Test <angle> invalid value: \f.E0grad\f
-PASS Test <angle> invalid value: \fe1\f
-PASS Test <angle> invalid value: \fe1deg\f
-PASS Test <angle> invalid value: \fe1rad\f
-PASS Test <angle> invalid value: \fe1grad\f
+[PASS] Test <angle> invalid value: -
+[PASS] Test <angle> invalid value: -deg
+[PASS] Test <angle> invalid value: -rad
+[PASS] Test <angle> invalid value: -grad
+[PASS] Test <angle> invalid value: +
+[PASS] Test <angle> invalid value: +deg
+[PASS] Test <angle> invalid value: +rad
+[PASS] Test <angle> invalid value: +grad
+[PASS] Test <angle> invalid value: -.
+[PASS] Test <angle> invalid value: -.deg
+[PASS] Test <angle> invalid value: -.rad
+[PASS] Test <angle> invalid value: -.grad
+[PASS] Test <angle> invalid value: .-
+[PASS] Test <angle> invalid value: .-deg
+[PASS] Test <angle> invalid value: .-rad
+[PASS] Test <angle> invalid value: .-grad
+[PASS] Test <angle> invalid value: .
+[PASS] Test <angle> invalid value: .deg
+[PASS] Test <angle> invalid value: .rad
+[PASS] Test <angle> invalid value: .grad
+[PASS] Test <angle> invalid value: +.
+[PASS] Test <angle> invalid value: +.deg
+[PASS] Test <angle> invalid value: +.rad
+[PASS] Test <angle> invalid value: +.grad
+[PASS] Test <angle> invalid value: .E0
+[PASS] Test <angle> invalid value: .E0deg
+[PASS] Test <angle> invalid value: .E0rad
+[PASS] Test <angle> invalid value: .E0grad
+[PASS] Test <angle> invalid value: e1
+[PASS] Test <angle> invalid value: e1deg
+[PASS] Test <angle> invalid value: e1rad
+[PASS] Test <angle> invalid value: e1grad
+[PASS] Test <angle> invalid value: - 
+[PASS] Test <angle> invalid value: -deg 
+[PASS] Test <angle> invalid value: -rad 
+[PASS] Test <angle> invalid value: -grad 
+[PASS] Test <angle> invalid value: + 
+[PASS] Test <angle> invalid value: +deg 
+[PASS] Test <angle> invalid value: +rad 
+[PASS] Test <angle> invalid value: +grad 
+[PASS] Test <angle> invalid value: -. 
+[PASS] Test <angle> invalid value: -.deg 
+[PASS] Test <angle> invalid value: -.rad 
+[PASS] Test <angle> invalid value: -.grad 
+[PASS] Test <angle> invalid value: .- 
+[PASS] Test <angle> invalid value: .-deg 
+[PASS] Test <angle> invalid value: .-rad 
+[PASS] Test <angle> invalid value: .-grad 
+[PASS] Test <angle> invalid value: . 
+[PASS] Test <angle> invalid value: .deg 
+[PASS] Test <angle> invalid value: .rad 
+[PASS] Test <angle> invalid value: .grad 
+[PASS] Test <angle> invalid value: +. 
+[PASS] Test <angle> invalid value: +.deg 
+[PASS] Test <angle> invalid value: +.rad 
+[PASS] Test <angle> invalid value: +.grad 
+[PASS] Test <angle> invalid value: .E0 
+[PASS] Test <angle> invalid value: .E0deg 
+[PASS] Test <angle> invalid value: .E0rad 
+[PASS] Test <angle> invalid value: .E0grad 
+[PASS] Test <angle> invalid value: e1 
+[PASS] Test <angle> invalid value: e1deg 
+[PASS] Test <angle> invalid value: e1rad 
+[PASS] Test <angle> invalid value: e1grad 
+[PASS] Test <angle> invalid value: -   
+[PASS] Test <angle> invalid value: -deg   
+[PASS] Test <angle> invalid value: -rad   
+[PASS] Test <angle> invalid value: -grad   
+[PASS] Test <angle> invalid value: +   
+[PASS] Test <angle> invalid value: +deg   
+[PASS] Test <angle> invalid value: +rad   
+[PASS] Test <angle> invalid value: +grad   
+[PASS] Test <angle> invalid value: -.   
+[PASS] Test <angle> invalid value: -.deg   
+[PASS] Test <angle> invalid value: -.rad   
+[PASS] Test <angle> invalid value: -.grad   
+[PASS] Test <angle> invalid value: .-   
+[PASS] Test <angle> invalid value: .-deg   
+[PASS] Test <angle> invalid value: .-rad   
+[PASS] Test <angle> invalid value: .-grad   
+[PASS] Test <angle> invalid value: .   
+[PASS] Test <angle> invalid value: .deg   
+[PASS] Test <angle> invalid value: .rad   
+[PASS] Test <angle> invalid value: .grad   
+[PASS] Test <angle> invalid value: +.   
+[PASS] Test <angle> invalid value: +.deg   
+[PASS] Test <angle> invalid value: +.rad   
+[PASS] Test <angle> invalid value: +.grad   
+[PASS] Test <angle> invalid value: .E0   
+[PASS] Test <angle> invalid value: .E0deg   
+[PASS] Test <angle> invalid value: .E0rad   
+[PASS] Test <angle> invalid value: .E0grad   
+[PASS] Test <angle> invalid value: e1   
+[PASS] Test <angle> invalid value: e1deg   
+[PASS] Test <angle> invalid value: e1rad   
+[PASS] Test <angle> invalid value: e1grad   
+[PASS] Test <angle> invalid value: -\r\n\t 
+[PASS] Test <angle> invalid value: -deg\r\n\t 
+[PASS] Test <angle> invalid value: -rad\r\n\t 
+[PASS] Test <angle> invalid value: -grad\r\n\t 
+[PASS] Test <angle> invalid value: +\r\n\t 
+[PASS] Test <angle> invalid value: +deg\r\n\t 
+[PASS] Test <angle> invalid value: +rad\r\n\t 
+[PASS] Test <angle> invalid value: +grad\r\n\t 
+[PASS] Test <angle> invalid value: -.\r\n\t 
+[PASS] Test <angle> invalid value: -.deg\r\n\t 
+[PASS] Test <angle> invalid value: -.rad\r\n\t 
+[PASS] Test <angle> invalid value: -.grad\r\n\t 
+[PASS] Test <angle> invalid value: .-\r\n\t 
+[PASS] Test <angle> invalid value: .-deg\r\n\t 
+[PASS] Test <angle> invalid value: .-rad\r\n\t 
+[PASS] Test <angle> invalid value: .-grad\r\n\t 
+[PASS] Test <angle> invalid value: .\r\n\t 
+[PASS] Test <angle> invalid value: .deg\r\n\t 
+[PASS] Test <angle> invalid value: .rad\r\n\t 
+[PASS] Test <angle> invalid value: .grad\r\n\t 
+[PASS] Test <angle> invalid value: +.\r\n\t 
+[PASS] Test <angle> invalid value: +.deg\r\n\t 
+[PASS] Test <angle> invalid value: +.rad\r\n\t 
+[PASS] Test <angle> invalid value: +.grad\r\n\t 
+[PASS] Test <angle> invalid value: .E0\r\n\t 
+[PASS] Test <angle> invalid value: .E0deg\r\n\t 
+[PASS] Test <angle> invalid value: .E0rad\r\n\t 
+[PASS] Test <angle> invalid value: .E0grad\r\n\t 
+[PASS] Test <angle> invalid value: e1\r\n\t 
+[PASS] Test <angle> invalid value: e1deg\r\n\t 
+[PASS] Test <angle> invalid value: e1rad\r\n\t 
+[PASS] Test <angle> invalid value: e1grad\r\n\t 
+[PASS] Test <angle> invalid value: -\f
+[PASS] Test <angle> invalid value: -deg\f
+[PASS] Test <angle> invalid value: -rad\f
+[PASS] Test <angle> invalid value: -grad\f
+[PASS] Test <angle> invalid value: +\f
+[PASS] Test <angle> invalid value: +deg\f
+[PASS] Test <angle> invalid value: +rad\f
+[PASS] Test <angle> invalid value: +grad\f
+[PASS] Test <angle> invalid value: -.\f
+[PASS] Test <angle> invalid value: -.deg\f
+[PASS] Test <angle> invalid value: -.rad\f
+[PASS] Test <angle> invalid value: -.grad\f
+[PASS] Test <angle> invalid value: .-\f
+[PASS] Test <angle> invalid value: .-deg\f
+[PASS] Test <angle> invalid value: .-rad\f
+[PASS] Test <angle> invalid value: .-grad\f
+[PASS] Test <angle> invalid value: .\f
+[PASS] Test <angle> invalid value: .deg\f
+[PASS] Test <angle> invalid value: .rad\f
+[PASS] Test <angle> invalid value: .grad\f
+[PASS] Test <angle> invalid value: +.\f
+[PASS] Test <angle> invalid value: +.deg\f
+[PASS] Test <angle> invalid value: +.rad\f
+[PASS] Test <angle> invalid value: +.grad\f
+[PASS] Test <angle> invalid value: .E0\f
+[PASS] Test <angle> invalid value: .E0deg\f
+[PASS] Test <angle> invalid value: .E0rad\f
+[PASS] Test <angle> invalid value: .E0grad\f
+[PASS] Test <angle> invalid value: e1\f
+[PASS] Test <angle> invalid value: e1deg\f
+[PASS] Test <angle> invalid value: e1rad\f
+[PASS] Test <angle> invalid value: e1grad\f
+[PASS] Test <angle> invalid value:  -
+[PASS] Test <angle> invalid value:  -deg
+[PASS] Test <angle> invalid value:  -rad
+[PASS] Test <angle> invalid value:  -grad
+[PASS] Test <angle> invalid value:  +
+[PASS] Test <angle> invalid value:  +deg
+[PASS] Test <angle> invalid value:  +rad
+[PASS] Test <angle> invalid value:  +grad
+[PASS] Test <angle> invalid value:  -.
+[PASS] Test <angle> invalid value:  -.deg
+[PASS] Test <angle> invalid value:  -.rad
+[PASS] Test <angle> invalid value:  -.grad
+[PASS] Test <angle> invalid value:  .-
+[PASS] Test <angle> invalid value:  .-deg
+[PASS] Test <angle> invalid value:  .-rad
+[PASS] Test <angle> invalid value:  .-grad
+[PASS] Test <angle> invalid value:  .
+[PASS] Test <angle> invalid value:  .deg
+[PASS] Test <angle> invalid value:  .rad
+[PASS] Test <angle> invalid value:  .grad
+[PASS] Test <angle> invalid value:  +.
+[PASS] Test <angle> invalid value:  +.deg
+[PASS] Test <angle> invalid value:  +.rad
+[PASS] Test <angle> invalid value:  +.grad
+[PASS] Test <angle> invalid value:  .E0
+[PASS] Test <angle> invalid value:  .E0deg
+[PASS] Test <angle> invalid value:  .E0rad
+[PASS] Test <angle> invalid value:  .E0grad
+[PASS] Test <angle> invalid value:  e1
+[PASS] Test <angle> invalid value:  e1deg
+[PASS] Test <angle> invalid value:  e1rad
+[PASS] Test <angle> invalid value:  e1grad
+[PASS] Test <angle> invalid value:  - 
+[PASS] Test <angle> invalid value:  -deg 
+[PASS] Test <angle> invalid value:  -rad 
+[PASS] Test <angle> invalid value:  -grad 
+[PASS] Test <angle> invalid value:  + 
+[PASS] Test <angle> invalid value:  +deg 
+[PASS] Test <angle> invalid value:  +rad 
+[PASS] Test <angle> invalid value:  +grad 
+[PASS] Test <angle> invalid value:  -. 
+[PASS] Test <angle> invalid value:  -.deg 
+[PASS] Test <angle> invalid value:  -.rad 
+[PASS] Test <angle> invalid value:  -.grad 
+[PASS] Test <angle> invalid value:  .- 
+[PASS] Test <angle> invalid value:  .-deg 
+[PASS] Test <angle> invalid value:  .-rad 
+[PASS] Test <angle> invalid value:  .-grad 
+[PASS] Test <angle> invalid value:  . 
+[PASS] Test <angle> invalid value:  .deg 
+[PASS] Test <angle> invalid value:  .rad 
+[PASS] Test <angle> invalid value:  .grad 
+[PASS] Test <angle> invalid value:  +. 
+[PASS] Test <angle> invalid value:  +.deg 
+[PASS] Test <angle> invalid value:  +.rad 
+[PASS] Test <angle> invalid value:  +.grad 
+[PASS] Test <angle> invalid value:  .E0 
+[PASS] Test <angle> invalid value:  .E0deg 
+[PASS] Test <angle> invalid value:  .E0rad 
+[PASS] Test <angle> invalid value:  .E0grad 
+[PASS] Test <angle> invalid value:  e1 
+[PASS] Test <angle> invalid value:  e1deg 
+[PASS] Test <angle> invalid value:  e1rad 
+[PASS] Test <angle> invalid value:  e1grad 
+[PASS] Test <angle> invalid value:  -   
+[PASS] Test <angle> invalid value:  -deg   
+[PASS] Test <angle> invalid value:  -rad   
+[PASS] Test <angle> invalid value:  -grad   
+[PASS] Test <angle> invalid value:  +   
+[PASS] Test <angle> invalid value:  +deg   
+[PASS] Test <angle> invalid value:  +rad   
+[PASS] Test <angle> invalid value:  +grad   
+[PASS] Test <angle> invalid value:  -.   
+[PASS] Test <angle> invalid value:  -.deg   
+[PASS] Test <angle> invalid value:  -.rad   
+[PASS] Test <angle> invalid value:  -.grad   
+[PASS] Test <angle> invalid value:  .-   
+[PASS] Test <angle> invalid value:  .-deg   
+[PASS] Test <angle> invalid value:  .-rad   
+[PASS] Test <angle> invalid value:  .-grad   
+[PASS] Test <angle> invalid value:  .   
+[PASS] Test <angle> invalid value:  .deg   
+[PASS] Test <angle> invalid value:  .rad   
+[PASS] Test <angle> invalid value:  .grad   
+[PASS] Test <angle> invalid value:  +.   
+[PASS] Test <angle> invalid value:  +.deg   
+[PASS] Test <angle> invalid value:  +.rad   
+[PASS] Test <angle> invalid value:  +.grad   
+[PASS] Test <angle> invalid value:  .E0   
+[PASS] Test <angle> invalid value:  .E0deg   
+[PASS] Test <angle> invalid value:  .E0rad   
+[PASS] Test <angle> invalid value:  .E0grad   
+[PASS] Test <angle> invalid value:  e1   
+[PASS] Test <angle> invalid value:  e1deg   
+[PASS] Test <angle> invalid value:  e1rad   
+[PASS] Test <angle> invalid value:  e1grad   
+[PASS] Test <angle> invalid value:  -\r\n\t 
+[PASS] Test <angle> invalid value:  -deg\r\n\t 
+[PASS] Test <angle> invalid value:  -rad\r\n\t 
+[PASS] Test <angle> invalid value:  -grad\r\n\t 
+[PASS] Test <angle> invalid value:  +\r\n\t 
+[PASS] Test <angle> invalid value:  +deg\r\n\t 
+[PASS] Test <angle> invalid value:  +rad\r\n\t 
+[PASS] Test <angle> invalid value:  +grad\r\n\t 
+[PASS] Test <angle> invalid value:  -.\r\n\t 
+[PASS] Test <angle> invalid value:  -.deg\r\n\t 
+[PASS] Test <angle> invalid value:  -.rad\r\n\t 
+[PASS] Test <angle> invalid value:  -.grad\r\n\t 
+[PASS] Test <angle> invalid value:  .-\r\n\t 
+[PASS] Test <angle> invalid value:  .-deg\r\n\t 
+[PASS] Test <angle> invalid value:  .-rad\r\n\t 
+[PASS] Test <angle> invalid value:  .-grad\r\n\t 
+[PASS] Test <angle> invalid value:  .\r\n\t 
+[PASS] Test <angle> invalid value:  .deg\r\n\t 
+[PASS] Test <angle> invalid value:  .rad\r\n\t 
+[PASS] Test <angle> invalid value:  .grad\r\n\t 
+[PASS] Test <angle> invalid value:  +.\r\n\t 
+[PASS] Test <angle> invalid value:  +.deg\r\n\t 
+[PASS] Test <angle> invalid value:  +.rad\r\n\t 
+[PASS] Test <angle> invalid value:  +.grad\r\n\t 
+[PASS] Test <angle> invalid value:  .E0\r\n\t 
+[PASS] Test <angle> invalid value:  .E0deg\r\n\t 
+[PASS] Test <angle> invalid value:  .E0rad\r\n\t 
+[PASS] Test <angle> invalid value:  .E0grad\r\n\t 
+[PASS] Test <angle> invalid value:  e1\r\n\t 
+[PASS] Test <angle> invalid value:  e1deg\r\n\t 
+[PASS] Test <angle> invalid value:  e1rad\r\n\t 
+[PASS] Test <angle> invalid value:  e1grad\r\n\t 
+[PASS] Test <angle> invalid value:  -\f
+[PASS] Test <angle> invalid value:  -deg\f
+[PASS] Test <angle> invalid value:  -rad\f
+[PASS] Test <angle> invalid value:  -grad\f
+[PASS] Test <angle> invalid value:  +\f
+[PASS] Test <angle> invalid value:  +deg\f
+[PASS] Test <angle> invalid value:  +rad\f
+[PASS] Test <angle> invalid value:  +grad\f
+[PASS] Test <angle> invalid value:  -.\f
+[PASS] Test <angle> invalid value:  -.deg\f
+[PASS] Test <angle> invalid value:  -.rad\f
+[PASS] Test <angle> invalid value:  -.grad\f
+[PASS] Test <angle> invalid value:  .-\f
+[PASS] Test <angle> invalid value:  .-deg\f
+[PASS] Test <angle> invalid value:  .-rad\f
+[PASS] Test <angle> invalid value:  .-grad\f
+[PASS] Test <angle> invalid value:  .\f
+[PASS] Test <angle> invalid value:  .deg\f
+[PASS] Test <angle> invalid value:  .rad\f
+[PASS] Test <angle> invalid value:  .grad\f
+[PASS] Test <angle> invalid value:  +.\f
+[PASS] Test <angle> invalid value:  +.deg\f
+[PASS] Test <angle> invalid value:  +.rad\f
+[PASS] Test <angle> invalid value:  +.grad\f
+[PASS] Test <angle> invalid value:  .E0\f
+[PASS] Test <angle> invalid value:  .E0deg\f
+[PASS] Test <angle> invalid value:  .E0rad\f
+[PASS] Test <angle> invalid value:  .E0grad\f
+[PASS] Test <angle> invalid value:  e1\f
+[PASS] Test <angle> invalid value:  e1deg\f
+[PASS] Test <angle> invalid value:  e1rad\f
+[PASS] Test <angle> invalid value:  e1grad\f
+[PASS] Test <angle> invalid value:    -
+[PASS] Test <angle> invalid value:    -deg
+[PASS] Test <angle> invalid value:    -rad
+[PASS] Test <angle> invalid value:    -grad
+[PASS] Test <angle> invalid value:    +
+[PASS] Test <angle> invalid value:    +deg
+[PASS] Test <angle> invalid value:    +rad
+[PASS] Test <angle> invalid value:    +grad
+[PASS] Test <angle> invalid value:    -.
+[PASS] Test <angle> invalid value:    -.deg
+[PASS] Test <angle> invalid value:    -.rad
+[PASS] Test <angle> invalid value:    -.grad
+[PASS] Test <angle> invalid value:    .-
+[PASS] Test <angle> invalid value:    .-deg
+[PASS] Test <angle> invalid value:    .-rad
+[PASS] Test <angle> invalid value:    .-grad
+[PASS] Test <angle> invalid value:    .
+[PASS] Test <angle> invalid value:    .deg
+[PASS] Test <angle> invalid value:    .rad
+[PASS] Test <angle> invalid value:    .grad
+[PASS] Test <angle> invalid value:    +.
+[PASS] Test <angle> invalid value:    +.deg
+[PASS] Test <angle> invalid value:    +.rad
+[PASS] Test <angle> invalid value:    +.grad
+[PASS] Test <angle> invalid value:    .E0
+[PASS] Test <angle> invalid value:    .E0deg
+[PASS] Test <angle> invalid value:    .E0rad
+[PASS] Test <angle> invalid value:    .E0grad
+[PASS] Test <angle> invalid value:    e1
+[PASS] Test <angle> invalid value:    e1deg
+[PASS] Test <angle> invalid value:    e1rad
+[PASS] Test <angle> invalid value:    e1grad
+[PASS] Test <angle> invalid value:    - 
+[PASS] Test <angle> invalid value:    -deg 
+[PASS] Test <angle> invalid value:    -rad 
+[PASS] Test <angle> invalid value:    -grad 
+[PASS] Test <angle> invalid value:    + 
+[PASS] Test <angle> invalid value:    +deg 
+[PASS] Test <angle> invalid value:    +rad 
+[PASS] Test <angle> invalid value:    +grad 
+[PASS] Test <angle> invalid value:    -. 
+[PASS] Test <angle> invalid value:    -.deg 
+[PASS] Test <angle> invalid value:    -.rad 
+[PASS] Test <angle> invalid value:    -.grad 
+[PASS] Test <angle> invalid value:    .- 
+[PASS] Test <angle> invalid value:    .-deg 
+[PASS] Test <angle> invalid value:    .-rad 
+[PASS] Test <angle> invalid value:    .-grad 
+[PASS] Test <angle> invalid value:    . 
+[PASS] Test <angle> invalid value:    .deg 
+[PASS] Test <angle> invalid value:    .rad 
+[PASS] Test <angle> invalid value:    .grad 
+[PASS] Test <angle> invalid value:    +. 
+[PASS] Test <angle> invalid value:    +.deg 
+[PASS] Test <angle> invalid value:    +.rad 
+[PASS] Test <angle> invalid value:    +.grad 
+[PASS] Test <angle> invalid value:    .E0 
+[PASS] Test <angle> invalid value:    .E0deg 
+[PASS] Test <angle> invalid value:    .E0rad 
+[PASS] Test <angle> invalid value:    .E0grad 
+[PASS] Test <angle> invalid value:    e1 
+[PASS] Test <angle> invalid value:    e1deg 
+[PASS] Test <angle> invalid value:    e1rad 
+[PASS] Test <angle> invalid value:    e1grad 
+[PASS] Test <angle> invalid value:    -   
+[PASS] Test <angle> invalid value:    -deg   
+[PASS] Test <angle> invalid value:    -rad   
+[PASS] Test <angle> invalid value:    -grad   
+[PASS] Test <angle> invalid value:    +   
+[PASS] Test <angle> invalid value:    +deg   
+[PASS] Test <angle> invalid value:    +rad   
+[PASS] Test <angle> invalid value:    +grad   
+[PASS] Test <angle> invalid value:    -.   
+[PASS] Test <angle> invalid value:    -.deg   
+[PASS] Test <angle> invalid value:    -.rad   
+[PASS] Test <angle> invalid value:    -.grad   
+[PASS] Test <angle> invalid value:    .-   
+[PASS] Test <angle> invalid value:    .-deg   
+[PASS] Test <angle> invalid value:    .-rad   
+[PASS] Test <angle> invalid value:    .-grad   
+[PASS] Test <angle> invalid value:    .   
+[PASS] Test <angle> invalid value:    .deg   
+[PASS] Test <angle> invalid value:    .rad   
+[PASS] Test <angle> invalid value:    .grad   
+[PASS] Test <angle> invalid value:    +.   
+[PASS] Test <angle> invalid value:    +.deg   
+[PASS] Test <angle> invalid value:    +.rad   
+[PASS] Test <angle> invalid value:    +.grad   
+[PASS] Test <angle> invalid value:    .E0   
+[PASS] Test <angle> invalid value:    .E0deg   
+[PASS] Test <angle> invalid value:    .E0rad   
+[PASS] Test <angle> invalid value:    .E0grad   
+[PASS] Test <angle> invalid value:    e1   
+[PASS] Test <angle> invalid value:    e1deg   
+[PASS] Test <angle> invalid value:    e1rad   
+[PASS] Test <angle> invalid value:    e1grad   
+[PASS] Test <angle> invalid value:    -\r\n\t 
+[PASS] Test <angle> invalid value:    -deg\r\n\t 
+[PASS] Test <angle> invalid value:    -rad\r\n\t 
+[PASS] Test <angle> invalid value:    -grad\r\n\t 
+[PASS] Test <angle> invalid value:    +\r\n\t 
+[PASS] Test <angle> invalid value:    +deg\r\n\t 
+[PASS] Test <angle> invalid value:    +rad\r\n\t 
+[PASS] Test <angle> invalid value:    +grad\r\n\t 
+[PASS] Test <angle> invalid value:    -.\r\n\t 
+[PASS] Test <angle> invalid value:    -.deg\r\n\t 
+[PASS] Test <angle> invalid value:    -.rad\r\n\t 
+[PASS] Test <angle> invalid value:    -.grad\r\n\t 
+[PASS] Test <angle> invalid value:    .-\r\n\t 
+[PASS] Test <angle> invalid value:    .-deg\r\n\t 
+[PASS] Test <angle> invalid value:    .-rad\r\n\t 
+[PASS] Test <angle> invalid value:    .-grad\r\n\t 
+[PASS] Test <angle> invalid value:    .\r\n\t 
+[PASS] Test <angle> invalid value:    .deg\r\n\t 
+[PASS] Test <angle> invalid value:    .rad\r\n\t 
+[PASS] Test <angle> invalid value:    .grad\r\n\t 
+[PASS] Test <angle> invalid value:    +.\r\n\t 
+[PASS] Test <angle> invalid value:    +.deg\r\n\t 
+[PASS] Test <angle> invalid value:    +.rad\r\n\t 
+[PASS] Test <angle> invalid value:    +.grad\r\n\t 
+[PASS] Test <angle> invalid value:    .E0\r\n\t 
+[PASS] Test <angle> invalid value:    .E0deg\r\n\t 
+[PASS] Test <angle> invalid value:    .E0rad\r\n\t 
+[PASS] Test <angle> invalid value:    .E0grad\r\n\t 
+[PASS] Test <angle> invalid value:    e1\r\n\t 
+[PASS] Test <angle> invalid value:    e1deg\r\n\t 
+[PASS] Test <angle> invalid value:    e1rad\r\n\t 
+[PASS] Test <angle> invalid value:    e1grad\r\n\t 
+[PASS] Test <angle> invalid value:    -\f
+[PASS] Test <angle> invalid value:    -deg\f
+[PASS] Test <angle> invalid value:    -rad\f
+[PASS] Test <angle> invalid value:    -grad\f
+[PASS] Test <angle> invalid value:    +\f
+[PASS] Test <angle> invalid value:    +deg\f
+[PASS] Test <angle> invalid value:    +rad\f
+[PASS] Test <angle> invalid value:    +grad\f
+[PASS] Test <angle> invalid value:    -.\f
+[PASS] Test <angle> invalid value:    -.deg\f
+[PASS] Test <angle> invalid value:    -.rad\f
+[PASS] Test <angle> invalid value:    -.grad\f
+[PASS] Test <angle> invalid value:    .-\f
+[PASS] Test <angle> invalid value:    .-deg\f
+[PASS] Test <angle> invalid value:    .-rad\f
+[PASS] Test <angle> invalid value:    .-grad\f
+[PASS] Test <angle> invalid value:    .\f
+[PASS] Test <angle> invalid value:    .deg\f
+[PASS] Test <angle> invalid value:    .rad\f
+[PASS] Test <angle> invalid value:    .grad\f
+[PASS] Test <angle> invalid value:    +.\f
+[PASS] Test <angle> invalid value:    +.deg\f
+[PASS] Test <angle> invalid value:    +.rad\f
+[PASS] Test <angle> invalid value:    +.grad\f
+[PASS] Test <angle> invalid value:    .E0\f
+[PASS] Test <angle> invalid value:    .E0deg\f
+[PASS] Test <angle> invalid value:    .E0rad\f
+[PASS] Test <angle> invalid value:    .E0grad\f
+[PASS] Test <angle> invalid value:    e1\f
+[PASS] Test <angle> invalid value:    e1deg\f
+[PASS] Test <angle> invalid value:    e1rad\f
+[PASS] Test <angle> invalid value:    e1grad\f
+[PASS] Test <angle> invalid value: \r\n\t -
+[PASS] Test <angle> invalid value: \r\n\t -deg
+[PASS] Test <angle> invalid value: \r\n\t -rad
+[PASS] Test <angle> invalid value: \r\n\t -grad
+[PASS] Test <angle> invalid value: \r\n\t +
+[PASS] Test <angle> invalid value: \r\n\t +deg
+[PASS] Test <angle> invalid value: \r\n\t +rad
+[PASS] Test <angle> invalid value: \r\n\t +grad
+[PASS] Test <angle> invalid value: \r\n\t -.
+[PASS] Test <angle> invalid value: \r\n\t -.deg
+[PASS] Test <angle> invalid value: \r\n\t -.rad
+[PASS] Test <angle> invalid value: \r\n\t -.grad
+[PASS] Test <angle> invalid value: \r\n\t .-
+[PASS] Test <angle> invalid value: \r\n\t .-deg
+[PASS] Test <angle> invalid value: \r\n\t .-rad
+[PASS] Test <angle> invalid value: \r\n\t .-grad
+[PASS] Test <angle> invalid value: \r\n\t .
+[PASS] Test <angle> invalid value: \r\n\t .deg
+[PASS] Test <angle> invalid value: \r\n\t .rad
+[PASS] Test <angle> invalid value: \r\n\t .grad
+[PASS] Test <angle> invalid value: \r\n\t +.
+[PASS] Test <angle> invalid value: \r\n\t +.deg
+[PASS] Test <angle> invalid value: \r\n\t +.rad
+[PASS] Test <angle> invalid value: \r\n\t +.grad
+[PASS] Test <angle> invalid value: \r\n\t .E0
+[PASS] Test <angle> invalid value: \r\n\t .E0deg
+[PASS] Test <angle> invalid value: \r\n\t .E0rad
+[PASS] Test <angle> invalid value: \r\n\t .E0grad
+[PASS] Test <angle> invalid value: \r\n\t e1
+[PASS] Test <angle> invalid value: \r\n\t e1deg
+[PASS] Test <angle> invalid value: \r\n\t e1rad
+[PASS] Test <angle> invalid value: \r\n\t e1grad
+[PASS] Test <angle> invalid value: \r\n\t - 
+[PASS] Test <angle> invalid value: \r\n\t -deg 
+[PASS] Test <angle> invalid value: \r\n\t -rad 
+[PASS] Test <angle> invalid value: \r\n\t -grad 
+[PASS] Test <angle> invalid value: \r\n\t + 
+[PASS] Test <angle> invalid value: \r\n\t +deg 
+[PASS] Test <angle> invalid value: \r\n\t +rad 
+[PASS] Test <angle> invalid value: \r\n\t +grad 
+[PASS] Test <angle> invalid value: \r\n\t -. 
+[PASS] Test <angle> invalid value: \r\n\t -.deg 
+[PASS] Test <angle> invalid value: \r\n\t -.rad 
+[PASS] Test <angle> invalid value: \r\n\t -.grad 
+[PASS] Test <angle> invalid value: \r\n\t .- 
+[PASS] Test <angle> invalid value: \r\n\t .-deg 
+[PASS] Test <angle> invalid value: \r\n\t .-rad 
+[PASS] Test <angle> invalid value: \r\n\t .-grad 
+[PASS] Test <angle> invalid value: \r\n\t . 
+[PASS] Test <angle> invalid value: \r\n\t .deg 
+[PASS] Test <angle> invalid value: \r\n\t .rad 
+[PASS] Test <angle> invalid value: \r\n\t .grad 
+[PASS] Test <angle> invalid value: \r\n\t +. 
+[PASS] Test <angle> invalid value: \r\n\t +.deg 
+[PASS] Test <angle> invalid value: \r\n\t +.rad 
+[PASS] Test <angle> invalid value: \r\n\t +.grad 
+[PASS] Test <angle> invalid value: \r\n\t .E0 
+[PASS] Test <angle> invalid value: \r\n\t .E0deg 
+[PASS] Test <angle> invalid value: \r\n\t .E0rad 
+[PASS] Test <angle> invalid value: \r\n\t .E0grad 
+[PASS] Test <angle> invalid value: \r\n\t e1 
+[PASS] Test <angle> invalid value: \r\n\t e1deg 
+[PASS] Test <angle> invalid value: \r\n\t e1rad 
+[PASS] Test <angle> invalid value: \r\n\t e1grad 
+[PASS] Test <angle> invalid value: \r\n\t -   
+[PASS] Test <angle> invalid value: \r\n\t -deg   
+[PASS] Test <angle> invalid value: \r\n\t -rad   
+[PASS] Test <angle> invalid value: \r\n\t -grad   
+[PASS] Test <angle> invalid value: \r\n\t +   
+[PASS] Test <angle> invalid value: \r\n\t +deg   
+[PASS] Test <angle> invalid value: \r\n\t +rad   
+[PASS] Test <angle> invalid value: \r\n\t +grad   
+[PASS] Test <angle> invalid value: \r\n\t -.   
+[PASS] Test <angle> invalid value: \r\n\t -.deg   
+[PASS] Test <angle> invalid value: \r\n\t -.rad   
+[PASS] Test <angle> invalid value: \r\n\t -.grad   
+[PASS] Test <angle> invalid value: \r\n\t .-   
+[PASS] Test <angle> invalid value: \r\n\t .-deg   
+[PASS] Test <angle> invalid value: \r\n\t .-rad   
+[PASS] Test <angle> invalid value: \r\n\t .-grad   
+[PASS] Test <angle> invalid value: \r\n\t .   
+[PASS] Test <angle> invalid value: \r\n\t .deg   
+[PASS] Test <angle> invalid value: \r\n\t .rad   
+[PASS] Test <angle> invalid value: \r\n\t .grad   
+[PASS] Test <angle> invalid value: \r\n\t +.   
+[PASS] Test <angle> invalid value: \r\n\t +.deg   
+[PASS] Test <angle> invalid value: \r\n\t +.rad   
+[PASS] Test <angle> invalid value: \r\n\t +.grad   
+[PASS] Test <angle> invalid value: \r\n\t .E0   
+[PASS] Test <angle> invalid value: \r\n\t .E0deg   
+[PASS] Test <angle> invalid value: \r\n\t .E0rad   
+[PASS] Test <angle> invalid value: \r\n\t .E0grad   
+[PASS] Test <angle> invalid value: \r\n\t e1   
+[PASS] Test <angle> invalid value: \r\n\t e1deg   
+[PASS] Test <angle> invalid value: \r\n\t e1rad   
+[PASS] Test <angle> invalid value: \r\n\t e1grad   
+[PASS] Test <angle> invalid value: \r\n\t -\r\n\t 
+[PASS] Test <angle> invalid value: \r\n\t -deg\r\n\t 
+[PASS] Test <angle> invalid value: \r\n\t -rad\r\n\t 
+[PASS] Test <angle> invalid value: \r\n\t -grad\r\n\t 
+[PASS] Test <angle> invalid value: \r\n\t +\r\n\t 
+[PASS] Test <angle> invalid value: \r\n\t +deg\r\n\t 
+[PASS] Test <angle> invalid value: \r\n\t +rad\r\n\t 
+[PASS] Test <angle> invalid value: \r\n\t +grad\r\n\t 
+[PASS] Test <angle> invalid value: \r\n\t -.\r\n\t 
+[PASS] Test <angle> invalid value: \r\n\t -.deg\r\n\t 
+[PASS] Test <angle> invalid value: \r\n\t -.rad\r\n\t 
+[PASS] Test <angle> invalid value: \r\n\t -.grad\r\n\t 
+[PASS] Test <angle> invalid value: \r\n\t .-\r\n\t 
+[PASS] Test <angle> invalid value: \r\n\t .-deg\r\n\t 
+[PASS] Test <angle> invalid value: \r\n\t .-rad\r\n\t 
+[PASS] Test <angle> invalid value: \r\n\t .-grad\r\n\t 
+[PASS] Test <angle> invalid value: \r\n\t .\r\n\t 
+[PASS] Test <angle> invalid value: \r\n\t .deg\r\n\t 
+[PASS] Test <angle> invalid value: \r\n\t .rad\r\n\t 
+[PASS] Test <angle> invalid value: \r\n\t .grad\r\n\t 
+[PASS] Test <angle> invalid value: \r\n\t +.\r\n\t 
+[PASS] Test <angle> invalid value: \r\n\t +.deg\r\n\t 
+[PASS] Test <angle> invalid value: \r\n\t +.rad\r\n\t 
+[PASS] Test <angle> invalid value: \r\n\t +.grad\r\n\t 
+[PASS] Test <angle> invalid value: \r\n\t .E0\r\n\t 
+[PASS] Test <angle> invalid value: \r\n\t .E0deg\r\n\t 
+[PASS] Test <angle> invalid value: \r\n\t .E0rad\r\n\t 
+[PASS] Test <angle> invalid value: \r\n\t .E0grad\r\n\t 
+[PASS] Test <angle> invalid value: \r\n\t e1\r\n\t 
+[PASS] Test <angle> invalid value: \r\n\t e1deg\r\n\t 
+[PASS] Test <angle> invalid value: \r\n\t e1rad\r\n\t 
+[PASS] Test <angle> invalid value: \r\n\t e1grad\r\n\t 
+[PASS] Test <angle> invalid value: \r\n\t -\f
+[PASS] Test <angle> invalid value: \r\n\t -deg\f
+[PASS] Test <angle> invalid value: \r\n\t -rad\f
+[PASS] Test <angle> invalid value: \r\n\t -grad\f
+[PASS] Test <angle> invalid value: \r\n\t +\f
+[PASS] Test <angle> invalid value: \r\n\t +deg\f
+[PASS] Test <angle> invalid value: \r\n\t +rad\f
+[PASS] Test <angle> invalid value: \r\n\t +grad\f
+[PASS] Test <angle> invalid value: \r\n\t -.\f
+[PASS] Test <angle> invalid value: \r\n\t -.deg\f
+[PASS] Test <angle> invalid value: \r\n\t -.rad\f
+[PASS] Test <angle> invalid value: \r\n\t -.grad\f
+[PASS] Test <angle> invalid value: \r\n\t .-\f
+[PASS] Test <angle> invalid value: \r\n\t .-deg\f
+[PASS] Test <angle> invalid value: \r\n\t .-rad\f
+[PASS] Test <angle> invalid value: \r\n\t .-grad\f
+[PASS] Test <angle> invalid value: \r\n\t .\f
+[PASS] Test <angle> invalid value: \r\n\t .deg\f
+[PASS] Test <angle> invalid value: \r\n\t .rad\f
+[PASS] Test <angle> invalid value: \r\n\t .grad\f
+[PASS] Test <angle> invalid value: \r\n\t +.\f
+[PASS] Test <angle> invalid value: \r\n\t +.deg\f
+[PASS] Test <angle> invalid value: \r\n\t +.rad\f
+[PASS] Test <angle> invalid value: \r\n\t +.grad\f
+[PASS] Test <angle> invalid value: \r\n\t .E0\f
+[PASS] Test <angle> invalid value: \r\n\t .E0deg\f
+[PASS] Test <angle> invalid value: \r\n\t .E0rad\f
+[PASS] Test <angle> invalid value: \r\n\t .E0grad\f
+[PASS] Test <angle> invalid value: \r\n\t e1\f
+[PASS] Test <angle> invalid value: \r\n\t e1deg\f
+[PASS] Test <angle> invalid value: \r\n\t e1rad\f
+[PASS] Test <angle> invalid value: \r\n\t e1grad\f
+[PASS] Test <angle> invalid value: \f-
+[PASS] Test <angle> invalid value: \f-deg
+[PASS] Test <angle> invalid value: \f-rad
+[PASS] Test <angle> invalid value: \f-grad
+[PASS] Test <angle> invalid value: \f+
+[PASS] Test <angle> invalid value: \f+deg
+[PASS] Test <angle> invalid value: \f+rad
+[PASS] Test <angle> invalid value: \f+grad
+[PASS] Test <angle> invalid value: \f-.
+[PASS] Test <angle> invalid value: \f-.deg
+[PASS] Test <angle> invalid value: \f-.rad
+[PASS] Test <angle> invalid value: \f-.grad
+[PASS] Test <angle> invalid value: \f.-
+[PASS] Test <angle> invalid value: \f.-deg
+[PASS] Test <angle> invalid value: \f.-rad
+[PASS] Test <angle> invalid value: \f.-grad
+[PASS] Test <angle> invalid value: \f.
+[PASS] Test <angle> invalid value: \f.deg
+[PASS] Test <angle> invalid value: \f.rad
+[PASS] Test <angle> invalid value: \f.grad
+[PASS] Test <angle> invalid value: \f+.
+[PASS] Test <angle> invalid value: \f+.deg
+[PASS] Test <angle> invalid value: \f+.rad
+[PASS] Test <angle> invalid value: \f+.grad
+[PASS] Test <angle> invalid value: \f.E0
+[PASS] Test <angle> invalid value: \f.E0deg
+[PASS] Test <angle> invalid value: \f.E0rad
+[PASS] Test <angle> invalid value: \f.E0grad
+[PASS] Test <angle> invalid value: \fe1
+[PASS] Test <angle> invalid value: \fe1deg
+[PASS] Test <angle> invalid value: \fe1rad
+[PASS] Test <angle> invalid value: \fe1grad
+[PASS] Test <angle> invalid value: \f- 
+[PASS] Test <angle> invalid value: \f-deg 
+[PASS] Test <angle> invalid value: \f-rad 
+[PASS] Test <angle> invalid value: \f-grad 
+[PASS] Test <angle> invalid value: \f+ 
+[PASS] Test <angle> invalid value: \f+deg 
+[PASS] Test <angle> invalid value: \f+rad 
+[PASS] Test <angle> invalid value: \f+grad 
+[PASS] Test <angle> invalid value: \f-. 
+[PASS] Test <angle> invalid value: \f-.deg 
+[PASS] Test <angle> invalid value: \f-.rad 
+[PASS] Test <angle> invalid value: \f-.grad 
+[PASS] Test <angle> invalid value: \f.- 
+[PASS] Test <angle> invalid value: \f.-deg 
+[PASS] Test <angle> invalid value: \f.-rad 
+[PASS] Test <angle> invalid value: \f.-grad 
+[PASS] Test <angle> invalid value: \f. 
+[PASS] Test <angle> invalid value: \f.deg 
+[PASS] Test <angle> invalid value: \f.rad 
+[PASS] Test <angle> invalid value: \f.grad 
+[PASS] Test <angle> invalid value: \f+. 
+[PASS] Test <angle> invalid value: \f+.deg 
+[PASS] Test <angle> invalid value: \f+.rad 
+[PASS] Test <angle> invalid value: \f+.grad 
+[PASS] Test <angle> invalid value: \f.E0 
+[PASS] Test <angle> invalid value: \f.E0deg 
+[PASS] Test <angle> invalid value: \f.E0rad 
+[PASS] Test <angle> invalid value: \f.E0grad 
+[PASS] Test <angle> invalid value: \fe1 
+[PASS] Test <angle> invalid value: \fe1deg 
+[PASS] Test <angle> invalid value: \fe1rad 
+[PASS] Test <angle> invalid value: \fe1grad 
+[PASS] Test <angle> invalid value: \f-   
+[PASS] Test <angle> invalid value: \f-deg   
+[PASS] Test <angle> invalid value: \f-rad   
+[PASS] Test <angle> invalid value: \f-grad   
+[PASS] Test <angle> invalid value: \f+   
+[PASS] Test <angle> invalid value: \f+deg   
+[PASS] Test <angle> invalid value: \f+rad   
+[PASS] Test <angle> invalid value: \f+grad   
+[PASS] Test <angle> invalid value: \f-.   
+[PASS] Test <angle> invalid value: \f-.deg   
+[PASS] Test <angle> invalid value: \f-.rad   
+[PASS] Test <angle> invalid value: \f-.grad   
+[PASS] Test <angle> invalid value: \f.-   
+[PASS] Test <angle> invalid value: \f.-deg   
+[PASS] Test <angle> invalid value: \f.-rad   
+[PASS] Test <angle> invalid value: \f.-grad   
+[PASS] Test <angle> invalid value: \f.   
+[PASS] Test <angle> invalid value: \f.deg   
+[PASS] Test <angle> invalid value: \f.rad   
+[PASS] Test <angle> invalid value: \f.grad   
+[PASS] Test <angle> invalid value: \f+.   
+[PASS] Test <angle> invalid value: \f+.deg   
+[PASS] Test <angle> invalid value: \f+.rad   
+[PASS] Test <angle> invalid value: \f+.grad   
+[PASS] Test <angle> invalid value: \f.E0   
+[PASS] Test <angle> invalid value: \f.E0deg   
+[PASS] Test <angle> invalid value: \f.E0rad   
+[PASS] Test <angle> invalid value: \f.E0grad   
+[PASS] Test <angle> invalid value: \fe1   
+[PASS] Test <angle> invalid value: \fe1deg   
+[PASS] Test <angle> invalid value: \fe1rad   
+[PASS] Test <angle> invalid value: \fe1grad   
+[PASS] Test <angle> invalid value: \f-\r\n\t 
+[PASS] Test <angle> invalid value: \f-deg\r\n\t 
+[PASS] Test <angle> invalid value: \f-rad\r\n\t 
+[PASS] Test <angle> invalid value: \f-grad\r\n\t 
+[PASS] Test <angle> invalid value: \f+\r\n\t 
+[PASS] Test <angle> invalid value: \f+deg\r\n\t 
+[PASS] Test <angle> invalid value: \f+rad\r\n\t 
+[PASS] Test <angle> invalid value: \f+grad\r\n\t 
+[PASS] Test <angle> invalid value: \f-.\r\n\t 
+[PASS] Test <angle> invalid value: \f-.deg\r\n\t 
+[PASS] Test <angle> invalid value: \f-.rad\r\n\t 
+[PASS] Test <angle> invalid value: \f-.grad\r\n\t 
+[PASS] Test <angle> invalid value: \f.-\r\n\t 
+[PASS] Test <angle> invalid value: \f.-deg\r\n\t 
+[PASS] Test <angle> invalid value: \f.-rad\r\n\t 
+[PASS] Test <angle> invalid value: \f.-grad\r\n\t 
+[PASS] Test <angle> invalid value: \f.\r\n\t 
+[PASS] Test <angle> invalid value: \f.deg\r\n\t 
+[PASS] Test <angle> invalid value: \f.rad\r\n\t 
+[PASS] Test <angle> invalid value: \f.grad\r\n\t 
+[PASS] Test <angle> invalid value: \f+.\r\n\t 
+[PASS] Test <angle> invalid value: \f+.deg\r\n\t 
+[PASS] Test <angle> invalid value: \f+.rad\r\n\t 
+[PASS] Test <angle> invalid value: \f+.grad\r\n\t 
+[PASS] Test <angle> invalid value: \f.E0\r\n\t 
+[PASS] Test <angle> invalid value: \f.E0deg\r\n\t 
+[PASS] Test <angle> invalid value: \f.E0rad\r\n\t 
+[PASS] Test <angle> invalid value: \f.E0grad\r\n\t 
+[PASS] Test <angle> invalid value: \fe1\r\n\t 
+[PASS] Test <angle> invalid value: \fe1deg\r\n\t 
+[PASS] Test <angle> invalid value: \fe1rad\r\n\t 
+[PASS] Test <angle> invalid value: \fe1grad\r\n\t 
+[PASS] Test <angle> invalid value: \f-\f
+[PASS] Test <angle> invalid value: \f-deg\f
+[PASS] Test <angle> invalid value: \f-rad\f
+[PASS] Test <angle> invalid value: \f-grad\f
+[PASS] Test <angle> invalid value: \f+\f
+[PASS] Test <angle> invalid value: \f+deg\f
+[PASS] Test <angle> invalid value: \f+rad\f
+[PASS] Test <angle> invalid value: \f+grad\f
+[PASS] Test <angle> invalid value: \f-.\f
+[PASS] Test <angle> invalid value: \f-.deg\f
+[PASS] Test <angle> invalid value: \f-.rad\f
+[PASS] Test <angle> invalid value: \f-.grad\f
+[PASS] Test <angle> invalid value: \f.-\f
+[PASS] Test <angle> invalid value: \f.-deg\f
+[PASS] Test <angle> invalid value: \f.-rad\f
+[PASS] Test <angle> invalid value: \f.-grad\f
+[PASS] Test <angle> invalid value: \f.\f
+[PASS] Test <angle> invalid value: \f.deg\f
+[PASS] Test <angle> invalid value: \f.rad\f
+[PASS] Test <angle> invalid value: \f.grad\f
+[PASS] Test <angle> invalid value: \f+.\f
+[PASS] Test <angle> invalid value: \f+.deg\f
+[PASS] Test <angle> invalid value: \f+.rad\f
+[PASS] Test <angle> invalid value: \f+.grad\f
+[PASS] Test <angle> invalid value: \f.E0\f
+[PASS] Test <angle> invalid value: \f.E0deg\f
+[PASS] Test <angle> invalid value: \f.E0rad\f
+[PASS] Test <angle> invalid value: \f.E0grad\f
+[PASS] Test <angle> invalid value: \fe1\f
+[PASS] Test <angle> invalid value: \fe1deg\f
+[PASS] Test <angle> invalid value: \fe1rad\f
+[PASS] Test <angle> invalid value: \fe1grad\f
 Harness: the test ran to completion.
 

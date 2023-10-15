@@ -1,16 +1,20 @@
 This is a testharness.js-based test.
-PASS # AUDIT TASK RUNNER STARTED.
-PASS Executing "test"
-PASS Audit report
-PASS > [test] Test webm decoding
-PASS   context.sampleRate is equal to 48000.
-PASS   Number of channels is equal to 2.
-PASS   Decoded number of frames is equal to 46080.
-FAIL X SNR between actual expected channel 0 is not greater than or equal to 110.97. Got 110.33326648257862. assert_true: expected true got false
-PASS   Decoded channel 0 equals [0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0...] with an element-wise tolerance of {"absoluteThreshold":0.000040234,"relativeThreshold":0}.
-FAIL X SNR between actual expected channel 1 is not greater than or equal to 110.97. Got 110.33326648257862. assert_true: expected true got false
-PASS   Decoded channel 1 equals [0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0...] with an element-wise tolerance of {"absoluteThreshold":0.000040234,"relativeThreshold":0}.
-FAIL < [test] 2 out of 7 assertions were failed. assert_true: expected true got false
-FAIL # AUDIT TASK RUNNER FINISHED: 1 out of 1 tasks were failed. assert_true: expected true got false
+[PASS] # AUDIT TASK RUNNER STARTED.
+[PASS] Executing "test"
+[PASS] Audit report
+[PASS] > [test] Test webm decoding
+[PASS]   context.sampleRate is equal to 48000.
+[PASS]   Number of channels is equal to 2.
+[PASS]   Decoded number of frames is equal to 46080.
+[FAIL] X SNR between actual expected channel 0 is not greater than or equal to 110.97. Got 110.33326648257862.
+  assert_true: expected true got false
+[PASS]   Decoded channel 0 equals [0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0...] with an element-wise tolerance of {"absoluteThreshold":0.000040234,"relativeThreshold":0}.
+[FAIL] X SNR between actual expected channel 1 is not greater than or equal to 110.97. Got 110.33326648257862.
+  assert_true: expected true got false
+[PASS]   Decoded channel 1 equals [0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0...] with an element-wise tolerance of {"absoluteThreshold":0.000040234,"relativeThreshold":0}.
+[FAIL] < [test] 2 out of 7 assertions were failed.
+  assert_true: expected true got false
+[FAIL] # AUDIT TASK RUNNER FINISHED: 1 out of 1 tasks were failed.
+  assert_true: expected true got false
 Harness: the test ran to completion.
 

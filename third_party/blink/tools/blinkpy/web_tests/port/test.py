@@ -394,24 +394,22 @@ layer at (0,0) size 800x34
 
     tests.add('passes_two/test-virtual-passes.html')
 
-    tests.add(
-        'passes/testharness.html',
-        actual_text='This is a testharness.js-based test.\nPASS: bah\n'
-        'Harness: the test ran to completion.',
-        expected_text=None,
-        actual_checksum=None,
-        actual_image=None,
-        expected_checksum=None,
-        expected_image=None)
-    tests.add(
-        'failures/unexpected/testharness.html',
-        actual_text='This is a testharness.js-based test.\nFAIL: bah\n'
-        'Harness: the test ran to completion.',
-        expected_text=None,
-        actual_checksum=None,
-        actual_image=None,
-        expected_checksum=None,
-        expected_image=None)
+    tests.add('passes/testharness.html',
+              actual_text='This is a testharness.js-based test.\n[PASS] bah\n'
+              'Harness: the test ran to completion.',
+              expected_text=None,
+              actual_checksum=None,
+              actual_image=None,
+              expected_checksum=None,
+              expected_image=None)
+    tests.add('failures/unexpected/testharness.html',
+              actual_text='This is a testharness.js-based test.\n[FAIL] bah\n'
+              'Harness: the test ran to completion.',
+              expected_text=None,
+              actual_checksum=None,
+              actual_image=None,
+              expected_checksum=None,
+              expected_image=None)
 
     tests.add('virtual/virtual_empty_bases/physical1.html')
     tests.add('virtual/virtual_empty_bases/dir/physical2.html')

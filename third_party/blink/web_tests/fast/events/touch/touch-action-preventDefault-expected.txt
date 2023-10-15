@@ -1,6 +1,6 @@
 CONSOLE ERROR: Unable to preventDefault inside passive event listener due to target being treated as passive. See https://www.chromestatus.com/feature/5093566007214080
 This is a testharness.js-based test.
-PASS Forced passive event listener
-PASS Forced passive event listener with touch-action
+[PASS] Forced passive event listener
+[PASS] Forced passive event listener with touch-action
 Harness: the test ran to completion.
 

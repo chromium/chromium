@@ -6,8 +6,8 @@ CONSOLE WARNING: A parser-blocking, cross site (i.e. different eTLD+1) script, h
 CONSOLE WARNING: A parser-blocking, cross site (i.e. different eTLD+1) script, http://localhost:8000/loading/resources/js-loaded.js?reload, is invoked via document.write. The network request for this script MAY be blocked by the browser in this or a future page load due to poor network connectivity. If blocked in this page load, it will be confirmed in a subsequent console message. See https://www.chromestatus.com/feature/5718547946799104 for more details.
 CONSOLE WARNING: A parser-blocking, cross site (i.e. different eTLD+1) script, http://localhost:8000/loading/resources/js-loaded.js?reload, is invoked via document.write. The network request for this script MAY be blocked by the browser in this or a future page load due to poor network connectivity. If blocked in this page load, it will be confirmed in a subsequent console message. See https://www.chromestatus.com/feature/5718547946799104 for more details.
 This is a testharness.js-based test.
-PASS window.internals is required for the test to run
-PASS Load Success
-PASS cross origin doc.written scripts are not blocked in a page reload
+[PASS] window.internals is required for the test to run
+[PASS] Load Success
+[PASS] cross origin doc.written scripts are not blocked in a page reload
 Harness: the test ran to completion.
 

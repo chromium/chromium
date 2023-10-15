@@ -999,1005 +999,1005 @@ CONSOLE ERROR: Error: <svg> attribute x: Expected length, "\fe1pt\f".
 CONSOLE ERROR: Error: <svg> attribute x: Expected length, "\fe1pc\f".
 CONSOLE ERROR: Error: <svg> attribute x: Expected length, "\fe1%\f".
 This is a testharness.js-based test.
-PASS Test <length> invalid value: .
-PASS Test <length> invalid value: .em
-PASS Test <length> invalid value: .ex
-PASS Test <length> invalid value: .px
-PASS Test <length> invalid value: .in
-PASS Test <length> invalid value: .cm
-PASS Test <length> invalid value: .mm
-PASS Test <length> invalid value: .pt
-PASS Test <length> invalid value: .pc
-PASS Test <length> invalid value: .%
-PASS Test <length> invalid value: +.
-PASS Test <length> invalid value: +.em
-PASS Test <length> invalid value: +.ex
-PASS Test <length> invalid value: +.px
-PASS Test <length> invalid value: +.in
-PASS Test <length> invalid value: +.cm
-PASS Test <length> invalid value: +.mm
-PASS Test <length> invalid value: +.pt
-PASS Test <length> invalid value: +.pc
-PASS Test <length> invalid value: +.%
-PASS Test <length> invalid value: .E0
-PASS Test <length> invalid value: .E0em
-PASS Test <length> invalid value: .E0ex
-PASS Test <length> invalid value: .E0px
-PASS Test <length> invalid value: .E0in
-PASS Test <length> invalid value: .E0cm
-PASS Test <length> invalid value: .E0mm
-PASS Test <length> invalid value: .E0pt
-PASS Test <length> invalid value: .E0pc
-PASS Test <length> invalid value: .E0%
-PASS Test <length> invalid value: e1
-PASS Test <length> invalid value: e1em
-PASS Test <length> invalid value: e1ex
-PASS Test <length> invalid value: e1px
-PASS Test <length> invalid value: e1in
-PASS Test <length> invalid value: e1cm
-PASS Test <length> invalid value: e1mm
-PASS Test <length> invalid value: e1pt
-PASS Test <length> invalid value: e1pc
-PASS Test <length> invalid value: e1%
-PASS Test <length> invalid value: . 
-PASS Test <length> invalid value: .em 
-PASS Test <length> invalid value: .ex 
-PASS Test <length> invalid value: .px 
-PASS Test <length> invalid value: .in 
-PASS Test <length> invalid value: .cm 
-PASS Test <length> invalid value: .mm 
-PASS Test <length> invalid value: .pt 
-PASS Test <length> invalid value: .pc 
-PASS Test <length> invalid value: .% 
-PASS Test <length> invalid value: +. 
-PASS Test <length> invalid value: +.em 
-PASS Test <length> invalid value: +.ex 
-PASS Test <length> invalid value: +.px 
-PASS Test <length> invalid value: +.in 
-PASS Test <length> invalid value: +.cm 
-PASS Test <length> invalid value: +.mm 
-PASS Test <length> invalid value: +.pt 
-PASS Test <length> invalid value: +.pc 
-PASS Test <length> invalid value: +.% 
-PASS Test <length> invalid value: .E0 
-PASS Test <length> invalid value: .E0em 
-PASS Test <length> invalid value: .E0ex 
-PASS Test <length> invalid value: .E0px 
-PASS Test <length> invalid value: .E0in 
-PASS Test <length> invalid value: .E0cm 
-PASS Test <length> invalid value: .E0mm 
-PASS Test <length> invalid value: .E0pt 
-PASS Test <length> invalid value: .E0pc 
-PASS Test <length> invalid value: .E0% 
-PASS Test <length> invalid value: e1 
-PASS Test <length> invalid value: e1em 
-PASS Test <length> invalid value: e1ex 
-PASS Test <length> invalid value: e1px 
-PASS Test <length> invalid value: e1in 
-PASS Test <length> invalid value: e1cm 
-PASS Test <length> invalid value: e1mm 
-PASS Test <length> invalid value: e1pt 
-PASS Test <length> invalid value: e1pc 
-PASS Test <length> invalid value: e1% 
-PASS Test <length> invalid value: .   
-PASS Test <length> invalid value: .em   
-PASS Test <length> invalid value: .ex   
-PASS Test <length> invalid value: .px   
-PASS Test <length> invalid value: .in   
-PASS Test <length> invalid value: .cm   
-PASS Test <length> invalid value: .mm   
-PASS Test <length> invalid value: .pt   
-PASS Test <length> invalid value: .pc   
-PASS Test <length> invalid value: .%   
-PASS Test <length> invalid value: +.   
-PASS Test <length> invalid value: +.em   
-PASS Test <length> invalid value: +.ex   
-PASS Test <length> invalid value: +.px   
-PASS Test <length> invalid value: +.in   
-PASS Test <length> invalid value: +.cm   
-PASS Test <length> invalid value: +.mm   
-PASS Test <length> invalid value: +.pt   
-PASS Test <length> invalid value: +.pc   
-PASS Test <length> invalid value: +.%   
-PASS Test <length> invalid value: .E0   
-PASS Test <length> invalid value: .E0em   
-PASS Test <length> invalid value: .E0ex   
-PASS Test <length> invalid value: .E0px   
-PASS Test <length> invalid value: .E0in   
-PASS Test <length> invalid value: .E0cm   
-PASS Test <length> invalid value: .E0mm   
-PASS Test <length> invalid value: .E0pt   
-PASS Test <length> invalid value: .E0pc   
-PASS Test <length> invalid value: .E0%   
-PASS Test <length> invalid value: e1   
-PASS Test <length> invalid value: e1em   
-PASS Test <length> invalid value: e1ex   
-PASS Test <length> invalid value: e1px   
-PASS Test <length> invalid value: e1in   
-PASS Test <length> invalid value: e1cm   
-PASS Test <length> invalid value: e1mm   
-PASS Test <length> invalid value: e1pt   
-PASS Test <length> invalid value: e1pc   
-PASS Test <length> invalid value: e1%   
-PASS Test <length> invalid value: .\r\n\t 
-PASS Test <length> invalid value: .em\r\n\t 
-PASS Test <length> invalid value: .ex\r\n\t 
-PASS Test <length> invalid value: .px\r\n\t 
-PASS Test <length> invalid value: .in\r\n\t 
-PASS Test <length> invalid value: .cm\r\n\t 
-PASS Test <length> invalid value: .mm\r\n\t 
-PASS Test <length> invalid value: .pt\r\n\t 
-PASS Test <length> invalid value: .pc\r\n\t 
-PASS Test <length> invalid value: .%\r\n\t 
-PASS Test <length> invalid value: +.\r\n\t 
-PASS Test <length> invalid value: +.em\r\n\t 
-PASS Test <length> invalid value: +.ex\r\n\t 
-PASS Test <length> invalid value: +.px\r\n\t 
-PASS Test <length> invalid value: +.in\r\n\t 
-PASS Test <length> invalid value: +.cm\r\n\t 
-PASS Test <length> invalid value: +.mm\r\n\t 
-PASS Test <length> invalid value: +.pt\r\n\t 
-PASS Test <length> invalid value: +.pc\r\n\t 
-PASS Test <length> invalid value: +.%\r\n\t 
-PASS Test <length> invalid value: .E0\r\n\t 
-PASS Test <length> invalid value: .E0em\r\n\t 
-PASS Test <length> invalid value: .E0ex\r\n\t 
-PASS Test <length> invalid value: .E0px\r\n\t 
-PASS Test <length> invalid value: .E0in\r\n\t 
-PASS Test <length> invalid value: .E0cm\r\n\t 
-PASS Test <length> invalid value: .E0mm\r\n\t 
-PASS Test <length> invalid value: .E0pt\r\n\t 
-PASS Test <length> invalid value: .E0pc\r\n\t 
-PASS Test <length> invalid value: .E0%\r\n\t 
-PASS Test <length> invalid value: e1\r\n\t 
-PASS Test <length> invalid value: e1em\r\n\t 
-PASS Test <length> invalid value: e1ex\r\n\t 
-PASS Test <length> invalid value: e1px\r\n\t 
-PASS Test <length> invalid value: e1in\r\n\t 
-PASS Test <length> invalid value: e1cm\r\n\t 
-PASS Test <length> invalid value: e1mm\r\n\t 
-PASS Test <length> invalid value: e1pt\r\n\t 
-PASS Test <length> invalid value: e1pc\r\n\t 
-PASS Test <length> invalid value: e1%\r\n\t 
-PASS Test <length> invalid value: .\f
-PASS Test <length> invalid value: .em\f
-PASS Test <length> invalid value: .ex\f
-PASS Test <length> invalid value: .px\f
-PASS Test <length> invalid value: .in\f
-PASS Test <length> invalid value: .cm\f
-PASS Test <length> invalid value: .mm\f
-PASS Test <length> invalid value: .pt\f
-PASS Test <length> invalid value: .pc\f
-PASS Test <length> invalid value: .%\f
-PASS Test <length> invalid value: +.\f
-PASS Test <length> invalid value: +.em\f
-PASS Test <length> invalid value: +.ex\f
-PASS Test <length> invalid value: +.px\f
-PASS Test <length> invalid value: +.in\f
-PASS Test <length> invalid value: +.cm\f
-PASS Test <length> invalid value: +.mm\f
-PASS Test <length> invalid value: +.pt\f
-PASS Test <length> invalid value: +.pc\f
-PASS Test <length> invalid value: +.%\f
-PASS Test <length> invalid value: .E0\f
-PASS Test <length> invalid value: .E0em\f
-PASS Test <length> invalid value: .E0ex\f
-PASS Test <length> invalid value: .E0px\f
-PASS Test <length> invalid value: .E0in\f
-PASS Test <length> invalid value: .E0cm\f
-PASS Test <length> invalid value: .E0mm\f
-PASS Test <length> invalid value: .E0pt\f
-PASS Test <length> invalid value: .E0pc\f
-PASS Test <length> invalid value: .E0%\f
-PASS Test <length> invalid value: e1\f
-PASS Test <length> invalid value: e1em\f
-PASS Test <length> invalid value: e1ex\f
-PASS Test <length> invalid value: e1px\f
-PASS Test <length> invalid value: e1in\f
-PASS Test <length> invalid value: e1cm\f
-PASS Test <length> invalid value: e1mm\f
-PASS Test <length> invalid value: e1pt\f
-PASS Test <length> invalid value: e1pc\f
-PASS Test <length> invalid value: e1%\f
-PASS Test <length> invalid value:  .
-PASS Test <length> invalid value:  .em
-PASS Test <length> invalid value:  .ex
-PASS Test <length> invalid value:  .px
-PASS Test <length> invalid value:  .in
-PASS Test <length> invalid value:  .cm
-PASS Test <length> invalid value:  .mm
-PASS Test <length> invalid value:  .pt
-PASS Test <length> invalid value:  .pc
-PASS Test <length> invalid value:  .%
-PASS Test <length> invalid value:  +.
-PASS Test <length> invalid value:  +.em
-PASS Test <length> invalid value:  +.ex
-PASS Test <length> invalid value:  +.px
-PASS Test <length> invalid value:  +.in
-PASS Test <length> invalid value:  +.cm
-PASS Test <length> invalid value:  +.mm
-PASS Test <length> invalid value:  +.pt
-PASS Test <length> invalid value:  +.pc
-PASS Test <length> invalid value:  +.%
-PASS Test <length> invalid value:  .E0
-PASS Test <length> invalid value:  .E0em
-PASS Test <length> invalid value:  .E0ex
-PASS Test <length> invalid value:  .E0px
-PASS Test <length> invalid value:  .E0in
-PASS Test <length> invalid value:  .E0cm
-PASS Test <length> invalid value:  .E0mm
-PASS Test <length> invalid value:  .E0pt
-PASS Test <length> invalid value:  .E0pc
-PASS Test <length> invalid value:  .E0%
-PASS Test <length> invalid value:  e1
-PASS Test <length> invalid value:  e1em
-PASS Test <length> invalid value:  e1ex
-PASS Test <length> invalid value:  e1px
-PASS Test <length> invalid value:  e1in
-PASS Test <length> invalid value:  e1cm
-PASS Test <length> invalid value:  e1mm
-PASS Test <length> invalid value:  e1pt
-PASS Test <length> invalid value:  e1pc
-PASS Test <length> invalid value:  e1%
-PASS Test <length> invalid value:  . 
-PASS Test <length> invalid value:  .em 
-PASS Test <length> invalid value:  .ex 
-PASS Test <length> invalid value:  .px 
-PASS Test <length> invalid value:  .in 
-PASS Test <length> invalid value:  .cm 
-PASS Test <length> invalid value:  .mm 
-PASS Test <length> invalid value:  .pt 
-PASS Test <length> invalid value:  .pc 
-PASS Test <length> invalid value:  .% 
-PASS Test <length> invalid value:  +. 
-PASS Test <length> invalid value:  +.em 
-PASS Test <length> invalid value:  +.ex 
-PASS Test <length> invalid value:  +.px 
-PASS Test <length> invalid value:  +.in 
-PASS Test <length> invalid value:  +.cm 
-PASS Test <length> invalid value:  +.mm 
-PASS Test <length> invalid value:  +.pt 
-PASS Test <length> invalid value:  +.pc 
-PASS Test <length> invalid value:  +.% 
-PASS Test <length> invalid value:  .E0 
-PASS Test <length> invalid value:  .E0em 
-PASS Test <length> invalid value:  .E0ex 
-PASS Test <length> invalid value:  .E0px 
-PASS Test <length> invalid value:  .E0in 
-PASS Test <length> invalid value:  .E0cm 
-PASS Test <length> invalid value:  .E0mm 
-PASS Test <length> invalid value:  .E0pt 
-PASS Test <length> invalid value:  .E0pc 
-PASS Test <length> invalid value:  .E0% 
-PASS Test <length> invalid value:  e1 
-PASS Test <length> invalid value:  e1em 
-PASS Test <length> invalid value:  e1ex 
-PASS Test <length> invalid value:  e1px 
-PASS Test <length> invalid value:  e1in 
-PASS Test <length> invalid value:  e1cm 
-PASS Test <length> invalid value:  e1mm 
-PASS Test <length> invalid value:  e1pt 
-PASS Test <length> invalid value:  e1pc 
-PASS Test <length> invalid value:  e1% 
-PASS Test <length> invalid value:  .   
-PASS Test <length> invalid value:  .em   
-PASS Test <length> invalid value:  .ex   
-PASS Test <length> invalid value:  .px   
-PASS Test <length> invalid value:  .in   
-PASS Test <length> invalid value:  .cm   
-PASS Test <length> invalid value:  .mm   
-PASS Test <length> invalid value:  .pt   
-PASS Test <length> invalid value:  .pc   
-PASS Test <length> invalid value:  .%   
-PASS Test <length> invalid value:  +.   
-PASS Test <length> invalid value:  +.em   
-PASS Test <length> invalid value:  +.ex   
-PASS Test <length> invalid value:  +.px   
-PASS Test <length> invalid value:  +.in   
-PASS Test <length> invalid value:  +.cm   
-PASS Test <length> invalid value:  +.mm   
-PASS Test <length> invalid value:  +.pt   
-PASS Test <length> invalid value:  +.pc   
-PASS Test <length> invalid value:  +.%   
-PASS Test <length> invalid value:  .E0   
-PASS Test <length> invalid value:  .E0em   
-PASS Test <length> invalid value:  .E0ex   
-PASS Test <length> invalid value:  .E0px   
-PASS Test <length> invalid value:  .E0in   
-PASS Test <length> invalid value:  .E0cm   
-PASS Test <length> invalid value:  .E0mm   
-PASS Test <length> invalid value:  .E0pt   
-PASS Test <length> invalid value:  .E0pc   
-PASS Test <length> invalid value:  .E0%   
-PASS Test <length> invalid value:  e1   
-PASS Test <length> invalid value:  e1em   
-PASS Test <length> invalid value:  e1ex   
-PASS Test <length> invalid value:  e1px   
-PASS Test <length> invalid value:  e1in   
-PASS Test <length> invalid value:  e1cm   
-PASS Test <length> invalid value:  e1mm   
-PASS Test <length> invalid value:  e1pt   
-PASS Test <length> invalid value:  e1pc   
-PASS Test <length> invalid value:  e1%   
-PASS Test <length> invalid value:  .\r\n\t 
-PASS Test <length> invalid value:  .em\r\n\t 
-PASS Test <length> invalid value:  .ex\r\n\t 
-PASS Test <length> invalid value:  .px\r\n\t 
-PASS Test <length> invalid value:  .in\r\n\t 
-PASS Test <length> invalid value:  .cm\r\n\t 
-PASS Test <length> invalid value:  .mm\r\n\t 
-PASS Test <length> invalid value:  .pt\r\n\t 
-PASS Test <length> invalid value:  .pc\r\n\t 
-PASS Test <length> invalid value:  .%\r\n\t 
-PASS Test <length> invalid value:  +.\r\n\t 
-PASS Test <length> invalid value:  +.em\r\n\t 
-PASS Test <length> invalid value:  +.ex\r\n\t 
-PASS Test <length> invalid value:  +.px\r\n\t 
-PASS Test <length> invalid value:  +.in\r\n\t 
-PASS Test <length> invalid value:  +.cm\r\n\t 
-PASS Test <length> invalid value:  +.mm\r\n\t 
-PASS Test <length> invalid value:  +.pt\r\n\t 
-PASS Test <length> invalid value:  +.pc\r\n\t 
-PASS Test <length> invalid value:  +.%\r\n\t 
-PASS Test <length> invalid value:  .E0\r\n\t 
-PASS Test <length> invalid value:  .E0em\r\n\t 
-PASS Test <length> invalid value:  .E0ex\r\n\t 
-PASS Test <length> invalid value:  .E0px\r\n\t 
-PASS Test <length> invalid value:  .E0in\r\n\t 
-PASS Test <length> invalid value:  .E0cm\r\n\t 
-PASS Test <length> invalid value:  .E0mm\r\n\t 
-PASS Test <length> invalid value:  .E0pt\r\n\t 
-PASS Test <length> invalid value:  .E0pc\r\n\t 
-PASS Test <length> invalid value:  .E0%\r\n\t 
-PASS Test <length> invalid value:  e1\r\n\t 
-PASS Test <length> invalid value:  e1em\r\n\t 
-PASS Test <length> invalid value:  e1ex\r\n\t 
-PASS Test <length> invalid value:  e1px\r\n\t 
-PASS Test <length> invalid value:  e1in\r\n\t 
-PASS Test <length> invalid value:  e1cm\r\n\t 
-PASS Test <length> invalid value:  e1mm\r\n\t 
-PASS Test <length> invalid value:  e1pt\r\n\t 
-PASS Test <length> invalid value:  e1pc\r\n\t 
-PASS Test <length> invalid value:  e1%\r\n\t 
-PASS Test <length> invalid value:  .\f
-PASS Test <length> invalid value:  .em\f
-PASS Test <length> invalid value:  .ex\f
-PASS Test <length> invalid value:  .px\f
-PASS Test <length> invalid value:  .in\f
-PASS Test <length> invalid value:  .cm\f
-PASS Test <length> invalid value:  .mm\f
-PASS Test <length> invalid value:  .pt\f
-PASS Test <length> invalid value:  .pc\f
-PASS Test <length> invalid value:  .%\f
-PASS Test <length> invalid value:  +.\f
-PASS Test <length> invalid value:  +.em\f
-PASS Test <length> invalid value:  +.ex\f
-PASS Test <length> invalid value:  +.px\f
-PASS Test <length> invalid value:  +.in\f
-PASS Test <length> invalid value:  +.cm\f
-PASS Test <length> invalid value:  +.mm\f
-PASS Test <length> invalid value:  +.pt\f
-PASS Test <length> invalid value:  +.pc\f
-PASS Test <length> invalid value:  +.%\f
-PASS Test <length> invalid value:  .E0\f
-PASS Test <length> invalid value:  .E0em\f
-PASS Test <length> invalid value:  .E0ex\f
-PASS Test <length> invalid value:  .E0px\f
-PASS Test <length> invalid value:  .E0in\f
-PASS Test <length> invalid value:  .E0cm\f
-PASS Test <length> invalid value:  .E0mm\f
-PASS Test <length> invalid value:  .E0pt\f
-PASS Test <length> invalid value:  .E0pc\f
-PASS Test <length> invalid value:  .E0%\f
-PASS Test <length> invalid value:  e1\f
-PASS Test <length> invalid value:  e1em\f
-PASS Test <length> invalid value:  e1ex\f
-PASS Test <length> invalid value:  e1px\f
-PASS Test <length> invalid value:  e1in\f
-PASS Test <length> invalid value:  e1cm\f
-PASS Test <length> invalid value:  e1mm\f
-PASS Test <length> invalid value:  e1pt\f
-PASS Test <length> invalid value:  e1pc\f
-PASS Test <length> invalid value:  e1%\f
-PASS Test <length> invalid value:    .
-PASS Test <length> invalid value:    .em
-PASS Test <length> invalid value:    .ex
-PASS Test <length> invalid value:    .px
-PASS Test <length> invalid value:    .in
-PASS Test <length> invalid value:    .cm
-PASS Test <length> invalid value:    .mm
-PASS Test <length> invalid value:    .pt
-PASS Test <length> invalid value:    .pc
-PASS Test <length> invalid value:    .%
-PASS Test <length> invalid value:    +.
-PASS Test <length> invalid value:    +.em
-PASS Test <length> invalid value:    +.ex
-PASS Test <length> invalid value:    +.px
-PASS Test <length> invalid value:    +.in
-PASS Test <length> invalid value:    +.cm
-PASS Test <length> invalid value:    +.mm
-PASS Test <length> invalid value:    +.pt
-PASS Test <length> invalid value:    +.pc
-PASS Test <length> invalid value:    +.%
-PASS Test <length> invalid value:    .E0
-PASS Test <length> invalid value:    .E0em
-PASS Test <length> invalid value:    .E0ex
-PASS Test <length> invalid value:    .E0px
-PASS Test <length> invalid value:    .E0in
-PASS Test <length> invalid value:    .E0cm
-PASS Test <length> invalid value:    .E0mm
-PASS Test <length> invalid value:    .E0pt
-PASS Test <length> invalid value:    .E0pc
-PASS Test <length> invalid value:    .E0%
-PASS Test <length> invalid value:    e1
-PASS Test <length> invalid value:    e1em
-PASS Test <length> invalid value:    e1ex
-PASS Test <length> invalid value:    e1px
-PASS Test <length> invalid value:    e1in
-PASS Test <length> invalid value:    e1cm
-PASS Test <length> invalid value:    e1mm
-PASS Test <length> invalid value:    e1pt
-PASS Test <length> invalid value:    e1pc
-PASS Test <length> invalid value:    e1%
-PASS Test <length> invalid value:    . 
-PASS Test <length> invalid value:    .em 
-PASS Test <length> invalid value:    .ex 
-PASS Test <length> invalid value:    .px 
-PASS Test <length> invalid value:    .in 
-PASS Test <length> invalid value:    .cm 
-PASS Test <length> invalid value:    .mm 
-PASS Test <length> invalid value:    .pt 
-PASS Test <length> invalid value:    .pc 
-PASS Test <length> invalid value:    .% 
-PASS Test <length> invalid value:    +. 
-PASS Test <length> invalid value:    +.em 
-PASS Test <length> invalid value:    +.ex 
-PASS Test <length> invalid value:    +.px 
-PASS Test <length> invalid value:    +.in 
-PASS Test <length> invalid value:    +.cm 
-PASS Test <length> invalid value:    +.mm 
-PASS Test <length> invalid value:    +.pt 
-PASS Test <length> invalid value:    +.pc 
-PASS Test <length> invalid value:    +.% 
-PASS Test <length> invalid value:    .E0 
-PASS Test <length> invalid value:    .E0em 
-PASS Test <length> invalid value:    .E0ex 
-PASS Test <length> invalid value:    .E0px 
-PASS Test <length> invalid value:    .E0in 
-PASS Test <length> invalid value:    .E0cm 
-PASS Test <length> invalid value:    .E0mm 
-PASS Test <length> invalid value:    .E0pt 
-PASS Test <length> invalid value:    .E0pc 
-PASS Test <length> invalid value:    .E0% 
-PASS Test <length> invalid value:    e1 
-PASS Test <length> invalid value:    e1em 
-PASS Test <length> invalid value:    e1ex 
-PASS Test <length> invalid value:    e1px 
-PASS Test <length> invalid value:    e1in 
-PASS Test <length> invalid value:    e1cm 
-PASS Test <length> invalid value:    e1mm 
-PASS Test <length> invalid value:    e1pt 
-PASS Test <length> invalid value:    e1pc 
-PASS Test <length> invalid value:    e1% 
-PASS Test <length> invalid value:    .   
-PASS Test <length> invalid value:    .em   
-PASS Test <length> invalid value:    .ex   
-PASS Test <length> invalid value:    .px   
-PASS Test <length> invalid value:    .in   
-PASS Test <length> invalid value:    .cm   
-PASS Test <length> invalid value:    .mm   
-PASS Test <length> invalid value:    .pt   
-PASS Test <length> invalid value:    .pc   
-PASS Test <length> invalid value:    .%   
-PASS Test <length> invalid value:    +.   
-PASS Test <length> invalid value:    +.em   
-PASS Test <length> invalid value:    +.ex   
-PASS Test <length> invalid value:    +.px   
-PASS Test <length> invalid value:    +.in   
-PASS Test <length> invalid value:    +.cm   
-PASS Test <length> invalid value:    +.mm   
-PASS Test <length> invalid value:    +.pt   
-PASS Test <length> invalid value:    +.pc   
-PASS Test <length> invalid value:    +.%   
-PASS Test <length> invalid value:    .E0   
-PASS Test <length> invalid value:    .E0em   
-PASS Test <length> invalid value:    .E0ex   
-PASS Test <length> invalid value:    .E0px   
-PASS Test <length> invalid value:    .E0in   
-PASS Test <length> invalid value:    .E0cm   
-PASS Test <length> invalid value:    .E0mm   
-PASS Test <length> invalid value:    .E0pt   
-PASS Test <length> invalid value:    .E0pc   
-PASS Test <length> invalid value:    .E0%   
-PASS Test <length> invalid value:    e1   
-PASS Test <length> invalid value:    e1em   
-PASS Test <length> invalid value:    e1ex   
-PASS Test <length> invalid value:    e1px   
-PASS Test <length> invalid value:    e1in   
-PASS Test <length> invalid value:    e1cm   
-PASS Test <length> invalid value:    e1mm   
-PASS Test <length> invalid value:    e1pt   
-PASS Test <length> invalid value:    e1pc   
-PASS Test <length> invalid value:    e1%   
-PASS Test <length> invalid value:    .\r\n\t 
-PASS Test <length> invalid value:    .em\r\n\t 
-PASS Test <length> invalid value:    .ex\r\n\t 
-PASS Test <length> invalid value:    .px\r\n\t 
-PASS Test <length> invalid value:    .in\r\n\t 
-PASS Test <length> invalid value:    .cm\r\n\t 
-PASS Test <length> invalid value:    .mm\r\n\t 
-PASS Test <length> invalid value:    .pt\r\n\t 
-PASS Test <length> invalid value:    .pc\r\n\t 
-PASS Test <length> invalid value:    .%\r\n\t 
-PASS Test <length> invalid value:    +.\r\n\t 
-PASS Test <length> invalid value:    +.em\r\n\t 
-PASS Test <length> invalid value:    +.ex\r\n\t 
-PASS Test <length> invalid value:    +.px\r\n\t 
-PASS Test <length> invalid value:    +.in\r\n\t 
-PASS Test <length> invalid value:    +.cm\r\n\t 
-PASS Test <length> invalid value:    +.mm\r\n\t 
-PASS Test <length> invalid value:    +.pt\r\n\t 
-PASS Test <length> invalid value:    +.pc\r\n\t 
-PASS Test <length> invalid value:    +.%\r\n\t 
-PASS Test <length> invalid value:    .E0\r\n\t 
-PASS Test <length> invalid value:    .E0em\r\n\t 
-PASS Test <length> invalid value:    .E0ex\r\n\t 
-PASS Test <length> invalid value:    .E0px\r\n\t 
-PASS Test <length> invalid value:    .E0in\r\n\t 
-PASS Test <length> invalid value:    .E0cm\r\n\t 
-PASS Test <length> invalid value:    .E0mm\r\n\t 
-PASS Test <length> invalid value:    .E0pt\r\n\t 
-PASS Test <length> invalid value:    .E0pc\r\n\t 
-PASS Test <length> invalid value:    .E0%\r\n\t 
-PASS Test <length> invalid value:    e1\r\n\t 
-PASS Test <length> invalid value:    e1em\r\n\t 
-PASS Test <length> invalid value:    e1ex\r\n\t 
-PASS Test <length> invalid value:    e1px\r\n\t 
-PASS Test <length> invalid value:    e1in\r\n\t 
-PASS Test <length> invalid value:    e1cm\r\n\t 
-PASS Test <length> invalid value:    e1mm\r\n\t 
-PASS Test <length> invalid value:    e1pt\r\n\t 
-PASS Test <length> invalid value:    e1pc\r\n\t 
-PASS Test <length> invalid value:    e1%\r\n\t 
-PASS Test <length> invalid value:    .\f
-PASS Test <length> invalid value:    .em\f
-PASS Test <length> invalid value:    .ex\f
-PASS Test <length> invalid value:    .px\f
-PASS Test <length> invalid value:    .in\f
-PASS Test <length> invalid value:    .cm\f
-PASS Test <length> invalid value:    .mm\f
-PASS Test <length> invalid value:    .pt\f
-PASS Test <length> invalid value:    .pc\f
-PASS Test <length> invalid value:    .%\f
-PASS Test <length> invalid value:    +.\f
-PASS Test <length> invalid value:    +.em\f
-PASS Test <length> invalid value:    +.ex\f
-PASS Test <length> invalid value:    +.px\f
-PASS Test <length> invalid value:    +.in\f
-PASS Test <length> invalid value:    +.cm\f
-PASS Test <length> invalid value:    +.mm\f
-PASS Test <length> invalid value:    +.pt\f
-PASS Test <length> invalid value:    +.pc\f
-PASS Test <length> invalid value:    +.%\f
-PASS Test <length> invalid value:    .E0\f
-PASS Test <length> invalid value:    .E0em\f
-PASS Test <length> invalid value:    .E0ex\f
-PASS Test <length> invalid value:    .E0px\f
-PASS Test <length> invalid value:    .E0in\f
-PASS Test <length> invalid value:    .E0cm\f
-PASS Test <length> invalid value:    .E0mm\f
-PASS Test <length> invalid value:    .E0pt\f
-PASS Test <length> invalid value:    .E0pc\f
-PASS Test <length> invalid value:    .E0%\f
-PASS Test <length> invalid value:    e1\f
-PASS Test <length> invalid value:    e1em\f
-PASS Test <length> invalid value:    e1ex\f
-PASS Test <length> invalid value:    e1px\f
-PASS Test <length> invalid value:    e1in\f
-PASS Test <length> invalid value:    e1cm\f
-PASS Test <length> invalid value:    e1mm\f
-PASS Test <length> invalid value:    e1pt\f
-PASS Test <length> invalid value:    e1pc\f
-PASS Test <length> invalid value:    e1%\f
-PASS Test <length> invalid value: \r\n\t .
-PASS Test <length> invalid value: \r\n\t .em
-PASS Test <length> invalid value: \r\n\t .ex
-PASS Test <length> invalid value: \r\n\t .px
-PASS Test <length> invalid value: \r\n\t .in
-PASS Test <length> invalid value: \r\n\t .cm
-PASS Test <length> invalid value: \r\n\t .mm
-PASS Test <length> invalid value: \r\n\t .pt
-PASS Test <length> invalid value: \r\n\t .pc
-PASS Test <length> invalid value: \r\n\t .%
-PASS Test <length> invalid value: \r\n\t +.
-PASS Test <length> invalid value: \r\n\t +.em
-PASS Test <length> invalid value: \r\n\t +.ex
-PASS Test <length> invalid value: \r\n\t +.px
-PASS Test <length> invalid value: \r\n\t +.in
-PASS Test <length> invalid value: \r\n\t +.cm
-PASS Test <length> invalid value: \r\n\t +.mm
-PASS Test <length> invalid value: \r\n\t +.pt
-PASS Test <length> invalid value: \r\n\t +.pc
-PASS Test <length> invalid value: \r\n\t +.%
-PASS Test <length> invalid value: \r\n\t .E0
-PASS Test <length> invalid value: \r\n\t .E0em
-PASS Test <length> invalid value: \r\n\t .E0ex
-PASS Test <length> invalid value: \r\n\t .E0px
-PASS Test <length> invalid value: \r\n\t .E0in
-PASS Test <length> invalid value: \r\n\t .E0cm
-PASS Test <length> invalid value: \r\n\t .E0mm
-PASS Test <length> invalid value: \r\n\t .E0pt
-PASS Test <length> invalid value: \r\n\t .E0pc
-PASS Test <length> invalid value: \r\n\t .E0%
-PASS Test <length> invalid value: \r\n\t e1
-PASS Test <length> invalid value: \r\n\t e1em
-PASS Test <length> invalid value: \r\n\t e1ex
-PASS Test <length> invalid value: \r\n\t e1px
-PASS Test <length> invalid value: \r\n\t e1in
-PASS Test <length> invalid value: \r\n\t e1cm
-PASS Test <length> invalid value: \r\n\t e1mm
-PASS Test <length> invalid value: \r\n\t e1pt
-PASS Test <length> invalid value: \r\n\t e1pc
-PASS Test <length> invalid value: \r\n\t e1%
-PASS Test <length> invalid value: \r\n\t . 
-PASS Test <length> invalid value: \r\n\t .em 
-PASS Test <length> invalid value: \r\n\t .ex 
-PASS Test <length> invalid value: \r\n\t .px 
-PASS Test <length> invalid value: \r\n\t .in 
-PASS Test <length> invalid value: \r\n\t .cm 
-PASS Test <length> invalid value: \r\n\t .mm 
-PASS Test <length> invalid value: \r\n\t .pt 
-PASS Test <length> invalid value: \r\n\t .pc 
-PASS Test <length> invalid value: \r\n\t .% 
-PASS Test <length> invalid value: \r\n\t +. 
-PASS Test <length> invalid value: \r\n\t +.em 
-PASS Test <length> invalid value: \r\n\t +.ex 
-PASS Test <length> invalid value: \r\n\t +.px 
-PASS Test <length> invalid value: \r\n\t +.in 
-PASS Test <length> invalid value: \r\n\t +.cm 
-PASS Test <length> invalid value: \r\n\t +.mm 
-PASS Test <length> invalid value: \r\n\t +.pt 
-PASS Test <length> invalid value: \r\n\t +.pc 
-PASS Test <length> invalid value: \r\n\t +.% 
-PASS Test <length> invalid value: \r\n\t .E0 
-PASS Test <length> invalid value: \r\n\t .E0em 
-PASS Test <length> invalid value: \r\n\t .E0ex 
-PASS Test <length> invalid value: \r\n\t .E0px 
-PASS Test <length> invalid value: \r\n\t .E0in 
-PASS Test <length> invalid value: \r\n\t .E0cm 
-PASS Test <length> invalid value: \r\n\t .E0mm 
-PASS Test <length> invalid value: \r\n\t .E0pt 
-PASS Test <length> invalid value: \r\n\t .E0pc 
-PASS Test <length> invalid value: \r\n\t .E0% 
-PASS Test <length> invalid value: \r\n\t e1 
-PASS Test <length> invalid value: \r\n\t e1em 
-PASS Test <length> invalid value: \r\n\t e1ex 
-PASS Test <length> invalid value: \r\n\t e1px 
-PASS Test <length> invalid value: \r\n\t e1in 
-PASS Test <length> invalid value: \r\n\t e1cm 
-PASS Test <length> invalid value: \r\n\t e1mm 
-PASS Test <length> invalid value: \r\n\t e1pt 
-PASS Test <length> invalid value: \r\n\t e1pc 
-PASS Test <length> invalid value: \r\n\t e1% 
-PASS Test <length> invalid value: \r\n\t .   
-PASS Test <length> invalid value: \r\n\t .em   
-PASS Test <length> invalid value: \r\n\t .ex   
-PASS Test <length> invalid value: \r\n\t .px   
-PASS Test <length> invalid value: \r\n\t .in   
-PASS Test <length> invalid value: \r\n\t .cm   
-PASS Test <length> invalid value: \r\n\t .mm   
-PASS Test <length> invalid value: \r\n\t .pt   
-PASS Test <length> invalid value: \r\n\t .pc   
-PASS Test <length> invalid value: \r\n\t .%   
-PASS Test <length> invalid value: \r\n\t +.   
-PASS Test <length> invalid value: \r\n\t +.em   
-PASS Test <length> invalid value: \r\n\t +.ex   
-PASS Test <length> invalid value: \r\n\t +.px   
-PASS Test <length> invalid value: \r\n\t +.in   
-PASS Test <length> invalid value: \r\n\t +.cm   
-PASS Test <length> invalid value: \r\n\t +.mm   
-PASS Test <length> invalid value: \r\n\t +.pt   
-PASS Test <length> invalid value: \r\n\t +.pc   
-PASS Test <length> invalid value: \r\n\t +.%   
-PASS Test <length> invalid value: \r\n\t .E0   
-PASS Test <length> invalid value: \r\n\t .E0em   
-PASS Test <length> invalid value: \r\n\t .E0ex   
-PASS Test <length> invalid value: \r\n\t .E0px   
-PASS Test <length> invalid value: \r\n\t .E0in   
-PASS Test <length> invalid value: \r\n\t .E0cm   
-PASS Test <length> invalid value: \r\n\t .E0mm   
-PASS Test <length> invalid value: \r\n\t .E0pt   
-PASS Test <length> invalid value: \r\n\t .E0pc   
-PASS Test <length> invalid value: \r\n\t .E0%   
-PASS Test <length> invalid value: \r\n\t e1   
-PASS Test <length> invalid value: \r\n\t e1em   
-PASS Test <length> invalid value: \r\n\t e1ex   
-PASS Test <length> invalid value: \r\n\t e1px   
-PASS Test <length> invalid value: \r\n\t e1in   
-PASS Test <length> invalid value: \r\n\t e1cm   
-PASS Test <length> invalid value: \r\n\t e1mm   
-PASS Test <length> invalid value: \r\n\t e1pt   
-PASS Test <length> invalid value: \r\n\t e1pc   
-PASS Test <length> invalid value: \r\n\t e1%   
-PASS Test <length> invalid value: \r\n\t .\r\n\t 
-PASS Test <length> invalid value: \r\n\t .em\r\n\t 
-PASS Test <length> invalid value: \r\n\t .ex\r\n\t 
-PASS Test <length> invalid value: \r\n\t .px\r\n\t 
-PASS Test <length> invalid value: \r\n\t .in\r\n\t 
-PASS Test <length> invalid value: \r\n\t .cm\r\n\t 
-PASS Test <length> invalid value: \r\n\t .mm\r\n\t 
-PASS Test <length> invalid value: \r\n\t .pt\r\n\t 
-PASS Test <length> invalid value: \r\n\t .pc\r\n\t 
-PASS Test <length> invalid value: \r\n\t .%\r\n\t 
-PASS Test <length> invalid value: \r\n\t +.\r\n\t 
-PASS Test <length> invalid value: \r\n\t +.em\r\n\t 
-PASS Test <length> invalid value: \r\n\t +.ex\r\n\t 
-PASS Test <length> invalid value: \r\n\t +.px\r\n\t 
-PASS Test <length> invalid value: \r\n\t +.in\r\n\t 
-PASS Test <length> invalid value: \r\n\t +.cm\r\n\t 
-PASS Test <length> invalid value: \r\n\t +.mm\r\n\t 
-PASS Test <length> invalid value: \r\n\t +.pt\r\n\t 
-PASS Test <length> invalid value: \r\n\t +.pc\r\n\t 
-PASS Test <length> invalid value: \r\n\t +.%\r\n\t 
-PASS Test <length> invalid value: \r\n\t .E0\r\n\t 
-PASS Test <length> invalid value: \r\n\t .E0em\r\n\t 
-PASS Test <length> invalid value: \r\n\t .E0ex\r\n\t 
-PASS Test <length> invalid value: \r\n\t .E0px\r\n\t 
-PASS Test <length> invalid value: \r\n\t .E0in\r\n\t 
-PASS Test <length> invalid value: \r\n\t .E0cm\r\n\t 
-PASS Test <length> invalid value: \r\n\t .E0mm\r\n\t 
-PASS Test <length> invalid value: \r\n\t .E0pt\r\n\t 
-PASS Test <length> invalid value: \r\n\t .E0pc\r\n\t 
-PASS Test <length> invalid value: \r\n\t .E0%\r\n\t 
-PASS Test <length> invalid value: \r\n\t e1\r\n\t 
-PASS Test <length> invalid value: \r\n\t e1em\r\n\t 
-PASS Test <length> invalid value: \r\n\t e1ex\r\n\t 
-PASS Test <length> invalid value: \r\n\t e1px\r\n\t 
-PASS Test <length> invalid value: \r\n\t e1in\r\n\t 
-PASS Test <length> invalid value: \r\n\t e1cm\r\n\t 
-PASS Test <length> invalid value: \r\n\t e1mm\r\n\t 
-PASS Test <length> invalid value: \r\n\t e1pt\r\n\t 
-PASS Test <length> invalid value: \r\n\t e1pc\r\n\t 
-PASS Test <length> invalid value: \r\n\t e1%\r\n\t 
-PASS Test <length> invalid value: \r\n\t .\f
-PASS Test <length> invalid value: \r\n\t .em\f
-PASS Test <length> invalid value: \r\n\t .ex\f
-PASS Test <length> invalid value: \r\n\t .px\f
-PASS Test <length> invalid value: \r\n\t .in\f
-PASS Test <length> invalid value: \r\n\t .cm\f
-PASS Test <length> invalid value: \r\n\t .mm\f
-PASS Test <length> invalid value: \r\n\t .pt\f
-PASS Test <length> invalid value: \r\n\t .pc\f
-PASS Test <length> invalid value: \r\n\t .%\f
-PASS Test <length> invalid value: \r\n\t +.\f
-PASS Test <length> invalid value: \r\n\t +.em\f
-PASS Test <length> invalid value: \r\n\t +.ex\f
-PASS Test <length> invalid value: \r\n\t +.px\f
-PASS Test <length> invalid value: \r\n\t +.in\f
-PASS Test <length> invalid value: \r\n\t +.cm\f
-PASS Test <length> invalid value: \r\n\t +.mm\f
-PASS Test <length> invalid value: \r\n\t +.pt\f
-PASS Test <length> invalid value: \r\n\t +.pc\f
-PASS Test <length> invalid value: \r\n\t +.%\f
-PASS Test <length> invalid value: \r\n\t .E0\f
-PASS Test <length> invalid value: \r\n\t .E0em\f
-PASS Test <length> invalid value: \r\n\t .E0ex\f
-PASS Test <length> invalid value: \r\n\t .E0px\f
-PASS Test <length> invalid value: \r\n\t .E0in\f
-PASS Test <length> invalid value: \r\n\t .E0cm\f
-PASS Test <length> invalid value: \r\n\t .E0mm\f
-PASS Test <length> invalid value: \r\n\t .E0pt\f
-PASS Test <length> invalid value: \r\n\t .E0pc\f
-PASS Test <length> invalid value: \r\n\t .E0%\f
-PASS Test <length> invalid value: \r\n\t e1\f
-PASS Test <length> invalid value: \r\n\t e1em\f
-PASS Test <length> invalid value: \r\n\t e1ex\f
-PASS Test <length> invalid value: \r\n\t e1px\f
-PASS Test <length> invalid value: \r\n\t e1in\f
-PASS Test <length> invalid value: \r\n\t e1cm\f
-PASS Test <length> invalid value: \r\n\t e1mm\f
-PASS Test <length> invalid value: \r\n\t e1pt\f
-PASS Test <length> invalid value: \r\n\t e1pc\f
-PASS Test <length> invalid value: \r\n\t e1%\f
-PASS Test <length> invalid value: \f.
-PASS Test <length> invalid value: \f.em
-PASS Test <length> invalid value: \f.ex
-PASS Test <length> invalid value: \f.px
-PASS Test <length> invalid value: \f.in
-PASS Test <length> invalid value: \f.cm
-PASS Test <length> invalid value: \f.mm
-PASS Test <length> invalid value: \f.pt
-PASS Test <length> invalid value: \f.pc
-PASS Test <length> invalid value: \f.%
-PASS Test <length> invalid value: \f+.
-PASS Test <length> invalid value: \f+.em
-PASS Test <length> invalid value: \f+.ex
-PASS Test <length> invalid value: \f+.px
-PASS Test <length> invalid value: \f+.in
-PASS Test <length> invalid value: \f+.cm
-PASS Test <length> invalid value: \f+.mm
-PASS Test <length> invalid value: \f+.pt
-PASS Test <length> invalid value: \f+.pc
-PASS Test <length> invalid value: \f+.%
-PASS Test <length> invalid value: \f.E0
-PASS Test <length> invalid value: \f.E0em
-PASS Test <length> invalid value: \f.E0ex
-PASS Test <length> invalid value: \f.E0px
-PASS Test <length> invalid value: \f.E0in
-PASS Test <length> invalid value: \f.E0cm
-PASS Test <length> invalid value: \f.E0mm
-PASS Test <length> invalid value: \f.E0pt
-PASS Test <length> invalid value: \f.E0pc
-PASS Test <length> invalid value: \f.E0%
-PASS Test <length> invalid value: \fe1
-PASS Test <length> invalid value: \fe1em
-PASS Test <length> invalid value: \fe1ex
-PASS Test <length> invalid value: \fe1px
-PASS Test <length> invalid value: \fe1in
-PASS Test <length> invalid value: \fe1cm
-PASS Test <length> invalid value: \fe1mm
-PASS Test <length> invalid value: \fe1pt
-PASS Test <length> invalid value: \fe1pc
-PASS Test <length> invalid value: \fe1%
-PASS Test <length> invalid value: \f. 
-PASS Test <length> invalid value: \f.em 
-PASS Test <length> invalid value: \f.ex 
-PASS Test <length> invalid value: \f.px 
-PASS Test <length> invalid value: \f.in 
-PASS Test <length> invalid value: \f.cm 
-PASS Test <length> invalid value: \f.mm 
-PASS Test <length> invalid value: \f.pt 
-PASS Test <length> invalid value: \f.pc 
-PASS Test <length> invalid value: \f.% 
-PASS Test <length> invalid value: \f+. 
-PASS Test <length> invalid value: \f+.em 
-PASS Test <length> invalid value: \f+.ex 
-PASS Test <length> invalid value: \f+.px 
-PASS Test <length> invalid value: \f+.in 
-PASS Test <length> invalid value: \f+.cm 
-PASS Test <length> invalid value: \f+.mm 
-PASS Test <length> invalid value: \f+.pt 
-PASS Test <length> invalid value: \f+.pc 
-PASS Test <length> invalid value: \f+.% 
-PASS Test <length> invalid value: \f.E0 
-PASS Test <length> invalid value: \f.E0em 
-PASS Test <length> invalid value: \f.E0ex 
-PASS Test <length> invalid value: \f.E0px 
-PASS Test <length> invalid value: \f.E0in 
-PASS Test <length> invalid value: \f.E0cm 
-PASS Test <length> invalid value: \f.E0mm 
-PASS Test <length> invalid value: \f.E0pt 
-PASS Test <length> invalid value: \f.E0pc 
-PASS Test <length> invalid value: \f.E0% 
-PASS Test <length> invalid value: \fe1 
-PASS Test <length> invalid value: \fe1em 
-PASS Test <length> invalid value: \fe1ex 
-PASS Test <length> invalid value: \fe1px 
-PASS Test <length> invalid value: \fe1in 
-PASS Test <length> invalid value: \fe1cm 
-PASS Test <length> invalid value: \fe1mm 
-PASS Test <length> invalid value: \fe1pt 
-PASS Test <length> invalid value: \fe1pc 
-PASS Test <length> invalid value: \fe1% 
-PASS Test <length> invalid value: \f.   
-PASS Test <length> invalid value: \f.em   
-PASS Test <length> invalid value: \f.ex   
-PASS Test <length> invalid value: \f.px   
-PASS Test <length> invalid value: \f.in   
-PASS Test <length> invalid value: \f.cm   
-PASS Test <length> invalid value: \f.mm   
-PASS Test <length> invalid value: \f.pt   
-PASS Test <length> invalid value: \f.pc   
-PASS Test <length> invalid value: \f.%   
-PASS Test <length> invalid value: \f+.   
-PASS Test <length> invalid value: \f+.em   
-PASS Test <length> invalid value: \f+.ex   
-PASS Test <length> invalid value: \f+.px   
-PASS Test <length> invalid value: \f+.in   
-PASS Test <length> invalid value: \f+.cm   
-PASS Test <length> invalid value: \f+.mm   
-PASS Test <length> invalid value: \f+.pt   
-PASS Test <length> invalid value: \f+.pc   
-PASS Test <length> invalid value: \f+.%   
-PASS Test <length> invalid value: \f.E0   
-PASS Test <length> invalid value: \f.E0em   
-PASS Test <length> invalid value: \f.E0ex   
-PASS Test <length> invalid value: \f.E0px   
-PASS Test <length> invalid value: \f.E0in   
-PASS Test <length> invalid value: \f.E0cm   
-PASS Test <length> invalid value: \f.E0mm   
-PASS Test <length> invalid value: \f.E0pt   
-PASS Test <length> invalid value: \f.E0pc   
-PASS Test <length> invalid value: \f.E0%   
-PASS Test <length> invalid value: \fe1   
-PASS Test <length> invalid value: \fe1em   
-PASS Test <length> invalid value: \fe1ex   
-PASS Test <length> invalid value: \fe1px   
-PASS Test <length> invalid value: \fe1in   
-PASS Test <length> invalid value: \fe1cm   
-PASS Test <length> invalid value: \fe1mm   
-PASS Test <length> invalid value: \fe1pt   
-PASS Test <length> invalid value: \fe1pc   
-PASS Test <length> invalid value: \fe1%   
-PASS Test <length> invalid value: \f.\r\n\t 
-PASS Test <length> invalid value: \f.em\r\n\t 
-PASS Test <length> invalid value: \f.ex\r\n\t 
-PASS Test <length> invalid value: \f.px\r\n\t 
-PASS Test <length> invalid value: \f.in\r\n\t 
-PASS Test <length> invalid value: \f.cm\r\n\t 
-PASS Test <length> invalid value: \f.mm\r\n\t 
-PASS Test <length> invalid value: \f.pt\r\n\t 
-PASS Test <length> invalid value: \f.pc\r\n\t 
-PASS Test <length> invalid value: \f.%\r\n\t 
-PASS Test <length> invalid value: \f+.\r\n\t 
-PASS Test <length> invalid value: \f+.em\r\n\t 
-PASS Test <length> invalid value: \f+.ex\r\n\t 
-PASS Test <length> invalid value: \f+.px\r\n\t 
-PASS Test <length> invalid value: \f+.in\r\n\t 
-PASS Test <length> invalid value: \f+.cm\r\n\t 
-PASS Test <length> invalid value: \f+.mm\r\n\t 
-PASS Test <length> invalid value: \f+.pt\r\n\t 
-PASS Test <length> invalid value: \f+.pc\r\n\t 
-PASS Test <length> invalid value: \f+.%\r\n\t 
-PASS Test <length> invalid value: \f.E0\r\n\t 
-PASS Test <length> invalid value: \f.E0em\r\n\t 
-PASS Test <length> invalid value: \f.E0ex\r\n\t 
-PASS Test <length> invalid value: \f.E0px\r\n\t 
-PASS Test <length> invalid value: \f.E0in\r\n\t 
-PASS Test <length> invalid value: \f.E0cm\r\n\t 
-PASS Test <length> invalid value: \f.E0mm\r\n\t 
-PASS Test <length> invalid value: \f.E0pt\r\n\t 
-PASS Test <length> invalid value: \f.E0pc\r\n\t 
-PASS Test <length> invalid value: \f.E0%\r\n\t 
-PASS Test <length> invalid value: \fe1\r\n\t 
-PASS Test <length> invalid value: \fe1em\r\n\t 
-PASS Test <length> invalid value: \fe1ex\r\n\t 
-PASS Test <length> invalid value: \fe1px\r\n\t 
-PASS Test <length> invalid value: \fe1in\r\n\t 
-PASS Test <length> invalid value: \fe1cm\r\n\t 
-PASS Test <length> invalid value: \fe1mm\r\n\t 
-PASS Test <length> invalid value: \fe1pt\r\n\t 
-PASS Test <length> invalid value: \fe1pc\r\n\t 
-PASS Test <length> invalid value: \fe1%\r\n\t 
-PASS Test <length> invalid value: \f.\f
-PASS Test <length> invalid value: \f.em\f
-PASS Test <length> invalid value: \f.ex\f
-PASS Test <length> invalid value: \f.px\f
-PASS Test <length> invalid value: \f.in\f
-PASS Test <length> invalid value: \f.cm\f
-PASS Test <length> invalid value: \f.mm\f
-PASS Test <length> invalid value: \f.pt\f
-PASS Test <length> invalid value: \f.pc\f
-PASS Test <length> invalid value: \f.%\f
-PASS Test <length> invalid value: \f+.\f
-PASS Test <length> invalid value: \f+.em\f
-PASS Test <length> invalid value: \f+.ex\f
-PASS Test <length> invalid value: \f+.px\f
-PASS Test <length> invalid value: \f+.in\f
-PASS Test <length> invalid value: \f+.cm\f
-PASS Test <length> invalid value: \f+.mm\f
-PASS Test <length> invalid value: \f+.pt\f
-PASS Test <length> invalid value: \f+.pc\f
-PASS Test <length> invalid value: \f+.%\f
-PASS Test <length> invalid value: \f.E0\f
-PASS Test <length> invalid value: \f.E0em\f
-PASS Test <length> invalid value: \f.E0ex\f
-PASS Test <length> invalid value: \f.E0px\f
-PASS Test <length> invalid value: \f.E0in\f
-PASS Test <length> invalid value: \f.E0cm\f
-PASS Test <length> invalid value: \f.E0mm\f
-PASS Test <length> invalid value: \f.E0pt\f
-PASS Test <length> invalid value: \f.E0pc\f
-PASS Test <length> invalid value: \f.E0%\f
-PASS Test <length> invalid value: \fe1\f
-PASS Test <length> invalid value: \fe1em\f
-PASS Test <length> invalid value: \fe1ex\f
-PASS Test <length> invalid value: \fe1px\f
-PASS Test <length> invalid value: \fe1in\f
-PASS Test <length> invalid value: \fe1cm\f
-PASS Test <length> invalid value: \fe1mm\f
-PASS Test <length> invalid value: \fe1pt\f
-PASS Test <length> invalid value: \fe1pc\f
-PASS Test <length> invalid value: \fe1%\f
+[PASS] Test <length> invalid value: .
+[PASS] Test <length> invalid value: .em
+[PASS] Test <length> invalid value: .ex
+[PASS] Test <length> invalid value: .px
+[PASS] Test <length> invalid value: .in
+[PASS] Test <length> invalid value: .cm
+[PASS] Test <length> invalid value: .mm
+[PASS] Test <length> invalid value: .pt
+[PASS] Test <length> invalid value: .pc
+[PASS] Test <length> invalid value: .%
+[PASS] Test <length> invalid value: +.
+[PASS] Test <length> invalid value: +.em
+[PASS] Test <length> invalid value: +.ex
+[PASS] Test <length> invalid value: +.px
+[PASS] Test <length> invalid value: +.in
+[PASS] Test <length> invalid value: +.cm
+[PASS] Test <length> invalid value: +.mm
+[PASS] Test <length> invalid value: +.pt
+[PASS] Test <length> invalid value: +.pc
+[PASS] Test <length> invalid value: +.%
+[PASS] Test <length> invalid value: .E0
+[PASS] Test <length> invalid value: .E0em
+[PASS] Test <length> invalid value: .E0ex
+[PASS] Test <length> invalid value: .E0px
+[PASS] Test <length> invalid value: .E0in
+[PASS] Test <length> invalid value: .E0cm
+[PASS] Test <length> invalid value: .E0mm
+[PASS] Test <length> invalid value: .E0pt
+[PASS] Test <length> invalid value: .E0pc
+[PASS] Test <length> invalid value: .E0%
+[PASS] Test <length> invalid value: e1
+[PASS] Test <length> invalid value: e1em
+[PASS] Test <length> invalid value: e1ex
+[PASS] Test <length> invalid value: e1px
+[PASS] Test <length> invalid value: e1in
+[PASS] Test <length> invalid value: e1cm
+[PASS] Test <length> invalid value: e1mm
+[PASS] Test <length> invalid value: e1pt
+[PASS] Test <length> invalid value: e1pc
+[PASS] Test <length> invalid value: e1%
+[PASS] Test <length> invalid value: . 
+[PASS] Test <length> invalid value: .em 
+[PASS] Test <length> invalid value: .ex 
+[PASS] Test <length> invalid value: .px 
+[PASS] Test <length> invalid value: .in 
+[PASS] Test <length> invalid value: .cm 
+[PASS] Test <length> invalid value: .mm 
+[PASS] Test <length> invalid value: .pt 
+[PASS] Test <length> invalid value: .pc 
+[PASS] Test <length> invalid value: .% 
+[PASS] Test <length> invalid value: +. 
+[PASS] Test <length> invalid value: +.em 
+[PASS] Test <length> invalid value: +.ex 
+[PASS] Test <length> invalid value: +.px 
+[PASS] Test <length> invalid value: +.in 
+[PASS] Test <length> invalid value: +.cm 
+[PASS] Test <length> invalid value: +.mm 
+[PASS] Test <length> invalid value: +.pt 
+[PASS] Test <length> invalid value: +.pc 
+[PASS] Test <length> invalid value: +.% 
+[PASS] Test <length> invalid value: .E0 
+[PASS] Test <length> invalid value: .E0em 
+[PASS] Test <length> invalid value: .E0ex 
+[PASS] Test <length> invalid value: .E0px 
+[PASS] Test <length> invalid value: .E0in 
+[PASS] Test <length> invalid value: .E0cm 
+[PASS] Test <length> invalid value: .E0mm 
+[PASS] Test <length> invalid value: .E0pt 
+[PASS] Test <length> invalid value: .E0pc 
+[PASS] Test <length> invalid value: .E0% 
+[PASS] Test <length> invalid value: e1 
+[PASS] Test <length> invalid value: e1em 
+[PASS] Test <length> invalid value: e1ex 
+[PASS] Test <length> invalid value: e1px 
+[PASS] Test <length> invalid value: e1in 
+[PASS] Test <length> invalid value: e1cm 
+[PASS] Test <length> invalid value: e1mm 
+[PASS] Test <length> invalid value: e1pt 
+[PASS] Test <length> invalid value: e1pc 
+[PASS] Test <length> invalid value: e1% 
+[PASS] Test <length> invalid value: .   
+[PASS] Test <length> invalid value: .em   
+[PASS] Test <length> invalid value: .ex   
+[PASS] Test <length> invalid value: .px   
+[PASS] Test <length> invalid value: .in   
+[PASS] Test <length> invalid value: .cm   
+[PASS] Test <length> invalid value: .mm   
+[PASS] Test <length> invalid value: .pt   
+[PASS] Test <length> invalid value: .pc   
+[PASS] Test <length> invalid value: .%   
+[PASS] Test <length> invalid value: +.   
+[PASS] Test <length> invalid value: +.em   
+[PASS] Test <length> invalid value: +.ex   
+[PASS] Test <length> invalid value: +.px   
+[PASS] Test <length> invalid value: +.in   
+[PASS] Test <length> invalid value: +.cm   
+[PASS] Test <length> invalid value: +.mm   
+[PASS] Test <length> invalid value: +.pt   
+[PASS] Test <length> invalid value: +.pc   
+[PASS] Test <length> invalid value: +.%   
+[PASS] Test <length> invalid value: .E0   
+[PASS] Test <length> invalid value: .E0em   
+[PASS] Test <length> invalid value: .E0ex   
+[PASS] Test <length> invalid value: .E0px   
+[PASS] Test <length> invalid value: .E0in   
+[PASS] Test <length> invalid value: .E0cm   
+[PASS] Test <length> invalid value: .E0mm   
+[PASS] Test <length> invalid value: .E0pt   
+[PASS] Test <length> invalid value: .E0pc   
+[PASS] Test <length> invalid value: .E0%   
+[PASS] Test <length> invalid value: e1   
+[PASS] Test <length> invalid value: e1em   
+[PASS] Test <length> invalid value: e1ex   
+[PASS] Test <length> invalid value: e1px   
+[PASS] Test <length> invalid value: e1in   
+[PASS] Test <length> invalid value: e1cm   
+[PASS] Test <length> invalid value: e1mm   
+[PASS] Test <length> invalid value: e1pt   
+[PASS] Test <length> invalid value: e1pc   
+[PASS] Test <length> invalid value: e1%   
+[PASS] Test <length> invalid value: .\r\n\t 
+[PASS] Test <length> invalid value: .em\r\n\t 
+[PASS] Test <length> invalid value: .ex\r\n\t 
+[PASS] Test <length> invalid value: .px\r\n\t 
+[PASS] Test <length> invalid value: .in\r\n\t 
+[PASS] Test <length> invalid value: .cm\r\n\t 
+[PASS] Test <length> invalid value: .mm\r\n\t 
+[PASS] Test <length> invalid value: .pt\r\n\t 
+[PASS] Test <length> invalid value: .pc\r\n\t 
+[PASS] Test <length> invalid value: .%\r\n\t 
+[PASS] Test <length> invalid value: +.\r\n\t 
+[PASS] Test <length> invalid value: +.em\r\n\t 
+[PASS] Test <length> invalid value: +.ex\r\n\t 
+[PASS] Test <length> invalid value: +.px\r\n\t 
+[PASS] Test <length> invalid value: +.in\r\n\t 
+[PASS] Test <length> invalid value: +.cm\r\n\t 
+[PASS] Test <length> invalid value: +.mm\r\n\t 
+[PASS] Test <length> invalid value: +.pt\r\n\t 
+[PASS] Test <length> invalid value: +.pc\r\n\t 
+[PASS] Test <length> invalid value: +.%\r\n\t 
+[PASS] Test <length> invalid value: .E0\r\n\t 
+[PASS] Test <length> invalid value: .E0em\r\n\t 
+[PASS] Test <length> invalid value: .E0ex\r\n\t 
+[PASS] Test <length> invalid value: .E0px\r\n\t 
+[PASS] Test <length> invalid value: .E0in\r\n\t 
+[PASS] Test <length> invalid value: .E0cm\r\n\t 
+[PASS] Test <length> invalid value: .E0mm\r\n\t 
+[PASS] Test <length> invalid value: .E0pt\r\n\t 
+[PASS] Test <length> invalid value: .E0pc\r\n\t 
+[PASS] Test <length> invalid value: .E0%\r\n\t 
+[PASS] Test <length> invalid value: e1\r\n\t 
+[PASS] Test <length> invalid value: e1em\r\n\t 
+[PASS] Test <length> invalid value: e1ex\r\n\t 
+[PASS] Test <length> invalid value: e1px\r\n\t 
+[PASS] Test <length> invalid value: e1in\r\n\t 
+[PASS] Test <length> invalid value: e1cm\r\n\t 
+[PASS] Test <length> invalid value: e1mm\r\n\t 
+[PASS] Test <length> invalid value: e1pt\r\n\t 
+[PASS] Test <length> invalid value: e1pc\r\n\t 
+[PASS] Test <length> invalid value: e1%\r\n\t 
+[PASS] Test <length> invalid value: .\f
+[PASS] Test <length> invalid value: .em\f
+[PASS] Test <length> invalid value: .ex\f
+[PASS] Test <length> invalid value: .px\f
+[PASS] Test <length> invalid value: .in\f
+[PASS] Test <length> invalid value: .cm\f
+[PASS] Test <length> invalid value: .mm\f
+[PASS] Test <length> invalid value: .pt\f
+[PASS] Test <length> invalid value: .pc\f
+[PASS] Test <length> invalid value: .%\f
+[PASS] Test <length> invalid value: +.\f
+[PASS] Test <length> invalid value: +.em\f
+[PASS] Test <length> invalid value: +.ex\f
+[PASS] Test <length> invalid value: +.px\f
+[PASS] Test <length> invalid value: +.in\f
+[PASS] Test <length> invalid value: +.cm\f
+[PASS] Test <length> invalid value: +.mm\f
+[PASS] Test <length> invalid value: +.pt\f
+[PASS] Test <length> invalid value: +.pc\f
+[PASS] Test <length> invalid value: +.%\f
+[PASS] Test <length> invalid value: .E0\f
+[PASS] Test <length> invalid value: .E0em\f
+[PASS] Test <length> invalid value: .E0ex\f
+[PASS] Test <length> invalid value: .E0px\f
+[PASS] Test <length> invalid value: .E0in\f
+[PASS] Test <length> invalid value: .E0cm\f
+[PASS] Test <length> invalid value: .E0mm\f
+[PASS] Test <length> invalid value: .E0pt\f
+[PASS] Test <length> invalid value: .E0pc\f
+[PASS] Test <length> invalid value: .E0%\f
+[PASS] Test <length> invalid value: e1\f
+[PASS] Test <length> invalid value: e1em\f
+[PASS] Test <length> invalid value: e1ex\f
+[PASS] Test <length> invalid value: e1px\f
+[PASS] Test <length> invalid value: e1in\f
+[PASS] Test <length> invalid value: e1cm\f
+[PASS] Test <length> invalid value: e1mm\f
+[PASS] Test <length> invalid value: e1pt\f
+[PASS] Test <length> invalid value: e1pc\f
+[PASS] Test <length> invalid value: e1%\f
+[PASS] Test <length> invalid value:  .
+[PASS] Test <length> invalid value:  .em
+[PASS] Test <length> invalid value:  .ex
+[PASS] Test <length> invalid value:  .px
+[PASS] Test <length> invalid value:  .in
+[PASS] Test <length> invalid value:  .cm
+[PASS] Test <length> invalid value:  .mm
+[PASS] Test <length> invalid value:  .pt
+[PASS] Test <length> invalid value:  .pc
+[PASS] Test <length> invalid value:  .%
+[PASS] Test <length> invalid value:  +.
+[PASS] Test <length> invalid value:  +.em
+[PASS] Test <length> invalid value:  +.ex
+[PASS] Test <length> invalid value:  +.px
+[PASS] Test <length> invalid value:  +.in
+[PASS] Test <length> invalid value:  +.cm
+[PASS] Test <length> invalid value:  +.mm
+[PASS] Test <length> invalid value:  +.pt
+[PASS] Test <length> invalid value:  +.pc
+[PASS] Test <length> invalid value:  +.%
+[PASS] Test <length> invalid value:  .E0
+[PASS] Test <length> invalid value:  .E0em
+[PASS] Test <length> invalid value:  .E0ex
+[PASS] Test <length> invalid value:  .E0px
+[PASS] Test <length> invalid value:  .E0in
+[PASS] Test <length> invalid value:  .E0cm
+[PASS] Test <length> invalid value:  .E0mm
+[PASS] Test <length> invalid value:  .E0pt
+[PASS] Test <length> invalid value:  .E0pc
+[PASS] Test <length> invalid value:  .E0%
+[PASS] Test <length> invalid value:  e1
+[PASS] Test <length> invalid value:  e1em
+[PASS] Test <length> invalid value:  e1ex
+[PASS] Test <length> invalid value:  e1px
+[PASS] Test <length> invalid value:  e1in
+[PASS] Test <length> invalid value:  e1cm
+[PASS] Test <length> invalid value:  e1mm
+[PASS] Test <length> invalid value:  e1pt
+[PASS] Test <length> invalid value:  e1pc
+[PASS] Test <length> invalid value:  e1%
+[PASS] Test <length> invalid value:  . 
+[PASS] Test <length> invalid value:  .em 
+[PASS] Test <length> invalid value:  .ex 
+[PASS] Test <length> invalid value:  .px 
+[PASS] Test <length> invalid value:  .in 
+[PASS] Test <length> invalid value:  .cm 
+[PASS] Test <length> invalid value:  .mm 
+[PASS] Test <length> invalid value:  .pt 
+[PASS] Test <length> invalid value:  .pc 
+[PASS] Test <length> invalid value:  .% 
+[PASS] Test <length> invalid value:  +. 
+[PASS] Test <length> invalid value:  +.em 
+[PASS] Test <length> invalid value:  +.ex 
+[PASS] Test <length> invalid value:  +.px 
+[PASS] Test <length> invalid value:  +.in 
+[PASS] Test <length> invalid value:  +.cm 
+[PASS] Test <length> invalid value:  +.mm 
+[PASS] Test <length> invalid value:  +.pt 
+[PASS] Test <length> invalid value:  +.pc 
+[PASS] Test <length> invalid value:  +.% 
+[PASS] Test <length> invalid value:  .E0 
+[PASS] Test <length> invalid value:  .E0em 
+[PASS] Test <length> invalid value:  .E0ex 
+[PASS] Test <length> invalid value:  .E0px 
+[PASS] Test <length> invalid value:  .E0in 
+[PASS] Test <length> invalid value:  .E0cm 
+[PASS] Test <length> invalid value:  .E0mm 
+[PASS] Test <length> invalid value:  .E0pt 
+[PASS] Test <length> invalid value:  .E0pc 
+[PASS] Test <length> invalid value:  .E0% 
+[PASS] Test <length> invalid value:  e1 
+[PASS] Test <length> invalid value:  e1em 
+[PASS] Test <length> invalid value:  e1ex 
+[PASS] Test <length> invalid value:  e1px 
+[PASS] Test <length> invalid value:  e1in 
+[PASS] Test <length> invalid value:  e1cm 
+[PASS] Test <length> invalid value:  e1mm 
+[PASS] Test <length> invalid value:  e1pt 
+[PASS] Test <length> invalid value:  e1pc 
+[PASS] Test <length> invalid value:  e1% 
+[PASS] Test <length> invalid value:  .   
+[PASS] Test <length> invalid value:  .em   
+[PASS] Test <length> invalid value:  .ex   
+[PASS] Test <length> invalid value:  .px   
+[PASS] Test <length> invalid value:  .in   
+[PASS] Test <length> invalid value:  .cm   
+[PASS] Test <length> invalid value:  .mm   
+[PASS] Test <length> invalid value:  .pt   
+[PASS] Test <length> invalid value:  .pc   
+[PASS] Test <length> invalid value:  .%   
+[PASS] Test <length> invalid value:  +.   
+[PASS] Test <length> invalid value:  +.em   
+[PASS] Test <length> invalid value:  +.ex   
+[PASS] Test <length> invalid value:  +.px   
+[PASS] Test <length> invalid value:  +.in   
+[PASS] Test <length> invalid value:  +.cm   
+[PASS] Test <length> invalid value:  +.mm   
+[PASS] Test <length> invalid value:  +.pt   
+[PASS] Test <length> invalid value:  +.pc   
+[PASS] Test <length> invalid value:  +.%   
+[PASS] Test <length> invalid value:  .E0   
+[PASS] Test <length> invalid value:  .E0em   
+[PASS] Test <length> invalid value:  .E0ex   
+[PASS] Test <length> invalid value:  .E0px   
+[PASS] Test <length> invalid value:  .E0in   
+[PASS] Test <length> invalid value:  .E0cm   
+[PASS] Test <length> invalid value:  .E0mm   
+[PASS] Test <length> invalid value:  .E0pt   
+[PASS] Test <length> invalid value:  .E0pc   
+[PASS] Test <length> invalid value:  .E0%   
+[PASS] Test <length> invalid value:  e1   
+[PASS] Test <length> invalid value:  e1em   
+[PASS] Test <length> invalid value:  e1ex   
+[PASS] Test <length> invalid value:  e1px   
+[PASS] Test <length> invalid value:  e1in   
+[PASS] Test <length> invalid value:  e1cm   
+[PASS] Test <length> invalid value:  e1mm   
+[PASS] Test <length> invalid value:  e1pt   
+[PASS] Test <length> invalid value:  e1pc   
+[PASS] Test <length> invalid value:  e1%   
+[PASS] Test <length> invalid value:  .\r\n\t 
+[PASS] Test <length> invalid value:  .em\r\n\t 
+[PASS] Test <length> invalid value:  .ex\r\n\t 
+[PASS] Test <length> invalid value:  .px\r\n\t 
+[PASS] Test <length> invalid value:  .in\r\n\t 
+[PASS] Test <length> invalid value:  .cm\r\n\t 
+[PASS] Test <length> invalid value:  .mm\r\n\t 
+[PASS] Test <length> invalid value:  .pt\r\n\t 
+[PASS] Test <length> invalid value:  .pc\r\n\t 
+[PASS] Test <length> invalid value:  .%\r\n\t 
+[PASS] Test <length> invalid value:  +.\r\n\t 
+[PASS] Test <length> invalid value:  +.em\r\n\t 
+[PASS] Test <length> invalid value:  +.ex\r\n\t 
+[PASS] Test <length> invalid value:  +.px\r\n\t 
+[PASS] Test <length> invalid value:  +.in\r\n\t 
+[PASS] Test <length> invalid value:  +.cm\r\n\t 
+[PASS] Test <length> invalid value:  +.mm\r\n\t 
+[PASS] Test <length> invalid value:  +.pt\r\n\t 
+[PASS] Test <length> invalid value:  +.pc\r\n\t 
+[PASS] Test <length> invalid value:  +.%\r\n\t 
+[PASS] Test <length> invalid value:  .E0\r\n\t 
+[PASS] Test <length> invalid value:  .E0em\r\n\t 
+[PASS] Test <length> invalid value:  .E0ex\r\n\t 
+[PASS] Test <length> invalid value:  .E0px\r\n\t 
+[PASS] Test <length> invalid value:  .E0in\r\n\t 
+[PASS] Test <length> invalid value:  .E0cm\r\n\t 
+[PASS] Test <length> invalid value:  .E0mm\r\n\t 
+[PASS] Test <length> invalid value:  .E0pt\r\n\t 
+[PASS] Test <length> invalid value:  .E0pc\r\n\t 
+[PASS] Test <length> invalid value:  .E0%\r\n\t 
+[PASS] Test <length> invalid value:  e1\r\n\t 
+[PASS] Test <length> invalid value:  e1em\r\n\t 
+[PASS] Test <length> invalid value:  e1ex\r\n\t 
+[PASS] Test <length> invalid value:  e1px\r\n\t 
+[PASS] Test <length> invalid value:  e1in\r\n\t 
+[PASS] Test <length> invalid value:  e1cm\r\n\t 
+[PASS] Test <length> invalid value:  e1mm\r\n\t 
+[PASS] Test <length> invalid value:  e1pt\r\n\t 
+[PASS] Test <length> invalid value:  e1pc\r\n\t 
+[PASS] Test <length> invalid value:  e1%\r\n\t 
+[PASS] Test <length> invalid value:  .\f
+[PASS] Test <length> invalid value:  .em\f
+[PASS] Test <length> invalid value:  .ex\f
+[PASS] Test <length> invalid value:  .px\f
+[PASS] Test <length> invalid value:  .in\f
+[PASS] Test <length> invalid value:  .cm\f
+[PASS] Test <length> invalid value:  .mm\f
+[PASS] Test <length> invalid value:  .pt\f
+[PASS] Test <length> invalid value:  .pc\f
+[PASS] Test <length> invalid value:  .%\f
+[PASS] Test <length> invalid value:  +.\f
+[PASS] Test <length> invalid value:  +.em\f
+[PASS] Test <length> invalid value:  +.ex\f
+[PASS] Test <length> invalid value:  +.px\f
+[PASS] Test <length> invalid value:  +.in\f
+[PASS] Test <length> invalid value:  +.cm\f
+[PASS] Test <length> invalid value:  +.mm\f
+[PASS] Test <length> invalid value:  +.pt\f
+[PASS] Test <length> invalid value:  +.pc\f
+[PASS] Test <length> invalid value:  +.%\f
+[PASS] Test <length> invalid value:  .E0\f
+[PASS] Test <length> invalid value:  .E0em\f
+[PASS] Test <length> invalid value:  .E0ex\f
+[PASS] Test <length> invalid value:  .E0px\f
+[PASS] Test <length> invalid value:  .E0in\f
+[PASS] Test <length> invalid value:  .E0cm\f
+[PASS] Test <length> invalid value:  .E0mm\f
+[PASS] Test <length> invalid value:  .E0pt\f
+[PASS] Test <length> invalid value:  .E0pc\f
+[PASS] Test <length> invalid value:  .E0%\f
+[PASS] Test <length> invalid value:  e1\f
+[PASS] Test <length> invalid value:  e1em\f
+[PASS] Test <length> invalid value:  e1ex\f
+[PASS] Test <length> invalid value:  e1px\f
+[PASS] Test <length> invalid value:  e1in\f
+[PASS] Test <length> invalid value:  e1cm\f
+[PASS] Test <length> invalid value:  e1mm\f
+[PASS] Test <length> invalid value:  e1pt\f
+[PASS] Test <length> invalid value:  e1pc\f
+[PASS] Test <length> invalid value:  e1%\f
+[PASS] Test <length> invalid value:    .
+[PASS] Test <length> invalid value:    .em
+[PASS] Test <length> invalid value:    .ex
+[PASS] Test <length> invalid value:    .px
+[PASS] Test <length> invalid value:    .in
+[PASS] Test <length> invalid value:    .cm
+[PASS] Test <length> invalid value:    .mm
+[PASS] Test <length> invalid value:    .pt
+[PASS] Test <length> invalid value:    .pc
+[PASS] Test <length> invalid value:    .%
+[PASS] Test <length> invalid value:    +.
+[PASS] Test <length> invalid value:    +.em
+[PASS] Test <length> invalid value:    +.ex
+[PASS] Test <length> invalid value:    +.px
+[PASS] Test <length> invalid value:    +.in
+[PASS] Test <length> invalid value:    +.cm
+[PASS] Test <length> invalid value:    +.mm
+[PASS] Test <length> invalid value:    +.pt
+[PASS] Test <length> invalid value:    +.pc
+[PASS] Test <length> invalid value:    +.%
+[PASS] Test <length> invalid value:    .E0
+[PASS] Test <length> invalid value:    .E0em
+[PASS] Test <length> invalid value:    .E0ex
+[PASS] Test <length> invalid value:    .E0px
+[PASS] Test <length> invalid value:    .E0in
+[PASS] Test <length> invalid value:    .E0cm
+[PASS] Test <length> invalid value:    .E0mm
+[PASS] Test <length> invalid value:    .E0pt
+[PASS] Test <length> invalid value:    .E0pc
+[PASS] Test <length> invalid value:    .E0%
+[PASS] Test <length> invalid value:    e1
+[PASS] Test <length> invalid value:    e1em
+[PASS] Test <length> invalid value:    e1ex
+[PASS] Test <length> invalid value:    e1px
+[PASS] Test <length> invalid value:    e1in
+[PASS] Test <length> invalid value:    e1cm
+[PASS] Test <length> invalid value:    e1mm
+[PASS] Test <length> invalid value:    e1pt
+[PASS] Test <length> invalid value:    e1pc
+[PASS] Test <length> invalid value:    e1%
+[PASS] Test <length> invalid value:    . 
+[PASS] Test <length> invalid value:    .em 
+[PASS] Test <length> invalid value:    .ex 
+[PASS] Test <length> invalid value:    .px 
+[PASS] Test <length> invalid value:    .in 
+[PASS] Test <length> invalid value:    .cm 
+[PASS] Test <length> invalid value:    .mm 
+[PASS] Test <length> invalid value:    .pt 
+[PASS] Test <length> invalid value:    .pc 
+[PASS] Test <length> invalid value:    .% 
+[PASS] Test <length> invalid value:    +. 
+[PASS] Test <length> invalid value:    +.em 
+[PASS] Test <length> invalid value:    +.ex 
+[PASS] Test <length> invalid value:    +.px 
+[PASS] Test <length> invalid value:    +.in 
+[PASS] Test <length> invalid value:    +.cm 
+[PASS] Test <length> invalid value:    +.mm 
+[PASS] Test <length> invalid value:    +.pt 
+[PASS] Test <length> invalid value:    +.pc 
+[PASS] Test <length> invalid value:    +.% 
+[PASS] Test <length> invalid value:    .E0 
+[PASS] Test <length> invalid value:    .E0em 
+[PASS] Test <length> invalid value:    .E0ex 
+[PASS] Test <length> invalid value:    .E0px 
+[PASS] Test <length> invalid value:    .E0in 
+[PASS] Test <length> invalid value:    .E0cm 
+[PASS] Test <length> invalid value:    .E0mm 
+[PASS] Test <length> invalid value:    .E0pt 
+[PASS] Test <length> invalid value:    .E0pc 
+[PASS] Test <length> invalid value:    .E0% 
+[PASS] Test <length> invalid value:    e1 
+[PASS] Test <length> invalid value:    e1em 
+[PASS] Test <length> invalid value:    e1ex 
+[PASS] Test <length> invalid value:    e1px 
+[PASS] Test <length> invalid value:    e1in 
+[PASS] Test <length> invalid value:    e1cm 
+[PASS] Test <length> invalid value:    e1mm 
+[PASS] Test <length> invalid value:    e1pt 
+[PASS] Test <length> invalid value:    e1pc 
+[PASS] Test <length> invalid value:    e1% 
+[PASS] Test <length> invalid value:    .   
+[PASS] Test <length> invalid value:    .em   
+[PASS] Test <length> invalid value:    .ex   
+[PASS] Test <length> invalid value:    .px   
+[PASS] Test <length> invalid value:    .in   
+[PASS] Test <length> invalid value:    .cm   
+[PASS] Test <length> invalid value:    .mm   
+[PASS] Test <length> invalid value:    .pt   
+[PASS] Test <length> invalid value:    .pc   
+[PASS] Test <length> invalid value:    .%   
+[PASS] Test <length> invalid value:    +.   
+[PASS] Test <length> invalid value:    +.em   
+[PASS] Test <length> invalid value:    +.ex   
+[PASS] Test <length> invalid value:    +.px   
+[PASS] Test <length> invalid value:    +.in   
+[PASS] Test <length> invalid value:    +.cm   
+[PASS] Test <length> invalid value:    +.mm   
+[PASS] Test <length> invalid value:    +.pt   
+[PASS] Test <length> invalid value:    +.pc   
+[PASS] Test <length> invalid value:    +.%   
+[PASS] Test <length> invalid value:    .E0   
+[PASS] Test <length> invalid value:    .E0em   
+[PASS] Test <length> invalid value:    .E0ex   
+[PASS] Test <length> invalid value:    .E0px   
+[PASS] Test <length> invalid value:    .E0in   
+[PASS] Test <length> invalid value:    .E0cm   
+[PASS] Test <length> invalid value:    .E0mm   
+[PASS] Test <length> invalid value:    .E0pt   
+[PASS] Test <length> invalid value:    .E0pc   
+[PASS] Test <length> invalid value:    .E0%   
+[PASS] Test <length> invalid value:    e1   
+[PASS] Test <length> invalid value:    e1em   
+[PASS] Test <length> invalid value:    e1ex   
+[PASS] Test <length> invalid value:    e1px   
+[PASS] Test <length> invalid value:    e1in   
+[PASS] Test <length> invalid value:    e1cm   
+[PASS] Test <length> invalid value:    e1mm   
+[PASS] Test <length> invalid value:    e1pt   
+[PASS] Test <length> invalid value:    e1pc   
+[PASS] Test <length> invalid value:    e1%   
+[PASS] Test <length> invalid value:    .\r\n\t 
+[PASS] Test <length> invalid value:    .em\r\n\t 
+[PASS] Test <length> invalid value:    .ex\r\n\t 
+[PASS] Test <length> invalid value:    .px\r\n\t 
+[PASS] Test <length> invalid value:    .in\r\n\t 
+[PASS] Test <length> invalid value:    .cm\r\n\t 
+[PASS] Test <length> invalid value:    .mm\r\n\t 
+[PASS] Test <length> invalid value:    .pt\r\n\t 
+[PASS] Test <length> invalid value:    .pc\r\n\t 
+[PASS] Test <length> invalid value:    .%\r\n\t 
+[PASS] Test <length> invalid value:    +.\r\n\t 
+[PASS] Test <length> invalid value:    +.em\r\n\t 
+[PASS] Test <length> invalid value:    +.ex\r\n\t 
+[PASS] Test <length> invalid value:    +.px\r\n\t 
+[PASS] Test <length> invalid value:    +.in\r\n\t 
+[PASS] Test <length> invalid value:    +.cm\r\n\t 
+[PASS] Test <length> invalid value:    +.mm\r\n\t 
+[PASS] Test <length> invalid value:    +.pt\r\n\t 
+[PASS] Test <length> invalid value:    +.pc\r\n\t 
+[PASS] Test <length> invalid value:    +.%\r\n\t 
+[PASS] Test <length> invalid value:    .E0\r\n\t 
+[PASS] Test <length> invalid value:    .E0em\r\n\t 
+[PASS] Test <length> invalid value:    .E0ex\r\n\t 
+[PASS] Test <length> invalid value:    .E0px\r\n\t 
+[PASS] Test <length> invalid value:    .E0in\r\n\t 
+[PASS] Test <length> invalid value:    .E0cm\r\n\t 
+[PASS] Test <length> invalid value:    .E0mm\r\n\t 
+[PASS] Test <length> invalid value:    .E0pt\r\n\t 
+[PASS] Test <length> invalid value:    .E0pc\r\n\t 
+[PASS] Test <length> invalid value:    .E0%\r\n\t 
+[PASS] Test <length> invalid value:    e1\r\n\t 
+[PASS] Test <length> invalid value:    e1em\r\n\t 
+[PASS] Test <length> invalid value:    e1ex\r\n\t 
+[PASS] Test <length> invalid value:    e1px\r\n\t 
+[PASS] Test <length> invalid value:    e1in\r\n\t 
+[PASS] Test <length> invalid value:    e1cm\r\n\t 
+[PASS] Test <length> invalid value:    e1mm\r\n\t 
+[PASS] Test <length> invalid value:    e1pt\r\n\t 
+[PASS] Test <length> invalid value:    e1pc\r\n\t 
+[PASS] Test <length> invalid value:    e1%\r\n\t 
+[PASS] Test <length> invalid value:    .\f
+[PASS] Test <length> invalid value:    .em\f
+[PASS] Test <length> invalid value:    .ex\f
+[PASS] Test <length> invalid value:    .px\f
+[PASS] Test <length> invalid value:    .in\f
+[PASS] Test <length> invalid value:    .cm\f
+[PASS] Test <length> invalid value:    .mm\f
+[PASS] Test <length> invalid value:    .pt\f
+[PASS] Test <length> invalid value:    .pc\f
+[PASS] Test <length> invalid value:    .%\f
+[PASS] Test <length> invalid value:    +.\f
+[PASS] Test <length> invalid value:    +.em\f
+[PASS] Test <length> invalid value:    +.ex\f
+[PASS] Test <length> invalid value:    +.px\f
+[PASS] Test <length> invalid value:    +.in\f
+[PASS] Test <length> invalid value:    +.cm\f
+[PASS] Test <length> invalid value:    +.mm\f
+[PASS] Test <length> invalid value:    +.pt\f
+[PASS] Test <length> invalid value:    +.pc\f
+[PASS] Test <length> invalid value:    +.%\f
+[PASS] Test <length> invalid value:    .E0\f
+[PASS] Test <length> invalid value:    .E0em\f
+[PASS] Test <length> invalid value:    .E0ex\f
+[PASS] Test <length> invalid value:    .E0px\f
+[PASS] Test <length> invalid value:    .E0in\f
+[PASS] Test <length> invalid value:    .E0cm\f
+[PASS] Test <length> invalid value:    .E0mm\f
+[PASS] Test <length> invalid value:    .E0pt\f
+[PASS] Test <length> invalid value:    .E0pc\f
+[PASS] Test <length> invalid value:    .E0%\f
+[PASS] Test <length> invalid value:    e1\f
+[PASS] Test <length> invalid value:    e1em\f
+[PASS] Test <length> invalid value:    e1ex\f
+[PASS] Test <length> invalid value:    e1px\f
+[PASS] Test <length> invalid value:    e1in\f
+[PASS] Test <length> invalid value:    e1cm\f
+[PASS] Test <length> invalid value:    e1mm\f
+[PASS] Test <length> invalid value:    e1pt\f
+[PASS] Test <length> invalid value:    e1pc\f
+[PASS] Test <length> invalid value:    e1%\f
+[PASS] Test <length> invalid value: \r\n\t .
+[PASS] Test <length> invalid value: \r\n\t .em
+[PASS] Test <length> invalid value: \r\n\t .ex
+[PASS] Test <length> invalid value: \r\n\t .px
+[PASS] Test <length> invalid value: \r\n\t .in
+[PASS] Test <length> invalid value: \r\n\t .cm
+[PASS] Test <length> invalid value: \r\n\t .mm
+[PASS] Test <length> invalid value: \r\n\t .pt
+[PASS] Test <length> invalid value: \r\n\t .pc
+[PASS] Test <length> invalid value: \r\n\t .%
+[PASS] Test <length> invalid value: \r\n\t +.
+[PASS] Test <length> invalid value: \r\n\t +.em
+[PASS] Test <length> invalid value: \r\n\t +.ex
+[PASS] Test <length> invalid value: \r\n\t +.px
+[PASS] Test <length> invalid value: \r\n\t +.in
+[PASS] Test <length> invalid value: \r\n\t +.cm
+[PASS] Test <length> invalid value: \r\n\t +.mm
+[PASS] Test <length> invalid value: \r\n\t +.pt
+[PASS] Test <length> invalid value: \r\n\t +.pc
+[PASS] Test <length> invalid value: \r\n\t +.%
+[PASS] Test <length> invalid value: \r\n\t .E0
+[PASS] Test <length> invalid value: \r\n\t .E0em
+[PASS] Test <length> invalid value: \r\n\t .E0ex
+[PASS] Test <length> invalid value: \r\n\t .E0px
+[PASS] Test <length> invalid value: \r\n\t .E0in
+[PASS] Test <length> invalid value: \r\n\t .E0cm
+[PASS] Test <length> invalid value: \r\n\t .E0mm
+[PASS] Test <length> invalid value: \r\n\t .E0pt
+[PASS] Test <length> invalid value: \r\n\t .E0pc
+[PASS] Test <length> invalid value: \r\n\t .E0%
+[PASS] Test <length> invalid value: \r\n\t e1
+[PASS] Test <length> invalid value: \r\n\t e1em
+[PASS] Test <length> invalid value: \r\n\t e1ex
+[PASS] Test <length> invalid value: \r\n\t e1px
+[PASS] Test <length> invalid value: \r\n\t e1in
+[PASS] Test <length> invalid value: \r\n\t e1cm
+[PASS] Test <length> invalid value: \r\n\t e1mm
+[PASS] Test <length> invalid value: \r\n\t e1pt
+[PASS] Test <length> invalid value: \r\n\t e1pc
+[PASS] Test <length> invalid value: \r\n\t e1%
+[PASS] Test <length> invalid value: \r\n\t . 
+[PASS] Test <length> invalid value: \r\n\t .em 
+[PASS] Test <length> invalid value: \r\n\t .ex 
+[PASS] Test <length> invalid value: \r\n\t .px 
+[PASS] Test <length> invalid value: \r\n\t .in 
+[PASS] Test <length> invalid value: \r\n\t .cm 
+[PASS] Test <length> invalid value: \r\n\t .mm 
+[PASS] Test <length> invalid value: \r\n\t .pt 
+[PASS] Test <length> invalid value: \r\n\t .pc 
+[PASS] Test <length> invalid value: \r\n\t .% 
+[PASS] Test <length> invalid value: \r\n\t +. 
+[PASS] Test <length> invalid value: \r\n\t +.em 
+[PASS] Test <length> invalid value: \r\n\t +.ex 
+[PASS] Test <length> invalid value: \r\n\t +.px 
+[PASS] Test <length> invalid value: \r\n\t +.in 
+[PASS] Test <length> invalid value: \r\n\t +.cm 
+[PASS] Test <length> invalid value: \r\n\t +.mm 
+[PASS] Test <length> invalid value: \r\n\t +.pt 
+[PASS] Test <length> invalid value: \r\n\t +.pc 
+[PASS] Test <length> invalid value: \r\n\t +.% 
+[PASS] Test <length> invalid value: \r\n\t .E0 
+[PASS] Test <length> invalid value: \r\n\t .E0em 
+[PASS] Test <length> invalid value: \r\n\t .E0ex 
+[PASS] Test <length> invalid value: \r\n\t .E0px 
+[PASS] Test <length> invalid value: \r\n\t .E0in 
+[PASS] Test <length> invalid value: \r\n\t .E0cm 
+[PASS] Test <length> invalid value: \r\n\t .E0mm 
+[PASS] Test <length> invalid value: \r\n\t .E0pt 
+[PASS] Test <length> invalid value: \r\n\t .E0pc 
+[PASS] Test <length> invalid value: \r\n\t .E0% 
+[PASS] Test <length> invalid value: \r\n\t e1 
+[PASS] Test <length> invalid value: \r\n\t e1em 
+[PASS] Test <length> invalid value: \r\n\t e1ex 
+[PASS] Test <length> invalid value: \r\n\t e1px 
+[PASS] Test <length> invalid value: \r\n\t e1in 
+[PASS] Test <length> invalid value: \r\n\t e1cm 
+[PASS] Test <length> invalid value: \r\n\t e1mm 
+[PASS] Test <length> invalid value: \r\n\t e1pt 
+[PASS] Test <length> invalid value: \r\n\t e1pc 
+[PASS] Test <length> invalid value: \r\n\t e1% 
+[PASS] Test <length> invalid value: \r\n\t .   
+[PASS] Test <length> invalid value: \r\n\t .em   
+[PASS] Test <length> invalid value: \r\n\t .ex   
+[PASS] Test <length> invalid value: \r\n\t .px   
+[PASS] Test <length> invalid value: \r\n\t .in   
+[PASS] Test <length> invalid value: \r\n\t .cm   
+[PASS] Test <length> invalid value: \r\n\t .mm   
+[PASS] Test <length> invalid value: \r\n\t .pt   
+[PASS] Test <length> invalid value: \r\n\t .pc   
+[PASS] Test <length> invalid value: \r\n\t .%   
+[PASS] Test <length> invalid value: \r\n\t +.   
+[PASS] Test <length> invalid value: \r\n\t +.em   
+[PASS] Test <length> invalid value: \r\n\t +.ex   
+[PASS] Test <length> invalid value: \r\n\t +.px   
+[PASS] Test <length> invalid value: \r\n\t +.in   
+[PASS] Test <length> invalid value: \r\n\t +.cm   
+[PASS] Test <length> invalid value: \r\n\t +.mm   
+[PASS] Test <length> invalid value: \r\n\t +.pt   
+[PASS] Test <length> invalid value: \r\n\t +.pc   
+[PASS] Test <length> invalid value: \r\n\t +.%   
+[PASS] Test <length> invalid value: \r\n\t .E0   
+[PASS] Test <length> invalid value: \r\n\t .E0em   
+[PASS] Test <length> invalid value: \r\n\t .E0ex   
+[PASS] Test <length> invalid value: \r\n\t .E0px   
+[PASS] Test <length> invalid value: \r\n\t .E0in   
+[PASS] Test <length> invalid value: \r\n\t .E0cm   
+[PASS] Test <length> invalid value: \r\n\t .E0mm   
+[PASS] Test <length> invalid value: \r\n\t .E0pt   
+[PASS] Test <length> invalid value: \r\n\t .E0pc   
+[PASS] Test <length> invalid value: \r\n\t .E0%   
+[PASS] Test <length> invalid value: \r\n\t e1   
+[PASS] Test <length> invalid value: \r\n\t e1em   
+[PASS] Test <length> invalid value: \r\n\t e1ex   
+[PASS] Test <length> invalid value: \r\n\t e1px   
+[PASS] Test <length> invalid value: \r\n\t e1in   
+[PASS] Test <length> invalid value: \r\n\t e1cm   
+[PASS] Test <length> invalid value: \r\n\t e1mm   
+[PASS] Test <length> invalid value: \r\n\t e1pt   
+[PASS] Test <length> invalid value: \r\n\t e1pc   
+[PASS] Test <length> invalid value: \r\n\t e1%   
+[PASS] Test <length> invalid value: \r\n\t .\r\n\t 
+[PASS] Test <length> invalid value: \r\n\t .em\r\n\t 
+[PASS] Test <length> invalid value: \r\n\t .ex\r\n\t 
+[PASS] Test <length> invalid value: \r\n\t .px\r\n\t 
+[PASS] Test <length> invalid value: \r\n\t .in\r\n\t 
+[PASS] Test <length> invalid value: \r\n\t .cm\r\n\t 
+[PASS] Test <length> invalid value: \r\n\t .mm\r\n\t 
+[PASS] Test <length> invalid value: \r\n\t .pt\r\n\t 
+[PASS] Test <length> invalid value: \r\n\t .pc\r\n\t 
+[PASS] Test <length> invalid value: \r\n\t .%\r\n\t 
+[PASS] Test <length> invalid value: \r\n\t +.\r\n\t 
+[PASS] Test <length> invalid value: \r\n\t +.em\r\n\t 
+[PASS] Test <length> invalid value: \r\n\t +.ex\r\n\t 
+[PASS] Test <length> invalid value: \r\n\t +.px\r\n\t 
+[PASS] Test <length> invalid value: \r\n\t +.in\r\n\t 
+[PASS] Test <length> invalid value: \r\n\t +.cm\r\n\t 
+[PASS] Test <length> invalid value: \r\n\t +.mm\r\n\t 
+[PASS] Test <length> invalid value: \r\n\t +.pt\r\n\t 
+[PASS] Test <length> invalid value: \r\n\t +.pc\r\n\t 
+[PASS] Test <length> invalid value: \r\n\t +.%\r\n\t 
+[PASS] Test <length> invalid value: \r\n\t .E0\r\n\t 
+[PASS] Test <length> invalid value: \r\n\t .E0em\r\n\t 
+[PASS] Test <length> invalid value: \r\n\t .E0ex\r\n\t 
+[PASS] Test <length> invalid value: \r\n\t .E0px\r\n\t 
+[PASS] Test <length> invalid value: \r\n\t .E0in\r\n\t 
+[PASS] Test <length> invalid value: \r\n\t .E0cm\r\n\t 
+[PASS] Test <length> invalid value: \r\n\t .E0mm\r\n\t 
+[PASS] Test <length> invalid value: \r\n\t .E0pt\r\n\t 
+[PASS] Test <length> invalid value: \r\n\t .E0pc\r\n\t 
+[PASS] Test <length> invalid value: \r\n\t .E0%\r\n\t 
+[PASS] Test <length> invalid value: \r\n\t e1\r\n\t 
+[PASS] Test <length> invalid value: \r\n\t e1em\r\n\t 
+[PASS] Test <length> invalid value: \r\n\t e1ex\r\n\t 
+[PASS] Test <length> invalid value: \r\n\t e1px\r\n\t 
+[PASS] Test <length> invalid value: \r\n\t e1in\r\n\t 
+[PASS] Test <length> invalid value: \r\n\t e1cm\r\n\t 
+[PASS] Test <length> invalid value: \r\n\t e1mm\r\n\t 
+[PASS] Test <length> invalid value: \r\n\t e1pt\r\n\t 
+[PASS] Test <length> invalid value: \r\n\t e1pc\r\n\t 
+[PASS] Test <length> invalid value: \r\n\t e1%\r\n\t 
+[PASS] Test <length> invalid value: \r\n\t .\f
+[PASS] Test <length> invalid value: \r\n\t .em\f
+[PASS] Test <length> invalid value: \r\n\t .ex\f
+[PASS] Test <length> invalid value: \r\n\t .px\f
+[PASS] Test <length> invalid value: \r\n\t .in\f
+[PASS] Test <length> invalid value: \r\n\t .cm\f
+[PASS] Test <length> invalid value: \r\n\t .mm\f
+[PASS] Test <length> invalid value: \r\n\t .pt\f
+[PASS] Test <length> invalid value: \r\n\t .pc\f
+[PASS] Test <length> invalid value: \r\n\t .%\f
+[PASS] Test <length> invalid value: \r\n\t +.\f
+[PASS] Test <length> invalid value: \r\n\t +.em\f
+[PASS] Test <length> invalid value: \r\n\t +.ex\f
+[PASS] Test <length> invalid value: \r\n\t +.px\f
+[PASS] Test <length> invalid value: \r\n\t +.in\f
+[PASS] Test <length> invalid value: \r\n\t +.cm\f
+[PASS] Test <length> invalid value: \r\n\t +.mm\f
+[PASS] Test <length> invalid value: \r\n\t +.pt\f
+[PASS] Test <length> invalid value: \r\n\t +.pc\f
+[PASS] Test <length> invalid value: \r\n\t +.%\f
+[PASS] Test <length> invalid value: \r\n\t .E0\f
+[PASS] Test <length> invalid value: \r\n\t .E0em\f
+[PASS] Test <length> invalid value: \r\n\t .E0ex\f
+[PASS] Test <length> invalid value: \r\n\t .E0px\f
+[PASS] Test <length> invalid value: \r\n\t .E0in\f
+[PASS] Test <length> invalid value: \r\n\t .E0cm\f
+[PASS] Test <length> invalid value: \r\n\t .E0mm\f
+[PASS] Test <length> invalid value: \r\n\t .E0pt\f
+[PASS] Test <length> invalid value: \r\n\t .E0pc\f
+[PASS] Test <length> invalid value: \r\n\t .E0%\f
+[PASS] Test <length> invalid value: \r\n\t e1\f
+[PASS] Test <length> invalid value: \r\n\t e1em\f
+[PASS] Test <length> invalid value: \r\n\t e1ex\f
+[PASS] Test <length> invalid value: \r\n\t e1px\f
+[PASS] Test <length> invalid value: \r\n\t e1in\f
+[PASS] Test <length> invalid value: \r\n\t e1cm\f
+[PASS] Test <length> invalid value: \r\n\t e1mm\f
+[PASS] Test <length> invalid value: \r\n\t e1pt\f
+[PASS] Test <length> invalid value: \r\n\t e1pc\f
+[PASS] Test <length> invalid value: \r\n\t e1%\f
+[PASS] Test <length> invalid value: \f.
+[PASS] Test <length> invalid value: \f.em
+[PASS] Test <length> invalid value: \f.ex
+[PASS] Test <length> invalid value: \f.px
+[PASS] Test <length> invalid value: \f.in
+[PASS] Test <length> invalid value: \f.cm
+[PASS] Test <length> invalid value: \f.mm
+[PASS] Test <length> invalid value: \f.pt
+[PASS] Test <length> invalid value: \f.pc
+[PASS] Test <length> invalid value: \f.%
+[PASS] Test <length> invalid value: \f+.
+[PASS] Test <length> invalid value: \f+.em
+[PASS] Test <length> invalid value: \f+.ex
+[PASS] Test <length> invalid value: \f+.px
+[PASS] Test <length> invalid value: \f+.in
+[PASS] Test <length> invalid value: \f+.cm
+[PASS] Test <length> invalid value: \f+.mm
+[PASS] Test <length> invalid value: \f+.pt
+[PASS] Test <length> invalid value: \f+.pc
+[PASS] Test <length> invalid value: \f+.%
+[PASS] Test <length> invalid value: \f.E0
+[PASS] Test <length> invalid value: \f.E0em
+[PASS] Test <length> invalid value: \f.E0ex
+[PASS] Test <length> invalid value: \f.E0px
+[PASS] Test <length> invalid value: \f.E0in
+[PASS] Test <length> invalid value: \f.E0cm
+[PASS] Test <length> invalid value: \f.E0mm
+[PASS] Test <length> invalid value: \f.E0pt
+[PASS] Test <length> invalid value: \f.E0pc
+[PASS] Test <length> invalid value: \f.E0%
+[PASS] Test <length> invalid value: \fe1
+[PASS] Test <length> invalid value: \fe1em
+[PASS] Test <length> invalid value: \fe1ex
+[PASS] Test <length> invalid value: \fe1px
+[PASS] Test <length> invalid value: \fe1in
+[PASS] Test <length> invalid value: \fe1cm
+[PASS] Test <length> invalid value: \fe1mm
+[PASS] Test <length> invalid value: \fe1pt
+[PASS] Test <length> invalid value: \fe1pc
+[PASS] Test <length> invalid value: \fe1%
+[PASS] Test <length> invalid value: \f. 
+[PASS] Test <length> invalid value: \f.em 
+[PASS] Test <length> invalid value: \f.ex 
+[PASS] Test <length> invalid value: \f.px 
+[PASS] Test <length> invalid value: \f.in 
+[PASS] Test <length> invalid value: \f.cm 
+[PASS] Test <length> invalid value: \f.mm 
+[PASS] Test <length> invalid value: \f.pt 
+[PASS] Test <length> invalid value: \f.pc 
+[PASS] Test <length> invalid value: \f.% 
+[PASS] Test <length> invalid value: \f+. 
+[PASS] Test <length> invalid value: \f+.em 
+[PASS] Test <length> invalid value: \f+.ex 
+[PASS] Test <length> invalid value: \f+.px 
+[PASS] Test <length> invalid value: \f+.in 
+[PASS] Test <length> invalid value: \f+.cm 
+[PASS] Test <length> invalid value: \f+.mm 
+[PASS] Test <length> invalid value: \f+.pt 
+[PASS] Test <length> invalid value: \f+.pc 
+[PASS] Test <length> invalid value: \f+.% 
+[PASS] Test <length> invalid value: \f.E0 
+[PASS] Test <length> invalid value: \f.E0em 
+[PASS] Test <length> invalid value: \f.E0ex 
+[PASS] Test <length> invalid value: \f.E0px 
+[PASS] Test <length> invalid value: \f.E0in 
+[PASS] Test <length> invalid value: \f.E0cm 
+[PASS] Test <length> invalid value: \f.E0mm 
+[PASS] Test <length> invalid value: \f.E0pt 
+[PASS] Test <length> invalid value: \f.E0pc 
+[PASS] Test <length> invalid value: \f.E0% 
+[PASS] Test <length> invalid value: \fe1 
+[PASS] Test <length> invalid value: \fe1em 
+[PASS] Test <length> invalid value: \fe1ex 
+[PASS] Test <length> invalid value: \fe1px 
+[PASS] Test <length> invalid value: \fe1in 
+[PASS] Test <length> invalid value: \fe1cm 
+[PASS] Test <length> invalid value: \fe1mm 
+[PASS] Test <length> invalid value: \fe1pt 
+[PASS] Test <length> invalid value: \fe1pc 
+[PASS] Test <length> invalid value: \fe1% 
+[PASS] Test <length> invalid value: \f.   
+[PASS] Test <length> invalid value: \f.em   
+[PASS] Test <length> invalid value: \f.ex   
+[PASS] Test <length> invalid value: \f.px   
+[PASS] Test <length> invalid value: \f.in   
+[PASS] Test <length> invalid value: \f.cm   
+[PASS] Test <length> invalid value: \f.mm   
+[PASS] Test <length> invalid value: \f.pt   
+[PASS] Test <length> invalid value: \f.pc   
+[PASS] Test <length> invalid value: \f.%   
+[PASS] Test <length> invalid value: \f+.   
+[PASS] Test <length> invalid value: \f+.em   
+[PASS] Test <length> invalid value: \f+.ex   
+[PASS] Test <length> invalid value: \f+.px   
+[PASS] Test <length> invalid value: \f+.in   
+[PASS] Test <length> invalid value: \f+.cm   
+[PASS] Test <length> invalid value: \f+.mm   
+[PASS] Test <length> invalid value: \f+.pt   
+[PASS] Test <length> invalid value: \f+.pc   
+[PASS] Test <length> invalid value: \f+.%   
+[PASS] Test <length> invalid value: \f.E0   
+[PASS] Test <length> invalid value: \f.E0em   
+[PASS] Test <length> invalid value: \f.E0ex   
+[PASS] Test <length> invalid value: \f.E0px   
+[PASS] Test <length> invalid value: \f.E0in   
+[PASS] Test <length> invalid value: \f.E0cm   
+[PASS] Test <length> invalid value: \f.E0mm   
+[PASS] Test <length> invalid value: \f.E0pt   
+[PASS] Test <length> invalid value: \f.E0pc   
+[PASS] Test <length> invalid value: \f.E0%   
+[PASS] Test <length> invalid value: \fe1   
+[PASS] Test <length> invalid value: \fe1em   
+[PASS] Test <length> invalid value: \fe1ex   
+[PASS] Test <length> invalid value: \fe1px   
+[PASS] Test <length> invalid value: \fe1in   
+[PASS] Test <length> invalid value: \fe1cm   
+[PASS] Test <length> invalid value: \fe1mm   
+[PASS] Test <length> invalid value: \fe1pt   
+[PASS] Test <length> invalid value: \fe1pc   
+[PASS] Test <length> invalid value: \fe1%   
+[PASS] Test <length> invalid value: \f.\r\n\t 
+[PASS] Test <length> invalid value: \f.em\r\n\t 
+[PASS] Test <length> invalid value: \f.ex\r\n\t 
+[PASS] Test <length> invalid value: \f.px\r\n\t 
+[PASS] Test <length> invalid value: \f.in\r\n\t 
+[PASS] Test <length> invalid value: \f.cm\r\n\t 
+[PASS] Test <length> invalid value: \f.mm\r\n\t 
+[PASS] Test <length> invalid value: \f.pt\r\n\t 
+[PASS] Test <length> invalid value: \f.pc\r\n\t 
+[PASS] Test <length> invalid value: \f.%\r\n\t 
+[PASS] Test <length> invalid value: \f+.\r\n\t 
+[PASS] Test <length> invalid value: \f+.em\r\n\t 
+[PASS] Test <length> invalid value: \f+.ex\r\n\t 
+[PASS] Test <length> invalid value: \f+.px\r\n\t 
+[PASS] Test <length> invalid value: \f+.in\r\n\t 
+[PASS] Test <length> invalid value: \f+.cm\r\n\t 
+[PASS] Test <length> invalid value: \f+.mm\r\n\t 
+[PASS] Test <length> invalid value: \f+.pt\r\n\t 
+[PASS] Test <length> invalid value: \f+.pc\r\n\t 
+[PASS] Test <length> invalid value: \f+.%\r\n\t 
+[PASS] Test <length> invalid value: \f.E0\r\n\t 
+[PASS] Test <length> invalid value: \f.E0em\r\n\t 
+[PASS] Test <length> invalid value: \f.E0ex\r\n\t 
+[PASS] Test <length> invalid value: \f.E0px\r\n\t 
+[PASS] Test <length> invalid value: \f.E0in\r\n\t 
+[PASS] Test <length> invalid value: \f.E0cm\r\n\t 
+[PASS] Test <length> invalid value: \f.E0mm\r\n\t 
+[PASS] Test <length> invalid value: \f.E0pt\r\n\t 
+[PASS] Test <length> invalid value: \f.E0pc\r\n\t 
+[PASS] Test <length> invalid value: \f.E0%\r\n\t 
+[PASS] Test <length> invalid value: \fe1\r\n\t 
+[PASS] Test <length> invalid value: \fe1em\r\n\t 
+[PASS] Test <length> invalid value: \fe1ex\r\n\t 
+[PASS] Test <length> invalid value: \fe1px\r\n\t 
+[PASS] Test <length> invalid value: \fe1in\r\n\t 
+[PASS] Test <length> invalid value: \fe1cm\r\n\t 
+[PASS] Test <length> invalid value: \fe1mm\r\n\t 
+[PASS] Test <length> invalid value: \fe1pt\r\n\t 
+[PASS] Test <length> invalid value: \fe1pc\r\n\t 
+[PASS] Test <length> invalid value: \fe1%\r\n\t 
+[PASS] Test <length> invalid value: \f.\f
+[PASS] Test <length> invalid value: \f.em\f
+[PASS] Test <length> invalid value: \f.ex\f
+[PASS] Test <length> invalid value: \f.px\f
+[PASS] Test <length> invalid value: \f.in\f
+[PASS] Test <length> invalid value: \f.cm\f
+[PASS] Test <length> invalid value: \f.mm\f
+[PASS] Test <length> invalid value: \f.pt\f
+[PASS] Test <length> invalid value: \f.pc\f
+[PASS] Test <length> invalid value: \f.%\f
+[PASS] Test <length> invalid value: \f+.\f
+[PASS] Test <length> invalid value: \f+.em\f
+[PASS] Test <length> invalid value: \f+.ex\f
+[PASS] Test <length> invalid value: \f+.px\f
+[PASS] Test <length> invalid value: \f+.in\f
+[PASS] Test <length> invalid value: \f+.cm\f
+[PASS] Test <length> invalid value: \f+.mm\f
+[PASS] Test <length> invalid value: \f+.pt\f
+[PASS] Test <length> invalid value: \f+.pc\f
+[PASS] Test <length> invalid value: \f+.%\f
+[PASS] Test <length> invalid value: \f.E0\f
+[PASS] Test <length> invalid value: \f.E0em\f
+[PASS] Test <length> invalid value: \f.E0ex\f
+[PASS] Test <length> invalid value: \f.E0px\f
+[PASS] Test <length> invalid value: \f.E0in\f
+[PASS] Test <length> invalid value: \f.E0cm\f
+[PASS] Test <length> invalid value: \f.E0mm\f
+[PASS] Test <length> invalid value: \f.E0pt\f
+[PASS] Test <length> invalid value: \f.E0pc\f
+[PASS] Test <length> invalid value: \f.E0%\f
+[PASS] Test <length> invalid value: \fe1\f
+[PASS] Test <length> invalid value: \fe1em\f
+[PASS] Test <length> invalid value: \fe1ex\f
+[PASS] Test <length> invalid value: \fe1px\f
+[PASS] Test <length> invalid value: \fe1in\f
+[PASS] Test <length> invalid value: \fe1cm\f
+[PASS] Test <length> invalid value: \fe1mm\f
+[PASS] Test <length> invalid value: \fe1pt\f
+[PASS] Test <length> invalid value: \fe1pc\f
+[PASS] Test <length> invalid value: \fe1%\f
 Harness: the test ran to completion.
 

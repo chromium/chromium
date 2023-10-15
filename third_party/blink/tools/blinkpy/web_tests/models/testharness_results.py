@@ -49,15 +49,17 @@ def is_testharness_output_passing(content_text):
     """
     # Leading and trailing whitespace are ignored.
     lines = content_text.strip().splitlines()
-    lines = [line.strip() for line in lines]
 
     at_least_one_pass = False
 
+    # support both baseline formats for now
     for line in lines:
-        if line.startswith('PASS') or line.startswith(_ALL_PASS_MARKER):
+        if line.startswith('[PASS]') or line.startswith(
+                'PASS') or line.startswith(_ALL_PASS_MARKER):
             at_least_one_pass = True
             continue
-        if (line.startswith('FAIL') or line.startswith('TIMEOUT')
+        if ((line.startswith('[') and not line.startswith('[PASS]'))
+                or line.startswith('FAIL') or line.startswith('TIMEOUT')
                 or line.startswith('NOTRUN')
                 or line.startswith('PRECONDITION_FAILED')
                 or line.startswith('Harness Error.')):

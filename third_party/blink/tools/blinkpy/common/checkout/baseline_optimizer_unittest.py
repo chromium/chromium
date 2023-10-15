@@ -39,13 +39,13 @@ from blinkpy.web_tests.builder_list import BuilderList
 from blinkpy.web_tests.models.testharness_results import ABBREVIATED_ALL_PASS
 
 ALL_PASS_TESTHARNESS_RESULT = """This is a testharness.js-based test.
-PASS woohoo
+[PASS] woohoo
 Harness: the test ran to completion.
 """
 
 ALL_PASS_TESTHARNESS_RESULT2 = """This is a testharness.js-based test.
-PASS woohoo
-PASS yahoo
+[PASS] woohoo
+[PASS] yahoo
 Harness: the test ran to completion.
 """
 

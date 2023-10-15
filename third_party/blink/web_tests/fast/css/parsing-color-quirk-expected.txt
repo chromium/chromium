@@ -1,54 +1,54 @@
 This is a testharness.js-based test.
 Harness Error. harness_status.status = 1 , harness_status.message = 1 duplicate test name: "No hashless color quirk for background-color property with invalid hashless value"
-PASS StyleSheet present
-PASS All rules parsed
-PASS Hashless color quirk for color property
-PASS Hashless color quirk for background-color property
-PASS Hashless color quirk for border-color short-hand
-PASS Hashless color quirk for border-bottom-color property
-PASS Hashless color quirk for border-left-color property
-PASS Hashless color quirk for border-right-color property
-PASS Hashless color quirk for border-top-color property
-PASS No hashless color quirk for background short-hand
-PASS No hashless color quirk for text-shadow color
-PASS No hashless color quirk for box-shadow color
-PASS No hashless color quirk for linear-gradient colors
-PASS No hashless color quirk for border-inline-start-color property
-PASS No hashless color quirk for border-inline-end-color property
-PASS No hashless color quirk for border-block-start-property
-PASS No hashless color quirk for border-block-end-color property
-PASS No hashless color quirk for -webkit-column-rule-color property
-PASS No hashless color quirk for -webkit-text-emphasis-color property
-PASS No hashless color quirk for -webkit-text-fill-color property
-PASS No hashless color quirk for -webkit-text-stroke-color property
-PASS No hashless color quirk for fill property
-PASS No hashless color quirk for stroke property
-PASS No hashless color quirk for stop-color property
-PASS No hashless color quirk for flood-color property
-PASS No hashless color quirk for lighting-color property
-PASS No hashless color quirk for border-top shorthand
-PASS No hashless color quirk for border-left shorthand
-PASS No hashless color quirk for border-right shorthand
-PASS No hashless color quirk for border-bottom shorthand
-PASS No hashless color quirk for border shorthand
-PASS No hashless color quirk for background-color property with invalid hashless value
-PASS No hashless color quirk for background-color property with invalid hashless value
-PASS No hashless color quirk for background-color property with invalid hashless value
-PASS No hashless color quirk for background-color property with invalid hashless value
-PASS No hashless color quirk for background-color property with invalid hashless value
-PASS No hashless color quirk for background-color property with invalid hashless value
-PASS 4 digits: 1010 is a valid <quirky-color>
-PASS 8 digits: 00101010 is a valid <quirky-color>
-PASS No hashless color quirk for border-color property with 4 digit hex value
-PASS No hashless color quirk for border-color property with 8 digit hex value
-PASS 3 digit hex: f0f should be accepted in quirks-mode
-PASS 6 digit hex: ff00ff should be accepted in quirks-mode
-PASS 4 digit hex: F0F0 must be ignored in quirks-mode
-PASS 8 digit hex: FF00FF00 must be ignored in quirks-mode
-PASS No hashless color quirk for background-color property with invalid hashless value
-PASS No hashless color quirk for background-color property with invalid hashless value
-PASS No hashless color quirk for background-color property with invalid hashless value
-PASS No hashless color quirk for background-color property with invalid hashless value
-PASS No hashless color quirk for background-color property with invalid hashless value
+[PASS] StyleSheet present
+[PASS] All rules parsed
+[PASS] Hashless color quirk for color property
+[PASS] Hashless color quirk for background-color property
+[PASS] Hashless color quirk for border-color short-hand
+[PASS] Hashless color quirk for border-bottom-color property
+[PASS] Hashless color quirk for border-left-color property
+[PASS] Hashless color quirk for border-right-color property
+[PASS] Hashless color quirk for border-top-color property
+[PASS] No hashless color quirk for background short-hand
+[PASS] No hashless color quirk for text-shadow color
+[PASS] No hashless color quirk for box-shadow color
+[PASS] No hashless color quirk for linear-gradient colors
+[PASS] No hashless color quirk for border-inline-start-color property
+[PASS] No hashless color quirk for border-inline-end-color property
+[PASS] No hashless color quirk for border-block-start-property
+[PASS] No hashless color quirk for border-block-end-color property
+[PASS] No hashless color quirk for -webkit-column-rule-color property
+[PASS] No hashless color quirk for -webkit-text-emphasis-color property
+[PASS] No hashless color quirk for -webkit-text-fill-color property
+[PASS] No hashless color quirk for -webkit-text-stroke-color property
+[PASS] No hashless color quirk for fill property
+[PASS] No hashless color quirk for stroke property
+[PASS] No hashless color quirk for stop-color property
+[PASS] No hashless color quirk for flood-color property
+[PASS] No hashless color quirk for lighting-color property
+[PASS] No hashless color quirk for border-top shorthand
+[PASS] No hashless color quirk for border-left shorthand
+[PASS] No hashless color quirk for border-right shorthand
+[PASS] No hashless color quirk for border-bottom shorthand
+[PASS] No hashless color quirk for border shorthand
+[PASS] No hashless color quirk for background-color property with invalid hashless value
+[PASS] No hashless color quirk for background-color property with invalid hashless value
+[PASS] No hashless color quirk for background-color property with invalid hashless value
+[PASS] No hashless color quirk for background-color property with invalid hashless value
+[PASS] No hashless color quirk for background-color property with invalid hashless value
+[PASS] No hashless color quirk for background-color property with invalid hashless value
+[PASS] 4 digits: 1010 is a valid <quirky-color>
+[PASS] 8 digits: 00101010 is a valid <quirky-color>
+[PASS] No hashless color quirk for border-color property with 4 digit hex value
+[PASS] No hashless color quirk for border-color property with 8 digit hex value
+[PASS] 3 digit hex: f0f should be accepted in quirks-mode
+[PASS] 6 digit hex: ff00ff should be accepted in quirks-mode
+[PASS] 4 digit hex: F0F0 must be ignored in quirks-mode
+[PASS] 8 digit hex: FF00FF00 must be ignored in quirks-mode
+[PASS] No hashless color quirk for background-color property with invalid hashless value
+[PASS] No hashless color quirk for background-color property with invalid hashless value
+[PASS] No hashless color quirk for background-color property with invalid hashless value
+[PASS] No hashless color quirk for background-color property with invalid hashless value
+[PASS] No hashless color quirk for background-color property with invalid hashless value
 Harness: the test ran to completion.
 
