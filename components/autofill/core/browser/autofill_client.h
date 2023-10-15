@@ -15,6 +15,7 @@
 #include "base/functional/callback_forward.h"
 #include "base/i18n/rtl.h"
 #include "base/memory/weak_ptr.h"
+#include "base/types/optional_ref.h"
 #include "build/build_config.h"
 #include "components/autofill/core/browser/autofill_trigger_details.h"
 #include "components/autofill/core/browser/country_type.h"
@@ -382,11 +383,13 @@ class AutofillClient : public RiskDataLoader {
   using WebauthnDialogCallback =
       base::RepeatingCallback<void(WebauthnDialogCallbackType)>;
 
-  // TODO(crbug.com/1486412): investigate if AutofillProfile should be passed
-  // by const reference.
+  // Callback to run when the user makes a decision on whether to save the
+  // profile. If the user edits the Autofill profile and then accepts edits, the
+  // edited version of the profile should be passed as the second parameter. No
+  // Autofill profile is passed otherwise.
   using AddressProfileSavePromptCallback =
       base::OnceCallback<void(SaveAddressProfileOfferUserDecision,
-                              AutofillProfile profile)>;
+                              base::optional_ref<const AutofillProfile>)>;
 
   // The callback accepts the boolean parameter indicating whether the user has
   // accepted the delete dialog. The callback is intended to be called only upon

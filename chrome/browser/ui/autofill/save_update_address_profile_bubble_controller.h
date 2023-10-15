@@ -37,7 +37,7 @@ class SaveUpdateAddressProfileBubbleController {
   virtual const AutofillProfile* GetOriginalProfile() const = 0;
   virtual void OnUserDecision(
       AutofillClient::SaveAddressProfileOfferUserDecision decision,
-      AutofillProfile profile) = 0;
+      base::optional_ref<const AutofillProfile> profile) = 0;
   virtual void OnEditButtonClicked() = 0;
   virtual void OnBubbleClosed() = 0;
 };

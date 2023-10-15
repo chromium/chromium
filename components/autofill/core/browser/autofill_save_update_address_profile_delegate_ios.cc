@@ -249,7 +249,12 @@ bool AutofillSaveUpdateAddressProfileDelegateIOS::ShouldExpire(
 void AutofillSaveUpdateAddressProfileDelegateIOS::
     RunSaveAddressProfilePromptCallback() {
   std::move(address_profile_save_prompt_callback_)
-      .Run(user_decision_, profile_);
+      .Run(user_decision_,
+           user_decision_ ==
+                   AutofillClient::SaveAddressProfileOfferUserDecision::
+                       kEditAccepted
+               ? base::optional_ref(profile_)
+               : std::nullopt);
 }
 
 void AutofillSaveUpdateAddressProfileDelegateIOS::SetUserDecision(

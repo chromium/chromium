@@ -24,9 +24,10 @@
 
 namespace autofill {
 
-// |arg| must be of type AutofillProfile.
+// |arg| must be of type base::optional_ref<const AutofillProfile>.
 MATCHER_P2(AutofillProfileHasInfo, type, expected_value, "") {
-  return arg.GetRawInfo(type) == expected_value;
+  EXPECT_TRUE(arg.has_value());
+  return arg.value().GetRawInfo(type) == expected_value;
 }
 
 class MockEditAddressProfileDialogController
@@ -40,7 +41,7 @@ class MockEditAddressProfileDialogController
   MOCK_METHOD(void,
               OnDialogClosed,
               (AutofillClient::SaveAddressProfileOfferUserDecision decision,
-               const AutofillProfile& profile),
+               base::optional_ref<const AutofillProfile> profile),
               (override));
 };
 

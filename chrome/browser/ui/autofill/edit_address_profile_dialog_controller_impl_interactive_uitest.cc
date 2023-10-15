@@ -43,19 +43,26 @@ class EditAddressProfileDialogControllerImplTest
 
   void OnUserDecision(
       AutofillClient::SaveAddressProfileOfferUserDecision decision,
-      AutofillProfile edited_profile) {
+      base::optional_ref<const AutofillProfile> edited_profile) {
     user_decision_ = decision;
-    edited_profile_ = edited_profile;
+    if (edited_profile.has_value()) {
+      edited_profile_ = edited_profile.value();
+    }
   }
 
   auto EnsureClosedWithDecisionAndProfile(
       AutofillClient::SaveAddressProfileOfferUserDecision
           expected_user_decision,
-      const AutofillProfile& expected_profile) {
+      base::optional_ref<const AutofillProfile> expected_profile) {
     return Steps(
         CheckResult([this]() { return user_decision_; },
                     expected_user_decision),
-        CheckResult([this]() { return edited_profile_; }, expected_profile));
+        Do([this, expected_profile]() {
+          ASSERT_EQ(edited_profile_.has_value(), expected_profile.has_value());
+          if (expected_profile.has_value()) {
+            EXPECT_EQ(edited_profile_.value(), expected_profile.value());
+          }
+        }));
   }
 
   auto ShowEditor(const AutofillProfile& profile,
@@ -88,7 +95,7 @@ class EditAddressProfileDialogControllerImplTest
   // prompt.
   AutofillClient::SaveAddressProfileOfferUserDecision user_decision_;
   AutofillProfile local_profile_;
-  AutofillProfile edited_profile_;
+  std::optional<AutofillProfile> edited_profile_;
 };
 
 IN_PROC_BROWSER_TEST_F(EditAddressProfileDialogControllerImplTest,

@@ -26,6 +26,9 @@
 
 namespace autofill {
 
+using ::testing::Property;
+using profile_ref = base::optional_ref<const AutofillProfile>;
+
 class SaveUpdateAddressProfileBubbleControllerImplTest
     : public BrowserWithTestWindowTest {
  public:
@@ -64,9 +67,10 @@ TEST_F(SaveUpdateAddressProfileBubbleControllerImplTest,
   EXPECT_CALL(
       callback,
       Run(AutofillClient::SaveAddressProfileOfferUserDecision::kAccepted,
-          profile));
+          Property(&profile_ref::has_value, false)));
   controller()->OnUserDecision(
-      AutofillClient::SaveAddressProfileOfferUserDecision::kAccepted, profile);
+      AutofillClient::SaveAddressProfileOfferUserDecision::kAccepted,
+      std::nullopt);
 }
 
 TEST_F(SaveUpdateAddressProfileBubbleControllerImplTest,
@@ -81,9 +85,10 @@ TEST_F(SaveUpdateAddressProfileBubbleControllerImplTest,
   EXPECT_CALL(
       callback,
       Run(AutofillClient::SaveAddressProfileOfferUserDecision::kDeclined,
-          testing::_));
+          Property(&profile_ref::has_value, false)));
   controller()->OnUserDecision(
-      AutofillClient::SaveAddressProfileOfferUserDecision::kDeclined, profile);
+      AutofillClient::SaveAddressProfileOfferUserDecision::kDeclined,
+      std::nullopt);
 }
 
 // This is testing that closing all tabs (which effectively destroys the web
@@ -111,7 +116,7 @@ TEST_F(SaveUpdateAddressProfileBubbleControllerImplTest,
   EXPECT_EQ(2, tab_strip_model->count());
   EXPECT_CALL(callback,
               Run(AutofillClient::SaveAddressProfileOfferUserDecision::kIgnored,
-                  testing::_));
+                  Property(&profile_ref::has_value, false)));
   // Close controller tab.
   int previous_tab_count = browser()->tab_strip_model()->count();
   browser()->tab_strip_model()->CloseWebContentsAt(
@@ -166,7 +171,7 @@ TEST_F(SaveUpdateAddressProfileBubbleControllerImplTest,
   EXPECT_CALL(
       callback,
       Run(AutofillClient::SaveAddressProfileOfferUserDecision::kAutoDeclined,
-          testing::_));
+          Property(&profile_ref::has_value, false)));
   controller()->OfferSave(
       profile, /*original_profile=*/nullptr,
       AutofillClient::SaveAddressProfilePromptOptions{.show_prompt = true},
@@ -190,7 +195,7 @@ TEST_F(SaveUpdateAddressProfileBubbleControllerImplTest,
   // When second prompt comes, the first one will be ignored.
   EXPECT_CALL(callback,
               Run(AutofillClient::SaveAddressProfileOfferUserDecision::kIgnored,
-                  testing::_));
+                  Property(&profile_ref::has_value, false)));
   controller()->OfferSave(
       profile, /*original_profile=*/nullptr,
       AutofillClient::SaveAddressProfilePromptOptions{.show_prompt = true},

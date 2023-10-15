@@ -218,7 +218,7 @@ class ProfileImportProcess {
   // |edited_profile| reflect user edits to the import candidate.
   void SetUserDecision(
       AutofillClient::SaveAddressProfileOfferUserDecision decision,
-      absl::optional<AutofillProfile> edited_profile = absl::nullopt);
+      base::optional_ref<const AutofillProfile> edited_profile = std::nullopt);
 
   // Records UMA and UKM metrics. Should only be called after a user decision
   // was supplied or a silent update happens.

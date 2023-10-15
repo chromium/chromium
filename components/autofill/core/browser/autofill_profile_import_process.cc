@@ -326,7 +326,7 @@ void ProfileImportProcess::ApplyImport() {
 
 void ProfileImportProcess::SetUserDecision(
     UserDecision decision,
-    absl::optional<AutofillProfile> edited_profile) {
+    base::optional_ref<const AutofillProfile> edited_profile) {
   // A user decision should only be supplied once.
   DCHECK_EQ(user_decision_, UserDecision::kUndefined);
   DCHECK(!confirmed_import_candidate_.has_value());
@@ -344,24 +344,25 @@ void ProfileImportProcess::SetUserDecision(
       // If the import candidate is supplied, the 'edited_profile' must be
       // supplied.
       DCHECK(edited_profile.has_value());
+      confirmed_import_candidate_ = edited_profile.value();
 
       // Make sure the verification status of all settings-visible non-empty
       // fields in the edited profile are set to kUserVerified.
       for (auto type : GetUserVisibleTypes()) {
-        std::u16string value = edited_profile->GetRawInfo(type);
-        if (!value.empty() && edited_profile->GetVerificationStatus(type) ==
-                                  VerificationStatus::kNoStatus) {
-          edited_profile->SetRawInfoWithVerificationStatus(
+        std::u16string value = confirmed_import_candidate_->GetRawInfo(type);
+        if (!value.empty() &&
+            confirmed_import_candidate_->GetVerificationStatus(type) ==
+                VerificationStatus::kNoStatus) {
+          confirmed_import_candidate_->SetRawInfoWithVerificationStatus(
               type, value, VerificationStatus::kUserVerified);
         }
       }
 
-      edited_profile->FinalizeAfterImport();
-      edited_profile->set_modification_date(AutofillClock::Now());
-      // The `edited_profile` has to have the same `guid` as the original import
-      // candidate.
-      DCHECK_EQ(import_candidate_.value().guid(), edited_profile->guid());
-      confirmed_import_candidate_ = std::move(edited_profile);
+      confirmed_import_candidate_->FinalizeAfterImport();
+      confirmed_import_candidate_->set_modification_date(AutofillClock::Now());
+      // The `confirmed_import_candidate_` has to have the same `guid` as the
+      // original import candidate.
+      DCHECK_EQ(import_candidate_->guid(), confirmed_import_candidate_->guid());
       break;
 
     // If the confirmable merge was declided or ignored, the original merge

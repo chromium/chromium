@@ -54,7 +54,7 @@ class EditAddressProfileDialogControllerImpl
   bool GetIsValidatable() const override;
   void OnDialogClosed(
       AutofillClient::SaveAddressProfileOfferUserDecision decision,
-      const AutofillProfile& profile_with_edits) override;
+      base::optional_ref<const AutofillProfile> profile_with_edits) override;
 
   // content::WebContentsObserver:
   void WebContentsDestroyed() override;

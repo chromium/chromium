@@ -18,6 +18,8 @@ namespace autofill {
 namespace {
 
 constexpr char16_t kTestEmail[] = u"test@email.com";
+using ::testing::Property;
+using profile_ref = base::optional_ref<const AutofillProfile>;
 
 }  // namespace
 
@@ -58,7 +60,7 @@ TEST_F(AutofillSaveUpdateAddressProfileDelegateIOSTest,
   EXPECT_CALL(
       callback_,
       Run(AutofillClient::SaveAddressProfileOfferUserDecision::kAccepted,
-          profile_));
+          Property(&profile_ref::has_value, false)));
   delegate->Accept();
 }
 
@@ -72,7 +74,7 @@ TEST_F(AutofillSaveUpdateAddressProfileDelegateIOSTest,
   EXPECT_CALL(
       callback_,
       Run(AutofillClient::SaveAddressProfileOfferUserDecision::kDeclined,
-          testing::_));
+          Property(&profile_ref::has_value, false)));
   // The callback should run in the destructor.
   delegate.reset();
 }
@@ -84,7 +86,7 @@ TEST_F(AutofillSaveUpdateAddressProfileDelegateIOSTest, TestCallbackOnSave) {
   EXPECT_CALL(
       callback_,
       Run(AutofillClient::SaveAddressProfileOfferUserDecision::kAccepted,
-          testing::_));
+          Property(&profile_ref::has_value, false)));
   delegate->Accept();
 }
 
@@ -107,7 +109,7 @@ TEST_F(AutofillSaveUpdateAddressProfileDelegateIOSTest,
       CreateAutofillSaveUpdateAddressProfileDelegate();
   EXPECT_CALL(callback_,
               Run(AutofillClient::SaveAddressProfileOfferUserDecision::kNever,
-                  profile_));
+                  Property(&profile_ref::has_value, false)));
   delegate->Never();
 }
 

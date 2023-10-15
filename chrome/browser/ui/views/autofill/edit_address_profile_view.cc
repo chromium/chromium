@@ -112,8 +112,12 @@ void EditAddressProfileView::Hide() {
 
 void EditAddressProfileView::WindowClosing() {
   if (controller_) {
-    controller_->OnDialogClosed(decision_,
-                                address_editor_view_->GetAddressProfile());
+    controller_->OnDialogClosed(
+        decision_,
+        decision_ == AutofillClient::SaveAddressProfileOfferUserDecision::
+                         kEditAccepted
+            ? base::optional_ref(address_editor_view_->GetAddressProfile())
+            : std::nullopt);
     controller_ = nullptr;
   }
 }

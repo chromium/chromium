@@ -19,6 +19,9 @@
 namespace autofill {
 
 using ::testing::_;
+using ::testing::AllOf;
+using ::testing::Property;
+using profile_ref = base::optional_ref<const AutofillProfile>;
 
 class EditAddressProfileDialogControllerImplTest
     : public BrowserWithTestWindowTest {
@@ -59,7 +62,7 @@ class EditAddressProfileDialogControllerImplTest
   TestAutofillBubble autofill_bubble_;
   base::MockOnceCallback<void(
       AutofillClient::SaveAddressProfileOfferUserDecision,
-      AutofillProfile profile)>
+      profile_ref profile)>
       save_callback_;
 };
 
@@ -76,10 +79,11 @@ TEST_F(EditAddressProfileDialogControllerImplTest,
        IgnoreDialog_CancelCallbackInvoked) {
   EXPECT_CALL(save_callback_,
               Run(AutofillClient::SaveAddressProfileOfferUserDecision::kIgnored,
-                  profile_));
+                  Property(&profile_ref::has_value, false)));
 
   controller()->OnDialogClosed(
-      AutofillClient::SaveAddressProfileOfferUserDecision::kIgnored, profile_);
+      AutofillClient::SaveAddressProfileOfferUserDecision::kIgnored,
+      std::nullopt);
 }
 
 TEST_F(EditAddressProfileDialogControllerImplTest,
@@ -87,11 +91,11 @@ TEST_F(EditAddressProfileDialogControllerImplTest,
   EXPECT_CALL(
       save_callback_,
       Run(AutofillClient::SaveAddressProfileOfferUserDecision::kEditDeclined,
-          profile_));
+          Property(&profile_ref::has_value, false)));
 
   controller()->OnDialogClosed(
       AutofillClient::SaveAddressProfileOfferUserDecision::kEditDeclined,
-      profile_);
+      std::nullopt);
 }
 
 TEST_F(EditAddressProfileDialogControllerImplTest,
@@ -99,7 +103,8 @@ TEST_F(EditAddressProfileDialogControllerImplTest,
   EXPECT_CALL(
       save_callback_,
       Run(AutofillClient::SaveAddressProfileOfferUserDecision::kEditAccepted,
-          profile_));
+          AllOf(Property(&profile_ref::has_value, true),
+                Property(&profile_ref::value, profile_))));
 
   controller()->OnDialogClosed(
       AutofillClient::SaveAddressProfileOfferUserDecision::kEditAccepted,

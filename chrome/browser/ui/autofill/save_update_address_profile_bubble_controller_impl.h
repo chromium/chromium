@@ -58,7 +58,7 @@ class SaveUpdateAddressProfileBubbleControllerImpl
   const AutofillProfile* GetOriginalProfile() const override;
   void OnUserDecision(
       AutofillClient::SaveAddressProfileOfferUserDecision decision,
-      AutofillProfile profile) override;
+      base::optional_ref<const AutofillProfile> profile) override;
   void OnEditButtonClicked() override;
   void OnBubbleClosed() override;
 
