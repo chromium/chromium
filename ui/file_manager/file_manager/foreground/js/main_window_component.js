@@ -22,7 +22,6 @@ import {FileSelectionHandler} from './file_selection.js';
 import {NamingController} from './naming_controller.js';
 import {TaskController} from './task_controller.js';
 import {Command} from './ui/command.js';
-import {DirectoryTree} from './ui/directory_tree.js';
 import {FileManagerUI} from './ui/file_manager_ui.js';
 import {FileTapHandler} from './ui/file_tap_handler.js';
 import {ListContainer} from './ui/list_container.js';
@@ -429,7 +428,11 @@ export class MainWindowComponent {
       if (!focusedItem) {
         return;
       }
-      focusedItem.activate();
+      if (util.isNewDirectoryTreeEnabled()) {
+        focusedItem.selected = true;
+      } else {
+        focusedItem.activate();
+      }
       if (this.dialogType_ !== DialogType.FULL_PAGE &&
           !focusedItem.hasAttribute('renaming') &&
           util.isSameEntry(

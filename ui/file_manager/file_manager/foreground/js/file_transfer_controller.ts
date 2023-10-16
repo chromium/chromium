@@ -30,6 +30,7 @@ import {VolumeManager} from '../../externs/volume_manager.js';
 import {getFileData, getStore} from '../../state/store.js';
 import {XfTree} from '../../widgets/xf_tree.js';
 import {XfTreeItem} from '../../widgets/xf_tree_item.js';
+import {isTreeItem} from '../../widgets/xf_tree_util.js';
 import {FilesToast} from '../elements/files_toast.js';
 
 import {DirectoryModel} from './directory_model.js';
@@ -965,9 +966,15 @@ export class FileTransferController {
 
     // If current focus is on DirectoryTree, write selected item of
     // DirectoryTree to system clipboard.
-    if (isDirectoryTree(document.activeElement)) {
-      const tree = document.activeElement as DirectoryTree | XfTree;
-      this.cutOrCopyFromDirectoryTree(tree, clipboardData, effectAllowed);
+    if (document.activeElement && isDirectoryTree(document.activeElement)) {
+      const focusedItem = getFocusedTreeItem(document.activeElement);
+      this.cutOrCopyFromDirectoryTree(
+          focusedItem, clipboardData, effectAllowed);
+      return;
+    }
+    if (document.activeElement && isTreeItem(document.activeElement)) {
+      this.cutOrCopyFromDirectoryTree(
+          document.activeElement, clipboardData, effectAllowed);
       return;
     }
 
@@ -981,9 +988,9 @@ export class FileTransferController {
    * Performs cut or copy operation dispatched from directory tree.
    */
   cutOrCopyFromDirectoryTree(
-      _: DirectoryTree|XfTree, clipboardData: DataTransfer|null,
+      focusedItem: DirectoryItem|XfTreeItem|null,
+      clipboardData: DataTransfer|null,
       effectAllowed: DataTransfer['effectAllowed']) {
-    const focusedItem = getFocusedTreeItem(document.activeElement);
     if (focusedItem === null) {
       return;
     }
