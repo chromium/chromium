@@ -47,8 +47,6 @@ apply plugin: "com.android.application"
 {% endif %}
 
 android {
-    compileSdkVersion "{{ compile_sdk_version }}"
-
     defaultConfig {
         vectorDrawables.useSupportLibrary = true
         minSdkVersion {{ min_sdk_version }}
