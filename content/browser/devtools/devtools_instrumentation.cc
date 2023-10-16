@@ -643,6 +643,7 @@ void DidUpdatePrerenderStatus(
     int initiator_frame_tree_node_id,
     const base::UnguessableToken& initiator_devtools_navigation_token,
     const GURL& prerender_url,
+    absl::optional<blink::mojom::SpeculationTargetHint> target_hint,
     PreloadingTriggeringOutcome status,
     absl::optional<PrerenderFinalStatus> prerender_status,
     absl::optional<std::string> disallowed_mojo_interface) {
@@ -653,8 +654,9 @@ void DidUpdatePrerenderStatus(
   }
 
   DispatchToAgents(ftn, &protocol::PreloadHandler::DidUpdatePrerenderStatus,
-                   initiator_devtools_navigation_token, prerender_url, status,
-                   prerender_status, disallowed_mojo_interface);
+                   initiator_devtools_navigation_token, prerender_url,
+                   target_hint, status, prerender_status,
+                   disallowed_mojo_interface);
 }
 
 namespace {

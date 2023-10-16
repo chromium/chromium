@@ -200,7 +200,8 @@ class PrerenderHostRegistryTest : public RenderViewHostImplTestHarness {
       case PrerenderTriggerType::kSpeculationRule:
       case PrerenderTriggerType::kSpeculationRuleFromIsolatedWorld:
         return PrerenderAttributes(
-            url, trigger_type, embedder_histogram_suffix, Referrer(), eagerness,
+            url, trigger_type, embedder_histogram_suffix,
+            blink::mojom::SpeculationTargetHint::kNoHint, Referrer(), eagerness,
             rfh->GetLastCommittedOrigin(), rfh->GetProcess()->GetID(),
             contents()->GetWeakPtr(), rfh->GetFrameToken(),
             rfh->GetFrameTreeNodeId(), rfh->GetPageUkmSourceId(),
@@ -209,7 +210,8 @@ class PrerenderHostRegistryTest : public RenderViewHostImplTestHarness {
             /*prerender_navigation_handle_callback=*/absl::nullopt);
       case PrerenderTriggerType::kEmbedder:
         return PrerenderAttributes(
-            url, trigger_type, embedder_histogram_suffix, Referrer(),
+            url, trigger_type, embedder_histogram_suffix,
+            /*target_hint=*/absl::nullopt, Referrer(),
             /*eagerness=*/absl::nullopt, /*initiator_origin=*/absl::nullopt,
             /*initiator_process_id=*/ChildProcessHost::kInvalidUniqueID,
             contents()->GetWeakPtr(),

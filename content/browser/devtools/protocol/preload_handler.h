@@ -14,6 +14,7 @@
 #include "content/browser/devtools/protocol/preload.h"
 #include "content/browser/preloading/prefetch/prefetch_status.h"
 #include "content/browser/preloading/prerender/prerender_final_status.h"
+#include "third_party/blink/public/mojom/speculation_rules/speculation_rules.mojom-forward.h"
 #include "url/gurl.h"
 
 namespace content {
@@ -43,6 +44,7 @@ class PreloadHandler : public DevToolsDomainHandler, public Preload::Backend {
   void DidUpdatePrerenderStatus(
       const base::UnguessableToken& initiator_devtools_navigation_token,
       const GURL& prerender_url,
+      absl::optional<blink::mojom::SpeculationTargetHint> target_hint,
       PreloadingTriggeringOutcome status,
       absl::optional<PrerenderFinalStatus> prerender_status,
       absl::optional<std::string> disallowed_mojo_interface);

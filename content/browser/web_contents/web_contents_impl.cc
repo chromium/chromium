@@ -9975,7 +9975,8 @@ std::unique_ptr<PrerenderHandle> WebContentsImpl::StartPrerendering(
         prerender_navigation_handle_callback) {
   PrerenderAttributes attributes(
       prerendering_url, trigger_type, embedder_histogram_suffix,
-      content::Referrer(), /*eagerness=*/absl::nullopt,
+      /*target_hint=*/absl::nullopt, content::Referrer(),
+      /*eagerness=*/absl::nullopt,
       /*initiator_origin=*/absl::nullopt,
       content::ChildProcessHost::kInvalidUniqueID, GetWeakPtr(),
       /*initiator_frame_token=*/absl::nullopt,

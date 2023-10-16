@@ -129,7 +129,8 @@ class PrerenderHostTest : public RenderViewHostImplTestHarness {
     RenderFrameHostImpl* rfh = contents()->GetPrimaryMainFrame();
     return PrerenderAttributes(
         url, PrerenderTriggerType::kSpeculationRule,
-        /*embedder_histogram_suffix=*/"", Referrer(),
+        /*embedder_histogram_suffix=*/"",
+        blink::mojom::SpeculationTargetHint::kNoHint, Referrer(),
         blink::mojom::SpeculationEagerness::kEager,
         rfh->GetLastCommittedOrigin(), rfh->GetProcess()->GetID(),
         contents()->GetWeakPtr(), rfh->GetFrameToken(),

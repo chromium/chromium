@@ -240,11 +240,12 @@ bool PrerendererImpl::MaybePrerender(
   Referrer referrer(*(candidate->referrer));
   PrerenderAttributes attributes(
       candidate->url, GetTriggerType(candidate->injection_world),
-      /*embedder_histogram_suffix=*/"", referrer, candidate->eagerness,
-      rfhi.GetLastCommittedOrigin(), rfhi.GetProcess()->GetID(),
-      web_contents->GetWeakPtr(), rfhi.GetFrameToken(),
-      rfhi.GetFrameTreeNodeId(), rfhi.GetPageUkmSourceId(),
-      ui::PAGE_TRANSITION_LINK,
+      /*embedder_histogram_suffix=*/"",
+      candidate->target_browsing_context_name_hint, referrer,
+      candidate->eagerness, rfhi.GetLastCommittedOrigin(),
+      rfhi.GetProcess()->GetID(), web_contents->GetWeakPtr(),
+      rfhi.GetFrameToken(), rfhi.GetFrameTreeNodeId(),
+      rfhi.GetPageUkmSourceId(), ui::PAGE_TRANSITION_LINK,
       /*url_match_predicate=*/absl::nullopt,
       /*prerender_navigation_handle_callback=*/absl::nullopt,
       rfhi.GetDevToolsNavigationToken());
