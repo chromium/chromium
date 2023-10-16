@@ -183,7 +183,7 @@ class CORE_EXPORT DocumentMarkerController final
       DocumentMarker::MarkerType);
 
   DocumentMarkerVector ComputeMarkersToPaint(const Text&) const;
-  DocumentMarkerVector CustomHighlightMarkersNotOverlapping(const Text&) const;
+  void ProcessCustomHighlightMarkersForOverlap();
 
   bool PossiblyHasTextMatchMarkers() const;
   Vector<gfx::Rect> LayoutRectsForTextMatchMarkers();

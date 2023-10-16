@@ -484,7 +484,8 @@ NGHighlightPainter::NGHighlightPainter(
             *text_node, DocumentMarker::MarkerTypes::Spelling());
         grammar_ = controller.MarkersFor(
             *text_node, DocumentMarker::MarkerTypes::Grammar());
-        custom_ = controller.CustomHighlightMarkersNotOverlapping(*text_node);
+        custom_ = controller.MarkersFor(
+            *text_node, DocumentMarker::MarkerTypes::CustomHighlight());
       }
     }
   }
