@@ -101,8 +101,9 @@ class SavedTabGroupKeyedService : public KeyedService,
       const base::Uuid& saved_group_guid);
 
   // Activates the first tab in saved group that is already opened when its
-  // button is pressed.
-  void FocusFirstTabInOpenGroup(tab_groups::TabGroupId local_group_id);
+  // button is pressed, If active tab exists in saved group, only activates
+  // window.
+  void FocusFirstTabOrWindowInOpenGroup(tab_groups::TabGroupId local_group_id);
 
   // Returns a pointer to the TabStripModel which contains `local_group_id`.
   const TabStripModel* GetTabStripModelWithTabGroupId(

@@ -20,6 +20,7 @@
 #include "chrome/browser/ui/bookmarks/bookmark_utils_desktop.h"
 #include "chrome/browser/ui/browser.h"
 #include "chrome/browser/ui/browser_list.h"
+#include "chrome/browser/ui/browser_window.h"
 #include "chrome/browser/ui/tabs/saved_tab_groups/saved_tab_group_model_listener.h"
 #include "chrome/browser/ui/tabs/saved_tab_groups/saved_tab_group_utils.h"
 #include "chrome/browser/ui/tabs/tab_group.h"
@@ -111,7 +112,7 @@ void SavedTabGroupKeyedService::OpenSavedTabGroupInBrowser(
 
   // Activate the first tab in a group if it is already open.
   if (saved_group->local_group_id().has_value()) {
-    FocusFirstTabInOpenGroup(saved_group->local_group_id().value());
+    FocusFirstTabOrWindowInOpenGroup(saved_group->local_group_id().value());
     return;
   }
 
@@ -442,20 +443,30 @@ SavedTabGroupKeyedService::GetWebContentsToTabGuidMappingForOpening(
   return web_contents;
 }
 
-void SavedTabGroupKeyedService::FocusFirstTabInOpenGroup(
+void SavedTabGroupKeyedService::FocusFirstTabOrWindowInOpenGroup(
     tab_groups::TabGroupId local_group_id) {
   Browser* browser_for_activation =
       SavedTabGroupUtils::GetBrowserWithTabGroupId(local_group_id);
 
-  // Only activate the tab group's first tab if it exists in any browser's
-  // tabstrip model.
+  // Only activate the tab group's first tab, if it exists in any browser's
+  // tabstrip model and it is not in the active tab in the tab group.
   CHECK(browser_for_activation);
+  TabGroup* tab_group =
+      browser_for_activation->tab_strip_model()->group_model()->GetTabGroup(
+          local_group_id);
 
-  absl::optional<int> first_tab = browser_for_activation->tab_strip_model()
-                                      ->group_model()
-                                      ->GetTabGroup(local_group_id)
-                                      ->GetFirstTab();
+  absl::optional<int> first_tab = tab_group->GetFirstTab();
+  absl::optional<int> last_tab = tab_group->GetLastTab();
+  int active_index = browser_for_activation->tab_strip_model()->active_index();
   DCHECK(first_tab.has_value());
+  DCHECK(last_tab.has_value());
+  DCHECK_GT(active_index, 0);
+
+  if (active_index >= first_tab.value() && active_index <= last_tab) {
+    browser_for_activation->window()->Activate();
+    return;
+  }
+
   browser_for_activation->ActivateContents(
       browser_for_activation->tab_strip_model()->GetWebContentsAt(
           first_tab.value()));
