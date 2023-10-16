@@ -247,6 +247,9 @@ class _Generator(object):
                 (maybe_static, classname))
         .Append('%s%s Parse%s(base::StringPiece as_string);' %
                 (maybe_static, classname, classname))
+        .Append(
+            '%sstd::u16string Get%sParseError(base::StringPiece as_string);' %
+            (maybe_static, classname))
       )
     elif type_.property_type in (PropertyType.CHOICES,
                                  PropertyType.OBJECT):

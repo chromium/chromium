@@ -185,6 +185,7 @@ class _Generator(object):
     elif type_.property_type == PropertyType.ENUM:
       (c.Cblock(self._GenerateEnumToString(cpp_namespace, type_))
         .Cblock(self._GenerateEnumFromString(cpp_namespace, type_))
+        .Cblock(self._GenerateEnumParseErrorMessage(cpp_namespace, type_))
       )
 
     return c
@@ -957,7 +958,8 @@ class _Generator(object):
     elif underlying_type.property_type == PropertyType.ARRAY:
       if is_ptr:
         var = '*%s' % var
-      underlying_item_cpp_type = self._type_helper.GetCppType(underlying_type.item_type)
+      underlying_item_cpp_type = (
+          self._type_helper.GetCppType(underlying_type.item_type))
       if underlying_item_cpp_type != 'base::Value':
         return '%s' % self._util_cc_helper.CreateValueFromArray(var)
       else:
@@ -1324,11 +1326,11 @@ class _Generator(object):
                         self._type_helper.GetEnumDefaultValue(type_,
                           self._namespace)))
       .Concat(self._AppendError16(
-        'u\"\'%%(key)s\': expected \\"' +
-        '\\" or \\"'.join(
-            enum_value.name
-            for enum_value in self._type_helper.FollowRef(type_).enum_values) +
-        '\\", got \\"" + UTF8ToUTF16(*%s) + u"\\""' % enum_as_string))
+        'u\"\'%%(key)s\': "' + (
+            ' + %sGet%sParseError(*%s)' %
+            (cpp_type_namespace,
+             cpp_util.Classname(type_.name),
+             enum_as_string))))
       .Append('return %s;' % failure_value)
       .Eblock('}')
       .Substitute({'src_var': src_var, 'key': type_.name})
@@ -1399,6 +1401,31 @@ class _Generator(object):
     (c.Append('return %s;' % self._type_helper.GetEnumNoneValue(type_))
       .Eblock('}')
     )
+    return c
+
+  def _GenerateEnumParseErrorMessage(self, cpp_namespace, type_):
+    """Generates Get<ClassName>ParseError() which returns a parse error message
+    for a given string input.
+    """
+
+    c = Code()
+    classname = cpp_util.Classname(schema_util.StripNamespace(type_.name))
+
+    if cpp_namespace is not None:
+      c.Append('// static')
+    maybe_namespace = '' if cpp_namespace is None else '%s::' % cpp_namespace
+
+    c.Sblock(
+        'std::u16string %sGet%sParseError(base::StringPiece enum_string) {' %
+        (maybe_namespace, classname))
+    error_message = (
+        'u\"expected \\"' +
+        '\\" or \\"'.join(
+            enum_value.name
+            for enum_value in self._type_helper.FollowRef(type_).enum_values) +
+        '\\", got \\"" + UTF8ToUTF16(enum_string) + u"\\""')
+    c.Append('return %s;' % error_message)
+    c.Eblock('}')
     return c
 
   def _GenerateAsyncResponseArguments(self, function_scope, params):
