@@ -6,10 +6,14 @@ package org.chromium.chrome.browser.settings;
 
 import static org.junit.Assert.assertEquals;
 import static org.junit.Assert.assertNotNull;
-import static org.junit.Assert.assertNull;
 import static org.junit.Assert.assertTrue;
 
 import android.content.Intent;
+import android.content.res.TypedArray;
+import android.graphics.Canvas;
+import android.graphics.Rect;
+import android.util.Pair;
+import android.view.View;
 
 import androidx.lifecycle.Lifecycle.State;
 import androidx.recyclerview.widget.RecyclerView;
@@ -30,6 +34,7 @@ import org.robolectric.annotation.Implements;
 
 import org.chromium.base.ContextUtils;
 import org.chromium.base.test.BaseRobolectricTestRunner;
+import org.chromium.chrome.R;
 import org.chromium.chrome.browser.flags.ChromeFeatureList;
 import org.chromium.chrome.browser.init.ChromeBrowserInitializer;
 import org.chromium.chrome.browser.profiles.Profile;
@@ -38,7 +43,7 @@ import org.chromium.chrome.browser.settings.SettingsActivityUnitTest.ShadowProfi
 import org.chromium.chrome.test.util.browser.Features;
 import org.chromium.chrome.test.util.browser.Features.EnableFeatures;
 import org.chromium.components.browser_ui.settings.CustomDividerFragment;
-import org.chromium.components.browser_ui.settings.PaddedDividerItemDecoration;
+import org.chromium.components.browser_ui.settings.PaddedItemDecorationWithDivider;
 import org.chromium.content_public.browser.test.util.TestThreadUtils;
 
 import java.util.concurrent.TimeoutException;
@@ -123,14 +128,47 @@ public class SettingsActivityUnitTest {
         mActivityScenario.moveToState(State.RESUMED);
 
         RecyclerView recyclerView = mSettingsActivity.findViewById(R.id.recycler_view);
-        PaddedDividerItemDecoration decoration = getPaddedDividerDecoration(recyclerView);
-        assertNotNull("PaddedDividerItemDecoration should exists.", decoration);
+        PaddedItemDecorationWithDivider decoration = getPaddedDecoration(recyclerView);
+        assertNotNull("PaddedItemDecorationWithDivider should exists.", decoration);
         int parentPadding =
                 60; // (720 - UiConfig.WIDE_DISPLAY_STYLE_MIN_WIDTH_DP) / 2 = (720 - 600) / 2
-        assertEquals("Divider start padding is wrong.", parentPadding,
-                decoration.getDividerPaddingStart());
+        Pair<Integer, Integer> itemOffsets = decoration.getItemOffsetsForTesting();
+        assertEquals("Item offset start is wrong.", parentPadding, itemOffsets.first.intValue());
+        assertEquals("Item offset end is wrong.", parentPadding, itemOffsets.second.intValue());
+        assertEquals("Divider start padding is wrong.", 0, decoration.getDividerPaddingStart());
+        assertEquals("Divider end padding is wrong.", 0, decoration.getDividerPaddingEnd());
+    }
+
+    @Test
+    @Config(qualifiers = "w320dp-h1024dp")
+    public void addPaddingToContentOnNarrowDisplay() {
+        launchSettingsActivity(TestSettingsFragment.class.getName());
+        mActivityScenario.moveToState(State.CREATED);
+        mActivityScenario.moveToState(State.STARTED);
+        mActivityScenario.moveToState(State.RESUMED);
+
+        RecyclerView recyclerView = mSettingsActivity.findViewById(R.id.recycler_view);
+        PaddedItemDecorationWithDivider decoration = getPaddedDecoration(recyclerView);
+        assertNotNull("PaddedItemDecorationWithDivider should exists.", decoration);
+        TypedArray paddingArray =
+                mSettingsActivity
+                        .getTheme()
+                        .obtainStyledAttributes(
+                                new int[] {
+                                    R.attr.listPreferredItemPaddingStart,
+                                    R.attr.listPreferredItemPaddingEnd
+                                });
+        Pair<Integer, Integer> itemOffsets = decoration.getItemOffsetsForTesting();
         assertEquals(
-                "Divider end padding is wrong.", parentPadding, decoration.getDividerPaddingEnd());
+                "Item offset start is wrong.",
+                (int) paddingArray.getDimension(0, 0f),
+                itemOffsets.first.intValue());
+        assertEquals(
+                "Item offset end is wrong.",
+                (int) paddingArray.getDimension(1, 0f),
+                itemOffsets.second.intValue());
+        assertEquals("Divider start padding is wrong.", 0, decoration.getDividerPaddingStart());
+        assertEquals("Divider end padding is wrong.", 0, decoration.getDividerPaddingEnd());
     }
 
     @Test
@@ -142,13 +180,19 @@ public class SettingsActivityUnitTest {
         mActivityScenario.moveToState(State.STARTED);
         mActivityScenario.moveToState(State.RESUMED);
 
-        int padding = 60; // (720 - UiConfig.WIDE_DISPLAY_STYLE_MIN_WIDTH_DP) / 2 = (720 - 600) / 2
         RecyclerView recyclerView = mSettingsActivity.findViewById(R.id.recycler_view);
-        assertEquals("Padding start is wrong.", padding, recyclerView.getPaddingStart());
-        assertEquals("Padding end is wrong.", padding, recyclerView.getPaddingEnd());
+        PaddedItemDecorationWithDivider decoration = getPaddedDecoration(recyclerView);
+        assertNotNull("PaddedItemDecorationWithDivider should exists.", decoration);
+        int parentPadding =
+                60; // (720 - UiConfig.WIDE_DISPLAY_STYLE_MIN_WIDTH_DP) / 2 = (720 - 600) / 2
 
-        assertNull("PaddedDividerItemDecoration should not exist when no divider is in use.",
-                getPaddedDividerDecoration(recyclerView));
+        Pair<Integer, Integer> itemOffsets = decoration.getItemOffsetsForTesting();
+        assertEquals("Item offset start is wrong.", parentPadding, itemOffsets.first.intValue());
+        assertEquals("Item offset end is wrong.", parentPadding, itemOffsets.second.intValue());
+        assertEquals(
+                "Divider start padding should not be set.", 0, decoration.getDividerPaddingStart());
+        assertEquals(
+                "Divider end padding should not be set.", 0, decoration.getDividerPaddingEnd());
     }
 
     @Test
@@ -162,16 +206,33 @@ public class SettingsActivityUnitTest {
         mActivityScenario.moveToState(State.RESUMED);
 
         RecyclerView recyclerView = mSettingsActivity.findViewById(R.id.recycler_view);
-        PaddedDividerItemDecoration decoration = getPaddedDividerDecoration(recyclerView);
-        assertNotNull("PaddedDividerItemDecoration should exists.", decoration);
+        PaddedItemDecorationWithDivider decoration = getPaddedDecoration(recyclerView);
+
+        assertNotNull("PaddedItemDecorationWithDivider should exists.", decoration);
         int parentPadding =
                 60; // (720 - UiConfig.WIDE_DISPLAY_STYLE_MIN_WIDTH_DP) / 2 = (720 - 600) / 2
-        assertEquals("Divider start padding is wrong.",
-                parentPadding + CustomDividerTestSettingsFragment.DIVIDER_START_PADDING,
+        Pair<Integer, Integer> itemOffsets = decoration.getItemOffsetsForTesting();
+        assertEquals("Item offset start is wrong.", parentPadding, itemOffsets.first.intValue());
+        assertEquals("Item offset end is wrong.", parentPadding, itemOffsets.second.intValue());
+        assertEquals(
+                "Divider start padding is wrong.",
+                CustomDividerTestSettingsFragment.DIVIDER_START_PADDING,
                 decoration.getDividerPaddingStart());
-        assertEquals("Divider end padding is wrong.",
-                parentPadding + CustomDividerTestSettingsFragment.DIVIDER_END_PADDING,
+        assertEquals(
+                "Divider end padding is wrong.",
+                CustomDividerTestSettingsFragment.DIVIDER_END_PADDING,
                 decoration.getDividerPaddingEnd());
+
+        // simulate onDraw() call and verify padding
+        RecyclerView.State state = new RecyclerView.State();
+        decoration.onDraw(new Canvas(), recyclerView, state);
+        for (int index = 0; index < recyclerView.getChildCount(); index++) {
+            View view = recyclerView.getChildAt(index);
+            Rect outRect = new Rect();
+            decoration.getItemOffsets(outRect, view, recyclerView, state);
+            assertEquals("Recycler view item offset padding is wrong", parentPadding, outRect.left);
+            assertEquals("Recycler view item end offset is wrong", parentPadding, outRect.right);
+        }
     }
 
     private void launchSettingsActivity(String fragmentName) {
@@ -183,10 +244,10 @@ public class SettingsActivityUnitTest {
         mActivityScenario.onActivity(activity -> mSettingsActivity = activity);
     }
 
-    private PaddedDividerItemDecoration getPaddedDividerDecoration(RecyclerView recyclerView) {
+    private PaddedItemDecorationWithDivider getPaddedDecoration(RecyclerView recyclerView) {
         for (int i = 0; i < recyclerView.getItemDecorationCount(); ++i) {
-            if (recyclerView.getItemDecorationAt(i) instanceof PaddedDividerItemDecoration) {
-                return (PaddedDividerItemDecoration) recyclerView.getItemDecorationAt(i);
+            if (recyclerView.getItemDecorationAt(i) instanceof PaddedItemDecorationWithDivider) {
+                return (PaddedItemDecorationWithDivider) recyclerView.getItemDecorationAt(i);
             }
         }
         return null;

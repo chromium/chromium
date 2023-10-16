@@ -16,11 +16,13 @@ import android.graphics.drawable.Drawable;
 import android.os.Build;
 import android.os.Build.VERSION;
 import android.os.Bundle;
+import android.util.Pair;
 import android.view.Menu;
 import android.view.MenuItem;
 import android.view.View;
 import android.view.ViewGroup;
 
+import androidx.annotation.NonNull;
 import androidx.annotation.Nullable;
 import androidx.annotation.VisibleForTesting;
 import androidx.appcompat.widget.Toolbar;
@@ -32,6 +34,7 @@ import androidx.recyclerview.widget.RecyclerView;
 import org.chromium.base.BuildInfo;
 import org.chromium.base.IntentUtils;
 import org.chromium.base.supplier.OneshotSupplierImpl;
+import org.chromium.base.supplier.Supplier;
 import org.chromium.chrome.R;
 import org.chromium.chrome.browser.ApplicationLifetime;
 import org.chromium.chrome.browser.ChromeBaseAppCompatActivity;
@@ -80,13 +83,16 @@ import org.chromium.components.browser_ui.bottomsheet.ManagedBottomSheetControll
 import org.chromium.components.browser_ui.modaldialog.AppModalPresenter;
 import org.chromium.components.browser_ui.settings.CustomDividerFragment;
 import org.chromium.components.browser_ui.settings.FragmentSettingsLauncher;
-import org.chromium.components.browser_ui.settings.PaddedDividerItemDecoration;
+import org.chromium.components.browser_ui.settings.PaddedItemDecorationWithDivider;
 import org.chromium.components.browser_ui.settings.SettingsLauncher;
-import org.chromium.components.browser_ui.site_settings.SiteSettingsCategory;
 import org.chromium.components.browser_ui.site_settings.BaseSiteSettingsFragment;
+import org.chromium.components.browser_ui.site_settings.SiteSettingsCategory;
 import org.chromium.components.browser_ui.util.TraceEventVectorDrawableCompat;
+import org.chromium.components.browser_ui.widget.displaystyle.DisplayStyleObserver;
 import org.chromium.components.browser_ui.widget.displaystyle.UiConfig;
+import org.chromium.components.browser_ui.widget.displaystyle.UiConfig.DisplayStyle;
 import org.chromium.components.browser_ui.widget.displaystyle.ViewResizer;
+import org.chromium.components.browser_ui.widget.displaystyle.ViewResizerUtil;
 import org.chromium.components.browser_ui.widget.gesture.BackPressHandler;
 import org.chromium.components.browser_ui.widget.scrim.ScrimCoordinator;
 import org.chromium.components.privacy_sandbox.TrackingProtectionSettings;
@@ -99,13 +105,15 @@ import org.chromium.ui.modaldialog.ModalDialogManager.ModalDialogType;
 /**
  * The Chrome settings activity.
  *
- * This activity displays a single {@link Fragment}, typically a {@link PreferenceFragmentCompat}.
- * As the user navigates through settings, a separate Settings activity is created for each
- * screen. Thus each fragment may freely modify its activity's action bar or title. This mimics the
- * behavior of {@link android.preference.PreferenceActivity}.
+ * <p>This activity displays a single {@link Fragment}, typically a {@link
+ * PreferenceFragmentCompat}. As the user navigates through settings, a separate Settings activity
+ * is created for each screen. Thus each fragment may freely modify its activity's action bar or
+ * title. This mimics the behavior of {@link android.preference.PreferenceActivity}.</p>
  */
 public class SettingsActivity extends ChromeBaseAppCompatActivity
-        implements PreferenceFragmentCompat.OnPreferenceStartFragmentCallback, SnackbarManageable {
+        implements PreferenceFragmentCompat.OnPreferenceStartFragmentCallback,
+                SnackbarManageable,
+                DisplayStyleObserver {
     @VisibleForTesting(otherwise = VisibleForTesting.PACKAGE_PRIVATE)
     public static final String EXTRA_SHOW_FRAGMENT = "show_fragment";
     static final String EXTRA_SHOW_FRAGMENT_ARGUMENTS = "show_fragment_args";
@@ -135,6 +143,9 @@ public class SettingsActivity extends ChromeBaseAppCompatActivity
 
     private Profile mProfile;
 
+    private @Nullable PaddedItemDecorationWithDivider mItemDecoration;
+    private int mMinWidePaddingPixels;
+
     // This is only used on automotive.
     private @Nullable MissingDeviceLockLauncher mMissingDeviceLockLauncher;
 
@@ -160,6 +171,8 @@ public class SettingsActivity extends ChromeBaseAppCompatActivity
         getSupportActionBar().setDisplayHomeAsUpEnabled(true);
 
         mIsNewlyCreated = savedInstanceState == null;
+        mMinWidePaddingPixels =
+                getResources().getDimensionPixelSize(R.dimen.settings_wide_display_min_padding);
 
         String initialFragment = getIntent().getStringExtra(EXTRA_SHOW_FRAGMENT);
         Bundle initialArguments = getIntent().getBundleExtra(EXTRA_SHOW_FRAGMENT_ARGUMENTS);
@@ -194,7 +207,7 @@ public class SettingsActivity extends ChromeBaseAppCompatActivity
     @Override
     public void onConfigurationChanged(Configuration newConfig) {
         super.onConfigurationChanged(newConfig);
-        // Set width constraints
+        // Set width constraints.
         configureWideDisplayStyle();
     }
 
@@ -205,57 +218,88 @@ public class SettingsActivity extends ChromeBaseAppCompatActivity
      * by adding padding to both sides.
      */
     private void configureWideDisplayStyle() {
-        if (mUiConfig == null) {
-            View content = findViewById(R.id.content);
-            RecyclerView recyclerView = findViewById(R.id.recycler_view);
-            // For settings with a recycler view, add paddings to the side so the content is
-            // scrollable; otherwise, add the padding to the content.
-            View paddedView = recyclerView == null ? content : recyclerView;
-            mUiConfig = new UiConfig(paddedView);
+        if (mUiConfig != null) {
+            mUiConfig.updateDisplayStyle();
+            return;
+        }
 
-            int minWidePaddingPixels =
-                    getResources().getDimensionPixelSize(R.dimen.settings_wide_display_min_padding);
-            ViewResizer.createAndAttach(paddedView, mUiConfig, 0, minWidePaddingPixels);
+        View content = findViewById(R.id.content);
+        RecyclerView recyclerView = findViewById(R.id.recycler_view);
+        // For settings with a recycler view, add paddings to the side so the content is
+        // scrollable; otherwise, add the padding to the content.
+        View paddedView = recyclerView == null ? content : recyclerView;
+        mUiConfig = new UiConfig(paddedView);
+        mUiConfig.addObserver(this);
+        if (!hasPreferenceRecyclerView(recyclerView)) {
+            ViewResizer.createAndAttach(paddedView, mUiConfig, 0, mMinWidePaddingPixels);
+            return;
+        }
 
-            // Configure divider style if the fragment has a recycler view.
-            if (recyclerView != null && getMainFragment() instanceof PreferenceFragmentCompat) {
-                // Remove the default divider that PreferenceFragmentCompat initialized. This is a
-                // workaround as outer class has no access to the private DividerDecoration in
-                // PreferenceFragmentCompat. See https://crbug.com/1293429.
-                ((PreferenceFragmentCompat) getMainFragment()).setDivider(null);
+        // Configure divider style if the fragment has a recycler view.
+        // Remove the default divider that PreferenceFragmentCompat initialized. This is a
+        // workaround as outer class has no access to the private DividerDecoration in
+        // PreferenceFragmentCompat. See https://crbug.com/1293429.
+        ((PreferenceFragmentCompat) getMainFragment()).setDivider(null);
 
-                CustomDividerFragment customDividerFragment =
-                        getMainFragment() instanceof CustomDividerFragment
+        CustomDividerFragment customDividerFragment =
+                getMainFragment() instanceof CustomDividerFragment
                         ? (CustomDividerFragment) getMainFragment()
                         : null;
-                // Early return for Fragment implements CustomDividerFragment and explicitly don't
-                // want a divider.
-                if (customDividerFragment != null && !customDividerFragment.hasDivider()) {
-                    return;
-                }
-
-                // Configure the customized divider for the rest of the Fragments.
-                Drawable dividerDrawable = getDividerDrawable();
-                if (dividerDrawable == null) return;
-                PaddedDividerItemDecoration mDividerDecoration =
-                        new PaddedDividerItemDecoration(dividerDrawable);
-                mDividerDecoration.setPaddingStart(() -> {
-                    int dividerStartPadding = customDividerFragment != null
-                            ? customDividerFragment.getDividerStartPadding()
-                            : 0;
-                    return recyclerView.getPaddingStart() + dividerStartPadding;
-                });
-                mDividerDecoration.setPaddingEnd(() -> {
-                    int dividerEndPadding = customDividerFragment != null
-                            ? customDividerFragment.getDividerEndPadding()
-                            : 0;
-                    return recyclerView.getPaddingEnd() + dividerEndPadding;
-                });
-                recyclerView.addItemDecoration(mDividerDecoration);
-            }
-        } else {
-            mUiConfig.updateDisplayStyle();
+        mItemDecoration =
+                new PaddedItemDecorationWithDivider(
+                        getItemOffsets(mUiConfig.getCurrentDisplayStyle()));
+        Drawable dividerDrawable = getDividerDrawable();
+        // Early return if (a)Fragment implements CustomDividerFragment and explicitly don't
+        // want a divider OR (b) dividerDrawable not defined.
+        if ((customDividerFragment != null && !customDividerFragment.hasDivider())
+                || dividerDrawable == null) {
+            recyclerView.addItemDecoration(mItemDecoration);
+            return;
         }
+        // Configure the customized divider for the rest of the Fragments.
+        Supplier<Integer> dividerStartPaddingSupplier =
+                () ->
+                        customDividerFragment != null
+                                ? customDividerFragment.getDividerStartPadding()
+                                : 0;
+        Supplier<Integer> dividerEndPaddingSupplier =
+                () ->
+                        customDividerFragment != null
+                                ? customDividerFragment.getDividerEndPadding()
+                                : 0;
+        mItemDecoration.setDividerWithPadding(
+                dividerDrawable, dividerStartPaddingSupplier, dividerEndPaddingSupplier);
+        recyclerView.addItemDecoration(mItemDecoration);
+    }
+
+    @NonNull
+    private Pair<Integer, Integer> getItemOffsets(DisplayStyle displayStyle) {
+        if (displayStyle.isWide()) {
+            int widePadding =
+                    ViewResizerUtil.computePaddingForWideDisplay(this, mMinWidePaddingPixels);
+            return new Pair(widePadding, widePadding);
+        } else {
+            // Default to preference item paddings (if view does not define padding) for
+            // non-wide display.
+            TypedArray paddingArray =
+                    getTheme()
+                            .obtainStyledAttributes(
+                                    new int[] {
+                                        R.attr.listPreferredItemPaddingStart,
+                                        R.attr.listPreferredItemPaddingEnd
+                                    });
+            try {
+                return new Pair(
+                        (int) paddingArray.getDimension(0, 0f),
+                        (int) paddingArray.getDimension(1, 0f));
+            } finally {
+                paddingArray.recycle();
+            }
+        }
+    }
+
+    private boolean hasPreferenceRecyclerView(RecyclerView recyclerView) {
+        return recyclerView != null && (getMainFragment() instanceof PreferenceFragmentCompat);
     }
 
     /** Set up the bottom sheet for this activity. */
@@ -626,5 +670,17 @@ public class SettingsActivity extends ChromeBaseAppCompatActivity
         ta.recycle();
 
         return divider;
+    }
+
+    @Override
+    public void onDisplayStyleChanged(DisplayStyle newDisplayStyle) {
+        RecyclerView recyclerView = findViewById(R.id.recycler_view);
+        if (hasPreferenceRecyclerView(recyclerView)) {
+            if (mItemDecoration != null) {
+                mItemDecoration.setItemOffsets(getItemOffsets(newDisplayStyle));
+            }
+            // Invalidate decorations to reset.
+            recyclerView.invalidateItemDecorations();
+        }
     }
 }

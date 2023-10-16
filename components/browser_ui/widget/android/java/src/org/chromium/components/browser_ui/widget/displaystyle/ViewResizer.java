@@ -4,7 +4,6 @@
 
 package org.chromium.components.browser_ui.widget.displaystyle;
 
-import android.content.res.Resources;
 import android.view.View;
 
 import androidx.core.view.ViewCompat;
@@ -24,9 +23,6 @@ public class ViewResizer implements DisplayStyleObserver {
     private final View mView;
     private final DisplayStyleObserverAdapter mDisplayStyleObserver;
     protected final UiConfig mUiConfig;
-
-    @HorizontalDisplayStyle
-    private int mCurrentDisplayStyle;
 
     /**
      * @param view The view that will have its padding resized.
@@ -79,7 +75,6 @@ public class ViewResizer implements DisplayStyleObserver {
 
     @Override
     public void onDisplayStyleChanged(UiConfig.DisplayStyle newDisplayStyle) {
-        mCurrentDisplayStyle = newDisplayStyle.horizontal;
         updatePadding();
     }
 
@@ -106,23 +101,9 @@ public class ViewResizer implements DisplayStyleObserver {
      * Computes the lateral padding to be applied to the associated view.
      */
     protected int computePadding() {
-        if (!isCurrentDisplayWide()) return mDefaultPaddingPixels;
-
-        // mUiConfig.getContext().getResources() is used here instead of mView.getResources()
-        // because lemon compression, somehow, causes the resources to return a different
-        // configuration.
-        Resources resources = mUiConfig.getContext().getResources();
-        int screenWidthDp = resources.getConfiguration().screenWidthDp;
-        float dpToPx = resources.getDisplayMetrics().density;
-        int padding =
-                (int) (((screenWidthDp - UiConfig.WIDE_DISPLAY_STYLE_MIN_WIDTH_DP) / 2.f) * dpToPx);
-        padding = Math.max(mMinWidePaddingPixels, padding);
-
-        return padding;
-    }
-
-    protected boolean isCurrentDisplayWide() {
-        return mCurrentDisplayStyle == HorizontalDisplayStyle.WIDE;
+        if (!mUiConfig.getCurrentDisplayStyle().isWide()) return mDefaultPaddingPixels;
+        return ViewResizerUtil.computePaddingForWideDisplay(
+                mUiConfig.getContext(), mMinWidePaddingPixels);
     }
 
     protected int getMinWidePaddingPixels() {

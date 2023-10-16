@@ -24,7 +24,7 @@ android_library("java") {
     "widget/java/src/org/chromium/components/browser_ui/settings/ImageButtonPreference.java",
     "widget/java/src/org/chromium/components/browser_ui/settings/LearnMorePreference.java",
     "widget/java/src/org/chromium/components/browser_ui/settings/LongSummaryTextMessagePreference.java",
-    "widget/java/src/org/chromium/components/browser_ui/settings/PaddedDividerItemDecoration.java",
+    "widget/java/src/org/chromium/components/browser_ui/settings/PaddedItemDecorationWithDivider.java",
     "widget/java/src/org/chromium/components/browser_ui/settings/SpinnerPreference.java",
     "widget/java/src/org/chromium/components/browser_ui/settings/TextMessagePreference.java",
   ]
