@@ -102,6 +102,7 @@ source_set("eg2_tests") {
   sources = [ "activity_service_controller_egtest.mm" ]
 
   deps = [
+    "//base/test:test_support",
     "//components/strings",
     "//ios/chrome/app/strings",
     "//ios/chrome/browser/ui/popup_menu:constants",

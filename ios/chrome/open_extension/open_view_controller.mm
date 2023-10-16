@@ -13,6 +13,7 @@
 #import "base/strings/sys_string_conversions.h"
 #import "ios/chrome/common/app_group/app_group_command.h"
 #import "ios/chrome/common/app_group/app_group_constants.h"
+#import "ios/chrome/common/extension_open_url.h"
 
 // Type for completion handler to fetch the components of the share items.
 // `idResponse` type depends on the element beeing fetched.
@@ -128,28 +129,28 @@ NSError* ErrorForOutcome(app_group::OpenExtensionOutcome outcome_type) {
   }
 }
 
-- (void)openInChrome {
-  UIResponder* responder = self;
-
-  while ((responder = responder.nextResponder)) {
-    if ([responder respondsToSelector:@selector(openURL:)]) {
+- (void)performOpenURL:(NSURL*)openURL {
+  bool result = ExtensionOpenURL(openURL, self, ^(BOOL success) {
+    if (success) {
       LogOutcome(app_group::OpenExtensionOutcome::kSuccess);
-      [self openInURL:responder];
-      [self.extensionContext completeRequestReturningItems:@[ _openInItem ]
-                                         completionHandler:nil];
-      return;
     }
+  });
+  if (result) {
+    [self.extensionContext completeRequestReturningItems:@[ _openInItem ]
+                                       completionHandler:nil];
+    return;
   }
   // Display the error view when Open in is not found
   [self displayErrorViewForOutcome:app_group::OpenExtensionOutcome::
                                        kFailureOpenInNotFound];
 }
 
-- (void)openInURL:(UIResponder*)responder {
+- (void)openInChrome {
+  __weak OpenViewController* weakSelf = self;
   AppGroupCommand* command = [[AppGroupCommand alloc]
       initWithSourceApp:app_group::kOpenCommandSourceOpenExtension
          URLOpenerBlock:^(NSURL* openURL) {
-           [responder performSelector:@selector(openURL:) withObject:openURL];
+           [weakSelf performOpenURL:openURL];
          }];
   [command prepareToOpenURL:_openInURL];
   [command executeInApp];
