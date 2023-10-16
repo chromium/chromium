@@ -10,8 +10,6 @@ import("//third_party/protobuf/proto_library.gni")
 # events with several attached metrics.
 static_library("structured") {
   sources = [
-    "external_metrics.cc",
-    "external_metrics.h",
     "key_data.cc",
     "key_data.h",
     "key_data_provider.h",
@@ -32,6 +30,13 @@ static_library("structured") {
     "structured_metrics_service.cc",
     "structured_metrics_service.h",
   ]
+
+  if (is_chromeos_ash || is_chromeos_lacros) {
+    sources += [
+      "external_metrics.cc",
+      "external_metrics.h",
+    ]
+  }
 
   public_deps = [
     ":common",
@@ -212,36 +217,36 @@ static_library("test_support") {
   ]
 }
 
-source_set("unit_tests") {
-  testonly = true
-  sources = [
-    "external_metrics_unittest.cc",
-    "key_data_unittest.cc",
-    "persistent_proto_unittest.cc",
-    "structured_metrics_provider_unittest.cc",
-    "structured_metrics_recorder_unittest.cc",
-    "structured_metrics_service_unittest.cc",
-  ]
-
-  deps = [
-    ":events",
-    ":storage",
-    ":structured",
-    ":structured_events",
-    ":structured_metrics_validator",
-    ":test_support",
-    "//base",
-    "//base/test:test_support",
-    "//components/metrics",
-    "//components/metrics:test_support",
-    "//components/prefs",
-    "//components/prefs:test_support",
-    "//testing/gtest",
-  ]
-}
-
 # Structured metrics is only used in ash and lacros.
 if (is_chromeos_ash || is_chromeos_lacros) {
+  source_set("unit_tests") {
+    testonly = true
+    sources = [
+      "external_metrics_unittest.cc",
+      "key_data_unittest.cc",
+      "persistent_proto_unittest.cc",
+      "structured_metrics_provider_unittest.cc",
+      "structured_metrics_recorder_unittest.cc",
+      "structured_metrics_service_unittest.cc",
+    ]
+
+    deps = [
+      ":events",
+      ":storage",
+      ":structured",
+      ":structured_events",
+      ":structured_metrics_validator",
+      ":test_support",
+      "//base",
+      "//base/test:test_support",
+      "//components/metrics",
+      "//components/metrics:test_support",
+      "//components/prefs",
+      "//components/prefs:test_support",
+      "//testing/gtest",
+    ]
+  }
+
   # Convenience testing target
   test("structured_metrics_unittests") {
     deps = [

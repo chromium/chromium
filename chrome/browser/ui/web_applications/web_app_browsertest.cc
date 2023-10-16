@@ -131,7 +131,8 @@
 #if BUILDFLAG(IS_CHROMEOS)
 #include "chrome/browser/metrics/structured/event_logging_features.h"
 #include "chrome/browser/metrics/structured/test/test_structured_metrics_recorder.h"
-#include "components/metrics/structured/structured_events.h"
+// TODO(crbug/4925196): enable gn check once it learn about conditional includes
+#include "components/metrics/structured/structured_events.h"  // nogncheck
 #endif
 
 #if BUILDFLAG(IS_MAC)
