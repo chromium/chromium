@@ -166,6 +166,7 @@ Ezarpen hori aldatzeko, <ph name="BEGIN_LINK" />garbitu kontuko Chrome-ko datuak
 <translation id="1847795903283049083">Elementu hauek laster-marketan, irakurketa-zerrendan edo pasahitz-kudeatzailean ere ikusi eta kudea ditzakezu.</translation>
 <translation id="1870148520156231997">Erakutsi pasahitza</translation>
 <translation id="1872096359983322073">Linterna</translation>
+<translation id="1876851015978093044">Elementu hau erakusten du</translation>
 <translation id="1882901927376062252">{count,plural, =1{Gorde da laster-marka Google-ko kontuan ({email})}other{{count} laster-marka gorde dira Google-ko kontuan ({email})}}</translation>
 <translation id="1883255238294161206">Tolestu zerrenda</translation>
 <translation id="1890237935065108104">Ezarpena ez dago erabilgarri.</translation>
@@ -275,6 +276,7 @@ Webguneek ezin dituzte erabili cookieak beste webguneetan egiten dituzun arakatz
 <translation id="2482878487686419369">Jakinarazpenak</translation>
 <translation id="2484459871750294497">Nola gaitzen da eginbide hau?</translation>
 <translation id="2496626742194544812">Joan lehen fitxara</translation>
+<translation id="2499505845365628575">Arakatze-historia osoa ikusteko, ireki <ph name="HISTORY_BUTTON_ACCESSIBILITY_LABEL" />.</translation>
 <translation id="2500374554657206846">Pasahitza gordetzeko aukerak</translation>
 <translation id="2511117522375201202">Arriskuan dauden <ph name="NUMBER_OF_PASSWORDS" /> pasahitz dauzkazu, eta baliteke horrek segurtasunari eragitea.</translation>
 <translation id="2523363575747517183">Webgunea behin eta berriz saiatzen ari da beste aplikazio bat irekitzen.</translation>
@@ -1099,6 +1101,7 @@ Ezkutuko moduan zaudenean, webguneek ezin dituzte erabili cookieak beste webgune
 <translation id="6785453220513215166">Hutsegite-txostena bidaltzen…</translation>
 <translation id="6790502149545262384">Laster, <ph name="CHANNEL_NAME" /> webguneko istorioak ikusiko dituzu fitxa berri bat irekitzean.</translation>
 <translation id="6797885426782475225">Ahozko bilaketa</translation>
+<translation id="6800349425672670802">Fitxa-aldatzailearen bidez atzi ditzakezu irekitako fitxa guztiak.</translation>
 <translation id="6807889908376551050">Erakutsi guztiak…</translation>
 <translation id="681368974849482173">Elementua sortu da</translation>
 <translation id="6822587385560699678">Aktibatuta badago, pasahitzak <ph name="ACCOUNT" /> kontuan gordetzen dira. Desaktibatuta badago, pasahitzak gailu honetan soilik gordetzen dira.</translation>
@@ -1190,6 +1193,7 @@ Ezkutuko moduan zaudenean, webguneek ezin dituzte erabili cookieak beste webgune
 <translation id="7367530036083223701">Atzitu zure pasahitzak hasierako pantailatik segurtasun osoz Pasahitz-kudeatzailea widgetarekin.</translation>
 <translation id="7380220816562673297">Oraingoz, familiako kideekin soilik parteka ditzakezu pasahitzak. <ph name="BEGIN_LINK" />Sortu familia-talde bat<ph name="END_LINK" />, gehienez 6 kiderekin, eta atera etekin handiagoa Google-ren produktu eta harpidetzei.</translation>
 <translation id="7383797227493018512">Irakurketa-zerrenda</translation>
+<translation id="7396331865858820922">Ez da partekatu pasahitza</translation>
 <translation id="7398893703713203428">Sortu esteka bat</translation>
 <translation id="7399802613464275309">Segurtasun-egiaztapena</translation>
 <translation id="7400418766976504921">URLa</translation>
@@ -1210,6 +1214,7 @@ Ezkutuko moduan zaudenean, webguneek ezin dituzte erabili cookieak beste webgune
 <translation id="7488874549363591659">Entregatuta</translation>
 <translation id="7491131399623468277">Joan ezarpenetara…</translation>
 <translation id="7492574581995589075">Erakundeak Chrome-ko datuak Google-ko kontuan erabiltzeko eta gordetzeko aukera desaktibatu du. Laster-marka, pasahitz eta bestelako elementu berriak gailu honetan soilik gordeko dira.</translation>
+<translation id="749854780843431406">Beste fitxa bat irekitzeko, erabili <ph name="NEW_TAB_BUTTON_ACCESSIBILITY_LABEL" /> botoia.</translation>
 <translation id="750149195207506638">Laster-markak ezkutatuta daude</translation>
 <translation id="750228856503700085">Ez dago berritasunik</translation>
 <translation id="750493650310597496">Ez da bat ere hautatu</translation>
@@ -1269,6 +1274,7 @@ Ezkutuko moduan zaudenean, webguneek ezin dituzte erabili cookieak beste webgune
 <translation id="778855399387580014">Hasi bilaketa Chrome-ren fitxa berri batean.</translation>
 <translation id="7791543448312431591">Gehitu</translation>
 <translation id="7807060072011926525">Google-k eman du</translation>
+<translation id="7812377703891978671">Arakatze-historia osoa atzitzeko, hautatu <ph name="HISTORY_BUTTON_ACCESSIBILITY_LABEL" />.</translation>
 <translation id="78146569776629510">Deskargak</translation>
 <translation id="7839985698273989086">Konexiorik gabeko orria</translation>
 <translation id="7840771868269352570">Kendu egingo dira hautatutako elementuak.</translation>
@@ -1417,6 +1423,7 @@ Datuak pasaesaldiarekin enkriptatu ziren data honetan: <ph name="TIME" />. Chrom
 <translation id="8560253818350321773">Erakutsi maiz erabiltzen diren elementuak lehenik.</translation>
 <translation id="8588404856427128947">Itzalita</translation>
 <translation id="8591976964826315682">Blokeatu hirugarrenen cookieak ezkutuko moduan</translation>
+<translation id="8593565399399144771">Fitxa berri bat hemen ireki dezakezu.</translation>
 <translation id="8605219856220328675">Itxi fitxa.</translation>
 <translation id="8613883225817609844">Ezkutatu "Azken fitxak"</translation>
 <translation id="8620640915598389714">Editatu</translation>

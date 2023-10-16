@@ -191,6 +191,7 @@ Quyidagi narsalardan boshlashingiz mumkin.</translation>
 <translation id="1737078180382804488">Telefondagi bildirishnomalarni koʻrishni sozlash oynasini yopish</translation>
 <translation id="174102739345480129">Marker oʻchiq.</translation>
 <translation id="1743570585616704562">Barmoq izi aniqlanmadi</translation>
+<translation id="1743927604032653654">Bildirishnomani (<ph name="NOTIFICATION_TITLE" />) yigʻish</translation>
 <translation id="1746730358044914197">Matn kiritish usuli administratoringiz tomonidan sozlangan.</translation>
 <translation id="1747336645387973286">bajarish muddati: <ph name="DUE_DATE" /></translation>
 <translation id="1747827819627189109">Ekran klaviaturasi yoqildi</translation>
@@ -532,6 +533,7 @@ Quyidagi narsalardan boshlashingiz mumkin.</translation>
 <translation id="3217205077783620295">Ovoz yoniq. Ovozsiz qilish uchun shu belgini bosing.</translation>
 <translation id="3226991577105957773">yana <ph name="COUNT" /> ta</translation>
 <translation id="3227137524299004712">Mikrofon</translation>
+<translation id="3233611303007751344">Quvvat tejalishi faolsizlantirildi</translation>
 <translation id="324366796737464147">Shovqinsizlantirish</translation>
 <translation id="3249513730522716925"><ph name="WINDOW_TITLE" /> oynasi <ph name="ACTIVE_DESK" /> ish stolidan <ph name="TARGET_DESK" /> ish stoliga koʻchirildi</translation>
 <translation id="3253743281242075461">Sinf ishi turi: <ph name="GLANCEABLES_CLASSROOM_LIST_NAME" /></translation>
@@ -554,6 +556,7 @@ Quyidagi narsalardan boshlashingiz mumkin.</translation>
 <translation id="3308453408813785101"><ph name="USER_EMAIL_ADDRESS" /> keyinroq kira oladi.</translation>
 <translation id="3321628682574733415">Ota-ona kodi xato kiritildi</translation>
 <translation id="332827762492701193">Bildirishnomalar yashirilgan</translation>
+<translation id="3333674550998107387">Bildirishnomani (<ph name="NOTIFICATION_TITLE" />) yoyish</translation>
 <translation id="3339826665088060472">Ekran tasviri vositalari skrinshot olish va ekranni yozib olish uchun ishlatiladi</translation>
 <translation id="3340978935015468852">sozlamalar</translation>
 <translation id="3341303451326249809">Skrinshot olindi</translation>
@@ -771,6 +774,8 @@ Qurilmani quvvat manbaiga ulang.</translation>
 <translation id="4146671046252289537">Keyingi soʻz oxiriga oʻtish</translation>
 <translation id="4146833061457621061">Musiqani tinglash</translation>
 <translation id="4150201353443180367">Ekran</translation>
+<translation id="4156293514828496577">Batareyada <ph name="PERCENTAGE" />% quvvat qoldi (taxminan: <ph name="TIME_LEFT" />).
+Quvvatni tejash uchun ayrim funksiyalar ishlashi cheklandi.</translation>
 <translation id="4165275524535002941">Kabel displeylar bilan ishlamasligi mumkin</translation>
 <translation id="4177415338862979658">Batafsil axborot olish uchun bosing</translation>
 <translation id="4177913004758410636">{0,plural, =1{Qurilmani bir kun ichida oʻchirib yoqish kerak}other{Qurilmani # kun ichida yangilang}}</translation>
@@ -901,6 +906,7 @@ Qurilmani quvvat manbaiga ulang.</translation>
 <translation id="4659419629803378708">ChromeVox yoqildi</translation>
 <translation id="4666911709726371538">Boshqa ilovalar</translation>
 <translation id="4667099493359681081"><ph name="FILENAME" /> yuklab olinmoqda</translation>
+<translation id="4672539464599646374">Quvvat tejalishi yoqildi</translation>
 <translation id="468293128311738995">Telefondagi ilovalar</translation>
 <translation id="4690510401873698237">Javon pastda</translation>
 <translation id="4696813013609194136">Ota-ona kodi bilan qurilmani qulfdan chiqarish</translation>
@@ -1061,6 +1067,8 @@ Qurilmani quvvat manbaiga ulang.</translation>
 <translation id="5297704307811127955">Oʻchiq</translation>
 <translation id="5300589172476337783">Ko‘rsatish</translation>
 <translation id="5302048478445481009">Til</translation>
+<translation id="5303319262469238330">Batareyada <ph name="PERCENTAGE" />% quvvat qoldi.
+Quvvatni tejash uchun ayrim funksiyalar ishlashi cheklandi.</translation>
 <translation id="5308380583665731573">Ulanish</translation>
 <translation id="5313326810920013265">Bluetooth sozlamalari</translation>
 <translation id="5314219114274263156">Ekran yozib olindi</translation>
@@ -1302,6 +1310,7 @@ Qurilmani quvvat manbaiga ulang.</translation>
 <translation id="6231419273573514727">Tashqi qurilmalar samaradorligi cheklanishi mumkin</translation>
 <translation id="6232891689835436217"><ph name="APP_NAME" /> hozir kamera va mikrofondan foydalanmoqda</translation>
 <translation id="6237231532760393653">1X</translation>
+<translation id="62380141479352646">Batareya quvvati kam. Quvvat tejalishi yoqildi.</translation>
 <translation id="6247728804802644171">Bildirishnomalarni ochish</translation>
 <translation id="6254629735336163724">Gorizontal holatda qulflangan</translation>
 <translation id="6259254695169772643">Stilus yordamida tanlang</translation>
@@ -1416,6 +1425,7 @@ yangi oʻrnatilgan</translation>
 <translation id="6732800389263199929">+<ph name="COUNT" /></translation>
 <translation id="6737983188036277605">Kamera va mikrofon ishlatilmoqda</translation>
 <translation id="6739144137573853180">SOZLAMALARGA OʻTISH</translation>
+<translation id="6747985245839783873">Batareya quvvati: <ph name="PERCENTAGE" />%. Quvvat tejalishi yoniq.</translation>
 <translation id="6751052314767925245">Administrator tomonidan majburiy sozlangan</translation>
 <translation id="6751826523481687655">Unumdorlik kuzatuvi yoniq</translation>
 <translation id="6752912906630585008"><ph name="REMOVED_DESK" /> ish stoli olib tashlandi va oynalari <ph name="RECEIVE_DESK" /> ish stoliga birlashtirildi</translation>
@@ -1515,6 +1525,7 @@ yangi oʻrnatilgan</translation>
 <translation id="7131634465328662194">Seansingiz avtomatik yakunlanadi.</translation>
 <translation id="7143207342074048698">Ulanmoqda</translation>
 <translation id="7144942256906679589">Batareya holati</translation>
+<translation id="7145639536026937076">Batareya <ph name="PERCENTAGE" />% va quvvatlanmoqda. Quvvat tejalishi yoniq.</translation>
 <translation id="7165278925115064263">Alt+Shift+K</translation>
 <translation id="7167913274352523149"><ph name="HOTSPOT" />,
         <ph name="NETWORK" /></translation>
@@ -1524,6 +1535,7 @@ yangi oʻrnatilgan</translation>
 <translation id="7189412385142492784">Venera qanchalik uzoq</translation>
 <translation id="7198435252016571249">Kamera pastki oʻng burchakka joylandi. Tizim platfromasi bilan muammo chiqdi.</translation>
 <translation id="7229029500464092426">Xotira: <ph name="AVAILABLE_MEMORY" /> | jami: <ph name="TOTAL_MEMORY" /></translation>
+<translation id="7244725679040769470">Batareyada <ph name="PERCENTAGE" />% quvvat qoldi. Qurilmani quvvat manbaiga ulang.</translation>
 <translation id="7246071203293827765"><ph name="UPDATE_TEXT" />. Yangilanish amalga oshishi uchun Chromebook qayta ishga tushirilishi lozim. Bu 1 daqiqacha vaqt olishi mumkin.</translation>
 <translation id="7256634071279256947">Orqa mikrofon</translation>
 <translation id="7258828758145722155">Kecha tahrirlangan</translation>
@@ -1917,6 +1929,7 @@ Qurilmani oʻchirish uchun uning quvvat tugmasini biroz bosib turing.</translati
 <translation id="8878886163241303700">Yoyilgan ekran</translation>
 <translation id="888982883502837004">Qurilmangiz uchun chiqqan mikrodastur yangilanishlari. Koʻrib chiqish va yangilash uchun bosing.</translation>
 <translation id="8896630965521842259">“<ph name="DESK_TEMPLATE_NAME" />” soʻrovi butunlay oʻchirib tashlanadi</translation>
+<translation id="889790758758811533">Batareyada <ph name="PERCENTAGE" />% quvvat qoldi (taxminan: <ph name="TIME_LEFT" />). Qurilmani quvvat manbaiga ulang.</translation>
 <translation id="88986195241502842">Pastki sahifa</translation>
 <translation id="8905919797434099235">(Nomsiz)</translation>
 <translation id="890616557918890486">Manbani almashtirish</translation>

@@ -7,6 +7,7 @@
 <translation id="1073417869336441572">Bantu kami meningkatkan Chrome dengan memberitahu kami sebab anda membenarkan kuki pihak ketiga. <ph name="BEGIN_LINK" />Hantar maklum balas<ph name="END_LINK" /></translation>
 <translation id="1178581264944972037">Jeda</translation>
 <translation id="1181037720776840403">Alih keluar</translation>
+<translation id="1192844206376121885">Tindakan ini akan memadamkan semua data dan kuki yang disimpan oleh <ph name="ORIGIN" />.</translation>
 <translation id="1201402288615127009">Seterusnya</translation>
 <translation id="1242008676835033345">Dibenamkan pada <ph name="WEBSITE_URL" /></translation>
 <translation id="1272079795634619415">Berhenti</translation>
@@ -59,6 +60,7 @@
 <translation id="216989819110952009">Walaupun dengan mata yang terlindung disebalik cermin mata berwarna hijau, pada mulanya Dorothy dan rakan-rakannya terpesona dengan</translation>
 <translation id="2176704795966505152">Tunjukkan pilihan zum dalam menu utama</translation>
 <translation id="2182457891543959921">Tanya sebelum membenarkan tapak membuat peta 3D bagi persekitaran anda atau menjejaki kedudukan kamera (disyorkan)</translation>
+<translation id="2185965788978862351">Tindakan ini akan memadamkan <ph name="DATASIZE" /> data dan kuki yang disimpan oleh laman atau apl pada Skrin utama anda.</translation>
 <translation id="2194856509914051091">Perkara yang perlu dipertimbangkan</translation>
 <translation id="2212565012507486665">Benarkan kuki</translation>
 <translation id="2228071138934252756">Untuk membolehkan <ph name="APP_NAME" /> mengakses kamera anda, hidupkan juga kamera dalam <ph name="BEGIN_LINK" />Tetapan Android<ph name="END_LINK" />.</translation>
@@ -82,6 +84,7 @@
 <translation id="2434158240863470628">Muat turun selesai: <ph name="SEPARATOR" /><ph name="BYTES_DOWNLOADED" /></translation>
 <translation id="244264527810019436">Ciri pada sesetengah laman mungkin tidak berfungsi dalam mod Inkognito</translation>
 <translation id="2442870161001914531">Sentiasa minta laman desktop</translation>
+<translation id="2469312991797799607">Tindakan ini akan memadamkan semua data dan kuki untuk <ph name="ORIGIN" /> dan semua laman di bawah domain ini</translation>
 <translation id="2479148705183875116">Pergi ke Tetapan</translation>
 <translation id="2482878487686419369">Pemberitahuan</translation>
 <translation id="2485422356828889247">Nyahpasang</translation>
@@ -229,6 +232,7 @@
 <translation id="5063480226653192405">Penggunaan</translation>
 <translation id="5091013926750941408">Laman mudah alih</translation>
 <translation id="509133520954049755">Minta paparan desktop</translation>
+<translation id="5099358668261120049">Tindakan ini akan memadamkan semua data dan kuki yang disimpan oleh <ph name="ORIGIN" /> atau oleh apl pada Skrin utama anda.</translation>
 <translation id="5100237604440890931">Diruntuhkan - klik untuk mengembangkan.</translation>
 <translation id="5123685120097942451">Tab Inkognito</translation>
 <translation id="5186036860380548585">Pilihan tersedia berhampiran bahagian atas skrin</translation>
@@ -277,6 +281,7 @@
 <translation id="5916664084637901428">Hidupkan</translation>
 <translation id="5922853908706496913">Berkongsi skrin anda</translation>
 <translation id="5922967540311291836">Sekat kuki pihak ketiga:</translation>
+<translation id="5923512600150154850">Tindakan ini akan memadamkan <ph name="DATASIZE" /> data dan kuki yang disimpan oleh laman.</translation>
 <translation id="5939518447894949180">Tetapkan semula</translation>
 <translation id="5964247741333118902">Kandungan terbenam</translation>
 <translation id="5968921426641056619">Masukkan alamat web</translation>
@@ -345,6 +350,7 @@
 <translation id="7176368934862295254"><ph name="KILOBYTES" /> KB</translation>
 <translation id="7180611975245234373">Muat semula</translation>
 <translation id="7188508872042490670">Data laman pada peranti</translation>
+<translation id="7201549776650881587">Tindakan ini akan memadamkan semua data dan kuki yang disimpan oleh semua laman di bawah <ph name="ORIGIN" /> atau disimpan oleh apl laman tersebut pada Skrin utama anda</translation>
 <translation id="7203150201908454328">Diperluas</translation>
 <translation id="7219254577985949841">Padamkan data laman?</translation>
 <translation id="723171743924126238">Pilih imej</translation>

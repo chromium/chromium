@@ -83,10 +83,12 @@
 <translation id="1360432990279830238">साइन आउट गरी सिंक निष्क्रिय पार्ने हो?</translation>
 <translation id="1363028406613469049">ट्रयाक</translation>
 <translation id="1365106417372288489">तपाईंको iPhone भर्खरै रिस्टोर गरिएको हुनाले तपाईंको डिफल्ट ब्राउजर परिवर्तन भएको हुन सक्छ।</translation>
+<translation id="136942498637440594">तपाईं फोटोहरू र आफूले देखेका कुरा खोज्न सक्नुहुन्छ।</translation>
 <translation id="1375321115329958930">सुरक्षित गरिएका पासवर्डहरू</translation>
 <translation id="1377255359165588604">सिंकले काम गर्न छोड्यो।</translation>
 <translation id="1377321085342047638">कार्ड नम्बर</translation>
 <translation id="1377508275003315939">पासवर्डहरू</translation>
+<translation id="1380914240355562929"><ph name="BEGIN_BOLD" /><ph name="USERNAME" /><ph name="END_BOLD" /> Google पासवर्ड म्यानेजर प्रयोग गरेर <ph name="BEGIN_BOLD" /><ph name="WEBSITE" /><ph name="END_BOLD" /> मा साइन इन गर्दा अब तपाईंको युजरनेम र पासवर्ड प्रयोग गर्न सक्नुहुन्छ। <ph name="BEGIN_LINK" />थप जान्नुहोस्<ph name="END_LINK" /></translation>
 <translation id="1383876407941801731">खोज्नुहोस्</translation>
 <translation id="138618066238211776"><ph name="USER_NAME" /> का नामबाट जारी राख्नुहोस्</translation>
 <translation id="1400642268715879018">पछिल्लो ४ हप्ता</translation>
@@ -774,6 +776,7 @@
 <translation id="5121618895923301719">तपाईं यो उत्पादन ट्र्याक गरिरहनुभएको छ। यो पेज <ph name="BEGIN_LINK" />मोबाइल बुकमार्कहरू<ph name="END_LINK" />मा सेभ गरिएको छ।</translation>
 <translation id="512533434554095351">तपाईंको पासवर्डसम्बन्धी कयौँ समस्याहरू छन्।</translation>
 <translation id="5126465625664020024">साइन इन गरेर सिंक गर्नुहोस्</translation>
+<translation id="5131062416352684089">तपाईंका परिवारका सदस्य अब Google पासवर्ड म्यानेजर प्रयोग गरेर <ph name="BEGIN_BOLD" /><ph name="WEBSITE" /><ph name="END_BOLD" /> मा साइन इन गर्न तपाईंको युजरनेम र पासवर्ड प्रयोग गर्न सक्नुहुन्छ। <ph name="BEGIN_LINK" />थप जान्नुहोस्<ph name="END_LINK" /></translation>
 <translation id="5132942445612118989">सबै यन्त्रहरूमा आफ्ना पासवर्ड, इतिहास र थप कुरा सिंक गर्नुहोस्</translation>
 <translation id="5142890110117755815">{COUNT,plural, =1{{COUNT} वटा कमजोर पासवर्ड भेटियो}other{{COUNT} वटा कमजोर पासवर्ड भेटिए}}</translation>
 <translation id="5149188072385105201">पासवर्ड सेभ गर्नुहोस्...</translation>

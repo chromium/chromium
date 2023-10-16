@@ -7,6 +7,7 @@
 <translation id="1073417869336441572">Help us improve Chrome by telling us why you allowed third-party cookies. <ph name="BEGIN_LINK" />Send feedback<ph name="END_LINK" /></translation>
 <translation id="1178581264944972037">Pause</translation>
 <translation id="1181037720776840403">Remove</translation>
+<translation id="1192844206376121885">This will delete all data and cookies stored by <ph name="ORIGIN" />.</translation>
 <translation id="1201402288615127009">Next</translation>
 <translation id="1242008676835033345">Embedded on <ph name="WEBSITE_URL" /></translation>
 <translation id="1272079795634619415">Stop</translation>
@@ -59,6 +60,7 @@
 <translation id="216989819110952009">Even with eyes protected by the green spectacles, Dorothy and her friends were at first dazzled by the</translation>
 <translation id="2176704795966505152">Show zoom option in main menu</translation>
 <translation id="2182457891543959921">Ask before allowing sites to create a 3D map of your surroundings or track camera position (recommended)</translation>
+<translation id="2185965788978862351">This will clear <ph name="DATASIZE" /> of data and cookies stored by sites or by apps on your home screen.</translation>
 <translation id="2194856509914051091">Things to consider</translation>
 <translation id="2212565012507486665">Allow cookies</translation>
 <translation id="2228071138934252756">To let <ph name="APP_NAME" /> access your camera, also turn on camera in <ph name="BEGIN_LINK" />Android settings<ph name="END_LINK" />.</translation>
@@ -82,6 +84,7 @@
 <translation id="2434158240863470628">Download complete <ph name="SEPARATOR" /> <ph name="BYTES_DOWNLOADED" /></translation>
 <translation id="244264527810019436">Features on some sites may not work in Incognito mode</translation>
 <translation id="2442870161001914531">Always request desktop site</translation>
+<translation id="2469312991797799607">This action will clear all data and cookies for <ph name="ORIGIN" /> and all sites under it</translation>
 <translation id="2479148705183875116">Go to Settings</translation>
 <translation id="2482878487686419369">Notifications</translation>
 <translation id="2485422356828889247">Uninstall</translation>
@@ -229,6 +232,7 @@
 <translation id="5063480226653192405">Usage</translation>
 <translation id="5091013926750941408">Mobile site</translation>
 <translation id="509133520954049755">Request desktop view</translation>
+<translation id="5099358668261120049">This will clear all data and cookies stored by <ph name="ORIGIN" /> or by its app on your home screen.</translation>
 <translation id="5100237604440890931">Collapsed – click to expand.</translation>
 <translation id="5123685120097942451">Incognito tab</translation>
 <translation id="5186036860380548585">Option available near top of the screen</translation>
@@ -277,6 +281,7 @@
 <translation id="5916664084637901428">On</translation>
 <translation id="5922853908706496913">Sharing your screen</translation>
 <translation id="5922967540311291836">Block third-party cookies:</translation>
+<translation id="5923512600150154850">This will clear <ph name="DATASIZE" /> of data and cookies stored by sites.</translation>
 <translation id="5939518447894949180">Reset</translation>
 <translation id="5964247741333118902">Embedded content</translation>
 <translation id="5968921426641056619">Enter web address</translation>
@@ -345,6 +350,7 @@
 <translation id="7176368934862295254"><ph name="KILOBYTES" /> KB</translation>
 <translation id="7180611975245234373">Refresh</translation>
 <translation id="7188508872042490670">On-device site data</translation>
+<translation id="7201549776650881587">This action will clear all data and cookies stored by all sites under <ph name="ORIGIN" /> or by its app on your Home screen</translation>
 <translation id="7203150201908454328">Expanded</translation>
 <translation id="7219254577985949841">Delete site data?</translation>
 <translation id="723171743924126238">Select images</translation>

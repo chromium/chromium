@@ -7,6 +7,7 @@
 <translation id="1073417869336441572">Padėkite mums tobulinti „Chrome“ nurodydami, kodėl leidote trečiųjų šalių slapukus. <ph name="BEGIN_LINK" />Išsiųskite atsiliepimą<ph name="END_LINK" /></translation>
 <translation id="1178581264944972037">Pristabdyti</translation>
 <translation id="1181037720776840403">Pašalinti</translation>
+<translation id="1192844206376121885">Bus ištrinti visi domeno <ph name="ORIGIN" /> saugomi duomenys ir slapukai.</translation>
 <translation id="1201402288615127009">Kitas</translation>
 <translation id="1242008676835033345">Įterpta <ph name="WEBSITE_URL" /></translation>
 <translation id="1272079795634619415">Sustabdyti</translation>
@@ -59,6 +60,7 @@
 <translation id="216989819110952009">Netgi žaliais akiniais apsaugoję akis Dorotė ir jos draugai iš pradžių buvo apstulbinti</translation>
 <translation id="2176704795966505152">Rodyti mastelio keitimo parinktį pagrindiniame meniu</translation>
 <translation id="2182457891543959921">Klausti, ar svetainėms leidžiama kurti jūsų aplinkos 3D žemėlapį ir stebėti kameros padėtį (rekomenduojama)</translation>
+<translation id="2185965788978862351">Bus ištrinta <ph name="DATASIZE" /> duomenų ir slapukų, kuriuos svetainės ar programos saugo jūsų pagrindiniame ekrane.</translation>
 <translation id="2194856509914051091">Į ką reikėtų atsižvelgti</translation>
 <translation id="2212565012507486665">Leisti slapukus</translation>
 <translation id="2228071138934252756">Norėdami leisti „<ph name="APP_NAME" />“ pasiekti jūsų kamerą, taip pat įjunkite ją <ph name="BEGIN_LINK" />„Android“ nustatymuose<ph name="END_LINK" />.</translation>
@@ -82,6 +84,7 @@
 <translation id="2434158240863470628">Atsisiųsta: <ph name="SEPARATOR" /> <ph name="BYTES_DOWNLOADED" /></translation>
 <translation id="244264527810019436">Kai kurių svetainių funkcijos gali neveikti inkognito režimu</translation>
 <translation id="2442870161001914531">Visada galite pateikti užklausą dėl svetainės staliniams kompiuteriams</translation>
+<translation id="2469312991797799607">Atlikus šį veiksmą bus ištrinti visi domeno <ph name="ORIGIN" /> ir visų jo svetainių duomenys bei slapukai</translation>
 <translation id="2479148705183875116">Eiti į nustatymus</translation>
 <translation id="2482878487686419369">Pranešimai</translation>
 <translation id="2485422356828889247">Pašalinti</translation>
@@ -229,6 +232,7 @@
 <translation id="5063480226653192405">Naudojimas</translation>
 <translation id="5091013926750941408">Svetainė mobiliesiems</translation>
 <translation id="509133520954049755">Pateikti užklausą dėl rodinio versijos staliniams kompiuteriams</translation>
+<translation id="5099358668261120049">Bus ištrinti visi duomenys ir slapukai, kuriuos domenas <ph name="ORIGIN" /> arba jo programa saugo jūsų pagrindiniame ekrane.</translation>
 <translation id="5100237604440890931">Sutraukta – spustelėkite, kad išskleistumėte</translation>
 <translation id="5123685120097942451">Inkognito skirtukas</translation>
 <translation id="5186036860380548585">Parinktis pasiekiama netoli ekrano viršaus</translation>
@@ -277,6 +281,7 @@
 <translation id="5916664084637901428">Įjungta</translation>
 <translation id="5922853908706496913">Bendrinamas ekranas</translation>
 <translation id="5922967540311291836">Blokuoti trečiųjų šalių slapukus:</translation>
+<translation id="5923512600150154850">Bus ištrinta <ph name="DATASIZE" /> svetainių saugomų duomenų ir slapukų.</translation>
 <translation id="5939518447894949180">Nustatyti iš naujo</translation>
 <translation id="5964247741333118902">Įterptas turinys</translation>
 <translation id="5968921426641056619">Įveskite žiniatinklio adresą</translation>
@@ -345,6 +350,7 @@
 <translation id="7176368934862295254"><ph name="KILOBYTES" /> KB</translation>
 <translation id="7180611975245234373">Atnaujinti</translation>
 <translation id="7188508872042490670">Įrenginyje esantys svetainių duomenys</translation>
+<translation id="7201549776650881587">Atlikus šį veiksmą bus ištrinti visi duomenys ir slapukai, kuriuos visos domeno <ph name="ORIGIN" /> svetainės arba jo programa saugo jūsų pagrindiniame ekrane</translation>
 <translation id="7203150201908454328">Išskleista</translation>
 <translation id="7219254577985949841">Ištrinti svetainės duomenis?</translation>
 <translation id="723171743924126238">Pasirinkti vaizdus</translation>

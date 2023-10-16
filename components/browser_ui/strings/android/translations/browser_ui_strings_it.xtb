@@ -7,6 +7,7 @@
 <translation id="1073417869336441572">Aiutaci a migliorare Chrome spiegandoci perché hai consentito i cookie di terze parti. <ph name="BEGIN_LINK" />Invia feedback<ph name="END_LINK" /></translation>
 <translation id="1178581264944972037">Pausa</translation>
 <translation id="1181037720776840403">Rimuovi</translation>
+<translation id="1192844206376121885">Verranno eliminati tutti i dati e i cookie memorizzati da <ph name="ORIGIN" />.</translation>
 <translation id="1201402288615127009">Avanti</translation>
 <translation id="1242008676835033345">Incorporato su <ph name="WEBSITE_URL" /></translation>
 <translation id="1272079795634619415">Interrompi</translation>
@@ -59,6 +60,7 @@
 <translation id="216989819110952009">Nonostante gli occhiali verdi, i cinque rimasero ugualmente abbagliati dallo splendore</translation>
 <translation id="2176704795966505152">Mostra opzione zoom nel menu principale</translation>
 <translation id="2182457891543959921">Chiedi conferma prima di consentire ai siti di creare una mappa 3D dell'ambiente circostante o di monitorare la posizione della fotocamera (opzione consigliata)</translation>
+<translation id="2185965788978862351">Verranno eliminati <ph name="DATASIZE" /> di dati e cookie memorizzati da siti e app nella schermata Home.</translation>
 <translation id="2194856509914051091">Aspetti da considerare</translation>
 <translation id="2212565012507486665">Consenti cookie</translation>
 <translation id="2228071138934252756">Per consentire all'app <ph name="APP_NAME" /> di accedere alla fotocamera, attiva la fotocamera anche nelle <ph name="BEGIN_LINK" />Impostazioni Android<ph name="END_LINK" />.</translation>
@@ -82,6 +84,7 @@
 <translation id="2434158240863470628">Download completato: <ph name="SEPARATOR" /> <ph name="BYTES_DOWNLOADED" /></translation>
 <translation id="244264527810019436">Le funzionalità su alcuni siti potrebbero non essere disponibili in modalità di navigazione in incognito</translation>
 <translation id="2442870161001914531">Richiedi sempre sito desktop</translation>
+<translation id="2469312991797799607">Questa azione eliminerà tutti i dati e i cookie di <ph name="ORIGIN" /> e di tutti i siti secondari</translation>
 <translation id="2479148705183875116">Vai a Impostazioni</translation>
 <translation id="2482878487686419369">Notifiche</translation>
 <translation id="2485422356828889247">Disinstalla</translation>
@@ -229,6 +232,7 @@
 <translation id="5063480226653192405">Utilizzo</translation>
 <translation id="5091013926750941408">Sito mobile</translation>
 <translation id="509133520954049755">Richiedi visualizzazione desktop</translation>
+<translation id="5099358668261120049">Verranno eliminati tutti i dati e i cookie memorizzati dal sito <ph name="ORIGIN" /> o dalla relativa app nella schermata Home.</translation>
 <translation id="5100237604440890931">Compresso. Fai clic per espandere.</translation>
 <translation id="5123685120097942451">Scheda di navigazione in incognito</translation>
 <translation id="5186036860380548585">Opzione disponibile nella parte superiore dello schermo</translation>
@@ -277,6 +281,7 @@
 <translation id="5916664084637901428">On</translation>
 <translation id="5922853908706496913">Condivisione dello schermo</translation>
 <translation id="5922967540311291836">Blocca cookie di terze parti:</translation>
+<translation id="5923512600150154850">Verranno eliminati <ph name="DATASIZE" /> di dati e cookie memorizzati dai siti.</translation>
 <translation id="5939518447894949180">Reimposta</translation>
 <translation id="5964247741333118902">Contenuti incorporati</translation>
 <translation id="5968921426641056619">Inserisci l'indirizzo web</translation>
@@ -345,6 +350,7 @@
 <translation id="7176368934862295254"><ph name="KILOBYTES" /> kB</translation>
 <translation id="7180611975245234373">Aggiorna</translation>
 <translation id="7188508872042490670">Dati dei siti sul dispositivo</translation>
+<translation id="7201549776650881587">Questa azione eliminerà tutti i dati e i cookie memorizzati da tutti i siti in <ph name="ORIGIN" /> o dalla relativa app nella schermata Home</translation>
 <translation id="7203150201908454328">Espanso</translation>
 <translation id="7219254577985949841">Vuoi eliminare i dati del sito?</translation>
 <translation id="723171743924126238">Seleziona immagini</translation>

@@ -68,6 +68,7 @@
 <translation id="2120620239521071941">Овим ћете избрисати <ph name="ITEMS_COUNT" /> ставке(и) са овог уређаја. Да бисте касније вратили податке, пријавите се у Chrome као <ph name="USER_EMAIL" />.</translation>
 <translation id="2121284319307530122">Поново покрени да би се &amp;Chrome ажурирао</translation>
 <translation id="2123055963409958220">Помозите да побољшамо Chrome тако што ћете послати извештај о <ph name="BEGIN_LINK" />актуелним подешавањима<ph name="END_LINK" /></translation>
+<translation id="2126108037660393668">Верификација преузетог фајла није успела.</translation>
 <translation id="2131230230468101642">Ради заштите приватности аутоматски бришемо интересовања старија од 4 недеље. Када наставите да прегледате, интересовање ће се можда поново појавити на листи. Можете и да уклањате интересовања за која не желите да их Chrome узима у обзир.</translation>
 <translation id="2139300032719313227">Рестартујте Chrome ОС</translation>
 <translation id="2151406531797534936">Поново покрените Chrome</translation>
@@ -96,6 +97,7 @@
 <translation id="2580411288591421699">Није могуће инсталирати верзију Google Chrome прегледача која је иста као тренутно покренута верзија. Затворите Google Chrome и покушајте поново.</translation>
 <translation id="2586406160782125153">Овим ћете избрисати податке прегледања са уређаја. Да бисте касније вратили податке, пријавите се у Chrome као <ph name="USER_EMAIL" />.</translation>
 <translation id="2597976513418770460">Преузмите садржај из Chrome прегледача са: <ph name="ACCOUNT_EMAIL" /></translation>
+<translation id="259935314519650377">Кеширање преузетог инсталационог програма није успело. Грешка: <ph name="UNPACK_CACHING_ERROR_CODE" />.</translation>
 <translation id="2622559029861875898">Chrome не може да тражи ажурирања. Проверите интернет везу.</translation>
 <translation id="2645435784669275700">Chrome ОС</translation>
 <translation id="2649768380733403658">Chrome редовно проверава да ли прегледач има најбезбеднија подешавања. Обавестићемо вас ако је потребно да нешто прегледате.</translation>
@@ -321,6 +323,7 @@ Google Chrome не може да врати подешавања.</translation>
 <translation id="6676384891291319759">Приступите Интернету</translation>
 <translation id="6679975945624592337">Нека Google Chrome ради у позадини</translation>
 <translation id="6696915334902295848">Chrome-у треба дозвола за микрофон за овај сајт</translation>
+<translation id="6712881677154121168">Грешка при преузимању: <ph name="DOWNLOAD_ERROR" />.</translation>
 <translation id="6718739135284199302">Убрзајте Chrome</translation>
 <translation id="6735387454586646204">Chrome OS Flex систем</translation>
 <translation id="6739177684496155661">Желите да наставите на новом Chrome профилу?</translation>
@@ -335,6 +338,7 @@ Google Chrome не може да врати подешавања.</translation>
 <translation id="6943584222992551122">Подаци прегледања ове особе ће бити избрисани са овог уређаја. Да бисте вратили податке, пријавите се у Chrome као <ph name="USER_EMAIL" />.</translation>
 <translation id="6967962315388095737">Правило за долазни саобраћај за Google Chrome бета да бисте омогућили mDNS саобраћај.</translation>
 <translation id="6989339256997917931">Google Chrome је ажуриран, али га нисте користили најмање 30 дана.</translation>
+<translation id="7024536598735240744">Грешка при отпакивању: <ph name="UNPACK_ERROR" />.</translation>
 <translation id="7025789849649390912">Инсталација је прекинута.</translation>
 <translation id="7025800014283535195">Овде можете да прелазите са једног Chrome профила на други</translation>
 <translation id="7036251913954633326">Ако желите да користите овај налог само једном, можете да користите <ph name="GUEST_LINK_BEGIN" />режим госта<ph name="GUEST_LINK_END" /> у Chrome прегледачу. Ако желите да додате налог за неког другог, <ph name="LINK_BEGIN" />додајте нову особу<ph name="LINK_END" /> на уређај <ph name="DEVICE_TYPE" />.
@@ -428,6 +432,7 @@ Google Chrome не може да врати подешавања.</translation>
 <translation id="8516431725144212809">Ваша интересовања према процени Chrome-а</translation>
 <translation id="8521348052903287641">Правило за долазни саобраћај за програмерску верзију Google Chrome-а да бисте омогућили mDNS саобраћај.</translation>
 <translation id="8550334526674375523">Овај пословни профил је потпуно одвојен од личног профила.</translation>
+<translation id="8555465886620020932">Грешка у услузи: <ph name="SERVICE_ERROR" />.</translation>
 <translation id="8556340503434111824">Доступна је нова верзија Google Chrome прегледача, бржа него икад пре.</translation>
 <translation id="8571790202382503603">Помоћу Chrome профила можете да раздвојите све Chrome садржаје. На тај начин ћете лакше моћи да раздвојите посао и забаву.</translation>
 <translation id="8614913330719544658">Google Chrome не реагује. Желите ли да га одмах поново покренете?</translation>

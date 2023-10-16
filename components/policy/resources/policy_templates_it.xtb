@@ -791,6 +791,35 @@ Se il criterio viene impostato su False o se non viene configurato, non viene re
       Se il criterio non viene configurato, <ph name="DEFAULT_NOTIFICATIONS_SETTING_POLICY_NAME" /> si applica per tutti i siti, se impostato. In caso contrario, viene applicata l'impostazione personale dell'utente.
 
       Per informazioni dettagliate sui pattern <ph name="URL_LABEL" /> validi, visita la pagina https://cloud.google.com/docs/chrome-enterprise/policies/url-patterns. <ph name="WILDCARD_VALUE" /> non è un valore accettato per questo criterio.</translation>
+<translation id="173503685261877709">Questo criterio fornisce un modo per eseguire l'override dell'elenco di insiemi che il browser utilizza per le funzionalità degli insiemi di siti web correlati.
+
+Questo criterio esegue l'override di<ph name="FIRST_PARTY_SETS_OVERRIDES_POLICY_NAME" />.
+
+Ogni insieme nell'elenco di insiemi di siti web correlati del browser deve soddisfare i requisiti di un insieme di siti web correlati.
+Un insieme di siti web correlati deve contenere un sito principale e uno o più siti membri.
+Un insieme può anche contenere un elenco di siti di servizi di sua proprietà, nonché una mappa di un sito a tutte le sue varianti ccTLD.
+Visita la pagina https://github.com/WICG/first-party-sets per maggiori informazioni su come <ph name="PRODUCT_NAME" /> utilizza gli insiemi di siti web correlati.
+
+
+Tutti i siti di un insieme di siti web correlati devono avere un dominio registrabile pubblicato tramite HTTPS. Inoltre, ogni sito di un insieme di siti web correlati deve essere univoco, ovvero non può essere elencato più di una volta in un insieme di siti web correlati.
+
+Quando a questo criterio viene dato un dizionario vuoto, il browser utilizza l'elenco pubblico di insiemi di siti web correlati.
+
+Per tutti i siti in un insieme di siti web correlati dell'elenco <ph name="REPLACEMENTS" />, se un sito è presente anche in un insieme di siti web correlati nell'elenco del browser, quel sito verrà rimosso dall'insieme di siti web correlati del browser.
+Dopodiché, l'insieme di siti web correlati del criterio verrà aggiunto all'elenco di insiemi di siti web correlati del browser.
+
+Per tutti i siti in un insieme di siti web correlati dell'elenco <ph name="ADDITIONS" />, se un sito è presente anche in un insieme di siti web correlati nell'elenco del browser, l'insieme di siti web correlati del browser verrà aggiornato in modo che
+ il nuovo insieme di siti web correlati possa essere aggiunto all'elenco del browser. Una volta aggiornato l'elenco del browser, l'insieme di siti web correlati del criterio verrà aggiunto all'elenco di insiemi di siti web correlati del browser.
+
+L'elenco di insiemi di siti web correlati del browser richiede che nessuno dei siti al suo interno sia presente in più di un insieme. Questo requisito è valido anche per gli elenchi <ph name="REPLACEMENTS" /> e <ph name="ADDITIONS" />. In modo simile, un sito non può essere presente in entrambi gli elenchi <ph name="REPLACEMENTS" /> e <ph name="ADDITIONS" />.
+
+I caratteri jolly (*) non sono supportati come valore del criterio, né all'interno di alcun insieme di siti web correlati in questi elenchi.
+
+Tutti gli insiemi forniti dal criterio devono essere insiemi di siti web correlati validi. Qualora non lo fossero, verrà segnalato un errore appropriato.
+
+Su <ph name="MS_WIN_NAME" />, questo criterio è disponibile soltanto per le istanze che sono aggiunte a un dominio <ph name="MS_AD_NAME" />, aggiunte a <ph name="MS_AAD_NAME" /> o registrate in <ph name="CHROME_BROWSER_CLOUD_MANAGEMENT_NAME" />.
+
+Su <ph name="MAC_OS_NAME" />, questo criterio è disponibile soltanto per le istanze che sono gestite tramite MDM, aggiunte a un dominio tramite MCX o registrate in <ph name="CHROME_BROWSER_CLOUD_MANAGEMENT_NAME" />.</translation>
 <translation id="1736269219679256369">Consenti di proseguire dalla pagina di avviso SSL</translation>
 <translation id="1736319469723030923">Se il criterio viene attivato o se non viene configurato, Chrome Software Cleaner analizza periodicamente il sistema per individuare eventuale software indesiderato e, qualora fosse presente, chiede all'utente se vuole rimuoverlo. L'attivazione manuale di Chrome Software Cleaner da chrome://settings è consentita.
 
@@ -5844,6 +5873,9 @@ Se questo criterio non viene configurato o se l'elenco non contiene riferimenti 
 <translation id="6141402445226505817">Utilizza sempre il rilevamento approssimativo del fuso orario</translation>
 <translation id="6141944295566709543">Consenti agli utenti di riprodurre contenuti multimediali quando il dispositivo è bloccato</translation>
 <translation id="6142501278956229253">DPI stampa PDF con rasterizzazione</translation>
+<translation id="6143167485225352920">Se il criterio viene impostato su true o se non viene configurato, gli utenti gestiti possono utilizzare ARC su dispositivi non affiliati, a meno che ARC sia stato disattivato in altri modi. Se il criterio viene impostato su false, gli utenti gestiti non possono utilizzare ARC su dispositivi non affiliati.
+
+Tieni presente che altre limitazioni, come quelle imposte dai criteri ArcEnabled e UnaffiliatedArcAllowed, continuano a essere rispettate e ARC viene disattivato se uno dei criteri lo specifica.</translation>
 <translation id="6144046700495610112">Se il criterio viene impostato su Attivato, i dati di compilazione automatica dei moduli nel precedente browser predefinito verranno importati alla prima esecuzione. Se il criterio viene impostato su Disattivato o se non viene configurato, nessun dato di compilazione automatica dei moduli verrà importato alla prima esecuzione.
 
       Gli utenti possono attivare una finestra di dialogo per l'importazione e la casella di controllo dei dati di compilazione automatica dei moduli verrà selezionata o deselezionata in modo che corrisponda al valore del criterio.</translation>
@@ -6369,6 +6401,7 @@ NOTA: questo criterio presentava un valore predefinito documentato erroneamente 
 
           Il valore del criterio deve essere specificato in millisecondi. I valori devono essere inferiori al ritardo di inattività.</translation>
 <translation id="6497085755801788141">Utilizza lo strumento di verifica dei certificati integrato</translation>
+<translation id="6499579502664610993">Esegui l'override degli insiemi di siti web correlati.</translation>
 <translation id="6504720469162323184">La configurazione del criterio consente di determinare la quantità di tempo in millisecondi trascorsa senza attività utente prima che venga effettuato l'accesso automatico all'account locale del dispositivo specificato dal criterio <ph name="DEVICE_LOCAL_ACCOUNT_AUTO_LOGIN_ID_POLICY_NAME" />.
 
 Se il criterio non viene configurato, il timeout è 0 millisecondi.
@@ -6837,6 +6870,7 @@ Se viene impostato su False o se non viene configurato, il layout non è disponi
 <translation id="685769593149966548">Applica la modalità Restrizione massima per YouTube</translation>
 <translation id="686079137349561371">Microsoft Windows 7 o versioni successive</translation>
 <translation id="6866755486434471318">Consenti a <ph name="PEPPER_NAME" /> di usare immagini condivise per la decodifica video.</translation>
+<translation id="6878757724611298427">Consenti agli utenti di utilizzare app per Android su dispositivi non affiliati</translation>
 <translation id="6881447940489194100">Hash SHA-256 esadecimale codificato dei dati.</translation>
 <translation id="68818134518270542">La configurazione del criterio consente di specificare le app che gli utenti possono attivare come app per scrivere note nella schermata di blocco di <ph name="PRODUCT_OS_NAME" />.
 
@@ -7215,6 +7249,7 @@ Se questo criterio non viene configurato o se viene impostato su false, i criter
 Questo criterio viene rimosso se la funzionalità EphemeralNetworkPolicies è attiva per impostazione predefinita.</translation>
 <translation id="7157329428182136164">Attiva il supporto per le API grafiche 3D</translation>
 <translation id="7158358621906236999">Impostazione dei sensori predefinita</translation>
+<translation id="7158731543031879810">Consenti agli utenti aziendali di utilizzare ARC su dispositivi non affiliati.</translation>
 <translation id="7161568070244869726">Viene forzata l'attivazione di AppCache</translation>
 <translation id="7165879643294314958">Se il criterio viene impostato su Attivato o se non viene configurato, l'account locale del dispositivo viene configurato per l'accesso automatico senza ritardo. <ph name="PRODUCT_OS_NAME" /> rispetta la scorciatoie da tastiera Ctrl + Alt + S per eludere l'accesso automatico e mostrare la schermata di accesso.
 
@@ -7328,6 +7363,7 @@ Per informazioni dettagliate sui pattern <ph name="URL_LABEL" /> validi, visita 
       Se questa opzione viene disattivata o non viene impostata sarà possibile utilizzare gli Strumenti per sviluppatori e la console JavaScript.
 
       Se la norma DeveloperToolsAvailability viene impostata, il valore della norma DeveloperToolsDisabled viene ignorato.</translation>
+<translation id="7265638080114610885">Non consentire agli utenti di utilizzare app per Android su dispositivi non affiliati</translation>
 <translation id="7266471712301230894">Questa norma è stata rimossa a partire dalla versione 64 di <ph name="PRODUCT_NAME" />.
 
       La ricerca e l'installazione automatiche dei plug-in mancanti non sono più supportate.</translation>

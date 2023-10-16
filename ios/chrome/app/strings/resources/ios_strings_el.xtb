@@ -83,10 +83,12 @@
 <translation id="1360432990279830238">Αποσύνδεση και απενεργοπ. συγχρονισμού;</translation>
 <translation id="1363028406613469049">Κομμάτι</translation>
 <translation id="1365106417372288489">Έγινε πρόσφατα επαναφορά του iPhone, κάτι που μπορεί να άλλαξε το προεπιλεγμένο πρόγραμμα περιήγησης.</translation>
+<translation id="136942498637440594">Μπορείτε να αναζητήσετε εικόνες και αυτά που βλέπετε.</translation>
 <translation id="1375321115329958930">Αποθηκευμένοι κωδικοί πρόσβασης</translation>
 <translation id="1377255359165588604">Ο συγχρονισμός σταμάτησε να λειτουργεί.</translation>
 <translation id="1377321085342047638">Αρ.κάρτας</translation>
 <translation id="1377508275003315939">Κωδικοί πρόσβασης</translation>
+<translation id="1380914240355562929">Ο χρήστης <ph name="BEGIN_BOLD" /><ph name="USERNAME" /><ph name="END_BOLD" /> μπορεί πλέον να χρησιμοποιήσει το δικό σας όνομα χρήστη και κωδικό πρόσβασής όταν χρησιμοποιεί τον Διαχειριστή κωδικών πρόσβασης Google, για να συνδεθεί στον ιστότοπο <ph name="BEGIN_BOLD" /><ph name="WEBSITE" /><ph name="END_BOLD" />. <ph name="BEGIN_LINK" />Μάθετε περισσότερα<ph name="END_LINK" /></translation>
 <translation id="1383876407941801731">Αναζήτηση</translation>
 <translation id="138618066238211776">Συνέχεια ως <ph name="USER_NAME" /></translation>
 <translation id="1400642268715879018">Τελευταίες 4 εβδομάδες</translation>
@@ -774,6 +776,7 @@
 <translation id="5121618895923301719">Παρακολουθείτε ήδη αυτό το προϊόν. Αυτή η σελίδα έχει αποθηκευτεί στους <ph name="BEGIN_LINK" />Σελιδοδείκτες κινητής συσκευής<ph name="END_LINK" />.</translation>
 <translation id="512533434554095351">Έχετε αρκετά προβλήματα με τους κωδικούς πρόσβασης.</translation>
 <translation id="5126465625664020024">Σύνδεση και συγχρονισμός</translation>
+<translation id="5131062416352684089">Τα μέλη της οικογένειάς σας μπορούν πλέον να χρησιμοποιήσουν το δικό σας όνομα χρήστη και κωδικό πρόσβασής όταν χρησιμοποιούν τον Διαχειριστή κωδικών πρόσβασης Google, για να συνδεθούν στον ιστότοπο <ph name="BEGIN_BOLD" /><ph name="WEBSITE" /><ph name="END_BOLD" />. <ph name="BEGIN_LINK" />Μάθετε περισσότερα<ph name="END_LINK" /></translation>
 <translation id="5132942445612118989">Συγχρονίστε κωδικούς πρόσβασης, ιστορικό και πολλά άλλα σε όλες τις συσκευές</translation>
 <translation id="5142890110117755815">{COUNT,plural, =1{{COUNT} ασθενής κωδικός πρόσβασης}other{{COUNT} ασθενείς κωδικοί πρόσβασης}}</translation>
 <translation id="5149188072385105201">Προσθήκη κωδικού πρόσβασης…</translation>

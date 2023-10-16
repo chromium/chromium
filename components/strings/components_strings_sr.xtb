@@ -966,6 +966,7 @@
 <translation id="2977665033722899841"><ph name="ROW_NAME" />, тренутно изабрано. <ph name="ROW_CONTENT" /></translation>
 <translation id="2978824962390592855">Опера</translation>
 <translation id="2979424420072875974">Ресурси за писце</translation>
+<translation id="2980742331521553164">CVC ове картице ће бити шифрован и сачуван на Google налогу ради бржег плаћања</translation>
 <translation id="2983666748527428214">Отвори картицу без архивирања</translation>
 <translation id="2985306909656435243">Ако омогућите ову опцију, Chromium ће складиштити копију картице на овом уређају ради бржег попуњавања образаца.</translation>
 <translation id="2985398929374701810">Унесите важећу адресу</translation>
@@ -3396,6 +3397,7 @@
 <translation id="79338296614623784">Унесите важећи број телефона</translation>
 <translation id="7934414805353235750"><ph name="URL" /> жели да пусти заштићени садржај. Google ће потврдити идентитет уређаја.</translation>
 <translation id="7935318582918952113">DOM Distiller</translation>
+<translation id="7937163678541954811">CVC ове картице ће бити шифрован и сачуван на уређају ради бржег плаћања</translation>
 <translation id="7937554595067888181">Истиче <ph name="EXPIRATION_DATE_ABBR" /></translation>
 <translation id="7938958445268990899">Сертификат сервера још увек није важећи.</translation>
 <translation id="7939713744218886332">Светска кухиња</translation>

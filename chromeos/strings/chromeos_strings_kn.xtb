@@ -75,6 +75,7 @@
 <translation id="1499900233129743732">ಈ ಬಳಕೆದಾರರನ್ನು <ph name="MANAGER" /> ನಿರ್ವಹಿಸುತ್ತದೆ ಮತ್ತು ರಿಮೋಟ್ ಆಗಿ ಸೆಟ್ಟಿಂಗ್‌ಗಳನ್ನು ನಿರ್ವಹಿಸಬಹುದು ಹಾಗೂ ಬಳಕೆದಾರರ ಚಟುವಟಿಕೆಯನ್ನು ಮಾನಿಟರ್ ಮಾಡಬಹುದು.</translation>
 <translation id="150962533380566081">ಅಮಾನ್ಯ PUK.</translation>
 <translation id="1510238584712386396">ಲಾಂಚರ್</translation>
+<translation id="1515129336378114413">ಬ್ರೌಸರ್ ಹೋಮ್</translation>
 <translation id="1526389707933164996">ಸ್ಕ್ರೀನ್‌ಸೇವರ್ ಆ್ಯನಿಮೇಶನ್</translation>
 <translation id="152892567002884378">ವಾಲ್ಯೂಮ್ ಹೆಚ್ಚು ಮಾಡಿ</translation>
 <translation id="1555130319947370107">ನೀಲಿ</translation>
@@ -168,7 +169,9 @@
 <translation id="2152882202543497059"><ph name="NUMBER" /> ಫೋಟೋಗಳು</translation>
 <translation id="2157660087437850958">ಎಮೋಜಿ ಪಿಕರ್‌</translation>
 <translation id="2157959690810728433">ಸರದಿಯಲ್ಲಿರಿಸಲಾಗಿದೆ</translation>
+<translation id="2158450850127366833">{NUM_ROOL_APPS,plural,offset:2 =1{ನೀವು ಪ್ರತಿ ಬಾರಿ ಲಾಗ್ ಇನ್ ಮಾಡಿದಾಗ ಸ್ವಯಂಚಾಲಿತವಾಗಿ ಪ್ರಾರಂಭವಾಗುವಂತೆ ನಿಮ್ಮ ನಿರ್ವಾಹಕರು <ph name="APP_NAME_1" /> ಅನ್ನು ಸೆಟ್ ಮಾಡಿದ್ದಾರೆ.}=2{ನೀವು ಪ್ರತಿ ಬಾರಿ ಲಾಗ್ ಇನ್ ಮಾಡಿದಾಗ ಸ್ವಯಂಚಾಲಿತವಾಗಿ ಪ್ರಾರಂಭವಾಗುವಂತೆ ನಿಮ್ಮ ನಿರ್ವಾಹಕರು <ph name="APP_NAME_1" /> ಮತ್ತು <ph name="APP_NAME_2" /> ಅನ್ನು ಸೆಟ್ ಮಾಡಿದ್ದಾರೆ.}=3{ನೀವು ಪ್ರತಿ ಬಾರಿ ಲಾಗ್ ಇನ್ ಮಾಡಿದಾಗ ಸ್ವಯಂಚಾಲಿತವಾಗಿ ಪ್ರಾರಂಭವಾಗುವಂತೆ ನಿಮ್ಮ ನಿರ್ವಾಹಕರು <ph name="APP_NAME_1" />, <ph name="APP_NAME_2" /> ಮತ್ತು <ph name="APP_NAME_3" /> ಅನ್ನು ಸೆಟ್ ಮಾಡಿದ್ದಾರೆ.}one{ನೀವು ಪ್ರತಿ ಬಾರಿ ಲಾಗ್ ಇನ್ ಮಾಡಿದಾಗ ಸ್ವಯಂಚಾಲಿತವಾಗಿ ಪ್ರಾರಂಭವಾಗುವಂತೆ ನಿಮ್ಮ ನಿರ್ವಾಹಕರು <ph name="APP_NAME_1" />, <ph name="APP_NAME_2" /> ಮತ್ತು # ಇತರ ಆ್ಯಪ್‌ಗಳನ್ನು ಸೆಟ್ ಮಾಡಿದ್ದಾರೆ.}other{ನೀವು ಪ್ರತಿ ಬಾರಿ ಲಾಗ್ ಇನ್ ಮಾಡಿದಾಗ ಸ್ವಯಂಚಾಲಿತವಾಗಿ ಪ್ರಾರಂಭವಾಗುವಂತೆ ನಿಮ್ಮ ನಿರ್ವಾಹಕರು <ph name="APP_NAME_1" />, <ph name="APP_NAME_2" /> ಮತ್ತು # ಇತರ ಆ್ಯಪ್‌ಗಳನ್ನು ಸೆಟ್ ಮಾಡಿದ್ದಾರೆ.}}</translation>
 <translation id="2158971754079422508"><ph name="DESC_TEXT" />: ಮರುಪ್ರಯತ್ನಿಸಿ</translation>
+<translation id="215916044711630446">APN ಸೇರಿಸಿ ಎಂಬ ಬಟನ್ ಅನ್ನು ಈಗ ನಿಷ್ಕ್ರಿಯಗೊಳಿಸಲಾಗಿದೆ</translation>
 <translation id="2161394479394250669">ಮುದ್ರಣ ಕಾರ್ಯವನ್ನು ರದ್ದುಮಾಡಿ</translation>
 <translation id="2161656808144014275">ಪಠ್ಯ</translation>
 <translation id="2163937499206714165">ಕತ್ತಲೆ ಮೋಡ್ ಆನ್ ಮಾಡಿ</translation>
@@ -399,6 +402,7 @@
 <translation id="4117637339509843559">ಕತ್ತಲೆ ಮೋಡ್</translation>
 <translation id="4130035430755296270">ಇನ್ನಷ್ಟು ಲೇಔಟ್ ಆಯ್ಕೆಗಳಿಗಾಗಿ ಹೋವರ್ ಮಾಡುತ್ತಿರಿ</translation>
 <translation id="4131410914670010031">ಕಪ್ಪು ಮತ್ತು ಬಿಳುಪು</translation>
+<translation id="4143820682073026914">{NUM_ROOL_APPS,plural, =1{<ph name="APP_NAME_1" /> ಸ್ವಯಂಚಾಲಿತವಾಗಿ ಪ್ರಾರಂಭವಾಗಿದೆ}one{# ಆ್ಯಪ್‌ಗಳು ಸ್ವಯಂಚಾಲಿತವಾಗಿ ಪ್ರಾರಂಭವಾಗಿವೆ}other{# ಆ್ಯಪ್‌ಗಳು ಸ್ವಯಂಚಾಲಿತವಾಗಿ ಪ್ರಾರಂಭವಾಗಿವೆ}}</translation>
 <translation id="4145784616224233563">HTTP ಫೈರ್‌ವಾಲ್</translation>
 <translation id="4147897805161313378">Google Photos</translation>
 <translation id="4150201353443180367">ಡಿಸ್‌ಪ್ಲೇ</translation>
@@ -444,6 +448,7 @@
 <translation id="445059817448385655">ಹಳೆಯ ಪಾಸ್‌ವರ್ಡ್‌</translation>
 <translation id="4453205916657964690">ಸಬ್‌ನೆಟ್‌ ಮಾಸ್ಕ್‌</translation>
 <translation id="4454245904991689773">ಇದರಲ್ಲಿ ಸ್ಕ್ಯಾನ್ ಮಾಡಿ</translation>
+<translation id="4456812688969919973">APN ಸೇವ್ ಮಾಡಿ ಎಂಬ ಬಟನ್ ಅನ್ನು ಈಗ ನಿಷ್ಕ್ರಿಯಗೊಳಿಸಲಾಗಿದೆ</translation>
 <translation id="4469288414739283461">ಭೂಮಿ ತಿರುಗುವ ಸ್ಕ್ರೀನ್ ಸೇವರ್</translation>
 <translation id="4479639480957787382">ಈಥರ್ನೆಟ್</translation>
 <translation id="4483049906298469269">ಡೀಫಾಲ್ಟ್ ಅಲ್ಲದ ನೆಟ್‌ವರ್ಕ್ ಗೇಟ್‌ವೇಗೆ ಪಿಂಗ್ ಮಾಡಲು ವಿಫಲವಾಗಿದೆ</translation>
@@ -715,6 +720,7 @@
 <translation id="6423239382391657905">VPN ತೆರೆಯಿರಿ</translation>
 <translation id="6439505561246192797">ದುರ್ಬಲ (<ph name="SIGNAL_STRENGTH" />)</translation>
 <translation id="6447630859861661624">ಖಾತೆಯ ಸೆಟ್ಟಿಂಗ್‌ಗಳಿಗೆ ಹೋಗಿ</translation>
+<translation id="6462978824459367242">APN ಸೇರಿಸಿ ಎಂಬ ಬಟನ್ ಅನ್ನು ಈಗ ಸಕ್ರಿಯಗೊಳಿಸಲಾಗಿದೆ</translation>
 <translation id="6463239094587744704">{PAGE_NUMBER,plural, =0{ಪುಟವನ್ನು ಪುನಃ ಸ್ಕ್ಯಾನ್ ಮಾಡಬೇಕೇ?}=1{{PAGE_NUMBER} ನೇ ಪುಟವನ್ನು ಪುನಃ ಸ್ಕ್ಯಾನ್ ಮಾಡಬೇಕೇ?}one{{PAGE_NUMBER} ನೇ ಪುಟವನ್ನು ಪುನಃ ಸ್ಕ್ಯಾನ್ ಮಾಡಬೇಕೇ?}other{{PAGE_NUMBER} ನೇ ಪುಟವನ್ನು ಪುನಃ ಸ್ಕ್ಯಾನ್ ಮಾಡಬೇಕೇ?}}</translation>
 <translation id="6472207088655375767">OTP</translation>
 <translation id="6480327114083866287"><ph name="MANAGER" /> ಮೂಲಕ ನಿರ್ವಹಿಸಲಾಗಿದೆ</translation>
@@ -749,6 +755,7 @@
 <translation id="6659594942844771486">ಬ್ರೌಸರ್ ಟ್ಯಾಬ್</translation>
 <translation id="6673898378497337661">ಕೀ ಬೋರ್ಡ್ ಪ್ರಖರತೆ ಹೆಚ್ಚಿಸಿ</translation>
 <translation id="6692996468359469499">ನಿಮ್ಮ ಆಯ್ಕೆಗೆ ಸಂಬಂಧಿಸಿದ ಮಾಹಿತಿ ಪಡೆಯಿರಿ</translation>
+<translation id="6694534975463174713">ಲಾಕ್</translation>
 <translation id="6704062477274546131">DNS ರೆಸಲ್ಯೂಷನ್‌‌</translation>
 <translation id="6723839937902243910">ಪವರ್‌</translation>
 <translation id="6723847290197874913">ಕೀಬೋರ್ಡ್ ಬ್ಯಾಕ್‌ಲೈಟ್</translation>
@@ -1052,6 +1059,7 @@
 <translation id="902638246363752736">ಕೀಬೋರ್ಡ್ ಸೆಟ್ಟಿಂಗ್‌ಗಳು</translation>
 <translation id="9028832514430399253">ಸ್ಕ್ರೀನ್‌ಸೇವರ್ ಆಯ್ಕೆಗಳನ್ನು ಆರಿಸಲು ಟಾಗಲ್ ಆನ್ ಮಾಡಿ</translation>
 <translation id="9039663905644212491">PEAP</translation>
+<translation id="9049868303458988905">APN ಸೇವ್ ಮಾಡಿ ಎಂಬ ಬಟನ್ ಅನ್ನು ಈಗ ಸಕ್ರಿಯಗೊಳಿಸಲಾಗಿದೆ</translation>
 <translation id="9058932992221914855">IPv6</translation>
 <translation id="9062831201344759865">DNS ರೆಸಲ್ಯೂಷನ್ ಹೆಚ್ಚಿನ ಲೇಟೆನ್ಸಿಯನ್ನು ಹೊಂದಿದೆ</translation>
 <translation id="9065203028668620118">ಎಡಿಟ್</translation>

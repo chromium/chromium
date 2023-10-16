@@ -2582,6 +2582,7 @@ Txartel adimenduna sartuta edukitzea eskatzen du <ph name="DOMAIN" /> domeinuak.
 <translation id="2990583317361835189">Ez eman mugimendu-sentsoreak erabiltzeko baimena webguneei</translation>
 <translation id="2992931425024192067">Erakutsi jakinarazpenen eduki guztia</translation>
 <translation id="2993517869960930405">Aplikazioari buruzko informazioa</translation>
+<translation id="2996108796702395498">Gailuaren serie-zenbakia <ph name="SERIAL_NUMBER" /> da. Zerbitzua aktibatzeko erabil daiteke zenbaki hori.</translation>
 <translation id="2996286169319737844">Sinkronizazio-pasaesaldiarekin enkriptatu dira datuak. Ez dira hartzen barne Google Pay-ko ordainketa-metodoak eta helbideak.</translation>
 <translation id="2996722619877761919">Irauli ertz luzearen noranzkoan</translation>
 <translation id="2996932914629936323">Sinkronizatuta dauden gailu guztietako historia garbitzen du</translation>
@@ -2969,6 +2970,7 @@ Txartel adimenduna sartuta edukitzea eskatzen du <ph name="DOMAIN" /> domeinuak.
 <translation id="3320630259304269485">Arakatze segurua (webgune kaltegarrien aurreko babesa) eta bestelako segurtasun-ezarpenak</translation>
 <translation id="3321460131042519426">Gaitu hitzen doikuntza</translation>
 <translation id="3321494112580110651">Ez duzu ikusten zure inprimagailua?</translation>
+<translation id="3321776060736518525">Iturburua: <ph name="APP_URL" /></translation>
 <translation id="3323521181261657960">Erabilera-denbora gehiago eman dizute!</translation>
 <translation id="3325804108816646710">Eskuragarri dauden profilak bilatzen…</translation>
 <translation id="3325910708063135066">Kamera eta mikrofonoa erabiltzeko baimenak desaktibatuta daude Mac sistemaren hobespenetan</translation>
@@ -6227,6 +6229,7 @@ Baliteke webguneei eta aplikazioei emandako baimenak kontu honi aplikatzea. Goog
 <translation id="5996200702878169822">Era berean, <ph name="BEGIN_LINK" />eskuz<ph name="END_LINK" /> konfigura dezakezu eSIMaren profil bat.</translation>
 <translation id="5997337190805127100">Lortu informazio gehiago webguneetarako sarbideari buruz</translation>
 <translation id="5998458948782718639">Lagundu betetze automatikoa hobetzen</translation>
+<translation id="5999024481231496910">Hirugarrenen cookieak pixkanaka kentzeko probak gaitu dituzu. Aukera hori aplikatuko da, ezarpenen orrian kontrakoa ezarri bada ere. Hirugarrenen cookieak berriro gaitu nahi badituzu, desgaitu eginbide hau eta exekutatu Chrome berriro.</translation>
 <translation id="5999630716831179808">Ahotsak</translation>
 <translation id="6000758707621254961">"<ph name="SEARCH_TEXT" />" bilaketak <ph name="RESULT_COUNT" /> emaitza ditu</translation>
 <translation id="6001839398155993679">Has gaitezen</translation>
@@ -6709,6 +6712,7 @@ Txartel adimenduna sartuta edukitzea eskatzen du <ph name="DOMAIN" /> domeinuak.
 <translation id="6399675241776343019">Ukatuta</translation>
 <translation id="6399774419735315745">Zelataria</translation>
 <translation id="6400360390396538896">Beti <ph name="ORIGIN" /> webgunean</translation>
+<translation id="6401118106417399952">Gailuaren EIDa <ph name="EID_NUMBER" /> da, eta serie-zenbakia, <ph name="SERIAL_NUMBER" />. Zerbitzua aktibatzeko erabil daitezke zenbakiok.</translation>
 <translation id="6401458660421980302">Fitxa beste gailu batera bidaltzeko, hasi saioa Chrome-n bertan</translation>
 <translation id="6401597285454423070">Ordenagailuak Trusted Platform Module (TPM) bat daukan segurtasun-gailu bat du; Chrome OS-ren ezinbesteko segurtasun-eginbideak inplementatzeko erabiltzen da gailu hori. Informazio gehiago lortzeko, joan Chromebook-en laguntza-zentrora: https://support.google.com/chromebook/?p=tpm</translation>
 <translation id="6404511346730675251">Editatu laster-marka</translation>
@@ -8225,6 +8229,7 @@ Inoiz Voice Match erabiltzeari utzi nahi badiozu, ken ezazu Laguntzailea zerbitz
 <translation id="7637272932128132922">Fitxa inaktibo zegoen bitartean, memoria-aurreztaileak beste zeregin batzuetarako tokia egin du memorian. Hori aldatzeko, joan <ph name="SETTINGS_LINK" /> atalera.</translation>
 <translation id="7637593984496473097">Ez dago nahikoa tokirik memorian</translation>
 <translation id="7639914187072011620">Ezin izan da eskuratu SAMLko birbideratze URLa zerbitzaritik</translation>
+<translation id="7640256527901510478">Gailuaren IMEIa <ph name="IMEI_NUMBER" /> da, eta serie-zenbakia, <ph name="SERIAL_NUMBER" />. Zerbitzua aktibatzeko erabil daitezke zenbakiok.</translation>
 <translation id="7640308610547854367">ChromeOS-en aurreko bertsio batera itzuli zara. Eguneratzeak lortzeko, itxaron hurrengo bertsioa kaleratu arte.</translation>
 <translation id="7641513591566880111">Profilaren izen berria</translation>
 <translation id="764178579712141045">Gehitu da <ph name="USER_EMAIL" /></translation>
@@ -9723,6 +9728,7 @@ Txartel adimenduna sartuta edukitzea eskatzen du <ph name="DOMAIN" /> domeinuak.
 <translation id="881799181680267069">Ezkutatu besteak</translation>
 <translation id="8818152010000655963">Horma-papera</translation>
 <translation id="8818958672113348984">Egiaztatu telefonoaren bidez</translation>
+<translation id="8819510664278523111">Gailuaren EIDa <ph name="EID_NUMBER" /> da; IMEIa <ph name="IMEI_NUMBER" /> da, eta serie-zenbakia, <ph name="SERIAL_NUMBER" />. Zerbitzua aktibatzeko erabil daitezke zenbakiok.</translation>
 <translation id="8820817407110198400">Laster-markak</translation>
 <translation id="8821045908425223359">Konfiguratu automatikoki IP helbidea</translation>
 <translation id="8821268776955756404"><ph name="APP_NAME" /> erabiltzeko prest dago.</translation>

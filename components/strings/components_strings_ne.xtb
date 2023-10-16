@@ -966,6 +966,7 @@
 <translation id="2977665033722899841"><ph name="ROW_NAME" />, हाल चयन गरिएको छ। <ph name="ROW_CONTENT" /></translation>
 <translation id="2978824962390592855">ओपेरा</translation>
 <translation id="2979424420072875974">लेखकसम्बन्धी स्रोत साधन</translation>
+<translation id="2980742331521553164">तपाईं छिटोछरितो रूपमा चेक आउट गर्न सक्नुहोस् भन्नाका लागि यो कार्डको CVC इन्क्रिप्ट गरिने छ र तपाईंको Google खातामा सेभ गरिने छ</translation>
 <translation id="2983666748527428214">इन्कोग्निटो ट्याब खोल्नुहोस्</translation>
 <translation id="2985306909656435243">सक्रिय गरिएको खण्डमा अझ छिटो फाराम भर्नका लागि Chromium ले यस यन्त्रमा तपाईँको कार्डको प्रतिलिपि भण्डारण गर्ने छ।</translation>
 <translation id="2985398929374701810">मान्य ठेगाना प्रविष्टि गर्नुहोस्</translation>
@@ -3395,6 +3396,7 @@
 <translation id="79338296614623784">मान्य फोन नम्बर प्रविष्टि गर्नुहोस्</translation>
 <translation id="7934414805353235750"><ph name="URL" /> संरक्षित गरिएको सामग्री प्ले गर्न चाहन्छ। Google ले तपाईंको डिभाइसको पहिचान प्रमाणित गर्ने छ।</translation>
 <translation id="7935318582918952113">DOM डिस्टिलर</translation>
+<translation id="7937163678541954811">तपाईं छिटोछरितो रूपमा चेक आउट गर्न सक्नुहोस् भन्नाका लागि यो कार्डको CVC इन्क्रिप्ट गरिने छ र तपाईंको डिभाइसमा सेभ गरिने छ</translation>
 <translation id="7937554595067888181"><ph name="EXPIRATION_DATE_ABBR" /> मा म्याद समाप्त हुन्छ</translation>
 <translation id="7938958445268990899">सर्भरको प्रमाणपत्र</translation>
 <translation id="7939713744218886332">विश्वभरिका परिकार</translation>
