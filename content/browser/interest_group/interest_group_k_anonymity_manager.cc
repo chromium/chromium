@@ -55,6 +55,15 @@ void InterestGroupKAnonymityManager::QueryKAnonymityData(
     if (k_anon_data_item.last_updated < check_time - min_wait) {
       ids_to_query.push_back(k_anon_data_item.key);
     }
+
+    if (ids_to_query.size() >= kQueryBatchSizeLimit) {
+      k_anonymity_service_->QuerySets(
+          ids_to_query,
+          base::BindOnce(&InterestGroupKAnonymityManager::QuerySetsCallback,
+                         weak_ptr_factory_.GetWeakPtr(), ids_to_query,
+                         check_time));
+      ids_to_query.clear();
+    }
   }
 
   if (ids_to_query.empty())
