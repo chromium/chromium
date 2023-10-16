@@ -57,13 +57,13 @@ class IpProtectionConfigGetterInterceptor
         token_(std::move(token)),
         expiration_(expiration),
         should_intercept_(should_intercept) {
-    // TODO: handle return value.
-    std::ignore =
+    auto* old_impl =
         getter_->receivers_for_testing().SwapImplForTesting(receiver_id_, this);
+    // We should only ever be replacing `getter` as the impl.
+    CHECK_EQ(getter, old_impl);
   }
 
   ~IpProtectionConfigGetterInterceptor() override {
-    // TODO: handle return value.
     std::ignore = getter_->receivers_for_testing().SwapImplForTesting(
         receiver_id_, getter_);
   }
