@@ -170,7 +170,6 @@ void InitializeDBus() {
   InitializeDBusClient<DlcserviceClient>(bus);
   InitializeDBusClient<chromeos::DlpClient>(bus);
   InitializeDBusClient<EasyUnlockClient>(bus);
-  InitializeDBusClient<featured::FeaturedClient>(bus);
   InitializeDBusClient<FederatedClient>(bus);
   InitializeDBusClient<GnubbyClient>(bus);
   hermes_clients::Initialize(bus);
@@ -262,6 +261,10 @@ void InitializeFeatureListDependentDBus() {
   if (features::IsCellularCarrierLockEnabled()) {
     InitializeDBusClient<Modem3gppClient>(bus);
   }
+
+  // FeaturedClient is not a feature and instead uses the FieldTrialList (which
+  // is initialized with the FeatureList) to record early-boot trials in UMA.
+  InitializeDBusClient<featured::FeaturedClient>(bus);
 }
 
 void ShutdownDBus() {
