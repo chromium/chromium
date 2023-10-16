@@ -181,7 +181,9 @@ class CORE_EXPORT HTMLPlugInElement
   // OwnedPlugin both return the plugin that is stored as
   // HTMLFrameOwnerElement::embedded_content_view_.  However
   // PluginEmbeddedContentView will synchronously create the plugin if required
-  // by calling LayoutEmbeddedContentForJSBindings. Possibly the
+  // by calling LayoutEmbeddedContentForJSBindings.  This can cause
+  // navigations, and it also means that two successive calls to
+  // PluginEmbeddedContentView might not return the same result.  Possibly the
   // PluginEmbeddedContentView code can be inlined into PluginWrapper.
   WebPluginContainerImpl* PluginEmbeddedContentView() const;
 
