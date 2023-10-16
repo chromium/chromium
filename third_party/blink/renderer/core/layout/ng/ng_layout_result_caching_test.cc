@@ -25,7 +25,7 @@ class NGLayoutResultCachingTest : public RenderingTest {
       LayoutBox* box,
       const NGConstraintSpace& constraint_space,
       const NGBlockBreakToken* break_token) {
-    absl::optional<NGFragmentGeometry> fragment_geometry;
+    absl::optional<FragmentGeometry> fragment_geometry;
     NGLayoutCacheStatus cache_status;
     return box->CachedLayoutResult(constraint_space, break_token, nullptr,
                                    nullptr, &fragment_geometry, &cache_status);
@@ -35,7 +35,7 @@ class NGLayoutResultCachingTest : public RenderingTest {
       LayoutBox* box,
       const NGConstraintSpace& constraint_space,
       NGLayoutCacheStatus* out_cache_status = nullptr) {
-    absl::optional<NGFragmentGeometry> fragment_geometry;
+    absl::optional<FragmentGeometry> fragment_geometry;
     NGLayoutCacheStatus cache_status;
     const NGLayoutResult* result =
         box->CachedLayoutResult(constraint_space, nullptr, nullptr, nullptr,

@@ -1309,7 +1309,7 @@ LayoutUnit CalculateDefaultBlockSize(const NGConstraintSpace& space,
   return kIndefiniteSize;
 }
 
-NGFragmentGeometry CalculateInitialFragmentGeometry(
+FragmentGeometry CalculateInitialFragmentGeometry(
     const NGConstraintSpace& space,
     const NGBlockNode& node,
     const NGBlockBreakToken* break_token,

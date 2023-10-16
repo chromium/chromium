@@ -72,7 +72,7 @@ const NGLayoutResult* LayoutBox::CachedLayoutResult(
     const NGBlockBreakToken* break_token,
     const NGEarlyBreak* early_break,
     const NGColumnSpannerPath* column_spanner_path,
-    absl::optional<NGFragmentGeometry>* initial_fragment_geometry,
+    absl::optional<FragmentGeometry>* initial_fragment_geometry,
     NGLayoutCacheStatus* out_cache_status) {
   NOT_DESTROYED();
   *out_cache_status = NGLayoutCacheStatus::kNeedsLayout;

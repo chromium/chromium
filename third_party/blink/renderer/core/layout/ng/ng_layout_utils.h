@@ -40,7 +40,7 @@ NGLayoutCacheStatus CalculateSizeBasedLayoutCacheStatus(
     const NGBlockBreakToken* break_token,
     const NGLayoutResult& cached_layout_result,
     const NGConstraintSpace& new_space,
-    absl::optional<NGFragmentGeometry>* fragment_geometry);
+    absl::optional<FragmentGeometry>* fragment_geometry);
 
 // Returns true if for a given |new_space|, the |cached_layout_result| won't be
 // affected by clearance, or floats, and therefore might be able to skip

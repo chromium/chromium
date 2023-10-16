@@ -96,7 +96,7 @@ const NGPhysicalBoxFragment* NGPageLayoutAlgorithm::LayoutPage(
   DCHECK(page_size.inline_size != kIndefiniteSize);
   DCHECK(page_size.block_size != kIndefiniteSize);
   NGConstraintSpace child_space = CreateConstraintSpaceForPages(page_size);
-  NGFragmentGeometry fragment_geometry =
+  FragmentGeometry fragment_geometry =
       CalculateInitialFragmentGeometry(child_space, Node(), BreakToken());
   NGBlockLayoutAlgorithm child_algorithm(
       {Node(), fragment_geometry, child_space, break_token});

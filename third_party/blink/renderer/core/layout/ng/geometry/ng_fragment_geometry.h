@@ -16,7 +16,7 @@ namespace blink {
 //    'auto' for example).
 //  - The border, scrollbar, and padding.
 // This *doesn't* necessarily represent the final geometry of the fragment.
-struct NGFragmentGeometry {
+struct FragmentGeometry {
   LogicalSize border_box_size;
   BoxStrut border;
   BoxStrut scrollbar;

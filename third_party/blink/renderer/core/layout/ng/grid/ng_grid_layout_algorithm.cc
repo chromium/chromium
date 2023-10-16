@@ -441,7 +441,7 @@ GridArea SubgriddedAreaInParent(const NGSubgriddedItemData& opt_subgrid_data) {
   return subgridded_area_in_parent;
 }
 
-NGFragmentGeometry CalculateInitialFragmentGeometryForSubgrid(
+FragmentGeometry CalculateInitialFragmentGeometryForSubgrid(
     const GridItemData& subgrid_data,
     const NGConstraintSpace& space) {
   DCHECK(subgrid_data.IsSubgrid());

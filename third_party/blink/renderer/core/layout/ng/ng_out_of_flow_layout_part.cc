@@ -953,9 +953,8 @@ void NGOutOfFlowLayoutPart::LayoutOOFsInMulticol(
   // suitable for holding child fragmentainers while we're cloning them.
   NGConstraintSpace limited_multicol_constraint_space =
       CreateConstraintSpaceForMulticol(multicol);
-  NGFragmentGeometry limited_fragment_geometry =
-      CalculateInitialFragmentGeometry(limited_multicol_constraint_space,
-                                       multicol, /* break_token */ nullptr);
+  FragmentGeometry limited_fragment_geometry = CalculateInitialFragmentGeometry(
+      limited_multicol_constraint_space, multicol, /* break_token */ nullptr);
   NGBoxFragmentBuilder limited_multicol_container_builder =
       CreateContainerBuilderForMulticol(multicol,
                                         limited_multicol_constraint_space,
@@ -1179,7 +1178,7 @@ void NGOutOfFlowLayoutPart::LayoutOOFsInMulticol(
     // fragment.
     const NGConstraintSpace& constraint_space =
         old_result->GetConstraintSpaceForCaching();
-    NGFragmentGeometry fragment_geometry = CalculateInitialFragmentGeometry(
+    FragmentGeometry fragment_geometry = CalculateInitialFragmentGeometry(
         constraint_space, multicol, /* break_token */ nullptr);
     NGLayoutAlgorithmParams params(multicol, fragment_geometry,
                                    constraint_space);
@@ -2216,7 +2215,7 @@ void NGOutOfFlowLayoutPart::LayoutOOFsInFragmentainer(
   const NGBlockNode& node = container_builder_->Node();
   const auto* fragment =
       To<NGPhysicalBoxFragment>(fragmentainer.fragment.Get());
-  NGFragmentGeometry fragment_geometry =
+  FragmentGeometry fragment_geometry =
       CalculateInitialFragmentGeometry(space, node, /* break_token */ nullptr);
   LogicalOffset fragmentainer_offset = UpdatedFragmentainerOffset(
       fragmentainer.offset, index, fragmentainer_progression, is_new_fragment);

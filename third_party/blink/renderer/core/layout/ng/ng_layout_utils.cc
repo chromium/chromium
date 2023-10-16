@@ -176,7 +176,7 @@ bool SizeMayChange(const NGBlockNode& node,
 //  - |NGLayoutCacheStatus::kHit| otherwise.
 NGLayoutCacheStatus CalculateSizeBasedLayoutCacheStatusWithGeometry(
     const NGBlockNode& node,
-    const NGFragmentGeometry& fragment_geometry,
+    const FragmentGeometry& fragment_geometry,
     const NGLayoutResult& layout_result,
     const NGConstraintSpace& new_space,
     const NGConstraintSpace& old_space) {
@@ -420,7 +420,7 @@ bool IntrinsicSizeWillChange(
     const NGBlockBreakToken* break_token,
     const NGLayoutResult& cached_layout_result,
     const NGConstraintSpace& new_space,
-    absl::optional<NGFragmentGeometry>* fragment_geometry) {
+    absl::optional<FragmentGeometry>* fragment_geometry) {
   const ComputedStyle& style = node.Style();
   if (new_space.IsInlineAutoBehaviorStretch() && !NeedMinMaxSize(style))
     return false;
@@ -447,7 +447,7 @@ NGLayoutCacheStatus CalculateSizeBasedLayoutCacheStatus(
     const NGBlockBreakToken* break_token,
     const NGLayoutResult& cached_layout_result,
     const NGConstraintSpace& new_space,
-    absl::optional<NGFragmentGeometry>* fragment_geometry) {
+    absl::optional<FragmentGeometry>* fragment_geometry) {
   DCHECK_EQ(cached_layout_result.Status(), NGLayoutResult::kSuccess);
 
   const NGConstraintSpace& old_space =

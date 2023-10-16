@@ -355,7 +355,7 @@ MinMaxSizesResult NGColumnLayoutAlgorithm::ComputeMinMaxSizes(
 
   // First calculate the min/max sizes of columns.
   NGConstraintSpace space = CreateConstraintSpaceForMinMax();
-  NGFragmentGeometry fragment_geometry = CalculateInitialFragmentGeometry(
+  FragmentGeometry fragment_geometry = CalculateInitialFragmentGeometry(
       space, Node(), /* break_token */ nullptr, /* is_intrinsic */ true);
   NGBlockLayoutAlgorithm algorithm({Node(), fragment_geometry, space});
   MinMaxSizesResult result =
@@ -733,7 +733,7 @@ const NGLayoutResult* NGColumnLayoutAlgorithm::LayoutRow(
           ColumnPercentageResolutionSize(), balance_columns,
           min_break_appeal.value_or(kBreakAppealLastResort));
 
-      NGFragmentGeometry fragment_geometry =
+      FragmentGeometry fragment_geometry =
           CalculateInitialFragmentGeometry(child_space, Node(), BreakToken());
 
       NGLayoutAlgorithmParams params(Node(), fragment_geometry, child_space,
@@ -1209,7 +1209,7 @@ LayoutUnit NGColumnLayoutAlgorithm::ResolveColumnAutoBlockSizeInternal(
   // strip (unless there are forced breaks). When we're done with this layout
   // pass, we can examine the result and calculate an ideal column block-size.
   NGConstraintSpace space = CreateConstraintSpaceForBalancing(column_size);
-  NGFragmentGeometry fragment_geometry =
+  FragmentGeometry fragment_geometry =
       CalculateInitialFragmentGeometry(space, Node(), BreakToken());
 
   // A run of content without explicit (forced) breaks; i.e. the content portion

@@ -54,7 +54,7 @@ class NGLayoutResult;
 class ShapeOutsideInfo;
 class WritingModeConverter;
 enum class NGLayoutCacheStatus;
-struct NGFragmentGeometry;
+struct FragmentGeometry;
 struct NonOverflowingScrollRange;
 struct PaintInfo;
 struct PhysicalBoxStrut;
@@ -774,7 +774,7 @@ class CORE_EXPORT LayoutBox : public LayoutBoxModelObject {
       const NGBlockBreakToken*,
       const NGEarlyBreak*,
       const NGColumnSpannerPath*,
-      absl::optional<NGFragmentGeometry>* initial_fragment_geometry,
+      absl::optional<FragmentGeometry>* initial_fragment_geometry,
       NGLayoutCacheStatus* out_cache_status);
 
   using NGLayoutResultList = HeapVector<Member<const NGLayoutResult>, 1>;

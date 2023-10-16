@@ -676,7 +676,7 @@ inline LayoutUnit ConstrainByMinMax(LayoutUnit length,
 }
 
 template <typename MinMaxSizesFunc>
-NGFragmentGeometry CalculateInitialFragmentGeometry(
+FragmentGeometry CalculateInitialFragmentGeometry(
     const NGConstraintSpace& space,
     const NGBlockNode& node,
     const NGBlockBreakToken* break_token,
@@ -758,7 +758,7 @@ NGFragmentGeometry CalculateInitialFragmentGeometry(
 // is typically used within the |NGBlockNode::ComputeMinMaxSizes| pass (as to
 // determine the inline-size, we'd need to compute the min/max sizes, which in
 // turn would call this function).
-CORE_EXPORT NGFragmentGeometry
+CORE_EXPORT FragmentGeometry
 CalculateInitialFragmentGeometry(const NGConstraintSpace&,
                                  const NGBlockNode&,
                                  const NGBlockBreakToken*,

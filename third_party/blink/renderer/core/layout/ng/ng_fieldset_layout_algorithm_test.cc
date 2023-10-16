@@ -29,7 +29,7 @@ class NGFieldsetLayoutAlgorithmTest : public NGBaseLayoutAlgorithmTest {
         LogicalSize(LayoutUnit(), LayoutUnit()),
         /* stretch_inline_size_if_auto */ true,
         node.CreatesNewFormattingContext());
-    NGFragmentGeometry fragment_geometry = CalculateInitialFragmentGeometry(
+    FragmentGeometry fragment_geometry = CalculateInitialFragmentGeometry(
         space, node, /* break_token */ nullptr, /* is_intrinsic */ true);
 
     NGFieldsetLayoutAlgorithm algorithm({node, fragment_geometry, space});

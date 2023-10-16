@@ -2752,7 +2752,7 @@ TEST_F(NGColumnLayoutAlgorithmTest, MinMax) {
   NGConstraintSpace space = ConstructBlockLayoutTestConstraintSpace(
       {WritingMode::kHorizontalTb, TextDirection::kLtr},
       LogicalSize(LayoutUnit(1000), kIndefiniteSize));
-  NGFragmentGeometry fragment_geometry =
+  FragmentGeometry fragment_geometry =
       CalculateInitialFragmentGeometry(space, node, /* break_token */ nullptr);
   NGColumnLayoutAlgorithm algorithm({node, fragment_geometry, space});
   absl::optional<MinMaxSizes> sizes;
