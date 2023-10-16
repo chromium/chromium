@@ -6,6 +6,7 @@
 #include <string>
 #include <tuple>
 #include <utility>
+#include <vector>
 
 #include "base/barrier_closure.h"
 #include "base/check_deref.h"
@@ -264,8 +265,10 @@ void UpdateClientTest::RunThreads() {
 TEST_F(UpdateClientTest, OneCrxNoUpdate) {
   class DataCallbackMock {
    public:
-    static std::vector<absl::optional<CrxComponent>> Callback(
-        const std::vector<std::string>& ids) {
+    static void Callback(
+        const std::vector<std::string>& ids,
+        base::OnceCallback<
+            void(const std::vector<absl::optional<CrxComponent>>&)> callback) {
       CrxComponent crx;
       crx.app_id = "jebgalgnebhfojomionfpkfelancnnkf";
       crx.name = "test_jebg";
@@ -274,7 +277,7 @@ TEST_F(UpdateClientTest, OneCrxNoUpdate) {
       crx.installer = base::MakeRefCounted<TestInstaller>();
       crx.crx_format_requirement = crx_file::VerifierFormat::CRX3;
       std::vector<absl::optional<CrxComponent>> component = {crx};
-      return component;
+      std::move(callback).Run({component});
     }
   };
 
@@ -388,8 +391,10 @@ TEST_F(UpdateClientTest, OneCrxNoUpdate) {
 TEST_F(UpdateClientTest, TwoCrxUpdateNoUpdate) {
   class DataCallbackMock {
    public:
-    static std::vector<absl::optional<CrxComponent>> Callback(
-        const std::vector<std::string>& ids) {
+    static void Callback(
+        const std::vector<std::string>& ids,
+        base::OnceCallback<
+            void(const std::vector<absl::optional<CrxComponent>>&)> callback) {
       CrxComponent crx1;
       crx1.app_id = "jebgalgnebhfojomionfpkfelancnnkf";
       crx1.name = "test_jebg";
@@ -406,7 +411,7 @@ TEST_F(UpdateClientTest, TwoCrxUpdateNoUpdate) {
       crx2.installer = base::MakeRefCounted<TestInstaller>();
       crx2.crx_format_requirement = crx_file::VerifierFormat::CRX3;
 
-      return {crx1, crx2};
+      std::move(callback).Run({crx1, crx2});
     }
   };
 
@@ -646,8 +651,10 @@ TEST_F(UpdateClientTest, TwoCrxUpdateNoUpdate) {
 TEST_F(UpdateClientTest, TwoCrxUpdateFirstServerIgnoresSecond) {
   class DataCallbackMock {
    public:
-    static std::vector<absl::optional<CrxComponent>> Callback(
-        const std::vector<std::string>& ids) {
+    static void Callback(
+        const std::vector<std::string>& ids,
+        base::OnceCallback<
+            void(const std::vector<absl::optional<CrxComponent>>&)> callback) {
       CrxComponent crx1;
       crx1.app_id = "jebgalgnebhfojomionfpkfelancnnkf";
       crx1.name = "test_jebg";
@@ -663,7 +670,7 @@ TEST_F(UpdateClientTest, TwoCrxUpdateFirstServerIgnoresSecond) {
       crx2.installer = base::MakeRefCounted<TestInstaller>();
       crx2.crx_format_requirement = crx_file::VerifierFormat::CRX3;
 
-      return {crx1, crx2};
+      std::move(callback).Run({crx1, crx2});
     }
   };
 
@@ -884,8 +891,10 @@ TEST_F(UpdateClientTest, TwoCrxUpdateFirstServerIgnoresSecond) {
 TEST_F(UpdateClientTest, TwoCrxUpdateNoCrxComponentData) {
   class DataCallbackMock {
    public:
-    static std::vector<absl::optional<CrxComponent>> Callback(
-        const std::vector<std::string>& ids) {
+    static void Callback(
+        const std::vector<std::string>& ids,
+        base::OnceCallback<
+            void(const std::vector<absl::optional<CrxComponent>>&)> callback) {
       CrxComponent crx;
       crx.app_id = "jebgalgnebhfojomionfpkfelancnnkf";
       crx.name = "test_jebg";
@@ -893,7 +902,7 @@ TEST_F(UpdateClientTest, TwoCrxUpdateNoCrxComponentData) {
       crx.version = base::Version("0.9");
       crx.installer = base::MakeRefCounted<TestInstaller>();
       crx.crx_format_requirement = crx_file::VerifierFormat::CRX3;
-      return {crx, absl::nullopt};
+      std::move(callback).Run({crx, absl::nullopt});
     }
   };
 
@@ -1099,9 +1108,11 @@ TEST_F(UpdateClientTest, TwoCrxUpdateNoCrxComponentData) {
 TEST_F(UpdateClientTest, TwoCrxUpdateNoCrxComponentDataAtAll) {
   class DataCallbackMock {
    public:
-    static std::vector<absl::optional<CrxComponent>> Callback(
-        const std::vector<std::string>& ids) {
-      return {absl::nullopt, absl::nullopt};
+    static void Callback(
+        const std::vector<std::string>& ids,
+        base::OnceCallback<
+            void(const std::vector<absl::optional<CrxComponent>>&)> callback) {
+      std::move(callback).Run({absl::nullopt, absl::nullopt});
     }
   };
 
@@ -1200,8 +1211,10 @@ TEST_F(UpdateClientTest, TwoCrxUpdateNoCrxComponentDataAtAll) {
 TEST_F(UpdateClientTest, TwoCrxUpdateDownloadTimeout) {
   class DataCallbackMock {
    public:
-    static std::vector<absl::optional<CrxComponent>> Callback(
-        const std::vector<std::string>& ids) {
+    static void Callback(
+        const std::vector<std::string>& ids,
+        base::OnceCallback<
+            void(const std::vector<absl::optional<CrxComponent>>&)> callback) {
       CrxComponent crx1;
       crx1.app_id = "jebgalgnebhfojomionfpkfelancnnkf";
       crx1.name = "test_jebg";
@@ -1218,7 +1231,7 @@ TEST_F(UpdateClientTest, TwoCrxUpdateDownloadTimeout) {
       crx2.installer = base::MakeRefCounted<TestInstaller>();
       crx2.crx_format_requirement = crx_file::VerifierFormat::CRX3;
 
-      return {crx1, crx2};
+      std::move(callback).Run({crx1, crx2});
     }
   };
 
@@ -1503,8 +1516,10 @@ TEST_F(UpdateClientTest, OneCrxDiffUpdate) {
   }
   class DataCallbackMock {
    public:
-    static std::vector<absl::optional<CrxComponent>> Callback(
-        const std::vector<std::string>& ids) {
+    static void Callback(
+        const std::vector<std::string>& ids,
+        base::OnceCallback<
+            void(const std::vector<absl::optional<CrxComponent>>&)> callback) {
       static int num_calls = 0;
 
       // Must use the same stateful installer object.
@@ -1527,7 +1542,7 @@ TEST_F(UpdateClientTest, OneCrxDiffUpdate) {
         NOTREACHED();
       }
 
-      return {crx};
+      std::move(callback).Run({crx});
     }
   };
 
@@ -2179,12 +2194,14 @@ TEST_F(UpdateClientTest, OneCrxDiffUpdateAvoided) {
     update_client->Update(
         ids,
         base::BindLambdaForTesting(
-            [crx](const std::vector<std::string>& ids) mutable
-            -> std::vector<absl::optional<CrxComponent>> {
+            [crx](const std::vector<std::string>& ids,
+                  base::OnceCallback<void(
+                      const std::vector<absl::optional<CrxComponent>>&)>
+                      callback) mutable {
               EXPECT_EQ(ids.size(), size_t{1});
               EXPECT_STREQ(ids[0].c_str(), "ihfokbkgjpifnbbojhneepfflplebdkc");
               crx.version = base::Version("0.8");
-              return {crx};
+              std::move(callback).Run({crx});
             }),
         base::BindRepeating(&MockCrxStateChangeReceiver::Receive, receiver),
         false,
@@ -2232,12 +2249,14 @@ TEST_F(UpdateClientTest, OneCrxDiffUpdateAvoided) {
     update_client->Update(
         ids,
         base::BindLambdaForTesting(
-            [crx](const std::vector<std::string>& ids) mutable
-            -> std::vector<absl::optional<CrxComponent>> {
+            [crx](const std::vector<std::string>& ids,
+                  base::OnceCallback<void(
+                      const std::vector<absl::optional<CrxComponent>>&)>
+                      callback) mutable {
               EXPECT_EQ(ids.size(), size_t{1});
               EXPECT_STREQ(ids[0].c_str(), "ihfokbkgjpifnbbojhneepfflplebdkc");
               crx.version = base::Version("1.0");
-              return {crx};
+              std::move(callback).Run({crx});
             }),
         base::BindRepeating(&MockCrxStateChangeReceiver::Receive, receiver),
         false,
@@ -2322,8 +2341,10 @@ TEST_F(UpdateClientTest, OneCrxInstallError) {
 
   class DataCallbackMock {
    public:
-    static std::vector<absl::optional<CrxComponent>> Callback(
-        const std::vector<std::string>& ids) {
+    static void Callback(
+        const std::vector<std::string>& ids,
+        base::OnceCallback<
+            void(const std::vector<absl::optional<CrxComponent>>&)> callback) {
       scoped_refptr<MockInstaller> installer =
           base::MakeRefCounted<MockInstaller>();
 
@@ -2340,7 +2361,7 @@ TEST_F(UpdateClientTest, OneCrxInstallError) {
       crx.installer = installer;
       crx.crx_format_requirement = crx_file::VerifierFormat::CRX3;
 
-      return {crx};
+      std::move(callback).Run({crx});
     }
   };
 
@@ -2533,8 +2554,10 @@ TEST_F(UpdateClientTest, OneCrxDiffUpdateFailsFullUpdateSucceeds) {
   }
   class DataCallbackMock {
    public:
-    static std::vector<absl::optional<CrxComponent>> Callback(
-        const std::vector<std::string>& ids) {
+    static void Callback(
+        const std::vector<std::string>& ids,
+        base::OnceCallback<
+            void(const std::vector<absl::optional<CrxComponent>>&)> callback) {
       static int num_calls = 0;
 
       // Must use the same stateful installer object.
@@ -2556,7 +2579,7 @@ TEST_F(UpdateClientTest, OneCrxDiffUpdateFailsFullUpdateSucceeds) {
         NOTREACHED();
       }
 
-      return {crx};
+      std::move(callback).Run({crx});
     }
   };
 
@@ -3167,12 +3190,14 @@ TEST_F(UpdateClientTest, OneCrxDiffUpdateAvoidedFullUpdateSucceeds) {
     update_client->Update(
         ids,
         base::BindLambdaForTesting(
-            [crx](const std::vector<std::string>& ids) mutable
-            -> std::vector<absl::optional<CrxComponent>> {
+            [crx](const std::vector<std::string>& ids,
+                  base::OnceCallback<void(
+                      const std::vector<absl::optional<CrxComponent>>&)>
+                      callback) mutable {
               EXPECT_EQ(ids.size(), size_t{1});
               EXPECT_STREQ(ids[0].c_str(), "ihfokbkgjpifnbbojhneepfflplebdkc");
               crx.version = base::Version("0.8");
-              return {crx};
+              std::move(callback).Run({crx});
             }),
         base::BindRepeating(&MockCrxStateChangeReceiver::Receive, receiver),
         false,
@@ -3205,12 +3230,14 @@ TEST_F(UpdateClientTest, OneCrxDiffUpdateAvoidedFullUpdateSucceeds) {
     update_client->Update(
         ids,
         base::BindLambdaForTesting(
-            [crx](const std::vector<std::string>& ids) mutable
-            -> std::vector<absl::optional<CrxComponent>> {
+            [crx](const std::vector<std::string>& ids,
+                  base::OnceCallback<void(
+                      const std::vector<absl::optional<CrxComponent>>&)>
+                      callback) mutable {
               EXPECT_EQ(ids.size(), size_t{1});
               EXPECT_STREQ(ids[0].c_str(), "ihfokbkgjpifnbbojhneepfflplebdkc");
               crx.version = base::Version("1.0");
-              return {crx};
+              std::move(callback).Run({crx});
             }),
         base::BindRepeating(&MockCrxStateChangeReceiver::Receive, receiver),
         false,
@@ -3241,8 +3268,10 @@ TEST_F(UpdateClientTest, OneCrxDiffUpdateAvoidedFullUpdateSucceeds) {
 TEST_F(UpdateClientTest, OneCrxNoUpdateQueuedCall) {
   class DataCallbackMock {
    public:
-    static std::vector<absl::optional<CrxComponent>> Callback(
-        const std::vector<std::string>& ids) {
+    static void Callback(
+        const std::vector<std::string>& ids,
+        base::OnceCallback<
+            void(const std::vector<absl::optional<CrxComponent>>&)> callback) {
       CrxComponent crx;
       crx.app_id = "jebgalgnebhfojomionfpkfelancnnkf";
       crx.name = "test_jebg";
@@ -3250,7 +3279,7 @@ TEST_F(UpdateClientTest, OneCrxNoUpdateQueuedCall) {
       crx.version = base::Version("0.9");
       crx.installer = base::MakeRefCounted<TestInstaller>();
       crx.crx_format_requirement = crx_file::VerifierFormat::CRX3;
-      return {crx};
+      std::move(callback).Run({crx});
     }
   };
 
@@ -3391,8 +3420,10 @@ TEST_F(UpdateClientTest, OneCrxNoUpdateQueuedCall) {
 TEST_F(UpdateClientTest, OneCrxInstall) {
   class DataCallbackMock {
    public:
-    static std::vector<absl::optional<CrxComponent>> Callback(
-        const std::vector<std::string>& ids) {
+    static void Callback(
+        const std::vector<std::string>& ids,
+        base::OnceCallback<
+            void(const std::vector<absl::optional<CrxComponent>>&)> callback) {
       CrxComponent crx;
       crx.app_id = "jebgalgnebhfojomionfpkfelancnnkf";
       crx.name = "test_jebg";
@@ -3400,7 +3431,7 @@ TEST_F(UpdateClientTest, OneCrxInstall) {
       crx.version = base::Version("0.0");
       crx.installer = base::MakeRefCounted<TestInstaller>();
       crx.crx_format_requirement = crx_file::VerifierFormat::CRX3;
-      return {crx};
+      std::move(callback).Run({crx});
     }
   };
 
@@ -3630,9 +3661,11 @@ TEST_F(UpdateClientTest, OneCrxInstall) {
 TEST_F(UpdateClientTest, OneCrxInstallNoCrxComponentData) {
   class DataCallbackMock {
    public:
-    static std::vector<absl::optional<CrxComponent>> Callback(
-        const std::vector<std::string>& ids) {
-      return {absl::nullopt};
+    static void Callback(
+        const std::vector<std::string>& ids,
+        base::OnceCallback<
+            void(const std::vector<absl::optional<CrxComponent>>&)> callback) {
+      std::move(callback).Run({absl::nullopt});
     }
   };
 
@@ -3736,8 +3769,10 @@ TEST_F(UpdateClientTest, OneCrxInstallNoCrxComponentData) {
 TEST_F(UpdateClientTest, ConcurrentInstallSameCRX) {
   class DataCallbackMock {
    public:
-    static std::vector<absl::optional<CrxComponent>> Callback(
-        const std::vector<std::string>& ids) {
+    static void Callback(
+        const std::vector<std::string>& ids,
+        base::OnceCallback<
+            void(const std::vector<absl::optional<CrxComponent>>&)> callback) {
       CrxComponent crx;
       crx.app_id = "jebgalgnebhfojomionfpkfelancnnkf";
       crx.name = "test_jebg";
@@ -3745,7 +3780,7 @@ TEST_F(UpdateClientTest, ConcurrentInstallSameCRX) {
       crx.version = base::Version("0.0");
       crx.installer = base::MakeRefCounted<TestInstaller>();
       crx.crx_format_requirement = crx_file::VerifierFormat::CRX3;
-      return {crx};
+      std::move(callback).Run({crx});
     }
   };
 
@@ -3879,9 +3914,11 @@ TEST_F(UpdateClientTest, ConcurrentInstallSameCRX) {
 TEST_F(UpdateClientTest, EmptyIdList) {
   class DataCallbackMock {
    public:
-    static std::vector<absl::optional<CrxComponent>> Callback(
-        const std::vector<std::string>& ids) {
-      return {};
+    static void Callback(
+        const std::vector<std::string>& ids,
+        base::OnceCallback<
+            void(const std::vector<absl::optional<CrxComponent>>&)> callback) {
+      std::move(callback).Run({});
     }
   };
 
@@ -4097,8 +4134,10 @@ TEST_F(UpdateClientTest, SendInstallPing) {
 TEST_F(UpdateClientTest, RetryAfter) {
   class DataCallbackMock {
    public:
-    static std::vector<absl::optional<CrxComponent>> Callback(
-        const std::vector<std::string>& ids) {
+    static void Callback(
+        const std::vector<std::string>& ids,
+        base::OnceCallback<
+            void(const std::vector<absl::optional<CrxComponent>>&)> callback) {
       CrxComponent crx;
       crx.app_id = "jebgalgnebhfojomionfpkfelancnnkf";
       crx.name = "test_jebg";
@@ -4106,7 +4145,7 @@ TEST_F(UpdateClientTest, RetryAfter) {
       crx.version = base::Version("0.9");
       crx.installer = base::MakeRefCounted<TestInstaller>();
       crx.crx_format_requirement = crx_file::VerifierFormat::CRX3;
-      return {crx};
+      std::move(callback).Run({crx});
     }
   };
 
@@ -4289,8 +4328,10 @@ TEST_F(UpdateClientTest, RetryAfter) {
 TEST_F(UpdateClientTest, TwoCrxUpdateOneUpdateDisabled) {
   class DataCallbackMock {
    public:
-    static std::vector<absl::optional<CrxComponent>> Callback(
-        const std::vector<std::string>& ids) {
+    static void Callback(
+        const std::vector<std::string>& ids,
+        base::OnceCallback<
+            void(const std::vector<absl::optional<CrxComponent>>&)> callback) {
       CrxComponent crx1;
       crx1.app_id = "jebgalgnebhfojomionfpkfelancnnkf";
       crx1.name = "test_jebg";
@@ -4308,7 +4349,7 @@ TEST_F(UpdateClientTest, TwoCrxUpdateOneUpdateDisabled) {
       crx2.installer = base::MakeRefCounted<TestInstaller>();
       crx2.crx_format_requirement = crx_file::VerifierFormat::CRX3;
 
-      return {crx1, crx2};
+      std::move(callback).Run({crx1, crx2});
     }
   };
 
@@ -4567,15 +4608,17 @@ TEST_F(UpdateClientTest, TwoCrxUpdateOneUpdateDisabled) {
 TEST_F(UpdateClientTest, OneCrxUpdateCheckFails) {
   class DataCallbackMock {
    public:
-    static std::vector<absl::optional<CrxComponent>> Callback(
-        const std::vector<std::string>& ids) {
+    static void Callback(
+        const std::vector<std::string>& ids,
+        base::OnceCallback<
+            void(const std::vector<absl::optional<CrxComponent>>&)> callback) {
       CrxComponent crx;
       crx.name = "test_jebg";
       crx.pk_hash.assign(jebg_hash, jebg_hash + std::size(jebg_hash));
       crx.version = base::Version("0.9");
       crx.installer = base::MakeRefCounted<TestInstaller>();
       crx.crx_format_requirement = crx_file::VerifierFormat::CRX3;
-      return {crx};
+      std::move(callback).Run({crx});
     }
   };
 
@@ -4686,8 +4729,10 @@ TEST_F(UpdateClientTest, OneCrxUpdateCheckFails) {
 TEST_F(UpdateClientTest, OneCrxErrorUnknownApp) {
   class DataCallbackMock {
    public:
-    static std::vector<absl::optional<CrxComponent>> Callback(
-        const std::vector<std::string>& ids) {
+    static void Callback(
+        const std::vector<std::string>& ids,
+        base::OnceCallback<
+            void(const std::vector<absl::optional<CrxComponent>>&)> callback) {
       std::vector<absl::optional<CrxComponent>> component;
       {
         CrxComponent crx;
@@ -4729,7 +4774,7 @@ TEST_F(UpdateClientTest, OneCrxErrorUnknownApp) {
         crx.crx_format_requirement = crx_file::VerifierFormat::CRX3;
         component.push_back(crx);
       }
-      return component;
+      std::move(callback).Run(component);
     }
   };
 
@@ -5050,7 +5095,10 @@ TEST_F(UpdateClientTest, ActionRun_Install) {
 
   update_client->Install(
       std::string("gjpmebpgbhcamgdgjcmnjfhggjpgcimm"),
-      base::BindOnce([](const std::vector<std::string>& ids) {
+      base::BindOnce([](const std::vector<std::string>& ids,
+                        base::OnceCallback<void(
+                            const std::vector<absl::optional<CrxComponent>>&)>
+                            callback) {
         auto action_handler = base::MakeRefCounted<MockActionHandler>();
         EXPECT_CALL(*action_handler, Handle(_, _, _))
             .WillOnce([](const base::FilePath& action,
@@ -5070,7 +5118,7 @@ TEST_F(UpdateClientTest, ActionRun_Install) {
         crx.installer = base::MakeRefCounted<VersionedTestInstaller>();
         crx.action_handler = action_handler;
         crx.crx_format_requirement = crx_file::VerifierFormat::CRX3;
-        return std::vector<absl::optional<CrxComponent>>{crx};
+        std::move(callback).Run({crx});
       }),
       {},
       base::BindOnce(
@@ -5208,7 +5256,9 @@ TEST_F(UpdateClientTest, ActionRun_NoUpdate) {
       ids,
       base::BindOnce(
           [](const base::FilePath& unpack_path,
-             const std::vector<std::string>& ids) {
+             const std::vector<std::string>& ids,
+             base::OnceCallback<void(
+                 const std::vector<absl::optional<CrxComponent>>&)> callback) {
             auto action_handler = base::MakeRefCounted<MockActionHandler>();
             EXPECT_CALL(*action_handler, Handle(_, _, _))
                 .WillOnce([](const base::FilePath& action,
@@ -5229,7 +5279,7 @@ TEST_F(UpdateClientTest, ActionRun_NoUpdate) {
                 base::MakeRefCounted<ReadOnlyTestInstaller>(unpack_path);
             crx.action_handler = action_handler;
             crx.crx_format_requirement = crx_file::VerifierFormat::CRX3;
-            return std::vector<absl::optional<CrxComponent>>{crx};
+            std::move(callback).Run({crx});
           },
           unpack_path),
       {}, false,
@@ -5247,8 +5297,10 @@ TEST_F(UpdateClientTest, ActionRun_NoUpdate) {
 TEST_F(UpdateClientTest, CustomAttributeNoUpdate) {
   class DataCallbackMock {
    public:
-    static std::vector<absl::optional<CrxComponent>> Callback(
-        const std::vector<std::string>& ids) {
+    static void Callback(
+        const std::vector<std::string>& ids,
+        base::OnceCallback<
+            void(const std::vector<absl::optional<CrxComponent>>&)> callback) {
       CrxComponent crx;
       crx.app_id = "jebgalgnebhfojomionfpkfelancnnkf";
       crx.name = "test_jebg";
@@ -5257,7 +5309,7 @@ TEST_F(UpdateClientTest, CustomAttributeNoUpdate) {
       crx.installer = base::MakeRefCounted<TestInstaller>();
       crx.crx_format_requirement = crx_file::VerifierFormat::CRX3;
       std::vector<absl::optional<CrxComponent>> component = {crx};
-      return component;
+      std::move(callback).Run(component);
     }
   };
 
@@ -5412,10 +5464,14 @@ TEST_F(UpdateClientTest, BadCrxDataCallback) {
   // component id. This means that its result is ill formed, and the `Update`
   // call completes with an error.
   update_client->Update(
-      ids, base::BindOnce([](const std::vector<std::string>& ids) {
-        EXPECT_EQ(ids.size(), size_t{2});
-        return std::vector<absl::optional<CrxComponent>>{absl::nullopt};
-      }),
+      ids,
+      base::BindOnce(
+          [](const std::vector<std::string>& ids,
+             base::OnceCallback<void(
+                 const std::vector<absl::optional<CrxComponent>>&)> callback) {
+            EXPECT_EQ(ids.size(), size_t{2});
+            std::move(callback).Run({absl::nullopt});
+          }),
       base::BindRepeating(&MockCrxStateChangeReceiver::Receive, receiver), true,
       base::BindOnce(&CompletionCallbackMock::Callback, quit_closure()));
   RunThreads();
@@ -5428,8 +5484,10 @@ TEST_F(UpdateClientTest, BadCrxDataCallback) {
 TEST_F(UpdateClientTest, CancelInstallBeforeTaskStart) {
   class DataCallbackMock {
    public:
-    static std::vector<absl::optional<CrxComponent>> Callback(
-        const std::vector<std::string>& ids) {
+    static void Callback(
+        const std::vector<std::string>& ids,
+        base::OnceCallback<
+            void(const std::vector<absl::optional<CrxComponent>>&)> callback) {
       CrxComponent crx;
       crx.app_id = "jebgalgnebhfojomionfpkfelancnnkf";
       crx.name = "test_jebg";
@@ -5437,7 +5495,7 @@ TEST_F(UpdateClientTest, CancelInstallBeforeTaskStart) {
       crx.version = base::Version("0.0");
       crx.installer = base::MakeRefCounted<TestInstaller>();
       crx.crx_format_requirement = crx_file::VerifierFormat::CRX3;
-      return {crx};
+      std::move(callback).Run({crx});
     }
   };
 
@@ -5573,8 +5631,10 @@ TEST_F(UpdateClientTest, CancelInstallBeforeTaskStart) {
 TEST_F(UpdateClientTest, CancelInstallBeforeInstall) {
   class DataCallbackMock {
    public:
-    static std::vector<absl::optional<CrxComponent>> Callback(
-        const std::vector<std::string>& ids) {
+    static void Callback(
+        const std::vector<std::string>& ids,
+        base::OnceCallback<
+            void(const std::vector<absl::optional<CrxComponent>>&)> callback) {
       CrxComponent crx;
       crx.app_id = "jebgalgnebhfojomionfpkfelancnnkf";
       crx.name = "test_jebg";
@@ -5582,7 +5642,7 @@ TEST_F(UpdateClientTest, CancelInstallBeforeInstall) {
       crx.version = base::Version("0.0");
       crx.installer = base::MakeRefCounted<TestInstaller>();
       crx.crx_format_requirement = crx_file::VerifierFormat::CRX3;
-      return {crx};
+      std::move(callback).Run({crx});
     }
   };
 
@@ -5756,15 +5816,17 @@ TEST_F(UpdateClientTest, CancelInstallBeforeInstall) {
 TEST_F(UpdateClientTest, CancelInstallBeforeDownload) {
   class DataCallbackMock {
    public:
-    static std::vector<absl::optional<CrxComponent>> Callback(
-        const std::vector<std::string>& ids) {
+    static void Callback(
+        const std::vector<std::string>& ids,
+        base::OnceCallback<
+            void(const std::vector<absl::optional<CrxComponent>>&)> callback) {
       CrxComponent crx;
       crx.name = "test_jebg";
       crx.pk_hash.assign(jebg_hash, jebg_hash + std::size(jebg_hash));
       crx.version = base::Version("0.0");
       crx.installer = base::MakeRefCounted<TestInstaller>();
       crx.crx_format_requirement = crx_file::VerifierFormat::CRX3;
-      return {crx};
+      std::move(callback).Run({crx});
     }
   };
 
@@ -5930,8 +5992,10 @@ TEST_F(UpdateClientTest, CancelInstallBeforeDownload) {
 TEST_F(UpdateClientTest, CheckForUpdate_NoUpdate) {
   class DataCallbackMock {
    public:
-    static std::vector<absl::optional<CrxComponent>> Callback(
-        const std::vector<std::string>& ids) {
+    static void Callback(
+        const std::vector<std::string>& ids,
+        base::OnceCallback<
+            void(const std::vector<absl::optional<CrxComponent>>&)> callback) {
       CrxComponent crx;
       crx.app_id = "jebgalgnebhfojomionfpkfelancnnkf";
       crx.name = "test_jebg";
@@ -5939,7 +6003,7 @@ TEST_F(UpdateClientTest, CheckForUpdate_NoUpdate) {
       crx.version = base::Version("0.9");
       crx.installer = base::MakeRefCounted<TestInstaller>();
       crx.crx_format_requirement = crx_file::VerifierFormat::CRX3;
-      return {crx};
+      std::move(callback).Run({crx});
     }
   };
 
@@ -6043,8 +6107,10 @@ TEST_F(UpdateClientTest, CheckForUpdate_NoUpdate) {
 TEST_F(UpdateClientTest, CheckForUpdate_UpdateAvailable) {
   class DataCallbackMock {
    public:
-    static std::vector<absl::optional<CrxComponent>> Callback(
-        const std::vector<std::string>& ids) {
+    static void Callback(
+        const std::vector<std::string>& ids,
+        base::OnceCallback<
+            void(const std::vector<absl::optional<CrxComponent>>&)> callback) {
       CrxComponent crx;
       crx.app_id = "jebgalgnebhfojomionfpkfelancnnkf";
       crx.name = "test_jebg";
@@ -6052,7 +6118,7 @@ TEST_F(UpdateClientTest, CheckForUpdate_UpdateAvailable) {
       crx.version = base::Version("0.9");
       crx.installer = base::MakeRefCounted<TestInstaller>();
       crx.crx_format_requirement = crx_file::VerifierFormat::CRX3;
-      return {crx};
+      std::move(callback).Run({crx});
     }
   };
 
@@ -6195,8 +6261,10 @@ TEST_F(UpdateClientTest, CheckForUpdate_UpdateAvailable) {
 TEST_F(UpdateClientTest, CheckForUpdate_QueueChecks) {
   class DataCallbackMock {
    public:
-    static std::vector<absl::optional<CrxComponent>> Callback(
-        const std::vector<std::string>& ids) {
+    static void Callback(
+        const std::vector<std::string>& ids,
+        base::OnceCallback<
+            void(const std::vector<absl::optional<CrxComponent>>&)> callback) {
       CrxComponent crx;
       crx.app_id = "jebgalgnebhfojomionfpkfelancnnkf";
       crx.name = "test_jebg";
@@ -6204,7 +6272,7 @@ TEST_F(UpdateClientTest, CheckForUpdate_QueueChecks) {
       crx.version = base::Version("0.9");
       crx.installer = base::MakeRefCounted<TestInstaller>();
       crx.crx_format_requirement = crx_file::VerifierFormat::CRX3;
-      return {crx};
+      std::move(callback).Run({crx});
     }
   };
 
@@ -6329,8 +6397,10 @@ TEST_F(UpdateClientTest, CheckForUpdate_QueueChecks) {
 TEST_F(UpdateClientTest, CheckForUpdate_Stop) {
   class DataCallbackMock {
    public:
-    static std::vector<absl::optional<CrxComponent>> Callback(
-        const std::vector<std::string>& ids) {
+    static void Callback(
+        const std::vector<std::string>& ids,
+        base::OnceCallback<
+            void(const std::vector<absl::optional<CrxComponent>>&)> callback) {
       CrxComponent crx;
       crx.app_id = "jebgalgnebhfojomionfpkfelancnnkf";
       crx.name = "test_jebg";
@@ -6338,7 +6408,7 @@ TEST_F(UpdateClientTest, CheckForUpdate_Stop) {
       crx.version = base::Version("0.9");
       crx.installer = base::MakeRefCounted<TestInstaller>();
       crx.crx_format_requirement = crx_file::VerifierFormat::CRX3;
-      return {crx};
+      std::move(callback).Run({crx});
     }
   };
 
@@ -6515,9 +6585,12 @@ TEST_F(UpdateClientTest, CheckForUpdate_Errors) {
   update_client->AddObserver(&observer);
   const std::string id = "jebgalgnebhfojomionfpkfelancnnkf";
   update_client->CheckForUpdate(
-      "", base::BindOnce([](const std::vector<std::string>& /*ids*/) {
-        return std::vector<absl::optional<CrxComponent>>();
-      }),
+      "",
+      base::BindOnce(
+          [](const std::vector<std::string>&, /*ids*/ base::OnceCallback<void(
+                 const std::vector<absl::optional<CrxComponent>>&)> callback) {
+            std::move(callback).Run({});
+          }),
       base::BindRepeating(&MockCrxStateChangeReceiver::Receive, receiver),
       /*is_foreground=*/true, base::BindLambdaForTesting([&](Error error) {
         EXPECT_EQ(error, Error::BAD_CRX_DATA_CALLBACK);
@@ -6525,11 +6598,15 @@ TEST_F(UpdateClientTest, CheckForUpdate_Errors) {
       }));
   update_client->CheckForUpdate(
       id,
-      base::BindLambdaForTesting([&id](const std::vector<std::string>& ids) {
-        EXPECT_EQ(ids.size(), 1u);
-        EXPECT_EQ(id, ids[0]);
-        return std::vector<absl::optional<CrxComponent>>{absl::nullopt};
-      }),
+      base::BindLambdaForTesting(
+          [&id](
+              const std::vector<std::string>& ids,
+              base::OnceCallback<void(
+                  const std::vector<absl::optional<CrxComponent>>&)> callback) {
+            EXPECT_EQ(ids.size(), 1u);
+            EXPECT_EQ(id, ids[0]);
+            std::move(callback).Run({absl::nullopt});
+          }),
       base::BindRepeating(&MockCrxStateChangeReceiver::Receive, receiver),
       /*is_foreground=*/true, base::BindLambdaForTesting([&](Error error) {
         EXPECT_EQ(error, Error::NONE);
@@ -6550,8 +6627,10 @@ TEST_F(UpdateClientTest, CheckForUpdate_Errors) {
 TEST_F(UpdateClientTest, UpdateCheck_UpdateDisabled) {
   class DataCallbackMock {
    public:
-    static std::vector<absl::optional<CrxComponent>> Callback(
-        const std::vector<std::string>& ids) {
+    static void Callback(
+        const std::vector<std::string>& ids,
+        base::OnceCallback<
+            void(const std::vector<absl::optional<CrxComponent>>&)> callback) {
       CrxComponent crx;
       crx.app_id = "jebgalgnebhfojomionfpkfelancnnkf";
       crx.name = "test_jebg";
@@ -6560,7 +6639,7 @@ TEST_F(UpdateClientTest, UpdateCheck_UpdateDisabled) {
       crx.installer = base::MakeRefCounted<TestInstaller>();
       crx.crx_format_requirement = crx_file::VerifierFormat::CRX3;
       crx.updates_enabled = false;
-      return {crx};
+      std::move(callback).Run({crx});
     }
   };
 

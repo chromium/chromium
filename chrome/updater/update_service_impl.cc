@@ -217,7 +217,7 @@ MakeUpdateClientCrxStateChangeCallback(
       config, persisted_data, new_install, callback);
 }
 
-std::vector<absl::optional<update_client::CrxComponent>> GetComponents(
+void GetComponents(
     scoped_refptr<Configurator> config,
     scoped_refptr<PersistedData> persisted_data,
     const AppClientInstallData& app_client_install_data,
@@ -225,7 +225,10 @@ std::vector<absl::optional<update_client::CrxComponent>> GetComponents(
     UpdateService::Priority priority,
     bool update_blocked,
     UpdateService::PolicySameVersionUpdate policy_same_version_update,
-    const std::vector<std::string>& ids) {
+    const std::vector<std::string>& ids,
+    base::OnceCallback<
+        void(const std::vector<absl::optional<update_client::CrxComponent>>&)>
+        callback) {
   VLOG(1) << __func__
           << ". Same version update: " << policy_same_version_update;
   const bool is_foreground = priority == UpdateService::Priority::kForeground;
@@ -273,7 +276,7 @@ std::vector<absl::optional<update_client::CrxComponent>> GetComponents(
             config->GetCrxVerifierFormat())
             ->MakeCrxComponent());
   }
-  return components;
+  std::move(callback).Run(components);
 }
 
 }  // namespace

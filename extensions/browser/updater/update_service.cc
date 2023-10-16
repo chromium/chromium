@@ -5,6 +5,7 @@
 #include "extensions/browser/updater/update_service.h"
 
 #include <algorithm>
+#include <string>
 #include <utility>
 #include <vector>
 
@@ -198,9 +199,10 @@ void UpdateService::StartUpdateCheck(
       base::BindOnce(&UpdateService::UpdateCheckComplete,
                      weak_ptr_factory_.GetWeakPtr(), std::move(update)));
 
-  base::RepeatingCallback<
-      std::vector<absl::optional<update_client::CrxComponent>>(
-          const std::vector<std::string>&)>
+  base::RepeatingCallback<void(
+      const std::vector<std::string>&,
+      base::OnceCallback<void(
+          const std::vector<absl::optional<update_client::CrxComponent>>&)>)>
       get_data = base::BindRepeating(
           &UpdateDataProvider::GetData, update_data_provider_,
           update_params.install_immediately, std::move(update_data));

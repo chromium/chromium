@@ -87,8 +87,10 @@ class CrxUpdateService : public ComponentUpdateService,
 
   const CrxUpdateItem* GetComponentState(const std::string& id) const;
 
-  std::vector<absl::optional<CrxComponent>> GetCrxComponents(
-      const std::vector<std::string>& ids);
+  void GetCrxComponents(
+      const std::vector<std::string>& ids,
+      base::OnceCallback<void(const std::vector<absl::optional<CrxComponent>>&)>
+          callback);
   void OnUpdateComplete(Callback callback,
                         const base::TimeTicks& start_time,
                         update_client::Error error);

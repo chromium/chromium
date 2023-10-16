@@ -430,8 +430,10 @@ bool CrxUpdateService::GetComponentDetails(const std::string& id,
   return false;
 }
 
-std::vector<absl::optional<CrxComponent>> CrxUpdateService::GetCrxComponents(
-    const std::vector<std::string>& ids) {
+void CrxUpdateService::GetCrxComponents(
+    const std::vector<std::string>& ids,
+    base::OnceCallback<void(const std::vector<absl::optional<CrxComponent>>&)>
+        callback) {
   DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
   std::vector<absl::optional<CrxComponent>> crxs;
   for (absl::optional<ComponentRegistration> item :
@@ -439,7 +441,7 @@ std::vector<absl::optional<CrxComponent>> CrxUpdateService::GetCrxComponents(
     crxs.push_back(item ? absl::optional<CrxComponent>{ToCrxComponent(*item)}
                         : absl::nullopt);
   }
-  return crxs;
+  std::move(callback).Run(crxs);
 }
 
 void CrxUpdateService::OnUpdateComplete(Callback callback,

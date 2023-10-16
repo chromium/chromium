@@ -51,10 +51,13 @@ class UpdateDataProvider : public base::RefCounted<UpdateDataProvider> {
   // done.
   void Shutdown();
 
-  std::vector<absl::optional<update_client::CrxComponent>> GetData(
+  void GetData(
       bool install_immediately,
       const ExtensionUpdateDataMap& update_info,
-      const std::vector<std::string>& ids);
+      const std::vector<std::string>& ids,
+      base::OnceCallback<
+          void(const std::vector<absl::optional<update_client::CrxComponent>>&)>
+          callback);
 
  private:
   friend class base::RefCounted<UpdateDataProvider>;

@@ -58,13 +58,21 @@ void UpdateDataProvider::Shutdown() {
   browser_context_ = nullptr;
 }
 
-std::vector<absl::optional<update_client::CrxComponent>>
-UpdateDataProvider::GetData(bool install_immediately,
-                            const ExtensionUpdateDataMap& update_crx_component,
-                            const std::vector<std::string>& ids) {
+void UpdateDataProvider::GetData(
+    bool install_immediately,
+    const ExtensionUpdateDataMap& update_crx_component,
+    const std::vector<std::string>& ids,
+    base::OnceCallback<
+        void(const std::vector<absl::optional<update_client::CrxComponent>>&)>
+        callback) {
   std::vector<absl::optional<update_client::CrxComponent>> data;
-  if (!browser_context_)
-    return data;
+  if (!browser_context_) {
+    for (size_t i = 0; i < ids.size(); i++) {
+      data.push_back(absl::nullopt);
+    }
+    std::move(callback).Run(data);
+    return;
+  }
   const ExtensionRegistry* registry = ExtensionRegistry::Get(browser_context_);
   const ExtensionPrefs* extension_prefs = ExtensionPrefs::Get(browser_context_);
   for (const auto& id : ids) {
@@ -120,7 +128,7 @@ UpdateDataProvider::GetData(bool install_immediately,
     crx_component->install_location =
         ManifestFetchData::GetSimpleLocationString(extension->location());
   }
-  return data;
+  std::move(callback).Run(data);
 }
 
 void UpdateDataProvider::RunInstallCallback(

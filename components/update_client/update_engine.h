@@ -97,6 +97,9 @@ class UpdateEngine : public base::RefCountedThreadSafe<UpdateEngine> {
       UpdateClient::CrxDataCallback crx_data_callback,
       UpdateClient::CrxStateChangeCallback crx_state_change_callback,
       Callback update_callback);
+  void StartOperation(
+      scoped_refptr<UpdateContext> update_context,
+      const std::vector<absl::optional<CrxComponent>>& crx_components);
   void UpdateComplete(scoped_refptr<UpdateContext> update_context, Error error);
 
   void DoUpdateCheck(scoped_refptr<UpdateContext> update_context);
