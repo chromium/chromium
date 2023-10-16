@@ -674,10 +674,6 @@ template("test") {
     }
 
     _test_target = target_name
-    _output_name = target_name
-    if (defined(invoker.output_name)) {
-      _output_name = invoker.output_name
-    }
 
     _wrapper_output_name = "run_${target_name}"
     ios_test_runner_wrapper(_wrapper_output_name) {
@@ -741,13 +737,7 @@ template("test") {
         info_plist = "//testing/gtest_ios/unittest-Info.plist"
       }
 
-      if (ios_use_shared_bundle_id_for_test_apps) {
-        bundle_identifier = shared_bundle_id_for_test_apps
-        not_needed([ "_output_name" ])
-      } else {
-        bundle_identifier = "$ios_app_bundle_id_prefix.chrome." +
-                            string_replace(_output_name, "_", "-")
-      }
+      bundle_identifier = shared_bundle_id_for_test_apps
 
       if (!defined(bundle_deps)) {
         bundle_deps = []
