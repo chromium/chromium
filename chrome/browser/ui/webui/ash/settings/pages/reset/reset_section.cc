@@ -2,7 +2,7 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#include "chrome/browser/ui/webui/settings/ash/reset_section.h"
+#include "chrome/browser/ui/webui/ash/settings/pages/reset/reset_section.h"
 
 #include "ash/constants/ash_features.h"
 #include "base/no_destructor.h"
