@@ -31,6 +31,10 @@
 // Consumer for this mediator.
 @property(nonatomic, weak) id<FeedTopSectionConsumer> consumer;
 
+// Whether the signin promo should be shown. When the promo state changes, it
+// will call `promoStateChanges:` on the delegate.
+@property(nonatomic, assign) BOOL shouldShowSigninPromo;
+
 @end
 
 @implementation FeedTopSectionMediator
@@ -71,6 +75,18 @@
   self.prefService = nullptr;
 }
 
+#pragma mark - Setters
+
+- (void)setShouldShowSigninPromo:(BOOL)shouldShowSigninPromo {
+  if (_shouldShowSigninPromo == shouldShowSigninPromo) {
+    return;
+  }
+  _shouldShowSigninPromo = shouldShowSigninPromo;
+
+  // Update the consumer.
+  self.consumer.shouldShowSigninPromo = _shouldShowSigninPromo;
+}
+
 #pragma mark - FeedTopSectionViewControllerDelegate
 
 - (SigninPromoViewConfigurator*)signinPromoConfigurator {
@@ -93,7 +109,7 @@
     case signin::PrimaryAccountChangeEvent::Type::kSet:
       if (!self.signinPromoMediator.showSpinner) {
         // User has signed in, stop showing the promo.
-        [self updateShouldShowSigninPromo];
+        self.shouldShowSigninPromo = NO;
       }
       break;
     case signin::PrimaryAccountChangeEvent::Type::kCleared:
@@ -116,24 +132,26 @@
 - (void)signinPromoViewMediatorCloseButtonWasTapped:
     (SigninPromoViewMediator*)mediator {
   [self.ntpDelegate handleFeedTopSectionClosed];
-  [self.consumer hideSigninPromo];
+  self.shouldShowSigninPromo = NO;
 }
 
 #pragma mark - Private
 
 - (void)updateShouldShowSigninPromo {
-  PrefService* localState = GetApplicationContext()->GetLocalState();
+  self.shouldShowSigninPromo = NO;
   // Don't show the promo for incognito or start surface.
-  BOOL isStartSurfaceOrIncognito = self.isIncognito ||
-                                   [self.ntpDelegate isStartSurface] ||
-                                   !self.isSignInPromoEnabled;
+  if (self.isIncognito || [self.ntpDelegate isStartSurface] ||
+      !self.isSignInPromoEnabled) {
+    return;
+  }
 
-  // Don't show the promo if Set Up Lists is Enabled.
-  BOOL isSetupListEnabled = IsIOSSetUpListEnabled() &&
-                            set_up_list_utils::IsSetUpListActive(localState);
+  // Don't show the promo if SetUpList might be displayed.
+  PrefService* localState = GetApplicationContext()->GetLocalState();
+  if (IsIOSSetUpListEnabled() &&
+      set_up_list_utils::IsSetUpListActive(localState)) {
+    return;
+  }
 
-  // Don't show the promo if the account is not elegible for a SigninPromo.
-  BOOL isAccountEligibleForPromo = NO;
   if ([SigninPromoViewMediator
           shouldDisplaySigninPromoViewWithAccessPoint:
               signin_metrics::AccessPoint::ACCESS_POINT_NTP_FEED_TOP_PROMO
@@ -143,15 +161,8 @@
         base::FeatureList::IsEnabled(syncer::kReplaceSyncPromosWithSignInPromos)
             ? signin::ConsentLevel::kSignin
             : signin::ConsentLevel::kSync;
-    isAccountEligibleForPromo =
+    self.shouldShowSigninPromo =
         !self.identityManager->HasPrimaryAccount(consent);
-  }
-
-  if (!isStartSurfaceOrIncognito && !isSetupListEnabled &&
-      isAccountEligibleForPromo) {
-    [self.consumer showSigninPromo];
-  } else {
-    [self.consumer hideSigninPromo];
   }
 }
 
