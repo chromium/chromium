@@ -176,8 +176,7 @@ void MessageCenterController::RemoveObserver(Observer* observer) {
 
 void MessageCenterController::OnActiveUserPrefServiceChanged(
     PrefService* prefs) {
-  if (!features::IsNotificationExperimentalShortTimeoutsEnabled() ||
-      DisableShortNotificationsForAccessibility(prefs)) {
+  if (DisableShortNotificationsForAccessibility(prefs)) {
     return;
   }
 

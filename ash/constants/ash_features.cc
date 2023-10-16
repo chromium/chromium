@@ -1845,11 +1845,6 @@ BASE_FEATURE(kNotificationExpansionAnimation,
              "NotificationExpansionAnimation",
              base::FEATURE_DISABLED_BY_DEFAULT);
 
-// Shorten notification timeouts to 6 seconds.
-BASE_FEATURE(kNotificationExperimentalShortTimeouts,
-             "NotificationExperimentalShortTimeouts",
-             base::FEATURE_ENABLED_BY_DEFAULT);
-
 // Enables dragging the image from a notification by mouse or gesture.
 BASE_FEATURE(kNotificationImageDrag,
              "NotificationImageDrag",
@@ -3742,10 +3737,6 @@ bool IsSystemNudgeV2Enabled() {
 
 bool IsNotificationExpansionAnimationEnabled() {
   return base::FeatureList::IsEnabled(kNotificationExpansionAnimation);
-}
-
-bool IsNotificationExperimentalShortTimeoutsEnabled() {
-  return base::FeatureList::IsEnabled(kNotificationExperimentalShortTimeouts);
 }
 
 bool IsNotificationImageDragEnabled() {
