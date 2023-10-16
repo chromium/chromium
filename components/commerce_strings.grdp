@@ -228,6 +228,12 @@
       <message name="IDS_PRICE_HISTORY_TITLE" desc="The title name of the Price History section in the Shopping Insights side panel.">
         Price History
       </message>
+      <message name="IDS_PRICE_HISTORY_TITLE_MULTIPLE_OPTIONS" translateable="false" desc="The title of the Price History section in the Shopping Insights side panel when we find multiple options of this product.">
+        Price History Across the Web for this Option
+      </message>
+      <message name="IDS_PRICE_HISTORY_TITLE_SINGLE_OPTION" translateable="false" desc="The title of the Price History section in the Shopping Insights side panel when we only find one option of this product.">
+        Price History Across the Web
+      </message>
       <message name="IDS_PRICE_HISTORY_MULTIPLE_OPTIONS_LOW_PRICE" desc="Text shown in the Price History section in the Shopping Insights side panel, indicating an option has relatively low price.">
         Low Priced Option
       </message>
@@ -256,6 +262,12 @@
       </message>
       <message name="IDS_PRICE_HISTORY_TITLE" desc="The title name of the Price History section in the Shopping Insights side panel.">
         Price history
+      </message>
+      <message name="IDS_PRICE_HISTORY_TITLE_MULTIPLE_OPTIONS" translateable="false" desc="The title of the Price History section in the Shopping Insights side panel when we find multiple options of this product.">
+        Price history across the web for this option
+      </message>
+      <message name="IDS_PRICE_HISTORY_TITLE_SINGLE_OPTION" translateable="false" desc="The title of the Price History section in the Shopping Insights side panel when we only find one option of this product.">
+        Price history across the web
       </message>
       <message name="IDS_PRICE_HISTORY_MULTIPLE_OPTIONS_LOW_PRICE" desc="Text shown in the Price History section in the Shopping Insights side panel, indicating an option has relatively low price.">
         Low priced option

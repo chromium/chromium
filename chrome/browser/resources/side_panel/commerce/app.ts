@@ -88,6 +88,12 @@ export class ShoppingInsightsAppElement extends PolymerElement {
         loadTimeData.getStringF('rangeSingleOptionOnePrice', lowPrice) :
         loadTimeData.getStringF('rangeSingleOption', lowPrice, highPrice);
   }
+
+  private getHistoryTitle_(info: PriceInsightsInfo): string {
+    return loadTimeData.getString(
+        info.hasMultipleCatalogs ? 'historyTitleMultipleOptions' :
+                                   'historyTitleSingleOption');
+  }
 }
 
 declare global {

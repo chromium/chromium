@@ -50,8 +50,6 @@
   .history-subtitle {
     line-height: 20px;
     max-width: 100%;
-    text-overflow: ellipsis;
-    white-space: nowrap;
   }
 
   #priceRange {
@@ -82,7 +80,7 @@
     <div class="divider"></div>
     <div class="section" id="historySection">
       <div class="section-title" id="historyTitle">
-        $i18n{historyTitle}
+        [[getHistoryTitle_(priceInsightsInfo)]]
       </div>
       <catalog-attributes-row class="history-subtitle"
           price-insights-info="[[priceInsightsInfo]]"
