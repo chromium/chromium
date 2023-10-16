@@ -26,7 +26,6 @@ class MockCampaignsManagerClient : public CampaignsManagerClient {
   MOCK_CONST_METHOD0(IsCloudGamingDevice, bool());
   MOCK_CONST_METHOD0(IsFeatureAwareDevice, bool());
   MOCK_CONST_METHOD0(GetApplicationLocale, std::string&());
-  MOCK_CONST_METHOD0(GetDemoModeAppVersion, const base::Version&());
 };
 
 }  // namespace growth
