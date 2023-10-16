@@ -37,8 +37,13 @@ class MockSpeculationHostDelegate : public SpeculationHostDelegate {
     return candidates_;
   }
 
+  base::WeakPtr<MockSpeculationHostDelegate> AsWeakPtr() {
+    return weak_ptr_factory_.GetWeakPtr();
+  }
+
  private:
   std::vector<blink::mojom::SpeculationCandidatePtr> candidates_;
+  base::WeakPtrFactory<MockSpeculationHostDelegate> weak_ptr_factory_{this};
 };
 
 class TestPrefetchService : public PrefetchService {
@@ -91,15 +96,15 @@ class MockContentBrowserClient : public TestContentBrowserClient {
       RenderFrameHost& render_frame_host) override {
     auto delegate =
         std::make_unique<MockSpeculationHostDelegate>(render_frame_host);
-    delegate_ = delegate.get();
+    delegate_ = delegate->AsWeakPtr();
     return delegate;
   }
 
-  MockSpeculationHostDelegate* GetDelegate() { return delegate_; }
+  base::WeakPtr<MockSpeculationHostDelegate> GetDelegate() { return delegate_; }
 
  private:
-  raw_ptr<ContentBrowserClient> old_browser_client_;
-  raw_ptr<MockSpeculationHostDelegate, DanglingUntriaged> delegate_;
+  raw_ptr<ContentBrowserClient> old_browser_client_ = nullptr;
+  base::WeakPtr<MockSpeculationHostDelegate> delegate_;
 };
 
 class PrefetcherTest : public RenderViewHostTestHarness {
@@ -153,8 +158,9 @@ TEST_F(PrefetcherTest, ProcessCandidatesForPrefetch) {
 
   MockContentBrowserClient browser_client;
   auto prefetcher = Prefetcher(GetPrimaryMainFrame());
-  auto* delegate = browser_client.GetDelegate();
-  EXPECT_TRUE(delegate != nullptr);
+  base::WeakPtr<MockSpeculationHostDelegate> delegate =
+      browser_client.GetDelegate();
+  ASSERT_TRUE(delegate);
 
   // Create list of SpeculationCandidatePtrs.
   std::vector<blink::mojom::SpeculationCandidatePtr> candidates;
@@ -226,8 +232,9 @@ TEST_F(PrefetcherTest, MockPrefetcher) {
 
   MockContentBrowserClient browser_client;
   auto prefetcher = MockPrefetcher(GetPrimaryMainFrame());
-  auto* delegate = browser_client.GetDelegate();
-  EXPECT_TRUE(delegate != nullptr);
+  base::WeakPtr<MockSpeculationHostDelegate> delegate =
+      browser_client.GetDelegate();
+  ASSERT_TRUE(delegate);
 
   // Create list of SpeculationCandidatePtrs.
   std::vector<blink::mojom::SpeculationCandidatePtr> candidates;
