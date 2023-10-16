@@ -286,6 +286,13 @@ class LocalDataMigrationHelper::LocalDataMigrationRequest
     if (types_.Has(syncer::READING_LIST)) {
       CHECK(helper_->dual_reading_list_model_);
       helper_->dual_reading_list_model_->MarkAllForUploadToSyncServerIfNeeded();
+      // MarkAllForUploadToSyncServerIfNeeded() does not remove from local store
+      // if the same url already exists in the account store. Clear the local
+      // model explicitly to handle such cases.
+      // TODO(crbug.com/1493020): Move clearing of local model to
+      // MarkAllForUploadToSyncServerIfNeeded().
+      helper_->dual_reading_list_model_->GetLocalOrSyncableModel()
+          ->DeleteAllEntries();
     }
   }
 
