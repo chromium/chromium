@@ -3,8 +3,9 @@
 // found in the LICENSE file.
 
 import 'chrome://resources/polymer/v3_0/iron-list/iron-list.js';
+import '../controls/settings_checkbox_list_entry.js';
+import '../settings_shared.css.js';
 import '../site_favicon.js';
-import './tab_discard_exception_current_sites_entry.js';
 
 import {PrefsMixin, PrefsMixinInterface} from 'chrome://resources/cr_components/settings_prefs/prefs_mixin.js';
 import {CrScrollableMixin, CrScrollableMixinInterface} from 'chrome://resources/cr_elements/cr_scrollable_mixin.js';
@@ -159,6 +160,11 @@ export class TabDiscardExceptionCurrentSitesListElement extends
 
   private computeSubmitDisabled_() {
     this.submitDisabled = !this.selectedSites_.size;
+  }
+
+  // Convert iron-list index (0-indexed) to aria-posinset (1-indexed).
+  private getAriaPosinset_(index: number): number {
+    return index + 1;
   }
 
   // Called to recalculate checked status of entries when the site changes due

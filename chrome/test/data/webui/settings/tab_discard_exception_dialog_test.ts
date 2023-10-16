@@ -5,7 +5,7 @@
 import 'chrome://settings/settings.js';
 
 import {flush} from 'chrome://resources/polymer/v3_0/polymer/polymer_bundled.min.js';
-import {HighEfficiencyModeExceptionListAction, MAX_TAB_DISCARD_EXCEPTION_RULE_LENGTH, PerformanceBrowserProxyImpl, PerformanceMetricsProxyImpl, TAB_DISCARD_EXCEPTIONS_OVERFLOW_SIZE, TAB_DISCARD_EXCEPTIONS_PREF, TabDiscardExceptionAddDialogElement, TabDiscardExceptionAddDialogTabs, TabDiscardExceptionCurrentSitesEntryElement, TabDiscardExceptionEditDialogElement, TabDiscardExceptionTabbedAddDialogElement} from 'chrome://settings/settings.js';
+import {HighEfficiencyModeExceptionListAction, MAX_TAB_DISCARD_EXCEPTION_RULE_LENGTH, PerformanceBrowserProxyImpl, PerformanceMetricsProxyImpl, SettingsCheckboxListEntryElement, TAB_DISCARD_EXCEPTIONS_OVERFLOW_SIZE, TAB_DISCARD_EXCEPTIONS_PREF, TabDiscardExceptionAddDialogElement, TabDiscardExceptionAddDialogTabs, TabDiscardExceptionEditDialogElement, TabDiscardExceptionTabbedAddDialogElement} from 'chrome://settings/settings.js';
 import {assertDeepEquals, assertEquals, assertFalse, assertTrue} from 'chrome://webui-test/chai_assert.js';
 import {eventToPromise} from 'chrome://webui-test/test_util.js';
 
@@ -233,11 +233,11 @@ suite('TabDiscardExceptionsDialog', function() {
 
   function getRulesListEntry(
       dialog: TabDiscardExceptionTabbedAddDialogElement,
-      idx: number): TabDiscardExceptionCurrentSitesEntryElement {
+      idx: number): SettingsCheckboxListEntryElement {
     const entry = [
       ...dialog.$.list.$.list
-          .querySelectorAll<TabDiscardExceptionCurrentSitesEntryElement>(
-              'tab-discard-exception-current-sites-entry:not([hidden])'),
+          .querySelectorAll<SettingsCheckboxListEntryElement>(
+              'settings-checkbox-list-entry:not([hidden])'),
     ][idx];
     assertTrue(!!entry);
     return entry;

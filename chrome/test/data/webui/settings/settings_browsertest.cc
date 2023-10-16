@@ -81,6 +81,10 @@ IN_PROC_BROWSER_TEST_F(SettingsTest, Checkbox) {
   RunTest("settings/checkbox_test.js", "mocha.run()");
 }
 
+IN_PROC_BROWSER_TEST_F(SettingsTest, CheckboxListEntry) {
+  RunTest("settings/checkbox_list_entry_test.js", "mocha.run()");
+}
+
 IN_PROC_BROWSER_TEST_F(SettingsTest, ChooserExceptionList) {
   RunTest("settings/chooser_exception_list_test.js", "mocha.run()");
 }

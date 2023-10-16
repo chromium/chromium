@@ -50,6 +50,7 @@ export {SettingsAutofillPageElement} from './autofill_page/autofill_page.js';
 export {PasswordCheckReferrer, PasswordManagerImpl, PasswordManagerPage, PasswordManagerProxy} from './autofill_page/password_manager_proxy.js';
 export {BaseMixin} from './base_mixin.js';
 export {SettingsBasicPageElement} from './basic_page/basic_page.js';
+export {SettingsCheckboxListEntryElement} from './controls/settings_checkbox_list_entry.js';
 export {SettingsIdleLoadElement} from './controls/settings_idle_load.js';
 // <if expr="not is_chromeos">
 export {DefaultBrowserBrowserProxy, DefaultBrowserBrowserProxyImpl, DefaultBrowserInfo} from './default_browser_page/default_browser_browser_proxy.js';
@@ -76,7 +77,6 @@ export {BatterySaverModeState, HighEfficiencyModeExceptionListAction, HighEffici
 export {HIGH_EFFICIENCY_MODE_PREF, SettingsPerformancePageElement} from './performance_page/performance_page.js';
 export {SpeedPageElement} from './performance_page/speed_page.js';
 export {TabDiscardExceptionAddDialogElement} from './performance_page/tab_discard_exception_add_dialog.js';
-export {TabDiscardExceptionCurrentSitesEntryElement} from './performance_page/tab_discard_exception_current_sites_entry.js';
 export {TabDiscardExceptionEditDialogElement} from './performance_page/tab_discard_exception_edit_dialog.js';
 export {TabDiscardExceptionEntryElement} from './performance_page/tab_discard_exception_entry.js';
 export {TAB_DISCARD_EXCEPTIONS_OVERFLOW_SIZE, TabDiscardExceptionListElement} from './performance_page/tab_discard_exception_list.js';
