@@ -2,11 +2,12 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-import {assertEquals, assertNotEquals} from 'chrome://webui-test/chai_assert.js';
+import {assertEquals, assertNotEquals, assertTrue} from 'chrome://webui-test/chai_assert.js';
 
 suite('PasswordManagerInternals', function() {
   test('LogText', () => {
     const divLogs = document.getElementById('log-entries');
+    assertTrue(!!divLogs);
     assertNotEquals(null, divLogs, 'The <div> with logs not found.');
     assertNotEquals(
         null, divLogs.innerHTML.match(/text for testing/),
@@ -18,6 +19,7 @@ suite('PasswordManagerInternals', function() {
 
   test('LogEmpty', () => {
     const divLogs = document.getElementById('log-entries');
+    assertTrue(!!divLogs);
     assertNotEquals(null, divLogs, 'The <div> with logs not found.');
     assertEquals(
         null, divLogs.innerHTML.match(/[^\s]/),
@@ -26,8 +28,10 @@ suite('PasswordManagerInternals', function() {
 
   test('NonIncognitoDescription', () => {
     const body = document.getElementsByTagName('body')[0];
+    assertTrue(!!body);
     const bodyText = body.innerText;
     let match = bodyText.match(/logs are listed below/);
+    assertTrue(!!match);
     assertEquals(1, match.length, 'Where are the logs in: ' + bodyText);
     match = bodyText.match(/in Incognito/);
     assertEquals(null, match);
@@ -35,8 +39,10 @@ suite('PasswordManagerInternals', function() {
 
   test('IncognitoDescription', () => {
     const body = document.getElementsByTagName('body')[0];
+    assertTrue(!!body);
     const bodyText = body.innerText;
     let match = bodyText.match(/in Incognito/);
+    assertTrue(!!match);
     assertEquals(1, match.length, 'Where is Incognito in: ' + bodyText);
     match = bodyText.match(/logs are listed below/);
     assertEquals(null, match);

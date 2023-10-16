@@ -438,12 +438,6 @@ ts_library("build_ts") {
     "test_store_ts.ts",
     "test_util.ts",
     "trusted_html.ts",
-
-    # TODO(dpapad): Migrate the files below to TypeScript and remove allowJs
-    # from tsconfig_base.json.
-    "sandbox/gpu_test.js",
-    "sandbox/sandbox_test.js",
-    "password_manager_internals/password_manager_internals_test.js",
   ]
 
   if (is_chromeos_ash) {
@@ -516,7 +510,9 @@ generate_grd("build_grd") {
     "new_tab_page:build_grdp",
     "optimization_guide_internals:build_grdp",
     "password_manager:build_grdp",
+    "password_manager_internals:build_grdp",
     "privacy_sandbox:build_grdp",
+    "sandbox:build_grdp",
     "settings:build_grdp",
     "side_panel:build_grdp",
     "side_panel/customize_chrome:build_grdp",
@@ -555,7 +551,9 @@ generate_grd("build_grd") {
     "$target_gen_dir/new_tab_page/resources.grdp",
     "$target_gen_dir/optimization_guide_internals/resources.grdp",
     "$target_gen_dir/password_manager/resources.grdp",
+    "$target_gen_dir/password_manager_internals/resources.grdp",
     "$target_gen_dir/privacy_sandbox/resources.grdp",
+    "$target_gen_dir/sandbox/resources.grdp",
     "$target_gen_dir/settings/resources.grdp",
     "$target_gen_dir/side_panel/customize_chrome/resources.grdp",
     "$target_gen_dir/side_panel/resources.grdp",

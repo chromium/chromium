@@ -24,7 +24,7 @@ suite('Sandbox', () => {
     const bpfno = document.body.innerText.match(bpfnostring);
 
     assertEquals(null, bpfno);
-    assertFalse(bpfyes === null);
+    assertTrue(!!bpfyes);
     assertEquals(bpfyesstring, bpfyes[0]);
   });
 
@@ -37,6 +37,7 @@ suite('Sandbox', () => {
     assertTrue(titleyes !== null);
 
     const rawNode = document.getElementById('raw-info');
+    assertTrue(!!rawNode);
     const policiesyes = rawNode.innerText.match(sandboxPolicies);
     assertTrue(policiesyes !== null);
     const mitigationsyes = rawNode.innerText.match(sandboxMitigations);
