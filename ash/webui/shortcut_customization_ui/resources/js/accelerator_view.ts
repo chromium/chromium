@@ -462,6 +462,7 @@ export class AcceleratorViewElement extends AcceleratorViewElementBase {
             this.pendingAcceleratorInfo.layoutProperties.standardAccelerator
                 .keyDisplay);
         this.hasError = true;
+        this.makeA11yAnnouncement(this.statusMessage);
         return;
       }
       case AcceleratorConfigResult.kSuccess: {
