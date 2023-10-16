@@ -415,6 +415,10 @@ void BookmarkModel::Move(const BookmarkNode* node,
   DCHECK(!is_permanent_node(node));
   DCHECK(!new_parent->HasAncestor(node));
 
+  SCOPED_CRASH_KEY_NUMBER("BookmarkModelMove", "newParentType",
+                          new_parent->type());
+  DUMP_WILL_BE_CHECK(new_parent->is_folder());
+
   const BookmarkNode* old_parent = node->parent();
   size_t old_index = old_parent->GetIndexOf(node).value();
 
@@ -445,7 +449,12 @@ void BookmarkModel::Move(const BookmarkNode* node,
   }
 
   if (old_parent != new_parent) {
-    metrics::RecordBookmarkMovedTo(GetFolderType(new_parent));
+    // TODO(crbug.com/1491227): Remove if check once the root cause of this
+    // crash is identified and addressed, and new_parent->is_folder() is
+    // checked at the top of this method.
+    if (new_parent->is_folder()) {
+      metrics::RecordBookmarkMovedTo(GetFolderType(new_parent));
+    }
   }
 }
 
