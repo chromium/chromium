@@ -33,6 +33,8 @@ import org.chromium.chrome.browser.omnibox.suggestions.OmniboxSuggestionsDropdow
 import org.chromium.chrome.browser.ui.theme.BrandedColorScheme;
 import org.chromium.chrome.browser.util.KeyNavigationUtil;
 import org.chromium.components.browser_ui.styles.ChromeColors;
+import org.chromium.components.browser_ui.widget.RoundedCornerOutlineProvider;
+import org.chromium.ui.base.DeviceFormFactor;
 import org.chromium.ui.base.ViewUtils;
 
 /** A widget for showing a list of omnibox suggestions. */
@@ -233,6 +235,15 @@ public class OmniboxSuggestionsDropdown extends RecyclerView {
         mIncognitoBgColor = shouldShowModernizeVisualUpdate
                 ? context.getColor(incognitoBgColorRes)
                 : ChromeColors.getDefaultThemeColor(context, true);
+        if (OmniboxFeatures.shouldShowModernizeVisualUpdate(context)
+                && DeviceFormFactor.isNonMultiDisplayContextOnTablet(context)) {
+            setOutlineProvider(
+                    new RoundedCornerOutlineProvider(
+                            context.getResources()
+                                    .getDimensionPixelSize(
+                                            R.dimen.omnibox_suggestion_bg_round_corner_radius)));
+            setClipToOutline(true);
+        }
     }
 
     /** Get the Android View implementing suggestion list. */
