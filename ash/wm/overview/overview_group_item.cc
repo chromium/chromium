@@ -195,7 +195,9 @@ float OverviewGroupItem::GetOpacity() const {
   return 1.f;
 }
 
-void OverviewGroupItem::PrepareForOverview() {}
+void OverviewGroupItem::PrepareForOverview() {
+  prepared_for_overview_ = true;
+}
 
 void OverviewGroupItem::OnStartingAnimationComplete() {
   for (const auto& item : overview_items_) {

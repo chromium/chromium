@@ -235,16 +235,6 @@ class ASH_EXPORT OverviewItem : public OverviewItemBase,
   std::unique_ptr<DragWindowController> item_mirror_for_dragging_;
   std::unique_ptr<DragWindowController> window_mirror_for_dragging_;
 
-  // True if the windows are still alive so they can have a closing animation.
-  // These windows should not be used in calculations for
-  // OverviewGrid::PositionWindows.
-  bool animating_to_close_ = false;
-
-  // True if this overview item is currently being dragged around.
-  bool is_being_dragged_ = false;
-
-  bool prepared_for_overview_ = false;
-
   // Disable animations on the contained window while it is being managed by the
   // overview item.
   ScopedAnimationDisabler animation_disabler_;
