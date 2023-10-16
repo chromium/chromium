@@ -109,10 +109,6 @@ class CloudOpenMetrics {
   // Print the debug information for each metric.
   void PrintMetrics();
 
-  // TODO(b/300861997): Dump without crashing.
-  // Handle a metric inconsistency by printing metric information.
-  void HandleInconsistency();
-
   CloudProvider cloud_provider_;
   Metric<base::File::Error> copy_error_;
   Metric<base::File::Error> move_error_;

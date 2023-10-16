@@ -76,42 +76,55 @@ CloudOpenMetrics::CloudOpenMetrics(CloudProvider cloud_provider)
                          ? kGoogleDriveUploadResultMetricName
                          : kOneDriveUploadResultMetricName) {}
 
+// TODO(b/300861997): Dump without crashing if there was an inconsistency.
 CloudOpenMetrics::~CloudOpenMetrics() = default;
 
 void CloudOpenMetrics::LogCopyError(base::File::Error value) {
-  copy_error_.Log(value);
+  if (!copy_error_.Log(value)) {
+    PrintMetrics();
+  }
 }
 
 void CloudOpenMetrics::LogMoveError(base::File::Error value) {
-  move_error_.Log(value);
+  if (!move_error_.Log(value)) {
+    PrintMetrics();
+  }
 }
 
 void CloudOpenMetrics::LogGoogleDriveOpenError(OfficeDriveOpenErrors value) {
-  drive_open_error_.Log(value);
+  if (!drive_open_error_.Log(value)) {
+    PrintMetrics();
+  }
 }
 
 void CloudOpenMetrics::LogOneDriveOpenError(OfficeOneDriveOpenErrors value) {
-  one_drive_open_error_.Log(value);
+  if (!one_drive_open_error_.Log(value)) {
+    PrintMetrics();
+  }
 }
 
 void CloudOpenMetrics::LogSourceVolume(OfficeFilesSourceVolume value) {
-  source_volume_.Log(value);
+  if (!source_volume_.Log(value)) {
+    PrintMetrics();
+  }
 }
 
 void CloudOpenMetrics::LogTaskResult(OfficeTaskResult value) {
   if (!task_result_.Log(value)) {
-    HandleInconsistency();
+    PrintMetrics();
   }
 }
 
 void CloudOpenMetrics::LogTransferRequired(OfficeFilesTransferRequired value) {
   if (!transfer_required_.Log(value)) {
-    HandleInconsistency();
+    PrintMetrics();
   }
 }
 
 void CloudOpenMetrics::LogUploadResult(OfficeFilesUploadResult value) {
-  upload_result_.Log(value);
+  if (!upload_result_.Log(value)) {
+    PrintMetrics();
+  }
 }
 
 base::SafeRef<CloudOpenMetrics> CloudOpenMetrics::GetSafeRef() const {
@@ -127,10 +140,6 @@ void CloudOpenMetrics::PrintMetrics() {
   LOG(WARNING) << "Metrics: " << std::endl
                << task_result_ << std::endl
                << transfer_required_;
-}
-
-void CloudOpenMetrics::HandleInconsistency() {
-  PrintMetrics();
 }
 
 template <class MetricType>
