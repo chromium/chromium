@@ -97,14 +97,14 @@ class VectorBuffer {
 
   // Trivially destructible objects need not have their destructors called.
   template <typename T2 = T,
-            typename std::enable_if<std::is_trivially_destructible<T2>::value,
+            typename std::enable_if<std::is_trivially_destructible_v<T2>,
                                     int>::type = 0>
   void DestructRange(T* begin, T* end) {}
 
   // Non-trivially destructible objects must have their destructors called
   // individually.
   template <typename T2 = T,
-            typename std::enable_if<!std::is_trivially_destructible<T2>::value,
+            typename std::enable_if<!std::is_trivially_destructible_v<T2>,
                                     int>::type = 0>
   void DestructRange(T* begin, T* end) {
     CHECK_LE(begin, end);
@@ -148,7 +148,7 @@ class VectorBuffer {
   // destruct the original.
   template <
       typename T2 = T,
-      typename std::enable_if<std::is_move_constructible<T2>::value &&
+      typename std::enable_if<std::is_move_constructible_v<T2> &&
                                   !is_trivially_copyable_or_relocatable<T2>,
                               int>::type = 0>
   static void MoveRange(T* from_begin, T* from_end, T* to) {
@@ -165,7 +165,7 @@ class VectorBuffer {
   // destruct the original.
   template <
       typename T2 = T,
-      typename std::enable_if<!std::is_move_constructible<T2>::value &&
+      typename std::enable_if<!std::is_move_constructible_v<T2> &&
                                   !is_trivially_copyable_or_relocatable<T2>,
                               int>::type = 0>
   static void MoveRange(T* from_begin, T* from_end, T* to) {

@@ -285,11 +285,10 @@ class GSL_POINTER span : public internal::ExtentStorage<Extent> {
     CHECK(Extent == dynamic_extent || Extent == count);
   }
 
-  template <
-      typename It,
-      typename End,
-      typename = internal::EnableIfCompatibleContiguousIterator<It, T>,
-      typename = std::enable_if_t<!std::is_convertible<End, size_t>::value>>
+  template <typename It,
+            typename End,
+            typename = internal::EnableIfCompatibleContiguousIterator<It, T>,
+            typename = std::enable_if_t<!std::is_convertible_v<End, size_t>>>
   constexpr span(It begin, End end) noexcept
       // Subtracting two iterators gives a ptrdiff_t, but the result should be
       // non-negative: see CHECK below.
@@ -496,7 +495,7 @@ as_bytes(span<T, X> s) noexcept {
 
 template <typename T,
           size_t X,
-          typename = std::enable_if_t<!std::is_const<T>::value>>
+          typename = std::enable_if_t<!std::is_const_v<T>>>
 span<uint8_t, (X == dynamic_extent ? dynamic_extent : sizeof(T) * X)>
 as_writable_bytes(span<T, X> s) noexcept {
   return {reinterpret_cast<uint8_t*>(s.data()), s.size_bytes()};

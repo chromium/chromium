@@ -115,8 +115,8 @@ struct ClampedNegFastOp {
 // However, there is no corresponding implementation of e.g. SafeUnsignedAbs,
 // so the float versions will not compile.
 template <typename Numeric,
-          bool IsInteger = std::is_integral<Numeric>::value,
-          bool IsFloat = std::is_floating_point<Numeric>::value>
+          bool IsInteger = std::is_integral_v<Numeric>,
+          bool IsFloat = std::is_floating_point_v<Numeric>>
 struct UnsignedOrFloatForSize;
 
 template <typename Numeric>
@@ -135,35 +135,33 @@ struct UnsignedOrFloatForSize<Numeric, false, true> {
 // if an overflow occurred.
 
 template <typename T,
-          typename std::enable_if<std::is_integral<T>::value>::type* = nullptr>
+          typename std::enable_if<std::is_integral_v<T>>::type* = nullptr>
 constexpr T NegateWrapper(T value) {
   using UnsignedT = typename std::make_unsigned<T>::type;
   // This will compile to a NEG on Intel, and is normal negation on ARM.
   return static_cast<T>(UnsignedT(0) - static_cast<UnsignedT>(value));
 }
 
-template <
-    typename T,
-    typename std::enable_if<std::is_floating_point<T>::value>::type* = nullptr>
+template <typename T,
+          typename std::enable_if<std::is_floating_point_v<T>>::type* = nullptr>
 constexpr T NegateWrapper(T value) {
   return -value;
 }
 
 template <typename T,
-          typename std::enable_if<std::is_integral<T>::value>::type* = nullptr>
+          typename std::enable_if<std::is_integral_v<T>>::type* = nullptr>
 constexpr typename std::make_unsigned<T>::type InvertWrapper(T value) {
   return ~value;
 }
 
 template <typename T,
-          typename std::enable_if<std::is_integral<T>::value>::type* = nullptr>
+          typename std::enable_if<std::is_integral_v<T>>::type* = nullptr>
 constexpr T AbsWrapper(T value) {
   return static_cast<T>(SafeUnsignedAbs(value));
 }
 
-template <
-    typename T,
-    typename std::enable_if<std::is_floating_point<T>::value>::type* = nullptr>
+template <typename T,
+          typename std::enable_if<std::is_floating_point_v<T>>::type* = nullptr>
 constexpr T AbsWrapper(T value) {
   return value < 0 ? -value : value;
 }

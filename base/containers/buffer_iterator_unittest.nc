@@ -21,7 +21,7 @@ class Complex {
   std::string string_;
 };
 
-#if defined(NCTEST_BUFFER_ITERATOR_CREATE_TYPE_UINT16)  // [r"fatal error: static_assert failed due to requirement 'std::is_same<unsigned short, char>::value || std::is_same<unsigned short, unsigned char>::value': Underlying buffer type must be char-type."]
+#if defined(NCTEST_BUFFER_ITERATOR_CREATE_TYPE_UINT16)  // [r"fatal error: static_assert failed due to requirement 'std::is_same_v<unsigned short, char> || std::is_same_v<unsigned short, unsigned char>': Underlying buffer type must be char-type."]
 
 void WontCompile() {
   constexpr size_t size = 64;
