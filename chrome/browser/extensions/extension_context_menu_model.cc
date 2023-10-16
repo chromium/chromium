@@ -429,7 +429,7 @@ void ExtensionContextMenuModel::ExecuteCommand(int command_id,
     case PAGE_ACCESS_RUN_ON_CLICK:
     case PAGE_ACCESS_RUN_ON_SITE:
     case PAGE_ACCESS_RUN_ON_ALL_SITES: {
-      // If the web contents have navigated to a different origin, do nothing.
+      // Do nothing if the web contents have navigated to a different origin.
       auto* web_contents = GetActiveWebContents();
       if (!web_contents ||
           !origin_.IsSameOriginWith(web_contents->GetLastCommittedURL())) {
@@ -437,6 +437,16 @@ void ExtensionContextMenuModel::ExecuteCommand(int command_id,
       }
 
       LogPageAccessAction(command_id);
+
+      // Do nothing if the extension cannot have its site permissions updated.
+      // Page access option should only be enabled when the extension site
+      // permissions can be changed. However, sometimes the command still gets
+      // invoked (crbug.com/1468151). Thus, we exit early to prevent any
+      // crashes.
+      if (!PermissionsManager::Get(profile_)->CanAffectExtension(*extension)) {
+        return;
+      }
+
       SitePermissionsHelper permissions(profile_);
       permissions.UpdateSiteAccess(*extension, web_contents,
                                    CommandIdToSiteAccess(command_id));
