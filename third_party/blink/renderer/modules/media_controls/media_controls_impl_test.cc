@@ -1257,6 +1257,30 @@ TEST_F(MediaControlsImplTestWithMockScheduler,
   EXPECT_FALSE(volume_slider->classList().contains(AtomicString("closed")));
 }
 
+TEST_F(MediaControlsImplTestWithMockScheduler,
+       VolumeSliderDoesNotOpenWithoutAudio) {
+  MediaControls().MediaElement().SetSrc(
+      AtomicString("https://example.com/foo.mp4"));
+  platform()->RunForPeriodSeconds(1);
+  SetHasAudio(false);
+
+  ScopedWebTestMode web_test_mode(false);
+
+  Element* volume_slider = VolumeSliderElement();
+  Element* mute_button = MuteButtonElement();
+
+  ASSERT_NE(nullptr, volume_slider);
+
+  // Volume slider starts out hidden.
+  EXPECT_TRUE(volume_slider->classList().contains(AtomicString("closed")));
+
+  // Tab focus on the mute button should not open the volume slider since there
+  // is no audio to control.
+  mute_button->SetFocused(true, mojom::blink::FocusType::kNone);
+  mute_button->DispatchEvent(*Event::Create(event_type_names::kFocus));
+  EXPECT_TRUE(volume_slider->classList().contains(AtomicString("closed")));
+}
+
 TEST_F(MediaControlsImplTest, CastOverlayDefaultHidesOnTimer) {
   MediaControls().MediaElement().SetBooleanAttribute(html_names::kControlsAttr,
                                                      false);
