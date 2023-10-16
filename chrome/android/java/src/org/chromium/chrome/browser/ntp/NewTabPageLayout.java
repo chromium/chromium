@@ -228,6 +228,13 @@ public class NewTabPageLayout extends LinearLayout {
         Profile profile = Profile.getLastUsedRegularProfile();
         mIsTablet = isTablet;
 
+        // On first run, the NewTabPageLayout is initialized behind the First Run Experience,
+        // meaning the UiConfig will pickup the screen layout then. However onConfigurationChanged
+        // is not called on orientation changes until the FRE is completed. This means that if a
+        // user starts the FRE in one orientation, changes an orientation and then leaves the FRE
+        // the UiConfig will have the wrong orientation. https://crbug.com/683886.
+        mUiConfig.updateDisplayStyle();
+
         mSearchBoxCoordinator = new SearchBoxCoordinator(getContext(), this);
         mSearchBoxCoordinator.initialize(lifecycleDispatcher, mIsIncognito, mWindowAndroid);
         if (isSurfacePolishEnabled) {
@@ -887,13 +894,6 @@ public class NewTabPageLayout extends LinearLayout {
     @Override
     protected void onWindowVisibilityChanged(int visibility) {
         super.onWindowVisibilityChanged(visibility);
-
-        // On first run, the NewTabPageLayout is initialized behind the First Run Experience,
-        // meaning the UiConfig will pickup the screen layout then. However onConfigurationChanged
-        // is not called on orientation changes until the FRE is completed. This means that if a
-        // user starts the FRE in one orientation, changes an orientation and then leaves the FRE
-        // the UiConfig will have the wrong orientation. https://crbug.com/683886.
-        mUiConfig.updateDisplayStyle();
 
         if (visibility == VISIBLE) {
             updateActionButtonVisibility();

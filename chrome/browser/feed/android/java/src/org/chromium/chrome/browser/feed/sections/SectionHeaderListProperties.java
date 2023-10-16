@@ -61,13 +61,18 @@ public class SectionHeaderListProperties {
     public static final PropertyModel.WritableIntPropertyKey STICKY_HEADER_MUTABLE_MARGIN_KEY =
             new PropertyModel.WritableIntPropertyKey();
 
+    /** Whether the view is shown in a narrow window on tablets. */
+    public static final PropertyModel.WritableBooleanPropertyKey IS_NARROW_WINDOW_ON_TABLET_KEY =
+            new PropertyModel.WritableBooleanPropertyKey();
+
     public static PropertyModel create(@Px int toolbarHeight) {
         return new PropertyModel
                 .Builder(IS_SECTION_ENABLED_KEY, SECTION_HEADERS_KEY, CURRENT_TAB_INDEX_KEY,
                         ON_TAB_SELECTED_CALLBACK_KEY, MENU_MODEL_LIST_KEY, MENU_DELEGATE_KEY,
                         IS_TAB_MODE_KEY, IS_LOGO_KEY, INDICATOR_VIEW_VISIBILITY_KEY,
                         EXPANDING_DRAWER_VIEW_KEY, TOOLBAR_HEIGHT_PX, STICKY_HEADER_VISIBLILITY_KEY,
-                        STICKY_HEADER_EXPANDING_DRAWER_VIEW_KEY, STICKY_HEADER_MUTABLE_MARGIN_KEY)
+                        STICKY_HEADER_EXPANDING_DRAWER_VIEW_KEY, STICKY_HEADER_MUTABLE_MARGIN_KEY,
+                        IS_NARROW_WINDOW_ON_TABLET_KEY)
                 .with(SECTION_HEADERS_KEY, new PropertyListModel<>())
                 .with(INDICATOR_VIEW_VISIBILITY_KEY, ViewVisibility.INVISIBLE)
                 .with(TOOLBAR_HEIGHT_PX, toolbarHeight)
