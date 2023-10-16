@@ -83,16 +83,18 @@ class PrintingMetricsApiTest : public ExtensionApiTest {
     ExtensionApiTest::SetUpInProcessBrowserTestFixture();
   }
 
+  const Extension* extension() {
+    return ExtensionRegistry::Get(profile())->enabled_extensions().GetByID(
+        kTestExtensionID);
+  }
+
   void ForceInstallExtensionByPolicy() {
     policy_test_utils::SetUpEmbeddedTestServer(embedded_test_server());
     ASSERT_TRUE(embedded_test_server()->Start());
     policy_test_utils::SetExtensionInstallForcelistPolicy(
         kTestExtensionID, embedded_test_server()->GetURL(kUpdateManifestPath),
         profile(), &policy_provider_);
-    extension_ =
-        ExtensionRegistry::Get(profile())->enabled_extensions().GetByID(
-            kTestExtensionID);
-    ASSERT_TRUE(extension_);
+    ASSERT_TRUE(extension());
   }
 
   void CreateAndCancelPrintJob(const std::string& job_title) {
@@ -137,7 +139,6 @@ class PrintingMetricsApiTest : public ExtensionApiTest {
   }
 #endif  // BUILDFLAG(IS_CHROMEOS_LACROS)
 
-  raw_ptr<const extensions::Extension> extension_ = nullptr;
   testing::NiceMock<policy::MockConfigurationPolicyProvider> policy_provider_;
 
  private:
@@ -166,7 +167,7 @@ IN_PROC_BROWSER_TEST_F(PrintingMetricsApiTest, GetPrintJobs) {
   SetCustomArg(kTitle);
   extensions::ResultCatcher catcher;
   ASSERT_TRUE(ui_test_utils::NavigateToURL(
-      new_browser, extension_->GetResourceURL("get_print_jobs.html")));
+      new_browser, extension()->GetResourceURL("get_print_jobs.html")));
   ASSERT_TRUE(catcher.GetNextResult()) << catcher.message();
 }
 
@@ -182,7 +183,7 @@ IN_PROC_BROWSER_TEST_F(PrintingMetricsApiTest, OnPrintJobFinished) {
   ResultCatcher catcher;
   Browser* const new_browser = CreateBrowser(profile());
   ASSERT_TRUE(ui_test_utils::NavigateToURL(
-      new_browser, extension_->GetResourceURL("on_print_job_finished.html")));
+      new_browser, extension()->GetResourceURL("on_print_job_finished.html")));
 
   CreateAndCancelPrintJob(kTitle);
 
