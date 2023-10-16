@@ -6,6 +6,7 @@ package org.chromium.chrome.browser.readaloud.player.expanded;
 
 import org.chromium.chrome.browser.readaloud.player.PlayerProperties;
 import org.chromium.chrome.browser.readaloud.player.VisibilityState;
+import org.chromium.chrome.modules.readaloud.PlaybackListener;
 import org.chromium.ui.modelutil.PropertyKey;
 import org.chromium.ui.modelutil.PropertyModel;
 
@@ -31,6 +32,9 @@ public class ExpandedPlayerViewBinder {
             content.setTitle(model.get(PlayerProperties.TITLE));
         } else if (key == PlayerProperties.PUBLISHER) {
             content.setPublisher(model.get(PlayerProperties.PUBLISHER));
+        } else if (key == PlayerProperties.PLAYBACK_STATE) {
+            content.setPlaying(
+                    model.get(PlayerProperties.PLAYBACK_STATE) == PlaybackListener.State.PLAYING);
         } else if (key == PlayerProperties.SPEED) {
             content.setSpeed(model.get(PlayerProperties.SPEED));
         } else if (key == PlayerProperties.INTERACTION_HANDLER) {

@@ -26,6 +26,7 @@ import org.chromium.chrome.browser.readaloud.player.PlayerCoordinator;
 import org.chromium.chrome.browser.readaloud.player.PlayerProperties;
 import org.chromium.chrome.browser.readaloud.player.VisibilityState;
 import org.chromium.chrome.modules.readaloud.Playback;
+import org.chromium.chrome.modules.readaloud.PlaybackListener;
 import org.chromium.components.browser_ui.bottomsheet.BottomSheetController;
 import org.chromium.components.browser_ui.bottomsheet.BottomSheetController.StateChangeReason;
 import org.chromium.components.browser_ui.bottomsheet.BottomSheetObserver;
@@ -120,5 +121,14 @@ public class ExpandedPlayerCoordinatorUnitTest {
     public void testBindSpeed() {
         mModel.set(PlayerProperties.SPEED, 2f);
         verify(mSheetContent).setSpeed(eq(2f));
+    }
+
+    @Test
+    public void testBindPlaybackState() {
+        mCoordinator.show();
+        mModel.set(PlayerProperties.PLAYBACK_STATE, PlaybackListener.State.PLAYING);
+        verify(mSheetContent).setPlaying(true);
+        mModel.set(PlayerProperties.PLAYBACK_STATE, PlaybackListener.State.PAUSED);
+        verify(mSheetContent).setPlaying(false);
     }
 }
