@@ -387,11 +387,6 @@ BASE_FEATURE(kEnableVkPipelineCache,
              "EnableVkPipelineCache",
              base::FEATURE_DISABLED_BY_DEFAULT);
 
-// Enable Skia reduceOpsTaskSplitting to reduce render passes.
-BASE_FEATURE(kReduceOpsTaskSplitting,
-             "ReduceOpsTaskSplitting",
-             base::FEATURE_DISABLED_BY_DEFAULT);
-
 // Enabling this will make the GPU decode path use a mock implementation of
 // discardable memory.
 BASE_FEATURE(kNoDiscardableMemoryForGpuDecodePath,

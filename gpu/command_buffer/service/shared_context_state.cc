@@ -323,13 +323,6 @@ bool SharedContextState::InitializeGanesh(
   if (gpu_preferences.force_max_texture_size)
     options.fMaxTextureSizeOverride = gpu_preferences.force_max_texture_size;
 
-  if (base::FeatureList::IsEnabled(features::kReduceOpsTaskSplitting) &&
-      !workarounds.disable_skia_reduce_ops_task_splitting) {
-    options.fReduceOpsTaskSplitting = GrContextOptions::Enable::kYes;
-  } else {
-    options.fReduceOpsTaskSplitting = GrContextOptions::Enable::kNo;
-  }
-
   if (gr_context_type_ == GrContextType::kGL) {
     DCHECK(context_->IsCurrent(nullptr));
     constexpr bool use_version_es2 = false;
