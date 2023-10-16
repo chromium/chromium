@@ -200,7 +200,7 @@ function prepareMacOSBinaries(buildId) {
 
 async function main(options) {
   let buildArchives = [];
-  const buildId = await buildChromiumSymbols(options);
+  const { buildId, symbolsArchiveFile } = await buildChromiumSymbols(options);
 
   const platform = currentPlatform();
 
@@ -225,9 +225,8 @@ async function main(options) {
 
   const downloadUris = uploadArchives(buildArchives);
 
-  const symbolsFile = `${buildId}.symbols.tgz`;
-  uploadToAllBuckets(symbolsFile, `symbols/${symbolsFile}`);
-  fs.unlinkSync(symbolsFile);
+  uploadToAllBuckets(symbolsArchiveFile, `symbols/${symbolsArchiveFile}`);
+  fs.unlinkSync(symbolsArchiveFile);
 
   for (const buildArchive of buildArchives) {
     log(`BuildUploaded https://static.replay.io/downloads/${buildArchive}`);
@@ -352,15 +351,16 @@ async function buildChromiumSymbols(options) {
       throw new Error("NYI");
   }
 
-  await buildSymbolsArchive(
+  const archiveFile = await buildSymbolsArchive(
     `${buildId}`,
     path.join("out", "Release"),
     libraries,
+    options.useARM,
     pdbs
   );
 
   log(`ChromiumSymbols Done`);
-  return `${buildId}`;
+  return { buildId, symbolsArchiveFile: archiveFile };
 }
 
 function readShortRevision(branch = "HEAD") {
@@ -462,6 +462,7 @@ async function buildSymbolsArchive(
   buildId,
   objectDirectory,
   libraries,
+  useArm,
   pdbs = []
 ) {
   const json = {};
@@ -482,11 +483,15 @@ async function buildSymbolsArchive(
     json[name] = symbols;
   }
 
-  const jsonFile = `${buildId}.symbols.json`;
-  const archiveFile = `${buildId}.symbols.tgz`;
+  const archSuffix = useArm ? "-arm" : "";
+
+  const jsonFile = `${buildId}${archSuffix}.symbols.json`;
+  const archiveFile = `${buildId}${archSuffix}.symbols.tgz`;
   fs.writeFileSync(jsonFile, JSON.stringify(json));
   spawnChecked("tar", ["-czf", archiveFile, jsonFile]);
   fs.unlinkSync(jsonFile);
+
+  return archiveFile;
 }
 
 const buildIdExtension =
@@ -494,4 +499,5 @@ const buildIdExtension =
   process.env["BUILDKITE_PIPELINE_DEFAULT_BRANCH"]
     ? "-dev"
     : process.env["LOCAL_DEVELOPER_BUILD_EXTENSION"] || "";
-main({ buildIdExtension, driverRevision: process.env.DRIVER_REVISION });
+const useARM = !!process.env.REPLAY_BUILD_ARM;
+main({ buildIdExtension, driverRevision: process.env.DRIVER_REVISION, useARM });
