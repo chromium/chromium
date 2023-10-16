@@ -19,12 +19,13 @@ import android.os.Handler;
 import android.os.HandlerThread;
 import android.provider.Settings;
 
+import org.jni_zero.CalledByNative;
+import org.jni_zero.JNINamespace;
+import org.jni_zero.NativeMethods;
+
 import org.chromium.base.ContextUtils;
 import org.chromium.base.Log;
 import org.chromium.base.ThreadUtils.ThreadChecker;
-import org.chromium.base.annotations.CalledByNative;
-import org.chromium.base.annotations.JNINamespace;
-import org.chromium.base.annotations.NativeMethods;
 
 import java.lang.reflect.Method;
 import java.util.Optional;
