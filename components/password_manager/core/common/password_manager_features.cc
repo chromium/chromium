@@ -99,14 +99,6 @@ BASE_FEATURE(kRecoverFromNeverSaveAndroid,
              "RecoverFromNeverSaveAndroid_LAUNCHED",
              base::FEATURE_ENABLED_BY_DEFAULT);
 
-#if BUILDFLAG(IS_MAC) || BUILDFLAG(IS_LINUX)
-// Displays at least the decryptable and never saved logins in the password
-// manager
-BASE_FEATURE(kSkipUndecryptablePasswords,
-             "SkipUndecryptablePasswords",
-             base::FEATURE_DISABLED_BY_DEFAULT);
-#endif
-
 #if BUILDFLAG(IS_ANDROID)
 // Use GMS AccountSettings to manage passkeys when UPM is not available.
 BASE_FEATURE(kPasskeyManagementUsingAccountSettingsAndroid,

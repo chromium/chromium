@@ -1607,6 +1607,11 @@
     "expiry_milestone": 120
   },
   {
+    "name": "delete-undecryptable-passwords",
+    "owners": [ "vasilii", "vsemeniuk@google.com"],
+    "expiry_milestone": 122
+  },
+  {
     "name": "deprecate-alt-based-six-pack",
     "owners": [ "zentaro@google.com", "jimmyxgong@google.com",
                 "cros-peripherals@google.com"],
@@ -4914,6 +4919,11 @@
     "name": "ignore-ui-gains",
     "owners": ["eddyhsu"],
     "expiry_milestone": 130
+  },
+  {
+    "name": "ignore-undecryptable-passwords",
+    "owners": [ "vasilii", "vsemeniuk@google.com"],
+    "expiry_milestone": 122
   },
   {
     "name": "improved-incognito-screenshot",

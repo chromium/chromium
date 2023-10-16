@@ -1050,7 +1050,6 @@ std::string GeneratePlaceholders(size_t count) {
   return result;
 }
 
-#if BUILDFLAG(IS_MAC) || BUILDFLAG(IS_LINUX)
 // Fills |form| with necessary data required to be removed from the database
 // and returns it.
 PasswordForm GetFormForRemoval(sql::Statement& statement) {
@@ -1062,16 +1061,11 @@ PasswordForm GetFormForRemoval(sql::Statement& statement) {
   form.signon_realm = statement.ColumnString(COLUMN_SIGNON_REALM);
   return form;
 }
-#endif
 
 // Whether we should try to return the decryptable passwords while the
 // encryption service fails for some passwords.
 bool ShouldReturnPartialPasswords() {
-#if BUILDFLAG(IS_MAC) || BUILDFLAG(IS_LINUX)
   return base::FeatureList::IsEnabled(features::kSkipUndecryptablePasswords);
-#else
-  return false;
-#endif
 }
 
 std::unique_ptr<sync_pb::EntityMetadata> DecryptAndParseSyncEntityMetadata(
@@ -1959,7 +1953,6 @@ bool LoginDatabase::DeleteAndRecreateDatabaseFile() {
 }
 
 DatabaseCleanupResult LoginDatabase::DeleteUndecryptableLogins() {
-#if BUILDFLAG(IS_MAC) || BUILDFLAG(IS_LINUX)
   TRACE_EVENT0("passwords", "LoginDatabase::DeleteUndecryptableLogins");
   // If the Keychain in MacOS or the real secret key in Linux is unavailable,
   // don't delete any logins.
@@ -2004,7 +1997,6 @@ DatabaseCleanupResult LoginDatabase::DeleteUndecryptableLogins() {
     metrics_util::LogDeleteUndecryptableLoginsReturnValue(
         metrics_util::DeleteCorruptedPasswordsResult::kSuccessPasswordsDeleted);
   }
-#endif
 
   return DatabaseCleanupResult::kSuccess;
 }

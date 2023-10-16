@@ -212,6 +212,12 @@ extern const char kAppleCalendarExperienceKitDescription[] =
     "When enabled, long pressing on dates will trigger Experience Kit Apple "
     "Calendar event handling.";
 
+const char kClearUndecryptablePasswordsOnSyncName[] =
+    "Enable cleaning up of password store on initial Sync";
+const char kClearUndecryptablePasswordsOnSyncDescription[] =
+    "Once password sync starts for the first time, the currently undecryptable "
+    "passwords will be silently cleaned up";
+
 const char kContentPushNotificationsName[] = "Content Push Notifications";
 const char kContentPushNotificationsDescription[] =
     "Enables the content push notifications.";
@@ -1001,6 +1007,12 @@ const char kShowInactiveTabsCountName[] =
 const char kShowInactiveTabsCountDescription[] =
     "When enabled, the count of Inactive Tabs is shown in the Inactive Tabs "
     "button that appears in the Tab Grid.";
+
+const char kSkipUndecryptablePasswordsName[] =
+    "Enable silent ignoring of undecryptable passwords";
+const char kSkipUndecryptablePasswordsDescription[] =
+    "The password store will silently skip undecryptable passwords when "
+    "reading them";
 
 const char kSmartSortingPriceTrackingDestinationName[] =
     "Price Tracking destination (with Smart Sorting)";

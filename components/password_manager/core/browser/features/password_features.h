@@ -22,6 +22,7 @@ BASE_DECLARE_FEATURE(kBiometricAuthenticationInSettings);
 #endif
 
 BASE_DECLARE_FEATURE(kBiometricTouchToFill);
+BASE_DECLARE_FEATURE(kClearUndecryptablePasswordsOnSync);
 BASE_DECLARE_FEATURE(kDisablePasswordsDropdownForCvcFields);
 
 BASE_DECLARE_FEATURE(kEnablePasswordsAccountStorage);
@@ -43,6 +44,8 @@ BASE_DECLARE_FEATURE(kPasswordManagerEnableReceiverService);
 BASE_DECLARE_FEATURE(kPasswordManagerEnableSenderService);
 
 BASE_DECLARE_FEATURE(kPasswordManagerLogToTerminal);
+
+BASE_DECLARE_FEATURE(kSkipUndecryptablePasswords);
 
 BASE_DECLARE_FEATURE(kUseExtensionListForPSLMatching);
 
