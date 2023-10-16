@@ -13759,7 +13759,8 @@ Called by update_bad_message_reasons.py.-->
   <int value="2" label="Network error"/>
   <int value="3" label="Server response contained an error"/>
   <int value="4" label="Failed to parse the server response"/>
-  <int value="5" label="Invalid session parameters"/>
+  <int value="5" label="Required field missing"/>
+  <int value="6" label="Invalid session parameters"/>
 </enum>
 
 <enum name="BreakageIndicatorType">
