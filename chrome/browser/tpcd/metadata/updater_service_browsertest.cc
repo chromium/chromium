@@ -376,7 +376,7 @@ IN_PROC_BROWSER_TEST_P(UpdaterServiceCookiePrefsBrowserTest,
       ContentSettingsToString(ContentSettingsType::TPCD_METADATA_GRANTS),
       testing::ElementsAre("[*,*]:1"));
 
-  EXPECT_EQ(GetCookieSettings()->ShouldConsider3pcdMetadataGrantsSettings(),
+  EXPECT_EQ(!BlockAll3pcToggleEnabled(),
             GetCookieSettings()->MitigationsEnabledFor3pcd());
   EXPECT_EQ(
       GetCookieSettings()->GetCookieSetting(third_party_url, first_party_url,
@@ -415,10 +415,8 @@ IN_PROC_BROWSER_TEST_P(UpdaterServiceCookiePrefsBrowserTest,
             {base::StringPrintf("[%s,%s]:%d", primary_pattern_spec.c_str(),
                                 secondary_pattern_spec.c_str(), 1)}));
 
-    EXPECT_EQ(GetCookieSettings()->ShouldConsider3pcdMetadataGrantsSettings(),
-              GetCookieSettings()->MitigationsEnabledFor3pcd());
-    bool expected =
-        GetCookieSettings()->ShouldConsider3pcdMetadataGrantsSettings();
+    bool expected = !BlockAll3pcToggleEnabled();
+    EXPECT_EQ(expected, GetCookieSettings()->MitigationsEnabledFor3pcd());
     EXPECT_EQ(
         GetCookieSettings()->GetCookieSetting(third_party_url, first_party_url,
                                               net::CookieSettingOverrides()),
@@ -500,10 +498,8 @@ IN_PROC_BROWSER_TEST_P(UpdaterServiceCookiePrefsBrowserTest,
             {base::StringPrintf("[%s,%s]:%d", primary_pattern_spec.c_str(),
                                 secondary_pattern_spec.c_str(), 1)}));
 
-    EXPECT_EQ(GetCookieSettings()->ShouldConsider3pcdMetadataGrantsSettings(),
-              GetCookieSettings()->MitigationsEnabledFor3pcd());
-    bool expected =
-        GetCookieSettings()->ShouldConsider3pcdMetadataGrantsSettings();
+    bool expected = !BlockAll3pcToggleEnabled();
+    EXPECT_EQ(expected, GetCookieSettings()->MitigationsEnabledFor3pcd());
     EXPECT_EQ(
         GetCookieSettings()->GetCookieSetting(third_party_url, first_party_url,
                                               net::CookieSettingOverrides()),
@@ -529,11 +525,9 @@ IN_PROC_BROWSER_TEST_P(UpdaterServiceCookiePrefsBrowserTest,
                     "[%s,%s]:%d", primary_pattern_spec.c_str(),
                     secondary_pattern_spec.c_str(), 1)}));
 
-    EXPECT_EQ(GetCookieSettings(alt_profile)
-                  ->ShouldConsider3pcdMetadataGrantsSettings(),
+    bool expected = !BlockAll3pcToggleEnabled();
+    EXPECT_EQ(expected,
               GetCookieSettings(alt_profile)->MitigationsEnabledFor3pcd());
-    bool expected = GetCookieSettings(alt_profile)
-                        ->ShouldConsider3pcdMetadataGrantsSettings();
     EXPECT_EQ(GetCookieSettings(alt_profile)
                   ->GetCookieSetting(third_party_url, first_party_url,
                                      net::CookieSettingOverrides()),
@@ -576,8 +570,8 @@ IN_PROC_BROWSER_TEST_P(UpdaterServiceCookiePrefsBrowserTest,
             {base::StringPrintf("[%s,%s]:%d", primary_pattern_spec.c_str(),
                                 secondary_pattern_spec.c_str(), 1)}));
 
-    bool expected =
-        GetCookieSettings()->ShouldConsider3pcdMetadataGrantsSettings();
+    bool expected = !BlockAll3pcToggleEnabled();
+    EXPECT_EQ(expected, GetCookieSettings()->MitigationsEnabledFor3pcd());
     EXPECT_EQ(
         GetCookieSettings()->GetCookieSetting(third_party_url, first_party_url,
                                               net::CookieSettingOverrides()),
@@ -604,8 +598,8 @@ IN_PROC_BROWSER_TEST_P(UpdaterServiceCookiePrefsBrowserTest,
                                 incognito_profile)
             .empty());
 
-    EXPECT_FALSE(GetCookieSettings(incognito_profile)
-                     ->ShouldConsider3pcdMetadataGrantsSettings());
+    EXPECT_FALSE(
+        GetCookieSettings(incognito_profile)->MitigationsEnabledFor3pcd());
     bool expected = false;
     EXPECT_EQ(GetCookieSettings(incognito_profile)
                   ->GetCookieSetting(third_party_url, first_party_url,
@@ -650,8 +644,8 @@ IN_PROC_BROWSER_TEST_P(UpdaterServiceCookiePrefsBrowserTest,
             {base::StringPrintf("[%s,%s]:%d", primary_pattern_spec.c_str(),
                                 secondary_pattern_spec.c_str(), 1)}));
 
-    bool expected =
-        GetCookieSettings()->ShouldConsider3pcdMetadataGrantsSettings();
+    bool expected = !BlockAll3pcToggleEnabled();
+    EXPECT_EQ(expected, GetCookieSettings()->MitigationsEnabledFor3pcd());
     EXPECT_EQ(
         GetCookieSettings()->GetCookieSetting(third_party_url, first_party_url,
                                               net::CookieSettingOverrides()),
@@ -681,8 +675,9 @@ IN_PROC_BROWSER_TEST_P(UpdaterServiceCookiePrefsBrowserTest,
                     "[%s,%s]:%d", primary_pattern_spec.c_str(),
                     secondary_pattern_spec.c_str(), 1)}));
 
-    bool expected = GetCookieSettings(guest_profile)
-                        ->ShouldConsider3pcdMetadataGrantsSettings();
+    bool expected = !BlockAll3pcToggleEnabled();
+    EXPECT_EQ(expected,
+              GetCookieSettings(guest_profile)->MitigationsEnabledFor3pcd());
     EXPECT_EQ(GetCookieSettings(guest_profile)
                   ->GetCookieSetting(third_party_url, first_party_url,
                                      net::CookieSettingOverrides()),
