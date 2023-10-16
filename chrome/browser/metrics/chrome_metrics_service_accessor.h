@@ -55,7 +55,6 @@ class UkmConsentParamBrowserTest;
 }  // namespace metrics
 
 namespace safe_browsing {
-class ChromeCleanerControllerDelegate;
 class ChromeSafeBrowsingUIManagerDelegate;
 class DownloadUrlSBClient;
 class IncidentReportingService;
@@ -138,7 +137,6 @@ class ChromeMetricsServiceAccessor : public metrics::MetricsServiceAccessor {
   friend class ash::settings::PerSessionSettingsUserActionTracker;
   friend class settings::MetricsReportingHandler;
   friend class UmaSessionStats;
-  friend class safe_browsing::ChromeCleanerControllerDelegate;
   friend class safe_browsing::ChromeSafeBrowsingUIManagerDelegate;
   friend class safe_browsing::DownloadUrlSBClient;
   friend class safe_browsing::IncidentReportingService;
