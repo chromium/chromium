@@ -1630,11 +1630,26 @@ chromium-metrics-reviews@google.com.
 
 <histogram name="Platform.Segmentation.FeatureLevel" units="level number"
     expires_after="2024-08-09">
+  <owner>gwendal@chromium.org</owner>
   <owner>mutexlox@chromium.org</owner>
   <owner>iby@chromium.org</owner>
   <owner>cros-telemetry@google.com</owner>
   <summary>
     Records the feature level of the device. Recorded in every UMA upload.
+
+    See libsegmentation in platform2 for context.
+  </summary>
+</histogram>
+
+<histogram name="Platform.Segmentation.ScopeLevel"
+    enum="FeatureManagementScopeLevel" expires_after="2024-08-09">
+  <owner>gwendal@chromium.org</owner>
+  <owner>mutexlox@chromium.org</owner>
+  <owner>iby@chromium.org</owner>
+  <owner>cros-telemetry@google.com</owner>
+  <summary>
+    Records the scope level of the device (Soft vs Hard Branded). Recorded in
+    every UMA upload.
 
     See libsegmentation in platform2 for context.
   </summary>

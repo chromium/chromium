@@ -69,6 +69,8 @@ inline constexpr char kFeatureManagementLevelFlag[] =
     "feature-management-level";
 inline constexpr char kFeatureManagementMaxLevelFlag[] =
     "feature-management-max-level";
+inline constexpr char kFeatureManagementScopeFlag[] =
+    "feature-management-scope";
 
 void IncrementPrefValue(const char* path, int num_samples) {
   PrefService* pref = g_browser_process->local_state();
@@ -261,34 +263,64 @@ ChromeOSHistogramMetricsProvider::ChromeOSHistogramMetricsProvider() = default;
 ChromeOSHistogramMetricsProvider::~ChromeOSHistogramMetricsProvider() = default;
 
 bool ChromeOSHistogramMetricsProvider::ProvideHistograms() {
+  // The scope type. Used in a histogram; do not modify existing types.
+  // see histograms/enums.xml.
+  enum {
+    FEATURE_MANAGEMENT_REGULAR = 0,
+    FEATURE_MANAGEMENT_SOFT_BRANDED = 1,
+    FEATURE_MANAGEMENT_HARD_BRANDED = 2,
+    kMaxValue = FEATURE_MANAGEMENT_HARD_BRANDED
+  } scope_level;
+
   if (!base::CommandLine::InitializedForCurrentProcess()) {
     return false;
   }
 
   base::CommandLine* command_line = base::CommandLine::ForCurrentProcess();
   if (!command_line->HasSwitch(kFeatureManagementLevelFlag) ||
-      !command_line->HasSwitch(kFeatureManagementMaxLevelFlag)) {
+      !command_line->HasSwitch(kFeatureManagementMaxLevelFlag) ||
+      !command_line->HasSwitch(kFeatureManagementScopeFlag)) {
     return false;
   }
   int feature_level = -1;
   int feature_max_level = -1;
+  int scope_level_raw = -1;
   if (!base::StringToInt(
           command_line->GetSwitchValueASCII(kFeatureManagementLevelFlag),
           &feature_level) ||
       !base::StringToInt(
           command_line->GetSwitchValueASCII(kFeatureManagementMaxLevelFlag),
-          &feature_max_level)) {
+          &feature_max_level) ||
+      !base::StringToInt(
+          command_line->GetSwitchValueASCII(kFeatureManagementScopeFlag),
+          &scope_level_raw)) {
     return false;
   }
-  if (feature_level < 0 || feature_max_level < 0 ||
+  if (feature_level < 0 || feature_max_level < 0 || scope_level_raw < 0 ||
       feature_max_level < feature_level) {
-    LOG(ERROR) << "Invalid " << kFeatureManagementLevelFlag << " ("
-               << feature_level << ") or " << kFeatureManagementMaxLevelFlag
-               << " (" << feature_max_level << ")";
+    LOG(ERROR) << "Invalid FeatureLevel arguments: "
+               << kFeatureManagementLevelFlag << " (" << feature_level
+               << ") or " << kFeatureManagementMaxLevelFlag << " ("
+               << feature_max_level << ") or " << kFeatureManagementScopeFlag
+               << " (" << scope_level_raw << ")";
+    return false;
+  }
+  if (feature_level == 0 && scope_level_raw == 0) {
+    scope_level = FEATURE_MANAGEMENT_REGULAR;
+  } else if (feature_level > 0 && scope_level_raw == 0) {
+    scope_level = FEATURE_MANAGEMENT_SOFT_BRANDED;
+  } else if (feature_level > 0 && scope_level_raw == 1) {
+    scope_level = FEATURE_MANAGEMENT_HARD_BRANDED;
+  } else {
+    LOG(ERROR) << "Invalid ScopeLevel:" << kFeatureManagementLevelFlag << " ("
+               << feature_level << ") or " << kFeatureManagementScopeFlag
+               << " (" << scope_level_raw << ")";
     return false;
   }
 
   base::UmaHistogramExactLinear("Platform.Segmentation.FeatureLevel",
                                 feature_level, feature_max_level + 1);
+  base::UmaHistogramEnumeration("Platform.Segmentation.ScopeLevel",
+                                scope_level);
   return true;
 }

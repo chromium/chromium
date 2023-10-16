@@ -39065,6 +39065,16 @@ Called by update_extension_permission.py.-->
   <int value="2" label="Grace period is not over"/>
 </enum>
 
+<enum name="FeatureManagementScopeLevel">
+  <int value="0" label="Regular">Device is a regular Chromebook.</int>
+  <int value="1" label="Soft Braned">
+    Device is a Soft Branded Chromebook Plus.
+  </int>
+  <int value="2" label="Hard Braned">
+    Device is a Hard Branded Chromebook Plus.
+  </int>
+</enum>
+
 <enum name="FeatureModuleAvailabilityStatus">
   <int value="0" label="Requested">
     Feature module has been requested but is not installed yet.
