@@ -11,11 +11,13 @@
 #include "ui/base/metadata/metadata_impl_macros.h"
 #include "ui/views/view.h"
 #include "ui/views/view_targeter_delegate.h"
+#include "ui/views/widget/widget_observer.h"
 
 // Creates and manages the content setting overlay for autopip.  This is used
 // both for video-only and document pip on desktop.  It is not used on Android.
 class AutoPipSettingOverlayView : public views::View,
-                                  public views::ViewTargeterDelegate {
+                                  public views::ViewTargeterDelegate,
+                                  public views::WidgetObserver {
  public:
   METADATA_HEADER(AutoPipSettingOverlayView);
   using ResultCb =
@@ -41,9 +43,30 @@ class AutoPipSettingOverlayView : public views::View,
     return background_;
   }
 
+  // Returns true if the bubble wants events at this point.  In practice, this
+  // means "is over a button".
+  virtual bool WantsEvent(const gfx::Point& point_in_screen);
+
+  // Return the size of the bubble.  This does not include the scrim.
+  virtual gfx::Size GetBubbleSize() const;
+
+  // views::WidgetObserver
+  void OnWidgetDestroying(views::Widget*) override;
+
+  AutoPipSettingView* get_view_for_testing() { return auto_pip_setting_view_; }
+
  private:
-  std::unique_ptr<AutoPipSettingView> auto_pip_setting_view_;
+  // We temporarily own the setting view during init, but usually this is null.
+  // Keep it separate so one doesn't accidentally use it.  It's likely that you
+  // really want `auto_pip_setting_view_`, outside this struct.
+  struct {
+    std::unique_ptr<AutoPipSettingView> auto_pip_setting_view_;
+  } init_;
+
   raw_ptr<views::View> background_ = nullptr;
+  raw_ptr<AutoPipSettingView> auto_pip_setting_view_ = nullptr;
+  raw_ptr<views::Widget> widget_ = nullptr;
+  gfx::Size bubble_size_;
   base::WeakPtrFactory<AutoPipSettingOverlayView> weak_factory_{this};
 
   // Callback used to hide the semi-opaque background layer.

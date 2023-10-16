@@ -30,7 +30,7 @@ AutoPipSettingOverlayView::AutoPipSettingOverlayView(
     views::BubbleBorder::Arrow arrow) {
   CHECK(result_cb);
 
-  auto_pip_setting_view_ = std::make_unique<AutoPipSettingView>(
+  init_.auto_pip_setting_view_ = std::make_unique<AutoPipSettingView>(
       std::move(result_cb),
       base::BindOnce(&AutoPipSettingOverlayView::OnHideView,
                      weak_factory_.GetWeakPtr()),
@@ -53,14 +53,22 @@ AutoPipSettingOverlayView::AutoPipSettingOverlayView(
 
 void AutoPipSettingOverlayView::ShowBubble(gfx::NativeView parent) {
   DCHECK(parent);
-  auto_pip_setting_view_->set_parent_window(parent);
-  views::BubbleDialogDelegate::CreateBubble(std::move(auto_pip_setting_view_))
-      ->Show();
+  init_.auto_pip_setting_view_->set_parent_window(parent);
+  auto_pip_setting_view_ = init_.auto_pip_setting_view_.get();
+  widget_ = views::BubbleDialogDelegate::CreateBubble(
+      std::move(init_.auto_pip_setting_view_));
+  widget_->Show();
+  bubble_size_ = widget_->GetWindowBoundsInScreen().size();
+  widget_->AddObserver(this);
 }
 
 void AutoPipSettingOverlayView::OnHideView() {
   // Hide the semi-opaque background layer.
   SetVisible(false);
+}
+
+gfx::Size AutoPipSettingOverlayView::GetBubbleSize() const {
+  return bubble_size_;
 }
 
 void AutoPipSettingOverlayView::FadeInLayer(ui::Layer* layer) {
@@ -72,9 +80,27 @@ void AutoPipSettingOverlayView::FadeInLayer(ui::Layer* layer) {
       .SetOpacity(layer, kOverlayViewOpacity, gfx::Tween::LINEAR);
 }
 
+bool AutoPipSettingOverlayView::WantsEvent(const gfx::Point& point) {
+  if (!auto_pip_setting_view_) {
+    return false;
+  }
+
+  return auto_pip_setting_view_->WantsEvent(point);
+}
+
 AutoPipSettingOverlayView::~AutoPipSettingOverlayView() {
+  if (widget_) {
+    widget_->RemoveObserver(this);
+    widget_ = nullptr;
+  }
   background_ = nullptr;
-  auto_pip_setting_view_.reset();
+  auto_pip_setting_view_ = nullptr;
+}
+
+void AutoPipSettingOverlayView::OnWidgetDestroying(views::Widget*) {
+  auto_pip_setting_view_ = nullptr;
+  widget_->RemoveObserver(this);
+  widget_ = nullptr;
 }
 
 BEGIN_METADATA(AutoPipSettingOverlayView, views::View)

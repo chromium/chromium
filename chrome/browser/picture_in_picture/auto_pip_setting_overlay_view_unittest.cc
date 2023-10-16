@@ -62,9 +62,9 @@ class AutoPipSettingOverlayViewTest : public views::ViewsTestBase {
     ViewsTestBase::TearDown();
   }
 
-  const AutoPipSettingOverlayView* setting_overlay() const {
-    return setting_overlay_;
-  }
+  AutoPipSettingOverlayView* setting_overlay() { return setting_overlay_; }
+
+  views::Widget* anchor_view_widget() { return anchor_view_widget_.get(); }
 
   views::View* background() const {
     return setting_overlay_->get_background_for_testing();
@@ -105,4 +105,19 @@ TEST_F(AutoPipSettingOverlayViewTest, TestBackgroundLayerAnimation) {
   // a 0.70f opacity.
   background()->layer()->GetAnimator()->StopAnimating();
   EXPECT_EQ(0.70f, background()->layer()->GetTargetOpacity());
+}
+
+TEST_F(AutoPipSettingOverlayViewTest, TestWantsEvent) {
+  setting_overlay()->ShowBubble(anchor_view_widget()->GetNativeView());
+  // Assume nothing is at screen coordinate 0,0.
+  EXPECT_FALSE(setting_overlay()->WantsEvent(gfx::Point(0, 0)));
+
+  // Make sure that the buttons work.
+  auto* view = setting_overlay()->get_view_for_testing();
+  EXPECT_TRUE(setting_overlay()->WantsEvent(
+      view->get_allow_always_button_center_in_screen_for_testing()));
+  EXPECT_TRUE(setting_overlay()->WantsEvent(
+      view->get_allow_once_button_center_in_screen_for_testing()));
+  EXPECT_TRUE(setting_overlay()->WantsEvent(
+      view->get_block_button_center_in_screen_for_testing()));
 }

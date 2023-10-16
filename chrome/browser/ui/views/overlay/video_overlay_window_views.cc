@@ -96,6 +96,9 @@ constexpr int kSecondaryControlBottomMargin = 8;
 // Margin between controls.
 constexpr int kControlMargin = 16;
 
+// Minimum padding between the overlay view, if shown, and the window.
+constexpr gfx::Size kOverlayViewPadding(64, 46);
+
 // Returns the quadrant the VideoOverlayWindowViews is primarily in on the
 // current work area.
 VideoOverlayWindowViews::WindowQuadrant GetCurrentWindowQuadrant(
@@ -349,7 +352,7 @@ gfx::Rect VideoOverlayWindowViews::CalculateAndUpdateWindowBounds() {
   // it's possible for the current size to be outside of those bounds
   // transiently on some platforms, so we need to cap it.
   window_size.SetToMin(max_size_);
-  window_size.SetToMax(min_size_);
+  window_size.SetToMax(GetMinimumSize());
 
   // Determine the window size by fitting |natural_size_| within |window_size|,
   // keeping to |natural_size_|'s aspect ratio.
@@ -375,8 +378,8 @@ gfx::Rect VideoOverlayWindowViews::CalculateAndUpdateWindowBounds() {
 
     // Update the window size to adhere to the aspect ratio.
     gfx::Rect window_rect(bounds.origin(), window_size);
-    gfx::SizeRectToAspectRatio(resize_edge, aspect_ratio, min_size_, max_size_,
-                               &window_rect);
+    gfx::SizeRectToAspectRatio(resize_edge, aspect_ratio, GetMinimumSize(),
+                               max_size_, &window_rect);
     window_size = window_rect.size();
 
     UpdateLayerBoundsWithLetterboxing(window_size);
@@ -420,6 +423,14 @@ void VideoOverlayWindowViews::OnNativeBlur() {
 }
 
 gfx::Size VideoOverlayWindowViews::GetMinimumSize() const {
+  if (overlay_view_) {
+    // Make sure that our minimum is sufficiently large to enclose the bubble,
+    // plus some margin to make it look nicer.
+    gfx::Size overlay_size =
+        overlay_view_->GetBubbleSize() + kOverlayViewPadding;
+    overlay_size.SetToMax(min_size_);
+    return overlay_size;
+  }
   return min_size_;
 }
 
@@ -689,7 +700,9 @@ bool VideoOverlayWindowViews::ControlsHitTestContainsPoint(
     // Let the overlay view consume this event if it wants to.  If not, then
     // ignore any of our controls as well.  This will still permit dragging the
     // window by any parts that aren't consumed by the overlay view.
-    return overlay_view_->GetEventHandlerForPoint(point);
+    gfx::Point point_in_screen =
+        views::View::ConvertPointToScreen(non_client_view(), point);
+    return overlay_view_->WantsEvent(point_in_screen);
   }
 
   if (!AreControlsVisible())
@@ -1236,8 +1249,7 @@ void VideoOverlayWindowViews::ShowInactive() {
     // Remove and delete the outgoing view.  Note the trailing `T` on the method
     // name -- this removes `overlay_view_` and returns a unique_ptr to it which
     // we then discard.  Without the `T`, it returns nothing and frees nothing.
-    GetContentsView()->RemoveChildViewT(overlay_view_);
-    overlay_view_ = nullptr;
+    GetContentsView()->RemoveChildViewT(overlay_view_.ExtractAsDangling());
   }
 
   // TODO(crbug.com/1472386): Confirm whether the anchor should remain as FLOAT.
@@ -1254,6 +1266,7 @@ void VideoOverlayWindowViews::ShowInactive() {
     // else, potentially, during widget resize.
     overlay_view_->SetBoundsRect(gfx::Rect(GetBounds().size()));
     overlay_view_->ShowBubble(GetNativeView());
+    SetBounds(CalculateAndUpdateWindowBounds());
   }
 
   // If this is not the first time the window is shown, this will be a no-op.

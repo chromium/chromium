@@ -208,6 +208,16 @@ void AutoPipSettingView::OnButtonPressed(UiResult result) {
   GetWidget()->Close();
 }
 
+bool AutoPipSettingView::WantsEvent(const gfx::Point& point_in_screen) {
+  return allow_once_button_->HitTestPoint(views::View::ConvertPointFromScreen(
+             allow_once_button_, point_in_screen)) ||
+         allow_on_every_visit_button_->HitTestPoint(
+             views::View::ConvertPointFromScreen(allow_on_every_visit_button_,
+                                                 point_in_screen)) ||
+         block_button_->HitTestPoint(views::View::ConvertPointFromScreen(
+             block_button_, point_in_screen));
+}
+
 ///////////////////////////////////////////////////////////////////////////////
 // views::BubbleDialogDelegate:
 gfx::Rect AutoPipSettingView::GetAnchorRect() const {
