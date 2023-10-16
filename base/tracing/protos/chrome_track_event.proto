@@ -1427,7 +1427,9 @@ message LibunwindstackUnwinder {
 message ScrollPredictorMetrics {
   message EventFrameValue {
     optional int64 event_trace_id = 1;
-    optional float delta_value = 2;
+    // The fractional pixels (can be fractional after the predictor adjusts in
+    // resampling of input) that the page was scrolled by this frame.
+    optional float delta_value_pixels = 2;
   };
   // Data from the previous, current, and next frame used to determine the
   // values below as according to the metric doc:
@@ -1438,7 +1440,7 @@ message ScrollPredictorMetrics {
   // This is the amount of delta processed in this frame that was above the
   // janky threshold (as defined by
   // http://doc/1Y0u0Tq5eUZff75nYUzQVw6JxmbZAW9m64pJidmnGWsY)
-  optional float janky_value = 4;
+  optional float janky_value_pixels = 4;
   // True if we are also missing frames (so multiple frames are being presented
   // at once).
   optional bool has_missed_vsyncs = 5;

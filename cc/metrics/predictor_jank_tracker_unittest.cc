@@ -162,13 +162,13 @@ TEST_F(PredictorJankTrackerTest, BasicNonMissedUpperJankCaseWithTracing) {
       R"(
       SELECT
         EXTRACT_ARG(arg_set_id,
-          "scroll_predictor_metrics.prev_event_frame_value.delta_value"
+          "scroll_predictor_metrics.prev_event_frame_value.delta_value_pixels"
         ) AS prev_delta,
         EXTRACT_ARG(arg_set_id,
-          "scroll_predictor_metrics.cur_event_frame_value.delta_value"
+          "scroll_predictor_metrics.cur_event_frame_value.delta_value_pixels"
         ) AS cur_delta,
         EXTRACT_ARG(arg_set_id,
-          "scroll_predictor_metrics.next_event_frame_value.delta_value"
+          "scroll_predictor_metrics.next_event_frame_value.delta_value_pixels"
         ) AS next_delta
       FROM
         slice

@@ -136,7 +136,7 @@ void PredictorJankTracker::ReportJankyFrame(
           if (frame_data_.prev_trace_id_) {
             values->set_event_trace_id(frame_data_.prev_trace_id_->value());
           }
-          values->set_delta_value(frame_data_.prev_delta_);
+          values->set_delta_value_pixels(frame_data_.prev_delta_);
         }
         {
           // cur data.
@@ -144,7 +144,7 @@ void PredictorJankTracker::ReportJankyFrame(
           if (frame_data_.cur_trace_id_) {
             values->set_event_trace_id(frame_data_.cur_trace_id_->value());
           }
-          values->set_delta_value(frame_data_.cur_delta_);
+          values->set_delta_value_pixels(frame_data_.cur_delta_);
         }
         {
           // next data.
@@ -152,9 +152,9 @@ void PredictorJankTracker::ReportJankyFrame(
           if (trace_id) {
             values->set_event_trace_id(trace_id->value());
           }
-          values->set_delta_value(next_delta);
+          values->set_delta_value_pixels(next_delta);
         }
-        scroll_data->set_janky_value(janky_value);
+        scroll_data->set_janky_value_pixels(janky_value);
         scroll_data->set_has_missed_vsyncs(contains_missed_vsyncs);
         scroll_data->set_is_slow_scroll(slow_scroll);
       });

@@ -443,6 +443,23 @@ constexpr MessageInfo kChromeGraphicsPipeline = {
 constexpr int kCrasUnifiedIndices[] = {1, 2, 3, 4, 5, 6, 7, -1};
 constexpr MessageInfo kCrasUnified = {kCrasUnifiedIndices, nullptr};
 
+// Proto Message: LibunwindstackUnwinder
+constexpr int kLibunwindstackUnwinderIndices[] = {1, 2, -1};
+constexpr MessageInfo kLibunwindstackUnwinder = {kLibunwindstackUnwinderIndices,
+                                                 nullptr};
+
+// Proto Message: EventFrameValue
+constexpr int kEventFrameValueIndices[] = {1, 2, -1};
+constexpr MessageInfo kEventFrameValue = {kEventFrameValueIndices, nullptr};
+
+// Proto Message: ScrollPredictorMetrics
+constexpr int kScrollPredictorMetricsIndices[] = {1, 2, 3, 4, 5, 6, -1};
+constexpr MessageInfo const* kScrollPredictorMetricsComplexMessages[] = {
+    &kEventFrameValue, &kEventFrameValue, &kEventFrameValue,
+    nullptr,           nullptr,           nullptr};
+constexpr MessageInfo kScrollPredictorMetrics = {
+    kScrollPredictorMetricsIndices, kScrollPredictorMetricsComplexMessages};
+
 // Proto Message: TrackEvent
 constexpr int kTrackEventIndices[] = {
     1,    2,    3,    5,    6,    9,    10,   11,   12,   16,   17,   22,
@@ -451,7 +468,7 @@ constexpr int kTrackEventIndices[] = {
     1003, 1004, 1005, 1006, 1007, 1008, 1009, 1010, 1011, 1012, 1013, 1014,
     1015, 1016, 1017, 1018, 1019, 1020, 1021, 1022, 1023, 1024, 1025, 1028,
     1031, 1032, 1033, 1034, 1036, 1038, 1039, 1040, 1041, 1042, 1046, 1047,
-    1048, 1049, 1050, 1051, 1052, 1053, -1};
+    1048, 1049, 1050, 1051, 1052, 1053, 1054, 1055, -1};
 constexpr MessageInfo const* kTrackEventComplexMessages[] = {
     nullptr,
     nullptr,
@@ -530,7 +547,9 @@ constexpr MessageInfo const* kTrackEventComplexMessages[] = {
     &kLinuxAlsaOutput,
     &kLinuxPulseOutput,
     &kChromeGraphicsPipeline,
-    &kCrasUnified};
+    &kCrasUnified,
+    &kLibunwindstackUnwinder,
+    &kScrollPredictorMetrics};
 constexpr MessageInfo kTrackEvent = {kTrackEventIndices,
                                      kTrackEventComplexMessages};
 
