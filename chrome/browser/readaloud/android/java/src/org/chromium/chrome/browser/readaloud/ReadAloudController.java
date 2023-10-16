@@ -52,6 +52,7 @@ public class ReadAloudController implements Player.Observer, Player.Delegate, Pl
     private final HashSet<String> mPendingRequests = new HashSet<>();
     private final TabModel mTabModel;
     private final PlayerCoordinator mPlayerCoordinator;
+    private final Context mContext;
     @Nullable
     private static PlayerCoordinator sPlayerCoordinatorForTesting;
 
@@ -120,6 +121,7 @@ public class ReadAloudController implements Player.Observer, Player.Delegate, Pl
     public ReadAloudController(Context context, ObservableSupplier<Profile> profileSupplier,
             TabModel tabModel, ViewStub miniPlayerStub,
             BottomSheetController bottomSheetController) {
+        this.mContext = context;
         mProfileSupplier = profileSupplier;
         mTabModel = tabModel;
         mReadabilityHooks = sReadabilityHooksForTesting != null
@@ -290,7 +292,8 @@ public class ReadAloudController implements Player.Observer, Player.Delegate, Pl
                 mHighligher = mPlaybackHooks.createHighlighter();
             }
 
-            mHighligher.initializeJs(mCurrentlyPlayingTab, metadata, new Highlighter.Config());
+            mHighligher.initializeJs(
+                    mCurrentlyPlayingTab, metadata, new Highlighter.Config(mContext));
             assert (mCurrentlyPlayingTab.getWebContents() != null
                     && mCurrentlyPlayingTab.getWebContents().getMainFrame() != null);
             if (mCurrentlyPlayingTab.getWebContents() != null
