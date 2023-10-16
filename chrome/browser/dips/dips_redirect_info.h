@@ -80,7 +80,8 @@ struct DIPSRedirectInfo {
   // For client redirects, the time between the previous page committing
   // and the redirect navigation starting. (For server redirects, zero)
   const base::TimeDelta client_bounce_delay;
-  // For client redirects, whether the user ever interacted with the page.
+  // For client redirects, whether the user ever interacted with the page during
+  // this navigation.
   const bool has_sticky_activation;
   // For client redirects, whether the user ever triggered a web authn assertion
   // call.

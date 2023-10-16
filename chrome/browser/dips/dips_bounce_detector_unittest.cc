@@ -268,6 +268,10 @@ class DIPSBounceDetectorTest : public ::testing::Test {
     detector_.WebAuthnAssertionRequestSucceeded();
   }
 
+  const DIPSRedirectContext& CommittedRedirectContext() {
+    return detector_.CommittedRedirectContext();
+  }
+
   void AdvanceDIPSTime(base::TimeDelta delta) {
     task_environment_.AdvanceClock(delta);
     task_environment_.RunUntilIdle();
@@ -1138,6 +1142,29 @@ TEST_F(DIPSBounceDetectorTest, Histograms_UKM) {
                   Pair("WebAuthnAssertionRequestSucceeded", false)));
 }
 
+TEST_F(DIPSBounceDetectorTest, SiteHadUserActivation) {
+  NavigateTo("http://a.test", kWithUserGesture);
+  ActivatePage();
+  AdvanceDIPSTime(features::kDIPSClientBounceDetectionTimeout.Get() +
+                  base::Seconds(1));
+
+  StartNavigation("http://b.test", kNoUserGesture)
+      .RedirectTo("http://c.test")
+      .Finish(/*commit=*/true);
+  ActivatePage();
+  NavigateTo("http://d.test", kNoUserGesture);
+
+  // Expect one initial URL (a.test) and two redirects (b.test, c.test).
+  EXPECT_EQ(CommittedRedirectContext().GetInitialURLForTesting(),
+            GURL("http://a.test"));
+  EXPECT_EQ(CommittedRedirectContext().GetRedirectChainLength(), 2u);
+
+  EXPECT_TRUE(CommittedRedirectContext().SiteHadUserActivation("a.test"));
+  EXPECT_FALSE(CommittedRedirectContext().SiteHadUserActivation("b.test"));
+  EXPECT_TRUE(CommittedRedirectContext().SiteHadUserActivation("c.test"));
+  EXPECT_FALSE(CommittedRedirectContext().SiteHadUserActivation("d.test"));
+}
+
 using ChainPair =
     std::pair<DIPSRedirectChainInfoPtr, std::vector<DIPSRedirectInfoPtr>>;
 
@@ -1224,9 +1251,9 @@ TEST(DIPSRedirectContextTest, OneAppend) {
   context.AppendCommitted(
       GURL("http://a.test/"),
       MakeServerRedirects({"http://b.test/", "http://c.test/"}),
-      GURL("http://d.test/"));
+      GURL("http://d.test/"), false);
   ASSERT_EQ(chains.size(), 0u);
-  context.EndChain(GURL("http://d.test/"));
+  context.EndChain(GURL("http://d.test/"), false);
 
   ASSERT_EQ(chains.size(), 1u);
   EXPECT_THAT(chains[0].first,
@@ -1246,13 +1273,13 @@ TEST(DIPSRedirectContextTest, TwoAppends_NoClientRedirect) {
   context.AppendCommitted(
       GURL("http://a.test/"),
       MakeServerRedirects({"http://b.test/", "http://c.test/"}),
-      GURL("http://d.test/"));
+      GURL("http://d.test/"), false);
   ASSERT_EQ(chains.size(), 0u);
   context.AppendCommitted(GURL("http://d.test/"),
                           MakeServerRedirects({"http://e.test/"}),
-                          GURL("http://f.test/"));
+                          GURL("http://f.test/"), false);
   ASSERT_EQ(chains.size(), 1u);
-  context.EndChain(GURL("http://f.test/"));
+  context.EndChain(GURL("http://f.test/"), false);
 
   ASSERT_EQ(chains.size(), 2u);
   EXPECT_THAT(chains[0].first,
@@ -1277,14 +1304,14 @@ TEST(DIPSRedirectContextTest, TwoAppends_WithClientRedirect) {
   context.AppendCommitted(
       GURL("http://a.test/"),
       MakeServerRedirects({"http://b.test/", "http://c.test/"}),
-      GURL("http://d.test/"));
+      GURL("http://d.test/"), false);
   ASSERT_EQ(chains.size(), 0u);
   context.AppendCommitted(
       MakeClientRedirect("http://d.test/"),
       MakeServerRedirects({"http://e.test/", "http://f.test/"}),
-      GURL("http://g.test/"));
+      GURL("http://g.test/"), false);
   ASSERT_EQ(chains.size(), 0u);
-  context.EndChain(GURL("http://g.test/"));
+  context.EndChain(GURL("http://g.test/"), false);
 
   ASSERT_EQ(chains.size(), 1u);
   EXPECT_THAT(chains[0].first,
@@ -1310,15 +1337,16 @@ TEST(DIPSRedirectContextTest, OnlyClientRedirects) {
       GURL(),
       /*redirect_prefix_count=*/0);
   ASSERT_EQ(chains.size(), 0u);
-  context.AppendCommitted(GURL("http://a.test/"), {}, GURL("http://b.test/"));
+  context.AppendCommitted(GURL("http://a.test/"), {}, GURL("http://b.test/"),
+                          false);
   ASSERT_EQ(chains.size(), 0u);
   context.AppendCommitted(MakeClientRedirect("http://b.test/"), {},
-                          GURL("http://c.test/"));
+                          GURL("http://c.test/"), false);
   ASSERT_EQ(chains.size(), 0u);
   context.AppendCommitted(MakeClientRedirect("http://c.test/"), {},
-                          GURL("http://d.test/"));
+                          GURL("http://d.test/"), false);
   ASSERT_EQ(chains.size(), 0u);
-  context.EndChain(GURL("http://d.test"));
+  context.EndChain(GURL("http://d.test"), false);
 
   ASSERT_EQ(chains.size(), 1u);
   EXPECT_THAT(chains[0].first,
@@ -1334,12 +1362,13 @@ TEST(DIPSRedirectContextTest, OverflowMaxChain_TrimsFromFront) {
       base::BindRepeating(AppendChainPair, std::ref(chains)), base::DoNothing(),
       GURL(),
       /*redirect_prefix_count=*/0);
-  context.AppendCommitted(GURL("http://a.test/"), {}, GURL("http://c.test/"));
+  context.AppendCommitted(GURL("http://a.test/"), {}, GURL("http://c.test/"),
+                          false);
   for (size_t ind = 0; ind < kDIPSRedirectChainMax; ind++) {
     std::string redirect_url =
         base::StrCat({"http://", base::NumberToString(ind), ".test/"});
     context.AppendCommitted(MakeClientRedirect(redirect_url), {},
-                            GURL("http://c.test/"));
+                            GURL("http://c.test/"), false);
   }
   // Each redirect was added to the chain.
   ASSERT_EQ(context.size(), kDIPSRedirectChainMax);
@@ -1347,10 +1376,10 @@ TEST(DIPSRedirectContextTest, OverflowMaxChain_TrimsFromFront) {
 
   // The next redirect overflows the chain and evicts the first one.
   context.AppendCommitted(MakeClientRedirect("http://b.test/"), {},
-                          GURL("http://c.test/"));
+                          GURL("http://c.test/"), false);
   ASSERT_EQ(context.size(), kDIPSRedirectChainMax);
   ASSERT_EQ(chains.size(), 1u);
-  context.EndChain(GURL("http://c.test/"));
+  context.EndChain(GURL("http://c.test/"), false);
 
   // Expect two chains handled: one partial chain with the dropped redirect, and
   // one with the other redirects.
@@ -1392,7 +1421,7 @@ TEST(DIPSRedirectContextTest, Uncommitted_NoClientRedirects) {
   context.AppendCommitted(
       GURL("http://a.test/"),
       MakeServerRedirects({"http://b.test/", "http://c.test/"}),
-      GURL("http://d.test/"));
+      GURL("http://d.test/"), false);
   ASSERT_EQ(chains.size(), 0u);
   context.HandleUncommitted(
       GURL("http://d.test/"),
@@ -1401,9 +1430,9 @@ TEST(DIPSRedirectContextTest, Uncommitted_NoClientRedirects) {
   ASSERT_EQ(chains.size(), 1u);
   context.AppendCommitted(GURL("http://h.test/"),
                           MakeServerRedirects({"http://i.test/"}),
-                          GURL("http://j.test/"));
+                          GURL("http://j.test/"), false);
   ASSERT_EQ(chains.size(), 2u);
-  context.EndChain(GURL("http://j.test/"));
+  context.EndChain(GURL("http://j.test/"), false);
 
   ASSERT_EQ(chains.size(), 3u);
   // First, the uncommitted (middle) chain.
@@ -1435,7 +1464,7 @@ TEST(DIPSRedirectContextTest, Uncommitted_IncludingClientRedirects) {
   context.AppendCommitted(
       GURL("http://a.test/"),
       MakeServerRedirects({"http://b.test/", "http://c.test/"}),
-      GURL("http://d.test/"));
+      GURL("http://d.test/"), false);
   ASSERT_EQ(chains.size(), 0u);
   // Uncommitted navigation:
   context.HandleUncommitted(
@@ -1445,9 +1474,9 @@ TEST(DIPSRedirectContextTest, Uncommitted_IncludingClientRedirects) {
   ASSERT_EQ(chains.size(), 1u);
   context.AppendCommitted(MakeClientRedirect("http://h.test/"),
                           MakeServerRedirects({"http://i.test/"}),
-                          GURL("http://j.test/"));
+                          GURL("http://j.test/"), false);
   ASSERT_EQ(chains.size(), 1u);
-  context.EndChain(GURL("http://j.test/"));
+  context.EndChain(GURL("http://j.test/"), false);
 
   ASSERT_EQ(chains.size(), 2u);
   // First, the uncommitted chain. The overall length includes the
@@ -1478,16 +1507,18 @@ TEST(DIPSRedirectContextTest, NoRedirects) {
       /*redirect_prefix_count=*/0);
   ASSERT_EQ(chains.size(), 0u);
 
-  context.AppendCommitted(GURL("http://a.test/"), {}, GURL("http://b.test/"));
+  context.AppendCommitted(GURL("http://a.test/"), {}, GURL("http://b.test/"),
+                          false);
   ASSERT_EQ(chains.size(), 0u);
 
-  context.AppendCommitted(GURL("http://b.test/"), {}, GURL("http://c.test/"));
+  context.AppendCommitted(GURL("http://b.test/"), {}, GURL("http://c.test/"),
+                          false);
   ASSERT_EQ(chains.size(), 1u);
 
   context.HandleUncommitted(GURL("http://c.test/"), {}, GURL("http://d.test/"));
   ASSERT_EQ(chains.size(), 2u);
 
-  context.EndChain(GURL("http://e.test/"));
+  context.EndChain(GURL("http://e.test/"), false);
   ASSERT_EQ(chains.size(), 3u);
 
   EXPECT_THAT(chains[0].first,
@@ -1518,7 +1549,7 @@ TEST(DIPSRedirectContextTest, AddLateCookieAccess) {
       MakeServerRedirects(
           {"http://b.test/", "http://c.test/", "http://d.test/"},
           SiteDataAccessType::kNone),
-      GURL("http://e.test/"));
+      GURL("http://e.test/"), false);
 
   EXPECT_TRUE(context.AddLateCookieAccess(GURL("http://b.test/"),
                                           CookieOperation::kChange));
@@ -1539,7 +1570,7 @@ TEST(DIPSRedirectContextTest, AddLateCookieAccess) {
       MakeClientRedirect("http://e.test/", SiteDataAccessType::kNone),
       MakeServerRedirects({"http://f.test/", "http://g.test/"},
                           SiteDataAccessType::kRead),
-      GURL("http://h.test/"));
+      GURL("http://h.test/"), false);
 
   // This late "write" will be merged with the "read" already recorded.
   EXPECT_TRUE(context.AddLateCookieAccess(GURL("http://g.test/"),
@@ -1548,13 +1579,13 @@ TEST(DIPSRedirectContextTest, AddLateCookieAccess) {
   context.AppendCommitted(
       MakeClientRedirect("http://h.test/", SiteDataAccessType::kNone),
       MakeServerRedirects({"http://i.test/"}, SiteDataAccessType::kRead),
-      GURL("http://j.test/"));
+      GURL("http://j.test/"), false);
 
   // Can't modify h.test since i.test already has a known cookie access.
   EXPECT_FALSE(context.AddLateCookieAccess(GURL("http://h.test/"),
                                            CookieOperation::kRead));
 
-  context.EndChain(GURL("http://j.test/"));
+  context.EndChain(GURL("http://j.test/"), false);
 
   ASSERT_EQ(chains.size(), 1u);
   EXPECT_THAT(chains[0].first,

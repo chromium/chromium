@@ -21774,6 +21774,12 @@ be describing additional metrics about the same event.
       never been a user interaction from the tracking site.
     </summary>
   </metric>
+  <metric name="IsCurrentInteraction" enum="Boolean">
+    <summary>
+      Whether there was a user interaction on the tracking site when it was
+      loaded in the current redirect chain.
+    </summary>
+  </metric>
   <metric name="MillisecondsSinceRedirect">
     <summary>
       The number of milliseconds between the redirect to the cookie access.

@@ -50,7 +50,8 @@ class OpenerHeuristicTabHelper
 
    private:
     // Emit the OpenerHeuristic.PopupPastInteraction UKM event if we have all
-    // the necessary information.
+    // the necessary information, and create a storage access grant if
+    // supported.
     void EmitPastInteractionIfReady();
     // Emit the OpenerHeuristic.TopLevel UKM event.
     void EmitTopLevel(const GURL& tracker_url,

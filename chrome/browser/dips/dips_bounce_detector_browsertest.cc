@@ -1647,8 +1647,7 @@ IN_PROC_BROWSER_TEST_F(DIPSBounceDetectorBrowserTest,
       base::FilePath(FILE_PATH_LITERAL("chrome/test/data")));
   ASSERT_TRUE(https_server.Start());
 
-  GURL initial_final_url =
-      embedded_test_server()->GetURL("a.test", "/title1.html");
+  GURL final_url = embedded_test_server()->GetURL("a.test", "/title1.html");
 
   GURL tracker_url_with_interaction =
       embedded_test_server()->GetURL("b.test", "/title1.html");
@@ -1679,7 +1678,13 @@ IN_PROC_BROWSER_TEST_F(DIPSBounceDetectorBrowserTest,
                                     ContentSettingsType::COOKIES,
                                     ContentSetting::CONTENT_SETTING_BLOCK);
 
-  // Record an interaction for the first tracking site.
+  // Set cookies on image URLs.
+  ASSERT_TRUE(NavigateToSetCookie(web_contents, &https_server, "sub.b.test",
+                                  /*is_secure_cookie_set=*/true));
+  ASSERT_TRUE(NavigateToSetCookie(web_contents, &https_server, "sub.c.test",
+                                  /*is_secure_cookie_set=*/true));
+
+  // Start on `tracker_url_with_interaction` and record a current interaction.
   ASSERT_TRUE(
       content::NavigateToURL(web_contents, tracker_url_with_interaction));
   UserActivationObserver observer(web_contents,
@@ -1688,14 +1693,6 @@ IN_PROC_BROWSER_TEST_F(DIPSBounceDetectorBrowserTest,
   SimulateMouseClick(web_contents, 0, blink::WebMouseEvent::Button::kLeft);
   observer.Wait();
 
-  // Set cookies on image URLs.
-  ASSERT_TRUE(NavigateToSetCookie(web_contents, &https_server, "sub.b.test",
-                                  /*is_secure_cookie_set=*/true));
-  ASSERT_TRUE(NavigateToSetCookie(web_contents, &https_server, "sub.c.test",
-                                  /*is_secure_cookie_set=*/true));
-
-  // Visit initial page.
-  ASSERT_TRUE(content::NavigateToURL(web_contents, initial_final_url));
   // Redirect to one of the target URLs, to set DoesFirstPartyPrecedeThirdParty.
   ASSERT_TRUE(content::NavigateToURLFromRendererWithoutUserGesture(
       web_contents, target_url_3pc_blocked));
@@ -1722,8 +1719,8 @@ IN_PROC_BROWSER_TEST_F(DIPSBounceDetectorBrowserTest,
   CreateImageAndWaitForCookieAccess(web_contents, image_url_in_iframe);
 
   // Redirect to final URL.
-  ASSERT_TRUE(content::NavigateToURLFromRendererWithoutUserGesture(
-      web_contents, initial_final_url));
+  ASSERT_TRUE(content::NavigateToURLFromRendererWithoutUserGesture(web_contents,
+                                                                   final_url));
 
   EndRedirectChain();
 
@@ -1732,7 +1729,8 @@ IN_PROC_BROWSER_TEST_F(DIPSBounceDetectorBrowserTest,
           "RedirectHeuristic.CookieAccess",
           {"AccessId", "AccessAllowed", "HoursSinceLastInteraction",
            "MillisecondsSinceRedirect", "OpenerHasSameSiteIframe",
-           "SitesPassedCount", "DoesFirstPartyPrecedeThirdParty"});
+           "SitesPassedCount", "DoesFirstPartyPrecedeThirdParty",
+           "IsCurrentInteraction"});
 
   // Expect UKM entries from both of the cookie accesses, as well as the iframe
   // navigation.
@@ -1759,6 +1757,7 @@ IN_PROC_BROWSER_TEST_F(DIPSBounceDetectorBrowserTest,
   EXPECT_EQ(ukm_entries[0].metrics.at("SitesPassedCount"), 1);
   EXPECT_EQ(ukm_entries[0].metrics.at("DoesFirstPartyPrecedeThirdParty"),
             false);
+  EXPECT_EQ(ukm_entries[0].metrics.at("IsCurrentInteraction"), 1);
 
   // The second cookie access was due to the iframe navigation from
   // target_url_3pc_blocked to tracker_url_in_iframe.
@@ -1768,6 +1767,7 @@ IN_PROC_BROWSER_TEST_F(DIPSBounceDetectorBrowserTest,
       Eq(target_url_3pc_blocked));
   EXPECT_EQ(ukm_entries[1].metrics.at("AccessAllowed"), false);
   EXPECT_EQ(ukm_entries[1].metrics.at("HoursSinceLastInteraction"), -1);
+  EXPECT_EQ(ukm_entries[1].metrics.at("IsCurrentInteraction"), 0);
 
   // The third cookie access was from a tracking site in an iframe of the
   // target, on a site with 3PC access blocked.
@@ -1783,6 +1783,7 @@ IN_PROC_BROWSER_TEST_F(DIPSBounceDetectorBrowserTest,
             static_cast<int32_t>(OptionalBool::kTrue));
   EXPECT_EQ(ukm_entries[2].metrics.at("SitesPassedCount"), 3);
   EXPECT_EQ(ukm_entries[2].metrics.at("DoesFirstPartyPrecedeThirdParty"), true);
+  EXPECT_EQ(ukm_entries[2].metrics.at("IsCurrentInteraction"), 0);
 
   // Verify there are three corresponding CookieAccessThirdParty entries with
   // matching access IDs.
