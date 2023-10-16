@@ -19,6 +19,15 @@
 
 namespace ash::curtain {
 
+namespace {
+
+// We can only disable the camera if the controller exists, which might
+// not be the case if the privacy hub feature is disabled.
+bool CanDisableCamera() {
+  return CameraPrivacySwitchController::Get() != nullptr;
+}
+
+}  // namespace
 ////////////////////////////////////////////////////////////////////////////////
 //  RootWindowsObserver
 ////////////////////////////////////////////////////////////////////////////////
@@ -118,7 +127,7 @@ Session::Session(Shell* shell,
   if (init_params.mute_audio_input) {
     scoped_audio_input_muter_ = std::make_unique<ScopedAudioInputMuter>();
   }
-  if (init_params.disable_camera_access) {
+  if (init_params.disable_camera_access && CanDisableCamera()) {
     scoped_camera_disabler_ = std::make_unique<ScopedCameraDisabler>();
   }
 
