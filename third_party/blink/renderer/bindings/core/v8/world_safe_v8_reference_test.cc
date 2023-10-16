@@ -27,7 +27,7 @@ class IsolateOnlyV8TestingScope {
 
  public:
   IsolateOnlyV8TestingScope(const KURL& url = KURL())
-      : holder_(V8TestingScope::CreateDummyPageHolder(url)),
+      : holder_(DummyPageHolder::CreateAndCommitNavigation(url)),
         handle_scope_(GetIsolate()) {}
 
   v8::Isolate* GetIsolate() const {
