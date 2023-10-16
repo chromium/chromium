@@ -39,6 +39,7 @@
 #include "base/i18n/rtl.h"
 #include "base/metrics/histogram_functions.h"
 #include "base/notreached.h"
+#include "base/trace_event/trace_event.h"
 #include "base/uuid.h"
 #include "chromeos/constants/chromeos_features.h"
 #include "ui/base/l10n/l10n_util.h"

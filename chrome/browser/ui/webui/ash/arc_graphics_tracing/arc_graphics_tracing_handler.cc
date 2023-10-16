@@ -22,6 +22,8 @@
 #include "base/strings/utf_string_conversions.h"
 #include "base/task/thread_pool.h"
 #include "base/timer/timer.h"
+#include "base/trace_event/trace_config.h"
+#include "base/trace_event/trace_event.h"
 #include "base/values.h"
 #include "chrome/browser/ash/arc/tracing/arc_system_model.h"
 #include "chrome/browser/ash/arc/tracing/arc_system_stat_collector.h"

@@ -14,6 +14,7 @@
 #include "ash/wm/window_util.h"
 #include "base/check_op.h"
 #include "base/containers/unique_ptr_adapters.h"
+#include "base/trace_event/trace_event.h"
 #include "ui/gfx/geometry/rect_f.h"
 #include "ui/gfx/geometry/rounded_corners_f.h"
 #include "ui/views/widget/widget.h"
