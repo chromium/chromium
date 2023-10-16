@@ -30,7 +30,6 @@ public class ShoppingAccessoryCoordinator {
     /**
      * Factory constructor for building the view programmatically.
      * @param context The calling context, usually the parent view.
-     * @param visual Whether the visual row should be used.
      */
     static ShoppingAccessoryView buildView(Context context) {
         ShoppingAccessoryView view = new ShoppingAccessoryView(context, null);
