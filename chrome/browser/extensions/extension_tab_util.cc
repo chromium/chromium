@@ -871,6 +871,8 @@ base::expected<GURL, std::string> ExtensionTabUtil::PrepareURLForNavigation(
   // navigation as such contexts are trusted and do not have a concept of file
   // access.
   if (extension && url.SchemeIsFile() &&
+      // PDF viewer extension can navigate to file URLs.
+      extension->id() != extension_misc::kPdfExtensionId &&
       !util::AllowFileAccess(extension->id(), browser_context) &&
       base::FeatureList::IsEnabled(
           extensions_features::kRestrictFileURLNavigation)) {

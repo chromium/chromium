@@ -175,6 +175,18 @@ TEST_F(ChromeExtensionNavigationTest, PrepareURLForNavigation) {
   }
 }
 
+TEST_F(ChromeExtensionNavigationTest, PrepareURLForNavigationWithPDFViewer) {
+  // Set ID for PDF viewer extension.
+  auto extension =
+      ExtensionBuilder("test").SetID(extension_misc::kPdfExtensionId).Build();
+
+  // File URLs are returned when the extension has access to file.
+  const std::string kFileURLWithPDFViewer("file:///etc/passwd");
+  auto url = ExtensionTabUtil::PrepareURLForNavigation(
+      kFileURLWithPDFViewer, extension.get(), browser_context());
+  EXPECT_THAT(url, base::test::ValueIs(GURL(kFileURLWithPDFViewer)));
+}
+
 TEST_F(ChromeExtensionNavigationTest, PrepareURLForNavigationOnDevtools) {
   const std::string kDevtoolsURL(
       "devtools://devtools/bundled/devtools_app.html");
