@@ -6,6 +6,7 @@
 #define SERVICES_NETWORK_MASKED_DOMAIN_LIST_URL_MATCHER_WITH_BYPASS_H_
 
 #include <map>
+#include <string_view>
 
 #include "components/privacy_sandbox/masked_domain_list/masked_domain_list.pb.h"
 #include "net/base/scheme_host_port_matcher.h"
@@ -32,13 +33,13 @@ class COMPONENT_EXPORT(NETWORK_SERVICE) UrlMatcherWithBypass {
   bool Matches(const GURL& resource_url, const GURL& top_frame_url);
 
   // Adds a matcher rule and bypass matcher for the domain.
-  void AddDomainWithBypass(const std::string& domain,
+  void AddDomainWithBypass(std::string_view domain,
                            net::SchemeHostPortMatcher bypass_matcher);
 
   // Builds the bypass rules from the MDL ownership entry and adds a rule.
   void AddMaskedDomainListRules(
-      const std::string& domain,
-      masked_domain_list::ResourceOwner resource_owner);
+      std::string_view domain,
+      const masked_domain_list::ResourceOwner& resource_owner);
 
   void Clear();
 
@@ -48,7 +49,7 @@ class COMPONENT_EXPORT(NETWORK_SERVICE) UrlMatcherWithBypass {
 
   // Determine the partition of the `match_list_with_bypass_map_` that contains
   // the given domain.
-  static std::string PartitionMapKey(std::string domain);
+  static std::string PartitionMapKey(std::string_view domain);
 
  private:
   // Maps partition map keys to smaller maps of domains eligible for the match
