@@ -133,11 +133,11 @@ and still easy to implement across implementations.
 [list-style-position]: https://drafts.csswg.org/css-lists-3/#propdef-list-style-position
 [marker positioning]: https://drafts.csswg.org/css-lists-3/#positioning
 
-[LayoutListItem]: layout_ng_list_item.h
-[LayoutInsideListMarker]: layout_ng_inside_list_marker.h
-[LayoutOutsideListMarker]: layout_ng_outside_list_marker.h
-[NGBlockLayoutAlgorithm]: ../ng_block_layout_algorithm.h
-[NGInlineItem]: ../inline/ng_inline_item.h
-[NGInlineLayoutAlgorithm]: ../inline/ng_inline_layout_algorithm.h
-[NGLayoutResult]: ../ng_layout_result.h
+[LayoutListItem]: layout_list_item.h
+[LayoutInsideListMarker]: layout_inside_list_marker.h
+[LayoutOutsideListMarker]: layout_outside_list_marker.h
+[NGBlockLayoutAlgorithm]: ../ng/ng_block_layout_algorithm.h
+[NGInlineItem]: ../ng/inline/ng_inline_item.h
+[NGInlineLayoutAlgorithm]: ../ng/inline/ng_inline_layout_algorithm.h
+[NGLayoutResult]: ../ng/ng_layout_result.h
 [PaintLayer]: ../../paint/PaintLayer.h

@@ -2,8 +2,8 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#ifndef THIRD_PARTY_BLINK_RENDERER_CORE_LAYOUT_LIST_MARKER_H_
-#define THIRD_PARTY_BLINK_RENDERER_CORE_LAYOUT_LIST_MARKER_H_
+#ifndef THIRD_PARTY_BLINK_RENDERER_CORE_LAYOUT_LIST_LIST_MARKER_H_
+#define THIRD_PARTY_BLINK_RENDERER_CORE_LAYOUT_LIST_LIST_MARKER_H_
 
 #include "base/check_op.h"
 #include "third_party/blink/renderer/core/core_export.h"
@@ -113,4 +113,4 @@ class CORE_EXPORT ListMarker {
 
 }  // namespace blink
 
-#endif  // THIRD_PARTY_BLINK_RENDERER_CORE_LAYOUT_LIST_MARKER_H_
+#endif  // THIRD_PARTY_BLINK_RENDERER_CORE_LAYOUT_LIST_LIST_MARKER_H_
