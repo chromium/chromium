@@ -338,9 +338,9 @@ HanKerning::FontData::FontData(const SimpleFontData& font,
 
   // Compute types from glyph bounds.
   DCHECK_EQ(bounds.size(), std::size(kChars));
-  type_for_dot = GetType(base::make_span(bounds.begin() + kDotStartIndex,
-                                         kDotStartIndex + kDotSize),
-                         em, is_horizontal);
+  type_for_dot =
+      GetType(base::make_span(bounds.begin() + kDotStartIndex, kDotSize), em,
+              is_horizontal);
   type_for_colon = GetType(bounds[kColonIndex], em, is_horizontal);
   type_for_semicolon = GetType(bounds[kSemicolonIndex], em, is_horizontal);
 }
