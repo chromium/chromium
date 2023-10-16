@@ -48,6 +48,9 @@ class SplitViewMetricsController;
 class SplitViewObserver;
 class SplitViewOverviewSessionTest;
 
+// Histogram of the number of swapping window operations in split view.
+constexpr char kSplitViewSwapWindowsSource[] = "Ash.SplitView.SwapWindowSource";
+
 // `SplitViewController` controls what the window snapping behaviors should be
 // in different UI modes (clamshell UI mode and tablet UI mode), and how the
 // window snapping interacts with the overview mode. There is an instance for

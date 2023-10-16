@@ -16,6 +16,8 @@
 #include "ash/wm/splitview/split_view_constants.h"
 #include "ash/wm/splitview/split_view_controller.h"
 #include "base/functional/bind.h"
+#include "base/metrics/histogram_functions.h"
+#include "base/metrics/user_metrics.h"
 #include "ui/base/metadata/metadata_impl_macros.h"
 #include "ui/compositor/layer.h"
 #include "ui/views/background.h"
@@ -99,7 +101,11 @@ void SnapGroupExpandedMenuView::OnUpdateSecondaryWindowButtonPressed() {
 }
 
 void SnapGroupExpandedMenuView::OnSwapWindowsButtonPressed() {
-  split_view_controller()->SwapWindows(
+  snap_group_->SwapWindows();
+  base::RecordAction(
+      base::UserMetricsAction("SplitView_SwapWindowsButtonSwapWindows"));
+  base::UmaHistogramEnumeration(
+      kSplitViewSwapWindowsSource,
       SplitViewController::SwapWindowsSource::kSnapGroupSwapWindowsButton);
 }
 

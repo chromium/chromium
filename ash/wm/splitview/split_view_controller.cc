@@ -131,9 +131,6 @@ constexpr char kTabletSplitViewResizeMultiMaxLatencyHistogram[] =
 constexpr char kTabletSplitViewResizeWithOverviewMaxLatencyHistogram[] =
     "Ash.SplitViewResize.PresentationTime.MaxLatency.TabletMode.WithOverview";
 
-// Histogram of the number of swapping window operations in split view.
-constexpr char kSplitViewSwapWindowsSource[] = "Ash.SplitView.SwapWindowSource";
-
 // The time when the number of roots in split view changes from one to two. Used
 // for the purpose of metric collection.
 base::Time g_multi_display_split_view_start_time;
@@ -903,12 +900,6 @@ void SplitViewController::SwapWindows(SwapWindowsSource swap_windows_source) {
     return;
   }
 
-  SnapGroupController* snap_group_controller = SnapGroupController::Get();
-  if (snap_group_controller && snap_group_controller->AreWindowsInSnapGroup(
-                                   primary_window_, secondary_window_)) {
-    snap_group_controller->RemoveSnapGroupContainingWindow(primary_window_);
-  }
-
   SwapWindowsAndUpdateBounds();
   if (IsSnapped(primary_window_)) {
     TriggerWMEventToSnapWindow(WindowState::Get(primary_window_),
@@ -929,16 +920,16 @@ void SplitViewController::SwapWindows(SwapWindowsSource swap_windows_source) {
   UpdateStateAndNotifyObservers();
   NotifyWindowSwapped();
 
+  // TODO(b/305251109): Remove this when the kebab button is removed.
   switch (swap_windows_source) {
     case SwapWindowsSource::kDoubleTap: {
       base::RecordAction(
           base::UserMetricsAction("SplitView_DoubleTapDividerSwapWindows"));
       break;
     }
-    case SwapWindowsSource::kSnapGroupSwapWindowsButton: {
-      base::RecordAction(
-          base::UserMetricsAction("SplitView_SwapWindowsButtonSwapWindows"));
-    }
+    case SwapWindowsSource::kSnapGroupSwapWindowsButton:
+      NOTREACHED();
+      break;
   }
   base::UmaHistogramEnumeration(kSplitViewSwapWindowsSource,
                                 swap_windows_source);

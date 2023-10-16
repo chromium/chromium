@@ -29,6 +29,7 @@
 #include "ash/wm/overview/overview_utils.h"
 #include "ash/wm/overview/overview_window_drag_controller.h"
 #include "ash/wm/overview/scoped_overview_transform_window.h"
+#include "ash/wm/snap_group/snap_group.h"
 #include "ash/wm/snap_group/snap_group_controller.h"
 #include "ash/wm/snap_group/snap_group_expanded_menu_view.h"
 #include "ash/wm/splitview/split_view_constants.h"
@@ -508,16 +509,16 @@ class SnapGroupEntryPointArm1Test : public SnapGroupTest {
     EXPECT_TRUE(snap_group_expanded_menu_widget());
     EXPECT_TRUE(snap_group_expanded_menu_view());
 
-    const auto* cached_primary_window =
-        split_view_controller()->primary_window();
-    const auto* cached_secondary_window =
-        split_view_controller()->secondary_window();
+    auto* snap_group = SnapGroupController::Get()->GetTopmostSnapGroup();
+    CHECK(snap_group);
+    const auto* cached_primary_window = snap_group->window1();
+    const auto* cached_secondary_window = snap_group->window2();
 
     IconButton* swap_button = swap_windows_button();
     EXPECT_TRUE(swap_button);
     LeftClickOn(swap_button);
-    auto* new_primary_window = split_view_controller()->primary_window();
-    auto* new_secondary_window = split_view_controller()->secondary_window();
+    auto* new_primary_window = snap_group->window1();
+    auto* new_secondary_window = snap_group->window2();
     EXPECT_TRUE(SnapGroupController::Get()->AreWindowsInSnapGroup(
         new_primary_window, new_secondary_window));
     EXPECT_EQ(new_primary_window, cached_secondary_window);
@@ -971,6 +972,10 @@ TEST_F(SnapGroupEntryPointArm1Test, OverviewEnterExitBasic) {
   EXPECT_TRUE(overview_controller->overview_session());
   EXPECT_EQ(GetOverviewGridBounds(), work_area_bounds());
   EXPECT_FALSE(split_view_divider());
+  EXPECT_EQ(chromeos::WindowStateType::kPrimarySnapped,
+            WindowState::Get(w1.get())->GetStateType());
+  EXPECT_EQ(chromeos::WindowStateType::kSecondarySnapped,
+            WindowState::Get(w2.get())->GetStateType());
 
   // Verify that the snap group is restored with two windows snapped and that
   // the split view divider becomes available on overview exit.
@@ -1645,7 +1650,6 @@ TEST_F(SnapGroupEntryPointArm1Test, SwapWindowsButtonTest) {
   event_generator->MoveMouseTo(hover_location);
   event_generator->MoveMouseTo(hover_location + gfx::Vector2d(50, 0));
   EXPECT_TRUE(kebab_button());
-  ClickKebabButtonToShowExpandedMenu();
   ClickSwapWindowsButtonAndVerify();
 }
 
@@ -1756,7 +1760,6 @@ TEST_F(SnapGroupEntryPointArm1Test, SwapWindowsAndUnlockTest) {
   SnapTwoTestWindowsInArm1(w1.get(), w2.get(), /*horizontal=*/true);
   ClickKebabButtonToShowExpandedMenu();
   ClickSwapWindowsButtonAndVerify();
-  ClickKebabButtonToShowExpandedMenu();
   ClickUnlockButtonAndVerify();
 }
 
