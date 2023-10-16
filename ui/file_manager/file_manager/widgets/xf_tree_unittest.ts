@@ -36,11 +36,19 @@ function getTreeItemById(id: string): XfTreeItem {
 
 function sendKeyDownEvent(tree: XfTree, key: string) {
   const keyDownEvent = new KeyboardEvent('keydown', {key});
-  getTreeRoot(tree).dispatchEvent(keyDownEvent);
+  tree.dispatchEvent(keyDownEvent);
 }
 
 function simulateDoubleClick(element: HTMLElement) {
   element.dispatchEvent(new MouseEvent('dblclick', {
+    bubbles: true,
+    composed: true,
+  }));
+}
+
+function simulateRightClick(element: HTMLElement) {
+  element.dispatchEvent(new MouseEvent('mousedown', {
+    button: 2,
     bubbles: true,
     composed: true,
   }));
@@ -552,6 +560,7 @@ export async function testSelectTreeItemByClick(done: () => void) {
   // item1 should be selected, not expanded.
   assertFalse(item1.expanded);
   assertTrue(item1.selected);
+  assertTrue(checkFocusedItemToBe(tree, 'item1'));
 
   done();
 }
@@ -568,6 +577,7 @@ export async function testExpandTreeItemByDoubleClick(done: () => void) {
 
   // item1 should be expanded.
   assertTrue(item1.expanded);
+  assertTrue(checkFocusedItemToBe(tree, 'item1'));
 
   // Double click again on item1.
   simulateDoubleClick(item1);
@@ -575,6 +585,77 @@ export async function testExpandTreeItemByDoubleClick(done: () => void) {
 
   // item1 should be collapsed.
   assertFalse(item1.expanded);
+  assertTrue(checkFocusedItemToBe(tree, 'item1'));
+
+  done();
+}
+
+/** Tests tree item can be focused by right click. */
+export async function testFocusTreeItemByRightClick(done: () => void) {
+  const tree = await getTree();
+  await appendDirectTreeItems(tree);
+
+  // Right click on item1.
+  const item1 = getTreeItemById('item1');
+  simulateRightClick(item1);
+  await waitForElementUpdate(item1);
+
+  // item1 should be focused.
+  assertTrue(checkFocusedItemToBe(tree, 'item1'));
+
+  done();
+}
+
+export async function testClickHostShouldFocusItem(done: () => void) {
+  const tree = await getTree();
+  await appendDirectTreeItems(tree);
+
+  // Make item2 focusable.
+  const item2 = getTreeItemById('item2');
+  tree.focusedItem = item2;
+
+  // item2 should not be focused yet.
+  assertNotEquals('item2', document.activeElement!.id);
+
+  // Click the tree will make item2 become focused.
+  tree.click();
+  assertEquals('item2', document.activeElement!.id);
+
+  done();
+}
+
+export async function testRightClickHostShouldFocusItem(done: () => void) {
+  const tree = await getTree();
+  await appendDirectTreeItems(tree);
+
+  // Make item2 focusable.
+  const item2 = getTreeItemById('item2');
+  tree.focusedItem = item2;
+
+  // item2 should not be focused yet.
+  assertNotEquals('item2', document.activeElement!.id);
+
+  // Right click the tree will make item2 become focused.
+  simulateRightClick(tree);
+  assertEquals('item2', document.activeElement!.id);
+
+  done();
+}
+
+export async function testDoubleClickHostShouldFocusItem(done: () => void) {
+  const tree = await getTree();
+  await appendDirectTreeItems(tree);
+
+  // Make item2 focusable.
+  const item2 = getTreeItemById('item2');
+  tree.focusedItem = item2;
+
+  // item2 should not be focused yet.
+  assertNotEquals('item2', document.activeElement!.id);
+
+  // Double click the tree will make item2 become focused.
+  simulateDoubleClick(tree);
+  assertEquals('item2', document.activeElement!.id);
 
   done();
 }
@@ -685,6 +766,30 @@ export async function testSelectionUpdateAfterRemoving(done: () => void) {
 
   // The selected item should be null now.
   assertEquals(null, tree.selectedItem);
+
+  done();
+}
+
+/** Tests removing a focused tree item should update focusedItem properly. */
+export async function testFocusUpdateAfterRemoving(done: () => void) {
+  const tree = await getTree();
+  await appendDirectTreeItems(tree);
+
+  // Focus item2.
+  const item2 = getTreeItemById('item2');
+  tree.focusedItem = item2;
+
+  // Select item1.
+  const item1 = getTreeItemById('item1');
+  item1.selected = true;
+  await waitForElementUpdate(item1);
+
+  // Remove item2.
+  tree.removeChild(item2);
+  await waitForElementUpdate(tree);
+
+  // The selected item should be the selected item now.
+  assertEquals('item1', tree.focusedItem.id);
 
   done();
 }

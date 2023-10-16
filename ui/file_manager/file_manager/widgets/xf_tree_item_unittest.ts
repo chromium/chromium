@@ -426,6 +426,31 @@ export async function testRemoveSelectedItem(done: () => void) {
   done();
 }
 
+/** Tests removal of the focused item. */
+export async function testRemoveFocusedItem(done: () => void) {
+  await setUpNestedTreeItems();
+  const tree = getTree();
+
+  // Focus item1a.
+  const item1a = getTreeItemById('item1a');
+  tree.focusedItem = item1a;
+
+  // Select item1b.
+  const item1b = getTreeItemById('item1b');
+  item1b.selected = true;
+  await waitForElementUpdate(item1b);
+
+  // Remove item1a.
+  const item1 = getTreeItemById('item1');
+  item1.removeChild(item1a);
+  await waitForElementUpdate(item1);
+
+  // The focused item should be the selected item now.
+  assertEquals('item1b', tree.focusedItem.id);
+
+  done();
+}
+
 /** Tests that iconSet has higher priority than icon property. */
 export async function testIconSetIgnoreIcon(done: () => void) {
   await setUpSingleTreeItem();
