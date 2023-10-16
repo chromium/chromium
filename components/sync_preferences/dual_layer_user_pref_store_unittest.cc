@@ -2304,7 +2304,7 @@ TEST_F(
 using DualLayerUserPrefStoreHistoryOptInTest = DualLayerUserPrefStoreTest;
 
 TEST_F(DualLayerUserPrefStoreHistoryOptInTest,
-       ShouldNotGetHistorySensitivePrefFromAccountStoreIfHistorySyncOff) {
+       ShouldReturnHistorySensitivePrefFromLocalStoreIfHistorySyncOff) {
   store()->SetIsHistorySyncEnabledForTest(false);
 
   local_store()->SetValueSilently(kHistorySensitivePrefName,
@@ -2317,9 +2317,43 @@ TEST_F(DualLayerUserPrefStoreHistoryOptInTest,
       ValueInStoreIs(*store(), kHistorySensitivePrefName, "local value"));
 
   // Check GetMutableValue().
-  base::Value* value = nullptr;
-  ASSERT_TRUE(store()->GetMutableValue(kHistorySensitivePrefName, &value));
-  EXPECT_EQ(*value, base::Value("local value"));
+  {
+    base::Value* value = nullptr;
+    ASSERT_TRUE(store()->GetMutableValue(kHistorySensitivePrefName, &value));
+    EXPECT_EQ(*value, base::Value("local value"));
+  }
+
+  // Check GetValues().
+  {
+    base::Value::Dict values = store()->GetValues();
+    base::Value* value = values.FindByDottedPath(kHistorySensitivePrefName);
+    ASSERT_TRUE(value);
+    EXPECT_EQ(*value, base::Value("local value"));
+  }
+
+  // Verify that a change in history sync opt-in is reflected.
+  store()->SetIsHistorySyncEnabledForTest(true);
+
+  EXPECT_TRUE(
+      ValueInStoreIs(*store(), kHistorySensitivePrefName, "account value"));
+}
+
+TEST_F(DualLayerUserPrefStoreHistoryOptInTest,
+       ShouldNotGetHistorySensitivePrefFromAccountStoreIfHistorySyncOff) {
+  store()->SetIsHistorySyncEnabledForTest(false);
+
+  account_store()->SetValueSilently(kHistorySensitivePrefName,
+                                    base::Value("account value"), 0);
+
+  // Check GetValue().
+  EXPECT_TRUE(ValueInStoreIsAbsent(*store(), kHistorySensitivePrefName));
+
+  // Check GetMutableValue().
+  EXPECT_FALSE(store()->GetMutableValue(kHistorySensitivePrefName, nullptr));
+
+  // Check GetValues().
+  base::Value::Dict values = store()->GetValues();
+  EXPECT_FALSE(values.FindByDottedPath(kHistorySensitivePrefName));
 
   // Verify that a change in history sync opt-in is reflected.
   store()->SetIsHistorySyncEnabledForTest(true);
@@ -2342,9 +2376,19 @@ TEST_F(DualLayerUserPrefStoreHistoryOptInTest,
       ValueInStoreIs(*store(), kHistorySensitivePrefName, "account value"));
 
   // Check GetMutableValue().
-  base::Value* value = nullptr;
-  ASSERT_TRUE(store()->GetMutableValue(kHistorySensitivePrefName, &value));
-  EXPECT_EQ(*value, base::Value("account value"));
+  {
+    base::Value* value = nullptr;
+    ASSERT_TRUE(store()->GetMutableValue(kHistorySensitivePrefName, &value));
+    EXPECT_EQ(*value, base::Value("account value"));
+  }
+
+  // Check GetValues().
+  {
+    base::Value::Dict values = store()->GetValues();
+    base::Value* value = values.FindByDottedPath(kHistorySensitivePrefName);
+    ASSERT_TRUE(value);
+    EXPECT_EQ(*value, base::Value("account value"));
+  }
 }
 
 TEST_F(DualLayerUserPrefStoreHistoryOptInTest,
@@ -2616,6 +2660,29 @@ TEST_F(DualLayerUserPrefStoreHistoryOptInTest,
   // Should not lead to notification.
   sync_service.FireStateChanged();
   ASSERT_TRUE(store()->IsHistorySyncEnabledForTest());
+
+  store()->RemoveObserver(&observer);
+}
+
+TEST_F(DualLayerUserPrefStoreHistoryOptInTest,
+       ShouldRemoveSensitivePrefsFromAccountStoreUponDisableIfHistorySyncOff) {
+  store()->SetIsHistorySyncEnabledForTest(false);
+
+  base::Value account_value("account value");
+  account_store()->SetValueSilently(kHistorySensitivePrefName,
+                                    account_value.Clone(), 0);
+
+  testing::StrictMock<MockPrefStoreObserver> observer;
+  store()->AddObserver(&observer);
+
+  // No call should be made for `kHistorySensitivePrefName` since history sync
+  // is off and the effective is thus unchanged.
+  EXPECT_CALL(observer, OnPrefValueChanged(kHistorySensitivePrefName)).Times(0);
+
+  store()->DisableTypeAndClearAccountStore(syncer::PREFERENCES);
+
+  EXPECT_TRUE(
+      ValueInStoreIsAbsent(*account_store(), kHistorySensitivePrefName));
 
   store()->RemoveObserver(&observer);
 }
