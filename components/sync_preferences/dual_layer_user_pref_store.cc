@@ -20,6 +20,7 @@
 #include "components/sync_preferences/pref_model_associator_client.h"
 #include "components/sync_preferences/preferences_merge_helper.h"
 #include "components/sync_preferences/syncable_prefs_database.h"
+#include "third_party/abseil-cpp/absl/types/optional.h"
 
 namespace sync_preferences {
 
@@ -726,17 +727,44 @@ void DualLayerUserPrefStore::OnStateChanged(syncer::SyncService* sync_service) {
     return;
   }
 
-  is_history_sync_enabled_ = is_history_sync_enabled;
-
   if (!pref_model_associator_client_) {
+    is_history_sync_enabled_ = is_history_sync_enabled;
     return;
   }
 
+  // Store the old values for sensitive prefs in a map and only inform the
+  // observers if the effective values change.
+  // Note: absl::optional is used as the value type since it makes the
+  // comparison with the new values easier.
+  std::map<std::string, absl::optional<base::Value>> old_values;
   for (const std::string& pref_name : GetPrefNamesInAccountStore()) {
     auto metadata = pref_model_associator_client_->GetSyncablePrefsDatabase()
                         .GetSyncablePrefMetadata(pref_name);
     CHECK(metadata.has_value());
+    // Add effective value for sensitive prefs to `old_values`.
     if (metadata->is_history_opt_in_required()) {
+      if (const base::Value* value = nullptr; GetValue(pref_name, &value)) {
+        old_values.emplace(pref_name, value->Clone());
+      } else {
+        // Put in absl::nullopt to mark pref not existing in the store. This
+        // helps avoid an extra call to GetPrefNamesInAccount() later.
+        old_values.emplace(pref_name, absl::nullopt);
+      }
+    }
+  }
+
+  is_history_sync_enabled_ = is_history_sync_enabled;
+
+  // The history sync state has changed. Check for any change in the effective
+  // values of any of the sensitive prefs as a consequence.
+  for (const auto& [pref_name, old_value] : old_values) {
+    absl::optional<base::Value> new_value;
+    if (const base::Value* value = nullptr; GetValue(pref_name, &value)) {
+      new_value = value->Clone();
+    }
+
+    // Only notify the observers if the effective value is changing.
+    if (old_value != new_value) {
       for (PrefStore::Observer& observer : observers_) {
         observer.OnPrefValueChanged(pref_name);
       }
