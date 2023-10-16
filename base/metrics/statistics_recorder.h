@@ -445,6 +445,14 @@ class BASE_EXPORT StatisticsRecorder {
   static SrLock& GetLock() { return lock_.Get(); }
   static void AssertLockHeld() { lock_.Get().AssertAcquired(); }
 
+  // Returns the histogram registered with |hash|, if there is one. Returns
+  // nullptr otherwise.
+  // Note: |name| is only used in DCHECK builds to assert that there was no
+  // collision (i.e. different histograms with the same hash).
+  HistogramBase* FindHistogramByHashInternal(uint64_t hash,
+                                             StringPiece name) const
+      EXCLUSIVE_LOCKS_REQUIRED(GetLock());
+
   // Adds an observer to be notified when a new sample is recorded on the
   // histogram referred to by |histogram_name|. Can be called before or after
   // the histogram is created.
@@ -464,13 +472,15 @@ class BASE_EXPORT StatisticsRecorder {
 
   typedef std::vector<WeakPtr<HistogramProvider>> HistogramProviders;
 
-  typedef std::unordered_map<StringPiece, HistogramBase*> HistogramMap;
+  // A map of histogram name hash (see HashMetricName()) to histogram object.
+  typedef std::unordered_map<uint64_t, HistogramBase*> HistogramMap;
 
-  // A map of histogram name to registered observers. If the histogram isn't
-  // created yet, the observers will be added after creation.
+  // A map of histogram name hash (see HashMetricName()) to registered observers
+  // If the histogram isn't created yet, the observers will be added after
+  // creation.
   using HistogramSampleObserverList =
       base::ObserverListThreadSafe<ScopedHistogramSampleObserver>;
-  typedef std::unordered_map<std::string,
+  typedef std::unordered_map<uint64_t,
                              scoped_refptr<HistogramSampleObserverList>>
       ObserverMap;
 
@@ -513,6 +523,8 @@ class BASE_EXPORT StatisticsRecorder {
   raw_ptr<StatisticsRecorder> previous_ = nullptr;
 
   // Global lock for internal synchronization.
+  // Note: Care must be taken to not read or write anything to persistent memory
+  // while holding this lock, as that could cause a file I/O stall.
   static LazyInstance<SrLock>::Leaky lock_;
 
   // Global lock for internal synchronization of histogram snapshots.
