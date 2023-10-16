@@ -40,4 +40,22 @@ AppInstallerResult RunApplicationInstaller(
              : AppInstallerResult(kErrorApplicationInstallerFailed, exit_code);
 }
 
+std::string LookupString(const base::FilePath& path,
+                         const std::string& keyname,
+                         const std::string& default_value) {
+  absl::optional<std::string> value = ReadValueFromPlist(path, keyname);
+  return value ? *value : default_value;
+}
+
+base::Version LookupVersion(const base::FilePath& path,
+                            const std::string& keyname,
+                            const base::Version& default_value) {
+  absl::optional<std::string> value = ReadValueFromPlist(path, keyname);
+  if (value) {
+    base::Version value_version(*value);
+    return value_version.IsValid() ? value_version : default_value;
+  }
+  return default_value;
+}
+
 }  // namespace updater

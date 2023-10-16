@@ -530,4 +530,16 @@ AppInstallerResult RunApplicationInstaller(
       GetInstallerOutcome(app_info.scope, app_info.app_id), exit_code);
 }
 
+std::string LookupString(const base::FilePath& path,
+                         const std::string& keyname,
+                         const std::string& default_value) {
+  return default_value;
+}
+
+base::Version LookupVersion(const base::FilePath& path,
+                            const std::string& keyname,
+                            const base::Version& default_value) {
+  return default_value;
+}
+
 }  // namespace updater

@@ -30,17 +30,27 @@
 #include "third_party/abseil-cpp/absl/types/optional.h"
 
 namespace updater {
+
 namespace {
 
-// Returns the full path to the installation directory for the application
-// identified by the |app_id|.
-absl::optional<base::FilePath> GetAppInstallDir(UpdaterScope scope,
-                                                const std::string& app_id) {
-  absl::optional<base::FilePath> app_install_dir = GetInstallDirectory(scope);
-  if (!app_install_dir) {
-    return absl::nullopt;
-  }
-  return app_install_dir->AppendASCII(kAppsDir).AppendASCII(app_id);
+// Runs in thread pool, can block.
+AppInfo MakeAppInfo(UpdaterScope scope,
+                    const std::string& app_id,
+                    const base::Version& pv,
+                    const base::FilePath& pv_path,
+                    const std::string& pv_key,
+                    const std::string& ap,
+                    const base::FilePath& ap_path,
+                    const std::string& ap_key,
+                    const std::string& brand,
+                    const base::FilePath& brand_path,
+                    const std::string& brand_key,
+                    const base::FilePath& ec_path) {
+  const base::Version pv_lookup = LookupVersion(pv_path, pv_key, pv);
+  return AppInfo(scope, app_id, LookupString(ap_path, ap_key, ap),
+                 LookupString(brand_path, brand_key, brand),
+                 pv_lookup.IsValid() ? pv_lookup : base::Version(kNullVersion),
+                 ec_path);
 }
 
 }  // namespace
@@ -83,27 +93,37 @@ Installer::Installer(
       policy_same_version_update_(policy_same_version_update),
       persisted_data_(persisted_data),
       crx_verifier_format_(crx_verifier_format),
-      usage_stats_enabled_(persisted_data->GetUsageStatsEnabled()) {}
+      usage_stats_enabled_(persisted_data->GetUsageStatsEnabled()),
+      app_info_(AppInfo(GetUpdaterScope(), app_id, {}, {}, {}, {})) {}
 
 Installer::~Installer() = default;
 
-update_client::CrxComponent Installer::MakeCrxComponent() {
+void Installer::MakeCrxComponent(
+    base::OnceCallback<void(update_client::CrxComponent)> callback) {
+  base::ThreadPool::PostTaskAndReplyWithResult(
+      FROM_HERE, {base::MayBlock()},
+      base::BindOnce(&MakeAppInfo, updater_scope_, app_id_,
+                     persisted_data_->GetProductVersion(app_id_),
+                     persisted_data_->GetProductVersionPath(app_id_),
+                     persisted_data_->GetProductVersionKey(app_id_),
+                     persisted_data_->GetAP(app_id_),
+                     persisted_data_->GetAPPath(app_id_),
+                     persisted_data_->GetAPKey(app_id_),
+                     persisted_data_->GetBrandCode(app_id_),
+                     persisted_data_->GetBrandPath(app_id_), "KSBrandID",
+                     persisted_data_->GetExistenceCheckerPath(app_id_)),
+      base::BindOnce(&Installer::MakeCrxComponentFromAppInfo, this,
+                     std::move(callback)));
+}
+
+void Installer::MakeCrxComponentFromAppInfo(
+    base::OnceCallback<void(update_client::CrxComponent)> callback,
+    const AppInfo& app_info) {
   DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
 
   VLOG(1) << __func__ << " for " << app_id_;
 
-  // |pv| is the version of the registered app, persisted in prefs, and used
-  // in the update checks and pings.
-  const auto pv = persisted_data_->GetProductVersion(app_id_);
-  if (pv.IsValid()) {
-    pv_ = pv;
-    checker_path_ = persisted_data_->GetExistenceCheckerPath(app_id_);
-    fingerprint_ = persisted_data_->GetFingerprint(app_id_);
-    ap_ = persisted_data_->GetAP(app_id_);
-    brand_ = persisted_data_->GetBrandCode(app_id_);
-  } else {
-    pv_ = base::Version(kNullVersion);
-  }
+  app_info_ = app_info;
 
   update_client::CrxComponent component;
   component.installer = scoped_refptr<Installer>(this);
@@ -117,11 +137,11 @@ update_client::CrxComponent Installer::MakeCrxComponent() {
     component.install_data_index = install_data_index_;
   }
 
-  component.ap = ap_;
-  component.brand = persisted_data_->GetBrandCode(app_id_);
+  component.ap = app_info_.ap;
+  component.brand = app_info_.brand;
   component.name = app_id_;
-  component.version = pv_;
-  component.fingerprint = fingerprint_;
+  component.version = app_info_.version;
+  component.fingerprint = persisted_data_->GetFingerprint(app_id_);
   component.channel = target_channel_;
   component.rollback_allowed = rollback_allowed_;
   component.same_version_update_allowed =
@@ -130,30 +150,7 @@ update_client::CrxComponent Installer::MakeCrxComponent() {
   component.target_version_prefix = target_version_prefix_;
   component.updates_enabled = !update_disabled_;
 
-  return component;
-}
-
-void Installer::DeleteOlderInstallPaths() {
-  base::ScopedBlockingCall scoped_blocking_call(FROM_HERE,
-                                                base::BlockingType::WILL_BLOCK);
-
-  const absl::optional<base::FilePath> app_install_dir =
-      GetAppInstallDir(updater_scope_, app_id_);
-  if (!app_install_dir || !base::PathExists(*app_install_dir)) {
-    return;
-  }
-
-  base::FileEnumerator(*app_install_dir, false,
-                       base::FileEnumerator::DIRECTORIES)
-      .ForEach([this](const base::FilePath& path) {
-        const base::Version version_dir(path.BaseName().MaybeAsASCII());
-
-        // Mark for deletion any valid versioned directory except the directory
-        // for the currently registered app.
-        if (version_dir.IsValid() && version_dir.CompareTo(pv_)) {
-          base::DeletePathRecursively(path);
-        }
-      });
+  std::move(callback).Run(component);
 }
 
 Installer::Result Installer::InstallHelper(
@@ -183,8 +180,7 @@ Installer::Result Installer::InstallHelper(
   // The task sequencing guarantees that the prefs will be updated by the
   // time another CrxDataCallback is invoked, which needs updated values.
   return RunApplicationInstaller(
-      AppInfo(updater_scope_, app_id_, ap_, brand_, pv_, checker_path_),
-      application_installer, install_params->arguments,
+      app_info_, application_installer, install_params->arguments,
       WriteInstallerDataToTempFile(unpack_path,
                                    client_install_data_.empty()
                                        ? install_params->server_install_data
@@ -199,7 +195,6 @@ void Installer::InstallWithSyncPrimitives(
     Callback callback) {
   base::ScopedBlockingCall scoped_blocking_call(FROM_HERE,
                                                 base::BlockingType::WILL_BLOCK);
-  DeleteOlderInstallPaths();
   const auto result = InstallHelper(unpack_path, std::move(install_params),
                                     std::move(progress_callback));
   base::DeletePathRecursively(unpack_path);
@@ -227,34 +222,11 @@ void Installer::Install(const base::FilePath& unpack_path,
 
 bool Installer::GetInstalledFile(const std::string& file,
                                  base::FilePath* installed_file) {
-  base::ScopedBlockingCall scoped_blocking_call(FROM_HERE,
-                                                base::BlockingType::WILL_BLOCK);
-  if (pv_ == base::Version(kNullVersion)) {
-    return false;  // No component has been installed yet.
-  }
-
-  const auto install_dir = GetCurrentInstallDir();
-  if (!install_dir) {
-    return false;
-  }
-
-  *installed_file = install_dir->AppendASCII(file);
-  return true;
+  return false;
 }
 
 bool Installer::Uninstall() {
   return false;
-}
-
-absl::optional<base::FilePath> Installer::GetCurrentInstallDir() const {
-  base::ScopedBlockingCall scoped_blocking_call(FROM_HERE,
-                                                base::BlockingType::WILL_BLOCK);
-  const absl::optional<base::FilePath> path =
-      GetAppInstallDir(updater_scope_, app_id_);
-  if (!path) {
-    return absl::nullopt;
-  }
-  return path->AppendASCII(pv_.GetString());
 }
 
 }  // namespace updater
