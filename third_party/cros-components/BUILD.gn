@@ -86,6 +86,7 @@ rewrite_imports("cros_components_ts") {
   deps = [
     ":cros_components__ts_library",
     ":rename_tsconfig",
+    "//third_party/material_web_components:mwc_rewrite",
   ]
 }
 
