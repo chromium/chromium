@@ -13,7 +13,7 @@
 #include "base/functional/callback.h"
 #include "base/functional/callback_helpers.h"
 #include "base/logging.h"
-#include "base/metrics/histogram_macros.h"
+#include "base/metrics/histogram_functions.h"
 #include "base/numerics/clamped_math.h"
 #include "base/task/single_thread_task_runner.h"
 #include "base/trace_event/common/trace_event_common.h"
@@ -756,8 +756,8 @@ void VideoEncoder::ContinueConfigureWithGpuFactories(
 
       self->ReportError(error_message.c_str(), std::move(status));
     } else {
-      UMA_HISTOGRAM_ENUMERATION("Blink.WebCodecs.VideoEncoder.Codec", codec,
-                                media::VideoCodec::kMaxValue);
+      base::UmaHistogramEnumeration("Blink.WebCodecs.VideoEncoder.Codec",
+                                    codec);
     }
     req->EndTracing();
 
