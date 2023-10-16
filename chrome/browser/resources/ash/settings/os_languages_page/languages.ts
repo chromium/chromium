@@ -18,6 +18,7 @@ import 'chrome://resources/cr_components/settings_prefs/prefs.js';
 import {PrefsMixin} from 'chrome://resources/cr_components/settings_prefs/prefs_mixin.js';
 import {CrSettingsPrefs} from 'chrome://resources/cr_components/settings_prefs/prefs_types.js';
 import {assert} from 'chrome://resources/js/assert.js';
+import {loadTimeData} from 'chrome://resources/js/load_time_data.js';
 import {PromiseResolver} from 'chrome://resources/js/promise_resolver.js';
 import {PolymerElement} from 'chrome://resources/polymer/v3_0/polymer/polymer_bundled.min.js';
 
@@ -329,12 +330,14 @@ export class SettingsLanguagesElement extends SettingsLanguagesElementBase
       this.languageSettingsPrivate_.getSpellcheckDictionaryStatuses().then(
           this.boundOnSpellcheckDictionariesChanged_);
 
-      // Poll language packs now to prevent test flakiness.
-      // Do so in the next microtask to prevent `connectedCallback()` from
-      // failing and stalling tests.
-      Promise.resolve().then(() => this.pollLanguagePacks_());
-      this.languagePackPollIntervalId = setInterval(
-          () => this.pollLanguagePacks_(), LANGUAGE_PACKS_POLLING_RATE_MS);
+      if (loadTimeData.getBoolean('languagePacksInSettingsEnabled')) {
+        // Poll language packs now to prevent test flakiness.
+        // Do so in the next microtask to prevent `connectedCallback()` from
+        // failing and stalling tests.
+        Promise.resolve().then(() => this.pollLanguagePacks_());
+        this.languagePackPollIntervalId = setInterval(
+            () => this.pollLanguagePacks_(), LANGUAGE_PACKS_POLLING_RATE_MS);
+      }
 
       this.resolver_.resolve(undefined);
     });
