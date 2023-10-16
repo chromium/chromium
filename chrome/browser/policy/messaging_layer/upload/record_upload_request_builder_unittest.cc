@@ -14,6 +14,7 @@
 #include "base/test/task_environment.h"
 #include "base/token.h"
 #include "base/uuid.h"
+#include "build/build_config.h"
 #include "chrome/browser/enterprise/browser_management/management_service_factory.h"
 #include "chrome/browser/policy/messaging_layer/upload/record_handler_impl.h"
 #include "chrome/browser/policy/messaging_layer/util/test_request_payload.h"
@@ -236,6 +237,7 @@ TEST_P(RecordUploadRequestBuilderTest, DenyPoorlyFormedEncryptedRecords) {
   EXPECT_THAT(record_dict.value(), IsRecordValid<>());
   EXPECT_TRUE(record_reservation.reserved());
 
+#if BUILDFLAG(IS_CHROMEOS)
   // Now, verify that generation guid is required when the device is in an
   // unmanaged state. The generation guid is not set, so we just need to ensure
   // the device is unmanaged.
@@ -255,6 +257,8 @@ TEST_P(RecordUploadRequestBuilderTest, DenyPoorlyFormedEncryptedRecords) {
 
   // Set the generation id - expect complete call.
   sequence_information->set_generation_guid(kGenerationGuid);
+#endif  // BUILDFLAG(IS_CHROMEOS)
+
   record_dict =
       EncryptedRecordDictionaryBuilder(record, record_reservation).Build();
 

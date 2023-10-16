@@ -10,7 +10,7 @@
 #include "base/task/sequenced_task_runner.h"
 #include "base/test/task_environment.h"
 #include "base/time/time.h"
-
+#include "build/build_config.h"
 #include "chrome/browser/enterprise/browser_management/management_service_factory.h"
 #include "chrome/browser/policy/messaging_layer/proto/synced/log_upload_event.pb.h"
 #include "chrome/browser/policy/messaging_layer/public/report_client_test_util.h"
@@ -221,13 +221,15 @@ EncryptedRecord ComposeEncryptedRecord(
     UploadSettings upload_settings,
     absl::optional<UploadTracker> upload_tracker) {
   static constexpr int64_t kGenerationId = 1234;
-  static const std::string kGenerationGuid =
-      base::Uuid::GenerateRandomV4().AsLowercaseString();
   EncryptedRecord encrypted_record;
   encrypted_record.set_encrypted_wrapped_record(data.data(), data.size());
   auto* sequence_information = encrypted_record.mutable_sequence_information();
   sequence_information->set_generation_id(kGenerationId);
+#if BUILDFLAG(IS_CHROMEOS)
+  static const std::string kGenerationGuid =
+      base::Uuid::GenerateRandomV4().AsLowercaseString();
   sequence_information->set_generation_guid(kGenerationGuid);
+#endif  // BUILDFLAG(IS_CHROMEOS)
   sequence_information->set_sequencing_id(0);
   sequence_information->set_priority(Priority::SECURITY);
   {

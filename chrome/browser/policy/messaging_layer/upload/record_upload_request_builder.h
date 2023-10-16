@@ -9,7 +9,7 @@
 
 #include "base/feature_list.h"
 #include "base/values.h"
-
+#include "build/build_config.h"
 #include "components/reporting/proto/synced/record.pb.h"
 #include "components/reporting/resources/resource_manager.h"
 #include "third_party/abseil-cpp/absl/types/optional.h"
@@ -34,9 +34,10 @@ namespace reporting {
 //         "generationId": 123456789,
 //         "priority": 1
 //         // The string value of the `generation_guid` may be empty for managed
-//         // devices, but will always have a value for unmanaged devices. It's
-//         // value, if present, must be a string of base::Uuid. See base/uuid.h
-//         // for format information.
+//         // ChromeOS devices or any non-ChromeOS devices, but will always have
+//         // a value for unmanaged ChromeOS devices. Its value, if present,
+//         // must be a string of base::Uuid. See base/uuid.h for format
+//         // information.
 //         "generation_guid": "xxxxxxxx-xxxx-4xxx-yxxx-xxxxxxxxxxxx"
 //       },
 //       "compressionInformation": {
@@ -167,7 +168,9 @@ class SequenceInformationDictionaryBuilder {
   static std::string_view GetSequencingIdPath();
   static std::string_view GetGenerationIdPath();
   static std::string_view GetPriorityPath();
+#if BUILDFLAG(IS_CHROMEOS)
   static std::string_view GetGenerationGuidPath();
+#endif  // BUILDFLAG(IS_CHROMEOS)
 
  private:
   absl::optional<base::Value::Dict> result_;

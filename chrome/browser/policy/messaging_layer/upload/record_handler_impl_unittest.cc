@@ -15,6 +15,7 @@
 #include "base/strings/string_number_conversions.h"
 #include "base/uuid.h"
 #include "base/values.h"
+#include "build/build_config.h"
 #include "chrome/browser/enterprise/browser_management/management_service_factory.h"
 #include "chrome/browser/policy/messaging_layer/public/report_client.h"
 #include "chrome/browser/policy/messaging_layer/public/report_client_test_util.h"
@@ -173,7 +174,9 @@ BuildTestRecordsVector(size_t number_of_test_records,
     auto* sequence_information =
         encrypted_record.mutable_sequence_information();
     sequence_information->set_generation_id(generation_id);
+#if BUILDFLAG(IS_CHROMEOS)
     sequence_information->set_generation_guid(generation_guid);
+#endif  // BUILDFLAG(IS_CHROMEOS)
     sequence_information->set_sequencing_id(i);
     sequence_information->set_priority(Priority::IMMEDIATE);
     ScopedReservation record_reservation(encrypted_record.ByteSizeLong(),
@@ -307,6 +310,7 @@ TEST_P(RecordHandlerImplTest, ContainsGenerationGuid) {
                       .Build();
   ASSERT_TRUE(response.has_value());
 
+#if BUILDFLAG(IS_CHROMEOS)
   // Verify generation guid exists and equals kGenerationGuid.
   ASSERT_THAT(response->FindStringByDottedPath(
                   "lastSucceedUploadedRecord.generationGuid"),
@@ -314,6 +318,7 @@ TEST_P(RecordHandlerImplTest, ContainsGenerationGuid) {
   EXPECT_THAT(*(response->FindStringByDottedPath(
                   "lastSucceedUploadedRecord.generationGuid")),
               StrEq(kGenerationGuid));
+#endif  // BUILDFLAG(IS_CHROMEOS)
 
   test_env_.SimulateCustomResponseForRequest(0, std::move(response.value()));
 
@@ -355,6 +360,7 @@ TEST_P(RecordHandlerImplTest, ValidGenerationGuid) {
   EXPECT_OK(result) << result.status();
 }
 
+#if BUILDFLAG(IS_CHROMEOS)
 TEST_P(RecordHandlerImplTest, InvalidGenerationGuid) {
   auto test_records = BuildTestRecordsVector(kNumTestRecords, kGenerationId,
                                              kGenerationGuid, memory_resource_);
@@ -387,6 +393,7 @@ TEST_P(RecordHandlerImplTest, InvalidGenerationGuid) {
   EXPECT_THAT(result.status(),
               Property(&Status::error_code, Eq(error::INTERNAL)));
 }
+#endif  // BUILDFLAG(IS_CHROMEOS)
 
 TEST_P(RecordHandlerImplTest, MissingGenerationGuidFromManagedDeviceIsOk) {
   // Set device as managed
@@ -427,6 +434,7 @@ TEST_P(RecordHandlerImplTest, MissingGenerationGuidFromManagedDeviceIsOk) {
   EXPECT_OK(result) << result.status();
 }
 
+#if BUILDFLAG(IS_CHROMEOS)
 TEST_P(RecordHandlerImplTest,
        MissingGenerationGuidFromUnmanagedDeviceReturnError) {
   // Set device as unmanaged
@@ -467,6 +475,7 @@ TEST_P(RecordHandlerImplTest,
   EXPECT_THAT(result.status(),
               Property(&Status::error_code, Eq(error::INTERNAL)));
 }
+#endif  // BUILDFLAG(IS_CHROMEOS)
 
 TEST_P(RecordHandlerImplTest, MissingSequenceInformation) {
   // test records that has one record with missing sequence information.

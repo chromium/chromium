@@ -76,6 +76,7 @@ static absl::optional<Priority> GetPriorityProtoFromSequenceInformationValue(
   return priority;
 }
 
+#if BUILDFLAG(IS_CHROMEOS)
 // Returns true if `generation_guid` is required and missing.
 // Returns false otherwise.
 static bool IsMissingGenerationGuid(const std::string* generation_guid) {
@@ -88,6 +89,7 @@ static bool IsMissingGenerationGuid(const std::string* generation_guid) {
   }
   return !generation_guid || generation_guid->empty();
 }
+#endif  // BUILDFLAG(IS_CHROMEOS)
 
 // Returns true if any required sequence info is missing. Returns
 // false otherwise.
@@ -97,11 +99,14 @@ static bool IsMissingSequenceInformation(
     const absl::optional<Priority> priority_result,
     const std::string* generation_guid) {
   return !sequencing_id || !generation_id || generation_id->empty() ||
+#if BUILDFLAG(IS_CHROMEOS)
+         IsMissingGenerationGuid(generation_guid) ||
+#endif  // BUILDFLAG(IS_CHROMEOS)
          !priority_result.has_value() ||
-         !Priority_IsValid(priority_result.value()) ||
-         IsMissingGenerationGuid(generation_guid);
+         !Priority_IsValid(priority_result.value());
 }
 
+#if BUILDFLAG(IS_CHROMEOS)
 // Returns true if `generation_guid` can be parsed as a GUID or if
 // `generation_guid` does not need to be parsed based on the type of device.
 // Returns false otherwise.
@@ -116,6 +121,7 @@ static bool GenerationGuidIsValid(const std::string& generation_guid) {
   }
   return base::Uuid::ParseCaseInsensitive(generation_guid).is_valid();
 }
+#endif  // BUILDFLAG(IS_CHROMEOS)
 
 // Processes LOG_UPLOAD event.
 void ProcessFileUpload(base::WeakPtr<FileUploadJob::Delegate> delegate,
@@ -326,6 +332,12 @@ RecordHandlerImpl::SequenceInformationValueToProto(
   }
   const auto [seq_id, gen_id] = parse_seq_id_gen_id_result.ValueOrDie();
 
+  SequenceInformation proto;
+  proto.set_sequencing_id(seq_id);
+  proto.set_generation_id(gen_id);
+  proto.set_priority(Priority(priority_result.value()));
+
+#if BUILDFLAG(IS_CHROMEOS)
   // If `generation_guid` does not exist, set it to be an empty string.
   const std::string gen_guid = generation_guid ? *generation_guid : "";
   if (!GenerationGuidIsValid(gen_guid)) {
@@ -335,12 +347,8 @@ RecordHandlerImpl::SequenceInformationValueToProto(
                       "SequenceInformation proto. Invalid generation guid : ",
                       value.DebugString()}));
   }
-
-  SequenceInformation proto;
-  proto.set_sequencing_id(seq_id);
-  proto.set_generation_id(gen_id);
-  proto.set_priority(Priority(priority_result.value()));
   proto.set_generation_guid(gen_guid);
+#endif  // BUILDFLAG(IS_CHROMEOS)
   return proto;
 }
 
@@ -469,6 +477,7 @@ void RecordHandlerImpl::ReportUploader::StartUpload() {
 void RecordHandlerImpl::ReportUploader::LogNumRecordsInUpload(
     size_t num_records) {
   DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
+#if BUILDFLAG(IS_CHROMEOS)
   if (policy::ManagementServiceFactory::GetForPlatform()
           ->HasManagementAuthority(
               policy::EnterpriseManagementAuthority::CLOUD_DOMAIN)) {
@@ -479,6 +488,8 @@ void RecordHandlerImpl::ReportUploader::LogNumRecordsInUpload(
     base::UmaHistogramCounts1000(
         "Browser.ERP.RecordsPerUploadFromUnmanagedDevice", num_records);
   }
+// TODO(b/304623373): Add separate UMA for non-ChromeOS devices.
+#endif  // BUILDFLAG(IS_CHROMEOS)
 }
 
 void RecordHandlerImpl::ReportUploader::ResumeUpload(size_t next_record) {
