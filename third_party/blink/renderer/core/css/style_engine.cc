@@ -2600,9 +2600,6 @@ void StyleEngine::ApplyUserRuleSetChanges(
     MarkPositionFallbackStylesDirty();
   }
 
-  // TODO(crbug.com/1463966): @view-transitions doesn't yet work from user
-  // stylesheets.
-
   InvalidateForRuleSetChanges(GetDocument(), changed_rule_sets,
                               changed_rule_flags, kInvalidateAllScopes);
 }

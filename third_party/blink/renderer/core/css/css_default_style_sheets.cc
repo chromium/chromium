@@ -200,6 +200,9 @@ void CSSDefaultStyleSheets::InitializeDefaultStyles() {
                                                 ScreenEval());
   default_print_style_->AddRulesFromSheet(DefaultStyleSheet(), PrintEval());
 
+  CHECK(default_html_style_->ViewTransitionsRules().empty())
+      << "@view-transitions is not implemented for the UA stylesheet.";
+
   VerifyUniversalRuleCount();
 }
 
