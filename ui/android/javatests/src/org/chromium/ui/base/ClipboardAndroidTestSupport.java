@@ -4,8 +4,8 @@
 
 package org.chromium.ui.base;
 
-import org.chromium.base.annotations.JNINamespace;
-import org.chromium.base.annotations.NativeMethods;
+import org.jni_zero.JNINamespace;
+import org.jni_zero.NativeMethods;
 
 /**
  * JNI methods for {@link ClipboardAndroidTest}.

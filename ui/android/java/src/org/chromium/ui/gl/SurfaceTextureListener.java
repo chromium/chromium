@@ -6,8 +6,8 @@ package org.chromium.ui.gl;
 
 import android.graphics.SurfaceTexture;
 
-import org.chromium.base.annotations.JNINamespace;
-import org.chromium.base.annotations.NativeMethods;
+import org.jni_zero.JNINamespace;
+import org.jni_zero.NativeMethods;
 
 /**
  * Listener to an android SurfaceTexture object for frame availability.

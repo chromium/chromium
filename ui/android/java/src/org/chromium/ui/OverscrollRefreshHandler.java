@@ -4,7 +4,7 @@
 
 package org.chromium.ui;
 
-import org.chromium.base.annotations.CalledByNative;
+import org.jni_zero.CalledByNative;
 
 /**
  * Simple interface allowing customized response to an overscrolling pull input.

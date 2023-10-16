@@ -7,11 +7,12 @@ package org.chromium.ui.base;
 import android.content.res.AssetFileDescriptor;
 import android.content.res.AssetManager;
 
+import org.jni_zero.CalledByNative;
+import org.jni_zero.JNINamespace;
+
 import org.chromium.base.ContextUtils;
 import org.chromium.base.LocaleUtils;
 import org.chromium.base.Log;
-import org.chromium.base.annotations.CalledByNative;
-import org.chromium.base.annotations.JNINamespace;
 
 import java.io.IOException;
 import java.util.Arrays;

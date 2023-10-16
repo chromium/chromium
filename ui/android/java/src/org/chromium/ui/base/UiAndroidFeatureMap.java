@@ -4,9 +4,10 @@
 
 package org.chromium.ui.base;
 
+import org.jni_zero.JNINamespace;
+import org.jni_zero.NativeMethods;
+
 import org.chromium.base.FeatureMap;
-import org.chromium.base.annotations.JNINamespace;
-import org.chromium.base.annotations.NativeMethods;
 
 /**
  * Java accessor for ui/android/ui_android_feature_map.cc state

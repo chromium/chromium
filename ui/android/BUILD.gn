@@ -411,7 +411,6 @@ android_library("ui_no_recycler_view_java") {
     ":ui_java_resources",
     ":ui_utils_java",
     "//base:base_java",
-    "//base:jni_java",
     "//build/android:build_java",
     "//components/url_formatter/android:url_formatter_java",
     "//third_party/android_deps:com_google_code_findbugs_jsr305_java",
@@ -424,6 +423,7 @@ android_library("ui_no_recycler_view_java") {
     "//third_party/androidx:androidx_core_core_java",
     "//third_party/androidx:androidx_interpolator_interpolator_java",
     "//third_party/androidx:androidx_vectordrawable_vectordrawable_animated_java",
+    "//third_party/jni_zero:jni_zero_java",
     "//ui/accessibility:ax_base_java",
     "//ui/base/cursor/mojom:cursor_type_java",
     "//ui/base/ime/mojom:mojom_java",
@@ -583,7 +583,6 @@ robolectric_binary("ui_junit_tests") {
     "//base:base_java",
     "//base:base_java_test_support",
     "//base:base_junit_test_support",
-    "//base:jni_java",
     "//base/test:test_support_java",
     "//third_party/androidx:androidx_annotation_annotation_java",
     "//third_party/androidx:androidx_appcompat_appcompat_resources_java",
@@ -594,6 +593,7 @@ robolectric_binary("ui_junit_tests") {
     "//third_party/androidx:androidx_test_ext_junit_java",
     "//third_party/androidx:androidx_test_runner_java",
     "//third_party/hamcrest:hamcrest_java",
+    "//third_party/jni_zero:jni_zero_java",
     "//third_party/mockito:mockito_java",
     "//ui/accessibility:ax_base_java",
     "//ui/android:ui_android_features_java",
@@ -648,8 +648,8 @@ android_library("clipboard_java_test_support") {
 
   deps = [
     "//base:base_java_test_support",
-    "//base:jni_java",
     "//build/android:build_java",
+    "//third_party/jni_zero:jni_zero_java",
   ]
 }
 
