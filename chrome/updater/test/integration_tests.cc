@@ -581,6 +581,14 @@ class IntegrationTest : public ::testing::Test {
 
 #endif  // BUILDFLAG(IS_WIN) && defined(ARCH_CPU_ARM64)
 
+// TODO(crbug.com/1492981): re-enable the test once it's not flaky with ASAN
+// build.
+#if defined(ADDRESS_SANITIZER)
+#define MAYBE_UpdateServiceStress DISABLED_UpdateServiceStress
+#else
+#define MAYBE_UpdateServiceStress UpdateServiceStress
+#endif
+
 // The project's position is that component builds are not portable outside of
 // the build directory. Therefore, installation of component builds is not
 // expected to work and these tests do not run on component builders.
@@ -1444,7 +1452,7 @@ TEST_F(IntegrationTest, MAYBE_InstallLowerVersion) {
 #endif
 #endif
 
-TEST_F(IntegrationTest, UpdateServiceStress) {
+TEST_F(IntegrationTest, MAYBE_UpdateServiceStress) {
   ASSERT_NO_FATAL_FAILURE(Install());
   ASSERT_NO_FATAL_FAILURE(ExpectInstalled());
   ASSERT_NO_FATAL_FAILURE(StressUpdateService());
