@@ -2005,6 +2005,11 @@ class CONTENT_EXPORT NavigationRequest
   // navigation.
   void RecordEarlyRenderFrameHostSwapMetrics();
 
+  // Helpers for GetTentativeOriginAtRequestTime and GetOriginToCommit.
+  std::pair<url::Origin, std::string>
+  GetOriginForURLLoaderFactoryUncheckedWithDebugInfo();
+  url::Origin GetOriginForURLLoaderFactoryUnchecked();
+
   // Never null. The pointee node owns this navigation request instance.
   // This field is not a raw_ptr because of incompatibilities with tracing
   // (TRACE_EVENT*), perfetto::TracedDictionary::Add and gmock/EXPECT_THAT.

@@ -738,83 +738,6 @@ network::mojom::RequestDestination GetDestinationFromFrameTreeNode(
   }
 }
 
-std::pair<url::Origin, std::string>
-GetOriginForURLLoaderFactoryUncheckedWithDebugInfo(
-    NavigationRequest* navigation_request) {
-  DCHECK(navigation_request);
-  const blink::mojom::CommonNavigationParams& common_params =
-      navigation_request->common_params();
-
-  if (navigation_request->DidEncounterError()) {
-    // Error pages commit in an opaque origin in the renderer process. If this
-    // NavigationRequest resulted in committing an error page, return an
-    // opaque origin that has precursor information consistent with the URL
-    // being requested.  Note: this is intentionally done first; cases like
-    // errors in srcdoc frames need not inherit the parent's origin for errors.
-    return std::make_pair(
-        url::Origin::Create(common_params.url).DeriveNewOpaqueOrigin(),
-        "error");
-  }
-
-  // Check if this is loadDataWithBaseUrl (which needs special treatment).
-  if (navigation_request->IsLoadDataWithBaseURL()) {
-    // A (potentially attacker-controlled) renderer process should not be able
-    // to use loadDataWithBaseUrl code path to initiate fetches on behalf of a
-    // victim origin (fetches controlled by attacker-provided
-    // |common_params.url| data: URL in a victim's origin from the
-    // attacker-provided |common_params.base_url_for_data_url|).  Browser
-    // process should verify that |common_params.base_url_for_data_url| is empty
-    // for all renderer-initiated navigations (e.g. see
-    // VerifyBeginNavigationCommonParams), but as a defense-in-depth this is
-    // also asserted below.
-    // History navigations are exempt from this rule because, although they can
-    // be renderer-initaited via the js history API, the renderer does not
-    // choose the url being navigated to. A renderer-initiated history
-    // navigation may therefore navigate back to a previous browser-initiated
-    // loadDataWithBaseUrl.
-    CHECK(navigation_request->browser_initiated() ||
-          NavigationTypeUtils::IsHistory(
-              navigation_request->common_params().navigation_type));
-
-    // loadDataWithBaseUrl submits a data: |common_params.url| (which has a
-    // opaque origin), but commits that URL as if it came from
-    // |common_params.base_url_for_data_url|.  See also
-    // https://crbug.com/976253.
-    return std::make_pair(
-        url::Origin::Create(common_params.base_url_for_data_url),
-        "load_data_with_base_url");
-  }
-
-  // Srcdoc subframes need to inherit their origin from their parent frame.
-  if (navigation_request->GetURL().IsAboutSrcdoc()) {
-    RenderFrameHostImpl* parent =
-        navigation_request->frame_tree_node()->parent();
-
-    // The only path for `parent` to be missing for a srcdoc navigation is if a
-    // renderer executes `location = "about:srcdoc` instead of embedding an
-    // <iframe srcdoc="..."></iframe> element; this is covered by
-    // NavigationBrowserTest.BlockedSrcDoc* tests.  However, we should never get
-    // here in such a case, because it would result in an error page which would
-    // be handled by the DidEncounterError() case above.
-    DCHECK(parent);
-    return std::make_pair(parent->GetLastCommittedOrigin(), "about_srcdoc");
-  }
-
-  // In cases not covered above, URLLoaderFactory should be associated with the
-  // origin of |common_params.url| and/or |common_params.initiator_origin|.
-  return std::make_pair(
-      url::Origin::Resolve(
-          common_params.url,
-          common_params.initiator_origin.value_or(url::Origin())),
-      "url_or_initiator");
-}
-
-url::Origin GetOriginForURLLoaderFactoryUnchecked(
-    NavigationRequest* navigation_request) {
-  return GetOriginForURLLoaderFactoryUncheckedWithDebugInfo(navigation_request)
-      .first;
-}
-
 // Returns true if the parent's COEP policy `parent_coep` should block a child
 // embedded in an <iframe> loaded with `child_coep` policy. The
 // `is_credentialless` parameter reflects whether the child will be loaded as a
@@ -2684,7 +2607,7 @@ void NavigationRequest::BeginNavigationImpl() {
 
       // Enforce cross-origin-opener-policy for about:blank, about:srcdoc and
       // MHTML iframe, before selecting the RenderFrameHost.
-      const url::Origin origin = GetOriginForURLLoaderFactoryUnchecked(this);
+      const url::Origin origin = GetOriginForURLLoaderFactoryUnchecked();
       const net::SchemefulSite site = net::SchemefulSite(origin);
 
       // Set the COOP origin in the policy container builder via the mutable
@@ -3270,7 +3193,7 @@ void NavigationRequest::OnRequestRedirected(
     // OnRequestFailedInternal has destroyed the NavigationRequest.
     return;
   }
-  const url::Origin origin = GetOriginForURLLoaderFactoryUnchecked(this);
+  const url::Origin origin = GetOriginForURLLoaderFactoryUnchecked();
   // Set the COOP origin in the policy container builder via the mutable
   // reference before coop is sent to EnforceCOOP.
   network::CrossOriginOpenerPolicy& coop =
@@ -7502,7 +7425,7 @@ NavigationRequest::GetOriginForURLLoaderFactoryBeforeResponseWithDebugInfo(
     network::mojom::WebSandboxFlags sandbox_flags) {
   // Calculate an approximation of the origin. The sandbox/csp are ignored.
   std::pair<url::Origin, std::string> origin_and_debug_info =
-      GetOriginForURLLoaderFactoryUncheckedWithDebugInfo(this);
+      GetOriginForURLLoaderFactoryUncheckedWithDebugInfo();
 
   // Apply sandbox flags.
   // See https://html.spec.whatwg.org/#sandboxed-origin-browsing-context-flag
@@ -9024,7 +8947,7 @@ void NavigationRequest::ComputePoliciesToCommit() {
   // to the origin of the creation URL, prior to opaquification.
   policy_container_builder_->SetIsOriginPotentiallyTrustworthy(
       network::IsOriginPotentiallyTrustworthy(
-          GetOriginForURLLoaderFactoryUnchecked(this)));
+          GetOriginForURLLoaderFactoryUnchecked()));
 
   policy_container_builder_->SetCrossOriginEmbedderPolicy(
       ComputeCrossOriginEmbedderPolicy());
@@ -9867,6 +9790,74 @@ void NavigationRequest::RecordEarlyRenderFrameHostSwapMetrics() {
         "Navigation.EarlyRenderFrameHostSwap.IsInOutermostMainFrame",
         IsInOutermostMainFrame());
   }
+}
+
+std::pair<url::Origin, std::string>
+NavigationRequest::GetOriginForURLLoaderFactoryUncheckedWithDebugInfo() {
+  if (DidEncounterError()) {
+    // Error pages commit in an opaque origin in the renderer process. If this
+    // NavigationRequest resulted in committing an error page, return an
+    // opaque origin that has precursor information consistent with the URL
+    // being requested.  Note: this is intentionally done first; cases like
+    // errors in srcdoc frames need not inherit the parent's origin for errors.
+    return std::make_pair(
+        url::Origin::Create(common_params().url).DeriveNewOpaqueOrigin(),
+        "error");
+  }
+
+  // Check if this is loadDataWithBaseUrl (which needs special treatment).
+  if (IsLoadDataWithBaseURL()) {
+    // A (potentially attacker-controlled) renderer process should not be able
+    // to use loadDataWithBaseUrl code path to initiate fetches on behalf of a
+    // victim origin (fetches controlled by attacker-provided
+    // |common_params.url| data: URL in a victim's origin from the
+    // attacker-provided |common_params.base_url_for_data_url|).  Browser
+    // process should verify that |common_params.base_url_for_data_url| is empty
+    // for all renderer-initiated navigations (e.g. see
+    // VerifyBeginNavigationCommonParams), but as a defense-in-depth this is
+    // also asserted below.
+    // History navigations are exempt from this rule because, although they can
+    // be renderer-initaited via the js history API, the renderer does not
+    // choose the url being navigated to. A renderer-initiated history
+    // navigation may therefore navigate back to a previous browser-initiated
+    // loadDataWithBaseUrl.
+    CHECK(browser_initiated() ||
+          NavigationTypeUtils::IsHistory(common_params().navigation_type));
+
+    // loadDataWithBaseUrl submits a data: |common_params.url| (which has a
+    // opaque origin), but commits that URL as if it came from
+    // |common_params.base_url_for_data_url|.  See also
+    // https://crbug.com/976253.
+    return std::make_pair(
+        url::Origin::Create(common_params().base_url_for_data_url),
+        "load_data_with_base_url");
+  }
+
+  // Srcdoc subframes need to inherit their origin from their parent frame.
+  if (GetURL().IsAboutSrcdoc()) {
+    RenderFrameHostImpl* parent = frame_tree_node()->parent();
+
+    // The only path for `parent` to be missing for a srcdoc navigation is if a
+    // renderer executes `location = "about:srcdoc` instead of embedding an
+    // <iframe srcdoc="..."></iframe> element; this is covered by
+    // NavigationBrowserTest.BlockedSrcDoc* tests.  However, we should never get
+    // here in such a case, because it would result in an error page which would
+    // be handled by the DidEncounterError() case above.
+    DCHECK(parent);
+    return std::make_pair(parent->GetLastCommittedOrigin(), "about_srcdoc");
+  }
+
+  // In cases not covered above, URLLoaderFactory should be associated with the
+  // origin of |common_params.url| and/or |common_params.initiator_origin|.
+  return std::make_pair(
+      url::Origin::Resolve(
+          common_params().url,
+          common_params().initiator_origin.value_or(url::Origin())),
+      "url_or_initiator");
+}
+
+url::Origin NavigationRequest::GetOriginForURLLoaderFactoryUnchecked() {
+  return GetOriginForURLLoaderFactoryUncheckedWithDebugInfo().first;
 }
 
 }  // namespace content
