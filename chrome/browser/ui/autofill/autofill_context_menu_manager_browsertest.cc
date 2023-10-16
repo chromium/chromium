@@ -101,6 +101,7 @@ class AutofillContextMenuManagerTest : public InProcessBrowserTest {
 
   void SetUpOnMainThread() override {
     InProcessBrowserTest::SetUpOnMainThread();
+    ASSERT_TRUE(ui_test_utils::NavigateToURL(browser(), GURL("about:blank")));
     personal_data_ = PersonalDataManagerFactory::GetForProfile(profile());
 
     AddAutofillProfile(test::GetFullProfile());
@@ -116,8 +117,6 @@ class AutofillContextMenuManagerTest : public InProcessBrowserTest {
             nullptr);
     autofill_context_menu_manager()->set_params_for_testing(
         CreateContextMenuParams());
-
-    ASSERT_TRUE(ui_test_utils::NavigateToURL(browser(), GURL("about:blank")));
   }
 
   void AddAutofillProfile(const autofill::AutofillProfile& profile) {
