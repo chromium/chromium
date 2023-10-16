@@ -59,7 +59,7 @@ using LogicalType =
 // It queries the internals of Windows::Foundation to obtain this information.
 template <typename TComplex>
 using StorageType = std::conditional_t<
-    std::is_convertible<AbiType<TComplex>, IUnknown*>::value,
+    std::is_convertible_v<AbiType<TComplex>, IUnknown*>,
     Microsoft::WRL::ComPtr<std::remove_pointer_t<AbiType<TComplex>>>,
     AbiType<TComplex>>;
 
@@ -67,7 +67,7 @@ using StorageType = std::conditional_t<
 // type is not a pointer to IUnknown.
 template <typename TComplex>
 using OptionalStorageType = std::conditional_t<
-    std::is_convertible<AbiType<TComplex>, IUnknown*>::value,
+    std::is_convertible_v<AbiType<TComplex>, IUnknown*>,
     Microsoft::WRL::ComPtr<std::remove_pointer_t<AbiType<TComplex>>>,
     absl::optional<AbiType<TComplex>>>;
 

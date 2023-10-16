@@ -15,7 +15,7 @@ namespace base::internal {
 // ASCII-specific tolower.  The standard library's tolower is locale sensitive,
 // so we don't want to use it here.
 template <typename CharT,
-          typename = std::enable_if_t<std::is_integral<CharT>::value>>
+          typename = std::enable_if_t<std::is_integral_v<CharT>>>
 constexpr CharT ToLowerASCII(CharT c) {
   return (c >= 'A' && c <= 'Z') ? (c + ('a' - 'A')) : c;
 }

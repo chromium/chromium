@@ -115,7 +115,7 @@ constexpr WStringPiece MakeWStringPiece(Iter begin, Iter end) {
 // ASCII-specific tolower.  The standard library's tolower is locale sensitive,
 // so we don't want to use it here.
 template <typename CharT,
-          typename = std::enable_if_t<std::is_integral<CharT>::value>>
+          typename = std::enable_if_t<std::is_integral_v<CharT>>>
 constexpr CharT ToLowerASCII(CharT c) {
   return internal::ToLowerASCII(c);
 }
@@ -123,7 +123,7 @@ constexpr CharT ToLowerASCII(CharT c) {
 // ASCII-specific toupper.  The standard library's toupper is locale sensitive,
 // so we don't want to use it here.
 template <typename CharT,
-          typename = std::enable_if_t<std::is_integral<CharT>::value>>
+          typename = std::enable_if_t<std::is_integral_v<CharT>>>
 CharT ToUpperASCII(CharT c) {
   return (c >= 'a' && c <= 'z') ? static_cast<CharT>(c + 'A' - 'a') : c;
 }

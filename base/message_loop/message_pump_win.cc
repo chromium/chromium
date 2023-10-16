@@ -51,7 +51,7 @@ DWORD GetSleepTimeoutMs(TimeTicks next_task_time,
 
   // A saturated_cast with an unsigned destination automatically clamps negative
   // values at zero.
-  static_assert(!std::is_signed<DWORD>::value, "DWORD is unexpectedly signed");
+  static_assert(!std::is_signed_v<DWORD>, "DWORD is unexpectedly signed");
   return saturated_cast<DWORD>(timeout_ms);
 }
 

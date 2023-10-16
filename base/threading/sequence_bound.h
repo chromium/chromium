@@ -648,7 +648,7 @@ class SequenceBound {
 
   template <typename ReturnType>
   using AsyncCallWithBoundArgsBuilder = typename std::conditional<
-      std::is_void<ReturnType>::value,
+      std::is_void_v<ReturnType>,
       AsyncCallWithBoundArgsBuilderVoid,
       AsyncCallWithBoundArgsBuilderDefault<ReturnType>>::type;
 
