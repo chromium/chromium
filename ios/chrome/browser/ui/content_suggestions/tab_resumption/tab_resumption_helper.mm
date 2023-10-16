@@ -20,6 +20,7 @@
 #import "ios/chrome/browser/synced_sessions/model/distant_session.h"
 #import "ios/chrome/browser/synced_sessions/model/distant_tab.h"
 #import "ios/chrome/browser/synced_sessions/model/synced_sessions.h"
+#import "ios/chrome/browser/tabs/tab_sync_util.h"
 #import "ios/chrome/browser/ui/content_suggestions/tab_resumption/tab_resumption_item.h"
 #import "ios/chrome/browser/ui/start_surface/start_surface_features.h"
 #import "ios/chrome/browser/ui/start_surface/start_surface_recent_tab_browser_agent.h"
@@ -49,21 +50,20 @@ void FetchFaviconForItem(
       });
 }
 
-// Creates a TabResumptionItem corresponding to the last synced tab then
+// Creates a TabResumptionItem corresponding to the last active distant tab then
 // asynchronously invokes `item_block_handler` and exits.
-void LastSyncedTabItemFromSession(
+void LastSyncedTabItemFromLastActiveDistantTab(
     const synced_sessions::DistantSession* session,
+    const synced_sessions::DistantTab* tab,
     FaviconLoader* favicon_loader,
     TabResumptionHelper::TabResumptionItemCompletionBlock item_block_handler) {
   CHECK(!IsTabResumptionEnabledForMostRecentTabOnly());
-
-  const synced_sessions::DistantTab* tab = session->tabs.front().get();
 
   TabResumptionItem* tab_resumption_item = [[TabResumptionItem alloc]
       initWithItemType:TabResumptionItemType::kLastSyncedTab];
   tab_resumption_item.sessionName = base::SysUTF8ToNSString(session->name);
   tab_resumption_item.tabTitle = base::SysUTF16ToNSString(tab->title);
-  tab_resumption_item.syncedTime = session->modified_time;
+  tab_resumption_item.syncedTime = tab->last_active_time;
   tab_resumption_item.tabURL = tab->virtual_url;
 
   // Fetch the favicon.
@@ -132,15 +132,17 @@ void TabResumptionHelper::LastTabResumptionItem(
     }
   }
 
-  const synced_sessions::DistantSession* session;
+  const synced_sessions::DistantSession* session = nullptr;
+  const synced_sessions::DistantTab* tab = nullptr;
   auto const synced_sessions =
       std::make_unique<synced_sessions::SyncedSessions>(session_sync_service_);
   if (!IsTabResumptionEnabledForMostRecentTabOnly()) {
-    if (synced_sessions->GetSessionCount()) {
-      // Get the last synced session and tab.
-      session = synced_sessions->GetSession(0);
-      // TODO(crbug.com/1478156): Add restrictions.
-      last_synced_tab_synced_time = session->modified_time;
+    LastActiveDistantTab last_distant_tab = GetLastActiveDistantTab(
+        synced_sessions.get(), TabResumptionForXDevicesTimeThreshold());
+    if (last_distant_tab.tab) {
+      session = last_distant_tab.session;
+      tab = last_distant_tab.tab;
+      last_synced_tab_synced_time = last_distant_tab.tab->last_active_time;
     }
   }
 
@@ -150,7 +152,8 @@ void TabResumptionHelper::LastTabResumptionItem(
     return;
   } else if (last_synced_tab_synced_time > most_recent_tab_opened_time) {
     CHECK(!IsTabResumptionEnabledForMostRecentTabOnly());
-    LastSyncedTabItemFromSession(session, favicon_loader_, item_block_handler);
+    LastSyncedTabItemFromLastActiveDistantTab(session, tab, favicon_loader_,
+                                              item_block_handler);
   } else if (can_show_most_recent_item_) {
     MostRecentTabItemFromWebState(most_recent_tab, most_recent_tab_opened_time,
                                   favicon_loader_, item_block_handler);

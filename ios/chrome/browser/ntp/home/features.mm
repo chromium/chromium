@@ -6,6 +6,7 @@
 
 #import "base/metrics/field_trial.h"
 #import "base/metrics/field_trial_params.h"
+#import "base/time/time.h"
 #import "components/prefs/pref_service.h"
 #import "ios/chrome/browser/shared/model/application_context/application_context.h"
 
@@ -45,6 +46,8 @@ const char kTabResumptionParameterName[] = "variant";
 const char kTabResumptionMostRecentTabOnlyParam[] =
     "tab-resumption-recent-tab-only";
 const char kTabResumptionAllTabsParam[] = "tab-resumption-all-tabs";
+const char kTabResumptionAllTabsOneDayThresholdParam[] =
+    "tab-resumption-all-tabs-one-day-threshold";
 
 bool IsDiscoverFeedEnabled() {
   return base::FeatureList::IsEnabled(kDiscoverFeedInNtp);
@@ -66,7 +69,18 @@ bool IsTabResumptionEnabledForMostRecentTabOnly() {
   CHECK(IsTabResumptionEnabled());
   std::string feature_param = base::GetFieldTrialParamValueByFeature(
       kTabResumption, kTabResumptionParameterName);
-  return feature_param != kTabResumptionAllTabsParam;
+  return feature_param == kTabResumptionMostRecentTabOnlyParam;
+}
+
+const base::TimeDelta TabResumptionForXDevicesTimeThreshold() {
+  CHECK(!IsTabResumptionEnabledForMostRecentTabOnly());
+
+  std::string feature_param = base::GetFieldTrialParamValueByFeature(
+      kTabResumption, kTabResumptionParameterName);
+  if (feature_param == kTabResumptionAllTabsOneDayThresholdParam) {
+    return base::Days(1);
+  }
+  return base::Hours(12);
 }
 
 bool ShouldPutMostVisitedSitesInMagicStack() {

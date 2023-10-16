@@ -5,7 +5,11 @@
 #ifndef IOS_CHROME_BROWSER_NTP_HOME_FEATURES_H_
 #define IOS_CHROME_BROWSER_NTP_HOME_FEATURES_H_
 
-#include "base/feature_list.h"
+#import "base/feature_list.h"
+
+namespace base {
+class TimeDelta;
+}  // namespace base
 
 // Feature to choose between the old Zine feed or the new Discover feed in the
 // Bling new tab page.
@@ -51,6 +55,7 @@ extern const char kDiscoverFeedIsNativeUIEnabled[];
 extern const char kTabResumptionParameterName[];
 extern const char kTabResumptionMostRecentTabOnlyParam[];
 extern const char kTabResumptionAllTabsParam[];
+extern const char kTabResumptionAllTabsOneDayThresholdParam[];
 
 // Whether the Discover feed is enabled instead of the Zine feed.
 // TODO(crbug.com/1385512): Remove this.
@@ -67,6 +72,10 @@ bool IsTabResumptionEnabled();
 
 // Whether the tab resumption feature is enabled for most recent tab only.
 bool IsTabResumptionEnabledForMostRecentTabOnly();
+
+// Convenience method for determining the tab resumption time threshold for
+// X-Devices tabs only.
+const base::TimeDelta TabResumptionForXDevicesTimeThreshold();
 
 // Whether the Most Visited Sites should be put into the Magic Stack.
 bool ShouldPutMostVisitedSitesInMagicStack();
