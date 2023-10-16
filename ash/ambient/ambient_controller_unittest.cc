@@ -2061,6 +2061,34 @@ TEST_F(AmbientControllerForManagedScreensaverLoginScreenTest,
   EXPECT_FALSE(ambient_controller()->ShouldShowAmbientUi());
 }
 
+TEST_F(AmbientControllerForManagedScreensaverLoginScreenTest,
+       ManagedScreensaverNotShownInKioskSessions) {
+  // Confirm that the screensaver is still triggered on the login screen
+  TriggerScreensaverOnLoginScreen();
+  // New tests are flaky most of the time in the flakiness cluster on CQ due to
+  // mocked time, fast forward by 20% time to make sure that they work as
+  // expected.
+  // TODO(b/305199163) Remove after investigating the root cause and coming
+  // up with a general solution.
+  FastForwardByLockScreenInactivityTimeout(/*factor=*/0.2f);
+  EXPECT_TRUE(ambient_controller()->ShouldShowAmbientUi());
+  ASSERT_TRUE(GetContainerView());
+
+  SimulateKioskMode(user_manager::UserType::USER_TYPE_WEB_KIOSK_APP);
+  EXPECT_FALSE(ambient_controller()->ShouldShowAmbientUi());
+  SetAmbientModeManagedScreensaverEnabled(true);
+  EXPECT_EQ(AmbientUiModel::Get()->ui_visibility(),
+            AmbientUiVisibility::kClosed);
+  // There is no lock screen in kiosk sessions so we just try to forward the
+  // time and try setting screen state to idle.
+  FastForwardByLockScreenInactivityTimeout();
+  EXPECT_EQ(AmbientUiModel::Get()->ui_visibility(),
+            AmbientUiVisibility::kClosed);
+  SetScreenIdleStateAndWait(/*is_screen_dimmed=*/true, /*is_off=*/false);
+  EXPECT_EQ(AmbientUiModel::Get()->ui_visibility(),
+            AmbientUiVisibility::kClosed);
+}
+
 TEST_F(AmbientControllerForManagedScreensaverTest,
        ManagedScreensaverNotShownOnScreenDim) {
   SetAmbientModeManagedScreensaverEnabled(/*enabled=*/true);

@@ -2888,6 +2888,7 @@ component("ash") {
     "//chromeos/ash/services/quick_pair/public/mojom",
     "//chromeos/ash/services/recording",
     "//chromeos/ash/services/recording/public/mojom",
+    "//chromeos/components/kiosk",
     "//chromeos/components/quick_answers/public/cpp:prefs",
     "//chromeos/components/sensors:sensors",
     "//chromeos/components/sensors/mojom",
