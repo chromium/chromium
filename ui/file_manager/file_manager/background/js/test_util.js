@@ -2,12 +2,10 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-import {FilesAppState} from '../../common/js/files_app_state.js';
 import {ProgressCenterItem} from '../../common/js/progress_center_common.js';
 import {ScriptLoader} from '../../common/js/script_loader.js';
 import {util} from '../../common/js/util.js';
 
-import {launchFileManager} from './launcher.js';
 import {test} from './test_util_base.js';
 
 export {test};
@@ -20,15 +18,6 @@ export {test};
 export function sanitizeDate(strDate) {
   return strDate.replace('\u202f', ' ');
 }
-/**
- * Opens the main Files app's window and waits until it is ready.
- *
- * @param {!FilesAppState} appState App state.
- * @param {function()} callback Completion callback.
- */
-test.util.async.openMainWindow = (appState, callback) => {
-  launchFileManager(appState).then(callback);
-};
 
 /**
  * Returns details about each file shown in the file list: name, size, type and

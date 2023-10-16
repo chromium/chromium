@@ -263,15 +263,12 @@ testcase.searchButtonToggles = async () => {
  * LaunchParam.searchQuery is specified.
  */
 testcase.searchQueryLaunchParam = async () => {
-  addEntries(['local'], BASIC_LOCAL_ENTRY_SET);
-  addEntries(['drive'], BASIC_DRIVE_ENTRY_SET);
-
   // Open Files app with LaunchParam.searchQuery='gdoc'.
   const query = 'gdoc';
   /** @type {!FilesAppState} */
   const appState = {searchQuery: query};
-  const appId =
-      await remoteCall.callRemoteTestUtil('openMainWindow', null, [appState]);
+  const appId = await setupAndWaitUntilReady(
+      null, BASIC_LOCAL_ENTRY_SET, BASIC_DRIVE_ENTRY_SET, appState);
 
   // Check: search box should be filled with the query.
   const caller = getCaller();
@@ -290,15 +287,10 @@ testcase.searchQueryLaunchParam = async () => {
   await directoryTree.waitForFocusedItemByLabel('My Drive');
 
   // Check: Query-matched files should be shown in the files list.
-  await repeatUntil(async () => {
-    const filenameLabel =
-        await remoteCall.waitForElement(appId, '#file-list .filename-label');
-    if (!filenameLabel.text.includes(query)) {
-      // Pre-search results might be shown only for a moment before the search
-      // spinner is shown.
-      return pending(caller, 'Waiting files list to be updated.');
-    }
-  });
+  await remoteCall.waitForFiles(appId, TestEntryInfo.getExpectedRows([
+    ENTRIES.testDocument,
+    ENTRIES.testSharedDocument,
+  ]));
 };
 
 /**

@@ -98,11 +98,13 @@ export async function openNewWindow(initialRoot, appState = {}) {
   const launchDir = appState ? appState.currentDirectoryURL : undefined;
   const type = appState ? appState.type : undefined;
   const volumeFilter = appState ? appState.volumeFilter : undefined;
+  const searchQuery = appState ? appState.searchQuery : undefined;
   const appId = await sendTestMessage({
     name: 'launchFileManager',
-    launchDir: launchDir,
-    type: type,
+    launchDir,
+    type,
     volumeFilter,
+    searchQuery,
   });
 
   return appId;
