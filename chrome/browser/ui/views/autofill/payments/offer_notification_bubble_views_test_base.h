@@ -64,8 +64,7 @@ class OfferNotificationBubbleViewsTestBase
     BUBBLE_SHOWN,
   };
 
-  explicit OfferNotificationBubbleViewsTestBase(
-      bool promo_code_flag_enabled = true);
+  OfferNotificationBubbleViewsTestBase();
   ~OfferNotificationBubbleViewsTestBase() override;
   OfferNotificationBubbleViewsTestBase(
       const OfferNotificationBubbleViewsTestBase&) = delete;

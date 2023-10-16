@@ -28,7 +28,6 @@ BASE_DECLARE_FEATURE(kAutofillEnableMovingGPayLogoToTheRightOnDesktop);
 BASE_DECLARE_FEATURE(kAutofillEnableMovingGPayLogoToTheRightOnClank);
 BASE_DECLARE_FEATURE(kAutofillEnableNewCardArtAndNetworkImages);
 BASE_DECLARE_FEATURE(kAutofillEnableNewSaveCardBubbleUi);
-BASE_DECLARE_FEATURE(kAutofillEnableOfferNotificationForPromoCodes);
 BASE_DECLARE_FEATURE(kAutofillEnableOffersInClankKeyboardAccessory);
 
 #if BUILDFLAG(IS_ANDROID)

@@ -9,7 +9,6 @@
 #include "components/autofill/core/browser/data_model/credit_card.h"
 #include "components/autofill/core/browser/payments/autofill_offer_manager.h"
 #include "components/autofill/core/browser/payments/offer_notification_options.h"
-#include "components/autofill/core/common/autofill_payments_features.h"
 #include "components/commerce/core/commerce_feature_list.h"
 #include "components/commerce/core/commerce_utils.h"
 #include "components/search/ntp_features.h"
@@ -25,12 +24,6 @@ bool IsOfferValid(AutofillOfferData* offer) {
   }
 
   if (offer->GetMerchantOrigins().empty()) {
-    return false;
-  }
-
-  if (offer->IsPromoCodeOffer() &&
-      !base::FeatureList::IsEnabled(
-          features::kAutofillEnableOfferNotificationForPromoCodes)) {
     return false;
   }
 

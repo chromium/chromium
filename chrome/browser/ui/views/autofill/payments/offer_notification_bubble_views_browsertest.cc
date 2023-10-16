@@ -138,33 +138,4 @@ IN_PROC_BROWSER_TEST_F(OfferNotificationBubbleViewsBrowserTest,
   EXPECT_FALSE(GetOfferNotificationBubbleViews());
 }
 
-class OfferNotificationBubbleViewsBrowserTestWithoutPromoCodes
-    : public OfferNotificationBubbleViewsTestBase {
- public:
-  OfferNotificationBubbleViewsBrowserTestWithoutPromoCodes()
-      : OfferNotificationBubbleViewsTestBase(
-            /*promo_code_flag_enabled=*/false) {}
-  ~OfferNotificationBubbleViewsBrowserTestWithoutPromoCodes() override =
-      default;
-  OfferNotificationBubbleViewsBrowserTestWithoutPromoCodes(
-      const OfferNotificationBubbleViewsBrowserTestWithoutPromoCodes&) = delete;
-  OfferNotificationBubbleViewsBrowserTest& operator=(
-      const OfferNotificationBubbleViewsBrowserTestWithoutPromoCodes&) = delete;
-};
-
-// Tests that the offer notification bubble will not be shown for a promo code
-// offer if the feature flag is disabled.
-IN_PROC_BROWSER_TEST_F(OfferNotificationBubbleViewsBrowserTestWithoutPromoCodes,
-                       NoPromoCodeOffer) {
-  auto offer_data =
-      CreateGPayPromoCodeOfferDataWithDomains({GetUrl("www.example.com", "/")});
-  personal_data()->AddOfferDataForTest(std::move(offer_data));
-  personal_data()->NotifyPersonalDataObserver();
-
-  // Neither icon nor bubble should be visible.
-  NavigateToAndWaitForForm(GetUrl("www.example.com", "/first"));
-  EXPECT_FALSE(IsIconVisible());
-  EXPECT_FALSE(GetOfferNotificationBubbleViews());
-}
-
 }  // namespace autofill

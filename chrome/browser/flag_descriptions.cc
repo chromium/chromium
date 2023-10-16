@@ -490,12 +490,6 @@ const char kAutofillEnableNewCardArtAndNetworkImagesName[] =
 const char kAutofillEnableNewCardArtAndNetworkImagesDescription[] =
     "When enabled, new and larger card art and network icons will be shown.";
 
-const char kAutofillEnableOfferNotificationForPromoCodesName[] =
-    "Extend Autofill offers and rewards notification to promo code offers";
-const char kAutofillEnableOfferNotificationForPromoCodesDescription[] =
-    "When enabled, a notification will be displayed on page navigation if the "
-    "domain has an eligible merchant promo code offer or reward.";
-
 const char kAutofillEnableOffersInClankKeyboardAccessoryName[] =
     "Enable Autofill offers in keyboard accessory";
 const char kAutofillEnableOffersInClankKeyboardAccessoryDescription[] =

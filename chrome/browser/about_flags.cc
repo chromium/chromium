@@ -9352,14 +9352,6 @@ const FeatureEntry kFeatureEntries[] = {
      flag_descriptions::kTabAudioMutingDescription, kOsDesktop,
      FEATURE_VALUE_TYPE(media::kEnableTabMuting)},
 
-    {"autofill-enable-offer-notification-for-promo-codes",
-     flag_descriptions::kAutofillEnableOfferNotificationForPromoCodesName,
-     flag_descriptions::
-         kAutofillEnableOfferNotificationForPromoCodesDescription,
-     kOsAll,
-     FEATURE_VALUE_TYPE(
-         autofill::features::kAutofillEnableOfferNotificationForPromoCodes)},
-
     {"upcoming-follow-features", flag_descriptions::kUpcomingFollowFeaturesName,
      flag_descriptions::kUpcomingFollowFeaturesDescription, kOsAll,
      FEATURE_VALUE_TYPE(follow::kUpcomingFollowFeatures)},

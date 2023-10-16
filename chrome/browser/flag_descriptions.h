@@ -299,9 +299,6 @@ extern const char kAutofillEnableEmailOtpForVcnYellowPathDescription[];
 extern const char kAutofillEnableNewCardArtAndNetworkImagesName[];
 extern const char kAutofillEnableNewCardArtAndNetworkImagesDescription[];
 
-extern const char kAutofillEnableOfferNotificationForPromoCodesName[];
-extern const char kAutofillEnableOfferNotificationForPromoCodesDescription[];
-
 extern const char kAutofillEnableOffersInClankKeyboardAccessoryName[];
 extern const char kAutofillEnableOffersInClankKeyboardAccessoryDescription[];
 
