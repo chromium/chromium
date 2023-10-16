@@ -627,15 +627,15 @@ public class NetworkChangesTest {
         networks.connectDefaultNetwork();
 
         callback.blockForDone();
-        assertThat(callback.mOnErrorCalled).isFalse();
-        assertThat(callback.mError).isNull();
-        assertThat(callback.getResponseInfoWithChecks().getNegotiatedProtocol()).isEqualTo("h3");
+        assertThat(callback.getResponseInfoWithChecks())
+                .hasNegotiatedProtocolThat()
+                .isEqualTo("h3");
     }
 
     @Test
     @SmallTest
     public void
-    testDefaultNetworkDisconnectAndReconnect_closeSessionsOnIpChange_pendingRequestSucceeds()
+    testDefaultNetworkDisconnectAndReconnect_closeSessionsOnIpChange_pendingRequestFails()
             throws Exception {
         mTestRule.getTestFramework().applyEngineBuilderPatch(
                 (builder) -> { closeSessionsOnIpChange(builder); });
