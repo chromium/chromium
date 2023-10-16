@@ -569,6 +569,18 @@ class PrerenderBrowserTest : public ContentBrowserTest,
                                                   expected_attempt_entry);
   }
 
+  void ExpectPreloadingPredictionUkm(
+      const std::vector<UkmEntry>& expected_prediction_entries) {
+    auto prediction_entries =
+        test_ukm_recorder()->GetEntries(Preloading_Prediction::kEntryName,
+                                        test::kPreloadingPredictionUkmMetrics);
+    EXPECT_EQ(prediction_entries.size(), expected_prediction_entries.size());
+    EXPECT_THAT(prediction_entries,
+                testing::UnorderedElementsAreArray(expected_prediction_entries))
+        << test::ActualVsExpectedUkmEntriesToString(
+               prediction_entries, expected_prediction_entries);
+  }
+
   void TestHostPrerenderingState(const GURL& prerender_url) {
     const GURL kInitialUrl = GetUrl("/empty.html");
 
@@ -817,14 +829,10 @@ IN_PROC_BROWSER_TEST_F(PrerenderBrowserTest, SpeculationRulesPrerender) {
         /*ready_time=*/kMockElapsedTime,
         blink::mojom::SpeculationEagerness::kEager)});
 
-    UkmEntry prediction_expected_entry =
-        prediction_ukm_entry_builder().BuildEntry(ukm_source_id,
-                                                  /*confidence=*/100,
-                                                  /*accurate_prediction=*/true);
-
-    EXPECT_EQ(prediction_ukm_entries[0], prediction_expected_entry)
-        << test::ActualVsExpectedUkmEntryToString(prediction_ukm_entries[1],
-                                                  prediction_expected_entry);
+    ExpectPreloadingPredictionUkm({prediction_ukm_entry_builder().BuildEntry(
+        ukm_source_id,
+        /*confidence=*/100,
+        /*accurate_prediction=*/true)});
   }
 
   // Collect metrics we recorded the renderer processes.
@@ -851,33 +859,20 @@ IN_PROC_BROWSER_TEST_F(PrerenderBrowserTest, SpeculationInitiatorNavigateAway) {
   // The prerender host should be destroyed.
   EXPECT_FALSE(HasHostForUrl(kPrerenderingUrl));
 
-  {
-    // Cross-check that in case where the navigation happens to a different
-    // page, we log the correct metrics.
-    ukm::SourceId ukm_source_id = PrimaryPageSourceId();
-    auto prediction_ukm_entries =
-        test_ukm_recorder()->GetEntries(Preloading_Prediction::kEntryName,
-                                        test::kPreloadingPredictionUkmMetrics);
-    EXPECT_EQ(prediction_ukm_entries.size(), 1u);
-
-    ExpectPreloadingAttemptUkm({attempt_ukm_entry_builder().BuildEntry(
-        ukm_source_id, PreloadingType::kPrerender,
-        PreloadingEligibility::kEligible, PreloadingHoldbackStatus::kAllowed,
-        PreloadingTriggeringOutcome::kReady,
-        PreloadingFailureReason::kUnspecified,
-        /*accurate=*/false,
-        /*ready_time=*/kMockElapsedTime,
-        blink::mojom::SpeculationEagerness::kEager)});
-
-    UkmEntry prediction_expected_entry =
-        prediction_ukm_entry_builder().BuildEntry(
-            ukm_source_id, /*confidence=*/100,
-            /*accurate_prediction=*/false);
-
-    EXPECT_EQ(prediction_ukm_entries[0], prediction_expected_entry)
-        << test::ActualVsExpectedUkmEntryToString(prediction_ukm_entries[1],
-                                                  prediction_expected_entry);
-  }
+  // Cross-check that in case where the navigation happens to a different page,
+  // we log the correct metrics.
+  ukm::SourceId ukm_source_id = PrimaryPageSourceId();
+  ExpectPreloadingAttemptUkm({attempt_ukm_entry_builder().BuildEntry(
+      ukm_source_id, PreloadingType::kPrerender,
+      PreloadingEligibility::kEligible, PreloadingHoldbackStatus::kAllowed,
+      PreloadingTriggeringOutcome::kReady,
+      PreloadingFailureReason::kUnspecified,
+      /*accurate=*/false,
+      /*ready_time=*/kMockElapsedTime,
+      blink::mojom::SpeculationEagerness::kEager)});
+  ExpectPreloadingPredictionUkm({prediction_ukm_entry_builder().BuildEntry(
+      ukm_source_id, /*confidence=*/100,
+      /*accurate_prediction=*/false)});
 }
 
 // Tests that clicking a link can activate a prerender.
