@@ -23,6 +23,7 @@
 #include "chrome/browser/chromeos/policy/dlp/dlp_reporting_manager.h"
 #include "chrome/browser/chromeos/policy/dlp/dlp_rules_manager.h"
 #include "chrome/browser/chromeos/policy/dlp/dlp_scoped_file_access_delegate.h"
+#include "chrome/browser/enterprise/data_controls/chrome_dlp_rules_manager.h"
 #include "chrome/common/chrome_features.h"
 #include "chromeos/dbus/dlp/dlp_client.h"
 #include "chromeos/dbus/dlp/dlp_service.pb.h"
@@ -311,13 +312,13 @@ DlpRulesManagerImpl::GetAggregatedComponents(const GURL& source,
 
 DlpRulesManagerImpl::DlpRulesManagerImpl(PrefService* local_state,
                                          Profile* profile)
-    : profile_(profile) {
+    : DlpRulesManager(profile) {
   pref_change_registrar_.Init(local_state);
   pref_change_registrar_.Add(
       policy_prefs::kDlpRulesList,
-      base::BindRepeating(&DlpRulesManagerImpl::OnPolicyUpdate,
+      base::BindRepeating(&DlpRulesManagerImpl::OnDataLeakPreventionRulesUpdate,
                           base::Unretained(this)));
-  OnPolicyUpdate();
+  OnDataLeakPreventionRulesUpdate();
 
   if (IsReportingEnabled())
     reporting_manager_ = std::make_unique<DlpReportingManager>();
@@ -357,7 +358,7 @@ bool DlpRulesManagerImpl::IsFilesPolicyEnabled() const {
 
 void DlpRulesManagerImpl::DlpDaemonRestarted() {
   // This should trigger re-notification of DLP daemon if needed.
-  OnPolicyUpdate();
+  OnDataLeakPreventionRulesUpdate();
 }
 
 void DlpRulesManagerImpl::Shutdown() {
@@ -368,7 +369,7 @@ void DlpRulesManagerImpl::Shutdown() {
   files_controller_.reset();
 }
 
-void DlpRulesManagerImpl::OnPolicyUpdate() {
+void DlpRulesManagerImpl::OnDataLeakPreventionRulesUpdate() {
   components_rules_.clear();
   restrictions_map_.clear();
   src_url_rules_mapping_.clear();

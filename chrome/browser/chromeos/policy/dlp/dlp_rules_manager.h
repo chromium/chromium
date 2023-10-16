@@ -15,6 +15,8 @@
 #include "components/enterprise/data_controls/component.h"
 #include "url/gurl.h"
 
+class Profile;
+
 namespace policy {
 
 class DlpReportingManager;
@@ -51,6 +53,7 @@ class DlpRulesManager : public data_controls::ChromeDlpRulesManager {
   using AggregatedComponents =
       std::map<Level, std::set<data_controls::Component>>;
 
+  explicit DlpRulesManager(Profile* profile);
   ~DlpRulesManager() override = default;
 
   // Returns the enforcement level for `restriction` given that data comes

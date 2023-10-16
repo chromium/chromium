@@ -64,7 +64,7 @@ class DlpRulesManagerImpl : public DlpRulesManager,
   DlpRulesManagerImpl(PrefService* local_state, Profile* profile);
 
  private:
-  void OnPolicyUpdate() override;
+  void OnDataLeakPreventionRulesUpdate() override;
 
   // Used to track kDlpRulesList local state pref.
   PrefChangeRegistrar pref_change_registrar_;
@@ -83,10 +83,6 @@ class DlpRulesManagerImpl : public DlpRulesManager,
 
   // System-wide singleton instantiated when there are rules involving files.
   std::unique_ptr<DlpFilesController> files_controller_;
-
-  // The profile with which we are associated. Not owned. It's currently always
-  // the main/primary profile.
-  const raw_ptr<Profile> profile_;
 
 #if BUILDFLAG(IS_CHROMEOS_ASH)
   // Observe to re-notify DLP daemon in case of restart.

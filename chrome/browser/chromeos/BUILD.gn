@@ -150,6 +150,7 @@ source_set("chromeos") {
     "policy/dlp/dlp_policy_constants.h",
     "policy/dlp/dlp_reporting_manager.cc",
     "policy/dlp/dlp_reporting_manager.h",
+    "policy/dlp/dlp_rules_manager.cc",
     "policy/dlp/dlp_rules_manager.h",
     "policy/dlp/dlp_rules_manager_factory.cc",
     "policy/dlp/dlp_rules_manager_factory.h",

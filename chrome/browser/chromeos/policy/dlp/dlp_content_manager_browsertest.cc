@@ -84,7 +84,8 @@ class DlpContentManagerBrowserTest : public InProcessBrowserTest {
 
   std::unique_ptr<KeyedService> SetDlpRulesManager(
       content::BrowserContext* context) {
-    auto dlp_rules_manager = std::make_unique<MockDlpRulesManager>();
+    auto dlp_rules_manager = std::make_unique<MockDlpRulesManager>(
+        Profile::FromBrowserContext(context));
     mock_rules_manager_ = dlp_rules_manager.get();
     return dlp_rules_manager;
   }

@@ -171,7 +171,8 @@ void SendKeyEvent(Browser* browser,
 std::unique_ptr<KeyedService> SetDlpRulesManager(
     content::BrowserContext* context) {
   auto dlp_rules_manager =
-      std::make_unique<testing::NiceMock<policy::MockDlpRulesManager>>();
+      std::make_unique<testing::NiceMock<policy::MockDlpRulesManager>>(
+          Profile::FromBrowserContext(context));
   ON_CALL(*dlp_rules_manager, GetSourceUrlPattern)
       .WillByDefault(testing::DoAll(testing::SetArgPointee<3>(kRuleMetadata),
                                     testing::Return(kSrcPattern)));

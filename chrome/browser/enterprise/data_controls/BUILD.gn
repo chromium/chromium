@@ -20,8 +20,10 @@ source_set("data_controls") {
 
   deps = [
     "//base",
+    "//chrome/browser/profiles:profile",
     "//components/keyed_service/core",
     "//components/policy/core/browser",
+    "//components/prefs",
     "//components/url_matcher",
     "//third_party/abseil-cpp:absl",
     "//url",

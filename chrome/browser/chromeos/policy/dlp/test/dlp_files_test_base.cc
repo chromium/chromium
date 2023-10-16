@@ -56,7 +56,8 @@ void DlpFilesTestBase::TearDown() {
 
 std::unique_ptr<KeyedService> DlpFilesTestBase::SetDlpRulesManager(
     content::BrowserContext* context) {
-  auto dlp_rules_manager = std::make_unique<MockDlpRulesManager>();
+  auto dlp_rules_manager = std::make_unique<MockDlpRulesManager>(
+      Profile::FromBrowserContext(context));
   rules_manager_ = dlp_rules_manager.get();
   return dlp_rules_manager;
 }
