@@ -115,6 +115,10 @@ constexpr net::NetworkTrafficAnnotationTag kTrafficAnnotation =
 
 const char kDnsOverHttpResponseContentType[] = "application/dns-message";
 
+// The maximum size of the DNS message for DoH, per
+// https://datatracker.ietf.org/doc/html/rfc8484#section-6
+const int64_t kDnsOverHttpResponseMaximumSize = 65535;
+
 // Count labels in the fully-qualified name in DNS format.
 int CountLabels(base::span<const uint8_t> name) {
   size_t count = 0;
@@ -539,10 +543,16 @@ class DnsHTTPAttempt : public DnsAttempt, public URLRequest::Delegate {
 
     if (request->response_headers()->HasHeader(
             HttpRequestHeaders::kContentLength)) {
+      if (request_->response_headers()->GetContentLength() >
+          kDnsOverHttpResponseMaximumSize) {
+        ResponseCompleted(ERR_DNS_MALFORMED_RESPONSE);
+        return;
+      }
+
       buffer_->SetCapacity(request_->response_headers()->GetContentLength() +
                            1);
     } else {
-      buffer_->SetCapacity(66560);  // 64kb.
+      buffer_->SetCapacity(kDnsOverHttpResponseMaximumSize + 1);
     }
 
     DCHECK(buffer_->data());
@@ -577,6 +587,11 @@ class DnsHTTPAttempt : public DnsAttempt, public URLRequest::Delegate {
     DCHECK_GE(bytes_read, 0);
 
     if (bytes_read > 0) {
+      if (buffer_->offset() + bytes_read > kDnsOverHttpResponseMaximumSize) {
+        ResponseCompleted(ERR_DNS_MALFORMED_RESPONSE);
+        return;
+      }
+
       buffer_->set_offset(buffer_->offset() + bytes_read);
 
       if (buffer_->RemainingCapacity() == 0) {

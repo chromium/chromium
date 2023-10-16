@@ -2609,6 +2609,39 @@ TEST_F(DnsTransactionTest, HttpsGetRedirectToInsecureProtocol) {
   ASSERT_EQ(helper0.response(), nullptr);
 }
 
+TEST_F(DnsTransactionTest, HttpsGetContentLengthTooLarge) {
+  ConfigureDohServers(/*use_post=*/false);
+  AddQueryAndResponse(0, kT0HostName, kT0Qtype, kT0ResponseDatagram,
+                      std::size(kT0ResponseDatagram), SYNCHRONOUS,
+                      Transport::HTTPS, /*opt_rdata=*/nullptr,
+                      DnsQuery::PaddingStrategy::BLOCK_LENGTH_128,
+                      /*enqueue_transaction_id=*/false);
+  TransactionHelper helper0(ERR_DNS_MALFORMED_RESPONSE);
+  SetResponseModifierCallback(base::BindLambdaForTesting(
+      [](URLRequest* request, HttpResponseInfo* info) {
+        info->headers->AddHeader("Content-Length", "65536");
+      }));
+  helper0.StartTransaction(transaction_factory_.get(), kT0HostName, kT0Qtype,
+                           /*secure=*/true, resolve_context_.get());
+  helper0.RunUntilComplete();
+  ASSERT_EQ(helper0.response(), nullptr);
+}
+
+TEST_F(DnsTransactionTest, HttpsGetResponseTooLargeWithoutContentLength) {
+  ConfigureDohServers(/*use_post=*/false);
+  std::vector<uint8_t> large_response(65536, 0);
+  AddQueryAndResponse(0, kT0HostName, kT0Qtype, large_response.data(),
+                      large_response.size(), SYNCHRONOUS, Transport::HTTPS,
+                      /*opt_rdata=*/nullptr,
+                      DnsQuery::PaddingStrategy::BLOCK_LENGTH_128,
+                      /*enqueue_transaction_id=*/false);
+  TransactionHelper helper0(ERR_DNS_MALFORMED_RESPONSE);
+  helper0.StartTransaction(transaction_factory_.get(), kT0HostName, kT0Qtype,
+                           /*secure=*/true, resolve_context_.get());
+  helper0.RunUntilComplete();
+  ASSERT_EQ(helper0.response(), nullptr);
+}
+
 void MakeResponseNoType(URLRequest* request, HttpResponseInfo* info) {
   info->headers->RemoveHeader("Content-Type");
 }
