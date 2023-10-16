@@ -103,7 +103,12 @@ template("build_webui_tests") {
   # chrome/test/data/webui:build_grd which will place this grdp file into a grd
   # file.
   generate_grd("build_grdp") {
-    grd_prefix = "webui_${invoker.resource_path_prefix}"
+    resource_path_prefix = rebase_path(".", "//chrome/test/data/webui")
+    grd_prefix = "webui_" + string_replace(resource_path_prefix, "/", "_")
+
+    # TODO(dpapad): Delete `resource_path_prefix` parameter, not needed.
+    not_needed(invoker, [ "resource_path_prefix" ])
+
     out_grd = "$target_gen_dir/resources.grdp"
     deps = [ ":build_ts" ]
     manifest_files =
@@ -113,6 +118,5 @@ template("build_webui_tests") {
       manifest_files +=
           [ "${target_gen_dir}/preprocess_static_files_manifest.json" ]
     }
-    resource_path_prefix = rebase_path(".", "//chrome/test/data/webui")
   }
 }
