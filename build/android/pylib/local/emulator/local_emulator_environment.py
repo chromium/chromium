@@ -33,6 +33,7 @@ class LocalEmulatorEnvironment(local_device_environment.LocalDeviceEnvironment):
     self._emulator_count = min(_MAX_ANDROID_EMULATORS, args.emulator_count)
     self._emulator_window = args.emulator_window
     self._emulator_debug_tags = args.emulator_debug_tags
+    self._emulator_enable_network = args.emulator_enable_network
     self._writable_system = ((hasattr(args, 'use_webview_provider')
                               and args.use_webview_provider)
                              or (hasattr(args, 'replace_system_package')
@@ -63,6 +64,7 @@ class LocalEmulatorEnvironment(local_device_environment.LocalDeviceEnvironment):
           inst.Start(window=self._emulator_window,
                      writable_system=self._writable_system,
                      debug_tags=self._emulator_debug_tags,
+                     enable_network=self._emulator_enable_network,
                      require_fast_start=True)
         except avd.AvdException:
           logging.exception('Failed to start emulator instance.')
