@@ -514,8 +514,8 @@ IN_PROC_BROWSER_TEST_P(MediaHistoryBrowserTest,
   }
 }
 
-// TODO(crbug.com/1492554): Flaky on Linux dbg. Fix and Re-enable this test.
-#if (BUILDFLAG(IS_LINUX))
+// TODO(crbug.com/1491952): Flaky on Linux dbg. Fix and Re-enable this test.
+#if (BUILDFLAG(IS_LINUX)) || BUILDFLAG(IS_CHROMEOS)
 #define MAYBE_DoNotRecordSessionIfNotActive \
   DISABLED_DoNotRecordSessionIfNotActive
 #else
