@@ -3024,6 +3024,21 @@ void WebLocalFrameImpl::UsageCountChromeLoadTimes(const WebString& metric) {
   Deprecation::CountDeprecation(GetFrame()->DomWindow(), feature);
 }
 
+void WebLocalFrameImpl::UsageCountChromeCSI(const WebString& metric) {
+  CHECK(GetFrame());
+  WebFeature feature = WebFeature::kChromeCSIUnknown;
+  if (metric == "onloadT") {
+    feature = WebFeature::kChromeCSIOnloadT;
+  } else if (metric == "pageT") {
+    feature = WebFeature::kChromeCSIPageT;
+  } else if (metric == "startE") {
+    feature = WebFeature::kChromeCSIStartE;
+  } else if (metric == "tran") {
+    feature = WebFeature::kChromeCSITran;
+  }
+  GetFrame()->DomWindow()->CountUse(feature);
+}
+
 FrameScheduler* WebLocalFrameImpl::Scheduler() const {
   return GetFrame()->GetFrameScheduler();
 }

@@ -681,6 +681,10 @@ class BLINK_EXPORT WebLocalFrame : public WebFrame {
   // This will be removed following the deprecation. See: crbug.com/621512
   virtual void UsageCountChromeLoadTimes(const WebString& metric) = 0;
 
+  // Usage count for chrome.csi deprecation.
+  // This will be removed following the deprecation. See: crbug.com/113048
+  virtual void UsageCountChromeCSI(const WebString& metric) = 0;
+
   // Whether we've dispatched "pagehide" on the current document in this frame
   // previously, and haven't dispatched the "pageshow" event after the last time
   // we dispatched "pagehide". This means that we've navigated away from the

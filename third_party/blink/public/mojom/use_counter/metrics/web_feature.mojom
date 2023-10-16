@@ -4019,6 +4019,11 @@ enum WebFeature {
   kHTMLDetailsElementNameAttributeClosesOther = 4679,
   kCSSSubgridLayout = 4680,
   kV8TemporalObject = 4681,
+  kChromeCSIUnknown = 4682,
+  kChromeCSIOnloadT = 4683,
+  kChromeCSIPageT = 4684,
+  kChromeCSIStartE = 4685,
+  kChromeCSITran = 4686,
 
   // Add new features immediately above this line. Don't change assigned
   // numbers of any item, and don't reuse removed slots.

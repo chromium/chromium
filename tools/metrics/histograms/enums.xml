@@ -44200,6 +44200,11 @@ Called by update_use_counter_feature_enum.py.-->
   <int value="4679" label="HTMLDetailsElementNameAttributeClosesOther"/>
   <int value="4680" label="CSSSubgridLayout"/>
   <int value="4681" label="V8TemporalObject"/>
+  <int value="4682" label="ChromeCSIUnknown"/>
+  <int value="4683" label="ChromeCSIOnloadT"/>
+  <int value="4684" label="ChromeCSIPageT"/>
+  <int value="4685" label="ChromeCSIStartE"/>
+  <int value="4686" label="ChromeCSITran"/>
 </enum>
 
 <enum name="FeaturePolicyAllowlistType">

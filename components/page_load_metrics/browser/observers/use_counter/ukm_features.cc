@@ -313,6 +313,11 @@ UseCounterMetricsRecorder::GetAllowedUkmFeatures() {
           WebFeature::kV8Window_GetScreenDetails_Method,
           WebFeature::kV8Window_ShowSaveFilePicker_Method,
           WebFeature::kFullscreenAllowedByWindowOpen,
+          WebFeature::kChromeCSIUnknown,
+          WebFeature::kChromeCSIOnloadT,
+          WebFeature::kChromeCSIPageT,
+          WebFeature::kChromeCSIStartE,
+          WebFeature::kChromeCSITran,
       }));
   return *opt_in_features;
 }

@@ -292,6 +292,7 @@ class CORE_EXPORT WebLocalFrameImpl final
           mojom::blink::ContextMenuClientInterfaceBase> context_menu_client)
       override;
   void UsageCountChromeLoadTimes(const WebString& metric) override;
+  void UsageCountChromeCSI(const WebString& metric) override;
   bool DispatchedPagehideAndStillHidden() const override;
   FrameScheduler* Scheduler() const override;
   scheduler::WebAgentGroupScheduler* GetAgentGroupScheduler() const override;
