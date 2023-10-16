@@ -5065,6 +5065,11 @@
     "expiry_milestone": 120
   },
   {
+    "name": "ios-hide-feed-with-search-choice",
+    "owners": ["scottyoder@google.com", "bling-get-set-up@google.com"],
+    "expiry_milestone": 123
+  },
+  {
     "name": "ios-incognito-downloads-warning",
     "owners": [ "zalmashni@google.com", "chrome-incognito@google.com" ],
     "expiry_milestone": 124
