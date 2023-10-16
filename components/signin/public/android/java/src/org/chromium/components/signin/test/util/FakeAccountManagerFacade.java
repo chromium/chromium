@@ -73,8 +73,9 @@ public class FakeAccountManagerFacade implements AccountManagerFacade {
     private final Set<AccountHolder> mAccountHolders = new LinkedHashSet<>();
     private final List<AccountsChangeObserver> mObservers = new ArrayList<>();
 
-    /** Can be used to block {@link #getAccounts()} result. */
-    private @Nullable Promise<List<Account>> mBlockedGetAccountsPromise;
+    /** Can be used to block {@link #getCoreAccountInfos()} ()} result. */
+    private @Nullable Promise<List<CoreAccountInfo>> mBlockedGetCoreAccountInfosPromise;
+
     private @Nullable Intent mAddAccountIntent;
 
     /**
@@ -97,23 +98,12 @@ public class FakeAccountManagerFacade implements AccountManagerFacade {
     }
 
     @Override
-    public Promise<List<Account>> getAccounts() {
-        synchronized (mLock) {
-            if (mBlockedGetAccountsPromise != null) {
-                return mBlockedGetAccountsPromise;
-            }
-            return Promise.fulfilled(getAccountsInternal());
-        }
-    }
-
-    @Override
     public Promise<List<CoreAccountInfo>> getCoreAccountInfos() {
-        Promise<List<Account>> accountsPromise = getAccounts();
-        if (accountsPromise.isFulfilled()) {
-            return Promise.fulfilled(buildCoreAccountInfos(accountsPromise.getResult()));
-        } else {
-            return accountsPromise.then(
-                    (List<Account> accounts) -> buildCoreAccountInfos(accounts));
+        synchronized (mLock) {
+            if (mBlockedGetCoreAccountInfosPromise != null) {
+                return mBlockedGetCoreAccountInfosPromise;
+            }
+            return Promise.fulfilled(getCoreAccountInfosInternal());
         }
     }
 
@@ -223,27 +213,27 @@ public class FakeAccountManagerFacade implements AccountManagerFacade {
     }
 
     /**
-     * Blocks callers from getting accounts through {@link #getAccounts}.
-     * After this method is called, subsequent calls to {@link #getAccounts} will return
-     * a non-fulfilled promise. Use {@link #unblockGetAccounts} to unblock this promise.
+     * Blocks callers from getting accounts through {@link #getCoreAccountInfos()}. After this
+     * method is called, subsequent calls to {@link #getCoreAccountInfos()} will return a
+     * non-fulfilled promise. Use {@link #unblockGetCoreAccountInfos()} to unblock this promise.
      */
-    public void blockGetAccounts() {
+    public void blockGetCoreAccountInfos() {
         synchronized (mLock) {
-            assert mBlockedGetAccountsPromise == null;
-            mBlockedGetAccountsPromise = new Promise<>();
+            assert mBlockedGetCoreAccountInfosPromise == null;
+            mBlockedGetCoreAccountInfosPromise = new Promise<>();
         }
     }
 
     /**
-     * Unblocks callers that are waiting for {@link #getAccounts} result.
-     * Use after {@link #blockGetAccounts} to unblock callers waiting for promises obtained from
-     * {@link #getAccounts}.
+     * Unblocks callers that are waiting for {@link #getCoreAccountInfos()} result. Use after {@link
+     * #blockGetCoreAccountInfos()} to unblock callers waiting for promises obtained from {@link
+     * #getCoreAccountInfos()}.
      */
-    public void unblockGetAccounts() {
+    public void unblockGetCoreAccountInfos() {
         synchronized (mLock) {
-            assert mBlockedGetAccountsPromise != null;
-            mBlockedGetAccountsPromise.fulfill(getAccountsInternal());
-            mBlockedGetAccountsPromise = null;
+            assert mBlockedGetCoreAccountInfosPromise != null;
+            mBlockedGetCoreAccountInfosPromise.fulfill(getCoreAccountInfosInternal());
+            mBlockedGetCoreAccountInfosPromise = null;
         }
     }
 
@@ -261,12 +251,14 @@ public class FakeAccountManagerFacade implements AccountManagerFacade {
     }
 
     @GuardedBy("mLock")
-    private List<Account> getAccountsInternal() {
-        List<Account> accounts = new ArrayList<>();
+    private List<CoreAccountInfo> getCoreAccountInfosInternal() {
+        List<CoreAccountInfo> coreAccountInfos = new ArrayList<>();
         for (AccountHolder accountHolder : mAccountHolders) {
-            accounts.add(accountHolder.getAccount());
+            String accountEmail = accountHolder.getAccount().name;
+            coreAccountInfos.add(
+                    CoreAccountInfo.createFromEmailAndGaiaId(accountEmail, toGaiaId(accountEmail)));
         }
-        return accounts;
+        return coreAccountInfos;
     }
 
     @GuardedBy("mLock")
@@ -290,14 +282,5 @@ public class FakeAccountManagerFacade implements AccountManagerFacade {
         for (AccountsChangeObserver observer : mObservers) {
             observer.onCoreAccountInfosChanged();
         }
-    }
-
-    private List<CoreAccountInfo> buildCoreAccountInfos(List<Account> accounts) {
-        List<CoreAccountInfo> coreAccountInfos = new ArrayList<>();
-        for (Account account : accounts) {
-            coreAccountInfos.add(
-                    CoreAccountInfo.createFromEmailAndGaiaId(account.name, toGaiaId(account.name)));
-        }
-        return coreAccountInfos;
     }
 }

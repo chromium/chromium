@@ -45,19 +45,6 @@ public class AccountUtils {
     }
 
     /**
-     * Converts a list of accounts to a list of account names.
-     * TODO(crbug.com/1462264): Replace usage with toAccountEmails().
-     */
-    @Deprecated
-    public static List<String> toAccountNames(final List<Account> accounts) {
-        List<String> accountNames = new ArrayList<>();
-        for (Account account : accounts) {
-            accountNames.add(account.name);
-        }
-        return accountNames;
-    }
-
-    /**
      * Converts a list of {@link CoreAccountInfo}s to a list of account emails.
      */
     public static List<String> toAccountEmails(final List<CoreAccountInfo> coreAccountInfos) {

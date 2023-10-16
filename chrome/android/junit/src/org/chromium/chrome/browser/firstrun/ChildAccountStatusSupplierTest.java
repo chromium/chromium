@@ -64,7 +64,7 @@ public class ChildAccountStatusSupplierTest {
 
     @Test
     public void testNoAccounts() {
-        mAccountManagerFacade.blockGetAccounts();
+        mAccountManagerFacade.blockGetCoreAccountInfos();
         ChildAccountStatusSupplier supplier = new ChildAccountStatusSupplier(
                 mAccountManagerFacade, mFirstRunAppRestrictionInfoMock);
         shadowOf(Looper.getMainLooper()).idle();
@@ -75,7 +75,7 @@ public class ChildAccountStatusSupplierTest {
                 RecordHistogram.getHistogramTotalCountForTesting(
                         "MobileFre.ChildAccountStatusDuration"));
 
-        mAccountManagerFacade.unblockGetAccounts();
+        mAccountManagerFacade.unblockGetCoreAccountInfos();
         shadowOf(Looper.getMainLooper()).idle();
 
         assertFalse(supplier.get());
@@ -131,7 +131,7 @@ public class ChildAccountStatusSupplierTest {
     public void testNonChildWhenNoAppRestrictions() {
         mAccountManagerTestRule.addAccount(ADULT_ACCOUNT_EMAIL);
         // Block getAccounts call to make sure ChildAccountStatusSupplier checks app restrictions.
-        mAccountManagerFacade.blockGetAccounts();
+        mAccountManagerFacade.blockGetCoreAccountInfos();
         doNothing()
                 .when(mFirstRunAppRestrictionInfoMock)
                 .getHasAppRestriction(mCallbackCaptor.capture());
@@ -154,7 +154,7 @@ public class ChildAccountStatusSupplierTest {
     public void testWaitsForAccountManagerFacadeWhenAppRestrictionsFound() {
         mAccountManagerTestRule.addAccount(CHILD_ACCOUNT_EMAIL);
         // Block getAccounts call to make sure ChildAccountStatusSupplier checks app restrictions.
-        mAccountManagerFacade.blockGetAccounts();
+        mAccountManagerFacade.blockGetCoreAccountInfos();
         doCallback((Callback<Boolean> callback) -> callback.onResult(true))
                 .when(mFirstRunAppRestrictionInfoMock)
                 .getHasAppRestriction(any());
@@ -165,7 +165,7 @@ public class ChildAccountStatusSupplierTest {
         // AccountManagerFacade, so the status shouldn't be available yet.
         assertNull(supplier.get());
 
-        mAccountManagerFacade.unblockGetAccounts();
+        mAccountManagerFacade.unblockGetCoreAccountInfos();
         shadowOf(Looper.getMainLooper()).idle();
 
         assertTrue(supplier.get());

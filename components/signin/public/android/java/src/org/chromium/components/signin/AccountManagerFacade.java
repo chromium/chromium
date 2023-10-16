@@ -57,23 +57,6 @@ public interface AccountManagerFacade {
     void removeObserver(AccountsChangeObserver observer);
 
     /**
-     * Retrieves accounts on device after filtering them through account restriction patterns.
-     * The {@link Promise} will be fulfilled once the accounts cache will be populated.
-     * If an error occurs while getting account list, the returned {@link Promise} will wrap an
-     * empty array.
-     *
-     * Since a different {@link Promise} will be returned every time the accounts get updated,
-     * this makes the {@link Promise} a bad candidate for end users to cache locally unless
-     * the end users are awaiting the current list of accounts only.
-     *
-     * @deprecated
-     * TODO(crbug.com/1463878): Use {@link #getCoreAccountInfos()} instead.
-     */
-    @MainThread
-    @Deprecated
-    Promise<List<Account>> getAccounts();
-
-    /**
      * Retrieves corresponding {@link CoreAccountInfo}s for filtered accounts.
      * The {@link Promise} will be fulfilled once the accounts cache is populated and gaia ids are
      * fetched. If an error occurs while getting account list, the returned {@link Promise} will

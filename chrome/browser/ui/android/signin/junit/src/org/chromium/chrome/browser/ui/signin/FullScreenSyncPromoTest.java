@@ -26,7 +26,6 @@ import org.mockito.junit.MockitoJUnit;
 import org.mockito.junit.MockitoRule;
 import org.robolectric.RuntimeEnvironment;
 
-import org.chromium.base.Promise;
 import org.chromium.base.test.BaseRobolectricTestRunner;
 import org.chromium.base.test.util.JniMocker;
 import org.chromium.chrome.browser.flags.ChromeFeatureList;
@@ -111,7 +110,7 @@ public class FullScreenSyncPromoTest {
     public void whenAccountCacheNotPopulated() {
         mAccountManagerTestRule.addAccount(AccountManagerTestRule.TEST_ACCOUNT_EMAIL);
         mPrefManager.setSigninPromoLastShownVersion(38);
-        when(mFakeAccountManagerFacade.getAccounts()).thenReturn(new Promise<>());
+        mFakeAccountManagerFacade.blockGetCoreAccountInfos();
         Assert.assertFalse(FullScreenSyncPromoUtil.launchPromoIfNeeded(
                 mContext, mLauncherMock, CURRENT_MAJOR_VERSION));
         Assert.assertEquals(38, mPrefManager.getSigninPromoLastShownVersion());
@@ -124,7 +123,7 @@ public class FullScreenSyncPromoTest {
         Assert.assertFalse(FullScreenSyncPromoUtil.launchPromoIfNeeded(
                 mContext, mLauncherMock, CURRENT_MAJOR_VERSION));
         Assert.assertEquals(42, mPrefManager.getSigninPromoLastShownVersion());
-        verify(mFakeAccountManagerFacade, never()).getAccounts();
+        verify(mFakeAccountManagerFacade, never()).getCoreAccountInfos();
     }
 
     @EnableFeatures({ChromeFeatureList.FORCE_STARTUP_SIGNIN_PROMO})
@@ -145,7 +144,7 @@ public class FullScreenSyncPromoTest {
         mPrefManager.setSigninPromoLastShownVersion(38);
         Assert.assertFalse(FullScreenSyncPromoUtil.launchPromoIfNeeded(
                 mContext, mLauncherMock, CURRENT_MAJOR_VERSION));
-        verify(mFakeAccountManagerFacade, never()).getAccounts();
+        verify(mFakeAccountManagerFacade, never()).getCoreAccountInfos();
         verify(mLauncherMock, never()).launchActivityIfAllowed(any(), anyInt());
     }
 
@@ -157,7 +156,7 @@ public class FullScreenSyncPromoTest {
         mPrefManager.setSigninPromoLastShownVersion(38);
         Assert.assertFalse(FullScreenSyncPromoUtil.launchPromoIfNeeded(
                 mContext, mLauncherMock, CURRENT_MAJOR_VERSION));
-        verify(mFakeAccountManagerFacade, never()).getAccounts();
+        verify(mFakeAccountManagerFacade, never()).getCoreAccountInfos();
         verify(mLauncherMock, never()).launchActivityIfAllowed(any(), anyInt());
     }
 
@@ -167,7 +166,7 @@ public class FullScreenSyncPromoTest {
         mPrefManager.setSigninPromoLastShownVersion(41);
         Assert.assertFalse(FullScreenSyncPromoUtil.launchPromoIfNeeded(
                 mContext, mLauncherMock, CURRENT_MAJOR_VERSION));
-        verify(mFakeAccountManagerFacade, never()).getAccounts();
+        verify(mFakeAccountManagerFacade, never()).getCoreAccountInfos();
         verify(mLauncherMock, never()).launchActivityIfAllowed(any(), anyInt());
     }
 
@@ -176,7 +175,7 @@ public class FullScreenSyncPromoTest {
         mPrefManager.setSigninPromoLastShownVersion(38);
         Assert.assertFalse(FullScreenSyncPromoUtil.launchPromoIfNeeded(
                 mContext, mLauncherMock, CURRENT_MAJOR_VERSION));
-        verify(mFakeAccountManagerFacade).getAccounts();
+        verify(mFakeAccountManagerFacade).getCoreAccountInfos();
         verify(mLauncherMock, never()).launchActivityIfAllowed(any(), anyInt());
     }
 
@@ -231,7 +230,7 @@ public class FullScreenSyncPromoTest {
                 Set.of(AccountManagerTestRule.TEST_ACCOUNT_EMAIL));
         Assert.assertFalse(FullScreenSyncPromoUtil.launchPromoIfNeeded(
                 mContext, mLauncherMock, CURRENT_MAJOR_VERSION));
-        verify(mFakeAccountManagerFacade).getAccounts();
+        verify(mFakeAccountManagerFacade).getCoreAccountInfos();
         verify(mLauncherMock, never()).launchActivityIfAllowed(any(), anyInt());
         Assert.assertEquals(40, mPrefManager.getSigninPromoLastShownVersion());
         Assert.assertArrayEquals(mPrefManager.getSigninPromoLastAccountEmails().toArray(),
@@ -246,7 +245,7 @@ public class FullScreenSyncPromoTest {
                 Set.of(AccountManagerTestRule.TEST_ACCOUNT_EMAIL, "test2@gmail.com"));
         Assert.assertFalse(FullScreenSyncPromoUtil.launchPromoIfNeeded(
                 mContext, mLauncherMock, CURRENT_MAJOR_VERSION));
-        verify(mFakeAccountManagerFacade).getAccounts();
+        verify(mFakeAccountManagerFacade).getCoreAccountInfos();
         verify(mLauncherMock, never()).launchActivityIfAllowed(any(), anyInt());
         Assert.assertEquals(40, mPrefManager.getSigninPromoLastShownVersion());
         Assert.assertEquals(2, mPrefManager.getSigninPromoLastAccountEmails().size());

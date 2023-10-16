@@ -23,6 +23,7 @@ import java.util.Set;
  * account, such as its password and set of granted auth tokens.
  */
 public class AccountHolder {
+    // TODO(crbug.com/1462264): Use CoreAcountInfo instead of Account.
     private final Account mAccount;
     private final Map<String, AccessTokenData> mAuthTokens;
     private final Set<String> mFeatures;
