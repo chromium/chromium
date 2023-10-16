@@ -32,16 +32,20 @@
   // Contains information about the recipients that the user selected to share a
   // password with.
   NSArray<RecipientInfoForIOSDisplay*>* _recipients;
+
+  // Website for which the password is being shared.
+  NSString* _website;
 }
 
-- (instancetype)initWithBaseViewController:(UIViewController*)viewController
-                                   browser:(Browser*)browser
-                                recipients:
-                                    (NSArray<RecipientInfoForIOSDisplay*>*)
-                                        recipients {
+- (instancetype)
+    initWithBaseViewController:(UIViewController*)viewController
+                       browser:(Browser*)browser
+                    recipients:(NSArray<RecipientInfoForIOSDisplay*>*)recipients
+                       website:(NSString*)website {
   self = [super initWithBaseViewController:viewController browser:browser];
   if (self) {
     _recipients = recipients;
+    _website = website;
   }
   return self;
 }
@@ -59,7 +63,8 @@
                                 browserState)
       accountManagerService:ChromeAccountManagerServiceFactory::
                                 GetForBrowserState(browserState)
-                 recipients:_recipients];
+                 recipients:_recipients
+                    website:_website];
   self.mediator.consumer = self.viewController;
 
   self.viewController.sheetPresentationController.detents =

@@ -21,7 +21,7 @@ class ChromeAccountManagerService;
       initWithAuthService:(AuthenticationService*)authService
     accountManagerService:(ChromeAccountManagerService*)accountManagerService
                recipients:(NSArray<RecipientInfoForIOSDisplay*>*)recipients
-    NS_DESIGNATED_INITIALIZER;
+                  website:(NSString*)website NS_DESIGNATED_INITIALIZER;
 
 - (instancetype)init NS_UNAVAILABLE;
 

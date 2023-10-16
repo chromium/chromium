@@ -30,17 +30,22 @@ const CGFloat kProfileImageSize = 60.0;
   // Contains information about the recipients that the user selected to share a
   // password with.
   NSArray<RecipientInfoForIOSDisplay*>* _recipients;
+
+  // Website for which the password is being shared.
+  NSString* _website;
 }
 
 - (instancetype)
       initWithAuthService:(AuthenticationService*)authService
     accountManagerService:(ChromeAccountManagerService*)accountManagerService
-               recipients:(NSArray<RecipientInfoForIOSDisplay*>*)recipients {
+               recipients:(NSArray<RecipientInfoForIOSDisplay*>*)recipients
+                  website:(NSString*)website {
   self = [super init];
   if (self) {
     _authService = authService;
     _accountManagerService = accountManagerService;
     _recipients = recipients;
+    _website = website;
   }
   return self;
 }
@@ -54,6 +59,7 @@ const CGFloat kProfileImageSize = 60.0;
   [_consumer setSenderImage:[self fetchSenderImage]];
   [_consumer setRecipientImage:[self createRecipientImage]];
   [_consumer setSubtitleString:[self subtitleString]];
+  [_consumer setFooterString:[self footerString]];
 }
 
 #pragma mark - Private
@@ -144,16 +150,27 @@ const CGFloat kProfileImageSize = 60.0;
   }];
 }
 
+// Creates subtitle string based on the amount of recipients chosen for sharing.
+// For one recipient the subtitle contains the name of that recipients, whereas
+// for multiple recipients it is replaced with more generic string.
 - (NSString*)subtitleString {
-  // TODO(crbug.com/1463882): Add passing link to the site.
   if (_recipients.count == 1) {
     return base::SysUTF16ToNSString(l10n_util::GetStringFUTF16(
         IDS_IOS_PASSWORD_SHARING_SUCCESS_SUBTITLE,
-        base::SysNSStringToUTF16(_recipients[0].fullName), u""));
+        base::SysNSStringToUTF16(_recipients[0].fullName),
+        base::SysNSStringToUTF16(_website)));
   }
 
   return base::SysUTF16ToNSString(l10n_util::GetStringFUTF16(
-      IDS_IOS_PASSWORD_SHARING_SUCCESS_SUBTITLE_MULTIPLE_RECIPIENTS, u""));
+      IDS_IOS_PASSWORD_SHARING_SUCCESS_SUBTITLE_MULTIPLE_RECIPIENTS,
+      base::SysNSStringToUTF16(_website)));
+}
+
+// Creates footer string informing the user how to revoke sharing access.
+- (NSString*)footerString {
+  return base::SysUTF16ToNSString(
+      l10n_util::GetStringFUTF16(IDS_IOS_PASSWORD_SHARING_SUCCESS_FOOTNOTE,
+                                 base::SysNSStringToUTF16(_website)));
 }
 
 @end

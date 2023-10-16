@@ -94,6 +94,9 @@ NSString* const kEndBoldTag = @"[ \t]*END_BOLD";
 // Subtitle string that will be displayed when the sharing is succesful.
 @property(nonatomic, strong) NSString* subtitleString;
 
+// Footer string that will be displayed when the sharing is succesful.
+@property(nonatomic, strong) NSString* footerString;
+
 // The button that cancels the sharing process.
 @property(nonatomic, strong) UIButton* cancelButton;
 
@@ -223,6 +226,10 @@ NSString* const kEndBoldTag = @"[ \t]*END_BOLD";
 
 - (void)setSubtitleString:(NSString*)subtitleString {
   _subtitleString = subtitleString;
+}
+
+- (void)setFooterString:(NSString*)footerString {
+  _footerString = footerString;
 }
 
 #pragma mark - Private
@@ -460,10 +467,7 @@ NSString* const kEndBoldTag = @"[ \t]*END_BOLD";
   footer.font = [UIFont preferredFontForTextStyle:UIFontTextStyleFootnote];
   footer.textColor = [UIColor colorNamed:kTextSecondaryColor];
 
-  // TODO(crbug.com/1463882): Add passing link value.
-  StringWithTags stringWithTags =
-      ParseStringWithLinks(base::SysUTF16ToNSString(l10n_util::GetStringFUTF16(
-          IDS_IOS_PASSWORD_SHARING_SUCCESS_FOOTNOTE, u"")));
+  StringWithTags stringWithTags = ParseStringWithLinks(self.footerString);
   footer.text = stringWithTags.string;
   [self addLinkAttributeToTextView:footer range:stringWithTags.ranges[0]];
 

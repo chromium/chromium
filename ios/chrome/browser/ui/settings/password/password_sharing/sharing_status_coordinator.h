@@ -22,7 +22,7 @@
     initWithBaseViewController:(UIViewController*)viewController
                        browser:(Browser*)browser
                     recipients:(NSArray<RecipientInfoForIOSDisplay*>*)recipients
-    NS_DESIGNATED_INITIALIZER;
+                       website:(NSString*)website NS_DESIGNATED_INITIALIZER;
 
 - (instancetype)initWithBaseViewController:(UIViewController*)viewController
                                    browser:(Browser*)browser NS_UNAVAILABLE;

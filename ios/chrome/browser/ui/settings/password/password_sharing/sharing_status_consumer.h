@@ -19,6 +19,9 @@
 // Sets subtitle string to be displayed in the success status view.
 - (void)setSubtitleString:(NSString*)subtitleString;
 
+// Sets footer string to be displayed in the success status view.
+- (void)setFooterString:(NSString*)footerString;
+
 @end
 
 #endif  // IOS_CHROME_BROWSER_UI_SETTINGS_PASSWORD_PASSWORD_SHARING_SHARING_STATUS_CONSUMER_H_

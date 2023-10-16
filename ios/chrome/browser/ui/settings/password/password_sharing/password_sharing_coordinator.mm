@@ -4,6 +4,8 @@
 
 #import "ios/chrome/browser/ui/settings/password/password_sharing/password_sharing_coordinator.h"
 
+#import "base/strings/sys_string_conversions.h"
+#import "components/password_manager/core/browser/password_ui_utils.h"
 #import "components/password_manager/core/browser/sharing/recipients_fetcher.h"
 #import "components/password_manager/core/browser/ui/credential_ui_entry.h"
 #import "components/password_manager/core/browser/ui/saved_passwords_presenter.h"
@@ -288,7 +290,11 @@ using password_manager::FetchFamilyMembersRequestStatus;
   self.sharingStatusCoordinator = [[SharingStatusCoordinator alloc]
       initWithBaseViewController:self.navigationController
                          browser:self.browser
-                      recipients:self.mediator.selectedRecipients];
+                      recipients:self.mediator.selectedRecipients
+                         website:base::SysUTF8ToNSString(
+                                     password_manager::GetShownOrigin(
+                                         self.mediator
+                                             .selectedCredentials[0]))];
   self.sharingStatusCoordinator.delegate = self;
   [self.sharingStatusCoordinator start];
 }
