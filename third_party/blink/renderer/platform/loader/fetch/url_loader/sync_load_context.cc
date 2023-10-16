@@ -124,6 +124,7 @@ void SyncLoadContext::StartAsyncWithWaitableEvent(
       loader_options, cors_exempt_header_list, context,
       context->url_loader_factory_, std::move(throttles),
       std::move(resource_load_info_notifier_wrapper),
+      /*code_cache_host=*/nullptr,
       /*evict_from_bfcache_callback=*/
       base::OnceCallback<void(mojom::blink::RendererEvictionReason)>(),
       /*did_buffer_load_while_in_bfcache_callback=*/
@@ -212,7 +213,8 @@ void SyncLoadContext::CancelRedirect() {
 
 void SyncLoadContext::OnReceivedResponse(
     network::mojom::URLResponseHeadPtr head,
-    base::TimeTicks response_arrival_at_renderer) {
+    base::TimeTicks response_arrival_at_renderer,
+    absl::optional<mojo_base::BigBuffer> cached_metadata) {
   DCHECK(!Completed());
   response_->head = std::move(head);
 }

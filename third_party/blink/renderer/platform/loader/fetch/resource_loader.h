@@ -149,8 +149,9 @@ class PLATFORM_EXPORT ResourceLoader final
                           bool insecure_scheme_was_upgraded) override;
   void DidSendData(uint64_t bytes_sent,
                    uint64_t total_bytes_to_be_sent) override;
-  void DidReceiveResponse(const WebURLResponse&) override;
-  void DidReceiveCachedMetadata(mojo_base::BigBuffer data) override;
+  void DidReceiveResponse(
+      const WebURLResponse&,
+      absl::optional<mojo_base::BigBuffer> cached_metadata) override;
   void DidReceiveData(const char*, size_t) override;
   void DidReceiveTransferSizeUpdate(int transfer_size_diff) override;
   void DidStartLoadingResponseBody(
@@ -167,9 +168,6 @@ class PLATFORM_EXPORT ResourceLoader final
                int64_t decoded_body_length) override;
   void CountFeature(blink::mojom::WebFeature) override;
 
-  mojom::blink::CodeCacheType GetCodeCacheType() const;
-  void SendCachedCodeToResource(mojo_base::BigBuffer data);
-
   void HandleError(const ResourceError&);
 
   void DidFinishLoadingFirstPartInMultipart();
@@ -183,7 +181,6 @@ class PLATFORM_EXPORT ResourceLoader final
   friend class SubresourceIntegrityTest;
   friend class ResourceLoaderIsolatedCodeCacheTest;
   friend class ResourceLoaderSubresourceFilterCnameAliasTest;
-  class CodeCacheRequest;
 
   void DidStartLoadingResponseBodyInternal(BytesConsumer& bytes_consumer);
 
@@ -222,7 +219,9 @@ class PLATFORM_EXPORT ResourceLoader final
   void RequestAsynchronously(const ResourceRequestHead&);
   void Dispose();
 
-  void DidReceiveResponseInternal(const ResourceResponse&);
+  void DidReceiveResponseInternal(
+      const ResourceResponse&,
+      absl::optional<mojo_base::BigBuffer> cached_metadata);
 
   void CancelTimerFired(TimerBase*);
 
@@ -263,9 +262,6 @@ class PLATFORM_EXPORT ResourceLoader final
   Member<ResponseBodyLoader> response_body_loader_;
   Member<DataPipeBytesConsumer::CompletionNotifier>
       data_pipe_completion_notifier_;
-  // code_cache_request_ is created only if required. It is required to check
-  // if it is valid before using it.
-  std::unique_ptr<CodeCacheRequest> code_cache_request_;
 
   // https://fetch.spec.whatwg.org/#concept-request-response-tainting
   network::mojom::FetchResponseType response_tainting_ =
@@ -273,7 +269,6 @@ class PLATFORM_EXPORT ResourceLoader final
   uint32_t inflight_keepalive_bytes_;
   bool is_cache_aware_loading_activated_;
 
-  bool should_use_isolated_code_cache_ = false;
   bool is_downloading_to_blob_ = false;
   blink::HeapMojoAssociatedReceiver<mojom::blink::ProgressClient,
                                     blink::ResourceLoader>

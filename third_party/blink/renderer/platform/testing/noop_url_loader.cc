@@ -35,6 +35,7 @@ void NoopURLLoader::LoadAsynchronously(
     bool no_mime_sniffing,
     std::unique_ptr<blink::ResourceLoadInfoNotifierWrapper>
         resource_load_info_notifier_wrapper,
+    CodeCacheHost* code_cache_host,
     URLLoaderClient*) {}
 
 }  // namespace blink

@@ -254,7 +254,8 @@ TEST_F(ImageResourceTest, MultipartImage) {
       http_names::kContentType,
       AtomicString("multipart/x-mixed-replace; boundary=boundary"));
   image_resource->Loader()->DidReceiveResponse(
-      WrappedResourceResponse(multipart_response));
+      WrappedResourceResponse(multipart_response),
+      /*cached_metadata=*/absl::nullopt);
   EXPECT_FALSE(image_resource->ResourceBuffer());
   EXPECT_FALSE(image_resource->GetContent()->HasImage());
   EXPECT_EQ(0, observer->ImageChangedCount());
@@ -340,7 +341,8 @@ TEST_F(ImageResourceTest, BitmapMultipartImage) {
       http_names::kContentType,
       AtomicString("multipart/x-mixed-replace; boundary=boundary"));
   image_resource->Loader()->DidReceiveResponse(
-      WrappedResourceResponse(multipart_response));
+      WrappedResourceResponse(multipart_response),
+      /*cached_metadata=*/absl::nullopt);
   EXPECT_FALSE(image_resource->GetContent()->HasImage());
 
   const char kBoundary[] = "--boundary\n";
@@ -823,7 +825,8 @@ TEST_F(ImageResourceTest, CancelOnDecodeError) {
   resource_response.SetMimeType(AtomicString("image/jpeg"));
   resource_response.SetExpectedContentLength(18);
   image_resource->Loader()->DidReceiveResponse(
-      WrappedResourceResponse(resource_response));
+      WrappedResourceResponse(resource_response),
+      /*cached_metadata=*/absl::nullopt);
 
   EXPECT_EQ(0, observer->ImageChangedCount());
 
@@ -851,7 +854,8 @@ TEST_F(ImageResourceTest, DecodeErrorWithEmptyBody) {
   ResourceResponse resource_response(test_url);
   resource_response.SetMimeType(AtomicString("image/jpeg"));
   image_resource->Loader()->DidReceiveResponse(
-      WrappedResourceResponse(resource_response));
+      WrappedResourceResponse(resource_response),
+      /*cached_metadata=*/absl::nullopt);
 
   EXPECT_EQ(ResourceStatus::kPending, image_resource->GetStatus());
   EXPECT_FALSE(observer->ImageNotifyFinishedCalled());
@@ -894,7 +898,8 @@ TEST_F(ImageResourceTest, PartialContentWithoutDimensions) {
                         sizeof(kJpegImage)));
 
   image_resource->Loader()->DidReceiveResponse(
-      WrappedResourceResponse(partial_response));
+      WrappedResourceResponse(partial_response),
+      /*cached_metadata=*/absl::nullopt);
   image_resource->Loader()->DidReceiveData(
       reinterpret_cast<const char*>(kJpegImage),
       kJpegImageSubrangeWithoutDimensionsLength);

@@ -79,12 +79,13 @@ class FakeURLLoader final : public URLLoader {
       bool no_mime_sniffing,
       std::unique_ptr<blink::ResourceLoadInfoNotifierWrapper>
           resource_load_info_notifier_wrapper,
+      CodeCacheHost* code_cache_host,
       URLLoaderClient* client) override {
     if (request->url.spec() == kNotFoundScriptURL) {
       WebURLResponse response;
       response.SetMimeType("text/javascript");
       response.SetHttpStatusCode(404);
-      client->DidReceiveResponse(response);
+      client->DidReceiveResponse(response, /*cached_metadata=*/absl::nullopt);
       client->DidFinishLoading(base::TimeTicks(), 0, 0, 0, false);
       return;
     }

@@ -217,7 +217,6 @@ source_set("unit_tests") {
     "fetch/resource_fetcher_properties_test.cc",
     "fetch/resource_fetcher_test.cc",
     "fetch/resource_load_scheduler_test.cc",
-    "fetch/resource_loader_defer_loading_test.cc",
     "fetch/resource_loader_test.cc",
     "fetch/resource_request_test.cc",
     "fetch/resource_response_test.cc",

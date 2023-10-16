@@ -58,13 +58,18 @@ class MockResourceRequestSender : public ResourceRequestSender {
     }
   }
 
-  void OnReceivedResponse(network::mojom::URLResponseHeadPtr head,
-                          base::TimeTicks response_arrival_time) override {
+  void OnReceivedResponse(
+      network::mojom::URLResponseHeadPtr head,
+      base::TimeTicks response_arrival_time,
+      absl::optional<mojo_base::BigBuffer> cached_metadata) override {
     EXPECT_FALSE(context_->cancelled);
     EXPECT_FALSE(context_->received_response);
     EXPECT_FALSE(context_->complete);
     context_->received_response = true;
     context_->last_load_timing = head->load_timing;
+    if (cached_metadata) {
+      context_->cached_metadata = std::move(*cached_metadata);
+    }
     if (context_->cancel_on_receive_response)
       context_->cancelled = true;
   }
@@ -87,14 +92,6 @@ class MockResourceRequestSender : public ResourceRequestSender {
     if (context_->defer_on_transfer_size_updated) {
       context_->url_laoder_client->Freeze(LoaderFreezeMode::kStrict);
     }
-  }
-
-  void OnReceivedCachedMetadata(mojo_base::BigBuffer data) override {
-    EXPECT_TRUE(context_->received_response);
-    EXPECT_FALSE(context_->complete);
-    if (context_->cancelled)
-      return;
-    context_->cached_metadata = std::move(data);
   }
 
   void OnRequestComplete(

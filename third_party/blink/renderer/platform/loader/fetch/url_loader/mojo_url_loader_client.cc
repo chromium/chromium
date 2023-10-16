@@ -53,19 +53,23 @@ class MojoURLLoaderClient::DeferredOnReceiveResponse final
  public:
   explicit DeferredOnReceiveResponse(
       network::mojom::URLResponseHeadPtr response_head,
-      base::TimeTicks response_arrival)
+      base::TimeTicks response_arrival,
+      absl::optional<mojo_base::BigBuffer> cached_metadata)
       : response_head_(std::move(response_head)),
-        response_arrival_(response_arrival) {}
+        response_arrival_(response_arrival),
+        cached_metadata_(std::move(cached_metadata)) {}
 
   void HandleMessage(ResourceRequestSender* resource_request_sender) override {
     resource_request_sender->OnReceivedResponse(std::move(response_head_),
-                                                response_arrival_);
+                                                response_arrival_,
+                                                std::move(cached_metadata_));
   }
   bool IsCompletionMessage() const override { return false; }
 
  private:
   network::mojom::URLResponseHeadPtr response_head_;
   const base::TimeTicks response_arrival_;
+  absl::optional<mojo_base::BigBuffer> cached_metadata_;
 };
 
 class MojoURLLoaderClient::DeferredOnReceiveRedirect final
@@ -105,21 +109,6 @@ class MojoURLLoaderClient::DeferredOnUploadProgress final
  private:
   const int64_t current_;
   const int64_t total_;
-};
-
-class MojoURLLoaderClient::DeferredOnReceiveCachedMetadata final
-    : public DeferredMessage {
- public:
-  explicit DeferredOnReceiveCachedMetadata(mojo_base::BigBuffer data)
-      : data_(std::move(data)) {}
-
-  void HandleMessage(ResourceRequestSender* resource_request_sender) override {
-    resource_request_sender->OnReceivedCachedMetadata(std::move(data_));
-  }
-  bool IsCompletionMessage() const override { return false; }
-
- private:
-  mojo_base::BigBuffer data_;
 };
 
 class MojoURLLoaderClient::DeferredOnStartLoadingResponseBody final
@@ -335,31 +324,16 @@ void MojoURLLoaderClient::OnReceiveResponse(
   base::WeakPtr<MojoURLLoaderClient> weak_this = weak_factory_.GetWeakPtr();
   if (NeedsStoringMessage()) {
     StoreAndDispatch(std::make_unique<DeferredOnReceiveResponse>(
-        std::move(response_head), response_arrival_timing));
+        std::move(response_head), response_arrival_timing,
+        std::move(cached_metadata)));
   } else {
     resource_request_sender_->OnReceivedResponse(std::move(response_head),
-                                                 response_arrival_timing);
+                                                 response_arrival_timing,
+                                                 std::move(cached_metadata));
   }
 
   if (!weak_this)
     return;
-
-  // Send the cached metadata, if any, before starting to load the body, so that
-  // resources using the cached data (e.g. script resources deserialising the
-  // code cache) immediately know whether the cache is available before starting
-  // to process the response body.
-  if (cached_metadata) {
-    if (NeedsStoringMessage()) {
-      StoreAndDispatch(std::make_unique<DeferredOnReceiveCachedMetadata>(
-          std::move(*cached_metadata)));
-    } else {
-      resource_request_sender_->OnReceivedCachedMetadata(
-          std::move(*cached_metadata));
-    }
-
-    if (!weak_this)
-      return;
-  }
 
   if (!body)
     return;

@@ -103,6 +103,7 @@ class MockResourceRequestSender : public ResourceRequestSender {
       WebVector<std::unique_ptr<URLLoaderThrottle>> throttles,
       std::unique_ptr<ResourceLoadInfoNotifierWrapper>
           resource_load_info_notifier_wrapper,
+      CodeCacheHost* code_cache_host,
       base::OnceCallback<void(mojom::blink::RendererEvictionReason)>
           evict_from_bfcache_callback,
       base::RepeatingCallback<void(size_t)>
@@ -230,7 +231,9 @@ class TestURLLoaderClient : public URLLoaderClient {
     EXPECT_TRUE(loader_);
   }
 
-  void DidReceiveResponse(const WebURLResponse& response) override {
+  void DidReceiveResponse(
+      const WebURLResponse& response,
+      absl::optional<mojo_base::BigBuffer> cached_metadata) override {
     EXPECT_TRUE(loader_);
     EXPECT_FALSE(did_receive_response_);
 
@@ -335,7 +338,7 @@ class URLLoaderTest : public testing::Test {
         /*no_mime_sniffing=*/false,
         std::make_unique<ResourceLoadInfoNotifierWrapper>(
             /*resource_load_info_notifier=*/nullptr),
-        client());
+        /*code_cache_host=*/nullptr, client());
     ASSERT_TRUE(resource_request_client());
   }
 
@@ -365,7 +368,9 @@ class URLLoaderTest : public testing::Test {
   void DoReceiveResponse() {
     EXPECT_FALSE(client()->did_receive_response());
     resource_request_client()->OnReceivedResponse(
-        network::mojom::URLResponseHead::New());
+        network::mojom::URLResponseHead::New(),
+        /*response_arrival_at_renderer=*/base::TimeTicks::Now(),
+        /*cached_metadata=*/absl::nullopt);
     EXPECT_TRUE(client()->did_receive_response());
   }
 

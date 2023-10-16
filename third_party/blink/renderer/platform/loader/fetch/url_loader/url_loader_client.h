@@ -82,7 +82,9 @@ class BLINK_PLATFORM_EXPORT URLLoaderClient {
                            uint64_t total_bytes_to_be_sent) {}
 
   // Called when response headers are received.
-  virtual void DidReceiveResponse(const WebURLResponse&) {}
+  virtual void DidReceiveResponse(
+      const WebURLResponse&,
+      absl::optional<mojo_base::BigBuffer> cached_metadata) {}
 
   // Called when the response body becomes available. This method is only called
   // if the request's PassResponsePipeToClient flag was set to true.
@@ -96,10 +98,6 @@ class BLINK_PLATFORM_EXPORT URLLoaderClient {
   // Called when the number of bytes actually received from network including
   // HTTP headers is updated. |transfer_size_diff| is positive.
   virtual void DidReceiveTransferSizeUpdate(int transfer_size_diff) {}
-
-  // Called when a chunk of renderer-generated metadata is received from the
-  // cache.
-  virtual void DidReceiveCachedMetadata(mojo_base::BigBuffer data) {}
 
   // Called when the load completes successfully.
   // |total_encoded_data_length| may be equal to kUnknownEncodedDataLength.

@@ -142,7 +142,8 @@ class SyncLoadContextTest : public testing::Test {
 
     // Simulate the response.
     context->OnReceivedResponse(network::mojom::URLResponseHead::New(),
-                                base::TimeTicks());
+                                base::TimeTicks(),
+                                /*cached_metadata=*/absl::nullopt);
     mojo::ScopedDataPipeProducerHandle producer_handle;
     mojo::ScopedDataPipeConsumerHandle consumer_handle;
     EXPECT_EQ(MOJO_RESULT_OK,
