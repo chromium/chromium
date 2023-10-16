@@ -70,6 +70,17 @@ void DOMURL::Trace(Visitor* visitor) const {
   ScriptWrappable::Trace(visitor);
 }
 
+// static
+bool DOMURL::canParse(const String& url) {
+  return KURL(NullURL(), url).IsValid();
+}
+
+// static
+bool DOMURL::canParse(const String& url, const String& base) {
+  KURL base_url(base);
+  return base_url.IsValid() && KURL(base_url, url).IsValid();
+}
+
 void DOMURL::setHref(const String& value, ExceptionState& exception_state) {
   KURL url(value);
   if (!url.IsValid()) {

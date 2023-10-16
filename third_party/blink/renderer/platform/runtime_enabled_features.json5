@@ -3891,6 +3891,10 @@
       origin_trial_os: ["win", "mac", "linux", "fuchsia", "chromeos"],
     },
     {
+      name: "URLCanParse",
+      status: "experimental",
+    },
+    {
       name: "URLPatternCompareComponent",
       status: "experimental",
       base_feature: "none",

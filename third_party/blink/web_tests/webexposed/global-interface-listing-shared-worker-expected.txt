@@ -1469,6 +1469,7 @@ Starting worker: resources/global-interface-listing-worker.js
 [Worker]     method isScriptURL
 [Worker]     setter onbeforecreatepolicy
 [Worker] interface URL
+[Worker]     static method canParse
 [Worker]     static method createObjectURL
 [Worker]     static method revokeObjectURL
 [Worker]     attribute @@toStringTag
