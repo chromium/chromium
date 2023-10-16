@@ -9804,13 +9804,6 @@ const FeatureEntry kFeatureEntries[] = {
 #endif  // !BUILDFLAG(IS_ANDROID)
 
 #if BUILDFLAG(IS_ANDROID)
-    {"network-service-in-process",
-     flag_descriptions::kNetworkServiceInProcessName,
-     flag_descriptions::kNetworkServiceInProcessDescription, kOsAndroid,
-     FEATURE_VALUE_TYPE(features::kNetworkServiceInProcess)},
-#endif
-
-#if BUILDFLAG(IS_ANDROID)
     {"enable-commerce-hint-android",
      flag_descriptions::kCommerceHintAndroidName,
      flag_descriptions::kCommerceHintAndroidDescription, kOsAndroid,

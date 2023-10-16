@@ -118,12 +118,6 @@ const char kBackgroundResourceFetchName[] = "Background Resource Fetch";
 const char kBackgroundResourceFetchDescription[] =
     "Process resource requests in a background thread inside Blink.";
 
-const char kBrokerFileOperationsOnDiskCacheInNetworkServiceName[] =
-    "Broker file operations on disk cache in the Network Service";
-const char kBrokerFileOperationsOnDiskCacheInNetworkServiceDescription[] =
-    "Broker file operations on disk cache running in the Network Service. This "
-    "is no-op when the Network Service is running in the browser process.";
-
 const char kCdmStorageDatabaseName[] = "Cdm Storage Database";
 const char kCdmStorageDatabaseDescription[] =
     "Start to use the CdmStorageDatabase to store data alongside the "
@@ -4104,12 +4098,6 @@ const char kMouseAndTrackpadDropdownMenuName[] =
 const char kMouseAndTrackpadDropdownMenuDescription[] =
     "When enabled, shows a dropdown menu for mouse and trackpad secondary "
     "clicks (i.e. right click) with respect to text selection.";
-
-const char kNetworkServiceInProcessName[] =
-    "Run the network service on the browser process";
-const char kNetworkServiceInProcessDescription[] =
-    "When enabled, the network service runs on the browser process. Otherwise, "
-    "it runs on a dedicated process.";
 
 const char kNewTabSearchEngineUrlAndroidName[] =
     "Enable new Tab Urls of customized search engines";
