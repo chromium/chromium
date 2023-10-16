@@ -13,38 +13,72 @@ interface ComposeDialogPageHandlerFactory {
       pending_remote<ComposeDialog> dialog);
 };
 
+// Configuration parameter used in compose requests.
 enum Tone {
   kUnset,
   kFormal,
   kCasual,
 };
 
+// Configuration parameter used in compose requests.
 enum Length {
   kUnset,
   kShorter,
   kLonger,
 };
 
+// Status code used in compose responses.
 enum ComposeStatus {
   kOk,
   kError,
 };
 
+// Configuration parameters used in compose requests.
 struct StyleModifiers {
   Tone tone;
   Length length;
 };
 
+// The response to compose requests. `response_text` is only valid if `status`
+// is kOk.
 struct ComposeResponse {
   ComposeStatus status;
   string result;
 };
+
+// Snapshot of state that can describe current state or be used to
+// fully restore a previous state.
+struct ComposeState {
+  // User-provided input string. If this state has a compose response,
+  // then this is the input that was used to generate the response.
+  string input;
+  // Modifiers used in the response captured in this state.
+  StyleModifiers style;
+  // Response from compose service. This is not present if the request
+  // has not been completed. The response is present if the request has
+  // completed, even if the response status is an error.
+  ComposeResponse? response;
+  // Whether a request is pending. False can also mean that the
+  // request was not made.
+  bool has_pending_request;
+};
+
+
+// Information needed by the WebUI to show a new or restored
+// compose dialog.
+struct OpenMetadata {
+  ComposeState compose_state;
+};
+
 
 // Interface for calls from Compose dialog JS into the native handler.
 interface ComposeDialogPageHandler {
   // Asks the Browser to compose `input` with `stye` applied. Response contains
   // the modified output.
   Compose(StyleModifiers style, string input) => (ComposeResponse response);
+
+  // Asks the Browser for information needed for opening the Compose dialog.
+  RequestInitialState() => (OpenMetadata initial_state);
 };
 
 // Interface for calls from native code into Compose dialog JS.

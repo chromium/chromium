@@ -8,6 +8,7 @@
 #include <memory>
 #include <string>
 
+#include "base/containers/flat_map.h"
 #include "chrome/common/compose/compose.mojom.h"
 #include "components/autofill/core/common/unique_ids.h"
 #include "components/compose/core/browser/compose_client.h"
@@ -52,8 +53,13 @@ class ChromeComposeClient
                const std::string& input,
                ComposeCallback callback) override;
 
+  // Retrieves and returns (through `callback`) state information for the last
+  // field the user selected compose on.
+  void RequestInitialState(RequestInitialStateCallback callback) override;
+
   void SetModelExecutorForTest(
       optimization_guide::OptimizationGuideModelExecutor* model_executor);
+  void SetSkipShowDialogForTest();
 
  private:
   friend class content::WebContentsUserData<ChromeComposeClient>;
@@ -65,6 +71,23 @@ class ChromeComposeClient
       ComposeCallback callback,
       optimization_guide::OptimizationGuideModelExecutionResult result);
 
+  // Creates a compose state for `field_id` if it does not exist.
+  void SaveFieldAndCreateComposeStateIfEmpty(
+      const autofill::FieldGlobalId& field_id);
+  // Saves the compose request in the current state, and saves the previous
+  // state for undo.
+  void SaveNewComposeRequest(const std::string& input,
+                             compose::mojom::StyleModifiersPtr style);
+  // Saves the current state in the undo stack if it contains a valid
+  // response. States with no response, or with error will not be stored for
+  // undo.
+  void MaybeSaveCurrentStateInUndoStack();
+  // Replaces the existing current compose state with a new blank state.
+  void CreateNewCurrentComposeState();
+  // Updates the compose state with a new response.
+  void UpdateComposeStateWithResponse(compose::mojom::ComposeStatus status,
+                                      const std::string& response_text);
+
   compose::ComposeManagerImpl manager_;
   std::unique_ptr<mojo::Receiver<compose::mojom::ComposeDialogPageHandler>>
       handler_receiver_;
@@ -75,6 +98,12 @@ class ChromeComposeClient
 
   // The unique renderer ID of the last field the user selected compose on.
   autofill::FieldGlobalId last_compose_field_id_;
+
+  // Saved states for each compose field.
+  base::flat_map<autofill::FieldGlobalId, compose::mojom::ComposeStatePtr>
+      field_states_;
+
+  bool skip_show_dialog_for_test_;
 
   base::WeakPtrFactory<ChromeComposeClient> weak_ptr_factory_{this};
 

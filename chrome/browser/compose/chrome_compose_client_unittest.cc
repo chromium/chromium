@@ -63,6 +63,7 @@ class ChromeComposeClientTest : public BrowserWithTestWindowTest {
         browser()->tab_strip_model()->GetWebContentsAt(0);
     client_ = ChromeComposeClient::FromWebContents(contents);
     client_->SetModelExecutorForTest(&model_executor_);
+    client_->SetSkipShowDialogForTest();
 
     // Setup Dialog Page Handler.
     mojo::PendingReceiver<compose::mojom::ComposeDialogPageHandler>
@@ -241,4 +242,55 @@ TEST_F(ChromeComposeClientTest, TestNoModelExecutor) {
 
   compose::mojom::ComposeResponsePtr result = test_future.Take();
   EXPECT_EQ(compose::mojom::ComposeStatus::kError, result->status);
+}
+
+TEST_F(ChromeComposeClientTest, TestRestoreStateAfterRequestResponse) {
+  EXPECT_CALL(model_executor(), ExecuteModel(_, _, _))
+      .WillOnce(testing::WithArg<2>(testing::Invoke(
+          [&](optimization_guide::OptimizationGuideModelExecutionResultCallback
+                  callback) {
+            std::move(callback).Run(
+                OptimizationGuideResponse(ComposeResponse(true)));
+          })));
+
+  client().ShowComposeDialog(
+      autofill::AutofillComposeDelegate::UiEntryPoint::kAutofillPopup,
+      autofill::FormFieldData(), std::nullopt, base::NullCallback());
+
+  base::test::TestFuture<compose::mojom::ComposeResponsePtr> test_future;
+  auto style_modifiers = compose::mojom::StyleModifiers::New();
+  style_modifiers->tone = compose::mojom::Tone::kCasual;
+  style_modifiers->length = compose::mojom::Length::kLonger;
+  page_handler()->Compose(std::move(style_modifiers), "a user typed this",
+                          test_future.GetCallback());
+
+  base::test::TestFuture<compose::mojom::OpenMetadataPtr> open_test_future;
+  page_handler()->RequestInitialState(open_test_future.GetCallback());
+
+  compose::mojom::OpenMetadataPtr result = open_test_future.Take();
+  EXPECT_EQ("a user typed this", result->compose_state->input);
+  EXPECT_EQ(compose::mojom::Tone::kCasual, result->compose_state->style->tone);
+  EXPECT_EQ(compose::mojom::Length::kLonger,
+            result->compose_state->style->length);
+  EXPECT_EQ(false, result->compose_state->response.is_null());
+  EXPECT_EQ(compose::mojom::ComposeStatus::kOk,
+            result->compose_state->response->status);
+  EXPECT_EQ("Cucumbers", result->compose_state->response->result);
+  EXPECT_EQ(false, result->compose_state->has_pending_request);
+}
+
+TEST_F(ChromeComposeClientTest, TestRestoreEmptyState) {
+  client().ShowComposeDialog(
+      autofill::AutofillComposeDelegate::UiEntryPoint::kAutofillPopup,
+      autofill::FormFieldData(), std::nullopt, base::NullCallback());
+
+  base::test::TestFuture<compose::mojom::OpenMetadataPtr> open_test_future;
+  page_handler()->RequestInitialState(open_test_future.GetCallback());
+
+  compose::mojom::OpenMetadataPtr result = open_test_future.Take();
+  EXPECT_EQ("", result->compose_state->input);
+  EXPECT_EQ(compose::mojom::Tone::kUnset, result->compose_state->style->tone);
+  EXPECT_EQ(compose::mojom::Length::kUnset,
+            result->compose_state->style->length);
+  EXPECT_EQ(true, result->compose_state->response.is_null());
 }

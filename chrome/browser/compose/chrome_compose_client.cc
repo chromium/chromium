@@ -4,6 +4,7 @@
 
 #include "chrome/browser/compose/chrome_compose_client.h"
 
+#include <memory>
 #include <string>
 #include <utility>
 
@@ -48,16 +49,21 @@ void ChromeComposeClient::BindComposeDialog(
 void ChromeComposeClient::Compose(compose::mojom::StyleModifiersPtr style,
                                   const std::string& input,
                                   ComposeCallback callback) {
+  SaveNewComposeRequest(input, std::move(style));
   // TODO(b/300974056): Move this to the overall feature-enabled check.
   auto* model_executor = GetModelExecutor();
   if (!model_executor ||
       !base::FeatureList::IsEnabled(
           optimization_guide::features::kOptimizationGuideModelExecution)) {
+    UpdateComposeStateWithResponse(compose::mojom::ComposeStatus::kError, "");
     std::move(callback).Run(compose::mojom::ComposeResponse::New(
         compose::mojom::ComposeStatus::kError,
         l10n_util::GetStringUTF8(IDS_COMPOSE_CONFIGURATION_ERROR)));
     return;
   }
+
+  compose::mojom::StyleModifiersPtr& saved_style =
+      field_states_.at(last_compose_field_id_)->style;
 
   compose_proto::ComposePageMetadata page_metadata;
   page_metadata.set_page_url(GetWebContents().GetLastCommittedURL().spec());
@@ -65,8 +71,8 @@ void ChromeComposeClient::Compose(compose::mojom::StyleModifiersPtr style,
 
   compose_proto::ComposeRequest request;
   request.set_user_input(input);
-  request.set_tone(ComposeTone(style->tone));
-  request.set_length(ComposeLength(style->length));
+  request.set_tone(ComposeTone(saved_style->tone));
+  request.set_length(ComposeLength(saved_style->length));
   *request.mutable_page_metadata() = std::move(page_metadata);
   model_executor->ExecuteModel(
       optimization_guide::proto::ModelExecutionFeature::
@@ -81,6 +87,7 @@ void ChromeComposeClient::ModelExecutionCallback(
     optimization_guide::OptimizationGuideModelExecutionResult result) {
   // TODO(b/302748001 Add proper error handler.
   if (!result.has_value()) {
+    UpdateComposeStateWithResponse(compose::mojom::ComposeStatus::kError, "");
     std::move(callback).Run(compose::mojom::ComposeResponse::New(
         compose::mojom::ComposeStatus::kError, ""));
     return;
@@ -90,11 +97,14 @@ void ChromeComposeClient::ModelExecutionCallback(
           result.value());
 
   if (!response) {
+    UpdateComposeStateWithResponse(compose::mojom::ComposeStatus::kError, "");
     std::move(callback).Run(compose::mojom::ComposeResponse::New(
         compose::mojom::ComposeStatus::kError, ""));
     return;
   }
 
+  UpdateComposeStateWithResponse(compose::mojom::ComposeStatus::kOk,
+                                 response->output());
   auto ui_response = compose::mojom::ComposeResponse::New();
   ui_response->status = compose::mojom::ComposeStatus::kOk;
   ui_response->result = response->output();
@@ -108,9 +118,65 @@ void ChromeComposeClient::ShowComposeDialog(
     std::optional<autofill::AutofillClient::PopupScreenLocation>
         popup_screen_location,
     ComposeDialogCallback callback) {
-  last_compose_field_id_ = trigger_field.global_id();
-  const gfx::RectF element_bounds = trigger_field.bounds;
-  chrome::ShowComposeDialog(GetWebContents(), element_bounds);
+  SaveFieldAndCreateComposeStateIfEmpty(trigger_field.global_id());
+  if (!skip_show_dialog_for_test_) {
+    const gfx::RectF element_bounds = trigger_field.bounds;
+    chrome::ShowComposeDialog(GetWebContents(), element_bounds);
+  }
+}
+
+void ChromeComposeClient::RequestInitialState(
+    RequestInitialStateCallback callback) {
+  compose::mojom::ComposeStatePtr compose_state =
+      field_states_.at(last_compose_field_id_)->Clone();
+  std::move(callback).Run(
+      compose::mojom::OpenMetadata::New(std::move(compose_state)));
+}
+
+void ChromeComposeClient::SaveFieldAndCreateComposeStateIfEmpty(
+    const autofill::FieldGlobalId& field_id) {
+  last_compose_field_id_ = field_id;
+  auto it = field_states_.find(last_compose_field_id_);
+  if (it == field_states_.end()) {
+    CreateNewCurrentComposeState();
+  }
+}
+
+void ChromeComposeClient::SaveNewComposeRequest(
+    const std::string& input,
+    compose::mojom::StyleModifiersPtr style) {
+  MaybeSaveCurrentStateInUndoStack();
+  // Overwrite the existing state, after we save it for undo.
+  CreateNewCurrentComposeState();
+
+  auto& compose_state = field_states_.at(last_compose_field_id_);
+  compose_state->has_pending_request = true;
+  compose_state->input = input;
+  compose_state->style = std::move(style);
+}
+
+void ChromeComposeClient::MaybeSaveCurrentStateInUndoStack() {
+  // TODO(b/302741370) Save the existing current state in the undo stack if
+  // there is a valid response. Undo states are not saved if there is no
+  // response, or if the response is an error.
+}
+
+void ChromeComposeClient::CreateNewCurrentComposeState() {
+  auto compose_state = compose::mojom::ComposeState::New();
+  compose_state->style = compose::mojom::StyleModifiers::New();
+  compose_state->style->tone = compose::mojom::Tone::kUnset;
+  compose_state->style->length = compose::mojom::Length::kUnset;
+  field_states_.emplace(last_compose_field_id_, std::move(compose_state));
+}
+
+void ChromeComposeClient::UpdateComposeStateWithResponse(
+    compose::mojom::ComposeStatus status,
+    const std::string& response_text) {
+  auto& compose_state = field_states_.at(last_compose_field_id_);
+  compose_state->has_pending_request = false;
+  compose_state->response = compose::mojom::ComposeResponse::New();
+  compose_state->response->status = status;
+  compose_state->response->result = response_text;
 }
 
 compose::ComposeManager& ChromeComposeClient::GetManager() {
@@ -127,6 +193,10 @@ ChromeComposeClient::GetModelExecutor() {
 void ChromeComposeClient::SetModelExecutorForTest(
     optimization_guide::OptimizationGuideModelExecutor* model_executor) {
   model_executor_for_test_ = model_executor;
+}
+
+void ChromeComposeClient::SetSkipShowDialogForTest() {
+  skip_show_dialog_for_test_ = true;
 }
 
 WEB_CONTENTS_USER_DATA_KEY_IMPL(ChromeComposeClient);
