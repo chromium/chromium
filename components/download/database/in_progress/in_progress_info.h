@@ -125,11 +125,6 @@ struct InProgressInfo {
   // can ony be resumed on WIFI.
   bool metered = false;
 
-  // Notification ID associated with the download. Used in android only.
-  // Defaults to zero as invalid value, since we explicitly use a
-  // auto-incrementing ID starting at 100000.
-  int notification_id = 0;
-
   // The credentials mode of the request.
   ::network::mojom::CredentialsMode credentials_mode =
       ::network::mojom::CredentialsMode::kInclude;

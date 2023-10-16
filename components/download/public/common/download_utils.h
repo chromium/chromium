@@ -153,17 +153,6 @@ COMPONENTS_DOWNLOAD_EXPORT base::TimeDelta GetOverwrittenDownloadDeleteTime();
 
 // Returns the size of the file buffer that reads data from the data pipe.
 COMPONENTS_DOWNLOAD_EXPORT int GetDownloadFileBufferSize();
-
-// Returns the notification ID associated with the given download.
-COMPONENTS_DOWNLOAD_EXPORT int GetNotificationIdForDownload(
-    const DownloadItem* download);
-
-// Attaches the notification ID to the given download. Useful for plumbing the
-// ID from UI up to the DB layer.
-COMPONENTS_DOWNLOAD_EXPORT void SetNotificationIdForDownload(
-    DownloadItem* download,
-    int notification_id);
-
 }  // namespace download
 
 #endif  // COMPONENTS_DOWNLOAD_PUBLIC_COMMON_DOWNLOAD_UTILS_H_
