@@ -3283,7 +3283,7 @@
 <translation id="7682287625158474539">Дастаўка</translation>
 <translation id="7682451652090915298">Рэгбі</translation>
 <translation id="7684683146428206649">Метал</translation>
-<translation id="7684928361160505327">{0,plural, =1{Файл "<ph name="FILE_NAME" />" заблакіраваны з-за абмежаванняў, звязаных з палітыкай}one{<ph name="FILE_COUNT" /> файл заблакіраваны з-за абмежаванняў, звязаных з палітыкай}few{<ph name="FILE_COUNT" /> файлы заблакіраваны з-за абмежаванняў, звязаных з палітыкай}many{<ph name="FILE_COUNT" /> файлаў заблакіраваны з-за абмежаванняў, звязаных з палітыкай}other{<ph name="FILE_COUNT" /> файла заблакіраваны з-за абмежаванняў, звязаных з палітыкай}}</translation>
+<translation id="7684928361160505327">{0,plural, =1{Файл "<ph name="FILE_NAME" />" заблакіраваны з-за парушэння правіл}one{<ph name="FILE_COUNT" /> файл заблакіраваны з-за парушэння правіл}few{<ph name="FILE_COUNT" /> файлы заблакіраваны з-за парушэння правіл}many{<ph name="FILE_COUNT" /> файлаў заблакіраваны з-за парушэння правіл}other{<ph name="FILE_COUNT" /> файла заблакіраваны з-за парушэння правіл}}</translation>
 <translation id="7687186412095877299">Запаўняе плацежныя формы звесткамі з захаваных спосабаў аплаты</translation>
 <translation id="7687305263118037187">Скончыўся час чакання паўтору</translation>
 <translation id="7690647519407127574">Паштоўка Oufuku Hagaki</translation>
