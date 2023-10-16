@@ -27,13 +27,9 @@ PersonalDataManagerCleaner::PersonalDataManagerCleaner(
       pref_service_(pref_service),
       alternative_state_name_map_updater_(alternative_state_name_map_updater) {
   // Check if profile cleanup has already been performed this major version.
-  is_autofill_profile_cleanup_pending_ =
+  is_autofill_profile_dedupe_pending_ =
       pref_service_->GetInteger(prefs::kAutofillLastVersionDeduped) <
       CHROME_VERSION_MAJOR;
-  DVLOG(1) << "Autofill profile cleanup "
-           << (is_autofill_profile_cleanup_pending_ ? "needs to be"
-                                                    : "has already been")
-           << " performed for this version";
 }
 
 PersonalDataManagerCleaner::~PersonalDataManagerCleaner() = default;
@@ -45,7 +41,7 @@ void PersonalDataManagerCleaner::CleanupDataAndNotifyPersonalDataObservers() {
   // defer the insertion to when the observers are notified.
   if (!alternative_state_name_map_updater_
            ->is_alternative_state_name_map_populated() &&
-      is_autofill_profile_cleanup_pending_) {
+      is_autofill_profile_dedupe_pending_) {
     alternative_state_name_map_updater_->PopulateAlternativeStateNameMap(
         base::BindOnce(&PersonalDataManagerCleaner::
                            CleanupDataAndNotifyPersonalDataObservers,
@@ -90,7 +86,7 @@ void PersonalDataManagerCleaner::ApplyAddressAndCardFixesAndCleanups(
   if (autofill_profile_sync_started_ && contact_info_sync_started_ &&
       !alternative_state_name_map_updater_
            ->is_alternative_state_name_map_populated() &&
-      is_autofill_profile_cleanup_pending_) {
+      is_autofill_profile_dedupe_pending_) {
     alternative_state_name_map_updater_->PopulateAlternativeStateNameMap(
         base::BindOnce(
             &PersonalDataManagerCleaner::ApplyAddressAndCardFixesAndCleanups,
@@ -107,36 +103,39 @@ void PersonalDataManagerCleaner::ApplyAddressAndCardFixesAndCleanups(
 
   // Run deferred credit card startup code.
   if (model_type == syncer::AUTOFILL_WALLET_DATA) {
-    // TODO(crbug.com/1477292): Run ApplyCardFixesAndCleanups() once per version
+    ApplyCardFixesAndCleanups();
   }
 }
 
-bool PersonalDataManagerCleaner::ApplyAddressFixesAndCleanups() {
-  // Check if de-duplication has already been performed on this major version.
-  if (!is_autofill_profile_cleanup_pending_) {
-    DVLOG(1)
-        << "Autofill profile de-duplication already performed for this version";
-    return false;
+void PersonalDataManagerCleaner::ApplyAddressFixesAndCleanups() {
+  if (!is_profile_cleanup_pending_) {
+    return;
   }
 
+  // Once per major version, otherwise NOP.
   ApplyDedupingRoutine();
+
+  // Ran once on browser startup.
   DeleteDisusedAddresses();
+
+  // Ran once on browser startup.
   RemoveInaccessibleProfileValues();
 
-  is_autofill_profile_cleanup_pending_ = false;
-  // Set the pref to the current major version.
-  pref_service_->SetInteger(prefs::kAutofillLastVersionDeduped,
-                            CHROME_VERSION_MAJOR);
-
-  return true;
+  is_profile_cleanup_pending_ = false;
 }
 
 void PersonalDataManagerCleaner::ApplyCardFixesAndCleanups() {
-  // Once per major version, otherwise NOP.
+  if (!is_credit_card_cleanup_pending_) {
+    return;
+  }
+
+  // Ran once on browser startup.
   DeleteDisusedCreditCards();
 
-  // Ran everytime it is called.
+  // Ran once on browser startup.
   ClearCreditCardNonSettingsOrigins();
+
+  is_credit_card_cleanup_pending_ = true;
 }
 
 void PersonalDataManagerCleaner::RemoveInaccessibleProfileValues() {
@@ -162,6 +161,11 @@ void PersonalDataManagerCleaner::RemoveInaccessibleProfileValues() {
 }
 
 bool PersonalDataManagerCleaner::ApplyDedupingRoutine() {
+  // Check if de-duplication has already been performed on this major version.
+  if (!is_autofill_profile_dedupe_pending_) {
+    return false;
+  }
+
   const std::vector<AutofillProfile*>& profiles =
       base::FeatureList::IsEnabled(
                   features::kAutofillAccountProfileStorage)
@@ -172,6 +176,8 @@ bool PersonalDataManagerCleaner::ApplyDedupingRoutine() {
   // No need to de-duplicate if there are less than two profiles.
   if (profiles.size() < 2) {
     DVLOG(1) << "Autofill profile de-duplication not needed.";
+    pref_service_->SetInteger(prefs::kAutofillLastVersionDeduped,
+                              CHROME_VERSION_MAJOR);
     return false;
   }
 
@@ -203,6 +209,11 @@ bool PersonalDataManagerCleaner::ApplyDedupingRoutine() {
   }
 
   UpdateCardsBillingAddressReference(guids_merge_map);
+
+  is_autofill_profile_dedupe_pending_ = false;
+  // Set the pref to the current major version.
+  pref_service_->SetInteger(prefs::kAutofillLastVersionDeduped,
+                            CHROME_VERSION_MAJOR);
 
   return true;
 }

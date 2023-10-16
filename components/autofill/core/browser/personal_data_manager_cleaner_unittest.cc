@@ -117,10 +117,6 @@ class PersonalDataManagerCleanerTest : public PersonalDataManagerTestBase,
     return personal_data_manager_cleaner_->ApplyDedupingRoutine();
   }
 
-  bool ApplyAddressFixesAndCleanups() {
-    return personal_data_manager_cleaner_->ApplyAddressFixesAndCleanups();
-  }
-
   void RemoveInaccessibleProfileValues() {
     personal_data_manager_cleaner_->RemoveInaccessibleProfileValues();
   }
@@ -669,7 +665,7 @@ TEST_F(PersonalDataManagerCleanerTest, ApplyDedupingRoutine_OncePerVersion) {
   EXPECT_EQ(2U, personal_data().GetProfiles().size());
 
   // The deduping routine should be run a first time.
-  EXPECT_TRUE(ApplyAddressFixesAndCleanups());
+  EXPECT_TRUE(ApplyDedupingRoutine());
   PersonalDataProfileTaskWaiter(personal_data()).Wait();
 
   std::vector<AutofillProfile*> profiles = personal_data().GetProfiles();
@@ -689,7 +685,7 @@ TEST_F(PersonalDataManagerCleanerTest, ApplyDedupingRoutine_OncePerVersion) {
   EXPECT_EQ(2U, personal_data().GetProfiles().size());
 
   // The deduping routine should not be run.
-  EXPECT_FALSE(ApplyAddressFixesAndCleanups());
+  EXPECT_FALSE(ApplyDedupingRoutine());
 
   // The two duplicate profiles should still be present.
   EXPECT_EQ(2U, personal_data().GetProfiles().size());

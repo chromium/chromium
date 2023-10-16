@@ -56,7 +56,7 @@ class PersonalDataManagerCleaner {
 
  private:
   // Applies various fixes and cleanups on autofill addresses.
-  bool ApplyAddressFixesAndCleanups();
+  void ApplyAddressFixesAndCleanups();
 
   // Applies various fixes and cleanups on autofill credit cards.
   void ApplyCardFixesAndCleanups();
@@ -103,8 +103,12 @@ class PersonalDataManagerCleaner {
   // the settings page.
   void ClearCreditCardNonSettingsOrigins();
 
-  // True if autofill profile cleanup needs to be performed.
-  bool is_autofill_profile_cleanup_pending_ = false;
+  // True if autofill profile dedupe needs to be performed.
+  bool is_autofill_profile_dedupe_pending_ = true;
+
+  // True if the profile or credit card cleanups need to be performed.
+  bool is_profile_cleanup_pending_ = true;
+  bool is_credit_card_cleanup_pending_ = true;
 
   // The personal data manager, used to load and update the personal data
   // from/to the web database.
