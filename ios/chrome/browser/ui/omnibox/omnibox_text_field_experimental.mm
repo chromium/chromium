@@ -103,6 +103,7 @@ NSString* const kOmniboxFadeAnimationKey = @"OmniboxFadeAnimation";
 
     // Force initial layout of internal text label.  Needed for omnibox
     // animations that will otherwise animate the text label from origin {0, 0}.
+    self.font = self.currentFont;
     [super setText:@" "];
 
     [self addGestureRecognizer:[[UITapGestureRecognizer alloc]
