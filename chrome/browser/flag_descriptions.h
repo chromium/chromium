@@ -3256,9 +3256,6 @@ extern const char kBluetoothFlossIsAvailabilityCheckNeededDescription[];
 extern const char kBluetoothUseLLPrivacyName[];
 extern const char kBluetoothUseLLPrivacyDescription[];
 
-extern const char kBluetoothLongAutosuspendName[];
-extern const char kBluetoothLongAutosuspendDescription[];
-
 extern const char kCalendarJellyName[];
 extern const char kCalendarJellyDescription[];
 

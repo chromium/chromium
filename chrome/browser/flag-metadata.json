@@ -853,11 +853,6 @@
     "expiry_milestone": 130
   },
   {
-    "name": "bluetooth-long-autosuspend",
-    "owners": ["abhishekpandit", "chromeos-bt-champs@google.com"],
-    "expiry_milestone": 120
-  },
-  {
     "name": "bluetooth-quality-report",
     "owners": [ "josephsih", "chromeos-bt-champs@google.com" ],
     "expiry_milestone": 111
