@@ -448,7 +448,7 @@ UserScriptList ConvertValueToScripts(const Extension& extension,
     if (!script_parsing::ParseFileSources(
             &extension, base::OptionalToPtr(content_script->js),
             base::OptionalToPtr(content_script->css),
-            /*definition_index=*/0, script.get(), &error)) {
+            /*definition_index=*/absl::nullopt, script.get(), &error)) {
       continue;
     }
 

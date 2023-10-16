@@ -4,8 +4,6 @@
 
 #include "chrome/browser/extensions/api/scripting/scripting_api.h"
 
-#include <algorithm>
-
 #include "base/check.h"
 #include "base/containers/contains.h"
 #include "base/json/json_writer.h"
@@ -49,6 +47,8 @@ namespace {
 constexpr char kCouldNotLoadFileError[] = "Could not load file: '*'.";
 constexpr char kDuplicateFileSpecifiedError[] =
     "Duplicate file specified: '*'.";
+constexpr char kEmptyMatchesError[] =
+    "Script with ID '*' must specify 'matches'.";
 constexpr char kExactlyOneOfCssAndFilesError[] =
     "Exactly one of 'css' and 'files' must be specified.";
 
@@ -458,7 +458,6 @@ std::unique_ptr<UserScript> ParseUserScript(
     content::BrowserContext* browser_context,
     const Extension& extension,
     const api::scripting::RegisteredContentScript& content_script,
-    int definition_index,
     int valid_schemes,
     std::u16string* error) {
   auto result = std::make_unique<UserScript>();
@@ -500,8 +499,8 @@ std::unique_ptr<UserScript> ParseUserScript(
 
   if (!script_parsing::ParseFileSources(
           &extension, base::OptionalToPtr(content_script.js),
-          base::OptionalToPtr(content_script.css), definition_index,
-          result.get(), error)) {
+          base::OptionalToPtr(content_script.css),
+          /*definition_index=*/absl::nullopt, result.get(), error)) {
     return nullptr;
   }
 
@@ -948,24 +947,20 @@ ScriptingRegisterContentScriptsFunction::Run() {
       scripting::kScriptsCanExecuteEverywhere);
 
   parsed_scripts->reserve(scripts.size());
-  for (size_t i = 0; i < scripts.size(); ++i) {
-    if (!scripts[i].matches) {
-      std::string error_script_id =
-          UserScript::TrimPrefixFromScriptID(scripts[i].id);
-      return RespondNow(
-          Error(base::StringPrintf("Script with ID '%s' must specify 'matches'",
-                                   error_script_id.c_str())));
+  for (auto& script : scripts) {
+    if (!script.matches) {
+      return RespondNow(Error(ErrorUtils::FormatErrorMessage(
+          kEmptyMatchesError, UserScript::TrimPrefixFromScriptID(script.id))));
     }
 
-    std::unique_ptr<UserScript> user_script =
-        ParseUserScript(browser_context(), *extension(), scripts[i], i,
-                        valid_schemes, &parse_error);
-    if (!user_script)
+    std::unique_ptr<UserScript> user_script = ParseUserScript(
+        browser_context(), *extension(), script, valid_schemes, &parse_error);
+    if (!user_script) {
       return RespondNow(Error(base::UTF16ToASCII(parse_error)));
+    }
 
     // Scripts will persist across sessions by default.
-    if (!scripts[i].persist_across_sessions ||
-        *scripts[i].persist_across_sessions) {
+    if (script.persist_across_sessions.value_or(true)) {
       persistent_script_ids.insert(user_script->id());
     }
     parsed_scripts->push_back(std::move(user_script));
@@ -1200,7 +1195,6 @@ std::unique_ptr<UserScript> ScriptingUpdateContentScriptsFunction::ApplyUpdate(
     std::set<std::string>* script_ids_to_persist,
     api::scripting::RegisteredContentScript& new_script,
     api::scripting::RegisteredContentScript& original_script,
-    int definition_index,
     std::u16string* parse_error) {
   if (new_script.matches) {
     original_script.matches = std::move(new_script.matches);
@@ -1236,7 +1230,7 @@ std::unique_ptr<UserScript> ScriptingUpdateContentScriptsFunction::ApplyUpdate(
       scripting::kScriptsCanExecuteEverywhere);
   std::unique_ptr<UserScript> parsed_script =
       ParseUserScript(browser_context(), *extension(), original_script,
-                      definition_index, valid_schemes, parse_error);
+                      valid_schemes, parse_error);
   if (!parsed_script) {
     return nullptr;
   }

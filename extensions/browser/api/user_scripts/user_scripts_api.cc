@@ -410,7 +410,6 @@ ExtensionFunction::ResponseAction UserScriptsUpdateFunction::Run() {
 std::unique_ptr<UserScript> UserScriptsUpdateFunction::ApplyUpdate(
     api::user_scripts::RegisteredUserScript& new_script,
     api::user_scripts::RegisteredUserScript& original_script,
-    int definition_index,
     std::u16string* parse_error) {
   if (new_script.run_at != api::extension_types::RunAt::kNone) {
     original_script.run_at = new_script.run_at;

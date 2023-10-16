@@ -65,11 +65,11 @@ bool ParseMatchPatterns(const std::vector<std::string>& matches,
 
 // Parses the `js` and `css` fields, and updates `result` with the specified
 // file paths. Returns false and populates `error` if both `js` and `css` are
-// empty.
+// empty. `definition_index` must be only provided for static scripts.
 bool ParseFileSources(const Extension* extension,
                       const std::vector<std::string>* js,
                       const std::vector<std::string>* css,
-                      int definition_index,
+                      absl::optional<int> definition_index,
                       UserScript* result,
                       std::u16string* error);
 
