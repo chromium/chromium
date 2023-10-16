@@ -17,12 +17,12 @@ import {fileOperationUtil} from './file_operation_util.js';
 export class FileOperationManagerImpl {
   constructor() {
     /**
-     * @private {VolumeManager}
+     * @private @type {VolumeManager}
      */
     this.volumeManager_ = null;
 
     /**
-     * @private {number}
+     * @private @type {number}
      */
     this.taskIdCounter_ = 0;
   }

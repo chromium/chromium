@@ -15,14 +15,14 @@ export class ProgressCenterPanelInterface {
     /**
      * Callback to be called with the ID of the progress item when the cancel
      * button is clicked.
-     * @public {?function(string)}
+     * @public @type {?function(string)}
      */
     this.cancelCallback;
 
     /**
      * Callback to be called with the ID of the error item when user pressed
      * dismiss button of it.
-     * @public {?function(string)}
+     * @public @type {?function(string)}
      */
     this.dismissErrorItemCallback;
   }

@@ -35,61 +35,61 @@ export class ListThumbnailLoader extends EventTarget {
       opt_thumbnailLoaderConstructor) {
     super();
     /**
-     * @private {!DirectoryModel}
+     * @private @type {!DirectoryModel}
      */
     this.directoryModel_ = directoryModel;
 
     /**
-     * @private {!ThumbnailModel}
+     * @private @type {!ThumbnailModel}
      */
     this.thumbnailModel_ = thumbnailModel;
 
     /**
-     * @private {!VolumeManager}
+     * @private @type {!VolumeManager}
      */
     this.volumeManager_ = volumeManager;
 
     /**
      * Constructor of thumbnail loader.
-     * @private {!Function}
+     * @private @type {!Function}
      */
     this.thumbnailLoaderConstructor_ =
         opt_thumbnailLoaderConstructor || ThumbnailLoader;
 
     /**
-     * @private {!Object<!ListThumbnailLoader.Task>}
+     * @private @type {!Object<!ListThumbnailLoader.Task>}
      */
     this.active_ = {};
 
     /**
-     * @private {LruCache<!ListThumbnailLoader.ThumbnailData>}
+     * @private @type {LruCache<!ListThumbnailLoader.ThumbnailData>}
      */
     this.cache_ = new LruCache(ListThumbnailLoader.CACHE_SIZE);
 
     /**
-     * @private {number}
+     * @private @type {number}
      */
     this.beginIndex_ = 0;
 
     /**
-     * @private {number}
+     * @private @type {number}
      */
     this.endIndex_ = 0;
 
     /**
      * Cursor.
-     * @private {number}
+     * @private @type {number}
      */
     this.cursor_ = 0;
 
     /**
      * Current volume type.
-     * @private {?ListThumbnailLoader.VolumeType}
+     * @private @type {?ListThumbnailLoader.VolumeType}
      */
     this.currentVolumeType_ = null;
 
     /**
-     * @private {!FileListModel}
+     * @private @type {!FileListModel}
      */
     this.dataModel_ = assert(this.directoryModel_.getFileList());
 
@@ -308,13 +308,13 @@ export class ListThumbnailLoader extends EventTarget {
 /**
  * Cache size. Cache size must be larger than sum of high priority range size
  * and number of prefetch tasks.
- * @const {number}
+ * @const @type {number}
  */
 ListThumbnailLoader.CACHE_SIZE = 500;
 
 /**
  * Volume type for testing.
- * @const {string}
+ * @const @type {string}
  */
 ListThumbnailLoader.TEST_VOLUME_TYPE = 'test_volume_type';
 
@@ -371,22 +371,22 @@ ListThumbnailLoader.ThumbnailData = class {
    */
   constructor(fileUrl, dataUrl, width, height) {
     /**
-     * @const {string}
+     * @const @type {string}
      */
     this.fileUrl = fileUrl;
 
     /**
-     * @const {?string}
+     * @const @type {?string}
      */
     this.dataUrl = dataUrl;
 
     /**
-     * @const {?number}
+     * @const @type {?number}
      */
     this.width = width;
 
     /**
-     * @const {?number}
+     * @const @type {?number}
      */
     this.height = height;
 

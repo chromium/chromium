@@ -44,10 +44,10 @@ export function createFakeDirectoryModel() {
     constructor() {
       super();
 
-      /** @private {!FileFilter} */
+      /** @private @type {!FileFilter} */
       this.fileFilter_ = createFakeFileFilter();
 
-      /** @private {FilesAppDirEntry} */
+      /** @private @type {FilesAppDirEntry} */
       this.myFiles_ = null;
     }
 

@@ -31,7 +31,7 @@ export const fakeDriveVolumeId =
  */
 export class MockVolumeManager {
   constructor() {
-    /** @const {!VolumeInfoList} */
+    /** @const @type {!VolumeInfoList} */
     this.volumeInfoList = new VolumeInfoListImpl();
 
     /** @type {!chrome.fileManagerPrivate.DriveConnectionState} */
@@ -299,7 +299,7 @@ export class MockVolumeManager {
   }
 }
 
-/** @private {?VolumeManager} */
+/** @private @type {?VolumeManager} */
 MockVolumeManager.instance_ = null;
 
 MockVolumeManager.prototype.getVolumeInfo =

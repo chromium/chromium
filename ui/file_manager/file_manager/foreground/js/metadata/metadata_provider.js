@@ -18,7 +18,7 @@ export class MetadataProvider {
     /**
      * Set of valid property names. Key is the name of property and value is
      * always true.
-     * @private @const {!Object<boolean>}
+     * @private @const @type {!Object<boolean>}
      */
     this.validPropertyNames_ = {};
     for (let i = 0; i < validPropertyNames.length; i++) {

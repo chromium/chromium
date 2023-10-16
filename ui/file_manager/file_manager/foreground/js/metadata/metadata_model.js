@@ -21,19 +21,19 @@ import {MultiMetadataProvider} from './multi_metadata_provider.js';
  */
 export class MetadataStats {
   constructor() {
-    /** @public {number} Total of entries fulfilled from cache. */
+    /** @public @type {number} Total of entries fulfilled from cache. */
     this.fromCache = 0;
 
-    /** @public {number} Total of entries that requested to backends. */
+    /** @public @type {number} Total of entries that requested to backends. */
     this.fullFetch = 0;
 
-    /** @public {number} Total of entries that called to invalidate. */
+    /** @public @type {number} Total of entries that called to invalidate. */
     this.invalidateCount = 0;
 
-    /** @public {number} Total of entries that called to clear. */
+    /** @public @type {number} Total of entries that called to clear. */
     this.clearCacheCount = 0;
 
-    /** @public {number} Total of calls to function clearAllCache. */
+    /** @public @type {number} Total of calls to function clearAllCache. */
     this.clearAllCount = 0;
   }
 }
@@ -43,18 +43,18 @@ export class MetadataModel {
    * @param {!MetadataProvider} rawProvider
    */
   constructor(rawProvider) {
-    /** @private @const {!MetadataProvider} */
+    /** @private @const @type {!MetadataProvider} */
     this.rawProvider_ = rawProvider;
 
-    /** @private @const {!MetadataCacheSet} */
+    /** @private @const @type {!MetadataCacheSet} */
     this.cache_ = new MetadataCacheSet();
 
-    /** @private @const {!Array<!MetadataProviderCallbackRequest>} */
+    /** @private @const @type {!Array<!MetadataProviderCallbackRequest>} */
     this.callbackRequests_ = [];
 
     /**
-     * @private @const {?MetadataStats} record stats about Metadata when in
-     *     tests.
+     * @private @const @type {?MetadataStats} record stats about Metadata when
+     *     in tests.
      */
     this.stats_ = window.IN_TEST ? new MetadataStats() : null;
   }
@@ -285,25 +285,25 @@ class MetadataProviderCallbackRequest {
    */
   constructor(entries, names, cache, fulfill) {
     /**
-     * @private {!Array<!Entry>}
+     * @private @type {!Array<!Entry>}
      * @const
      */
     this.entries_ = entries;
 
     /**
-     * @private {!Array<string>}
+     * @private @type {!Array<string>}
      * @const
      */
     this.names_ = names;
 
     /**
-     * @private {!MetadataCacheSet}
+     * @private @type {!MetadataCacheSet}
      * @const
      */
     this.cache_ = cache;
 
     /**
-     * @private {function(!Array<MetadataItem>):undefined}
+     * @private @type {function(!Array<MetadataItem>):undefined}
      * @const
      */
     this.fulfill_ = fulfill;

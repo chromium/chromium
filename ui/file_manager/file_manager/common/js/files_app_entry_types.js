@@ -77,12 +77,12 @@ export class CombinedReaders {
    */
   constructor(readers) {
     /**
-     * @private {!Array<!DirectoryReader>} Reversed readers so the readEntries
-     *     can just use pop() to get the next
+     * @private @type {!Array<!DirectoryReader>} Reversed readers so the
+     *     readEntries can just use pop() to get the next
      */
     this.readers_ = readers.reverse();
 
-    /** @private {!DirectoryReader} */
+    /** @private @type {!DirectoryReader} */
     this.currentReader_ = readers.pop();
   }
 
@@ -137,22 +137,23 @@ export class EntryList {
    */
   constructor(label, rootType, devicePath = '') {
     /**
-     * @private {string} label: Label to be used when displaying to user, it
+     * @private @type {string} label: Label to be used when displaying to user,
+     *     it
      *      should be already translated.
      */
     this.label_ = label;
 
-    /** @private {VolumeManagerCommon.RootType} rootType root type. */
+    /** @private @type {VolumeManagerCommon.RootType} rootType root type. */
     this.rootType_ = rootType;
 
     /**
-     * @private {string} devicePath Path belonging to the external media
+     * @private @type {string} devicePath Path belonging to the external media
      * device. Partitions on the same external drive have the same device path.
      */
     this.devicePath_ = devicePath;
 
     /**
-     * @private {!Array<!Entry|!FilesAppEntry>} children entries of
+     * @private @type {!Array<!Entry|!FilesAppEntry>} children entries of
      * this EntryList instance.
      */
     this.children_ = [];
@@ -163,13 +164,13 @@ export class EntryList {
     this.fullPath = '/';
 
     /**
-     * @public {?FileSystem}
+     * @public @type {?FileSystem}
      */
     this.filesystem = null;
 
     /**
-     * @public {boolean} EntryList can be a placeholder of a real volume (e.g.
-     * MyFiles or DriveFakeRootEntryList), it can be disabled if the
+     * @public @type {boolean} EntryList can be a placeholder of a real volume
+     * (e.g. MyFiles or DriveFakeRootEntryList), it can be disabled if the
      * corresponding volume type is disabled.
      */
     this.disabled = false;
@@ -412,7 +413,8 @@ export class VolumeEntry {
    */
   constructor(volumeInfo) {
     /**
-     * @private {!VolumeInfo} holds a reference to VolumeInfo to delegate some
+     * @private @type {!VolumeInfo} holds a reference to VolumeInfo to delegate
+     *     some
      * method calls to it.
      */
     this.volumeInfo_ = volumeInfo;
@@ -757,54 +759,54 @@ export class FakeEntryImpl {
    */
   constructor(label, rootType, opt_sourceRestriction, opt_fileCategory) {
     /**
-     * @public {string} label: Label to be used when displaying to user, it
-     *      should be already translated.
+     * @public @type {string} label: Label to be used when displaying to user,
+     * it should be already translated.
      */
     this.label = label;
 
-    /** @public {string} Name for this volume. */
+    /** @public @type {string} Name for this volume. */
     this.name = label;
 
-    /** @public {!VolumeManagerCommon.RootType} */
+    /** @public @type {!VolumeManagerCommon.RootType} */
     this.rootType = rootType;
 
-    /** @public {boolean} true FakeEntry are always directory-like. */
+    /** @public @type {boolean} true FakeEntry are always directory-like. */
     this.isDirectory = true;
 
-    /** @public {boolean} false FakeEntry are always directory-like. */
+    /** @public @type {boolean} false FakeEntry are always directory-like. */
     this.isFile = false;
 
     /**
-     * @public {boolean} false FakeEntry can be disabled if it represents the
-     * placeholder of the real volume.
+     * @public @type {boolean} false FakeEntry can be disabled if it represents
+     * the placeholder of the real volume.
      */
     this.disabled = false;
 
     /**
-     * @public {chrome.fileManagerPrivate.SourceRestriction|undefined} It's used
-     * to communicate restrictions about sources to
+     * @public @type {chrome.fileManagerPrivate.SourceRestriction|undefined}
+     * It's used to communicate restrictions about sources to
      * chrome.fileManagerPrivate.getRecentFiles API.
      */
     this.sourceRestriction = opt_sourceRestriction;
 
     /**
-     * @public {chrome.fileManagerPrivate.FileCategory|undefined} It's used to
-     * communicate file-type filter to chrome.fileManagerPrivate.getRecentFiles
-     * API.
+     * @public @type {chrome.fileManagerPrivate.FileCategory|undefined} It's
+     * used to communicate file-type filter to
+     * chrome.fileManagerPrivate.getRecentFiles API.
      */
     this.fileCategory = opt_fileCategory;
 
     /**
-     * @public {string} the class name for this class. It's workaround for the
-     * fact that an instance created on foreground page and sent to background
-     * page can't be checked with "instanceof".
+     * @public @type {string} the class name for this class. It's workaround for
+     * the fact that an instance created on foreground page and sent to
+     * background page can't be checked with "instanceof".
      */
     this.type_name = 'FakeEntry';
 
     this.fullPath = '/';
 
     /**
-     * @public {?FileSystem}
+     * @public @type {?FileSystem}
      */
     this.filesystem = null;
   }
@@ -954,14 +956,14 @@ export class GuestOsPlaceholder extends FakeEntryImpl {
     super(label, VolumeManagerCommon.RootType.GUEST_OS, undefined, undefined);
 
     /**
-     * @public {number} The id of this guest
+     * @public @type {number} The id of this guest
      */
     this.guest_id = guest_id;
 
     /**
-     * @public {string} the class name for this class. It's workaround for the
-     * fact that an instance created on foreground page and sent to background
-     * page can't be checked with "instanceof".
+     * @public @type {string} the class name for this class. It's workaround for
+     * the fact that an instance created on foreground page and sent to
+     * background page can't be checked with "instanceof".
      */
     this.type_name = 'GuestOsPlaceholder';
 

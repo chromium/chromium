@@ -24,19 +24,19 @@ export class MetadataUpdateController {
    */
   constructor(
       listContainer, directoryModel, metadataModel, fileMetadataFormatter) {
-    /** @private @const {!DirectoryModel} */
+    /** @private @const @type {!DirectoryModel} */
     this.directoryModel_ = directoryModel;
 
-    /** @private @const {!MetadataModel} */
+    /** @private @const @type {!MetadataModel} */
     this.metadataModel_ = metadataModel;
 
-    /** @private @const {!ListContainer} */
+    /** @private @const @type {!ListContainer} */
     this.listContainer_ = listContainer;
 
-    /** @private @const {!FileMetadataFormatter} */
+    /** @private @const @type {!FileMetadataFormatter} */
     this.fileMetadataFormatter_ = fileMetadataFormatter;
 
-    /** @private {!Store} */
+    /** @private @type {!Store} */
     this.store_ = getStore();
 
     chrome.fileManagerPrivate.onPreferencesChanged.addListener(
@@ -142,6 +142,6 @@ export class MetadataUpdateController {
 
 /**
  * Number of milliseconds in a day.
- * @private @const {number}
+ * @private @const @type {number}
  */
 MetadataUpdateController.MILLISECONDS_IN_DAY_ = 24 * 60 * 60 * 1000;

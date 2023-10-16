@@ -23,22 +23,22 @@ import {positionPopupAtPoint} from './position_util.js';
   class ContextMenuHandler extends EventTarget {
     constructor() {
       super();
-      /** @private {!EventTracker} */
+      /** @private @type {!EventTracker} */
       this.showingEvents_ = new EventTracker();
 
       /**
        * The menu that we are currently showing.
-       * @private {?Menu}
+       * @private @type {?Menu}
        */
       this.menu_ = null;
 
-      /** @private {?number} */
+      /** @private @type {?number} */
       this.hideTimestamp_ = null;
 
-      /** @private {boolean} */
+      /** @private @type {boolean} */
       this.keyIsDown_ = false;
 
-      /** @private {?ResizeObserver} */
+      /** @private @type {?ResizeObserver} */
       this.resizeObserver_ = null;
     }
 

@@ -14,19 +14,19 @@ export class SortMenuController {
    * @param {!FileListModel} fileListModel
    */
   constructor(sortButton, fileListModel) {
-    /** @private @const {!FileListModel} */
+    /** @private @const @type {!FileListModel} */
     this.fileListModel_ = fileListModel;
 
-    /** @private @const {!HTMLElement} */
+    /** @private @const @type {!HTMLElement} */
     this.sortByNameButton_ =
         queryRequiredElement('#sort-menu-sort-by-name', sortButton.menu);
-    /** @private @const {!HTMLElement} */
+    /** @private @const @type {!HTMLElement} */
     this.sortBySizeButton_ =
         queryRequiredElement('#sort-menu-sort-by-size', sortButton.menu);
-    /** @private @const {!HTMLElement} */
+    /** @private @const @type {!HTMLElement} */
     this.sortByTypeButton_ =
         queryRequiredElement('#sort-menu-sort-by-type', sortButton.menu);
-    /** @private @const {!HTMLElement} */
+    /** @private @const @type {!HTMLElement} */
     this.sortByDateButton_ =
         queryRequiredElement('#sort-menu-sort-by-date', sortButton.menu);
 

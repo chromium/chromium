@@ -55,13 +55,13 @@ export class VolumeManagerImpl extends EventTarget {
 
     /**
      * Holds the resolver for the `waitForInitialization_` promise.
-     * @private {null|function():void}
+     * @private @type {null|function():void}
      */
     this.finishInitialization_ = null;
 
     /**
      * Promise used to wait for the initialize() method to finish.
-     * @private {!Promise<void>}
+     * @private @type {!Promise<void>}
      */
     this.waitForInitialization_ =
         new Promise(resolve => this.finishInitialization_ = resolve);

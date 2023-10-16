@@ -22,40 +22,40 @@ export class DialogFooter {
   constructor(dialogType, container, filenameInput) {
     /**
      * Root element of the footer.
-     * @public @const {!Element}
+     * @public @const @type {!Element}
      */
     this.element = container;
 
     /**
      * Dialog type.
-     * @private @const {DialogType}
+     * @private @const @type {DialogType}
      */
     this.dialogType_ = dialogType;
 
     /**
      * OK button in the footer.
-     * @public @const {!HTMLButtonElement}
+     * @public @const @type {!HTMLButtonElement}
      */
     this.okButton =
         /** @type {!HTMLButtonElement} */ (container.querySelector('.ok'));
 
     /**
      * OK button's label in the footer.
-     * @public @const {!HTMLSpanElement}
+     * @public @const @type {!HTMLSpanElement}
      */
     this.okButtonLabel = /** @type {!HTMLSpanElement} */
         (this.okButton.querySelector('span'));
 
     /**
      * Cancel button in the footer.
-     * @public @const {!HTMLButtonElement}
+     * @public @const @type {!HTMLButtonElement}
      */
     this.cancelButton = /** @type {!HTMLButtonElement} */
         (container.querySelector('.cancel'));
 
     /**
      * New folder button in the footer.
-     * @public @const {!HTMLButtonElement}
+     * @public @const @type {!HTMLButtonElement}
      */
     this.newFolderButton = /** @type {!HTMLButtonElement} */
         (container.querySelector('#new-folder-button'));
@@ -86,7 +86,7 @@ export class DialogFooter {
 
     this.fileTypeSelectorText = this.fileTypeSelector.querySelector('span');
 
-    /** @public @const {!CrInputElement} */
+    /** @public @const @type {!CrInputElement} */
     this.filenameInput = /** @type {!CrInputElement} */ (filenameInput);
 
     // Initialize the element styles.

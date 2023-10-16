@@ -82,7 +82,7 @@ export class ProgressCenterItem {
   constructor() {
     /**
      * Item ID.
-     * @private {string}
+     * @private @type {string}
      */
     this.id_ = '';
 

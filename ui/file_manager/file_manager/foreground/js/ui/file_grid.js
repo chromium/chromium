@@ -43,49 +43,49 @@ export class FileGrid extends Grid {
   constructor() {
     super();
 
-    /** @private {number} */
+    /** @private @type {number} */
     this.paddingTop_ = 0;
 
-    /** @private {number} */
+    /** @private @type {number} */
     this.paddingStart_ = 0;
 
-    /** @private {number} */
+    /** @private @type {number} */
     this.beginIndex_ = 0;
 
-    /** @private {number} */
+    /** @private @type {number} */
     this.endIndex_ = 0;
 
     /**
      * Inherited from Grid <- List
-     * @private {?Element}
+     * @private @type {?Element}
      * */
     this.beforeFiller_ = null;
 
     /**
      * Inherited from Grid <- List
-     * @private {?Element}
+     * @private @type {?Element}
      * */
     this.afterFiller_ = null;
 
-    /** @private {?MetadataModel} */
+    /** @private @type {?MetadataModel} */
     this.metadataModel_ = null;
 
-    /** @private {?ListThumbnailLoader} */
+    /** @private @type {?ListThumbnailLoader} */
     this.listThumbnailLoader_ = null;
 
-    /** @private {?VolumeManager} */
+    /** @private @type {?VolumeManager} */
     this.volumeManager_ = null;
 
-    /** @private {?RateLimiter} */
+    /** @private @type {?RateLimiter} */
     this.relayoutRateLimiter_ = null;
 
-    /** @private {?function(!Event)} */
+    /** @private @type {?function(!Event)} */
     this.onThumbnailLoadedBound_ = null;
 
-    /** @private {?ObjectPropertyDescriptor|undefined} */
+    /** @private @type {?ObjectPropertyDescriptor|undefined} */
     this.dataModelDescriptor_ = null;
 
-    /** @public {?A11yAnnounce} */
+    /** @public @type {?A11yAnnounce} */
     this.a11y = null;
 
     throw new Error('Use FileGrid.decorate');

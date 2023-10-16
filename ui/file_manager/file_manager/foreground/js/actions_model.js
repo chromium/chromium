@@ -55,25 +55,25 @@ class DriveShareAction {
    */
   constructor(entry, metadataModel, volumeManager, ui) {
     /**
-     * @private {!Entry}
+     * @private @type {!Entry}
      * @const
      */
     this.entry_ = entry;
 
     /**
-     * @private {!MetadataModel}
+     * @private @type {!MetadataModel}
      * @const
      */
     this.metadataModel_ = metadataModel;
 
     /**
-     * @private {!VolumeManager}
+     * @private @type {!VolumeManager}
      * @const
      */
     this.volumeManager_ = volumeManager;
 
     /**
-     * @private {!ActionModelUI}
+     * @private @type {!ActionModelUI}
      * @const
      */
     this.ui_ = ui;
@@ -156,37 +156,37 @@ class DriveToggleOfflineAction {
    */
   constructor(entries, metadataModel, ui, volumeManager, value, onExecute) {
     /**
-     * @private {!Array<!Entry>}
+     * @private @type {!Array<!Entry>}
      * @const
      */
     this.entries_ = entries;
 
     /**
-     * @private {!MetadataModel}
+     * @private @type {!MetadataModel}
      * @const
      */
     this.metadataModel_ = metadataModel;
 
     /**
-     * @private {!VolumeManager}
+     * @private @type {!VolumeManager}
      * @const
      */
     this.volumeManager_ = volumeManager;
 
     /**
-     * @private {!ActionModelUI}
+     * @private @type {!ActionModelUI}
      * @const
      */
     this.ui_ = ui;
 
     /**
-     * @private {boolean}
+     * @private @type {boolean}
      * @const
      */
     this.value_ = value;
 
     /**
-     * @private {function()}
+     * @private @type {function()}
      * @const
      */
     this.onExecute_ = onExecute;
@@ -319,19 +319,19 @@ class DriveCreateFolderShortcutAction {
    */
   constructor(entry, shortcutsModel, onExecute) {
     /**
-     * @private {!Entry}
+     * @private @type {!Entry}
      * @const
      */
     this.entry_ = entry;
 
     /**
-     * @private {!FolderShortcutsDataModel}
+     * @private @type {!FolderShortcutsDataModel}
      * @const
      */
     this.shortcutsModel_ = shortcutsModel;
 
     /**
-     * @private {function()}
+     * @private @type {function()}
      * @const
      */
     this.onExecute_ = onExecute;
@@ -395,19 +395,19 @@ class DriveRemoveFolderShortcutAction {
    */
   constructor(entry, shortcutsModel, onExecute) {
     /**
-     * @private {!Entry}
+     * @private @type {!Entry}
      * @const
      */
     this.entry_ = entry;
 
     /**
-     * @private {!FolderShortcutsDataModel}
+     * @private @type {!FolderShortcutsDataModel}
      * @const
      */
     this.shortcutsModel_ = shortcutsModel;
 
     /**
-     * @private {function()}
+     * @private @type {function()}
      * @const
      */
     this.onExecute_ = onExecute;
@@ -472,19 +472,19 @@ class DriveManageAction {
     /**
      * The entry to open the 'Manage' page for.
      *
-     * @private {!Entry}
+     * @private @type {!Entry}
      * @const
      */
     this.entry_ = entry;
 
     /**
-     * @private {!VolumeManager}
+     * @private @type {!VolumeManager}
      * @const
      */
     this.volumeManager_ = volumeManager;
 
     /**
-     * @private {!ActionModelUI}
+     * @private @type {!ActionModelUI}
      * @const
      */
     this.ui_ = ui;
@@ -567,25 +567,25 @@ class CustomAction {
    */
   constructor(entries, id, title, onExecute) {
     /**
-     * @private {!Array<!Entry>}
+     * @private @type {!Array<!Entry>}
      * @const
      */
     this.entries_ = entries;
 
     /**
-     * @private {string}
+     * @private @type {string}
      * @const
      */
     this.id_ = id;
 
     /**
-     * @private {?string}
+     * @private @type {?string}
      * @const
      */
     this.title_ = title;
 
     /**
-     * @private {function()}
+     * @private @type {function()}
      * @const
      */
     this.onExecute_ = onExecute;
@@ -642,52 +642,52 @@ export class ActionsModel extends EventTarget {
     super();
 
     /**
-     * @private {!VolumeManager}
+     * @private @type {!VolumeManager}
      * @const
      */
     this.volumeManager_ = volumeManager;
 
     /**
-     * @private {!MetadataModel}
+     * @private @type {!MetadataModel}
      * @const
      */
     this.metadataModel_ = metadataModel;
 
     /**
-     * @private {!FolderShortcutsDataModel}
+     * @private @type {!FolderShortcutsDataModel}
      * @const
      */
     this.shortcutsModel_ = shortcutsModel;
 
     /**
-     * @private {!ActionModelUI}
+     * @private @type {!ActionModelUI}
      * @const
      */
     this.ui_ = ui;
 
     /**
-     * @private {!Array<!Entry>}
+     * @private @type {!Array<!Entry>}
      * @const
      */
     this.entries_ = entries;
 
     /**
-     * @private {!Object<!Action>}
+     * @private @type {!Object<!Action>}
      */
     this.actions_ = {};
 
     /**
-     * @private {?function()}
+     * @private @type {?function()}
      */
     this.initializePromiseReject_ = null;
 
     /**
-     * @private {Promise}
+     * @private @type {Promise}
      */
     this.initializePromise_ = null;
 
     /**
-     * @private {boolean}
+     * @private @type {boolean}
      */
     this.destroyed_ = false;
   }

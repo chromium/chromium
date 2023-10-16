@@ -23,25 +23,25 @@ class ProvidersModelItem {
   constructor(
       providerId, iconSet, name, configurable, watchable, multipleMounts,
       source) {
-    /** @private @const {string} */
+    /** @private @const @type {string} */
     this.providerId_ = providerId;
 
-    /** @private @const {!chrome.fileManagerPrivate.IconSet} */
+    /** @private @const @type {!chrome.fileManagerPrivate.IconSet} */
     this.iconSet_ = iconSet;
 
-    /** @private @const {string} */
+    /** @private @const @type {string} */
     this.name_ = name;
 
-    /** @private @const {boolean} */
+    /** @private @const @type {boolean} */
     this.configurable_ = configurable;
 
-    /** @private @const {boolean} */
+    /** @private @const @type {boolean} */
     this.watchable_ = watchable;
 
-    /** @private @const {boolean} */
+    /** @private @const @type {boolean} */
     this.multipleMounts_ = multipleMounts;
 
-    /** @private @const {string} */
+    /** @private @const @type {string} */
     this.source_ = source;
   }
 
@@ -105,7 +105,7 @@ export class ProvidersModel {
    * @param {!VolumeManager} volumeManager
    */
   constructor(volumeManager) {
-    /** @private @const {!VolumeManager} */
+    /** @private @const @type {!VolumeManager} */
     this.volumeManager_ = volumeManager;
   }
 

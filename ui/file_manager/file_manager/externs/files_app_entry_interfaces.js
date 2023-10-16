@@ -22,14 +22,14 @@ import {VolumeManagerCommon} from '../common/js/volume_manager_types.js';
 export class FilesAppEntry {
   constructor() {
     /**
-     * @public {boolean} true if this entry represents a Directory-like entry,
-     * as in have sub-entries and implements {createReader} method.
-     * This attribute is defined on Entry.
+     * @public @type {boolean} true if this entry represents a Directory-like
+     * entry, as in have sub-entries and implements {createReader} method. This
+     * attribute is defined on Entry.
      */
     this.isDirectory = false;
 
     /**
-     * @public {boolean} true if this entry represents a File-like entry.
+     * @public @type {boolean} true if this entry represents a File-like entry.
      * Implementations of FilesAppEntry are expected to have this as |true|.
      * Whereas implementations of FilesAppDirEntry are expected to have this as
      * |false|.
@@ -38,32 +38,32 @@ export class FilesAppEntry {
     this.isFile = true;
 
     /**
-     * @public {string} absolute path from the file system's root to the entry.
-     * It can also be thought of as a path which is relative to the root
+     * @public @type {string} absolute path from the file system's root to the
+     * entry. It can also be thought of as a path which is relative to the root
      * directory, prepended with a "/" character.
      * This attribute is defined on Entry.
      */
     this.fullPath = '';
 
     /**
-     * @public {string} the name of the entry (the final part of the path,
+     * @public @type {string} the name of the entry (the final part of the path,
      * after the last.
      * This attribute is defined on Entry.
      */
     this.name = '';
 
     /**
-     * @public {string} the class name for this class. It's workaround for the
-     * fact that an instance created on foreground page and sent to background
-     * page can't be checked with "instanceof".
+     * @public @type {string} the class name for this class. It's workaround for
+     * the fact that an instance created on foreground page and sent to
+     * background page can't be checked with "instanceof".
      */
     this.type_name = 'FilesAppEntry';
 
-    /** @public {VolumeManagerCommon.RootType|null} */
+    /** @public @type {VolumeManagerCommon.RootType|null} */
     this.rootType = null;
 
     /**
-     * @public {?FileSystem}
+     * @public @type {?FileSystem}
      */
     this.filesystem = null;
   }
@@ -150,8 +150,8 @@ export class FilesAppDirEntry extends FilesAppEntry {
   constructor() {
     super();
     /**
-     * @public {boolean} true if this entry represents a Directory-like entry,
-     * as in have sub-entries and implements {createReader} method.
+     * @public @type {boolean} true if this entry represents a Directory-like
+     * entry, as in have sub-entries and implements {createReader} method.
      * Implementations of FilesAppEntry are expected to have this as |true|.
      * This attribute is defined on Entry.
      */
@@ -208,47 +208,47 @@ export class FakeEntry extends FilesAppDirEntry {
   constructor(label, rootType, opt_sourceRestriction, opt_fileCategory) {
     super();
     /**
-     * @public {string} label: Label to be used when displaying to user, it
-     *      should be already translated.
+     * @public @type {string} label: Label to be used when displaying to user,
+     * it should be already translated.
      */
     this.label;
 
-    /** @public {string} Name for this volume. */
+    /** @public @type {string} Name for this volume. */
     this.name;
 
-    /** @public {!VolumeManagerCommon.RootType} */
+    /** @public @type {!VolumeManagerCommon.RootType} */
     this.rootType;
 
-    /** @public {boolean} true FakeEntry are always directory-like. */
+    /** @public @type {boolean} true FakeEntry are always directory-like. */
     this.isDirectory = true;
 
-    /** @public {boolean} false FakeEntry are always directory-like. */
+    /** @public @type {boolean} false FakeEntry are always directory-like. */
     this.isFile = false;
 
     /**
-     * @public {boolean} false FakeEntry can be disabled if it represents the
-     * placeholder of the real volume.
+     * @public @type {boolean} false FakeEntry can be disabled if it represents
+     * the placeholder of the real volume.
      */
     this.disabled = false;
 
     /**
-     * @public {chrome.fileManagerPrivate.SourceRestriction|undefined} It's used
-     * to communicate restrictions about sources to
+     * @public @type {chrome.fileManagerPrivate.SourceRestriction|undefined}
+     * It's used to communicate restrictions about sources to
      * chrome.fileManagerPrivate.getRecentFiles API.
      */
     this.sourceRestriction;
 
     /**
-     * @public {chrome.fileManagerPrivate.FileCategory|undefined} It's used to
-     * communicate category filter to chrome.fileManagerPrivate.getRecentFiles
-     * API.
+     * @public @type {chrome.fileManagerPrivate.FileCategory|undefined} It's
+     * used to communicate category filter to
+     * chrome.fileManagerPrivate.getRecentFiles API.
      */
     this.fileCategory;
 
     /**
-     * @public {string} the class name for this class. It's workaround for the
-     * fact that an instance created on foreground page and sent to background
-     * page can't be checked with "instanceof".
+     * @public @type {string} the class name for this class. It's workaround for
+     * the fact that an instance created on foreground page and sent to
+     * background page can't be checked with "instanceof".
      */
     this.type_name = 'FakeEntry';
   }

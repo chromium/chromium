@@ -10,7 +10,7 @@ export class MetadataParserLogger {
     /**
      * Verbose logging for the dispatcher.
      * Individual parsers also take this as their default verbosity setting.
-     * @public {boolean}
+     * @public @type {boolean}
      */
     this.verbose;
   }

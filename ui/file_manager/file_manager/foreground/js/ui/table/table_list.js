@@ -24,12 +24,12 @@ export class TableList extends List {
   constructor(opt_propertyBag) {
     super(opt_propertyBag);
 
-    /** @private {Table} */
+    /** @private @type {Table} */
     this.table_ = null;
 
     /**
      * Actually defined and managed by List.
-     * @private {HTMLElement}
+     * @private @type {HTMLElement}
      * */
     this.afterFiller_;
   }

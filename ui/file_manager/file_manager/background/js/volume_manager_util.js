@@ -19,25 +19,25 @@ const volumeManagerUtil = {};
  * Time in milliseconds that we wait a response for general volume operations
  * such as mount, unmount, and requestFileSystem. If no response on
  * mount/unmount received the request supposed failed.
- * @const {number}
+ * @const @type {number}
  */
 volumeManagerUtil.TIMEOUT = 15 * 60 * 1000;
 
 /**
  * Time in milliseconds that we wait a response for
  * chrome.fileManagerPrivate.resolveIsolatedEntries.
- * @const {number}
+ * @const @type {number}
  */
 volumeManagerUtil.TIMEOUT_FOR_RESOLVE_ISOLATED_ENTRIES = 1 * 60 * 1000;
 
 /**
- * @const {string}
+ * @const @type {string}
  */
 volumeManagerUtil.TIMEOUT_STR_REQUEST_FILE_SYSTEM =
     'timeout(requestFileSystem)';
 
 /**
- * @const {string}
+ * @const @type {string}
  */
 volumeManagerUtil.TIMEOUT_STR_RESOLVE_ISOLATED_ENTRIES =
     'timeout(resolveIsolatedEntries)';

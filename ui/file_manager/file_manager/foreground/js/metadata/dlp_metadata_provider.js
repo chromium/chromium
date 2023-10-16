@@ -68,7 +68,7 @@ export class DlpMetadataProvider extends MetadataProvider {
   }
 }
 
-/** @const {!Array<string>} */
+/** @const @type {!Array<string>} */
 DlpMetadataProvider.PROPERTY_NAMES = [
   'isDlpRestricted',
   'sourceUrl',

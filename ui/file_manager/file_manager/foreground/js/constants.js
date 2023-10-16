@@ -9,7 +9,7 @@
 export const constants = {};
 
 /**
- * @const {!Array<string>}
+ * @const @type {!Array<string>}
  */
 constants.ACTIONS_MODEL_METADATA_PREFETCH_PROPERTY_NAMES = [
   'canPin',
@@ -35,7 +35,7 @@ constants.EXECUTABLE_EXTENSIONS = Object.freeze([
 /**
  * These metadata is expected to be cached to accelerate computeAdditional.
  * See: crbug.com/458915.
- * @const {!Array<string>}
+ * @const @type {!Array<string>}
  */
 constants.FILE_SELECTION_METADATA_PREFETCH_PROPERTY_NAMES = [
   'availableOffline',
@@ -50,7 +50,7 @@ constants.FILE_SELECTION_METADATA_PREFETCH_PROPERTY_NAMES = [
  * TODO(sashab): Store capabilities as a set of flags to save memory. See
  * https://crbug.com/849997
  *
- * @const {!Array<string>}
+ * @const @type {!Array<string>}
  */
 constants.LIST_CONTAINER_METADATA_PREFETCH_PROPERTY_NAMES = [
   'availableOffline',
@@ -77,7 +77,7 @@ constants.LIST_CONTAINER_METADATA_PREFETCH_PROPERTY_NAMES = [
  * Metadata properties used to inform the user about DLP (Data Leak Prevention)
  * Files restrictions. These metadata is expected to be cached.
  *
- * @const {!Array<string>}
+ * @const @type {!Array<string>}
  */
 constants.DLP_METADATA_PREFETCH_PROPERTY_NAMES = [
   'isDlpRestricted',
@@ -105,28 +105,28 @@ constants.DEFAULT_BRUSCHETTA_VM = 'bru';
 
 /**
  * DOMError type for crostini connection failure.
- * @const {string}
+ * @const @type {string}
  */
 constants.CROSTINI_CONNECT_ERR = 'CrostiniConnectErr';
 
 /**
  * ID of the fake fileSystemProvider custom action containing OneDrive document
  * URLs.
- * @const {string}
+ * @const @type {string}
  */
 constants.FSP_ACTION_HIDDEN_ONEDRIVE_URL = 'HIDDEN_ONEDRIVE_URL';
 
 /**
  * ID of the fake fileSystemProvider custom action containing OneDrive document
  * User Emails.
- * @const {string}
+ * @const @type {string}
  */
 constants.FSP_ACTION_HIDDEN_ONEDRIVE_USER_EMAIL = 'HIDDEN_ONEDRIVE_USER_EMAIL';
 
 /**
  * ID of the fake fileSystemProvider custom action containing OneDrive document
  * Reauthentication Required state.
- * @const {string}
+ * @const @type {string}
  */
 constants.FSP_ACTION_HIDDEN_ONEDRIVE_REAUTHENTICATION_REQUIRED =
     'HIDDEN_ONEDRIVE_REAUTHENTICATION_REQUIRED';

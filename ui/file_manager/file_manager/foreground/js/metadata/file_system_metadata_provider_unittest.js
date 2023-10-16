@@ -9,7 +9,7 @@ import {reportPromise} from '../../../common/js/test_error_reporting.js';
 import {FileSystemMetadataProvider} from './file_system_metadata_provider.js';
 import {MetadataRequest} from './metadata_request.js';
 
-/** @const {!Entry} */
+/** @const @type {!Entry} */
 const entryA = /** @type {!Entry} */ ({
   toURL: function() {
     return 'filesystem://A';
@@ -20,7 +20,7 @@ const entryA = /** @type {!Entry} */ ({
   },
 });
 
-/** @const {!Entry} */
+/** @const @type {!Entry} */
 const entryB = /** @type {!Entry} */ ({
   toURL: function() {
     return 'filesystem://B';

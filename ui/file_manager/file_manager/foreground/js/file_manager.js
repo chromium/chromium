@@ -118,91 +118,91 @@ export class FileManager extends EventTarget {
 
     /**
      * Volume manager.
-     * @private {!FilteredVolumeManager}
+     * @private @type {!FilteredVolumeManager}
      */
     this.volumeManager_;
 
-    /** @private {?Crostini} */
+    /** @private @type {?Crostini} */
     this.crostini_ = null;
 
-    /** @private {?CrostiniController} */
+    /** @private @type {?CrostiniController} */
     this.crostiniController_ = null;
 
-    /** @private {?GuestOsController} */
+    /** @private @type {?GuestOsController} */
     this.guestOsController_ = null;
 
-    /** @private {?MetadataModel} */
+    /** @private @type {?MetadataModel} */
     this.metadataModel_ = null;
 
-    /** @private @const {!FileMetadataFormatter} */
+    /** @private @const @type {!FileMetadataFormatter} */
     this.fileMetadataFormatter_ = new FileMetadataFormatter();
 
-    /** @private {?ThumbnailModel} */
+    /** @private @type {?ThumbnailModel} */
     this.thumbnailModel_ = null;
 
     /**
      * File operation manager.
-     * @private {?FileOperationManager}
+     * @private @type {?FileOperationManager}
      */
     this.fileOperationManager_ = null;
 
     /**
      * File filter.
-     * @private {?FileFilter}
+     * @private @type {?FileFilter}
      */
     this.fileFilter_ = null;
 
     /**
      * Model of current directory.
-     * @private {?DirectoryModel}
+     * @private @type {?DirectoryModel}
      */
     this.directoryModel_ = null;
 
     /**
      * Model of folder shortcuts.
-     * @private {?FolderShortcutsDataModel}
+     * @private @type {?FolderShortcutsDataModel}
      */
     this.folderShortcutsModel_ = null;
 
     /**
      * Model of Android apps.
-     * @private {?AndroidAppListModel}
+     * @private @type {?AndroidAppListModel}
      */
     this.androidAppListModel_ = null;
 
     /**
      * Model for providers (providing extensions).
-     * @private {?ProvidersModel}
+     * @private @type {?ProvidersModel}
      */
     this.providersModel_ = null;
 
     /**
      * Model for quick view.
-     * @private {?QuickViewModel}
+     * @private @type {?QuickViewModel}
      */
     this.quickViewModel_ = null;
 
     /**
      * Controller for actions for current selection.
-     * @private {ActionsController}
+     * @private @type {ActionsController}
      */
     this.actionsController_ = null;
 
     /**
      * Handler for command events.
-     * @private {CommandHandler}
+     * @private @type {CommandHandler}
      */
     this.commandHandler_ = null;
 
     /**
      * Handler for the change of file selection.
-     * @private {?FileSelectionHandler}
+     * @private @type {?FileSelectionHandler}
      */
     this.selectionHandler_ = null;
 
     /**
      * UI management class of file manager.
-     * @private {?FileManagerUI}
+     * @private @type {?FileManagerUI}
      */
     this.ui_ = null;
 
@@ -211,13 +211,13 @@ export class FileManager extends EventTarget {
 
     /**
      * Dialog type of this window.
-     * @public {DialogType}
+     * @public @type {DialogType}
      */
     this.dialogType = DialogType.FULL_PAGE;
 
     /**
      * Startup parameters for this application.
-     * @private {?LaunchParam}
+     * @private @type {?LaunchParam}
      */
     this.launchParams_ = null;
 
@@ -226,116 +226,116 @@ export class FileManager extends EventTarget {
 
     /**
      * File transfer controller.
-     * @private {?FileTransferController}
+     * @private @type {?FileTransferController}
      */
     this.fileTransferController_ = null;
 
     /**
      * Naming controller.
-     * @private {?NamingController}
+     * @private @type {?NamingController}
      */
     this.namingController_ = null;
 
     /**
      * Directory tree naming controller.
-     * @private {DirectoryTreeNamingController}
+     * @private @type {DirectoryTreeNamingController}
      */
     this.directoryTreeNamingController_ = null;
 
     /**
      * Controller for search UI.
-     * @private {?SearchController}
+     * @private @type {?SearchController}
      */
     this.searchController_ = null;
 
     /**
      * Controller for directory scan.
-     * @private {?ScanController}
+     * @private @type {?ScanController}
      */
     this.scanController_ = null;
 
     /**
      * Controller for spinner.
-     * @private {?SpinnerController}
+     * @private @type {?SpinnerController}
      */
     this.spinnerController_ = null;
 
     /**
      * Sort menu controller.
-     * @private {?SortMenuController}
+     * @private @type {?SortMenuController}
      */
     this.sortMenuController_ = null;
 
     /**
      * Gear menu controller.
-     * @private {?GearMenuController}
+     * @private @type {?GearMenuController}
      */
     this.gearMenuController_ = null;
 
     /**
      * Controller for the context menu opened by the action bar button in the
      * check-select mode.
-     * @private {?SelectionMenuController}
+     * @private @type {?SelectionMenuController}
      */
     this.selectionMenuController_ = null;
 
     /**
      * Toolbar controller.
-     * @private {?ToolbarController}
+     * @private @type {?ToolbarController}
      */
     this.toolbarController_ = null;
 
     /**
      * App state controller.
-     * @private {?AppStateController}
+     * @private @type {?AppStateController}
      */
     this.appStateController_ = null;
 
     /**
      * Dialog action controller.
-     * @private {?DialogActionController}
+     * @private @type {?DialogActionController}
      */
     this.dialogActionController_ = null;
 
     /**
      * List update controller.
-     * @private {?MetadataUpdateController}
+     * @private @type {?MetadataUpdateController}
      */
     this.metadataUpdateController_ = null;
 
     /**
      * Last modified controller.
-     * @private {LastModifiedController}
+     * @private @type {LastModifiedController}
      */
     this.lastModifiedController_ = null;
 
     /**
      * Component for main window and its misc UI parts.
-     * @private {?MainWindowComponent}
+     * @private @type {?MainWindowComponent}
      */
     this.mainWindowComponent_ = null;
 
-    /** @private {?TaskController} */
+    /** @private @type {?TaskController} */
     this.taskController_ = null;
 
-    /** @private {?QuickViewUma} */
+    /** @private @type {?QuickViewUma} */
     this.quickViewUma_ = null;
 
-    /** @private {?QuickViewController} */
+    /** @private @type {?QuickViewController} */
     this.quickViewController_ = null;
 
-    /** @private {?FileTypeFiltersController} */
+    /** @private @type {?FileTypeFiltersController} */
     this.fileTypeFiltersController_ = null;
 
     /**
      * Empty folder controller.
-     * @private {?EmptyFolderController}
+     * @private @type {?EmptyFolderController}
      */
     this.emptyFolderController_ = null;
 
     /**
      * Records histograms of directory-changed event.
-     * @private {?NavigationUma}
+     * @private @type {?NavigationUma}
      */
     this.navigationUma_ = null;
 
@@ -343,19 +343,19 @@ export class FileManager extends EventTarget {
     // DOM elements.
 
     /**
-     * @private {?FileManagerBaseInterface}
+     * @private @type {?FileManagerBaseInterface}
      */
     this.fileBrowserBackground_ = null;
 
     /**
      * The root DOM element of this app.
-     * @private {?HTMLBodyElement}
+     * @private @type {?HTMLBodyElement}
      */
     this.dialogDom_ = null;
 
     /**
      * The document object of this app.
-     * @private {?Document}
+     * @private @type {?Document}
      */
     this.document_ = null;
 
@@ -365,26 +365,26 @@ export class FileManager extends EventTarget {
     /**
      * Promise object which is fulfilled when initialization for app state
      * controller is done.
-     * @private {?Promise<void>}
+     * @private @type {?Promise<void>}
      */
     this.initSettingsPromise_ = null;
 
     /**
      * Promise object which is fulfilled when initialization related to the
      * background page is done.
-     * @private {?Promise<void>}
+     * @private @type {?Promise<void>}
      */
     this.initBackgroundPagePromise_ = null;
 
     /**
      * Whether Drive is enabled. Retrieved from user preferences.
-     * @private {?boolean}
+     * @private @type {?boolean}
      */
     this.driveEnabled_ = false;
 
     /**
      * A fake Drive placeholder item.
-     * @private {?NavigationModelFakeItem}
+     * @private @type {?NavigationModelFakeItem}
      */
     this.fakeDriveItem_ = null;
 
@@ -396,23 +396,23 @@ export class FileManager extends EventTarget {
 
     /**
      * A fake Trash placeholder item.
-     * @private {?NavigationModelFakeItem}
+     * @private @type {?NavigationModelFakeItem}
      */
     this.fakeTrashItem_ = null;
 
     /**
      * A fake entry for Recents.
-     * @private {?FakeEntry}
+     * @private @type {?FakeEntry}
      */
     this.recentEntry_ = null;
 
     /**
      * Whether or not we are running in guest mode.
-     * @private {boolean}
+     * @private @type {boolean}
      */
     this.guestMode_ = false;
 
-    /** @private {!Store} */
+    /** @private @type {!Store} */
     this.store_ = getStore();
 
     /** @suppress {checkTypes} */

@@ -62,39 +62,39 @@ export class EmptyFolderController {
    */
   constructor(emptyFolder, directoryModel, providersModel, recentEntry) {
     /**
-     * @private {!HTMLElement}
+     * @private @type {!HTMLElement}
      */
     this.emptyFolder_ = emptyFolder;
 
     /**
-     * @private {!DirectoryModel}
+     * @private @type {!DirectoryModel}
      */
     this.directoryModel_ = directoryModel;
 
     /**
      * Model for providers (providing extensions).
-     * @private {!ProvidersModel}
+     * @private @type {!ProvidersModel}
      */
     this.providersModel_ = providersModel;
 
     /**
-     * @private {!FakeEntry}
+     * @private @type {!FakeEntry}
      * @const
      */
     this.recentEntry_ = recentEntry;
 
     /**
-     * @private {!HTMLElement}
+     * @private @type {!HTMLElement}
      */
     this.label_ = queryRequiredElement('.label', emptyFolder);
 
     /**
-     * @private {!HTMLElement}
+     * @private @type {!HTMLElement}
      */
     this.image_ = queryRequiredElement('.image', emptyFolder);
 
     /**
-     * @private {boolean}
+     * @private @type {boolean}
      */
     this.isScanning_ = false;
 

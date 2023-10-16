@@ -43,81 +43,81 @@ export class ToolbarController {
       toolbar, navigationList, listContainer, selectionHandler, directoryModel,
       volumeManager, fileOperationManager, a11y) {
     /**
-     * @private {!HTMLElement}
+     * @private @type {!HTMLElement}
      * @const
      */
     this.toolbar_ = toolbar;
 
     /**
-     * @private {!HTMLElement}
+     * @private @type {!HTMLElement}
      * @const
      */
     this.cancelSelectionButton_ =
         queryRequiredElement('#cancel-selection-button', this.toolbar_);
 
     /**
-     * @private {!HTMLElement}
+     * @private @type {!HTMLElement}
      * @const
      */
     this.cancelSelectionButtonWrapper_ =
         queryRequiredElement('#cancel-selection-button-wrapper', this.toolbar_);
 
     /**
-     * @private {!HTMLElement}
+     * @private @type {!HTMLElement}
      * @const
      */
     this.filesSelectedLabel_ =
         queryRequiredElement('#files-selected-label', this.toolbar_);
 
     /**
-     * @private {!HTMLElement}
+     * @private @type {!HTMLElement}
      * @const
      */
     this.deleteButton_ = queryRequiredElement('#delete-button', this.toolbar_);
 
     /**
-     * @private {!HTMLElement}
+     * @private @type {!HTMLElement}
      * @const
      */
     this.moveToTrashButton_ =
         queryRequiredElement('#move-to-trash-button', this.toolbar_);
 
     /**
-     * @private {!HTMLElement}
+     * @private @type {!HTMLElement}
      * @const
      */
     this.restoreFromTrashButton_ =
         queryRequiredElement('#restore-from-trash-button', this.toolbar_);
 
     /**
-     * @private {!HTMLElement}
+     * @private @type {!HTMLElement}
      * @const
      */
     this.sharesheetButton_ =
         queryRequiredElement('#sharesheet-button', this.toolbar_);
 
     /**
-     * @private {!HTMLElement}
+     * @private @type {!HTMLElement}
      * @const
      */
     this.readOnlyIndicator_ =
         queryRequiredElement('#read-only-indicator', this.toolbar_);
 
     /**
-     * @private {!HTMLElement}
+     * @private @type {!HTMLElement}
      * @const
      */
     this.pinnedToggleWrapper_ =
         queryRequiredElement('#pinned-toggle-wrapper', this.toolbar_);
 
     /**
-     * @private {HTMLElement}
+     * @private @type {HTMLElement}
      * @const
      */
     this.pinnedToggle_;
 
     /**
-     * @private {HTMLElement}
+     * @private @type {HTMLElement}
      * @const
      */
     this.pinnedToggleJelly_;
@@ -126,27 +126,27 @@ export class ToolbarController {
         ['#pinned-toggle', '#pinned-toggle-jelly'], this.toolbar_);
 
     /**
-     * @private {!HTMLElement}
+     * @private @type {!HTMLElement}
      * @const
      */
     this.cloudButton_ = queryRequiredElement('#cloud-button', this.toolbar_);
 
     /**
-     * @private {!HTMLElement}
+     * @private @type {!HTMLElement}
      * @const
      */
     this.cloudStatusIcon_ = queryRequiredElement(
         '#cloud-button > xf-icon[slot="suffix-icon"]', this.toolbar_);
 
     /**
-     * @private {!HTMLElement}
+     * @private @type {!HTMLElement}
      * @const
      */
     this.cloudButtonIcon_ = queryRequiredElement(
         '#cloud-button > xf-icon[slot="prefix-icon"]', this.toolbar_);
 
     /**
-     * @private {!Command}
+     * @private @type {!Command}
      * @const
      */
     this.deleteCommand_ = assertInstanceof(
@@ -164,7 +164,7 @@ export class ToolbarController {
         Command);
 
     /**
-     * @private {!Command}
+     * @private @type {!Command}
      * @const
      */
     this.restoreFromTrashCommand_ = assertInstanceof(
@@ -173,7 +173,7 @@ export class ToolbarController {
         Command);
 
     /**
-     * @private {!Command}
+     * @private @type {!Command}
      * @const
      */
     this.emptyTrashCommand_ = assertInstanceof(
@@ -182,7 +182,7 @@ export class ToolbarController {
         Command);
 
     /**
-     * @private {!Command}
+     * @private @type {!Command}
      * @const
      */
     this.refreshCommand_ = assertInstanceof(
@@ -191,7 +191,7 @@ export class ToolbarController {
         Command);
 
     /**
-     * @private {!Command}
+     * @private @type {!Command}
      * @const
      */
     this.newFolderCommand_ = assertInstanceof(
@@ -200,7 +200,7 @@ export class ToolbarController {
         Command);
 
     /**
-     * @private {!Command}
+     * @private @type {!Command}
      * @const
      */
     this.invokeSharesheetCommand_ = assertInstanceof(
@@ -209,7 +209,7 @@ export class ToolbarController {
         Command);
 
     /**
-     * @private {!Command}
+     * @private @type {!Command}
      * @const
      */
     this.togglePinnedCommand_ = assertInstanceof(
@@ -218,49 +218,49 @@ export class ToolbarController {
         Command);
 
     /**
-     * @private {!HTMLElement}
+     * @private @type {!HTMLElement}
      * @const
      */
     this.navigationList_ = navigationList;
 
     /**
-     * @private {!ListContainer}
+     * @private @type {!ListContainer}
      * @const
      */
     this.listContainer_ = listContainer;
 
     /**
-     * @private {!FileSelectionHandler}
+     * @private @type {!FileSelectionHandler}
      * @const
      */
     this.selectionHandler_ = selectionHandler;
 
     /**
-     * @private {!DirectoryModel}
+     * @private @type {!DirectoryModel}
      * @const
      */
     this.directoryModel_ = directoryModel;
 
     /**
-     * @private {!VolumeManager}
+     * @private @type {!VolumeManager}
      * @const
      */
     this.volumeManager_ = volumeManager;
 
     /**
-     * @private {!FileOperationManager}
+     * @private @type {!FileOperationManager}
      * @const
      */
     this.fileOperationManager_ = fileOperationManager;
 
     /**
-     * @private {!A11yAnnounce}
+     * @private @type {!A11yAnnounce}
      * @const
      */
     this.a11y_ = a11y;
 
     /**
-     * @private {!Store}
+     * @private @type {!Store}
      */
     this.store_ = getStore();
     this.store_.subscribe(this);

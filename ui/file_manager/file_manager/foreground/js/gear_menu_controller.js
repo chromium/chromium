@@ -26,22 +26,22 @@ export class GearMenuController {
   constructor(
       gearButton, gearMenu, providersMenu, directoryModel, commandHandler,
       providersModel) {
-    /** @private @const {!MultiMenuButton} */
+    /** @private @const @type {!MultiMenuButton} */
     this.gearButton_ = gearButton;
 
-    /** @private @const {!GearMenu} */
+    /** @private @const @type {!GearMenu} */
     this.gearMenu_ = gearMenu;
 
-    /** @private @const {!ProvidersMenu} */
+    /** @private @const @type {!ProvidersMenu} */
     this.providersMenu_ = providersMenu;
 
-    /** @private @const {!DirectoryModel} */
+    /** @private @const @type {!DirectoryModel} */
     this.directoryModel_ = directoryModel;
 
-    /** @private @const {!CommandHandler} */
+    /** @private @const @type {!CommandHandler} */
     this.commandHandler_ = commandHandler;
 
-    /** @private @const {!ProvidersModel} */
+    /** @private @const @type {!ProvidersModel} */
     this.providersModel_ = providersModel;
 
     gearButton.addEventListener('menushow', this.onShowGearMenu_.bind(this));

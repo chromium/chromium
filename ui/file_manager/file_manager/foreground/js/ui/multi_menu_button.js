@@ -24,7 +24,7 @@ export class MultiMenuButton {
   constructor() {
     /**
      * Property that hosts sub-menus for filling with overflow items.
-     * @public {Menu|null} Used for menu-items that overflow parent
+     * @public @type {Menu|null} Used for menu-items that overflow parent
      * menu.
      */
     this.overflow = null;
@@ -32,20 +32,20 @@ export class MultiMenuButton {
     /**
      * Padding used when restricting menu height when the window is too small
      * to show the entire menu.
-     * @private {number}
+     * @private @type {number}
      */
     this.menuEndGap_ = 0;  // padding on cr.menu + 2px
 
-    /** @private {?EventTracker} */
+    /** @private @type {?EventTracker} */
     this.showingEvents_ = null;
 
-    /** @private {?Menu} */
+    /** @private @type {?Menu} */
     this.menu_ = null;
 
-    /** @private {?ResizeObserver} */
+    /** @private @type {?ResizeObserver} */
     this.observer_ = null;
 
-    /** @private {?Element} */
+    /** @private @type {?Element} */
     this.observedElement_ = null;
 
     throw new Error('Designed to decorate elements');

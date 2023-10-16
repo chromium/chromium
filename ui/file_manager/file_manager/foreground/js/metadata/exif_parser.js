@@ -453,18 +453,18 @@ export class ExifParser extends ImageParser {
 
 /**
  * Map from the exif orientation value to the horizontal scale value.
- * @const {Array<number>}
+ * @const @type {Array<number>}
  */
 ExifParser.SCALEX = [1, -1, -1, 1, 1, 1, -1, -1];
 
 /**
  * Map from the exif orientation value to the vertical scale value.
- * @const {Array<number>}
+ * @const @type {Array<number>}
  */
 ExifParser.SCALEY = [1, 1, -1, -1, -1, 1, 1, -1];
 
 /**
  * Map from the exit orientation value to the rotation value.
- * @const {Array<number>}
+ * @const @type {Array<number>}
  */
 ExifParser.ROTATE90 = [0, 0, 0, 0, 1, 1, 1, 1];

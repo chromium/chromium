@@ -134,7 +134,7 @@ export class MockEntry {
     filesystem.entries[fullPath] = this;
     this.filesystem = filesystem;
     this.fullPath = fullPath;
-    /** @public {!Metadata} */
+    /** @public @type {!Metadata} */
     this.metadata = opt_metadata || /** @type {!Metadata} */ ({});
     this.removed_ = false;
   }

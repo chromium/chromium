@@ -111,11 +111,11 @@ export class DirectoryModel extends EventTarget {
     this.scanFailures_ = 0;
     this.changeDirectorySequence_ = 0;
 
-    /** @private {?function(Event): void} */
+    /** @private @type {?function(Event): void} */
     this.onSearchCompleted_ = null;
 
     /**
-     * @private {boolean}
+     * @private @type {boolean}
      */
     this.ignoreCurrentDirectoryDeletion_ = false;
 
@@ -123,7 +123,7 @@ export class DirectoryModel extends EventTarget {
 
     /**
      * Number of running directory change trackers.
-     * @private {number}
+     * @private @type {number}
      */
     this.numChangeTrackerRunning_ = 0;
 
@@ -143,7 +143,7 @@ export class DirectoryModel extends EventTarget {
 
     /**
      * Empty file list which is used as a dummy for inactive view of file list.
-     * @private {!FileListModel}
+     * @private @type {!FileListModel}
      */
     this.emptyFileList_ = new FileListModel(metadataModel);
 
@@ -155,7 +155,7 @@ export class DirectoryModel extends EventTarget {
 
     /**
      * File watcher.
-     * @private {!FileWatcher}
+     * @private @type {!FileWatcher}
      * @const
      */
     this.fileWatcher_ = new FileWatcher();
@@ -167,16 +167,16 @@ export class DirectoryModel extends EventTarget {
     chrome.fileManagerPrivate.onIOTaskProgressStatus.addListener(
         this.updateFileListAfterIOTask_.bind(this));
 
-    /** @private {string} */
+    /** @private @type {string} */
     this.lastSearchQuery_ = '';
 
-    /** @private {FilesAppDirEntry} */
+    /** @private @type {FilesAppDirEntry} */
     this.myFilesEntry_ = null;
 
-    /** @private {?Object<!VolumeId, !Volume>} */
+    /** @private @type {?Object<!VolumeId, !Volume>} */
     this.volumes_ = null;
 
-    /** @private {!Store} */
+    /** @private @type {!Store} */
     this.store_ = getStore();
     this.store_.subscribe(this);
   }

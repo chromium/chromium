@@ -44,6 +44,6 @@ export class FileSystemMetadataProvider extends MetadataProvider {
   }
 }
 
-/** @const {!Array<string>} */
+/** @const @type {!Array<string>} */
 FileSystemMetadataProvider.PROPERTY_NAMES =
     ['modificationTime', 'size', 'present', 'availableOffline'];

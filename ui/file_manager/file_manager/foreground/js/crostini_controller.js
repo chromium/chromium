@@ -46,7 +46,7 @@ export class CrostiniController {
     this.entrySharedWithPluginVm_ = false;
 
     /**
-     * @private @const {boolean}
+     * @private @const @type {boolean}
      */
     this.disabled_ = disabled;
   }

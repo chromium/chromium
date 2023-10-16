@@ -26,7 +26,7 @@ export class FileTypeFiltersController {
    */
   constructor(fileTypeFilterContainer, directoryModel, recentEntry, a11y) {
     /**
-     * @private {Map<chrome.fileManagerPrivate.FileCategory, string>}
+     * @private @type {Map<chrome.fileManagerPrivate.FileCategory, string>}
      * @const
      */
     this.filterTypeToTranslationKeyMap_ = new Map([
@@ -53,59 +53,59 @@ export class FileTypeFiltersController {
     ]);
 
     /**
-     * @private {!HTMLElement}
+     * @private @type {!HTMLElement}
      * @const
      */
     this.container_ = fileTypeFilterContainer;
 
     /**
-     * @private {!DirectoryModel}
+     * @private @type {!DirectoryModel}
      * @const
      */
     this.directoryModel_ = directoryModel;
 
     /**
-     * @private {!FakeEntry}
+     * @private @type {!FakeEntry}
      * @const
      */
     this.recentEntry_ = recentEntry;
 
     /**
-     * @private {!A11yAnnounce}
+     * @private @type {!A11yAnnounce}
      * @const
      */
     this.a11y_ = a11y;
 
     /**
-     * @private {!HTMLElement}
+     * @private @type {!HTMLElement}
      * @const
      */
     this.allFilterButton_ =
         this.createFilterButton_(chrome.fileManagerPrivate.FileCategory.ALL);
 
     /**
-     * @private {!HTMLElement}
+     * @private @type {!HTMLElement}
      * @const
      */
     this.audioFilterButton_ =
         this.createFilterButton_(chrome.fileManagerPrivate.FileCategory.AUDIO);
 
     /**
-     * @private {!HTMLElement|null}
+     * @private @type {!HTMLElement|null}
      * @const
      */
     this.documentFilterButton_ = this.createFilterButton_(
         chrome.fileManagerPrivate.FileCategory.DOCUMENT);
 
     /**
-     * @private {!HTMLElement}
+     * @private @type {!HTMLElement}
      * @const
      */
     this.imageFilterButton_ =
         this.createFilterButton_(chrome.fileManagerPrivate.FileCategory.IMAGE);
 
     /**
-     * @private {!HTMLElement}
+     * @private @type {!HTMLElement}
      * @const
      */
     this.videoFilterButton_ =
@@ -117,7 +117,7 @@ export class FileTypeFiltersController {
     this.updateButtonActiveStates_();
 
     /**
-     * @private {boolean}
+     * @private @type {boolean}
      */
     this.inRecent_ = false;
 

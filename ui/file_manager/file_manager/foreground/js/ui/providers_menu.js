@@ -21,13 +21,13 @@ export class ProvidersMenu {
    */
   constructor(model, menu) {
     /**
-     * @private {!ProvidersModel}}
+     * @private @type {!ProvidersModel}}
      * @const
      */
     this.model_ = model;
 
     /**
-     * @private {!Menu}
+     * @private @type {!Menu}
      * @const
      */
     this.menu_ = menu;

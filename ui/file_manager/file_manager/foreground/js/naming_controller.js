@@ -32,32 +32,32 @@ export class NamingController {
   constructor(
       listContainer, alertDialog, confirmDialog, directoryModel, fileFilter,
       selectionHandler) {
-    /** @private @const {!ListContainer} */
+    /** @private @const @type {!ListContainer} */
     this.listContainer_ = listContainer;
 
-    /** @private @const {!FilesAlertDialog} */
+    /** @private @const @type {!FilesAlertDialog} */
     this.alertDialog_ = alertDialog;
 
-    /** @private @const {!ConfirmDialog} */
+    /** @private @const @type {!ConfirmDialog} */
     this.confirmDialog_ = confirmDialog;
 
-    /** @private @const {!DirectoryModel} */
+    /** @private @const @type {!DirectoryModel} */
     this.directoryModel_ = directoryModel;
 
-    /** @private @const {!FileFilter} */
+    /** @private @const @type {!FileFilter} */
     this.fileFilter_ = fileFilter;
 
-    /** @private @const {!FileSelectionHandler} */
+    /** @private @const @type {!FileSelectionHandler} */
     this.selectionHandler_ = selectionHandler;
 
     /**
      * Whether the entry being renamed is a root of a removable
      * partition/volume.
-     * @private {boolean}
+     * @private @type {boolean}
      */
     this.isRemovableRoot_ = false;
 
-    /** @private {?VolumeInfo} */
+    /** @private @type {?VolumeInfo} */
     this.volumeInfo_ = null;
 
     // Register events.

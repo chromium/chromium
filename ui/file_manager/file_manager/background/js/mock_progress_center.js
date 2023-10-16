@@ -16,7 +16,7 @@ export class MockProgressCenter {
   constructor() {
     /**
      * Items stored in the progress center.
-     * @const {!Object<ProgressCenterItem>}
+     * @const @type {!Object<ProgressCenterItem>}
      */
     this.items = {};
   }

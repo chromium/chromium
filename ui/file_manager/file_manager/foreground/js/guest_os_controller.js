@@ -34,7 +34,7 @@ export class GuestOsController {
     /** @private @const */
     this.directoryTree_ = directoryTree;
 
-    /** @private @const {!VolumeManager} */
+    /** @private @const @type {!VolumeManager} */
     this.volumeManager_ = volumeManager;
 
     chrome.fileManagerPrivate.onMountableGuestsChanged.addListener(

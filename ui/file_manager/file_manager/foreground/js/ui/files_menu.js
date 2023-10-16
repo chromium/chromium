@@ -13,25 +13,25 @@ export class FilesMenuItem extends MenuItem {
   constructor() {
     super();
 
-    /** @private {boolean} */
+    /** @private @type {boolean} */
     this.animating_ = false;
 
-    /** @private {(boolean|undefined)} */
+    /** @private @type {(boolean|undefined)} */
     this.hidden_ = undefined;
 
-    /** @private {?HTMLElement} */
+    /** @private @type {?HTMLElement} */
     this.label_ = null;
 
-    /** @private {?HTMLElement} */
+    /** @private @type {?HTMLElement} */
     this.iconStart_ = null;
 
-    /** @private {?HTMLElement} */
+    /** @private @type {?HTMLElement} */
     this.iconManaged_ = null;
 
-    /** @private {?HTMLElement} */
+    /** @private @type {?HTMLElement} */
     this.iconEnd_ = null;
 
-    /** @private {?HTMLElement} */
+    /** @private @type {?HTMLElement} */
     this.ripple_ = null;
 
     /** @public @type {?chrome.fileManagerPrivate.FileTaskDescriptor} */

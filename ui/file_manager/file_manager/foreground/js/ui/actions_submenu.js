@@ -15,20 +15,20 @@ export class ActionsSubmenu {
   /** @param {!Menu} menu */
   constructor(menu) {
     /**
-     * @private {!Menu}
+     * @private @type {!Menu}
      * @const
      */
     this.menu_ = menu;
 
     /**
-     * @private {!MenuItem}
+     * @private @type {!MenuItem}
      * @const
      */
     this.separator_ = /** @type {!MenuItem} */
         (queryRequiredElement('#actions-separator', this.menu_));
 
     /**
-     * @private {!Array<!MenuItem>}
+     * @private @type {!Array<!MenuItem>}
      */
     this.items_ = [];
   }

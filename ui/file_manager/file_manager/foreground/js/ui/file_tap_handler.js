@@ -17,57 +17,57 @@ export class FileTapHandler {
     /**
      * Whether the pointer is currently down and at the same place as the
      * initial position.
-     * @private {boolean}
+     * @private @type {boolean}
      */
     this.tapStarted_ = false;
 
-    /** @private {boolean} */
+    /** @private @type {boolean} */
     this.isLongTap_ = false;
 
-    /** @private {boolean} */
+    /** @private @type {boolean} */
     this.isTwoFingerTap_ = false;
 
-    /** @private {boolean} */
+    /** @private @type {boolean} */
     this.hasLongPressProcessed_ = false;
 
-    /** @private {number} */
+    /** @private @type {number} */
     this.longTapDetectorTimerId_ = -1;
 
     /**
      * If defined, the identifier of the active touch. Note that 0 is a valid
      * touch identifier.
-     * @private {number|undefined}
+     * @private @type {number|undefined}
      */
     this.activeTouchId_ = undefined;
 
     /**
      * The index of the item which is being touched by the active touch. Valid
      * only when |activeTouchId_| is defined.
-     * @private {number}
+     * @private @type {number}
      */
     this.activeItemIndex_ = -1;
 
     /**
      * Last touch X position in client co-ords.
-     * @private {number}
+     * @private @type {number}
      */
     this.lastTouchX_ = 0;
 
     /**
      * Last touch Y position in client co-ords.
-     * @private {number}
+     * @private @type {number}
      */
     this.lastTouchY_ = 0;
 
     /**
      * The absolute sum of all touch X deltas.
-     * @private {number}
+     * @private @type {number}
      */
     this.totalMoveX_ = 0;
 
     /**
      * The absolute sum of all touch Y deltas.
-     * @private {number}
+     * @private @type {number}
      */
     this.totalMoveY_ = 0;
   }

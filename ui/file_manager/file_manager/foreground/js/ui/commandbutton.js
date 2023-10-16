@@ -19,7 +19,7 @@ export class CommandButton {
   constructor() {
     /**
      * Associated command.
-     * @private {Command}
+     * @private @type {Command}
      */
     this.command_ = null;
   }

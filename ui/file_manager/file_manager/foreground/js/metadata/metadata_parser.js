@@ -16,15 +16,15 @@ export class MetadataParser {
    * @param {!RegExp} urlFilter RegExp to match URLs.
    */
   constructor(parent, type, urlFilter) {
-    /** @private @const {!MetadataParserLogger} */
+    /** @private @const @type {!MetadataParserLogger} */
     this.parent_ = parent;
-    /** @public @const {string} */
+    /** @public @const @type {string} */
     this.type = type;
-    /** @public @const {!RegExp} */
+    /** @public @const @type {!RegExp} */
     this.urlFilter = urlFilter;
-    /** @public @const {boolean} */
+    /** @public @const @type {boolean} */
     this.verbose = parent.verbose;
-    /** @public {string} */
+    /** @public @type {string} */
     this.mimeType = 'unknown';
   }
 

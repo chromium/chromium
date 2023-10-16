@@ -150,7 +150,7 @@ export class NavigationModelAndroidAppItem extends NavigationModelItem {
   constructor(androidApp) {
     super(androidApp.name, NavigationModelItemType.ANDROID_APP);
 
-    /** @private {!chrome.fileManagerPrivate.AndroidApp} */
+    /** @private @type {!chrome.fileManagerPrivate.AndroidApp} */
     this.androidApp_ = androidApp;
   }
 
@@ -219,63 +219,63 @@ export class NavigationListModel extends EventTarget {
     super();
 
     /**
-     * @private {!VolumeManager}
+     * @private @type {!VolumeManager}
      * @const
      */
     this.volumeManager_ = volumeManager;
 
     /**
-     * @private {!FolderShortcutsDataModel}
+     * @private @type {!FolderShortcutsDataModel}
      * @const
      */
     this.shortcutListModel_ = shortcutListModel;
 
     /**
-     * @private {NavigationModelFakeItem}
+     * @private @type {NavigationModelFakeItem}
      * @const
      */
     this.recentModelItem_ = recentModelItem;
 
     /**
-     * @private {!DirectoryModel}
+     * @private @type {!DirectoryModel}
      * @const
      */
     this.directoryModel_ = directoryModel;
 
     /**
-     * @private {!AndroidAppListModel}
+     * @private @type {!AndroidAppListModel}
      */
     this.androidAppListModel_ = androidAppListModel;
 
     /**
-     * @private {!DialogType}
+     * @private @type {!DialogType}
      */
     this.dialogType_ = dialogType;
 
     /**
      * Root folder for crostini Linux files.
      * This field will be modified when crostini is enabled/disabled.
-     * @private {NavigationModelFakeItem}
+     * @private @type {NavigationModelFakeItem}
      */
     this.linuxFilesItem_ = null;
 
     /**
      * Root folders for Guest OS files.
      * This field will be modified when new guests are added/removed.
-     * @private {!Array<!NavigationModelFakeItem>}
+     * @private @type {!Array<!NavigationModelFakeItem>}
      */
     this.guestOsPlaceholders_ = [];
 
     /**
      * Root folder for trash.
-     * @private {?NavigationModelFakeItem}
+     * @private @type {?NavigationModelFakeItem}
      */
     this.trashItem_ = null;
 
     /**
      * NavigationModel for MyFiles, since DirectoryTree expect it to be always
      * the same reference we keep the initial reference for reuse.
-     * @private {NavigationModelFakeItem}
+     * @private @type {NavigationModelFakeItem}
      */
     this.myFilesModel_ = null;
 
@@ -283,17 +283,17 @@ export class NavigationListModel extends EventTarget {
      * A collection of NavigationModel objects for Removable partition groups.
      * Store the reference to each model here since DirectoryTree expects it to
      * always have the same reference.
-     * @private {!Map<string, !NavigationModelFakeItem>}
+     * @private @type {!Map<string, !NavigationModelFakeItem>}
      */
     this.removableModels_ = new Map();
 
     /**
      * All root navigation items in display order.
-     * @private {!Array<!NavigationModelItem>}
+     * @private @type {!Array<!NavigationModelItem>}
      */
     this.navigationItems_ = [];
 
-    /** @private {?NavigationModelFakeItem} */
+    /** @private @type {?NavigationModelFakeItem} */
     this.fakeDriveItem_;
 
     const volumeInfoToModelItem = volumeInfo => {

@@ -109,7 +109,7 @@ export class FilteredVolumeManager extends EventTarget {
     // Public VolumeManager.volumeInfoList property accessed by callers.
     this.volumeInfoList = new FilteredVolumeInfoList(this.list_);
 
-    /** @private {?VolumeManager} */
+    /** @private @type {?VolumeManager} */
     this.volumeManager_ = null;
 
     this.onEventBound_ = this.onEvent_.bind(this);
@@ -118,39 +118,39 @@ export class FilteredVolumeManager extends EventTarget {
 
     this.disposed_ = false;
 
-    /** @private {!Promise<!VolumeManager>} */
+    /** @private @type {!Promise<!VolumeManager>} */
     this.volumeManagerGetter_ = volumeManagerGetter;
 
     /**
      * True if |volumeFilter| contains the 'fusebox-only' filter. SelectFileAsh
      * (Lacros) file picker sets this filter.
-     * @private @const {boolean}
+     * @private @const @type {boolean}
      */
     this.isFuseBoxOnly_ = volumeFilter.includes('fusebox-only');
 
     /**
      * True if |volumeFilter| contains the 'media-store-files-only' filter.
      * Android (ARC) file picker sets this filter.
-     * @private @const {boolean}
+     * @private @const @type {boolean}
      */
     this.isMediaStoreOnly_ = volumeFilter.includes('media-store-files-only');
 
     /**
      * True if chrome://flags#fuse-box-debug is enabled. This shows additional
      * UI elements, for manual fusebox testing.
-     * @private @const {boolean}
+     * @private @const @type {boolean}
      */
     this.isFuseBoxDebugEnabled_ = util.isFuseBoxDebugEnabled();
 
     /**
      * List of disabled volumes.
-     * @private @const {!Array<!VolumeManagerCommon.VolumeType>}
+     * @private @const @type {!Array<!VolumeManagerCommon.VolumeType>}
      */
     this.disabledVolumes_ = disabledVolumes;
 
     /**
      * Tracks async initialization of volume manager.
-     * @private @const {!Promise<void> }
+     * @private @const @type {!Promise<void> }
      */
     this.initialized_ = this.initialize_();
   }

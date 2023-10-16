@@ -161,7 +161,7 @@ export class FileManagerUI {
 
     /**
      * Dialog for formatting
-     * @const {!HTMLElement}
+     * @const @type {!HTMLElement}
      */
     this.formatDialog = queryRequiredElement('#format-dialog');
 
@@ -202,7 +202,7 @@ export class FileManagerUI {
 
     /**
      * Breadcrumb controller.
-     * @private {?BreadcrumbContainer}
+     * @private @type {?BreadcrumbContainer}
      */
     this.breadcrumbContainer_ = null;
 
@@ -309,7 +309,7 @@ export class FileManagerUI {
         queryDecoratedElement('#file-context-menu', MultiMenu);
 
     /**
-     * @public {!FilesMenuItem}
+     * @public @type {!FilesMenuItem}
      * @const
      */
     this.defaultTaskMenuItem =
@@ -317,7 +317,7 @@ export class FileManagerUI {
         (queryRequiredElement('#default-task-menu-item', this.fileContextMenu));
 
     /**
-     * @public @const {!MenuItem}
+     * @public @const @type {!MenuItem}
      */
     this.tasksSeparator = /** @type {!MenuItem} */
         (queryRequiredElement('#tasks-separator', this.fileContextMenu));
@@ -351,21 +351,21 @@ export class FileManagerUI {
         /** @type {!Document} */ (this.element.ownerDocument));
 
     /**
-     * @public {!ProvidersMenu}
+     * @public @type {!ProvidersMenu}
      * @const
      */
     this.providersMenu = new ProvidersMenu(
         providersModel, queryDecoratedElement('#providers-menu', Menu));
 
     /**
-     * @public {!ActionsSubmenu}
+     * @public @type {!ActionsSubmenu}
      * @const
      */
     this.actionsSubmenu = new ActionsSubmenu(this.fileContextMenu);
 
     /**
      * The container that maintains the lifetime of nudges.
-     * @public {!NudgeContainer}
+     * @public @type {!NudgeContainer}
      * @const
      */
     this.nudgeContainer = new NudgeContainer();
@@ -379,7 +379,7 @@ export class FileManagerUI {
 
     /**
      * Container of file-type filter buttons.
-     * @const {!HTMLElement}
+     * @const @type {!HTMLElement}
      */
     this.fileTypeFilterContainer =
         queryRequiredElement('#file-type-filter-container', this.element);
@@ -394,14 +394,14 @@ export class FileManagerUI {
     /**
      * A hidden div that can be used to announce text to screen
      * reader/ChromeVox.
-     * @private {!HTMLElement}
+     * @private @type {!HTMLElement}
      */
     this.a11yMessage_ = queryRequiredElement('#a11y-msg', this.element);
 
     if (window.IN_TEST) {
       /**
        * Stores all a11y announces to be checked in tests.
-       * @public {Array<string>}
+       * @public @type {Array<string>}
        */
       this.a11yAnnounces = [];
     }
@@ -429,7 +429,7 @@ export class FileManagerUI {
      * 'drop_failed_plugin_vm_directory_not_shared' is received during drag, we
      * show the move-to-windows-files dialog.
      *
-     * @public {boolean}
+     * @public @type {boolean}
      */
     this.dragInProcess = false;
   }

@@ -20,16 +20,16 @@ export class DisplayPanel extends HTMLElement {
     super();
     this.createElement_();
 
-    /** @private {?Element} */
+    /** @private @type {?Element} */
     this.summary_ = this.shadowRoot.querySelector('#summary');
 
-    /** @private {?Element} */
+    /** @private @type {?Element} */
     this.separator_ = this.shadowRoot.querySelector('#separator');
 
-    /** @private {?Element} */
+    /** @private @type {?Element} */
     this.panels_ = this.shadowRoot.querySelector('#panels');
 
-    /** @private {!function(!Event)} */
+    /** @private @type {!function(!Event)} */
     this.listener_;
 
     /**

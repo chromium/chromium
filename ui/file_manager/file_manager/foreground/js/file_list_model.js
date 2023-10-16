@@ -66,7 +66,7 @@ export class FileListModel extends ArrayDataModel {
     super([]);
 
     /**
-     * @private {!MetadataModel}
+     * @private @type {!MetadataModel}
      * @const
      */
     this.metadataModel_ = metadataModel;
@@ -94,34 +94,34 @@ export class FileListModel extends ArrayDataModel {
 
     /**
      * The number of folders in the list.
-     * @private {number}
+     * @private @type {number}
      */
     this.numFolders_ = 0;
 
     /**
      * The number of files in the list.
-     * @private {number}
+     * @private @type {number}
      */
     this.numFiles_ = 0;
 
     /**
      * The number of image files in the list.
-     * @private {number}
+     * @private @type {number}
      */
     this.numImageFiles_ = 0;
 
     /**
      * Whether to use modificationByMeTime as "Last Modified" time.
-     * @private {boolean}
+     * @private @type {boolean}
      */
     this.useModificationByMeTime_ = false;
 
-    /** @private {VolumeManager} The volume manager. */
+    /** @private @type {VolumeManager} The volume manager. */
     this.volumeManager_ = null;
 
     /**
-     * @private {EntryLocation} Used to get the label for entries when sorting
-     *     by label.
+     * @private @type {EntryLocation} Used to get the label for entries when
+     *     sorting by label.
      */
     this.locationInfo_ = null;
 
@@ -131,7 +131,7 @@ export class FileListModel extends ArrayDataModel {
     this.hasGroupHeadingBeforeSort = false;
 
     /**
-     * @private {string|null} The field to do group by on.
+     * @private @type {string|null} The field to do group by on.
      */
     this.groupByField_ = null;
 
@@ -139,7 +139,7 @@ export class FileListModel extends ArrayDataModel {
      * The key is the field name which is used by groupBy. The value is a
      * object with type GroupBySnapshot.
      *
-     * @private {!Object<string, !GroupBySnapshot>}
+     * @private @type {!Object<string, !GroupBySnapshot>}
      */
     this.groupBySnapshot_ =
         Array.from(FIELDS_SUPPORT_GROUP_BY).reduce((acc, field) => {

@@ -28,10 +28,10 @@ export class ListSelectionModel extends EventTarget {
     this.anchorIndex_ = -1;
     this.oldAnchorIndex_ = null;
 
-    /** @private {?number} */
+    /** @private @type {?number} */
     this.changeCount_;
 
-    /** @private {?Object} */
+    /** @private @type {?Object} */
     this.changedIndexes_;
   }
 

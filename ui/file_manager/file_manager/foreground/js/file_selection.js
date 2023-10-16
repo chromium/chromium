@@ -31,58 +31,61 @@ export class FileSelection {
    */
   constructor(indexes, entries, volumeManager) {
     /**
-     * @public {!Array<number>}
+     * @public @type {!Array<number>}
      * @const
      */
     this.indexes = indexes;
 
     /**
-     * @public {!Array<!Entry>}
+     * @public @type {!Array<!Entry>}
      * @const
      */
     this.entries = entries;
 
     /**
-     * @public {!Array<string>}
+     * @public @type {!Array<string>}
      */
     this.mimeTypes = [];
 
     /**
-     * @public {number}
+     * @public @type {number}
      */
     this.totalCount = 0;
 
     /**
-     * @public {number}
+     * @public @type {number}
      */
     this.fileCount = 0;
 
     /**
-     * @public {number}
+     * @public @type {number}
      */
     this.directoryCount = 0;
 
     /**
-     * @public {boolean}
+     * @public @type {boolean}
      */
     this.anyFilesNotInCache = true;
 
     /**
-     * @public {boolean}
+     * @public @type {boolean}
      */
     this.anyFilesHosted = true;
 
     /**
-     * @public {boolean}
+     * @public @type {boolean}
      */
     this.anyFilesEncrypted = true;
 
     /**
-     * @private {Promise<boolean>}
+     * @private @type {Promise<boolean>}
      */
     this.additionalPromise_ = null;
 
-    /** @private {boolean} If the current selection has any read-only entry. */
+    /**
+     * @private @type {boolean} If the current selection has any read-only
+     *     entry.
+     */
     this.hasReadOnlyEntry_ = false;
 
     entries.forEach(entry => {
@@ -160,25 +163,25 @@ export class FileSelectionHandler extends EventTarget {
     super();
 
     /**
-     * @private {DirectoryModel}
+     * @private @type {DirectoryModel}
      * @const
      */
     this.directoryModel_ = directoryModel;
 
     /**
-     * @private {ListContainer}
+     * @private @type {ListContainer}
      * @const
      */
     this.listContainer_ = listContainer;
 
     /**
-     * @private {MetadataModel}
+     * @private @type {MetadataModel}
      * @const
      */
     this.metadataModel_ = metadataModel;
 
     /**
-     * @private {!VolumeManager}
+     * @private @type {!VolumeManager}
      * @const
      */
     this.volumeManager_ = volumeManager;
@@ -189,22 +192,22 @@ export class FileSelectionHandler extends EventTarget {
     this.selection = new FileSelection([], [], volumeManager);
 
     /**
-     * @private {?number}
+     * @private @type {?number}
      */
     this.selectionUpdateTimer_ = 0;
 
-    /** @private {!Store} */
+    /** @private @type {!Store} */
     this.store_ = getStore();
 
     /**
      * The time, in ms since the epoch, when it is OK to post next throttled
      * selection event. Can be directly compared with Date.now().
-     * @private {number}
+     * @private @type {number}
      */
     this.nextThrottledEventTime_ = 0;
 
     /**
-     * @private {AllowedPaths}
+     * @private @type {AllowedPaths}
      * @const
      */
     this.allowedPaths_ = allowedPaths;
@@ -404,7 +407,7 @@ FileSelectionHandler.EventType = {
  * Delay in milliseconds before recalculating the selection in case the
  * selection is changed fast, or there are many items. Used to avoid freezing
  * the UI.
- * @const {number}
+ * @const @type {number}
  */
 FileSelectionHandler.UPDATE_DELAY = 200;
 
@@ -412,6 +415,6 @@ FileSelectionHandler.UPDATE_DELAY = 200;
  * Number of items in the selection which triggers the update delay. Used to
  * let the Material Design animations complete before performing a heavy task
  * which would cause the UI freezing.
- * @const {number}
+ * @const @type {number}
  */
 FileSelectionHandler.NUMBER_OF_ITEMS_HEAVY_TO_COMPUTE = 100;

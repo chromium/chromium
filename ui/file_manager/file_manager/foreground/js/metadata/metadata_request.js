@@ -9,13 +9,13 @@ export class MetadataRequest {
    */
   constructor(entry, names) {
     /**
-     * @public {!Entry}
+     * @public @type {!Entry}
      * @const
      */
     this.entry = entry;
 
     /**
-     * @public {!Array<string>}
+     * @public @type {!Array<string>}
      * @const
      */
     this.names = names;

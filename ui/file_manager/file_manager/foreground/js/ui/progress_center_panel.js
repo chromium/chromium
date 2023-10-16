@@ -17,7 +17,7 @@ export class ProgressCenterPanel {
   constructor() {
     /**
      * Reference to the feedback panel host.
-     * @private {!DisplayPanel}
+     * @private @type {!DisplayPanel}
      */
     this.feedbackHost_ = /** @type {!DisplayPanel} */ (
         document.querySelector('#progress-panel'));
@@ -25,7 +25,7 @@ export class ProgressCenterPanel {
     /**
      * Items that are progressing, or completed.
      * Key is item ID.
-     * @private {!Object<ProgressCenterItem>}
+     * @private @type {!Object<ProgressCenterItem>}
      */
     this.items_ = {};
 
@@ -47,14 +47,14 @@ export class ProgressCenterPanel {
      * Defer showing in progress operation to avoid displaying quick
      * operations, e.g. the notification panel only shows if the task is
      * processing longer than this time.
-     * @private {number}
+     * @private @type {number}
      */
     this.PENDING_TIME_MS_ = 2000;
 
     /**
      * Timeout for removing the notification panel, e.g. the notification
      * panel will be removed after this time.
-     * @private {number}
+     * @private @type {number}
      */
     this.TIMEOUT_TO_REMOVE_MS_ = 4000;
 

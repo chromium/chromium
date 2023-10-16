@@ -29,16 +29,16 @@ export class ThumbnailLoader {
   constructor(
       entry, opt_loaderType, opt_metadata, opt_mediaType, opt_loadTargets,
       opt_priority) {
-    /** @private {boolean} */
+    /** @private @type {boolean} */
     this.canvasUpToDate_ = false;
 
-    /** @private {?Image} */
+    /** @private @type {?Image} */
     this.image_ = null;
 
-    /** @private {?number} */
+    /** @private @type {?number} */
     this.taskId_ = null;
 
-    /** @private {?HTMLCanvasElement} */
+    /** @private @type {?HTMLCanvasElement} */
     this.canvas_ = null;
 
     const loadTargets = opt_loadTargets || [
@@ -47,19 +47,19 @@ export class ThumbnailLoader {
       ThumbnailLoader.LoadTarget.FILE_ENTRY,
     ];
 
-    /** @private @const {!Entry} */
+    /** @private @const @type {!Entry} */
     this.entry_ = entry;
 
-    /** @private @const {string} */
+    /** @private @const @type {string} */
     this.mediaType_ = opt_mediaType || FileType.getMediaType(entry);
 
-    /** @private @const {!ThumbnailLoader.LoaderType} */
+    /** @private @const @type {!ThumbnailLoader.LoaderType} */
     this.loaderType_ = opt_loaderType || ThumbnailLoader.LoaderType.IMAGE;
 
-    /** @private @const {?Object|undefined} */
+    /** @private @const @type {?Object|undefined} */
     this.metadata_ = opt_metadata;
 
-    /** @private @const {number} */
+    /** @private @const @type {number} */
     this.priority_ = (opt_priority !== undefined) ? opt_priority : 2;
 
     /**
@@ -69,11 +69,11 @@ export class ThumbnailLoader {
      * it can't be properly type-checked so long as |opt_metadata| is passed in
      * merely as "{Object}".
      *
-     * @private {?ImageTransformParam}
+     * @private @type {?ImageTransformParam}
      */
     this.transform_ = null;
 
-    /** @private {?ThumbnailLoader.LoadTarget} */
+    /** @private @type {?ThumbnailLoader.LoadTarget} */
     this.loadTarget_ = null;
 
     if (!opt_metadata) {
@@ -503,7 +503,7 @@ export class ThumbnailLoader {
  * In percents (0.0 - 1.0), how much area can be cropped to fill an image
  * in a container, when loading a thumbnail in FillMode.AUTO mode.
  * The default 30% value allows to fill 16:9, 3:2 pictures in 4:3 element.
- * @const {number}
+ * @const @type {number}
  */
 ThumbnailLoader.AUTO_FILL_THRESHOLD_DEFAULT_VALUE = 0.3;
 

@@ -33,7 +33,7 @@ export class FileTableColumnModel extends TableColumnModel {
   constructor(tableColumns) {
     super(tableColumns);
 
-    /** @private {?FileTableColumnModel.ColumnSnapshot} */
+    /** @private @type {?FileTableColumnModel.ColumnSnapshot} */
     this.snapshot_ = null;
   }
 
@@ -317,7 +317,7 @@ export function renderHeader_(table) {
 /**
  * Minimum width of column. Note that is not marked private as it is used in the
  * unit tests.
- * @const {number}
+ * @const @type {number}
  */
 FileTableColumnModel.MIN_WIDTH_ = 40;
 
@@ -329,7 +329,7 @@ FileTableColumnModel.ColumnSnapshot = class {
    * @param {!Array<!TableColumn>} columns
    */
   constructor(columns) {
-    /** @private {!Array<number>} */
+    /** @private @type {!Array<number>} */
     this.columnPos_ = [0];
     for (let i = 0; i < columns.length; i++) {
       this.columnPos_[i + 1] = columns[i].width + this.columnPos_[i];
@@ -337,7 +337,7 @@ FileTableColumnModel.ColumnSnapshot = class {
 
     /**
      * Starts off as a copy of the current column positions, but gets modified.
-     * @private {!Array<number>}
+     * @private @type {!Array<number>}
      */
     this.newPos = this.columnPos_.slice(0);
   }
@@ -384,37 +384,37 @@ export class FileTable extends Table {
   constructor() {
     super();
 
-    /** @private {number} */
+    /** @private @type {number} */
     this.beginIndex_ = 0;
 
-    /** @private {number} */
+    /** @private @type {number} */
     this.endIndex_ = 0;
 
-    /** @private {?ListThumbnailLoader} */
+    /** @private @type {?ListThumbnailLoader} */
     this.listThumbnailLoader_ = null;
 
-    /** @private {?RateLimiter} */
+    /** @private @type {?RateLimiter} */
     this.relayoutRateLimiter_ = null;
 
-    /** @private {?MetadataModel} */
+    /** @private @type {?MetadataModel} */
     this.metadataModel_ = null;
 
-    /** @private {?FileMetadataFormatter} */
+    /** @private @type {?FileMetadataFormatter} */
     this.formatter_ = null;
 
-    /** @private {boolean} */
+    /** @private @type {boolean} */
     this.useModificationByMeTime_ = false;
 
-    /** @private {?VolumeManager} */
+    /** @private @type {?VolumeManager} */
     this.volumeManager_ = null;
 
-    /** @private {!Array} */
+    /** @private @type {!Array} */
     this.lastSelection_ = [];
 
-    /** @private {?function(!Event)} */
+    /** @private @type {?function(!Event)} */
     this.onThumbnailLoadedBound_ = null;
 
-    /** @public {?A11yAnnounce} */
+    /** @public @type {?A11yAnnounce} */
     this.a11y = null;
 
     throw new Error('Designed to decorate elements');
@@ -447,19 +447,19 @@ export class FileTable extends Table {
       endSpacer.classList.add('signals-overscroll');
     }
 
-    /** @private {ListThumbnailLoader} */
+    /** @private @type {ListThumbnailLoader} */
     self.listThumbnailLoader_ = null;
 
-    /** @private {number} */
+    /** @private @type {number} */
     self.beginIndex_ = 0;
 
-    /** @private {number} */
+    /** @private @type {number} */
     self.endIndex_ = 0;
 
-    /** @private {function(!Event)} */
+    /** @private @type {function(!Event)} */
     self.onThumbnailLoadedBound_ = self.onThumbnailLoaded_.bind(self);
 
-    /** @private {boolean} */
+    /** @private @type {boolean} */
     self.useModificationByMeTime_ = false;
 
     const nameColumn =

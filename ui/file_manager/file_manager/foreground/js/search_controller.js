@@ -24,13 +24,13 @@ export class SearchController {
    *     messages.
    */
   constructor(searchContainer, directoryModel, a11y) {
-    /** @const @private {!SearchContainer} */
+    /** @const @private @type {!SearchContainer} */
     this.searchContainer_ = searchContainer;
 
-    /** @const @private {!DirectoryModel} */
+    /** @const @private @type {!DirectoryModel} */
     this.directoryModel_ = directoryModel;
 
-    /** @const @private {!FileManagerUI} */
+    /** @const @private @type {!FileManagerUI} */
     this.a11y_ = a11y;
 
     directoryModel.addEventListener('directory-changed', this.clear.bind(this));

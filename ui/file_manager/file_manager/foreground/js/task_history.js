@@ -127,11 +127,11 @@ TaskHistory.EventType = {
 
 /**
  * Key used to store the task history in local storage.
- * @const {string}
+ * @const @type {string}
  */
 TaskHistory.STORAGE_KEY_LAST_EXECUTED_TIME = 'task-last-executed-time';
 
 /**
- * @const {number}
+ * @const @type {number}
  */
 TaskHistory.LAST_EXECUTED_TIME_HISTORY_MAX = 100;

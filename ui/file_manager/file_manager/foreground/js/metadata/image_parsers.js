@@ -21,7 +21,7 @@ export class SimpleImageParser extends ImageParser {
    */
   constructor(parent, type, urlFilter, headerSize) {
     super(parent, type, urlFilter);
-    /** @public @const {number} */
+    /** @public @const @type {number} */
     this.headerSize = headerSize;
   }
 
