@@ -140,7 +140,7 @@ class TableViewTestHelper {
   }
 
  private:
-  raw_ptr<TableView, DanglingUntriaged> table_;
+  const raw_ptr<TableView> table_;
 };
 
 namespace {
@@ -467,6 +467,8 @@ class TableViewTest : public ViewsTestBase,
   }
 
   void TearDown() override {
+    table_ = nullptr;
+    helper_.reset();
     widget_.reset();
     ViewsTestBase::TearDown();
   }
@@ -588,8 +590,8 @@ class TableViewTest : public ViewsTestBase,
 
   std::unique_ptr<TestTableModel2> model_;
 
-  // Owned by |parent_|.
-  raw_ptr<TableView, DanglingUntriaged> table_ = nullptr;
+  // Owned by the scroll view owned by `widget_`.
+  raw_ptr<TableView> table_ = nullptr;
 
   std::unique_ptr<TableViewTestHelper> helper_;
 
@@ -867,7 +869,6 @@ TEST_P(TableViewTest, ResizeViaKeyboard) {
 // Verifies resizing a column won't reduce the column width below the width of
 // the column's title text.
 TEST_P(TableViewTest, ResizeHonorsMinimum) {
-  TableViewTestHelper helper(table_);
   const int x = table_->GetVisibleColumn(0).width;
   EXPECT_NE(0, x);
 
@@ -875,7 +876,7 @@ TEST_P(TableViewTest, ResizeHonorsMinimum) {
   DragLeftMouseTo(helper_->header(), gfx::Point(20, 0));
 
   int title_width = gfx::GetStringWidth(
-      table_->GetVisibleColumn(0).column.title, helper.font_list());
+      table_->GetVisibleColumn(0).column.title, helper_->font_list());
   EXPECT_LT(title_width, table_->GetVisibleColumn(0).width);
 
   int old_width = table_->GetVisibleColumn(0).width;
