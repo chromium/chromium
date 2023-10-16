@@ -5740,8 +5740,11 @@ To change this setting, <ph name="BEGIN_LINK">&lt;resetlink&gt;</ph>reset sync<p
       <message name="IDS_SIGNIN_TEMPORARILY_UNAVAILABLE_ERROR_DIALOG_DESCRIPTION" desc="Description of temporarily unavailable error upon user failing to sign in with an account from an identity provider." translateable="false">
         <ph name="IDENTITY_PROVIDER_ETLD_PLUS_ONE">%1$s<ex>idp.example</ex></ph> isn't available right now.
       </message>
-      <message name="IDS_SIGNIN_ERROR_DIALOG_MORE_DETAILS_PROMPT" desc="Prompt user to click on the more details button to get more details about an error that has occurred in their attempt to sign in with an account from an identity provider." translateable="false">
+      <message name="IDS_SIGNIN_ERROR_DIALOG_MORE_DETAILS_PROMPT" desc="Prompt user to get more details about an error that has occurred in their attempt to sign in with an account from an identity provider." translateable="false">
         If this issue keeps happening, get <ph name="BEGIN_LINK">&lt;link_more_details&gt;</ph>more information<ph name="END_LINK">&lt;/link_more_details&gt;</ph> from <ph name="IDENTITY_PROVIDER_ETLD_PLUS_ONE">%1$s<ex>idp.example</ex></ph>.
+      </message>
+      <message name="IDS_SIGNIN_GENERIC_ERROR_DIALOG_MORE_DETAILS_PROMPT" desc="Prompt user to get more details about a generic error that has occurred in their attempt to sign in with an account from an identity provider." translateable="false">
+        <ph name="BEGIN_LINK">&lt;link_more_details&gt;</ph>More details<ph name="END_LINK">&lt;/link_more_details&gt;</ph>
       </message>
       <message name="IDS_SIGNIN_ERROR_DIALOG_TRY_OTHER_WAYS_PROMPT" desc="Prompt user to try other ways of signing in after an error has occurred in their attempt to sign in with an account from an identity provider." translateable="false">
         If this issue keeps happening, you can try other ways to continue on <ph name="SITE_ETLD_PLUS_ONE">%1$s<ex>rp.example</ex></ph>.

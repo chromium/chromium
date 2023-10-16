@@ -112,10 +112,10 @@ public class AccountSelectionViewTest {
             mCode = code;
             mUrl = url;
             mExpectedSummary = mCodeToSummary.get(code);
-            mExpectedDescription = AccountSelectionViewBinder.GENERIC.equals(code)
-                            || AccountSelectionViewBinder.SERVER_ERROR.equals(code)
-                    ? mCodeToDescription.get(code)
-                    : appendExtraDescription(url, mCodeToDescription.get(code));
+            mExpectedDescription =
+                    AccountSelectionViewBinder.SERVER_ERROR.equals(code)
+                            ? mCodeToDescription.get(code)
+                            : appendExtraDescription(code, url);
         }
 
         private final Map<String, String> mCodeToSummary = Map.of(
@@ -152,7 +152,19 @@ public class AccountSelectionViewTest {
                 mResources.getString(
                         R.string.signin_server_error_dialog_description, TEST_RP_ETLD_PLUS_ONE));
 
-        private final String appendExtraDescription(GURL url, String initialDescription) {
+        private final String appendExtraDescription(String code, GURL url) {
+            String initialDescription = mCodeToDescription.get(code);
+            if (AccountSelectionViewBinder.GENERIC.equals(code)) {
+                if (TEST_EMPTY_ERROR_URL.equals(url)) {
+                    return initialDescription;
+                }
+                return initialDescription
+                        + ". "
+                        + mResources
+                                .getString(R.string.signin_generic_error_dialog_more_details_prompt)
+                                .replaceAll(LINK_TAG_REGEX, "");
+            }
+
             if (TEST_EMPTY_ERROR_URL.equals(url)) {
                 return initialDescription + " "
                         + mResources.getString(R.string.signin_error_dialog_try_other_ways_prompt,
