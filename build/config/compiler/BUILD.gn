@@ -19,6 +19,7 @@ import("//build/config/rust.gni")
 import("//build/config/ui.gni")
 import("//build/config/unwind.gni")
 import("//build/toolchain/cc_wrapper.gni")
+import("//build/toolchain/cros/cros_config.gni")
 import("//build/toolchain/goma.gni")
 import("//build/toolchain/rbe.gni")
 import("//build/toolchain/toolchain.gni")
@@ -1963,9 +1964,10 @@ config("chromium_code") {
       # disabled, so only do that for Release build.
       fortify_level = "2"
 
-      # ChromeOS supports a high-quality _FORTIFY_SOURCE=3 implementation
-      # with a few custom glibc patches. Use that if it's available.
-      if (is_chromeos_ash) {
+      # ChromeOS's toolchain supports a high-quality _FORTIFY_SOURCE=3
+      # implementation with a few custom glibc patches. Use that if it's
+      # available.
+      if (is_chromeos_device && !lacros_use_chromium_toolchain) {
         fortify_level = "3"
       }
       defines += [ "_FORTIFY_SOURCE=" + fortify_level ]

@@ -4,14 +4,9 @@
 
 import("//build/config/compiler/compiler.gni")
 import("//build/config/sysroot.gni")
+import("//build/toolchain/cros/cros_config.gni")
 import("//build/toolchain/cros_toolchain.gni")
 import("//build/toolchain/gcc_toolchain.gni")
-
-declare_args() {
-  # If set, build lacros with Chromium's toolchain instead of with Chrome OS's.
-  # TODO(thakis): Set this to `= chromeos_is_browser_only` once that works.
-  lacros_use_chromium_toolchain = false
-}
 
 # This is mostly identical to gcc_toolchain, but handles relativizing toolchain
 # paths. This is needed for CrOS since these paths often change based on the

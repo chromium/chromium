@@ -1,0 +1,9 @@
+# Copyright 2023 The Chromium Authors
+# Use of this source code is governed by a BSD-style license that can be
+# found in the LICENSE file.
+
+declare_args() {
+  # If set, build lacros with Chromium's toolchain instead of with Chrome OS's.
+  # TODO(thakis): Set this to `= chromeos_is_browser_only` once that works.
+  lacros_use_chromium_toolchain = false
+}
