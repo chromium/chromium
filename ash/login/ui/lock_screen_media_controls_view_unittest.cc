@@ -3,17 +3,17 @@
 // found in the LICENSE file.
 
 #include "ash/login/ui/lock_screen_media_controls_view.h"
-#include "ash/login/ui/lock_contents_view_test_api.h"
-#include "base/memory/raw_ptr.h"
 
 #include "ash/constants/ash_features.h"
 #include "ash/login/ui/fake_login_detachable_base_model.h"
 #include "ash/login/ui/lock_contents_view.h"
+#include "ash/login/ui/lock_contents_view_test_api.h"
 #include "ash/login/ui/login_test_base.h"
 #include "ash/login/ui/media_controls_header_view.h"
 #include "ash/session/session_controller_impl.h"
 #include "ash/shell.h"
 #include "ash/style/dark_light_mode_controller_impl.h"
+#include "base/memory/raw_ptr.h"
 #include "base/ranges/algorithm.h"
 #include "base/test/power_monitor_test.h"
 #include "base/test/scoped_feature_list.h"
@@ -34,6 +34,7 @@
 #include "ui/views/animation/bounds_animator_observer.h"
 #include "ui/views/controls/image_view.h"
 #include "ui/views/controls/label.h"
+#include "ui/views/view_utils.h"
 
 namespace ash {
 
@@ -54,9 +55,9 @@ MediaSessionAction kActionButtonOrder[] = {
     MediaSessionAction::kNextTrack};
 
 // Checks if the view class name is used by a media button.
-bool IsMediaButtonType(const char* class_name) {
-  return class_name == views::ImageButton::kViewClassName ||
-         class_name == views::ToggleImageButton::kViewClassName;
+bool IsMediaButtonType(const views::View* view) {
+  return views::IsViewClass<views::ImageButton>(view) ||
+         views::IsViewClass<views::ToggleImageButton>(view);
 }
 
 class AnimationWaiter : public ui::LayerAnimationObserver,
@@ -384,7 +385,7 @@ TEST_F(LockScreenMediaControlsViewTest, ButtonsSanityCheck) {
   for (int i = 0; i < 5; /* size of |button_row| */ i++) {
     auto* child = media_action_buttons()[i];
 
-    ASSERT_TRUE(IsMediaButtonType(child->GetClassName()));
+    ASSERT_TRUE(IsMediaButtonType(child));
 
     ASSERT_EQ(
         static_cast<MediaSessionAction>(views::Button::AsButton(child)->tag()),

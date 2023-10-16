@@ -6,6 +6,7 @@
 #define ASH_APP_LIST_VIEWS_GHOST_IMAGE_VIEW_H_
 
 #include "ash/app_list/views/apps_grid_view.h"
+#include "ash/ash_export.h"
 #include "ui/base/metadata/metadata_header_macros.h"
 #include "ui/compositor/layer_animation_observer.h"
 #include "ui/views/controls/image_view.h"
@@ -15,11 +16,11 @@ namespace ash {
 // An ImageView of the ghosting icon to show where a dragged app or folder
 // will drop on the app list. This view is owned by the client and not the
 // view hierarchy.
-class GhostImageView : public views::ImageView,
-                       public ui::ImplicitAnimationObserver {
- public:
-  METADATA_HEADER(GhostImageView);
+class ASH_EXPORT GhostImageView : public views::ImageView,
+                                  public ui::ImplicitAnimationObserver {
+  METADATA_HEADER(GhostImageView, views::ImageView)
 
+ public:
   explicit GhostImageView(GridIndex index);
 
   GhostImageView(const GhostImageView&) = delete;

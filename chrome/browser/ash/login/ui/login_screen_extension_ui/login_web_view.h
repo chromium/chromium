@@ -2,8 +2,8 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#ifndef CHROME_BROWSER_ASH_LOGIN_UI_LOGIN_SCREEN_EXTENSION_UI_WEB_DIALOG_VIEW_H_
-#define CHROME_BROWSER_ASH_LOGIN_UI_LOGIN_SCREEN_EXTENSION_UI_WEB_DIALOG_VIEW_H_
+#ifndef CHROME_BROWSER_ASH_LOGIN_UI_LOGIN_SCREEN_EXTENSION_UI_LOGIN_WEB_VIEW_H_
+#define CHROME_BROWSER_ASH_LOGIN_UI_LOGIN_SCREEN_EXTENSION_UI_LOGIN_WEB_VIEW_H_
 
 #include <memory>
 
@@ -22,19 +22,20 @@ namespace ash {
 namespace login_screen_extension_ui {
 class DialogDelegate;
 
-// A WebDialogView used by chrome.loginScreenUi API calls. It hides the close
-// button if `DialogDelegate::CanCloseDialog()` is false.
-class WebDialogView : public views::WebDialogView, public SystemTrayObserver {
+// A WebDialogView subclass used by chrome.loginScreenUi API calls. It hides
+// the close button if `DialogDelegate::CanCloseDialog()` is false.
+class LoginWebView : public views::WebDialogView, public SystemTrayObserver {
+  METADATA_HEADER(LoginWebView, views::WebDialogView)
+
  public:
-  METADATA_HEADER(WebDialogView);
-  explicit WebDialogView(
+  explicit LoginWebView(
       content::BrowserContext* context,
       login_screen_extension_ui::DialogDelegate* delegate,
       std::unique_ptr<ui::WebDialogWebContentsDelegate::WebContentsHandler>
           handler);
-  WebDialogView(const WebDialogView&) = delete;
-  WebDialogView& operator=(const WebDialogView&) = delete;
-  ~WebDialogView() override;
+  LoginWebView(const LoginWebView&) = delete;
+  LoginWebView& operator=(const LoginWebView&) = delete;
+  ~LoginWebView() override;
 
   // views::WebDialogView
   bool TakeFocus(content::WebContents* source, bool reverse) override;
@@ -53,4 +54,4 @@ class WebDialogView : public views::WebDialogView, public SystemTrayObserver {
 }  // namespace login_screen_extension_ui
 }  // namespace ash
 
-#endif  // CHROME_BROWSER_ASH_LOGIN_UI_LOGIN_SCREEN_EXTENSION_UI_WEB_DIALOG_VIEW_H_
+#endif  // CHROME_BROWSER_ASH_LOGIN_UI_LOGIN_SCREEN_EXTENSION_UI_LOGIN_WEB_VIEW_H_

@@ -18,7 +18,7 @@
 #define BEGIN_METADATA_BASE(class_name)                     \
   METADATA_REINTERPRET_BASE_CLASS_INTERNAL(                 \
       class_name, METADATA_CLASS_NAME_INTERNAL(class_name)) \
-  BEGIN_METADATA_INTERNAL(                                  \
+  BEGIN_METADATA_INTERNAL_BASE(                             \
       class_name, METADATA_CLASS_NAME_INTERNAL(class_name), class_name)
 
 #define _BEGIN_NESTED_METADATA(outer_class, class_name, parent_class_name) \
@@ -32,6 +32,12 @@
       class_name, METADATA_CLASS_NAME_INTERNAL(class_name), parent_class_name) \
   METADATA_PARENT_CLASS_INTERNAL(parent_class_name)
 
+#define _BEGIN_METADATA_SIMPLE(class_name)                          \
+  BEGIN_METADATA_INTERNAL(class_name,                               \
+                          METADATA_CLASS_NAME_INTERNAL(class_name), \
+                          class_name::kAncestorClass)               \
+  METADATA_PARENT_CLASS_INTERNAL(class_name::kAncestorClass)
+
 #define _GET_MD_MACRO_NAME(_1, _2, _3, NAME, ...) NAME
 
 // The following macro overloads the above macros. For most cases, only two
@@ -39,10 +45,10 @@
 // class, the first parameter should be the outer scope with the remaining
 // parameters same as the non-nested macro.
 
-#define BEGIN_METADATA(class_name1, class_name2, ...)         \
-  _GET_MD_MACRO_NAME(class_name1, class_name2, ##__VA_ARGS__, \
-                     _BEGIN_NESTED_METADATA, _BEGIN_METADATA) \
-  (class_name1, class_name2, ##__VA_ARGS__)
+#define BEGIN_METADATA(class_name, ...)                                 \
+  _GET_MD_MACRO_NAME(class_name, ##__VA_ARGS__, _BEGIN_NESTED_METADATA, \
+                     _BEGIN_METADATA, _BEGIN_METADATA_SIMPLE)           \
+  (class_name, ##__VA_ARGS__)
 
 #define END_METADATA }
 
