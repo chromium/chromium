@@ -79,9 +79,9 @@ class ASH_EXPORT GameDashboardToolbarView : public views::BoxLayoutView,
   // Adds Game Controls button if needed.
   void MayAddGameControlsTile();
 
-  // Updates the `game_controls_button_` states and tooltip text according to
-  // `flags`.
-  void UpdateGameControlsButton(ArcGameControlsFlag flags);
+  // Updates this view's widget visibility. If it is visible, updates
+  // game_controls_button_'s state, and the tooltip text according to flags.
+  void UpdateViewForGameControls(ArcGameControlsFlag flags);
 
   // Updates the `record_game_button_` UI. If `is_recording_game_window` is
   // true, then the button will change to a stop button, otherwise it will show

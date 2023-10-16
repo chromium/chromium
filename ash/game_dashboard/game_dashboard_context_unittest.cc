@@ -20,6 +20,7 @@
 #include "ash/game_dashboard/game_dashboard_utils.h"
 #include "ash/game_dashboard/game_dashboard_widget.h"
 #include "ash/game_dashboard/test_game_dashboard_delegate.h"
+#include "ash/public/cpp/arc_game_controls_flag.h"
 #include "ash/public/cpp/capture_mode/capture_mode_test_api.h"
 #include "ash/public/cpp/style/dark_light_mode_controller.h"
 #include "ash/public/cpp/window_properties.h"
@@ -593,6 +594,49 @@ TEST_F(GameDashboardContextTest, GameControlsMenuFunctions) {
       /*feature_switch_states=*/
       {/*expect_exists=*/true, /*expect_toggled=*/true},
       /*setup_exists=*/false);
+}
+
+// Verify Game Dashboard button is disabled and toolbar hides in the edit mode.
+TEST_F(GameDashboardContextTest, GameControlsEditMode) {
+  CreateGameWindow(/*is_arc_window=*/true);
+  // Game Controls is available, not empty, enabled and hint on.
+  game_window_->SetProperty(
+      kArcGameControlsFlagsKey,
+      static_cast<ArcGameControlsFlag>(
+          ArcGameControlsFlag::kKnown | ArcGameControlsFlag::kAvailable |
+          ArcGameControlsFlag::kEnabled | ArcGameControlsFlag::kHint));
+  auto* game_dashboard_button = test_api_->GetGameDashboardButton();
+  EXPECT_TRUE(game_dashboard_button->GetEnabled());
+  LeftClickOn(game_dashboard_button);
+  EXPECT_TRUE(test_api_->GetMainMenuWidget());
+  // Show the toolbar.
+  test_api_->OpenTheToolbar();
+  auto* tool_bar_widget = test_api_->GetToolbarWidget();
+  EXPECT_TRUE(tool_bar_widget);
+  EXPECT_TRUE(tool_bar_widget->IsVisible());
+
+  // Enter Game Controls edit mode.
+  LeftClickOn(test_api_->GetMainMenuGameControlsDetailsButton());
+  EXPECT_TRUE(game_dashboard_utils::IsFlagSet(
+      game_window_->GetProperty(kArcGameControlsFlagsKey),
+      ArcGameControlsFlag::kEdit));
+  EXPECT_FALSE(test_api_->GetMainMenuWidget());
+  EXPECT_FALSE(tool_bar_widget->IsVisible());
+  // In the edit mode, Game Dashboard button is disabled and it doesn't show
+  // menu after clicked. The toolbar is also hidden if it shows up.
+  EXPECT_FALSE(game_dashboard_button->GetEnabled());
+  LeftClickOn(game_dashboard_button);
+  EXPECT_FALSE(test_api_->GetMainMenuWidget());
+  // Exit edit mode and verify Game Dashboard button and toolbar are resumed.
+  ArcGameControlsFlag flags =
+      game_window_->GetProperty(kArcGameControlsFlagsKey);
+  flags = game_dashboard_utils::UpdateFlag(flags, ArcGameControlsFlag::kEdit,
+                                           /*enable_flag=*/false);
+  game_window_->SetProperty(kArcGameControlsFlagsKey, flags);
+  EXPECT_TRUE(game_dashboard_button->GetEnabled());
+  LeftClickOn(game_dashboard_button);
+  EXPECT_TRUE(test_api_->GetMainMenuWidget());
+  EXPECT_TRUE(tool_bar_widget->IsVisible());
 }
 
 // Verifies that when one game window starts a recording session, it's

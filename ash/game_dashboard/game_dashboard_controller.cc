@@ -257,9 +257,11 @@ void GameDashboardController::RefreshGameDashboardButton(aura::Window* window) {
 
   auto it = game_window_contexts_.find(window);
   if (it != game_window_contexts_.end()) {
-    it->second->SetGameDashboardButtonEnabled(game_dashboard_utils::IsFlagSet(
-        window->GetProperty(kArcGameControlsFlagsKey),
-        ArcGameControlsFlag::kKnown));
+    const ArcGameControlsFlag flags =
+        window->GetProperty(kArcGameControlsFlagsKey);
+    it->second->SetGameDashboardButtonEnabled(
+        game_dashboard_utils::IsFlagSet(flags, ArcGameControlsFlag::kKnown) &&
+        !game_dashboard_utils::IsFlagSet(flags, ArcGameControlsFlag::kEdit));
   }
 }
 
