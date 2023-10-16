@@ -2,7 +2,7 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#include "chrome/browser/ui/webui/settings/ash/system_preferences_section.h"
+#include "chrome/browser/ui/webui/ash/settings/pages/system_preferences/system_preferences_section.h"
 
 #include "chrome/browser/ui/webui/ash/settings/pages/date_time/date_time_section.h"
 #include "chrome/browser/ui/webui/ash/settings/pages/files/files_section.h"
