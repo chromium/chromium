@@ -13,6 +13,7 @@
 #include "chrome/browser/first_party_sets/first_party_sets_pref_names.h"
 #include "chrome/browser/privacy_sandbox/tracking_protection_settings_factory.h"
 #include "chrome/browser/profiles/profile.h"
+#include "components/content_settings/core/browser/content_settings_utils.h"
 #include "components/content_settings/core/browser/host_content_settings_map.h"
 #include "components/content_settings/core/common/content_settings_constraints.h"
 #include "components/prefs/pref_service.h"
@@ -199,19 +200,21 @@ void FirstPartySetsPolicyService::OnFirstPartySetsEnabledChanged(bool enabled) {
 }
 
 void FirstPartySetsPolicyService::ClearContentSettings(Profile* profile) const {
-  auto is_nonrestorable =
-      [](const ContentSettingPatternSource& setting) -> bool {
-    return setting.metadata.session_model() ==
-           content_settings::SessionModel::NonRestorableUserSession;
-  };
-
   HostContentSettingsMap* host_content_settings_map =
       HostContentSettingsMapFactory::GetForProfile(profile);
 
   host_content_settings_map->ClearSettingsForOneTypeWithPredicate(
-      ContentSettingsType::STORAGE_ACCESS, is_nonrestorable);
+      ContentSettingsType::STORAGE_ACCESS,
+      [](const ContentSettingPatternSource& setting) -> bool {
+        return content_settings::IsGrantedByRelatedWebsiteSets(
+            ContentSettingsType::STORAGE_ACCESS, setting.metadata);
+      });
   host_content_settings_map->ClearSettingsForOneTypeWithPredicate(
-      ContentSettingsType::TOP_LEVEL_STORAGE_ACCESS, is_nonrestorable);
+      ContentSettingsType::TOP_LEVEL_STORAGE_ACCESS,
+      [](const ContentSettingPatternSource& setting) -> bool {
+        return content_settings::IsGrantedByRelatedWebsiteSets(
+            ContentSettingsType::TOP_LEVEL_STORAGE_ACCESS, setting.metadata);
+      });
 }
 
 void FirstPartySetsPolicyService::RegisterThrottleResumeCallback(
