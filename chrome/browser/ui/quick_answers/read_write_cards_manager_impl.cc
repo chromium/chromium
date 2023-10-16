@@ -22,30 +22,6 @@
 
 namespace chromeos {
 
-namespace {
-
-constexpr base::StringPiece kOrcaKey = "orca-key";
-constexpr char kOrcaKeyHash[] =
-    "\x7a\xf3\xa1\x57\x28\x48\xc4\x14\x27\x13\x53\x5a\x09\xf3\x0e\xfc\xee\xa6"
-    "\xbb\xa4";
-
-bool CheckOrcaKey() {
-  const std::string& debug_key_hash = base::SHA1HashString(
-      base::CommandLine::ForCurrentProcess()->GetSwitchValueASCII(
-          /*ash::switches::kOrcaKey=*/kOrcaKey));
-  // See go/orca-key for the key.
-  // Commandline looks like:
-  //  out/Default/chrome --user-data-dir=/tmp/auuf123 --orca-key="INSERT KEY
-  //  HERE" --enable-features=Orca
-  bool orca_key_check = (debug_key_hash == kOrcaKeyHash);
-  if (!orca_key_check) {
-    LOG(ERROR) << "Provided debug key does not match with the expected one.";
-  }
-  return orca_key_check;
-}
-
-}  // namespace
-
 ReadWriteCardsManagerImpl::ReadWriteCardsManagerImpl()
     : quick_answers_controller_(
           std::make_unique<QuickAnswersControllerImpl>()) {
@@ -74,7 +50,7 @@ ReadWriteCardController* ReadWriteCardsManagerImpl::GetController(
 
   if (chromeos::features::IsOrcaEnabled()) {
     if (params.is_editable) {
-      return CheckOrcaKey() ? editor_menu_controller_.get() : nullptr;
+      return editor_menu_controller_.get();
     }
   }
 

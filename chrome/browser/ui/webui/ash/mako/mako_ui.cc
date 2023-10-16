@@ -44,19 +44,6 @@ MakoUntrustedUI::MakoUntrustedUI(content::WebUI* web_ui)
     : ui::UntrustedBubbleWebUIController(web_ui) {
   CHECK(chromeos::features::IsOrcaEnabled());
 
-  const std::string debug_key_hash = base::SHA1HashString(
-      base::CommandLine::ForCurrentProcess()->GetSwitchValueASCII(
-          ash::switches::kOrcaKey));
-  // See go/orca-key for the key
-  // Commandline looks like:
-  //  out/Default/chrome --user-data-dir=/tmp/auuf123 --orca-key="INSERT KEY
-  //  HERE" --enable-features=Orca
-  const std::string hash =
-      "\x7a\xf3\xa1\x57\x28\x48\xc4\x14\x27\x13\x53\x5a\x09\xf3\x0e\xfc\xee\xa6"
-      "\xbb\xa4";
-  // If key fails to match, crash chrome.
-  CHECK_EQ(debug_key_hash, hash);
-
   // Setup the data source
   content::WebUIDataSource* source = content::WebUIDataSource::CreateAndAdd(
       web_ui->GetWebContents()->GetBrowserContext(), kChromeUIMakoURL);

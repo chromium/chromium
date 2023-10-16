@@ -901,9 +901,6 @@ const char kOobeTimezoneOverrideForTests[] = "oobe-timezone-override-for-tests";
 const char kOobeTriggerSyncTimeoutForTests[] =
     "oobe-trigger-sync-timeout-for-tests";
 
-// Supply secret key for Orca feature
-const char kOrcaKey[] = "orca-key";
-
 // Controls how often the HiddenNetworkHandler class checks for wrongly hidden
 // networks. The interval should be provided in seconds, should follow the
 // format "--hidden-network-migration-interval=#", and should be >= 1.
