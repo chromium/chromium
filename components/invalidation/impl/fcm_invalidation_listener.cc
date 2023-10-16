@@ -5,14 +5,35 @@
 #include "components/invalidation/impl/fcm_invalidation_listener.h"
 
 #include "base/functional/bind.h"
-#include "base/functional/callback.h"
 #include "base/logging.h"
 #include "base/task/single_thread_task_runner.h"
+#include "components/invalidation/public/invalidation.h"
 #include "components/invalidation/public/invalidation_util.h"
 #include "components/invalidation/public/topic_invalidation_map.h"
-#include "components/prefs/pref_service.h"
 
 namespace invalidation {
+
+namespace {
+
+// Insert or update the invalidation in the map at `invalidation.topic()`.
+// If `map` does not have an invalidation for that topic, a copy of `inv` will
+// be inserted.
+// Otherwise, the existing invalidation for the topic will be replaced by `inv`
+// if and only if `inv` has a higher version than `map.at(inv.topic())`.
+void Upsert(std::map<Topic, Invalidation>& map,
+            const Invalidation& invalidation) {
+  auto it = map.find(invalidation.topic());
+  if (it == map.end()) {
+    map.emplace(invalidation.topic(), invalidation);
+    return;
+  }
+  if (it->second.version() < invalidation.version()) {
+    it->second = invalidation;
+    return;
+  }
+}
+
+}  // namespace
 
 FCMInvalidationListener::FCMInvalidationListener(
     std::unique_ptr<FCMSyncNetworkChannel> network_channel)
@@ -76,7 +97,6 @@ void FCMInvalidationListener::InvalidationReceived(
              << expected_public_topic.value_or("<None>");
     return;
   }
-  TopicInvalidationMap invalidations;
   Invalidation inv =
       Invalidation::Init(*expected_public_topic, version, payload);
   inv.SetAckHandler(weak_factory_.GetWeakPtr(),
@@ -84,30 +104,19 @@ void FCMInvalidationListener::InvalidationReceived(
   DVLOG(1) << "Received invalidation with version " << inv.version() << " for "
            << *expected_public_topic;
 
-  invalidations.Insert(inv);
-  DispatchInvalidations(invalidations);
+  DispatchInvalidation(inv);
 }
 
-void FCMInvalidationListener::DispatchInvalidations(
-    const TopicInvalidationMap& invalidations) {
-  TopicInvalidationMap to_save = invalidations;
-  TopicInvalidationMap to_emit =
-      invalidations.GetSubsetWithTopics(interested_topics_);
+void FCMInvalidationListener::DispatchInvalidation(
+    const Invalidation& invalidation) {
+  // Cache invalidation
+  Upsert(unacked_invalidations_map_, invalidation);
 
-  SaveInvalidations(to_save);
-  EmitSavedInvalidations(to_emit);
-}
-
-void FCMInvalidationListener::SaveInvalidations(
-    const TopicInvalidationMap& to_save) {
-  for (const Topic& topic : to_save.GetTopics()) {
-    auto lookup = unacked_invalidations_map_.find(topic);
-    if (lookup == unacked_invalidations_map_.end()) {
-      lookup = unacked_invalidations_map_
-                   .emplace(topic, UnackedInvalidationSet(topic))
-                   .first;
-    }
-    lookup->second.AddSet(to_save.ForTopic(topic));
+  // Emit invalidation to registered handlers (if any).
+  if (interested_topics_.contains(invalidation.topic())) {
+    TopicInvalidationMap topic_invalidation_map;
+    topic_invalidation_map.Insert(invalidation);
+    EmitSavedInvalidations(topic_invalidation_map);
   }
 }
 
@@ -135,7 +144,11 @@ void FCMInvalidationListener::Acknowledge(const Topic& topic,
     DLOG(WARNING) << "Received acknowledgement for untracked topic";
     return;
   }
-  lookup->second.Acknowledge(handle);
+  if (lookup->second.ack_handle().Equals(handle)) {
+    unacked_invalidations_map_.erase(topic);
+    return;
+  }
+  DLOG(WARNING) << "Unrecognized to ack for topic " << topic;
 }
 
 void FCMInvalidationListener::DoSubscriptionUpdate() {
@@ -152,15 +165,11 @@ void FCMInvalidationListener::DoSubscriptionUpdate() {
   // already dispatched but not acked yet.
   // TODO(melandory): remove unacked invalidations for unregistered topics.
   TopicInvalidationMap topic_invalidation_map;
-  for (const auto& unacked : unacked_invalidations_map_) {
-    if (interested_topics_.find(unacked.first) == interested_topics_.end()) {
+  for (const auto& [topic, invalidation] : unacked_invalidations_map_) {
+    if (interested_topics_.find(topic) == interested_topics_.end()) {
       continue;
     }
-
-    unacked.second.ExportInvalidations(
-        weak_factory_.GetWeakPtr(),
-        base::SingleThreadTaskRunner::GetCurrentDefault(),
-        &topic_invalidation_map);
+    topic_invalidation_map.Insert(invalidation);
   }
 
   // There's no need to run these through DispatchInvalidations(); they've

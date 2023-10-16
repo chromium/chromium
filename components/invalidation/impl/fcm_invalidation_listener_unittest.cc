@@ -278,28 +278,34 @@ TEST_F(FCMInvalidationListenerTest, InvalidateBeforeRegistration_Simple) {
   EXPECT_EQ(kPayload1, GetPayload(topic));
 }
 
-// Fire ten invalidations before an topics registers.  Some invalidations will
-// be dropped an replaced with an unknown version invalidation.
+// Fire a couple of invalidations before any topic registers. For each topic,
+// all but the invalidation with the highest version number will be dropped.
 TEST_F(FCMInvalidationListenerTest, InvalidateBeforeRegistration_Drop) {
-  const int kRepeatCount =
-      UnackedInvalidationSet::kMaxBufferedInvalidations + 1;
-  const Topic kUnregisteredId("unregistered");
-  const Topic& topic = kUnregisteredId;
+  const int kRepeatCount = 10;
+  const Topic kTopicA = "unregistered topic a";
+  const Topic kTopicB = "unregistered topic b";
   Topics topics;
-  topics.emplace(topic, TopicMetadata{false});
+  topics.emplace(kTopicA, TopicMetadata{false});
+  topics.emplace(kTopicB, TopicMetadata{false});
 
-  EXPECT_EQ(0U, GetInvalidationCount(topic));
+  EXPECT_EQ(0U, GetInvalidationCount(kTopicA));
+  EXPECT_EQ(0U, GetInvalidationCount(kTopicB));
 
-  int64_t initial_version = kVersion1;
-  for (int64_t i = initial_version; i < initial_version + kRepeatCount; ++i) {
-    FireInvalidate(topic, i, kPayload1);
+  const int64_t initial_version = kVersion1;
+  const int64_t max_version = initial_version + kRepeatCount;
+  for (int64_t i = initial_version; i <= initial_version + kRepeatCount; ++i) {
+    FireInvalidate(kTopicA, i, kPayload1);
+    FireInvalidate(kTopicB, i, kPayload1);
   }
 
   EnableNotifications();
   listener_.UpdateInterestedTopics(topics);
 
-  ASSERT_EQ(UnackedInvalidationSet::kMaxBufferedInvalidations,
-            GetInvalidationCount(topic));
+  EXPECT_EQ(1U, GetInvalidationCount(kTopicA));
+  EXPECT_EQ(max_version, GetVersion(kTopicA));
+
+  EXPECT_EQ(1U, GetInvalidationCount(kTopicB));
+  EXPECT_EQ(max_version, GetVersion(kTopicB));
 }
 
 // Fire an invalidation, then fire another one with a lower version.  Both
