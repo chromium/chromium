@@ -30,6 +30,7 @@ class ArcFlossBridge : public ArcBluetoothBridge,
   void SendCachedDevices() const override;
   void StartLEScanImpl() override;
   void ResetLEScanSession() override;
+  bool IsDiscoveringOrScanning() override;
 
   // Bluetooth Mojo host interface - Bluetooth SDP functions
   void GetSdpRecords(mojom::BluetoothAddressPtr remote_addr,

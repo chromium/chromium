@@ -417,14 +417,14 @@ void ArcBluetoothBridge::DeviceChanged(BluetoothAdapter* adapter,
     return;
 
   std::string addr = device->GetAddress();
-  if (discovered_devices_.insert(addr).second) {
+  if (IsDiscoveringOrScanning() && discovered_devices_.insert(addr).second) {
     auto* bluetooth_instance = ARC_GET_INSTANCE_FOR_METHOD(
         arc_bridge_service_->bluetooth(), OnDeviceFound);
     if (bluetooth_instance) {
       bluetooth_instance->OnDeviceFound(
           GetDeviceProperties(mojom::BluetoothPropertyType::ALL, device));
     }
-  } else {
+  } else if (discovered_devices_.contains(addr)) {
     auto* bluetooth_instance = ARC_GET_INSTANCE_FOR_METHOD(
         arc_bridge_service_->bluetooth(), OnDevicePropertiesChanged);
     if (bluetooth_instance) {
@@ -561,10 +561,15 @@ void ArcBluetoothBridge::DeviceAdvertisementReceived(
   mojom::BluetoothAddressPtr addr =
       mojom::BluetoothAddress::From(device->GetAddress());
 
-  auto* bluetooth_instance = ARC_GET_INSTANCE_FOR_METHOD(
-      arc_bridge_service_->bluetooth(), OnLEDeviceFound);
-  if (bluetooth_instance)
-    bluetooth_instance->OnLEDeviceFound(std::move(addr), rssi, eir);
+  if ((IsDiscoveringOrScanning() &&
+       scanned_devices_.insert(device->GetAddress()).second) ||
+      scanned_devices_.contains(device->GetAddress())) {
+    auto* bluetooth_instance = ARC_GET_INSTANCE_FOR_METHOD(
+        arc_bridge_service_->bluetooth(), OnLEDeviceFound);
+    if (bluetooth_instance) {
+      bluetooth_instance->OnLEDeviceFound(std::move(addr), rssi, eir);
+    }
+  }
 }
 
 void ArcBluetoothBridge::DeviceConnectedStateChanged(BluetoothAdapter* adapter,
@@ -1235,6 +1240,7 @@ void ArcBluetoothBridge::StartLEScanImpl() {
   if (le_scan_session_) {
     LOG(ERROR) << "Discovery session for LE scan already running.";
     StartLEScanOffTimer();
+    scanned_devices_.clear();
     discovery_queue_.Pop();
     return;
   }
@@ -1274,6 +1280,10 @@ void ArcBluetoothBridge::StartLEScanOffTimer() {
 
 void ArcBluetoothBridge::ResetLEScanSession() {
   le_scan_session_ = nullptr;
+}
+
+bool ArcBluetoothBridge::IsDiscoveringOrScanning() {
+  return discovery_session_ || le_scan_session_;
 }
 
 void ArcBluetoothBridge::StopLEScanImpl() {
@@ -1348,6 +1358,7 @@ void ArcBluetoothBridge::OnLEScanStarted(
 
   StartLEScanOffTimer();
   le_scan_session_ = std::move(session);
+  scanned_devices_.clear();
 
   // Android doesn't need a callback for discovery started event for a LE scan.
   discovery_queue_.Pop();
