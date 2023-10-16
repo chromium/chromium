@@ -166,9 +166,15 @@ struct VectorTypeOperations {
 
   static void Initialize(T* begin, T* end) {
     if constexpr (VectorTraits<T>::kCanInitializeWithMemset) {
-      // NOLINTNEXTLINE(bugprone-undefined-memory-manipulation)
-      memset(begin, 0,
-             reinterpret_cast<char*>(end) - reinterpret_cast<char*>(begin));
+      size_t size =
+          reinterpret_cast<char*>(end) - reinterpret_cast<char*>(begin);
+      if constexpr (!Allocator::kIsGarbageCollected ||
+                    !IsTraceableInCollectionTrait<VectorTraits<T>>::value) {
+        // NOLINTNEXTLINE(bugprone-undefined-memory-manipulation)
+        memset(begin, 0, size);
+      } else {
+        AtomicMemzero(begin, size);
+      }
     } else {
       for (T* cur = begin; cur != end; ++cur)
         ConstructTraits::Construct(cur);
