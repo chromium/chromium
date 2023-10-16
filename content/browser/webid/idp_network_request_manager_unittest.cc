@@ -1427,6 +1427,41 @@ TEST_F(IdpNetworkRequestManagerTest, TokenRequestErrorWithUntrustworthyUrl) {
   run_loop.Run();
 }
 
+TEST_F(IdpNetworkRequestManagerTest, TokenRequestErrorWithEmptyUrl) {
+  base::test::ScopedFeatureList list;
+  list.InitAndEnableFeature(features::kFedCmError);
+
+  net::HttpStatusCode http_status = net::HTTP_OK;
+  const std::string& mime_type = "application/json";
+
+  const char response[] =
+      R"({
+        "error": {
+          "code": "invalid_request",
+          "url": ""
+        }
+      })";
+  GURL token_endpoint(kTestTokenEndpoint);
+  AddResponse(token_endpoint, http_status, mime_type, response);
+
+  base::RunLoop run_loop;
+  auto callback =
+      base::BindLambdaForTesting([&](FetchStatus status, TokenResult result) {
+        EXPECT_TRUE(result.error);
+        EXPECT_EQ("invalid_request", result.error->code);
+        EXPECT_EQ(GURL(), result.error->url);
+        run_loop.Quit();
+      });
+
+  auto on_continue =
+      base::BindLambdaForTesting([&](FetchStatus status, const GURL& url) {});
+
+  std::unique_ptr<IdpNetworkRequestManager> manager = CreateTestManager();
+  manager->SendTokenRequest(token_endpoint, "account", "request",
+                            std::move(callback), std::move(on_continue));
+  run_loop.Run();
+}
+
 TEST_F(IdpNetworkRequestManagerTest, TokenRequestServerError) {
   base::test::ScopedFeatureList list;
   list.InitAndEnableFeature(features::kFedCmError);

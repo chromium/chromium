@@ -598,7 +598,7 @@ void OnAccountsRequestParsed(
 }
 
 GURL GetErrorUrl(const std::string* url, const GURL& idp_url) {
-  if (!url) {
+  if (!url || url->empty()) {
     return GURL();
   }
 
