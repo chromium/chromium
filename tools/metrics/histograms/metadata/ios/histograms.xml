@@ -2409,6 +2409,19 @@ chromium-metrics-reviews@google.com.
   </summary>
 </histogram>
 
+<histogram name="IOS.PushNotification.NotificationSettingsAuthorizationStatus"
+    enum="PushNotificationSettingsAuthorizationStatus"
+    expires_after="2024-10-11">
+  <owner>danieltwhite@google.com</owner>
+  <owner>ajuma@google.com</owner>
+  <summary>
+    Logs the permission status, stored in iOS settings, the user has given for
+    whether Chrome can receive push notifications on the device. This histogram
+    is logged each time Chrome requests the device's APNS token from the APNS
+    server.
+  </summary>
+</histogram>
+
 <histogram name="IOS.ReadingList.ImageTooLargeFailure" units="KB"
     expires_after="2024-06-07">
   <owner>olivierrobin@chromium.org</owner>

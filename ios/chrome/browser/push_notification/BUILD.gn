@@ -85,12 +85,15 @@ source_set("unit_tests") {
     "push_notification_account_context_manager+testing.h",
     "push_notification_account_context_manager_unittest.mm",
     "push_notification_client_manager_unittest.mm",
+    "push_notification_util+testing.h",
+    "push_notification_util_unittest.mm",
   ]
   deps = [
     ":push_notification_client",
     ":push_notification_service",
     ":test_support",
     "//base",
+    "//base/test:test_support",
     "//ios/chrome/browser/shared/model/application_context",
     "//ios/chrome/browser/shared/model/browser_state",
     "//ios/chrome/browser/shared/model/browser_state:test_support",
