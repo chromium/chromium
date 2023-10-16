@@ -8,12 +8,13 @@ import static org.chromium.content_public.browser.HostZoomMap.TEXT_SIZE_MULTIPLI
 import static org.chromium.content_public.browser.HostZoomMap.getSystemFontScale;
 import static org.chromium.content_public.browser.HostZoomMap.setSystemFontScale;
 
+import org.jni_zero.CalledByNative;
+import org.jni_zero.CalledByNativeForTesting;
+import org.jni_zero.JNINamespace;
+import org.jni_zero.NativeMethods;
+
 import org.chromium.base.MathUtils;
 import org.chromium.base.ResettersForTesting;
-import org.chromium.base.annotations.CalledByNative;
-import org.chromium.base.annotations.CalledByNativeForTesting;
-import org.chromium.base.annotations.JNINamespace;
-import org.chromium.base.annotations.NativeMethods;
 import org.chromium.content_public.browser.BrowserContextHandle;
 import org.chromium.content_public.browser.ContentFeatureList;
 import org.chromium.content_public.browser.ContentFeatureMap;

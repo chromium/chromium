@@ -47,13 +47,14 @@ import androidx.annotation.Nullable;
 import androidx.annotation.VisibleForTesting;
 import androidx.core.view.inputmethod.EditorInfoCompat;
 
+import org.jni_zero.CalledByNative;
+import org.jni_zero.JNINamespace;
+import org.jni_zero.NativeMethods;
+
 import org.chromium.base.ContextUtils;
 import org.chromium.base.Log;
 import org.chromium.base.TraceEvent;
 import org.chromium.base.UserData;
-import org.chromium.base.annotations.CalledByNative;
-import org.chromium.base.annotations.JNINamespace;
-import org.chromium.base.annotations.NativeMethods;
 import org.chromium.blink.mojom.EventType;
 import org.chromium.blink.mojom.FocusType;
 import org.chromium.blink.mojom.HandwritingGestureResult;
@@ -515,10 +516,17 @@ public class ImeAdapterImpl
         TraceEvent.begin("ImeAdapter.updateState");
         try {
             if (DEBUG_LOGS) {
-                Log.i(TAG,
-                        "updateState: type [%d->%d], flags [%d], mode[%d], action[%d], show [%b], hide [%b]",
-                        mTextInputType, textInputType, textInputFlags, textInputMode,
-                        textInputAction, showIfNeeded, alwaysHide);
+                Log.i(
+                        TAG,
+                        "updateState: type [%d->%d], flags [%d], mode[%d], action[%d], show [%b],"
+                                + " hide [%b]",
+                        mTextInputType,
+                        textInputType,
+                        textInputFlags,
+                        textInputMode,
+                        textInputAction,
+                        showIfNeeded,
+                        alwaysHide);
             }
             boolean needsRestart = false;
             boolean hide = false;

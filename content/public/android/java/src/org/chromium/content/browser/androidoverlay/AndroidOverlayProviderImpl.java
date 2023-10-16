@@ -4,9 +4,10 @@
 
 package org.chromium.content.browser.androidoverlay;
 
+import org.jni_zero.CalledByNative;
+import org.jni_zero.JNINamespace;
+
 import org.chromium.base.ThreadUtils;
-import org.chromium.base.annotations.CalledByNative;
-import org.chromium.base.annotations.JNINamespace;
 import org.chromium.media.mojom.AndroidOverlay;
 import org.chromium.media.mojom.AndroidOverlayClient;
 import org.chromium.media.mojom.AndroidOverlayConfig;

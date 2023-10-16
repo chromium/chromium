@@ -12,13 +12,14 @@ import android.os.Environment;
 import android.text.TextUtils;
 import android.util.Pair;
 
+import org.jni_zero.CalledByNative;
+import org.jni_zero.JNINamespace;
+import org.jni_zero.NativeMethods;
+
 import org.chromium.base.Callback;
 import org.chromium.base.ContextUtils;
 import org.chromium.base.Log;
 import org.chromium.base.StrictModeContext;
-import org.chromium.base.annotations.CalledByNative;
-import org.chromium.base.annotations.JNINamespace;
-import org.chromium.base.annotations.NativeMethods;
 import org.chromium.content.R;
 import org.chromium.content_public.browser.TracingControllerAndroid;
 import org.chromium.ui.widget.Toast;

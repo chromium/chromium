@@ -6,9 +6,10 @@ package org.chromium.content.browser;
 
 import androidx.annotation.Nullable;
 
+import org.jni_zero.CalledByNative;
+import org.jni_zero.JNINamespace;
+
 import org.chromium.base.UnguessableToken;
-import org.chromium.base.annotations.CalledByNative;
-import org.chromium.base.annotations.JNINamespace;
 import org.chromium.content_public.browser.AdditionalNavigationParams;
 
 /**

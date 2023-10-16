@@ -7,9 +7,10 @@ package org.chromium.content_public.browser;
 import androidx.annotation.NonNull;
 import androidx.annotation.VisibleForTesting;
 
+import org.jni_zero.CalledByNative;
+import org.jni_zero.JNINamespace;
+
 import org.chromium.base.UserDataHost;
-import org.chromium.base.annotations.CalledByNative;
-import org.chromium.base.annotations.JNINamespace;
 import org.chromium.net.NetError;
 import org.chromium.ui.base.PageTransition;
 import org.chromium.url.GURL;

@@ -1243,7 +1243,6 @@ if (is_android) {
       ":content_browsertests_resources",
       "//base:base_java",
       "//base:base_java_test_support",
-      "//base:jni_java",
       "//components/download/internal/common:internal_java",
       "//components/metrics:metrics_java",
       "//components/viz/service:service_java",
@@ -1251,6 +1250,7 @@ if (is_android) {
       "//content/public/test/android:content_java_test_support",
       "//content/shell/android:content_shell_browsertests_java",
       "//testing/android/native_test:native_test_java",
+      "//third_party/jni_zero:jni_zero_java",
       "//ui/android:ui_java",
     ]
   }
@@ -3417,8 +3417,8 @@ if (is_android) {
       "$google_play_services_package:google_play_services_basement_java",
       "$google_play_services_package:google_play_services_tasks_java",
       "//base:base_java",
-      "//base:jni_java",
       "//content/public/android:content_java",
+      "//third_party/jni_zero:jni_zero_java",
       "//ui/android:ui_full_java",
     ]
   }

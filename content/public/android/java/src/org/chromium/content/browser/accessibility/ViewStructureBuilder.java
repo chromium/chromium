@@ -15,7 +15,8 @@ import android.os.Build;
 import android.os.Bundle;
 import android.view.ViewStructure;
 
-import org.chromium.base.annotations.CalledByNative;
+import org.jni_zero.CalledByNative;
+
 import org.chromium.content.browser.RenderCoordinatesImpl;
 
 import java.util.ArrayList;

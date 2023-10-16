@@ -4,9 +4,9 @@
 
 package org.chromium.content_public.common;
 
-import org.chromium.base.annotations.CalledByNative;
-import org.chromium.base.annotations.JNINamespace;
-import org.chromium.base.annotations.NativeMethods;
+import org.jni_zero.CalledByNative;
+import org.jni_zero.JNINamespace;
+import org.jni_zero.NativeMethods;
 
 /**
  * Wrapper around the native content::ResourceRequestBody.

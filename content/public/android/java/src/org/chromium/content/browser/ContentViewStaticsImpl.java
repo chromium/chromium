@@ -4,7 +4,8 @@
 
 package org.chromium.content.browser;
 
-import org.chromium.base.annotations.NativeMethods;
+import org.jni_zero.NativeMethods;
+
 import org.chromium.net.ProxyChangeListener;
 
 /**
