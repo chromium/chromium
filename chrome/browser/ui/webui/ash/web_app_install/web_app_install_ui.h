@@ -30,6 +30,8 @@ class WebAppInstallDialogUI : public ui::MojoWebDialogUI,
       mojo::PendingReceiver<mojom::PageHandler> pending_page_handler) override;
 
  private:
+  void CloseDialog();
+
   std::unique_ptr<WebAppInstallPageHandler> page_handler_;
   mojo::Receiver<mojom::PageHandlerFactory> factory_receiver_{this};
 

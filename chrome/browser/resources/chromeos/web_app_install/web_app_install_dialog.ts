@@ -9,6 +9,7 @@ import {CrButtonElement} from 'chrome://resources/cr_elements/cr_button/cr_butto
 import {assert, assertInstanceof} from 'chrome://resources/js/assert.js';
 import {loadTimeData} from 'chrome://resources/js/load_time_data.js';
 
+import {BrowserProxy} from './browser_proxy.js';
 import {getTemplate} from './web_app_install_dialog.html.js';
 
 /**
@@ -50,7 +51,8 @@ class WebAppInstallDialogElement extends HTMLElement {
   }
 
   private onCancelButtonClick(): void {
-    chrome.send('dialogClose');
+    const proxy = BrowserProxy.getInstance();
+    proxy.handler.closeDialog();
   }
 
   private async onInstallButtonClick(event: MouseEvent) {

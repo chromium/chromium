@@ -49,8 +49,13 @@ void WebAppInstallDialogUI::BindInterface(
 
 void WebAppInstallDialogUI::CreatePageHandler(
     mojo::PendingReceiver<mojom::PageHandler> receiver) {
-  page_handler_ =
-      std::make_unique<WebAppInstallPageHandler>(std::move(receiver));
+  page_handler_ = std::make_unique<WebAppInstallPageHandler>(
+      std::move(receiver), base::BindOnce(&WebAppInstallDialogUI::CloseDialog,
+                                          base::Unretained(this)));
+}
+
+void WebAppInstallDialogUI::CloseDialog() {
+  ui::MojoWebDialogUI::CloseDialog(base::Value::List());
 }
 
 WEB_UI_CONTROLLER_TYPE_IMPL(WebAppInstallDialogUI)

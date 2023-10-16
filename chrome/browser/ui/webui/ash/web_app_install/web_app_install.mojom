@@ -15,4 +15,7 @@ interface PageHandlerFactory {
 // are implemented in the browser process.
 interface PageHandler {
   // TODO(crbug.com/1488697): Add an InstallApp method.
+
+  // Closes the dialog.
+  CloseDialog();
 };
