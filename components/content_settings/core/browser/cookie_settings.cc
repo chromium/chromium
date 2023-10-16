@@ -265,6 +265,7 @@ ContentSetting CookieSettings::GetContentSetting(
     ContentSettingsType content_type,
     content_settings::SettingInfo* info) const {
   if (content_type == ContentSettingsType::TPCD_METADATA_GRANTS) {
+    base::AutoLock lock(tpcd_lock_);
     const auto& entry = base::ranges::find_if(
         settings_for_3pcd_metadata_grants_,
         [&](const ContentSettingPatternSource& entry) {

@@ -134,6 +134,7 @@ class CookieSettings
   // to be held and accessed from memory by the cookie settings object.
   void SetContentSettingsFor3pcdMetadataGrants(
       const ContentSettingsForOneType settings) {
+    base::AutoLock lock(tpcd_lock_);
     settings_for_3pcd_metadata_grants_ = settings;
   }
 
@@ -146,6 +147,7 @@ class CookieSettings
   }
 
   ContentSettingsForOneType GetTpcdMetadataGrantsForTesting() {
+    base::AutoLock lock(tpcd_lock_);
     return settings_for_3pcd_metadata_grants_;
   }
 
@@ -270,7 +272,10 @@ class CookieSettings
   // TODO(http://b/290039145): There's a chance for the list to get considerably
   // big. Look into optimizing memory by querying straight from a global
   // service.
-  ContentSettingsForOneType settings_for_3pcd_metadata_grants_;
+
+  mutable base::Lock tpcd_lock_;
+  ContentSettingsForOneType settings_for_3pcd_metadata_grants_
+      GUARDED_BY(tpcd_lock_);
 
   mutable base::Lock lock_;
   bool block_third_party_cookies_ GUARDED_BY(lock_);
