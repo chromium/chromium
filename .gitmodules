@@ -282,10 +282,6 @@
 [submodule "third_party/googletest/src"]
 	path = third_party/googletest/src
 	url = https://chromium.googlesource.com/external/github.com/google/googletest.git
-[submodule "third_party/gnu_binutils"]
-	path = third_party/gnu_binutils
-	url = https://chromium.googlesource.com/native_client/deps/third_party/gnu_binutils.git
-	gclient-condition = checkout_nacl and checkout_win
 [submodule "third_party/gperf"]
 	path = third_party/gperf
 	url = https://chromium.googlesource.com/chromium/deps/gperf.git
@@ -420,18 +416,10 @@
 	path = third_party/material_design_icons/src
 	url = https://chromium.googlesource.com/external/github.com/google/material-design-icons.git
 	gclient-condition = checkout_ios
-[submodule "third_party/mingw-w64/mingw/bin"]
-	path = third_party/mingw-w64/mingw/bin
-	url = https://chromium.googlesource.com/native_client/deps/third_party/mingw-w64/mingw/bin.git
-	gclient-condition = checkout_nacl and checkout_win
 [submodule "third_party/minigbm/src"]
 	path = third_party/minigbm/src
 	url = https://chromium.googlesource.com/chromiumos/platform/minigbm.git
 	gclient-condition = checkout_linux
-[submodule "third_party/nacl_sdk_binaries"]
-	path = third_party/nacl_sdk_binaries
-	url = https://chromium.googlesource.com/chromium/deps/nacl_sdk_binaries.git
-	gclient-condition = checkout_nacl and checkout_win
 [submodule "third_party/nasm"]
 	path = third_party/nasm
 	url = https://chromium.googlesource.com/chromium/deps/nasm.git

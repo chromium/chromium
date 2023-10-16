@@ -119,7 +119,7 @@ vars = {
 
   # Check out and download nacl by default, unless on Windows or Mac.
   # This can be disabled e.g. with custom_vars.
-  'checkout_nacl': 'not (host_os == "win" or host_os == "mac")',
+  'checkout_nacl': 'host_os == "linux"',
 
   # By default, do not check out src-internal. This can be overridden e.g. with
   # custom_vars.
@@ -1397,12 +1397,6 @@ deps = {
   'src/third_party/googletest/src':
     Var('chromium_git') + '/external/github.com/google/googletest.git' + '@' + Var('googletest_revision'),
 
-  # GNU binutils assembler for x86-32.
-  'src/third_party/gnu_binutils': {
-      'url': Var('chromium_git') + '/native_client/deps/third_party/gnu_binutils.git' + '@' + 'f4003433b61b25666565690caf3d7a7a1a4ec436',
-      'condition': 'checkout_nacl and checkout_win',
-  },
-
   'src/third_party/gperf': {
       'url': Var('chromium_git') + '/chromium/deps/gperf.git' + '@' + 'd892d79f64f9449770443fb06da49b5a1e5d33c1',
       'condition': 'checkout_win',
@@ -1707,22 +1701,10 @@ deps = {
       'dep_type': 'cipd',
   },
 
-  # GNU binutils assembler for x86-64.
-  'src/third_party/mingw-w64/mingw/bin': {
-      'url': Var('chromium_git') + '/native_client/deps/third_party/mingw-w64/mingw/bin.git' + '@' + '3cc8b140b883a9fe4986d12cfd46c16a093d3527',
-      'condition': 'checkout_nacl and checkout_win',
-  },
-
   # Graphics buffer allocator for Chrome OS.
   'src/third_party/minigbm/src': {
       'url': Var('chromium_git') + '/chromiumos/platform/minigbm.git' + '@' + '3018207f4d89395cc271278fb9a6558b660885f5',
       'condition': 'checkout_linux',
-  },
-
-  # Binaries for nacl sdk.
-  'src/third_party/nacl_sdk_binaries': {
-      'url': Var('chromium_git') + '/chromium/deps/nacl_sdk_binaries.git' + '@' + '759dfca03bdc774da7ecbf974f6e2b84f43699a5',
-      'condition': 'checkout_nacl and checkout_win',
   },
 
   'src/third_party/nasm': {
