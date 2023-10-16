@@ -585,7 +585,7 @@ TEST_F(MessageCenterMetricsUtilsTest, RecordPopupUserJourneyTime) {
 
   // Dismiss "never timeout" popup after 7s.
   notification->set_timestamp(base::Time::Now());
-  notification->set_never_timeout(true);
+  notification->SetSystemPriority();
   message_center->AddNotification(
       std::make_unique<message_center::Notification>(*notification));
   task_environment()->FastForwardBy(kPopupTimeOutDuration + base::Seconds(1));

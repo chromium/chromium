@@ -182,7 +182,7 @@ void MessageCenterController::OnActiveUserPrefServiceChanged(
 
   message_center::PopupTimersController::SetNotificationTimeouts(
       message_center::kAutocloseShortDelaySeconds,
-      message_center::kAutocloseShortDelaySeconds);
+      message_center::kAutocloseCrosHighPriorityDelaySeconds);
 }
 
 }  // namespace ash

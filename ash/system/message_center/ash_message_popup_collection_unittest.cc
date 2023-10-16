@@ -36,8 +36,10 @@
 #include "ash/wm/tablet_mode/tablet_mode_controller.h"
 #include "ash/wm/tablet_mode/tablet_mode_controller_test_api.h"
 #include "base/command_line.h"
+#include "base/run_loop.h"
 #include "base/test/metrics/histogram_tester.h"
 #include "base/test/scoped_feature_list.h"
+#include "base/time/time.h"
 #include "chromeos/ash/components/phonehub/fake_phone_hub_manager.h"
 #include "chromeos/ash/components/phonehub/feature_status.h"
 #include "ui/display/manager/display_manager.h"
@@ -1681,6 +1683,56 @@ TEST_P(AshMessagePopupCollectionTest, BubbleNotCloseWhenPopupClose) {
 
   EXPECT_FALSE(popup_collection->GetPopupViewForNotificationID(id));
   EXPECT_TRUE(phone_hub_tray->GetBubbleView());
+}
+
+class AshMessagePopupCollectionMockTimeTest : public ash::AshTestBase {
+ public:
+  AshMessagePopupCollectionMockTimeTest()
+      : AshTestBase(base::test::TaskEnvironment::TimeSource::MOCK_TIME) {}
+  AshMessagePopupCollectionMockTimeTest(
+      const AshMessagePopupCollectionMockTimeTest&) = delete;
+  AshMessagePopupCollectionMockTimeTest& operator=(
+      const AshMessagePopupCollectionMockTimeTest&) = delete;
+  ~AshMessagePopupCollectionMockTimeTest() override = default;
+};
+
+TEST_F(AshMessagePopupCollectionMockTimeTest, PopupTimeouts) {
+  auto* popup_collection =
+      GetPrimaryUnifiedSystemTray()->GetMessagePopupCollection();
+  auto* message_center = message_center::MessageCenter::Get();
+  std::string id = "0";
+  auto notification_priorities = {
+      message_center::DEFAULT_PRIORITY, message_center::HIGH_PRIORITY,
+      message_center::MAX_PRIORITY, message_center::SYSTEM_PRIORITY};
+
+  // Make sure all notification popups below `SYSTEM_PRIORITY` are dismissed
+  // after `kAutocloseShortDelaySeconds` seconds. Also, make sure
+  // `SYSTEM_PRIORITY` notifications are dismissed after
+  // `kAutocloseCrosHighPriorityDelaySeconds`.
+  for (auto priority : notification_priorities) {
+    auto notification = CreateSimpleNotification(id);
+    notification->set_priority(priority);
+    if (priority == message_center::SYSTEM_PRIORITY) {
+      notification->SetSystemPriority();
+    }
+    message_center->AddNotification(std::move(notification));
+    EXPECT_TRUE(popup_collection->GetPopupViewForNotificationID(id));
+
+    int timeout = priority == message_center::SYSTEM_PRIORITY
+                      ? message_center::kAutocloseCrosHighPriorityDelaySeconds
+                      : message_center::kAutocloseShortDelaySeconds;
+    task_environment()->FastForwardBy(base::Seconds(timeout - 1));
+    base::RunLoop().RunUntilIdle();
+    EXPECT_TRUE(popup_collection->GetPopupViewForNotificationID(id));
+
+    task_environment()->FastForwardBy(base::Seconds(timeout));
+    base::RunLoop().RunUntilIdle();
+
+    EXPECT_FALSE(popup_collection->GetPopupViewForNotificationID(id));
+
+    message_center->RemoveNotification(id,
+                                       /*by_user=*/false);
+  }
 }
 
 }  // namespace ash

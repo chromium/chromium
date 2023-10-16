@@ -305,16 +305,11 @@ void NotificationList::MarkSinglePopupAsShown(const std::string& id,
   DCHECK(iter != notifications_.end());
 
   NotificationState* state = &iter->second;
-  const Notification& notification = *iter->first;
-
   if (iter->second.shown_as_popup) {
     return;
   }
 
-  // System notification is marked as shown only when marked as read.
-  if (notification.priority() != SYSTEM_PRIORITY || mark_notification_as_read) {
-    state->shown_as_popup = true;
-  }
+  state->shown_as_popup = true;
 
   // The popup notification is already marked as read when it's displayed.
   // Set the is_read back to false if necessary.
