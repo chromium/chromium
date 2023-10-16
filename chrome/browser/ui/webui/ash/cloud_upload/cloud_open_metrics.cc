@@ -6,7 +6,6 @@
 
 #include <string>
 
-#include "base/metrics/histogram_functions.h"
 #include "chrome/browser/ui/webui/ash/cloud_upload/cloud_upload_util.h"
 
 namespace ash::cloud_upload {
@@ -40,8 +39,7 @@ std::ostream& operator<<(std::ostream& os, const MetricType& value) {
 
 // Print debug information about this metric.
 template <typename MetricType>
-std::ostream& operator<<(std::ostream& os,
-                         const CloudOpenMetrics::Metric<MetricType>& metric) {
+std::ostream& operator<<(std::ostream& os, const Metric<MetricType>& metric) {
   os << metric.metric_name;
   os << ": ";
   os << metric.state;
@@ -140,56 +138,6 @@ void CloudOpenMetrics::PrintMetrics() {
   LOG(WARNING) << "Metrics: " << std::endl
                << task_result_ << std::endl
                << transfer_required_;
-}
-
-template <class MetricType>
-CloudOpenMetrics::Metric<MetricType>::Metric(std::string metric_name_to_set)
-    : metric_name(metric_name_to_set) {}
-
-template <class MetricType>
-bool CloudOpenMetrics::Metric<MetricType>::Log(MetricType new_value) {
-  LogMetric(new_value);
-  if (state == MetricState::kCorrectlyNotLogged) {
-    set_state(MetricState::kCorrectlyLogged);
-  } else {
-    set_state(MetricState::kIncorrectlyLoggedMultipleTimes);
-    LOG(ERROR) << metric_name << " being logged with " << new_value
-               << " when it was already logged with " << value;
-  }
-  value = new_value;
-  return state == MetricState::kCorrectlyLogged;
-}
-
-template <class MetricType>
-bool CloudOpenMetrics::Metric<MetricType>::logged() {
-  switch (state) {
-    case MetricState::kCorrectlyNotLogged:
-    case MetricState::kIncorrectlyNotLogged:
-      return false;
-    case MetricState::kCorrectlyLogged:
-    case MetricState::kIncorrectlyLogged:
-    case MetricState::kIncorrectlyLoggedMultipleTimes:
-    case MetricState::kWrongValueLogged:
-      return true;
-  }
-}
-
-template <class MetricType>
-void CloudOpenMetrics::Metric<MetricType>::set_state(MetricState new_state) {
-  state = new_state;
-}
-
-template <class MetricType>
-void CloudOpenMetrics::Metric<MetricType>::LogMetric(MetricType new_value) {
-  base::UmaHistogramEnumeration(metric_name, new_value);
-}
-
-// Handle a value of type base::File::Error differently.
-template <>
-void CloudOpenMetrics::Metric<base::File::Error>::LogMetric(
-    base::File::Error new_value) {
-  base::UmaHistogramExactLinear(metric_name, -new_value,
-                                -base::File::FILE_ERROR_MAX);
 }
 
 }  // namespace ash::cloud_upload

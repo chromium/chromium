@@ -6,6 +6,7 @@
 #define CHROME_BROWSER_UI_WEBUI_ASH_CLOUD_UPLOAD_CLOUD_OPEN_METRICS_H_
 
 #include "base/memory/safe_ref.h"
+#include "base/metrics/histogram_functions.h"
 #include "chrome/browser/ui/webui/ash/cloud_upload/cloud_upload_util.h"
 
 namespace ash::cloud_upload {
@@ -24,6 +25,74 @@ enum class MetricState {
   // An unexpected value was logged.
   kWrongValueLogged,
 };
+
+// Represents a metric identified by `metric_name` that logs value of type
+// `MetricType`. Log the metric through this class. Keeps track of the value
+// logged and the `MetricState` of the metric.
+template <typename MetricType>
+class Metric {
+  static_assert(std::is_same_v<std::underlying_type_t<MetricType>, int>,
+                "The underlying type of the MetricType must be an int");
+
+ public:
+  explicit Metric(std::string metric_name_to_set)
+      : metric_name(metric_name_to_set) {}
+  ~Metric() = default;
+
+  // Logs a `new_value` to the metric with `metric_name` and saves it to
+  // `value`. Update the state:
+  //   kCorrectlyNotLogged  -> kCorrectlyLogged
+  //   !kCorrectlyNotLogged -> kIncorrectlyLoggedMultipleTimes
+  // Return false if there was a metric inconsistency. That is, if the latter
+  // state change occurred.
+  bool Log(MetricType new_value) {
+    LogMetric(new_value);
+    if (state == MetricState::kCorrectlyNotLogged) {
+      set_state(MetricState::kCorrectlyLogged);
+    } else {
+      set_state(MetricState::kIncorrectlyLoggedMultipleTimes);
+      // TODO(cassycc): Log old vs new value.
+      LOG(ERROR) << metric_name << " was logged multiple times";
+    }
+    value = new_value;
+    return state == MetricState::kCorrectlyLogged;
+  }
+
+  // Return true if the `state` is a logged state.
+  bool logged() {
+    switch (state) {
+      case MetricState::kCorrectlyNotLogged:
+      case MetricState::kIncorrectlyNotLogged:
+        return false;
+      case MetricState::kCorrectlyLogged:
+      case MetricState::kIncorrectlyLogged:
+      case MetricState::kIncorrectlyLoggedMultipleTimes:
+      case MetricState::kWrongValueLogged:
+        return true;
+    }
+  }
+
+  void set_state(MetricState new_state) { state = new_state; }
+
+  const std::string metric_name;
+  MetricState state = MetricState::kCorrectlyNotLogged;
+  MetricType value;
+
+ private:
+  void LogMetric(MetricType new_value);
+};
+
+// Specialise for base::File::Error.
+template <>
+inline void Metric<base::File::Error>::LogMetric(base::File::Error new_value) {
+  base::UmaHistogramExactLinear(metric_name, -new_value,
+                                -base::File::FILE_ERROR_MAX);
+}
+
+template <class MetricType>
+inline void Metric<MetricType>::LogMetric(MetricType new_value) {
+  base::UmaHistogramEnumeration(metric_name, new_value);
+}
 
 // TODO(b/300861997): Add "LogMetric" functions so metrics can be logged through
 // this class. Add ability to track the state of each relevant metric in the
@@ -71,39 +140,6 @@ class CloudOpenMetrics {
 
   // For testing.
   base::WeakPtr<CloudOpenMetrics> GetWeakPtr();
-
-  // Represents a metric identified by `metric_name` that logs value of type
-  // `MetricType`. Log the metric through this class. Keeps track of the value
-  // logged and the `MetricState` of the metric.
-  template <typename MetricType>
-  class Metric {
-    static_assert(std::is_same_v<std::underlying_type_t<MetricType>, int>,
-                  "The underlying type of the MetricType must be an int");
-
-   public:
-    explicit Metric(std::string metric_name_to_set);
-    ~Metric() = default;
-
-    // Logs a `new_value` to the metric with `metric_name` and saves it to
-    // `value`. Update the state:
-    //   kCorrectlyNotLogged  -> kCorrectlyLogged
-    //   !kCorrectlyNotLogged -> kIncorrectlyLoggedMultipleTimes
-    // Return false if there was a metric inconsistency. That is, if the latter
-    // state change occurred.
-    bool Log(MetricType new_value);
-
-    // Return true if the `state` is a logged state.
-    bool logged();
-
-    void set_state(MetricState new_state);
-
-    const std::string metric_name;
-    MetricState state = MetricState::kCorrectlyNotLogged;
-    MetricType value;
-
-   private:
-    void LogMetric(MetricType new_value);
-  };
 
  private:
   // Print the debug information for each metric.
