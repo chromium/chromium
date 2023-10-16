@@ -38,6 +38,8 @@ using ::testing::StrictMock;
 
 class EditablePasswordComboboxTest : public ViewsTestBase {
  public:
+  static constexpr int kComboboxId = 123;
+
   EditablePasswordComboboxTest() = default;
 
   EditablePasswordComboboxTest(const EditablePasswordComboboxTest&) = delete;
@@ -50,30 +52,32 @@ class EditablePasswordComboboxTest : public ViewsTestBase {
   void TearDown() override;
 
  protected:
-  size_t GetItemCount() const {
-    return combobox_->GetMenuModelForTesting()->GetItemCount();
+  size_t GetItemCount() {
+    return combobox()->GetMenuModelForTesting()->GetItemCount();
   }
 
-  std::u16string GetItemAt(size_t index) const {
-    return combobox_->GetItemTextForTesting(index);
+  std::u16string GetItemAt(size_t index) {
+    return combobox()->GetItemTextForTesting(index);
   }
 
   // Clicks the eye button to reveal or obscure the password.
   void ClickEye() {
-    ToggleImageButton* eye = combobox_->GetEyeButtonForTesting();
+    ToggleImageButton* eye = combobox()->GetEyeButtonForTesting();
     generator_->MoveMouseTo(eye->GetBoundsInScreen().CenterPoint());
     generator_->ClickLeftButton();
   }
 
-  EditablePasswordCombobox* combobox() { return combobox_.get(); }
+  EditablePasswordCombobox* combobox() {
+    return static_cast<EditablePasswordCombobox*>(
+        widget_->GetContentsView()->GetViewByID(kComboboxId));
+  }
+
   base::MockCallback<Button::PressedCallback::Callback>* eye_mock_callback() {
     return &eye_callback_;
   }
 
  private:
-  raw_ptr<Widget, AcrossTasksDanglingUntriaged> widget_ = nullptr;
-  raw_ptr<EditablePasswordCombobox, AcrossTasksDanglingUntriaged> combobox_ =
-      nullptr;
+  raw_ptr<Widget> widget_ = nullptr;
   base::MockCallback<Button::PressedCallback::Callback> eye_callback_;
 
   // Used for simulating eye button clicks.
@@ -94,6 +98,7 @@ void EditablePasswordComboboxTest::SetUp() {
   // Set dummy tooltips and name to avoid running into a11y-related DCHECKs.
   combobox->SetPasswordIconTooltips(u"Show password", u"Hide password");
   combobox->SetAccessibleName(u"Password field");
+  combobox->SetID(kComboboxId);
 
   widget_ = new Widget();
   Widget::InitParams params =
@@ -103,7 +108,7 @@ void EditablePasswordComboboxTest::SetUp() {
 
   widget_->Init(std::move(params));
   View* container = widget_->SetContentsView(std::make_unique<View>());
-  combobox_ = container->AddChildView(std::move(combobox));
+  container->AddChildView(std::move(combobox));
 
   generator_ =
       std::make_unique<ui::test::EventGenerator>(GetRootWindow(widget_));
@@ -126,7 +131,7 @@ void EditablePasswordComboboxTest::SetUp() {
 void EditablePasswordComboboxTest::TearDown() {
   generator_.reset();
   if (widget_) {
-    widget_->Close();
+    widget_.ExtractAsDangling()->Close();
   }
   ViewsTestBase::TearDown();
 }
