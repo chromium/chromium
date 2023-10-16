@@ -1043,15 +1043,75 @@ TEST_F(AutofillSuggestionGeneratorTest,
 }
 #endif  // if BUILDFLAG(IS_ANDROID) || BUILDFLAG(IS_IOS)
 
+TEST_F(
+    AutofillSuggestionGeneratorTest,
+    CreateSuggestionsFromProfiles_GroupFillingLabels_AddFillAddressAndDifferentiatingLabel) {
+  base::test::ScopedFeatureList scoped_features_list(
+      features::kAutofillGranularFillingAvailable);
+  AutofillProfile profile = test::GetFullProfile();
+  std::vector<Suggestion> suggestions =
+      suggestion_generator()->CreateSuggestionsFromProfiles(
+          {&profile}, /*field_types=*/{NAME_FIRST},
+          /*last_targeted_fields=*/
+          GetServerFieldTypesOfGroup(FieldTypeGroup::kName),
+          ADDRESS_HOME_ADDRESS,
+          /*trigger_field_max_length=*/0);
+
+  ASSERT_EQ(suggestions.size(), 1u);
+  EXPECT_EQ(suggestions[0].labels,
+            std::vector<std::vector<Suggestion::Text>>(
+                {{Suggestion::Text(u"Fill address"), Suggestion::Text(u"-"),
+                  Suggestion::Text(u"John H. Doe")}}));
+}
+
+// When there is no differentiating label, we add only the granular filling
+// label, either "Fill full name" or "Fill address".
+TEST_F(AutofillSuggestionGeneratorTest,
+       CreateSuggestionsFromProfiles_GroupFillingLabels_AddOnlyFillName) {
+  base::test::ScopedFeatureList scoped_features_list(
+      features::kAutofillGranularFillingAvailable);
+  AutofillProfile profile = test::GetFullProfile();
+  std::vector<Suggestion> suggestions =
+      suggestion_generator()->CreateSuggestionsFromProfiles(
+          {&profile}, /*field_types=*/{NAME_FIRST},
+          /*last_targeted_fields=*/
+          GetServerFieldTypesOfGroup(FieldTypeGroup::kName), NAME_FIRST,
+          /*trigger_field_max_length=*/0);
+
+  ASSERT_EQ(suggestions.size(), 1u);
+  EXPECT_EQ(suggestions[0].labels,
+            std::vector<std::vector<Suggestion::Text>>(
+                {{Suggestion::Text(u"Fill full name")}}));
+}
+
+TEST_F(
+    AutofillSuggestionGeneratorTest,
+    CreateSuggestionsFromProfiles_GroupFillingLabels_AddFillNameAndDifferentiatingLabel) {
+  base::test::ScopedFeatureList scoped_features_list(
+      features::kAutofillGranularFillingAvailable);
+  AutofillProfile profile = test::GetFullProfile();
+  std::vector<Suggestion> suggestions =
+      suggestion_generator()->CreateSuggestionsFromProfiles(
+          {&profile}, /*field_types=*/{ADDRESS_HOME_CITY},
+          /*last_targeted_fields=*/
+          GetServerFieldTypesOfGroup(FieldTypeGroup::kName), NAME_FIRST,
+          /*trigger_field_max_length=*/0);
+
+  ASSERT_EQ(suggestions.size(), 1u);
+  EXPECT_EQ(suggestions[0].labels,
+            std::vector<std::vector<Suggestion::Text>>(
+                {{Suggestion::Text(u"Fill full name"), Suggestion::Text(u"-"),
+                  Suggestion::Text(u"Elysium")}}));
+}
+
 // TODO(crbug.com/1459990): Consider having a test fixture for granular filling
 // related tests. In general these tests are quite lengthy and finding a way to
 // make them more concise is desirable.
 TEST_F(AutofillSuggestionGeneratorTest,
        CreateSuggestionsFromProfiles_FirstLevelChildrenSuggestions) {
-  base::test::ScopedFeatureList feature_list(
+  base::test::ScopedFeatureList scoped_features_list(
       features::kAutofillGranularFillingAvailable);
   AutofillProfile profile = test::GetFullProfile();
-
   std::vector<Suggestion> suggestions =
       suggestion_generator()->CreateSuggestionsFromProfiles(
           {&profile}, /*field_types=*/{NAME_FIRST},
@@ -1114,10 +1174,9 @@ TEST_F(AutofillSuggestionGeneratorTest,
 
 TEST_F(AutofillSuggestionGeneratorTest,
        CreateSuggestionsFromProfiles_SecondLevelChildrenSuggestions) {
-  base::test::ScopedFeatureList feature_list(
+  base::test::ScopedFeatureList scoped_features_list(
       features::kAutofillGranularFillingAvailable);
   AutofillProfile profile = test::GetFullProfile();
-
   std::vector<Suggestion> suggestions =
       suggestion_generator()->CreateSuggestionsFromProfiles(
           {&profile}, /*field_types=*/{NAME_FIRST},
@@ -1149,7 +1208,7 @@ TEST_F(AutofillSuggestionGeneratorTest,
 TEST_F(
     AutofillSuggestionGeneratorTest,
     CreateSuggestionsFromProfiles_LastTargetedFieldsIsSingleField_FieldByFieldFilling) {
-  base::test::ScopedFeatureList feature_list(
+  base::test::ScopedFeatureList scoped_features_list(
       features::kAutofillGranularFillingAvailable);
   AutofillProfile profile = test::GetFullProfile();
 
@@ -1159,15 +1218,15 @@ TEST_F(
           absl::optional<ServerFieldTypeSet>({NAME_LAST}), NAME_FIRST,
           /*trigger_field_max_length=*/0);
 
+  ASSERT_EQ(suggestions.size(), 1u);
   EXPECT_EQ(suggestions[0].popup_item_id, PopupItemId::kFieldByFieldFilling);
 }
 
 TEST_F(AutofillSuggestionGeneratorTest,
        CreateSuggestionsFromProfiles_LastTargetedFieldsIsGroup_GroupFilling) {
-  base::test::ScopedFeatureList feature_list(
+  base::test::ScopedFeatureList scoped_features_list(
       features::kAutofillGranularFillingAvailable);
   AutofillProfile profile = test::GetFullProfile();
-
   std::vector<Suggestion> suggestions =
       suggestion_generator()->CreateSuggestionsFromProfiles(
           {&profile}, /*field_types=*/{NAME_FIRST},
@@ -1181,16 +1240,16 @@ TEST_F(AutofillSuggestionGeneratorTest,
 TEST_F(
     AutofillSuggestionGeneratorTest,
     CreateSuggestionsFromProfiles_LastTargetedFieldsAreAllServerFields_FullForm) {
-  base::test::ScopedFeatureList feature_list(
+  base::test::ScopedFeatureList scoped_features_list(
       features::kAutofillGranularFillingAvailable);
   AutofillProfile profile = test::GetFullProfile();
-
   std::vector<Suggestion> suggestions =
       suggestion_generator()->CreateSuggestionsFromProfiles(
           {&profile}, /*field_types=*/{NAME_FIRST},
           absl::optional<ServerFieldTypeSet>(kAllServerFieldTypes), NAME_FIRST,
           /*trigger_field_max_length=*/0);
 
+  ASSERT_EQ(suggestions.size(), 1u);
   EXPECT_EQ(suggestions[0].popup_item_id, PopupItemId::kAddressEntry);
 }
 
@@ -1198,10 +1257,9 @@ TEST_F(
 // fields are a group but the triggering field does not match any group.
 TEST_F(AutofillSuggestionGeneratorTest,
        CreateSuggestionsFromProfiles_LastTargetedFieldsAreGroup_Fallback) {
-  base::test::ScopedFeatureList feature_list(
+  base::test::ScopedFeatureList scoped_features_list(
       features::kAutofillGranularFillingAvailable);
   AutofillProfile profile = test::GetFullProfile();
-
   std::vector<Suggestion> suggestions =
       suggestion_generator()->CreateSuggestionsFromProfiles(
           {&profile}, /*field_types=*/{CREDIT_CARD_TYPE},
@@ -1209,6 +1267,7 @@ TEST_F(AutofillSuggestionGeneratorTest,
           CREDIT_CARD_TYPE,
           /*trigger_field_max_length=*/0);
 
+  ASSERT_EQ(suggestions.size(), 1u);
   EXPECT_EQ(suggestions[0].popup_item_id, PopupItemId::kAddressEntry);
 }
 
@@ -1219,7 +1278,7 @@ TEST_F(AutofillSuggestionGeneratorTest,
 // "random" field.
 TEST_F(AutofillSuggestionGeneratorTest,
        CreateSuggestionsFromProfiles_ChildrenSuggestionsPhoneField) {
-  base::test::ScopedFeatureList feature_list(
+  base::test::ScopedFeatureList scoped_features_list(
       features::kAutofillGranularFillingAvailable);
   AutofillProfile profile = test::GetFullProfile();
   std::vector<Suggestion> suggestions =
@@ -1252,10 +1311,9 @@ TEST_F(AutofillSuggestionGeneratorTest,
 
 TEST_F(AutofillSuggestionGeneratorTest,
        CreateSuggestionsFromProfiles_ChildrenSuggestionsAddressField) {
-  base::test::ScopedFeatureList feature_list(
+  base::test::ScopedFeatureList scoped_features_list(
       features::kAutofillGranularFillingAvailable);
   AutofillProfile profile = test::GetFullProfile();
-
   std::vector<Suggestion> suggestions =
       suggestion_generator()->CreateSuggestionsFromProfiles(
           {&profile}, /*field_types=*/{ADDRESS_HOME_LINE1},
@@ -1278,6 +1336,7 @@ TEST_F(AutofillSuggestionGeneratorTest,
   // 12. line separator
   // 13. edit address
   // 14. delete address
+  ASSERT_EQ(suggestions.size(), 1u);
   ASSERT_EQ(14U, suggestions[0].children.size());
   EXPECT_THAT(suggestions[0].children[4],
               Field(&Suggestion::popup_item_id, PopupItemId::kFillFullAddress));
@@ -1286,9 +1345,8 @@ TEST_F(AutofillSuggestionGeneratorTest,
 TEST_F(
     AutofillSuggestionGeneratorTest,
     CreateSuggestionsFromProfiles_ChildrenSuggestions_HouseNumberAndStreetNameCanBeNestedUnderDifferentAddressLines) {
-  base::test::ScopedFeatureList feature_list(
+  base::test::ScopedFeatureList scoped_features_list(
       features::kAutofillGranularFillingAvailable);
-
   AutofillProfile profile;
   // Update the profile to have house number and street name information in
   // different address lines.
@@ -1425,7 +1483,7 @@ TEST_F(AutofillSuggestionGeneratorTest,
 TEST_F(
     AutofillSuggestionGeneratorTest,
     CreateSuggestionsFromProfiles_GranularityNotFullForm_FillEverythingChildSuggestion) {
-  base::test::ScopedFeatureList feature_list(
+  base::test::ScopedFeatureList scoped_features_list(
       features::kAutofillGranularFillingAvailable);
   AutofillProfile profile = test::GetFullProfile();
 
@@ -1438,6 +1496,7 @@ TEST_F(
           absl::optional<ServerFieldTypeSet>({NAME_FIRST}), ADDRESS_HOME_LINE1,
           /*trigger_field_max_length=*/0);
 
+  ASSERT_EQ(suggestions.size(), 1u);
   EXPECT_TRUE(base::ranges::any_of(suggestions[0].children, [](auto child) {
     return child.popup_item_id ==
            PopupItemId::kFillEverythingFromAddressProfile;
@@ -1712,9 +1771,10 @@ TEST_F(AutofillSuggestionGeneratorTest,
   bool should_display_gpay_logo;
   bool with_offer;
   autofill_metrics::CardMetadataLoggingContext metadata_logging_context;
-  auto suggestions = suggestion_generator()->GetSuggestionsForCreditCards(
-      FormFieldData(), CREDIT_CARD_NUMBER, should_display_gpay_logo, with_offer,
-      metadata_logging_context);
+  std::vector<Suggestion> suggestions =
+      suggestion_generator()->GetSuggestionsForCreditCards(
+          FormFieldData(), CREDIT_CARD_NUMBER, should_display_gpay_logo,
+          with_offer, metadata_logging_context);
 
   EXPECT_TRUE(with_offer);
   ASSERT_EQ(suggestions.size(), 3U);
@@ -1744,7 +1804,7 @@ TEST_F(AutofillSuggestionGeneratorTest,
       {virtual_card.guid(),
        VirtualCardUsageData::VirtualCardLastFour(u"1234")});
   autofill_metrics::CardMetadataLoggingContext metadata_logging_context;
-  auto suggestions =
+  std::vector<Suggestion> suggestions =
       suggestion_generator()->GetSuggestionsForVirtualCardStandaloneCvc(
           metadata_logging_context, virtual_card_guid_to_last_four_map);
 
@@ -1767,9 +1827,10 @@ TEST_F(AutofillSuggestionGeneratorTest, ShouldDisplayGpayLogo) {
     bool should_display_gpay_logo;
     bool with_offer;
     autofill_metrics::CardMetadataLoggingContext metadata_logging_context;
-    auto suggestions = suggestion_generator()->GetSuggestionsForCreditCards(
-        FormFieldData(), CREDIT_CARD_NUMBER, should_display_gpay_logo,
-        with_offer, metadata_logging_context);
+    std::vector<Suggestion> suggestions =
+        suggestion_generator()->GetSuggestionsForCreditCards(
+            FormFieldData(), CREDIT_CARD_NUMBER, should_display_gpay_logo,
+            with_offer, metadata_logging_context);
 
     EXPECT_EQ(suggestions.size(), 2U);
     EXPECT_TRUE(should_display_gpay_logo);
@@ -1792,9 +1853,10 @@ TEST_F(AutofillSuggestionGeneratorTest, ShouldDisplayGpayLogo) {
     bool should_display_gpay_logo;
     bool with_offer;
     autofill_metrics::CardMetadataLoggingContext metadata_logging_context;
-    auto suggestions = suggestion_generator()->GetSuggestionsForCreditCards(
-        FormFieldData(), CREDIT_CARD_NUMBER, should_display_gpay_logo,
-        with_offer, metadata_logging_context);
+    std::vector<Suggestion> suggestions =
+        suggestion_generator()->GetSuggestionsForCreditCards(
+            FormFieldData(), CREDIT_CARD_NUMBER, should_display_gpay_logo,
+            with_offer, metadata_logging_context);
 
     EXPECT_EQ(suggestions.size(), 2U);
     EXPECT_FALSE(should_display_gpay_logo);
@@ -1819,9 +1881,10 @@ TEST_F(AutofillSuggestionGeneratorTest, ShouldDisplayGpayLogo) {
     bool should_display_gpay_logo;
     bool with_offer;
     autofill_metrics::CardMetadataLoggingContext metadata_logging_context;
-    auto suggestions = suggestion_generator()->GetSuggestionsForCreditCards(
-        FormFieldData(), CREDIT_CARD_NUMBER, should_display_gpay_logo,
-        with_offer, metadata_logging_context);
+    std::vector<Suggestion> suggestions =
+        suggestion_generator()->GetSuggestionsForCreditCards(
+            FormFieldData(), CREDIT_CARD_NUMBER, should_display_gpay_logo,
+            with_offer, metadata_logging_context);
 
     EXPECT_EQ(suggestions.size(), 1U);
     EXPECT_TRUE(should_display_gpay_logo);
@@ -1834,9 +1897,10 @@ TEST_F(AutofillSuggestionGeneratorTest, ShouldDisplayGpayLogo) {
     bool should_display_gpay_logo;
     bool with_offer;
     autofill_metrics::CardMetadataLoggingContext metadata_logging_context;
-    auto suggestions = suggestion_generator()->GetSuggestionsForCreditCards(
-        FormFieldData(), CREDIT_CARD_NUMBER, should_display_gpay_logo,
-        with_offer, metadata_logging_context);
+    std::vector<Suggestion> suggestions =
+        suggestion_generator()->GetSuggestionsForCreditCards(
+            FormFieldData(), CREDIT_CARD_NUMBER, should_display_gpay_logo,
+            with_offer, metadata_logging_context);
 
     EXPECT_TRUE(suggestions.empty());
     EXPECT_TRUE(should_display_gpay_logo);
