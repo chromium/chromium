@@ -2,6 +2,18 @@
 
 All notable changes to this project will be documented in this file.
 
+## [0.4.32](https://github.com/GoogleChromeLabs/chromium-bidi/compare/chromium-bidi-v0.4.31...chromium-bidi-v0.4.32) (2023-10-16)
+
+
+### Features
+
+* add quality for `webp` ([#1426](https://github.com/GoogleChromeLabs/chromium-bidi/issues/1426)) ([d514bf9](https://github.com/GoogleChromeLabs/chromium-bidi/commit/d514bf96bedd1b53473abb212638110066831efb))
+* implement device pixel ratio changes ([#1422](https://github.com/GoogleChromeLabs/chromium-bidi/issues/1422)) ([49f6dee](https://github.com/GoogleChromeLabs/chromium-bidi/commit/49f6dee572f67992d87ca4ec60e49350a8467ff2))
+* implement document origin screenshots ([#1427](https://github.com/GoogleChromeLabs/chromium-bidi/issues/1427)) ([b952297](https://github.com/GoogleChromeLabs/chromium-bidi/commit/b95229776ff40f5ee7087ad4b93ff559098b8899))
+* **network interception:** implement continue request ([#1331](https://github.com/GoogleChromeLabs/chromium-bidi/issues/1331)) ([8a935b9](https://github.com/GoogleChromeLabs/chromium-bidi/commit/8a935b9c9295ceea567cabd2b696eb8fbcc53369)), closes [#644](https://github.com/GoogleChromeLabs/chromium-bidi/issues/644)
+* session handling refactoring. Step 1 ([#1385](https://github.com/GoogleChromeLabs/chromium-bidi/issues/1385)) ([8fe37b9](https://github.com/GoogleChromeLabs/chromium-bidi/commit/8fe37b9f402bb2b52c585b6925dba4b15b04473a))
+* unblock event queue when network events are blocked ([#1409](https://github.com/GoogleChromeLabs/chromium-bidi/issues/1409)) ([e94f79d](https://github.com/GoogleChromeLabs/chromium-bidi/commit/e94f79d88cba8b73f2a895a31fffd87b9f03f48a))
+
 ## [0.4.31](https://github.com/GoogleChromeLabs/chromium-bidi/compare/chromium-bidi-v0.4.30...chromium-bidi-v0.4.31) (2023-10-06)
 
 
