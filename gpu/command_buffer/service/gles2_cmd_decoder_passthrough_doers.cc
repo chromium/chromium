@@ -2508,14 +2508,12 @@ error::Error GLES2DecoderPassthroughImpl::DoWritePixelsYUVINTERNAL(
   ui::ScopedMakeCurrent smc(shared_context_state->context(),
                             shared_context_state->surface());
 
-  if (src_yuv_plane_config < 0 ||
-      src_yuv_plane_config > static_cast<int>(SkYUVAInfo::PlaneConfig::kLast)) {
+  if (src_yuv_plane_config > static_cast<int>(SkYUVAInfo::PlaneConfig::kLast)) {
     InsertError(GL_INVALID_ENUM,
                 "src_yuv_plane_config must be a valid PlaneConfig");
     return error::kNoError;
   }
-  if (src_yuv_subsampling < 0 ||
-      src_yuv_subsampling > static_cast<int>(SkYUVAInfo::Subsampling::kLast)) {
+  if (src_yuv_subsampling > static_cast<int>(SkYUVAInfo::Subsampling::kLast)) {
     InsertError(GL_INVALID_ENUM,
                 "src_yuv_subsampling must be a valid Subsampling");
     return error::kNoError;
