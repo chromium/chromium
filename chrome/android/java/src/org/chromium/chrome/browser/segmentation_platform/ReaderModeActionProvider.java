@@ -46,13 +46,19 @@ public class ReaderModeActionProvider implements ContextualPageActionController.
         if (tab == null) return;
         if (action != AdaptiveToolbarButtonVariant.READER_MODE) return;
 
-        new Handler(Looper.getMainLooper()).postDelayed(() -> {
-            if (tab.isDestroyed()) return;
+        new Handler(Looper.getMainLooper())
+                .postDelayed(
+                        () -> {
+                            if (tab.isDestroyed()) return;
 
-            tab.getUserDataHost()
-                    .getUserData(ReaderModeManager.USER_DATA_KEY)
-                    .setReaderModeUiShown();
-        }, /* delayMillis= */ 500);
+                            ReaderModeManager readerModeManager =
+                                    tab.getUserDataHost()
+                                            .getUserData(ReaderModeManager.USER_DATA_KEY);
+                            if (readerModeManager != null) {
+                                readerModeManager.setReaderModeUiShown();
+                            }
+                        },
+                        /* delayMillis= */ 500);
     }
 
     private void notifyActionAvailable(boolean isDistillable, boolean isMobileOptimized, Tab tab,
@@ -71,10 +77,11 @@ public class ReaderModeActionProvider implements ContextualPageActionController.
 
         if (usingRequestDesktopSite) return true;
 
-        if (AdaptiveToolbarFeatures.isReaderModeRateLimited()
-                && tab.getUserDataHost()
-                           .getUserData(ReaderModeManager.USER_DATA_KEY)
-                           .isReaderModeUiRateLimited()) {
+        ReaderModeManager readerModeManager =
+                tab.getUserDataHost().getUserData(ReaderModeManager.USER_DATA_KEY);
+        boolean isTabRateLimited =
+                (readerModeManager == null || readerModeManager.isReaderModeUiRateLimited());
+        if (AdaptiveToolbarFeatures.isReaderModeRateLimited() && isTabRateLimited) {
             return true;
         }
 

@@ -169,6 +169,25 @@ public class ReaderModeActionProviderTest {
     }
 
     @Test
+    public void testUsingReaderModeManagerRateLimiting_shouldIgnoreTabsWithNoManager() {
+        TestValues testValues = new TestValues();
+        testValues.addFieldTrialParamOverride(
+                ChromeFeatureList.CONTEXTUAL_PAGE_ACTIONS,
+                "reader_mode_session_rate_limiting",
+                "true");
+        FeatureList.setTestValues(testValues);
+
+        mMockTab.getUserDataHost().removeUserData(ReaderModeManager.USER_DATA_KEY);
+
+        ReaderModeActionProvider provider = new ReaderModeActionProvider();
+
+        setReaderModeBackendSignal(true);
+        provider.getAction(mMockTab, mMockSignalAccumulator);
+        verify(mMockSignalAccumulator).setHasReaderMode(false);
+        verify(mMockSignalAccumulator).notifySignalAvailable();
+    }
+
+    @Test
     public void testProviderDelaysSettingOnShown() throws TimeoutException {
         TestValues testValues = new TestValues();
         testValues.addFieldTrialParamOverride(ChromeFeatureList.CONTEXTUAL_PAGE_ACTIONS,
