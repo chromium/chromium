@@ -380,7 +380,8 @@ TEST_F(ManagedConfigurationVariablesTest, RespectsSpecialCharacters) {
   EXPECT_EQ(*dict.FindString(kKey1), kSpecialCharacters);
 }
 
-TEST_F(ManagedConfigurationVariablesTest, RecursiveValuesAreReplacedCorrectly) {
+TEST_F(ManagedConfigurationVariablesTest,
+       RecursiveValuesAreNotReplacedMoreThanOnce) {
   // Setup a |dict| with asset ID and location variables.
   const std::string kVariable1 =
       base::StringPrintf(kVariablePattern, kDeviceAssetId);
@@ -399,6 +400,27 @@ TEST_F(ManagedConfigurationVariablesTest, RecursiveValuesAreReplacedCorrectly) {
   // Expect variables are replaced only once without an infinite loop.
   EXPECT_EQ(*dict.FindString(kKey1), kVariable2);
   EXPECT_EQ(*dict.FindString(kKey2), kVariable1);
+}
+
+TEST_F(ManagedConfigurationVariablesTest, ReplacesVariablesInLists) {
+  const std::string kVariable1 =
+      base::StringPrintf(kVariablePattern, kDeviceAssetId);
+
+  base::Value::Dict dict = base::Value::Dict().Set(
+      kKey1,
+      base::Value::List().Append(base::Value::Dict().Set(kKey2, kVariable1)));
+
+  device_attributes()->SetFakeDeviceAssetId(kTestDeviceAssetId);
+
+  RecursivelyReplaceManagedConfigurationVariables(profile(),
+                                                  device_attributes(), dict);
+
+  ASSERT_EQ(1U, dict.size());
+  base::Value::List* nestedList = dict.FindList(kKey1);
+  ASSERT_NE(nullptr, nestedList);
+  ASSERT_EQ(1U, nestedList->size());
+  base::Value::Dict& leafDict = (*nestedList)[0].GetDict();
+  ASSERT_EQ(kTestDeviceAssetId, *leafDict.FindString(kKey2));
 }
 
 TEST_P(ManagedConfigurationVariablesAffiliatedTest, ReplacesVariables) {
