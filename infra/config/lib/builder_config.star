@@ -750,11 +750,6 @@ def _set_builder_config_property(ctx):
                 "Android FYI Release (Samsung A13)",
                 "Android FYI Release (Samsung A23)",
 
-                # TODO(crbug.com/1486140): Remove when skylab bots are fixed.
-                "lacros-amd64-generic-rel-skylab",
-                "lacros-arm-generic-rel-skylab",
-                "lacros-arm64-generic-rel-skylab",
-
                 # TODO(crbug.com/1484233): Remove the following as trybots are
                 # created for them.
                 "android-arm64-archive-rel",
