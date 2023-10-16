@@ -30,6 +30,7 @@ import org.junit.runner.RunWith;
 
 import org.chromium.base.Log;
 import org.chromium.base.annotations.NativeMethods;
+import org.chromium.base.test.util.DoNotBatch;
 import org.chromium.net.CronetTestRule.CronetImplementation;
 import org.chromium.net.CronetTestRule.IgnoreFor;
 import org.chromium.net.CronetTestRule.RequiresMinAndroidApi;
@@ -60,6 +61,7 @@ import java.util.regex.Matcher;
 import java.util.regex.Pattern;
 
 /** Test functionality of CronetUrlRequest. */
+@DoNotBatch(reason = "crbug/1459563")
 @RunWith(AndroidJUnit4.class)
 public class CronetUrlRequestTest {
     private static final String TAG = CronetUrlRequestTest.class.getSimpleName();

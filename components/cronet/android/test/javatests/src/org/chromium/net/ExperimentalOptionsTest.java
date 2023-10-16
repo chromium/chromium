@@ -32,6 +32,7 @@ import org.chromium.base.PathUtils;
 import org.chromium.base.annotations.JNINamespace;
 import org.chromium.base.annotations.NativeMethods;
 import org.chromium.base.test.util.DisabledTest;
+import org.chromium.base.test.util.DoNotBatch;
 import org.chromium.net.CronetTestRule.CronetImplementation;
 import org.chromium.net.CronetTestRule.DisableAutomaticNetLog;
 import org.chromium.net.CronetTestRule.IgnoreFor;
@@ -46,6 +47,7 @@ import java.net.URL;
 import java.util.concurrent.CountDownLatch;
 
 /** Tests for experimental options. */
+@DoNotBatch(reason = "crbug/1459563")
 @RunWith(AndroidJUnit4.class)
 @JNINamespace("cronet")
 @OptIn(markerClass = {ConnectionMigrationOptions.Experimental.class, DnsOptions.Experimental.class,

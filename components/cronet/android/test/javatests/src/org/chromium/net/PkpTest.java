@@ -24,6 +24,7 @@ import org.junit.Rule;
 import org.junit.Test;
 import org.junit.runner.RunWith;
 
+import org.chromium.base.test.util.DoNotBatch;
 import org.chromium.net.CronetTestRule.CronetImplementation;
 import org.chromium.net.CronetTestRule.IgnoreFor;
 import org.chromium.net.test.util.CertTestUtil;
@@ -38,6 +39,7 @@ import java.util.HashSet;
 import java.util.Set;
 
 /** Public-Key-Pinning tests of Cronet Java API. */
+@DoNotBatch(reason = "crbug/1459563")
 @RunWith(AndroidJUnit4.class)
 @IgnoreFor(implementations = {CronetImplementation.FALLBACK},
         reason = "The fallback implementation doesn't support public key pinning")

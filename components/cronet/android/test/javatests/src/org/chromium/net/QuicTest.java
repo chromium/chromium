@@ -21,6 +21,7 @@ import org.junit.Rule;
 import org.junit.Test;
 import org.junit.runner.RunWith;
 
+import org.chromium.base.test.util.DoNotBatch;
 import org.chromium.net.CronetTestRule.CronetImplementation;
 import org.chromium.net.CronetTestRule.IgnoreFor;
 
@@ -31,6 +32,7 @@ import java.util.Date;
 import java.util.concurrent.Executors;
 
 /** Tests making requests using QUIC. */
+@DoNotBatch(reason = "crbug/1459563")
 @RunWith(AndroidJUnit4.class)
 @IgnoreFor(implementations = {CronetImplementation.FALLBACK},
         reason = "The fallback implementation doesn't support QUIC")

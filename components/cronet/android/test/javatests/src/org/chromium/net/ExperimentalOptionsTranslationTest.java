@@ -19,6 +19,7 @@ import org.junit.Test;
 import org.junit.runner.RunWith;
 
 import org.chromium.base.annotations.JNINamespace;
+import org.chromium.base.test.util.DoNotBatch;
 import org.chromium.net.DnsOptions.StaleDnsOptions;
 
 import java.util.Collections;
@@ -30,6 +31,7 @@ import java.util.Locale;
 import java.util.Map;
 import java.util.Set;
 
+@DoNotBatch(reason = "crbug/1459563")
 @RunWith(AndroidJUnit4.class)
 @JNINamespace("cronet")
 @OptIn(markerClass = {ConnectionMigrationOptions.Experimental.class, DnsOptions.Experimental.class,

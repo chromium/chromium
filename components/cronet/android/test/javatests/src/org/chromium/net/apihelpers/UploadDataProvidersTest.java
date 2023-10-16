@@ -20,6 +20,7 @@ import org.junit.Rule;
 import org.junit.Test;
 import org.junit.runner.RunWith;
 
+import org.chromium.base.test.util.DoNotBatch;
 import org.chromium.net.CallbackException;
 import org.chromium.net.CronetTestRule;
 import org.chromium.net.CronetTestRule.CronetImplementation;
@@ -36,6 +37,7 @@ import java.io.IOException;
 import java.nio.ByteBuffer;
 
 /** Test the default provided implementations of {@link UploadDataProvider} */
+@DoNotBatch(reason = "crbug/1459563")
 @RunWith(AndroidJUnit4.class)
 public class UploadDataProvidersTest {
     private static final String LOREM = "Lorem ipsum dolor sit amet, consectetur adipiscing elit. "

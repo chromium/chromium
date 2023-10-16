@@ -14,6 +14,7 @@ import androidx.test.filters.SmallTest;
 import org.junit.Test;
 import org.junit.runner.RunWith;
 
+import org.chromium.base.test.util.DoNotBatch;
 import org.chromium.net.impl.UrlResponseInfoImpl;
 
 import java.util.AbstractMap;
@@ -25,6 +26,7 @@ import java.util.Map;
 /**
  * Tests for {@link UrlResponseInfo}.
  */
+@DoNotBatch(reason = "crbug/1459563")
 @RunWith(AndroidJUnit4.class)
 public class UrlResponseInfoTest {
     /**

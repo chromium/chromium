@@ -24,6 +24,7 @@ import org.junit.Test;
 import org.junit.rules.ExpectedException;
 import org.junit.runner.RunWith;
 
+import org.chromium.base.test.util.DoNotBatch;
 import org.chromium.net.CronetTestRule.CronetImplementation;
 import org.chromium.net.CronetTestRule.IgnoreFor;
 import org.chromium.net.TestUrlRequestCallback.ResponseStep;
@@ -40,6 +41,7 @@ import java.util.concurrent.Executors;
  * Tests that {@link org.chromium.net.impl.CronetUrlRequest#getStatus(StatusListener)} works as
  * expected.
  */
+@DoNotBatch(reason = "crbug/1459563")
 @RunWith(AndroidJUnit4.class)
 public class GetStatusTest {
     @Rule
