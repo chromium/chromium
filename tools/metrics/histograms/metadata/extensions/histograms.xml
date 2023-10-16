@@ -381,7 +381,7 @@ chromium-metrics-reviews@google.com.
 </histogram>
 
 <histogram name="Extensions.ContentScripts.ContentScriptLength" units="KB"
-    expires_after="2023-11-22">
+    expires_after="2024-11-22">
   <owner>kelvinjiang@chromium.org</owner>
   <owner>extensions-core@chromium.org</owner>
   <summary>
@@ -391,7 +391,7 @@ chromium-metrics-reviews@google.com.
 </histogram>
 
 <histogram name="Extensions.ContentScripts.DynamicContentScriptsLengthPerLoad"
-    units="KB" expires_after="2023-12-02">
+    units="KB" expires_after="2024-12-02">
   <owner>kelvinjiang@chromium.org</owner>
   <owner>extensions-core@chromium.org</owner>
   <summary>
@@ -402,7 +402,7 @@ chromium-metrics-reviews@google.com.
 </histogram>
 
 <histogram name="Extensions.ContentScripts.ManifestContentScriptsLengthPerLoad"
-    units="KB" expires_after="2023-12-02">
+    units="KB" expires_after="2024-12-02">
   <owner>kelvinjiang@chromium.org</owner>
   <owner>extensions-core@chromium.org</owner>
   <summary>
