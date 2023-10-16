@@ -1,9 +1,9 @@
 
 import {TestRunner} from 'test_runner';
-import * as UI from 'devtools/ui/legacy/legacy.js';
-(async function() {
-  await TestRunner.loadLegacyModule('data_grid');
 
+import * as UI from 'devtools/ui/legacy/legacy.js';
+
+(async function() {
   TestRunner.addResult("This tests viewport datagrid.");
 
   var div = document.createElement("div");

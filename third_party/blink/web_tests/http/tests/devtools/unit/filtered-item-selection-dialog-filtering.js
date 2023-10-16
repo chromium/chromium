@@ -1,7 +1,9 @@
 
 import {TestRunner} from 'test_runner';
+
+import * as QuickOpen from 'devtools/ui/legacy/components/quick_open/quick_open.js';
+
 (async function() {
-    await TestRunner.loadLegacyModule('quick_open');
     TestRunner.addResult("Check to see that FilteredItemSelectionDialog uses proper regex to filter results.");
 
     var overridenInput = [];
@@ -25,7 +27,7 @@ import {TestRunner} from 'test_runner';
 
         TestRunner.addResult("Input:" + JSON.stringify(input));
 
-        var filteredSelectionDialog = new QuickOpen.FilteredListWidget(provider, history);
+        var filteredSelectionDialog = new QuickOpen.FilteredListWidget.FilteredListWidget(provider, history);
         filteredSelectionDialog.showAsDialog();
         var promise = TestRunner.addSnifferPromise(filteredSelectionDialog, "itemsFilteredForTest").then(accept);
         filteredSelectionDialog.setQuery(query);

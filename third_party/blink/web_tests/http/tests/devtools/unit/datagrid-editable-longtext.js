@@ -2,8 +2,6 @@ import * as UI from 'devtools/ui/legacy/legacy.js';
 
 import {TestRunner} from 'test_runner';
 (async function() {
-  await TestRunner.loadLegacyModule('data_grid');
-
   TestRunner.addResult("This tests long text in datagrid.");
 
   var columns = [

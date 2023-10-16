@@ -5,9 +5,10 @@
 import {TestRunner} from 'test_runner';
 import {DataGridTestRunner} from 'data_grid_test_runner';
 
+import * as DataGrid from 'devtools/ui/legacy/components/data_grid/data_grid.js';
+
 (async function() {
   TestRunner.addResult(`Tests ViewportDataGrid.\n`);
-  await TestRunner.loadLegacyModule('data_grid');
 
   function attach(parent, child, index) {
     var parentName = parent === root ? 'root' : parent.data.id;
@@ -42,14 +43,14 @@ import {DataGridTestRunner} from 'data_grid_test_runner';
     TestRunner.addResult('Collapsed node ' + node.data.id);
   }
 
-  var columns = [{id: 'id'}];
-  var dataGrid = new DataGrid.DataGrid({displayName: 'Test', columns});
-  var a = new DataGrid.DataGridNode({id: 'a'});
-  var aa = new DataGrid.DataGridNode({id: 'aa'});
-  var aaa = new DataGrid.DataGridNode({id: 'aaa'});
-  var aab = new DataGrid.DataGridNode({id: 'aab'});
-  var ab = new DataGrid.DataGridNode({id: 'ab'});
-  var b = new DataGrid.DataGridNode({id: 'b'});
+  var columns = [{id: 'id', sortable: false}];
+  var dataGrid = new DataGrid.DataGrid.DataGridImpl({displayName: 'Test', columns});
+  var a = new DataGrid.DataGrid.DataGridNode({id: 'a'});
+  var aa = new DataGrid.DataGrid.DataGridNode({id: 'aa'});
+  var aaa = new DataGrid.DataGrid.DataGridNode({id: 'aaa'});
+  var aab = new DataGrid.DataGrid.DataGridNode({id: 'aab'});
+  var ab = new DataGrid.DataGrid.DataGridNode({id: 'ab'});
+  var b = new DataGrid.DataGrid.DataGridNode({id: 'b'});
 
   var root = dataGrid.rootNode();
 
@@ -89,7 +90,7 @@ import {DataGridTestRunner} from 'data_grid_test_runner';
   dumpNodes();
   attach(aa, aaa);
   attach(aa, aab);
-  var aac = new DataGrid.DataGridNode({id: 'aac'});
+  var aac = new DataGrid.DataGrid.DataGridNode({id: 'aac'});
   attach(aa, aac);
   dumpNodes();
   attach(aa, aac, 0);
@@ -113,14 +114,14 @@ import {DataGridTestRunner} from 'data_grid_test_runner';
   root.removeChildren();
   dumpNodes();
 
-  var columns = [{id: 'id'}];
-  var dataGrid = new DataGrid.DataGrid({displayName: 'Test', columns});
-  var a = new DataGrid.DataGridNode({id: 'TextData', secondCol: 'a foo'});
-  var b = new DataGrid.DataGridNode({id: 'NullData', secondCol: null});
+  var columns = [{id: 'id', sortable: false}];
+  var dataGrid = new DataGrid.DataGrid.DataGridImpl({displayName: 'Test', columns});
+  var a = new DataGrid.DataGrid.DataGridNode({id: 'TextData', secondCol: 'a foo'});
+  var b = new DataGrid.DataGrid.DataGridNode({id: 'NullData', secondCol: null});
   var root = dataGrid.rootNode();
   attach(root, a);
   dumpNodes();
-  dataGrid.addColumn({id: 'secondCol'});
+  dataGrid.addColumn({id: 'secondCol', sortable: false});
   TestRunner.addResult('Added secondCol');
   dumpNodes();
   attach(root, b);
