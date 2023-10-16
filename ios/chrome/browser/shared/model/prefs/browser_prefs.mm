@@ -172,6 +172,53 @@ inline constexpr char kSyncRequested[] = "sync.requested";
 const char kAutofillBrandingKeyboardAccessoriesTapped[] =
     "ios.autofill.branding.keyboard_accessory_tapped";
 
+// Helper function migrating the preference `pref_name` of type "double" from
+// `defaults` to `pref_service`.
+void MigrateDoublePreferenceFromUserDefaults(std::string_view pref_name,
+                                             PrefService* pref_service,
+                                             NSUserDefaults* defaults) {
+  NSString* key = @(pref_name.data());
+  NSNumber* value =
+      base::apple::ObjCCast<NSNumber>([defaults objectForKey:key]);
+  if (!value) {
+    return;
+  }
+
+  pref_service->SetDouble(pref_name.data(), [value doubleValue]);
+  [defaults removeObjectForKey:key];
+}
+
+// Helper function migrating the preference `pref_name` of type "int" from
+// `defaults` to `pref_service`.
+void MigrateIntegerPreferenceFromUserDefaults(std::string_view pref_name,
+                                              PrefService* pref_service,
+                                              NSUserDefaults* defaults) {
+  NSString* key = @(pref_name.data());
+  NSNumber* value =
+      base::apple::ObjCCast<NSNumber>([defaults objectForKey:key]);
+  if (!value) {
+    return;
+  }
+
+  pref_service->SetInteger(pref_name.data(), [value intValue]);
+  [defaults removeObjectForKey:key];
+}
+
+// Helper function migrating the preference `pref_name` of type "NSDate" from
+// `defaults` to `pref_service`.
+void MigrateNSDatePreferenceFromUserDefaults(std::string_view pref_name,
+                                             PrefService* pref_service,
+                                             NSUserDefaults* defaults) {
+  NSString* key = @(pref_name.data());
+  NSDate* value = base::apple::ObjCCast<NSDate>([defaults objectForKey:key]);
+  if (!value) {
+    return;
+  }
+
+  pref_service->SetTime(pref_name.data(), base::Time::FromNSDate(value));
+  [defaults removeObjectForKey:key];
+}
+
 }  // namespace
 
 void RegisterLocalStatePrefs(PrefRegistrySimple* registry) {
@@ -617,27 +664,13 @@ void MigrateObsoleteLocalStatePrefs(PrefService* prefs) {
 
   // Added 09/2023
   // TODO(crbug.com/1485045) To be removed after a few milestones.
-  {
-    NSString* key = @(kAppStoreRatingTotalDaysOnChromeKey);
-    NSInteger value = [defaults integerForKey:key];
-    if (value) {
-      [defaults removeObjectForKey:key];
-      prefs->SetInteger(kAppStoreRatingTotalDaysOnChromeKey, value);
-    }
-  }
+  MigrateIntegerPreferenceFromUserDefaults(kAppStoreRatingTotalDaysOnChromeKey,
+                                           prefs, defaults);
 
   // Added 09/2023
   // TODO(crbug.com/1485045) To be removed after a few milestones.
-  {
-    NSString* key = @(kAppStoreRatingLastShownPromoDayKey);
-    NSDate* value =
-        base::apple::ObjCCastStrict<NSDate>([defaults objectForKey:key]);
-    if (value) {
-      [defaults removeObjectForKey:key];
-      prefs->SetTime(kAppStoreRatingLastShownPromoDayKey,
-                     base::Time::FromNSDate(value));
-    }
-  }
+  MigrateNSDatePreferenceFromUserDefaults(kAppStoreRatingLastShownPromoDayKey,
+                                          prefs, defaults);
 
   // Added 10/2023.
   prefs->ClearPref(kAutofillBrandingKeyboardAccessoriesTapped);
@@ -708,43 +741,23 @@ void MigrateObsoleteBrowserStatePrefs(PrefService* prefs) {
   prefs->ClearPref(kObsoleteIosSettingsSigninPromoDisplayedCount);
   prefs->ClearPref(kPrivacySandboxManuallyControlled);
 
+  NSUserDefaults* defaults = [NSUserDefaults standardUserDefaults];
   // Added 09/2023.
   // TODO(crbug.com/1486770) To be removed after a few milestones.
-  NSUserDefaults* defaults = [NSUserDefaults standardUserDefaults];
-  {
-    NSString* key = @(kActivityBucketLastReportedDateKey);
-    NSDate* value = [defaults objectForKey:key];
-    if (value != nil) {
-      [defaults removeObjectForKey:key];
-      prefs->SetTime(kActivityBucketLastReportedDateKey,
-                     base::Time::FromNSDate(value));
-    }
-  }
+  MigrateNSDatePreferenceFromUserDefaults(kActivityBucketLastReportedDateKey,
+                                          prefs, defaults);
 
   // Added 10/2023.
   prefs->ClearPref(kSyncRequested);
 
   // Added 10/2023.
   // TODO(crbug.com/1486770) To be removed after a few milestones.
-  {
-    NSString* key = @(kActivityBucketKey);
-    NSInteger value = [defaults integerForKey:key];
-    if (value) {
-      [defaults removeObjectForKey:key];
-      prefs->SetInteger(kActivityBucketKey, value);
-    }
-  }
+  MigrateIntegerPreferenceFromUserDefaults(kActivityBucketKey, prefs, defaults);
 
   // Added 10/2023.
   // TODO(crbug.com/1486770) To be removed after a few milestones.
-  {
-    NSString* key = @(kTimeSpentInFeedAggregateKey);
-    double value = [defaults doubleForKey:key];
-    if (value) {
-      [defaults removeObjectForKey:key];
-      prefs->SetDouble(kTimeSpentInFeedAggregateKey, value);
-    }
-  }
+  MigrateDoublePreferenceFromUserDefaults(kTimeSpentInFeedAggregateKey, prefs,
+                                          defaults);
 }
 
 void MigrateObsoleteUserDefault(void) {
