@@ -5,7 +5,6 @@
 #ifndef CHROME_BROWSER_UI_VIEWS_COMPOSE_COMPOSE_DIALOG_VIEW_H_
 #define CHROME_BROWSER_UI_VIEWS_COMPOSE_COMPOSE_DIALOG_VIEW_H_
 
-#include "components/compose/core/browser/compose_client.h"
 #include "content/public/browser/web_contents.h"
 #include "ui/base/metadata/metadata_header_macros.h"
 #include "ui/views/bubble/bubble_dialog_delegate_view.h"
@@ -21,8 +20,7 @@ class ComposeDialogView : public views::BubbleDialogDelegateView {
   explicit ComposeDialogView(View* anchor_view,
                              views::BubbleBorder::Arrow anchor_position,
                              const gfx::Rect bounds,
-                             content::WebContents* web_contents,
-                             ComposeClient::ComposeDialogCallback callback);
+                             content::WebContents* web_contents);
 
   ~ComposeDialogView() override;
 };

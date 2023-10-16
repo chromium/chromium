@@ -18,10 +18,9 @@ constexpr gfx::Size kInputDialogSize(448, 216);
 namespace chrome {
 
 void ShowComposeDialog(content::WebContents& web_contents,
-                       const gfx::RectF& element_bounds,
-                       compose::ComposeClient::ComposeDialogCallback callback) {
+                       const gfx::RectF& element_bounds) {
   ComposeDialogController::GetOrCreate(&web_contents)
-      ->ShowComposeDialog(nullptr, element_bounds, std::move(callback));
+      ->ShowComposeDialog(nullptr, element_bounds);
 }
 
 }  // namespace chrome
@@ -41,14 +40,13 @@ ComposeDialogController* ComposeDialogController::GetOrCreate(
 // open with an expanding animation.
 void ComposeDialogController::ShowComposeDialog(
     views::View* anchor_view,
-    const gfx::RectF& element_bounds_in_screen,
-    compose::ComposeClient::ComposeDialogCallback callback) {
+    const gfx::RectF& element_bounds_in_screen) {
   gfx::Rect element_centered_bounds = ComputeCenteredDialogBoundsInScreen(
       kInputDialogSize, element_bounds_in_screen);
 
   auto compose_dialog_view = std::make_unique<compose::ComposeDialogView>(
       anchor_view, views::BubbleBorder::TOP_LEFT, element_centered_bounds,
-      &GetWebContents(), std::move(callback));
+      &GetWebContents());
   compose_dialog_view_ = compose_dialog_view.get();
 
   views::BubbleDialogDelegateView::CreateBubble(std::move(compose_dialog_view))

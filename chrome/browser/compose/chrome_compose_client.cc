@@ -110,8 +110,7 @@ void ChromeComposeClient::ShowComposeDialog(
     ComposeDialogCallback callback) {
   last_compose_field_id_ = trigger_field.global_id();
   const gfx::RectF element_bounds = trigger_field.bounds;
-  chrome::ShowComposeDialog(GetWebContents(), element_bounds,
-                            std::move(callback));
+  chrome::ShowComposeDialog(GetWebContents(), element_bounds);
 }
 
 compose::ComposeManager& ChromeComposeClient::GetManager() {

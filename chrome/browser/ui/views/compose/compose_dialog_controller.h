@@ -7,7 +7,6 @@
 
 #include "base/memory/weak_ptr.h"
 #include "chrome/browser/ui/views/compose/compose_dialog_view.h"
-#include "components/compose/core/browser/compose_client.h"
 #include "content/public/browser/web_contents.h"
 #include "content/public/browser/web_contents_user_data.h"
 
@@ -30,10 +29,8 @@ class ComposeDialogController
       content::WebContents* web_contents);
 
   // Create and show the dialog view.
-  void ShowComposeDialog(
-      views::View* anchor_view,
-      const gfx::RectF& element_bounds_in_screen,
-      compose::ComposeClient::ComposeDialogCallback callback);
+  void ShowComposeDialog(views::View* anchor_view,
+                         const gfx::RectF& element_bounds_in_screen);
 
   // Returns bounds of a compose dialog centered on |element_bounds_in_screen|.
   gfx::Rect ComputeCenteredDialogBoundsInScreen(

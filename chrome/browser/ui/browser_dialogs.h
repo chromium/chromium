@@ -16,7 +16,6 @@
 #include "build/chromeos_buildflags.h"
 #include "chrome/browser/ui/bookmarks/bookmark_editor.h"
 #include "components/compose/buildflags.h"
-#include "components/compose/core/browser/compose_client.h"
 #include "content/public/browser/bluetooth_delegate.h"
 #include "content/public/browser/login_delegate.h"
 #include "extensions/buildflags/buildflags.h"
@@ -179,8 +178,7 @@ using OnProceedCallback = base::OnceCallback<
 
 #if BUILDFLAG(ENABLE_COMPOSE)
 void ShowComposeDialog(content::WebContents& web_contents,
-                       const gfx::RectF& element_bounds,
-                       compose::ComposeClient::ComposeDialogCallback callback);
+                       const gfx::RectF& element_bounds);
 #endif
 
 }  // namespace chrome

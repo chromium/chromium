@@ -54,10 +54,8 @@ TEST_F(ComposeDialogControllerTest, ShowComposeDialog) {
 
   views::NamedWidgetShownWaiter waiter(views::test::AnyWidgetTestPasskey(),
                                        "ComposeDialogView");
-  compose::ComposeClient::ComposeDialogCallback callback = base::NullCallback();
   gfx::RectF bounds = gfx::RectF();
-  controller_->ShowComposeDialog(anchor_widget_->GetContentsView(), bounds,
-                                 std::move(callback));
+  controller_->ShowComposeDialog(anchor_widget_->GetContentsView(), bounds);
 
   waiter.WaitIfNeededAndGet();
   EXPECT_THAT(controller_->GetComposeDialog(), testing::NotNull());

@@ -16,12 +16,10 @@ constexpr gfx::Size kInputDialogSize(448, 216);
 
 ComposeDialogView::~ComposeDialogView() = default;
 
-ComposeDialogView::ComposeDialogView(
-    View* anchor_view,
-    views::BubbleBorder::Arrow anchor_position,
-    const gfx::Rect bounds,
-    content::WebContents* web_contents,
-    ComposeClient::ComposeDialogCallback callback)
+ComposeDialogView::ComposeDialogView(View* anchor_view,
+                                     views::BubbleBorder::Arrow anchor_position,
+                                     const gfx::Rect bounds,
+                                     content::WebContents* web_contents)
     : BubbleDialogDelegateView(anchor_view, anchor_position) {
   // For testing, a test Window widget is used. Otherwise, no |anchor_view| is
   // given and the parent Window must be manually set.
