@@ -58,15 +58,14 @@ config("mediapipe_internal_config") {
   cflags = [
     "-Wno-unused-function",
     "-Wno-deprecated-declarations",
+    # MediaPipe's CHECK macros are redefined from absl's.
+    "-Wno-macro-redefined",
   ]
 }
 
 config("mediapipe_flags") {
-  cflags = [
-    # MediaPipe's CHECK macros are redefined from absl's.
-    "-Wno-macro-redefined",
-  ]
-
+  # This config is added to the public_config. Don't add cflags that disable
+  # warnings here.
   defines = [ "MEDIAPIPE_PROTO_LITE=1" ]
 
   if (!mediapipe_build_with_gpu_support) {

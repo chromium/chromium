@@ -81,6 +81,9 @@ static_library("sentencepiece") {
 
   public_configs = [
     ":sentencepiece_config",
+  ]
+
+  configs += [
     ":sentencepiece_flags",
   ]
 }
