@@ -29,7 +29,6 @@ import org.chromium.components.autofill.AutofillSuggestion;
 import org.chromium.components.autofill.PopupItemId;
 import org.chromium.content_public.browser.test.util.TestThreadUtils;
 import org.chromium.content_public.browser.test.util.TouchCommon;
-import org.chromium.ui.DropdownItem;
 import org.chromium.ui.base.ViewAndroidDelegate;
 import org.chromium.ui.test.util.BlankUiTestActivity;
 
@@ -101,32 +100,60 @@ public class AutofillUnitTest {
 
     private AutofillSuggestion[] createTwoAutofillSuggestionArray() {
         return new AutofillSuggestion[] {
-                new AutofillSuggestion("Sherlock Holmes", "221B Baker Street", /*itemTag=*/"",
-                        DropdownItem.NO_ICON, false, PopupItemId.ADDRESS_ENTRY, false, false, false,
-                        /* featureForIPH= */ ""),
-                new AutofillSuggestion("Arthur Dent", "West Country", /*itemTag=*/"",
-                        DropdownItem.NO_ICON, false, PopupItemId.ADDRESS_ENTRY, false, false, false,
-                        /* featureForIPH= */ ""),
+            new AutofillSuggestion.Builder()
+                    .setLabel("Sherlock Holmes")
+                    .setSubLabel("221B Baker Street")
+                    .setItemTag("")
+                    .setPopupItemId(PopupItemId.ADDRESS_ENTRY)
+                    .setFeatureForIPH("")
+                    .build(),
+            new AutofillSuggestion.Builder()
+                    .setLabel("Arthur Dent")
+                    .setSubLabel("West Country")
+                    .setItemTag("")
+                    .setPopupItemId(PopupItemId.ADDRESS_ENTRY)
+                    .setFeatureForIPH("")
+                    .build()
         };
     }
 
     private AutofillSuggestion[] createFiveAutofillSuggestionArray() {
         return new AutofillSuggestion[] {
-                new AutofillSuggestion("Sherlock Holmes", "221B Baker Street", /*itemTag=*/"",
-                        DropdownItem.NO_ICON, false, PopupItemId.ADDRESS_ENTRY, false, false, false,
-                        /* featureForIPH= */ ""),
-                new AutofillSuggestion("Arthur Dent", "West Country", /*itemTag=*/"",
-                        DropdownItem.NO_ICON, false, PopupItemId.ADDRESS_ENTRY, false, false, false,
-                        /* featureForIPH= */ ""),
-                new AutofillSuggestion("Arthos", "France", /*itemTag=*/"", DropdownItem.NO_ICON,
-                        false, PopupItemId.ADDRESS_ENTRY, false, false, false,
-                        /* featureForIPH= */ ""),
-                new AutofillSuggestion("Porthos", "France", /*itemTag=*/"", DropdownItem.NO_ICON,
-                        false, PopupItemId.ADDRESS_ENTRY, false, false, false,
-                        /* featureForIPH= */ ""),
-                new AutofillSuggestion("Aramis", "France", /*itemTag=*/"", DropdownItem.NO_ICON,
-                        false, PopupItemId.ADDRESS_ENTRY, false, false, false,
-                        /* featureForIPH= */ ""),
+            new AutofillSuggestion.Builder()
+                    .setLabel("Sherlock Holmes")
+                    .setSubLabel("221B Baker Street")
+                    .setItemTag("")
+                    .setPopupItemId(PopupItemId.ADDRESS_ENTRY)
+                    .setFeatureForIPH("")
+                    .build(),
+            new AutofillSuggestion.Builder()
+                    .setLabel("Arthur Dent")
+                    .setSubLabel("West Country")
+                    .setItemTag("")
+                    .setPopupItemId(PopupItemId.ADDRESS_ENTRY)
+                    .setFeatureForIPH("")
+                    .build(),
+            new AutofillSuggestion.Builder()
+                    .setLabel("Arthos")
+                    .setSubLabel("France")
+                    .setItemTag("")
+                    .setPopupItemId(PopupItemId.ADDRESS_ENTRY)
+                    .setFeatureForIPH("")
+                    .build(),
+            new AutofillSuggestion.Builder()
+                    .setLabel("Porthos")
+                    .setSubLabel("France")
+                    .setItemTag("")
+                    .setPopupItemId(PopupItemId.ADDRESS_ENTRY)
+                    .setFeatureForIPH("")
+                    .build(),
+            new AutofillSuggestion.Builder()
+                    .setLabel("Aramis")
+                    .setSubLabel("France")
+                    .setItemTag("")
+                    .setPopupItemId(PopupItemId.ADDRESS_ENTRY)
+                    .setFeatureForIPH("")
+                    .build()
         };
     }
 

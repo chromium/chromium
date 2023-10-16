@@ -16,7 +16,6 @@ import org.chromium.components.autofill.AutofillDelegate;
 import org.chromium.components.autofill.AutofillPopup;
 import org.chromium.components.autofill.AutofillSuggestion;
 import org.chromium.components.autofill.PopupItemId;
-import org.chromium.ui.DropdownItem;
 
 /**
  * Java counterpart to the AwAutofillClient. This class is owned by AwContents and has
@@ -101,9 +100,14 @@ public class AwAutofillClient {
     @CalledByNative
     private static void addToAutofillSuggestionArray(AutofillSuggestion[] array, int index,
             String name, String label, @PopupItemId int popupItemId) {
-        array[index] = new AutofillSuggestion(name, label, /* itemTag= */ "", DropdownItem.NO_ICON,
-                false /* isIconAtLeft */, popupItemId, false /* isDeletable */,
-                false /* isMultilineLabel */, false /* isBoldLabel */, /* featureForIPH= */ "");
+        array[index] =
+                new AutofillSuggestion.Builder()
+                        .setLabel(name)
+                        .setSecondarySubLabel(label)
+                        .setItemTag("")
+                        .setPopupItemId(popupItemId)
+                        .setFeatureForIPH("")
+                        .build();
     }
 
     @NativeMethods
