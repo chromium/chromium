@@ -1726,12 +1726,6 @@ BASE_FEATURE(kLockScreenMediaControls,
              "LockScreenMediaControls",
              base::FEATURE_ENABLED_BY_DEFAULT);
 
-// Enables the Device Trust connector client code is enabled on the login
-// screen.
-BASE_FEATURE(kLoginScreenDeviceTrustConnectorEnabled,
-             "LoginScreenDeviceTrustConnectorEnabled",
-             base::FEATURE_ENABLED_BY_DEFAULT);
-
 // Feature to allow MAC address randomization to be enabled for WiFi networks.
 BASE_FEATURE(kMacAddressRandomization,
              "MacAddressRandomization",
@@ -3662,10 +3656,6 @@ bool IsLockScreenInlineReplyEnabled() {
 
 bool IsLockScreenNotificationsEnabled() {
   return base::FeatureList::IsEnabled(kLockScreenNotifications);
-}
-
-bool IsLoginScreenDeviceTrustConnectorFeatureEnabled() {
-  return base::FeatureList::IsEnabled(kLoginScreenDeviceTrustConnectorEnabled);
 }
 
 bool IsProductivityLauncherImageSearchEnabled() {

@@ -13,7 +13,6 @@
 #include "chrome/browser/enterprise/connectors/device_trust/common/common_types.h"
 #include "chrome/browser/enterprise/connectors/device_trust/common/device_trust_constants.h"
 #include "chrome/browser/enterprise/connectors/device_trust/common/metrics_utils.h"
-#include "chrome/browser/enterprise/connectors/device_trust/device_trust_features.h"
 #include "chrome/browser/enterprise/connectors/device_trust/device_trust_service.h"
 #include "chrome/browser/enterprise/connectors/device_trust/device_trust_service_factory.h"
 #include "chrome/browser/enterprise/signals/user_permission_service_factory.h"
@@ -101,10 +100,6 @@ constexpr char kVerifiedAccessResponseHeader[] =
 std::unique_ptr<DeviceTrustNavigationThrottle>
 DeviceTrustNavigationThrottle::MaybeCreateThrottleFor(
     content::NavigationHandle* navigation_handle) {
-  if (!enterprise_connectors::IsDeviceTrustConnectorFeatureEnabled()) {
-    return nullptr;
-  }
-
   auto* profile = GetProfile(navigation_handle);
   auto* device_trust_service =
       DeviceTrustServiceFactory::GetForProfile(profile);

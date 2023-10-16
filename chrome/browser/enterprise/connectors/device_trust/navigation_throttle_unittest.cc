@@ -17,7 +17,6 @@
 #include "chrome/browser/enterprise/connectors/device_trust/common/device_trust_constants.h"
 #include "chrome/browser/enterprise/connectors/device_trust/common/metrics_utils.h"
 #include "chrome/browser/enterprise/connectors/device_trust/device_trust_connector_service.h"
-#include "chrome/browser/enterprise/connectors/device_trust/device_trust_features.h"
 #include "chrome/browser/enterprise/connectors/device_trust/fake_device_trust_connector_service.h"
 #include "chrome/browser/enterprise/connectors/device_trust/mock_device_trust_service.h"
 #include "chrome/browser/enterprise/signals/user_permission_service_factory.h"
@@ -111,9 +110,7 @@ class DeviceTrustNavigationThrottleTest : public testing::Test {
  protected:
   DeviceTrustNavigationThrottleTest() {
     scoped_feature_list_.InitWithFeatures(
-        {kDeviceTrustConnectorEnabled,
-         enterprise_signals::features::kDeviceSignalsConsentDialog},
-        {});
+        {enterprise_signals::features::kDeviceSignalsConsentDialog}, {});
     web_contents_ =
         content::WebContentsTester::CreateTestWebContents(&profile_, nullptr);
     test_prefs_ = profile_.GetTestingPrefService();

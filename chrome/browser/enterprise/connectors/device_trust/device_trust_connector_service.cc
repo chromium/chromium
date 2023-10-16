@@ -5,7 +5,6 @@
 #include "chrome/browser/enterprise/connectors/device_trust/device_trust_connector_service.h"
 
 #include "base/check.h"
-#include "chrome/browser/enterprise/connectors/device_trust/device_trust_features.h"
 #include "chrome/browser/enterprise/connectors/device_trust/prefs.h"
 #include "components/prefs/pref_service.h"
 #include "components/url_matcher/url_matcher.h"
@@ -18,10 +17,6 @@ DeviceTrustConnectorService::DeviceTrustConnectorService(
     PrefService* profile_prefs)
     : profile_prefs_(profile_prefs) {
   CHECK(profile_prefs_);
-
-  if (!IsDeviceTrustConnectorFeatureEnabled()) {
-    return;
-  }
 
   pref_observer_.Init(profile_prefs_);
   policy_details_map_.emplace(
@@ -78,11 +73,6 @@ void DeviceTrustConnectorService::AddObserver(
 const std::set<DTCPolicyLevel>
 DeviceTrustConnectorService::GetEnabledInlinePolicyLevels() const {
   std::set<DTCPolicyLevel> levels;
-
-  if (!IsDeviceTrustConnectorFeatureEnabled() || !profile_prefs_) {
-    return levels;
-  }
-
   for (auto const& policy_details : policy_details_map_) {
     if (policy_details.second.enabled) {
       levels.insert(policy_details.first);

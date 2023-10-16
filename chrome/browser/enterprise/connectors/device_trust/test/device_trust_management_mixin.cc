@@ -9,7 +9,6 @@
 #include "base/check.h"
 #include "base/containers/flat_map.h"
 #include "build/chromeos_buildflags.h"
-#include "chrome/browser/enterprise/connectors/device_trust/device_trust_features.h"
 #include "chrome/browser/enterprise/connectors/device_trust/test/test_constants.h"
 #include "chrome/browser/profiles/profile.h"
 #include "components/device_signals/core/browser/pref_names.h"
