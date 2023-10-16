@@ -347,7 +347,7 @@ void IntroHandler::HandleSetAsDefaultBrowser(const base::Value::List& args) {
   CHECK(args.empty());
   if (default_browser_callback_) {
     std::move(default_browser_callback_)
-        .Run(DefaultBrowserChoice::kSetAsDefault);
+        .Run(DefaultBrowserChoice::kClickSetAsDefault);
   }
 }
 

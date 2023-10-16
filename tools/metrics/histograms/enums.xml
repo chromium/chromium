@@ -46758,10 +46758,11 @@ Called by update_permissions_policy_enum.py.-->
   <summary>
     User choice on the prompt to set Chrome as their default browser.
   </summary>
-  <int value="0" label="SetAsDefaultBrowser"/>
+  <int value="0" label="ClickSetAsDefaultBrowser"/>
   <int value="1" label="SkipDefaultBrowser"/>
   <int value="2" label="QuitOnDefaultBrowser"/>
   <int value="3" label="NotShownOnDefaultBrowserCheckTimeout"/>
+  <int value="4" label="SuccessfullySetAsDefaultBrowser"/>
 </enum>
 
 <enum name="FirstRunEntryPoint">

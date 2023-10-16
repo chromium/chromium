@@ -347,8 +347,9 @@ IN_PROC_BROWSER_TEST_P(FirstRunParameterizedInteractiveUiTest, SignInAndSync) {
       signin_metrics::AccessPoint::ACCESS_POINT_FOR_YOU_FRE, 1);
 
   if (WithDefaultBrowserStep()) {
-    histogram_tester.ExpectUniqueSample("ProfilePicker.FirstRun.DefaultBrowser",
-                                        DefaultBrowserChoice::kSetAsDefault, 1);
+    histogram_tester.ExpectUniqueSample(
+        "ProfilePicker.FirstRun.DefaultBrowser",
+        DefaultBrowserChoice::kClickSetAsDefault, 1);
   }
 
   EXPECT_TRUE(proceed_future.Get());
