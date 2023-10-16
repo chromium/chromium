@@ -8,9 +8,12 @@
 #import "base/check.h"
 #import "ios/chrome/browser/shared/model/browser/browser.h"
 #import "ios/chrome/browser/shared/model/browser_state/chrome_browser_state.h"
+#import "ios/chrome/browser/shared/public/commands/application_commands.h"
 #import "ios/chrome/browser/shared/public/commands/browser_commands.h"
+#import "ios/chrome/browser/shared/public/commands/browsing_data_commands.h"
 #import "ios/chrome/browser/shared/public/commands/command_dispatcher.h"
 #import "ios/chrome/browser/shared/public/commands/open_new_tab_command.h"
+#import "ios/chrome/browser/shared/public/commands/snackbar_commands.h"
 #import "ios/chrome/browser/shared/public/features/features.h"
 #import "ios/chrome/browser/ui/settings/clear_browsing_data/clear_browsing_data_coordinator.h"
 #import "ios/chrome/browser/ui/settings/privacy/handoff_table_view_controller.h"
@@ -28,7 +31,6 @@
     PrivacyTableViewControllerPresentationDelegate,
     LockdownModeCoordinatorDelegate>
 
-@property(nonatomic, strong) id<ApplicationCommands> handler;
 @property(nonatomic, strong) PrivacyTableViewController* viewController;
 // Coordinator for Privacy Safe Browsing settings.
 @property(nonatomic, strong)
@@ -61,22 +63,30 @@
 #pragma mark - ChromeCoordinator
 
 - (void)start {
-  self.handler = HandlerForProtocol(self.browser->GetCommandDispatcher(),
-                                    ApplicationCommands);
-
   ReauthenticationModule* module = [[ReauthenticationModule alloc] init];
-  self.viewController =
+  PrivacyTableViewController* viewController =
       [[PrivacyTableViewController alloc] initWithBrowser:self.browser
                                    reauthenticationModule:module];
+  self.viewController = viewController;
+
+  CommandDispatcher* dispatcher = self.browser->GetCommandDispatcher();
+  viewController.applicationHandler =
+      HandlerForProtocol(dispatcher, ApplicationCommands);
+  viewController.browserHandler =
+      HandlerForProtocol(dispatcher, BrowserCommands);
+  viewController.browsingDataHandler =
+      HandlerForProtocol(dispatcher, BrowsingDataCommands);
+  viewController.settingsHandler =
+      HandlerForProtocol(dispatcher, ApplicationSettingsCommands);
+  viewController.snackbarHandler =
+      HandlerForProtocol(dispatcher, SnackbarCommands);
 
   DCHECK(self.baseNavigationController);
-  self.viewController.handler = self;
-  [self.baseNavigationController pushViewController:self.viewController
+  viewController.handler = self;
+  viewController.presentationDelegate = self;
+
+  [self.baseNavigationController pushViewController:viewController
                                            animated:YES];
-  self.viewController.presentationDelegate = self;
-  self.viewController.dispatcher = static_cast<
-      id<ApplicationCommands, BrowserCommands, BrowsingDataCommands>>(
-      self.browser->GetCommandDispatcher());
 }
 
 - (void)stop {
@@ -102,7 +112,7 @@
   HandoffTableViewController* viewController =
       [[HandoffTableViewController alloc]
           initWithBrowserState:self.browser->GetBrowserState()];
-  viewController.dispatcher = self.viewController.dispatcher;
+  [self.viewController configureHandlersForRootViewController:viewController];
   [self.baseNavigationController pushViewController:viewController
                                            animated:YES];
 }

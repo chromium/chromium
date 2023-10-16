@@ -402,7 +402,7 @@ typedef NS_ENUM(NSInteger, ItemType) {
       BlockPopupsTableViewController* controller =
           [[BlockPopupsTableViewController alloc]
               initWithBrowserState:_browser->GetBrowserState()];
-      controller.dispatcher = self.dispatcher;
+      [self configureHandlersForRootViewController:controller];
       [self.navigationController pushViewController:controller animated:YES];
       break;
     }

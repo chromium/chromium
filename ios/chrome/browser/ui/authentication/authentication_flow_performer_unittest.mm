@@ -4,15 +4,23 @@
 
 #import "ios/chrome/browser/ui/authentication/authentication_flow_performer.h"
 
+#import <objc/runtime.h>
+
 #import "ios/chrome/browser/shared/model/application_context/application_context.h"
 #import "ios/chrome/browser/shared/model/browser/test/test_browser.h"
 #import "ios/chrome/browser/shared/model/browser_state/test_chrome_browser_state.h"
+#import "ios/chrome/browser/shared/public/commands/application_commands.h"
+#import "ios/chrome/browser/shared/public/commands/browser_commands.h"
+#import "ios/chrome/browser/shared/public/commands/browsing_data_commands.h"
+#import "ios/chrome/browser/shared/public/commands/command_dispatcher.h"
+#import "ios/chrome/browser/shared/public/commands/snackbar_commands.h"
 #import "ios/chrome/browser/signin/authentication_service.h"
 #import "ios/chrome/browser/signin/authentication_service_factory.h"
 #import "ios/chrome/browser/signin/fake_authentication_service_delegate.h"
 #import "ios/chrome/browser/signin/fake_system_identity.h"
 #import "ios/chrome/browser/signin/fake_system_identity_manager.h"
 #import "ios/chrome/test/ios_chrome_scoped_testing_local_state.h"
+#import "ios/testing/protocol_fake.h"
 #import "ios/web/public/test/web_task_environment.h"
 #import "testing/platform_test.h"
 #import "third_party/ocmock/gtest_support.h"
@@ -35,6 +43,20 @@ class AuthenticationFlowPerformerTest : public PlatformTest {
         std::make_unique<FakeAuthenticationServiceDelegate>());
     browser_ = std::make_unique<TestBrowser>(browser_state_.get());
     fake_identity_ = [FakeSystemIdentity fakeIdentity1];
+
+    NSArray<Protocol*>* command_protocols = @[
+      @protocol(ApplicationCommands), @protocol(BrowserCommands),
+      @protocol(BrowsingDataCommands), @protocol(ApplicationSettingsCommands),
+      @protocol(SnackbarCommands)
+    ];
+    fake_command_endpoint_ =
+        [[ProtocolFake alloc] initWithProtocols:command_protocols];
+    for (Protocol* protocol in command_protocols) {
+      [browser_->GetCommandDispatcher()
+          startDispatchingToTarget:fake_command_endpoint_
+                       forProtocol:protocol];
+    }
+
     FakeSystemIdentityManager* fake_system_identity_manager =
         FakeSystemIdentityManager::FromSystemIdentityManager(
             GetApplicationContext()->GetSystemIdentityManager());
@@ -59,6 +81,7 @@ class AuthenticationFlowPerformerTest : public PlatformTest {
   id<AuthenticationFlowPerformerDelegate>
       authentication_flow_performer_delegate_mock_ = nil;
   FakeSystemIdentity* fake_identity_ = nil;
+  ProtocolFake* fake_command_endpoint_ = nil;
 };
 
 // Tests interrupt call with `SigninCoordinatorInterrupt::UIShutdownNoDismiss`.

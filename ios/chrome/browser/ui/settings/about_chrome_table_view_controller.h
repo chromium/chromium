@@ -16,12 +16,6 @@
 @interface AboutChromeTableViewController
     : SettingsRootTableViewController <SettingsControllerProtocol>
 
-// ApplicationCommands handler.
-@property(nonatomic, weak) id<ApplicationCommands> applicationCommandsHandler;
-
-// SnackbarCommands handler.
-@property(nonatomic, weak) id<SnackbarCommands> snackbarCommandsHandler;
-
 - (instancetype)init NS_DESIGNATED_INITIALIZER;
 
 - (instancetype)initWithStyle:(UITableViewStyle)style NS_UNAVAILABLE;

@@ -599,22 +599,6 @@ NSString* const kAuthenticationSnackbarCategory =
   _navigationController = nil;
 }
 
-- (id<ApplicationCommands, BrowserCommands, BrowsingDataCommands>)
-    handlerForSettings {
-  NOTREACHED();
-  return nil;
-}
-
-- (id<ApplicationCommands>)handlerForApplicationCommands {
-  NOTREACHED();
-  return nil;
-}
-
-- (id<SnackbarCommands>)handlerForSnackbarCommands {
-  NOTREACHED();
-  return nil;
-}
-
 #pragma mark - Private
 
 - (void)updateUserPolicyNotificationStatusIfNeeded:(PrefService*)prefService {

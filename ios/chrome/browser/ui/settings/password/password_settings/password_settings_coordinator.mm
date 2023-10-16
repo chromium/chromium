@@ -442,11 +442,12 @@ constexpr const char* kBulkMovePasswordsToAccountConfirmationDialogAccepted =
       pattern, "COUNT", count, "EMAIL", base::UTF8ToUTF16(email));
 
   TriggerHapticFeedbackForNotification(UINotificationFeedbackTypeSuccess);
-  [self.handlerForSnackbarCommands
-      showSnackbarWithMessage:base::SysUTF16ToNSString(result)
-                   buttonText:nil
-                messageAction:nil
-             completionAction:nil];
+  id<SnackbarCommands> handler = HandlerForProtocol(
+      self.browser->GetCommandDispatcher(), SnackbarCommands);
+  [handler showSnackbarWithMessage:base::SysUTF16ToNSString(result)
+                        buttonText:nil
+                     messageAction:nil
+                  completionAction:nil];
 }
 
 #pragma mark - PasswordExportHandler
@@ -557,22 +558,6 @@ constexpr const char* kBulkMovePasswordsToAccountConfirmationDialogAccepted =
 
 - (void)settingsWasDismissed {
   [self.delegate passwordSettingsCoordinatorDidRemove:self];
-}
-
-- (id<ApplicationCommands, BrowserCommands, BrowsingDataCommands>)
-    handlerForSettings {
-  NOTREACHED();
-  return nil;
-}
-
-- (id<ApplicationCommands>)handlerForApplicationCommands {
-  NOTREACHED();
-  return nil;
-}
-
-- (id<SnackbarCommands>)handlerForSnackbarCommands {
-  return HandlerForProtocol(self.browser->GetCommandDispatcher(),
-                            SnackbarCommands);
 }
 
 #pragma mark - ReauthenticationCoordinatorDelegate

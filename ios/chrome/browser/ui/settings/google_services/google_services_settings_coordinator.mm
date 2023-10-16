@@ -16,10 +16,12 @@
 #import "ios/chrome/browser/shared/model/browser_state/chrome_browser_state.h"
 #import "ios/chrome/browser/shared/model/url/chrome_url_constants.h"
 #import "ios/chrome/browser/shared/public/commands/application_commands.h"
+#import "ios/chrome/browser/shared/public/commands/browser_commands.h"
 #import "ios/chrome/browser/shared/public/commands/browsing_data_commands.h"
 #import "ios/chrome/browser/shared/public/commands/command_dispatcher.h"
 #import "ios/chrome/browser/shared/public/commands/open_new_tab_command.h"
 #import "ios/chrome/browser/shared/public/commands/show_signin_command.h"
+#import "ios/chrome/browser/shared/public/commands/snackbar_commands.h"
 #import "ios/chrome/browser/shared/public/features/features.h"
 #import "ios/chrome/browser/shared/ui/table_view/table_view_utils.h"
 #import "ios/chrome/browser/signin/authentication_service.h"
@@ -98,9 +100,19 @@ using signin_metrics::PromoAction;
   self.mediator.commandHandler = self;
   viewController.modelDelegate = self.mediator;
   viewController.serviceDelegate = self.mediator;
-  viewController.dispatcher = static_cast<
-      id<ApplicationCommands, BrowserCommands, BrowsingDataCommands>>(
-      self.browser->GetCommandDispatcher());
+
+  CommandDispatcher* dispatcher = self.browser->GetCommandDispatcher();
+  viewController.applicationHandler =
+      HandlerForProtocol(dispatcher, ApplicationCommands);
+  viewController.browserHandler =
+      HandlerForProtocol(dispatcher, BrowserCommands);
+  viewController.browsingDataHandler =
+      HandlerForProtocol(dispatcher, BrowsingDataCommands);
+  viewController.settingsHandler =
+      HandlerForProtocol(dispatcher, ApplicationSettingsCommands);
+  viewController.snackbarHandler =
+      HandlerForProtocol(dispatcher, SnackbarCommands);
+
   DCHECK(self.baseNavigationController);
   [self.baseNavigationController pushViewController:self.viewController
                                            animated:YES];

@@ -60,7 +60,11 @@ const CGFloat kActivityIndicatorDimensionIPhone = 56;
 
 @implementation SettingsRootTableViewController
 
-@synthesize dispatcher = _dispatcher;
+@synthesize applicationHandler = _applicationHandler;
+@synthesize browserHandler = _browserHandler;
+@synthesize browsingDataHandler = _browsingDataHandler;
+@synthesize settingsHandler = _settingsHandler;
+@synthesize snackbarHandler = _snackbarHandler;
 
 #pragma mark - Public
 
@@ -132,6 +136,15 @@ const CGFloat kActivityIndicatorDimensionIPhone = 56;
 - (void)reloadData {
   [self loadModel];
   [self.tableView reloadData];
+}
+
+- (void)configureHandlersForRootViewController:
+    (id<SettingsRootViewControlling>)controller {
+  controller.applicationHandler = self.applicationHandler;
+  controller.browserHandler = self.browserHandler;
+  controller.browsingDataHandler = self.browsingDataHandler;
+  controller.settingsHandler = self.settingsHandler;
+  controller.snackbarHandler = self.snackbarHandler;
 }
 
 #pragma mark - Property
@@ -269,10 +282,10 @@ const CGFloat kActivityIndicatorDimensionIPhone = 56;
 
 - (void)view:(TableViewLinkHeaderFooterView*)view didTapLinkURL:(CrURL*)URL {
   // Subclass must have a valid dispatcher assigned.
-  DCHECK(self.dispatcher);
+  DCHECK(self.applicationHandler);
   OpenNewTabCommand* command =
       [OpenNewTabCommand commandWithURLFromChrome:URL.gurl];
-  [self.dispatcher closeSettingsUIAndOpenURL:command];
+  [self.applicationHandler closeSettingsUIAndOpenURL:command];
 }
 
 #pragma mark - Private

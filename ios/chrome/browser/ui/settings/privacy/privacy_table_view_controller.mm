@@ -598,9 +598,9 @@ const char kSyncSettingsURL[] = "settings://open_sync";
   if (URL.gurl == GURL(kGoogleServicesSettingsURL)) {
     // kGoogleServicesSettingsURL is not a realy link. It should be handled
     // with a special case.
-    [self.dispatcher showGoogleServicesSettingsFromViewController:self];
+    [self.settingsHandler showGoogleServicesSettingsFromViewController:self];
   } else if (URL.gurl == GURL(kSyncSettingsURL)) {
-    [self.dispatcher showSyncSettingsFromViewController:self];
+    [self.settingsHandler showSyncSettingsFromViewController:self];
   } else {
     [super view:view didTapLinkURL:URL];
   }

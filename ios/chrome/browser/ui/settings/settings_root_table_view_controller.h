@@ -68,6 +68,11 @@
 // table view data.
 - (void)reloadData;
 
+// Configures the handlers on another root table view controller, copying them
+// from the receiver.
+- (void)configureHandlersForRootViewController:
+    (id<SettingsRootViewControlling>)controller;
+
 @end
 
 // Subclasses of SettingsRootTableViewController should implement the

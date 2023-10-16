@@ -1658,8 +1658,7 @@ void InjectNTP(Browser* browser) {
     self.settingsNavigationController =
         [SettingsNavigationController userFeedbackControllerForBrowser:browser
                                                               delegate:self
-                                                      userFeedbackData:data
-                                                               handler:handler];
+                                                      userFeedbackData:data];
     [baseViewController presentViewController:self.settingsNavigationController
                                      animated:YES
                                    completion:nil];
@@ -2393,24 +2392,6 @@ void InjectNTP(Browser* browser) {
 - (void)settingsWasDismissed {
   [self.settingsNavigationController cleanUpSettings];
   self.settingsNavigationController = nil;
-}
-
-- (id<ApplicationCommands, BrowserCommands>)handlerForSettings {
-  // Assume that settings always wants the dispatcher from the main BVC.
-  return static_cast<id<ApplicationCommands, BrowserCommands>>(
-      self.mainInterface.browser->GetCommandDispatcher());
-}
-
-- (id<ApplicationCommands>)handlerForApplicationCommands {
-  // Assume that settings always wants the dispatcher from the main BVC.
-  return HandlerForProtocol(self.mainInterface.browser->GetCommandDispatcher(),
-                            ApplicationCommands);
-}
-
-- (id<SnackbarCommands>)handlerForSnackbarCommands {
-  // Assume that settings always wants the dispatcher from the main BVC.
-  return HandlerForProtocol(self.mainInterface.browser->GetCommandDispatcher(),
-                            SnackbarCommands);
 }
 
 #pragma mark - TabGridCoordinatorDelegate

@@ -120,6 +120,7 @@ source_set("unit_tests") {
     "//ios/chrome/common/ui/reauthentication",
     "//ios/chrome/test:test_support",
     "//ios/chrome/test/app:test_support",
+    "//ios/testing:protocol_fake",
     "//ios/web/public/test",
     "//testing/gmock",
     "//testing/gtest",

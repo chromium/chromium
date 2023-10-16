@@ -168,14 +168,14 @@ const CGFloat kDefaultHeight = 70;
   MDCSnackbarMessage* message =
       [MDCSnackbarMessage messageWithText:messageText];
   message.category = @"version copied";
-  [self.snackbarCommandsHandler showSnackbarMessage:message bottomOffset:0];
+  [self.snackbarHandler showSnackbarMessage:message bottomOffset:0];
 }
 
 #pragma mark - Private methods
 
 - (void)openURL:(GURL)URL {
   OpenNewTabCommand* command = [OpenNewTabCommand commandWithURLFromChrome:URL];
-  [self.applicationCommandsHandler closeSettingsUIAndOpenURL:command];
+  [self.applicationHandler closeSettingsUIAndOpenURL:command];
 }
 
 - (std::string)versionString {

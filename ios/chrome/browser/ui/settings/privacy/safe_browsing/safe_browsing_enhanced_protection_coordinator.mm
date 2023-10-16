@@ -11,9 +11,11 @@
 #import "ios/chrome/browser/shared/model/browser_state/chrome_browser_state.h"
 #import "ios/chrome/browser/shared/model/web_state_list/web_state_list.h"
 #import "ios/chrome/browser/shared/public/commands/application_commands.h"
+#import "ios/chrome/browser/shared/public/commands/browser_commands.h"
 #import "ios/chrome/browser/shared/public/commands/browsing_data_commands.h"
 #import "ios/chrome/browser/shared/public/commands/command_dispatcher.h"
 #import "ios/chrome/browser/shared/public/commands/open_new_tab_command.h"
+#import "ios/chrome/browser/shared/public/commands/snackbar_commands.h"
 #import "ios/chrome/browser/shared/public/features/features.h"
 #import "ios/chrome/browser/shared/ui/table_view/chrome_table_view_styler.h"
 #import "ios/chrome/browser/shared/ui/table_view/table_view_utils.h"
@@ -47,22 +49,33 @@
 }
 
 - (void)start {
+  SafeBrowsingEnhancedProtectionViewController* viewController = nil;
   if (base::FeatureList::IsEnabled(
           safe_browsing::kFriendlierSafeBrowsingSettingsEnhancedProtection)) {
-    self.viewController = [[SafeBrowsingEnhancedProtectionViewController alloc]
+    viewController = [[SafeBrowsingEnhancedProtectionViewController alloc]
         initWithStyle:UITableViewStyleGrouped];
   } else {
-    self.viewController = [[SafeBrowsingEnhancedProtectionViewController alloc]
+    viewController = [[SafeBrowsingEnhancedProtectionViewController alloc]
         initWithStyle:ChromeTableViewStyle()];
   }
-  self.viewController.presentationDelegate = self;
+  self.viewController = viewController;
 
-  self.viewController.dispatcher = static_cast<
-      id<ApplicationCommands, BrowserCommands, BrowsingDataCommands>>(
-      self.browser->GetCommandDispatcher());
+  viewController.presentationDelegate = self;
+  CommandDispatcher* dispatcher = self.browser->GetCommandDispatcher();
+  viewController.applicationHandler =
+      HandlerForProtocol(dispatcher, ApplicationCommands);
+  viewController.browserHandler =
+      HandlerForProtocol(dispatcher, BrowserCommands);
+  viewController.browsingDataHandler =
+      HandlerForProtocol(dispatcher, BrowsingDataCommands);
+  viewController.settingsHandler =
+      HandlerForProtocol(dispatcher, ApplicationSettingsCommands);
+  viewController.snackbarHandler =
+      HandlerForProtocol(dispatcher, SnackbarCommands);
+
   DCHECK(self.baseNavigationController);
   [self.baseNavigationController
-      presentViewController:self.viewController.navigationController
+      presentViewController:viewController.navigationController
                    animated:YES
                  completion:nil];
 }

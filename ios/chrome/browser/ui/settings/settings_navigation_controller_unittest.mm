@@ -5,6 +5,7 @@
 #import "ios/chrome/browser/ui/settings/settings_navigation_controller.h"
 
 #import <Foundation/Foundation.h>
+#import <objc/runtime.h>
 
 #import <memory>
 
@@ -20,12 +21,18 @@
 #import "ios/chrome/browser/shared/model/browser/test/test_browser.h"
 #import "ios/chrome/browser/shared/model/browser_state/test_chrome_browser_state.h"
 #import "ios/chrome/browser/shared/model/browser_state/test_chrome_browser_state_manager.h"
+#import "ios/chrome/browser/shared/public/commands/application_commands.h"
+#import "ios/chrome/browser/shared/public/commands/browser_commands.h"
+#import "ios/chrome/browser/shared/public/commands/browsing_data_commands.h"
+#import "ios/chrome/browser/shared/public/commands/command_dispatcher.h"
+#import "ios/chrome/browser/shared/public/commands/snackbar_commands.h"
 #import "ios/chrome/browser/signin/authentication_service.h"
 #import "ios/chrome/browser/signin/authentication_service_factory.h"
 #import "ios/chrome/browser/signin/fake_authentication_service_delegate.h"
 #import "ios/chrome/browser/sync/model/sync_setup_service.h"
 #import "ios/chrome/browser/sync/model/sync_setup_service_factory.h"
 #import "ios/chrome/test/ios_chrome_scoped_testing_chrome_browser_state_manager.h"
+#import "ios/testing/protocol_fake.h"
 #import "ios/web/public/test/web_task_environment.h"
 #import "testing/gmock/include/gmock/gmock.h"
 #import "testing/gtest/include/gtest/gtest.h"
@@ -67,6 +74,19 @@ class SettingsNavigationControllerTest : public PlatformTest {
     scene_state_ = [[SceneState alloc] initWithAppState:nil];
     SceneStateBrowserAgent::CreateForBrowser(browser_.get(), scene_state_);
 
+    NSArray<Protocol*>* command_protocols = @[
+      @protocol(ApplicationCommands), @protocol(BrowserCommands),
+      @protocol(BrowsingDataCommands), @protocol(ApplicationSettingsCommands),
+      @protocol(SnackbarCommands)
+    ];
+    fake_command_endpoint_ =
+        [[ProtocolFake alloc] initWithProtocols:command_protocols];
+    for (Protocol* protocol in command_protocols) {
+      [browser_->GetCommandDispatcher()
+          startDispatchingToTarget:fake_command_endpoint_
+                       forProtocol:protocol];
+    }
+
     mockDelegate_ = [OCMockObject
         niceMockForProtocol:@protocol(SettingsNavigationControllerDelegate)];
 
@@ -100,6 +120,7 @@ class SettingsNavigationControllerTest : public PlatformTest {
   id mockDelegate_;
   NSString* initialValueForSpdyProxyEnabled_;
   SceneState* scene_state_;
+  ProtocolFake* fake_command_endpoint_;
 };
 
 // When navigation stack has more than one view controller,

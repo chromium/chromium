@@ -23,8 +23,11 @@
 #import "ios/chrome/browser/shared/coordinator/alert/alert_coordinator.h"
 #import "ios/chrome/browser/shared/model/browser/browser.h"
 #import "ios/chrome/browser/shared/public/commands/application_commands.h"
+#import "ios/chrome/browser/shared/public/commands/browser_commands.h"
+#import "ios/chrome/browser/shared/public/commands/browsing_data_commands.h"
 #import "ios/chrome/browser/shared/public/commands/command_dispatcher.h"
 #import "ios/chrome/browser/shared/public/commands/open_new_tab_command.h"
+#import "ios/chrome/browser/shared/public/commands/snackbar_commands.h"
 #import "ios/chrome/browser/signin/chrome_account_manager_service_factory.h"
 #import "ios/chrome/browser/signin/identity_manager_factory.h"
 #import "ios/chrome/browser/sync/model/sync_service_factory.h"
@@ -168,18 +171,32 @@ using password_manager::WarningType;
       /*successfulReauthTimeAccessor=*/self.mediator);
   ChromeAccountManagerService* accountManagerService =
       ChromeAccountManagerServiceFactory::GetForBrowserState(browserState);
-  self.passwordsViewController = [[PasswordManagerViewController alloc]
-      initWithChromeAccountManagerService:accountManagerService
-                              prefService:browserState->GetPrefs()
-                   shouldOpenInSearchMode:
-                       self.openViewControllerForPasswordSearch];
 
-  self.passwordsViewController.handler = self;
-  self.passwordsViewController.delegate = self.mediator;
-  self.passwordsViewController.dispatcher = self.dispatcher;
-  self.passwordsViewController.presentationDelegate = self;
-  self.passwordsViewController.reauthenticationModule = self.reauthModule;
-  self.passwordsViewController.imageDataSource = self.mediator;
+  PasswordManagerViewController* passwordsViewController =
+      [[PasswordManagerViewController alloc]
+          initWithChromeAccountManagerService:accountManagerService
+                                  prefService:browserState->GetPrefs()
+                       shouldOpenInSearchMode:
+                           self.openViewControllerForPasswordSearch];
+  self.passwordsViewController = passwordsViewController;
+
+  CommandDispatcher* dispatcher = self.browser->GetCommandDispatcher();
+  passwordsViewController.applicationHandler =
+      HandlerForProtocol(dispatcher, ApplicationCommands);
+  passwordsViewController.browserHandler =
+      HandlerForProtocol(dispatcher, BrowserCommands);
+  passwordsViewController.browsingDataHandler =
+      HandlerForProtocol(dispatcher, BrowsingDataCommands);
+  passwordsViewController.settingsHandler =
+      HandlerForProtocol(dispatcher, ApplicationSettingsCommands);
+  passwordsViewController.snackbarHandler =
+      HandlerForProtocol(dispatcher, SnackbarCommands);
+
+  passwordsViewController.handler = self;
+  passwordsViewController.delegate = self.mediator;
+  passwordsViewController.presentationDelegate = self;
+  passwordsViewController.reauthenticationModule = self.reauthModule;
+  passwordsViewController.imageDataSource = self.mediator;
 
   self.mediator.consumer = self.passwordsViewController;
 

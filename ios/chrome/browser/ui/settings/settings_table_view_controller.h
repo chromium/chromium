@@ -12,7 +12,6 @@
 class Browser;
 @protocol BrowserCommands;
 @protocol BrowsingDataCommands;
-@protocol SettingsMainPageCommands;
 @class SigninInteractionController;
 @protocol SnackbarCommands;
 
@@ -20,19 +19,9 @@ class Browser;
 @interface SettingsTableViewController
     : SettingsRootTableViewController <SettingsControllerProtocol>
 
-// ApplicationCommands handler.
-@property(nonatomic, weak) id<ApplicationCommands> applicationCommandsHandler;
-
-// SnackbarCommands handler.
-@property(nonatomic, weak) id<SnackbarCommands> snackbarCommandsHandler;
-
 // Initializes a new SettingsTableViewController. `browser` must not
 // be nil and must not be associated with an off the record browser state.
-- (instancetype)
-    initWithBrowser:(Browser*)browser
-         dispatcher:
-             (id<ApplicationCommands, BrowserCommands, BrowsingDataCommands>)
-                 dispatcher NS_DESIGNATED_INITIALIZER;
+- (instancetype)initWithBrowser:(Browser*)browser NS_DESIGNATED_INITIALIZER;
 
 - (instancetype)initWithStyle:(UITableViewStyle)style NS_UNAVAILABLE;
 

@@ -977,11 +977,7 @@ constexpr CGFloat kErrorSymbolSize = 22.;
   // Verify that the accounts table is displayed from a navigation controller.
   DCHECK(self.navigationController);
 
-  // TODO(crbug.com/1045047): Use HandlerForProtocol after commands protocol
-  // clean up.
-  controllerToPush.dispatcher = static_cast<
-      id<ApplicationCommands, BrowserCommands, BrowsingDataCommands>>(
-      _browser->GetCommandDispatcher());
+  [self configureHandlersForRootViewController:controllerToPush];
   [self.navigationController pushViewController:controllerToPush animated:YES];
 }
 

@@ -303,17 +303,12 @@ UIImage* GetBrandedGoogleServicesSymbol() {
 @end
 
 @implementation SettingsTableViewController
-@synthesize dispatcher = _dispatcher;
 @synthesize managedFeedSettingsItem = _managedFeedSettingsItem;
 @synthesize feedSettingsItem = _feedSettingsItem;
 
 #pragma mark Initialization
 
-- (instancetype)
-    initWithBrowser:(Browser*)browser
-         dispatcher:
-             (id<ApplicationCommands, BrowserCommands, BrowsingDataCommands>)
-                 dispatcher {
+- (instancetype)initWithBrowser:(Browser*)browser {
   DCHECK(browser);
   DCHECK(!browser->GetBrowserState()->IsOffTheRecord());
 
@@ -406,8 +401,6 @@ UIImage* GetBrandedGoogleServicesSymbol() {
     _notificationsObserver =
         [[NotificationsSettingsObserver alloc] initWithPrefService:prefService];
     _notificationsObserver.delegate = self;
-
-    _dispatcher = dispatcher;
 
     // TODO(crbug.com/764578): -loadModel should not be called from
     // initializer. A possible fix is to move this call to -viewDidLoad.
@@ -1303,7 +1296,7 @@ UIImage* GetBrandedGoogleServicesSymbol() {
           [[AccountsTableViewController alloc] initWithBrowser:_browser
                                      closeSettingsOnAddAccount:NO];
       accountsTableViewController.applicationCommandsHandler =
-          self.applicationCommandsHandler;
+          self.applicationHandler;
       controller = accountsTableViewController;
       break;
     }
@@ -1435,10 +1428,6 @@ UIImage* GetBrandedGoogleServicesSymbol() {
       base::RecordAction(base::UserMetricsAction("AboutChrome"));
       AboutChromeTableViewController* aboutChromeTableViewController =
           [[AboutChromeTableViewController alloc] init];
-      aboutChromeTableViewController.applicationCommandsHandler =
-          self.applicationCommandsHandler;
-      aboutChromeTableViewController.snackbarCommandsHandler =
-          self.snackbarCommandsHandler;
       controller = aboutChromeTableViewController;
       break;
     }
@@ -1457,7 +1446,7 @@ UIImage* GetBrandedGoogleServicesSymbol() {
   }
 
   if (controller) {
-    controller.dispatcher = self.dispatcher;
+    [self configureHandlersForRootViewController:controller];
     [self.navigationController pushViewController:controller animated:YES];
   }
 }
@@ -2007,7 +1996,7 @@ UIImage* GetBrandedGoogleServicesSymbol() {
                  BOOL success = result == SigninCoordinatorResultSuccess;
                  [weakSelf didFinishSignin:success];
                }];
-  [self.applicationCommandsHandler showSignin:command baseViewController:self];
+  [self.applicationHandler showSignin:command baseViewController:self];
 }
 
 - (void)didFinishSignin:(BOOL)signedIn {
