@@ -204,8 +204,6 @@ void AddStrings(content::WebUIDataSource* source) {
        IDS_PERSONALIZATION_APP_AMBIENT_MODE_DURATION_ONE_HOUR},
       {"ambientModeDurationForever",
        IDS_PERSONALIZATION_APP_AMBIENT_MODE_DURATION_FOREVER},
-      {"ambientModeDurationDescription",
-       IDS_PERSONALIZATION_APP_AMBIENT_MODE_DURATION_DESCRIPTION},
       {"ambientModeTopicSourceTitle",
        IDS_PERSONALIZATION_APP_AMBIENT_MODE_TOPIC_SOURCE_TITLE},
       {"ambientModeTopicSourceGooglePhotos",
