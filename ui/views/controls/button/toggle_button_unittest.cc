@@ -70,9 +70,7 @@ class ToggleButtonTest : public ViewsTestBase {
     params.bounds = gfx::Rect(0, 0, 650, 650);
     widget_->Init(std::move(params));
     widget_->Show();
-
-    button_ =
-        widget_->SetContentsView(std::make_unique<TestToggleButton>(&counter_));
+    widget_->SetContentsView(std::make_unique<TestToggleButton>(&counter_));
   }
 
   void TearDown() override {
@@ -83,11 +81,12 @@ class ToggleButtonTest : public ViewsTestBase {
  protected:
   int counter() const { return counter_; }
   Widget* widget() { return widget_.get(); }
-  TestToggleButton* button() { return button_; }
+  TestToggleButton* button() {
+    return static_cast<TestToggleButton*>(widget_->GetContentsView());
+  }
 
  private:
   std::unique_ptr<Widget> widget_;
-  raw_ptr<TestToggleButton, DanglingUntriaged> button_ = nullptr;
   int counter_ = 0;
 };
 
