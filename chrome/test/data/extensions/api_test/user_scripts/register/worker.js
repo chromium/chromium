@@ -4,6 +4,31 @@
 
 import { openTab, getInjectedElementIds } from '/_test_resources/test_util/tabs_util.js';
 
+// Inject a script which changes the page's title based on the execution world
+// it's running on, then call executeScript which checks the title.
+async function runExecutionWorldTest(world, expectedTitle) {
+  await chrome.userScripts.unregister();
+
+  const scripts = [{
+    id: 'us1',
+    matches: ['*://*/*'],
+    js: [{file: 'inject_to_world.js'}],
+    runAt: 'document_end',
+    world
+  }];
+  await chrome.userScripts.register(scripts);
+  const config = await chrome.test.getConfig();
+
+  // After the scripts has been registered, navigate to a url where they will be
+  // injected.
+  const url = `http://requested.com:${
+      config.testServer.port}/extensions/main_world_script_flag.html`;
+  const tab = await openTab(url);
+  chrome.test.assertEq(expectedTitle, tab.title);
+
+  chrome.test.succeed();
+}
+
 chrome.test.runTests([
   // Tests that an error is returned when multiple user script entries in
   // userScripts.register share the same ID.
@@ -311,6 +336,13 @@ chrome.test.runTests([
     chrome.test.assertEq('NEW TITLE', tab.title);
 
     chrome.test.succeed();
+  },
+
+  // Tests that a file is executed in the correct execution world.
+  async function registerFile_ExecutionWorld() {
+    runExecutionWorldTest(chrome.userScripts.ExecutionWorld.MAIN, 'MAIN_WORLD');
+    runExecutionWorldTest(
+        chrome.userScripts.ExecutionWorld.USER_SCRIPT, 'USER_SCRIPT_WORLD');
   },
 
   // Tests that a file can be used both as a user script and content script.

@@ -7,6 +7,7 @@
 #include <vector>
 
 #include "base/functional/bind.h"
+#include "base/notreached.h"
 #include "base/strings/utf_string_conversions.h"
 #include "base/types/optional_util.h"
 #include "extensions/browser/api/scripting/scripting_constants.h"
@@ -17,6 +18,7 @@
 #include "extensions/browser/user_script_manager.h"
 #include "extensions/common/api/extension_types.h"
 #include "extensions/common/api/user_scripts.h"
+#include "extensions/common/mojom/execution_world.mojom-shared.h"
 #include "extensions/common/user_script.h"
 #include "extensions/common/utils/content_script_utils.h"
 #include "extensions/common/utils/extension_types_utils.h"
@@ -32,6 +34,30 @@ constexpr char kInvalidSourceError[] =
     "js source.";
 constexpr char kMatchesMissingError[] =
     "User script with ID '*' must specify 'matches'.";
+
+mojom::ExecutionWorld ConvertExecutionWorld(
+    api::user_scripts::ExecutionWorld world) {
+  switch (world) {
+    // Execution world defaults to `kUserScript` when it's not provided.
+    case api::user_scripts::EXECUTION_WORLD_NONE:
+    case api::user_scripts::EXECUTION_WORLD_USER_SCRIPT:
+      return mojom::ExecutionWorld::kUserScript;
+    case api::user_scripts::EXECUTION_WORLD_MAIN:
+      return mojom::ExecutionWorld::kMain;
+  }
+}
+
+api::user_scripts::ExecutionWorld ConvertExecutionWorldForAPI(
+    mojom::ExecutionWorld world) {
+  switch (world) {
+    case mojom::ExecutionWorld::kUserScript:
+      return api::user_scripts::EXECUTION_WORLD_USER_SCRIPT;
+    case mojom::ExecutionWorld::kMain:
+      return api::user_scripts::EXECUTION_WORLD_MAIN;
+    case mojom::ExecutionWorld::kIsolated:
+      NOTREACHED_NORETURN() << "ISOLATED worlds are not supported in this API.";
+  }
+}
 
 std::unique_ptr<UserScript> ParseUserScript(
     const Extension& extension,
@@ -98,6 +124,8 @@ std::unique_ptr<UserScript> ParseUserScript(
     }
   }
 
+  result->set_execution_world(ConvertExecutionWorld(user_script.world));
+
   return result;
 }
 
@@ -136,6 +164,8 @@ api::user_scripts::RegisteredUserScript CreateRegisteredUserScriptInfo(
       script_info.js.push_back(std::move(source));
     }
   }
+
+  script_info.world = ConvertExecutionWorldForAPI(script.execution_world());
 
   return script_info;
 }
@@ -400,6 +430,10 @@ std::unique_ptr<UserScript> UserScriptsUpdateFunction::ApplyUpdate(
 
   if (!new_script.js.empty()) {
     original_script.js = std::move(new_script.js);
+  }
+
+  if (new_script.world) {
+    original_script.world = std::move(new_script.world);
   }
 
   std::unique_ptr<UserScript> parsed_script =
