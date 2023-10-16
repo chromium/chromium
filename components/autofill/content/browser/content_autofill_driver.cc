@@ -217,24 +217,39 @@ net::IsolationInfo ContentAutofillDriver::IsolationInfo() {
   return render_frame_host_->GetIsolationInfoForSubresources();
 }
 
-std::vector<FieldGlobalId> ContentAutofillDriver::ApplyAutofillAction(
-    mojom::AutofillActionType action_type,
-    mojom::AutofillActionPersistence action_persistence,
+std::vector<FieldGlobalId> ContentAutofillDriver::ApplyFormAction(
+    mojom::ActionType action_type,
+    mojom::ActionPersistence action_persistence,
     const FormData& form,
     const url::Origin& triggered_origin,
     const base::flat_map<FieldGlobalId, ServerFieldType>& field_type_map) {
-  return router().ApplyAutofillAction(
+  return router().ApplyFormAction(
       this, action_type, action_persistence, form, triggered_origin,
       field_type_map,
-      [](autofill::AutofillDriver* target,
-         mojom::AutofillActionType action_type,
-         mojom::AutofillActionPersistence action_persistence,
-         const FormData& form) {
+      [](autofill::AutofillDriver* target, mojom::ActionType action_type,
+         mojom::ActionPersistence action_persistence, const FormData& form) {
         if (!cast(target)->RendererIsAvailable()) {
           return;
         }
-        cast(target)->GetAutofillAgent()->ApplyAutofillAction(
+        cast(target)->GetAutofillAgent()->ApplyFormAction(
             action_type, action_persistence, form);
+      });
+}
+
+void ContentAutofillDriver::ApplyFieldAction(
+    mojom::ActionPersistence action_persistence,
+    const FieldGlobalId& field,
+    const std::u16string& value) {
+  router().ApplyFieldAction(
+      this, action_persistence, field, value,
+      [](autofill::AutofillDriver* target,
+         mojom::ActionPersistence action_persistence,
+         const FieldRendererId& field, const std::u16string& value) {
+        if (!cast(target)->RendererIsAvailable()) {
+          return;
+        }
+        cast(target)->GetAutofillAgent()->ApplyFieldAction(action_persistence,
+                                                           field, value);
       });
 }
 
@@ -317,34 +332,6 @@ void ContentAutofillDriver::RendererShouldTriggerSuggestions(
         }
         cast(target)->GetAutofillAgent()->TriggerSuggestions(field,
                                                              trigger_source);
-      });
-}
-
-void ContentAutofillDriver::RendererShouldFillFieldWithValue(
-    const FieldGlobalId& field,
-    const std::u16string& value) {
-  router().RendererShouldFillFieldWithValue(
-      this, field, value,
-      [](autofill::AutofillDriver* target, const FieldRendererId& field,
-         const std::u16string& value) {
-        if (!cast(target)->RendererIsAvailable()) {
-          return;
-        }
-        cast(target)->GetAutofillAgent()->FillFieldWithValue(field, value);
-      });
-}
-
-void ContentAutofillDriver::RendererShouldPreviewFieldWithValue(
-    const FieldGlobalId& field,
-    const std::u16string& value) {
-  router().RendererShouldPreviewFieldWithValue(
-      this, field, value,
-      [](autofill::AutofillDriver* target, const FieldRendererId& field,
-         const std::u16string& value) {
-        if (!cast(target)->RendererIsAvailable()) {
-          return;
-        }
-        cast(target)->GetAutofillAgent()->PreviewFieldWithValue(field, value);
       });
 }
 

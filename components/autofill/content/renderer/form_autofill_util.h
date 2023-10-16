@@ -368,18 +368,18 @@ std::optional<FormData> FindFormForContentEditable(
 // Fills or previews the form represented by `form`.
 // `initiating_element` is the element that initiated the autofill process.
 // Returns the filled elements.
-std::vector<blink::WebFormControlElement> ApplyAutofillAction(
+std::vector<blink::WebFormControlElement> ApplyFormAction(
     const FormData& form,
     const blink::WebFormControlElement& initiating_element,
-    mojom::AutofillActionType action_type,
-    mojom::AutofillActionPersistence action_persistence);
+    mojom::ActionType action_type,
+    mojom::ActionPersistence action_persistence);
 
 // Clears the suggested values in `previewed_elements`.
 // `initiating_element` is the element that initiated the preview operation.
 // `old_autofill_state` is the previous state of the field that initiated the
 // preview.
 void ClearPreviewedElements(
-    mojom::AutofillActionType action_type,
+    mojom::ActionType action_type,
     std::vector<blink::WebFormControlElement>& previewed_elements,
     const blink::WebFormControlElement& initiating_element,
     blink::WebAutofillState old_autofill_state);

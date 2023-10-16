@@ -408,9 +408,8 @@ TEST_F(AutofillAgentTest, UndoAutofillSetsLastQueriedElement) {
       form_util::EXTRACT_VALUE, &form, nullptr));
 
   ASSERT_TRUE(autofill_agent_->focused_element().IsNull());
-  autofill_agent_->ApplyAutofillAction(mojom::AutofillActionType::kUndo,
-                                       mojom::AutofillActionPersistence::kFill,
-                                       form);
+  autofill_agent_->ApplyFormAction(mojom::ActionType::kUndo,
+                                   mojom::ActionPersistence::kFill, form);
   EXPECT_FALSE(autofill_agent_->focused_element().IsNull());
 }
 

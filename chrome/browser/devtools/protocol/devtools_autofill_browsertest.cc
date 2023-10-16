@@ -467,7 +467,7 @@ IN_PROC_BROWSER_TEST_F(DevToolsAutofillTest, AddressFormFilled) {
   SendCommandSync("Autofill.enable");
   main_autofill_manager().NotifyObservers(
       &autofill::AutofillManager::Observer::OnFillOrPreviewDataModelForm,
-      form_id(), autofill::mojom::AutofillActionPersistence::kFill,
+      form_id(), autofill::mojom::ActionPersistence::kFill,
       filled_fields_by_autofill, &profile);
 
   base::Value::Dict notification = WaitForNotification(

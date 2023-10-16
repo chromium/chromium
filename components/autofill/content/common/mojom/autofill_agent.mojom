@@ -20,12 +20,20 @@ interface AutofillAgent {
   // while another TriggerFormExtractionWithResponse() was ongoing.
   TriggerFormExtractionWithResponse() => (bool success);
 
-  // Fills or Previews the active form with some of `forms` data.
+  // Fills or previews the form identified by `form.unique_renderer_id` with
+  // the data in `form`.
   // `action_type` denotes if the action is a Fill or Undo.
   // `action_persistence` denotes if the operation is a Fill or Preview.
-  ApplyAutofillAction(AutofillActionType action_type,
-                      AutofillActionPersistence action_persistence,
-                      FormData form);
+  ApplyFormAction(ActionType action_type,
+                  ActionPersistence action_persistence,
+                  FormData form);
+
+  // Fills or previews the field identified by `field` with `value`.
+  // `action_type` denotes if the action is a Fill or Undo.
+  // `action_persistence` denotes if the operation is a Fill or Preview.
+  ApplyFieldAction(ActionPersistence action_persistence,
+                   FieldRendererId field,
+                   mojo_base.mojom.String16 value);
 
   // Sends the heuristic and server field type predictions to the renderer.
   FieldTypePredictionsAvailable(array<FormDataPredictions> forms);
@@ -51,13 +59,6 @@ interface AutofillAgent {
   // called.
   TriggerSuggestions(FieldRendererId field,
                      AutofillSuggestionTriggerSource trigger_source);
-
-  // Sets the value of |field| (if it is still the currently selected node).
-  FillFieldWithValue(FieldRendererId field, mojo_base.mojom.String16 value);
-
-  // Sets the suggested value of |field| (if it is still the currently selected
-  // node).
-  PreviewFieldWithValue(FieldRendererId field, mojo_base.mojom.String16 value);
 
   // Sets the autofill/autocomplete suggestion availability of |field| (if it is
   // still the currently selected node).

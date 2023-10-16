@@ -88,14 +88,14 @@ bool AutofillDriverIOS::RendererIsAvailable() {
   return true;
 }
 
-std::vector<FieldGlobalId> AutofillDriverIOS::ApplyAutofillAction(
-    mojom::AutofillActionType action_type,
-    mojom::AutofillActionPersistence action_persistence,
+std::vector<FieldGlobalId> AutofillDriverIOS::ApplyFormAction(
+    mojom::ActionType action_type,
+    mojom::ActionPersistence action_persistence,
     const FormData& data,
     const url::Origin& triggered_origin,
     const base::flat_map<FieldGlobalId, ServerFieldType>& field_type_map) {
   // TODO(crbug.com/1441410) Add Undo support on iOS.
-  if (action_type == mojom::AutofillActionType::kUndo) {
+  if (action_type == mojom::ActionType::kUndo) {
     return {};
   }
   web::WebFrame* frame = web_frame();
@@ -107,6 +107,11 @@ std::vector<FieldGlobalId> AutofillDriverIOS::ApplyAutofillAction(
     safe_fields.push_back(field.global_id());
   return safe_fields;
 }
+
+void AutofillDriverIOS::ApplyFieldAction(
+    mojom::ActionPersistence action_persistence,
+    const FieldGlobalId& field,
+    const std::u16string& value) {}
 
 void AutofillDriverIOS::HandleParsedForms(const std::vector<FormData>& forms) {
   const std::map<FormGlobalId, std::unique_ptr<FormStructure>>& map =
@@ -171,14 +176,6 @@ void AutofillDriverIOS::RendererShouldTriggerSuggestions(
   // manual fallbacks on Desktop. It is not implemented on iOS.
   NOTIMPLEMENTED();
 }
-
-void AutofillDriverIOS::RendererShouldFillFieldWithValue(
-    const FieldGlobalId& field,
-    const std::u16string& value) {}
-
-void AutofillDriverIOS::RendererShouldPreviewFieldWithValue(
-    const FieldGlobalId& field,
-    const std::u16string& value) {}
 
 void AutofillDriverIOS::RendererShouldSetSuggestionAvailability(
     const FieldGlobalId& field,

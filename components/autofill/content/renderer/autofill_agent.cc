@@ -635,10 +635,9 @@ void AutofillAgent::TriggerRefillIfNeeded(const FormData& form) {
 }
 
 // mojom::AutofillAgent:
-void AutofillAgent::ApplyAutofillAction(
-    mojom::AutofillActionType action_type,
-    mojom::AutofillActionPersistence action_persistence,
-    const FormData& form) {
+void AutofillAgent::ApplyFormAction(mojom::ActionType action_type,
+                                    mojom::ActionPersistence action_persistence,
+                                    const FormData& form) {
   // If `element_` is null or not focused, Autofill was either triggered from
   // another frame or the `element_` has been detached from the DOM or the focus
   // was moved otherwise.
@@ -668,17 +667,17 @@ void AutofillAgent::ApplyAutofillAction(
 
   ClearPreviewedForm();
 
-  if (action_persistence == mojom::AutofillActionPersistence::kPreview) {
+  if (action_persistence == mojom::ActionPersistence::kPreview) {
     query_node_autofill_state_ = last_queried_element_.GetAutofillState();
-    previewed_elements_ = form_util::ApplyAutofillAction(
+    previewed_elements_ = form_util::ApplyFormAction(
         form, last_queried_element_, action_type, action_persistence);
   } else {
     was_last_action_fill_ = true;
 
     query_node_autofill_state_ = last_queried_element_.GetAutofillState();
     bool filled_some_fields =
-        !form_util::ApplyAutofillAction(form, last_queried_element_,
-                                        action_type, action_persistence)
+        !form_util::ApplyFormAction(form, last_queried_element_, action_type,
+                                    action_persistence)
              .empty();
 
     if (!last_queried_element_.Form().IsNull()) {
@@ -694,7 +693,7 @@ void AutofillAgent::ApplyAutofillAction(
       autofill_driver->DidFillAutofillFormData(form,
                                                AutofillTickClock::NowTicks());
     }
-    if (action_type == mojom::AutofillActionType::kFill) {
+    if (action_type == mojom::ActionType::kFill) {
       TriggerRefillIfNeeded(form);
     }
     SendPotentiallySubmittedFormToBrowser();
@@ -761,44 +760,42 @@ void AutofillAgent::TriggerSuggestions(
   }
 }
 
-void AutofillAgent::FillFieldWithValue(FieldRendererId field_id,
-                                       const std::u16string& value) {
+void AutofillAgent::ApplyFieldAction(
+    mojom::ActionPersistence action_persistence,
+    FieldRendererId field_id,
+    const std::u16string& value) {
   // TODO(crbug.com/1427131): Look up `field_id` rather than using
   // `last_queried_element_` once
   // blink::features::kAutofillUseDomNodeIdForRendererId is enabled.
   if (!last_queried_element_.IsNull() &&
       field_id == form_util::GetFieldRendererId(last_queried_element_) &&
       form_util::IsTextAreaElementOrTextInput(last_queried_element_)) {
+    DCHECK(MaybeWasOwnedByFrame(last_queried_element_, unsafe_render_frame()));
     ClearPreviewedForm();
-    DoFillFieldWithValue(value, last_queried_element_,
-                         WebAutofillState::kAutofilled);
-  } else if (WebElement content_editable =
-                 form_util::FindContentEditableByRendererId(field_id);
-             !content_editable.IsNull()) {
-    // TODO(crbug.com/1490373): Fill the contenteditable.
-    DVLOG(1) << "Filling contenteditable with value '" << value
-             << "' isn't implemented yet";
-  }
-}
-
-void AutofillAgent::PreviewFieldWithValue(FieldRendererId field_id,
-                                          const std::u16string& value) {
-  if (last_queried_element_.IsNull() ||
-      field_id != form_util::GetFieldRendererId(last_queried_element_)) {
+    switch (action_persistence) {
+      case mojom::ActionPersistence::kPreview:
+        query_node_autofill_state_ = last_queried_element_.GetAutofillState();
+        last_queried_element_.SetSuggestedValue(
+            blink::WebString::FromUTF16(value));
+        form_util::PreviewSuggestion(
+            last_queried_element_.SuggestedValue().Utf16(),
+            last_queried_element_.Value().Utf16(), &last_queried_element_);
+        previewed_elements_.push_back(last_queried_element_);
+        break;
+      case mojom::ActionPersistence::kFill:
+        DoFillFieldWithValue(value, last_queried_element_,
+                             WebAutofillState::kAutofilled);
+        break;
+    }
     return;
   }
 
-  WebInputElement input_element =
-      last_queried_element_.DynamicTo<WebInputElement>();
-  if (!input_element.IsNull()) {
-    DCHECK(MaybeWasOwnedByFrame(input_element, unsafe_render_frame()));
-    ClearPreviewedForm();
-
-    query_node_autofill_state_ = last_queried_element_.GetAutofillState();
-    input_element.SetSuggestedValue(blink::WebString::FromUTF16(value));
-    form_util::PreviewSuggestion(input_element.SuggestedValue().Utf16(),
-                                 input_element.Value().Utf16(), &input_element);
-    previewed_elements_.push_back(input_element);
+  if (WebElement content_editable =
+          form_util::FindContentEditableByRendererId(field_id);
+      !content_editable.IsNull()) {
+    // TODO(crbug.com/1490373): Preview and fill the contenteditable.
+    DVLOG(1) << "Previewing and filling contenteditable with value '" << value
+             << "' isn't implemented yet";
   }
 }
 

@@ -179,7 +179,7 @@ TEST_P(CardMetadataFormEventMetricsTest, LogSelectedMetrics) {
   autofill_manager().DidShowSuggestions(
       /*has_autofill_suggestions=*/true, form(), form().fields.back());
   autofill_manager().FillOrPreviewForm(
-      mojom::AutofillActionPersistence::kFill, form(), form().fields.back(),
+      mojom::ActionPersistence::kFill, form(), form().fields.back(),
       Suggestion::BackendId(kCardGuid),
       {.trigger_source = AutofillTriggerSource::kPopup});
 
@@ -225,7 +225,7 @@ TEST_P(CardMetadataFormEventMetricsTest, LogSelectedMetrics) {
 
   // Select the suggestion again.
   autofill_manager().FillOrPreviewForm(
-      mojom::AutofillActionPersistence::kFill, form(), form().fields.back(),
+      mojom::ActionPersistence::kFill, form(), form().fields.back(),
       Suggestion::BackendId(kCardGuid),
       {.trigger_source = AutofillTriggerSource::kPopup});
 
@@ -255,7 +255,7 @@ TEST_P(CardMetadataFormEventMetricsTest, LogFilledMetrics) {
 
   // Simulate filling the card.
   autofill_manager().FillOrPreviewForm(
-      mojom::AutofillActionPersistence::kFill, form(), form().fields.back(),
+      mojom::ActionPersistence::kFill, form(), form().fields.back(),
       Suggestion::BackendId(kCardGuid),
       {.trigger_source = AutofillTriggerSource::kPopup});
   test_api(autofill_manager())
@@ -331,7 +331,7 @@ TEST_P(CardMetadataFormEventMetricsTest, LogSubmitMetrics) {
   // Simulate filling and then submitting the card.
   autofill_manager().OnAskForValuesToFillTest(form(), form().fields.back());
   autofill_manager().FillOrPreviewForm(
-      mojom::AutofillActionPersistence::kFill, form(), form().fields.back(),
+      mojom::ActionPersistence::kFill, form(), form().fields.back(),
       Suggestion::BackendId(kCardGuid),
       {.trigger_source = AutofillTriggerSource::kPopup});
   test_api(autofill_manager())
@@ -461,7 +461,7 @@ TEST_P(CardMetadataLatencyMetricsTest, LogMetrics) {
       /*has_autofill_suggestions=*/true, form(), form().fields.back());
   test_clock.SetNowTicks(now + base::Seconds(2));
   autofill_manager().FillOrPreviewForm(
-      mojom::AutofillActionPersistence::kFill, form(), form().fields.front(),
+      mojom::ActionPersistence::kFill, form(), form().fields.front(),
       Suggestion::BackendId(kTestMaskedCardId),
       {.trigger_source = AutofillTriggerSource::kPopup});
 

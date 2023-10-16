@@ -58,7 +58,7 @@ class AutofillHandler : public protocol::Autofill::Backend,
   void OnFillOrPreviewDataModelForm(
       autofill::AutofillManager& manager,
       autofill::FormGlobalId form,
-      autofill::mojom::AutofillActionPersistence action_persistence,
+      autofill::mojom::ActionPersistence action_persistence,
       base::span<const autofill::FormFieldData* const> filled_fields,
       absl::variant<const autofill::AutofillProfile*,
                     const autofill::CreditCard*> profile_or_credit_card)

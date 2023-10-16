@@ -90,7 +90,7 @@ class AndroidAutofillManager : public AutofillManager,
   // |triggered_origin| is the origin of the field from which the autofill is
   // triggered; this affects the security policy for cross-frame fills. See
   // AutofillDriver::FillOrPreviewForm() for further details.
-  void FillOrPreviewForm(mojom::AutofillActionPersistence action_persistence,
+  void FillOrPreviewForm(mojom::ActionPersistence action_persistence,
                          const FormData& form,
                          const FieldTypeGroup field_type_group,
                          const url::Origin& triggered_origin);

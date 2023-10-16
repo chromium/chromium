@@ -364,7 +364,7 @@ class AutofillManagerSingleEventWaiter : public AutofillManager::Observer {
   void OnFillOrPreviewDataModelForm(
       AutofillManager& manager,
       autofill::FormGlobalId form,
-      mojom::AutofillActionPersistence action_persistence,
+      mojom::ActionPersistence action_persistence,
       base::span<const FormFieldData* const> filled_fields,
       absl::variant<const AutofillProfile*, const CreditCard*>
           profile_or_credit_card) override {
@@ -409,7 +409,7 @@ class AutofillManagerSingleEventWaiter : public AutofillManager::Observer {
 //   base::OnceCallback<bool()> preview_waiter = WaitForEvent(
 //      *autofill_manager,
 //      &AutofillManager::Observer::OnFillOrPreviewDataModelForm,
-//      testing::Args<2>(mojom::AutofillActionPersistence::kPreview));
+//      testing::Args<2>(mojom::ActionPersistence::kPreview));
 //   ...
 //   EXPECT_TRUE(std::move(preview_waiter).Run());
 template <typename Matcher, typename R, typename... Args>

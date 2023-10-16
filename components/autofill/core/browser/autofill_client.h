@@ -865,10 +865,9 @@ class AutofillClient : public RiskDataLoader {
   virtual bool IsPasswordManagerEnabled() = 0;
 
   // Inform the client that the form has been filled.
-  virtual void DidFillOrPreviewForm(
-      mojom::AutofillActionPersistence action_persistence,
-      AutofillTriggerSource trigger_source,
-      bool is_refill) = 0;
+  virtual void DidFillOrPreviewForm(mojom::ActionPersistence action_persistence,
+                                    AutofillTriggerSource trigger_source,
+                                    bool is_refill) = 0;
 
   // Inform the client that the field has been filled.
   virtual void DidFillOrPreviewField(

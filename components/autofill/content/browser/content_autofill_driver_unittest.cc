@@ -125,7 +125,7 @@ class FakeAutofillAgent : public mojom::AutofillAgent {
   }
 
   // Returns data received via mojo interface method
-  // mojom::AutofillAgent::FillFieldWithValue().
+  // mojom::AutofillAgent::ApplyFieldAction(kFill).
   absl::optional<std::u16string> GetString16FillFieldWithValue(
       const FieldGlobalId& field) {
     if (value_renderer_id_ != field.renderer_id) {
@@ -135,7 +135,7 @@ class FakeAutofillAgent : public mojom::AutofillAgent {
   }
 
   // Returns data received via mojo interface method
-  // mojom::AutofillAgent::PreviewFieldWithValue().
+  // mojom::AutofillAgent::ApplyFieldAction(kPreview).
   absl::optional<std::u16string> GetString16PreviewFieldWithValue(
       const FieldGlobalId field) {
     if (value_renderer_id_ != field.renderer_id) {
@@ -174,13 +174,31 @@ class FakeAutofillAgent : public mojom::AutofillAgent {
   // mojom::AutofillAgent:
   void TriggerFormExtraction() override {}
 
-  void ApplyAutofillAction(mojom::AutofillActionType action_type,
-                           mojom::AutofillActionPersistence action_persistence,
-                           const FormData& form) override {
-    if (action_persistence == mojom::AutofillActionPersistence::kPreview) {
-      preview_form_form_ = form;
-    } else {
-      fill_form_form_ = form;
+  void ApplyFormAction(mojom::ActionType action_type,
+                       mojom::ActionPersistence action_persistence,
+                       const FormData& form) override {
+    switch (action_persistence) {
+      case mojom::ActionPersistence::kPreview:
+        preview_form_form_ = form;
+        break;
+      case mojom::ActionPersistence::kFill:
+        fill_form_form_ = form;
+        break;
+    }
+    CallDone();
+  }
+
+  void ApplyFieldAction(mojom::ActionPersistence action_persistence,
+                        FieldRendererId field,
+                        const std::u16string& value) override {
+    value_renderer_id_ = field;
+    switch (action_persistence) {
+      case mojom::ActionPersistence::kPreview:
+        value_preview_field_ = value;
+        break;
+      case mojom::ActionPersistence::kFill:
+        value_fill_field_ = value;
+        break;
     }
     CallDone();
   }
@@ -206,20 +224,6 @@ class FakeAutofillAgent : public mojom::AutofillAgent {
       AutofillSuggestionTriggerSource trigger_source) override {
     value_renderer_id_ = field;
     suggestion_trigger_source_ = trigger_source;
-    CallDone();
-  }
-
-  void FillFieldWithValue(FieldRendererId field,
-                          const std::u16string& value) override {
-    value_renderer_id_ = field;
-    value_fill_field_ = value;
-    CallDone();
-  }
-
-  void PreviewFieldWithValue(FieldRendererId field,
-                             const std::u16string& value) override {
-    value_renderer_id_ = field;
-    value_preview_field_ = value;
     CallDone();
   }
 
@@ -274,12 +278,11 @@ class FakeAutofillAgent : public mojom::AutofillAgent {
   bool called_clear_previewed_form_ = false;
   // Records the trigger source received from a TriggerSuggestions() call.
   absl::optional<AutofillSuggestionTriggerSource> suggestion_trigger_source_;
-  // Records the ID received from FillFieldWithValue(), PreviewFieldWithValue(),
+  // Records the ID received from ApplyFieldAction(),
   // SetSuggestionAvailability(), or AcceptDataListSuggestion().
   absl::optional<FieldRendererId> value_renderer_id_;
-  // Records string received from FillFieldWithValue() call.
+  // Records string received from ApplyFieldAction() call.
   absl::optional<std::u16string> value_fill_field_;
-  // Records string received from PreviewFieldWithValue() call.
   absl::optional<std::u16string> value_preview_field_;
   // Records string received from AcceptDataListSuggestion() call.
   absl::optional<std::u16string> value_accept_data_;
@@ -583,8 +586,8 @@ TEST_F(ContentAutofillDriverTest, FormDataSentToRenderer_FillForm) {
   }
   base::RunLoop run_loop;
   fake_agent_.SetQuitLoopClosure(run_loop.QuitClosure());
-  driver().browser_events().ApplyAutofillAction(
-      mojom::AutofillActionType::kFill, mojom::AutofillActionPersistence::kFill,
+  driver().browser_events().ApplyFormAction(
+      mojom::ActionType::kFill, mojom::ActionPersistence::kFill,
       input_form_data, triggered_origin, {});
 
   run_loop.RunUntilIdle();
@@ -609,10 +612,9 @@ TEST_F(ContentAutofillDriverTest, FormDataSentToRenderer_PreviewForm) {
                                    &FormFieldData::value));
   base::RunLoop run_loop;
   fake_agent_.SetQuitLoopClosure(run_loop.QuitClosure());
-  driver().browser_events().ApplyAutofillAction(
-      mojom::AutofillActionType::kFill,
-      mojom::AutofillActionPersistence::kPreview, input_form_data,
-      triggered_origin, {});
+  driver().browser_events().ApplyFormAction(
+      mojom::ActionType::kFill, mojom::ActionPersistence::kPreview,
+      input_form_data, triggered_origin, {});
 
   run_loop.RunUntilIdle();
 
@@ -706,27 +708,27 @@ TEST_F(ContentAutofillDriverTest, TriggerSuggestions) {
   EXPECT_EQ(input_source, fake_agent_.GetCalledTriggerSuggestionsSource(field));
 }
 
-TEST_F(ContentAutofillDriverTest, FillFieldWithValue) {
+TEST_F(ContentAutofillDriverTest, ApplyFieldAction_Fill) {
   FieldGlobalId field = SeeAddressFormData().fields.front().global_id();
   std::u16string input_value(u"barqux");
 
   base::RunLoop run_loop;
   fake_agent_.SetQuitLoopClosure(run_loop.QuitClosure());
-  driver().browser_events().RendererShouldFillFieldWithValue(field,
-                                                             input_value);
+  driver().browser_events().ApplyFieldAction(mojom::ActionPersistence::kFill,
+                                             field, input_value);
   run_loop.RunUntilIdle();
 
   EXPECT_EQ(input_value, fake_agent_.GetString16FillFieldWithValue(field));
 }
 
-TEST_F(ContentAutofillDriverTest, PreviewFieldWithValue) {
+TEST_F(ContentAutofillDriverTest, ApplyFieldAction_Preview) {
   FieldGlobalId field = SeeAddressFormData().fields.front().global_id();
   std::u16string input_value(u"barqux");
 
   base::RunLoop run_loop;
   fake_agent_.SetQuitLoopClosure(run_loop.QuitClosure());
-  driver().browser_events().RendererShouldPreviewFieldWithValue(field,
-                                                                input_value);
+  driver().browser_events().ApplyFieldAction(mojom::ActionPersistence::kPreview,
+                                             field, input_value);
   run_loop.RunUntilIdle();
 
   EXPECT_EQ(input_value, fake_agent_.GetString16PreviewFieldWithValue(field));

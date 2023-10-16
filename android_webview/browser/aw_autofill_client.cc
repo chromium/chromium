@@ -343,7 +343,7 @@ bool AwAutofillClient::IsPasswordManagerEnabled() {
 }
 
 void AwAutofillClient::DidFillOrPreviewForm(
-    autofill::mojom::AutofillActionPersistence action_persistence,
+    autofill::mojom::ActionPersistence action_persistence,
     autofill::AutofillTriggerSource trigger_source,
     bool is_refill) {}
 

@@ -100,7 +100,7 @@ class BrowserAutofillManagerTestApi : public AutofillManagerTestApi {
   }
 
   void FillOrPreviewDataModelForm(
-      mojom::AutofillActionPersistence action_persistence,
+      mojom::ActionPersistence action_persistence,
       const FormData& form,
       const FormFieldData& field,
       absl::variant<const AutofillProfile*, const CreditCard*>

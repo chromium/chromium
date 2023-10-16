@@ -110,7 +110,7 @@ class MockAutofillManagerObserver : public AutofillManager::Observer {
               OnFillOrPreviewDataModelForm,
               (AutofillManager&,
                FormGlobalId,
-               mojom::AutofillActionPersistence action_persistence,
+               mojom::ActionPersistence action_persistence,
                (base::span<const FormFieldData* const>),
                (absl::variant<const AutofillProfile*, const CreditCard*>
                     profile_or_credit_card)),

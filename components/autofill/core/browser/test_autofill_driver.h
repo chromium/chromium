@@ -62,6 +62,9 @@ class TestAutofillDriverTemplate : public T {
   bool HasSharedAutofillPermission() const override { return shared_autofill_; }
   bool CanShowAutofillUi() const override { return true; }
   bool RendererIsAvailable() override { return true; }
+  void ApplyFieldAction(mojom::ActionPersistence action_persistence,
+                        const FieldGlobalId& field,
+                        const std::u16string& value) override {}
   void HandleParsedForms(const std::vector<FormData>& forms) override {}
   void SendAutofillTypePredictionsToRenderer(
       const std::vector<FormStructure*>& forms) override {}
@@ -73,11 +76,6 @@ class TestAutofillDriverTemplate : public T {
   void RendererShouldTriggerSuggestions(
       const FieldGlobalId& field_id,
       AutofillSuggestionTriggerSource trigger_source) override {}
-  void RendererShouldFillFieldWithValue(const FieldGlobalId& field,
-                                        const std::u16string& value) override {}
-  void RendererShouldPreviewFieldWithValue(
-      const FieldGlobalId& field,
-      const std::u16string& value) override {}
   void RendererShouldSetSuggestionAvailability(
       const FieldGlobalId& field,
       const mojom::AutofillState state) override {}
@@ -95,14 +93,14 @@ class TestAutofillDriverTemplate : public T {
 
   // The return value contains the members (field, type) of `field_type_map` for
   // which `field_type_map_filter_.Run(triggered_origin, field, type)` is true.
-  std::vector<FieldGlobalId> ApplyAutofillAction(
-      mojom::AutofillActionType action_type,
-      mojom::AutofillActionPersistence action_persistence,
+  std::vector<FieldGlobalId> ApplyFormAction(
+      mojom::ActionType action_type,
+      mojom::ActionPersistence action_persistence,
       const FormData& form_data,
       const url::Origin& triggered_origin,
       const base::flat_map<FieldGlobalId, ServerFieldType>& field_type_map)
       override {
-    if (action_type == mojom::AutofillActionType::kUndo) {
+    if (action_type == mojom::ActionType::kUndo) {
       return {};
     }
     std::vector<FieldGlobalId> result;

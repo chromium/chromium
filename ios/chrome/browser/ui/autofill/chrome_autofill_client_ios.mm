@@ -481,7 +481,7 @@ bool ChromeAutofillClientIOS::IsPasswordManagerEnabled() {
 }
 
 void ChromeAutofillClientIOS::DidFillOrPreviewForm(
-    mojom::AutofillActionPersistence action_persistence,
+    mojom::ActionPersistence action_persistence,
     AutofillTriggerSource trigger_source,
     bool is_refill) {}
 

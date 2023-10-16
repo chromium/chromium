@@ -162,7 +162,7 @@ class AwAutofillClient : public autofill::ContentAutofillClient {
   bool IsAutocompleteEnabled() const override;
   bool IsPasswordManagerEnabled() override;
   void DidFillOrPreviewForm(
-      autofill::mojom::AutofillActionPersistence action_persistence,
+      autofill::mojom::ActionPersistence action_persistence,
       autofill::AutofillTriggerSource trigger_source,
       bool is_refill) override;
   void DidFillOrPreviewField(const std::u16string& autofilled_value,

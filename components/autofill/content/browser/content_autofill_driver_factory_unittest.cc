@@ -71,10 +71,16 @@ class MockAutofillAgent : public mojom::AutofillAgent {
               (base::OnceCallback<void(bool)>),
               (override));
   MOCK_METHOD(void,
-              ApplyAutofillAction,
-              (mojom::AutofillActionType action_type,
-               mojom::AutofillActionPersistence action_persistence,
+              ApplyFormAction,
+              (mojom::ActionType action_type,
+               mojom::ActionPersistence action_persistence,
                const FormData& form),
+              (override));
+  MOCK_METHOD(void,
+              ApplyFieldAction,
+              (mojom::ActionPersistence action_persistence,
+               FieldRendererId field,
+               const std::u16string& value),
               (override));
   MOCK_METHOD(void,
               FieldTypePredictionsAvailable,
@@ -86,14 +92,6 @@ class MockAutofillAgent : public mojom::AutofillAgent {
               TriggerSuggestions,
               (FieldRendererId field_id,
                AutofillSuggestionTriggerSource trigger_source),
-              (override));
-  MOCK_METHOD(void,
-              FillFieldWithValue,
-              (FieldRendererId field, const std::u16string& value),
-              (override));
-  MOCK_METHOD(void,
-              PreviewFieldWithValue,
-              (FieldRendererId field, const ::std::u16string& value),
               (override));
   MOCK_METHOD(void,
               SetSuggestionAvailability,

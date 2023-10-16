@@ -158,7 +158,7 @@ class AutofillManager
     virtual void OnFillOrPreviewDataModelForm(
         AutofillManager& manager,
         FormGlobalId form,
-        mojom::AutofillActionPersistence action_persistence,
+        mojom::ActionPersistence action_persistence,
         base::span<const FormFieldData* const> filled_fields,
         absl::variant<const AutofillProfile*, const CreditCard*>
             profile_or_credit_card) {}

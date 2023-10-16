@@ -532,10 +532,10 @@ std::u16string GetCreditCardNumberForInput(
     const CreditCard& credit_card,
     const AutofillField& field,
     const std::string& app_locale,
-    mojom::AutofillActionPersistence action_persistence) {
+    mojom::ActionPersistence action_persistence) {
   std::u16string value;
 
-  if (action_persistence == mojom::AutofillActionPersistence::kPreview) {
+  if (action_persistence == mojom::ActionPersistence::kPreview) {
     // A single field is detected when the offset begins at 0 and the field's
     // max_length can hold the entire obfuscated credit card number.
     bool is_single_field =
@@ -599,7 +599,7 @@ std::u16string GetVirtualCardNumberForPreviewInput(
 // Returns the credit card CVC for Preview or Fill.
 std::u16string GetCreditCardVerificationCodeForInput(
     const CreditCard& credit_card,
-    mojom::AutofillActionPersistence action_persistence,
+    mojom::ActionPersistence action_persistence,
     const std::u16string& cvc) {
   const std::u16string cvc_candidate =
       credit_card.cvc().empty() ? cvc : credit_card.cvc();
@@ -608,10 +608,10 @@ std::u16string GetCreditCardVerificationCodeForInput(
     return u"";
   }
   switch (action_persistence) {
-    case mojom::AutofillActionPersistence::kFill:
+    case mojom::ActionPersistence::kFill:
       return cvc_candidate;
     // For preview, we will mask CVC with dots.
-    case mojom::AutofillActionPersistence::kPreview:
+    case mojom::ActionPersistence::kPreview:
       return CreditCard::GetMidlineEllipsisDots(cvc_candidate.length());
   }
 }
@@ -900,7 +900,7 @@ std::u16string GetValueForCreditCard(
     const CreditCard& credit_card,
     const std::u16string& cvc,
     const std::string& app_locale,
-    mojom::AutofillActionPersistence action_persistence,
+    mojom::ActionPersistence action_persistence,
     const AutofillField& field,
     std::string* failure_to_fill) {
   ServerFieldType storable_type = field.Type().GetStorableType();
@@ -1014,7 +1014,7 @@ std::u16string FieldFiller::GetValueForFilling(
         profile_or_credit_card,
     FormFieldData* field_data,
     const std::u16string& cvc,
-    mojom::AutofillActionPersistence action_persistence,
+    mojom::ActionPersistence action_persistence,
     std::string* failure_to_fill) {
   std::u16string value;
   DCHECK(field_data);
@@ -1024,7 +1024,7 @@ std::u16string FieldFiller::GetValueForFilling(
         absl::get<const CreditCard*>(profile_or_credit_card);
 
     if (credit_card->record_type() == CreditCard::RecordType::kVirtualCard &&
-        action_persistence == mojom::AutofillActionPersistence::kPreview) {
+        action_persistence == mojom::ActionPersistence::kPreview) {
       value = GetValueForVirtualCardPreview(*credit_card, app_locale_, field,
                                             failure_to_fill);
     } else {
@@ -1054,7 +1054,7 @@ bool FieldFiller::FillFormField(
     const std::map<FieldGlobalId, std::u16string>& forced_fill_values,
     FormFieldData* field_data,
     const std::u16string& cvc,
-    mojom::AutofillActionPersistence action_persistence,
+    mojom::ActionPersistence action_persistence,
     std::string* failure_to_fill) {
   const AutofillType type = field.Type();
 

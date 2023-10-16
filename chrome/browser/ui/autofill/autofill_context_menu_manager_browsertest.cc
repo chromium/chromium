@@ -60,10 +60,6 @@ class MockAutofillDriver : public ContentAutofillDriver {
 
   // Mock methods to enable testability.
   MOCK_METHOD(void,
-              RendererShouldFillFieldWithValue,
-              (const FieldGlobalId& field_id, const std::u16string& value),
-              (override));
-  MOCK_METHOD(void,
               OnContextMenuShownInField,
               (const FormGlobalId& form_global_id,
                const FieldGlobalId& field_global_id),

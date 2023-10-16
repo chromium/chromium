@@ -277,7 +277,7 @@ class MockAutofillClient : public autofill::AutofillClient {
   MOCK_METHOD(bool, IsPasswordManagerEnabled, (), (override));
   MOCK_METHOD(void,
               DidFillOrPreviewForm,
-              (autofill::mojom::AutofillActionPersistence action_persistence,
+              (autofill::mojom::ActionPersistence action_persistence,
                autofill::AutofillTriggerSource trigger_source,
                bool is_refill),
               (override));

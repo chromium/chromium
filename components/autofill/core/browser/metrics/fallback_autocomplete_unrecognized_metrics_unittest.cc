@@ -72,7 +72,7 @@ TEST_F(AutocompleteUnrecognizedFallbackEventLoggerTest,
   ShowSuggestions(form);
   // Fill the suggestion.
   autofill_manager().FillOrPreviewForm(
-      mojom::AutofillActionPersistence::kFill, form, form.fields[0],
+      mojom::ActionPersistence::kFill, form, form.fields[0],
       Suggestion::BackendId(kTestProfileId),
       {.trigger_source = AutofillTriggerSource::kPopup});
 

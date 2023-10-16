@@ -136,12 +136,11 @@ class BrowserAutofillManager : public AutofillManager,
 
   // Called from our external delegate so they cannot be private.
   // TODO(crbug.com/1330108): Clean up the API.
-  virtual void FillOrPreviewForm(
-      mojom::AutofillActionPersistence action_persistence,
-      const FormData& form,
-      const FormFieldData& field,
-      Suggestion::BackendId backend_id,
-      const AutofillTriggerDetails& trigger_details);
+  virtual void FillOrPreviewForm(mojom::ActionPersistence action_persistence,
+                                 const FormData& form,
+                                 const FormFieldData& field,
+                                 Suggestion::BackendId backend_id,
+                                 const AutofillTriggerDetails& trigger_details);
   void FillCreditCardFormImpl(
       const FormData& form,
       const FormFieldData& field,
@@ -151,7 +150,7 @@ class BrowserAutofillManager : public AutofillManager,
   // Reverts the last autofill operation on `form` that affected
   // `trigger_field`, virtual for testing. `renderer_action` denotes whether
   // this is an actual filling or a preview operation on the renderer side.
-  virtual void UndoAutofill(mojom::AutofillActionPersistence action_persistence,
+  virtual void UndoAutofill(mojom::ActionPersistence action_persistence,
                             FormData form,
                             const FormFieldData& trigger_field);
   // Virtual for testing
@@ -164,7 +163,7 @@ class BrowserAutofillManager : public AutofillManager,
   // Asks for authentication via CVC before filling with server card data.
   // TODO(crbug.com/1330108): Clean up the API.
   virtual void FillOrPreviewCreditCardForm(
-      mojom::AutofillActionPersistence action_persistence,
+      mojom::ActionPersistence action_persistence,
       const FormData& form,
       const FormFieldData& field,
       const CreditCard* credit_card,
@@ -181,7 +180,7 @@ class BrowserAutofillManager : public AutofillManager,
   // |guid| and fills the information into the form.
   // TODO(crbug.com/1330108): Clean up the API.
   virtual void FillOrPreviewVirtualCardInformation(
-      mojom::AutofillActionPersistence action_persistence,
+      mojom::ActionPersistence action_persistence,
       const std::string& guid,
       const FormData& form,
       const FormFieldData& field,
@@ -506,17 +505,16 @@ class BrowserAutofillManager : public AutofillManager,
   // Fills or previews the profile form.
   // Assumes the form and field are valid.
   // TODO(crbug.com/1330108): Clean up the API.
-  void FillOrPreviewProfileForm(
-      mojom::AutofillActionPersistence action_persistence,
-      const FormData& form,
-      const FormFieldData& field,
-      const AutofillProfile& profile,
-      const AutofillTriggerDetails& trigger_details);
+  void FillOrPreviewProfileForm(mojom::ActionPersistence action_persistence,
+                                const FormData& form,
+                                const FormFieldData& field,
+                                const AutofillProfile& profile,
+                                const AutofillTriggerDetails& trigger_details);
 
   // Fills or previews |data_model| in the |form|.
   // TODO(crbug.com/1330108): Clean up the API.
   void FillOrPreviewDataModelForm(
-      mojom::AutofillActionPersistence action_persistence,
+      mojom::ActionPersistence action_persistence,
       const FormData& form,
       const FormFieldData& field,
       absl::variant<const AutofillProfile*, const CreditCard*>
@@ -534,7 +532,7 @@ class BrowserAutofillManager : public AutofillManager,
   // the field as a substring, Autofill would override the filled value in that
   // case.
   [[nodiscard]] bool ShouldPreventAutofillFromOverridingPrefilledField(
-      mojom::AutofillActionPersistence action_persistence,
+      mojom::ActionPersistence action_persistence,
       AutofillField* cached_field,
       FormFieldData* field_data,
       bool is_initiating_field,
@@ -632,7 +630,7 @@ class BrowserAutofillManager : public AutofillManager,
       bool should_notify,
       const std::u16string& cvc,
       uint32_t profile_form_bitmask,
-      mojom::AutofillActionPersistence action_persistence,
+      mojom::ActionPersistence action_persistence,
       std::string* failure_to_fill);
 
   void SetFillingContext(const FormStructure& form,

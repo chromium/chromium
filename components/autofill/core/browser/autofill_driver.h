@@ -135,12 +135,17 @@ class AutofillDriver {
   // operation currently being filled or undone.
   //
   // This method is a no-op if the renderer is not currently available.
-  virtual std::vector<FieldGlobalId> ApplyAutofillAction(
-      mojom::AutofillActionType action_type,
-      mojom::AutofillActionPersistence action_persistence,
+  virtual std::vector<FieldGlobalId> ApplyFormAction(
+      mojom::ActionType action_type,
+      mojom::ActionPersistence action_persistence,
       const FormData& form,
       const url::Origin& triggered_origin,
       const base::flat_map<FieldGlobalId, ServerFieldType>& field_type_map) = 0;
+
+  // Tells the renderer to set the node text.
+  virtual void ApplyFieldAction(mojom::ActionPersistence action_persistence,
+                                const FieldGlobalId& field_id,
+                                const std::u16string& value) = 0;
 
   // Forwards parsed |forms| to the embedder.
   virtual void HandleParsedForms(const std::vector<FormData>& forms) = 0;
@@ -165,16 +170,6 @@ class AutofillDriver {
   virtual void RendererShouldTriggerSuggestions(
       const FieldGlobalId& field_id,
       AutofillSuggestionTriggerSource trigger_source) = 0;
-
-  // Tells the renderer to set the node text.
-  virtual void RendererShouldFillFieldWithValue(
-      const FieldGlobalId& field_id,
-      const std::u16string& value) = 0;
-
-  // Tells the renderer to preview the node with suggested text.
-  virtual void RendererShouldPreviewFieldWithValue(
-      const FieldGlobalId& field_id,
-      const std::u16string& value) = 0;
 
   // Tells the renderer to set the currently focused node's corresponding
   // accessibility node's autofill state to |state|.

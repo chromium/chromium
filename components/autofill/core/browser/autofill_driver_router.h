@@ -246,17 +246,26 @@ class AutofillDriverRouter {
 
   // Events called by the browser, passed to the renderer:
   // Keep in alphabetic order.
-  std::vector<FieldGlobalId> ApplyAutofillAction(
+  std::vector<FieldGlobalId> ApplyFormAction(
       AutofillDriver* source,
-      mojom::AutofillActionType action_type,
-      mojom::AutofillActionPersistence action_persistence,
+      mojom::ActionType action_type,
+      mojom::ActionPersistence action_persistence,
       const FormData& data,
       const url::Origin& triggered_origin,
       const base::flat_map<FieldGlobalId, ServerFieldType>& field_type_map,
       void (*callback)(AutofillDriver* target,
-                       mojom::AutofillActionType action_type,
-                       mojom::AutofillActionPersistence action_persistence,
+                       mojom::ActionType action_type,
+                       mojom::ActionPersistence action_persistence,
                        const FormData& form));
+  void ApplyFieldAction(
+      AutofillDriver* source,
+      mojom::ActionPersistence action_persistence,
+      const FieldGlobalId& field,
+      const std::u16string& value,
+      void (*callback)(AutofillDriver* target,
+                       mojom::ActionPersistence action_persistence,
+                       const FieldRendererId& field,
+                       const std::u16string& value));
   void RendererShouldAcceptDataListSuggestion(
       AutofillDriver* source,
       const FieldGlobalId& field,
@@ -270,20 +279,6 @@ class AutofillDriverRouter {
   void RendererShouldClearPreviewedForm(
       AutofillDriver* source,
       void (*callback)(AutofillDriver* target));
-  void RendererShouldFillFieldWithValue(
-      AutofillDriver* source,
-      const FieldGlobalId& field,
-      const std::u16string& value,
-      void (*callback)(AutofillDriver* target,
-                       const FieldRendererId& field,
-                       const std::u16string& value));
-  void RendererShouldPreviewFieldWithValue(
-      AutofillDriver* source,
-      const FieldGlobalId& field,
-      const std::u16string& value,
-      void (*callback)(AutofillDriver* target,
-                       const FieldRendererId& field,
-                       const std::u16string& value));
   void RendererShouldSetSuggestionAvailability(
       AutofillDriver* source,
       const FieldGlobalId& field,

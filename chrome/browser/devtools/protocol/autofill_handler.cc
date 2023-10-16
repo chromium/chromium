@@ -223,7 +223,7 @@ void AutofillHandler::SetAddresses(
 void AutofillHandler::OnFillOrPreviewDataModelForm(
     autofill::AutofillManager& manager,
     autofill::FormGlobalId form,
-    autofill::mojom::AutofillActionPersistence action_persistence,
+    autofill::mojom::ActionPersistence action_persistence,
     base::span<const FormFieldData* const> filled_fields,
     absl::variant<const autofill::AutofillProfile*, const autofill::CreditCard*>
         profile_or_credit_card) {
@@ -233,7 +233,7 @@ void AutofillHandler::OnFillOrPreviewDataModelForm(
   }
 
   // We only care about address forms that were filled.
-  if (action_persistence != autofill::mojom::AutofillActionPersistence::kFill ||
+  if (action_persistence != autofill::mojom::ActionPersistence::kFill ||
       !absl::holds_alternative<const autofill::AutofillProfile*>(
           profile_or_credit_card)) {
     return;

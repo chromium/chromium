@@ -408,16 +408,16 @@ void AutofillDriverRouter::JavaScriptChangedAutofilledValue(
 // The reason is that browser forms may be outdated and hence refer to frames
 // that do not exist anymore.
 
-std::vector<FieldGlobalId> AutofillDriverRouter::ApplyAutofillAction(
+std::vector<FieldGlobalId> AutofillDriverRouter::ApplyFormAction(
     AutofillDriver* source,
-    mojom::AutofillActionType action_type,
-    mojom::AutofillActionPersistence action_persistence,
+    mojom::ActionType action_type,
+    mojom::ActionPersistence action_persistence,
     const FormData& data,
     const url::Origin& triggered_origin,
     const base::flat_map<FieldGlobalId, ServerFieldType>& field_type_map,
     void (*callback)(AutofillDriver* target,
-                     mojom::AutofillActionType action_type,
-                     mojom::AutofillActionPersistence action_persistence,
+                     mojom::ActionType action_type,
+                     mojom::ActionPersistence action_persistence,
                      const FormData& form)) {
   // Since Undo only affects fields that were already filled, and only sets
   // values to fields to something that already existed in it prior to the
@@ -425,7 +425,7 @@ std::vector<FieldGlobalId> AutofillDriverRouter::ApplyAutofillAction(
   // `TrustAllOrigins()`.
   internal::FormForest::RendererForms renderer_forms =
       form_forest_.GetRendererFormsOfBrowserForm(
-          data, action_type == mojom::AutofillActionType::kUndo
+          data, action_type == mojom::ActionType::kUndo
                     ? internal::FormForest::SecurityOptions::TrustAllOrigins()
                     : internal::FormForest::SecurityOptions(&triggered_origin,
                                                             &field_type_map));
@@ -435,6 +435,20 @@ std::vector<FieldGlobalId> AutofillDriverRouter::ApplyAutofillAction(
     }
   }
   return renderer_forms.safe_fields;
+}
+
+void AutofillDriverRouter::ApplyFieldAction(
+    AutofillDriver* source,
+    mojom::ActionPersistence action_persistence,
+    const FieldGlobalId& field,
+    const std::u16string& value,
+    void (*callback)(AutofillDriver* target,
+                     mojom::ActionPersistence action_persistence,
+                     const FieldRendererId& field,
+                     const std::u16string& value)) {
+  if (auto* target = DriverOfFrame(field.frame_token)) {
+    callback(target, action_persistence, field.renderer_id, value);
+  }
 }
 
 void AutofillDriverRouter::SendAutofillTypePredictionsToRenderer(
@@ -541,30 +555,6 @@ void AutofillDriverRouter::RendererShouldTriggerSuggestions(
                      AutofillSuggestionTriggerSource trigger_source)) {
   if (AutofillDriver* target = DriverOfFrame(field.frame_token)) {
     callback(target, field.renderer_id, trigger_source);
-  }
-}
-
-void AutofillDriverRouter::RendererShouldFillFieldWithValue(
-    AutofillDriver* source,
-    const FieldGlobalId& field,
-    const std::u16string& value,
-    void (*callback)(AutofillDriver* target,
-                     const FieldRendererId& field,
-                     const std::u16string& value)) {
-  if (auto* target = DriverOfFrame(field.frame_token)) {
-    callback(target, field.renderer_id, value);
-  }
-}
-
-void AutofillDriverRouter::RendererShouldPreviewFieldWithValue(
-    AutofillDriver* source,
-    const FieldGlobalId& field,
-    const std::u16string& value,
-    void (*callback)(AutofillDriver* target,
-                     const FieldRendererId& field,
-                     const std::u16string& value)) {
-  if (auto* target = DriverOfFrame(field.frame_token)) {
-    callback(target, field.renderer_id, value);
   }
 }
 

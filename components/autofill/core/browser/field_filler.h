@@ -34,7 +34,7 @@ class FieldFiller {
           profile_or_credit_card,
       FormFieldData* field_data,
       const std::u16string& cvc,
-      mojom::AutofillActionPersistence action_persistence,
+      mojom::ActionPersistence action_persistence,
       std::string* failure_to_fill);
 
   // Set |field_data|'s value to the right value in |profile_or_credit_card|.
@@ -56,7 +56,7 @@ class FieldFiller {
       const std::map<FieldGlobalId, std::u16string>& forced_fill_values,
       FormFieldData* field_data,
       const std::u16string& cvc,
-      mojom::AutofillActionPersistence action_persistence,
+      mojom::ActionPersistence action_persistence,
       std::string* failure_to_fill = nullptr);
 
   // Returns the phone number value for the given `field_max_length`. The

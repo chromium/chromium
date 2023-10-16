@@ -351,7 +351,7 @@ bool WebViewAutofillClientIOS::IsPasswordManagerEnabled() {
 }
 
 void WebViewAutofillClientIOS::DidFillOrPreviewForm(
-    mojom::AutofillActionPersistence action_persistence,
+    mojom::ActionPersistence action_persistence,
     AutofillTriggerSource trigger_source,
     bool is_refill) {}
 

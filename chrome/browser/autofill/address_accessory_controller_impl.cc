@@ -124,8 +124,9 @@ void AddressAccessoryControllerImpl::OnFillingTriggered(
       autofill::ContentAutofillDriver::GetForRenderFrameHost(rfh);
   if (!driver)
     return;
-  driver->browser_events().RendererShouldFillFieldWithValue(
-      focused_field_id, selection.display_text());
+  driver->browser_events().ApplyFieldAction(mojom::ActionPersistence::kFill,
+                                            focused_field_id,
+                                            selection.display_text());
 }
 
 void AddressAccessoryControllerImpl::OnPasskeySelected(
