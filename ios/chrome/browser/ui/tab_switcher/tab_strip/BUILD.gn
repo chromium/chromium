@@ -16,6 +16,7 @@ source_set("tab_strip") {
     ":tab_strip_ui",
     "//base",
     "//components/favicon/ios",
+    "//ios/chrome/browser/ntp:util",
     "//ios/chrome/browser/policy:policy_util",
     "//ios/chrome/browser/shared/coordinator/chrome_coordinator",
     "//ios/chrome/browser/shared/model/browser",
