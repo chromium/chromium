@@ -136,7 +136,10 @@ source_set("session_saving") {
 }
 
 source_set("session_io") {
-  visibility = [ ":unit_tests" ]
+  visibility = [
+    ":session_restoration_service_impl",
+    ":unit_tests",
+  ]
   sources = [
     "session_io_request.h",
     "session_io_request.mm",
@@ -179,14 +182,21 @@ source_set("session_restoration_service_impl") {
   ]
   deps = [
     ":restoration_observer",
+    ":serialisation",
+    ":session_constants",
+    ":session_internal_util",
+    ":session_io",
     ":session_restoration_service",
     "//base",
-    "//components/sessions:session_id",
+    "//ios/chrome/browser/sessions/proto",
+    "//ios/chrome/browser/shared/model/browser",
+    "//ios/chrome/browser/shared/model/browser_state",
     "//ios/chrome/browser/shared/model/web_state_list",
     "//ios/web/public",
     "//ios/web/public:web_state_observer",
     "//ios/web/public/js_messaging",
     "//ios/web/public/navigation",
+    "//ios/web/public/session/proto",
     "//ios/web/public/ui",
   ]
 }
@@ -200,7 +210,9 @@ source_set("session_restoration_service_factory") {
     ":session_restoration_service_impl",
     "//base",
     "//components/keyed_service/ios",
+    "//ios/chrome/browser/shared/model/browser",
     "//ios/chrome/browser/shared/model/browser_state",
+    "//ios/chrome/browser/tabs:features",
     "//ios/web/common:features",
   ]
 }
@@ -326,6 +338,7 @@ source_set("unit_tests") {
     "//ios/chrome/browser/signin",
     "//ios/chrome/browser/signin:test_support",
     "//ios/chrome/browser/tabs:features",
+    "//ios/chrome/browser/web:web_internal",
     "//ios/chrome/test:test_support",
     "//ios/web/common:features",
     "//ios/web/public/navigation",
