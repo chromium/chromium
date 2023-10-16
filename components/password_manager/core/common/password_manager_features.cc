@@ -85,14 +85,6 @@ BASE_FEATURE(kPasswordReuseDetectionEnabled,
              "PasswordReuseDetectionEnabled",
              base::FEATURE_ENABLED_BY_DEFAULT);
 
-// Enables different experiments that modify content and behavior of the
-// existing generated password suggestion dropdown.
-#if !BUILDFLAG(IS_ANDROID) && !BUILDFLAG(IS_IOS)  // Desktop
-BASE_FEATURE(kPasswordGenerationExperiment,
-             "PasswordGenerationExperiment",
-             base::FEATURE_DISABLED_BY_DEFAULT);
-#endif
-
 // Enables showing UI which allows users to easily revert their choice to
 // never save passwords on a certain website.
 BASE_FEATURE(kRecoverFromNeverSaveAndroid,

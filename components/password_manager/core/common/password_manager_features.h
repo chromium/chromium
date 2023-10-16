@@ -34,9 +34,6 @@ BASE_DECLARE_FEATURE(kPasswordIssuesInSpecificsMetadata);
 BASE_DECLARE_FEATURE(kSendPasswords);
 BASE_DECLARE_FEATURE(kPasswordChangeWellKnown);
 BASE_DECLARE_FEATURE(kPasswordReuseDetectionEnabled);
-#if !BUILDFLAG(IS_ANDROID) && !BUILDFLAG(IS_IOS)  // Desktop
-BASE_DECLARE_FEATURE(kPasswordGenerationExperiment);
-#endif
 BASE_DECLARE_FEATURE(kPasswordsImportM2);
 BASE_DECLARE_FEATURE(kRecoverFromNeverSaveAndroid);
 
@@ -54,50 +51,6 @@ BASE_DECLARE_FEATURE(kPasswordsInCredMan);
 #endif
 
 // All features parameters are in alphabetical order.
-
-#if !BUILDFLAG(IS_ANDROID) && !BUILDFLAG(IS_IOS)  // Desktop
-// This enum supports enabling specific arms of the
-// `kPasswordGenerationExperiment` (go/strong-passwords-desktop).
-// Keep the order consistent with
-// `kPasswordGenerationExperimentVariationOption` below and with
-// `kPasswordGenerationExperimentVariations` in about_flags.cc.
-enum class PasswordGenerationVariation {
-  // Adjusts the language focusing on recommendation and security messaging.
-  kTrustedAdvice = 1,
-  // Adjusts the language making the suggestion softer and more guiding.
-  kSafetyFirst = 2,
-  // Adjusts the language adding a more persuasive and reassuring tone.
-  kTrySomethingNew = 3,
-  // Adjusts the language focusing on the convenience of use.
-  kConvenience = 4,
-  // Adjusts the language of the help text pointing out the benefits.
-  kCrossDevice = 5,
-  // Adds a row for switching to editing the suggested password directly.
-  kEditPassword = 6,
-  // Adds chunking generated passwords into smaller readable parts.
-  kChunkPassword = 7,
-  // Removes strong password row and adds nudge passwords buttons instead.
-  kNudgePassword = 8,
-};
-
-inline constexpr base::FeatureParam<PasswordGenerationVariation>::Option
-    kPasswordGenerationExperimentVariationOption[] = {
-        {PasswordGenerationVariation::kTrustedAdvice, "trusted_advice"},
-        {PasswordGenerationVariation::kSafetyFirst, "safety_first"},
-        {PasswordGenerationVariation::kTrySomethingNew, "try_something_new"},
-        {PasswordGenerationVariation::kConvenience, "convenience"},
-        {PasswordGenerationVariation::kCrossDevice, "cross_device"},
-        {PasswordGenerationVariation::kEditPassword, "edit_password"},
-        {PasswordGenerationVariation::kChunkPassword, "chunk_password"},
-        {PasswordGenerationVariation::kNudgePassword, "nudge_password"},
-};
-
-inline constexpr base::FeatureParam<PasswordGenerationVariation>
-    kPasswordGenerationExperimentVariationParam{
-        &kPasswordGenerationExperiment, "password_generation_variation",
-        PasswordGenerationVariation::kTrustedAdvice,
-        &kPasswordGenerationExperimentVariationOption};
-#endif  // !BUILDFLAG(IS_ANDROID) && !BUILDFLAG(IS_IOS)
 
 #if BUILDFLAG(IS_ANDROID)
 extern const base::FeatureParam<int> kSaveUpdatePromptSyncingStringVersion;

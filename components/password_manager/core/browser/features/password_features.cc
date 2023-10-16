@@ -72,11 +72,13 @@ BASE_FEATURE(kNewConfirmationBubbleForGeneratedPasswords,
              base::FEATURE_DISABLED_BY_DEFAULT);
 #endif  // !BUILDFLAG(IS_ANDROID) && !BUILDFLAG(IS_IOS)
 
-// Enables the notification UI that is displayed to the user when visiting a
-// website for which a stored password has been shared by another user.
-BASE_FEATURE(kSharedPasswordNotificationUI,
-             "SharedPasswordNotificationUI",
+// Enables different experiments that modify content and behavior of the
+// existing generated password suggestion dropdown.
+#if !BUILDFLAG(IS_ANDROID) && !BUILDFLAG(IS_IOS)  // Desktop
+BASE_FEATURE(kPasswordGenerationExperiment,
+             "PasswordGenerationExperiment",
              base::FEATURE_DISABLED_BY_DEFAULT);
+#endif
 
 // Enables password receiving service including incoming password sharing
 // invitation sync data type.
@@ -94,6 +96,12 @@ BASE_FEATURE(kPasswordManagerEnableSenderService,
 // terminal.
 BASE_FEATURE(kPasswordManagerLogToTerminal,
              "PasswordManagerLogToTerminal",
+             base::FEATURE_DISABLED_BY_DEFAULT);
+
+// Enables the notification UI that is displayed to the user when visiting a
+// website for which a stored password has been shared by another user.
+BASE_FEATURE(kSharedPasswordNotificationUI,
+             "SharedPasswordNotificationUI",
              base::FEATURE_DISABLED_BY_DEFAULT);
 
 // Displays at least the decryptable and never saved logins in the password
