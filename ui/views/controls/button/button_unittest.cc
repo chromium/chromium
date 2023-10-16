@@ -181,7 +181,7 @@ class ButtonTest : public ViewsTestBase {
     widget_->Init(std::move(params));
     widget_->Show();
 
-    button_ = widget()->SetContentsView(std::make_unique<TestButton>(false));
+    widget()->SetContentsView(std::make_unique<TestButton>(false));
 
     event_generator_ =
         std::make_unique<ui::test::EventGenerator>(GetRootWindow(widget()));
@@ -194,20 +194,22 @@ class ButtonTest : public ViewsTestBase {
   }
 
   TestInkDrop* CreateButtonWithInkDrop(bool has_ink_drop_action_on_click) {
-    button_ = widget()->SetContentsView(
+    widget()->SetContentsView(
         std::make_unique<TestButton>(has_ink_drop_action_on_click));
-    return AddTestInkDrop(button_);
+    return AddTestInkDrop(button());
   }
 
   void CreateButtonWithObserver() {
-    button_ = widget()->SetContentsView(std::make_unique<TestButton>(false));
-    InkDrop::Get(button_)->SetMode(views::InkDropHost::InkDropMode::ON);
-    button_observer_ = std::make_unique<TestButtonObserver>(button_);
+    widget()->SetContentsView(std::make_unique<TestButton>(false));
+    InkDrop::Get(button())->SetMode(views::InkDropHost::InkDropMode::ON);
+    button_observer_ = std::make_unique<TestButtonObserver>(button());
   }
 
  protected:
   Widget* widget() { return widget_.get(); }
-  TestButton* button() { return button_; }
+  TestButton* button() {
+    return static_cast<TestButton*>(widget()->GetContentsView());
+  }
   TestButtonObserver* button_observer() { return button_observer_.get(); }
   ui::test::EventGenerator* event_generator() { return event_generator_.get(); }
   void SetDraggedView(View* dragged_view) {
@@ -216,7 +218,6 @@ class ButtonTest : public ViewsTestBase {
 
  private:
   std::unique_ptr<Widget> widget_;
-  raw_ptr<TestButton, DanglingUntriaged> button_;
   std::unique_ptr<TestButtonObserver> button_observer_;
   std::unique_ptr<ui::test::EventGenerator> event_generator_;
 };
