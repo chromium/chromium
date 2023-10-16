@@ -368,6 +368,18 @@ struct VRDisplayState {
 #endif
 };
 
+struct VRHandJointData {
+  float transform[16];
+  float radius;
+};
+
+// https://www.w3.org/TR/webxr-hand-input-1/#skeleton-joints-section
+static const uint32_t kHandTrackingNumJoints = 25;
+
+struct VRHandTrackingData {
+  VRHandJointData handJointData[kHandTrackingNumJoints];
+};
+
 struct VRControllerState {
   char controllerName[kVRControllerNameMaxLen];
 #ifdef MOZILLA_INTERNAL_API
@@ -432,6 +444,9 @@ struct VRControllerState {
 
   bool isPositionValid;
   bool isOrientationValid;
+
+  bool hasHandTrackingData;
+  VRHandTrackingData handTrackingData;
 
 #ifdef MOZILLA_INTERNAL_API
   void Clear() { memset(this, 0, sizeof(VRControllerState)); }
