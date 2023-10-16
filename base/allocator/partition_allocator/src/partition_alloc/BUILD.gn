@@ -2,8 +2,6 @@
 # Use of this source code is governed by a BSD-style license that can be
 # found in the LICENSE file.
 
-import(
-    "//base/allocator/partition_allocator/src/partition_alloc/partition_alloc.gni")
 import("//build/buildflag_header.gni")
 import("//build/config/android/config.gni")
 import("//build/config/chromecast_build.gni")
@@ -11,6 +9,7 @@ import("//build/config/chromeos/ui_mode.gni")
 import("//build/config/compiler/compiler.gni")
 import("//build/config/dcheck_always_on.gni")
 import("//build/config/logging.gni")
+import("../../partition_alloc.gni")
 
 # Add partition_alloc.gni and import it for partition_alloc configs.
 

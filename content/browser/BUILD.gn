@@ -2,8 +2,7 @@
 # Use of this source code is governed by a BSD-style license that can be
 # found in the LICENSE file.
 
-import(
-    "//base/allocator/partition_allocator/src/partition_alloc/partition_alloc.gni")
+import("//base/allocator/partition_allocator/partition_alloc.gni")
 import("//build/buildflag_header.gni")
 import("//build/config/chromeos/ui_mode.gni")
 import("//build/config/chromeos/ui_mode.gni")

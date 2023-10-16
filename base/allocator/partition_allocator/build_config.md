@@ -8,7 +8,7 @@ different settings. Broadly, these are controlled at the top-level by
 *** promo
 Most of what you'll want to know exists between
 
-* [`//base/allocator/partition_allocator/src/partition_alloc/BUILD.gn`][pa-build-gn],
+* [`//base/allocator/partition_allocator/BUILD.gn`][pa-build-gn],
 * Everything else ending in `.gn` or `.gni` in
   `//base/allocator/partition_allocator/src/partition_alloc/`,
 * [`allocator.gni`][allocator-gni],
@@ -93,7 +93,7 @@ that influence PartitionAlloc's behavior.
 
 [gn-declare-args]: https://gn.googlesource.com/gn/+/refs/heads/main/docs/reference.md#func_declare_args
 [buildflag-header]: https://source.chromium.org/chromium/chromium/src/+/main:build/buildflag_header.gni
-[pa-build-gn]: https://source.chromium.org/chromium/chromium/src/+/main:base/allocator/partition_allocator/src/partition_alloc/BUILD.gn
+[pa-build-gn]: https://source.chromium.org/chromium/chromium/src/+/main:base/allocator/partition_allocator/BUILD.gn
 [allocator-gni]: https://source.chromium.org/chromium/chromium/src/+/main:base/allocator/allocator.gni
 [base-allocator-build-gn]: https://source.chromium.org/chromium/chromium/src/+/main:base/allocator/BUILD.gn
 [base-build-gn]: https://source.chromium.org/chromium/chromium/src/+/main:base/BUILD.gn

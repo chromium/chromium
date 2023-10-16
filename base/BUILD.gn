@@ -18,8 +18,7 @@
 # huge sequence of random-looking conditionals.
 
 import("//base/allocator/allocator.gni")
-import(
-    "//base/allocator/partition_allocator/src/partition_alloc/partition_alloc.gni")
+import("//base/allocator/partition_allocator/partition_alloc.gni")
 import("//base/debug/debug.gni")
 import("//base/trace_event/tracing.gni")
 import("//build/buildflag_header.gni")
@@ -1040,7 +1039,7 @@ component("base") {
   deps = [
     ":message_pump_buildflags",
     "//base/allocator:buildflags",
-    "//base/allocator/partition_allocator/src/partition_alloc:raw_ptr",
+    "//base/allocator/partition_allocator:raw_ptr",
     "//base/third_party/double_conversion",
     "//base/third_party/dynamic_annotations",
     "//build:blink_buildflags",
@@ -1079,8 +1078,8 @@ component("base") {
     ":sanitizer_buildflags",
     ":synchronization_buildflags",
     ":tracing_buildflags",
-    "//base/allocator/partition_allocator/src/partition_alloc:buildflags",
-    "//base/allocator/partition_allocator/src/partition_alloc:raw_ptr",
+    "//base/allocator/partition_allocator:buildflags",
+    "//base/allocator/partition_allocator:raw_ptr",
     "//base/numerics:base_numerics",
     "//build:chromecast_buildflags",
     "//build:chromeos_buildflags",
@@ -1707,8 +1706,8 @@ component("base") {
     # partition_alloc code if use_partition_alloc = false because no code uses
     # partition_alloc.
     public_deps += [
-      "allocator/partition_allocator/src/partition_alloc",
-      "allocator/partition_allocator/src/partition_alloc:raw_ptr",
+      "allocator/partition_allocator:partition_alloc",
+      "allocator/partition_allocator:raw_ptr",
     ]
   }
 
@@ -5073,7 +5072,7 @@ source_set("partition_alloc_test_support") {
     sources += [ "allocator/partition_allocator/src/partition_alloc/partition_alloc_base/threading/platform_thread_android_for_testing.cc" ]
   }
   public_deps = [
-    "allocator/partition_allocator/src/partition_alloc:buildflags",
+    "allocator/partition_allocator:buildflags",
     "//build:branding_buildflags",
     "//build/config/compiler:compiler_buildflags",
   ]
