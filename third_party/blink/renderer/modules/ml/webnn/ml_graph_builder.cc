@@ -155,15 +155,18 @@ base::expected<webnn::Conv2dAttributes, String> ConvertToConv2dAttributes(
   // The order of padding array is [beginning_height, ending_height,
   // beginning_width, ending_width].
   attributes.padding = webnn::Padding2d{
-      .beginning = webnn::Size2d{.height = padding[0], .width = padding[2]},
-      .ending = webnn::Size2d{.height = padding[1], .width = padding[3]}};
+      .beginning =
+          webnn::Size2d<uint32_t>{.height = padding[0], .width = padding[2]},
+      .ending =
+          webnn::Size2d<uint32_t>{.height = padding[1], .width = padding[3]}};
 
   // If strides is not present, the values are assumed to be [1,1].
   auto strides = options->getStridesOr({1, 1});
   if (strides.size() != 2) {
     return base::unexpected("The length of strides should be 2.");
   }
-  attributes.strides = webnn::Size2d{.height = strides[0], .width = strides[1]};
+  attributes.strides =
+      webnn::Size2d<uint32_t>{.height = strides[0], .width = strides[1]};
 
   // If dilations is not present, the values are assumed to be [1,1].
   auto dilations = options->getDilationsOr({1, 1});
@@ -171,7 +174,7 @@ base::expected<webnn::Conv2dAttributes, String> ConvertToConv2dAttributes(
     return base::unexpected("The length of dilations should be 2.");
   }
   attributes.dilations =
-      webnn::Size2d{.height = dilations[0], .width = dilations[1]};
+      webnn::Size2d<uint32_t>{.height = dilations[0], .width = dilations[1]};
   attributes.auto_pad = BlinkAutoPadToComponent(options->autoPad().AsEnum());
   attributes.groups = options->groups();
   attributes.input_layout =
@@ -193,8 +196,8 @@ base::expected<webnn::Pool2dAttributes, std::string> ConvertToPool2dAttributes(
     if (window_dimensions.size() != 2) {
       return base::unexpected("The length of window dimensions should be 2.");
     }
-    attributes.window_dimensions = webnn::Size2d{.height = window_dimensions[0],
-                                                 .width = window_dimensions[1]};
+    attributes.window_dimensions = webnn::Size2d<uint32_t>{
+        .height = window_dimensions[0], .width = window_dimensions[1]};
   }
 
   // If padding is not present, the values are assumed to be [0,0,0,0].
@@ -203,15 +206,18 @@ base::expected<webnn::Pool2dAttributes, std::string> ConvertToPool2dAttributes(
     return base::unexpected("The length of padding should be 4.");
   }
   attributes.padding = webnn::Padding2d{
-      .beginning = webnn::Size2d{.height = padding[0], .width = padding[2]},
-      .ending = webnn::Size2d{.height = padding[1], .width = padding[3]}};
+      .beginning =
+          webnn::Size2d<uint32_t>{.height = padding[0], .width = padding[2]},
+      .ending =
+          webnn::Size2d<uint32_t>{.height = padding[1], .width = padding[3]}};
 
   // If strides is not present, the values are assumed to be [1,1].
   auto strides = options->getStridesOr({1, 1});
   if (strides.size() != 2) {
     return base::unexpected("The length of strides should be 2.");
   }
-  attributes.strides = webnn::Size2d{.height = strides[0], .width = strides[1]};
+  attributes.strides =
+      webnn::Size2d<uint32_t>{.height = strides[0], .width = strides[1]};
 
   // If dilations is not present, the values are assumed to be [1,1].
   auto dilations = options->getDilationsOr({1, 1});
@@ -219,7 +225,7 @@ base::expected<webnn::Pool2dAttributes, std::string> ConvertToPool2dAttributes(
     return base::unexpected("The length of dilations should be 2.");
   }
   attributes.dilations =
-      webnn::Size2d{.height = dilations[0], .width = dilations[1]};
+      webnn::Size2d<uint32_t>{.height = dilations[0], .width = dilations[1]};
   attributes.auto_pad = BlinkAutoPadToComponent(options->autoPad().AsEnum());
   attributes.layout =
       BlinkInputOperandLayoutToComponent(options->layout().AsEnum());
@@ -232,8 +238,8 @@ base::expected<webnn::Pool2dAttributes, std::string> ConvertToPool2dAttributes(
     if (output_size.size() != 2) {
       return base::unexpected("The length of output sizes should be 2.");
     }
-    attributes.output_sizes =
-        webnn::Size2d{.height = output_size[0], .width = output_size[1]};
+    attributes.output_sizes = webnn::Size2d<uint32_t>{.height = output_size[0],
+                                                      .width = output_size[1]};
   }
   return attributes;
 }
@@ -750,8 +756,8 @@ MLOperand* MLGraphBuilder::conv2d(const MLOperand* input,
                                   ExceptionState& exception_state) {
   auto conv2d_attributes = ConvertToConv2dAttributes(options);
   if (!conv2d_attributes.has_value()) {
-    exception_state.ThrowDOMException(
-        DOMExceptionCode::kDataError, conv2d_attributes.error());
+    exception_state.ThrowDOMException(DOMExceptionCode::kDataError,
+                                      conv2d_attributes.error());
     return nullptr;
   }
 

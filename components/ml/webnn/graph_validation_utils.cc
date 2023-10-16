@@ -32,11 +32,6 @@ bool IsFloatingPointType(Operand::DataType data_type) {
   NOTREACHED_NORETURN();
 }
 
-struct FloatSize2D {
-  double height;
-  double width;
-};
-
 // Calculate the output size for conv2d based on WebNN spec:
 // https://www.w3.org/TR/webnn/#api-mlgraphbuilder-conv2d
 // Return the calculated output size if no error.
@@ -81,15 +76,15 @@ base::expected<double, std::string> CalculateConv2dOutputSize(
 // input sizes, filter sizes, padding, strides and dilations.
 // Return the calculated output sizes in double precision floating point number
 // if no errors.
-base::expected<FloatSize2D, std::string> ValidateAndCalculateConv2dOutputSizes(
-    const uint32_t input_height,
-    const uint32_t input_width,
-    const uint32_t filter_height,
-    const uint32_t filter_width,
-    const Padding2d& padding,
-    const Size2d& strides,
-    const Size2d& dilations,
-    const AutoPad auto_pad) {
+base::expected<Size2d<double>, std::string>
+ValidateAndCalculateConv2dOutputSizes(const uint32_t input_height,
+                                      const uint32_t input_width,
+                                      const uint32_t filter_height,
+                                      const uint32_t filter_width,
+                                      const Padding2d& padding,
+                                      const Size2d<uint32_t>& strides,
+                                      const Size2d<uint32_t>& dilations,
+                                      const AutoPad auto_pad) {
   uint32_t padding_beginning_height = padding.beginning.height;
   uint32_t padding_ending_height = padding.ending.height;
   uint32_t padding_beginning_width = padding.beginning.width;
@@ -147,8 +142,8 @@ base::expected<FloatSize2D, std::string> ValidateAndCalculateConv2dOutputSizes(
                             float_output_width.error());
   }
 
-  return FloatSize2D({.height = float_output_height.value(),
-                      .width = float_output_width.value()});
+  return Size2d<double>{.height = float_output_height.value(),
+                        .width = float_output_width.value()};
 }
 
 }  // namespace

@@ -101,6 +101,8 @@ std::string OpTagToString(Operation::Tag tag) {
       return "conv2d";
     case Operation::Tag::kPool2d:
       return "pool2d";
+    case Operation::Tag::kResample2d:
+      return "resample2d";
     case Operation::Tag::kRelu:
       return "relu";
     case Operation::Tag::kSplit:

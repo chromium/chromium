@@ -228,6 +228,22 @@ union OperatorAttributes {
   GemmAttributes gemm;
 };
 
+// Resample the tensor values from the source to the destination spatial
+// dimensions.
+struct Resample2d {
+  // The id of input operand.
+  uint64 input_operand_id;
+  // The id of output operand.
+  uint64 output_operand_id;
+
+  enum InterpolationMode {
+    kNearestNeighbor,
+    kLinear,
+  };
+
+  InterpolationMode mode;
+};
+
 // Represents the operations defined in `MLGraphBuilder` that describes the
 // functional semantics.
 struct Operator {
@@ -263,6 +279,7 @@ union Operation {
   Conv2d conv2d;
   Pool2d pool2d;
   Relu relu;
+  Resample2d resample2d;
   Softmax softmax;
   Split split;
   Transpose transpose;

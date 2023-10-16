@@ -1130,6 +1130,56 @@ TEST_F(WebNNGraphImplTest, ReluTest) {
   }
 }
 
+struct Resample2dTester {
+  OperandInfo input;
+  mojom::Resample2d::InterpolationMode mode =
+      mojom::Resample2d::InterpolationMode::kNearestNeighbor;
+  OperandInfo output;
+  bool expected;
+
+  void Test() {
+    // Build the graph with mojo type.
+    GraphInfoBuilder builder;
+    uint64_t input_operand_id =
+        builder.BuildInput("input", input.dimensions, input.type);
+    uint64_t output_operand_id =
+        builder.BuildOutput("output", output.dimensions, output.type);
+    builder.BuildResample2d(input_operand_id, output_operand_id, mode);
+    EXPECT_EQ(WebNNGraphImpl::ValidateGraph(builder.GetGraphInfo()), expected);
+  }
+};
+
+TEST_F(WebNNGraphImplTest, Resample2dTest) {
+  {
+    Resample2dTester{.input = {.type = mojom::Operand::DataType::kFloat32,
+                               .dimensions = {1, 1, 2, 4}},
+                     .output = {.type = mojom::Operand::DataType::kFloat32,
+                                .dimensions = {1, 1, 2, 4}},
+                     .expected = true}
+        .Test();
+  }
+  {
+    // Test resample2d with mode =
+    // "mojom::Resample2d::InterpolationMode::kLinear".
+    Resample2dTester{.input = {.type = mojom::Operand::DataType::kFloat32,
+                               .dimensions = {1, 1, 2, 4}},
+                     .mode = mojom::Resample2d::InterpolationMode::kLinear,
+                     .output = {.type = mojom::Operand::DataType::kFloat32,
+                                .dimensions = {1, 1, 4, 8}},
+                     .expected = true}
+        .Test();
+  }
+  {
+    // Test the invalid graph for output types don't match.
+    Resample2dTester{.input = {.type = mojom::Operand::DataType::kFloat32,
+                               .dimensions = {1, 1, 2, 4}},
+                     .output = {.type = mojom::Operand::DataType::kFloat16,
+                                .dimensions = {1, 1, 4, 8}},
+                     .expected = false}
+        .Test();
+  }
+}
+
 struct ReshapeTester {
   OperandInfo input;
   OperandInfo output;

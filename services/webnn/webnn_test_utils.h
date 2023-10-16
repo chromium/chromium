@@ -158,6 +158,18 @@ class GraphInfoBuilder final {
 
   void BuildRelu(uint64_t input_operand_id, uint64_t output_operand_id);
 
+  void BuildResample2d(uint64_t input_operand_id,
+                       uint64_t output_operand_id,
+                       mojom::Resample2d::InterpolationMode mode) {
+    mojom::Resample2dPtr resample2d = mojom::Resample2d::New();
+    resample2d->input_operand_id = input_operand_id;
+    resample2d->output_operand_id = output_operand_id;
+    resample2d->mode = mode;
+
+    graph_info_->operations.push_back(
+        mojom::Operation::NewResample2d(std::move(resample2d)));
+  }
+
   void BuildSoftmax(uint64_t input_operand_id, uint64_t output_operand_id);
 
   void BuildSplit(uint64_t input_operand_id,
