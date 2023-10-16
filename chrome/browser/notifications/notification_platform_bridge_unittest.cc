@@ -45,5 +45,5 @@ INSTANTIATE_TEST_SUITE_P(
         base::FilePath(FILE_PATH_LITERAL("Profile 7")),
         // Custom directory.
         base::FilePath(FILE_PATH_LITERAL("CustomDir")),
-        // UTF8 string.
-        base::FilePath(FILE_PATH_LITERAL("\xd9\x85\xd8\xb5\xd8\xb1"))));
+        // Non-ASCII string.
+        base::FilePath(FILE_PATH_LITERAL("\u0645\u0635\u0631"))));
