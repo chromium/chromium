@@ -631,6 +631,48 @@ TEST_F(SharedDictionaryNetworkTransactionTest,
 }
 
 TEST_F(SharedDictionaryNetworkTransactionTest,
+       AsyncDictionarySuccessAfterTransactionDestroy) {
+  std::unique_ptr<DummyAsyncDictionary> dictionary =
+      std::make_unique<DummyAsyncDictionary>(kTestDictionaryData);
+  DummyAsyncDictionary* dictionary_ptr = dictionary.get();
+  DummySharedDictionaryManager manager(
+      base::MakeRefCounted<DummySharedDictionaryStorage>(
+          std::move(dictionary)));
+
+  net::MockHttpRequest request(kBrotliDictionaryTestTransaction);
+  std::unique_ptr<SharedDictionaryNetworkTransaction> transaction =
+      std::make_unique<SharedDictionaryNetworkTransaction>(
+          manager, CreateNetworkTransaction());
+  transaction->SetIsSharedDictionaryReadAllowedCallback(
+      base::BindRepeating([]() { return true; }));
+
+  net::TestCompletionCallback start_callback;
+  ASSERT_THAT(transaction->Start(&request, start_callback.callback(),
+                                 net::NetLogWithSource()),
+              net::test::IsError(net::ERR_IO_PENDING));
+  EXPECT_THAT(start_callback.WaitForResult(), net::test::IsError(net::OK));
+
+  base::OnceCallback<void(int)> dictionary_read_all_callback =
+      dictionary_ptr->TakeReadAllCallback();
+  ASSERT_TRUE(dictionary_read_all_callback);
+
+  scoped_refptr<net::IOBufferWithSize> buf =
+      base::MakeRefCounted<net::IOBufferWithSize>(kDefaultBufferSize);
+  net::TestCompletionCallback read_callback;
+  ASSERT_THAT(
+      transaction->Read(buf.get(), buf->size(), read_callback.callback()),
+      net::test::IsError(net::ERR_IO_PENDING));
+  RunUntilIdle();
+  EXPECT_FALSE(read_callback.have_result());
+
+  transaction.reset();
+
+  std::move(dictionary_read_all_callback).Run(net::OK);
+
+  EXPECT_FALSE(read_callback.have_result());
+}
+
+TEST_F(SharedDictionaryNetworkTransactionTest,
        AsyncDictionaryFailureBeforeStartReading) {
   std::unique_ptr<DummyAsyncDictionary> dictionary =
       std::make_unique<DummyAsyncDictionary>(kTestDictionaryData);
