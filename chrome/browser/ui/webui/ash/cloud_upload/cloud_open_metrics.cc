@@ -140,17 +140,29 @@ CloudOpenMetrics::Metric<MetricType>::Metric(std::string metric_name_to_set)
 template <class MetricType>
 bool CloudOpenMetrics::Metric<MetricType>::Log(MetricType new_value) {
   LogMetric(new_value);
-  bool result = true;
   if (state == MetricState::kCorrectlyNotLogged) {
     set_state(MetricState::kCorrectlyLogged);
   } else {
     set_state(MetricState::kIncorrectlyLoggedMultipleTimes);
     LOG(ERROR) << metric_name << " being logged with " << new_value
                << " when it was already logged with " << value;
-    result = false;
   }
   value = new_value;
-  return result;
+  return state == MetricState::kCorrectlyLogged;
+}
+
+template <class MetricType>
+bool CloudOpenMetrics::Metric<MetricType>::logged() {
+  switch (state) {
+    case MetricState::kCorrectlyNotLogged:
+    case MetricState::kIncorrectlyNotLogged:
+      return false;
+    case MetricState::kCorrectlyLogged:
+    case MetricState::kIncorrectlyLogged:
+    case MetricState::kIncorrectlyLoggedMultipleTimes:
+    case MetricState::kWrongValueLogged:
+      return true;
+  }
 }
 
 template <class MetricType>

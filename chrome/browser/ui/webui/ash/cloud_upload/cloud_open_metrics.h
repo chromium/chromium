@@ -92,6 +92,9 @@ class CloudOpenMetrics {
     // state change occurred.
     bool Log(MetricType new_value);
 
+    // Return true if the `state` is a logged state.
+    bool logged();
+
     void set_state(MetricState new_state);
 
     const std::string metric_name;
