@@ -320,6 +320,32 @@ public class SyncPromoControllerTest {
         Assert.assertTrue(syncPromoController.canShowSyncPromo());
     }
 
+    @Test
+    public void shouldHideRecentTabsSyncPromoIfTabsIsManagedByPolicy() {
+        SyncServiceFactory.setInstanceForTesting(mSyncService);
+        when(mSyncService.isTypeManagedByPolicy(UserSelectableType.TABS)).thenReturn(true);
+
+        SyncPromoController syncPromoController =
+                new SyncPromoController(
+                        mProfile,
+                        SigninAccessPoint.RECENT_TABS,
+                        mock(SyncConsentActivityLauncher.class));
+        Assert.assertFalse(syncPromoController.canShowSyncPromo());
+    }
+
+    @Test
+    public void shouldShowRecentTabsSyncPromoIfTabsIsNotManagedByPolicy() {
+        SyncServiceFactory.setInstanceForTesting(mSyncService);
+        when(mSyncService.isTypeManagedByPolicy(UserSelectableType.TABS)).thenReturn(false);
+
+        SyncPromoController syncPromoController =
+                new SyncPromoController(
+                        mProfile,
+                        SigninAccessPoint.RECENT_TABS,
+                        mock(SyncConsentActivityLauncher.class));
+        Assert.assertTrue(syncPromoController.canShowSyncPromo());
+    }
+
     private void disableNTPSyncPromoBySettingLimits(
             long firstShownTime, long lastShownTime, int signinPromoResetAfterHours) {
         StartSurfaceConfiguration.SIGNIN_PROMO_NTP_SINCE_FIRST_TIME_SHOWN_LIMIT_HOURS.setForTesting(
