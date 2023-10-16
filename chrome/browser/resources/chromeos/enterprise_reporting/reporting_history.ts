@@ -57,6 +57,9 @@ export class ReportingHistoryElement extends PolymerElement {
   override connectedCallback() {
     super.connectedCallback();
 
+    // Set up history table to initially show as empty.
+    this.setEmptyErpTable();
+
     // Add a listener for the asynchronous 'setErpHistoryData' event
     // to be invoked by page handler and populate the table.
     this.browserProxy.callbackRouter.setErpHistoryData.addListener(
@@ -70,37 +73,42 @@ export class ReportingHistoryElement extends PolymerElement {
 
     // Set initial history on/off state after refresh.
     this.browserProxy.handler.getDebugState().then(
-        (value: {state: boolean}) => {
-          this.loggingState = value.state;
+        ({state}: {state: boolean}) => {
+          this.loggingState = state;
         });
 
     // Populate history upon page refresh.
     this.browserProxy.handler.getErpHistoryData().then(
-        (value: {historyData: ErpHistoryData}) => {
-          this.updateErpTable(value.historyData);
+        ({historyData}: {historyData: ErpHistoryData}) => {
+          this.updateErpTable(historyData);
         });
+  }
+
+  // Fills the table as empty (initially or upon update).
+  private setEmptyErpTable() {
+    const emptyRow = document.createElement('tr');
+    // Pad with empty data cells, so that the alignment matches.
+    emptyRow.replaceChildren(
+        this.createHistoryTableDataCell('No events', 'erp-type'),
+        this.composeEventParameters([], 'erp-parameters'),
+        this.createHistoryTableDataCell('', 'erp-status'),
+        this.createHistoryTableDataCell('', 'erp-timestamp'));
+    this.$.body.appendChild(emptyRow);
   }
 
   // Fills the passed table element with the given history.
   private updateErpTable(history: ErpHistoryData) {
-    // Clear the table first.
+    // Reset table.
     this.$.body.replaceChildren();
 
     // If there are no events, present a placeholder.
     if (history.events.length === 0) {
-      const emptyRow = document.createElement('tr');
-      // Padd with empty data cells, so that the alignment matches.
-      emptyRow.replaceChildren(
-          this.createHistoryTableDataCell('No events', 'erp-type'),
-          this.composeEventParameters([], 'erp-parameters'),
-          this.createHistoryTableDataCell('', 'erp-status'),
-          this.createHistoryTableDataCell('', 'erp-timestamp'));
-      this.$.body.appendChild(emptyRow);
+      this.setEmptyErpTable();
       return;
     }
 
-    // Iterate through the history in reverse order so that the most recent
-    // event shows up first.
+    // Populate the table row by the events: iterate through the history
+    // in reverse order so that the most recent event shows up first.
     for (const event of history.events.reverse()) {
       const row = this.composeTableRow(event);
       this.$.body.appendChild(row);
