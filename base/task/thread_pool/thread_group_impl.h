@@ -89,9 +89,9 @@ class BASE_EXPORT ThreadGroupImpl : public ThreadGroup {
 
   ThreadGroupImpl(const ThreadGroupImpl&) = delete;
   ThreadGroupImpl& operator=(const ThreadGroupImpl&) = delete;
-  // Destroying a ThreadGroupImpl returned by Create() is not allowed in
-  // production; it is always leaked. In tests, it can only be destroyed after
-  // JoinForTesting() has returned.
+  // Destroying a ThreadGroupImpl is not allowed in production; it is always
+  // leaked. In tests, it can only be destroyed after JoinForTesting() has
+  // returned.
   ~ThreadGroupImpl() override;
 
   // ThreadGroup:
