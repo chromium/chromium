@@ -172,7 +172,7 @@ class VIEWS_EXPORT MenuRunner {
   const int32_t run_types_;
 
   // We own this. No scoped_ptr because it is destroyed by calling Release().
-  raw_ptr<internal::MenuRunnerImplInterface, DanglingUntriaged> impl_;
+  raw_ptr<internal::MenuRunnerImplInterface> impl_;
 
   // An implementation of RunMenuAt. This is usually NULL and ignored. If this
   // is not NULL, this implementation will be used.

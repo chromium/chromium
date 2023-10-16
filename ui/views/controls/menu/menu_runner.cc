@@ -27,7 +27,8 @@ MenuRunner::MenuRunner(MenuItemView* menu_view, int32_t run_types)
     : run_types_(run_types), impl_(new internal::MenuRunnerImpl(menu_view)) {}
 
 MenuRunner::~MenuRunner() {
-  impl_->Release();
+  // Release causes the deletion of the object.
+  impl_.ExtractAsDangling()->Release();
 }
 
 void MenuRunner::RunMenuAt(Widget* parent,
