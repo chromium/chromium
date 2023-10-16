@@ -1441,6 +1441,11 @@
     "expiry_milestone": 130
   },
   {
+    "name": "cros-legacy-media-formats",
+    "owners": [ "dalecurtis", "tapted" ],
+    "expiry_milestone": 125
+  },
+  {
     "name": "cros-libassistant-v2-migration",
     "owners": ["wutao@chromium.com", "assistive-eng@google.com"],
     "expiry_milestone": 112

@@ -63248,6 +63248,7 @@ from previous Chrome versions.
       label="DesktopPWAsAdditionalWindowingControls:enabled"/>
   <int value="-981354827" label="SupportSearchSuggestionForPrerender2:enabled"/>
   <int value="-981237342" label="SyncUSSAutofillWalletMetadata:disabled"/>
+  <int value="-981090414" label="CrOSLegacyMediaFormats:enabled"/>
   <int value="-981033001" label="TabScrollingButtonPosition:enabled"/>
   <int value="-980889204" label="SharingRenameDevices:enabled"/>
   <int value="-980475527" label="DevToolsTabTarget:disabled"/>
@@ -68633,6 +68634,7 @@ from previous Chrome versions.
   <int value="1665349789" label="spurious-power-button-window"/>
   <int value="1665400247" label="OsSettingsDeepLinking:enabled"/>
   <int value="1665430464" label="force-control-face-ae"/>
+  <int value="1666226008" label="CrOSLegacyMediaFormats:disabled"/>
   <int value="1666933104" label="TabStripStartupRefactoring:enabled"/>
   <int value="1667533501" label="SameAppWindowCycle:disabled"/>
   <int value="1667584730" label="WebXR:disabled"/>

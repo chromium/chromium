@@ -165,6 +165,13 @@ const char kContentLanguagesInLanguagePickerDescription[] =
     "Enables bringing user's content languages that are translatable to the "
     "top of the list with all languages shown in the translate menu";
 
+#if BUILDFLAG(IS_CHROMEOS)
+const char kCrOSLegacyMediaFormatsName[] = "Legacy media format support";
+const char kCrOSLegacyMediaFormatsDescription[] =
+    "Controls support for uncommon legacy media formats: AVI containers and "
+    "MPEG4 video streams.";
+#endif
+
 const char kCustomizeChromeColorExtractionName[] =
     "Customize Chrome Color Extraction";
 const char kCustomizeChromeColorExtractionDescription[] =
