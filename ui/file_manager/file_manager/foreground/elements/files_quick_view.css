@@ -1,4 +1,4 @@
-/* Copyright 2016 The Chromium Authors
+/* Copyright 2023 The Chromium Authors
  * Use of this source code is governed by a BSD-style license that can be
  * found in the LICENSE file. */
 
@@ -58,9 +58,7 @@ dialog#delete-confirm-dialog::backdrop {
   margin: 0;
   padding: 0;
   position: absolute;
-  /* The top value here should be the total height of the #toolbar including
-  the height and the border-width */
-  top: 57px;
+  top: 56px; /* toolbar height */
   width: 100%;
 }
 
@@ -82,10 +80,11 @@ dialog#delete-confirm-dialog::backdrop {
 }
 
 #innerContentPanel {
-  background-color: var(--cros-app-shield-80);
-  color: var(--cros-text-color-primary);
+  background-color: var(--cros-sys-scrim);
+  color: var(--cros-sys-on_surface);
   display: flex;
   flex-direction: column;
+  font: var(--cros-body-1-font);
   height: calc(100% - 64px);
   justify-content: center;
   outline: none;
@@ -106,18 +105,12 @@ dialog#delete-confirm-dialog::backdrop {
   width: 100%;
 }
 
-.text-content {
-  background-color: var(--cros-bg-color);
-}
-
 #toolbar {
   align-items: center;
-  background-color: var(--cros-bg-color);
-  border-bottom: 1px solid var(--cros-separator-color);
-  color: var(--cros-text-color-primary);
+  background-color: var(--cros-sys-app_base);
+  color: var(--cros-sys-on_surface);
   display: flex;
-  font-family: 'Roboto Medium';
-  font-size: 14px;
+  font: var(--cros-title-1-font);
   height: 56px;
   margin: 0;
   opacity: 1;
@@ -127,6 +120,7 @@ dialog#delete-confirm-dialog::backdrop {
 
 #file-path {
   flex: 1;
+  margin-inline-end: 8px;
   margin-inline-start: 8px;
   max-width: 100%;
   overflow: hidden;
@@ -138,19 +132,19 @@ dialog#delete-confirm-dialog::backdrop {
 }
 
 cr-button {
-  --hover-bg-color:var(--cros-ripple-color);
-  --ink-color: var(--cros-ripple-color);
+  --hover-bg-color: var(--cros-sys-hover_on_subtle);
+  --ink-color: var(--cros-sys-ripple_neutral_on_subtle);
   --ripple-opacity: 100%;
-  --text-color: var(--cros-icon-color-primary);
-  border: 2px solid transparent;
-  border-radius: 50%;
+  --text-color: currentColor;
+  border: none;
+  border-radius: 12px;
   box-shadow: none;
   box-sizing: border-box;
-  height: 36px;
-  margin: 0 6px;
-  min-width: 36px;
-  padding: calc(6px - 2px);
-  width: 36px;
+  height: 40px;
+  margin: 4px;
+  min-width: 40px;
+  padding: 0;
+  width: 40px;
 }
 
 :host-context(html.pointer-active) cr-button:not(:active):hover {
@@ -200,8 +194,13 @@ iron-icon {
   width: 16px;
 }
 
+#info-button {
+  --ink-color: var(--cros-sys-ripple_primary);
+}
+
 #info-button[aria-pressed=true] {
-  background-color: var(--cros-ripple-color);
+  background-color: var(--cros-sys-primary_container);
+  color: var(--cros-sys-on_primary_container);
 }
 
 #info-button > .icon {
@@ -209,11 +208,11 @@ iron-icon {
 }
 
 :host-context(html.focus-outline-visible) cr-button:not(:active):focus {
-  border: 2px solid var(--cros-focus-ring-color);
+  outline: 2px solid var(--cros-sys-focus_ring);
 }
 
 #metadata-box {
-  background-color: var(--cros-bg-color-dropped-elevation-1);
+  background-color: var(--cros-sys-app_base);
   bottom: 0;
   height: 100%;
   margin: 0;
@@ -229,13 +228,13 @@ iron-icon {
 }
 
 ::-webkit-scrollbar {
-  background-color: var(--cros-app-scrollbar-color);
+  background-color: var(--cros-sys-scrollbar);
   width: 10px;
 }
 
 ::-webkit-scrollbar-thumb {
   background-clip: content-box;
-  background-color: var(--cros-app-scrollbar-color-hover);
+  background-color: var(--cros-sys-scrollbar_hover);
   border: 2.5px solid transparent;
   width: 5px;
 }
@@ -245,17 +244,21 @@ iron-icon {
 }
 
 .no-preview {
-  margin-top: 16px;
+  max-width: 130px;
 }
 
-@media only screen and (max-width: 720px) {
-  #contentPanel[metadata-box-active] #innerContentPanel {
-    padding-inline-end: 4px;
-    padding-inline-start: 4px;
-  }
-  #contentPanel[metadata-box-active] {
-    margin-inline-end: 250px;
-  }
+.no-preview-container {
+  -webkit-mask-image: url(../images/files/ui/quickview_star.svg);
+  -webkit-mask-position: center;
+  -webkit-mask-repeat: no-repeat;
+  -webkit-mask-size: 224px;
+  align-items: center;
+  background-color: var(--cros-sys-primary_container);
+  color: var(--cros-sys-on_primary_container);
+  display: flex;
+  flex-direction: column;
+  height: 224px;
+  justify-content: center;
 }
 
 /* Large generic thumbnails, used when a file does not have a thumbnail. */
@@ -263,34 +266,28 @@ iron-icon {
   -webkit-mask-image: url(../images/filetype/filetype_generic.svg);
   -webkit-mask-position: center;
   -webkit-mask-repeat: no-repeat;
-  -webkit-mask-size: auto 88px;
+  -webkit-mask-size: 80px;
   background-color: currentColor;
-  background-position: center;
-  background-repeat: no-repeat;
-  background-size: auto 88px;
-  height: 88px;
+  height: 80px;
+  margin-bottom: 8px;
+  width: 80px;
 }
 
 [generic-thumbnail='.folder'] {
   -webkit-mask-image: url(../images/filetype/filetype_folder.svg);
-  -webkit-mask-size: auto 72px;
 }
 
 [generic-thumbnail='audio'] {
-  -webkit-mask-image: none;
-  background-color: transparent;
-  background-image: url(../images/filetype/filetype_audio.svg);
+  -webkit-mask-image: url(../images/filetype/filetype_audio.svg);
+  background-color: var(--cros-sys-error);
 }
 
 [generic-thumbnail='image'] {
-  -webkit-mask-image: none;
-  background-color: transparent;
-  background-image: url(../images/filetype/filetype_image.svg);
+  -webkit-mask-image: url(../images/filetype/filetype_image.svg);
+  background-color: var(--cros-sys-error);
 }
 
 [generic-thumbnail='video'] {
-  -webkit-mask-image: none;
-  background-color: transparent;
-  background-image: url(../images/filetype/filetype_video.svg);
-  background-size: auto 72px;
+  -webkit-mask-image: url(../images/filetype/filetype_video.svg);
+  background-color: var(--cros-sys-error);
 }
