@@ -1057,9 +1057,9 @@ bool BrowserAutofillManager::WasSuggestionPreviouslyHidden(
     return false;
   }
   // Getting the filling-relevant fields so that suggestions are based only on
-  // those fields. Function BrowserAutofillManager::GetSkipStatuses assumes that
-  // the passed FormData and FormStructure have the same size. If it's not the
-  // case we just assume as a fallback that all fields are relevant.
+  // those fields. BrowserAutofillManager::GetFieldFillingSkipReasons() assumes
+  // that the passed FormData and FormStructure have the same size. If it's not
+  // the case we just assume as a fallback that all fields are relevant.
   std::vector<FieldFillingSkipReason> skip_reasons =
       form.fields.size() == form_structure->field_count()
           ? GetFieldFillingSkipReasons(
