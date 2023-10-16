@@ -98,38 +98,15 @@ namespace web {
 const char kRestoreNavigationItemCount[] = "IOS.RestoreNavigationItemCount";
 const char kRestoreNavigationTime[] = "IOS.RestoreNavigationTime";
 
-NavigationManager::WebLoadParams::WebLoadParams(const GURL& url)
-    : url(url),
-      transition_type(ui::PAGE_TRANSITION_LINK),
-      is_renderer_initiated(false),
-      post_data(nil),
-      https_upgrade_type(HttpsUpgradeType::kNone) {}
+NavigationManager::WebLoadParams::WebLoadParams(const GURL& url) : url(url) {}
 
-NavigationManager::WebLoadParams::~WebLoadParams() {}
+NavigationManager::WebLoadParams::~WebLoadParams() = default;
 
-NavigationManager::WebLoadParams::WebLoadParams(const WebLoadParams& other)
-    : url(other.url),
-      virtual_url(other.virtual_url),
-      referrer(other.referrer),
-      transition_type(other.transition_type),
-      is_renderer_initiated(other.is_renderer_initiated),
-      extra_headers([other.extra_headers copy]),
-      post_data([other.post_data copy]),
-      https_upgrade_type(other.https_upgrade_type) {}
+NavigationManager::WebLoadParams::WebLoadParams(const WebLoadParams& other) =
+    default;
 
 NavigationManager::WebLoadParams& NavigationManager::WebLoadParams::operator=(
-    const WebLoadParams& other) {
-  url = other.url;
-  virtual_url = other.virtual_url;
-  referrer = other.referrer;
-  is_renderer_initiated = other.is_renderer_initiated;
-  transition_type = other.transition_type;
-  extra_headers = [other.extra_headers copy];
-  post_data = [other.post_data copy];
-  https_upgrade_type = other.https_upgrade_type;
-
-  return *this;
-}
+    const WebLoadParams& other) = default;
 
 NavigationManagerImpl::NavigationManagerImpl(
     BrowserState* browser_state,
