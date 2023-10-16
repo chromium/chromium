@@ -94,9 +94,9 @@ struct WebUISource {
   url.mojom.Origin reporting_origin;
   double source_time;
   double expiry_time;
-  // TODO(crbug.com/1462699): Display `event_report_windows` and
-  // `max_event_level_reports` fields.
+  attribution_reporting.mojom.EventReportWindows event_report_windows;
   double aggregatable_report_window_time;
+  int32 max_event_level_reports;
   attribution_reporting.mojom.SourceType source_type;
   int64 priority;
   attribution_reporting.mojom.DebugKey? debug_key;

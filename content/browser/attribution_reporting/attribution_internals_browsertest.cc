@@ -312,6 +312,7 @@ IN_PROC_BROWSER_TEST_F(AttributionInternalsWebUiBrowserTest,
                   net::SchemefulSite::Deserialize("https://a.test"),
                   net::SchemefulSite::Deserialize("https://b.test"),
               })
+              .SetMaxEventLevelReports(3)
               .BuildStored(),
           SourceBuilder(now + base::Hours(1))
               .SetSourceType(SourceType::kEvent)
@@ -323,6 +324,7 @@ IN_PROC_BROWSER_TEST_F(AttributionInternalsWebUiBrowserTest,
               .SetAggregationKeys(
                   *attribution_reporting::AggregationKeys::FromKeys({{"a", 1}}))
               .SetAggregatableDedupKeys({14, 18})
+              .SetMaxEventLevelReports(1)
               .BuildStored(),
           SourceBuilder(now + base::Hours(2))
               .SetActiveState(
@@ -353,11 +355,14 @@ IN_PROC_BROWSER_TEST_F(AttributionInternalsWebUiBrowserTest,
           .Build(),
       StorableSource::Result::kExcessiveReportingOrigins);
 
+  // TODO(crbug.com/1491813): Bypass locale dependency to validate event report
+  // windows column value.
   static constexpr char kScript[] = R"(
     const table = document.querySelector('#sourceTable')
         .shadowRoot.querySelector('tbody');
     const regTable = document.querySelector('#sourceRegistrationTable')
         .shadowRoot.querySelector('tbody');
+
     const setTitleIfDone = (_, obs) => {
       if (table.children.length === 4 &&
           regTable.children.length === 5 &&
@@ -366,24 +371,26 @@ IN_PROC_BROWSER_TEST_F(AttributionInternalsWebUiBrowserTest,
           table.children[0].children[3]?.children[0]?.children[1]?.innerText === 'https://b.test' &&
           table.children[1].children[3]?.innerText === 'https://conversion.test' &&
           table.children[0].children[0]?.innerText === $1 &&
-          table.children[0].children[8]?.innerText === 'Navigation' &&
-          table.children[1].children[8]?.innerText === 'Event' &&
-          table.children[0].children[9]?.innerText === '0' &&
-          table.children[1].children[9]?.innerText === $2 &&
-          table.children[0].children[10]?.innerText === '{}' &&
-          table.children[1].children[10]?.innerText === '{\n "a": [\n  "b",\n  "c"\n ]\n}' &&
-          table.children[0].children[11]?.innerText === '{}' &&
-          table.children[1].children[11]?.innerText === '{\n "a": "0x1"\n}' &&
-          table.children[0].children[12]?.innerText === '0 / 65536' &&
-          table.children[1].children[12]?.innerText === '1300 / 65536' &&
-          table.children[0].children[13]?.innerText === '19' &&
-          table.children[1].children[13]?.innerText === '' &&
-          table.children[0].children[14]?.innerText === '' &&
-          table.children[1].children[14]?.children[0]?.children[0]?.innerText === '13' &&
-          table.children[1].children[14]?.children[0]?.children[1]?.innerText === '17' &&
-          table.children[0].children[15]?.innerText === '' &&
-          table.children[1].children[15]?.children[0]?.children[0]?.innerText === '14' &&
-          table.children[1].children[15]?.children[0]?.children[1]?.innerText === '18' &&
+          table.children[0].children[9]?.innerText === '3' &&
+          table.children[1].children[9]?.innerText === '1' &&
+          table.children[0].children[10]?.innerText === 'Navigation' &&
+          table.children[1].children[10]?.innerText === 'Event' &&
+          table.children[0].children[11]?.innerText === '0' &&
+          table.children[1].children[11]?.innerText === $2 &&
+          table.children[0].children[12]?.innerText === '{}' &&
+          table.children[1].children[12]?.innerText === '{\n "a": [\n  "b",\n  "c"\n ]\n}' &&
+          table.children[0].children[13]?.innerText === '{}' &&
+          table.children[1].children[13]?.innerText === '{\n "a": "0x1"\n}' &&
+          table.children[0].children[14]?.innerText === '0 / 65536' &&
+          table.children[1].children[14]?.innerText === '1300 / 65536' &&
+          table.children[0].children[15]?.innerText === '19' &&
+          table.children[1].children[15]?.innerText === '' &&
+          table.children[0].children[16]?.innerText === '' &&
+          table.children[1].children[16]?.children[0]?.children[0]?.innerText === '13' &&
+          table.children[1].children[16]?.children[0]?.children[1]?.innerText === '17' &&
+          table.children[0].children[17]?.innerText === '' &&
+          table.children[1].children[17]?.children[0]?.children[0]?.innerText === '14' &&
+          table.children[1].children[17]?.children[0]?.children[1]?.innerText === '18' &&
           table.children[0].children[1]?.innerText === 'Unattributable: noised with no reports' &&
           table.children[1].children[1]?.innerText === 'Attributable' &&
           table.children[2].children[1]?.innerText === 'Attributable: reached event-level attribution limit' &&

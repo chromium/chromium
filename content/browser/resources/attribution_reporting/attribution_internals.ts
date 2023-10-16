@@ -13,6 +13,7 @@ import {Factory, HandlerInterface, HandlerRemote, ObserverInterface, ObserverRec
 import {AttributionInternalsTableElement} from './attribution_internals_table.js';
 import {OsRegistrationResult, RegistrationType} from './attribution_reporting.mojom-webui.js';
 import {EventLevelResult} from './event_level_result.mojom-webui.js';
+import {EventReportWindows} from './registration.mojom-webui.js';
 import {SourceType} from './source_type.mojom-webui.js';
 import {StoreSourceResult} from './store_source_result.mojom-webui.js';
 import {Column, TableModel} from './table_model.js';
@@ -84,7 +85,8 @@ class CodeColumn<T> extends ValueColumn<T, string> {
 class ListColumn<T, V> extends ValueColumn<T, V[]> {
   constructor(
       header: string, getValue: (p: T) => V[],
-      private readonly flatten: boolean = false) {
+      private readonly flatten: boolean = false,
+      private readonly renderItem: (p: V) => string = (p) => `${p}`) {
     super(header, getValue, /*comparable=*/ false);
   }
 
@@ -95,7 +97,7 @@ class ListColumn<T, V> extends ValueColumn<T, V[]> {
     }
 
     if (this.flatten && values.length === 1) {
-      td.innerText = `${values[0]}`;
+      td.innerText = this.renderItem(values[0]!);
       return;
     }
 
@@ -103,7 +105,7 @@ class ListColumn<T, V> extends ValueColumn<T, V[]> {
 
     values.forEach(value => {
       const li = td.ownerDocument.createElement('li');
-      li.innerText = `${value}`;
+      li.innerText = this.renderItem(value);
       ul.appendChild(li);
     });
 
@@ -234,7 +236,9 @@ class Source {
   reportingOrigin: string;
   sourceTime: Date;
   expiryTime: Date;
+  eventReportWindows: Date[];
   aggregatableReportWindowTime: Date;
+  maxEventLevelReports: bigint;
   sourceType: string;
   filterData: string;
   aggregationKeys: string;
@@ -253,8 +257,11 @@ class Source {
     this.reportingOrigin = originToText(mojo.reportingOrigin);
     this.sourceTime = new Date(mojo.sourceTime);
     this.expiryTime = new Date(mojo.expiryTime);
+    this.eventReportWindows =
+        windowsAbsoluteTime(mojo.eventReportWindows, this.sourceTime);
     this.aggregatableReportWindowTime =
         new Date(mojo.aggregatableReportWindowTime);
+    this.maxEventLevelReports = BigInt(mojo.maxEventLevelReports);
     this.sourceType = sourceTypeText[mojo.sourceType];
     this.priority = mojo.priority;
     this.filterData = JSON.stringify(mojo.filterData, null, ' ');
@@ -265,6 +272,23 @@ class Source {
     this.aggregatableBudgetConsumed = mojo.aggregatableBudgetConsumed;
     this.aggregatableDedupKeys = mojo.aggregatableDedupKeys;
     this.status = attributabilityText[mojo.attributability];
+  }
+}
+
+const EVENT_REPORT_WINDOWS_COLS: Array<Column<Source>> = [
+  new DateColumn<Source>('Start Time', e => e.eventReportWindows[0]!),
+  new ListColumn<Source, Date>(
+      'End Times', e => e.eventReportWindows.slice(1), /*flatten=*/ false,
+      (v) => v.toLocaleString()),
+];
+
+class EventReportWindowsColumn implements Column<Source> {
+  renderHeader(th: HTMLElement) {
+    th.innerText = 'Event Report Windows';
+  }
+
+  render(td: HTMLElement, row: Source) {
+    renderDL(td, row, EVENT_REPORT_WINDOWS_COLS);
   }
 }
 
@@ -286,9 +310,12 @@ class SourceTableModel extends TableModel<Source> {
           new DateColumn<Source>(
               'Source Registration Time', (e) => e.sourceTime),
           new DateColumn<Source>('Expiry Time', (e) => e.expiryTime),
+          new EventReportWindowsColumn(),
           new DateColumn<Source>(
               'Aggregatable Report Window Time',
               (e) => e.aggregatableReportWindowTime),
+          new ValueColumn<Source, bigint>(
+              'Max Event Level Reports', (e) => e.maxEventLevelReports),
           new ValueColumn<Source, string>('Source Type', (e) => e.sourceType),
           new ValueColumn<Source, bigint>('Priority', (e) => e.priority),
           new CodeColumn<Source>('Filter Data', (e) => e.filterData),
@@ -865,6 +892,18 @@ function originToText(origin: Origin): string {
     result += ':' + origin.port;
   }
   return result;
+}
+
+function windowsAbsoluteTime(
+    eventReportWindows: EventReportWindows, sourceTime: Date): Date[] {
+  const dates: Date[] = [new Date(
+      sourceTime.getTime() +
+      (Number(eventReportWindows.startTime.microseconds) / 1000))];
+  for (const endTime of eventReportWindows.endTimes) {
+    dates.push(
+        new Date(sourceTime.getTime() + (Number(endTime.microseconds) / 1000)));
+  }
+  return dates;
 }
 
 const sourceTypeText: Readonly<Record<SourceType, string>> = {
