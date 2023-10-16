@@ -212,9 +212,21 @@ def main(args):
     if int(r['optimal_shard_count']) == int(r['shard_count']):
       continue
 
+    runtime_diff = abs(
+        float(opts.desired_runtime) - float(r['percentile_duration_minutes']))
+    # Don't bother resharding suites that are running < 1 minute faster
+    # than desired.
+    if runtime_diff < 1:
+      continue
+
     # Throw out any attempt to shard to 1. This will lock the test suite
     # and prevent go/nplus1shardsproposal from running new shardings
     if int(r['optimal_shard_count']) == 1:
+      continue
+
+    # Don't bother resharding if the simulated runtime is greater than the
+    # desired runtime.
+    if (float(r['simulated_max_shard_duration']) > opts.desired_runtime):
       continue
 
     # Shard values may have changed over the lookback period, so the query
@@ -239,7 +251,8 @@ def main(args):
       if int(r['shard_count']) != int(r['most_used_shard_count']):
         continue
 
-      # Query suggests we should decrease shard count
+      # Query suggests we should decrease shard count for suite that has
+      # never been autosharded
       if int(r['optimal_shard_count']) < int(r['shard_count']):
         # Only use lower shard count value if the suite was previously
         # autosharded.
