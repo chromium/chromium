@@ -317,13 +317,6 @@ public class TasksSurfaceCoordinator implements TasksSurface {
     }
 
     @Override
-    public void updateFakeSearchBox(int height, int topMargin, int endPadding, float translationX,
-            int buttonSize, int lensButtonLeftMargin) {
-        mView.updateFakeSearchBox(height, topMargin, endPadding, translationX, buttonSize,
-                lensButtonLeftMargin, height + topMargin);
-    }
-
-    @Override
     public void onHide() {
         if (mSuggestionsUiDelegate != null) {
             mSuggestionsUiDelegate.onDestroy();
