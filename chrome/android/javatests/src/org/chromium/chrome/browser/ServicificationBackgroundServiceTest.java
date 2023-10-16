@@ -115,7 +115,9 @@ public final class ServicificationBackgroundServiceTest {
     @Test
     @LargeTest
     @Feature({"ServicificationStartup"})
-    @CommandLineFlags.Add({"force-fieldtrials=*Foo/Bar", "enable-features=UMABackgroundSessions"})
+    @CommandLineFlags.Add({"force-fieldtrials=*Foo/Bar", "enable-features=UMABackgroundSessions",
+            // TODO(crbug.com/1491942): This fails with the field trial testing config.
+            "disable-field-trial-config"})
     @Restriction({Restriction.RESTRICTION_TYPE_NON_LOW_END_DEVICE}) // crbug.com/1096833
     // Verifies that the memory-mapped file for persistent histogram data exists and contains a
     // valid SystemProfile. This test isn't run on low end devices which use local memory for
