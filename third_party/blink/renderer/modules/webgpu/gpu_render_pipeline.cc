@@ -135,30 +135,49 @@ void GPUPrimitiveStateAsWGPUPrimitiveState(
   }
 }
 
-WGPUDepthStencilState AsDawnType(GPUDevice* device,
-                                 const GPUDepthStencilState* webgpu_desc,
-                                 ExceptionState& exception_state) {
+void GPUDepthStencilStateAsWGPUDepthStencilState(
+    GPUDevice* device,
+    const GPUDepthStencilState* webgpu_desc,
+    OwnedDepthStencilState* dawn_state,
+    ExceptionState& exception_state) {
   DCHECK(webgpu_desc);
+  DCHECK(dawn_state);
 
   if (!device->ValidateTextureFormatUsage(webgpu_desc->format(),
                                           exception_state)) {
-    return {};
+    return;
   }
 
-  WGPUDepthStencilState dawn_desc = {};
-  dawn_desc.nextInChain = nullptr;
-  dawn_desc.format = AsDawnEnum(webgpu_desc->format());
-  dawn_desc.depthWriteEnabled = webgpu_desc->depthWriteEnabled();
-  dawn_desc.depthCompare = AsDawnEnum(webgpu_desc->depthCompare());
-  dawn_desc.stencilFront = AsDawnType(webgpu_desc->stencilFront());
-  dawn_desc.stencilBack = AsDawnType(webgpu_desc->stencilBack());
-  dawn_desc.stencilReadMask = webgpu_desc->stencilReadMask();
-  dawn_desc.stencilWriteMask = webgpu_desc->stencilWriteMask();
-  dawn_desc.depthBias = webgpu_desc->depthBias();
-  dawn_desc.depthBiasSlopeScale = webgpu_desc->depthBiasSlopeScale();
-  dawn_desc.depthBiasClamp = webgpu_desc->depthBiasClamp();
+  dawn_state->dawn_desc.nextInChain = nullptr;
+  dawn_state->dawn_desc.format = AsDawnEnum(webgpu_desc->format());
 
-  return dawn_desc;
+  // This extension struct is required so that the Dawn C API can differentiate
+  // whether depthWriteEnabled was provided or not. The Dawn C API will assume
+  // the boolean is defined, unless the extension struct is added and
+  // depthWriteDefined is true.
+  auto* depth_write_defined = &dawn_state->depth_write_defined;
+  depth_write_defined->chain.sType =
+      WGPUSType_DepthStencilStateDepthWriteDefinedDawn;
+  depth_write_defined->depthWriteDefined = webgpu_desc->hasDepthWriteEnabled();
+  dawn_state->dawn_desc.nextInChain =
+      reinterpret_cast<WGPUChainedStruct*>(depth_write_defined);
+  dawn_state->dawn_desc.depthWriteEnabled =
+      webgpu_desc->hasDepthWriteEnabled() && webgpu_desc->depthWriteEnabled();
+
+  WGPUCompareFunction depthCompare = WGPUCompareFunction_Undefined;
+  if (webgpu_desc->hasDepthCompare()) {
+    depthCompare = AsDawnEnum(webgpu_desc->depthCompare());
+  }
+  dawn_state->dawn_desc.depthCompare = depthCompare;
+
+  dawn_state->dawn_desc.stencilFront = AsDawnType(webgpu_desc->stencilFront());
+  dawn_state->dawn_desc.stencilBack = AsDawnType(webgpu_desc->stencilBack());
+  dawn_state->dawn_desc.stencilReadMask = webgpu_desc->stencilReadMask();
+  dawn_state->dawn_desc.stencilWriteMask = webgpu_desc->stencilWriteMask();
+  dawn_state->dawn_desc.depthBias = webgpu_desc->depthBias();
+  dawn_state->dawn_desc.depthBiasSlopeScale =
+      webgpu_desc->depthBiasSlopeScale();
+  dawn_state->dawn_desc.depthBiasClamp = webgpu_desc->depthBiasClamp();
 }
 
 WGPUMultisampleState AsDawnType(const GPUMultisampleState* webgpu_desc) {
@@ -333,9 +352,11 @@ void ConvertToDawnType(v8::Isolate* isolate,
 
   // DepthStencil
   if (webgpu_desc->hasDepthStencil()) {
-    dawn_desc_info->depth_stencil =
-        AsDawnType(device, webgpu_desc->depthStencil(), exception_state);
-    dawn_desc_info->dawn_desc.depthStencil = &dawn_desc_info->depth_stencil;
+    GPUDepthStencilStateAsWGPUDepthStencilState(
+        device, webgpu_desc->depthStencil(), &dawn_desc_info->depth_stencil,
+        exception_state);
+    dawn_desc_info->dawn_desc.depthStencil =
+        &dawn_desc_info->depth_stencil.dawn_desc;
   }
 
   // Multisample
