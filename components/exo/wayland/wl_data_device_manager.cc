@@ -340,7 +340,11 @@ class WaylandDataDeviceDelegate : public DataDeviceDelegate {
       LOG(ERROR) << "Invalid event type for StartDrag:" << (int)*event_type
                  << ", serial=" << serial << ", "
                  << serial_tracker_->ToString();
+      return;
     }
+    // TODO(crbug/1371493): Remove this when bug is fixed.
+    LOG(ERROR) << "DataDrag Started=" << serial
+               << ", event_type=" << SerialTracker::ToString(*event_type);
   }
 
   void SetSelection(DataDevice* data_device,

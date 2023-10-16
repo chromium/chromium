@@ -99,8 +99,10 @@ class DataSource {
       ReadDataCallback web_custom_data_reader,
       base::RepeatingClosure failure_callback);
 
-  void ReadDataForTesting(const std::string& mime_type,
-                          ReadDataCallback callback);
+  void ReadDataForTesting(
+      const std::string& mime_type,
+      ReadDataCallback callback,
+      base::RepeatingClosure failure_callback = base::DoNothing());
 
   bool CanBeDataSourceForCopy(Surface* surface) const;
 
@@ -112,10 +114,11 @@ class DataSource {
                 ReadDataCallback callback,
                 base::OnceClosure failure_callback);
 
-  void OnDataRead(ReadDataCallback callback,
-                  const std::string& mime_type,
-                  base::OnceClosure failure_callback,
-                  const absl::optional<std::vector<uint8_t>>& data);
+  static void OnDataRead(base::WeakPtr<DataSource> data_source_ptr,
+                         ReadDataCallback callback,
+                         const std::string& mime_type,
+                         base::OnceClosure failure_callback,
+                         const absl::optional<std::vector<uint8_t>>& data);
 
   void OnTextRead(ReadTextDataCallback callback,
                   const std::string& mime_type,
