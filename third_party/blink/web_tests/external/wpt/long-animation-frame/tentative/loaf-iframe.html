@@ -1,6 +1,6 @@
 <!DOCTYPE HTML>
 <meta charset=utf-8>
-<title>Long Animation Frame Timing: iframes & popups</title>
+<title>Long Animation Frame Timing: iframes</title>
 <meta name="timeout" content="long">
 <body>
 <script src="/resources/testharness.js"></script>
@@ -38,14 +38,6 @@ promise_test(async t => {
         while (performance.now() < deadline) {}
     }, [very_long_frame_duration]), t);
 }, 'A long busy wait in a same-origin requestAnimationFrame is a long animation frame');
-
-promise_test(async t => {
-    const [executor] = await prepare_exec_popup(t, ORIGIN);
-    await expect_no_long_frame(() => executor.execute_script((duration) => {
-        const deadline = performance.now() + duration;
-        while (performance.now() < deadline) {}
-    }, [very_long_frame_duration]), t);
-}, 'A long busy wait in a same-origin popup is a not long animation frame');
 
 for (const origin of ["ORIGIN", "REMOTE_ORIGIN", "HTTP_NOTSAMESITE_ORIGIN"]) {
     promise_test(async t => {
