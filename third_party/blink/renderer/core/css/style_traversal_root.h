@@ -42,7 +42,7 @@ class CORE_EXPORT StyleTraversalRoot {
   // the flat for the given subclass.
   virtual void SubtreeModified(ContainerNode& parent) = 0;
 
-  Node* GetRootNode() const { return root_node_; }
+  Node* GetRootNode() const { return root_node_.Get(); }
   void Clear() {
     root_node_ = nullptr;
     root_type_ = RootType::kSingleRoot;

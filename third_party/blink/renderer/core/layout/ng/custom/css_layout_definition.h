@@ -102,7 +102,7 @@ class CSSLayoutDefinition final : public GarbageCollected<CSSLayoutDefinition>,
     return child_custom_invalidation_properties_;
   }
 
-  ScriptState* GetScriptState() const { return script_state_; }
+  ScriptState* GetScriptState() const { return script_state_.Get(); }
 
   virtual void Trace(Visitor* visitor) const;
 

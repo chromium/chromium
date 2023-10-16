@@ -54,7 +54,7 @@ const ModuleScript* ModuleRecordResolverImpl::GetModuleScriptFromModuleRecord(
       << "Failed to find ModuleScript corresponding to the "
          "record.[[HostDefined]]";
   CHECK(it->value);
-  return it->value;
+  return it->value.Get();
 }
 
 // <specdef

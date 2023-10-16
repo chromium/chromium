@@ -36,7 +36,7 @@ class WebGLRenderingContextBase;
 // WebGLRenderingContextBase.
 class WebGLContextObject : public WebGLObject {
  public:
-  WebGLRenderingContextBase* Context() const { return context_; }
+  WebGLRenderingContextBase* Context() const { return context_.Get(); }
 
   bool Validate(const WebGLContextGroup*,
                 const WebGLRenderingContextBase*) const final;

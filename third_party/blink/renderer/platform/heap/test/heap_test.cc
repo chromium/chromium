@@ -2764,7 +2764,7 @@ class Link1 : public GarbageCollected<Link1> {
 
   void Trace(Visitor* visitor) const { visitor->Trace(link_); }
 
-  IntWrapper* Link() { return link_; }
+  IntWrapper* Link() { return link_.Get(); }
 
  private:
   Member<IntWrapper> link_;

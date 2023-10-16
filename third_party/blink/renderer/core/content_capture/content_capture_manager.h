@@ -53,7 +53,7 @@ class CORE_EXPORT ContentCaptureManager
   virtual void Trace(Visitor*) const;
 
   ContentCaptureTask* GetContentCaptureTaskForTesting() const {
-    return content_capture_idle_task_;
+    return content_capture_idle_task_.Get();
   }
 
  protected:

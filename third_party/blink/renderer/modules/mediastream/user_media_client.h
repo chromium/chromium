@@ -103,7 +103,9 @@ class MODULES_EXPORT UserMediaClient
 
     UserMediaRequest* MoveUserMediaRequest();
 
-    UserMediaRequest* user_media_request() const { return user_media_request_; }
+    UserMediaRequest* user_media_request() const {
+      return user_media_request_.Get();
+    }
     blink::ApplyConstraintsRequest* apply_constraints_request() const {
       return apply_constraints_request_;
     }

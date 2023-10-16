@@ -37,7 +37,7 @@ class CORE_EXPORT CSSToggleMap : public ScriptWrappable,
   explicit CSSToggleMap(Element* owner_element);
 
   ToggleMap& Toggles() { return toggles_; }
-  Element* OwnerElement() const { return owner_element_; }
+  Element* OwnerElement() const { return owner_element_.Get(); }
   // Create any toggles specified by 'toggle-root' that don't already exist on
   // the element.
   void CreateToggles(const ToggleRootList* toggle_roots);

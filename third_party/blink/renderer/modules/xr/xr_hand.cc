@@ -65,7 +65,7 @@ XRHand::XRHand(const device::mojom::blink::XRHandTrackingData* state,
 
 XRJointSpace* XRHand::get(const V8XRHandJoint& key) const {
   wtf_size_t index = static_cast<wtf_size_t>(key.AsEnum());
-  return joints_[index];
+  return joints_[index].Get();
 }
 
 void XRHand::updateFromHandTrackingData(

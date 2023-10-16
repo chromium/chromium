@@ -242,7 +242,7 @@ class TestRawResourceClient final
     RawResourceClient::Trace(visitor);
   }
 
-  BytesConsumer* body() { return body_; }
+  BytesConsumer* body() { return body_.Get(); }
 
  private:
   Member<BytesConsumer> body_;

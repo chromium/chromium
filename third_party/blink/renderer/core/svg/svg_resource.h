@@ -68,7 +68,7 @@ class SVGResource : public GarbageCollected<SVGResource> {
   virtual void Load(Document&) {}
   virtual void LoadWithoutCSP(Document&) {}
 
-  Element* Target() const { return target_; }
+  Element* Target() const { return target_.Get(); }
   // Returns the target's LayoutObject (if target exists and is attached to the
   // layout tree). Also perform cycle-checking, and may thus return nullptr if
   // this SVGResourceClient -> SVGResource reference would start a cycle.

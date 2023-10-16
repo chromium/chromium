@@ -98,7 +98,7 @@ class NodeData : public GarbageCollected<NodeData> {
   NodeData(const NodeData&) = delete;
   NodeData(NodeData&&);
 
-  LayoutObject* GetLayoutObject() const { return layout_object_; }
+  LayoutObject* GetLayoutObject() const { return layout_object_.Get(); }
   void SetLayoutObject(LayoutObject* layout_object) {
     DCHECK_NE(&SharedEmptyData(), this);
     layout_object_ = layout_object;
@@ -180,7 +180,9 @@ class NodeRareData : public NodeData {
     return *node_lists_;
   }
 
-  FlatTreeNodeData* GetFlatTreeNodeData() const { return flat_tree_node_data_; }
+  FlatTreeNodeData* GetFlatTreeNodeData() const {
+    return flat_tree_node_data_.Get();
+  }
   FlatTreeNodeData& EnsureFlatTreeNodeData();
 
   NodeMutationObserverData* MutationObserverData() {
@@ -230,7 +232,7 @@ class NodeRareData : public NodeData {
 
   void AddDOMPart(Part& part);
   void RemoveDOMPart(Part& part);
-  PartsList* GetDOMParts() const { return dom_parts_; }
+  PartsList* GetDOMParts() const { return dom_parts_.Get(); }
 
   void Trace(blink::Visitor*) const override;
 

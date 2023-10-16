@@ -78,7 +78,7 @@ class PLATFORM_EXPORT CallbackFunctionBase
     if (!cached_data_) {
       MakeCachedData();
     }
-    return cached_data_->incumbent_script_state_;
+    return cached_data_->incumbent_script_state_.Get();
   }
 
   DOMWrapperWorld& GetWorld() const { return IncumbentScriptState()->World(); }
@@ -116,7 +116,7 @@ class PLATFORM_EXPORT CallbackFunctionBase
     if (!cached_data_) {
       MakeCachedData();
     }
-    return cached_data_->callback_relevant_script_state_;
+    return cached_data_->callback_relevant_script_state_.Get();
   }
 
   inline void MakeCachedData(ScriptState* callback_relevant_script_state,
@@ -169,7 +169,9 @@ class PLATFORM_EXPORT CallbackFunctionWithTaskAttributionBase
  public:
   ~CallbackFunctionWithTaskAttributionBase() override = default;
 
-  scheduler::TaskAttributionInfo* GetParentTask() const { return parent_task_; }
+  scheduler::TaskAttributionInfo* GetParentTask() const {
+    return parent_task_.Get();
+  }
 
   void SetParentTask(scheduler::TaskAttributionInfo* task) {
     parent_task_ = task;

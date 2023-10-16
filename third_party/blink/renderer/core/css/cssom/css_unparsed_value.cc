@@ -93,7 +93,7 @@ V8CSSUnparsedSegment* CSSUnparsedValue::AnonymousIndexedGetter(
     uint32_t index,
     ExceptionState& exception_state) const {
   if (index < tokens_.size()) {
-    return tokens_[index];
+    return tokens_[index].Get();
   }
   return nullptr;
 }

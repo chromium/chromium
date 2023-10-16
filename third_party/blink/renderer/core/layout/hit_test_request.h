@@ -95,7 +95,7 @@ class HitTestRequest {
   bool TouchMove() const { return Move() && TouchEvent(); }
 
   HitTestRequestType GetType() const { return request_type_; }
-  const LayoutObject* GetStopNode() const { return stop_node_; }
+  const LayoutObject* GetStopNode() const { return stop_node_.Get(); }
 
   // The Cacheability bits don't affect hit testing computation.
   // TODO(dtapuska): These bits really shouldn't be fields on the HitTestRequest

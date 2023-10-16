@@ -100,7 +100,7 @@ class CORE_EXPORT DedicatedWorkerGlobalScope final : public WorkerGlobalScope {
   int requestAnimationFrame(V8FrameRequestCallback* callback, ExceptionState&);
   void cancelAnimationFrame(int id);
   WorkerAnimationFrameProvider* GetAnimationFrameProvider() {
-    return animation_frame_provider_;
+    return animation_frame_provider_.Get();
   }
 
   // Implements WorkerGlobalScope.

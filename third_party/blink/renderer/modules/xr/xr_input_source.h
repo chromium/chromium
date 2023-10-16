@@ -50,7 +50,7 @@ class XRInputSource : public ScriptWrappable, public Gamepad::Client {
   int16_t activeFrameId() const { return state_.active_frame_id; }
   void setActiveFrameId(int16_t id) { state_.active_frame_id = id; }
 
-  XRSession* session() const { return session_; }
+  XRSession* session() const { return session_.Get(); }
 
   device::mojom::XRHandedness xr_handedness() const {
     return state_.handedness;
@@ -61,8 +61,8 @@ class XRInputSource : public ScriptWrappable, public Gamepad::Client {
   bool emulatedPosition() const { return state_.emulated_position; }
   XRSpace* targetRaySpace() const;
   XRSpace* gripSpace() const;
-  Gamepad* gamepad() const { return gamepad_; }
-  XRHand* hand() const { return hand_; }
+  Gamepad* gamepad() const { return gamepad_.Get(); }
+  XRHand* hand() const { return hand_.Get(); }
   Vector<String> profiles() const { return state_.profiles; }
 
   uint32_t source_id() const { return state_.source_id; }

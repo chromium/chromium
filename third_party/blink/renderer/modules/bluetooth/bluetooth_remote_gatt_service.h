@@ -41,7 +41,7 @@ class BluetoothRemoteGATTService final : public ScriptWrappable {
   // IDL exposed interface:
   String uuid() { return service_->uuid; }
   bool isPrimary() { return is_primary_; }
-  BluetoothDevice* device() { return device_; }
+  BluetoothDevice* device() { return device_.Get(); }
   ScriptPromise getCharacteristic(
       ScriptState* script_state,
       const V8BluetoothCharacteristicUUID* characteristic,

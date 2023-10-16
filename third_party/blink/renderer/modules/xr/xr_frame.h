@@ -54,7 +54,7 @@ class XRFrame final : public ScriptWrappable {
 
   explicit XRFrame(XRSession* session, bool is_animation_frame = false);
 
-  XRSession* session() const { return session_; }
+  XRSession* session() const { return session_.Get(); }
 
   // Returns basespace_from_viewer.
   XRViewerPose* getViewerPose(XRReferenceSpace* basespace,

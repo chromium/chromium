@@ -152,7 +152,7 @@ class CORE_EXPORT DocumentLoader : public GarbageCollected<DocumentLoader>,
 
   static bool WillLoadUrlAsEmpty(const KURL&);
 
-  LocalFrame* GetFrame() const { return frame_; }
+  LocalFrame* GetFrame() const { return frame_.Get(); }
 
   void DetachFromFrame(bool flush_microtask_queue);
 
@@ -274,7 +274,7 @@ class CORE_EXPORT DocumentLoader : public GarbageCollected<DocumentLoader>,
     navigation_type_ = navigation_type;
   }
 
-  HistoryItem* GetHistoryItem() const { return history_item_; }
+  HistoryItem* GetHistoryItem() const { return history_item_.Get(); }
 
   void StartLoading();
   void StopLoading();

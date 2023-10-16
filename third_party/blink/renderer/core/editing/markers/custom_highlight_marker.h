@@ -27,7 +27,7 @@ class CORE_EXPORT CustomHighlightMarker final : public HighlightPseudoMarker {
   PseudoId GetPseudoId() const final;
   const AtomicString& GetPseudoArgument() const final;
 
-  const Highlight* GetHighlight() const { return highlight_; }
+  const Highlight* GetHighlight() const { return highlight_.Get(); }
   const AtomicString& GetHighlightName() const { return highlight_name_; }
 
   void SetHasVisualOverflow(bool has_overflow);

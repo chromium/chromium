@@ -104,7 +104,7 @@ class CORE_EXPORT SpeculationRuleSet final
   bool has_document_rule() const { return has_document_rule_; }
   bool requires_unfiltered_input() const { return requires_unfiltered_input_; }
 
-  Source* source() const { return source_; }
+  Source* source() const { return source_.Get(); }
 
   const HeapVector<Member<StyleRule>>& selectors() { return selectors_; }
 

@@ -53,7 +53,7 @@ DOMFileSystem* DraggedIsolatedFileSystemImpl::GetDOMFileSystem(
     return nullptr;
   auto it = dragged_isolated_file_system->filesystems_.find(file_system_id);
   if (it != dragged_isolated_file_system->filesystems_.end())
-    return it->value;
+    return it->value.Get();
   return dragged_isolated_file_system->filesystems_
       .insert(file_system_id, DOMFileSystem::CreateIsolatedFileSystem(
                                   execution_context, file_system_id))

@@ -842,7 +842,7 @@ inline const QualifiedName& CSSSelector::TagQName() const {
 inline const StyleRule* CSSSelector::ParentRule() const {
   DCHECK_EQ(match_, static_cast<unsigned>(kPseudoClass));
   DCHECK_EQ(pseudo_type_, static_cast<unsigned>(kPseudoParent));
-  return data_.parent_rule_;
+  return data_.parent_rule_.Get();
 }
 
 inline const AtomicString& CSSSelector::Value() const {

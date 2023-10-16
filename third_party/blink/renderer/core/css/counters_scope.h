@@ -50,12 +50,12 @@ class CORE_EXPORT CountersScope final : public GarbageCollected<CountersScope> {
   void ClearChildren();
   HeapVector<Member<CountersScope>>& Children() { return children_; }
 
-  StyleContainmentScope* StyleScope() const { return scope_; }
+  StyleContainmentScope* StyleScope() const { return scope_.Get(); }
   void SetStyleScope(StyleContainmentScope* scope) {
     scope_ = scope;
     is_dirty_ = true;
   }
-  CountersScope* Parent() const { return parent_; }
+  CountersScope* Parent() const { return parent_.Get(); }
   void SetParent(CountersScope* parent) {
     parent_ = parent;
     is_dirty_ = true;

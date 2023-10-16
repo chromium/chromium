@@ -42,7 +42,7 @@ RTCTrackEvent::RTCTrackEvent(RTCRtpReceiver* receiver,
 }
 
 RTCRtpReceiver* RTCTrackEvent::receiver() const {
-  return receiver_;
+  return receiver_.Get();
 }
 
 MediaStreamTrack* RTCTrackEvent::track() const {

@@ -25,8 +25,8 @@ class CORE_EXPORT ResizeObserverEntry final : public ScriptWrappable {
  public:
   ResizeObserverEntry(Element* target);
 
-  Element* target() const { return target_; }
-  DOMRectReadOnly* contentRect() const { return content_rect_; }
+  Element* target() const { return target_.Get(); }
+  DOMRectReadOnly* contentRect() const { return content_rect_.Get(); }
   HeapVector<Member<ResizeObserverSize>> contentBoxSize() const {
     return content_box_size_;
   }

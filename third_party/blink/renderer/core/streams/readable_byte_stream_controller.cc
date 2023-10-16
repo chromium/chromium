@@ -109,7 +109,7 @@ ReadableStreamBYOBRequest* ReadableByteStreamController::GetBYOBRequest(
   }
 
   // 2. Return controller.[[byobRequest]].
-  return controller->byob_request_;
+  return controller->byob_request_.Get();
 }
 
 absl::optional<double> ReadableByteStreamController::desiredSize() {

@@ -37,7 +37,7 @@ class WebGLRenderingContextBase;
 // multiple WebGLRenderingContexts.
 class WebGLSharedObject : public WebGLObject {
  public:
-  WebGLContextGroup* ContextGroup() const { return context_group_; }
+  WebGLContextGroup* ContextGroup() const { return context_group_.Get(); }
 
   virtual bool IsBuffer() const { return false; }
   virtual bool IsProgram() const { return false; }

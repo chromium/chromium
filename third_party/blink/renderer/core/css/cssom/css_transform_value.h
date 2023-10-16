@@ -45,7 +45,7 @@ class CORE_EXPORT CSSTransformValue final : public CSSStyleValue {
   StyleValueType GetType() const override { return kTransformType; }
 
   CSSTransformComponent* AnonymousIndexedGetter(wtf_size_t index) {
-    return transform_components_.at(index);
+    return transform_components_.at(index).Get();
   }
   IndexedPropertySetterResult AnonymousIndexedSetter(
       unsigned,

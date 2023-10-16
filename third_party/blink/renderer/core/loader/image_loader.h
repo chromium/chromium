@@ -83,7 +83,7 @@ class CORE_EXPORT ImageLoader : public GarbageCollected<ImageLoader>,
 
   void ElementDidMoveToNewDocument();
 
-  Element* GetElement() const { return element_; }
+  Element* GetElement() const { return element_.Get(); }
   bool ImageComplete() const { return image_complete_; }
 
   ImageResourceContent* GetContent() const { return image_content_.Get(); }

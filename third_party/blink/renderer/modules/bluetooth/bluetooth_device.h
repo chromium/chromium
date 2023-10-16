@@ -81,7 +81,7 @@ class BluetoothDevice final
   const AtomicString& InterfaceName() const override;
   ExecutionContext* GetExecutionContext() const override;
 
-  Bluetooth* GetBluetooth() { return bluetooth_; }
+  Bluetooth* GetBluetooth() { return bluetooth_.Get(); }
 
   const mojom::blink::WebBluetoothDevicePtr& GetDevice() const {
     return device_;
@@ -97,7 +97,7 @@ class BluetoothDevice final
   ScriptPromise forget(ScriptState*, ExceptionState&);
   String id() { return device_->id.DeviceIdInBase64().c_str(); }
   String name() { return device_->name; }
-  BluetoothRemoteGATTServer* gatt() { return gatt_; }
+  BluetoothRemoteGATTServer* gatt() { return gatt_.Get(); }
   bool watchingAdvertisements() { return client_receiver_.is_bound(); }
 
   void AbortWatchAdvertisements(AbortSignal* signal);

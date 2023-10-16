@@ -36,7 +36,7 @@ class RemoteFrameClientImpl final : public RemoteFrameClient {
   void CreateRemoteChildren(
       const Vector<mojom::blink::CreateRemoteChildParamsPtr>& params) override;
 
-  WebRemoteFrameImpl* GetWebFrame() const { return web_frame_; }
+  WebRemoteFrameImpl* GetWebFrame() const { return web_frame_.Get(); }
 
  private:
   WebRemoteFrameImpl* CreateRemoteChildImpl(

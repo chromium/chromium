@@ -38,7 +38,7 @@ class XRLightProbe : public EventTarget {
     kReflectionFormatRGBA16F = 1
   };
 
-  XRSession* session() const { return session_; }
+  XRSession* session() const { return session_.Get(); }
 
   XRSpace* probeSpace() const;
 
@@ -52,7 +52,7 @@ class XRLightProbe : public EventTarget {
       const device::mojom::blink::XRLightEstimationData* data,
       double timestamp);
 
-  XRLightEstimate* getLightEstimate() { return light_estimate_; }
+  XRLightEstimate* getLightEstimate() { return light_estimate_.Get(); }
   XRCubeMap* getReflectionCubeMap() { return cube_map_.get(); }
 
   XRReflectionFormat ReflectionFormat() const { return reflection_format_; }

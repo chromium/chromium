@@ -68,7 +68,7 @@ class CORE_EXPORT Request final : public ScriptWrappable, public Body {
   // From Request.idl:
   String method() const;
   const KURL& url() const;
-  Headers* getHeaders() const { return headers_; }
+  Headers* getHeaders() const { return headers_.Get(); }
   String destination() const;
   String referrer() const;
   String getReferrerPolicy() const;

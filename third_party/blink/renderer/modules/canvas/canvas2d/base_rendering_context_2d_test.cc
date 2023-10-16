@@ -141,7 +141,7 @@ class TestRenderingContext2D final
   }
 
   ExecutionContext* GetTopExecutionContext() const override {
-    return execution_context_;
+    return execution_context_.Get();
   }
 
   bool HasAlpha() const override { return false; }

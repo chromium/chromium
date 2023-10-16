@@ -30,7 +30,7 @@ SubresourceWebBundle* SubresourceWebBundleList::GetMatchingBundle(
   for (auto it = subresource_web_bundles_.rbegin();
        it != subresource_web_bundles_.rend(); ++it) {
     if ((*it)->CanHandleRequest(url)) {
-      return *it;
+      return it->Get();
     }
   }
   return nullptr;
@@ -43,7 +43,7 @@ SubresourceWebBundleList::FindSubresourceWebBundleWhichWillBeReleased(
   for (auto& it : subresource_web_bundles_) {
     if (it->WillBeReleased() && it->GetBundleUrl() == bundle_url &&
         it->GetCredentialsMode() == credentials_mode)
-      return it;
+      return it.Get();
   }
   return nullptr;
 }

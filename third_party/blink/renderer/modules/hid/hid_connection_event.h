@@ -24,7 +24,7 @@ class HIDConnectionEvent final : public Event {
   HIDConnectionEvent(const AtomicString& type, const HIDConnectionEventInit*);
   HIDConnectionEvent(const AtomicString& type, HIDDevice*);
 
-  HIDDevice* device() const { return device_; }
+  HIDDevice* device() const { return device_.Get(); }
 
   void Trace(Visitor*) const override;
 

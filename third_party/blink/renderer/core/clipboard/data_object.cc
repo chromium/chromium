@@ -117,7 +117,7 @@ uint32_t DataObject::length() const {
 DataObjectItem* DataObject::Item(uint32_t index) {
   if (index >= length())
     return nullptr;
-  return item_list_[index];
+  return item_list_[index].Get();
 }
 
 void DataObject::DeleteItem(uint32_t index) {
@@ -285,7 +285,7 @@ DataObject::DataObject() : modifiers_(0) {}
 DataObjectItem* DataObject::FindStringItem(const String& type) const {
   for (const auto& item : item_list_) {
     if (item->Kind() == DataObjectItem::kStringKind && item->GetType() == type)
-      return item;
+      return item.Get();
   }
   return nullptr;
 }

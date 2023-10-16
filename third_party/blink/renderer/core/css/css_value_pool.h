@@ -82,13 +82,13 @@ class CORE_EXPORT CSSValuePool final : public GarbageCollected<CSSValuePool> {
   CSSValuePool& operator=(const CSSValuePool&) = delete;
 
   // Cached individual values.
-  CSSColor* TransparentColor() { return color_transparent_; }
-  CSSColor* WhiteColor() { return color_white_; }
-  CSSColor* BlackColor() { return color_black_; }
-  CSSInheritedValue* InheritedValue() { return inherited_value_; }
-  CSSInitialValue* InitialValue() { return initial_value_; }
-  CSSUnsetValue* UnsetValue() { return unset_value_; }
-  CSSRevertValue* RevertValue() { return revert_value_; }
+  CSSColor* TransparentColor() { return color_transparent_.Get(); }
+  CSSColor* WhiteColor() { return color_white_.Get(); }
+  CSSColor* BlackColor() { return color_black_.Get(); }
+  CSSInheritedValue* InheritedValue() { return inherited_value_.Get(); }
+  CSSInitialValue* InitialValue() { return initial_value_.Get(); }
+  CSSUnsetValue* UnsetValue() { return unset_value_.Get(); }
+  CSSRevertValue* RevertValue() { return revert_value_.Get(); }
   CSSRevertLayerValue* RevertLayerValue() { return revert_layer_value_; }
   CSSInvalidVariableValue* InvalidVariableValue() {
     return invalid_variable_value_;

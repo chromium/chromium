@@ -62,7 +62,7 @@ DOMArrayBuffer* XRCPUDepthInformation::data(
     return nullptr;
   }
 
-  return data_;
+  return data_.Get();
 }
 
 float XRCPUDepthInformation::getDepthInMeters(

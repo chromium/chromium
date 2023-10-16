@@ -25,7 +25,7 @@ class PLATFORM_EXPORT FontFallbackMap : public FontCacheClient,
 
   ~FontFallbackMap() override;
 
-  FontSelector* GetFontSelector() const { return font_selector_; }
+  FontSelector* GetFontSelector() const { return font_selector_.Get(); }
 
   scoped_refptr<FontFallbackList> Get(const FontDescription& font_description);
 

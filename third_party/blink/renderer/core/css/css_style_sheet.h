@@ -96,7 +96,7 @@ class CORE_EXPORT CSSStyleSheet final : public StyleSheet,
   ~CSSStyleSheet() override;
 
   CSSStyleSheet* parentStyleSheet() const override;
-  Node* ownerNode() const override { return owner_node_; }
+  Node* ownerNode() const override { return owner_node_.Get(); }
   MediaList* media() override;
   String href() const override;
   String title() const override { return title_; }
@@ -129,7 +129,7 @@ class CORE_EXPORT CSSStyleSheet final : public StyleSheet,
 
   void ClearOwnerNode() override;
 
-  CSSRule* ownerRule() const override { return owner_rule_; }
+  CSSRule* ownerRule() const override { return owner_rule_.Get(); }
   KURL BaseURL() const override;
   bool IsLoading() const override;
 
@@ -162,7 +162,7 @@ class CORE_EXPORT CSSStyleSheet final : public StyleSheet,
 
   // Associated document for constructed stylesheet. Always non-null for
   // constructed stylesheets, always null otherwise.
-  Document* ConstructorDocument() const { return constructor_document_; }
+  Document* ConstructorDocument() const { return constructor_document_.Get(); }
 
   // Set constructor document for constructed stylesheet.
   void SetConstructorDocument(Document& document) {

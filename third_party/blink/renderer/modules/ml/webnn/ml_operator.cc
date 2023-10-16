@@ -102,7 +102,7 @@ MLOperator::OperatorKind MLOperator::Kind() const {
 }
 
 const bindings::DictionaryBase* MLOperator::Options() const {
-  return options_;
+  return options_.Get();
 }
 
 bool MLOperator::IsConnected() const {

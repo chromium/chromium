@@ -51,7 +51,7 @@ class CORE_EXPORT TrackBase : public Supplementable<TrackBase> {
   void SetMediaElement(HTMLMediaElement* media_element) {
     media_element_ = media_element;
   }
-  HTMLMediaElement* MediaElement() const { return media_element_; }
+  HTMLMediaElement* MediaElement() const { return media_element_.Get(); }
 
   void Trace(Visitor*) const override;
 

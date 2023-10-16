@@ -63,7 +63,7 @@ class TaskSession final : public GarbageCollected<TaskSession> {
     bool HasUnsentChangedContent() const { return !changed_content_.empty(); }
     bool HasUnsentDetachedNodes() const { return !detached_nodes_.empty(); }
     WebVector<int64_t> MoveDetachedNodes();
-    const Document* GetDocument() const { return document_; }
+    const Document* GetDocument() const { return document_.Get(); }
     bool FirstDataHasSent() const { return first_data_has_sent_; }
     void SetFirstDataHasSent() { first_data_has_sent_ = true; }
 

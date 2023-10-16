@@ -110,7 +110,7 @@ class CORE_EXPORT Scrollbar : public GarbageCollected<Scrollbar>,
   virtual void OffsetDidChange(mojom::blink::ScrollType scroll_type);
 
   virtual void DisconnectFromScrollableArea();
-  ScrollableArea* GetScrollableArea() const { return scrollable_area_; }
+  ScrollableArea* GetScrollableArea() const { return scrollable_area_.Get(); }
 
   int PressedPos() const { return pressed_pos_; }
 

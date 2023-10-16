@@ -109,7 +109,7 @@ class HeapMojoReceiverSet {
     mojo::ReceiverSet<Interface, ContextType>& receiver_set() {
       return receiver_set_;
     }
-    Owner* owner() { return owner_; }
+    Owner* owner() { return owner_.Get(); }
 
     // ContextLifecycleObserver methods
     void ContextDestroyed() override {

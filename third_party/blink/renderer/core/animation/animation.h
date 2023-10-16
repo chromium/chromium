@@ -202,8 +202,8 @@ class CORE_EXPORT Animation : public EventTarget,
   double playbackRate() const;
   void setPlaybackRate(double, ExceptionState& = ASSERT_NO_EXCEPTION);
 
-  AnimationTimeline* TimelineInternal() { return timeline_; }
-  AnimationTimeline* TimelineInternal() const { return timeline_; }
+  AnimationTimeline* TimelineInternal() { return timeline_.Get(); }
+  AnimationTimeline* TimelineInternal() const { return timeline_.Get(); }
 
   // Note that this function returns the *exposed* timeline, which may be
   // different from the the timeline the Animation is actually attached to.

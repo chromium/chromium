@@ -92,7 +92,7 @@ class XRSpace : public EventTarget {
   // other_from_this.
   virtual XRPose* getPose(const XRSpace* other_space) const;
 
-  XRSession* session() const { return session_; }
+  XRSession* session() const { return session_.Get(); }
 
   // ToString() helper, used for debugging.
   virtual std::string ToString() const = 0;

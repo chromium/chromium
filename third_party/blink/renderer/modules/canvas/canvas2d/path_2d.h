@@ -86,7 +86,9 @@ class MODULES_EXPORT Path2D final : public ScriptWrappable, public CanvasPath {
 
   void Trace(Visitor*) const override;
 
-  ExecutionContext* GetTopExecutionContext() const override { return context_; }
+  ExecutionContext* GetTopExecutionContext() const override {
+    return context_.Get();
+  }
 
   explicit Path2D(ScriptState* script_state)
       : context_(ExecutionContext::From(script_state)) {

@@ -32,23 +32,23 @@ void PreferenceManager::Trace(Visitor* visitor) const {
 }
 
 PreferenceObject* PreferenceManager::colorScheme() {
-  return color_scheme_;
+  return color_scheme_.Get();
 }
 
 PreferenceObject* PreferenceManager::contrast() {
-  return contrast_;
+  return contrast_.Get();
 }
 
 PreferenceObject* PreferenceManager::reducedMotion() {
-  return reduced_motion_;
+  return reduced_motion_.Get();
 }
 
 PreferenceObject* PreferenceManager::reducedTransparency() {
-  return reduced_transparency_;
+  return reduced_transparency_.Get();
 }
 
 PreferenceObject* PreferenceManager::reducedData() {
-  return reduced_data_;
+  return reduced_data_.Get();
 }
 
 }  // namespace blink

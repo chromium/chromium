@@ -57,7 +57,7 @@ class CanvasStyle final {
     return color_.SerializeAsCanvasColor();
   }
   CanvasGradient* GetCanvasGradient() const { return gradient_.Get(); }
-  CanvasPattern* GetCanvasPattern() const { return pattern_; }
+  CanvasPattern* GetCanvasPattern() const { return pattern_.Get(); }
 
   // Applies the CanvasStyle to PaintFlags. This is the slow path to be used
   // in cases where PaintFlags has never been initialized and no assumptions

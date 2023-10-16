@@ -52,9 +52,9 @@ class RegisteredEventListener final
 
   AddEventListenerOptionsResolved* Options() const;
 
-  const EventListener* Callback() const { return callback_; }
+  const EventListener* Callback() const { return callback_.Get(); }
 
-  EventListener* Callback() { return callback_; }
+  EventListener* Callback() { return callback_.Get(); }
 
   void SetCallback(EventListener* listener);
 

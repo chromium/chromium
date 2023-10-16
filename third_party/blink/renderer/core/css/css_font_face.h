@@ -59,7 +59,7 @@ class CORE_EXPORT CSSFontFace final : public GarbageCollected<CSSFontFace> {
   const CSSFontFaceSource* FrontSource() const {
     return sources_.empty() ? nullptr : sources_.front();
   }
-  FontFace* GetFontFace() const { return font_face_; }
+  FontFace* GetFontFace() const { return font_face_.Get(); }
 
   scoped_refptr<UnicodeRangeSet> Ranges() { return ranges_; }
 

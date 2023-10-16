@@ -119,7 +119,7 @@ class CORE_EXPORT FetchRequestData final
   void SetHeaderList(FetchHeaderList* header_list) {
     header_list_ = header_list;
   }
-  BodyStreamBuffer* Buffer() const { return buffer_; }
+  BodyStreamBuffer* Buffer() const { return buffer_.Get(); }
   void SetBuffer(BodyStreamBuffer* buffer, uint64_t length = 0) {
     buffer_ = buffer;
     buffer_byte_length_ = length;

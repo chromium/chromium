@@ -63,7 +63,7 @@ class MODULES_EXPORT TransferredMediaStreamTrack : public MediaStreamTrack {
   bool HasImplementation() const { return !!track_; }
   // TODO(1288839): access to track_ is a baby-step toward removing
   // TransferredMediaStreamTrack.
-  MediaStreamTrack* track() const { return track_; }
+  MediaStreamTrack* track() const { return track_.Get(); }
   void SetImplementation(MediaStreamTrack* track);
   void SetComponentImplementation(MediaStreamComponent* component);
 

@@ -23,7 +23,7 @@ StyleRuleViewTransitions::StyleRuleViewTransitions(
 StyleRuleViewTransitions::~StyleRuleViewTransitions() = default;
 
 const CSSValue* StyleRuleViewTransitions::GetNavigationTrigger() const {
-  return navigation_trigger_;
+  return navigation_trigger_.Get();
 }
 
 void StyleRuleViewTransitions::TraceAfterDispatch(

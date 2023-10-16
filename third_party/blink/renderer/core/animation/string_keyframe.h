@@ -122,7 +122,7 @@ class CORE_EXPORT StringKeyframe : public Keyframe {
         const ComputedStyle& base_style,
         const ComputedStyle* parent_style) const final;
     const CompositorKeyframeValue* GetCompositorKeyframeValue() const final {
-      return compositor_keyframe_value_cache_;
+      return compositor_keyframe_value_cache_.Get();
     }
 
     bool IsNeutral() const final { return !value_; }

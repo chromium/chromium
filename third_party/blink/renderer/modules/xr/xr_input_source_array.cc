@@ -30,7 +30,7 @@ XRInputSource* XRInputSourceArray::operator[](unsigned index) const {
 XRInputSource* XRInputSourceArray::GetWithSourceId(uint32_t source_id) {
   auto it = input_sources_.find(source_id);
   if (it != input_sources_.end())
-    return it->value;
+    return it->value.Get();
   return nullptr;
 }
 

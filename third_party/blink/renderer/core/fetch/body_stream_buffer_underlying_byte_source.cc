@@ -53,7 +53,7 @@ ScriptPromise BodyStreamBufferUnderlyingByteSource::Cancel(
 }
 
 ScriptState* BodyStreamBufferUnderlyingByteSource::GetScriptState() {
-  return script_state_;
+  return script_state_.Get();
 }
 
 void BodyStreamBufferUnderlyingByteSource::Trace(Visitor* visitor) const {

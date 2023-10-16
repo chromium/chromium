@@ -45,7 +45,7 @@ class CORE_EXPORT PrintContext : public GarbageCollected<PrintContext> {
   explicit PrintContext(LocalFrame*);
   virtual ~PrintContext();
 
-  LocalFrame* GetFrame() const { return frame_; }
+  LocalFrame* GetFrame() const { return frame_.Get(); }
 
   // These are only valid when inside print mode.
   wtf_size_t PageCount() const { return page_count_; }

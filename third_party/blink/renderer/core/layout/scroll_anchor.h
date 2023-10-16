@@ -60,7 +60,7 @@ class CORE_EXPORT ScrollAnchor final {
 
   // The LayoutObject we are currently anchored to. Lazily computed during
   // notifyBeforeLayout() and cached until the next call to clear().
-  LayoutObject* AnchorObject() const { return anchor_object_; }
+  LayoutObject* AnchorObject() const { return anchor_object_.Get(); }
 
   // Called when the scroller attached to this anchor is being destroyed.
   void Dispose();

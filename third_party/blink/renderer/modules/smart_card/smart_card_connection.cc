@@ -178,7 +178,7 @@ class SmartCardConnection::TransactionState final
       base::OnceCallback<void(device::mojom::blink::SmartCardResultPtr)>);
 
   ScriptPromiseResolver* GetStartTransactionRequest() const {
-    return start_transaction_request_;
+    return start_transaction_request_.Get();
   }
 
  private:

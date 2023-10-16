@@ -121,7 +121,7 @@ class PLATFORM_EXPORT ResourceLoader final
     return is_cache_aware_loading_activated_;
   }
 
-  ResourceFetcher* Fetcher() { return fetcher_; }
+  ResourceFetcher* Fetcher() { return fetcher_.Get(); }
   bool ShouldBeKeptAliveWhenDetached() const;
 
   void AbortResponseBodyLoading();

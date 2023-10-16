@@ -149,15 +149,15 @@ class CORE_EXPORT PendingScript : public GarbageCollected<PendingScript>,
 
   virtual void DisposeInternal() = 0;
 
-  PendingScriptClient* Client() { return client_; }
+  PendingScriptClient* Client() { return client_.Get(); }
 
   virtual void CheckState() const = 0;
 
   Document* OriginalElementDocument() const {
-    return original_element_document_;
+    return original_element_document_.Get();
   }
   ExecutionContext* OriginalExecutionContext() const {
-    return original_execution_context_;
+    return original_execution_context_.Get();
   }
 
   bool IsDisposed() const { return !element_; }

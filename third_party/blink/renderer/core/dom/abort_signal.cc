@@ -321,7 +321,7 @@ AbortSignalCompositionManager* AbortSignal::GetCompositionManager(
     AbortSignalCompositionType type) {
   DCHECK(RuntimeEnabledFeatures::AbortSignalCompositionEnabled());
   if (type == AbortSignalCompositionType::kAbort) {
-    return composition_manager_;
+    return composition_manager_.Get();
   }
   return nullptr;
 }

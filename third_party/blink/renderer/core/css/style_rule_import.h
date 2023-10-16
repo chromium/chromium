@@ -45,7 +45,9 @@ class StyleRuleImport : public StyleRuleBase {
                   OriginClean origin_clean);
   ~StyleRuleImport();
 
-  StyleSheetContents* ParentStyleSheet() const { return parent_style_sheet_; }
+  StyleSheetContents* ParentStyleSheet() const {
+    return parent_style_sheet_.Get();
+  }
   void SetParentStyleSheet(StyleSheetContents* sheet) {
     DCHECK(sheet);
     parent_style_sheet_ = sheet;

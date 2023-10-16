@@ -40,14 +40,14 @@ class MockMediaStreamTrack : public blink::MediaStreamTrack {
   void SetReadyState(const String& ready_state) { ready_state_ = ready_state; }
 
   MediaTrackCapabilities* getCapabilities() const override {
-    return capabilities_;
+    return capabilities_.Get();
   }
   void SetCapabilities(MediaTrackCapabilities* capabilities) {
     capabilities_ = capabilities;
   }
 
   MediaTrackConstraints* getConstraints() const override {
-    return constraints_;
+    return constraints_.Get();
   }
   void SetConstraints(MediaTrackConstraints* constraints) {
     constraints_ = constraints;

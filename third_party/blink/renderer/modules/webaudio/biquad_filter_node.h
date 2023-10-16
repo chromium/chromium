@@ -68,10 +68,10 @@ class BiquadFilterNode final : public AudioNode {
   String type() const;
   void setType(const String&);
 
-  AudioParam* frequency() { return frequency_; }
-  AudioParam* q() { return q_; }
-  AudioParam* gain() { return gain_; }
-  AudioParam* detune() { return detune_; }
+  AudioParam* frequency() { return frequency_.Get(); }
+  AudioParam* q() { return q_.Get(); }
+  AudioParam* gain() { return gain_.Get(); }
+  AudioParam* detune() { return detune_.Get(); }
 
   // Get the magnitude and phase response of the filter at the given
   // set of frequencies (in Hz). The phase response is in radians.

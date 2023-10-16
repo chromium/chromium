@@ -62,7 +62,7 @@ bool CSSURLImageValue::IsAccelerated() const {
 }
 
 const CSSValue* CSSURLImageValue::ToCSSValue() const {
-  return value_;
+  return value_.Get();
 }
 
 void CSSURLImageValue::Trace(Visitor* visitor) const {

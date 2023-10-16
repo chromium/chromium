@@ -38,7 +38,7 @@ class MODULES_EXPORT DelegatedInkTrailPresenter : public ScriptWrappable {
                                 InkTrailStyle* style,
                                 ExceptionState& exception_state);
   uint32_t expectedImprovement() const { return expected_improvement_; }
-  Element* presentationArea() const { return presentation_area_; }
+  Element* presentationArea() const { return presentation_area_.Get(); }
 
   void Trace(Visitor* visitor) const override;
 

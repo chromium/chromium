@@ -167,7 +167,7 @@ class CORE_EXPORT ReferenceFilterOperation : public FilterOperation {
   Filter* GetFilter() const { return filter_.Get(); }
   void SetFilter(Filter* filter) { filter_ = filter; }
 
-  SVGResource* Resource() const { return resource_; }
+  SVGResource* Resource() const { return resource_.Get(); }
 
   void AddClient(SVGResourceClient&);
   void RemoveClient(SVGResourceClient&);

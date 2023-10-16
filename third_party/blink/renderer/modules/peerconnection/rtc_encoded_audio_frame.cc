@@ -82,7 +82,7 @@ DOMArrayBuffer* RTCEncodedAudioFrame::data() const {
   if (!frame_data_) {
     frame_data_ = delegate_->CreateDataBuffer();
   }
-  return frame_data_;
+  return frame_data_.Get();
 }
 
 RTCEncodedAudioFrameMetadata* RTCEncodedAudioFrame::getMetadata() const {

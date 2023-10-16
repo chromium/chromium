@@ -67,7 +67,7 @@ class CORE_EXPORT BodyStreamBuffer final
   BodyStreamBuffer(const BodyStreamBuffer&) = delete;
   BodyStreamBuffer& operator=(const BodyStreamBuffer&) = delete;
 
-  ReadableStream* Stream() { return stream_; }
+  ReadableStream* Stream() { return stream_.Get(); }
 
   // Callable only when neither locked nor disturbed.
   scoped_refptr<BlobDataHandle> DrainAsBlobDataHandle(
@@ -112,7 +112,7 @@ class CORE_EXPORT BodyStreamBuffer final
   ScriptCachedMetadataHandler* GetCachedMetadataHandler() {
     DCHECK(!IsStreamLocked());
     DCHECK(!IsStreamDisturbed());
-    return cached_metadata_handler_;
+    return cached_metadata_handler_.Get();
   }
 
   // Take the blob representing any side data associated with this body

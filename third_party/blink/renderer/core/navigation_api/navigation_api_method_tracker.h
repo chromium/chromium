@@ -38,7 +38,7 @@ class NavigationApiMethodTracker final
   // Note: even though this returns the same NavigationResult every time, the
   // bindings layer will create a new JS object for each distinct navigation API
   // method call, so we still match the specified semantics.
-  NavigationResult* GetNavigationResult() const { return result_; }
+  NavigationResult* GetNavigationResult() const { return result_.Get(); }
 
   const ScriptValue& GetInfo() const { return info_; }
   const String& GetKey() const { return key_; }

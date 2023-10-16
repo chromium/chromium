@@ -35,10 +35,10 @@ class BluetoothRemoteGATTDescriptor final : public ScriptWrappable {
 
   // IDL exposed interface:
   BluetoothRemoteGATTCharacteristic* characteristic() {
-    return characteristic_;
+    return characteristic_.Get();
   }
   String uuid() { return descriptor_->uuid; }
-  DOMDataView* value() const { return value_; }
+  DOMDataView* value() const { return value_.Get(); }
   ScriptPromise readValue(ScriptState*, ExceptionState&);
   ScriptPromise writeValue(ScriptState*, const DOMArrayPiece&, ExceptionState&);
 

@@ -258,7 +258,7 @@ class CounterContentData final : public ContentData {
   const AtomicString& Identifier() const { return identifier_; }
   const AtomicString& ListStyle() const { return list_style_; }
   const AtomicString& Separator() const { return separator_; }
-  const TreeScope* GetTreeScope() const { return tree_scope_; }
+  const TreeScope* GetTreeScope() const { return tree_scope_.Get(); }
 
   void Trace(Visitor*) const override;
 

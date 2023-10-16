@@ -249,12 +249,12 @@ class CORE_EXPORT ScrollableArea : public GarbageCollectedMixin {
   // This getter will return null if the ScrollAnimatorBase hasn't been created
   // yet.
   ScrollAnimatorBase* ExistingScrollAnimator() const {
-    return scroll_animator_;
+    return scroll_animator_.Get();
   }
 
   ProgrammaticScrollAnimator& GetProgrammaticScrollAnimator() const;
   ProgrammaticScrollAnimator* ExistingProgrammaticScrollAnimator() const {
-    return programmatic_scroll_animator_;
+    return programmatic_scroll_animator_.Get();
   }
 
   virtual cc::AnimationHost* GetCompositorAnimationHost() const {

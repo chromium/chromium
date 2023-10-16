@@ -122,7 +122,7 @@ DOMArrayBuffer* RTCEncodedVideoFrame::data() const {
   if (!frame_data_) {
     frame_data_ = delegate_->CreateDataBuffer();
   }
-  return frame_data_;
+  return frame_data_.Get();
 }
 
 RTCEncodedVideoFrameMetadata* RTCEncodedVideoFrame::getMetadata() const {

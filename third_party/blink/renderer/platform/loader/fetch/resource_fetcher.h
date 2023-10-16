@@ -147,7 +147,7 @@ class PLATFORM_EXPORT ResourceFetcher
   ResourceLoadObserver* GetResourceLoadObserver() {
     // When detached, we must have a null observer.
     DCHECK(!IsDetached() || !resource_load_observer_);
-    return resource_load_observer_;
+    return resource_load_observer_.Get();
   }
   // This must be called right after construction.
   void SetResourceLoadObserver(ResourceLoadObserver* observer) {
@@ -339,7 +339,7 @@ class PLATFORM_EXPORT ResourceFetcher
   SubresourceWebBundleList* GetOrCreateSubresourceWebBundleList();
 
   BackForwardCacheLoaderHelper* GetBackForwardCacheLoaderHelper() {
-    return back_forward_cache_loader_helper_;
+    return back_forward_cache_loader_helper_.Get();
   }
 
   void SetEarlyHintsPreloadedResources(

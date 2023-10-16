@@ -66,7 +66,7 @@ class PLATFORM_EXPORT ResourceClient : public GarbageCollectedMixin {
 
   virtual bool IsRawResourceClient() const { return false; }
 
-  Resource* GetResource() const { return resource_; }
+  Resource* GetResource() const { return resource_.Get(); }
 
   bool FinishedFromMemoryCache() const { return finished_from_memory_cache_; }
   void SetHasFinishedFromMemoryCache() { finished_from_memory_cache_ = true; }

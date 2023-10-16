@@ -137,11 +137,11 @@ void OscillatorNode::setType(const String& type,
 }
 
 AudioParam* OscillatorNode::frequency() {
-  return frequency_;
+  return frequency_.Get();
 }
 
 AudioParam* OscillatorNode::detune() {
-  return detune_;
+  return detune_.Get();
 }
 
 void OscillatorNode::setPeriodicWave(PeriodicWave* wave) {

@@ -1233,9 +1233,9 @@ void ResourceFetcher::AttachWebBundleTokenIfNeeded(
 SubresourceWebBundleList*
 ResourceFetcher::GetOrCreateSubresourceWebBundleList() {
   if (subresource_web_bundles_)
-    return subresource_web_bundles_;
+    return subresource_web_bundles_.Get();
   subresource_web_bundles_ = MakeGarbageCollected<SubresourceWebBundleList>();
-  return subresource_web_bundles_;
+  return subresource_web_bundles_.Get();
 }
 
 ukm::MojoUkmRecorder* ResourceFetcher::UkmRecorder() {

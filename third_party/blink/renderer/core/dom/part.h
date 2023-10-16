@@ -35,7 +35,7 @@ class CORE_EXPORT Part : public ScriptWrappable {
   virtual Part* ClonePart(NodeCloningData&, Node&) const = 0;
   virtual PartRoot* GetAsPartRoot() const { return nullptr; }
   virtual bool IncludeInPartsList() const { return true; }
-  PartRoot* root() const { return root_; }
+  PartRoot* root() const { return root_.Get(); }
   void MoveToRoot(PartRoot* new_root);
   virtual Document& GetDocument() const = 0;
   void PartDisconnected(Node& node);

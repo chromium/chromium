@@ -109,8 +109,8 @@ class TeeHelper final : public GarbageCollected<TeeHelper>,
     src_->Cancel();
   }
 
-  BytesConsumer* Destination1() const { return destination1_; }
-  BytesConsumer* Destination2() const { return destination2_; }
+  BytesConsumer* Destination1() const { return destination1_.Get(); }
+  BytesConsumer* Destination2() const { return destination2_.Get(); }
 
   void Trace(Visitor* visitor) const override {
     visitor->Trace(src_);

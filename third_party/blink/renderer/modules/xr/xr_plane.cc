@@ -49,7 +49,7 @@ XRSpace* XRPlane::planeSpace() const {
     plane_space_ = MakeGarbageCollected<XRObjectSpace<XRPlane>>(session_, this);
   }
 
-  return plane_space_;
+  return plane_space_.Get();
 }
 
 absl::optional<gfx::Transform> XRPlane::MojoFromObject() const {

@@ -59,7 +59,7 @@ class CORE_EXPORT AsyncIterationSourceBase
   v8::Local<v8::Value> MakeEndOfIteration() const;
 
   // Returns the ScriptState where the async iterator is running.
-  ScriptState* GetScriptState() const { return script_state_; }
+  ScriptState* GetScriptState() const { return script_state_.Get(); }
 
  private:
   class CallableCommon;

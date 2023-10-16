@@ -37,7 +37,7 @@ class CORE_EXPORT CSSToggle : public ScriptWrappable, public ToggleRoot {
 
   void Trace(Visitor*) const override;
 
-  CSSToggleMap* OwnerToggleMap() const { return owner_toggle_map_; }
+  CSSToggleMap* OwnerToggleMap() const { return owner_toggle_map_.Get(); }
   Element* OwnerElement() const;
 
   // Find the toggle and corresponding element that has the toggle named name

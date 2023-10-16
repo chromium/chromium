@@ -150,7 +150,7 @@ class CORE_EXPORT CanvasRenderingContext
 
   static CanvasRenderingAPI RenderingAPIFromId(const String& id);
 
-  CanvasRenderingContextHost* Host() const { return host_; }
+  CanvasRenderingContextHost* Host() const { return host_.Get(); }
   virtual SkColorInfo CanvasRenderingContextSkColorInfo() const;
 
   virtual scoped_refptr<StaticBitmapImage> GetImage(FlushReason) = 0;

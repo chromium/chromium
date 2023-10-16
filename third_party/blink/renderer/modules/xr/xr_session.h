@@ -128,14 +128,16 @@ class XRSession final : public EventTarget,
             XRSessionFeatureSet enabled_features);
   ~XRSession() override = default;
 
-  XRSystem* xr() const { return xr_; }
+  XRSystem* xr() const { return xr_.Get(); }
   const String& environmentBlendMode() const { return blend_mode_string_; }
   const String& interactionMode() const { return interaction_mode_string_; }
-  XRDOMOverlayState* domOverlayState() const { return dom_overlay_state_; }
+  XRDOMOverlayState* domOverlayState() const {
+    return dom_overlay_state_.Get();
+  }
   const String visibilityState() const;
   absl::optional<float> frameRate() const { return absl::nullopt; }
   DOMFloat32Array* supportedFrameRates() const { return nullptr; }
-  XRRenderState* renderState() const { return render_state_; }
+  XRRenderState* renderState() const { return render_state_.Get(); }
 
   // ARCore by default returns textures in RGBA half-float HDR format and no
   // other runtimes support reflection mapping, so just return this until we

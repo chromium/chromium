@@ -32,7 +32,7 @@ RTCStatsResponse::RTCStatsResponse() = default;
 
 RTCLegacyStatsReport* RTCStatsResponse::namedItem(const AtomicString& name) {
   if (base::Contains(idmap_, name)) {
-    return result_[idmap_.at(name)];
+    return result_[idmap_.at(name)].Get();
   }
   return nullptr;
 }

@@ -139,7 +139,7 @@ String AudioNode::GetNodeName() const {
 }
 
 BaseAudioContext* AudioNode::context() const {
-  return context_;
+  return context_.Get();
 }
 
 AudioNode* AudioNode::connect(AudioNode* destination,

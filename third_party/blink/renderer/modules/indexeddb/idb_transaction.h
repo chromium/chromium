@@ -135,7 +135,7 @@ class MODULES_EXPORT IDBTransaction final
   const String& durability() const;
   DOMStringList* objectStoreNames() const;
   IDBDatabase* db() const { return database_.Get(); }
-  DOMException* error() const { return error_; }
+  DOMException* error() const { return error_.Get(); }
   IDBObjectStore* objectStore(const String& name, ExceptionState&);
   void abort(ExceptionState&);
   void commit(ExceptionState&);

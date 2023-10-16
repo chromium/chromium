@@ -52,7 +52,7 @@ class CORE_EXPORT ReadableStreamGenericReader : public ScriptWrappable {
                                 ReadableStreamGenericReader*,
                                 ReadableStream*);
 
-  StreamPromiseResolver* ClosedPromise() const { return closed_promise_; }
+  StreamPromiseResolver* ClosedPromise() const { return closed_promise_.Get(); }
 
   void Trace(Visitor*) const override;
 

@@ -56,7 +56,7 @@ class MemoryCacheEntry final : public GarbageCollected<MemoryCacheEntry> {
   explicit MemoryCacheEntry(Resource* resource) : resource_(resource) {}
 
   void Trace(Visitor*) const;
-  Resource* GetResource() const { return resource_; }
+  Resource* GetResource() const { return resource_.Get(); }
 
  private:
   void ClearResourceWeak(const LivenessBroker&);

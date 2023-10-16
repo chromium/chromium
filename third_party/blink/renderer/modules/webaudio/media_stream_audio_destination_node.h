@@ -50,7 +50,7 @@ class MediaStreamAudioDestinationNode final : public AudioNode {
 
   MediaStreamAudioDestinationNode(AudioContext&, uint32_t number_of_channels);
 
-  MediaStream* stream() const { return stream_; }
+  MediaStream* stream() const { return stream_.Get(); }
   MediaStreamSource* source() const { return source_; }
 
   void Trace(Visitor*) const final;

@@ -21,9 +21,9 @@ class CORE_EXPORT StyleRuleFontPaletteValues : public StyleRuleBase {
   ~StyleRuleFontPaletteValues();
 
   AtomicString GetName() const { return name_; }
-  const CSSValue* GetFontFamily() const { return font_family_; }
-  const CSSValue* GetBasePalette() const { return base_palette_; }
-  const CSSValue* GetOverrideColors() const { return override_colors_; }
+  const CSSValue* GetFontFamily() const { return font_family_.Get(); }
+  const CSSValue* GetBasePalette() const { return base_palette_.Get(); }
+  const CSSValue* GetOverrideColors() const { return override_colors_.Get(); }
 
   FontPalette::BasePaletteValue GetBasePaletteIndex() const;
   Vector<FontPalette::FontPaletteOverride> GetOverrideColorsAsVector() const;

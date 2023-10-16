@@ -116,7 +116,7 @@ class CORE_EXPORT ScriptPromiseResolver
   // Reject with WebAssembly Error object.
   void RejectWithWasmCompileError(const String& message);
 
-  ScriptState* GetScriptState() const { return script_state_; }
+  ScriptState* GetScriptState() const { return script_state_.Get(); }
 
   const ExceptionContext& GetExceptionContext() const {
     return exception_context_;

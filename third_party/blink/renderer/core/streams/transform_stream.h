@@ -74,11 +74,11 @@ class CORE_EXPORT TransformStream final : public ScriptWrappable {
   TransformStream(ReadableStream*, WritableStream*);
 
   // IDL attributes
-  ReadableStream* readable() const { return readable_; }
-  WritableStream* writable() const { return writable_; }
+  ReadableStream* readable() const { return readable_.Get(); }
+  WritableStream* writable() const { return writable_.Get(); }
 
-  ReadableStream* Readable() const { return readable_; }
-  WritableStream* Writable() const { return writable_; }
+  ReadableStream* Readable() const { return readable_.Get(); }
+  WritableStream* Writable() const { return writable_.Get(); }
 
   void Trace(Visitor*) const override;
 

@@ -30,7 +30,7 @@ class XRRenderState : public ScriptWrappable {
   double depthNear() const { return depth_near_; }
   double depthFar() const { return depth_far_; }
   absl::optional<double> inlineVerticalFieldOfView() const;
-  XRWebGLLayer* baseLayer() const { return base_layer_; }
+  XRWebGLLayer* baseLayer() const { return base_layer_.Get(); }
   const HeapVector<Member<XRLayer>>& layers() const { return layers_; }
 
   HTMLCanvasElement* output_canvas() const;

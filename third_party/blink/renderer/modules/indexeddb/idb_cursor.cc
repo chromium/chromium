@@ -428,7 +428,7 @@ ScriptValue IDBCursor::value(ScriptState* script_state) {
 }
 
 const IDBCursor::Source* IDBCursor::source() const {
-  return source_;
+  return source_.Get();
 }
 
 void IDBCursor::SetValueReady(std::unique_ptr<IDBKey> key,

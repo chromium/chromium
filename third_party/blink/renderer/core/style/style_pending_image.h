@@ -54,7 +54,7 @@ class CORE_EXPORT StylePendingImage final : public StyleImage {
 
   WrappedImagePtr Data() const override { return value_.Get(); }
 
-  CSSValue* CssValue() const override { return value_; }
+  CSSValue* CssValue() const override { return value_.Get(); }
 
   CSSValue* ComputedCSSValue(const ComputedStyle& style,
                              bool allow_visited_style) const override;

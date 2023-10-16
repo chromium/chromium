@@ -40,7 +40,7 @@ class XRFrameProvider final : public GarbageCollected<XRFrameProvider> {
 
   explicit XRFrameProvider(XRSystem*);
 
-  XRSession* immersive_session() const { return immersive_session_; }
+  XRSession* immersive_session() const { return immersive_session_.Get(); }
 
   void OnSessionStarted(XRSession* session,
                         device::mojom::blink::XRSessionPtr session_ptr);

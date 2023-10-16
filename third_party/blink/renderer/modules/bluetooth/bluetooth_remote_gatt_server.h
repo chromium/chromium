@@ -66,7 +66,7 @@ class BluetoothRemoteGATTServer
   void Trace(Visitor*) const override;
 
   // IDL exposed interface:
-  BluetoothDevice* device() { return device_; }
+  BluetoothDevice* device() { return device_.Get(); }
   bool connected() { return connected_; }
   ScriptPromise connect(ScriptState*, ExceptionState&);
   void disconnect(ScriptState*, ExceptionState&);

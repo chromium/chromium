@@ -64,7 +64,7 @@ const AtomicString& SpeechSynthesisUtterance::InterfaceName() const {
 }
 
 SpeechSynthesisVoice* SpeechSynthesisUtterance::voice() const {
-  return voice_;
+  return voice_.Get();
 }
 
 void SpeechSynthesisUtterance::setVoice(SpeechSynthesisVoice* voice) {

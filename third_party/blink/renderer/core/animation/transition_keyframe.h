@@ -65,7 +65,7 @@ class CORE_EXPORT TransitionKeyframe : public Keyframe {
           compositor_value_(compositor_value) {}
 
     const CompositorKeyframeValue* GetCompositorKeyframeValue() const final {
-      return compositor_value_;
+      return compositor_value_.Get();
     }
 
     bool IsNeutral() const final { return false; }

@@ -56,7 +56,7 @@ const String& NDEFReadingEvent::serialNumber() const {
 }
 
 NDEFMessage* NDEFReadingEvent::message() const {
-  return message_;
+  return message_.Get();
 }
 
 }  // namespace blink

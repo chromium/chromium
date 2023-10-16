@@ -67,7 +67,7 @@ void PluginInfo::AddMimeType(MimeClassInfo* info) {
 const MimeClassInfo* PluginInfo::GetMimeClassInfo(wtf_size_t index) const {
   if (index >= mimes_.size())
     return nullptr;
-  return mimes_[index];
+  return mimes_[index].Get();
 }
 
 const MimeClassInfo* PluginInfo::GetMimeClassInfo(const String& type) const {

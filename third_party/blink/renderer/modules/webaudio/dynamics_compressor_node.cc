@@ -157,15 +157,15 @@ DynamicsCompressorNode::GetDynamicsCompressorHandler() const {
 }
 
 AudioParam* DynamicsCompressorNode::threshold() const {
-  return threshold_;
+  return threshold_.Get();
 }
 
 AudioParam* DynamicsCompressorNode::knee() const {
-  return knee_;
+  return knee_.Get();
 }
 
 AudioParam* DynamicsCompressorNode::ratio() const {
-  return ratio_;
+  return ratio_.Get();
 }
 
 float DynamicsCompressorNode::reduction() const {

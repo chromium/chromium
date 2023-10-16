@@ -82,14 +82,14 @@ class CORE_EXPORT ClassicScript final : public Script {
     return sanitize_script_errors_;
   }
 
-  CachedMetadataHandler* CacheHandler() const { return cache_handler_; }
+  CachedMetadataHandler* CacheHandler() const { return cache_handler_.Get(); }
 
-  ScriptStreamer* Streamer() const { return streamer_; }
+  ScriptStreamer* Streamer() const { return streamer_.Get(); }
   ScriptStreamer::NotStreamingReason NotStreamingReason() const {
     return not_streaming_reason_;
   }
 
-  ScriptCacheConsumer* CacheConsumer() const { return cache_consumer_; }
+  ScriptCacheConsumer* CacheConsumer() const { return cache_consumer_.Get(); }
 
   const String& SourceMapUrl() const { return source_map_url_; }
 

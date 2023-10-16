@@ -258,7 +258,7 @@ class CORE_EXPORT ReadableStream : public ScriptWrappable {
   }
 
   ReadableStreamController* GetController() {
-    return readable_stream_controller_;
+    return readable_stream_controller_.Get();
   }
 
   v8::Local<v8::Value> GetStoredError(v8::Isolate*) const;

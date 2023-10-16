@@ -41,7 +41,7 @@ class CORE_EXPORT SpeculationRule final
   ~SpeculationRule();
 
   const Vector<KURL>& urls() const { return urls_; }
-  DocumentRulePredicate* predicate() const { return predicate_; }
+  DocumentRulePredicate* predicate() const { return predicate_.Get(); }
   bool requires_anonymous_client_ip_when_cross_origin() const {
     return requires_anonymous_client_ip_.value();
   }

@@ -26,8 +26,8 @@ class XRCanvasInputProvider : public GarbageCollected<XRCanvasInputProvider>,
   XRCanvasInputProvider(XRSession*, HTMLCanvasElement*);
   ~XRCanvasInputProvider() override;
 
-  XRSession* session() const { return session_; }
-  HTMLCanvasElement* canvas() const { return canvas_; }
+  XRSession* session() const { return session_.Get(); }
+  HTMLCanvasElement* canvas() const { return canvas_.Get(); }
 
   // Remove all event listeners.
   void Stop();

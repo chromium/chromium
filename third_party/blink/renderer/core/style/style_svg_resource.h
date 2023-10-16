@@ -31,7 +31,7 @@ class StyleSVGResource : public GarbageCollected<StyleSVGResource> {
   void AddClient(SVGResourceClient& client);
   void RemoveClient(SVGResourceClient& client);
 
-  SVGResource* Resource() const { return resource_; }
+  SVGResource* Resource() const { return resource_.Get(); }
   const AtomicString& Url() const { return url_; }
 
  private:

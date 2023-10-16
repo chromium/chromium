@@ -38,18 +38,20 @@ class MODULES_EXPORT SharedStorageOperationDefinition final
     return "SharedStorageOperationDefinition";
   }
 
-  ScriptState* GetScriptState() { return script_state_; }
+  ScriptState* GetScriptState() { return script_state_.Get(); }
 
-  V8NoArgumentConstructor* GetConstructorFunction() { return constructor_; }
+  V8NoArgumentConstructor* GetConstructorFunction() {
+    return constructor_.Get();
+  }
 
   V8RunFunctionForSharedStorageSelectURLOperation*
   GetRunFunctionForSharedStorageSelectURLOperation() {
-    return run_function_for_select_url_;
+    return run_function_for_select_url_.Get();
   }
 
   V8RunFunctionForSharedStorageRunOperation*
   GetRunFunctionForSharedStorageRunOperation() {
-    return run_function_for_run_;
+    return run_function_for_run_.Get();
   }
 
   TraceWrapperV8Reference<v8::Value> GetInstance();

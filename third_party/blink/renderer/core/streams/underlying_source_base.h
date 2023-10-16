@@ -56,7 +56,7 @@ class CORE_EXPORT UnderlyingSourceBase
             ExecutionContext::From(script_state)) {}
 
   ReadableStreamDefaultControllerWithScriptScope* Controller() const {
-    return controller_;
+    return controller_.Get();
   }
 
  private:

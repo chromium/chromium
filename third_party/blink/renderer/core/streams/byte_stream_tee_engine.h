@@ -32,8 +32,8 @@ class ByteStreamTeeEngine final : public GarbageCollected<ByteStreamTeeEngine> {
   void Start(ScriptState*, ReadableStream*, ExceptionState&);
 
   // Branch1() and Branch2() are null until Start() is called.
-  ReadableStream* Branch1() const { return branch_[0]; }
-  ReadableStream* Branch2() const { return branch_[1]; }
+  ReadableStream* Branch1() const { return branch_[0].Get(); }
+  ReadableStream* Branch2() const { return branch_[1].Get(); }
 
   void Trace(Visitor* visitor) const {
     visitor->Trace(stream_);

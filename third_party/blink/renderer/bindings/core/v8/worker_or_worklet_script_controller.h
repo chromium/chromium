@@ -78,7 +78,7 @@ class CORE_EXPORT WorkerOrWorkletScriptController final
   // Disables wasm code generation. This must be called before Evaluate().
   void SetWasmEvalErrorMessage(const String&);
 
-  ScriptState* GetScriptState() { return script_state_; }
+  ScriptState* GetScriptState() { return script_state_.Get(); }
 
   // Used by V8 bindings:
   v8::Local<v8::Context> GetContext() {

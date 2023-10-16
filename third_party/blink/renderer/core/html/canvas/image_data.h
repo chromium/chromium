@@ -163,7 +163,7 @@ class CORE_EXPORT ImageData final : public ScriptWrappable,
       ValidateAndCreateParams params,
       ExceptionState& exception_state);
   // TODO(https://crbug.com/1198606): Remove this.
-  ImageDataSettings* getSettings() { return settings_; }
+  ImageDataSettings* getSettings() { return settings_.Get(); }
 
   static ImageData* CreateForTest(const gfx::Size&);
   static ImageData* CreateForTest(const gfx::Size&,
@@ -185,7 +185,7 @@ class CORE_EXPORT ImageData final : public ScriptWrappable,
   // TODO(https://crbug.com/1198606): Remove this.
   ImageDataSettings* getSettings() const;
 
-  const V8ImageDataArray* data() const { return data_; }
+  const V8ImageDataArray* data() const { return data_.Get(); }
 
   bool IsBufferBaseDetached() const;
   PredefinedColorSpace GetPredefinedColorSpace() const;

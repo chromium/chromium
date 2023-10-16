@@ -39,7 +39,7 @@ class XRInputSourcesChangeEvent final : public Event {
                             const XRInputSourcesChangeEventInit*);
   ~XRInputSourcesChangeEvent() override;
 
-  XRSession* session() const { return session_; }
+  XRSession* session() const { return session_.Get(); }
   const HeapVector<Member<XRInputSource>>& added() const { return added_; }
   const HeapVector<Member<XRInputSource>>& removed() const { return removed_; }
 

@@ -173,7 +173,7 @@ class MODULES_EXPORT BaseAudioContext
                              V8DecodeErrorCallback*,
                              ExceptionContext);
 
-  AudioListener* listener() { return listener_; }
+  AudioListener* listener() { return listener_.Get(); }
 
   virtual bool HasRealtimeConstraint() = 0;
 

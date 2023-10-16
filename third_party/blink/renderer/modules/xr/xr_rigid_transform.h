@@ -38,8 +38,8 @@ class MODULES_EXPORT XRRigidTransform : public ScriptWrappable {
 
   ~XRRigidTransform() override = default;
 
-  DOMPointReadOnly* position() const { return position_; }
-  DOMPointReadOnly* orientation() const { return orientation_; }
+  DOMPointReadOnly* position() const { return position_.Get(); }
+  DOMPointReadOnly* orientation() const { return orientation_.Get(); }
   DOMFloat32Array* matrix();
   XRRigidTransform* inverse();
 

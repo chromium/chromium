@@ -423,7 +423,7 @@ class CORE_EXPORT LocalFrameView final
   void ProcessUrlFragment(const KURL&,
                           bool same_document_navigation,
                           bool should_scroll = true);
-  FragmentAnchor* GetFragmentAnchor() { return fragment_anchor_; }
+  FragmentAnchor* GetFragmentAnchor() { return fragment_anchor_.Get(); }
   void InvokeFragmentAnchor();
   void ClearFragmentAnchor();
 
@@ -691,7 +691,7 @@ class CORE_EXPORT LocalFrameView final
   }
 
   MobileFriendlinessChecker* GetMobileFriendlinessChecker() const {
-    return mobile_friendliness_checker_;
+    return mobile_friendliness_checker_.Get();
   }
   void RegisterTapEvent(Element* target);
 

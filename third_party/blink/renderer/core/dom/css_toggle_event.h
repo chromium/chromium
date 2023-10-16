@@ -33,7 +33,7 @@ class CORE_EXPORT CSSToggleEvent : public Event {
                  CSSToggle* toggle);
 
   String toggleName() const { return toggle_name_; }
-  CSSToggle* toggle() const { return toggle_; }
+  CSSToggle* toggle() const { return toggle_.Get(); }
 
   void Trace(Visitor*) const override;
 

@@ -47,7 +47,7 @@ class CORE_EXPORT ReadableStreamDefaultControllerWithScriptScope
   }
 
   ReadableStreamDefaultController* GetOriginalController() {
-    return controller_;
+    return controller_.Get();
   }
 
   void Trace(Visitor*) const;

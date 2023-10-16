@@ -117,7 +117,7 @@ struct BaseMemberHashTraits : SimpleClassHashTraits<MemberType> {
   using IteratorReferenceType = MemberType&;
   using IteratorConstReferenceType = const MemberType&;
 
-  static PeekOutType Peek(const MemberType& value) { return value; }
+  static PeekOutType Peek(const MemberType& value) { return value.Get(); }
 
   static void ConstructDeletedValue(MemberType& slot) {
     slot = cppgc::kSentinelPointer;

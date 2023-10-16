@@ -68,7 +68,7 @@ class CORE_EXPORT IntersectionObservation final
   IntersectionObservation(IntersectionObserver&, Element&);
 
   IntersectionObserver* Observer() const { return observer_.Get(); }
-  Element* Target() const { return target_; }
+  Element* Target() const { return target_.Get(); }
   unsigned LastThresholdIndex() const { return last_threshold_index_; }
   // Returns 1 if the geometry was recalculated, otherwise 0. This could be a
   // bool, but int64_t matches IntersectionObserver::ComputeIntersections().

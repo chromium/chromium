@@ -58,7 +58,7 @@ class ListStyleTypeData final : public GarbageCollected<ListStyleTypeData> {
     return name_or_string_value_;
   }
 
-  const TreeScope* GetTreeScope() const { return tree_scope_; }
+  const TreeScope* GetTreeScope() const { return tree_scope_.Get(); }
 
   // TODO(crbug.com/687225): Try not to pass a Document, which is cumbersome.
   bool IsCounterStyleReferenceValid(Document&) const;

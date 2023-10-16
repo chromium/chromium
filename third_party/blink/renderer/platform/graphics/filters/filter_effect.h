@@ -92,8 +92,8 @@ class PLATFORM_EXPORT FilterEffect : public GarbageCollected<FilterEffect> {
     filter_primitive_subregion_ = filter_primitive_subregion;
   }
 
-  Filter* GetFilter() { return filter_; }
-  const Filter* GetFilter() const { return filter_; }
+  Filter* GetFilter() { return filter_.Get(); }
+  const Filter* GetFilter() const { return filter_.Get(); }
 
   bool ClipsToBounds() const { return clips_to_bounds_; }
   void SetClipsToBounds(bool value) { clips_to_bounds_ = value; }

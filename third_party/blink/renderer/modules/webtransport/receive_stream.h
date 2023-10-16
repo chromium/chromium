@@ -35,7 +35,7 @@ class MODULES_EXPORT ReceiveStream final : public ReadableStream {
     incoming_stream_->InitWithExistingReadableStream(this, exception_state);
   }
 
-  IncomingStream* GetIncomingStream() { return incoming_stream_; }
+  IncomingStream* GetIncomingStream() { return incoming_stream_.Get(); }
 
   void Trace(Visitor*) const override;
 

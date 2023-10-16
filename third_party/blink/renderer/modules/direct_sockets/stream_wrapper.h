@@ -33,7 +33,7 @@ class MODULES_EXPORT StreamWrapper : public GarbageCollectedMixin {
   virtual ~StreamWrapper();
 
   State GetState() const { return state_; }
-  ScriptState* GetScriptState() const { return script_state_; }
+  ScriptState* GetScriptState() const { return script_state_.Get(); }
 
   // Checks whether associated stream is locked to a reader/writer.
   virtual bool Locked() const = 0;
@@ -53,7 +53,7 @@ class MODULES_EXPORT StreamWrapper : public GarbageCollectedMixin {
 
 class ReadableStreamWrapper : public StreamWrapper {
  public:
-  ReadableStream* Readable() const { return readable_; }
+  ReadableStream* Readable() const { return readable_.Get(); }
 
   // Checks whether |readable_| is locked to a reader.
   bool Locked() const override;

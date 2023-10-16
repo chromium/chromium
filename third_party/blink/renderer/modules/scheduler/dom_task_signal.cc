@@ -182,7 +182,7 @@ AbortSignalCompositionManager* DOMTaskSignal::GetCompositionManager(
   if (composition_type != AbortSignalCompositionType::kPriority) {
     return AbortSignal::GetCompositionManager(composition_type);
   }
-  return priority_composition_manager_;
+  return priority_composition_manager_.Get();
 }
 
 void DOMTaskSignal::OnSignalSettled(

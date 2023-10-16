@@ -171,7 +171,7 @@ class CORE_EXPORT Page final : public GarbageCollected<Page>,
   // also be called to update accordingly.
   // TODO(npm): update the |page_scheduler_| directly in this method.
   void SetMainFrame(Frame*);
-  Frame* MainFrame() const { return main_frame_; }
+  Frame* MainFrame() const { return main_frame_.Get(); }
 
   void SetPreviousMainFrameForLocalSwap(
       LocalFrame* previous_main_frame_for_local_swap) {
@@ -179,7 +179,7 @@ class CORE_EXPORT Page final : public GarbageCollected<Page>,
   }
 
   LocalFrame* GetPreviousMainFrameForLocalSwap() {
-    return previous_main_frame_for_local_swap_;
+    return previous_main_frame_for_local_swap_.Get();
   }
 
   // Escape hatch for existing code that assumes that the root frame is

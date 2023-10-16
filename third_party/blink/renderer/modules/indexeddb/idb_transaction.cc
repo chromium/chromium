@@ -178,7 +178,7 @@ IDBObjectStore* IDBTransaction::objectStore(const String& name,
 
   IDBObjectStoreMap::iterator it = object_store_map_.find(name);
   if (it != object_store_map_.end())
-    return it->value;
+    return it->value.Get();
 
   if (!IsVersionChange() && !scope_.Contains(name)) {
     exception_state.ThrowDOMException(
