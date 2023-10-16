@@ -146,10 +146,12 @@ SigninPromoViewStyle GetTopOfFeedPromoStyle() {
 }
 
 bool ShouldIgnoreFeedEngagementConditionForTopSyncPromo() {
-  CHECK(IsDiscoverFeedTopSyncPromoEnabled());
-  return base::GetFieldTrialParamByFeatureAsBool(
-      kEnableDiscoverFeedTopSyncPromo,
-      kDiscoverFeedTopSyncPromoIgnoreEngagementCondition, false);
+  if (IsDiscoverFeedTopSyncPromoEnabled()) {
+    return base::GetFieldTrialParamByFeatureAsBool(
+        kEnableDiscoverFeedTopSyncPromo,
+        kDiscoverFeedTopSyncPromoIgnoreEngagementCondition, false);
+  }
+  return true;
 }
 
 int FeedSyncPromoAutodismissCount() {

@@ -119,8 +119,7 @@
 
 - (void)signinPromoHasChangedVisibility:(BOOL)visible {
   if (!self.isSignInPromoEnabled ||
-      self.isSigninPromoVisibleOnScreen == visible ||
-      !self.feedTopSectionViewController.shouldShowSigninPromo) {
+      self.isSigninPromoVisibleOnScreen == visible) {
     return;
   }
   if (visible) {
