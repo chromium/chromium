@@ -53408,6 +53408,34 @@ Called by update_gpu_driver_bug_workaround_entries.py.-->
   <int value="8" label="kEndorsementFailure"/>
 </enum>
 
+<enum name="HwsecPinWeaverLogReplayResultEnum">
+  <int value="0" label="kSuccess">Succeeded.</int>
+  <int value="1" label="kInvalidLogEntry">
+    Invalid log entry from PinWeaver server (GSC).
+  </int>
+  <int value="2" label="kOperationFailed">
+    Failure to replay pinweaver log entries.
+  </int>
+  <int value="3" label="kRemoveInsertedCredentialsError">
+    Failed to remove re-inserted labels.
+  </int>
+</enum>
+
+<enum name="HwsecPinWeaverSyncOutcomeEnum">
+  <int value="0" label="kStateNotReady">
+    Attempted to sync hash tree but state isn't ready.
+  </int>
+  <int value="1" label="kSuccessAfterLocalReconstruct">
+    Succeeded without needing to perform log replay.
+  </int>
+  <int value="2" label="kGetLogFailed">
+    Failed to get log from PinWeaver server(GSC).
+  </int>
+  <int value="3" label="kLogReplay">
+    Performing log replay: check the ReplayLogResult histogram.
+  </int>
+</enum>
+
 <enum name="HwsecRetryActionEnum">
   <int value="0" label="kNone">Succeeded.</int>
   <int value="1" label="kCommunication">Communication failure.</int>

@@ -974,6 +974,67 @@ chromium-metrics-reviews@google.com.
   </summary>
 </histogram>
 
+<histogram
+    name="Platform.Libhwsec.PinWeaverManager.SyncHashTree.ReplayLogResult{ReplayType}"
+    enum="HwsecPinWeaverLogReplayResultEnum" expires_after="2024-02-20">
+  <owner>chensa@google.com</owner>
+  <owner>cros-hwsec-userland-eng+uma@google.com</owner>
+  <summary>
+    Each sample is the result code of a libhwsec
+    PinWeaverManagerImpl::ReplayLogEntries operation. Categorized into 2 replay
+    types(Normal/Full), depending on whether all of the log entries were used
+    for replay, as this will result in different error distributions. This is
+    logged after the ReplayLog operation is attempted, during libhwsec's retry
+    handling when the PinWeaver client loses sync with the server (GSC).
+  </summary>
+  <token key="ReplayType">
+    <variant name=""/>
+    <variant name=".Full"/>
+    <variant name=".Normal"/>
+  </token>
+</histogram>
+
+<histogram name="Platform.Libhwsec.PinWeaverManager.SyncHashTree.SyncOutcome"
+    enum="HwsecPinWeaverSyncOutcomeEnum" expires_after="2024-02-20">
+  <owner>chensa@google.com</owner>
+  <owner>cros-hwsec-userland-eng+uma@google.com</owner>
+  <summary>
+    Each sample is the result code of a libhwsec PinWeaverManager::SyncHashTree
+    operation. This is logged after the Sync operation is attempted, during
+    libhwsec's retry handling when the PinWeaver client loses sync with the
+    server (GSC).
+  </summary>
+</histogram>
+
+<histogram
+    name="Platform.Libhwsec.RetryAction.PinWeaverManager.{ReplayOperationType}{ReplayEntryType}"
+    enum="HwsecRetryActionEnum" expires_after="2024-02-20">
+  <owner>chensa@google.com</owner>
+  <owner>cros-hwsec-userland-eng+uma@google.com</owner>
+  <summary>
+    Each sample is the result of the libhwsec PinWeaver {ReplayOperationType}
+    operation. This is logged when a {ReplayOperationType} replay operation is
+    attempted during libhwsec's retry handling, when the PinWeaver client loses
+    sync with the server (GSC). The metric is categorized by the ReplayEntry
+    types, where {ReplayEntryType} differentiates the status of the replay
+    before attempting to replay the current log entry.
+  </summary>
+  <token key="ReplayOperationType">
+    <variant name="ReplayCheck" summary="PinWeaverManagerImpl::ReplayCheck"/>
+    <variant name="ReplayInsert" summary="PinWeaverManagerImpl::ReplayInsert"/>
+    <variant name="ReplayInvalid"
+        summary="PinWeaverManagerImpl::ReplayInvalid"/>
+    <variant name="ReplayRemove" summary="PinWeaverManagerImpl::ReplayRemove"/>
+    <variant name="ReplayReset" summary="PinWeaverManagerImpl::ReplayReset"/>
+  </token>
+  <token key="ReplayEntryType">
+    <variant name=""/>
+    <variant name=".MismatchedHash"/>
+    <variant name=".Normal"/>
+    <variant name=".SecondEntry"/>
+  </token>
+</histogram>
+
 <histogram name="Platform.Libhwsec.RetryAction{Category}"
     enum="HwsecRetryActionEnum" expires_after="2024-02-20">
   <owner>yich@google.com</owner>
@@ -1036,6 +1097,9 @@ chromium-metrics-reviews@google.com.
         summary="KeyManagement::WrapECCKey"/>
     <variant name=".KeyManagement.WrapRSAKey"
         summary="KeyManagement::WrapRSAKey"/>
+<!-- TODO(b/304710017): Remove .PinWeaver* histograms after we
+    fully migrated pinweaver_manager to libhwsec (target: M120)-->
+
     <variant name=".PinWeaver" summary="PinWeaver"/>
     <variant name=".PinWeaver.BlockGeneratePk"
         summary="PinWeaver::BlockGeneratePk"/>
@@ -1066,6 +1130,35 @@ chromium-metrics-reviews@google.com.
         summary="PinWeaver::ResetCredential"/>
     <variant name=".PinWeaver.StartBiometricsAuth"
         summary="PinWeaver::StartBiometricsAuth"/>
+    <variant name=".PinWeaverManager" summary="PinWeaverManager"/>
+    <variant name=".PinWeaverManager.BlockGeneratePk"
+        summary="PinWeaverManager::BlockGeneratePk"/>
+    <variant name=".PinWeaverManager.CheckCredential"
+        summary="PinWeaverManager::CheckCredential"/>
+    <variant name=".PinWeaverManager.GeneratePk"
+        summary="PinWeaverManager::GeneratePk"/>
+    <variant name=".PinWeaverManager.GetDelayInSeconds"
+        summary="PinWeaverManager::GetDelayInSeconds"/>
+    <variant name=".PinWeaverManager.GetDelaySchedule"
+        summary="PinWeaverManager::GetDelaySchedule"/>
+    <variant name=".PinWeaverManager.GetExpirationInSeconds"
+        summary="PinWeaverManager::GetExpirationInSeconds"/>
+    <variant name=".PinWeaverManager.GetVersion"
+        summary="PinWeaverManager::GetVersion"/>
+    <variant name=".PinWeaverManager.GetWrongAuthAttempts"
+        summary="PinWeaverManager::GetWrongAuthAttempts"/>
+    <variant name=".PinWeaverManager.InsertCredential"
+        summary="PinWeaverManager::InsertCredential"/>
+    <variant name=".PinWeaverManager.InsertRateLimiter"
+        summary="PinWeaverManager::InsertRateLimiter"/>
+    <variant name=".PinWeaverManager.IsEnabled"
+        summary="PinWeaverManager::IsEnabled"/>
+    <variant name=".PinWeaverManager.RemoveCredential"
+        summary="PinWeaverManager::RemoveCredential"/>
+    <variant name=".PinWeaverManager.ResetCredential"
+        summary="PinWeaverManager::ResetCredential"/>
+    <variant name=".PinWeaverManager.StartBiometricsAuth"
+        summary="PinWeaverManager::StartBiometricsAuth"/>
     <variant name=".Random" summary="Random"/>
     <variant name=".Random.RandomBlob" summary="Random::RandomBlob"/>
     <variant name=".Random.RandomSecureBlob"

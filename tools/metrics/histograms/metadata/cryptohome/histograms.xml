@@ -222,6 +222,9 @@ chromium-metrics-reviews@google.com.
   </summary>
 </histogram>
 
+<!-- TODO(b/304710017): Remove Cryptohome.LECredential histograms after we
+fully migrated pinweaver_manager to libhwsec (target: M120)-->
+
 <histogram name="Cryptohome.LECredential.LogReplayEntryCount" units="count"
     expires_after="2024-03-17">
   <owner>hcyang@google.com</owner>
@@ -236,6 +239,9 @@ chromium-metrics-reviews@google.com.
     the LogReplay command to sync server state again.
   </summary>
 </histogram>
+
+<!-- TODO(b/304710017): Remove Cryptohome.LECredential histograms after we
+fully migrated pinweaver_manager to libhwsec (target: M120)-->
 
 <histogram name="Cryptohome.LECredential.Replay.{ReplayType}"
     enum="CryptohomeLEReplayError" expires_after="2024-03-17">
@@ -256,6 +262,9 @@ chromium-metrics-reviews@google.com.
     <variant name="Normal"/>
   </token>
 </histogram>
+
+<!-- TODO(b/304710017): Remove Cryptohome.LECredential histograms after we
+fully migrated pinweaver_manager to libhwsec (target: M120)-->
 
 <histogram name="Cryptohome.LECredential.{Operation}{Action}"
     enum="CryptohomeLECredError" expires_after="2024-03-17">
