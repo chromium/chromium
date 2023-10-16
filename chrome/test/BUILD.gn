@@ -2740,8 +2740,6 @@ if (!is_android) {
       sources += [
         # TODO(b/301587955): Fix placement of supervised_user/e2e test files and their dependencies.
         "../browser/supervised_user/url_filter_interactive_uitest.cc",
-        "supervised_user/custom_state_observers.cc",
-        "supervised_user/custom_state_observers.h",
         "supervised_user/family_live_test.cc",
         "supervised_user/family_live_test.h",
         "supervised_user/family_member.cc",
