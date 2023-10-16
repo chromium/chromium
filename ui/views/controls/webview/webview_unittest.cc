@@ -146,6 +146,8 @@ void SimulateRendererCrash(content::WebContents* contents, WebView* view) {
 // Provides functionality to test a WebView.
 class WebViewUnitTest : public views::test::WidgetTest {
  public:
+  static constexpr int kWebViewID = 123;
+
   WebViewUnitTest()
       : views::test::WidgetTest(std::unique_ptr<base::test::TaskEnvironment>(
             std::make_unique<content::BrowserTaskEnvironment>())) {}
@@ -184,16 +186,18 @@ class WebViewUnitTest : public views::test::WidgetTest {
     top_level_widget_->SetBounds(gfx::Rect(0, 10, 100, 100));
     View* const contents_view =
         top_level_widget_->SetContentsView(std::make_unique<View>());
-    auto web_view = std::make_unique<WebView>(browser_context_.get());
-    web_view->SetBoundsRect(gfx::Rect(contents_view->size()));
-    web_view_ = contents_view->AddChildView(std::move(web_view));
+    auto view = std::make_unique<WebView>(browser_context_.get());
+    view->SetID(kWebViewID);
+    view->SetBoundsRect(gfx::Rect(contents_view->size()));
+    contents_view->AddChildView(std::move(view));
     top_level_widget_->Show();
-    ASSERT_EQ(gfx::Rect(0, 0, 100, 100), web_view_->bounds());
+    ASSERT_EQ(gfx::Rect(0, 0, 100, 100), web_view()->bounds());
   }
 
   void TearDown() override {
     scoped_web_contents_creator_.reset();
-    top_level_widget_->Close();  // Deletes all children and itself.
+    top_level_widget_.ExtractAsDangling()
+        ->Close();  // Deletes all children and itself.
     RunPendingMessages();
 
     browser_context_.reset(nullptr);
@@ -204,9 +208,12 @@ class WebViewUnitTest : public views::test::WidgetTest {
   }
 
  protected:
-  Widget* top_level_widget() const { return top_level_widget_; }
-  WebView* web_view() const { return web_view_; }
-  NativeViewHost* holder() const { return web_view_->holder_; }
+  Widget* top_level_widget() { return top_level_widget_; }
+  WebView* web_view() {
+    return static_cast<WebView*>(
+        top_level_widget()->GetContentsView()->GetViewByID(kWebViewID));
+  }
+  NativeViewHost* holder() { return web_view()->holder_; }
 
   std::unique_ptr<content::WebContents> CreateWebContents() const {
     return content::WebContents::Create(
@@ -218,7 +225,9 @@ class WebViewUnitTest : public views::test::WidgetTest {
         browser_context_.get(), /*instance=*/nullptr);
   }
 
-  void SetAXMode(ui::AXMode mode) { web_view()->OnAXModeAdded(mode); }
+  void SetAXModeForView(WebView* view, ui::AXMode mode) {
+    view->OnAXModeAdded(mode);
+  }
 
  private:
   std::unique_ptr<content::RenderViewHostTestEnabler> rvh_enabler_;
@@ -227,8 +236,7 @@ class WebViewUnitTest : public views::test::WidgetTest {
   std::unique_ptr<views::WebView::ScopedWebContentsCreatorForTesting>
       scoped_web_contents_creator_;
 
-  raw_ptr<Widget, DanglingUntriaged> top_level_widget_ = nullptr;
-  raw_ptr<WebView, DanglingUntriaged> web_view_ = nullptr;
+  raw_ptr<Widget> top_level_widget_ = nullptr;
 };
 
 // Tests that attaching and detaching a WebContents to a WebView makes the
@@ -424,7 +432,7 @@ TEST_F(WebViewUnitTest, ReparentingUpdatesParentAccessible) {
 #endif
 TEST_F(WebViewUnitTest, MAYBE_ChangeAXMode) {
   // Case 1: WebView has a Widget and no WebContents.
-  SetAXMode(ui::AXMode::kFirstModeFlag);
+  SetAXModeForView(web_view(), ui::AXMode::kFirstModeFlag);
 
   // Case 2: WebView has no Widget and a WebContents.
   View* contents_view = top_level_widget()->GetContentsView();
@@ -432,10 +440,8 @@ TEST_F(WebViewUnitTest, MAYBE_ChangeAXMode) {
   auto scoped_view = contents_view->RemoveChildViewT(web_view());
   const std::unique_ptr<content::WebContents> web_contents =
       CreateWebContents();
-  web_view()->SetWebContents(web_contents.get());
-
-  SetAXMode(ui::AXMode::kFirstModeFlag);
-
+  scoped_view->SetWebContents(web_contents.get());
+  SetAXModeForView(scoped_view.get(), ui::AXMode::kFirstModeFlag);
   // No crash.
 }
 
