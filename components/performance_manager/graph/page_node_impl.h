@@ -37,8 +37,9 @@ class TabConnectednessAccess;
 enum class PagePropertyFlag {
   kIsVisible,  // initializes PageNode::IsVisible()
   kMin = kIsVisible,
-  kIsAudible,  // initializes PageNode::IsAudible()
-  kMax = kIsAudible,
+  kIsAudible,            // initializes PageNode::IsAudible()
+  kHasPictureInPicture,  // initializes PageNode::HasPictureInPicture()
+  kMax = kHasPictureInPicture,
 };
 using PagePropertyFlags = base::
     EnumSet<PagePropertyFlag, PagePropertyFlag::kMin, PagePropertyFlag::kMax>;
@@ -86,6 +87,7 @@ class PageNodeImpl
   void SetIsFocused(bool is_focused);
   void SetIsVisible(bool is_visible);
   void SetIsAudible(bool is_audible);
+  void SetHasPictureInPicture(bool has_picture_in_picture);
   void SetLoadingState(LoadingState loading_state);
   void SetUkmSourceId(ukm::SourceId ukm_source_id);
   void OnFaviconUpdated();
@@ -126,6 +128,7 @@ class PageNodeImpl
   bool is_focused() const;
   bool is_visible() const;
   bool is_audible() const;
+  bool has_picture_in_picture() const;
   LoadingState loading_state() const;
   ukm::SourceId ukm_source_id() const;
   LifecycleState lifecycle_state() const;
@@ -241,6 +244,7 @@ class PageNodeImpl
   bool IsFocused() const override;
   bool IsVisible() const override;
   base::TimeDelta GetTimeSinceLastVisibilityChange() const override;
+  bool HasPictureInPicture() const override;
   bool IsAudible() const override;
   absl::optional<base::TimeDelta> GetTimeSinceLastAudibleChange()
       const override;
@@ -361,6 +365,12 @@ class PageNodeImpl
   ObservedProperty::NotifiesOnlyOnChanges<bool,
                                           &PageNodeObserver::OnIsAudibleChanged>
       is_audible_ GUARDED_BY_CONTEXT(sequence_checker_){false};
+  // Whether or not the page is displaying content in picture-in-picture. Driven
+  // by browser instrumentation. Initialized on construction.
+  ObservedProperty::NotifiesOnlyOnChanges<
+      bool,
+      &PageNodeObserver::OnHasPictureInPictureChanged>
+      has_picture_in_picture_ GUARDED_BY_CONTEXT(sequence_checker_){false};
   // The loading state. This is driven by instrumentation in the browser
   // process.
   ObservedProperty::NotifiesOnlyOnChangesWithPreviousValue<

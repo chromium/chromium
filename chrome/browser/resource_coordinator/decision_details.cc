@@ -38,6 +38,7 @@ const char* kDecisionFailureReasonStrings[] = {
     "Tab is currently holding an IndexedDB lock",
     "Tab has notification permission ",
     "Tab is a web application window",
+    "Tab is displaying content in picture-in-picture",
 };
 static_assert(std::size(kDecisionFailureReasonStrings) ==
                   static_cast<size_t>(DecisionFailureReason::MAX),
@@ -150,6 +151,9 @@ void PopulateFailureReason(
       break;
     case DecisionFailureReason::LIVE_WEB_APP:
       ukm->SetFailureLiveWebApp(1);
+      break;
+    case DecisionFailureReason::LIVE_PICTURE_IN_PICTURE:
+      ukm->SetFailureLivePictureInPicture(1);
       break;
     case DecisionFailureReason::MAX:
       NOTREACHED();

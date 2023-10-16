@@ -431,6 +431,11 @@ bool TabLifecycleUnitSource::TabLifecycleUnit::CanDiscard(
     decision_details->AddReason(DecisionFailureReason::LIVE_WEB_APP);
   }
 
+  if (web_contents()->HasPictureInPictureVideo() ||
+      web_contents()->HasPictureInPictureDocument()) {
+    decision_details->AddReason(DecisionFailureReason::LIVE_PICTURE_IN_PICTURE);
+  }
+
   if (decision_details->reasons().empty()) {
     decision_details->AddReason(
         DecisionSuccessReason::HEURISTIC_OBSERVED_TO_BE_SAFE);

@@ -24328,6 +24328,12 @@ be describing additional metrics about the same event.
       via feature policy.
     </summary>
   </metric>
+  <metric name="FailureLivePictureInPicture" enum="Boolean">
+    <summary>
+      Boolean indicating that the intervention was disallowed because the tab is
+      displaying content in picture-in-picture.
+    </summary>
+  </metric>
   <metric name="FailureLiveStateCapturing" enum="Boolean">
     <summary>
       Boolean indicating that the intervention was disallowed because the tab is

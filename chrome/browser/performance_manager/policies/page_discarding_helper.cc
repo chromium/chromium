@@ -312,6 +312,11 @@ PageDiscardingHelper::CanDiscardResult PageDiscardingHelper::CanDiscard(
     return CanDiscardResult::kProtected;
   }
 
+  // Don't discard pages that are displaying content in picture-in-picture.
+  if (page_node->HasPictureInPicture()) {
+    return CanDiscardResult::kProtected;
+  }
+
   // Do not discard PDFs as they might contain entry that is not saved and they
   // don't remember their scrolling positions. See crbug.com/547286 and
   // crbug.com/65244.

@@ -102,6 +102,10 @@ PerformanceManagerTabHelper::PerformanceManagerTabHelper(
   if (web_contents->IsCurrentlyAudible()) {
     initial_property_flags.Put(PagePropertyFlag::kIsAudible);
   }
+  if (web_contents->HasPictureInPictureVideo() ||
+      web_contents->HasPictureInPictureDocument()) {
+    initial_property_flags.Put(PagePropertyFlag::kHasPictureInPicture);
+  }
 
   // Create the page node.
   std::unique_ptr<PageData> page = std::make_unique<PageData>();
@@ -484,6 +488,14 @@ void PerformanceManagerTabHelper::DidUpdateFaviconURL(
   PerformanceManagerImpl::CallOnGraphImpl(
       FROM_HERE, base::BindOnce(&PageNodeImpl::OnFaviconUpdated,
                                 base::Unretained(primary_page_node())));
+}
+
+void PerformanceManagerTabHelper::MediaPictureInPictureChanged(
+    bool is_picture_in_picture) {
+  PerformanceManagerImpl::CallOnGraphImpl(
+      FROM_HERE, base::BindOnce(&PageNodeImpl::SetHasPictureInPicture,
+                                base::Unretained(primary_page_node()),
+                                is_picture_in_picture));
 }
 
 void PerformanceManagerTabHelper::OnWebContentsFocused(

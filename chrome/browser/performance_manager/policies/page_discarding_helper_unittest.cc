@@ -442,6 +442,13 @@ TEST_F(PageDiscardingHelperTest,
   EXPECT_TRUE(CanDiscard(page_node(), DiscardReason::EXTERNAL));
 }
 
+TEST_F(PageDiscardingHelperTest, TestCannotDiscardWithPictureInPicture) {
+  page_node()->SetHasPictureInPicture(true);
+  EXPECT_FALSE(CanDiscard(page_node(), DiscardReason::URGENT));
+  EXPECT_FALSE(CanDiscard(page_node(), DiscardReason::PROACTIVE));
+  EXPECT_TRUE(CanDiscard(page_node(), DiscardReason::EXTERNAL));
+}
+
 // Tests DiscardMultiplePages.
 
 TEST_F(PageDiscardingHelperTest, DiscardMultiplePagesNoCandidate) {
