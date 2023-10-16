@@ -1383,7 +1383,11 @@ class MetaBuildWrapper:
         self.Print(out)
       return ret
 
-    runtime_deps = out.splitlines()
+    runtime_deps = []
+    for l in out.splitlines():
+      # FIXME: Can remove this check if/when use_goma is removed.
+      if 'The gn arg use_goma=true will be deprecated by EOY 2023' not in l:
+        runtime_deps.append(l)
 
     ret = self.WriteIsolateFiles(build_dir, command, target, runtime_deps, vals,
                                  extra_files)
