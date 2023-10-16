@@ -784,6 +784,7 @@ public class CustomTabToolbar extends ToolbarLayout implements View.OnLongClickL
     @Override
     protected void onConfigurationChanged(Configuration newConfig) {
         super.onConfigurationChanged(newConfig);
+        mLocationBar.addButtonsVisibilityUpdater();
         mLocationBarModel.notifyTitleChanged();
         mLocationBarModel.notifyUrlChanged();
         mLocationBarModel.notifyPrimaryColorChanged();
@@ -1135,11 +1136,17 @@ public class CustomTabToolbar extends ToolbarLayout implements View.OnLongClickL
             mSecurityButton = container.findViewById(R.id.security_button);
             mAnimDelegate = new CustomTabToolbarAnimationDelegate(
                     mSecurityButton, mTitleUrlContainer, R.dimen.location_bar_icon_width);
-            mTitleUrlContainer.addOnLayoutChangeListener(mButtonsVisibilityUpdater);
+            addButtonsVisibilityUpdater();
         }
 
         private void removeButtonsVisibilityUpdater() {
             mTitleUrlContainer.removeOnLayoutChangeListener(mButtonsVisibilityUpdater);
+        }
+
+        private void addButtonsVisibilityUpdater() {
+            if (mTitleUrlContainer != null) {
+                mTitleUrlContainer.addOnLayoutChangeListener(mButtonsVisibilityUpdater);
+            }
         }
 
         public void init(LocationBarDataProvider locationBarDataProvider,
