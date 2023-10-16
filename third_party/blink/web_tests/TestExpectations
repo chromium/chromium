@@ -556,6 +556,11 @@ crbug.com/432153 external/wpt/css/css-masking/mask-image/mask-size-percent.html 
 
 # New failures exposed by supporting unprefixed mask-image.
 crbug.com/432153 external/wpt/css/css-masking/mask-image/mask-image-3a.html [ Failure ]
+crbug.com/432153 external/wpt/css/css-masking/mask-image/mask-image-3b.html [ Failure ]
+crbug.com/432153 external/wpt/css/css-masking/mask-image/mask-image-3c.html [ Failure ]
+crbug.com/432153 external/wpt/css/css-masking/mask-image/mask-image-3d.html [ Failure ]
+crbug.com/432153 external/wpt/css/css-masking/mask-image/mask-image-3e.html [ Failure ]
+crbug.com/432153 external/wpt/css/css-masking/mask-image/mask-image-3i.html [ Failure ]
 crbug.com/432153 external/wpt/css/css-masking/mask-image/mask-image-3h.html [ Failure ]
 crbug.com/432153 external/wpt/css/css-masking/mask-image/mask-image-6.html [ Failure ]
 
