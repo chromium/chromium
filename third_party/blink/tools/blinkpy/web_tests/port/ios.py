@@ -128,6 +128,13 @@ class IOSPort(base.Port):
         # ensure it is up to date.
         self.host.executive.run_command(self.reinstall_cmd_line())
 
+    def used_expectations_files(self):
+        files = super(IOSPort, self).used_expectations_files()
+        ios_additional_expectations_files = self._filesystem.join(
+            self.web_tests_dir(), 'IOSTestExpectations')
+        files.append(ios_additional_expectations_files)
+        return files
+
 
 class ChromiumIOSDriver(driver.Driver):
     def __init__(self, port, worker_number, no_timeout=False):

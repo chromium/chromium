@@ -69,3 +69,15 @@ class IOSPortTest(port_testcase.PortTestCase):
             port.path_to_apache_config_file(),
             '/mock-checkout/third_party/blink/tools/apache_config/apache2-httpd-2.4-php7.conf'
         )
+
+    def test_used_expectations_files(self):
+        port = self.make_port()
+        self.assertEqual(list(port.used_expectations_files()), [
+            port.path_to_generic_test_expectations_file(),
+            port.host.filesystem.join(port.web_tests_dir(), 'NeverFixTests'),
+            port.host.filesystem.join(port.web_tests_dir(),
+                                      'StaleTestExpectations'),
+            port.host.filesystem.join(port.web_tests_dir(), 'SlowTests'),
+            port.host.filesystem.join(port.web_tests_dir(),
+                                      'IOSTestExpectations'),
+        ])

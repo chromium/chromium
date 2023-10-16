@@ -1604,6 +1604,10 @@ if (use_blink && !is_cronet_build) {
       "//tools/idl_parser/",
     ]
 
+    if (is_ios) {
+      data += [ "//third_party/blink/web_tests/IOSTestExpectations" ]
+    }
+
     data_deps = [ "//ui/base:goldctl" ]
   }
 }
