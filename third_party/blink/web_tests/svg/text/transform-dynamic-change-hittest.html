@@ -1,0 +1,43 @@
+<!DOCTYPE html>
+<html>
+<link rel="help" href="https://bugs.chromium.org/p/chromium/issues/detail?id=1440024">
+
+<style>
+/* Following two rulesets are necessary to reproduce the issue! */
+
+.dummy:hover > * {
+  border-color: red;
+}
+
+*:hover *[contenteditable=true] {
+  user-select: text;
+}
+</style>
+<body>
+
+<div id="container" style="transform: scale(1); transform-origin: top left;">
+<svg viewBox="0 0 200 100" width="400" height="200" xmlns="http://www.w3.org/2000/svg">
+<text x="100" y="50" dominant-baseline="middle" text-anchor="middle"
+  fill="black" font-size="30px" font-family="Arial">HEY THERE</text>
+</svg>
+<div id="editable" contenteditable=true>editable</div>
+</div>
+
+<script>
+async function test() {
+  await new Promise(requestAnimationFrame);
+  await new Promise(requestAnimationFrame);
+  document.querySelector('#container').style.transform = 'scale(0.5)';
+  await new Promise(requestAnimationFrame);
+  document.execCommand('selectall', false, '');
+  await new Promise(requestAnimationFrame);
+  eventSender.mouseMoveTo(0, 300);
+  eventSender.mouseDown();
+  eventSender.mouseUp();
+  testRunner.notifyDone();
+}
+
+testRunner.waitUntilDone();
+test();
+</script>
+</body>

@@ -3697,6 +3697,10 @@
       status: "stable",
     },
     {
+      name: "SvgTextFixHittestAfterScale",
+      status: "stable",
+    },
+    {
       name: "SvgTextSkipZeroLengthItems",
       status: "stable",
     },
