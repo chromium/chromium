@@ -94,4 +94,10 @@ BASE_FEATURE(kSearchEngineChoiceSettingsUi,
 
 BASE_FEATURE(kUnoDesktop, "UnoDesktop", base::FEATURE_DISABLED_BY_DEFAULT);
 
+#if BUILDFLAG(IS_IOS)
+BASE_FEATURE(kRemoveSignedInAccountsDialog,
+             "RemoveSignedInAccountsDialog",
+             base::FEATURE_ENABLED_BY_DEFAULT);
+#endif
+
 }  // namespace switches

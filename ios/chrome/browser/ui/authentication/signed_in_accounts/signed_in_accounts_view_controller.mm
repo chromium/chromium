@@ -4,8 +4,10 @@
 
 #import "ios/chrome/browser/ui/authentication/signed_in_accounts/signed_in_accounts_view_controller.h"
 
+#import "base/feature_list.h"
 #import "base/ios/ios_util.h"
 #import "base/memory/raw_ptr.h"
+#import "components/signin/public/base/signin_switches.h"
 #import "components/signin/public/identity_manager/identity_manager.h"
 #import "components/signin/public/identity_manager/objc/identity_manager_observer_bridge.h"
 #import "ios/chrome/browser/shared/model/browser_state/chrome_browser_state.h"
@@ -61,6 +63,9 @@ constexpr CGFloat kDefaultCellHeight = 54;
 }
 
 + (BOOL)shouldBePresentedForBrowserState:(ChromeBrowserState*)browserState {
+  if (base::FeatureList::IsEnabled(switches::kRemoveSignedInAccountsDialog)) {
+    return NO;
+  }
   if (!browserState || browserState->IsOffTheRecord()) {
     return NO;
   }
@@ -75,6 +80,8 @@ constexpr CGFloat kDefaultCellHeight = 54;
 - (instancetype)initWithBrowserState:(ChromeBrowserState*)browserState
                           dispatcher:
                               (id<ApplicationSettingsCommands>)dispatcher {
+  CHECK(!base::FeatureList::IsEnabled(switches::kRemoveSignedInAccountsDialog));
+
   self = [super initWithNibName:nil bundle:nil];
   if (self) {
     CHECK(browserState);

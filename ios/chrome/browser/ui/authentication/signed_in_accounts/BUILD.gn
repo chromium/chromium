@@ -14,6 +14,7 @@ source_set("signed_in_accounts") {
     "signed_in_accounts_view_controller.mm",
   ]
   deps = [
+    "//components/signin/public/base",
     "//components/signin/public/identity_manager",
     "//components/signin/public/identity_manager/objc",
     "//ios/chrome/app/strings",
@@ -41,6 +42,7 @@ source_set("unit_tests") {
     ":signed_in_accounts",
     "//base",
     "//base/test:test_support",
+    "//components/signin/public/base",
     "//components/signin/public/identity_manager:test_support",
     "//components/variations:test_support",
     "//ios/chrome/browser/shared/model/application_context",
@@ -63,6 +65,7 @@ source_set("eg2_tests") {
   sources = [ "signed_in_accounts_egtest.mm" ]
   deps = [
     "//base",
+    "//components/signin/public/base",
     "//ios/chrome/app/strings",
     "//ios/chrome/browser/signin:fake_system_identity",
     "//ios/chrome/browser/ui/authentication:eg_test_support+eg2",

@@ -67,6 +67,10 @@ BASE_DECLARE_FEATURE(kSearchEngineChoiceSettingsUi);
 // launched to stable for the moment, while it's still in a prototype state.
 BASE_DECLARE_FEATURE(kUnoDesktop);
 
+#if BUILDFLAG(IS_IOS)
+BASE_DECLARE_FEATURE(kRemoveSignedInAccountsDialog);
+#endif
+
 }  // namespace switches
 
 #endif  // COMPONENTS_SIGNIN_PUBLIC_BASE_SIGNIN_SWITCHES_H_
