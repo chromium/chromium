@@ -155,11 +155,6 @@ public class ChromeSiteSettingsDelegate implements SiteSettingsDelegate {
     }
 
     @Override
-    public boolean isPrivacySandboxSettings4Enabled() {
-        return ChromeFeatureList.isEnabled(ChromeFeatureList.PRIVACY_SANDBOX_SETTINGS_4);
-    }
-
-    @Override
     public boolean isUserBypassUIEnabled() {
         return ChromeFeatureList.isEnabled(ChromeFeatureList.USER_BYPASS_UI);
     }
@@ -227,11 +222,7 @@ public class ChromeSiteSettingsDelegate implements SiteSettingsDelegate {
         if (mPrivacySandboxController == null) return;
 
         // Only show the snackbar when Privacy Sandbox APIs are enabled.
-        if (isPrivacySandboxSettings4Enabled()) {
-            if (!isAnyPrivacySandboxApiEnabledV4()) return;
-        } else {
-            if (!PrivacySandboxBridge.isPrivacySandboxEnabled()) return;
-        }
+        if (!isAnyPrivacySandboxApiEnabledV4()) return;
 
         if (PrivacySandboxBridge.isPrivacySandboxRestricted()) return;
 

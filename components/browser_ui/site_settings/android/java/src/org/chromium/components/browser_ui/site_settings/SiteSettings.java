@@ -31,10 +31,7 @@ public class SiteSettings extends BaseSiteSettingsFragment
 
     @Override
     public void onCreatePreferences(Bundle savedInstanceState, String rootKey) {
-        SettingsUtils.addPreferencesFromResource(this,
-                getSiteSettingsDelegate().isPrivacySandboxSettings4Enabled()
-                        ? R.xml.site_settings_preferences_with_categories
-                        : R.xml.site_settings_preferences);
+        SettingsUtils.addPreferencesFromResource(this, R.xml.site_settings_preferences);
         getActivity().setTitle(getContext().getString(R.string.prefs_site_settings));
 
         configurePreferences();

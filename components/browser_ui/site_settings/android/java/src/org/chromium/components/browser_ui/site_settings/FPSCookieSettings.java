@@ -14,7 +14,6 @@ import org.chromium.components.browser_ui.settings.ChromeSwitchPreference;
 import org.chromium.components.browser_ui.settings.ManagedPreferenceDelegate;
 import org.chromium.components.browser_ui.settings.SettingsUtils;
 import org.chromium.components.browser_ui.settings.TextMessagePreference;
-import org.chromium.components.content_settings.ContentSettingsType;
 import org.chromium.components.content_settings.CookieControlsMode;
 import org.chromium.components.prefs.PrefService;
 import org.chromium.components.user_prefs.UserPrefs;
@@ -85,15 +84,8 @@ public class FPSCookieSettings
     private boolean isBlockThirdPartyCookieSelected() {
         BrowserContextHandle context = getSiteSettingsDelegate().getBrowserContextHandle();
         PrefService prefService = UserPrefs.get(context);
-        if (getSiteSettingsDelegate().isPrivacySandboxSettings4Enabled()) {
             return prefService.getInteger(COOKIE_CONTROLS_MODE)
                     == CookieControlsMode.BLOCK_THIRD_PARTY;
-        } else {
-            boolean areCookiesAllowed =
-                    WebsitePreferenceBridge.isCategoryEnabled(context, ContentSettingsType.COOKIES);
-            var cookiesControlMode = prefService.getInteger(COOKIE_CONTROLS_MODE);
-            return areCookiesAllowed && cookiesControlMode == CookieControlsMode.BLOCK_THIRD_PARTY;
-        }
     }
 
     @Override

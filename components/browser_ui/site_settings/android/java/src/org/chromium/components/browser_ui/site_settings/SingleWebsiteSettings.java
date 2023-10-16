@@ -368,7 +368,6 @@ public class SingleWebsiteSettings extends BaseSiteSettingsFragment
             };
             ClearWebsiteStorageDialog dialogFragment =
                     ClearWebsiteStorageDialog.newInstance(preference, onDialogClosed,
-                            getSiteSettingsDelegate().isPrivacySandboxSettings4Enabled(),
                             /*isGroup=*/false);
             dialogFragment.setTargetFragment(this, 0);
             dialogFragment.show(getFragmentManager(), ClearWebsiteStorageDialog.TAG);
@@ -1359,10 +1358,6 @@ public class SingleWebsiteSettings extends BaseSiteSettingsFragment
         signedOutText.setText(R.string.webstorage_clear_data_dialog_sign_out_message);
         TextView offlineText = dialogView.findViewById(R.id.offline_text);
         offlineText.setText(R.string.webstorage_delete_data_dialog_offline_message);
-        if (getSiteSettingsDelegate().isPrivacySandboxSettings4Enabled()) {
-            TextView adPersonalizationText = dialogView.findViewById(R.id.ad_personalization_text);
-            adPersonalizationText.setVisibility(View.VISIBLE);
-        }
         mConfirmationDialog =
                 new AlertDialog.Builder(getContext(), R.style.ThemeOverlay_BrowserUI_AlertDialog)
                         .setView(dialogView)

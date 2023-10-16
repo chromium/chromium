@@ -16,9 +16,6 @@
   <message name="IDS_ALL_SITES" desc='Title of the "All sites" settings screen that allows the user to see permissions for all websites. [CHAR_LIMIT=32]'>
     All sites
   </message>
-  <message name="IDS_ADS_PERMISSION_TITLE" desc="Title for the ads permission [CHAR_LIMIT=32]">
-    Ads
-  </message>
   <message name="IDS_ANTI_ABUSE_PERMISSION_TITLE" desc="Title for the anti-abuse permission [CHAR_LIMIT=32]">
     Auto-verify
   </message>
@@ -368,9 +365,6 @@
   <message name="IDS_INTRUSIVE_ADS_INFORMATION" desc="The extra information at the top of the Site Details page when the site tends to show intrusive ads">
     This site shows intrusive or misleading ads
   </message>
-  <message name="IDS_WEBSITE_SETTINGS_CATEGORY_ADS_BLOCKED" desc="A setting that, if turned on, will block intrusive or misleading ads on sites that have a history of showing such ads.">
-    Block ads on sites that show intrusive or misleading ads
-  </message>
   <message name="IDS_WEBSITE_SETTINGS_CATEGORY_ADS_BLOCKED_LIST" desc="Summary text explaining that the Ads permission is set to block ads on some sites. To be shown in the list of permission categories.">
     Blocked on some sites
   </message>
@@ -499,9 +493,6 @@
   </message>
   <message name="IDS_WEBSITE_SETTINGS_CATEGORY_COOKIE_BLOCK_ADDITION" desc="Additional text used to explain the block cookies option in settings">
     Features on many sites may not work
-  </message>
-  <message name="IDS_WEBSITE_SETTINGS_CATEGORY_COOKIE_ALLOWED" desc="Summary text explaining that sites are allowed to use cookies and that it is the recommended setting.">
-    Allow sites to save and read cookie data (recommended)
   </message>
   <message name="IDS_WEBSITE_SETTINGS_ADD_SITE_DESCRIPTION_COOKIES_ALLOW" desc="The description for the allow Cookies for website dialog.">
     Allow cookies for a specific site.

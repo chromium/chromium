@@ -42,17 +42,11 @@ public class PageInfoAdPersonalizationSettings
 
         int summaryId;
         if (mParams.hasJoinedUserToInterestGroup && !mParams.topicInfo.isEmpty()) {
-            summaryId = getSiteSettingsDelegate().isPrivacySandboxSettings4Enabled()
-                    ? R.string.page_info_ad_privacy_topics_and_fledge_description
-                    : R.string.page_info_ad_personalization_topics_and_interest_group_description;
+            summaryId = R.string.page_info_ad_privacy_topics_and_fledge_description;
         } else if (mParams.hasJoinedUserToInterestGroup) {
-            summaryId = getSiteSettingsDelegate().isPrivacySandboxSettings4Enabled()
-                    ? R.string.page_info_ad_privacy_fledge_description
-                    : R.string.page_info_ad_personalization_interest_group_description;
+            summaryId = R.string.page_info_ad_privacy_fledge_description;
         } else {
-            summaryId = getSiteSettingsDelegate().isPrivacySandboxSettings4Enabled()
-                    ? R.string.page_info_ad_privacy_topics_description
-                    : R.string.page_info_ad_personalization_topics_description;
+            summaryId = R.string.page_info_ad_privacy_topics_description;
         }
         findPreference(PERSONALIZATION_SUMMARY).setSummary(summaryId);
 
@@ -73,9 +67,7 @@ public class PageInfoAdPersonalizationSettings
 
         var manageButtonPreference = findPreference(MANAGE_INTEREST_PREFERENCE);
         manageButtonPreference.setOnPreferenceClickListener(this);
-        manageButtonPreference.setTitle(getSiteSettingsDelegate().isPrivacySandboxSettings4Enabled()
-                        ? R.string.page_info_ad_privacy_subpage_manage_button
-                        : R.string.page_info_ad_manage_interests);
+        manageButtonPreference.setTitle(R.string.page_info_ad_privacy_subpage_manage_button);
         updateTopics();
     }
 

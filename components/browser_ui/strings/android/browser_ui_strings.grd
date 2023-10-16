@@ -648,21 +648,6 @@
       <message name="IDS_PAGE_INFO_URL_TRUNCATED" desc="Accessibility announcement when the URL in PageInfo switches from full to truncated display">
         URL truncated
       </message>
-      <message name="IDS_PAGE_INFO_AD_PERSONALIZATION_TITLE" desc="The title of the 'Ad personalization' section in Page Info.">
-        Ad personalization
-      </message>
-      <message name="IDS_PAGE_INFO_AD_PERSONALIZATION_TOPICS_AND_INTEREST_GROUP_DESCRIPTION" desc="The description label that explains to the user that the current site has accessed the Topics API and joined the user to an interest group. The label is located in 'Ad personalization' subpage in page info bubble.">
-        This site defines interests other sites can use to show you ads. This site also gets your interests from Chrome to show you more relevant ads.
-      </message>
-      <message name="IDS_PAGE_INFO_AD_PERSONALIZATION_TOPICS_DESCRIPTION"  desc="The description label that explains to the user that the current site has accessed the Topics API. The label is located in 'Ad personalization' subpage in page info bubble.">
-        This site gets your interests from Chrome to show you more relevant ads
-      </message>
-      <message name="IDS_PAGE_INFO_AD_PERSONALIZATION_INTEREST_GROUP_DESCRIPTION" desc="The description label that explains to the user that the current site has joined the user to an interest group. The label is located in 'Ad personalization' subpage in page info bubble.">
-        This site defines interests other sites can use to show you ads
-      </message>
-      <message name="IDS_PAGE_INFO_AD_MANAGE_INTERESTS" desc="The button label of the 'Manage interests' button in Page Info. The button opens a settings page to manage interests for the site.">
-        Manage interests
-      </message>
       <message name="IDS_PAGE_INFO_AD_PRIVACY_HEADER" desc="A label that represents the new ad-related settings. 1) Navigate to any site. 2) Click the icon (often a lock) to the left of the URL in the address bar. Information about the page you're viewing appears. The 'Ad privacy' label will appear above the 'Site settings' button.">
         Ad privacy
       </message>

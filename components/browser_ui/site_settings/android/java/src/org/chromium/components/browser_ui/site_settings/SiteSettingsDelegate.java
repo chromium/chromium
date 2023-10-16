@@ -66,11 +66,6 @@ public interface SiteSettingsDelegate {
     boolean isPrivacySandboxFirstPartySetsUIFeatureEnabled();
 
     /**
-     * @return true if the PrivacySandboxSettings4 feature is enabled.
-     */
-    boolean isPrivacySandboxSettings4Enabled();
-
-    /**
      * @return true if the UserBypassUI feature is enabled.
      */
     boolean isUserBypassUIEnabled();

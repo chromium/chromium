@@ -258,7 +258,6 @@ android_resources("java_resources") {
     "java/res/xml/grouped_websites_preferences.xml",
     "java/res/xml/single_website_preferences.xml",
     "java/res/xml/site_settings_preferences.xml",
-    "java/res/xml/site_settings_preferences_with_categories.xml",
     "java/res/xml/website_preferences.xml",
   ]
 

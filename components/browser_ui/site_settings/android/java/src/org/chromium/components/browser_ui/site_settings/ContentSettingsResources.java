@@ -98,17 +98,13 @@ public class ContentSettingsResources {
                     return new ResourceItem(
                             0, 0, ContentSettingValues.ALLOW, ContentSettingValues.BLOCK, 0, 0);
                 }
-                return new ResourceItem(R.drawable.web_asset,
-                        delegate.isPrivacySandboxSettings4Enabled()
-                                ? R.string.site_settings_page_intrusive_ads_label
-                                : R.string.ads_permission_title,
-                        ContentSettingValues.ALLOW, ContentSettingValues.BLOCK,
-                        delegate.isPrivacySandboxSettings4Enabled()
-                                ? R.string.site_settings_page_intrusive_allowed_sub_label
-                                : 0,
-                        delegate.isPrivacySandboxSettings4Enabled()
-                                ? R.string.site_settings_page_intrusive_blocked_sub_label
-                                : R.string.website_settings_category_ads_blocked);
+                return new ResourceItem(
+                        R.drawable.web_asset,
+                        R.string.site_settings_page_intrusive_ads_label,
+                        ContentSettingValues.ALLOW,
+                        ContentSettingValues.BLOCK,
+                        R.string.site_settings_page_intrusive_allowed_sub_label,
+                        R.string.site_settings_page_intrusive_blocked_sub_label);
 
             case ContentSettingsType.ANTI_ABUSE:
                 return new ResourceItem(R.drawable.ic_account_attention,
@@ -169,18 +165,13 @@ public class ContentSettingsResources {
                     return new ResourceItem(
                             0, 0, ContentSettingValues.ALLOW, ContentSettingValues.BLOCK, 0, 0);
                 }
-                return new ResourceItem(delegate.isPrivacySandboxSettings4Enabled()
-                                ? R.drawable.gm_database_24
-                                : R.drawable.permission_cookie,
-                        delegate.isPrivacySandboxSettings4Enabled() ? R.string.site_data_page_title
-                                                                    : R.string.cookies_title,
-                        ContentSettingValues.ALLOW, ContentSettingValues.BLOCK,
-                        delegate.isPrivacySandboxSettings4Enabled()
-                                ? R.string.website_settings_site_data_page_toggle_sub_label_allow
-                                : R.string.website_settings_category_cookie_allowed,
-                        delegate.isPrivacySandboxSettings4Enabled()
-                                ? R.string.website_settings_site_data_page_toggle_sub_label_block
-                                : 0);
+                return new ResourceItem(
+                        R.drawable.gm_database_24,
+                        R.string.site_data_page_title,
+                        ContentSettingValues.ALLOW,
+                        ContentSettingValues.BLOCK,
+                        R.string.website_settings_site_data_page_toggle_sub_label_allow,
+                        R.string.website_settings_site_data_page_toggle_sub_label_block);
 
             case ContentSettingsType.REQUEST_DESKTOP_SITE:
                 return new ResourceItem(R.drawable.ic_desktop_windows, R.string.desktop_site_title,
