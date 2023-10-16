@@ -117,7 +117,6 @@ class WvrManager : public device::mojom::XRPresentationProvider,
   void ClosePresentationBindings();
   void OnSubmitClientMojoConnectionError();
 
-  base::TimeTicks pending_time_;
   device::mojom::XRFrameDataProvider::GetFrameDataCallback
       get_frame_data_callback_;
 
