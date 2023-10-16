@@ -24,27 +24,32 @@ def main():
     parser.add_argument('--out-dir',
                         default='out/gnrt',
                         help='put target and cargo home dir here')
-    args, rest = parser.parse_known_args()
+    parser.add_argument('gnrt_args',
+                        nargs='*',
+                        help='additional arguments to pass to gnrt, e.g. "gen"')
+    args = parser.parse_args()
 
     exe = ''
     if sys.platform == 'win32':
         exe = '.exe'
 
-    cargo_bin = os.path.join(args.rust_sysroot, 'bin', f'cargo{exe}')
-    rustc_bin = os.path.join(args.rust_sysroot, 'bin', f'rustc{exe}')
+    cargo_bin = os.path.abspath(
+        os.path.join(args.rust_sysroot, 'bin', f'cargo{exe}'))
+    rustc_bin = os.path.abspath(
+        os.path.join(args.rust_sysroot, 'bin', f'rustc{exe}'))
 
     cargo_env = os.environ
     cargo_env['CARGO_HOME'] = os.path.abspath(
         os.path.join(args.out_dir, 'cargo_home'))
     target_dir = os.path.abspath(os.path.join(args.out_dir, 'target'))
 
-    gnrt_args = rest
-    if gnrt_args[0] == '--':
-        gnrt_args = gnrt_args[1:]
-
+    gnrt_args = args.gnrt_args
+    if gnrt_args and gnrt_args[0] == 'gen':
+        gnrt_args.extend(['--rustc-path', rustc_bin])
     return subprocess.run([
         cargo_bin, '--locked', 'run', '--release', '--manifest-path',
-        GNRT_MANIFEST_PATH, '--target-dir', target_dir, '--'
+        GNRT_MANIFEST_PATH, '--target-dir', target_dir, '--config',
+        f'build.rustc="{rustc_bin}"', '--'
     ] + gnrt_args).returncode
 
 
