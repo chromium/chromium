@@ -233,14 +233,6 @@ class RequestHandler:
                 ),
             ),
             _Route(
-                "/chrome_stub/resources/js/assert_ts.js",
-                functools.partial(
-                    self._handle_static_file,
-                    root=self._gen_dir,
-                    path="ui/webui/resources/tsc/js/assert_ts.js",
-                ),
-            ),
-            _Route(
                 "/chrome_stub/resources/mwc/lit/index.js",
                 functools.partial(
                     self._handle_static_file,
