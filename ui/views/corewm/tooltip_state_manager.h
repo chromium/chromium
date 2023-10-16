@@ -119,7 +119,8 @@ class VIEWS_EXPORT TooltipStateManager {
   std::unique_ptr<Tooltip> tooltip_;
 
   // The pointer to the view for which the tooltip is set.
-  raw_ptr<const void> tooltip_id_ = nullptr;
+  // TODO(crbug.com/1492221) - Fix this dangling pointer.
+  raw_ptr<const void, DanglingUntriaged> tooltip_id_ = nullptr;
 
   // The text value used at the last tooltip update.
   std::u16string tooltip_text_;

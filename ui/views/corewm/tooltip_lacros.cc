@@ -75,6 +75,13 @@ void TooltipLacros::Update(aura::Window* parent_window,
   parent_window_ = parent_window;
   text_ = text;
   position_ = position;
+
+  // TODO(crbug.com/1492220) - Figure out why this is necessary and get the
+  // correctly computed offset.
+  if (parent_window_->GetType() == aura::client::WINDOW_TYPE_POPUP) {
+    position_.Offset(0, 36);
+  }
+
   // Add the distance between `parent_window` and its toplevel window to
   // `position_` since Ash-side server will use this position as relative to
   // wayland toplevel window.
