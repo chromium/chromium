@@ -34,7 +34,8 @@ void UpdatePermissionsPolicyFeatureListFlagDefaults(PermissionsPolicyFeatureList
 
 // The base list with no flags or special cases.
 PermissionsPolicyFeatureList GetBasePermissionsPolicyFeatureList() {
-  static const base::NoDestructor<PermissionsPolicyFeatureList> feature_list({
+  static const base::NoDestructor<PermissionsPolicyFeatureList> feature_list([] {
+    PermissionsPolicyFeatureList map({
       {%- for feature in features %}
         {
           mojom::PermissionsPolicyFeature::k{{feature.name}},
@@ -42,6 +43,9 @@ PermissionsPolicyFeatureList GetBasePermissionsPolicyFeatureList() {
         },
       {%- endfor %}
     });
+
+    return map;
+  }());
   return *feature_list;
 }
 
