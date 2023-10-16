@@ -23,6 +23,7 @@ import android.view.ViewStub;
 import android.widget.ImageView;
 import android.widget.LinearLayout;
 
+import androidx.annotation.Nullable;
 import androidx.annotation.StringRes;
 import androidx.annotation.VisibleForTesting;
 import androidx.appcompat.content.res.AppCompatResources;
@@ -59,6 +60,7 @@ import org.chromium.chrome.browser.util.BrowserUiUtils.HostSurface;
 import org.chromium.chrome.browser.util.BrowserUiUtils.ModuleTypeOnStartAndNTP;
 import org.chromium.chrome.features.start_surface.StartSurfaceConfiguration;
 import org.chromium.components.browser_ui.styles.ChromeColors;
+import org.chromium.components.browser_ui.widget.displaystyle.DisplayStyleObserver;
 import org.chromium.components.browser_ui.widget.displaystyle.HorizontalDisplayStyle;
 import org.chromium.components.browser_ui.widget.displaystyle.UiConfig;
 import org.chromium.components.browser_ui.widget.highlight.ViewHighlighter;
@@ -101,6 +103,7 @@ public class NewTabPageLayout extends LinearLayout {
     private NewTabPageManager mManager;
     private Activity mActivity;
     private UiConfig mUiConfig;
+    private @Nullable DisplayStyleObserver mDisplayStyleObserver;
     private CallbackController mCallbackController = new CallbackController();
 
     /**
@@ -228,12 +231,18 @@ public class NewTabPageLayout extends LinearLayout {
         Profile profile = Profile.getLastUsedRegularProfile();
         mIsTablet = isTablet;
 
-        // On first run, the NewTabPageLayout is initialized behind the First Run Experience,
-        // meaning the UiConfig will pickup the screen layout then. However onConfigurationChanged
-        // is not called on orientation changes until the FRE is completed. This means that if a
-        // user starts the FRE in one orientation, changes an orientation and then leaves the FRE
-        // the UiConfig will have the wrong orientation. https://crbug.com/683886.
-        mUiConfig.updateDisplayStyle();
+        if (mIsTablet) {
+            mDisplayStyleObserver = this::onDisplayStyleChanged;
+            mUiConfig.addObserver(mDisplayStyleObserver);
+        } else {
+            // On first run, the NewTabPageLayout is initialized behind the First Run Experience,
+            // meaning the UiConfig will pickup the screen layout then. However
+            // onConfigurationChanged is not called on orientation changes until the FRE is
+            // completed. This means that if a user starts the FRE in one orientation, changes an
+            // orientation and then leaves the FRE the UiConfig will have the wrong orientation.
+            // https://crbug.com/683886.
+            mUiConfig.updateDisplayStyle();
+        }
 
         mSearchBoxCoordinator = new SearchBoxCoordinator(getContext(), this);
         mSearchBoxCoordinator.initialize(lifecycleDispatcher, mIsIncognito, mWindowAndroid);
@@ -565,7 +574,7 @@ public class NewTabPageLayout extends LinearLayout {
             } else {
                 mIsMvtAllFilledPortrait = isAllFilled;
             }
-            updateMvtWidthOnTabletForPolish();
+            updateMvtOnTabletForPolish();
         }
     }
 
@@ -962,6 +971,11 @@ public class NewTabPageLayout extends LinearLayout {
             mMostVisitedTilesCoordinator.destroyMvtiles();
             mMostVisitedTilesCoordinator = null;
         }
+
+        if (mIsTablet) {
+            mUiConfig.removeObserver(mDisplayStyleObserver);
+            mDisplayStyleObserver = null;
+        }
     }
 
     MostVisitedTilesCoordinator getMostVisitedTilesCoordinatorForTesting() {
@@ -1084,17 +1098,11 @@ public class NewTabPageLayout extends LinearLayout {
         return mLogoCoordinator;
     }
 
-    /**
-     * Modify the margins of the container for MV tiles when the orientation of the tablet changes.
-     * @param newConfig The new resource configuration.
-     */
-    @Override
-    public void onConfigurationChanged(Configuration newConfig) {
-        super.onConfigurationChanged(newConfig);
+    private void onDisplayStyleChanged(UiConfig.DisplayStyle newDisplayStyle) {
         if (!mIsTablet) return;
 
         if (mIsSurfacePolishEnabled) {
-            updateMvtWidthOnTabletForPolish();
+            updateMvtOnTabletForPolish();
             updateSearchBoxWidthForPolish();
         } else if (mIsNtpAsHomeSurfaceEnabled && isScrollableMvtEnabled()) {
             MarginLayoutParams marginLayoutParams =
@@ -1129,18 +1137,27 @@ public class NewTabPageLayout extends LinearLayout {
 
     /**
      * Updates whether the MV tiles layout stays in the center of the container when used in NTP on
-     * the tablet by changing the width of its container.
+     * the tablet by changing the width of its container. Also updates the lateral margins.
      */
-    private void updateMvtWidthOnTabletForPolish() {
-        LayoutParams layoutParams = (LayoutParams) mMvTilesContainerLayout.getLayoutParams();
-        layoutParams.width = ViewGroup.LayoutParams.MATCH_PARENT;
+    private void updateMvtOnTabletForPolish() {
+        MarginLayoutParams marginLayoutParams =
+                (MarginLayoutParams) mMvTilesContainerLayout.getLayoutParams();
+        marginLayoutParams.width = ViewGroup.LayoutParams.MATCH_PARENT;
         if (getResources().getConfiguration().orientation == Configuration.ORIENTATION_LANDSCAPE) {
             if (mIsMvtAllFilledLandscape != null && mIsMvtAllFilledLandscape) {
-                layoutParams.width = ViewGroup.LayoutParams.WRAP_CONTENT;
+                marginLayoutParams.width = ViewGroup.LayoutParams.WRAP_CONTENT;
             }
         } else if (mIsMvtAllFilledPortrait != null && mIsMvtAllFilledPortrait) {
-            layoutParams.width = ViewGroup.LayoutParams.WRAP_CONTENT;
+            marginLayoutParams.width = ViewGroup.LayoutParams.WRAP_CONTENT;
         }
+
+        int lateralPaddingId =
+                isInNarrowWindowOnTablet(mIsTablet, mUiConfig)
+                        ? R.dimen.search_box_lateral_margin_polish
+                        : R.dimen.mvt_container_lateral_margin_polish;
+        int lateralPaddingsForNTP = getResources().getDimensionPixelSize(lateralPaddingId);
+        marginLayoutParams.leftMargin = lateralPaddingsForNTP;
+        marginLayoutParams.rightMargin = lateralPaddingsForNTP;
     }
 
     private void updateSearchBoxWidthForPolish() {
@@ -1148,6 +1165,14 @@ public class NewTabPageLayout extends LinearLayout {
             mSearchBoxTwoSideMargin =
                     getResources().getDimensionPixelSize(R.dimen.search_box_lateral_margin_polish)
                             * 2;
+            // Invalidates |mIsHalfMvtLandscape| or |mIsHalfMvtPortrait| to recalculate them in
+            // onMeasure().
+            if (getResources().getConfiguration().orientation
+                    == Configuration.ORIENTATION_LANDSCAPE) {
+                mIsHalfMvtLandscape = null;
+            } else {
+                mIsHalfMvtPortrait = null;
+            }
         } else if (mIsNtpAsHomeSurfaceEnabled) {
             mSearchBoxTwoSideMargin =
                     getResources()
