@@ -656,6 +656,7 @@ crosapi::mojom::ProbeUsbSpecSpeed Convert(
     cros_healthd::mojom::UsbSpecSpeed input) {
   switch (input) {
     case cros_healthd::mojom::UsbSpecSpeed::kUnmappedEnumField:
+    case cros_healthd::mojom::UsbSpecSpeed::kDeprecatedSpeed:
       return crosapi::mojom::ProbeUsbSpecSpeed::kUnknown;
     case cros_healthd::mojom::UsbSpecSpeed::kUnknown:
       return crosapi::mojom::ProbeUsbSpecSpeed::kUnknown;
@@ -663,8 +664,6 @@ crosapi::mojom::ProbeUsbSpecSpeed Convert(
       return crosapi::mojom::ProbeUsbSpecSpeed::k1_5Mbps;
     case cros_healthd::mojom::UsbSpecSpeed::k12Mbps:
       return crosapi::mojom::ProbeUsbSpecSpeed::k12Mbps;
-    case cros_healthd::mojom::UsbSpecSpeed::kDeprecateSpeed:
-      return crosapi::mojom::ProbeUsbSpecSpeed::kUnknown;
     case cros_healthd::mojom::UsbSpecSpeed::k480Mbps:
       return crosapi::mojom::ProbeUsbSpecSpeed::k480Mbps;
     case cros_healthd::mojom::UsbSpecSpeed::k5Gbps:

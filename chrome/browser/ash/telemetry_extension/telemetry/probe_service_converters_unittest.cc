@@ -315,7 +315,7 @@ TEST(ProbeServiceConverters, ProbeUsbSpecSpeed) {
   EXPECT_EQ(Convert(cros_healthd::mojom::UsbSpecSpeed::k12Mbps),
             crosapi::mojom::ProbeUsbSpecSpeed::k12Mbps);
 
-  EXPECT_EQ(Convert(cros_healthd::mojom::UsbSpecSpeed::kDeprecateSpeed),
+  EXPECT_EQ(Convert(cros_healthd::mojom::UsbSpecSpeed::kDeprecatedSpeed),
             crosapi::mojom::ProbeUsbSpecSpeed::kUnknown);
 
   EXPECT_EQ(Convert(cros_healthd::mojom::UsbSpecSpeed::k480Mbps),
