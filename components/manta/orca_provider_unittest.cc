@@ -13,6 +13,7 @@
 #include "base/time/time.h"
 #include "components/manta/manta_status.h"
 #include "components/signin/public/base/consent_level.h"
+#include "components/signin/public/identity_manager/identity_manager.h"
 #include "components/signin/public/identity_manager/identity_test_environment.h"
 #include "net/base/net_errors.h"
 #include "net/http/http_status_code.h"
@@ -49,6 +50,7 @@ class FakeOrcaProvider : public OrcaProvider {
       const GURL& url,
       const std::vector<std::string>& scopes,
       const std::string& post_data) override {
+    CHECK(identity_manager_observation_.IsObserving());
     return std::make_unique<EndpointFetcher>(
         /*url_loader_factory=*/url_loader_factory_,
         /*oauth_consumer_name=*/kMockOAuthConsumerName,
@@ -57,7 +59,7 @@ class FakeOrcaProvider : public OrcaProvider {
         /*scopes=*/std::vector<std::string>{kMockScope},
         /*timeout_ms=*/kMockTimeout.InMilliseconds(), /*post_data=*/post_data,
         /*annotation_tag=*/TRAFFIC_ANNOTATION_FOR_TESTS,
-        /*identity_manager=*/identity_manager_,
+        /*identity_manager=*/identity_manager_observation_.GetSource(),
         /*consent_level=*/signin::ConsentLevel::kSync);
   }
 };
@@ -73,9 +75,10 @@ class OrcaProviderTest : public testing::Test {
   ~OrcaProviderTest() override = default;
 
   void SetUp() override {
-    identity_test_env_.MakePrimaryAccountAvailable(kEmail,
-                                                   signin::ConsentLevel::kSync);
-    identity_test_env_.SetAutomaticIssueOfAccessTokens(true);
+    identity_test_env_ = std::make_unique<signin::IdentityTestEnvironment>();
+    identity_test_env_->MakePrimaryAccountAvailable(
+        kEmail, signin::ConsentLevel::kSync);
+    identity_test_env_->SetAutomaticIssueOfAccessTokens(true);
   }
 
   void SetEndpointMockResponse(const GURL& request_url,
@@ -99,14 +102,14 @@ class OrcaProviderTest : public testing::Test {
     return std::make_unique<FakeOrcaProvider>(
         base::MakeRefCounted<network::WeakWrapperSharedURLLoaderFactory>(
             &test_url_loader_factory_),
-        identity_test_env_.identity_manager());
+        identity_test_env_->identity_manager());
   }
 
  protected:
   base::test::TaskEnvironment task_environment_;
+  std::unique_ptr<signin::IdentityTestEnvironment> identity_test_env_;
 
  private:
-  signin::IdentityTestEnvironment identity_test_env_;
   network::TestURLLoaderFactory test_url_loader_factory_;
 };
 
@@ -227,6 +230,23 @@ TEST_F(OrcaProviderTest, ParseSuccessfulResponse) {
 
             quit_closure.Run();
           }));
+  task_environment_.RunUntilQuit();
+}
+
+TEST_F(OrcaProviderTest, EmptyResponseAfterIdentityManagerShutdown) {
+  std::unique_ptr<FakeOrcaProvider> orca_provider = CreateOrcaProvider();
+
+  identity_test_env_.reset();
+
+  orca_provider->Call(
+      {}, base::BindLambdaForTesting(
+              [quit_closure = task_environment_.QuitClosure()](
+                  base::Value::Dict dict, MantaStatus manta_status) {
+                ASSERT_TRUE(dict.empty());
+                ASSERT_EQ(MantaStatusCode::kNoIdentityManager,
+                          manta_status.status_code);
+                quit_closure.Run();
+              }));
   task_environment_.RunUntilQuit();
 }
 

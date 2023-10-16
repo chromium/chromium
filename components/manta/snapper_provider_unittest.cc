@@ -13,6 +13,7 @@
 #include "base/time/time.h"
 #include "components/manta/manta_status.h"
 #include "components/signin/public/base/consent_level.h"
+#include "components/signin/public/identity_manager/identity_manager.h"
 #include "components/signin/public/identity_manager/identity_test_environment.h"
 #include "net/base/net_errors.h"
 #include "net/http/http_status_code.h"
@@ -48,6 +49,7 @@ class FakeSnapperProvider : public SnapperProvider {
       const GURL& url,
       const std::vector<std::string>& scopes,
       const std::string& post_data) override {
+    CHECK(identity_manager_observation_.IsObserving());
     return std::make_unique<EndpointFetcher>(
         /*url_loader_factory=*/url_loader_factory_,
         /*oauth_consumer_name=*/kMockOAuthConsumerName,
@@ -56,7 +58,7 @@ class FakeSnapperProvider : public SnapperProvider {
         /*scopes=*/std::vector<std::string>{kMockScope},
         /*timeout_ms=*/kMockTimeout.InMilliseconds(), /*post_data=*/post_data,
         /*annotation_tag=*/TRAFFIC_ANNOTATION_FOR_TESTS,
-        /*identity_manager=*/identity_manager_,
+        /*identity_manager=*/identity_manager_observation_.GetSource(),
         /*consent_level=*/signin::ConsentLevel::kSync);
   }
 };
@@ -72,9 +74,10 @@ class SnapperProviderTest : public testing::Test {
   ~SnapperProviderTest() override = default;
 
   void SetUp() override {
-    identity_test_env_.MakePrimaryAccountAvailable(kEmail,
-                                                   signin::ConsentLevel::kSync);
-    identity_test_env_.SetAutomaticIssueOfAccessTokens(true);
+    identity_test_env_ = std::make_unique<signin::IdentityTestEnvironment>();
+    identity_test_env_->MakePrimaryAccountAvailable(
+        kEmail, signin::ConsentLevel::kSync);
+    identity_test_env_->SetAutomaticIssueOfAccessTokens(true);
   }
 
   void SetEndpointMockResponse(const GURL& request_url,
@@ -98,14 +101,14 @@ class SnapperProviderTest : public testing::Test {
     return std::make_unique<FakeSnapperProvider>(
         base::MakeRefCounted<network::WeakWrapperSharedURLLoaderFactory>(
             &test_url_loader_factory_),
-        identity_test_env_.identity_manager());
+        identity_test_env_->identity_manager());
   }
 
  protected:
   base::test::TaskEnvironment task_environment_;
+  std::unique_ptr<signin::IdentityTestEnvironment> identity_test_env_;
 
  private:
-  signin::IdentityTestEnvironment identity_test_env_;
   network::TestURLLoaderFactory test_url_loader_factory_;
 };
 
@@ -137,6 +140,26 @@ TEST_F(SnapperProviderTest, SimpleRequestPayload) {
                 response->output_data(0).image().has_serialized_bytes());
             EXPECT_EQ("foo",
                       response->output_data(0).image().serialized_bytes());
+            quit_closure.Run();
+          }));
+  task_environment_.RunUntilQuit();
+}
+
+TEST_F(SnapperProviderTest, EmptyResponseAfterIdentityManagerShutdown) {
+  std::unique_ptr<FakeSnapperProvider> snapper_provider =
+      CreateSnapperProvider();
+
+  identity_test_env_.reset();
+
+  snapper_provider->Call(
+      manta::proto::Request(),
+      base::BindLambdaForTesting(
+          [quit_closure = task_environment_.QuitClosure()](
+              std::unique_ptr<manta::proto::Response> response,
+              MantaStatus manta_status) {
+            ASSERT_FALSE(response);
+            ASSERT_EQ(MantaStatusCode::kNoIdentityManager,
+                      manta_status.status_code);
             quit_closure.Run();
           }));
   task_environment_.RunUntilQuit();

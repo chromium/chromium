@@ -46,6 +46,7 @@ orca::mojom::TextQueryErrorCode ConvertErrorCode(
   switch (status_code) {
     case manta::MantaStatusCode::kGenericError:
     case manta::MantaStatusCode::kMalformedResponse:
+    case manta::MantaStatusCode::kNoIdentityManager:
       return orca::mojom::TextQueryErrorCode::kUnknown;
     case manta::MantaStatusCode::kInvalidInput:
       return orca::mojom::TextQueryErrorCode::kInvalidArgument;
