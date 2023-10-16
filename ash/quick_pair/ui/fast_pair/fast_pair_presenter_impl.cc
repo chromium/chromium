@@ -9,6 +9,7 @@
 #include "ash/constants/ash_features.h"
 #include "ash/public/cpp/new_window_delegate.h"
 #include "ash/public/cpp/session/session_controller.h"
+#include "ash/public/cpp/system/toast_data.h"
 #include "ash/public/cpp/system_tray_client.h"
 #include "ash/quick_pair/common/device.h"
 #include "ash/quick_pair/common/fast_pair/fast_pair_metrics.h"
@@ -449,6 +450,17 @@ void FastPairPresenterImpl::ShowInstallCompanionApp(
     CompanionAppCallback callback) {
   CHECK(features::IsFastPairPwaCompanionEnabled());
 
+  toast_collision_avoidance_timer_.Start(
+      FROM_HERE, ash::ToastData::kDefaultToastDuration,
+      base::BindOnce(&FastPairPresenterImpl::ShowInstallCompanionAppDelayed,
+                     weak_pointer_factory_.GetWeakPtr(), device, callback));
+}
+
+void FastPairPresenterImpl::ShowInstallCompanionAppDelayed(
+    scoped_refptr<Device> device,
+    CompanionAppCallback callback) {
+  CHECK(features::IsFastPairPwaCompanionEnabled());
+
   const auto metadata_id = device->metadata_id();
   FastPairRepository::Get()->GetDeviceMetadata(
       metadata_id,
@@ -490,6 +502,17 @@ void FastPairPresenterImpl::ShowLaunchCompanionApp(
     CompanionAppCallback callback) {
   CHECK(features::IsFastPairPwaCompanionEnabled());
 
+  toast_collision_avoidance_timer_.Start(
+      FROM_HERE, ash::ToastData::kDefaultToastDuration,
+      base::BindOnce(&FastPairPresenterImpl::ShowLaunchCompanionAppDelayed,
+                     weak_pointer_factory_.GetWeakPtr(), device, callback));
+}
+
+void FastPairPresenterImpl::ShowLaunchCompanionAppDelayed(
+    scoped_refptr<Device> device,
+    CompanionAppCallback callback) {
+  CHECK(features::IsFastPairPwaCompanionEnabled());
+
   const auto metadata_id = device->metadata_id();
   FastPairRepository::Get()->GetDeviceMetadata(
       metadata_id,
@@ -518,8 +541,6 @@ void FastPairPresenterImpl::OnLaunchCompanionAppMetadataRetrieved(
     device_name = base::ASCIIToUTF16(device_metadata->GetDetails().name());
   }
 
-  // Temporarily skipping ShowApplicationAvailableNotification to shortcut to
-  // companion website.
   notification_controller_->ShowApplicationInstalledNotification(
       // temporarily hardcoded text in place of companion app name
       device_name, device_metadata->image(), u"the web companion",
