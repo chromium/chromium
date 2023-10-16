@@ -893,6 +893,46 @@ TEST_F(PanActionPointerEventTest, PanActionAdjustedWithTappableNodeNearby) {
   ASSERT_NE(widget->LastPanAction(), PanAction::kStylusWritable);
 }
 
+TEST_F(PanActionPointerEventTest, PanActionAdjustedWhenZoomed) {
+  ScopedStylusHandwritingForTest stylus_handwriting(true);
+  GetDocument().SetBaseURLOverride(KURL("http://test.com"));
+  SetBodyInnerHTML(R"HTML(
+    <style>
+      html { zoom: 2; margin: 0; padding: 0; border: none; }
+      body { margin: 0; padding: 0; border: none; }
+    </style>
+    <input type=text style='width: 50px; height: 50px; margin-top: 50px;'>
+  )HTML");
+
+  PanActionTrackingWebFrameWidget* widget = GetWidget();
+
+  // Pan action adjusted as stylus writable for (15 / 2)px around edit area
+  // with pointer as kPen.
+  ASSERT_EQ(widget->LastPanAction(), PanAction::kNone);
+  GetEventHandler().HandleMouseMoveEvent(
+      CreateTestMouseMoveEvent(WebPointerProperties::PointerType::kPen,
+                               gfx::PointF(50, 94)),
+      Vector<WebMouseEvent>(), Vector<WebMouseEvent>());
+  test::RunPendingTasks();
+  ASSERT_EQ(widget->LastPanAction(), PanAction::kStylusWritable);
+
+  // Pan action is stylus writable on editable node.
+  GetEventHandler().HandleMouseMoveEvent(
+      CreateTestMouseMoveEvent(WebPointerProperties::PointerType::kPen,
+                               gfx::PointF(50, 125)),
+      Vector<WebMouseEvent>(), Vector<WebMouseEvent>());
+  test::RunPendingTasks();
+  ASSERT_EQ(widget->LastPanAction(), PanAction::kStylusWritable);
+
+  // Pan action is not stylus writable outside of editable node.
+  GetEventHandler().HandleMouseMoveEvent(
+      CreateTestMouseMoveEvent(WebPointerProperties::PointerType::kPen,
+                               gfx::PointF(110, 225)),
+      Vector<WebMouseEvent>(), Vector<WebMouseEvent>());
+  test::RunPendingTasks();
+  ASSERT_NE(widget->LastPanAction(), PanAction::kStylusWritable);
+}
+
 TEST_F(PanActionPointerEventTest, PanActionSentAcrossFrames) {
   ScopedStylusHandwritingForTest stylus_handwriting(true);
   GetDocument().SetBaseURLOverride(KURL("http://test.com"));

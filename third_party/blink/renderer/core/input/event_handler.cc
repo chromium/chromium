@@ -1153,7 +1153,7 @@ WebInputEventResult EventHandler::HandleMouseMoveOrLeaveEvent(
 
     // Set Effective pan action before Pointer cursor is updated.
     const WebPointerEvent web_pointer_event(WebInputEvent::Type::kPointerMove,
-                                            mev.Event());
+                                            mev.Event().FlattenTransform());
     pointer_event_manager_->SendEffectivePanActionAtPointer(web_pointer_event,
                                                             mev.InnerNode());
 
