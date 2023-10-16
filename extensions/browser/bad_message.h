@@ -68,6 +68,7 @@ enum BadMessageReason {
   EMF_INVALID_EXTENSION_ID_FOR_WEB_PAGE = 27,
   EMF_INVALID_EXTENSION_ID_FOR_USER_SCRIPT = 28,
   EMF_INVALID_EXTERNAL_EXTENSION_ID_FOR_USER_SCRIPT = 29,
+  EMF_INVALID_OPEN_CHANNEL_TO_NATIVE_APP_FROM_NATIVE_HOST = 30,
   // Please add new elements here. The naming convention is abbreviated class
   // name (e.g. ExtensionHost becomes EH) plus a unique description of the
   // reason. After making changes, you MUST update histograms.xml by running:

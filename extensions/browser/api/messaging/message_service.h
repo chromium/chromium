@@ -24,6 +24,7 @@
 #include "extensions/common/extension_id.h"
 
 class GURL;
+struct ExtensionMsg_ExternalConnectionInfo;
 
 namespace content {
 class BrowserContext;
@@ -100,39 +101,40 @@ class MessageService : public BrowserContextKeyedAPI,
                               mojom::ChannelType channel_type,
                               const std::string& channel_name);
 
-  // Same as above, but opens a channel to the tab with the given ID.  Messages
-  // are restricted to that tab, so if there are multiple tabs in that process,
-  // only the targeted tab will receive messages.
+  using ExternalConnectionInfo = ExtensionMsg_ExternalConnectionInfo;
+  void OpenChannelToExtension(const ChannelEndpoint& source,
+                              const PortId& source_port_id,
+                              const ExternalConnectionInfo& info,
+                              mojom::ChannelType channel_type,
+                              const std::string& channel_name);
+  void OpenChannelToNativeApp(const ChannelEndpoint& source,
+                              const PortId& source_port_id,
+                              const std::string& native_app_name);
   void OpenChannelToTab(const ChannelEndpoint& source,
                         const PortId& source_port_id,
                         int tab_id,
                         int frame_id,
                         const std::string& document_id,
-                        const std::string& extension_id,
                         mojom::ChannelType channel_type,
                         const std::string& channel_name);
 
-  void OpenChannelToNativeApp(const ChannelEndpoint& source,
-                              const PortId& source_port_id,
-                              const std::string& native_app_name);
-
   // Marks the given port as opened by |port_context| in the render process
   // with id |process_id|.
-  void OpenPort(const PortId& port_id,
-                int process_id,
+  void OpenPort(content::RenderProcessHost* process,
+                const PortId& port_id,
                 const PortContext& port_context);
 
   // Closes the given port in the given |port_context|. If this was the last
   // context or if |force_close| is true, then the other side is closed as well.
-  void ClosePort(const PortId& port_id,
-                 int process_id,
+  void ClosePort(content::RenderProcessHost* process,
+                 const PortId& port_id,
                  const PortContext& port_context,
                  bool force_close);
 
   // Notifies the port that one of the receivers of a message indicated that
   // they plan to respond to the message later.
-  void NotifyResponsePending(const PortId& port_id,
-                             int process_id,
+  void NotifyResponsePending(content::RenderProcessHost* process,
+                             const PortId& port_id,
                              const PortContext& port_context);
 
   // Returns the number of open channels for test.
@@ -146,6 +148,28 @@ class MessageService : public BrowserContextKeyedAPI,
   friend class MockMessageService;
   friend class BrowserContextKeyedAPIFactory<MessageService>;
   struct OpenChannelParams;
+
+  // Same as `OpenChannelToExtension`, but opens a channel to the tab with the
+  // given ID.  Messages are restricted to that tab, so if there are multiple
+  // tabs in that process, only the targeted tab will receive messages.
+  void OpenChannelToTabImpl(const ChannelEndpoint& source,
+                            const PortId& source_port_id,
+                            int tab_id,
+                            int frame_id,
+                            const std::string& document_id,
+                            const std::string& extension_id,
+                            mojom::ChannelType channel_type,
+                            const std::string& channel_name);
+  void OpenChannelToNativeAppImpl(const ChannelEndpoint& source,
+                                  const PortId& source_port_id,
+                                  const std::string& native_app_name);
+  void OpenPortImpl(const PortId& port_id,
+                    int process_id,
+                    const PortContext& port_context);
+
+  // Notifies the port that one of the receivers of a message indicated that
+  // they plan to respond to the message later.
+  void NotifyResponsePending(const PortId& port_id);
 
   // A map of channel ID to its channel object.
   using MessageChannelMap =

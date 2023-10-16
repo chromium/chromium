@@ -465,7 +465,7 @@ void MessageService::OpenChannelToExtension(
   OnOpenChannelAllowed(std::move(params), true);
 }
 
-void MessageService::OpenChannelToNativeApp(
+void MessageService::OpenChannelToNativeAppImpl(
     const ChannelEndpoint& source,
     const PortId& source_port_id,
     const std::string& native_app_name) {
@@ -549,14 +549,14 @@ void MessageService::OpenChannelToNativeApp(
         // BUILDFLAG(IS_CHROMEOS))
 }
 
-void MessageService::OpenChannelToTab(const ChannelEndpoint& source,
-                                      const PortId& source_port_id,
-                                      int tab_id,
-                                      int frame_id,
-                                      const std::string& document_id,
-                                      const std::string& extension_id,
-                                      mojom::ChannelType channel_type,
-                                      const std::string& channel_name) {
+void MessageService::OpenChannelToTabImpl(const ChannelEndpoint& source,
+                                          const PortId& source_port_id,
+                                          int tab_id,
+                                          int frame_id,
+                                          const std::string& document_id,
+                                          const std::string& extension_id,
+                                          mojom::ChannelType channel_type,
+                                          const std::string& channel_name) {
   DCHECK_CURRENTLY_ON(BrowserThread::UI);
   DCHECK_GE(frame_id, -1);
   DCHECK(source_port_id.is_opener);
@@ -777,9 +777,9 @@ void MessageService::AddChannel(std::unique_ptr<MessageChannel> channel,
   pending_lazy_context_channels_.erase(channel_id);
 }
 
-void MessageService::OpenPort(const PortId& port_id,
-                              int process_id,
-                              const PortContext& port_context) {
+void MessageService::OpenPortImpl(const PortId& port_id,
+                                  int process_id,
+                                  const PortContext& port_context) {
   DCHECK_CURRENTLY_ON(BrowserThread::UI);
   DCHECK(!port_id.is_opener);
 
@@ -790,19 +790,6 @@ void MessageService::OpenPort(const PortId& port_id,
 
   it->second->receiver->OpenPort(process_id, port_context);
 }
-
-void MessageService::ClosePort(const PortId& port_id,
-                               int process_id,
-                               const PortContext& context,
-                               bool force_close) {
-  DCHECK_CURRENTLY_ON(BrowserThread::UI);
-  int routing_id = context.frame ? context.frame->routing_id : MSG_ROUTING_NONE;
-  int worker_thread_id =
-      context.worker ? context.worker->thread_id : kMainThreadId;
-  ClosePortImpl(port_id, process_id, routing_id, worker_thread_id, force_close,
-                std::string());
-}
-
 void MessageService::CloseChannel(const PortId& port_id,
                                   const std::string& error_message) {
   DCHECK_CURRENTLY_ON(BrowserThread::UI);
@@ -947,9 +934,7 @@ void MessageService::DispatchMessage(const PortId& source_port_id,
   dest_port->DispatchOnMessage(message);
 }
 
-void MessageService::NotifyResponsePending(const PortId& port_id,
-                                           int process_id,
-                                           const PortContext& port_context) {
+void MessageService::NotifyResponsePending(const PortId& port_id) {
   DCHECK_CURRENTLY_ON(BrowserThread::UI);
   DCHECK(!port_id.is_opener);
 
