@@ -17,7 +17,7 @@ from pathlib import Path
 
 import pytest
 from anys import ANY_STR
-from test_helpers import (assert_images_similar, execute_command, get_tree,
+from test_helpers import (assert_images_similar, get_tree,
                           goto_url, read_JSON_message, send_JSON_command)
 
 
@@ -61,8 +61,7 @@ async def test_screenshot(websocket, context_id, png_filename):
 
         resp = await read_JSON_message(websocket)
         assert resp["result"] == {'data': ANY_STR}
-        with open(Path(__file__).parent.resolve() / png_filename,
-                'wb') as im:
+        with open(Path(__file__).parent.resolve() / png_filename, 'wb') as im:
             im.write(base64.b64decode(resp["result"]["data"]))
 
         assert_images_similar(resp["result"]["data"], png_base64)
@@ -156,8 +155,12 @@ async def test_screenshot_oopif(websocket, context_id, html, iframe):
 
 
 @pytest.mark.asyncio
-async def test_screenshot_document(websocket, context_id, query_selector, html):
-    await goto_url(websocket, context_id, html('<div style="width: 100px; height: 100px; background: red"></div>'))
+async def test_screenshot_document(websocket, context_id, query_selector,
+                                   html):
+    await goto_url(
+        websocket, context_id,
+        html('<div style="width: 100px; height: 100px; background: red"></div>'
+             ))
 
     # Set a fixed viewport to make the test deterministic.
     await send_JSON_command(
