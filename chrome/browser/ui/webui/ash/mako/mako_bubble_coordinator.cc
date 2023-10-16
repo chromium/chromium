@@ -123,14 +123,12 @@ void MakoBubbleCoordinator::LoadConsentUI(Profile* profile) {
     return;
   }
 
-  caret_bounds_ = GetTextInputClient()->GetCaretBounds();
   contents_wrapper_ = std::make_unique<BubbleContentsWrapperT<MakoUntrustedUI>>(
       GURL(kChromeUIMakoPrivacyURL), profile, kMakoTaskManagerStringID);
   contents_wrapper_->ReloadWebContents();
   views::BubbleDialogDelegateView::CreateBubble(
       std::make_unique<MakoConsentView>(contents_wrapper_.get(),
-                                        caret_bounds_.value()))
-      ->Show();
+                                        context_caret_bounds_));
 }
 
 void MakoBubbleCoordinator::LoadEditorUI(
@@ -139,16 +137,7 @@ void MakoBubbleCoordinator::LoadEditorUI(
     absl::optional<std::string_view> preset_query_id,
     absl::optional<std::string_view> freeform_text) {
   if (IsShowingUI()) {
-    // If switching contents (e.g. from consent UI to rewrite UI), close the
-    // current contents and use the cached caret bounds.
     contents_wrapper_->CloseUI();
-    CHECK(caret_bounds_.has_value());
-  } else if (const auto* text_input_client = GetTextInputClient()) {
-    // Otherwise, try to get the caret bounds from the text input client.
-    caret_bounds_ = text_input_client->GetCaretBounds();
-  } else {
-    // Otherwise, don't show mako UI.
-    return;
   }
 
   GURL url = net::AppendOrReplaceQueryParameter(GURL(kChromeUIMakoOrcaURL),
@@ -164,7 +153,7 @@ void MakoBubbleCoordinator::LoadEditorUI(
   contents_wrapper_->ReloadWebContents();
   views::BubbleDialogDelegateView::CreateBubble(
       std::make_unique<MakoRewriteView>(contents_wrapper_.get(),
-                                        caret_bounds_.value()));
+                                        context_caret_bounds_));
 }
 
 void MakoBubbleCoordinator::ShowUI() {
@@ -177,7 +166,6 @@ void MakoBubbleCoordinator::CloseUI() {
   if (contents_wrapper_) {
     contents_wrapper_->CloseUI();
     contents_wrapper_ = nullptr;
-    caret_bounds_ = absl::nullopt;
   }
 }
 
@@ -186,6 +174,12 @@ bool MakoBubbleCoordinator::IsShowingUI() const {
   // the JS has finished loading instead of checking this pointer.
   return contents_wrapper_ != nullptr &&
          contents_wrapper_->GetHost() != nullptr;
+}
+
+void MakoBubbleCoordinator::CacheContextCaretBounds() {
+  if (const auto* text_input_client = GetTextInputClient()) {
+    context_caret_bounds_ = text_input_client->GetCaretBounds();
+  }
 }
 
 }  // namespace ash
