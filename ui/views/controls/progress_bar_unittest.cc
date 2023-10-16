@@ -28,11 +28,8 @@ class ProgressBarTest : public ViewsTestBase {
     ViewsTestBase::SetUp();
 
     widget_ = CreateTestWidget();
-    bar_ = widget_->SetContentsView(std::make_unique<ProgressBar>());
+    widget_->SetContentsView(std::make_unique<ProgressBar>());
     widget_->Show();
-
-    event_generator_ = std::make_unique<ui::test::EventGenerator>(
-        GetRootWindow(widget_.get()));
   }
 
   void TearDown() override {
@@ -40,17 +37,18 @@ class ProgressBarTest : public ViewsTestBase {
     ViewsTestBase::TearDown();
   }
 
-  raw_ptr<ProgressBar, DanglingUntriaged> bar_;
-  std::unique_ptr<Widget> widget_;
+  ProgressBar* bar() {
+    return static_cast<ProgressBar*>(widget_->GetContentsView());
+  }
 
-  std::unique_ptr<ui::test::EventGenerator> event_generator_;
+  std::unique_ptr<Widget> widget_;
 };
 
 TEST_F(ProgressBarTest, AccessibleNodeData) {
-  bar_->SetValue(0.626);
+  bar()->SetValue(0.626);
 
   ui::AXNodeData node_data;
-  bar_->GetAccessibleNodeData(&node_data);
+  bar()->GetAccessibleNodeData(&node_data);
   EXPECT_EQ(ax::mojom::Role::kProgressIndicator, node_data.role);
   EXPECT_EQ(std::u16string(),
             node_data.GetString16Attribute(ax::mojom::StringAttribute::kName));
@@ -65,16 +63,16 @@ TEST_F(ProgressBarTest, AccessibilityEvents) {
   test::AXEventCounter ax_counter(views::AXEventManager::Get());
   EXPECT_EQ(0, ax_counter.GetCount(ax::mojom::Event::kValueChanged));
 
-  bar_->SetValue(0.50);
+  bar()->SetValue(0.50);
   EXPECT_EQ(1, ax_counter.GetCount(ax::mojom::Event::kValueChanged));
 
-  bar_->SetValue(0.63);
+  bar()->SetValue(0.63);
   EXPECT_EQ(2, ax_counter.GetCount(ax::mojom::Event::kValueChanged));
 
-  bar_->SetValue(0.636);
+  bar()->SetValue(0.636);
   EXPECT_EQ(2, ax_counter.GetCount(ax::mojom::Event::kValueChanged));
 
-  bar_->SetValue(0.642);
+  bar()->SetValue(0.642);
   EXPECT_EQ(3, ax_counter.GetCount(ax::mojom::Event::kValueChanged));
 
   widget_->Hide();
@@ -82,7 +80,7 @@ TEST_F(ProgressBarTest, AccessibilityEvents) {
   EXPECT_EQ(3, ax_counter.GetCount(ax::mojom::Event::kValueChanged));
 
   widget_->Hide();
-  bar_->SetValue(0.8);
+  bar()->SetValue(0.8);
   EXPECT_EQ(3, ax_counter.GetCount(ax::mojom::Event::kValueChanged));
 
   widget_->Show();
@@ -91,35 +89,35 @@ TEST_F(ProgressBarTest, AccessibilityEvents) {
 
 // Test that default colors can be overridden. Used by Chromecast.
 TEST_F(ProgressBarTest, OverrideDefaultColors) {
-  EXPECT_NE(SK_ColorRED, bar_->GetForegroundColor());
-  EXPECT_NE(SK_ColorGREEN, bar_->GetBackgroundColor());
-  EXPECT_NE(bar_->GetForegroundColor(), bar_->GetBackgroundColor());
+  EXPECT_NE(SK_ColorRED, bar()->GetForegroundColor());
+  EXPECT_NE(SK_ColorGREEN, bar()->GetBackgroundColor());
+  EXPECT_NE(bar()->GetForegroundColor(), bar()->GetBackgroundColor());
 
-  bar_->SetForegroundColor(SK_ColorRED);
-  bar_->SetBackgroundColor(SK_ColorGREEN);
-  EXPECT_EQ(SK_ColorRED, bar_->GetForegroundColor());
-  EXPECT_EQ(SK_ColorGREEN, bar_->GetBackgroundColor());
+  bar()->SetForegroundColor(SK_ColorRED);
+  bar()->SetBackgroundColor(SK_ColorGREEN);
+  EXPECT_EQ(SK_ColorRED, bar()->GetForegroundColor());
+  EXPECT_EQ(SK_ColorGREEN, bar()->GetBackgroundColor());
 
   // Override colors with color ID. It will also override the colors set with
   // SkColor.
-  bar_->SetForegroundColorId(ui::kColorSysPrimary);
-  bar_->SetBackgroundColorId(ui::kColorSysPrimaryContainer);
-  const auto* color_provider = bar_->GetColorProvider();
+  bar()->SetForegroundColorId(ui::kColorSysPrimary);
+  bar()->SetBackgroundColorId(ui::kColorSysPrimaryContainer);
+  const auto* color_provider = bar()->GetColorProvider();
   EXPECT_EQ(color_provider->GetColor(ui::kColorSysPrimary),
-            bar_->GetForegroundColor());
+            bar()->GetForegroundColor());
   EXPECT_EQ(color_provider->GetColor(ui::kColorSysPrimaryContainer),
-            bar_->GetBackgroundColor());
-  EXPECT_EQ(ui::kColorSysPrimary, bar_->GetForegroundColorId().value());
+            bar()->GetBackgroundColor());
+  EXPECT_EQ(ui::kColorSysPrimary, bar()->GetForegroundColorId().value());
   EXPECT_EQ(ui::kColorSysPrimaryContainer,
-            bar_->GetBackgroundColorId().value());
+            bar()->GetBackgroundColorId().value());
 
   // Override the colors set with color ID by SkColor.
-  bar_->SetForegroundColor(SK_ColorRED);
-  bar_->SetBackgroundColor(SK_ColorGREEN);
-  EXPECT_EQ(SK_ColorRED, bar_->GetForegroundColor());
-  EXPECT_EQ(SK_ColorGREEN, bar_->GetBackgroundColor());
-  EXPECT_EQ(absl::nullopt, bar_->GetForegroundColorId());
-  EXPECT_EQ(absl::nullopt, bar_->GetBackgroundColorId());
+  bar()->SetForegroundColor(SK_ColorRED);
+  bar()->SetBackgroundColor(SK_ColorGREEN);
+  EXPECT_EQ(SK_ColorRED, bar()->GetForegroundColor());
+  EXPECT_EQ(SK_ColorGREEN, bar()->GetBackgroundColor());
+  EXPECT_EQ(absl::nullopt, bar()->GetForegroundColorId());
+  EXPECT_EQ(absl::nullopt, bar()->GetBackgroundColorId());
 }
 
 }  // namespace views
