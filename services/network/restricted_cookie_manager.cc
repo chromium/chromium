@@ -905,12 +905,7 @@ void RestrictedCookieManager::SetCookieFromString(
   // the cookie is actually set.
   IncrementSharedVersion();
 
-  bool site_for_cookies_ok =
-      BoundSiteForCookies().IsEquivalent(site_for_cookies);
-  bool top_frame_origin_ok = top_frame_origin == BoundTopFrameOrigin();
-
-  std::move(callback).Run(site_for_cookies_ok, top_frame_origin_ok);
-  callback = base::DoNothing();
+  std::move(callback).Run();
 
   net::CookieInclusionStatus status;
   std::unique_ptr<net::CanonicalCookie> parsed_cookie =
@@ -930,22 +925,13 @@ void RestrictedCookieManager::SetCookieFromString(
           mojom::CookieAccessDetails::Type::kChange, url, site_for_cookies,
           std::move(result_with_access_result), absl::nullopt, 1));
     }
-    std::move(callback).Run(site_for_cookies_ok, top_frame_origin_ok);
     return;
   }
 
   // Further checks (origin_, settings), as well as logging done by
   // SetCanonicalCookie()
-  SetCanonicalCookie(
-      *parsed_cookie, url, site_for_cookies, top_frame_origin,
-      has_storage_access, status,
-      base::BindOnce([](base::OnceClosure closure,
-                        bool success) { std::move(closure).Run(); },
-                     // Although these values are being called outside
-                     // ValidateAccessToCookiesAt, the checks done in that
-                     // method are called shortly after synchronously.
-                     base::BindOnce(std::move(callback), site_for_cookies_ok,
-                                    top_frame_origin_ok)));
+  SetCanonicalCookie(*parsed_cookie, url, site_for_cookies, top_frame_origin,
+                     has_storage_access, status, base::DoNothing());
 }
 
 void RestrictedCookieManager::GetCookiesString(

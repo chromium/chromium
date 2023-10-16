@@ -238,7 +238,7 @@ class RestrictedCookieManagerSync {
                            const url::Origin& top_frame_origin,
                            bool has_storage_access,
                            const std::string& cookie) {
-    base::test::TestFuture<bool, bool> future;
+    base::test::TestFuture<void> future;
     cookie_service_->SetCookieFromString(url, site_for_cookies,
                                          top_frame_origin, has_storage_access,
                                          cookie, future.GetCallback());
@@ -612,12 +612,9 @@ TEST_P(RestrictedCookieManagerTest, CookieVersion) {
   // Version is still at initial value since nothing modified the cookie.
   EXPECT_EQ(version, mojom::kInitialCookieVersion);
 
-  bool site_for_cookies_ok = false;
-  bool top_frame_origin_ok = false;
   EXPECT_TRUE(backend()->SetCookieFromString(
       kDefaultUrlWithPath, kDefaultSiteForCookies, kDefaultOrigin,
-      /*has_storage_access=*/false, "new-name=new-value;path=/",
-      &site_for_cookies_ok, &top_frame_origin_ok));
+      /*has_storage_access=*/false, "new-name=new-value;path=/"));
 
   EXPECT_TRUE(backend()->GetCookiesString(
       kDefaultUrlWithPath, kDefaultSiteForCookies, kDefaultOrigin,
@@ -1186,14 +1183,9 @@ TEST_P(RestrictedCookieManagerTest, SetCanonicalCookieHttpOnly) {
 }
 
 TEST_P(RestrictedCookieManagerTest, SetCookieFromString) {
-  bool site_for_cookies_ok = false;
-  bool top_frame_origin_ok = false;
   EXPECT_TRUE(backend()->SetCookieFromString(
       kDefaultUrlWithPath, kDefaultSiteForCookies, kDefaultOrigin,
-      /*has_storage_access=*/false, "new-name=new-value;path=/",
-      &site_for_cookies_ok, &top_frame_origin_ok));
-  EXPECT_TRUE(site_for_cookies_ok);
-  EXPECT_TRUE(top_frame_origin_ok);
+      /*has_storage_access=*/false, "new-name=new-value;path=/"));
   auto options = mojom::CookieManagerGetOptions::New();
   options->name = "new-name";
   options->match_type = mojom::CookieMatchType::EQUALS;
@@ -1202,20 +1194,6 @@ TEST_P(RestrictedCookieManagerTest, SetCookieFromString) {
                                   kDefaultOrigin, /*has_storage_access=*/false,
                                   std::move(options)),
       ElementsAre(net::MatchesCookieNameValue("new-name", "new-value")));
-}
-
-TEST_P(RestrictedCookieManagerTest, BadSetCookieFromString) {
-  bool site_for_cookies_ok = true;
-  bool top_frame_origin_ok = true;
-  // Purposely set an invalid cookie to return early before the DCHECK fails.
-  EXPECT_TRUE(backend()->SetCookieFromString(
-      kDefaultUrlWithPath, net::SiteForCookies(),
-      url::Origin::Create(GURL("https://not-example.com")),
-      /*has_storage_access=*/false,
-      "__Host-invalid=host_prefix_with_domain; Domain=example.com",
-      &site_for_cookies_ok, &top_frame_origin_ok));
-  EXPECT_FALSE(site_for_cookies_ok);
-  EXPECT_FALSE(top_frame_origin_ok);
 }
 
 TEST_P(RestrictedCookieManagerTest, SetCanonicalCookieFromWrongOrigin) {
@@ -1263,12 +1241,9 @@ TEST_P(RestrictedCookieManagerTest, SetCanonicalCookieWithMismatchingDomain) {
 
 TEST_P(RestrictedCookieManagerTest, SetCookieFromStringWrongOrigin) {
   ExpectBadMessage();
-  bool site_for_cookies_ok = false;
-  bool top_frame_origin_ok = false;
   EXPECT_TRUE(backend()->SetCookieFromString(
       kOtherUrlWithPath, kDefaultSiteForCookies, kDefaultOrigin,
-      /*has_storage_access=*/false, "new-name=new-value;path=/",
-      &site_for_cookies_ok, &top_frame_origin_ok));
+      /*has_storage_access=*/false, "new-name=new-value;path=/"));
   ASSERT_TRUE(received_bad_message());
 }
 
