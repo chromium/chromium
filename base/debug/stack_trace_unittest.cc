@@ -48,8 +48,7 @@ TEST_F(StackTraceTest, OutputToStream) {
   // ToString() should produce the same output.
   EXPECT_EQ(backtrace_message, trace.ToString());
 
-  size_t frames_found = 0;
-  const void* const* addresses = trace.Addresses(&frames_found);
+  span<const void* const> addresses = trace.addresses();
 
 #if defined(OFFICIAL_BUILD) && \
     ((BUILDFLAG(IS_POSIX) && !BUILDFLAG(IS_APPLE)) || BUILDFLAG(IS_FUCHSIA))
@@ -61,8 +60,8 @@ TEST_F(StackTraceTest, OutputToStream) {
         // ((BUILDFLAG(IS_POSIX) && !BUILDFLAG(IS_APPLE)) ||
         // BUILDFLAG(IS_FUCHSIA))
 
-  ASSERT_TRUE(addresses);
-  ASSERT_GT(frames_found, 5u) << "Too few frames found.";
+  ASSERT_GT(addresses.size(), 5u) << "Too few frames found.";
+  ASSERT_TRUE(addresses[0]);
 
   if (!StackTrace::WillSymbolizeToStreamForTesting())
     return;
@@ -98,13 +97,10 @@ TEST_F(StackTraceTest, OutputToStream) {
 TEST_F(StackTraceTest, TruncatedTrace) {
   StackTrace trace;
 
-  size_t count = 0;
-  trace.Addresses(&count);
-  ASSERT_LT(2u, count);
+  ASSERT_LT(2u, trace.addresses().size());
 
   StackTrace truncated(2);
-  truncated.Addresses(&count);
-  EXPECT_EQ(2u, count);
+  EXPECT_EQ(2u, truncated.addresses().size());
 }
 #endif  // !defined(OFFICIAL_BUILD) && !defined(NO_UNWIND_TABLES)
 

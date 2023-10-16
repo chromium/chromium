@@ -11,6 +11,7 @@
 #include <string>
 
 #include "base/base_export.h"
+#include "base/containers/span.h"
 #include "base/debug/debugging_buildflags.h"
 #include "base/memory/raw_ptr.h"
 #include "build/build_config.h"
@@ -104,7 +105,9 @@ class BASE_EXPORT StackTrace {
   // number of elements in the returned array. Addresses()[0] will contain an
   // address from the leaf function, and Addresses()[count-1] will contain an
   // address from the root function (i.e.; the thread's entry point).
-  const void* const* Addresses(size_t* count) const;
+  span<const void* const> addresses() const {
+    return make_span(trace_, count_);
+  }
 
   // Prints the stack trace to stderr.
   void Print() const;
