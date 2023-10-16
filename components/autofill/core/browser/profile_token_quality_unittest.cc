@@ -168,7 +168,7 @@ TEST_F(ProfileTokenQualityTest, AddObservationsForFilledForm_Edited) {
   // Edit field 2 to a value similar to the originally filled one.
   ASSERT_EQ(profile.GetInfo(ADDRESS_HOME_LINE1, pdm_.app_locale()),
             u"666 Erebus St.");
-  EditFieldValue(form, 2, u"666 Erbus Str");
+  EditFieldValue(form, 2, u"666 erbus str");
   // Edit field 3 to a completely different token.
   EditFieldValue(form, 3, u"different value");
 
