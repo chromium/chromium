@@ -69,7 +69,7 @@ public class TrackingProtectionNoticeController {
         NoticeControllerEvent.NOTICE_REQUESTED_AND_SHOWN,
         NoticeControllerEvent.NOTICE_REQUESTED_BUT_NOT_SHOWN
     })
-    private @interface NoticeControllerEvent {
+    public @interface NoticeControllerEvent {
         int CONTROLLER_CREATED = 0;
         int ACTIVE_TAB_CHANGED = 1;
         int NAVIGATION_FINISHED = 2;
@@ -82,11 +82,12 @@ public class TrackingProtectionNoticeController {
         int COUNT = 8;
     }
 
+    public static final String NOTICE_CONTROLLER_EVENT_HISTOGRAM =
+            "PrivacySandbox.TrackingProtection.Onboarding.NoticeControllerEvent";
+
     private static void logNoticeControllerEvent(@NoticeControllerEvent int action) {
         RecordHistogram.recordEnumeratedHistogram(
-                "PrivacySandbox.TrackingProtection.Onboarding.NoticeControllerEvent",
-                action,
-                NoticeControllerEvent.COUNT);
+                NOTICE_CONTROLLER_EVENT_HISTOGRAM, action, NoticeControllerEvent.COUNT);
     }
 
     /**

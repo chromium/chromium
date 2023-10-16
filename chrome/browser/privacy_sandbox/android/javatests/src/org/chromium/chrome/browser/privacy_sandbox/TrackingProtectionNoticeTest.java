@@ -18,6 +18,7 @@ import static org.junit.Assert.assertTrue;
 import static org.mockito.ArgumentMatchers.any;
 import static org.mockito.Mockito.when;
 
+import static org.chromium.chrome.browser.privacy_sandbox.TrackingProtectionNoticeController.NOTICE_CONTROLLER_EVENT_HISTOGRAM;
 import static org.chromium.ui.test.util.ViewUtils.onViewWaiting;
 
 import androidx.test.espresso.Espresso;
@@ -34,8 +35,10 @@ import org.chromium.base.StrictModeContext;
 import org.chromium.base.test.util.Batch;
 import org.chromium.base.test.util.CommandLineFlags;
 import org.chromium.base.test.util.Feature;
+import org.chromium.base.test.util.HistogramWatcher;
 import org.chromium.base.test.util.JniMocker;
 import org.chromium.chrome.browser.flags.ChromeSwitches;
+import org.chromium.chrome.browser.privacy_sandbox.TrackingProtectionNoticeController.NoticeControllerEvent;
 import org.chromium.chrome.test.ChromeJUnit4ClassRunner;
 import org.chromium.chrome.test.ChromeTabbedActivityTestRule;
 import org.chromium.chrome.test.util.ChromeRenderTestRule;
@@ -96,13 +99,33 @@ public final class TrackingProtectionNoticeTest {
     @Test
     @SmallTest
     public void testNoticeShownOnlyOnSecurePage() {
+        var notShownWatcher =
+                HistogramWatcher.newBuilder()
+                        .expectIntRecords(
+                                NOTICE_CONTROLLER_EVENT_HISTOGRAM,
+                                NoticeControllerEvent.CONTROLLER_CREATED,
+                                NoticeControllerEvent.ACTIVE_TAB_CHANGED,
+                                NoticeControllerEvent.NON_SECURE_CONNECTION,
+                                NoticeControllerEvent.NOTICE_REQUESTED_BUT_NOT_SHOWN)
+                        .build();
+
         mFakeTrackingProtectionBridge.setShouldShowOnboardingNotice(true);
 
         sActivityTestRule.startMainActivityOnBlankPage();
         onView(withId(R.id.message_banner)).check(doesNotExist());
+        notShownWatcher.assertExpected();
 
+        var pageLoadWatcher =
+                HistogramWatcher.newBuilder()
+                        .expectIntRecords(
+                                NOTICE_CONTROLLER_EVENT_HISTOGRAM,
+                                NoticeControllerEvent.NAVIGATION_FINISHED,
+                                NoticeControllerEvent.NON_SECURE_CONNECTION,
+                                NoticeControllerEvent.NOTICE_REQUESTED_BUT_NOT_SHOWN)
+                        .build();
         sActivityTestRule.loadUrl(UrlConstants.NTP_URL);
         onView(withId(R.id.message_banner)).check(doesNotExist());
+        pageLoadWatcher.assertExpected();
 
         setConnectionSecurityLevel(ConnectionSecurityLevel.SECURE);
         sActivityTestRule.loadUrl(UrlConstants.GOOGLE_URL);
@@ -122,6 +145,16 @@ public final class TrackingProtectionNoticeTest {
     @Test
     @SmallTest
     public void testNoticeNotShownMoreThanOnceWhenNewTabWithSecurePageIsOpened() {
+        var histogramWatcher =
+                HistogramWatcher.newBuilder()
+                        .expectIntRecords(
+                                NOTICE_CONTROLLER_EVENT_HISTOGRAM,
+                                NoticeControllerEvent.CONTROLLER_CREATED,
+                                NoticeControllerEvent.ACTIVE_TAB_CHANGED,
+                                NoticeControllerEvent.CONTROLLER_NO_LONGER_OBSERVING,
+                                NoticeControllerEvent.NOTICE_REQUESTED_AND_SHOWN)
+                        .build();
+
         mFakeTrackingProtectionBridge.setShouldShowOnboardingNotice(true);
         setConnectionSecurityLevel(ConnectionSecurityLevel.SECURE);
 
@@ -130,6 +163,8 @@ public final class TrackingProtectionNoticeTest {
 
         sActivityTestRule.loadUrlInNewTab(UrlConstants.MY_ACTIVITY_HOME_URL);
         onView(withId(R.id.message_banner)).check(matches(isDisplayed()));
+
+        histogramWatcher.assertExpected();
     }
 
     @Test
