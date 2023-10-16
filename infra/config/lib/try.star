@@ -269,8 +269,8 @@ def try_builder(
         fail("Setting 'cq' property directly is not supported. It is " +
              "generated automatically based on tryjob and location_filters.")
     if tryjob != None:
-        cq = "required" if not tryjob.location_filters else "path-based"
-        properties["cq"] = cq
+        cq_reason = "required" if not tryjob.location_filters else "path-based"
+        properties["cq"] = cq_reason
 
         # TODO(crbug/1456545) - Once we've migrated to the ResultDB-based solution
         # check_for_flakiness_with_resultdb should be deprecated in favor for the
@@ -317,6 +317,9 @@ def try_builder(
             experiment_percentage = tryjob.experiment_percentage,
             location_filters = location_filters,
             cancel_stale = tryjob.cancel_stale,
+            # These are the default if includable_only is False, but we list
+            # them here so we can add additional modes in a later generator.
+            mode_allowlist = [cq.MODE_DRY_RUN, cq.MODE_FULL_RUN],
         )
     else:
         # Allow CQ to trigger this builder if user opts in via CQ-Include-Trybots.
