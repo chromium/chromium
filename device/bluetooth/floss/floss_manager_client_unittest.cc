@@ -61,12 +61,6 @@ class TestManagerObserver : public FlossManagerClient::Observer {
   void AdapterEnabledChanged(int adapter, bool enabled) override {
     adapter_enabled_changed_count_++;
     adapter_enabled_[adapter] = enabled;
-
-    // An adapter with a changed `enabled` status is implicitly present. Mark
-    // present if it hasn't been
-    if (!adapter_present_[adapter]) {
-      AdapterPresent(adapter, true);
-    }
   }
 
   int manager_present_count_ = 0;
@@ -430,7 +424,9 @@ TEST_F(FlossManagerClientTest, VerifyAdapterEnabled) {
 
   EXPECT_EQ(observer.adapter_enabled_changed_count_, 4);
   EXPECT_TRUE(observer.adapter_enabled_[1]);
-  EXPECT_TRUE(observer.adapter_present_[1]);
+  // On enabled = true, present = true is implied. The platform should emit both
+  // but the client shouldn't depend on it.
+  EXPECT_FALSE(observer.adapter_present_[1]);
 
   // 5 was unchanged
   EXPECT_TRUE(client_->GetAdapterEnabled(5));

@@ -329,6 +329,7 @@ void FlossManagerClient::HandleGetAvailableAdapters(
     // enabled changed for them.
     for (auto& [adapter, enabled] : adapter_to_enabled_) {
       if (!base::Contains(previous_adapters, adapter)) {
+        observer.AdapterPresent(adapter, true);
         observer.AdapterEnabledChanged(adapter, enabled);
       }
     }
