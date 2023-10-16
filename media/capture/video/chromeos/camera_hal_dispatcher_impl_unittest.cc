@@ -522,7 +522,6 @@ TEST_F(CameraHalDispatcherImplTest, RegisterClientSuccess) {
               });
       // These above calls only happen on the first client connection
       firstRun = false;
-      // Extra call for SetCameraEffectsCallback
       loopsRequired += 2;
     }
     CreateLoop(loopsRequired);
@@ -554,7 +553,8 @@ TEST_F(CameraHalDispatcherImplTest, RegisterClientFail) {
   auto mock_server = std::make_unique<MockCameraHalServer>();
   auto mock_client = std::make_unique<MockCameraHalClient>();
 
-  // Extra RunLoop for SetCameraEffectsCallback
+  // Extra RunLoop for failure to register the client. In |OnRegisteredClient|,
+  // |QuitRunLoop| is called if the registration fails.
   CreateLoop(3);
   EXPECT_CALL(*mock_server, SetAutoFramingState(_))
       .Times(1)
