@@ -48,6 +48,10 @@ CaptivePortalDialogDelegate::CaptivePortalDialogDelegate(
     : host_view_(host_dialog_view),
       web_contents_(host_dialog_view->web_contents()) {
   DCHECK(web_contents_);
+
+  set_dialog_modal_type(ui::ModalType::MODAL_TYPE_SYSTEM);
+  set_show_dialog_title(false);
+
   view_ =
       new views::WebDialogView(ProfileHelper::GetSigninProfile(), this,
                                std::make_unique<ChromeWebContentsHandler>());
@@ -102,44 +106,11 @@ void CaptivePortalDialogDelegate::Close() {
   }
 }
 
-ui::ModalType CaptivePortalDialogDelegate::GetDialogModalType() const {
-  return ui::ModalType::MODAL_TYPE_SYSTEM;
-}
-
-std::u16string CaptivePortalDialogDelegate::GetDialogTitle() const {
-  return std::u16string();
-}
-
-GURL CaptivePortalDialogDelegate::GetDialogContentURL() const {
-  return GURL();
-}
-
-void CaptivePortalDialogDelegate::GetWebUIMessageHandlers(
-    std::vector<content::WebUIMessageHandler*>* handlers) const {}
-
 void CaptivePortalDialogDelegate::GetDialogSize(gfx::Size* size) const {
   *size = display::Screen::GetScreen()
               ->GetDisplayNearestWindow(widget_->GetNativeWindow())
               .work_area()
               .size();
-}
-
-std::string CaptivePortalDialogDelegate::GetDialogArgs() const {
-  return std::string();
-}
-
-void CaptivePortalDialogDelegate::OnDialogClosed(
-    const std::string& json_retval) {
-  delete this;
-}
-
-void CaptivePortalDialogDelegate::OnCloseContents(content::WebContents* source,
-                                                  bool* out_close_dialog) {
-  *out_close_dialog = false;
-}
-
-bool CaptivePortalDialogDelegate::ShouldShowDialogTitle() const {
-  return false;
 }
 
 web_modal::WebContentsModalDialogHost*
