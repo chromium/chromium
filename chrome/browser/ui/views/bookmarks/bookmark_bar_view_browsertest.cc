@@ -463,8 +463,19 @@ class PrerenderBookmarkBarOnPressedNavigationTest
       ukm_entry_builder_;
 };
 
-IN_PROC_BROWSER_TEST_F(PrerenderBookmarkBarOnPressedNavigationTest,
-                       PrerenderActivation) {
+// TODO(crbug.com/1491942): This fails with the field trial testing config.
+class PrerenderBookmarkBarOnPressedNavigationTestNoTestingConfig
+    : public PrerenderBookmarkBarOnPressedNavigationTest {
+ public:
+  void SetUpCommandLine(base::CommandLine* command_line) override {
+    PrerenderBookmarkBarOnPressedNavigationTest::SetUpCommandLine(command_line);
+    command_line->AppendSwitch("disable-field-trial-config");
+  }
+};
+
+IN_PROC_BROWSER_TEST_F(
+    PrerenderBookmarkBarOnPressedNavigationTestNoTestingConfig,
+    PrerenderActivation) {
   base::HistogramTester histogram_tester;
   // Navigate to an non-empty tab
   ASSERT_TRUE(ui_test_utils::NavigateToURL(
@@ -688,6 +699,16 @@ IN_PROC_BROWSER_TEST_F(PrerenderBookmarkBarOnHoverNavigationTest,
       "Bookmarks.BookmarkBar.PrerenderNavigationToActivation", 1);
 }
 
+// TODO(crbug.com/1491942): This fails with the field trial testing config.
+class PrerenderBookmarkBarOnHoverNavigationTestNoTestingConfig
+    : public PrerenderBookmarkBarOnHoverNavigationTest {
+ public:
+  void SetUpCommandLine(base::CommandLine* command_line) override {
+    PrerenderBookmarkBarOnHoverNavigationTest::SetUpCommandLine(command_line);
+    command_line->AppendSwitch("disable-field-trial-config");
+  }
+};
+
 // This test verifies prerender cancellation triggered by mouseExited, and
 // another prerender can trigger normally after that.
 // TODO(https://crbug.com/1491974): Times out on Win, Mac and Linux.
@@ -699,7 +720,7 @@ IN_PROC_BROWSER_TEST_F(PrerenderBookmarkBarOnHoverNavigationTest,
   PrerenderMouseExitedCancellationAndPrerenderActivation
 #endif
 IN_PROC_BROWSER_TEST_F(
-    PrerenderBookmarkBarOnHoverNavigationTest,
+    PrerenderBookmarkBarOnHoverNavigationTestNoTestingConfig,
     MAYBE_PrerenderMouseExitedCancellationAndPrerenderActivation) {
   base::HistogramTester histogram_tester;
   // Navigate to an non-empty tab
