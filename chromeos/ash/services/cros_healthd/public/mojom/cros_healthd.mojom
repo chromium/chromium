@@ -54,7 +54,7 @@ interface CrosHealthdServiceFactory {
 
 // Diagnostics interface exposed by the cros_healthd daemon.
 //
-// NextMinVersion: 14, NextIndex: 48
+// NextMinVersion: 15, NextIndex: 49
 [Stable]
 interface CrosHealthdDiagnosticsService {
   // Returns an array of all diagnostic routines that the platform supports.
@@ -767,6 +767,17 @@ interface CrosHealthdDiagnosticsService {
   // * |response| - contains a unique identifier and status for the created
   //                routine.
   [MinVersion=13] RunUfsLifetimeRoutine@47() => (RunRoutineResponse response);
+
+  // Requests that the Fan routine is created and started on the
+  // platform. This routine checks whether there is any errors about the audio
+  // driver.
+  // The availability of this routine can be determined by checking that
+  // kFan is returned by GetAvailableRoutines.
+  //
+  // The response:
+  // * |response| - contains a unique identifier and status for the created
+  //                routine.
+  [MinVersion=14] RunFanRoutine@48() => (RunRoutineResponse response);
 };
 
 // Event interface exposed by the cros_healthd daemon.

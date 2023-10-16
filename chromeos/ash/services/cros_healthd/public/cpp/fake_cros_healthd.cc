@@ -755,6 +755,11 @@ void FakeCrosHealthd::RunUfsLifetimeRoutine(
   std::move(callback).Run(run_routine_response_.Clone());
 }
 
+void FakeCrosHealthd::RunFanRoutine(RunFanRoutineCallback callback) {
+  last_run_routine_ = mojom::DiagnosticRoutineEnum::kFan;
+  std::move(callback).Run(run_routine_response_.Clone());
+}
+
 void FakeCrosHealthd::DEPRECATED_AddBluetoothObserver(
     mojo::PendingRemote<mojom::CrosHealthdBluetoothObserver> observer) {
   NOTREACHED();
