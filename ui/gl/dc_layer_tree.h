@@ -145,8 +145,10 @@ class GL_EXPORT DCLayerTree {
   // at least given input and output size.  The video processor is shared across
   // layers so the same one can be reused if it's large enough.  Returns true on
   // success.
-  VideoProcessorWrapper* InitializeVideoProcessor(const gfx::Size& input_size,
-                                                  const gfx::Size& output_size);
+  VideoProcessorWrapper* InitializeVideoProcessor(
+      const gfx::Size& input_size,
+      const gfx::Size& output_size,
+      bool& video_processor_recreated);
 
   bool disable_nv12_dynamic_textures() const {
     return disable_nv12_dynamic_textures_;

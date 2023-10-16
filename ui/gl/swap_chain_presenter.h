@@ -323,9 +323,13 @@ class SwapChainPresenter : public base::PowerStateObserver {
   Microsoft::WRL::ComPtr<IDXGIResource> decode_resource_;
   Microsoft::WRL::ComPtr<IDXGIDecodeSwapChain> decode_swap_chain_;
   Microsoft::WRL::ComPtr<IUnknown> decode_surface_;
+
   bool is_on_battery_power_;
+
   bool enable_vp_auto_hdr_ = false;
   bool enable_vp_super_resolution_ = false;
+  bool driver_supports_vp_auto_hdr_ = false;
+
   UINT gpu_vendor_id_ = 0;
 
   // Number of frames per second.
