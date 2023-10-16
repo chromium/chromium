@@ -51,7 +51,7 @@ const CGFloat kFakeLocationBarHeightMargin = 2;
 
 // The constants for the constraints affecting the end button; either Lens or
 // Voice Search, depending on if Lens is enabled.
-const CGFloat kEndButtonFakeboxTrailingSpace = 12.0;
+const CGFloat kEndButtonFakeboxTrailingSpace = 13.0;
 const CGFloat kEndButtonOmniboxTrailingSpace = 7.0;
 
 // The constants for the constraints the leading-edge aligned UI elements.
