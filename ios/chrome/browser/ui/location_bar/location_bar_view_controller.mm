@@ -26,6 +26,7 @@
 #import "ios/chrome/browser/ui/fullscreen/fullscreen_animator.h"
 #import "ios/chrome/browser/ui/location_bar/location_bar_constants.h"
 #import "ios/chrome/browser/ui/location_bar/location_bar_steady_view.h"
+#import "ios/chrome/browser/ui/omnibox/omnibox_constants.h"
 #import "ios/chrome/browser/ui/orchestrator/location_bar_offset_provider.h"
 #import "ios/chrome/browser/ui/toolbar/public/toolbar_type.h"
 #import "ios/chrome/common/ui/util/constraints_ui_util.h"
@@ -85,7 +86,9 @@ const NSString* kScribbleOmniboxElementId = @"omnibox";
 
 @end
 
-@implementation LocationBarViewController
+@implementation LocationBarViewController {
+  BOOL _isNTP;
+}
 
 #pragma mark - public
 
@@ -257,6 +260,7 @@ const NSString* kScribbleOmniboxElementId = @"omnibox";
 // the location bar is visible after scrolling the fakebox off the page. On
 // iPhone, the location bar is not shown on the NTP at all.
 - (void)updateForNTP:(BOOL)isNTP {
+  _isNTP = isNTP;
   if (isNTP) {
     // Display a fake "placeholder".
     NSString* placeholderString =
@@ -345,8 +349,11 @@ const NSString* kScribbleOmniboxElementId = @"omnibox";
 // Computes the target offset for the focus/defocus animation that allows to
 // visually match the position of edit and steady views.
 - (CGFloat)targetOffset {
-  CGFloat offset = [self.offsetProvider
-      xOffsetForString:self.locationBarSteadyView.locationLabel.text];
+  CGFloat offset =
+      _isNTP
+          ? kOmniboxEditOffset
+          : [self.offsetProvider
+                xOffsetForString:self.locationBarSteadyView.locationLabel.text];
 
   CGRect labelRect = [self.view
       convertRect:self.locationBarSteadyView.locationLabel.frame
