@@ -144,6 +144,20 @@ absl::optional<base::FilePath> GetUpdaterExecutablePath(
   return path->Append(GetExecutableRelativePath());
 }
 
+#if !BUILDFLAG(IS_MAC)
+absl::optional<base::FilePath> GetCacheBaseDirectory(UpdaterScope scope) {
+  return GetInstallDirectory(scope);
+}
+#endif
+
+absl::optional<base::FilePath> GetCrxDiffCacheDirectory(UpdaterScope scope) {
+  const absl::optional<base::FilePath> cache_path(GetCacheBaseDirectory(scope));
+  if (!cache_path) {
+    return absl::nullopt;
+  }
+  return absl::optional<base::FilePath>(cache_path->AppendASCII("crx_cache"));
+}
+
 absl::optional<base::FilePath> GetUpdaterExecutablePath(UpdaterScope scope) {
   return GetUpdaterExecutablePath(scope, base::Version(kUpdaterVersion));
 }

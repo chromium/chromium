@@ -226,6 +226,16 @@ absl::optional<base::FilePath> GetInstallDirectory(UpdaterScope scope) {
               : absl::nullopt;
 }
 
+absl::optional<base::FilePath> GetCacheBaseDirectory(UpdaterScope scope) {
+  base::FilePath caches_path;
+  if (!base::apple::GetLocalDirectory(NSCachesDirectory, &caches_path)) {
+    VLOG(1) << "Could not get Caches path";
+    return absl::nullopt;
+  }
+  return absl::optional<base::FilePath>(
+      caches_path.AppendASCII(MAC_BUNDLE_IDENTIFIER_STRING));
+}
+
 absl::optional<base::FilePath> GetUpdateServiceLauncherPath(
     UpdaterScope scope) {
   absl::optional<base::FilePath> install_dir = GetInstallDirectory(scope);
