@@ -5,13 +5,13 @@
 import {TestRunner} from 'test_runner';
 import {SourcesTestRunner} from 'sources_test_runner';
 
-import * as SDK from 'devtools/core/sdk/sdk.js';
 import * as PerfUI from 'devtools/ui/legacy/components/perf_ui/perf_ui.js';
+import * as SDK from 'devtools/core/sdk/sdk.js';
+import * as SourceFrame from 'devtools/ui/legacy/components/source_frame/source_frame.js';
 
 (async function() {
   TestRunner.addResult(`Tests that a line-level CPU profile is shown in the text editor.\n`);
   await TestRunner.loadLegacyModule("perf_ui");
-  await TestRunner.loadLegacyModule('source_frame');
   await TestRunner.showPanel('timeline');
   await TestRunner.showPanel('sources');
   await TestRunner.addScriptTag('../resources/empty.js');

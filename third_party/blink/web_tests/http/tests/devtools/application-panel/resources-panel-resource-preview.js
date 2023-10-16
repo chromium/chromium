@@ -6,17 +6,17 @@ import {TestRunner} from 'test_runner';
 import {ApplicationTestRunner} from 'application_test_runner';
 import {ConsoleTestRunner} from 'console_test_runner';
 
-import * as SDK from 'devtools/core/sdk/sdk.js';
-import * as Common from 'devtools/core/common/common.js';
-import * as UI from 'devtools/ui/legacy/legacy.js';
 import * as Application from 'devtools/panels/application/application.js';
+import * as Common from 'devtools/core/common/common.js';
+import * as SourceFrame from 'devtools/ui/legacy/components/source_frame/source_frame.js';
+import * as SDK from 'devtools/core/sdk/sdk.js';
+import * as UI from 'devtools/ui/legacy/legacy.js';
 
 (async function() {
   TestRunner.addResult(`Tests Application Panel preview for resources of different types.\n`);
     // Note: every test that uses a storage API must manually clean-up state from previous tests.
   await ApplicationTestRunner.resetState();
 
-  await TestRunner.loadLegacyModule('source_frame');
   await TestRunner.showPanel('resources');
   await TestRunner.loadHTML(`
       <img src="../resources/image.png">
@@ -37,7 +37,9 @@ import * as Application from 'devtools/panels/application/application.js';
 
   function dumpCurrentState(label) {
     var types = new Map([
-      [SourceFrame.ResourceSourceFrame, 'source'], [SourceFrame.ImageView, 'image'], [SourceFrame.JSONView, 'json']
+      [SourceFrame.ResourceSourceFrame.ResourceSourceFrame, 'source'],
+      [SourceFrame.ImageView.ImageView, 'image'],
+      [SourceFrame.JSONView.JSONView, 'json']
     ]);
 
     var view = Application.ResourcesPanel.ResourcesPanel.instance();
