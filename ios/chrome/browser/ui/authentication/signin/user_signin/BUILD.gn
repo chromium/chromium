@@ -7,7 +7,6 @@ import("//build/config/chrome_build.gni")
 source_set("user_signin") {
   sources = [
     "user_signin_constants.h",
-    "user_signin_constants.mm",
     "user_signin_coordinator.h",
     "user_signin_coordinator.mm",
     "user_signin_mediator.h",
@@ -105,6 +104,7 @@ source_set("eg2_tests") {
     "//components/signin/ios/browser:features",
     "//components/sync/base:features",
     "//ios/chrome/browser/flags:system_flags",
+    "//ios/chrome/browser/metrics:eg_test_support+eg2",
     "//ios/chrome/browser/shared/public/features:system_flags",
     "//ios/chrome/browser/signin:capabilities_types",
     "//ios/chrome/browser/signin:fake_system_identity",
@@ -114,6 +114,7 @@ source_set("eg2_tests") {
     "//ios/chrome/browser/ui/authentication/unified_consent:constants",
     "//ios/chrome/browser/ui/authentication/views:views_constants",
     "//ios/chrome/browser/ui/settings:constants",
+    "//ios/chrome/common/ui/promo_style:constants",
     "//ios/chrome/test/earl_grey:eg_test_support+eg2",
     "//ios/chrome/test/earl_grey:switches",
     "//ios/testing/earl_grey:eg_test_support+eg2",

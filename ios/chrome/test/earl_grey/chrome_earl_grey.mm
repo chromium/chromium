@@ -1427,6 +1427,10 @@ id<GREYAction> grey_longPressWithDuration(base::TimeDelta duration) {
   [ChromeEarlGreyAppInterface removeUserDefaultObjectForKey:key];
 }
 
+- (id)userDefaultObjectForKey:(NSString*)key {
+  return [ChromeEarlGreyAppInterface userDefaultObjectForKey:key];
+}
+
 #pragma mark - Pref Utilities (EG2)
 
 // Returns a base::Value representation of the requested pref.

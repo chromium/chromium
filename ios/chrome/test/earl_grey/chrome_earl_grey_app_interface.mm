@@ -1233,6 +1233,10 @@ NSString* SerializedValue(const base::Value* value) {
   [[NSUserDefaults standardUserDefaults] removeObjectForKey:key];
 }
 
++ (id)userDefaultObjectForKey:(NSString*)key {
+  return [[NSUserDefaults standardUserDefaults] objectForKey:key];
+}
+
 #pragma mark - Pref Utilities (EG2)
 
 + (NSString*)localStatePrefValue:(NSString*)prefName {

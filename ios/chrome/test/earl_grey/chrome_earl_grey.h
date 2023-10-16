@@ -762,6 +762,9 @@ id<GREYAction> grey_longPressWithDuration(base::TimeDelta duration);
 // Removes the object for `key` in NSUserDefault.
 - (void)removeUserDefaultObjectForKey:(NSString*)key;
 
+// Returns the object for `key` in NSUserDefault.
+- (id)userDefaultObjectForKey:(NSString*)key;
+
 #pragma mark - Pref Utilities (EG2)
 
 // Gets the value of a local state pref.
