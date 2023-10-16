@@ -226,14 +226,14 @@ ValidationResult ValidateMetadataAndFeatures(
   }
 
   for (int i = 0; i < model_metadata.features_size(); ++i) {
-    auto feature = model_metadata.features(i);
+    const auto& feature = model_metadata.features(i);
     auto feature_result = ValidateMetadataUmaFeature(feature);
     if (feature_result != ValidationResult::kValidationSuccess)
       return feature_result;
   }
 
   for (int i = 0; i < model_metadata.input_features_size(); ++i) {
-    auto feature = model_metadata.input_features(i);
+    const auto& feature = model_metadata.input_features(i);
     if (feature.has_uma_feature()) {
       auto feature_result = ValidateMetadataUmaFeature(feature.uma_feature());
       if (feature_result != ValidationResult::kValidationSuccess)
