@@ -395,6 +395,10 @@ class PermissionRequestManager
 
   void PreIgnoreQuietPromptInternal();
 
+  // Returns true if there is a request in progress that is initiated by an
+  // embedded permission element.
+  bool IsCurrentRequestEmbeddedPermissionElementInitiated() const;
+
   // Factory to be used to create views when needed.
   PermissionPrompt::Factory view_factory_;
 

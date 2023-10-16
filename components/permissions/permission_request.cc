@@ -325,4 +325,10 @@ std::u16string PermissionRequest::GetPermissionNameTextFragment() const {
   return l10n_util::GetStringUTF16(message_id);
 }
 
+void PermissionRequest::SetEmbeddedPermissionElementInitiatedForTesting(
+    bool embedded_permission_element_initiated) {
+  data_.embedded_permission_element_initiated =
+      embedded_permission_element_initiated;
+}
+
 }  // namespace permissions

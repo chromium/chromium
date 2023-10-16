@@ -283,8 +283,16 @@ void PermissionRequestManager::AddRequest(
 }
 
 bool PermissionRequestManager::ReprioritizeCurrentRequestIfNeeded() {
-  if (pending_permission_requests_.IsEmpty() || !IsRequestInProgress())
+  if (pending_permission_requests_.IsEmpty() || !IsRequestInProgress() ||
+      IsCurrentRequestEmbeddedPermissionElementInitiated()) {
     return true;
+  }
+
+  // Pop out all invalid requests in front of the queue.
+  while (!pending_permission_requests_.IsEmpty() &&
+         !ValidateRequest(pending_permission_requests_.Peek())) {
+    pending_permission_requests_.Pop();
+  }
 
   auto current_request_fate = CurrentRequestFate::kKeepCurrent;
 
@@ -298,12 +306,6 @@ bool PermissionRequestManager::ReprioritizeCurrentRequestIfNeeded() {
       if (ShouldCurrentRequestUseQuietUI()) {
         current_request_fate = CurrentRequestFate::kPreempt;
       } else {
-        // Pop out all invalid requests in front of the queue.
-        while (!pending_permission_requests_.IsEmpty() &&
-               !ValidateRequest(pending_permission_requests_.Peek())) {
-          pending_permission_requests_.Pop();
-        }
-
         // Here we also try to prioritise the requests. If there's a valid high
         // priority request (high acceptance rate request) in the pending queue,
         // preempt the current request. The valid high priority request, if
@@ -319,6 +321,12 @@ bool PermissionRequestManager::ReprioritizeCurrentRequestIfNeeded() {
     // If we're displaying a quiet permission request, ignore it in favor of a
     // new permission request.
     current_request_fate = CurrentRequestFate::kFinalize;
+  }
+
+  if (current_request_fate == CurrentRequestFate::kKeepCurrent &&
+      pending_permission_requests_.Peek()
+          ->IsEmbeddedPermissionElementInitiated()) {
+    current_request_fate = CurrentRequestFate::kPreempt;
   }
 
   switch (current_request_fate) {
@@ -339,7 +347,7 @@ bool PermissionRequestManager::ReprioritizeCurrentRequestIfNeeded() {
 
       pending_permission_requests_.Pop();
       PreemptAndRequeueCurrentRequest();
-      pending_permission_requests_.Push(next_candidate);
+      pending_permission_requests_.PushFront(next_candidate);
       ScheduleDequeueRequestIfNeeded();
       return false;
     }
@@ -377,8 +385,7 @@ bool PermissionRequestManager::ValidateRequest(PermissionRequest* request,
 void PermissionRequestManager::QueueRequest(
     content::RenderFrameHost* source_frame,
     PermissionRequest* request) {
-  pending_permission_requests_.Push(request,
-                                    true /*reorder_based_on_priority*/);
+  pending_permission_requests_.Push(request);
   request_sources_map_.emplace(
       request, PermissionRequestSource({source_frame->GetGlobalId()}));
 }
@@ -386,7 +393,7 @@ void PermissionRequestManager::QueueRequest(
 void PermissionRequestManager::PreemptAndRequeueCurrentRequest() {
   ResetViewStateForCurrentRequest();
   for (auto* current_request : requests_) {
-    pending_permission_requests_.Push(current_request);
+    pending_permission_requests_.PushFront(current_request);
   }
 
   // Because the order of the requests is changed, we should not preignore it.
@@ -818,9 +825,11 @@ void PermissionRequestManager::DequeueRequestIfNeeded() {
   // Mark the remaining pending requests as validated, so only the "new and has
   // not been validated" requests added to the queue could have effect to
   // priority order
-  for (auto* request : pending_permission_requests_) {
-    if (ValidateRequest(request, /* should_finalize */ false)) {
-      validated_requests_set_.insert(request);
+  for (const auto& request_list : pending_permission_requests_) {
+    for (auto* request : request_list) {
+      if (ValidateRequest(request, /* should_finalize */ false)) {
+        validated_requests_set_.insert(request);
+      }
     }
   }
 
@@ -1447,6 +1456,12 @@ void PermissionRequestManager::DoAutoResponseForTesting() {
     case NONE:
       NOTREACHED();
   }
+}
+
+bool PermissionRequestManager::
+    IsCurrentRequestEmbeddedPermissionElementInitiated() const {
+  return IsRequestInProgress() &&
+         requests_[0]->IsEmbeddedPermissionElementInitiated();
 }
 
 WEB_CONTENTS_USER_DATA_KEY_IMPL(PermissionRequestManager);

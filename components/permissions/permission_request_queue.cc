@@ -5,83 +5,94 @@
 #include "components/permissions/permission_request_queue.h"
 
 #include "base/ranges/algorithm.h"
-#include "components/permissions/features.h"
+#include "components/permissions/permission_request.h"
 #include "components/permissions/permission_util.h"
 
 namespace permissions {
 
-PermissionRequestQueue::PermissionRequestQueue() = default;
+PermissionRequestQueue::PermissionRequestQueue()
+    : queued_requests_(static_cast<size_t>(Priority::kNum)) {}
 
 PermissionRequestQueue::~PermissionRequestQueue() = default;
 
 bool PermissionRequestQueue::IsEmpty() const {
-  return queued_requests_.empty();
+  return !Count();
 }
 
 size_t PermissionRequestQueue::Count() const {
-  return queued_requests_.size();
+  size_t count = 0;
+  for (const auto& request_list : queued_requests_) {
+    count += request_list.size();
+  }
+  return count;
 }
 
 size_t PermissionRequestQueue::Count(PermissionRequest* request) const {
-  return base::ranges::count(queued_requests_, request);
+  size_t count = 0;
+  for (const auto& request_list : queued_requests_) {
+    count += base::ranges::count(request_list, request);
+  }
+  return count;
 }
 
-void PermissionRequestQueue::PushInternal(PermissionRequest* request) {
-  queued_requests_.push_back(request);
-}
+void PermissionRequestQueue::Push(PermissionRequest* request) {
+  Priority priority = DetermineRequestPriority(request);
 
-void PermissionRequestQueue::Push(PermissionRequest* request,
-                                  bool reorder_based_on_priority) {
-  if (!reorder_based_on_priority) {
-    PushInternal(request);
+  // High priority requests are always pushed to the back since they don't use
+  // the chip.
+  if (priority == Priority::kHigh) {
+    PushBackInternal(request, priority);
     return;
   }
 
+  // If the platform does not support the chip, push to the back.
   if (!PermissionUtil::DoesPlatformSupportChip()) {
-    PushInternal(request);
+    PushBackInternal(request, priority);
     return;
   }
 
-  // There're situations we need to take the priority into consideration (eg:
-  // when the permission chip is enabled). In such cases,
-  // push the new request to front of queue if it has high priority. Otherwise,
-  // insert the request after the first low priority request.
-  // Note that, the queue processing order is FIFO, but we have to iterate the
-  // queue in reverse order (see |PushInternal|)
-  if (queued_requests_.empty() ||
-      !PermissionUtil::IsLowPriorityPermissionRequest(request)) {
-    PushInternal(request);
-    return;
-  }
+  // Otherwise push to the front since chip requests use FILO ordering.
+  PushFrontInternal(request, priority);
+}
 
-  PermissionRequestQueue::const_reverse_iterator iter =
-      queued_requests_.rbegin();
-  for (; iter != queued_requests_.rend() &&
-         !PermissionUtil::IsLowPriorityPermissionRequest(*iter);
-       ++iter) {
-  }
+void PermissionRequestQueue::PushFront(
+    permissions::PermissionRequest* request) {
+  Priority priority = DetermineRequestPriority(request);
+  PushFrontInternal(request, priority);
+}
 
-  queued_requests_.insert(iter.base(), request);
+void PermissionRequestQueue::PushBack(permissions::PermissionRequest* request) {
+  Priority priority = DetermineRequestPriority(request);
+  PushBackInternal(request, priority);
 }
 
 PermissionRequest* PermissionRequestQueue::Pop() {
-  PermissionRequest* next = Peek();
-  if (PermissionUtil::DoesPlatformSupportChip()) {
-    queued_requests_.pop_back();
-  } else {
-    queued_requests_.pop_front();
+  std::vector<base::circular_deque<PermissionRequest*>>::reverse_iterator it;
+  // Skip entries that contain empty queues.
+  for (it = queued_requests_.rbegin();
+       it != queued_requests_.rend() && it->empty(); ++it) {
   }
-  return next;
+  PermissionRequest* front = it->front();
+  it->pop_front();
+  return front;
 }
 
 PermissionRequest* PermissionRequestQueue::Peek() const {
-  return PermissionUtil::DoesPlatformSupportChip() ? queued_requests_.back()
-                                                   : queued_requests_.front();
+  std::vector<base::circular_deque<PermissionRequest*>>::const_reverse_iterator
+      it;
+  // Skip entries that contain empty queues.
+  for (it = queued_requests_.rbegin();
+       it != queued_requests_.rend() && it->empty(); ++it) {
+  }
+  return it->front();
 }
 
 PermissionRequest* PermissionRequestQueue::FindDuplicate(
     PermissionRequest* request) const {
-  for (PermissionRequest* queued_request : queued_requests_) {
+  auto priority = DetermineRequestPriority(request);
+  const auto& queued_request_list =
+      queued_requests_[static_cast<size_t>(priority)];
+  for (PermissionRequest* queued_request : queued_request_list) {
     if (request->IsDuplicateOf(queued_request)) {
       return queued_request;
     }
@@ -95,6 +106,34 @@ PermissionRequestQueue::const_iterator PermissionRequestQueue::begin() const {
 
 PermissionRequestQueue::const_iterator PermissionRequestQueue::end() const {
   return queued_requests_.end();
+}
+
+// static
+PermissionRequestQueue::Priority
+PermissionRequestQueue::DetermineRequestPriority(
+    permissions::PermissionRequest* request) {
+  if (request->IsEmbeddedPermissionElementInitiated()) {
+    return Priority::kHigh;
+  }
+
+  if (permissions::PermissionUtil::DoesPlatformSupportChip() &&
+      permissions::PermissionUtil::IsLowPriorityPermissionRequest(request)) {
+    return Priority::kLow;
+  }
+
+  return Priority::kMedium;
+}
+
+void PermissionRequestQueue::PushFrontInternal(
+    permissions::PermissionRequest* request,
+    Priority priority) {
+  queued_requests_[static_cast<size_t>(priority)].push_front(request);
+}
+
+void PermissionRequestQueue::PushBackInternal(
+    permissions::PermissionRequest* request,
+    Priority priority) {
+  queued_requests_[static_cast<size_t>(priority)].push_back(request);
 }
 
 }  // namespace permissions

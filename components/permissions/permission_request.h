@@ -168,6 +168,12 @@ class PermissionRequest {
   // identify the permission being requested.
   virtual std::u16string GetPermissionNameTextFragment() const;
 
+ protected:
+  // Sets whether this request is permission element initiated, for testing
+  // subclasses only.
+  void SetEmbeddedPermissionElementInitiatedForTesting(
+      bool embedded_permission_element_initiated);
+
  private:
   PermissionRequestData data_;
 
