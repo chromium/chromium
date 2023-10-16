@@ -552,7 +552,9 @@ void BodyStreamBuffer::ProcessData() {
                 byte_controller->byobRequest()) {
           DOMArrayBufferView* view = request->view().Get();
           available = std::min(view->byteLength(), available);
-          memcpy(view->buffer()->Data(), buffer, available);
+          memcpy(
+              static_cast<char*>(view->buffer()->Data()) + view->byteOffset(),
+              buffer, available);
           byob_view = view;
         }
       }
