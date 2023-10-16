@@ -639,11 +639,6 @@ enum HeaderBehaviour {
   };
 
   [self setLastTapPointFromCommand:originPoint];
-  // The new tab can be opened before BVC has been made visible onscreen.  Test
-  // for this case by checking if the parent container VC is currently in the
-  // process of being presented.
-  DCHECK(self.visible || self.dismissingModal ||
-         self.parentViewController.isBeingPresented);
 
   // In most cases, we want to take a snapshot of the current tab before opening
   // a new tab. However, if the current tab is not fully visible (did not finish
