@@ -1,7 +1,11 @@
 This is a testharness.js-based test.
-FAIL environmentBlendMode is correct for a VR device in immersive - webgl promise_test: Unhandled rejection with value: object "TypeError: Cannot read properties of null (reading 'makeXRCompatible')"
-FAIL environmentBlendMode is correct for a VR device in immersive - webgl2 promise_test: Unhandled rejection with value: object "TypeError: Cannot read properties of null (reading 'makeXRCompatible')"
-FAIL environmentBlendMode is correct for a VR device in non-immersive - webgl promise_test: Unhandled rejection with value: object "TypeError: Cannot read properties of null (reading 'makeXRCompatible')"
-FAIL environmentBlendMode is correct for a VR device in non-immersive - webgl2 promise_test: Unhandled rejection with value: object "TypeError: Cannot read properties of null (reading 'makeXRCompatible')"
+[FAIL] environmentBlendMode is correct for a VR device in immersive - webgl
+  promise_test: Unhandled rejection with value: object "TypeError: Cannot read properties of null (reading 'makeXRCompatible')"
+[FAIL] environmentBlendMode is correct for a VR device in immersive - webgl2
+  promise_test: Unhandled rejection with value: object "TypeError: Cannot read properties of null (reading 'makeXRCompatible')"
+[FAIL] environmentBlendMode is correct for a VR device in non-immersive - webgl
+  promise_test: Unhandled rejection with value: object "TypeError: Cannot read properties of null (reading 'makeXRCompatible')"
+[FAIL] environmentBlendMode is correct for a VR device in non-immersive - webgl2
+  promise_test: Unhandled rejection with value: object "TypeError: Cannot read properties of null (reading 'makeXRCompatible')"
 Harness: the test ran to completion.
 

@@ -271,10 +271,13 @@
     }
 
     function shouldUseNewFormat() {
-        if (location.hostname == 'web-platform.test') {
-            return false;
+        if (location.hostname != 'web-platform.test') {
+            return true;
         }
-        return true;
+        if (location.pathname.startsWith('/wpt_internal/')) {
+            return true;
+        }
+        return false;
     }
 
     /** Converts the testharness test status into the corresponding string. */

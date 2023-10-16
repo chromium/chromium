@@ -1,5 +1,7 @@
 This is a testharness.js-based test.
-FAIL inlineVerticalFieldOfView is set appropriately on inline sessions - webgl promise_test: Unhandled rejection with value: object "TypeError: Cannot read properties of null (reading 'makeXRCompatible')"
-FAIL inlineVerticalFieldOfView is set appropriately on inline sessions - webgl2 promise_test: Unhandled rejection with value: object "TypeError: Cannot read properties of null (reading 'makeXRCompatible')"
+[FAIL] inlineVerticalFieldOfView is set appropriately on inline sessions - webgl
+  promise_test: Unhandled rejection with value: object "TypeError: Cannot read properties of null (reading 'makeXRCompatible')"
+[FAIL] inlineVerticalFieldOfView is set appropriately on inline sessions - webgl2
+  promise_test: Unhandled rejection with value: object "TypeError: Cannot read properties of null (reading 'makeXRCompatible')"
 Harness: the test ran to completion.
 

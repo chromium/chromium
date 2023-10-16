@@ -1,5 +1,7 @@
 This is a testharness.js-based test.
-FAIL A frame should be submitted if the base layer was written to during requestAnimationFrame - webgl promise_test: Unhandled rejection with value: object "TypeError: Cannot read properties of null (reading 'makeXRCompatible')"
-FAIL A frame should be submitted if the base layer was written to during requestAnimationFrame - webgl2 promise_test: Unhandled rejection with value: object "TypeError: Cannot read properties of null (reading 'makeXRCompatible')"
+[FAIL] A frame should be submitted if the base layer was written to during requestAnimationFrame - webgl
+  promise_test: Unhandled rejection with value: object "TypeError: Cannot read properties of null (reading 'makeXRCompatible')"
+[FAIL] A frame should be submitted if the base layer was written to during requestAnimationFrame - webgl2
+  promise_test: Unhandled rejection with value: object "TypeError: Cannot read properties of null (reading 'makeXRCompatible')"
 Harness: the test ran to completion.
 

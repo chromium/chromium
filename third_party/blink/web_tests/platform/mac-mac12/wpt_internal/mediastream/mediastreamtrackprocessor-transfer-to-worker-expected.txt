@@ -1,5 +1,6 @@
 This is a testharness.js-based test.
-FAIL Test we can transfer a Video MediaStreamTrackProcessor stream assert_true: Stream is ended before we could read enough frames expected true got false
-PASS Test we can transfer an Audio MediaStreamTrackProcessor stream
+[FAIL] Test we can transfer a Video MediaStreamTrackProcessor stream
+  assert_true: Stream is ended before we could read enough frames expected true got false
+[PASS] Test we can transfer an Audio MediaStreamTrackProcessor stream
 Harness: the test ran to completion.
 
