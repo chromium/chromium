@@ -353,27 +353,6 @@ void UnknownSchemeCallback(
           handled_externally ? net::ERR_ABORTED : net::ERR_UNKNOWN_URL_SCHEME));
 }
 
-uint32_t GetURLLoaderOptions(bool is_outermost_main_frame) {
-  uint32_t options = network::mojom::kURLLoadOptionNone;
-
-  // Ensure that Mime sniffing works.
-  options |= network::mojom::kURLLoadOptionSniffMimeType;
-
-  if (is_outermost_main_frame) {
-    // SSLInfo is not needed on subframe or fenced frame responses because users
-    // can inspect only the certificate for the main frame when using the info
-    // bubble.
-    options |= network::mojom::kURLLoadOptionSendSSLInfoWithResponse;
-  }
-
-  // When there's a certificate error for a frame load (regardless of whether
-  // the error caused the connection to fail), SSLInfo is useful for adjusting
-  // security UI accordingly.
-  options |= network::mojom::kURLLoadOptionSendSSLInfoForCertificateError;
-
-  return options;
-}
-
 void LogQueueTimeHistogram(base::StringPiece name,
                            bool is_outermost_main_frame) {
   auto* task = base::TaskAnnotator::CurrentTaskForThread();

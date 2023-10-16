@@ -20,6 +20,7 @@
 #include "base/time/time.h"
 #include "base/trace_event/common/trace_event_common.h"
 #include "base/trace_event/trace_event.h"
+#include "content/browser/loader/navigation_url_loader.h"
 #include "content/browser/service_worker/service_worker_container_host.h"
 #include "content/browser/service_worker/service_worker_context_core.h"
 #include "content/browser/service_worker/service_worker_context_wrapper.h"
@@ -536,8 +537,12 @@ bool ServiceWorkerMainResourceLoader::StartRaceNetworkRequest(
       forwarded_race_network_request_url_loader_factory_
           ->InitURLLoaderNewPipeAndPassReceiver(),
       GlobalRequestID::MakeBrowserInitiated().request_id,
-      network::mojom::kURLLoadOptionNone, resource_request_,
-      std::move(client_to_pass),
+      // Since RaceNetworkRequest may not involve the fetch handler for the
+      // navigation, requests SSLInfo here to be attached with the response.
+      // This is required to show the HTTPS padlock by the browser.
+      NavigationURLLoader::GetURLLoaderOptions(
+          resource_request_.is_outermost_main_frame),
+      resource_request_, std::move(client_to_pass),
       net::MutableNetworkTrafficAnnotationTag(
           ServiceWorkerRaceNetworkRequestURLLoaderClient::
               NetworkTrafficAnnotationTag()));
