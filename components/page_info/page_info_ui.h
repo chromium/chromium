@@ -13,6 +13,7 @@
 #include "build/build_config.h"
 #include "components/content_settings/core/common/content_settings.h"
 #include "components/content_settings/core/common/content_settings_types.h"
+#include "components/content_settings/core/common/cookie_blocking_3pcd_status.h"
 #include "components/page_info/page_info.h"
 #include "components/permissions/object_permission_context_base.h"
 #include "components/privacy_sandbox/canonical_topic.h"
@@ -100,8 +101,11 @@ class PageInfoUI {
     // The number of sites allowed to access cookies.
     int allowed_sites_count = -1;
 
-    // The status of blocking third-party cookies.
+    // The status of whether third-party cookies are blocked.
     CookieControlsStatus status;
+
+    // The type of third-party cookie blocking in 3PCD.
+    CookieBlocking3pcdStatus blocking_status;
 
     // The status of enforcement of blocking third-party cookies.
     CookieControlsEnforcement enforcement;

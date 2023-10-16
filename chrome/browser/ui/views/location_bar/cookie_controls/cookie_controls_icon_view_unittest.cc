@@ -10,6 +10,7 @@
 #include "chrome/browser/ui/views/frame/test_with_browser_view.h"
 #include "chrome/browser/ui/views/location_bar/location_bar_view.h"
 #include "chrome/grit/generated_resources.h"
+#include "components/content_settings/core/common/cookie_blocking_3pcd_status.h"
 #include "components/content_settings/core/common/features.h"
 #include "cookie_controls_bubble_coordinator.h"
 #include "testing/gmock/include/gmock/gmock.h"
@@ -124,6 +125,7 @@ TEST_F(CookieControlsIconViewUnitTest, DefaultNotVisible) {
 TEST_F(CookieControlsIconViewUnitTest, HighConfidenceEnabled) {
   view_->OnStatusChanged(CookieControlsStatus::kEnabled,
                          CookieControlsEnforcement::kEnforcedByCookieSetting,
+                         CookieBlocking3pcdStatus::kNotIn3pcd,
                          base::Time::Now() + base::Days(10));
   view_->OnBreakageConfidenceLevelChanged(
       CookieControlsBreakageConfidenceLevel::kHigh);
@@ -145,6 +147,7 @@ TEST_F(CookieControlsIconViewUnitTest,
        LowConfidenceDoesNotRetriggerA11yReadOut) {
   view_->OnStatusChanged(CookieControlsStatus::kEnabled,
                          CookieControlsEnforcement::kEnforcedByCookieSetting,
+                         CookieBlocking3pcdStatus::kNotIn3pcd,
                          base::Time::Now() + base::Days(10));
   view_->OnBreakageConfidenceLevelChanged(
       CookieControlsBreakageConfidenceLevel::kHigh);
@@ -172,6 +175,7 @@ TEST_F(CookieControlsIconViewUnitTest,
 TEST_F(CookieControlsIconViewUnitTest, MediumConfidenceEnabled) {
   view_->OnStatusChanged(CookieControlsStatus::kEnabled,
                          CookieControlsEnforcement::kEnforcedByCookieSetting,
+                         CookieBlocking3pcdStatus::kNotIn3pcd,
                          base::Time::Now() + base::Days(10));
   view_->OnBreakageConfidenceLevelChanged(
       CookieControlsBreakageConfidenceLevel::kMedium);
@@ -191,6 +195,7 @@ TEST_F(CookieControlsIconViewUnitTest, MediumConfidenceEnabled) {
 TEST_F(CookieControlsIconViewUnitTest, LowConfidenceEnabled) {
   view_->OnStatusChanged(CookieControlsStatus::kEnabled,
                          CookieControlsEnforcement::kEnforcedByCookieSetting,
+                         CookieBlocking3pcdStatus::kNotIn3pcd,
                          base::Time::Now() + base::Days(10));
   view_->OnBreakageConfidenceLevelChanged(
       CookieControlsBreakageConfidenceLevel::kLow);
@@ -213,6 +218,7 @@ TEST_F(CookieControlsIconViewUnitTest, LowConfidenceEnabled) {
 TEST_F(CookieControlsIconViewUnitTest, HighConfidenceDisabled) {
   view_->OnStatusChanged(CookieControlsStatus::kDisabled,
                          CookieControlsEnforcement::kEnforcedByCookieSetting,
+                         CookieBlocking3pcdStatus::kNotIn3pcd,
                          base::Time::Now() + base::Days(10));
   view_->OnBreakageConfidenceLevelChanged(
       CookieControlsBreakageConfidenceLevel::kHigh);
@@ -233,6 +239,7 @@ TEST_F(CookieControlsIconViewUnitTest, HighConfidenceDisabled) {
 TEST_F(CookieControlsIconViewUnitTest, MediumConfidenceDisabled) {
   view_->OnStatusChanged(CookieControlsStatus::kDisabled,
                          CookieControlsEnforcement::kEnforcedByCookieSetting,
+                         CookieBlocking3pcdStatus::kNotIn3pcd,
                          base::Time::Now() + base::Days(10));
   view_->OnBreakageConfidenceLevelChanged(
       CookieControlsBreakageConfidenceLevel::kMedium);
@@ -252,6 +259,7 @@ TEST_F(CookieControlsIconViewUnitTest, MediumConfidenceDisabled) {
 TEST_F(CookieControlsIconViewUnitTest, LowConfidenceDisabled) {
   view_->OnStatusChanged(CookieControlsStatus::kDisabled,
                          CookieControlsEnforcement::kEnforcedByCookieSetting,
+                         CookieBlocking3pcdStatus::kNotIn3pcd,
                          base::Time::Now() + base::Days(10));
   view_->OnBreakageConfidenceLevelChanged(
       CookieControlsBreakageConfidenceLevel::kLow);
@@ -273,6 +281,7 @@ TEST_F(CookieControlsIconViewUnitTest, LowConfidenceDisabled) {
 TEST_F(CookieControlsIconViewUnitTest, HighConfidenceDisabledForSite) {
   view_->OnStatusChanged(CookieControlsStatus::kDisabledForSite,
                          CookieControlsEnforcement::kEnforcedByCookieSetting,
+                         CookieBlocking3pcdStatus::kNotIn3pcd,
                          base::Time::Now() + base::Days(10));
   view_->OnBreakageConfidenceLevelChanged(
       CookieControlsBreakageConfidenceLevel::kHigh);
@@ -291,6 +300,7 @@ TEST_F(CookieControlsIconViewUnitTest, HighConfidenceDisabledForSite) {
 TEST_F(CookieControlsIconViewUnitTest, MediumConfidenceDisabledForSite) {
   view_->OnStatusChanged(CookieControlsStatus::kDisabledForSite,
                          CookieControlsEnforcement::kEnforcedByCookieSetting,
+                         CookieBlocking3pcdStatus::kNotIn3pcd,
                          base::Time::Now() + base::Days(10));
   view_->OnBreakageConfidenceLevelChanged(
       CookieControlsBreakageConfidenceLevel::kMedium);
@@ -309,6 +319,7 @@ TEST_F(CookieControlsIconViewUnitTest, MediumConfidenceDisabledForSite) {
 TEST_F(CookieControlsIconViewUnitTest, LowConfidenceDisabledForSite) {
   view_->OnStatusChanged(CookieControlsStatus::kDisabledForSite,
                          CookieControlsEnforcement::kEnforcedByCookieSetting,
+                         CookieBlocking3pcdStatus::kNotIn3pcd,
                          base::Time::Now() + base::Days(10));
   view_->OnBreakageConfidenceLevelChanged(
       CookieControlsBreakageConfidenceLevel::kLow);

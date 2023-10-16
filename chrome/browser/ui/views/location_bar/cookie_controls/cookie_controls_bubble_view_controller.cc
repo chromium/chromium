@@ -18,6 +18,7 @@
 #include "chrome/browser/ui/views/location_bar/location_bar_bubble_delegate_view.h"
 #include "chrome/grit/generated_resources.h"
 #include "components/content_settings/browser/ui/cookie_controls_util.h"
+#include "components/content_settings/core/common/cookie_blocking_3pcd_status.h"
 #include "components/content_settings/core/common/features.h"
 #include "components/favicon/core/favicon_service.h"
 #include "content/public/browser/navigation_controller.h"
@@ -157,6 +158,7 @@ CookieControlsBubbleViewController::~CookieControlsBubbleViewController() =
 void CookieControlsBubbleViewController::OnStatusChanged(
     CookieControlsStatus status,
     CookieControlsEnforcement enforcement,
+    CookieBlocking3pcdStatus blocking_status,
     base::Time expiration) {
   switch (status) {
     case CookieControlsStatus::kEnabled:

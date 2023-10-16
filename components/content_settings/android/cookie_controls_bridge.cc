@@ -49,7 +49,8 @@ void CookieControlsBridge::UpdateWebContents(
       permissions_client->GetCookieSettings(context),
       original_context ? permissions_client->GetCookieSettings(original_context)
                        : nullptr,
-      permissions_client->GetSettingsMap(context));
+      permissions_client->GetSettingsMap(context),
+      /*tracking_protection_settings=*/nullptr);
 
   old_observation_.Observe(controller_.get());
   observation_.Observe(controller_.get());
@@ -96,6 +97,7 @@ void CookieControlsBridge::OnStatefulBounceCountChanged(int bounce_count) {}
 void CookieControlsBridge::OnStatusChanged(
     CookieControlsStatus status,
     CookieControlsEnforcement enforcement,
+    CookieBlocking3pcdStatus blocking_status,
     base::Time expiration) {
   // Only invoke the callback when there is a change.
   if (status_ == status && enforcement_ == enforcement &&

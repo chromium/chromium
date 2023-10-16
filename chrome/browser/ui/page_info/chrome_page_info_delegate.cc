@@ -36,7 +36,6 @@
 #include "components/permissions/object_permission_context_base.h"
 #include "components/permissions/permission_manager.h"
 #include "components/prefs/pref_service.h"
-#include "components/privacy_sandbox/tracking_protection_settings.h"
 #include "components/security_interstitials/content/stateful_ssl_host_state_delegate.h"
 #include "components/subresource_filter/content/browser/subresource_filter_content_settings_manager.h"
 #include "components/subresource_filter/content/browser/subresource_filter_profile_context.h"
@@ -227,7 +226,9 @@ ChromePageInfoDelegate::CreateCookieControlsController() {
       profile->IsOffTheRecord()
           ? CookieSettingsFactory::GetForProfile(profile->GetOriginalProfile())
           : nullptr,
-      HostContentSettingsMapFactory::GetForProfile(profile));
+      HostContentSettingsMapFactory::GetForProfile(profile),
+      TrackingProtectionSettingsFactory::GetForProfile(
+          profile->GetOriginalProfile()));
 }
 
 bool ChromePageInfoDelegate::IsIsolatedWebApp() {
@@ -408,16 +409,6 @@ ChromePageInfoDelegate::GetPageSpecificContentSettingsDelegate() {
   auto delegate = std::make_unique<chrome::PageSpecificContentSettingsDelegate>(
       web_contents_);
   return std::move(delegate);
-}
-
-bool ChromePageInfoDelegate::IsTrackingProtection3pcdEnabled() {
-  return TrackingProtectionSettingsFactory::GetForProfile(GetProfile())
-      ->IsTrackingProtection3pcdEnabled();
-}
-
-bool ChromePageInfoDelegate::AreAllThirdPartyCookiesBlocked() {
-  return TrackingProtectionSettingsFactory::GetForProfile(GetProfile())
-      ->AreAllThirdPartyCookiesBlocked();
 }
 
 #if BUILDFLAG(IS_ANDROID)
