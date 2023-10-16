@@ -143,9 +143,8 @@ try_.builder(
     ],
     builderless = not settings.is_main,
     contact_team_email = "chrome-desktop-engprod@google.com",
-    tryjob = try_.job(
-        experiment_percentage = 100,
-    ),
+    main_list_view = "try",
+    tryjob = try_.job(),
 )
 
 try_.builder(
