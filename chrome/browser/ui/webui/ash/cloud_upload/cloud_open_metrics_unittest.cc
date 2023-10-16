@@ -20,7 +20,8 @@ class MetricTest : public testing::Test {
   enum class TestEnum {
     kZero = 0,
     kOne = 1,
-    kMaxValue = kOne,
+    kTwo = 2,
+    kMaxValue = kTwo,
   };
 
   Metric<TestEnum> metric_ = Metric<TestEnum>("metric_name");
@@ -45,6 +46,73 @@ TEST_F(MetricTest, Log) {
   ASSERT_TRUE(metric_.logged());
 
   histogram_.ExpectBucketCount("metric_name", TestEnum::kZero, 1);
+}
+
+// Tests that Metric::ExpectNotLogged() updates the `state` correctly when the
+// metric was never logged.
+TEST_F(MetricTest, ExpectNotLoggedWhenNotLogged) {
+  ASSERT_EQ(metric_.state, MetricState::kCorrectlyNotLogged);
+
+  metric_.ExpectNotLogged();
+  ASSERT_EQ(metric_.state, MetricState::kCorrectlyNotLogged);
+}
+
+// Tests that Metric::ExpectNotLogged() updates the `state` correctly when the
+// metric was logged.
+TEST_F(MetricTest, ExpectNotLoggedWhenLogged) {
+  metric_.Log(TestEnum::kOne);
+  ASSERT_EQ(metric_.state, MetricState::kCorrectlyLogged);
+
+  metric_.ExpectNotLogged();
+  ASSERT_EQ(metric_.state, MetricState::kIncorrectlyLogged);
+}
+
+// Tests that Metric::ExpectLogged() updates the `state` correctly when the
+// metric was logged.
+TEST_F(MetricTest, ExpectLoggedWhenLogged) {
+  metric_.Log(TestEnum::kOne);
+  ASSERT_EQ(metric_.state, MetricState::kCorrectlyLogged);
+
+  metric_.ExpectLogged();
+  ASSERT_EQ(metric_.state, MetricState::kCorrectlyLogged);
+}
+
+// Tests that Metric::ExpectLogged() updates the `state` correctly when the
+// metric was never logged.
+TEST_F(MetricTest, ExpectLoggedWhenNotLogged) {
+  ASSERT_EQ(metric_.state, MetricState::kCorrectlyNotLogged);
+
+  metric_.ExpectLogged();
+  ASSERT_EQ(metric_.state, MetricState::kIncorrectlyNotLogged);
+}
+
+// Tests that Metric::ExpectLoggedWith() updates the `state` correctly when
+// logged with the correct value.
+TEST_F(MetricTest, ExpectLoggedWithWhenLoggedWithCorrectValue) {
+  metric_.Log(TestEnum::kOne);
+  ASSERT_EQ(metric_.state, MetricState::kCorrectlyLogged);
+
+  metric_.ExpectLoggedWith({TestEnum::kZero, TestEnum::kOne});
+  ASSERT_EQ(metric_.state, MetricState::kCorrectlyLogged);
+}
+
+// Tests Metric::ExpectLoggedWith()  updates the `state` correctly when not
+// logged.
+TEST_F(MetricTest, ExpectLoggedWithWhenNotLogged) {
+  ASSERT_EQ(metric_.state, MetricState::kCorrectlyNotLogged);
+
+  metric_.ExpectLoggedWith({TestEnum::kZero, TestEnum::kOne});
+  ASSERT_EQ(metric_.state, MetricState::kIncorrectlyNotLogged);
+}
+
+// Tests that Metric::ExpectLoggedWith() updates the `state` correctly when
+// logged with the wrong value.
+TEST_F(MetricTest, ExpectLoggedWithWhenLoggedWithWrongValue) {
+  metric_.Log(TestEnum::kTwo);
+  ASSERT_EQ(metric_.state, MetricState::kCorrectlyLogged);
+
+  metric_.ExpectLoggedWith({TestEnum::kZero, TestEnum::kOne});
+  ASSERT_EQ(metric_.state, MetricState::kWrongValueLogged);
 }
 
 }  // namespace ash::cloud_upload

@@ -48,9 +48,9 @@ class Metric {
   bool Log(MetricType new_value) {
     LogMetric(new_value);
     if (state == MetricState::kCorrectlyNotLogged) {
-      set_state(MetricState::kCorrectlyLogged);
+      state = MetricState::kCorrectlyLogged;
     } else {
-      set_state(MetricState::kIncorrectlyLoggedMultipleTimes);
+      state = MetricState::kIncorrectlyLoggedMultipleTimes;
       // TODO(cassycc): Log old vs new value.
       LOG(ERROR) << metric_name << " was logged multiple times";
     }
@@ -72,7 +72,25 @@ class Metric {
     }
   }
 
-  void set_state(MetricState new_state) { state = new_state; }
+  void ExpectNotLogged() {
+    if (logged()) {
+      state = MetricState::kIncorrectlyLogged;
+    }
+  }
+
+  void ExpectLogged() {
+    if (!logged()) {
+      state = MetricState::kIncorrectlyNotLogged;
+    }
+  }
+
+  void ExpectLoggedWith(const std::vector<MetricType>& values) {
+    if (!logged()) {
+      state = MetricState::kIncorrectlyNotLogged;
+    } else if (!base::Contains(values, value)) {
+      state = MetricState::kWrongValueLogged;
+    }
+  }
 
   const std::string metric_name;
   MetricState state = MetricState::kCorrectlyNotLogged;
@@ -144,6 +162,23 @@ class CloudOpenMetrics {
  private:
   // Print the debug information for each metric.
   void PrintMetrics();
+
+  // Handle when the child metric has an inconsistency with the parent metric.
+  // Print information about the inconsistency and call PrintMetrics().
+  template <typename MetricType1, typename MetricType2>
+  void HandlePossibleInconsistency(Metric<MetricType1>& child,
+                                   Metric<MetricType2>& parent);
+
+  // Expect that the `child` metric is not logged.
+  template <typename MetricType1, typename MetricType2>
+  void ExpectNotLoggedRelativeToParent(Metric<MetricType1>& child,
+                                       Metric<MetricType2>& parent);
+
+  // Expect that the `child` metric is logged with a value from `values`.
+  template <typename MetricType1, typename MetricType2>
+  void ExpectLoggedRelativeToParent(const std::vector<MetricType1>& values,
+                                    Metric<MetricType1>& child,
+                                    Metric<MetricType2>& parent);
 
   CloudProvider cloud_provider_;
   Metric<base::File::Error> copy_error_;

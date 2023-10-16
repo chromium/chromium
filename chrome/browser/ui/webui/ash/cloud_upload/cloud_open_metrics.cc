@@ -75,7 +75,29 @@ CloudOpenMetrics::CloudOpenMetrics(CloudProvider cloud_provider)
                          : kOneDriveUploadResultMetricName) {}
 
 // TODO(b/300861997): Dump without crashing if there was an inconsistency.
-CloudOpenMetrics::~CloudOpenMetrics() = default;
+CloudOpenMetrics::~CloudOpenMetrics() {
+  bool google_drive = cloud_provider_ == CloudProvider::kGoogleDrive;
+  // TODO(cassycc): Add the rest of inconsistency checks.
+  if (!task_result_.logged()) {
+    task_result_.ExpectLogged();
+    // Manually handle inconsistency for this case as there is no parent
+    // metric.
+    LOG(ERROR) << task_result_.metric_name << " should have been logged";
+    PrintMetrics();
+  } else if (task_result_.value == OfficeTaskResult::kFallbackQuickOffice ||
+             task_result_.value == OfficeTaskResult::kCancelledAtFallback) {
+    if (google_drive) {
+      ExpectLoggedRelativeToParent({OfficeDriveOpenErrors::kOffline,
+                                    OfficeDriveOpenErrors::kDriveFsInterface},
+                                   drive_open_error_, task_result_);
+    } else {
+      ExpectLoggedRelativeToParent({OfficeOneDriveOpenErrors::kOffline},
+                                   one_drive_open_error_, task_result_);
+    }
+    ExpectNotLoggedRelativeToParent(transfer_required_, task_result_);
+    ExpectNotLoggedRelativeToParent(upload_result_, task_result_);
+  }
+}
 
 void CloudOpenMetrics::LogCopyError(base::File::Error value) {
   if (!copy_error_.Log(value)) {
@@ -132,6 +154,41 @@ base::SafeRef<CloudOpenMetrics> CloudOpenMetrics::GetSafeRef() const {
 // For testing.
 base::WeakPtr<CloudOpenMetrics> CloudOpenMetrics::GetWeakPtr() {
   return weak_ptr_factory_.GetWeakPtr();
+}
+
+template <typename MetricType1, typename MetricType2>
+void CloudOpenMetrics::HandlePossibleInconsistency(
+    Metric<MetricType1>& child,
+    Metric<MetricType2>& parent) {
+  switch (child.state) {
+    case MetricState::kCorrectlyNotLogged:
+    case MetricState::kCorrectlyLogged:
+      return;
+    case MetricState::kIncorrectlyNotLogged:
+    case MetricState::kIncorrectlyLogged:
+    case MetricState::kIncorrectlyLoggedMultipleTimes:
+    case MetricState::kWrongValueLogged:
+      LOG(ERROR) << "Inconsistency found for metric: " << child
+                 << " due to metric: " << parent;
+  }
+  PrintMetrics();
+}
+
+template <typename MetricType1, typename MetricType2>
+void CloudOpenMetrics::ExpectNotLoggedRelativeToParent(
+    Metric<MetricType1>& child,
+    Metric<MetricType2>& parent) {
+  child.ExpectNotLogged();
+  HandlePossibleInconsistency(child, parent);
+}
+
+template <typename MetricType1, typename MetricType2>
+void CloudOpenMetrics::ExpectLoggedRelativeToParent(
+    const std::vector<MetricType1>& values,
+    Metric<MetricType1>& child,
+    Metric<MetricType2>& parent) {
+  child.ExpectLoggedWith(values);
+  HandlePossibleInconsistency(child, parent);
 }
 
 void CloudOpenMetrics::PrintMetrics() {
