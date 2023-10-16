@@ -124,6 +124,10 @@ bool AssistantViewDelegateImpl::ShouldShowOnboarding() const {
     return true;
   }
 
+  if (!assistant::features::IsOnboardingEnabled()) {
+    return false;
+  }
+
   // Once a user has had an interaction with Assistant, we will no longer show
   // onboarding in that user session.
   auto* interaction_controller = AssistantInteractionController::Get();

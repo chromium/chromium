@@ -79,6 +79,94 @@ TEST_F(AssistantZeroStateViewUnittest, ZeroStateViewIsNotVisibleAfterResponse) {
   ASSERT_FALSE(zero_state_view->GetVisible());
 }
 
+TEST_F(AssistantZeroStateViewUnittest, OnboardingViewIsVisible_TabletMode) {
+  base::test::ScopedFeatureList scoped_feature_list(
+      assistant::features::kEnableAssistantOnboarding);
+
+  SetTabletMode(true);
+  ShowAssistantUi();
+
+  // The onboarding and greeting views are shown in a mutually exclusive way.
+  // An onboarding view should be shown instead of a greeting label.
+  const views::View* onboarding_view =
+      page_view()->GetViewByID(AssistantViewID::kOnboardingView);
+  ASSERT_TRUE(onboarding_view);
+  EXPECT_TRUE(onboarding_view->GetVisible());
+  EXPECT_TRUE(onboarding_view->IsDrawn());
+
+  const views::View* greeting_label =
+      page_view()->GetViewByID(AssistantViewID::kGreetingLabel);
+  ASSERT_TRUE(greeting_label);
+  EXPECT_FALSE(greeting_label->GetVisible());
+  EXPECT_FALSE(greeting_label->IsDrawn());
+}
+
+TEST_F(AssistantZeroStateViewUnittest, OnboardingViewIsNotVisible_TabletMode) {
+  base::test::ScopedFeatureList feature_list;
+  feature_list.InitAndDisableFeature(
+      assistant::features::kEnableAssistantOnboarding);
+
+  SetTabletMode(true);
+  ShowAssistantUi();
+
+  // The onboarding and greeting views are shown in a mutually exclusive way.
+  // A greeting label should be shown instead of an onboarding view.
+  views::View* onboarding_view =
+      page_view()->GetViewByID(AssistantViewID::kOnboardingView);
+  ASSERT_TRUE(onboarding_view);
+  EXPECT_FALSE(onboarding_view->GetVisible());
+  EXPECT_FALSE(onboarding_view->IsDrawn());
+
+  const views::View* greeting_label =
+      page_view()->GetViewByID(AssistantViewID::kGreetingLabel);
+  ASSERT_TRUE(greeting_label);
+  EXPECT_TRUE(greeting_label->GetVisible());
+  EXPECT_TRUE(greeting_label->IsDrawn());
+}
+
+TEST_F(AssistantZeroStateViewUnittest, OnboardingViewIsVisible) {
+  base::test::ScopedFeatureList scoped_feature_list(
+      assistant::features::kEnableAssistantOnboarding);
+
+  ShowAssistantUi();
+
+  // The onboarding and greeting views are shown in a mutually exclusive way.
+  // An onboarding view should be shown instead of a greeting label.
+  const views::View* onboarding_view =
+      page_view()->GetViewByID(AssistantViewID::kOnboardingView);
+  ASSERT_TRUE(onboarding_view);
+  EXPECT_TRUE(onboarding_view->GetVisible());
+  EXPECT_TRUE(onboarding_view->IsDrawn());
+
+  const views::View* greeting_label =
+      page_view()->GetViewByID(AssistantViewID::kGreetingLabel);
+  ASSERT_TRUE(greeting_label);
+  EXPECT_FALSE(greeting_label->GetVisible());
+  EXPECT_FALSE(greeting_label->IsDrawn());
+}
+
+TEST_F(AssistantZeroStateViewUnittest, OnboardingViewIsNotVisible) {
+  base::test::ScopedFeatureList feature_list;
+  feature_list.InitAndDisableFeature(
+      assistant::features::kEnableAssistantOnboarding);
+
+  ShowAssistantUi();
+
+  // The onboarding and greeting views are shown in a mutually exclusive way.
+  // A greeting label should be shown instead of an onboarding view.
+  views::View* onboarding_view =
+      page_view()->GetViewByID(AssistantViewID::kOnboardingView);
+  ASSERT_TRUE(onboarding_view);
+  EXPECT_FALSE(onboarding_view->GetVisible());
+  EXPECT_FALSE(onboarding_view->IsDrawn());
+
+  const views::View* greeting_label =
+      page_view()->GetViewByID(AssistantViewID::kGreetingLabel);
+  ASSERT_TRUE(greeting_label);
+  EXPECT_TRUE(greeting_label->GetVisible());
+  EXPECT_TRUE(greeting_label->IsDrawn());
+}
+
 TEST_F(AssistantZeroStateViewUnittest, LearnMoreToastViewIsNotVisible) {
   base::test::ScopedFeatureList feature_list_;
   feature_list_.InitAndDisableFeature(
