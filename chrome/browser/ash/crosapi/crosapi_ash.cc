@@ -515,8 +515,9 @@ void CrosapiAsh::BindEchoPrivate(
 
 void CrosapiAsh::BindEditorPanelManager(
     mojo::PendingReceiver<mojom::EditorPanelManager> receiver) {
-  ash::input_method::EditorMediator::Get()->BindEditorPanelManager(
-      std::move(receiver));
+  if (auto* editor_mediator = ash::input_method::EditorMediator::Get()) {
+    editor_mediator->BindEditorPanelManager(std::move(receiver));
+  }
 }
 
 void CrosapiAsh::BindEmbeddedAccessibilityHelperClientFactory(

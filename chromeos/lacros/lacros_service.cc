@@ -18,6 +18,7 @@
 #include "chromeos/components/cdm_factory_daemon/mojom/browser_cdm_factory.mojom.h"
 #include "chromeos/components/payments/mojom/payment_app.mojom.h"
 #include "chromeos/components/remote_apps/mojom/remote_apps.mojom.h"
+#include "chromeos/constants/chromeos_features.h"
 #include "chromeos/crosapi/cpp/crosapi_constants.h"
 #include "chromeos/crosapi/mojom/app_service.mojom.h"
 #include "chromeos/crosapi/mojom/app_window_tracker.mojom.h"
@@ -48,6 +49,7 @@
 #include "chromeos/crosapi/mojom/download_status_updater.mojom.h"
 #include "chromeos/crosapi/mojom/drive_integration_service.mojom.h"
 #include "chromeos/crosapi/mojom/echo_private.mojom.h"
+#include "chromeos/crosapi/mojom/editor_panel.mojom.h"
 #include "chromeos/crosapi/mojom/embedded_accessibility_helper.mojom.h"
 #include "chromeos/crosapi/mojom/emoji_picker.mojom.h"
 #include "chromeos/crosapi/mojom/extension_info_private.mojom.h"
@@ -341,6 +343,11 @@ LacrosService::LacrosService()
   ConstructRemote<crosapi::mojom::EchoPrivate,
                   &crosapi::mojom::Crosapi::BindEchoPrivate,
                   Crosapi::MethodMinVersions::kBindEchoPrivateMinVersion>();
+  if (chromeos::features::IsOrcaEnabled()) {
+    ConstructRemote<
+        crosapi::mojom::EditorPanelManager, &Crosapi::BindEditorPanelManager,
+        Crosapi::MethodMinVersions::kBindEditorPanelManagerMinVersion>();
+  }
   ConstructRemote<
       crosapi::mojom::EmbeddedAccessibilityHelperClientFactory,
       &Crosapi::BindEmbeddedAccessibilityHelperClientFactory,

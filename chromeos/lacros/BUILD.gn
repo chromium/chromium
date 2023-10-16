@@ -22,6 +22,7 @@ component("lacros") {
     "//base",
     "//build:chromeos_buildflags",
     "//chromeos/components/cdm_factory_daemon/mojom",
+    "//chromeos/constants:constants",
     "//chromeos/crosapi/cpp",
     "//chromeos/crosapi/cpp:crosapi_constants",
     "//chromeos/crosapi/mojom",
