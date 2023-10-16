@@ -385,6 +385,9 @@ if (is_chromeos_ash) {
   mojom("web_ui_test_bindings") {
     sources = [ "web_ui_test.mojom" ]
     webui_module_path = "/"
+
+    # Used by legacy MojoWebUIBrowserTest.
+    use_typescript_sources = false
   }
 
   generate_grd("build_web_ui_test_mojo_grdp") {

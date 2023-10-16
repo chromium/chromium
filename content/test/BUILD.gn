@@ -1077,6 +1077,10 @@ mojom("web_ui_test_mojo_bindings") {
     "//url/mojom:url_mojom_gurl",
   ]
   webui_module_path = "/content/test/data"
+
+  # Generate WebUI bindings in JavaScript instead of TypeScript. This is
+  # necessary since this target is intentionally testing JS WebUI bindings.
+  use_typescript_sources = false
 }
 
 mojom_with_webui_js_bridge("web_ui_js_bridge_test_bindings") {
@@ -1088,6 +1092,11 @@ mojom_with_webui_js_bridge("web_ui_js_bridge_test_bindings") {
   webui_controller_deps = [ "//content/test:test_support" ]
 
   webui_module_path = "/content/test/data"
+
+  # Generate WebUI bindings in JavaScript instead of TypeScript.
+  # TODO (https://crbug.com/1002798): Determine if this target should be
+  # Ash-only or migrated to TypeScript.
+  use_typescript_sources = false
 }
 
 # Closure compilation is only used on Ash. See below for TypeScript targets
