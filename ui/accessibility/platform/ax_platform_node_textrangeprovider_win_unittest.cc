@@ -3949,7 +3949,6 @@ TEST_F(AXPlatformNodeTextRangeProviderTest,
   text_data.AddIntAttribute(ax::mojom::IntAttribute::kBackgroundColor,
                             0xFFADBEEFU);
   text_data.AddIntAttribute(ax::mojom::IntAttribute::kColor, 0xFFADC0DEU);
-  text_data.AddStringAttribute(ax::mojom::StringAttribute::kLanguage, "fr-CA");
   text_data.SetTextDirection(ax::mojom::WritingDirection::kRtl);
   text_data.AddTextStyle(ax::mojom::TextStyle::kItalic);
   text_data.SetTextPosition(ax::mojom::TextPosition::kSubscript);
@@ -4241,18 +4240,6 @@ TEST_F(AXPlatformNodeTextRangeProviderTest,
   EXPECT_UIA_TEXTATTRIBUTE_EQ(list_item2_text_range_provider,
                               UIA_BulletStyleAttributeId, expected_variant);
   expected_variant.Reset();
-
-  {
-    base::win::ScopedVariant lang_variant;
-    EXPECT_HRESULT_SUCCEEDED(text_range_provider->GetAttributeValue(
-        UIA_CultureAttributeId, lang_variant.Receive()));
-
-    EXPECT_EQ(lang_variant.type(), VT_I4);
-    const LCID lcid = V_I4(lang_variant.ptr());
-    EXPECT_EQ(LANG_FRENCH, PRIMARYLANGID(lcid));
-    EXPECT_EQ(SUBLANG_FRENCH_CANADIAN, SUBLANGID(lcid));
-    EXPECT_EQ(SORT_DEFAULT, SORTIDFROMLCID(lcid));
-  }
 
   std::wstring font_name = L"sans";
   expected_variant.Set(SysAllocString(font_name.c_str()));

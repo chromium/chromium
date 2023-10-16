@@ -4688,6 +4688,7 @@ data/accessibility/language-detection/dynamic-reparenting-expected-win.txt
 data/accessibility/language-detection/dynamic-reparenting.html
 data/accessibility/language-detection/lang-attribute-expected-blink.txt
 data/accessibility/language-detection/lang-attribute-expected-mac.txt
+data/accessibility/language-detection/lang-attribute-expected-uia-win.txt
 data/accessibility/language-detection/lang-attribute-expected-win.txt
 data/accessibility/language-detection/lang-attribute-nested-expected-blink.txt
 data/accessibility/language-detection/lang-attribute-nested-expected-mac.txt
