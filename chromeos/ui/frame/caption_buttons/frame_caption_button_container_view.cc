@@ -266,7 +266,9 @@ FrameCaptionButtonContainerView::FrameCaptionButtonContainerView(
                           base::Unretained(this)),
       views::CAPTION_BUTTON_ICON_CLOSE, HTCLOSE);
   close_button_->SetTooltipText(
-      l10n_util::GetStringUTF16(IDS_APP_ACCNAME_CLOSE));
+      is_close_button_enabled
+          ? l10n_util::GetStringUTF16(IDS_APP_ACCNAME_CLOSE)
+          : l10n_util::GetStringUTF16(IDS_APP_CLOSE_BUTTON_DISABLED_BY_ADMIN));
   AddChildView(close_button_.get());
 
   SetButtonImage(views::CAPTION_BUTTON_ICON_FLOAT,
