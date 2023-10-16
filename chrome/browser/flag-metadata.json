@@ -2246,11 +2246,6 @@
     "expiry_milestone":120
   },
   {
-    "name": "enable-check-visibility-on-attention-log-start",
-    "owners": [ "sczs", "tinazwang" ],
-    "expiry_milestone": 120
-  },
-  {
     "name": "enable-close-tab-suggestions",
     "owners": [ "memex-team@google.com" ],
     "expiry_milestone": 90
@@ -3440,11 +3435,6 @@
     "name": "enable-red-interstitial-facelift",
     "owners": ["skrakowi", "chrome-counter-abuse-alerts@google.com" ],
     "expiry_milestone": 122
-  },
-  {
-    "name": "enable-refine-data-source-reload-reporting",
-    "owners": [ "sczs", "tinazwang" ],
-    "expiry_milestone": 120
   },
   {
     "name": "enable-remove-stale-policy-pinned-apps-from-shelf",
