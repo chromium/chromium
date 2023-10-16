@@ -101,21 +101,9 @@ class OobeUIDialogDelegate : public ui::WebDialogDelegate,
 
  private:
   // ui::WebDialogDelegate:
-  ui::ModalType GetDialogModalType() const override;
-  std::u16string GetDialogTitle() const override;
-  GURL GetDialogContentURL() const override;
-  void GetWebUIMessageHandlers(
-      std::vector<content::WebUIMessageHandler*>* handlers) const override;
-  void GetDialogSize(gfx::Size* size) const override;
-  std::string GetDialogArgs() const override;
   // NOTE: This function starts cleanup sequence that would call FinishCleanup
   // and delete this object in the end.
   void OnDialogClosed(const std::string& json_retval) override;
-  void OnCloseContents(content::WebContents* source,
-                       bool* out_close_dialog) override;
-  bool ShouldShowDialogTitle() const override;
-  bool HandleContextMenu(content::RenderFrameHost& render_frame_host,
-                         const content::ContextMenuParams& params) override;
   std::vector<ui::Accelerator> GetAccelerators() override;
   bool AcceleratorPressed(const ui::Accelerator& accelerator) override;
   WebDialogDelegate::FrameKind GetWebDialogFrameKind() const override;
