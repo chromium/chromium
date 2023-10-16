@@ -12,7 +12,8 @@ namespace network {
 
 namespace {
 
-bool ResourceIsEligibleForBlockList(masked_domain_list::Resource resource) {
+bool ResourceIsEligibleForBlockList(
+    const masked_domain_list::Resource& resource) {
   return std::find(resource.experiments().begin(), resource.experiments().end(),
                    masked_domain_list::Resource_Experiment_EXPERIMENT_AFP) !=
          resource.experiments().end();
@@ -40,7 +41,7 @@ bool NetworkServiceResourceBlockList::IsPopulated() {
 
 bool NetworkServiceResourceBlockList::Matches(
     const GURL& request_url,
-    absl::optional<net::IsolationInfo> isolation_info) {
+    const absl::optional<net::IsolationInfo>& isolation_info) {
   // If there is no isolation_info, it is not possible to determine if the
   // request is in a 3rd party context and it should not be blocked.
   if (!isolation_info || isolation_info->IsEmpty() ||
@@ -59,8 +60,10 @@ bool NetworkServiceResourceBlockList::Matches(
 void NetworkServiceResourceBlockList::UseMaskedDomainList(
     const masked_domain_list::MaskedDomainList& mdl) {
   url_matcher_with_bypass_.Clear();
-  for (auto resource_owner : mdl.resource_owners()) {
-    for (auto resource : resource_owner.owned_resources()) {
+  for (const masked_domain_list::ResourceOwner& resource_owner :
+       mdl.resource_owners()) {
+    for (const masked_domain_list::Resource& resource :
+         resource_owner.owned_resources()) {
       if (ResourceIsEligibleForBlockList(resource)) {
         url_matcher_with_bypass_.AddMaskedDomainListRules(resource.domain(),
                                                           resource_owner);
