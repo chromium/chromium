@@ -62,6 +62,12 @@ class PrivacySandboxSettingsBrowserTest
     FinishSetUp();
   }
 
+  // TODO(crbug.com/1491942): This fails with the field trial testing config.
+  void SetUpCommandLine(base::CommandLine* command_line) override {
+    MixinBasedInProcessBrowserTest::SetUpCommandLine(command_line);
+    command_line->AppendSwitch("disable-field-trial-config");
+  }
+
   // Virtual so that derived classes can delay starting the server and/or
   // register different handlers.
   virtual void FinishSetUp() {
