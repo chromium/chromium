@@ -64,10 +64,22 @@
         "_default": "_default"
       },
       "CFI Linux CF": {
-        "_default": "_default"
+        "build_time": {},
+        "infra_fail_rate": {
+          "average": 0.05
+        },
+        "pending_time": {
+          "p50_mins": 20
+        }
       },
       "CFI Linux ToT": {
-        "_default": "_default"
+        "build_time": {},
+        "infra_fail_rate": {
+          "average": 0.05
+        },
+        "pending_time": {
+          "p50_mins": 20
+        }
       },
       "Cast Android (dbg)": {
         "_default": "_default"
@@ -79,10 +91,22 @@
         "_default": "_default"
       },
       "CrWinAsan": {
-        "_default": "_default"
+        "build_time": {},
+        "infra_fail_rate": {
+          "average": 0.05
+        },
+        "pending_time": {
+          "p50_mins": 20
+        }
       },
       "CrWinAsan(dll)": {
-        "_default": "_default"
+        "build_time": {},
+        "infra_fail_rate": {
+          "average": 0.05
+        },
+        "pending_time": {
+          "p50_mins": 20
+        }
       },
       "Dawn Android arm Builder": {
         "_default": "_default"
@@ -334,115 +358,337 @@
         "_default": "_default"
       },
       "ToTAndroid": {
-        "_default": "_default"
+        "build_time": {},
+        "infra_fail_rate": {
+          "average": 0.05
+        },
+        "pending_time": {
+          "p50_mins": 20
+        }
       },
       "ToTAndroid (dbg)": {
-        "_default": "_default"
+        "build_time": {},
+        "infra_fail_rate": {
+          "average": 0.05
+        },
+        "pending_time": {
+          "p50_mins": 20
+        }
       },
       "ToTAndroid x64": {
-        "_default": "_default"
+        "build_time": {},
+        "infra_fail_rate": {
+          "average": 0.05
+        },
+        "pending_time": {
+          "p50_mins": 20
+        }
       },
       "ToTAndroid x86": {
-        "_default": "_default"
+        "build_time": {},
+        "infra_fail_rate": {
+          "average": 0.05
+        },
+        "pending_time": {
+          "p50_mins": 20
+        }
       },
       "ToTAndroid64": {
-        "_default": "_default"
+        "build_time": {},
+        "infra_fail_rate": {
+          "average": 0.05
+        },
+        "pending_time": {
+          "p50_mins": 20
+        }
       },
       "ToTAndroidASan": {
-        "_default": "_default"
+        "build_time": {},
+        "infra_fail_rate": {
+          "average": 0.05
+        },
+        "pending_time": {
+          "p50_mins": 20
+        }
       },
       "ToTAndroidCoverage x86": {
-        "_default": "_default"
+        "build_time": {},
+        "infra_fail_rate": {
+          "average": 0.05
+        },
+        "pending_time": {
+          "p50_mins": 20
+        }
       },
       "ToTAndroidOfficial": {
-        "_default": "_default"
+        "build_time": {},
+        "infra_fail_rate": {
+          "average": 0.05
+        },
+        "pending_time": {
+          "p50_mins": 20
+        }
       },
       "ToTChromeOS": {
-        "_default": "_default"
+        "build_time": {},
+        "infra_fail_rate": {
+          "average": 0.05
+        },
+        "pending_time": {
+          "p50_mins": 20
+        }
       },
       "ToTChromeOS (dbg)": {
-        "_default": "_default"
+        "build_time": {},
+        "infra_fail_rate": {
+          "average": 0.05
+        },
+        "pending_time": {
+          "p50_mins": 20
+        }
       },
       "ToTFuchsia x64": {
-        "_default": "_default"
+        "build_time": {},
+        "infra_fail_rate": {
+          "average": 0.05
+        },
+        "pending_time": {
+          "p50_mins": 20
+        }
       },
       "ToTFuchsiaOfficial arm64": {
-        "_default": "_default"
+        "build_time": {},
+        "infra_fail_rate": {
+          "average": 0.05
+        },
+        "pending_time": {
+          "p50_mins": 20
+        }
       },
       "ToTLinux": {
-        "_default": "_default"
+        "build_time": {},
+        "infra_fail_rate": {
+          "average": 0.05
+        },
+        "pending_time": {
+          "p50_mins": 20
+        }
       },
       "ToTLinux (dbg)": {
-        "_default": "_default"
+        "build_time": {},
+        "infra_fail_rate": {
+          "average": 0.05
+        },
+        "pending_time": {
+          "p50_mins": 20
+        }
       },
       "ToTLinuxASan": {
-        "_default": "_default"
+        "build_time": {},
+        "infra_fail_rate": {
+          "average": 0.05
+        },
+        "pending_time": {
+          "p50_mins": 20
+        }
       },
       "ToTLinuxASanLibfuzzer": {
-        "_default": "_default"
+        "build_time": {},
+        "infra_fail_rate": {
+          "average": 0.05
+        },
+        "pending_time": {
+          "p50_mins": 20
+        }
       },
       "ToTLinuxCoverage": {
-        "_default": "_default"
+        "build_time": {},
+        "infra_fail_rate": {
+          "average": 0.05
+        },
+        "pending_time": {
+          "p50_mins": 20
+        }
       },
       "ToTLinuxMSan": {
-        "_default": "_default"
+        "build_time": {},
+        "infra_fail_rate": {
+          "average": 0.05
+        },
+        "pending_time": {
+          "p50_mins": 20
+        }
       },
       "ToTLinuxPGO": {
-        "_default": "_default"
+        "build_time": {},
+        "infra_fail_rate": {
+          "average": 0.05
+        },
+        "pending_time": {
+          "p50_mins": 20
+        }
       },
       "ToTLinuxTSan": {
-        "_default": "_default"
+        "build_time": {},
+        "infra_fail_rate": {
+          "average": 0.05
+        },
+        "pending_time": {
+          "p50_mins": 20
+        }
       },
       "ToTLinuxUBSanVptr": {
-        "_default": "_default"
+        "build_time": {},
+        "infra_fail_rate": {
+          "average": 0.05
+        },
+        "pending_time": {
+          "p50_mins": 20
+        }
       },
       "ToTMac": {
-        "_default": "_default"
+        "build_time": {},
+        "infra_fail_rate": {
+          "average": 0.05
+        },
+        "pending_time": {
+          "p50_mins": 20
+        }
       },
       "ToTMac (dbg)": {
-        "_default": "_default"
+        "build_time": {},
+        "infra_fail_rate": {
+          "average": 0.05
+        },
+        "pending_time": {
+          "p50_mins": 20
+        }
       },
       "ToTMacASan": {
-        "_default": "_default"
+        "build_time": {},
+        "infra_fail_rate": {
+          "average": 0.05
+        },
+        "pending_time": {
+          "p50_mins": 20
+        }
       },
       "ToTMacCoverage": {
-        "_default": "_default"
+        "build_time": {},
+        "infra_fail_rate": {
+          "average": 0.05
+        },
+        "pending_time": {
+          "p50_mins": 20
+        }
       },
       "ToTWin": {
-        "_default": "_default"
+        "build_time": {},
+        "infra_fail_rate": {
+          "average": 0.05
+        },
+        "pending_time": {
+          "p50_mins": 20
+        }
       },
       "ToTWin(dbg)": {
-        "_default": "_default"
+        "build_time": {},
+        "infra_fail_rate": {
+          "average": 0.05
+        },
+        "pending_time": {
+          "p50_mins": 20
+        }
       },
       "ToTWin(dll)": {
-        "_default": "_default"
+        "build_time": {},
+        "infra_fail_rate": {
+          "average": 0.05
+        },
+        "pending_time": {
+          "p50_mins": 20
+        }
       },
       "ToTWin64": {
-        "_default": "_default"
+        "build_time": {},
+        "infra_fail_rate": {
+          "average": 0.05
+        },
+        "pending_time": {
+          "p50_mins": 20
+        }
       },
       "ToTWin64(dbg)": {
-        "_default": "_default"
+        "build_time": {},
+        "infra_fail_rate": {
+          "average": 0.05
+        },
+        "pending_time": {
+          "p50_mins": 20
+        }
       },
       "ToTWin64(dll)": {
-        "_default": "_default"
+        "build_time": {},
+        "infra_fail_rate": {
+          "average": 0.05
+        },
+        "pending_time": {
+          "p50_mins": 20
+        }
       },
       "ToTWin64PGO": {
-        "_default": "_default"
+        "build_time": {},
+        "infra_fail_rate": {
+          "average": 0.05
+        },
+        "pending_time": {
+          "p50_mins": 20
+        }
       },
       "ToTWinASanLibfuzzer": {
-        "_default": "_default"
+        "build_time": {},
+        "infra_fail_rate": {
+          "average": 0.05
+        },
+        "pending_time": {
+          "p50_mins": 20
+        }
       },
       "ToTWinArm64PGO": {
-        "_default": "_default"
+        "build_time": {},
+        "infra_fail_rate": {
+          "average": 0.05
+        },
+        "pending_time": {
+          "p50_mins": 20
+        }
       },
       "ToTWindowsCoverage": {
-        "_default": "_default"
+        "build_time": {},
+        "infra_fail_rate": {
+          "average": 0.05
+        },
+        "pending_time": {
+          "p50_mins": 20
+        }
       },
       "ToTiOS": {
-        "_default": "_default"
+        "build_time": {},
+        "infra_fail_rate": {
+          "average": 0.05
+        },
+        "pending_time": {
+          "p50_mins": 20
+        }
       },
       "ToTiOSDevice": {
-        "_default": "_default"
+        "build_time": {},
+        "infra_fail_rate": {
+          "average": 0.05
+        },
+        "pending_time": {
+          "p50_mins": 20
+        }
       },
       "UBSan Release": {
         "_default": "_default"
@@ -961,7 +1207,13 @@
         "_default": "_default"
       },
       "linux-win_cross-rel": {
-        "_default": "_default"
+        "build_time": {},
+        "infra_fail_rate": {
+          "average": 0.05
+        },
+        "pending_time": {
+          "p50_mins": 20
+        }
       },
       "mac-archive-rel": {
         "_default": "_default"
