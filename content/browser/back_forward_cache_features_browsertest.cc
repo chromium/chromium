@@ -4591,6 +4591,10 @@ IN_PROC_BROWSER_TEST_P(BackForwardCacheBrowserTestWithSpeechSynthesis,
 
   // 2) Navigate away.
   EXPECT_TRUE(NavigateToURL(shell(), url_b));
+  if (!IsSpeechSynthesisSupported()) {
+    ASSERT_TRUE(rfh_a.WaitUntilRenderFrameDeleted());
+  }
+
   // 3) Go back to the page with SpeechSynthesis and ensure the page is
   // restored if the flag is on.
   ASSERT_TRUE(HistoryGoBack(web_contents()));
