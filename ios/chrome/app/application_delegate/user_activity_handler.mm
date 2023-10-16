@@ -656,10 +656,10 @@ NSArray* CompatibleModeForActivityType(NSString* activityType) {
 
   if (IsIncognitoModeDisabled(prefService)) {
     return [array containsObject:kRegularMode];
-  } else if (IsIncognitoModeForced(prefService)) {
+  }
+  if (IsIncognitoModeForced(prefService)) {
     return [array containsObject:kIncognitoMode];
   }
-
   // Return YES if the compatible mode array is not nil.
   return array != nil;
 }
