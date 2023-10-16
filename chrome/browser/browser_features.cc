@@ -264,17 +264,6 @@ BASE_FEATURE(kNewTabPageTriggerForPrerender2,
 BASE_FEATURE(kSupportSearchSuggestionForPrerender2,
              "SupportSearchSuggestionForPrerender2",
              base::FEATURE_DISABLED_BY_DEFAULT);
-const base::FeatureParam<SearchSuggestionPrerenderImplementationType>::Option
-    search_suggestion_implementation_types[] = {
-        {SearchSuggestionPrerenderImplementationType::kUsePrefetch,
-         "use_prefetch"},
-        {SearchSuggestionPrerenderImplementationType::kIgnorePrefetch,
-         "ignore_prefetch"}};
-const base::FeatureParam<SearchSuggestionPrerenderImplementationType>
-    kSearchSuggestionPrerenderImplementationTypeParam{
-        &kSupportSearchSuggestionForPrerender2, "implementation_type",
-        SearchSuggestionPrerenderImplementationType::kUsePrefetch,
-        &search_suggestion_implementation_types};
 
 const base::FeatureParam<SearchPreloadShareableCacheType>::Option
     search_preload_shareable_cache_types[] = {

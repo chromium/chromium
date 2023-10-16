@@ -38,20 +38,7 @@ bool ShouldUpdateCacheEntryManually() {
   return base::FeatureList::IsEnabled(kHidePrefetchParameter);
 }
 
-bool SearchPrefetchUpgradeToPrerenderIsEnabled() {
-  CHECK(IsSearchSuggestionPrerenderEnabled());
-  switch (features::kSearchSuggestionPrerenderImplementationTypeParam.Get()) {
-    case features::SearchSuggestionPrerenderImplementationType::kUsePrefetch:
-      return true;
-    case features::SearchSuggestionPrerenderImplementationType::kIgnorePrefetch:
-      return false;
-  }
-}
-
 bool SearchPreloadShareableCacheIsEnabled() {
-  if (!SearchPrefetchUpgradeToPrerenderIsEnabled()) {
-    return false;
-  }
   switch (features::kSearchPreloadShareableCacheTypeParam.Get()) {
     case features::SearchPreloadShareableCacheType::kEnabled:
       return true;

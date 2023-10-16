@@ -859,19 +859,6 @@ const FeatureEntry::FeatureVariation kMBIModeVariations[] = {
     {"per site instance", kMBIModeEnabledPerSiteInstance,
      std::size(kMBIModeEnabledPerSiteInstance), nullptr}};
 
-const FeatureEntry::FeatureParam kSearchSuggestionPrerenderUsingPrefetch[] = {
-    {"implementation_type", "use_prefetch"}};
-const FeatureEntry::FeatureParam kSearchSuggestionPrerenderIgnoringPrefetch[] =
-    {{"implementation_type", "ignore_prefetch"}};
-
-const FeatureEntry::FeatureVariation
-    kSearchSuggestionPrerenderTypeVariations[] = {
-        {"use prefetched request", kSearchSuggestionPrerenderUsingPrefetch,
-         std::size(kSearchSuggestionPrerenderUsingPrefetch), nullptr},
-        {"ignore prefetched request",
-         kSearchSuggestionPrerenderIgnoringPrefetch,
-         std::size(kSearchSuggestionPrerenderIgnoringPrefetch), nullptr}};
-
 const FeatureEntry::FeatureParam kSearchPrefetchWithoutHoldback[] = {
     {"prefetch_holdback", "false"}};
 const FeatureEntry::FeatureParam kSearchPrefetchWithHoldback[] = {
@@ -8703,10 +8690,7 @@ const FeatureEntry kFeatureEntries[] = {
      flag_descriptions::kSupportSearchSuggestionForPrerender2Name,
      flag_descriptions::kSupportSearchSuggestionForPrerender2Description,
      kOsAll,
-     FEATURE_WITH_PARAMS_VALUE_TYPE(
-         features::kSupportSearchSuggestionForPrerender2,
-         kSearchSuggestionPrerenderTypeVariations,
-         "SearchSuggestionPrerender")},
+     FEATURE_VALUE_TYPE(features::kSupportSearchSuggestionForPrerender2)},
 
     {"omnibox-search-prefetch",
      flag_descriptions::kEnableOmniboxSearchPrefetchName,

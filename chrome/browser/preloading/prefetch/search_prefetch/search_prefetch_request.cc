@@ -409,24 +409,25 @@ void SearchPrefetchRequest::ErrorEncountered() {
 void SearchPrefetchRequest::OnServableResponseCodeReceived() {
   servable_response_code_received_ = true;
 
+  if (!prerender_manager_) {
+    return;
+  }
+
   // TODO(https://crbug.com/1295170): Do not start prerendering if this request
   // is about to expire.
-  if (prerender_manager_) {
-    DCHECK(prerender_utils::SearchPrefetchUpgradeToPrerenderIsEnabled());
-    if (prerender_utils::SearchPreloadShareableCacheIsEnabled()) {
-      // Start prerender synchronously. For shareable cache cases, the request
-      // will build the data pipe by itself and we do not need to wait.
-      prerender_manager_->StartPrerenderSearchResult(
-          canonical_search_url_, prerender_url_, prerender_preloading_attempt_);
-    } else {
-      // Start prerender asynchronously, so that the request can prepare the
-      // data pipe completely
-      base::SequencedTaskRunner::GetCurrentDefault()->PostTask(
-          FROM_HERE,
-          base::BindOnce(&PrerenderManager::StartPrerenderSearchResult,
-                         prerender_manager_, canonical_search_url_,
-                         prerender_url_, prerender_preloading_attempt_));
-    }
+  if (prerender_utils::SearchPreloadShareableCacheIsEnabled()) {
+    // Start prerender synchronously. For shareable cache cases, the request
+    // will build the data pipe by itself and we do not need to wait.
+    prerender_manager_->StartPrerenderSearchResult(
+        canonical_search_url_, prerender_url_, prerender_preloading_attempt_);
+  } else {
+    // Start prerender asynchronously, so that the request can prepare the
+    // data pipe completely
+    base::SequencedTaskRunner::GetCurrentDefault()->PostTask(
+        FROM_HERE,
+        base::BindOnce(&PrerenderManager::StartPrerenderSearchResult,
+                       prerender_manager_, canonical_search_url_,
+                       prerender_url_, prerender_preloading_attempt_));
   }
 }
 

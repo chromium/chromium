@@ -97,12 +97,6 @@ const base::FeatureParam<int>
 // This flag controls whether to trigger prerendering when the default search
 // engine suggests to prerender a search result.
 BASE_DECLARE_FEATURE(kSupportSearchSuggestionForPrerender2);
-enum class SearchSuggestionPrerenderImplementationType {
-  kUsePrefetch,
-  kIgnorePrefetch,
-};
-extern const base::FeatureParam<SearchSuggestionPrerenderImplementationType>
-    kSearchSuggestionPrerenderImplementationTypeParam;
 // Indicates whether to make search prefetch response shareable to prerender.
 // When allowing this, prerender can only copy the cache but cannot take over
 // the ownership.

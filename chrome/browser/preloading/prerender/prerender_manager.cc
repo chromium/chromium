@@ -80,17 +80,6 @@ base::TimeDelta GetSearchPrerenderExpiryDuration() {
   return SearchPrefetchCachingLimit();
 }
 
-// TODO(https://crbug.com/1295170): This is a workaround. Remove this method
-// after the unification work is done.
-GURL RemoveParameterFromUrl(const GURL& url) {
-  std::string query = url.query();
-  base::ReplaceFirstSubstringAfterOffset(&query, /*start_offset=*/0, "&pf=cs",
-                                         "");
-  GURL::Replacements replacements;
-  replacements.SetQueryStr(query);
-  return url.ReplaceComponents(replacements);
-}
-
 void MarkPreloadingAttemptAsDuplicate(
     content::PreloadingAttempt* preloading_attempt) {
   CHECK(!preloading_attempt->ShouldHoldback());
@@ -183,47 +172,8 @@ class PrerenderManager::SearchPrerenderTask {
       return;
     }
 
-    if (prerender_utils::SearchPrefetchUpgradeToPrerenderIsEnabled()) {
-      search_prefetch_service->OnPrerenderedRequestUsed(
-          prerendered_canonical_search_url_,
-          web_contents.GetLastCommittedURL());
-      return;
-    }
-
-    // TODO(https://crbug.com/1295170): This rule is hard coded according to
-    // TemplateUrl, which is not good, and can be removed after the unification
-    // work is done.
-    const std::string prerender_key = "pf";
-
-    // Maybe the prerendering page has updated its URL. In this case, obtain the
-    // original URL with the ReplacedNavigationEntryData. The reason why we do
-    // not compare the URL with GetInitialPrerenderingUrl here is that the URL
-    // can be changed by other mechanisms, such as safe search.
-    if (const absl::optional<content::ReplacedNavigationEntryData>&
-            replaced_data = entry->GetReplacedEntryData()) {
-      const GURL& maybe_prerendering_url = replaced_data->first_committed_url;
-      std::string out_value;
-      bool key_exists = net::GetValueForKeyInQuery(maybe_prerendering_url,
-                                                   prerender_key, &out_value);
-      if (key_exists &&
-          !net::GetValueForKeyInQuery(web_contents.GetLastCommittedURL(),
-                                      prerender_key, &out_value)) {
-        search_prefetch_service->AddCacheEntryForPrerender(
-            web_contents.GetLastCommittedURL(),
-            replaced_data->first_committed_url);
-        return;
-      }
-    }
-
-    const GURL& activated_url = web_contents.GetLastCommittedURL();
-    std::string out_value;
-    bool key_exists =
-        net::GetValueForKeyInQuery(activated_url, prerender_key, &out_value);
-    if (key_exists) {
-      GURL new_url = RemoveParameterFromUrl(activated_url);
-      search_prefetch_service->AddCacheEntryForPrerender(new_url,
-                                                         activated_url);
-    }
+    search_prefetch_service->OnPrerenderedRequestUsed(
+        prerendered_canonical_search_url_, web_contents.GetLastCommittedURL());
   }
 
   void RecordTimestampOnDidStartNavigation(
@@ -577,8 +527,6 @@ void PrerenderManager::StartPrerenderSearchResult(
     const GURL& canonical_search_url,
     const GURL& prerendering_url,
     base::WeakPtr<content::PreloadingAttempt> preloading_attempt) {
-  CHECK(prerender_utils::SearchPrefetchUpgradeToPrerenderIsEnabled());
-
   // If the caller does not want to prerender a new result, this does not need
   // to do anything.
   if (!ResetSearchPrerenderTaskIfNecessary(canonical_search_url,
