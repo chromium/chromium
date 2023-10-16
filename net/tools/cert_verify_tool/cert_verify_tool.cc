@@ -45,8 +45,10 @@ namespace {
 enum class RootStoreType {
   // No roots other than those explicitly passed in on the command line.
   kEmpty,
+#if !BUILDFLAG(CHROME_ROOT_STORE_ONLY)
   // Use the system root store.
   kSystem,
+#endif
   // Use the Chrome Root Store.
   kChrome
 };
@@ -195,10 +197,12 @@ std::unique_ptr<net::SystemTrustStore> CreateSystemTrustStore(
     base::StringPiece impl_name,
     RootStoreType root_store_type) {
   switch (root_store_type) {
+#if BUILDFLAG(IS_FUCHSIA)
     case RootStoreType::kSystem:
       std::cerr << impl_name
                 << ": using system roots (--roots are in addition).\n";
       return net::CreateSslSystemTrustStore();
+#endif
     case RootStoreType::kChrome:
 #if BUILDFLAG(CHROME_ROOT_STORE_SUPPORTED)
       std::cerr << impl_name
@@ -223,8 +227,7 @@ std::unique_ptr<CertVerifyImpl> CreateCertVerifyImplFromName(
     scoped_refptr<net::CertNetFetcher> cert_net_fetcher,
     scoped_refptr<net::CRLSet> crl_set,
     RootStoreType root_store_type) {
-#if !(BUILDFLAG(IS_FUCHSIA) || BUILDFLAG(IS_LINUX) || \
-      BUILDFLAG(IS_CHROMEOS) || BUILDFLAG(CHROME_ROOT_STORE_ONLY))
+#if !(BUILDFLAG(IS_FUCHSIA) || BUILDFLAG(CHROME_ROOT_STORE_ONLY))
   if (impl_name == "platform") {
     if (root_store_type != RootStoreType::kSystem) {
       std::cerr << "WARNING: platform verifier not supported with "
@@ -413,7 +416,12 @@ int main(int argc, char** argv) {
     }
   }
 
+#if BUILDFLAG(CHROME_ROOT_STORE_ONLY)
+  RootStoreType root_store_type = RootStoreType::kChrome;
+#else
   RootStoreType root_store_type = RootStoreType::kSystem;
+#endif
+
   if (command_line.HasSwitch("no-system-roots")) {
     root_store_type = RootStoreType::kEmpty;
   }

@@ -115,8 +115,6 @@ class MockSystemTrustStore : public SystemTrustStore {
  public:
   TrustStore* GetTrustStore() override { return &trust_store_; }
 
-  bool UsesSystemTrustStore() const override { return false; }
-
   bool IsKnownRoot(const ParsedCertificate* trust_anchor) const override {
     return mock_is_known_root_;
   }

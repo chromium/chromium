@@ -33,17 +33,6 @@ class SystemTrustStore {
   // this method must be thread-safe.
   virtual TrustStore* GetTrustStore() = 0;
 
-  // Returns false if the implementation of SystemTrustStore doesn't actually
-  // make use of the system's trust store. This might be the case for
-  // unsupported platforms. In the case where this returns false, the trust
-  // store returned by GetTrustStore() is made up solely of the manually added
-  // trust anchors (via AddTrustAnchor()).
-  //
-  // TODO(hchao): Rename this to something more sensible now that we're
-  // introducing the idea of a Chrome Root Store that doesn't use all parts of a
-  // system's trust store.
-  virtual bool UsesSystemTrustStore() const = 0;
-
   // IsKnownRoot() returns true if the given certificate originated from the
   // system trust store and is a "standard" one. The meaning of "standard" is
   // that it is one of default trust anchors for the system, as opposed to a
@@ -57,30 +46,18 @@ class SystemTrustStore {
 #endif
 };
 
+#if BUILDFLAG(IS_FUCHSIA)
 // Creates an instance of SystemTrustStore that wraps the current platform's SSL
-// trust store. This cannot return nullptr, even in the case where system trust
-// store integration is not supported.
-//
-// In cases where system trust store integration is not supported, the
-// SystemTrustStore will not give access to the platform's SSL trust store, to
-// avoid trusting a CA that the user has disabled on their system. In this
-// case, UsesSystemTrustStore() will return false, and only manually-added trust
-// anchors will be used.
+// trust store. This cannot return nullptr.
 NET_EXPORT std::unique_ptr<SystemTrustStore> CreateSslSystemTrustStore();
+#endif
 
 #if BUILDFLAG(CHROME_ROOT_STORE_SUPPORTED)
 class TrustStoreChrome;
 
 // Creates an instance of SystemTrustStore that wraps the current platform's SSL
 // trust store for user added roots, but uses the Chrome Root Store trust
-// anchors. This cannot return nullptr, even in the case where system trust
-// store integration is not supported.
-//
-// In cases where system trust store integration is not supported, the
-// SystemTrustStore will not give access to the Chrome Root Store, to avoid
-// trusting a CA that the user has disabled on their system. In this case,
-// UsesSystemTrustStore() will return false, and only manually-added trust
-// anchors will be used.
+// anchors. This cannot return nullptr.
 NET_EXPORT std::unique_ptr<SystemTrustStore>
 CreateSslSystemTrustStoreChromeRoot(
     std::unique_ptr<TrustStoreChrome> chrome_root);
@@ -92,9 +69,7 @@ CreateSystemTrustStoreChromeForTesting(
 #endif  // BUILDFLAG(CHROME_ROOT_STORE_SUPPORTED)
 
 // Creates an instance of SystemTrustStore that initially does not have any
-// trust roots. (This is the same trust store implementation that will be
-// returned by CreateSslSystemTrustStore() on platforms where system trust
-// store integration is not supported.)
+// trust roots.
 NET_EXPORT std::unique_ptr<SystemTrustStore> CreateEmptySystemTrustStore();
 
 #if BUILDFLAG(IS_MAC)

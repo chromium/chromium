@@ -58,8 +58,6 @@ class DummySystemTrustStore : public SystemTrustStore {
  public:
   TrustStore* GetTrustStore() override { return &trust_store_; }
 
-  bool UsesSystemTrustStore() const override { return false; }
-
   bool IsKnownRoot(const ParsedCertificate* trust_anchor) const override {
     return false;
   }
@@ -90,8 +88,6 @@ class SystemTrustStoreChromeWithUnOwnedSystemStore : public SystemTrustStore {
   }
 
   TrustStore* GetTrustStore() override { return &trust_store_collection_; }
-
-  bool UsesSystemTrustStore() const override { return true; }
 
   // IsKnownRoot returns true if the given trust anchor is a standard one (as
   // opposed to a user-installed root)
@@ -135,14 +131,6 @@ std::unique_ptr<SystemTrustStore> CreateSystemTrustStoreChromeForTesting(
 
 #if BUILDFLAG(USE_NSS_CERTS)
 
-// Using the Builtin Verifier w/o the Chrome Root Store is unsupported on
-// NSS using platforms.
-// TODO(https://crbug.com/1412591): probably should just not define this
-// function in this case.
-std::unique_ptr<SystemTrustStore> CreateSslSystemTrustStore() {
-  return std::make_unique<DummySystemTrustStore>();
-}
-
 std::unique_ptr<SystemTrustStore> CreateSslSystemTrustStoreChromeRoot(
     std::unique_ptr<TrustStoreChrome> chrome_root) {
   return std::make_unique<SystemTrustStoreChrome>(
@@ -160,12 +148,6 @@ CreateSslSystemTrustStoreChromeRootWithUserSlotRestriction(
 }
 
 #elif BUILDFLAG(IS_MAC)
-
-// Using the Builtin Verifier w/o the Chrome Root Store is unsupported on
-// Mac.
-std::unique_ptr<SystemTrustStore> CreateSslSystemTrustStore() {
-  return std::make_unique<DummySystemTrustStore>();
-}
 
 namespace {
 
@@ -245,8 +227,6 @@ class SystemTrustStoreFuchsia : public SystemTrustStore {
     return g_root_certs_fuchsia.Get().system_trust_store();
   }
 
-  bool UsesSystemTrustStore() const override { return true; }
-
   bool IsKnownRoot(const ParsedCertificate* trust_anchor) const override {
     return g_root_certs_fuchsia.Get().system_trust_store()->Contains(
         trust_anchor);
@@ -258,12 +238,6 @@ std::unique_ptr<SystemTrustStore> CreateSslSystemTrustStore() {
 }
 
 #elif BUILDFLAG(IS_WIN)
-
-// Using the Builtin Verifier w/o the Chrome Root Store is unsupported on
-// Windows.
-std::unique_ptr<SystemTrustStore> CreateSslSystemTrustStore() {
-  return std::make_unique<DummySystemTrustStore>();
-}
 
 namespace {
 TrustStoreWin* GetGlobalTrustStoreWinForCRS() {
@@ -292,12 +266,6 @@ void InitializeTrustStoreWinSystem() {
 }
 
 #elif BUILDFLAG(IS_ANDROID)
-
-// Using the Builtin Verifier w/o the Chrome Root Store is unsupported on
-// Android.
-std::unique_ptr<SystemTrustStore> CreateSslSystemTrustStore() {
-  return std::make_unique<DummySystemTrustStore>();
-}
 
 #if BUILDFLAG(CHROME_ROOT_STORE_SUPPORTED)
 
@@ -337,12 +305,6 @@ void InitializeTrustStoreAndroid() {
 void InitializeTrustStoreAndroid() {}
 
 #endif  // CHROME_ROOT_STORE_SUPPORTED
-
-#else
-
-std::unique_ptr<SystemTrustStore> CreateSslSystemTrustStore() {
-  return std::make_unique<DummySystemTrustStore>();
-}
 
 #endif
 

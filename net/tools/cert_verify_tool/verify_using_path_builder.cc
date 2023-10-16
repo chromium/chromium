@@ -159,11 +159,6 @@ bool VerifyUsingPathBuilder(
   trust_store.AddTrustStore(&additional_roots);
   trust_store.AddTrustStore(system_trust_store->GetTrustStore());
 
-  if (!system_trust_store->UsesSystemTrustStore() &&
-      der_certs_with_trust_settings.empty()) {
-    std::cerr << "NOTE: CertPathBuilder does not currently use OS trust "
-                 "settings (--roots must be specified).\n";
-  }
   net::CertIssuerSourceStatic intermediate_cert_issuer_source;
   for (const auto& der_cert : intermediate_der_certs) {
     std::shared_ptr<const net::ParsedCertificate> cert =
