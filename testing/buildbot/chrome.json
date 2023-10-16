@@ -1641,7 +1641,7 @@
     "skylab_tests": [
       {
         "cros_board": "brya",
-        "cros_img": "brya-release/R118-15604.35.0",
+        "cros_img": "brya-release/R118-15604.42.0",
         "dut_pool": "chrome",
         "name": "lacros_all_tast_tests BRYA_RELEASE_BETA",
         "resultdb": {
@@ -1658,7 +1658,7 @@
       },
       {
         "cros_board": "brya",
-        "cros_img": "brya-release/R119-15633.0.0",
+        "cros_img": "brya-release/R119-15633.10.0",
         "dut_pool": "chrome",
         "name": "lacros_all_tast_tests BRYA_RELEASE_DEV",
         "resultdb": {
@@ -1710,7 +1710,7 @@
       },
       {
         "cros_board": "dedede",
-        "cros_img": "dedede-release/R118-15604.35.0",
+        "cros_img": "dedede-release/R118-15604.42.0",
         "name": "lacros_all_tast_tests DEDEDE_RELEASE_BETA",
         "resultdb": {
           "enable": true,
@@ -1726,7 +1726,7 @@
       },
       {
         "cros_board": "dedede",
-        "cros_img": "dedede-release/R119-15633.0.0",
+        "cros_img": "dedede-release/R119-15633.10.0",
         "name": "lacros_all_tast_tests DEDEDE_RELEASE_DEV",
         "resultdb": {
           "enable": true,
@@ -1775,7 +1775,7 @@
       },
       {
         "cros_board": "fizz",
-        "cros_img": "fizz-release/R118-15604.35.0",
+        "cros_img": "fizz-release/R118-15604.42.0",
         "dut_pool": "chrome",
         "name": "lacros_all_tast_tests FIZZ_RELEASE_BETA",
         "resultdb": {
@@ -1792,7 +1792,7 @@
       },
       {
         "cros_board": "fizz",
-        "cros_img": "fizz-release/R119-15633.0.0",
+        "cros_img": "fizz-release/R119-15633.10.0",
         "dut_pool": "chrome",
         "name": "lacros_all_tast_tests FIZZ_RELEASE_DEV",
         "resultdb": {
@@ -1844,7 +1844,7 @@
       },
       {
         "cros_board": "guybrush",
-        "cros_img": "guybrush-release/R118-15604.35.0",
+        "cros_img": "guybrush-release/R118-15604.42.0",
         "dut_pool": "chrome",
         "name": "lacros_all_tast_tests GUYBRUSH_RELEASE_BETA",
         "resultdb": {
@@ -1913,7 +1913,7 @@
       },
       {
         "cros_board": "puff",
-        "cros_img": "puff-release/R118-15604.35.0",
+        "cros_img": "puff-release/R118-15604.42.0",
         "dut_pool": "chrome",
         "name": "lacros_all_tast_tests PUFF_RELEASE_BETA",
         "resultdb": {
@@ -1930,7 +1930,7 @@
       },
       {
         "cros_board": "puff",
-        "cros_img": "puff-release/R119-15633.0.0",
+        "cros_img": "puff-release/R119-15633.10.0",
         "dut_pool": "chrome",
         "name": "lacros_all_tast_tests PUFF_RELEASE_DEV",
         "resultdb": {
@@ -2014,7 +2014,7 @@
     "skylab_tests": [
       {
         "cros_board": "jacuzzi",
-        "cros_img": "jacuzzi-release/R118-15604.35.0",
+        "cros_img": "jacuzzi-release/R118-15604.42.0",
         "name": "lacros_all_tast_tests JACUZZI_RELEASE_BETA",
         "resultdb": {
           "enable": true,
@@ -2030,7 +2030,7 @@
       },
       {
         "cros_board": "jacuzzi",
-        "cros_img": "jacuzzi-release/R119-15633.0.0",
+        "cros_img": "jacuzzi-release/R119-15633.10.0",
         "name": "lacros_all_tast_tests JACUZZI_RELEASE_DEV",
         "resultdb": {
           "enable": true,
