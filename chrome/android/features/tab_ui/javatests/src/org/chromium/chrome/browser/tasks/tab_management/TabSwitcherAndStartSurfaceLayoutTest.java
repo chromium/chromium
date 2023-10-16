@@ -1239,9 +1239,10 @@ public class TabSwitcherAndStartSurfaceLayoutTest {
     @MediumTest
     @UseMethodParameter(RefactorTestParams.class)
     @EnableFeatures({ChromeFeatureList.TAB_TO_GTS_ANIMATION + "<Study"})
-    @CommandLineFlags.Add({BASE_PARAMS})
-    public void testThumbnailFetchingResult_liveLayer(boolean isStartSurfaceRefactorEnabled)
-            throws Exception {
+    @CommandLineFlags.Add({BASE_PARAMS,
+            // TODO(crbug.com/1491942): This fails with the field trial testing config.
+            "disable-field-trial-config"})
+    public void testThumbnailFetchingResult_liveLayer(boolean isStartSurfaceRefactorEnabled) throws Exception {
         // May be called when setting both grid card size and thumbnail fetcher.
         var histograms = HistogramWatcher.newBuilder()
                                  .expectIntRecord(TabContentManager.UMA_THUMBNAIL_FETCHING_RESULT,
