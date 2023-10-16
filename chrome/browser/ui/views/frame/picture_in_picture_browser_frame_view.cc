@@ -78,6 +78,7 @@ namespace {
 
 constexpr int kWindowIconImageSize = 16;
 constexpr int kBackToTabImageSize = 16;
+constexpr int kContentSettingIconSize = 16;
 
 // The height of the controls bar at the top of the window.
 constexpr int kTopControlsHeight = 30;
@@ -495,6 +496,7 @@ PictureInPictureBrowserFrameView::PictureInPictureBrowserFrameView(
 
   // Creates the content setting views based on the models.
   for (auto& model : models) {
+    model->SetIconSize(kContentSettingIconSize);
     auto image_view = std::make_unique<ContentSettingImageView>(
         std::move(model), this, this, font_list);
     content_setting_views_.push_back(

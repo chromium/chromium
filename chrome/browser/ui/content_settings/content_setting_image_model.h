@@ -14,6 +14,7 @@
 #include "chrome/browser/ui/content_settings/content_setting_bubble_model.h"
 #include "chrome/browser/ui/content_settings/content_setting_bubble_model_delegate.h"
 #include "components/content_settings/core/common/content_settings_types.h"
+#include "third_party/abseil-cpp/absl/types/optional.h"
 #include "ui/gfx/image/image.h"
 
 namespace content {
@@ -99,6 +100,9 @@ class ContentSettingImageModel {
   // settings icons will have a blocked badge.
   gfx::Image GetIcon(SkColor icon_color) const;
 
+  // Allows overriding the default icon size.
+  void SetIconSize(int icon_size);
+
   // Returns the resource ID of a string to show when the icon appears, or 0 if
   // we don't wish to show anything.
   int explanatory_string_id() const { return explanatory_string_id_; }
@@ -172,6 +176,7 @@ class ContentSettingImageModel {
   const bool image_type_should_notify_accessibility_;
   bool should_auto_open_bubble_ = false;
   bool should_show_promo_ = false;
+  absl::optional<int> icon_size_;
 };
 
 // A subclass for an image model tied to a single content type.
