@@ -9,15 +9,31 @@ updates:
     directory: /
     schedule:
       interval: monthly
+    groups:
+      all:
+        patterns:
+          - '*'
   - package-ecosystem: pip
     directory: examples/
     schedule:
       interval: monthly
+    groups:
+      all:
+        patterns:
+          - '*'
   - package-ecosystem: pip
     directory: tests/
     schedule:
       interval: monthly
+    groups:
+      all:
+        patterns:
+          - '*'
   - package-ecosystem: npm
     directory: /
     schedule:
       interval: monthly
+    groups:
+      all:
+        patterns:
+          - '*'
