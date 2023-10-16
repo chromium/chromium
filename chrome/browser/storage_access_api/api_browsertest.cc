@@ -1810,10 +1810,10 @@ IN_PROC_BROWSER_TEST_P(StorageAccessAPIWithFirstPartySetsBrowserTest,
 
   content::FetchHistogramsFromChildProcesses();
 
-  EXPECT_THAT(histogram_tester.GetBucketCount(
-                  kRequestOutcomeHistogram,
-                  0 /*RequestOutcome::kGrantedByFirstPartySet*/),
-              Gt(0));
+  EXPECT_THAT(
+      histogram_tester.GetBucketCount(kRequestOutcomeHistogram,
+                                      RequestOutcome::kGrantedByFirstPartySet),
+      Gt(0));
 }
 
 IN_PROC_BROWSER_TEST_P(StorageAccessAPIWithFirstPartySetsBrowserTest,
@@ -1837,10 +1837,10 @@ IN_PROC_BROWSER_TEST_P(StorageAccessAPIWithFirstPartySetsBrowserTest,
   EXPECT_FALSE(storage::test::HasStorageAccessForFrame(GetFrame()));
 
   content::FetchHistogramsFromChildProcesses();
-  EXPECT_THAT(histogram_tester.GetBucketCount(
-                  kRequestOutcomeHistogram,
-                  5 /*RequestOutcome::kDeniedByPrerequisites*/),
-              Gt(0));
+  EXPECT_THAT(
+      histogram_tester.GetBucketCount(kRequestOutcomeHistogram,
+                                      RequestOutcome::kDeniedByPrerequisites),
+      Gt(0));
   // Ensure that the denied state is not exposed to developers, per the spec.
   EXPECT_EQ(QueryPermission(GetFrame()), "prompt");
 }
@@ -1905,10 +1905,10 @@ IN_PROC_BROWSER_TEST_P(StorageAccessAPIWithFirstPartySetsBrowserTest,
 
   content::FetchHistogramsFromChildProcesses();
 
-  EXPECT_THAT(histogram_tester.GetBucketCount(
-                  kRequestOutcomeHistogram,
-                  3 /*RequestOutcome::kDeniedByFirstPartySet*/),
-              Gt(0));
+  EXPECT_THAT(
+      histogram_tester.GetBucketCount(kRequestOutcomeHistogram,
+                                      RequestOutcome::kDeniedByFirstPartySet),
+      Gt(0));
 }
 
 // Verifies kPermissionStorageAccessAPI feature turns off the autodenial.
@@ -1937,10 +1937,9 @@ IN_PROC_BROWSER_TEST_P(StorageAccessAPIWithFirstPartySetsBrowserTest,
 
   content::FetchHistogramsFromChildProcesses();
 
-  EXPECT_THAT(
-      histogram_tester.GetBucketCount(kRequestOutcomeHistogram,
-                                      2 /*RequestOutcome::kGrantedByUser*/),
-      Gt(0));
+  EXPECT_THAT(histogram_tester.GetBucketCount(kRequestOutcomeHistogram,
+                                              RequestOutcome::kGrantedByUser),
+              Gt(0));
 }
 
 IN_PROC_BROWSER_TEST_P(
