@@ -1,6 +1,8 @@
+import {TestRunner} from 'test_runner';
+
+import * as DataGrid from 'devtools/ui/legacy/components/data_grid/data_grid.js';
 import * as UI from 'devtools/ui/legacy/legacy.js';
 
-import {TestRunner} from 'test_runner';
 (async function() {
   TestRunner.addResult("This tests long text in datagrid.");
 
@@ -8,11 +10,11 @@ import {TestRunner} from 'test_runner';
     {id: "key", title: "Key column", editable: true, longText: false},
     {id: "value", title: "Value column", editable: true, longText: true}
   ];
-  var dataGrid = new DataGrid.DataGrid({displayName: 'Test', columns, editCallback: onEdit});
+  var dataGrid = new DataGrid.DataGrid.DataGridImpl({displayName: 'Test', columns, editCallback: onEdit});
   UI.InspectorView.InspectorView.instance().element.appendChild(dataGrid.element);
 
   var rootNode = dataGrid.rootNode();
-  var node = new DataGrid.DataGridNode({key: "k".repeat(1500), value: "v".repeat(1500)});
+  var node = new DataGrid.DataGrid.DataGridNode({key: "k".repeat(1500), value: "v".repeat(1500)});
   rootNode.appendChild(node);
 
   var keyElement = dataGrid.element.querySelector("tbody .key-column");
