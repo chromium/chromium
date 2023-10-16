@@ -314,6 +314,12 @@ class PersonalDataManagerHelper : public PersonalDataManagerTestBase {
         std::make_unique<AutofillOfferData>(offer_data));
   }
 
+  void AddLocalIban(Iban& iban) {
+    iban.set_identifier(Iban::Guid(personal_data_->AddIban(iban)));
+    PersonalDataProfileTaskWaiter(*personal_data_).Wait();
+    iban.set_record_type(Iban::kLocalIban);
+  }
+
   std::unique_ptr<PersonalDataManager> personal_data_;
 };
 
@@ -1014,19 +1020,8 @@ TEST_F(PersonalDataManagerTest, AddLocalIbans) {
   // Attempt to add all three IBANs to the database. The first two should add
   // successfully, but the third should get skipped because its value is
   // identical to `iban2`.
-  std::string guid = personal_data_->AddIban(iban1);
-  PersonalDataProfileTaskWaiter(*personal_data_).Wait();
-  // Should set identifier and record_type manually here as `iban1` has been
-  // passed by value above in `AddIban`, and `AddIban` method sets identifier
-  // and record_type to the given `iban1`.
-  iban1.set_identifier(Iban::Guid(guid));
-  iban1.set_record_type(Iban::kLocalIban);
-
-  guid = personal_data_->AddIban(iban2);
-  PersonalDataProfileTaskWaiter(*personal_data_).Wait();
-  iban2.set_identifier(Iban::Guid(guid));
-  iban2.set_record_type(Iban::kLocalIban);
-
+  AddLocalIban(iban1);
+  AddLocalIban(iban2);
   // Do not add `PersonalDataProfileTaskWaiter(*personal_data_).Wait()` for this
   // `AddIban` operation, as it will be terminated prematurely for
   // `iban2_with_different_nickname` due to the presence of an IBAN with the
@@ -1041,14 +1036,7 @@ TEST_F(PersonalDataManagerTest, UpdateLocalIbans) {
   Iban iban;
   iban.set_value(base::UTF8ToUTF16(std::string(test::kIbanValue)));
   iban.set_nickname(u"Nickname for Iban");
-
-  std::string guid = personal_data_->AddIban(iban);
-  PersonalDataProfileTaskWaiter(*personal_data_).Wait();
-  // Should set identifier and record_type manually here as `iban` has been
-  // passed by value above in `AddIban`, and `AddIban` method sets identifier
-  // and record_type to the given `iban`.
-  iban.set_identifier(Iban::Guid(guid));
-  iban.set_record_type(Iban::kLocalIban);
+  AddLocalIban(iban);
 
   // Verify the `iban` has been added successfully.
   std::vector<Iban*> ibans = {&iban};
@@ -1075,24 +1063,17 @@ TEST_F(PersonalDataManagerTest, RemoveLocalIbans) {
   Iban iban;
   iban.set_value(base::UTF8ToUTF16(std::string(test::kIbanValue)));
   iban.set_nickname(u"Nickname for Iban");
-
-  std::string guid = personal_data_->AddIban(iban);
-  PersonalDataProfileTaskWaiter(*personal_data_).Wait();
-  // Should set identifier and record_type manually here as `iban` has been
-  // passed by value above in `AddIban`, and `AddIban` method sets identifier
-  // and record_type to the given `iban`.
-  iban.set_identifier(Iban::Guid(guid));
-  iban.set_record_type(Iban::kLocalIban);
+  AddLocalIban(iban);
 
   // Verify the `iban` has been added successfully.
   std::vector<Iban*> ibans = {&iban};
   ExpectSameElements(ibans, personal_data_->GetLocalIbans());
 
-  RemoveByGUIDFromPersonalDataManager(guid);
+  RemoveByGUIDFromPersonalDataManager(iban.guid());
   EXPECT_TRUE(personal_data_->GetLocalIbans().empty());
 
   // Verify that removal of a GUID that doesn't exist won't crash.
-  RemoveByGUIDFromPersonalDataManager(guid);
+  RemoveByGUIDFromPersonalDataManager(iban.guid());
 }
 
 // Ensure that new IBANs can be updated and saved via
