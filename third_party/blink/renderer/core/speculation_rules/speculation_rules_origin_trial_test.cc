@@ -276,7 +276,6 @@ TEST(SpeculationRulesPrefetchFutureOriginTrialTest,
   // This should have enabled the origin trial and all its dependent features.
   EXPECT_TRUE(RuntimeEnabledFeatures::SpeculationRulesPrefetchFutureEnabled(
       frame.DomWindow()));
-  EXPECT_TRUE(RuntimeEnabledFeatures::DeliveryTypeEnabled(frame.DomWindow()));
   EXPECT_TRUE(RuntimeEnabledFeatures::SpeculationRulesDocumentRulesEnabled(
       frame.DomWindow()));
   EXPECT_TRUE(RuntimeEnabledFeatures::SpeculationRulesFetchFromHeaderEnabled(
@@ -376,7 +375,6 @@ TEST(SpeculationRulesPrefetchFutureOriginTrialTest,
   // This should have enabled the origin trial and all its dependent features.
   EXPECT_TRUE(RuntimeEnabledFeatures::SpeculationRulesPrefetchFutureEnabled(
       frame.DomWindow()));
-  EXPECT_TRUE(RuntimeEnabledFeatures::DeliveryTypeEnabled(frame.DomWindow()));
   EXPECT_TRUE(RuntimeEnabledFeatures::SpeculationRulesDocumentRulesEnabled(
       frame.DomWindow()));
   EXPECT_TRUE(RuntimeEnabledFeatures::SpeculationRulesFetchFromHeaderEnabled(
@@ -413,7 +411,6 @@ TEST(SpeculationRulesPrefetchFutureOriginTrialTest,
   // This should have enabled the origin trial and all its dependent features.
   EXPECT_TRUE(RuntimeEnabledFeatures::SpeculationRulesPrefetchFutureEnabled(
       frame.DomWindow()));
-  EXPECT_TRUE(RuntimeEnabledFeatures::DeliveryTypeEnabled(frame.DomWindow()));
   EXPECT_TRUE(RuntimeEnabledFeatures::SpeculationRulesDocumentRulesEnabled(
       frame.DomWindow()));
   EXPECT_TRUE(RuntimeEnabledFeatures::SpeculationRulesFetchFromHeaderEnabled(

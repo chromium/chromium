@@ -1303,12 +1303,6 @@
       name: "DelegatedInkTrails",
       status: "stable",
     },
-    // https://github.com/w3c/resource-timing/pull/343
-    {
-      name: "DeliveryType",
-      status: "stable",
-      base_feature: "none",
-    },
     {
       name: "DeprecatedNonStreamingDeclarativeShadowDOM",
       status: "stable",
