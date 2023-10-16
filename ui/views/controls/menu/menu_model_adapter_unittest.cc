@@ -108,9 +108,7 @@ class MenuModelBase : public ui::MenuModel {
          ui::MenuModel* item_submenu)
         : type(item_type),
           label(base::ASCIIToUTF16(item_label)),
-          submenu(item_submenu),
-          enabled(true),
-          visible(true) {}
+          submenu(item_submenu) {}
 
     Item(ItemType item_type,
          const std::string& item_label,
@@ -125,9 +123,9 @@ class MenuModelBase : public ui::MenuModel {
 
     ItemType type;
     std::u16string label;
-    raw_ptr<ui::MenuModel, DanglingUntriaged> submenu;
-    bool enabled;
-    bool visible;
+    raw_ptr<ui::MenuModel> submenu;
+    bool enabled = true;
+    bool visible = true;
     bool alerted = false;
     bool new_feature = false;
   };
@@ -194,7 +192,10 @@ class RootModel : public MenuModelBase {
   RootModel(const RootModel&) = delete;
   RootModel& operator=(const RootModel&) = delete;
 
-  ~RootModel() override = default;
+  ~RootModel() override {
+    // Avoid that the pointer to `submenu_model_` becomes dangling.
+    items_.clear();
+  }
 
  private:
   std::unique_ptr<MenuModel> submenu_model_;
