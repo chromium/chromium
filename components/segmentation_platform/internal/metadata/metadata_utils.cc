@@ -535,7 +535,7 @@ void VisitAllUmaFeatures(const proto::SegmentationModelMetadata& model_metadata,
 
   // Add training/inference inputs.
   for (int i = 0; i < model_metadata.input_features_size(); ++i) {
-    auto feature = model_metadata.input_features(i);
+    const auto& feature = model_metadata.input_features(i);
     if (feature.has_uma_feature())
       visit.Run(feature.uma_feature());
   }
