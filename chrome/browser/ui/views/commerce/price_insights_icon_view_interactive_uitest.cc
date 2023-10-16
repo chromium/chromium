@@ -10,6 +10,7 @@
 #include "chrome/browser/profiles/profile.h"
 #include "chrome/browser/ui/browser_element_identifiers.h"
 #include "chrome/browser/ui/commerce/price_tracking/mock_shopping_list_ui_tab_helper.h"
+#include "chrome/browser/ui/commerce/price_tracking/shopping_list_ui_tab_helper.h"
 #include "chrome/test/base/in_process_browser_test.h"
 #include "chrome/test/base/interactive_test_utils.h"
 #include "chrome/test/base/ui_test_utils.h"
@@ -18,6 +19,7 @@
 #include "components/commerce/core/mock_shopping_service.h"
 #include "components/commerce/core/test_utils.h"
 #include "components/feature_engagement/public/feature_constants.h"
+#include "components/search/ntp_features.h"
 #include "components/user_education/test/feature_promo_test_util.h"
 #include "content/public/test/browser_test.h"
 #include "net/dns/mock_host_resolver.h"
@@ -45,7 +47,8 @@ class PriceInsightsIconViewInteractiveTest : public InteractiveBrowserTest {
  public:
   PriceInsightsIconViewInteractiveTest() {
     test_features_.InitWithFeatures(
-        {commerce::kCommerceAllowChipExpansion, commerce::kPriceInsights}, {});
+        {commerce::kCommerceAllowChipExpansion, commerce::kPriceInsights},
+        {ntp_features::kNtpHistoryClustersModuleDiscounts});
   }
 
   void SetUp() override {
@@ -89,9 +92,8 @@ class PriceInsightsIconViewInteractiveTest : public InteractiveBrowserTest {
  protected:
   raw_ptr<commerce::MockShoppingService, AcrossTasksDanglingUntriaged>
       mock_shopping_service_;
-  raw_ptr<MockShoppingListUiTabHelper, AcrossTasksDanglingUntriaged>
-      mock_tab_helper_;
   absl::optional<commerce::PriceInsightsInfo> price_insights_info_;
+  absl::optional<commerce::ProductInfo> product_info_;
   base::CallbackListSubscription create_services_subscription_;
   bool is_browser_context_services_created{false};
 
@@ -103,28 +105,24 @@ class PriceInsightsIconViewInteractiveTest : public InteractiveBrowserTest {
     mock_shopping_service_ = static_cast<commerce::MockShoppingService*>(
         commerce::ShoppingServiceFactory::GetForBrowserContext(
             browser()->profile()));
-    MockShoppingListUiTabHelper::CreateForWebContents(
-        browser()->tab_strip_model()->GetActiveWebContents());
-    mock_tab_helper_ = static_cast<MockShoppingListUiTabHelper*>(
-        MockShoppingListUiTabHelper::FromWebContents(
-            browser()->tab_strip_model()->GetActiveWebContents()));
-    EXPECT_CALL(*mock_tab_helper_, ShouldShowPriceInsightsIconView)
-        .Times(testing::AnyNumber());
-    ON_CALL(*mock_tab_helper_, ShouldShowPriceInsightsIconView)
-        .WillByDefault(testing::Return(true));
 
     price_insights_info_ = commerce::CreateValidPriceInsightsInfo(
         true, true, commerce::PriceBucket::kLowPrice);
-    EXPECT_CALL(*mock_tab_helper_, GetPriceInsightsInfo)
-        .Times(testing::AnyNumber());
-    ON_CALL(*mock_tab_helper_, GetPriceInsightsInfo)
-        .WillByDefault(testing::ReturnRef(price_insights_info_));
+    mock_shopping_service_->SetResponseForGetPriceInsightsInfoForUrl(
+        price_insights_info_);
+
+    product_info_ = commerce::ProductInfo();
+    product_info_->title = "Product";
+    product_info_->product_cluster_title = "Product";
+    product_info_->product_cluster_id = 12345L;
+    mock_shopping_service_->SetResponseForGetProductInfoForUrl(product_info_);
 
     EXPECT_CALL(*mock_shopping_service_, IsPriceInsightsEligible)
         .Times(testing::AnyNumber());
 
-    mock_tab_helper_->SetShoppingServiceForTesting(mock_shopping_service_);
     mock_shopping_service_->SetIsPriceInsightsEligible(true);
+    mock_shopping_service_->SetIsShoppingListEligible(false);
+    mock_shopping_service_->SetIsDiscountEligibleToShowOnNavigation(false);
 
     MockGetProductInfoForUrlResponse();
     MockGetPriceInsightsInfoForUrlResponse();
@@ -221,8 +219,9 @@ class PriceInsightsIconViewEngagementTest
   }
 
   void NavigateToANonShoppingPage() {
-    ON_CALL(*mock_tab_helper_, ShouldShowPriceInsightsIconView)
-        .WillByDefault(testing::Return(false));
+    mock_shopping_service_->SetResponseForGetProductInfoForUrl(absl::nullopt);
+    mock_shopping_service_->SetResponseForGetPriceInsightsInfoForUrl(
+        absl::nullopt);
     RunTestSequence(
         NavigateWebContents(kShoppingTab,
                             embedded_test_server()->GetURL(kNonShoppingURL)),
@@ -230,8 +229,9 @@ class PriceInsightsIconViewEngagementTest
   }
 
   void NavigateToAShoppingPage(bool expected_to_show_label) {
-    ON_CALL(*mock_tab_helper_, ShouldShowPriceInsightsIconView)
-        .WillByDefault(testing::Return(true));
+    mock_shopping_service_->SetResponseForGetProductInfoForUrl(product_info_);
+    mock_shopping_service_->SetResponseForGetPriceInsightsInfoForUrl(
+        price_insights_info_);
     RunTestSequence(
         NavigateWebContents(kShoppingTab,
                             embedded_test_server()->GetURL(kShoppingURL)),

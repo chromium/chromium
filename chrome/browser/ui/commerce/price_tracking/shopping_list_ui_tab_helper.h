@@ -8,6 +8,8 @@
 #include "base/memory/raw_ptr.h"
 #include "base/memory/weak_ptr.h"
 #include "base/scoped_observation.h"
+#include "chrome/browser/ui/page_action/page_action_icon_type.h"
+#include "chrome/browser/ui/views/commerce/price_insights_icon_view.h"
 #include "components/commerce/core/shopping_service.h"
 #include "components/commerce/core/subscriptions/subscriptions_observer.h"
 #include "components/image_fetcher/core/request_metadata.h"
@@ -63,6 +65,11 @@ class ShoppingListUiTabHelper
   // Return whether the PriceInsightsIconView is visible.
   virtual bool ShouldShowPriceInsightsIconView();
 
+  // Return the page action label. If no label should be shown, return
+  // PriceInsightsIconLabelType::kNone.
+  virtual PriceInsightsIconView::PriceInsightsIconLabelType
+  GetPriceInsightsIconLabelTypeForPage();
+
   // The URL for the last fetched product image. A reference to this object
   // should not be kept directly, if one is needed, a copy should be made.
   const GURL& GetProductImageURL();
@@ -86,6 +93,9 @@ class ShoppingListUiTabHelper
   // shopping service for the sake of testing.
   void SetShoppingServiceForTesting(ShoppingService* shopping_service);
 
+  // Update this tab helper to use the specified image fetcher in tests.
+  void SetImageFetcherForTesting(image_fetcher::ImageFetcher* image_fetcher);
+
   // Set the price tracking state for the product on the current page.
   virtual void SetPriceTrackingState(bool enable,
                                      bool is_new_bookmark,
@@ -96,6 +106,12 @@ class ShoppingListUiTabHelper
   // to this object should not be kept directly, if one is needed, a copy should
   // be made.
   virtual const absl::optional<PriceInsightsInfo>& GetPriceInsightsInfo();
+
+  // Gets whether the page action with the provided |type| should expand. This
+  // method will change the internal state of this class if the ID provided
+  // matches the icon that should expand -- the "true" response is only valid
+  // once per page load to avoid having the icon expand multiple times.
+  virtual bool ShouldExpandPageActionIcon(PageActionIconType type);
 
  protected:
   ShoppingListUiTabHelper(content::WebContents* contents,
@@ -117,6 +133,8 @@ class ShoppingListUiTabHelper
   void HandlePriceInsightsInfoResponse(
       const GURL& url,
       const absl::optional<PriceInsightsInfo>& info);
+
+  void HandleDiscountsResponse(const DiscountsMap& map);
 
   void HandleImageFetcherResponse(
       const GURL image_url,
@@ -152,6 +170,12 @@ class ShoppingListUiTabHelper
 
   void DelayUpdateForIconView();
 
+  void MaybeComputePageActionToExpand();
+
+  void ComputePageActionToExpand();
+
+  bool IsShowingDiscountsIcon();
+
   // The shopping service is tied to the lifetime of the browser context
   // which will always outlive this tab helper.
   raw_ptr<ShoppingService, DanglingUntriaged> shopping_service_;
@@ -170,6 +194,20 @@ class ShoppingListUiTabHelper
 
   // The cluster ID for the current page, if applicable.
   absl::optional<uint64_t> cluster_id_for_page_;
+
+  // The product info available for the current page if available.
+  absl::optional<ProductInfo> product_info_for_page_;
+
+  // Whether the chip that should expand for the current page has been computed.
+  bool is_page_action_expansion_computed_for_page_{false};
+
+  // Whether we have received responses for the various commerce features for
+  // the current page load.
+  bool got_discounts_response_for_page_{false};
+  bool got_insights_response_for_page_{false};
+  bool got_product_response_for_page_{false};
+  bool got_initial_subscription_status_for_page_{false};
+  bool page_has_discounts_{false};
 
   // A flag indicating whether the initial navigation has committed for the web
   // contents. This is used to ensure product info is fetched when a tab is
@@ -191,6 +229,9 @@ class ShoppingListUiTabHelper
 
   // The PriceInsightsInfo associated with the last committed URL.
   absl::optional<PriceInsightsInfo> price_insights_info_;
+
+  // The page action that should expand for the current page.
+  absl::optional<PageActionIconType> page_action_to_expand_;
 
   // Automatically remove this observer from its host when destroyed.
   base::ScopedObservation<ShoppingService, SubscriptionsObserver>

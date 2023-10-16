@@ -10,13 +10,16 @@
 #include "base/metrics/user_metrics.h"
 #include "base/metrics/user_metrics_action.h"
 #include "base/strings/string_number_conversions.h"
+#include "chrome/browser/feature_engagement/tracker_factory.h"
 #include "chrome/browser/profiles/profile.h"
 #include "chrome/browser/ui/browser.h"
 #include "chrome/browser/ui/browser_finder.h"
 #include "chrome/browser/ui/browser_window.h"
 #include "chrome/browser/ui/side_panel/side_panel_ui.h"
 #include "chrome/browser/ui/views/chrome_layout_provider.h"
+#include "chrome/browser/ui/views/commerce/price_insights_icon_view.h"
 #include "chrome/browser/ui/views/frame/browser_view.h"
+#include "chrome/browser/ui/views/frame/toolbar_button_provider.h"
 #include "chrome/browser/ui/views/side_panel/side_panel_coordinator.h"
 #include "chrome/browser/ui/views/side_panel/side_panel_entry.h"
 #include "chrome/browser/ui/views/side_panel/side_panel_registry.h"
@@ -26,6 +29,7 @@
 #include "components/bookmarks/browser/bookmark_model.h"
 #include "components/commerce/core/commerce_constants.h"
 #include "components/commerce/core/commerce_feature_list.h"
+#include "components/commerce/core/commerce_utils.h"
 #include "components/commerce/core/price_tracking_utils.h"
 #include "components/image_fetcher/core/image_fetcher.h"
 #include "components/strings/grit/components_strings.h"
@@ -78,6 +82,9 @@ constexpr net::NetworkTrafficAnnotationTag kTrafficAnnotation =
 constexpr char kImageFetcherUmaClient[] = "ShoppingList";
 
 constexpr base::TimeDelta kDelayIconView = base::Seconds(1);
+
+// price tracking chip (assuming price insights isn't expanded).
+constexpr int64_t kAlwaysExpandChipPriceMicros = 100000000L;
 
 bool ShouldDelayChipUpdate() {
   if (base::FeatureList::IsEnabled(commerce::kPriceInsights)) {
@@ -133,6 +140,14 @@ void ShoppingListUiTabHelper::DidFinishNavigation(
   last_fetched_image_url_ = GURL();
   is_cluster_id_tracked_by_user_ = false;
   cluster_id_for_page_.reset();
+  product_info_for_page_.reset();
+  is_page_action_expansion_computed_for_page_ = false;
+  got_discounts_response_for_page_ = false;
+  got_insights_response_for_page_ = false;
+  got_product_response_for_page_ = false;
+  got_initial_subscription_status_for_page_ = false;
+  page_has_discounts_ = false;
+  page_action_to_expand_ = absl::nullopt;
   pending_tracking_state_.reset();
   is_first_load_for_nav_finished_ = false;
   price_insights_info_.reset();
@@ -157,6 +172,15 @@ void ShoppingListUiTabHelper::DidFinishNavigation(
       web_contents()->GetLastCommittedURL(),
       base::BindOnce(&ShoppingListUiTabHelper::HandleProductInfoResponse,
                      weak_ptr_factory_.GetWeakPtr()));
+
+  if (shopping_service_->IsDiscountEligibleToShowOnNavigation() ||
+      base::FeatureList::IsEnabled(
+          ntp_features::kNtpHistoryClustersModuleDiscounts)) {
+    shopping_service_->GetDiscountInfoForUrls(
+        {web_contents()->GetLastCommittedURL()},
+        base::BindOnce(&ShoppingListUiTabHelper::HandleDiscountsResponse,
+                       weak_ptr_factory_.GetWeakPtr()));
+  }
 }
 
 bool ShoppingListUiTabHelper::ShouldIgnoreSameUrlNavigation() {
@@ -205,6 +229,7 @@ void ShoppingListUiTabHelper::DelayUpdateForIconView() {
                 weak_ptr_factory_.GetWeakPtr()),
             kDelayIconView);
   }
+
   if (!last_fetched_image_.IsEmpty()) {
     content::GetUIThreadTaskRunner({base::TaskPriority::BEST_EFFORT})
         ->PostDelayedTask(
@@ -260,10 +285,17 @@ void ShoppingListUiTabHelper::SetShoppingServiceForTesting(
   }
 }
 
+void ShoppingListUiTabHelper::SetImageFetcherForTesting(
+    image_fetcher::ImageFetcher* image_fetcher) {
+  CHECK_IS_TEST();
+  image_fetcher_ = image_fetcher;
+}
+
 bool ShoppingListUiTabHelper::ShouldShowPriceTrackingIconView() {
   bool should_show = shopping_service_ &&
                      shopping_service_->IsShoppingListEligible() &&
-                     !last_fetched_image_.IsEmpty();
+                     !last_fetched_image_.IsEmpty() &&
+                     got_initial_subscription_status_for_page_;
 
   return ShouldDelayChipUpdate()
              ? should_show && is_first_load_for_nav_finished_
@@ -284,8 +316,12 @@ void ShoppingListUiTabHelper::HandleProductInfoResponse(
     const GURL& url,
     const absl::optional<const ProductInfo>& info) {
   if (url != web_contents()->GetLastCommittedURL() || !info.has_value()) {
+    got_product_response_for_page_ = true;
+    MaybeComputePageActionToExpand();
     return;
   }
+
+  product_info_for_page_ = info;
 
   if (shopping_service_->IsShoppingListEligible() && CanTrackPrice(info) &&
       !info->image_url.is_empty()) {
@@ -302,25 +338,92 @@ void ShoppingListUiTabHelper::HandleProductInfoResponse(
                                           kImageFetcherUmaClient));
   }
 
-  if (shopping_service_->IsPriceInsightsEligible() &&
-      !info->product_cluster_title.empty()) {
-    shopping_service_->GetPriceInsightsInfoForUrl(
-        url, base::BindOnce(
-                 &ShoppingListUiTabHelper::HandlePriceInsightsInfoResponse,
-                 weak_ptr_factory_.GetWeakPtr()));
+  if (shopping_service_->IsPriceInsightsEligible()) {
+    if (!info->product_cluster_title.empty()) {
+      shopping_service_->GetPriceInsightsInfoForUrl(
+          url, base::BindOnce(
+                   &ShoppingListUiTabHelper::HandlePriceInsightsInfoResponse,
+                   weak_ptr_factory_.GetWeakPtr()));
+    } else {
+      // If we were blocked because of the title, consider it a response of
+      // false.
+      got_insights_response_for_page_ = true;
+    }
   }
 }
 
 void ShoppingListUiTabHelper::HandlePriceInsightsInfoResponse(
     const GURL& url,
     const absl::optional<PriceInsightsInfo>& info) {
+  got_insights_response_for_page_ = true;
+
   if (url != web_contents()->GetLastCommittedURL() || !info.has_value()) {
+    MaybeComputePageActionToExpand();
     return;
   }
 
   price_insights_info_.emplace(info.value());
+  MaybeComputePageActionToExpand();
   MakeShoppingInsightsSidePanelAvailable();
   TriggerUpdateForIconView();
+}
+
+void ShoppingListUiTabHelper::HandleDiscountsResponse(const DiscountsMap& map) {
+  bool response_has_discounts = false;
+  if (!map.empty()) {
+    for (auto it = map.begin(); it == map.end(); ++it) {
+      if (!it->second.empty()) {
+        response_has_discounts = true;
+        break;
+      }
+    }
+  }
+
+  page_has_discounts_ =
+      response_has_discounts
+          ? shopping_service_->IsDiscountEligibleToShowOnNavigation() ||
+                (base::FeatureList::IsEnabled(
+                     ntp_features::kNtpHistoryClustersModuleDiscounts) &&
+                 commerce::UrlContainsDiscountUtmTag(
+                     web_contents()->GetLastCommittedURL()))
+          : false;
+
+  got_discounts_response_for_page_ = true;
+  MaybeComputePageActionToExpand();
+}
+
+void ShoppingListUiTabHelper::MaybeComputePageActionToExpand() {
+  if (!shopping_service_) {
+    return;
+  }
+
+  // Make sure we have responses from all the relevant features first.
+  if ((shopping_service_->IsDiscountEligibleToShowOnNavigation() ||
+       base::FeatureList::IsEnabled(
+           ntp_features::kNtpHistoryClustersModuleDiscounts)) &&
+      !got_discounts_response_for_page_) {
+    return;
+  }
+  if (shopping_service_->IsPriceInsightsEligible() &&
+      !got_insights_response_for_page_) {
+    return;
+  }
+  if (shopping_service_->IsShoppingListEligible() &&
+      (!got_product_response_for_page_ ||
+       !got_initial_subscription_status_for_page_)) {
+    return;
+  }
+
+  if (is_page_action_expansion_computed_for_page_) {
+    return;
+  }
+
+  ComputePageActionToExpand();
+
+  is_page_action_expansion_computed_for_page_ = true;
+
+  UpdatePriceTrackingIconView();
+  UpdatePriceInsightsIconView();
 }
 
 void ShoppingListUiTabHelper::SetPriceTrackingState(
@@ -399,6 +502,7 @@ void ShoppingListUiTabHelper::UpdatePriceTrackingStateFromSubscriptions() {
             }
 
             helper->is_cluster_id_tracked_by_user_ = is_tracked;
+            helper->got_initial_subscription_status_for_page_ = true;
             helper->UpdatePriceTrackingIconView();
           },
           weak_ptr_factory_.GetWeakPtr()));
@@ -408,11 +512,15 @@ void ShoppingListUiTabHelper::HandleImageFetcherResponse(
     const GURL image_url,
     const gfx::Image& image,
     const image_fetcher::RequestMetadata& request_metadata) {
-  if (image.IsEmpty())
+  if (image.IsEmpty()) {
     return;
+  }
 
   last_fetched_image_url_ = image_url;
   last_fetched_image_ = image;
+
+  got_product_response_for_page_ = true;
+  MaybeComputePageActionToExpand();
 
   TriggerUpdateForIconView();
 }
@@ -508,6 +616,142 @@ const absl::optional<PriceInsightsInfo>&
 ShoppingListUiTabHelper::GetPriceInsightsInfo() {
   return price_insights_info_;
 }
+
+bool ShoppingListUiTabHelper::IsShowingDiscountsIcon() {
+  auto* browser = chrome::FindBrowserWithWebContents(web_contents());
+  if (!browser) {
+    return false;
+  }
+  auto* browser_view = BrowserView::GetBrowserViewForBrowser(browser);
+  if (!browser_view) {
+    return false;
+  }
+
+  auto* toolbar_button_provider = browser_view->toolbar_button_provider();
+  if (!toolbar_button_provider) {
+    return false;
+  }
+
+  auto* icon = toolbar_button_provider->GetPageActionIconView(
+      PageActionIconType::kPaymentsOfferNotification);
+
+  return page_has_discounts_ || (icon ? icon->GetVisible() : false);
+  ;
+}
+
+void ShoppingListUiTabHelper::ComputePageActionToExpand() {
+  page_action_to_expand_ = absl::nullopt;
+
+  if (!web_contents() || !web_contents()->GetBrowserContext()) {
+    page_action_to_expand_ = absl::nullopt;
+    return;
+  }
+
+  auto* tracker = feature_engagement::TrackerFactory::GetForBrowserContext(
+      web_contents()->GetBrowserContext());
+
+  // TODO(b:301440117): Splitting the triggering logic for each icon into
+  //                    delegates would make this much easier to test.
+
+  // We don't have full control over the discounts icon, so if we detect
+  // that it is showing at all, block the others from expanding.
+  if (IsShowingDiscountsIcon()) {
+    return;
+  }
+
+  // Prioritize the price insights icon.
+  if (ShouldShowPriceInsightsIconView()) {
+    PriceInsightsIconView::PriceInsightsIconLabelType label_type =
+        GetPriceInsightsIconLabelTypeForPage();
+    bool icon_has_label =
+        label_type != PriceInsightsIconView::PriceInsightsIconLabelType::kNone;
+
+    if (icon_has_label && tracker &&
+        tracker->ShouldTriggerHelpUI(
+            feature_engagement::kIPHPriceInsightsPageActionIconLabelFeature)) {
+      // Note that `Dismiss()` in these cases does not dismiss the UI. It's
+      // telling the FE backend that the promo is done so that other promos can
+      // run. Showing the label should not block other promos from displaying.
+      tracker->Dismissed(
+          feature_engagement::kIPHPriceInsightsPageActionIconLabelFeature);
+      page_action_to_expand_ = PageActionIconType::kPriceInsights;
+      base::UmaHistogramEnumeration(
+          "Commerce.PriceInsights.OmniboxIconShownLabel", label_type);
+      return;
+    } else {
+      base::UmaHistogramEnumeration(
+          "Commerce.PriceInsights.OmniboxIconShownLabel",
+          PriceInsightsIconView::PriceInsightsIconLabelType::kNone);
+    }
+  }
+
+  if (ShouldShowPriceTrackingIconView()) {
+    bool already_subscribed = false;
+    if (product_info_for_page_.has_value()) {
+      CommerceSubscription sub(
+          SubscriptionType::kPriceTrack, IdentifierType::kProductClusterId,
+          base::NumberToString(
+              product_info_for_page_->product_cluster_id.value()),
+          ManagementType::kUserManaged);
+      already_subscribed = shopping_service_->IsSubscribedFromCache(sub);
+    }
+
+    // Don't expand the chip if the user is already subscribed to the product.
+    if (!already_subscribed) {
+      if (tracker && tracker->ShouldTriggerHelpUI(
+                         feature_engagement::
+                             kIPHPriceTrackingPageActionIconLabelFeature)) {
+        tracker->Dismissed(
+            feature_engagement::kIPHPriceTrackingPageActionIconLabelFeature);
+        page_action_to_expand_ = PageActionIconType::kPriceTracking;
+        return;
+      }
+
+      // If none of the above cases expanded a chip, expand the price tracking
+      // chip if the product price is > $100.
+      if (product_info_for_page_->amount_micros >
+              kAlwaysExpandChipPriceMicros &&
+          product_info_for_page_->product_cluster_id.has_value()) {
+        page_action_to_expand_ = PageActionIconType::kPriceTracking;
+        return;
+      }
+    }
+  }
+}
+
+PriceInsightsIconView::PriceInsightsIconLabelType
+ShoppingListUiTabHelper::GetPriceInsightsIconLabelTypeForPage() {
+  auto& price_insights_info = GetPriceInsightsInfo();
+
+  if (!price_insights_info.has_value() ||
+      !price_insights_info->typical_low_price_micros.has_value() ||
+      !price_insights_info->typical_high_price_micros.has_value() ||
+      price_insights_info->catalog_history_prices.empty()) {
+    return PriceInsightsIconView::PriceInsightsIconLabelType::kNone;
+  } else if (price_insights_info->price_bucket ==
+             commerce::PriceBucket::kLowPrice) {
+    return PriceInsightsIconView::PriceInsightsIconLabelType::kPriceIsLow;
+  } else if (price_insights_info->price_bucket ==
+                 commerce::PriceBucket::kHighPrice &&
+             commerce::kPriceInsightsChipLabelExpandOnHighPrice.Get()) {
+    return PriceInsightsIconView::PriceInsightsIconLabelType::kPriceIsHigh;
+  } else {
+    return PriceInsightsIconView::PriceInsightsIconLabelType::kNone;
+  }
+}
+
+bool ShoppingListUiTabHelper::ShouldExpandPageActionIcon(
+    PageActionIconType type) {
+  // Only allow the requesting icon to expand once. This prevents the icon from
+  // expanding multiple times per page load.
+  if (page_action_to_expand_.has_value() &&
+      type == page_action_to_expand_.value()) {
+    page_action_to_expand_ = absl::nullopt;
+    return true;
+  }
+  return false;
+}
+
 WEB_CONTENTS_USER_DATA_KEY_IMPL(ShoppingListUiTabHelper);
 
 }  // namespace commerce

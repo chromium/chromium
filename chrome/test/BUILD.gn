@@ -10680,6 +10680,7 @@ if (!is_android && !is_chromeos_device) {
       deps += [
         "//components/commerce/core:feature_list",
         "//components/commerce/core:shopping_service_test_support",
+        "//components/image_fetcher/core:test_support",
         "//components/live_caption:utils",
         "//components/lookalikes/core:safety_tips",
         "//components/omnibox/browser:vector_icons",

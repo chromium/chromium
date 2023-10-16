@@ -164,8 +164,8 @@ void PriceTrackingIconView::UpdateImpl() {
     if (!GetVisible()) {
       base::RecordAction(
           base::UserMetricsAction("Commerce.PriceTracking.OmniboxChipShown"));
-      MaybeShowPageActionLabel();
     }
+    MaybeShowPageActionLabel();
   } else {
     HidePageActionLabel();
   }
@@ -323,22 +323,16 @@ void PriceTrackingIconView::MaybeShowPageActionLabel() {
     return;
   }
 
-  auto* tracker =
-      feature_engagement::TrackerFactory::GetForBrowserContext(profile_);
-  if (!tracker ||
-      !tracker->ShouldTriggerHelpUI(
-          feature_engagement::kIPHPriceTrackingPageActionIconLabelFeature)) {
+  auto* tab_helper =
+      commerce::ShoppingListUiTabHelper::FromWebContents(GetWebContents());
+
+  if (!tab_helper || !tab_helper->ShouldExpandPageActionIcon(
+                         PageActionIconType::kPriceTracking)) {
     return;
   }
 
   should_extend_label_shown_duration_ = true;
   AnimateIn(absl::nullopt);
-
-  // Note that `Dismiss()` in this case does not dismiss the UI. It's telling
-  // the FE backend that the promo is done so that other promos can run. Showing
-  // the label should not block other promos from displaying.
-  tracker->Dismissed(
-      feature_engagement::kIPHPriceTrackingPageActionIconLabelFeature);
 }
 
 void PriceTrackingIconView::HidePageActionLabel() {
