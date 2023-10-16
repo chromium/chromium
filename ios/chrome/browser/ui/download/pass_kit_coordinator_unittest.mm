@@ -212,8 +212,8 @@ TEST_F(PassKitCoordinatorTest, InvalidPassKitObject) {
 
   infobars::InfoBarManager* infobar_manager =
       InfoBarManagerImpl::FromWebState(web_state_);
-  ASSERT_EQ(1U, infobar_manager->infobar_count());
-  infobars::InfoBar* infobar = infobar_manager->infobar_at(0);
+  ASSERT_EQ(1U, infobar_manager->infobars().size());
+  infobars::InfoBar* infobar = infobar_manager->infobars()[0];
   ASSERT_TRUE(infobar->delegate());
   auto* delegate = infobar->delegate()->AsConfirmInfoBarDelegate();
   ASSERT_TRUE(delegate);
@@ -232,8 +232,8 @@ TEST_F(PassKitCoordinatorTest, EmptyPassKitObject) {
 
   infobars::InfoBarManager* infobar_manager =
       InfoBarManagerImpl::FromWebState(web_state_);
-  ASSERT_EQ(1U, infobar_manager->infobar_count());
-  infobars::InfoBar* infobar = infobar_manager->infobar_at(0);
+  ASSERT_EQ(1U, infobar_manager->infobars().size());
+  infobars::InfoBar* infobar = infobar_manager->infobars()[0];
   ASSERT_TRUE(infobar->delegate());
   auto* delegate = infobar->delegate()->AsConfirmInfoBarDelegate();
   ASSERT_TRUE(delegate);

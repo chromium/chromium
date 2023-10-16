@@ -1773,14 +1773,15 @@ class ContentSubresourceFilterThrottleManagerInfoBarUiTest
   bool presenting_ads_blocked_infobar() {
     auto* infobar_manager = infobars::ContentInfoBarManager::FromWebContents(
         content::RenderViewHostTestHarness::web_contents());
-    if (infobar_manager->infobar_count() == 0)
+    if (infobar_manager->infobars().empty()) {
       return false;
+    }
 
     // No infobars other than the ads blocked infobar should be displayed in the
     // context of these tests.
-    EXPECT_EQ(infobar_manager->infobar_count(), 1u);
-    auto* infobar = infobar_manager->infobar_at(0);
-    EXPECT_EQ(infobar->delegate()->GetIdentifier(),
+    EXPECT_EQ(infobar_manager->infobars().size(), 1u);
+    auto* infobar = infobar_manager->infobars()[0];
+    EXPECT_EQ(infobar->GetIdentifier(),
               infobars::InfoBarDelegate::ADS_BLOCKED_INFOBAR_DELEGATE_ANDROID);
 
     return true;

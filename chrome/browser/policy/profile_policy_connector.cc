@@ -13,6 +13,7 @@
 #include "base/logging.h"
 #include "base/memory/raw_ptr.h"
 #include "base/metrics/histogram_functions.h"
+#include "base/ranges/algorithm.h"
 #include "base/task/sequenced_task_runner.h"
 #include "base/task/single_thread_task_runner.h"
 #include "base/time/time.h"
@@ -294,13 +295,12 @@ class LocalTestInfoBarVisibilityManager :
       content::WebContents* web_contents) {
     auto* infobar_manager =
         infobars::ContentInfoBarManager::FromWebContents(web_contents);
-    for (size_t i = 0; i < infobar_manager->infobar_count(); i++) {
-      auto* infobar = infobar_manager->infobar_at(i);
-      if (infobar->delegate()->GetIdentifier() ==
-          infobars::InfoBarDelegate::LOCAL_TEST_POLICIES_APPLIED_INFOBAR) {
-        infobar_manager->RemoveInfoBar(infobar);
-        return;
-      }
+    const auto it = base::ranges::find(
+        infobar_manager->infobars(),
+        infobars::InfoBarDelegate::LOCAL_TEST_POLICIES_APPLIED_INFOBAR,
+        &infobars::InfoBar::GetIdentifier);
+    if (it != infobar_manager->infobars().cend()) {
+      infobar_manager->RemoveInfoBar(*it);
     }
   }
 

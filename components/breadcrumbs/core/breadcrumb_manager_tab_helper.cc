@@ -164,7 +164,7 @@ bool BreadcrumbManagerTabHelper::ShouldLogRepeatedEvent(int count) {
 void BreadcrumbManagerTabHelper::OnInfoBarAdded(infobars::InfoBar* infobar) {
   sequentially_replaced_infobars_ = 0;
   LogEvent(base::StringPrintf("%s%d", kBreadcrumbInfobarAdded,
-                              infobar->delegate()->GetIdentifier()));
+                              infobar->GetIdentifier()));
 }
 
 void BreadcrumbManagerTabHelper::OnInfoBarRemoved(infobars::InfoBar* infobar,
@@ -172,7 +172,7 @@ void BreadcrumbManagerTabHelper::OnInfoBarRemoved(infobars::InfoBar* infobar,
   sequentially_replaced_infobars_ = 0;
   std::vector<std::string> event = {
       base::StringPrintf("%s%d", kBreadcrumbInfobarRemoved,
-                         infobar->delegate()->GetIdentifier()),
+                         infobar->GetIdentifier()),
   };
   if (!animate)
     event.push_back(kBreadcrumbInfobarNotAnimated);
@@ -186,7 +186,7 @@ void BreadcrumbManagerTabHelper::OnInfoBarReplaced(
 
   if (ShouldLogRepeatedEvent(sequentially_replaced_infobars_)) {
     LogEvent(base::StringPrintf("%s%d %d", kBreadcrumbInfobarReplaced,
-                                new_infobar->delegate()->GetIdentifier(),
+                                new_infobar->GetIdentifier(),
                                 sequentially_replaced_infobars_));
   }
 }

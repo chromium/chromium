@@ -24,7 +24,7 @@
       interface.browser->GetWebStateList()->GetActiveWebState();
   infobars::InfoBarManager* manager =
       InfoBarManagerImpl::FromWebState(webState);
-  return totalInfobars == (NSInteger)manager->infobar_count();
+  return totalInfobars == (NSInteger)manager->infobars().size();
 }
 
 + (BOOL)addTestInfoBarToCurrentTabWithMessage:(NSString*)message {

@@ -2865,8 +2865,8 @@ TEST_F(SiteSettingsHandlerInfobarTest, SettingPermissionsTriggersInfobar) {
   AddTab(browser(), origin_anchor);
   AddTab(browser(), foo);
   for (int i = 0; i < browser()->tab_strip_model()->count(); ++i) {
-    EXPECT_EQ(0u,
-              GetInfoBarManagerForTab(browser(), i, nullptr)->infobar_count());
+    EXPECT_EQ(
+        0u, GetInfoBarManagerForTab(browser(), i, nullptr)->infobars().size());
   }
 
   AddTab(browser2(), about);
@@ -2874,8 +2874,8 @@ TEST_F(SiteSettingsHandlerInfobarTest, SettingPermissionsTriggersInfobar) {
   AddTab(browser2(), origin_query);
   AddTab(browser2(), insecure);
   for (int i = 0; i < browser2()->tab_strip_model()->count(); ++i) {
-    EXPECT_EQ(0u,
-              GetInfoBarManagerForTab(browser2(), i, nullptr)->infobar_count());
+    EXPECT_EQ(
+        0u, GetInfoBarManagerForTab(browser2(), i, nullptr)->infobars().size());
   }
 
   // Block notifications.
@@ -2892,11 +2892,13 @@ TEST_F(SiteSettingsHandlerInfobarTest, SettingPermissionsTriggersInfobar) {
   for (int i = 0; i < browser()->tab_strip_model()->count(); ++i) {
     if (i == /*origin_anchor=*/1 || i == /*origin=*/3) {
       EXPECT_EQ(
-          1u, GetInfoBarManagerForTab(browser(), i, &tab_url)->infobar_count());
+          1u,
+          GetInfoBarManagerForTab(browser(), i, &tab_url)->infobars().size());
       EXPECT_TRUE(url::IsSameOriginWith(origin, tab_url));
     } else {
       EXPECT_EQ(
-          0u, GetInfoBarManagerForTab(browser(), i, &tab_url)->infobar_count());
+          0u,
+          GetInfoBarManagerForTab(browser(), i, &tab_url)->infobars().size());
       EXPECT_FALSE(url::IsSameOriginWith(origin, tab_url));
     }
   }
@@ -2904,12 +2906,12 @@ TEST_F(SiteSettingsHandlerInfobarTest, SettingPermissionsTriggersInfobar) {
     if (i == /*origin_query=*/1) {
       EXPECT_EQ(
           1u,
-          GetInfoBarManagerForTab(browser2(), i, &tab_url)->infobar_count());
+          GetInfoBarManagerForTab(browser2(), i, &tab_url)->infobars().size());
       EXPECT_TRUE(url::IsSameOriginWith(origin, tab_url));
     } else {
       EXPECT_EQ(
           0u,
-          GetInfoBarManagerForTab(browser2(), i, &tab_url)->infobar_count());
+          GetInfoBarManagerForTab(browser2(), i, &tab_url)->infobars().size());
       EXPECT_FALSE(url::IsSameOriginWith(origin, tab_url));
     }
   }
@@ -2942,11 +2944,13 @@ TEST_F(SiteSettingsHandlerInfobarTest, SettingPermissionsTriggersInfobar) {
     if (i == /*origin_path=*/0 || i == /*origin_anchor=*/1 ||
         i == /*origin=*/3) {
       EXPECT_EQ(
-          1u, GetInfoBarManagerForTab(browser(), i, &tab_url)->infobar_count());
+          1u,
+          GetInfoBarManagerForTab(browser(), i, &tab_url)->infobars().size());
       EXPECT_TRUE(url::IsSameOriginWith(origin, tab_url));
     } else {
       EXPECT_EQ(
-          0u, GetInfoBarManagerForTab(browser(), i, &tab_url)->infobar_count());
+          0u,
+          GetInfoBarManagerForTab(browser(), i, &tab_url)->infobars().size());
       EXPECT_FALSE(url::IsSameOriginWith(origin, tab_url));
     }
   }
@@ -2954,14 +2958,15 @@ TEST_F(SiteSettingsHandlerInfobarTest, SettingPermissionsTriggersInfobar) {
   // navigated to |example_without_www|) should disappear.
   for (int i = 0; i < browser2()->tab_strip_model()->count(); ++i) {
     EXPECT_EQ(
-        0u, GetInfoBarManagerForTab(browser2(), i, &tab_url)->infobar_count());
+        0u,
+        GetInfoBarManagerForTab(browser2(), i, &tab_url)->infobars().size());
     EXPECT_FALSE(url::IsSameOriginWith(origin, tab_url));
   }
 
   // Make sure it's the correct infobar that's being shown.
   EXPECT_EQ(infobars::InfoBarDelegate::PAGE_INFO_INFOBAR_DELEGATE,
             GetInfoBarManagerForTab(browser(), /*tab_index=*/0, &tab_url)
-                ->infobar_at(0)
+                ->infobars()[0]
                 ->delegate()
                 ->GetIdentifier());
   EXPECT_TRUE(url::IsSameOriginWith(origin, tab_url));
@@ -2987,11 +2992,11 @@ TEST_F(SiteSettingsHandlerInfobarTest,
   // Set up. No info bars.
   AddTab(browser(), origin_anchor);
   EXPECT_EQ(0u,
-            GetInfoBarManagerForTab(browser(), 0, nullptr)->infobar_count());
+            GetInfoBarManagerForTab(browser(), 0, nullptr)->infobars().size());
 
   AddTab(browser3(), origin_query);
   EXPECT_EQ(0u,
-            GetInfoBarManagerForTab(browser3(), 0, nullptr)->infobar_count());
+            GetInfoBarManagerForTab(browser3(), 0, nullptr)->infobars().size());
 
   // Block notifications.
   base::Value::List set_args;
@@ -3005,13 +3010,13 @@ TEST_F(SiteSettingsHandlerInfobarTest,
   // as `origin_anchor` have an infobar shown.
   GURL tab_url;
   EXPECT_EQ(1u,
-            GetInfoBarManagerForTab(browser(), 0, &tab_url)->infobar_count());
+            GetInfoBarManagerForTab(browser(), 0, &tab_url)->infobars().size());
   EXPECT_TRUE(url::IsSameOriginWith(origin, tab_url));
 
   // Make sure all tabs with the same origin as `origin_anchor` that don't
   // belong to the same profile don't have an infobar shown
-  EXPECT_EQ(0u,
-            GetInfoBarManagerForTab(browser3(), 0, &tab_url)->infobar_count());
+  EXPECT_EQ(
+      0u, GetInfoBarManagerForTab(browser3(), 0, &tab_url)->infobars().size());
   EXPECT_TRUE(url::IsSameOriginWith(origin, tab_url));
 }
 

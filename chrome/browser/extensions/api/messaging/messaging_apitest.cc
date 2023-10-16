@@ -1023,14 +1023,14 @@ IN_PROC_BROWSER_TEST_F(ExternallyConnectableMessagingTest,
       base::StringPrintf("assertions.trySendMessage('%s')", app->id().c_str());
   CHECK(content::ExecJs(incognito_frame1, script));
   CHECK(content::ExecJs(incognito_frame2, script));
-  EXPECT_EQ(1U, infobar_manager1->infobar_count());
-  EXPECT_EQ(1U, infobar_manager2->infobar_count());
+  EXPECT_EQ(1U, infobar_manager1->infobars().size());
+  EXPECT_EQ(1U, infobar_manager2->infobars().size());
 
   // Navigating away will dismiss the infobar on the active tab only.
   ASSERT_TRUE(
       ui_test_utils::NavigateToURL(incognito_browser, google_com_url()));
-  EXPECT_EQ(1U, infobar_manager1->infobar_count());
-  EXPECT_EQ(0U, infobar_manager2->infobar_count());
+  EXPECT_EQ(1U, infobar_manager1->infobars().size());
+  EXPECT_EQ(0U, infobar_manager2->infobars().size());
 
   // Navigate back and accept the infobar this time. Both should be dismissed.
   {
@@ -1044,11 +1044,11 @@ IN_PROC_BROWSER_TEST_F(ExternallyConnectableMessagingTest,
                            ->GetPrimaryMainFrame();
     EXPECT_NE(incognito_frame1, incognito_frame2);
 
-    EXPECT_EQ(1U, infobar_manager1->infobar_count());
+    EXPECT_EQ(1U, infobar_manager1->infobars().size());
     EXPECT_EQ(OK, CanConnectAndSendMessagesToFrame(incognito_frame2, app.get(),
                                                    nullptr));
     EXPECT_EQ(1, alert_tracker.GetAndResetAlertCount());
-    EXPECT_EQ(0U, infobar_manager1->infobar_count());
+    EXPECT_EQ(0U, infobar_manager1->infobars().size());
   }
 }
 

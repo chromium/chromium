@@ -81,14 +81,11 @@ infobars::InfoBar* EnableLinkCapturingInfoBarDelegate::FindInfoBar(
   auto* infobar_manager =
       infobars::ContentInfoBarManager::FromWebContents(web_contents);
   CHECK(infobar_manager);
-  for (size_t i = 0; i < infobar_manager->infobar_count(); ++i) {
-    auto* infobar = infobar_manager->infobar_at(i);
-    if (infobar->delegate()->GetIdentifier() ==
-        infobars::InfoBarDelegate::ENABLE_LINK_CAPTURING_INFOBAR_DELEGATE) {
-      return infobar;
-    }
-  }
-  return nullptr;
+  const auto it = base::ranges::find(
+      infobar_manager->infobars(),
+      infobars::InfoBarDelegate::ENABLE_LINK_CAPTURING_INFOBAR_DELEGATE,
+      &infobars::InfoBar::GetIdentifier);
+  return it != infobar_manager->infobars().cend() ? *it : nullptr;
 }
 
 // static

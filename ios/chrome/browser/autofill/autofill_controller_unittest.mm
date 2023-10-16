@@ -801,13 +801,13 @@ TEST_F(AutofillControllerTest, CreditCardImport) {
   infobars::InfoBarManager* infobar_manager =
       InfoBarManagerImpl::FromWebState(web_state());
   WaitForCondition(^bool() {
-    return infobar_manager->infobar_count();
+    return infobar_manager->infobars().size();
   });
   ExpectMetric("Autofill.CreditCardInfoBar.Local",
                AutofillMetrics::INFOBAR_SHOWN);
-  ASSERT_EQ(1U, infobar_manager->infobar_count());
+  ASSERT_EQ(1U, infobar_manager->infobars().size());
   infobars::InfoBarDelegate* infobar =
-      infobar_manager->infobar_at(0)->delegate();
+      infobar_manager->infobars()[0]->delegate();
   ConfirmInfoBarDelegate* confirm_infobar = infobar->AsConfirmInfoBarDelegate();
 
   // This call cause a modification of the PersonalDataManager, so wait until

@@ -74,9 +74,9 @@ class TranslateManagerRenderViewHostAndroidTest
   // Returns the translate infobar if there is 1 infobar and it is a translate
   // infobar.
   translate::TranslateInfoBarDelegate* GetTranslateInfoBar() {
-    return (infobar_manager()->infobar_count() == 1)
+    return (infobar_manager()->infobars().size() == 1)
                ? infobar_manager()
-                     ->infobar_at(0)
+                     ->infobars()[0]
                      ->delegate()
                      ->AsTranslateInfoBarDelegate()
                : NULL;
@@ -90,7 +90,7 @@ class TranslateManagerRenderViewHostAndroidTest
     if (!infobar)
       return false;
     infobar->InfoBarDismissed();  // Simulates closing the infobar.
-    infobar_manager()->RemoveInfoBar(infobar_manager()->infobar_at(0));
+    infobar_manager()->RemoveInfoBar(infobar_manager()->infobars()[0]);
     return true;
   }
 #endif

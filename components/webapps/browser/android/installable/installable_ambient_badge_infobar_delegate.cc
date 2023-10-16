@@ -25,15 +25,12 @@ InstallableAmbientBadgeInfoBarDelegate::
 infobars::InfoBar*
 InstallableAmbientBadgeInfoBarDelegate::GetVisibleAmbientBadgeInfoBar(
     infobars::ContentInfoBarManager* infobar_manager) {
-  for (size_t i = 0; i < infobar_manager->infobar_count(); ++i) {
-    infobars::InfoBar* infobar = infobar_manager->infobar_at(i);
-    if (infobar->delegate()->GetIdentifier() ==
-        InstallableAmbientBadgeInfoBarDelegate::
-            INSTALLABLE_AMBIENT_BADGE_INFOBAR_DELEGATE) {
-      return infobar;
-    }
-  }
-  return nullptr;
+  const auto it =
+      base::ranges::find(infobar_manager->infobars(),
+                         InstallableAmbientBadgeInfoBarDelegate::
+                             INSTALLABLE_AMBIENT_BADGE_INFOBAR_DELEGATE,
+                         &infobars::InfoBar::GetIdentifier);
+  return it != infobar_manager->infobars().cend() ? *it : nullptr;
 }
 
 // static

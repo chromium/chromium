@@ -151,7 +151,7 @@ class TranslateManagerRenderViewHostTest
       return bubble != nullptr;
     } else {
       bool result = (GetTranslateInfoBar() != nullptr);
-      EXPECT_EQ(infobar_manager()->infobar_count() != 0, result);
+      EXPECT_EQ(infobar_manager()->infobars().size() != 0, result);
       return result;
     }
   }
@@ -276,9 +276,9 @@ class TranslateManagerRenderViewHostTest
   // Returns the translate infobar if there is 1 infobar and it is a translate
   // infobar.
   translate::TranslateInfoBarDelegate* GetTranslateInfoBar() {
-    return (infobar_manager()->infobar_count() == 1)
+    return (infobar_manager()->infobars().size() == 1)
                ? infobar_manager()
-                     ->infobar_at(0)
+                     ->infobars()[0]
                      ->delegate()
                      ->AsTranslateInfoBarDelegate()
                : nullptr;
@@ -292,7 +292,7 @@ class TranslateManagerRenderViewHostTest
     if (!infobar)
       return false;
     infobar->InfoBarDismissed();  // Simulates closing the infobar.
-    infobar_manager()->RemoveInfoBar(infobar_manager()->infobar_at(0));
+    infobar_manager()->RemoveInfoBar(infobar_manager()->infobars()[0]);
     return true;
   }
 
@@ -319,7 +319,7 @@ class TranslateManagerRenderViewHostTest
       if (!infobar)
         return false;
       infobar->TranslationDeclined();
-      infobar_manager()->RemoveInfoBar(infobar_manager()->infobar_at(0));
+      infobar_manager()->RemoveInfoBar(infobar_manager()->infobars()[0]);
       return true;
     }
   }

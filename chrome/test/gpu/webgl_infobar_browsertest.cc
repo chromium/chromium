@@ -80,7 +80,7 @@ IN_PROC_BROWSER_TEST_F(WebGLInfoBarTest, DISABLED_ContextLossRaisesInfoBar) {
                                    InfoBarObserver::Type::kInfoBarAdded);
   SimulateGPUCrash(browser());
   infobar_observer.Wait();
-  EXPECT_EQ(1u, infobar_manager->infobar_count());
+  EXPECT_EQ(1u, infobar_manager->infobars().size());
 }
 
 // There isn't any point in adding a test which calls Accept() on the

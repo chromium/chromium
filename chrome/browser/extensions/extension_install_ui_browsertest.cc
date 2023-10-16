@@ -51,13 +51,13 @@ class ExtensionInstallUIBrowserTest : public extensions::ExtensionBrowserTest {
     ASSERT_TRUE(web_contents);
     infobars::ContentInfoBarManager* infobar_manager =
         infobars::ContentInfoBarManager::FromWebContents(web_contents);
-    ASSERT_EQ(1U, infobar_manager->infobar_count());
+    ASSERT_EQ(1U, infobar_manager->infobars().size());
     ConfirmInfoBarDelegate* delegate =
-        infobar_manager->infobar_at(0)->delegate()->AsConfirmInfoBarDelegate();
+        infobar_manager->infobars()[0]->delegate()->AsConfirmInfoBarDelegate();
     ASSERT_TRUE(delegate);
     delegate->Cancel();
     WaitForThemeChange();
-    ASSERT_EQ(0U, infobar_manager->infobar_count());
+    ASSERT_EQ(0U, infobar_manager->infobars().size());
   }
 
   // Install the given theme from the data dir and verify expected name.

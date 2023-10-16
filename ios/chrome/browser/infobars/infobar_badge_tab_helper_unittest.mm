@@ -212,18 +212,18 @@ TEST_F(InfobarBadgeTabHelperTest, TestInfobarReplacing) {
   // Test tab helper by driving it through InfoBarManager.
   AddInfobar(/*has_badge=*/true);
   // Check first one added correctly.
-  EXPECT_TRUE(InfoBarManagerImpl::FromWebState(&web_state_)->infobar_count() ==
-              1);
+  EXPECT_EQ(InfoBarManagerImpl::FromWebState(&web_state_)->infobars().size(),
+            1u);
   // Replace with second one.
   FakeInfobarIOS* infobar2 =
       AddInfobar(/*has_badge=*/true, /*replace_existing=*/true);
   // Should be only one.
-  EXPECT_TRUE(InfoBarManagerImpl::FromWebState(&web_state_)->infobar_count() ==
-              1);
+  EXPECT_EQ(InfoBarManagerImpl::FromWebState(&web_state_)->infobars().size(),
+            1u);
   // If first one wasn't replaced this will fail.
   InfoBarManagerImpl::FromWebState(&web_state_)->RemoveInfoBar(infobar2);
   // Left with none.
-  EXPECT_TRUE(InfoBarManagerImpl::FromWebState(&web_state_)->infobar_count() ==
-              0);
+  EXPECT_EQ(InfoBarManagerImpl::FromWebState(&web_state_)->infobars().size(),
+            0u);
   // No crash.
 }

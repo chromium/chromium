@@ -75,7 +75,7 @@ infobars::ContentInfoBarManager* GetInfoBarManager(
 
 ConfirmInfoBarDelegate* GetDelegate(Browser* browser, int tab) {
   return static_cast<ConfirmInfoBarDelegate*>(
-      GetInfoBarManager(browser, tab)->infobar_at(0)->delegate());
+      GetInfoBarManager(browser, tab)->infobars()[0]->delegate());
 }
 
 class InfobarUIChangeObserver : public TabStripModelObserver {

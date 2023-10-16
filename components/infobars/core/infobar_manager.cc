@@ -35,20 +35,19 @@ void InfoBarManager::Observer::OnManagerShuttingDown(InfoBarManager* manager) {
 
 // InfoBarManager --------------------------------------------------------------
 
-InfoBar* InfoBarManager::AddInfoBar(std::unique_ptr<InfoBar> infobar,
+InfoBar* InfoBarManager::AddInfoBar(std::unique_ptr<InfoBar> new_infobar,
                                     bool replace_existing) {
-  DCHECK(infobar);
+  DCHECK(new_infobar);
 
-  for (InfoBars::const_iterator i(infobars_.begin()); i != infobars_.end();
-       ++i) {
-    if ((*i)->delegate()->EqualsDelegate(infobar->delegate())) {
-      DCHECK_NE((*i)->delegate(), infobar->delegate());
-      return replace_existing ? ReplaceInfoBar(*i, std::move(infobar))
+  for (auto* infobar : infobars_) {
+    if (infobar->delegate()->EqualsDelegate(new_infobar->delegate())) {
+      DCHECK_NE(infobar->delegate(), new_infobar->delegate());
+      return replace_existing ? ReplaceInfoBar(infobar, std::move(new_infobar))
                               : nullptr;
     }
   }
 
-  InfoBar* infobar_ptr = infobar.release();
+  InfoBar* infobar_ptr = new_infobar.release();
   infobars_.push_back(infobar_ptr);
   infobar_ptr->SetOwner(this);
 
