@@ -50,6 +50,7 @@ source_set("unit_tests") {
     "//ios/chrome/browser/snapshots/model",
     "//ios/chrome/browser/web",
     "//ios/chrome/test:test_support",
+    "//ios/web/public/session",
     "//ios/web/public/test",
     "//ios/web/public/test/fakes",
     "//third_party/ocmock",
