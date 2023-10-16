@@ -771,7 +771,6 @@ struct StatefulPartitionInfo {
 
 // Bluetooth probe result. Can either be populated with the BluetoothAdapterInfo
 // or an error retrieving the information.
-[Stable]
 union BluetoothResult {
   // Valid BluetoothAdapterInfo.
   array<BluetoothAdapterInfo> bluetooth_adapter_info;
@@ -782,7 +781,6 @@ union BluetoothResult {
 // Information related to one of a device's Bluetooth adapters.
 //
 // NextMinVersion: 3, NextIndex: 11
-[Stable]
 struct BluetoothAdapterInfo {
   // The name of the adapter.
   string name@0;
@@ -857,7 +855,7 @@ enum BluetoothDeviceType {
 //
 // TODO(b/299415168): Deprecate it.
 // NextMinVersion: 1, NextIndex: 4
-[Stable, RenamedFrom="ash.cros_healthd.mojom.SupportedCapabilities"]
+[RenamedFrom="ash.cros_healthd.mojom.SupportedCapabilities"]
 struct DEPRECATED_SupportedCapabilities {
   // Max advertising data length.
   uint8 max_adv_len@0;
@@ -1999,7 +1997,6 @@ struct Sensor {
 // to fetch that information, but was unable to.
 //
 // NextMinVersion: 6, NextIndex: 22
-[Stable]
 struct TelemetryInfo {
   // Information about the device's main battery. Only present when kBattery was
   // included in the categories input to ProbeTelemetryInfo.
