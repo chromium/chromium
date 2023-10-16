@@ -66,7 +66,7 @@ void ModelManagerImpl::Initialize() {
         std::make_pair(segment_id, ModelSource::DEFAULT_MODEL_SOURCE),
         std::move(default_provider));
     OnSegmentationModelUpdated(ModelSource::DEFAULT_MODEL_SOURCE, segment_id,
-                               model_config->metadata,
+                               std::move(model_config->metadata),
                                model_config->model_version);
   }
 }
