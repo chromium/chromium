@@ -141,8 +141,7 @@ class COMPONENT_EXPORT(TRACING_CPP) PerfettoTracedProcess final
   // to Register() must have process-lifetime since Perfetto data sources are
   // never unregistered.
   template <typename T>
-  class COMPONENT_EXPORT(TRACING_CPP) DataSourceProxy
-      : public perfetto::DataSource<DataSourceProxy<T>> {
+  class DataSourceProxy : public perfetto::DataSource<DataSourceProxy<T>> {
    public:
     // Create a proxy for a singleton data source instance.
     explicit DataSourceProxy(PerfettoTracedProcess::DataSourceBase*);
