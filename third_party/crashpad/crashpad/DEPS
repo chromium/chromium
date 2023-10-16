@@ -53,7 +53,7 @@ deps = {
       'fda403cf93ecb8792cb1d061564d89a6553ca020',
   'crashpad/third_party/zlib/zlib':
       Var('chromium_git') + '/chromium/src/third_party/zlib@' +
-      '13dc246a58e4b72104d35f9b1809af95221ebda7',
+      'fef58692c1d7bec94c4ed3d030a45a1832a9615d',
 
   # CIPD packages.
   'buildtools/linux64': {
@@ -89,8 +89,8 @@ deps = {
   'crashpad/third_party/linux/clang/linux-amd64': {
     'packages': [
       {
-        'package': 'fuchsia/clang/linux-amd64',
-        'version': 'goma',
+        'package': 'fuchsia/third_party/clang/linux-amd64',
+        'version': 'Tpc85d1ZwSlZ6UKl2d96GRUBGNA5JKholOKe24sRDr0C',
       },
     ],
     'condition': 'checkout_linux and pull_linux_clang',
@@ -99,8 +99,8 @@ deps = {
   'crashpad/third_party/fuchsia/clang/mac-amd64': {
     'packages': [
       {
-        'package': 'fuchsia/clang/mac-amd64',
-        'version': 'goma',
+        'package': 'fuchsia/third_party/clang/mac-amd64',
+        'version': 'MAOjNhwTu5JU3P_0C9dITiyCTtQ1n7lRJnMfB9hhvOkC',
       },
     ],
     'condition': 'checkout_fuchsia and host_os == "mac"',
@@ -109,8 +109,8 @@ deps = {
   'crashpad/third_party/fuchsia/clang/linux-amd64': {
     'packages': [
       {
-        'package': 'fuchsia/clang/linux-amd64',
-        'version': 'goma',
+        'package': 'fuchsia/third_party/clang/linux-amd64',
+        'version': 'Tpc85d1ZwSlZ6UKl2d96GRUBGNA5JKholOKe24sRDr0C',
       },
     ],
     'condition': 'checkout_fuchsia and host_os == "linux"',

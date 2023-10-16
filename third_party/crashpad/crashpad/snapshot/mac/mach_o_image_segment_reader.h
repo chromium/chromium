@@ -53,18 +53,11 @@ namespace crashpad {
 //! \param[in] mach_o_file_type The Mach-O type of the module being examined.
 //! \param[in] module_name The pathname that `dyld` reported having loaded the
 //!     module from.
-//! \param[out] has_timestamp Optional, may be `nullptr`. If provided, and the
-//!     module is a maformed `cl_kernels` module, this will be set to `true` if
-//!     the module was loaded from the filesystem (as is the case when loaded
-//!     from the CVMS directory) and is expected to have a timestamp, and
-//!     `false` otherwise. Note that even when loaded from the filesystem, these
-//!     modules are unlinked from the filesystem after loading.
 //!
 //! \return `true` if the module appears to be a malformed `cl_kernels` module
 //!     based on the provided information, `false` otherwise.
 bool IsMalformedCLKernelsModule(uint32_t mach_o_file_type,
-                                const std::string& module_name,
-                                bool* has_timestamp);
+                                const std::string& module_name);
 
 //! \brief A reader for `LC_SEGMENT` or `LC_SEGMENT_64` load commands in Mach-O
 //!     images mapped into another process.

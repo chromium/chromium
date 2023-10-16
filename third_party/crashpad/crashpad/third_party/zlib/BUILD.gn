@@ -38,6 +38,10 @@ config("zlib_config") {
   }
 }
 
+config("Wno-sign-compare") {
+  cflags = [ "-Wno-sign-compare" ]
+}
+
 if (zlib_source == "external") {
   group("zlib") {
     public_configs = [ ":zlib_config" ]
@@ -112,6 +116,11 @@ if (zlib_source == "external") {
       ]
     }
 
+    if (crashpad_is_fuchsia) {
+      # Fuchsia build's default warnings include -Wsign-compare (indirectly)
+      configs += [ ":Wno-sign-compare" ]
+    }
+
     if (crashpad_is_standalone) {
       configs -= [ "//third_party/mini_chromium/mini_chromium/build/config:Wimplicit_fallthrough" ]
     } else if (crashpad_is_external) {
@@ -119,14 +128,11 @@ if (zlib_source == "external") {
     }
 
     if (zlib_source == "embedded") {
-      sources += [ "$zlib_dir/names.h" ]
+      sources += [ "$zlib_dir/chromeconf.h" ]
 
       if (current_cpu == "x86" || current_cpu == "x64") {
         sources += [
           "$zlib_dir/crc_folding.c",
-          "$zlib_dir/fill_window_sse.c",
-          "$zlib_dir/x86.c",
-          "$zlib_dir/x86.h",
         ]
         if (!crashpad_is_win || crashpad_is_clang) {
           cflags += [
@@ -137,8 +143,6 @@ if (zlib_source == "external") {
         if (crashpad_is_clang) {
           cflags += [ "-Wno-incompatible-pointer-types" ]
         }
-      } else {
-        sources += [ "$zlib_dir/simd_stub.c" ]
       }
     }
   }
