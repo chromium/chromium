@@ -89,7 +89,7 @@ class OfferNotificationControllerAndroidBrowserTest
   Profile* GetProfile() { return chrome_test_utils::GetProfile(this); }
 
   AutofillOfferData* SetUpOfferDataWithDomains(const GURL& url) {
-    personal_data_->ClearAllServerData();
+    personal_data_->ClearAllServerDataForTesting();
     std::vector<GURL> merchant_origins;
     merchant_origins.emplace_back(url.DeprecatedGetOriginAsURL());
     std::vector<int64_t> eligible_instrument_ids = {0x4444};

@@ -200,7 +200,7 @@ void OfferNotificationBubbleViewsTestBase::SetUpOfferDataWithDomains(
 
 void OfferNotificationBubbleViewsTestBase::SetUpCardLinkedOfferDataWithDomains(
     const std::vector<GURL>& domains) {
-  personal_data_->ClearAllServerData();
+  personal_data_->ClearAllServerDataForTesting();
   // CreateCardLinkedOfferDataWithDomains(~) will add the necessary card.
   personal_data_->AddOfferDataForTest(
       CreateCardLinkedOfferDataWithDomains(domains));
@@ -210,7 +210,7 @@ void OfferNotificationBubbleViewsTestBase::SetUpCardLinkedOfferDataWithDomains(
 void OfferNotificationBubbleViewsTestBase::
     SetUpFreeListingCouponOfferDataWithDomains(
         const std::vector<GURL>& domains) {
-  personal_data_->ClearAllServerData();
+  personal_data_->ClearAllServerDataForTesting();
   personal_data_->AddOfferDataForTest(
       CreateFreeListingCouponDataWithDomains(domains));
   personal_data_->NotifyPersonalDataObserver();
@@ -218,7 +218,7 @@ void OfferNotificationBubbleViewsTestBase::
 
 void OfferNotificationBubbleViewsTestBase::
     SetUpGPayPromoCodeOfferDataWithDomains(const std::vector<GURL>& domains) {
-  personal_data_->ClearAllServerData();
+  personal_data_->ClearAllServerDataForTesting();
   personal_data_->AddOfferDataForTest(
       CreateGPayPromoCodeOfferDataWithDomains(domains));
   personal_data_->NotifyPersonalDataObserver();

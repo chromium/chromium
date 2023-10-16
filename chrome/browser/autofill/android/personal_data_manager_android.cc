@@ -570,7 +570,7 @@ jlong PersonalDataManagerAndroid::GetDateNDaysAgoForTesting(
 void PersonalDataManagerAndroid::ClearServerDataForTesting(
     JNIEnv* env,
     const base::android::JavaParamRef<jobject>& unused_obj) {
-  personal_data_manager_->ClearAllServerData();
+  personal_data_manager_->ClearAllServerDataForTesting();  // IN-TEST
   personal_data_manager_->NotifyPersonalDataObserver();
 }
 

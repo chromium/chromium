@@ -3174,7 +3174,7 @@ TEST_P(BrowserAutofillManagerLogAblationTest, TestLogging) {
                                   << static_cast<int>(form_type));
 
   if (!params.run_with_data_on_file) {
-    personal_data().ClearAllServerData();
+    personal_data().ClearAllServerDataForTesting();
     personal_data().ClearAllLocalData();
   }
 

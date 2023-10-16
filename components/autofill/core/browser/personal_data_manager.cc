@@ -1242,7 +1242,7 @@ void PersonalDataManager::ResetFullServerCards() {
   }
 }
 
-void PersonalDataManager::ClearAllServerData() {
+void PersonalDataManager::ClearAllServerDataForTesting() {
   // This could theoretically be called before we get the data back from the
   // database on startup, and it could get called when the wallet pref is
   // off (meaning this class won't even query for the server data) so don't

@@ -298,7 +298,7 @@ class PersonalDataManager : public KeyedService,
   void ResetFullServerCards();
 
   // Deletes all server profiles and cards (both masked and unmasked).
-  void ClearAllServerData();
+  void ClearAllServerDataForTesting();
 
   // Deletes all local profiles and cards.
   virtual void ClearAllLocalData();
