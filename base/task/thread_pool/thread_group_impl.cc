@@ -984,9 +984,9 @@ ThreadGroupImpl::CreateAndRegisterWorkerLockRequired(
   DCHECK_LT(workers_.size(), kMaxNumberOfWorkers);
   DCHECK(idle_workers_set_.IsEmpty());
 
-  // WorkerThread needs |lock_| as a predecessor for its thread lock
-  // because in WakeUpOneWorker, |lock_| is first acquired and then
-  // the thread lock is acquired when WakeUp is called on the worker.
+  // WorkerThread needs |lock_| as a predecessor for its thread lock because in
+  // GetWork(), |lock_| is first acquired and then the thread lock is acquired
+  // when GetLastUsedTime() is called on the worker by CanGetWorkLockRequired().
   scoped_refptr<WorkerThread> worker = MakeRefCounted<WorkerThread>(
       thread_type_hint_,
       std::make_unique<WorkerThreadDelegateImpl>(
