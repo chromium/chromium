@@ -105,10 +105,9 @@ void PinnedToolbarActionsModel::MovePinnedAction(
   }
 
   const absl::optional<std::string>& action_id_to_move =
-      actions::ActionManager::ActionIdToString(action_id);
+      actions::ActionIdMap::ActionIdToString(action_id);
   const absl::optional<std::string>& action_id_of_target =
-      actions::ActionManager::ActionIdToString(
-          pinned_action_ids_[target_index]);
+      actions::ActionIdMap::ActionIdToString(pinned_action_ids_[target_index]);
 
   // Both ActionIds should have a string equivalent.
   CHECK(action_id_to_move.has_value());
@@ -144,7 +143,7 @@ void PinnedToolbarActionsModel::PinAction(const actions::ActionId& action_id) {
   base::Value::List updated_pinned_action_ids =
       pref_service_->GetList(prefs::kPinnedActions).Clone();
   const absl::optional<std::string>& id =
-      actions::ActionManager::ActionIdToString(action_id);
+      actions::ActionIdMap::ActionIdToString(action_id);
   // The ActionId should have a string equivalent.
   CHECK(id.has_value());
 
@@ -165,7 +164,7 @@ void PinnedToolbarActionsModel::UnpinAction(
   base::Value::List updated_pinned_action_ids =
       pref_service_->GetList(prefs::kPinnedActions).Clone();
   const absl::optional<std::string>& id =
-      actions::ActionManager::ActionIdToString(action_id);
+      actions::ActionIdMap::ActionIdToString(action_id);
   // The ActionId should have a string equivalent.
   CHECK(id.has_value());
 
@@ -198,7 +197,7 @@ void PinnedToolbarActionsModel::UpdatePinnedActionIds() {
   for (const base::Value& action_id : updated_pinned_action_ids) {
     if (action_id.is_string()) {
       const absl::optional<actions::ActionId>& id =
-          actions::ActionManager::StringToActionId(action_id.GetString());
+          actions::ActionIdMap::StringToActionId(action_id.GetString());
       // It could be possible that an ActionId is not mapped to the string if it
       // comes from the prefs object. Example: One version could have an id that
       // another one doesn't.

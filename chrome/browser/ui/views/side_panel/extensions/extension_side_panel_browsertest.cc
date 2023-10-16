@@ -228,7 +228,7 @@ class ExtensionSidePanelBrowserTest : public ExtensionBrowserTest {
       const extensions::Extension* extension,
       BrowserActions* browser_actions) {
     absl::optional<actions::ActionId> extension_action_id =
-        actions::ActionManager::StringToActionId(
+        actions::ActionIdMap::StringToActionId(
             GetKey(extension->id()).ToString());
     EXPECT_TRUE(extension_action_id.has_value());
     actions::ActionItem* action_item = actions::ActionManager::Get().FindAction(
@@ -315,7 +315,7 @@ IN_PROC_BROWSER_TEST_F(ExtensionSidePanelBrowserTest,
   EXPECT_FALSE(action_item->GetImage().IsEmpty());
 
   absl::optional<actions::ActionId> no_side_panel_extension_action_id =
-      actions::ActionManager::StringToActionId(
+      actions::ActionIdMap::StringToActionId(
           GetKey(no_side_panel_extension->id()).ToString());
 
   EXPECT_FALSE(no_side_panel_extension_action_id.has_value());

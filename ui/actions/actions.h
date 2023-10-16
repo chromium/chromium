@@ -273,8 +273,6 @@ class COMPONENT_EXPORT(ACTIONS) ActionManager
 
   using ActionItemInitializerList =
       base::RepeatingCallbackList<void(ActionManager*)>;
-  using ActionIdToStringMap = base::flat_map<ActionId, std::string>;
-  using StringToActionIdMap = base::flat_map<std::string, ActionId>;
 
   ActionManager(const ActionManager&) = delete;
   ActionManager& operator=(const ActionManager&) = delete;
@@ -282,26 +280,6 @@ class COMPONENT_EXPORT(ACTIONS) ActionManager
   static ActionManager& Get();
   static ActionManager& GetForTesting();
   static void ResetForTesting();
-
-  // Searches existing maps for the given ActionId and returns the corresponding
-  // string if found, otherwise returns an empty string.
-  static absl::optional<std::string> ActionIdToString(const ActionId action_id);
-  // Searches existing maps for the given string and returns the corresponding
-  // ActionId if found, otherwise returns kActionsEnd.
-  static absl::optional<ActionId> StringToActionId(
-      const std::string action_id_string);
-  static std::vector<absl::optional<std::string>> ActionIdsToStrings(
-      std::vector<ActionId> action_ids);
-  static std::vector<absl::optional<ActionId>> StringsToActionIds(
-      std::vector<std::string> action_id_strings);
-
-  static void AddActionIdToStringMappings(ActionIdToStringMap map);
-  static void AddStringToActionIdMappings(StringToActionIdMap map);
-
-  // The second element in the pair is set to true if a new ActionId is
-  // created, or false if an ActionId with the given name already exists.
-  static std::pair<ActionId, bool> CreateActionId(
-      const std::string& action_name);
 
   void IndexActions();
   ActionItem* FindAction(std::u16string term, ActionItem* scope = nullptr);
@@ -342,18 +320,52 @@ class COMPONENT_EXPORT(ACTIONS) ActionManager
   ActionItem* FindActionImpl(ActionId action_id, const ActionList& list);
   void GetActionsImpl(ActionItem* item, ActionItemVector& items);
 
-  // Merges the `map2` into `map1`.
-  template <typename T, typename U>
-  static void MergeMaps(base::flat_map<T, U>& map1, base::flat_map<T, U>& map2);
-
-  static ActionIdToStringMap& GetActionIdToStringMap();
-  static StringToActionIdMap& GetStringToActionIdMap();
-
   // Holds the chain of ActionManager initializer callbacks.
   std::unique_ptr<ActionItemInitializerList> initializer_list_;
 
   // All "root" actions are parented to this action.
   BaseAction root_action_parent_;
+};
+
+class COMPONENT_EXPORT(ACTIONS) ActionIdMap {
+ public:
+  using ActionIdToStringMap = base::flat_map<ActionId, std::string>;
+  using StringToActionIdMap = base::flat_map<std::string, ActionId>;
+
+  ActionIdMap(const ActionIdMap&) = delete;
+  ActionIdMap& operator=(const ActionIdMap&) = delete;
+
+  // Searches existing maps for the given ActionId and returns the corresponding
+  // string if found, otherwise returns an empty string.
+  static absl::optional<std::string> ActionIdToString(const ActionId action_id);
+  // Searches existing maps for the given string and returns the corresponding
+  // ActionId if found, otherwise returns kActionsEnd.
+  static absl::optional<ActionId> StringToActionId(
+      const std::string action_id_string);
+  static std::vector<absl::optional<std::string>> ActionIdsToStrings(
+      std::vector<ActionId> action_ids);
+  static std::vector<absl::optional<ActionId>> StringsToActionIds(
+      std::vector<std::string> action_id_strings);
+
+  static void AddActionIdToStringMappings(ActionIdToStringMap map);
+  static void AddStringToActionIdMappings(StringToActionIdMap map);
+
+  // The second element in the pair is set to true if a new ActionId is
+  // created, or false if an ActionId with the given name already exists.
+  static std::pair<ActionId, bool> CreateActionId(
+      const std::string& action_name);
+
+  static void ResetMapsForTesting();
+
+ private:
+  // Merges `map2` into `map1`.
+  template <typename T, typename U>
+  static void MergeMaps(base::flat_map<T, U>& map1, base::flat_map<T, U>& map2);
+
+  static absl::optional<ActionIdToStringMap>& GetGlobalActionIdToStringMap();
+  static absl::optional<StringToActionIdMap>& GetGlobalStringToActionIdMap();
+  static ActionIdToStringMap& GetActionIdToStringMap();
+  static StringToActionIdMap& GetStringToActionIdMap();
 };
 
 COMPONENT_EXPORT(ACTIONS)

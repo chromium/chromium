@@ -536,15 +536,39 @@ void ActionManager::ResetForTesting() {
   GetGlobalManager().reset();
 }
 
+// static
+void ActionIdMap::ResetMapsForTesting() {
+  GetGlobalActionIdToStringMap().reset();
+  GetGlobalStringToActionIdMap().reset();
+}
+
+// static
+absl::optional<ActionIdMap::ActionIdToStringMap>&
+ActionIdMap::GetGlobalActionIdToStringMap() {
+  static base::NoDestructor<absl::optional<ActionIdMap::ActionIdToStringMap>>
+      map;
+  return *map;
+}
+
+// static
+absl::optional<ActionIdMap::StringToActionIdMap>&
+ActionIdMap::GetGlobalStringToActionIdMap() {
+  static base::NoDestructor<absl::optional<ActionIdMap::StringToActionIdMap>>
+      map;
+  return *map;
+}
+
 #define MAP_ACTION_IDS_TO_STRINGS
 #include "ui/actions/action_id_macros.inc"
 
 // static
-ActionManager::ActionIdToStringMap& ActionManager::GetActionIdToStringMap() {
-  static base::NoDestructor<ActionIdToStringMap> map(
-      base::MakeFlatMap<ActionId, std::string>(
-          std::vector<std::pair<ActionId, std::string>>{ACTION_IDS}));
-  return *map;
+ActionIdMap::ActionIdToStringMap& ActionIdMap::GetActionIdToStringMap() {
+  absl::optional<ActionIdMap::ActionIdToStringMap>& map =
+      GetGlobalActionIdToStringMap();
+  if (!map.has_value()) {
+    map.emplace(std::vector<std::pair<ActionId, std::string>>{ACTION_IDS});
+  }
+  return map.value();
 }
 
 #include "ui/actions/action_id_macros.inc"
@@ -554,28 +578,30 @@ ActionManager::ActionIdToStringMap& ActionManager::GetActionIdToStringMap() {
 #include "ui/actions/action_id_macros.inc"
 
 // static
-ActionManager::StringToActionIdMap& ActionManager::GetStringToActionIdMap() {
-  static base::NoDestructor<StringToActionIdMap> map(
-      base::MakeFlatMap<std::string, ActionId>(
-          std::vector<std::pair<std::string, ActionId>>{ACTION_IDS}));
-  return *map;
+ActionIdMap::StringToActionIdMap& ActionIdMap::GetStringToActionIdMap() {
+  absl::optional<ActionIdMap::StringToActionIdMap>& map =
+      GetGlobalStringToActionIdMap();
+  if (!map.has_value()) {
+    map.emplace(std::vector<std::pair<std::string, ActionId>>{ACTION_IDS});
+  }
+  return map.value();
 }
 
 #include "ui/actions/action_id_macros.inc"
 #undef MAP_STRING_TO_ACTION_IDS
 
 // static
-absl::optional<std::string> ActionManager::ActionIdToString(
+absl::optional<std::string> ActionIdMap::ActionIdToString(
     const ActionId action_id) {
   auto iter = GetActionIdToStringMap().find(action_id);
   if (iter != GetActionIdToStringMap().end()) {
-    return std::string(iter->second);
+    return iter->second;
   }
   return absl::nullopt;
 }
 
 // static
-absl::optional<ActionId> ActionManager::StringToActionId(
+absl::optional<ActionId> ActionIdMap::StringToActionId(
     const std::string action_id_string) {
   auto iter = GetStringToActionIdMap().find(action_id_string);
   if (iter != GetStringToActionIdMap().end()) {
@@ -585,7 +611,7 @@ absl::optional<ActionId> ActionManager::StringToActionId(
 }
 
 // static
-std::vector<absl::optional<std::string>> ActionManager::ActionIdsToStrings(
+std::vector<absl::optional<std::string>> ActionIdMap::ActionIdsToStrings(
     std::vector<ActionId> action_ids) {
   std::vector<absl::optional<std::string>> action_id_strings;
   action_id_strings.reserve(action_ids.size());
@@ -597,7 +623,7 @@ std::vector<absl::optional<std::string>> ActionManager::ActionIdsToStrings(
 }
 
 // static
-std::vector<absl::optional<ActionId>> ActionManager::StringsToActionIds(
+std::vector<absl::optional<ActionId>> ActionIdMap::StringsToActionIds(
     std::vector<std::string> action_id_strings) {
   std::vector<absl::optional<ActionId>> action_ids;
   action_ids.reserve(action_id_strings.size());
@@ -609,8 +635,8 @@ std::vector<absl::optional<ActionId>> ActionManager::StringsToActionIds(
 }
 
 template <typename T, typename U>
-void ActionManager::MergeMaps(base::flat_map<T, U>& map1,
-                              base::flat_map<T, U>& map2) {
+void ActionIdMap::MergeMaps(base::flat_map<T, U>& map1,
+                            base::flat_map<T, U>& map2) {
   auto vec1 = std::move(map1).extract();
   auto vec2 = std::move(map2).extract();
   std::vector<std::pair<T, U>> vec3(vec1.size() + vec2.size());
@@ -619,17 +645,17 @@ void ActionManager::MergeMaps(base::flat_map<T, U>& map1,
 }
 
 // static
-void ActionManager::AddActionIdToStringMappings(ActionIdToStringMap map) {
+void ActionIdMap::AddActionIdToStringMappings(ActionIdToStringMap map) {
   MergeMaps(GetActionIdToStringMap(), map);
 }
 
 // static
-void ActionManager::AddStringToActionIdMappings(StringToActionIdMap map) {
+void ActionIdMap::AddStringToActionIdMappings(StringToActionIdMap map) {
   MergeMaps(GetStringToActionIdMap(), map);
 }
 
 // static
-std::pair<ActionId, bool> ActionManager::CreateActionId(
+std::pair<ActionId, bool> ActionIdMap::CreateActionId(
     const std::string& action_name) {
   static ActionId new_action_id = std::numeric_limits<ActionId>::max();
 

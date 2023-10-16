@@ -46,7 +46,7 @@ source_set("unit_tests") {
   deps = [
     ":actions",
     ":actions_headers",
-    "//base/test:test_support",
+    "//testing/gmock",
     "//testing/gtest",
   ]
 }

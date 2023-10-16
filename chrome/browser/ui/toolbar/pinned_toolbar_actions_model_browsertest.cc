@@ -18,7 +18,7 @@
 
 namespace {
 const std::vector<absl::optional<std::string>> kTestActionIdStrings =
-    actions::ActionManager::ActionIdsToStrings(
+    actions::ActionIdMap::ActionIdsToStrings(
         {actions::kActionCut, actions::kActionCopy, actions::kActionPaste});
 
 // A simple observer that tracks the number of times certain events occur.
