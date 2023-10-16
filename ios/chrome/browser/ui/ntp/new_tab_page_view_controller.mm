@@ -342,6 +342,8 @@ const CGFloat kShiftTilesUpAnimationDuration = 0.1;
 - (void)willTransitionToTraitCollection:(UITraitCollection*)newCollection
               withTransitionCoordinator:
                   (id<UIViewControllerTransitionCoordinator>)coordinator {
+  [super willTransitionToTraitCollection:newCollection
+               withTransitionCoordinator:coordinator];
   if (IsMagicStackEnabled()) {
     [self updateModularHomeBackgroundColorForUserInterfaceStyle:
               newCollection.userInterfaceStyle];
@@ -362,7 +364,6 @@ const CGFloat kShiftTilesUpAnimationDuration = 0.1;
         -([self stickyOmniboxHeight] + [self feedHeaderHeight]);
     [self.contentSuggestionsViewController.view setNeedsLayout];
     [self.contentSuggestionsViewController.view layoutIfNeeded];
-    [self.headerViewController updateConstraints];
     [self updateOverscrollActionsState];
     [self updateHeightAboveFeed];
   }
@@ -370,7 +371,6 @@ const CGFloat kShiftTilesUpAnimationDuration = 0.1;
   if (previousTraitCollection.preferredContentSizeCategory !=
       self.traitCollection.preferredContentSizeCategory) {
     [self updateFakeOmniboxForScrollPosition];
-    [self.headerViewController updateConstraints];
     [self updateOverscrollActionsState];
     // Subviews will receive traitCollectionDidChange after this call, so the
     // only way to ensure that the scrollview isn't scrolled up too far is to

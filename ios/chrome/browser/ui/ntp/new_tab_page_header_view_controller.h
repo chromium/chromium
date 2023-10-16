@@ -105,9 +105,6 @@
 // Returns the height of the entire header.
 - (CGFloat)headerHeight;
 
-// Update the constraints for the current header's content height.
-- (void)updateConstraints;
-
 @end
 
 #endif  // IOS_CHROME_BROWSER_UI_NTP_NEW_TAB_PAGE_HEADER_VIEW_CONTROLLER_H_

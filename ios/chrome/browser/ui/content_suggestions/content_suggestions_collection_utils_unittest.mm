@@ -84,7 +84,7 @@ TEST_F(ContentSuggestionsCollectionUtilsTest, doodleFrameIPhoneLandscape) {
   // Test.
   EXPECT_EQ(68, heightLogo);
   EXPECT_EQ(kDoodleHeightNoLogo, heightNoLogo);
-  EXPECT_EQ(78, topMargin);
+  EXPECT_EQ(95, topMargin);
 }
 
 TEST_F(ContentSuggestionsCollectionUtilsTest, searchFieldFrameIPad) {
@@ -169,7 +169,7 @@ TEST_F(ContentSuggestionsCollectionUtilsTest, shrunkDoodleFrameIPhone) {
       DoodleTopMargin(kTopInset, IPhoneLandscapeTraitCollection());
   EXPECT_EQ(68, heightLogoLandscape);
   EXPECT_EQ(kDoodleHeightNoLogo, heightNoLogoLandscape);
-  EXPECT_EQ(78, topMarginLandscape);
+  EXPECT_EQ(95, topMarginLandscape);
 
   // Portrait
   CGFloat heightLogoPortrait =

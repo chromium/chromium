@@ -39,8 +39,7 @@ const CGFloat kTopSpacingMaterial = 24;
 
 // Top margin for the doodle.
 const CGFloat kDoodleTopMarginRegularXRegular = 162;
-const CGFloat kDoodleTopMarginOther = 48;
-const CGFloat kShrunkDoodleTopMarginOther = 65;
+const CGFloat kDoodleTopMarginOther = 65;
 // Size of the doodle top margin which is multiplied by the scaled font factor,
 // and added to `kDoodleTopMarginOther` on non Regular x Regular form factors.
 const CGFloat kDoodleScaledTopMarginOther = 10;
@@ -130,11 +129,7 @@ CGFloat DoodleTopMargin(CGFloat top_inset,
   if (IsIOSLargeFakeboxEnabled()) {
     top_margin += kLargeFakeboxExtraDoodleTopMargin;
   }
-  if (!IsCompactHeight(trait_collection)) {
-    top_margin += kShrunkDoodleTopMarginOther;
-  } else {
-    top_margin += kDoodleTopMarginOther;
-  }
+  top_margin += kDoodleTopMarginOther;
   return top_margin;
 }
 

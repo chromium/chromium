@@ -201,9 +201,6 @@ CGFloat Interpolate(CGFloat from, CGFloat to, CGFloat percent) {
 // Constraint for positioning the end button away from the fake box rounded
 // rectangle.
 @property(nonatomic, strong) NSLayoutConstraint* endButtonTrailingConstraint;
-// Layout constraint for the invisible button that is where the omnibox should
-// be and that focuses the omnibox when tapped.
-@property(nonatomic, strong) NSLayoutConstraint* invisibleOmniboxConstraint;
 // View used to add on-touch highlight to the fake omnibox.
 @property(nonatomic, strong) UIView* fakeLocationBarHighlightView;
 // View used to simulate the top toolbar when the header is stuck to the top of
@@ -229,15 +226,13 @@ CGFloat Interpolate(CGFloat from, CGFloat to, CGFloat percent) {
 - (void)addToolbarView:(UIView*)toolbarView {
   _toolBarView = toolbarView;
   [self addSubview:toolbarView];
-  self.invisibleOmniboxConstraint =
-      [toolbarView.topAnchor constraintEqualToAnchor:self.topAnchor
-                                            constant:self.safeAreaInsets.top];
   [NSLayoutConstraint activateConstraints:@[
     [toolbarView.leadingAnchor constraintEqualToAnchor:self.leadingAnchor],
     [toolbarView.heightAnchor
         constraintEqualToConstant:content_suggestions::FakeToolbarHeight()],
     [toolbarView.trailingAnchor constraintEqualToAnchor:self.trailingAnchor],
-    self.invisibleOmniboxConstraint,
+    [toolbarView.topAnchor
+        constraintEqualToAnchor:self.safeAreaLayoutGuide.topAnchor],
   ]];
 }
 
@@ -573,7 +568,7 @@ CGFloat Interpolate(CGFloat from, CGFloat to, CGFloat percent) {
   // Adjust the position of the search field's subviews by adjusting their
   // constraint constant value.
   CGFloat subviewsDiff = -maxXInset * percent;
-  self.endButtonTrailingMarginConstraint.constant = -subviewsDiff;
+  self.endButtonTrailingMarginConstraint.constant = 0;
   // The trailing space wanted is a linear scale between the two states of the
   // fakebox: 1) when centered in the NTP and 2) when pinned to the top,
   // emulating the the omnibox.
@@ -583,7 +578,7 @@ CGFloat Interpolate(CGFloat from, CGFloat to, CGFloat percent) {
   if (base::FeatureList::IsEnabled(kNewNTPOmniboxLayout)) {
     // A similar positioning scheme is applied to the leading-edge-aligned
     // hint label as the trailing-edge-aligned buttons.
-    self.hintLabelLeadingMarginConstraint.constant = subviewsDiff;
+    self.hintLabelLeadingMarginConstraint.constant = 0;
     self.hintLabelLeadingConstraint.constant =
         hintLabelScalingExtraOffset +
         Interpolate(HintLabelFakeboxLeadingSpace(),
@@ -624,10 +619,6 @@ CGFloat Interpolate(CGFloat from, CGFloat to, CGFloat percent) {
       [self setFakeboxBackgroundWithProgress:_lastAnimationPercent];
     }
   }
-}
-
-- (void)updateForTopSafeAreaInset:(CGFloat)topSafeAreaInset {
-  self.invisibleOmniboxConstraint.constant = topSafeAreaInset;
 }
 
 #pragma mark - Property accessors
