@@ -67,10 +67,6 @@ class ASH_EXPORT DarkLightModeControllerImpl
   void OnActiveUserPrefServiceChanged(PrefService* prefs) override;
   void OnSessionStateChanged(session_manager::SessionState state) override;
 
- protected:
-  // ScheduledFeature:
-  void RefreshFeatureState() override;
-
  private:
   // ScheduledFeature:
   const char* GetFeatureName() const override;

@@ -174,7 +174,6 @@ class ASH_EXPORT NightLightControllerImpl
   void OnDisplayConfigurationChanged() override;
 
   // aura::EnvObserver:
-  void OnWindowInitialized(aura::Window* window) override {}
   void OnHostInitialized(aura::WindowTreeHost* host) override;
 
   // SessionObserver:

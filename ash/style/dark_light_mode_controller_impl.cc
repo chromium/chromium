@@ -223,8 +223,6 @@ void DarkLightModeControllerImpl::OnSessionStateChanged(
   }
 }
 
-void DarkLightModeControllerImpl::RefreshFeatureState() {}
-
 const char* DarkLightModeControllerImpl::GetFeatureName() const {
   return "DarkLightModeControllerImpl";
 }

@@ -27,7 +27,6 @@
 #include "components/prefs/pref_registry_simple.h"
 #include "components/prefs/pref_service.h"
 #include "third_party/icu/source/i18n/astro.h"
-#include "ui/aura/env.h"
 #include "ui/base/l10n/l10n_util.h"
 #include "ui/gfx/geometry/vector3d_f.h"
 
@@ -107,7 +106,6 @@ ScheduledFeature::ScheduledFeature(
       clock_(&default_clock_),
       refresh_failure_backoff_(&kRefreshFailureBackoffPolicy) {
   Shell::Get()->session_controller()->AddObserver(this);
-  aura::Env::GetInstance()->AddObserver(this);
   chromeos::PowerManagerClient::Get()->AddObserver(this);
   // Check that both start or end times are supplied or both are absent.
   DCHECK_EQ(prefs_path_custom_start_time_.empty(),
@@ -116,7 +114,6 @@ ScheduledFeature::ScheduledFeature(
 
 ScheduledFeature::~ScheduledFeature() {
   chromeos::PowerManagerClient::Get()->RemoveObserver(this);
-  aura::Env::GetInstance()->RemoveObserver(this);
   Shell::Get()->session_controller()->RemoveObserver(this);
 }
 

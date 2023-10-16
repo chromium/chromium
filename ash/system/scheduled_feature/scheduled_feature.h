@@ -26,7 +26,6 @@
 #include "chromeos/dbus/power/power_manager_client.h"
 #include "components/prefs/pref_change_registrar.h"
 #include "net/base/backoff_entry.h"
-#include "ui/aura/env_observer.h"
 
 class PrefService;
 
@@ -44,7 +43,6 @@ class LocalTimeConverter;
 // a custom scheduler with a custom start and end time.
 class ASH_EXPORT ScheduledFeature
     : public GeolocationController::Observer,
-      public aura::EnvObserver,
       public SessionObserver,
       public chromeos::PowerManagerClient::Observer {
  public:
