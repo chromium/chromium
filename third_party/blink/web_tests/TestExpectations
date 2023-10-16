@@ -6798,3 +6798,17 @@ crbug.com/1492219 [ Linux ] fast/forms/color-scheme/suggestion-picker/time-sugge
 
 crbug.com/1467464 http/tests/devtools/security/interstitial-sidebar.js [ Failure Pass ]
 crbug.com/1467464 http/tests/devtools/security/mixed-content-sidebar.js [ Failure Pass ]
+# Failures due to adding new virtual tests. 
+crbug.com/1491985 virtual/css-masking-disabled/external/wpt/css/css-masking/mask-image/mask-clip-1.html [ Failure ]
+crbug.com/1491985 virtual/css-masking-disabled/external/wpt/css/css-masking/mask-image/mask-image-1a.html [ Failure ]
+crbug.com/1491985 virtual/css-masking-disabled/external/wpt/css/css-masking/mask-image/mask-image-1b.html [ Failure ]
+crbug.com/1491985 virtual/css-masking-disabled/external/wpt/css/css-masking/mask-image/mask-image-2.html [ Failure ]
+crbug.com/1491985 virtual/css-masking-disabled/external/wpt/css/css-masking/mask-image/mask-image-4a.html [ Failure ]
+crbug.com/1491985 virtual/css-masking-disabled/external/wpt/css/css-masking/mask-image/mask-image-4b.html [ Failure ]
+crbug.com/1491985 virtual/css-masking-disabled/external/wpt/css/css-masking/mask-image/mask-image-url-image-hash.html [ Failure ]
+crbug.com/1491985 virtual/css-masking-disabled/external/wpt/css/css-masking/mask-image/mask-image-url-image.html [ Failure ]
+crbug.com/1491985 virtual/css-masking-disabled/external/wpt/css/css-masking/mask-image/mask-opacity-1a.html [ Failure ]
+crbug.com/1491985 virtual/css-masking-disabled/external/wpt/css/css-masking/mask-image/mask-opacity-1b.html [ Failure ]
+crbug.com/1491985 virtual/css-masking-disabled/external/wpt/css/css-masking/mask-image/mask-opacity-1e.html [ Failure ]
+crbug.com/1491985 virtual/css-masking-disabled/external/wpt/css/css-masking/mask-image/mask-size-percent-percent-stretch.html [ Failure ]
+crbug.com/626703 virtual/css-masking-disabled/external/wpt/css/css-masking/mask-shorthand-subproperties-reset.html [ Timeout ]

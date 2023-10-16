@@ -1,0 +1,39 @@
+This is a testharness.js-based test.
+PASS Property clip has initial value auto
+PASS Property clip does not inherit
+PASS Property clip-path has initial value none
+PASS Property clip-path does not inherit
+PASS Property clip-rule has initial value nonzero
+PASS Property clip-rule inherits
+FAIL Property mask-border-mode has initial value alpha assert_true: mask-border-mode doesn't seem to be supported in the computed style expected true got false
+FAIL Property mask-border-mode does not inherit assert_true: expected true got false
+FAIL Property mask-border-outset has initial value 0 assert_true: mask-border-outset doesn't seem to be supported in the computed style expected true got false
+FAIL Property mask-border-outset does not inherit assert_true: expected true got false
+FAIL Property mask-border-repeat has initial value stretch assert_true: mask-border-repeat doesn't seem to be supported in the computed style expected true got false
+FAIL Property mask-border-repeat does not inherit assert_true: expected true got false
+FAIL Property mask-border-slice has initial value 0 assert_true: mask-border-slice doesn't seem to be supported in the computed style expected true got false
+FAIL Property mask-border-slice does not inherit assert_true: expected true got false
+FAIL Property mask-border-source has initial value none assert_true: mask-border-source doesn't seem to be supported in the computed style expected true got false
+FAIL Property mask-border-source does not inherit assert_true: expected true got false
+FAIL Property mask-border-width has initial value auto assert_true: mask-border-width doesn't seem to be supported in the computed style expected true got false
+FAIL Property mask-border-width does not inherit assert_true: expected true got false
+FAIL Property mask-clip has initial value border-box assert_true: mask-clip doesn't seem to be supported in the computed style expected true got false
+FAIL Property mask-clip does not inherit assert_true: expected true got false
+FAIL Property mask-composite has initial value add assert_true: mask-composite doesn't seem to be supported in the computed style expected true got false
+FAIL Property mask-composite does not inherit assert_true: expected true got false
+FAIL Property mask-image has initial value none assert_true: mask-image doesn't seem to be supported in the computed style expected true got false
+FAIL Property mask-image does not inherit assert_true: expected true got false
+FAIL Property mask-mode has initial value match-source assert_true: mask-mode doesn't seem to be supported in the computed style expected true got false
+FAIL Property mask-mode does not inherit assert_true: expected true got false
+FAIL Property mask-origin has initial value border-box assert_true: mask-origin doesn't seem to be supported in the computed style expected true got false
+FAIL Property mask-origin does not inherit assert_true: expected true got false
+FAIL Property mask-position has initial value 0% 0% assert_true: mask-position doesn't seem to be supported in the computed style expected true got false
+FAIL Property mask-position does not inherit assert_true: expected true got false
+FAIL Property mask-repeat has initial value repeat assert_true: mask-repeat doesn't seem to be supported in the computed style expected true got false
+FAIL Property mask-repeat does not inherit assert_true: expected true got false
+FAIL Property mask-size has initial value auto assert_true: mask-size doesn't seem to be supported in the computed style expected true got false
+FAIL Property mask-size does not inherit assert_true: expected true got false
+PASS Property mask-type has initial value luminance
+PASS Property mask-type does not inherit
+Harness: the test ran to completion.
+
