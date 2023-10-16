@@ -19,12 +19,13 @@ void TabHoverCardThumbnailObserver::Observe(
   if (!current_image_)
     return;
 
-  // Check if the current image is not null again after calling
-  // Subscribe to handle situations around reenterency which might
-  // invalidate the current image (crbug.com/1353340).
+  // Dump callstack without crashing if the current image is null after calling
+  // Subscribe to identify the re-entrant path that invalidates the current
+  // image (crbug.com/1353340).
   subscription_ = current_image_->Subscribe();
   if (!current_image_) {
     subscription_.reset();
+    DUMP_WILL_BE_NOTREACHED_NORETURN();
     return;
   }
 
