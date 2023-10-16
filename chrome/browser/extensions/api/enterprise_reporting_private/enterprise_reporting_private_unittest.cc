@@ -2,20 +2,20 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#include <tuple>
-
-#include "base/files/file_util.h"
-#include "base/memory/raw_ptr.h"
-#include "chrome/browser/browser_process.h"
-#include "chrome/browser/enterprise/signals/device_info_fetcher.h"
 #include "chrome/browser/extensions/api/enterprise_reporting_private/enterprise_reporting_private_api.h"
+
+#include <tuple>
 
 #include "base/command_line.h"
 #include "base/environment.h"
+#include "base/files/file_util.h"
 #include "base/files/scoped_temp_dir.h"
 #include "base/json/json_writer.h"
+#include "base/memory/raw_ptr.h"
 #include "build/build_config.h"
+#include "chrome/browser/browser_process.h"
 #include "chrome/browser/enterprise/identifiers/profile_id_service_factory.h"
+#include "chrome/browser/enterprise/signals/device_info_fetcher.h"
 #include "chrome/browser/enterprise/signals/signals_common.h"
 #include "chrome/browser/extensions/api/enterprise_reporting_private/chrome_desktop_report_request_helper.h"
 #include "chrome/browser/extensions/extension_api_unittest.h"
@@ -50,6 +50,7 @@
 
 #if BUILDFLAG(IS_WIN)
 #include <netfw.h>
+#include <shlobj.h>
 #include <windows.h>
 #include <wrl/client.h>
 
@@ -816,7 +817,8 @@ class EnterpriseReportingPrivateGetContextInfoChromeRemoteDesktopAppBlockedTest
                                    std::move(allowlist));
   }
 
-  void ExpectDefaultPolicies(enterprise_reporting_private::ContextInfo& info) {
+  void ExpectDefaultPolicies(
+      const enterprise_reporting_private::ContextInfo& info) {
     EXPECT_TRUE(info.browser_affiliation_ids.empty());
     EXPECT_TRUE(info.profile_affiliation_ids.empty());
     EXPECT_TRUE(info.on_file_attached_providers.empty());
@@ -891,6 +893,10 @@ class EnterpriseReportingPrivateGetContextInfoOSFirewallTest
 
  protected:
   void SetUp() override {
+    if (!::IsUserAnAdmin()) {
+      // INetFwPolicy2::put_FirewallEnabled fails for non-admin users.
+      GTEST_SKIP() << "This test must be run by an admin user";
+    }
     EnterpriseReportingPrivateGetContextInfoTest::SetUp();
     HRESULT hr = CoCreateInstance(CLSID_NetFwPolicy2, nullptr, CLSCTX_ALL,
                                   IID_PPV_ARGS(&firewall_policy_));
