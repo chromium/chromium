@@ -16,6 +16,7 @@
 #include "base/scoped_observation.h"
 #include "extensions/browser/api/declarative/rules_cache_delegate.h"
 #include "extensions/browser/api/declarative/rules_registry.h"
+#include "extensions/browser/api/web_request/web_request_event_router_factory.h"
 #include "extensions/browser/browser_context_keyed_api_factory.h"
 #include "extensions/browser/extension_registry.h"
 #include "extensions/browser/extension_registry_observer.h"
@@ -180,6 +181,16 @@ class RulesRegistryService : public BrowserContextKeyedAPI,
   raw_ptr<content::BrowserContext> browser_context_;
 
   base::ObserverList<Observer>::Unchecked observers_;
+};
+
+template <>
+struct BrowserContextFactoryDependencies<RulesRegistryService> {
+  static void DeclareFactoryDependencies(
+      BrowserContextKeyedAPIFactory<RulesRegistryService>* factory) {
+    factory->DependsOn(
+        ExtensionsBrowserClient::Get()->GetExtensionSystemFactory());
+    factory->DependsOn(WebRequestEventRouterFactory::GetInstance());
+  }
 };
 
 }  // namespace extensions

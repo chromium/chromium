@@ -90,6 +90,8 @@ BASE_DECLARE_FEATURE(kStructuredCloningForMV3Messaging);
 
 BASE_DECLARE_FEATURE(kTelemetryExtensionPendingApprovalApi);
 
+BASE_DECLARE_FEATURE(kUsePerBrowserContextWebRequestEventRouter);
+
 BASE_DECLARE_FEATURE(kWebviewTagMPArchBehavior);
 
 ///////////////////////////////////////////////////////////////////////////////

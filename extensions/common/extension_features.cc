@@ -182,6 +182,13 @@ BASE_FEATURE(kTelemetryExtensionPendingApprovalApi,
              "TelemetryExtensionPendingApprovalApi",
              base::FEATURE_DISABLED_BY_DEFAULT);
 
+// If enabled, calling WebRequestEventRouter::Get will return an instance of the
+// per-BrowserContext WebRequestEventRouter instead of the global singleton
+// ExtensionWebRequestEventRouter.
+BASE_FEATURE(kUsePerBrowserContextWebRequestEventRouter,
+             "kUsePerBrowserContextWebRequestEventRouter",
+             base::FEATURE_DISABLED_BY_DEFAULT);
+
 // Controls the <webview> tag behaviour changes proposed as part of the guest
 // view MPArch migration. See
 // https://docs.google.com/document/d/1RVbtvklXUg9QCNvMT0r-1qDwJNeQFGoTCOD1Ur9mDa4/edit?usp=sharing

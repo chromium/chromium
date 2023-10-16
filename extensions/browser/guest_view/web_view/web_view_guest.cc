@@ -277,8 +277,9 @@ void WebViewGuest::CleanUp(content::BrowserContext* browser_context,
   }
 
   // Clean up web request event listeners for the WebView.
-  ExtensionWebRequestEventRouter::GetInstance()->RemoveWebViewEventListeners(
-      browser_context, embedder_process_id, view_instance_id);
+  WebRequestEventRouter::Get(browser_context)
+      ->RemoveWebViewEventListeners(browser_context, embedder_process_id,
+                                    view_instance_id);
 
   // Clean up content scripts for the WebView.
   auto* csm = WebViewContentScriptManager::Get(browser_context);

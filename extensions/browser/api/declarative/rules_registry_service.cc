@@ -63,8 +63,15 @@ void RulesRegistryService::Shutdown() {
   // Release the references to all registries, and remove the default registry
   // from ExtensionWebRequestEventRouter.
   rule_registries_.clear();
-  ExtensionWebRequestEventRouter::GetInstance()->RegisterRulesRegistry(
-      browser_context_, RulesRegistryService::kDefaultRulesRegistryID, nullptr);
+  // TODO(crbug.com/1433136): This could be moved to
+  // WebRequestEventRouter::Shutdown when the new per-BrowserContext event
+  // router is the only implementation. Or we might just remove it completely,
+  // since that instance will be destroyed when this RulesRegistryService
+  // instance is.
+  WebRequestEventRouter::Get(browser_context_)
+      ->RegisterRulesRegistry(browser_context_,
+                              RulesRegistryService::kDefaultRulesRegistryID,
+                              nullptr);
 }
 
 static base::LazyInstance<BrowserContextKeyedAPIFactory<RulesRegistryService>>::
@@ -191,8 +198,9 @@ RulesRegistryService::RegisterWebRequestRulesRegistry(
   web_request_cache_delegate->AddObserver(this);
   cache_delegates_.push_back(std::move(web_request_cache_delegate));
   RegisterRulesRegistry(web_request_rules_registry);
-  ExtensionWebRequestEventRouter::GetInstance()->RegisterRulesRegistry(
-      browser_context_, rules_registry_id, web_request_rules_registry);
+  WebRequestEventRouter::Get(browser_context_)
+      ->RegisterRulesRegistry(browser_context_, rules_registry_id,
+                              web_request_rules_registry);
   return web_request_rules_registry;
 }
 

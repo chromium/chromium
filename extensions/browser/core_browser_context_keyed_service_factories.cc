@@ -4,6 +4,7 @@
 
 #include "extensions/browser/core_browser_context_keyed_service_factories.h"
 
+#include "extensions/browser/api/web_request/web_request_event_router_factory.h"
 #include "extensions/browser/app_window/app_window_geometry_cache.h"
 #include "extensions/browser/app_window/app_window_registry.h"
 #include "extensions/browser/event_router_factory.h"
@@ -40,6 +41,7 @@ void EnsureCoreBrowserContextKeyedServiceFactoriesBuilt() {
   RendererStartupHelperFactory::GetInstance();
   ServiceWorkerTaskQueueFactory::GetInstance();
   UpdateServiceFactory::GetInstance();
+  WebRequestEventRouterFactory::GetInstance();
 }
 
 }  // namespace extensions

@@ -13,6 +13,8 @@
 #include "base/functional/bind.h"
 #include "base/json/json_writer.h"
 #include "base/lazy_instance.h"
+#include "base/memory/raw_ptr.h"
+#include "base/ranges/algorithm.h"
 #include "base/strings/string_number_conversions.h"
 #include "base/strings/utf_string_conversions.h"
 #include "base/task/sequenced_task_runner.h"
@@ -26,6 +28,7 @@
 #include "content/public/browser/render_view_host.h"
 #include "content/public/browser/storage_partition.h"
 #include "content/public/common/url_constants.h"
+#include "extensions/browser/api/web_request/extension_web_request_event_router.h"
 #include "extensions/browser/api/web_request/web_request_api_constants.h"
 #include "extensions/browser/api/web_request/web_request_api_helpers.h"
 #include "extensions/browser/api/web_request/web_request_proxying_url_loader_factory.h"
@@ -270,10 +273,8 @@ WebRequestAPI::WebRequestAPI(content::BrowserContext* context)
   // bit tricky right now because the singleton instance would need to
   // observe the EventRouter for each BrowserContext that has webRequest
   // API event listeners.
-  // Observe related events in the EventRouter for the
-  // ExtensionWebRequestEventRouter.
-  for (std::string event_name :
-       ExtensionWebRequestEventRouter::GetEventNames()) {
+  // Observe related events in the EventRouter for the WebRequestEventRouter.
+  for (std::string event_name : WebRequestEventRouter::GetEventNames()) {
     event_router->RegisterObserver(this, event_name);
   }
   extensions::ExtensionRegistry::Get(browser_context_)->AddObserver(this);
@@ -285,8 +286,10 @@ void WebRequestAPI::Shutdown() {
   proxies_.reset();
   EventRouter::Get(browser_context_)->UnregisterObserver(this);
   extensions::ExtensionRegistry::Get(browser_context_)->RemoveObserver(this);
-  ExtensionWebRequestEventRouter::GetInstance()->OnBrowserContextShutdown(
-      browser_context_);
+  // TODO(https://crbug.com/1433136): Remove this once WebRequestEventRouter
+  // implements `KeyedService::Shutdown` correctly.
+  WebRequestEventRouter::Get(browser_context_)
+      ->OnBrowserContextShutdown(browser_context_);
 }
 
 static base::LazyInstance<
@@ -332,15 +335,13 @@ void WebRequestAPI::OnListenerRemoved(const EventListenerInfo& details) {
         browser_context_.get(), details.extension_id, sub_event_name);
   } else {
     // This was an active listener registration.
-    auto update_type =
-        ExtensionWebRequestEventRouter::ListenerUpdateType::kRemove;
+    auto update_type = WebRequestEventRouter::ListenerUpdateType::kRemove;
     if (details.service_worker_version_id !=
         blink::mojom::kInvalidServiceWorkerVersionId) {
       // This was a listener removed for a service worker, but it wasn't the
       // lazy listener registration. In this case, we only deactivate the
       // listener (rather than removing it).
-      update_type =
-          ExtensionWebRequestEventRouter::ListenerUpdateType::kDeactivate;
+      update_type = WebRequestEventRouter::ListenerUpdateType::kDeactivate;
     }
 
     // Note that we unwrap the raw_ptr BrowserContext instance using
@@ -354,8 +355,6 @@ void WebRequestAPI::OnListenerRemoved(const EventListenerInfo& details) {
 
   // This PostTask is necessary even though we are already on the UI thread to
   // allow cases where blocking listeners remove themselves inside the handler.
-  // This Unretained is safe because the ExtensionWebRequestEventRouter
-  // singleton is leaked.
   base::SequencedTaskRunner::GetCurrentDefault()->PostTask(
       FROM_HERE, std::move(remove_listener));
 }
@@ -495,9 +494,11 @@ void WebRequestAPI::ProxyWebSocket(
   DCHECK_CURRENTLY_ON(BrowserThread::UI);
   DCHECK(MayHaveProxies() || MayHaveWebsocketProxiesForExtensionTelemetry());
 
+  content::BrowserContext* browser_context =
+      frame->GetProcess()->GetBrowserContext();
   const bool has_extra_headers =
-      ExtensionWebRequestEventRouter::GetInstance()->HasAnyExtraHeadersListener(
-          frame->GetProcess()->GetBrowserContext());
+      WebRequestEventRouter::Get(browser_context)
+          ->HasAnyExtraHeadersListener(browser_context);
 
   const ukm::SourceIdObj& ukm_source_id =
       ukm::SourceIdObj::FromInt64(frame->GetPageUkmSourceId());
@@ -562,7 +563,7 @@ bool WebRequestAPI::MayHaveWebsocketProxiesForExtensionTelemetry() const {
 }
 
 bool WebRequestAPI::HasExtraHeadersListenerForTesting() {
-  return ExtensionWebRequestEventRouter::GetInstance()
+  return WebRequestEventRouter::Get(browser_context_)
       ->HasAnyExtraHeadersListener(browser_context_);
 }
 
@@ -594,7 +595,7 @@ void WebRequestAPI::OnExtensionUnloaded(
 
 void WebRequestAPI::UpdateActiveListener(
     content::BrowserContext* browser_context,
-    ExtensionWebRequestEventRouter::ListenerUpdateType update_type,
+    WebRequestEventRouter::ListenerUpdateType update_type,
     const ExtensionId& extension_id,
     const std::string& sub_event_name,
     int worker_thread_id,
@@ -602,9 +603,10 @@ void WebRequestAPI::UpdateActiveListener(
   if (!ExtensionsBrowserClient::Get()->IsValidContext(browser_context)) {
     return;
   }
-  ExtensionWebRequestEventRouter::GetInstance()->UpdateActiveListener(
-      browser_context, update_type, extension_id, sub_event_name,
-      worker_thread_id, service_worker_version_id);
+  WebRequestEventRouter::Get(browser_context)
+      ->UpdateActiveListener(browser_context, update_type, extension_id,
+                             sub_event_name, worker_thread_id,
+                             service_worker_version_id);
 }
 
 void WebRequestAPI::RemoveLazyListener(content::BrowserContext* browser_context,
@@ -613,8 +615,8 @@ void WebRequestAPI::RemoveLazyListener(content::BrowserContext* browser_context,
   if (!ExtensionsBrowserClient::Get()->IsValidContext(browser_context)) {
     return;
   }
-  ExtensionWebRequestEventRouter::GetInstance()->RemoveLazyListener(
-      browser_context, extension_id, sub_event_name);
+  WebRequestEventRouter::Get(browser_context)
+      ->RemoveLazyListener(browser_context, extension_id, sub_event_name);
 }
 
 // Special QuotaLimitHeuristic for WebRequestHandlerBehaviorChangedFunction.
@@ -647,8 +649,7 @@ class ClearCacheQuotaHeuristic : public QuotaLimitHeuristic {
   bool Apply(Bucket* bucket, const base::TimeTicks& event_time) override;
 
  private:
-  // Callback that is triggered by the ExtensionWebRequestEventRouter on a page
-  // load.
+  // Callback that is triggered by the WebRequestEventRouter on a page load.
   //
   // We don't need to take care of the life time of |bucket|: It is owned by the
   // BucketMapper of our base class in |QuotaLimitHeuristic::bucket_mapper_|. As
@@ -672,7 +673,7 @@ bool ClearCacheQuotaHeuristic::Apply(Bucket* bucket,
   // Call bucket->DeductToken() on a new page load, this is when
   // webRequest.handlerBehaviorChanged() clears the cache.
   if (!callback_registered_) {
-    ExtensionWebRequestEventRouter::GetInstance()->AddCallbackForPageLoad(
+    WebRequestEventRouter::AddCallbackForPageLoad(
         base::BindOnce(&ClearCacheQuotaHeuristic::OnPageLoad,
                        weak_ptr_factory_.GetWeakPtr(), bucket));
     callback_registered_ = true;
@@ -693,7 +694,7 @@ WebRequestInternalAddEventListenerFunction::Run() {
   EXTENSION_FUNCTION_VALIDATE(args().size() == 6);
 
   // Argument 0 is the callback, which we don't use here.
-  ExtensionWebRequestEventRouter::RequestFilter filter;
+  WebRequestEventRouter::RequestFilter filter;
   EXTENSION_FUNCTION_VALIDATE(args()[1].is_dict());
   // Failure + an empty error string means a fatal error.
   std::string error;
@@ -774,11 +775,12 @@ WebRequestInternalAddEventListenerFunction::Run() {
   }
 
   bool success =
-      ExtensionWebRequestEventRouter::GetInstance()->AddEventListener(
-          browser_context(), extension_id_safe(), extension_name, event_name,
-          sub_event_name, std::move(filter), extra_info_spec, render_process_id,
-          web_view_instance_id, worker_thread_id(),
-          service_worker_version_id());
+      WebRequestEventRouter::Get(browser_context())
+          ->AddEventListener(browser_context(), extension_id_safe(),
+                             extension_name, event_name, sub_event_name,
+                             std::move(filter), extra_info_spec,
+                             render_process_id, web_view_instance_id,
+                             worker_thread_id(), service_worker_version_id());
   EXTENSION_FUNCTION_VALIDATE(success);
 
   helpers::ClearCacheOnNavigation();
@@ -792,11 +794,12 @@ void WebRequestInternalEventHandledFunction::OnError(
     uint64_t request_id,
     int render_process_id,
     int web_view_instance_id,
-    std::unique_ptr<ExtensionWebRequestEventRouter::EventResponse> response) {
-  ExtensionWebRequestEventRouter::GetInstance()->OnEventHandled(
-      browser_context(), extension_id_safe(), event_name, sub_event_name,
-      request_id, render_process_id, web_view_instance_id, worker_thread_id(),
-      service_worker_version_id(), std::move(response));
+    std::unique_ptr<WebRequestEventRouter::EventResponse> response) {
+  WebRequestEventRouter::Get(browser_context())
+      ->OnEventHandled(browser_context(), extension_id_safe(), event_name,
+                       sub_event_name, request_id, render_process_id,
+                       web_view_instance_id, worker_thread_id(),
+                       service_worker_version_id(), std::move(response));
 }
 
 ExtensionFunction::ResponseAction
@@ -821,7 +824,7 @@ WebRequestInternalEventHandledFunction::Run() {
 
   int render_process_id = source_process_id();
 
-  std::unique_ptr<ExtensionWebRequestEventRouter::EventResponse> response;
+  std::unique_ptr<WebRequestEventRouter::EventResponse> response;
   if (HasOptionalArgument(4)) {
     EXTENSION_FUNCTION_VALIDATE(args()[4].is_dict());
     const base::Value::Dict& dict_value = args()[4].GetDict();
@@ -829,9 +832,8 @@ WebRequestInternalEventHandledFunction::Run() {
     if (!dict_value.empty()) {
       base::Time install_time = ExtensionPrefs::Get(browser_context())
                                     ->GetLastUpdateTime(extension_id_safe());
-      response =
-          std::make_unique<ExtensionWebRequestEventRouter::EventResponse>(
-              extension_id_safe(), install_time);
+      response = std::make_unique<WebRequestEventRouter::EventResponse>(
+          extension_id_safe(), install_time);
     }
 
     const base::Value* redirect_url_value = dict_value.Find("redirectUrl");
@@ -938,10 +940,11 @@ WebRequestInternalEventHandledFunction::Run() {
     }
   }
 
-  ExtensionWebRequestEventRouter::GetInstance()->OnEventHandled(
-      browser_context(), extension_id_safe(), event_name, sub_event_name,
-      request_id, render_process_id, web_view_instance_id, worker_thread_id(),
-      service_worker_version_id(), std::move(response));
+  WebRequestEventRouter::Get(browser_context())
+      ->OnEventHandled(browser_context(), extension_id_safe(), event_name,
+                       sub_event_name, request_id, render_process_id,
+                       web_view_instance_id, worker_thread_id(),
+                       service_worker_version_id(), std::move(response));
 
   return RespondNow(NoArguments());
 }

@@ -13,6 +13,7 @@
 #include "base/memory/scoped_refptr.h"
 #include "base/memory/weak_ptr.h"
 #include "components/keyed_service/core/keyed_service_shutdown_notifier.h"
+#include "extensions/browser/api/web_request/extension_web_request_event_router.h"
 #include "extensions/browser/api/web_request/web_request_api.h"
 #include "extensions/browser/api/web_request/web_request_info.h"
 #include "mojo/public/cpp/bindings/pending_receiver.h"
@@ -115,8 +116,7 @@ class WebRequestProxyingWebSocket
   void ContinueToStartRequest(int error_code);
   void OnHeadersReceivedComplete(int error_code);
   void ContinueToHeadersReceived();
-  void OnAuthRequiredComplete(
-      ExtensionWebRequestEventRouter::AuthRequiredResponse rv);
+  void OnAuthRequiredComplete(WebRequestEventRouter::AuthRequiredResponse rv);
   void OnHeadersReceivedCompleteForAuth(const net::AuthChallengeInfo& auth_info,
                                         int rv);
   void ContinueToCompleted();

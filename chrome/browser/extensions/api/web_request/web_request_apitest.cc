@@ -3889,7 +3889,7 @@ IN_PROC_BROWSER_TEST_F(ExtensionWebRequestApiTest,
   const Extension* extension = LoadExtension(test_dir.UnpackedPath());
   ASSERT_TRUE(extension);
 
-  auto* router = ExtensionWebRequestEventRouter::GetInstance();
+  auto* router = WebRequestEventRouter::Get(profile());
   ASSERT_TRUE(router);
 
   static constexpr char kEventName[] = "webRequest.onBeforeRequest";
@@ -5542,8 +5542,8 @@ class ManifestV3WebRequestApiTest : public ExtensionWebRequestApiTest {
     return extension;
   }
 
-  ExtensionWebRequestEventRouter* web_request_router() {
-    return ExtensionWebRequestEventRouter::GetInstance();
+  WebRequestEventRouter* web_request_router() {
+    return WebRequestEventRouter::Get(profile());
   }
 };
 

@@ -146,53 +146,45 @@ TEST_F(ExtensionWebRequestTest, AddAndRemoveListeners) {
   const std::string kEventName(web_request::OnBeforeRequest::kEventName);
   const std::string kSubEventName1 = kEventName + "/1";
   const std::string kSubEventName2 = kEventName + "/2";
-  EXPECT_EQ(
-      0u,
-      ExtensionWebRequestEventRouter::GetInstance()->GetListenerCountForTesting(
-          &profile_, kEventName));
+  WebRequestEventRouter* const event_router =
+      WebRequestEventRouter::Get(&profile_);
+  EXPECT_EQ(0u,
+            event_router->GetListenerCountForTesting(&profile_, kEventName));
 
   // Add two listeners.
-  ExtensionWebRequestEventRouter::GetInstance()->AddEventListener(
+  event_router->AddEventListener(
       &profile_, ext_id, ext_id, kEventName, kSubEventName1,
-      ExtensionWebRequestEventRouter::RequestFilter(), 0,
-      1 /* render_process_id */, 0, extensions::kMainThreadId,
-      blink::mojom::kInvalidServiceWorkerVersionId);
-  ExtensionWebRequestEventRouter::GetInstance()->AddEventListener(
+      WebRequestEventRouter::RequestFilter(), 0, 1 /* render_process_id */, 0,
+      extensions::kMainThreadId, blink::mojom::kInvalidServiceWorkerVersionId);
+  event_router->AddEventListener(
       &profile_, ext_id, ext_id, kEventName, kSubEventName2,
-      ExtensionWebRequestEventRouter::RequestFilter(), 0,
-      1 /* render_process_id */, 0, extensions::kMainThreadId,
-      blink::mojom::kInvalidServiceWorkerVersionId);
-  EXPECT_EQ(
-      2u,
-      ExtensionWebRequestEventRouter::GetInstance()->GetListenerCountForTesting(
-          &profile_, kEventName));
+      WebRequestEventRouter::RequestFilter(), 0, 1 /* render_process_id */, 0,
+      extensions::kMainThreadId, blink::mojom::kInvalidServiceWorkerVersionId);
+  EXPECT_EQ(2u,
+            event_router->GetListenerCountForTesting(&profile_, kEventName));
 
   // Now remove the listeners one at a time, verifying the counts after each
   // removal.
-  ExtensionWebRequestEventRouter::GetInstance()->UpdateActiveListenerForTesting(
-      &profile_, ExtensionWebRequestEventRouter::ListenerUpdateType::kRemove,
-      ext_id, kSubEventName1, extensions::kMainThreadId,
+  event_router->UpdateActiveListenerForTesting(
+      &profile_, WebRequestEventRouter::ListenerUpdateType::kRemove, ext_id,
+      kSubEventName1, extensions::kMainThreadId,
       blink::mojom::kInvalidServiceWorkerVersionId);
-  EXPECT_EQ(
-      1u,
-      ExtensionWebRequestEventRouter::GetInstance()->GetListenerCountForTesting(
-          &profile_, kEventName));
+  EXPECT_EQ(1u,
+            event_router->GetListenerCountForTesting(&profile_, kEventName));
 
-  ExtensionWebRequestEventRouter::GetInstance()->UpdateActiveListenerForTesting(
-      &profile_, ExtensionWebRequestEventRouter::ListenerUpdateType::kRemove,
-      ext_id, kSubEventName2, extensions::kMainThreadId,
+  event_router->UpdateActiveListenerForTesting(
+      &profile_, WebRequestEventRouter::ListenerUpdateType::kRemove, ext_id,
+      kSubEventName2, extensions::kMainThreadId,
       blink::mojom::kInvalidServiceWorkerVersionId);
-  EXPECT_EQ(
-      0u,
-      ExtensionWebRequestEventRouter::GetInstance()->GetListenerCountForTesting(
-          &profile_, kEventName));
+  EXPECT_EQ(0u,
+            event_router->GetListenerCountForTesting(&profile_, kEventName));
 }
 
 // Tests that when a browser_context shuts down, all data keyed to that
 // context is removed.
 TEST_F(ExtensionWebRequestTest, BrowserContextShutdown) {
-  ExtensionWebRequestEventRouter* const event_router =
-      ExtensionWebRequestEventRouter::GetInstance();
+  WebRequestEventRouter* const event_router =
+      WebRequestEventRouter::Get(&profile_);
   ASSERT_TRUE(event_router);
 
   std::string ext_id("abcdefghijklmnopabcdefghijklmnop");
@@ -205,14 +197,12 @@ TEST_F(ExtensionWebRequestTest, BrowserContextShutdown) {
   // Add two listeners for the main profile.
   event_router->AddEventListener(
       &profile_, ext_id, ext_id, kEventName, kSubEventName,
-      ExtensionWebRequestEventRouter::RequestFilter(), 0,
-      1 /* render_process_id */, 0, extensions::kMainThreadId,
-      blink::mojom::kInvalidServiceWorkerVersionId);
+      WebRequestEventRouter::RequestFilter(), 0, 1 /* render_process_id */, 0,
+      extensions::kMainThreadId, blink::mojom::kInvalidServiceWorkerVersionId);
   event_router->AddEventListener(
       &profile_, ext_id, ext_id, kEventName, kSubEventName,
-      ExtensionWebRequestEventRouter::RequestFilter(), 0,
-      2 /* render_process_id */, 0, extensions::kMainThreadId,
-      blink::mojom::kInvalidServiceWorkerVersionId);
+      WebRequestEventRouter::RequestFilter(), 0, 2 /* render_process_id */, 0,
+      extensions::kMainThreadId, blink::mojom::kInvalidServiceWorkerVersionId);
   event_router->IncrementExtraHeadersListenerCount(&profile_);
   EXPECT_EQ(2u,
             event_router->GetListenerCountForTesting(&profile_, kEventName));
@@ -228,8 +218,8 @@ TEST_F(ExtensionWebRequestTest, BrowserContextShutdown) {
   // Because the ExtensionWebRequestEventRouter is a singleton, there are hooks
   // in the off-the-record profile for notifying it when an OTR profile is
   // created and destroyed. Unfortunately, that doesn't work with test profiles,
-  // so the test needs to simulate those calls
-  event_router->OnOTRBrowserContextCreated(&profile_, otr_profile);
+  // so the test needs to simulate those calls.
+  WebRequestEventRouter::OnOTRBrowserContextCreated(&profile_, otr_profile);
   EXPECT_EQ(0u,
             event_router->GetListenerCountForTesting(otr_profile, kEventName));
   EXPECT_FALSE(event_router->HasAnyExtraHeadersListenerForTesting(otr_profile));
@@ -237,14 +227,12 @@ TEST_F(ExtensionWebRequestTest, BrowserContextShutdown) {
   // Add two listeners for the otr profile.
   event_router->AddEventListener(
       otr_profile, ext_id, ext_id, kEventName, kSubEventName,
-      ExtensionWebRequestEventRouter::RequestFilter(), 0,
-      1 /* render_process_id */, 0, extensions::kMainThreadId,
-      blink::mojom::kInvalidServiceWorkerVersionId);
+      WebRequestEventRouter::RequestFilter(), 0, 1 /* render_process_id */, 0,
+      extensions::kMainThreadId, blink::mojom::kInvalidServiceWorkerVersionId);
   event_router->AddEventListener(
       otr_profile, ext_id, ext_id, kEventName, kSubEventName,
-      ExtensionWebRequestEventRouter::RequestFilter(), 0,
-      2 /* render_process_id */, 0, extensions::kMainThreadId,
-      blink::mojom::kInvalidServiceWorkerVersionId);
+      WebRequestEventRouter::RequestFilter(), 0, 2 /* render_process_id */, 0,
+      extensions::kMainThreadId, blink::mojom::kInvalidServiceWorkerVersionId);
   event_router->IncrementExtraHeadersListenerCount(otr_profile);
   EXPECT_EQ(2u,
             event_router->GetListenerCountForTesting(otr_profile, kEventName));

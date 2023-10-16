@@ -33,6 +33,7 @@
 #include "extensions/browser/api/declarative_net_request/ruleset_matcher.h"
 #include "extensions/browser/api/web_request/extension_web_request_event_router.h"
 #include "extensions/browser/api/web_request/permission_helper.h"
+#include "extensions/browser/api/web_request/web_request_event_router_factory.h"
 #include "extensions/browser/disable_reason.h"
 #include "extensions/browser/extension_file_task_runner.h"
 #include "extensions/browser/extension_prefs.h"
@@ -1164,6 +1165,7 @@ void BrowserContextKeyedAPIFactory<
   DependsOn(ExtensionPrefsFactory::GetInstance());
   DependsOn(WarningServiceFactory::GetInstance());
   DependsOn(PermissionHelper::GetFactoryInstance());
+  DependsOn(WebRequestEventRouterFactory::GetInstance());
 }
 
 }  // namespace extensions

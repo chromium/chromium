@@ -214,6 +214,8 @@ source_set("browser_sources") {
     "api/web_request/web_request_api_helpers.h",
     "api/web_request/web_request_event_details.cc",
     "api/web_request/web_request_event_details.h",
+    "api/web_request/web_request_event_router_factory.cc",
+    "api/web_request/web_request_event_router_factory.h",
     "api/web_request/web_request_info.cc",
     "api/web_request/web_request_info.h",
     "api/web_request/web_request_permissions.cc",
