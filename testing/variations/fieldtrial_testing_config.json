@@ -6064,6 +6064,23 @@
             ]
         }
     ],
+    "EnableDevToolsJsErrorReporting": [
+        {
+            "platforms": [
+                "chromeos",
+                "chromeos_lacros",
+                "linux"
+            ],
+            "experiments": [
+                {
+                    "name": "Enabled",
+                    "enable_features": [
+                        "EnableDevToolsJsErrorReporting"
+                    ]
+                }
+            ]
+        }
+    ],
     "EnableDiscountOnNavigationDesktop": [
         {
             "platforms": [
