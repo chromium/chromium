@@ -17,7 +17,7 @@ import pytest
 from anys import ANY_DICT, ANY_LIST, ANY_NUMBER, ANY_STR, AnyOr
 from test_helpers import (ANY_TIMESTAMP, AnyExtending, execute_command,
                           goto_url, read_JSON_message, send_JSON_command,
-                          subscribe)
+                          subscribe, wait_for_event)
 
 
 @pytest.mark.asyncio
@@ -384,6 +384,54 @@ async def test_network_sends_only_included_cookies(websocket, context_id):
             },
             "initiator": {
                 "type": "other"
+            },
+            "timestamp": ANY_TIMESTAMP
+        }
+    }
+
+
+@pytest.mark.asyncio
+@pytest.mark.skip(reason="TODO: #1350")
+async def test_network_should_not_block_queue_shared_workers_with_data_url(
+        websocket, context_id):
+
+    await subscribe(websocket, ["network.beforeRequestSent"])
+
+    await goto_url(websocket, context_id, "https://example.com")
+
+    await send_JSON_command(
+        websocket, {
+            "method": "script.callFunction",
+            "params": {
+                "functionDeclaration": "() => {new SharedWorker('data:text/javascript,console.log(`hi`)');}",
+                "target": {
+                    "context": context_id
+                },
+                "awaitPromise": True,
+            }
+        })
+
+    response = await wait_for_event(websocket, 'network.beforeRequestSent')
+    assert response == {
+        'type': 'event',
+        "method": "network.beforeRequestSent",
+        "params": {
+            "isBlocked": False,
+            "context": context_id,
+            "navigation": ANY_STR,
+            "redirectCount": 0,
+            "request": {
+                "request": ANY_STR,
+                "url": 'data:text/javascript,console.log("hi")',
+                "method": "GET",
+                "headers": ANY_LIST,
+                "cookies": [],
+                "headersSize": -1,
+                "bodySize": 0,
+                "timings": ANY_DICT
+            },
+            "initiator": {
+                "type": "script"
             },
             "timestamp": ANY_TIMESTAMP
         }
