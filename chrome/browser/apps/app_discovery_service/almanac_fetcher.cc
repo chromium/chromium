@@ -109,9 +109,12 @@ base::CallbackListSubscription AlmanacFetcher::RegisterForAppUpdates(
 void AlmanacFetcher::GetIcon(const std::string& app_id,
                              int32_t size_hint_in_dip,
                              GetIconCallback callback) {
-  if (!icon_cache_) {
+  // Do not use the icon cache if the environment isn't setup correctly.
+  if (!icon_cache_ || !(google_apis::IsGoogleChromeAPIKeyUsed() ||
+                        skip_api_key_check_for_testing)) {
     std::move(callback).Run(gfx::ImageSkia(),
                             DiscoveryError::kErrorRequestFailed);
+    return;
   }
   // We ignore the size as it's hard-coded to kAppIconDimension in:
   // //chrome/browser/ash/app_list/search/common/icon_constants.h
