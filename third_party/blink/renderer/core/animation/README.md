@@ -401,7 +401,7 @@ https://drafts.csswg.org/css-transitions-2/#animation-composite-order
 
 Style updates for CSS transitions, are applied before updates for CSS
 animations, which in turn are applied before generic web animations. Each
-affect, when applied, can replace or combine with the previous effects in the
+effect, when applied, can replace or combine with the previous effects in the
 effect stack depending on the composite mode (refer to discussion of composite
 modes in the KeyframeEffect section). Additional rules apply for sorting CSS
 transitions and CSS animations.
@@ -742,7 +742,7 @@ animation has been removed.
    };
    ```
 
-* **[cancel nethod]**: synchronously cancels an animation. This operation will
+* **[cancel method]**: synchronously cancels an animation. This operation will
 reject any pending read or finished promise, cancel any pending play or pause
 task, and queue a cancel event.
 
@@ -791,7 +791,7 @@ time, resetting the hold time and resolving the ready promise.
    animation.play();
    ```
 
-* **[pause nethod]**: schedules an animation to pause. The pending state remains
+* **[pause method]**: schedules an animation to pause. The pending state remains
 true until acked from the client agent. [Animation::NotifyReady][] calls
 [Animation::CommitPendingPause][] to run the microtask for updating the hold
 time, resetting the start time, and resolving the ready promise.
@@ -807,7 +807,7 @@ time, resetting the start time, and resolving the ready promise.
    }
    ```
 
-* **[updatePlaybackRate nethod]**: sets a pending playback rate for the
+* **[updatePlaybackRate method]**: sets a pending playback rate for the
 animation. The change does not take effect until acked by the client agent.
 [Animation::NotifyReady][] calls [Animation::CommitPendingPlay][] or
  [Animation::CommitPendingPause][] depending on the play state. The algorithm
@@ -1511,7 +1511,7 @@ The Blink animation engine interacts with Blink/Chrome in the following ways:
 
     Animations that can be accelerated get added to the [PendingAnimations][]
     list. The pending list is updated as part of document lifecycle and ensures
-    each pending animation gets a corresponding [cc::AnimationPlayer][]
+    each pending animation gets a corresponding [cc::Animation][]
     representing the animation on the compositor. The player is initialized with
     appropriate timing values and corresponding effects.
 

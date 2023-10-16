@@ -16,90 +16,79 @@ cc/animation actually works: how animations are ticked, what animation curves
 are, what the ownership model is, etc. Later sections document how other parts
 of Chromium interact with cc/animation, most prominently Blink and ui/.
 
-## cc/animation terminology
+## cc/animation Terminology
 
-[Animation](https://cs.chromium.org/chromium/src/cc/animation/animation.h)
-A cc::Animation is responsible for managing animating properties for a set of
-targets. Each target is represented by a [KeyframeEffect][] and can be animating
-multiple properties on that target; see KeyframeEffect below.
+### Animation
 
-A particular Animation may not own all the KeyframeEffects for a given
-target. Animation is only a grouping mechanism for related effects, and the
-grouping relationship is defined by the client. It is also the client's
-responsibility to deal with any conflicts that arise from animating the same
-property of the same target across multiple Animations.
+An [Animation][] is responsible for managing and animating multiple properties
+for a single target. A particular Animation may not be the sole Animation acting
+on a given target. Animation is only a grouping mechanism for related
+effects; the grouping relationship is defined by the client. It is also the
+client's responsibility to deal with any conflicts that arise from animating
+the same property of the same target across multiple Animations.
 
 Each Animation has a copy on the impl thread, and will take care of
 synchronizing to/from the impl thread when requested.
 
-There is a 1:1 relationship between Animation and KeyframeEffect.
+### KeyframeModel
 
-[Keyframe model](https://codesearch.chromium.org/chromium/src/cc/animation/keyframe_model.h)
-KeyframeModels contain the state necessary to 'play' (interpolate values from) an
+[KeyframeModel][]s contain the state necessary to 'play' (i.e. interpolate
+values from) an [AnimationCurve][], which is a function that returns a value
+given an input time. Aside from the AnimationCurve itself, a KeyframeModel's
+state includes the run state (playing, paused, etc), the start time, the current
+direction (forwards, reverse), etc. It does not know or care what property is
+being animated and holds only an opaque identifier for the property to allow
+clients to map output values to the correct properties.
 
-[animation curve](https://codesearch.chromium.org/chromium/src/cc/animation/animation_curve.h),
-which is a function that returns a value given an input time. Aside from the
-animation curve itself, a keyframe model's state includes the run state (playing,
-paused, etc), the start time, the current direction (forwards, reverse), etc.
-An animation does not know or care what property is being animated, and holds
-only an opaque identifier for the property to allow clients to map output values
-to the correct properties.
+### KeyframeEffect
 
-[Keyframe effect][]
-A KeyframeEffect owns a group of KeyframeModels for a single target (identified
-by [PropertyToElementIdMap][]). It is responsible for managing the KeyframeModels'
-running states (starting, running, paused, etc), as well as ticking the
-KeyframeModels when it is requested to produce new outputs for a given time.
+A [KeyframeEffect][] owns a group of KeyframeModels for a single target. It is
+responsible for managing the KeyframeModels' running states (starting, running,
+paused, etc), as well as ticking the KeyframeModels when it is requested to
+produce new outputs for a given time. There is a 1:1 relationship between
+Animation and KeyframeEffect.
 
-Note that a single KeyframeEffect may not own all the KeyframeModels for a
-given target. KeyframeEffect is only a grouping mechanism for related
-KeyframeModels. The commonality between keyframe models on the same target is
-found via ElementAnimations - there is only one ElementAnimations for a given
-target.
+Note that a single KeyframeEffect may not own all the KeyframeModels for a given
+target. KeyframeEffect is only a grouping mechanism for related KeyframeModels.
+All KeyframeModels for a given target can found via ElementAnimations - there
+is only one ElementAnimations for a given target.
 
-Group:
+In general, KeyframeModels are grouped together in a KeyframeEffect and each
+such group is owned by an Animation.
+
+### Group
+
 KeyframeModels that must be run together are called 'grouped' and have the same
 group id. Grouped KeyframeModels are guaranteed to start at the same time and no
 other KeyframeModels may animate any of the group's target properties until all
 KeyframeModels in the group have finished animating. It's also guaranteed that
-no two keyframe models within a keyframe effect that have both the same group id
-and property id.
+no two KeyframeModels within a KeyframeEffect that have both the same group id
+and target property.
 
-In general, KeyframeModels are grouped together based on their
-[animation target](https://codesearch.chromium.org/chromium/src/cc/animation/animation_target.h)
-(the entity whose property is being animated) and each such group is owned by an
-[animation](https://codesearch.chromium.org/chromium/src/cc/animation/animation.h).
-Note that there may be multiple animations with the same target (each
-with a set of KeyframeModels for that target); the
-[ElementAnimations](https://codesearch.chromium.org/chromium/src/cc/animation/element_animations.h)
-class wraps the multiple animations and has a 1:1 relationship with
-target entities.
+### Ticking An Animation
 
-`TODO(smcgruer): Why are ElementAnimations and Animations separate?`
-
-In order to play an animation, input time values must be provided to the
-animation curve and output values fed back into the animating entity. This is
-called 'ticking' an animation and is the responsibility of the
-[animation host](https://codesearch.chromium.org/chromium/src/cc/animation/animation_host.h).
-The animation host has a list of currently ticking animations (i.e. those that have
-any non-deleted animations), which it iterates through whenever it receives a
-tick call from the client (along with a corresponding input time).  The
-animations then call into their non-deleted animations, retrieving the
-value from the animation curve.  As they are computed, output values are sent to
-the target which is responsible for passing them to the client entity that is
-being animated.
+In order to play an Animation, input time values must be provided to the
+AnimationCurve and output values fed back into the animating entity. This is
+called 'ticking' an Animation and is the responsibility of the
+[AnimationHost][]. The AnimationHost has a list of currently ticking Animations
+(i.e. those that have any non-deleted KeyframeModels), which it iterates through
+whenever it receives a tick call from the client (along with a corresponding
+input time). The Animations then call into their non-deleted KeyframeModels,
+retrieving a value from the AnimationCurve. As they are computed, output
+values are sent to the target which is responsible for passing them to the
+client entity that is being animated.
 
 ### Types of Animation Curve
 
-As noted above, an animation curve is simply a function which converts an input
-time value into some output value. Animation curves are categorized based on
+As noted above, an AniationCurve is simply a function which converts an input
+time value into some output value. AnimationCurves are categorized based on
 their output type, and each such category can have multiple implementations that
-provide different conversion functions. There are many categories of animation
-curve, but some common ones are `FloatAnimationCurve`, `ColorAnimationCurve`,
-and `TransformAnimationCurve`.
+provide different conversion functions. There are many categories of
+AnimationCurve, but some common ones are `FloatAnimationCurve`,
+`ColorAnimationCurve`, and `TransformAnimationCurve`.
 
 The most common implementation of the various animation curve categories are the
-[keyframed animation curves](https://codesearch.chromium.org/chromium/src/cc/animation/keyframed_animation_curve.h).
+[keyframed animation curves](https://source.chromium.org/chromium/chromium/src/+/main:ui/gfx/animation/keyframe/keyframed_animation_curve.h).
 These curves each have a set of keyframes which map a specific time to a
 specific output value. Producing an output value for a given input time is then
 a matter of identifying the two keyframes the time lies between, and
@@ -109,20 +98,18 @@ details of how each animation curve category is interpolated can be found in the
 implementations.
 
 There is one category of animation curve that stands somewhat apart, the
-[scroll offset animation curve](https://codesearch.chromium.org/chromium/src/cc/animation/scroll_offset_animation_curve.h).
-This curve converts the input time into a scroll offset, interpolating between
-an initial scroll offset and an updateable target scroll offset. It has logic to
-handle different types of scrolling such as programmatic, keyboard, and mouse
-wheel scrolls.
+[ScrollOffsetAnimationCurve][]. This curve converts the input time into a
+scroll offset, interpolating between an initial scroll offset and an updateable
+target scroll offset. It has logic to handle different types of scrolling such
+as programmatic, keyboard, and mouse wheel scrolls.
 
 ### Animation Timelines
 
-cc/animation has a concept of an
-[animation timeline](https://codesearch.chromium.org/chromium/src/cc/animation/animation_timeline.h).
-This should not be confused with the identically named Blink concept. In
-cc/animation, animation timelines are an implementation detail - they hold the
-animations and are responsible for syncing them to the impl thread (see
-below), but do not participate in the ticking process in any way.
+cc/animation has a concept of an [AnimationTimeline][]. This should not be
+confused with the identically named Blink concept. In cc/animation,
+AnimationTimelines are an implementation detail; they hold the Animations and
+are responsible for syncing them to the impl thread (see below), but they do not
+participate in the ticking process in any way.
 
 ### Main/Impl Threads
 
@@ -142,10 +129,9 @@ Both of these clients utilize
 as their animation entity and interact with cc/animation via the
 [MutatorHostClient](https://codesearch.chromium.org/chromium/src/cc/trees/mutator_host_client.h)
 interface (which is implemented by cc::LayerTreeHost and cc::LayerTreeHostImpl).
-Recently a third client, chrome/browser/vr/, has started using cc/animations as
-well. The vr/ client does not use cc::Layer as its animation entity.
 
-`TODO(smcgruer): Summarize how vr/ uses cc/animation.`
+chrome/browser/vr/ also makes use of cc/animations but does not use cc::Layer as
+its animation entity.
 
 ### Supported Animatable Properties
 
@@ -217,15 +203,15 @@ The lifetime of a newly started cc::Animation is roughly the following:
 [PropertyToElementIdMap]: https://cs.chromium.org/chromium/src/cc/trees/target_property.h?type=cs&g=0&l=42
 
 #### Animation Events
-The purpose of animation events ([cc::AnimationEvent][], not to confuse with
-[blink::AnimationEvent][]) is to synchronize animation state from cc::animation
+The purpose of AnimationEvents ([cc::AnimationEvent][], not to confused with
+[blink::AnimationEvent][]) is to synchronize animation state from cc::Animation
 to its client. The typical life cycle of the events is:
 1. **Event Generation.**
 Events are generated on IMPL thread and collected into [cc::AnimationEvents][]
 container.  [cc::AnimationEvents][] are passed to the MAIN thread as part of
 [BeginMainFrame][] arguments.
 1. **Event Dispatch.**
-On the MAIN thread events are dispatched to [cc::KeyframeModel][]s to ensure
+On the MAIN thread, events are dispatched to [cc::KeyframeModel][]s to ensure
 they are synchronized to their counterparts on the IMPL side. TIME_UPDATED
 events skip this step since [cc::KeyframeModel][]s of worklet animations
 don't participate in generating and reacting to these events.
@@ -234,10 +220,10 @@ After the events are dispatched, they are delegated to
 [cc::AnimationDelegate][], the final destination of the events on cc:animation's
 client.
 
-There is a special type of events called impl_only events. They are generated by
-animations that are running on IMPL thread only. These events are not passed to
-the MAIN thread and skip dispatch stage. They are delegated to the
-[cc::AnimationDelegate][] on the IMPL thread.
+There is a special type of event called impl_only events. These are generated by
+Animations that don't have a counterpart on the MAIN thread. These events are
+not passed to the MAIN thread and skip the dispatch stage. They are delegated to
+the [cc::AnimationDelegate][] immediately from the IMPL thread.
 
 [cc::AnimationEvent]: https://cs.chromium.org/chromium/src/cc/animation/animation_events.h
 [cc::AnimationEvents]: https://cs.chromium.org/chromium/src/cc/animation/animation_events.h
@@ -252,6 +238,11 @@ the MAIN thread and skip dispatch stage. They are delegated to the
 `TODO(smcgruer): Write this.`
 
 ## Additional References
+
+The [blink/animations
+README](https://chromium.googlesource.com/chromium/src/+/main/third_party/blink/renderer/core/animation/README.md)
+contains comprehensive documentation about how Blink animations work and
+integrate with CC animations.
 
 The Compositor Property Trees talk [slides](https://goo.gl/U4wXpW)
 includes discussion on compositor animations.

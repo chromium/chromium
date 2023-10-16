@@ -73,11 +73,11 @@ bool PendingAnimations::Update(
         animation->HasActiveAnimationsOnCompositor();
     // Animations with a start time or non-monotonic timeline do not participate
     // in compositor start-time grouping.
-    bool has_nonmonotonic_timeline =
+    bool has_monotonic_timeline =
         animation->TimelineInternal() &&
         animation->TimelineInternal()->IsMonotonicallyIncreasing();
     bool use_compositor_group =
-        !animation->StartTimeInternal() && has_nonmonotonic_timeline;
+        !animation->StartTimeInternal() && has_monotonic_timeline;
     if (animation->PreCommit(use_compositor_group ? compositor_group : 1,
                              paint_artifact_compositor, start_on_compositor)) {
       if (animation->HasActiveAnimationsOnCompositor() &&
@@ -91,7 +91,7 @@ bool PendingAnimations::Update(
       }
 
       if (animation->Playing() && !animation->StartTimeInternal() &&
-          has_nonmonotonic_timeline) {
+          has_monotonic_timeline) {
         // Scroll timelines get their start time set during timeline validation
         // and do not need to be added to the list. Once the start time is set
         // they must be re-added to the pending animations.
