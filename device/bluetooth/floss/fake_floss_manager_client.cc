@@ -10,6 +10,7 @@
 namespace floss {
 
 FakeFlossManagerClient::FakeFlossManagerClient() {
+  version_ = floss::version::GetMaximalSupportedVersion();
   adapter_to_enabled_.emplace(GetDefaultAdapter(), true);
 }
 
@@ -19,6 +20,7 @@ void FakeFlossManagerClient::Init(dbus::Bus* bus,
                                   const std::string& service_name,
                                   const int adapter_index,
                                   base::OnceClosure on_ready) {
+  init_ = true;
   std::move(on_ready).Run();
 }
 

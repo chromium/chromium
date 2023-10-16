@@ -169,7 +169,9 @@ class DEVICE_BLUETOOTH_EXPORT FlossDBusManager
   }
 
   // Returns true if Object Manager is supported.
-  bool IsObjectManagerSupported() const { return object_manager_supported_; }
+  bool IsObjectManagerSupported() const {
+    return object_manager_supported_ && mgmt_client_present_;
+  }
 
   // Shuts down the existing adapter clients and initializes a new set for the
   // given adapter. When the new adapter clients are ready, calls the |on_ready|
@@ -230,6 +232,7 @@ class DEVICE_BLUETOOTH_EXPORT FlossDBusManager
 
   void OnObjectManagerSupported(dbus::Response* response);
   void OnObjectManagerNotSupported(dbus::ErrorResponse* response);
+  void OnManagerClientInitComplete();
 
   // Initializes the manager client
   void InitializeManagerClient();
@@ -265,6 +268,9 @@ class DEVICE_BLUETOOTH_EXPORT FlossDBusManager
   base::OnceClosure object_manager_support_known_callback_;
   bool object_manager_support_known_ = false;
   bool object_manager_supported_ = false;
+
+  // Whether the manager client has been initialized successfully.
+  bool mgmt_client_present_ = false;
 
   bool adapter_interface_present_ = false;
   bool adapter_logging_interface_present_ = false;

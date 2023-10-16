@@ -17,6 +17,7 @@
 #include "base/logging.h"
 #include "base/observer_list.h"
 #include "base/task/single_thread_task_runner.h"
+#include "components/device_event_log/device_event_log.h"
 #include "dbus/bus.h"
 #include "dbus/exported_object.h"
 #include "dbus/message.h"
@@ -163,7 +164,7 @@ void FlossManagerClient::SetAdapterEnabled(int adapter,
       command, adapter);
 }
 
-uint32_t FlossManagerClient::GetFlossApiVersion() const {
+base::Version FlossManagerClient::GetFlossApiVersion() const {
   return version_;
 }
 
@@ -172,6 +173,11 @@ void FlossManagerClient::DoGetFlossApiVersion() {
       base::BindOnce(&FlossManagerClient::HandleGetFlossApiVersion,
                      weak_ptr_factory_.GetWeakPtr()),
       manager::kGetFlossApiVersion);
+}
+
+bool FlossManagerClient::IsCompatibleFlossApi() {
+  return version_ >= floss::version::GetMinimalSupportedVersion() &&
+         version_ <= floss::version::GetMaximalSupportedVersion();
 }
 
 void FlossManagerClient::OnSetAdapterEnabled(DBusResult<Void> response) {
@@ -198,6 +204,9 @@ void FlossManagerClient::SetDevCoredump(ResponseCallback<Void> callback,
 // Register manager client against manager.
 void FlossManagerClient::RegisterWithManager() {
   DCHECK(!manager_available_);
+
+  // Get Floss API version of the daemon.
+  DoGetFlossApiVersion();
 
   // Get the default adapter.
   CallManagerMethod<int>(
@@ -248,13 +257,16 @@ void FlossManagerClient::Init(dbus::Bus* bus,
                               const std::string& service_name,
                               const int adapter_index,
                               base::OnceClosure on_ready) {
+  init_ = false;
   bus_ = bus;
   service_name_ = service_name;
+  on_ready_ = std::move(on_ready);
 
   // We should always have object proxy since the client initialization is
   // gated on ObjectManager marking the manager interface as available.
   if (!bus_->GetObjectProxy(service_name_, dbus::ObjectPath(kManagerObject))) {
     LOG(ERROR) << "FlossManagerClient couldn't init. Object proxy was null.";
+    std::move(on_ready_).Run();
     return;
   }
 
@@ -276,6 +288,7 @@ void FlossManagerClient::Init(dbus::Bus* bus,
           base::BindOnce(&FlossManagerClient::RegisterWithManager,
                          weak_ptr_factory_.GetWeakPtr()))) {
     LOG(ERROR) << "Unable to successfully export FlossManagerClientCallbacks.";
+    std::move(on_ready_).Run();
     return;
   }
 
@@ -309,8 +322,6 @@ void FlossManagerClient::Init(dbus::Bus* bus,
         }
       }),
       base::FeatureList::IsEnabled(bluez::features::kLinkLayerPrivacy));
-
-  on_ready_ = std::move(on_ready);
 }
 
 void FlossManagerClient::HandleGetDefaultAdapter(DBusResult<int32_t> response) {
@@ -364,7 +375,9 @@ void FlossManagerClient::HandleRegisterCallback(DBusResult<Void> result) {
   if (!result.has_value()) {
     LOG(ERROR) << "Floss manager RegisterCallback returned error: "
                << result.error();
-    return;
+    init_ = false;
+  } else {
+    init_ = IsCompatibleFlossApi();
   }
 
   if (on_ready_) {
@@ -487,13 +500,23 @@ void FlossManagerClient::CompleteSetFlossEnabled(DBusResult<bool> ret) {
 void FlossManagerClient::HandleGetFlossApiVersion(
     DBusResult<uint32_t> response) {
   if (!response.has_value()) {
-    LOG(WARNING) << "Floss API version is not available. Default version is 0."
-                    " Error="
-                 << response.error();
+    BLUETOOTH_LOG(EVENT) << "Floss API version is not available! Error="
+                         << response.error();
+    version_ = base::Version("0.0");
     return;
   }
 
-  version_ = response.value();
+  uint32_t val = response.value();
+  version_ = floss::version::IntoVersion(val);
+
+  BLUETOOTH_LOG(EVENT) << "Floss API version " << version_;
+  if (!IsCompatibleFlossApi()) {
+    BLUETOOTH_LOG(ERROR) << "Unsupported Floss API version " << version_
+                         << ". Valid range: "
+                         << floss::version::GetMinimalSupportedVersion()
+                         << " to "
+                         << floss::version::GetMinimalSupportedVersion();
+  }
 }
 
 dbus::PropertySet* FlossManagerClient::CreateProperties(

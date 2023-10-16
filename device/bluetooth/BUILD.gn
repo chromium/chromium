@@ -565,6 +565,8 @@ component("bluetooth") {
         "floss/floss_sdp_types.h",
         "floss/floss_socket_manager.cc",
         "floss/floss_socket_manager.h",
+        "floss/floss_version.cc",
+        "floss/floss_version.h",
         "floss/test_helpers.h",
       ]
       if (is_chromeos) {

@@ -320,6 +320,8 @@ class FlossManagerClientTest : public testing::Test {
 
   void DoGetFlossApiVersion() { client_->DoGetFlossApiVersion(); }
 
+  bool IsCompatibleFlossApi() { return client_->IsCompatibleFlossApi(); }
+
   void EndRunLoopCallback(base::RepeatingClosure quit, DBusResult<bool> ret) {
     std::move(quit).Run();
   }
@@ -525,13 +527,29 @@ TEST_F(FlossManagerClientTest, SetFlossEnabledRetries) {
 }
 
 TEST_F(FlossManagerClientTest, GetFlossApiVersion) {
+  base::Version version = floss::version::IntoVersion(floss_api_version_);
+
   TestManagerObserver observer(client_.get());
   client_->Init(bus_.get(), kManagerInterface, /*adapter_index=*/-1,
                 base::DoNothing());
 
+  method_called_.clear();
   DoGetFlossApiVersion();
 
   EXPECT_EQ(method_called_[manager::kGetFlossApiVersion], 1);
-  EXPECT_EQ(client_->GetFlossApiVersion(), floss_api_version_);
+  EXPECT_EQ(client_->GetFlossApiVersion(), version);
+}
+
+TEST_F(FlossManagerClientTest, NewFlossDaemonIsNotCompatible) {
+  // Given Floss daemon's Floss API version is a newer one.
+  floss_api_version_ = 0xffffffff;
+
+  // When FlossManagerClient gets the Floss API version at initialized.
+  TestManagerObserver observer(client_.get());
+  client_->Init(bus_.get(), kManagerInterface, /*adapter_index=*/-1,
+                base::DoNothing());
+
+  // Then, the Floss API exported by Floss daemon is not compatible.
+  EXPECT_FALSE(IsCompatibleFlossApi());
 }
 }  // namespace floss
