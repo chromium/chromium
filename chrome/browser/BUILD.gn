@@ -5736,8 +5736,6 @@ static_library("browser") {
     sources += [
       "apps/intent_helper/chromeos_disabled_apps_throttle.cc",
       "apps/intent_helper/chromeos_disabled_apps_throttle.h",
-      "apps/intent_helper/chromeos_intent_picker_helpers.cc",
-      "apps/intent_helper/chromeos_intent_picker_helpers.h",
       "browser_process_platform_part_chromeos.cc",
       "browser_process_platform_part_chromeos.h",
       "certificate_provider/certificate_provider.h",
@@ -6143,8 +6141,6 @@ static_library("browser") {
       "accessibility/caption_settings_dialog_mac.cc",
       "app_controller_mac.h",
       "app_controller_mac.mm",
-      "apps/intent_helper/mac_intent_picker_helpers.h",
-      "apps/intent_helper/mac_intent_picker_helpers.mm",
       "badging/badge_manager_delegate_mac.cc",
       "badging/badge_manager_delegate_mac.h",
       "browser_process_platform_part_mac.h",

@@ -52,8 +52,12 @@ void IntentPickerView::OnExecuting(
     PageActionIconView::ExecuteSource execute_source) {
   DCHECK(GetShowIcon());
   content::WebContents* web_contents = GetWebContents();
+  CHECK(web_contents);
   const GURL& url = chrome::GetURLToBookmark(web_contents);
-  IntentPickerTabHelper::ShowIntentPickerBubbleOrLaunchApp(web_contents, url);
+  IntentPickerTabHelper* intent_picker_tab_helper =
+      IntentPickerTabHelper::FromWebContents(web_contents);
+  CHECK(intent_picker_tab_helper);
+  intent_picker_tab_helper->ShowIntentPickerBubbleOrLaunchApp(url);
 }
 
 views::BubbleDialogDelegate* IntentPickerView::GetBubble() const {

@@ -9,16 +9,29 @@ assert(!is_android)
 
 source_set("link_capturing") {
   sources = [
+    "apps_intent_picker_delegate.h",
     "intent_picker_info.cc",
     "intent_picker_info.h",
     "link_capturing_features.cc",
     "link_capturing_features.h",
+
+    # TODO(b/300155286): Implement for WML as well.
+    "chromeos_apps_intent_picker_delegate.cc",
+    "chromeos_apps_intent_picker_delegate.h",
     "link_capturing_navigation_throttle.cc",
     "link_capturing_navigation_throttle.h",
   ]
 
+  if (is_mac) {
+    sources += [
+      "mac_intent_picker_helpers.h",
+      "mac_intent_picker_helpers.mm",
+    ]
+  }
+
   deps = [
     "//base",
+    "//chrome/browser/apps/app_service",
     "//chrome/browser/profiles:profile",
     "//chrome/browser/web_applications",
     "//components/keep_alive_registry",
@@ -39,7 +52,8 @@ source_set("link_capturing") {
     ]
     deps += [
       "//ash/webui/projector_app/public/cpp",
-      "//chrome/browser/apps/app_service",
+      # TODO(b/300155286): Bring back here later.
+      # "//chrome/browser/apps/app_service",
     ]
   } else {
     sources += [

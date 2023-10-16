@@ -10,7 +10,6 @@
 #include "chrome/browser/apps/link_capturing/intent_picker_info.h"
 
 class GURL;
-class Profile;
 
 namespace content {
 class WebContents;
@@ -18,18 +17,8 @@ class WebContents;
 
 namespace apps {
 
-// Returns true if persistence for PWA entries in the Intent Picker is enabled.
-bool IntentPickerPwaPersistenceEnabled();
-
 // Returns the size, in dp, of app icons shown in the intent picker bubble.
 int GetIntentPickerBubbleIconSize();
-
-// Returns all of the apps that can be used for the given url. Can includes
-// platform-specific apps like mac native apps.
-void FindAllAppsForUrl(
-    Profile* profile,
-    const GURL& url,
-    base::OnceCallback<void(std::vector<apps::IntentPickerAppInfo>)> callback);
 
 void LaunchAppFromIntentPicker(content::WebContents* web_contents,
                                const GURL& url,

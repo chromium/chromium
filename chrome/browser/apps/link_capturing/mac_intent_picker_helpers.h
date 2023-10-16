@@ -2,12 +2,12 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#ifndef CHROME_BROWSER_APPS_INTENT_HELPER_MAC_INTENT_PICKER_HELPERS_H_
-#define CHROME_BROWSER_APPS_INTENT_HELPER_MAC_INTENT_PICKER_HELPERS_H_
+#ifndef CHROME_BROWSER_APPS_LINK_CAPTURING_MAC_INTENT_PICKER_HELPERS_H_
+#define CHROME_BROWSER_APPS_LINK_CAPTURING_MAC_INTENT_PICKER_HELPERS_H_
 
 #include <string>
 
-#include "chrome/browser/apps/link_capturing/intent_picker_info.h"
+#include "chrome/browser/apps/link_capturing/apps_intent_picker_delegate.h"
 #include "third_party/abseil-cpp/absl/types/optional.h"
 #include "url/gurl.h"
 
@@ -31,4 +31,4 @@ void OverrideMacAppForUrlForTesting(bool fake, const std::string& app_path);
 
 }  // namespace apps
 
-#endif  // CHROME_BROWSER_APPS_INTENT_HELPER_MAC_INTENT_PICKER_HELPERS_H_
+#endif  // CHROME_BROWSER_APPS_LINK_CAPTURING_MAC_INTENT_PICKER_HELPERS_H_

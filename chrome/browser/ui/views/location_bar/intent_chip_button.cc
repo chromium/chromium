@@ -101,7 +101,7 @@ void IntentChipButton::HandlePressed() {
   content::WebContents* web_contents =
       delegate_->GetWebContentsForPageActionIconView();
   const GURL& url = web_contents->GetURL();
-  IntentPickerTabHelper::ShowIntentPickerBubbleOrLaunchApp(web_contents, url);
+  GetTabHelper()->ShowIntentPickerBubbleOrLaunchApp(url);
 }
 
 IntentPickerTabHelper* IntentChipButton::GetTabHelper() const {

@@ -11,6 +11,7 @@
 #include "base/memory/raw_ptr.h"
 #include "base/memory/weak_ptr.h"
 #include "base/scoped_observation.h"
+#include "chrome/browser/apps/link_capturing/apps_intent_picker_delegate.h"
 #include "chrome/browser/apps/link_capturing/intent_picker_info.h"
 #include "chrome/browser/web_applications/web_app_install_manager.h"
 #include "chrome/browser/web_applications/web_app_install_manager_observer.h"
@@ -34,15 +35,13 @@ class IntentPickerTabHelper
   ~IntentPickerTabHelper() override;
 
   // Displays the intent picker icon in the omnibox, based on the last committed
-  // URL in |web_contents|.
-  static void MaybeShowIntentPickerIcon(content::WebContents* web_contents);
+  // URL for the current web_contents.
+  void MaybeShowIntentPickerIcon();
 
   // Shows the intent picker bubble to present a choice between apps to handle
   // |url|. May launch directly into an app based on user preferences and
   // installed apps.
-  static void ShowIntentPickerBubbleOrLaunchApp(
-      content::WebContents* web_contents,
-      const GURL& url);
+  void ShowIntentPickerBubbleOrLaunchApp(const GURL& url);
 
   // Shows or hides the intent picker icon for |web_contents|. Always shows a
   // generic picker icon, even if MaybeShowIconForApps() had previously applied
@@ -147,6 +146,8 @@ class IntentPickerTabHelper
   ui::ImageModel current_app_icon_;
 
   base::OnceClosure icon_update_closure_for_testing_;
+
+  std::unique_ptr<apps::AppsIntentPickerDelegate> intent_picker_delegate_;
 
   base::ScopedObservation<web_app::WebAppInstallManager,
                           web_app::WebAppInstallManagerObserver>

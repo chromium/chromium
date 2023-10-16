@@ -2027,7 +2027,11 @@ Browser* OpenInChrome(Browser* hosted_app_browser) {
       true);
   auto* web_contents =
       target_browser->tab_strip_model()->GetActiveWebContents();
-  IntentPickerTabHelper::MaybeShowIntentPickerIcon(web_contents);
+  CHECK(web_contents);
+  IntentPickerTabHelper* helper =
+      IntentPickerTabHelper::FromWebContents(web_contents);
+  CHECK(helper);
+  helper->MaybeShowIntentPickerIcon();
 #if !BUILDFLAG(IS_CHROMEOS)
   apps::EnableLinkCapturingInfoBarDelegate::RemoveInfoBar(web_contents);
 #endif

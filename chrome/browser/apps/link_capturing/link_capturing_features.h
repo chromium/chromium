@@ -10,7 +10,6 @@
 namespace apps::features {
 
 BASE_DECLARE_FEATURE(kLinkCapturingUiUpdate);
-BASE_DECLARE_FEATURE(kLinkCapturingInfoBar);
 
 // Enables user link capturing on desktop platforms, i.e. Windows, Mac
 // Linux amd Fuchsia.
@@ -28,11 +27,6 @@ BASE_DECLARE_FEATURE(kAppToAppLinkCapturingWorkspaceApps);
 
 // Returns true if the overall link capturing UI update feature is enabled.
 bool LinkCapturingUiUpdateEnabled();
-
-// Returns true if the Link Capturing Info Bar should be shown when launching an
-// app through the Intent Picker. Only returns true if
-// LinkCapturingUiUpdateEnabled() returns true.
-bool LinkCapturingInfoBarEnabled();
 
 }  // namespace apps::features
 

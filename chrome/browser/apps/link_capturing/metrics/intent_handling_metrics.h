@@ -130,10 +130,6 @@ class IntentHandlingMetrics {
   // app, as the result of a user previously setting a preference for that app.
   static void RecordPreferredAppLinkClickMetrics(Platform platform);
 
-  // Records metrics for usage of the intent picker icon which appears in the
-  // Omnibox.
-  static void RecordIntentPickerIconEvent(IntentPickerIconEvent event);
-
   // Records metrics for when an entry point is shown for the link capturing
   // flow. An entry point can be the Intent Chip or Intent Picker.
   static void RecordLinkCapturingEntryPointShown(

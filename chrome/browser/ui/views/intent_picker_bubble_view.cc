@@ -789,13 +789,7 @@ void IntentPickerBubbleView::UpdateCheckboxState(size_t index) {
   if (!remember_selection_checkbox_)
     return;
   auto selected_app_type = app_info_[index].type;
-  bool should_enable = true;
-  if (selected_app_type == apps::PickerEntryType::kDevice) {
-    // TODO(crbug.com/1000037): Allow persisting remote devices.
-    should_enable = false;
-  } else if (selected_app_type == apps::PickerEntryType::kWeb) {
-    should_enable = apps::IntentPickerPwaPersistenceEnabled();
-  }
+  bool should_enable = selected_app_type != apps::PickerEntryType::kDevice;
 
   // Reset the checkbox state to the default unchecked if becomes disabled.
   if (!should_enable)

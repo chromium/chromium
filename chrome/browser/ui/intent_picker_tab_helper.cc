@@ -14,6 +14,8 @@
 #include "chrome/browser/apps/app_service/app_service_proxy_factory.h"
 #include "chrome/browser/apps/intent_helper/intent_chip_display_prefs.h"
 #include "chrome/browser/apps/intent_helper/intent_picker_helpers.h"
+#include "chrome/browser/apps/link_capturing/apps_intent_picker_delegate.h"
+#include "chrome/browser/apps/link_capturing/chromeos_apps_intent_picker_delegate.h"
 #include "chrome/browser/apps/link_capturing/intent_picker_info.h"
 #include "chrome/browser/apps/link_capturing/link_capturing_features.h"
 #include "chrome/browser/preloading/prefetch/no_state_prefetch/chrome_no_state_prefetch_contents_delegate.h"
@@ -35,7 +37,6 @@
 #include "url/origin.h"
 
 #if BUILDFLAG(IS_CHROMEOS)
-#include "chrome/browser/apps/intent_helper/chromeos_intent_picker_helpers.h"
 #include "chrome/browser/apps/link_capturing/metrics/intent_handling_metrics.h"
 #endif  // BUILDFLAG(IS_CHROMEOS)
 
@@ -76,16 +77,6 @@ web_app::WebAppInstallManager* MaybeGetWebAppInstallManager(
   return provider ? &provider->install_manager() : nullptr;
 }
 
-void LoadSingleAppIcon(Profile* profile,
-                       apps::AppType app_type,
-                       const std::string& app_id,
-                       int size_in_dip,
-                       base::OnceCallback<void(apps::IconValuePtr)> callback) {
-  apps::AppServiceProxyFactory::GetForProfile(profile)->LoadIcon(
-      app_type, app_id, apps::IconType::kStandard, size_in_dip,
-      /*allow_placeholder_icon=*/false, std::move(callback));
-}
-
 bool IsNavigatingToNewSite(content::NavigationHandle* navigation_handle) {
   return navigation_handle->IsInPrimaryMainFrame() &&
          navigation_handle->HasCommitted() &&
@@ -94,18 +85,11 @@ bool IsNavigatingToNewSite(content::NavigationHandle* navigation_handle) {
               navigation_handle->GetPreviousPrimaryMainFrameURL());
 }
 
-bool ShouldConsiderWebContentsForIntentPicker(
-    content::WebContents* web_contents) {
-  Profile* profile =
-      Profile::FromBrowserContext(web_contents->GetBrowserContext());
+bool IsValidWebContentsForIntentPicker(content::WebContents* web_contents) {
   bool is_prerender =
       prerender::ChromeNoStatePrefetchContentsDelegate::FromWebContents(
           web_contents) != nullptr;
-  if (is_prerender || !web_app::AreWebAppsUserInstallable(profile)) {
-    return false;
-  }
-
-  if (!apps::AppServiceProxyFactory::IsAppServiceAvailableForProfile(profile)) {
+  if (is_prerender) {
     return false;
   }
 
@@ -137,42 +121,40 @@ void ShowIntentPickerBubbleForApps(
       std::move(callback));
 }
 
+bool IsShuttingDown(content::WebContents* web_contents) {
+  return !web_contents || web_contents->IsBeingDestroyed() ||
+         web_contents->GetBrowserContext()->ShutdownStarted();
+}
+
 }  // namespace
 
 IntentPickerTabHelper::~IntentPickerTabHelper() = default;
 
-// static
-void IntentPickerTabHelper::MaybeShowIntentPickerIcon(
-    content::WebContents* web_contents) {
-  CHECK(web_contents);
-  IntentPickerTabHelper* helper =
-      IntentPickerTabHelper::FromWebContents(web_contents);
-  if (!ShouldConsiderWebContentsForIntentPicker(web_contents)) {
-    helper->MaybeShowIconForApps({});
+void IntentPickerTabHelper::MaybeShowIntentPickerIcon() {
+  CHECK(web_contents());
+  if (!intent_picker_delegate_->ShouldShowIntentPickerWithApps() ||
+      !IsValidWebContentsForIntentPicker(web_contents())) {
+    MaybeShowIconForApps({});
     return;
   }
 
-  FindAllAppsForUrl(
-      Profile::FromBrowserContext(web_contents->GetBrowserContext()),
-      web_contents->GetLastCommittedURL(),
+  intent_picker_delegate_->FindAllAppsForUrl(
+      web_contents()->GetLastCommittedURL(),
       base::BindOnce(&IntentPickerTabHelper::MaybeShowIconForApps,
-                     helper->per_navigation_weak_factory_.GetWeakPtr()));
+                     per_navigation_weak_factory_.GetWeakPtr()));
 }
 
-// static
-void IntentPickerTabHelper::ShowIntentPickerBubbleOrLaunchApp(
-    content::WebContents* web_contents,
-    const GURL& url) {
-  CHECK(web_contents);
-  IntentPickerTabHelper* helper =
-      IntentPickerTabHelper::FromWebContents(web_contents);
-  if (!ShouldConsiderWebContentsForIntentPicker(web_contents)) {
+void IntentPickerTabHelper::ShowIntentPickerBubbleOrLaunchApp(const GURL& url) {
+  CHECK(web_contents());
+  if (!intent_picker_delegate_->ShouldShowIntentPickerWithApps() ||
+      !IsValidWebContentsForIntentPicker(web_contents())) {
     return;
   }
-  FindAllAppsForUrl(
-      Profile::FromBrowserContext(web_contents->GetBrowserContext()), url,
+
+  intent_picker_delegate_->FindAllAppsForUrl(
+      url,
       base::BindOnce(&IntentPickerTabHelper::ShowIntentPickerOrLaunchAppImpl,
-                     helper->per_navigation_weak_factory_.GetWeakPtr(), url));
+                     per_navigation_weak_factory_.GetWeakPtr(), url));
 }
 
 // static
@@ -202,7 +184,7 @@ void IntentPickerTabHelper::MaybeShowIconForApps(
     // This point doesn't exactly match when the icon is shown in the UI (e.g.
     // if the tab is not active), but recording here corresponds more closely to
     // navigations which cause the icon to appear.
-    apps::IntentHandlingMetrics::RecordIntentPickerIconEvent(
+    intent_picker_delegate_->RecordIntentPickerIconEvent(
         apps::IntentHandlingMetrics::IntentPickerIconEvent::kIconShown);
 
     apps::IntentHandlingMetrics::RecordLinkCapturingEntryPointShown(apps);
@@ -213,19 +195,15 @@ void IntentPickerTabHelper::MaybeShowIconForApps(
     if (apps.size() == 1 && apps[0].launch_name != current_app_id_) {
       current_app_id_ = apps[0].launch_name;
 
-      Profile* profile =
-          Profile::FromBrowserContext(web_contents()->GetBrowserContext());
-
       // If this app is the preferred app to handle this URL, the icon will
       // always be shown as expanded, regardless of the usage-based decision
       // calculated in UpdateExpandedState().
       current_app_is_preferred_ =
-          apps::AppServiceProxyFactory::GetForProfile(profile)
-              ->PreferredAppsList()
-              .IsPreferredAppForSupportedLinks(current_app_id_);
+          intent_picker_delegate_->IsPreferredAppForSupportedLinks(
+              current_app_id_);
 
-      LoadSingleAppIcon(
-          profile, GetAppType(apps[0].type), current_app_id_,
+      intent_picker_delegate_->LoadSingleAppIcon(
+          GetAppType(apps[0].type), current_app_id_,
           GetLayoutConstant(LOCATION_BAR_ICON_SIZE),
           base::BindOnce(&IntentPickerTabHelper::OnAppIconLoadedForChip,
                          per_navigation_weak_factory_.GetWeakPtr(),
@@ -246,8 +224,15 @@ IntentPickerTabHelper::IntentPickerTabHelper(content::WebContents* web_contents)
       content::WebContentsUserData<IntentPickerTabHelper>(*web_contents),
       registrar_(MaybeGetWebAppRegistrar(web_contents)),
       install_manager_(MaybeGetWebAppInstallManager(web_contents)) {
-  if (install_manager_)
+  if (install_manager_) {
     install_manager_observation_.Observe(install_manager_.get());
+  }
+
+  // TODO(b/300155286): Implement for WML as well.
+  Profile* profile =
+      Profile::FromBrowserContext(web_contents->GetBrowserContext());
+  intent_picker_delegate_ =
+      std::make_unique<apps::ChromeOsAppsIntentPickerDelegate>(profile);
 }
 
 
@@ -280,11 +265,8 @@ void IntentPickerTabHelper::LoadAppIcon(
   const std::string& app_id = apps[index].launch_name;
   auto app_type = GetAppType(apps[index].type);
 
-  Profile* profile =
-      Profile::FromBrowserContext(web_contents()->GetBrowserContext());
-
-  LoadSingleAppIcon(
-      profile, app_type, app_id, apps::GetIntentPickerBubbleIconSize(),
+  intent_picker_delegate_->LoadSingleAppIcon(
+      app_type, app_id, apps::GetIntentPickerBubbleIconSize(),
       base::BindOnce(&IntentPickerTabHelper::OnAppIconLoaded,
                      per_navigation_weak_factory_.GetWeakPtr(), std::move(apps),
                      std::move(callback), index));
@@ -358,35 +340,21 @@ void IntentPickerTabHelper::ShowIntentPickerOrLaunchAppImpl(
   if (apps.empty()) {
     return;
   }
-  if (web_contents()->IsBeingDestroyed()) {
+  if (IsShuttingDown(web_contents())) {
     return;
   }
 
+  // TODO(b/300155286): Implement for WML as well.
 #if BUILDFLAG(IS_CHROMEOS)
-  apps::IntentHandlingMetrics::RecordIntentPickerIconEvent(
+  intent_picker_delegate_->RecordIntentPickerIconEvent(
       apps::IntentHandlingMetrics::IntentPickerIconEvent::kIconClicked);
 #endif
 
-  if (apps.size() == 1) {
-    // If there is only a single available app, immediately launch it if either:
-    // - LinkCapturingInfoBarEnabled() is enabled, or
-    // - LinkCapturingUiUpdateEnabled() is enabled and the app is preferred for
-    // this link.
-    Profile* profile =
-        Profile::FromBrowserContext(web_contents()->GetBrowserContext());
-    auto* proxy = apps::AppServiceProxyFactory::GetForProfile(profile);
-
-    bool should_launch_for_preferred_app =
-        apps::features::LinkCapturingUiUpdateEnabled() &&
-        proxy->PreferredAppsList().FindPreferredAppForUrl(url) ==
-            apps[0].launch_name;
-
-    if (apps::features::LinkCapturingInfoBarEnabled() ||
-        should_launch_for_preferred_app) {
-      LaunchAppFromIntentPicker(web_contents(), url, apps[0].launch_name,
-                                apps[0].type);
-      return;
-    }
+  if (apps.size() == 1 && intent_picker_delegate_->ShouldLaunchAppDirectly(
+                              url, apps[0].launch_name)) {
+    LaunchAppFromIntentPicker(web_contents(), url, apps[0].launch_name,
+                              apps[0].type);
+    return;
   }
 
   bool show_stay_in_chrome;
@@ -415,16 +383,26 @@ void IntentPickerTabHelper::OnIntentPickerClosedMaybeLaunch(
     apps::PickerEntryType entry_type,
     apps::IntentPickerCloseReason close_reason,
     bool should_persist) {
-  if (web_contents()->IsBeingDestroyed()) {
+  if (IsShuttingDown(web_contents())) {
     return;
   }
 
+  bool should_launch_app =
+      (close_reason == apps::IntentPickerCloseReason::OPEN_APP);
+
 #if BUILDFLAG(IS_CHROMEOS)
-  OnIntentPickerClosedChromeOs(web_contents()->GetWeakPtr(), url, launch_name,
-                               entry_type, close_reason, should_persist);
+  intent_picker_delegate_->RecordOutputMetrics(
+      entry_type, close_reason, should_persist, should_launch_app);
+  if (should_persist) {
+    intent_picker_delegate_->PersistIntentPreferencesForApp(entry_type,
+                                                            launch_name);
+  }
+  if (should_launch_app) {
+    intent_picker_delegate_->LaunchApp(web_contents(), url, launch_name,
+                                       entry_type);
+  }
 #else
-  const bool should_launch_app =
-      close_reason == apps::IntentPickerCloseReason::OPEN_APP;
+  // TODO(b/300155286): Implement for WML as well.
   if (should_launch_app) {
     LaunchAppFromIntentPicker(web_contents(), url, launch_name, entry_type);
   }
@@ -465,7 +443,7 @@ void IntentPickerTabHelper::DidFinishNavigation(
     bool is_valid_page = navigation_handle->GetURL().SchemeIsHTTPOrHTTPS() &&
                          !navigation_handle->IsErrorPage();
     if (is_valid_page) {
-      MaybeShowIntentPickerIcon(web_contents());
+      MaybeShowIntentPickerIcon();
     } else {
       ShowOrHideIcon(web_contents(), /*should_show_icon=*/false);
     }

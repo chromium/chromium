@@ -2,7 +2,7 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#include "chrome/browser/apps/intent_helper/mac_intent_picker_helpers.h"
+#include "chrome/browser/apps/link_capturing/mac_intent_picker_helpers.h"
 
 #import <Cocoa/Cocoa.h>
 #import <SafariServices/SafariServices.h>
@@ -56,9 +56,10 @@ IntentPickerAppInfo AppInfoForAppUrl(NSURL* app_url) {
 
 absl::optional<IntentPickerAppInfo> FindMacAppForUrl(const GURL& url) {
   if (UseFakeAppForTesting()) {
-    std::string fake_app = FakeAppForTesting();
-    if (fake_app.empty())
+    std::string fake_app = FakeAppForTesting();  // IN-TEST
+    if (fake_app.empty()) {
       return absl::nullopt;
+    }
 
     return AppInfoForAppUrl(
         [NSURL fileURLWithPath:base::SysUTF8ToNSString(fake_app)]);
@@ -85,8 +86,8 @@ void LaunchMacApp(const GURL& url, const std::string& launch_name) {
 }
 
 void OverrideMacAppForUrlForTesting(bool fake, const std::string& app_path) {
-  UseFakeAppForTesting() = fake;
-  FakeAppForTesting() = app_path;
+  UseFakeAppForTesting() = fake;   // IN-TEST
+  FakeAppForTesting() = app_path;  // IN-TEST
 }
 
 }  // namespace apps

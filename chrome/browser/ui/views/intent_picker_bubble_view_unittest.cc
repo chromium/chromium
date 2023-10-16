@@ -379,9 +379,10 @@ TEST_P(IntentPickerBubbleViewLayoutTest, RememberCheckbox) {
   ClickApp(0);
   ASSERT_FALSE(checkbox->GetEnabled());
 
-  // kWeb entries should allow persistence when PWA persistence is enabled.
+  // kWeb entries should allow persistence on CrOS. The checkbox does not pop up
+  // on non-ChromeOS platforms, and persistence results in a no-op behavior.
   ClickApp(1);
-  ASSERT_EQ(checkbox->GetEnabled(), apps::IntentPickerPwaPersistenceEnabled());
+  ASSERT_TRUE(checkbox->GetEnabled());
 
   // Other app types can be persisted.
   ClickApp(2);

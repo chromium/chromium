@@ -110,11 +110,6 @@ void IntentHandlingMetrics::RecordPreferredAppLinkClickMetrics(
   RecordDestinationPlatformMetric(platform);
 }
 
-void IntentHandlingMetrics::RecordIntentPickerIconEvent(
-    IntentPickerIconEvent event) {
-  UMA_HISTOGRAM_ENUMERATION("ChromeOS.Intents.IntentPickerIconEvent", event);
-}
-
 void IntentHandlingMetrics::RecordLinkCapturingEvent(PickerEntryType app_type,
                                                      LinkCapturingEvent event) {
   switch (app_type) {
