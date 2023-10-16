@@ -312,6 +312,9 @@ class MESSAGE_CENTER_EXPORT MessageView
   // shape of the notification.
   int top_radius_ = 0;
   int bottom_radius_ = 0;
+
+ public:
+  base::WeakPtrFactory<MessageView> weak_factory_{this};
 };
 
 }  // namespace message_center

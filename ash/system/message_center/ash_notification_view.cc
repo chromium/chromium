@@ -1061,8 +1061,9 @@ void AshNotificationView::RemoveGroupNotification(
     return;
   }
 
-  base::WeakPtr<AshNotificationView> to_be_removed =
-      static_cast<AshNotificationView*>(child_view)->weak_factory_.GetWeakPtr();
+  base::WeakPtr<message_center::MessageView> to_be_removed =
+      static_cast<message_center::MessageView*>(child_view)
+          ->weak_factory_.GetWeakPtr();
   if (to_be_removed) {
     // Abort any previously queued animations, if a remove animation was in
     // progress this will cause `to_be_removed` to be deleted. Because of this
@@ -1218,16 +1219,29 @@ void AshNotificationView::UpdateViewForExpandedState(bool expanded) {
 
     int notification_count = 0;
     for (auto* child : grouped_notifications_container_->children()) {
-      auto* notification_view = static_cast<AshNotificationView*>(child);
-      notification_view->AnimateGroupedChildExpandedCollapse(expanded);
-      notification_view->SetGroupedChildExpanded(expanded);
+      auto* message_view = static_cast<message_center::MessageView*>(child);
+      std::string notification_id = message_view->notification_id();
+
+      message_center::Notification* notification =
+          message_center::MessageCenter::Get()->FindVisibleNotificationById(
+              notification_id);
+
+      if (notification->type() != message_center::NOTIFICATION_TYPE_CUSTOM ||
+          notification->notifier_id().type !=
+              message_center::NotifierType::ARC_APPLICATION) {
+        auto* notification_view = static_cast<AshNotificationView*>(child);
+        notification_view->AnimateGroupedChildExpandedCollapse(expanded);
+        notification_view->SetGroupedChildExpanded(expanded);
+      }
+
       notification_count++;
       if (notification_count >
           message_center_style::kMaxGroupedNotificationsInCollapsedState) {
-        notification_view->SetVisible(expanded);
+        child->SetVisible(expanded);
       }
     }
   }
+
   NotificationViewBase::UpdateViewForExpandedState(expanded);
 
   message_label_in_expanded_state_->SetProperty(
@@ -1671,7 +1685,7 @@ views::View* AshNotificationView::FindGroupNotificationView(
   auto notification = base::ranges::find(
       grouped_notifications_container_->children(), notification_id,
       [](views::View* notification_view) {
-        return static_cast<AshNotificationView*>(notification_view)
+        return static_cast<message_center::MessageView*>(notification_view)
             ->notification_id();
       });
   return notification == grouped_notifications_container_->children().end()
