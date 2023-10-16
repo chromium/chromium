@@ -2,12 +2,12 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#include "chrome/browser/ui/webui/settings/ash/personalization_section.h"
+#include "chrome/browser/ui/webui/ash/settings/pages/personalization/personalization_section.h"
 
 #include "ash/constants/ash_features.h"
 #include "chrome/browser/profiles/profile.h"
 #include "chrome/browser/ui/webui/ash/settings/search/search_tag_registry.h"
-#include "chrome/browser/ui/webui/settings/ash/personalization_hub_handler.h"
+#include "chrome/browser/ui/webui/ash/settings/pages/personalization/personalization_hub_handler.h"
 #include "chrome/grit/generated_resources.h"
 #include "components/prefs/pref_service.h"
 #include "content/public/browser/web_ui.h"

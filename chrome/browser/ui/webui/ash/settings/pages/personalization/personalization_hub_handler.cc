@@ -2,7 +2,7 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#include "chrome/browser/ui/webui/settings/ash/personalization_hub_handler.h"
+#include "chrome/browser/ui/webui/ash/settings/pages/personalization/personalization_hub_handler.h"
 
 #include "ash/constants/ash_features.h"
 #include "ash/constants/personalization_entry_point.h"
