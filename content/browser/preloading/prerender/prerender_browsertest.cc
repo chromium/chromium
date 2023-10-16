@@ -415,6 +415,29 @@ class PrerenderBrowserTest : public ContentBrowserTest,
                                           std::string());
   }
 
+  std::unique_ptr<PrerenderHandle> AddEmbedderTriggeredPrerender(
+      const GURL& prerendering_url,
+      PreloadingAttempt* preloading_attempt = nullptr) {
+    std::unique_ptr<PrerenderHandle> handle =
+        AddEmbedderTriggeredPrerenderAsync(prerendering_url,
+                                           preloading_attempt);
+    EXPECT_TRUE(handle);
+    test::PrerenderTestHelper::WaitForPrerenderLoadCompletion(*web_contents(),
+                                                              prerendering_url);
+    return handle;
+  }
+
+  std::unique_ptr<PrerenderHandle> AddEmbedderTriggeredPrerenderAsync(
+      const GURL& prerendering_url,
+      PreloadingAttempt* preloading_attempt = nullptr) {
+    return web_contents_impl()->StartPrerendering(
+        prerendering_url, PrerenderTriggerType::kEmbedder,
+        "EmbedderSuffixForTest",
+        ui::PageTransitionFromInt(ui::PAGE_TRANSITION_TYPED |
+                                  ui::PAGE_TRANSITION_FROM_ADDRESS_BAR),
+        PreloadingHoldbackStatus::kUnspecified, preloading_attempt);
+  }
+
   bool AddTestUtilJS(RenderFrameHost* host) {
     std::string js = R"(
         const script = document.createElement("script");
@@ -2529,21 +2552,6 @@ class PrerenderMainFrameNavigationBrowserTest
     kCrossSite,
   };
 
-  // TODO(nhiroki): Move this to PrerenderTestHelper.
-  std::unique_ptr<PrerenderHandle> AddEmbedderTriggeredPrerender(
-      const GURL& url) {
-    std::unique_ptr<PrerenderHandle> handle =
-        web_contents_impl()->StartPrerendering(
-            url, PrerenderTriggerType::kEmbedder, "EmbedderSuffixForTest",
-            ui::PageTransitionFromInt(ui::PAGE_TRANSITION_TYPED |
-                                      ui::PAGE_TRANSITION_FROM_ADDRESS_BAR),
-            PreloadingHoldbackStatus::kUnspecified, nullptr);
-    EXPECT_TRUE(handle);
-    test::PrerenderTestHelper::WaitForPrerenderLoadCompletion(*web_contents(),
-                                                              url);
-    return handle;
-  }
-
   void NavigatePrimaryPageFromAddressBar(const GURL& url) {
     web_contents()->OpenURL(OpenURLParams(
         url, Referrer(), WindowOpenDisposition::CURRENT_TAB,
@@ -4088,12 +4096,7 @@ void PrerenderBrowserTest::TestCancelOnlyEmbedderTriggeredPrerenderWhenTimeout(
                                             kPrerenderUrl2);
   // Start prerendering by embedder.
   std::unique_ptr<PrerenderHandle> prerender_handle =
-      web_contents_impl()->StartPrerendering(
-          kPrerenderUrl2, PrerenderTriggerType::kEmbedder,
-          "EmbedderSuffixForTest",
-          ui::PageTransitionFromInt(ui::PAGE_TRANSITION_TYPED |
-                                    ui::PAGE_TRANSITION_FROM_ADDRESS_BAR),
-          PreloadingHoldbackStatus::kUnspecified, nullptr);
+      AddEmbedderTriggeredPrerenderAsync(kPrerenderUrl2);
 
   PrerenderHostRegistry* registry =
       web_contents_impl()->GetPrerenderHostRegistry();
@@ -5534,15 +5537,8 @@ IN_PROC_BROWSER_TEST_F(PrerenderSequentialPrerenderingBrowserTest,
   // Start prerendering by embedder triggered prerendering; this should start
   // immediately instead of being enqueued.
   std::unique_ptr<PrerenderHandle> prerender_handle =
-      web_contents_impl()->StartPrerendering(
-          kEmbedderPrerender, PrerenderTriggerType::kEmbedder,
-          "EmbedderSuffixForTest",
-          ui::PageTransitionFromInt(ui::PAGE_TRANSITION_TYPED |
-                                    ui::PAGE_TRANSITION_FROM_ADDRESS_BAR),
-          PreloadingHoldbackStatus::kUnspecified, nullptr);
-
+      AddEmbedderTriggeredPrerender(kEmbedderPrerender);
   EXPECT_TRUE(prerender_handle);
-  WaitForPrerenderLoadCompletion(kEmbedderPrerender);
 
   // Confirm that embedder triggered prerender does not affect the pending
   // prerender triggered by speculation rules.
@@ -5588,12 +5584,7 @@ IN_PROC_BROWSER_TEST_F(PrerenderSequentialPrerenderingBrowserTest,
   // Start prerendering by embedder triggered prerendering. This should be
   // blocked because b.test is in embedder_blocked_hosts.
   std::unique_ptr<PrerenderHandle> prerender_handle =
-      web_contents_impl()->StartPrerendering(
-          kEmbedderPrerender, PrerenderTriggerType::kEmbedder,
-          "EmbedderSuffixForTest",
-          ui::PageTransitionFromInt(ui::PAGE_TRANSITION_TYPED |
-                                    ui::PAGE_TRANSITION_FROM_ADDRESS_BAR),
-          PreloadingHoldbackStatus::kUnspecified, nullptr);
+      AddEmbedderTriggeredPrerenderAsync(kEmbedderPrerender);
 
   EXPECT_FALSE(prerender_handle);
   EXPECT_EQ(GetHostForUrl(kEmbedderPrerender),
@@ -6409,12 +6400,7 @@ IN_PROC_BROWSER_TEST_F(PrerenderBrowserTest, EmbedderPrerenderToNonHttpUrl) {
 
   // Start prerendering by embedder triggered prerendering.
   std::unique_ptr<PrerenderHandle> prerender_handle =
-      web_contents_impl()->StartPrerendering(
-          kPrerenderUrl, PrerenderTriggerType::kEmbedder,
-          "EmbedderSuffixForTest",
-          ui::PageTransitionFromInt(ui::PAGE_TRANSITION_TYPED |
-                                    ui::PAGE_TRANSITION_FROM_ADDRESS_BAR),
-          PreloadingHoldbackStatus::kUnspecified, nullptr);
+      AddEmbedderTriggeredPrerenderAsync(kPrerenderUrl);
 
   // Both the creation of PrerenderHandle and PrerenderHost should fail.
   EXPECT_FALSE(prerender_handle);
@@ -8741,12 +8727,7 @@ IN_PROC_BROWSER_TEST_F(PrerenderBrowserTest, StartByEmbeddersMultipleTimes) {
   // Start prerendering by embedder triggered prerendering; this should be
   // trigger successfully.
   std::unique_ptr<PrerenderHandle> prerender_handle1 =
-      web_contents_impl()->StartPrerendering(
-          kFirstPrerenderingUrl, PrerenderTriggerType::kEmbedder,
-          "EmbedderSuffixForTest",
-          ui::PageTransitionFromInt(ui::PAGE_TRANSITION_TYPED |
-                                    ui::PAGE_TRANSITION_FROM_ADDRESS_BAR),
-          PreloadingHoldbackStatus::kUnspecified, nullptr);
+      AddEmbedderTriggeredPrerenderAsync(kFirstPrerenderingUrl);
   EXPECT_TRUE(prerender_handle1);
 
   histogram_tester().ExpectBucketCount(
@@ -8757,12 +8738,7 @@ IN_PROC_BROWSER_TEST_F(PrerenderBrowserTest, StartByEmbeddersMultipleTimes) {
   // Start prerendering by embedder triggered prerendering; this should be
   // trigger successfully.
   std::unique_ptr<PrerenderHandle> prerender_handle2 =
-      web_contents_impl()->StartPrerendering(
-          kSecondPrerenderingUrl, PrerenderTriggerType::kEmbedder,
-          "EmbedderSuffixForTest",
-          ui::PageTransitionFromInt(ui::PAGE_TRANSITION_TYPED |
-                                    ui::PAGE_TRANSITION_FROM_ADDRESS_BAR),
-          PreloadingHoldbackStatus::kUnspecified, nullptr);
+      AddEmbedderTriggeredPrerenderAsync(kSecondPrerenderingUrl);
   EXPECT_TRUE(prerender_handle2);
 
   histogram_tester().ExpectBucketCount(
@@ -8773,12 +8749,7 @@ IN_PROC_BROWSER_TEST_F(PrerenderBrowserTest, StartByEmbeddersMultipleTimes) {
   // Start prerendering by embedder triggered prerendering; this should hit the
   // limit.
   std::unique_ptr<PrerenderHandle> prerender_handle3 =
-      web_contents_impl()->StartPrerendering(
-          kThirdPrerenderingUrl, PrerenderTriggerType::kEmbedder,
-          "EmbedderSuffixForTest",
-          ui::PageTransitionFromInt(ui::PAGE_TRANSITION_TYPED |
-                                    ui::PAGE_TRANSITION_FROM_ADDRESS_BAR),
-          PreloadingHoldbackStatus::kUnspecified, nullptr);
+      AddEmbedderTriggeredPrerenderAsync(kThirdPrerenderingUrl);
   EXPECT_FALSE(prerender_handle3);
 
   histogram_tester().ExpectBucketCount(
@@ -8816,23 +8787,13 @@ IN_PROC_BROWSER_TEST_F(PrerenderBrowserTest,
   // Start the first embedder triggered prerendering; this should be triggered
   // successfully.
   std::unique_ptr<PrerenderHandle> prerender_handle1 =
-      web_contents_impl()->StartPrerendering(
-          kEmbedderPrerenderingUrl1, PrerenderTriggerType::kEmbedder,
-          "EmbedderSuffixForTest",
-          ui::PageTransitionFromInt(ui::PAGE_TRANSITION_TYPED |
-                                    ui::PAGE_TRANSITION_FROM_ADDRESS_BAR),
-          PreloadingHoldbackStatus::kUnspecified, nullptr);
+      AddEmbedderTriggeredPrerenderAsync(kEmbedderPrerenderingUrl1);
   EXPECT_TRUE(prerender_handle1);
 
   // Start the second embedder triggered prerendering; this should be triggered
   // successfully.
   std::unique_ptr<PrerenderHandle> prerender_handle2 =
-      web_contents_impl()->StartPrerendering(
-          kEmbedderPrerenderingUrl2, PrerenderTriggerType::kEmbedder,
-          "EmbedderSuffixForTest",
-          ui::PageTransitionFromInt(ui::PAGE_TRANSITION_TYPED |
-                                    ui::PAGE_TRANSITION_FROM_ADDRESS_BAR),
-          PreloadingHoldbackStatus::kUnspecified, nullptr);
+      AddEmbedderTriggeredPrerenderAsync(kEmbedderPrerenderingUrl2);
   EXPECT_TRUE(prerender_handle2);
 
   histogram_tester().ExpectBucketCount(
@@ -8842,12 +8803,7 @@ IN_PROC_BROWSER_TEST_F(PrerenderBrowserTest,
 
   // Start the third embedder triggered prerendering; this should hit the limit.
   std::unique_ptr<PrerenderHandle> prerender_handle3 =
-      web_contents_impl()->StartPrerendering(
-          kEmbedderPrerenderingUrl3, PrerenderTriggerType::kEmbedder,
-          "EmbedderSuffixForTest",
-          ui::PageTransitionFromInt(ui::PAGE_TRANSITION_TYPED |
-                                    ui::PAGE_TRANSITION_FROM_ADDRESS_BAR),
-          PreloadingHoldbackStatus::kUnspecified, nullptr);
+      AddEmbedderTriggeredPrerenderAsync(kEmbedderPrerenderingUrl3);
   EXPECT_FALSE(prerender_handle3);
 
   histogram_tester().ExpectBucketCount(
@@ -8858,12 +8814,8 @@ IN_PROC_BROWSER_TEST_F(PrerenderBrowserTest,
   // Cancel the second embedder triggered prerendering and start a new one;
   // this should succeed as one of the prerenders is freed.
   prerender_handle2.reset();
-  prerender_handle3 = web_contents_impl()->StartPrerendering(
-      kEmbedderPrerenderingUrl3, PrerenderTriggerType::kEmbedder,
-      "EmbedderSuffixForTest",
-      ui::PageTransitionFromInt(ui::PAGE_TRANSITION_TYPED |
-                                ui::PAGE_TRANSITION_FROM_ADDRESS_BAR),
-      PreloadingHoldbackStatus::kUnspecified, nullptr);
+  prerender_handle3 =
+      AddEmbedderTriggeredPrerenderAsync(kEmbedderPrerenderingUrl3);
   EXPECT_TRUE(prerender_handle3);
 }
 
@@ -9085,12 +9037,7 @@ IN_PROC_BROWSER_TEST_F(MultiplePrerendersBrowserTest,
   // Start an embedder triggered prerendering; this should be triggered
   // successfully because its limitation is independent from speculation rules.
   std::unique_ptr<PrerenderHandle> prerender_handle =
-      web_contents_impl()->StartPrerendering(
-          kEmbedderTriggeredPrerenderingUrl, PrerenderTriggerType::kEmbedder,
-          "EmbedderSuffixForTest",
-          ui::PageTransitionFromInt(ui::PAGE_TRANSITION_TYPED |
-                                    ui::PAGE_TRANSITION_FROM_ADDRESS_BAR),
-          PreloadingHoldbackStatus::kUnspecified, nullptr);
+      AddEmbedderTriggeredPrerenderAsync(kEmbedderTriggeredPrerenderingUrl);
   EXPECT_TRUE(prerender_handle);
 }
 
@@ -9550,12 +9497,7 @@ void PrerenderBrowserTest::TestEmbedderTriggerWithUnsupportedScheme(
 
   // Start prerendering by embedder triggered prerendering.
   std::unique_ptr<PrerenderHandle> prerender_handle =
-      web_contents_impl()->StartPrerendering(
-          prerendering_url, PrerenderTriggerType::kEmbedder,
-          "EmbedderSuffixForTest",
-          ui::PageTransitionFromInt(ui::PAGE_TRANSITION_TYPED |
-                                    ui::PAGE_TRANSITION_FROM_ADDRESS_BAR),
-          PreloadingHoldbackStatus::kUnspecified, preloading_attempt);
+      AddEmbedderTriggeredPrerenderAsync(prerendering_url, preloading_attempt);
   EXPECT_FALSE(prerender_handle);
 
   histogram_tester().ExpectUniqueSample(
@@ -9621,15 +9563,7 @@ IN_PROC_BROWSER_TEST_F(PrerenderBrowserTest,
 
   // Start prerendering by embedder triggered prerendering.
   std::unique_ptr<PrerenderHandle> prerender_handle =
-      web_contents_impl()->StartPrerendering(
-          prerender_initial_url, PrerenderTriggerType::kEmbedder,
-          "EmbedderSuffixForTest",
-          ui::PageTransitionFromInt(ui::PAGE_TRANSITION_TYPED |
-                                    ui::PAGE_TRANSITION_FROM_ADDRESS_BAR),
-          PreloadingHoldbackStatus::kUnspecified, nullptr);
-  EXPECT_TRUE(prerender_handle);
-  test::PrerenderTestHelper::WaitForPrerenderLoadCompletion(
-      *shell()->web_contents(), prerender_initial_url);
+      AddEmbedderTriggeredPrerender(prerender_initial_url);
   ASSERT_EQ(3u, redirect_chain_observer.redirect_chain().size());
 
   // Prerender is not canceled.
@@ -9675,15 +9609,7 @@ IN_PROC_BROWSER_TEST_F(
 
   // Start prerendering by embedder triggered prerendering.
   std::unique_ptr<PrerenderHandle> prerender_handle =
-      web_contents_impl()->StartPrerendering(
-          prerendering_initial_url, PrerenderTriggerType::kEmbedder,
-          "EmbedderSuffixForTest",
-          ui::PageTransitionFromInt(ui::PAGE_TRANSITION_TYPED |
-                                    ui::PAGE_TRANSITION_FROM_ADDRESS_BAR),
-          PreloadingHoldbackStatus::kUnspecified, nullptr);
-  EXPECT_TRUE(prerender_handle);
-  test::PrerenderTestHelper::WaitForPrerenderLoadCompletion(
-      *shell()->web_contents(), prerendering_initial_url);
+      AddEmbedderTriggeredPrerender(prerendering_initial_url);
 
   histogram_tester().ExpectUniqueSample(
       "Prerender.Experimental.PrerenderHostFinalStatus.Embedder_"
