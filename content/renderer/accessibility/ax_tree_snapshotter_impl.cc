@@ -72,8 +72,6 @@ void AXTreeSnapshotterImpl::Snapshot(size_t max_node_count,
     NOTREACHED_NORETURN();
   }
 
-  context_->UpdateAXForAllDocuments();
-
   if (context_->SerializeEntireTree(max_node_count, timeout, response)) {
     return;
   }

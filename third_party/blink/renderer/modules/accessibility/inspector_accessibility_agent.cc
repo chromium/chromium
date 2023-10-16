@@ -544,6 +544,8 @@ protocol::Response InspectorAccessibilityAgent::getPartialAXTree(
 
   auto& cache = AttachToAXObjectCache(&document);
   cache.UpdateAXForAllDocuments();
+  ScopedFreezeAXCache freeze(cache);
+
   DocumentLifecycle::DisallowTransitionScope disallow_transition(
       document.Lifecycle());
 
@@ -799,6 +801,7 @@ InspectorAccessibilityAgent::WalkAXNodesToDepth(Document* document,
 
   auto& cache = AttachToAXObjectCache(document);
   cache.UpdateAXForAllDocuments();
+  ScopedFreezeAXCache freeze(cache);
 
   Deque<std::pair<AXID, int>> id_depths;
   id_depths.emplace_back(cache.Root()->AXObjectID(), 1);
@@ -843,8 +846,10 @@ protocol::Response InspectorAccessibilityAgent::getRootAXNode(
 
   auto& cache = AttachToAXObjectCache(document);
   cache.UpdateAXForAllDocuments();
-
   auto& root = *cache.Root();
+
+  ScopedFreezeAXCache freeze(cache);
+
   *node = BuildProtocolAXNodeForAXObject(root);
   nodes_requested_.insert(root.AXObjectID());
 
@@ -879,6 +884,8 @@ protocol::Response InspectorAccessibilityAgent::getAXNodeAndAncestors(
       document.Lifecycle());
 
   AXObject* ax_object = cache.GetOrCreate(dom_node);
+
+  ScopedFreezeAXCache freeze(cache);
 
   *out_nodes =
       std::make_unique<protocol::Array<protocol::Accessibility::AXNode>>();
@@ -923,6 +930,8 @@ protocol::Response InspectorAccessibilityAgent::getChildAXNodes(
 
   auto& cache = AttachToAXObjectCache(document);
   cache.UpdateAXForAllDocuments();
+
+  ScopedFreezeAXCache freeze(cache);
 
   AXID ax_id = in_id.ToInt();
   AXObject* ax_object = cache.ObjectFromAXID(ax_id);
@@ -1070,6 +1079,7 @@ void InspectorAccessibilityAgent::CompleteQuery(AXQuery& query) {
   DocumentLifecycle::DisallowTransitionScope disallow_transition(
       document.Lifecycle());
   auto& cache = AttachToAXObjectCache(&document);
+  ScopedFreezeAXCache freeze(cache);
 
   std::unique_ptr<protocol::Array<AXNode>> nodes =
       std::make_unique<protocol::Array<protocol::Accessibility::AXNode>>();
@@ -1156,6 +1166,8 @@ void InspectorAccessibilityAgent::ProcessPendingDirtyNodes(Document& document) {
   auto nodes =
       std::make_unique<protocol::Array<protocol::Accessibility::AXNode>>();
 
+  CHECK(document.ExistingAXObjectCache());
+  ScopedFreezeAXCache freeze(*document.ExistingAXObjectCache());
   for (AXObject* changed_node : *dirty_nodes) {
     if (!changed_node->IsDetached())
       nodes->push_back(BuildProtocolAXNodeForAXObject(*changed_node));
@@ -1196,13 +1208,15 @@ void InspectorAccessibilityAgent::AXEventFired(AXObject* ax_object,
   if (!enabled_.Get())
     return;
   DCHECK(ax_object->AccessibilityIsIncludedInTree());
+
   switch (event) {
-    case ax::mojom::blink::Event::kLoadComplete:
+    case ax::mojom::blink::Event::kLoadComplete: {
       dirty_nodes_.clear();
       nodes_requested_.clear();
       nodes_requested_.insert(ax_object->AXObjectID());
+      ScopedFreezeAXCache freeze(ax_object->AXObjectCache());
       GetFrontend()->loadComplete(BuildProtocolAXNodeForAXObject(*ax_object));
-      break;
+    } break;
     case ax::mojom::blink::Event::kLocationChanged:
       // Since we do not serialize location data we can ignore changes to this.
       break;

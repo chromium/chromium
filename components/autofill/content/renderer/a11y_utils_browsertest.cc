@@ -42,6 +42,8 @@ TEST_F(A11yUtilsTest, SetAutofillState) {
 
   // kAutofillAvailable.
   SetAutofillState(element, mojom::AutofillState::kAutofillAvailable);
+  ax_context->UpdateAXForAllDocuments();
+
   node_data = ui::AXNodeData();
   element_ax_object.Serialize(&node_data, ui::AXMode::kScreenReader);
   EXPECT_TRUE(node_data.HasState(ax::mojom::State::kAutofillAvailable));
@@ -50,6 +52,8 @@ TEST_F(A11yUtilsTest, SetAutofillState) {
 
   // kAutocompleteAvailable.
   SetAutofillState(element, mojom::AutofillState::kAutocompleteAvailable);
+  ax_context->UpdateAXForAllDocuments();
+
   node_data = ui::AXNodeData();
   element_ax_object.Serialize(&node_data, ui::AXMode::kScreenReader);
   EXPECT_FALSE(node_data.HasState(ax::mojom::State::kAutofillAvailable));
@@ -58,6 +62,8 @@ TEST_F(A11yUtilsTest, SetAutofillState) {
 
   // kNoSuggestions.
   SetAutofillState(element, mojom::AutofillState::kNoSuggestions);
+  ax_context->UpdateAXForAllDocuments();
+
   node_data = ui::AXNodeData();
   element_ax_object.Serialize(&node_data, ui::AXMode::kScreenReader);
   EXPECT_FALSE(node_data.HasState(ax::mojom::State::kAutofillAvailable));

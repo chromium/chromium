@@ -94,30 +94,6 @@ void SetAccessibilityCrashKey(ui::AXMode mode) {
 
 namespace content {
 
-// Create this on the stack to freeze BlinkAXTreeSource and automatically
-// un-freeze it when it goes out of scope.
-class ScopedFreezeAXTreeSource {
- public:
-  explicit ScopedFreezeAXTreeSource(blink::WebAXContext* context)
-      : context_(context) {
-    if (context_) {
-      context_->Freeze();
-    }
-  }
-
-  ScopedFreezeAXTreeSource(const ScopedFreezeAXTreeSource&) = delete;
-  ScopedFreezeAXTreeSource& operator=(const ScopedFreezeAXTreeSource&) = delete;
-
-  ~ScopedFreezeAXTreeSource() {
-    if (context_) {
-      context_->Thaw();
-    }
-  }
-
- private:
-  raw_ptr<blink::WebAXContext, ExperimentalRenderer> context_;
-};
-
 RenderAccessibilityImpl::RenderAccessibilityImpl(
     RenderAccessibilityManager* const render_accessibility_manager,
     RenderFrameImpl* const render_frame,
@@ -318,7 +294,6 @@ void RenderAccessibilityImpl::HitTest(
 
   // If the result was in the same frame, return the result.
   ui::AXNodeData data;
-  ScopedFreezeAXTreeSource freeze(ax_context_.get());
   ax_object.Serialize(&data, ax_context_->GetAXMode());
   if (!data.HasStringAttribute(ax::mojom::StringAttribute::kChildTreeId)) {
     // Optionally fire an event, if requested to. This is a good fit for
@@ -458,7 +433,6 @@ void RenderAccessibilityImpl::PerformAction(const ui::AXActionData& data) {
         CreateAXImageAnnotator();
         // Rebuild the document tree so that images become annotated.
         DCHECK(ax_context_);
-        ScopedFreezeAXTreeSource freeze(ax_context_.get());
         ax_context_->MarkDocumentDirty();
       }
       break;
@@ -1304,7 +1278,6 @@ void RenderAccessibilityImpl::SendPendingAccessibilityEvents() {
     ax_context_->UpdateAXForAllDocuments();
   }
 
-  ScopedFreezeAXTreeSource freeze(ax_context_.get());
   WebAXObject root = ComputeRoot();
 #if DCHECK_IS_ON()
   // Never causes a document lifecycle change during serialization,
@@ -1488,7 +1461,6 @@ void RenderAccessibilityImpl::OnGetImageData(const ui::AXActionTarget* target,
     return;
   }
   const WebAXObject& obj = blink_target->WebAXObject();
-  ScopedFreezeAXTreeSource freeze(ax_context_.get());
   obj.SetImageAsDataNodeId(max_size);
 
   const WebDocument& document = GetMainDocument();
@@ -1681,7 +1653,6 @@ blink::WebAXObject RenderAccessibilityImpl::GetPluginRoot() {
   if (!ax_context_)
     return WebAXObject();
   ax_context_->UpdateAXForAllDocuments();
-  ScopedFreezeAXTreeSource freeze(ax_context_.get());
   return ax_context_->GetPluginRoot();
 }
 

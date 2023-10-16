@@ -204,6 +204,7 @@ void WebAXObject::Serialize(ui::AXNodeData* node_data,
   }
 #endif
 
+  ScopedFreezeAXCache freeze(private_->AXObjectCache());
   private_->Serialize(node_data, accessibility_mode);
 }
 

@@ -59,6 +59,7 @@ void WebAXContext::SerializeLocationChanges(uint32_t reset_token) const {
   if (!HasActiveDocument()) {
     return;
   }
+  ScopedFreezeAXCache freeze(private_->GetAXObjectCache());
   private_->GetAXObjectCache().SerializeLocationChanges(reset_token);
 }
 
@@ -69,25 +70,16 @@ WebAXObject WebAXContext::GetPluginRoot() {
   return WebAXObject(private_->GetAXObjectCache().GetPluginRoot());
 }
 
-void WebAXContext::Freeze() {
-  if (!HasActiveDocument()) {
-    return;
-  }
-  private_->GetAXObjectCache().Freeze();
-}
-
-void WebAXContext::Thaw() {
-  if (!HasActiveDocument()) {
-    return;
-  }
-  private_->GetAXObjectCache().Thaw();
-}
-
 bool WebAXContext::SerializeEntireTree(size_t max_node_count,
                                        base::TimeDelta timeout,
                                        ui::AXTreeUpdate* response) {
   CHECK(HasActiveDocument());
   CHECK(HasAXObjectCache());
+  CHECK(private_->GetDocument()->ExistingAXObjectCache());
+
+  UpdateAXForAllDocuments();
+
+  ScopedFreezeAXCache freeze(private_->GetAXObjectCache());
   return private_->GetAXObjectCache().SerializeEntireTree(max_node_count,
                                                           timeout, response);
 }
@@ -102,6 +94,8 @@ void WebAXContext::SerializeDirtyObjectsAndEvents(
   if (!HasActiveDocument()) {
     return;
   }
+
+  ScopedFreezeAXCache freeze(private_->GetAXObjectCache());
   private_->GetAXObjectCache().SerializeDirtyObjectsAndEvents(
       has_plugin_tree_source, updates, events, had_end_of_test_event,
       had_load_complete_messages, need_to_send_location_changes);
