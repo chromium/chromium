@@ -281,6 +281,8 @@ gfx::Rect ToastOverlay::CalculateOverlayBounds() {
   auto* window = overlay_widget_->IsNativeWidgetInitialized()
                      ? overlay_widget_->GetNativeWindow()
                      : root_window_.get();
+  DCHECK(window);
+
   auto* window_controller = RootWindowController::ForWindow(window);
   auto* hotseat_widget = window_controller->shelf()->hotseat_widget();
 
@@ -358,7 +360,7 @@ void ToastOverlay::OnImplicitAnimationsScheduled() {}
 
 void ToastOverlay::OnImplicitAnimationsCompleted() {
   if (!overlay_widget_->GetLayer()->GetTargetVisibility())
-    delegate_->OnClosed();
+    delegate_->CloseToast();
 }
 
 void ToastOverlay::OnKeyboardOccludedBoundsChanged(

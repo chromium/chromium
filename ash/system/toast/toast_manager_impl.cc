@@ -204,7 +204,7 @@ bool ToastManagerImpl::IsHighlighted(std::string_view id) const {
   return false;
 }
 
-void ToastManagerImpl::OnClosed() {
+void ToastManagerImpl::CloseToast() {
   const base::TimeDelta user_journey_time =
       base::TimeTicks::Now() - current_toast_data_->time_start_showing;
   const std::string time_range = GetToastDismissedTimeRange(user_journey_time);
@@ -357,6 +357,13 @@ void ToastManagerImpl::OnRootWindowAdded(aura::Window* root_window) {
 }
 
 void ToastManagerImpl::OnRootWindowWillShutdown(aura::Window* root_window) {
+  // If the toast only exists in the root window that is being closed, inform
+  // the manager that the toast should be closed.
+  if (root_window_to_overlay_[root_window] &&
+      !current_toast_data_->show_on_all_root_windows) {
+    CloseToast();
+  }
+
   root_window_to_overlay_.erase(root_window);
 }
 

@@ -59,7 +59,7 @@ class ASH_EXPORT ToastManagerImpl : public ToastManager,
   bool IsHighlighted(std::string_view id) const override;
 
   // ToastOverlay::Delegate overrides:
-  void OnClosed() override;
+  void CloseToast() override;
   void OnToastHoverStateChanged(bool is_hovering) override;
 
   // SessionObserver:

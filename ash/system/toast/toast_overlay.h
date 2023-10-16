@@ -47,7 +47,7 @@ class ASH_EXPORT ToastOverlay : public ui::ImplicitAnimationObserver,
   class ASH_EXPORT Delegate {
    public:
     virtual ~Delegate() {}
-    virtual void OnClosed() = 0;
+    virtual void CloseToast() = 0;
 
     // Called when a toast's hover state changed if the toast is supposed to
     // persist on hover.
