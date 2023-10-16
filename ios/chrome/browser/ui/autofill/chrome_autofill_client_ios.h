@@ -36,6 +36,10 @@ namespace web {
 class WebState;
 }
 
+namespace plus_addresses {
+class PlusAddressService;
+}
+
 namespace autofill {
 
 // Chrome iOS implementation of AutofillClient.
@@ -147,6 +151,7 @@ class ChromeAutofillClientIOS : public AutofillClient {
   FormInteractionsFlowId GetCurrentFormInteractionsFlowId() override;
   LogManager* GetLogManager() const override;
   bool IsLastQueriedField(FieldGlobalId field_id) override;
+  plus_addresses::PlusAddressService* GetPlusAddressService() override;
 
   // RiskDataLoader:
   void LoadRiskData(

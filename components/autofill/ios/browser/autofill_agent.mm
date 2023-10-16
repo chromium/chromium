@@ -693,6 +693,12 @@ constexpr base::TimeDelta kA11yAnnouncementQueueDelay = base::Seconds(1);
                autofill::PopupItemId::kShowAccountCards) {
       // Show opt-in for showing cards from account.
       value = SysUTF16ToNSString(popup_suggestion.main_text.value);
+    } else if (popup_suggestion.popup_item_id ==
+                   autofill::PopupItemId::kFillExistingPlusAddress ||
+               popup_suggestion.popup_item_id ==
+                   autofill::PopupItemId::kCreateNewPlusAddress) {
+      // Show any plus_address suggestions.
+      value = SysUTF16ToNSString(popup_suggestion.main_text.value);
     }
 
     if (!value)

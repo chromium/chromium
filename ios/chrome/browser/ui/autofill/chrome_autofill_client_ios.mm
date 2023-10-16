@@ -34,6 +34,7 @@
 #import "components/infobars/core/infobar_manager.h"
 #import "components/keyed_service/core/service_access_type.h"
 #import "components/password_manager/core/common/password_manager_pref_names.h"
+#import "components/plus_addresses/plus_address_service.h"
 #import "components/security_state/ios/security_state_utils.h"
 #import "components/sync/service/sync_service.h"
 #import "components/translate/core/browser/translate_manager.h"
@@ -48,6 +49,7 @@
 #import "ios/chrome/browser/infobars/infobar_ios.h"
 #import "ios/chrome/browser/infobars/infobar_utils.h"
 #import "ios/chrome/browser/passwords/model/password_tab_helper.h"
+#import "ios/chrome/browser/plus_addresses/model/plus_address_service_factory.h"
 #import "ios/chrome/browser/shared/model/application_context/application_context.h"
 #import "ios/chrome/browser/signin/authentication_service.h"
 #import "ios/chrome/browser/signin/authentication_service_factory.h"
@@ -430,6 +432,11 @@ void ChromeAutofillClientIOS::ShowAutofillPopup(
     const AutofillClient::PopupOpenArgs& open_args,
     base::WeakPtr<AutofillPopupDelegate> delegate) {
   [bridge_ showAutofillPopup:open_args.suggestions popupDelegate:delegate];
+}
+
+plus_addresses::PlusAddressService*
+ChromeAutofillClientIOS::GetPlusAddressService() {
+  return PlusAddressServiceFactory::GetForBrowserState(browser_state_);
 }
 
 void ChromeAutofillClientIOS::UpdateAutofillPopupDataListValues(
