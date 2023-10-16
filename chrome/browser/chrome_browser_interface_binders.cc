@@ -349,6 +349,8 @@
 #include "chrome/browser/ui/webui/ash/smb_shares/smb_share_dialog.h"
 #include "chrome/browser/ui/webui/ash/vm/vm.mojom.h"
 #include "chrome/browser/ui/webui/ash/vm/vm_ui.h"
+#include "chrome/browser/ui/webui/ash/web_app_install/web_app_install.mojom.h"
+#include "chrome/browser/ui/webui/ash/web_app_install/web_app_install_ui.h"
 #include "chrome/browser/ui/webui/feedback/feedback_ui.h"
 #include "chrome/browser/ui/webui/nearby_share/nearby_share.mojom.h"
 #include "chrome/browser/ui/webui/nearby_share/nearby_share_dialog_ui.h"
@@ -1605,6 +1607,13 @@ void PopulateChromeWebUIFrameBinders(
     RegisterWebUIControllerInterfaceBinder<
         ash::settings::google_drive::mojom::PageHandlerFactory,
         ash::settings::OSSettingsUI>(map);
+  }
+
+  if (base::FeatureList::IsEnabled(
+          chromeos::features::kCrosWebAppInstallDialog)) {
+    RegisterWebUIControllerInterfaceBinder<
+        ash::web_app_install::mojom::PageHandlerFactory,
+        ash::web_app_install::WebAppInstallDialogUI>(map);
   }
 #endif  // BUILDFLAG(IS_CHROMEOS_ASH)
 
