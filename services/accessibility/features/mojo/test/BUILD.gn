@@ -10,6 +10,11 @@ mojom("mojom_js_api") {
   sources = [ "test_api.test-mojom" ]
   public_deps = [ "//mojo/public/mojom/base" ]
   webui_module_path = "/"
+  use_typescript_sources = true
+
+  # Remove this when module loading is implemented and legacy bindings are no
+  # longer required
+  generate_legacy_js_bindings = true
 }
 
 group("test_support_data") {
