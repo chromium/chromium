@@ -71,8 +71,3 @@ IN_PROC_BROWSER_TEST_F(SidePanelCustomizeChromeTest, WallpaperSearch) {
   RunTest("side_panel/customize_chrome/wallpaper_search_test.js",
           "mocha.run()");
 }
-
-IN_PROC_BROWSER_TEST_F(SidePanelCustomizeChromeTest, WallpaperSearchSimple) {
-  RunTest("side_panel/customize_chrome/wallpaper_search_simple_test.js",
-          "mocha.run()");
-}
