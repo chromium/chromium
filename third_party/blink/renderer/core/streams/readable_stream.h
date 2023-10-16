@@ -220,7 +220,9 @@ class CORE_EXPORT ReadableStream : public ScriptWrappable {
   }
 
   // https://streams.spec.whatwg.org/#is-readable-stream-locked
-  static bool IsLocked(const ReadableStream* stream) { return stream->reader_; }
+  static bool IsLocked(const ReadableStream* stream) {
+    return stream->reader_ != nullptr;
+  }
 
   // https://streams.spec.whatwg.org/#readable-stream-pipe-to
   static ScriptPromise PipeTo(ScriptState*,

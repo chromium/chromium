@@ -140,7 +140,7 @@ class CORE_EXPORT PendingScript : public GarbageCollected<PendingScript>,
     return false;
   }
 
-  bool IsWatchingForLoad() const { return client_; }
+  bool IsWatchingForLoad() const { return client_ != nullptr; }
 
  protected:
   PendingScript(ScriptElementBase*,

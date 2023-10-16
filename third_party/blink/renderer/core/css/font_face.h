@@ -154,7 +154,7 @@ class CORE_EXPORT FontFace : public ScriptWrappable,
   }
   FontMetricsOverride GetFontMetricsOverride() const;
 
-  bool HasSizeAdjust() const { return size_adjust_; }
+  bool HasSizeAdjust() const { return size_adjust_ != nullptr; }
   float GetSizeAdjust() const;
 
   Document* GetDocument() const;

@@ -56,7 +56,7 @@ class WebGLSharedObject : public WebGLObject {
  protected:
   explicit WebGLSharedObject(WebGLRenderingContextBase*);
 
-  bool HasGroupOrContext() const final { return context_group_; }
+  bool HasGroupOrContext() const final { return context_group_ != nullptr; }
 
   uint32_t CurrentNumberOfContextLosses() const final;
 

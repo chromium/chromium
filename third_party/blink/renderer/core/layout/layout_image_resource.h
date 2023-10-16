@@ -50,7 +50,7 @@ class CORE_EXPORT LayoutImageResource
 
   void SetImageResource(ImageResourceContent*);
   ImageResourceContent* CachedImage() const { return cached_image_.Get(); }
-  virtual bool HasImage() const { return cached_image_; }
+  virtual bool HasImage() const { return cached_image_ != nullptr; }
   ResourcePriority ComputeResourcePriority() const;
 
   void ResetAnimation();

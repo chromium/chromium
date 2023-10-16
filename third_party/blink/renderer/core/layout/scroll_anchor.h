@@ -56,7 +56,7 @@ class CORE_EXPORT ScrollAnchor final {
   void SetScroller(ScrollableArea*);
 
   // Returns true if the underlying scroller is set.
-  bool HasScroller() const { return scroller_; }
+  bool HasScroller() const { return scroller_ != nullptr; }
 
   // The LayoutObject we are currently anchored to. Lazily computed during
   // notifyBeforeLayout() and cached until the next call to clear().

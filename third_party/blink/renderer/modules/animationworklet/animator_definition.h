@@ -37,7 +37,7 @@ class MODULES_EXPORT AnimatorDefinition final
   V8AnimatorConstructor* ConstructorFunction() const { return constructor_; }
   V8AnimateCallback* AnimateFunction() const { return animate_; }
   V8StateCallback* StateFunction() const { return state_; }
-  bool IsStateful() const { return state_; }
+  bool IsStateful() const { return state_ != nullptr; }
 
  private:
   // This object keeps the constructor function, animate, and state function

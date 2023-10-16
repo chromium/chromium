@@ -213,7 +213,7 @@ class CORE_EXPORT StringKeyframe : public Keyframe {
     // Two shorthands with overlapping longhand properties are sorted based
     // on the number of longhand properties in their expansions.
     bool IsLogical() { return is_logical_; }
-    bool IsShorthand() { return css_property_value_set_; }
+    bool IsShorthand() { return css_property_value_set_ != nullptr; }
     unsigned ExpansionCount() {
       return css_property_value_set_ ? css_property_value_set_->PropertyCount()
                                      : 1;

@@ -241,7 +241,7 @@ class CORE_EXPORT DisplayLockContext final
     is_details_slot_ = is_details_slot;
   }
 
-  bool HasElement() const { return element_; }
+  bool HasElement() const { return element_ != nullptr; }
 
   // Top layer implementation.
   void NotifyHasTopLayerElement();

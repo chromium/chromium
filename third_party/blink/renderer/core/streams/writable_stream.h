@@ -107,7 +107,9 @@ class CORE_EXPORT WritableStream : public ScriptWrappable {
 
   // Inherited methods used internally.
 
-  static bool IsLocked(const WritableStream* stream) { return stream->writer_; }
+  static bool IsLocked(const WritableStream* stream) {
+    return stream->writer_ != nullptr;
+  }
 
   void Serialize(ScriptState*, MessagePort*, ExceptionState&);
 

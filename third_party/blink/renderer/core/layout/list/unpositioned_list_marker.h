@@ -56,7 +56,7 @@ class CORE_EXPORT UnpositionedListMarker final {
   explicit UnpositionedListMarker(LayoutOutsideListMarker*);
   explicit UnpositionedListMarker(const NGBlockNode&);
 
-  explicit operator bool() const { return marker_layout_object_; }
+  explicit operator bool() const { return marker_layout_object_ != nullptr; }
 
   // Returns the baseline that the list-marker should place itself along.
   //

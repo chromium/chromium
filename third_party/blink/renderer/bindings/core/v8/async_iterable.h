@@ -45,7 +45,9 @@ class CORE_EXPORT AsyncIterationSourceBase
   // [1] https://webidl.spec.whatwg.org/#dfn-get-the-next-iteration-result
   virtual void GetNextIterationResult() = 0;
 
-  bool HasPendingPromise() const { return pending_promise_resolver_; }
+  bool HasPendingPromise() const {
+    return pending_promise_resolver_ != nullptr;
+  }
 
   // Returns the pending promise resolver by removing it from this instance.
   ScriptPromiseResolver* TakePendingPromiseResolver() {

@@ -43,7 +43,7 @@ struct CORE_EXPORT NGLayoutOpportunity final {
 
   // Returns if the opportunity has any shapes which may affect a line layout
   // opportunity.
-  bool HasShapeExclusions() const { return shape_exclusions; }
+  bool HasShapeExclusions() const { return shape_exclusions != nullptr; }
 
   // Returns if the given delta (relative to the start of the opportunity) will
   // be below any shapes.

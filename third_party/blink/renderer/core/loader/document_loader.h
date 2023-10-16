@@ -196,7 +196,9 @@ class CORE_EXPORT DocumentLoader : public GarbageCollected<DocumentLoader>,
   // same number of time than BlockParser().
   void BlockParser() override;
   void ResumeParser() override;
-  bool HasBeenLoadedAsWebArchive() const override { return archive_; }
+  bool HasBeenLoadedAsWebArchive() const override {
+    return archive_ != nullptr;
+  }
   WebArchiveInfo GetArchiveInfo() const override;
   bool LastNavigationHadTransientUserActivation() const override {
     return last_navigation_had_transient_user_activation_;
