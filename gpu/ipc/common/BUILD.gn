@@ -709,6 +709,9 @@ mojom("gpu_preferences_interface") {
 
 mojom("vulkan_interface") {
   generate_java = true
+  webui_module_path = "/"
+  use_typescript_sources = true
+  generate_legacy_js_bindings = true
 
   # TODO(crbug.com/1062364): This interface code is used by some javascript
   # targets even when vulkan isn't enabled, but the C++ fuzzer code will fail
@@ -753,8 +756,6 @@ mojom("vulkan_interface") {
   export_class_attribute = "GPU_EXPORT"
   export_header = "gpu/gpu_export.h"
   cpp_configs = [ "//gpu:gpu_implementation" ]
-
-  webui_module_path = "/"
 }
 
 mojom("test_interfaces") {

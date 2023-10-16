@@ -2147,6 +2147,11 @@ template("mojom") {
           args += message_scrambling_args
         }
 
+        if (defined(invoker.js_generate_struct_deserializers) &&
+            invoker.js_generate_struct_deserializers) {
+          args += [ "--js_generate_struct_deserializers" ]
+        }
+
         # TODO(crbug.com/1007587): Support scramble_message_ids if above is
         # insufficient.
         # TODO(crbug.com/1007591): Support generate_fuzzing.

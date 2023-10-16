@@ -181,6 +181,12 @@ export namespace mojo {
       nullableValueKindProperties?: NullableValueKindProperties;
     }
 
+    function createStructDeserializer(structMojomType: mojo.internal.MojomType):
+        (dataView: DataView) => {
+          [key: string]: any,
+        };
+
+
     function StructField(
         name: string, packedOffset: number, packedBitOffset: number,
         type: MojomType, defaultValue: any, nullable: boolean,
