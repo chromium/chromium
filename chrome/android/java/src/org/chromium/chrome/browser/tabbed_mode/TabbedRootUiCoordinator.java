@@ -466,7 +466,7 @@ public class TabbedRootUiCoordinator extends RootUiCoordinator {
                 mActivityLifecycleDispatcher, mCompositorViewHolderSupplier.get(),
                 mCallbackController.makeCancelable(
                         () -> mLayoutManager.getActiveLayout().requestUpdate()),
-                mActivityTabProvider, mInsetObserverViewSupplier.get(),
+                mActivityTabProvider, mInsetObserverViewSupplier.get(), mStartSurfaceSupplier,
                 new BackActionDelegate() {
                     @Override
                     public @ActionType int getBackActionType(Tab tab) {
