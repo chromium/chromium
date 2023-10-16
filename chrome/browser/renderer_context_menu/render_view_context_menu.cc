@@ -1884,17 +1884,11 @@ void RenderViewContextMenu::AppendSearchWebForImageItems() {
     return;
   }
 
-  std::u16string menu_string =
+  menu_model_.AddItem(
+      GetSearchForImageIdc(),
       l10n_util::GetStringFUTF16(IDS_CONTENT_CONTEXT_SEARCHLENSFORIMAGE,
-                                 GetImageSearchProviderName(provider));
+                                 provider->short_name()));
 
-  if (lens::features::UseLensContextMenuItemAlternateText()) {
-    menu_string = l10n_util::GetStringFUTF16(
-        IDS_CONTENT_CONTEXT_SEARCHLENSFORIMAGE_ALT_TEXT,
-        provider->short_name());
-  }
-
-  menu_model_.AddItem(GetSearchForImageIdc(), menu_string);
   if (companion::IsNewBadgeEnabledForSearchMenuItem(GetBrowser())) {
     menu_model_.SetIsNewFeatureAt(menu_model_.GetItemCount() - 1, true);
   }

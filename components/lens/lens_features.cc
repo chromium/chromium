@@ -102,9 +102,6 @@ constexpr base::FeatureParam<int> kMaxPixelsForImageSearch{
 const base::FeatureParam<bool> kEnableLensFullscreenSearch{
     &kLensSearchOptimizations, "enable-lens-fullscreen-search", false};
 
-const base::FeatureParam<bool> kLensContextMenuUseAlternateText{
-    &kLensSearchOptimizations, "use-lens-context-menu-alternate-text", false};
-
 const base::FeatureParam<int> kEncodingQualityJpeg{
     &kLensImageFormatOptimizations, "encoding-quality-jpeg", 40};
 
@@ -193,12 +190,6 @@ bool IsLensSidePanelEnabledForRegionSearch() {
 
 bool IsLensRegionSearchStaticPageEnabled() {
   return base::FeatureList::IsEnabled(kLensRegionSearchStaticPage);
-}
-
-bool UseLensContextMenuItemAlternateText() {
-  return base::FeatureList::IsEnabled(kLensStandalone) &&
-         base::FeatureList::IsEnabled(kLensSearchOptimizations) &&
-         kLensContextMenuUseAlternateText.Get();
 }
 
 int GetEncodingQualityJpeg() {
