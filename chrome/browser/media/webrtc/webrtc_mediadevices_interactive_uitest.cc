@@ -454,6 +454,28 @@ IN_PROC_BROWSER_TEST_P(WebRtcMediaDevicesInteractiveUITest,
   EXPECT_TRUE(keys_future.Get().empty());
 }
 
+IN_PROC_BROWSER_TEST_P(WebRtcMediaDevicesInteractiveUITest,
+                       NoPersistentSaltStoredWithCookiesDisabled) {
+  if (!IsMediaDeviceIdRandomSaltsPerStorageKeyEnabled()) {
+    return;
+  }
+  ASSERT_TRUE(embedded_test_server()->Start());
+  GURL url(embedded_test_server()->GetURL(kMainWebrtcTestHtmlPage));
+  ASSERT_TRUE(ui_test_utils::NavigateToURL(browser(), url));
+  CookieSettingsFactory::GetForProfile(browser()->profile())
+      ->SetDefaultCookieSetting(CONTENT_SETTING_BLOCK);
+  content::WebContents* tab =
+      browser()->tab_strip_model()->GetActiveWebContents();
+  std::vector<MediaDeviceInfo> devices;
+  EnumerateDevices(tab, &devices);
+
+  media_device_salt::MediaDeviceSaltService* salt_service =
+      MediaDeviceSaltServiceFactory::GetForBrowserContext(browser()->profile());
+  base::test::TestFuture<std::vector<blink::StorageKey>> keys_future;
+  salt_service->GetAllStorageKeys(keys_future.GetCallback());
+  EXPECT_TRUE(keys_future.Get().empty());
+}
+
 INSTANTIATE_TEST_SUITE_P(All,
                          WebRtcMediaDevicesInteractiveUITest,
                          testing::Bool());
