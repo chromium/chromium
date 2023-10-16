@@ -28,6 +28,7 @@
 
 using chrome_test_util::ManageSyncSettingsButton;
 using chrome_test_util::SettingsAccountButton;
+using chrome_test_util::SettingsDoneButton;
 using chrome_test_util::SettingsSignInRowMatcher;
 
 namespace {
@@ -66,6 +67,12 @@ void SignInWithPromoFromAccountSettings(FakeSystemIdentity* fake_identity,
   }
   [ChromeEarlGreyUI waitForAppToIdle];
   [SigninEarlGrey verifySignedInWithFakeIdentity:fake_identity];
+
+  // Close settings and re-open it to make sure the settings UI is updated to
+  // avoid flakiness.
+  [[EarlGrey selectElementWithMatcher:SettingsDoneButton()]
+      performAction:grey_tap()];
+  [ChromeEarlGreyUI openSettingsMenu];
 
   // Check that Settings is presented.
   [[EarlGrey
