@@ -107,6 +107,14 @@ DataKeyDebugStringVisitor::operator()<content::SessionStorageUsageInfo>(
   return debug_string.str();
 }
 
+template <>
+std::string DataKeyDebugStringVisitor::operator()<net::CanonicalCookie>(
+    const net::CanonicalCookie& cookie) {
+  std::stringstream debug_string;
+  debug_string << "CanonicalCookie: " << cookie.DebugString();
+  return debug_string.str();
+}
+
 struct DataOwnerDebugStringVisitor {
   template <class T>
   std::string operator()(const T& data_owner);
@@ -191,8 +199,8 @@ void ValidateBrowsingDataEntries(
   }
   expected_entries_debug_string += "]";
 
-  SCOPED_TRACE("Model Entries: " + model_entries_debug_string +
-               " Expected Entries: " + expected_entries_debug_string);
+  SCOPED_TRACE("\nModel Entries:   " + model_entries_debug_string +
+               "\nExpected Entries:" + expected_entries_debug_string);
 
   EXPECT_THAT(model_entries,
               testing::UnorderedElementsAreArray(expected_entries));

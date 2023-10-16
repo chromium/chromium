@@ -17,6 +17,7 @@
 #include "content/public/browser/interest_group_manager.h"
 #include "content/public/browser/private_aggregation_data_model.h"
 #include "content/public/browser/session_storage_usage_info.h"
+#include "net/cookies/canonical_cookie.h"
 #include "net/extras/shared_dictionary/shared_dictionary_isolation_key.h"
 #include "third_party/abseil-cpp/absl/types/variant.h"
 #include "third_party/blink/public/common/storage_key/storage_key.h"
@@ -32,7 +33,6 @@ class StoragePartition;
 // UI. Exposes a uniform view into browsing data based on the concept of
 // "data owners", which denote which entity the data should be closely
 // associated with in UI surfaces.
-// TODO(crbug.com/1271155): Implementation in progress, should not be used.
 class BrowsingDataModel {
  public:
   // The entity that logically owns a set of data. All browsing data will be
@@ -54,9 +54,10 @@ class BrowsingDataModel {
     kQuotaStorage,
     kSharedDictionary,
     kSharedWorker,
+    kCookie,
 
     kFirstType = kTrustTokens,
-    kLastType = kSharedWorker,
+    kLastType = kCookie,
     kExtendedDelegateRange =
         63,  // This is needed to include delegate values when adding delegate
              // browsing data to the model.
@@ -75,7 +76,8 @@ class BrowsingDataModel {
                         content::PrivateAggregationDataModel::DataKey,
                         content::SessionStorageUsageInfo,
                         net::SharedDictionaryIsolationKey,
-                        browsing_data::SharedWorkerInfo
+                        browsing_data::SharedWorkerInfo,
+                        net::CanonicalCookie
                         // TODO(crbug.com/1271155): Additional backend keys.
                         >
       DataKey;
@@ -127,9 +129,6 @@ class BrowsingDataModel {
                           const DataKey& data_key,
                           const DataDetails& data_details);
   };
-
-  // Retrieves the host from the data owner.
-  static const std::string GetHost(const DataOwner& data_owner);
 
   // A delegate to handle non components/ data type retrieval and deletion.
   class Delegate {
@@ -211,6 +210,9 @@ class BrowsingDataModel {
 
   // Returns number of entries within the Model.
   size_t size() const { return browsing_data_entries_.size(); }
+
+  // Retrieves the host from the data owner.
+  static const std::string GetHost(const DataOwner& data_owner);
 
   // Consults supported storage backends to create and populate a Model based
   // on the current state of `browser_context`.

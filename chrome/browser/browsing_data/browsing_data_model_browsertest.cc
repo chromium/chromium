@@ -248,7 +248,7 @@ using browsing_data_test_util::SetDataForType;
 
 class BrowsingDataModelBrowserTest
     : public MixinBasedInProcessBrowserTest,
-      public ::testing::WithParamInterface<bool> {
+      public ::testing::WithParamInterface<std::tuple<bool, bool>> {
  public:
   BrowsingDataModelBrowserTest() {
     auto& field_trial_param =
@@ -282,12 +282,20 @@ class BrowsingDataModelBrowserTest
     enabled_features.push_back({media::kExternalClearKeyForTesting, {}});
 #endif
 
-    if (GetParam()) {
+    if (IsMigrateStorageToBDMEnabled()) {
       enabled_features.push_back(
           {browsing_data::features::kMigrateStorageToBDM, {}});
     } else {
       disabled_features.emplace_back(
           browsing_data::features::kMigrateStorageToBDM);
+    }
+
+    if (IsDeprecateCookiesTreeModelEnabled()) {
+      enabled_features.push_back(
+          {browsing_data::features::kDeprecateCookiesTreeModel, {}});
+    } else {
+      disabled_features.emplace_back(
+          browsing_data::features::kDeprecateCookiesTreeModel);
     }
 
     feature_list_.InitWithFeaturesAndParameters(enabled_features,
@@ -361,6 +369,10 @@ class BrowsingDataModelBrowserTest
         "/browsing_data/storage_accessor.html", replacement_text);
     return https_test_server()->GetURL(kTestHost, replaced_path);
   }
+
+  bool IsMigrateStorageToBDMEnabled() { return std::get<0>(GetParam()); }
+
+  bool IsDeprecateCookiesTreeModelEnabled() { return std::get<1>(GetParam()); }
 
   network::test::TrustTokenRequestHandler request_handler_;
 
@@ -802,8 +814,7 @@ IN_PROC_BROWSER_TEST_P(BrowsingDataModelBrowserTest,
     // Ensure that quota data is fetched
     browsing_data_model = BuildBrowsingDataModel();
 
-    bool is_migrate_storage_to_bdm_enabled = GetParam();
-    if (is_migrate_storage_to_bdm_enabled) {
+    if (IsMigrateStorageToBDMEnabled()) {
       // Validate that quota data is fetched to browsing data model.
       url::Origin testOrigin = https_test_server()->GetOrigin(kTestHost);
       auto data_key = blink::StorageKey::CreateFirstParty(testOrigin);
@@ -852,7 +863,7 @@ IN_PROC_BROWSER_TEST_P(BrowsingDataModelBrowserTest,
   ValidateBrowsingDataEntries(browsing_data_model.get(), {});
   ASSERT_EQ(browsing_data_model->size(), 0u);
 
-  if (!GetParam()) {
+  if (!IsMigrateStorageToBDMEnabled()) {
     return;
   }
 
@@ -917,7 +928,7 @@ IN_PROC_BROWSER_TEST_P(BrowsingDataModelBrowserTest,
   ASSERT_EQ(allowed_browsing_data_model->size(), 0u);
 
   SetDataForType("LocalStorage", web_contents());
-  if (GetParam()) {
+  if (IsMigrateStorageToBDMEnabled()) {
     WaitForModelUpdate(allowed_browsing_data_model, /*expected_size=*/1);
 
     // Validate Local Storage is reported.
@@ -955,7 +966,7 @@ IN_PROC_BROWSER_TEST_P(BrowsingDataModelBrowserTest,
       content_settings->allowed_browsing_data_model();
   ValidateBrowsingDataEntries(allowed_browsing_data_model, {});
   ASSERT_EQ(allowed_browsing_data_model->size(), 0u);
-  if (!GetParam()) {
+  if (!IsMigrateStorageToBDMEnabled()) {
     return;
   }
 
@@ -1024,7 +1035,7 @@ IN_PROC_BROWSER_TEST_P(BrowsingDataModelBrowserTest,
     ValidateBrowsingDataEntries(allowed_browsing_data_model, {});
     ASSERT_EQ(allowed_browsing_data_model->size(), 0u);
 
-    if (!GetParam()) {
+    if (!IsMigrateStorageToBDMEnabled()) {
       return;
     }
 
@@ -1069,7 +1080,7 @@ IN_PROC_BROWSER_TEST_P(BrowsingDataModelBrowserTest,
   ASSERT_EQ(allowed_browsing_data_model->size(), 0u);
 
   SetDataForType("SharedWorker", web_contents());
-  if (GetParam()) {
+  if (IsMigrateStorageToBDMEnabled()) {
     WaitForModelUpdate(allowed_browsing_data_model, /*expected_size=*/1);
 
     // Validate Shared Worker is reported.
@@ -1102,7 +1113,7 @@ IN_PROC_BROWSER_TEST_P(BrowsingDataModelBrowserTest,
   std::unique_ptr<BrowsingDataModel> browsing_data_model =
       BuildBrowsingDataModel();
   ValidateBrowsingDataEntries(browsing_data_model.get(), {});
-  if (!GetParam()) {
+  if (!IsMigrateStorageToBDMEnabled()) {
     return;
   }
 
@@ -1475,5 +1486,54 @@ IN_PROC_BROWSER_TEST_P(
          /*cookie_count=*/0}}});
 }
 
-// Boolean parameter used to enable/disable the feature `kMigrateStorageToBDM`.
-INSTANTIATE_TEST_SUITE_P(All, BrowsingDataModelBrowserTest, ::testing::Bool());
+IN_PROC_BROWSER_TEST_P(BrowsingDataModelBrowserTest, CookiesHandledCorrectly) {
+  ASSERT_TRUE(ui_test_utils::NavigateToURL(
+      browser(),
+      https_test_server()->GetURL(kTestHost, "/browsing_data/site_data.html")));
+  // Ensure that there isn't any data fetched.
+  std::unique_ptr<BrowsingDataModel> browsing_data_model =
+      BuildBrowsingDataModel();
+  ValidateBrowsingDataEntries(browsing_data_model.get(), {});
+  ASSERT_EQ(browsing_data_model->size(), 0u);
+
+  if (!IsDeprecateCookiesTreeModelEnabled()) {
+    return;
+  }
+
+  SetDataForType("Cookie", web_contents());
+
+  // Ensure that cookie is fetched.
+  browsing_data_model = BuildBrowsingDataModel();
+
+  // Validate that cookie is fetched to browsing data model.
+  url::Origin testOrigin = https_test_server()->GetOrigin(kTestHost);
+  std::unique_ptr<net::CanonicalCookie> data_key = net::CanonicalCookie::Create(
+      testOrigin.GetURL(), "foo=bar; Path=/browsing_data", base::Time::Now(),
+      absl::nullopt /* server_time */,
+      absl::nullopt /* cookie_partition_key */);
+  ValidateBrowsingDataEntries(browsing_data_model.get(),
+                              {{kTestHost,
+                                *(data_key.get()),
+                                {{BrowsingDataModel::StorageType::kCookie},
+                                 /*storage_size=*/0,
+                                 /*cookie_count=*/1}}});
+  ASSERT_EQ(browsing_data_model->size(), 1u);
+
+  // Remove cookie entry.
+  RemoveBrowsingDataForDataOwner(browsing_data_model.get(), kTestHost);
+
+  // Rebuild Browsing Data Model and verify entries are empty.
+  browsing_data_model = BuildBrowsingDataModel();
+  ValidateBrowsingDataEntries(browsing_data_model.get(), {});
+  ASSERT_EQ(browsing_data_model->size(), 0u);
+  ASSERT_FALSE(HasDataForType("Cookie", web_contents()));
+}
+
+INSTANTIATE_TEST_SUITE_P(
+    All,
+    BrowsingDataModelBrowserTest,
+    ::testing::Combine(
+        // Enable/disable `kMigrateStorageToBDM` feature.
+        ::testing::Bool(),
+        // Enable/disable `kDeprecateCookiesTreeModel` feature.
+        ::testing::Bool()));

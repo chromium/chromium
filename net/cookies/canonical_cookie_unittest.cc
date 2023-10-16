@@ -6060,4 +6060,47 @@ TEST(CanonicalCookieTest, TestDoubleUnderscorePrefixHistogram) {
   histograms.ExpectBucketCount(kDoubleUnderscorePrefixHistogram, true, 2);
 }
 
+TEST(CanonicalCookieTest, IsThirdPartyPartitioned) {
+  // Partitioned cookie in 3p context.
+  EXPECT_TRUE(CanonicalCookie::CreateUnsafeCookieForTesting(
+                  "A", "B", "x.y", "/foo/bar", base::Time(), base::Time(),
+                  base::Time(), base::Time(), /*secure=*/true,
+                  /*httponly=*/false, CookieSameSite::UNSPECIFIED,
+                  COOKIE_PRIORITY_LOW,
+                  /*same_party=*/false,
+                  CookiePartitionKey::FromURLForTesting(
+                      GURL("https://toplevelsite.com")))
+                  ->IsThirdPartyPartitioned());
+
+  // Partitioned cookie in 1p context.
+  EXPECT_FALSE(CanonicalCookie::CreateUnsafeCookieForTesting(
+                   "A", "B", "x.y", "/foo/bar", base::Time(), base::Time(),
+                   base::Time(), base::Time(), /*secure=*/true,
+                   /*httponly=*/false, CookieSameSite::UNSPECIFIED,
+                   COOKIE_PRIORITY_LOW,
+                   /*same_party=*/false,
+                   CookiePartitionKey::FromURLForTesting(GURL("https://x.y")))
+                   ->IsThirdPartyPartitioned());
+
+  // Nonced-partitioned cookie should always be 3p context.
+  auto partition_key_with_nonce =
+      absl::make_optional(CookiePartitionKey::FromURLForTesting(
+          GURL("https://x.y"), base::UnguessableToken::Create()));
+  EXPECT_TRUE(CanonicalCookie::CreateUnsafeCookieForTesting(
+                  "A", "B", "x.y", "/foo/bar", base::Time(), base::Time(),
+                  base::Time(), base::Time(), /*secure=*/true,
+                  /*httponly=*/false, CookieSameSite::UNSPECIFIED,
+                  COOKIE_PRIORITY_LOW,
+                  /*same_party=*/false, partition_key_with_nonce)
+                  ->IsThirdPartyPartitioned());
+
+  // Unpartitioned cookie.
+  EXPECT_FALSE(CanonicalCookie::CreateUnsafeCookieForTesting(
+                   "A", "B", "x.y", "/foo/bar", base::Time(), base::Time(),
+                   base::Time(), base::Time(), /*secure=*/false,
+                   /*httponly=*/false, CookieSameSite::NO_RESTRICTION,
+                   COOKIE_PRIORITY_LOW, /*same_party=*/false)
+                   ->IsThirdPartyPartitioned());
+}
+
 }  // namespace net
