@@ -95,7 +95,7 @@ const base::FeatureParam<bool> kEnableOopPrintDriversSandbox{
 #if BUILDFLAG(ENABLE_PRINT_CONTENT_ANALYSIS)
 BASE_FEATURE(kEnableCloudScanAfterPreview,
              "EnableCloudScanAfterPreview",
-             base::FEATURE_DISABLED_BY_DEFAULT);
+             base::FEATURE_ENABLED_BY_DEFAULT);
 
 // The naming mismatch below is intentional to preserve compatibility while
 // making code usage clearer. This is temporary and will be removed once
