@@ -844,8 +844,9 @@ void PasswordAutofillAgent::FillPasswordSuggestion(
     const std::u16string& username,
     const std::u16string& password) {
   auto element = focused_element().DynamicTo<WebInputElement>();
-  if (element.IsNull())
+  if (element.IsNull() || focused_element().IsReadOnly()) {
     return;
+  }
 
   WebInputElement username_element;
   WebInputElement password_element;
@@ -903,7 +904,7 @@ void PasswordAutofillAgent::FillIntoFocusedField(
     bool is_password,
     const std::u16string& credential) {
   auto focused_input_element = focused_element().DynamicTo<WebInputElement>();
-  if (focused_input_element.IsNull()) {
+  if (focused_input_element.IsNull() || focused_input_element.IsReadOnly()) {
     return;
   }
   if (!is_password) {
@@ -1589,7 +1590,7 @@ void PasswordAutofillAgent::KeyboardReplacingSurfaceClosed(
   keyboard_replacing_surface_state_ = KeyboardReplacingSurfaceState::kWasShown;
 
   auto focused_input_element = focused_element().DynamicTo<WebInputElement>();
-  if (focused_input_element.IsNull()) {
+  if (focused_input_element.IsNull() || focused_element().IsReadOnly()) {
     return;
   }
 
