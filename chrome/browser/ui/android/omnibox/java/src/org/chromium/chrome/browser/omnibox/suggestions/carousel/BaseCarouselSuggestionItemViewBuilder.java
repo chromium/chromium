@@ -15,6 +15,7 @@ import androidx.annotation.IntDef;
 import org.chromium.chrome.browser.omnibox.OmniboxFeatures;
 import org.chromium.chrome.browser.omnibox.R;
 import org.chromium.chrome.browser.omnibox.styles.OmniboxResourceProvider;
+import org.chromium.chrome.browser.omnibox.suggestions.querytiles.QueryTileView;
 import org.chromium.chrome.browser.ui.theme.BrandedColorScheme;
 import org.chromium.components.browser_ui.widget.tile.TileView;
 import org.chromium.components.browser_ui.widget.tile.TileViewBinder;
@@ -72,10 +73,7 @@ public class BaseCarouselSuggestionItemViewBuilder {
         TileView tile = (TileView) LayoutInflater.from(context).inflate(
                 R.layout.suggestions_tile_view, parent, false);
         tile.setClickable(true);
-
-        Drawable background = OmniboxResourceProvider.resolveAttributeToDrawable(
-                context, BrandedColorScheme.APP_DEFAULT, R.attr.selectableItemBackground);
-        tile.setBackground(background);
+        applyViewBackground(tile);
 
         // Update the background color of the solid circle around the icon (typically a favicon).
         if (OmniboxFeatures.shouldShowModernizeVisualUpdate(context)) {
@@ -94,9 +92,18 @@ public class BaseCarouselSuggestionItemViewBuilder {
      * @return A View element hosting QueryTile.
      */
     private static View createQueryTile(ViewGroup parent) {
-        Context context = parent.getContext();
-        View tile = LayoutInflater.from(context).inflate(R.layout.query_tile_view, parent, false);
-        tile.setClickable(true);
+        View tile = new QueryTileView(parent.getContext());
+        applyViewBackground(tile);
         return tile;
+    }
+
+    private static void applyViewBackground(View view) {
+        view.setFocusable(true);
+        Drawable background =
+                OmniboxResourceProvider.resolveAttributeToDrawable(
+                        view.getContext(),
+                        BrandedColorScheme.APP_DEFAULT,
+                        R.attr.selectableItemBackground);
+        view.setBackground(background);
     }
 }

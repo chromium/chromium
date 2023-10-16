@@ -1,0 +1,28 @@
+// Copyright 2023 The Chromium Authors
+// Use of this source code is governed by a BSD-style license that can be
+// found in the LICENSE file.
+
+package org.chromium.chrome.browser.omnibox.suggestions.querytiles;
+
+import android.content.Context;
+import android.view.LayoutInflater;
+import android.widget.FrameLayout;
+
+import org.chromium.components.browser_ui.widget.R;
+
+/** The view for a QueryTile. */
+public class QueryTileView extends FrameLayout {
+    public QueryTileView(Context context) {
+        super(context);
+        LayoutInflater.from(context).inflate(R.layout.query_tile_view, this, true);
+    }
+
+    /**
+     * Report View focused state when it's either focused or selected. Allows rendering view focused
+     * state when view is highlighted via the means of keyboard navigation.
+     */
+    @Override
+    public boolean isFocused() {
+        return super.isFocused() || (isSelected() && !isInTouchMode());
+    }
+}
