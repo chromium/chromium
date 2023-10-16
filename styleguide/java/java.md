@@ -166,7 +166,7 @@ in Chrome. If you find one, please discuss on `java@chromium.org`.
 
 ### Finalizers
 
-In line with [Google's Java style guide](https://google.github.io/styleguide/javaguide.html#s6.4-finalizers),
+In line with [Google's Java style guide] and [Android's Java style guide],
 never override `Object.finalize()`.
 
 Custom finalizers:
@@ -177,6 +177,9 @@ Custom finalizers:
 Classes that need destructor logic should provide an explicit `destroy()`
 method. Use [LifetimeAssert](https://chromium.googlesource.com/chromium/src/+/main/base/android/java/src/org/chromium/base/LifetimeAssert.java)
 to ensure in debug builds and tests that `destroy()` is called.
+
+[Google's Java style guide]: https://google.github.io/styleguide/javaguide.html#s6.4-finalizers
+[Android's Java style guide]: https://source.android.com/docs/setup/contribute/code-style#dont-use-finalizers
 
 ### AndroidX Annotations
 
@@ -358,32 +361,14 @@ much like
 
 ## Tools
 
-### Automatically Formatting Edited Files
-
-A checkout should give you clang-format to automatically format Java code.
-It is suggested that Clang's formatting of code should be accepted in code
-reviews.
+`google-java-format` is used to auto-format Java files. Formatting of its code
+should be accepted in code reviews.
 
 You can run `git cl format` to apply the automatic formatting.
 
-### IDE Setup
+Chromium also makes use of several [static analysis] tools.
 
-For automatically using the correct style, follow the guide to set up your
-favorite IDE:
-
-* [Android Studio](https://chromium.googlesource.com/chromium/src/+/main/docs/android_studio.md)
-* [Eclipse](https://chromium.googlesource.com/chromium/src/+/main/docs/eclipse.md)
-
-### Checkstyle
-
-Checkstyle is automatically run by the build bots, and to ensure you do not have
-any surprises, you can also set up checkstyle locally using [this
-guide](https://sites.google.com/a/chromium.org/dev/developers/checkstyle).
-
-### Lint
-
-Lint is run as part of the build. For more information, see
-[here](https://chromium.googlesource.com/chromium/src/+/main/build/android/docs/lint.md).
+[static analysis]: /build/android/docs/static_analysis.md
 
 ## Miscellany
 

@@ -1,10 +1,13 @@
 # Lint
 
-Android's [**lint**](https://developer.android.com/tools/help/lint.html) is a
-static analysis tool that Chromium uses to catch possible issues in Java code.
+[Android Lint] is [one of the static analysis tools] that Chromium uses to catch
+possible issues in Java code.
 
-This is a list of [**checks**](http://tools.android.com/tips/lint-checks) that
-you might encounter.
+This is a [list of checks] that you might encounter.
+
+[Android Lint]: https://googlesamples.github.io/android-custom-lint-rules/book.md.html
+[one of the static analysis tools]: static_analysis.md
+[list of checks]: https://googlesamples.github.io/android-custom-lint-rules/checks/index.md.html
 
 [TOC]
 
