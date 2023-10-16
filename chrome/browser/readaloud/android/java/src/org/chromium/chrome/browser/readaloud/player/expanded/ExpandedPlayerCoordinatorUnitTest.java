@@ -103,6 +103,20 @@ public class ExpandedPlayerCoordinatorUnitTest {
     }
 
     @Test
+    public void testBindTitleAndPublisher() {
+        assertTrue(mModel.get(PlayerProperties.TITLE) == null);
+        mCoordinator.show();
+        mModel.set(PlayerProperties.TITLE, "title");
+        verify(mSheetContent).setTitle("title");
+        assertTrue(mModel.get(PlayerProperties.TITLE).equals("title"));
+
+        assertTrue(mModel.get(PlayerProperties.PUBLISHER) == null);
+        mModel.set(PlayerProperties.PUBLISHER, "publisher");
+        verify(mSheetContent).setPublisher("publisher");
+        assertTrue(mModel.get(PlayerProperties.PUBLISHER).equals("publisher"));
+    }
+
+    @Test
     public void testBindSpeed() {
         mModel.set(PlayerProperties.SPEED, 2f);
         verify(mSheetContent).setSpeed(eq(2f));

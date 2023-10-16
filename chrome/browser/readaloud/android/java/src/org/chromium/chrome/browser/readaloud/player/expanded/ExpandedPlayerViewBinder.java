@@ -27,7 +27,10 @@ public class ExpandedPlayerViewBinder {
             } else if (state == VisibilityState.HIDING) {
                 content.hide();
             }
-            // TODO: set title and publisher
+        } else if (key == PlayerProperties.TITLE) {
+            content.setTitle(model.get(PlayerProperties.TITLE));
+        } else if (key == PlayerProperties.PUBLISHER) {
+            content.setPublisher(model.get(PlayerProperties.PUBLISHER));
         } else if (key == PlayerProperties.SPEED) {
             content.setSpeed(model.get(PlayerProperties.SPEED));
         } else if (key == PlayerProperties.INTERACTION_HANDLER) {

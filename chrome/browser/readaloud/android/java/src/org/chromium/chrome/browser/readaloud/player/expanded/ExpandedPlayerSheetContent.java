@@ -72,6 +72,15 @@ public class ExpandedPlayerSheetContent implements BottomSheetContent {
         mBottomSheetController.hideContent(this, /* animate= */ true);
     }
 
+    void setTitle(String title) {
+        ((TextView) mContentView.findViewById(R.id.readaloud_expanded_player_title)).setText(title);
+    }
+
+    void setPublisher(String publisher) {
+        ((TextView) mContentView.findViewById(R.id.readaloud_expanded_player_publisher))
+                .setText(publisher);
+    }
+
     void setCloseButtonHandler(View.OnClickListener onClick) {
         mContentView
                 .findViewById(R.id.readaloud_expanded_player_close_button)
