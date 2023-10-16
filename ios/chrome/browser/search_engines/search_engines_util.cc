@@ -12,6 +12,7 @@
 #include "base/task/single_thread_task_runner.h"
 #include "components/country_codes/country_codes.h"
 #include "components/prefs/pref_service.h"
+#include "components/search_engines/search_engine_choice_utils.h"
 #include "components/search_engines/search_engines_pref_names.h"
 #include "components/search_engines/template_url_prepopulate_data.h"
 #include "components/search_engines/template_url_service.h"
@@ -24,14 +25,19 @@ static const int kGoogleEnginePrepopulatedId = 1;
 
 // Update the search engine of the given service to the default ones for the
 // current locale.
-void UpdateSearchEngine(TemplateURLService* service) {
-  DCHECK(service);
-  DCHECK(service->loaded());
+void UpdateSearchEngine(PrefService* preferences, TemplateURLService* service) {
+  CHECK(service);
+  CHECK(service->loaded());
   std::vector<TemplateURL*> old_engines = service->GetTemplateURLs();
-  size_t default_engine_index;
-  std::vector<std::unique_ptr<TemplateURLData>> new_engines =
-      TemplateURLPrepopulateData::GetPrepopulatedEngines(nullptr,
-                                                         &default_engine_index);
+  std::vector<std::unique_ptr<TemplateURLData>> new_engines;
+  if (search_engines::IsChoiceScreenFlagEnabled(
+          search_engines::ChoicePromo::kAny)) {
+    new_engines = TemplateURLPrepopulateData::GetPrepopulatedEngines(
+        preferences, nullptr);
+  } else {
+    new_engines =
+        TemplateURLPrepopulateData::GetPrepopulatedEngines(nullptr, nullptr);
+  }
   // The aim is to replace the old search engines with the new ones.
   // It is not possible to remove all of them, because removing the current
   // selected engine is not allowed.
@@ -64,9 +70,11 @@ void UpdateSearchEngine(TemplateURLService* service) {
 // This class will delete itself as soon as the TemplateURLService is loaded.
 class LoadedObserver : public TemplateURLServiceObserver {
  public:
-  explicit LoadedObserver(TemplateURLService* service) : service_(service) {
-    DCHECK(service_);
-    DCHECK(!service_->loaded());
+  LoadedObserver(PrefService* prefs, TemplateURLService* service)
+      : prefs_(prefs), service_(service) {
+    CHECK(prefs_);
+    CHECK(service_);
+    CHECK(!service_->loaded());
     service_->AddObserver(this);
     service_->Load();
   }
@@ -75,14 +83,15 @@ class LoadedObserver : public TemplateURLServiceObserver {
 
   void OnTemplateURLServiceChanged() override {
     service_->RemoveObserver(this);
-    UpdateSearchEngine(service_);
+    UpdateSearchEngine(prefs_, service_);
     // Only delete this class when this callback is finished.
     base::SingleThreadTaskRunner::GetCurrentDefault()->DeleteSoon(FROM_HERE,
                                                                   this);
   }
 
  private:
-  TemplateURLService* service_;
+  raw_ptr<PrefService> prefs_ = nullptr;
+  raw_ptr<TemplateURLService> service_ = nullptr;
 };
 
 }  // namespace
@@ -110,10 +119,12 @@ void UpdateSearchEnginesIfNeeded(PrefService* preferences,
   // removed then the engines can be updated again.
   if (!service || service->is_default_search_managed())
     return;
-  if (service->loaded())
-    UpdateSearchEngine(service);
-  else
-    new LoadedObserver(service);  // The observer manages its own lifetime.
+  if (service->loaded()) {
+    UpdateSearchEngine(preferences, service);
+  } else {
+    // The observer manages its own lifetime.
+    new LoadedObserver(preferences, service);
+  }
 }
 
 bool SupportsSearchByImage(TemplateURLService* service) {
