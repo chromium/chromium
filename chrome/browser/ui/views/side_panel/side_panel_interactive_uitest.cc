@@ -215,12 +215,18 @@ class PinnedSidePanelInteractiveTest : public InteractiveBrowserTest {
 
 // Verify that we can open the ReadingMode side panel from the 3dot -> More
 // tools context menu.
-// TODO(https://crbug.com/1491271): Fix and reenable the test.
 IN_PROC_BROWSER_TEST_F(PinnedSidePanelInteractiveTest,
-                       DISABLED_OpenReadingModeSidePanel) {
+                       OpenReadingModeSidePanel) {
+  // Replace the contents of the ReadingMode side panel with an empty view so it
+  // loads faster.
+  auto* registry = SidePanelCoordinator::GetGlobalSidePanelRegistry(browser());
+  registry->Deregister(SidePanelEntry::Key(SidePanelEntry::Id::kReadAnything));
+  registry->Register(std::make_unique<SidePanelEntry>(
+      SidePanelEntry::Id::kReadAnything, u"testing1", ui::ImageModel(),
+      base::BindRepeating([]() { return std::make_unique<views::View>(); })));
+
   SidePanelCoordinator* const coordinator =
       SidePanelUtil::GetSidePanelCoordinatorForBrowser(browser());
-  coordinator->SetNoDelaysForTesting(true);
 
   chrome::ExecuteCommand(browser(), IDC_SHOW_READING_MODE_SIDE_PANEL);
 
