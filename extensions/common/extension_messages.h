@@ -297,14 +297,6 @@ IPC_SYNC_MESSAGE_CONTROL1_1(
     std::string /* extension id */,
     extensions::MessageBundle::SubstitutionMap /* message bundle */)
 
-// Informs the browser to increment the keepalive count for the lazy background
-// page, keeping it alive.
-IPC_MESSAGE_ROUTED0(ExtensionHostMsg_IncrementLazyKeepaliveCount)
-
-// Informs the browser there is one less thing keeping the lazy background page
-// alive.
-IPC_MESSAGE_ROUTED0(ExtensionHostMsg_DecrementLazyKeepaliveCount)
-
 // Notify the browser that an app window is ready and can resume resource
 // requests.
 IPC_MESSAGE_ROUTED0(ExtensionHostMsg_AppWindowReady)

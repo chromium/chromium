@@ -6,7 +6,6 @@
 
 #include "base/functional/bind.h"
 #include "content/public/renderer/render_frame.h"
-#include "extensions/common/extension_messages.h"
 #include "extensions/renderer/extension_frame_helper.h"
 #include "extensions/renderer/script_context.h"
 
@@ -32,18 +31,18 @@ void LazyBackgroundPageNativeHandler::AddRoutes() {
 void LazyBackgroundPageNativeHandler::IncrementKeepaliveCount(
     const v8::FunctionCallbackInfo<v8::Value>& args) {
   if (context() && ExtensionFrameHelper::IsContextForEventPage(context())) {
-    content::RenderFrame* render_frame = context()->GetRenderFrame();
-    render_frame->Send(new ExtensionHostMsg_IncrementLazyKeepaliveCount(
-        render_frame->GetRoutingID()));
+    ExtensionFrameHelper::Get(context()->GetRenderFrame())
+        ->GetLocalFrameHost()
+        ->IncrementLazyKeepaliveCount();
   }
 }
 
 void LazyBackgroundPageNativeHandler::DecrementKeepaliveCount(
     const v8::FunctionCallbackInfo<v8::Value>& args) {
   if (context() && ExtensionFrameHelper::IsContextForEventPage(context())) {
-    content::RenderFrame* render_frame = context()->GetRenderFrame();
-    render_frame->Send(new ExtensionHostMsg_DecrementLazyKeepaliveCount(
-        render_frame->GetRoutingID()));
+    ExtensionFrameHelper::Get(context()->GetRenderFrame())
+        ->GetLocalFrameHost()
+        ->DecrementLazyKeepaliveCount();
   }
 }
 

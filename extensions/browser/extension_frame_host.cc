@@ -7,8 +7,11 @@
 #include <string>
 
 #include "content/public/browser/render_process_host.h"
+#include "extensions/browser/bad_message.h"
 #include "extensions/browser/extension_function_dispatcher.h"
+#include "extensions/browser/extension_host.h"
 #include "extensions/browser/extension_web_contents_observer.h"
+#include "extensions/browser/process_manager.h"
 
 namespace extensions {
 
@@ -65,5 +68,48 @@ void ExtensionFrameHost::ContentScriptsExecuting(
     const base::flat_map<std::string, std::vector<std::string>>&
         extension_id_to_scripts,
     const GURL& frame_url) {}
+
+void ExtensionFrameHost::IncrementLazyKeepaliveCount() {
+  content::RenderFrameHost* render_frame_host =
+      receivers_.GetCurrentTargetFrame();
+  auto* process_manager =
+      ProcessManager::Get(render_frame_host->GetBrowserContext());
+  const Extension* extension = GetExtension(process_manager, render_frame_host);
+  if (!extension) {
+    bad_message::ReceivedBadMessage(
+        render_frame_host->GetProcess(),
+        bad_message::EFH_NO_BACKGROUND_HOST_FOR_FRAME);
+    return;
+  }
+  process_manager->IncrementLazyKeepaliveCount(
+      extension, Activity::LIFECYCLE_MANAGEMENT, Activity::kIPC);
+}
+
+void ExtensionFrameHost::DecrementLazyKeepaliveCount() {
+  content::RenderFrameHost* render_frame_host =
+      receivers_.GetCurrentTargetFrame();
+  auto* process_manager =
+      ProcessManager::Get(render_frame_host->GetBrowserContext());
+  const Extension* extension = GetExtension(process_manager, render_frame_host);
+  if (!extension) {
+    bad_message::ReceivedBadMessage(
+        render_frame_host->GetProcess(),
+        bad_message::EFH_NO_BACKGROUND_HOST_FOR_FRAME);
+    return;
+  }
+  process_manager->DecrementLazyKeepaliveCount(
+      extension, Activity::LIFECYCLE_MANAGEMENT, Activity::kIPC);
+}
+
+const Extension* ExtensionFrameHost::GetExtension(
+    ProcessManager* process_manager,
+    content::RenderFrameHost* frame) {
+  ExtensionHost* extension_host =
+      process_manager->GetBackgroundHostForRenderFrameHost(frame);
+  if (!extension_host) {
+    return nullptr;
+  }
+  return extension_host->extension();
+}
 
 }  // namespace extensions

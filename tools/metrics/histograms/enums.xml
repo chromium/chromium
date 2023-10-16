@@ -10951,6 +10951,7 @@ Called by update_bad_message_reasons.py.-->
   <int value="29" label="EMF_INVALID_EXTERNAL_EXTENSION_ID_FOR_USER_SCRIPT"/>
   <int value="30"
       label="EMF_INVALID_OPEN_CHANNEL_TO_NATIVE_APP_FROM_NATIVE_HOST"/>
+  <int value="31" label="EFH_NO_BACKGROUND_HOST_FOR_FRAME"/>
 </enum>
 
 <enum name="BadMessageReasonGuestView">

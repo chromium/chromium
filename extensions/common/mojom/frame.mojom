@@ -184,4 +184,12 @@ interface LocalFrameHost {
   // that the IPC originated from.
   ContentScriptsExecuting(map<string, array<string>> extension_id_to_scripts,
                           url.mojom.Url frame_url);
+
+  // Informs the browser to increment the keepalive count for the lazy
+  // background page, keeping it alive.
+  IncrementLazyKeepaliveCount();
+
+  // Informs the browser there is one less thing keeping the lazy background
+  // page alive.
+  DecrementLazyKeepaliveCount();
 };
