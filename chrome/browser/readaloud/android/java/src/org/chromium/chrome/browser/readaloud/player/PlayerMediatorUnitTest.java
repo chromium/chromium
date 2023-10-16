@@ -263,6 +263,12 @@ public class PlayerMediatorUnitTest {
         verify(mPlayerCoordinator).closeClicked();
     }
 
+    @Test
+    public void testOnMiniPlayerExpandClick() {
+        mMediator.onMiniPlayerExpandClick();
+        verify(mPlayerCoordinator).expand();
+    }
+
     private void resetPlayback() {
         reset(mPlayback);
         doReturn(mPlaybackMetadata).when(mPlayback).getMetadata();

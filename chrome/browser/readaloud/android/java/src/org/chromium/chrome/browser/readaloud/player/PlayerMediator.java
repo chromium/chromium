@@ -129,6 +129,6 @@ class PlayerMediator implements InteractionHandler {
 
     @Override
     public void onMiniPlayerExpandClick() {
-        // TODO: implement expand
+        mCoordinator.expand();
     }
 }

@@ -7,6 +7,7 @@ package org.chromium.chrome.browser.readaloud.player.expanded;
 import android.content.Context;
 
 import androidx.annotation.Nullable;
+import androidx.annotation.VisibleForTesting;
 
 import org.chromium.chrome.browser.readaloud.player.VisibilityState;
 import org.chromium.chrome.modules.readaloud.Player.Delegate;
@@ -27,12 +28,17 @@ public class ExpandedPlayerCoordinator {
 
                 @Override
                 public void onSheetContentChanged(@Nullable BottomSheetContent newContent) {
-                    // TODO: implement
+                    if (mTrackedContent == mSheetContent && newContent != mSheetContent) {
+                        mMediator.setVisibility(VisibilityState.GONE);
+                    }
+                    mTrackedContent = newContent;
                 }
 
                 @Override
                 public void onSheetOpened(@StateChangeReason int reason) {
-                    // TODO: implement
+                    if (mTrackedContent == mSheetContent) {
+                        mMediator.setVisibility(VisibilityState.VISIBLE);
+                    }
                 }
 
                 @Override
@@ -47,30 +53,34 @@ public class ExpandedPlayerCoordinator {
     private ExpandedPlayerMediator mMediator;
 
     public ExpandedPlayerCoordinator(Context context, Delegate delegate, PropertyModel model) {
+        this(
+                context,
+                delegate,
+                model,
+                new ExpandedPlayerMediator(model),
+                new ExpandedPlayerSheetContent(context, delegate.getBottomSheetController()));
+    }
+
+    @VisibleForTesting
+    ExpandedPlayerCoordinator(
+            Context context,
+            Delegate delegate,
+            PropertyModel model,
+            ExpandedPlayerMediator mediator,
+            ExpandedPlayerSheetContent content) {
         mContext = context;
         mDelegate = delegate;
         mModel = model;
+        mMediator = mediator;
+        mSheetContent = content;
         mDelegate.getBottomSheetController().addObserver(mBottomSheetObserver);
+        mModelChangeProcessor =
+                PropertyModelChangeProcessor.create(
+                        mModel, mSheetContent, ExpandedPlayerViewBinder::bind);
     }
 
     public void show() {
-        if (mSheetContent == null) {
-            makeSheetContent();
-            mModelChangeProcessor =
-                    PropertyModelChangeProcessor.create(
-                            mModel, mSheetContent, ExpandedPlayerViewBinder::bind);
-            makeMediator();
-        }
         mMediator.show();
-    }
-
-    public void makeSheetContent() {
-        mSheetContent =
-                new ExpandedPlayerSheetContent(mContext, mDelegate.getBottomSheetController());
-    }
-
-    public void makeMediator() {
-        mMediator = new ExpandedPlayerMediator(mModel);
     }
 
     public void dismiss() {
@@ -86,11 +96,8 @@ public class ExpandedPlayerCoordinator {
         return mMediator.getVisibility();
     }
 
-    void setMediatorForTesting(ExpandedPlayerMediator mediator) {
-        mMediator = mediator;
-    }
-
-    void setSheetContentForTesting(ExpandedPlayerSheetContent sheetContent) {
+    @VisibleForTesting(otherwise = VisibleForTesting.PACKAGE_PRIVATE)
+    void setSheetContent(ExpandedPlayerSheetContent sheetContent) {
         mSheetContent = sheetContent;
     }
 }

@@ -88,6 +88,7 @@ public class PlayerCoordinator implements Player {
     public void playbackReady(Playback playback, @PlaybackListener.State int currentPlaybackState) {
         mMediator.setPlayback(playback);
         mMediator.setPlaybackState(currentPlaybackState);
+        mPlayback = playback;
     }
 
     @Override
@@ -99,7 +100,9 @@ public class PlayerCoordinator implements Player {
 
     /** Show expanded player. */
     void expand() {
-        // TODO implement
+        if (mPlayback != null) {
+            mExpandedPlayer.show();
+        }
     }
 
     @Override

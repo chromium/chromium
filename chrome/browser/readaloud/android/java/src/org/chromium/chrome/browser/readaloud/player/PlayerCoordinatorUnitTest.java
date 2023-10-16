@@ -92,6 +92,15 @@ public class PlayerCoordinatorUnitTest {
     }
 
     @Test
+    public void testExpand() {
+        mPlayerCoordinator.expand();
+        verify(mExpandedPlayer, never()).show();
+        mPlayerCoordinator.playbackReady(mPlayback, PlaybackListener.State.PLAYING);
+        mPlayerCoordinator.expand();
+        verify(mExpandedPlayer).show();
+    }
+
+    @Test
     public void testDismissPlayers() {
         mPlayerCoordinator.playTabRequested();
         verify(mMediator).setPlayback(eq(null));
