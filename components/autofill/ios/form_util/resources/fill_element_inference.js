@@ -465,7 +465,7 @@ __gCrWeb.fill.inferLabelFromDivTable = function(element) {
       } else if (node.nodeType === Node.TEXT_NODE) {
         inferredLabel = __gCrWeb.fill.nodeValue(node).trim();
       }
-    } else if (__gCrWeb.fill.isTraversableContainerElement(node)) {
+    } else if (inferenceUtil.isTraversableContainerElement(node)) {
       // If the element is in a non-div container, its label most likely is too.
       break;
     }
@@ -542,31 +542,31 @@ __gCrWeb.fill.inferLabelForElement = function(element) {
   let inferredLabel;
   if (__gCrWeb.fill.isCheckableElement(element)) {
     inferredLabel = __gCrWeb.fill.inferLabelFromNext(element);
-    if (__gCrWeb.fill.IsLabelValid(inferredLabel)) {
+    if (inferenceUtil.IsLabelValid(inferredLabel)) {
       return inferredLabel;
     }
   }
 
   inferredLabel = __gCrWeb.fill.inferLabelFromPrevious(element);
-  if (__gCrWeb.fill.IsLabelValid(inferredLabel)) {
+  if (inferenceUtil.IsLabelValid(inferredLabel)) {
     return inferredLabel;
   }
 
   // If we didn't find a label, check for the placeholder case.
   inferredLabel = __gCrWeb.fill.inferLabelFromPlaceholder(element);
-  if (__gCrWeb.fill.IsLabelValid(inferredLabel)) {
+  if (inferenceUtil.IsLabelValid(inferredLabel)) {
     return inferredLabel;
   }
 
   // If we didn't find a placeholder, check for the aria-label case.
   inferredLabel = __gCrWeb.fill.getAriaLabel(element);
-  if (__gCrWeb.fill.IsLabelValid(inferredLabel)) {
+  if (inferenceUtil.IsLabelValid(inferredLabel)) {
     return inferredLabel;
   }
 
   // For all other searches that involve traversing up the tree, the search
   // order is based on which tag is the closest ancestor to |element|.
-  const tagNames = __gCrWeb.fill.ancestorTagNames(element);
+  const tagNames = inferenceUtil.ancestorTagNames(element);
   const seenTagNames = {};
   for (let index = 0; index < tagNames.length; ++index) {
     const tagName = tagNames[index];
@@ -581,7 +581,7 @@ __gCrWeb.fill.inferLabelForElement = function(element) {
       inferredLabel = __gCrWeb.fill.inferLabelFromDivTable(element);
     } else if (tagName === 'TD') {
       inferredLabel = __gCrWeb.fill.inferLabelFromTableColumn(element);
-      if (!__gCrWeb.fill.IsLabelValid(inferredLabel)) {
+      if (!inferenceUtil.IsLabelValid(inferredLabel)) {
         inferredLabel = __gCrWeb.fill.inferLabelFromTableRow(element);
       }
     } else if (tagName === 'DD') {
@@ -592,13 +592,13 @@ __gCrWeb.fill.inferLabelForElement = function(element) {
       break;
     }
 
-    if (__gCrWeb.fill.IsLabelValid(inferredLabel)) {
+    if (inferenceUtil.IsLabelValid(inferredLabel)) {
       return inferredLabel;
     }
   }
   // If we didn't find a label, check for the value attribute case.
   inferredLabel = __gCrWeb.fill.InferLabelFromValueAttr(element);
-  if (__gCrWeb.fill.IsLabelValid(inferredLabel)) {
+  if (inferenceUtil.IsLabelValid(inferredLabel)) {
     return inferredLabel;
   }
 

@@ -31,8 +31,7 @@ __gCrWeb.fill.hasTagName = function(node, tag) {
  */
 __gCrWeb.fill.isAutofillableElement = function(element) {
   return __gCrWeb.fill.isAutofillableInputElement(element) ||
-      __gCrWeb.fill.isSelectElement(element) ||
-      __gCrWeb.fill.isTextAreaElement(element);
+      __gCrWeb.fill.isSelectElement(element) || isTextAreaElement(element);
 };
 
 /**
@@ -232,7 +231,7 @@ function findChildText(node) {
  * @param {!Node} node The node to be examined.
  * @return {boolean} Whether it can be traversed.
  */
-__gCrWeb.fill.isTraversableContainerElement = function(node) {
+function isTraversableContainerElement(node) {
   if (node.nodeType !== Node.ELEMENT_NODE) {
     return false;
   }
@@ -241,7 +240,7 @@ __gCrWeb.fill.isTraversableContainerElement = function(node) {
   return (
       tagName === 'DD' || tagName === 'DIV' || tagName === 'FIELDSET' ||
       tagName === 'LI' || tagName === 'TD' || tagName === 'TABLE');
-};
+}
 
 /**
  * Returns the element type for all ancestor nodes in CAPS, starting with the
@@ -255,7 +254,7 @@ __gCrWeb.fill.isTraversableContainerElement = function(node) {
  * @param {FormControlElement} element An element to examine.
  * @return {Array} The element types for all ancestors.
  */
-__gCrWeb.fill.ancestorTagNames = function(element) {
+function ancestorTagNames(element) {
   const tagNames = [];
   let parentNode = element.parentNode;
   while (parentNode) {
@@ -265,7 +264,7 @@ __gCrWeb.fill.ancestorTagNames = function(element) {
     parentNode = parentNode.parentNode;
   }
   return tagNames;
-};
+}
 
 /**
  * Returns true if |element| is a text input element.
@@ -311,12 +310,12 @@ __gCrWeb.fill.isSelectElement = function(element) {
  * @param {FormControlElement} element An element to examine.
  * @return {boolean} Whether element is a 'textarea' element.
  */
-__gCrWeb.fill.isTextAreaElement = function(element) {
+function isTextAreaElement(element) {
   if (!element) {
     return false;
   }
   return element.type === 'textarea';
-};
+}
 
 /**
  * Returns true if |element| is a checkbox or a radio button element.
@@ -366,8 +365,15 @@ __gCrWeb.fill.isAutofillableInputElement = function(element) {
  * @param {string} label An element to examine.
  * @return {boolean} Whether the label contains not special characters.
  */
-__gCrWeb.fill.IsLabelValid = function(label) {
+function IsLabelValid(label) {
   return label.search(/[^ *:()\u2013-]/) >= 0;
-};
+}
 
-export {findChildTextWithIgnoreList, findChildText};
+export {
+  findChildTextWithIgnoreList,
+  findChildText,
+  isTraversableContainerElement,
+  ancestorTagNames,
+  isTextAreaElement,
+  IsLabelValid,
+};

@@ -7,7 +7,7 @@ import '//components/autofill/ios/form_util/resources/fill_element_inference.js'
 import '//components/autofill/ios/form_util/resources/fill_util.js';
 
 import * as fillConstants from '//components/autofill/ios/form_util/resources/fill_constants.js';
-import {findChildText} from '//components/autofill/ios/form_util/resources/fill_element_inference_util.js';
+import * as inferenceUtil from '//components/autofill/ios/form_util/resources/fill_element_inference_util.js';
 
 // This file provides methods used to fill forms in JavaScript.
 
@@ -207,7 +207,7 @@ function matchLabelsAndFields_(
     if (!('label' in fieldData)) {
       fieldData['label'] = '';
     }
-    let labelText = findChildText(label);
+    let labelText = inferenceUtil.findChildText(label);
     if (labelText.length === 0 && !label.htmlFor) {
       labelText = __gCrWeb.fill.inferLabelFromNext(fieldElement);
     }
@@ -461,7 +461,7 @@ __gCrWeb.fill.webFormControlElementToFormField = function(
   }
 
   if (__gCrWeb.fill.isAutofillableInputElement(element) ||
-      __gCrWeb.fill.isTextAreaElement(element) ||
+      inferenceUtil.isTextAreaElement(element) ||
       __gCrWeb.fill.isSelectElement(element)) {
     field['is_autofilled'] = element['isAutofilled'];
     field['should_autocomplete'] = __gCrWeb.fill.shouldAutocomplete(element);
@@ -478,7 +478,7 @@ __gCrWeb.fill.webFormControlElementToFormField = function(
       }
     }
     field['is_checkable'] = __gCrWeb.fill.isCheckableElement(element);
-  } else if (__gCrWeb.fill.isTextAreaElement(element)) {
+  } else if (inferenceUtil.isTextAreaElement(element)) {
     // Nothing more to do in this case.
   } else if (extractMask & fillConstants.EXTRACT_MASK_OPTIONS) {
     __gCrWeb.fill.getOptionStringsFromElement(element, field);
