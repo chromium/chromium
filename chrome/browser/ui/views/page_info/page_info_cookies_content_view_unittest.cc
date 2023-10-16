@@ -10,7 +10,6 @@
 #include "chrome/browser/ui/views/frame/browser_view.h"
 #include "chrome/browser/ui/views/frame/test_with_browser_view.h"
 #include "chrome/browser/ui/views/page_info/page_info_view_factory.h"
-#include "components/content_settings/core/common/cookie_blocking_3pcd_status.h"
 #include "components/content_settings/core/common/features.h"
 #include "components/page_info/page_info.h"
 #include "components/strings/grit/components_strings.h"
@@ -126,7 +125,6 @@ TEST_P(PageInfoCookiesContentViewTest, ThirdPartyCookiesAllowedByDefault) {
   cookie_info.expiration = base::Time();
   cookie_info.confidence =
       CookieControlsBreakageConfidenceLevel::kUninitialized;
-  cookie_info.blocking_status = CookieBlocking3pcdStatus::kNotIn3pcd;
 
   content_view()->SetCookieInfo(cookie_info);
 
@@ -149,7 +147,6 @@ TEST_P(PageInfoCookiesContentViewTest, ThirdPartyCookiesBlocked) {
   cookie_info.enforcement = CookieControlsEnforcement::kNoEnforcement;
   cookie_info.expiration = base::Time();
   cookie_info.confidence = CookieControlsBreakageConfidenceLevel::kMedium;
-  cookie_info.blocking_status = CookieBlocking3pcdStatus::kNotIn3pcd;
 
   content_view()->SetCookieInfo(cookie_info);
 
@@ -192,7 +189,6 @@ TEST_P(PageInfoCookiesContentViewTest, ThirdPartyCookiesAllowedPermanent) {
   cookie_info.enforcement = CookieControlsEnforcement::kNoEnforcement;
   cookie_info.expiration = base::Time();
   cookie_info.confidence = CookieControlsBreakageConfidenceLevel::kMedium;
-  cookie_info.blocking_status = CookieBlocking3pcdStatus::kNotIn3pcd;
 
   content_view()->SetCookieInfo(cookie_info);
 
@@ -234,7 +230,6 @@ TEST_P(PageInfoCookiesContentViewTest, ThirdPartyCookiesAllowedTemporary) {
   cookie_info.enforcement = CookieControlsEnforcement::kNoEnforcement;
   cookie_info.expiration = base::Time::Now() + base::Days(kDaysToExpiration);
   cookie_info.confidence = CookieControlsBreakageConfidenceLevel::kMedium;
-  cookie_info.blocking_status = CookieBlocking3pcdStatus::kNotIn3pcd;
 
   content_view()->SetCookieInfo(cookie_info);
 
@@ -275,7 +270,6 @@ TEST_P(PageInfoCookiesContentViewTest, ThirdPartyCookiesBlockedByPolicy) {
   cookie_info.enforcement = CookieControlsEnforcement::kEnforcedByPolicy;
   cookie_info.expiration = base::Time();
   cookie_info.confidence = CookieControlsBreakageConfidenceLevel::kMedium;
-  cookie_info.blocking_status = CookieBlocking3pcdStatus::kNotIn3pcd;
 
   content_view()->SetCookieInfo(cookie_info);
 
@@ -315,7 +309,6 @@ TEST_P(PageInfoCookiesContentViewTest, ThirdPartyCookiesAllowedByPolicy) {
   cookie_info.enforcement = CookieControlsEnforcement::kEnforcedByPolicy;
   cookie_info.expiration = base::Time();
   cookie_info.confidence = CookieControlsBreakageConfidenceLevel::kMedium;
-  cookie_info.blocking_status = CookieBlocking3pcdStatus::kNotIn3pcd;
 
   content_view()->SetCookieInfo(cookie_info);
 
@@ -355,7 +348,6 @@ TEST_P(PageInfoCookiesContentViewTest, ThirdPartyCookiesBlockedByExtension) {
   cookie_info.enforcement = CookieControlsEnforcement::kEnforcedByExtension;
   cookie_info.expiration = base::Time();
   cookie_info.confidence = CookieControlsBreakageConfidenceLevel::kMedium;
-  cookie_info.blocking_status = CookieBlocking3pcdStatus::kNotIn3pcd;
 
   content_view()->SetCookieInfo(cookie_info);
 
@@ -395,7 +387,6 @@ TEST_P(PageInfoCookiesContentViewTest, ThirdPartyCookiesAllowedByExtension) {
   cookie_info.enforcement = CookieControlsEnforcement::kEnforcedByExtension;
   cookie_info.expiration = base::Time();
   cookie_info.confidence = CookieControlsBreakageConfidenceLevel::kMedium;
-  cookie_info.blocking_status = CookieBlocking3pcdStatus::kNotIn3pcd;
 
   content_view()->SetCookieInfo(cookie_info);
 
@@ -437,7 +428,6 @@ TEST_P(PageInfoCookiesContentViewTest, ThirdPartyCookiesBlockedBySetting) {
   cookie_info.enforcement = CookieControlsEnforcement::kEnforcedByCookieSetting;
   cookie_info.expiration = base::Time();
   cookie_info.confidence = CookieControlsBreakageConfidenceLevel::kMedium;
-  cookie_info.blocking_status = CookieBlocking3pcdStatus::kNotIn3pcd;
 
   content_view()->SetCookieInfo(cookie_info);
 
@@ -478,7 +468,6 @@ TEST_P(PageInfoCookiesContentViewTest, ThirdPartyCookiesAllowedBySetting) {
   cookie_info.enforcement = CookieControlsEnforcement::kEnforcedByCookieSetting;
   cookie_info.expiration = base::Time();
   cookie_info.confidence = CookieControlsBreakageConfidenceLevel::kMedium;
-  cookie_info.blocking_status = CookieBlocking3pcdStatus::kNotIn3pcd;
 
   content_view()->SetCookieInfo(cookie_info);
 

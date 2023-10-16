@@ -15,7 +15,6 @@
 #include "chrome/test/base/ui_test_utils.h"
 #include "components/content_settings/core/browser/cookie_settings.h"
 #include "components/content_settings/core/common/content_settings_utils.h"
-#include "components/content_settings/core/common/cookie_blocking_3pcd_status.h"
 #include "components/content_settings/core/common/features.h"
 #include "components/content_settings/core/common/pref_names.h"
 #include "components/prefs/pref_service.h"
@@ -62,8 +61,7 @@ class CookieControlsBubbleViewBrowserTest : public InProcessBrowserTest {
 
     controller_ = std::make_unique<content_settings::CookieControlsController>(
         CookieSettingsFactory::GetForProfile(browser()->profile()), nullptr,
-        HostContentSettingsMapFactory::GetForProfile(browser()->profile()),
-        /*tracking_protection_settings=*/nullptr);
+        HostContentSettingsMapFactory::GetForProfile(browser()->profile()));
 
     coordinator_ = std::make_unique<CookieControlsBubbleCoordinator>();
   }
@@ -154,14 +152,12 @@ IN_PROC_BROWSER_TEST_F(CookieControlsBubbleViewBrowserTest,
   ShowBubble();
   view_controller()->OnStatusChanged(CookieControlsStatus::kDisabled,
                                      CookieControlsEnforcement::kNoEnforcement,
-                                     CookieBlocking3pcdStatus::kNotIn3pcd,
                                      base::Time());
   WaitForBubbleClose();
 
   ShowBubble();
   view_controller()->OnStatusChanged(CookieControlsStatus::kUninitialized,
                                      CookieControlsEnforcement::kNoEnforcement,
-                                     CookieBlocking3pcdStatus::kNotIn3pcd,
                                      base::Time());
   WaitForBubbleClose();
 }

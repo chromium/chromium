@@ -119,6 +119,8 @@ class PageInfoDelegate {
   virtual std::unique_ptr<
       content_settings::PageSpecificContentSettings::Delegate>
   GetPageSpecificContentSettingsDelegate() = 0;
+  virtual bool IsTrackingProtection3pcdEnabled() = 0;
+  virtual bool AreAllThirdPartyCookiesBlocked() = 0;
 
   virtual bool IsContentDisplayedInVrHeadset() = 0;
   virtual security_state::SecurityLevel GetSecurityLevel() = 0;

@@ -123,9 +123,7 @@ void CookieControlsIconView::UpdateImpl() {
               profile->IsOffTheRecord() ? CookieSettingsFactory::GetForProfile(
                                               profile->GetOriginalProfile())
                                         : nullptr,
-              HostContentSettingsMapFactory::GetForProfile(profile),
-              TrackingProtectionSettingsFactory::GetForProfile(
-                  profile->GetOriginalProfile()));
+              HostContentSettingsMapFactory::GetForProfile(profile));
       controller_observation_.Observe(controller_.get());
     }
     controller_->Update(web_contents);
@@ -231,7 +229,6 @@ absl::optional<int> CookieControlsIconView::GetLabelForStatus() const {
 void CookieControlsIconView::OnStatusChanged(
     CookieControlsStatus status,
     CookieControlsEnforcement enforcement,
-    CookieBlocking3pcdStatus blocking_status,
     base::Time expiration) {
   if (status_ != status) {
     status_ = status;

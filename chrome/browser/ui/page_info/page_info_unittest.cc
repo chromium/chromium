@@ -36,7 +36,6 @@
 #include "components/content_settings/core/common/content_settings.h"
 #include "components/content_settings/core/common/content_settings_constraints.h"
 #include "components/content_settings/core/common/content_settings_types.h"
-#include "components/content_settings/core/common/cookie_blocking_3pcd_status.h"
 #include "components/infobars/content/content_infobar_manager.h"
 #include "components/infobars/core/infobar.h"
 #include "components/page_info/core/features.h"
@@ -227,9 +226,8 @@ class PageInfoTest : public ChromeRenderViewHostTestHarness {
   void SetPermissionInfo(const PermissionInfoList& permission_info_list,
                          ChosenObjectInfoList chosen_object_info_list) {
     last_chosen_object_info_.clear();
-    for (auto& chosen_object_info : chosen_object_info_list) {
+    for (auto& chosen_object_info : chosen_object_info_list)
       last_chosen_object_info_.push_back(std::move(chosen_object_info));
-    }
     last_permission_info_list_ = permission_info_list;
   }
 
@@ -1540,9 +1538,9 @@ TEST_F(PageInfoTest, ShowInfoBarWhenAllowingThirdPartyCookies) {
     EXPECT_CALL(*mock_ui(), SetCookieInfo(_)).Times(2);
   }
 
-  page_info()->OnStatusChanged(
-      CookieControlsStatus::kEnabled, CookieControlsEnforcement::kNoEnforcement,
-      CookieBlocking3pcdStatus::kNotIn3pcd, base::Time());
+  page_info()->OnStatusChanged(CookieControlsStatus::kEnabled,
+                               CookieControlsEnforcement::kNoEnforcement,
+                               base::Time());
 
   EXPECT_EQ(0u, infobar_manager()->infobars().size());
   page_info()->OnThirdPartyToggleClicked(/*block_third_party_cookies=*/false);
@@ -1566,7 +1564,6 @@ TEST_F(PageInfoTest, ShowInfoBarWhenBlockingThirdPartyCookies) {
 
   page_info()->OnStatusChanged(CookieControlsStatus::kDisabledForSite,
                                CookieControlsEnforcement::kNoEnforcement,
-                               CookieBlocking3pcdStatus::kNotIn3pcd,
                                base::Time());
 
   EXPECT_EQ(0u, infobar_manager()->infobars().size());
