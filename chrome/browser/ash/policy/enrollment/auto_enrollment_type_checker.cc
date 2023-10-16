@@ -510,10 +510,10 @@ AutoEnrollmentTypeChecker::DetermineAutoEnrollmentCheckType(
       // fixed.
       break;
     case FRERequirement::kExplicitlyRequired:
-      LOG(WARNING) << "Proceeding with FRE check.";
+      LOG(WARNING) << "Proceeding with explicit FRE check.";
       return CheckType::kForcedReEnrollmentExplicitlyRequired;
     case FRERequirement::kRequired:
-      LOG(WARNING) << "Proceeding with FRE check.";
+      LOG(WARNING) << "Proceeding with implicit FRE check.";
       return CheckType::kForcedReEnrollmentImplicitlyRequired;
   }
 
