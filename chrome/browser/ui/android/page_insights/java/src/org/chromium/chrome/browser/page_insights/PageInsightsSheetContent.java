@@ -26,8 +26,13 @@ public class PageInsightsSheetContent implements BottomSheetContent {
     /** Ratio of the height when in full mode. */
     private static final float FULL_HEIGHT_RATIO = 0.9f;
 
+    @VisibleForTesting static final float PEEK_HEIGHT_RATIO_WITHOUT_PRIVACY_NOTICE = 0.201f;
+
+    @VisibleForTesting static final float PEEK_HEIGHT_RATIO_WITH_PRIVACY_NOTICE = 0.263f;
+
     private ViewGroup mToolbarView;
     private ViewGroup mSheetContentView;
+    private int mFullScreenHeight;
     private final SharedPreferencesManager mSharedPreferencesManager =
             ChromeSharedPreferences.getInstance();
 
@@ -45,6 +50,7 @@ public class PageInsightsSheetContent implements BottomSheetContent {
         mSheetContentView = (ViewGroup) LayoutInflater.from(context).inflate(
                 R.layout.page_insights_sheet_content, null);
         preparePrivacyNotice(context, myActivityUrlCallback);
+        mFullScreenHeight = context.getResources().getDisplayMetrics().heightPixels;
     }
 
     @Override
@@ -87,7 +93,10 @@ public class PageInsightsSheetContent implements BottomSheetContent {
     @Override
     public int getPeekHeight() {
         // TODO(b/282739536): Find the right peeking height value from the feed view dimension.
-        return 400;
+        if (shouldShowPrivacyNotice()) {
+            return (int) (PEEK_HEIGHT_RATIO_WITH_PRIVACY_NOTICE * mFullScreenHeight);
+        }
+        return (int) (PEEK_HEIGHT_RATIO_WITHOUT_PRIVACY_NOTICE * mFullScreenHeight);
     }
 
     @Override

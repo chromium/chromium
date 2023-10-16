@@ -53,6 +53,8 @@ public class PageInsightsSheetContentTest {
     private ScrimCoordinator mScrimCoordinator;
     private PageInsightsSheetContent mSheetContent;
     private BottomSheetTestSupport mTestSupport;
+    private int mFullHeight;
+    private static final float ASSERTION_DELTA = 0.01f;
 
     @BeforeClass
     public static void setUpSuite() {
@@ -83,10 +85,14 @@ public class PageInsightsSheetContentTest {
         });
 
         mTestSupport = new BottomSheetTestSupport(mBottomSheetController);
-        TestThreadUtils.runOnUiThreadBlocking(() -> {
-            mSheetContent = new PageInsightsSheetContent(sTestRule.getActivity(), view -> {});
-            mBottomSheetController.requestShowContent(mSheetContent, false);
-        });
+        TestThreadUtils.runOnUiThreadBlocking(
+                () -> {
+                    mSheetContent =
+                            new PageInsightsSheetContent(sTestRule.getActivity(), view -> {});
+                    mBottomSheetController.requestShowContent(mSheetContent, false);
+                    mFullHeight =
+                            sTestRule.getActivity().getResources().getDisplayMetrics().heightPixels;
+                });
     }
 
     @After
@@ -213,11 +219,18 @@ public class PageInsightsSheetContentTest {
     @Test
     @MediumTest
     public void privacyNoticeShownForFirstTime() {
-        TestThreadUtils.runOnUiThreadBlocking(() -> {
-            mSheetContent.showFeedPage();
-            assertEquals(View.VISIBLE,
-                    getContentViewById(R.id.page_insights_privacy_notice).getVisibility());
-        });
+        TestThreadUtils.runOnUiThreadBlocking(
+                () -> {
+                    mSheetContent.showFeedPage();
+                    float ratio = ((float) mSheetContent.getPeekHeight()) / ((float) mFullHeight);
+                    assertEquals(
+                            PageInsightsSheetContent.PEEK_HEIGHT_RATIO_WITH_PRIVACY_NOTICE,
+                            ratio,
+                            ASSERTION_DELTA);
+                    assertEquals(
+                            View.VISIBLE,
+                            getContentViewById(R.id.page_insights_privacy_notice).getVisibility());
+                });
     }
 
     @Test
@@ -239,15 +252,22 @@ public class PageInsightsSheetContentTest {
     @Test
     @MediumTest
     public void sharedPreferenceSetTruePrivacyNoticeNotShown() {
-        TestThreadUtils.runOnUiThreadBlocking(() -> {
-            SharedPreferencesManager sharedPreferencesManager =
-                    ChromeSharedPreferences.getInstance();
-            sharedPreferencesManager.writeBoolean(
-                    ChromePreferenceKeys.PIH_PRIVACY_NOTICE_CLOSED, true);
-            mSheetContent.showFeedPage();
-            assertEquals(View.GONE,
-                    getContentViewById(R.id.page_insights_privacy_notice).getVisibility());
-        });
+        TestThreadUtils.runOnUiThreadBlocking(
+                () -> {
+                    SharedPreferencesManager sharedPreferencesManager =
+                            ChromeSharedPreferences.getInstance();
+                    sharedPreferencesManager.writeBoolean(
+                            ChromePreferenceKeys.PIH_PRIVACY_NOTICE_CLOSED, true);
+                    mSheetContent.showFeedPage();
+                    float ratio = ((float) mSheetContent.getPeekHeight()) / ((float) mFullHeight);
+                    assertEquals(
+                            PageInsightsSheetContent.PEEK_HEIGHT_RATIO_WITHOUT_PRIVACY_NOTICE,
+                            ratio,
+                            ASSERTION_DELTA);
+                    assertEquals(
+                            View.GONE,
+                            getContentViewById(R.id.page_insights_privacy_notice).getVisibility());
+                });
     }
 
     private View getToolbarViewById(int viewId){
