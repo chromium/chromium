@@ -150,8 +150,9 @@ void AnnotationsTabHelper::OnClick(web::WebState* web_state,
   }
 
   NSString* ns_text = base::SysUTF8ToNSString(text);
-  DCHECK(ios::provider::HandleIntentTypesForOneTap(
-      web_state, match, ns_text, base_view_controller_, mini_map_handler_));
+  const BOOL success = ios::provider::HandleIntentTypesForOneTap(
+      web_state, match, ns_text, base_view_controller_, mini_map_handler_);
+  DCHECK(success);
 }
 
 #pragma mark - Private Methods
