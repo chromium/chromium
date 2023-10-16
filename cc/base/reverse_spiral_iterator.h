@@ -44,14 +44,15 @@ class CC_BASE_EXPORT ReverseSpiralIterator {
 
  private:
   int current_step_count() const {
-    return (direction_ == UP || direction_ == DOWN) ? vertical_step_count_
-                                                    : horizontal_step_count_;
+    return (direction_ == Direction::kUp || direction_ == Direction::kDown)
+               ? vertical_step_count_
+               : horizontal_step_count_;
   }
 
   bool needs_direction_switch() const;
   void switch_direction();
 
-  enum Direction { LEFT, UP, RIGHT, DOWN };
+  enum class Direction { kLeft, kUp, kRight, kDown };
 
   IndexRect around_index_rect_;
   IndexRect consider_index_rect_;

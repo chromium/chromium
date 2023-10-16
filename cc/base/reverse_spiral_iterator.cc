@@ -26,7 +26,7 @@ ReverseSpiralIterator::ReverseSpiralIterator(
       ignore_index_rect_(ignore_index_rect),
       index_x_(-1),
       index_y_(-1),
-      direction_(LEFT),
+      direction_(Direction::kLeft),
       delta_x_(-1),
       delta_y_(0),
       current_step_(0),
@@ -104,16 +104,16 @@ ReverseSpiralIterator& ReverseSpiralIterator::operator++() {
       // inside it (so that the continue would take us outside).
       int steps_to_edge = 0;
       switch (direction_) {
-        case UP:
+        case Direction::kUp:
           steps_to_edge = index_y_ - ignore_index_rect_.top();
           break;
-        case LEFT:
+        case Direction::kLeft:
           steps_to_edge = index_x_ - ignore_index_rect_.left();
           break;
-        case DOWN:
+        case Direction::kDown:
           steps_to_edge = ignore_index_rect_.bottom() - index_y_;
           break;
-        case RIGHT:
+        case Direction::kRight:
           steps_to_edge = ignore_index_rect_.right() - index_x_;
           break;
       }
@@ -136,22 +136,22 @@ ReverseSpiralIterator& ReverseSpiralIterator::operator++() {
       // We might hit the consider rect before needing to switch directions:
       // update steps to take.
       switch (direction_) {
-        case UP:
+        case Direction::kUp:
           if (consider_index_rect_.valid_column(index_x_) &&
               consider_index_rect_.bottom() < index_y_)
             steps_to_take = index_y_ - consider_index_rect_.bottom() - 1;
           break;
-        case LEFT:
+        case Direction::kLeft:
           if (consider_index_rect_.valid_row(index_y_) &&
               consider_index_rect_.right() < index_x_)
             steps_to_take = index_x_ - consider_index_rect_.right() - 1;
           break;
-        case DOWN:
+        case Direction::kDown:
           if (consider_index_rect_.valid_column(index_x_) &&
               consider_index_rect_.top() > index_y_)
             steps_to_take = consider_index_rect_.top() - index_y_ - 1;
           break;
-        case RIGHT:
+        case Direction::kRight:
           if (consider_index_rect_.valid_row(index_y_) &&
               consider_index_rect_.left() > index_x_)
             steps_to_take = consider_index_rect_.left() - index_x_ - 1;
@@ -186,9 +186,9 @@ void ReverseSpiralIterator::switch_direction() {
   delta_y_ = new_delta_y;
 
   current_step_ = 0;
-  direction_ = static_cast<Direction>((direction_ + 1) % 4);
+  direction_ = static_cast<Direction>((static_cast<int>(direction_) + 1) % 4);
 
-  if (direction_ == UP || direction_ == DOWN) {
+  if (direction_ == Direction::kUp || direction_ == Direction::kDown) {
     --vertical_step_count_;
     --horizontal_step_count_;
 
