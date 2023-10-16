@@ -5050,11 +5050,6 @@
     "expiry_milestone": 122
   },
   {
-    "name": "ios-crashpad",
-    "owners": [ "justincohen", "bling-flags@google.com" ],
-    "expiry_milestone": 120
-  },
-  {
     "name": "ios-edit-menu-hide-search-web",
     "owners": [ "olivierrobin@chromium.org", "bling-flags@google.com" ],
     "expiry_milestone": 130
@@ -7210,8 +7205,8 @@
   {
     "name": "restore-session-from-cache",
     "owners": [ "justincohen", "gambard", "bling-flags@google.com" ],
-    // Needed for manual testing of native session restore flow on iOS.
-    "expiry_milestone": 120
+    // Needed for testing of native session restore flow on iOS.
+    "expiry_milestone": -1
   },
   {
     "name": "restore-synced-placeholder-tabs",
@@ -7808,7 +7803,8 @@
   {
     "name": "synthesized-restore-session",
     "owners": [ "justincohen", "ajuma" ],
-    "expiry_milestone": 120
+    // Needed for testing of native session restore flow on iOS.
+    "expiry_milestone": -1
   },
   {
     "name": "system-color-chooser",
