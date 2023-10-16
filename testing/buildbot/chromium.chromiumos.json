@@ -1129,6 +1129,7 @@
     ],
     "skylab_tests": [
       {
+        "autotest_name": "tast.lacros-from-gcs",
         "bucket": "chromiumos-image-archive",
         "cros_board": "volteer",
         "cros_img": "volteer-public/R120-15642.0.0",
@@ -1473,6 +1474,7 @@
     ],
     "skylab_tests": [
       {
+        "autotest_name": "chromium",
         "bucket": "chromiumos-image-archive",
         "cros_board": "jacuzzi",
         "cros_img": "jacuzzi-public/R120-15642.0.0",
@@ -1482,6 +1484,7 @@
         "variant_id": "JACUZZI_PUBLIC_LKGM"
       },
       {
+        "autotest_name": "tast.lacros-from-gcs",
         "bucket": "chromiumos-image-archive",
         "cros_board": "jacuzzi",
         "cros_img": "jacuzzi-public/R120-15642.0.0",
@@ -1511,6 +1514,7 @@
     ],
     "skylab_tests": [
       {
+        "autotest_name": "tast.lacros-from-gcs",
         "bucket": "chromiumos-image-archive",
         "cros_board": "trogdor",
         "cros_img": "trogdor-public/R120-15642.0.0",

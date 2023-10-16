@@ -1145,12 +1145,26 @@ class BBJSONGenerator(object):  # pylint: disable=useless-object-inheritance
         # is mainly used in generate_gpu_telemetry_test().
         new_test['variant_id'] = identifier
 
-        # cros_chrome_version is the ash chrome version in the cros img in the
-        # variant of cros_board. We don't want to include it in the final json
-        # files; so remove it.
         for k, v in variant_skylab.items():
+          # cros_chrome_version is the ash chrome version in the cros img in the
+          # variant of cros_board. We don't want to include it in the final json
+          # files; so remove it.
           if k != 'cros_chrome_version':
             new_test[k] = v
+
+        # For skylab, we need to pop the correct `autotest_name`. This field
+        # defines what wrapper we use in OS infra. e.g. for gtest it's
+        # https://source.chromium.org/chromiumos/chromiumos/codesearch/+/main:src/third_party/autotest/files/server/site_tests/chromium/chromium.py
+        if variant_skylab and 'autotest_name' not in new_test:
+          if 'tast_expr' in test_config:
+            if 'lacros' in test_config['name']:
+              new_test['autotest_name'] = 'tast.lacros-from-gcs'
+            else:
+              new_test['autotest_name'] = 'tast.chrome-from-gcs'
+          elif 'benchmark' in test_config:
+            new_test['autotest_name'] = 'chromium_Telemetry'
+          else:
+            new_test['autotest_name'] = 'chromium'
 
         test_suite.setdefault(test_name, []).append(new_test)
 

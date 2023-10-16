@@ -4339,13 +4339,21 @@ MATRIX_SKYLAB_WATERFALL = """\
 MATRIX_COMPOUND_SKYLAB_REF = """\
 {
   'basic_suites': {
+    'autotest_suites': {
+      'autotest_suite': {
+      },
+    },
     'cros_skylab_basic': {
-      'tast.basic': {
-        'suite': 'tast.basic',
+      'benchmark_suite': {
+        'benchmark': 'something',
+      },
+      'chrome_all_tast_tests': {
+        'tast_expr': 'dummy expr',
         'timeout': 3600,
       },
-      'tast.foo': {
-        'suite': 'tast.foo',
+      'gtest_suite': { },
+      'lacros_all_tast_tests': {
+        'tast_expr': 'lacros expr',
         'timeout': 3600,
       },
     },
@@ -4353,7 +4361,13 @@ MATRIX_COMPOUND_SKYLAB_REF = """\
   'compound_suites': {},
   'matrix_compound_suites': {
     'cros_skylab_basic_x86': {
+      'autotest_suites': {
+        'variants': [
+          'octopus-89-with-autotest-name',
+        ],
+      },
       'cros_skylab_basic': {
+        'tast_expr': 'dummy expr',
         'variants': [
           'octopus-89',
           'octopus-88',
@@ -4375,6 +4389,16 @@ SKYLAB_VARIANTS = """\
     'enabled': True,
     'identifier': 'OCTOPUS_TOT',
   },
+  'octopus-89-with-autotest-name': {
+    'skylab': {
+      'cros_board': 'octopus',
+      'cros_chrome_version': '89.0.3234.0',
+      'cros_img': 'octopus-release/R89-13655.0.0',
+      'autotest_name': 'unique_autotest_name',
+    },
+    'enabled': True,
+    'identifier': 'OCTOPUS_TOT',
+  },
   'octopus-88': {
     'skylab': {
       'cros_board': 'octopus',
@@ -4392,10 +4416,12 @@ ENABLED_AND_DISABLED_MATRIX_COMPOUND_SKYLAB_REF = """\
   'basic_suites': {
     'cros_skylab_basic': {
       'tast.basic': {
+        'tast_expr': 'dummy expr',
         'suite': 'tast.basic',
         'timeout': 3600,
       },
       'tast.foo': {
+        'tast_expr': 'dummy expr',
         'suite': 'tast.foo',
         'timeout': 3600,
       },
