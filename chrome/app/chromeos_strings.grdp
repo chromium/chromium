@@ -268,8 +268,8 @@
   <message name="IDS_CELLULAR_SETUP_ESIM_PAGE_SCAN_QR_CODE_LOADING" desc="Label informing the user that the activation code is currently being verified.">
     Verifying activation code...
   </message>
-  <message name="IDS_CELLULAR_SETUP_ESIM_PAGE_VERIFYING_ACTIVATION_CODE" desc="Label informing the user that the activation code is currently being verified, and that it may take a couple of minutes before it is complete.">
-    Verifying activation code. This may take a few minutes.
+  <message name="IDS_CELLULAR_SETUP_ESIM_PROFILE_INSTALLING_MESSAGE" desc="Label informing the user that an eSIM profile is being added, and that it may take a couple of minutes before it is complete.">
+    Adding eSIM profile. This may take a few minutes.
   </message>
   <message name="IDS_CELLULAR_SETUP_ESIM_PAGE_SCAN_QR_CODE_INVALID" desc="Label informing the user that the code used to install an eSIM profile is invalid.">
     Invalid code. Please try again.

@@ -166,13 +166,8 @@ suite(`CrComponentsEsimFlowUiTest${suiteSuffix}`, function() {
    * @param {ButtonState} previousBackButtonState
    */
   async function navigateForwardForInstall(page, previousBackButtonState) {
-    const checkShowBusyState =
-        (page !== profileDiscoveryPage && page !== finalPage);
     assertEquals(eSimPage.buttonState.forward, ButtonState.ENABLED);
     assertEquals(eSimPage.buttonState.backward, previousBackButtonState);
-    if (checkShowBusyState) {
-      assertFalse(page.showBusy);
-    }
 
     // If back button is hidden before installation began, the new back button
     // state should also be hidden, if it was enabled new back button state
@@ -186,8 +181,11 @@ suite(`CrComponentsEsimFlowUiTest${suiteSuffix}`, function() {
     assertEquals(eSimPage.buttonState.forward, ButtonState.DISABLED);
     assertEquals(eSimPage.buttonState.cancel, ButtonState.DISABLED);
     assertEquals(eSimPage.buttonState.backward, newBackButtonState);
-    if (checkShowBusyState) {
-      assertTrue(page.showBusy);
+
+    if (page !== profileLoadingPage && page !== profileDiscoveryConsentPage &&
+        page !== finalPage) {
+      assertEquals(
+          ESimPageName.PROFILE_INSTALLING, eSimPage.selectedESimPageName_);
     }
 
     await flushAsync();
