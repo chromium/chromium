@@ -20,7 +20,6 @@ UserState::UserState(const LoginUserInfo& user_info)
   disable_auth = !user_info.is_multi_user_sign_in_allowed &&
                  Shell::Get()->session_controller()->GetSessionState() ==
                      session_manager::SessionState::LOGIN_SECONDARY;
-  is_recovery_configured = user_info.is_recovery_configured;
 }
 
 UserState::UserState(UserState&&) = default;
