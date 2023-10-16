@@ -697,6 +697,16 @@ bool ToplevelWindowEventHandler::AttemptToStartDrag(
     EndClosure end_closure,
     bool update_gesture_target,
     bool grab_capture) {
+  auto* env = aura::Env::GetInstance();
+  // This may be called asynchronosly from remote client, and the mouse/touch
+  // might have already been released.
+  if ((source == ::wm::WINDOW_MOVE_SOURCE_TOUCH && !env->is_touch_down()) ||
+      (source == ::wm::WINDOW_MOVE_SOURCE_MOUSE && !env->IsMouseButtonDown())) {
+    LOG(WARNING) << "AttemptToStartDrag called when mouse/touch are not in "
+                    "pressed state";
+    return false;
+  }
+
   if (gesture_target_ != nullptr && update_gesture_target) {
     DCHECK_EQ(source, ::wm::WINDOW_MOVE_SOURCE_TOUCH);
     // Transfer events for gesture if switching to new target.

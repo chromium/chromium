@@ -401,10 +401,14 @@ TEST_F(ExtendedDragSourceTest, DragSurfaceNotMappedYet_Touch) {
   auto buffer = CreateBuffer({32, 32});
   surface->Attach(buffer.get());
   surface->Commit();
+  auto* dragged_window = shell_surface->GetWidget()->GetNativeWindow();
+
+  GetEventGenerator()->PressTouch(
+      dragged_window->GetBoundsInScreen().CenterPoint());
 
   // Start the DND + extended-drag session.
-  StartExtendedDragSession(shell_surface->GetWidget()->GetNativeWindow(),
-                           gfx::Point(0, 0), ui::DragDropTypes::DRAG_MOVE,
+  StartExtendedDragSession(dragged_window, gfx::Point(0, 0),
+                           ui::DragDropTypes::DRAG_MOVE,
                            ui::mojom::DragEventSource::kTouch);
 
   // Create a new surface to emulate a "detachment" process.

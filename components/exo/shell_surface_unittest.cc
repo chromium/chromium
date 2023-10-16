@@ -1231,8 +1231,9 @@ TEST_F(ShellSurfaceTest, StartMove) {
 
   ASSERT_TRUE(shell_surface->GetWidget());
 
+  aura::Env::GetInstance()->set_mouse_button_flags(ui::EF_LEFT_MOUSE_BUTTON);
   // The interactive move should end when surface is destroyed.
-  shell_surface->StartMove();
+  ASSERT_TRUE(shell_surface->StartMove());
 
   // Test that destroying the shell surface before move ends is OK.
   shell_surface.reset();
@@ -1250,8 +1251,9 @@ TEST_F(ShellSurfaceTest, StartResize) {
   surface->Commit();
   ASSERT_TRUE(shell_surface->GetWidget());
 
+  aura::Env::GetInstance()->set_mouse_button_flags(ui::EF_LEFT_MOUSE_BUTTON);
   // The interactive resize should end when surface is destroyed.
-  shell_surface->StartResize(HTBOTTOMRIGHT);
+  ASSERT_TRUE(shell_surface->StartResize(HTBOTTOMRIGHT));
 
   // Test that destroying the surface before resize ends is OK.
   surface.reset();
@@ -1276,8 +1278,9 @@ TEST_F(ShellSurfaceTest, StartResizeAndDestroyShell) {
   surface->Commit();
   ASSERT_TRUE(shell_surface->GetWidget());
 
+  aura::Env::GetInstance()->set_mouse_button_flags(ui::EF_LEFT_MOUSE_BUTTON);
   // The interactive resize should end when surface is destroyed.
-  shell_surface->StartResize(HTBOTTOMRIGHT);
+  ASSERT_TRUE(shell_surface->StartResize(HTBOTTOMRIGHT));
 
   // Go through configure/commit stage to update the resize component.
   shell_surface->AcknowledgeConfigure(serial);
@@ -1519,7 +1522,9 @@ TEST_F(ShellSurfaceTest, ConfigureCallback) {
   EXPECT_FALSE(config_data.is_active);
 
   EXPECT_FALSE(config_data.is_resizing);
-  shell_surface->StartResize(HTBOTTOMRIGHT);
+
+  aura::Env::GetInstance()->set_mouse_button_flags(ui::EF_LEFT_MOUSE_BUTTON);
+  ASSERT_TRUE(shell_surface->StartResize(HTBOTTOMRIGHT));
   shell_surface->AcknowledgeConfigure(0);
   EXPECT_TRUE(config_data.is_resizing);
 }
@@ -2671,7 +2676,7 @@ TEST_F(ShellSurfaceTest, UpdateBoundsWhenDraggedToAnotherDisplay) {
       base::BindLambdaForTesting(origin_change));
   event_generator->MoveMouseTo(1, 1);
   event_generator->PressLeftButton();
-  shell_surface->StartMove();
+  ASSERT_TRUE(shell_surface->StartMove());
   event_generator->MoveMouseTo(801, 1);
   event_generator->ReleaseLeftButton();
   EXPECT_EQ(last_origin, gfx::Point(800, 0));
@@ -2694,7 +2699,8 @@ TEST_F(ShellSurfaceTest, CommitShouldNotMoveDisplay) {
                     shell_surface->GetWidget()->GetNativeWindow())
                 .id());
 
-  shell_surface->StartMove();
+  aura::Env::GetInstance()->set_mouse_button_flags(ui::EF_LEFT_MOUSE_BUTTON);
+  ASSERT_TRUE(shell_surface->StartMove());
 
   constexpr gfx::Size kBufferSize(256, 256);
   auto new_buffer = std::make_unique<Buffer>(
@@ -2708,7 +2714,9 @@ TEST_F(ShellSurfaceTest, CommitShouldNotMoveDisplay) {
                     shell_surface->GetWidget()->GetNativeWindow())
                 .id());
 
-  shell_surface->EndDrag();
+  GetEventGenerator()->ReleaseLeftButton();
+
+  // shell_surface->EndDrag();
 
   // Ending drag will not move the window unless the mouse cursor enters
   // another display.
@@ -2907,7 +2915,8 @@ TEST_F(ShellSurfaceTest, ResizeShadowIndependentBounds) {
   shell_surface->set_configure_callback(configure_callback);
 
   // Resize the widget and set geometry.
-  shell_surface->StartResize(HTBOTTOMRIGHT);
+  aura::Env::GetInstance()->set_mouse_button_flags(ui::EF_LEFT_MOUSE_BUTTON);
+  ASSERT_TRUE(shell_surface->StartResize(HTBOTTOMRIGHT));
   shell_surface->SetWidgetBounds(kNewBounds, /*adjusted by server=*/false);
   shell_surface->SetGeometry(gfx::Rect(kNewBounds.size()));
 
@@ -2963,8 +2972,9 @@ TEST_F(ShellSurfaceTest, ResizeShadowIndependentBounds) {
   EXPECT_EQ(expected_shadow_on_secondary,
             resize_shadow->GetLayerForTest()->bounds());
 
+  aura::Env::GetInstance()->set_mouse_button_flags(ui::EF_LEFT_MOUSE_BUTTON);
   constexpr gfx::Rect kResizedBoundsOn2nd{950, 50, 150, 150};
-  shell_surface->StartResize(HTTOPLEFT);
+  ASSERT_TRUE(shell_surface->StartResize(HTTOPLEFT));
   shell_surface->GetWidget()->SetBounds(kResizedBoundsOn2nd);
   shell_surface->SetGeometry(gfx::Rect(kResizedBoundsOn2nd.size()));
   shell_surface->AcknowledgeConfigure(serial);
@@ -3026,9 +3036,9 @@ TEST_F(ShellSurfaceTest, ResizeShadowDependentBounds) {
 
   gfx::Size new_size(100, 100);
   gfx::Rect new_bounds(new_size);
-
+  aura::Env::GetInstance()->set_mouse_button_flags(ui::EF_LEFT_MOUSE_BUTTON);
   // Resize the widget and set geometry.
-  shell_surface->StartResize(HTBOTTOMRIGHT);
+  ASSERT_TRUE(shell_surface->StartResize(HTBOTTOMRIGHT));
   shell_surface->SetWidgetBounds(new_bounds, /*adjusted_by_server=*/false);
   shell_surface->SetGeometry(new_bounds);
   // Shadow bounds are updated as soon as the widget bounds change.

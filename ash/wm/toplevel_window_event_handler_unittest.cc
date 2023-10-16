@@ -124,19 +124,6 @@ class ToplevelWindowEventHandlerTest : public AshTestBase {
   ~ToplevelWindowEventHandlerTest() override = default;
 
  protected:
-  aura::Window* CreateWindow(int hittest_code) {
-    TestWindowDelegate* d1 = new TestWindowDelegate(hittest_code);
-    aura::Window* w1 = new aura::Window(d1, aura::client::WINDOW_TYPE_NORMAL);
-    w1->SetId(1);
-    w1->Init(ui::LAYER_TEXTURED);
-    aura::Window* parent = Shell::GetContainer(
-        Shell::GetPrimaryRootWindow(), desks_util::GetActiveDeskContainerId());
-    parent->AddChild(w1);
-    w1->SetBounds(gfx::Rect(0, 0, 100, 100));
-    w1->Show();
-    return w1;
-  }
-
   void DragFromCenterBy(aura::Window* window, int dx, int dy) {
     ui::test::EventGenerator generator(Shell::GetPrimaryRootWindow(), window);
     generator.DragMouseBy(dx, dy);
@@ -149,6 +136,20 @@ class ToplevelWindowEventHandlerTest : public AshTestBase {
 
   std::unique_ptr<ToplevelWindowEventHandler> handler_;
 };
+
+aura::Window* CreateWindow(int hittest_code) {
+  TestWindowDelegate* d1 = new TestWindowDelegate(hittest_code);
+  aura::Window* w1 = new aura::Window(d1, aura::client::WINDOW_TYPE_NORMAL);
+  w1->SetId(1);
+  w1->Init(ui::LAYER_TEXTURED);
+  aura::Window* parent = Shell::GetContainer(
+      Shell::GetPrimaryRootWindow(), desks_util::GetActiveDeskContainerId());
+  parent->AddChild(w1);
+  w1->SetBounds(gfx::Rect(0, 0, 100, 100));
+  w1->Show();
+  return w1;
+}
+
 }  // namespace
 
 TEST_F(ToplevelWindowEventHandlerTest, Caption) {
@@ -1065,8 +1066,9 @@ void CheckHasCaptureAndReleaseCapture(aura::Window* window) {
 // Test that releasing capture completes an in-progress gesture drag.
 TEST_F(ToplevelWindowEventHandlerTest, GestureDragCaptureLoss) {
   std::unique_ptr<aura::Window> window(CreateWindow(HTNOWHERE));
-  ui::test::EventGenerator generator(Shell::GetPrimaryRootWindow(),
-                                     window.get());
+  auto* generator = GetEventGenerator();
+
+  generator->PressTouch(window->GetBoundsInScreen().CenterPoint());
 
   ::wm::WindowMoveClient* move_client =
       ::wm::GetWindowMoveClient(window->GetRootWindow());
@@ -1264,6 +1266,8 @@ class ToplevelWindowEventHandlerDragTest : public AshTestBase {
                             ui::GestureEventDetails gesture_details) {
     ui::GestureEvent event(position.x(), position.y(), ui::EF_NONE,
                            base::TimeTicks::Now(), gesture_details);
+    // This assume gesture types generated here are all 'pressed' state.
+    aura::Env::GetInstance()->SetTouchDown(true);
     ui::Event::DispatcherApi(&event).set_target(dragged_window_.get());
     ui::Event::DispatcherApi(&event).set_phase(ui::EP_PRETARGET);
     Shell::Get()->toplevel_window_event_handler()->OnGestureEvent(&event);
@@ -1319,6 +1323,24 @@ TEST_F(ToplevelWindowEventHandlerDragTest,
 
   EXPECT_TRUE(event_handler->gesture_target());
   dragged_window_.reset();
+}
+
+TEST_F(ToplevelWindowEventHandlerDragTest,
+       DragShouldNotStartWithoutPressedEvents) {
+  auto* env = aura::Env::GetInstance();
+  auto* toplevel_window_event_handler =
+      Shell::Get()->toplevel_window_event_handler();
+
+  std::unique_ptr<aura::Window> w1(CreateWindow(HTCAPTION));
+  ASSERT_FALSE(env->is_touch_down());
+  ASSERT_FALSE(env->IsMouseButtonDown());
+
+  EXPECT_FALSE(toplevel_window_event_handler->AttemptToStartDrag(
+      w1.get(), gfx::PointF(50, 50), HTCAPTION, ::wm::WINDOW_MOVE_SOURCE_MOUSE,
+      base::DoNothing(), /*updaete_gesture_target=*/false));
+  EXPECT_FALSE(toplevel_window_event_handler->AttemptToStartDrag(
+      w1.get(), gfx::PointF(50, 50), HTCAPTION, ::wm::WINDOW_MOVE_SOURCE_TOUCH,
+      base::DoNothing(), /*updaete_gesture_target=*/false));
 }
 
 class ToplevelWindowEventHandlerPipPinchToResizeTest : public AshTestBase {

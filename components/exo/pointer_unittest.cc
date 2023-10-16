@@ -718,7 +718,7 @@ TEST_P(PointerTest, OnPointerButtonWithAttemptToStartDrag) {
   EXPECT_CALL(delegate,
               OnPointerButton(testing::_, ui::EF_LEFT_MOUSE_BUTTON, false));
   generator.PressLeftButton();
-  shell_surface->StartMove();
+  ASSERT_TRUE(shell_surface->StartMove());
 
   generator.ReleaseLeftButton();
 
@@ -2021,7 +2021,7 @@ TEST_P(PointerTest, DontSendMouseEventDuringMove) {
   generator->MoveMouseRelativeTo(shell_surface->GetWidget()->GetNativeWindow(),
                                  {1, 1});
   generator->PressLeftButton();
-  shell_surface->StartMove();
+  ASSERT_TRUE(shell_surface->StartMove());
   EXPECT_EQ(shell_surface->GetWidget()->GetWindowBoundsInScreen().origin(),
             gfx::Point(10, 10));
 

@@ -1322,6 +1322,10 @@ TEST_F(TabletModeControllerTest, StartTabletActiveDraggedPreviousLeftSnap) {
   std::unique_ptr<aura::Window> snapped_window =
       CreateDesktopWindowSnappedLeft();
   wm::ActivateWindow(dragged_window.get());
+
+  GetEventGenerator()->PressTouch(
+      dragged_window->GetBoundsInScreen().CenterPoint());
+
   ASSERT_TRUE(Shell::Get()->toplevel_window_event_handler()->AttemptToStartDrag(
       dragged_window.get(), gfx::PointF(), HTCAPTION,
       ToplevelWindowEventHandler::EndClosure()));
@@ -1364,6 +1368,9 @@ TEST_F(TabletModeControllerTest,
   ::wm::AddTransientChild(parent.get(), child.get());
   wm::ActivateWindow(child.get());
   wm::ActivateWindow(dragged_window.get());
+
+  GetEventGenerator()->PressTouch(
+      dragged_window->GetBoundsInScreen().CenterPoint());
   ASSERT_TRUE(Shell::Get()->toplevel_window_event_handler()->AttemptToStartDrag(
       dragged_window.get(), gfx::PointF(), HTCAPTION,
       ToplevelWindowEventHandler::EndClosure()));
