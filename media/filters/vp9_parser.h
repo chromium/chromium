@@ -313,8 +313,9 @@ class MEDIA_EXPORT Vp9Parser {
       // Marks this context as requiring an update from parser's client.
       void SetNeedsClientUpdate();
 
-      // Updates frame context.
-      void Update(const Vp9FrameContext& frame_context);
+      // Updates frame context. Returns false if |frame_content| is not valid,
+      // true otherwise.
+      bool Update(const Vp9FrameContext& frame_context);
 
       // Returns a callback to update frame context at a later time with.
       ContextRefreshCallback GetUpdateCb();
@@ -336,8 +337,9 @@ class MEDIA_EXPORT Vp9Parser {
     void MarkFrameContextForUpdate(size_t frame_context_idx);
 
     // Update frame context at |frame_context_idx| with the contents of
-    // |frame_context|.
-    void UpdateFrameContext(size_t frame_context_idx,
+    // |frame_context|. Returns false if |frame_content| is not valid,
+    // true otherwise.
+    bool UpdateFrameContext(size_t frame_context_idx,
                             const Vp9FrameContext& frame_context);
 
     // Return ReferenceSlot for frame at |ref_idx|.

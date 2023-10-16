@@ -1080,11 +1080,16 @@ bool Vp9UncompressedHeaderParser::Parse(const uint8_t* stream,
     SetupPastIndependence(fhdr);
     if (fhdr->IsKeyframe() || fhdr->error_resilient_mode ||
         fhdr->reset_frame_context == 3) {
-      for (size_t i = 0; i < kVp9NumFrameContexts; ++i)
-        context_->UpdateFrameContext(i, fhdr->frame_context);
+      for (size_t i = 0; i < kVp9NumFrameContexts; ++i) {
+        if (!context_->UpdateFrameContext(i, fhdr->frame_context)) {
+          return false;
+        }
+      }
     } else if (fhdr->reset_frame_context == 2) {
-      context_->UpdateFrameContext(fhdr->frame_context_idx,
-                                   fhdr->frame_context);
+      if (!context_->UpdateFrameContext(fhdr->frame_context_idx,
+                                        fhdr->frame_context)) {
+        return false;
+      }
     }
     fhdr->frame_context_idx = 0;
   }

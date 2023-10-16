@@ -478,10 +478,12 @@ Vp9Parser::Context::Vp9FrameContextManager::GetUpdateCb() {
   return {};
 }
 
-void Vp9Parser::Context::Vp9FrameContextManager::Update(
+bool Vp9Parser::Context::Vp9FrameContextManager::Update(
     const Vp9FrameContext& frame_context) {
-  // DCHECK because we can trust values from our parser.
-  DCHECK(frame_context.IsValid());
+  if (!frame_context.IsValid()) {
+    return false;
+  }
+
   initialized_ = true;
   frame_context_ = frame_context;
 
@@ -493,6 +495,7 @@ void Vp9Parser::Context::Vp9FrameContextManager::Update(
   // are still decoding.
   weak_ptr_factory_.InvalidateWeakPtrs();
   needs_client_update_ = false;
+  return true;
 }
 
 void Vp9Parser::Context::Vp9FrameContextManager::UpdateFromClient(
@@ -521,11 +524,12 @@ void Vp9Parser::Context::MarkFrameContextForUpdate(size_t frame_context_idx) {
   frame_context_managers_[frame_context_idx].SetNeedsClientUpdate();
 }
 
-void Vp9Parser::Context::UpdateFrameContext(
+bool Vp9Parser::Context::UpdateFrameContext(
     size_t frame_context_idx,
     const Vp9FrameContext& frame_context) {
   DCHECK_LT(frame_context_idx, std::size(frame_context_managers_));
-  frame_context_managers_[frame_context_idx].Update(frame_context);
+
+  return frame_context_managers_[frame_context_idx].Update(frame_context);
 }
 
 const Vp9Parser::ReferenceSlot& Vp9Parser::Context::GetRefSlot(
@@ -668,8 +672,11 @@ bool Vp9Parser::ParseCompressedHeader(const FrameInfo& frame_info,
     // In frame parallel mode, we can refresh the context without decoding
     // tile data.
     if (curr_frame_header_.frame_parallel_decoding_mode) {
-      context_.UpdateFrameContext(frame_context_idx,
-                                  curr_frame_header_.frame_context);
+      if (!context_.UpdateFrameContext(frame_context_idx,
+                                       curr_frame_header_.frame_context)) {
+        *result = kInvalidStream;
+        return true;
+      }
     } else {
       if (needs_external_context_update_)
         context_.MarkFrameContextForUpdate(frame_context_idx);
