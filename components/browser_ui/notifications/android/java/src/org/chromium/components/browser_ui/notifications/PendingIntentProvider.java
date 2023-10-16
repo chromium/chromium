@@ -8,6 +8,8 @@ import android.app.PendingIntent;
 import android.content.Context;
 import android.content.Intent;
 
+import androidx.core.app.PendingIntentCompat.Flags;
+
 import org.chromium.base.IntentUtils;
 
 /**
@@ -15,7 +17,7 @@ import org.chromium.base.IntentUtils;
  */
 public class PendingIntentProvider {
     private PendingIntent mPendingIntent;
-    private final int mFlags;
+    @Flags private final int mFlags;
     private final int mRequestCode;
 
     /**
@@ -95,10 +97,8 @@ public class PendingIntentProvider {
         return mPendingIntent;
     }
 
-    /**
-     * Returns the flags of {@link PendingIntent}.
-     */
-    public int getFlags() {
+    /** Returns the flags of {@link PendingIntent}. */
+    public @Flags int getFlags() {
         return mFlags;
     }
 

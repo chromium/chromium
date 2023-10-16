@@ -127,7 +127,6 @@ public class NotificationIntentInterceptor {
      * @param pendingIntentProvider Provides the {@link PendingIntent} to launch Chrome.
      *
      */
-    @SuppressWarnings("WrongConstant") // https://crbug.com/1412248 flags from PendingIntent.
     public static PendingIntent createInterceptPendingIntent(@IntentType int intentType,
             int intentId, NotificationMetadata metadata,
             @Nullable PendingIntentProvider pendingIntentProvider) {
