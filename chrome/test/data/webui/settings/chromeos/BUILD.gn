@@ -26,7 +26,6 @@ build_webui_tests("build") {
     "apn_detail_dialog_test.ts",
     "cellular_networks_list_test.js",
     "cellular_roaming_toggle_button_test.js",
-    "crostini_page_test.js",
     "esim_remove_profile_dialog_test.js",
     "fake_canvas_context.js",
     "fake_input_method_private.js",
@@ -67,6 +66,7 @@ build_webui_tests("build") {
     "app_management/toggle_row_test.ts",
 
     "crostini_page/crostini_extra_containers_subpage_test.ts",
+    "crostini_page/crostini_page_test.ts",
     "crostini_page/crostini_settings_card_test.ts",
     "crostini_page/test_crostini_browser_proxy.ts",
 

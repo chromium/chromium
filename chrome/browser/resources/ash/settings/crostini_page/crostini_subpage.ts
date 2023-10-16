@@ -46,7 +46,7 @@ enum ConfirmationState {
 const SettingsCrostiniSubpageElementBase = DeepLinkingMixin(
     RouteOriginMixin(PrefsMixin(WebUiListenerMixin(PolymerElement))));
 
-class SettingsCrostiniSubpageElement extends
+export class SettingsCrostiniSubpageElement extends
     SettingsCrostiniSubpageElementBase {
   static get is() {
     return 'settings-crostini-subpage';

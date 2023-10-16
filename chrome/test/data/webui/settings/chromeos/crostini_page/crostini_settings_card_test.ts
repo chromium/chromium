@@ -25,7 +25,7 @@ suite('<crostini-settings-card>', () => {
 
   interface PrefParams {
     sharedPaths?: {[key: string]: string[]};
-    forwardedPorts?: CrostiniPortSetting[] | [];
+    forwardedPorts?: CrostiniPortSetting[];
     micAllowed?: boolean;
     arcEnabled?: boolean;
     bruschettaInstalled?: boolean;

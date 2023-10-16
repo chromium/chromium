@@ -22,13 +22,13 @@ import {PolymerElement} from 'chrome://resources/polymer/v3_0/polymer/polymer_bu
 
 import {getTemplate} from './crostini_confirmation_dialog.html.js';
 
-interface SettingsCrostiniConfirmationDialogElement {
+export interface SettingsCrostiniConfirmationDialogElement {
   $: {
     dialog: CrDialogElement,
   };
 }
 
-class SettingsCrostiniConfirmationDialogElement extends PolymerElement {
+export class SettingsCrostiniConfirmationDialogElement extends PolymerElement {
   static get is() {
     return 'settings-crostini-confirmation-dialog';
   }

@@ -29,7 +29,7 @@ import {Route, routes} from '../router.js';
 import {getTemplate} from './crostini_arc_adb.html.js';
 import {CrostiniBrowserProxy, CrostiniBrowserProxyImpl} from './crostini_browser_proxy.js';
 
-interface SettingsCrostiniArcAdbElement {
+export interface SettingsCrostiniArcAdbElement {
   $: {
     arcAdbEnabledButton: CrToggleElement,
   };
@@ -38,7 +38,8 @@ interface SettingsCrostiniArcAdbElement {
 const SettingsCrostiniArcAdbElementBase = DeepLinkingMixin(
     RouteObserverMixin(WebUiListenerMixin(I18nMixin(PolymerElement))));
 
-class SettingsCrostiniArcAdbElement extends SettingsCrostiniArcAdbElementBase {
+export class SettingsCrostiniArcAdbElement extends
+    SettingsCrostiniArcAdbElementBase {
   static get is() {
     return 'settings-crostini-arc-adb';
   }

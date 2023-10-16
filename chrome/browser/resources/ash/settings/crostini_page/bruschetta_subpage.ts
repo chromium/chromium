@@ -23,7 +23,7 @@ import {CrostiniBrowserProxy, CrostiniBrowserProxyImpl} from './crostini_browser
 const BruschettaSubpageElementBase =
     RouteOriginMixin(PrefsMixin(PolymerElement));
 
-class BruschettaSubpageElement extends BruschettaSubpageElementBase {
+export class BruschettaSubpageElement extends BruschettaSubpageElementBase {
   static get is() {
     return 'settings-bruschetta-subpage' as const;
   }

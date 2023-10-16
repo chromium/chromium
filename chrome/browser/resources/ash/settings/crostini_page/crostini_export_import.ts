@@ -28,7 +28,7 @@ import {getTemplate} from './crostini_export_import.html.js';
 const SettingsCrostiniExportImportElementBase =
     DeepLinkingMixin(RouteObserverMixin(WebUiListenerMixin(PolymerElement)));
 
-class SettingsCrostiniExportImportElement extends
+export class SettingsCrostiniExportImportElement extends
     SettingsCrostiniExportImportElementBase {
   static get is() {
     return 'settings-crostini-export-import';

@@ -138,11 +138,19 @@ export {AppManagementSupportedLinksOverlappingAppsDialogElement} from 'chrome://
 // Tests should use this export of `sanitizerInnerHtml` to prevent repeated
 // TrustedTypes policies from being created.
 export {sanitizeInnerHtml} from 'chrome://resources/js/parse_html_subset.js';
+export {BruschettaSubpageElement} from './crostini_page/bruschetta_subpage.js';
+export {SettingsCrostiniArcAdbElement} from './crostini_page/crostini_arc_adb.js';
 export {CrostiniBrowserProxy, CrostiniBrowserProxyImpl, CrostiniDiskInfo, CrostiniPortActiveSetting, CrostiniPortProtocol, CrostiniPortSetting} from './crostini_page/crostini_browser_proxy.js';
+export {SettingsCrostiniConfirmationDialogElement} from './crostini_page/crostini_confirmation_dialog.js';
+export {SettingsCrostiniDiskResizeDialogElement} from './crostini_page/crostini_disk_resize_dialog.js';
+export {SettingsCrostiniExportImportElement} from './crostini_page/crostini_export_import.js';
 export {ExtraContainersElement} from './crostini_page/crostini_extra_containers.js';
 export {ExtraContainersCreateDialog} from './crostini_page/crostini_extra_containers_create_dialog.js';
 export {SettingsCrostiniPageElement} from './crostini_page/crostini_page.js';
+export {CrostiniPortForwardingElement} from './crostini_page/crostini_port_forwarding.js';
 export {CrostiniSettingsCardElement} from './crostini_page/crostini_settings_card.js';
+export {CrostiniSharedUsbDevicesElement} from './crostini_page/crostini_shared_usb_devices.js';
+export {SettingsCrostiniSubpageElement} from './crostini_page/crostini_subpage.js';
 export {SettingsDateTimePageElement} from './date_time_page/date_time_page.js';
 export {DateTimeSettingsCardElement} from './date_time_page/date_time_settings_card.js';
 export {TimeZoneAutoDetectMethod} from './date_time_page/date_time_types.js';
@@ -158,6 +166,7 @@ export {DragAndDropManager, getDataTransferOriginIndex, setDataTransferOriginInd
 export {KeyCombinationInputDialogElement} from './device_page/key_combination_input_dialog.js';
 export {SettingsPowerElement} from './device_page/power.js';
 export {ContainerInfo, CROSTINI_TYPE, GuestId, GuestOsBrowserProxy, GuestOsBrowserProxyImpl, GuestOsSharedUsbDevice, PLUGIN_VM_TYPE, ShareableDevices} from './guest_os/guest_os_browser_proxy.js';
+export {ContainerSelectElement} from './guest_os/guest_os_container_select.js';
 export {SettingsGuestOsSharedPathsElement} from './guest_os/guest_os_shared_paths.js';
 export {SettingsGuestOsSharedUsbDevicesElement} from './guest_os/guest_os_shared_usb_devices.js';
 export {CellularNetworksListElement} from './internet_page/cellular_networks_list.js';

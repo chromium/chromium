@@ -14,7 +14,7 @@ import {SettingsGuestOsSharedUsbDevicesElement} from '../guest_os/guest_os_share
 
 import {CrostiniBrowserProxyImpl, DEFAULT_CROSTINI_GUEST_ID} from './crostini_browser_proxy.js';
 
-class CrostiniSharedUsbDevicesElement extends
+export class CrostiniSharedUsbDevicesElement extends
     SettingsGuestOsSharedUsbDevicesElement {
   static override get is() {
     return 'settings-crostini-shared-usb-devices';

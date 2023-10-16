@@ -158,7 +158,7 @@ function crostiniTestGenPreamble() {
 var OSSettingsCrostiniPageTest = class extends OSSettingsBrowserTest {
   /** @override */
   get browsePreload() {
-    return 'chrome://os-settings/test_loader.html?module=settings/chromeos/crostini_page_test.js';
+    return 'chrome://os-settings/test_loader.html?module=settings/chromeos/crostini_page/crostini_page_test.js';
   }
 
   /** @override */
