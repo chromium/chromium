@@ -19,7 +19,7 @@ class TextStream;
 
 namespace blink {
 
-struct NGPhysicalBoxStrut;
+struct PhysicalBoxStrut;
 
 // PhysicalRect is the position and size of a rect (typically a fragment)
 // relative to its parent rect in the physical coordinate system.
@@ -115,7 +115,7 @@ struct CORE_EXPORT PhysicalRect {
   void Intersect(const PhysicalRect&);
   bool InclusiveIntersect(const PhysicalRect&);
 
-  void Expand(const NGPhysicalBoxStrut&);
+  void Expand(const PhysicalBoxStrut&);
   void ExpandEdges(LayoutUnit top,
                    LayoutUnit right,
                    LayoutUnit bottom,
@@ -128,7 +128,7 @@ struct CORE_EXPORT PhysicalRect {
   void ExpandEdgesToPixelBoundaries();
   void Inflate(LayoutUnit d) { ExpandEdges(d, d, d, d); }
 
-  void Contract(const NGPhysicalBoxStrut&);
+  void Contract(const PhysicalBoxStrut&);
   void ContractEdges(LayoutUnit top,
                      LayoutUnit right,
                      LayoutUnit bottom,

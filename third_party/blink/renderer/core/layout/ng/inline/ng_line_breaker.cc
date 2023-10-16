@@ -57,7 +57,7 @@ inline LineBreakStrictness StrictnessFromLineBreak(LineBreak line_break) {
 
 // Returns smallest negative left and right bearing in `box_fragment`.
 // This function is used for calculating side bearing.
-NGLineBoxStrut ComputeNegativeSideBearings(
+LineBoxStrut ComputeNegativeSideBearings(
     const NGPhysicalBoxFragment& box_fragment) {
   const auto get_shape_result =
       [](const NGInlineCursor cursor) -> const ShapeResultView* {
@@ -72,7 +72,7 @@ NGLineBoxStrut ComputeNegativeSideBearings(
     return item.TextShapeResult();
   };
 
-  NGLineBoxStrut side_bearing;
+  LineBoxStrut side_bearing;
 
   for (NGInlineCursor cursor(box_fragment); cursor; cursor.MoveToNextLine()) {
     // Take left/right bearing from the first/last child in the line if it has
@@ -2593,7 +2593,7 @@ void NGLineBreaker::HandleAtomicInline(const NGInlineItem& item,
         ShouldApplyInlineKerning(physical_box_fragment)) {
       // Apply "Inline Kerning" to the initial letter box[1].
       // [1] https://drafts.csswg.org/css-inline/#initial-letter-inline-position
-      const NGLineBoxStrut side_bearing =
+      const LineBoxStrut side_bearing =
           ComputeNegativeSideBearings(physical_box_fragment);
       if (IsLtr(base_direction_)) {
         item_result->margins.inline_start += side_bearing.inline_start;

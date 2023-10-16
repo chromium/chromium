@@ -1120,11 +1120,10 @@ LayoutUnit ColumnInlineProgression(LayoutUnit available_size,
   return column_inline_size + ResolveUsedColumnGap(available_size, style);
 }
 
-NGPhysicalBoxStrut ComputePhysicalMargins(
-    const ComputedStyle& style,
-    LayoutUnit percentage_resolution_size) {
+PhysicalBoxStrut ComputePhysicalMargins(const ComputedStyle& style,
+                                        LayoutUnit percentage_resolution_size) {
   if (!style.MayHaveMargin())
-    return NGPhysicalBoxStrut();
+    return PhysicalBoxStrut();
 
   // This function may be called for determining intrinsic margins, clamp
   // indefinite %-sizes to zero. See:
@@ -1519,9 +1518,9 @@ void AddScrollbarFreeze(const BoxStrut& scrollbars_before,
                         WritingDirectionMode writing_direction,
                         bool* freeze_horizontal,
                         bool* freeze_vertical) {
-  NGPhysicalBoxStrut physical_before =
+  PhysicalBoxStrut physical_before =
       scrollbars_before.ConvertToPhysical(writing_direction);
-  NGPhysicalBoxStrut physical_after =
+  PhysicalBoxStrut physical_after =
       scrollbars_after.ConvertToPhysical(writing_direction);
   *freeze_horizontal |= (!physical_before.top && physical_after.top) ||
                         (!physical_before.bottom && physical_after.bottom);

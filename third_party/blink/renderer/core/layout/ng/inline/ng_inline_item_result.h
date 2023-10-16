@@ -99,9 +99,9 @@ struct CORE_EXPORT NGInlineItemResult {
 
   // Margins, borders, and padding for open tags.
   // Margins are set for atomic inlines too.
-  NGLineBoxStrut margins;
-  NGLineBoxStrut borders;
-  NGLineBoxStrut padding;
+  LineBoxStrut margins;
+  LineBoxStrut borders;
+  LineBoxStrut padding;
 
   // Inside of this may be breakable. False means there are no break
   // opportunities, or has CSS properties that prohibit breaking.

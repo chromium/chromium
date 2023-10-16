@@ -11,7 +11,7 @@
 
 namespace blink {
 
-FontHeight NGBoxFragment::BaselineMetrics(const NGLineBoxStrut& margins,
+FontHeight NGBoxFragment::BaselineMetrics(const LineBoxStrut& margins,
                                           FontBaseline baseline_type) const {
   // For checkbox and radio controls, we always use the border edge instead of
   // the margin edge.

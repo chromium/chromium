@@ -33,7 +33,7 @@ PhysicalRect NGLayoutOverflowCalculator::RecalculateLayoutOverflowForFragment(
 
   // TODO(ikilpatrick): The final computed scrollbars for a fragment should
   // likely live on the NGPhysicalBoxFragment.
-  NGPhysicalBoxStrut scrollbar;
+  PhysicalBoxStrut scrollbar;
   if (fragment.IsCSSBox()) {
     scrollbar = ComputeScrollbarsForNonAnonymous(node).ConvertToPhysical(
         writing_direction);
@@ -75,9 +75,9 @@ NGLayoutOverflowCalculator::NGLayoutOverflowCalculator(
     const NGBlockNode& node,
     bool is_css_box,
     bool has_block_fragmentation,
-    const NGPhysicalBoxStrut& borders,
-    const NGPhysicalBoxStrut& scrollbar,
-    const NGPhysicalBoxStrut& padding,
+    const PhysicalBoxStrut& borders,
+    const PhysicalBoxStrut& scrollbar,
+    const PhysicalBoxStrut& padding,
     PhysicalSize size,
     WritingDirectionMode writing_direction)
     : node_(node),

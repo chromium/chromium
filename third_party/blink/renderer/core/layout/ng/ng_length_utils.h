@@ -546,11 +546,11 @@ CORE_EXPORT LayoutUnit ResolveUsedColumnGap(LayoutUnit available_size,
 CORE_EXPORT LayoutUnit ColumnInlineProgression(LayoutUnit available_size,
                                                const ComputedStyle&);
 // Compute physical margins.
-CORE_EXPORT NGPhysicalBoxStrut
+CORE_EXPORT PhysicalBoxStrut
 ComputePhysicalMargins(const ComputedStyle&,
                        LayoutUnit percentage_resolution_size);
 
-inline NGPhysicalBoxStrut ComputePhysicalMargins(
+inline PhysicalBoxStrut ComputePhysicalMargins(
     const NGConstraintSpace& constraint_space,
     const ComputedStyle& style) {
   LayoutUnit percentage_resolution_size =
@@ -594,11 +594,11 @@ inline BoxStrut ComputeMarginsForSelf(const NGConstraintSpace& constraint_space,
 //
 // The "line" versions compute line-relative logical values. See NGLineBoxStrut
 // for more details.
-inline NGLineBoxStrut ComputeLineMarginsForSelf(
+inline LineBoxStrut ComputeLineMarginsForSelf(
     const NGConstraintSpace& constraint_space,
     const ComputedStyle& style) {
   if (!style.MayHaveMargin() || constraint_space.IsAnonymous())
-    return NGLineBoxStrut();
+    return LineBoxStrut();
   LayoutUnit percentage_resolution_size =
       constraint_space.PercentageResolutionInlineSizeForParentWritingMode();
   return ComputePhysicalMargins(style, percentage_resolution_size)
@@ -607,11 +607,11 @@ inline NGLineBoxStrut ComputeLineMarginsForSelf(
 
 // Compute line logical margins for the constraint space, in the visual order
 // (always assumes LTR, ignoring the direction) for inline layout algorithm.
-inline NGLineBoxStrut ComputeLineMarginsForVisualContainer(
+inline LineBoxStrut ComputeLineMarginsForVisualContainer(
     const NGConstraintSpace& constraint_space,
     const ComputedStyle& style) {
   if (!style.MayHaveMargin() || constraint_space.IsAnonymous())
-    return NGLineBoxStrut();
+    return LineBoxStrut();
   LayoutUnit percentage_resolution_size =
       constraint_space.PercentageResolutionInlineSizeForParentWritingMode();
   return ComputePhysicalMargins(style, percentage_resolution_size)
@@ -626,9 +626,9 @@ CORE_EXPORT BoxStrut ComputeBordersForInline(const ComputedStyle&);
 
 CORE_EXPORT BoxStrut ComputeNonCollapsedTableBorders(const ComputedStyle&);
 
-inline NGLineBoxStrut ComputeLineBorders(const ComputedStyle& style) {
-  return NGLineBoxStrut(ComputeBordersForInline(style),
-                        style.IsFlippedLinesWritingMode());
+inline LineBoxStrut ComputeLineBorders(const ComputedStyle& style) {
+  return LineBoxStrut(ComputeBordersForInline(style),
+                      style.IsFlippedLinesWritingMode());
 }
 
 CORE_EXPORT BoxStrut ComputeBordersForTest(const ComputedStyle& style);
@@ -636,11 +636,11 @@ CORE_EXPORT BoxStrut ComputeBordersForTest(const ComputedStyle& style);
 CORE_EXPORT BoxStrut ComputePadding(const NGConstraintSpace&,
                                     const ComputedStyle&);
 
-inline NGLineBoxStrut ComputeLinePadding(
+inline LineBoxStrut ComputeLinePadding(
     const NGConstraintSpace& constraint_space,
     const ComputedStyle& style) {
-  return NGLineBoxStrut(ComputePadding(constraint_space, style),
-                        style.IsFlippedLinesWritingMode());
+  return LineBoxStrut(ComputePadding(constraint_space, style),
+                      style.IsFlippedLinesWritingMode());
 }
 
 // Compute the scrollbars and scrollbar gutters.

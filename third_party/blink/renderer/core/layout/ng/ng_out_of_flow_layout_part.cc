@@ -884,7 +884,7 @@ void NGOutOfFlowLayoutPart::LayoutCandidates(
             CalculateOffset(node_info, /* is_first_run */ false,
                             needs_anchor_queries ? &*anchor_queries : nullptr)};
         const NGLayoutResult* result = LayoutOOFNode(node_to_layout);
-        NGPhysicalBoxStrut physical_margins =
+        PhysicalBoxStrut physical_margins =
             node_to_layout.offset_info.node_dimensions.margins
                 .ConvertToPhysical(
                     node_info.node.Style().GetWritingDirection());

@@ -2362,7 +2362,7 @@ TextEmphasisMark ComputedStyle::GetTextEmphasisMark() const {
   return TextEmphasisMark::kSesame;
 }
 
-NGPhysicalBoxStrut ComputedStyle::ImageOutsets(
+PhysicalBoxStrut ComputedStyle::ImageOutsets(
     const NinePieceImage& image) const {
   return {NinePieceImage::ComputeOutset(image.Outset().Top(),
                                         BorderTopWidth().ToInt()),
@@ -2399,13 +2399,13 @@ bool ComputedStyle::BorderObscuresBackground() const {
   return true;
 }
 
-NGPhysicalBoxStrut ComputedStyle::BoxDecorationOutsets() const {
+PhysicalBoxStrut ComputedStyle::BoxDecorationOutsets() const {
   DCHECK(HasVisualOverflowingEffect());
-  NGPhysicalBoxStrut outsets;
+  PhysicalBoxStrut outsets;
 
   if (const ShadowList* box_shadow = BoxShadow()) {
-    outsets = NGPhysicalBoxStrut::Enclosing(
-        box_shadow->RectOutsetsIncludingOriginal());
+    outsets =
+        PhysicalBoxStrut::Enclosing(box_shadow->RectOutsetsIncludingOriginal());
   }
 
   if (HasBorderImageOutsets()) {

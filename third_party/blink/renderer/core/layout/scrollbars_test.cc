@@ -3138,7 +3138,7 @@ TEST_P(ScrollbarsTest, ScrollbarGutterWithHorizontalTextAndClassicScrollbars) {
   auto* box_auto = auto_->GetLayoutBox();
   EXPECT_EQ(box_auto->OffsetWidth(), 100);
   EXPECT_EQ(box_auto->ClientWidth(), 100);
-  NGPhysicalBoxStrut box_auto_scrollbars = box_auto->ComputeScrollbars();
+  PhysicalBoxStrut box_auto_scrollbars = box_auto->ComputeScrollbars();
   EXPECT_EQ(box_auto_scrollbars.top, 0);
   EXPECT_EQ(box_auto_scrollbars.bottom, 0);
   EXPECT_EQ(box_auto_scrollbars.left, 0);
@@ -3148,7 +3148,7 @@ TEST_P(ScrollbarsTest, ScrollbarGutterWithHorizontalTextAndClassicScrollbars) {
   auto* box_stable = stable->GetLayoutBox();
   EXPECT_EQ(box_stable->OffsetWidth(), 100);
   EXPECT_EQ(box_stable->ClientWidth(), 85);
-  NGPhysicalBoxStrut box_stable_scrollbars = box_stable->ComputeScrollbars();
+  PhysicalBoxStrut box_stable_scrollbars = box_stable->ComputeScrollbars();
   EXPECT_EQ(box_stable_scrollbars.top, 0);
   EXPECT_EQ(box_stable_scrollbars.bottom, 0);
   EXPECT_EQ(box_stable_scrollbars.left, 0);
@@ -3159,7 +3159,7 @@ TEST_P(ScrollbarsTest, ScrollbarGutterWithHorizontalTextAndClassicScrollbars) {
   auto* box_stable_both_edges = stable_both_edges->GetLayoutBox();
   EXPECT_EQ(box_stable_both_edges->OffsetWidth(), 100);
   EXPECT_EQ(box_stable_both_edges->ClientWidth(), 70);
-  NGPhysicalBoxStrut box_stable_both_edges_scrollbars =
+  PhysicalBoxStrut box_stable_both_edges_scrollbars =
       box_stable_both_edges->ComputeScrollbars();
   EXPECT_EQ(box_stable_both_edges_scrollbars.top, 0);
   EXPECT_EQ(box_stable_both_edges_scrollbars.bottom, 0);
@@ -3203,7 +3203,7 @@ TEST_P(ScrollbarsTest, ScrollbarGutterWithVerticalTextAndClassicScrollbars) {
   auto* box_auto = auto_->GetLayoutBox();
   EXPECT_EQ(box_auto->OffsetHeight(), 100);
   EXPECT_EQ(box_auto->ClientHeight(), 100);
-  NGPhysicalBoxStrut box_auto_scrollbars = box_auto->ComputeScrollbars();
+  PhysicalBoxStrut box_auto_scrollbars = box_auto->ComputeScrollbars();
   EXPECT_EQ(box_auto_scrollbars.top, 0);
   EXPECT_EQ(box_auto_scrollbars.bottom, 0);
   EXPECT_EQ(box_auto_scrollbars.left, 0);
@@ -3213,7 +3213,7 @@ TEST_P(ScrollbarsTest, ScrollbarGutterWithVerticalTextAndClassicScrollbars) {
   auto* box_stable = stable->GetLayoutBox();
   EXPECT_EQ(box_stable->OffsetHeight(), 100);
   EXPECT_EQ(box_stable->ClientHeight(), 85);
-  NGPhysicalBoxStrut box_stable_scrollbars = box_stable->ComputeScrollbars();
+  PhysicalBoxStrut box_stable_scrollbars = box_stable->ComputeScrollbars();
   EXPECT_EQ(box_stable_scrollbars.top, 0);
   EXPECT_EQ(box_stable_scrollbars.bottom, 15);
   EXPECT_EQ(box_stable_scrollbars.left, 0);
@@ -3224,7 +3224,7 @@ TEST_P(ScrollbarsTest, ScrollbarGutterWithVerticalTextAndClassicScrollbars) {
   auto* box_stable_both_edges = stable_both_edges->GetLayoutBox();
   EXPECT_EQ(box_stable_both_edges->OffsetHeight(), 100);
   EXPECT_EQ(box_stable_both_edges->ClientHeight(), 70);
-  NGPhysicalBoxStrut box_stable_both_edges_scrollbars =
+  PhysicalBoxStrut box_stable_both_edges_scrollbars =
       box_stable_both_edges->ComputeScrollbars();
   EXPECT_EQ(box_stable_both_edges_scrollbars.top, 15);
   EXPECT_EQ(box_stable_both_edges_scrollbars.bottom, 15);
@@ -3269,7 +3269,7 @@ TEST_P(ScrollbarsTest, ScrollbarGutterWithHorizontalTextAndOverlayScrollbars) {
   auto* box_auto = auto_->GetLayoutBox();
   EXPECT_EQ(box_auto->OffsetWidth(), 100);
   EXPECT_EQ(box_auto->ClientWidth(), 100);
-  NGPhysicalBoxStrut box_auto_scrollbars = box_auto->ComputeScrollbars();
+  PhysicalBoxStrut box_auto_scrollbars = box_auto->ComputeScrollbars();
   EXPECT_EQ(box_auto_scrollbars.top, 0);
   EXPECT_EQ(box_auto_scrollbars.bottom, 0);
   EXPECT_EQ(box_auto_scrollbars.left, 0);
@@ -3279,7 +3279,7 @@ TEST_P(ScrollbarsTest, ScrollbarGutterWithHorizontalTextAndOverlayScrollbars) {
   auto* box_stable = stable->GetLayoutBox();
   EXPECT_EQ(box_stable->OffsetWidth(), 100);
   EXPECT_EQ(box_stable->ClientWidth(), 100);
-  NGPhysicalBoxStrut box_stable_scrollbars = box_stable->ComputeScrollbars();
+  PhysicalBoxStrut box_stable_scrollbars = box_stable->ComputeScrollbars();
   EXPECT_EQ(box_stable_scrollbars.top, 0);
   EXPECT_EQ(box_stable_scrollbars.bottom, 0);
   EXPECT_EQ(box_stable_scrollbars.left, 0);
@@ -3290,7 +3290,7 @@ TEST_P(ScrollbarsTest, ScrollbarGutterWithHorizontalTextAndOverlayScrollbars) {
   auto* box_stable_both_edges = stable_both_edges->GetLayoutBox();
   EXPECT_EQ(box_stable_both_edges->OffsetWidth(), 100);
   EXPECT_EQ(box_stable_both_edges->ClientWidth(), 100);
-  NGPhysicalBoxStrut box_stable_both_edges_scrollbars =
+  PhysicalBoxStrut box_stable_both_edges_scrollbars =
       box_stable_both_edges->ComputeScrollbars();
   EXPECT_EQ(box_stable_both_edges_scrollbars.top, 0);
   EXPECT_EQ(box_stable_both_edges_scrollbars.bottom, 0);
@@ -3335,7 +3335,7 @@ TEST_P(ScrollbarsTest, ScrollbarGutterWithVerticalTextAndOverlayScrollbars) {
   auto* box_auto = auto_->GetLayoutBox();
   EXPECT_EQ(box_auto->OffsetHeight(), 100);
   EXPECT_EQ(box_auto->ClientHeight(), 100);
-  NGPhysicalBoxStrut box_auto_scrollbars = box_auto->ComputeScrollbars();
+  PhysicalBoxStrut box_auto_scrollbars = box_auto->ComputeScrollbars();
   EXPECT_EQ(box_auto_scrollbars.top, 0);
   EXPECT_EQ(box_auto_scrollbars.bottom, 0);
   EXPECT_EQ(box_auto_scrollbars.left, 0);
@@ -3345,7 +3345,7 @@ TEST_P(ScrollbarsTest, ScrollbarGutterWithVerticalTextAndOverlayScrollbars) {
   auto* box_stable = stable->GetLayoutBox();
   EXPECT_EQ(box_stable->OffsetHeight(), 100);
   EXPECT_EQ(box_stable->ClientHeight(), 100);
-  NGPhysicalBoxStrut box_stable_scrollbars = box_stable->ComputeScrollbars();
+  PhysicalBoxStrut box_stable_scrollbars = box_stable->ComputeScrollbars();
   EXPECT_EQ(box_stable_scrollbars.top, 0);
   EXPECT_EQ(box_stable_scrollbars.bottom, 0);
   EXPECT_EQ(box_stable_scrollbars.left, 0);
@@ -3356,7 +3356,7 @@ TEST_P(ScrollbarsTest, ScrollbarGutterWithVerticalTextAndOverlayScrollbars) {
   auto* box_stable_both_edges = stable_both_edges->GetLayoutBox();
   EXPECT_EQ(box_stable_both_edges->OffsetHeight(), 100);
   EXPECT_EQ(box_stable_both_edges->ClientHeight(), 100);
-  NGPhysicalBoxStrut box_stable_both_edges_scrollbars =
+  PhysicalBoxStrut box_stable_both_edges_scrollbars =
       box_stable_both_edges->ComputeScrollbars();
   EXPECT_EQ(box_stable_both_edges_scrollbars.top, 0);
   EXPECT_EQ(box_stable_both_edges_scrollbars.bottom, 0);

@@ -330,8 +330,8 @@ TEST_F(NGInlineLayoutAlgorithmTest, InlineBoxBorderPadding) {
   const NGFragmentItem& item1 = *cursor.Current();
   const NGPhysicalBoxFragment* box1 = item1.BoxFragment();
   ASSERT_TRUE(box1);
-  const NGPhysicalBoxStrut borders1 = box1->Borders();
-  const NGPhysicalBoxStrut padding1 = box1->Padding();
+  const PhysicalBoxStrut borders1 = box1->Borders();
+  const PhysicalBoxStrut padding1 = box1->Padding();
   int borders_and_padding1[] = {
       borders1.left.ToInt(),   borders1.top.ToInt(),   borders1.right.ToInt(),
       borders1.bottom.ToInt(), padding1.left.ToInt(),  padding1.top.ToInt(),
@@ -346,8 +346,8 @@ TEST_F(NGInlineLayoutAlgorithmTest, InlineBoxBorderPadding) {
   const NGFragmentItem& item2 = *cursor.Current();
   const NGPhysicalBoxFragment* box2 = item2.BoxFragment();
   ASSERT_TRUE(box2);
-  const NGPhysicalBoxStrut borders2 = box2->Borders();
-  const NGPhysicalBoxStrut padding2 = box2->Padding();
+  const PhysicalBoxStrut borders2 = box2->Borders();
+  const PhysicalBoxStrut padding2 = box2->Padding();
   int borders_and_padding2[] = {
       borders2.left.ToInt(),   borders2.top.ToInt(),   borders2.right.ToInt(),
       borders2.bottom.ToInt(), padding2.left.ToInt(),  padding2.top.ToInt(),

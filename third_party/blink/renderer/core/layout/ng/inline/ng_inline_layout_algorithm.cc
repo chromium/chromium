@@ -872,7 +872,7 @@ void NGInlineLayoutAlgorithm::PlaceBlockInInline(
   if (!result.IsSelfCollapsing()) {
     // Block-in-inline is wrapped in an anonymous block that has no margins.
     const FontHeight metrics = fragment.BaselineMetrics(
-        /* margins */ NGLineBoxStrut(), baseline_type_);
+        /* margins */ LineBoxStrut(), baseline_type_);
     box_states_->OnBlockInInline(metrics, line_box);
   }
 

@@ -38,7 +38,7 @@ class BoxBorderPainter {
                                      const ComputedStyle& style,
                                      const PhysicalRect& border_rect,
                                      int width,
-                                     const NGPhysicalBoxStrut& inner_outsets) {
+                                     const PhysicalBoxStrut& inner_outsets) {
     BoxBorderPainter(context, style, border_rect, width, inner_outsets).Paint();
   }
 
@@ -61,7 +61,7 @@ class BoxBorderPainter {
                    const ComputedStyle&,
                    const PhysicalRect& border_rect,
                    int width,
-                   const NGPhysicalBoxStrut& inner_outsets);
+                   const PhysicalBoxStrut& inner_outsets);
 
   void Paint() const;
 
@@ -121,9 +121,9 @@ class BoxBorderPainter {
                                     MiterType miter2,
                                     EBorderStyle);
 
-  NGPhysicalBoxStrut DoubleStripeOutsets(
+  PhysicalBoxStrut DoubleStripeOutsets(
       BorderEdge::DoubleBorderStripe stripe) const;
-  NGPhysicalBoxStrut CenterOutsets() const;
+  PhysicalBoxStrut CenterOutsets() const;
 
   bool ColorsMatchAtCorner(BoxSide side, BoxSide adjacent_side) const;
 
@@ -141,7 +141,7 @@ class BoxBorderPainter {
 
   // const inputs
   const PhysicalRect border_rect_;
-  const NGPhysicalBoxStrut outer_outsets_;
+  const PhysicalBoxStrut outer_outsets_;
   const ComputedStyle& style_;
   const BackgroundBleedAvoidance bleed_avoidance_;
   const PhysicalBoxSides sides_to_include_;

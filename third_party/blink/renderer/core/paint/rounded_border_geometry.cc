@@ -77,7 +77,7 @@ FloatRoundedRect RoundedBorderGeometry::PixelSnappedRoundedInnerBorder(
     PhysicalBoxSides sides_to_include) {
   return PixelSnappedRoundedBorderWithOutsets(
       style, border_rect,
-      NGPhysicalBoxStrut(
+      PhysicalBoxStrut(
           -style.BorderTopWidth().Floor(), -style.BorderRightWidth().Floor(),
           -style.BorderBottomWidth().Floor(), -style.BorderLeftWidth().Floor()),
       sides_to_include);
@@ -86,9 +86,9 @@ FloatRoundedRect RoundedBorderGeometry::PixelSnappedRoundedInnerBorder(
 FloatRoundedRect RoundedBorderGeometry::PixelSnappedRoundedBorderWithOutsets(
     const ComputedStyle& style,
     const PhysicalRect& border_rect,
-    const NGPhysicalBoxStrut& outsets,
+    const PhysicalBoxStrut& outsets,
     PhysicalBoxSides sides_to_include) {
-  NGPhysicalBoxStrut adjusted_outsets(
+  PhysicalBoxStrut adjusted_outsets(
       sides_to_include.top ? outsets.top : LayoutUnit(),
       sides_to_include.right ? outsets.right : LayoutUnit(),
       sides_to_include.bottom ? outsets.bottom : LayoutUnit(),

@@ -18,7 +18,7 @@ std::ostream& operator<<(std::ostream& stream, const BoxStrut& value) {
   return stream << value.ToString();
 }
 
-BoxStrut::BoxStrut(const NGLineBoxStrut& line_relative, bool is_flipped_lines) {
+BoxStrut::BoxStrut(const LineBoxStrut& line_relative, bool is_flipped_lines) {
   if (!is_flipped_lines) {
     *this = {line_relative.inline_start, line_relative.inline_end,
              line_relative.line_over, line_relative.line_under};
@@ -28,8 +28,8 @@ BoxStrut::BoxStrut(const NGLineBoxStrut& line_relative, bool is_flipped_lines) {
   }
 }
 
-NGLineBoxStrut::NGLineBoxStrut(const BoxStrut& flow_relative,
-                               bool is_flipped_lines) {
+LineBoxStrut::LineBoxStrut(const BoxStrut& flow_relative,
+                           bool is_flipped_lines) {
   if (!is_flipped_lines) {
     *this = {flow_relative.inline_start, flow_relative.inline_end,
              flow_relative.block_start, flow_relative.block_end};
@@ -39,13 +39,13 @@ NGLineBoxStrut::NGLineBoxStrut(const BoxStrut& flow_relative,
   }
 }
 
-std::ostream& operator<<(std::ostream& stream, const NGLineBoxStrut& value) {
+std::ostream& operator<<(std::ostream& stream, const LineBoxStrut& value) {
   return stream << "Inline: (" << value.inline_start << " " << value.inline_end
                 << ") Line: (" << value.line_over << " " << value.line_under
                 << ") ";
 }
 
-NGPhysicalBoxStrut& NGPhysicalBoxStrut::Unite(const NGPhysicalBoxStrut& other) {
+PhysicalBoxStrut& PhysicalBoxStrut::Unite(const PhysicalBoxStrut& other) {
   top = std::max(top, other.top);
   right = std::max(right, other.right);
   bottom = std::max(bottom, other.bottom);

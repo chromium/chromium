@@ -80,7 +80,7 @@ class CORE_EXPORT NGBoxFragment final : public NGFragment {
   //
   // This will synthesize baseline metrics if no baseline is available. See
   // |Baseline()| for when this may occur.
-  FontHeight BaselineMetrics(const NGLineBoxStrut& margins, FontBaseline) const;
+  FontHeight BaselineMetrics(const LineBoxStrut& margins, FontBaseline) const;
 
   BoxStrut Borders() const {
     return PhysicalBoxFragment().Borders().ConvertToLogical(writing_direction_);

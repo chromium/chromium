@@ -103,13 +103,12 @@ class ChildFragmentIterator {
   wtf_size_t child_index_ = 0;
 };
 
-LayoutPoint ComputeLocation(
-    const NGPhysicalBoxFragment& column_box,
-    PhysicalOffset column_offset,
-    LayoutUnit set_inline_size,
-    const LayoutBlockFlow& container,
-    wtf_size_t fragment_index,
-    const NGPhysicalBoxStrut& border_padding_scrollbar) {
+LayoutPoint ComputeLocation(const NGPhysicalBoxFragment& column_box,
+                            PhysicalOffset column_offset,
+                            LayoutUnit set_inline_size,
+                            const LayoutBlockFlow& container,
+                            wtf_size_t fragment_index,
+                            const PhysicalBoxStrut& border_padding_scrollbar) {
   const NGPhysicalBoxFragment* container_fragment =
       container.GetPhysicalFragment(fragment_index);
   WritingModeConverter converter(
@@ -431,9 +430,9 @@ void LayoutMultiColumnSet::UpdateGeometry() {
 
   const auto* first_fragment = container->GetPhysicalFragment(0);
   WritingMode writing_mode = first_fragment->Style().GetWritingMode();
-  NGPhysicalBoxStrut border_padding_scrollbar = first_fragment->Borders() +
-                                                first_fragment->Padding() +
-                                                container->ComputeScrollbars();
+  PhysicalBoxStrut border_padding_scrollbar = first_fragment->Borders() +
+                                              first_fragment->Padding() +
+                                              container->ComputeScrollbars();
 
   // Set the inline-size to that of the content-box of the multicol container.
   PhysicalSize content_size =

@@ -23,7 +23,7 @@ struct BoxLayoutExtraInput {
   PhysicalSize size;
 
   // Border and padding values.
-  NGPhysicalBoxStrut border_padding;
+  PhysicalBoxStrut border_padding;
 };
 
 }  // namespace blink

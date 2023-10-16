@@ -2200,7 +2200,7 @@ void FragmentPaintPropertyTreeBuilder::UpdateBackgroundClip() {
     PhysicalRect clip_rect(context_.current.paint_offset, fragment.Size());
     auto clip = object_.StyleRef().BackgroundLayers().Clip();
     if (clip == EFillBox::kContent || clip == EFillBox::kPadding) {
-      NGPhysicalBoxStrut strut = fragment.Borders();
+      PhysicalBoxStrut strut = fragment.Borders();
       if (clip == EFillBox::kContent) {
         strut += fragment.Padding();
       }
@@ -2231,7 +2231,7 @@ static void AdjustRoundedClipForOverflowClipMargin(
 
   // The default rects map to the inner border-radius which is the padding-box.
   // First apply a margin for the reference-box.
-  NGPhysicalBoxStrut outsets;
+  PhysicalBoxStrut outsets;
   switch (overflow_clip_margin->GetReferenceBox()) {
     case StyleOverflowClipMargin::ReferenceBox::kBorderBox:
       outsets = box.BorderOutsets();
@@ -2319,7 +2319,7 @@ void FragmentPaintPropertyTreeBuilder::UpdateOverflowClip() {
         auto clip_rect =
             RoundedBorderGeometry::PixelSnappedRoundedBorderWithOutsets(
                 replaced.StyleRef(), content_rect,
-                NGPhysicalBoxStrut(
+                PhysicalBoxStrut(
                     -(replaced.PaddingTop() + replaced.BorderTop()),
                     -(replaced.PaddingRight() + replaced.BorderRight()),
                     -(replaced.PaddingBottom() + replaced.BorderBottom()),

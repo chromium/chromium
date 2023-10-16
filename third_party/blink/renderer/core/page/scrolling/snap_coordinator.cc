@@ -415,7 +415,7 @@ cc::SnapAreaData SnapCoordinator::CalculateSnapAreaData(
       area_rect, &snap_container,
       kTraverseDocumentBoundaries | kIgnoreScrollOffset);
 
-  NGPhysicalBoxStrut area_margin(
+  PhysicalBoxStrut area_margin(
       area_style->ScrollMarginTop(), area_style->ScrollMarginRight(),
       area_style->ScrollMarginBottom(), area_style->ScrollMarginLeft());
   area_rect.Expand(area_margin);

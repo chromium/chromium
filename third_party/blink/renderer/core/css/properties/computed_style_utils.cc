@@ -706,7 +706,7 @@ CSSValue* ComputedStyleUtils::ValueForPositionOffset(
       box && box->IsOutOfFlowPositioned()) {
     // LayoutBox::OutOfFlowInsetsForGetComputedStyle() are relative to the
     // container's writing direction. Convert it to physical.
-    const NGPhysicalBoxStrut& insets =
+    const PhysicalBoxStrut& insets =
         box->OutOfFlowInsetsForGetComputedStyle().ConvertToPhysical(
             box->ContainingBlock()->StyleRef().GetWritingDirection());
     LayoutUnit inset;

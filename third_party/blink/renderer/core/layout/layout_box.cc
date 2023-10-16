@@ -132,7 +132,7 @@ static const unsigned kBackgroundObscurationTestMaxDepth = 4;
 struct SameSizeAsLayoutBox : public LayoutBoxModelObject {
   DeprecatedLayoutRect frame_rect;
   PhysicalSize previous_size;
-  NGPhysicalBoxStrut margin_box_outsets;
+  PhysicalBoxStrut margin_box_outsets;
   MinMaxSizes intrinsic_logical_widths;
   LayoutUnit intrinsic_logical_widths_initial_block_size;
   Member<void*> result;
@@ -1144,13 +1144,13 @@ int LayoutBox::PixelSnappedScrollHeight() const {
   return SnapSizeToPixel(ScrollHeight(), top + ClientTop());
 }
 
-void LayoutBox::SetMargin(const NGPhysicalBoxStrut& box) {
+void LayoutBox::SetMargin(const PhysicalBoxStrut& box) {
   NOT_DESTROYED();
   DCHECK(!RuntimeEnabledFeatures::LayoutNGNoCopyBackEnabled());
   margin_box_outsets_ = box;
 }
 
-NGPhysicalBoxStrut LayoutBox::MarginBoxOutsets() const {
+PhysicalBoxStrut LayoutBox::MarginBoxOutsets() const {
   NOT_DESTROYED();
   if (!RuntimeEnabledFeatures::LayoutNGNoCopyBackEnabled()) {
     return margin_box_outsets_;
@@ -1161,7 +1161,7 @@ NGPhysicalBoxStrut LayoutBox::MarginBoxOutsets() const {
     // fragmentation.
     return GetPhysicalFragment(0)->Margins();
   }
-  return NGPhysicalBoxStrut();
+  return PhysicalBoxStrut();
 }
 
 void LayoutBox::AbsoluteQuads(Vector<gfx::QuadF>& quads,
@@ -1566,12 +1566,12 @@ bool LayoutBox::HasScrollbarGutters(ScrollbarOrientation orientation) const {
   }
 }
 
-NGPhysicalBoxStrut LayoutBox::ComputeScrollbarsInternal(
+PhysicalBoxStrut LayoutBox::ComputeScrollbarsInternal(
     ShouldClampToContentBox clamp_to_content_box,
     OverlayScrollbarClipBehavior overlay_scrollbar_clip_behavior,
     ShouldIncludeScrollbarGutter include_scrollbar_gutter) const {
   NOT_DESTROYED();
-  NGPhysicalBoxStrut scrollbars;
+  PhysicalBoxStrut scrollbars;
   PaintLayerScrollableArea* scrollable_area = GetScrollableArea();
 
   if (include_scrollbar_gutter == kIncludeScrollbarGutter &&
@@ -1738,7 +1738,7 @@ gfx::Vector2d LayoutBox::OriginAdjustmentForScrollbars() const {
   if (CanSkipComputeScrollbars())
     return gfx::Vector2d();
 
-  NGPhysicalBoxStrut scrollbars = ComputeScrollbarsInternal(kClampToContentBox);
+  PhysicalBoxStrut scrollbars = ComputeScrollbarsInternal(kClampToContentBox);
   return gfx::Vector2d(scrollbars.left.ToInt(), scrollbars.top.ToInt());
 }
 
@@ -2496,7 +2496,7 @@ void LayoutBox::ExcludeScrollbars(
   if (CanSkipComputeScrollbars())
     return;
 
-  NGPhysicalBoxStrut scrollbars = ComputeScrollbarsInternal(
+  PhysicalBoxStrut scrollbars = ComputeScrollbarsInternal(
       kDoNotClampToContentBox, overlay_scrollbar_clip_behavior,
       include_scrollbar_gutter);
   rect.offset.top += scrollbars.top;
@@ -3290,12 +3290,12 @@ bool LayoutBox::IsCustomItem() const {
   return parent_layout_box && parent_layout_box->IsLoaded();
 }
 
-NGPhysicalBoxStrut LayoutBox::ComputeVisualEffectOverflowOutsets() {
+PhysicalBoxStrut LayoutBox::ComputeVisualEffectOverflowOutsets() {
   NOT_DESTROYED();
   const ComputedStyle& style = StyleRef();
   DCHECK(style.HasVisualOverflowingEffect());
 
-  NGPhysicalBoxStrut outsets = style.BoxDecorationOutsets();
+  PhysicalBoxStrut outsets = style.BoxDecorationOutsets();
 
   if (style.HasOutline()) {
     OutlineInfo info;
@@ -3306,8 +3306,8 @@ NGPhysicalBoxStrut LayoutBox::ComputeVisualEffectOverflowOutsets() {
     bool outline_affected = rect.size != Size();
     SetOutlineMayBeAffectedByDescendants(outline_affected);
     rect.Inflate(LayoutUnit(OutlinePainter::OutlineOutsetExtent(style, info)));
-    outsets.Unite(NGPhysicalBoxStrut(-rect.Y(), rect.Right() - Size().width,
-                                     rect.Bottom() - Size().height, -rect.X()));
+    outsets.Unite(PhysicalBoxStrut(-rect.Y(), rect.Right() - Size().width,
+                                   rect.Bottom() - Size().height, -rect.X()));
   }
 
   return outsets;
@@ -3542,7 +3542,7 @@ void LayoutBox::AddContentsVisualOverflow(const PhysicalRect& rect) {
 }
 
 void LayoutBox::UpdateHasSubpixelVisualEffectOutsets(
-    const NGPhysicalBoxStrut& outsets) {
+    const PhysicalBoxStrut& outsets) {
   if (!VisualOverflowIsSet()) {
     return;
   }
@@ -3562,7 +3562,7 @@ void LayoutBox::SetVisualOverflow(const PhysicalRect& self,
   const PhysicalRect overflow_rect =
       overflow_->visual_overflow->SelfVisualOverflowRect();
   const PhysicalSize box_size = Size();
-  const NGPhysicalBoxStrut outsets(
+  const PhysicalBoxStrut outsets(
       -overflow_rect.Y(), overflow_rect.Right() - box_size.width,
       overflow_rect.Bottom() - box_size.height, -overflow_rect.X());
   UpdateHasSubpixelVisualEffectOutsets(outsets);
@@ -3734,12 +3734,12 @@ LayoutUnit LayoutBox::FirstLineHeight() const {
   return LayoutUnit();
 }
 
-NGPhysicalBoxStrut LayoutBox::BorderOutsetsForClipping() const {
+PhysicalBoxStrut LayoutBox::BorderOutsetsForClipping() const {
   auto padding_box = -BorderOutsets();
   if (!ShouldApplyOverflowClipMargin())
     return padding_box;
 
-  NGPhysicalBoxStrut overflow_clip_margin;
+  PhysicalBoxStrut overflow_clip_margin;
   switch (StyleRef().OverflowClipMargin()->GetReferenceBox()) {
     case StyleOverflowClipMargin::ReferenceBox::kBorderBox:
       break;
@@ -3776,7 +3776,7 @@ PhysicalRect LayoutBox::VisualOverflowRect() const {
         overflow_->visual_overflow->ContentsVisualOverflowRect();
     if (!contents_visual_overflow_rect.IsEmpty()) {
       PhysicalRect result = PhysicalBorderBoxRect();
-      NGPhysicalBoxStrut outsets = BorderOutsetsForClipping();
+      PhysicalBoxStrut outsets = BorderOutsetsForClipping();
       result.ExpandEdges(outsets.top, outsets.right, outsets.bottom,
                          outsets.left);
       result.Intersect(contents_visual_overflow_rect);

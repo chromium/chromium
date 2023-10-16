@@ -202,7 +202,7 @@ class CORE_EXPORT LayoutReplaced : public LayoutBox {
 
   // This returns border and padding values computed in NG if a
   // BoxLayoutExtraInput is associated to this box.
-  NGPhysicalBoxStrut BorderPaddingFromNG() const;
+  PhysicalBoxStrut BorderPaddingFromNG() const;
 
   // ReplacedPainter doesn't support CompositeBackgroundAttachmentFixed yet.
   bool ComputeCanCompositeBackgroundAttachmentFixed() const override {

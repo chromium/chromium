@@ -20,11 +20,11 @@ struct FieldsetPaintInfo {
   // caused by the rendered legend.
   FieldsetPaintInfo(const ComputedStyle& fieldset_style,
                     const PhysicalSize& fieldset_size,
-                    const NGPhysicalBoxStrut& fieldset_borders,
+                    const PhysicalBoxStrut& fieldset_borders,
                     const PhysicalRect& legend_border_box);
 
   // Block-start border outset caused by the rendered legend.
-  NGPhysicalBoxStrut border_outsets;
+  PhysicalBoxStrut border_outsets;
 
   // The cutout rectangle (where the border is not to be painted) occupied by
   // the legend. Note that this may intersect with other border sides than the

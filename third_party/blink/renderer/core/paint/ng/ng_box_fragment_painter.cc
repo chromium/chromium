@@ -1844,7 +1844,7 @@ PhysicalRect NGBoxFragmentPainter::AdjustRectForScrolledContent(
     // the ends.
     scrolled_paint_rect.offset -=
         PhysicalOffset(physical.PixelSnappedScrolledContentOffset());
-    NGPhysicalBoxStrut borders = AdjustedBorderOutsets(info);
+    PhysicalBoxStrut borders = AdjustedBorderOutsets(info);
     scrolled_paint_rect.size =
         physical.ScrollSize() +
         PhysicalSize(borders.HorizontalSum(), borders.VerticalSum());
@@ -1852,15 +1852,15 @@ PhysicalRect NGBoxFragmentPainter::AdjustRectForScrolledContent(
   return scrolled_paint_rect;
 }
 
-NGPhysicalBoxStrut NGBoxFragmentPainter::ComputeBorders() const {
+PhysicalBoxStrut NGBoxFragmentPainter::ComputeBorders() const {
   return PhysicalFragment().Borders();
 }
 
-NGPhysicalBoxStrut NGBoxFragmentPainter::ComputePadding() const {
+PhysicalBoxStrut NGBoxFragmentPainter::ComputePadding() const {
   return PhysicalFragment().Padding();
 }
 
-NGPhysicalBoxStrut NGBoxFragmentPainter::ComputeMargins() const {
+PhysicalBoxStrut NGBoxFragmentPainter::ComputeMargins() const {
   return PhysicalFragment().Margins();
 }
 

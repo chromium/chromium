@@ -55,9 +55,9 @@ class ShapeOutsideInfo;
 class WritingModeConverter;
 enum class NGLayoutCacheStatus;
 struct NGFragmentGeometry;
-struct NGPhysicalBoxStrut;
 struct NonOverflowingScrollRange;
 struct PaintInfo;
+struct PhysicalBoxStrut;
 
 enum BackgroundRectType {
   kBackgroundPaintedExtent,
@@ -467,9 +467,9 @@ class CORE_EXPORT LayoutBox : public LayoutBoxModelObject {
 
   void AddSelfVisualOverflow(const PhysicalRect& r);
   void AddContentsVisualOverflow(const PhysicalRect& r);
-  void UpdateHasSubpixelVisualEffectOutsets(const NGPhysicalBoxStrut&);
+  void UpdateHasSubpixelVisualEffectOutsets(const PhysicalBoxStrut&);
 
-  NGPhysicalBoxStrut ComputeVisualEffectOverflowOutsets();
+  PhysicalBoxStrut ComputeVisualEffectOverflowOutsets();
 
   void ClearLayoutOverflow();
   void ClearVisualOverflow();
@@ -644,7 +644,7 @@ class CORE_EXPORT LayoutBox : public LayoutBoxModelObject {
   int PixelSnappedScrollWidth() const;
   int PixelSnappedScrollHeight() const;
 
-  NGPhysicalBoxStrut MarginBoxOutsets() const;
+  PhysicalBoxStrut MarginBoxOutsets() const;
   LayoutUnit MarginTop() const override {
     NOT_DESTROYED();
     return MarginBoxOutsets().top;
@@ -661,7 +661,7 @@ class CORE_EXPORT LayoutBox : public LayoutBoxModelObject {
     NOT_DESTROYED();
     return MarginBoxOutsets().right;
   }
-  void SetMargin(const NGPhysicalBoxStrut&);
+  void SetMargin(const PhysicalBoxStrut&);
 
   void AbsoluteQuads(Vector<gfx::QuadF>&,
                      MapCoordinatesFlags mode = 0) const override;
@@ -889,10 +889,10 @@ class CORE_EXPORT LayoutBox : public LayoutBoxModelObject {
   }
 
   // Return both scrollbars and scrollbar gutters (defined by scrollbar-gutter).
-  inline NGPhysicalBoxStrut ComputeScrollbars() const {
+  inline PhysicalBoxStrut ComputeScrollbars() const {
     NOT_DESTROYED();
     if (CanSkipComputeScrollbars())
-      return NGPhysicalBoxStrut();
+      return PhysicalBoxStrut();
     else
       return ComputeScrollbarsInternal();
   }
@@ -1461,7 +1461,7 @@ class CORE_EXPORT LayoutBox : public LayoutBoxModelObject {
 
   // The outsets from this box's border-box that the element's content should be
   // clipped to, including overflow-clip-margin.
-  NGPhysicalBoxStrut BorderOutsetsForClipping() const;
+  PhysicalBoxStrut BorderOutsetsForClipping() const;
 
   void SetVisualOverflow(const PhysicalRect& self,
                          const PhysicalRect& contents);
@@ -1494,7 +1494,7 @@ class CORE_EXPORT LayoutBox : public LayoutBoxModelObject {
 
   // TODO(crbug.com/1353190): Remove this data member after enabling
   // LayoutNGNoCopyBack flag.
-  NGPhysicalBoxStrut margin_box_outsets_;
+  PhysicalBoxStrut margin_box_outsets_;
 
   void AddSnapArea(LayoutBox&);
   void RemoveSnapArea(const LayoutBox&);
@@ -1513,7 +1513,7 @@ class CORE_EXPORT LayoutBox : public LayoutBoxModelObject {
            StyleRef().IsScrollbarGutterAuto();
   }
 
-  NGPhysicalBoxStrut ComputeScrollbarsInternal(
+  PhysicalBoxStrut ComputeScrollbarsInternal(
       ShouldClampToContentBox = kDoNotClampToContentBox,
       OverlayScrollbarClipBehavior = kIgnoreOverlayScrollbarSize,
       ShouldIncludeScrollbarGutter = kIncludeScrollbarGutter) const;

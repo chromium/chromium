@@ -1450,7 +1450,7 @@ gfx::Outsets GetFixedToSnapshotViewportOutsets(Document& document) {
                   ->GetVirtualKeyboardResizeHeight();
   }
 
-  NGPhysicalBoxStrut scrollbar_strut =
+  PhysicalBoxStrut scrollbar_strut =
       document.GetLayoutView()->ComputeScrollbars();
   // A left-side scrollbar (i.e. in an RTL writing-mode) should overlay the
   // snapshot viewport as well. This cannot currently happen in Chrome but it
@@ -1816,7 +1816,7 @@ PhysicalRect ViewTransitionStyleTracker::ComputeVisualOverflowRect(
     if (auto* layout_box = DynamicTo<LayoutBox>(box)) {
       overflow_rect = layout_box->PhysicalBorderBoxRect();
       if (layout_box->StyleRef().HasVisualOverflowingEffect()) {
-        NGPhysicalBoxStrut outsets =
+        PhysicalBoxStrut outsets =
             layout_box->ComputeVisualEffectOverflowOutsets();
         overflow_rect.Expand(outsets);
       }
