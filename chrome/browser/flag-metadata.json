@@ -459,7 +459,7 @@
   {
     "name": "audio-ap-noise-cancellation",
     "owners": ["aaronyu", "hunghsienchen", "chromeos-audio@google.com" ],
-    "expiry_milestone": 120
+    "expiry_milestone": 125
   },
   {
     "name": "audio-flexible-loopback",
