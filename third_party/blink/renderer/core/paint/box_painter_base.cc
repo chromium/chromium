@@ -548,22 +548,22 @@ absl::optional<gfx::RectF> OptimizeToSingleTileDraw(
     const PhysicalRect& dest_rect,
     Image& image,
     RespectImageOrientationEnum respect_orientation) {
-  const PhysicalOffset dest_phase = geometry.ComputeDestPhase();
+  const PhysicalRect& snapped_dest = geometry.SnappedDestRect();
 
   // Phase calculation uses the actual painted location, given by the
   // border-snapped destination rect.
-  const PhysicalRect one_tile_rect(dest_phase, geometry.TileSize());
+  const PhysicalRect one_tile_rect(
+      snapped_dest.offset + geometry.ComputePhase(), geometry.TileSize());
 
   // We cannot optimize if the tile is misaligned.
   if (!one_tile_rect.Contains(dest_rect))
     return absl::nullopt;
 
-  const PhysicalOffset offset_in_tile = dest_rect.offset - dest_phase;
+  const PhysicalOffset offset_in_tile = dest_rect.offset - one_tile_rect.offset;
   if (!image.HasIntrinsicSize()) {
     // This is a generated image sized according to the tile size so we can use
     // the snapped dest rect directly.
-    const PhysicalRect offset_tile(offset_in_tile,
-                                   geometry.SnappedDestRect().size);
+    const PhysicalRect offset_tile(offset_in_tile, snapped_dest.size);
     return gfx::RectF(offset_tile);
   }
 
@@ -637,13 +637,14 @@ void DrawTiledBackground(LocalFrame* frame,
                          ImagePaintTimingInfo paint_timing_info) {
   DCHECK(!geometry.TileSize().IsEmpty());
 
-  const gfx::RectF dest_rect(geometry.SnappedDestRect());
+  const PhysicalRect& snapped_dest = geometry.SnappedDestRect();
+  const gfx::RectF dest_rect(snapped_dest);
   // Check and see if a single draw of the image can cover the entire area
   // we are supposed to tile. The dest_rect_for_subset must use the same
   // location that was used in ComputePhaseForBackground and the unsnapped
   // destination rect in order to correctly evaluate the subset size and
   // location in the presence of border snapping and zoom.
-  const PhysicalRect dest_rect_for_subset(geometry.SnappedDestRect().offset,
+  const PhysicalRect dest_rect_for_subset(snapped_dest.offset,
                                           geometry.UnsnappedDestRect().size);
   if (absl::optional<gfx::RectF> single_tile_src = OptimizeToSingleTileDraw(
           geometry, dest_rect_for_subset, image, respect_orientation)) {
@@ -669,7 +670,8 @@ void DrawTiledBackground(LocalFrame* frame,
   // Note that this tile rect uses the image's pre-scaled size.
   ImageTilingInfo tiling_info;
   tiling_info.image_rect.set_size(intrinsic_tile_size);
-  tiling_info.phase = gfx::PointF(geometry.ComputeDestPhase());
+  tiling_info.phase =
+      gfx::PointF(snapped_dest.offset + geometry.ComputePhase());
   tiling_info.spacing = gfx::SizeF(geometry.SpaceSize());
 
   // Farther down the pipeline we will use the scaled tile size to determine
@@ -680,13 +682,12 @@ void DrawTiledBackground(LocalFrame* frame,
   //
   // So detect when we do not want to repeat and set the scale to round the
   // values in that dimension.
-  const PhysicalSize tile_dest_diff =
-      geometry.TileSize() - geometry.SnappedDestRect().size;
+  const PhysicalSize tile_dest_diff = geometry.TileSize() - snapped_dest.size;
   const LayoutUnit ref_tile_width = tile_dest_diff.width.Abs() <= 0.5f
-                                        ? geometry.SnappedDestRect().Width()
+                                        ? snapped_dest.Width()
                                         : geometry.TileSize().width;
   const LayoutUnit ref_tile_height = tile_dest_diff.height.Abs() <= 0.5f
-                                         ? geometry.SnappedDestRect().Height()
+                                         ? snapped_dest.Height()
                                          : geometry.TileSize().height;
   tiling_info.scale = {ref_tile_width / tiling_info.image_rect.width(),
                        ref_tile_height / tiling_info.image_rect.height()};
