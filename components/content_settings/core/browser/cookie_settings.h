@@ -138,14 +138,6 @@ class CookieSettings
     settings_for_3pcd_metadata_grants_ = settings;
   }
 
-  ContentSetting GetContentSettingForTesting(
-      const GURL& primary_url,
-      const GURL& secondary_url,
-      ContentSettingsType content_type,
-      content_settings::SettingInfo* info = nullptr) {
-    return GetContentSetting(primary_url, secondary_url, content_type);
-  }
-
   ContentSettingsForOneType GetTpcdMetadataGrantsForTesting() {
     base::AutoLock lock(tpcd_lock_);
     return settings_for_3pcd_metadata_grants_;

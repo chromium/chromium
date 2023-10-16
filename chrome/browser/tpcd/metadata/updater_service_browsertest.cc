@@ -27,14 +27,15 @@
 #include "components/content_settings/core/browser/cookie_settings.h"
 #include "components/content_settings/core/common/content_settings_utils.h"
 #include "components/content_settings/core/common/features.h"
-#include "components/content_settings/core/common/pref_names.h"
 #include "components/prefs/pref_service.h"
 #include "components/privacy_sandbox/tracking_protection_prefs.h"
 #include "components/tpcd/metadata/parser_test_helper.h"
 #include "content/public/common/content_paths.h"
 #include "content/public/test/browser_test.h"
 #include "content/public/test/test_navigation_observer.h"
+#include "net/base/features.h"
 #include "net/cookies/cookie_setting_override.h"
+#include "net/cookies/site_for_cookies.h"
 #include "net/dns/mock_host_resolver.h"
 #include "net/test/embedded_test_server/embedded_test_server.h"
 
@@ -78,8 +79,10 @@ class UpdaterServiceBrowserTest : public PlatformBrowserTest {
       : https_server_(net::EmbeddedTestServer::TYPE_HTTPS) {
     CHECK(fake_install_dir_.CreateUniqueTempDir());
     CHECK(fake_install_dir_.IsValid());
-    scoped_feature_list_.InitAndEnableFeature(
-        net::features::kTpcdMetadataGrants);
+    scoped_feature_list_.InitWithFeatures(
+        {content_settings::features::kTrackingProtection3pcd,
+         net::features::kTpcdMetadataGrants},
+        {});
   }
 
   void SetUpOnMainThread() override {
@@ -90,6 +93,8 @@ class UpdaterServiceBrowserTest : public PlatformBrowserTest {
     https_server_.ServeFilesFromDirectory(path);
     https_server_.AddDefaultHandlers(GetChromeTestDataDir());
     EXPECT_TRUE(https_server_.Start());
+    browser()->profile()->GetPrefs()->SetBoolean(
+        prefs::kTrackingProtection3pcdEnabled, true);
   }
 
   net::test_server::EmbeddedTestServer* https_server() {
@@ -202,27 +207,14 @@ class UpdaterServiceBrowserTest : public PlatformBrowserTest {
 IN_PROC_BROWSER_TEST_F(UpdaterServiceBrowserTest,
                        ContentSettingsForOneType_Empty) {
   base::ScopedAllowBlockingForTesting allow_blocking;
-
-  const GURL kEmbedded = GURL("http://www.bar.com");
-  const GURL kEmbedder = GURL("http://www.foo.com");
-
   ASSERT_EQ(GetCookieSettings()->GetTpcdMetadataGrantsForTesting().size(), 0u);
-  EXPECT_EQ(
-      GetCookieSettings()->GetContentSettingForTesting(
-          kEmbedded, kEmbedder, ContentSettingsType::TPCD_METADATA_GRANTS),
-      ContentSetting::CONTENT_SETTING_BLOCK);
 
   std::vector<MetadataPair> metadata_pairs;
   Metadata metadata = MakeMetadataProtoFromVectorOfPair(metadata_pairs);
   ASSERT_EQ(metadata.metadata_entries_size(), 0);
 
   MockComponentInstallation(metadata);
-
   ASSERT_EQ(GetCookieSettings()->GetTpcdMetadataGrantsForTesting().size(), 0u);
-  EXPECT_EQ(
-      GetCookieSettings()->GetContentSettingForTesting(
-          kEmbedded, kEmbedder, ContentSettingsType::TPCD_METADATA_GRANTS),
-      ContentSetting::CONTENT_SETTING_BLOCK);
 }
 
 IN_PROC_BROWSER_TEST_F(UpdaterServiceBrowserTest,
@@ -230,13 +222,10 @@ IN_PROC_BROWSER_TEST_F(UpdaterServiceBrowserTest,
   base::ScopedAllowBlockingForTesting allow_blocking;
 
   const GURL kEmbedded = GURL("http://www.bar.com");
-  const GURL kEmbedder = GURL("http://www.foo.com");
-
+  const url::Origin kEmbedder = url::Origin::Create(GURL("http://www.foo.com"));
   ASSERT_EQ(GetCookieSettings()->GetTpcdMetadataGrantsForTesting().size(), 0u);
-  EXPECT_EQ(
-      ContentSetting::CONTENT_SETTING_BLOCK,
-      GetCookieSettings()->GetContentSettingForTesting(
-          kEmbedded, kEmbedder, ContentSettingsType::TPCD_METADATA_GRANTS));
+  EXPECT_FALSE(GetCookieSettings()->IsFullCookieAccessAllowed(
+      kEmbedded, net::SiteForCookies(), kEmbedder, {}));
 
   const std::string primary_pattern_spec = "[*.]bar.com";
   const std::string secondary_pattern_spec = "[*.]foo.com";
@@ -249,10 +238,8 @@ IN_PROC_BROWSER_TEST_F(UpdaterServiceBrowserTest,
   MockComponentInstallation(metadata);
 
   ASSERT_EQ(GetCookieSettings()->GetTpcdMetadataGrantsForTesting().size(), 1u);
-  EXPECT_EQ(
-      ContentSetting::CONTENT_SETTING_ALLOW,
-      GetCookieSettings()->GetContentSettingForTesting(
-          kEmbedded, kEmbedder, ContentSettingsType::TPCD_METADATA_GRANTS));
+  EXPECT_TRUE(GetCookieSettings()->IsFullCookieAccessAllowed(
+      kEmbedded, net::SiteForCookies(), kEmbedder, {}));
 }
 
 IN_PROC_BROWSER_TEST_F(UpdaterServiceBrowserTest,
@@ -260,9 +247,11 @@ IN_PROC_BROWSER_TEST_F(UpdaterServiceBrowserTest,
   base::ScopedAllowBlockingForTesting allow_blocking;
 
   const GURL kEmbedded1 = GURL("http://www.bar.com");
-  const GURL kEmbedder1 = GURL("http://www.foo.com");
+  const url::Origin kEmbedder1 =
+      url::Origin::Create(GURL("http://www.foo.com"));
   const GURL kEmbedded2 = GURL("http://www.baz.com");
-  const GURL kEmbedder2 = GURL("http://www.daz.com");
+  const url::Origin kEmbedder2 =
+      url::Origin::Create(GURL("http://www.daz.com"));
 
   {
     const std::string primary_pattern_spec = "[*.]bar.com";
@@ -275,20 +264,15 @@ IN_PROC_BROWSER_TEST_F(UpdaterServiceBrowserTest,
 
     ASSERT_EQ(GetCookieSettings()->GetTpcdMetadataGrantsForTesting().size(),
               0u);
-    EXPECT_EQ(
-
-        GetCookieSettings()->GetContentSettingForTesting(
-            kEmbedded1, kEmbedder1, ContentSettingsType::TPCD_METADATA_GRANTS),
-        ContentSetting::CONTENT_SETTING_BLOCK);
+    EXPECT_FALSE(GetCookieSettings()->IsFullCookieAccessAllowed(
+        kEmbedded1, net::SiteForCookies(), kEmbedder1, {}));
 
     MockComponentInstallation(metadata);
 
     ASSERT_EQ(GetCookieSettings()->GetTpcdMetadataGrantsForTesting().size(),
               1u);
-    EXPECT_EQ(
-        GetCookieSettings()->GetContentSettingForTesting(
-            kEmbedded1, kEmbedder1, ContentSettingsType::TPCD_METADATA_GRANTS),
-        ContentSetting::CONTENT_SETTING_ALLOW);
+    EXPECT_TRUE(GetCookieSettings()->IsFullCookieAccessAllowed(
+        kEmbedded1, net::SiteForCookies(), kEmbedder1, {}));
   }
 
   {
@@ -302,27 +286,19 @@ IN_PROC_BROWSER_TEST_F(UpdaterServiceBrowserTest,
 
     ASSERT_EQ(GetCookieSettings()->GetTpcdMetadataGrantsForTesting().size(),
               1u);
-    EXPECT_EQ(
-        GetCookieSettings()->GetContentSettingForTesting(
-            kEmbedded1, kEmbedder1, ContentSettingsType::TPCD_METADATA_GRANTS),
-        ContentSetting::CONTENT_SETTING_ALLOW);
-    EXPECT_EQ(
-        GetCookieSettings()->GetContentSettingForTesting(
-            kEmbedded2, kEmbedder2, ContentSettingsType::TPCD_METADATA_GRANTS),
-        ContentSetting::CONTENT_SETTING_BLOCK);
+    EXPECT_TRUE(GetCookieSettings()->IsFullCookieAccessAllowed(
+        kEmbedded1, net::SiteForCookies(), kEmbedder1, {}));
+    EXPECT_FALSE(GetCookieSettings()->IsFullCookieAccessAllowed(
+        kEmbedded2, net::SiteForCookies(), kEmbedder2, {}));
 
     MockComponentInstallation(metadata);
 
     ASSERT_EQ(GetCookieSettings()->GetTpcdMetadataGrantsForTesting().size(),
               1u);
-    EXPECT_EQ(
-        GetCookieSettings()->GetContentSettingForTesting(
-            kEmbedded1, kEmbedder1, ContentSettingsType::TPCD_METADATA_GRANTS),
-        ContentSetting::CONTENT_SETTING_BLOCK);
-    EXPECT_EQ(
-        GetCookieSettings()->GetContentSettingForTesting(
-            kEmbedded2, kEmbedder2, ContentSettingsType::TPCD_METADATA_GRANTS),
-        ContentSetting::CONTENT_SETTING_ALLOW);
+    EXPECT_FALSE(GetCookieSettings()->IsFullCookieAccessAllowed(
+        kEmbedded1, net::SiteForCookies(), kEmbedder1, {}));
+    EXPECT_TRUE(GetCookieSettings()->IsFullCookieAccessAllowed(
+        kEmbedded2, net::SiteForCookies(), kEmbedder2, {}));
   }
 }
 
