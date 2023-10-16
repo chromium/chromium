@@ -655,6 +655,34 @@ const FeatureEntry::FeatureVariation kOneTapForMapsWithVariations[] = {
      std::size(kOneTapForMapsConsentModeDisabled), nullptr},
 };
 
+constexpr FeatureEntry::FeatureParam kOmniboxInspireMeWith25Total5Trends[] = {
+    {OmniboxFieldTrial::kInspireMeAdditionalTrendingQueries.name, "5"},
+    {OmniboxFieldTrial::kInspireMePsuggestQueries.name, "20"},
+    {OmniboxFieldTrial::kInspireMeNTPZPSLimit.name, "25"}};
+constexpr FeatureEntry::FeatureParam kOmniboxInspireMeWith20Total5Trends[] = {
+    {OmniboxFieldTrial::kInspireMeAdditionalTrendingQueries.name, "5"},
+    {OmniboxFieldTrial::kInspireMePsuggestQueries.name, "15"},
+    {OmniboxFieldTrial::kInspireMeNTPZPSLimit.name, "20"}};
+constexpr FeatureEntry::FeatureParam kOmniboxInspireMeWith25Total10Trends[] = {
+    {OmniboxFieldTrial::kInspireMeAdditionalTrendingQueries.name, "10"},
+    {OmniboxFieldTrial::kInspireMePsuggestQueries.name, "15"},
+    {OmniboxFieldTrial::kInspireMeNTPZPSLimit.name, "25"}};
+constexpr FeatureEntry::FeatureParam kOmniboxInspireMeWith20Total10Trends[] = {
+    {OmniboxFieldTrial::kInspireMeAdditionalTrendingQueries.name, "10"},
+    {OmniboxFieldTrial::kInspireMePsuggestQueries.name, "10"},
+    {OmniboxFieldTrial::kInspireMeNTPZPSLimit.name, "20"}};
+
+constexpr FeatureEntry::FeatureVariation kOmniboxInspireMeVariants[] = {
+    {"25 total, 5 Trends", kOmniboxInspireMeWith25Total5Trends,
+     std::size(kOmniboxInspireMeWith25Total5Trends), "t3363282"},
+    {"20 total, 5 Trends", kOmniboxInspireMeWith20Total5Trends,
+     std::size(kOmniboxInspireMeWith20Total5Trends), "t3363282"},
+    {"25 total, 10 Trends", kOmniboxInspireMeWith25Total10Trends,
+     std::size(kOmniboxInspireMeWith25Total10Trends), "t3363285"},
+    {"20 total, 10 Trends", kOmniboxInspireMeWith20Total10Trends,
+     std::size(kOmniboxInspireMeWith20Total10Trends), "t3363285"},
+};
+
 // To add a new entry, add to the end of kFeatureEntries. There are four
 // distinct types of entries:
 // . ENABLE_DISABLE_VALUE: entry is either enabled, disabled, or uses the
@@ -757,6 +785,15 @@ const flags_ui::FeatureEntry kFeatureEntries[] = {
      FEATURE_WITH_PARAMS_VALUE_TYPE(omnibox::kMaxZeroSuggestMatches,
                                     kOmniboxMaxZPSMatchesVariations,
                                     "OmniboxMaxZPSVariations")},
+    {"omnibox-inspire-me", flag_descriptions::kOmniboxInspireMeName,
+     flag_descriptions::kOmniboxInspireMeDescription, flags_ui::kOsIos,
+     FEATURE_WITH_PARAMS_VALUE_TYPE(omnibox::kInspireMe,
+                                    kOmniboxInspireMeVariants,
+                                    "OmniboxBundledExperimentV1")},
+    {"omnibox-inspire-me-signed-out",
+     flag_descriptions::kOmniboxInspireMeSignedOutName,
+     flag_descriptions::kOmniboxInspireMeSignedOutDescription, flags_ui::kOsIos,
+     FEATURE_VALUE_TYPE(omnibox::kZeroSuggestOnNTPForSignedOutUsers)},
     {"autofill-use-mobile-label-disambiguation",
      flag_descriptions::kAutofillUseMobileLabelDisambiguationName,
      flag_descriptions::kAutofillUseMobileLabelDisambiguationDescription,

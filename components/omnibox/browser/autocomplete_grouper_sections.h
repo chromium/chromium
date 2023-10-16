@@ -152,12 +152,16 @@ class DesktopNonZpsSection : public Section {
 };
 
 // Section expressing the iPhone ZPS limits and grouping for the NTP.
-// - up to 20 suggestions total.
+// - up to `total_count` suggestions total.
 //  - up to 1 clipboard suggestion.
-//  - up to 20 personalized suggestions.
+//  - up to `psuggest_count` personalized suggestions.
+//  - up to `max_trending_queries` trending suggestions.
 class IOSNTPZpsSection : public ZpsSection {
  public:
-  explicit IOSNTPZpsSection(omnibox::GroupConfigMap& group_configs);
+  explicit IOSNTPZpsSection(size_t max_trending_queries,
+                            size_t psuggest_count,
+                            size_t total_count,
+                            omnibox::GroupConfigMap& group_configs);
 };
 
 // Section expressing the iPhone ZPS limits and grouping for the SRP.

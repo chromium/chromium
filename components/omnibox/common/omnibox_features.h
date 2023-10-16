@@ -133,6 +133,9 @@ BASE_DECLARE_FEATURE(kLogUrlScoringSignals);
 BASE_DECLARE_FEATURE(kMlUrlScoring);
 BASE_DECLARE_FEATURE(kUrlScoringModel);
 
+// Inspire Me - additional suggestions based on user's location and interests.
+BASE_DECLARE_FEATURE(kInspireMe);
+
 // Actions in Suggest - Action Chips for Entity Suggestions.
 // Data driven feature; flag helps tune behavior.
 BASE_DECLARE_FEATURE(kActionsInSuggest);

@@ -234,12 +234,14 @@ void DesktopNonZpsSection::InitFromMatches(ACMatches& matches) {
   }
 }
 
-IOSNTPZpsSection::IOSNTPZpsSection(omnibox::GroupConfigMap& group_configs)
-    : ZpsSection(20,
-                 {
-                     {1, omnibox::GROUP_MOBILE_CLIPBOARD},
-                     {20, omnibox::GROUP_PERSONALIZED_ZERO_SUGGEST},
-                 },
+IOSNTPZpsSection::IOSNTPZpsSection(size_t max_trending_queries,
+                                   size_t psuggest_count,
+                                   size_t total_count,
+                                   omnibox::GroupConfigMap& group_configs)
+    : ZpsSection(total_count,
+                 {{1, omnibox::GROUP_MOBILE_CLIPBOARD},
+                  {psuggest_count, omnibox::GROUP_PERSONALIZED_ZERO_SUGGEST},
+                  {max_trending_queries, omnibox::GROUP_TRENDS}},
                  group_configs) {}
 
 IOSSRPZpsSection::IOSSRPZpsSection(omnibox::GroupConfigMap& group_configs)

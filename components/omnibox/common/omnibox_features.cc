@@ -485,6 +485,10 @@ BASE_FEATURE(kLogUrlScoringSignals,
 // URL suggestions and reranks them.
 BASE_FEATURE(kMlUrlScoring, "MlUrlScoring", base::FEATURE_DISABLED_BY_DEFAULT);
 
+// If enabled, appends additional Trending and Recent Search Related Queries to
+// the suggestion list on the NTP and SRP.
+BASE_FEATURE(kInspireMe, "OmniboxInspireMe", enabled_by_default_android_only);
+
 // If enabled, creates Omnibox autocompete URL scoring model.
 BASE_FEATURE(kUrlScoringModel,
              "UrlScoringModel",

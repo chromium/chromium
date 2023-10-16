@@ -620,6 +620,14 @@ extern const char kOmniboxFocusTriggersSRPZeroSuggestDescription[];
 extern const char kOmniboxHttpsUpgradesName[];
 extern const char kOmniboxHttpsUpgradesDescription[];
 
+// Title and description for the Inspire Me omnibox flag.
+extern const char kOmniboxInspireMeName[];
+extern const char kOmniboxInspireMeDescription[];
+
+// Title and description for the Inspire Me for Signed Out Users omnibox flag.
+extern const char kOmniboxInspireMeSignedOutName[];
+extern const char kOmniboxInspireMeSignedOutDescription[];
+
 // Title and description for the flag to enable Omnibox Grouping implementation
 // for ZPS.
 extern const char kOmniboxGroupingFrameworkForZPSName[];

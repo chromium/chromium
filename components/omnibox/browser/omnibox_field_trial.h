@@ -698,6 +698,30 @@ extern const base::FeatureParam<bool>
 
 // <- Two-column realbox
 // ---------------------------------------------------------
+// Inspire Me ->
+
+// Specify number of additional Related and Trending queries appended to the
+// suggestion list, when the Inspire Me feature is enabled.
+constexpr base::FeatureParam<int> kInspireMeAdditionalRelatedQueries(
+    &omnibox::kInspireMe,
+    "AdditionalRelatedQueries",
+    0);
+
+constexpr base::FeatureParam<int> kInspireMeAdditionalTrendingQueries(
+    &omnibox::kInspireMe,
+    "AdditionalTrendingQueries",
+    10);
+
+constexpr base::FeatureParam<int> kInspireMePsuggestQueries(
+    &omnibox::kInspireMe,
+    "PersonalizedSuggestQueries",
+    20);
+
+constexpr base::FeatureParam<int>
+    kInspireMeNTPZPSLimit(&omnibox::kInspireMe, "NTPZPSSuggestionsLimit", 20);
+
+// <- Inspire Me
+// ---------------------------------------------------------
 // Actions In Suggest ->
 //
 // When set to true, permits Entity suggestion with associated Actions to be

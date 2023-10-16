@@ -6136,6 +6136,16 @@
     "expiry_milestone": 130
   },
   {
+    "name": "omnibox-inspire-me",
+    "owners": [ "stkhapugin", "chrome-mobile-search@google.com" ],
+    "expiry_milestone": 130
+  },
+  {
+    "name": "omnibox-inspire-me-signed-out",
+    "owners": [ "stkhapugin", "chrome-mobile-search@google.com" ],
+    "expiry_milestone": 130
+  },
+  {
     "name": "omnibox-keyboard-paste-button",
     "owners": ["christianxu", "stkhapugin", "chrome-omnibox-team@google.com" ],
     "expiry_milestone": 130
