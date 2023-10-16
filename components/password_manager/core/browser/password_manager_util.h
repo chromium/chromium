@@ -152,9 +152,6 @@ GURL StripAuthAndParams(const GURL& gurl);
 // by default. For ip-addresses, scheme "http://" is used.
 GURL ConstructGURLWithScheme(const std::string& url);
 
-// Returns whether |url| has valid format and either an HTTP or HTTPS scheme.
-bool IsValidPasswordURL(const GURL& url);
-
 // TODO(crbug.com/1261752): Deduplicate GetSignonRealm implementations.
 // Returns the value of PasswordForm::signon_realm for an HTML form with the
 // origin |url|.

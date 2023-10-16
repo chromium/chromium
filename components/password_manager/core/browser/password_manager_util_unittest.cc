@@ -922,19 +922,6 @@ TEST(PasswordManagerUtil, ConstructGURLWithScheme) {
   }
 }
 
-TEST(PasswordManagerUtil, IsValidPasswordURL) {
-  std::vector<std::pair<GURL, bool>> test_cases = {
-      {GURL("noscheme.com"), false},
-      {GURL("https://;/valid"), true},
-      {GURL("https://^/invalid"), false},
-      {GURL("scheme://unsupported"), false},
-      {GURL("http://example.com"), true},
-      {GURL("https://test.com/login"), true}};
-  for (const auto& test_case : test_cases) {
-    EXPECT_EQ(test_case.second, IsValidPasswordURL(test_case.first));
-  }
-}
-
 TEST(PasswordManagerUtil, GetSignonRealm) {
   std::vector<std::pair<GURL, std::string>> test_cases = {
       {GURL("http://example.com/"), "http://example.com/"},

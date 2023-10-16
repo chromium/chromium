@@ -23,6 +23,7 @@
 #include "components/password_manager/core/browser/password_manager_util.h"
 #include "components/password_manager/core/browser/password_ui_utils.h"
 #include "components/password_manager/core/browser/ui/credential_ui_entry.h"
+#include "components/password_manager/core/browser/ui/credential_utils.h"
 #include "components/password_manager/core/browser/ui/saved_passwords_presenter.h"
 #include "components/password_manager/core/common/password_manager_features.h"
 #include "components/password_manager/services/csv_password/csv_password_parser_service.h"
@@ -183,7 +184,7 @@ CSVPasswordToCredentialUIEntry(const CSVPassword& csv_password,
   if (url.spec().length() > 2048) {
     return base::unexpected(with_status(ImportEntry::Status::LONG_URL));
   }
-  if (!password_manager_util::IsValidPasswordURL(url)) {
+  if (!IsValidPasswordURL(url)) {
     return base::unexpected(with_status(ImportEntry::Status::INVALID_URL));
   }
 

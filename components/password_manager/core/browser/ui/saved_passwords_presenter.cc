@@ -29,8 +29,8 @@
 #include "components/password_manager/core/browser/password_form.h"
 #include "components/password_manager/core/browser/password_list_sorter.h"
 #include "components/password_manager/core/browser/password_manager_metrics_util.h"
-#include "components/password_manager/core/browser/password_manager_util.h"
 #include "components/password_manager/core/browser/ui/credential_ui_entry.h"
+#include "components/password_manager/core/browser/ui/credential_utils.h"
 #include "components/password_manager/core/browser/ui/password_undo_helper.h"
 #include "components/password_manager/core/browser/ui/passwords_grouper.h"
 #include "components/password_manager/core/common/password_manager_features.h"
@@ -179,8 +179,9 @@ void SavedPasswordsPresenter::UndoLastRemoval() {
 SavedPasswordsPresenter::AddResult
 SavedPasswordsPresenter::GetExpectedAddResult(
     const CredentialUIEntry& credential) const {
-  if (!password_manager_util::IsValidPasswordURL(credential.GetURL()))
+  if (!IsValidPasswordURL(credential.GetURL())) {
     return AddResult::kInvalid;
+  }
   if (credential.password.empty())
     return AddResult::kInvalid;
 

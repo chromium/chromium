@@ -44,6 +44,10 @@ inline bool operator<(const CanonicalizedCredential& lhs,
          std::tie(rhs.canonicalized_username, rhs.password);
 }
 
+// Returns whether `url` has valid format (either an HTTP or HTTPS scheme) or
+// Android credential.
+bool IsValidPasswordURL(const GURL& url);
+
 }  // namespace password_manager
 
 #endif  // COMPONENTS_PASSWORD_MANAGER_CORE_BROWSER_UI_CREDENTIAL_UTILS_H_
