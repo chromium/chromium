@@ -270,18 +270,6 @@ bool ValidateClampOptions(const MLClampOptions* options,
   return true;
 }
 
-bool ValidateAxis(uint32_t axis,
-                  uint32_t input_rank,
-                  ExceptionState& exception_state) {
-  if (axis >= input_rank) {
-    exception_state.ThrowDOMException(DOMExceptionCode::kDataError,
-                                      "The axis must be in the range [0, N-1] "
-                                      "where N is the rank of input tensor.");
-    return false;
-  }
-  return true;
-}
-
 absl::optional<Vector<uint32_t>> BroadcastShapes(
     const Vector<uint32_t>& dims_lhs,
     const Vector<uint32_t>& dims_rhs,
@@ -695,74 +683,25 @@ MLOperand* MLGraphBuilder::constant(const MLOperandDescriptor* desc,
 MLOperand* MLGraphBuilder::concat(const HeapVector<Member<MLOperand>>& inputs,
                                   const uint32_t axis,
                                   ExceptionState& exception_state) {
-  auto* concat = MakeGarbageCollected<MLConcatOperator>(this, axis);
-  if (inputs.empty()) {
-    exception_state.ThrowDOMException(DOMExceptionCode::kDataError,
-                                      "The inputs should not be empty.");
-    return nullptr;
-  }
-  const auto& first_input_shape = inputs[0]->Dimensions();
-  const auto first_input_rank = first_input_shape.size();
-  // According to WebNN spec:
-  // https://www.w3.org/TR/webnn/#dom-mlgraphbuilder-concat-inputs-axis-axis,
-  // the axis that the inputs concatenate along, with the value in the interval
-  // [0, N-1] where N is the rank of input tensors. We just check the first
-  // input rank here because we will check all inputs have same rank in the
-  // following loop.
-  if (!ValidateAxis(axis, first_input_rank, exception_state)) {
-    return nullptr;
-  }
-  const auto output_type = inputs[0]->Type();
-  // The loop skips the first input to avoid repeated checks.
-  for (wtf_size_t i = 1; i < inputs.size(); ++i) {
-    if (inputs[i]->Type() != output_type) {
-      exception_state.ThrowDOMException(DOMExceptionCode::kDataError,
-                                        "The input types don't match.");
-      return nullptr;
-    }
-    // According to WebNN spec:
-    // https://www.w3.org/TR/webnn/#api-mlgraphbuilder-concat, all input tensors
-    // must have the same dimension.
-    if (inputs[i]->Dimensions().size() != first_input_rank) {
-      exception_state.ThrowDOMException(
-          DOMExceptionCode::kDataError,
-          "All input tensors must have the same dimension.");
-      return nullptr;
-    }
-    // According to WebNN spec:
-    // https://www.w3.org/TR/webnn/#api-mlgraphbuilder-concat, all input tensors
-    // must have the same shape, except for the size of the dimension to
-    // concatenate on.
-    for (wtf_size_t dim = 0; dim < first_input_rank; ++dim) {
-      if (dim == axis ||
-          inputs[i]->Dimensions()[dim] == first_input_shape[dim]) {
-        continue;
-      }
-      exception_state.ThrowDOMException(
-          DOMExceptionCode::kDataError,
-          "All input tensors must have the same shape, except for the size of "
-          "the dimension to concatenate on.");
-      return nullptr;
-    }
-  }
-  // Calculate the output shape according to WebNN spec:
-  // https://www.w3.org/TR/webnn/#api-mlgraphbuilder-concat, the output tensor
-  // has the same shape except on the dimension that all the inputs concatenated
-  // along. The size of that dimension is computed as the sum of all the input
-  // sizes of the same dimension.
-  auto axis_size = base::MakeCheckedNum<uint32_t>(0);
-  for (auto& input : inputs) {
-    axis_size += input->Dimensions()[axis];
-  }
-  auto output_shape = first_input_shape;
-  if (!axis_size.AssignIfValid(&output_shape[axis])) {
+  std::vector<webnn::Operand> input_component_operands;
+  input_component_operands.reserve(inputs.size());
+  base::ranges::transform(
+      inputs, std::back_inserter(input_component_operands),
+      [](const auto& input) { return ConvertToComponentOperand(input); });
+
+  auto validated_output =
+      webnn::ValidateConcatAndInferOutput(input_component_operands, axis);
+  if (!validated_output.has_value()) {
     exception_state.ThrowDOMException(
         DOMExceptionCode::kDataError,
-        "The concatenated dimension size is too large.");
+        String::FromUTF8(validated_output.error()));
     return nullptr;
   }
-  auto output = MLOperand::ValidateAndCreateOutput(this, output_type,
-                                                   output_shape, concat);
+
+  auto* concat = MakeGarbageCollected<MLConcatOperator>(this, axis);
+  auto output = MLOperand::ValidateAndCreateOutput(
+      this, ComponentOperandTypeToBlink(validated_output->data_type),
+      Vector<uint32_t>(validated_output->dimensions), concat);
   if (!output.has_value()) {
     exception_state.ThrowDOMException(DOMExceptionCode::kDataError,
                                       output.error());

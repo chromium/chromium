@@ -568,6 +568,68 @@ base::expected<Operand, std::string> ValidateGemmAndInferOutput(
   return Operand(a.data_type, std::move(output_shape));
 }
 
+base::expected<Operand, std::string> ValidateConcatAndInferOutput(
+    const std::vector<Operand>& inputs,
+    const uint32_t axis) {
+  if (inputs.empty()) {
+    return base::unexpected("The inputs should not be empty.");
+  }
+  const auto& first_input_shape = inputs[0].dimensions;
+  const auto first_input_rank = first_input_shape.size();
+  // According to WebNN spec:
+  // https://www.w3.org/TR/webnn/#dom-mlgraphbuilder-concat-inputs-axis-axis,
+  // the axis that the inputs concatenate along, with the value in the interval
+  // [0, N-1] where N is the rank of input tensors. We just check the first
+  // input rank here because we will check all inputs have same rank in the
+  // following loop.
+  if (axis >= first_input_rank) {
+    return base::unexpected(
+        "The axis must be in the range [0, N-1] where N is the rank of input "
+        "tensor.");
+  }
+  const auto output_type = inputs[0].data_type;
+  // The loop skips the first input to avoid repeated checks.
+  for (size_t i = 1; i < inputs.size(); ++i) {
+    if (inputs[i].data_type != output_type) {
+      return base::unexpected("The input types don't match.");
+    }
+    // According to WebNN spec:
+    // https://www.w3.org/TR/webnn/#api-mlgraphbuilder-concat, all input tensors
+    // must have the same dimension.
+    if (inputs[i].dimensions.size() != first_input_rank) {
+      return base::unexpected(
+          "All input tensors must have the same dimension.");
+    }
+    // According to WebNN spec:
+    // https://www.w3.org/TR/webnn/#api-mlgraphbuilder-concat, all input tensors
+    // must have the same shape, except for the size of the dimension to
+    // concatenate on.
+    for (size_t dim = 0; dim < first_input_rank; ++dim) {
+      if (dim == axis || inputs[i].dimensions[dim] == first_input_shape[dim]) {
+        continue;
+      }
+      return base::unexpected(
+          "All input tensors must have the same shape, except for the size of "
+          "the dimension to concatenate on.");
+    }
+  }
+  // Calculate the output shape according to WebNN spec:
+  // https://www.w3.org/TR/webnn/#api-mlgraphbuilder-concat, the output tensor
+  // has the same shape except on the dimension that all the inputs concatenated
+  // along. The size of that dimension is computed as the sum of all the input
+  // sizes of the same dimension.
+  auto axis_size = base::MakeCheckedNum<uint32_t>(0);
+  for (auto& input : inputs) {
+    axis_size += input.dimensions[axis];
+  }
+  auto output_shape = first_input_shape;
+  if (!axis_size.AssignIfValid(&output_shape[axis])) {
+    return base::unexpected("The concatenated dimension size is too large.");
+  }
+
+  return Operand(output_type, std::move(output_shape));
+}
+
 base::expected<Operand, std::string> ValidateTransposeAndInferOutput(
     const Operand& input,
     base::span<const uint32_t> permutation) {

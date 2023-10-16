@@ -204,6 +204,12 @@ base::expected<Operand, std::string> ValidateGemmAndInferOutput(
     const Operand& b,
     const GemmAttributes& attributes);
 
+// Validate concat operator defined in WebIDL here
+// https://www.w3.org/TR/webnn/#api-mlgraphbuilder-concat
+base::expected<Operand, std::string> ValidateConcatAndInferOutput(
+    const std::vector<Operand>& input,
+    const uint32_t axis);
+
 // Validate transpose operator defined in WebIDL here
 // https://www.w3.org/TR/webnn/#api-mlgraphbuilder-transpose
 base::expected<Operand, std::string> ValidateTransposeAndInferOutput(

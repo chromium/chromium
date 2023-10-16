@@ -50,6 +50,10 @@ class GraphInfoBuilder final {
                   float min_value,
                   float max_value);
 
+  void BuildConcat(std::vector<uint64_t> input_operand_ids,
+                   uint64_t output_operand_id,
+                   uint32_t axis);
+
   // A `Conv2dAttributes` type should have the following members:
   // struct Conv2dAttributes {
   //   std::vector<uint32_t> padding;

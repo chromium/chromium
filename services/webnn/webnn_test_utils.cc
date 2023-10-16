@@ -103,6 +103,17 @@ void GraphInfoBuilder::BuildClamp(uint64_t input_operand_id,
       mojom::Operation::NewClamp(std::move(clamp)));
 }
 
+void GraphInfoBuilder::BuildConcat(std::vector<uint64_t> input_operand_ids,
+                                   uint64_t output_operand_id,
+                                   uint32_t axis) {
+  mojom::ConcatPtr concat = mojom::Concat::New();
+  concat->input_operand_ids = std::move(input_operand_ids);
+  concat->output_operand_id = output_operand_id;
+  concat->axis = axis;
+  graph_info_->operations.push_back(
+      mojom::Operation::NewConcat(std::move(concat)));
+}
+
 void GraphInfoBuilder::BuildRelu(uint64_t input_operand_id,
                                  uint64_t output_operand_id) {
   mojom::ReluPtr relu = mojom::Relu::New();

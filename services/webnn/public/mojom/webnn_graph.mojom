@@ -46,6 +46,19 @@ struct Clamp {
   float max_value;
 };
 
+// Represents the concat operation that concatenates the input tensors along
+// the given axis.
+struct Concat {
+  // The ids of input operand are used to get the `Operand` description from
+  // `GraphInfo.id_to_operand_map`.
+  array<uint64> input_operand_ids;
+  // The id of output operand is used to get the `Operand` description from
+  // `GraphInfo.id_to_operand_map`.
+  uint64 output_operand_id;
+  // The axis used to concatenate along.
+  uint32 axis;
+};
+
 // Represents the `MLInputOperandLayout` that specifies the layout format of
 // the input tensor. `kChannelsFirst` means `nchw` (batches, channels, height,
 // width), `kChannelsLast` means `nhwc` (batches, height, width, channels).
@@ -246,6 +259,7 @@ struct Operator {
 // Holds one of operator.
 union Operation {
   Clamp clamp;
+  Concat concat;
   Conv2d conv2d;
   Pool2d pool2d;
   Relu relu;

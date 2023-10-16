@@ -4,6 +4,7 @@
 
 #include "third_party/blink/renderer/modules/ml/webnn/ml_graph_type_converter.h"
 
+#include "base/ranges/algorithm.h"
 #include "third_party/blink/renderer/bindings/modules/v8/v8_ml_clamp_options.h"
 #include "third_party/blink/renderer/bindings/modules/v8/v8_ml_conv_2d_options.h"
 #include "third_party/blink/renderer/bindings/modules/v8/v8_ml_gemm_options.h"
@@ -145,6 +146,27 @@ webnn::mojom::blink::InputOperandLayout BlinkInputOperandLayoutToMojo(
       return webnn::mojom::blink::InputOperandLayout::kChannelsLast;
   }
   NOTREACHED_NORETURN();
+}
+
+OperationPtr CreateConcatOperation(const OperandToIdMap& operand_to_id_map,
+                                   const MLOperator* concat) {
+  const auto& inputs = concat->Inputs();
+
+  Vector<uint64_t> input_operand_ids;
+  input_operand_ids.reserve(inputs.size());
+  base::ranges::transform(inputs, std::back_inserter(input_operand_ids),
+                          [operand_to_id_map](const auto& input) {
+                            return operand_to_id_map.at(input);
+                          });
+
+  auto concat_mojo = webnn::mojom::blink::Concat::New();
+  concat_mojo->input_operand_ids = std::move(input_operand_ids);
+  concat_mojo->output_operand_id =
+      GetOperatorOutputId(concat, operand_to_id_map);
+  const auto* concat_operator = static_cast<const MLConcatOperator*>(concat);
+
+  concat_mojo->axis = concat_operator->Axis();
+  return webnn::mojom::blink::Operation::NewConcat(std::move(concat_mojo));
 }
 
 base::expected<OperationPtr, String> CreateConv2dOperation(
@@ -486,6 +508,8 @@ base::expected<OperationPtr, String> ConvertToMojoOperation(
   switch (op->Kind()) {
     case MLOperator::OperatorKind::kClamp:
       return CreateClampOperation(operand_to_id_map, op);
+    case MLOperator::OperatorKind::kConcat:
+      return CreateConcatOperation(operand_to_id_map, op);
     case MLOperator::OperatorKind::kConv2d:
       return CreateConv2dOperation(operand_to_id_map, op);
     case MLOperator::OperatorKind::kAdd:
@@ -516,7 +540,6 @@ base::expected<OperationPtr, String> ConvertToMojoOperation(
     case MLOperator::OperatorKind::kReduceSum:
     case MLOperator::OperatorKind::kResample2d:
     case MLOperator::OperatorKind::kSigmoid:
-    case MLOperator::OperatorKind::kConcat:
     case MLOperator::OperatorKind::kLeakyRelu:
     case MLOperator::OperatorKind::kConvTranspose2d:
     case MLOperator::OperatorKind::kPRelu:

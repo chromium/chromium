@@ -254,6 +254,35 @@ bool ValidateClamp(const IdToOperandMap& id_to_operand_map,
   return true;
 }
 
+bool ValidateConcat(const IdToOperandMap& id_to_operand_map,
+                    const mojom::ConcatPtr& concat) {
+  auto* output = GetMojoOperand(id_to_operand_map, concat->output_operand_id);
+  if (!output) {
+    // The concat operator is invalid.
+    return false;
+  }
+
+  std::vector<Operand> inputs;
+  inputs.reserve(concat->input_operand_ids.size());
+  for (const auto& input_operand_id : concat->input_operand_ids) {
+    auto* input = GetMojoOperand(id_to_operand_map, input_operand_id);
+    if (!input || input == output) {
+      return false;
+    }
+    inputs.push_back(ConvertToComponentOperand(input));
+  }
+
+  auto validated_output = ValidateConcatAndInferOutput(inputs, concat->axis);
+  if (!validated_output.has_value()) {
+    return false;
+  }
+  if (validated_output != ConvertToComponentOperand(output)) {
+    return false;
+  }
+
+  return true;
+}
+
 bool ValidateConv2d(const IdToOperandMap& id_to_operand_map,
                     const mojom::Conv2dPtr& conv2d) {
   auto* input = GetMojoOperand(id_to_operand_map, conv2d->input_operand_id);
@@ -547,6 +576,8 @@ bool ValidateOperation(const IdToOperandMap& id_to_operand_map,
   switch (operation->which()) {
     case mojom::Operation::Tag::kClamp:
       return ValidateClamp(id_to_operand_map, operation->get_clamp());
+    case mojom::Operation::Tag::kConcat:
+      return ValidateConcat(id_to_operand_map, operation->get_concat());
     case mojom::Operation::Tag::kConv2d:
       return ValidateConv2d(id_to_operand_map, operation->get_conv2d());
     case mojom::Operation::Tag::kPool2d:
