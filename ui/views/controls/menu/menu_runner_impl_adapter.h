@@ -52,7 +52,7 @@ class VIEWS_EXPORT MenuRunnerImplAdapter : public MenuRunnerImplInterface {
   ~MenuRunnerImplAdapter() override;
 
   std::unique_ptr<MenuModelAdapter> menu_model_adapter_;
-  raw_ptr<MenuRunnerImpl, DanglingUntriaged> impl_;
+  raw_ptr<MenuRunnerImpl> impl_;
 };
 
 }  // namespace internal
