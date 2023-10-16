@@ -278,7 +278,7 @@ Dispatcher::Dispatcher(std::unique_ptr<DispatcherDelegate> delegate)
       receiver_(this),
       dispatcher_(this) {
   bindings_system_ = CreateBindingsSystem(
-      IPCMessageSender::CreateMainThreadIPCMessageSender());
+      this, IPCMessageSender::CreateMainThreadIPCMessageSender());
 
   script_context_set_ =
       std::make_unique<ScriptContextSet>(&active_extension_ids_);
@@ -560,7 +560,8 @@ void Dispatcher::WillEvaluateServiceWorkerOnWorkerThread(
             extension->id());
     worker_dispatcher->AddWorkerData(
         context_proxy, service_worker_version_id, worker_activation_token,
-        context, CreateBindingsSystem(std::move(ipc_sender)));
+        context,
+        CreateBindingsSystem(worker_dispatcher, std::move(ipc_sender)));
 
     // TODO(lazyboy): Make sure accessing |source_map_| in worker thread is
     // safe.
@@ -1466,6 +1467,10 @@ void Dispatcher::OnUserScriptsUpdated(const mojom::HostID& changed_host) {
     UpdateActiveExtensions();
 }
 
+ScriptContextSetIterable* Dispatcher::GetScriptContextSet() {
+  return script_context_set_iterator();
+}
+
 void Dispatcher::UpdateActiveExtensions() {
   std::set<std::string> active_extensions = active_extension_ids_;
   user_script_set_manager_->GetAllActiveExtensionIds(&active_extensions);
@@ -1622,9 +1627,10 @@ void Dispatcher::RequireGuestViewModules(ScriptContext* context) {
 }
 
 std::unique_ptr<NativeExtensionBindingsSystem> Dispatcher::CreateBindingsSystem(
+    NativeExtensionBindingsSystem::Delegate* delegate,
     std::unique_ptr<IPCMessageSender> ipc_sender) {
-  auto bindings_system =
-      std::make_unique<NativeExtensionBindingsSystem>(std::move(ipc_sender));
+  auto bindings_system = std::make_unique<NativeExtensionBindingsSystem>(
+      delegate, std::move(ipc_sender));
   delegate_->InitializeBindingsSystem(this, bindings_system.get());
   return bindings_system;
 }

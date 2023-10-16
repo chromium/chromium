@@ -29,6 +29,7 @@
 #include "extensions/common/mojom/frame.mojom.h"
 #include "extensions/common/mojom/host_id.mojom-forward.h"
 #include "extensions/common/mojom/renderer.mojom.h"
+#include "extensions/renderer/native_extension_bindings_system.h"
 #include "extensions/renderer/resource_bundle_source_map.h"
 #include "extensions/renderer/script_context.h"
 #include "extensions/renderer/script_context_set.h"
@@ -66,7 +67,6 @@ const int kRendererProfileId = 0;
 class ContentWatcher;
 class DispatcherDelegate;
 class Extension;
-class NativeExtensionBindingsSystem;
 class IPCMessageSender;
 class ScriptContext;
 class ScriptContextSetIterable;
@@ -80,7 +80,8 @@ struct PortId;
 class Dispatcher : public content::RenderThreadObserver,
                    public UserScriptSetManager::Observer,
                    public mojom::Renderer,
-                   public mojom::EventDispatcher {
+                   public mojom::EventDispatcher,
+                   public NativeExtensionBindingsSystem::Delegate {
  public:
   explicit Dispatcher(std::unique_ptr<DispatcherDelegate> delegate);
 
@@ -293,6 +294,9 @@ class Dispatcher : public content::RenderThreadObserver,
   // UserScriptSetManager::Observer implementation.
   void OnUserScriptsUpdated(const mojom::HostID& changed_host) override;
 
+  // NativeExtensionBindingsSystem::Delegate implementation.
+  ScriptContextSetIterable* GetScriptContextSet() override;
+
   void UpdateActiveExtensions();
 
   // Sets up the host permissions for |extension|.
@@ -331,6 +335,7 @@ class Dispatcher : public content::RenderThreadObserver,
   // thread, and thus cannot mutate any state or rely on state which can be
   // mutated in Dispatcher.
   std::unique_ptr<NativeExtensionBindingsSystem> CreateBindingsSystem(
+      NativeExtensionBindingsSystem::Delegate* delegate,
       std::unique_ptr<IPCMessageSender> ipc_sender);
 
   void ResumeEvaluationOnWorkerThread(const ExtensionId& extension_id);

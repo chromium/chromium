@@ -50,7 +50,7 @@ void NativeExtensionBindingsSystemUnittest::SetUp() {
   }
   ipc_message_sender_ = message_sender.get();
   bindings_system_ = std::make_unique<NativeExtensionBindingsSystem>(
-      std::move(message_sender));
+      this, std::move(message_sender));
   APIBindingTest::SetUp();
 }
 
@@ -114,6 +114,11 @@ void NativeExtensionBindingsSystemUnittest::RegisterExtension(
 
 bool NativeExtensionBindingsSystemUnittest::UseStrictIPCMessageSender() {
   return false;
+}
+
+ScriptContextSetIterable*
+NativeExtensionBindingsSystemUnittest::GetScriptContextSet() {
+  return script_context_set_.get();
 }
 
 }  // namespace extensions

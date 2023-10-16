@@ -669,4 +669,8 @@ void WorkerThreadDispatcher::UnbindEventDispatcher(int worker_thread_id) {
 }
 #endif
 
+ScriptContextSetIterable* WorkerThreadDispatcher::GetScriptContextSet() {
+  return Dispatcher::GetWorkerScriptContextSet();
+}
+
 }  // namespace extensions

@@ -20,6 +20,7 @@
 #include "extensions/common/mojom/event_dispatcher.mojom.h"
 #include "extensions/common/mojom/event_router.mojom.h"
 #include "extensions/common/mojom/service_worker_host.mojom.h"
+#include "extensions/renderer/native_extension_bindings_system.h"
 #include "ipc/ipc_sync_message_filter.h"
 #include "mojo/public/cpp/bindings/associated_receiver_set.h"
 #include "mojo/public/cpp/bindings/associated_remote.h"
@@ -59,12 +60,11 @@ struct PortId;
 // worker thread (this TODO formerly referred to content::ThreadSafeSender
 // which no longer exists).
 class WorkerThreadDispatcher : public content::RenderThreadObserver,
-                               public IPC::Sender
+                               public IPC::Sender,
 #if BUILDFLAG(ENABLE_EXTENSIONS_LEGACY_IPC)
-    ,
-                               public mojom::EventDispatcher
+                               public mojom::EventDispatcher,
 #endif
-{
+                               public NativeExtensionBindingsSystem::Delegate {
  public:
   WorkerThreadDispatcher();
 
@@ -188,6 +188,9 @@ class WorkerThreadDispatcher : public content::RenderThreadObserver,
   void DispatchEvent(mojom::DispatchEventParamsPtr params,
                      base::Value::List event_args) override;
 #endif
+
+  // NativeExtensionBindingsSystem::Delegate implementation.
+  ScriptContextSetIterable* GetScriptContextSet() override;
 
  private:
   static bool HandlesMessageOnWorkerThread(const IPC::Message& message);

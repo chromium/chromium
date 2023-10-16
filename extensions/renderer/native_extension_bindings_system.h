@@ -35,7 +35,13 @@ class ScriptContextSetIterable;
 // a bit messy (since there used to be a different ExtensionBindingsSystem).
 class NativeExtensionBindingsSystem {
  public:
+  class Delegate {
+   public:
+    virtual ScriptContextSetIterable* GetScriptContextSet() = 0;
+  };
+
   explicit NativeExtensionBindingsSystem(
+      Delegate* delegate,
       std::unique_ptr<IPCMessageSender> ipc_message_sender);
 
   NativeExtensionBindingsSystem(const NativeExtensionBindingsSystem&) = delete;
@@ -93,6 +99,7 @@ class NativeExtensionBindingsSystem {
   NativeRendererMessagingService* messaging_service() {
     return &messaging_service_;
   }
+  Delegate* delegate() { return delegate_; }
 
   // Returns the API with the given |name| for the given |context|. Used for
   // testing purposes.
@@ -153,6 +160,8 @@ class NativeExtensionBindingsSystem {
   // Creates the parameters objects inside chrome.scripting, if |context| is for
   // content scripts running in an isolated world.
   void SetScriptingParams(ScriptContext* context);
+
+  const raw_ptr<Delegate, ExperimentalRenderer> delegate_;
 
   std::unique_ptr<IPCMessageSender> ipc_message_sender_;
 

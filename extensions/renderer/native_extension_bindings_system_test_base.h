@@ -21,6 +21,7 @@
 #include "extensions/renderer/bindings/api_binding_test.h"
 #include "extensions/renderer/bindings/api_binding_types.h"
 #include "extensions/renderer/ipc_message_sender.h"
+#include "extensions/renderer/native_extension_bindings_system.h"
 #include "extensions/renderer/string_source_map.h"
 #include "extensions/renderer/test_extensions_renderer_client.h"
 #include "mojo/public/cpp/bindings/pending_associated_remote.h"
@@ -38,7 +39,6 @@ class ExtensionConfiguration;
 
 namespace extensions {
 
-class NativeExtensionBindingsSystem;
 class ScriptContext;
 class ScriptContextSet;
 
@@ -116,7 +116,9 @@ class TestIPCMessageSender : public IPCMessageSender {
 // A test harness to instantiate the NativeExtensionBindingsSystem (along with
 // its dependencies) and support adding/removing extensions and ScriptContexts.
 // This is useful for bindings tests that need extensions-specific knowledge.
-class NativeExtensionBindingsSystemUnittest : public APIBindingTest {
+class NativeExtensionBindingsSystemUnittest
+    : public APIBindingTest,
+      public NativeExtensionBindingsSystem::Delegate {
  public:
   NativeExtensionBindingsSystemUnittest();
 
@@ -158,6 +160,9 @@ class NativeExtensionBindingsSystemUnittest : public APIBindingTest {
   void set_allow_unregistered_contexts(bool allow_unregistered_contexts) {
     allow_unregistered_contexts_ = allow_unregistered_contexts;
   }
+
+  // NativeExtensionBindingsSystem::Delegate implementation.
+  ScriptContextSetIterable* GetScriptContextSet() override;
 
  private:
   ExtensionIdSet extension_ids_;

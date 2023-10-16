@@ -412,8 +412,10 @@ const char* const kWebAvailableFeatures[] = {
 }  // namespace
 
 NativeExtensionBindingsSystem::NativeExtensionBindingsSystem(
+    Delegate* delegate,
     std::unique_ptr<IPCMessageSender> ipc_message_sender)
-    : ipc_message_sender_(std::move(ipc_message_sender)),
+    : delegate_(delegate),
+      ipc_message_sender_(std::move(ipc_message_sender)),
       api_system_(
           base::BindRepeating(&GetAPISchema),
           base::BindRepeating(&IsAPIFeatureAvailable),
