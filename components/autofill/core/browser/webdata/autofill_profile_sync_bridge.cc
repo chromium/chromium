@@ -244,7 +244,7 @@ absl::optional<syncer::ModelError> AutofillProfileSyncBridge::FlushSyncTracker(
   DCHECK(tracker);
 
   RETURN_IF_ERROR(tracker->FlushToLocal(base::BindOnce(
-      &AutofillWebDataBackend::NotifyOfMultipleAutofillChanges,
+      &AutofillWebDataBackend::NotifyOnAutofillChangedBySync,
       base::Unretained(web_data_backend_), syncer::AUTOFILL_PROFILE)));
 
   std::vector<std::unique_ptr<AutofillProfile>> profiles_to_upload_to_sync;

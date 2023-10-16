@@ -198,7 +198,7 @@ void AutofillWalletOfferSyncBridge::MergeRemoteData(
   web_data_backend_->CommitChanges();
 
   if (offer_data_changed) {
-    web_data_backend_->NotifyOfMultipleAutofillChanges(
+    web_data_backend_->NotifyOnAutofillChangedBySync(
         syncer::AUTOFILL_WALLET_OFFER);
   }
 }

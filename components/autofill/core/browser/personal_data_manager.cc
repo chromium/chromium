@@ -642,7 +642,7 @@ void PersonalDataManager::OnWebDataServiceRequestDone(
   }
 }
 
-void PersonalDataManager::AutofillMultipleChangedBySync(
+void PersonalDataManager::OnAutofillChangedBySync(
     syncer::ModelType model_type) {
   // After each change coming from sync we go through a two-step process:
   //  - First, we post a task on the DB sequence to (potentially) convert server

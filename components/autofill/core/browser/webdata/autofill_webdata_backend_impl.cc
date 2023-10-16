@@ -127,13 +127,15 @@ AutofillWebDataBackendImpl::AutofillWebDataBackendImpl(
     scoped_refptr<WebDatabaseBackend> web_database_backend,
     scoped_refptr<base::SequencedTaskRunner> ui_task_runner,
     scoped_refptr<base::SequencedTaskRunner> db_task_runner,
-    const base::RepeatingCallback<void(syncer::ModelType)>& on_changed_callback,
+    const base::RepeatingCallback<void(syncer::ModelType)>&
+        on_autofill_changed_by_sync_callback,
     const base::RepeatingClosure& on_address_conversion_completed_callback)
     : base::RefCountedDeleteOnSequence<AutofillWebDataBackendImpl>(
           std::move(db_task_runner)),
       ui_task_runner_(ui_task_runner),
       web_database_backend_(web_database_backend),
-      on_changed_callback_(on_changed_callback),
+      on_autofill_changed_by_sync_callback_(
+          on_autofill_changed_by_sync_callback),
       on_address_conversion_completed_callback_(
           on_address_conversion_completed_callback) {}
 
@@ -207,13 +209,14 @@ void AutofillWebDataBackendImpl::NotifyOfCreditCardChanged(
     db_observer.CreditCardChanged(change);
 }
 
-void AutofillWebDataBackendImpl::NotifyOfMultipleAutofillChanges(
+void AutofillWebDataBackendImpl::NotifyOnAutofillChangedBySync(
     syncer::ModelType model_type) {
   DCHECK(owning_task_runner()->RunsTasksInCurrentSequence());
 
   // UI sequence notification.
-  ui_task_runner_->PostTask(FROM_HERE,
-                            base::BindOnce(on_changed_callback_, model_type));
+  ui_task_runner_->PostTask(
+      FROM_HERE,
+      base::BindOnce(on_autofill_changed_by_sync_callback_, model_type));
 }
 
 void AutofillWebDataBackendImpl::NotifyOfAddressConversionCompleted() {

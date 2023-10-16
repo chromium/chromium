@@ -35,9 +35,9 @@ AutofillWebDataService::AutofillWebDataService(
       ui_task_runner_(std::move(ui_task_runner)),
       db_task_runner_(std::move(db_task_runner)),
       autofill_backend_(nullptr) {
-  base::RepeatingCallback<void(syncer::ModelType)> on_changed_callback =
-      base::BindRepeating(
-          &AutofillWebDataService::NotifyAutofillMultipleChangedOnUISequence,
+  base::RepeatingCallback<void(syncer::ModelType)>
+      on_autofill_changed_by_sync_callback = base::BindRepeating(
+          &AutofillWebDataService::NotifyOnAutofillChangedBySyncOnUISequence,
           weak_ptr_factory_.GetWeakPtr());
   base::RepeatingClosure on_address_conversion_completed_callback =
       base::BindRepeating(
@@ -46,7 +46,8 @@ AutofillWebDataService::AutofillWebDataService(
           weak_ptr_factory_.GetWeakPtr());
   autofill_backend_ = new AutofillWebDataBackendImpl(
       wdbs_->GetBackend(), ui_task_runner_, db_task_runner_,
-      on_changed_callback, on_address_conversion_completed_callback);
+      on_autofill_changed_by_sync_callback,
+      on_address_conversion_completed_callback);
 }
 
 AutofillWebDataService::AutofillWebDataService(
@@ -452,11 +453,11 @@ AutofillWebDataService::RemoveExpiredAutocompleteEntries(
 
 AutofillWebDataService::~AutofillWebDataService() = default;
 
-void AutofillWebDataService::NotifyAutofillMultipleChangedOnUISequence(
+void AutofillWebDataService::NotifyOnAutofillChangedBySyncOnUISequence(
     syncer::ModelType model_type) {
   DCHECK(ui_task_runner_->RunsTasksInCurrentSequence());
   for (auto& ui_observer : ui_observer_list_)
-    ui_observer.AutofillMultipleChangedBySync(model_type);
+    ui_observer.OnAutofillChangedBySync(model_type);
 }
 
 void AutofillWebDataService::

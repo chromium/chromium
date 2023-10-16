@@ -574,7 +574,7 @@ void AutofillWalletMetadataSyncBridge::DeleteOldOrphanMetadata() {
   // on shutdown).
   web_data_backend_->CommitChanges();
 
-  // We do not need to NotifyOfMultipleAutofillChanges() because this change is
+  // We do not need to NotifyOnAutofillChangedBySync() because this change is
   // invisible for PersonalDataManager - it does not change metadata for any
   // existing data.
 }
@@ -694,7 +694,7 @@ AutofillWalletMetadataSyncBridge::MergeRemoteChanges(
   web_data_backend_->CommitChanges();
 
   if (is_any_local_modified) {
-    web_data_backend_->NotifyOfMultipleAutofillChanges(
+    web_data_backend_->NotifyOnAutofillChangedBySync(
         syncer::AUTOFILL_WALLET_METADATA);
   }
 

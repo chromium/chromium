@@ -320,7 +320,7 @@ void AutofillWalletSyncBridge::SetSyncData(
   web_data_backend_->CommitChanges();
 
   if (web_data_backend_ && wallet_data_changed)
-    web_data_backend_->NotifyOfMultipleAutofillChanges(
+    web_data_backend_->NotifyOnAutofillChangedBySync(
         syncer::AUTOFILL_WALLET_DATA);
 }
 

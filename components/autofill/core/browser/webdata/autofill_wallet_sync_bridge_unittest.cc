@@ -592,7 +592,7 @@ TEST_F(AutofillWalletSyncBridgeTest,
       cloud_token_data, &cloud_token_data_specifics);
 
   EXPECT_CALL(*backend(),
-              NotifyOfMultipleAutofillChanges(syncer::AUTOFILL_WALLET_DATA));
+              NotifyOnAutofillChangedBySync(syncer::AUTOFILL_WALLET_DATA));
   EXPECT_CALL(*backend(), CommitChanges());
   EXPECT_CALL(*backend(), NotifyOfAutofillProfileChanged(
                               AddChange(address2.server_id(), address2)));
@@ -643,7 +643,7 @@ TEST_F(AutofillWalletSyncBridgeTest,
       cloud_token_data, &cloud_token_data_specifics);
 
   EXPECT_CALL(*backend(),
-              NotifyOfMultipleAutofillChanges(syncer::AUTOFILL_WALLET_DATA));
+              NotifyOnAutofillChangedBySync(syncer::AUTOFILL_WALLET_DATA));
   EXPECT_CALL(*backend(), CommitChanges());
   StartSyncing({profile_specifics, card_specifics, customer_data_specifics,
                 cloud_token_data_specifics});
@@ -692,7 +692,7 @@ TEST_F(AutofillWalletSyncBridgeTest,
       cloud_token_data, &cloud_token_data_specifics);
 
   EXPECT_CALL(*backend(),
-              NotifyOfMultipleAutofillChanges(syncer::AUTOFILL_WALLET_DATA));
+              NotifyOnAutofillChangedBySync(syncer::AUTOFILL_WALLET_DATA));
   EXPECT_CALL(*backend(), CommitChanges());
   EXPECT_CALL(*backend(), NotifyOfAutofillProfileChanged).Times(0);
   EXPECT_CALL(*backend(), NotifyOfCreditCardChanged).Times(0);
@@ -736,7 +736,7 @@ TEST_F(AutofillWalletSyncBridgeTest, MergeFullSyncData_NewCloudTokenData) {
       cloud_token_data2, &cloud_token_data_specifics2);
 
   EXPECT_CALL(*backend(),
-              NotifyOfMultipleAutofillChanges(syncer::AUTOFILL_WALLET_DATA));
+              NotifyOnAutofillChangedBySync(syncer::AUTOFILL_WALLET_DATA));
   EXPECT_CALL(*backend(), CommitChanges());
   EXPECT_CALL(*backend(), NotifyOfAutofillProfileChanged).Times(0);
   EXPECT_CALL(*backend(), NotifyOfCreditCardChanged).Times(0);
@@ -762,7 +762,7 @@ TEST_F(AutofillWalletSyncBridgeTest, MergeFullSyncData_NoWalletAddressOrCard) {
   table()->SetServerCreditCards({local_card});
 
   EXPECT_CALL(*backend(),
-              NotifyOfMultipleAutofillChanges(syncer::AUTOFILL_WALLET_DATA));
+              NotifyOnAutofillChangedBySync(syncer::AUTOFILL_WALLET_DATA));
   EXPECT_CALL(*backend(), CommitChanges());
   EXPECT_CALL(*backend(), NotifyOfAutofillProfileChanged(
                               RemoveChange(local_profile.server_id())));
@@ -786,7 +786,7 @@ TEST_F(AutofillWalletSyncBridgeTest, MergeFullSyncData_NoCloudTokenData) {
   table()->SetCreditCardCloudTokenData({cloud_token_data});
 
   EXPECT_CALL(*backend(),
-              NotifyOfMultipleAutofillChanges(syncer::AUTOFILL_WALLET_DATA));
+              NotifyOnAutofillChangedBySync(syncer::AUTOFILL_WALLET_DATA));
   EXPECT_CALL(*backend(), CommitChanges());
   EXPECT_CALL(*backend(), NotifyOfAutofillProfileChanged).Times(0);
   EXPECT_CALL(*backend(), NotifyOfCreditCardChanged).Times(0);
@@ -827,7 +827,7 @@ TEST_F(
       cloud_token_data, &cloud_token_data_specifics);
 
   EXPECT_CALL(*backend(),
-              NotifyOfMultipleAutofillChanges(syncer::AUTOFILL_WALLET_DATA))
+              NotifyOnAutofillChangedBySync(syncer::AUTOFILL_WALLET_DATA))
       .Times(0);
   // We still need to commit the updated progress marker on the client.
   EXPECT_CALL(*backend(), CommitChanges());
@@ -870,7 +870,7 @@ TEST_F(AutofillWalletSyncBridgeTest,
 
   EXPECT_CALL(*backend(), CommitChanges());
   EXPECT_CALL(*backend(),
-              NotifyOfMultipleAutofillChanges(syncer::AUTOFILL_WALLET_DATA));
+              NotifyOnAutofillChangedBySync(syncer::AUTOFILL_WALLET_DATA));
   EXPECT_CALL(*backend(), NotifyOfAutofillProfileChanged(
                               RemoveChange(profile2.server_id())));
   EXPECT_CALL(*backend(),
@@ -1049,7 +1049,7 @@ TEST_F(AutofillWalletSyncBridgeTest, ApplyDisableSyncChanges) {
 
   EXPECT_CALL(*backend(), CommitChanges());
   EXPECT_CALL(*backend(),
-              NotifyOfMultipleAutofillChanges(syncer::AUTOFILL_WALLET_DATA));
+              NotifyOnAutofillChangedBySync(syncer::AUTOFILL_WALLET_DATA));
   EXPECT_CALL(*backend(), NotifyOfAutofillProfileChanged).Times(0);
   EXPECT_CALL(*backend(), NotifyOfCreditCardChanged).Times(0);
 

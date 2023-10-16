@@ -248,7 +248,7 @@ class AutofillWebDataService : public WebDataServiceBase {
  protected:
   ~AutofillWebDataService() override;
 
-  void NotifyAutofillMultipleChangedOnUISequence(syncer::ModelType model_type);
+  void NotifyOnAutofillChangedBySyncOnUISequence(syncer::ModelType model_type);
   void NotifyAutofillAddressConversionCompletedOnUISequence();
 
   base::WeakPtr<AutofillWebDataService> AsWeakPtr() {

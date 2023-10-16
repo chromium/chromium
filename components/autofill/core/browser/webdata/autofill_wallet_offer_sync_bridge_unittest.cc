@@ -276,7 +276,7 @@ TEST_F(AutofillWalletOfferSyncBridgeTest, MergeFullSyncData_NewData) {
 
   EXPECT_CALL(*backend(), CommitChanges());
   EXPECT_CALL(*backend(),
-              NotifyOfMultipleAutofillChanges(syncer::AUTOFILL_WALLET_OFFER));
+              NotifyOnAutofillChangedBySync(syncer::AUTOFILL_WALLET_OFFER));
   StartSyncing({offer_specifics});
 
   // Only the server offer should be present on the client.
@@ -293,7 +293,7 @@ TEST_F(AutofillWalletOfferSyncBridgeTest, MergeFullSyncData_NoData) {
 
   EXPECT_CALL(*backend(), CommitChanges());
   EXPECT_CALL(*backend(),
-              NotifyOfMultipleAutofillChanges(syncer::AUTOFILL_WALLET_OFFER));
+              NotifyOnAutofillChangedBySync(syncer::AUTOFILL_WALLET_OFFER));
   StartSyncing({});
 
   EXPECT_TRUE(GetAllLocalData().empty());
@@ -311,7 +311,7 @@ TEST_F(AutofillWalletOfferSyncBridgeTest, MergeFullSyncData_LogDataValidity) {
 
   EXPECT_CALL(*backend(), CommitChanges());
   EXPECT_CALL(*backend(),
-              NotifyOfMultipleAutofillChanges(syncer::AUTOFILL_WALLET_OFFER));
+              NotifyOnAutofillChangedBySync(syncer::AUTOFILL_WALLET_OFFER));
   base::HistogramTester histogram_tester;
   StartSyncing({offer_specifics1, offer_specifics2});
 
@@ -330,7 +330,7 @@ TEST_F(AutofillWalletOfferSyncBridgeTest, ApplyDisableSyncChanges) {
 
   EXPECT_CALL(*backend(), CommitChanges());
   EXPECT_CALL(*backend(),
-              NotifyOfMultipleAutofillChanges(syncer::AUTOFILL_WALLET_OFFER));
+              NotifyOnAutofillChangedBySync(syncer::AUTOFILL_WALLET_OFFER));
 
   bridge()->ApplyDisableSyncChanges(/*delete_metadata_change_list=*/
                                     std::make_unique<

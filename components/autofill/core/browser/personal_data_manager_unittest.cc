@@ -316,7 +316,7 @@ class PersonalDataManagerHelper : public PersonalDataManagerTestBase {
   void ConvertWalletAddressesAndUpdateWalletCards() {
     // Simulate new data is coming from sync which triggers a conversion of
     // wallet addresses which in turn triggers a refresh.
-    personal_data_->AutofillMultipleChangedBySync(syncer::AUTOFILL_WALLET_DATA);
+    personal_data_->OnAutofillChangedBySync(syncer::AUTOFILL_WALLET_DATA);
     PersonalDataProfileTaskWaiter(*personal_data_).Wait();
   }
 

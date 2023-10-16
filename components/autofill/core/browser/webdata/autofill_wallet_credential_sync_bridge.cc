@@ -139,7 +139,7 @@ AutofillWalletCredentialSyncBridge::ApplyIncrementalSyncChanges(
   // empty `entity_data`, where only the metadata needs to be updated. This
   // check helps check that and prevent any false positives.
   if (!entity_data.empty()) {
-    web_data_backend_->NotifyOfMultipleAutofillChanges(
+    web_data_backend_->NotifyOnAutofillChangedBySync(
         syncer::AUTOFILL_WALLET_CREDENTIAL);
   }
   return change_processor()->GetError();
@@ -198,7 +198,7 @@ void AutofillWalletCredentialSyncBridge::ApplyDisableSyncChanges(
         {FROM_HERE, "Failed to delete wallet credential data from the table."});
   }
   web_data_backend_->CommitChanges();
-  web_data_backend_->NotifyOfMultipleAutofillChanges(
+  web_data_backend_->NotifyOnAutofillChangedBySync(
       syncer::AUTOFILL_WALLET_CREDENTIAL);
 }
 

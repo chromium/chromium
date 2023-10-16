@@ -448,13 +448,13 @@ TEST_F(AutocompleteSyncBridgeTest, ApplyIncrementalSyncChangesSimple) {
   ASSERT_NE(GetStorageKey(specifics1), GetStorageKey(specifics2));
 
   EXPECT_CALL(*backend(), CommitChanges());
-  EXPECT_CALL(*backend(), NotifyOfMultipleAutofillChanges(syncer::AUTOFILL));
+  EXPECT_CALL(*backend(), NotifyOnAutofillChangedBySync(syncer::AUTOFILL));
 
   ApplyAdds({specifics1, specifics2});
   VerifyAllData({specifics1, specifics2});
 
   EXPECT_CALL(*backend(), CommitChanges());
-  EXPECT_CALL(*backend(), NotifyOfMultipleAutofillChanges(syncer::AUTOFILL));
+  EXPECT_CALL(*backend(), NotifyOnAutofillChangedBySync(syncer::AUTOFILL));
 
   syncer::EntityChangeList entity_change_list;
   entity_change_list.push_back(
@@ -474,7 +474,7 @@ TEST_F(AutocompleteSyncBridgeTest, ApplyIncrementalSyncChangesWrongChangeType) {
   VerifyAllData(std::vector<AutofillSpecifics>());
 
   EXPECT_CALL(*backend(), CommitChanges());
-  EXPECT_CALL(*backend(), NotifyOfMultipleAutofillChanges(syncer::AUTOFILL));
+  EXPECT_CALL(*backend(), NotifyOnAutofillChangedBySync(syncer::AUTOFILL));
 
   syncer::EntityChangeList entity_change_list2;
   entity_change_list2.push_back(EntityChange::CreateUpdate(
@@ -483,7 +483,7 @@ TEST_F(AutocompleteSyncBridgeTest, ApplyIncrementalSyncChangesWrongChangeType) {
   VerifyAllData({specifics});
 
   EXPECT_CALL(*backend(), CommitChanges());
-  EXPECT_CALL(*backend(), NotifyOfMultipleAutofillChanges(syncer::AUTOFILL));
+  EXPECT_CALL(*backend(), NotifyOnAutofillChangedBySync(syncer::AUTOFILL));
 
   specifics.add_usage_timestamp(Time::FromTimeT(2).ToInternalValue());
   ApplyAdds({specifics});
@@ -591,7 +591,7 @@ TEST_F(AutocompleteSyncBridgeTest, LocalEntriesAdded) {
   // Bridge should not commit transaction on local changes (it is committed by
   // the AutofillWebDataService itself).
   EXPECT_CALL(*backend(), CommitChanges()).Times(0);
-  EXPECT_CALL(*backend(), NotifyOfMultipleAutofillChanges(syncer::AUTOFILL))
+  EXPECT_CALL(*backend(), NotifyOnAutofillChangedBySync(syncer::AUTOFILL))
       .Times(0);
 
   bridge()->AutofillEntriesChanged(
@@ -608,7 +608,7 @@ TEST_F(AutocompleteSyncBridgeTest, LocalEntryAddedThenUpdated) {
   // Bridge should not commit transaction on local changes (it is committed by
   // the AutofillWebDataService itself).
   EXPECT_CALL(*backend(), CommitChanges()).Times(0);
-  EXPECT_CALL(*backend(), NotifyOfMultipleAutofillChanges(syncer::AUTOFILL))
+  EXPECT_CALL(*backend(), NotifyOnAutofillChangedBySync(syncer::AUTOFILL))
       .Times(0);
 
   bridge()->AutofillEntriesChanged(
@@ -621,7 +621,7 @@ TEST_F(AutocompleteSyncBridgeTest, LocalEntryAddedThenUpdated) {
   // Bridge should not commit transaction on local changes (it is committed by
   // the AutofillWebDataService itself).
   EXPECT_CALL(*backend(), CommitChanges()).Times(0);
-  EXPECT_CALL(*backend(), NotifyOfMultipleAutofillChanges(syncer::AUTOFILL))
+  EXPECT_CALL(*backend(), NotifyOnAutofillChangedBySync(syncer::AUTOFILL))
       .Times(0);
 
   bridge()->AutofillEntriesChanged(
@@ -638,7 +638,7 @@ TEST_F(AutocompleteSyncBridgeTest, LocalEntryDeleted) {
   // Bridge should not commit transaction on local changes (it is committed by
   // the AutofillWebDataService itself).
   EXPECT_CALL(*backend(), CommitChanges()).Times(0);
-  EXPECT_CALL(*backend(), NotifyOfMultipleAutofillChanges(syncer::AUTOFILL))
+  EXPECT_CALL(*backend(), NotifyOnAutofillChangedBySync(syncer::AUTOFILL))
       .Times(0);
 
   bridge()->AutofillEntriesChanged(
@@ -666,7 +666,7 @@ TEST_F(AutocompleteSyncBridgeTest, LocalEntryExpired) {
   // Bridge should not commit transaction on local changes (it is committed by
   // the AutofillWebDataService itself).
   EXPECT_CALL(*backend(), CommitChanges()).Times(0);
-  EXPECT_CALL(*backend(), NotifyOfMultipleAutofillChanges(syncer::AUTOFILL))
+  EXPECT_CALL(*backend(), NotifyOnAutofillChangedBySync(syncer::AUTOFILL))
       .Times(0);
 
   bridge()->AutofillEntriesChanged(
@@ -702,7 +702,7 @@ TEST_F(AutocompleteSyncBridgeTest, LoadMetadataReportsErrorForMissingDB) {
 TEST_F(AutocompleteSyncBridgeTest, MergeFullSyncDataEmpty) {
   EXPECT_CALL(mock_processor(), Delete).Times(0);
   EXPECT_CALL(mock_processor(), Put).Times(0);
-  EXPECT_CALL(*backend(), NotifyOfMultipleAutofillChanges(syncer::AUTOFILL))
+  EXPECT_CALL(*backend(), NotifyOnAutofillChangedBySync(syncer::AUTOFILL))
       .Times(0);
   // The bridge should still commit the model type state change.
   EXPECT_CALL(*backend(), CommitChanges());
@@ -719,7 +719,7 @@ TEST_F(AutocompleteSyncBridgeTest, MergeFullSyncDataRemoteOnly) {
   EXPECT_CALL(mock_processor(), Delete).Times(0);
   EXPECT_CALL(mock_processor(), Put).Times(0);
   EXPECT_CALL(*backend(), CommitChanges());
-  EXPECT_CALL(*backend(), NotifyOfMultipleAutofillChanges(syncer::AUTOFILL));
+  EXPECT_CALL(*backend(), NotifyOnAutofillChangedBySync(syncer::AUTOFILL));
 
   StartSyncing(/*remote_data=*/{specifics1, specifics2});
 
@@ -737,7 +737,7 @@ TEST_F(AutocompleteSyncBridgeTest, MergeFullSyncDataLocalOnly) {
   ApplyAdds({specifics1, specifics2});
   VerifyAllData({specifics1, specifics2});
 
-  EXPECT_CALL(*backend(), NotifyOfMultipleAutofillChanges(syncer::AUTOFILL))
+  EXPECT_CALL(*backend(), NotifyOnAutofillChangedBySync(syncer::AUTOFILL))
       .Times(0);
   EXPECT_CALL(*backend(), CommitChanges());
 
@@ -774,7 +774,7 @@ TEST_F(AutocompleteSyncBridgeTest, MergeFullSyncDataAllMerged) {
   ApplyAdds({local1, local2, local3, local4, local5, local6});
 
   EXPECT_CALL(*backend(), CommitChanges());
-  EXPECT_CALL(*backend(), NotifyOfMultipleAutofillChanges(syncer::AUTOFILL));
+  EXPECT_CALL(*backend(), NotifyOnAutofillChangedBySync(syncer::AUTOFILL));
 
   StartSyncing(
       /*remote_data=*/{remote1, remote2, remote3, remote4, remote5, remote6});
@@ -796,7 +796,7 @@ TEST_F(AutocompleteSyncBridgeTest, MergeFullSyncDataMixed) {
   ApplyAdds({local1, specifics3, local4});
 
   EXPECT_CALL(*backend(), CommitChanges());
-  EXPECT_CALL(*backend(), NotifyOfMultipleAutofillChanges(syncer::AUTOFILL));
+  EXPECT_CALL(*backend(), NotifyOnAutofillChangedBySync(syncer::AUTOFILL));
 
   StartSyncing(/*remote_data=*/{remote2, specifics3, remote4});
 

@@ -43,18 +43,18 @@ class AutofillWebDataBackendImpl
     : public base::RefCountedDeleteOnSequence<AutofillWebDataBackendImpl>,
       public AutofillWebDataBackend {
  public:
-  // |web_database_backend| is used to access the WebDatabase directly for
-  // Sync-related operations. |ui_task_runner| and |db_task_runner| are the task
+  // `web_database_backend` is used to access the WebDatabase directly for
+  // Sync-related operations. `ui_task_runner` and `db_task_runner` are the task
   // runners that this class uses for UI and DB tasks respectively.
-  // |on_changed_callback| is a closure which can be used to notify the UI
-  // sequence of changes initiated by Sync (this callback may be called multiple
-  // times).
+  // `on_autofill_changed_by_sync_callback_` is a closure which can be used to
+  // notify the UI sequence of changes initiated by Sync (this callback may be
+  // called multiple times).
   AutofillWebDataBackendImpl(
       scoped_refptr<WebDatabaseBackend> web_database_backend,
       scoped_refptr<base::SequencedTaskRunner> ui_task_runner,
       scoped_refptr<base::SequencedTaskRunner> db_task_runner,
       const base::RepeatingCallback<void(syncer::ModelType)>&
-          on_changed_callback,
+          on_autofill_changed_by_sync_callback,
       const base::RepeatingClosure& on_address_conversion_completed_callback);
 
   AutofillWebDataBackendImpl(const AutofillWebDataBackendImpl&) = delete;
@@ -74,7 +74,7 @@ class AutofillWebDataBackendImpl
   void NotifyOfAutofillProfileChanged(
       const AutofillProfileChange& change) override;
   void NotifyOfCreditCardChanged(const CreditCardChange& change) override;
-  void NotifyOfMultipleAutofillChanges(syncer::ModelType model_type) override;
+  void NotifyOnAutofillChangedBySync(syncer::ModelType model_type) override;
   void NotifyOfAddressConversionCompleted() override;
   void CommitChanges() override;
 
@@ -289,7 +289,8 @@ class AutofillWebDataBackendImpl
   // TODO(caitkp): Make it so nobody but us needs direct DB access anymore.
   scoped_refptr<WebDatabaseBackend> web_database_backend_;
 
-  base::RepeatingCallback<void(syncer::ModelType)> on_changed_callback_;
+  base::RepeatingCallback<void(syncer::ModelType)>
+      on_autofill_changed_by_sync_callback_;
   base::RepeatingClosure on_address_conversion_completed_callback_;
   base::RepeatingCallback<void(const AutofillProfileDeepChange&)>
       on_autofill_profile_changed_cb_;

@@ -132,7 +132,8 @@ ContactInfoSyncBridge::ApplyIncrementalSyncChanges(
   // Since such false positives are fine, and since AutofillTable's API
   // currently doesn't provide a way to detect such cases, we don't distinguish.
   if (!entity_changes.empty())
-    web_data_backend_->NotifyOfMultipleAutofillChanges(syncer::CONTACT_INFO);
+    web_data_backend_->NotifyOnAutofillChangedBySync(syncer::CONTACT_INFO);
+
   return absl::nullopt;
 }
 
@@ -221,7 +222,7 @@ void ContactInfoSyncBridge::ApplyDisableSyncChanges(
   }
   web_data_backend_->CommitChanges();
   // False positives can occur here if there were no profiles to begin with.
-  web_data_backend_->NotifyOfMultipleAutofillChanges(syncer::CONTACT_INFO);
+  web_data_backend_->NotifyOnAutofillChangedBySync(syncer::CONTACT_INFO);
 }
 
 sync_pb::EntitySpecifics

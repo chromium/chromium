@@ -192,7 +192,7 @@ class SyncDifferenceTracker {
       return ModelError(FROM_HERE, "Failed updating WebDatabase");
     }
     if (!delete_from_local_.empty() || !save_to_local_.empty()) {
-      web_data_backend->NotifyOfMultipleAutofillChanges(syncer::AUTOFILL);
+      web_data_backend->NotifyOnAutofillChangedBySync(syncer::AUTOFILL);
     }
     return {};
   }
