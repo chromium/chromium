@@ -11,7 +11,7 @@
 #include "chrome/test/base/ui_test_utils.h"
 #include "components/autofill/core/browser/data_model/autofill_offer_data.h"
 #include "components/autofill/core/browser/payments/offer_notification_options.h"
-#include "components/commerce/core/commerce_utils.h"
+#include "components/commerce/core/commerce_feature_list.h"
 #include "content/public/test/browser_test.h"
 #include "ui/base/ui_base_features.h"
 #include "ui/compositor/scoped_animation_duration_scale_mode.h"

@@ -18,7 +18,7 @@
 #include "components/autofill/core/browser/data_model/autofill_offer_data.h"
 #include "components/autofill/core/browser/data_model/credit_card.h"
 #include "components/autofill/core/common/autofill_payments_features.h"
-#include "components/commerce/core/commerce_utils.h"
+#include "components/commerce/core/commerce_feature_list.h"
 #include "components/strings/grit/components_strings.h"
 #include "ui/base/clipboard/clipboard_buffer.h"
 #include "ui/base/clipboard/scoped_clipboard_writer.h"

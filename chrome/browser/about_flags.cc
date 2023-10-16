@@ -81,7 +81,6 @@
 #include "components/browser_sync/browser_sync_switches.h"
 #include "components/browsing_data/core/features.h"
 #include "components/commerce/core/commerce_feature_list.h"
-#include "components/commerce/core/commerce_utils.h"
 #include "components/commerce/core/flag_descriptions.h"
 #include "components/component_updater/component_updater_command_line_config_policy.h"
 #include "components/component_updater/component_updater_switches.h"
