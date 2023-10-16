@@ -117,7 +117,8 @@ device::Gamepad ToGamepad(const mozilla::gfx::VRControllerState& controller) {
     }
   }
 
-  // TODO: fill in hand tracking data here
+  // TODO: Fill Gamepad data when there are no controllers, e.g during hand-tracking
+  //       https://www.w3.org/TR/webxr-gamepads-module-1/#gamepad-api-integration
 
   return builder.GetGamepad().value();
 }
@@ -386,7 +387,8 @@ void WvrManager::OnSubmitClientMojoConnectionError() {
 // for reference
 static void PopulateProfiles(
     device::mojom::XRInputSourceStatePtr& input_source,
-    const mozilla::gfx::VRControllerState& controller) {
+    const mozilla::gfx::VRControllerState& controller,
+    bool add_hand_profile) {
   switch (controller.type) {
     case mozilla::gfx::VRControllerType::HTCVive:
       input_source->description->profiles = {
@@ -452,6 +454,36 @@ static void PopulateProfiles(
       NOTREACHED();
       break;
   };
+
+  if (add_hand_profile)
+    input_source->description->profiles.push_back("generic-hand-select");
+}
+
+device::mojom::XRHandTrackingDataPtr
+GetHandTrackingData(const mozilla::gfx::VRControllerState& controller) {
+  if (!controller.hasHandTrackingData)
+    return nullptr;
+
+  auto hand_tracking_data = device::mojom::XRHandTrackingData::New();
+
+  hand_tracking_data->hand_joint_data.resize(mozilla::gfx::kHandTrackingNumJoints);
+
+  for (uint32_t i = 0; i < mozilla::gfx::kHandTrackingNumJoints; i++) {
+    auto hand_joint_dst = device::mojom::XRHandJointData::New();
+    auto& hand_joint_src = controller.handTrackingData.handJointData[i];
+
+    hand_joint_dst->joint = static_cast<device::mojom::XRHandJoint>(i);
+
+    gfx::Transform transform;
+    WvrMatToTransform(hand_joint_src.transform, &transform);
+    hand_joint_dst->mojo_from_joint.emplace(transform);
+
+    hand_joint_dst->radius = hand_joint_src.radius;
+
+    hand_tracking_data->hand_joint_data[i] = std::move(hand_joint_dst);
+  }
+
+  return hand_tracking_data;
 }
 
 std::vector<device::mojom::XRInputSourceStatePtr>
@@ -503,7 +535,7 @@ WvrManager::GetInputSourceState() {
             ? device::mojom::XRHandedness::LEFT
             : device::mojom::XRHandedness::RIGHT;
 
-    PopulateProfiles(input_source, controller);
+    PopulateProfiles(input_source, controller, controller.hasHandTrackingData);
 
     input_source->gamepad = ToGamepad(controller);
 
@@ -532,6 +564,8 @@ WvrManager::GetInputSourceState() {
             mozilla::gfx::ControllerCapabilityFlags::Cap_GripSpacePosition)) {
       input_source->mojo_from_input = WvrPoseToTransform(&controller.pose);
     }
+
+    input_source->hand_tracking_data = GetHandTrackingData(controller);
 
     input_sources.push_back(std::move(input_source));
   }
