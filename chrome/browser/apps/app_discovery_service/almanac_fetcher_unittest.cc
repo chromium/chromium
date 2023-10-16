@@ -346,6 +346,11 @@ TEST_F(AlmanacFetcherTest, GetAppsUpdateOnSecondLogin) {
 }
 
 TEST_F(AlmanacFetcherTest, GetIconSuccess) {
+  base::test::TestFuture<const std::vector<Result>&> waiter;
+  base::CallbackListSubscription subscription =
+      almanac_fetcher()->RegisterForAppUpdates(waiter.GetRepeatingCallback());
+  ASSERT_EQ(waiter.Take().size(), 2u);
+
   base::test::TestFuture<gfx::ImageSkia, apps::DiscoveryError> result;
   std::string icon_url = "https://icon";
   gfx::Image expected_image = GetTestImage(IDR_DEFAULT_FAVICON);
@@ -365,6 +370,11 @@ TEST_F(AlmanacFetcherTest, GetIconSuccess) {
 }
 
 TEST_F(AlmanacFetcherTest, GetIconError) {
+  base::test::TestFuture<const std::vector<Result>&> waiter;
+  base::CallbackListSubscription subscription =
+      almanac_fetcher()->RegisterForAppUpdates(waiter.GetRepeatingCallback());
+  ASSERT_EQ(waiter.Take().size(), 2u);
+
   base::test::TestFuture<gfx::ImageSkia, apps::DiscoveryError> result;
   std::string icon_url = "https://icon";
   EXPECT_CALL(*icon_cache_, GetIcon(GURL(icon_url), _))
@@ -373,6 +383,17 @@ TEST_F(AlmanacFetcherTest, GetIconError) {
                      base::OnceCallback<void(const gfx::Image&)> callback) {
             std::move(callback).Run(gfx::Image());
           }));
+  almanac_fetcher()->GetIcon(
+      icon_url, /*size_hint_in_dip=*/32,
+      result.GetCallback<const gfx::ImageSkia&, apps::DiscoveryError>());
+  EXPECT_TRUE(result.Get<0>().isNull());
+  EXPECT_EQ(result.Get<1>(), DiscoveryError::kErrorRequestFailed);
+}
+
+TEST_F(AlmanacFetcherTest, GetIconNoAppsError) {
+  base::test::TestFuture<gfx::ImageSkia, apps::DiscoveryError> result;
+  std::string icon_url = "https://icon";
+  EXPECT_CALL(*icon_cache_, GetIcon(GURL(icon_url), _)).Times(0);
   almanac_fetcher()->GetIcon(
       icon_url, /*size_hint_in_dip=*/32,
       result.GetCallback<const gfx::ImageSkia&, apps::DiscoveryError>());
