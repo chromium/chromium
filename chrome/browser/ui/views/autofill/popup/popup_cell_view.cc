@@ -69,19 +69,6 @@ bool PopupCellView::IsHighlighted() const {
   return selected_ || permanently_highlighted_;
 }
 
-void PopupCellView::SetTooltipText(std::u16string tooltip_text) {
-  if (tooltip_text_ == tooltip_text) {
-    return;
-  }
-
-  tooltip_text_ = std::move(tooltip_text);
-  TooltipTextChanged();
-}
-
-std::u16string PopupCellView::GetTooltipText(const gfx::Point& p) const {
-  return tooltip_text_;
-}
-
 void PopupCellView::SetAccessibilityDelegate(
     std::unique_ptr<AccessibilityDelegate> a11y_delegate) {
   a11y_delegate_ = std::move(a11y_delegate);
@@ -144,7 +131,6 @@ void PopupCellView::RefreshStyle() {
 
 BEGIN_METADATA(PopupCellView, views::View)
 ADD_PROPERTY_METADATA(bool, Selected)
-ADD_PROPERTY_METADATA(std::u16string, TooltipText)
 END_METADATA
 
 }  // namespace autofill

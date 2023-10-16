@@ -67,10 +67,6 @@ class PopupCellView : public views::View {
 
   bool IsHighlighted() const;
 
-  // Gets and sets the tooltip of the cell.
-  const std::u16string& GetTooltipText() const { return tooltip_text_; }
-  void SetTooltipText(std::u16string tooltip_text);
-
   // Sets the accessibility delegate that is consulted when providing accessible
   // node data.
   void SetAccessibilityDelegate(
@@ -115,11 +111,6 @@ class PopupCellView : public views::View {
   // into account) and runs the OnAccepted callback.
   void RunOnAcceptedForEvent(const ui::Event& event);
 
-  // views::View:
-  std::u16string GetTooltipText(const gfx::Point& p) const override;
-
-  // The tooltip text for this cell.
-  std::u16string tooltip_text_;
   // The accessibility delegate.
   std::unique_ptr<AccessibilityDelegate> a11y_delegate_;
 
@@ -129,7 +120,6 @@ class PopupCellView : public views::View {
 };
 
 BEGIN_VIEW_BUILDER(/* no export*/, PopupCellView, views::View)
-VIEW_BUILDER_PROPERTY(std::u16string, TooltipText)
 VIEW_BUILDER_PROPERTY(std::unique_ptr<PopupCellView::AccessibilityDelegate>,
                       AccessibilityDelegate)
 VIEW_BUILDER_PROPERTY(base::RepeatingClosure, OnSelectedCallback)
