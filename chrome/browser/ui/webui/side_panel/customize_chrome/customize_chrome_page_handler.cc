@@ -432,7 +432,6 @@ void CustomizeChromePageHandler::GetDescriptors(
             }
           }
         })");
-
   auto resource_request = std::make_unique<network::ResourceRequest>();
   resource_request->url = GURL(
       "https://static.corp.google.com/chrome-wallpaper-search/"
@@ -475,7 +474,9 @@ void CustomizeChromePageHandler::SearchWallpaper(
 }
 
 void CustomizeChromePageHandler::GetWallpaperSearchResults(
-    const std::string& query,
+    const std::string& descriptor_a,
+    const absl::optional<std::string>& descriptor_b,
+    const absl::optional<std::string>& descriptor_c,
     GetWallpaperSearchResultsCallback callback) {
   callback = mojo::WrapCallbackWithDefaultInvokeIfNotRun(
       std::move(callback),
@@ -492,7 +493,9 @@ void CustomizeChromePageHandler::GetWallpaperSearchResults(
     return;
   }
   chrome_intelligence_modelexecution_proto::WallpaperSearchRequest request;
-  request.set_query(query);
+  request.set_query(base::StrCat(
+      {descriptor_a, descriptor_b ? " " : "", descriptor_b.value_or(""),
+       descriptor_c ? " " : "", descriptor_c.value_or("")}));
   optimization_guide_keyed_service->ExecuteModel(
       optimization_guide::proto::ModelExecutionFeature::
           MODEL_EXECUTION_FEATURE_WALLPAPER_SEARCH,

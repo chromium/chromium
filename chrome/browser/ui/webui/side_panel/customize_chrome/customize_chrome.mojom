@@ -173,15 +173,15 @@ interface CustomizeChromePageHandler {
   // Triggers a call to |CustomizeChromePage.UpdateScrollToSection()|.
   UpdateScrollToSection();
 
+  // Retrieves NTP descriptors.
+  GetDescriptors() => (Descriptors? descriptors);
+
   // Searches NTP wallpaper for `query`. Returns true if search was successful.
   SearchWallpaper(string query) => (bool success);
 
-  // Searches for NTP descriptors.
-  GetDescriptors() => (Descriptors? descriptors);
-
   // Searches NTP wallpaper for `query`. Returns list of sanitized image data.
-  GetWallpaperSearchResults(string query) =>
-      (array<WallpaperSearchResult> results);
+  GetWallpaperSearchResults(string descriptor_a, string? descriptor_b,
+    string? descriptor_c) => (array<WallpaperSearchResult> results);
 
   // Sets wallpaper search result of index to background image.
   SetBackgroundToWallpaperSearchResult(mojo_base.mojom.Token result_id);

@@ -79,46 +79,37 @@
       back-button-title="$i18n{backButton}">
     <h2 slot="heading">Wallpaper Search</h2>
   </sp-heading>
-  <div class="content">
-    <cr-input
-        id="queryInput"
-        type="text"
-        placeholder="Query"
-        value="{{query_}}">
-    </cr-input>
-    <cr-button id="descriptorBtnA" hidden$="[[!descriptors_]]"
-        on-click="onDescriptorMenuClickA_">
+  <div class="content" hidden$="[[!descriptors_]]">
+    <cr-button id="descriptorBtnA" on-click="onDescriptorMenuClickA_">
       Descriptor A
     </cr-button>
     <cr-action-menu id="descriptorMenuA">
       <template is="dom-repeat" items="[[descriptors_.descriptorA]]">
         <span>[[item.category]]</span>
         <template is="dom-repeat" items="[[item.labels]]">
-          <button class="dropdown-item">
+          <button class="dropdown-item" on-click="onDescriptorLabelClickA_">
             <span>[[item]]</span>
           </button>
         </template>
       </template>
     </cr-action-menu>
-    <cr-button id="descriptorBtnB" hidden$="[[!descriptors_]]"
-        on-click="onDescriptorMenuClickB_">
+    <cr-button id="descriptorBtnB" on-click="onDescriptorMenuClickB_">
       Descriptor B
     </cr-button>
     <cr-action-menu id="descriptorMenuB">
       <template is="dom-repeat" items="[[descriptors_.descriptorB]]">
-        <button class="dropdown-item">
+        <button class="dropdown-item" on-click="onDescriptorLabelClickB_">
           <img src="[[item.imagePath]]"></img>
           <span>[[item.label]]</span>
         </button>
       </template>
     </cr-action-menu>
-    <cr-button id="descriptorBtnC" hidden$="[[!descriptors_]]"
-        on-click="onDescriptorMenuClickC_">
+    <cr-button id="descriptorBtnC" on-click="onDescriptorMenuClickC_">
       Descriptor C
     </cr-button>
     <cr-action-menu id="descriptorMenuC">
       <template is="dom-repeat" items="[[descriptors_.descriptorC]]">
-        <button class="dropdown-item">
+        <button class="dropdown-item" on-click="onDescriptorLabelClickC_">
           <span>[[item]]</span>
         </button>
       </template>

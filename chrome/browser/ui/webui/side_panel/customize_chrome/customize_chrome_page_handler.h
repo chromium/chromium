@@ -113,7 +113,9 @@ class CustomizeChromePageHandler
   void SearchWallpaper(const std::string& query,
                        SearchWallpaperCallback callback) override;
   void GetWallpaperSearchResults(
-      const std::string& query,
+      const std::string& descriptor_a,
+      const absl::optional<std::string>& descriptor_b,
+      const absl::optional<std::string>& descriptor_c,
       GetWallpaperSearchResultsCallback callback) override;
   void SetBackgroundToWallpaperSearchResult(
       const base::Token& result_id) override;

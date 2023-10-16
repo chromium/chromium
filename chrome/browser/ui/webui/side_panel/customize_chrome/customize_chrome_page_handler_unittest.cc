@@ -1152,8 +1152,8 @@ TEST_F(CustomizeChromePageHandlerWithWallpaperSearchTest,
       CustomizeChromePageHandler::GetWallpaperSearchResultsCallback>
       callback;
 
-  handler().GetWallpaperSearchResults("foo", callback.Get());
-  EXPECT_EQ("foo", request.query());
+  handler().GetWallpaperSearchResults("foo", "bar", "baz", callback.Get());
+  EXPECT_EQ("foo bar baz", request.query());
 
   chrome_intelligence_modelexecution_proto::WallpaperSearchResponse response;
 
@@ -1210,6 +1210,30 @@ TEST_F(CustomizeChromePageHandlerWithWallpaperSearchTest,
 }
 
 TEST_F(CustomizeChromePageHandlerWithWallpaperSearchTest,
+       GetWallpaperSearchResults_TwoDescriptorsQueryFormatCorrect) {
+  chrome_intelligence_modelexecution_proto::WallpaperSearchRequest request;
+  base::OnceCallback<void(const gfx::Image&)> decoder_callback1;
+  EXPECT_CALL(mock_optimization_guide_keyed_service(), ExecuteModel(_, _, _))
+      .WillOnce(Invoke(
+          [&request](
+              optimization_guide::proto::ModelExecutionFeature feature_arg,
+              const google::protobuf::MessageLite& request_arg,
+              optimization_guide::OptimizationGuideModelExecutionResultCallback
+                  done_callback_arg) {
+            ASSERT_EQ(request.GetTypeName(), request_arg.GetTypeName());
+            request.CheckTypeAndMergeFrom(request_arg);
+          }));
+
+  testing::NiceMock<base::MockCallback<
+      CustomizeChromePageHandler::GetWallpaperSearchResultsCallback>>
+      callback;
+  handler().GetWallpaperSearchResults("foo", absl::nullopt, "bar",
+                                      callback.Get());
+
+  EXPECT_EQ("foo bar", request.query());
+}
+
+TEST_F(CustomizeChromePageHandlerWithWallpaperSearchTest,
        GetWallpaperSearchResults_NoResponse) {
   chrome_intelligence_modelexecution_proto::WallpaperSearchRequest request;
   optimization_guide::OptimizationGuideModelExecutionResultCallback
@@ -1231,7 +1255,8 @@ TEST_F(CustomizeChromePageHandlerWithWallpaperSearchTest,
       CustomizeChromePageHandler::GetWallpaperSearchResultsCallback>
       callback;
 
-  handler().GetWallpaperSearchResults("foo", callback.Get());
+  handler().GetWallpaperSearchResults("foo", absl::nullopt, absl::nullopt,
+                                      callback.Get());
   EXPECT_EQ("foo", request.query());
 
   std::vector<side_panel::mojom::WallpaperSearchResultPtr> images;
@@ -1264,7 +1289,8 @@ TEST_F(CustomizeChromePageHandlerWithWallpaperSearchTest,
       CustomizeChromePageHandler::GetWallpaperSearchResultsCallback>
       callback;
 
-  handler().GetWallpaperSearchResults("foo", callback.Get());
+  handler().GetWallpaperSearchResults("foo", absl::nullopt, absl::nullopt,
+                                      callback.Get());
   EXPECT_EQ("foo", request.query());
 
   chrome_intelligence_modelexecution_proto::WallpaperSearchResponse response;
@@ -1321,7 +1347,8 @@ TEST_F(CustomizeChromePageHandlerWithWallpaperSearchTest,
       CustomizeChromePageHandler::GetWallpaperSearchResultsCallback>
       callback;
 
-  handler().GetWallpaperSearchResults("foo", callback.Get());
+  handler().GetWallpaperSearchResults("foo", absl::nullopt, absl::nullopt,
+                                      callback.Get());
   EXPECT_EQ("foo", request.query());
 
   chrome_intelligence_modelexecution_proto::WallpaperSearchResponse response;
