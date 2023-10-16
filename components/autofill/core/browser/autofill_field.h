@@ -8,6 +8,7 @@
 #include <stddef.h>
 
 #include <map>
+#include <optional>
 #include <string>
 #include <utility>
 #include <vector>
@@ -312,8 +313,8 @@ class AutofillField : public FormFieldData {
   void ClearLogEvents() { field_log_events_.clear(); }
 
   void set_autofill_source_profile_guid(
-      const std::string& autofill_profile_guid) {
-    autofill_source_profile_guid_ = autofill_profile_guid;
+      std::optional<std::string> autofill_profile_guid) {
+    autofill_source_profile_guid_ = std::move(autofill_profile_guid);
   }
   absl::optional<std::string> autofill_source_profile_guid() const {
     return autofill_source_profile_guid_;
@@ -442,7 +443,7 @@ class AutofillField : public FormFieldData {
   // Note: `is_autofilled` is true for autocompleted fields. So `is_autofilled`
   // is not a sufficient condition for `autofill_source_profile_guid_` to have a
   // value.
-  absl::optional<std::string> autofill_source_profile_guid_;
+  std::optional<std::string> autofill_source_profile_guid_;
 };
 
 }  // namespace autofill

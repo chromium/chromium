@@ -137,9 +137,12 @@ class BrowserAutofillManagerTestApi : public AutofillManagerTestApi {
         consider_form_as_secure_for_testing;
   }
 
-  void AddFormFillEntry(base::span<const FormFieldData* const> filled_fields,
-                        bool is_refill) {
-    manager_->form_autofill_history_.AddFormFillEntry(filled_fields, is_refill);
+  void AddFormFillEntry(
+      base::span<const FormFieldData* const> filled_fields,
+      base::span<const AutofillField* const> filled_autofill_fields,
+      bool is_refill) {
+    manager_->form_autofill_history_.AddFormFillEntry(
+        filled_fields, filled_autofill_fields, is_refill);
   }
 
  private:

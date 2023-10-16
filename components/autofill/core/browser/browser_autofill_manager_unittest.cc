@@ -787,10 +787,11 @@ class BrowserAutofillManagerTest : public testing::Test {
   }
 
   void AddFormFillHistoryEntry(
-      base::span<const FormFieldData* const> filled_fields,
+      std::vector<const FormFieldData* const> filled_fields,
+      std::vector<const AutofillField* const> filled_autofill_fields,
       bool is_refill) {
     test_api(*browser_autofill_manager_)
-        .AddFormFillEntry(filled_fields, is_refill);
+        .AddFormFillEntry(filled_fields, filled_autofill_fields, is_refill);
   }
 
   void FillAutofillFormData(
@@ -2991,11 +2992,11 @@ TEST_F(BrowserAutofillManagerTest, UndoAutofillCallsDriver) {
 
 TEST_F(BrowserAutofillManagerTest, UndoResetsCachedAutofillState) {
   FormData form = CreateTestAddressFormData();
-  std::vector<const FormFieldData* const> filled_fields = {
-      &form.fields.front()};
+  AutofillField filled_autofill_field(form.fields.front());
 
   form.fields.front().is_autofilled = false;
-  AddFormFillHistoryEntry(filled_fields, /*is_refill=*/false);
+  AddFormFillHistoryEntry({&form.fields.front()}, {&filled_autofill_field},
+                          /*is_refill=*/false);
   form.fields.front().is_autofilled = true;
   FormsSeen({form});
 

@@ -4,14 +4,31 @@
 
 #include "components/autofill/core/browser/form_autofill_history.h"
 
+#include "components/autofill/core/browser/autofill_field.h"
 #include "components/autofill/core/common/autofill_constants.h"
 #include "components/autofill/core/common/form_field_data.h"
 #include "components/autofill/core/common/unique_ids.h"
 
 namespace autofill {
 
-FormAutofillHistory::FieldFillingEntry
-FormAutofillHistory::FillOperation::GetAutofillValue(
+FormAutofillHistory::FieldFillingEntry::FieldFillingEntry(
+    std::u16string field_value,
+    bool field_is_autofilled,
+    std::optional<std::string> field_autofill_source_profile_guid)
+    : value(field_value),
+      is_autofilled(field_is_autofilled),
+      autofill_source_profile_guid(field_autofill_source_profile_guid) {}
+
+FormAutofillHistory::FieldFillingEntry::~FieldFillingEntry() = default;
+
+FormAutofillHistory::FieldFillingEntry::FieldFillingEntry(
+    const FieldFillingEntry&) = default;
+
+FormAutofillHistory::FieldFillingEntry::FieldFillingEntry(FieldFillingEntry&&) =
+    default;
+
+const FormAutofillHistory::FieldFillingEntry&
+FormAutofillHistory::FillOperation::GetFieldFillingEntry(
     FieldGlobalId field_id) const {
   auto it = iterator_->find(field_id);
   CHECK(it != iterator_->end());
@@ -24,6 +41,7 @@ FormAutofillHistory::~FormAutofillHistory() = default;
 
 void FormAutofillHistory::AddFormFillEntry(
     base::span<const FormFieldData* const> filled_fields,
+    base::span<const AutofillField* const> filled_autofill_fields,
     bool is_refill) {
   // Intuitively, `if (!is_refill) history_.emplace_front()` suffices, but it
   // does not handle these corner cases correctly:
@@ -33,7 +51,10 @@ void FormAutofillHistory::AddFormFillEntry(
   if (history_.empty() || (!is_refill && !history_.front().empty())) {
     history_.emplace_front();
   }
-  for (const FormFieldData* field : filled_fields) {
+  CHECK_EQ(filled_fields.size(), filled_autofill_fields.size());
+  for (size_t i = 0; i < filled_fields.size(); ++i) {
+    const FormFieldData* const field = filled_fields[i];
+    const AutofillField* const autofill_field = filled_autofill_fields[i];
     // During refills, a field that was previously filled in the original
     // fill operation, with initial value `A` and filled value `B`, might be
     // refilled with a newer value `C`. We do not store this so that upon
@@ -41,7 +62,9 @@ void FormAutofillHistory::AddFormFillEntry(
     // this is what happened from a user's perspective.
     size_ += history_.front()
                  .emplace(field->global_id(),
-                          FieldFillingEntry(field->value, field->is_autofilled))
+                          FieldFillingEntry(
+                              field->value, field->is_autofilled,
+                              autofill_field->autofill_source_profile_guid()))
                  .second;
   }
   // Drop the last history entry while the history size exceeds the limit.
