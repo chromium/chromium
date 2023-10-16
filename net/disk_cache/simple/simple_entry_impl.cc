@@ -35,6 +35,7 @@
 #include "net/disk_cache/simple/simple_util.h"
 #include "net/log/net_log.h"
 #include "net/log/net_log_source_type.h"
+#include "third_party/abseil-cpp/absl/types/optional.h"
 #include "third_party/zlib/zlib.h"
 
 namespace disk_cache {
@@ -193,7 +194,7 @@ EntryResult SimpleEntryImpl::OpenEntry(EntryResultCallback callback) {
 
 EntryResult SimpleEntryImpl::CreateEntry(EntryResultCallback callback) {
   DCHECK(backend_.get());
-  DCHECK_EQ(entry_hash_, simple_util::GetEntryHashKey(key_));
+  DCHECK_EQ(entry_hash_, simple_util::GetEntryHashKey(*key_));
 
   net_log_.AddEvent(net::NetLogEventType::SIMPLE_CACHE_ENTRY_CREATE_CALL);
 
@@ -234,7 +235,7 @@ EntryResult SimpleEntryImpl::CreateEntry(EntryResultCallback callback) {
 
 EntryResult SimpleEntryImpl::OpenOrCreateEntry(EntryResultCallback callback) {
   DCHECK(backend_.get());
-  DCHECK_EQ(entry_hash_, simple_util::GetEntryHashKey(key_));
+  DCHECK_EQ(entry_hash_, simple_util::GetEntryHashKey(*key_));
 
   net_log_.AddEvent(
       net::NetLogEventType::SIMPLE_CACHE_ENTRY_OPEN_OR_CREATE_CALL);
@@ -354,7 +355,7 @@ void SimpleEntryImpl::Close() {
 
 std::string SimpleEntryImpl::GetKey() const {
   DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
-  return key_;
+  return *key_;
 }
 
 Time SimpleEntryImpl::GetLastUsed() const {
@@ -848,7 +849,7 @@ void SimpleEntryImpl::CreateEntryInternal(
 
   OnceClosure task =
       base::BindOnce(&SimpleSynchronousEntry::CreateEntry, cache_type_, path_,
-                     key_, entry_hash_, file_tracker_,
+                     *key_, entry_hash_, file_tracker_,
                      file_operations_factory_->CreateUnbound(), results.get());
   OnceClosure reply = base::BindOnce(
       &SimpleEntryImpl::CreationOperationComplete, this, result_state,
@@ -909,7 +910,7 @@ void SimpleEntryImpl::OpenOrCreateEntryInternal(
 
   base::OnceClosure task =
       base::BindOnce(&SimpleSynchronousEntry::OpenOrCreateEntry, cache_type_,
-                     path_, key_, entry_hash_, index_state, optimistic_create,
+                     path_, *key_, entry_hash_, index_state, optimistic_create,
                      file_tracker_, file_operations_factory_->CreateUnbound(),
                      trailer_prefetch_size, results.get());
 
@@ -1427,13 +1428,13 @@ void SimpleEntryImpl::CreationOperationComplete(
 
   // If this entry was opened by hash, key_ could still be empty. If so, update
   // it with the key read from the synchronous entry.
-  if (key_.empty()) {
-    SetKey(synchronous_entry_->key());
+  if (!key_.has_value()) {
+    SetKey(*synchronous_entry_->key());
   } else {
     // This should only be triggered when creating an entry. In the open case
     // the key is either copied from the arguments to open, or checked
     // in the synchronous entry.
-    DCHECK_EQ(key_, synchronous_entry_->key());
+    DCHECK_EQ(*key_, *synchronous_entry_->key());
   }
 
   // Prefer index last used time to disk's, since that may be pretty inaccurate.
@@ -1655,7 +1656,7 @@ void SimpleEntryImpl::UpdateDataFromEntryStat(
 int64_t SimpleEntryImpl::GetDiskUsage() const {
   int64_t file_size = 0;
   for (int data_size : data_size_) {
-    file_size += simple_util::GetFileSizeFromDataSize(key_.size(), data_size);
+    file_size += simple_util::GetFileSizeFromDataSize(key_->size(), data_size);
   }
   file_size += sparse_data_size_;
   return file_size;

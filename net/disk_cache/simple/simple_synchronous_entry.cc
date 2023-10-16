@@ -33,6 +33,7 @@
 #include "net/disk_cache/simple/simple_histogram_macros.h"
 #include "net/disk_cache/simple/simple_util.h"
 #include "third_party/abseil-cpp/absl/container/inlined_vector.h"
+#include "third_party/abseil-cpp/absl/types/optional.h"
 #include "third_party/zlib/zlib.h"
 
 using base::FilePath;
@@ -341,7 +342,7 @@ SimpleSynchronousEntry::SparseRequest::SparseRequest(int64_t sparse_offset_p,
 void SimpleSynchronousEntry::OpenEntry(
     net::CacheType cache_type,
     const FilePath& path,
-    const std::string& key,
+    const absl::optional<std::string>& key,
     const uint64_t entry_hash,
     SimpleFileTracker* file_tracker,
     std::unique_ptr<UnboundBackendFileOperations> file_operations,
@@ -607,7 +608,7 @@ void SimpleSynchronousEntry::ReadData(const ReadRequest& in_entry_op,
     return;
   }
   const int64_t file_offset = entry_stat->GetOffsetInFile(
-      key_.size(), in_entry_op.offset, in_entry_op.index);
+      key_->size(), in_entry_op.offset, in_entry_op.index);
   // Zero-length reads and reads to the empty streams of omitted files should
   // be handled in the SimpleEntryImpl.
   DCHECK_GT(in_entry_op.buf_len, 0);
@@ -667,8 +668,9 @@ void SimpleSynchronousEntry::WriteData(const WriteRequest& in_entry_op,
   int buf_len = in_entry_op.buf_len;
   bool truncate = in_entry_op.truncate;
   bool doomed = in_entry_op.doomed;
+  size_t key_size = key_->size();
   const int64_t file_offset = out_entry_stat->GetOffsetInFile(
-      key_.size(), in_entry_op.offset, in_entry_op.index);
+      key_size, in_entry_op.offset, in_entry_op.index);
   bool extending_by_write = offset + buf_len > out_entry_stat->data_size(index);
 
   if (empty_file_omitted_[file_index]) {
@@ -711,7 +713,7 @@ void SimpleSynchronousEntry::WriteData(const WriteRequest& in_entry_op,
   if (extending_by_write) {
     // The EOF record and the eventual stream afterward need to be zeroed out.
     const int64_t file_eof_offset =
-        out_entry_stat->GetEOFOffsetInFile(key_.size(), index);
+        out_entry_stat->GetEOFOffsetInFile(key_size, index);
     if (!file->SetLength(file_eof_offset)) {
       RecordWriteResult(cache_type_, SYNC_WRITE_RESULT_PRETRUNCATE_FAILURE);
       DoomInternal(file_operations);
@@ -733,7 +735,7 @@ void SimpleSynchronousEntry::WriteData(const WriteRequest& in_entry_op,
   } else {
     out_entry_stat->set_data_size(index, offset + buf_len);
     int file_eof_offset =
-        out_entry_stat->GetLastEOFOffsetInFile(key_.size(), index);
+        out_entry_stat->GetLastEOFOffsetInFile(key_size, index);
     if (!file->SetLength(file_eof_offset)) {
       RecordWriteResult(cache_type_, SYNC_WRITE_RESULT_TRUNCATE_FAILURE);
       DoomInternal(file_operations);
@@ -1004,7 +1006,7 @@ int SimpleSynchronousEntry::CheckEOFRecord(
     uint32_t expected_crc32) {
   DCHECK(initialized_);
   SimpleFileEOF eof_record;
-  int file_offset = entry_stat.GetEOFOffsetInFile(key_.size(), stream_index);
+  int file_offset = entry_stat.GetEOFOffsetInFile(key_->size(), stream_index);
   int file_index = GetFileIndexFromStreamIndex(stream_index);
   int rv =
       GetEOFRecordData(file, nullptr, file_index, file_offset, &eof_record);
@@ -1038,7 +1040,7 @@ int SimpleSynchronousEntry::PreReadStreamPayload(
   int read_size = stream_size + extra_size;
   out->data = base::MakeRefCounted<net::GrowableIOBuffer>();
   out->data->SetCapacity(read_size);
-  int file_offset = entry_stat.GetOffsetInFile(key_.size(), 0, stream_index);
+  int file_offset = entry_stat.GetOffsetInFile(key_->size(), 0, stream_index);
   if (!ReadFromFileOrPrefetched(file, prefetch_data, 0, file_offset, read_size,
                                 out->data->data()))
     return net::ERR_FAILED;
@@ -1068,6 +1070,7 @@ void SimpleSynchronousEntry::Close(
   unbound_file_operations_ = nullptr;
   base::ElapsedTimer close_time;
   DCHECK(stream_0_data);
+  const std::string& key = *key_;
 
   for (auto& crc_record : *crc32s_to_write) {
     const int stream_index = crc_record.index;
@@ -1085,7 +1088,7 @@ void SimpleSynchronousEntry::Close(
 
     if (stream_index == 0) {
       // Write stream 0 data.
-      int stream_0_offset = entry_stat.GetOffsetInFile(key_.size(), 0, 0);
+      int stream_0_offset = entry_stat.GetOffsetInFile(key.size(), 0, 0);
       if (file->Write(stream_0_offset, stream_0_data->data(),
                       entry_stat.data_size(0)) != entry_stat.data_size(0)) {
         RecordCloseResult(cache_type_, CLOSE_RESULT_WRITE_FAILURE);
@@ -1093,7 +1096,7 @@ void SimpleSynchronousEntry::Close(
         DoomInternal(file_operations.get());
       }
       net::SHA256HashValue hash_value;
-      CalculateSHA256OfKey(key_, &hash_value);
+      CalculateSHA256OfKey(key, &hash_value);
       if (file->Write(stream_0_offset + entry_stat.data_size(0),
                       reinterpret_cast<char*>(hash_value.data),
                       sizeof(hash_value)) != sizeof(hash_value)) {
@@ -1124,7 +1127,7 @@ void SimpleSynchronousEntry::Close(
     if (stream_index == 0)
       eof_record.flags |= SimpleFileEOF::FLAG_HAS_KEY_SHA256;
     eof_record.data_crc32 = crc_record.data_crc32;
-    int eof_offset = entry_stat.GetEOFOffsetInFile(key_.size(), stream_index);
+    int eof_offset = entry_stat.GetEOFOffsetInFile(key.size(), stream_index);
     // If stream 0 changed size, the file needs to be resized, otherwise the
     // next open will yield wrong stream sizes. On stream 1 and stream 2 proper
     // resizing of the file is handled in SimpleSynchronousEntry::WriteData().
@@ -1169,7 +1172,7 @@ void SimpleSynchronousEntry::Close(
 SimpleSynchronousEntry::SimpleSynchronousEntry(
     net::CacheType cache_type,
     const FilePath& path,
-    const std::string& key,
+    const absl::optional<std::string>& key,
     const uint64_t entry_hash,
     SimpleFileTracker* file_tracker,
     std::unique_ptr<UnboundBackendFileOperations> unbound_file_operations,
@@ -1370,8 +1373,8 @@ void SimpleSynchronousEntry::CloseFiles() {
 
 bool SimpleSynchronousEntry::CheckHeaderAndKey(base::File* file,
                                                int file_index) {
-  std::vector<char> header_data(key_.empty() ? kInitialHeaderRead
-                                             : GetHeaderSize(key_.size()));
+  std::vector<char> header_data(
+      !key_.has_value() ? kInitialHeaderRead : GetHeaderSize(key_->size()));
   int bytes_read = file->Read(0, header_data.data(), header_data.size());
   const SimpleFileHeader* header =
       reinterpret_cast<const SimpleFileHeader*>(header_data.data());
@@ -1417,10 +1420,10 @@ bool SimpleSynchronousEntry::CheckHeaderAndKey(base::File* file,
   }
 
   std::string key_from_header(key_data, header->key_length);
-  if (key_.empty()) {
-    key_.swap(key_from_header);
+  if (!key_.has_value()) {
+    key_.emplace(std::move(key_from_header));
   } else {
-    if (key_ != key_from_header) {
+    if (*key_ != key_from_header) {
       RecordSyncOpenResult(cache_type_, OPEN_ENTRY_KEY_MISMATCH);
       return false;
     }
@@ -1443,7 +1446,7 @@ int SimpleSynchronousEntry::InitializeForOpen(
     if (empty_file_omitted_[i])
       continue;
 
-    if (key_.empty()) {
+    if (!key_.has_value()) {
       SimpleFileTracker::FileHandle file =
           file_tracker_->Acquire(file_operations, this, SubFileForFileIndex(i));
       // If |key_| is empty, we were opened via the iterator interface, without
@@ -1460,6 +1463,7 @@ int SimpleSynchronousEntry::InitializeForOpen(
       // start reading in the data, depending on stream # and format revision.
       header_and_key_check_needed_[i] = true;
     }
+    size_t key_size = key_->size();
 
     if (i == 0) {
       // File size for stream 0 has been stored temporarily in data_size[1].
@@ -1470,8 +1474,7 @@ int SimpleSynchronousEntry::InitializeForOpen(
         return ret_value_stream_0;
     } else {
       out_entry_stat->set_data_size(
-          2,
-          GetDataSizeFromFileSize(key_.size(), out_entry_stat->data_size(2)));
+          2, GetDataSizeFromFileSize(key_size, out_entry_stat->data_size(2)));
       const int32_t data_size_2 = out_entry_stat->data_size(2);
       int ret_value_stream_2 = net::OK;
       if (data_size_2 < 0) {
@@ -1483,7 +1486,7 @@ int SimpleSynchronousEntry::InitializeForOpen(
         SimpleFileTracker::FileHandle file = file_tracker_->Acquire(
             file_operations, this, SubFileForFileIndex(i));
         int file_offset =
-            out_entry_stat->GetEOFOffsetInFile(key_.size(), 2 /*stream index*/);
+            out_entry_stat->GetEOFOffsetInFile(key_size, 2 /*stream index*/);
         ret_value_stream_2 =
             GetEOFRecordData(file.get(), nullptr, i, file_offset, &eof_record);
       }
@@ -1528,22 +1531,24 @@ bool SimpleSynchronousEntry::InitializeCreatedFile(
       file_operations, this, SubFileForFileIndex(file_index));
   if (!file.IsOK())
     return false;
+  const std::string& key = *key_;
 
   SimpleFileHeader header;
   header.initial_magic_number = kSimpleInitialMagicNumber;
   header.version = kSimpleEntryVersionOnDisk;
 
-  header.key_length = key_.size();
-  header.key_hash = base::PersistentHash(key_);
+  header.key_length = key.size();
+  header.key_hash = base::PersistentHash(key);
 
   int bytes_written =
       file->Write(0, reinterpret_cast<char*>(&header), sizeof(header));
   if (bytes_written != sizeof(header))
     return false;
 
-  bytes_written = file->Write(sizeof(header), key_.data(), key_.size());
-  if (bytes_written != base::checked_cast<int>(key_.size()))
+  bytes_written = file->Write(sizeof(header), key.data(), key.size());
+  if (bytes_written != base::checked_cast<int>(key.size())) {
     return false;
+  }
 
   return true;
 }
@@ -1643,8 +1648,9 @@ int SimpleSynchronousEntry::ReadAndValidateStream0AndMaybe1(
   if (has_key_sha256)
     extra_post_stream_0_read += sizeof(net::SHA256HashValue);
 
+  const std::string& key = *key_;
   int32_t stream1_size = file_size - 2 * sizeof(SimpleFileEOF) - stream_0_size -
-                         sizeof(SimpleFileHeader) - key_.size() -
+                         sizeof(SimpleFileHeader) - key.size() -
                          extra_post_stream_0_read;
   if (stream1_size < 0 || stream1_size > file_size)
     return net::ERR_FAILED;
@@ -1667,14 +1673,14 @@ int SimpleSynchronousEntry::ReadAndValidateStream0AndMaybe1(
   // If prefetch buffer is available, and we have sha256(key) (so we don't need
   // to look at the header), extract out stream 1 info as well.
   int stream_1_offset = out_entry_stat->GetOffsetInFile(
-      key_.size(), /* offset= */ 0, /* stream_index = */ 1);
+      key.size(), /* offset= */ 0, /* stream_index = */ 1);
   int stream_1_read_size =
       sizeof(SimpleFileEOF) + out_entry_stat->data_size(/* stream_index = */ 1);
   if (has_key_sha256 &&
       prefetch_data.HasData(stream_1_offset, stream_1_read_size)) {
     SimpleFileEOF stream_1_eof;
     int stream_1_eof_offset =
-        out_entry_stat->GetEOFOffsetInFile(key_.size(), /* stream_index = */ 1);
+        out_entry_stat->GetEOFOffsetInFile(key.size(), /* stream_index = */ 1);
     rv = GetEOFRecordData(file.get(), &prefetch_data, /* file_index = */ 0,
                           stream_1_eof_offset, &stream_1_eof);
     if (rv != net::OK)
@@ -1691,7 +1697,7 @@ int SimpleSynchronousEntry::ReadAndValidateStream0AndMaybe1(
   // If present, check the key SHA256.
   if (has_key_sha256) {
     net::SHA256HashValue hash_value;
-    CalculateSHA256OfKey(key_, &hash_value);
+    CalculateSHA256OfKey(key, &hash_value);
     bool matched =
         std::memcmp(&hash_value,
                     stream_prefetch_data[0].data->data() + stream_0_size,
@@ -1889,7 +1895,7 @@ void SimpleSynchronousEntry::CloseSparseFile(
 bool SimpleSynchronousEntry::TruncateSparseFile(base::File* sparse_file) {
   DCHECK(sparse_file_open());
 
-  int64_t header_and_key_length = sizeof(SimpleFileHeader) + key_.size();
+  int64_t header_and_key_length = sizeof(SimpleFileHeader) + key_->size();
   if (!sparse_file->SetLength(header_and_key_length)) {
     DLOG(WARNING) << "Could not truncate sparse file";
     return false;
@@ -1905,8 +1911,9 @@ bool SimpleSynchronousEntry::InitializeSparseFile(base::File* sparse_file) {
   SimpleFileHeader header;
   header.initial_magic_number = kSimpleInitialMagicNumber;
   header.version = kSimpleVersion;
-  header.key_length = key_.size();
-  header.key_hash = base::PersistentHash(key_);
+  const std::string& key = *key_;
+  header.key_length = key.size();
+  header.key_hash = base::PersistentHash(key);
 
   int header_write_result =
       sparse_file->Write(0, reinterpret_cast<char*>(&header), sizeof(header));
@@ -1916,14 +1923,14 @@ bool SimpleSynchronousEntry::InitializeSparseFile(base::File* sparse_file) {
   }
 
   int key_write_result =
-      sparse_file->Write(sizeof(header), key_.data(), key_.size());
-  if (key_write_result != base::checked_cast<int>(key_.size())) {
+      sparse_file->Write(sizeof(header), key.data(), key.size());
+  if (key_write_result != base::checked_cast<int>(key.size())) {
     DLOG(WARNING) << "Could not write sparse file key";
     return false;
   }
 
   sparse_ranges_.clear();
-  sparse_tail_offset_ = sizeof(header) + key_.size();
+  sparse_tail_offset_ = sizeof(header) + key.size();
 
   return true;
 }
@@ -1953,7 +1960,7 @@ bool SimpleSynchronousEntry::ScanSparseFile(base::File* sparse_file,
 
   sparse_ranges_.clear();
 
-  int64_t range_header_offset = sizeof(header) + key_.size();
+  int64_t range_header_offset = sizeof(header) + key_->size();
   while (true) {
     SimpleFileSparseRangeHeader range_header;
     int range_header_read_result = sparse_file->Read(
