@@ -2136,7 +2136,7 @@
   {
     "name": "enable-audio-focus-enforcement",
     "owners": [ "liberato", "steimel", "meganlfu", "media-dev" ],
-    "expiry_milestone": 120
+    "expiry_milestone": 125
   },
   {
     "name": "enable-auto-disable-accessibility",
