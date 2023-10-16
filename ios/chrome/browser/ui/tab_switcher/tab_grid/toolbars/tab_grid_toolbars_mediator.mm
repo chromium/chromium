@@ -55,33 +55,39 @@
 
   BOOL shouldEnableEditButton =
       _configuration.closeAllButton || _configuration.selectTabsButton;
-  if (shouldEnableEditButton) {
-    [self configureEditButtons];
-  }
+
+  [self configureEditButtons];
   [self.bottomToolbarConsumer setEditButtonEnabled:shouldEnableEditButton];
   [self.topToolbarConsumer setEditButtonEnabled:shouldEnableEditButton];
 }
 
 // Configures buttons that are available under the edit menu.
 - (void)configureEditButtons {
-  ActionFactory* actionFactory = [[ActionFactory alloc]
-      initWithScenario:MenuScenarioHistogram::kTabGridEdit];
-  __weak id<TabGridToolbarsButtonsDelegate> weakButtonDelegate =
-      _buttonsDelegate;
-  NSMutableArray<UIMenuElement*>* menuElements =
-      [@[ [actionFactory actionToCloseAllTabsWithBlock:^{
-        [weakButtonDelegate closeAllButtonTapped:nil];
-      }] ] mutableCopy];
-  // Disable the "Select All" option from the edit button when there are no tabs
-  // in the regular tab grid. "Close All" can still be called if there are
-  // inactive tabs.
-  if (_configuration.selectTabsButton) {
-    [menuElements addObject:[actionFactory actionToSelectTabsWithBlock:^{
-                    [weakButtonDelegate selectTabsButtonTapped:nil];
-                  }]];
+  BOOL shouldEnableEditButton =
+      _configuration.closeAllButton || _configuration.selectTabsButton;
+
+  UIMenu* menu = nil;
+  if (shouldEnableEditButton) {
+    ActionFactory* actionFactory = [[ActionFactory alloc]
+        initWithScenario:MenuScenarioHistogram::kTabGridEdit];
+    __weak id<TabGridToolbarsButtonsDelegate> weakButtonDelegate =
+        _buttonsDelegate;
+    NSMutableArray<UIMenuElement*>* menuElements =
+        [@[ [actionFactory actionToCloseAllTabsWithBlock:^{
+          [weakButtonDelegate closeAllButtonTapped:nil];
+        }] ] mutableCopy];
+    // Disable the "Select All" option from the edit button when there are no
+    // tabs in the regular tab grid. "Close All" can still be called if there
+    // are inactive tabs.
+    if (_configuration.selectTabsButton) {
+      [menuElements addObject:[actionFactory actionToSelectTabsWithBlock:^{
+                      [weakButtonDelegate selectTabsButtonTapped:nil];
+                    }]];
+    }
+
+    menu = [UIMenu menuWithChildren:menuElements];
   }
 
-  UIMenu* menu = [UIMenu menuWithChildren:menuElements];
   [self.topToolbarConsumer setEditButtonMenu:menu];
   [self.bottomToolbarConsumer setEditButtonMenu:menu];
 }
