@@ -4657,7 +4657,18 @@ IN_PROC_BROWSER_TEST_F(BackForwardCacheBrowserTest,
                     {}, {reason}, {}, FROM_HERE);
 }
 
-IN_PROC_BROWSER_TEST_F(BackForwardCacheBrowserTest, CacheWithMediaSession) {
+// TODO(crbug.com/1491942): This fails with the field trial testing config.
+class BackForwardCacheBrowserTestNoTestingConfig
+    : public BackForwardCacheBrowserTest {
+ public:
+  void SetUpCommandLine(base::CommandLine* command_line) override {
+    BackForwardCacheBrowserTest::SetUpCommandLine(command_line);
+    command_line->AppendSwitch("disable-field-trial-config");
+  }
+};
+
+IN_PROC_BROWSER_TEST_F(BackForwardCacheBrowserTestNoTestingConfig,
+                       CacheWithMediaSession) {
   ASSERT_TRUE(embedded_test_server()->Start());
 
   // 1) Navigate to a page using MediaSession.
@@ -4815,8 +4826,19 @@ class BackForwardCacheBrowserTestWithMediaSession
   }
 };
 
-IN_PROC_BROWSER_TEST_F(BackForwardCacheBrowserTestWithMediaSession,
-                       CacheWhenMediaSessionPlaybackStateIsChanged) {
+// TODO(crbug.com/1491942): This fails with the field trial testing config.
+class BackForwardCacheBrowserTestWithMediaSessionNoTestingConfig
+    : public BackForwardCacheBrowserTestWithMediaSession {
+ public:
+  void SetUpCommandLine(base::CommandLine* command_line) override {
+    BackForwardCacheBrowserTestWithMediaSession::SetUpCommandLine(command_line);
+    command_line->AppendSwitch("disable-field-trial-config");
+  }
+};
+
+IN_PROC_BROWSER_TEST_F(
+    BackForwardCacheBrowserTestWithMediaSessionNoTestingConfig,
+    CacheWhenMediaSessionPlaybackStateIsChanged) {
   ASSERT_TRUE(embedded_test_server()->Start());
 
   // 1) Navigate to a page.
@@ -4861,8 +4883,9 @@ IN_PROC_BROWSER_TEST_F(BackForwardCacheBrowserTestWithMediaSession,
   ExpectRestored(FROM_HERE);
 }
 
-IN_PROC_BROWSER_TEST_F(BackForwardCacheBrowserTestWithMediaSession,
-                       DontCacheWhenMediaSessionServiceIsUsed) {
+IN_PROC_BROWSER_TEST_F(
+    BackForwardCacheBrowserTestWithMediaSessionNoTestingConfig,
+    DontCacheWhenMediaSessionServiceIsUsed) {
   ASSERT_TRUE(embedded_test_server()->Start());
 
   // Navigate to a page using MediaSession.

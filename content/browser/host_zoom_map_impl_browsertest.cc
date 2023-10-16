@@ -83,6 +83,12 @@ class HostZoomMapImplBrowserTestWithRDS : public HostZoomMapImplBrowserTest {
     feature_list_.InitAndEnableFeatureWithParameters(
         features::kRequestDesktopSiteZoom, params);
   }
+
+  // TODO(crbug.com/1491942): This fails with the field trial testing config.
+  void SetUpCommandLine(base::CommandLine* command_line) override {
+    HostZoomMapImplBrowserTest::SetUpCommandLine(command_line);
+    command_line->AppendSwitch("disable-field-trial-config");
+  }
 };
 
 class HostZoomMapImplBrowserTestWithPageZoomAndRDS

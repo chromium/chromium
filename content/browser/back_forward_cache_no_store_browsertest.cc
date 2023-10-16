@@ -49,7 +49,17 @@ const char kResponseWithNoCache[] =
 
 }  // namespace
 
-IN_PROC_BROWSER_TEST_F(BackForwardCacheBrowserTest,
+// TODO(crbug.com/1491942): This fails with the field trial testing config.
+class BackForwardCacheBrowserTestNoTestingConfig
+    : public BackForwardCacheBrowserTest {
+ public:
+  void SetUpCommandLine(base::CommandLine* command_line) override {
+    BackForwardCacheBrowserTest::SetUpCommandLine(command_line);
+    command_line->AppendSwitch("disable-field-trial-config");
+  }
+};
+
+IN_PROC_BROWSER_TEST_F(BackForwardCacheBrowserTestNoTestingConfig,
                        MainFrameWithNoStoreNotCached) {
   net::test_server::ControllableHttpResponse response(embedded_test_server(),
                                                       "/main_document");
@@ -72,8 +82,8 @@ IN_PROC_BROWSER_TEST_F(BackForwardCacheBrowserTest,
   delete_observer_rfh_a.WaitUntilDeleted();
 }
 
-// Disabled for being flaky. See crbug.com/1116190.
-IN_PROC_BROWSER_TEST_F(BackForwardCacheBrowserTest, SubframeWithNoStoreCached) {
+IN_PROC_BROWSER_TEST_F(BackForwardCacheBrowserTestNoTestingConfig,
+                       SubframeWithNoStoreCached) {
   // iframe will try to load title1.html.
   net::test_server::ControllableHttpResponse response(embedded_test_server(),
                                                       "/title1.html");
@@ -109,7 +119,7 @@ IN_PROC_BROWSER_TEST_F(BackForwardCacheBrowserTest, SubframeWithNoStoreCached) {
 #else
 #define MAYBE_CCNSAndWebSocketBothRecorded CCNSAndWebSocketBothRecorded
 #endif
-IN_PROC_BROWSER_TEST_F(BackForwardCacheBrowserTest,
+IN_PROC_BROWSER_TEST_F(BackForwardCacheBrowserTestNoTestingConfig,
                        MAYBE_CCNSAndWebSocketBothRecorded) {
   net::SpawnedTestServer ws_server(net::SpawnedTestServer::TYPE_WS,
                                    net::GetWebSocketTestDataDirectory());
@@ -773,6 +783,12 @@ class BackForwardCacheWithJsNetworkRequestReceivingCCNSResourceBrowserTest
       case RequestType::kXhr:
         return "XHR";
     }
+  }
+
+  // TODO(crbug.com/1491942): This fails with the field trial testing config.
+  void SetUpCommandLine(base::CommandLine* command_line) override {
+    BackForwardCacheBrowserTest::SetUpCommandLine(command_line);
+    command_line->AppendSwitch("disable-field-trial-config");
   }
 
  protected:
