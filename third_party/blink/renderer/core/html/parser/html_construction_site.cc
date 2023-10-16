@@ -926,10 +926,11 @@ void HTMLConstructionSite::InsertHTMLTemplateElement(
   HTMLStackItem* template_stack_item =
       HTMLStackItem::Create(template_element, token);
   bool should_attach_template = true;
-  if (declarative_shadow_root_type ==
-          DeclarativeShadowRootType::kStreamingOpen ||
-      declarative_shadow_root_type ==
-          DeclarativeShadowRootType::kStreamingClosed) {
+  if ((declarative_shadow_root_type ==
+           DeclarativeShadowRootType::kStreamingOpen ||
+       declarative_shadow_root_type ==
+           DeclarativeShadowRootType::kStreamingClosed) &&
+      IsA<Element>(open_elements_.TopStackItem()->GetNode())) {
     // Attach the shadow root now
     auto focus_delegation = template_stack_item->GetAttributeItem(
                                 html_names::kShadowrootdelegatesfocusAttr)
@@ -965,9 +966,15 @@ void HTMLConstructionSite::InsertHTMLTemplateElement(
     // Attach a normal template element, or the opening tag of a non-streaming
     // declarative shadow root.
     AttachLater(CurrentNode(), template_element, token->NeedsNodePart());
+    // cant_attach_shadow can happen if we are being asked to attach a
+    // declarative shadowroot to another declarative shadowroot or another
+    // existing shadowroot.
+    bool cant_attach_shadow =
+        !IsA<Element>(open_elements_.TopStackItem()->GetNode());
     DocumentFragment* template_content =
-        template_element->GetDeclarativeShadowRootType() ==
-                DeclarativeShadowRootType::kNone
+        cant_attach_shadow ||
+                template_element->GetDeclarativeShadowRootType() ==
+                    DeclarativeShadowRootType::kNone
             ? template_element->content()
             : template_element->DeclarativeShadowContent();
     if (pending_dom_parts_ && template_content) {

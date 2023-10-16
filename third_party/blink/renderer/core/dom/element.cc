@@ -6323,8 +6323,8 @@ void Element::SetInnerHTMLInternal(const String& html,
     setTextContent(html);
   } else {
     if (DocumentFragment* fragment = CreateFragmentForInnerOuterHTML(
-            html, this, kAllowScriptingContent, "innerHTML",
-            include_shadow_roots, exception_state)) {
+            html, this, kAllowScriptingContent, include_shadow_roots,
+            exception_state)) {
       ContainerNode* container = this;
       bool swap_dom_parts{false};
       if (auto* template_element = DynamicTo<HTMLTemplateElement>(*this)) {
@@ -6396,7 +6396,7 @@ void Element::setOuterHTML(const String& html,
   Node* next = nextSibling();
 
   DocumentFragment* fragment = CreateFragmentForInnerOuterHTML(
-      html, parent, kAllowScriptingContent, "outerHTML",
+      html, parent, kAllowScriptingContent,
       /*include_shadow_roots=*/false, exception_state);
   if (exception_state.HadException()) {
     return;
@@ -6607,7 +6607,7 @@ void Element::insertAdjacentHTML(const String& where,
 
   // Step 3 of http://domparsing.spec.whatwg.org/#insertadjacenthtml()
   DocumentFragment* fragment = CreateFragmentForInnerOuterHTML(
-      markup, context_element, kAllowScriptingContent, "insertAdjacentHTML",
+      markup, context_element, kAllowScriptingContent,
       /*include_shadow_roots=*/false, exception_state);
   if (!fragment) {
     return;
@@ -9500,6 +9500,12 @@ Element* Element::ImplicitAnchorElement() {
     }
   }
   return nullptr;
+}
+
+void Element::setHTMLUnsafe(const String& html,
+                            ExceptionState& exception_state) {
+  CHECK(RuntimeEnabledFeatures::HTMLUnsafeMethodsEnabled());
+  SetInnerHTMLInternal(html, /*include_shadow_roots=*/true, exception_state);
 }
 
 }  // namespace blink

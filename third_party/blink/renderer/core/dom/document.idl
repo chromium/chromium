@@ -80,6 +80,9 @@ typedef (HTMLScriptElement or SVGScriptElement) HTMLOrSVGScriptElement;
     // HTML
     // https://html.spec.whatwg.org/C/#the-document-object
 
+    // https://github.com/whatwg/html/pull/9538
+    [RuntimeEnabled=HTMLUnsafeMethods,CallWith=ExecutionContext,MeasureAs=ParseHTMLUnsafe] static Document parseHTMLUnsafe(DOMString html);
+
     // resource metadata management
 
     [PutForwards=href, LegacyUnforgeable] readonly attribute Location? location;

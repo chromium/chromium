@@ -1804,6 +1804,7 @@ interface Directive
     method constructor
     method toString
 interface Document : Node
+    static method parseHTMLUnsafe
     attribute @@toStringTag
     attribute @@unscopables
     getter URL
@@ -2422,6 +2423,7 @@ interface Element : Node
     method setAttributeNode
     method setAttributeNodeNS
     method setHTML
+    method setHTMLUnsafe
     method setPointerCapture
     method toggleAttribute
     method webkitMatchesSelector
@@ -9251,6 +9253,7 @@ interface ShadowRoot : DocumentFragment
     method getAnimations
     method getInnerHTML
     method getSelection
+    method setHTMLUnsafe
     setter adoptedStyleSheets
     setter fullscreenElement
     setter innerHTML

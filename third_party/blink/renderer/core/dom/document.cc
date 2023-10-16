@@ -380,6 +380,8 @@ namespace blink {
 
 namespace {
 
+constexpr char kTextHtml[] = "text/html";
+
 // This enum must match the numbering for RequestStorageResult in
 // histograms/enums.xml. Do not reorder or remove items, only add new items
 // at the end.
@@ -1590,7 +1592,7 @@ String Document::SuggestedMIMEType() const {
   if (xmlStandalone())
     return "text/xml";
   if (IsA<HTMLDocument>(this))
-    return "text/html";
+    return kTextHtml;
 
   if (DocumentLoader* document_loader = Loader())
     return document_loader->MimeType();
@@ -9309,6 +9311,21 @@ Resource* Document::GetPendingLinkPreloadForTesting(const KURL& url) {
     }
   }
   return nullptr;
+}
+
+// static
+Document* Document::parseHTMLUnsafe(ExecutionContext* context,
+                                    const String& html) {
+  CHECK(RuntimeEnabledFeatures::HTMLUnsafeMethodsEnabled());
+  Document* doc = DocumentInit::Create()
+                      .WithTypeFrom(kTextHtml)
+                      .WithExecutionContext(context)
+                      .WithAgent(*context->GetAgent())
+                      .CreateDocument();
+  doc->setAllowDeclarativeShadowRoots(true);
+  doc->SetContent(html);
+  doc->SetMimeType(AtomicString(kTextHtml));
+  return doc;
 }
 
 template class CORE_TEMPLATE_EXPORT Supplement<Document>;

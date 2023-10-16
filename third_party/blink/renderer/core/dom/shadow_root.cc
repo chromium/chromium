@@ -153,11 +153,23 @@ String ShadowRoot::getInnerHTML(const GetInnerHTMLOptions* options) const {
 void ShadowRoot::setInnerHTML(const String& html,
                               ExceptionState& exception_state) {
   if (DocumentFragment* fragment = CreateFragmentForInnerOuterHTML(
-          html, &host(), kAllowScriptingContent, "innerHTML",
+          html, &host(), kAllowScriptingContent,
           /*include_shadow_roots=*/false, exception_state)) {
     ReplaceChildrenWithFragment(this, fragment, exception_state);
     if (auto* element = DynamicTo<HTMLElement>(host()))
       element->AdjustDirectionalityIfNeededAfterShadowRootChanged();
+  }
+}
+
+void ShadowRoot::setHTMLUnsafe(const String& html,
+                               ExceptionState& exception_state) {
+  if (DocumentFragment* fragment = CreateFragmentForInnerOuterHTML(
+          html, &host(), kAllowScriptingContent,
+          /*include_shadow_roots=*/true, exception_state)) {
+    ReplaceChildrenWithFragment(this, fragment, exception_state);
+    if (auto* element = DynamicTo<HTMLElement>(host())) {
+      element->AdjustDirectionalityIfNeededAfterShadowRootChanged();
+    }
   }
 }
 

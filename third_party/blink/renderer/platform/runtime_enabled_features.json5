@@ -2091,6 +2091,12 @@
       base_feature: "none",
     },
     {
+      // http://crbug.com/1478969
+      // https://github.com/whatwg/html/pull/9538
+      name: "HTMLUnsafeMethods",
+      status: "experimental",
+    },
+    {
       name: "IdleDetection",
       public: true,
       status: "stable",

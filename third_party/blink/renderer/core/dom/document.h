@@ -1994,6 +1994,10 @@ class CORE_EXPORT Document : public ContainerNode,
 
   void EnqueuePageRevealEvent();
 
+  // https://github.com/whatwg/html/pull/9538
+  static Document* parseHTMLUnsafe(ExecutionContext* context,
+                                   const String& html);
+
  protected:
   void ClearXMLVersion() { xml_version_ = String(); }
 
