@@ -388,6 +388,10 @@ template("generate_runner_script") {
             "/run/chrome",
           ]
         }
+
+        # Make the tests match the browser's selinux tags so it gets the same
+        # security context as the browser would.
+        executable_args += [ "--set-selinux-label=chromeos_integration_tests=u:object_r:chrome_browser_exec:s0" ]
       }
       if (defined(runtime_deps_file)) {
         executable_args += [

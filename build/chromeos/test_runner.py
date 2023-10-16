@@ -494,6 +494,7 @@ class GTestTest(RemoteTest):
     self._stop_ui = args.stop_ui
     self._trace_dir = args.trace_dir
     self._run_test_sudo_helper = args.run_test_sudo_helper
+    self._set_selinux_label = args.set_selinux_label
 
   @property
   def suite_name(self):
@@ -590,6 +591,18 @@ class GTestTest(RemoteTest):
       ])
       test_invocation += (
           ' --test-sudo-helper-socket-path=${TEST_SUDO_HELPER_PATH}')
+
+    # Append the selinux labels. The 'setfiles' command takes a file with each
+    # line consisting of "<file-regex> <file-type> <new-label>", where '--' is
+    # the type of a regular file.
+    if self._set_selinux_label:
+      for label_pair in self._set_selinux_label:
+        filename, label = label_pair.split('=', 1)
+        specfile = filename + '.specfile'
+        device_test_script_contents.extend([
+            'echo %s -- %s > %s' % (filename, label, specfile),
+            'setfiles -F %s %s' % (specfile, filename),
+        ])
 
     if self._additional_args:
       test_invocation += ' %s' % ' '.join(self._additional_args)
@@ -941,6 +954,15 @@ def main():
       default=True,
       help="Do not clean up the deployed files after running the test. "
       "Only supported for --remote-cmd tests")
+  gtest_parser.add_argument(
+      '--set-selinux-label',
+      action='append',
+      default=[],
+      help='Set the selinux label for a file before running. The format is:\n'
+      '  --set-selinux-label=<filename>=<label>\n'
+      'So:\n'
+      '  --set-selinux-label=my_test=u:r:cros_foo_label:s0\n'
+      'You can specify it more than one time to set multiple files tags.')
 
   # Tast test args.
   # pylint: disable=line-too-long
