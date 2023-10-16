@@ -640,8 +640,8 @@ class CORE_EXPORT NGConstraintSpace final {
                          : LayoutUnit();
   }
 
-  NGMarginStrut MarginStrut() const {
-    return HasRareData() ? rare_data_->MarginStrut() : NGMarginStrut();
+  MarginStrut GetMarginStrut() const {
+    return HasRareData() ? rare_data_->GetMarginStrut() : MarginStrut();
   }
 
   // The BfcOffset is where the MarginStrut is placed within the block
@@ -652,7 +652,7 @@ class CORE_EXPORT NGConstraintSpace final {
   //
   // This is done by:
   //   bfc_block_offset =
-  //     space.GetBfcOffset().block_offset + space.MarginStrut().Sum();
+  //     space.GetBfcOffset().block_offset + space.GetMarginStrut().Sum();
   //
   // The BFC offset can get "resolved" in many circumstances (including, but
   // not limited to):
@@ -1084,13 +1084,13 @@ class CORE_EXPORT NGConstraintSpace final {
       block_start_annotation_space = space;
     }
 
-    NGMarginStrut MarginStrut() const {
+    MarginStrut GetMarginStrut() const {
       return GetDataUnionType() == DataUnionType::kBlockData
                  ? block_data_.margin_strut
-                 : NGMarginStrut();
+                 : MarginStrut();
     }
 
-    void SetMarginStrut(const NGMarginStrut& margin_strut) {
+    void SetMarginStrut(const MarginStrut& margin_strut) {
       EnsureBlockData()->margin_strut = margin_strut;
     }
 
@@ -1341,7 +1341,7 @@ class CORE_EXPORT NGConstraintSpace final {
         return !lines_until_clamp.has_value();
       }
 
-      NGMarginStrut margin_strut;
+      MarginStrut margin_strut;
       absl::optional<LayoutUnit> optimistic_bfc_block_offset;
       absl::optional<LayoutUnit> forced_bfc_block_offset;
       LayoutUnit clearance_offset = LayoutUnit::Min();

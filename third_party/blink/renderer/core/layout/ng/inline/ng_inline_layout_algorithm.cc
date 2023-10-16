@@ -1361,7 +1361,7 @@ const NGLayoutResult* NGInlineLayoutAlgorithm::Layout() {
   // having resolved the BFC offset).
   context_->ClearParallelFlowBreakTokens();
 
-  end_margin_strut_ = ConstraintSpace().MarginStrut();
+  end_margin_strut_ = ConstraintSpace().GetMarginStrut();
   container_builder_.SetAdjoiningObjectTypes(
       ConstraintSpace().AdjoiningObjectTypes());
   lines_until_clamp_ = ConstraintSpace().LinesUntilClamp();
@@ -1377,7 +1377,7 @@ const NGLayoutResult* NGInlineLayoutAlgorithm::Layout() {
   LayoutUnit bfc_block_offset =
       ConstraintSpace().ForcedBfcBlockOffset().value_or(
           ConstraintSpace().GetBfcOffset().block_offset +
-          ConstraintSpace().MarginStrut().Sum());
+          ConstraintSpace().GetMarginStrut().Sum());
 
   // Also apply clearance if necessary.
   if (ConstraintSpace().HasClearanceOffset() &&
@@ -1691,7 +1691,7 @@ const NGLayoutResult* NGInlineLayoutAlgorithm::Layout() {
       // Margins should only collapse across "certain zero-height line boxes".
       // https://drafts.csswg.org/css2/box.html#collapsing-margins
       if (!line_info.IsBlockInInline()) {
-        end_margin_strut_ = NGMarginStrut();
+        end_margin_strut_ = MarginStrut();
         if (lines_until_clamp_)
           *lines_until_clamp_ = *lines_until_clamp_ - 1;
       }

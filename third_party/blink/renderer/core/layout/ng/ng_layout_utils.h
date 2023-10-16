@@ -12,7 +12,7 @@ namespace blink {
 
 class NGConstraintSpace;
 class NGLayoutResult;
-struct NGMarginStrut;
+struct MarginStrut;
 
 // NGLayoutCacheStatus indicates what type of cache hit/miss occurred. For
 // various types of misses we may be able to perform less work than a full
@@ -58,7 +58,7 @@ bool MaySkipLayoutWithinBlockFormattingContext(
     const NGConstraintSpace& new_space,
     absl::optional<LayoutUnit>* bfc_block_offset,
     LayoutUnit* block_offset_delta,
-    NGMarginStrut* end_margin_strut);
+    MarginStrut* end_margin_strut);
 
 }  // namespace blink
 

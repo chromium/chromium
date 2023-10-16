@@ -13,7 +13,7 @@
 namespace blink {
 
 // This struct is used for the margin collapsing calculation.
-struct CORE_EXPORT NGMarginStrut {
+struct CORE_EXPORT MarginStrut {
   LayoutUnit positive_margin;
   LayoutUnit negative_margin;
 
@@ -50,10 +50,8 @@ struct CORE_EXPORT NGMarginStrut {
   // Whether there have been no margins appended to this margin strut.
   bool IsEmpty() const;
 
-  bool operator==(const NGMarginStrut& other) const;
-  bool operator!=(const NGMarginStrut& other) const {
-    return !(*this == other);
-  }
+  bool operator==(const MarginStrut& other) const;
+  bool operator!=(const MarginStrut& other) const { return !(*this == other); }
 };
 
 }  // namespace blink

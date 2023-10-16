@@ -123,7 +123,7 @@ class CORE_EXPORT NGFragmentBuilder {
   }
   void ResetBfcBlockOffset() { bfc_block_offset_.reset(); }
 
-  void SetEndMarginStrut(const NGMarginStrut& end_margin_strut) {
+  void SetEndMarginStrut(const MarginStrut& end_margin_strut) {
     end_margin_strut_ = end_margin_strut;
   }
 
@@ -561,7 +561,7 @@ class CORE_EXPORT NGFragmentBuilder {
   NGLogicalAnchorQuery* anchor_query_ = nullptr;
   LayoutUnit bfc_line_offset_;
   absl::optional<LayoutUnit> bfc_block_offset_;
-  NGMarginStrut end_margin_strut_;
+  MarginStrut end_margin_strut_;
   NGExclusionSpace exclusion_space_;
   absl::optional<int> lines_until_clamp_;
 

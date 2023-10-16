@@ -324,13 +324,14 @@ class CORE_EXPORT NGConstraintSpaceBuilder final {
       space_.EnsureRareData()->SetBlockStartAnnotationSpace(space);
   }
 
-  void SetMarginStrut(const NGMarginStrut& margin_strut) {
+  void SetMarginStrut(const MarginStrut& margin_strut) {
 #if DCHECK_IS_ON()
     DCHECK(!is_margin_strut_set_);
     is_margin_strut_set_ = true;
 #endif
-    if (!is_new_fc_ && margin_strut != NGMarginStrut())
+    if (!is_new_fc_ && margin_strut != MarginStrut()) {
       space_.EnsureRareData()->SetMarginStrut(margin_strut);
+    }
   }
 
   void SetBfcOffset(const BfcOffset& bfc_offset) {

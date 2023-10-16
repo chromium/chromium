@@ -259,7 +259,7 @@ const NGLayoutResult* NGSimplifiedLayoutAlgorithm::Layout() {
     if (!result)
       return nullptr;
 
-    const NGMarginStrut end_margin_strut = result->EndMarginStrut();
+    const MarginStrut end_margin_strut = result->EndMarginStrut();
     // No margins should pierce outside formatting-context roots.
     DCHECK(!result->PhysicalFragment().IsFormattingContextRoot() ||
            end_margin_strut.IsEmpty());
@@ -334,7 +334,7 @@ NGSimplifiedLayoutAlgorithm::LayoutWithItemsBuilder() {
 void NGSimplifiedLayoutAlgorithm::AddChildFragment(
     const NGLink& old_fragment,
     const NGPhysicalFragment& new_fragment,
-    const NGMarginStrut* margin_strut,
+    const MarginStrut* margin_strut,
     bool is_self_collapsing) {
   DCHECK_EQ(old_fragment->Size(), new_fragment.Size());
 

@@ -439,7 +439,7 @@ MinMaxSizesResult NGColumnLayoutAlgorithm::ComputeSpannersMinMaxSizes(
 }
 
 NGBreakStatus NGColumnLayoutAlgorithm::LayoutChildren() {
-  NGMarginStrut margin_strut;
+  MarginStrut margin_strut;
   MulticolPartWalker walker(Node(), BreakToken());
   while (!walker.IsFinished()) {
     auto entry = walker.Current();
@@ -576,7 +576,7 @@ struct ResultWithOffset {
 const NGLayoutResult* NGColumnLayoutAlgorithm::LayoutRow(
     const NGBlockBreakToken* next_column_token,
     LayoutUnit minimum_column_block_size,
-    NGMarginStrut* margin_strut) {
+    MarginStrut* margin_strut) {
   LogicalSize column_size(column_inline_size_, column_block_size_);
 
   // Calculate the block-offset by including any trailing margin from a previous
@@ -1025,7 +1025,7 @@ const NGLayoutResult* NGColumnLayoutAlgorithm::LayoutRow(
     // reset the margin strut (it has already been incorporated into the
     // offset).
     intrinsic_block_size_ = row_offset + intrinsic_block_size_contribution;
-    *margin_strut = NGMarginStrut();
+    *margin_strut = MarginStrut();
   }
 
   // Commit all column fragments to the fragment builder.
@@ -1044,7 +1044,7 @@ const NGLayoutResult* NGColumnLayoutAlgorithm::LayoutRow(
 NGBreakStatus NGColumnLayoutAlgorithm::LayoutSpanner(
     NGBlockNode spanner_node,
     const NGBlockBreakToken* break_token,
-    NGMarginStrut* margin_strut) {
+    MarginStrut* margin_strut) {
   spanner_path_ = nullptr;
   const ComputedStyle& spanner_style = spanner_node.Style();
   BoxStrut margins =
@@ -1105,7 +1105,7 @@ NGBreakStatus NGColumnLayoutAlgorithm::LayoutSpanner(
 
   AttemptToPositionListMarker(spanner_fragment, block_offset);
 
-  *margin_strut = NGMarginStrut();
+  *margin_strut = MarginStrut();
   margin_strut->Append(margins.block_end, /* is_quirky */ false);
 
   intrinsic_block_size_ = offset.block_offset + logical_fragment.BlockSize();

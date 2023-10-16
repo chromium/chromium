@@ -1271,7 +1271,7 @@ TEST_F(NGLayoutResultCachingTest, MarginStrutMovementSelfCollapsing) {
   EXPECT_NE(result, nullptr);
 
   // The "end" margin-strut should be updated.
-  NGMarginStrut expected_margin_strut;
+  MarginStrut expected_margin_strut;
   expected_margin_strut.Append(LayoutUnit(5), false /* is_quirky */);
   EXPECT_EQ(expected_margin_strut, result->EndMarginStrut());
 

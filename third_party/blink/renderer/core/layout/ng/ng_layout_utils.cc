@@ -488,7 +488,7 @@ bool MaySkipLayoutWithinBlockFormattingContext(
     const NGConstraintSpace& new_space,
     absl::optional<LayoutUnit>* bfc_block_offset,
     LayoutUnit* block_offset_delta,
-    NGMarginStrut* end_margin_strut) {
+    MarginStrut* end_margin_strut) {
   DCHECK_EQ(cached_layout_result.Status(), NGLayoutResult::kSuccess);
   DCHECK(bfc_block_offset);
   DCHECK(block_offset_delta);
@@ -498,7 +498,7 @@ bool MaySkipLayoutWithinBlockFormattingContext(
       cached_layout_result.GetConstraintSpaceForCaching();
 
   bool is_margin_strut_equal =
-      old_space.MarginStrut() == new_space.MarginStrut();
+      old_space.GetMarginStrut() == new_space.GetMarginStrut();
 
   LayoutUnit old_clearance_offset = old_space.ClearanceOffset();
   LayoutUnit new_clearance_offset = new_space.ClearanceOffset();
@@ -593,7 +593,7 @@ bool MaySkipLayoutWithinBlockFormattingContext(
     // the new "start" margin-strut becomes the new "end" margin-strut (as we
     // are self-collapsing).
     if (!cached_layout_result.SubtreeModifiedMarginStrut()) {
-      *end_margin_strut = new_space.MarginStrut();
+      *end_margin_strut = new_space.GetMarginStrut();
     } else {
       DCHECK(is_margin_strut_equal);
     }
@@ -646,13 +646,13 @@ bool MaySkipLayoutWithinBlockFormattingContext(
     // difference in the incoming margin-struts.
 #if DCHECK_IS_ON()
     DCHECK(!cached_layout_result.SubtreeModifiedMarginStrut());
-    LayoutUnit old_bfc_block_offset =
-        old_space.GetBfcOffset().block_offset + old_space.MarginStrut().Sum();
+    LayoutUnit old_bfc_block_offset = old_space.GetBfcOffset().block_offset +
+                                      old_space.GetMarginStrut().Sum();
     DCHECK_EQ(old_bfc_block_offset, **bfc_block_offset);
 #endif
 
-    LayoutUnit new_bfc_block_offset =
-        new_space.GetBfcOffset().block_offset + new_space.MarginStrut().Sum();
+    LayoutUnit new_bfc_block_offset = new_space.GetBfcOffset().block_offset +
+                                      new_space.GetMarginStrut().Sum();
     *block_offset_delta = new_bfc_block_offset - **bfc_block_offset;
     *bfc_block_offset = **bfc_block_offset + *block_offset_delta;
   }

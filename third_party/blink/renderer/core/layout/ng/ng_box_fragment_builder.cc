@@ -135,7 +135,7 @@ void NGBoxFragmentBuilder::AddResult(
     }
   }
 
-  const NGMarginStrut end_margin_strut = child_layout_result.EndMarginStrut();
+  const MarginStrut end_margin_strut = child_layout_result.EndMarginStrut();
   // No margins should pierce outside formatting-context roots.
   DCHECK(!fragment.IsFormattingContextRoot() || end_margin_strut.IsEmpty());
 
@@ -171,7 +171,7 @@ void NGBoxFragmentBuilder::AddResult(const NGLayoutResult& child_layout_result,
 void NGBoxFragmentBuilder::AddChild(
     const NGPhysicalFragment& child,
     const LogicalOffset& child_offset,
-    const NGMarginStrut* margin_strut,
+    const MarginStrut* margin_strut,
     bool is_self_collapsing,
     absl::optional<LogicalOffset> relative_offset,
     const NGInlineContainer<LogicalOffset>* inline_container) {
@@ -231,7 +231,7 @@ void NGBoxFragmentBuilder::AddChild(
         // If we are in block-flow layout we use the end *margin-strut* as the
         // block-end "margin" (instead of just the block-end margin).
         if (margin_strut) {
-          NGMarginStrut end_margin_strut = *margin_strut;
+          MarginStrut end_margin_strut = *margin_strut;
           end_margin_strut.Append(margins.block_end, /* is_quirky */ false);
 
           // Self-collapsing blocks are special, their end margin-strut is part
@@ -517,7 +517,7 @@ const NGLayoutResult* NGBoxFragmentBuilder::ToBoxFragment(
       // we don't prevent such propagation, the trailing margin may push down
       // subsequent nodes that are being resumed after a break, rather than
       // resuming at the block-start of the fragmentainer.
-      end_margin_strut_ = NGMarginStrut();
+      end_margin_strut_ = MarginStrut();
     }
 
     if (!break_token_) {
