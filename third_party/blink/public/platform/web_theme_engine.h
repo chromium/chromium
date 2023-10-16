@@ -289,6 +289,10 @@ class WebThemeEngine {
     return absl::nullopt;
   }
 
+  virtual absl::optional<SkColor> GetAccentColor() const {
+    return absl::nullopt;
+  }
+
   virtual ForcedColors GetForcedColors() const { return ForcedColors::kNone; }
   virtual void OverrideForcedColorsTheme(bool is_dark_theme) {}
   virtual void SetForcedColors(const blink::ForcedColors forced_colors) {}

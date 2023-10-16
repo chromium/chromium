@@ -864,6 +864,32 @@ void LayoutTheme::UpdateForcedColorsState() {
       ForcedColors::kNone;
 }
 
+bool LayoutTheme::IsAccentColorCustomized(
+    mojom::blink::ColorScheme color_scheme) const {
+  if (!RuntimeEnabledFeatures::CSSSystemAccentColorEnabled()) {
+    return false;
+  }
+
+  return WebThemeEngineHelper::GetNativeThemeEngine()
+      ->GetAccentColor()
+      .has_value();
+}
+
+Color LayoutTheme::GetSystemAccentColor(
+    mojom::blink::ColorScheme color_scheme) const {
+  if (!RuntimeEnabledFeatures::CSSSystemAccentColorEnabled()) {
+    return Color();
+  }
+
+  // Currently only plumbed through on ChromeOS.
+  const auto& accent_color =
+      WebThemeEngineHelper::GetNativeThemeEngine()->GetAccentColor();
+  if (!accent_color.has_value()) {
+    return Color();
+  }
+  return Color::FromSkColor(accent_color.value());
+}
+
 Color LayoutTheme::GetAccentColorOrDefault(
     mojom::blink::ColorScheme color_scheme) const {
   // This is from the kAccent color from NativeThemeBase::GetControlColor

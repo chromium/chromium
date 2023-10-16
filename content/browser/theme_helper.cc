@@ -5,6 +5,7 @@
 #include "content/browser/theme_helper.h"
 
 #include "base/no_destructor.h"
+#include "build/build_config.h"
 #include "content/browser/renderer_host/render_process_host_impl.h"
 #include "content/common/renderer.mojom.h"
 #include "ui/color/color_provider_key.h"
@@ -32,6 +33,10 @@ mojom::UpdateSystemColorInfoParamsPtr MakeUpdateSystemColorInfoParams(
   params->forced_colors = native_theme->InForcedColorsMode();
   const auto& colors = native_theme->GetSystemColors();
   params->colors.insert(colors.begin(), colors.end());
+
+#if BUILDFLAG(IS_CHROMEOS)
+  params->accent_color = native_theme->user_color();
+#endif
 
   // TODO(crbug.com/1251637): We should not be using ColorProviders sourced from
   // the global NativeTheme web instance and instead have WebContents instances

@@ -294,6 +294,10 @@ absl::optional<SkColor> WebThemeEngineDefault::GetSystemColor(
       NativeSystemThemeColor(system_theme_color));
 }
 
+absl::optional<SkColor> WebThemeEngineDefault::GetAccentColor() const {
+  return ui::NativeTheme::GetInstanceForWeb()->user_color();
+}
+
 #if BUILDFLAG(IS_WIN)
 // static
 void WebThemeEngineDefault::cacheScrollBarMetrics(

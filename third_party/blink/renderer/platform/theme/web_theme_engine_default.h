@@ -33,6 +33,7 @@ class WebThemeEngineDefault : public WebThemeEngine {
   gfx::Rect NinePatchAperture(Part part) const override;
   absl::optional<SkColor> GetSystemColor(
       WebThemeEngine::SystemThemeColor system_theme_color) const override;
+  absl::optional<SkColor> GetAccentColor() const override;
 #if BUILDFLAG(IS_WIN)
   // Caches the scrollbar metrics. These are retrieved in the browser and passed
   // to the renderer in RendererPreferences because the required Windows

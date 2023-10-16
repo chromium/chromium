@@ -182,15 +182,13 @@ class CORE_EXPORT LayoutTheme : public RefCounted<LayoutTheme> {
   virtual void AdjustControlPartStyle(ComputedStyleBuilder&);
 
   virtual bool IsAccentColorCustomized(
-      mojom::blink::ColorScheme color_scheme) const {
-    return false;
-  }
+      mojom::blink::ColorScheme color_scheme) const;
+
   // GetSystemAccentColor returns transparent unless there is a special value
   // from the OS color scheme.
   virtual Color GetSystemAccentColor(
-      mojom::blink::ColorScheme color_scheme) const {
-    return Color();
-  }
+      mojom::blink::ColorScheme color_scheme) const;
+
   // GetAccentColorOrDefault will return GetAccentColor if there is a value from
   // the OS, otherwise it will return the default accent color.
   Color GetAccentColorOrDefault(mojom::blink::ColorScheme color_scheme) const;
