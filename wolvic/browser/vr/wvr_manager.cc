@@ -593,7 +593,6 @@ void WvrManager::GetFrameData(
     return;
   }
 
-  pending_time_ = base::TimeTicks();
   get_frame_data_callback_ = std::move(callback);
   WebXrTryStartAnimatingFrame();
 }
@@ -606,13 +605,13 @@ void WvrManager::WebXrTryStartAnimatingFrame() {
   }
 
   device::mojom::XRFrameDataPtr frame_data = device::mojom::XRFrameData::New();
-
   frame_data->frame_id = webxr_.StartFrameAnimating();
 
   // Process all events.
   if (!SubmitFrameInternal(frame_data->frame_id))
    return;
 
+  base::TimeTicks now = base::TimeTicks::Now();
   mozilla::gfx::VRSystemState system_state = wvr_api_->get_system_state();
   const mozilla::gfx::VRPose* pose = &system_state.sensorState.pose;
 
@@ -624,7 +623,7 @@ void WvrManager::WebXrTryStartAnimatingFrame() {
 
   frame_data->mojo_from_viewer = PoseToVRPosePtr(pose);
 
-  frame_data->time_delta = pending_time_ - base::TimeTicks();
+  frame_data->time_delta = now - base::TimeTicks();
 
   std::move(get_frame_data_callback_).Run(std::move(frame_data));
 }
