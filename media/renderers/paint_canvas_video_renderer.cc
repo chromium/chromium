@@ -778,6 +778,14 @@ VideoPixelFormatAsSkYUVAInfoValues(VideoPixelFormat format) {
   }
 }
 
+// Controls whether the one-copy path when copying a VideoFrame to a GL texture
+// is enabled or disabled. The one-copy path being enabled is the default
+// production state - this Feature is used to be able to disable this path for
+// performance testing.
+BASE_FEATURE(kOneCopyUploadOfVideoFrameToGLTexture,
+             "OneCopyUploadOfVideoFrameToGLTexture",
+             base::FEATURE_ENABLED_BY_DEFAULT);
+
 // Whether SharedImage is used to perform direct GPU-GPU VideoFrame to GL
 // texture uploads (when allowed) rather than legacy mailboxes.
 BASE_FEATURE(kUseSharedImageForDirectUpload,
@@ -1526,18 +1534,20 @@ bool PaintCanvasVideoRenderer::CopyVideoFrameTexturesToGLTexture(
         (video_frame->NumTextures() > 1 ||
          video_frame->shared_image_format_type() ==
              SharedImageFormatType::kSharedImageFormat)) {
-      if (allow_shared_image_for_direct_upload &&
-          base::FeatureList::IsEnabled(kUseSharedImageForDirectUpload)) {
-        if (UploadVideoFrameToGLTextureViaSharedImage(
-                raster_context_provider, destination_gl, video_frame, target,
-                texture, internal_format, format, type, flip_y)) {
-          return true;
-        }
-      } else {
-        if (UploadVideoFrameToGLTexture(
-                raster_context_provider, destination_gl, video_frame.get(),
-                target, texture, internal_format, format, type, flip_y)) {
-          return true;
+      if (base::FeatureList::IsEnabled(kOneCopyUploadOfVideoFrameToGLTexture)) {
+        if (allow_shared_image_for_direct_upload &&
+            base::FeatureList::IsEnabled(kUseSharedImageForDirectUpload)) {
+          if (UploadVideoFrameToGLTextureViaSharedImage(
+                  raster_context_provider, destination_gl, video_frame, target,
+                  texture, internal_format, format, type, flip_y)) {
+            return true;
+          }
+        } else {
+          if (UploadVideoFrameToGLTexture(
+                  raster_context_provider, destination_gl, video_frame.get(),
+                  target, texture, internal_format, format, type, flip_y)) {
+            return true;
+          }
         }
       }
     }
@@ -1840,18 +1850,20 @@ bool PaintCanvasVideoRenderer::CopyVideoFrameYUVDataToGLTexture(
   // accurate.
   if ((media::IsOpaque(video_frame->format()) || premultiply_alpha) &&
       level == 0) {
-    if (allow_shared_image_for_direct_upload &&
-        base::FeatureList::IsEnabled(kUseSharedImageForDirectUpload)) {
-      if (UploadVideoFrameToGLTextureViaSharedImage(
-              raster_context_provider, destination_gl, video_frame, target,
-              texture, internal_format, format, type, flip_y)) {
-        return true;
-      }
-    } else {
-      if (UploadVideoFrameToGLTexture(raster_context_provider, destination_gl,
-                                      video_frame, target, texture,
-                                      internal_format, format, type, flip_y)) {
-        return true;
+    if (base::FeatureList::IsEnabled(kOneCopyUploadOfVideoFrameToGLTexture)) {
+      if (allow_shared_image_for_direct_upload &&
+          base::FeatureList::IsEnabled(kUseSharedImageForDirectUpload)) {
+        if (UploadVideoFrameToGLTextureViaSharedImage(
+                raster_context_provider, destination_gl, video_frame, target,
+                texture, internal_format, format, type, flip_y)) {
+          return true;
+        }
+      } else {
+        if (UploadVideoFrameToGLTexture(
+                raster_context_provider, destination_gl, video_frame, target,
+                texture, internal_format, format, type, flip_y)) {
+          return true;
+        }
       }
     }
   }
