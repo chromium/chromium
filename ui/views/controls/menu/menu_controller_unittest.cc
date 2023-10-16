@@ -271,7 +271,7 @@ bool TestDragDropClient::IsDragDropInProgress() {
 // View which cancels the menu it belongs to on mouse press.
 class CancelMenuOnMousePressView : public View {
  public:
-  explicit CancelMenuOnMousePressView(MenuController* controller)
+  explicit CancelMenuOnMousePressView(base::WeakPtr<MenuController> controller)
       : controller_(controller) {}
 
   // View:
@@ -279,7 +279,7 @@ class CancelMenuOnMousePressView : public View {
   gfx::Size CalculatePreferredSize() const override;
 
  private:
-  raw_ptr<MenuController, DanglingUntriaged> controller_;
+  const base::WeakPtr<MenuController> controller_;
 };
 
 bool CancelMenuOnMousePressView::OnMousePressed(const ui::MouseEvent& event) {
@@ -507,16 +507,12 @@ class MenuControllerTest : public ViewsTestBase,
   gfx::Insets GetBorderAndShadowInsets(bool is_submenu);
 
  private:
-  // Not owned.
-  raw_ptr<test::ReleaseRefTestViewsDelegate, DanglingUntriaged>
-      test_views_delegate_ = nullptr;
-
   std::unique_ptr<GestureTestWidget> owner_;
   std::unique_ptr<ui::test::EventGenerator> event_generator_;
   std::unique_ptr<MenuItemView> menu_item_;
   std::unique_ptr<TestMenuControllerDelegate> menu_controller_delegate_;
   std::unique_ptr<test::TestMenuDelegate> menu_delegate_;
-  raw_ptr<MenuController, DanglingUntriaged> menu_controller_ = nullptr;
+  raw_ptr<MenuController> menu_controller_ = nullptr;
 };
 
 void MenuControllerTest::SetUp() {
@@ -524,8 +520,7 @@ void MenuControllerTest::SetUp() {
     base::i18n::SetRTLForTesting(GetParam());
   }
 
-  test_views_delegate_ =
-      set_views_delegate(std::make_unique<test::ReleaseRefTestViewsDelegate>());
+  set_views_delegate(std::make_unique<test::ReleaseRefTestViewsDelegate>());
   ViewsTestBase::SetUp();
   ASSERT_TRUE(base::CurrentUIThread::IsSet());
 
@@ -680,8 +675,9 @@ void MenuControllerTest::TestCancelAllDuringDrag() {
 void MenuControllerTest::TestDestroyedDuringViewsRelease() {
   // |test_views_delegate_| is owned by views::ViewsTestBase and not deleted
   // until TearDown. MenuControllerTest outlives it.
-  test_views_delegate_->set_release_ref_callback(base::BindRepeating(
-      &MenuControllerTest::DestroyMenuController, base::Unretained(this)));
+  static_cast<test::ReleaseRefTestViewsDelegate*>(test_views_delegate())
+      ->set_release_ref_callback(base::BindRepeating(
+          &MenuControllerTest::DestroyMenuController, base::Unretained(this)));
   menu_controller_->ExitMenu();
 }
 
@@ -956,8 +952,7 @@ void MenuControllerTest::DestroyMenuController() {
 
   menu_controller_->showing_ = false;
   menu_controller_->owner_ = nullptr;
-  delete menu_controller_;
-  menu_controller_ = nullptr;
+  delete menu_controller_.ExtractAsDangling();
 }
 
 // static
@@ -2720,8 +2715,9 @@ TEST_F(MenuControllerTest, NoUseAfterFreeWhenMenuCanceledOnMousePress) {
   item->SetBounds(0, 0, 50, 50);
 
   SubmenuView* const submenu = item->CreateSubmenu();
-  auto* const canceling_view = submenu->AddChildView(
-      std::make_unique<CancelMenuOnMousePressView>(menu_controller()));
+  auto* const canceling_view =
+      submenu->AddChildView(std::make_unique<CancelMenuOnMousePressView>(
+          menu_controller()->AsWeakPtr()));
   canceling_view->SetBoundsRect(item->GetLocalBounds());
 
   menu_controller()->Run(owner(), nullptr, item.get(), item->bounds(),
