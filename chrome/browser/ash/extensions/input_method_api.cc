@@ -597,7 +597,9 @@ InputMethodPrivateGetLanguagePackStatusFunction::Run() {
 void InputMethodPrivateGetLanguagePackStatusFunction::
     OnGetLanguagePackStatusComplete(
         const input_method_private::LanguagePackStatus status) {
-  Respond(WithArguments(ToString(status)));
+  base::Value::List results =
+      input_method_private::GetLanguagePackStatus::Results::Create(status);
+  Respond(ArgumentList(std::move(results)));
 }
 
 InputMethodAPI::InputMethodAPI(content::BrowserContext* context)
