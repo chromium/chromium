@@ -11740,8 +11740,14 @@ INSTANTIATE_TEST_SUITE_P(All,
 // Other tests in `PrerenderSessionHistoryBrowserTest` explicitly trigger the
 // prediction and the navigation. For this test, we actually simulate the back
 // button press events.
+// TODO(https://crbug.com/1059468): Flaky on ChromeOS.
+#if BUILDFLAG(IS_CHROMEOS)
+#define MAYBE_BackButtonNavigation DISABLED_BackButtonNavigation
+#else
+#define MAYBE_BackButtonNavigation BackButtonNavigation
+#endif
 IN_PROC_BROWSER_TEST_P(PrerenderSessionHistoryBrowserTest,
-                       BackButtonNavigation) {
+                       MAYBE_BackButtonNavigation) {
   const GURL url1 = GetUrl("/title1.html");
   const GURL url2 = GetCrossSiteUrl("/title2.html");
   PerformInitialNavigations(web_contents_impl(), url1, url2);
