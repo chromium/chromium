@@ -54,7 +54,7 @@ class CheckboxTest : public ViewsTestBase {
     widget_->Init(std::move(params));
     widget_->Show();
 
-    checkbox_ = widget_->SetContentsView(std::make_unique<TestCheckbox>());
+    widget_->SetContentsView(std::make_unique<TestCheckbox>());
   }
 
   void TearDown() override {
@@ -63,11 +63,12 @@ class CheckboxTest : public ViewsTestBase {
   }
 
  protected:
-  TestCheckbox* checkbox() { return checkbox_; }
+  TestCheckbox* checkbox() {
+    return static_cast<TestCheckbox*>(widget_->GetContentsView());
+  }
 
  private:
   std::unique_ptr<Widget> widget_;
-  raw_ptr<TestCheckbox, DanglingUntriaged> checkbox_ = nullptr;
 };
 
 class CheckboxTestRefreshOnly : public CheckboxTest {
