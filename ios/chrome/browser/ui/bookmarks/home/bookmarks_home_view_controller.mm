@@ -440,7 +440,7 @@ std::vector<GURL> GetUrlsToOpen(const std::vector<const BookmarkNode*>& nodes) {
     [self refreshContents];
   }
 
-  [IntentDonationHelper donateIntent:DonatedIntentType::kOpenBookmarks];
+  [IntentDonationHelper donateIntent:IntentType::kOpenBookmarks];
 }
 
 - (void)viewDidLayoutSubviews {

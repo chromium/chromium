@@ -42,7 +42,7 @@
 }
 
 - (void)tabGridTouchDown {
-  [IntentDonationHelper donateIntent:DonatedIntentType::kOpenTabGrid];
+  [IntentDonationHelper donateIntent:IntentType::kOpenTabGrid];
   [self.applicationHandler prepareTabSwitcher];
 }
 
@@ -84,7 +84,7 @@
   _engagementTracker->NotifyEvent(
       feature_engagement::events::kNewTabToolbarItemUsed);
 
-  [IntentDonationHelper donateIntent:DonatedIntentType::kOpenNewTab];
+  [IntentDonationHelper donateIntent:IntentType::kOpenNewTab];
 }
 
 - (void)cancelOmniboxFocusAction {

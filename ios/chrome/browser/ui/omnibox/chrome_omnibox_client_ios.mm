@@ -209,7 +209,7 @@ void ChromeOmniboxClientIOS::OnURLOpenedFromOmnibox(OmniboxLog* log) {
   if (!browser_state_->IsOffTheRecord() &&
       (log->input_type == metrics::OmniboxInputType::QUERY ||
        log->input_type == metrics::OmniboxInputType::UNKNOWN)) {
-    [IntentDonationHelper donateIntent:DonatedIntentType::kSearchInChrome];
+    [IntentDonationHelper donateIntent:IntentType::kSearchInChrome];
   }
 
   engagement_tracker_->NotifyEvent(

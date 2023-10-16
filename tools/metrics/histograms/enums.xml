@@ -56629,6 +56629,13 @@ Unsupported non-ascii characters will cause issues with xml presubmits.
   <int value="10" label="Open Latest Tab"/>
   <int value="11" label="Start Lens"/>
   <int value="12" label="Clear Browsing Data"/>
+  <int value="13" label="Open In Chrome"/>
+  <int value="14" label="Open In Incognito"/>
+  <int value="15" label="Open New Incognito Tab"/>
+  <int value="16" label="Manage Payment Methods"/>
+  <int value="17" label="Run Safety Check"/>
+  <int value="18" label="Manage Passwords"/>
+  <int value="19" label="Manage Settings"/>
 </enum>
 
 <enum name="IOSSpotlightOrigin">

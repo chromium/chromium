@@ -180,7 +180,7 @@ const base::TimeDelta kCloseLensViewTimeout = base::Seconds(10);
     return;
   }
 
-  [IntentDonationHelper donateIntent:DonatedIntentType::kStartLens];
+  [IntentDonationHelper donateIntent:IntentType::kStartLens];
 
   // Create a Lens configuration for this request.
   const LensEntrypoint entrypoint = command.entryPoint;

@@ -203,6 +203,7 @@ source_set("application_delegate_internal") {
     "//ios/chrome/browser/device_sharing",
     "//ios/chrome/browser/feature_engagement",
     "//ios/chrome/browser/geolocation",
+    "//ios/chrome/browser/intents:intent_type",
     "//ios/chrome/browser/metrics",
     "//ios/chrome/browser/metrics:metrics_internal",
     "//ios/chrome/browser/metrics/model",
