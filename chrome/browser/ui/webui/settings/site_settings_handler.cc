@@ -2397,6 +2397,9 @@ void SiteSettingsHandler::HandleClearSiteGroupDataAndCookies(
         net::SchemefulSite(ConvertEtldToOrigin(*etld_plus_one, true));
     http_top_level_site =
         net::SchemefulSite(ConvertEtldToOrigin(*etld_plus_one, false));
+  } else if (absl::optional<url::Origin> origin = grouping_key.GetOrigin()) {
+    https_top_level_site = net::SchemefulSite(*origin);
+    http_top_level_site = net::SchemefulSite(*origin);
   }
 
   AllowJavascript();
