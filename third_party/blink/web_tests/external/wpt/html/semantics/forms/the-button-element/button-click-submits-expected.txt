@@ -1,14 +1,15 @@
 This is a testharness.js-based test.
-PASS clicking a button with .click() should trigger a submit (form connected)
-PASS clicking a button with .click() should not trigger a submit (form disconnected)
-PASS clicking a button by dispatching an event should trigger a submit (form connected)
-PASS clicking a button by dispatching an event should not trigger a submit (form disconnected)
-PASS clicking a button that cancels the event should not trigger a submit
-PASS clicking a disabled button (via disabled attribute) should not trigger submit
-PASS clicking a disabled button (via ancestor fieldset) should not trigger submit
-PASS clicking a button inside a disabled fieldset's legend *should* trigger submit
-PASS clicking the child of a button with .click() should trigger a submit
-PASS clicking the child of a button by dispatching a bubbling event should trigger a submit
-FAIL clicking the child of a button by dispatching a non-bubbling event should not trigger submit assert_unreached: Form should not be submitted Reached unreachable code
+[PASS] clicking a button with .click() should trigger a submit (form connected)
+[PASS] clicking a button with .click() should not trigger a submit (form disconnected)
+[PASS] clicking a button by dispatching an event should trigger a submit (form connected)
+[PASS] clicking a button by dispatching an event should not trigger a submit (form disconnected)
+[PASS] clicking a button that cancels the event should not trigger a submit
+[PASS] clicking a disabled button (via disabled attribute) should not trigger submit
+[PASS] clicking a disabled button (via ancestor fieldset) should not trigger submit
+[PASS] clicking a button inside a disabled fieldset's legend *should* trigger submit
+[PASS] clicking the child of a button with .click() should trigger a submit
+[PASS] clicking the child of a button by dispatching a bubbling event should trigger a submit
+[FAIL] clicking the child of a button by dispatching a non-bubbling event should not trigger submit
+  assert_unreached: Form should not be submitted Reached unreachable code
 Harness: the test ran to completion.
 

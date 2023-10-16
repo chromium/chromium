@@ -1,5 +1,0 @@
-This is a testharness.js-based test.
-PASS Cross-origin iframe
-PASS Same-origin iframe
-Harness: the test ran to completion.
-

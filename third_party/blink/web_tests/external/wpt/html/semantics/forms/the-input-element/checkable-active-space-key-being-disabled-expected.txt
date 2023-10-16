@@ -1,7 +1,11 @@
 This is a testharness.js-based test.
-FAIL Space key shouldn't active the checkbox when it's disabled by a keydown event listener assert_equals: The disabled checkbox should be inactivated even if activated accidentally expected null but got Element node <input type="checkbox" disabled=""></input>
-FAIL Space key shouldn't active the radio when it's disabled by a keydown event listener assert_equals: The disabled radio should be inactivated even if it's accidentally activated expected null but got Element node <input type="radio" disabled=""></input>
-FAIL Space key press shouldn't activate the disabled checkbox assert_equals: The checkbox shouldn't be activated expected null but got Element node <input type="checkbox" disabled=""></input>
-FAIL Space key press shouldn't activate the disabled radio assert_equals: The radio shouldn't be activated expected null but got Element node <input type="radio" disabled=""></input>
+[FAIL] Space key shouldn't active the checkbox when it's disabled by a keydown event listener
+  assert_equals: The disabled checkbox should be inactivated even if activated accidentally expected null but got Element node <input type="checkbox" disabled=""></input>
+[FAIL] Space key shouldn't active the radio when it's disabled by a keydown event listener
+  assert_equals: The disabled radio should be inactivated even if it's accidentally activated expected null but got Element node <input type="radio" disabled=""></input>
+[FAIL] Space key press shouldn't activate the disabled checkbox
+  assert_equals: The checkbox shouldn't be activated expected null but got Element node <input type="checkbox" disabled=""></input>
+[FAIL] Space key press shouldn't activate the disabled radio
+  assert_equals: The radio shouldn't be activated expected null but got Element node <input type="radio" disabled=""></input>
 Harness: the test ran to completion.
 

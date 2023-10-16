@@ -1,5 +1,6 @@
 This is a testharness.js-based test.
-FAIL Load a CSS module with dynamic import() promise_test: Unhandled rejection with value: object "TypeError: Failed to fetch dynamically imported module: http://web-platform.test:8001/html/semantics/scripting-1/the-script-element/css-module/resources/basic.css"
-PASS Ensure that loading a CSS module with dymnamic import() fails without a type attribute
+[FAIL] Load a CSS module with dynamic import()
+  promise_test: Unhandled rejection with value: object "TypeError: Failed to fetch dynamically imported module: http://web-platform.test:8001/html/semantics/scripting-1/the-script-element/css-module/resources/basic.css"
+[PASS] Ensure that loading a CSS module with dymnamic import() fails without a type attribute
 Harness: the test ran to completion.
 

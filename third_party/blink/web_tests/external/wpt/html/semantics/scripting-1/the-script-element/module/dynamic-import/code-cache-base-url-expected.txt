@@ -1,9 +1,10 @@
 This is a testharness.js-based test.
-PASS alpha - Function
-PASS alpha - eval
-PASS beta - Function
-PASS beta - eval
-FAIL gamma - Function assert_equals: expected "gamma/import.js" but got "beta/import.js"
-PASS gamma - eval
+[PASS] alpha - Function
+[PASS] alpha - eval
+[PASS] beta - Function
+[PASS] beta - eval
+[FAIL] gamma - Function
+  assert_equals: expected "gamma/import.js" but got "beta/import.js"
+[PASS] gamma - eval
 Harness: the test ran to completion.
 

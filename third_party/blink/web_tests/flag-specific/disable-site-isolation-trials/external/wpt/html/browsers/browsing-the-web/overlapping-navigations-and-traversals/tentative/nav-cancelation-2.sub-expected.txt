@@ -1,4 +1,0 @@
-This is a testharness.js-based test.
-FAIL grandparent cancels a pending navigation in a cross-origin grandchild assert_false: Grandchild <iframe>'s load event does not fire at least one task after the grandparent's window load event fires. It should only fire when its subsequent navigation is complete expected false got true
-Harness: the test ran to completion.
-

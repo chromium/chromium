@@ -1,7 +1,0 @@
-This is a testharness.js-based test.
-FAIL same-origin, same-window location cycle Cyclic __proto__ value
-PASS cross-origin location has null prototype
-FAIL same-origin, different-window location cycle Cyclic __proto__ value
-FAIL cross-origin, but joined via document.domain, location cycle Cyclic __proto__ value
-Harness: the test ran to completion.
-

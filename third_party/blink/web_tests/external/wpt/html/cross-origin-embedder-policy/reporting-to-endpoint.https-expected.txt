@@ -1,8 +1,0 @@
-This is a testharness.js-based test.
-PASS subresource CORP
-PASS navigation CORP
-PASS COEP violation on nested frame navigation
-PASS Two COEP headers, split inside report-to value
-FAIL Shared worker fetch assert_equals: expected "iframe" but got ""
-Harness: the test ran to completion.
-

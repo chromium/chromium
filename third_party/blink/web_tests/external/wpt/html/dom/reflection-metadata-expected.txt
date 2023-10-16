@@ -1,207 +1,293 @@
 This is a testharness.js-based test.
 Found 3098 tests; 3012 PASS, 86 FAIL, 0 TIMEOUT, 0 NOTRUN.
-PASS head.title: 38 tests
-PASS head.lang: 38 tests
-PASS head.dir: 68 tests
-PASS head.className (<head class>): 38 tests
-PASS head.autofocus: 39 tests
-PASS head.hidden: 39 tests
-PASS head.accessKey: 38 tests
-PASS head.tabIndex: 26 tests
-PASS title.title: 38 tests
-PASS title.lang: 38 tests
-PASS title.dir: 68 tests
-PASS title.className (<title class>): 38 tests
-PASS title.autofocus: 39 tests
-PASS title.hidden: 39 tests
-PASS title.accessKey: 38 tests
-PASS title.tabIndex: 26 tests
-PASS base.title: 38 tests
-PASS base.lang: 38 tests
-PASS base.dir: 68 tests
-PASS base.className (<base class>): 38 tests
-PASS base.autofocus: 39 tests
-PASS base.hidden: 39 tests
-PASS base.accessKey: 38 tests
-PASS base.tabIndex: 26 tests
-PASS base.href: 22 tests
-PASS base.target: 38 tests
-PASS link.title: 38 tests
-PASS link.lang: 38 tests
-PASS link.dir: 68 tests
-PASS link.className (<link class>): 38 tests
-PASS link.autofocus: 39 tests
-PASS link.hidden: 39 tests
-PASS link.accessKey: 38 tests
-PASS link.tabIndex: 26 tests
-PASS link.href: 44 tests
-PASS link.crossOrigin: 62 tests
-PASS link.rel: 38 tests
-PASS link.as: 25 tests
-FAIL link.as: setAttribute() to "audio" assert_equals: IDL get expected "audio" but got ""
-PASS link.as: 3 tests
-FAIL link.as: setAttribute() to "AUDIO" assert_equals: IDL get expected "audio" but got ""
-FAIL link.as: setAttribute() to "document" assert_equals: IDL get expected "document" but got ""
-PASS link.as: 3 tests
-FAIL link.as: setAttribute() to "DOCUMENT" assert_equals: IDL get expected "document" but got ""
-FAIL link.as: setAttribute() to "embed" assert_equals: IDL get expected "embed" but got ""
-PASS link.as: 3 tests
-FAIL link.as: setAttribute() to "EMBED" assert_equals: IDL get expected "embed" but got ""
-PASS link.as: 10 tests
-FAIL link.as: setAttribute() to "manifest" assert_equals: IDL get expected "manifest" but got ""
-PASS link.as: 3 tests
-FAIL link.as: setAttribute() to "MANIFEST" assert_equals: IDL get expected "manifest" but got ""
-PASS link.as: setAttribute() to "manifeſt"
-FAIL link.as: setAttribute() to "object" assert_equals: IDL get expected "object" but got ""
-PASS link.as: 3 tests
-FAIL link.as: setAttribute() to "OBJECT" assert_equals: IDL get expected "object" but got ""
-FAIL link.as: setAttribute() to "report" assert_equals: IDL get expected "report" but got ""
-PASS link.as: 3 tests
-FAIL link.as: setAttribute() to "REPORT" assert_equals: IDL get expected "report" but got ""
-PASS link.as: 6 tests
-FAIL link.as: setAttribute() to "sharedworker" assert_equals: IDL get expected "sharedworker" but got ""
-PASS link.as: 3 tests
-FAIL link.as: setAttribute() to "SHAREDWORKER" assert_equals: IDL get expected "sharedworker" but got ""
-PASS link.as: 14 tests
-FAIL link.as: setAttribute() to "video" assert_equals: IDL get expected "video" but got ""
-PASS link.as: 3 tests
-FAIL link.as: setAttribute() to "VIDEO" assert_equals: IDL get expected "video" but got ""
-FAIL link.as: setAttribute() to "worker" assert_equals: IDL get expected "worker" but got ""
-PASS link.as: 3 tests
-FAIL link.as: setAttribute() to "WORKER" assert_equals: IDL get expected "worker" but got ""
-PASS link.as: setAttribute() to "worKer"
-FAIL link.as: setAttribute() to "xslt" assert_equals: IDL get expected "xslt" but got ""
-PASS link.as: 3 tests
-FAIL link.as: setAttribute() to "XSLT" assert_equals: IDL get expected "xslt" but got ""
-PASS link.as: 24 tests
-FAIL link.as: IDL set to "audio" assert_equals: IDL get expected "audio" but got ""
-PASS link.as: 3 tests
-FAIL link.as: IDL set to "AUDIO" assert_equals: IDL get expected "audio" but got ""
-FAIL link.as: IDL set to "document" assert_equals: IDL get expected "document" but got ""
-PASS link.as: 3 tests
-FAIL link.as: IDL set to "DOCUMENT" assert_equals: IDL get expected "document" but got ""
-FAIL link.as: IDL set to "embed" assert_equals: IDL get expected "embed" but got ""
-PASS link.as: 3 tests
-FAIL link.as: IDL set to "EMBED" assert_equals: IDL get expected "embed" but got ""
-PASS link.as: 10 tests
-FAIL link.as: IDL set to "manifest" assert_equals: IDL get expected "manifest" but got ""
-PASS link.as: 3 tests
-FAIL link.as: IDL set to "MANIFEST" assert_equals: IDL get expected "manifest" but got ""
-PASS link.as: IDL set to "manifeſt"
-FAIL link.as: IDL set to "object" assert_equals: IDL get expected "object" but got ""
-PASS link.as: 3 tests
-FAIL link.as: IDL set to "OBJECT" assert_equals: IDL get expected "object" but got ""
-FAIL link.as: IDL set to "report" assert_equals: IDL get expected "report" but got ""
-PASS link.as: 3 tests
-FAIL link.as: IDL set to "REPORT" assert_equals: IDL get expected "report" but got ""
-PASS link.as: 6 tests
-FAIL link.as: IDL set to "sharedworker" assert_equals: IDL get expected "sharedworker" but got ""
-PASS link.as: 3 tests
-FAIL link.as: IDL set to "SHAREDWORKER" assert_equals: IDL get expected "sharedworker" but got ""
-PASS link.as: 14 tests
-FAIL link.as: IDL set to "video" assert_equals: IDL get expected "video" but got ""
-PASS link.as: 3 tests
-FAIL link.as: IDL set to "VIDEO" assert_equals: IDL get expected "video" but got ""
-FAIL link.as: IDL set to "worker" assert_equals: IDL get expected "worker" but got ""
-PASS link.as: 3 tests
-FAIL link.as: IDL set to "WORKER" assert_equals: IDL get expected "worker" but got ""
-PASS link.as: IDL set to "worKer"
-FAIL link.as: IDL set to "xslt" assert_equals: IDL get expected "xslt" but got ""
-PASS link.as: 3 tests
-FAIL link.as: IDL set to "XSLT" assert_equals: IDL get expected "xslt" but got ""
-PASS link.as: IDL set to "xſlt"
-PASS link.media: 38 tests
-PASS link.nonce: 20 tests
-FAIL link.nonce: IDL set to "" assert_equals: getAttribute() expected "" but got "test-valueOf"
-FAIL link.nonce: IDL set to " \0\x01\x02\x03\x04\x05\x06\x07 \b\t\n\v\f\r\x0e\x0f \x10\x11\x12\x13\x14\x15\x16\x17 \x18\x19\x1a\x1b\x1c\x1d\x1e\x1f  foo " assert_equals: getAttribute() expected " \0\x01\x02\x03\x04\x05\x06\x07 \b\t\n\v\f\r\x0e\x0f \x10\x11\x12\x13\x14\x15\x16\x17 \x18\x19\x1a\x1b\x1c\x1d\x1e\x1f  foo " but got "test-valueOf"
-FAIL link.nonce: IDL set to undefined assert_equals: getAttribute() expected "undefined" but got "test-valueOf"
-FAIL link.nonce: IDL set to 7 assert_equals: getAttribute() expected "7" but got "test-valueOf"
-FAIL link.nonce: IDL set to 1.5 assert_equals: getAttribute() expected "1.5" but got "test-valueOf"
-FAIL link.nonce: IDL set to "5%" assert_equals: getAttribute() expected "5%" but got "test-valueOf"
-FAIL link.nonce: IDL set to "+100" assert_equals: getAttribute() expected "+100" but got "test-valueOf"
-FAIL link.nonce: IDL set to ".5" assert_equals: getAttribute() expected ".5" but got "test-valueOf"
-FAIL link.nonce: IDL set to true assert_equals: getAttribute() expected "true" but got "test-valueOf"
-FAIL link.nonce: IDL set to false assert_equals: getAttribute() expected "false" but got "test-valueOf"
-FAIL link.nonce: IDL set to object "[object Object]" assert_equals: getAttribute() expected "[object Object]" but got "test-valueOf"
-FAIL link.nonce: IDL set to NaN assert_equals: getAttribute() expected "NaN" but got "test-valueOf"
-FAIL link.nonce: IDL set to Infinity assert_equals: getAttribute() expected "Infinity" but got "test-valueOf"
-FAIL link.nonce: IDL set to -Infinity assert_equals: getAttribute() expected "-Infinity" but got "test-valueOf"
-FAIL link.nonce: IDL set to "\0" assert_equals: getAttribute() expected "\0" but got "test-valueOf"
-FAIL link.nonce: IDL set to null assert_equals: getAttribute() expected "null" but got "test-valueOf"
-FAIL link.nonce: IDL set to object "test-toString" assert_equals: getAttribute() expected "test-toString" but got "test-valueOf"
-PASS link.nonce: IDL set to object "test-valueOf"
-PASS link.integrity: 38 tests
-PASS link.hreflang: 38 tests
-PASS link.type: 38 tests
-PASS link.referrerPolicy: 30 tests
-FAIL link.referrerPolicy: setAttribute() to "same-origin" assert_equals: IDL get expected "same-origin" but got ""
-PASS link.referrerPolicy: 3 tests
-FAIL link.referrerPolicy: setAttribute() to "SAME-ORIGIN" assert_equals: IDL get expected "same-origin" but got ""
-PASS link.referrerPolicy: 6 tests
-FAIL link.referrerPolicy: setAttribute() to "strict-origin" assert_equals: IDL get expected "strict-origin" but got ""
-PASS link.referrerPolicy: 3 tests
-FAIL link.referrerPolicy: setAttribute() to "STRICT-ORIGIN" assert_equals: IDL get expected "strict-origin" but got ""
-PASS link.referrerPolicy: 7 tests
-FAIL link.referrerPolicy: setAttribute() to "strict-origin-when-cross-origin" assert_equals: IDL get expected "strict-origin-when-cross-origin" but got ""
-PASS link.referrerPolicy: 3 tests
-FAIL link.referrerPolicy: setAttribute() to "STRICT-ORIGIN-WHEN-CROSS-ORIGIN" assert_equals: IDL get expected "strict-origin-when-cross-origin" but got ""
-PASS link.referrerPolicy: 35 tests
-FAIL link.referrerPolicy: IDL set to "same-origin" assert_equals: IDL get expected "same-origin" but got ""
-PASS link.referrerPolicy: 3 tests
-FAIL link.referrerPolicy: IDL set to "SAME-ORIGIN" assert_equals: IDL get expected "same-origin" but got ""
-PASS link.referrerPolicy: 6 tests
-FAIL link.referrerPolicy: IDL set to "strict-origin" assert_equals: IDL get expected "strict-origin" but got ""
-PASS link.referrerPolicy: 3 tests
-FAIL link.referrerPolicy: IDL set to "STRICT-ORIGIN" assert_equals: IDL get expected "strict-origin" but got ""
-PASS link.referrerPolicy: 7 tests
-FAIL link.referrerPolicy: IDL set to "strict-origin-when-cross-origin" assert_equals: IDL get expected "strict-origin-when-cross-origin" but got ""
-PASS link.referrerPolicy: 3 tests
-FAIL link.referrerPolicy: IDL set to "STRICT-ORIGIN-WHEN-CROSS-ORIGIN" assert_equals: IDL get expected "strict-origin-when-cross-origin" but got ""
-PASS link.referrerPolicy: 7 tests
-PASS link.charset: 38 tests
-PASS link.rev: 38 tests
-PASS link.target: 38 tests
-PASS meta.title: 38 tests
-PASS meta.lang: 38 tests
-PASS meta.dir: 68 tests
-PASS meta.className (<meta class>): 38 tests
-PASS meta.autofocus: 39 tests
-PASS meta.hidden: 39 tests
-PASS meta.accessKey: 38 tests
-PASS meta.tabIndex: 26 tests
-PASS meta.name: 38 tests
-PASS meta.httpEquiv (<meta http-equiv>): 38 tests
-PASS meta.content: 38 tests
-PASS meta.media: 38 tests
-PASS meta.scheme: 38 tests
-PASS style.title: 38 tests
-PASS style.lang: 38 tests
-PASS style.dir: 68 tests
-PASS style.className (<style class>): 38 tests
-PASS style.autofocus: 39 tests
-PASS style.hidden: 39 tests
-PASS style.accessKey: 38 tests
-PASS style.tabIndex: 26 tests
-PASS style.media: 38 tests
-PASS style.nonce: 20 tests
-FAIL style.nonce: IDL set to "" assert_equals: getAttribute() expected "" but got "test-valueOf"
-FAIL style.nonce: IDL set to " \0\x01\x02\x03\x04\x05\x06\x07 \b\t\n\v\f\r\x0e\x0f \x10\x11\x12\x13\x14\x15\x16\x17 \x18\x19\x1a\x1b\x1c\x1d\x1e\x1f  foo " assert_equals: getAttribute() expected " \0\x01\x02\x03\x04\x05\x06\x07 \b\t\n\v\f\r\x0e\x0f \x10\x11\x12\x13\x14\x15\x16\x17 \x18\x19\x1a\x1b\x1c\x1d\x1e\x1f  foo " but got "test-valueOf"
-FAIL style.nonce: IDL set to undefined assert_equals: getAttribute() expected "undefined" but got "test-valueOf"
-FAIL style.nonce: IDL set to 7 assert_equals: getAttribute() expected "7" but got "test-valueOf"
-FAIL style.nonce: IDL set to 1.5 assert_equals: getAttribute() expected "1.5" but got "test-valueOf"
-FAIL style.nonce: IDL set to "5%" assert_equals: getAttribute() expected "5%" but got "test-valueOf"
-FAIL style.nonce: IDL set to "+100" assert_equals: getAttribute() expected "+100" but got "test-valueOf"
-FAIL style.nonce: IDL set to ".5" assert_equals: getAttribute() expected ".5" but got "test-valueOf"
-FAIL style.nonce: IDL set to true assert_equals: getAttribute() expected "true" but got "test-valueOf"
-FAIL style.nonce: IDL set to false assert_equals: getAttribute() expected "false" but got "test-valueOf"
-FAIL style.nonce: IDL set to object "[object Object]" assert_equals: getAttribute() expected "[object Object]" but got "test-valueOf"
-FAIL style.nonce: IDL set to NaN assert_equals: getAttribute() expected "NaN" but got "test-valueOf"
-FAIL style.nonce: IDL set to Infinity assert_equals: getAttribute() expected "Infinity" but got "test-valueOf"
-FAIL style.nonce: IDL set to -Infinity assert_equals: getAttribute() expected "-Infinity" but got "test-valueOf"
-FAIL style.nonce: IDL set to "\0" assert_equals: getAttribute() expected "\0" but got "test-valueOf"
-FAIL style.nonce: IDL set to null assert_equals: getAttribute() expected "null" but got "test-valueOf"
-FAIL style.nonce: IDL set to object "test-toString" assert_equals: getAttribute() expected "test-toString" but got "test-valueOf"
-PASS style.nonce: IDL set to object "test-valueOf"
-PASS style.type: 38 tests
+[PASS] head.title: 38 tests
+[PASS] head.lang: 38 tests
+[PASS] head.dir: 68 tests
+[PASS] head.className (<head class>): 38 tests
+[PASS] head.autofocus: 39 tests
+[PASS] head.hidden: 39 tests
+[PASS] head.accessKey: 38 tests
+[PASS] head.tabIndex: 26 tests
+[PASS] title.title: 38 tests
+[PASS] title.lang: 38 tests
+[PASS] title.dir: 68 tests
+[PASS] title.className (<title class>): 38 tests
+[PASS] title.autofocus: 39 tests
+[PASS] title.hidden: 39 tests
+[PASS] title.accessKey: 38 tests
+[PASS] title.tabIndex: 26 tests
+[PASS] base.title: 38 tests
+[PASS] base.lang: 38 tests
+[PASS] base.dir: 68 tests
+[PASS] base.className (<base class>): 38 tests
+[PASS] base.autofocus: 39 tests
+[PASS] base.hidden: 39 tests
+[PASS] base.accessKey: 38 tests
+[PASS] base.tabIndex: 26 tests
+[PASS] base.href: 22 tests
+[PASS] base.target: 38 tests
+[PASS] link.title: 38 tests
+[PASS] link.lang: 38 tests
+[PASS] link.dir: 68 tests
+[PASS] link.className (<link class>): 38 tests
+[PASS] link.autofocus: 39 tests
+[PASS] link.hidden: 39 tests
+[PASS] link.accessKey: 38 tests
+[PASS] link.tabIndex: 26 tests
+[PASS] link.href: 44 tests
+[PASS] link.crossOrigin: 62 tests
+[PASS] link.rel: 38 tests
+[PASS] link.as: 25 tests
+[FAIL] link.as: setAttribute() to "audio"
+  assert_equals: IDL get expected "audio" but got ""
+[PASS] link.as: 3 tests
+[FAIL] link.as: setAttribute() to "AUDIO"
+  assert_equals: IDL get expected "audio" but got ""
+[FAIL] link.as: setAttribute() to "document"
+  assert_equals: IDL get expected "document" but got ""
+[PASS] link.as: 3 tests
+[FAIL] link.as: setAttribute() to "DOCUMENT"
+  assert_equals: IDL get expected "document" but got ""
+[FAIL] link.as: setAttribute() to "embed"
+  assert_equals: IDL get expected "embed" but got ""
+[PASS] link.as: 3 tests
+[FAIL] link.as: setAttribute() to "EMBED"
+  assert_equals: IDL get expected "embed" but got ""
+[PASS] link.as: 10 tests
+[FAIL] link.as: setAttribute() to "manifest"
+  assert_equals: IDL get expected "manifest" but got ""
+[PASS] link.as: 3 tests
+[FAIL] link.as: setAttribute() to "MANIFEST"
+  assert_equals: IDL get expected "manifest" but got ""
+[PASS] link.as: setAttribute() to "manifeſt"
+[FAIL] link.as: setAttribute() to "object"
+  assert_equals: IDL get expected "object" but got ""
+[PASS] link.as: 3 tests
+[FAIL] link.as: setAttribute() to "OBJECT"
+  assert_equals: IDL get expected "object" but got ""
+[FAIL] link.as: setAttribute() to "report"
+  assert_equals: IDL get expected "report" but got ""
+[PASS] link.as: 3 tests
+[FAIL] link.as: setAttribute() to "REPORT"
+  assert_equals: IDL get expected "report" but got ""
+[PASS] link.as: 6 tests
+[FAIL] link.as: setAttribute() to "sharedworker"
+  assert_equals: IDL get expected "sharedworker" but got ""
+[PASS] link.as: 3 tests
+[FAIL] link.as: setAttribute() to "SHAREDWORKER"
+  assert_equals: IDL get expected "sharedworker" but got ""
+[PASS] link.as: 14 tests
+[FAIL] link.as: setAttribute() to "video"
+  assert_equals: IDL get expected "video" but got ""
+[PASS] link.as: 3 tests
+[FAIL] link.as: setAttribute() to "VIDEO"
+  assert_equals: IDL get expected "video" but got ""
+[FAIL] link.as: setAttribute() to "worker"
+  assert_equals: IDL get expected "worker" but got ""
+[PASS] link.as: 3 tests
+[FAIL] link.as: setAttribute() to "WORKER"
+  assert_equals: IDL get expected "worker" but got ""
+[PASS] link.as: setAttribute() to "worKer"
+[FAIL] link.as: setAttribute() to "xslt"
+  assert_equals: IDL get expected "xslt" but got ""
+[PASS] link.as: 3 tests
+[FAIL] link.as: setAttribute() to "XSLT"
+  assert_equals: IDL get expected "xslt" but got ""
+[PASS] link.as: 24 tests
+[FAIL] link.as: IDL set to "audio"
+  assert_equals: IDL get expected "audio" but got ""
+[PASS] link.as: 3 tests
+[FAIL] link.as: IDL set to "AUDIO"
+  assert_equals: IDL get expected "audio" but got ""
+[FAIL] link.as: IDL set to "document"
+  assert_equals: IDL get expected "document" but got ""
+[PASS] link.as: 3 tests
+[FAIL] link.as: IDL set to "DOCUMENT"
+  assert_equals: IDL get expected "document" but got ""
+[FAIL] link.as: IDL set to "embed"
+  assert_equals: IDL get expected "embed" but got ""
+[PASS] link.as: 3 tests
+[FAIL] link.as: IDL set to "EMBED"
+  assert_equals: IDL get expected "embed" but got ""
+[PASS] link.as: 10 tests
+[FAIL] link.as: IDL set to "manifest"
+  assert_equals: IDL get expected "manifest" but got ""
+[PASS] link.as: 3 tests
+[FAIL] link.as: IDL set to "MANIFEST"
+  assert_equals: IDL get expected "manifest" but got ""
+[PASS] link.as: IDL set to "manifeſt"
+[FAIL] link.as: IDL set to "object"
+  assert_equals: IDL get expected "object" but got ""
+[PASS] link.as: 3 tests
+[FAIL] link.as: IDL set to "OBJECT"
+  assert_equals: IDL get expected "object" but got ""
+[FAIL] link.as: IDL set to "report"
+  assert_equals: IDL get expected "report" but got ""
+[PASS] link.as: 3 tests
+[FAIL] link.as: IDL set to "REPORT"
+  assert_equals: IDL get expected "report" but got ""
+[PASS] link.as: 6 tests
+[FAIL] link.as: IDL set to "sharedworker"
+  assert_equals: IDL get expected "sharedworker" but got ""
+[PASS] link.as: 3 tests
+[FAIL] link.as: IDL set to "SHAREDWORKER"
+  assert_equals: IDL get expected "sharedworker" but got ""
+[PASS] link.as: 14 tests
+[FAIL] link.as: IDL set to "video"
+  assert_equals: IDL get expected "video" but got ""
+[PASS] link.as: 3 tests
+[FAIL] link.as: IDL set to "VIDEO"
+  assert_equals: IDL get expected "video" but got ""
+[FAIL] link.as: IDL set to "worker"
+  assert_equals: IDL get expected "worker" but got ""
+[PASS] link.as: 3 tests
+[FAIL] link.as: IDL set to "WORKER"
+  assert_equals: IDL get expected "worker" but got ""
+[PASS] link.as: IDL set to "worKer"
+[FAIL] link.as: IDL set to "xslt"
+  assert_equals: IDL get expected "xslt" but got ""
+[PASS] link.as: 3 tests
+[FAIL] link.as: IDL set to "XSLT"
+  assert_equals: IDL get expected "xslt" but got ""
+[PASS] link.as: IDL set to "xſlt"
+[PASS] link.media: 38 tests
+[PASS] link.nonce: 20 tests
+[FAIL] link.nonce: IDL set to ""
+  assert_equals: getAttribute() expected "" but got "test-valueOf"
+[FAIL] link.nonce: IDL set to " \0\x01\x02\x03\x04\x05\x06\x07 \b\t\n\v\f\r\x0e\x0f \x10\x11\x12\x13\x14\x15\x16\x17 \x18\x19\x1a\x1b\x1c\x1d\x1e\x1f  foo "
+  assert_equals: getAttribute() expected " \0\x01\x02\x03\x04\x05\x06\x07 \b\t\n\v\f\r\x0e\x0f \x10\x11\x12\x13\x14\x15\x16\x17 \x18\x19\x1a\x1b\x1c\x1d\x1e\x1f  foo " but got "test-valueOf"
+[FAIL] link.nonce: IDL set to undefined
+  assert_equals: getAttribute() expected "undefined" but got "test-valueOf"
+[FAIL] link.nonce: IDL set to 7
+  assert_equals: getAttribute() expected "7" but got "test-valueOf"
+[FAIL] link.nonce: IDL set to 1.5
+  assert_equals: getAttribute() expected "1.5" but got "test-valueOf"
+[FAIL] link.nonce: IDL set to "5%"
+  assert_equals: getAttribute() expected "5%" but got "test-valueOf"
+[FAIL] link.nonce: IDL set to "+100"
+  assert_equals: getAttribute() expected "+100" but got "test-valueOf"
+[FAIL] link.nonce: IDL set to ".5"
+  assert_equals: getAttribute() expected ".5" but got "test-valueOf"
+[FAIL] link.nonce: IDL set to true
+  assert_equals: getAttribute() expected "true" but got "test-valueOf"
+[FAIL] link.nonce: IDL set to false
+  assert_equals: getAttribute() expected "false" but got "test-valueOf"
+[FAIL] link.nonce: IDL set to object "[object Object]"
+  assert_equals: getAttribute() expected "[object Object]" but got "test-valueOf"
+[FAIL] link.nonce: IDL set to NaN
+  assert_equals: getAttribute() expected "NaN" but got "test-valueOf"
+[FAIL] link.nonce: IDL set to Infinity
+  assert_equals: getAttribute() expected "Infinity" but got "test-valueOf"
+[FAIL] link.nonce: IDL set to -Infinity
+  assert_equals: getAttribute() expected "-Infinity" but got "test-valueOf"
+[FAIL] link.nonce: IDL set to "\0"
+  assert_equals: getAttribute() expected "\0" but got "test-valueOf"
+[FAIL] link.nonce: IDL set to null
+  assert_equals: getAttribute() expected "null" but got "test-valueOf"
+[FAIL] link.nonce: IDL set to object "test-toString"
+  assert_equals: getAttribute() expected "test-toString" but got "test-valueOf"
+[PASS] link.nonce: IDL set to object "test-valueOf"
+[PASS] link.integrity: 38 tests
+[PASS] link.hreflang: 38 tests
+[PASS] link.type: 38 tests
+[PASS] link.referrerPolicy: 30 tests
+[FAIL] link.referrerPolicy: setAttribute() to "same-origin"
+  assert_equals: IDL get expected "same-origin" but got ""
+[PASS] link.referrerPolicy: 3 tests
+[FAIL] link.referrerPolicy: setAttribute() to "SAME-ORIGIN"
+  assert_equals: IDL get expected "same-origin" but got ""
+[PASS] link.referrerPolicy: 6 tests
+[FAIL] link.referrerPolicy: setAttribute() to "strict-origin"
+  assert_equals: IDL get expected "strict-origin" but got ""
+[PASS] link.referrerPolicy: 3 tests
+[FAIL] link.referrerPolicy: setAttribute() to "STRICT-ORIGIN"
+  assert_equals: IDL get expected "strict-origin" but got ""
+[PASS] link.referrerPolicy: 7 tests
+[FAIL] link.referrerPolicy: setAttribute() to "strict-origin-when-cross-origin"
+  assert_equals: IDL get expected "strict-origin-when-cross-origin" but got ""
+[PASS] link.referrerPolicy: 3 tests
+[FAIL] link.referrerPolicy: setAttribute() to "STRICT-ORIGIN-WHEN-CROSS-ORIGIN"
+  assert_equals: IDL get expected "strict-origin-when-cross-origin" but got ""
+[PASS] link.referrerPolicy: 35 tests
+[FAIL] link.referrerPolicy: IDL set to "same-origin"
+  assert_equals: IDL get expected "same-origin" but got ""
+[PASS] link.referrerPolicy: 3 tests
+[FAIL] link.referrerPolicy: IDL set to "SAME-ORIGIN"
+  assert_equals: IDL get expected "same-origin" but got ""
+[PASS] link.referrerPolicy: 6 tests
+[FAIL] link.referrerPolicy: IDL set to "strict-origin"
+  assert_equals: IDL get expected "strict-origin" but got ""
+[PASS] link.referrerPolicy: 3 tests
+[FAIL] link.referrerPolicy: IDL set to "STRICT-ORIGIN"
+  assert_equals: IDL get expected "strict-origin" but got ""
+[PASS] link.referrerPolicy: 7 tests
+[FAIL] link.referrerPolicy: IDL set to "strict-origin-when-cross-origin"
+  assert_equals: IDL get expected "strict-origin-when-cross-origin" but got ""
+[PASS] link.referrerPolicy: 3 tests
+[FAIL] link.referrerPolicy: IDL set to "STRICT-ORIGIN-WHEN-CROSS-ORIGIN"
+  assert_equals: IDL get expected "strict-origin-when-cross-origin" but got ""
+[PASS] link.referrerPolicy: 7 tests
+[PASS] link.charset: 38 tests
+[PASS] link.rev: 38 tests
+[PASS] link.target: 38 tests
+[PASS] meta.title: 38 tests
+[PASS] meta.lang: 38 tests
+[PASS] meta.dir: 68 tests
+[PASS] meta.className (<meta class>): 38 tests
+[PASS] meta.autofocus: 39 tests
+[PASS] meta.hidden: 39 tests
+[PASS] meta.accessKey: 38 tests
+[PASS] meta.tabIndex: 26 tests
+[PASS] meta.name: 38 tests
+[PASS] meta.httpEquiv (<meta http-equiv>): 38 tests
+[PASS] meta.content: 38 tests
+[PASS] meta.media: 38 tests
+[PASS] meta.scheme: 38 tests
+[PASS] style.title: 38 tests
+[PASS] style.lang: 38 tests
+[PASS] style.dir: 68 tests
+[PASS] style.className (<style class>): 38 tests
+[PASS] style.autofocus: 39 tests
+[PASS] style.hidden: 39 tests
+[PASS] style.accessKey: 38 tests
+[PASS] style.tabIndex: 26 tests
+[PASS] style.media: 38 tests
+[PASS] style.nonce: 20 tests
+[FAIL] style.nonce: IDL set to ""
+  assert_equals: getAttribute() expected "" but got "test-valueOf"
+[FAIL] style.nonce: IDL set to " \0\x01\x02\x03\x04\x05\x06\x07 \b\t\n\v\f\r\x0e\x0f \x10\x11\x12\x13\x14\x15\x16\x17 \x18\x19\x1a\x1b\x1c\x1d\x1e\x1f  foo "
+  assert_equals: getAttribute() expected " \0\x01\x02\x03\x04\x05\x06\x07 \b\t\n\v\f\r\x0e\x0f \x10\x11\x12\x13\x14\x15\x16\x17 \x18\x19\x1a\x1b\x1c\x1d\x1e\x1f  foo " but got "test-valueOf"
+[FAIL] style.nonce: IDL set to undefined
+  assert_equals: getAttribute() expected "undefined" but got "test-valueOf"
+[FAIL] style.nonce: IDL set to 7
+  assert_equals: getAttribute() expected "7" but got "test-valueOf"
+[FAIL] style.nonce: IDL set to 1.5
+  assert_equals: getAttribute() expected "1.5" but got "test-valueOf"
+[FAIL] style.nonce: IDL set to "5%"
+  assert_equals: getAttribute() expected "5%" but got "test-valueOf"
+[FAIL] style.nonce: IDL set to "+100"
+  assert_equals: getAttribute() expected "+100" but got "test-valueOf"
+[FAIL] style.nonce: IDL set to ".5"
+  assert_equals: getAttribute() expected ".5" but got "test-valueOf"
+[FAIL] style.nonce: IDL set to true
+  assert_equals: getAttribute() expected "true" but got "test-valueOf"
+[FAIL] style.nonce: IDL set to false
+  assert_equals: getAttribute() expected "false" but got "test-valueOf"
+[FAIL] style.nonce: IDL set to object "[object Object]"
+  assert_equals: getAttribute() expected "[object Object]" but got "test-valueOf"
+[FAIL] style.nonce: IDL set to NaN
+  assert_equals: getAttribute() expected "NaN" but got "test-valueOf"
+[FAIL] style.nonce: IDL set to Infinity
+  assert_equals: getAttribute() expected "Infinity" but got "test-valueOf"
+[FAIL] style.nonce: IDL set to -Infinity
+  assert_equals: getAttribute() expected "-Infinity" but got "test-valueOf"
+[FAIL] style.nonce: IDL set to "\0"
+  assert_equals: getAttribute() expected "\0" but got "test-valueOf"
+[FAIL] style.nonce: IDL set to null
+  assert_equals: getAttribute() expected "null" but got "test-valueOf"
+[FAIL] style.nonce: IDL set to object "test-toString"
+  assert_equals: getAttribute() expected "test-toString" but got "test-valueOf"
+[PASS] style.nonce: IDL set to object "test-valueOf"
+[PASS] style.type: 38 tests
 Harness: the test ran to completion.
 

@@ -1,6 +1,9 @@
 This is a testharness.js-based test.
-FAIL track element changing "track URL" and clearing cues, set mode, add cue, set src assert_equals: cues.length after setting src expected 0 but got 1
-FAIL track element changing "track URL" and clearing cues, set mode, set src, add cue, change src assert_equals: cues.length after changing src expected 0 but got 1
-FAIL track element changing "track URL" and clearing cues, set mode, add cue, change mode to disabled, set src assert_equals: cues.length after changing src expected 0 but got 1
+[FAIL] track element changing "track URL" and clearing cues, set mode, add cue, set src
+  assert_equals: cues.length after setting src expected 0 but got 1
+[FAIL] track element changing "track URL" and clearing cues, set mode, set src, add cue, change src
+  assert_equals: cues.length after changing src expected 0 but got 1
+[FAIL] track element changing "track URL" and clearing cues, set mode, add cue, change mode to disabled, set src
+  assert_equals: cues.length after changing src expected 0 but got 1
 Harness: the test ran to completion.
 

@@ -1,4 +1,0 @@
-This is a testharness.js-based test.
-FAIL COEP:require-corp parent embeds cross-origin credentialless iframe assert_equals: expected "load" but got "block"
-Harness: the test ran to completion.
-

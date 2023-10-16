@@ -2789,7 +2789,8 @@ crbug.com/626703 external/wpt/css/css-text/word-space-transform/word-space-trans
 crbug.com/626703 [ Mac11 ] external/wpt/font-access/font_access_detached_iframe.tentative.https.window.html [ Timeout ]
 crbug.com/626703 [ Mac13 ] external/wpt/html/canvas/element/manual/wide-gamut-canvas/canvas-display-p3-drawImage-ImageBitmap-video.html [ Timeout ]
 crbug.com/626703 [ Mac10.15 ] external/wpt/html/capability-delegation/delegate-fullscreen-request-subframe-cross-origin.https.sub.tentative.html [ Timeout ]
-crbug.com/626703 [ Mac13 ] external/wpt/html/cross-origin-embedder-policy/dedicated-worker.https.html [ Failure Timeout ]
+crbug.com/626703 [ Mac ] external/wpt/html/cross-origin-embedder-policy/dedicated-worker.https.html [ Failure Timeout ]
+crbug.com/626703 [ Win11 ] external/wpt/html/cross-origin-embedder-policy/dedicated-worker.https.html [ Failure Timeout ]
 crbug.com/626703 external/wpt/html/links/stylesheet/quirk-origin-check-recursive-import.html [ Timeout ]
 crbug.com/626703 [ Mac10.15 ] external/wpt/html/semantics/embedded-content/media-elements/autoplay-allowed-by-feature-policy.https.sub.html [ Timeout ]
 crbug.com/626703 [ Mac13 ] external/wpt/webtransport/echo-large-bidirectional-streams.https.html [ Timeout ]
@@ -6768,6 +6769,9 @@ crbug.com/1481694 [ Win10.20h2 ] accessibility/selection-change-notification-on-
 
 # TODO(crbug.com/1428024): These tests should be updated because of the migration to new data engine
 crbug.com/1428024 http/tests/devtools/tracing/timeline-misc/timeline-aggregated-details.js [ Failure Pass ]
+
+# rebaseline tool reports this test is flaky
+crbug.com/1481730 [ Linux ] external/wpt/html/canvas/element/manual/wide-gamut-canvas/canvas-display-p3-drawImage-video.html [ Failure ]
 
 # Gardener 2023-10-09
 crbug.com/1476826 [ Win ] http/tests/xmlhttprequest/small-chunks-response-text.html [ Failure Pass ]

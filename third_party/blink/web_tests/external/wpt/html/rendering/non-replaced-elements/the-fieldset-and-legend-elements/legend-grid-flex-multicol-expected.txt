@@ -1,8 +1,10 @@
 This is a testharness.js-based test.
-PASS flex
-FAIL inline-flex assert_equals: display expected "inline-flex" but got "flex"
-PASS grid
-FAIL inline-grid assert_equals: display expected "inline-grid" but got "grid"
-PASS multicol
+[PASS] flex
+[FAIL] inline-flex
+  assert_equals: display expected "inline-flex" but got "flex"
+[PASS] grid
+[FAIL] inline-grid
+  assert_equals: display expected "inline-grid" but got "grid"
+[PASS] multicol
 Harness: the test ran to completion.
 

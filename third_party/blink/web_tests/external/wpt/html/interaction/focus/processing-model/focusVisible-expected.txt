@@ -1,8 +1,12 @@
 This is a testharness.js-based test.
-FAIL FocusOptions.focusVisible: button assert_equals: :focus-visible expected true but got false
-FAIL FocusOptions.focusVisible: input assert_equals: :focus-visible expected false but got true
-FAIL FocusOptions.focusVisible: #contenteditable assert_equals: :focus-visible expected false but got true
-FAIL FocusOptions.focusVisible: #tabindex assert_equals: :focus-visible expected true but got false
-PASS FocusOptions.focusVisible: #not_focusable
+[FAIL] FocusOptions.focusVisible: button
+  assert_equals: :focus-visible expected true but got false
+[FAIL] FocusOptions.focusVisible: input
+  assert_equals: :focus-visible expected false but got true
+[FAIL] FocusOptions.focusVisible: #contenteditable
+  assert_equals: :focus-visible expected false but got true
+[FAIL] FocusOptions.focusVisible: #tabindex
+  assert_equals: :focus-visible expected true but got false
+[PASS] FocusOptions.focusVisible: #not_focusable
 Harness: the test ran to completion.
 

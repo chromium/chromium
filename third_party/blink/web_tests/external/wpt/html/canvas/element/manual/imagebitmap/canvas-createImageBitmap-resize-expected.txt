@@ -1,9 +1,10 @@
 This is a testharness.js-based test.
-PASS createImageBitmap from a Blob with resize option.
-PASS createImageBitmap from a HTMLCanvasElement with resize option.
-PASS createImageBitmap from a HTMLImageElement with resize option.
-FAIL createImageBitmap from a HTMLImageElement of svg with no specified size with resize option. assert_array_equals: This pixel should be green. expected property 0 to be 0 but got 255 (expected array [0, 255, 0, 255] got object "255,0,0,255")
-PASS createImageBitmap from an ImageBitmap with resize option.
-PASS createImageBitmap from an ImageData with resize option.
+[PASS] createImageBitmap from a Blob with resize option.
+[PASS] createImageBitmap from a HTMLCanvasElement with resize option.
+[PASS] createImageBitmap from a HTMLImageElement with resize option.
+[FAIL] createImageBitmap from a HTMLImageElement of svg with no specified size with resize option.
+  assert_array_equals: This pixel should be green. expected property 0 to be 0 but got 255 (expected array [0, 255, 0, 255] got object "255,0,0,255")
+[PASS] createImageBitmap from an ImageBitmap with resize option.
+[PASS] createImageBitmap from an ImageData with resize option.
 Harness: the test ran to completion.
 

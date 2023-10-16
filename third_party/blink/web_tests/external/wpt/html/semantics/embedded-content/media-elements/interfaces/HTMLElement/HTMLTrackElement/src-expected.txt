@@ -1,14 +1,16 @@
 This is a testharness.js-based test.
-PASS HTMLTrackElement.src missing value
-PASS HTMLTrackElement.src empty string in content attribute
-PASS HTMLTrackElement.src assigning empty string to IDL attribute
-FAIL HTMLTrackElement.src unresolvable value in content attribute assert_equals: expected "http://foo bar" but got "http://foo%20bar/"
-FAIL HTMLTrackElement.src assigning unresolvable value to IDL attribute assert_equals: expected "http://foo bar" but got "http://foo%20bar/"
-PASS HTMLTrackElement.src resolvable value in content attribute
-PASS HTMLTrackElement.src assigning resolvable value to IDL attribute
-PASS HTMLTrackElement.src \u0000 in content attribute
-PASS HTMLTrackElement.src assigning \u0000 to IDL attribute
-PASS HTMLTrackElement.src foo\u0000bar in content attribute
-PASS HTMLTrackElement.src assigning foo\u0000bar to IDL attribute
+[PASS] HTMLTrackElement.src missing value
+[PASS] HTMLTrackElement.src empty string in content attribute
+[PASS] HTMLTrackElement.src assigning empty string to IDL attribute
+[FAIL] HTMLTrackElement.src unresolvable value in content attribute
+  assert_equals: expected "http://foo bar" but got "http://foo%20bar/"
+[FAIL] HTMLTrackElement.src assigning unresolvable value to IDL attribute
+  assert_equals: expected "http://foo bar" but got "http://foo%20bar/"
+[PASS] HTMLTrackElement.src resolvable value in content attribute
+[PASS] HTMLTrackElement.src assigning resolvable value to IDL attribute
+[PASS] HTMLTrackElement.src \u0000 in content attribute
+[PASS] HTMLTrackElement.src assigning \u0000 to IDL attribute
+[PASS] HTMLTrackElement.src foo\u0000bar in content attribute
+[PASS] HTMLTrackElement.src assigning foo\u0000bar to IDL attribute
 Harness: the test ran to completion.
 

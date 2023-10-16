@@ -1,4 +1,0 @@
-This is a testharness.js-based test.
-FAIL getImageData() works for sizes smaller than one pixel Failed to execute 'getImageData' on 'OffscreenCanvasRenderingContext2D': The source width is 0.
-Harness: the test ran to completion.
-

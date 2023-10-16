@@ -1,349 +1,455 @@
 This is a testharness.js-based test.
 Found 8656 tests; 8550 PASS, 106 FAIL, 0 TIMEOUT, 0 NOTRUN.
-PASS picture.title: 38 tests
-PASS picture.lang: 38 tests
-PASS picture.dir: 68 tests
-PASS picture.className (<picture class>): 38 tests
-PASS picture.autofocus: 39 tests
-PASS picture.hidden: 39 tests
-PASS picture.accessKey: 38 tests
-PASS picture.tabIndex: 26 tests
-PASS img.title: 38 tests
-PASS img.lang: 38 tests
-PASS img.dir: 68 tests
-PASS img.className (<img class>): 38 tests
-PASS img.autofocus: 39 tests
-PASS img.hidden: 39 tests
-PASS img.accessKey: 38 tests
-PASS img.tabIndex: 26 tests
-PASS img.alt: 38 tests
-PASS img.src: 44 tests
-PASS img.srcset: 38 tests
-PASS img.crossOrigin: 62 tests
-PASS img.useMap: 38 tests
-PASS img.isMap: 39 tests
-PASS img.width: 8 tests
-PASS img.height: 8 tests
-PASS img.referrerPolicy: 30 tests
-FAIL img.referrerPolicy: setAttribute() to "same-origin" assert_equals: IDL get expected "same-origin" but got ""
-PASS img.referrerPolicy: 3 tests
-FAIL img.referrerPolicy: setAttribute() to "SAME-ORIGIN" assert_equals: IDL get expected "same-origin" but got ""
-PASS img.referrerPolicy: 6 tests
-FAIL img.referrerPolicy: setAttribute() to "strict-origin" assert_equals: IDL get expected "strict-origin" but got ""
-PASS img.referrerPolicy: 3 tests
-FAIL img.referrerPolicy: setAttribute() to "STRICT-ORIGIN" assert_equals: IDL get expected "strict-origin" but got ""
-PASS img.referrerPolicy: 7 tests
-FAIL img.referrerPolicy: setAttribute() to "strict-origin-when-cross-origin" assert_equals: IDL get expected "strict-origin-when-cross-origin" but got ""
-PASS img.referrerPolicy: 3 tests
-FAIL img.referrerPolicy: setAttribute() to "STRICT-ORIGIN-WHEN-CROSS-ORIGIN" assert_equals: IDL get expected "strict-origin-when-cross-origin" but got ""
-PASS img.referrerPolicy: 35 tests
-FAIL img.referrerPolicy: IDL set to "same-origin" assert_equals: IDL get expected "same-origin" but got ""
-PASS img.referrerPolicy: 3 tests
-FAIL img.referrerPolicy: IDL set to "SAME-ORIGIN" assert_equals: IDL get expected "same-origin" but got ""
-PASS img.referrerPolicy: 6 tests
-FAIL img.referrerPolicy: IDL set to "strict-origin" assert_equals: IDL get expected "strict-origin" but got ""
-PASS img.referrerPolicy: 3 tests
-FAIL img.referrerPolicy: IDL set to "STRICT-ORIGIN" assert_equals: IDL get expected "strict-origin" but got ""
-PASS img.referrerPolicy: 7 tests
-FAIL img.referrerPolicy: IDL set to "strict-origin-when-cross-origin" assert_equals: IDL get expected "strict-origin-when-cross-origin" but got ""
-PASS img.referrerPolicy: 3 tests
-FAIL img.referrerPolicy: IDL set to "STRICT-ORIGIN-WHEN-CROSS-ORIGIN" assert_equals: IDL get expected "strict-origin-when-cross-origin" but got ""
-PASS img.referrerPolicy: 7 tests
-PASS img.decoding: 70 tests
-PASS img.name: 38 tests
-PASS img.lowsrc: 44 tests
-PASS img.align: 38 tests
-PASS img.hspace: 65 tests
-PASS img.vspace: 65 tests
-PASS img.longDesc: 44 tests
-PASS img.border: 38 tests
-PASS iframe.title: 38 tests
-PASS iframe.lang: 38 tests
-PASS iframe.dir: 68 tests
-PASS iframe.className (<iframe class>): 38 tests
-PASS iframe.autofocus: 39 tests
-PASS iframe.hidden: 39 tests
-PASS iframe.accessKey: 38 tests
-PASS iframe.tabIndex: 26 tests
-PASS iframe.src: 44 tests
-PASS iframe.srcdoc: 38 tests
-PASS iframe.name: 38 tests
-PASS iframe.allowFullscreen: 39 tests
-FAIL iframe.allowUserMedia: typeof IDL attribute assert_equals: expected "boolean" but got "undefined"
-FAIL iframe.allowUserMedia: IDL get with DOM attribute unset assert_equals: expected (boolean) false but got (undefined) undefined
-FAIL iframe.allowUserMedia: setAttribute() to "" assert_equals: IDL get expected (boolean) true but got (undefined) undefined
-FAIL iframe.allowUserMedia: setAttribute() to " foo " assert_equals: IDL get expected (boolean) true but got (undefined) undefined
-FAIL iframe.allowUserMedia: setAttribute() to undefined assert_equals: IDL get expected (boolean) true but got (undefined) undefined
-FAIL iframe.allowUserMedia: setAttribute() to null assert_equals: IDL get expected (boolean) true but got (undefined) undefined
-FAIL iframe.allowUserMedia: setAttribute() to 7 assert_equals: IDL get expected (boolean) true but got (undefined) undefined
-FAIL iframe.allowUserMedia: setAttribute() to 1.5 assert_equals: IDL get expected (boolean) true but got (undefined) undefined
-FAIL iframe.allowUserMedia: setAttribute() to "5%" assert_equals: IDL get expected (boolean) true but got (undefined) undefined
-FAIL iframe.allowUserMedia: setAttribute() to "+100" assert_equals: IDL get expected (boolean) true but got (undefined) undefined
-FAIL iframe.allowUserMedia: setAttribute() to ".5" assert_equals: IDL get expected (boolean) true but got (undefined) undefined
-FAIL iframe.allowUserMedia: setAttribute() to true assert_equals: IDL get expected (boolean) true but got (undefined) undefined
-FAIL iframe.allowUserMedia: setAttribute() to false assert_equals: IDL get expected (boolean) true but got (undefined) undefined
-FAIL iframe.allowUserMedia: setAttribute() to object "[object Object]" assert_equals: IDL get expected (boolean) true but got (undefined) undefined
-FAIL iframe.allowUserMedia: setAttribute() to NaN assert_equals: IDL get expected (boolean) true but got (undefined) undefined
-FAIL iframe.allowUserMedia: setAttribute() to Infinity assert_equals: IDL get expected (boolean) true but got (undefined) undefined
-FAIL iframe.allowUserMedia: setAttribute() to -Infinity assert_equals: IDL get expected (boolean) true but got (undefined) undefined
-FAIL iframe.allowUserMedia: setAttribute() to "\0" assert_equals: IDL get expected (boolean) true but got (undefined) undefined
-FAIL iframe.allowUserMedia: setAttribute() to object "test-toString" assert_equals: IDL get expected (boolean) true but got (undefined) undefined
-FAIL iframe.allowUserMedia: setAttribute() to object "test-valueOf" assert_equals: IDL get expected (boolean) true but got (undefined) undefined
-FAIL iframe.allowUserMedia: setAttribute() to "allowUserMedia" assert_equals: IDL get expected (boolean) true but got (undefined) undefined
-FAIL iframe.allowUserMedia: IDL set to "" assert_equals: hasAttribute() expected false but got true
-FAIL iframe.allowUserMedia: IDL set to " foo " assert_equals: IDL get expected (boolean) true but got (string) " foo "
-FAIL iframe.allowUserMedia: IDL set to undefined assert_equals: hasAttribute() expected false but got true
-FAIL iframe.allowUserMedia: IDL set to null assert_equals: hasAttribute() expected false but got true
-FAIL iframe.allowUserMedia: IDL set to 7 assert_equals: IDL get expected (boolean) true but got (number) 7
-FAIL iframe.allowUserMedia: IDL set to 1.5 assert_equals: IDL get expected (boolean) true but got (number) 1.5
-FAIL iframe.allowUserMedia: IDL set to "5%" assert_equals: IDL get expected (boolean) true but got (string) "5%"
-FAIL iframe.allowUserMedia: IDL set to "+100" assert_equals: IDL get expected (boolean) true but got (string) "+100"
-FAIL iframe.allowUserMedia: IDL set to ".5" assert_equals: IDL get expected (boolean) true but got (string) ".5"
-PASS iframe.allowUserMedia: IDL set to true
-FAIL iframe.allowUserMedia: IDL set to false assert_equals: hasAttribute() expected false but got true
-FAIL iframe.allowUserMedia: IDL set to object "[object Object]" assert_equals: IDL get expected (boolean) true but got (object) object "[object Object]"
-FAIL iframe.allowUserMedia: IDL set to NaN assert_equals: hasAttribute() expected false but got true
-FAIL iframe.allowUserMedia: IDL set to Infinity assert_equals: IDL get expected (boolean) true but got (number) Infinity
-FAIL iframe.allowUserMedia: IDL set to -Infinity assert_equals: IDL get expected (boolean) true but got (number) -Infinity
-FAIL iframe.allowUserMedia: IDL set to "\0" assert_equals: IDL get expected (boolean) true but got (string) "\0"
-FAIL iframe.allowUserMedia: IDL set to object "test-toString" assert_equals: IDL get expected (boolean) true but got (object) object "test-toString"
-FAIL iframe.allowUserMedia: IDL set to object "test-valueOf" assert_equals: IDL get expected (boolean) true but got (object) object "test-valueOf"
-PASS iframe.width: 38 tests
-PASS iframe.height: 38 tests
-PASS iframe.referrerPolicy: 30 tests
-FAIL iframe.referrerPolicy: setAttribute() to "same-origin" assert_equals: IDL get expected "same-origin" but got ""
-PASS iframe.referrerPolicy: 3 tests
-FAIL iframe.referrerPolicy: setAttribute() to "SAME-ORIGIN" assert_equals: IDL get expected "same-origin" but got ""
-PASS iframe.referrerPolicy: 6 tests
-FAIL iframe.referrerPolicy: setAttribute() to "strict-origin" assert_equals: IDL get expected "strict-origin" but got ""
-PASS iframe.referrerPolicy: 3 tests
-FAIL iframe.referrerPolicy: setAttribute() to "STRICT-ORIGIN" assert_equals: IDL get expected "strict-origin" but got ""
-PASS iframe.referrerPolicy: 7 tests
-FAIL iframe.referrerPolicy: setAttribute() to "strict-origin-when-cross-origin" assert_equals: IDL get expected "strict-origin-when-cross-origin" but got ""
-PASS iframe.referrerPolicy: 3 tests
-FAIL iframe.referrerPolicy: setAttribute() to "STRICT-ORIGIN-WHEN-CROSS-ORIGIN" assert_equals: IDL get expected "strict-origin-when-cross-origin" but got ""
-PASS iframe.referrerPolicy: 35 tests
-FAIL iframe.referrerPolicy: IDL set to "same-origin" assert_equals: IDL get expected "same-origin" but got ""
-PASS iframe.referrerPolicy: 3 tests
-FAIL iframe.referrerPolicy: IDL set to "SAME-ORIGIN" assert_equals: IDL get expected "same-origin" but got ""
-PASS iframe.referrerPolicy: 6 tests
-FAIL iframe.referrerPolicy: IDL set to "strict-origin" assert_equals: IDL get expected "strict-origin" but got ""
-PASS iframe.referrerPolicy: 3 tests
-FAIL iframe.referrerPolicy: IDL set to "STRICT-ORIGIN" assert_equals: IDL get expected "strict-origin" but got ""
-PASS iframe.referrerPolicy: 7 tests
-FAIL iframe.referrerPolicy: IDL set to "strict-origin-when-cross-origin" assert_equals: IDL get expected "strict-origin-when-cross-origin" but got ""
-PASS iframe.referrerPolicy: 3 tests
-FAIL iframe.referrerPolicy: IDL set to "STRICT-ORIGIN-WHEN-CROSS-ORIGIN" assert_equals: IDL get expected "strict-origin-when-cross-origin" but got ""
-PASS iframe.referrerPolicy: 7 tests
-FAIL iframe.delegateStickyUserActivation: typeof IDL attribute assert_equals: expected "string" but got "undefined"
-FAIL iframe.delegateStickyUserActivation: setAttribute() to "vibration" assert_equals: IDL get expected (string) "vibration" but got (undefined) undefined
-FAIL iframe.delegateStickyUserActivation: setAttribute() to "VIBRATION" assert_equals: IDL get expected (string) "vibration" but got (undefined) undefined
-FAIL iframe.delegateStickyUserActivation: setAttribute() to "media" assert_equals: IDL get expected (string) "media" but got (undefined) undefined
-FAIL iframe.delegateStickyUserActivation: setAttribute() to "MEDIA" assert_equals: IDL get expected (string) "media" but got (undefined) undefined
-FAIL iframe.delegateStickyUserActivation: IDL set to "" assert_equals: getAttribute() expected "" but got "MEDIA"
-FAIL iframe.delegateStickyUserActivation: IDL set to " \0\x01\x02\x03\x04\x05\x06\x07 \b\t\n\v\f\r\x0e\x0f \x10\x11\x12\x13\x14\x15\x16\x17 \x18\x19\x1a\x1b\x1c\x1d\x1e\x1f  foo " assert_equals: getAttribute() expected " \0\x01\x02\x03\x04\x05\x06\x07 \b\t\n\v\f\r\x0e\x0f \x10\x11\x12\x13\x14\x15\x16\x17 \x18\x19\x1a\x1b\x1c\x1d\x1e\x1f  foo " but got "MEDIA"
-FAIL iframe.delegateStickyUserActivation: IDL set to undefined assert_equals: getAttribute() expected "undefined" but got "MEDIA"
-FAIL iframe.delegateStickyUserActivation: IDL set to 7 assert_equals: getAttribute() expected "7" but got "MEDIA"
-FAIL iframe.delegateStickyUserActivation: IDL set to 1.5 assert_equals: getAttribute() expected "1.5" but got "MEDIA"
-FAIL iframe.delegateStickyUserActivation: IDL set to "5%" assert_equals: getAttribute() expected "5%" but got "MEDIA"
-FAIL iframe.delegateStickyUserActivation: IDL set to "+100" assert_equals: getAttribute() expected "+100" but got "MEDIA"
-FAIL iframe.delegateStickyUserActivation: IDL set to ".5" assert_equals: getAttribute() expected ".5" but got "MEDIA"
-FAIL iframe.delegateStickyUserActivation: IDL set to true assert_equals: getAttribute() expected "true" but got "MEDIA"
-FAIL iframe.delegateStickyUserActivation: IDL set to false assert_equals: getAttribute() expected "false" but got "MEDIA"
-FAIL iframe.delegateStickyUserActivation: IDL set to object "[object Object]" assert_equals: getAttribute() expected "[object Object]" but got "MEDIA"
-FAIL iframe.delegateStickyUserActivation: IDL set to NaN assert_equals: getAttribute() expected "NaN" but got "MEDIA"
-FAIL iframe.delegateStickyUserActivation: IDL set to Infinity assert_equals: getAttribute() expected "Infinity" but got "MEDIA"
-FAIL iframe.delegateStickyUserActivation: IDL set to -Infinity assert_equals: getAttribute() expected "-Infinity" but got "MEDIA"
-FAIL iframe.delegateStickyUserActivation: IDL set to "\0" assert_equals: getAttribute() expected "\0" but got "MEDIA"
-PASS iframe.delegateStickyUserActivation: IDL set to null
-FAIL iframe.delegateStickyUserActivation: IDL set to object "test-toString" assert_equals: getAttribute() expected "test-toString" but got "MEDIA"
-FAIL iframe.delegateStickyUserActivation: IDL set to object "test-valueOf" assert_equals: getAttribute() expected "test-valueOf" but got "MEDIA"
-FAIL iframe.delegateStickyUserActivation: IDL set to "vibration" assert_equals: getAttribute() expected "vibration" but got "MEDIA"
-FAIL iframe.delegateStickyUserActivation: IDL set to "xvibration" assert_equals: getAttribute() expected "xvibration" but got "MEDIA"
-FAIL iframe.delegateStickyUserActivation: IDL set to "vibration\0" assert_equals: getAttribute() expected "vibration\0" but got "MEDIA"
-FAIL iframe.delegateStickyUserActivation: IDL set to "ibration" assert_equals: getAttribute() expected "ibration" but got "MEDIA"
-FAIL iframe.delegateStickyUserActivation: IDL set to "VIBRATION" assert_equals: getAttribute() expected "VIBRATION" but got "MEDIA"
-FAIL iframe.delegateStickyUserActivation: IDL set to "media" assert_equals: getAttribute() expected "media" but got "MEDIA"
-FAIL iframe.delegateStickyUserActivation: IDL set to "xmedia" assert_equals: getAttribute() expected "xmedia" but got "MEDIA"
-FAIL iframe.delegateStickyUserActivation: IDL set to "media\0" assert_equals: getAttribute() expected "media\0" but got "MEDIA"
-FAIL iframe.delegateStickyUserActivation: IDL set to "edia" assert_equals: getAttribute() expected "edia" but got "MEDIA"
-FAIL iframe.delegateStickyUserActivation: IDL set to "MEDIA" assert_equals: IDL get expected "media" but got "MEDIA"
-PASS iframe.align: 38 tests
-PASS iframe.scrolling: 38 tests
-PASS iframe.frameBorder: 38 tests
-PASS iframe.longDesc: 44 tests
-PASS iframe.marginHeight: 38 tests
-PASS iframe.marginWidth: 38 tests
-PASS embed.title: 38 tests
-PASS embed.lang: 38 tests
-PASS embed.dir: 68 tests
-PASS embed.className (<embed class>): 38 tests
-PASS embed.autofocus: 39 tests
-PASS embed.hidden: 39 tests
-PASS embed.accessKey: 38 tests
-PASS embed.tabIndex: 26 tests
-PASS embed.src: 44 tests
-PASS embed.type: 38 tests
-PASS embed.width: 38 tests
-PASS embed.height: 38 tests
-PASS embed.align: 38 tests
-PASS embed.name: 38 tests
-PASS object.title: 38 tests
-PASS object.lang: 38 tests
-PASS object.dir: 68 tests
-PASS object.className (<object class>): 38 tests
-PASS object.autofocus: 39 tests
-PASS object.hidden: 39 tests
-PASS object.accessKey: 38 tests
-PASS object.tabIndex: 26 tests
-PASS object.data: 44 tests
-PASS object.type: 38 tests
-PASS object.name: 38 tests
-PASS object.useMap: 38 tests
-PASS object.width: 38 tests
-PASS object.height: 38 tests
-PASS object.align: 38 tests
-PASS object.archive: 38 tests
-PASS object.code: 38 tests
-PASS object.declare: 39 tests
-PASS object.hspace: 65 tests
-PASS object.standby: 38 tests
-PASS object.vspace: 65 tests
-PASS object.codeBase: 44 tests
-PASS object.codeType: 38 tests
-PASS object.border: 38 tests
-PASS param.title: 38 tests
-PASS param.lang: 38 tests
-PASS param.dir: 68 tests
-PASS param.className (<param class>): 38 tests
-PASS param.autofocus: 39 tests
-PASS param.hidden: 39 tests
-PASS param.accessKey: 38 tests
-PASS param.tabIndex: 26 tests
-PASS param.name: 38 tests
-PASS param.value: 38 tests
-PASS param.type: 38 tests
-PASS param.valueType: 38 tests
-PASS video.title: 38 tests
-PASS video.lang: 38 tests
-PASS video.dir: 68 tests
-PASS video.className (<video class>): 38 tests
-PASS video.autofocus: 39 tests
-PASS video.hidden: 39 tests
-PASS video.accessKey: 38 tests
-PASS video.tabIndex: 26 tests
-PASS video.src: 44 tests
-PASS video.crossOrigin: 62 tests
-PASS video.preload: 40 tests
-PASS video.autoplay: 39 tests
-PASS video.loop: 39 tests
-PASS video.controls: 39 tests
-PASS video.defaultMuted (<video muted>): 39 tests
-PASS video.width: 65 tests
-PASS video.height: 65 tests
-PASS video.poster: 44 tests
-PASS video.playsInline: 39 tests
-PASS audio.title: 38 tests
-PASS audio.lang: 38 tests
-PASS audio.dir: 68 tests
-PASS audio.className (<audio class>): 38 tests
-PASS audio.autofocus: 39 tests
-PASS audio.hidden: 39 tests
-PASS audio.accessKey: 38 tests
-PASS audio.tabIndex: 26 tests
-PASS audio.src: 44 tests
-PASS audio.crossOrigin: 62 tests
-PASS audio.preload: 40 tests
-PASS audio.autoplay: 39 tests
-PASS audio.loop: 39 tests
-PASS audio.controls: 39 tests
-PASS audio.defaultMuted (<audio muted>): 39 tests
-PASS source.title: 38 tests
-PASS source.lang: 38 tests
-PASS source.dir: 68 tests
-PASS source.className (<source class>): 38 tests
-PASS source.autofocus: 39 tests
-PASS source.hidden: 39 tests
-PASS source.accessKey: 38 tests
-PASS source.tabIndex: 26 tests
-PASS source.src: 44 tests
-PASS source.type: 38 tests
-PASS source.srcset: 38 tests
-PASS source.sizes: 38 tests
-PASS source.media: 38 tests
-PASS track.title: 38 tests
-PASS track.lang: 38 tests
-PASS track.dir: 68 tests
-PASS track.className (<track class>): 38 tests
-PASS track.autofocus: 39 tests
-PASS track.hidden: 39 tests
-PASS track.accessKey: 38 tests
-PASS track.tabIndex: 26 tests
-PASS track.kind: 96 tests
-PASS track.src: 44 tests
-PASS track.srclang: 38 tests
-PASS track.label: 38 tests
-PASS track.default: 39 tests
-PASS canvas.title: 38 tests
-PASS canvas.lang: 38 tests
-PASS canvas.dir: 68 tests
-PASS canvas.className (<canvas class>): 38 tests
-PASS canvas.autofocus: 39 tests
-PASS canvas.hidden: 39 tests
-PASS canvas.accessKey: 38 tests
-PASS canvas.tabIndex: 26 tests
-PASS canvas.width: 63 tests
-PASS canvas.height: 63 tests
-PASS map.title: 38 tests
-PASS map.lang: 38 tests
-PASS map.dir: 68 tests
-PASS map.className (<map class>): 38 tests
-PASS map.autofocus: 39 tests
-PASS map.hidden: 39 tests
-PASS map.accessKey: 38 tests
-PASS map.tabIndex: 26 tests
-PASS map.name: 38 tests
-PASS area.title: 38 tests
-PASS area.lang: 38 tests
-PASS area.dir: 68 tests
-PASS area.className (<area class>): 38 tests
-PASS area.autofocus: 39 tests
-PASS area.hidden: 39 tests
-PASS area.accessKey: 38 tests
-PASS area.tabIndex: 26 tests
-PASS area.alt: 38 tests
-PASS area.coords: 38 tests
-PASS area.shape: 38 tests
-PASS area.target: 38 tests
-PASS area.download: 38 tests
-PASS area.ping: 38 tests
-PASS area.rel: 38 tests
-PASS area.referrerPolicy: 30 tests
-FAIL area.referrerPolicy: setAttribute() to "same-origin" assert_equals: IDL get expected "same-origin" but got ""
-PASS area.referrerPolicy: 3 tests
-FAIL area.referrerPolicy: setAttribute() to "SAME-ORIGIN" assert_equals: IDL get expected "same-origin" but got ""
-PASS area.referrerPolicy: 6 tests
-FAIL area.referrerPolicy: setAttribute() to "strict-origin" assert_equals: IDL get expected "strict-origin" but got ""
-PASS area.referrerPolicy: 3 tests
-FAIL area.referrerPolicy: setAttribute() to "STRICT-ORIGIN" assert_equals: IDL get expected "strict-origin" but got ""
-PASS area.referrerPolicy: 7 tests
-FAIL area.referrerPolicy: setAttribute() to "strict-origin-when-cross-origin" assert_equals: IDL get expected "strict-origin-when-cross-origin" but got ""
-PASS area.referrerPolicy: 3 tests
-FAIL area.referrerPolicy: setAttribute() to "STRICT-ORIGIN-WHEN-CROSS-ORIGIN" assert_equals: IDL get expected "strict-origin-when-cross-origin" but got ""
-PASS area.referrerPolicy: 35 tests
-FAIL area.referrerPolicy: IDL set to "same-origin" assert_equals: IDL get expected "same-origin" but got ""
-PASS area.referrerPolicy: 3 tests
-FAIL area.referrerPolicy: IDL set to "SAME-ORIGIN" assert_equals: IDL get expected "same-origin" but got ""
-PASS area.referrerPolicy: 6 tests
-FAIL area.referrerPolicy: IDL set to "strict-origin" assert_equals: IDL get expected "strict-origin" but got ""
-PASS area.referrerPolicy: 3 tests
-FAIL area.referrerPolicy: IDL set to "STRICT-ORIGIN" assert_equals: IDL get expected "strict-origin" but got ""
-PASS area.referrerPolicy: 7 tests
-FAIL area.referrerPolicy: IDL set to "strict-origin-when-cross-origin" assert_equals: IDL get expected "strict-origin-when-cross-origin" but got ""
-PASS area.referrerPolicy: 3 tests
-FAIL area.referrerPolicy: IDL set to "STRICT-ORIGIN-WHEN-CROSS-ORIGIN" assert_equals: IDL get expected "strict-origin-when-cross-origin" but got ""
-PASS area.referrerPolicy: 7 tests
-PASS area.href: 44 tests
-PASS area.noHref: 39 tests
+[PASS] picture.title: 38 tests
+[PASS] picture.lang: 38 tests
+[PASS] picture.dir: 68 tests
+[PASS] picture.className (<picture class>): 38 tests
+[PASS] picture.autofocus: 39 tests
+[PASS] picture.hidden: 39 tests
+[PASS] picture.accessKey: 38 tests
+[PASS] picture.tabIndex: 26 tests
+[PASS] img.title: 38 tests
+[PASS] img.lang: 38 tests
+[PASS] img.dir: 68 tests
+[PASS] img.className (<img class>): 38 tests
+[PASS] img.autofocus: 39 tests
+[PASS] img.hidden: 39 tests
+[PASS] img.accessKey: 38 tests
+[PASS] img.tabIndex: 26 tests
+[PASS] img.alt: 38 tests
+[PASS] img.src: 44 tests
+[PASS] img.srcset: 38 tests
+[PASS] img.crossOrigin: 62 tests
+[PASS] img.useMap: 38 tests
+[PASS] img.isMap: 39 tests
+[PASS] img.width: 8 tests
+[PASS] img.height: 8 tests
+[PASS] img.referrerPolicy: 30 tests
+[FAIL] img.referrerPolicy: setAttribute() to "same-origin"
+  assert_equals: IDL get expected "same-origin" but got ""
+[PASS] img.referrerPolicy: 3 tests
+[FAIL] img.referrerPolicy: setAttribute() to "SAME-ORIGIN"
+  assert_equals: IDL get expected "same-origin" but got ""
+[PASS] img.referrerPolicy: 6 tests
+[FAIL] img.referrerPolicy: setAttribute() to "strict-origin"
+  assert_equals: IDL get expected "strict-origin" but got ""
+[PASS] img.referrerPolicy: 3 tests
+[FAIL] img.referrerPolicy: setAttribute() to "STRICT-ORIGIN"
+  assert_equals: IDL get expected "strict-origin" but got ""
+[PASS] img.referrerPolicy: 7 tests
+[FAIL] img.referrerPolicy: setAttribute() to "strict-origin-when-cross-origin"
+  assert_equals: IDL get expected "strict-origin-when-cross-origin" but got ""
+[PASS] img.referrerPolicy: 3 tests
+[FAIL] img.referrerPolicy: setAttribute() to "STRICT-ORIGIN-WHEN-CROSS-ORIGIN"
+  assert_equals: IDL get expected "strict-origin-when-cross-origin" but got ""
+[PASS] img.referrerPolicy: 35 tests
+[FAIL] img.referrerPolicy: IDL set to "same-origin"
+  assert_equals: IDL get expected "same-origin" but got ""
+[PASS] img.referrerPolicy: 3 tests
+[FAIL] img.referrerPolicy: IDL set to "SAME-ORIGIN"
+  assert_equals: IDL get expected "same-origin" but got ""
+[PASS] img.referrerPolicy: 6 tests
+[FAIL] img.referrerPolicy: IDL set to "strict-origin"
+  assert_equals: IDL get expected "strict-origin" but got ""
+[PASS] img.referrerPolicy: 3 tests
+[FAIL] img.referrerPolicy: IDL set to "STRICT-ORIGIN"
+  assert_equals: IDL get expected "strict-origin" but got ""
+[PASS] img.referrerPolicy: 7 tests
+[FAIL] img.referrerPolicy: IDL set to "strict-origin-when-cross-origin"
+  assert_equals: IDL get expected "strict-origin-when-cross-origin" but got ""
+[PASS] img.referrerPolicy: 3 tests
+[FAIL] img.referrerPolicy: IDL set to "STRICT-ORIGIN-WHEN-CROSS-ORIGIN"
+  assert_equals: IDL get expected "strict-origin-when-cross-origin" but got ""
+[PASS] img.referrerPolicy: 7 tests
+[PASS] img.decoding: 70 tests
+[PASS] img.name: 38 tests
+[PASS] img.lowsrc: 44 tests
+[PASS] img.align: 38 tests
+[PASS] img.hspace: 65 tests
+[PASS] img.vspace: 65 tests
+[PASS] img.longDesc: 44 tests
+[PASS] img.border: 38 tests
+[PASS] iframe.title: 38 tests
+[PASS] iframe.lang: 38 tests
+[PASS] iframe.dir: 68 tests
+[PASS] iframe.className (<iframe class>): 38 tests
+[PASS] iframe.autofocus: 39 tests
+[PASS] iframe.hidden: 39 tests
+[PASS] iframe.accessKey: 38 tests
+[PASS] iframe.tabIndex: 26 tests
+[PASS] iframe.src: 44 tests
+[PASS] iframe.srcdoc: 38 tests
+[PASS] iframe.name: 38 tests
+[PASS] iframe.allowFullscreen: 39 tests
+[FAIL] iframe.allowUserMedia: typeof IDL attribute
+  assert_equals: expected "boolean" but got "undefined"
+[FAIL] iframe.allowUserMedia: IDL get with DOM attribute unset
+  assert_equals: expected (boolean) false but got (undefined) undefined
+[FAIL] iframe.allowUserMedia: setAttribute() to ""
+  assert_equals: IDL get expected (boolean) true but got (undefined) undefined
+[FAIL] iframe.allowUserMedia: setAttribute() to " foo "
+  assert_equals: IDL get expected (boolean) true but got (undefined) undefined
+[FAIL] iframe.allowUserMedia: setAttribute() to undefined
+  assert_equals: IDL get expected (boolean) true but got (undefined) undefined
+[FAIL] iframe.allowUserMedia: setAttribute() to null
+  assert_equals: IDL get expected (boolean) true but got (undefined) undefined
+[FAIL] iframe.allowUserMedia: setAttribute() to 7
+  assert_equals: IDL get expected (boolean) true but got (undefined) undefined
+[FAIL] iframe.allowUserMedia: setAttribute() to 1.5
+  assert_equals: IDL get expected (boolean) true but got (undefined) undefined
+[FAIL] iframe.allowUserMedia: setAttribute() to "5%"
+  assert_equals: IDL get expected (boolean) true but got (undefined) undefined
+[FAIL] iframe.allowUserMedia: setAttribute() to "+100"
+  assert_equals: IDL get expected (boolean) true but got (undefined) undefined
+[FAIL] iframe.allowUserMedia: setAttribute() to ".5"
+  assert_equals: IDL get expected (boolean) true but got (undefined) undefined
+[FAIL] iframe.allowUserMedia: setAttribute() to true
+  assert_equals: IDL get expected (boolean) true but got (undefined) undefined
+[FAIL] iframe.allowUserMedia: setAttribute() to false
+  assert_equals: IDL get expected (boolean) true but got (undefined) undefined
+[FAIL] iframe.allowUserMedia: setAttribute() to object "[object Object]"
+  assert_equals: IDL get expected (boolean) true but got (undefined) undefined
+[FAIL] iframe.allowUserMedia: setAttribute() to NaN
+  assert_equals: IDL get expected (boolean) true but got (undefined) undefined
+[FAIL] iframe.allowUserMedia: setAttribute() to Infinity
+  assert_equals: IDL get expected (boolean) true but got (undefined) undefined
+[FAIL] iframe.allowUserMedia: setAttribute() to -Infinity
+  assert_equals: IDL get expected (boolean) true but got (undefined) undefined
+[FAIL] iframe.allowUserMedia: setAttribute() to "\0"
+  assert_equals: IDL get expected (boolean) true but got (undefined) undefined
+[FAIL] iframe.allowUserMedia: setAttribute() to object "test-toString"
+  assert_equals: IDL get expected (boolean) true but got (undefined) undefined
+[FAIL] iframe.allowUserMedia: setAttribute() to object "test-valueOf"
+  assert_equals: IDL get expected (boolean) true but got (undefined) undefined
+[FAIL] iframe.allowUserMedia: setAttribute() to "allowUserMedia"
+  assert_equals: IDL get expected (boolean) true but got (undefined) undefined
+[FAIL] iframe.allowUserMedia: IDL set to ""
+  assert_equals: hasAttribute() expected false but got true
+[FAIL] iframe.allowUserMedia: IDL set to " foo "
+  assert_equals: IDL get expected (boolean) true but got (string) " foo "
+[FAIL] iframe.allowUserMedia: IDL set to undefined
+  assert_equals: hasAttribute() expected false but got true
+[FAIL] iframe.allowUserMedia: IDL set to null
+  assert_equals: hasAttribute() expected false but got true
+[FAIL] iframe.allowUserMedia: IDL set to 7
+  assert_equals: IDL get expected (boolean) true but got (number) 7
+[FAIL] iframe.allowUserMedia: IDL set to 1.5
+  assert_equals: IDL get expected (boolean) true but got (number) 1.5
+[FAIL] iframe.allowUserMedia: IDL set to "5%"
+  assert_equals: IDL get expected (boolean) true but got (string) "5%"
+[FAIL] iframe.allowUserMedia: IDL set to "+100"
+  assert_equals: IDL get expected (boolean) true but got (string) "+100"
+[FAIL] iframe.allowUserMedia: IDL set to ".5"
+  assert_equals: IDL get expected (boolean) true but got (string) ".5"
+[PASS] iframe.allowUserMedia: IDL set to true
+[FAIL] iframe.allowUserMedia: IDL set to false
+  assert_equals: hasAttribute() expected false but got true
+[FAIL] iframe.allowUserMedia: IDL set to object "[object Object]"
+  assert_equals: IDL get expected (boolean) true but got (object) object "[object Object]"
+[FAIL] iframe.allowUserMedia: IDL set to NaN
+  assert_equals: hasAttribute() expected false but got true
+[FAIL] iframe.allowUserMedia: IDL set to Infinity
+  assert_equals: IDL get expected (boolean) true but got (number) Infinity
+[FAIL] iframe.allowUserMedia: IDL set to -Infinity
+  assert_equals: IDL get expected (boolean) true but got (number) -Infinity
+[FAIL] iframe.allowUserMedia: IDL set to "\0"
+  assert_equals: IDL get expected (boolean) true but got (string) "\0"
+[FAIL] iframe.allowUserMedia: IDL set to object "test-toString"
+  assert_equals: IDL get expected (boolean) true but got (object) object "test-toString"
+[FAIL] iframe.allowUserMedia: IDL set to object "test-valueOf"
+  assert_equals: IDL get expected (boolean) true but got (object) object "test-valueOf"
+[PASS] iframe.width: 38 tests
+[PASS] iframe.height: 38 tests
+[PASS] iframe.referrerPolicy: 30 tests
+[FAIL] iframe.referrerPolicy: setAttribute() to "same-origin"
+  assert_equals: IDL get expected "same-origin" but got ""
+[PASS] iframe.referrerPolicy: 3 tests
+[FAIL] iframe.referrerPolicy: setAttribute() to "SAME-ORIGIN"
+  assert_equals: IDL get expected "same-origin" but got ""
+[PASS] iframe.referrerPolicy: 6 tests
+[FAIL] iframe.referrerPolicy: setAttribute() to "strict-origin"
+  assert_equals: IDL get expected "strict-origin" but got ""
+[PASS] iframe.referrerPolicy: 3 tests
+[FAIL] iframe.referrerPolicy: setAttribute() to "STRICT-ORIGIN"
+  assert_equals: IDL get expected "strict-origin" but got ""
+[PASS] iframe.referrerPolicy: 7 tests
+[FAIL] iframe.referrerPolicy: setAttribute() to "strict-origin-when-cross-origin"
+  assert_equals: IDL get expected "strict-origin-when-cross-origin" but got ""
+[PASS] iframe.referrerPolicy: 3 tests
+[FAIL] iframe.referrerPolicy: setAttribute() to "STRICT-ORIGIN-WHEN-CROSS-ORIGIN"
+  assert_equals: IDL get expected "strict-origin-when-cross-origin" but got ""
+[PASS] iframe.referrerPolicy: 35 tests
+[FAIL] iframe.referrerPolicy: IDL set to "same-origin"
+  assert_equals: IDL get expected "same-origin" but got ""
+[PASS] iframe.referrerPolicy: 3 tests
+[FAIL] iframe.referrerPolicy: IDL set to "SAME-ORIGIN"
+  assert_equals: IDL get expected "same-origin" but got ""
+[PASS] iframe.referrerPolicy: 6 tests
+[FAIL] iframe.referrerPolicy: IDL set to "strict-origin"
+  assert_equals: IDL get expected "strict-origin" but got ""
+[PASS] iframe.referrerPolicy: 3 tests
+[FAIL] iframe.referrerPolicy: IDL set to "STRICT-ORIGIN"
+  assert_equals: IDL get expected "strict-origin" but got ""
+[PASS] iframe.referrerPolicy: 7 tests
+[FAIL] iframe.referrerPolicy: IDL set to "strict-origin-when-cross-origin"
+  assert_equals: IDL get expected "strict-origin-when-cross-origin" but got ""
+[PASS] iframe.referrerPolicy: 3 tests
+[FAIL] iframe.referrerPolicy: IDL set to "STRICT-ORIGIN-WHEN-CROSS-ORIGIN"
+  assert_equals: IDL get expected "strict-origin-when-cross-origin" but got ""
+[PASS] iframe.referrerPolicy: 7 tests
+[FAIL] iframe.delegateStickyUserActivation: typeof IDL attribute
+  assert_equals: expected "string" but got "undefined"
+[FAIL] iframe.delegateStickyUserActivation: setAttribute() to "vibration"
+  assert_equals: IDL get expected (string) "vibration" but got (undefined) undefined
+[FAIL] iframe.delegateStickyUserActivation: setAttribute() to "VIBRATION"
+  assert_equals: IDL get expected (string) "vibration" but got (undefined) undefined
+[FAIL] iframe.delegateStickyUserActivation: setAttribute() to "media"
+  assert_equals: IDL get expected (string) "media" but got (undefined) undefined
+[FAIL] iframe.delegateStickyUserActivation: setAttribute() to "MEDIA"
+  assert_equals: IDL get expected (string) "media" but got (undefined) undefined
+[FAIL] iframe.delegateStickyUserActivation: IDL set to ""
+  assert_equals: getAttribute() expected "" but got "MEDIA"
+[FAIL] iframe.delegateStickyUserActivation: IDL set to " \0\x01\x02\x03\x04\x05\x06\x07 \b\t\n\v\f\r\x0e\x0f \x10\x11\x12\x13\x14\x15\x16\x17 \x18\x19\x1a\x1b\x1c\x1d\x1e\x1f  foo "
+  assert_equals: getAttribute() expected " \0\x01\x02\x03\x04\x05\x06\x07 \b\t\n\v\f\r\x0e\x0f \x10\x11\x12\x13\x14\x15\x16\x17 \x18\x19\x1a\x1b\x1c\x1d\x1e\x1f  foo " but got "MEDIA"
+[FAIL] iframe.delegateStickyUserActivation: IDL set to undefined
+  assert_equals: getAttribute() expected "undefined" but got "MEDIA"
+[FAIL] iframe.delegateStickyUserActivation: IDL set to 7
+  assert_equals: getAttribute() expected "7" but got "MEDIA"
+[FAIL] iframe.delegateStickyUserActivation: IDL set to 1.5
+  assert_equals: getAttribute() expected "1.5" but got "MEDIA"
+[FAIL] iframe.delegateStickyUserActivation: IDL set to "5%"
+  assert_equals: getAttribute() expected "5%" but got "MEDIA"
+[FAIL] iframe.delegateStickyUserActivation: IDL set to "+100"
+  assert_equals: getAttribute() expected "+100" but got "MEDIA"
+[FAIL] iframe.delegateStickyUserActivation: IDL set to ".5"
+  assert_equals: getAttribute() expected ".5" but got "MEDIA"
+[FAIL] iframe.delegateStickyUserActivation: IDL set to true
+  assert_equals: getAttribute() expected "true" but got "MEDIA"
+[FAIL] iframe.delegateStickyUserActivation: IDL set to false
+  assert_equals: getAttribute() expected "false" but got "MEDIA"
+[FAIL] iframe.delegateStickyUserActivation: IDL set to object "[object Object]"
+  assert_equals: getAttribute() expected "[object Object]" but got "MEDIA"
+[FAIL] iframe.delegateStickyUserActivation: IDL set to NaN
+  assert_equals: getAttribute() expected "NaN" but got "MEDIA"
+[FAIL] iframe.delegateStickyUserActivation: IDL set to Infinity
+  assert_equals: getAttribute() expected "Infinity" but got "MEDIA"
+[FAIL] iframe.delegateStickyUserActivation: IDL set to -Infinity
+  assert_equals: getAttribute() expected "-Infinity" but got "MEDIA"
+[FAIL] iframe.delegateStickyUserActivation: IDL set to "\0"
+  assert_equals: getAttribute() expected "\0" but got "MEDIA"
+[PASS] iframe.delegateStickyUserActivation: IDL set to null
+[FAIL] iframe.delegateStickyUserActivation: IDL set to object "test-toString"
+  assert_equals: getAttribute() expected "test-toString" but got "MEDIA"
+[FAIL] iframe.delegateStickyUserActivation: IDL set to object "test-valueOf"
+  assert_equals: getAttribute() expected "test-valueOf" but got "MEDIA"
+[FAIL] iframe.delegateStickyUserActivation: IDL set to "vibration"
+  assert_equals: getAttribute() expected "vibration" but got "MEDIA"
+[FAIL] iframe.delegateStickyUserActivation: IDL set to "xvibration"
+  assert_equals: getAttribute() expected "xvibration" but got "MEDIA"
+[FAIL] iframe.delegateStickyUserActivation: IDL set to "vibration\0"
+  assert_equals: getAttribute() expected "vibration\0" but got "MEDIA"
+[FAIL] iframe.delegateStickyUserActivation: IDL set to "ibration"
+  assert_equals: getAttribute() expected "ibration" but got "MEDIA"
+[FAIL] iframe.delegateStickyUserActivation: IDL set to "VIBRATION"
+  assert_equals: getAttribute() expected "VIBRATION" but got "MEDIA"
+[FAIL] iframe.delegateStickyUserActivation: IDL set to "media"
+  assert_equals: getAttribute() expected "media" but got "MEDIA"
+[FAIL] iframe.delegateStickyUserActivation: IDL set to "xmedia"
+  assert_equals: getAttribute() expected "xmedia" but got "MEDIA"
+[FAIL] iframe.delegateStickyUserActivation: IDL set to "media\0"
+  assert_equals: getAttribute() expected "media\0" but got "MEDIA"
+[FAIL] iframe.delegateStickyUserActivation: IDL set to "edia"
+  assert_equals: getAttribute() expected "edia" but got "MEDIA"
+[FAIL] iframe.delegateStickyUserActivation: IDL set to "MEDIA"
+  assert_equals: IDL get expected "media" but got "MEDIA"
+[PASS] iframe.align: 38 tests
+[PASS] iframe.scrolling: 38 tests
+[PASS] iframe.frameBorder: 38 tests
+[PASS] iframe.longDesc: 44 tests
+[PASS] iframe.marginHeight: 38 tests
+[PASS] iframe.marginWidth: 38 tests
+[PASS] embed.title: 38 tests
+[PASS] embed.lang: 38 tests
+[PASS] embed.dir: 68 tests
+[PASS] embed.className (<embed class>): 38 tests
+[PASS] embed.autofocus: 39 tests
+[PASS] embed.hidden: 39 tests
+[PASS] embed.accessKey: 38 tests
+[PASS] embed.tabIndex: 26 tests
+[PASS] embed.src: 44 tests
+[PASS] embed.type: 38 tests
+[PASS] embed.width: 38 tests
+[PASS] embed.height: 38 tests
+[PASS] embed.align: 38 tests
+[PASS] embed.name: 38 tests
+[PASS] object.title: 38 tests
+[PASS] object.lang: 38 tests
+[PASS] object.dir: 68 tests
+[PASS] object.className (<object class>): 38 tests
+[PASS] object.autofocus: 39 tests
+[PASS] object.hidden: 39 tests
+[PASS] object.accessKey: 38 tests
+[PASS] object.tabIndex: 26 tests
+[PASS] object.data: 44 tests
+[PASS] object.type: 38 tests
+[PASS] object.name: 38 tests
+[PASS] object.useMap: 38 tests
+[PASS] object.width: 38 tests
+[PASS] object.height: 38 tests
+[PASS] object.align: 38 tests
+[PASS] object.archive: 38 tests
+[PASS] object.code: 38 tests
+[PASS] object.declare: 39 tests
+[PASS] object.hspace: 65 tests
+[PASS] object.standby: 38 tests
+[PASS] object.vspace: 65 tests
+[PASS] object.codeBase: 44 tests
+[PASS] object.codeType: 38 tests
+[PASS] object.border: 38 tests
+[PASS] param.title: 38 tests
+[PASS] param.lang: 38 tests
+[PASS] param.dir: 68 tests
+[PASS] param.className (<param class>): 38 tests
+[PASS] param.autofocus: 39 tests
+[PASS] param.hidden: 39 tests
+[PASS] param.accessKey: 38 tests
+[PASS] param.tabIndex: 26 tests
+[PASS] param.name: 38 tests
+[PASS] param.value: 38 tests
+[PASS] param.type: 38 tests
+[PASS] param.valueType: 38 tests
+[PASS] video.title: 38 tests
+[PASS] video.lang: 38 tests
+[PASS] video.dir: 68 tests
+[PASS] video.className (<video class>): 38 tests
+[PASS] video.autofocus: 39 tests
+[PASS] video.hidden: 39 tests
+[PASS] video.accessKey: 38 tests
+[PASS] video.tabIndex: 26 tests
+[PASS] video.src: 44 tests
+[PASS] video.crossOrigin: 62 tests
+[PASS] video.preload: 40 tests
+[PASS] video.autoplay: 39 tests
+[PASS] video.loop: 39 tests
+[PASS] video.controls: 39 tests
+[PASS] video.defaultMuted (<video muted>): 39 tests
+[PASS] video.width: 65 tests
+[PASS] video.height: 65 tests
+[PASS] video.poster: 44 tests
+[PASS] video.playsInline: 39 tests
+[PASS] audio.title: 38 tests
+[PASS] audio.lang: 38 tests
+[PASS] audio.dir: 68 tests
+[PASS] audio.className (<audio class>): 38 tests
+[PASS] audio.autofocus: 39 tests
+[PASS] audio.hidden: 39 tests
+[PASS] audio.accessKey: 38 tests
+[PASS] audio.tabIndex: 26 tests
+[PASS] audio.src: 44 tests
+[PASS] audio.crossOrigin: 62 tests
+[PASS] audio.preload: 40 tests
+[PASS] audio.autoplay: 39 tests
+[PASS] audio.loop: 39 tests
+[PASS] audio.controls: 39 tests
+[PASS] audio.defaultMuted (<audio muted>): 39 tests
+[PASS] source.title: 38 tests
+[PASS] source.lang: 38 tests
+[PASS] source.dir: 68 tests
+[PASS] source.className (<source class>): 38 tests
+[PASS] source.autofocus: 39 tests
+[PASS] source.hidden: 39 tests
+[PASS] source.accessKey: 38 tests
+[PASS] source.tabIndex: 26 tests
+[PASS] source.src: 44 tests
+[PASS] source.type: 38 tests
+[PASS] source.srcset: 38 tests
+[PASS] source.sizes: 38 tests
+[PASS] source.media: 38 tests
+[PASS] track.title: 38 tests
+[PASS] track.lang: 38 tests
+[PASS] track.dir: 68 tests
+[PASS] track.className (<track class>): 38 tests
+[PASS] track.autofocus: 39 tests
+[PASS] track.hidden: 39 tests
+[PASS] track.accessKey: 38 tests
+[PASS] track.tabIndex: 26 tests
+[PASS] track.kind: 96 tests
+[PASS] track.src: 44 tests
+[PASS] track.srclang: 38 tests
+[PASS] track.label: 38 tests
+[PASS] track.default: 39 tests
+[PASS] canvas.title: 38 tests
+[PASS] canvas.lang: 38 tests
+[PASS] canvas.dir: 68 tests
+[PASS] canvas.className (<canvas class>): 38 tests
+[PASS] canvas.autofocus: 39 tests
+[PASS] canvas.hidden: 39 tests
+[PASS] canvas.accessKey: 38 tests
+[PASS] canvas.tabIndex: 26 tests
+[PASS] canvas.width: 63 tests
+[PASS] canvas.height: 63 tests
+[PASS] map.title: 38 tests
+[PASS] map.lang: 38 tests
+[PASS] map.dir: 68 tests
+[PASS] map.className (<map class>): 38 tests
+[PASS] map.autofocus: 39 tests
+[PASS] map.hidden: 39 tests
+[PASS] map.accessKey: 38 tests
+[PASS] map.tabIndex: 26 tests
+[PASS] map.name: 38 tests
+[PASS] area.title: 38 tests
+[PASS] area.lang: 38 tests
+[PASS] area.dir: 68 tests
+[PASS] area.className (<area class>): 38 tests
+[PASS] area.autofocus: 39 tests
+[PASS] area.hidden: 39 tests
+[PASS] area.accessKey: 38 tests
+[PASS] area.tabIndex: 26 tests
+[PASS] area.alt: 38 tests
+[PASS] area.coords: 38 tests
+[PASS] area.shape: 38 tests
+[PASS] area.target: 38 tests
+[PASS] area.download: 38 tests
+[PASS] area.ping: 38 tests
+[PASS] area.rel: 38 tests
+[PASS] area.referrerPolicy: 30 tests
+[FAIL] area.referrerPolicy: setAttribute() to "same-origin"
+  assert_equals: IDL get expected "same-origin" but got ""
+[PASS] area.referrerPolicy: 3 tests
+[FAIL] area.referrerPolicy: setAttribute() to "SAME-ORIGIN"
+  assert_equals: IDL get expected "same-origin" but got ""
+[PASS] area.referrerPolicy: 6 tests
+[FAIL] area.referrerPolicy: setAttribute() to "strict-origin"
+  assert_equals: IDL get expected "strict-origin" but got ""
+[PASS] area.referrerPolicy: 3 tests
+[FAIL] area.referrerPolicy: setAttribute() to "STRICT-ORIGIN"
+  assert_equals: IDL get expected "strict-origin" but got ""
+[PASS] area.referrerPolicy: 7 tests
+[FAIL] area.referrerPolicy: setAttribute() to "strict-origin-when-cross-origin"
+  assert_equals: IDL get expected "strict-origin-when-cross-origin" but got ""
+[PASS] area.referrerPolicy: 3 tests
+[FAIL] area.referrerPolicy: setAttribute() to "STRICT-ORIGIN-WHEN-CROSS-ORIGIN"
+  assert_equals: IDL get expected "strict-origin-when-cross-origin" but got ""
+[PASS] area.referrerPolicy: 35 tests
+[FAIL] area.referrerPolicy: IDL set to "same-origin"
+  assert_equals: IDL get expected "same-origin" but got ""
+[PASS] area.referrerPolicy: 3 tests
+[FAIL] area.referrerPolicy: IDL set to "SAME-ORIGIN"
+  assert_equals: IDL get expected "same-origin" but got ""
+[PASS] area.referrerPolicy: 6 tests
+[FAIL] area.referrerPolicy: IDL set to "strict-origin"
+  assert_equals: IDL get expected "strict-origin" but got ""
+[PASS] area.referrerPolicy: 3 tests
+[FAIL] area.referrerPolicy: IDL set to "STRICT-ORIGIN"
+  assert_equals: IDL get expected "strict-origin" but got ""
+[PASS] area.referrerPolicy: 7 tests
+[FAIL] area.referrerPolicy: IDL set to "strict-origin-when-cross-origin"
+  assert_equals: IDL get expected "strict-origin-when-cross-origin" but got ""
+[PASS] area.referrerPolicy: 3 tests
+[FAIL] area.referrerPolicy: IDL set to "STRICT-ORIGIN-WHEN-CROSS-ORIGIN"
+  assert_equals: IDL get expected "strict-origin-when-cross-origin" but got ""
+[PASS] area.referrerPolicy: 7 tests
+[PASS] area.href: 44 tests
+[PASS] area.noHref: 39 tests
 Harness: the test ran to completion.
 

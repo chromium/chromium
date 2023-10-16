@@ -1,80 +1,146 @@
 This is a testharness.js-based test.
 Found 76 tests; 10 PASS, 66 FAIL, 0 TIMEOUT, 0 NOTRUN.
-FAIL Property popover-show-delay value '0s' assert_true: popover-show-delay doesn't seem to be supported in the computed style expected true got false
-FAIL Property popover-show-delay value '0ms' assert_true: popover-show-delay doesn't seem to be supported in the computed style expected true got false
-FAIL Property popover-show-delay value '32s' assert_true: popover-show-delay doesn't seem to be supported in the computed style expected true got false
-FAIL Property popover-show-delay value '123ms' assert_true: popover-show-delay doesn't seem to be supported in the computed style expected true got false
-FAIL e.style['popover-show-delay'] = "0s" should set the property value assert_not_equals: property should be set got disallowed value ""
-FAIL e.style['popover-show-delay'] = "0ms" should set the property value assert_not_equals: property should be set got disallowed value ""
-FAIL e.style['popover-show-delay'] = "32s" should set the property value assert_not_equals: property should be set got disallowed value ""
-FAIL e.style['popover-show-delay'] = "123ms" should set the property value assert_not_equals: property should be set got disallowed value ""
-FAIL e.style['popover-show-delay'] = "inherit" should set the property value assert_not_equals: property should be set got disallowed value ""
-PASS e.style['popover-show-delay'] = "0" should not set the property value
-PASS e.style['popover-show-delay'] = "foo" should not set the property value
-PASS e.style['popover-show-delay'] = "-1s" should not set the property value
-PASS e.style['popover-show-delay'] = "none" should not set the property value
-PASS e.style['popover-show-delay'] = "auto" should not set the property value
-FAIL CSS Transitions: property <popover-show-delay> from [1s] to [2000ms] at (-1.5) should be [0s] assert_true: 'from' value should be supported expected true got false
-FAIL CSS Transitions: property <popover-show-delay> from [1s] to [2000ms] at (-0.3) should be [0.7s] assert_true: 'from' value should be supported expected true got false
-FAIL CSS Transitions: property <popover-show-delay> from [1s] to [2000ms] at (0) should be [1s] assert_true: 'from' value should be supported expected true got false
-FAIL CSS Transitions: property <popover-show-delay> from [1s] to [2000ms] at (0.5) should be [1.5s] assert_true: 'from' value should be supported expected true got false
-FAIL CSS Transitions: property <popover-show-delay> from [1s] to [2000ms] at (1) should be [2s] assert_true: 'from' value should be supported expected true got false
-FAIL CSS Transitions: property <popover-show-delay> from [1s] to [2000ms] at (1.5) should be [2.5s] assert_true: 'from' value should be supported expected true got false
-FAIL CSS Transitions with transition: all: property <popover-show-delay> from [1s] to [2000ms] at (-1.5) should be [0s] assert_true: 'from' value should be supported expected true got false
-FAIL CSS Transitions with transition: all: property <popover-show-delay> from [1s] to [2000ms] at (-0.3) should be [0.7s] assert_true: 'from' value should be supported expected true got false
-FAIL CSS Transitions with transition: all: property <popover-show-delay> from [1s] to [2000ms] at (0) should be [1s] assert_true: 'from' value should be supported expected true got false
-FAIL CSS Transitions with transition: all: property <popover-show-delay> from [1s] to [2000ms] at (0.5) should be [1.5s] assert_true: 'from' value should be supported expected true got false
-FAIL CSS Transitions with transition: all: property <popover-show-delay> from [1s] to [2000ms] at (1) should be [2s] assert_true: 'from' value should be supported expected true got false
-FAIL CSS Transitions with transition: all: property <popover-show-delay> from [1s] to [2000ms] at (1.5) should be [2.5s] assert_true: 'from' value should be supported expected true got false
-FAIL CSS Animations: property <popover-show-delay> from [1s] to [2000ms] at (-1.5) should be [0s] assert_true: 'from' value should be supported expected true got false
-FAIL CSS Animations: property <popover-show-delay> from [1s] to [2000ms] at (-0.3) should be [0.7s] assert_true: 'from' value should be supported expected true got false
-FAIL CSS Animations: property <popover-show-delay> from [1s] to [2000ms] at (0) should be [1s] assert_true: 'from' value should be supported expected true got false
-FAIL CSS Animations: property <popover-show-delay> from [1s] to [2000ms] at (0.5) should be [1.5s] assert_true: 'from' value should be supported expected true got false
-FAIL CSS Animations: property <popover-show-delay> from [1s] to [2000ms] at (1) should be [2s] assert_true: 'from' value should be supported expected true got false
-FAIL CSS Animations: property <popover-show-delay> from [1s] to [2000ms] at (1.5) should be [2.5s] assert_true: 'from' value should be supported expected true got false
-FAIL Web Animations: property <popover-show-delay> from [1s] to [2000ms] at (-1.5) should be [0s] assert_true: 'from' value should be supported expected true got false
-FAIL Web Animations: property <popover-show-delay> from [1s] to [2000ms] at (-0.3) should be [0.7s] assert_true: 'from' value should be supported expected true got false
-FAIL Web Animations: property <popover-show-delay> from [1s] to [2000ms] at (0) should be [1s] assert_true: 'from' value should be supported expected true got false
-FAIL Web Animations: property <popover-show-delay> from [1s] to [2000ms] at (0.5) should be [1.5s] assert_true: 'from' value should be supported expected true got false
-FAIL Web Animations: property <popover-show-delay> from [1s] to [2000ms] at (1) should be [2s] assert_true: 'from' value should be supported expected true got false
-FAIL Web Animations: property <popover-show-delay> from [1s] to [2000ms] at (1.5) should be [2.5s] assert_true: 'from' value should be supported expected true got false
-FAIL Property popover-hide-delay value '0s' assert_true: popover-hide-delay doesn't seem to be supported in the computed style expected true got false
-FAIL Property popover-hide-delay value '0ms' assert_true: popover-hide-delay doesn't seem to be supported in the computed style expected true got false
-FAIL Property popover-hide-delay value '32s' assert_true: popover-hide-delay doesn't seem to be supported in the computed style expected true got false
-FAIL Property popover-hide-delay value '123ms' assert_true: popover-hide-delay doesn't seem to be supported in the computed style expected true got false
-FAIL e.style['popover-hide-delay'] = "0s" should set the property value assert_not_equals: property should be set got disallowed value ""
-FAIL e.style['popover-hide-delay'] = "0ms" should set the property value assert_not_equals: property should be set got disallowed value ""
-FAIL e.style['popover-hide-delay'] = "32s" should set the property value assert_not_equals: property should be set got disallowed value ""
-FAIL e.style['popover-hide-delay'] = "123ms" should set the property value assert_not_equals: property should be set got disallowed value ""
-FAIL e.style['popover-hide-delay'] = "inherit" should set the property value assert_not_equals: property should be set got disallowed value ""
-PASS e.style['popover-hide-delay'] = "0" should not set the property value
-PASS e.style['popover-hide-delay'] = "foo" should not set the property value
-PASS e.style['popover-hide-delay'] = "-1s" should not set the property value
-PASS e.style['popover-hide-delay'] = "none" should not set the property value
-PASS e.style['popover-hide-delay'] = "auto" should not set the property value
-FAIL CSS Transitions: property <popover-hide-delay> from [1s] to [2000ms] at (-1.5) should be [0s] assert_true: 'from' value should be supported expected true got false
-FAIL CSS Transitions: property <popover-hide-delay> from [1s] to [2000ms] at (-0.3) should be [0.7s] assert_true: 'from' value should be supported expected true got false
-FAIL CSS Transitions: property <popover-hide-delay> from [1s] to [2000ms] at (0) should be [1s] assert_true: 'from' value should be supported expected true got false
-FAIL CSS Transitions: property <popover-hide-delay> from [1s] to [2000ms] at (0.5) should be [1.5s] assert_true: 'from' value should be supported expected true got false
-FAIL CSS Transitions: property <popover-hide-delay> from [1s] to [2000ms] at (1) should be [2s] assert_true: 'from' value should be supported expected true got false
-FAIL CSS Transitions: property <popover-hide-delay> from [1s] to [2000ms] at (1.5) should be [2.5s] assert_true: 'from' value should be supported expected true got false
-FAIL CSS Transitions with transition: all: property <popover-hide-delay> from [1s] to [2000ms] at (-1.5) should be [0s] assert_true: 'from' value should be supported expected true got false
-FAIL CSS Transitions with transition: all: property <popover-hide-delay> from [1s] to [2000ms] at (-0.3) should be [0.7s] assert_true: 'from' value should be supported expected true got false
-FAIL CSS Transitions with transition: all: property <popover-hide-delay> from [1s] to [2000ms] at (0) should be [1s] assert_true: 'from' value should be supported expected true got false
-FAIL CSS Transitions with transition: all: property <popover-hide-delay> from [1s] to [2000ms] at (0.5) should be [1.5s] assert_true: 'from' value should be supported expected true got false
-FAIL CSS Transitions with transition: all: property <popover-hide-delay> from [1s] to [2000ms] at (1) should be [2s] assert_true: 'from' value should be supported expected true got false
-FAIL CSS Transitions with transition: all: property <popover-hide-delay> from [1s] to [2000ms] at (1.5) should be [2.5s] assert_true: 'from' value should be supported expected true got false
-FAIL CSS Animations: property <popover-hide-delay> from [1s] to [2000ms] at (-1.5) should be [0s] assert_true: 'from' value should be supported expected true got false
-FAIL CSS Animations: property <popover-hide-delay> from [1s] to [2000ms] at (-0.3) should be [0.7s] assert_true: 'from' value should be supported expected true got false
-FAIL CSS Animations: property <popover-hide-delay> from [1s] to [2000ms] at (0) should be [1s] assert_true: 'from' value should be supported expected true got false
-FAIL CSS Animations: property <popover-hide-delay> from [1s] to [2000ms] at (0.5) should be [1.5s] assert_true: 'from' value should be supported expected true got false
-FAIL CSS Animations: property <popover-hide-delay> from [1s] to [2000ms] at (1) should be [2s] assert_true: 'from' value should be supported expected true got false
-FAIL CSS Animations: property <popover-hide-delay> from [1s] to [2000ms] at (1.5) should be [2.5s] assert_true: 'from' value should be supported expected true got false
-FAIL Web Animations: property <popover-hide-delay> from [1s] to [2000ms] at (-1.5) should be [0s] assert_true: 'from' value should be supported expected true got false
-FAIL Web Animations: property <popover-hide-delay> from [1s] to [2000ms] at (-0.3) should be [0.7s] assert_true: 'from' value should be supported expected true got false
-FAIL Web Animations: property <popover-hide-delay> from [1s] to [2000ms] at (0) should be [1s] assert_true: 'from' value should be supported expected true got false
-FAIL Web Animations: property <popover-hide-delay> from [1s] to [2000ms] at (0.5) should be [1.5s] assert_true: 'from' value should be supported expected true got false
-FAIL Web Animations: property <popover-hide-delay> from [1s] to [2000ms] at (1) should be [2s] assert_true: 'from' value should be supported expected true got false
-FAIL Web Animations: property <popover-hide-delay> from [1s] to [2000ms] at (1.5) should be [2.5s] assert_true: 'from' value should be supported expected true got false
+[FAIL] Property popover-show-delay value '0s'
+  assert_true: popover-show-delay doesn't seem to be supported in the computed style expected true got false
+[FAIL] Property popover-show-delay value '0ms'
+  assert_true: popover-show-delay doesn't seem to be supported in the computed style expected true got false
+[FAIL] Property popover-show-delay value '32s'
+  assert_true: popover-show-delay doesn't seem to be supported in the computed style expected true got false
+[FAIL] Property popover-show-delay value '123ms'
+  assert_true: popover-show-delay doesn't seem to be supported in the computed style expected true got false
+[FAIL] e.style['popover-show-delay'] = "0s" should set the property value
+  assert_not_equals: property should be set got disallowed value ""
+[FAIL] e.style['popover-show-delay'] = "0ms" should set the property value
+  assert_not_equals: property should be set got disallowed value ""
+[FAIL] e.style['popover-show-delay'] = "32s" should set the property value
+  assert_not_equals: property should be set got disallowed value ""
+[FAIL] e.style['popover-show-delay'] = "123ms" should set the property value
+  assert_not_equals: property should be set got disallowed value ""
+[FAIL] e.style['popover-show-delay'] = "inherit" should set the property value
+  assert_not_equals: property should be set got disallowed value ""
+[PASS] e.style['popover-show-delay'] = "0" should not set the property value
+[PASS] e.style['popover-show-delay'] = "foo" should not set the property value
+[PASS] e.style['popover-show-delay'] = "-1s" should not set the property value
+[PASS] e.style['popover-show-delay'] = "none" should not set the property value
+[PASS] e.style['popover-show-delay'] = "auto" should not set the property value
+[FAIL] CSS Transitions: property <popover-show-delay> from [1s] to [2000ms] at (-1.5) should be [0s]
+  assert_true: 'from' value should be supported expected true got false
+[FAIL] CSS Transitions: property <popover-show-delay> from [1s] to [2000ms] at (-0.3) should be [0.7s]
+  assert_true: 'from' value should be supported expected true got false
+[FAIL] CSS Transitions: property <popover-show-delay> from [1s] to [2000ms] at (0) should be [1s]
+  assert_true: 'from' value should be supported expected true got false
+[FAIL] CSS Transitions: property <popover-show-delay> from [1s] to [2000ms] at (0.5) should be [1.5s]
+  assert_true: 'from' value should be supported expected true got false
+[FAIL] CSS Transitions: property <popover-show-delay> from [1s] to [2000ms] at (1) should be [2s]
+  assert_true: 'from' value should be supported expected true got false
+[FAIL] CSS Transitions: property <popover-show-delay> from [1s] to [2000ms] at (1.5) should be [2.5s]
+  assert_true: 'from' value should be supported expected true got false
+[FAIL] CSS Transitions with transition: all: property <popover-show-delay> from [1s] to [2000ms] at (-1.5) should be [0s]
+  assert_true: 'from' value should be supported expected true got false
+[FAIL] CSS Transitions with transition: all: property <popover-show-delay> from [1s] to [2000ms] at (-0.3) should be [0.7s]
+  assert_true: 'from' value should be supported expected true got false
+[FAIL] CSS Transitions with transition: all: property <popover-show-delay> from [1s] to [2000ms] at (0) should be [1s]
+  assert_true: 'from' value should be supported expected true got false
+[FAIL] CSS Transitions with transition: all: property <popover-show-delay> from [1s] to [2000ms] at (0.5) should be [1.5s]
+  assert_true: 'from' value should be supported expected true got false
+[FAIL] CSS Transitions with transition: all: property <popover-show-delay> from [1s] to [2000ms] at (1) should be [2s]
+  assert_true: 'from' value should be supported expected true got false
+[FAIL] CSS Transitions with transition: all: property <popover-show-delay> from [1s] to [2000ms] at (1.5) should be [2.5s]
+  assert_true: 'from' value should be supported expected true got false
+[FAIL] CSS Animations: property <popover-show-delay> from [1s] to [2000ms] at (-1.5) should be [0s]
+  assert_true: 'from' value should be supported expected true got false
+[FAIL] CSS Animations: property <popover-show-delay> from [1s] to [2000ms] at (-0.3) should be [0.7s]
+  assert_true: 'from' value should be supported expected true got false
+[FAIL] CSS Animations: property <popover-show-delay> from [1s] to [2000ms] at (0) should be [1s]
+  assert_true: 'from' value should be supported expected true got false
+[FAIL] CSS Animations: property <popover-show-delay> from [1s] to [2000ms] at (0.5) should be [1.5s]
+  assert_true: 'from' value should be supported expected true got false
+[FAIL] CSS Animations: property <popover-show-delay> from [1s] to [2000ms] at (1) should be [2s]
+  assert_true: 'from' value should be supported expected true got false
+[FAIL] CSS Animations: property <popover-show-delay> from [1s] to [2000ms] at (1.5) should be [2.5s]
+  assert_true: 'from' value should be supported expected true got false
+[FAIL] Web Animations: property <popover-show-delay> from [1s] to [2000ms] at (-1.5) should be [0s]
+  assert_true: 'from' value should be supported expected true got false
+[FAIL] Web Animations: property <popover-show-delay> from [1s] to [2000ms] at (-0.3) should be [0.7s]
+  assert_true: 'from' value should be supported expected true got false
+[FAIL] Web Animations: property <popover-show-delay> from [1s] to [2000ms] at (0) should be [1s]
+  assert_true: 'from' value should be supported expected true got false
+[FAIL] Web Animations: property <popover-show-delay> from [1s] to [2000ms] at (0.5) should be [1.5s]
+  assert_true: 'from' value should be supported expected true got false
+[FAIL] Web Animations: property <popover-show-delay> from [1s] to [2000ms] at (1) should be [2s]
+  assert_true: 'from' value should be supported expected true got false
+[FAIL] Web Animations: property <popover-show-delay> from [1s] to [2000ms] at (1.5) should be [2.5s]
+  assert_true: 'from' value should be supported expected true got false
+[FAIL] Property popover-hide-delay value '0s'
+  assert_true: popover-hide-delay doesn't seem to be supported in the computed style expected true got false
+[FAIL] Property popover-hide-delay value '0ms'
+  assert_true: popover-hide-delay doesn't seem to be supported in the computed style expected true got false
+[FAIL] Property popover-hide-delay value '32s'
+  assert_true: popover-hide-delay doesn't seem to be supported in the computed style expected true got false
+[FAIL] Property popover-hide-delay value '123ms'
+  assert_true: popover-hide-delay doesn't seem to be supported in the computed style expected true got false
+[FAIL] e.style['popover-hide-delay'] = "0s" should set the property value
+  assert_not_equals: property should be set got disallowed value ""
+[FAIL] e.style['popover-hide-delay'] = "0ms" should set the property value
+  assert_not_equals: property should be set got disallowed value ""
+[FAIL] e.style['popover-hide-delay'] = "32s" should set the property value
+  assert_not_equals: property should be set got disallowed value ""
+[FAIL] e.style['popover-hide-delay'] = "123ms" should set the property value
+  assert_not_equals: property should be set got disallowed value ""
+[FAIL] e.style['popover-hide-delay'] = "inherit" should set the property value
+  assert_not_equals: property should be set got disallowed value ""
+[PASS] e.style['popover-hide-delay'] = "0" should not set the property value
+[PASS] e.style['popover-hide-delay'] = "foo" should not set the property value
+[PASS] e.style['popover-hide-delay'] = "-1s" should not set the property value
+[PASS] e.style['popover-hide-delay'] = "none" should not set the property value
+[PASS] e.style['popover-hide-delay'] = "auto" should not set the property value
+[FAIL] CSS Transitions: property <popover-hide-delay> from [1s] to [2000ms] at (-1.5) should be [0s]
+  assert_true: 'from' value should be supported expected true got false
+[FAIL] CSS Transitions: property <popover-hide-delay> from [1s] to [2000ms] at (-0.3) should be [0.7s]
+  assert_true: 'from' value should be supported expected true got false
+[FAIL] CSS Transitions: property <popover-hide-delay> from [1s] to [2000ms] at (0) should be [1s]
+  assert_true: 'from' value should be supported expected true got false
+[FAIL] CSS Transitions: property <popover-hide-delay> from [1s] to [2000ms] at (0.5) should be [1.5s]
+  assert_true: 'from' value should be supported expected true got false
+[FAIL] CSS Transitions: property <popover-hide-delay> from [1s] to [2000ms] at (1) should be [2s]
+  assert_true: 'from' value should be supported expected true got false
+[FAIL] CSS Transitions: property <popover-hide-delay> from [1s] to [2000ms] at (1.5) should be [2.5s]
+  assert_true: 'from' value should be supported expected true got false
+[FAIL] CSS Transitions with transition: all: property <popover-hide-delay> from [1s] to [2000ms] at (-1.5) should be [0s]
+  assert_true: 'from' value should be supported expected true got false
+[FAIL] CSS Transitions with transition: all: property <popover-hide-delay> from [1s] to [2000ms] at (-0.3) should be [0.7s]
+  assert_true: 'from' value should be supported expected true got false
+[FAIL] CSS Transitions with transition: all: property <popover-hide-delay> from [1s] to [2000ms] at (0) should be [1s]
+  assert_true: 'from' value should be supported expected true got false
+[FAIL] CSS Transitions with transition: all: property <popover-hide-delay> from [1s] to [2000ms] at (0.5) should be [1.5s]
+  assert_true: 'from' value should be supported expected true got false
+[FAIL] CSS Transitions with transition: all: property <popover-hide-delay> from [1s] to [2000ms] at (1) should be [2s]
+  assert_true: 'from' value should be supported expected true got false
+[FAIL] CSS Transitions with transition: all: property <popover-hide-delay> from [1s] to [2000ms] at (1.5) should be [2.5s]
+  assert_true: 'from' value should be supported expected true got false
+[FAIL] CSS Animations: property <popover-hide-delay> from [1s] to [2000ms] at (-1.5) should be [0s]
+  assert_true: 'from' value should be supported expected true got false
+[FAIL] CSS Animations: property <popover-hide-delay> from [1s] to [2000ms] at (-0.3) should be [0.7s]
+  assert_true: 'from' value should be supported expected true got false
+[FAIL] CSS Animations: property <popover-hide-delay> from [1s] to [2000ms] at (0) should be [1s]
+  assert_true: 'from' value should be supported expected true got false
+[FAIL] CSS Animations: property <popover-hide-delay> from [1s] to [2000ms] at (0.5) should be [1.5s]
+  assert_true: 'from' value should be supported expected true got false
+[FAIL] CSS Animations: property <popover-hide-delay> from [1s] to [2000ms] at (1) should be [2s]
+  assert_true: 'from' value should be supported expected true got false
+[FAIL] CSS Animations: property <popover-hide-delay> from [1s] to [2000ms] at (1.5) should be [2.5s]
+  assert_true: 'from' value should be supported expected true got false
+[FAIL] Web Animations: property <popover-hide-delay> from [1s] to [2000ms] at (-1.5) should be [0s]
+  assert_true: 'from' value should be supported expected true got false
+[FAIL] Web Animations: property <popover-hide-delay> from [1s] to [2000ms] at (-0.3) should be [0.7s]
+  assert_true: 'from' value should be supported expected true got false
+[FAIL] Web Animations: property <popover-hide-delay> from [1s] to [2000ms] at (0) should be [1s]
+  assert_true: 'from' value should be supported expected true got false
+[FAIL] Web Animations: property <popover-hide-delay> from [1s] to [2000ms] at (0.5) should be [1.5s]
+  assert_true: 'from' value should be supported expected true got false
+[FAIL] Web Animations: property <popover-hide-delay> from [1s] to [2000ms] at (1) should be [2s]
+  assert_true: 'from' value should be supported expected true got false
+[FAIL] Web Animations: property <popover-hide-delay> from [1s] to [2000ms] at (1.5) should be [2.5s]
+  assert_true: 'from' value should be supported expected true got false
 Harness: the test ran to completion.
 

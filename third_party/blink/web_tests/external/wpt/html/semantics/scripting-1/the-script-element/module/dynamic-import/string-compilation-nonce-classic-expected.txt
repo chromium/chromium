@@ -1,9 +1,10 @@
 This is a testharness.js-based test.
-FAIL setTimeout must inherit the nonce from the triggering script, thus execute promise_test: Unhandled rejection with value: object "TypeError: Failed to fetch dynamically imported module: http://web-platform.test:8001/html/semantics/scripting-1/the-script-element/module/imports-a.js?label=setTimeout"
-PASS direct eval must inherit the nonce from the triggering script, thus execute
-PASS indirect eval must inherit the nonce from the triggering script, thus execute
-PASS the Function constructor must inherit the nonce from the triggering script, thus execute
-PASS reflected inline event handlers must not inherit the nonce from the triggering script, thus fail
-PASS inline event handlers triggered via UA code must not inherit the nonce from the triggering script, thus fail
+[FAIL] setTimeout must inherit the nonce from the triggering script, thus execute
+  promise_test: Unhandled rejection with value: object "TypeError: Failed to fetch dynamically imported module: http://web-platform.test:8001/html/semantics/scripting-1/the-script-element/module/imports-a.js?label=setTimeout"
+[PASS] direct eval must inherit the nonce from the triggering script, thus execute
+[PASS] indirect eval must inherit the nonce from the triggering script, thus execute
+[PASS] the Function constructor must inherit the nonce from the triggering script, thus execute
+[PASS] reflected inline event handlers must not inherit the nonce from the triggering script, thus fail
+[PASS] inline event handlers triggered via UA code must not inherit the nonce from the triggering script, thus fail
 Harness: the test ran to completion.
 

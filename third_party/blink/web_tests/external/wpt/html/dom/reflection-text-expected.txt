@@ -1,277 +1,289 @@
 This is a testharness.js-based test.
 Found 10144 tests; 10132 PASS, 12 FAIL, 0 TIMEOUT, 0 NOTRUN.
-PASS a.title: 38 tests
-PASS a.lang: 38 tests
-PASS a.dir: 68 tests
-PASS a.className (<a class>): 38 tests
-PASS a.autofocus: 39 tests
-PASS a.hidden: 39 tests
-PASS a.accessKey: 38 tests
-PASS a.tabIndex: 26 tests
-PASS a.target: 38 tests
-PASS a.download: 38 tests
-PASS a.ping: 38 tests
-PASS a.rel: 38 tests
-PASS a.hreflang: 38 tests
-PASS a.type: 38 tests
-PASS a.referrerPolicy: 30 tests
-FAIL a.referrerPolicy: setAttribute() to "same-origin" assert_equals: IDL get expected "same-origin" but got ""
-PASS a.referrerPolicy: 3 tests
-FAIL a.referrerPolicy: setAttribute() to "SAME-ORIGIN" assert_equals: IDL get expected "same-origin" but got ""
-PASS a.referrerPolicy: 6 tests
-FAIL a.referrerPolicy: setAttribute() to "strict-origin" assert_equals: IDL get expected "strict-origin" but got ""
-PASS a.referrerPolicy: 3 tests
-FAIL a.referrerPolicy: setAttribute() to "STRICT-ORIGIN" assert_equals: IDL get expected "strict-origin" but got ""
-PASS a.referrerPolicy: 7 tests
-FAIL a.referrerPolicy: setAttribute() to "strict-origin-when-cross-origin" assert_equals: IDL get expected "strict-origin-when-cross-origin" but got ""
-PASS a.referrerPolicy: 3 tests
-FAIL a.referrerPolicy: setAttribute() to "STRICT-ORIGIN-WHEN-CROSS-ORIGIN" assert_equals: IDL get expected "strict-origin-when-cross-origin" but got ""
-PASS a.referrerPolicy: 35 tests
-FAIL a.referrerPolicy: IDL set to "same-origin" assert_equals: IDL get expected "same-origin" but got ""
-PASS a.referrerPolicy: 3 tests
-FAIL a.referrerPolicy: IDL set to "SAME-ORIGIN" assert_equals: IDL get expected "same-origin" but got ""
-PASS a.referrerPolicy: 6 tests
-FAIL a.referrerPolicy: IDL set to "strict-origin" assert_equals: IDL get expected "strict-origin" but got ""
-PASS a.referrerPolicy: 3 tests
-FAIL a.referrerPolicy: IDL set to "STRICT-ORIGIN" assert_equals: IDL get expected "strict-origin" but got ""
-PASS a.referrerPolicy: 7 tests
-FAIL a.referrerPolicy: IDL set to "strict-origin-when-cross-origin" assert_equals: IDL get expected "strict-origin-when-cross-origin" but got ""
-PASS a.referrerPolicy: 3 tests
-FAIL a.referrerPolicy: IDL set to "STRICT-ORIGIN-WHEN-CROSS-ORIGIN" assert_equals: IDL get expected "strict-origin-when-cross-origin" but got ""
-PASS a.referrerPolicy: 7 tests
-PASS a.href: 44 tests
-PASS a.coords: 38 tests
-PASS a.charset: 38 tests
-PASS a.name: 38 tests
-PASS a.rev: 38 tests
-PASS a.shape: 38 tests
-PASS em.title: 38 tests
-PASS em.lang: 38 tests
-PASS em.dir: 68 tests
-PASS em.className (<em class>): 38 tests
-PASS em.autofocus: 39 tests
-PASS em.hidden: 39 tests
-PASS em.accessKey: 38 tests
-PASS em.tabIndex: 26 tests
-PASS strong.title: 38 tests
-PASS strong.lang: 38 tests
-PASS strong.dir: 68 tests
-PASS strong.className (<strong class>): 38 tests
-PASS strong.autofocus: 39 tests
-PASS strong.hidden: 39 tests
-PASS strong.accessKey: 38 tests
-PASS strong.tabIndex: 26 tests
-PASS small.title: 38 tests
-PASS small.lang: 38 tests
-PASS small.dir: 68 tests
-PASS small.className (<small class>): 38 tests
-PASS small.autofocus: 39 tests
-PASS small.hidden: 39 tests
-PASS small.accessKey: 38 tests
-PASS small.tabIndex: 26 tests
-PASS s.title: 38 tests
-PASS s.lang: 38 tests
-PASS s.dir: 68 tests
-PASS s.className (<s class>): 38 tests
-PASS s.autofocus: 39 tests
-PASS s.hidden: 39 tests
-PASS s.accessKey: 38 tests
-PASS s.tabIndex: 26 tests
-PASS cite.title: 38 tests
-PASS cite.lang: 38 tests
-PASS cite.dir: 68 tests
-PASS cite.className (<cite class>): 38 tests
-PASS cite.autofocus: 39 tests
-PASS cite.hidden: 39 tests
-PASS cite.accessKey: 38 tests
-PASS cite.tabIndex: 26 tests
-PASS q.title: 38 tests
-PASS q.lang: 38 tests
-PASS q.dir: 68 tests
-PASS q.className (<q class>): 38 tests
-PASS q.autofocus: 39 tests
-PASS q.hidden: 39 tests
-PASS q.accessKey: 38 tests
-PASS q.tabIndex: 26 tests
-PASS q.cite: 44 tests
-PASS dfn.title: 38 tests
-PASS dfn.lang: 38 tests
-PASS dfn.dir: 68 tests
-PASS dfn.className (<dfn class>): 38 tests
-PASS dfn.autofocus: 39 tests
-PASS dfn.hidden: 39 tests
-PASS dfn.accessKey: 38 tests
-PASS dfn.tabIndex: 26 tests
-PASS abbr.title: 38 tests
-PASS abbr.lang: 38 tests
-PASS abbr.dir: 68 tests
-PASS abbr.className (<abbr class>): 38 tests
-PASS abbr.autofocus: 39 tests
-PASS abbr.hidden: 39 tests
-PASS abbr.accessKey: 38 tests
-PASS abbr.tabIndex: 26 tests
-PASS ruby.title: 38 tests
-PASS ruby.lang: 38 tests
-PASS ruby.dir: 68 tests
-PASS ruby.className (<ruby class>): 38 tests
-PASS ruby.autofocus: 39 tests
-PASS ruby.hidden: 39 tests
-PASS ruby.accessKey: 38 tests
-PASS ruby.tabIndex: 26 tests
-PASS rt.title: 38 tests
-PASS rt.lang: 38 tests
-PASS rt.dir: 68 tests
-PASS rt.className (<rt class>): 38 tests
-PASS rt.autofocus: 39 tests
-PASS rt.hidden: 39 tests
-PASS rt.accessKey: 38 tests
-PASS rt.tabIndex: 26 tests
-PASS rp.title: 38 tests
-PASS rp.lang: 38 tests
-PASS rp.dir: 68 tests
-PASS rp.className (<rp class>): 38 tests
-PASS rp.autofocus: 39 tests
-PASS rp.hidden: 39 tests
-PASS rp.accessKey: 38 tests
-PASS rp.tabIndex: 26 tests
-PASS data.title: 38 tests
-PASS data.lang: 38 tests
-PASS data.dir: 68 tests
-PASS data.className (<data class>): 38 tests
-PASS data.autofocus: 39 tests
-PASS data.hidden: 39 tests
-PASS data.accessKey: 38 tests
-PASS data.tabIndex: 26 tests
-PASS data.value: 38 tests
-PASS time.title: 38 tests
-PASS time.lang: 38 tests
-PASS time.dir: 68 tests
-PASS time.className (<time class>): 38 tests
-PASS time.autofocus: 39 tests
-PASS time.hidden: 39 tests
-PASS time.accessKey: 38 tests
-PASS time.tabIndex: 26 tests
-PASS time.dateTime: 38 tests
-PASS code.title: 38 tests
-PASS code.lang: 38 tests
-PASS code.dir: 68 tests
-PASS code.className (<code class>): 38 tests
-PASS code.autofocus: 39 tests
-PASS code.hidden: 39 tests
-PASS code.accessKey: 38 tests
-PASS code.tabIndex: 26 tests
-PASS var.title: 38 tests
-PASS var.lang: 38 tests
-PASS var.dir: 68 tests
-PASS var.className (<var class>): 38 tests
-PASS var.autofocus: 39 tests
-PASS var.hidden: 39 tests
-PASS var.accessKey: 38 tests
-PASS var.tabIndex: 26 tests
-PASS samp.title: 38 tests
-PASS samp.lang: 38 tests
-PASS samp.dir: 68 tests
-PASS samp.className (<samp class>): 38 tests
-PASS samp.autofocus: 39 tests
-PASS samp.hidden: 39 tests
-PASS samp.accessKey: 38 tests
-PASS samp.tabIndex: 26 tests
-PASS kbd.title: 38 tests
-PASS kbd.lang: 38 tests
-PASS kbd.dir: 68 tests
-PASS kbd.className (<kbd class>): 38 tests
-PASS kbd.autofocus: 39 tests
-PASS kbd.hidden: 39 tests
-PASS kbd.accessKey: 38 tests
-PASS kbd.tabIndex: 26 tests
-PASS sub.title: 38 tests
-PASS sub.lang: 38 tests
-PASS sub.dir: 68 tests
-PASS sub.className (<sub class>): 38 tests
-PASS sub.autofocus: 39 tests
-PASS sub.hidden: 39 tests
-PASS sub.accessKey: 38 tests
-PASS sub.tabIndex: 26 tests
-PASS sup.title: 38 tests
-PASS sup.lang: 38 tests
-PASS sup.dir: 68 tests
-PASS sup.className (<sup class>): 38 tests
-PASS sup.autofocus: 39 tests
-PASS sup.hidden: 39 tests
-PASS sup.accessKey: 38 tests
-PASS sup.tabIndex: 26 tests
-PASS i.title: 38 tests
-PASS i.lang: 38 tests
-PASS i.dir: 68 tests
-PASS i.className (<i class>): 38 tests
-PASS i.autofocus: 39 tests
-PASS i.hidden: 39 tests
-PASS i.accessKey: 38 tests
-PASS i.tabIndex: 26 tests
-PASS b.title: 38 tests
-PASS b.lang: 38 tests
-PASS b.dir: 68 tests
-PASS b.className (<b class>): 38 tests
-PASS b.autofocus: 39 tests
-PASS b.hidden: 39 tests
-PASS b.accessKey: 38 tests
-PASS b.tabIndex: 26 tests
-PASS u.title: 38 tests
-PASS u.lang: 38 tests
-PASS u.dir: 68 tests
-PASS u.className (<u class>): 38 tests
-PASS u.autofocus: 39 tests
-PASS u.hidden: 39 tests
-PASS u.accessKey: 38 tests
-PASS u.tabIndex: 26 tests
-PASS mark.title: 38 tests
-PASS mark.lang: 38 tests
-PASS mark.dir: 68 tests
-PASS mark.className (<mark class>): 38 tests
-PASS mark.autofocus: 39 tests
-PASS mark.hidden: 39 tests
-PASS mark.accessKey: 38 tests
-PASS mark.tabIndex: 26 tests
-PASS bdi.title: 38 tests
-PASS bdi.lang: 38 tests
-PASS bdi.dir: 68 tests
-PASS bdi.className (<bdi class>): 38 tests
-PASS bdi.autofocus: 39 tests
-PASS bdi.hidden: 39 tests
-PASS bdi.accessKey: 38 tests
-PASS bdi.tabIndex: 26 tests
-PASS bdo.title: 38 tests
-PASS bdo.lang: 38 tests
-PASS bdo.dir: 68 tests
-PASS bdo.className (<bdo class>): 38 tests
-PASS bdo.autofocus: 39 tests
-PASS bdo.hidden: 39 tests
-PASS bdo.accessKey: 38 tests
-PASS bdo.tabIndex: 26 tests
-PASS span.title: 38 tests
-PASS span.lang: 38 tests
-PASS span.dir: 68 tests
-PASS span.className (<span class>): 38 tests
-PASS span.autofocus: 39 tests
-PASS span.hidden: 39 tests
-PASS span.accessKey: 38 tests
-PASS span.tabIndex: 26 tests
-PASS br.title: 38 tests
-PASS br.lang: 38 tests
-PASS br.dir: 68 tests
-PASS br.className (<br class>): 38 tests
-PASS br.autofocus: 39 tests
-PASS br.hidden: 39 tests
-PASS br.accessKey: 38 tests
-PASS br.tabIndex: 26 tests
-PASS br.clear: 38 tests
-PASS wbr.title: 38 tests
-PASS wbr.lang: 38 tests
-PASS wbr.dir: 68 tests
-PASS wbr.className (<wbr class>): 38 tests
-PASS wbr.autofocus: 39 tests
-PASS wbr.hidden: 39 tests
-PASS wbr.accessKey: 38 tests
-PASS wbr.tabIndex: 26 tests
+[PASS] a.title: 38 tests
+[PASS] a.lang: 38 tests
+[PASS] a.dir: 68 tests
+[PASS] a.className (<a class>): 38 tests
+[PASS] a.autofocus: 39 tests
+[PASS] a.hidden: 39 tests
+[PASS] a.accessKey: 38 tests
+[PASS] a.tabIndex: 26 tests
+[PASS] a.target: 38 tests
+[PASS] a.download: 38 tests
+[PASS] a.ping: 38 tests
+[PASS] a.rel: 38 tests
+[PASS] a.hreflang: 38 tests
+[PASS] a.type: 38 tests
+[PASS] a.referrerPolicy: 30 tests
+[FAIL] a.referrerPolicy: setAttribute() to "same-origin"
+  assert_equals: IDL get expected "same-origin" but got ""
+[PASS] a.referrerPolicy: 3 tests
+[FAIL] a.referrerPolicy: setAttribute() to "SAME-ORIGIN"
+  assert_equals: IDL get expected "same-origin" but got ""
+[PASS] a.referrerPolicy: 6 tests
+[FAIL] a.referrerPolicy: setAttribute() to "strict-origin"
+  assert_equals: IDL get expected "strict-origin" but got ""
+[PASS] a.referrerPolicy: 3 tests
+[FAIL] a.referrerPolicy: setAttribute() to "STRICT-ORIGIN"
+  assert_equals: IDL get expected "strict-origin" but got ""
+[PASS] a.referrerPolicy: 7 tests
+[FAIL] a.referrerPolicy: setAttribute() to "strict-origin-when-cross-origin"
+  assert_equals: IDL get expected "strict-origin-when-cross-origin" but got ""
+[PASS] a.referrerPolicy: 3 tests
+[FAIL] a.referrerPolicy: setAttribute() to "STRICT-ORIGIN-WHEN-CROSS-ORIGIN"
+  assert_equals: IDL get expected "strict-origin-when-cross-origin" but got ""
+[PASS] a.referrerPolicy: 35 tests
+[FAIL] a.referrerPolicy: IDL set to "same-origin"
+  assert_equals: IDL get expected "same-origin" but got ""
+[PASS] a.referrerPolicy: 3 tests
+[FAIL] a.referrerPolicy: IDL set to "SAME-ORIGIN"
+  assert_equals: IDL get expected "same-origin" but got ""
+[PASS] a.referrerPolicy: 6 tests
+[FAIL] a.referrerPolicy: IDL set to "strict-origin"
+  assert_equals: IDL get expected "strict-origin" but got ""
+[PASS] a.referrerPolicy: 3 tests
+[FAIL] a.referrerPolicy: IDL set to "STRICT-ORIGIN"
+  assert_equals: IDL get expected "strict-origin" but got ""
+[PASS] a.referrerPolicy: 7 tests
+[FAIL] a.referrerPolicy: IDL set to "strict-origin-when-cross-origin"
+  assert_equals: IDL get expected "strict-origin-when-cross-origin" but got ""
+[PASS] a.referrerPolicy: 3 tests
+[FAIL] a.referrerPolicy: IDL set to "STRICT-ORIGIN-WHEN-CROSS-ORIGIN"
+  assert_equals: IDL get expected "strict-origin-when-cross-origin" but got ""
+[PASS] a.referrerPolicy: 7 tests
+[PASS] a.href: 44 tests
+[PASS] a.coords: 38 tests
+[PASS] a.charset: 38 tests
+[PASS] a.name: 38 tests
+[PASS] a.rev: 38 tests
+[PASS] a.shape: 38 tests
+[PASS] em.title: 38 tests
+[PASS] em.lang: 38 tests
+[PASS] em.dir: 68 tests
+[PASS] em.className (<em class>): 38 tests
+[PASS] em.autofocus: 39 tests
+[PASS] em.hidden: 39 tests
+[PASS] em.accessKey: 38 tests
+[PASS] em.tabIndex: 26 tests
+[PASS] strong.title: 38 tests
+[PASS] strong.lang: 38 tests
+[PASS] strong.dir: 68 tests
+[PASS] strong.className (<strong class>): 38 tests
+[PASS] strong.autofocus: 39 tests
+[PASS] strong.hidden: 39 tests
+[PASS] strong.accessKey: 38 tests
+[PASS] strong.tabIndex: 26 tests
+[PASS] small.title: 38 tests
+[PASS] small.lang: 38 tests
+[PASS] small.dir: 68 tests
+[PASS] small.className (<small class>): 38 tests
+[PASS] small.autofocus: 39 tests
+[PASS] small.hidden: 39 tests
+[PASS] small.accessKey: 38 tests
+[PASS] small.tabIndex: 26 tests
+[PASS] s.title: 38 tests
+[PASS] s.lang: 38 tests
+[PASS] s.dir: 68 tests
+[PASS] s.className (<s class>): 38 tests
+[PASS] s.autofocus: 39 tests
+[PASS] s.hidden: 39 tests
+[PASS] s.accessKey: 38 tests
+[PASS] s.tabIndex: 26 tests
+[PASS] cite.title: 38 tests
+[PASS] cite.lang: 38 tests
+[PASS] cite.dir: 68 tests
+[PASS] cite.className (<cite class>): 38 tests
+[PASS] cite.autofocus: 39 tests
+[PASS] cite.hidden: 39 tests
+[PASS] cite.accessKey: 38 tests
+[PASS] cite.tabIndex: 26 tests
+[PASS] q.title: 38 tests
+[PASS] q.lang: 38 tests
+[PASS] q.dir: 68 tests
+[PASS] q.className (<q class>): 38 tests
+[PASS] q.autofocus: 39 tests
+[PASS] q.hidden: 39 tests
+[PASS] q.accessKey: 38 tests
+[PASS] q.tabIndex: 26 tests
+[PASS] q.cite: 44 tests
+[PASS] dfn.title: 38 tests
+[PASS] dfn.lang: 38 tests
+[PASS] dfn.dir: 68 tests
+[PASS] dfn.className (<dfn class>): 38 tests
+[PASS] dfn.autofocus: 39 tests
+[PASS] dfn.hidden: 39 tests
+[PASS] dfn.accessKey: 38 tests
+[PASS] dfn.tabIndex: 26 tests
+[PASS] abbr.title: 38 tests
+[PASS] abbr.lang: 38 tests
+[PASS] abbr.dir: 68 tests
+[PASS] abbr.className (<abbr class>): 38 tests
+[PASS] abbr.autofocus: 39 tests
+[PASS] abbr.hidden: 39 tests
+[PASS] abbr.accessKey: 38 tests
+[PASS] abbr.tabIndex: 26 tests
+[PASS] ruby.title: 38 tests
+[PASS] ruby.lang: 38 tests
+[PASS] ruby.dir: 68 tests
+[PASS] ruby.className (<ruby class>): 38 tests
+[PASS] ruby.autofocus: 39 tests
+[PASS] ruby.hidden: 39 tests
+[PASS] ruby.accessKey: 38 tests
+[PASS] ruby.tabIndex: 26 tests
+[PASS] rt.title: 38 tests
+[PASS] rt.lang: 38 tests
+[PASS] rt.dir: 68 tests
+[PASS] rt.className (<rt class>): 38 tests
+[PASS] rt.autofocus: 39 tests
+[PASS] rt.hidden: 39 tests
+[PASS] rt.accessKey: 38 tests
+[PASS] rt.tabIndex: 26 tests
+[PASS] rp.title: 38 tests
+[PASS] rp.lang: 38 tests
+[PASS] rp.dir: 68 tests
+[PASS] rp.className (<rp class>): 38 tests
+[PASS] rp.autofocus: 39 tests
+[PASS] rp.hidden: 39 tests
+[PASS] rp.accessKey: 38 tests
+[PASS] rp.tabIndex: 26 tests
+[PASS] data.title: 38 tests
+[PASS] data.lang: 38 tests
+[PASS] data.dir: 68 tests
+[PASS] data.className (<data class>): 38 tests
+[PASS] data.autofocus: 39 tests
+[PASS] data.hidden: 39 tests
+[PASS] data.accessKey: 38 tests
+[PASS] data.tabIndex: 26 tests
+[PASS] data.value: 38 tests
+[PASS] time.title: 38 tests
+[PASS] time.lang: 38 tests
+[PASS] time.dir: 68 tests
+[PASS] time.className (<time class>): 38 tests
+[PASS] time.autofocus: 39 tests
+[PASS] time.hidden: 39 tests
+[PASS] time.accessKey: 38 tests
+[PASS] time.tabIndex: 26 tests
+[PASS] time.dateTime: 38 tests
+[PASS] code.title: 38 tests
+[PASS] code.lang: 38 tests
+[PASS] code.dir: 68 tests
+[PASS] code.className (<code class>): 38 tests
+[PASS] code.autofocus: 39 tests
+[PASS] code.hidden: 39 tests
+[PASS] code.accessKey: 38 tests
+[PASS] code.tabIndex: 26 tests
+[PASS] var.title: 38 tests
+[PASS] var.lang: 38 tests
+[PASS] var.dir: 68 tests
+[PASS] var.className (<var class>): 38 tests
+[PASS] var.autofocus: 39 tests
+[PASS] var.hidden: 39 tests
+[PASS] var.accessKey: 38 tests
+[PASS] var.tabIndex: 26 tests
+[PASS] samp.title: 38 tests
+[PASS] samp.lang: 38 tests
+[PASS] samp.dir: 68 tests
+[PASS] samp.className (<samp class>): 38 tests
+[PASS] samp.autofocus: 39 tests
+[PASS] samp.hidden: 39 tests
+[PASS] samp.accessKey: 38 tests
+[PASS] samp.tabIndex: 26 tests
+[PASS] kbd.title: 38 tests
+[PASS] kbd.lang: 38 tests
+[PASS] kbd.dir: 68 tests
+[PASS] kbd.className (<kbd class>): 38 tests
+[PASS] kbd.autofocus: 39 tests
+[PASS] kbd.hidden: 39 tests
+[PASS] kbd.accessKey: 38 tests
+[PASS] kbd.tabIndex: 26 tests
+[PASS] sub.title: 38 tests
+[PASS] sub.lang: 38 tests
+[PASS] sub.dir: 68 tests
+[PASS] sub.className (<sub class>): 38 tests
+[PASS] sub.autofocus: 39 tests
+[PASS] sub.hidden: 39 tests
+[PASS] sub.accessKey: 38 tests
+[PASS] sub.tabIndex: 26 tests
+[PASS] sup.title: 38 tests
+[PASS] sup.lang: 38 tests
+[PASS] sup.dir: 68 tests
+[PASS] sup.className (<sup class>): 38 tests
+[PASS] sup.autofocus: 39 tests
+[PASS] sup.hidden: 39 tests
+[PASS] sup.accessKey: 38 tests
+[PASS] sup.tabIndex: 26 tests
+[PASS] i.title: 38 tests
+[PASS] i.lang: 38 tests
+[PASS] i.dir: 68 tests
+[PASS] i.className (<i class>): 38 tests
+[PASS] i.autofocus: 39 tests
+[PASS] i.hidden: 39 tests
+[PASS] i.accessKey: 38 tests
+[PASS] i.tabIndex: 26 tests
+[PASS] b.title: 38 tests
+[PASS] b.lang: 38 tests
+[PASS] b.dir: 68 tests
+[PASS] b.className (<b class>): 38 tests
+[PASS] b.autofocus: 39 tests
+[PASS] b.hidden: 39 tests
+[PASS] b.accessKey: 38 tests
+[PASS] b.tabIndex: 26 tests
+[PASS] u.title: 38 tests
+[PASS] u.lang: 38 tests
+[PASS] u.dir: 68 tests
+[PASS] u.className (<u class>): 38 tests
+[PASS] u.autofocus: 39 tests
+[PASS] u.hidden: 39 tests
+[PASS] u.accessKey: 38 tests
+[PASS] u.tabIndex: 26 tests
+[PASS] mark.title: 38 tests
+[PASS] mark.lang: 38 tests
+[PASS] mark.dir: 68 tests
+[PASS] mark.className (<mark class>): 38 tests
+[PASS] mark.autofocus: 39 tests
+[PASS] mark.hidden: 39 tests
+[PASS] mark.accessKey: 38 tests
+[PASS] mark.tabIndex: 26 tests
+[PASS] bdi.title: 38 tests
+[PASS] bdi.lang: 38 tests
+[PASS] bdi.dir: 68 tests
+[PASS] bdi.className (<bdi class>): 38 tests
+[PASS] bdi.autofocus: 39 tests
+[PASS] bdi.hidden: 39 tests
+[PASS] bdi.accessKey: 38 tests
+[PASS] bdi.tabIndex: 26 tests
+[PASS] bdo.title: 38 tests
+[PASS] bdo.lang: 38 tests
+[PASS] bdo.dir: 68 tests
+[PASS] bdo.className (<bdo class>): 38 tests
+[PASS] bdo.autofocus: 39 tests
+[PASS] bdo.hidden: 39 tests
+[PASS] bdo.accessKey: 38 tests
+[PASS] bdo.tabIndex: 26 tests
+[PASS] span.title: 38 tests
+[PASS] span.lang: 38 tests
+[PASS] span.dir: 68 tests
+[PASS] span.className (<span class>): 38 tests
+[PASS] span.autofocus: 39 tests
+[PASS] span.hidden: 39 tests
+[PASS] span.accessKey: 38 tests
+[PASS] span.tabIndex: 26 tests
+[PASS] br.title: 38 tests
+[PASS] br.lang: 38 tests
+[PASS] br.dir: 68 tests
+[PASS] br.className (<br class>): 38 tests
+[PASS] br.autofocus: 39 tests
+[PASS] br.hidden: 39 tests
+[PASS] br.accessKey: 38 tests
+[PASS] br.tabIndex: 26 tests
+[PASS] br.clear: 38 tests
+[PASS] wbr.title: 38 tests
+[PASS] wbr.lang: 38 tests
+[PASS] wbr.dir: 68 tests
+[PASS] wbr.className (<wbr class>): 38 tests
+[PASS] wbr.autofocus: 39 tests
+[PASS] wbr.hidden: 39 tests
+[PASS] wbr.accessKey: 38 tests
+[PASS] wbr.tabIndex: 26 tests
 Harness: the test ran to completion.
 

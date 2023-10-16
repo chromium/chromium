@@ -1,4 +1,5 @@
 This is a testharness.js-based test.
-FAIL Focus should be kept when page gets into and out of BFCache assert_true: activeElement on pagehide expected true got false
+[FAIL] Focus should be kept when page gets into and out of BFCache
+  assert_true: activeElement on pagehide expected true got false
 Harness: the test ran to completion.
 

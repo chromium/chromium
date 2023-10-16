@@ -274,7 +274,8 @@
         if (location.hostname != 'web-platform.test') {
             return true;
         }
-        if (location.pathname.startsWith('/wpt_internal/')) {
+        if (location.pathname.startsWith('/wpt_internal/') ||
+            location.pathname.startsWith('/html/')) {
             return true;
         }
         return false;

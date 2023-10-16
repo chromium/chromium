@@ -1,62 +1,86 @@
 This is a testharness.js-based test.
 Found 58 tests; 34 PASS, 24 FAIL, 0 TIMEOUT, 0 NOTRUN.
-PASS table bordercolor attribute is correct
-PASS table cellspacing attribute is correct
-PASS table background attribute is correct
-PASS table bgcolor attribute is correct
-PASS thead background attribute is correct
-PASS thead bgcolor attribute is correct
-PASS tbody background attribute is correct
-PASS tbody bgcolor attribute is correct
-PASS tfoot background attribute is correct
-PASS tfoot bgcolor attribute is correct
-PASS tr background attribute is correct
-PASS tr bgcolor attribute is correct
-PASS td background attribute is correct
-PASS td bgcolor attribute is correct
-PASS th background attribute is correct
-PASS th bgcolor attribute is correct
-FAIL table thead align attribute center is correct assert_equals: expected "center" but got "-webkit-center"
-FAIL table thead align attribute middle is correct assert_equals: expected "center" but got "-webkit-center"
-FAIL table thead align attribute left is correct assert_equals: expected "left" but got "-webkit-left"
-FAIL table thead align attribute right is correct assert_equals: expected "right" but got "-webkit-right"
-PASS table thead align attribute justify is correct
-FAIL table tbody align attribute center is correct assert_equals: expected "center" but got "-webkit-center"
-FAIL table tbody align attribute middle is correct assert_equals: expected "center" but got "-webkit-center"
-FAIL table tbody align attribute left is correct assert_equals: expected "left" but got "-webkit-left"
-FAIL table tbody align attribute right is correct assert_equals: expected "right" but got "-webkit-right"
-PASS table tbody align attribute justify is correct
-FAIL table tfoot align attribute center is correct assert_equals: expected "center" but got "-webkit-center"
-FAIL table tfoot align attribute middle is correct assert_equals: expected "center" but got "-webkit-center"
-FAIL table tfoot align attribute left is correct assert_equals: expected "left" but got "-webkit-left"
-FAIL table tfoot align attribute right is correct assert_equals: expected "right" but got "-webkit-right"
-PASS table tfoot align attribute justify is correct
-FAIL table tr align attribute center is correct assert_equals: expected "center" but got "-webkit-center"
-FAIL table tr align attribute middle is correct assert_equals: expected "center" but got "-webkit-center"
-FAIL table tr align attribute left is correct assert_equals: expected "left" but got "-webkit-left"
-FAIL table tr align attribute right is correct assert_equals: expected "right" but got "-webkit-right"
-PASS table tr align attribute justify is correct
-FAIL table td align attribute center is correct assert_equals: expected "center" but got "-webkit-center"
-FAIL table td align attribute middle is correct assert_equals: expected "center" but got "-webkit-center"
-FAIL table td align attribute left is correct assert_equals: expected "left" but got "-webkit-left"
-FAIL table td align attribute right is correct assert_equals: expected "right" but got "-webkit-right"
-PASS table td align attribute justify is correct
-FAIL table th align attribute center is correct assert_equals: expected "center" but got "-webkit-center"
-FAIL table th align attribute middle is correct assert_equals: expected "center" but got "-webkit-center"
-FAIL table th align attribute left is correct assert_equals: expected "left" but got "-webkit-left"
-FAIL table th align attribute right is correct assert_equals: expected "right" but got "-webkit-right"
-PASS table th align attribute justify is correct
-PASS tr height attribute pixel is correct
-PASS td height attribute pixel is correct
-PASS th height attribute pixel is correct
-PASS table_tr height attribute percentage is correct
-PASS table_td height attribute percentage is correct
-PASS table_th height attribute percentage is correct
-PASS table height attribute pixel is correct
-PASS table height attribute 90% is correct
-PASS table height attribute 110% is correct
-PASS table cellpadding attribute is correct
-PASS th default align attribute is center
-PASS table col width attribute is correct
+[PASS] table bordercolor attribute is correct
+[PASS] table cellspacing attribute is correct
+[PASS] table background attribute is correct
+[PASS] table bgcolor attribute is correct
+[PASS] thead background attribute is correct
+[PASS] thead bgcolor attribute is correct
+[PASS] tbody background attribute is correct
+[PASS] tbody bgcolor attribute is correct
+[PASS] tfoot background attribute is correct
+[PASS] tfoot bgcolor attribute is correct
+[PASS] tr background attribute is correct
+[PASS] tr bgcolor attribute is correct
+[PASS] td background attribute is correct
+[PASS] td bgcolor attribute is correct
+[PASS] th background attribute is correct
+[PASS] th bgcolor attribute is correct
+[FAIL] table thead align attribute center is correct
+  assert_equals: expected "center" but got "-webkit-center"
+[FAIL] table thead align attribute middle is correct
+  assert_equals: expected "center" but got "-webkit-center"
+[FAIL] table thead align attribute left is correct
+  assert_equals: expected "left" but got "-webkit-left"
+[FAIL] table thead align attribute right is correct
+  assert_equals: expected "right" but got "-webkit-right"
+[PASS] table thead align attribute justify is correct
+[FAIL] table tbody align attribute center is correct
+  assert_equals: expected "center" but got "-webkit-center"
+[FAIL] table tbody align attribute middle is correct
+  assert_equals: expected "center" but got "-webkit-center"
+[FAIL] table tbody align attribute left is correct
+  assert_equals: expected "left" but got "-webkit-left"
+[FAIL] table tbody align attribute right is correct
+  assert_equals: expected "right" but got "-webkit-right"
+[PASS] table tbody align attribute justify is correct
+[FAIL] table tfoot align attribute center is correct
+  assert_equals: expected "center" but got "-webkit-center"
+[FAIL] table tfoot align attribute middle is correct
+  assert_equals: expected "center" but got "-webkit-center"
+[FAIL] table tfoot align attribute left is correct
+  assert_equals: expected "left" but got "-webkit-left"
+[FAIL] table tfoot align attribute right is correct
+  assert_equals: expected "right" but got "-webkit-right"
+[PASS] table tfoot align attribute justify is correct
+[FAIL] table tr align attribute center is correct
+  assert_equals: expected "center" but got "-webkit-center"
+[FAIL] table tr align attribute middle is correct
+  assert_equals: expected "center" but got "-webkit-center"
+[FAIL] table tr align attribute left is correct
+  assert_equals: expected "left" but got "-webkit-left"
+[FAIL] table tr align attribute right is correct
+  assert_equals: expected "right" but got "-webkit-right"
+[PASS] table tr align attribute justify is correct
+[FAIL] table td align attribute center is correct
+  assert_equals: expected "center" but got "-webkit-center"
+[FAIL] table td align attribute middle is correct
+  assert_equals: expected "center" but got "-webkit-center"
+[FAIL] table td align attribute left is correct
+  assert_equals: expected "left" but got "-webkit-left"
+[FAIL] table td align attribute right is correct
+  assert_equals: expected "right" but got "-webkit-right"
+[PASS] table td align attribute justify is correct
+[FAIL] table th align attribute center is correct
+  assert_equals: expected "center" but got "-webkit-center"
+[FAIL] table th align attribute middle is correct
+  assert_equals: expected "center" but got "-webkit-center"
+[FAIL] table th align attribute left is correct
+  assert_equals: expected "left" but got "-webkit-left"
+[FAIL] table th align attribute right is correct
+  assert_equals: expected "right" but got "-webkit-right"
+[PASS] table th align attribute justify is correct
+[PASS] tr height attribute pixel is correct
+[PASS] td height attribute pixel is correct
+[PASS] th height attribute pixel is correct
+[PASS] table_tr height attribute percentage is correct
+[PASS] table_td height attribute percentage is correct
+[PASS] table_th height attribute percentage is correct
+[PASS] table height attribute pixel is correct
+[PASS] table height attribute 90% is correct
+[PASS] table height attribute 110% is correct
+[PASS] table cellpadding attribute is correct
+[PASS] th default align attribute is center
+[PASS] table col width attribute is correct
 Harness: the test ran to completion.
 

@@ -1,5 +1,6 @@
 This is a testharness.js-based test.
-PASS A navigation's initiator origin and referrer are stored in the document state and used in the document repopulation case
-FAIL A navigation's initiator origin and referrer are stored in the document state and used on location.reload() assert_equals: Same-origin forward history navigation to a document whose original initiator was cross-site, ends up with Sec-Fetch-Dest: cross-site header expected "cross-site" but got "same-origin"
+[PASS] A navigation's initiator origin and referrer are stored in the document state and used in the document repopulation case
+[FAIL] A navigation's initiator origin and referrer are stored in the document state and used on location.reload()
+  assert_equals: Same-origin forward history navigation to a document whose original initiator was cross-site, ends up with Sec-Fetch-Dest: cross-site header expected "cross-site" but got "same-origin"
 Harness: the test ran to completion.
 

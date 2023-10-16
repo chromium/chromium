@@ -1,4 +1,5 @@
 This is a testharness.js-based test.
-FAIL Defer Script Execution Order Uncaught Error: assert_array_equals: Execution order expected property 0 to be "Inline1" but got "EndOfBody" (expected array ["Inline1", "Sync1", "Inline2", "Sync2", "EndOfBody", "Defer1", "Defer2", "DOMContentLoaded"] got ["EndOfBody", "Inline1", "Sync1", "Inline2", "Sync2", "Defer1", "Defer2", "DOMContentLoaded"])
+[FAIL] Defer Script Execution Order
+  Uncaught Error: assert_array_equals: Execution order expected property 0 to be "Inline1" but got "EndOfBody" (expected array ["Inline1", "Sync1", "Inline2", "Sync2", "EndOfBody", "Defer1", "Defer2", "DOMContentLoaded"] got ["EndOfBody", "Inline1", "Sync1", "Inline2", "Sync2", "Defer1", "Defer2", "DOMContentLoaded"])
 Harness: the test ran to completion.
 

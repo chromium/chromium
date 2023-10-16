@@ -1,6 +1,7 @@
 This is a testharness.js-based test.
-PASS First <base> has a data: URL so fallback is used
-PASS First <base> is removed so second is used
-FAIL Dynamically inserted first <base> has a data: URL so fallback is used assert_equals: expected "http://web-platform.test:8001/html/semantics/document-metadata/the-base-element/blah" but got "https://example.com/blah"
+[PASS] First <base> has a data: URL so fallback is used
+[PASS] First <base> is removed so second is used
+[FAIL] Dynamically inserted first <base> has a data: URL so fallback is used
+  assert_equals: expected "http://web-platform.test:8001/html/semantics/document-metadata/the-base-element/blah" but got "https://example.com/blah"
 Harness: the test ran to completion.
 

@@ -1,8 +1,9 @@
 This is a testharness.js-based test.
-PASS no width/height attributes
-PASS only width attribute
-PASS only height attribute
-PASS both width/height attributes
-FAIL both width/height attributes and style assert_equals: height expected 300 but got 150
+[PASS] no width/height attributes
+[PASS] only width attribute
+[PASS] only height attribute
+[PASS] both width/height attributes
+[FAIL] both width/height attributes and style
+  assert_equals: height expected 300 but got 150
 Harness: the test ran to completion.
 

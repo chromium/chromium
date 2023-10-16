@@ -1,4 +1,5 @@
 This is a testharness.js-based test.
-FAIL Unregister service worker while a controlled page is in BFCache assert_implements: Should not be BFCached but actually was undefined
+[FAIL] Unregister service worker while a controlled page is in BFCache
+  assert_implements: Should not be BFCached but actually was undefined
 Harness: the test ran to completion.
 

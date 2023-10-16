@@ -1,5 +1,7 @@
 This is a testharness.js-based test.
-FAIL control assert_equals: divAfter.offsetTop expected 52 but got 51
-FAIL overflow: visible assert_equals: divAfter.offsetTop expected 2 but got 1
+[FAIL] control
+  assert_equals: divAfter.offsetTop expected 52 but got 51
+[FAIL] overflow: visible
+  assert_equals: divAfter.offsetTop expected 2 but got 1
 Harness: the test ran to completion.
 

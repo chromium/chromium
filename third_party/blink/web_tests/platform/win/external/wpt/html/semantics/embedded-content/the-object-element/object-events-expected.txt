@@ -1,7 +1,9 @@
 This is a testharness.js-based test.
-FAIL error event (using 'file:' protocol) assert_unreached: The load event should not be fired. Reached unreachable code
-FAIL error event (using 'http:' protocol) assert_unreached: The load event should not be fired. Reached unreachable code
-PASS load event
-PASS load event of about:blank
+[FAIL] error event (using 'file:' protocol)
+  assert_unreached: The load event should not be fired. Reached unreachable code
+[FAIL] error event (using 'http:' protocol)
+  assert_unreached: The load event should not be fired. Reached unreachable code
+[PASS] load event
+[PASS] load event of about:blank
 Harness: the test ran to completion.
 

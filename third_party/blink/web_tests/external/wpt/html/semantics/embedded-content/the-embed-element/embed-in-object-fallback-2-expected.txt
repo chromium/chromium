@@ -1,4 +1,5 @@
 This is a testharness.js-based test.
-FAIL Test <embed> nesting inside <object> assert_equals: Should have loaded all should-load elements expected 12 but got 0
+[FAIL] Test <embed> nesting inside <object>
+  assert_equals: Should have loaded all should-load elements expected 12 but got 0
 Harness: the test ran to completion.
 

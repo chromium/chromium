@@ -1,35 +1,45 @@
 This is a testharness.js-based test.
-PASS sRGB-FF0100, Context srgb, ImageData srgb, cropSource=false
-PASS sRGB-FF0100, Context srgb, ImageData srgb, cropSource=true
-PASS sRGB-FF0100, Context srgb, ImageData display-p3, cropSource=false
-PASS sRGB-FF0100, Context srgb, ImageData display-p3, cropSource=true
-PASS sRGB-FF0100, Context display-p3, ImageData srgb, cropSource=false
-PASS sRGB-FF0100, Context display-p3, ImageData srgb, cropSource=true
-PASS sRGB-FF0100, Context display-p3, ImageData display-p3, cropSource=false
-PASS sRGB-FF0100, Context display-p3, ImageData display-p3, cropSource=true
-PASS sRGB-BB0000, Context srgb, ImageData srgb, cropSource=false
-PASS sRGB-BB0000, Context srgb, ImageData srgb, cropSource=true
-PASS sRGB-BB0000, Context srgb, ImageData display-p3, cropSource=false
-PASS sRGB-BB0000, Context srgb, ImageData display-p3, cropSource=true
-PASS sRGB-BB0000, Context display-p3, ImageData srgb, cropSource=false
-PASS sRGB-BB0000, Context display-p3, ImageData srgb, cropSource=true
-PASS sRGB-BB0000, Context display-p3, ImageData display-p3, cropSource=false
-PASS sRGB-BB0000, Context display-p3, ImageData display-p3, cropSource=true
-PASS Rec2020-3FF000000, Context srgb, ImageData srgb, cropSource=false
-PASS Rec2020-3FF000000, Context srgb, ImageData srgb, cropSource=true
-PASS Rec2020-3FF000000, Context srgb, ImageData display-p3, cropSource=false
-PASS Rec2020-3FF000000, Context srgb, ImageData display-p3, cropSource=true
-PASS Rec2020-3FF000000, Context display-p3, ImageData srgb, cropSource=false
-PASS Rec2020-3FF000000, Context display-p3, ImageData srgb, cropSource=true
-FAIL Rec2020-3FF000000, Context display-p3, ImageData display-p3, cropSource=false assert_true: Actual pixel value 233,51,35,255 is approximately equal to 255,0,9,255. expected true got false
-FAIL Rec2020-3FF000000, Context display-p3, ImageData display-p3, cropSource=true assert_true: Actual pixel value 233,51,35,255 is approximately equal to 255,0,9,255. expected true got false
-FAIL Rec2020-222000000, Context srgb, ImageData srgb, cropSource=false assert_true: Actual pixel value 136,0,0,255 is approximately equal to 186,0,0,255. expected true got false
-FAIL Rec2020-222000000, Context srgb, ImageData srgb, cropSource=true assert_true: Actual pixel value 136,0,0,255 is approximately equal to 186,0,0,255. expected true got false
-FAIL Rec2020-222000000, Context srgb, ImageData display-p3, cropSource=false assert_true: Actual pixel value 124,22,13,255 is approximately equal to 170,34,23,255. expected true got false
-FAIL Rec2020-222000000, Context srgb, ImageData display-p3, cropSource=true assert_true: Actual pixel value 124,22,13,255 is approximately equal to 170,34,23,255. expected true got false
-FAIL Rec2020-222000000, Context display-p3, ImageData srgb, cropSource=false assert_true: Actual pixel value 136,0,0,255 is approximately equal to 186,0,0,255. expected true got false
-FAIL Rec2020-222000000, Context display-p3, ImageData srgb, cropSource=true assert_true: Actual pixel value 136,0,0,255 is approximately equal to 186,0,0,255. expected true got false
-FAIL Rec2020-222000000, Context display-p3, ImageData display-p3, cropSource=false assert_true: Actual pixel value 124,22,13,255 is approximately equal to 169,0,3,255. expected true got false
-FAIL Rec2020-222000000, Context display-p3, ImageData display-p3, cropSource=true assert_true: Actual pixel value 124,22,13,255 is approximately equal to 169,0,3,255. expected true got false
+[PASS] sRGB-FF0100, Context srgb, ImageData srgb, cropSource=false
+[PASS] sRGB-FF0100, Context srgb, ImageData srgb, cropSource=true
+[PASS] sRGB-FF0100, Context srgb, ImageData display-p3, cropSource=false
+[PASS] sRGB-FF0100, Context srgb, ImageData display-p3, cropSource=true
+[PASS] sRGB-FF0100, Context display-p3, ImageData srgb, cropSource=false
+[PASS] sRGB-FF0100, Context display-p3, ImageData srgb, cropSource=true
+[PASS] sRGB-FF0100, Context display-p3, ImageData display-p3, cropSource=false
+[PASS] sRGB-FF0100, Context display-p3, ImageData display-p3, cropSource=true
+[PASS] sRGB-BB0000, Context srgb, ImageData srgb, cropSource=false
+[PASS] sRGB-BB0000, Context srgb, ImageData srgb, cropSource=true
+[PASS] sRGB-BB0000, Context srgb, ImageData display-p3, cropSource=false
+[PASS] sRGB-BB0000, Context srgb, ImageData display-p3, cropSource=true
+[PASS] sRGB-BB0000, Context display-p3, ImageData srgb, cropSource=false
+[PASS] sRGB-BB0000, Context display-p3, ImageData srgb, cropSource=true
+[PASS] sRGB-BB0000, Context display-p3, ImageData display-p3, cropSource=false
+[PASS] sRGB-BB0000, Context display-p3, ImageData display-p3, cropSource=true
+[PASS] Rec2020-3FF000000, Context srgb, ImageData srgb, cropSource=false
+[PASS] Rec2020-3FF000000, Context srgb, ImageData srgb, cropSource=true
+[PASS] Rec2020-3FF000000, Context srgb, ImageData display-p3, cropSource=false
+[PASS] Rec2020-3FF000000, Context srgb, ImageData display-p3, cropSource=true
+[PASS] Rec2020-3FF000000, Context display-p3, ImageData srgb, cropSource=false
+[PASS] Rec2020-3FF000000, Context display-p3, ImageData srgb, cropSource=true
+[FAIL] Rec2020-3FF000000, Context display-p3, ImageData display-p3, cropSource=false
+  assert_true: Actual pixel value 233,51,35,255 is approximately equal to 255,0,9,255. expected true got false
+[FAIL] Rec2020-3FF000000, Context display-p3, ImageData display-p3, cropSource=true
+  assert_true: Actual pixel value 233,51,35,255 is approximately equal to 255,0,9,255. expected true got false
+[FAIL] Rec2020-222000000, Context srgb, ImageData srgb, cropSource=false
+  assert_true: Actual pixel value 136,0,0,255 is approximately equal to 186,0,0,255. expected true got false
+[FAIL] Rec2020-222000000, Context srgb, ImageData srgb, cropSource=true
+  assert_true: Actual pixel value 136,0,0,255 is approximately equal to 186,0,0,255. expected true got false
+[FAIL] Rec2020-222000000, Context srgb, ImageData display-p3, cropSource=false
+  assert_true: Actual pixel value 124,22,13,255 is approximately equal to 170,34,23,255. expected true got false
+[FAIL] Rec2020-222000000, Context srgb, ImageData display-p3, cropSource=true
+  assert_true: Actual pixel value 124,22,13,255 is approximately equal to 170,34,23,255. expected true got false
+[FAIL] Rec2020-222000000, Context display-p3, ImageData srgb, cropSource=false
+  assert_true: Actual pixel value 136,0,0,255 is approximately equal to 186,0,0,255. expected true got false
+[FAIL] Rec2020-222000000, Context display-p3, ImageData srgb, cropSource=true
+  assert_true: Actual pixel value 136,0,0,255 is approximately equal to 186,0,0,255. expected true got false
+[FAIL] Rec2020-222000000, Context display-p3, ImageData display-p3, cropSource=false
+  assert_true: Actual pixel value 124,22,13,255 is approximately equal to 169,0,3,255. expected true got false
+[FAIL] Rec2020-222000000, Context display-p3, ImageData display-p3, cropSource=true
+  assert_true: Actual pixel value 124,22,13,255 is approximately equal to 169,0,3,255. expected true got false
 Harness: the test ran to completion.
 
