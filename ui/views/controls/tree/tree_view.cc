@@ -151,12 +151,14 @@ void TreeView::SetModel(TreeModel* model) {
   selected_node_ = nullptr;
   active_node_ = nullptr;
   icons_.clear();
+  root_.Reset(nullptr);
+  root_.DeleteAll();
+  GetViewAccessibility().RemoveAllVirtualChildViews();
+
   if (model_) {
     model_->AddObserver(this);
     model_->GetIcons(&icons_);
 
-    GetViewAccessibility().RemoveAllVirtualChildViews();
-    root_.DeleteAll();
     ConfigureInternalNode(model_->GetRoot(), &root_);
     std::unique_ptr<AXVirtualView> ax_root_view =
         CreateAndSetAccessibilityView(&root_);
@@ -570,10 +572,12 @@ void TreeView::TreeNodeRemoved(TreeModel* model,
 
   DCHECK(parent_node->accessibility_view()->Contains(
       child_removing->accessibility_view()));
-  parent_node->accessibility_view()->RemoveChildView(
-      child_removing->accessibility_view());
-  child_removing->set_accessibility_view(nullptr);
-  parent_node->Remove(index);
+  {
+    AXVirtualView* view_to_remove = child_removing->accessibility_view();
+    child_removing = nullptr;
+    parent_node->Remove(index);
+    parent_node->accessibility_view()->RemoveChildView(view_to_remove);
+  }
 
   if (reset_selected_node || reset_active_node) {
     // selected_node_ or active_node_ or both were no longer valid (i.e. the
