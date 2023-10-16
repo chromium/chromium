@@ -4,15 +4,11 @@
 
 package org.chromium.chrome.modules.readaloud.contentjs;
 
-import android.content.Context;
-
-import androidx.annotation.ColorInt;
 import androidx.annotation.IntDef;
 
 import org.chromium.chrome.browser.tab.Tab;
 import org.chromium.chrome.modules.readaloud.Playback;
 import org.chromium.chrome.modules.readaloud.PlaybackListener.PhraseTiming;
-import org.chromium.components.browser_ui.styles.SemanticColorUtils;
 import org.chromium.content_public.browser.GlobalRenderFrameHostId;
 
 import java.lang.annotation.Retention;
@@ -38,34 +34,12 @@ public interface Highlighter {
         int TEXT_HIGHLIGHTING_MODE_OFF = 3;
     }
 
-    /** Highlighting configuration. */
+    /** Highlighting configuration. To be added: colors, different mode support */
     public static class Config {
         private @Mode int mMode = Mode.TEXT_HIGHLIGHTING_MODE_WORD;
-        // Hex values in format: RRGGBBAA
-        private final String mHighlightForegroundColorHex = "#00000000";
-        private final String mHighlightBackgroundColorHex;
-
-        public Config(Context context) {
-            // Color format: AARRGGBB
-            @ColorInt int color = SemanticColorUtils.getDefaultTextColorLink(context);
-            // when converting to RRGGBBAA hex also add 25% opacity per UI specs.
-            mHighlightBackgroundColorHex = String.format("#%06X", (0x00FFFFFF & color)) + "40";
-        }
-
-        public void setMode(@Mode int mode) {
-            mMode = mode;
-        }
 
         public @Mode int getMode() {
             return mMode;
-        }
-
-        public String getHighlightBackgroundColorHex() {
-            return mHighlightBackgroundColorHex;
-        }
-
-        public String getHighlighForegroundColorHex() {
-            return mHighlightForegroundColorHex;
         }
     }
 

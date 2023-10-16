@@ -19,8 +19,6 @@ import static org.mockito.Mockito.when;
 import android.content.Context;
 import android.view.ViewStub;
 
-import androidx.test.core.app.ApplicationProvider;
-
 import org.junit.Before;
 import org.junit.Rule;
 import org.junit.Test;
@@ -66,7 +64,6 @@ public class ReadAloudControllerUnitTest {
 
     private MockTab mTab;
     private ReadAloudController mController;
-    private Context mContext;
 
     @Rule
     public JniMocker mJniMocker = new JniMocker();
@@ -78,6 +75,8 @@ public class ReadAloudControllerUnitTest {
     private ObservableSupplier<Profile> mMockProfileSupplier;
     @Mock
     private Profile mMockProfile;
+    @Mock
+    Context mContext;
     @Mock
     private ReadAloudReadabilityHooksImpl mHooksImpl;
     @Mock
@@ -112,7 +111,6 @@ public class ReadAloudControllerUnitTest {
         when(mMockProfile.isOffTheRecord()).thenReturn(false);
         UnifiedConsentServiceBridge.setUrlKeyedAnonymizedDataCollectionEnabled(true);
 
-        mContext = ApplicationProvider.getApplicationContext();
         mFakeTranslateBridge = new FakeTranslateBridgeJni();
         mJniMocker.mock(TranslateBridgeJni.TEST_HOOKS, mFakeTranslateBridge);
         mTabModelSelector =
