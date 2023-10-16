@@ -36,11 +36,12 @@ class MenuButtonControllerTest : public ViewsTestBase {
 
  protected:
   Widget* widget() { return widget_.get(); }
-  TestButton* button() { return button_; }
+  TestButton* button() {
+    return static_cast<TestButton*>(widget()->GetContentsView());
+  }
 
  private:
   std::unique_ptr<Widget> widget_;
-  raw_ptr<TestButton, DanglingUntriaged> button_;
 
   void SetUp() override {
     ViewsTestBase::SetUp();
@@ -52,8 +53,7 @@ class MenuButtonControllerTest : public ViewsTestBase {
     params.bounds = gfx::Rect(0, 0, 650, 650);
     widget_->Init(std::move(params));
     widget_->Show();
-
-    button_ = widget()->SetContentsView(std::make_unique<TestButton>());
+    widget()->SetContentsView(std::make_unique<TestButton>());
   }
 
   void TearDown() override {
