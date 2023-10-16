@@ -257,14 +257,6 @@ void DeleteGooglePhotosCache(const AccountId& account_id) {
   }
 }
 
-// Fuzzes a timedelta by up to one hour into the future to prevent hotspotting.
-base::TimeDelta FuzzTimeDelta(base::TimeDelta delta) {
-  auto random_delay = base::Milliseconds(base::RandDouble() *
-                                         base::Time::kMillisecondsPerSecond *
-                                         base::Time::kSecondsPerHour);
-  return delta + random_delay;
-}
-
 scoped_refptr<base::RefCountedMemory> EncodeAndResizeImage(
     gfx::ImageSkia image) {
   auto resized = WallpaperResizer::GetResizedImage(image,
@@ -808,7 +800,6 @@ void WallpaperControllerImpl::SetGooglePhotosWallpaper(
         return;
       }
 
-      update_wallpaper_timer_.Stop();
       std::move(callback).Run(true);
 
       info.collection_id = std::string();
@@ -854,7 +845,6 @@ void WallpaperControllerImpl::SetGooglePhotosDailyRefreshAlbumId(
     info.type = WallpaperType::kOnceGooglePhotos;
   }
   SetUserWallpaperInfo(account_id, info);
-  StartDailyRefreshTimer();
 }
 
 std::string WallpaperControllerImpl::GetGooglePhotosDailyRefreshAlbumId(
@@ -886,8 +876,7 @@ void WallpaperControllerImpl::SetTimeOfDayWallpaper(
   OnlineWallpaperVariantInfoFetcher::FetchParamsCallback on_fetch =
       base::BindOnce(&WallpaperControllerImpl::OnWallpaperVariantsFetched,
                      set_wallpaper_weak_factory_.GetWeakPtr(),
-                     WallpaperType::kOnline,
-                     /*start_daily_refresh_timer=*/false, std::move(callback));
+                     WallpaperType::kOnline, std::move(callback));
   variant_info_fetcher_->FetchTimeOfDayWallpaper(
       account_id, wallpaper_constants::kDefaultTimeOfDayWallpaperUnitId,
       Shell::Get()->dark_light_mode_controller()->current_checkpoint(),
@@ -910,8 +899,6 @@ void WallpaperControllerImpl::SetDefaultWallpaper(
     std::move(callback).Run(/*success=*/false);
     return;
   }
-
-  update_wallpaper_timer_.Stop();
 
   RemoveUserWallpaper(account_id, /*on_removed=*/base::DoNothing());
   if (!SetDefaultWallpaperInfo(account_id, base::Time::Now())) {
@@ -1692,11 +1679,6 @@ void WallpaperControllerImpl::OnActiveUserPrefServiceChanged(
   // Sends signal for daily refresh check.
   OnCheckpointChanged(daily_refresh_scheduler_.get(),
                       daily_refresh_scheduler_->current_checkpoint());
-
-  if (IsDailyRefreshEnabled() || IsDailyGooglePhotosWallpaperSelected())
-    StartDailyRefreshTimer();
-  if (IsGooglePhotosWallpaperSet())
-    StartGooglePhotosStalenessTimer();
 }
 
 void WallpaperControllerImpl::ShowDefaultWallpaperForTesting() {
@@ -1721,11 +1703,6 @@ void WallpaperControllerImpl::ReloadWallpaperForTesting(bool clear_cache) {
 
 void WallpaperControllerImpl::ClearPrefChangeObserverForTesting() {
   pref_change_registrar_.reset();
-}
-
-base::WallClockTimer&
-WallpaperControllerImpl::GetUpdateWallpaperTimerForTesting() {
-  return update_wallpaper_timer_;
 }
 
 void WallpaperControllerImpl::UpdateWallpaperForRootWindow(
@@ -1890,20 +1867,11 @@ bool WallpaperControllerImpl::SetDefaultWallpaperInfo(
 
 void WallpaperControllerImpl::OnWallpaperVariantsFetched(
     WallpaperType type,
-    bool start_daily_refresh_timer,
     SetWallpaperCallback callback,
     absl::optional<OnlineWallpaperParams> params) {
   DCHECK(IsOnlineWallpaper(type));
   if (params) {
     SetOnlineWallpaper(*params, std::move(callback));
-
-    // This callback may be invoked when the system color's mode changes and
-    // updates the variant of the same wallpaper. In this case, the caller is
-    // expected to set |start_daily_refresh_timer| to false to prevent the daily
-    // timer from getting reset and daily wallpaper getting stuck indefinitely.
-    if (type == WallpaperType::kDaily && start_daily_refresh_timer) {
-      StartDailyRefreshTimer();
-    }
     return;
   }
 
@@ -1913,10 +1881,6 @@ void WallpaperControllerImpl::OnWallpaperVariantsFetched(
   // Log setting wallpaper failure due to fetching request failure.
   wallpaper_metrics_manager_->LogWallpaperResult(
       type, SetWallpaperResult::kRequestFailure);
-
-  // Daily wallpaper should schedule retry.
-  if (type == WallpaperType::kDaily)
-    OnFetchDailyWallpaperFailed();
 }
 
 void WallpaperControllerImpl::RepaintOnlineWallpaper(
@@ -2122,8 +2086,6 @@ void WallpaperControllerImpl::OnDailyGooglePhotosPhotoFetched(
         wallpaper_metrics_manager_->LogWallpaperResult(
             WallpaperType::kDailyGooglePhotos,
             SetWallpaperResult::kRequestFailure);
-        // If the request simply failed, retry in an hour.
-        StartUpdateWallpaperTimer(base::Hours(1));
       }
     }
     return;
@@ -2165,8 +2127,6 @@ void WallpaperControllerImpl::OnDailyGooglePhotosWallpaperDecoded(
        /*preview_mode=*/false, /*dedup_key=*/absl::nullopt});
   wallpaper_info.location = photo_id;
   wallpaper_info.dedup_key = dedup_key;
-
-  StartDailyRefreshTimer();
 
   SetWallpaperImpl(account_id, wallpaper_info, image, /*show_wallpaper=*/true);
 }
@@ -2716,7 +2676,6 @@ void WallpaperControllerImpl::SetDailyRefreshCollectionId(
     info.type = WallpaperType::kOnline;
   }
   SetUserWallpaperInfo(account_id, info);
-  StartDailyRefreshTimer();
 }
 
 std::string WallpaperControllerImpl::GetDailyRefreshCollectionId(
@@ -2782,7 +2741,6 @@ void WallpaperControllerImpl::UpdateDailyRefreshWallpaper(
   // Invalidate weak ptrs to cancel prior requests to set wallpaper.
   set_wallpaper_weak_factory_.InvalidateWeakPtrs();
   if (!IsDailyRefreshEnabled() && !IsDailyGooglePhotosWallpaperSelected()) {
-    update_wallpaper_timer_.Stop();
     std::move(callback).Run(false);
     return;
   }
@@ -2811,7 +2769,6 @@ void WallpaperControllerImpl::UpdateDailyRefreshWallpaper(
       OnlineWallpaperVariantInfoFetcher::FetchParamsCallback fetch_callback =
           base::BindOnce(&WallpaperControllerImpl::OnWallpaperVariantsFetched,
                          set_wallpaper_weak_factory_.GetWeakPtr(), info.type,
-                         /*start_daily_refresh_timer=*/true,
                          std::move(on_done));
       // Fetch can fail if wallpaper_controller_client has been cleared or
       // |info| is malformed.
@@ -2825,77 +2782,7 @@ void WallpaperControllerImpl::UpdateDailyRefreshWallpaper(
       }
     }
   } else {
-    StartDailyRefreshTimer();
     std::move(on_done).Run(false);
-  }
-}
-
-void WallpaperControllerImpl::StartDailyRefreshTimer() {
-  base::TimeDelta timer_delay =
-      features::IsWallpaperFastRefreshEnabled()
-          ? base::Seconds(10)
-          : FuzzTimeDelta(GetTimeToNextDailyRefreshUpdate());
-  StartUpdateWallpaperTimer(timer_delay);
-}
-
-void WallpaperControllerImpl::StartGooglePhotosStalenessTimer() {
-  base::TimeDelta timer_delay = FuzzTimeDelta(base::Days(1));
-  StartUpdateWallpaperTimer(timer_delay);
-}
-
-void WallpaperControllerImpl::OnFetchDailyWallpaperFailed() {
-  StartUpdateWallpaperTimer(base::Hours(1));
-}
-
-void WallpaperControllerImpl::StartUpdateWallpaperTimer(base::TimeDelta delay) {
-  // Timer is used for checking daily wallpaper refresh and Google photos
-  // staleness. When the revamp flag is enabled, these functionalities will be
-  // handled in `OnCheckpointChanged()`.
-  if (features::IsWallpaperRefreshRevampEnabled()) {
-    return;
-  }
-  DCHECK(delay.is_positive());
-  base::Time desired_run_time = base::Time::Now() + delay;
-  update_wallpaper_timer_.Start(
-      FROM_HERE, desired_run_time,
-      base::BindOnce(&WallpaperControllerImpl::OnUpdateWallpaperTimerExpired,
-                     weak_factory_.GetWeakPtr()));
-}
-
-base::TimeDelta WallpaperControllerImpl::GetTimeToNextDailyRefreshUpdate()
-    const {
-  const AccountId& account_id = GetActiveAccountId();
-  return pref_manager_->GetTimeToNextDailyRefreshUpdate(account_id);
-}
-
-void WallpaperControllerImpl::OnUpdateWallpaperTimerExpired() {
-  WallpaperInfo info;
-  auto account_id = GetActiveAccountId();
-  if (!pref_manager_->GetLocalWallpaperInfo(account_id, &info)) {
-    LOG(ERROR) << "Timer to update wallpaper expired, but the current "
-               << "wallpaper info is missing or invalid.";
-    return;
-  }
-  switch (info.type) {
-    case WallpaperType::kDaily:
-    case WallpaperType::kDailyGooglePhotos:
-      UpdateDailyRefreshWallpaper();
-      return;
-    case WallpaperType::kOnceGooglePhotos:
-      CheckGooglePhotosStaleness(account_id, info);
-      return;
-    case WallpaperType::kOnline:
-    case WallpaperType::kCustomized:
-    case WallpaperType::kDefault:
-    case WallpaperType::kPolicy:
-    case WallpaperType::kThirdParty:
-    case WallpaperType::kDevice:
-    case WallpaperType::kOneShot:
-    case WallpaperType::kOobe:
-    case WallpaperType::kCount:
-      LOG(ERROR) << "Timer to update wallpaper expired, but the current "
-                 << "wallpaper type doesn't support/require updating.";
-      return;
   }
 }
 
@@ -2907,9 +2794,6 @@ void WallpaperControllerImpl::CheckGooglePhotosStaleness(
       account_id, info.location,
       base::BindOnce(&WallpaperControllerImpl::HandleGooglePhotosStalenessCheck,
                      set_wallpaper_weak_factory_.GetWeakPtr(), account_id));
-  // Start a recheck timer in case our weak ptr above is invalidated, or other
-  // confusing conditions happen before the API call returns.
-  StartUpdateWallpaperTimer(base::Hours(1));
 }
 
 void WallpaperControllerImpl::HandleGooglePhotosStalenessCheck(
@@ -2926,8 +2810,6 @@ void WallpaperControllerImpl::HandleGooglePhotosStalenessCheck(
     sequenced_task_runner_->PostTask(
         FROM_HERE, base::BindOnce(&DeleteGooglePhotosCache, account_id));
     SetDefaultWallpaper(account_id, /*show_wallpaper=*/true, base::DoNothing());
-  } else {
-    StartGooglePhotosStalenessTimer();
   }
 }
 
@@ -3011,8 +2893,7 @@ void WallpaperControllerImpl::HandleDailyWallpaperInfoSyncedIn(
     return;
   OnlineWallpaperVariantInfoFetcher::FetchParamsCallback callback =
       base::BindOnce(&WallpaperControllerImpl::OnWallpaperVariantsFetched,
-                     weak_factory_.GetWeakPtr(), info.type,
-                     /*start_daily_refresh_timer=*/true, base::DoNothing());
+                     weak_factory_.GetWeakPtr(), info.type, base::DoNothing());
   if (!variant_info_fetcher_->FetchDailyWallpaper(
           account_id, info,
           Shell::Get()->dark_light_mode_controller()->current_checkpoint(),
@@ -3053,12 +2934,10 @@ void WallpaperControllerImpl::HandleSettingOnlineWallpaperFromWallpaperInfo(
     const WallpaperInfo& info) {
   DCHECK(IsOnlineWallpaper(info.type));
 
-  // Set |start_daily_refresh_timer| to false as this does not set a new
-  // wallpaper, but updates the variant of the same wallpaper.
   OnlineWallpaperVariantInfoFetcher::FetchParamsCallback callback =
       base::BindOnce(&WallpaperControllerImpl::OnWallpaperVariantsFetched,
                      set_wallpaper_weak_factory_.GetWeakPtr(), info.type,
-                     /*start_daily_refresh_timer=*/false, base::DoNothing());
+                     base::DoNothing());
 
   variant_info_fetcher_->FetchOnlineWallpaper(
       account_id, info,
@@ -3069,15 +2948,6 @@ void WallpaperControllerImpl::HandleSettingOnlineWallpaperFromWallpaperInfo(
 void WallpaperControllerImpl::CleanUpBeforeSettingUserWallpaperInfo(
     const AccountId& account_id,
     const WallpaperInfo& info) {
-  if (info.type != WallpaperType::kDaily &&
-      info.type != WallpaperType::kOnceGooglePhotos &&
-      info.type != WallpaperType::kDailyGooglePhotos) {
-    update_wallpaper_timer_.Stop();
-  }
-
-  if (info.type == WallpaperType::kOnceGooglePhotos)
-    StartGooglePhotosStalenessTimer();
-
   if (info.type != WallpaperType::kOnceGooglePhotos &&
       info.type != WallpaperType::kDailyGooglePhotos) {
     sequenced_task_runner_->PostTask(
