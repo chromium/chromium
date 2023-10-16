@@ -167,8 +167,8 @@ bool FakeCrOSComponentManager::Unload(const std::string& name) {
 
 void FakeCrOSComponentManager::RegisterCompatiblePath(
     const std::string& name,
-    const base::FilePath& path) {
-  installed_components_[name] = path;
+    CompatibleComponentInfo info) {
+  installed_components_[name] = std::move(info);
 }
 
 void FakeCrOSComponentManager::UnregisterCompatiblePath(
@@ -181,7 +181,7 @@ base::FilePath FakeCrOSComponentManager::GetCompatiblePath(
   const auto& it = installed_components_.find(name);
   if (it == installed_components_.end())
     return base::FilePath();
-  return it->second;
+  return it->second.path;
 }
 
 void FakeCrOSComponentManager::SetRegisteredComponents(
@@ -256,13 +256,16 @@ void FakeCrOSComponentManager::FinishComponentLoad(
     registered_components_.insert(name);
   }
 
-  if (component_info.load_response != Error::NONE)
+  if (component_info.load_response != Error::NONE) {
     return;
+  }
 
   DCHECK_EQ(mount_requested, !component_info.mount_path.empty());
-  installed_components_[name] = component_info.install_path;
-  if (mount_requested)
+  installed_components_[name] = CompatibleComponentInfo(
+      component_info.install_path, component_info.version);
+  if (mount_requested) {
     mounted_components_[name] = component_info.mount_path;
+  }
 }
 
 }  // namespace component_updater
