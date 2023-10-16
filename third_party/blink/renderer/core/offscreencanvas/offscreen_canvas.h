@@ -113,7 +113,9 @@ class CORE_EXPORT OffscreenCanvas final
   void PreFinalizeFrame() override {}
   void PostFinalizeFrame(FlushReason) override {}
   void DetachContext() override { context_ = nullptr; }
-  CanvasRenderingContext* RenderingContext() const override { return context_; }
+  CanvasRenderingContext* RenderingContext() const override {
+    return context_.Get();
+  }
 
   bool PushFrameIfNeeded();
   bool PushFrame(scoped_refptr<CanvasResource>&& frame,

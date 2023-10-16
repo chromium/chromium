@@ -51,7 +51,7 @@ class CORE_EXPORT FirstLetterPseudoElement final : public PseudoElement {
 
   void ClearRemainingTextLayoutObject();
   LayoutTextFragment* RemainingTextLayoutObject() const {
-    return remaining_text_layout_object_;
+    return remaining_text_layout_object_.Get();
   }
 
   void UpdateTextFragments();

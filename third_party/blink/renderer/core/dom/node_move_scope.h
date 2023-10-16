@@ -44,7 +44,7 @@ class NodeMoveScopeItem : public GarbageCollected<NodeMoveScopeItem> {
     if (!destination_tree_root_) {
       destination_tree_root_ = &destination_root_->TreeRoot();
     }
-    return destination_tree_root_;
+    return destination_tree_root_.Get();
   }
 
   void SetCurrentNodeBeingRemoved(Node& node) {
@@ -53,7 +53,7 @@ class NodeMoveScopeItem : public GarbageCollected<NodeMoveScopeItem> {
 
   Node* CurrentNodeBeingRemoved() {
     DCHECK(current_node_being_removed_);
-    return current_node_being_removed_;
+    return current_node_being_removed_.Get();
   }
 
   bool AllMovedPartsWereClean() { return all_parts_lists_clean_; }

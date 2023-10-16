@@ -90,7 +90,7 @@ HTMLElement* HTMLFormControlsCollection::VirtualItemAfter(
     if (listed_element->IsEnumeratable()) {
       cached_element_ = listed_element->ToHTMLElement();
       cached_element_offset_in_array_ = i;
-      return cached_element_;
+      return cached_element_.Get();
     }
   }
   return nullptr;

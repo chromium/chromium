@@ -35,7 +35,7 @@ class CORE_EXPORT HighlightPointerEvent : public PointerEvent {
       MouseEvent::SyntheticEventType synthetic_event_type,
       WebMenuSourceType menu_source_type = kMenuSourceNone);
 
-  Range* range() const { return range_; }
+  Range* range() const { return range_.Get(); }
 
   bool IsHighlightPointerEvent() const override;
 

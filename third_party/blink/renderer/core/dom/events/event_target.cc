@@ -661,7 +661,7 @@ RegisteredEventListener* EventTarget::GetAttributeRegisteredEventListener(
     EventListener* listener = registered_listener->Callback();
     if (GetExecutionContext() && listener->IsEventHandler() &&
         listener->BelongsToTheCurrentWorld(GetExecutionContext()))
-      return registered_listener;
+      return registered_listener.Get();
   }
   return nullptr;
 }

@@ -40,7 +40,9 @@ class CORE_EXPORT DocumentPartRoot : public ScriptWrappable, public PartRoot {
 
   // PartRoot API
   PartRootUnion* clone(ExceptionState&);
-  ContainerNode* rootContainer() const override { return root_container_; }
+  ContainerNode* rootContainer() const override {
+    return root_container_.Get();
+  }
 
  protected:
   const PartRoot* GetParentPartRoot() const override { return nullptr; }

@@ -153,7 +153,7 @@ class CORE_EXPORT WebFrameWidgetImpl
 
   // Returns the WebFrame that this widget is attached to. It will be a local
   // root since only local roots have a widget attached.
-  WebLocalFrameImpl* LocalRootImpl() const { return local_root_; }
+  WebLocalFrameImpl* LocalRootImpl() const { return local_root_.Get(); }
 
   // Returns the bounding box of the block type node touched by the WebPoint.
   gfx::Rect ComputeBlockBound(const gfx::Point& point_in_root_frame,

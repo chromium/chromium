@@ -516,7 +516,7 @@ class CORE_EXPORT LocalDOMWindow final : public DOMWindow,
   Fence* fence();
 
   CloseWatcher::WatcherStack* closewatcher_stack() {
-    return closewatcher_stack_;
+    return closewatcher_stack_.Get();
   }
 
   void GenerateNewNavigationId();

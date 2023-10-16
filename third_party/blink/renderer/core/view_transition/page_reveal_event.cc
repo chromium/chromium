@@ -29,7 +29,7 @@ void PageRevealEvent::Trace(Visitor* visitor) const {
 }
 
 DOMViewTransition* PageRevealEvent::viewTransition() const {
-  return dom_view_transition_;
+  return dom_view_transition_.Get();
 }
 
 }  // namespace blink

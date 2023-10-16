@@ -359,17 +359,17 @@ class CORE_EXPORT LayoutObject : public GarbageCollected<LayoutObject>,
 
   LayoutObject* Parent() const {
     NOT_DESTROYED();
-    return parent_;
+    return parent_.Get();
   }
   bool IsDescendantOf(const LayoutObject*) const;
 
   LayoutObject* PreviousSibling() const {
     NOT_DESTROYED();
-    return previous_;
+    return previous_.Get();
   }
   LayoutObject* NextSibling() const {
     NOT_DESTROYED();
-    return next_;
+    return next_.Get();
   }
 
   DISABLE_CFI_PERF

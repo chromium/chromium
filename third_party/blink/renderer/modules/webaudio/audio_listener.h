@@ -61,9 +61,9 @@ class AudioListener final : public ScriptWrappable,
   AudioParam* forwardX() const { return forward_x_.Get(); }
   AudioParam* forwardY() const { return forward_y_.Get(); }
   AudioParam* forwardZ() const { return forward_z_.Get(); }
-  AudioParam* upX() const { return up_x_; }
-  AudioParam* upY() const { return up_y_; }
-  AudioParam* upZ() const { return up_z_; }
+  AudioParam* upX() const { return up_x_.Get(); }
+  AudioParam* upY() const { return up_y_.Get(); }
+  AudioParam* upZ() const { return up_z_.Get(); }
 
   // https://www.w3.org/TR/webaudio/#AudioListener-methods
   void setOrientation(float x, float y, float z,

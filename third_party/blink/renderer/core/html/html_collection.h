@@ -126,14 +126,14 @@ class CORE_EXPORT HTMLCollection : public ScriptWrappable,
       auto it = id_cache_.find(id);
       if (it == id_cache_.end())
         return nullptr;
-      return it->value;
+      return it->value.Get();
     }
     const HeapVector<Member<Element>>* GetElementsByName(
         const AtomicString& name) const {
       auto it = name_cache_.find(name);
       if (it == name_cache_.end())
         return nullptr;
-      return it->value;
+      return it->value.Get();
     }
     void AddElementWithId(const AtomicString& id, Element* element) {
       AddElementToMap(id_cache_, id, element);

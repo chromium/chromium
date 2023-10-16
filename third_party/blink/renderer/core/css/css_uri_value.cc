@@ -31,7 +31,7 @@ SVGResource* CSSURIValue::EnsureResourceReference() const {
   if (!resource_) {
     resource_ = MakeGarbageCollected<ExternalSVGResource>(AbsoluteUrl());
   }
-  return resource_;
+  return resource_.Get();
 }
 
 void CSSURIValue::ReResolveUrl(const Document& document) const {

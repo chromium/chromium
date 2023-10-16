@@ -52,7 +52,7 @@ class CORE_EXPORT NodePart : public Part {
   Document& GetDocument() const override;
 
   // NodePart API
-  Node* node() const { return node_; }
+  Node* node() const { return node_.Get(); }
 
  private:
   Member<Node> node_;

@@ -233,7 +233,7 @@ class XRSystem final : public EventTarget,
     void SetDOMOverlayElement(Element* element) {
       dom_overlay_element_ = element;
     }
-    Element* DOMOverlayElement() { return dom_overlay_element_; }
+    Element* DOMOverlayElement() { return dom_overlay_element_.Get(); }
 
     void SetTrackedImages(
         const Vector<device::mojom::blink::XRTrackedImage>& images) {

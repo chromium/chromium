@@ -93,11 +93,11 @@ const CSSImageSetOptionValue* CSSImageSetValue::GetBestOption(
 
   for (const auto& option : options_) {
     if (option && option->ComputedResolution() >= device_scale_factor) {
-      return option;
+      return option.Get();
     }
   }
 
-  return options_.back();
+  return options_.back().Get();
 }
 
 bool CSSImageSetValue::IsCachePending(const float device_scale_factor) const {

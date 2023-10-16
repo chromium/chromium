@@ -45,7 +45,7 @@ class NGEarlyBreak : public GarbageCollected<NGEarlyBreak> {
     DCHECK_EQ(const_type_, kLine);
     return line_number_;
   }
-  const NGEarlyBreak* BreakInside() const { return break_inside_child_; }
+  const NGEarlyBreak* BreakInside() const { return break_inside_child_.Get(); }
 
   NGBreakAppeal BreakAppeal() const {
     return static_cast<NGBreakAppeal>(break_appeal_);

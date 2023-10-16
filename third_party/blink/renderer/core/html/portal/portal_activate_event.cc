@@ -144,7 +144,7 @@ HTMLPortalElement* PortalActivateEvent::adoptPredecessor(
       std::move(predecessor_portal_client_receiver_));
   std::move(on_portal_activated_callback_)
       .Run(mojom::blink::PortalActivateResult::kPredecessorWasAdopted);
-  return adopted_portal_;
+  return adopted_portal_.Get();
 }
 
 void PortalActivateEvent::ExpireAdoptionLifetime() {

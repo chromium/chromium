@@ -498,12 +498,14 @@ class CORE_EXPORT LocalFrame final
 
   PluginData* GetPluginData() const;
 
-  PerformanceMonitor* GetPerformanceMonitor() { return performance_monitor_; }
-  IdlenessDetector* GetIdlenessDetector() { return idleness_detector_; }
-  AdTracker* GetAdTracker() { return ad_tracker_; }
+  PerformanceMonitor* GetPerformanceMonitor() {
+    return performance_monitor_.Get();
+  }
+  IdlenessDetector* GetIdlenessDetector() { return idleness_detector_.Get(); }
+  AdTracker* GetAdTracker() { return ad_tracker_.Get(); }
   void SetAdTrackerForTesting(AdTracker* ad_tracker);
   AttributionSrcLoader* GetAttributionSrcLoader() {
-    return attribution_src_loader_;
+    return attribution_src_loader_.Get();
   }
 
   enum class LazyLoadImageSetting { kDisabled, kEnabledExplicit };
@@ -811,7 +813,7 @@ class CORE_EXPORT LocalFrame final
   bool ShouldMaintainTrivialSessionHistory() const;
 
   TextFragmentHandler* GetTextFragmentHandler() const {
-    return text_fragment_handler_;
+    return text_fragment_handler_.Get();
   }
 
   void BindTextFragmentReceiver(

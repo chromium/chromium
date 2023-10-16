@@ -141,7 +141,7 @@ class CORE_EXPORT NGInlineItem {
     return Type() != NGInlineItem::kListMarker ? BidiLevel() : 0;
   }
 
-  LayoutObject* GetLayoutObject() const { return layout_object_; }
+  LayoutObject* GetLayoutObject() const { return layout_object_.Get(); }
 
   bool IsImage() const {
     return GetLayoutObject() && GetLayoutObject()->IsLayoutImage();

@@ -207,7 +207,9 @@ class CORE_EXPORT StyleEngine final : public GarbageCollected<StyleEngine>,
     return injected_author_style_sheets_;
   }
 
-  CSSStyleSheet* InspectorStyleSheet() const { return inspector_style_sheet_; }
+  CSSStyleSheet* InspectorStyleSheet() const {
+    return inspector_style_sheet_.Get();
+  }
 
   void AddTextTrack(TextTrack*);
   void RemoveTextTrack(TextTrack*);
@@ -358,7 +360,7 @@ class CORE_EXPORT StyleEngine final : public GarbageCollected<StyleEngine>,
 
   StyleContainmentScopeTree& EnsureStyleContainmentScopeTree();
   StyleContainmentScopeTree* GetStyleContainmentScopeTree() const {
-    return style_containment_scope_tree_;
+    return style_containment_scope_tree_.Get();
   }
 
   void SetRuleUsageTracker(StyleRuleUsageTracker*);
@@ -436,7 +438,7 @@ class CORE_EXPORT StyleEngine final : public GarbageCollected<StyleEngine>,
   // resume it during layout.
   bool SkipStyleRecalcAllowed() const { return allow_skip_style_recalc_; }
 
-  CSSFontSelector* GetFontSelector() { return font_selector_; }
+  CSSFontSelector* GetFontSelector() { return font_selector_.Get(); }
 
   void RemoveFontFaceRules(const HeapVector<Member<const StyleRuleFontFace>>&);
   // updateGenericFontFamilySettings is used from WebSettingsImpl.
@@ -568,12 +570,14 @@ class CORE_EXPORT StyleEngine final : public GarbageCollected<StyleEngine>,
       AtomicString palette_name,
       AtomicString font_family);
 
-  CounterStyleMap* GetUserCounterStyleMap() { return user_counter_style_map_; }
+  CounterStyleMap* GetUserCounterStyleMap() {
+    return user_counter_style_map_.Get();
+  }
   const CounterStyle& FindCounterStyleAcrossScopes(const AtomicString&,
                                                    const TreeScope*) const;
 
   const CascadeLayerMap* GetUserCascadeLayerMap() const {
-    return user_cascade_layer_map_;
+    return user_cascade_layer_map_.Get();
   }
 
   DocumentStyleEnvironmentVariables& EnsureEnvironmentVariables();

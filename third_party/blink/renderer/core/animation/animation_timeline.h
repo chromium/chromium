@@ -100,7 +100,7 @@ class CORE_EXPORT AnimationTimeline : public ScriptWrappable {
   // See class TimelineRange.
   virtual TimelineRange GetTimelineRange() const { return TimelineRange(); }
 
-  Document* GetDocument() const { return document_; }
+  Document* GetDocument() const { return document_.Get(); }
   virtual void AnimationAttached(Animation*);
   virtual void AnimationDetached(Animation*);
 

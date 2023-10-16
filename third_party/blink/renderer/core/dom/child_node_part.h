@@ -57,16 +57,18 @@ class CORE_EXPORT ChildNodePart : public Part, public PartRoot {
 
   Document& GetDocument() const override;
   bool IsDocumentPartRoot() const override { return false; }
-  Node* FirstIncludedChildNode() const override { return previous_sibling_; }
-  Node* LastIncludedChildNode() const override { return next_sibling_; }
+  Node* FirstIncludedChildNode() const override {
+    return previous_sibling_.Get();
+  }
+  Node* LastIncludedChildNode() const override { return next_sibling_.Get(); }
 
   // ChildNodePart API
   void disconnect() override;
   PartRootUnion* clone(ExceptionState& exception_state);
   ContainerNode* rootContainer() const override;
   ContainerNode* parentNode() const { return previous_sibling_->parentNode(); }
-  Node* previousSibling() const { return previous_sibling_; }
-  Node* nextSibling() const { return next_sibling_; }
+  Node* previousSibling() const { return previous_sibling_.Get(); }
+  Node* nextSibling() const { return next_sibling_.Get(); }
   void setNextSibling(Node& next_sibling);
   HeapVector<Member<Node>> children() const;
   void replaceChildren(

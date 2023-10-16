@@ -177,10 +177,10 @@ class CORE_EXPORT PaintLayer : public GarbageCollected<PaintLayer>,
   // Returns |GetLayoutBox()| if it exists and has fragments.
   const LayoutBox* GetLayoutBoxWithBlockFragments() const;
 
-  PaintLayer* Parent() const { return parent_; }
-  PaintLayer* PreviousSibling() const { return previous_; }
-  PaintLayer* NextSibling() const { return next_; }
-  PaintLayer* FirstChild() const { return first_; }
+  PaintLayer* Parent() const { return parent_.Get(); }
+  PaintLayer* PreviousSibling() const { return previous_.Get(); }
+  PaintLayer* NextSibling() const { return next_.Get(); }
+  PaintLayer* FirstChild() const { return first_.Get(); }
   PaintLayer* LastChild() const { return last_; }
 
   // TODO(wangxianzhu): Find a better name for it. 'paintContainer' might be

@@ -1290,14 +1290,14 @@ bool RuleSet::DidMediaQueryResultsChange(
 const CascadeLayer* RuleSet::GetLayerForTest(const RuleData& rule) const {
   if (!layer_intervals_.size() ||
       layer_intervals_[0].start_position > rule.GetPosition()) {
-    return implicit_outer_layer_;
+    return implicit_outer_layer_.Get();
   }
   for (unsigned i = 1; i < layer_intervals_.size(); ++i) {
     if (layer_intervals_[i].start_position > rule.GetPosition()) {
-      return layer_intervals_[i - 1].value;
+      return layer_intervals_[i - 1].value.Get();
     }
   }
-  return layer_intervals_.back().value;
+  return layer_intervals_.back().value.Get();
 }
 
 void RuleData::Trace(Visitor* visitor) const {

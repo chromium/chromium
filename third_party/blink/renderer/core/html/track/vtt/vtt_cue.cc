@@ -689,7 +689,7 @@ VTTCueBox* VTTCue::GetDisplayTree() {
   DCHECK_EQ(display_tree_->firstChild(), cue_background_box_);
 
   if (!display_tree_should_change_)
-    return display_tree_;
+    return display_tree_.Get();
 
   CreateVTTNodeTree();
 
@@ -707,7 +707,7 @@ VTTCueBox* VTTCue::GetDisplayTree() {
 
   display_tree_should_change_ = false;
 
-  return display_tree_;
+  return display_tree_.Get();
 }
 
 void VTTCue::RemoveDisplayTree(RemovalNotification removal_notification) {

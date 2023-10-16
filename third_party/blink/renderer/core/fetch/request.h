@@ -79,7 +79,7 @@ class CORE_EXPORT Request final : public ScriptWrappable, public Body {
   String integrity() const;
   bool keepalive() const;
   bool isHistoryNavigation() const;
-  AbortSignal* signal() const { return signal_; }
+  AbortSignal* signal() const { return signal_.Get(); }
   String targetAddressSpace() const;
 
   // From Request.idl:
@@ -101,7 +101,7 @@ class CORE_EXPORT Request final : public ScriptWrappable, public Body {
   void Trace(Visitor*) const override;
 
  private:
-  const FetchRequestData* GetRequest() const { return request_; }
+  const FetchRequestData* GetRequest() const { return request_.Get(); }
   static Request* CreateRequestWithRequestOrString(ScriptState*,
                                                    Request*,
                                                    const String&,

@@ -34,7 +34,7 @@ class MODULES_EXPORT SendStream final : public WritableStream {
     outgoing_stream_->InitWithExistingWritableStream(this, exception_state);
   }
 
-  OutgoingStream* GetOutgoingStream() { return outgoing_stream_; }
+  OutgoingStream* GetOutgoingStream() { return outgoing_stream_.Get(); }
 
   void Trace(Visitor*) const override;
 

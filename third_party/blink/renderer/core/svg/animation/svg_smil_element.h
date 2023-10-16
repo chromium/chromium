@@ -88,7 +88,7 @@ class CORE_EXPORT SVGSMILElement : public SVGElement, public SVGTests {
   SMILTimeContainer* TimeContainer() const { return time_container_.Get(); }
 
   bool HasValidTarget() const;
-  SVGElement* targetElement() const { return target_element_; }
+  SVGElement* targetElement() const { return target_element_.Get(); }
 
   void BeginByLinkActivation();
 

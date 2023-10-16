@@ -70,7 +70,7 @@ class HTMLElementStack {
 
   HTMLStackItem* TopStackItem() const {
     DCHECK(top_);
-    return top_;
+    return top_.Get();
   }
 
   HTMLStackItem* OneBelowTop() const;

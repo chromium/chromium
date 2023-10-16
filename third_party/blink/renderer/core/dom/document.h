@@ -751,7 +751,7 @@ class CORE_EXPORT Document : public ContainerNode,
   // If you have a Document, use GetLayoutView() instead which is faster.
   void GetLayoutObject() const = delete;
 
-  LayoutView* GetLayoutView() const { return layout_view_; }
+  LayoutView* GetLayoutView() const { return layout_view_.Get(); }
 
   // This will return an AXObjectCache only if there's one or more
   // AXContext associated with this document. When all associated
@@ -1035,7 +1035,7 @@ class CORE_EXPORT Document : public ContainerNode,
 
   // Updates for :target (CSS3 selector).
   void SetCSSTarget(Element*);
-  Element* CssTarget() const { return css_target_; }
+  Element* CssTarget() const { return css_target_.Get(); }
   void SetSelectorFragmentAnchorCSSTarget(Element*);
 
   void ScheduleLayoutTreeUpdateIfNeeded();
@@ -1073,7 +1073,7 @@ class CORE_EXPORT Document : public ContainerNode,
                          unsigned old_length);
   void DidSplitTextNode(const Text& old_node);
 
-  LocalDOMWindow* domWindow() const { return dom_window_; }
+  LocalDOMWindow* domWindow() const { return dom_window_.Get(); }
 
   // Helper functions for forwarding LocalDOMWindow event related tasks to the
   // LocalDOMWindow if it exists.
@@ -1563,7 +1563,9 @@ class CORE_EXPORT Document : public ContainerNode,
 
   HTMLDialogElement* ActiveModalDialog() const;
 
-  HTMLElement* PopoverHintShowing() const { return popover_hint_showing_; }
+  HTMLElement* PopoverHintShowing() const {
+    return popover_hint_showing_.Get();
+  }
   void SetPopoverHintShowing(HTMLElement* element);
   HeapVector<Member<HTMLElement>>& PopoverStack() { return popover_stack_; }
   const HeapVector<Member<HTMLElement>>& PopoverStack() const {
@@ -1578,7 +1580,7 @@ class CORE_EXPORT Document : public ContainerNode,
     return popovers_waiting_to_hide_;
   }
   const HTMLElement* PopoverPointerdownTarget() const {
-    return popover_pointerdown_target_;
+    return popover_pointerdown_target_.Get();
   }
   void SetPopoverPointerdownTarget(const HTMLElement*);
 
@@ -1591,7 +1593,9 @@ class CORE_EXPORT Document : public ContainerNode,
   // Call SetNeedsStyleRecalc for elements from AddToRecalcStyleForToggle;
   // return whether any calls were made.
   bool SetNeedsStyleRecalcForToggles();
-  CSSToggleInference* GetCSSToggleInference() { return css_toggle_inference_; }
+  CSSToggleInference* GetCSSToggleInference() {
+    return css_toggle_inference_.Get();
+  }
   CSSToggleInference& EnsureCSSToggleInference();
 
   // https://crbug.com/1453291
@@ -1605,7 +1609,7 @@ class CORE_EXPORT Document : public ContainerNode,
   // EnsureTemplateDocument().
   bool IsTemplateDocument() const { return template_document_host_; }
   Document& EnsureTemplateDocument();
-  Document* TemplateDocumentHost() { return template_document_host_; }
+  Document* TemplateDocumentHost() { return template_document_host_.Get(); }
 
   void DidAddOrRemoveFormRelatedElement(Element*);
 
@@ -1701,7 +1705,7 @@ class CORE_EXPORT Document : public ContainerNode,
   bool IsInOutermostMainFrame() const;
 
   const PropertyRegistry* GetPropertyRegistry() const {
-    return property_registry_;
+    return property_registry_.Get();
   }
   PropertyRegistry& EnsurePropertyRegistry();
 
@@ -1901,7 +1905,7 @@ class CORE_EXPORT Document : public ContainerNode,
                               const AtomicString& new_value);
 
   RenderBlockingResourceManager* GetRenderBlockingResourceManager() {
-    return render_blocking_resource_manager_;
+    return render_blocking_resource_manager_.Get();
   }
 
   // Called when a previously render-blocking resource is no longer render-

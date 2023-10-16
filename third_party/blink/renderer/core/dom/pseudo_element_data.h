@@ -121,20 +121,20 @@ inline PseudoElement* PseudoElementData::GetPseudoElement(
     PseudoId pseudo_id,
     const AtomicString& view_transition_name) const {
   if (kPseudoIdBefore == pseudo_id)
-    return generated_before_;
+    return generated_before_.Get();
   if (kPseudoIdAfter == pseudo_id)
-    return generated_after_;
+    return generated_after_.Get();
   if (kPseudoIdMarker == pseudo_id)
-    return generated_marker_;
+    return generated_marker_.Get();
 // Workaround for CPU bug. This avoids compiler optimizing
 // this group of if conditions into switch. See http://crbug.com/855390.
 #if defined(ARCH_CPU_ARMEL)
   __asm__ volatile("");
 #endif
   if (kPseudoIdBackdrop == pseudo_id)
-    return backdrop_;
+    return backdrop_.Get();
   if (kPseudoIdFirstLetter == pseudo_id)
-    return generated_first_letter_;
+    return generated_first_letter_.Get();
   if (IsTransitionPseudoElement(pseudo_id)) {
     return transition_data_ ? transition_data_->GetPseudoElement(
                                   pseudo_id, view_transition_name)

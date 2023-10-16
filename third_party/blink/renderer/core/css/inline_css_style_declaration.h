@@ -47,7 +47,7 @@ class InlineCSSStyleDeclaration final
  private:
   MutableCSSPropertyValueSet& PropertySet() const override;
   CSSStyleSheet* ParentStyleSheet() const override;
-  Element* ParentElement() const override { return parent_element_; }
+  Element* ParentElement() const override { return parent_element_.Get(); }
 
   void DidMutate(MutationType) override;
 

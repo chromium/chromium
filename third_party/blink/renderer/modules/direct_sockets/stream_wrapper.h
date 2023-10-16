@@ -78,7 +78,7 @@ class ReadableStreamDefaultWrapper : public ReadableStreamWrapper {
 
   void Trace(Visitor*) const override;
 
-  ControllerType* Controller() const { return controller_; }
+  ControllerType* Controller() const { return controller_.Get(); }
   void SetController(ControllerType* controller) { controller_ = controller; }
 
  protected:
@@ -102,7 +102,7 @@ class ReadableByteStreamWrapper : public ReadableStreamWrapper {
 
   void Trace(Visitor*) const override;
 
-  ControllerType* Controller() const { return controller_; }
+  ControllerType* Controller() const { return controller_.Get(); }
   void SetController(ControllerType* controller) { controller_ = controller; }
 
  protected:
@@ -124,7 +124,7 @@ class WritableStreamWrapper : public StreamWrapper {
  public:
   using ControllerType = WritableStreamDefaultController;
 
-  WritableStream* Writable() const { return writable_; }
+  WritableStream* Writable() const { return writable_.Get(); }
 
   // Checks whether |writable_| is locked to a writer.
   bool Locked() const override;
@@ -142,7 +142,7 @@ class WritableStreamWrapper : public StreamWrapper {
   // Implements UnderlyingSink::write(...)
   virtual ScriptPromise Write(ScriptValue, ExceptionState&) = 0;
 
-  ControllerType* Controller() const { return controller_; }
+  ControllerType* Controller() const { return controller_.Get(); }
   void SetController(ControllerType* controller) { controller_ = controller; }
 
   void Trace(Visitor*) const override;

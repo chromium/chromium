@@ -169,7 +169,7 @@ void ChildNodePart::Trace(Visitor* visitor) const {
 }
 
 Node* ChildNodePart::NodeToSortBy() const {
-  return previous_sibling_;
+  return previous_sibling_.Get();
 }
 
 ContainerNode* ChildNodePart::rootContainer() const {

@@ -77,7 +77,7 @@ class VTTElement final : public Element {
     return attr;
   }
 
-  const TextTrack* GetTrack() const { return track_; }
+  const TextTrack* GetTrack() const { return track_.Get(); }
 
   void SetTrack(TextTrack*);
   void Trace(Visitor*) const override;

@@ -66,7 +66,9 @@ class CORE_EXPORT StyleSheetContents final
 
   // TODO(xiaochengh): |parser_context_| should never be null. Make it return a
   // const reference here to avoid confusion.
-  const CSSParserContext* ParserContext() const { return parser_context_; }
+  const CSSParserContext* ParserContext() const {
+    return parser_context_.Get();
+  }
 
   const AtomicString& DefaultNamespace() const { return default_namespace_; }
   const AtomicString& NamespaceURIFromPrefix(const AtomicString& prefix) const;
@@ -186,7 +188,7 @@ class CORE_EXPORT StyleSheetContents final
   void NotifyLoadedSheet(const CSSStyleSheetResource*);
 
   StyleSheetContents* ParentStyleSheet() const;
-  StyleRuleImport* OwnerRule() const { return owner_rule_; }
+  StyleRuleImport* OwnerRule() const { return owner_rule_.Get(); }
   void ClearOwnerRule() { owner_rule_ = nullptr; }
 
   // The URL that started the redirect chain that led to this

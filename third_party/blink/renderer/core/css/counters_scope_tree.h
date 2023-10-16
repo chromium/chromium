@@ -42,7 +42,7 @@ class CORE_EXPORT CountersScopeTree final
   ScopesMap& Scopes() { return scopes_; }
 
   void ReparentCountersToStyleScope(StyleContainmentScope& new_parent);
-  StyleContainmentScope* StyleScope() const { return style_scope_; }
+  StyleContainmentScope* StyleScope() const { return style_scope_.Get(); }
   void SetStyleScope(StyleContainmentScope* style_scope) {
     style_scope_ = style_scope;
   }

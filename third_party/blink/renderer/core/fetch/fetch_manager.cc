@@ -250,12 +250,14 @@ class FetchLoaderBase : public GarbageCollectedMixin {
   bool AddConsoleMessage(const String& message,
                          absl::optional<base::UnguessableToken> issue_id);
 
-  ExecutionContext* GetExecutionContext() { return execution_context_; }
+  ExecutionContext* GetExecutionContext() { return execution_context_.Get(); }
   void SetExecutionContext(ExecutionContext* ec) { execution_context_ = ec; }
-  FetchRequestData* GetFetchRequestData() const { return fetch_request_data_; }
-  ScriptState* GetScriptState() { return script_state_; }
+  FetchRequestData* GetFetchRequestData() const {
+    return fetch_request_data_.Get();
+  }
+  ScriptState* GetScriptState() { return script_state_.Get(); }
   scoped_refptr<const DOMWrapperWorld> World() { return world_; }
-  AbortSignal* Signal() { return signal_; }
+  AbortSignal* Signal() { return signal_.Get(); }
 
  private:
   Member<ExecutionContext> execution_context_;

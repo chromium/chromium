@@ -41,7 +41,7 @@ class CORE_EXPORT PluginDocument final : public HTMLDocument {
   void SetPluginNode(HTMLPlugInElement* plugin_node) {
     plugin_node_ = plugin_node;
   }
-  HTMLPlugInElement* PluginNode() { return plugin_node_; }
+  HTMLPlugInElement* PluginNode() { return plugin_node_.Get(); }
 
   WebPluginContainerImpl* GetPluginView();
 

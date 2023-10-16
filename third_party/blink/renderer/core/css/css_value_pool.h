@@ -89,25 +89,27 @@ class CORE_EXPORT CSSValuePool final : public GarbageCollected<CSSValuePool> {
   CSSInitialValue* InitialValue() { return initial_value_.Get(); }
   CSSUnsetValue* UnsetValue() { return unset_value_.Get(); }
   CSSRevertValue* RevertValue() { return revert_value_.Get(); }
-  CSSRevertLayerValue* RevertLayerValue() { return revert_layer_value_; }
+  CSSRevertLayerValue* RevertLayerValue() { return revert_layer_value_.Get(); }
   CSSInvalidVariableValue* InvalidVariableValue() {
-    return invalid_variable_value_;
+    return invalid_variable_value_.Get();
   }
   CSSCyclicVariableValue* CyclicVariableValue() {
-    return cyclic_variable_value_;
+    return cyclic_variable_value_.Get();
   }
-  CSSInitialColorValue* InitialColorValue() { return initial_color_value_; }
+  CSSInitialColorValue* InitialColorValue() {
+    return initial_color_value_.Get();
+  }
 
   // Vector caches.
   CSSIdentifierValue* IdentifierCacheValue(CSSValueID ident) {
-    return identifier_value_cache_[static_cast<int>(ident)];
+    return identifier_value_cache_[static_cast<int>(ident)].Get();
   }
   CSSIdentifierValue* SetIdentifierCacheValue(CSSValueID ident,
                                               CSSIdentifierValue* css_value) {
     return identifier_value_cache_[static_cast<int>(ident)] = css_value;
   }
   CSSNumericLiteralValue* PixelCacheValue(int int_value) {
-    return pixel_value_cache_[int_value];
+    return pixel_value_cache_[int_value].Get();
   }
   CSSNumericLiteralValue* SetPixelCacheValue(
       int int_value,
@@ -115,7 +117,7 @@ class CORE_EXPORT CSSValuePool final : public GarbageCollected<CSSValuePool> {
     return pixel_value_cache_[int_value] = css_value;
   }
   CSSNumericLiteralValue* PercentCacheValue(int int_value) {
-    return percent_value_cache_[int_value];
+    return percent_value_cache_[int_value].Get();
   }
   CSSNumericLiteralValue* SetPercentCacheValue(
       int int_value,
@@ -123,7 +125,7 @@ class CORE_EXPORT CSSValuePool final : public GarbageCollected<CSSValuePool> {
     return percent_value_cache_[int_value] = css_value;
   }
   CSSNumericLiteralValue* NumberCacheValue(int int_value) {
-    return number_value_cache_[int_value];
+    return number_value_cache_[int_value].Get();
   }
   CSSNumericLiteralValue* SetNumberCacheValue(
       int int_value,

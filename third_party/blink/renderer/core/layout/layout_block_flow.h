@@ -87,7 +87,7 @@ class CORE_EXPORT LayoutBlockFlow : public LayoutBlock {
 
   LayoutMultiColumnFlowThread* MultiColumnFlowThread() const {
     NOT_DESTROYED();
-    return multi_column_flow_thread_;
+    return multi_column_flow_thread_.Get();
   }
   void ResetMultiColumnFlowThread() {
     NOT_DESTROYED();

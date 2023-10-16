@@ -64,7 +64,7 @@ class CORE_EXPORT ScopedStyleResolver final
   StyleRuleKeyframes* KeyframeStylesForAnimation(
       const AtomicString& animation_name);
 
-  CounterStyleMap* GetCounterStyleMap() { return counter_style_map_; }
+  CounterStyleMap* GetCounterStyleMap() { return counter_style_map_.Get(); }
   static void CounterStyleRulesChanged(TreeScope& scope);
 
   StyleRulePositionFallback* PositionFallbackForName(
@@ -76,7 +76,7 @@ class CORE_EXPORT ScopedStyleResolver final
   void RebuildCascadeLayerMap(const ActiveStyleSheetVector& sheets);
   bool HasCascadeLayerMap() const { return cascade_layer_map_.Get(); }
   const CascadeLayerMap* GetCascadeLayerMap() const {
-    return cascade_layer_map_;
+    return cascade_layer_map_.Get();
   }
   const HeapVector<Member<CSSStyleSheet>>& GetStyleSheets() const {
     return style_sheets_;

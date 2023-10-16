@@ -122,22 +122,22 @@ inline PseudoElement* TransitionPseudoElementData::GetPseudoElement(
     const AtomicString& view_transition_name) const {
   switch (pseudo_id) {
     case kPseudoIdViewTransition:
-      return transition_;
+      return transition_.Get();
     case kPseudoIdViewTransitionImagePair:
       DCHECK(!transition_image_wrapper_ || !view_transition_name ||
              transition_image_wrapper_->view_transition_name() ==
                  view_transition_name);
-      return transition_image_wrapper_;
+      return transition_image_wrapper_.Get();
     case kPseudoIdViewTransitionOld:
       DCHECK(!transition_outgoing_image_ || !view_transition_name ||
              transition_outgoing_image_->view_transition_name() ==
                  view_transition_name);
-      return transition_outgoing_image_;
+      return transition_outgoing_image_.Get();
     case kPseudoIdViewTransitionNew:
       DCHECK(!transition_incoming_image_ || !view_transition_name ||
              transition_incoming_image_->view_transition_name() ==
                  view_transition_name);
-      return transition_incoming_image_;
+      return transition_incoming_image_.Get();
     case kPseudoIdViewTransitionGroup: {
       DCHECK(view_transition_name);
       auto it = transition_containers_.find(view_transition_name);

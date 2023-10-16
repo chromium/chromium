@@ -123,7 +123,7 @@ class NodeListsNodeData final : public GarbageCollected<NodeListsNodeData> {
     TagCollectionNSCache::AddResult result =
         tag_collection_ns_caches_.insert(name, nullptr);
     if (!result.is_new_entry)
-      return result.stored_value->value;
+      return result.stored_value->value.Get();
 
     auto* list = MakeGarbageCollected<TagCollectionNS>(
         node, kTagCollectionNSType, namespace_uri, local_name);

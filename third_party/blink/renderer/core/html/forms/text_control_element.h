@@ -134,7 +134,7 @@ class CORE_EXPORT TextControlElement : public HTMLFormControlElementWithState {
       WebAutofillState = WebAutofillState::kNotFilled) = 0;
 
   TextControlInnerEditorElement* InnerEditorElement() const {
-    return inner_editor_;
+    return inner_editor_.Get();
   }
   virtual TextControlInnerEditorElement* EnsureInnerEditorElement() const = 0;
   HTMLElement* CreateInnerEditorElement();

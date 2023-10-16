@@ -139,7 +139,7 @@ TaskSession::DocumentSession* TaskSession::GetNextUnsentDocumentSession() {
   for (auto& doc : to_document_session_.Values()) {
     if (!doc->HasUnsentData())
       continue;
-    return doc;
+    return doc.Get();
   }
   has_unsent_data_ = false;
   return nullptr;
@@ -194,7 +194,7 @@ TaskSession::DocumentSession* TaskSession::GetDocumentSession(
   auto it = to_document_session_.find(&document);
   if (it == to_document_session_.end())
     return nullptr;
-  return it->value;
+  return it->value.Get();
 }
 
 void TaskSession::Trace(Visitor* visitor) const {

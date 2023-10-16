@@ -89,7 +89,7 @@ Element* CachedContainer(Element* starting_element,
       container_selector_cache.Find<ScopedContainerSelectorHashTranslator>(
           ScopedContainerSelector(container_selector, selector_tree_scope));
   if (it != container_selector_cache.end()) {
-    return it->value;
+    return it->value.Get();
   }
   Element* container = ContainerQueryEvaluator::FindContainer(
       starting_element, container_selector, selector_tree_scope);

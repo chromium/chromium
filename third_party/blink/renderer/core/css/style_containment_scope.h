@@ -48,9 +48,9 @@ class StyleContainmentScope final
   void AppendChild(StyleContainmentScope*);
   void RemoveChild(StyleContainmentScope*);
 
-  const Element* GetElement() { return element_; }
-  CountersScopeTree* GetCountersScopeTree() { return counters_tree_; }
-  StyleContainmentScope* Parent() { return parent_; }
+  const Element* GetElement() { return element_.Get(); }
+  CountersScopeTree* GetCountersScopeTree() { return counters_tree_.Get(); }
+  StyleContainmentScope* Parent() { return parent_.Get(); }
   void SetParent(StyleContainmentScope* parent) { parent_ = parent; }
   const HeapVector<Member<LayoutQuote>>& Quotes() const { return quotes_; }
   const HeapVector<Member<StyleContainmentScope>>& Children() const {
@@ -58,7 +58,7 @@ class StyleContainmentScope final
   }
 
   StyleContainmentScopeTree* GetStyleContainmentScopeTree() const {
-    return style_containment_tree_;
+    return style_containment_tree_.Get();
   }
 
   void Trace(Visitor*) const;

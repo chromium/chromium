@@ -205,7 +205,7 @@ AccessibleNode* AccessibleNode::Create(Document& document) {
 Document* AccessibleNode::GetDocument() const {
   if (document_) {
     DCHECK(!element_);
-    return document_;
+    return document_.Get();
   }
   if (element_) {
     DCHECK(!document_);
@@ -234,7 +234,7 @@ AccessibleNode* AccessibleNode::GetProperty(Element* element,
   if (AccessibleNode* accessible_node = element->ExistingAccessibleNode()) {
     for (const auto& item : accessible_node->relation_properties_) {
       if (item.first == property && item.second)
-        return item.second;
+        return item.second.Get();
     }
   }
 
@@ -251,7 +251,7 @@ AccessibleNodeList* AccessibleNode::GetProperty(
   if (AccessibleNode* accessible_node = element->ExistingAccessibleNode()) {
     for (const auto& item : accessible_node->relation_list_properties_) {
       if (item.first == property && item.second)
-        return item.second;
+        return item.second.Get();
     }
   }
 

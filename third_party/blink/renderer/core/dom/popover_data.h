@@ -43,11 +43,11 @@ class PopoverData final : public GarbageCollected<PopoverData>,
         << "Remove PopoverData rather than setting kNone type";
   }
 
-  Element* invoker() const { return invoker_; }
+  Element* invoker() const { return invoker_.Get(); }
   void setInvoker(Element* element) { invoker_ = element; }
 
   Element* previouslyFocusedElement() const {
-    return previously_focused_element_;
+    return previously_focused_element_.Get();
   }
   void setPreviouslyFocusedElement(Element* element) {
     previously_focused_element_ = element;
@@ -112,13 +112,13 @@ class PopoverData final : public GarbageCollected<PopoverData>,
   }
 
   HTMLSelectListElement* ownerSelectListElement() const {
-    return owner_select_list_element_;
+    return owner_select_list_element_.Get();
   }
   void setOwnerSelectListElement(HTMLSelectListElement* element) {
     owner_select_list_element_ = element;
   }
 
-  CloseWatcher* closeWatcher() { return close_watcher_; }
+  CloseWatcher* closeWatcher() { return close_watcher_.Get(); }
   void setCloseWatcher(CloseWatcher* close_watcher) {
     close_watcher_ = close_watcher;
   }

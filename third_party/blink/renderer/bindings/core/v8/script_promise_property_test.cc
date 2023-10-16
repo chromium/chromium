@@ -66,7 +66,7 @@ class GarbageCollectedHolder final : public GarbageCollectedScriptWrappable {
       : GarbageCollectedScriptWrappable("holder"),
         property_(MakeGarbageCollected<Property>(execution_context)) {}
 
-  Property* GetProperty() { return property_; }
+  Property* GetProperty() { return property_.Get(); }
   GarbageCollectedScriptWrappable* ToGarbageCollectedScriptWrappable() {
     return this;
   }

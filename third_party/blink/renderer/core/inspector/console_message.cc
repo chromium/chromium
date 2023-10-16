@@ -107,7 +107,7 @@ const String& ConsoleMessage::WorkerId() const {
 LocalFrame* ConsoleMessage::Frame() const {
   // Do not reference detached frames.
   if (frame_ && frame_->Client())
-    return frame_;
+    return frame_.Get();
   return nullptr;
 }
 

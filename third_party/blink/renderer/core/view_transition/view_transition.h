@@ -84,7 +84,7 @@ class CORE_EXPORT ViewTransition : public GarbageCollected<ViewTransition>,
   // Navigation-initiated from-snapshot constructor.
   ViewTransition(PassKey, Document*, ViewTransitionState, Delegate*);
 
-  DOMViewTransition* GetScriptDelegate() { return script_delegate_; }
+  DOMViewTransition* GetScriptDelegate() { return script_delegate_.Get(); }
 
   // GC functionality.
   void Trace(Visitor* visitor) const override;

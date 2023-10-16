@@ -49,7 +49,7 @@ void NodePart::Trace(Visitor* visitor) const {
 }
 
 Node* NodePart::NodeToSortBy() const {
-  return node_;
+  return node_.Get();
 }
 
 Part* NodePart::ClonePart(NodeCloningData& data, Node& node_clone) const {

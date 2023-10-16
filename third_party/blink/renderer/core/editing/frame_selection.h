@@ -140,7 +140,7 @@ class CORE_EXPORT FrameSelection final
   bool IsAvailable() const;
   // You should not call |document()| when |!isAvailable()|.
   Document& GetDocument() const;
-  LocalFrame* GetFrame() const { return frame_; }
+  LocalFrame* GetFrame() const { return frame_.Get(); }
   Element* RootEditableElementOrDocumentElement() const;
   wtf_size_t CharacterIndexForPoint(const gfx::Point&) const;
 

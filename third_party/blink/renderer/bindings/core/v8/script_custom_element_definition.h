@@ -71,7 +71,7 @@ class CORE_EXPORT ScriptCustomElementDefinition final
   ScriptValue GetConstructorForScript() final;
   bool RunConstructor(Element&) override;
   V8CustomElementConstructor* GetV8CustomElementConstructor() final {
-    return constructor_;
+    return constructor_.Get();
   }
 
   // Calls the constructor. The script scope, etc. must already be set up.

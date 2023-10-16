@@ -65,7 +65,9 @@ class CORE_EXPORT LCPCriticalPathPredictor final
   // Member functions invoked in LCPP hint production path (write path):
 
   void OnLargestContentfulPaintUpdated(Element* lcp_element);
-  LCPScriptObserver* lcp_script_observer() { return lcp_script_observer_; }
+  LCPScriptObserver* lcp_script_observer() {
+    return lcp_script_observer_.Get();
+  }
   void OnFontFetched(const KURL& url);
   void Trace(Visitor*) const;
 

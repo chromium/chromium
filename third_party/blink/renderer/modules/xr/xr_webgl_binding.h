@@ -44,7 +44,7 @@ class XRWebGLBinding final : public ScriptWrappable {
                                    XRView* view,
                                    ExceptionState& exception_state);
 
-  XRSession* session() const { return session_; }
+  XRSession* session() const { return session_.Get(); }
 
   WebGLTexture* getReflectionCubeMap(XRLightProbe*, ExceptionState&);
 

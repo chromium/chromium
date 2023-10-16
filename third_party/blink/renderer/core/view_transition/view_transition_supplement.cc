@@ -225,7 +225,7 @@ void ViewTransitionSupplement::OnTransitionFinished(
 }
 
 ViewTransition* ViewTransitionSupplement::GetTransition() {
-  return transition_;
+  return transition_.Get();
 }
 
 ViewTransitionSupplement::ViewTransitionSupplement(Document& document)

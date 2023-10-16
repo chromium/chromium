@@ -62,10 +62,12 @@ class MockMediaStreamTrack : public blink::MediaStreamTrack {
     applyConstraintsResolver(resolver, constraints);
   }
 
-  MediaTrackSettings* getSettings() const override { return settings_; }
+  MediaTrackSettings* getSettings() const override { return settings_.Get(); }
   void SetSettings(MediaTrackSettings* settings) { settings_ = settings; }
 
-  CaptureHandle* getCaptureHandle() const override { return capture_handle_; }
+  CaptureHandle* getCaptureHandle() const override {
+    return capture_handle_.Get();
+  }
   void SetCaptureHandle(CaptureHandle* capture_handle) {
     capture_handle_ = capture_handle;
   }
@@ -77,7 +79,7 @@ class MockMediaStreamTrack : public blink::MediaStreamTrack {
     ready_state_enum_ = ready_state_enum;
   }
 
-  MediaStreamComponent* Component() const override { return component_; }
+  MediaStreamComponent* Component() const override { return component_.Get(); }
   void SetComponent(MediaStreamComponent* component) { component_ = component; }
 
   bool Ended() const override { return ended_; }
@@ -85,7 +87,9 @@ class MockMediaStreamTrack : public blink::MediaStreamTrack {
 
   const AtomicString& InterfaceName() const override;
 
-  ExecutionContext* GetExecutionContext() const override { return context_; }
+  ExecutionContext* GetExecutionContext() const override {
+    return context_.Get();
+  }
   void SetExecutionContext(ExecutionContext* context) { context_ = context; }
 
   bool HasPendingActivity() const override { return false; }

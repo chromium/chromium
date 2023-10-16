@@ -132,7 +132,7 @@ class CORE_EXPORT LayoutView : public LayoutNGBlockFlow {
 
   LocalFrameView* GetFrameView() const {
     NOT_DESTROYED();
-    return frame_view_;
+    return frame_view_.Get();
   }
   const LayoutBox& RootBox() const;
 
@@ -185,7 +185,7 @@ class CORE_EXPORT LayoutView : public LayoutNGBlockFlow {
 
   ViewFragmentationContext* FragmentationContext() const {
     NOT_DESTROYED();
-    return fragmentation_context_;
+    return fragmentation_context_.Get();
   }
   bool IsFragmentationContextRoot() const override;
 
