@@ -176,9 +176,6 @@ interface CustomizeChromePageHandler {
   // Retrieves NTP descriptors.
   GetDescriptors() => (Descriptors? descriptors);
 
-  // Searches NTP wallpaper for `query`. Returns true if search was successful.
-  SearchWallpaper(string query) => (bool success);
-
   // Searches NTP wallpaper for `query`. Returns list of sanitized image data.
   GetWallpaperSearchResults(string descriptor_a, string? descriptor_b,
     string? descriptor_c) => (array<WallpaperSearchResult> results);

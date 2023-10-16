@@ -447,32 +447,6 @@ void CustomizeChromePageHandler::GetDescriptors(
       1024 * 1024);
 }
 
-void CustomizeChromePageHandler::SearchWallpaper(
-    const std::string& query,
-    SearchWallpaperCallback callback) {
-  callback =
-      mojo::WrapCallbackWithDefaultInvokeIfNotRun(std::move(callback), false);
-  if (!base::FeatureList::IsEnabled(
-          ntp_features::kCustomizeChromeWallpaperSearch) ||
-      !base::FeatureList::IsEnabled(
-          optimization_guide::features::kOptimizationGuideModelExecution)) {
-    return;
-  }
-  auto* optimization_guide_keyed_service =
-      OptimizationGuideKeyedServiceFactory::GetForProfile(profile_);
-  if (!optimization_guide_keyed_service) {
-    return;
-  }
-  chrome_intelligence_modelexecution_proto::WallpaperSearchRequest request;
-  request.set_query(query);
-  optimization_guide_keyed_service->ExecuteModel(
-      optimization_guide::proto::ModelExecutionFeature::
-          MODEL_EXECUTION_FEATURE_WALLPAPER_SEARCH,
-      request,
-      base::BindOnce(&CustomizeChromePageHandler::WallpaperSearchCallback,
-                     weak_ptr_factory_.GetWeakPtr(), std::move(callback)));
-}
-
 void CustomizeChromePageHandler::GetWallpaperSearchResults(
     const std::string& descriptor_a,
     const absl::optional<std::string>& descriptor_b,
@@ -600,25 +574,6 @@ void CustomizeChromePageHandler::OnDescriptorsJsonParsed(
   }
   mojo_descriptors->descriptor_c = std::move(mojo_descriptor_c_labels);
   std::move(get_descriptors_callback_).Run(std::move(mojo_descriptors));
-}
-
-void CustomizeChromePageHandler::WallpaperSearchCallback(
-    SearchWallpaperCallback callback,
-    optimization_guide::OptimizationGuideModelExecutionResult result) {
-  if (!result.has_value()) {
-    return;
-  }
-  auto response = optimization_guide::ParsedAnyMetadata<
-      chrome_intelligence_modelexecution_proto::WallpaperSearchResponse>(
-      result.value());
-  if (response->images_size() < 1) {
-    return;
-  }
-  if (ntp_custom_background_service_) {
-    ntp_custom_background_service_->SelectLocalBackgroundImage(
-        response->images(0));
-  }
-  std::move(callback).Run(true);
 }
 
 void CustomizeChromePageHandler::OnWallpaperSearchResultsRetrieved(

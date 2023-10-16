@@ -71,9 +71,6 @@ class NtpCustomBackgroundService : public KeyedService,
   // Virtual for testing.
   virtual void SelectLocalBackgroundImage(const base::FilePath& path);
 
-  // Invoked by Wallpaper Search to set background image.
-  virtual void SelectLocalBackgroundImage(const std::string& data);
-
   // Invoked by Wallpaper Search to set background image with already decoded
   // data.
   virtual void SelectLocalBackgroundImage(const SkBitmap& bitmap);

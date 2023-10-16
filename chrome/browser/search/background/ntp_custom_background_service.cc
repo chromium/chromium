@@ -369,25 +369,6 @@ void NtpCustomBackgroundService::SelectLocalBackgroundImage(
   }
 }
 
-void NtpCustomBackgroundService::SelectLocalBackgroundImage(
-    const std::string& data) {
-  if (IsCustomBackgroundDisabledByPolicy()) {
-    return;
-  }
-  previous_background_info_.reset();
-  previous_local_background_ = true;
-  base::ThreadPool::PostTaskAndReply(
-      FROM_HERE, {base::TaskPriority::USER_VISIBLE, base::MayBlock()},
-      base::BindOnce(&WriteFileToProfilePath, data, profile_->GetPath()),
-      base::BindOnce(&NtpCustomBackgroundService::SetBackgroundToLocalResource,
-                     weak_ptr_factory_.GetWeakPtr()));
-
-  if (base::FeatureList::IsEnabled(
-          ntp_features::kCustomizeChromeWallpaperSearch)) {
-    NtpCustomBackgroundService::ProcessLocalImageData(data);
-  }
-}
-
 void NtpCustomBackgroundService::SetBackgroundToLocalResourceAndExtractColor(
     const SkBitmap& bitmap) {
   NtpCustomBackgroundService::SetBackgroundToLocalResource();

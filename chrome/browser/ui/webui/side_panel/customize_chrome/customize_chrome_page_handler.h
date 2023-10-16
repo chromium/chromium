@@ -110,8 +110,6 @@ class CustomizeChromePageHandler
   void UpdateModulesSettings() override;
   void UpdateScrollToSection() override;
   void GetDescriptors(GetDescriptorsCallback callback) override;
-  void SearchWallpaper(const std::string& query,
-                       SearchWallpaperCallback callback) override;
   void GetWallpaperSearchResults(
       const std::string& descriptor_a,
       const absl::optional<std::string>& descriptor_b,
@@ -123,9 +121,6 @@ class CustomizeChromePageHandler
  private:
   void OnDescriptorsRetrieved(std::unique_ptr<std::string> response_body);
   void OnDescriptorsJsonParsed(data_decoder::DataDecoder::ValueOrError result);
-  void WallpaperSearchCallback(
-      SearchWallpaperCallback callback,
-      optimization_guide::OptimizationGuideModelExecutionResult result);
   void OnWallpaperSearchResultsRetrieved(
       GetWallpaperSearchResultsCallback callback,
       optimization_guide::OptimizationGuideModelExecutionResult result);
