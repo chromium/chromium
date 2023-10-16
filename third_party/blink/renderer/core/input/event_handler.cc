@@ -1574,12 +1574,8 @@ WebInputEventResult EventHandler::HandleGestureEvent(
   DCHECK_EQ(frame_, &frame_->LocalFrameRoot());
   DCHECK_NE(0, gesture_event.FrameScale());
 
-  // Scrolling-related gesture events invoke EventHandler recursively for each
-  // frame down the chain, doing a single-frame hit-test per frame. This matches
-  // handleWheelEvent.
-  // FIXME: Add a test that traverses this path, e.g. for devtools overlay.
-  if (gesture_event.IsScrollEvent())
-    return HandleGestureScrollEvent(gesture_event);
+  // Gesture scroll events are handled on the compositor thread.
+  DCHECK(!gesture_event.IsScrollEvent());
 
   // Hit test across all frames and do touch adjustment as necessary for the
   // event type.

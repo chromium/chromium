@@ -2745,48 +2745,6 @@ TEST_F(EventHandlerSimTest, ElementTargetedGestureScrollIFrame) {
   ASSERT_EQ(scrollable_area->ScrollOffsetInt().y(), delta_y);
 }
 
-TEST_F(EventHandlerSimTest, ElementTargetedGestureScrollIFrameNoCrash) {
-  WebView().MainFrameViewWidget()->Resize(gfx::Size(800, 600));
-  SimRequest request_outer("https://example.com/test-outer.html", "text/html");
-  SimRequest request_inner("https://example.com/test-inner.html", "text/html");
-  LoadURL("https://example.com/test-outer.html");
-  request_outer.Complete(R"HTML(
-    <!DOCTYPE html>
-    <iframe id="iframe" src="test-inner.html"></iframe>
-    <div style="height:1000px"></div>
-    )HTML");
-
-  request_inner.Complete(R"HTML(
-    <!DOCTYPE html>
-    <div style="height:1000px"></div>
-  )HTML");
-  Compositor().BeginFrame();
-
-  auto* const iframe = To<HTMLFrameElementBase>(
-      GetDocument().getElementById(AtomicString("iframe")));
-  FrameView* child_frame_view =
-      iframe->GetLayoutEmbeddedContent()->ChildFrameView();
-  auto* local_child_frame_view = DynamicTo<LocalFrameView>(child_frame_view);
-  ScrollableArea* scrollable_area = local_child_frame_view->GetScrollableArea();
-
-  iframe->style()->setProperty(GetDocument().GetExecutionContext(), "display",
-                               "none", String(), ASSERT_NO_EXCEPTION);
-  GetDocument().UpdateStyleAndLayout(DocumentUpdateReason::kTest);
-
-  // Target the iframe scrollable area and make sure it scrolls when targeted
-  // with gestures.
-  constexpr float delta_y = 100;
-  WebGestureEvent gesture_scroll_begin{
-      WebInputEvent::Type::kGestureScrollBegin, WebInputEvent::kNoModifiers,
-      WebInputEvent::GetStaticTimeStampForTests()};
-  gesture_scroll_begin.data.scroll_begin.delta_x_hint = 0;
-  gesture_scroll_begin.data.scroll_begin.delta_y_hint = -delta_y;
-  gesture_scroll_begin.data.scroll_begin.scrollable_area_element_id =
-      scrollable_area->GetScrollElementId().GetInternalValue();
-  GetDocument().GetFrame()->GetEventHandler().HandleGestureEvent(
-      gesture_scroll_begin);
-}
-
 TEST_F(EventHandlerSimTest, ElementTargetedGestureScrollViewport) {
   ResizeView(gfx::Size(800, 600));
   // Set a page scale factor so that the VisualViewport will also scroll.
