@@ -456,6 +456,8 @@ public final class ProductionSupportedFlagList {
                             + " This has no effect if metrics reporting is disabled"),
             Flag.baseFeature(SafeBrowsingFeatures.SAFE_BROWSING_SKIP_SUBRESOURCES,
                 "When enabled, Safe Browsing will skip subresources"),
+            Flag.baseFeature("SafeBrowsingSkipSubResources2",
+                "When enabled, Safe Browsing will skip WebTransport and WebSockets"),
             Flag.baseFeature("SafeBrowsingOnUIThread"),
             Flag.baseFeature(BlinkFeatures.ANDROID_EXTENDED_KEYBOARD_SHORTCUTS,
                     "Enables WebView to use the extended keyboard shortcuts added for Android U"),
