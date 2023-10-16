@@ -7,24 +7,20 @@
 
 #include "base/memory/raw_ptr.h"
 #include "base/memory/weak_ptr.h"
-#include "base/scoped_observation.h"
 #include "chrome/browser/ui/webui/settings/settings_page_ui_handler.h"
-#include "extensions/browser/extension_prefs_observer.h"
 
 class Profile;
 
 namespace extensions {
 class CWSInfoService;
 class SafetyCheckExtensionsHandlerTest;
-class ExtensionPrefs;
 }  // namespace extensions
 
 namespace settings {
 
 // Settings page UI handler that checks for any extensions that trigger
 // a review by the safety check.
-class SafetyCheckExtensionsHandler : public settings::SettingsPageUIHandler,
-                                     public extensions::ExtensionPrefsObserver {
+class SafetyCheckExtensionsHandler : public settings::SettingsPageUIHandler {
  public:
   explicit SafetyCheckExtensionsHandler(Profile* profile);
   ~SafetyCheckExtensionsHandler() override;
@@ -40,7 +36,7 @@ class SafetyCheckExtensionsHandler : public settings::SettingsPageUIHandler,
 
   // Let listeners know that the number of extensions that need
   // review may have changed.
-  void UpdateNumberOfExtensionsThatNeedReview();
+  void HandleUpdateNumberOfExtensionsThatNeedReview();
 
   // Return the number of extensions that should be reviewed by the user.
   // There are currently three triggers the `SafetyCheckExtensionsHandler`
@@ -49,10 +45,6 @@ class SafetyCheckExtensionsHandler : public settings::SettingsPageUIHandler,
   // -- Extension Policy Violation
   // -- Extension Unpublished by the developer
   int GetNumberOfExtensionsThatNeedReview();
-
-  // ExtensionPrefsObserver implementation to track changes to extensions.
-  void OnExtensionPrefsDeleted(const std::string& extension_id) override;
-  void OnExtensionPrefsUpdated(const std::string& extension_id) override;
 
   // SettingsPageUIHandler implementation.
   void OnJavascriptDisallowed() override;
@@ -63,10 +55,6 @@ class SafetyCheckExtensionsHandler : public settings::SettingsPageUIHandler,
 
   raw_ptr<Profile> profile_ = nullptr;
   raw_ptr<extensions::CWSInfoService> cws_info_service_ = nullptr;
-  // Listen to extension prefs for when prefs are unloaded or changed.
-  base::ScopedObservation<extensions::ExtensionPrefs,
-                          extensions::ExtensionPrefsObserver>
-      prefs_observation_{this};
   base::WeakPtrFactory<SafetyCheckExtensionsHandler> weak_ptr_factory_{this};
 };
 
