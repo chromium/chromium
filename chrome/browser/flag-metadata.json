@@ -279,7 +279,7 @@
   {
     "name": "arc-enable-aaudio-mmap",
     "owners": [ "pteerapong", "chromeos-audio@google.com" ],
-    "expiry_milestone": 120
+    "expiry_milestone": 125
   },
   {
     "name": "arc-enable-virtio-blk-for-data",
