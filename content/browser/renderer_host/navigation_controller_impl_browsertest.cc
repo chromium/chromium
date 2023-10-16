@@ -13955,11 +13955,27 @@ IN_PROC_BROWSER_TEST_P(NavigationControllerBrowserTest,
   NavigationRequest::SetCommitTimeoutForTesting(base::TimeDelta());
 }
 
+// TODO(crbug.com/1491942): This fails with the field trial testing config.
+class NavigationControllerBrowserTestNoServerNoTestingConfig
+    : public NavigationControllerBrowserTestNoServer {
+ public:
+  void SetUpCommandLine(base::CommandLine* command_line) override {
+    NavigationControllerBrowserTestNoServer::SetUpCommandLine(command_line);
+    command_line->AppendSwitch("disable-field-trial-config");
+  }
+};
+INSTANTIATE_TEST_SUITE_P(
+    All,
+    NavigationControllerBrowserTestNoServerNoTestingConfig,
+    testing::Combine(testing::ValuesIn(RenderDocumentFeatureLevelValues()),
+                     testing::Bool()),
+    NavigationControllerBrowserTest::DescribeParams);
+
 // This test simulates a same-document navigation racing with a cross-document
 // one. Historically this would have been started as a same-document navigation
 // then restarted by the renderer as a cross-document navigation (see
 // https://crbug.com/936962).
-IN_PROC_BROWSER_TEST_P(NavigationControllerBrowserTestNoServer,
+IN_PROC_BROWSER_TEST_P(NavigationControllerBrowserTestNoServerNoTestingConfig,
                        SameDocumentNavigationRaceWithCrossDocumentNavigation) {
   net::test_server::ControllableHttpResponse response_success(
       embedded_test_server(), "/title1.html");
