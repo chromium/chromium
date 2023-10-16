@@ -15,8 +15,6 @@
 #include "components/password_manager/core/browser/leak_detection_dialog_utils.h"
 #include "components/password_manager/core/browser/password_form.h"
 
-class PrefService;
-
 namespace password_manager {
 
 class LeakDetectionCheck;
@@ -83,11 +81,6 @@ class LeakDetectionDelegate : public LeakDetectionDelegateInterface {
   // credentials.
   std::unique_ptr<LeakDetectionDelegateHelper> helper_;
 };
-
-// Determines whether the leak check can be started depending on `prefs`. Will
-// use `client` for logging if non-null.
-bool CanStartLeakCheck(const PrefService& prefs,
-                       PasswordManagerClient* client = nullptr);
 
 }  // namespace password_manager
 

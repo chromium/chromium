@@ -55,7 +55,11 @@ source_set("leak_detection") {
   deps = [
     ":proto",
     "//base",
+    "//components/autofill/core/common",
+    "//components/password_manager/core/common",
     "//components/password_manager/core/common:features",
+    "//components/prefs",
+    "//components/safe_browsing/core/common:safe_browsing_prefs",
     "//components/signin/public/identity_manager",
     "//components/version_info:channel",
     "//third_party/private-join-and-compute/src:ec_commutative_cipher",

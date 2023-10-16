@@ -12,9 +12,13 @@
 #include "base/metrics/histogram_functions.h"
 #include "base/strings/utf_string_conversions.h"
 #include "base/timer/elapsed_timer.h"
+#include "components/autofill/core/common/save_password_progress_logger.h"
 #include "components/password_manager/core/browser/leak_detection/leak_detection_delegate_interface.h"
 #include "components/password_manager/core/browser/leak_detection/leak_detection_request_utils.h"
 #include "components/password_manager/core/browser/leak_detection/single_lookup_response.h"
+#include "components/password_manager/core/common/password_manager_pref_names.h"
+#include "components/prefs/pref_service.h"
+#include "components/safe_browsing/core/common/safe_browsing_prefs.h"
 #include "components/signin/public/identity_manager/access_token_fetcher.h"
 #include "components/signin/public/identity_manager/access_token_info.h"
 #include "components/signin/public/identity_manager/identity_manager.h"
@@ -217,6 +221,36 @@ void LeakDetectionCheckImpl::Start(LeakDetectionInitiator initiator,
       initiator, base::UTF16ToUTF8(username_), base::UTF16ToUTF8(password_),
       base::BindOnce(&LeakDetectionCheckImpl::OnRequestDataReady,
                      weak_ptr_factory_.GetWeakPtr()));
+}
+
+// static
+bool LeakDetectionCheck::CanStartLeakCheck(
+    const PrefService& prefs,
+    std::unique_ptr<autofill::SavePasswordProgressLogger> logger) {
+  const bool is_leak_protection_on =
+      prefs.GetBoolean(prefs::kPasswordLeakDetectionEnabled);
+  // Leak detection can only start if:
+  // 1. The user has not opted out and Safe Browsing is turned on, or
+  // 2. The user is an enhanced protection user
+  safe_browsing::SafeBrowsingState sb_state =
+      safe_browsing::GetSafeBrowsingState(prefs);
+  switch (sb_state) {
+    case safe_browsing::SafeBrowsingState::NO_SAFE_BROWSING:
+      if (logger) {
+        logger->LogMessage(autofill::SavePasswordProgressLogger::
+                               STRING_LEAK_DETECTION_DISABLED_SAFE_BROWSING);
+      }
+      return false;
+    case safe_browsing::SafeBrowsingState::STANDARD_PROTECTION:
+      if (!is_leak_protection_on && logger) {
+        logger->LogMessage(autofill::SavePasswordProgressLogger::
+                               STRING_LEAK_DETECTION_DISABLED_FEATURE);
+      }
+      return is_leak_protection_on;
+    case safe_browsing::SafeBrowsingState::ENHANCED_PROTECTION:
+      // feature is on.
+      return true;
+  }
 }
 
 void LeakDetectionCheckImpl::OnAccessTokenRequestCompleted(
