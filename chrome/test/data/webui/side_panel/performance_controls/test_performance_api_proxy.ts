@@ -18,6 +18,8 @@ export class TestPerformanceApiProxy extends TestBrowserProxy implements
     super([]);
   }
 
+  showUi() {}
+
   getCallbackRouter() {
     return this.callbackRouter_;
   }

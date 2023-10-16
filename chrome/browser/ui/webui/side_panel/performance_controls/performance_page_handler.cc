@@ -15,3 +15,10 @@ PerformancePageHandler::PerformancePageHandler(
       performance_ui_(performance_ui) {}
 
 PerformancePageHandler::~PerformancePageHandler() = default;
+
+void PerformancePageHandler::ShowUI() {
+  auto embedder = performance_ui_->embedder();
+  if (embedder) {
+    embedder->ShowUI();
+  }
+}

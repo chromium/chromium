@@ -34,6 +34,13 @@ export class PerformanceAppElement extends PolymerElement {
     super();
     ColorChangeUpdater.forDocument().start();
   }
+
+  override connectedCallback() {
+    super.connectedCallback();
+
+    // Inform the handler that listeners are registered.
+    setTimeout(() => this.performanceApi_.showUi(), 0);
+  }
 }
 declare global {
   interface HTMLElementTagNameMap {
