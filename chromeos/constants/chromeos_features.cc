@@ -89,13 +89,11 @@ BASE_FEATURE(kIWAForTelemetryExtensionAPI,
              base::FEATURE_ENABLED_BY_DEFAULT);
 
 // Enables Jelly features. go/jelly-flags
-BASE_FEATURE(kJelly, "Jelly_LAUNCHED", base::FEATURE_ENABLED_BY_DEFAULT);
+BASE_FEATURE(kJelly, "Jelly", base::FEATURE_ENABLED_BY_DEFAULT);
 
 // Enables Jellyroll features. Jellyroll is a feature flag for CrOSNext, which
 // controls all system UI updates and new system components. go/jelly-flags
-BASE_FEATURE(kJellyroll,
-             "Jellyroll_LAUNCHED",
-             base::FEATURE_ENABLED_BY_DEFAULT);
+BASE_FEATURE(kJellyroll, "Jellyroll", base::FEATURE_ENABLED_BY_DEFAULT);
 
 // Controls enabling / disabling the orca feature.
 BASE_FEATURE(kOrca, "Orca", base::FEATURE_DISABLED_BY_DEFAULT);
