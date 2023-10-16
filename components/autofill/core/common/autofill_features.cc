@@ -90,6 +90,12 @@ BASE_FEATURE(kAutofillContentEditables,
              "AutofillContentEditables",
              base::FEATURE_DISABLED_BY_DEFAULT);
 
+// If enabled, the payment methods sync toggle is decoupled from autofill.
+// TODO(crbug.com/1435431): Cleanup when launched.
+BASE_FEATURE(kAutofillDecoupleAddressPaymentSyncSettings,
+             "AutofillDecoupleAddressPaymentSyncSettings",
+             base::FEATURE_DISABLED_BY_DEFAULT);
+
 // Crowdsourcing already prefers PHONE_HOME_CITY_AND_NUMBER over
 // PHONE_HOME_WHOLE_NUMBER. With this feature, local heuristics do the same.
 BASE_FEATURE(kAutofillDefaultToCityAndNumber,
