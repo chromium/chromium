@@ -2,24 +2,28 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
+import 'chrome://accessory-update/firmware_update_dialog.js';
+
 import {fakeFirmwareUpdate} from 'chrome://accessory-update/fake_data.js';
 import {UpdateState} from 'chrome://accessory-update/firmware_update.mojom-webui.js';
 import {FirmwareUpdateDialogElement} from 'chrome://accessory-update/firmware_update_dialog.js';
 import {loadTimeData} from 'chrome://resources/ash/common/load_time_data.m.js';
+import {strictQuery} from 'chrome://resources/ash/common/typescript_utils/strict_query.js';
+import {CrButtonElement} from 'chrome://resources/cr_elements/cr_button/cr_button.js';
+import {CrDialogElement} from 'chrome://resources/cr_elements/cr_dialog/cr_dialog.js';
+import {assert} from 'chrome://resources/js/assert.js';
 import {mojoString16ToString} from 'chrome://resources/js/mojo_type_util.js';
-import {flush} from 'chrome://resources/polymer/v3_0/polymer/polymer_bundled.min.js';
+import {PaperProgressElement} from 'chrome://resources/polymer/v3_0/paper-progress/paper-progress.js';
 import {assertEquals, assertFalse, assertTrue} from 'chrome://webui-test/chromeos/chai_assert.js';
 import {flushTasks} from 'chrome://webui-test/polymer_test_util.js';
-
-import {isVisible} from '../test_util.js';
+import {isVisible} from 'chrome://webui-test/test_util.js';
 
 export function firmwareUpdateDialogTest() {
-  /** @type {?FirmwareUpdateDialogElement} */
-  let updateDialogElement = null;
+  let updateDialogElement: FirmwareUpdateDialogElement|null = null;
 
   setup(() => {
-    updateDialogElement = /** @type {!FirmwareUpdateDialogElement} */ (
-        document.createElement('firmware-update-dialog'));
+    updateDialogElement = document.createElement('firmware-update-dialog');
+    assert(updateDialogElement);
     updateDialogElement.update = fakeFirmwareUpdate;
     updateDialogElement.installationProgress = {
       percentage: 0,
@@ -29,54 +33,61 @@ export function firmwareUpdateDialogTest() {
   });
 
   teardown(() => {
-    updateDialogElement.remove();
+    updateDialogElement?.remove();
     updateDialogElement = null;
   });
 
-  /**
-   * @param {number} percentage
-   * @param {!UpdateState} state
-   * @return {!Promise}
-   */
-  function setInstallationProgress(percentage, state) {
+  function setInstallationProgress(
+      percentage: number, state: UpdateState): Promise<void> {
+    assert(updateDialogElement);
     updateDialogElement.installationProgress = {percentage, state};
     return flushTasks();
   }
 
-  /** @return {!Promise} */
-  function clickDoneButton() {
-    updateDialogElement.shadowRoot.querySelector('#updateDoneButton').click();
+  function clickDoneButton(): Promise<void> {
+    assert(updateDialogElement?.shadowRoot);
+    const button = strictQuery(
+        '#updateDoneButton', updateDialogElement?.shadowRoot, CrButtonElement)!;
+    button.click();
     return flushTasks();
   }
 
-  /**
-   * @param {boolean} inflight
-   */
-  function setIsInitiallyInflight(inflight) {
-    updateDialogElement.setIsInitiallyInflightForTesting(inflight);
+  function setIsInitiallyInflight(inflight: boolean) {
+    updateDialogElement?.setIsInitiallyInflightForTesting(inflight);
+  }
+
+  function getUpdateDialog(): CrDialogElement {
+    assert(updateDialogElement?.shadowRoot);
+    return strictQuery(
+        '#updateDialog', updateDialogElement?.shadowRoot, CrDialogElement);
+  }
+
+  function getTextContent(selector: string): string {
+    assert(updateDialogElement?.shadowRoot);
+    const element =
+        strictQuery(selector, updateDialogElement?.shadowRoot, HTMLElement);
+    assert(element);
+    return element.textContent?.trim() ?? '';
   }
 
   test('DialogStateUpdatesCorrectly', async () => {
+    assert(updateDialogElement?.shadowRoot);
     // Start update.
     await setInstallationProgress(1, UpdateState.kUpdating);
-    assertTrue(
-        updateDialogElement.shadowRoot.querySelector('#updateDialog').open);
+    assertTrue(getUpdateDialog().open);
 
     // |UpdateState.KIdle| handled correctly while an update is still
     // in-progress.
     await setInstallationProgress(20, UpdateState.kIdle);
-    assertTrue(
-        updateDialogElement.shadowRoot.querySelector('#updateDialog').open);
+    assertTrue(getUpdateDialog().open);
 
     // Dialog remains open while the device is restarting.
     await setInstallationProgress(70, UpdateState.kRestarting);
-    assertTrue(
-        updateDialogElement.shadowRoot.querySelector('#updateDialog').open);
+    assertTrue(getUpdateDialog().open);
 
     // Dialog remains open when the update is completed.
     await setInstallationProgress(100, UpdateState.kSuccess);
-    assertTrue(
-        updateDialogElement.shadowRoot.querySelector('#updateDialog').open);
+    assertTrue(getUpdateDialog().open);
 
     // Dialog closes when the "Done" button is clicked.
     await clickDoneButton();
@@ -85,30 +96,26 @@ export function firmwareUpdateDialogTest() {
   });
 
   test('DeviceRestarting', async () => {
+    assert(updateDialogElement?.shadowRoot);
     // Start update.
     await setInstallationProgress(1, UpdateState.kUpdating);
-    assertTrue(
-        updateDialogElement.shadowRoot.querySelector('#updateDialog').open);
+    assertTrue(getUpdateDialog().open);
 
     // Dialog remains open while the device is restarting.
     await setInstallationProgress(70, UpdateState.kRestarting);
-    assertTrue(
-        updateDialogElement.shadowRoot.querySelector('#updateDialog').open);
+    assertTrue(getUpdateDialog().open);
 
     // Correct text is shown.
     assertEquals(
-        updateDialogElement.shadowRoot.querySelector('#updateDialogTitle')
-            .textContent.trim(),
+        getTextContent('#updateDialogTitle'),
         loadTimeData.getStringF(
             'restartingTitleText',
-            mojoString16ToString(updateDialogElement.update.deviceName)));
+            mojoString16ToString(updateDialogElement.update!.deviceName)));
     assertEquals(
-        updateDialogElement.shadowRoot.querySelector('#updateDialogBody')
-            .textContent.trim(),
+        getTextContent('#updateDialogBody'),
         loadTimeData.getString('restartingBodyText'));
     assertEquals(
-        updateDialogElement.shadowRoot.querySelector('#progress')
-            .textContent.trim(),
+        getTextContent('#progress'),
         loadTimeData.getString('restartingFooterText'));
     // Check that the indeterminate progress is shown.
     assertTrue(!!updateDialogElement.shadowRoot.querySelector(
@@ -119,46 +126,40 @@ export function firmwareUpdateDialogTest() {
   });
 
   test('UpdateDialogContent', async () => {
+    assert(updateDialogElement?.shadowRoot);
     // Start update.
     await setInstallationProgress(1, UpdateState.kUpdating);
-    assertTrue(
-        updateDialogElement.shadowRoot.querySelector('#updateDialog').open);
+    assertTrue(getUpdateDialog()!.open);
 
     // Check dialog contents
     assertEquals(
-        updateDialogElement.shadowRoot.querySelector('#updateDialogTitle')
-            .textContent.trim(),
+        getTextContent('#updateDialogTitle'),
         loadTimeData.getStringF(
             'updating',
-            mojoString16ToString(updateDialogElement.update.deviceName)));
+            mojoString16ToString(updateDialogElement.update!.deviceName)));
     assertEquals(
-        updateDialogElement.shadowRoot.querySelector('#updateDialogBody')
-            .textContent.trim(),
+        getTextContent('#updateDialogBody'),
         loadTimeData.getString('updatingInfo'));
-    const percentBarStatus =
-        updateDialogElement.shadowRoot.querySelector('#updateProgressBar')
-            .value;
+    const percentBar = updateDialogElement.shadowRoot.querySelector(
+                           '#updateProgressBar') as PaperProgressElement;
+    const percentBarStatus = percentBar.value;
     assertEquals(1, percentBarStatus);
 
     // Dialog remains open while the device is restarting.
     await setInstallationProgress(70, UpdateState.kRestarting);
-    assertTrue(
-        updateDialogElement.shadowRoot.querySelector('#updateDialog').open);
+    assertTrue(getUpdateDialog().open);
 
     // Correct text is shown.
     assertEquals(
-        updateDialogElement.shadowRoot.querySelector('#updateDialogTitle')
-            .textContent.trim(),
+        getTextContent('#updateDialogTitle'),
         loadTimeData.getStringF(
             'restartingTitleText',
-            mojoString16ToString(updateDialogElement.update.deviceName)));
+            mojoString16ToString(updateDialogElement.update!.deviceName)));
     assertEquals(
-        updateDialogElement.shadowRoot.querySelector('#updateDialogBody')
-            .textContent.trim(),
+        getTextContent('#updateDialogBody'),
         loadTimeData.getString('restartingBodyText'));
     assertEquals(
-        updateDialogElement.shadowRoot.querySelector('#progress')
-            .textContent.trim(),
+        getTextContent('#progress'),
         loadTimeData.getString('restartingFooterText'));
     // Check that the indeterminate progress is shown.
     assertTrue(!!updateDialogElement.shadowRoot.querySelector(
@@ -169,20 +170,21 @@ export function firmwareUpdateDialogTest() {
   });
 
   test('ProgressBarAppears', async () => {
+    assert(updateDialogElement?.shadowRoot);
     // Simulate update inflight, but restarting. Idle state during inflight
     // is equivalent as a restart phase.
     setIsInitiallyInflight(/*inflight=*/ true);
     await flushTasks();
     await setInstallationProgress(0, UpdateState.kIdle);
-    assertTrue(
-        updateDialogElement.shadowRoot.querySelector('#updateDialog').open);
-    assertTrue(!!updateDialogElement.shadowRoot.querySelector(
-        '#indeterminateProgressBar'));
+    assertTrue(getUpdateDialog().open);
+    assertTrue(isVisible(strictQuery(
+        '#indeterminateProgressBar', updateDialogElement.shadowRoot,
+        HTMLElement)));
 
     // Set inflight to false, expect no progress bar.
     setIsInitiallyInflight(/*inflight=*/ false);
     await flushTasks();
-    assertFalse(!!updateDialogElement.shadowRoot.querySelector(
-        '#indeterminateProgressBar'));
+    assertFalse(isVisible(updateDialogElement.shadowRoot.querySelector(
+        '#indeterminateProgressBar')));
   });
 }

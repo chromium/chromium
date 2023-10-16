@@ -18,7 +18,7 @@ build_webui_tests("build_webui_tests") {
   files = [
     "fake_update_controller_test.ts",
     "fake_update_provider_test.ts",
-    "firmware_update_dialog_test.js",
+    "firmware_update_dialog_test.ts",
     "firmware_update_test.js",
     "firmware_update_unified_test.js",
     "peripheral_updates_list_test.js",
