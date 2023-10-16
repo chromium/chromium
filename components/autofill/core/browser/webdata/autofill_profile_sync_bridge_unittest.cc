@@ -312,6 +312,8 @@ class AutofillProfileSyncBridgeTest : public testing::Test {
   }
 
   void ApplyIncrementalSyncChanges(EntityChangeList changes) {
+    EXPECT_CALL(*backend(),
+                NotifyOfMultipleAutofillChanges(syncer::AUTOFILL_PROFILE));
     const absl::optional<syncer::ModelError> error =
         bridge()->ApplyIncrementalSyncChanges(
             bridge()->CreateMetadataChangeList(), std::move(changes));
