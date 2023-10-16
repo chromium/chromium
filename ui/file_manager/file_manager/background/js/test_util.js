@@ -2,7 +2,7 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-import {ProgressCenterItem} from '../../common/js/progress_center_common.js';
+import {ProgressCenterItem, ProgressItemState, ProgressItemType} from '../../common/js/progress_center_common.js';
 import {ScriptLoader} from '../../common/js/script_loader.js';
 import {util} from '../../common/js/util.js';
 
@@ -373,7 +373,7 @@ test.util.async.renderWindowTextDirectionRTL = (contentWindow, callback) => {
  * Maps the path to the replaced attribute to the PrepareFake instance that
  * replaced it, to be able to restore the original value.
  *
- * @private @type {Object<string, test.util.PrepareFake>}
+ * @private @type {Object<string, PrepareFake>}
  */
 test.util.backgroundReplacedObjects_ = {};
 
@@ -381,7 +381,7 @@ test.util.backgroundReplacedObjects_ = {};
  * Map the appId to a map of all fakes applied in the foreground window e.g.:
  *  {'files#0': {'chrome.bla.api': FAKE}
  *
- * @private @type {Object<string, Object<string, test.util.PrepareFake>>}
+ * @private @type {Object<string, Object<string, PrepareFake>>}
  */
 test.util.foregroundReplacedObjects_ = {};
 
@@ -427,7 +427,7 @@ test.util.FakeType = {
 /**
  * Class holds the information for applying and restoring fakes.
  */
-test.util.PrepareFake = class {
+class PrepareFake {
   /**
    * @param {string} attrName Name of the attribute to be replaced by the fake
    *   e.g.: "chrome.app.window.create".
@@ -622,7 +622,9 @@ test.util.PrepareFake = class {
     this.parentObject_ = parentObj;
     this.leafAttrName_ = attr;
   }
-};
+}
+
+test.util.PrepareFake = PrepareFake;
 
 /**
  * Replaces implementations in the background page with fakes.
@@ -646,7 +648,7 @@ test.util.sync.backgroundFake = (fakeData) => {
     const fakeId = mockValue[0];
     const fakeArgs = mockValue[1] || [];
 
-    const fake = new test.util.PrepareFake(path, fakeId, window, ...fakeArgs);
+    const fake = new PrepareFake(path, fakeId, window, ...fakeArgs);
     fake.prepare();
     fake.replace(test.util.FakeType.BACKGROUND_FAKE, window);
   }
@@ -689,8 +691,7 @@ test.util.sync.foregroundFake = (contentWindow, fakeData) => {
   for (const [path, mockValue] of entries) {
     const fakeId = mockValue[0];
     const fakeArgs = mockValue[1] || [];
-    const fake =
-        new test.util.PrepareFake(path, fakeId, contentWindow, ...fakeArgs);
+    const fake = new PrepareFake(path, fakeId, contentWindow, ...fakeArgs);
     fake.prepare();
     fake.replace(test.util.FakeType.FOREGROUND_FAKE, contentWindow);
   }

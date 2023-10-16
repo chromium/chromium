@@ -5,10 +5,6 @@
 import {assertEquals, assertGT, assertTrue} from 'chrome://webui-test/chromeos/chai_assert.js';
 
 import {Speedometer} from './file_operation_util.js';
-import {MockFileOperationManager} from './mock_file_operation_manager.js';
-
-/** @type {!MockFileOperationManager} */
-let fileOperationManager;
 
 /**
  * Mock JS Date.
@@ -18,8 +14,8 @@ let fileOperationManager;
 class MockDate {
   constructor() {
     this.originalNow = Date.now;
-    Date.tick_ = 0;
-    Date.now = this.now;
+    this.tick_ = 0;
+    Date.now = this.now.bind(this);
   }
 
   /**
@@ -28,14 +24,14 @@ class MockDate {
    * @param {number} msec Milliseconds to add to the current timestamp.
    */
   tick(msec) {
-    Date.tick_ += msec;
+    this.tick_ += msec;
   }
 
   /**
    * @returns {number} Current timestamp of the mock object.
    */
   now() {
-    return Date.tick_;
+    return this.tick_;
   }
 
   /**
@@ -44,12 +40,6 @@ class MockDate {
   stop() {
     Date.now = this.originalNow;
   }
-}
-
-// Set up the test components.
-export function setUp() {
-  // Create mock items needed for FileOperationHandler.
-  fileOperationManager = new MockFileOperationManager();
 }
 
 /**

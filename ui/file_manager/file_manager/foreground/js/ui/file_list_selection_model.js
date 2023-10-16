@@ -13,10 +13,8 @@ export class FileListSelectionModel extends ListSelectionModel {
     /**
      * Overwrite ListSelectionModel to allow lead item to be independent of the
      * current selected item(s).
-     * @private @type {boolean}
-     * @override
      */
-    this.independentLeadItem_ = true;
+    this.independentLeadItem = true;
 
     /** @private @type {boolean} */
     this.isCheckSelectMode_ = false;

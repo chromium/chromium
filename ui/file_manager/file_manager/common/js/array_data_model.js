@@ -15,7 +15,7 @@ import {NativeEventTarget as EventTarget} from 'chrome://resources/ash/common/ev
  */
 export class ArrayDataModel extends EventTarget {
   /**
-   * @param {!Array} array The underlying array.
+   * @param {!Array<*>} array The underlying array.
    */
   constructor(array) {
     super();
@@ -117,7 +117,7 @@ export class ArrayDataModel extends EventTarget {
    * Returns an array of elements in a selected range.
    * @param {number=} opt_from The starting index of the selected range.
    * @param {number=} opt_to The ending index of selected range.
-   * @return {!Array} An array of elements in the selected range.
+   * @return {!Array<*>} An array of elements in the selected range.
    */
   slice(opt_from, opt_to) {
     const arr = this.array_;
@@ -134,9 +134,9 @@ export class ArrayDataModel extends EventTarget {
    * @param {number} index The index of the item to update.
    * @param {number} deleteCount The number of items to remove.
    * @param {...*} var_args The items to add.
-   * @return {!Array} An array with the removed items.
+   * @return {!Array<*>} An array with the removed items.
    */
-  splice(index, deleteCount, var_args) {
+  splice(index, deleteCount, ...var_args) {
     const addCount = arguments.length - 2;
     const newIndexes = [];
     const deletePermutation = [];
@@ -213,7 +213,7 @@ export class ArrayDataModel extends EventTarget {
    * @param {...*} var_args The items to append.
    * @return {number} The new length of the model.
    */
-  push(var_args) {
+  push(...var_args) {
     const args = Array.prototype.slice.call(arguments);
     args.unshift(this.length, 0);
     this.splice.apply(this, args);

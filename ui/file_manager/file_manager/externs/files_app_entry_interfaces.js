@@ -87,13 +87,12 @@ export class FilesAppEntry {
   /**
    * Return metadata via |success| callback. Relevant metadata are
    * "modificationTime" and "contentMimeType".
-   * @param {function({modificationTime: Date, size: number})} success callback
-   *     to be called with the result metadata.
-   * @param {function(FileError)=} error callback to be called in case of error
-   *     or
-   * ignored if no error happened.
+   * @param {function({modificationTime: Date, size: number}): void} _success
+   *     callback to be called with the result metadata.
+   * @param {function(FileError)=} _error callback to be called in case of error
+   *     or ignored if no error happened.
    */
-  getMetadata(success, error) {}
+  getMetadata(_success, _error) {}
 
   /**
    * Returns true if this entry object has a native representation such as Entry

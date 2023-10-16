@@ -47,14 +47,13 @@ export class StaticReader {
   /**
    * Reads array of entries via |success| callback.
    *
-   * @param {function(!Array<!Entry|!FilesAppEntry>)} success: A callback that
+   * @param {function(!Array<!Entry>):void} success: A callback that
    *     will be called multiple times with the entries, last call will be
    *     called with an empty array indicating that no more entries available.
-   * @param {function(!FileError)=} error: A callback that's never
+   * @param {function(!FileError)=} _error: A callback that's never
    *     called, it's here to match the signature from the Web Standards.
-   * @override
    */
-  readEntries(success, error) {
+  readEntries(success, _error) {
     const entries = this.entries_;
     // readEntries is suppose to return empty result when there are no more
     // files to return, so we clear the entries_ attribute for next call.
@@ -87,13 +86,12 @@ export class CombinedReaders {
   }
 
   /**
-   * @param {function(!Array<!Entry|!FilesAppEntry>)} success returning entries
+   * @param {function(!Array<!Entry>):void} success returning entries
    *     of all readers, it's called with empty Array when there is no more
    *     entries to return.
    * @param {function(!FileError)=} error called when error happens when reading
    *    from readers.
    * for this implementation.
-   * @override
    */
   readEntries(success, error) {
     if (!this.currentReader_) {
@@ -197,13 +195,15 @@ export class EntryList {
     return this.label_;
   }
 
-  /** @override */
   get isNativeType() {
     return false;
   }
 
-  /** @override */
-  getMetadata(success, error) {
+  /**
+   * @param {function({modificationTime: Date, size: number}): void} success
+   * @param {function(FileError)=} _error
+   */
+  getMetadata(success, _error) {
     // Defaults modificationTime to current time just to have a valid value.
     setTimeout(() => success({modificationTime: new Date(), size: 0}));
   }
@@ -222,13 +222,12 @@ export class EntryList {
   }
 
   /**
-   * @param {(function(DirectoryEntry)|function(FilesAppDirEntry))=} success
-   *     callback.
-   * @param {function(Error)=} error callback.
-   * @override
+   * @param {(function((DirectoryEntry|FilesAppDirEntry)):void)=} success
+   * @param {function(Error)=} _error callback.
    */
-  getParent(success, error) {
-    setTimeout((self) => success(self), 0, this);
+  getParent(success, _error) {
+    const self = /** @type {!FilesAppDirEntry} */ (this);
+    setTimeout(() => success && success(self), 0, this);
   }
 
   /**
@@ -240,7 +239,7 @@ export class EntryList {
     this.children_.push(entry);
     // Only VolumeEntry can have prefix set because it sets on VolumeInfo,
     // which is then used on LocationInfo/PathComponent.
-    if (entry.type_name == 'VolumeEntry') {
+    if (/** @type{FilesAppEntry} */ (entry).type_name == 'VolumeEntry') {
       const volumeEntry = /** @type {VolumeEntry} */ (entry);
       volumeEntry.setPrefix(this);
     }
@@ -251,7 +250,6 @@ export class EntryList {
    * DirectoryEntry.createReader (from Web Standards) that reads the children of
    * this EntryList instance.
    * This method is defined on DirectoryEntry.
-   * @override
    */
   createReader() {
     return new StaticReader(this.children_);
@@ -299,8 +297,8 @@ export class EntryList {
    * This method is specific to VolumeEntry/EntryList instance.
    */
   removeAllByRootType(rootType) {
-    this.children_ =
-        this.children_.filter(entry => entry.rootType !== rootType);
+    this.children_ = this.children_.filter(
+        entry => /** @type{FilesAppEntry} */ (entry).rootType !== rootType);
   }
 
   /**
@@ -329,7 +327,6 @@ export class EntryList {
     return false;
   }
 
-  /** @override */
   getNativeEntry() {
     return null;
   }
@@ -437,6 +434,7 @@ export class VolumeEntry {
     // TODO(b/271485133): consider deriving this from volumeInfo. Setting
     // rootType here breaks some integration tests, e.g.
     // saveAsDlpRestrictedAndroid.
+    /** @type {?VolumeManagerCommon.RootType} */
     this.rootType = null;
 
     this.disabled_ = false;
@@ -458,7 +456,6 @@ export class VolumeEntry {
   /**
    * @return {?FileSystem} FileSystem for this volume.
    * This method is defined on Entry.
-   * @override
    */
   get filesystem() {
     return this.rootEntry_ ? this.rootEntry_.filesystem : null;
@@ -477,7 +474,6 @@ export class VolumeEntry {
   /**
    * @return {string} Full path for this volume.
    * This method is defined on Entry.
-   * @override.
    */
   get fullPath() {
     return this.rootEntry_ ? this.rootEntry_.fullPath : '';
@@ -513,23 +509,23 @@ export class VolumeEntry {
    * @see https://github.com/google/closure-compiler/blob/mastexterns/browser/fileapi.js
    * @param {string} path Entry fullPath.
    * @param {!FileSystemFlags=} options
-   * @param {function(!DirectoryEntry)=} success
-   * @param {function(!FileError)=} error
+   * @param {function(!DirectoryEntry):void=} success
+   * @param {function(!FileError):void=} error
    */
   getDirectory(path, options, success, error) {
     if (!this.rootEntry_) {
       error && setTimeout(error, 0, new Error('root entry not resolved yet.'));
       return;
     }
-    return this.rootEntry_.getDirectory(path, options, success, error);
+    this.rootEntry_.getDirectory(path, options, success, error);
   }
 
   /**
    * @see https://github.com/google/closure-compiler/blob/mastexterns/browser/fileapi.js
    * @param {string} path
    * @param {!FileSystemFlags=} options
-   * @param {function(!FileEntry)=} success
-   * @param {function(!FileError)=} error
+   * @param {function(!FileEntry):void=} success
+   * @param {function(!FileError):void=} error
    * @return {undefined}
    */
   getFile(path, options, success, error) {
@@ -537,12 +533,11 @@ export class VolumeEntry {
       error && setTimeout(error, 0, new Error('root entry not resolved yet.'));
       return;
     }
-    return this.rootEntry_.getFile(path, options, success, error);
+    this.rootEntry_.getFile(path, options, success, error);
   }
 
   /**
    * @return {string} Name for this volume.
-   * @override.
    */
   get name() {
     return this.volumeInfo_.label;
@@ -550,7 +545,6 @@ export class VolumeEntry {
 
   /**
    * @return {string}
-   * @override
    */
   toURL() {
     return this.rootEntry_ ? this.rootEntry_.toURL() : '';
@@ -573,27 +567,29 @@ export class VolumeEntry {
   }
 
   /**
-   * @param {(function(DirectoryEntry)|function(FilesAppDirEntry))=} success
+   * @param {function((DirectoryEntry|FilesAppDirEntry)):void=} success
    *     callback, it returns itself since EntryList is intended to be used as
    * root node and the Web Standard says to do so.
-   * @param {function(Error)=} error callback, not used for this implementation.
-   * @override
+   * @param {function(Error)=} _error callback, not used for this
+   *     implementation.
    */
-  getParent(success, error) {
-    setTimeout((self) => success(self), 0, this);
+  getParent(success, _error) {
+    const self = /** @type {!FilesAppDirEntry} */ (this);
+    setTimeout(() => success && success(self), 0, this);
   }
 
-  /** @override */
+  /**
+   * @param {function({modificationTime: Date, size: number}): void} success
+   * @param {function(FileError)=} error
+   */
   getMetadata(success, error) {
     this.rootEntry_.getMetadata(success, error);
   }
 
-  /** @override */
   get isNativeType() {
     return true;
   }
 
-  /** @override */
   getNativeEntry() {
     return this.rootEntry_;
   }
@@ -602,7 +598,6 @@ export class VolumeEntry {
    * @return {!DirectoryReader} Returns a reader from root entry, which is
    * compatible with DirectoryEntry.createReader (from Web Standards).
    * This method is defined on DirectoryEntry.
-   * @override
    */
   createReader() {
     const readers = [];
@@ -635,7 +630,7 @@ export class VolumeEntry {
     this.children_.push(entry);
     // Only VolumeEntry can have prefix set because it sets on VolumeInfo,
     // which is then used on LocationInfo/PathComponent.
-    if (entry.type_name == 'VolumeEntry') {
+    if (/** @type {!FilesAppEntry} */ (entry).type_name == 'VolumeEntry') {
       const volumeEntry = /** @type {VolumeEntry} */ (entry);
       volumeEntry.setPrefix(this);
     }
@@ -683,8 +678,8 @@ export class VolumeEntry {
    * This method is specific to VolumeEntry/EntryList instance.
    */
   removeAllByRootType(rootType) {
-    this.children_ =
-        this.children_.filter(entry => entry.rootType !== rootType);
+    this.children_ = this.children_.filter(
+        entry => /** @type {!FilesAppEntry} */ (entry).rootType !== rootType);
   }
 
   /**
@@ -814,14 +809,16 @@ export class FakeEntryImpl {
   /**
    * FakeEntry is used as root, so doesn't have a parent and should return
    * itself.
-   *
-   *  @override
+   * @param {(function((DirectoryEntry|FilesAppDirEntry)):void)=} success
+   *     callback, it returns itself since EntryList is intended to be used as
+   * root node and the Web Standard says to do so.
+   * @param {function(Error)=} _error callback, not used for this
+   *     implementation.
    */
-  getParent(success, error) {
+  getParent(success, _error) {
     setTimeout((self) => success(self), 0, this);
   }
 
-  /** @override */
   toURL() {
     let url = 'fake-entry://' + this.rootType;
     if (this.fileCategory) {
@@ -854,18 +851,17 @@ export class FakeEntryImpl {
   }
 
   /**
-   * @override
+   * @param {function({modificationTime: Date, size: number}): void} success
+   * @param {function(FileError)=} _error
    */
-  getMetadata(success, error) {
+  getMetadata(success, _error) {
     setTimeout(() => success({modificationTime: new Date(), size: 0}));
   }
 
-  /** @override */
   get isNativeType() {
     return false;
   }
 
-  /** @override */
   getNativeEntry() {
     return null;
   }
@@ -873,7 +869,6 @@ export class FakeEntryImpl {
   /**
    * @return {!DirectoryReader} Returns a reader compatible with
    * DirectoryEntry.createReader (from Web Standards) that reads 0 entries.
-   * @override
    */
   createReader() {
     return new StaticReader([]);
@@ -971,7 +966,6 @@ export class GuestOsPlaceholder extends FakeEntryImpl {
   }
 
   /**
-   * @override
    * String used to determine the icon.
    * @return {string}
    */

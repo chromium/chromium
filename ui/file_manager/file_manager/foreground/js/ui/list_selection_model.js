@@ -21,7 +21,7 @@ export class ListSelectionModel extends EventTarget {
     this.selectedIndexes_ = [];
 
     // True if any item could be lead or anchor. False if only selected ones.
-    this.independentLeadItem_ = false;
+    this.independentLeadItem = false;
 
     this.leadIndex_ = -1;
     this.oldLeadIndex_ = null;
@@ -327,7 +327,7 @@ export class ListSelectionModel extends EventTarget {
     index = Math.max(-1, Math.min(this.length_ - 1, index));
     // On Mac and ChromeOS lead and anchor items are forced to be among
     // selected items. This rule is not enforces until end of batch update.
-    if (!this.changeCount_ && !this.independentLeadItem_ &&
+    if (!this.changeCount_ && !this.independentLeadItem &&
         !this.getIndexSelected(index)) {
       const index2 = this.getNearestSelectedIndex_(index);
       index = index2;
