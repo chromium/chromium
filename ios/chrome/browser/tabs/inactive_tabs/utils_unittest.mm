@@ -4,6 +4,7 @@
 
 #import "ios/chrome/browser/tabs/inactive_tabs/utils.h"
 
+#import "base/strings/sys_string_conversions.h"
 #import "base/test/scoped_feature_list.h"
 #import "base/test/task_environment.h"
 #import "ios/chrome/browser/ntp/new_tab_page_tab_helper.h"
@@ -21,6 +22,8 @@
 #import "ios/chrome/browser/tabs/inactive_tabs/utils.h"
 #import "ios/chrome/browser/web/web_navigation_util.h"
 #import "ios/chrome/test/ios_chrome_scoped_testing_local_state.h"
+#import "ios/web/public/session/crw_navigation_item_storage.h"
+#import "ios/web/public/session/crw_session_storage.h"
 #import "ios/web/public/test/fakes/fake_navigation_manager.h"
 #import "ios/web/public/test/fakes/fake_web_state.h"
 #import "ios/web/public/test/web_task_environment.h"
@@ -75,6 +78,35 @@ class InactiveTabsUtilsTest : public PlatformTest {
     web_state->SetLastActiveTime(base::Time::Now() -
                                  base::Days(inactivity_days_number));
     return web_state;
+  }
+
+  CRWSessionStorage* SessionStorage() {
+    CRWSessionStorage* session_storage = [[CRWSessionStorage alloc] init];
+    session_storage.stableIdentifier = [[NSUUID UUID] UUIDString];
+    session_storage.uniqueIdentifier = web::WebStateID::NewUnique();
+    // Create an item storage.
+    CRWNavigationItemStorage* item_storage =
+        [[CRWNavigationItemStorage alloc] init];
+    item_storage.virtualURL = GURL("http://init.test");
+    item_storage.referrer =
+        web::Referrer(GURL("http://referrer.url"), web::ReferrerPolicyDefault);
+    item_storage.timestamp = base::Time::Now();
+    item_storage.title = base::SysNSStringToUTF16(@"Title");
+    item_storage.HTTPRequestHeaders = @{@"HeaderKey" : @"HeaderValue"};
+    session_storage.itemStorages = @[ item_storage ];
+    session_storage.lastCommittedItemIndex = 0;
+    return session_storage;
+  }
+
+  int InsertNewWebStateWithSessionStorage(Browser* browser,
+                                          CRWSessionStorage* session_storage) {
+    std::unique_ptr<web::WebState> web_state =
+        web::WebState::CreateWithStorageSession(
+            web::WebState::CreateParams(browser->GetBrowserState()),
+            session_storage);
+    return browser->GetWebStateList()->InsertWebState(
+        0, std::move(web_state), WebStateList::INSERT_ACTIVATE,
+        WebStateOpener());
   }
 
   void CheckOrder(WebStateList* web_state_list,
@@ -498,4 +530,87 @@ TEST_F(InactiveTabsUtilsTest, EnsurePreferencePriority) {
 
   std::vector<int> expected_active_order = {10, 3};
   CheckOrder(active_web_state_list, expected_active_order);
+}
+
+// Checks that Inactive Tabs migration method RestoreAllInactiveTabs filters out
+// duplicates across browsers.
+TEST_F(InactiveTabsUtilsTest, RestoreAllInactiveTabsRemovesCrossDuplicates) {
+  // Create a session storage.
+  CRWSessionStorage* session_storage = SessionStorage();
+
+  // Create and insert an active tab with the session storage.
+  InsertNewWebStateWithSessionStorage(browser_active_.get(), session_storage);
+
+  // Create and insert an inactive tab with the same session storage.
+  InsertNewWebStateWithSessionStorage(browser_inactive_.get(), session_storage);
+
+  // Migrate back all inactive tabs to the active browser.
+  RestoreAllInactiveTabs(browser_inactive_.get(), browser_active_.get());
+
+  EXPECT_EQ(browser_active_->GetWebStateList()->count(), 1);
+  EXPECT_EQ(browser_inactive_->GetWebStateList()->count(), 0);
+}
+
+// Checks that Inactive Tabs migration method MoveTabsFromInactiveToActive
+// filters out duplicates across browsers.
+TEST_F(InactiveTabsUtilsTest,
+       MoveTabsFromInactiveToActiveRemovesCrossDuplicates) {
+  // No inactive tabs on iPad.
+  if (ui::GetDeviceFormFactor() == ui::DEVICE_FORM_FACTOR_TABLET) {
+    return;
+  }
+  base::test::ScopedFeatureList feature_list;
+  std::map<std::string, std::string> parameters;
+  parameters[kTabInactivityThresholdParameterName] =
+      kTabInactivityThresholdOneWeekParam;
+  feature_list.InitAndEnableFeatureWithParameters(kTabInactivityThreshold,
+                                                  parameters);
+
+  // Create a session storage for a recent tab.
+  CRWSessionStorage* session_storage = SessionStorage();
+  session_storage.lastActiveTime = base::Time::Now();
+
+  // Create and insert an active tab with the session storage.
+  InsertNewWebStateWithSessionStorage(browser_active_.get(), session_storage);
+
+  // Create and insert an inactive tab with the same session storage.
+  InsertNewWebStateWithSessionStorage(browser_inactive_.get(), session_storage);
+
+  // Migrate back all inactive tabs to the active browser.
+  MoveTabsFromInactiveToActive(browser_inactive_.get(), browser_active_.get());
+
+  EXPECT_EQ(browser_active_->GetWebStateList()->count(), 1);
+  EXPECT_EQ(browser_inactive_->GetWebStateList()->count(), 0);
+}
+
+// Checks that Inactive Tabs migration method MoveTabsFromActiveToInactive
+// filters out duplicates across browsers.
+TEST_F(InactiveTabsUtilsTest,
+       MoveTabsFromActiveToInactiveRemovesCrossDuplicates) {
+  // No inactive tabs on iPad.
+  if (ui::GetDeviceFormFactor() == ui::DEVICE_FORM_FACTOR_TABLET) {
+    return;
+  }
+  base::test::ScopedFeatureList feature_list;
+  std::map<std::string, std::string> parameters;
+  parameters[kTabInactivityThresholdParameterName] =
+      kTabInactivityThresholdOneWeekParam;
+  feature_list.InitAndEnableFeatureWithParameters(kTabInactivityThreshold,
+                                                  parameters);
+
+  // Create a session storage for an old tab.
+  CRWSessionStorage* session_storage = SessionStorage();
+  session_storage.lastActiveTime = base::Time::Now() - base::Days(10);
+
+  // Create and insert an active tab with the session storage.
+  InsertNewWebStateWithSessionStorage(browser_active_.get(), session_storage);
+
+  // Create and insert an inactive tab with the same session storage.
+  InsertNewWebStateWithSessionStorage(browser_inactive_.get(), session_storage);
+
+  // Migrate back all inactive tabs to the active browser.
+  MoveTabsFromActiveToInactive(browser_active_.get(), browser_inactive_.get());
+
+  EXPECT_EQ(browser_active_->GetWebStateList()->count(), 0);
+  EXPECT_EQ(browser_inactive_->GetWebStateList()->count(), 1);
 }
