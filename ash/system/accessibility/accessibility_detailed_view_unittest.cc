@@ -586,18 +586,7 @@ class AccessibilityDetailedViewTest : public AshTestBase,
   base::test::ScopedFeatureList scoped_feature_list_;
 };
 
-class AccessibilityDetailedViewQsRevampTest
-    : public AccessibilityDetailedViewTest {
- public:
-  AccessibilityDetailedViewQsRevampTest() {
-    feature_list_.InitAndEnableFeature(features::kQsRevamp);
-  }
-
- private:
-  base::test::ScopedFeatureList feature_list_;
-};
-
-TEST_F(AccessibilityDetailedViewQsRevampTest, ListItemsAreInRoundedContainer) {
+TEST_F(AccessibilityDetailedViewTest, ListItemsAreInRoundedContainer) {
   CreateDetailedMenu();
   auto has_rounded_container_parent = [](views::View* view) -> bool {
     return views::IsViewClass<RoundedContainer>(view->parent());
@@ -622,7 +611,7 @@ TEST_F(AccessibilityDetailedViewQsRevampTest, ListItemsAreInRoundedContainer) {
   CloseDetailMenu();
 }
 
-TEST_F(AccessibilityDetailedViewQsRevampTest, ContainerCount) {
+TEST_F(AccessibilityDetailedViewTest, ContainerCount) {
   CreateDetailedMenu();
   // All features are disabled, so there should only be one container in the
   // scroll list, for the main item list.
@@ -637,8 +626,7 @@ TEST_F(AccessibilityDetailedViewQsRevampTest, ContainerCount) {
   CloseDetailMenu();
 }
 
-TEST_F(AccessibilityDetailedViewQsRevampTest,
-       TopsViewsAreEmptyWithNoFeaturesEnabled) {
+TEST_F(AccessibilityDetailedViewTest, TopsViewsAreEmptyWithNoFeaturesEnabled) {
   CreateDetailedMenu();
 
   // By default none of the accessibility features are enabled, so none of the
@@ -664,7 +652,7 @@ TEST_F(AccessibilityDetailedViewQsRevampTest,
 
 // Verifies that pressing the tab key moves from row to row. In particular,
 // this verifies that the toggle button does not take focus.
-TEST_F(AccessibilityDetailedViewQsRevampTest, TabMovesFocusBetweenRows) {
+TEST_F(AccessibilityDetailedViewTest, TabMovesFocusBetweenRows) {
   CreateDetailedMenu();
   spoken_feedback_view()->RequestFocus();
   EXPECT_TRUE(spoken_feedback_view()->HasFocus());
@@ -702,7 +690,7 @@ TEST_F(AccessibilityDetailedViewQsRevampTest, TabMovesFocusBetweenRows) {
   EXPECT_TRUE(sticky_keys_view()->HasFocus());
 }
 
-TEST_F(AccessibilityDetailedViewQsRevampTest, SpokenFeedbackTopView) {
+TEST_F(AccessibilityDetailedViewTest, SpokenFeedbackTopView) {
   EnableSpokenFeedback(true);
   CreateDetailedMenu();
   ASSERT_TRUE(spoken_feedback_top_view());
@@ -715,7 +703,7 @@ TEST_F(AccessibilityDetailedViewQsRevampTest, SpokenFeedbackTopView) {
   EXPECT_FALSE(controller()->spoken_feedback().enabled());
 }
 
-TEST_F(AccessibilityDetailedViewQsRevampTest, SelectToSpeakTopView) {
+TEST_F(AccessibilityDetailedViewTest, SelectToSpeakTopView) {
   EnableSelectToSpeak(true);
   CreateDetailedMenu();
   ASSERT_TRUE(select_to_speak_top_view());
@@ -728,7 +716,7 @@ TEST_F(AccessibilityDetailedViewQsRevampTest, SelectToSpeakTopView) {
   EXPECT_FALSE(controller()->select_to_speak().enabled());
 }
 
-TEST_F(AccessibilityDetailedViewQsRevampTest, DictationTopView) {
+TEST_F(AccessibilityDetailedViewTest, DictationTopView) {
   EnableDictation(true);
   CreateDetailedMenu();
   ASSERT_TRUE(dictation_top_view());
@@ -741,7 +729,7 @@ TEST_F(AccessibilityDetailedViewQsRevampTest, DictationTopView) {
   EXPECT_FALSE(controller()->dictation().enabled());
 }
 
-TEST_F(AccessibilityDetailedViewQsRevampTest, HighContrastTopView) {
+TEST_F(AccessibilityDetailedViewTest, HighContrastTopView) {
   EnableHighContrast(true);
   CreateDetailedMenu();
   ASSERT_TRUE(high_contrast_top_view());
@@ -754,7 +742,7 @@ TEST_F(AccessibilityDetailedViewQsRevampTest, HighContrastTopView) {
   EXPECT_FALSE(controller()->high_contrast().enabled());
 }
 
-TEST_F(AccessibilityDetailedViewQsRevampTest, ScreenMagnifierTopView) {
+TEST_F(AccessibilityDetailedViewTest, ScreenMagnifierTopView) {
   Shell::Get()->accessibility_delegate()->SetMagnifierEnabled(true);
   CreateDetailedMenu();
   ASSERT_TRUE(screen_magnifier_top_view());
@@ -771,7 +759,7 @@ TEST_F(AccessibilityDetailedViewQsRevampTest, ScreenMagnifierTopView) {
   EXPECT_FALSE(Shell::Get()->accessibility_delegate()->IsMagnifierEnabled());
 }
 
-TEST_F(AccessibilityDetailedViewQsRevampTest, DockedMagnifierTopView) {
+TEST_F(AccessibilityDetailedViewTest, DockedMagnifierTopView) {
   SetDockedMagnifierEnabled(true);
   CreateDetailedMenu();
   ASSERT_TRUE(docked_magnifier_top_view());
@@ -784,7 +772,7 @@ TEST_F(AccessibilityDetailedViewQsRevampTest, DockedMagnifierTopView) {
   EXPECT_FALSE(Shell::Get()->docked_magnifier_controller()->GetEnabled());
 }
 
-TEST_F(AccessibilityDetailedViewQsRevampTest, LargeCursorTopView) {
+TEST_F(AccessibilityDetailedViewTest, LargeCursorTopView) {
   EnableLargeCursor(true);
   CreateDetailedMenu();
   ASSERT_TRUE(large_cursor_top_view());
@@ -797,7 +785,7 @@ TEST_F(AccessibilityDetailedViewQsRevampTest, LargeCursorTopView) {
   EXPECT_FALSE(controller()->large_cursor().enabled());
 }
 
-TEST_F(AccessibilityDetailedViewQsRevampTest, LiveCaptionTopView) {
+TEST_F(AccessibilityDetailedViewTest, LiveCaptionTopView) {
   EnableLiveCaption(true);
   CreateDetailedMenu();
   ASSERT_TRUE(live_caption_top_view());
@@ -810,7 +798,7 @@ TEST_F(AccessibilityDetailedViewQsRevampTest, LiveCaptionTopView) {
   EXPECT_FALSE(controller()->live_caption().enabled());
 }
 
-TEST_F(AccessibilityDetailedViewQsRevampTest, AutoClickTopView) {
+TEST_F(AccessibilityDetailedViewTest, AutoClickTopView) {
   EnableAutoclick(true);
   CreateDetailedMenu();
   ASSERT_TRUE(autoclick_top_view());
@@ -823,7 +811,7 @@ TEST_F(AccessibilityDetailedViewQsRevampTest, AutoClickTopView) {
   EXPECT_FALSE(controller()->autoclick().enabled());
 }
 
-TEST_F(AccessibilityDetailedViewQsRevampTest, VirtualKeyboardTopView) {
+TEST_F(AccessibilityDetailedViewTest, VirtualKeyboardTopView) {
   EnableVirtualKeyboard(true);
   CreateDetailedMenu();
   ASSERT_TRUE(virtual_keyboard_top_view());
@@ -836,7 +824,7 @@ TEST_F(AccessibilityDetailedViewQsRevampTest, VirtualKeyboardTopView) {
   EXPECT_FALSE(controller()->virtual_keyboard().enabled());
 }
 
-TEST_F(AccessibilityDetailedViewQsRevampTest, MonoAudioTopView) {
+TEST_F(AccessibilityDetailedViewTest, MonoAudioTopView) {
   EnableMonoAudio(true);
   CreateDetailedMenu();
   ASSERT_TRUE(mono_audio_top_view());
@@ -849,7 +837,7 @@ TEST_F(AccessibilityDetailedViewQsRevampTest, MonoAudioTopView) {
   EXPECT_FALSE(controller()->mono_audio().enabled());
 }
 
-TEST_F(AccessibilityDetailedViewQsRevampTest, CaretHighlightTopView) {
+TEST_F(AccessibilityDetailedViewTest, CaretHighlightTopView) {
   SetCaretHighlightEnabled(true);
   CreateDetailedMenu();
   ASSERT_TRUE(caret_highlight_top_view());
@@ -862,7 +850,7 @@ TEST_F(AccessibilityDetailedViewQsRevampTest, CaretHighlightTopView) {
   EXPECT_FALSE(controller()->caret_highlight().enabled());
 }
 
-TEST_F(AccessibilityDetailedViewQsRevampTest, HighlightMouseCursorTopView) {
+TEST_F(AccessibilityDetailedViewTest, HighlightMouseCursorTopView) {
   SetCursorHighlightEnabled(true);
   CreateDetailedMenu();
   ASSERT_TRUE(highlight_mouse_cursor_top_view());
@@ -875,7 +863,7 @@ TEST_F(AccessibilityDetailedViewQsRevampTest, HighlightMouseCursorTopView) {
   EXPECT_FALSE(controller()->cursor_highlight().enabled());
 }
 
-TEST_F(AccessibilityDetailedViewQsRevampTest, HighlightKeyboardFocusTopView) {
+TEST_F(AccessibilityDetailedViewTest, HighlightKeyboardFocusTopView) {
   SetFocusHighlightEnabled(true);
   CreateDetailedMenu();
   ASSERT_TRUE(highlight_keyboard_focus_top_view());
@@ -888,7 +876,7 @@ TEST_F(AccessibilityDetailedViewQsRevampTest, HighlightKeyboardFocusTopView) {
   EXPECT_FALSE(controller()->focus_highlight().enabled());
 }
 
-TEST_F(AccessibilityDetailedViewQsRevampTest, StickyKeysTopView) {
+TEST_F(AccessibilityDetailedViewTest, StickyKeysTopView) {
   EnableStickyKeys(true);
   CreateDetailedMenu();
   ASSERT_TRUE(sticky_keys_top_view());
@@ -901,7 +889,7 @@ TEST_F(AccessibilityDetailedViewQsRevampTest, StickyKeysTopView) {
   EXPECT_FALSE(controller()->sticky_keys().enabled());
 }
 
-TEST_F(AccessibilityDetailedViewQsRevampTest, SwitchAccessTopView) {
+TEST_F(AccessibilityDetailedViewTest, SwitchAccessTopView) {
   // Don't show the confirmation dialog when disabling switch access, so the
   // feature will be disabled immediately.
   controller()->DisableSwitchAccessDisableConfirmationDialogTesting();
@@ -918,7 +906,7 @@ TEST_F(AccessibilityDetailedViewQsRevampTest, SwitchAccessTopView) {
   EXPECT_FALSE(controller()->switch_access().enabled());
 }
 
-TEST_F(AccessibilityDetailedViewQsRevampTest, ColorCorrectionTopView) {
+TEST_F(AccessibilityDetailedViewTest, ColorCorrectionTopView) {
   EnableColorCorrection(true);
   CreateDetailedMenu();
   ASSERT_TRUE(color_correction_top_view());

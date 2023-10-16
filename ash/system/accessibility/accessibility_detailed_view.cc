@@ -10,7 +10,6 @@
 #include "ash/accessibility/accessibility_controller_impl.h"
 #include "ash/accessibility/accessibility_delegate.h"
 #include "ash/accessibility/magnifier/docked_magnifier_controller.h"
-#include "ash/constants/ash_features.h"
 #include "ash/constants/ash_pref_names.h"
 #include "ash/public/cpp/ash_view_ids.h"
 #include "ash/public/cpp/system_tray_client.h"
@@ -35,7 +34,6 @@
 #include "components/prefs/pref_service.h"
 #include "components/soda/soda_installer.h"
 #include "components/vector_icons/vector_icons.h"
-#include "third_party/abseil-cpp/absl/types/optional.h"
 #include "ui/accessibility/accessibility_features.h"
 #include "ui/base/l10n/l10n_util.h"
 #include "ui/base/metadata/metadata_impl_macros.h"
@@ -43,7 +41,6 @@
 #include "ui/gfx/paint_vector_icon.h"
 #include "ui/gfx/vector_icon_types.h"
 #include "ui/views/accessibility/view_accessibility.h"
-#include "ui/views/controls/separator.h"
 #include "ui/views/view_class_properties.h"
 #include "ui/views/view_utils.h"
 
@@ -96,17 +93,13 @@ void UpdateToggleState(HoverHighlightView* item, bool toggled) {
     return;
   }
   views::View* right_view = item->right_view();
-  // The right view is either an enterprise icon or a `TrayToggleButton`.
-  // For QsRevamp: the right view is either an enterprise icon or a `Switch`.
-  if (!features::IsQsRevampEnabled()) {
-    if (views::IsViewClass<TrayToggleButton>(right_view)) {
-      TrayToggleButton* button = static_cast<TrayToggleButton*>(right_view);
-      button->AnimateIsOn(toggled);
-    }
-  } else if (views::IsViewClass<Switch>(right_view)) {
+
+  // The right view is either an enterprise icon or a `Switch`.
+  if (views::IsViewClass<Switch>(right_view)) {
     Switch* button = static_cast<Switch*>(right_view);
     button->AnimateIsOn(toggled);
   }
+
   // The entire row is treated as one element for accessibility.
   item->SetAccessibilityState(
       toggled ? HoverHighlightView::AccessibilityState::CHECKED_CHECKBOX
@@ -118,15 +111,8 @@ void UpdateToggleState(HoverHighlightView* item, bool toggled) {
 void UpdateFeatureState(bool enabled,
                         HoverHighlightView* view1,
                         HoverHighlightView* view2) {
-  if (features::IsQsRevampEnabled()) {
-    // QsRevamp uses toggle buttons.
-    UpdateToggleState(view1, enabled);
-    UpdateToggleState(view2, enabled);
-    return;
-  }
-  // Pre-QsRevamp uses check marks.
-  TrayPopupUtils::UpdateCheckMarkVisibility(view1, enabled);
-  TrayPopupUtils::UpdateCheckMarkVisibility(view2, enabled);
+  UpdateToggleState(view1, enabled);
+  UpdateToggleState(view2, enabled);
 }
 
 }  // namespace
@@ -136,8 +122,7 @@ void UpdateFeatureState(bool enabled,
 
 AccessibilityDetailedView::AccessibilityDetailedView(
     DetailedViewDelegate* delegate)
-    : TrayDetailedView(delegate),
-      is_qs_revamp_enabled_(features::IsQsRevampEnabled()) {
+    : TrayDetailedView(delegate) {
   Reset();
   AppendAccessibilityList();
   CreateTitleRow(IDS_ASH_STATUS_TRAY_ACCESSIBILITY_TITLE);
@@ -270,23 +255,19 @@ void AccessibilityDetailedView::OnAccessibilityStatusChanged() {
 void AccessibilityDetailedView::AppendAccessibilityList() {
   CreateScrollableList();
 
-  if (is_qs_revamp_enabled_) {
-    auto top_container = std::make_unique<RoundedContainer>();
-    AddEnabledFeatures(top_container.get());
+  auto top_container = std::make_unique<RoundedContainer>();
+  AddEnabledFeatures(top_container.get());
 
-    // If enabled features were added, add the top container and some padding.
-    if (!top_container->children().empty()) {
-      auto* view = scroll_content()->AddChildView(std::move(top_container));
-      constexpr auto kTopContainerMargins = gfx::Insets::TLBR(0, 0, 8, 0);
-      view->SetProperty(views::kMarginsKey, kTopContainerMargins);
-    }
-
-    views::View* main_container =
-        scroll_content()->AddChildView(std::make_unique<RoundedContainer>());
-    AddAllFeatures(main_container);
-  } else {
-    AddAllFeatures(scroll_content());
+  // If enabled features were added, add the top container and some padding.
+  if (!top_container->children().empty()) {
+    auto* view = scroll_content()->AddChildView(std::move(top_container));
+    constexpr auto kTopContainerMargins = gfx::Insets::TLBR(0, 0, 8, 0);
+    view->SetProperty(views::kMarginsKey, kTopContainerMargins);
   }
+
+  views::View* main_container =
+      scroll_content()->AddChildView(std::make_unique<RoundedContainer>());
+  AddAllFeatures(main_container);
 }
 
 void AccessibilityDetailedView::AddEnabledFeatures(views::View* container) {
@@ -413,19 +394,6 @@ void AccessibilityDetailedView::AddAllFeatures(views::View* container) {
 
   if (controller->IsLiveCaptionSettingVisibleInTray()) {
     live_caption_view_ = AddLiveCaptionView(container);
-  }
-
-  // QsRevamp does not use a separator or sub-header.
-  if (!is_qs_revamp_enabled_) {
-    if (controller->IsAdditionalSettingsSeparatorVisibleInTray()) {
-      container->AddChildView(TrayPopupUtils::CreateListSubHeaderSeparator());
-    }
-
-    if (controller->IsAdditionalSettingsViewVisibleInTray()) {
-      AddScrollListSubHeader(
-          container, gfx::kNoneIcon,
-          IDS_ASH_STATUS_TRAY_ACCESSIBILITY_ADDITIONAL_SETTINGS);
-    }
   }
 
   if (controller->IsLargeCursorSettingVisibleInTray()) {
@@ -576,9 +544,7 @@ HoverHighlightView* AccessibilityDetailedView::AddLargeCursorView(
   auto* controller = Shell::Get()->accessibility_controller();
   bool checked = controller->large_cursor().enabled();
   return AddScrollListFeatureItem(
-      container,
-      is_qs_revamp_enabled_ ? kQuickSettingsA11yLargeMouseCursorIcon
-                            : gfx::kNoneIcon,
+      container, kQuickSettingsA11yLargeMouseCursorIcon,
       l10n_util::GetStringUTF16(IDS_ASH_STATUS_TRAY_ACCESSIBILITY_LARGE_CURSOR),
       checked, controller->IsEnterpriseIconVisibleForLargeCursor());
 }
@@ -588,8 +554,7 @@ HoverHighlightView* AccessibilityDetailedView::AddMonoAudioView(
   auto* controller = Shell::Get()->accessibility_controller();
   bool checked = controller->mono_audio().enabled();
   return AddScrollListFeatureItem(
-      container,
-      is_qs_revamp_enabled_ ? kQuickSettingsA11yMonoAudioIcon : gfx::kNoneIcon,
+      container, kQuickSettingsA11yMonoAudioIcon,
       l10n_util::GetStringUTF16(IDS_ASH_STATUS_TRAY_ACCESSIBILITY_MONO_AUDIO),
       checked, controller->IsEnterpriseIconVisibleForMonoAudio());
 }
@@ -599,9 +564,7 @@ HoverHighlightView* AccessibilityDetailedView::AddCaretHighlightView(
   auto* controller = Shell::Get()->accessibility_controller();
   bool checked = controller->caret_highlight().enabled();
   return AddScrollListFeatureItem(
-      container,
-      is_qs_revamp_enabled_ ? kQuickSettingsA11yHighlightTextCaretIcon
-                            : gfx::kNoneIcon,
+      container, kQuickSettingsA11yHighlightTextCaretIcon,
       l10n_util::GetStringUTF16(
           IDS_ASH_STATUS_TRAY_ACCESSIBILITY_CARET_HIGHLIGHT),
       checked, controller->IsEnterpriseIconVisibleForCaretHighlight());
@@ -612,9 +575,7 @@ HoverHighlightView* AccessibilityDetailedView::AddHighlightMouseCursorView(
   auto* controller = Shell::Get()->accessibility_controller();
   bool checked = controller->cursor_highlight().enabled();
   return AddScrollListFeatureItem(
-      container,
-      is_qs_revamp_enabled_ ? kQuickSettingsA11yHighlightMouseCursorIcon
-                            : gfx::kNoneIcon,
+      container, kQuickSettingsA11yHighlightMouseCursorIcon,
       l10n_util::GetStringUTF16(
           IDS_ASH_STATUS_TRAY_ACCESSIBILITY_HIGHLIGHT_MOUSE_CURSOR),
       checked, controller->IsEnterpriseIconVisibleForCursorHighlight());
@@ -625,9 +586,7 @@ HoverHighlightView* AccessibilityDetailedView::AddHighlightKeyboardFocusView(
   auto* controller = Shell::Get()->accessibility_controller();
   bool checked = controller->focus_highlight().enabled();
   return AddScrollListFeatureItem(
-      container,
-      is_qs_revamp_enabled_ ? kQuickSettingsA11yHighlightKeyboardFocusIcon
-                            : gfx::kNoneIcon,
+      container, kQuickSettingsA11yHighlightKeyboardFocusIcon,
       l10n_util::GetStringUTF16(
           IDS_ASH_STATUS_TRAY_ACCESSIBILITY_HIGHLIGHT_KEYBOARD_FOCUS),
       checked, controller->IsEnterpriseIconVisibleForFocusHighlight());
@@ -638,8 +597,7 @@ HoverHighlightView* AccessibilityDetailedView::AddStickyKeysView(
   auto* controller = Shell::Get()->accessibility_controller();
   bool checked = controller->sticky_keys().enabled();
   return AddScrollListFeatureItem(
-      container,
-      is_qs_revamp_enabled_ ? kQuickSettingsA11yStickyKeysIcon : gfx::kNoneIcon,
+      container, kQuickSettingsA11yStickyKeysIcon,
       l10n_util::GetStringUTF16(IDS_ASH_STATUS_TRAY_ACCESSIBILITY_STICKY_KEYS),
       checked, controller->IsEnterpriseIconVisibleForStickyKeys());
 }
@@ -650,14 +608,8 @@ HoverHighlightView* AccessibilityDetailedView::AddScrollListFeatureItem(
     const std::u16string& text,
     bool checked,
     bool enterprise_managed) {
-  if (is_qs_revamp_enabled_) {
-    // QsRevamp uses items with a toggle button on the right.
-    return AddScrollListToggleItem(container, icon, text, checked,
-                                   enterprise_managed);
-  }
-  // Pre-QsRevamp uses items with check marks on the right.
-  return AddScrollListCheckableItem(container, icon, text, checked,
-                                    enterprise_managed);
+  return AddScrollListToggleItem(container, icon, text, checked,
+                                 enterprise_managed);
 }
 
 HoverHighlightView* AccessibilityDetailedView::AddScrollListToggleItem(
@@ -681,14 +633,8 @@ HoverHighlightView* AccessibilityDetailedView::AddScrollListToggleItem(
   } else {
     // Create a non-clickable non-focusable toggle button on the right.
     std::unique_ptr<views::ToggleButton> toggle;
-    if (!is_qs_revamp_enabled_) {
-      toggle = std::make_unique<TrayToggleButton>(
-          views::Button::PressedCallback(),
-          /*accessible_name_id=*/absl::nullopt,
-          /*use_empty_border=*/false);
-    } else {
-      toggle = std::make_unique<Switch>();
-    }
+
+    toggle = std::make_unique<Switch>();
     toggle->SetIsOn(checked);
     toggle->SetCanProcessEventsWithinSubtree(false);
     toggle->SetFocusBehavior(views::View::FocusBehavior::NEVER);

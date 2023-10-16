@@ -1451,20 +1451,6 @@ bool AccessibilityControllerImpl::IsPrimarySettingsViewVisibleInTray() {
           IsLiveCaptionSettingVisibleInTray());
 }
 
-bool AccessibilityControllerImpl::IsAdditionalSettingsViewVisibleInTray() {
-  return (IsLargeCursorSettingVisibleInTray() ||
-          IsMonoAudioSettingVisibleInTray() ||
-          IsCaretHighlightSettingVisibleInTray() ||
-          IsCursorHighlightSettingVisibleInTray() ||
-          IsFocusHighlightSettingVisibleInTray() ||
-          IsStickyKeysSettingVisibleInTray());
-}
-
-bool AccessibilityControllerImpl::IsAdditionalSettingsSeparatorVisibleInTray() {
-  return IsPrimarySettingsViewVisibleInTray() &&
-         IsAdditionalSettingsViewVisibleInTray();
-}
-
 bool AccessibilityControllerImpl::IsCaretHighlightSettingVisibleInTray() {
   return caret_highlight().IsVisibleInTray();
 }

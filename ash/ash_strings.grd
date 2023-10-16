@@ -1377,9 +1377,6 @@ Style notes:
       <message name="IDS_ASH_STATUS_TRAY_ACCESSIBILITY_SWITCH_ACCESS" desc="The label used in the accessibility menu of the system tray to toggle Switch Access, a feature that allows the entire device to be controlled with as few as 1 switch or button.">
         Switch Access
       </message>
-      <message name="IDS_ASH_STATUS_TRAY_ACCESSIBILITY_ADDITIONAL_SETTINGS" desc="The sub-header label for additional setting in accessibility menu of system tray.">
-        Additional settings
-      </message>
       <message name="IDS_ASH_STATUS_TRAY_ACCESSIBILITY_MONO_AUDIO" desc="The label used in the additional settings of accessibility menu of the system tray to toggle on/off mono audio.">
         Mono audio
       </message>
