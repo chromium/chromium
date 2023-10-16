@@ -17,13 +17,13 @@ import {TableSplitter} from './table_splitter.js';
  */
 export class TableHeader {
   constructor() {
-    /** @private {Table} */
+    /** @private @type {Table} */
     this.table_ = null;
 
-    /** @private {number} */
+    /** @private @type {number} */
     this.batchCount_ = 0;
 
-    /** @private {Element} */
+    /** @private @type {Element} */
     this.headerInner_;
   }
 

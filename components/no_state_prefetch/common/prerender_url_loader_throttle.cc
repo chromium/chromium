@@ -5,6 +5,8 @@
 #include "components/no_state_prefetch/common/prerender_url_loader_throttle.h"
 
 #include "base/functional/bind.h"
+#include "base/location.h"
+#include "base/task/sequenced_task_runner.h"
 #include "build/build_config.h"
 #include "components/no_state_prefetch/common/no_state_prefetch_utils.h"
 #include "content/public/common/content_constants.h"
@@ -56,9 +58,15 @@ void PrerenderURLLoaderThrottle::PrerenderUsed() {
 }
 
 void PrerenderURLLoaderThrottle::DetachFromCurrentSequence() {
-  // This method is only called for synchronous XHR from the main thread which
-  // should not occur during a NoStatePrerender.
-  NOTREACHED();
+  if (destruction_closure_) {
+    destruction_closure_ = base::BindOnce(
+        [](scoped_refptr<base::SequencedTaskRunner> task_runner,
+           base::OnceClosure destruction_closure) {
+          task_runner->PostTask(FROM_HERE, std::move(destruction_closure));
+        },
+        base::SequencedTaskRunner::GetCurrentDefault(),
+        std::move(destruction_closure_));
+  }
 }
 
 void PrerenderURLLoaderThrottle::WillStartRequest(

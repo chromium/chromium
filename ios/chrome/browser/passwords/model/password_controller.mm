@@ -404,13 +404,11 @@ constexpr int kNotifyAutoSigninDuration = 3;  // seconds
   infobars::InfoBarManager* infoBarManager =
       InfoBarManagerImpl::FromWebState(_webState);
 
-  size_t count = infoBarManager->infobar_count();
-  for (size_t i = 0; i < count; i++) {
-    InfoBarIOS* infobar =
-        static_cast<InfoBarIOS*>(infoBarManager->infobar_at(i));
-    if (infobar->infobar_type() == infobarType &&
-        infobar->skip_banner() == manual) {
-      return infobar;
+  for (auto* infobar : infoBarManager->infobars()) {
+    InfoBarIOS* infoBarIOS = static_cast<InfoBarIOS*>(infobar);
+    if (infoBarIOS->infobar_type() == infobarType &&
+        infoBarIOS->skip_banner() == manual) {
+      return infoBarIOS;
     }
   }
 

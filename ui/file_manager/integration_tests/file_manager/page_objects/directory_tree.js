@@ -1385,7 +1385,7 @@ class DirectoryTreeSelectors_ {
    * Return the recipient element of the keyboard event.
    */
   get keyboardRecipient() {
-    return this.useNewTree ? [this.root, 'ul'] : this.root;
+    return this.root;
   }
 
   /**

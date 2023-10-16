@@ -1,14 +1,14 @@
 This is a testharness.js-based test.
 Harness Error. harness_status.status = 1 , harness_status.message = 2 duplicate test names: "fontFeatureSettings of '@font-face { font-feature-settings: "smcp"; }' should be '"smcp"'", "webkitFontFeatureSettings of '@font-face { font-feature-settings: "smcp"; }' should be '"smcp"'"
-PASS 'fontFeatureSettings' in style
-PASS 'webkitFontFeatureSettings' in style
-PASS fontFeatureSettings of '@font-face { font-feature-settings: "smcp"; }' should be '"smcp"'
-PASS webkitFontFeatureSettings of '@font-face { font-feature-settings: "smcp"; }' should be '"smcp"'
-PASS fontFeatureSettings of '@font-face { font-feature-settings: "smcp"; }' should be '"smcp"'
-PASS webkitFontFeatureSettings of '@font-face { font-feature-settings: "smcp"; }' should be '"smcp"'
-PASS fontFeatureSettings of 'font-feature-settings:"smcp" 1' should be '"smcp"'
-PASS webkitFontFeatureSettings of 'font-feature-settings:"smcp" 1' should be '"smcp"'
-PASS fontFeatureSettings of '-webkit-font-feature-settings:"smcp" 1' should be '"smcp"'
-PASS webkitFontFeatureSettings of '-webkit-font-feature-settings:"smcp" 1' should be '"smcp"'
+[PASS] 'fontFeatureSettings' in style
+[PASS] 'webkitFontFeatureSettings' in style
+[PASS] fontFeatureSettings of '@font-face { font-feature-settings: "smcp"; }' should be '"smcp"'
+[PASS] webkitFontFeatureSettings of '@font-face { font-feature-settings: "smcp"; }' should be '"smcp"'
+[PASS] fontFeatureSettings of '@font-face { font-feature-settings: "smcp"; }' should be '"smcp"'
+[PASS] webkitFontFeatureSettings of '@font-face { font-feature-settings: "smcp"; }' should be '"smcp"'
+[PASS] fontFeatureSettings of 'font-feature-settings:"smcp" 1' should be '"smcp"'
+[PASS] webkitFontFeatureSettings of 'font-feature-settings:"smcp" 1' should be '"smcp"'
+[PASS] fontFeatureSettings of '-webkit-font-feature-settings:"smcp" 1' should be '"smcp"'
+[PASS] webkitFontFeatureSettings of '-webkit-font-feature-settings:"smcp" 1' should be '"smcp"'
 Harness: the test ran to completion.
 

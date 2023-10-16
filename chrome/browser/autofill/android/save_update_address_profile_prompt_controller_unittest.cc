@@ -33,6 +33,11 @@
 namespace autofill {
 
 namespace {
+
+using profile_ref = base::optional_ref<const AutofillProfile>;
+using ::testing::AllOf;
+using ::testing::Property;
+
 std::unique_ptr<KeyedService> CreateTestSyncService(
     content::BrowserContext* context) {
   return std::make_unique<syncer::TestSyncService>();
@@ -176,7 +181,7 @@ TEST_F(SaveUpdateAddressProfilePromptControllerTest,
   EXPECT_CALL(
       decision_callback_,
       Run(AutofillClient::SaveAddressProfileOfferUserDecision::kAccepted,
-          profile_));
+          Property(&profile_ref::has_value, false)));
   controller_->OnUserAccepted(env_, mock_caller_);
 }
 
@@ -188,7 +193,7 @@ TEST_F(SaveUpdateAddressProfilePromptControllerTest,
   EXPECT_CALL(
       decision_callback_,
       Run(AutofillClient::SaveAddressProfileOfferUserDecision::kDeclined,
-          profile_));
+          Property(&profile_ref::has_value, false)));
   controller_->OnUserDeclined(env_, mock_caller_);
 }
 
@@ -200,7 +205,7 @@ TEST_F(SaveUpdateAddressProfilePromptControllerTest,
 
   EXPECT_CALL(decision_callback_,
               Run(AutofillClient::SaveAddressProfileOfferUserDecision::kNever,
-                  profile_));
+                  Property(&profile_ref::has_value, false)));
   controller_->OnUserDeclined(env_, mock_caller_);
 }
 
@@ -213,7 +218,8 @@ TEST_F(SaveUpdateAddressProfilePromptControllerTest,
   EXPECT_CALL(
       decision_callback_,
       Run(AutofillClient::SaveAddressProfileOfferUserDecision::kEditAccepted,
-          edited_profile));
+          AllOf(Property(&profile_ref::has_value, true),
+                Property(&profile_ref::value, edited_profile))));
   base::android::ScopedJavaLocalRef<jobject> edited_profile_java =
       edited_profile.CreateJavaObject(
           g_browser_process->GetApplicationLocale());
@@ -239,7 +245,7 @@ TEST_F(SaveUpdateAddressProfilePromptControllerTest,
 
   EXPECT_CALL(decision_callback_,
               Run(AutofillClient::SaveAddressProfileOfferUserDecision::kIgnored,
-                  profile_));
+                  Property(&profile_ref::has_value, false)));
   controller_.reset();
 }
 

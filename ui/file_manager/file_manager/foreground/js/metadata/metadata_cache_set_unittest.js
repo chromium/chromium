@@ -6,21 +6,21 @@ import {assertDeepEquals, assertEquals, assertFalse, assertTrue} from 'chrome://
 
 import {MetadataCacheSet} from './metadata_cache_set.js';
 
-/** @const {!Entry} */
+/** @const @type {!Entry} */
 const entryA = /** @type {!Entry} */ ({
   toURL: function() {
     return 'filesystem://A';
   },
 });
 
-/** @const {!Entry} */
+/** @const @type {!Entry} */
 const entryB = /** @type {!Entry} */ ({
   toURL: function() {
     return 'filesystem://B';
   },
 });
 
-/** @const {!Array<string>} */
+/** @const @type {!Array<string>} */
 const propertyNames = ['thumbnailUrl'];
 
 export function testMetadataCacheSetBasic() {

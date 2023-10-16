@@ -3231,6 +3231,7 @@ Bạn có thể quản lý các tùy chọn cài đặt của tài khoản này 
 <translation id="3521405806571557477">Xoá dữ liệu đã lưu cho <ph name="SITE_NAME" /></translation>
 <translation id="3521606918211282604">Thay đổi dung lượng ổ đĩa</translation>
 <translation id="3522088408596898827">Dung lượng ổ đĩa quá thấp. Hãy giải phóng dung lượng rồi thử lại.</translation>
+<translation id="3522979239100719575">Đang tìm hồ sơ có sẵn. Quá trình này có thể mất vài phút.</translation>
 <translation id="3524518036046613664">Khám phá các thiết bị trên mạng cục bộ của bạn, chẳng hạn như máy in</translation>
 <translation id="3524965460886318643">Xuất hoạt động</translation>
 <translation id="3525426269008462093">Kiểm tra tình trạng đồng bộ hoá thiết bị sau khi thiết lập</translation>
@@ -7824,6 +7825,7 @@ Bạn còn # mật khẩu bị lộ nữa. Trình quản lý mật khẩu của 
 <translation id="7283555985781738399">Chế độ khách</translation>
 <translation id="7284307451964417957">{DAYS,plural, =1{Thiết bị này sẽ được lưu trong 1 ngày và trong thời gian đó, bạn có thể kết nối mà không cần dùng mã. Chế độ này do quản trị viên của bạn thiết lập.}other{Thiết bị này sẽ được lưu trong {DAYS} ngày và trong thời gian đó, bạn có thể kết nối mà không cần dùng mã. Chế độ này do quản trị viên của bạn thiết lập.}}</translation>
 <translation id="7284411326658527427">Mỗi người đều có thể điều chỉnh tài khoản theo cách riêng và bảo mật dữ liệu.</translation>
+<translation id="7286867818472074330">Chọn khoá truy cập</translation>
 <translation id="7287143125007575591">Truy cập bị từ chối.</translation>
 <translation id="7287411021188441799">Khôi phục nền mặc định</translation>
 <translation id="7288676996127329262"><ph name="HORIZONTAL_DPI" />x<ph name="VERTICAL_DPI" /> dpi</translation>

@@ -692,7 +692,7 @@ NGBreakStatus FinishFragmentation(NGBlockNode node,
       // This is the first fragment generated for the node. Avoid breaking
       // inside block-start border, scrollbar and padding, if possible. No valid
       // breakpoints there.
-      const NGFragmentGeometry& geometry = builder->InitialFragmentGeometry();
+      const FragmentGeometry& geometry = builder->InitialFragmentGeometry();
       LayoutUnit block_start_unbreakable_space =
           geometry.border.block_start + geometry.scrollbar.block_start +
           geometry.padding.block_start;
@@ -1285,7 +1285,7 @@ NGConstraintSpace CreateConstraintSpaceForFragmentainer(
 NGBoxFragmentBuilder CreateContainerBuilderForMulticol(
     const NGBlockNode& multicol,
     const NGConstraintSpace& space,
-    const NGFragmentGeometry& fragment_geometry) {
+    const FragmentGeometry& fragment_geometry) {
   const ComputedStyle* style = &multicol.Style();
   NGBoxFragmentBuilder multicol_container_builder(multicol, style, space,
                                                   style->GetWritingDirection());

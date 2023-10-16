@@ -36,7 +36,6 @@
 <translation id="1173894706177603556">पुन: नामाकरण गर्नुहोस्</translation>
 <translation id="1174479719160874822">स्क्रिन सानो भएका खण्डमा Chrome ले मोबाइल साइट प्रयोग गर्न अनुरोध गर्ने छ</translation>
 <translation id="1177863135347784049">अनुकूल</translation>
-<translation id="1178581264944972037">पज गर्नुहोस्</translation>
 <translation id="1181037720776840403">हटाउनुहोस्</translation>
 <translation id="1181366777303791449"><ph name="MAIN_FRAME_ETLD_PLUS_ONE" /> मा</translation>
 <translation id="1193729455103054076">भरपर्दो पासवर्ड प्रयोग गर्ने हो?</translation>
@@ -166,6 +165,7 @@
 <translation id="1922362554271624559">सुझाव गरिएका भाषाहरू</translation>
 <translation id="1924255092154549435">ट्याब एक्स्पान्ड गरियो</translation>
 <translation id="1925021887439448749">आफू अनुकूल पारिएको वेब ठेगाना प्रविष्टि गर्नुहोस्</translation>
+<translation id="1928618076168182477">भिजुअल भ्यू देखाइँदै छ</translation>
 <translation id="1928696683969751773">अपडेटहरू</translation>
 <translation id="19288952978244135">Chrome पुनः खोल्नुहोस्।</translation>
 <translation id="1933845786846280168">चयन गरिएको ट्याब</translation>
@@ -196,6 +196,7 @@
 <translation id="2065944887543506430">{FILE_COUNT,plural, =1{१ वटा डाउनलोड गर्न सकिएन}other{# वटा डाउनलोडहरू गर्न सकिएन}}</translation>
 <translation id="2067805253194386918">पाठ</translation>
 <translation id="2082238445998314030"><ph name="TOTAL_RESULTS" /> को <ph name="RESULT_NUMBER" /> परिणाम</translation>
+<translation id="2091863218454846791">कम्प्याक्ट भ्यू देखाइँदै छ</translation>
 <translation id="2093731487903423814">पछिल्ला १५ मिनेट</translation>
 <translation id="2096012225669085171">यन्त्रहरूभरि सिंक र वैयक्तीकृत गर्नुहोस्</translation>
 <translation id="2100273922101894616">स्वत: साइन-इन</translation>
@@ -474,7 +475,6 @@
 <translation id="3513704683820682405">अग्मेन्टेड रियालिटी</translation>
 <translation id="3518985090088779359">स्वीकार र जारी</translation>
 <translation id="3522247891732774234">अद्यावधिक उपलब्ध छ। थप विकल्पहरू</translation>
-<translation id="3523426587027570423">“यो पेजमा भएको टेक्स्ट सुन्नुहोस्” प्लेयर बन्द गर्न ट्याप गर्नुहोस्।</translation>
 <translation id="3524138585025253783">विकासकर्ताको UI</translation>
 <translation id="3524334353996115845"><ph name="ORIGIN" /> लाई कोड पेस गर्ने व्यक्ति तपाईं नै हो भन्ने कुरा पुष्टि गर्न दिनुहोस्</translation>
 <translation id="3527085408025491307">फोल्डर</translation>
@@ -676,7 +676,6 @@
 <translation id="4640331037679501949">{NUM_PASSWORDS,plural, =1{अरूले देखेको १ पासवर्ड फेला पर्‍यो}other{अरूले देखेका # वटा पासवर्ड फेला परे}}</translation>
 <translation id="4645146721047390964">इन्कोग्निटो मोडमा ब्राउज गर्दा साइटहरूले विज्ञापन पर्सनलाइज गर्ने जस्ता प्रयोजनका लागि विभिन्न साइटमा ब्राउजर प्रयोग गरी गरिएका क्रियाकलाप हेर्न तपाईंका कुकीहरूको प्रयोग गर्न सक्दैनन्। कतिपय साइटका सुविधाहरूले काम नगर्न सक्छन्।</translation>
 <translation id="4650364565596261010">प्रणालीको डिफल्ट सेटिङ</translation>
-<translation id="4654641641922242357">“यो पेजमा भएको टेक्स्ट सुन्नुहोस्” प्लेयर।</translation>
 <translation id="465657074423018424">Safe Browsing नामक सुविधाको सहयोगले तपाईं भ्रामक वेबसाइटहरूबाट सुरक्षित रहनुहुन्छ। तपाईंले यो सेटिङ अफ गर्नुभएको छ भने ब्राउजिङ गर्दा र त्यसमा पनि विशेष गरी पासवर्ड प्रविष्टि गर्दा अझ सतर्क रहनुहोला।</translation>
 <translation id="4662373422909645029">उपनाममा अङ्क प्रयोग गर्न पाइँदैन</translation>
 <translation id="4663499661119906179">तपाईंका लागि सिफारिस गरिएका शीर्ष साइट र समाचारहरू हेर्नुहोस्</translation>
@@ -693,7 +692,6 @@
 <translation id="4710167854527459075">सबैभन्दा नयाँ सुरुमा आउने गरी क्रमबद्ध गर्नुहोस्</translation>
 <translation id="4719927025381752090">अनुवादको गर्न प्रस्ताव गर्नुहोस्</translation>
 <translation id="47217992755561375">तपाईंका लागि सिफारिस गरिएका शीर्ष साइटहरू हेर्नुहोस्</translation>
-<translation id="4731877163452936634">प्लेब्याकको गति: <ph name="PLAYBACK_SPEED" />। प्लेब्याकको गति बदल्न क्लिक गर्नुहोस्।</translation>
 <translation id="4732120983431207637">स्ट्याक Unwinder</translation>
 <translation id="4736934858538408121">भर्चुअल कार्ड</translation>
 <translation id="473775607612524610">अपडेट गर्नुहोस्</translation>
@@ -809,7 +807,6 @@
 <translation id="5226378907213531272">तपाईंले कार प्रयोग गर्दैपिच्छे आफ्नो स्क्रिन अनलक गर्नु पर्ने हुन्छ</translation>
 <translation id="5227554086496586518">खोज परिणामहरू हेर्न ट्याप गर्नुहोस्</translation>
 <translation id="5233638681132016545">नयाँ ट्याब</translation>
-<translation id="5234971936051226002">“यो पेजमा भएको टेक्स्ट सुन्नुहोस्” प्लेयर मिनिमाइज गरिएको छ।</translation>
 <translation id="5235196193381275927">साइन इन गर्ने क्रममा कुनै समस्या आयो</translation>
 <translation id="5246093389635966745">टुलबारको सर्टकट सम्पादन गर्नुहोस्</translation>
 <translation id="5264813352784073502">पछिल्ला २४ घण्टा</translation>
@@ -1105,7 +1102,6 @@
 <translation id="6770602306803890733">तपाईं र वेब प्रयोग गर्ने सम्पूर्ण प्रयोगकर्ताहरूलाई झन् सुरक्षित राख्छ</translation>
 <translation id="6775840696761158817">तपाईंले एड्रेस बार वा खोज बाकसमा ट्याप वा टाइप गर्दा तपाईंलाई तपाईंको डिफल्ट सर्च इन्जिनका सुझावहरू देखाइने छन्। इन्कोग्निटो मोडमा यो सुविधा अफ हुन्छ।</translation>
 <translation id="6785476624617658922">Chrome र ChromeOS का सेवाका अतिरिक्त सर्तहरू</translation>
-<translation id="6790428901817661496">प्ले गर्नुहोस्</translation>
 <translation id="6795633245022906657">तुरुन्तै नयाँ ट्याब खोल्नुहोस्। यो सर्टकट परिवर्तन गर्न सेटिङमा जानुहोस्।</translation>
 <translation id="6802555630140434547">यो विन्डो बन्द गरिने छ</translation>
 <translation id="6811034713472274749">पृष्ठ हेर्नका लागि तयार छ</translation>
@@ -1264,7 +1260,6 @@
 <translation id="757855969265046257">{FILES,plural, =1{<ph name="FILES_DOWNLOADED_ONE" /> फाइल डाउनलोड गरियो}other{<ph name="FILES_DOWNLOADED_MANY" /> फाइलहरू डाउनलोड गरिए}}</translation>
 <translation id="7581273696622423628">सर्वेक्षणमा भाग लिनुहोस्</translation>
 <translation id="7583262514280211622">तपाईंको अध्ययन सूची यहाँ देखिने छ</translation>
-<translation id="7587250070160020374">Chrome अहिले चलिरहेको छ</translation>
 <translation id="7588219262685291874">तपाईंको डिभाइसमा ब्याट्री सेभर मोड अन हुँदा अँध्यारो थिम अन गर्नुहोस्</translation>
 <translation id="7594687499944811403"><ph name="EMBEDDED_ORIGIN" /> लाई <ph name="TOP_ORIGIN" /> का सम्बन्धमा कोड पेस गर्ने व्यक्ति तपाईं नै हो भन्ने कुरा पुष्टि गर्न दिनुहोस्</translation>
 <translation id="7596558890252710462">अपरेटिङ सिस्टम</translation>
@@ -1343,7 +1338,6 @@
 <translation id="7939485076072265087">हाइलाइट गरिएको पाठ समावेश गरी शैलीबद्ध कार्ड बनाउनुहोस्</translation>
 <translation id="7942131818088350342"><ph name="PRODUCT_NAME" /> को म्याद सकिएको छ।</translation>
 <translation id="7944772052836377867">"सिंक" ले तपाईंको पहिचान पुष्टि गर्नु पर्ने हुन्छ</translation>
-<translation id="7945822420239537236"><ph name="NUMBER_OF_SECONDS" /> सेकेन्ड फर्वार्ड गर्नुहोस्</translation>
 <translation id="7947953824732555851">स्वीकार र साइन इन गर्नुहोस्</translation>
 <translation id="7957413488482743710">भर्चुअल कार्डले तपाईंलाई ठगीबाट जोगाउनका निम्ति तपाईंको कार्डको वास्तविक जानकारी लुकाउँछ। <ph name="BEGIN_LINK1" />भर्चुअल कार्डका बारेमा थप जान्नुहोस्<ph name="END_LINK1" /></translation>
 <translation id="7960972236129063347">पेजसम्बन्धी विश्लेषणात्मक डेटा भएको पानामा पछाडि जाने बटन</translation>
@@ -1352,7 +1346,6 @@
 <translation id="7965838025086216108">तपाईं सेभ गरिएका पासवर्डहरू जुनसुकै डिभाइसमा प्रयोग गर्न सक्नुहुन्छ। ती पासवर्डहरू <ph name="ACCOUNT" /> को Google पासवर्ड म्यानेजरमा सेभ गरिन्छन्।</translation>
 <translation id="7968014550143838305">अध्ययन सूचीमा हालियो</translation>
 <translation id="7971136598759319605">१ दिनअघि सक्रिय</translation>
-<translation id="7972866381678406344"><ph name="NUMBER_OF_SECONDS" /> सेकेन्ड पछाडि जानुहोस्</translation>
 <translation id="7975379999046275268"><ph name="BEGIN_NEW" />नयाँ<ph name="END_NEW" /> पृष्ठको पूर्वावलोकन गर्नु…</translation>
 <translation id="7977451675950311423">तपाईंले डेटा चोरीको घटनामा अरूले देखेका पासवर्ड प्रयोग गर्नुभयो भने यसले तपाईंलाई चेतावनी दिन्छ।</translation>
 <translation id="7986497153528221272">पासवर्डहरू हेर्न सर्वप्रथम आफ्नो यन्त्रमा स्क्रिन लक सेट गर्नुहोस्</translation>
@@ -1398,7 +1391,6 @@
 <translation id="8127542551745560481">गृहपृष्ठ सम्पदान गर्नुहोस्</translation>
 <translation id="8130309322784422030">तपाईंले भण्डारण गर्नुभएको युजरनेम र पासवर्ड पुरानो हुन सक्छ</translation>
 <translation id="813082847718468539">साइट जानकारी हेर्नुहोस्</translation>
-<translation id="8136852699834914183">यो पेजमा प्लेब्याक सुविधा उपलब्ध छैन।</translation>
 <translation id="8137562778192957619">तपाईंले यो पासवर्ड याद गरिराख्नु पर्दैन। यो पासवर्ड Google पासवर्ड म्यानेजरमा सेभ गरिने छ।</translation>
 <translation id="8186512483418048923"><ph name="FILES" /> फाइलहरू बाँकी छन्</translation>
 <translation id="8190358571722158785">१ दिन बाँकी छ</translation>
@@ -1547,7 +1539,6 @@
 <translation id="8937772741022875483">तपाईंले Chrome मा गर्नुभएका क्रियाकलाप डिजिटल वेलबिइङबाट हटाउने हो?</translation>
 <translation id="8942627711005830162">अर्को विन्डोमा खोल्नुहोस्</translation>
 <translation id="8945143127965743188"><ph name="LANG" /> - यो भाषा डाउनलोड गर्न सकिएन। पछि फेरि प्रयास गर्नुहोस्।</translation>
-<translation id="8953618380150219653">“यो पेजमा भएको टेक्स्ट सुन्नुहोस्” प्लेयर पूरै स्क्रिनमा खोलिएको छ।</translation>
 <translation id="8955719471735800169">सबैभन्दा माथि फर्कनुहोस्</translation>
 <translation id="8964479563882643397">तपाईं नयाँ इन्कोग्निटो ट्याब खोल्न चाहनुहुन्छ भने मेनु खोल्नुहोस्</translation>
 <translation id="8965591936373831584">विचाराधीन</translation>

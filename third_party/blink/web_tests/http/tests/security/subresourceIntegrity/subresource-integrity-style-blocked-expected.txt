@@ -2,6 +2,6 @@ CONSOLE ERROR: Failed to find a valid digest in the 'integrity' attribute for re
 CONSOLE ERROR: Failed to find a valid digest in the 'integrity' attribute for resource 'http://127.0.0.1:8000/security/subresourceIntegrity/style-2-of-3.css' with computed SHA-384 integrity 'j1bGpDxu0bZAb4jBJzciDWuVUuOTXlLvB9WNKDh7Gik9ygF6CctjgYISUwShHmFM'. The resource has been blocked.
 CONSOLE ERROR: Failed to find a valid digest in the 'integrity' attribute for resource 'http://127.0.0.1:8000/security/subresourceIntegrity/style-3-of-3.css' with computed SHA-512 integrity 'P302RfA5c/H9Ao/miirSIPVBr3uxOdTzm8IzaGwidneeOOwuyTfOhCp8+c1yg+W16rKf1IW/+4TxD0yAKdkV+Q=='. The resource has been blocked.
 This is a testharness.js-based test.
-PASS Subresource integrity blocked style resources
+[PASS] Subresource integrity blocked style resources
 Harness: the test ran to completion.
 

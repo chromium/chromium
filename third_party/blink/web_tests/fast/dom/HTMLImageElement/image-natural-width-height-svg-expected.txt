@@ -1,9 +1,13 @@
 This is a testharness.js-based test.
-PASS naturalWidth/Height of SVG in <img>, width/height in pixels
-FAIL naturalWidth/Height of SVG in <img>, width in pixels; height unspecified assert_equals: expected "500x0" but got "500x150"
-FAIL naturalWidth/Height of SVG in <img>, width in pixels; percentage height assert_equals: expected "500x0" but got "500x150"
-PASS naturalWidth/Height of SVG in <img>, width/height in pixels; viewBox
-FAIL naturalWidth/Height of SVG in <img>, width/height unspecified; viewBox assert_equals: expected "0x0" but got "200x150"
-FAIL naturalWidth/Height of SVG in <img>, width in pixels; height unspecified; viewBox assert_equals: expected "400x0" but got "400x300"
+[PASS] naturalWidth/Height of SVG in <img>, width/height in pixels
+[FAIL] naturalWidth/Height of SVG in <img>, width in pixels; height unspecified
+  assert_equals: expected "500x0" but got "500x150"
+[FAIL] naturalWidth/Height of SVG in <img>, width in pixels; percentage height
+  assert_equals: expected "500x0" but got "500x150"
+[PASS] naturalWidth/Height of SVG in <img>, width/height in pixels; viewBox
+[FAIL] naturalWidth/Height of SVG in <img>, width/height unspecified; viewBox
+  assert_equals: expected "0x0" but got "200x150"
+[FAIL] naturalWidth/Height of SVG in <img>, width in pixels; height unspecified; viewBox
+  assert_equals: expected "400x0" but got "400x300"
 Harness: the test ran to completion.
 

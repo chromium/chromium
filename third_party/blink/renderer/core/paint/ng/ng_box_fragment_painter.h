@@ -76,9 +76,9 @@ class CORE_EXPORT NGBoxFragmentPainter : public BoxPainterBase {
   gfx::Rect VisualRect(const PhysicalOffset& paint_offset);
 
  protected:
-  NGPhysicalBoxStrut ComputeBorders() const override;
-  NGPhysicalBoxStrut ComputePadding() const override;
-  NGPhysicalBoxStrut ComputeMargins() const override;
+  PhysicalBoxStrut ComputeBorders() const override;
+  PhysicalBoxStrut ComputePadding() const override;
+  PhysicalBoxStrut ComputeMargins() const override;
   BoxPainterBase::FillLayerInfo GetFillLayerInfo(
       const Color&,
       const FillLayer&,

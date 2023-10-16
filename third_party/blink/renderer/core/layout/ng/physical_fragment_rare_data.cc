@@ -16,8 +16,8 @@ PhysicalFragmentRareData::PhysicalFragmentRareData(wtf_size_t num_fields) {
 
 PhysicalFragmentRareData::PhysicalFragmentRareData(
     const PhysicalRect* layout_overflow,
-    const NGPhysicalBoxStrut* borders,
-    const NGPhysicalBoxStrut* padding,
+    const PhysicalBoxStrut* borders,
+    const PhysicalBoxStrut* padding,
     absl::optional<PhysicalRect> inflow_bounds,
     NGBoxFragmentBuilder& builder,
     wtf_size_t num_fields) {

@@ -3231,6 +3231,7 @@ Anda dapat mengelola setelan akun ini dengan menginstal aplikasi Family Link di 
 <translation id="3521405806571557477">Hapus data yang disimpan untuk <ph name="SITE_NAME" /></translation>
 <translation id="3521606918211282604">Ubah ukuran disk</translation>
 <translation id="3522088408596898827">Ruang disk hampir habis. Kosongkan ruang disk, lalu coba lagi.</translation>
+<translation id="3522979239100719575">Mencari profil yang tersedia. Proses ini mungkin perlu waktu beberapa menit.</translation>
 <translation id="3524518036046613664">Menemukan perangkat pada jaringan lokal Anda, seperti printer</translation>
 <translation id="3524965460886318643">Ekspor Aktivitas</translation>
 <translation id="3525426269008462093">Tinjau sinkronisasi perangkat setelah penyiapan selesai</translation>
@@ -7824,6 +7825,7 @@ Anda memiliki # sandi lainnya yang telah dibobol. Pengelola Sandi Google merekom
 <translation id="7283555985781738399">Mode tamu</translation>
 <translation id="7284307451964417957">{DAYS,plural, =1{Perangkat ini akan disimpan selama 1 hari dan Anda dapat terhubung pada waktu berikutnya tanpa kode. Ini disetel oleh administrator Anda.}other{Perangkat ini akan disimpan selama {DAYS} hari dan Anda dapat terhubung pada waktu berikutnya tanpa kode. Ini disetel oleh administrator Anda.}}</translation>
 <translation id="7284411326658527427">Setiap pengguna dapat mempersonalisasi akunnya dan menjaga privasi datanya.</translation>
+<translation id="7286867818472074330">Pilih kunci sandi</translation>
 <translation id="7287143125007575591">Akses ditolak.</translation>
 <translation id="7287411021188441799">Pulihkan background default</translation>
 <translation id="7288676996127329262"><ph name="HORIZONTAL_DPI" /> x <ph name="VERTICAL_DPI" /> dpi</translation>

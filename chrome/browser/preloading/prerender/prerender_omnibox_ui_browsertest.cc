@@ -886,10 +886,22 @@ class PrerenderOmniboxSearchSuggestionUIBrowserTest
   std::unique_ptr<base::ScopedMockElapsedTimersForTest> scoped_test_timer_;
 };
 
+// TODO(crbug.com/1491942): This fails with the field trial testing config.
+class PrerenderOmniboxSearchSuggestionUIBrowserTestNoTestingConfig
+    : public PrerenderOmniboxSearchSuggestionUIBrowserTest {
+ public:
+  void SetUpCommandLine(base::CommandLine* command_line) override {
+    PrerenderOmniboxSearchSuggestionUIBrowserTest::SetUpCommandLine(
+        command_line);
+    command_line->AppendSwitch("disable-field-trial-config");
+  }
+};
+
 // Tests the basic functionality of prerendering a search suggestion with search
 // suggestion hints.
-IN_PROC_BROWSER_TEST_F(PrerenderOmniboxSearchSuggestionUIBrowserTest,
-                       SearchPrerenderSuggestion) {
+IN_PROC_BROWSER_TEST_F(
+    PrerenderOmniboxSearchSuggestionUIBrowserTestNoTestingConfig,
+    SearchPrerenderSuggestion) {
   base::HistogramTester histogram_tester;
   const GURL kInitialUrl = embedded_test_server()->GetURL("/empty.html");
   ASSERT_TRUE(GetActiveWebContents());
@@ -1013,8 +1025,9 @@ IN_PROC_BROWSER_TEST_F(PrerenderOmniboxSearchSuggestionUIBrowserTest,
 }
 
 // Tests that prerendering the wrong URL doesn't lead to activation.
-IN_PROC_BROWSER_TEST_F(PrerenderOmniboxSearchSuggestionUIBrowserTest,
-                       WrongPrediction) {
+IN_PROC_BROWSER_TEST_F(
+    PrerenderOmniboxSearchSuggestionUIBrowserTestNoTestingConfig,
+    WrongPrediction) {
   base::HistogramTester histogram_tester;
   AddNewSuggestionRule("prerender22", {"prerender222", "prerender223"});
   const GURL kInitialUrl = embedded_test_server()->GetURL("/empty.html");
@@ -1076,8 +1089,9 @@ IN_PROC_BROWSER_TEST_F(PrerenderOmniboxSearchSuggestionUIBrowserTest,
 
 // Tests that prerender maintain the previous prerendered page if the new
 // prerendering aims to load a same url to the prerendered page.
-IN_PROC_BROWSER_TEST_F(PrerenderOmniboxSearchSuggestionUIBrowserTest,
-                       SameSuggestion) {
+IN_PROC_BROWSER_TEST_F(
+    PrerenderOmniboxSearchSuggestionUIBrowserTestNoTestingConfig,
+    SameSuggestion) {
   base::HistogramTester histogram_tester;
   AddNewSuggestionRule("prerender22", {"prerender222", "prerender223"});
   const GURL kInitialUrl = embedded_test_server()->GetURL("/empty.html");

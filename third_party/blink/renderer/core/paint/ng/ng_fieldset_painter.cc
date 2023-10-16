@@ -28,7 +28,7 @@ FieldsetPaintInfo NGFieldsetPainter::CreateFieldsetPaintInfo() const {
   }
   const PhysicalSize fieldset_size(fieldset_.Size());
   const auto& fragment = fieldset_;
-  NGPhysicalBoxStrut fieldset_borders = fragment.Borders();
+  PhysicalBoxStrut fieldset_borders = fragment.Borders();
   const ComputedStyle& style = fieldset_.Style();
   PhysicalRect legend_border_box;
   if (legend) {

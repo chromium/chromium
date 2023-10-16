@@ -1391,9 +1391,9 @@ Status ExecuteBidiCommand(Session* session,
   // destroys the session thread) The connection has already been accepted by
   // the CMD thread but soon it will be closed. We don't need to do anything.
   if (session == nullptr) {
-    return Status{kNoSuchFrame, "session not found"};
+    return Status{kInvalidArgument, "session not found"};
   }
-  const std::string* data = params.FindString("bidiCommand");
+  const base::Value::Dict* data = params.FindDict("bidiCommand");
   if (!data) {
     return Status{kUnknownError, "bidiCommand is missing in params"};
   }
@@ -1410,25 +1410,8 @@ Status ExecuteBidiCommand(Session* session,
     return status;
   }
 
-  absl::optional<base::Value> data_parsed =
-      base::JSONReader::Read(*data, base::JSON_PARSE_CHROMIUM_EXTENSIONS);
-
-  if (!data_parsed) {
-    return Status(kUnknownError, "cannot parse the BiDi command: " + *data);
-  }
-
-  if (!data_parsed->is_dict()) {
-    return Status(kUnknownError,
-                  "a JSON map is expected as a BiDi command: " + *data);
-  }
-
-  base::Value::Dict& bidi_cmd = data_parsed->GetDict();
-
+  base::Value::Dict bidi_cmd = data->Clone();
   std::string* method = bidi_cmd.FindString("method");
-  if (!method) {
-    return Status(kUnknownError,
-                  "BiDi command is missing 'method' field: " + *data);
-  }
 
   std::string* user_channel = bidi_cmd.FindString("channel");
   std::string channel;
@@ -1467,14 +1450,16 @@ Status ExecuteBidiCommand(Session* session,
       status = session->chrome->Quit();
       return Status(kUnknownError, "failed to close window in 20 seconds");
     }
-    if (status.IsError())
+    if (status.IsError()) {
       return status;
+    }
 
     std::list<std::string> web_view_ids;
     status =
         session->chrome->GetWebViewIds(&web_view_ids, session->w3c_compliant);
-    if (status.IsError())
+    if (status.IsError()) {
       return status;
+    }
 
     bool is_last_web_view = web_view_ids.size() <= 1u;
     if (is_last_web_view) {

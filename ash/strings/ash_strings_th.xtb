@@ -353,7 +353,6 @@
 <translation id="243878895369688216">เปิดเมื่อวานนี้</translation>
 <translation id="2440978926514840421">บันทึก GIF แล้ว</translation>
 <translation id="2441427462554639370">การบันทึกสิ้นสุดเนื่องจากพื้นที่เก็บข้อมูลใกล้เต็มแล้ว</translation>
-<translation id="24452542372838207">ขยายการแจ้งเตือน</translation>
 <translation id="2448312741937722512">ประเภท</translation>
 <translation id="2449089818483227734">แบตเตอรี่เหลือน้อย</translation>
 <translation id="2450205753526923158">โหมดภาพหน้าจอ</translation>
@@ -1945,7 +1944,6 @@
 <translation id="9030665205623277906">ภาพรวมการใช้ CPU: <ph name="CPU_USEAGE" />%</translation>
 <translation id="9034924485347205037">ไฟล์ Linux</translation>
 <translation id="9047624247355796468">เปิดการตั้งค่าสำหรับ <ph name="NETWORK_NAME" /></translation>
-<translation id="9059834730836941392">ยุบการแจ้งเตือน</translation>
 <translation id="906458777597946297">ขยายหน้าต่างเต็มหน้าจอ</translation>
 <translation id="9065203028668620118">แก้ไข</translation>
 <translation id="9070640332319875144">การตั้งค่า Assistant</translation>

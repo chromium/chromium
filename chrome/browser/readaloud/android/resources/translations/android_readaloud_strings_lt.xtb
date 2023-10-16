@@ -1,1 +1,17 @@
-<?xml version="1.0" ?><!DOCTYPE translationbundle><translationbundle lang="lt"></translationbundle>
+<?xml version="1.0" ?>
+<!DOCTYPE translationbundle>
+<translationbundle lang="lt">
+<translation id="1178581264944972037">Pristabdyti</translation>
+<translation id="3523426587027570423">Palieskite, kad uždarytumėte leistuvę „Klausytis šio puslapio“.</translation>
+<translation id="4654641641922242357">Leistuvė „Klausytis šio puslapio“.</translation>
+<translation id="4731877163452936634">Atkūrimo greitis: <ph name="PLAYBACK_SPEED" />. Spustelėkite ir pakeiskite.</translation>
+<translation id="5234971936051226002">Leistuvė „Klausyti šio puslapio“ sumažinta.</translation>
+<translation id="5596627076506792578">Daugiau parinkčių</translation>
+<translation id="6790428901817661496">Žaisti</translation>
+<translation id="6846298663435243399">Įkeliama…</translation>
+<translation id="7587250070160020374">Dabar „Chrome“ leidžiama</translation>
+<translation id="7945822420239537236">Sukti į priekį <ph name="NUMBER_OF_SECONDS" /> sek.</translation>
+<translation id="7972866381678406344">Atgal <ph name="NUMBER_OF_SECONDS" /> sek.</translation>
+<translation id="8136852699834914183">Šio puslapio negalima atkurti.</translation>
+<translation id="8953618380150219653">Leistuvė „Klausytis šio puslapio“ atidaryta per visą ekrano aukštį.</translation>
+</translationbundle>

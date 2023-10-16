@@ -112,20 +112,20 @@ export class MockChromeFileManagerPrivateDirectoryChanged {
   constructor() {
     /**
      * Listeners attached to listen for directory changes.
-     * @private {!Array<!function(!Event)>}
+     * @private @type {!Array<!function(!Event)>}
      * */
     this.listeners_ = [];
 
     /**
      * Mocked out size stats to return when testing.
-     * @private {!Object<string,
+     * @private @type {!Object<string,
      *     (!chrome.fileManagerPrivate.MountPointSizeStats|undefined)>}
      */
     this.sizeStats_ = {};
 
     /**
      * Mocked out drive quota metadata to return when testing.
-     * @private {!chrome.fileManagerPrivate.DriveQuotaMetadata|undefined}
+     * @private @type {!chrome.fileManagerPrivate.DriveQuotaMetadata|undefined}
      */
     this.driveQuotaMetadata_ = undefined;
 

@@ -24,7 +24,7 @@ export class FunctionSequence {
     this.failureCallback_ = failureCallback;
     this.logger = logger;
     this.name = name;
-    /** @public {boolean} */
+    /** @public @type {boolean} */
     this.started = false;
 
     this.onError = this.onError_.bind(this);

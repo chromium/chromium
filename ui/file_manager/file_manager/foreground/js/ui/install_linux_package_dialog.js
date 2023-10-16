@@ -53,7 +53,7 @@ export class InstallLinuxPackageDialog extends FileManagerDialogBase {
     this.buttons.insertBefore(this.installButton_, this.okButton);
     this.initialFocusElement_ = this.installButton_;
 
-    /** @private {?Entry} */
+    /** @private @type {?Entry} */
     this.entry_ = null;
   }
 

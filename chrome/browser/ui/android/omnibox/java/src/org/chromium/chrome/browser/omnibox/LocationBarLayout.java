@@ -320,7 +320,7 @@ public class LocationBarLayout extends FrameLayout {
         mMicButton.setVisibility(shouldShow ? VISIBLE : GONE);
     }
 
-    /** Sets the visibility of the mic button. */
+    /** Sets the visibility of the lens button. */
     /* package */ void setLensButtonVisibility(boolean shouldShow) {
         mLensButton.setVisibility(shouldShow ? VISIBLE : GONE);
     }

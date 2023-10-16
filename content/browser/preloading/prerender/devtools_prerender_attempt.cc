@@ -23,7 +23,8 @@ void DevToolsPrerenderAttempt::SetTriggeringOutcome(
   devtools_instrumentation::DidUpdatePrerenderStatus(
       attributes.initiator_frame_tree_node_id,
       attributes.initiator_devtools_navigation_token.value(),
-      attributes.prerendering_url, outcome, /*prerender_status=*/absl::nullopt,
+      attributes.prerendering_url, attributes.target_hint, outcome,
+      /*prerender_status=*/absl::nullopt,
       /*disallowed_mojo_interface=*/absl::nullopt);
 }
 
@@ -40,8 +41,9 @@ void DevToolsPrerenderAttempt::SetFailureReason(
   devtools_instrumentation::DidUpdatePrerenderStatus(
       attributes.initiator_frame_tree_node_id,
       attributes.initiator_devtools_navigation_token.value(),
-      attributes.prerendering_url, PreloadingTriggeringOutcome::kFailure,
-      prerender_status, /*disallowed_mojo_interface=*/absl::nullopt);
+      attributes.prerendering_url, attributes.target_hint,
+      PreloadingTriggeringOutcome::kFailure, prerender_status,
+      /*disallowed_mojo_interface=*/absl::nullopt);
 }
 
 void DevToolsPrerenderAttempt::SetFailureReason(
@@ -62,8 +64,9 @@ void DevToolsPrerenderAttempt::SetFailureReason(
   devtools_instrumentation::DidUpdatePrerenderStatus(
       attributes.initiator_frame_tree_node_id,
       attributes.initiator_devtools_navigation_token.value(),
-      attributes.prerendering_url, PreloadingTriggeringOutcome::kFailure,
-      prerender_status, disallowed_mojo_interface);
+      attributes.prerendering_url, attributes.target_hint,
+      PreloadingTriggeringOutcome::kFailure, prerender_status,
+      disallowed_mojo_interface);
 }
 
 }  // namespace content

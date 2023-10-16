@@ -310,10 +310,10 @@ class FileListSelectionController extends ListSelectionController {
   constructor(selectionModel, tableList) {
     super(selectionModel);
 
-    /** @const @private {!FileTapHandler} */
+    /** @const @private @type {!FileTapHandler} */
     this.tapHandler_ = new FileTapHandler();
 
-    /** @const @private {!FileTableList} */
+    /** @const @private @type {!FileTableList} */
     this.tableList_ = tableList;
   }
 

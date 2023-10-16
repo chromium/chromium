@@ -8,7 +8,7 @@
 #include "base/memory/scoped_refptr.h"
 #include "third_party/blink/renderer/core/core_export.h"
 #include "third_party/blink/renderer/core/layout/geometry/logical_size.h"
-#include "third_party/blink/renderer/core/layout/ng/list/ng_unpositioned_list_marker.h"
+#include "third_party/blink/renderer/core/layout/list/unpositioned_list_marker.h"
 #include "third_party/blink/renderer/core/layout/ng/ng_block_node.h"
 #include "third_party/blink/renderer/core/layout/ng/ng_break_appeal.h"
 #include "third_party/blink/renderer/core/layout/ng/ng_break_token.h"
@@ -123,7 +123,7 @@ class CORE_EXPORT NGFragmentBuilder {
   }
   void ResetBfcBlockOffset() { bfc_block_offset_.reset(); }
 
-  void SetEndMarginStrut(const NGMarginStrut& end_margin_strut) {
+  void SetEndMarginStrut(const MarginStrut& end_margin_strut) {
     end_margin_strut_ = end_margin_strut;
   }
 
@@ -202,12 +202,11 @@ class CORE_EXPORT NGFragmentBuilder {
   // NGOutOfFlowLayoutPart(container_style, builder).Run();
   //
   // See layout part for builder interaction.
-  void AddOutOfFlowChildCandidate(NGBlockNode,
-                                  const LogicalOffset& child_offset,
-                                  NGLogicalStaticPosition::InlineEdge =
-                                      NGLogicalStaticPosition::kInlineStart,
-                                  NGLogicalStaticPosition::BlockEdge =
-                                      NGLogicalStaticPosition::kBlockStart);
+  void AddOutOfFlowChildCandidate(
+      NGBlockNode,
+      const LogicalOffset& child_offset,
+      LogicalStaticPosition::InlineEdge = LogicalStaticPosition::kInlineStart,
+      LogicalStaticPosition::BlockEdge = LogicalStaticPosition::kBlockStart);
 
   void AddOutOfFlowChildCandidate(
       const NGLogicalOutOfFlowPositionedNode& candidate);
@@ -561,7 +560,7 @@ class CORE_EXPORT NGFragmentBuilder {
   NGLogicalAnchorQuery* anchor_query_ = nullptr;
   LayoutUnit bfc_line_offset_;
   absl::optional<LayoutUnit> bfc_block_offset_;
-  NGMarginStrut end_margin_strut_;
+  MarginStrut end_margin_strut_;
   NGExclusionSpace exclusion_space_;
   absl::optional<int> lines_until_clamp_;
 

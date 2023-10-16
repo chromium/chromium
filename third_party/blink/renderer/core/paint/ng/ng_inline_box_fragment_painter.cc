@@ -312,7 +312,7 @@ PhysicalRect NGInlineBoxFragmentPainterBase::ClipRectForNinePieceImageStrip(
     const NinePieceImage& image,
     const PhysicalRect& paint_rect) {
   PhysicalRect clip_rect(paint_rect);
-  NGPhysicalBoxStrut outsets = style.ImageOutsets(image);
+  PhysicalBoxStrut outsets = style.ImageOutsets(image);
   if (sides_to_include.left) {
     clip_rect.SetX(paint_rect.X() - outsets.left);
     clip_rect.SetWidth(paint_rect.Width() + outsets.left);

@@ -5,6 +5,7 @@
 import {TestRunner} from 'test_runner';
 import {DeviceModeTestRunner} from 'device_mode_test_runner';
 
+import * as Emulation from 'devtools/panels/emulation/emulation.js';
 import * as UIModule from 'devtools/ui/legacy/legacy.js';
 
 (async function() {
@@ -20,7 +21,7 @@ import * as UIModule from 'devtools/ui/legacy/legacy.js';
     }
   });
 
-  var view = new Emulation.DeviceModeView();
+  var view = new Emulation.DeviceModeView.DeviceModeView();
   var toolbar = view.toolbar;
   var model = view.model;
   var viewportSize = new UIModule.Geometry.Size(800, 600);

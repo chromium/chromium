@@ -1,5 +1,6 @@
 CONSOLE WARNING: The keyword 'inner-spin-button' used on the 'appearance' property was deprecated and has now been removed. It will no longer have any effect.
 This is a testharness.js-based test.
-FAIL appearance-warning-cssom-usecounter assert_true: expected true got false
+[FAIL] appearance-warning-cssom-usecounter
+  assert_true: expected true got false
 Harness: the test ran to completion.
 

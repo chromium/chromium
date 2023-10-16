@@ -264,7 +264,12 @@ void SaveUpdateAddressProfilePromptController::OnPromptDismissed(
 
 void SaveUpdateAddressProfilePromptController::RunSaveAddressProfileCallback(
     AutofillClient::SaveAddressProfileOfferUserDecision decision) {
-  std::move(decision_callback_).Run(decision, profile_);
+  std::move(decision_callback_)
+      .Run(decision,
+           decision == AutofillClient::SaveAddressProfileOfferUserDecision::
+                           kEditAccepted
+               ? base::optional_ref(profile_)
+               : std::nullopt);
 }
 
 }  // namespace autofill

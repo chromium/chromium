@@ -8,6 +8,7 @@
 #include "base/memory/raw_ptr.h"
 #include "base/memory/weak_ptr.h"
 #include "chromeos/ash/components/carrier_lock/fcm_topic_subscriber.h"
+#include "chromeos/ash/components/carrier_lock/topic_subscription_request.h"
 #include "components/gcm_driver/gcm_app_handler.h"
 #include "components/gcm_driver/instance_id/instance_id.h"
 #include "services/network/public/cpp/shared_url_loader_factory.h"
@@ -45,10 +46,12 @@ class COMPONENT_EXPORT(CHROMEOS_ASH_COMPONENTS_CARRIER_LOCK)
   std::string const token() override;
 
  private:
+  friend class FcmTopicSubscriberTest;
+
   void Subscribe(Result request_token_result);
   void OnGetToken(const std::string& token,
                   instance_id::InstanceID::Result result);
-  void OnSubscribe(instance_id::InstanceID::Result result);
+  void OnGetGcmStatistics(const gcm::GCMClient::GCMStatistics& statistics);
 
   void ReturnError(Result);
   void ReturnSuccess();
@@ -68,7 +71,11 @@ class COMPONENT_EXPORT(CHROMEOS_ASH_COMPONENTS_CARRIER_LOCK)
 
   raw_ptr<gcm::GCMDriver> gcm_driver_;
   std::unique_ptr<instance_id::InstanceIDDriver> instance_id_driver_;
+  std::unique_ptr<TopicSubscriptionRequest> subscription_request_;
+  scoped_refptr<network::SharedURLLoaderFactory> url_loader_factory_;
 
+  uint64_t android_id_ = 0;
+  uint64_t android_secret_ = 0;
   std::string app_id_;
   std::string sender_id_;
   std::string token_;

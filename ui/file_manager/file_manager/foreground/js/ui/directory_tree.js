@@ -1164,7 +1164,7 @@ class VolumeItem extends DirectoryItem {
 
     /**
      * Whether the display root has been resolved.
-     * @private {boolean}
+     * @private @type {boolean}
      */
     this.resolved_ = false;
 

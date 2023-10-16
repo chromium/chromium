@@ -7,7 +7,7 @@
 /**
  * Sets window.IN_TEST if this code is run in the test environment. We
  * detect this by checking for presence of domAutomationController.
- * @const {boolean}
+ * @const @type {boolean}
  */
 window.IN_TEST = window.IN_TEST || (() => {
                    return window.domAutomationController ? true : undefined;

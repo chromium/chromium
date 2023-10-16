@@ -481,9 +481,8 @@ absl::optional<PhysicalRect> NGInkOverflow::ComputeTextInkOverflow(
 
   const WritingMode writing_mode = style.GetWritingMode();
   if (ShadowList* text_shadow = style.TextShadow()) {
-    NGLineBoxStrut text_shadow_logical_outsets =
-        NGPhysicalBoxStrut::Enclosing(
-            text_shadow->RectOutsetsIncludingOriginal())
+    LineBoxStrut text_shadow_logical_outsets =
+        PhysicalBoxStrut::Enclosing(text_shadow->RectOutsetsIncludingOriginal())
             .ConvertToLineLogical({writing_mode, TextDirection::kLtr});
     ink_overflow.ExpandEdges(
         text_shadow_logical_outsets.line_over.ClampNegativeToZero(),

@@ -2,12 +2,10 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-import {FilesAppState} from '../../common/js/files_app_state.js';
-import {ProgressCenterItem} from '../../common/js/progress_center_common.js';
+import {ProgressCenterItem, ProgressItemState, ProgressItemType} from '../../common/js/progress_center_common.js';
 import {ScriptLoader} from '../../common/js/script_loader.js';
 import {util} from '../../common/js/util.js';
 
-import {launchFileManager} from './launcher.js';
 import {test} from './test_util_base.js';
 
 export {test};
@@ -20,15 +18,6 @@ export {test};
 export function sanitizeDate(strDate) {
   return strDate.replace('\u202f', ' ');
 }
-/**
- * Opens the main Files app's window and waits until it is ready.
- *
- * @param {!FilesAppState} appState App state.
- * @param {function()} callback Completion callback.
- */
-test.util.async.openMainWindow = (appState, callback) => {
-  launchFileManager(appState).then(callback);
-};
 
 /**
  * Returns details about each file shown in the file list: name, size, type and
@@ -384,7 +373,7 @@ test.util.async.renderWindowTextDirectionRTL = (contentWindow, callback) => {
  * Maps the path to the replaced attribute to the PrepareFake instance that
  * replaced it, to be able to restore the original value.
  *
- * @private {Object<string, test.util.PrepareFake>}
+ * @private @type {Object<string, PrepareFake>}
  */
 test.util.backgroundReplacedObjects_ = {};
 
@@ -392,7 +381,7 @@ test.util.backgroundReplacedObjects_ = {};
  * Map the appId to a map of all fakes applied in the foreground window e.g.:
  *  {'files#0': {'chrome.bla.api': FAKE}
  *
- * @private {Object<string, Object<string, test.util.PrepareFake>>}
+ * @private @type {Object<string, Object<string, PrepareFake>>}
  */
 test.util.foregroundReplacedObjects_ = {};
 
@@ -421,7 +410,7 @@ test.util.staticFakeFactory = (attrName, staticValue) => {
  * Registry of available fakes, it maps the an string ID to a factory function
  * which returns the actual fake used to replace an implementation.
  *
- * @private {Object<string, function(string, *)>}
+ * @private @type {Object<string, function(string, *)>}
  */
 test.util.fakes_ = {
   'static_fake': test.util.staticFakeFactory,
@@ -438,7 +427,7 @@ test.util.FakeType = {
 /**
  * Class holds the information for applying and restoring fakes.
  */
-test.util.PrepareFake = class {
+class PrepareFake {
   /**
    * @param {string} attrName Name of the attribute to be replaced by the fake
    *   e.g.: "chrome.app.window.create".
@@ -452,69 +441,69 @@ test.util.PrepareFake = class {
   constructor(attrName, fakeId, context, ...args) {
     /**
      * The instance of the fake to be used, ready to be used.
-     * @private {*}
+     * @private @type {*}
      */
     this.fake_ = null;
 
     /**
      * The attribute name to be traversed in the |context_|.
-     * @private {string}
+     * @private @type {string}
      */
     this.attrName_ = attrName;
 
     /**
      * The fake id the key to retrieve from test.util.fakes_.
-     * @private {string}
+     * @private @type {string}
      */
     this.fakeId_ = fakeId;
 
     /**
      * The context where |attrName_| will be traversed from, e.g. Window.
-     * @private {*}
+     * @private @type {*}
      */
     this.context_ = context;
 
     /**
      * After traversing |context_| the object that holds the attribute to be
      * replaced by the fake.
-     * @private {*}
+     * @private @type {*}
      */
     this.parentObject_ = null;
 
     /**
      * After traversing |context_| the attribute name in |parentObject_| that
      * will be replaced by the fake.
-     * @private {string}
+     * @private @type {string}
      */
     this.leafAttrName_ = '';
 
     /**
      * Additional data provided from integration tests to the fake constructor.
-     * @private {!Array}
+     * @private @type {!Array}
      */
     this.args_ = args;
 
     /**
      * Original object that was replaced by the fake.
-     * @private {*}
+     * @private @type {*}
      */
     this.original_ = null;
 
     /**
      * If this fake object has been constructed and everything initialized.
-     * @private {boolean}
+     * @private @type {boolean}
      */
     this.prepared_ = false;
 
     /**
      * Counter to record the number of times the static fake is called.
-     * @private {number}
+     * @private @type {number}
      */
     this.callCounter_ = 0;
 
     /**
      * List to record the arguments provided to the static fake calls.
-     * @private {!Array}
+     * @private @type {!Array}
      */
     this.calledArgs_ = [];
   }
@@ -633,7 +622,9 @@ test.util.PrepareFake = class {
     this.parentObject_ = parentObj;
     this.leafAttrName_ = attr;
   }
-};
+}
+
+test.util.PrepareFake = PrepareFake;
 
 /**
  * Replaces implementations in the background page with fakes.
@@ -657,7 +648,7 @@ test.util.sync.backgroundFake = (fakeData) => {
     const fakeId = mockValue[0];
     const fakeArgs = mockValue[1] || [];
 
-    const fake = new test.util.PrepareFake(path, fakeId, window, ...fakeArgs);
+    const fake = new PrepareFake(path, fakeId, window, ...fakeArgs);
     fake.prepare();
     fake.replace(test.util.FakeType.BACKGROUND_FAKE, window);
   }
@@ -700,8 +691,7 @@ test.util.sync.foregroundFake = (contentWindow, fakeData) => {
   for (const [path, mockValue] of entries) {
     const fakeId = mockValue[0];
     const fakeArgs = mockValue[1] || [];
-    const fake =
-        new test.util.PrepareFake(path, fakeId, contentWindow, ...fakeArgs);
+    const fake = new PrepareFake(path, fakeId, contentWindow, ...fakeArgs);
     fake.prepare();
     fake.replace(test.util.FakeType.FOREGROUND_FAKE, contentWindow);
   }

@@ -3208,6 +3208,7 @@
 <translation id="3521405806571557477">删除 <ph name="SITE_NAME" /> 的已存数据</translation>
 <translation id="3521606918211282604">更改磁盘大小</translation>
 <translation id="3522088408596898827">磁盘空间严重不足。请释放一些磁盘空间，然后重试。</translation>
+<translation id="3522979239100719575">正在查找可用的配置文件。这可能需要几分钟的时间。</translation>
 <translation id="3524518036046613664">查找您的本地网络中的设备，例如打印机</translation>
 <translation id="3524965460886318643">导出活动记录</translation>
 <translation id="3525426269008462093">在完成设置后查看设备同步情况</translation>
@@ -7796,6 +7797,7 @@
 <translation id="7283555985781738399">访客模式</translation>
 <translation id="7284307451964417957">{DAYS,plural, =1{此设备将被保存 1 天，下次您无需代码即可连接。这项设置是由您的管理员指定的。}other{此设备将被保存 {DAYS} 天，下次您无需代码即可连接。这项设置是由您的管理员指定的。}}</translation>
 <translation id="7284411326658527427">每个人都可对自己的账号进行个性化设置并确保数据的私密性。</translation>
+<translation id="7286867818472074330">选择通行密钥</translation>
 <translation id="7287143125007575591">访问遭拒。</translation>
 <translation id="7287411021188441799">恢复默认背景</translation>
 <translation id="7288676996127329262"><ph name="HORIZONTAL_DPI" />x<ph name="VERTICAL_DPI" /> dpi</translation>

@@ -7,7 +7,7 @@ import './xf_icon.js';
 
 import {css, customElement, html, ifDefined, property, type PropertyValues, query, state, styleMap, XfBase} from './xf_base.js';
 import type {XfTree} from './xf_tree.js';
-import {isTree, isTreeItem} from './xf_tree_util.js';
+import {handleTreeSlotChange, isTree, isTreeItem} from './xf_tree_util.js';
 
 /**
  * The number of pixels to indent per level.
@@ -255,15 +255,9 @@ export class XfTreeItem extends XfBase {
       updateScheduled = true;
     }
 
-    if (this.tree?.selectedItem) {
-      const newItems = new Set(this.items_);
-      if (oldItems.has(this.tree.selectedItem) &&
-          !newItems.has(this.tree.selectedItem)) {
-        // If the currently selected item exists in `oldItems` but not in
-        // `newItems`, it means it's being removed from the children slot,
-        // we need to mark the selected item to null.
-        this.tree.selectedItem = null;
-      }
+    const newItems = new Set(this.items_);
+    if (this.tree) {
+      handleTreeSlotChange(this.tree, oldItems, newItems);
     }
 
     if (!updateScheduled) {
@@ -388,8 +382,8 @@ function getCSS() {
       white-space: nowrap;
     }
 
-    :host(:not([selected]):not([disabled]):not([renaming]))
-        li:not(:focus-visible) .tree-row:hover {
+    :host(:not([selected]):not([disabled]):not([renaming]):not(:focus))
+        .tree-row:hover {
       background-color: var(--cros-sys-hover_on_subtle);
     }
 
@@ -403,14 +397,14 @@ function getCSS() {
       pointer-events: none;
     }
 
-    li:focus-visible .tree-row {
+    :host-context(.focus-outline-visible):host(:focus) .tree-row {
       outline: 2px solid var(--cros-sys-focus_ring);
       outline-offset: 2px;
       z-index: 2;
     }
 
-    :host-context(.pointer-active):host(:not([selected]):not([disabled]):not([renaming]))
-        li:not(:focus-visible) .tree-row:not(:hover):active {
+    :host-context(.pointer-active):host(:not([selected]):not([disabled]):not([renaming]):not(:focus))
+        .tree-row:not(:hover):active {
       background-color: var(--cros-sys-hover_on_subtle);
     }
 
@@ -418,8 +412,8 @@ function getCSS() {
       cursor: default;
     }
 
-    :host-context(.pointer-active):host(:not([selected]):not([disabled]):not([renaming]))
-        li:not(:focus-visible) .tree-row:not(:active):hover {
+    :host-context(.pointer-active):host(:not([selected]):not([disabled]):not([renaming]):not(:focus))
+        .tree-row:not(:active):hover {
       background-color: unset;
     }
 

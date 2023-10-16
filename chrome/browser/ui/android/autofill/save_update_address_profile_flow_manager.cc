@@ -34,7 +34,7 @@ void SaveUpdateAddressProfileFlowManager::OfferSave(
       save_update_address_profile_prompt_controller_) {
     std::move(callback).Run(
         AutofillClient::SaveAddressProfileOfferUserDecision::kAutoDeclined,
-        profile);
+        std::nullopt);
     return;
   }
 
@@ -46,7 +46,7 @@ void SaveUpdateAddressProfileFlowManager::OfferSave(
     // Fallback to the default behavior without confirmation.
     std::move(callback).Run(
         AutofillClient::SaveAddressProfileOfferUserDecision::kUserNotAsked,
-        profile);
+        std::nullopt);
   }
 }
 

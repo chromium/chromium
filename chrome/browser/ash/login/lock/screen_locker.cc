@@ -169,14 +169,15 @@ chromeos::CertificateProviderService* GetLoginScreenCertProviderService() {
 }  // namespace
 
 // static
-ScreenLocker* ScreenLocker::screen_locker_ = nullptr;
+ScreenLocker* ScreenLocker::screen_locker_ = nullptr;  // Only on UI thread
 
 //////////////////////////////////////////////////////////////////////////////
 // ScreenLocker, public:
 
 ScreenLocker::ScreenLocker(const user_manager::UserList& users)
     : users_(users) {
-  DCHECK(!screen_locker_);
+  CHECK(base::CurrentUIThread::IsSet());
+  CHECK(!screen_locker_);
   screen_locker_ = this;
 
   ui::ResourceBundle& bundle = ui::ResourceBundle::GetSharedInstance();
@@ -617,7 +618,7 @@ void ScreenLocker::HandleShowLockScreenRequest() {
 void ScreenLocker::Show() {
   VLOG(1) << "ScreenLocker::Show()";
   base::RecordAction(UserMetricsAction("ScreenLocker_Show"));
-  DCHECK(base::CurrentUIThread::IsSet());
+  CHECK(base::CurrentUIThread::IsSet());
 
   // Check whether the currently logged in user is a guest account and if so,
   // refuse to lock the screen (crosbug.com/23764).
@@ -642,29 +643,33 @@ void ScreenLocker::Show() {
 
 // static
 void ScreenLocker::Hide() {
-  DCHECK(base::CurrentUIThread::IsSet());
+  CHECK(base::CurrentUIThread::IsSet());
   // For a guest user, screen_locker_ would have never been initialized.
   if (user_manager::UserManager::Get()->IsLoggedInAsGuest()) {
     VLOG(1) << "Refusing to hide lock screen for guest account";
     return;
   }
 
-  DCHECK(screen_locker_);
+  CHECK(screen_locker_);
   SessionControllerClientImpl::Get()->RunUnlockAnimation(
       base::BindOnce(&ScreenLocker::OnUnlockAnimationFinished));
 }
 
 void ScreenLocker::ResetToLockedState() {
+  CHECK(base::CurrentUIThread::IsSet());
   LoginScreen::Get()->GetModel()->ResetFingerprintUIState(
       user_manager::UserManager::Get()->GetPrimaryUser()->GetAccountId());
+  CHECK(screen_locker_);
   screen_locker_->unlock_started_ = false;
 }
 
 // static
 void ScreenLocker::OnUnlockAnimationFinished(bool aborted) {
   VLOG(1) << "ScreenLocker::OnUnlockAnimationFinished aborted=" << aborted;
+  CHECK(base::CurrentUIThread::IsSet());
   if (aborted) {
     // Reset state that was impacted by successful auth.
+    CHECK(screen_locker_);
     screen_locker_->ResetToLockedState();
     return;
   }
@@ -682,6 +687,7 @@ void ScreenLocker::RefreshPinAndFingerprintTimeout() {
 
 // static
 void ScreenLocker::ScheduleDeletion() {
+  CHECK(base::CurrentUIThread::IsSet());
   // Avoid possible multiple calls.
   if (screen_locker_ == nullptr)
     return;
@@ -725,7 +731,8 @@ void ScreenLocker::SetClocksForTesting(const base::Clock* clock,
                                        const base::TickClock* tick_clock) {
   // Testing clocks should be already set at timer's initialization,
   // which happens in ScreenLocker's constructor.
-  DCHECK(!screen_locker_);
+  CHECK(base::CurrentUIThread::IsSet());
+  CHECK(!screen_locker_);
   g_clock_for_testing_ = clock;
   g_tick_clock_for_testing_ = tick_clock;
 }
@@ -741,7 +748,7 @@ ScreenLocker::AuthState::~AuthState() = default;
 
 ScreenLocker::~ScreenLocker() {
   VLOG(1) << "Destroying ScreenLocker " << this;
-  DCHECK(base::CurrentUIThread::IsSet());
+  CHECK(base::CurrentUIThread::IsSet());
   user_manager::UserManager::Get()->RemoveSessionStateObserver(this);
 
   GetLoginScreenCertProviderService()

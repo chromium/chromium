@@ -55,7 +55,7 @@ class MockContentBrowserClient : public TestContentBrowserClient {
   }
 
  private:
-  raw_ptr<ContentBrowserClient> old_browser_client_;
+  raw_ptr<ContentBrowserClient> old_browser_client_ = nullptr;
   base::WeakPtr<MockAnchorElementPreconnector> delegate_;
 };
 

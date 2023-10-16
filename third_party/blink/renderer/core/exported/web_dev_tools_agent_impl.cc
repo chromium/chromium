@@ -276,7 +276,9 @@ class ClientMessageLoopAdapter : public MainThreadDebugger::ClientMessageLoop {
     input_events_disabler_.reset();
 
     CHECK(paused_frame_);
-    paused_frame_->DevToolsAgentImpl()->MainThreadDebuggerResumed();
+    if (paused_frame_->GetFrame()) {
+      paused_frame_->DevToolsAgentImpl()->MainThreadDebuggerResumed();
+    }
     paused_frame_ = nullptr;
   }
 

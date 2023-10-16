@@ -6490,13 +6490,6 @@ Origin-Agent-Cluster HTTP 标头可控制是将某个文档隔离在以源为键
       如果此政策未设置，默认情况下，受企业管理的用户和非受管用户都能选择启用该应用。</translation>
 <translation id="6640748114867542396">不允许受管理的扩展程序使用 Enterprise Hardware Platform API</translation>
 <translation id="6641981670621198190">停用对 3D 图形 API 的支持</translation>
-<translation id="6644480111811011438">此政策提供了一种停用 First-Party Set 功能的方法。
-
-                  如果此政策未设置或已启用，则系统会启用 First-Party Set 功能。
-
-                  如果此政策已停用，则系统会停用 First-Party Set 功能。
-
-                  此政策用于控制 Chrome 是否支持 First-Party Set 相关集成。</translation>
 <translation id="6646912445796087001">通过设置此政策，您可以启用或停用各种屏幕键盘功能。仅当“VirtualKeyboardEnabled”政策启用后，此政策才会生效。
 
       如果此政策中的某一项功能设为 True，系统将会启用这项屏幕键盘功能。

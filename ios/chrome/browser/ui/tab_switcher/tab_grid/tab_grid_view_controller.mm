@@ -2345,23 +2345,23 @@ NSUInteger GetPageIndexFromPage(TabGridPage page) {
 - (void)pageControlChangedPageByDrag:(id)sender {
   TabGridPage newPage = self.topToolbar.pageControl.selectedPage;
 
-  [self scrollToPage:newPage animated:YES];
   // Records when the user uses the pageControl to switch pages.
   if (self.currentPage != newPage) {
     [self.mutator pageChanged:newPage
                   interaction:TabSwitcherPageChangeInteraction::kControlDrag];
   }
+  [self scrollToPage:newPage animated:YES];
 }
 
 - (void)pageControlChangedPageByTap:(id)sender {
   TabGridPage newPage = self.topToolbar.pageControl.selectedPage;
 
-  [self scrollToPage:newPage animated:YES];
   // Records when the user uses the pageControl to switch pages.
   if (self.currentPage != newPage) {
     [self.mutator pageChanged:newPage
                   interaction:TabSwitcherPageChangeInteraction::kControlTap];
   }
+  [self scrollToPage:newPage animated:YES];
 }
 
 #pragma mark - DisabledTabViewControllerDelegate

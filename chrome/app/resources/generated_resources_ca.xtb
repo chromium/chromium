@@ -3216,6 +3216,7 @@ Pots gestionar la configuració d'aquest compte instal·lant l'aplicació Family
 <translation id="3521405806571557477">Suprimeix les dades desades del lloc web <ph name="SITE_NAME" /></translation>
 <translation id="3521606918211282604">Canvia la mida del disc</translation>
 <translation id="3522088408596898827">Queda molt poc espai de disc. Allibera'n i torna-ho a provar.</translation>
+<translation id="3522979239100719575">S'estan cercant perfils disponibles. Aquest procés pot tardar uns minuts.</translation>
 <translation id="3524518036046613664">Descobrir dispositius de la xarxa local, com ara impressores</translation>
 <translation id="3524965460886318643">Exporta les activitats</translation>
 <translation id="3525426269008462093">Revisa la sincronització del dispositiu després de la configuració</translation>
@@ -7806,6 +7807,7 @@ Tens # contrasenyes més en perill. El gestor de contrasenyes de Google recomana
 <translation id="7283555985781738399">Mode de convidat</translation>
 <translation id="7284307451964417957">{DAYS,plural, =1{Aquest dispositiu es desarà durant 1 dia i et podràs connectar sense un codi la propera vegada. Això ho ha establert el teu administrador.}other{Aquest dispositiu es desarà durant {DAYS} dies i et podràs connectar sense un codi la propera vegada. Això ho ha establert el teu administrador.}}</translation>
 <translation id="7284411326658527427">Cada persona pot personalitzar el seu compte i mantenir la privadesa de les dades.</translation>
+<translation id="7286867818472074330">Selecciona la clau d'accés</translation>
 <translation id="7287143125007575591">Accés denegat.</translation>
 <translation id="7287411021188441799">Restaura el fons predeterminat</translation>
 <translation id="7288676996127329262"><ph name="HORIZONTAL_DPI" /> x <ph name="VERTICAL_DPI" /> ppp</translation>

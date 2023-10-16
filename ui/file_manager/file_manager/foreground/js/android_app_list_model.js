@@ -20,7 +20,7 @@ export class AndroidAppListModel extends EventTarget {
   constructor(showAndroidPickerApps, includeAllFiles, typeList) {
     super();
 
-    /** @private {!Array<!chrome.fileManagerPrivate.AndroidApp>} */
+    /** @private @type {!Array<!chrome.fileManagerPrivate.AndroidApp>} */
     this.apps_ = [];
 
     if (!showAndroidPickerApps) {

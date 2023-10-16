@@ -16,7 +16,9 @@
 #include "base/task/current_thread.h"
 #include "components/metrics/metrics_features.h"
 #include "components/metrics/structured/enums.h"
+#if BUILDFLAG(IS_CHROMEOS_ASH) || BUILDFLAG(IS_CHROMEOS_LACROS)
 #include "components/metrics/structured/external_metrics.h"
+#endif
 #include "components/metrics/structured/histogram_util.h"
 #include "components/metrics/structured/project_validator.h"
 #include "components/metrics/structured/storage.pb.h"
@@ -33,17 +35,17 @@ using ::metrics::SystemProfileProto;
 // The delay period for the PersistentProto.
 constexpr int kSaveDelayMs = 1000;
 
+#if BUILDFLAG(IS_CHROMEOS_ASH) || BUILDFLAG(IS_CHROMEOS_LACROS)
 // The interval between chrome's collection of metrics logged from cros.
 constexpr int kExternalMetricsIntervalMins = 10;
 
 // Directory containing serialized event protos to read.
 constexpr char kExternalMetricsDir[] = "/var/lib/metrics/structured/events";
+#endif
 
 }  // namespace
 
 int StructuredMetricsRecorder::kMaxEventsPerUpload = 100;
-
-char StructuredMetricsRecorder::kUnsentLogsPath[] = "structured_metrics/events";
 
 StructuredMetricsRecorder::StructuredMetricsRecorder(
     metrics::MetricsProvider* system_profile_provider)
@@ -69,9 +71,11 @@ void StructuredMetricsRecorder::EnableRecording() {
   // Enable recording only if structured metrics' feature flag is enabled.
   recording_enabled_ =
       base::FeatureList::IsEnabled(features::kStructuredMetrics);
+#if BUILDFLAG(IS_CHROMEOS_ASH) || BUILDFLAG(IS_CHROMEOS_LACROS)
   if (external_metrics_.get() != nullptr) {
     external_metrics_->EnableRecording();
   }
+#endif
   if (recording_enabled_) {
     CacheDisallowedProjectsSet();
   }
@@ -80,9 +84,11 @@ void StructuredMetricsRecorder::EnableRecording() {
 void StructuredMetricsRecorder::DisableRecording() {
   DCHECK(base::CurrentUIThread::IsSet());
   recording_enabled_ = false;
+#if BUILDFLAG(IS_CHROMEOS_ASH) || BUILDFLAG(IS_CHROMEOS_LACROS)
   if (external_metrics_.get() != nullptr) {
     external_metrics_->DisableRecording();
   }
+#endif
   disallowed_projects_.clear();
 }
 
@@ -217,13 +223,18 @@ void StructuredMetricsRecorder::OnProfileAdded(
       base::BindOnce(&StructuredMetricsRecorder::OnKeyDataInitialized,
                      weak_factory_.GetWeakPtr()));
 
+  // The directory used to store unsent logs. Relative to the user's cryptohome.
+  // This file is created by chromium.
   events_ = std::make_unique<PersistentProto<EventsProto>>(
-      profile_path.Append(kUnsentLogsPath), write_delay_,
+      profile_path.Append(FILE_PATH_LITERAL("structured_metrics"))
+          .Append(FILE_PATH_LITERAL("events")),
+      write_delay_,
       base::BindOnce(&StructuredMetricsRecorder::OnRead,
                      weak_factory_.GetWeakPtr()),
       base::BindRepeating(&StructuredMetricsRecorder::OnWrite,
                           weak_factory_.GetWeakPtr()));
 
+#if BUILDFLAG(IS_CHROMEOS_ASH) || BUILDFLAG(IS_CHROMEOS_LACROS)
   external_metrics_ = std::make_unique<ExternalMetrics>(
       base::FilePath(kExternalMetricsDir),
       base::Minutes(kExternalMetricsIntervalMins),
@@ -234,6 +245,7 @@ void StructuredMetricsRecorder::OnProfileAdded(
   if (recording_enabled_) {
     external_metrics_->EnableRecording();
   }
+#endif
 
   // See DisableRecording for more information.
   if (purge_state_on_init_) {
@@ -345,6 +357,7 @@ void StructuredMetricsRecorder::WriteNowForTest() {
   }
 }
 
+#if BUILDFLAG(IS_CHROMEOS_ASH) || BUILDFLAG(IS_CHROMEOS_LACROS)
 void StructuredMetricsRecorder::SetExternalMetricsDirForTest(
     const base::FilePath& dir) {
   external_metrics_ = std::make_unique<ExternalMetrics>(
@@ -353,6 +366,7 @@ void StructuredMetricsRecorder::SetExternalMetricsDirForTest(
           &StructuredMetricsRecorder::OnExternalMetricsCollected,
           weak_factory_.GetWeakPtr()));
 }
+#endif
 
 void StructuredMetricsRecorder::SetOnReadyToRecord(base::OnceClosure callback) {
   on_ready_callback_ = std::move(callback);

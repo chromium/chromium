@@ -963,6 +963,8 @@ PrerenderHost::LoadingOutcome PrerenderHost::WaitForLoadStopForTesting() {
       },
       loop.QuitClosure(), &status);
   loop.Run();
+  // Reset callback to null in case if loop is quit by timeout.
+  on_wait_loading_finished_.Reset();
   return status;
 }
 

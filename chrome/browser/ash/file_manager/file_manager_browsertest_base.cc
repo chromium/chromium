@@ -2801,8 +2801,13 @@ void FileManagerBrowserTestBase::OnCommand(const std::string& name,
       arg_value.Set("volumeFilter", std::move(cloned_volume_filter));
     }
 
+    const std::string* query = value.FindString("searchQuery");
+    if (query) {
+      arg_value.Set("searchQuery", *query);
+    }
+
     std::string search;
-    if (launch_dir || type || volume_filter) {
+    if (launch_dir || type || volume_filter || query) {
       std::string json_args;
       base::JSONWriter::Write(arg_value, &json_args);
       search = base::StrCat(

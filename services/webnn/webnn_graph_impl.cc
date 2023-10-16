@@ -108,13 +108,14 @@ webnn::Conv2dAttributes ConvertToConv2dAttributes(
   // Convert padding, strides, dilations.
   auto& mojo_padding = conv2d->padding;
   component_attributes.padding = webnn::Padding2d{
-      .beginning = webnn::Size2d{.height = mojo_padding->beginning->height,
-                                 .width = mojo_padding->beginning->width},
-      .ending = webnn::Size2d{.height = mojo_padding->ending->height,
-                              .width = mojo_padding->ending->width}};
-  component_attributes.strides = webnn::Size2d{
+      .beginning =
+          webnn::Size2d<uint32_t>{.height = mojo_padding->beginning->height,
+                                  .width = mojo_padding->beginning->width},
+      .ending = webnn::Size2d<uint32_t>{.height = mojo_padding->ending->height,
+                                        .width = mojo_padding->ending->width}};
+  component_attributes.strides = webnn::Size2d<uint32_t>{
       .height = conv2d->strides->height, .width = conv2d->strides->width};
-  component_attributes.dilations = webnn::Size2d{
+  component_attributes.dilations = webnn::Size2d<uint32_t>{
       .height = conv2d->dilations->height, .width = conv2d->dilations->width};
 
   // Convert groups, input and filter layout.
@@ -144,28 +145,29 @@ webnn::Pool2dAttributes ConvertToPool2dAttributes(
     const mojom::Operand* output) {
   webnn::Pool2dAttributes component_attributes;
   auto& window_dimensions = pool2d->window_dimensions;
-  component_attributes.window_dimensions = webnn::Size2d{
+  component_attributes.window_dimensions = webnn::Size2d<uint32_t>{
       .height = window_dimensions->height, .width = window_dimensions->width};
   auto& mojo_padding = pool2d->padding;
   component_attributes.padding = webnn::Padding2d{
-      .beginning = webnn::Size2d{.height = mojo_padding->beginning->height,
-                                 .width = mojo_padding->beginning->width},
-      .ending = webnn::Size2d{.height = mojo_padding->ending->height,
-                              .width = mojo_padding->ending->width}};
-  component_attributes.strides = webnn::Size2d{
+      .beginning =
+          webnn::Size2d<uint32_t>{.height = mojo_padding->beginning->height,
+                                  .width = mojo_padding->beginning->width},
+      .ending = webnn::Size2d<uint32_t>{.height = mojo_padding->ending->height,
+                                        .width = mojo_padding->ending->width}};
+  component_attributes.strides = webnn::Size2d<uint32_t>{
       .height = pool2d->strides->height, .width = pool2d->strides->width};
-  component_attributes.dilations = webnn::Size2d{
+  component_attributes.dilations = webnn::Size2d<uint32_t>{
       .height = pool2d->dilations->height, .width = pool2d->dilations->width};
   component_attributes.layout =
       MojoInputOperandLayoutToComponent(pool2d->layout);
   CHECK_EQ(output->dimensions.size(), 4u);
   switch (component_attributes.layout) {
     case webnn::InputOperandLayout::kNchw:
-      component_attributes.output_sizes = webnn::Size2d{
+      component_attributes.output_sizes = webnn::Size2d<uint32_t>{
           .height = output->dimensions[2], .width = output->dimensions[3]};
       break;
     case webnn::InputOperandLayout::kNhwc:
-      component_attributes.output_sizes = webnn::Size2d{
+      component_attributes.output_sizes = webnn::Size2d<uint32_t>{
           .height = output->dimensions[1], .width = output->dimensions[2]};
       break;
   }
@@ -248,6 +250,35 @@ bool ValidateClamp(const IdToOperandMap& id_to_operand_map,
 
   if (output->dimensions != input->dimensions) {
     // The output shape is not expected.
+    return false;
+  }
+
+  return true;
+}
+
+bool ValidateConcat(const IdToOperandMap& id_to_operand_map,
+                    const mojom::ConcatPtr& concat) {
+  auto* output = GetMojoOperand(id_to_operand_map, concat->output_operand_id);
+  if (!output) {
+    // The concat operator is invalid.
+    return false;
+  }
+
+  std::vector<Operand> inputs;
+  inputs.reserve(concat->input_operand_ids.size());
+  for (const auto& input_operand_id : concat->input_operand_ids) {
+    auto* input = GetMojoOperand(id_to_operand_map, input_operand_id);
+    if (!input || input == output) {
+      return false;
+    }
+    inputs.push_back(ConvertToComponentOperand(input));
+  }
+
+  auto validated_output = ValidateConcatAndInferOutput(inputs, concat->axis);
+  if (!validated_output.has_value()) {
+    return false;
+  }
+  if (validated_output != ConvertToComponentOperand(output)) {
     return false;
   }
 
@@ -385,6 +416,23 @@ bool ValidateRelu(const IdToOperandMap& id_to_operand_map,
     // The output shape is not expected.
     return false;
   }
+  return true;
+}
+
+bool ValidateResample2d(const IdToOperandMap& id_to_operand_map,
+                        const mojom::Resample2dPtr& resample2d) {
+  auto* input = GetMojoOperand(id_to_operand_map, resample2d->input_operand_id);
+  auto* output =
+      GetMojoOperand(id_to_operand_map, resample2d->output_operand_id);
+  if (!input || !output || output == input) {
+    // The resample2d operator is invalid.
+    return false;
+  }
+  if (output->data_type != input->data_type) {
+    // The output data type doesn't match input data type.
+    return false;
+  }
+
   return true;
 }
 
@@ -547,10 +595,14 @@ bool ValidateOperation(const IdToOperandMap& id_to_operand_map,
   switch (operation->which()) {
     case mojom::Operation::Tag::kClamp:
       return ValidateClamp(id_to_operand_map, operation->get_clamp());
+    case mojom::Operation::Tag::kConcat:
+      return ValidateConcat(id_to_operand_map, operation->get_concat());
     case mojom::Operation::Tag::kConv2d:
       return ValidateConv2d(id_to_operand_map, operation->get_conv2d());
     case mojom::Operation::Tag::kPool2d:
       return ValidatePool2d(id_to_operand_map, operation->get_pool2d());
+    case mojom::Operation::Tag::kResample2d:
+      return ValidateResample2d(id_to_operand_map, operation->get_resample2d());
     case mojom::Operation::Tag::kRelu:
       return ValidateRelu(id_to_operand_map, operation->get_relu());
     case mojom::Operation::Tag::kSoftmax:
@@ -681,15 +733,15 @@ bool WebNNGraphImpl::ValidateGraph(const mojom::GraphInfoPtr& graph_info) {
 void WebNNGraphImpl::Compute(
     base::flat_map<std::string, mojo_base::BigBuffer> named_inputs,
     mojom::WebNNGraph::ComputeCallback callback) {
-  // Validate the inputs for computation match the built graph's expected.
-  if (!base::ranges::equal(
-          named_inputs, compute_resource_info_.input_name_to_byte_length_map,
-          [](const auto& iter_a, const auto& iter_b) {
-            // Compare the input name with the key of map and the byte length of
-            // buffer with value of map.
-            return iter_a.first == iter_b.first &&
-                   iter_a.second.size() == iter_b.second;
-          })) {
+  // Validate the inputs for computation match the built graph's expectation.
+  if (!base::ranges::equal(named_inputs,
+                           compute_resource_info_.input_name_to_byte_length_map,
+                           [](const auto& iter_a, const auto& iter_b) {
+                             // Compare the input name with the key of map and
+                             // the byte length of buffer with value of map.
+                             return iter_a.first == iter_b.first &&
+                                    iter_a.second.size() == iter_b.second;
+                           })) {
     std::move(callback).Run(mojom::ComputeResult::kInvalidInputs,
                             absl::nullopt);
     return;

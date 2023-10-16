@@ -4263,6 +4263,9 @@ const FeatureEntry kFeatureEntries[] = {
     {"enable-cros-privacy-hub", flag_descriptions::kCrosPrivacyHubName,
      flag_descriptions::kCrosPrivacyHubDescription, kOsCrOS,
      FEATURE_VALUE_TYPE(ash::features::kCrosPrivacyHub)},
+    {"jelly-colors", flag_descriptions::kJellyColorsName,
+     flag_descriptions::kJellyColorsDescription, kOsCrOS | kOsLacros,
+     FEATURE_VALUE_TYPE(chromeos::features::kJelly)},
     {"cros-components", flag_descriptions::kCrosComponentsName,
      flag_descriptions::kCrosComponentsDescription, kOsCrOS | kOsLacros,
      FEATURE_VALUE_TYPE(chromeos::features::kCrosComponents)},
@@ -4487,6 +4490,10 @@ const FeatureEntry kFeatureEntries[] = {
 #endif  // BUILDFLAG(IS_CHROMEOS_ASH)
 
 #if BUILDFLAG(IS_CHROMEOS)
+    {"cros-legacy-media-formats",
+     flag_descriptions::kCrOSLegacyMediaFormatsName,
+     flag_descriptions::kCrOSLegacyMediaFormatsDescription, kOsCrOS | kOsLacros,
+     FEATURE_VALUE_TYPE(media::kCrOSLegacyMediaFormats)},
     {"disable-idle-sockets-close-on-memory-pressure",
      flag_descriptions::kDisableIdleSocketsCloseOnMemoryPressureName,
      flag_descriptions::kDisableIdleSocketsCloseOnMemoryPressureDescription,
@@ -9795,13 +9802,6 @@ const FeatureEntry kFeatureEntries[] = {
      flag_descriptions::kSafetyHubDescription, kOsDesktop,
      FEATURE_VALUE_TYPE(features::kSafetyHub)},
 #endif  // !BUILDFLAG(IS_ANDROID)
-
-#if BUILDFLAG(IS_ANDROID)
-    {"network-service-in-process",
-     flag_descriptions::kNetworkServiceInProcessName,
-     flag_descriptions::kNetworkServiceInProcessDescription, kOsAndroid,
-     FEATURE_VALUE_TYPE(features::kNetworkServiceInProcess)},
-#endif
 
 #if BUILDFLAG(IS_ANDROID)
     {"enable-commerce-hint-android",

@@ -1,6 +1,7 @@
 This is a testharness.js-based test.
-PASS Named property access on detached Window
-FAIL Indexed property access on detached Window assert_equals: Indexed property should still be accessible. expected (string) "123" but got (undefined) undefined
-PASS Interface Object access on detached Window
+[PASS] Named property access on detached Window
+[FAIL] Indexed property access on detached Window
+  assert_equals: Indexed property should still be accessible. expected (string) "123" but got (undefined) undefined
+[PASS] Interface Object access on detached Window
 Harness: the test ran to completion.
 

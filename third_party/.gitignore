@@ -61,7 +61,7 @@
 /gn/
 /gnu_binutils/
 /google-java-format/*.jar
-/google-truth/lib/
+/google-truth/src/
 /googlefonts_testdata/data
 /guava/lib/
 /gvr-android-sdk/common_library.aar

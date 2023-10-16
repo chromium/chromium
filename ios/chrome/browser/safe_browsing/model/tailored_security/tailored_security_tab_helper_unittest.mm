@@ -182,7 +182,7 @@ TEST_F(TailoredSecurityTabHelperTest,
   web_state_.WasShown();
   tab_helper_->OnTailoredSecurityBitChanged(/*enabled=*/true,
                                             base::Time::Now());
-  EXPECT_TRUE(infobar_manager->infobar_count() == 1);
+  EXPECT_EQ(infobar_manager->infobars().size(), 1u);
   EXPECT_TRUE(chrome_browser_state_->GetPrefs()->GetBoolean(
       prefs::kAccountTailoredSecurityShownNotification));
 }
@@ -198,7 +198,7 @@ TEST_F(TailoredSecurityTabHelperTest, InfobarNotCreatedOnHiddenWebState) {
   web_state_.WasHidden();
   tab_helper_->OnTailoredSecurityBitChanged(/*enabled=*/true,
                                             base::Time::Now());
-  EXPECT_TRUE(infobar_manager->infobar_count() == 0);
+  EXPECT_EQ(infobar_manager->infobars().size(), 0u);
   EXPECT_FALSE(chrome_browser_state_->GetPrefs()->GetBoolean(
       prefs::kAccountTailoredSecurityShownNotification));
 }
@@ -212,7 +212,7 @@ TEST_F(TailoredSecurityTabHelperTest, EarlyReturnOnTailoredSecurityBitChanged) {
 
   tab_helper_->OnTailoredSecurityBitChanged(/*enabled=*/false,
                                             base::Time::Now());
-  EXPECT_TRUE(infobar_manager->infobar_count() == 0);
+  EXPECT_EQ(infobar_manager->infobars().size(), 0u);
   EXPECT_FALSE(chrome_browser_state_->GetPrefs()->GetBoolean(
       prefs::kAccountTailoredSecurityShownNotification));
 }
@@ -228,7 +228,7 @@ TEST_F(TailoredSecurityTabHelperTest,
   tab_helper_->OnTailoredSecurityBitChanged(
       /*enabled=*/true,
       base::Time::Now() - (kThresholdForInFlowNotification + base::Minutes(1)));
-  EXPECT_TRUE(infobar_manager->infobar_count() == 0);
+  EXPECT_EQ(infobar_manager->infobars().size(), 0u);
   EXPECT_FALSE(chrome_browser_state_->GetPrefs()->GetBoolean(
       prefs::kAccountTailoredSecurityShownNotification));
 }

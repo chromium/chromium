@@ -21,16 +21,16 @@ export class ListSingleSelectionModel extends EventTarget {
     // True if any item could be lead or anchor. False if only selected ones.
     this.independentLeadItem_ = false;
 
-    /** @private {number} */
+    /** @private @type {number} */
     this.leadIndex_ = -1;
 
-    /** @private {?number} */
+    /** @private @type {?number} */
     this.selectedIndex_;
 
-    /** @private {?number} */
+    /** @private @type {?number} */
     this.selectedIndexBefore_;
 
-    /** @private {?number} */
+    /** @private @type {?number} */
     this.changeCount_;
   }
 

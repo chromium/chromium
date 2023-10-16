@@ -8,6 +8,7 @@ import static android.system.OsConstants.AF_INET6;
 import static android.system.OsConstants.SOCK_STREAM;
 
 import static com.google.common.truth.Truth.assertThat;
+import static com.google.common.truth.Truth.assertWithMessage;
 import static com.google.common.truth.TruthJUnit.assume;
 
 import static org.chromium.net.truth.UrlResponseInfoSubject.assertThat;
@@ -893,7 +894,9 @@ public class NetworkChangesTest {
             }
         };
         request.getStatus(listener);
-        cv.block();
+        assertWithMessage("Target status wasn't reached within the given timeout")
+                .that(cv.block(/*timeoutMs=*/5000))
+                .isTrue();
     }
 
     private static void postToInitThreadSync(Runnable r) {

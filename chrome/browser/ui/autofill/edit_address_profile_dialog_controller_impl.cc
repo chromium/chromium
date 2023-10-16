@@ -91,7 +91,7 @@ bool EditAddressProfileDialogControllerImpl::GetIsValidatable() const {
 
 void EditAddressProfileDialogControllerImpl::OnDialogClosed(
     AutofillClient::SaveAddressProfileOfferUserDecision decision,
-    const AutofillProfile& profile_with_edits) {
+    base::optional_ref<const AutofillProfile> profile_with_edits) {
   std::move(on_user_decision_callback_).Run(decision, profile_with_edits);
   dialog_view_ = nullptr;
 }

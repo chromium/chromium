@@ -5,9 +5,10 @@
 import {TestRunner} from 'test_runner';
 import {ConsoleTestRunner} from 'console_test_runner';
 
-import * as UI from 'devtools/ui/legacy/legacy.js';
-import * as Sources from 'devtools/panels/sources/sources.js';
 import * as Console from 'devtools/panels/console/console.js';
+import * as ObjectUI from 'devtools/ui/legacy/components/object_ui/object_ui.js';
+import * as Sources from 'devtools/panels/sources/sources.js';
+import * as UI from 'devtools/ui/legacy/legacy.js';
 
 (async function() {
   TestRunner.addResult(`Tests that "Show Function Definition" jumps to the correct location.\n`);
@@ -43,7 +44,7 @@ import * as Console from 'devtools/panels/console/console.js';
     },
 
     function testDumpFunctionDefinition(next) {
-      TestRunner.addSniffer(ObjectUI.ObjectPropertiesSection, 'formatObjectAsFunction', onConsoleMessagesReceived);
+      TestRunner.addSniffer(ObjectUI.ObjectPropertiesSection.ObjectPropertiesSection, 'formatObjectAsFunction', onConsoleMessagesReceived);
       var consoleView = Console.ConsoleView.ConsoleView.instance();
       consoleView.prompt.appendCommand('jumpToMe', true);
 

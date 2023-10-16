@@ -258,6 +258,7 @@
 <translation id="5545693483061321551">Sajtet nuk mund të përdorin kukit e tua për të parë aktivitetin tënd të shfletimit nëpër sajte të ndryshme, p.sh. për të personalizuar reklamat. Veçoritë në disa sajte mund të mos funksionojnë.</translation>
 <translation id="5553374991681107062">Më të fundit</translation>
 <translation id="5556459405103347317">Ringarko</translation>
+<translation id="5591840828808741583"><ph name="SITE_NAME" /> është bllokuar</translation>
 <translation id="5649053991847567735">Shkarkimet automatike</translation>
 <translation id="5668404140385795438">Zëvendësoje kërkesën e një sajti uebi për të parandaluar zmadhimin</translation>
 <translation id="5677928146339483299">Të bllokuara</translation>
@@ -455,6 +456,7 @@
 <translation id="8959122750345127698">Lundrimi është i paarritshëm: <ph name="URL" /></translation>
 <translation id="8986362086234534611">Harro</translation>
 <translation id="8990043154272859344">Do të dalësh nga të gjitha sajtet</translation>
+<translation id="9011903857143958461"><ph name="SITE_NAME" /> është lejuar</translation>
 <translation id="9019902583201351841">Menaxhuar nga prindërit e tu</translation>
 <translation id="9039697262778250930">Mund të dalësh nga këto sajte</translation>
 <translation id="9074739597929991885">Bluetooth-i</translation>

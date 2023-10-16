@@ -4,6 +4,7 @@
 
 #include "components/miracle_parameter/common/public/miracle_parameter.h"
 
+#include "base/command_line.h"
 #include "base/strings/strcat.h"
 #include "base/system/sys_info.h"
 
@@ -23,6 +24,12 @@ std::string GetFieldTrialParamByFeatureAsString(
 }  // namespace
 
 std::string GetParamNameWithSuffix(const std::string& param_name) {
+  // `base::SysInfo::AmountOfPhysicalMemoryMB()` refers to CommandLine
+  // internally. If the CommandLine is not initialized, we return early to avoid
+  // a crash.
+  if (!base::CommandLine::InitializedForCurrentProcess()) {
+    return param_name;
+  }
   int physical_memory_mb = base::SysInfo::AmountOfPhysicalMemoryMB();
   const char* suffix =
       physical_memory_mb < kMiracleParameterMemory512MB  ? "ForLessThan512MB"

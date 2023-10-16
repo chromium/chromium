@@ -5,16 +5,14 @@
 #ifndef COMPONENTS_INVALIDATION_IMPL_FCM_INVALIDATION_LISTENER_H_
 #define COMPONENTS_INVALIDATION_IMPL_FCM_INVALIDATION_LISTENER_H_
 
+#include <map>
 #include <memory>
 
-#include "base/functional/callback_forward.h"
 #include "base/memory/raw_ptr.h"
 #include "base/memory/weak_ptr.h"
-#include "base/values.h"
 #include "components/invalidation/impl/channels_states.h"
 #include "components/invalidation/impl/fcm_sync_network_channel.h"
 #include "components/invalidation/impl/per_user_topic_subscription_manager.h"
-#include "components/invalidation/impl/unacked_invalidation_set.h"
 #include "components/invalidation/public/ack_handler.h"
 #include "components/invalidation/public/invalidation_util.h"
 #include "components/invalidation/public/invalidator_state.h"
@@ -102,26 +100,14 @@ class FCMInvalidationListener
 
   void EmitStateChange();
 
-  // Sends invalidations to their appropriate destination.
-  //
-  // If there are no observers registered for them, they will be saved for
-  // later.
-  //
-  // If there are observers registered, they will be saved (to make sure we
-  // don't drop them until they've been acted on) and emitted to the observers.
-  void DispatchInvalidations(const TopicInvalidationMap& invalidations);
+  // Cache `invalidation` and emit it to registered handlers (if any).
+  void DispatchInvalidation(const Invalidation& invalidation);
 
-  // Saves invalidations.
-  //
-  // This call isn't synchronous so we can't guarantee these invalidations will
-  // be safely on disk by the end of the call, but it should ensure that the
-  // data makes it to disk eventually.
-  void SaveInvalidations(const TopicInvalidationMap& to_save);
   // Emits previously saved invalidations to their registered observers.
   void EmitSavedInvalidations(const TopicInvalidationMap& to_emit);
 
   std::unique_ptr<FCMSyncNetworkChannel> network_channel_;
-  UnackedInvalidationsMap unacked_invalidations_map_;
+  std::map<Topic, Invalidation> unacked_invalidations_map_;
   raw_ptr<Delegate> delegate_ = nullptr;
 
   // The set of topics for which we want to receive invalidations. We'll pass

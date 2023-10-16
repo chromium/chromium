@@ -6,7 +6,7 @@
 // the Chromium repo. This file should be updated first, before syncing in the
 // other repos.
 
-// Next MinVersion: 6
+// Next MinVersion: 7
 
 module ash.orca.mojom;
 
@@ -147,6 +147,9 @@ interface EditorClient {
 
   // Sends a request to close UI.
   [MinVersion=5] CloseUI@10();
+
+  // Appends the given text onto the current text input target.
+  [MinVersion=6] AppendText@11(string text);
 };
 
 // Used by the UI to bootstrap the connection with the service.

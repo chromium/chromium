@@ -26,32 +26,32 @@ export class DirectoryTreeNamingController {
    * @param {!FilesAlertDialog} alertDialog
    */
   constructor(directoryModel, directoryTree, alertDialog) {
-    /** @private @const {!DirectoryModel} */
+    /** @private @const @type {!DirectoryModel} */
     this.directoryModel_ = directoryModel;
 
-    /** @private @const {!DirectoryTree|!XfTree} */
+    /** @private @const @type {!DirectoryTree|!XfTree} */
     this.directoryTree_ = directoryTree;
 
-    /** @private @const {!FilesAlertDialog} */
+    /** @private @const @type {!FilesAlertDialog} */
     this.alertDialog_ = alertDialog;
 
-    /** @private {?(DirectoryItem|XfTreeItem)} */
+    /** @private @type {?(DirectoryItem|XfTreeItem)} */
     this.currentDirectoryItem_ = null;
 
-    /** @private {boolean} */
+    /** @private @type {boolean} */
     this.editing_ = false;
 
     /**
      * Whether the entry being renamed is a root of a removable
      * partition/volume.
-     * @private {boolean}
+     * @private @type {boolean}
      */
     this.isRemovableRoot_ = false;
 
-    /** @private {?VolumeInfo} */
+    /** @private @type {?VolumeInfo} */
     this.volumeInfo_ = null;
 
-    /** @private @const {!HTMLInputElement} */
+    /** @private @const @type {!HTMLInputElement} */
     this.inputElement_ = /** @type {!HTMLInputElement} */
         (document.createElement('input'));
     this.inputElement_.type = 'text';

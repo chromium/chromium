@@ -12,7 +12,7 @@ namespace blink {
 
 class NGConstraintSpace;
 class NGLayoutResult;
-struct NGMarginStrut;
+struct MarginStrut;
 
 // NGLayoutCacheStatus indicates what type of cache hit/miss occurred. For
 // various types of misses we may be able to perform less work than a full
@@ -40,7 +40,7 @@ NGLayoutCacheStatus CalculateSizeBasedLayoutCacheStatus(
     const NGBlockBreakToken* break_token,
     const NGLayoutResult& cached_layout_result,
     const NGConstraintSpace& new_space,
-    absl::optional<NGFragmentGeometry>* fragment_geometry);
+    absl::optional<FragmentGeometry>* fragment_geometry);
 
 // Returns true if for a given |new_space|, the |cached_layout_result| won't be
 // affected by clearance, or floats, and therefore might be able to skip
@@ -58,7 +58,7 @@ bool MaySkipLayoutWithinBlockFormattingContext(
     const NGConstraintSpace& new_space,
     absl::optional<LayoutUnit>* bfc_block_offset,
     LayoutUnit* block_offset_delta,
-    NGMarginStrut* end_margin_strut);
+    MarginStrut* end_margin_strut);
 
 }  // namespace blink
 

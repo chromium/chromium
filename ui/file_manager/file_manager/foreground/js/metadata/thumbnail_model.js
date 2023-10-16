@@ -18,7 +18,7 @@ export class ThumbnailModel {
    */
   constructor(metadataModel) {
     /**
-     * @private {!MetadataModel}
+     * @private @type {!MetadataModel}
      * @const
      */
     this.metadataModel_ = metadataModel;

@@ -19,29 +19,29 @@ export class AppStateController {
    * @param {DialogType} dialogType
    */
   constructor(dialogType) {
-    /** @private @const {string} */
+    /** @private @const @type {string} */
     this.viewOptionStorageKey_ = 'file-manager-' + dialogType;
 
-    /** @private {?DirectoryModel} */
+    /** @private @type {?DirectoryModel} */
     this.directoryModel_ = null;
 
-    /** @private {?FileManagerUI} */
+    /** @private @type {?FileManagerUI} */
     this.ui_ = null;
 
-    /** @private {*} */
+    /** @private @type {*} */
     this.viewOptions_ = null;
 
     /**
      * Preferred sort field of file list. This will be ignored in the Recent
      * folder, since it always uses descendant order of date-mofidied.
-     * @private {string}
+     * @private @type {string}
      */
     this.fileListSortField_ = AppStateController.DEFAULT_SORT_FIELD;
 
     /**
      * Preferred sort direction of file list. This will be ignored in the Recent
      * folder, since it always uses descendant order of date-mofidied.
-     * @private {string}
+     * @private @type {string}
      */
     this.fileListSortDirection_ = AppStateController.DEFAULT_SORT_DIRECTION;
   }
@@ -225,12 +225,12 @@ export class AppStateController {
 
 /**
  * Default sort field of the file list.
- * @const {string}
+ * @const @type {string}
  */
 AppStateController.DEFAULT_SORT_FIELD = 'modificationTime';
 
 /**
  * Default sort direction of the file list.
- * @const {string}
+ * @const @type {string}
  */
 AppStateController.DEFAULT_SORT_DIRECTION = 'desc';

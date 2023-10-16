@@ -2,6 +2,7 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
+#import "components/signin/public/base/signin_switches.h"
 #import "ios/chrome/browser/signin/fake_system_identity.h"
 #import "ios/chrome/browser/ui/authentication/signin_earl_grey.h"
 #import "ios/chrome/browser/ui/authentication/signin_earl_grey_app_interface.h"
@@ -38,6 +39,12 @@ id<GREYMatcher> SignedInAccountsDialogOkButtonMatcher() {
 @end
 
 @implementation SignedInAccountsTestCase
+
+- (AppLaunchConfiguration)appConfigurationForTestCase {
+  AppLaunchConfiguration config;
+  config.features_disabled.push_back(switches::kRemoveSignedInAccountsDialog);
+  return config;
+}
 
 // Tests that signed-in accounts view is not shown when user is signed out.
 - (void)testSignedInAccountsNotShownWhenSigedOut {

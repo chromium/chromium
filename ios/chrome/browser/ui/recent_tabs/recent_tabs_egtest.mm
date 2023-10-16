@@ -933,7 +933,11 @@ GURL TestPageURL() {
   for (NSUInteger i = 0; i < numberOfTabs; ++i) {
     // Check that the session header is displayed.
     NSString* tabName = [NSString stringWithFormat:@"Tab %ld", i];
-    [[EarlGrey selectElementWithMatcher:grey_accessibilityLabel(tabName)]
+    [[EarlGrey
+        selectElementWithMatcher:grey_allOf(grey_accessibilityLabel(tabName),
+                                            grey_ancestor(grey_kindOfClassName(
+                                                @"TableViewURLCell")),
+                                            nil)]
         assertWithMatcher:grey_sufficientlyVisible()];
   }
 

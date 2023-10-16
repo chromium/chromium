@@ -675,7 +675,7 @@ util.isDescendantEntry = (ancestorEntry, childEntry) => {
 
 /**
  * The last URL with visitURL().
- * @private {string}
+ * @private @type {string}
  */
 let lastVisitedURL;
 

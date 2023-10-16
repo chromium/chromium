@@ -41,6 +41,9 @@ struct UpdateSystemColorInfoParams {
   // renderer's ColorProviders.
   map<SystemThemeColor, uint32> colors;
 
+  // Accent color used by the system. Currently only set on ChromeOS.
+  uint32? accent_color;
+
   // Maps used to reconstruct ColorProvider instances in the renderer.
   map<color.mojom.RendererColorId, skia.mojom.SkColor> light_colors;
   map<color.mojom.RendererColorId, skia.mojom.SkColor> dark_colors;

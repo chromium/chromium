@@ -40,3 +40,17 @@ mojom("mojo_bindings") {
   ]
   deps = [ "//url/mojom:url_mojom_gurl" ]
 }
+
+source_set("unit_tests") {
+  testonly = true
+  sources = [ "prerender_url_loader_throttle_unittest.cc" ]
+
+  deps = [
+    ":mojo_bindings",
+    "//base",
+    "//components/no_state_prefetch/common",
+    "//content/test:test_support",
+    "//testing/gtest",
+    "//url:url",
+  ]
+}

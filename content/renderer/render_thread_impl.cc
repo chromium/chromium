@@ -1565,9 +1565,14 @@ void RenderThreadImpl::UpdateSystemColorInfo(
     blink::ColorProvidersChanged();
   }
 
-  bool did_system_color_info_change =
-      ui::NativeTheme::GetInstanceForWeb()->UpdateSystemColorInfo(
-          params->is_dark_mode, params->forced_colors, params->colors);
+  auto* native_theme = ui::NativeTheme::GetInstanceForWeb();
+
+  bool did_system_color_info_change = native_theme->UpdateSystemColorInfo(
+      params->is_dark_mode, params->forced_colors, params->colors);
+
+  did_system_color_info_change |=
+      native_theme->user_color() != params->accent_color;
+  native_theme->set_user_color(params->accent_color);
 
   if (did_system_color_info_change) {
     // Notify blink of system color info changes. These give blink the

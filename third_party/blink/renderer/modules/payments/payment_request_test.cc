@@ -675,7 +675,7 @@ TEST(PaymentRequestTest, DetailsIdIsSet) {
 class PageDeleter final : public NativeEventListener {
  public:
   PageDeleter()
-      : holder_(V8TestingScope::CreateDummyPageHolder(
+      : holder_(DummyPageHolder::CreateAndCommitNavigation(
             KURL("https://www.example.com"))) {}
   ~PageDeleter() override = default;
 

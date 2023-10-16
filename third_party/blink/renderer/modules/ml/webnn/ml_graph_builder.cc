@@ -155,15 +155,18 @@ base::expected<webnn::Conv2dAttributes, String> ConvertToConv2dAttributes(
   // The order of padding array is [beginning_height, ending_height,
   // beginning_width, ending_width].
   attributes.padding = webnn::Padding2d{
-      .beginning = webnn::Size2d{.height = padding[0], .width = padding[2]},
-      .ending = webnn::Size2d{.height = padding[1], .width = padding[3]}};
+      .beginning =
+          webnn::Size2d<uint32_t>{.height = padding[0], .width = padding[2]},
+      .ending =
+          webnn::Size2d<uint32_t>{.height = padding[1], .width = padding[3]}};
 
   // If strides is not present, the values are assumed to be [1,1].
   auto strides = options->getStridesOr({1, 1});
   if (strides.size() != 2) {
     return base::unexpected("The length of strides should be 2.");
   }
-  attributes.strides = webnn::Size2d{.height = strides[0], .width = strides[1]};
+  attributes.strides =
+      webnn::Size2d<uint32_t>{.height = strides[0], .width = strides[1]};
 
   // If dilations is not present, the values are assumed to be [1,1].
   auto dilations = options->getDilationsOr({1, 1});
@@ -171,7 +174,7 @@ base::expected<webnn::Conv2dAttributes, String> ConvertToConv2dAttributes(
     return base::unexpected("The length of dilations should be 2.");
   }
   attributes.dilations =
-      webnn::Size2d{.height = dilations[0], .width = dilations[1]};
+      webnn::Size2d<uint32_t>{.height = dilations[0], .width = dilations[1]};
   attributes.auto_pad = BlinkAutoPadToComponent(options->autoPad().AsEnum());
   attributes.groups = options->groups();
   attributes.input_layout =
@@ -193,8 +196,8 @@ base::expected<webnn::Pool2dAttributes, std::string> ConvertToPool2dAttributes(
     if (window_dimensions.size() != 2) {
       return base::unexpected("The length of window dimensions should be 2.");
     }
-    attributes.window_dimensions = webnn::Size2d{.height = window_dimensions[0],
-                                                 .width = window_dimensions[1]};
+    attributes.window_dimensions = webnn::Size2d<uint32_t>{
+        .height = window_dimensions[0], .width = window_dimensions[1]};
   }
 
   // If padding is not present, the values are assumed to be [0,0,0,0].
@@ -203,15 +206,18 @@ base::expected<webnn::Pool2dAttributes, std::string> ConvertToPool2dAttributes(
     return base::unexpected("The length of padding should be 4.");
   }
   attributes.padding = webnn::Padding2d{
-      .beginning = webnn::Size2d{.height = padding[0], .width = padding[2]},
-      .ending = webnn::Size2d{.height = padding[1], .width = padding[3]}};
+      .beginning =
+          webnn::Size2d<uint32_t>{.height = padding[0], .width = padding[2]},
+      .ending =
+          webnn::Size2d<uint32_t>{.height = padding[1], .width = padding[3]}};
 
   // If strides is not present, the values are assumed to be [1,1].
   auto strides = options->getStridesOr({1, 1});
   if (strides.size() != 2) {
     return base::unexpected("The length of strides should be 2.");
   }
-  attributes.strides = webnn::Size2d{.height = strides[0], .width = strides[1]};
+  attributes.strides =
+      webnn::Size2d<uint32_t>{.height = strides[0], .width = strides[1]};
 
   // If dilations is not present, the values are assumed to be [1,1].
   auto dilations = options->getDilationsOr({1, 1});
@@ -219,7 +225,7 @@ base::expected<webnn::Pool2dAttributes, std::string> ConvertToPool2dAttributes(
     return base::unexpected("The length of dilations should be 2.");
   }
   attributes.dilations =
-      webnn::Size2d{.height = dilations[0], .width = dilations[1]};
+      webnn::Size2d<uint32_t>{.height = dilations[0], .width = dilations[1]};
   attributes.auto_pad = BlinkAutoPadToComponent(options->autoPad().AsEnum());
   attributes.layout =
       BlinkInputOperandLayoutToComponent(options->layout().AsEnum());
@@ -232,8 +238,8 @@ base::expected<webnn::Pool2dAttributes, std::string> ConvertToPool2dAttributes(
     if (output_size.size() != 2) {
       return base::unexpected("The length of output sizes should be 2.");
     }
-    attributes.output_sizes =
-        webnn::Size2d{.height = output_size[0], .width = output_size[1]};
+    attributes.output_sizes = webnn::Size2d<uint32_t>{.height = output_size[0],
+                                                      .width = output_size[1]};
   }
   return attributes;
 }
@@ -266,18 +272,6 @@ bool ValidateClampOptions(const MLClampOptions* options,
                          options->minValue(), options->maxValue()));
       return false;
     }
-  }
-  return true;
-}
-
-bool ValidateAxis(uint32_t axis,
-                  uint32_t input_rank,
-                  ExceptionState& exception_state) {
-  if (axis >= input_rank) {
-    exception_state.ThrowDOMException(DOMExceptionCode::kDataError,
-                                      "The axis must be in the range [0, N-1] "
-                                      "where N is the rank of input tensor.");
-    return false;
   }
   return true;
 }
@@ -695,74 +689,25 @@ MLOperand* MLGraphBuilder::constant(const MLOperandDescriptor* desc,
 MLOperand* MLGraphBuilder::concat(const HeapVector<Member<MLOperand>>& inputs,
                                   const uint32_t axis,
                                   ExceptionState& exception_state) {
-  auto* concat = MakeGarbageCollected<MLConcatOperator>(this, axis);
-  if (inputs.empty()) {
-    exception_state.ThrowDOMException(DOMExceptionCode::kDataError,
-                                      "The inputs should not be empty.");
-    return nullptr;
-  }
-  const auto& first_input_shape = inputs[0]->Dimensions();
-  const auto first_input_rank = first_input_shape.size();
-  // According to WebNN spec:
-  // https://www.w3.org/TR/webnn/#dom-mlgraphbuilder-concat-inputs-axis-axis,
-  // the axis that the inputs concatenate along, with the value in the interval
-  // [0, N-1] where N is the rank of input tensors. We just check the first
-  // input rank here because we will check all inputs have same rank in the
-  // following loop.
-  if (!ValidateAxis(axis, first_input_rank, exception_state)) {
-    return nullptr;
-  }
-  const auto output_type = inputs[0]->Type();
-  // The loop skips the first input to avoid repeated checks.
-  for (wtf_size_t i = 1; i < inputs.size(); ++i) {
-    if (inputs[i]->Type() != output_type) {
-      exception_state.ThrowDOMException(DOMExceptionCode::kDataError,
-                                        "The input types don't match.");
-      return nullptr;
-    }
-    // According to WebNN spec:
-    // https://www.w3.org/TR/webnn/#api-mlgraphbuilder-concat, all input tensors
-    // must have the same dimension.
-    if (inputs[i]->Dimensions().size() != first_input_rank) {
-      exception_state.ThrowDOMException(
-          DOMExceptionCode::kDataError,
-          "All input tensors must have the same dimension.");
-      return nullptr;
-    }
-    // According to WebNN spec:
-    // https://www.w3.org/TR/webnn/#api-mlgraphbuilder-concat, all input tensors
-    // must have the same shape, except for the size of the dimension to
-    // concatenate on.
-    for (wtf_size_t dim = 0; dim < first_input_rank; ++dim) {
-      if (dim == axis ||
-          inputs[i]->Dimensions()[dim] == first_input_shape[dim]) {
-        continue;
-      }
-      exception_state.ThrowDOMException(
-          DOMExceptionCode::kDataError,
-          "All input tensors must have the same shape, except for the size of "
-          "the dimension to concatenate on.");
-      return nullptr;
-    }
-  }
-  // Calculate the output shape according to WebNN spec:
-  // https://www.w3.org/TR/webnn/#api-mlgraphbuilder-concat, the output tensor
-  // has the same shape except on the dimension that all the inputs concatenated
-  // along. The size of that dimension is computed as the sum of all the input
-  // sizes of the same dimension.
-  auto axis_size = base::MakeCheckedNum<uint32_t>(0);
-  for (auto& input : inputs) {
-    axis_size += input->Dimensions()[axis];
-  }
-  auto output_shape = first_input_shape;
-  if (!axis_size.AssignIfValid(&output_shape[axis])) {
+  std::vector<webnn::Operand> input_component_operands;
+  input_component_operands.reserve(inputs.size());
+  base::ranges::transform(
+      inputs, std::back_inserter(input_component_operands),
+      [](const auto& input) { return ConvertToComponentOperand(input); });
+
+  auto validated_output =
+      webnn::ValidateConcatAndInferOutput(input_component_operands, axis);
+  if (!validated_output.has_value()) {
     exception_state.ThrowDOMException(
         DOMExceptionCode::kDataError,
-        "The concatenated dimension size is too large.");
+        String::FromUTF8(validated_output.error()));
     return nullptr;
   }
-  auto output = MLOperand::ValidateAndCreateOutput(this, output_type,
-                                                   output_shape, concat);
+
+  auto* concat = MakeGarbageCollected<MLConcatOperator>(this, axis);
+  auto output = MLOperand::ValidateAndCreateOutput(
+      this, ComponentOperandTypeToBlink(validated_output->data_type),
+      Vector<uint32_t>(validated_output->dimensions), concat);
   if (!output.has_value()) {
     exception_state.ThrowDOMException(DOMExceptionCode::kDataError,
                                       output.error());
@@ -811,8 +756,8 @@ MLOperand* MLGraphBuilder::conv2d(const MLOperand* input,
                                   ExceptionState& exception_state) {
   auto conv2d_attributes = ConvertToConv2dAttributes(options);
   if (!conv2d_attributes.has_value()) {
-    exception_state.ThrowDOMException(
-        DOMExceptionCode::kDataError, conv2d_attributes.error());
+    exception_state.ThrowDOMException(DOMExceptionCode::kDataError,
+                                      conv2d_attributes.error());
     return nullptr;
   }
 

@@ -3,6 +3,7 @@
 // found in the LICENSE file.
 
 #include "base/memory/raw_ptr.h"
+#include "base/ranges/algorithm.h"
 #include "base/test/metrics/histogram_tester.h"
 #include "base/test/scoped_feature_list.h"
 #include "chrome/browser/autofill/autofill_uitest_util.h"
@@ -89,7 +90,7 @@ class OfferNotificationControllerAndroidBrowserTest
   Profile* GetProfile() { return chrome_test_utils::GetProfile(this); }
 
   AutofillOfferData* SetUpOfferDataWithDomains(const GURL& url) {
-    personal_data_->ClearAllServerData();
+    personal_data_->ClearAllServerDataForTesting();
     std::vector<GURL> merchant_origins;
     merchant_origins.emplace_back(url.DeprecatedGetOriginAsURL());
     std::vector<int64_t> eligible_instrument_ids = {0x4444};
@@ -150,15 +151,11 @@ class OfferNotificationControllerAndroidBrowserTestForInfobar
   infobars::InfoBar* GetInfoBar() {
     infobars::ContentInfoBarManager* infobar_manager =
         infobars::ContentInfoBarManager::FromWebContents(GetWebContents());
-    for (size_t i = 0; i < infobar_manager->infobar_count(); ++i) {
-      infobars::InfoBar* infobar = infobar_manager->infobar_at(i);
-      if (infobar->delegate()->GetIdentifier() ==
-          infobars::InfoBarDelegate::
-              AUTOFILL_OFFER_NOTIFICATION_INFOBAR_DELEGATE) {
-        return infobar;
-      }
-    }
-    return nullptr;
+    const auto it = base::ranges::find(
+        infobar_manager->infobars(),
+        infobars::InfoBarDelegate::AUTOFILL_OFFER_NOTIFICATION_INFOBAR_DELEGATE,
+        &infobars::InfoBar::GetIdentifier);
+    return it != infobar_manager->infobars().cend() ? *it : nullptr;
   }
 
   AutofillOfferNotificationInfoBarDelegateMobile* GetInfoBarDelegate(

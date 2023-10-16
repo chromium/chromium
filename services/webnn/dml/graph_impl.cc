@@ -95,10 +95,14 @@ std::string OpTagToString(Operation::Tag tag) {
   switch (tag) {
     case Operation::Tag::kClamp:
       return "clamp";
+    case Operation::Tag::kConcat:
+      return "concat";
     case Operation::Tag::kConv2d:
       return "conv2d";
     case Operation::Tag::kPool2d:
       return "pool2d";
+    case Operation::Tag::kResample2d:
+      return "resample2d";
     case Operation::Tag::kRelu:
       return "relu";
     case Operation::Tag::kSplit:

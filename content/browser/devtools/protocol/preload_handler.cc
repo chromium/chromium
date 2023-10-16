@@ -20,6 +20,8 @@
 
 namespace content::protocol {
 
+namespace {
+
 Preload::PrerenderFinalStatus PrerenderFinalStatusToProtocol(
     PrerenderFinalStatus feature) {
   switch (feature) {
@@ -313,6 +315,24 @@ bool PreloadingTriggeringOutcomeSupportedByPrerender(
   }
 }
 
+absl::optional<protocol::Preload::SpeculationTargetHint>
+GetProtocolSpeculationTargetHint(
+    absl::optional<blink::mojom::SpeculationTargetHint> target_hint) {
+  if (!target_hint.has_value()) {
+    return absl::nullopt;
+  }
+  switch (target_hint.value()) {
+    case blink::mojom::SpeculationTargetHint::kNoHint:
+      return absl::nullopt;
+    case blink::mojom::SpeculationTargetHint::kBlank:
+      return protocol::Preload::SpeculationTargetHintEnum::Blank;
+    case blink::mojom::SpeculationTargetHint::kSelf:
+      return protocol::Preload::SpeculationTargetHintEnum::Self;
+  }
+}
+
+}  // namespace
+
 PreloadHandler::PreloadHandler()
     : DevToolsDomainHandler(Preload::Metainfo::domainName) {}
 
@@ -334,7 +354,7 @@ void PreloadHandler::DidUpdatePrefetchStatus(
   if (!enabled_) {
     return;
   }
-  // TODO(crbug/1384419): Handle target_hint.
+
   auto preloading_attempt_key =
       protocol::Preload::PreloadingAttemptKey::Create()
           .SetLoaderId(initiator_devtools_navigation_token.ToString())
@@ -352,19 +372,25 @@ void PreloadHandler::DidUpdatePrefetchStatus(
 void PreloadHandler::DidUpdatePrerenderStatus(
     const base::UnguessableToken& initiator_devtools_navigation_token,
     const GURL& prerender_url,
+    absl::optional<blink::mojom::SpeculationTargetHint> target_hint,
     PreloadingTriggeringOutcome status,
     absl::optional<PrerenderFinalStatus> prerender_status,
     absl::optional<std::string> disallowed_mojo_interface) {
   if (!enabled_) {
     return;
   }
-  // TODO(crbug/1384419): Handle target_hint.
+
   auto preloading_attempt_key =
       protocol::Preload::PreloadingAttemptKey::Create()
           .SetLoaderId(initiator_devtools_navigation_token.ToString())
           .SetAction(Preload::SpeculationActionEnum::Prerender)
           .SetUrl(prerender_url.spec())
           .Build();
+  absl::optional<protocol::Preload::SpeculationTargetHint>
+      protocol_target_hint = GetProtocolSpeculationTargetHint(target_hint);
+  if (protocol_target_hint.has_value()) {
+    preloading_attempt_key->SetTargetHint(protocol_target_hint.value());
+  }
   Maybe<Preload::PrerenderFinalStatus> protocol_prerender_status =
       prerender_status.has_value()
           ? PrerenderFinalStatusToProtocol(prerender_status.value())

@@ -38,6 +38,7 @@
 #include "third_party/blink/renderer/core/page/page.h"
 #include "third_party/blink/renderer/core/testing/scoped_mock_overlay_scrollbars.h"
 #include "third_party/blink/renderer/platform/heap/persistent.h"
+#include "third_party/blink/renderer/platform/weborigin/kurl.h"
 #include "third_party/blink/renderer/platform/wtf/allocator/allocator.h"
 #include "ui/gfx/geometry/size.h"
 
@@ -69,6 +70,15 @@ class DummyPageHolder {
   USING_FAST_MALLOC(DummyPageHolder);
 
  public:
+  static std::unique_ptr<DummyPageHolder> CreateAndCommitNavigation(
+      const KURL& url,
+      const gfx::Size& initial_view_size = gfx::Size(),
+      ChromeClient* = nullptr,
+      LocalFrameClient* = nullptr,
+      base::OnceCallback<void(Settings&)> setting_overrider =
+          base::NullCallback(),
+      const base::TickClock* clock = base::DefaultTickClock::GetInstance());
+
   DummyPageHolder(
       const gfx::Size& initial_view_size = gfx::Size(),
       ChromeClient* = nullptr,

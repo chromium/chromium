@@ -1,12 +1,12 @@
 CONSOLE ERROR: [audit.js] this test requires the explicit comparison with the expected result when it runs with run_web_tests.py.
 CONSOLE WARNING: Unstable IIRFilter with feedback coefficients: [1, 1.1]
 This is a testharness.js-based test.
-PASS # AUDIT TASK RUNNER STARTED.
-PASS Executing "unstable"
-PASS Audit report
-PASS > [unstable] 
-PASS   Creating unstable IIR filter with  createIIRFilter([1], [1, 1.1]) did not throw an exception.
-PASS < [unstable] All assertions passed. (total 1 assertions)
-PASS # AUDIT TASK RUNNER FINISHED: 1 tasks ran successfully.
+[PASS] # AUDIT TASK RUNNER STARTED.
+[PASS] Executing "unstable"
+[PASS] Audit report
+[PASS] > [unstable] 
+[PASS]   Creating unstable IIR filter with  createIIRFilter([1], [1, 1.1]) did not throw an exception.
+[PASS] < [unstable] All assertions passed. (total 1 assertions)
+[PASS] # AUDIT TASK RUNNER FINISHED: 1 tasks ran successfully.
 Harness: the test ran to completion.
 

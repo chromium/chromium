@@ -2090,6 +2090,7 @@ Vous pouvez gérer les paramètres de ce compte en installant l'application Fami
 <translation id="2609980095400624569">Impossible d'établir la connexion</translation>
 <translation id="2610157865375787051">Veille</translation>
 <translation id="2610260699262139870">Taille ré&amp;elle</translation>
+<translation id="2610374175948698697">Peuvent voir des fichiers et des dossiers sur votre appareil</translation>
 <translation id="2610780100389066815">Signature de liste d'approbation Microsoft</translation>
 <translation id="261114180663074524">Connectez-vous à votre compte Microsoft, puis réessayez</translation>
 <translation id="2611776654555141051">Outil Rectangle</translation>
@@ -2137,6 +2138,7 @@ Vous pouvez gérer les paramètres de ce compte en installant l'application Fami
 <translation id="264897126871533291">Protanomalie</translation>
 <translation id="2649045351178520408">Chaîne de certificats codés Base 64 ASCII</translation>
 <translation id="265156376773362237">Préchargement standard</translation>
+<translation id="2652071759203138150">{COUNT,plural, =1{{COUNT} mot de passe n'est enregistré que sur cet appareil. Pour l'utiliser sur vos autres appareils, <ph name="BEGIN_LINK" />enregistrez-le dans votre compte Google<ph name="END_LINK" />.}one{{COUNT} mot de passe n'est enregistré que sur cet appareil. Pour l'utiliser sur vos autres appareils, <ph name="BEGIN_LINK" />enregistrez-le dans votre compte Google<ph name="END_LINK" />.}other{{COUNT} mots de passe ne sont enregistrés que sur cet appareil. Pour les utiliser sur vos autres appareils, <ph name="BEGIN_LINK" />enregistrez-les dans votre compte Google<ph name="END_LINK" />.}}</translation>
 <translation id="2652129567809778422">Sélectionner un mot de passe</translation>
 <translation id="2653266418988778031">Si vous supprimez le certificat d'une autorité de certification, votre navigateur ne fera plus confiance aux certificats émis par cette autorité de certification.</translation>
 <translation id="2653275834716714682">Remplacement du texte</translation>
@@ -3215,6 +3217,7 @@ Vous pouvez gérer les paramètres de ce compte en installant l'application Fami
 <translation id="3521405806571557477">Supprimer les données enregistrées pour <ph name="SITE_NAME" /></translation>
 <translation id="3521606918211282604">Modifier la taille du disque</translation>
 <translation id="3522088408596898827">Le disque est presque saturé. Veuillez libérer de l'espace et réessayer.</translation>
+<translation id="3522979239100719575">Recherche des profils disponibles… Cela peut prendre quelques minutes.</translation>
 <translation id="3524518036046613664">Découvrir les appareils de votre réseau local, comme les imprimantes</translation>
 <translation id="3524965460886318643">Exporter les activités</translation>
 <translation id="3525426269008462093">Vérifier la synchronisation de l'appareil après configuration</translation>
@@ -4027,6 +4030,7 @@ Cela peut inclure des informations sur les logiciels installés, les fichiers, v
 <translation id="4150201353443180367">Écran</translation>
 <translation id="4150569944729499860">Contexte de l'écran</translation>
 <translation id="4151449637210235443">Parlez-nous de votre partie récente</translation>
+<translation id="4151503145138736576">Aucun espace de stockage hors connexion à nettoyer</translation>
 <translation id="4152011295694446843">Vos favoris s'afficheront ici</translation>
 <translation id="4152670763139331043">{NUM_TABS,plural, =1{1 onglet}one{# onglet}other{# onglets}}</translation>
 <translation id="4154664944169082762">Empreintes</translation>
@@ -4237,6 +4241,7 @@ Cela peut inclure des informations sur les logiciels installés, les fichiers, v
 <translation id="4341577178275615435">Pour activer ou désactiver la navigation au clavier, appuyez sur F7</translation>
 <translation id="4341905082470253054">Vérification de l'état du TPM…</translation>
 <translation id="434198521554309404">Rapide. Sécurisé. Simple.</translation>
+<translation id="4342417854108207000">Autorisées à modifier des fichiers et des dossiers sur votre appareil</translation>
 <translation id="4343250402091037179">Pour effectuer une recherche sur un site spécifique ou une partie de Chrome, saisissez son raccourci dans la barre d'adresse suivi du raccourci clavier de votre choix.</translation>
 <translation id="434404122609091467">Avec votre fournisseur de services actuel</translation>
 <translation id="4345457680916430965">&amp;Ouvrir dans <ph name="APP" /></translation>
@@ -5270,6 +5275,7 @@ Appuyez sur Ctrl+Alt+Baisser la luminosité pour faire un zoom arrière.</transl
 <translation id="5197255632782567636">Internet</translation>
 <translation id="5198430103906431024">Envoyer des données d'utilisation et de diagnostic. À l'heure actuelle, cet appareil envoie automatiquement à Google des données liées à son utilisation et à celle des applications, ainsi que des données de diagnostic. Ces informations nous aideront à améliorer, entre autres, la stabilité du système et des applications. Certaines données globales seront également utiles aux développeurs des applications Google et à nos partenaires tels que les développeurs Android. Si vous avez activé le paramètre "Activité supplémentaire sur le Web et les applications", ces données peuvent être enregistrées dans votre compte Google.</translation>
 <translation id="5199729219167945352">Prototypes</translation>
+<translation id="5203035663139409780">Peuvent modifier des fichiers et des dossiers sur votre appareil</translation>
 <translation id="5203920255089865054">{NUM_EXTENSIONS,plural, =1{Cliquez ici pour afficher l'extension}one{Cliquez ici pour afficher l'extension}other{Cliquez ici pour afficher ces extensions}}</translation>
 <translation id="5204249655833504508">Tablette graphique</translation>
 <translation id="5204673965307125349">Veuillez effectuer un Powerwash de l'appareil, puis réessayer.</translation>
@@ -7807,6 +7813,7 @@ Vous avez # autres mots de passe compromis. Le Gestionnaire de mots de passe Go
 <translation id="7283555985781738399">Mode Invité</translation>
 <translation id="7284307451964417957">{DAYS,plural, =1{Pendant 1 jour, cet appareil sera enregistré et vous n'aurez pas besoin de code pour vous reconnecter. Ce paramètre est défini par votre administrateur.}one{Pendant {DAYS} jour, cet appareil sera enregistré et vous n'aurez pas besoin de code pour vous reconnecter. Ce paramètre est défini par votre administrateur.}other{Pendant {DAYS} jours, cet appareil sera enregistré et vous n'aurez pas besoin de code pour vous reconnecter. Ce paramètre est défini par votre administrateur.}}</translation>
 <translation id="7284411326658527427">Chaque personne pourra personnaliser son compte et préserver la confidentialité de ses données.</translation>
+<translation id="7286867818472074330">Sélectionner une clé d'accès</translation>
 <translation id="7287143125007575591">Accès refusé.</translation>
 <translation id="7287411021188441799">Restaurer l'arrière-plan par défaut</translation>
 <translation id="7288676996127329262"><ph name="HORIZONTAL_DPI" /> x <ph name="VERTICAL_DPI" /> PPP</translation>

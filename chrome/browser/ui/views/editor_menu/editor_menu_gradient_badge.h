@@ -6,6 +6,7 @@
 #define CHROME_BROWSER_UI_VIEWS_EDITOR_MENU_EDITOR_MENU_GRADIENT_BADGE_H_
 
 #include "ui/base/metadata/metadata_header_macros.h"
+#include "ui/gfx/color_palette.h"
 #include "ui/views/view.h"
 
 namespace chromeos::editor_menu {
@@ -24,9 +25,11 @@ class EditorMenuGradientBadge : public views::View {
   // View:
   gfx::Size CalculatePreferredSize() const override;
   void OnPaint(gfx::Canvas* canvas) override;
+  void OnThemeChanged() override;
 
  private:
   const std::u16string badge_text_;
+  SkColor badge_background_color_ = gfx::kPlaceholderColor;
 };
 
 }  // namespace chromeos::editor_menu

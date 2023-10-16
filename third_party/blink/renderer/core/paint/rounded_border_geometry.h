@@ -13,7 +13,7 @@ namespace blink {
 
 class ComputedStyle;
 class FloatRoundedRect;
-struct NGPhysicalBoxStrut;
+struct PhysicalBoxStrut;
 struct PhysicalRect;
 
 class CORE_EXPORT RoundedBorderGeometry {
@@ -41,7 +41,7 @@ class CORE_EXPORT RoundedBorderGeometry {
   static FloatRoundedRect PixelSnappedRoundedBorderWithOutsets(
       const ComputedStyle&,
       const PhysicalRect& border_rect,
-      const NGPhysicalBoxStrut& outsets_from_border,
+      const PhysicalBoxStrut& outsets_from_border,
       PhysicalBoxSides edges_to_include = PhysicalBoxSides());
 };
 

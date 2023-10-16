@@ -22,6 +22,7 @@
 #include "third_party/blink/renderer/core/layout/layout_multi_column_set.h"
 #include "third_party/blink/renderer/core/layout/layout_multi_column_spanner_placeholder.h"
 #include "third_party/blink/renderer/core/layout/layout_video.h"
+#include "third_party/blink/renderer/core/layout/list/layout_list_item.h"
 #include "third_party/blink/renderer/core/layout/min_max_sizes.h"
 #include "third_party/blink/renderer/core/layout/ng/custom/layout_ng_custom.h"
 #include "third_party/blink/renderer/core/layout/ng/custom/ng_custom_layout_algorithm.h"
@@ -31,7 +32,6 @@
 #include "third_party/blink/renderer/core/layout/ng/inline/ng_inline_cursor.h"
 #include "third_party/blink/renderer/core/layout/ng/inline/ng_inline_node.h"
 #include "third_party/blink/renderer/core/layout/ng/legacy_layout_tree_walking.h"
-#include "third_party/blink/renderer/core/layout/ng/list/layout_ng_list_item.h"
 #include "third_party/blink/renderer/core/layout/ng/mathml/ng_math_fraction_layout_algorithm.h"
 #include "third_party/blink/renderer/core/layout/ng/mathml/ng_math_layout_utils.h"
 #include "third_party/blink/renderer/core/layout/ng/mathml/ng_math_operator_layout_algorithm.h"
@@ -330,7 +330,7 @@ const NGLayoutResult* NGBlockNode::Layout(
 
   // We may be able to hit the cache without calculating fragment geometry
   // (calculating that isn't necessarily very cheap). So, start off without it.
-  absl::optional<NGFragmentGeometry> fragment_geometry;
+  absl::optional<FragmentGeometry> fragment_geometry;
 
   // CachedLayoutResult() might clear flags, so remember the need for layout
   // before attempting to hit the cache.
@@ -893,7 +893,7 @@ MinMaxSizesResult NGBlockNode::ComputeMinMaxSizes(
   if (!is_in_perform_layout &&
       (IsGrid() ||
        (IsFlexibleBox() && Style().ResolvedIsColumnFlexDirection()))) {
-    const NGFragmentGeometry fragment_geometry =
+    const FragmentGeometry fragment_geometry =
         CalculateInitialFragmentGeometry(constraint_space, *this,
                                          /* break_token */ nullptr,
                                          /* is_intrinsic */ true);
@@ -948,7 +948,7 @@ MinMaxSizesResult NGBlockNode::ComputeMinMaxSizes(
 
   if (!Style().AspectRatio().IsAuto() && !IsReplaced() &&
       type == MinMaxSizesType::kContent) {
-    const NGFragmentGeometry fragment_geometry =
+    const FragmentGeometry fragment_geometry =
         CalculateInitialFragmentGeometry(constraint_space, *this,
                                          /* break_token */ nullptr,
                                          /* is_intrinsic */ true);
@@ -982,7 +982,7 @@ MinMaxSizesResult NGBlockNode::ComputeMinMaxSizes(
       DependsOnBlockConstraints() ||
       UseParentPercentageResolutionBlockSizeForChildren();
 
-  const NGFragmentGeometry fragment_geometry = CalculateInitialFragmentGeometry(
+  const FragmentGeometry fragment_geometry = CalculateInitialFragmentGeometry(
       constraint_space, *this, /* break_token */ nullptr,
       /* is_intrinsic */ true);
   const LayoutUnit initial_block_size =

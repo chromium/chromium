@@ -13,7 +13,7 @@ export class MetadataCacheItem {
   constructor() {
     /**
      * Map of property name and MetadataCacheItemProperty.
-     * @private {!Object<!MetadataCacheItemProperty>}
+     * @private @type {!Object<!MetadataCacheItemProperty>}
      * @const
      */
     this.properties_ = {};
@@ -179,24 +179,24 @@ export class MetadataCacheItemProperty {
   constructor() {
     /**
      * Cached value of property.
-     * @public {*}
+     * @public @type {*}
      */
     this.value = null;
 
     /**
-     * @public {Error}
+     * @public @type {Error}
      */
     this.error = null;
 
     /**
      * Last request ID.
-     * @public {number}
+     * @public @type {number}
      */
     this.requestId = -1;
 
     /**
      * Cache state of the property.
-     * @public {MetadataCacheItemPropertyState}
+     * @public @type {MetadataCacheItemPropertyState}
      */
     this.state = MetadataCacheItemPropertyState.INVALIDATED;
   }

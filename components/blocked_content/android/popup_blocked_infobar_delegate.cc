@@ -37,8 +37,7 @@ bool PopupBlockedInfoBarDelegate::Create(
   // TODO(dfalcantara) When triggering more than one popup the infobar
   // will be shown once, then hide then be shown again.
   // This will be fixed once we have an in place replace infobar mechanism.
-  for (size_t i = 0; i < infobar_manager->infobar_count(); ++i) {
-    infobars::InfoBar* existing_infobar = infobar_manager->infobar_at(i);
+  for (auto* existing_infobar : infobar_manager->infobars()) {
     if (existing_infobar->delegate()->AsPopupBlockedInfoBarDelegate()) {
       infobar_manager->ReplaceInfoBar(existing_infobar, std::move(infobar));
       return false;

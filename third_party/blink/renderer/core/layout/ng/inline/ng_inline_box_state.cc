@@ -826,7 +826,7 @@ const NGLayoutResult* NGInlineLayoutStateStack::BoxData::CreateBoxFragment(
   DCHECK(item->Style());
   const ComputedStyle& style = *item->Style();
 
-  NGFragmentGeometry fragment_geometry;
+  FragmentGeometry fragment_geometry;
   fragment_geometry.border_box_size = {
       rect.size.inline_size.ClampNegativeToZero(), rect.size.block_size};
   fragment_geometry.border =

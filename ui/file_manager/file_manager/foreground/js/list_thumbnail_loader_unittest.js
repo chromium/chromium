@@ -86,7 +86,7 @@ export function setUp() {
   context.fillStyle = 'black';
   context.fillRect(0, 0, 80, 80);
   context.fillRect(80, 80, 80, 80);
-  /** @const {string} */
+  /** @const @type {string} */
   const testImageDataUrl = canvas.toDataURL('image/jpeg', 0.5);
 
   /** @suppress {const} */

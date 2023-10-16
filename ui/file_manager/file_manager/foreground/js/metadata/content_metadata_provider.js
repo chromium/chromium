@@ -25,14 +25,14 @@ export class ContentMetadataProvider extends MetadataProvider {
 
     /**
      * Pass all URLs to the metadata reader until we have a correct filter.
-     * @private {RegExp}
+     * @private @type {RegExp}
      */
     this.urlFilter_ = /.*/;
 
     /**
      * Initialization is not complete until the Worker sends back the
      * 'initialized' message.  See below.
-     * @private {boolean}
+     * @private @type {boolean}
      */
     this.initialized_ = false;
 
@@ -40,13 +40,13 @@ export class ContentMetadataProvider extends MetadataProvider {
      * Map from Entry.toURL() to callback.
      * Note that simultaneous requests for same url are handled in
      * MetadataCache.
-     * @private @const {!Object<!string, !Array<function(!MetadataItem)>>}
+     * @private @const @type {!Object<!string, !Array<function(!MetadataItem)>>}
      */
     this.callbacks_ = {};
 
     /**
      * Setup |this.disapatcher_|. Creates the Shared Worker if needed.
-     * @private @const {!MessagePort}
+     * @private @const @type {!MessagePort}
      */
     this.dispatcher_ = this.createSharedWorker_(opt_messagePort);
     this.dispatcher_.onmessage = this.onMessage_.bind(this);
@@ -237,7 +237,7 @@ export class ContentMetadataProvider extends MetadataProvider {
   getContentMetadata_(entry, names) {
     /**
      * First step is to determine the sniffed content mime type of |entry|.
-     * @const {!Promise<!MetadataItem>}
+     * @const @type {!Promise<!MetadataItem>}
      */
     const getContentMimeType = new Promise((resolve, reject) => {
       chrome.fileManagerPrivate.getContentMimeType(entry, resolve);
@@ -481,18 +481,18 @@ ContentMetadataProvider.Error = class extends Error {
   constructor(url, step, cause) {
     super(cause);
 
-    /** @public @const {string} */
+    /** @public @const @type {string} */
     this.url = url;
 
-    /** @public @const {string} */
+    /** @public @const @type {string} */
     this.step = step;
 
-    /** @public @const {string} */
+    /** @public @const @type {string} */
     this.errorDescription = cause;
   }
 };
 
-/** @public @const {!Array<string>} */
+/** @public @const @type {!Array<string>} */
 ContentMetadataProvider.PROPERTY_NAMES = [
   'contentImageTransform',
   'contentThumbnailTransform',
@@ -513,19 +513,19 @@ ContentMetadataProvider.PROPERTY_NAMES = [
 
 /**
  * The metadata Worker script URL.
- * @const @private {string}
+ * @const @private @type {string}
  */
 ContentMetadataProvider.DEFAULT_WORKER_SCRIPT_ =
     'foreground/js/metadata/metadata_dispatcher.js';
 
 /**
  * Worker script URL that is overwritten by client code.
- * @private {?string}
+ * @private @type {?string}
  */
 ContentMetadataProvider.workerScript_ = null;
 
 /**
  * Sets if the SharedWorker should start as a JS Module.
- * @private {boolean}
+ * @private @type {boolean}
  */
 ContentMetadataProvider.loadAsModule_ = true;

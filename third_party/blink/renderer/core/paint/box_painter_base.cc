@@ -320,7 +320,7 @@ void BoxPainterBase::PaintInsetBoxShadowWithInnerRect(
   if (!style.BoxShadow())
     return;
   auto bounds = RoundedBorderGeometry::PixelSnappedRoundedBorderWithOutsets(
-      style, inner_rect, NGPhysicalBoxStrut());
+      style, inner_rect, PhysicalBoxStrut());
   PaintInsetBoxShadow(info, bounds, style);
 }
 
@@ -971,7 +971,7 @@ FloatRoundedRect RoundedBorderRectForClip(
     bool object_has_multiple_boxes,
     const PhysicalSize& flow_box_size,
     BackgroundBleedAvoidance bleed_avoidance,
-    const NGPhysicalBoxStrut& border_padding_insets) {
+    const PhysicalBoxStrut& border_padding_insets) {
   if (!info.is_rounded_fill)
     return FloatRoundedRect();
 
@@ -1055,10 +1055,10 @@ void PaintFillLayerBackground(const Document* document,
   }
 }
 
-NGPhysicalBoxStrut AdjustOutsetsForEdgeInclusion(
-    const NGPhysicalBoxStrut& outsets,
+PhysicalBoxStrut AdjustOutsetsForEdgeInclusion(
+    const PhysicalBoxStrut& outsets,
     const BoxPainterBase::FillLayerInfo& info) {
-  NGPhysicalBoxStrut adjusted = outsets;
+  PhysicalBoxStrut adjusted = outsets;
   if (!info.sides_to_include.top)
     adjusted.top = LayoutUnit();
   if (!info.sides_to_include.right)
@@ -1078,14 +1078,14 @@ bool ShouldApplyBlendOperation(const BoxPainterBase::FillLayerInfo& info,
 
 }  // anonymous namespace
 
-NGPhysicalBoxStrut BoxPainterBase::ComputeSnappedBorders() const {
-  const NGPhysicalBoxStrut border_widths = ComputeBorders();
-  return NGPhysicalBoxStrut(
+PhysicalBoxStrut BoxPainterBase::ComputeSnappedBorders() const {
+  const PhysicalBoxStrut border_widths = ComputeBorders();
+  return PhysicalBoxStrut(
       border_widths.top.ToInt(), border_widths.right.ToInt(),
       border_widths.bottom.ToInt(), border_widths.left.ToInt());
 }
 
-NGPhysicalBoxStrut BoxPainterBase::AdjustedBorderOutsets(
+PhysicalBoxStrut BoxPainterBase::AdjustedBorderOutsets(
     const FillLayerInfo& info) const {
   return AdjustOutsetsForEdgeInclusion(ComputeSnappedBorders(), info);
 }
@@ -1134,9 +1134,9 @@ void BoxPainterBase::PaintFillLayer(const PaintInfo& paint_info,
     }
   }
 
-  NGPhysicalBoxStrut border = ComputeSnappedBorders();
-  NGPhysicalBoxStrut padding = ComputePadding();
-  NGPhysicalBoxStrut border_padding_insets = -(border + padding);
+  PhysicalBoxStrut border = ComputeSnappedBorders();
+  PhysicalBoxStrut padding = ComputePadding();
+  PhysicalBoxStrut border_padding_insets = -(border + padding);
   FloatRoundedRect border_rect = RoundedBorderRectForClip(
       style_, fill_layer_info, bg_layer, rect, object_has_multiple_boxes,
       flow_box_size, bleed_avoidance, border_padding_insets);

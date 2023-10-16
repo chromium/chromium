@@ -36,7 +36,6 @@
 <translation id="1173894706177603556">ප්‍රතිනම්</translation>
 <translation id="1174479719160874822">තිරය පටු වූ විට Chrome ජංගම අඩවිය ඉල්ලනු ඇත</translation>
 <translation id="1177863135347784049">සැකසුම්</translation>
-<translation id="1178581264944972037">විරාමය</translation>
 <translation id="1181037720776840403">ඉවත් කරන්න</translation>
 <translation id="1181366777303791449"><ph name="MAIN_FRAME_ETLD_PLUS_ONE" /> හි</translation>
 <translation id="1193729455103054076">ප්‍රබල මුරපදයක් භාවිත කරන්නද?</translation>
@@ -476,7 +475,6 @@
 <translation id="3513704683820682405">ආවර්ධිත යථාර්තය</translation>
 <translation id="3518985090088779359">පිළිගෙන කරගෙන යන්න</translation>
 <translation id="3522247891732774234">යාවත්කාලීන ලබා ගත හැකිය. තවත් විකල්ප</translation>
-<translation id="3523426587027570423">“මෙම පිටුවට සවන් දෙන්න” වැසීමට තට්ටු කරන්න.</translation>
 <translation id="3524138585025253783">සංවර්ධක UI</translation>
 <translation id="3524334353996115845"><ph name="ORIGIN" /> හට ඒ ඔබ බව සත්‍යාපනය කිරීමට ඉඩ දෙමු</translation>
 <translation id="3527085408025491307">ෆෝල්ඩරය</translation>
@@ -679,7 +677,6 @@
 <translation id="4640331037679501949">{NUM_PASSWORDS,plural, =1{අවදානමට පත් වූ මුරපද 1}one{අවදානමට පත් වූ මුරපද #}other{අවදානමට පත් වූ මුරපද #}}</translation>
 <translation id="4645146721047390964">අප්‍රසිද්ධ තුළ සිටින අතරේ, විවිධ වෙබ් අඩවි හරහා ඔබේ බ්‍රවුස් කිරීමේ ක්‍රියාකාරකම් බැලීමට, උදාහරණයක් වශයෙන්, දැන්වීම් පෞද්ගලීකරණය කිරීමට අඩවිවලට ඔබේ කුකි භාවිත කළ නොහැක. සමහර අඩවිවල විශේෂාංග බිඳිය හැක.</translation>
 <translation id="4650364565596261010">පද්ධති පෙරනිමිය</translation>
-<translation id="4654641641922242357">“මෙම පිටුවට සවන් දෙන්න” වාදකය.</translation>
 <translation id="465657074423018424">සුරක්ෂිත බ්‍රවුස් කිරීම රැවටිලිකාර වෙබ් අඩවිවලින් ඔබව ආරක්ෂා කරයි. ඔබ එය ක්‍රියාවිරහිත කරන්නේ නම්, විශේෂයෙන් මුරපද ඇතුළත් කිරීමට පෙර, බ්‍රවුස් කිරීමේදී අමතර ප්‍රවේශම් වන්න.</translation>
 <translation id="4662373422909645029">අපනාමයේ අංක ඇතුළත් විය නොහැක</translation>
 <translation id="4663499661119906179">ඔබ සඳහා ඉහළම අඩවි සහ කථාන්දර බලන්න</translation>
@@ -696,7 +693,6 @@
 <translation id="4710167854527459075">නවතම අනුව වර්ග කරන්න</translation>
 <translation id="4719927025381752090">පරිවර්තනය කිරීමට පිරිනමන්න</translation>
 <translation id="47217992755561375">ඔබගේ ඉහළම අඩවි බලන්න</translation>
-<translation id="4731877163452936634">පසුධාවන වේගය: <ph name="PLAYBACK_SPEED" />. වෙනස් කිරීමට ක්ලික් කරන්න.</translation>
 <translation id="4732120983431207637">එතීම ලිහන්නා</translation>
 <translation id="4736934858538408121">අතථ්‍ය කාඩ්පත</translation>
 <translation id="473775607612524610">යාවත්කාලීනය</translation>
@@ -812,7 +808,6 @@
 <translation id="5226378907213531272">ඔබ මෝටර් රථය භාවිතා කරන සෑම අවස්ථාවකම ඔබ ඔබේ තිරය අගුළු හරිනු ඇත</translation>
 <translation id="5227554086496586518">සෙවීම් ප්‍රතිඵල බැලීමට තට්ටු කරන්න</translation>
 <translation id="5233638681132016545">නව ටැබය</translation>
-<translation id="5234971936051226002">“මෙම පිටුවට සවන් දෙන්න” වාදකය අවම කෙරිණි.</translation>
 <translation id="5235196193381275927">පිරීම අතරතුර යම් දෙයක් වැරදිණි</translation>
 <translation id="5246093389635966745">මෙවලම් තීරු කෙටි මඟ සංස්කරණය කරන්න</translation>
 <translation id="5264813352784073502">පසුගිය පැය 24</translation>
@@ -1108,7 +1103,6 @@
 <translation id="6770602306803890733">ඔබේ සහ වෙබය මත සියලු දෙනාගේම ආරක්‍ෂාව වැඩිදියුණු කරයි</translation>
 <translation id="6775840696761158817">ඔබ ලිපින තීරුව හෝ සෙවීම් පෙට්ටිය තුළ තට්ටු කරන විට හෝ ටයිප් කරන විට, ඔබ ඔබේ පෙරනිමි සෙවීම් යන්ත්‍රයෙන් යෝජනා දකියි. මෙය අප්‍රසිද්ධ තුළ ක්‍රියා විරහිතයි.</translation>
 <translation id="6785476624617658922">Chrome සහ ChromeOS අතිරේක සේවා නියම</translation>
-<translation id="6790428901817661496">වාදනය කරන්න</translation>
 <translation id="6795633245022906657">ඉක්මනින් නව ටැබයක් විවෘත කරන්න. මෙම කෙටිමඟ සංස්කරණය කිරීමට, සැකසීම් වෙත යන්න.</translation>
 <translation id="6802555630140434547">කවුළුව වැසෙනු ඇත</translation>
 <translation id="6811034713472274749">පිටුව බැලීමට සූදානම්</translation>
@@ -1267,7 +1261,6 @@
 <translation id="757855969265046257">{FILES,plural, =1{<ph name="FILES_DOWNLOADED_ONE" /> ගොනුවක් බාගත්තා}one{ගොනු <ph name="FILES_DOWNLOADED_MANY" />ක් බාගත්තා}other{ගොනු <ph name="FILES_DOWNLOADED_MANY" />ක් බාගත්තා}}</translation>
 <translation id="7581273696622423628">සමීක්ෂණය ගන්න</translation>
 <translation id="7583262514280211622">ඔබට ඔබගේ කියවීම් ලැයිස්තුව මෙහි හමු වනු ඇත</translation>
-<translation id="7587250070160020374">Chrome දැන් වාදනය කරයි</translation>
 <translation id="7588219262685291874">ඔබේ උපාංගයේ බැටරි සුරැකුම සක්‍රීයව තිබෙන විට අඳුරු තේමාව සක්‍රීය කරන්න</translation>
 <translation id="7594687499944811403"><ph name="EMBEDDED_ORIGIN" /> හට <ph name="TOP_ORIGIN" /> සඳහා ඒ ඔබ බව සත්‍යාපනය කිරීමට ඉඩ දෙමු</translation>
 <translation id="7596558890252710462">මෙහෙයුම් පද්ධති</translation>
@@ -1346,7 +1339,6 @@
 <translation id="7939485076072265087">උද්දීපන සහිත ශෛලිගත කාඩ්පත තනන්න</translation>
 <translation id="7942131818088350342"><ph name="PRODUCT_NAME" /> යල් පැන ගොස් ඇත.</translation>
 <translation id="7944772052836377867">ඒ ඔබ බව සත්‍යාපනය කිරීමට සමමුහුර්තයට අවශ්‍යයි</translation>
-<translation id="7945822420239537236">තත්පර <ph name="NUMBER_OF_SECONDS" />ක් ඉදිරියට</translation>
 <translation id="7947953824732555851">පිළිගෙන පුරන්න</translation>
 <translation id="7957413488482743710">විය හැකි වංචාවෙන් ඔබව ආරක්ෂා කිරීමට උදවු කිරීමට අතථ්‍ය කාඩ්පතක් ඔබගේ සැබෑ කාඩ්පත සඟවයි. <ph name="BEGIN_LINK1" />අතථ්‍ය කාඩ්පත් ගැන තව දැන ගන්න<ph name="END_LINK1" /></translation>
 <translation id="7960972236129063347">පිටු ඇතුළාන්ත ආපසු බොත්තම</translation>
@@ -1355,7 +1347,6 @@
 <translation id="7965838025086216108">ඔබට ඕනෑම උපාංගයක සුරැකි මුරපද භාවිත කළ හැකිය. ඒවා <ph name="ACCOUNT" /> සඳහා Google මුරපද කළමනාකරු වෙත සුරැකේ.</translation>
 <translation id="7968014550143838305">කියවීම් ලැයිස්තුවට එක් කරන ලදී</translation>
 <translation id="7971136598759319605">1 දිනකට පෙර ක්‍රියාත්මකයි</translation>
-<translation id="7972866381678406344">තත්පර <ph name="NUMBER_OF_SECONDS" />ක් ආපස්සට</translation>
 <translation id="7975379999046275268">පිටුව පෙරදකින්න <ph name="BEGIN_NEW" />නව<ph name="END_NEW" /></translation>
 <translation id="7977451675950311423">ඔබ දත්ත කඩකිරීමක අවදානමට ලක් වූ මුරපදයක් භාවිතා කරන්නේ නම් ඔබට අනතුරු අඟවයි.</translation>
 <translation id="7986497153528221272">මුරපද බැලීමට, ඔබේ උපාංගයේ තිර අගුලක් සකසන්න</translation>
@@ -1401,7 +1392,6 @@
 <translation id="8127542551745560481">මුල් පිටුව සංස්කරණ කරන්න</translation>
 <translation id="8130309322784422030">ඔබගේ ගබඩා කළ පිරීමේ තතු කල් ඉකුත්ව තිබිය හැකිය</translation>
 <translation id="813082847718468539">අඩවි තොරතුරු පෙන්වන්න</translation>
-<translation id="8136852699834914183">මෙම පිටුව සඳහා පසුධාවනය නොමැත.</translation>
 <translation id="8137562778192957619">ඔබට මෙම මුරපදය මතක තබා ගැනීමට අවශ්‍ය නොවනු ඇත. එය Google මුරපද කළමනාකරු වෙත සුරකිනු ඇත.</translation>
 <translation id="8186512483418048923">ගොනු <ph name="FILES" />ක් ඉතිරියි</translation>
 <translation id="8190358571722158785">දින 1ක් ඉතිරියි</translation>
@@ -1550,7 +1540,6 @@
 <translation id="8937772741022875483">ඩිජිටල් සුවතාව වෙතින් ඔබේ Chrome ක්‍රියාකාරකම් ඉවත් කරන්න ද?</translation>
 <translation id="8942627711005830162">වෙනත් කවුළුවක විවෘත කරන්න</translation>
 <translation id="8945143127965743188"><ph name="LANG" /> - මෙම භාෂාව බාගැනීමට නොහැකි විය. පසුව නැවත උත්සාහ කරන්න.</translation>
-<translation id="8953618380150219653">“මෙම පිටුවට සවන් දෙන්න” වාදකය සම්පූර්ණ උසින් විවෘත විය.</translation>
 <translation id="8955719471735800169">නැවත මුලටම</translation>
 <translation id="8964479563882643397">නව අප්‍රසිද්ධ ටැබයක් විවෘත කිරීමට, මෙනුව විවෘත කරන්න</translation>
 <translation id="8965591936373831584">අපේක්‍ෂිත</translation>

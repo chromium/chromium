@@ -837,7 +837,6 @@
 <translation id="7401543881546089382">ਸ਼ਾਰਟਕੱਟ ਮਿਟਾਓ</translation>
 <translation id="741244894080940828">ਰੂਪਾਂਤਰਨ</translation>
 <translation id="7415801143053185905">ਬਹੁਤ ਜ਼ਿਆਦਾ HTTP ਵਿਲੰਬਤਾ</translation>
-<translation id="7425178841057519191">{NUM_ROOL_APPS,plural,offset:2 =1{ਤੁਹਾਡੇ ਪ੍ਰਸ਼ਾਸਕ ਨੇ ਹਰੇਕ ਵਾਰ ਤੁਹਾਡੇ ਵੱਲੋਂ ਲੌਗ-ਇਨ ਕਰਨ 'ਤੇ <ph name="APP_NAME_1" /> ਨੂੰ ਆਪਣੇ ਆਪ ਸ਼ੁਰੂ ਹੋਣ 'ਤੇ ਸੈੱਟ ਕੀਤਾ ਹੈ।}=2{ਤੁਹਾਡੇ ਪ੍ਰਸ਼ਾਸਕ ਨੇ ਹਰੇਕ ਵਾਰ ਤੁਹਾਡੇ ਵੱਲੋਂ ਲੌਗ-ਇਨ ਕਰਨ 'ਤੇ <ph name="APP_NAME_1" /> ਅਤੇ <ph name="APP_NAME_2" /> ਨੂੰ ਆਪਣੇ ਆਪ ਸ਼ੁਰੂ ਹੋਣ 'ਤੇ ਸੈੱਟ ਕੀਤਾ ਹੈ।}=3{ਤੁਹਾਡੇ ਪ੍ਰਸ਼ਾਸਕ ਨੇ ਹਰੇਕ ਵਾਰ ਤੁਹਾਡੇ ਵੱਲੋਂ ਲੌਗ-ਇਨ ਕਰਨ 'ਤੇ <ph name="APP_NAME_1" />, <ph name="APP_NAME_2" /> ਅਤੇ <ph name="APP_NAME_3" /> ਨੂੰ ਆਪਣੇ ਆਪ ਸ਼ੁਰੂ ਹੋਣ 'ਤੇ ਸੈੱਟ ਕੀਤਾ ਹੈ।}one{ਤੁਹਾਡੇ ਪ੍ਰਸ਼ਾਸਕ ਨੇ ਹਰੇਕ ਵਾਰ ਤੁਹਾਡੇ ਵੱਲੋਂ ਲੌਗ-ਇਨ ਕਰਨ 'ਤੇ <ph name="APP_NAME_1" />, <ph name="APP_NAME_2" /> ਅਤੇ # ਹੋਰ ਐਪ ਨੂੰ ਆਪਣੇ ਆਪ ਸ਼ੁਰੂ ਹੋਣ 'ਤੇ ਸੈੱਟ ਕੀਤਾ ਹੈ।}other{ਤੁਹਾਡੇ ਪ੍ਰਸ਼ਾਸਕ ਨੇ ਹਰੇਕ ਵਾਰ ਤੁਹਾਡੇ ਵੱਲੋਂ ਲੌਗ-ਇਨ ਕਰਨ 'ਤੇ <ph name="APP_NAME_1" />, <ph name="APP_NAME_2" /> ਅਤੇ # ਹੋਰ ਐਪਾਂ ਨੂੰ ਆਪਣੇ ਆਪ ਸ਼ੁਰੂ ਹੋਣ 'ਤੇ ਸੈੱਟ ਕੀਤਾ ਹੈ।}}</translation>
 <translation id="7427315641433634153">MSCHAP</translation>
 <translation id="7458970041932198923">ਅਵਤਾਰਾਂ ਨੂੰ ਦੇਖਣ ਅਤੇ ਉਨ੍ਹਾਂ ਨੂੰ ਸੈੱਟ ਕਰਨ ਲਈ ਕਿਰਪਾ ਕਰਕੇ ਕਿਸੇ ਨੈੱਟਵਰਕ ਨਾਲ ਕਨੈਕਟ ਕਰੋ ਅਤੇ ਪੰਨੇ ਨੂੰ ਰੀਲੋਡ ਕਰੋ।</translation>
 <translation id="7469648432129124067">ਪੋਰਟਲ ਦਾ ਪਤਾ ਲੱਗਾ</translation>
@@ -1045,7 +1044,6 @@
 <translation id="8983038754672563810">HSPA</translation>
 <translation id="8987565828374052507">{NUMBER_OF_PAGES,plural, =0{ਸਕੈਨ ਕਰੋ}=1{{NUMBER_OF_PAGES} ਪੰਨਾ ਸਕੈਨ ਕਰੋ}other{{NUMBER_OF_PAGES} ਪੰਨੇ ਸਕੈਨ ਕਰੋ}}</translation>
 <translation id="8997710128084572139">ਡੀਵਾਈਸ ਦੀ ਬੈਟਰੀ ਦਾ ਪੱਧਰ <ph name="BATTERY_PERCENTAGE" />% ਹੈ।</translation>
-<translation id="8998156756248178381">{NUM_ROOL_APPS,plural, =1{<ph name="APP_NAME_1" /> ਆਪਣੇ ਆਪ ਸ਼ੁਰੂ ਹੋ ਗਈ ਸੀ}one{# ਐਪ ਆਪਣੇ ਆਪ ਸ਼ੁਰੂ ਹੋ ਗਈ ਸੀ}other{# ਐਪਾਂ ਆਪਣੇ ਆਪ ਸ਼ੁਰੂ ਹੋ ਗਈਆਂ ਸਨ}}</translation>
 <translation id="8998289560386111590">ਤੁਹਾਡੇ ਡੀਵਾਈਸ 'ਤੇ ਉਪਲਬਧ ਨਹੀਂ ਹੈ</translation>
 <translation id="9003704114456258138">ਬਾਰੰਬਾਰਤਾ</translation>
 <translation id="901834265349196618">ਈਮੇਲ</translation>

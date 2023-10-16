@@ -11,6 +11,7 @@
 #include "base/memory/raw_ptr.h"
 #include "chrome/browser/ui/views/editor_menu/editor_menu_view_delegate.h"
 #include "components/vector_icons/vector_icons.h"
+#include "ui/base/ime/text_input_flags.h"
 #include "ui/base/metadata/metadata_impl_macros.h"
 #include "ui/base/models/image_model.h"
 #include "ui/color/color_id.h"
@@ -90,6 +91,9 @@ void EditorMenuTextfieldView::InitLayout() {
   textfield_ = AddChildView(std::make_unique<views::Textfield>());
   textfield_->set_controller(this);
   textfield_->SetTextInputType(ui::TEXT_INPUT_TYPE_TEXT);
+  // TODO:b:302404392 - Consider removing the line below after fixing the autocorrect crash
+  // issue in native views
+  textfield_->SetTextInputFlags(ui::TEXT_INPUT_FLAG_AUTOCORRECT_OFF);
   textfield_->SetAccessibleName(kContainerTitle);
   textfield_->SetPlaceholderText(l10n_util::GetStringUTF16(
       editor_menu_mode_ == EditorMenuMode::kWrite

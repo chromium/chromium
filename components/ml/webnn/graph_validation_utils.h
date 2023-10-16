@@ -69,18 +69,19 @@ enum AutoPad { kExplicit, kSameUpper, kSameLower };
 enum RoundingType { kFloor, kCeil };
 
 // A size has height and width values.
+template <typename T>
 struct Size2d {
-  uint32_t height;
-  uint32_t width;
+  T height;
+  T width;
 };
 
 // The additional rows and columns added to the beginning and ending of each
 // spatial dimension of input.
 struct Padding2d {
   // The height and width padding at the beginning of input tensor.
-  Size2d beginning;
+  Size2d<uint32_t> beginning;
   // The height and width padding at the ending of input tensor.
-  Size2d ending;
+  Size2d<uint32_t> ending;
 };
 
 // Contains the attributes of conv2d operator.
@@ -98,9 +99,9 @@ struct Conv2dAttributes {
   // spatial dimension of input.
   Padding2d padding;
   // The stride of the sliding window for each spatial dimension of input.
-  Size2d strides;
+  Size2d<uint32_t> strides;
   // The dilation factor for each spatial dimension of input.
-  Size2d dilations;
+  Size2d<uint32_t> dilations;
   // The automatic input padding options.
   AutoPad auto_pad = AutoPad::kExplicit;
   // The number of groups that input channels and output channels are divided
@@ -118,15 +119,15 @@ struct Conv2dAttributes {
 // Contains the attributes of pool2d operator.
 struct Pool2dAttributes {
   // The dimensions of the sliding window.
-  absl::optional<Size2d> window_dimensions;
+  absl::optional<Size2d<uint32_t>> window_dimensions;
   // The additional rows and columns added to the beginning and ending of each
   // spatial dimension of input.
   Padding2d padding;
   // The element stride of the sliding window for each spatial dimension of
   // input.
-  Size2d strides;
+  Size2d<uint32_t> strides;
   // The dilation factor for each spatial dimension of input.
-  Size2d dilations;
+  Size2d<uint32_t> dilations;
   // The automatic input padding options.
   AutoPad auto_pad = AutoPad::kExplicit;
   // The layout format of the input.
@@ -134,7 +135,7 @@ struct Pool2dAttributes {
   // The rounding function used to compute the output shape.
   RoundingType rounding_type = RoundingType::kFloor;
   // The element height and width of the output tensor.
-  absl::optional<Size2d> output_sizes;
+  absl::optional<Size2d<uint32_t>> output_sizes;
 };
 
 // Contains the attributes of gemm operator.
@@ -191,8 +192,8 @@ base::expected<Operand, std::string> ValidateConv2dAndInferOutput(
     const Operand& filter,
     const Conv2dAttributes& attributes);
 
-// Validate a mean, L2 norm, or max reduction operator defined in WebIDL here
-// https://www.w3.org/TR/webnn/#api-mlgraphbuilder-pool2d
+// Validate and infer output information of 2-D pooling operator defined in
+// WebIDL here https://www.w3.org/TR/webnn/#api-mlgraphbuilder-pool2d
 base::expected<Operand, std::string> ValidatePool2dAndInferOutput(
     const Operand& input,
     const Pool2dAttributes& attributes);
@@ -203,6 +204,12 @@ base::expected<Operand, std::string> ValidateGemmAndInferOutput(
     const Operand& a,
     const Operand& b,
     const GemmAttributes& attributes);
+
+// Validate concat operator defined in WebIDL here
+// https://www.w3.org/TR/webnn/#api-mlgraphbuilder-concat
+base::expected<Operand, std::string> ValidateConcatAndInferOutput(
+    const std::vector<Operand>& input,
+    const uint32_t axis);
 
 // Validate transpose operator defined in WebIDL here
 // https://www.w3.org/TR/webnn/#api-mlgraphbuilder-transpose

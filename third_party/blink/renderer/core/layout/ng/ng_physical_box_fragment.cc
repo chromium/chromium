@@ -126,11 +126,11 @@ const NGPhysicalBoxFragment* NGPhysicalBoxFragment::Create(
     NGBoxFragmentBuilder* builder,
     WritingMode block_or_line_writing_mode) {
   const auto writing_direction = builder->GetWritingDirection();
-  const NGPhysicalBoxStrut borders =
+  const PhysicalBoxStrut borders =
       builder->initial_fragment_geometry_->border.ConvertToPhysical(
           writing_direction);
   bool has_borders = !borders.IsZero();
-  const NGPhysicalBoxStrut padding =
+  const PhysicalBoxStrut padding =
       builder->initial_fragment_geometry_->padding.ConvertToPhysical(
           writing_direction);
   bool has_padding = !padding.IsZero();
@@ -153,7 +153,7 @@ const NGPhysicalBoxFragment* NGPhysicalBoxFragment::Create(
 
   PhysicalRect layout_overflow = {PhysicalOffset(), physical_size};
   if (builder->node_ && !builder->node_.IsReplaced()) {
-    const NGPhysicalBoxStrut scrollbar =
+    const PhysicalBoxStrut scrollbar =
         builder->initial_fragment_geometry_->scrollbar.ConvertToPhysical(
             writing_direction);
     NGLayoutOverflowCalculator calculator(
@@ -297,9 +297,9 @@ NGPhysicalBoxFragment::NGPhysicalBoxFragment(
     bool has_layout_overflow,
     const PhysicalRect& layout_overflow,
     bool has_borders,
-    const NGPhysicalBoxStrut& borders,
+    const PhysicalBoxStrut& borders,
     bool has_padding,
-    const NGPhysicalBoxStrut& padding,
+    const PhysicalBoxStrut& padding,
     const absl::optional<PhysicalRect>& inflow_bounds,
     bool has_fragment_items,
     WritingMode block_or_line_writing_mode)
@@ -939,7 +939,7 @@ PhysicalRect NGPhysicalBoxFragment::ScrollableOverflowFromChildren(
     const WritingDirectionMode writing_direction;
     const LayoutUnit border_inline_start;
     const LayoutUnit border_block_start;
-    absl::optional<NGPhysicalBoxStrut> padding_strut;
+    absl::optional<PhysicalBoxStrut> padding_strut;
     absl::optional<PhysicalRect> lineboxes_enclosing_rect;
     PhysicalRect children_overflow;
     TextHeightType height_type;
@@ -1077,7 +1077,7 @@ NGPhysicalBoxFragment::MutableForContainerLayout::MutableForContainerLayout(
     : fragment_(fragment) {}
 
 void NGPhysicalBoxFragment::MutableForContainerLayout::SetMargins(
-    const NGPhysicalBoxStrut& margins) {
+    const PhysicalBoxStrut& margins) {
   DCHECK(RuntimeEnabledFeatures::LayoutNGNoCopyBackEnabled());
   // This can be called even without rare_data_.
   fragment_.EnsureRareField(FieldId::kMargins).margins = margins;
@@ -1661,13 +1661,13 @@ NGPhysicalBoxFragment::PositionForPointRespectingEditingBoundaries(
   return child.GetLayoutObject()->PositionAfterThis();
 }
 
-NGPhysicalBoxStrut NGPhysicalBoxFragment::OverflowClipMarginOutsets() const {
+PhysicalBoxStrut NGPhysicalBoxFragment::OverflowClipMarginOutsets() const {
   DCHECK(Style().OverflowClipMargin());
   DCHECK(ShouldApplyOverflowClipMargin());
   DCHECK(!IsScrollContainer());
 
   const auto& overflow_clip_margin = Style().OverflowClipMargin();
-  NGPhysicalBoxStrut outsets;
+  PhysicalBoxStrut outsets;
 
   // First inset the overflow rect based on the reference box. The
   // |child_overflow_rect| initialized above assumes clipping to
@@ -1686,7 +1686,7 @@ NGPhysicalBoxStrut NGPhysicalBoxFragment::OverflowClipMarginOutsets() const {
 
   // Now expand the rect based on the given margin. The margin only
   // applies if the side is a painted with this child fragment.
-  outsets += NGPhysicalBoxStrut(overflow_clip_margin->GetMargin());
+  outsets += PhysicalBoxStrut(overflow_clip_margin->GetMargin());
   outsets.TruncateSides(SidesToInclude());
 
   return outsets;

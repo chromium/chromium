@@ -267,8 +267,8 @@ class CORE_EXPORT PaintLayer : public GarbageCollected<PaintLayer>,
     static_block_position_ = position;
   }
 
-  using InlineEdge = NGLogicalStaticPosition::InlineEdge;
-  using BlockEdge = NGLogicalStaticPosition::BlockEdge;
+  using InlineEdge = LogicalStaticPosition::InlineEdge;
+  using BlockEdge = LogicalStaticPosition::BlockEdge;
   InlineEdge StaticInlineEdge() const {
     return static_cast<InlineEdge>(static_inline_edge_);
   }
@@ -276,15 +276,15 @@ class CORE_EXPORT PaintLayer : public GarbageCollected<PaintLayer>,
     return static_cast<BlockEdge>(static_block_edge_);
   }
 
-  void SetStaticPositionFromNG(const NGLogicalStaticPosition& position) {
+  void SetStaticPositionFromNG(const LogicalStaticPosition& position) {
     static_inline_position_ = position.offset.inline_offset;
     static_block_position_ = position.offset.block_offset;
     static_inline_edge_ = position.inline_edge;
     static_block_edge_ = position.block_edge;
   }
 
-  NGLogicalStaticPosition GetStaticPosition() const {
-    NGLogicalStaticPosition position;
+  LogicalStaticPosition GetStaticPosition() const {
+    LogicalStaticPosition position;
     position.offset.inline_offset = static_inline_position_;
     position.offset.block_offset = static_block_position_;
     position.inline_edge = StaticInlineEdge();

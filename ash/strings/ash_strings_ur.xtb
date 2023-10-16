@@ -353,7 +353,6 @@
 <translation id="243878895369688216">گزشتہ کل کھولا گیا</translation>
 <translation id="2440978926514840421">‏GIF ریکارڈنگ کی گئی</translation>
 <translation id="2441427462554639370">اسٹوریج کی جگہ انتہائی کم ہونے کی وجہ ریکارڈنگ ختم ہو گئی</translation>
-<translation id="24452542372838207">اطلاع پھیلائيں</translation>
 <translation id="2448312741937722512">قسم</translation>
 <translation id="2449089818483227734">بیٹری کم ہے</translation>
 <translation id="2450205753526923158">اسکرین شاٹ وضع</translation>
@@ -1948,7 +1947,6 @@
 <translation id="9030665205623277906">‏CPU کے استعمال کا اسنیپ شاٹ: %<ph name="CPU_USEAGE" /></translation>
 <translation id="9034924485347205037">‏Linux فائلز</translation>
 <translation id="9047624247355796468"><ph name="NETWORK_NAME" /> کے لیے ترتیبات کھولیں</translation>
-<translation id="9059834730836941392">اطلاع سُکیڑیں</translation>
 <translation id="906458777597946297">ونڈو کو انتہا تک بڑا کریں</translation>
 <translation id="9065203028668620118">تبدیل کریں</translation>
 <translation id="9070640332319875144">اسسٹنٹ کی ترتیبات</translation>

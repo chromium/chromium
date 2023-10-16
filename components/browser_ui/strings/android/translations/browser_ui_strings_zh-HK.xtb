@@ -258,7 +258,7 @@
 <translation id="5545693483061321551">網站不能使用 Cookie 查看您在其他網站的瀏覽活動，例如放送個人化廣告。部分網站的功能可能會無法正常運作。</translation>
 <translation id="5553374991681107062">最新</translation>
 <translation id="5556459405103347317">重新載入</translation>
-<translation id="5591840828808741583">已封鎖「<ph name="SITE_NAME" />」</translation>
+<translation id="5591840828808741583">已封鎖 <ph name="SITE_NAME" /></translation>
 <translation id="5649053991847567735">自動下載</translation>
 <translation id="5668404140385795438">覆寫網站禁止放大的要求</translation>
 <translation id="5677928146339483299">已封鎖</translation>
@@ -456,7 +456,7 @@
 <translation id="8959122750345127698">無法存取瀏覽網址：<ph name="URL" /></translation>
 <translation id="8986362086234534611">清除</translation>
 <translation id="8990043154272859344">您將會從所有網站登出</translation>
-<translation id="9011903857143958461">已允許「<ph name="SITE_NAME" />」</translation>
+<translation id="9011903857143958461">已允許 <ph name="SITE_NAME" /></translation>
 <translation id="9019902583201351841">由您的家長管理</translation>
 <translation id="9039697262778250930">您可能會登出這些網站</translation>
 <translation id="9074739597929991885">藍牙</translation>

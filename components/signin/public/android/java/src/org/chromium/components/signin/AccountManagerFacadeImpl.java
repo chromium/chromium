@@ -36,6 +36,7 @@ import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 import java.util.concurrent.atomic.AtomicReference;
+import java.util.stream.Collectors;
 
 /**
  * AccountManagerFacade wraps our access of AccountManager in Android.
@@ -60,7 +61,7 @@ public class AccountManagerFacadeImpl implements AccountManagerFacade {
     private final AtomicReference<List<PatternMatcher>> mAccountRestrictionPatterns =
             new AtomicReference<>();
 
-    private @NonNull Promise<List<Account>> mAccountsPromise = new Promise<>();
+    private @NonNull List<Account> mAccounts = new ArrayList<>();
 
     private @NonNull Promise<List<CoreAccountInfo>> mCoreAccountInfosPromise = new Promise<>();
 
@@ -75,10 +76,14 @@ public class AccountManagerFacadeImpl implements AccountManagerFacade {
         mDelegate.attachAccountsChangeObserver(this::onAccountsUpdated);
         new AccountRestrictionPatternReceiver(this::onAccountRestrictionPatternsUpdated);
 
-        getAccounts().then(accounts -> {
-            RecordHistogram.recordExactLinearHistogram(
-                    "Signin.AndroidNumberOfDeviceAccounts", accounts.size(), 50);
-        });
+        getCoreAccountInfos()
+                .then(
+                        coreAccountInfos -> {
+                            RecordHistogram.recordExactLinearHistogram(
+                                    "Signin.AndroidNumberOfDeviceAccounts",
+                                    coreAccountInfos.size(),
+                                    50);
+                        });
         onAccountsUpdated();
     }
 
@@ -102,12 +107,6 @@ public class AccountManagerFacadeImpl implements AccountManagerFacade {
         ThreadUtils.assertOnUiThread();
         boolean success = mObservers.removeObserver(observer);
         assert success : "Can't find observer";
-    }
-
-    @Override
-    public Promise<List<Account>> getAccounts() {
-        ThreadUtils.assertOnUiThread();
-        return mAccountsPromise;
     }
 
     @MainThread
@@ -261,7 +260,7 @@ public class AccountManagerFacadeImpl implements AccountManagerFacade {
             mFetchGaiaIdsTask = null;
         }
 
-        List<String> emails = AccountUtils.toAccountNames(getAccounts().getResult());
+        List<String> emails = toAccountEmails(mAccounts);
         mFetchGaiaIdsTask = new AsyncTask<List<String>>() {
             @Override
             public @Nullable List<String> doInBackground() {
@@ -334,12 +333,7 @@ public class AccountManagerFacadeImpl implements AccountManagerFacade {
         if (mAllAccounts.get() == null || mAccountRestrictionPatterns.get() == null) {
             return;
         }
-        final List<Account> newAccounts = getFilteredAccounts();
-        if (mAccountsPromise.isFulfilled()) {
-            mAccountsPromise = Promise.fulfilled(newAccounts);
-        } else {
-            mAccountsPromise.fulfill(newAccounts);
-        }
+        mAccounts = getFilteredAccounts();
         fetchGaiaIdsAndUpdateCoreAccountInfos();
     }
 
@@ -357,6 +351,10 @@ public class AccountManagerFacadeImpl implements AccountManagerFacade {
             }
         }
         return Collections.unmodifiableList(filteredAccounts);
+    }
+
+    private static List<String> toAccountEmails(final List<Account> accounts) {
+        return accounts.stream().map(account -> account.name).collect(Collectors.toList());
     }
 
     /**

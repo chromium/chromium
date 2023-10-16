@@ -873,7 +873,7 @@ INSTANTIATE_TEST_SUITE_P(DestroyProfileOnBrowserClose,
 #if !BUILDFLAG(IS_CHROMEOS_ASH)
 
 const base::FilePath::CharType kNonAsciiProfileDir[] =
-    FILE_PATH_LITERAL("\xd9\x85\xd8\xb5\xd8\xb1");
+    FILE_PATH_LITERAL("\u0645\u0635\u0631");
 
 class ProfileManagerNonAsciiBrowserTest : public ProfileManagerBrowserTestBase {
  protected:

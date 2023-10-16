@@ -3231,6 +3231,7 @@ Jy kan hierdie rekening se instellings bestuur deur die Family Link-program op j
 <translation id="3521405806571557477">Vee gestoorde data uit vir <ph name="SITE_NAME" /></translation>
 <translation id="3521606918211282604">Verander skyfgrootte</translation>
 <translation id="3522088408596898827">Skyfspasie is gevaarlik min. Maak skyfspasie beskikbaar en probeer weer.</translation>
+<translation id="3522979239100719575">Soek tans beskikbare profiele. Dit kan ’n paar minute neem.</translation>
 <translation id="3524518036046613664">Ontdek toestelle op jou plaaslike netwerk, soos drukkers</translation>
 <translation id="3524965460886318643">Voer aktiwiteite uit</translation>
 <translation id="3525426269008462093">Gaan toestelsinkronisering ná opstelling na</translation>
@@ -7824,6 +7825,7 @@ Jy het nog # gekompromitteerde wagwoorde. Google Wagwoordbestuurder beveel aan d
 <translation id="7283555985781738399">Besoekermodus</translation>
 <translation id="7284307451964417957">{DAYS,plural, =1{Hierdie toestel sal 1 dag lank gestoor word en jy kan volgende keer sonder ’n kode koppel. Dit word deur jou administrateur gestel.}other{Hierdie toestel sal {DAYS} dae lank gestoor word en jy kan volgende keer sonder ’n kode koppel. Dit word deur jou administrateur gestel.}}</translation>
 <translation id="7284411326658527427">Elke persoon kan hul rekening personaliseer en data privaat hou.</translation>
+<translation id="7286867818472074330">Kies toegangsleutel</translation>
 <translation id="7287143125007575591">Toegang geweier.</translation>
 <translation id="7287411021188441799">Laai verstekagtergrond terug</translation>
 <translation id="7288676996127329262"><ph name="HORIZONTAL_DPI" />x<ph name="VERTICAL_DPI" /> dpi</translation>

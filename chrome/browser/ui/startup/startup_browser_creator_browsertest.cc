@@ -234,14 +234,8 @@ Browser* CloseBrowserAndOpenNew(Browser* browser, Profile* profile) {
 
 bool HasInfoBar(infobars::ContentInfoBarManager* infobar_manager,
                 const infobars::InfoBarDelegate::InfoBarIdentifier identifier) {
-  for (size_t i = 0; i < infobar_manager->infobar_count(); i++) {
-    infobars::InfoBar* infobar = infobar_manager->infobar_at(i);
-    if (infobar->delegate()->GetIdentifier() == identifier) {
-      return true;
-    }
-  }
-
-  return false;
+  return base::Contains(infobar_manager->infobars(), identifier,
+                        &infobars::InfoBar::GetIdentifier);
 }
 
 struct StartupBrowserCreatorFlagTypeValue {
@@ -340,7 +334,7 @@ class StartupBrowserCreatorTest : public extensions::ExtensionBrowserTest {
 #if BUILDFLAG(IS_MAC)
     infobars::ContentInfoBarManager* infobar_manager =
         infobars::ContentInfoBarManager::FromWebContents(web_contents);
-    EXPECT_EQ(1U, infobar_manager->infobar_count());
+    EXPECT_EQ(1U, infobar_manager->infobars().size());
 #endif  // BUILDFLAG(IS_MAC)
   }
 };

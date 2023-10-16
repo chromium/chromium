@@ -2,12 +2,12 @@ CONSOLE ERROR: [audit.js] this test requires the explicit comparison with the ex
 CONSOLE WARNING: Unstable IIRFilter with feedback coefficients: [1, -10]
 CONSOLE WARNING: IIRFilterNode: state is bad, probably due to unstable filter.
 This is a testharness.js-based test.
-PASS # AUDIT TASK RUNNER STARTED.
-PASS Executing "test"
-PASS Audit report
-PASS > [test] Console warning for unstable filter
-PASS   At least one non-Finite output value is true.
-PASS < [test] All assertions passed. (total 1 assertions)
-PASS # AUDIT TASK RUNNER FINISHED: 1 tasks ran successfully.
+[PASS] # AUDIT TASK RUNNER STARTED.
+[PASS] Executing "test"
+[PASS] Audit report
+[PASS] > [test] Console warning for unstable filter
+[PASS]   At least one non-Finite output value is true.
+[PASS] < [test] All assertions passed. (total 1 assertions)
+[PASS] # AUDIT TASK RUNNER FINISHED: 1 tasks ran successfully.
 Harness: the test ran to completion.
 

@@ -1,8 +1,9 @@
 This is a testharness.js-based test.
-PASS setMetadata() does allow changes to frameId and dependencies without a flag
-FAIL setMetadata() does not allow changes to fields without a flag assert_throws_dom: For field "height", function "() => clone.setMetadata(metadata)" did not throw
-PASS setMetadata() allows changes when AllowRTCEncodedVideoFrameSetMetadataAllFields is enabled
-PASS setMetadata() does not allow metadata with dependencies but no frameId
-PASS setMetadata() does allow metadata with no dependencies but a frameId
+[PASS] setMetadata() does allow changes to frameId and dependencies without a flag
+[FAIL] setMetadata() does not allow changes to fields without a flag
+  assert_throws_dom: For field "height", function "() => clone.setMetadata(metadata)" did not throw
+[PASS] setMetadata() allows changes when AllowRTCEncodedVideoFrameSetMetadataAllFields is enabled
+[PASS] setMetadata() does not allow metadata with dependencies but no frameId
+[PASS] setMetadata() does allow metadata with no dependencies but a frameId
 Harness: the test ran to completion.
 

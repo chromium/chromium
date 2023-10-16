@@ -2056,6 +2056,7 @@ Para gerenciar as configurações dessa conta, instale o app Family Link no seu 
 <translation id="2564520396658920462">A execução do JavaScript por AppleScript está desativada. Para ativá-la, na barra de menu, acesse Ver &gt; Desenvolvedor &gt; Permitir o JavaScript do Eventos da Apple. Para ver mais informações: https://support.google.com/chrome/?p=applescript</translation>
 <translation id="2564653188463346023">Verificação ortográfica aprimorada</translation>
 <translation id="256481480019204378">ID da Conta do Google</translation>
+<translation id="256517381556987641">A sincronização encontrou <ph name="ITEMS_FOUND" /> arquivos até agora e ainda está verificando o espaço de armazenamento. Tente ativar a sincronização de arquivos de novo em alguns minutos.</translation>
 <translation id="2565214867520763227">Ativar o leitor de tela</translation>
 <translation id="2568694057933302218">Na navegação anônima, os sites não podem usar cookies para conferir sua atividade de navegação. Essa atividade não é usada para ações como a personalização de anúncios. Os recursos de alguns sites podem não funcionar.</translation>
 <translation id="2568774940984945469">Recipiente da barra de informações</translation>
@@ -3232,6 +3233,7 @@ Para gerenciar as configurações dessa conta, instale o app Family Link no seu 
 <translation id="3521405806571557477">Excluir os dados salvos do site <ph name="SITE_NAME" /></translation>
 <translation id="3521606918211282604">Mudar tamanho do disco</translation>
 <translation id="3522088408596898827">Espaço em disco criticamente baixo. Libere espaço e tente novamente.</translation>
+<translation id="3522979239100719575">Procurando perfis disponíveis. Pode levar alguns minutos..</translation>
 <translation id="3524518036046613664">Descobrir dispositivos na sua rede local, como impressoras</translation>
 <translation id="3524965460886318643">Exportar atividades</translation>
 <translation id="3525426269008462093">Revisar a sincronização do dispositivo após a configuração</translation>
@@ -4374,6 +4376,7 @@ Isso pode incluir informações sobre softwares instalados, arquivos, seu navega
 <translation id="4427365070557649936">Verificando código de confirmação…</translation>
 <translation id="4429163740524851942">Layout do teclado físico</translation>
 <translation id="4430019312045809116">Volume</translation>
+<translation id="4430204941092622397">Isso pode desconectar a rede móvel por alguns minutos.</translation>
 <translation id="443031431654216610">Use apenas dígitos numéricos</translation>
 <translation id="4430369329743628066">Página adicionada como favorito</translation>
 <translation id="4430422687972614133">Ativar cartão virtual</translation>
@@ -4586,6 +4589,7 @@ Isso pode incluir informações sobre softwares instalados, arquivos, seu navega
 <translation id="4610162781778310380">O plug-in <ph name="PLUGIN_NAME" /> encontrou um erro</translation>
 <translation id="4610637590575890427">Você quis ir a <ph name="SITE" />?</translation>
 <translation id="4611114513649582138">Conexão de dados disponível</translation>
+<translation id="4611759022973144129">Você pode usar essa senha para fazer login no <ph name="DEVICE_TYPE" />.</translation>
 <translation id="4612841084470706111">Dar acesso a todos os sites solicitados.</translation>
 <translation id="4613144866899789710">Cancelando instalação do Linux...</translation>
 <translation id="4613271546271159013">Uma extensão alterou a página exibida quando uma nova guia é aberta.</translation>
@@ -5085,6 +5089,7 @@ Use Ctrl + Alt + Diminuir brilho para diminuir o zoom.</translation>
 <translation id="5027550639139316293">Certificado de e-mail</translation>
 <translation id="5027562294707732951">Adicionar extensão</translation>
 <translation id="5028445315206872221">As extensões estão bloqueadas neste site</translation>
+<translation id="5029287942302939687">Sua senha foi definida</translation>
 <translation id="5029873138381728058">Falha ao verificar as VMs</translation>
 <translation id="503155457707535043">Fazendo o download dos apps</translation>
 <translation id="5032430150487044192">Não é possível criar o código QR</translation>
@@ -5113,6 +5118,7 @@ Use Ctrl + Alt + Diminuir brilho para diminuir o zoom.</translation>
 <translation id="5054374119096692193">Veja todas as opções de cards em <ph name="BEGIN_LINK" />Personalizar o Chrome<ph name="END_LINK" /></translation>
 <translation id="5056950756634735043">Conectando ao contêiner</translation>
 <translation id="5057110919553308744">Quando você clicar na extensão</translation>
+<translation id="5057127674016624293">A verificação está demorando mais que o esperado</translation>
 <translation id="5059241099014281248">Restringir o login</translation>
 <translation id="5059429103770496207">Estilo de exibição</translation>
 <translation id="5059526285558225588">Escolha o que compartilhar</translation>
@@ -6005,6 +6011,7 @@ Não exponha nenhuma informação confidencial.</translation>
 <translation id="5797521893972859201">Limpa o histórico, inclusive da caixa de pesquisa</translation>
 <translation id="5797934230382081317">Aprenda como começar a usar no &lt;a target='_blank' href='<ph name="LINK_ANDROID" />'&gt;Android&lt;/a&gt; ou &lt;a target='_blank' href='<ph name="LINK_IOS" />'&gt;iOS&lt;/a&gt;</translation>
 <translation id="5798079537501238810">Os sites podem instalar gerenciadores de pagamento</translation>
+<translation id="5798086737841799234">Digite o código de confirmação</translation>
 <translation id="579915268381781820">Sua chave de segurança foi removida.</translation>
 <translation id="5799478978078236781">Receba ofertas, atualizações e dicas sobre o <ph name="DEVICE_TYPE" /> e compartilhe seu feedback.</translation>
 <translation id="5799508265798272974">Máquina virtual Linux: <ph name="LINUX_VM_NAME" /></translation>
@@ -7265,6 +7272,7 @@ Há # outras senhas comprometidas. O Gerenciador de senhas do Google recomenda q
 <translation id="6815376457351236663">Abrir mesmo assim</translation>
 <translation id="6815787852028615386">Este arquivo é enganoso e pode fazer mudanças inesperadas no seu dispositivo</translation>
 <translation id="6816097980753839617">Azul e amarelo (tritanomalia)</translation>
+<translation id="6816443526270499804">Procurando perfis de eSIM disponíveis</translation>
 <translation id="6818198425579322765">Idioma de origem da página</translation>
 <translation id="6818547713623251698">Ver os arquivos de mídia, fotos, notificações e apps do smartphone</translation>
 <translation id="6818802132960437751">Proteção antivírus integrada</translation>
@@ -7828,6 +7836,7 @@ Há # outras senhas comprometidas. O Gerenciador de senhas do Google recomenda q
 <translation id="7283555985781738399">Modo visitante</translation>
 <translation id="7284307451964417957">{DAYS,plural, =1{Este dispositivo vai ser salvo por 1 dia e você vai poder se conectar sem um código na próxima vez. Isso é definido pelo seu administrador.}one{Este dispositivo vai ser salvo por {DAYS} dia e você vai poder se conectar sem um código na próxima vez. Isso é definido pelo seu administrador.}other{Este dispositivo vai ser salvo por {DAYS} dias e você vai poder se conectar sem um código na próxima vez. Isso é definido pelo seu administrador.}}</translation>
 <translation id="7284411326658527427">Cada pessoa pode personalizar a própria conta e manter os dados privados.</translation>
+<translation id="7286867818472074330">Selecionar chave de acesso</translation>
 <translation id="7287143125007575591">Acesso negado.</translation>
 <translation id="7287411021188441799">Restaurar plano de fundo padrão</translation>
 <translation id="7288676996127329262"><ph name="HORIZONTAL_DPI" />x<ph name="VERTICAL_DPI" /> dpi</translation>
@@ -8073,6 +8082,7 @@ Há # outras senhas comprometidas. O Gerenciador de senhas do Google recomenda q
 <translation id="7475742997309661417">O leitor de tela no ChromeOS, o ChromeVox, é usado principalmente por pessoas cegas ou com baixa visão para ler textos exibidos na tela com um sintetizador de voz ou linha braille. Toque e pressione as duas teclas de volume por cinco segundos para ativar o ChromeVox. Quando o ChromeVox for ativado, vamos oferecer um tour rápido.</translation>
 <translation id="7476454130948140105">Bateria muito fraca para atualizar (<ph name="BATTERY_PERCENT" />%</translation>
 <translation id="7476989672001283112">Bloqueados automaticamente: <ph name="PERMISSION" /> e mais <ph name="COUNT" /></translation>
+<translation id="7477460499687558352">Escolha um perfil de eSIM para fazer o download</translation>
 <translation id="7477599578899108080">Uso elevado da memória: <ph name="MEMORY_USAGE" /></translation>
 <translation id="7477748600276493962">Criar código QR para esta página</translation>
 <translation id="7477793887173910789">Controle suas músicas, seus vídeos e muito mais</translation>

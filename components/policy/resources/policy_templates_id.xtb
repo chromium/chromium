@@ -6728,13 +6728,6 @@ Jika kebijakan ini disetel ke Salah (False), perilaku lama akan diaktifkan.</tra
       Jika kebijakan ini tidak disetel, baik pengguna yang dikelola maupun tidak dikelola perusahaan akan diizinkan secara default.</translation>
 <translation id="6640748114867542396">Jangan izinkan ekstensi terkelola menggunakan Enterprise Hardware Platform API</translation>
 <translation id="6641981670621198190">Nonaktifkan dukungan untuk API grafis 3D</translation>
-<translation id="6644480111811011438">Kebijakan ini disediakan sebagai cara untuk memblokir fitur Set Pihak Pertama.
-
-                  Jika kebijakan ini tidak disetel atau disetel ke Aktif, fitur Set Pihak Pertama akan diaktifkan.
-
-                  Jika kebijakan ini disetel ke Nonaktif, fitur Set Pihak Pertama akan dinonaktifkan.
-
-                  Kebijakan ini mengontrol apakah Chrome akan mendukung integrasi terkait Set Pihak Pertama.</translation>
 <translation id="6646912445796087001">Mengaktifkan atau menonaktifkan berbagai fitur di keyboard virtual. Kebijakan ini hanya berlaku jika kebijakan "VirtualKeyboardEnabled" diaktifkan.
 
       Jika satu fitur dalam kebijakan ini disetel ke Benar (True), fitur tersebut akan diaktifkan di keyboard virtual.

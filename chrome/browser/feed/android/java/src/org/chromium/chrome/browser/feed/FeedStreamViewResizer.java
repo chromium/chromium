@@ -73,7 +73,7 @@ public class FeedStreamViewResizer extends ViewResizer {
     @Override
     protected int computePadding() {
         if (DeviceFormFactor.isNonMultiDisplayContextOnTablet(mUiConfig.getContext())
-                && isCurrentDisplayWide()) {
+                && mUiConfig.getCurrentDisplayStyle().isWide()) {
             return computePaddingWide();
         } else {
             return computePaddingNarrow();

@@ -144,7 +144,8 @@ class PageSpecificSiteDataDialogBrowserTest
         browser()->tab_strip_model()->GetActiveWebContents();
     return web_contents
                ? infobars::ContentInfoBarManager::FromWebContents(web_contents)
-                     ->infobar_count()
+                     ->infobars()
+                     .size()
                : 0;
   }
 

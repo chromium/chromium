@@ -258,6 +258,7 @@
 <translation id="5545693483061321551">사이트에서 사용자의 다양한 사이트 탐색 활동 정보를 이용해 광고 맞춤설정 등의 작업을 하는 데 쿠키를 사용할 수 없습니다. 일부 사이트에서는 기능이 작동하지 않을 수 있습니다.</translation>
 <translation id="5553374991681107062">최신</translation>
 <translation id="5556459405103347317">새로고침</translation>
+<translation id="5591840828808741583"><ph name="SITE_NAME" /> 차단됨</translation>
 <translation id="5649053991847567735">자동 다운로드</translation>
 <translation id="5668404140385795438">웹사이트의 확대 방지 요청 무시</translation>
 <translation id="5677928146339483299">차단</translation>
@@ -455,6 +456,7 @@
 <translation id="8959122750345127698">탐색할 수 없음: <ph name="URL" /></translation>
 <translation id="8986362086234534611">저장 안함</translation>
 <translation id="8990043154272859344">모든 사이트에서 로그아웃됩니다.</translation>
+<translation id="9011903857143958461"><ph name="SITE_NAME" /> 허용됨</translation>
 <translation id="9019902583201351841">부모님이 관리합니다.</translation>
 <translation id="9039697262778250930">다음 사이트에서 로그아웃될 수 있습니다.</translation>
 <translation id="9074739597929991885">블루투스</translation>

@@ -837,7 +837,6 @@
 <translation id="7401543881546089382">Supprimer le raccourci</translation>
 <translation id="741244894080940828">conversion</translation>
 <translation id="7415801143053185905">Latence HTTP très élevée</translation>
-<translation id="7425178841057519191">{NUM_ROOL_APPS,plural,offset:2 =1{Votre administrateur a configuré <ph name="APP_NAME_1" /> pour qu'elle démarre automatiquement chaque fois que vous vous connectez.}=2{Votre administrateur a configuré <ph name="APP_NAME_1" /> et <ph name="APP_NAME_2" /> pour qu'elles démarrent automatiquement chaque fois que vous vous connectez.}=3{Votre administrateur a configuré <ph name="APP_NAME_1" />, <ph name="APP_NAME_2" /> et <ph name="APP_NAME_3" /> pour qu'elles démarrent automatiquement chaque fois que vous vous connectez.}one{Votre administrateur a configuré <ph name="APP_NAME_1" />, <ph name="APP_NAME_2" /> et # autre appli pour qu'elles démarrent automatiquement chaque fois que vous vous connectez.}other{Votre administrateur a configuré <ph name="APP_NAME_1" />, <ph name="APP_NAME_2" /> et # autres applis pour qu'elles démarrent automatiquement chaque fois que vous vous connectez.}}</translation>
 <translation id="7427315641433634153">MSCHAP</translation>
 <translation id="7458970041932198923">Veuillez vous connecter à un réseau et actualiser la page pour afficher et définir des avatars.</translation>
 <translation id="7469648432129124067">Portail détecté</translation>
@@ -1045,7 +1044,6 @@
 <translation id="8983038754672563810">3G+</translation>
 <translation id="8987565828374052507">{NUMBER_OF_PAGES,plural, =0{Scanner}=1{Scanner la page {NUMBER_OF_PAGES}}one{Scanner la page {NUMBER_OF_PAGES}}other{Scanner les pages {NUMBER_OF_PAGES}}}</translation>
 <translation id="8997710128084572139">L'appareil a <ph name="BATTERY_PERCENTAGE" /> % de batterie.</translation>
-<translation id="8998156756248178381">{NUM_ROOL_APPS,plural, =1{<ph name="APP_NAME_1" /> a démarré automatiquement}one{# appli a démarré automatiquement}other{# applis ont démarré automatiquement}}</translation>
 <translation id="8998289560386111590">Non disponible sur votre appareil</translation>
 <translation id="9003704114456258138">Fréquence</translation>
 <translation id="901834265349196618">e-mail</translation>

@@ -2084,6 +2084,7 @@ Voice Match-ekin, Google-ren Laguntzailea zerbitzuak <ph name="SUPERVISED_USER_N
 <translation id="2609980095400624569">Ezin izan da ezarri konexioa</translation>
 <translation id="2610157865375787051">Inaktibo</translation>
 <translation id="2610260699262139870">&amp;Benetako tamaina</translation>
+<translation id="2610374175948698697">Gailuko fitxategiak edo karpetak ikus ditzakete</translation>
 <translation id="2610780100389066815">Microsoft-en fidagarrien zerrendaren sinatzea</translation>
 <translation id="261114180663074524">Hasi saioa Microsoft-eko kontuan eta saiatu berriro</translation>
 <translation id="2611776654555141051">Laukizuzenaren tresna</translation>
@@ -2131,6 +2132,7 @@ Voice Match-ekin, Google-ren Laguntzailea zerbitzuak <ph name="SUPERVISED_USER_N
 <translation id="264897126871533291">Protanomalia</translation>
 <translation id="2649045351178520408">Base64 bidez kodetutako ASCII kodea, ziurtagiri-katea</translation>
 <translation id="265156376773362237">Aurrez kargatzeko modu arrunta</translation>
+<translation id="2652071759203138150">{COUNT,plural, =1{{COUNT} pasahitz gailu honetan soilik gordeta dago. Beste gailuetan erabiltzeko, <ph name="BEGIN_LINK" />gorde ezazu Google-ko kontuan<ph name="END_LINK" />.}other{{COUNT} pasahitz gailu honetan soilik gordeta daude. Beste gailuetan erabiltzeko, <ph name="BEGIN_LINK" />gorde itzazu Google-ko kontuan<ph name="END_LINK" />.}}</translation>
 <translation id="2652129567809778422">Hautatu pasahitz bat</translation>
 <translation id="2653266418988778031">Autoritate ziurtagiri-emaile batek jaulkitako ziurtagiri bat ezabatzen baduzu, aurrerantzean arakatzailea ez da fidatuko autoritate ziurtagiri-emaile horrek jaulkitako inongo ziurtagiriez.</translation>
 <translation id="2653275834716714682">Testu-ordezkapena</translation>
@@ -3207,6 +3209,7 @@ Txartel adimenduna sartuta edukitzea eskatzen du <ph name="DOMAIN" /> domeinuak.
 <translation id="3521405806571557477">Ezabatu <ph name="SITE_NAME" /> webguneak atzitutako datuak</translation>
 <translation id="3521606918211282604">Aldatu diskoaren tamaina</translation>
 <translation id="3522088408596898827">Oso toki gutxi geratzen da diskoan. Egin tokia eta saiatu berriro.</translation>
+<translation id="3522979239100719575">Erabilgarri dauden profilak bilatzen. Agian minutu batzuk beharko dira.</translation>
 <translation id="3524518036046613664">Aurkitu sare lokaleko gailuak, hala nola inprimagailuak</translation>
 <translation id="3524965460886318643">Esportatu jarduerak</translation>
 <translation id="3525426269008462093">Konfiguratu ondoren, berrikusi gailuaren sinkronizazioa</translation>
@@ -4016,6 +4019,7 @@ Besteak beste, instalatutako softwareari, fitxategiei, arakatzaileari eta sistem
 <translation id="4150201353443180367">Pantaila</translation>
 <translation id="4150569944729499860">Pantailaren testuingurua</translation>
 <translation id="4151449637210235443">Esan iezaguzu nola funtzionatu duten jokoek azkenaldian</translation>
+<translation id="4151503145138736576">Ez dago garbi daitekeen konexiorik gabeko biltegirik</translation>
 <translation id="4152011295694446843">Laster-markak aurkituko dituzu hemen</translation>
 <translation id="4152670763139331043">{NUM_TABS,plural, =1{Fitxa bat}other{# fitxa}}</translation>
 <translation id="4154664944169082762">Erreferentzia-fitxategiak</translation>
@@ -4226,6 +4230,7 @@ Besteak beste, instalatutako softwareari, fitxategiei, arakatzaileari eta sistem
 <translation id="4341577178275615435">Testu-kurtsorearen bidez arakatzeko eginbidea aktibatu edo desaktibatzeko, erabili F7 lasterbidea</translation>
 <translation id="4341905082470253054">TPMaren egoera egiaztatzen…</translation>
 <translation id="434198521554309404">Arina. Segurua. Inoiz baino errazagoa.</translation>
+<translation id="4342417854108207000">Gailuko fitxategiak edo karpetak editatzeko baimena dute</translation>
 <translation id="4343250402091037179">Bilaketak webgune zehatz batean edo Chrome-ren zati batean egiteko, idatzi atal horren lasterbidea helbide-barran eta, ondoren, sakatu erabili ohi duzun lasterbidea.</translation>
 <translation id="434404122609091467">Oraingo zerbitzu-hornitzailearekin</translation>
 <translation id="4345457680916430965">Ireki <ph name="APP" /> aplikazioan</translation>
@@ -5256,6 +5261,7 @@ Pantaila txikitzeko, berriz, erabili Ktrl + Alt + Txikitu distira.</translat
 <translation id="5197255632782567636">Internet</translation>
 <translation id="5198430103906431024">Bidali erabilera- eta diagnostiko-datuak. Gailu honek automatikoki bidaltzen dizkio Google-ri diagnostikoak eta gailu zein aplikazioen erabilera-datuak. Horri esker, sistemaren eta aplikazioen egonkortasuna hobetuko da, besteak beste. Gainera, multzokatutako datu batzuk oso baliagarriak izango dira Google-ren aplikazioak hobetzeko eta bazkideei laguntzeko (adibidez, Android-en garatzaileei). Sareko eta aplikazioetako jarduera gehigarriak ezarpena aktibatuta badago, baliteke datu horiek Google-ko kontuan gordetzea.</translation>
 <translation id="5199729219167945352">Esperimentuak</translation>
+<translation id="5203035663139409780">Gailuko fitxategiak edo karpetak edita ditzakete</translation>
 <translation id="5203920255089865054">{NUM_EXTENSIONS,plural, =1{Egin klik luzapena ikusteko}other{Egin klik luzapen horiek ikusteko}}</translation>
 <translation id="5204249655833504508">Tableta grafikoa</translation>
 <translation id="5204673965307125349">Berrezarri gailuaren fabrikako ezarpenak Powerwash bidez eta saiatu berriro.</translation>
@@ -7778,6 +7784,7 @@ Inoiz Voice Match erabiltzeari utzi nahi badiozu, ken ezazu Laguntzailea zerbitz
 <translation id="7283555985781738399">Gonbidatu modua</translation>
 <translation id="7284307451964417957">{DAYS,plural, =1{Gailua egun batez gordeko da; hurrengoan, koderik erabili gabe konektatu ahal izango zara. Administratzaileak ezarri du arau hori.}other{Gailua {DAYS} egunez gordeko da; hurrengoan, koderik erabili gabe konektatu ahal izango zara. Administratzaileak ezarri du arau hori.}}</translation>
 <translation id="7284411326658527427">Bakoitzak bere kontua pertsonaliza dezake, eta datuak pribatu mantendu.</translation>
+<translation id="7286867818472074330">Hautatu sarbide-gakoa</translation>
 <translation id="7287143125007575591">Sarbidea ukatuta dago.</translation>
 <translation id="7287411021188441799">Leheneratu atzeko plano lehenetsia</translation>
 <translation id="7288676996127329262"><ph name="HORIZONTAL_DPI" /> × <ph name="VERTICAL_DPI" /> dpi</translation>
@@ -10268,6 +10275,7 @@ Baliteke webguneei eta aplikazioei emandako baimenak kontu honi aplikatzea. Goog
 <translation id="956500788634395331">Luzapen kaltegarrien aurka babestuta zaude</translation>
 <translation id="957179356621191750">6 puntu</translation>
 <translation id="957960681186851048">Hainbat fitxategi automatikoki deskargatzen saiatu da webgunea</translation>
+<translation id="958571289841636277">Nabigatu atzera eta aurrera hatza pasatzeko keinua erabilita</translation>
 <translation id="960987915827980018">Gutxi gorabehera, ordubete falta da</translation>
 <translation id="962802172452141067">Laster-marken karpetaren zuhaitza</translation>
 <translation id="963000966785016697">Bilatu irudia <ph name="VISUAL_SEARCH_PROVIDER" /> bidez</translation>

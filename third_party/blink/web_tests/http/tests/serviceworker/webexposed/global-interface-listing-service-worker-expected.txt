@@ -1558,6 +1558,7 @@ interface TrustedTypePolicyFactory : EventTarget
     method isScriptURL
     setter onbeforecreatepolicy
 interface URL
+    static method canParse
     attribute @@toStringTag
     getter hash
     getter host

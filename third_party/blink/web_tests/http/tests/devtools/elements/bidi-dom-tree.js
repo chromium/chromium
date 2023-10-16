@@ -14,9 +14,7 @@ import {ElementsTestRunner} from 'elements_test_runner';
     `);
 
   // Warm up highlighter module.
-  TestRunner.loadLegacyModule('source_frame').then(function() {
-    ElementsTestRunner.expandElementsTree(step1);
-  });
+  ElementsTestRunner.expandElementsTree(step1);
 
   function step1() {
     ElementsTestRunner.dumpElementsTree();

@@ -20,10 +20,10 @@ import {ListSingleSelectionModel} from './list_single_selection_model.js';
 
 class TextSearchState {
   constructor() {
-    /** @public {string} */
+    /** @public @type {string} */
     this.text = '';
 
-    /** @public {!Date} */
+    /** @public @type {!Date} */
     this.date = new Date();
   }
 }
@@ -128,7 +128,7 @@ export class ListContainer {
     /**
      * List container needs to know if the current active directory is Recent
      * or not so it can update groupBy filed accordingly.
-     * @public {boolean}
+     * @public @type {boolean}
      */
     this.isOnRecent = false;
 

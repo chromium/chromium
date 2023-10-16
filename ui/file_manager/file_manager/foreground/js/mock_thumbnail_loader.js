@@ -43,7 +43,7 @@ export class MockThumbnailLoader {
 
 /**
  * Data url of test image.
- * @private {?string}
+ * @private @type {?string}
  */
 MockThumbnailLoader.testImageDataUrl = null;
 

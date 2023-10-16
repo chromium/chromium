@@ -30,39 +30,39 @@ export class ActionsController {
   constructor(
       volumeManager, metadataModel, directoryModel, shortcutsModel,
       selectionHandler, ui) {
-    /** @private @const {!VolumeManager} */
+    /** @private @const @type {!VolumeManager} */
     this.volumeManager_ = volumeManager;
 
-    /** @private @const {!MetadataModel} */
+    /** @private @const @type {!MetadataModel} */
     this.metadataModel_ = metadataModel;
 
-    /** @private @const {!DirectoryModel} */
+    /** @private @const @type {!DirectoryModel} */
     this.directoryModel_ = directoryModel;
 
-    /** @private @const {!FolderShortcutsDataModel} */
+    /** @private @const @type {!FolderShortcutsDataModel} */
     this.shortcutsModel_ = shortcutsModel;
 
-    /** @private @const {!FileSelectionHandler} */
+    /** @private @const @type {!FileSelectionHandler} */
     this.selectionHandler_ = selectionHandler;
 
-    /** @private @const {!FileManagerUI} */
+    /** @private @const @type {!FileManagerUI} */
     this.ui_ = ui;
 
-    /** @private @const {Map<string, ActionsModel>} */
+    /** @private @const @type {Map<string, ActionsModel>} */
     this.readyModels_ = new Map();
 
-    /** @private @const {Map<string, Promise<ActionsModel>>} */
+    /** @private @const @type {Map<string, Promise<ActionsModel>>} */
     this.initializingdModels_ = new Map();
 
     /**
      * Key for in-memory state for current directory.
-     * @private {?string}
+     * @private @type {?string}
      */
     this.currentDirKey_ = null;
 
     /**
      * Key for in-memory state for current selection in the file list.
-     * @private {?string}
+     * @private @type {?string}
      */
     this.currentSelectionKey_ = null;
 
@@ -70,7 +70,7 @@ export class ActionsController {
      * Id for an UI update, when an async update happens we only send the state
      * to the DOM if the sequence hasn't changed since its start.
      *
-     * @private {number}
+     * @private @type {number}
      */
     this.updateUiSequence_ = 0;
 

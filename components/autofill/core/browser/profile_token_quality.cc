@@ -19,6 +19,7 @@
 #include "base/feature_list.h"
 #include "base/rand_util.h"
 #include "base/ranges/algorithm.h"
+#include "base/strings/string_util.h"
 #include "base/types/cxx23_to_underlying.h"
 #include "components/autofill/core/browser/data_model/autofill_profile.h"
 #include "components/autofill/core/browser/field_types.h"
@@ -87,7 +88,8 @@ ObservationType GetObservationTypeForEditedField(
   }
 
   if (IsWithinLevenshteinDistance(
-          profile.GetInfo(type, app_locale), edited_value,
+          base::ToLowerASCII(profile.GetInfo(type, app_locale)),
+          base::ToLowerASCII(edited_value),
           ProfileTokenQuality::kMaximumLevenshteinDistance)) {
     return ObservationType::kEditedToSimilarValue;
   }

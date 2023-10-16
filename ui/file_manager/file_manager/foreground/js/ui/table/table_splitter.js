@@ -29,17 +29,17 @@ export class TableSplitter extends Splitter {
     // cr.ui magic overwrites __proto__, so here we restore it back.
     this.__proto__ = TableSplitter.prototype;
 
-    /** @private {Table} */
+    /** @private @type {Table} */
     this.table_;
     this.table = (opt_propertyBag && opt_propertyBag.table) || null;
 
-    /** @private {number} */
+    /** @private @type {number} */
     this.columnIndex_ = -1;
 
-    /** @private {number} */
+    /** @private @type {number} */
     this.columnWidth_ = 0;
 
-    /** @private {number} */
+    /** @private @type {number} */
     this.nextColumnWidth_ = 0;
 
     this.decorate();

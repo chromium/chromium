@@ -132,7 +132,7 @@ void AddressProfileSaveManager::OfferSavePrompt(
 void AddressProfileSaveManager::OnUserDecision(
     std::unique_ptr<ProfileImportProcess> import_process,
     UserDecision decision,
-    AutofillProfile edited_profile) {
+    base::optional_ref<const AutofillProfile> edited_profile) {
   DCHECK(import_process->prompt_shown());
 
   import_process->SetUserDecision(decision, edited_profile);

@@ -9,6 +9,7 @@
 #import "base/apple/foundation_util.h"
 #import "base/ios/block_types.h"
 #import "base/test/ios/wait_util.h"
+#import "base/test/metrics/histogram_tester.h"
 #import "base/test/metrics/user_action_tester.h"
 #import "ios/chrome/browser/shared/model/application_context/application_context.h"
 #import "ios/chrome/browser/shared/model/browser/test/test_browser.h"
@@ -21,10 +22,12 @@
 #import "ios/chrome/browser/sync/model/mock_sync_service_utils.h"
 #import "ios/chrome/browser/sync/model/sync_service_factory.h"
 #import "ios/chrome/browser/ui/authentication/signin/signin_completion_info.h"
+#import "ios/chrome/browser/ui/authentication/signin/signin_constants.h"
 #import "ios/chrome/browser/ui/authentication/tangible_sync/tangible_sync_view_controller.h"
 #import "ios/chrome/browser/ui/first_run/signin/signin_screen_view_controller.h"
 #import "ios/chrome/test/ios_chrome_scoped_testing_local_state.h"
 #import "ios/web/public/test/web_task_environment.h"
+#import "testing/gtest_mac.h"
 #import "testing/platform_test.h"
 
 // Test cases for the TwoScreensSigninCoordinator.
@@ -43,10 +46,23 @@ class TwoScreensSigninCoordinatorTest : public PlatformTest {
         std::make_unique<FakeAuthenticationServiceDelegate>());
     browser_ = std::make_unique<TestBrowser>(browser_state_.get());
 
+    NSUserDefaults* standardDefaults = [NSUserDefaults standardUserDefaults];
+    [standardDefaults removeObjectForKey:kDisplayedSSORecallPromoCountKey];
+    [standardDefaults removeObjectForKey:kDisplayedSSORecallForMajorVersionKey];
+    [standardDefaults removeObjectForKey:kLastShownAccountGaiaIdVersionKey];
+    [standardDefaults removeObjectForKey:kSigninPromoViewDisplayCountKey];
+
     UIView.animationsEnabled = NO;
     window_ = [[UIWindow alloc] init];
     window_.rootViewController = [[UIViewController alloc] init];
     [window_ addSubview:window_.rootViewController.view];
+
+    FakeSystemIdentityManager* system_identity_manager =
+        FakeSystemIdentityManager::FromSystemIdentityManager(
+            GetApplicationContext()->GetSystemIdentityManager());
+    // Resets all preferences related to upgrade promo.
+    FakeSystemIdentity* fake_identity = [FakeSystemIdentity fakeIdentity1];
+    system_identity_manager->AddIdentity(fake_identity);
 
     coordinator_ = [[TwoScreensSigninCoordinator alloc]
         initWithBaseViewController:window_.rootViewController
@@ -74,6 +90,24 @@ class TwoScreensSigninCoordinatorTest : public PlatformTest {
   // Expects the top view controller to be of the given class.
   void ExpectTopViewControllerIsKindOfClass(Class Klass) {
     EXPECT_TRUE([TopViewController() isKindOfClass:Klass]);
+  }
+
+  // Expects no preferences or metrics related to upgrade promo since the access
+  // point is not `ACCESS_POINT_SIGNIN_PROMO`.
+  void ExpectNoUpgradePromoHistogram(base::HistogramTester* histogram_tester) {
+    histogram_tester->ExpectTotalCount(kUMASSORecallAccountsAvailable, 0);
+    histogram_tester->ExpectTotalCount(kUMASSORecallPromoSeenCount, 0);
+    histogram_tester->ExpectTotalCount(kUMASSORecallPromoAction, 0);
+    NSUserDefaults* standardDefaults = [NSUserDefaults standardUserDefaults];
+    EXPECT_EQ([standardDefaults integerForKey:kDisplayedSSORecallPromoCountKey],
+              0);
+    EXPECT_EQ(
+        [standardDefaults objectForKey:kDisplayedSSORecallForMajorVersionKey],
+        nil);
+    EXPECT_EQ([standardDefaults objectForKey:kLastShownAccountGaiaIdVersionKey],
+              nil);
+    EXPECT_EQ([standardDefaults integerForKey:kSigninPromoViewDisplayCountKey],
+              0);
   }
 
   // Signs in a fake identity.
@@ -111,6 +145,7 @@ class TwoScreensSigninCoordinatorTest : public PlatformTest {
 
 // Tests that the screens are presented.
 TEST_F(TwoScreensSigninCoordinatorTest, PresentScreens) {
+  base::HistogramTester histogram_tester;
   __block SigninCoordinatorResult signin_result;
   __block SigninCompletionInfo* signin_completion_info;
   __block BOOL completion_block_done = NO;
@@ -152,10 +187,12 @@ TEST_F(TwoScreensSigninCoordinatorTest, PresentScreens) {
   EXPECT_EQ(signin_completion_info.signinCompletionAction,
             SigninCompletionActionNone);
   [coordinator_ stop];
+  ExpectNoUpgradePromoHistogram(&histogram_tester);
 }
 
 // Tests that stopping the coordinator before it is done will interrupt it.
 TEST_F(TwoScreensSigninCoordinatorTest, StopWillInterrupt) {
+  base::HistogramTester histogram_tester;
   __block SigninCoordinatorResult signin_result;
   __block SigninCompletionInfo* signin_completion_info;
   __block BOOL completion_block_done = NO;
@@ -178,10 +215,12 @@ TEST_F(TwoScreensSigninCoordinatorTest, StopWillInterrupt) {
   EXPECT_EQ(signin_completion_info.identity, nil);
   EXPECT_EQ(signin_completion_info.signinCompletionAction,
             SigninCompletionActionNone);
+  ExpectNoUpgradePromoHistogram(&histogram_tester);
 }
 
 // Tests that the user can cancel without signing in.
 TEST_F(TwoScreensSigninCoordinatorTest, CanceledByUser) {
+  base::HistogramTester histogram_tester;
   __block SigninCoordinatorResult signin_result;
   __block SigninCompletionInfo* signin_completion_info;
   __block BOOL completion_block_done = NO;
@@ -206,10 +245,12 @@ TEST_F(TwoScreensSigninCoordinatorTest, CanceledByUser) {
   EXPECT_EQ(signin_completion_info.signinCompletionAction,
             SigninCompletionActionNone);
   [coordinator_ stop];
+  ExpectNoUpgradePromoHistogram(&histogram_tester);
 }
 
 // Tests that the user can swipe to dismiss and that a user action is recorded.
 TEST_F(TwoScreensSigninCoordinatorTest, SwipeToDismiss) {
+  base::HistogramTester histogram_tester;
   __block SigninCoordinatorResult signin_result;
   __block SigninCompletionInfo* signin_completion_info;
   __block BOOL completion_block_done = NO;
@@ -242,4 +283,5 @@ TEST_F(TwoScreensSigninCoordinatorTest, SwipeToDismiss) {
   EXPECT_EQ(1, user_actions_.GetActionCount("Signin_TwoScreens_SwipeDismiss"));
 
   [coordinator_ stop];
+  ExpectNoUpgradePromoHistogram(&histogram_tester);
 }

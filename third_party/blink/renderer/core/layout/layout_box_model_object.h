@@ -271,12 +271,12 @@ class CORE_EXPORT LayoutBoxModelObject : public LayoutObject {
     return BorderTop() + BorderBottom();
   }
 
-  NGPhysicalBoxStrut BorderOutsets() const {
+  PhysicalBoxStrut BorderOutsets() const {
     NOT_DESTROYED();
     return {BorderTop(), BorderRight(), BorderBottom(), BorderLeft()};
   }
 
-  NGPhysicalBoxStrut PaddingOutsets() const {
+  PhysicalBoxStrut PaddingOutsets() const {
     NOT_DESTROYED();
     return {PaddingTop(), PaddingRight(), PaddingBottom(), PaddingLeft()};
   }
@@ -365,7 +365,7 @@ class CORE_EXPORT LayoutBoxModelObject : public LayoutObject {
     return MarginStart() + MarginEnd();
   }
 
-  NGPhysicalBoxStrut MarginOutsets() const {
+  PhysicalBoxStrut MarginOutsets() const {
     NOT_DESTROYED();
     return {MarginTop(), MarginRight(), MarginBottom(), MarginLeft()};
   }

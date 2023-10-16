@@ -60,7 +60,7 @@ class CORE_EXPORT NGBoxFragmentBuilder final : public NGFragmentBuilder {
   }
 
   void SetInitialFragmentGeometry(
-      const NGFragmentGeometry& initial_fragment_geometry) {
+      const FragmentGeometry& initial_fragment_geometry) {
     initial_fragment_geometry_ = &initial_fragment_geometry;
     size_ = initial_fragment_geometry_->border_box_size;
     is_initial_block_size_indefinite_ = size_.block_size == kIndefiniteSize;
@@ -86,7 +86,7 @@ class CORE_EXPORT NGBoxFragmentBuilder final : public NGFragmentBuilder {
     border_scrollbar_padding_.block_start = LayoutUnit();
   }
 
-  const NGFragmentGeometry& InitialFragmentGeometry() const {
+  const FragmentGeometry& InitialFragmentGeometry() const {
     DCHECK(initial_fragment_geometry_);
     return *initial_fragment_geometry_;
   }
@@ -225,7 +225,7 @@ class CORE_EXPORT NGBoxFragmentBuilder final : public NGFragmentBuilder {
   void AddChild(
       const NGPhysicalFragment&,
       const LogicalOffset&,
-      const NGMarginStrut* margin_strut = nullptr,
+      const MarginStrut* margin_strut = nullptr,
       bool is_self_collapsing = false,
       absl::optional<LogicalOffset> relative_offset = absl::nullopt,
       const NGInlineContainer<LogicalOffset>* inline_container = nullptr);
@@ -638,7 +638,7 @@ class CORE_EXPORT NGBoxFragmentBuilder final : public NGFragmentBuilder {
 
   const NGLayoutResult* ToBoxFragment(WritingMode);
 
-  const NGFragmentGeometry* initial_fragment_geometry_ = nullptr;
+  const FragmentGeometry* initial_fragment_geometry_ = nullptr;
   BoxStrut border_padding_;
   BoxStrut border_scrollbar_padding_;
   // We clamp the block-start of |border_scrollbar_padding_| after an item

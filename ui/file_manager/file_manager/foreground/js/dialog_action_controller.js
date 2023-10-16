@@ -40,42 +40,42 @@ export class DialogActionController {
   constructor(
       dialogType, dialogFooter, directoryModel, metadataModel, volumeManager,
       fileFilter, namingController, fileSelectionHandler, launchParam) {
-    /** @private @const {!DialogType} */
+    /** @private @const @type {!DialogType} */
     this.dialogType_ = dialogType;
 
-    /** @private @const {!DialogFooter} */
+    /** @private @const @type {!DialogFooter} */
     this.dialogFooter_ = dialogFooter;
 
-    /** @private @const {!DirectoryModel} */
+    /** @private @const @type {!DirectoryModel} */
     this.directoryModel_ = directoryModel;
 
-    /** @private @const {!MetadataModel} */
+    /** @private @const @type {!MetadataModel} */
     this.metadataModel_ = metadataModel;
 
-    /** @private @const {!VolumeManager} */
+    /** @private @const @type {!VolumeManager} */
     this.volumeManager_ = volumeManager;
 
-    /** @private @const {!FileFilter} */
+    /** @private @const @type {!FileFilter} */
     this.fileFilter_ = fileFilter;
 
-    /** @private @const {!NamingController} */
+    /** @private @const @type {!NamingController} */
     this.namingController_ = namingController;
 
-    /** @private @const {!FileSelectionHandler} */
+    /** @private @const @type {!FileSelectionHandler} */
     this.fileSelectionHandler_ = fileSelectionHandler;
 
     /**
      * List of acceptable file types for open dialog.
-     * @private @const {!Array<Object>}
+     * @private @const @type {!Array<Object>}
      */
     this.fileTypes_ = launchParam.typeList || [];
 
-    /** @private @const {!AllowedPaths} */
+    /** @private @const @type {!AllowedPaths} */
     this.allowedPaths_ = launchParam.allowedPaths;
 
     /**
      * Bound function for onCancel_.
-     * @private @const {!function(this:DialogActionController, Event)}
+     * @private @const @type {!function(this:DialogActionController, Event)}
      */
     this.onCancelBound_ = this.processCancelAction_.bind(this);
 

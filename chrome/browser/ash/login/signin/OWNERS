@@ -1,1 +1,3 @@
 file://chromeos/ash/components/account_manager/OWNERS
+
+per-file offline_signin_limiter*=file://ash/login/SAML_INTEGRATION_OWNERS

@@ -13,6 +13,8 @@
 #include "third_party/blink/renderer/core/css/resolver/style_resolver.h"
 #include "third_party/blink/renderer/core/html/forms/html_input_element.h"
 #include "third_party/blink/renderer/core/layout/layout_text_combine.h"
+#include "third_party/blink/renderer/core/layout/list/layout_outside_list_marker.h"
+#include "third_party/blink/renderer/core/layout/list/unpositioned_list_marker.h"
 #include "third_party/blink/renderer/core/layout/ng/inline/ng_bidi_paragraph.h"
 #include "third_party/blink/renderer/core/layout/ng/inline/ng_initial_letter_utils.h"
 #include "third_party/blink/renderer/core/layout/ng/inline/ng_inline_box_state.h"
@@ -28,8 +30,6 @@
 #include "third_party/blink/renderer/core/layout/ng/inline/ng_paragraph_line_breaker.h"
 #include "third_party/blink/renderer/core/layout/ng/inline/ng_ruby_utils.h"
 #include "third_party/blink/renderer/core/layout/ng/inline/ng_score_line_breaker.h"
-#include "third_party/blink/renderer/core/layout/ng/list/layout_ng_outside_list_marker.h"
-#include "third_party/blink/renderer/core/layout/ng/list/ng_unpositioned_list_marker.h"
 #include "third_party/blink/renderer/core/layout/ng/ng_block_break_token.h"
 #include "third_party/blink/renderer/core/layout/ng/ng_box_fragment.h"
 #include "third_party/blink/renderer/core/layout/ng/ng_constraint_space.h"
@@ -872,7 +872,7 @@ void NGInlineLayoutAlgorithm::PlaceBlockInInline(
   if (!result.IsSelfCollapsing()) {
     // Block-in-inline is wrapped in an anonymous block that has no margins.
     const FontHeight metrics = fragment.BaselineMetrics(
-        /* margins */ NGLineBoxStrut(), baseline_type_);
+        /* margins */ LineBoxStrut(), baseline_type_);
     box_states_->OnBlockInInline(metrics, line_box);
   }
 
@@ -1361,7 +1361,7 @@ const NGLayoutResult* NGInlineLayoutAlgorithm::Layout() {
   // having resolved the BFC offset).
   context_->ClearParallelFlowBreakTokens();
 
-  end_margin_strut_ = ConstraintSpace().MarginStrut();
+  end_margin_strut_ = ConstraintSpace().GetMarginStrut();
   container_builder_.SetAdjoiningObjectTypes(
       ConstraintSpace().AdjoiningObjectTypes());
   lines_until_clamp_ = ConstraintSpace().LinesUntilClamp();
@@ -1377,7 +1377,7 @@ const NGLayoutResult* NGInlineLayoutAlgorithm::Layout() {
   LayoutUnit bfc_block_offset =
       ConstraintSpace().ForcedBfcBlockOffset().value_or(
           ConstraintSpace().GetBfcOffset().block_offset +
-          ConstraintSpace().MarginStrut().Sum());
+          ConstraintSpace().GetMarginStrut().Sum());
 
   // Also apply clearance if necessary.
   if (ConstraintSpace().HasClearanceOffset() &&
@@ -1691,7 +1691,7 @@ const NGLayoutResult* NGInlineLayoutAlgorithm::Layout() {
       // Margins should only collapse across "certain zero-height line boxes".
       // https://drafts.csswg.org/css2/box.html#collapsing-margins
       if (!line_info.IsBlockInInline()) {
-        end_margin_strut_ = NGMarginStrut();
+        end_margin_strut_ = MarginStrut();
         if (lines_until_clamp_)
           *lines_until_clamp_ = *lines_until_clamp_ - 1;
       }

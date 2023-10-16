@@ -4,11 +4,11 @@ CONSOLE ERROR: Ignoring unrecogized 'integrity' attribute option 'foobar'.
 CONSOLE ERROR: Ignoring unrecogized 'integrity' attribute option 'foo=bar?'.
 CONSOLE ERROR: Ignoring unrecogized 'integrity' attribute option 'foo&bar?'.
 This is a testharness.js-based test.
-PASS SRI with options
-PASS SRI with options 1
-PASS SRI with options 2
-PASS SRI with options 3
-PASS SRI with options 4
-PASS SRI with options 5
+[PASS] SRI with options
+[PASS] SRI with options 1
+[PASS] SRI with options 2
+[PASS] SRI with options 3
+[PASS] SRI with options 4
+[PASS] SRI with options 5
 Harness: the test ran to completion.
 

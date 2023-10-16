@@ -21,19 +21,21 @@ export class ComboButton extends MultiMenuButton {
   constructor() {
     super();
 
-    /** @private {?MenuItem} */
+    // TODO(lucmult): Add type definition see `DropdownItem` in
+    // task_controller.ts.
+    /** @private @type {?*} */
     this.defaultItem_ = null;
 
-    /** @private {?Element} */
+    /** @private @type {?Element} */
     this.trigger_ = null;
 
-    /** @private {?Element} */
+    /** @private @type {?Element} */
     this.actionNode_ = null;
 
-    /** @private {boolean} */
+    /** @private @type {boolean} */
     this.disabled = false;
 
-    /** @private {boolean} */
+    /** @private @type {boolean} */
     this.multiple = false;
   }
 

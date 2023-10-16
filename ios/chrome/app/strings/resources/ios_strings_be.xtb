@@ -711,6 +711,7 @@
 <translation id="4808744395915275922">Абнаўленні</translation>
 <translation id="4818522717893377262">Дадаць мову...</translation>
 <translation id="481968316161811770">Файлы cookie, даныя сайта</translation>
+<translation id="4824480232751123840">Аб'ём</translation>
 <translation id="4824497107140370669">{count,plural, =0{{domain}}=1{{domain} і яшчэ 1}one{{domain} і яшчэ {count}}few{{domain} і яшчэ {count}}many{{domain} і яшчэ {count}}other{{domain} і яшчэ {count}}}</translation>
 <translation id="4826218269716039351">Староннія файлы cookie блакіруюцца</translation>
 <translation id="4826588772550366629">камеру і мікрафон</translation>
@@ -785,6 +786,7 @@
 <translation id="5181140330217080051">Ідзе спампоўванне</translation>
 <translation id="5184329579814168207">Адкрыць у Chrome</translation>
 <translation id="5186185447130319458">Прыватнае</translation>
+<translation id="5186634140793586141">Кіраваць тэмамі і пошукавымі запытамі, якімі вы цікавіцеся</translation>
 <translation id="5188482106078495165">Налада файлаў cookie прымяняецца да ўсіх укладак. Каб прымяніць новую наладу да адкрытай укладкі, перазагрузіце ўкладку.</translation>
 <translation id="5190835502935405962">Панэль закладак</translation>
 <translation id="519530786644929958">Збой спампоўвання. Паўтарыць спробу нельга.</translation>
@@ -848,6 +850,7 @@
 <translation id="5556459405103347317">Перазагрузіць</translation>
 <translation id="555749644339804659">Ідзе праверка пароляў…</translation>
 <translation id="556042886152191864">Кнопка</translation>
+<translation id="5572684875078967866">Аб'ём даных</translation>
 <translation id="5597915316964418992">Адкрыйце сетку ўкладак</translation>
 <translation id="560322036295180549">Ваша арганізацыя выключыла гэты параметр</translation>
 <translation id="5614553682702429503">Захаваць пароль?</translation>
@@ -909,6 +912,7 @@
 <translation id="5896576662943111387">Спецыяльна для iOS</translation>
 <translation id="5897749768294722429">Каб хутка вяртацца на сайты, якія вы наведвалі, сінхранізуйце свае ўкладкі і гісторыю.</translation>
 <translation id="5897956970858271241">Наведаць скапіраваную спасылку</translation>
+<translation id="5898848375214731122">Маса</translation>
 <translation id="5899314093904173337">Каб абагуліць гэта змесціва з карыстальнікамі паблізу, дайце ім адсканіраваць гэты QR-код камерай або з дапамогай праграмы сканіравання QR-кодаў.</translation>
 <translation id="5911030830365207728">Перакладчык Google</translation>
 <translation id="5913600720976431809">Параметры перакладу старонкі</translation>
@@ -926,6 +930,7 @@
 <translation id="5981230843984570095">Закрыць усе неактыўныя</translation>
 <translation id="5982717868370722439">Дадаць існуючыя даныя ва ўліковы запіс <ph name="USER_EMAIL" />.</translation>
 <translation id="5984222099446776634">Нядаўна наведаныя</translation>
+<translation id="598634819525651074">Плошча</translation>
 <translation id="5988097621740394599">Паказваць інфармацыю пра зніжэнне цэн на ўкладках.</translation>
 <translation id="5988851877894965432">Адкрыць URL-адрасы ў Chrome</translation>
 <translation id="6006672969046233841">Новая ўкладка</translation>
@@ -1161,7 +1166,6 @@
 <translation id="7062545763355031412">Прыняць і пераключыцца на іншы ўліковы запіс</translation>
 <translation id="7063811929043357292">Вашым уліковым запісам кіруюць бацькі.
 <ph name="BEGIN_LINK" />Даведацца больш<ph name="END_LINK" /></translation>
-<translation id="7064619810277839954">Дае прапановы ўкладак на аснове дзеянняў у браўзеры на іншых прыладах, якія выкарыстоўваюць ваш Уліковы запіс Google. На прыладах трэба ўвайсці з дапамогай аднаго і таго ж Уліковага запісу Google і ўключыць сінхранізацыю.</translation>
 <translation id="7069695992271320873">Выдаліць з гэтай прылады</translation>
 <translation id="7080806333218412752">Адпраўляе URL-адрасы на праверку ў Бяспечны прагляд. Таксама адпраўляе невялікія прыклады старонак, спамповак, дзеянняў пашырэнняў і інфармацыі пра сістэму, каб дапамагчы выяўляць новыя пагрозы. Часова звязвае гэтыя даныя з Уліковым запісам Google, у які вы ўвайшлі, каб абараніць вас у праграмах Google.</translation>
 <translation id="7082853213442715471">Калі ўключаны рэжым блакіроўкі, пэўныя вэб-тэхналогіі блакіруюцца, з-за чаго некаторыя вэб-сайты могуць загружацца марудней або працаваць няправільна.</translation>
@@ -1362,6 +1366,7 @@
 <translation id="8156478151976189188">Сінхранізацыя пароляў не працуе</translation>
 <translation id="8157532349231307196">Уліковых запісаў: <ph name="NUMBER_OF_ACCOUNTS" /></translation>
 <translation id="8159358225423560600">толькі што</translation>
+<translation id="8173034266693057059">Даўжыня</translation>
 <translation id="8179976553408161302">Enter</translation>
 <translation id="8182037667962849780">{count,plural, =1{Для {website_1}}=2{Для {website_1}, {website_2}}=3{Для {website_1}, {website_2} і яшчэ 1}one{Для {website_1}, {website_2} і яшчэ {more_count}}few{Для {website_1}, {website_2} і яшчэ {more_count}}many{Для {website_1}, {website_2} і яшчэ {more_count}}other{Для {website_1}, {website_2} і яшчэ {more_count}}}</translation>
 <translation id="8193953846147532858"><ph name="BEGIN_LINK" />Вашы прылады<ph name="END_LINK" /> · <ph name="EMAIL" /></translation>
@@ -1456,6 +1461,7 @@
 <translation id="8692689525339542358">Абараніцеся ад небяспечных сайтаў, спамповак і пашырэнняў.</translation>
 <translation id="8693663554456874301">{count,plural, =1{Закрыць укладку}one{Закрыць укладкі}few{Закрыць укладкі}many{Закрыць укладкі}other{Закрыць укладкі}}</translation>
 <translation id="8703536910991780768">Вы выкарыстоўваеце надзейныя паролі</translation>
+<translation id="8706253136355675497">Тэмпература</translation>
 <translation id="8717864919010420084">Скапіраваць спасылку</translation>
 <translation id="8721297211384281569">Меню "Інструменты"</translation>
 <translation id="8725066075913043281">Паўтарыць спробу</translation>
@@ -1561,6 +1567,7 @@
 <translation id="9188680907066685419">Выйсці з уліковага запісу пад кіраваннем</translation>
 <translation id="9200875785104711666"><ph name="TIME" /> сут таму</translation>
 <translation id="9203116392574189331">Перадача вэб-сайта</translation>
+<translation id="9206887540681440657">Хуткасць</translation>
 <translation id="9219154867334666734">Пошук укладак…</translation>
 <translation id="9223358826628549784">Справаздача аб збоях адпраўлена.</translation>
 <translation id="941747855997058526">Выбраць пароль…</translation>

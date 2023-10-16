@@ -26,3 +26,16 @@ const char* kWebSigninConsistencyConsecutiveActiveDismissalLimitParam =
     "consecutive_active_dismissal_limit";
 
 const int kDefaultWebSignInDismissalCount = 3;
+
+NSString* const kDisplayedSSORecallForMajorVersionKey =
+    @"DisplayedSSORecallForMajorVersionKey";
+NSString* const kLastShownAccountGaiaIdVersionKey =
+    @"LastShownAccountGaiaIdVersionKey";
+NSString* const kSigninPromoViewDisplayCountKey =
+    @"SigninPromoViewDisplayCountKey";
+NSString* const kDisplayedSSORecallPromoCountKey =
+    @"DisplayedSSORecallPromoCount";
+const char* const kUMASSORecallPromoAction = "SSORecallPromo.PromoAction";
+const char* const kUMASSORecallAccountsAvailable =
+    "SSORecallPromo.AccountsAvailable";
+const char* const kUMASSORecallPromoSeenCount = "SSORecallPromo.PromoSeenCount";

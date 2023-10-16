@@ -995,6 +995,24 @@ TEST_F(PasswordGenerationAgentTest,
   LoadHTMLWithUserGesture(kAccountCreationFormHTML);
   SelectGenerationFallbackAndExpect(false);
 }
+
+// Test corner case when password field becomes readonly the moment you focus it
+// and later becomes normal again.
+TEST_F(PasswordGenerationAgentTest,
+       DesktopContextMenuManualGenerationOnReadonly) {
+  LoadHTMLWithUserGesture(kSigninFormHTML);
+  ExecuteJavaScriptForTests(
+      "document.getElementsByClassName('first_password')[0].setAttribute('"
+      "readonly', 'true');");
+  SimulateElementRightClick("password");
+
+  ExecuteJavaScriptForTests(
+      "document.getElementsByClassName('first_password')[0].removeAttribute('"
+      "readonly');");
+
+  SelectGenerationFallbackAndExpect(true);
+}
+
 #endif  // !BUILDFLAG(IS_ANDROID)
 
 TEST_F(PasswordGenerationAgentTest, PresavingGeneratedPassword) {

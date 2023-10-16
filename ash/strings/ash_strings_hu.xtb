@@ -353,7 +353,6 @@
 <translation id="243878895369688216">Tegnap nyitotta meg</translation>
 <translation id="2440978926514840421">GIF-felvétel rögzítve</translation>
 <translation id="2441427462554639370">Felvétel megszakítva a kritikusan kevés tárhely miatt</translation>
-<translation id="24452542372838207">Értesítés kibontása</translation>
 <translation id="2448312741937722512">Típus</translation>
 <translation id="2449089818483227734">Alacsony töltöttség</translation>
 <translation id="2450205753526923158">Képernyőkép mód</translation>
@@ -1950,7 +1949,6 @@ Az eszköz leállításához tartsa ismét nyomva az eszköz bekapcsológombját
 <translation id="9030665205623277906">Processzorhasználati pillanatkép: <ph name="CPU_USEAGE" />%</translation>
 <translation id="9034924485347205037">Linux-fájlok</translation>
 <translation id="9047624247355796468"><ph name="NETWORK_NAME" /> beállításainak megnyitása</translation>
-<translation id="9059834730836941392">Értesítés összecsukása</translation>
 <translation id="906458777597946297">Ablak teljes méretre állítása</translation>
 <translation id="9065203028668620118">Szerkesztés</translation>
 <translation id="9070640332319875144">A Segéd beállításai</translation>

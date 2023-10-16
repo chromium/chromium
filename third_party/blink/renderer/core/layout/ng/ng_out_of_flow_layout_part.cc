@@ -884,7 +884,7 @@ void NGOutOfFlowLayoutPart::LayoutCandidates(
             CalculateOffset(node_info, /* is_first_run */ false,
                             needs_anchor_queries ? &*anchor_queries : nullptr)};
         const NGLayoutResult* result = LayoutOOFNode(node_to_layout);
-        NGPhysicalBoxStrut physical_margins =
+        PhysicalBoxStrut physical_margins =
             node_to_layout.offset_info.node_dimensions.margins
                 .ConvertToPhysical(
                     node_info.node.Style().GetWritingDirection());
@@ -953,9 +953,8 @@ void NGOutOfFlowLayoutPart::LayoutOOFsInMulticol(
   // suitable for holding child fragmentainers while we're cloning them.
   NGConstraintSpace limited_multicol_constraint_space =
       CreateConstraintSpaceForMulticol(multicol);
-  NGFragmentGeometry limited_fragment_geometry =
-      CalculateInitialFragmentGeometry(limited_multicol_constraint_space,
-                                       multicol, /* break_token */ nullptr);
+  FragmentGeometry limited_fragment_geometry = CalculateInitialFragmentGeometry(
+      limited_multicol_constraint_space, multicol, /* break_token */ nullptr);
   NGBoxFragmentBuilder limited_multicol_container_builder =
       CreateContainerBuilderForMulticol(multicol,
                                         limited_multicol_constraint_space,
@@ -1090,7 +1089,7 @@ void NGOutOfFlowLayoutPart::LayoutOOFsInMulticol(
       // fragment.
       const WritingModeConverter containing_block_converter(
           writing_direction, containing_block_fragment->Size());
-      NGLogicalStaticPosition static_position =
+      LogicalStaticPosition static_position =
           descendant.StaticPosition().ConvertToLogical(
               containing_block_converter);
 
@@ -1179,7 +1178,7 @@ void NGOutOfFlowLayoutPart::LayoutOOFsInMulticol(
     // fragment.
     const NGConstraintSpace& constraint_space =
         old_result->GetConstraintSpaceForCaching();
-    NGFragmentGeometry fragment_geometry = CalculateInitialFragmentGeometry(
+    FragmentGeometry fragment_geometry = CalculateInitialFragmentGeometry(
         constraint_space, multicol, /* break_token */ nullptr);
     NGLayoutAlgorithmParams params(multicol, fragment_geometry,
                                    constraint_space);
@@ -1556,7 +1555,7 @@ NGOutOfFlowLayoutPart::NodeInfo NGOutOfFlowLayoutPart::SetupNodeInfo(
   // be relative to the container's padding-box. Since
   // |container_info.rect.offset| is relative to its fragmentainer in this
   // case, we also need to adjust the offset to account for this.
-  NGLogicalStaticPosition static_position = oof_node.static_position;
+  LogicalStaticPosition static_position = oof_node.static_position;
   static_position.offset -= container_info.rect.offset;
   if (containing_block_fragment) {
     const auto& containing_block_for_fragmentation =
@@ -1566,7 +1565,7 @@ NGOutOfFlowLayoutPart::NodeInfo NGOutOfFlowLayoutPart::SetupNodeInfo(
         containing_block_for_fragmentation.RequiresContentBeforeBreaking();
   }
 
-  NGLogicalStaticPosition oof_static_position =
+  LogicalStaticPosition oof_static_position =
       static_position
           .ConvertToPhysical({ConstraintSpace().GetWritingDirection(),
                               container_physical_content_size})
@@ -2216,7 +2215,7 @@ void NGOutOfFlowLayoutPart::LayoutOOFsInFragmentainer(
   const NGBlockNode& node = container_builder_->Node();
   const auto* fragment =
       To<NGPhysicalBoxFragment>(fragmentainer.fragment.Get());
-  NGFragmentGeometry fragment_geometry =
+  FragmentGeometry fragment_geometry =
       CalculateInitialFragmentGeometry(space, node, /* break_token */ nullptr);
   LogicalOffset fragmentainer_offset = UpdatedFragmentainerOffset(
       fragmentainer.offset, index, fragmentainer_progression, is_new_fragment);
@@ -2725,7 +2724,7 @@ void NGOutOfFlowLayoutPart::ReplaceFragment(
 
 void NGOutOfFlowLayoutPart::SaveStaticPositionOnPaintLayer(
     LayoutBox* layout_box,
-    const NGLogicalStaticPosition& position) const {
+    const LogicalStaticPosition& position) const {
   const LayoutObject* parent =
       GetLayoutObjectForParentNode<const LayoutObject*>(layout_box);
   const LayoutObject* container = container_builder_->GetLayoutObject();
@@ -2737,8 +2736,8 @@ void NGOutOfFlowLayoutPart::SaveStaticPositionOnPaintLayer(
   }
 }
 
-NGLogicalStaticPosition NGOutOfFlowLayoutPart::ToStaticPositionForLegacy(
-    NGLogicalStaticPosition position) const {
+LogicalStaticPosition NGOutOfFlowLayoutPart::ToStaticPositionForLegacy(
+    LogicalStaticPosition position) const {
   // Legacy expects the static position to include the block contribution from
   // previous columns.
   if (const auto* break_token = container_builder_->PreviousBreakToken())

@@ -258,6 +258,7 @@
 <translation id="5545693483061321551">Les sites ne peuvent pas utiliser vos témoins pour voir votre activité de navigation sur différents sites (par exemple, pour personnaliser les annonces). Des fonctionnalités de certains sites pourraient ne pas fonctionner.</translation>
 <translation id="5553374991681107062">Plus récentes</translation>
 <translation id="5556459405103347317">Actualiser</translation>
+<translation id="5591840828808741583"><ph name="SITE_NAME" /> bloqué</translation>
 <translation id="5649053991847567735">Téléchargements automatiques</translation>
 <translation id="5668404140385795438">Ignorer la demande d'un site refusant de faire un zoom avant</translation>
 <translation id="5677928146339483299">Bloqué</translation>
@@ -455,6 +456,7 @@
 <translation id="8959122750345127698">Navigation inaccessible : <ph name="URL" /></translation>
 <translation id="8986362086234534611">Supprimer</translation>
 <translation id="8990043154272859344">Vous serez déconnecté de tous les sites</translation>
+<translation id="9011903857143958461">Autorisation de <ph name="SITE_NAME" /> accordée</translation>
 <translation id="9019902583201351841">Géré par tes parents</translation>
 <translation id="9039697262778250930">Il se peut que vous soyez déconnecté de ces sites</translation>
 <translation id="9074739597929991885">Bluetooth</translation>

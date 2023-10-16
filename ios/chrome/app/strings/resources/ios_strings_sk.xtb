@@ -786,6 +786,7 @@ Prečítajte si pokyny vyhľadávača, ako odstrániť históriu vyhľadávania 
 <translation id="5181140330217080051">Sťahovanie</translation>
 <translation id="5184329579814168207">Otvoriť v prehliadači Chrome</translation>
 <translation id="5186185447130319458">Súkromné</translation>
+<translation id="5186634140793586141">Spravujte témy a vyhľadávania, ktoré vás zaujímajú</translation>
 <translation id="5188482106078495165">Nastavenie súborov cookie platí pre všetky karty. Ak chcete pre otvorenú kartu použiť nové nastavenie, znova ju načítajte.</translation>
 <translation id="5190835502935405962">Panel so záložkami</translation>
 <translation id="519530786644929958">Súbor sa nestiahol. Pokus sa nedá zopakovať.</translation>
@@ -1165,7 +1166,6 @@ Weby v režime inkognito nemôžu pomocou súborov cookie zobraziť vašu aktiv
 <translation id="7062545763355031412">Prijať a prepnúť účty</translation>
 <translation id="7063811929043357292">Tvoj účet spravuje tvoj rodič.
 <ph name="BEGIN_LINK" />Ďalšie informácie<ph name="END_LINK" /></translation>
-<translation id="7064619810277839954">Poskytuje návrhy kariet na základe aktivity prehliadania vo vašich iných zariadeniach pomocou vášho účtu Google. Zariadenia musia byť prihlásené a synchronizované pomocou rovnakého účtu Google.</translation>
 <translation id="7069695992271320873">Odstrániť z tohto zariadenia</translation>
 <translation id="7080806333218412752">Odosiela webové adresy na kontrolu do Bezpečného prehliadania. Posiela tiež malú vzorku stránok, stiahnutých súborov, aktivity rozšírení a informácií o systéme a pomáha tak objavovať nové hrozby. Dočasne prepojí tieto údaje s vaším účtom Google (keď sa prihlásite), aby vás chránila v aplikáciách Google.</translation>
 <translation id="7082853213442715471">Keď je zapnutý, určité internetové technológie sú blokované, čo môže spôsobiť, že sa niektoré weby budú načítavať pomalšie alebo nebudú správne fungovať.</translation>

@@ -10,7 +10,6 @@ import * as Accessibility from 'devtools/panels/accessibility/accessibility.js';
 
 (async function() {
   TestRunner.addResult(`Tests that writing an ARIA attribute causes the accessibility node to be updated.\n`);
-  await TestRunner.loadLegacyModule('panels/accessibility');
   await TestRunner.showPanel('elements');
   await TestRunner.loadHTML(`
       <button id="inspected" role="checkbox" aria-checked="true">ARIA checkbox</button>

@@ -557,17 +557,17 @@ export class CommandHandler {
   constructor(fileManager, selectionHandler) {
     /**
      * CommandHandlerDeps.
-     * @private @const {!CommandHandlerDeps}
+     * @private @const @type {!CommandHandlerDeps}
      */
     this.fileManager_ = fileManager;
 
     /**
      * Command elements.
-     * @private @const {Object<Command>}
+     * @private @const @type {Object<Command>}
      */
     this.commands_ = {};
 
-    /** @private {?Element} */
+    /** @private @type {?Element} */
     this.lastFocusedElement_ = null;
 
     // Decorate command tags in the document.
@@ -656,7 +656,7 @@ export class CommandHandler {
 
 /**
  * Supported disk file system types for renaming.
- * @private @const {!Array<!VolumeManagerCommon.FileSystemType>}
+ * @private @const @type {!Array<!VolumeManagerCommon.FileSystemType>}
  */
 CommandHandler.RENAME_DISK_FILE_SYSTEM_SUPPORT_ = [
   VolumeManagerCommon.FileSystemType.EXFAT,
@@ -706,7 +706,7 @@ CommandHandler.MenuCommandsForUMA = {
  * The array indices will be recorded in UMA as enum values. The index for each
  * root type should never be renumbered nor reused in this array.
  *
- * @const {!Array<CommandHandler.MenuCommandsForUMA>}
+ * @const @type {!Array<CommandHandler.MenuCommandsForUMA>}
  */
 CommandHandler.ValidMenuCommandsForUMA = [
   CommandHandler.MenuCommandsForUMA.HELP,
@@ -753,7 +753,7 @@ CommandHandler.recordMenuItemSelected = menuItem => {
 
 /**
  * Commands.
- * @private @const {Object<FilesCommand>}
+ * @private @const @type {Object<FilesCommand>}
  */
 CommandHandler.COMMANDS_ = {};
 
@@ -982,7 +982,7 @@ CommandHandler.COMMANDS_['new-folder'] = new (class extends FilesCommand {
 
     /**
      * Whether a new-folder is in progress.
-     * @private {boolean}
+     * @private @type {boolean}
      */
     this.busy_ = false;
   }
@@ -1261,7 +1261,7 @@ CommandHandler.COMMANDS_['drive-sync-settings'] =
 
 /**
  * Delete / Move to Trash command.
- * @private @const {FilesCommand}
+ * @private @const @type {FilesCommand}
  */
 CommandHandler.deleteCommand_ = new (class extends FilesCommand {
   execute(event, fileManager) {
@@ -1722,7 +1722,7 @@ CommandHandler.COMMANDS_['paste-into-folder'] =
 
 /**
  * Cut/Copy command.
- * @private @const {FilesCommand}
+ * @private @const @type {FilesCommand}
  */
 CommandHandler.cutCopyCommand_ = new (class extends FilesCommand {
   execute(event, fileManager) {
@@ -2158,7 +2158,7 @@ CommandHandler.COMMANDS_['toggle-holding-space'] =
          * Whether the command adds or removed items from holding space. The
          * value is set in <code>canExecute()</code>. It will be true unless all
          * selected items are already in the holding space.
-         * @private {boolean|undefined}
+         * @private @type {boolean|undefined}
          */
         this.addsItems_;
       }

@@ -641,7 +641,7 @@ void AutofillExternalDelegate::ShowDeleteAddressProfileDialog(
 
 void AutofillExternalDelegate::OnAddressEditorClosed(
     AutofillClient::SaveAddressProfileOfferUserDecision decision,
-    AutofillProfile profile) {
+    base::optional_ref<const AutofillProfile> edited_profile) {
   if (decision ==
       AutofillClient::SaveAddressProfileOfferUserDecision::kEditAccepted) {
     autofill_metrics::LogEditAddressProfileDialogClosed(
@@ -650,7 +650,8 @@ void AutofillExternalDelegate::OnAddressEditorClosed(
     if (!pdm_observation_.IsObserving()) {
       pdm_observation_.Observe(pdm);
     }
-    pdm->UpdateProfile(profile);
+    CHECK(edited_profile.has_value());
+    pdm->UpdateProfile(edited_profile.value());
     return;
   }
   autofill_metrics::LogEditAddressProfileDialogClosed(

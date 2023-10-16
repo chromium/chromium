@@ -84,12 +84,16 @@ class PipWindowResizerTest : public AshTestBase,
     gfx::Rect screen_bounds = bounds;
     ::wm::ConvertRectToScreen(root_window, &screen_bounds);
 
+    auto* pip_container =
+        Shell::GetContainer(root_window, kShellWindowId_PipContainer);
+
     std::unique_ptr<views::Widget> widget(new views::Widget);
     views::Widget::InitParams params;
     params.ownership = views::Widget::InitParams::WIDGET_OWNS_NATIVE_WIDGET;
     params.bounds = screen_bounds;
     params.z_order = ui::ZOrderLevel::kFloatingWindow;
     params.context = root_window;
+    params.parent = pip_container;
 
     // Add a delegate to make it possible to set the maximum and minimum
     // size for the window with `NonClientFrameViewAsh`.
@@ -146,9 +150,14 @@ class PipWindowResizerTest : public AshTestBase,
   void PreparePipWindow(const gfx::Rect& bounds) {
     widget_ = CreateWidgetForTest(bounds);
     window_ = widget_->GetNativeWindow();
+
     auto test_state = std::make_unique<FakeWindowState>(WindowStateType::kPip);
     test_state_ = test_state.get();
     WindowState::Get(window_)->SetStateObject(std::move(test_state));
+
+    long root_window_index = static_cast<long>(std::get<1>(GetParam()));
+    window_->SetProperty(aura::client::kFullscreenTargetDisplayIdKey,
+                         root_window_index);
   }
 
  private:
@@ -436,11 +445,11 @@ TEST_P(PipWindowResizerTest,
 }
 
 TEST_P(PipWindowResizerTest, PipWindowIsFlungToEdge) {
-  PreparePipWindow(gfx::Rect(200, 200, 100, 100));
   auto landscape =
       display::Screen::GetScreen()->GetPrimaryDisplay().is_landscape();
 
   {
+    PreparePipWindow(gfx::Rect(200, 200, 100, 100));
     std::unique_ptr<PipWindowResizer> resizer(CreateResizerForTest(HTCAPTION));
     ASSERT_TRUE(resizer.get());
 
@@ -454,6 +463,7 @@ TEST_P(PipWindowResizerTest, PipWindowIsFlungToEdge) {
   }
 
   {
+    PreparePipWindow(gfx::Rect(200, 200, 100, 100));
     std::unique_ptr<PipWindowResizer> resizer(CreateResizerForTest(HTCAPTION));
     ASSERT_TRUE(resizer.get());
 
@@ -466,6 +476,7 @@ TEST_P(PipWindowResizerTest, PipWindowIsFlungToEdge) {
   }
 
   {
+    PreparePipWindow(gfx::Rect(200, 200, 100, 100));
     std::unique_ptr<PipWindowResizer> resizer(CreateResizerForTest(HTCAPTION));
     ASSERT_TRUE(resizer.get());
 
@@ -478,6 +489,7 @@ TEST_P(PipWindowResizerTest, PipWindowIsFlungToEdge) {
   }
 
   {
+    PreparePipWindow(gfx::Rect(200, 200, 100, 100));
     std::unique_ptr<PipWindowResizer> resizer(CreateResizerForTest(HTCAPTION));
     ASSERT_TRUE(resizer.get());
 
@@ -491,11 +503,11 @@ TEST_P(PipWindowResizerTest, PipWindowIsFlungToEdge) {
 }
 
 TEST_P(PipWindowResizerTest, PipWindowIsFlungDiagonally) {
-  PreparePipWindow(gfx::Rect(200, 200, 100, 100));
   auto landscape =
       display::Screen::GetScreen()->GetPrimaryDisplay().is_landscape();
 
   {
+    PreparePipWindow(gfx::Rect(200, 200, 100, 100));
     std::unique_ptr<PipWindowResizer> resizer(CreateResizerForTest(HTCAPTION));
     ASSERT_TRUE(resizer.get());
 
@@ -508,6 +520,7 @@ TEST_P(PipWindowResizerTest, PipWindowIsFlungDiagonally) {
   }
 
   {
+    PreparePipWindow(gfx::Rect(200, 200, 100, 100));
     std::unique_ptr<PipWindowResizer> resizer(CreateResizerForTest(HTCAPTION));
     ASSERT_TRUE(resizer.get());
 
@@ -519,6 +532,7 @@ TEST_P(PipWindowResizerTest, PipWindowIsFlungDiagonally) {
     EXPECT_EQ(origin, test_state()->last_requested_bounds().origin());
   }
   {
+    PreparePipWindow(gfx::Rect(200, 200, 100, 100));
     std::unique_ptr<PipWindowResizer> resizer(CreateResizerForTest(HTCAPTION));
     ASSERT_TRUE(resizer.get());
 
@@ -530,6 +544,7 @@ TEST_P(PipWindowResizerTest, PipWindowIsFlungDiagonally) {
   }
 
   {
+    PreparePipWindow(gfx::Rect(200, 200, 100, 100));
     std::unique_ptr<PipWindowResizer> resizer(CreateResizerForTest(HTCAPTION));
     ASSERT_TRUE(resizer.get());
 
@@ -542,6 +557,7 @@ TEST_P(PipWindowResizerTest, PipWindowIsFlungDiagonally) {
   }
 
   {
+    PreparePipWindow(gfx::Rect(200, 200, 100, 100));
     std::unique_ptr<PipWindowResizer> resizer(CreateResizerForTest(HTCAPTION));
     ASSERT_TRUE(resizer.get());
 
@@ -554,6 +570,7 @@ TEST_P(PipWindowResizerTest, PipWindowIsFlungDiagonally) {
   }
 
   {
+    PreparePipWindow(gfx::Rect(200, 200, 100, 100));
     std::unique_ptr<PipWindowResizer> resizer(CreateResizerForTest(HTCAPTION));
     ASSERT_TRUE(resizer.get());
 
@@ -566,6 +583,7 @@ TEST_P(PipWindowResizerTest, PipWindowIsFlungDiagonally) {
   }
 
   {
+    PreparePipWindow(gfx::Rect(200, 200, 100, 100));
     std::unique_ptr<PipWindowResizer> resizer(CreateResizerForTest(HTCAPTION));
     ASSERT_TRUE(resizer.get());
 
@@ -578,6 +596,7 @@ TEST_P(PipWindowResizerTest, PipWindowIsFlungDiagonally) {
   }
 
   {
+    PreparePipWindow(gfx::Rect(200, 200, 100, 100));
     std::unique_ptr<PipWindowResizer> resizer(CreateResizerForTest(HTCAPTION));
     ASSERT_TRUE(resizer.get());
 
@@ -590,6 +609,7 @@ TEST_P(PipWindowResizerTest, PipWindowIsFlungDiagonally) {
   }
 
   {
+    PreparePipWindow(gfx::Rect(200, 200, 100, 100));
     std::unique_ptr<PipWindowResizer> resizer(CreateResizerForTest(HTCAPTION));
     ASSERT_TRUE(resizer.get());
 

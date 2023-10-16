@@ -3216,6 +3216,7 @@
 <translation id="3521405806571557477">刪除 <ph name="SITE_NAME" /> 的已儲存資料</translation>
 <translation id="3521606918211282604">變更磁碟大小</translation>
 <translation id="3522088408596898827">磁碟空間嚴重不足，請釋出磁碟空間，然後再試一次。</translation>
+<translation id="3522979239100719575">正在尋找可用的設定檔，請稍候片刻。</translation>
 <translation id="3524518036046613664">探索區域網路中的裝置，例如印表機</translation>
 <translation id="3524965460886318643">匯出活動</translation>
 <translation id="3525426269008462093">在設定完成後查看裝置同步情形</translation>
@@ -7803,6 +7804,7 @@
 <translation id="7283555985781738399">訪客模式</translation>
 <translation id="7284307451964417957">{DAYS,plural, =1{系統會記住這部裝置，在 1 天內無需輸入驗證碼即可再次連接。這項設定是由你的系統管理員指定。}other{系統會記住這部裝置，在 {DAYS} 天內無需輸入驗證碼即可再次連接。這項設定是由你的系統管理員指定。}}</translation>
 <translation id="7284411326658527427">每位使用者都可以建立個人專屬的帳戶，並保護資料的私密性。</translation>
+<translation id="7286867818472074330">選取密碼金鑰</translation>
 <translation id="7287143125007575591">存取遭拒。</translation>
 <translation id="7287411021188441799">還原預設背景</translation>
 <translation id="7288676996127329262"><ph name="HORIZONTAL_DPI" />x<ph name="VERTICAL_DPI" /> dpi</translation>

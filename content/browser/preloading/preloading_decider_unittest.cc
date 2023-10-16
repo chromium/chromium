@@ -137,8 +137,8 @@ class ScopedMockPrerenderer {
   MockPrerenderer* Get() { return prerenderer_.get(); }
 
  private:
-  raw_ptr<PreloadingDecider> preloading_decider_;
-  raw_ptr<MockPrerenderer> prerenderer_;
+  raw_ptr<PreloadingDecider> preloading_decider_ = nullptr;
+  raw_ptr<MockPrerenderer> prerenderer_ = nullptr;
   std::unique_ptr<Prerenderer> old_prerenderer_;
 };
 
@@ -163,8 +163,8 @@ class MockContentBrowserClient : public TestContentBrowserClient {
   MockAnchorElementPreconnector* GetDelegate() { return delegate_; }
 
  private:
-  raw_ptr<ContentBrowserClient> old_browser_client_;
-  raw_ptr<MockAnchorElementPreconnector> delegate_;
+  raw_ptr<ContentBrowserClient> old_browser_client_ = nullptr;
+  raw_ptr<MockAnchorElementPreconnector> delegate_ = nullptr;
 };
 
 enum class EventType {

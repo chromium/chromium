@@ -1,7 +1,7 @@
 This is a testharness.js-based test.
 Harness Error. harness_status.status = 1 , harness_status.message = 1 duplicate test name: "Tests that pending callbacks retain the nodes even in the presence of garbage collection"
-PASS Tests that pending callbacks retain the nodes even in the presence of garbage collection
-PASS Tests that pending callbacks retain the nodes even in the presence of garbage collection
-PASS Tests that pending callbacks retain the nodes even in the presence of garbage collection
+[PASS] Tests that pending callbacks retain the nodes even in the presence of garbage collection
+[PASS] Tests that pending callbacks retain the nodes even in the presence of garbage collection
+[PASS] Tests that pending callbacks retain the nodes even in the presence of garbage collection
 Harness: the test ran to completion.
 

@@ -33,19 +33,19 @@ export class MultiMetadataProvider extends MetadataProvider {
               .concat(ContentMetadataProvider.PROPERTY_NAMES)
               .concat(DlpMetadataProvider.PROPERTY_NAMES));
 
-    /** @private @const {!FileSystemMetadataProvider} */
+    /** @private @const @type {!FileSystemMetadataProvider} */
     this.fileSystemMetadataProvider_ = fileSystemMetadataProvider;
 
-    /** @private @const {!ExternalMetadataProvider} */
+    /** @private @const @type {!ExternalMetadataProvider} */
     this.externalMetadataProvider_ = externalMetadataProvider;
 
-    /** @private @const {!ContentMetadataProvider} */
+    /** @private @const @type {!ContentMetadataProvider} */
     this.contentMetadataProvider_ = contentMetadataProvider;
 
-    /** @private @const {!DlpMetadataProvider} */
+    /** @private @const @type {!DlpMetadataProvider} */
     this.dlpMetadataProvider_ = dlpMetadataProvider;
 
-    /** @private @const {!VolumeManager} */
+    /** @private @const @type {!VolumeManager} */
     this.volumeManager_ = volumeManager;
   }
 
@@ -217,7 +217,7 @@ export class MultiMetadataProvider extends MetadataProvider {
  * zero-filled property can overwrite a valid property which is already
  * acquired from FileSystemMetadataProvider.
  *
- * @const {!Array<string>}
+ * @const @type {!Array<string>}
  */
 MultiMetadataProvider.DOCUMENTS_PROVIDER_EXTERNAL_PROPERTY_NAMES = [
   'canCopy',

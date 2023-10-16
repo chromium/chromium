@@ -102,8 +102,8 @@ TEST_F(BlockedPopupTabHelperTest, AllowBlockedPopup) {
   GetBlockedPopupTabHelper()->HandlePopup(target_url, referrer);
 
   // Allow blocked popup.
-  ASSERT_EQ(1U, GetInfobarManager()->infobar_count());
-  infobars::InfoBar* infobar = GetInfobarManager()->infobar_at(0);
+  ASSERT_EQ(1U, GetInfobarManager()->infobars().size());
+  infobars::InfoBar* infobar = GetInfobarManager()->infobars()[0];
   auto* delegate = infobar->delegate()->AsConfirmInfoBarDelegate();
   ASSERT_TRUE(delegate);
   ASSERT_FALSE(web_state_delegate_.last_open_url_request());
@@ -144,19 +144,19 @@ TEST_F(BlockedPopupTabHelperTest, DestroyWebState) {
 // BlockedPopupTabHelper::HandlePopup() is called.
 TEST_F(BlockedPopupTabHelperTest, ShowAndDismissInfoBar) {
   // Check that there are no infobars showing and no registered observers.
-  EXPECT_EQ(0U, GetInfobarManager()->infobar_count());
+  EXPECT_EQ(0U, GetInfobarManager()->infobars().size());
   EXPECT_FALSE(IsObservingSources());
 
   // Call `HandlePopup` to show an infobar.
   const GURL test_url("https://popups.example.com");
   GetBlockedPopupTabHelper()->HandlePopup(test_url, web::Referrer());
-  ASSERT_EQ(1U, GetInfobarManager()->infobar_count());
+  ASSERT_EQ(1U, GetInfobarManager()->infobars().size());
   EXPECT_TRUE(IsObservingSources());
 
   // Dismiss the infobar and check that the tab helper no longer has any
   // registered observers.
-  GetInfobarManager()->infobar_at(0)->RemoveSelf();
-  EXPECT_EQ(0U, GetInfobarManager()->infobar_count());
+  GetInfobarManager()->infobars()[0]->RemoveSelf();
+  EXPECT_EQ(0U, GetInfobarManager()->infobars().size());
   EXPECT_FALSE(IsObservingSources());
 }
 
@@ -169,7 +169,7 @@ TEST_F(BlockedPopupTabHelperTest, RecordDismissMetrics) {
   // histogram was recorded correctly.
   const GURL test_url("https://popups.example.com");
   GetBlockedPopupTabHelper()->HandlePopup(test_url, web::Referrer());
-  ASSERT_EQ(1U, GetInfobarManager()->infobar_count());
+  ASSERT_EQ(1U, GetInfobarManager()->infobars().size());
   histogram_tester.ExpectUniqueSample(
       "Mobile.Messages.Confirm.Event.ConfirmInfobarTypeBlockPopups",
       static_cast<base::HistogramBase::Sample>(
@@ -178,7 +178,7 @@ TEST_F(BlockedPopupTabHelperTest, RecordDismissMetrics) {
 
   // Dismiss the infobar and check that the Dismiss histogram was recorded
   // correctly.
-  GetInfobarManager()->infobar_at(0)->delegate()->InfoBarDismissed();
+  GetInfobarManager()->infobars()[0]->delegate()->InfoBarDismissed();
   histogram_tester.ExpectBucketCount(
       kInfobarTypeBlockPopupsEventHistogram,
       static_cast<base::HistogramBase::Sample>(
@@ -199,9 +199,9 @@ TEST_F(BlockedPopupTabHelperTest, RecordAcceptMetrics) {
 
   // Accept the infobar and check that the Accepted histogram was recorded
   // correctly.
-  ASSERT_EQ(1U, GetInfobarManager()->infobar_count());
+  ASSERT_EQ(1U, GetInfobarManager()->infobars().size());
   auto* delegate = GetInfobarManager()
-                       ->infobar_at(0)
+                       ->infobars()[0]
                        ->delegate()
                        ->AsConfirmInfoBarDelegate();
   delegate->Accept();

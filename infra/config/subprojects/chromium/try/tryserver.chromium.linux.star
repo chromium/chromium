@@ -22,6 +22,7 @@ try_.defaults.set(
     orchestrator_cores = 2,
     reclient_instance = reclient.instance.DEFAULT_UNTRUSTED,
     service_account = try_.DEFAULT_SERVICE_ACCOUNT,
+    siso_configs = ["builder"],
     siso_enable_cloud_profiler = True,
     siso_enable_cloud_trace = True,
     siso_project = siso.project.DEFAULT_UNTRUSTED,

@@ -1,1 +1,17 @@
-<?xml version="1.0" ?><!DOCTYPE translationbundle><translationbundle lang="ta"></translationbundle>
+<?xml version="1.0" ?>
+<!DOCTYPE translationbundle>
+<translationbundle lang="ta">
+<translation id="1178581264944972037">இடைநிறுத்து</translation>
+<translation id="3523426587027570423">“இந்தப் பக்கத்தைப் படி” பிளேயரை மூட தட்டவும்.</translation>
+<translation id="4654641641922242357">“இந்தப் பக்கத்தைப் படி” பிளேயர்.</translation>
+<translation id="4731877163452936634">பிளேபேக் வேகம்: <ph name="PLAYBACK_SPEED" />. மாற்ற, கிளிக் செய்யவும்.</translation>
+<translation id="5234971936051226002">“இந்தப் பக்கத்தைப் படி” பிளேயர் சிறிதாக்கப்பட்டது.</translation>
+<translation id="5596627076506792578">கூடுதல் விருப்பங்கள்</translation>
+<translation id="6790428901817661496">இயக்கு</translation>
+<translation id="6846298663435243399">ஏற்றுகிறது...</translation>
+<translation id="7587250070160020374">Chromeமில் தற்போது படித்துக் காட்டப்படுவது:</translation>
+<translation id="7945822420239537236"><ph name="NUMBER_OF_SECONDS" /> வினாடிகள் முன்செல்லும்</translation>
+<translation id="7972866381678406344"><ph name="NUMBER_OF_SECONDS" /> வினாடிகள் பின்செல்லும்</translation>
+<translation id="8136852699834914183">இந்தப் பக்கத்தில் பிளேபேக் வசதி கிடைக்காது.</translation>
+<translation id="8953618380150219653">“இந்தப் பக்கத்தைப் படி” பிளேயர் முழு உயரத்தில் திறக்கப்பட்டது.</translation>
+</translationbundle>

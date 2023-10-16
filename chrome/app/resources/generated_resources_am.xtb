@@ -3225,6 +3225,7 @@
 <translation id="3521405806571557477">ለ<ph name="SITE_NAME" /> የተቀመጠ ውሂብን አጥፋ</translation>
 <translation id="3521606918211282604">የዲስክ መጠንን ለውጥ</translation>
 <translation id="3522088408596898827">የዲስክ ቦታ በጣም ዝቅተኛ ነው። የዲስክ ቦታ ያስለቅቁ እና እንደገና ይሞክሩ።</translation>
+<translation id="3522979239100719575">የሚገኙ መገለጫዎችን በመፈለግ ላይ። ይህ ጥቂት ደቂቃዎችን ሊወስድ ይችላል።</translation>
 <translation id="3524518036046613664">እንደ አታሚዎች ያሉ በአከባቢዎ አውታረ መረብ ላይ መሣሪያዎችን ያግኙ</translation>
 <translation id="3524965460886318643">ወደ ውጭ የመላክ እንቅስቃሴዎች</translation>
 <translation id="3525426269008462093">ከውቅረት በኋላ የመሣሪያ ስምረትን ይገምግሙ</translation>
@@ -7817,6 +7818,7 @@
 <translation id="7283555985781738399">የእንግዳ ሁነታ</translation>
 <translation id="7284307451964417957">{DAYS,plural, =1{ይህ መሣሪያ ለ1 ቀን የሚቀመጥ ሲሆን በቀጣዩ ጊዜ ላይ ያለ ኮድ ማገናኘት ይችላሉ። ይህ በአስተዳዳሪዎ የሚቀናበር ነው።}one{ይህ መሣሪያ ለ{DAYS} ቀናት የሚቀመጥ ሲሆን በቀጣዩ ጊዜ ላይ ያለ ኮድ ማገናኘት ይችላሉ። ይህ በአስተዳዳሪዎ የሚቀናበር ነው።}other{ይህ መሣሪያ ለ{DAYS} ቀናት የሚቀመጥ ሲሆን በቀጣዩ ጊዜ ላይ ያለ ኮድ ማገናኘት ይችላሉ። ይህ በአስተዳዳሪዎ የሚቀናበር ነው።}}</translation>
 <translation id="7284411326658527427">እያንዳንዱ ሰው መለያቸውን የግል ማድረግ እና ውሂብን የግል አድርገው ማቆየት ይችላሉ።</translation>
+<translation id="7286867818472074330">የይለፍ ቁልፍ ምረጥ</translation>
 <translation id="7287143125007575591">መዳረሻ ተክልክሏል።</translation>
 <translation id="7287411021188441799">ወደነበረበት ነባሪ ዳራ መልስ</translation>
 <translation id="7288676996127329262"><ph name="HORIZONTAL_DPI" />x<ph name="VERTICAL_DPI" /> dpi</translation>

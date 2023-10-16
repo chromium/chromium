@@ -140,7 +140,7 @@ void SaveUpdateAddressProfileBubbleControllerImpl::OfferSave(
   if (bubble_view()) {
     std::move(address_profile_save_prompt_callback)
         .Run(AutofillClient::SaveAddressProfileOfferUserDecision::kAutoDeclined,
-             profile);
+             std::nullopt);
     return;
   }
   // If the user closed the bubble of the previous import process using the
@@ -153,7 +153,7 @@ void SaveUpdateAddressProfileBubbleControllerImpl::OfferSave(
   if (address_profile_save_prompt_callback_) {
     std::move(address_profile_save_prompt_callback_)
         .Run(AutofillClient::SaveAddressProfileOfferUserDecision::kIgnored,
-             address_profile_);
+             std::nullopt);
   }
 
   address_profile_ = profile;
@@ -325,7 +325,7 @@ SaveUpdateAddressProfileBubbleControllerImpl::GetOriginalProfile() const {
 
 void SaveUpdateAddressProfileBubbleControllerImpl::OnUserDecision(
     AutofillClient::SaveAddressProfileOfferUserDecision decision,
-    AutofillProfile profile) {
+    base::optional_ref<const AutofillProfile> profile) {
   if (decision ==
       AutofillClient::SaveAddressProfileOfferUserDecision::kEditDeclined) {
     // Reopen this bubble if the user canceled editing.
@@ -385,7 +385,7 @@ void SaveUpdateAddressProfileBubbleControllerImpl::WebContentsDestroyed() {
   AutofillBubbleControllerBase::WebContentsDestroyed();
 
   OnUserDecision(AutofillClient::SaveAddressProfileOfferUserDecision::kIgnored,
-                 address_profile_);
+                 std::nullopt);
 }
 
 PageActionIconType

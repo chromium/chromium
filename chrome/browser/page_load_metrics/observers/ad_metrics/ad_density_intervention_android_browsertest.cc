@@ -104,10 +104,11 @@ IN_PROC_BROWSER_TEST_F(
   EXPECT_FALSE(
       WasParsedScriptElementLoaded(web_contents->GetPrimaryMainFrame()));
   EXPECT_EQ(infobars::ContentInfoBarManager::FromWebContents(web_contents)
-                ->infobar_count(),
+                ->infobars()
+                .size(),
             1u);
   EXPECT_EQ(infobars::ContentInfoBarManager::FromWebContents(web_contents)
-                ->infobar_at(0)
+                ->infobars()[0]
                 ->delegate()
                 ->GetIdentifier(),
             infobars::InfoBarDelegate::ADS_BLOCKED_INFOBAR_DELEGATE_ANDROID);
@@ -162,7 +163,8 @@ IN_PROC_BROWSER_TEST_F(
   // No ads blocked infobar should be shown as we have not triggered the
   // intervention.
   EXPECT_EQ(infobars::ContentInfoBarManager::FromWebContents(web_contents)
-                ->infobar_count(),
+                ->infobars()
+                .size(),
             0u);
   histogram_tester.ExpectTotalCount(kAdsInterventionRecordedHistogram, 0);
 }
@@ -368,7 +370,8 @@ IN_PROC_BROWSER_TEST_F(
   // No ads blocked prompt should be shown as we have not triggered the
   // intervention.
   EXPECT_EQ(infobars::ContentInfoBarManager::FromWebContents(web_contents)
-                ->infobar_count(),
+                ->infobars()
+                .size(),
             0u);
   EXPECT_EQ(messages_test_helper.GetMessageCount(
                 web_contents->GetTopLevelNativeWindow()),

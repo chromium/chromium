@@ -1,1 +1,17 @@
-<?xml version="1.0" ?><!DOCTYPE translationbundle><translationbundle lang="zh-TW"></translationbundle>
+<?xml version="1.0" ?>
+<!DOCTYPE translationbundle>
+<translationbundle lang="zh-TW">
+<translation id="1178581264944972037">暫停</translation>
+<translation id="3523426587027570423">輕觸即可關閉「朗讀這頁內容」。</translation>
+<translation id="4654641641922242357">「朗讀這頁內容」播放器。</translation>
+<translation id="4731877163452936634">播放速度：<ph name="PLAYBACK_SPEED" />。按一下即可變更。</translation>
+<translation id="5234971936051226002">「朗讀這頁內容」播放器已縮到最小。</translation>
+<translation id="5596627076506792578">更多選項</translation>
+<translation id="6790428901817661496">播放</translation>
+<translation id="6846298663435243399">載入中…</translation>
+<translation id="7587250070160020374">Chrome 正在播放</translation>
+<translation id="7945822420239537236">快轉 <ph name="NUMBER_OF_SECONDS" /> 秒</translation>
+<translation id="7972866381678406344">倒轉 <ph name="NUMBER_OF_SECONDS" /> 秒</translation>
+<translation id="8136852699834914183">無法播放這個頁面的內容。</translation>
+<translation id="8953618380150219653">「朗讀這頁內容」播放器已開啟，目前已顯示在整個畫面上。</translation>
+</translationbundle>

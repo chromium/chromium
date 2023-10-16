@@ -36,7 +36,6 @@
 <translation id="1173894706177603556">重命名</translation>
 <translation id="1174479719160874822">当屏幕较窄时，Chrome 会请求改用移动网站</translation>
 <translation id="1177863135347784049">自定义</translation>
-<translation id="1178581264944972037">暂停</translation>
 <translation id="1181037720776840403">移除</translation>
 <translation id="1181366777303791449">位于：<ph name="MAIN_FRAME_ETLD_PLUS_ONE" /></translation>
 <translation id="1193729455103054076">使用安全系数高的密码？</translation>
@@ -476,7 +475,6 @@
 <translation id="3513704683820682405">增强现实</translation>
 <translation id="3518985090088779359">接受并继续</translation>
 <translation id="3522247891732774234">有更新。更多选项</translation>
-<translation id="3523426587027570423">点按即可关闭“读出此网页的内容”播放器。</translation>
 <translation id="3524138585025253783">开发者界面</translation>
 <translation id="3524334353996115845">让 <ph name="ORIGIN" /> 验证您的身份</translation>
 <translation id="3527085408025491307">文件夹</translation>
@@ -679,7 +677,6 @@
 <translation id="4640331037679501949">{NUM_PASSWORDS,plural, =1{有 1 个密码已遭泄露}other{有 # 个密码已遭泄露}}</translation>
 <translation id="4645146721047390964">在无痕模式下，网站无法使用 Cookie 查看您在各个不同网站上的浏览活动，因而无法实现某些功能或目的（例如为您展示个性化广告）。某些网站上的功能可能会无法正常运作。</translation>
 <translation id="4650364565596261010">系统默认设置</translation>
-<translation id="4654641641922242357">“读出此网页的内容”播放器。</translation>
 <translation id="465657074423018424">“安全浏览”功能会保护您免受诈骗网站的侵害。如果您关闭此功能，当浏览网站时（特别是在输入密码之前），请一定多加小心。</translation>
 <translation id="4662373422909645029">昵称不能包含数字</translation>
 <translation id="4663499661119906179">查看为您推荐的热门网站和报道</translation>
@@ -696,7 +693,6 @@
 <translation id="4710167854527459075">按从新到旧排序</translation>
 <translation id="4719927025381752090">提供翻译</translation>
 <translation id="47217992755561375">查看为您推荐的热门网站</translation>
-<translation id="4731877163452936634">播放速度：<ph name="PLAYBACK_SPEED" />。点击即可更改。</translation>
 <translation id="4732120983431207637">堆栈展开程序</translation>
 <translation id="4736934858538408121">虚拟卡</translation>
 <translation id="473775607612524610">更新</translation>
@@ -812,7 +808,6 @@
 <translation id="5226378907213531272">每次使用车载系统时，您都需要解锁屏幕</translation>
 <translation id="5227554086496586518">点按即可查看搜索结果</translation>
 <translation id="5233638681132016545">打开新的标签页</translation>
-<translation id="5234971936051226002">“读出此网页的内容”播放器已最小化。</translation>
 <translation id="5235196193381275927">登录期间出了点问题</translation>
 <translation id="5246093389635966745">修改工具栏快捷方式</translation>
 <translation id="5264813352784073502">过去 24 小时</translation>
@@ -1108,7 +1103,6 @@
 <translation id="6770602306803890733">为您和网络上的所有人提供更好的安全保障</translation>
 <translation id="6775840696761158817">当您在地址栏或搜索框中点按或输入字词时，系统会通过默认搜索引擎为您提供相关建议。在无痕模式下，此设置处于关闭状态。</translation>
 <translation id="6785476624617658922">Chrome 和 Chrome 操作系统附加服务条款</translation>
-<translation id="6790428901817661496">播放</translation>
 <translation id="6795633245022906657">快速打开一个新标签页。若要修改该快捷方式，请前往“设置”部分。</translation>
 <translation id="6802555630140434547">系统将会关闭此窗口</translation>
 <translation id="6811034713472274749">页面已可供查看</translation>
@@ -1267,7 +1261,6 @@
 <translation id="757855969265046257">{FILES,plural, =1{已下载 <ph name="FILES_DOWNLOADED_ONE" /> 个文件}other{已下载 <ph name="FILES_DOWNLOADED_MANY" /> 个文件}}</translation>
 <translation id="7581273696622423628">参与调查</translation>
 <translation id="7583262514280211622">您的阅读清单会显示在此处</translation>
-<translation id="7587250070160020374">Chrome 正在播放</translation>
 <translation id="7588219262685291874">在设备开启省电模式时启用深色主题背景</translation>
 <translation id="7594687499944811403">让 <ph name="EMBEDDED_ORIGIN" /> 验证是您本人正在访问 <ph name="TOP_ORIGIN" /></translation>
 <translation id="7596558890252710462">操作系统</translation>
@@ -1346,7 +1339,6 @@
 <translation id="7939485076072265087">使用突出显示的文本创建风格化卡片</translation>
 <translation id="7942131818088350342"><ph name="PRODUCT_NAME" /> 不是最新版本。</translation>
 <translation id="7944772052836377867">同步功能需要验证您的身份</translation>
-<translation id="7945822420239537236">快进 <ph name="NUMBER_OF_SECONDS" /> 秒</translation>
 <translation id="7947953824732555851">接受并登录</translation>
 <translation id="7957413488482743710">使用虚拟卡可隐藏您的实体卡信息，保护您免遭潜在欺诈活动的威胁。<ph name="BEGIN_LINK1" />详细了解虚拟卡<ph name="END_LINK1" /></translation>
 <translation id="7960972236129063347">网页数据洞见工作表中的返回按钮</translation>
@@ -1355,7 +1347,6 @@
 <translation id="7965838025086216108">您可在任意设备上使用已保存的密码。系统会将密码保存到 <ph name="ACCOUNT" /> 的 Google 密码管理工具中。</translation>
 <translation id="7968014550143838305">已添加到阅读清单</translation>
 <translation id="7971136598759319605">1 天前曾有活动</translation>
-<translation id="7972866381678406344">后退 <ph name="NUMBER_OF_SECONDS" /> 秒</translation>
 <translation id="7975379999046275268">预览网页<ph name="BEGIN_NEW" />新<ph name="END_NEW" /></translation>
 <translation id="7977451675950311423">如果发现您使用的密码已遭遇数据泄露，就会向您发出警告。</translation>
 <translation id="7986497153528221272">若要查看密码，请先在设备上设置屏幕锁定</translation>
@@ -1401,7 +1392,6 @@
 <translation id="8127542551745560481">修改主页</translation>
 <translation id="8130309322784422030">您存储的登录信息可能已过期</translation>
 <translation id="813082847718468539">查看网站信息</translation>
-<translation id="8136852699834914183">无法播放此网页中的内容。</translation>
 <translation id="8137562778192957619">您不需要记住此密码。系统会将它保存到 Google 密码管理工具中。</translation>
 <translation id="8186512483418048923">还剩 <ph name="FILES" /> 个文件</translation>
 <translation id="8190358571722158785">还剩 1 天</translation>
@@ -1550,7 +1540,6 @@
 <translation id="8937772741022875483">从“数字健康”应用中移除您的 Chrome 活动记录？</translation>
 <translation id="8942627711005830162">在其他窗口中打开</translation>
 <translation id="8945143127965743188"><ph name="LANG" /> - 无法下载此语言。请稍后再试。</translation>
-<translation id="8953618380150219653">“读出此网页的内容”播放器已全屏打开。</translation>
 <translation id="8955719471735800169">返回页首</translation>
 <translation id="8964479563882643397">若要打开一个新的无痕式标签页，请先打开菜单</translation>
 <translation id="8965591936373831584">待下载</translation>

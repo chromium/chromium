@@ -541,7 +541,7 @@ export class TaskController {
   }
 
   /**
-   * Return the tasks for the FileEntry |entry|.
+   * Return the tasks for the `entry`.
    * @param entry
    */
   async getEntryFileTasks(entry: Entry): Promise<FileTasks> {
@@ -551,7 +551,7 @@ export class TaskController {
         this.crostini_, this.progressCenter_, this);
   }
 
-  async executeEntryTask(entry: FileEntry) {
+  async executeEntryTask(entry: Entry) {
     const tasks = await this.getEntryFileTasks(entry);
     tasks.executeDefault();
   }

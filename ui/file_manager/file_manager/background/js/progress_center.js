@@ -19,13 +19,13 @@ export class ProgressCenterImpl {
   constructor() {
     /**
      * Current items managed by the progress center.
-     * @private @const {!Array<!ProgressCenterItem>}
+     * @private @const @type {!Array<!ProgressCenterItem>}
      */
     this.items_ = [];
 
     /**
      * Map of progress ID and notification ID.
-     * @private @const {!ProgressCenterImpl.Notifications_}
+     * @private @const @type {!ProgressCenterImpl.Notifications_}
      */
     this.notifications_ = new ProgressCenterImpl.Notifications_(
         this.requestCancel.bind(this),
@@ -33,7 +33,7 @@ export class ProgressCenterImpl {
 
     /**
      * List of panel UI managed by the progress center.
-     * @private @const {!Array<ProgressCenterPanelInterface>}
+     * @private @const @type {!Array<ProgressCenterPanelInterface>}
      */
     this.panels_ = [];
 
@@ -368,25 +368,25 @@ ProgressCenterImpl.Notifications_ = class {
     /**
      * ID set of notifications that is progressing now.
      * @private
-     * @const {Object<ProgressCenterImpl.Notifications_.NotificationState_>}
+     * @const @type {Object<ProgressCenterImpl.Notifications_.NotificationState_>}
      */
     this.ids_ = {};
 
     /**
      * Async queue.
-     * @private @const {AsyncQueue}
+     * @private @const @type {AsyncQueue}
      */
     this.queue_ = new AsyncQueue();
 
     /**
      * Callback to notify the progress center of cancel operation.
-     * @private @const {function(string)}
+     * @private @const @type {function(string)}
      */
     this.cancelCallback_ = cancelCallback;
 
     /**
      * Callback to notify the progress center that a notification is dismissed.
-     * @private {function(string)}
+     * @private @type {function(string)}
      */
     this.dismissCallback_ = dismissCallback;
 

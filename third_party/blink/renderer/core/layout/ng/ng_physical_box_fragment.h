@@ -50,9 +50,9 @@ class CORE_EXPORT NGPhysicalBoxFragment final : public NGPhysicalFragment {
                         bool has_layout_overflow,
                         const PhysicalRect& layout_overflow,
                         bool has_borders,
-                        const NGPhysicalBoxStrut& borders,
+                        const PhysicalBoxStrut& borders,
                         bool has_padding,
-                        const NGPhysicalBoxStrut& padding,
+                        const PhysicalBoxStrut& padding,
                         const absl::optional<PhysicalRect>& inflow_bounds,
                         bool has_fragment_items,
                         WritingMode block_or_line_writing_mode);
@@ -225,25 +225,25 @@ class CORE_EXPORT NGPhysicalBoxFragment final : public NGPhysicalFragment {
     return GetRareField(FieldId::kLayoutOverflow);
   }
 
-  const NGPhysicalBoxStrut Borders() const {
+  const PhysicalBoxStrut Borders() const {
     if (const auto* field = GetRareField(FieldId::kBorders)) {
       return field->borders;
     }
-    return NGPhysicalBoxStrut();
+    return PhysicalBoxStrut();
   }
 
-  const NGPhysicalBoxStrut Padding() const {
+  const PhysicalBoxStrut Padding() const {
     if (const auto* field = GetRareField(FieldId::kPadding)) {
       return field->padding;
     }
-    return NGPhysicalBoxStrut();
+    return PhysicalBoxStrut();
   }
 
-  const NGPhysicalBoxStrut Margins() const {
+  const PhysicalBoxStrut Margins() const {
     if (const auto* field = GetRareField(FieldId::kMargins)) {
       return field->margins;
     }
-    return NGPhysicalBoxStrut();
+    return PhysicalBoxStrut();
   }
 
   const PhysicalOffset ContentOffset() const {
@@ -383,7 +383,7 @@ class CORE_EXPORT NGPhysicalBoxFragment final : public NGPhysicalFragment {
 
   // The outsets to apply to the border-box of this fragment for
   // |overflow-clip-margin|.
-  NGPhysicalBoxStrut OverflowClipMarginOutsets() const;
+  PhysicalBoxStrut OverflowClipMarginOutsets() const;
 
   PhysicalBoxSides SidesToInclude() const {
     return PhysicalBoxSides(IncludeBorderTop(), IncludeBorderRight(),
@@ -452,7 +452,7 @@ class CORE_EXPORT NGPhysicalBoxFragment final : public NGPhysicalFragment {
    public:
     MutableForContainerLayout(base::PassKey<NGPhysicalBoxFragment>,
                               NGPhysicalBoxFragment& fragment);
-    void SetMargins(const NGPhysicalBoxStrut& margins);
+    void SetMargins(const PhysicalBoxStrut& margins);
 
    private:
     NGPhysicalBoxFragment& fragment_;

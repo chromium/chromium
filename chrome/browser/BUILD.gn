@@ -5302,6 +5302,7 @@ static_library("browser") {
       "//chrome/browser/ui/webui/ash/settings/pages/files/mojom",
       "//chrome/browser/ui/webui/ash/settings/search/mojom",
       "//chrome/browser/ui/webui/ash/vm:mojo_bindings",
+      "//chrome/browser/ui/webui/ash/web_app_install:mojo_bindings",
       "//chrome/browser/ui/webui/nearby_share:mojom",
       "//chrome/browser/ui/webui/settings/ash/display_settings:mojom",
       "//chrome/services/sharing/public/cpp",

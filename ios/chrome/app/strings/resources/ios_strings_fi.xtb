@@ -786,6 +786,7 @@ Katso tarvittaessa hakukoneesi ohjeet hakuhistorian poistamiselle.</translation>
 <translation id="5181140330217080051">Ladataan</translation>
 <translation id="5184329579814168207">Avaa Chromessa</translation>
 <translation id="5186185447130319458">Yksityinen</translation>
+<translation id="5186634140793586141">Valitse sinua kiinnostavia aiheita ja hakuja</translation>
 <translation id="5188482106078495165">Evästeasetustasi käytetään kaikilla välilehdillä. Jos haluat käyttää uutta asetusta avoimella välilehdellä, päivitä kyseinen välilehti.</translation>
 <translation id="5190835502935405962">Kirjanmerkkipalkki</translation>
 <translation id="519530786644929958">Lataus epäonnistui, eikä sitä voi yrittää uudelleen.</translation>
@@ -1165,7 +1166,6 @@ Kun olet incognito-tilassa, sivustot eivät näe selaustoimintaasi eri sivustoil
 <translation id="7062545763355031412">Hyväksy ja vaihda tiliä</translation>
 <translation id="7063811929043357292">Vanhempi ylläpitää tiliäsi.
 <ph name="BEGIN_LINK" />Lue lisää<ph name="END_LINK" /></translation>
-<translation id="7064619810277839954">Saat välilehtiehdotuksia perustuen Google-tilisi selaustoimintaan muilla laitteilla. Laitteiden on oltava kirjautuneena sisään ja synkronoitu samalla Google-tilille.</translation>
 <translation id="7069695992271320873">Poista tältä laitteelta</translation>
 <translation id="7080806333218412752">Lähettää URL-osoitteita Selaussuojan tarkistettavaksi. Lähettää myös pienen näytteen sivuista, latauksista, laajennustoiminnasta ja järjestelmätiedoista auttaakseen löytämään uusia uhkia. Linkittää tämän datan väliaikaisesti Google-tilillesi ollessasi sisäänkirjautunut, jotta se voi suojella sinua kaikissa Googlen sovelluksissa.</translation>
 <translation id="7082853213442715471">Kun tämä on päällä, tietyt verkkoteknologiat estetään, minkä seurauksena jotkin sivustot voivat latautua hitaammin tai eivät toimi oikein.</translation>

@@ -28,7 +28,7 @@ export class MetadataCacheSet extends EventTarget {
     this.items_ = new Map();
 
     /**
-     * @private {number}
+     * @private @type {number}
      */
     this.requestIdCounter_ = 0;
   }

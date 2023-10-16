@@ -353,7 +353,6 @@
 <translation id="243878895369688216">Өчигдөр нээсэн</translation>
 <translation id="2440978926514840421">GIF бичлэгийг хийсэн</translation>
 <translation id="2441427462554639370">Хадгалах сангийн зай хэт бага байгаа тул бичлэгийг дуусгасан</translation>
-<translation id="24452542372838207">Мэдэгдлийг дэлгэх</translation>
 <translation id="2448312741937722512">Төрөл</translation>
 <translation id="2449089818483227734">Батарей бага байна</translation>
 <translation id="2450205753526923158">Дэлгэцийн агшны горим</translation>
@@ -1951,7 +1950,6 @@
 <translation id="9030665205623277906">Төв процессорын нэгжийн ашиглалтын агшин зураг: <ph name="CPU_USEAGE" />%</translation>
 <translation id="9034924485347205037">Linux-н файл</translation>
 <translation id="9047624247355796468"><ph name="NETWORK_NAME" />-н тохиргоог нээх</translation>
-<translation id="9059834730836941392">Мэдэгдлийг буулгах</translation>
 <translation id="906458777597946297">Цонхыг томсгох</translation>
 <translation id="9065203028668620118">Засварлах</translation>
 <translation id="9070640332319875144">Туслагчийн тохиргоо</translation>

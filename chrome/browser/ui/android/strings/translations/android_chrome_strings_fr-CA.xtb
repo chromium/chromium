@@ -36,7 +36,6 @@ Seule une personne connaissant votre phrase de passe peut lire vos données chif
 <translation id="1173894706177603556">Renommer</translation>
 <translation id="1174479719160874822">Chrome demandera le site pour appareils mobiles lorsque l'écran est étroit</translation>
 <translation id="1177863135347784049">Personnalisé</translation>
-<translation id="1178581264944972037">Interrompre</translation>
 <translation id="1181037720776840403">Supprimer</translation>
 <translation id="1181366777303791449">sur <ph name="MAIN_FRAME_ETLD_PLUS_ONE" /></translation>
 <translation id="1193729455103054076">Utiliser un mot de passe fort?</translation>
@@ -166,6 +165,7 @@ Seule une personne connaissant votre phrase de passe peut lire vos données chif
 <translation id="1922362554271624559">Langues suggérées</translation>
 <translation id="1924255092154549435">L'onglet est développé</translation>
 <translation id="1925021887439448749">Entrer une adresse Web personnalisée</translation>
+<translation id="1928618076168182477">Affichage de la vue visuelle en cours…</translation>
 <translation id="1928696683969751773">Mises à jour</translation>
 <translation id="19288952978244135">Rouvrir Chrome.</translation>
 <translation id="1933845786846280168">Onglet sélectionné</translation>
@@ -196,6 +196,7 @@ Seule une personne connaissant votre phrase de passe peut lire vos données chif
 <translation id="2065944887543506430">{FILE_COUNT,plural, =1{Échec de 1 téléchargement}one{Échec de # téléchargement}other{Échec de # téléchargements}}</translation>
 <translation id="2067805253194386918">texte</translation>
 <translation id="2082238445998314030">Résultat <ph name="RESULT_NUMBER" /> sur <ph name="TOTAL_RESULTS" /></translation>
+<translation id="2091863218454846791">Affichage de la vue compacte en cours…</translation>
 <translation id="2093731487903423814">dernières 15 minutes</translation>
 <translation id="2096012225669085171">Profitez de la synchronisation et d'une expérience personnalisée sur tous vos appareils</translation>
 <translation id="2100273922101894616">Connexion automatique</translation>
@@ -471,7 +472,6 @@ Seule une personne connaissant votre phrase de passe peut lire vos données chif
 <translation id="3513704683820682405">Réalité augmentée</translation>
 <translation id="3518985090088779359">Accepter et continuer</translation>
 <translation id="3522247891732774234">Mise à jour disponible. Plus d'options</translation>
-<translation id="3523426587027570423">Toucher pour fermer « Écouter cette page ».</translation>
 <translation id="3524138585025253783">IU de développeur</translation>
 <translation id="3524334353996115845">Laissez <ph name="ORIGIN" /> vérifier qu'il s'agit bien de vous</translation>
 <translation id="3527085408025491307">Dossier</translation>
@@ -674,7 +674,6 @@ D'autres formes d'historique de navigation, telles que les recherches et l'activ
 <translation id="4640331037679501949">{NUM_PASSWORDS,plural, =1{1 mot de passe compromis}one{# mot de passe compromis}other{# mots de passe compromis}}</translation>
 <translation id="4645146721047390964">Lorsque vous êtes en mode de navigation privée, les sites ne peuvent pas utiliser vos témoins pour voir votre activité de navigation sur différents sites (par exemple, pour personnaliser les annonces). Les fonctionnalités sur certains sites peuvent ne pas fonctionner.</translation>
 <translation id="4650364565596261010">Paramètres par défaut</translation>
-<translation id="4654641641922242357">Lecteur « Écouter cette page ».</translation>
 <translation id="465657074423018424">La navigation sécurisée vous protège contre les sites Web trompeurs. Si vous la désactivez, faites bien attention durant la navigation, surtout lorsque vous entrez des mots de passe.</translation>
 <translation id="4662373422909645029">Aucun chiffre dans le pseudo</translation>
 <translation id="4663499661119906179">Consultez les sites les plus fréquentés et des articles sélectionnés pour vous</translation>
@@ -691,7 +690,6 @@ D'autres formes d'historique de navigation, telles que les recherches et l'activ
 <translation id="4710167854527459075">Trier par le plus récent</translation>
 <translation id="4719927025381752090">Proposer une traduction</translation>
 <translation id="47217992755561375">Afficher vos sites les plus fréquentés</translation>
-<translation id="4731877163452936634">Vitesse de lecture : <ph name="PLAYBACK_SPEED" />. Cliquer pour modifier.</translation>
 <translation id="4732120983431207637">Dérouleur de pile</translation>
 <translation id="4736934858538408121">Carte virtuelle</translation>
 <translation id="473775607612524610">Mise à jour</translation>
@@ -807,7 +805,6 @@ Pour modifier ce paramètre, <ph name="BEGIN_LINK" />réinitialisez la synchroni
 <translation id="5226378907213531272">Vous déverrouillerez votre écran chaque fois que vous utiliserez le véhicule</translation>
 <translation id="5227554086496586518">Touchez pour afficher les résultats de recherche</translation>
 <translation id="5233638681132016545">Nouvel onglet</translation>
-<translation id="5234971936051226002">Lecteur « Écouter cette page » minimisé.</translation>
 <translation id="5235196193381275927">Un problème est survenu lors de la connexion</translation>
 <translation id="5246093389635966745">Modifier le raccourci de la barre d'outils</translation>
 <translation id="5264813352784073502">dernières 24 heures</translation>
@@ -1101,7 +1098,6 @@ Par exemple, certains sites Web peuvent répondre à cette demande en diffusant 
 <translation id="6770602306803890733">Il renforce votre sécurité et celle de tous les utilisateurs sur le Web</translation>
 <translation id="6775840696761158817">Lorsque vous touchez la barre d'adresse ou le champ de recherche ou que vous tapez du texte à l'intérieur, vous verrez des suggestions de votre moteur de recherche par défaut. Ce paramètre est désactivé en mode de navigation privée.</translation>
 <translation id="6785476624617658922">Conditions d'utilisation supplémentaires de Google Chrome et de Chrome OS</translation>
-<translation id="6790428901817661496">Jouer</translation>
 <translation id="6795633245022906657">Ouvrez rapidement un nouvel onglet. Pour modifier ce raccourci, accédez à Paramètres.</translation>
 <translation id="6802555630140434547">La fenêtre sera fermée</translation>
 <translation id="6811034713472274749">La page est prête pour consultation</translation>
@@ -1260,7 +1256,6 @@ Par exemple, certains sites Web peuvent répondre à cette demande en diffusant 
 <translation id="757855969265046257">{FILES,plural, =1{<ph name="FILES_DOWNLOADED_ONE" /> fichier téléchargé}one{<ph name="FILES_DOWNLOADED_MANY" /> fichier téléchargé}other{<ph name="FILES_DOWNLOADED_MANY" /> fichiers téléchargés}}</translation>
 <translation id="7581273696622423628">Répondre au sondage</translation>
 <translation id="7583262514280211622">Vous trouverez votre liste de lecture ici</translation>
-<translation id="7587250070160020374">Chrome en cours de lecture</translation>
 <translation id="7588219262685291874">Activer le thème sombre lorsque la fonction Économiseur de pile de votre appareil est activée</translation>
 <translation id="7594687499944811403">Laissez <ph name="EMBEDDED_ORIGIN" /> vérifier qu'il s'agit bien de vous pour <ph name="TOP_ORIGIN" /></translation>
 <translation id="7596558890252710462">Système d'exploitation</translation>
@@ -1337,7 +1332,6 @@ Par exemple, certains sites Web peuvent répondre à cette demande en diffusant 
 <translation id="7939485076072265087">Créez une carte stylisée mise en évidence</translation>
 <translation id="7942131818088350342"><ph name="PRODUCT_NAME" /> n'est pas à jour.</translation>
 <translation id="7944772052836377867">La synchronisation doit vérifier qu'il s'agit bien de vous</translation>
-<translation id="7945822420239537236">Avancer de <ph name="NUMBER_OF_SECONDS" /> secondes</translation>
 <translation id="7947953824732555851">Accepter et se connecter</translation>
 <translation id="7957413488482743710">Une carte virtuelle masque votre carte réelle pour vous protéger de fraudes potentielles. <ph name="BEGIN_LINK1" />En savoir plus sur les cartes virtuelles<ph name="END_LINK1" /></translation>
 <translation id="7960972236129063347">Bouton Précédent des statistiques de la page</translation>
@@ -1346,7 +1340,6 @@ Par exemple, certains sites Web peuvent répondre à cette demande en diffusant 
 <translation id="7965838025086216108">Vous pouvez utiliser des mots de passe enregistrés sur n'importe quel appareil. Ils sont enregistrés dans le gestionnaire de mots de passe Google du compte <ph name="ACCOUNT" />.</translation>
 <translation id="7968014550143838305">Ajouté à la liste de lecture</translation>
 <translation id="7971136598759319605">Actif il y a 1 jour</translation>
-<translation id="7972866381678406344">Reculer de <ph name="NUMBER_OF_SECONDS" /> secondes</translation>
 <translation id="7975379999046275268">Prévisualiser la page <ph name="BEGIN_NEW" />Nouveau<ph name="END_NEW" /></translation>
 <translation id="7977451675950311423">Vous avertit si vous utilisez un mot de passe qui a été compromis à la suite d'une violation de données.</translation>
 <translation id="7986497153528221272">Pour afficher les mots de passe, configurez d'abord un verrouillage d'écran sur votre appareil</translation>
@@ -1392,7 +1385,6 @@ Par exemple, certains sites Web peuvent répondre à cette demande en diffusant 
 <translation id="8127542551745560481">Modifier la page d'accueil</translation>
 <translation id="8130309322784422030">Vos données de connexion enregistrées peuvent être obsolètes</translation>
 <translation id="813082847718468539">Afficher l'information sur le site</translation>
-<translation id="8136852699834914183">La lecture n'est pas accessible pour cette page.</translation>
 <translation id="8137562778192957619">Vous n'aurez pas à mémoriser ce mot de passe. Il sera enregistré dans le gestionnaire de mots de passe Google.</translation>
 <translation id="8186512483418048923"><ph name="FILES" /> fichiers restants</translation>
 <translation id="8190358571722158785">Il reste 1 jour</translation>
@@ -1540,7 +1532,6 @@ Par exemple, certains sites Web peuvent répondre à cette demande en diffusant 
 <translation id="8937772741022875483">Supprimer votre activité Chrome de Bien-être numérique?</translation>
 <translation id="8942627711005830162">Ouvrir dans une autre fenêtre</translation>
 <translation id="8945143127965743188">Impossible de télécharger cette langue : <ph name="LANG" />. Réessayez plus tard.</translation>
-<translation id="8953618380150219653">Lecteur « Écouter cette page » ouvert à pleine hauteur.</translation>
 <translation id="8955719471735800169">Retour en haut de la page</translation>
 <translation id="8964479563882643397">Pour ouvrir un nouvel onglet de navigation privée, ouvrez le menu</translation>
 <translation id="8965591936373831584">en attente</translation>

@@ -129,7 +129,7 @@ IN_PROC_BROWSER_TEST_F(InfoBarsTest, TestInfoBarsCloseOnNewTheme) {
                              InfoBarObserver::Type::kInfoBarAdded);
     InstallExtension("theme.crx");
     observer.Wait();
-    EXPECT_EQ(1u, infobar_manager1->infobar_count());
+    EXPECT_EQ(1u, infobar_manager1->infobars().size());
   }
 
   infobars::ContentInfoBarManager* infobar_manager2 = nullptr;
@@ -149,8 +149,8 @@ IN_PROC_BROWSER_TEST_F(InfoBarsTest, TestInfoBarsCloseOnNewTheme) {
     InstallExtension("theme2.crx");
     observer_removed.Wait();
     observer_added.Wait();
-    EXPECT_EQ(0u, infobar_manager1->infobar_count());
-    EXPECT_EQ(1u, infobar_manager2->infobar_count());
+    EXPECT_EQ(0u, infobar_manager1->infobars().size());
+    EXPECT_EQ(1u, infobar_manager2->infobars().size());
   }
 
   // Switching back to the default theme should close the infobar.
@@ -159,7 +159,7 @@ IN_PROC_BROWSER_TEST_F(InfoBarsTest, TestInfoBarsCloseOnNewTheme) {
                              InfoBarObserver::Type::kInfoBarRemoved);
     ThemeServiceFactory::GetForProfile(browser()->profile())->UseDefaultTheme();
     observer.Wait();
-    EXPECT_EQ(0u, infobar_manager2->infobar_count());
+    EXPECT_EQ(0u, infobar_manager2->infobars().size());
   }
 }
 

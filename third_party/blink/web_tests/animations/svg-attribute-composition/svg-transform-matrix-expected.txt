@@ -1,14 +1,20 @@
 This is a testharness.js-based test.
-PASS This test uses interpolation-test.js.
-PASS SMIL: Interpolate attribute <transform> with underlying [matrix(1 2 3 4 5 6)] from add [rotate(10 20 30)] to add [rotate(30 70 150)] at (0) is [matrix(1 2 3 4 5 6) rotate(10 20 30)]
-PASS SMIL: Interpolate attribute <transform> with underlying [matrix(1 2 3 4 5 6)] from add [rotate(10 20 30)] to add [rotate(30 70 150)] at (0.2) is [matrix(1 2 3 4 5 6) rotate(14 30 54)]
-PASS SMIL: Interpolate attribute <transform> with underlying [matrix(1 2 3 4 5 6)] from add [rotate(10 20 30)] to add [rotate(30 70 150)] at (0.6) is [matrix(1 2 3 4 5 6) rotate(22 50 102)]
-PASS SMIL: Interpolate attribute <transform> with underlying [matrix(1 2 3 4 5 6)] from add [rotate(10 20 30)] to add [rotate(30 70 150)] at (1) is [matrix(1 2 3 4 5 6) rotate(30 70 150)]
-FAIL Web Animations: Interpolate attribute <transform> with underlying [matrix(1 2 3 4 5 6)] from add [rotate(10 20 30)] to add [rotate(30 70 150)] at (-0.4) is [matrix(1 2 3 4 5 6) rotate(2 0 -18)] assert_equals: expected "1 , 0 , 1 , 2 , 3 , 4 , 5 , 6 , 4 , 2 , 1 , 0.03 , - 0.03 , 1 , - 0.63 , - 0.01 " but got "4 , 2 , 1 , 0.03 , - 0.03 , 1 , - 0.63 , - 0.01 "
-FAIL Web Animations: Interpolate attribute <transform> with underlying [matrix(1 2 3 4 5 6)] from add [rotate(10 20 30)] to add [rotate(30 70 150)] at (0) is [matrix(1 2 3 4 5 6) rotate(10 20 30)] assert_equals: expected "1 , 0 , 1 , 2 , 3 , 4 , 5 , 6 , 4 , 10 , 0.98 , 0.17 , - 0.17 , 0.98 , 5.51 , - 3.02 " but got "4 , 10 , 0.98 , 0.17 , - 0.17 , 0.98 , 5.51 , - 3.02 "
-FAIL Web Animations: Interpolate attribute <transform> with underlying [matrix(1 2 3 4 5 6)] from add [rotate(10 20 30)] to add [rotate(30 70 150)] at (0.2) is [matrix(1 2 3 4 5 6) rotate(14 30 54)] assert_equals: expected "1 , 0 , 1 , 2 , 3 , 4 , 5 , 6 , 4 , 14 , 0.97 , 0.24 , - 0.24 , 0.97 , 13.95 , - 5.65 " but got "4 , 14 , 0.97 , 0.24 , - 0.24 , 0.97 , 13.95 , - 5.65 "
-FAIL Web Animations: Interpolate attribute <transform> with underlying [matrix(1 2 3 4 5 6)] from add [rotate(10 20 30)] to add [rotate(30 70 150)] at (0.6) is [matrix(1 2 3 4 5 6) rotate(22 50 102)] assert_equals: expected "1 , 0 , 1 , 2 , 3 , 4 , 5 , 6 , 4 , 22 , 0.93 , 0.37 , - 0.37 , 0.93 , 41.85 , - 11.3 " but got "4 , 22 , 0.93 , 0.37 , - 0.37 , 0.93 , 41.85 , - 11.3 "
-FAIL Web Animations: Interpolate attribute <transform> with underlying [matrix(1 2 3 4 5 6)] from add [rotate(10 20 30)] to add [rotate(30 70 150)] at (1) is [matrix(1 2 3 4 5 6) rotate(30 70 150)] assert_equals: expected "1 , 0 , 1 , 2 , 3 , 4 , 5 , 6 , 4 , 30 , 0.87 , 0.5 , - 0.5 , 0.87 , 84.38 , - 14.9 " but got "4 , 30 , 0.87 , 0.5 , - 0.5 , 0.87 , 84.38 , - 14.9 "
-FAIL Web Animations: Interpolate attribute <transform> with underlying [matrix(1 2 3 4 5 6)] from add [rotate(10 20 30)] to add [rotate(30 70 150)] at (1.4) is [matrix(1 2 3 4 5 6) rotate(38 90 198)] assert_equals: expected "1 , 0 , 1 , 2 , 3 , 4 , 5 , 6 , 4 , 38 , 0.79 , 0.62 , - 0.62 , 0.79 , 140.98 , - 13.44 " but got "4 , 38 , 0.79 , 0.62 , - 0.62 , 0.79 , 140.98 , - 13.44 "
+[PASS] This test uses interpolation-test.js.
+[PASS] SMIL: Interpolate attribute <transform> with underlying [matrix(1 2 3 4 5 6)] from add [rotate(10 20 30)] to add [rotate(30 70 150)] at (0) is [matrix(1 2 3 4 5 6) rotate(10 20 30)]
+[PASS] SMIL: Interpolate attribute <transform> with underlying [matrix(1 2 3 4 5 6)] from add [rotate(10 20 30)] to add [rotate(30 70 150)] at (0.2) is [matrix(1 2 3 4 5 6) rotate(14 30 54)]
+[PASS] SMIL: Interpolate attribute <transform> with underlying [matrix(1 2 3 4 5 6)] from add [rotate(10 20 30)] to add [rotate(30 70 150)] at (0.6) is [matrix(1 2 3 4 5 6) rotate(22 50 102)]
+[PASS] SMIL: Interpolate attribute <transform> with underlying [matrix(1 2 3 4 5 6)] from add [rotate(10 20 30)] to add [rotate(30 70 150)] at (1) is [matrix(1 2 3 4 5 6) rotate(30 70 150)]
+[FAIL] Web Animations: Interpolate attribute <transform> with underlying [matrix(1 2 3 4 5 6)] from add [rotate(10 20 30)] to add [rotate(30 70 150)] at (-0.4) is [matrix(1 2 3 4 5 6) rotate(2 0 -18)]
+  assert_equals: expected "1 , 0 , 1 , 2 , 3 , 4 , 5 , 6 , 4 , 2 , 1 , 0.03 , - 0.03 , 1 , - 0.63 , - 0.01 " but got "4 , 2 , 1 , 0.03 , - 0.03 , 1 , - 0.63 , - 0.01 "
+[FAIL] Web Animations: Interpolate attribute <transform> with underlying [matrix(1 2 3 4 5 6)] from add [rotate(10 20 30)] to add [rotate(30 70 150)] at (0) is [matrix(1 2 3 4 5 6) rotate(10 20 30)]
+  assert_equals: expected "1 , 0 , 1 , 2 , 3 , 4 , 5 , 6 , 4 , 10 , 0.98 , 0.17 , - 0.17 , 0.98 , 5.51 , - 3.02 " but got "4 , 10 , 0.98 , 0.17 , - 0.17 , 0.98 , 5.51 , - 3.02 "
+[FAIL] Web Animations: Interpolate attribute <transform> with underlying [matrix(1 2 3 4 5 6)] from add [rotate(10 20 30)] to add [rotate(30 70 150)] at (0.2) is [matrix(1 2 3 4 5 6) rotate(14 30 54)]
+  assert_equals: expected "1 , 0 , 1 , 2 , 3 , 4 , 5 , 6 , 4 , 14 , 0.97 , 0.24 , - 0.24 , 0.97 , 13.95 , - 5.65 " but got "4 , 14 , 0.97 , 0.24 , - 0.24 , 0.97 , 13.95 , - 5.65 "
+[FAIL] Web Animations: Interpolate attribute <transform> with underlying [matrix(1 2 3 4 5 6)] from add [rotate(10 20 30)] to add [rotate(30 70 150)] at (0.6) is [matrix(1 2 3 4 5 6) rotate(22 50 102)]
+  assert_equals: expected "1 , 0 , 1 , 2 , 3 , 4 , 5 , 6 , 4 , 22 , 0.93 , 0.37 , - 0.37 , 0.93 , 41.85 , - 11.3 " but got "4 , 22 , 0.93 , 0.37 , - 0.37 , 0.93 , 41.85 , - 11.3 "
+[FAIL] Web Animations: Interpolate attribute <transform> with underlying [matrix(1 2 3 4 5 6)] from add [rotate(10 20 30)] to add [rotate(30 70 150)] at (1) is [matrix(1 2 3 4 5 6) rotate(30 70 150)]
+  assert_equals: expected "1 , 0 , 1 , 2 , 3 , 4 , 5 , 6 , 4 , 30 , 0.87 , 0.5 , - 0.5 , 0.87 , 84.38 , - 14.9 " but got "4 , 30 , 0.87 , 0.5 , - 0.5 , 0.87 , 84.38 , - 14.9 "
+[FAIL] Web Animations: Interpolate attribute <transform> with underlying [matrix(1 2 3 4 5 6)] from add [rotate(10 20 30)] to add [rotate(30 70 150)] at (1.4) is [matrix(1 2 3 4 5 6) rotate(38 90 198)]
+  assert_equals: expected "1 , 0 , 1 , 2 , 3 , 4 , 5 , 6 , 4 , 38 , 0.79 , 0.62 , - 0.62 , 0.79 , 140.98 , - 13.44 " but got "4 , 38 , 0.79 , 0.62 , - 0.62 , 0.79 , 140.98 , - 13.44 "
 Harness: the test ran to completion.
 

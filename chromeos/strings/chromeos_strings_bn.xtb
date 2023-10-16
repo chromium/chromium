@@ -837,7 +837,6 @@
 <translation id="7401543881546089382">শর্টকাট মুছুন</translation>
 <translation id="741244894080940828">রূপান্তর</translation>
 <translation id="7415801143053185905">HTTP লেটেন্সি অনেক বেশি</translation>
-<translation id="7425178841057519191">{NUM_ROOL_APPS,plural,offset:2 =1{প্রত্যেকবার আপনি লগ-ইন করার সময় অটোমেটিক চালু হওয়ার জন্য আপনার অ্যাডমিনিস্ট্রেটর <ph name="APP_NAME_1" /> সেট করেছেন।}=2{প্রত্যেকবার আপনি লগ-ইন করার সময় অটোমেটিক চালু হওয়ার জন্য আপনার অ্যাডমিনিস্ট্রেটর <ph name="APP_NAME_1" /> ও <ph name="APP_NAME_2" /> সেট করেছেন।}=3{প্রত্যেকবার আপনি লগ-ইন করার সময় অটোমেটিক চালু হওয়ার জন্য আপনার অ্যাডমিনিস্ট্রেটর <ph name="APP_NAME_1" />, <ph name="APP_NAME_2" /> ও <ph name="APP_NAME_3" /> সেট করেছেন।}one{প্রত্যেকবার আপনি লগ-ইন করার সময় অটোমেটিক চালু হওয়ার জন্য আপনার অ্যাডমিনিস্ট্রেটর <ph name="APP_NAME_1" />, <ph name="APP_NAME_2" /> ও অন্য #টি অ্যাপ সেট করেছেন।}other{প্রত্যেকবার আপনি লগ-ইন করার সময় অটোমেটিক চালু হওয়ার জন্য আপনার অ্যাডমিনিস্ট্রেটর <ph name="APP_NAME_1" />, <ph name="APP_NAME_2" /> ও অন্য #টি অ্যাপ সেট করেছেন।}}</translation>
 <translation id="7427315641433634153">MSCHAP</translation>
 <translation id="7458970041932198923">অবতার দেখার ও সেট করার জন্য ডিভাইসটি নেটওয়ার্কের সঙ্গে কানেক্ট করে পেজটি আবার লোড করুন।</translation>
 <translation id="7469648432129124067">পোর্টাল শনাক্ত করা হয়েছে</translation>
@@ -1045,7 +1044,6 @@
 <translation id="8983038754672563810">HSPA</translation>
 <translation id="8987565828374052507">{NUMBER_OF_PAGES,plural, =0{স্ক্যান করুন}=1{{NUMBER_OF_PAGES} নম্বর পৃষ্ঠা স্ক্যান করুন}one{{NUMBER_OF_PAGES} নম্বর পৃষ্ঠা স্ক্যান করুন}other{{NUMBER_OF_PAGES} নম্বর পৃষ্ঠা স্ক্যান করুন}}</translation>
 <translation id="8997710128084572139">ডিভাইসে <ph name="BATTERY_PERCENTAGE" />% ব্যাটারি আছে।</translation>
-<translation id="8998156756248178381">{NUM_ROOL_APPS,plural, =1{<ph name="APP_NAME_1" /> অটোমেটিক চালু করা হয়েছে}one{#টি অ্যাপ অটোমেটিক চালু করা হয়েছে}other{#টি অ্যাপ অটোমেটিক চালু করা হয়েছে}}</translation>
 <translation id="8998289560386111590">আপনার ডিভাইসে উপলভ্য নয়</translation>
 <translation id="9003704114456258138">ফ্রিকোয়েন্সি</translation>
 <translation id="901834265349196618">ইমেল আইডি</translation>

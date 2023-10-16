@@ -6,7 +6,6 @@
 
 #include <string>
 
-#include "base/metrics/histogram_functions.h"
 #include "chrome/browser/ui/webui/ash/cloud_upload/cloud_upload_util.h"
 
 namespace ash::cloud_upload {
@@ -40,8 +39,7 @@ std::ostream& operator<<(std::ostream& os, const MetricType& value) {
 
 // Print debug information about this metric.
 template <typename MetricType>
-std::ostream& operator<<(std::ostream& os,
-                         const CloudOpenMetrics::Metric<MetricType>& metric) {
+std::ostream& operator<<(std::ostream& os, const Metric<MetricType>& metric) {
   os << metric.metric_name;
   os << ": ";
   os << metric.state;
@@ -76,42 +74,77 @@ CloudOpenMetrics::CloudOpenMetrics(CloudProvider cloud_provider)
                          ? kGoogleDriveUploadResultMetricName
                          : kOneDriveUploadResultMetricName) {}
 
-CloudOpenMetrics::~CloudOpenMetrics() = default;
+// TODO(b/300861997): Dump without crashing if there was an inconsistency.
+CloudOpenMetrics::~CloudOpenMetrics() {
+  bool google_drive = cloud_provider_ == CloudProvider::kGoogleDrive;
+  // TODO(cassycc): Add the rest of inconsistency checks.
+  if (!task_result_.logged()) {
+    task_result_.ExpectLogged();
+    // Manually handle inconsistency for this case as there is no parent
+    // metric.
+    LOG(ERROR) << task_result_.metric_name << " should have been logged";
+    PrintMetrics();
+  } else if (task_result_.value == OfficeTaskResult::kFallbackQuickOffice ||
+             task_result_.value == OfficeTaskResult::kCancelledAtFallback) {
+    if (google_drive) {
+      ExpectLoggedRelativeToParent({OfficeDriveOpenErrors::kOffline,
+                                    OfficeDriveOpenErrors::kDriveFsInterface},
+                                   drive_open_error_, task_result_);
+    } else {
+      ExpectLoggedRelativeToParent({OfficeOneDriveOpenErrors::kOffline},
+                                   one_drive_open_error_, task_result_);
+    }
+    ExpectNotLoggedRelativeToParent(transfer_required_, task_result_);
+    ExpectNotLoggedRelativeToParent(upload_result_, task_result_);
+  }
+}
 
 void CloudOpenMetrics::LogCopyError(base::File::Error value) {
-  copy_error_.Log(value);
+  if (!copy_error_.Log(value)) {
+    PrintMetrics();
+  }
 }
 
 void CloudOpenMetrics::LogMoveError(base::File::Error value) {
-  move_error_.Log(value);
+  if (!move_error_.Log(value)) {
+    PrintMetrics();
+  }
 }
 
 void CloudOpenMetrics::LogGoogleDriveOpenError(OfficeDriveOpenErrors value) {
-  drive_open_error_.Log(value);
+  if (!drive_open_error_.Log(value)) {
+    PrintMetrics();
+  }
 }
 
 void CloudOpenMetrics::LogOneDriveOpenError(OfficeOneDriveOpenErrors value) {
-  one_drive_open_error_.Log(value);
+  if (!one_drive_open_error_.Log(value)) {
+    PrintMetrics();
+  }
 }
 
 void CloudOpenMetrics::LogSourceVolume(OfficeFilesSourceVolume value) {
-  source_volume_.Log(value);
+  if (!source_volume_.Log(value)) {
+    PrintMetrics();
+  }
 }
 
 void CloudOpenMetrics::LogTaskResult(OfficeTaskResult value) {
   if (!task_result_.Log(value)) {
-    HandleInconsistency();
+    PrintMetrics();
   }
 }
 
 void CloudOpenMetrics::LogTransferRequired(OfficeFilesTransferRequired value) {
   if (!transfer_required_.Log(value)) {
-    HandleInconsistency();
+    PrintMetrics();
   }
 }
 
 void CloudOpenMetrics::LogUploadResult(OfficeFilesUploadResult value) {
-  upload_result_.Log(value);
+  if (!upload_result_.Log(value)) {
+    PrintMetrics();
+  }
 }
 
 base::SafeRef<CloudOpenMetrics> CloudOpenMetrics::GetSafeRef() const {
@@ -123,52 +156,45 @@ base::WeakPtr<CloudOpenMetrics> CloudOpenMetrics::GetWeakPtr() {
   return weak_ptr_factory_.GetWeakPtr();
 }
 
+template <typename MetricType1, typename MetricType2>
+void CloudOpenMetrics::HandlePossibleInconsistency(
+    Metric<MetricType1>& child,
+    Metric<MetricType2>& parent) {
+  switch (child.state) {
+    case MetricState::kCorrectlyNotLogged:
+    case MetricState::kCorrectlyLogged:
+      return;
+    case MetricState::kIncorrectlyNotLogged:
+    case MetricState::kIncorrectlyLogged:
+    case MetricState::kIncorrectlyLoggedMultipleTimes:
+    case MetricState::kWrongValueLogged:
+      LOG(ERROR) << "Inconsistency found for metric: " << child
+                 << " due to metric: " << parent;
+  }
+  PrintMetrics();
+}
+
+template <typename MetricType1, typename MetricType2>
+void CloudOpenMetrics::ExpectNotLoggedRelativeToParent(
+    Metric<MetricType1>& child,
+    Metric<MetricType2>& parent) {
+  child.ExpectNotLogged();
+  HandlePossibleInconsistency(child, parent);
+}
+
+template <typename MetricType1, typename MetricType2>
+void CloudOpenMetrics::ExpectLoggedRelativeToParent(
+    const std::vector<MetricType1>& values,
+    Metric<MetricType1>& child,
+    Metric<MetricType2>& parent) {
+  child.ExpectLoggedWith(values);
+  HandlePossibleInconsistency(child, parent);
+}
+
 void CloudOpenMetrics::PrintMetrics() {
   LOG(WARNING) << "Metrics: " << std::endl
                << task_result_ << std::endl
                << transfer_required_;
-}
-
-void CloudOpenMetrics::HandleInconsistency() {
-  PrintMetrics();
-}
-
-template <class MetricType>
-CloudOpenMetrics::Metric<MetricType>::Metric(std::string metric_name_to_set)
-    : metric_name(metric_name_to_set) {}
-
-template <class MetricType>
-bool CloudOpenMetrics::Metric<MetricType>::Log(MetricType new_value) {
-  LogMetric(new_value);
-  bool result = true;
-  if (state == MetricState::kCorrectlyNotLogged) {
-    set_state(MetricState::kCorrectlyLogged);
-  } else {
-    set_state(MetricState::kIncorrectlyLoggedMultipleTimes);
-    LOG(ERROR) << metric_name << " being logged with " << new_value
-               << " when it was already logged with " << value;
-    result = false;
-  }
-  value = new_value;
-  return result;
-}
-
-template <class MetricType>
-void CloudOpenMetrics::Metric<MetricType>::set_state(MetricState new_state) {
-  state = new_state;
-}
-
-template <class MetricType>
-void CloudOpenMetrics::Metric<MetricType>::LogMetric(MetricType new_value) {
-  base::UmaHistogramEnumeration(metric_name, new_value);
-}
-
-// Handle a value of type base::File::Error differently.
-template <>
-void CloudOpenMetrics::Metric<base::File::Error>::LogMetric(
-    base::File::Error new_value) {
-  base::UmaHistogramExactLinear(metric_name, -new_value,
-                                -base::File::FILE_ERROR_MAX);
 }
 
 }  // namespace ash::cloud_upload

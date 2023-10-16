@@ -96,7 +96,7 @@ PhysicalRect BorderBoxRect(const LayoutBoxModelObject& object) {
 
 // TODO(crbug.com/1473440): Convert this to take a NGPhysicalBoxFragment
 // instead of a LayoutBoxModelObject.
-NGPhysicalBoxStrut ReferenceBoxBorderBoxOutsets(
+PhysicalBoxStrut ReferenceBoxBorderBoxOutsets(
     GeometryBox geometry_box,
     const LayoutBoxModelObject& object) {
   // It is complex to map from an SVG border box to a reference box (for
@@ -115,7 +115,7 @@ NGPhysicalBoxStrut ReferenceBoxBorderBoxOutsets(
     case GeometryBox::kBorderBox:
     case GeometryBox::kStrokeBox:
     case GeometryBox::kViewBox:
-      return NGPhysicalBoxStrut();
+      return PhysicalBoxStrut();
   }
 }
 

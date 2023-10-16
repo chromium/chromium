@@ -12,13 +12,13 @@ export class ByteReader {
   constructor(arrayBuffer, opt_offset, opt_length) {
     opt_offset = opt_offset || 0;
     opt_length = opt_length || (arrayBuffer.byteLength - opt_offset);
-    /** @private @const {!DataView} */
+    /** @private @const @type {!DataView} */
     this.view_ = new DataView(arrayBuffer, opt_offset, opt_length);
-    /** @private {number} */
+    /** @private @type {number} */
     this.pos_ = 0;
-    /** @private @const {!Array<number>} */
+    /** @private @const @type {!Array<number>} */
     this.seekStack_ = [];
-    /** @private {boolean} */
+    /** @private @type {boolean} */
     this.littleEndian_ = false;
   }
 
@@ -498,36 +498,36 @@ export class ByteReader {
 
 /**
  * Intel, 0x1234 is [0x34, 0x12]
- * @const {number}
+ * @const @type {number}
  */
 ByteReader.LITTLE_ENDIAN = 0;
 
 /**
  * Motorola, 0x1234 is [0x12, 0x34]
- * @const {number}
+ * @const @type {number}
  */
 ByteReader.BIG_ENDIAN = 1;
 
 /**
  * Seek relative to the beginning of the buffer.
- * @const {number}
+ * @const @type {number}
  */
 ByteReader.SEEK_BEG = 0;
 
 /**
  * Seek relative to the current position.
- * @const {number}
+ * @const @type {number}
  */
 ByteReader.SEEK_CUR = 1;
 
 /**
  * Seek relative to the end of the buffer.
- * @const {number}
+ * @const @type {number}
  */
 ByteReader.SEEK_END = 2;
 
 /**
- * @private @const {Array<string>}
+ * @private @const @type {Array<string>}
  */
 ByteReader.base64Alphabet_ =
     ('ABCDEFGHIJKLMNOPQRSTUVWXYZabcdefghijklmnopqrstuvwxyz0123456789+/')

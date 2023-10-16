@@ -18,7 +18,6 @@
 #include "chrome/browser/ash/login/user_online_signin_notifier.h"
 #include "chrome/browser/ash/system/system_clock.h"
 #include "chromeos/ash/components/dbus/cryptohome/rpc.pb.h"
-#include "chromeos/ash/components/login/auth/auth_performer.h"
 #include "chromeos/ash/components/proximity_auth/screenlock_bridge.h"
 #include "components/account_id/account_id.h"
 #include "components/session_manager/core/session_manager_observer.h"
@@ -33,8 +32,6 @@ namespace ash {
 class SmartLockService;
 class UserBoardView;
 struct LoginUserInfo;
-class UserContext;
-class AuthenticationError;
 
 enum class DisplayedScreen { SIGN_IN_SCREEN, USER_ADDING_SCREEN, LOCK_SCREEN };
 
@@ -123,10 +120,6 @@ class UserSelectionScreen
                            bool reauth_required);
   void OnAllowedInputMethodsChanged();
 
-  void OnStartAuthSession(bool user_exists,
-                          std::unique_ptr<UserContext> user_context,
-                          absl::optional<AuthenticationError> error);
-
   // Purpose of the screen.
   const DisplayedScreen display_type_;
 
@@ -172,10 +165,6 @@ class UserSelectionScreen
   base::ScopedObservation<UserOnlineSigninNotifier,
                           UserOnlineSigninNotifier::Observer>
       scoped_observation_{this};
-
-  AuthPerformer auth_performer_{UserDataAuthClient::Get()};
-
-  std::vector<LoginUserInfo> user_info_list_;
 
   base::WeakPtrFactory<UserSelectionScreen> weak_factory_{this};
 };

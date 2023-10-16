@@ -258,6 +258,7 @@
 <translation id="5545693483061321551">বিভিন্ন ছাইটত আপোনাৰ ব্ৰাউজিঙৰ কাৰ্যকলাপ চাবলৈ ছাইটসমূহে আপোনাৰ কুকিসমূহ ব্যৱহাৰ কৰিব নোৱাৰে, যেনে, বিজ্ঞাপন ব্যক্তিগতকৃত কৰিবলৈ। কিছুমান ছাইটত সুবিধাসমূহে কাম নকৰিবও পাৰে।</translation>
 <translation id="5553374991681107062">শেহতীয়া</translation>
 <translation id="5556459405103347317">পুনৰ ল’ড কৰক</translation>
+<translation id="5591840828808741583"><ph name="SITE_NAME" /> অৱৰোধ কৰা আছে</translation>
 <translation id="5649053991847567735">স্বয়ংক্ৰিয়ভাৱে হোৱা ডাউনল’ড</translation>
 <translation id="5668404140385795438">ৱেবছাইটোৱে জুম ইনৰ ক্ষেত্ৰত বাধা দিবলৈ কৰা অনুৰোধ অ’ভাৰৰাইড কৰে</translation>
 <translation id="5677928146339483299">অৱৰোধিত</translation>
@@ -455,6 +456,7 @@
 <translation id="8959122750345127698">ইয়ালৈ নেভিগেশ্বন পাব পৰা অৱস্থাত নাই: <ph name="URL" /></translation>
 <translation id="8986362086234534611">পাহৰক</translation>
 <translation id="8990043154272859344">আপোনাক সকলো ছাইটৰ পৰা ছাইন আউট কৰোৱা হ’ব</translation>
+<translation id="9011903857143958461"><ph name="SITE_NAME" />ৰ অনুমতি দিয়া আছে</translation>
 <translation id="9019902583201351841">আপোনাৰ অভিভাৱকৰ দ্বাৰা পৰিচালিত</translation>
 <translation id="9039697262778250930">আপোনাক এই ছাইটসমূহৰ পৰা ছাইন আউট কৰোৱা হ’ব পাৰে</translation>
 <translation id="9074739597929991885">ব্লুটুথ</translation>

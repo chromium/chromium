@@ -50,6 +50,7 @@ import chromedriver
 import websocket_connection
 import webelement
 import webshadowroot
+from websocket_connection import WebSocketConnection
 sys.path.remove(_CLIENT_DIR)
 
 sys.path.insert(1, _SERVER_DIR)
@@ -6199,6 +6200,83 @@ class HeadlessChromeDriverTest(ChromeDriverBaseTestWithWebServer):
     self.assertRaises(chromedriver.InvalidArgument,
                       self._driver.PrintPDF, {'pageRanges': ['x-y']})
 
+class PureBidiTest(ChromeDriverBaseTestWithWebServer):
+
+  def setUp(self):
+    super().setUp()
+    self._connections = []
+
+  def tearDown(self):
+    for conn in self._connections:
+      conn.Close()
+    super().tearDown()
+
+  def createUnboundWebSocketConnection(self):
+    server_url = _CHROMEDRIVER_SERVER_URL
+    conn = WebSocketConnection(server_url)
+    conn.SetTimeout(5 * 60) # 5 minutes
+    self._connections.append(conn)
+    return conn
+
+  def testSessionStatus(self):
+    conn = self.createUnboundWebSocketConnection()
+    cmd_id = conn.SendCommand({
+      'method': 'session.status',
+      'params': {}
+    })
+    status = conn.WaitForResponse(cmd_id)
+    self.assertEqual('success', status['type'])
+    self.assertEqual(False, status['result']['ready'])
+    self.assertEqual('ChromeDriver does not yet support BiDi-only sessions.',
+                     status['result']['message'])
+
+  def testSessionNew(self):
+    conn = self.createUnboundWebSocketConnection()
+    cmd_id = conn.SendCommand({
+      'method': 'session.new',
+      'params': {
+          'capabilities': {}
+      }
+    })
+    status = conn.WaitForResponse(cmd_id)
+    self.assertEqual('error', status['type'])
+    self.assertEqual('session not created', status['error'])
+    self.assertEqual(''.join([
+        'session not created: ',
+        'ChromeDriver does not yet support BiDi-only sessions.']),
+        status['message'])
+
+  def testUnknownStaticCommand(self):
+    conn = self.createUnboundWebSocketConnection()
+    cmd_id = conn.SendCommand({
+      'method': 'abracadabra',
+      'params': {}
+    })
+    status = conn.WaitForResponse(cmd_id)
+    self.assertEqual('error', status['type'])
+    self.assertEqual('unknown command', status['error'])
+    self.assertEqual('unknown command: abracadabra', status['message'])
+
+  def testStaticCommandWithoutMethod(self):
+    conn = self.createUnboundWebSocketConnection()
+    cmd_id = conn.SendCommand({
+      'params': {}
+    })
+    status = conn.WaitForResponse(cmd_id)
+    self.assertEqual('error', status['type'])
+    self.assertEqual('invalid argument', status['error'])
+    self.assertRegex(status['message'], 'no\\s+method')
+
+  def testStaticCommandWithoutParams(self):
+    conn = self.createUnboundWebSocketConnection()
+    cmd_id = conn.SendCommand({
+        'method': 'session.status'
+    })
+    status = conn.WaitForResponse(cmd_id)
+    self.assertEqual('error', status['type'])
+    self.assertEqual('invalid argument', status['error'])
+    self.assertRegex(status['message'], 'no\\s+params')
+
 class BidiTest(ChromeDriverBaseTestWithWebServer):
 
   def setUp(self):
@@ -6215,6 +6293,14 @@ class BidiTest(ChromeDriverBaseTestWithWebServer):
     if driver is None:
       driver = self._driver
     conn = driver.CreateWebSocketConnection()
+    conn.SetTimeout(5 * 60) # 5 minutes
+    self._connections.append(conn)
+    return conn
+
+  def createWebSocketConnectionIPv6(self, driver=None):
+    if driver is None:
+      driver = self._driver
+    conn = driver.CreateWebSocketConnectionIPv6()
     conn.SetTimeout(5 * 60) # 5 minutes
     self._connections.append(conn)
     return conn
@@ -6361,15 +6447,27 @@ class BidiTest(ChromeDriverBaseTestWithWebServer):
           'context': context_id
       }
     })
-    conn.WaitForResponse(cmd_id)
+    response = conn.WaitForResponse(cmd_id)
+    self.assertEqual('success', response['type'])
 
     with self.assertRaises(chromedriver.WebSocketConnectionClosedException):
       # BiDi messages cannot have negative "id".
       # Wait indefinitely until time out.
       conn.WaitForResponse(-1)
 
+  def testConnectionIsClosedIfSessionIsDestroyed(self):
+    driver = self.CreateDriver(web_socket_url=True)
+    conn = self.createWebSocketConnection(driver)
+    driver.Quit()
+
+    with self.assertRaises(chromedriver.WebSocketConnectionClosedException):
+      # BiDi messages cannot have negative "id".
+      # Wait indefinitely until time out.
+      conn.WaitForResponse(-1)
+
+
   def testCmdIdCheatAndBrowserClosing(self):
-    # Browser closing mechanism should not rely on command it
+    # Browser closing mechanism should not rely on command id
     conn = self.createWebSocketConnection()
     context_id = self.getContextId(conn, 0)
     cmd_id1 = None
@@ -6444,6 +6542,28 @@ class BidiTest(ChromeDriverBaseTestWithWebServer):
     context_id = self.getContextId(conn1, 0)
     self.assertIsNotNone(context_id)
     conn2 = self.createWebSocketConnection()
+    # Pre-check: make sure that the implementation does not use the same socket
+    self.assertNotEqual(conn1, conn2)
+
+    cmd_id1 = self.postEvaluate(conn1, '77', context_id = context_id)
+    cmd_id2 = self.postEvaluate(conn2, '23', context_id = context_id)
+    cmd_id3 = self.postEvaluate(conn1, '41', context_id = context_id)
+    cmd_id4 = self.postEvaluate(conn2, '98', context_id = context_id)
+
+    resp = conn1.WaitForResponse(cmd_id1)
+    self.assertEqual(77, resp['result']['result']['value'])
+    resp = conn1.WaitForResponse(cmd_id3)
+    self.assertEqual(41, resp['result']['result']['value'])
+    resp = conn2.WaitForResponse(cmd_id4)
+    self.assertEqual(98, resp['result']['result']['value'])
+    resp = conn2.WaitForResponse(cmd_id2)
+    self.assertEqual(23, resp['result']['result']['value'])
+
+  def testMultipleConnectionsDifferentIPs(self):
+    conn1 = self.createWebSocketConnection()
+    context_id = self.getContextId(conn1, 0)
+    self.assertIsNotNone(context_id)
+    conn2 = self.createWebSocketConnectionIPv6()
     # Pre-check: make sure that the implementation does not use the same socket
     self.assertNotEqual(conn1, conn2)
 

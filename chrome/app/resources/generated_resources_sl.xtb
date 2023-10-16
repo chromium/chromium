@@ -3234,6 +3234,7 @@ Domena <ph name="DOMAIN" /> zahteva, da je pametna kartica vstavljena.</translat
 <translation id="3521405806571557477">Izbris shranjenih podatkov za <ph name="SITE_NAME" /></translation>
 <translation id="3521606918211282604">Spremeni velikost diska</translation>
 <translation id="3522088408596898827">Na disku kritično primanjkuje prostora. Sprostite prostor na disku in poskusite znova.</translation>
+<translation id="3522979239100719575">Iskanje razpoložljivih profilov. To lahko traja nekaj minut.</translation>
 <translation id="3524518036046613664">Odkrivanje naprav v krajevnem omrežju, kot so tiskalniki</translation>
 <translation id="3524965460886318643">Izvoz dejavnosti</translation>
 <translation id="3525426269008462093">Pregled sinhroniziranja naprave po nastavitvi</translation>
@@ -7835,6 +7836,7 @@ Imate še # ogroženih gesel. Googlov upravitelj gesel priporoča, da takoj prev
 <translation id="7283555985781738399">Način za goste</translation>
 <translation id="7284307451964417957">{DAYS,plural, =1{Ta naprava bo shranjena za 1 dan in naslednjič se lahko z njo povežete brez kode. To nastavi vaš skrbnik.}one{Ta naprava bo shranjena za {DAYS} dan in naslednjič se lahko z njo povežete brez kode. To nastavi vaš skrbnik.}two{Ta naprava bo shranjena za {DAYS} dneva in naslednjič se lahko z njo povežete brez kode. To nastavi vaš skrbnik.}few{Ta naprava bo shranjena za {DAYS} dni in naslednjič se lahko z njo povežete brez kode. To nastavi vaš skrbnik.}other{Ta naprava bo shranjena za {DAYS} dni in naslednjič se lahko z njo povežete brez kode. To nastavi vaš skrbnik.}}</translation>
 <translation id="7284411326658527427">Vsak lahko individualno prilagodi svoj račun in poskrbi za zasebnost podatkov.</translation>
+<translation id="7286867818472074330">Izberi ključ za dostop</translation>
 <translation id="7287143125007575591">Dostop zavrnjen.</translation>
 <translation id="7287411021188441799">Obnovi privzeto ozadje</translation>
 <translation id="7288676996127329262"><ph name="HORIZONTAL_DPI" /> x <ph name="VERTICAL_DPI" /> dpi</translation>

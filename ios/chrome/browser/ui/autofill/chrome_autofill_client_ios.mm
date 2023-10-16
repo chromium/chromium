@@ -354,10 +354,10 @@ void ChromeAutofillClientIOS::ConfirmSaveAddressProfile(
     SaveAddressProfilePromptOptions options,
     AddressProfileSavePromptCallback callback) {
   // TODO(crbug.com/1167062): Respect SaveAddressProfilePromptOptions.
-  for (size_t i = 0; i < infobar_manager_->infobar_count(); ++i) {
+  for (auto* infobar : infobar_manager_->infobars()) {
     AutofillSaveUpdateAddressProfileDelegateIOS* existing_delegate =
         AutofillSaveUpdateAddressProfileDelegateIOS::FromInfobarDelegate(
-            infobar_manager_->infobar_at(i)->delegate());
+            infobar->delegate());
 
     if (existing_delegate) {
       if (existing_delegate->is_infobar_visible()) {
@@ -375,7 +375,7 @@ void ChromeAutofillClientIOS::ConfirmSaveAddressProfile(
         // saved data is shown to user. In both the cases, the original prompt
         // is replaced by the new one provided that the modal view of the
         // original infobar is not visible to the user.
-        infobar_manager_->RemoveInfoBar(infobar_manager_->infobar_at(i));
+        infobar_manager_->RemoveInfoBar(infobar);
         break;
       }
     }

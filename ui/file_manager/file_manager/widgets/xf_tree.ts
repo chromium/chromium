@@ -6,7 +6,7 @@ import {isRTL} from 'chrome://resources/ash/common/util.js';
 
 import {css, customElement, html, query, state, XfBase} from './xf_base.js';
 import {type TreeItemCollapsedEvent, XfTreeItem} from './xf_tree_item.js';
-import {isTreeItem} from './xf_tree_util.js';
+import {handleTreeSlotChange, isTreeItem} from './xf_tree_util.js';
 
 /**
  * <xf-tree> is the container of the <xf-tree-item> elements. An example
@@ -58,6 +58,9 @@ export class XfTree extends XfBase {
   get focusedItem(): XfTreeItem|null {
     return this.focusedItem_;
   }
+  set focusedItem(item: XfTreeItem|null) {
+    this.makeItemFocusable_(item);
+  }
 
   /** The child tree items. */
   get items(): XfTreeItem[] {
@@ -97,9 +100,6 @@ export class XfTree extends XfBase {
         class="tree"
         role="tree"
         aria-setsize=${this.ariaSetSize_}
-        @click=${this.onTreeClicked_}
-        @dblclick=${this.onTreeDblClicked_}
-        @keydown=${this.onTreeKeyDown_}
         @tree_item_collapsed=${this.onTreeItemCollapsed_}
       >
         <slot @slotchange=${this.onSlotChanged_}></slot>
@@ -109,21 +109,13 @@ export class XfTree extends XfBase {
 
   override connectedCallback(): void {
     super.connectedCallback();
-    // Delegate the tree level contextmenu event to the focused child tree item.
-    // This is triggered when right click at the blank space of the tree area.
-    // Binding the event at the host element level because the blank space of
-    // the tree doesn't belong to <ul> element.
-    this.addEventListener('contextmenu', (e: MouseEvent) => {
-      if (this.focusedItem_) {
-        const domRect = this.focusedItem_.getRectForContextMenu();
-        // Calculate the center point of the tree item, so <xf-tree-item> knows
-        // where to show the context menu pop-up.
-        const x = domRect.x + (domRect.width / 2);
-        const y = domRect.y + (domRect.height / 2);
-        this.focusedItem_.dispatchEvent(
-            new PointerEvent(e.type, {...e, clientX: x, clientY: y}));
-      }
-    });
+    // Binding all these events at the host element level because the blank
+    // space of the tree doesn't belong to the root <ul> element.
+    this.addEventListener('contextmenu', this.onHostContextMenu_.bind(this));
+    this.addEventListener('click', this.onHostClicked_.bind(this));
+    this.addEventListener('dblclick', this.onHostDblClicked_.bind(this));
+    this.addEventListener('mousedown', this.onHostMouseDown_.bind(this));
+    this.addEventListener('keydown', this.onHostKeyDown_.bind(this));
   }
 
   private onSlotChanged_() {
@@ -133,16 +125,8 @@ export class XfTree extends XfBase {
     this.items_ = this.$childrenSlot_.assignedElements().filter(isTreeItem);
     this.ariaSetSize_ = this.tabbableItems.length;
 
-    if (this.selectedItem_) {
-      const newItems = new Set(this.items_);
-      if (oldItems.has(this.selectedItem_) &&
-          !newItems.has(this.selectedItem_)) {
-        // If the currently selected item exists in `oldItems` but not in
-        // `newItems`, it means it's being removed from the children slot,
-        // we need to mark the selected item as null.
-        this.selectedItem = null;
-      }
-    }
+    const newItems = new Set(this.items_);
+    handleTreeSlotChange(this, oldItems, newItems);
   }
 
   /**
@@ -161,11 +145,21 @@ export class XfTree extends XfBase {
     }
   }
 
-  /** Called when the user clicks on a tree item. */
-  private async onTreeClicked_(e: MouseEvent) {
+  /** Called when the user clicks within the host element. */
+  private onHostClicked_(e: MouseEvent) {
+    // Mouse right click won't trigger click event, so this check is not
+    // necessary in real scenario. This is mainly for the browser test because
+    // waitAndRightClickEvent will actually trigger a click event with button=2.
+    if (e.button === 2) {
+      return;
+    }
+
     // Stop if the the click target is not a tree item.
     const treeItem = e.target as XfTreeItem;
     if (treeItem && !isTreeItem(treeItem)) {
+      // Clicking the non tree item area should focus the whole tree, which will
+      // delegate the focus to the currently focusable child tree item.
+      this.focus();
       return;
     }
 
@@ -182,15 +176,20 @@ export class XfTree extends XfBase {
       treeItem.expanded = !treeItem.expanded;
     } else {
       treeItem.selected = true;
-      this.makeItemFocusable_(treeItem);
     }
+    this.makeItemFocusable_(treeItem);
+    treeItem.focus();
   }
 
-  /** Called when the user double clicks on a tree item. */
-  private async onTreeDblClicked_(e: MouseEvent) {
+  /** Called when the user double clicks within the host element. */
+  private onHostDblClicked_(e: MouseEvent) {
     // Stop if the the click target is not a tree item.
     const treeItem = e.target as XfTreeItem;
     if (treeItem && !isTreeItem(treeItem)) {
+      // Double clicking the non tree item area should focus the whole tree,
+      // which will delegate the focus to the currently focusable child tree
+      // item.
+      this.focus();
       return;
     }
 
@@ -206,14 +205,62 @@ export class XfTree extends XfBase {
     if (innerClickTarget.className !== 'expand-icon' &&
         treeItem.hasChildren()) {
       treeItem.expanded = !treeItem.expanded;
+      this.makeItemFocusable_(treeItem);
+      treeItem.focus();
+    }
+  }
+
+  /** Called when mouse down event happens within the host element. */
+  private onHostMouseDown_(e: MouseEvent) {
+    // Only handle the right click here, left click is handled by the click
+    // handler above.
+    if (e.button !== 2) {
+      return;
+    }
+
+    // Stop if the the click target is not a tree item.
+    const treeItem = e.target as XfTreeItem;
+    if (treeItem && !isTreeItem(treeItem)) {
+      // Right clicking the non tree item area should focus the whole tree,
+      // which will delegate the focus to the currently focusable child tree
+      // item.
+      this.focus();
+      return;
+    }
+
+    if (treeItem.disabled) {
+      e.stopImmediatePropagation();
+      e.preventDefault();
+      return;
+    }
+
+    this.makeItemFocusable_(treeItem);
+    treeItem.focus();
+  }
+
+  /** Called when a context menu event happens within the host element. */
+  private onHostContextMenu_(e: MouseEvent) {
+    // Delegate the tree level contextmenu event to the focused child tree item.
+    // Note: tree item contextmenu event will never arrive here because the
+    // event listener registered in ContextMenuHandler stops propagation after
+    // showing the context menu. So the handler here is only for right clicking
+    // on the blank space area (e.g. outside the root <ul> element).
+    if (this.focusedItem_) {
+      const domRect = this.focusedItem_.getRectForContextMenu();
+      // Calculate the center point of the tree item, so <xf-tree-item> knows
+      // where to show the context menu pop-up.
+      const x = domRect.x + (domRect.width / 2);
+      const y = domRect.y + (domRect.height / 2);
+      this.focusedItem_.dispatchEvent(
+          new PointerEvent(e.type, {...e, clientX: x, clientY: y}));
     }
   }
 
   /**
-   * Handle the keydown within the tree, this mainly handles the navigation
-   * and the selection with the keyboard.
+   * Handle the keydown within the host element, this mainly handles the
+   * navigation and the selection with the keyboard.
    */
-  private onTreeKeyDown_(e: KeyboardEvent) {
+  private onHostKeyDown_(e: KeyboardEvent) {
     if (e.ctrlKey || e.repeat) {
       return;
     }

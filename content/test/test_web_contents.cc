@@ -471,7 +471,8 @@ int TestWebContents::AddPrerender(const GURL& url) {
   TestRenderFrameHost* rfhi = GetPrimaryMainFrame();
   return GetPrerenderHostRegistry()->CreateAndStartHost(PrerenderAttributes(
       url, PrerenderTriggerType::kSpeculationRule,
-      /*embedder_histogram_suffix=*/"", Referrer(),
+      /*embedder_histogram_suffix=*/"",
+      blink::mojom::SpeculationTargetHint::kNoHint, Referrer(),
       blink::mojom::SpeculationEagerness::kEager,
       rfhi->GetLastCommittedOrigin(), rfhi->GetProcess()->GetID(), GetWeakPtr(),
       rfhi->GetFrameToken(), rfhi->GetFrameTreeNodeId(),

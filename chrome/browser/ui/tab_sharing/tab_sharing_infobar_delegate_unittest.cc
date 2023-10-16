@@ -326,17 +326,17 @@ TEST_P(TabSharingInfoBarDelegateTest, MultipleInfobarsOnSameTab) {
   infobars::ContentInfoBarManager* infobar_manager =
       infobars::ContentInfoBarManager::FromWebContents(
           browser()->tab_strip_model()->GetWebContentsAt(0));
-  EXPECT_EQ(infobar_manager->infobar_count(), 0u);
+  EXPECT_EQ(infobar_manager->infobars().size(), 0u);
   CreateInfobar({.shared_tab_name = kSharedTabName,
                  .capturer_name = kAppName,
                  .shared_tab = false,
                  .can_share_instead = true});
-  EXPECT_EQ(infobar_manager->infobar_count(), 1u);
+  EXPECT_EQ(infobar_manager->infobars().size(), 1u);
   CreateInfobar({.shared_tab_name = kSharedTabName,
                  .capturer_name = kAppName,
                  .shared_tab = false,
                  .can_share_instead = true});
-  EXPECT_EQ(infobar_manager->infobar_count(), 2u);
+  EXPECT_EQ(infobar_manager->infobars().size(), 2u);
 }
 
 TEST_P(TabSharingInfoBarDelegateTest, InfobarNotDismissedOnNavigation) {
@@ -349,9 +349,9 @@ TEST_P(TabSharingInfoBarDelegateTest, InfobarNotDismissedOnNavigation) {
                  .capturer_name = kAppName,
                  .shared_tab = false,
                  .can_share_instead = true});
-  EXPECT_EQ(infobar_manager->infobar_count(), 1u);
+  EXPECT_EQ(infobar_manager->infobars().size(), 1u);
   NavigateAndCommit(web_contents, GURL("http://bar"));
-  EXPECT_EQ(infobar_manager->infobar_count(), 1u);
+  EXPECT_EQ(infobar_manager->infobars().size(), 1u);
 }
 
 // Test that the infobar on another not cast tab has the correct layout:

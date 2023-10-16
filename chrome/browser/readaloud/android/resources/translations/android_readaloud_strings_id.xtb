@@ -1,1 +1,17 @@
-<?xml version="1.0" ?><!DOCTYPE translationbundle><translationbundle lang="id"></translationbundle>
+<?xml version="1.0" ?>
+<!DOCTYPE translationbundle>
+<translationbundle lang="id">
+<translation id="1178581264944972037">Jeda</translation>
+<translation id="3523426587027570423">Ketuk untuk menutup “Dengarkan halaman ini”.</translation>
+<translation id="4654641641922242357">Pemutar “Dengarkan halaman ini”.</translation>
+<translation id="4731877163452936634">Kecepatan pemutaran: <ph name="PLAYBACK_SPEED" />. Klik untuk mengubah.</translation>
+<translation id="5234971936051226002">Pemutar “Dengarkan halaman ini” diperkecil.</translation>
+<translation id="5596627076506792578">Opsi lainnya</translation>
+<translation id="6790428901817661496">Putar</translation>
+<translation id="6846298663435243399">Memuat...</translation>
+<translation id="7587250070160020374">Chrome sedang memutar audio</translation>
+<translation id="7945822420239537236">Maju <ph name="NUMBER_OF_SECONDS" /> detik</translation>
+<translation id="7972866381678406344">Mundur <ph name="NUMBER_OF_SECONDS" /> detik</translation>
+<translation id="8136852699834914183">Pemutaran tidak tersedia untuk halaman ini.</translation>
+<translation id="8953618380150219653">Pemutar “Dengarkan halaman ini” dibuka sepenuhnya.</translation>
+</translationbundle>

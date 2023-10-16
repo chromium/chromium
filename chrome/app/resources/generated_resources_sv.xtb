@@ -3231,6 +3231,7 @@ Du kan hantera inställningarna för det här kontot genom att installera Family
 <translation id="3521405806571557477">Radera sparad data för <ph name="SITE_NAME" /></translation>
 <translation id="3521606918211282604">Ändra diskstorlek</translation>
 <translation id="3522088408596898827">Mycket ont om diskutrymme. Frigör diskutrymme och försök igen.</translation>
+<translation id="3522979239100719575">Söker efter tillgängliga profiler. Det kan ta några minuter.</translation>
 <translation id="3524518036046613664">Upptäck enheter i det lokala nätverket, t.ex. skrivare</translation>
 <translation id="3524965460886318643">Exportera aktivitet</translation>
 <translation id="3525426269008462093">Granska enhetssynkronisering efter konfigureringen</translation>
@@ -7824,6 +7825,7 @@ Det finns # utsatta lösenord till. Du rekommenderas av Google Lösenordshanteri
 <translation id="7283555985781738399">Gästläge</translation>
 <translation id="7284307451964417957">{DAYS,plural, =1{Den här enheten sparas i en dag. Nästa gång kan du ansluta utan kod. Det här ställs in av administratören.}other{Den här enheten sparas i {DAYS} dagar. Nästa gång kan du ansluta utan kod. Det här ställs in av administratören.}}</translation>
 <translation id="7284411326658527427">Var och en kan anpassa sitt konto och hålla sin data privat.</translation>
+<translation id="7286867818472074330">Välj nyckel</translation>
 <translation id="7287143125007575591">Åtkomst nekad.</translation>
 <translation id="7287411021188441799">Återställ standardbakgrund</translation>
 <translation id="7288676996127329262"><ph name="HORIZONTAL_DPI" />x<ph name="VERTICAL_DPI" /> dpi</translation>
@@ -10320,7 +10322,7 @@ Behörigheter som du redan har gett webbplatser och appar kan gälla för det h�
 <translation id="956500788634395331">Du är skyddad från tillägg som kan vara skadliga</translation>
 <translation id="957179356621191750">6-punkters</translation>
 <translation id="957960681186851048">Den här webbplatsen försökte ladda ned flera filer automatiskt</translation>
-<translation id="958571289841636277">Navigera bakåt och framåt med sveprörelser</translation>
+<translation id="958571289841636277">Navigera framåt och bakåt med en sveprörelse</translation>
 <translation id="960987915827980018">Ca 1 timme kvar</translation>
 <translation id="962802172452141067">Mappstruktur för bokmärken</translation>
 <translation id="963000966785016697">Bildsökning med <ph name="VISUAL_SEARCH_PROVIDER" /></translation>

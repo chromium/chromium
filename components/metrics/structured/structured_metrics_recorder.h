@@ -15,7 +15,9 @@
 #include "base/time/time.h"
 #include "components/metrics/metrics_provider.h"
 #include "components/metrics/structured/event.h"
+#if BUILDFLAG(IS_CHROMEOS_ASH) || BUILDFLAG(IS_CHROMEOS_LACROS)
 #include "components/metrics/structured/external_metrics.h"
+#endif
 #include "components/metrics/structured/key_data.h"
 #include "components/metrics/structured/key_data_provider.h"
 #include "components/metrics/structured/project_validator.h"
@@ -137,7 +139,9 @@ class StructuredMetricsRecorder : public Recorder::RecorderImpl {
   absl::optional<int> LastKeyRotation(uint64_t project_name_hash) override;
 
   void WriteNowForTest();
+#if BUILDFLAG(IS_CHROMEOS_ASH) || BUILDFLAG(IS_CHROMEOS_LACROS)
   void SetExternalMetricsDirForTest(const base::FilePath& dir);
+#endif
   void SetOnReadyToRecord(base::OnceClosure callback);
 
   // Sets a callback to be made every time an event is recorded. This is exposed
@@ -180,10 +184,6 @@ class StructuredMetricsRecorder : public Recorder::RecorderImpl {
   // ProvideCurrentSessionData, we stop recording events.
   static int kMaxEventsPerUpload;
 
-  // The directory used to store unsent logs. Relative to the user's cryptohome.
-  // This file is created by chromium.
-  static char kUnsentLogsPath[];
-
   // Whether the metrics provider has completed initialization. Initialization
   // occurs across OnProfileAdded and OnInitializationCompleted. No incoming
   // events are recorded until initialization has succeeded.
@@ -220,8 +220,10 @@ class StructuredMetricsRecorder : public Recorder::RecorderImpl {
   // The last time we provided independent metrics.
   base::Time last_provided_independent_metrics_;
 
+#if BUILDFLAG(IS_CHROMEOS_ASH) || BUILDFLAG(IS_CHROMEOS_LACROS)
   // Periodically reports metrics from cros.
   std::unique_ptr<ExternalMetrics> external_metrics_;
+#endif
 
   // On-device storage within the user's cryptohome for unsent logs.
   std::unique_ptr<PersistentProto<EventsProto>> events_;

@@ -3216,6 +3216,7 @@ Puoi gestire le impostazioni dell'account installando l'app Family Link su quest
 <translation id="3521405806571557477">Elimina i dati salvati per <ph name="SITE_NAME" /></translation>
 <translation id="3521606918211282604">Cambia dimensioni disco</translation>
 <translation id="3522088408596898827">Lo spazio sul disco sta per esaurirsi. Libera spazio sul disco e riprova.</translation>
+<translation id="3522979239100719575">È in corso la ricerca dei profili disponibili. Questa operazione può richiedere alcuni minuti.</translation>
 <translation id="3524518036046613664">Rilevamento di dispositivi sulla rete locale, come le stampanti</translation>
 <translation id="3524965460886318643">Esporta attività</translation>
 <translation id="3525426269008462093">Rivedi la sincronizzazione del dispositivo dopo la configurazione</translation>
@@ -7805,6 +7806,7 @@ Hai altre # password compromesse. Gestore delle password di Google consiglia di 
 <translation id="7283555985781738399">Modalità ospite</translation>
 <translation id="7284307451964417957">{DAYS,plural, =1{Questo dispositivo verrà salvato per 1 giorno e la prossima volta potrai connetterti senza un codice. Questa impostazione è stata configurata dal tuo amministratore.}other{Questo dispositivo verrà salvato per {DAYS} giorni e la prossima volta potrai connetterti senza un codice. Questa impostazione è stata configurata dal tuo amministratore.}}</translation>
 <translation id="7284411326658527427">Ogni persona potrà personalizzare il proprio account e mantenere privati i dati.</translation>
+<translation id="7286867818472074330">Seleziona passkey</translation>
 <translation id="7287143125007575591">Accesso negato.</translation>
 <translation id="7287411021188441799">Ripristina sfondo predefinito</translation>
 <translation id="7288676996127329262"><ph name="HORIZONTAL_DPI" /> x <ph name="VERTICAL_DPI" /> dpi</translation>

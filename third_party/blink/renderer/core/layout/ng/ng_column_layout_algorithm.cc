@@ -7,9 +7,9 @@
 #include <algorithm>
 #include "third_party/blink/renderer/core/layout/geometry/logical_size.h"
 #include "third_party/blink/renderer/core/layout/geometry/writing_mode_converter.h"
+#include "third_party/blink/renderer/core/layout/list/unpositioned_list_marker.h"
 #include "third_party/blink/renderer/core/layout/ng/geometry/ng_fragment_geometry.h"
 #include "third_party/blink/renderer/core/layout/ng/geometry/ng_margin_strut.h"
-#include "third_party/blink/renderer/core/layout/ng/list/ng_unpositioned_list_marker.h"
 #include "third_party/blink/renderer/core/layout/ng/ng_block_layout_algorithm.h"
 #include "third_party/blink/renderer/core/layout/ng/ng_box_fragment.h"
 #include "third_party/blink/renderer/core/layout/ng/ng_column_spanner_path.h"
@@ -355,7 +355,7 @@ MinMaxSizesResult NGColumnLayoutAlgorithm::ComputeMinMaxSizes(
 
   // First calculate the min/max sizes of columns.
   NGConstraintSpace space = CreateConstraintSpaceForMinMax();
-  NGFragmentGeometry fragment_geometry = CalculateInitialFragmentGeometry(
+  FragmentGeometry fragment_geometry = CalculateInitialFragmentGeometry(
       space, Node(), /* break_token */ nullptr, /* is_intrinsic */ true);
   NGBlockLayoutAlgorithm algorithm({Node(), fragment_geometry, space});
   MinMaxSizesResult result =
@@ -439,7 +439,7 @@ MinMaxSizesResult NGColumnLayoutAlgorithm::ComputeSpannersMinMaxSizes(
 }
 
 NGBreakStatus NGColumnLayoutAlgorithm::LayoutChildren() {
-  NGMarginStrut margin_strut;
+  MarginStrut margin_strut;
   MulticolPartWalker walker(Node(), BreakToken());
   while (!walker.IsFinished()) {
     auto entry = walker.Current();
@@ -576,7 +576,7 @@ struct ResultWithOffset {
 const NGLayoutResult* NGColumnLayoutAlgorithm::LayoutRow(
     const NGBlockBreakToken* next_column_token,
     LayoutUnit minimum_column_block_size,
-    NGMarginStrut* margin_strut) {
+    MarginStrut* margin_strut) {
   LogicalSize column_size(column_inline_size_, column_block_size_);
 
   // Calculate the block-offset by including any trailing margin from a previous
@@ -733,7 +733,7 @@ const NGLayoutResult* NGColumnLayoutAlgorithm::LayoutRow(
           ColumnPercentageResolutionSize(), balance_columns,
           min_break_appeal.value_or(kBreakAppealLastResort));
 
-      NGFragmentGeometry fragment_geometry =
+      FragmentGeometry fragment_geometry =
           CalculateInitialFragmentGeometry(child_space, Node(), BreakToken());
 
       NGLayoutAlgorithmParams params(Node(), fragment_geometry, child_space,
@@ -1025,7 +1025,7 @@ const NGLayoutResult* NGColumnLayoutAlgorithm::LayoutRow(
     // reset the margin strut (it has already been incorporated into the
     // offset).
     intrinsic_block_size_ = row_offset + intrinsic_block_size_contribution;
-    *margin_strut = NGMarginStrut();
+    *margin_strut = MarginStrut();
   }
 
   // Commit all column fragments to the fragment builder.
@@ -1044,7 +1044,7 @@ const NGLayoutResult* NGColumnLayoutAlgorithm::LayoutRow(
 NGBreakStatus NGColumnLayoutAlgorithm::LayoutSpanner(
     NGBlockNode spanner_node,
     const NGBlockBreakToken* break_token,
-    NGMarginStrut* margin_strut) {
+    MarginStrut* margin_strut) {
   spanner_path_ = nullptr;
   const ComputedStyle& spanner_style = spanner_node.Style();
   BoxStrut margins =
@@ -1105,7 +1105,7 @@ NGBreakStatus NGColumnLayoutAlgorithm::LayoutSpanner(
 
   AttemptToPositionListMarker(spanner_fragment, block_offset);
 
-  *margin_strut = NGMarginStrut();
+  *margin_strut = MarginStrut();
   margin_strut->Append(margins.block_end, /* is_quirky */ false);
 
   intrinsic_block_size_ = offset.block_offset + logical_fragment.BlockSize();
@@ -1209,7 +1209,7 @@ LayoutUnit NGColumnLayoutAlgorithm::ResolveColumnAutoBlockSizeInternal(
   // strip (unless there are forced breaks). When we're done with this layout
   // pass, we can examine the result and calculate an ideal column block-size.
   NGConstraintSpace space = CreateConstraintSpaceForBalancing(column_size);
-  NGFragmentGeometry fragment_geometry =
+  FragmentGeometry fragment_geometry =
       CalculateInitialFragmentGeometry(space, Node(), BreakToken());
 
   // A run of content without explicit (forced) breaks; i.e. the content portion

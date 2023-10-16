@@ -49,6 +49,7 @@
 #include "third_party/blink/renderer/platform/scheduler/public/agent_group_scheduler.h"
 #include "third_party/blink/renderer/platform/scheduler/public/main_thread.h"
 #include "third_party/blink/renderer/platform/scheduler/public/main_thread_scheduler.h"
+#include "third_party/blink/renderer/platform/testing/unit_test_helpers.h"
 #include "third_party/blink/renderer/platform/testing/url_loader_mock_factory.h"
 
 namespace blink {
@@ -66,6 +67,27 @@ class DummyLocalFrameClient : public EmptyLocalFrameClient {
 };
 
 }  // namespace
+
+// static
+std::unique_ptr<DummyPageHolder> DummyPageHolder::CreateAndCommitNavigation(
+    const KURL& url,
+    const gfx::Size& initial_view_size,
+    ChromeClient* chrome_client,
+    LocalFrameClient* local_frame_client,
+    base::OnceCallback<void(Settings&)> setting_overrider,
+    const base::TickClock* clock) {
+  std::unique_ptr<DummyPageHolder> holder = std::make_unique<DummyPageHolder>(
+      initial_view_size, chrome_client, local_frame_client,
+      std::move(setting_overrider), clock);
+  if (url.IsValid()) {
+    holder->GetFrame().Loader().CommitNavigation(
+        WebNavigationParams::CreateWithHTMLBufferForTesting(
+            SharedBuffer::Create(), url),
+        /*extra_data=*/nullptr);
+    blink::test::RunPendingTasks();
+  }
+  return holder;
+}
 
 DummyPageHolder::DummyPageHolder(
     const gfx::Size& initial_view_size,

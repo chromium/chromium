@@ -25,7 +25,7 @@ class NGLayoutResultCachingTest : public RenderingTest {
       LayoutBox* box,
       const NGConstraintSpace& constraint_space,
       const NGBlockBreakToken* break_token) {
-    absl::optional<NGFragmentGeometry> fragment_geometry;
+    absl::optional<FragmentGeometry> fragment_geometry;
     NGLayoutCacheStatus cache_status;
     return box->CachedLayoutResult(constraint_space, break_token, nullptr,
                                    nullptr, &fragment_geometry, &cache_status);
@@ -35,7 +35,7 @@ class NGLayoutResultCachingTest : public RenderingTest {
       LayoutBox* box,
       const NGConstraintSpace& constraint_space,
       NGLayoutCacheStatus* out_cache_status = nullptr) {
-    absl::optional<NGFragmentGeometry> fragment_geometry;
+    absl::optional<FragmentGeometry> fragment_geometry;
     NGLayoutCacheStatus cache_status;
     const NGLayoutResult* result =
         box->CachedLayoutResult(constraint_space, nullptr, nullptr, nullptr,
@@ -1271,7 +1271,7 @@ TEST_F(NGLayoutResultCachingTest, MarginStrutMovementSelfCollapsing) {
   EXPECT_NE(result, nullptr);
 
   // The "end" margin-strut should be updated.
-  NGMarginStrut expected_margin_strut;
+  MarginStrut expected_margin_strut;
   expected_margin_strut.Append(LayoutUnit(5), false /* is_quirky */);
   EXPECT_EQ(expected_margin_strut, result->EndMarginStrut());
 

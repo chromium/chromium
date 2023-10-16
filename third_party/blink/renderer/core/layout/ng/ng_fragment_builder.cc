@@ -373,11 +373,11 @@ void NGFragmentBuilder::AddChildInternal(const NGPhysicalFragment* child,
 void NGFragmentBuilder::AddOutOfFlowChildCandidate(
     NGBlockNode child,
     const LogicalOffset& child_offset,
-    NGLogicalStaticPosition::InlineEdge inline_edge,
-    NGLogicalStaticPosition::BlockEdge block_edge) {
+    LogicalStaticPosition::InlineEdge inline_edge,
+    LogicalStaticPosition::BlockEdge block_edge) {
   DCHECK(child);
   oof_positioned_candidates_.emplace_back(
-      child, NGLogicalStaticPosition{child_offset, inline_edge, block_edge},
+      child, LogicalStaticPosition{child_offset, inline_edge, block_edge},
       NGInlineContainer<LogicalOffset>());
 }
 
@@ -397,9 +397,9 @@ void NGFragmentBuilder::AddOutOfFlowInlineChildCandidate(
   // parent element to correctly determine an OOF childs static position.
   AddOutOfFlowChildCandidate(child, child_offset,
                              IsLtr(inline_container_direction)
-                                 ? NGLogicalStaticPosition::kInlineStart
-                                 : NGLogicalStaticPosition::kInlineEnd,
-                             NGLogicalStaticPosition::kBlockStart);
+                                 ? LogicalStaticPosition::kInlineStart
+                                 : LogicalStaticPosition::kInlineEnd,
+                             LogicalStaticPosition::kBlockStart);
 }
 
 void NGFragmentBuilder::AddOutOfFlowFragmentainerDescendant(
@@ -524,7 +524,7 @@ void NGFragmentBuilder::PropagateOOFPositionedInfo(
   const WritingModeConverter converter(GetWritingDirection(), fragment.Size());
   for (const auto& descendant : fragment.OutOfFlowPositionedDescendants()) {
     NGBlockNode node = descendant.Node();
-    NGLogicalStaticPosition static_position =
+    LogicalStaticPosition static_position =
         descendant.StaticPosition().ConvertToLogical(converter);
 
     NGInlineContainer<LogicalOffset> new_inline_container;
@@ -792,7 +792,7 @@ void NGFragmentBuilder::PropagateOOFFragmentainerDescendants(
     // fragment.
     const WritingModeConverter containing_block_converter(
         GetWritingDirection(), containing_block_fragment->Size());
-    NGLogicalStaticPosition static_position =
+    LogicalStaticPosition static_position =
         descendant.StaticPosition().ConvertToLogical(
             containing_block_converter);
 

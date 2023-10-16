@@ -24,22 +24,22 @@ import {TableList} from './table_list.js';
  */
 export class Table {
   constructor() {
-    /** @private {TableColumnModel} */
+    /** @private @type {TableColumnModel} */
     this.columnModel_;
 
-    /** @protected {?TableList} */
+    /** @protected @type {?TableList} */
     this.list_;
 
-    /** @private {TableHeader} */
+    /** @private @type {TableHeader} */
     this.header_;
 
-    /** @private {function((Event|null))} */
+    /** @private @type {function((Event|null))} */
     this.boundHandleChangeList_;
 
-    /** @private {function((Event|null))} */
+    /** @private @type {function((Event|null))} */
     this.boundHandleSorted_;
 
-    /** @private {function((Event|null))} */
+    /** @private @type {function((Event|null))} */
     this.boundResize_;
   }
 

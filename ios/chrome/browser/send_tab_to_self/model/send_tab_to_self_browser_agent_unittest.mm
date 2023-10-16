@@ -159,7 +159,7 @@ TEST_F(SendTabToSelfBrowserAgentTest, TestRemoteAddSimple) {
   web::WebState* web_state = AppendNewWebState(GURL("http://www.blank.com"));
   InfoBarManagerImpl* infobar_manager =
       InfoBarManagerImpl::FromWebState(web_state);
-  EXPECT_EQ(0UL, infobar_manager->infobar_count());
+  EXPECT_EQ(0UL, infobar_manager->infobars().size());
 
   std::unique_ptr<SendTabToSelfEntry> entry =
       SendTabToSelfEntry::FromRequiredFields(
@@ -167,7 +167,7 @@ TEST_F(SendTabToSelfBrowserAgentTest, TestRemoteAddSimple) {
   model_->RemoteAddEntry(entry.get());
 
   // An infobar for the entry should have been added.
-  EXPECT_EQ(1UL, infobar_manager->infobar_count());
+  EXPECT_EQ(1UL, infobar_manager->infobars().size());
 }
 
 TEST_F(SendTabToSelfBrowserAgentTest, TestRemoteAddNoTab) {
@@ -183,7 +183,7 @@ TEST_F(SendTabToSelfBrowserAgentTest, TestRemoteAddNoTab) {
       InfoBarManagerImpl::FromWebState(web_state);
 
   // An infobar for the entry should have been added.
-  EXPECT_EQ(1UL, infobar_manager->infobar_count());
+  EXPECT_EQ(1UL, infobar_manager->infobars().size());
 }
 
 TEST_F(SendTabToSelfBrowserAgentTest, TestRemoteAddTabNotVisible) {
@@ -193,7 +193,7 @@ TEST_F(SendTabToSelfBrowserAgentTest, TestRemoteAddTabNotVisible) {
                         WebStateList::INSERT_ACTIVATE, /*visible=*/false);
   InfoBarManagerImpl* infobar_manager =
       InfoBarManagerImpl::FromWebState(web_state);
-  EXPECT_EQ(0UL, infobar_manager->infobar_count());
+  EXPECT_EQ(0UL, infobar_manager->infobars().size());
 
   // Remote entries added.
   std::unique_ptr<SendTabToSelfEntry> entry =
@@ -202,13 +202,13 @@ TEST_F(SendTabToSelfBrowserAgentTest, TestRemoteAddTabNotVisible) {
   model_->RemoteAddEntry(entry.get());
 
   // No visible web state, so expect no infobar.
-  EXPECT_EQ(0UL, infobar_manager->infobar_count());
+  EXPECT_EQ(0UL, infobar_manager->infobars().size());
 
   // Show the web state.
   web_state->WasShown();
 
   // An infobar for the entry should have been added.
-  EXPECT_EQ(1UL, infobar_manager->infobar_count());
+  EXPECT_EQ(1UL, infobar_manager->infobars().size());
 }
 
 TEST_F(SendTabToSelfBrowserAgentTest, TestRemoteAddTabNotActive) {
@@ -218,7 +218,7 @@ TEST_F(SendTabToSelfBrowserAgentTest, TestRemoteAddTabNotActive) {
                         WebStateList::INSERT_NO_FLAGS, /*visible=*/false);
   InfoBarManagerImpl* infobar_manager =
       InfoBarManagerImpl::FromWebState(web_state);
-  EXPECT_EQ(0UL, infobar_manager->infobar_count());
+  EXPECT_EQ(0UL, infobar_manager->infobars().size());
 
   // Remote entries added.
   std::unique_ptr<SendTabToSelfEntry> entry =
@@ -227,16 +227,16 @@ TEST_F(SendTabToSelfBrowserAgentTest, TestRemoteAddTabNotActive) {
   model_->RemoteAddEntry(entry.get());
 
   // No active web state, so expect no infobar.
-  EXPECT_EQ(0UL, infobar_manager->infobar_count());
+  EXPECT_EQ(0UL, infobar_manager->infobars().size());
 
   // Show the web state. Since it was not active, still don't expect an infobar.
   web_state->WasShown();
-  EXPECT_EQ(0UL, infobar_manager->infobar_count());
+  EXPECT_EQ(0UL, infobar_manager->infobars().size());
 
   // Activate the web state.
   browser_->GetWebStateList()->ActivateWebStateAt(0);
   // An infobar for the entry should have been added.
-  EXPECT_EQ(1UL, infobar_manager->infobar_count());
+  EXPECT_EQ(1UL, infobar_manager->infobars().size());
 }
 
 TEST_F(SendTabToSelfBrowserAgentTest, TestRemoteAddTabNotVisibleActivated) {
@@ -246,7 +246,7 @@ TEST_F(SendTabToSelfBrowserAgentTest, TestRemoteAddTabNotVisibleActivated) {
                         WebStateList::INSERT_ACTIVATE, /*visible=*/false);
   InfoBarManagerImpl* infobar_manager =
       InfoBarManagerImpl::FromWebState(web_state);
-  EXPECT_EQ(0UL, infobar_manager->infobar_count());
+  EXPECT_EQ(0UL, infobar_manager->infobars().size());
 
   // Remote entries added.
   std::unique_ptr<SendTabToSelfEntry> entry =
@@ -255,7 +255,7 @@ TEST_F(SendTabToSelfBrowserAgentTest, TestRemoteAddTabNotVisibleActivated) {
   model_->RemoteAddEntry(entry.get());
 
   // No visible web state, so expect no infobar.
-  EXPECT_EQ(0UL, infobar_manager->infobar_count());
+  EXPECT_EQ(0UL, infobar_manager->infobars().size());
 
   // Add and activate a second web state.
   web::WebState* second_web_state =
@@ -265,8 +265,8 @@ TEST_F(SendTabToSelfBrowserAgentTest, TestRemoteAddTabNotVisibleActivated) {
 
   // An infobar for the entry should have been added to the second web state,
   // but not the first.
-  EXPECT_EQ(0UL, infobar_manager->infobar_count());
-  EXPECT_EQ(1UL, second_infobar_manager->infobar_count());
+  EXPECT_EQ(0UL, infobar_manager->infobars().size());
+  EXPECT_EQ(1UL, second_infobar_manager->infobars().size());
 }
 
 }  // anonymous namespace

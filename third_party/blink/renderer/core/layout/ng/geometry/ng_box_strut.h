@@ -19,8 +19,8 @@
 
 namespace blink {
 
-struct NGLineBoxStrut;
-struct NGPhysicalBoxStrut;
+struct LineBoxStrut;
+struct PhysicalBoxStrut;
 
 // This struct is used for storing margins, borders or padding of a box on all
 // four edges.
@@ -34,7 +34,7 @@ struct CORE_EXPORT BoxStrut {
         inline_end(inline_end),
         block_start(block_start),
         block_end(block_end) {}
-  BoxStrut(const NGLineBoxStrut&, bool is_flipped_lines);
+  BoxStrut(const LineBoxStrut&, bool is_flipped_lines);
 
   LayoutUnit LineLeft(TextDirection direction) const {
     return IsLtr(direction) ? inline_start : inline_end;
@@ -50,7 +50,7 @@ struct CORE_EXPORT BoxStrut {
 
   bool IsEmpty() const { return *this == BoxStrut(); }
 
-  inline NGPhysicalBoxStrut ConvertToPhysical(WritingDirectionMode) const;
+  inline PhysicalBoxStrut ConvertToPhysical(WritingDirectionMode) const;
 
   // The following two operators exist primarily to have an easy way to access
   // the sum of border and padding.
@@ -106,17 +106,17 @@ CORE_EXPORT std::ostream& operator<<(std::ostream&, const BoxStrut&);
 // swapped.
 //
 // https://drafts.csswg.org/css-writing-modes-3/#line-mappings
-struct CORE_EXPORT NGLineBoxStrut {
-  NGLineBoxStrut() = default;
-  NGLineBoxStrut(LayoutUnit inline_start,
-                 LayoutUnit inline_end,
-                 LayoutUnit line_over,
-                 LayoutUnit line_under)
+struct CORE_EXPORT LineBoxStrut {
+  LineBoxStrut() = default;
+  LineBoxStrut(LayoutUnit inline_start,
+               LayoutUnit inline_end,
+               LayoutUnit line_over,
+               LayoutUnit line_under)
       : inline_start(inline_start),
         inline_end(inline_end),
         line_over(line_over),
         line_under(line_under) {}
-  NGLineBoxStrut(const BoxStrut&, bool is_flipped_lines);
+  LineBoxStrut(const BoxStrut&, bool is_flipped_lines);
 
   LayoutUnit InlineSum() const { return inline_start + inline_end; }
   LayoutUnit BlockSum() const { return line_over + line_under; }
@@ -125,7 +125,7 @@ struct CORE_EXPORT NGLineBoxStrut {
     return !inline_start && !inline_end && !line_over && !line_under;
   }
 
-  bool operator==(const NGLineBoxStrut& other) const {
+  bool operator==(const LineBoxStrut& other) const {
     return inline_start == other.inline_start &&
            inline_end == other.inline_end && line_over == other.line_over &&
            line_under == other.line_under;
@@ -137,32 +137,32 @@ struct CORE_EXPORT NGLineBoxStrut {
   LayoutUnit line_under;
 };
 
-CORE_EXPORT std::ostream& operator<<(std::ostream&, const NGLineBoxStrut&);
+CORE_EXPORT std::ostream& operator<<(std::ostream&, const LineBoxStrut&);
 
 // Struct to store physical dimensions, independent of writing mode and
 // direction.
 // See https://drafts.csswg.org/css-writing-modes-3/#abstract-box
-struct CORE_EXPORT NGPhysicalBoxStrut {
-  NGPhysicalBoxStrut() = default;
-  explicit NGPhysicalBoxStrut(LayoutUnit value)
+struct CORE_EXPORT PhysicalBoxStrut {
+  PhysicalBoxStrut() = default;
+  explicit PhysicalBoxStrut(LayoutUnit value)
       : top(value), right(value), bottom(value), left(value) {}
-  NGPhysicalBoxStrut(LayoutUnit top,
-                     LayoutUnit right,
-                     LayoutUnit bottom,
-                     LayoutUnit left)
+  PhysicalBoxStrut(LayoutUnit top,
+                   LayoutUnit right,
+                   LayoutUnit bottom,
+                   LayoutUnit left)
       : top(top), right(right), bottom(bottom), left(left) {}
 
   // Arguments are clamped to [LayoutUnix::Min(), LayoutUnit::Max()].
-  NGPhysicalBoxStrut(int t, int r, int b, int l)
+  PhysicalBoxStrut(int t, int r, int b, int l)
       : top(LayoutUnit(t)),
         right(LayoutUnit(r)),
         bottom(LayoutUnit(b)),
         left(LayoutUnit(l)) {}
 
-  // Creates new NGPhysicalBoxStrut instance from the specified `outsets`.
+  // Creates new PhysicalBoxStrut instance from the specified `outsets`.
   // A data member of `outsets` is rounded up to the minimum LayoutUnit value
   // which is equal or lager than the data member.
-  static NGPhysicalBoxStrut Enclosing(const gfx::OutsetsF& outsets) {
+  static PhysicalBoxStrut Enclosing(const gfx::OutsetsF& outsets) {
     return {LayoutUnit::FromFloatCeil(outsets.top()),
             LayoutUnit::FromFloatCeil(outsets.right()),
             LayoutUnit::FromFloatCeil(outsets.bottom()),
@@ -204,16 +204,16 @@ struct CORE_EXPORT NGPhysicalBoxStrut {
 
   // Converts physical dimensions to line-relative logical ones per
   // https://drafts.csswg.org/css-writing-modes-3/#line-directions
-  NGLineBoxStrut ConvertToLineLogical(
+  LineBoxStrut ConvertToLineLogical(
       WritingDirectionMode writing_direction) const {
-    return NGLineBoxStrut(ConvertToLogical(writing_direction),
-                          writing_direction.IsFlippedLines());
+    return LineBoxStrut(ConvertToLogical(writing_direction),
+                        writing_direction.IsFlippedLines());
   }
 
   LayoutUnit HorizontalSum() const { return left + right; }
   LayoutUnit VerticalSum() const { return top + bottom; }
 
-  NGPhysicalBoxStrut& Inflate(LayoutUnit diff) {
+  PhysicalBoxStrut& Inflate(LayoutUnit diff) {
     top += diff;
     right += diff;
     bottom += diff;
@@ -223,9 +223,9 @@ struct CORE_EXPORT NGPhysicalBoxStrut {
 
   // Update each of data members with std::max(this->member, other.member).
   // This function returns `*this`.
-  NGPhysicalBoxStrut& Unite(const NGPhysicalBoxStrut& other);
+  PhysicalBoxStrut& Unite(const PhysicalBoxStrut& other);
 
-  NGPhysicalBoxStrut& operator+=(const NGPhysicalBoxStrut& other) {
+  PhysicalBoxStrut& operator+=(const PhysicalBoxStrut& other) {
     top += other.top;
     right += other.right;
     bottom += other.bottom;
@@ -233,7 +233,7 @@ struct CORE_EXPORT NGPhysicalBoxStrut {
     return *this;
   }
 
-  NGPhysicalBoxStrut& operator-=(const NGPhysicalBoxStrut& other) {
+  PhysicalBoxStrut& operator-=(const PhysicalBoxStrut& other) {
     top -= other.top;
     right -= other.right;
     bottom -= other.bottom;
@@ -241,19 +241,19 @@ struct CORE_EXPORT NGPhysicalBoxStrut {
     return *this;
   }
 
-  NGPhysicalBoxStrut operator+(const NGPhysicalBoxStrut& other) const {
-    NGPhysicalBoxStrut result(*this);
+  PhysicalBoxStrut operator+(const PhysicalBoxStrut& other) const {
+    PhysicalBoxStrut result(*this);
     result += other;
     return result;
   }
 
-  NGPhysicalBoxStrut operator-(const NGPhysicalBoxStrut& other) const {
-    NGPhysicalBoxStrut result(*this);
+  PhysicalBoxStrut operator-(const PhysicalBoxStrut& other) const {
+    PhysicalBoxStrut result(*this);
     result -= other;
     return result;
   }
 
-  bool operator==(const NGPhysicalBoxStrut& other) const {
+  bool operator==(const PhysicalBoxStrut& other) const {
     return top == other.top && right == other.right && bottom == other.bottom &&
            left == other.left;
   }
@@ -274,7 +274,7 @@ struct CORE_EXPORT NGPhysicalBoxStrut {
   LayoutUnit left;
 };
 
-inline NGPhysicalBoxStrut BoxStrut::ConvertToPhysical(
+inline PhysicalBoxStrut BoxStrut::ConvertToPhysical(
     WritingDirectionMode writing_direction) const {
   LayoutUnit direction_start = inline_start;
   LayoutUnit direction_end = inline_end;
@@ -282,25 +282,25 @@ inline NGPhysicalBoxStrut BoxStrut::ConvertToPhysical(
     std::swap(direction_start, direction_end);
   switch (writing_direction.GetWritingMode()) {
     case WritingMode::kHorizontalTb:
-      return NGPhysicalBoxStrut(block_start, direction_end, block_end,
-                                direction_start);
+      return PhysicalBoxStrut(block_start, direction_end, block_end,
+                              direction_start);
     case WritingMode::kVerticalRl:
     case WritingMode::kSidewaysRl:
-      return NGPhysicalBoxStrut(direction_start, block_start, direction_end,
-                                block_end);
+      return PhysicalBoxStrut(direction_start, block_start, direction_end,
+                              block_end);
     case WritingMode::kVerticalLr:
-      return NGPhysicalBoxStrut(direction_start, block_end, direction_end,
-                                block_start);
+      return PhysicalBoxStrut(direction_start, block_end, direction_end,
+                              block_start);
     case WritingMode::kSidewaysLr:
-      return NGPhysicalBoxStrut(direction_end, block_end, direction_start,
-                                block_start);
+      return PhysicalBoxStrut(direction_end, block_end, direction_start,
+                              block_start);
     default:
       NOTREACHED();
-      return NGPhysicalBoxStrut();
+      return PhysicalBoxStrut();
   }
 }
 
-inline NGPhysicalBoxStrut operator-(const NGPhysicalBoxStrut& a) {
+inline PhysicalBoxStrut operator-(const PhysicalBoxStrut& a) {
   return {-a.top, -a.right, -a.bottom, -a.left};
 }
 

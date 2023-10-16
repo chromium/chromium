@@ -40,6 +40,9 @@ let myFilesEntry;
  */
 let fileTypeFiltersController;
 
+/** @type {boolean} */
+let isScanCalled = false;
+
 const TOTAL_FILTER_BUTTON_COUNT = 5;
 
 export function setUp() {
@@ -49,11 +52,11 @@ export function setUp() {
       super();
 
       this.currentDirEntry = null;
-      window.isScanCalled = false;
+      isScanCalled = false;
     }
 
     clearCurrentDirAndScan() {
-      window.isScanCalled = true;
+      isScanCalled = true;
     }
 
     changeDirectoryEntry(dirEntry) {
@@ -251,38 +254,38 @@ export function testAppliedFilters() {
   buttons[1].click();
   assertEquals(
       recentEntry.fileCategory, chrome.fileManagerPrivate.FileCategory.AUDIO);
-  assertTrue(window.isScanCalled);
-  window.isScanCalled = false;
+  assertTrue(isScanCalled);
+  isScanCalled = false;
 
   // Clicking an active button will trigger a scan for "All".
   buttons[1].click();
   assertEquals(
       recentEntry.fileCategory, chrome.fileManagerPrivate.FileCategory.ALL);
-  assertTrue(window.isScanCalled);
-  window.isScanCalled = false;
+  assertTrue(isScanCalled);
+  isScanCalled = false;
 
   buttons[2].click();
   assertEquals(
       recentEntry.fileCategory,
       chrome.fileManagerPrivate.FileCategory.DOCUMENT);
-  assertTrue(window.isScanCalled);
-  window.isScanCalled = false;
+  assertTrue(isScanCalled);
+  isScanCalled = false;
 
   buttons[3].click();
   assertEquals(
       recentEntry.fileCategory, chrome.fileManagerPrivate.FileCategory.IMAGE);
-  assertTrue(window.isScanCalled);
-  window.isScanCalled = false;
+  assertTrue(isScanCalled);
+  isScanCalled = false;
 
   buttons[4].click();
   assertEquals(
       recentEntry.fileCategory, chrome.fileManagerPrivate.FileCategory.VIDEO);
-  assertTrue(window.isScanCalled);
-  window.isScanCalled = false;
+  assertTrue(isScanCalled);
+  isScanCalled = false;
 
   buttons[0].click();
   assertEquals(
       recentEntry.fileCategory, chrome.fileManagerPrivate.FileCategory.ALL);
-  assertTrue(window.isScanCalled);
-  window.isScanCalled = false;
+  assertTrue(isScanCalled);
+  isScanCalled = false;
 }

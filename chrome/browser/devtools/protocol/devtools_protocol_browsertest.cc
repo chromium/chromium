@@ -819,13 +819,13 @@ IN_PROC_BROWSER_TEST_F(DevToolsProtocolTest,
     params.Set("enabled", true);
     SendCommandSync("Emulation.setAutomationOverride", std::move(params));
   }
-  EXPECT_EQ(static_cast<int>(manager->infobar_count()), 1);
+  EXPECT_EQ(manager->infobars().size(), 1u);
   {
     base::Value::Dict params;
     params.Set("enabled", false);
     SendCommandSync("Emulation.setAutomationOverride", std::move(params));
   }
-  EXPECT_EQ(static_cast<int>(manager->infobar_count()), 0);
+  EXPECT_EQ(manager->infobars().size(), 0u);
 }
 
 IN_PROC_BROWSER_TEST_F(DevToolsProtocolTest,
@@ -838,13 +838,13 @@ IN_PROC_BROWSER_TEST_F(DevToolsProtocolTest,
     params.Set("enabled", true);
     SendCommandSync("Emulation.setAutomationOverride", std::move(params));
   }
-  EXPECT_EQ(static_cast<int>(manager->infobar_count()), 1);
+  EXPECT_EQ(manager->infobars().size(), 1u);
   {
     base::Value::Dict params;
     params.Set("enabled", true);
     SendCommandSync("Emulation.setAutomationOverride", std::move(params));
   }
-  EXPECT_EQ(static_cast<int>(manager->infobar_count()), 1);
+  EXPECT_EQ(manager->infobars().size(), 1u);
 }
 
 IN_PROC_BROWSER_TEST_F(DevToolsProtocolTest, UntrustedClient) {

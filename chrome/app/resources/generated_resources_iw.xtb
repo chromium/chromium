@@ -108,6 +108,7 @@
 <translation id="1076818208934827215">Microsoft Internet Explorer</translation>
 <translation id="1076882167394279216">לא ניתן היה להוריד מילון בדיקת איות ב<ph name="LANGUAGE" />. יש לנסות שוב.</translation>
 <translation id="1078037449555275327">‏הגדרות ChromeVox</translation>
+<translation id="1079285777677001938">יכול להיות שתכונות באתרים מסוימים לא יפעלו.</translation>
 <translation id="1079766198702302550">תמיד לחסום גישה למצלמה</translation>
 <translation id="1081956462909987459">{NUM_TABS,plural, =1{<ph name="GROUP_TITLE" /> – כרטיסייה אחת}one{<ph name="GROUP_TITLE" /> – # כרטיסיות}two{<ph name="GROUP_TITLE" /> – # כרטיסיות}other{<ph name="GROUP_TITLE" /> – # כרטיסיות}}</translation>
 <translation id="1082214733466244292">פונקציות מסוימות במכשיר הזה נחסמו על ידי מנהל המערכת</translation>
@@ -305,6 +306,7 @@
 <translation id="1227660082540388410">עריכת מפתח הגישה</translation>
 <translation id="1227993798763400520">ההעברה נכשלה. יש לנסות שוב.</translation>
 <translation id="1230417814058465809">מופעלת הגנה רגילה. כדי להוסיף שכבת אבטחה, יש להשתמש בהגנה המשופרת.</translation>
+<translation id="1231426483209637778">נזכור את הרשת שלך בשימוש הבא ב-<ph name="DEVICE_TYPE" /></translation>
 <translation id="1232569758102978740">ללא שם</translation>
 <translation id="1233497634904001272">יש לגעת במפתח האבטחה שוב כדי להשלים את הבקשה.</translation>
 <translation id="1233721473400465416">לוקאל</translation>
@@ -545,6 +547,7 @@
 <translation id="1431188203598586230">עדכון התוכנה האחרון</translation>
 <translation id="1432581352905426595">ניהול מנועי חיפוש</translation>
 <translation id="1433478348197382180">מצב קריאה</translation>
+<translation id="1433980411933182122">הפעלה</translation>
 <translation id="1434696352799406980">‏פעולה זו תאפס את דף הפתיחה, את דף הכרטיסייה החדשה, את מנוע החיפוש ואת הכרטיסיות המוצמדות שלך. היא גם תשבית את כל התוספים ותמחק נתונים זמניים כגון קובצי Cookie. הסימניות, ההיסטוריה והסיסמאות השמורות לא יימחקו.</translation>
 <translation id="1434886155212424586">דף הבית הוא הדף 'כרטיסייה חדשה'</translation>
 <translation id="1435940442311036198">שימוש במפתח גישה במכשיר אחר</translation>
@@ -674,6 +677,7 @@
 <translation id="1536754031901697553">מתנתק...</translation>
 <translation id="1537254971476575106">מגדיל למסך מלא</translation>
 <translation id="15373452373711364">סמן עכבר גדול</translation>
+<translation id="1540265419569299117">‏שירות לאפליקציות של ChromeOS</translation>
 <translation id="1540605929960647700">הפעלת מצב הדגמה</translation>
 <translation id="1541346352678737112">לא נמצאה רשת</translation>
 <translation id="154198613844929213">{0,plural, =0{נתוני הגלישה יימחקו עכשיו}=1{נתוני הגלישה יימחקו בעוד: שנייה אחת}one{נתוני הגלישה יימחקו בעוד: # שניות}two{נתוני הגלישה יימחקו בעוד: # שניות}other{נתוני הגלישה יימחקו בעוד: # שניות}}</translation>
@@ -1512,6 +1516,7 @@
 <translation id="2157474325782140681">‏כדי להשתמש בתכונות נוספות, יש להשתמש בתחנת עגינה של Dell שתוכננה לפעול עם ה-Chromebook הזה.</translation>
 <translation id="215753907730220065">יציאה ממסך מלא</translation>
 <translation id="2157875535253991059">דף זה הוא במסך מלא כעת.</translation>
+<translation id="2158249272743343757">מתבצעת מחיקה של נתוני ההתאמה האישית…</translation>
 <translation id="2158475082070321257">העתקת קישור לטקסט המודגש</translation>
 <translation id="2159488579268505102">USB-C</translation>
 <translation id="2161058806218011758">ההיקף של <ph name="SHORTCUT" /> עבור <ph name="EXTENSION_NAME" /></translation>
@@ -3225,6 +3230,7 @@
 <translation id="3521405806571557477">מחיקת הנתונים השמורים של <ph name="SITE_NAME" /></translation>
 <translation id="3521606918211282604">שינוי גודל הכונן</translation>
 <translation id="3522088408596898827">נפח האחסון כמעט נגמר. יש לפנות מקום ולנסות שוב.</translation>
+<translation id="3522979239100719575">מתבצע חיפוש של פרופילים זמינים. הפעולה עשויה להימשך מספר דקות.</translation>
 <translation id="3524518036046613664">גילוי מכשירים, כמו מדפסות, ברשת המקומית</translation>
 <translation id="3524965460886318643">ייצוא הפעילויות</translation>
 <translation id="3525426269008462093">בדיקה של סנכרון המכשירים לאחר ההגדרה</translation>
@@ -3385,6 +3391,7 @@
 <translation id="3660234220361471169">לא אמין</translation>
 <translation id="3661297433172569100">{NUM_PASSWORDS,plural, =1{נמצאה סיסמה אחת קיימת}one{נמצאו {NUM_PASSWORDS} סיסמאות קיימות}two{נמצאו {NUM_PASSWORDS} סיסמאות קיימות}other{נמצאו {NUM_PASSWORDS} סיסמאות קיימות}}</translation>
 <translation id="3664511988987167893">סמל התוסף</translation>
+<translation id="3665100783276035932">רוב האתרים אמורים לפעול כצפוי</translation>
 <translation id="3665301845536101715">פתיחה בחלונית צדדית</translation>
 <translation id="3665589677786828986">‏Chrome זיהה שחלק מההגדרות שלך נפגמו על ידי תכנית אחרת ואיפס אותן לברירות המחדל המקוריות.</translation>
 <translation id="3665919494326051362">הגרסה הנוכחית היא <ph name="CURRENT_VERSION" /></translation>
@@ -3838,11 +3845,13 @@
 <translation id="398477389655464998">העתקת קישור לטקסט המודגש</translation>
 <translation id="3984862166739904574">הגדרה של תשובות מהירות</translation>
 <translation id="3985022125189960801">ניתן להוסיף אתר בחזרה כדי שייכלל במאגר האתרים שיכולים להעריך מה מעניין אותך</translation>
+<translation id="3986813315215454677">‏Bluetooth של ChromeOS</translation>
 <translation id="3987544746655539083">להמשיך לחסום – האתר לא יקבל גישה למיקום שלך</translation>
 <translation id="3987938432087324095">זה לא היה ברור.</translation>
 <translation id="3987993985790029246">העתקת קישור</translation>
 <translation id="3988124842897276887">‏הכרטיסייה הזו מחוברת להתקן USB</translation>
 <translation id="3988996860813292272">בחירת אזור זמן</translation>
+<translation id="3991055816270226534">‏ניהול קובצי cookie של צד שלישי ואמצעי חסימת מעקב</translation>
 <translation id="399179161741278232">מיובאות</translation>
 <translation id="3992008114154328194">מתבצעת הורדה לקובץ <ph name="FILE_NAME" />,‏ <ph name="STATUS" /></translation>
 <translation id="3993259701827857030">גיבוי הנתונים</translation>
@@ -4500,6 +4509,7 @@
 <translation id="4546692474302123343">‏קלט קולי ב-Google Assistant</translation>
 <translation id="4547659257713117923">אין כרטיסיות ממכשירים אחרים</translation>
 <translation id="4547672827276975204">הגדרה באופן אוטומטי</translation>
+<translation id="4548858987594081919">‏עליך להוסיף את שם המשתמש שלך באתר הזה כדי לעזור למנהל הסיסמאות של Google לשמור את פרטי הכניסה</translation>
 <translation id="4549791035683739768">לא נשמרו טביעות אצבעות במפתח האבטחה</translation>
 <translation id="4550926046134589611">חלק מהקישורים הנתמכים ימשיכו להיפתח ב-<ph name="APP_NAME" />.</translation>
 <translation id="4551763574344810652">אפשר לבטל את הפעולה בהקשה על <ph name="MODIFIER_KEY_DESCRIPTION" /></translation>
@@ -4918,6 +4928,7 @@
 <translation id="4887424188275796356">פתיחה באמצעות מציג המערכת</translation>
 <translation id="488785315393301722">הצגת פרטים</translation>
 <translation id="488862352499217187">יצירת תיקייה חדשה</translation>
+<translation id="4890292359366636311">מעבר למצב 'תמונה בתוך תמונה' באופן אוטומטי כדי שניתן יהיה להשתמש בו מעל כרטיסיות וחלונות אחרים.</translation>
 <translation id="4890773143211625964">הצגת אפשרויות מדפסת מתקדמות</translation>
 <translation id="4891089016822695758">פורום ביטא</translation>
 <translation id="4892229439761351791">‏לאתר יש הרשאה להשתמש ב-Bluetooth</translation>
@@ -5094,6 +5105,7 @@
 <translation id="5051461727068120271">הורדת קובץ לא מאומת</translation>
 <translation id="5051836348807686060">בשפות שבחרת אין תמיכה בבדיקת איות</translation>
 <translation id="5052499409147950210">עריכת אתר</translation>
+<translation id="5053233576223592551">הוספת שם משתמש</translation>
 <translation id="505347685865235222">קבוצה ללא שם – <ph name="GROUP_CONTENT_STRING" /></translation>
 <translation id="5054374119096692193">‏הצגת כל אפשרויות הכרטיסים ב<ph name="BEGIN_LINK" />התאמה האישית של Chrome<ph name="END_LINK" /></translation>
 <translation id="5056950756634735043">מתבצעת התחברות למאגר</translation>
@@ -5859,6 +5871,7 @@
 <translation id="5684661240348539843">מזהה נכסים</translation>
 <translation id="5684950556880280580">הסיסמה שלך עודכנה</translation>
 <translation id="5687326903064479980">אזור זמן</translation>
+<translation id="5687340364605915800">לכל אתר יש דרך ושיקולים משלו בתגובה לבקשה הזו</translation>
 <translation id="5687606994963670306">‏אתרים שנוספו לפני יותר מ-30 יום נמחקים מ-Chrome באופן אוטומטי. אתר שמבקרים בו פעם נוספת עשוי להופיע שוב ברשימה. אפשר גם לחסום את האפשרות של אתרים להציע מודעות. <ph name="BEGIN_LINK" />מידע נוסף על ניהול הפרטיות בפרסום ב-Chrome<ph name="END_LINK" /></translation>
 <translation id="5687935527303996204">צריך לוודא שהמכשיר מחובר ואין לכבות אותו. ייתכן שתהליך ההתקנה יימשך עד 20 דקות. המכשיר שלך ייכבה אוטומטית כשההתקנה תושלם.</translation>
 <translation id="5689233503102158537">‏Alt + מקש Backspace</translation>
@@ -6093,6 +6106,7 @@
 <translation id="5869522115854928033">סיסמאות שמורות</translation>
 <translation id="5870086504539785141">סגירת תפריט הנגישות</translation>
 <translation id="5870155679953074650">שגיאות חמורות</translation>
+<translation id="5872318519182427835">‏ההגדרה משפיעה על האתרים הרשומים כאן ועל תת-הדומיינים שלהם. לדוגמה, אם מוסיפים את הכתובת 'google.com', יכול להיות שקובצי cookie של צד שלישי יהיו פעילים גם בכתובת mail.google.com, כי היא שייכת ל-google.com.</translation>
 <translation id="5875534259258494936">שיתוף המסך הסתיים</translation>
 <translation id="5876576639916258720">התכונה פעילה…</translation>
 <translation id="5876851302954717356">כרטיסייה חדשה מצד ימין</translation>
@@ -6477,6 +6491,7 @@
 <translation id="6180550893222597997">באיזה מפתח גישה ברצונך להשתמש עבור <ph name="APP_NAME" />?</translation>
 <translation id="6181431612547969857">ההורדה נחסמה</translation>
 <translation id="6184099524311454384">חיפוש כרטיסיות</translation>
+<translation id="6184868291074982484">‏Chrome מגביל באופן אוטומטי קובצי cookie של צד שלישי</translation>
 <translation id="6185132558746749656">מיקום מכשיר</translation>
 <translation id="6190953336330058278">‏אפליקציות של Phone Hub</translation>
 <translation id="6192333916571137726">קובץ הורדה</translation>
@@ -7334,12 +7349,14 @@
 <translation id="6876469544038980967">לא מועילה</translation>
 <translation id="6878422606530379992">השימוש בחיישנים מותר</translation>
 <translation id="6880587130513028875">תמונות נחסמו בדף זה</translation>
+<translation id="6882210908253838664">‏אם אתר מסוים לא פועל, אפשר לתת לו הרשאה זמנית לשימוש בקובצי cookie של צד שלישי. <ph name="BEGIN_LINK" />מידע נוסף<ph name="END_LINK" /></translation>
 <translation id="6883319974225028188">אופס! המערכת לא הצליחה לשמור את תצורת המכשיר.</translation>
 <translation id="6884474387073389421">בחרת למחוק את פרטי הכניסה שנבחרו. להמשיך?</translation>
 <translation id="6885122019363983153">יוגדרו אותם רקעים בשולחן העבודה במכשירים שונים</translation>
 <translation id="6885771755599377173">תצוגה מקדימה של מידע מערכת</translation>
 <translation id="6886380424988777998">‏לא הייתה אפשרות לשדרג את Linux</translation>
 <translation id="6886871292305414135">פתיחת קישור &amp;בכרטיסייה חדשה</translation>
+<translation id="6888831646723563669">כדאי להתחבר כדי ליהנות מכל התכונות של מכשיר <ph name="DEVICE_TYPE" /> החדש</translation>
 <translation id="6889957081990109136">המתג עדיין לא הוקצה</translation>
 <translation id="689007770043972343">כדאי לנסות לגרור כרטיסיות פתוחות אחרות לקבוצה</translation>
 <translation id="6892812721183419409">פתיחת קישור בתור <ph name="USER" /></translation>
@@ -7656,6 +7673,7 @@
 <translation id="7145413760160421938">לא ניתן לחזור לסשן הקודם</translation>
 <translation id="7146882055510146554">‏ב-Microsoft 365 נעשה שימוש ב-OneDrive כדי לפתוח ולערוך קבצים של Word,‏ Excel ו-PowerPoint. הקבצים האלה יופיעו בתפריט הניווט הצדדי של האפליקציה 'קבצים' בשם Microsoft OneDrive. צריך להיכנס באמצעות חשבון Microsoft. <ph name="LINK_BEGIN" />מידע נוסף<ph name="LINK_END" /></translation>
 <translation id="7148426638542880639">יכול להיות שאתרים לא יפעלו כצפוי. יש לבחור באפשרות הזו אם לא רוצים שיישמר במכשיר מידע על האתרים שמבקרים בהם.</translation>
+<translation id="7148954254185728510">‏לרוב האתרים אין אפשרות להשתמש בקובצי cookie של צד שלישי כדי לעקוב אחריך במהלך הגלישה, ולאף אתר אין אפשרות להשתמש בקובצי cookie של צד שלישי במצב פרטי.</translation>
 <translation id="7149839598364933473">אפשר להמיר את המכשיר הזה למכשיר <ph name="DEVICE_OS" />.</translation>
 <translation id="7149893636342594995">מהיום האחרון</translation>
 <translation id="7152478047064750137">אין צורך בהרשאות מיוחדות כדי להשתמש בתוסף זה</translation>
@@ -7807,6 +7825,7 @@
 <translation id="7283555985781738399">מצב אורח</translation>
 <translation id="7284307451964417957">{DAYS,plural, =1{המכשיר הזה יישמר למשך יום אחד ותהיה לך אפשרות להתחבר ללא קוד בפעם הבאה. ההגדרה נקבעת על ידי האדמין שלך.}one{המכשיר הזה יישמר למשך {DAYS} ימים ותהיה לך אפשרות להתחבר ללא קוד בפעם הבאה. ההגדרה נקבעת על ידי האדמין שלך.}two{המכשיר הזה יישמר למשך יומיים ({DAYS}) ותהיה לך אפשרות להתחבר ללא קוד בפעם הבאה. ההגדרה נקבעת על ידי האדמין שלך.}other{המכשיר הזה יישמר למשך {DAYS} ימים ותהיה לך אפשרות להתחבר ללא קוד בפעם הבאה. ההגדרה נקבעת על ידי האדמין שלך.}}</translation>
 <translation id="7284411326658527427">כל משתמש יכול להתאים אישית את החשבון שלו ולהגן על פרטיות הנתונים.</translation>
+<translation id="7286867818472074330">בחירת מפתח גישה</translation>
 <translation id="7287143125007575591">אין גישה</translation>
 <translation id="7287411021188441799">שחזור רקע ברירת מחדל</translation>
 <translation id="7288676996127329262">‏<ph name="HORIZONTAL_DPI" />‏x‏<ph name="VERTICAL_DPI" /> dpi</translation>
@@ -8243,6 +8262,7 @@
 <translation id="7634566076839829401">משהו השתבש. יש לנסות שוב.</translation>
 <translation id="7635048370253485243">מנהל המערכת הצמיד את התוסף הזה</translation>
 <translation id="7635711411613274199">‏במהלך הגלישה, יוצגו מודעות עם או בלי התאמה אישית בהתאם להגדרה הזו, <ph name="BEGIN_LINK1" />לנושאים של המודעות<ph name="LINK_END1" />, ל<ph name="BEGIN_LINK2" />הגדרות קובצי ה-cookie<ph name="LINK_END2" /> ולמצב ההתאמה האישית של מודעות באתר (פעילה או מושבתת)</translation>
+<translation id="7636346903338549690">‏אתרים שמורשים להשתמש בקובצי cookie של צד שלישי</translation>
 <translation id="7636919061354591437">התקנה במכשיר זה</translation>
 <translation id="7637253234491814483">אפשר לגעת בחיישן טביעות האצבע שבפינה הימנית העליונה של המקלדת, ליד לחצן ההפעלה. נתוני טביעות האצבע נשמרים באופן מאובטח ואף פעם לא נשלחים ממכשיר ה-<ph name="DEVICE_TYPE" />.</translation>
 <translation id="7637272932128132922">בזמן שהכרטיסייה לא הייתה פעילה, במסגרת מצב החיסכון בזיכרון התפנה זיכרון בשביל משימות אחרות. תמיד אפשר לשנות זאת ב<ph name="SETTINGS_LINK" />.</translation>
@@ -9576,6 +9596,7 @@
 <translation id="8678378565142776698">הפעלה מחדש והתקנת העדכונים האוטומטיים</translation>
 <translation id="8678538439778360739">‏הנתונים הוצפנו באמצעות ביטוי הסיסמה שלך לסנכרון בשעה <ph name="TIME" />. הנתונים המוצפנים לא כוללים אמצעי תשלום וכתובות מ-Google Pay.</translation>
 <translation id="8678582529642151449">הכרטיסיות לא יתכווצו</translation>
+<translation id="867882552362231068">‏ב-Chrome יש הגבלה על סוגי המידע שיכולים לשמש אתרים למעקב אחריך במהלך הגלישה. אפשר לשנות את ההגדרות כדי לבחור ברמת ההגנה הרצויה.</translation>
 <translation id="8678933587484842200">איך להפעיל את האפליקציה הזו?</translation>
 <translation id="8679054765393461130">‏לפי הרשימה של עיבוד בחירת הרשת, יופעל Wi-Fi לסריקות בתדירות גבוהה. יכול להיות שתהיה לכך השפעה על הביצועים ברשת ה-Wi-Fi.</translation>
 <translation id="8680251145628383637">‏יש להיכנס כדי לקבל גישה אל הסימניות, ההיסטוריה, הסיסמאות והגדרות נוספות בכל המכשירים שברשותך. בנוסף, תחובר אוטומטית אל שירותי Google.</translation>

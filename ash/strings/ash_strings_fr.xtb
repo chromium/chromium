@@ -353,7 +353,6 @@ Pour commencer, voici des exemples de ce que vous pouvez me demander.</translati
 <translation id="243878895369688216">Ouvert hier</translation>
 <translation id="2440978926514840421">Enregistrement de GIF effectué</translation>
 <translation id="2441427462554639370">Enregistrement interrompu, car l'espace de stockage est presque saturé</translation>
-<translation id="24452542372838207">Développer la notification</translation>
 <translation id="2448312741937722512">Type</translation>
 <translation id="2449089818483227734">Batterie faible</translation>
 <translation id="2450205753526923158">Mode de capture d'écran</translation>
@@ -1947,7 +1946,6 @@ Pour éteindre l'appareil, appuyez à nouveau de manière prolongée sur le bout
 <translation id="9030665205623277906">Instantané d'utilisation du processeur : <ph name="CPU_USEAGE" /> %</translation>
 <translation id="9034924485347205037">Fichiers Linux</translation>
 <translation id="9047624247355796468">Ouvrir les paramètres du réseau <ph name="NETWORK_NAME" /></translation>
-<translation id="9059834730836941392">Réduire la notification</translation>
 <translation id="906458777597946297">Agrandir la fenêtre</translation>
 <translation id="9065203028668620118">Modifier</translation>
 <translation id="9070640332319875144">Paramètres de l'Assistant</translation>

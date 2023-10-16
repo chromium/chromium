@@ -466,6 +466,7 @@ Jinak to vaše nastavení ochrany soukromí bude blokovat. Povolením umožníte
 <translation id="1875512691959384712">Formuláře Google</translation>
 <translation id="1876399092304384674">Podle data</translation>
 <translation id="187918866476621466">Otevřít počáteční stránky</translation>
+<translation id="1880901968112404879">Pokud příště chcete zaplatit rychleji, uložte si kartu, zašifrovaný bezpečnostní kód a fakturační adresu do účtu Google</translation>
 <translation id="1883255238294161206">Sbalit seznam</translation>
 <translation id="1884843295353628214">Jazz</translation>
 <translation id="1890171020361705182">Dinosauří hra. Pixelizovaný dinosaurus běží pustou krajinou a vyhýbá se přitom kaktusům a pterodaktylům. Když uslyšíte zvukový signál, klepnutím přeskočte překážku.</translation>
@@ -1889,6 +1890,7 @@ Jinak to vaše nastavení ochrany soukromí bude blokovat. Povolením umožníte
 <translation id="4873616204573862158">Brýle</translation>
 <translation id="4876188919622883022">Zjednodušené zobrazení</translation>
 <translation id="4876305945144899064">Žádné uživatelské jméno</translation>
+<translation id="4876327226315760474">To znamená, že funkce webu by měly fungovat podle očekávání, ale můžete mít menší ochranu při procházení.</translation>
 <translation id="4877047577339061095">Uskladňovací vybavení pro domácnost</translation>
 <translation id="4877083676943085827">{COUNT,plural, =0{Žádné}=1{<ph name="EXAMPLE_DOMAIN_1" />}=2{<ph name="EXAMPLE_DOMAIN_1" />, <ph name="EXAMPLE_DOMAIN_2" />}few{<ph name="EXAMPLE_DOMAIN_1" />, <ph name="EXAMPLE_DOMAIN_2" />, <ph name="AND_MORE" />}many{<ph name="EXAMPLE_DOMAIN_1" />, <ph name="EXAMPLE_DOMAIN_2" />, <ph name="AND_MORE" />}other{<ph name="EXAMPLE_DOMAIN_1" />, <ph name="EXAMPLE_DOMAIN_2" />, <ph name="AND_MORE" />}}</translation>
 <translation id="4877422487531841831">Vyhledávání dotazu <ph name="TEXT" /></translation>
@@ -2517,6 +2519,7 @@ Kontaktujte administrátora systému.</translation>
 <translation id="6182972682129119950">A4x5</translation>
 <translation id="61877208875190028">Dámské oděvy</translation>
 <translation id="6194209731893739467">Tady zobrazíte všechny sledované produkty</translation>
+<translation id="6195163219142236913">Soubory cookie třetích stran jsou omezeny</translation>
 <translation id="6195371403461054755">Geologie</translation>
 <translation id="6196640612572343990">Blokovat soubory cookie třetích stran</translation>
 <translation id="6197648101609735209">89 × 89 mm</translation>
@@ -3350,6 +3353,7 @@ Kontaktujte administrátora systému.</translation>
 <translation id="7802989406998618639">Zadejte <ph name="NUMBER_OF_DIGITS" />místný bezpečnostní kód na kartě <ph name="SIDE_OF_CARD" />, aby banka mohla ověřit vaši totožnost</translation>
 <translation id="780301667611848630">Ne, děkuji</translation>
 <translation id="7805768142964895445">Stav</translation>
+<translation id="7810410097247356677">Pokud příště chcete zaplatit rychleji, uložte si kartu a zašifrovaný bezpečnostní kód do zařízení</translation>
 <translation id="7812922009395017822">Mir</translation>
 <translation id="7813600968533626083">Odstranit návrh položky formuláře z Chromu?</translation>
 <translation id="781440967107097262">Sdílet schránku?</translation>

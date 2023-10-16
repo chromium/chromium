@@ -8,7 +8,7 @@
 #define COMPONENTS_INVALIDATION_PUBLIC_INVALIDATION_UTIL_H_
 
 #include <map>
-#include <memory>
+
 #include <set>
 #include <string>
 
@@ -26,8 +26,6 @@ struct INVALIDATION_EXPORT InvalidationVersionLessThan {
 using Topic = std::string;
 // It should be std::set, since std::set_difference is used for it.
 using TopicSet = std::set<std::string>;
-
-using TopicCountMap = std::map<Topic, int>;
 
 INVALIDATION_EXPORT struct TopicMetadata {
   // Whether the topic is public.

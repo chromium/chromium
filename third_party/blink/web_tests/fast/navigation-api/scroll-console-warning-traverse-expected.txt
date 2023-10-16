@@ -1,11 +1,11 @@
 CONSOLE WARNING: The "manual" value for intercept()'s scroll option will override the previously-passed value of "after-transition".
 CONSOLE WARNING: The "after-transition" value for intercept()'s scroll option will override the previously-passed value of "manual".
 This is a testharness.js-based test.
-PASS (not provided) + after-transition
-PASS (not provided) + manual
-PASS after-transition + manual
-PASS after-transition + (not provided)
-PASS manual + after-transition
-PASS manual + (not provided)
+[PASS] (not provided) + after-transition
+[PASS] (not provided) + manual
+[PASS] after-transition + manual
+[PASS] after-transition + (not provided)
+[PASS] manual + after-transition
+[PASS] manual + (not provided)
 Harness: the test ran to completion.
 

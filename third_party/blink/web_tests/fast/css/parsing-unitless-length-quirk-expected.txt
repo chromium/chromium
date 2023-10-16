@@ -1,59 +1,59 @@
 This is a testharness.js-based test.
 Harness Error. harness_status.status = 1 , harness_status.message = 6 duplicate test names: "Unitless length quirk for border-spacing property", "No unitless length quirk for border-top property", "No unitless length quirk for border property", "No unitless length quirk for font property", "Unitless length quirk for background-position property", "No unitless length quirk for background property"
-PASS StyleSheet present
-PASS All rules parsed
-PASS Unitless length quirk for border-top-width property
-PASS Unitless length quirk for border-right-width property
-PASS Unitless length quirk for border-bottom-width property
-PASS Unitless length quirk for border-left-width property
-PASS Unitless length quirk for border-width property
-PASS Unitless length quirk for bottom property
-PASS Unitless length quirk for clip property
-PASS Unitless length quirk for font-size property
-PASS Unitless length quirk for height property
-PASS Unitless length quirk for left property
-PASS Unitless length quirk for letter-spacing property
-PASS Unitless length quirk for margin-right property
-PASS Unitless length quirk for margin-left property
-PASS Unitless length quirk for margin-top property
-PASS Unitless length quirk for margin-bottom property
-PASS Unitless length quirk for margin property
-PASS Unitless length quirk for padding-right property
-PASS Unitless length quirk for padding-left property
-PASS Unitless length quirk for padding-top property
-PASS Unitless length quirk for padding-bottom property
-PASS Unitless length quirk for padding property
-PASS Unitless length quirk for right property
-PASS Unitless length quirk for top property
-PASS Unitless length quirk for width property
-PASS Unitless length quirk for word-spacing property
-PASS No unitless length quirk for border-top property
-PASS No unitless length quirk for border-right property
-PASS No unitless length quirk for border-bottom property
-PASS No unitless length quirk for border-left property
-PASS Unitless length quirk for border-spacing property
-PASS Unitless length quirk for border-spacing property
-PASS No unitless length quirk for border-top property
-PASS No unitless length quirk for border-top property
-PASS Unitless length quirk for border-top property
-PASS No unitless length quirk for border-top property
-PASS No unitless length quirk for border property
-PASS No unitless length quirk for border property
-PASS Unitless length quirk for border property
-PASS No unitless length quirk for border property
-PASS No unitless length quirk for font property
-PASS No unitless length quirk for font property
-PASS Unitless length quirk for background-position property
-PASS Unitless length quirk for background-position property
-PASS No unitless length quirk for background property
-PASS No unitless length quirk for background property
-PASS No unitless length quirk for background property
-PASS No unitless length quirk for background property
-PASS Unitless length quirk for text-indent property
-PASS No unitless length quirk for outline-width property
-PASS Unitless length quirk for min-width property
-PASS Unitless length quirk for min-height property
-PASS Unitless length quirk for max-width property
-PASS Unitless length quirk for max-height property
+[PASS] StyleSheet present
+[PASS] All rules parsed
+[PASS] Unitless length quirk for border-top-width property
+[PASS] Unitless length quirk for border-right-width property
+[PASS] Unitless length quirk for border-bottom-width property
+[PASS] Unitless length quirk for border-left-width property
+[PASS] Unitless length quirk for border-width property
+[PASS] Unitless length quirk for bottom property
+[PASS] Unitless length quirk for clip property
+[PASS] Unitless length quirk for font-size property
+[PASS] Unitless length quirk for height property
+[PASS] Unitless length quirk for left property
+[PASS] Unitless length quirk for letter-spacing property
+[PASS] Unitless length quirk for margin-right property
+[PASS] Unitless length quirk for margin-left property
+[PASS] Unitless length quirk for margin-top property
+[PASS] Unitless length quirk for margin-bottom property
+[PASS] Unitless length quirk for margin property
+[PASS] Unitless length quirk for padding-right property
+[PASS] Unitless length quirk for padding-left property
+[PASS] Unitless length quirk for padding-top property
+[PASS] Unitless length quirk for padding-bottom property
+[PASS] Unitless length quirk for padding property
+[PASS] Unitless length quirk for right property
+[PASS] Unitless length quirk for top property
+[PASS] Unitless length quirk for width property
+[PASS] Unitless length quirk for word-spacing property
+[PASS] No unitless length quirk for border-top property
+[PASS] No unitless length quirk for border-right property
+[PASS] No unitless length quirk for border-bottom property
+[PASS] No unitless length quirk for border-left property
+[PASS] Unitless length quirk for border-spacing property
+[PASS] Unitless length quirk for border-spacing property
+[PASS] No unitless length quirk for border-top property
+[PASS] No unitless length quirk for border-top property
+[PASS] Unitless length quirk for border-top property
+[PASS] No unitless length quirk for border-top property
+[PASS] No unitless length quirk for border property
+[PASS] No unitless length quirk for border property
+[PASS] Unitless length quirk for border property
+[PASS] No unitless length quirk for border property
+[PASS] No unitless length quirk for font property
+[PASS] No unitless length quirk for font property
+[PASS] Unitless length quirk for background-position property
+[PASS] Unitless length quirk for background-position property
+[PASS] No unitless length quirk for background property
+[PASS] No unitless length quirk for background property
+[PASS] No unitless length quirk for background property
+[PASS] No unitless length quirk for background property
+[PASS] Unitless length quirk for text-indent property
+[PASS] No unitless length quirk for outline-width property
+[PASS] Unitless length quirk for min-width property
+[PASS] Unitless length quirk for min-height property
+[PASS] Unitless length quirk for max-width property
+[PASS] Unitless length quirk for max-height property
 Harness: the test ran to completion.
 

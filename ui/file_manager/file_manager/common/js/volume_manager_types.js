@@ -410,7 +410,7 @@ VolumeManagerCommon.getMediaViewRootTypeFromVolumeId = volumeId => {
 /**
  * An event name trigerred when a user tries to mount the volume which is
  * already mounted. The event object must have a volumeId property.
- * @const {string}
+ * @const @type {string}
  */
 VolumeManagerCommon.VOLUME_ALREADY_MOUNTED = 'volume_already_mounted';
 
@@ -421,7 +421,7 @@ VolumeManagerCommon.SHARED_DRIVES_DIRECTORY_PATH =
 /**
  * This is the top level directory name for Computers in drive that are using
  * the backup and sync feature.
- * @const {string}
+ * @const @type {string}
  */
 VolumeManagerCommon.COMPUTERS_DIRECTORY_NAME = 'Computers';
 VolumeManagerCommon.COMPUTERS_DIRECTORY_PATH =
@@ -434,7 +434,7 @@ VolumeManagerCommon.ARCHIVE_OPENED_EVENT_TYPE = 'archive_opened';
 
 /**
  * ID of the Google Photos DocumentsProvider volume.
- * @const {string}
+ * @const @type {string}
  */
 VolumeManagerCommon.PHOTOS_DOCUMENTS_PROVIDER_VOLUME_ID =
     'documents_provider:com.google.android.apps.photos.photoprovider/com.google.android.apps.photos';
@@ -442,7 +442,7 @@ VolumeManagerCommon.PHOTOS_DOCUMENTS_PROVIDER_VOLUME_ID =
 /**
  * ID of the MediaDocumentsProvider. All the files returned by ARC source in
  * Recents have this ID prefix in their filesystem.
- * @const {string}
+ * @const @type {string}
  */
 VolumeManagerCommon.MEDIA_DOCUMENTS_PROVIDER_ID =
     'com.android.providers.media.documents';

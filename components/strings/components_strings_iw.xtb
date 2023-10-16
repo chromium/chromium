@@ -13,6 +13,7 @@
 <translation id="1024913885641459127">ביקורות על מוצרים והשוואות מחירים</translation>
 <translation id="1028781062521375153">לפרטים</translation>
 <translation id="1030706264415084469"><ph name="URL" /> רוצה לאחסן באופן קבוע כמות גדולה של נתונים במכשיר שלך</translation>
+<translation id="1030949145805074938">{COUNT,plural, =0{אין אתרים}=1{מאתר אחד. תתבצע יציאה מהחשבון ברוב האתרים. }one{מ-# אתרים. תתבצע יציאה מהחשבון ברוב האתרים. }two{מ-# אתרים. תתבצע יציאה מהחשבון ברוב האתרים. }other{מ-# אתרים. תתבצע יציאה מהחשבון ברוב האתרים. }}</translation>
 <translation id="1033329911862281889">המצב הפרטי לא מסתיר אותך לגמרי באינטרנט:
         <ph name="BEGIN_LIST" />
           <ph name="LIST_ITEM" />אתרים והשירותים שבהם נעשה שימוש יודעים שביקרת בהם<ph name="END_LIST_ITEM" />
@@ -486,6 +487,7 @@
 <translation id="1939059826036755332">הפעלה אוטומטית של 'תמונה בתוך תמונה'</translation>
 <translation id="1939175642807587452">האתר יכול לבקש הרשאה לשלוח התראות</translation>
 <translation id="1940441167050915935">מחיקה של קודי האבטחה שנשמרו</translation>
+<translation id="194174710521904357">‏אישרת לאתר הזה להשתמש בקובצי cookie של צד שלישי באופן זמני. במצב כזה יש פחות הגנה במהלך הגלישה, אבל סביר יותר שהתכונות באתר יפעלו בלי בעיות.</translation>
 <translation id="1943994668912612445">עיצוב</translation>
 <translation id="1945968466830820669">‏ייתכן שלא יתאפשר לך לגשת לחשבון הארגוני, והזהות שלך עלולה להיגנב. לגלישה בטוחה ב-Chromium, מומלץ לשנות את הסיסמה עכשיו.</translation>
 <translation id="1946849748901605102">‏12x15 אינץ'</translation>
@@ -663,6 +665,7 @@
 <translation id="2300306941146563769">לא הועלה</translation>
 <translation id="230286397113210245">הלחצן לפתיחת חלון פרטי, מפעילים אותו כדי לפתוח חלון פרטי חדש ולגלוש באופן פרטי</translation>
 <translation id="2312234273148520048">תבלינים ורטבים</translation>
+<translation id="2316087952091171402">פחות מ-<ph name="UPPER_ESTIMATE" />. בביקור הבא שלך, יכול להיות שאתרים מסוימים ייטענו לאט יותר.</translation>
 <translation id="2316159751672436664">‏התאמה אישית של כלי הנגישות בהגדרות ChromeOS</translation>
 <translation id="2316887270356262533">‏פינוי של פחות מ-‎1 MB‎ מהשטח. ייתכן שחלק מהאתרים ייטענו לאט יותר בביקור הבא שלך.</translation>
 <translation id="2317259163369394535"><ph name="DOMAIN" /> דורש שם משתמש וסיסמה.</translation>
@@ -1107,6 +1110,7 @@
 <translation id="3271648667212143903"><ph name="ORIGIN" /> רוצה להתחבר אל</translation>
 <translation id="3272091146646336650">‏12x19.2 אינץ' (Super B)</translation>
 <translation id="3272112314896217187">כאן מזינים את קוד האימות (<ph name="NUMBER_OF_DIGITS" /> ספרות)</translation>
+<translation id="3272643614306383237">‏פחות מ-1MB. בביקור הבא שלך, יכול להיות שאתרים מסוימים ייטענו לאט יותר.</translation>
 <translation id="3281350579597955952">{0,plural, =1{בהתאם למדיניות האדמין, לא מומלץ לפתוח את הקובץ הזה ב<ph name="DESTINATION_NAME" />}one{בהתאם למדיניות האדמין, לא מומלץ לפתוח את הקבצים האלה ב<ph name="DESTINATION_NAME" />}two{בהתאם למדיניות האדמין, לא מומלץ לפתוח את הקבצים האלה ב<ph name="DESTINATION_NAME" />}other{בהתאם למדיניות האדמין, לא מומלץ לפתוח את הקבצים האלה ב<ph name="DESTINATION_NAME" />}}</translation>
 <translation id="3282085321714087552">הארגון שלך, <ph name="ENROLLMENT_DOMAIN" />, שלח מספר פרטים, כמו הגדרות ומדיניות, לאתרים הבאים.</translation>
 <translation id="3286372614333682499">לאורך</translation>
@@ -2880,6 +2884,7 @@ Del</translation>
 <translation id="6934236486840930310">‏<ph name="BEGIN_BOLD" />מנוע החיפוש שמוגדר כברירת המחדל מאפשר לך לבצע חיפושים באינטרנט ומפעיל תכונות של Chrome<ph name="END_BOLD" />, כמו חיפוש מסרגל הכתובות ומתמונות בדפי אינטרנט. יכול להיות שתכונה מסוימת לא תהיה זמינה אם מנוע החיפוש לא תומך בה.</translation>
 <translation id="6934672428414710184">‏השם הזה הוא מחשבון Google שלך</translation>
 <translation id="6935082727755903526">משרות בתחום החשבונאות והפיננסים</translation>
+<translation id="6935179587384421592"><ph name="SIZE" />. בביקור הבא שלך, יכול להיות שאתרים מסוימים ייטענו לאט יותר.</translation>
 <translation id="6936976777388162184">‏זהו מכשיר שמגיע בחבילה ולא ניתן לרשום אותו לשדרוג של מכשירים לחתימה דיגיטלית ושל Kiosk.</translation>
 <translation id="6939469646605424232">סדרות דרמה</translation>
 <translation id="6944692733090228304">הזנת את הסיסמה שלך באתר שלא מנוהל על ידי <ph name="BEGIN_BOLD" /><ph name="ORG_NAME" /><ph name="END_BOLD" />. כדי להגן על החשבון, מומלץ לא להשתמש בסיסמה שלך באפליקציות ובאתרים אחרים.</translation>
@@ -3145,6 +3150,7 @@ Del</translation>
 <translation id="7441864845853794192">אוכל גורמה ומאכלים ייחודיים</translation>
 <translation id="7442725080345379071">כתום בהיר</translation>
 <translation id="7444046173054089907">האתר הזה חסום</translation>
+<translation id="7444176988908839653">{COUNT,plural, =0{‏קובצי cookie ייחסמו היום שוב}=1{‏קובצי cookie ייחסמו מחר שוב}one{‏יש עוד # ימים עד שקובצי cookie ייחסמו שוב}two{‏יש עוד יומיים עד שקובצי cookie ייחסמו שוב}other{‏יש עוד # ימים עד שקובצי cookie ייחסמו שוב}}</translation>
 <translation id="7445762425076701745">לא ניתן לאמת לגמרי את הזהות של השרת שאליו התחברת. התחברת לשרת באמצעות שם שקיים רק ברשת שלך, ושלרשות אישורים חיצונית אין דרך לאמת את בעלותך עליו. מכיוון שחלק מרשויות האישורים ינפיקו אישורים לשמות אלה ללא קשר, אין דרך להבטיח שהתחברת לאתר המיועד ואינך גורם תוקף.</translation>
 <translation id="7447234474237738389">שירותי ביגוד</translation>
 <translation id="7447625772313191651">‏<ph name="NAME" /> ‏(<ph name="WIDTH" />x<ph name="HEIGHT" /> מ"מ)</translation>
@@ -3511,6 +3517,7 @@ Del</translation>
 <translation id="81563721597823545">ציוד להוקי</translation>
 <translation id="8161095570253161196">המשך הגלישה</translation>
 <translation id="8163866351304776260">4 ניקובים בצד שמאל</translation>
+<translation id="8164078261547504572">רוצה לקבל אימיילים על ירידה במחיר?</translation>
 <translation id="8175796834047840627">‏Chrome מציע לשמור את הכרטיסים שלך בחשבון Google כי התחברת לחשבון. אפשר לשנות את ההתנהגות הזאת בהגדרות.</translation>
 <translation id="8176440868214972690">מנהל המערכת של המכשיר הזה שלח מספר פרטים, כמו הגדרות ומדיניות, לאתרים הבאים.</translation>
 <translation id="817820454357658398">מוצרי היגיינה לנשים</translation>
@@ -3951,6 +3958,7 @@ Del</translation>
 <translation id="9078912659001679888">בלנדרים ומסחטות</translation>
 <translation id="9078964945751709336">נדרש מידע נוסף</translation>
 <translation id="9080712759204168376">סיכום הזמנה</translation>
+<translation id="9084304544887760521">יישלחו אימיילים לכתובת <ph name="EMAIL" /> כשתהיה ירידה במחיר של פריטים שהוספת למעקב באתר כלשהו.</translation>
 <translation id="908796725011587895">ספורט אוניברסיטאי</translation>
 <translation id="9089260154716455634">מדיניות לשעות ללא פעילות:</translation>
 <translation id="9090243919347147717">קבצים מצורפים</translation>
@@ -4035,6 +4043,7 @@ Del</translation>
 <translation id="944540589955480312">‏שימוש בסיסמאות ובמפתחות הגישה שנשמרו בחשבון Google</translation>
 <translation id="945855313015696284">יש לבדוק את המידע שבהמשך ולמחוק כרטיסים עם שגיאות</translation>
 <translation id="947370374845726940">‏<ph name="CREATE_GOOGLE_SITE_FOCUSED_FRIENDLY_MATCH_TEXT" />, מקישים על Tab ואז על Enter כדי ליצור במהירות אתר חדש ב-Google Sites</translation>
+<translation id="947974362755924771">{COUNT,plural, =0{‏קובצי cookie יוגבלו היום שוב ב-Chrome}=1{‏קובצי cookie יוגבלו מחר שוב ב-Chrome}one{‏יש עוד # ימים עד שקובצי cookie יוגבלו שוב ב-Chrome}two{‏יש עוד יומיים עד שקובצי cookie יוגבלו שוב ב-Chrome}other{‏יש עוד # ימים עד שקובצי cookie יוגבלו שוב ב-Chrome}}</translation>
 <translation id="949314938206378263">‏ביקשת לבקר באתר הזה. להורה שלך יש אפשרות לענות ב-Family Link.</translation>
 <translation id="950736567201356821">3 ניקובים בחלק העליון</translation>
 <translation id="961663415146723894">כריכה בקצה התחתון</translation>

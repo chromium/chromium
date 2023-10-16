@@ -12,13 +12,13 @@ import {adjust, range} from './list_selection_model_test_util.js';
 
 /**
  * @param {number} len size of the selection model.
- * @param {boolean=} dependentLeadItem inverse value for `independentLeadItem_`
+ * @param {boolean=} dependentLeadItem inverse value for `independentLeadItem`
  *     defaults to true.
  * @return {!ListSelectionModel}
  */
 function createSelectionModel(len, dependentLeadItem) {
   const sm = new ListSelectionModel(len);
-  sm.independentLeadItem_ = !dependentLeadItem;
+  sm.independentLeadItem = !dependentLeadItem;
   return sm;
 }
 

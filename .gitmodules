@@ -275,6 +275,10 @@
 	path = third_party/google_toolbox_for_mac/src
 	url = https://chromium.googlesource.com/external/github.com/google/google-toolbox-for-mac.git
 	gclient-condition = checkout_ios or checkout_mac
+[submodule "third_party/google-truth/src"]
+	path = third_party/google-truth/src
+	url = https://chromium.googlesource.com/external/github.com/google/truth.git
+	gclient-condition = checkout_android
 [submodule "third_party/googletest/src"]
 	path = third_party/googletest/src
 	url = https://chromium.googlesource.com/external/github.com/google/googletest.git

@@ -25,7 +25,7 @@ export class PanelItem extends HTMLElement {
     const fragment = htmlTemplate.content.cloneNode(true);
     this.attachShadow({mode: 'open'}).appendChild(fragment);
 
-    /** @private {Element} */
+    /** @private @type {Element} */
     this.indicator_ = this.shadowRoot.querySelector('#indicator');
 
     /**
@@ -41,13 +41,13 @@ export class PanelItem extends HTMLElement {
     this.panelTypeFormatProgress = 5;
     this.panelTypeSyncProgress = 6;
 
-    /** @private {number} */
+    /** @private @type {number} */
     this.panelType_ = this.panelTypeDefault;
 
     /** @private @type {?function(Event)} */
     this.onclick = this.onClicked_.bind(this);
 
-    /** @public {?DisplayPanel} */
+    /** @public @type {?DisplayPanel} */
     this.parent = null;
 
     /**

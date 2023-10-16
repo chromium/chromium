@@ -7,11 +7,11 @@ import {NetworkTestRunner} from 'network_test_runner';
 
 import * as Common from 'devtools/core/common/common.js';
 import * as Network from 'devtools/panels/network/network.js';
+import * as SourceFrame from 'devtools/ui/legacy/components/source_frame/source_frame.js';
 import * as UI from 'devtools/ui/legacy/legacy.js';
 
 (async function() {
   TestRunner.addResult(`Tests that resources with JSON MIME types are previewed with the JSON viewer.\n`);
-  await TestRunner.loadLegacyModule('source_frame');
   await TestRunner.showPanel('network');
 
   async function testSearches(view, searches) {
@@ -48,7 +48,7 @@ import * as UI from 'devtools/ui/legacy/legacy.js';
     if (isSearchable)
       compontentView = searchableView.searchProvider;
 
-    if (compontentView instanceof SourceFrame.ResourceSourceFrame) {
+    if (compontentView instanceof SourceFrame.ResourceSourceFrame.ResourceSourceFrame) {
       typeName = 'ResourceSourceFrame';
       compontentView.ensureContentLoaded();
       if (!compontentView.loaded) {
@@ -57,9 +57,9 @@ import * as UI from 'devtools/ui/legacy/legacy.js';
             compontentView, 'setContent', previewViewHandled.bind(this, searches, callback, view));
         return;
       }
-    } else if (compontentView instanceof SourceFrame.XMLView) {
+    } else if (compontentView instanceof SourceFrame.XMLView.XMLView) {
       typeName = 'XMLView';
-    } else if (compontentView instanceof SourceFrame.JSONView) {
+    } else if (compontentView instanceof SourceFrame.JSONView.JSONView) {
       typeName = 'JSONView';
     } else if (compontentView instanceof Network.RequestHTMLView.RequestHTMLView) {
       typeName = 'RequestHTMLView';

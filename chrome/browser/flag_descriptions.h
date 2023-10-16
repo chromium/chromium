@@ -105,9 +105,6 @@ extern const char kAuxiliarySearchDonationDescription[];
 extern const char kBackgroundResourceFetchName[];
 extern const char kBackgroundResourceFetchDescription[];
 
-extern const char kBrokerFileOperationsOnDiskCacheInNetworkServiceName[];
-extern const char kBrokerFileOperationsOnDiskCacheInNetworkServiceDescription[];
-
 extern const char kCOLRV1FontsDescription[];
 
 extern const char kCdmStorageDatabaseName[];
@@ -133,6 +130,11 @@ extern const char kClipboardMaximumAgeDescription[];
 
 extern const char kContentLanguagesInLanguagePickerName[];
 extern const char kContentLanguagesInLanguagePickerDescription[];
+
+#if BUILDFLAG(IS_CHROMEOS)
+extern const char kCrOSLegacyMediaFormatsName[];
+extern const char kCrOSLegacyMediaFormatsDescription[];
+#endif
 
 extern const char kCustomizeChromeColorExtractionName[];
 extern const char kCustomizeChromeColorExtractionDescription[];
@@ -2418,9 +2420,6 @@ extern const char kMobilePWAInstallPromptMlDescription[];
 
 extern const char kMouseAndTrackpadDropdownMenuName[];
 extern const char kMouseAndTrackpadDropdownMenuDescription[];
-
-extern const char kNetworkServiceInProcessName[];
-extern const char kNetworkServiceInProcessDescription[];
 
 extern const char kNewTabSearchEngineUrlAndroidName[];
 extern const char kNewTabSearchEngineUrlAndroidDescription[];

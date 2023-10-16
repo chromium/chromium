@@ -52,7 +52,7 @@ namespace {
 
 constexpr char kWidgetName[] = "EditorMenuViewWidget";
 
-constexpr gfx::Insets kTitleContainerInsets = gfx::Insets::TLBR(12, 16, 12, 8);
+constexpr gfx::Insets kTitleContainerInsets = gfx::Insets::TLBR(12, 16, 12, 14);
 
 constexpr int kSettingsIconSizeDip = 20;
 

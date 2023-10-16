@@ -7,8 +7,10 @@
 
 #include <list>
 #include <map>
+#include <optional>
 #include <string>
 
+#include "components/autofill/core/browser/autofill_field.h"
 #include "components/autofill/core/common/form_field_data.h"
 #include "components/autofill/core/common/unique_ids.h"
 
@@ -20,19 +22,45 @@ namespace autofill {
 // It is assumed here that between a fill and a refill no user interaction
 // happens with the form. Owned by `BrowserAutofillManager`.
 class FormAutofillHistory {
- private:
-  // This represents the value of a field as well as its autofill state.
-  using FieldFillingEntry = std::pair<std::u16string, bool>;
+ public:
+  // This holds the field attributes that should be reset during an undo.
+  struct FieldFillingEntry {
+    FieldFillingEntry(
+        std::u16string field_value,
+        bool field_is_autofilled,
+        std::optional<std::string> field_autofill_source_profile_guid);
+
+    ~FieldFillingEntry();
+    FieldFillingEntry(const FieldFillingEntry&);
+    FieldFillingEntry(FieldFillingEntry&&);
+    FieldFillingEntry& operator=(const FieldFillingEntry&) = default;
+    FieldFillingEntry& operator=(FieldFillingEntry&&) = default;
+
+    bool operator==(const FieldFillingEntry& rhs) const = default;
+
+    // Value of the field prior to the Undo operation.
+    std::u16string value;
+
+    // Autofill state of the field prior to the Undo operation. This is stored
+    // because fields that are autofilled might be reset to still autofilled
+    // field, considering cases where autofill is allowed to override autofilled
+    // fields.
+    bool is_autofilled;
+
+    // ID of the last profile used to fill the field, if any. This is stored so
+    // the field doesn't track undone autofill operations, which can cause
+    // problems. (see crbug.com/1491872)
+    std::optional<std::string> autofill_source_profile_guid;
+  };
 
   using FormFillingEntry = std::map<FieldGlobalId, FieldFillingEntry>;
 
- public:
   class FillOperation {
    public:
     // Returns the field value and autofill state stored in history for
     // `field_id`. Assumes the underlying map contains a entry with key
     // `field_id`.
-    FieldFillingEntry GetAutofillValue(FieldGlobalId field_id) const;
+    const FieldFillingEntry& GetFieldFillingEntry(FieldGlobalId field_id) const;
 
     friend bool operator==(const FillOperation& lhs, const FillOperation& rhs) {
       return lhs.iterator_ == rhs.iterator_;
@@ -61,8 +89,11 @@ class FormAutofillHistory {
   // Adds a new history entry in the beginning of the list.
   // FormFieldData's are needed to get the most recent value of a field.
   // AutofillField's are needed to get the type of a field.
-  void AddFormFillEntry(base::span<const FormFieldData* const> filled_fields,
-                        bool is_refill);
+  // TODO(crbug.com/1345089): Only pass AutofillFields.
+  void AddFormFillEntry(
+      base::span<const FormFieldData* const> filled_fields,
+      base::span<const AutofillField* const> filled_autofill_fields,
+      bool is_refill);
 
   // Erases the history entry from the list represented by `fill_operation`.
   void EraseFormFillEntry(FillOperation fill_operation);

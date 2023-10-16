@@ -190,6 +190,13 @@ public class UiConfig {
                     || vertical == VerticalDisplayStyle.FLAT;
         }
 
+        /**
+         * @return whether the display is horizontally wide.
+         */
+        public boolean isWide() {
+            return horizontal == HorizontalDisplayStyle.WIDE;
+        }
+
         @Override
         public boolean equals(Object o) {
             if (this == o) return true;

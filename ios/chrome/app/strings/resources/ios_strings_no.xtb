@@ -83,10 +83,12 @@ For å endre denne innstillingen, <ph name="BEGIN_LINK" />slett Chrome-dataene i
 <translation id="1360432990279830238">Vil du logge av og slå av synkronisering?</translation>
 <translation id="1363028406613469049">Spor</translation>
 <translation id="1365106417372288489">iPhonen din ble nylig gjenopprettet, noe som kan ha medført at standardnettleseren ble endret.</translation>
+<translation id="136942498637440594">Du kan søke i bilder og det du ser.</translation>
 <translation id="1375321115329958930">Lagrede passord</translation>
 <translation id="1377255359165588604">Synkroniseringen har sluttet å fungere.</translation>
 <translation id="1377321085342047638">Kortnummer</translation>
 <translation id="1377508275003315939">Passord</translation>
+<translation id="1380914240355562929"><ph name="BEGIN_BOLD" /><ph name="USERNAME" /><ph name="END_BOLD" /> kan nå bruke brukernavnet og passordet ditt når hen bruker Google Passordlagring til å logge på <ph name="BEGIN_BOLD" /><ph name="WEBSITE" /><ph name="END_BOLD" />. <ph name="BEGIN_LINK" />Finn ut mer<ph name="END_LINK" /></translation>
 <translation id="1383876407941801731">Søk</translation>
 <translation id="138618066238211776">Fortsett som <ph name="USER_NAME" /></translation>
 <translation id="1400642268715879018">De siste 4 ukene</translation>
@@ -774,6 +776,7 @@ Se eventuelt instruksjonene fra den aktuelle søkemotoren om hvordan du sletter 
 <translation id="5121618895923301719">Du sporer allerede dette produktet. Denne siden er lagret i <ph name="BEGIN_LINK" />Bokmerker for mobil<ph name="END_LINK" />.</translation>
 <translation id="512533434554095351">Du har flere passordproblemer.</translation>
 <translation id="5126465625664020024">Pålogging og synkronisering</translation>
+<translation id="5131062416352684089">Nå kan familiemedlemmene dine bruke brukernavnet og passordet ditt når de bruker Google Passordlagring til å logge på <ph name="BEGIN_BOLD" /><ph name="WEBSITE" /><ph name="END_BOLD" />. <ph name="BEGIN_LINK" />Finn ut mer<ph name="END_LINK" /></translation>
 <translation id="5132942445612118989">Synkroniser passordene dine, loggen din med mer på alle enheter</translation>
 <translation id="5142890110117755815">{COUNT,plural, =1{{COUNT} svakt passord}other{{COUNT} svake passord}}</translation>
 <translation id="5149188072385105201">Legg til et passord…</translation>
@@ -786,6 +789,7 @@ Se eventuelt instruksjonene fra den aktuelle søkemotoren om hvordan du sletter 
 <translation id="5181140330217080051">Laster ned</translation>
 <translation id="5184329579814168207">Åpne i Chrome</translation>
 <translation id="5186185447130319458">Privat</translation>
+<translation id="5186634140793586141">Administrer emnene og søkene du er interessert i</translation>
 <translation id="5188482106078495165">Innstillingen for informasjonskapsler gjelder for alle faner. For å ta i bruk en ny innstilling på en åpen fane, last inn fanen på nytt.</translation>
 <translation id="5190835502935405962">Bokmerkerad</translation>
 <translation id="519530786644929958">Nedlastingen mislyktes. Det er ikke mulig å prøve på nytt.</translation>
@@ -1165,7 +1169,6 @@ Når du er i Inkognito, kan ikke nettsteder bruke informasjonskapsler til å se 
 <translation id="7062545763355031412">Godta og bytt konto</translation>
 <translation id="7063811929043357292">Kontoen din administreres av forelderen din.
 <ph name="BEGIN_LINK" />Finn ut mer<ph name="END_LINK" /></translation>
-<translation id="7064619810277839954">Gir deg forslag til faner basert på nettleseraktiviteten din på andre enheter der Google-kontoen din brukes. Enhetene dine må være pålogget og synkronisert med den samme Google-kontoen.</translation>
 <translation id="7069695992271320873">Fjern fra denne enheten</translation>
 <translation id="7080806333218412752">Sender nettadresser til Safe Browsing for å sjekke dem. Sender også et lite utvalg av sider, nedlastinger, utvidelsesaktivitet og systeminformasjon for å bidra til å oppdage nye trusler. Knytter disse dataene til Google-kontoen din midlertidig når du er pålogget, slik at du er beskyttet i alle Google-appene.</translation>
 <translation id="7082853213442715471">Når denne innstillingen er på, blokkeres enkelte netteknologier, noe som kan føre til at enkelte nettsteder lastes inn tregere eller ikke fungerer som de skal.</translation>

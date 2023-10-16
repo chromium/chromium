@@ -3232,6 +3232,7 @@ Anda boleh mengurus tetapan akaun ini dengan memasang apl Family Link pada peran
 <translation id="3521405806571557477">Padamkan data yang disimpan untuk <ph name="SITE_NAME" /></translation>
 <translation id="3521606918211282604">Tukar saiz cakera</translation>
 <translation id="3522088408596898827">Ruang cakera terlalu sedikit. Kosongkan ruang cakera dan cuba lagi.</translation>
+<translation id="3522979239100719575">Mencari profil yang tersedia. Proses ini mungkin mengambil masa beberapa minit.</translation>
 <translation id="3524518036046613664">Temukan peranti pada rangkaian setempat anda, seperti pencetak</translation>
 <translation id="3524965460886318643">Eksport Aktiviti</translation>
 <translation id="3525426269008462093">Semak penyegerakan peranti selepas persediaan</translation>
@@ -7831,6 +7832,7 @@ Anda mempunyai # lagi kata laluan yang terjejas. Google Password Manager mengesy
 <translation id="7283555985781738399">Mod tetamu</translation>
 <translation id="7284307451964417957">{DAYS,plural, =1{Peranti ini akan disimpan selama 1 hari dan anda boleh menyambung tanpa kod masa seterusnya. Ini ditetapkan oleh pentadbir anda.}other{Peranti ini akan disimpan selama {DAYS} hari dan anda boleh menyambung tanpa kod pada masa akan datang. Ini ditetapkan oleh pentadbir anda.}}</translation>
 <translation id="7284411326658527427">Setiap orang boleh memeribadikan akaun mereka dan merahsiakan data.</translation>
+<translation id="7286867818472074330">Pilih kunci laluan</translation>
 <translation id="7287143125007575591">Akses ditolak.</translation>
 <translation id="7287411021188441799">Pulihkan latar lalai</translation>
 <translation id="7288676996127329262"><ph name="HORIZONTAL_DPI" />x<ph name="VERTICAL_DPI" /> dpi</translation>

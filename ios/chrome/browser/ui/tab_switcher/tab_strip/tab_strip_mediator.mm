@@ -6,6 +6,7 @@
 
 #import "base/debug/dump_without_crashing.h"
 #import "components/favicon/ios/web_favicon_driver.h"
+#import "ios/chrome/browser/ntp/new_tab_page_util.h"
 #import "ios/chrome/browser/policy/policy_util.h"
 #import "ios/chrome/browser/shared/model/browser_state/chrome_browser_state.h"
 #import "ios/chrome/browser/shared/model/url/chrome_url_constants.h"
@@ -114,9 +115,17 @@ NSArray<TabSwitcherItem*>* CreateItems(WebStateList* web_state_list) {
     case WebStateListChange::Type::kMove:
       // Do nothing when a WebState is moved.
       break;
-    case WebStateListChange::Type::kReplace:
-      // TODO(crbug.com/1490555): handle the replacement issue.
+    case WebStateListChange::Type::kReplace: {
+      const WebStateListChangeReplace& replaceChange =
+          change.As<WebStateListChangeReplace>();
+      TabSwitcherItem* oldItem = [[WebStateTabSwitcherItem alloc]
+          initWithWebState:replaceChange.replaced_web_state()];
+      TabSwitcherItem* newItem = [[WebStateTabSwitcherItem alloc]
+          initWithWebState:replaceChange.inserted_web_state()];
+
+      [self.consumer replaceItem:oldItem withItem:newItem];
       break;
+    }
   }
 
   if (status.active_web_state_change()) {
@@ -246,6 +255,22 @@ NSArray<TabSwitcherItem*>* CreateItems(WebStateList* web_state_list) {
 }
 
 #pragma mark - CRWWebStateObserver
+
+- (void)webStateDidStartLoading:(web::WebState*)webState {
+  if (IsVisibleURLNewTabPage(webState)) {
+    return;
+  }
+
+  TabSwitcherItem* item =
+      [[WebStateTabSwitcherItem alloc] initWithWebState:webState];
+  [self.consumer reloadItem:item];
+}
+
+- (void)webStateDidStopLoading:(web::WebState*)webState {
+  TabSwitcherItem* item =
+      [[WebStateTabSwitcherItem alloc] initWithWebState:webState];
+  [self.consumer reloadItem:item];
+}
 
 - (void)webStateDidChangeTitle:(web::WebState*)webState {
   TabSwitcherItem* item =

@@ -106,7 +106,7 @@ export class ExternalMetadataProvider extends MetadataProvider {
   }
 }
 
-/** @const {!Array<string>} */
+/** @const @type {!Array<string>} */
 ExternalMetadataProvider.PROPERTY_NAMES = [
   'alternateUrl',
   'availableOffline',

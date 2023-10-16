@@ -222,6 +222,10 @@ void EditorMediator::HandleTrigger(
   }
 }
 
+void EditorMediator::CacheContextCaretBounds() {
+  mako_bubble_coordinator_.CacheContextCaretBounds();
+}
+
 void EditorMediator::OnTextInserted() {
   // After queuing the text to be inserted, closing the mako web ui should
   // return the focus back to the original input.

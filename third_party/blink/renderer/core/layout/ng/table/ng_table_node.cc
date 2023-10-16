@@ -53,7 +53,7 @@ LayoutUnit NGTableNode::ComputeTableInlineSize(
 
 LayoutUnit NGTableNode::ComputeCaptionBlockSize(
     const NGConstraintSpace& space) const {
-  NGFragmentGeometry geometry =
+  FragmentGeometry geometry =
       CalculateInitialFragmentGeometry(space, *this, /* break_token */ nullptr);
   NGLayoutAlgorithmParams params(*this, geometry, space);
   NGTableLayoutAlgorithm algorithm(params);

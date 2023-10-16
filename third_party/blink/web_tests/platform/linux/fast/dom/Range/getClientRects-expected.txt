@@ -1,12 +1,12 @@
 This is a testharness.js-based test.
-PASS range.selectNode(container) has rects for container and each line.
-PASS range.selectNodeContents(container) has rects for each line.
-PASS range.setStart/setEnd(node, offset) has rects for each line in range.
-PASS range.selectNode(container) should not include rect of image.
-PASS range.setStart/setEnd(node, offset) should include rect of image.
-PASS range.selectNode(container) should not include green/blue boxes.
-PASS range.selectNodeContents() should select green but not blue box.
-PASS transform, range.selectNodeContents() has rects for each line.
-PASS vertical, range.selectNodeContents() has rects for each line.
+[PASS] range.selectNode(container) has rects for container and each line.
+[PASS] range.selectNodeContents(container) has rects for each line.
+[PASS] range.setStart/setEnd(node, offset) has rects for each line in range.
+[PASS] range.selectNode(container) should not include rect of image.
+[PASS] range.setStart/setEnd(node, offset) should include rect of image.
+[PASS] range.selectNode(container) should not include green/blue boxes.
+[PASS] range.selectNodeContents() should select green but not blue box.
+[PASS] transform, range.selectNodeContents() has rects for each line.
+[PASS] vertical, range.selectNodeContents() has rects for each line.
 Harness: the test ran to completion.
 

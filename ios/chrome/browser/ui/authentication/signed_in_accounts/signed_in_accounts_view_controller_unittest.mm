@@ -8,6 +8,8 @@
 
 #import "base/functional/bind.h"
 #import "base/strings/sys_string_conversions.h"
+#import "base/test/scoped_feature_list.h"
+#import "components/signin/public/base/signin_switches.h"
 #import "components/signin/public/identity_manager/identity_test_environment.h"
 #import "components/variations/scoped_variations_ids_provider.h"
 #import "ios/chrome/browser/shared/model/application_context/application_context.h"
@@ -76,6 +78,9 @@ class SignedInAccountsViewControllerTest : public BlockCleanupTest {
 // accounts haven't changed.
 TEST_F(SignedInAccountsViewControllerTest,
        ShouldBePresentedForBrowserStateNotNecessary) {
+  base::test::ScopedFeatureList scoped_feature_list;
+  scoped_feature_list.InitAndDisableFeature(
+      switches::kRemoveSignedInAccountsDialog);
   EXPECT_FALSE([SignedInAccountsViewController
       shouldBePresentedForBrowserState:browser_state_.get()]);
 }
@@ -83,7 +88,10 @@ TEST_F(SignedInAccountsViewControllerTest,
 // Tests that the signed in accounts view should be presented when the accounts
 // have changed.
 TEST_F(SignedInAccountsViewControllerTest,
-       ShouldBePresentedForBrowserStateNecessary) {
+       ShouldBePresentedForBrowserStateNecessary_DialogShown) {
+  base::test::ScopedFeatureList scoped_feature_list;
+  scoped_feature_list.InitAndDisableFeature(
+      switches::kRemoveSignedInAccountsDialog);
   FakeSystemIdentityManager* system_identity_manager =
       FakeSystemIdentityManager::FromSystemIdentityManager(
           GetApplicationContext()->GetSystemIdentityManager());
@@ -91,5 +99,19 @@ TEST_F(SignedInAccountsViewControllerTest,
   system_identity_manager->FireSystemIdentityReloaded();
   base::RunLoop().RunUntilIdle();
   EXPECT_TRUE([SignedInAccountsViewController
+      shouldBePresentedForBrowserState:browser_state_.get()]);
+}
+
+TEST_F(SignedInAccountsViewControllerTest,
+       ShouldBePresentedForBrowserStateNecessary_DialogRemoved) {
+  ASSERT_TRUE(
+      base::FeatureList::IsEnabled(switches::kRemoveSignedInAccountsDialog));
+  FakeSystemIdentityManager* system_identity_manager =
+      FakeSystemIdentityManager::FromSystemIdentityManager(
+          GetApplicationContext()->GetSystemIdentityManager());
+  system_identity_manager->AddIdentities(@[ @"identity2" ]);
+  system_identity_manager->FireSystemIdentityReloaded();
+  base::RunLoop().RunUntilIdle();
+  EXPECT_FALSE([SignedInAccountsViewController
       shouldBePresentedForBrowserState:browser_state_.get()]);
 }

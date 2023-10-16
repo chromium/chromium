@@ -10,6 +10,7 @@
 #include <vector>
 
 #include "base/functional/callback.h"
+#include "base/functional/callback_forward.h"
 #include "base/gtest_prod_util.h"
 #include "base/memory/ref_counted.h"
 #include "base/memory/weak_ptr.h"
@@ -24,6 +25,7 @@
 #include "chrome/test/chromedriver/session_thread_map.h"
 #include "chrome/test/chromedriver/window_commands.h"
 #include "net/http/http_status_code.h"
+#include "third_party/abseil-cpp/absl/types/optional.h"
 
 namespace base {
 class SingleThreadTaskRunner;
@@ -44,6 +46,7 @@ class URLRequestContextGetter;
 class WrapperURLLoaderFactory;
 
 class HttpServer;
+class HttpServerInterface;
 
 enum HttpMethod {
   kGet,
@@ -96,9 +99,42 @@ class HttpHandler {
   FRIEND_TEST_ALL_PREFIXES(HttpHandlerTest, HandleUnimplementedCommand);
   FRIEND_TEST_ALL_PREFIXES(HttpHandlerTest, HandleCommand);
   FRIEND_TEST_ALL_PREFIXES(HttpHandlerTest, StandardResponse_ErrorNoMessage);
+  FRIEND_TEST_ALL_PREFIXES(WebSocketMessageTest, UnknownSessionNoId);
+  FRIEND_TEST_ALL_PREFIXES(WebSocketMessageTest,
+                           UnknownSessionNoIdIsPostedToIO);
+  FRIEND_TEST_ALL_PREFIXES(WebSocketMessageTest, UnknownSessionWithId);
+  FRIEND_TEST_ALL_PREFIXES(WebSocketMessageTest,
+                           UnknownSessionWithIdIsPostedToIO);
+  FRIEND_TEST_ALL_PREFIXES(WebSocketMessageTest, NoId);
+  FRIEND_TEST_ALL_PREFIXES(WebSocketMessageTest, NoMethod);
+  FRIEND_TEST_ALL_PREFIXES(WebSocketMessageTest, NoParams);
+  FRIEND_TEST_ALL_PREFIXES(WebSocketMessageTest, MalformedJson);
+  FRIEND_TEST_ALL_PREFIXES(WebSocketMessageTest, OtherErrorIsPostedToIO);
+  FRIEND_TEST_ALL_PREFIXES(WebSocketMessageTest, UnknownStaticCommand);
+  FRIEND_TEST_ALL_PREFIXES(WebSocketMessageTest,
+                           UnknownStaticCommandIsPostedToIO);
+  FRIEND_TEST_ALL_PREFIXES(WebSocketMessageTest,
+                           KnownStaticCommandReturnsSuccess);
+  FRIEND_TEST_ALL_PREFIXES(WebSocketMessageTest,
+                           KnownStaticCommandReturnsError);
+  FRIEND_TEST_ALL_PREFIXES(WebSocketMessageTest,
+                           KnownStaticCommandResponseIsPostedToIO);
+  FRIEND_TEST_ALL_PREFIXES(WebSocketMessageTest, SessionCommandReturnsSuccess);
+  FRIEND_TEST_ALL_PREFIXES(WebSocketMessageTest, SessionCommandNoReturnValue);
+  FRIEND_TEST_ALL_PREFIXES(WebSocketMessageTest, SessionCommandReturnsError);
+  FRIEND_TEST_ALL_PREFIXES(WebSocketMessageTest,
+                           SessionCommandResponseIsPostedToIO);
+  FRIEND_TEST_ALL_PREFIXES(WebSocketMessageTest,
+                           StaticCommandOnSessionBoundConnection);
+  FRIEND_TEST_ALL_PREFIXES(WebSocketRequestTest, UnknownPath);
+  FRIEND_TEST_ALL_PREFIXES(WebSocketRequestTest, UnknownSession);
+  FRIEND_TEST_ALL_PREFIXES(WebSocketRequestTest, ConnectionAlreadyBound);
+  FRIEND_TEST_ALL_PREFIXES(WebSocketRequestTest, CreateUnboundConnection);
   typedef std::vector<CommandMapping> CommandMap;
 
   friend class HttpServer;
+  friend class WebSocketMessageTest;
+  friend class WebSocketRequestTest;
 
   Command WrapToCommand(const char* name,
                         const SessionCommand& session_command,
@@ -130,28 +166,51 @@ class HttpHandler {
       std::unique_ptr<base::Value> value,
       const std::string& session_id);
 
-  void OnWebSocketRequest(HttpServer* http_server,
+  void OnWebSocketRequest(HttpServerInterface* http_server,
                           int connection_id,
                           const net::HttpServerRequestInfo& info);
 
-  void OnWebSocketMessage(HttpServer* http_server,
+  void OnWebSocketAttachToSessionRequest(
+      HttpServerInterface* http_server,
+      int connection_id,
+      const std::string& session_id,
+      const net::HttpServerRequestInfo& info);
+
+  void OnWebSocketUnboundConnectionRequest(
+      HttpServerInterface* http_server,
+      int connection_id,
+      const net::HttpServerRequestInfo& info);
+
+  void OnWebSocketMessage(HttpServerInterface* http_server,
                           int connection_id,
                           const std::string& data);
 
-  void OnWebSocketResponseOnCmdThread(HttpServer* http_server,
+  void SendResponseOverWebSocket(HttpServerInterface* http_server,
+                                 int connection_id,
+                                 absl::optional<double> maybe_id,
+                                 const Status& status,
+                                 std::unique_ptr<base::Value> result,
+                                 const std::string& session_id,
+                                 bool w3c);
+
+  void OnWebSocketResponseOnCmdThread(HttpServerInterface* http_server,
                                       int connection_id,
                                       const std::string& data);
 
-  void OnWebSocketResponseOnSessionThread(HttpServer* http_server,
+  void OnWebSocketResponseOnSessionThread(HttpServerInterface* http_server,
                                           int connection_id,
                                           const std::string& data);
 
-  void OnClose(HttpServer* http_server, int connection_id);
+  void OnClose(HttpServerInterface* http_server, int connection_id);
 
-  void SendWebSocketRejectResponse(HttpServer* http_server,
-                                   int connection_id,
-                                   net::HttpStatusCode code,
-                                   const std::string& msg);
+  void SendWebSocketRejectResponse(
+      base::RepeatingCallback<void(int,
+                                   const net::HttpServerResponseInfo&,
+                                   const net::NetworkTrafficAnnotationTag&)>
+          send_http_response,
+      int connection_id,
+      net::HttpStatusCode code,
+      const std::string& msg);
 
   base::ThreadChecker thread_checker_;
   base::RepeatingClosure quit_func_;
@@ -170,6 +229,8 @@ class HttpHandler {
   std::unique_ptr<CommandMap> command_map_;
   std::unique_ptr<Adb> adb_;
   std::unique_ptr<DeviceManager> device_manager_;
+  std::map<std::string, Command> static_bidi_command_map_;
+  Command execute_session_command_;
 
   base::WeakPtrFactory<HttpHandler> weak_ptr_factory_{this};
 };
@@ -185,6 +246,12 @@ bool MatchesCommand(const std::string& method,
                     base::Value::Dict* out_params);
 
 bool IsNewSession(const CommandMapping& command);
+
+Status ParseBidiCommand(const std::string& data, base::Value::Dict& parsed);
+
+base::Value::Dict CreateBidiErrorResponse(
+    Status status,
+    absl::optional<double> maybe_id = absl::nullopt);
 
 }  // namespace internal
 

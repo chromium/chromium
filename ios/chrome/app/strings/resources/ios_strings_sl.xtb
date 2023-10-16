@@ -786,6 +786,7 @@ Oglejte si navodila iskalnika za brisanje zgodovine iskanja, če je na voljo.</t
 <translation id="5181140330217080051">Prenos</translation>
 <translation id="5184329579814168207">Odpri v Chromu</translation>
 <translation id="5186185447130319458">Zasebno</translation>
+<translation id="5186634140793586141">Upravljanje tem in iskanj, ki vas zanimajo</translation>
 <translation id="5188482106078495165">Nastavitev piškotkov velja za vse zavihke. Če želite uporabiti novo nastavitev na odprtem zavihku, ga znova naložite.</translation>
 <translation id="5190835502935405962">Vrstica z zaznamki</translation>
 <translation id="519530786644929958">Prenos ni uspel in ga ni mogoče poskusiti znova.</translation>
@@ -1165,7 +1166,6 @@ Ko uporabljate anonimni način, spletna mesta ne smejo uporabljati piškotkov za
 <translation id="7062545763355031412">Sprejmi in preklopi račun</translation>
 <translation id="7063811929043357292">Tvoj račun upravlja starš.
 <ph name="BEGIN_LINK" />Več o tem<ph name="END_LINK" /></translation>
-<translation id="7064619810277839954">Predlaga vam zavihke glede na dejavnost brskanja v drugih napravah z računom Google. V napravah morate biti prijavljeni in sinhronizirani z istim računom Google.</translation>
 <translation id="7069695992271320873">Odstrani iz te naprave</translation>
 <translation id="7080806333218412752">Pošlje URL-je Varnemu brskanju, da jih ta preveri. Prav tako pošlje manjši vzorec strani, prenosov, dejavnosti razširitev in podatkov o sistemu zaradi pomoči pri odkrivanju novih groženj. Te podatke začasno poveže z vašim računom Google, če ste prijavljeni, zaradi zagotavljanja zaščite v Googlovih aplikacijah.</translation>
 <translation id="7082853213442715471">Če je vklopljeno, so nekatere spletne tehnologije blokirane, kar lahko povzroči počasnejše nalaganje ali nepravilno delovanje nekaterih spletnih mest.</translation>

@@ -14,17 +14,17 @@
 
 namespace blink {
 
-struct NGPhysicalStaticPosition;
+struct PhysicalStaticPosition;
 
 // Represents the static-position of an OOF-positioned descendant, in the
 // logical coordinate space.
 //
 // |offset| is the position of the descandant's |inline_edge|, and |block_edge|.
-struct CORE_EXPORT NGLogicalStaticPosition {
+struct CORE_EXPORT LogicalStaticPosition {
   enum InlineEdge { kInlineStart, kInlineCenter, kInlineEnd };
   enum BlockEdge { kBlockStart, kBlockCenter, kBlockEnd };
 
-  inline NGPhysicalStaticPosition ConvertToPhysical(
+  inline PhysicalStaticPosition ConvertToPhysical(
       const WritingModeConverter& converter) const;
 
   LogicalOffset offset;
@@ -32,8 +32,8 @@ struct CORE_EXPORT NGLogicalStaticPosition {
   BlockEdge block_edge;
 };
 
-// Similar to |NGLogicalStaticPosition| but in the physical coordinate space.
-struct CORE_EXPORT NGPhysicalStaticPosition {
+// Similar to |LogicalStaticPosition| but in the physical coordinate space.
+struct CORE_EXPORT PhysicalStaticPosition {
   enum HorizontalEdge { kLeft, kHorizontalCenter, kRight };
   enum VerticalEdge { kTop, kVerticalCenter, kBottom };
 
@@ -41,13 +41,13 @@ struct CORE_EXPORT NGPhysicalStaticPosition {
   HorizontalEdge horizontal_edge;
   VerticalEdge vertical_edge;
 
-  NGLogicalStaticPosition ConvertToLogical(
+  LogicalStaticPosition ConvertToLogical(
       const WritingModeConverter& converter) const {
     LogicalOffset logical_offset =
         converter.ToLogical(offset, /* inner_size */ PhysicalSize());
 
-    using InlineEdge = NGLogicalStaticPosition::InlineEdge;
-    using BlockEdge = NGLogicalStaticPosition::BlockEdge;
+    using InlineEdge = LogicalStaticPosition::InlineEdge;
+    using BlockEdge = LogicalStaticPosition::BlockEdge;
 
     InlineEdge inline_edge;
     BlockEdge block_edge;
@@ -111,13 +111,13 @@ struct CORE_EXPORT NGPhysicalStaticPosition {
   }
 };
 
-inline NGPhysicalStaticPosition NGLogicalStaticPosition::ConvertToPhysical(
+inline PhysicalStaticPosition LogicalStaticPosition::ConvertToPhysical(
     const WritingModeConverter& converter) const {
   PhysicalOffset physical_offset =
       converter.ToPhysical(offset, /* inner_size */ PhysicalSize());
 
-  using HorizontalEdge = NGPhysicalStaticPosition::HorizontalEdge;
-  using VerticalEdge = NGPhysicalStaticPosition::VerticalEdge;
+  using HorizontalEdge = PhysicalStaticPosition::HorizontalEdge;
+  using VerticalEdge = PhysicalStaticPosition::VerticalEdge;
 
   HorizontalEdge horizontal_edge;
   VerticalEdge vertical_edge;

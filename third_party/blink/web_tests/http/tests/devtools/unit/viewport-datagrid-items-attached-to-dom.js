@@ -1,16 +1,17 @@
 
 import {TestRunner} from 'test_runner';
-import * as UI from 'devtools/ui/legacy/legacy.js';
-(async function() {
-  await TestRunner.loadLegacyModule('data_grid');
 
+import * as DataGrid from 'devtools/ui/legacy/components/data_grid/data_grid.js';
+import * as UI from 'devtools/ui/legacy/legacy.js';
+
+(async function() {
   TestRunner.addResult("This tests viewport datagrid.");
 
   var div = document.createElement("div");
   UI.InspectorView.InspectorView.instance().element.appendChild(div);
 
   var columns = [{id: "id", title: "ID column", width: "250px"}];
-  var dataGrid = new DataGrid.ViewportDataGrid({displayName: 'Test', columns});
+  var dataGrid = new DataGrid.ViewportDataGrid.ViewportDataGrid({displayName: 'Test', columns});
   var widget = dataGrid.asWidget();
   widget.show(div);
   dataGrid.element.style.width = '100%';
@@ -22,7 +23,7 @@ import * as UI from 'devtools/ui/legacy/legacy.js';
   var nodes = [];
 
   for (var i = 0; i < 30; i++) {
-    var node = new DataGrid.ViewportDataGridNode({id: "a" + i});
+    var node = new DataGrid.ViewportDataGrid.ViewportDataGridNode({id: "a" + i});
     rootNode.appendChild(node);
     nodes.push(node);
   }

@@ -68,7 +68,7 @@ infobars::ContentInfoBarManager* GetInfoBarManager(Browser* browser, int tab) {
 
 ConfirmInfoBarDelegate* GetDelegate(Browser* browser, int tab) {
   return static_cast<ConfirmInfoBarDelegate*>(
-      GetInfoBarManager(browser, tab)->infobar_at(0)->delegate());
+      GetInfoBarManager(browser, tab)->infobars()[0]->delegate());
 }
 
 std::u16string GetInfobarMessageText(Browser* browser, int tab) {
@@ -254,10 +254,10 @@ class TabSharingUIViewsBrowserTest
       // All tabs have |infobar_count| tab sharing infobars.
       infobars::ContentInfoBarManager* infobar_manager =
           GetInfoBarManager(browser, i);
-      EXPECT_EQ(infobar_count, infobar_manager->infobar_count());
+      EXPECT_EQ(infobar_count, infobar_manager->infobars().size());
       for (size_t j = 0; j < infobar_count; ++j) {
         EXPECT_EQ(infobars::InfoBarDelegate::TAB_SHARING_INFOBAR_DELEGATE,
-                  infobar_manager->infobar_at(j)->delegate()->GetIdentifier());
+                  infobar_manager->infobars()[j]->delegate()->GetIdentifier());
       }
 
       // Content border is only visible on the shared tab.
@@ -287,7 +287,7 @@ class TabSharingUIViewsBrowserTest
                   GetExpectedSwitchToMessage(browser, capturing_tab));
         EXPECT_EQ(GetSecondaryButtonImage(browser, i),
                   GetFaviconAssociatedWith(browser, capturing_tab));
-      } else if (infobar_manager->infobar_count() > 0) {
+      } else if (infobar_manager->infobars().size() > 0) {
         // Any other infobar.
         ASSERT_TRUE(HasSecondaryButton(browser, i));
         EXPECT_EQ(GetSecondaryButtonLabel(browser, i),
@@ -617,7 +617,7 @@ IN_PROC_BROWSER_TEST_P(TabSharingUIViewsBrowserTest, KillTab) {
   // Verify that the sad tab does not have an infobar.
   infobars::ContentInfoBarManager* infobar_manager =
       GetInfoBarManager(browser(), 0);
-  EXPECT_EQ(0u, infobar_manager->infobar_count());
+  EXPECT_EQ(0u, infobar_manager->infobars().size());
 
   // Stop sharing should not result in a crash.
   tab_sharing_ui_views()->StopSharing();
@@ -791,7 +791,7 @@ IN_PROC_BROWSER_TEST_F(MultipleTabSharingUIViewsBrowserTest, VerifyUi) {
   // sessions.
   int tab_count = browser()->tab_strip_model()->count();
   for (int i = 0; i < tab_count; ++i)
-    EXPECT_EQ(3u, GetInfoBarManager(browser(), i)->infobar_count());
+    EXPECT_EQ(3u, GetInfoBarManager(browser(), i)->infobars().size());
 
   // Check that all shared tabs display a tab capture indicator.
   auto capture_indicator = GetCaptureIndicator();
@@ -824,7 +824,7 @@ IN_PROC_BROWSER_TEST_F(MultipleTabSharingUIViewsBrowserTest, StopSharing) {
     tab_sharing_ui_views(--shared_tab_count)->StopSharing();
     for (int j = 0; j < browser()->tab_strip_model()->count(); ++j)
       ASSERT_EQ(shared_tab_count,
-                GetInfoBarManager(browser(), j)->infobar_count());
+                GetInfoBarManager(browser(), j)->infobars().size());
   }
 }
 
@@ -840,7 +840,7 @@ IN_PROC_BROWSER_TEST_F(MultipleTabSharingUIViewsBrowserTest, CloseTabs) {
     tab_strip_model->CloseWebContentsAt(1, TabCloseTypes::CLOSE_NONE);
     for (int i = 0; i < tab_strip_model->count(); ++i)
       ASSERT_EQ(tab_strip_model->count() - 1u,
-                GetInfoBarManager(browser(), i)->infobar_count());
+                GetInfoBarManager(browser(), i)->infobars().size());
   }
 }
 
@@ -866,13 +866,13 @@ IN_PROC_BROWSER_TEST_F(
 
   // Expectation #1: The capture infobar is created in the profile
   // where capture is happening.
-  EXPECT_EQ(GetInfoBarManager(main_browser, /*tab=*/0)->infobar_count(), 1u);
-  EXPECT_EQ(GetInfoBarManager(main_browser, /*tab=*/1)->infobar_count(), 1u);
+  EXPECT_EQ(GetInfoBarManager(main_browser, /*tab=*/0)->infobars().size(), 1u);
+  EXPECT_EQ(GetInfoBarManager(main_browser, /*tab=*/1)->infobars().size(), 1u);
 
   // Expectation #2: The capture infobar is NOT created in the profile
   // where capture is NOT happening.
-  EXPECT_EQ(GetInfoBarManager(guest_browser, /*tab=*/0)->infobar_count(), 0u);
-  EXPECT_EQ(GetInfoBarManager(guest_browser, /*tab=*/1)->infobar_count(), 0u);
+  EXPECT_EQ(GetInfoBarManager(guest_browser, /*tab=*/0)->infobars().size(), 0u);
+  EXPECT_EQ(GetInfoBarManager(guest_browser, /*tab=*/1)->infobars().size(), 0u);
 }
 
 IN_PROC_BROWSER_TEST_F(
@@ -894,13 +894,13 @@ IN_PROC_BROWSER_TEST_F(
 
   // Expectation #1: The capture infobar is created in the profile
   // where capture is happening.
-  EXPECT_EQ(GetInfoBarManager(main_browser, /*tab=*/0)->infobar_count(), 1u);
-  EXPECT_EQ(GetInfoBarManager(main_browser, /*tab=*/1)->infobar_count(), 1u);
+  EXPECT_EQ(GetInfoBarManager(main_browser, /*tab=*/0)->infobars().size(), 1u);
+  EXPECT_EQ(GetInfoBarManager(main_browser, /*tab=*/1)->infobars().size(), 1u);
 
   // Expectation #2: The capture infobar is NOT created in the profile
   // where capture is NOT happening.
-  EXPECT_EQ(GetInfoBarManager(guest_browser, /*tab=*/0)->infobar_count(), 0u);
-  EXPECT_EQ(GetInfoBarManager(guest_browser, /*tab=*/1)->infobar_count(), 0u);
+  EXPECT_EQ(GetInfoBarManager(guest_browser, /*tab=*/0)->infobars().size(), 0u);
+  EXPECT_EQ(GetInfoBarManager(guest_browser, /*tab=*/1)->infobars().size(), 0u);
 }
 
 IN_PROC_BROWSER_TEST_F(
@@ -922,13 +922,13 @@ IN_PROC_BROWSER_TEST_F(
 
   // Expectation #1: The capture infobar is created in the profile
   // where capture is happening.
-  EXPECT_EQ(GetInfoBarManager(guest_browser, /*tab=*/0)->infobar_count(), 1u);
-  EXPECT_EQ(GetInfoBarManager(guest_browser, /*tab=*/1)->infobar_count(), 1u);
+  EXPECT_EQ(GetInfoBarManager(guest_browser, /*tab=*/0)->infobars().size(), 1u);
+  EXPECT_EQ(GetInfoBarManager(guest_browser, /*tab=*/1)->infobars().size(), 1u);
 
   // Expectation #2: The capture infobar is NOT created in the profile
   // where capture is NOT happening.
-  EXPECT_EQ(GetInfoBarManager(main_browser, /*tab=*/0)->infobar_count(), 0u);
-  EXPECT_EQ(GetInfoBarManager(main_browser, /*tab=*/1)->infobar_count(), 0u);
+  EXPECT_EQ(GetInfoBarManager(main_browser, /*tab=*/0)->infobars().size(), 0u);
+  EXPECT_EQ(GetInfoBarManager(main_browser, /*tab=*/1)->infobars().size(), 0u);
 }
 
 IN_PROC_BROWSER_TEST_F(
@@ -950,13 +950,13 @@ IN_PROC_BROWSER_TEST_F(
 
   // Expectation #1: The capture infobar is created in the profile
   // where capture is happening.
-  EXPECT_EQ(GetInfoBarManager(guest_browser, /*tab=*/0)->infobar_count(), 1u);
-  EXPECT_EQ(GetInfoBarManager(guest_browser, /*tab=*/1)->infobar_count(), 1u);
+  EXPECT_EQ(GetInfoBarManager(guest_browser, /*tab=*/0)->infobars().size(), 1u);
+  EXPECT_EQ(GetInfoBarManager(guest_browser, /*tab=*/1)->infobars().size(), 1u);
 
   // Expectation #2: The capture infobar is NOT created in the profile
   // where capture is NOT happening.
-  EXPECT_EQ(GetInfoBarManager(main_browser, /*tab=*/0)->infobar_count(), 0u);
-  EXPECT_EQ(GetInfoBarManager(main_browser, /*tab=*/1)->infobar_count(), 0u);
+  EXPECT_EQ(GetInfoBarManager(main_browser, /*tab=*/0)->infobars().size(), 0u);
+  EXPECT_EQ(GetInfoBarManager(main_browser, /*tab=*/1)->infobars().size(), 0u);
 }
 
 IN_PROC_BROWSER_TEST_F(MultipleTabSharingUIViewsBrowserTest,
@@ -971,13 +971,13 @@ IN_PROC_BROWSER_TEST_F(MultipleTabSharingUIViewsBrowserTest,
                            /*captured_tab=*/1);
 
   // Sanity - existing tabs have an infobar.
-  ASSERT_EQ(GetInfoBarManager(guest_browser, /*tab=*/0)->infobar_count(), 1u);
-  ASSERT_EQ(GetInfoBarManager(guest_browser, /*tab=*/1)->infobar_count(), 1u);
+  ASSERT_EQ(GetInfoBarManager(guest_browser, /*tab=*/0)->infobars().size(), 1u);
+  ASSERT_EQ(GetInfoBarManager(guest_browser, /*tab=*/1)->infobars().size(), 1u);
 
   // Test focus - when adding a tab in guest mode, that tab has an infobar.
   AddTabs(guest_browser, 1);
   ASSERT_EQ(guest_browser->tab_strip_model()->count(), 3);
-  EXPECT_EQ(GetInfoBarManager(guest_browser, /*tab=*/2)->infobar_count(), 1u);
+  EXPECT_EQ(GetInfoBarManager(guest_browser, /*tab=*/2)->infobars().size(), 1u);
 }
 #endif
 

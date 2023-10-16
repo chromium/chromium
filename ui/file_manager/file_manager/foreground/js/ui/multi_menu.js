@@ -23,41 +23,41 @@ export class MultiMenu {
   constructor() {
     /**
      * Whether a sub-menu is positioned on the left of its parent.
-     * @private {?boolean} Used to direct the arrow key navigation.
+     * @private @type {?boolean} Used to direct the arrow key navigation.
      */
     this.subMenuOnLeft = null;
 
     /**
      * Property that hosts sub-menus for filling with overflow items.
-     * @public {?Menu} Used for menu-items that overflow parent
+     * @public @type {?Menu} Used for menu-items that overflow parent
      * menu.
      */
     this.overflow = null;
 
     /**
      * Reference to the menu that the user is currently navigating.
-     * @private {?MultiMenu|Menu} Used to route events to the
+     * @private @type {?MultiMenu|Menu} Used to route events to the
      *     correct menu.
      */
     this.currentMenu = null;
 
-    /** @private {?Menu} Sub menu being used. */
+    /** @private @type {?Menu} Sub menu being used. */
     this.subMenu = null;
 
-    /** @private {?MenuItem} Menu item hosting a sub menu. */
+    /** @private @type {?MenuItem} Menu item hosting a sub menu. */
     this.parentMenuItem = null;
 
-    /** @private {?MenuItem} Selected item in a menu. */
+    /** @private @type {?MenuItem} Selected item in a menu. */
     this.selectedItem = null;
 
     /**
      * Padding used when restricting menu height when the window is too small
      * to show the entire menu.
-     * @private {number}
+     * @private @type {number}
      */
     this.menuEndGap_ = 0;  // padding on cr.menu + 2px.
 
-    /** @private {?EventTracker} */
+    /** @private @type {?EventTracker} */
     this.showingEvents_ = null;
 
     /** TODO(adanilo) Annotate these for closure checking. */

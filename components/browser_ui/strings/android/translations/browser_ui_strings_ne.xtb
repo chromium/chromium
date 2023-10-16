@@ -7,6 +7,7 @@
 <translation id="1073417869336441572">हामीलाई तपाईंले किन तेस्रो पक्षीय कुकीहरू प्रयोग गर्ने अनुमति दिनुभयो भन्ने कुराका बारेमा बताएर Chrome को गुणस्तर सुधार गर्न सघाउनुहोस् <ph name="BEGIN_LINK" />प्रतिक्रिया पठाउनुहोस्<ph name="END_LINK" /></translation>
 <translation id="1178581264944972037">पज गर्नुहोस्</translation>
 <translation id="1181037720776840403">हटाउनुहोस्</translation>
+<translation id="1192844206376121885">तपाईंले यसो गर्नुभयो भने <ph name="ORIGIN" /> ले भण्डारण गरेका सबै डेटा तथा कुकीहरू मेटिने छन्।</translation>
 <translation id="1201402288615127009">अर्को</translation>
 <translation id="1242008676835033345"><ph name="WEBSITE_URL" /> मा इम्बेड गरिएको</translation>
 <translation id="1272079795634619415">रोक्नुहोस्</translation>
@@ -59,6 +60,7 @@
 <translation id="216989819110952009">डोरोथी र उनका साथीहरूले सुरक्षाका लागि आँखामा हरियो चस्मा लगाएका भए पनि उनीहरू सुरुमा निकै आश्चर्यचकित भए</translation>
 <translation id="2176704795966505152">मुख्य मेनुमा जुमसम्बन्धी विकल्प देखाइयोस्</translation>
 <translation id="2182457891543959921">साइटहरूलाई आफू वरपरको ठाउँको 3D नक्सा बनाउन वा क्यामेराको अवस्था पत्ता लगाउन दिनुअघि मलाई सोधियोस् (सिफारिस गरिएको)</translation>
+<translation id="2185965788978862351">तपाईंले यसो गर्नुभयो भने साइट वा एपहरूले तपाईंको होम स्क्रिनमा भण्डारण गरेका <ph name="DATASIZE" /> डेटा तथा कुकीहरू मेटिने छन्।</translation>
 <translation id="2194856509914051091">विचार गर्नु पर्ने कुराहरू</translation>
 <translation id="2212565012507486665">कुकीहरूलाई अनुमति दिनुहोस्</translation>
 <translation id="2228071138934252756"><ph name="APP_NAME" /> लाई आफ्नो क्यामेरा प्रयोग गर्न दिन <ph name="BEGIN_LINK" />Android का सेटिङ<ph name="END_LINK" />मा गई क्यामेरा पनि अन गर्नुहोस्।</translation>
@@ -82,6 +84,7 @@
 <translation id="2434158240863470628">डाउनलोड सम्पन्न भयो <ph name="SEPARATOR" /> <ph name="BYTES_DOWNLOADED" /></translation>
 <translation id="244264527810019436">इन्कोग्निटो मोडमा केही साइटका सुविधाहरूले काम नगर्न सक्छन्</translation>
 <translation id="2442870161001914531">सधैँ साइटको डेस्कटप भ्यू देखाइयोस्</translation>
+<translation id="2469312991797799607">तपाईंले यो कारबाही गर्नुभयो भने <ph name="ORIGIN" /> र यसअन्तर्गत रहेका सबै साइटहरूले भण्डारण गरेका सबै डेटा तथा कुकीहरू मेटिने छन्</translation>
 <translation id="2479148705183875116">सेटिङमा जानुहोस्</translation>
 <translation id="2482878487686419369">सूचनाहरू</translation>
 <translation id="2485422356828889247">विस्थापन गर्नुहोस्</translation>
@@ -229,6 +232,7 @@
 <translation id="5063480226653192405">उपयोग</translation>
 <translation id="5091013926750941408">मोबाइल साइट</translation>
 <translation id="509133520954049755">डेस्कटप भ्यू देखाउन अनुरोध गरियोस्</translation>
+<translation id="5099358668261120049">तपाईंले यसो गर्नुभयो भने <ph name="ORIGIN" /> ले वा यससँग सम्बन्धित एपले तपाईंको होम स्क्रिनमा भण्डारण गरेका सबै डेटा तथा कुकीहरू मेटिने छन्।</translation>
 <translation id="5100237604440890931">संक्षिप्त भयो - विस्तृत गर्न क्लिक गर्नुहोस्</translation>
 <translation id="5123685120097942451">इन्कोग्निटो ट्याब</translation>
 <translation id="5186036860380548585">यो विकल्प स्क्रिनको सिरान छेउमा उपलब्ध छ</translation>
@@ -258,6 +262,7 @@
 <translation id="5545693483061321551">साइटहरूले तपाईंका गतिविधिअनुसार विज्ञापन देखाउने जस्ता प्रयोजनका लागि विभिन्न साइटहरूमा तपाईंको ब्राउजिङसम्बन्धी गतिविधि हेर्न तपाईंका कुकीहरू प्रयोग गर्न सक्दैनन्। केही साइटका सुविधाहरूले काम नगर्न सक्छन्।</translation>
 <translation id="5553374991681107062">नवीनतम</translation>
 <translation id="5556459405103347317">पुन: लोड गर्नुहोस्</translation>
+<translation id="5591840828808741583"><ph name="SITE_NAME" /> ब्लक गरिएको छ</translation>
 <translation id="5649053991847567735">स्वचालित डाउनलोडहरू</translation>
 <translation id="5668404140385795438">जूमिङ इनलाई रोक्न वेबसाइटको अनुरोधलाई ओभरराइड गर्नुहोस्</translation>
 <translation id="5677928146339483299">ब्लक गरिएको छ</translation>
@@ -276,6 +281,7 @@
 <translation id="5916664084637901428">अन</translation>
 <translation id="5922853908706496913">तपाईंको स्क्रिन सेयर गर्दै</translation>
 <translation id="5922967540311291836">तेस्रो पक्षीय कुकीहरू ब्लक गरियोस्:</translation>
+<translation id="5923512600150154850">तपाईंले यसो गर्नुभयो भने साइटहरूले भण्डारण गरेका <ph name="DATASIZE" /> डेटा तथा कुकीहरू मेटिने छन्।</translation>
 <translation id="5939518447894949180">रिसेट गर्नुहोस्</translation>
 <translation id="5964247741333118902">इम्बेड गरिएको सामग्री</translation>
 <translation id="5968921426641056619">वेब ठेगाना हाल्नुहोस्</translation>
@@ -344,6 +350,7 @@
 <translation id="7176368934862295254"><ph name="KILOBYTES" /> के.बि.</translation>
 <translation id="7180611975245234373">ताजा गर्नुहोस्</translation>
 <translation id="7188508872042490670">डिभाइसमै सेभ गरिने साइट डेटा</translation>
+<translation id="7201549776650881587">तपाईंले यो कारबाही गर्नुभयो भने <ph name="ORIGIN" /> अन्तर्गत रहेका सबै साइट वा यससँग सम्बन्धित एपले तपाईंको होम स्क्रिनमा भण्डारण गरेका सबै डेटा तथा कुकीहरू मेटिने छन्</translation>
 <translation id="7203150201908454328">विस्तारित</translation>
 <translation id="7219254577985949841">साइट डेटा मेटाउने हो?</translation>
 <translation id="723171743924126238">फोटो चयन गर्नुहोस्</translation>
@@ -455,6 +462,7 @@
 <translation id="8959122750345127698">नेभिगेशन पहुँचयोग्य छैन: <ph name="URL" /></translation>
 <translation id="8986362086234534611">बिर्सनुहोस्</translation>
 <translation id="8990043154272859344">तपाईंलाई सबै साइटहरूबाट साइन आउट गरिने छ</translation>
+<translation id="9011903857143958461"><ph name="SITE_NAME" /> लाई अनुमति दिइएको छ</translation>
 <translation id="9019902583201351841">तपाईँको अविभावक द्वारा व्यवस्थित</translation>
 <translation id="9039697262778250930">तपाईंलाई यी साइटहरूबाट साइन आउट गरिन सक्छ</translation>
 <translation id="9074739597929991885">ब्लुटुथ</translation>

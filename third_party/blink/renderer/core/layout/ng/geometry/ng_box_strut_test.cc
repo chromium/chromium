@@ -14,7 +14,7 @@ namespace {
 // this has not been implemented yet.
 TEST(GeometryUnitsTest, ConvertPhysicalStrutToLogical) {
   LayoutUnit left{5}, right{10}, top{15}, bottom{20};
-  NGPhysicalBoxStrut physical{top, right, bottom, left};
+  PhysicalBoxStrut physical{top, right, bottom, left};
 
   BoxStrut logical = physical.ConvertToLogical(
       {WritingMode::kHorizontalTb, TextDirection::kLtr});
@@ -94,9 +94,9 @@ TEST(GeometryUnitsTest, ConvertLogicalStrutToPhysical) {
   EXPECT_EQ(logical, converted);
 }
 
-TEST(NGPhysicalBoxStrutTest, Constructors) {
-  NGPhysicalBoxStrut result(0, std::numeric_limits<int>::max(), -1,
-                            std::numeric_limits<int>::min());
+TEST(PhysicalBoxStrutTest, Constructors) {
+  PhysicalBoxStrut result(0, std::numeric_limits<int>::max(), -1,
+                          std::numeric_limits<int>::min());
   EXPECT_EQ(LayoutUnit(), result.top);
   EXPECT_EQ(LayoutUnit::FromRawValue(GetMaxSaturatedSetResultForTesting()),
             result.right);
@@ -104,9 +104,9 @@ TEST(NGPhysicalBoxStrutTest, Constructors) {
   EXPECT_EQ(LayoutUnit::Min(), result.left);
 }
 
-TEST(NGPhysicalBoxStrutTest, Enclosing) {
+TEST(PhysicalBoxStrutTest, Enclosing) {
   ASSERT_LT(0.01f, LayoutUnit::Epsilon());
-  auto result = NGPhysicalBoxStrut::Enclosing(
+  auto result = PhysicalBoxStrut::Enclosing(
       gfx::OutsetsF()
           .set_top(3.00f)
           .set_right(5.01f)
@@ -118,8 +118,8 @@ TEST(NGPhysicalBoxStrutTest, Enclosing) {
   EXPECT_EQ(LayoutUnit::Max(), result.left);
 }
 
-TEST(NGPhysicalBoxStrutTest, Unite) {
-  NGPhysicalBoxStrut strut(LayoutUnit(10));
+TEST(PhysicalBoxStrutTest, Unite) {
+  PhysicalBoxStrut strut(LayoutUnit(10));
   strut.Unite(
       {LayoutUnit(10), LayoutUnit(11), LayoutUnit(0), LayoutUnit::Max()});
   EXPECT_EQ(LayoutUnit(10), strut.top);

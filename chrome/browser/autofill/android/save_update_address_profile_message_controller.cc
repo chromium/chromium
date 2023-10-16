@@ -138,7 +138,7 @@ void SaveUpdateAddressProfileMessageController::DismissMessage() {
 
 void SaveUpdateAddressProfileMessageController::RunSaveAddressProfileCallback(
     AutofillClient::SaveAddressProfileOfferUserDecision decision) {
-  std::move(save_address_profile_callback_).Run(decision, profile_);
+  std::move(save_address_profile_callback_).Run(decision, std::nullopt);
   primary_action_callback_.Reset();
 }
 

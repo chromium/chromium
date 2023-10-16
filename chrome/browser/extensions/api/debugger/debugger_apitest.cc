@@ -330,9 +330,9 @@ IN_PROC_BROWSER_TEST_F(DebuggerApiTest, InfoBar) {
   ASSERT_TRUE(api_test_utils::RunFunction(
       attach_function.get(),
       base::StringPrintf("[{\"tabId\": %d}, \"1.1\"]", tab_id), profile()));
-  EXPECT_EQ(1u, manager1->infobar_count());
-  EXPECT_EQ(1u, manager2->infobar_count());
-  EXPECT_EQ(1u, manager3->infobar_count());
+  EXPECT_EQ(1u, manager1->infobars().size());
+  EXPECT_EQ(1u, manager2->infobars().size());
+  EXPECT_EQ(1u, manager3->infobars().size());
 
   // Attaching to another tab should not create more infobars.
   attach_function = new DebuggerAttachFunction();
@@ -340,9 +340,9 @@ IN_PROC_BROWSER_TEST_F(DebuggerApiTest, InfoBar) {
   ASSERT_TRUE(api_test_utils::RunFunction(
       attach_function.get(),
       base::StringPrintf("[{\"tabId\": %d}, \"1.1\"]", tab_id2), profile()));
-  EXPECT_EQ(1u, manager1->infobar_count());
-  EXPECT_EQ(1u, manager2->infobar_count());
-  EXPECT_EQ(1u, manager3->infobar_count());
+  EXPECT_EQ(1u, manager1->infobars().size());
+  EXPECT_EQ(1u, manager2->infobars().size());
+  EXPECT_EQ(1u, manager3->infobars().size());
 
   // Detaching from one of the tabs should not remove infobars.
   detach_function = new DebuggerDetachFunction();
@@ -350,9 +350,9 @@ IN_PROC_BROWSER_TEST_F(DebuggerApiTest, InfoBar) {
   ASSERT_TRUE(api_test_utils::RunFunction(
       detach_function.get(), base::StringPrintf("[{\"tabId\": %d}]", tab_id2),
       profile()));
-  EXPECT_EQ(1u, manager1->infobar_count());
-  EXPECT_EQ(1u, manager2->infobar_count());
-  EXPECT_EQ(1u, manager3->infobar_count());
+  EXPECT_EQ(1u, manager1->infobars().size());
+  EXPECT_EQ(1u, manager2->infobars().size());
+  EXPECT_EQ(1u, manager3->infobars().size());
 
   // Detaching from the other tab also should not remove infobars, since even
   // though there is no longer an extension attached, the infobar can only be
@@ -362,9 +362,9 @@ IN_PROC_BROWSER_TEST_F(DebuggerApiTest, InfoBar) {
   ASSERT_TRUE(api_test_utils::RunFunction(
       detach_function.get(), base::StringPrintf("[{\"tabId\": %d}]", tab_id),
       profile()));
-  EXPECT_EQ(1u, manager1->infobar_count());
-  EXPECT_EQ(1u, manager2->infobar_count());
-  EXPECT_EQ(1u, manager3->infobar_count());
+  EXPECT_EQ(1u, manager1->infobars().size());
+  EXPECT_EQ(1u, manager2->infobars().size());
+  EXPECT_EQ(1u, manager3->infobars().size());
 
   // Attach again; should not create infobars.
   attach_function = new DebuggerAttachFunction();
@@ -372,19 +372,19 @@ IN_PROC_BROWSER_TEST_F(DebuggerApiTest, InfoBar) {
   ASSERT_TRUE(api_test_utils::RunFunction(
       attach_function.get(),
       base::StringPrintf("[{\"tabId\": %d}, \"1.1\"]", tab_id), profile()));
-  EXPECT_EQ(1u, manager1->infobar_count());
-  EXPECT_EQ(1u, manager2->infobar_count());
-  EXPECT_EQ(1u, manager3->infobar_count());
+  EXPECT_EQ(1u, manager1->infobars().size());
+  EXPECT_EQ(1u, manager2->infobars().size());
+  EXPECT_EQ(1u, manager3->infobars().size());
 
   // Remove the global infobar by simulating what happens when the user clicks
   // the close button (see InfoBarView::ButtonPressed()).  The
   // InfoBarDismissed() call will remove the infobars everywhere except on
   // |manager2| itself; the RemoveSelf() call removes that one.
-  manager2->infobar_at(0)->delegate()->InfoBarDismissed();
-  manager2->infobar_at(0)->RemoveSelf();
-  EXPECT_EQ(0u, manager1->infobar_count());
-  EXPECT_EQ(0u, manager2->infobar_count());
-  EXPECT_EQ(0u, manager3->infobar_count());
+  manager2->infobars()[0]->delegate()->InfoBarDismissed();
+  manager2->infobars()[0]->RemoveSelf();
+  EXPECT_EQ(0u, manager1->infobars().size());
+  EXPECT_EQ(0u, manager2->infobars().size());
+  EXPECT_EQ(0u, manager3->infobars().size());
   detach_function = new DebuggerDetachFunction();
   detach_function->set_extension(extension());
   // Cannot detach again.
@@ -398,23 +398,23 @@ IN_PROC_BROWSER_TEST_F(DebuggerApiTest, InfoBar) {
   ASSERT_TRUE(api_test_utils::RunFunction(
       attach_function.get(),
       base::StringPrintf("[{\"tabId\": %d}, \"1.1\"]", tab_id), profile()));
-  EXPECT_EQ(1u, manager1->infobar_count());
-  EXPECT_EQ(1u, manager2->infobar_count());
-  EXPECT_EQ(1u, manager3->infobar_count());
+  EXPECT_EQ(1u, manager1->infobars().size());
+  EXPECT_EQ(1u, manager2->infobars().size());
+  EXPECT_EQ(1u, manager3->infobars().size());
 
   // Closing tab should not affect anything.
   EXPECT_EQ(2, another_browser->tab_strip_model()->count());
   another_browser->tab_strip_model()->CloseWebContentsAt(1, 0);
   EXPECT_EQ(1, another_browser->tab_strip_model()->count());
   manager3 = nullptr;
-  EXPECT_EQ(1u, manager1->infobar_count());
-  EXPECT_EQ(1u, manager2->infobar_count());
+  EXPECT_EQ(1u, manager1->infobars().size());
+  EXPECT_EQ(1u, manager2->infobars().size());
 
   // Closing browser should not affect anything.
   CloseBrowserSynchronously(another_browser);
   manager2 = nullptr;
   another_browser = nullptr;
-  EXPECT_EQ(1u, manager1->infobar_count());
+  EXPECT_EQ(1u, manager1->infobars().size());
 
   // Detach should not affect anything.
   detach_function = new DebuggerDetachFunction();
@@ -422,7 +422,7 @@ IN_PROC_BROWSER_TEST_F(DebuggerApiTest, InfoBar) {
   ASSERT_TRUE(api_test_utils::RunFunction(
       detach_function.get(), base::StringPrintf("[{\"tabId\": %d}]", tab_id),
       profile()));
-  EXPECT_EQ(1u, manager1->infobar_count());
+  EXPECT_EQ(1u, manager1->infobars().size());
 }
 
 IN_PROC_BROWSER_TEST_F(DebuggerApiTest, InfoBarIsRemovedAfterFiveSeconds) {
@@ -439,7 +439,7 @@ IN_PROC_BROWSER_TEST_F(DebuggerApiTest, InfoBarIsRemovedAfterFiveSeconds) {
   ASSERT_TRUE(api_test_utils::RunFunction(
       attach_function.get(),
       base::StringPrintf("[{\"tabId\": %d}, \"1.1\"]", tab_id), profile()));
-  EXPECT_EQ(1u, manager->infobar_count());
+  EXPECT_EQ(1u, manager->infobars().size());
 
   // Detaching from the tab should remove the infobar after 5 seconds.
   auto detach_function = base::MakeRefCounted<DebuggerDetachFunction>();
@@ -455,13 +455,13 @@ IN_PROC_BROWSER_TEST_F(DebuggerApiTest, InfoBarIsRemovedAfterFiveSeconds) {
   base::SingleThreadTaskRunner::GetCurrentDefault()->PostDelayedTask(
       FROM_HERE, run_loop.QuitClosure(),
       ExtensionDevToolsInfoBarDelegate::kAutoCloseDelay);
-  EXPECT_EQ(1u, manager->infobar_count());  // Infobar is still shown.
+  EXPECT_EQ(1u, manager->infobars().size());  // Infobar is still shown.
 
   // Advance the clock by 5 seconds, and verify the infobar is removed.
   AdvanceClock(ExtensionDevToolsInfoBarDelegate::kAutoCloseDelay);
   run_loop.Run();
 
-  EXPECT_EQ(0u, manager->infobar_count());
+  EXPECT_EQ(0u, manager->infobars().size());
 }
 
 IN_PROC_BROWSER_TEST_F(DebuggerApiTest,
@@ -491,7 +491,7 @@ IN_PROC_BROWSER_TEST_F(DebuggerApiTest,
         base::StringPrintf("[{\"tabId\": %d}, \"1.1\"]", tab_id1), profile()));
   }
 
-  EXPECT_EQ(1u, manager->infobar_count());
+  EXPECT_EQ(1u, manager->infobars().size());
 
   // Attaching to a 2nd tab, to have another attached debugger.
   {
@@ -502,7 +502,7 @@ IN_PROC_BROWSER_TEST_F(DebuggerApiTest,
         base::StringPrintf("[{\"tabId\": %d}, \"1.1\"]", tab_id2), profile()));
   }
 
-  EXPECT_EQ(1u, manager->infobar_count());
+  EXPECT_EQ(1u, manager->infobars().size());
 
   // Detaching from the tab should not remove the infobar after 5 seconds, as
   // another debugger is still attached.
@@ -525,7 +525,7 @@ IN_PROC_BROWSER_TEST_F(DebuggerApiTest,
   }
 
   // Verify inforbar not removed.
-  EXPECT_EQ(1u, manager->infobar_count());
+  EXPECT_EQ(1u, manager->infobars().size());
 
   // Now detach the last debugger.
   {
@@ -547,7 +547,7 @@ IN_PROC_BROWSER_TEST_F(DebuggerApiTest,
   }
 
   // Verify inforbar removed.
-  EXPECT_EQ(0u, manager->infobar_count());
+  EXPECT_EQ(0u, manager->infobars().size());
 }
 
 class CrossProfileDebuggerApiTest : public DebuggerApiTest {
@@ -698,7 +698,7 @@ IN_PROC_BROWSER_TEST_F(DebuggerApiTest,
   ASSERT_TRUE(api_test_utils::RunFunction(
       attach_function.get(),
       base::StringPrintf("[{\"tabId\": %d}, \"1.1\"]", tab_id), profile()));
-  EXPECT_EQ(1u, manager->infobar_count());
+  EXPECT_EQ(1u, manager->infobars().size());
 
   // Detaching from the tab and attaching it again before 5 seconds should not
   // remove the infobar.
@@ -707,7 +707,7 @@ IN_PROC_BROWSER_TEST_F(DebuggerApiTest,
   ASSERT_TRUE(api_test_utils::RunFunction(
       detach_function.get(), base::StringPrintf("[{\"tabId\": %d}]", tab_id),
       profile()));
-  EXPECT_EQ(1u, manager->infobar_count());
+  EXPECT_EQ(1u, manager->infobars().size());
 
   attach_function = base::MakeRefCounted<DebuggerAttachFunction>();
   attach_function->set_extension(extension());
@@ -715,7 +715,7 @@ IN_PROC_BROWSER_TEST_F(DebuggerApiTest,
       attach_function.get(),
       base::StringPrintf("[{\"tabId\": %d}, \"1.1\"]", tab_id), profile()));
   // Verify that only one infobar is created.
-  EXPECT_EQ(1u, manager->infobar_count());
+  EXPECT_EQ(1u, manager->infobars().size());
 
   // Verify that infobar is not closed after 5 seconds.
   base::RunLoop run_loop;
@@ -725,7 +725,7 @@ IN_PROC_BROWSER_TEST_F(DebuggerApiTest,
   AdvanceClock(ExtensionDevToolsInfoBarDelegate::kAutoCloseDelay);
   run_loop.Run();
 
-  EXPECT_EQ(1u, manager->infobar_count());
+  EXPECT_EQ(1u, manager->infobars().size());
 }
 
 // Tests that policy blocked hosts supersede the `debugger`

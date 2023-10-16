@@ -10,14 +10,14 @@
 namespace blink {
 namespace {
 
-using InlineEdge = NGLogicalStaticPosition::InlineEdge;
-using BlockEdge = NGLogicalStaticPosition::BlockEdge;
-using HorizontalEdge = NGPhysicalStaticPosition::HorizontalEdge;
-using VerticalEdge = NGPhysicalStaticPosition::VerticalEdge;
+using InlineEdge = LogicalStaticPosition::InlineEdge;
+using BlockEdge = LogicalStaticPosition::BlockEdge;
+using HorizontalEdge = PhysicalStaticPosition::HorizontalEdge;
+using VerticalEdge = PhysicalStaticPosition::VerticalEdge;
 
-struct NGStaticPositionTestData {
-  NGLogicalStaticPosition logical;
-  NGPhysicalStaticPosition physical;
+struct StaticPositionTestData {
+  LogicalStaticPosition logical;
+  PhysicalStaticPosition physical;
   WritingMode writing_mode;
   TextDirection direction;
 
@@ -240,11 +240,11 @@ struct NGStaticPositionTestData {
      TextDirection::kRtl},
 };
 
-class NGStaticPositionTest
+class StaticPositionTest
     : public testing::Test,
-      public testing::WithParamInterface<NGStaticPositionTestData> {};
+      public testing::WithParamInterface<StaticPositionTestData> {};
 
-TEST_P(NGStaticPositionTest, Convert) {
+TEST_P(StaticPositionTest, Convert) {
   const auto& data = GetParam();
 
   // These tests take the logical static-position, and convert it to a physical
@@ -255,21 +255,21 @@ TEST_P(NGStaticPositionTest, Convert) {
 
   const WritingModeConverter converter({data.writing_mode, data.direction},
                                        PhysicalSize(100, 100));
-  NGPhysicalStaticPosition physical_result =
+  PhysicalStaticPosition physical_result =
       data.logical.ConvertToPhysical(converter);
   EXPECT_EQ(physical_result.offset, data.physical.offset);
   EXPECT_EQ(physical_result.horizontal_edge, data.physical.horizontal_edge);
   EXPECT_EQ(physical_result.vertical_edge, data.physical.vertical_edge);
 
-  NGLogicalStaticPosition logical_result =
+  LogicalStaticPosition logical_result =
       data.physical.ConvertToLogical(converter);
   EXPECT_EQ(logical_result.offset, data.logical.offset);
   EXPECT_EQ(logical_result.inline_edge, data.logical.inline_edge);
   EXPECT_EQ(logical_result.block_edge, data.logical.block_edge);
 }
 
-INSTANTIATE_TEST_SUITE_P(NGStaticPositionTest,
-                         NGStaticPositionTest,
+INSTANTIATE_TEST_SUITE_P(StaticPositionTest,
+                         StaticPositionTest,
                          testing::ValuesIn(ng_static_position_test_data));
 
 }  // namespace

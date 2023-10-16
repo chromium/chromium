@@ -5,6 +5,7 @@
 import {TestRunner} from 'test_runner';
 import {NetworkTestRunner} from 'network_test_runner';
 
+import * as DataGrid from 'devtools/ui/legacy/components/data_grid/data_grid.js';
 import * as Network from 'devtools/panels/network/network.js';
 
 (async function() {

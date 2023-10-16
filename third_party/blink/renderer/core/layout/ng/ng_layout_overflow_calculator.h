@@ -29,9 +29,9 @@ class CORE_EXPORT NGLayoutOverflowCalculator {
   NGLayoutOverflowCalculator(const NGBlockNode&,
                              bool is_css_box,
                              bool has_block_fragmentation,
-                             const NGPhysicalBoxStrut& borders,
-                             const NGPhysicalBoxStrut& scrollbar,
-                             const NGPhysicalBoxStrut& padding,
+                             const PhysicalBoxStrut& borders,
+                             const PhysicalBoxStrut& scrollbar,
+                             const PhysicalBoxStrut& padding,
                              PhysicalSize size,
                              WritingDirectionMode);
 
@@ -87,7 +87,7 @@ class CORE_EXPORT NGLayoutOverflowCalculator {
   const bool has_non_visible_overflow_;
   const bool has_block_fragmentation_;
 
-  const NGPhysicalBoxStrut padding_;
+  const PhysicalBoxStrut padding_;
   const PhysicalSize size_;
 
   PhysicalRect padding_rect_;

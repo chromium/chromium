@@ -100,24 +100,26 @@ TEST_P(PipPositionerDisplayTest, PipAdjustPositionForDragClampsToMovementArea) {
   // Adjust near top edge outside movement area.
   EXPECT_EQ(ConvertToScreen(gfx::Rect(100, 8, 100, 100)),
             PipPositioner::GetBoundsForDrag(
-                display, ConvertToScreen(gfx::Rect(100, -50, 100, 100))));
+                display, ConvertToScreen(gfx::Rect(100, -50, 100, 100)),
+                gfx::Transform()));
 
   // Adjust near bottom edge outside movement area.
-  EXPECT_EQ(
-      ConvertToScreen(gfx::Rect(100, bottom - 108, 100, 100)),
-      PipPositioner::GetBoundsForDrag(
-          display, ConvertToScreen(gfx::Rect(100, bottom + 50, 100, 100))));
+  EXPECT_EQ(ConvertToScreen(gfx::Rect(100, bottom - 108, 100, 100)),
+            PipPositioner::GetBoundsForDrag(
+                display, ConvertToScreen(gfx::Rect(100, bottom + 50, 100, 100)),
+                gfx::Transform()));
 
   // Adjust near left edge outside movement area.
   EXPECT_EQ(ConvertToScreen(gfx::Rect(8, 100, 100, 100)),
             PipPositioner::GetBoundsForDrag(
-                display, ConvertToScreen(gfx::Rect(-50, 100, 100, 100))));
+                display, ConvertToScreen(gfx::Rect(-50, 100, 100, 100)),
+                gfx::Transform()));
 
   // Adjust near right edge outside movement area.
-  EXPECT_EQ(
-      ConvertToScreen(gfx::Rect(right - 108, 100, 100, 100)),
-      PipPositioner::GetBoundsForDrag(
-          display, ConvertToScreen(gfx::Rect(right + 50, 100, 100, 100))));
+  EXPECT_EQ(ConvertToScreen(gfx::Rect(right - 108, 100, 100, 100)),
+            PipPositioner::GetBoundsForDrag(
+                display, ConvertToScreen(gfx::Rect(right + 50, 100, 100, 100)),
+                gfx::Transform()));
 }
 
 TEST_P(PipPositionerDisplayTest,
@@ -185,6 +187,38 @@ TEST_P(PipPositionerDisplayTest, PipDismissedPositionPrefersHorizontal) {
             PipPositioner::GetDismissedPosition(
                 display, ConvertToScreen(
                              gfx::Rect(right - 100, bottom - 100, 100, 100))));
+}
+
+TEST_P(PipPositionerDisplayTest,
+       ScaledPipAdjustPositionForDragClampsToMovementArea) {
+  auto display = GetDisplay();
+  int right = display.bounds().width();
+  int bottom = display.bounds().height();
+  gfx::Transform transform = gfx::Transform::MakeScale(2.f);
+
+  // Adjust near top edge outside movement area.
+  EXPECT_EQ(
+      ConvertToScreen(gfx::Rect(100, 8, 100, 100)),
+      PipPositioner::GetBoundsForDrag(
+          display, ConvertToScreen(gfx::Rect(100, -50, 100, 100)), transform));
+
+  // Adjust near bottom edge outside movement area.
+  EXPECT_EQ(ConvertToScreen(gfx::Rect(100, bottom - 208, 100, 100)),
+            PipPositioner::GetBoundsForDrag(
+                display, ConvertToScreen(gfx::Rect(100, bottom + 50, 100, 100)),
+                transform));
+
+  // Adjust near left edge outside movement area.
+  EXPECT_EQ(
+      ConvertToScreen(gfx::Rect(8, 100, 100, 100)),
+      PipPositioner::GetBoundsForDrag(
+          display, ConvertToScreen(gfx::Rect(-50, 100, 100, 100)), transform));
+
+  // Adjust near right edge outside movement area.
+  EXPECT_EQ(ConvertToScreen(gfx::Rect(right - 208, 100, 100, 100)),
+            PipPositioner::GetBoundsForDrag(
+                display, ConvertToScreen(gfx::Rect(right + 50, 100, 100, 100)),
+                transform));
 }
 
 INSTANTIATE_TEST_SUITE_P(

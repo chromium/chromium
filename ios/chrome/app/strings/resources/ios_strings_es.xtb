@@ -786,6 +786,7 @@ Consulta las instrucciones del buscador para eliminar tu historial de búsqueda 
 <translation id="5181140330217080051">Descargando</translation>
 <translation id="5184329579814168207">Abrir en Chrome</translation>
 <translation id="5186185447130319458">Privado</translation>
+<translation id="5186634140793586141">Gestiona los temas y las búsquedas que te interesan</translation>
 <translation id="5188482106078495165">Tu configuración de cookies se aplica a todas las pestañas. Para aplicar un ajuste nuevo a una pestaña abierta, vuelve a cargarla.</translation>
 <translation id="5190835502935405962">Barra de marcadores</translation>
 <translation id="519530786644929958">La descarga ha fallado y no se puede reintentar.</translation>
@@ -1165,7 +1166,6 @@ Mientras estás en modo Incógnito, los sitios no pueden usar tus cookies para v
 <translation id="7062545763355031412">Aceptar y cambiar de cuenta</translation>
 <translation id="7063811929043357292">Tu padre o madre gestiona tu cuenta.
 <ph name="BEGIN_LINK" />Más información<ph name="END_LINK" /></translation>
-<translation id="7064619810277839954">Te ofrece sugerencias de pestañas basadas en tu actividad de navegación en tus otros dispositivos usando tu cuenta de Google. Debes haber iniciado sesión y tener la sincronización activada en tus dispositivos con la misma cuenta de Google.</translation>
 <translation id="7069695992271320873">Quitar de este dispositivo</translation>
 <translation id="7080806333218412752">Envía URL a Navegación segura para que las compruebe. También envía una muestra pequeña de páginas, descargas, actividad de las extensiones e información del sistema para ayudar a detectar nuevas amenazas. Cuando inicias sesión, vincula estos datos a tu cuenta de Google de forma temporal para protegerte en las aplicaciones de Google.</translation>
 <translation id="7082853213442715471">Cuando está activado, se bloquean algunas tecnologías web, lo que puede que haga que algunos sitios web se carguen más despacio o no funcionen correctamente.</translation>

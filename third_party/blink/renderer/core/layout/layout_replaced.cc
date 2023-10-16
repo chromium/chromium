@@ -162,7 +162,7 @@ void LayoutReplaced::AddVisualEffectOverflow() {
 
   // Add in the final overflow with shadows, outsets and outline combined.
   PhysicalRect visual_effect_overflow = PhysicalBorderBoxRect();
-  NGPhysicalBoxStrut outsets = ComputeVisualEffectOverflowOutsets();
+  PhysicalBoxStrut outsets = ComputeVisualEffectOverflowOutsets();
   visual_effect_overflow.Expand(outsets);
   AddSelfVisualOverflow(visual_effect_overflow);
   UpdateHasSubpixelVisualEffectOutsets(outsets);
@@ -386,11 +386,11 @@ PhysicalSize LayoutReplaced::SizeFromNG() const {
   return GetBoxLayoutExtraInput()->size;
 }
 
-NGPhysicalBoxStrut LayoutReplaced::BorderPaddingFromNG() const {
+PhysicalBoxStrut LayoutReplaced::BorderPaddingFromNG() const {
   if (GetBoxLayoutExtraInput()) {
     return GetBoxLayoutExtraInput()->border_padding;
   }
-  return NGPhysicalBoxStrut(
+  return PhysicalBoxStrut(
       BorderTop() + PaddingTop(), BorderRight() + PaddingRight(),
       BorderBottom() + PaddingBottom(), BorderLeft() + PaddingLeft());
 }
@@ -398,7 +398,7 @@ NGPhysicalBoxStrut LayoutReplaced::BorderPaddingFromNG() const {
 PhysicalRect LayoutReplaced::PhysicalContentBoxRectFromNG() const {
   NOT_DESTROYED();
   const PhysicalSize size = SizeFromNG();
-  const NGPhysicalBoxStrut border_padding = BorderPaddingFromNG();
+  const PhysicalBoxStrut border_padding = BorderPaddingFromNG();
   return PhysicalRect(
       border_padding.left, border_padding.top,
       (size.width - border_padding.HorizontalSum()).ClampNegativeToZero(),

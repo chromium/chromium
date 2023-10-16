@@ -125,24 +125,25 @@ class Speedometer {
    */
   constructor(maxSamples = 20) {
     /**
-     * @private @const {number} Max number of samples to keep.
+     * @private @const @type {number} Max number of samples to keep.
      */
     this.maxSamples_ = maxSamples;
 
     /**
-     * @private {!Array<!{time: number, bytes: number}>} Recent samples.
+     * @private @type {!Array<!{time: number, bytes: number}>} Recent samples.
      *     |time| is in milliseconds.
      */
     this.samples_ = [];
 
     /**
-     * @private {?{time: number, bytes: number}} First sample.
+     * @private @type {?{time: number, bytes: number}} First sample.
      *     |time| is in milliseconds.
      */
     this.first_ = null;
 
     /**
-     * @private {number} Total number of bytes to be processed by the task.
+     * @private @type {number} Total number of bytes to be processed by the
+     *     task.
      */
     this.totalBytes_ = 0;
   }

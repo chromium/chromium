@@ -134,7 +134,7 @@ IN_PROC_BROWSER_TEST_F(NotificationsTest, DISABLED_TestUserGestureInfobar) {
   infobars::ContentInfoBarManager* infobar_manager =
       infobars::ContentInfoBarManager::FromWebContents(
           browser()->tab_strip_model()->GetWebContentsAt(0));
-  EXPECT_EQ(1U, infobar_manager->infobar_count());
+  EXPECT_EQ(1U, infobar_manager->infobars().size());
 }
 
 IN_PROC_BROWSER_TEST_F(NotificationsTest, TestCreateSimpleNotification) {

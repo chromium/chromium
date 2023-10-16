@@ -84,7 +84,8 @@ TEST_F(ChromeIOSTranslateClientTest, TranslateUICreated) {
                                     "en", "en",
                                     translate::TranslateErrors::NONE,
                                     /*triggered_from_menu=*/false);
-  EXPECT_EQ(1U, InfoBarManagerImpl::FromWebState(&web_state_)->infobar_count());
+  EXPECT_EQ(1U,
+            InfoBarManagerImpl::FromWebState(&web_state_)->infobars().size());
 }
 
 TEST_F(ChromeIOSTranslateClientTest, NewMetricsOnPageLoadCommits) {

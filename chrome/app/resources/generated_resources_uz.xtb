@@ -3218,6 +3218,7 @@ Oʻz qurilmangizda Family Link ilovasini oʻrnatib, bu hisob sozlamalarini boshq
 <translation id="3521405806571557477"><ph name="SITE_NAME" /> uchun saqlangan maʼlumotlarni oʻchiring</translation>
 <translation id="3521606918211282604">Disk hajmini oʻzgartirish</translation>
 <translation id="3522088408596898827">Diskda boʻsh joy deyarli qolmadi. Joy ochib, qaytadan urining.</translation>
+<translation id="3522979239100719575">Mavjud profillar qidirilmoqda. Bu bir necha daqiqa vaqt olishi mumkin.</translation>
 <translation id="3524518036046613664">Mahalliy tarmoqdagi printerlar kabi qurilmalarni topish</translation>
 <translation id="3524965460886318643">Eksport qilishlar jurnali</translation>
 <translation id="3525426269008462093">Qurilma sinxronizatsiyasi sozlashdan keyin tekshirilsin</translation>
@@ -7810,6 +7811,7 @@ Yana # ta oshkor qilingan parollaringiz bor. Google Parollar menejeri ularni hoz
 <translation id="7283555985781738399">Mehmon rejimi</translation>
 <translation id="7284307451964417957">{DAYS,plural, =1{Bu qurilma 1 kun davomida saqlanadi va unga keyingi safar kodsiz ulanish mumkin. Bu administrator tomonidan sozlangan.}other{Bu qurilma {DAYS} kun davomida saqlanadi va unga keyingi safar kodsiz ulanish mumkin. Bu administrator tomonidan sozlangan.}}</translation>
 <translation id="7284411326658527427">Har bir odamning hisobi alohida moslashtiriladi va ularning maʼlumotlari xavfsiz saqlanadi.</translation>
+<translation id="7286867818472074330">Kalitni tanlash</translation>
 <translation id="7287143125007575591">Ruxsat berilmadi.</translation>
 <translation id="7287411021188441799">Standart fonni tiklash</translation>
 <translation id="7288676996127329262"><ph name="HORIZONTAL_DPI" />x<ph name="VERTICAL_DPI" /> dpi</translation>

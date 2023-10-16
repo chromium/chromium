@@ -69,19 +69,34 @@ class TabStripViewController: UIViewController, TabStripConsumer {
     // TODO(crbug.com/1490555): Handle the selected item.
   }
 
-  func reloadItem(_ item: TabSwitcherItem?) {
-    // TODO(crbug.com/1490555): Implement this.
-  }
-
   func selectItem(_ item: TabSwitcherItem?) {
-    guard let item = item else {
-      return
-    }
-    guard let diffableDataSource = diffableDataSource else {
+    guard let item = item, let diffableDataSource = diffableDataSource else {
       return
     }
     let indexPath = diffableDataSource.indexPath(for: item)
     collectionView.selectItem(at: indexPath, animated: true, scrollPosition: [])
+  }
+
+  func reloadItem(_ item: TabSwitcherItem?) {
+    guard let item = item, let diffableDataSource = diffableDataSource else {
+      return
+    }
+
+    var snapshot = diffableDataSource.snapshot()
+    snapshot.reconfigureItems([item])
+    diffableDataSource.apply(snapshot, animatingDifferences: false)
+  }
+
+  func replaceItem(_ oldItem: TabSwitcherItem?, withItem newItem: TabSwitcherItem?) {
+    guard let oldItem = oldItem, let newItem = newItem, let diffableDataSource = diffableDataSource
+    else {
+      return
+    }
+
+    var snapshot = diffableDataSource.snapshot()
+    snapshot.insertItems([newItem], beforeItem: oldItem)
+    snapshot.deleteItems([oldItem])
+    diffableDataSource.apply(snapshot, animatingDifferences: false)
   }
 
   // MARK: - Private

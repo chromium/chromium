@@ -20,7 +20,7 @@
 namespace ash::web_app_install {
 
 WebAppInstallDialogUI::WebAppInstallDialogUI(content::WebUI* web_ui)
-    : ui::WebDialogUI(web_ui) {
+    : ui::MojoWebDialogUI(web_ui) {
   content::WebUIDataSource* source = content::WebUIDataSource::CreateAndAdd(
       Profile::FromWebUI(web_ui), chrome::kChromeUIWebAppInstallDialogHost);
 
@@ -38,6 +38,22 @@ WebAppInstallDialogUI::WebAppInstallDialogUI(content::WebUI* web_ui)
 }
 
 WebAppInstallDialogUI::~WebAppInstallDialogUI() = default;
+
+void WebAppInstallDialogUI::BindInterface(
+    mojo::PendingReceiver<mojom::PageHandlerFactory> pending_receiver) {
+  if (factory_receiver_.is_bound()) {
+    factory_receiver_.reset();
+  }
+  factory_receiver_.Bind(std::move(pending_receiver));
+}
+
+void WebAppInstallDialogUI::CreatePageHandler(
+    mojo::PendingReceiver<mojom::PageHandler> receiver) {
+  page_handler_ =
+      std::make_unique<WebAppInstallPageHandler>(std::move(receiver));
+}
+
+WEB_UI_CONTROLLER_TYPE_IMPL(WebAppInstallDialogUI)
 
 bool WebAppInstallDialogUIConfig::IsWebUIEnabled(
     content::BrowserContext* browser_context) {

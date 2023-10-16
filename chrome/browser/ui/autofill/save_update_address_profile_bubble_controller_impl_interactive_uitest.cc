@@ -51,7 +51,7 @@ class BaseSaveUpdateAddressProfileBubbleControllerImplTest
 
   void OnUserDecision(
       AutofillClient::SaveAddressProfileOfferUserDecision decision,
-      AutofillProfile profile) {
+      base::optional_ref<const AutofillProfile> profile) {
     user_decision_ = decision;
   }
 

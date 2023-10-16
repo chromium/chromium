@@ -2050,6 +2050,7 @@ Du kan administrere innstillingene for denne kontoen ved å installere Family Li
 <translation id="2564520396658920462">Kjøring av JavaScript gjennom AppleScript er slått av. For å slå det på, gå til menylinjen og velg Vis &gt; Utvikler &gt; Tillat JavaScript fra Apple Events. For mer informasjon, se: https://support.google.com/chrome/?p=applescript</translation>
 <translation id="2564653188463346023">Bedre stavekontroll</translation>
 <translation id="256481480019204378">Google-konto-ID</translation>
+<translation id="256517381556987641">Filsynkronisering har funnet <ph name="ITEMS_FOUND" /> filer så langt og sjekker fortsatt lagringsplassen. Prøv å slå på filsynkronisering igjen om noen minutter.</translation>
 <translation id="2565214867520763227">Slå på skjermleseren</translation>
 <translation id="2568694057933302218">Når du er i inkognito, kan ikke nettsteder bruke informasjonskapsler for å se nettleseraktiviteten din på andre nettsteder. Nettleseraktiviteten din brukes ikke til ting som personlig tilpasning av annonser. Det kan hende at funksjoner på noen nettsteder ikke fungerer.</translation>
 <translation id="2568774940984945469">Beholder for inforad</translation>
@@ -3226,6 +3227,7 @@ Du kan administrere innstillingene for denne kontoen ved å installere Family Li
 <translation id="3521405806571557477">Slett lagrede data for <ph name="SITE_NAME" /></translation>
 <translation id="3521606918211282604">Endre diskstørrelsen</translation>
 <translation id="3522088408596898827">Det er kritisk lite diskplass. Frigjør diskplass, og prøv igjen.</translation>
+<translation id="3522979239100719575">Ser etter tilgjengelige profiler. Dette kan ta noen minutter.</translation>
 <translation id="3524518036046613664">Oppdag enheter på lokalnettverket, for eksempel skrivere</translation>
 <translation id="3524965460886318643">Eksportér aktivitet</translation>
 <translation id="3525426269008462093">Gjennomgå enhetssynkroniseringen etter konfigureringen</translation>
@@ -4366,6 +4368,7 @@ Dette kan omfatte informasjon om installert programvare, filer, nettleseren og e
 <translation id="4427365070557649936">Verifiserer bekreftelseskoden …</translation>
 <translation id="4429163740524851942">Fysisk tastaturoppsett</translation>
 <translation id="4430019312045809116">Volum</translation>
+<translation id="4430204941092622397">Dette kan føre til at mobilnettverket ditt kobles fra i noen minutter.</translation>
 <translation id="443031431654216610">Bruk bare numeriske sifre</translation>
 <translation id="4430369329743628066">Bokmerke lagt til</translation>
 <translation id="4430422687972614133">Slå på virtuelt kort</translation>
@@ -4577,6 +4580,7 @@ Dette kan omfatte informasjon om installert programvare, filer, nettleseren og e
 <translation id="4610162781778310380">Det oppsto en feil med <ph name="PLUGIN_NAME" /></translation>
 <translation id="4610637590575890427">Vil du gå til <ph name="SITE" />?</translation>
 <translation id="4611114513649582138">En datatilkobling er tilgjengelig</translation>
+<translation id="4611759022973144129">Du kan bruke dette passordet til å logge på <ph name="DEVICE_TYPE" />.</translation>
 <translation id="4612841084470706111">Gi tilgang til alle forespurte nettsteder.</translation>
 <translation id="4613144866899789710">Avbryter Linux-installasjonen …</translation>
 <translation id="4613271546271159013">En utvidelse har endret hvilken siden som vises når du åpner en ny fane.</translation>
@@ -5076,6 +5080,7 @@ Bruk Ctrl + Alt + lysstyrke ned for å zoome ut.</translation>
 <translation id="5027550639139316293">E-postsertifikat</translation>
 <translation id="5027562294707732951">Legg til utvidelsen</translation>
 <translation id="5028445315206872221">Utvidelser er blokkert på dette nettstedet</translation>
+<translation id="5029287942302939687">Passordet ditt er angitt</translation>
 <translation id="5029873138381728058">Kunne ikke kontrollere VM-er</translation>
 <translation id="503155457707535043">Apper lastes ned</translation>
 <translation id="5032430150487044192">Kan ikke opprette QR-kode</translation>
@@ -5104,6 +5109,7 @@ Bruk Ctrl + Alt + lysstyrke ned for å zoome ut.</translation>
 <translation id="5054374119096692193">Se alle kortalternativene i <ph name="BEGIN_LINK" />Tilpass Chrome<ph name="END_LINK" /></translation>
 <translation id="5056950756634735043">Kobler til beholderen</translation>
 <translation id="5057110919553308744">Når du klikker på utvidelsen</translation>
+<translation id="5057127674016624293">Skanningen tar lengre tid enn forventet</translation>
 <translation id="5059241099014281248">Begrens pålogging</translation>
 <translation id="5059429103770496207">Visningsstil</translation>
 <translation id="5059526285558225588">Velg hva du vil dele</translation>
@@ -5994,6 +6000,7 @@ Tillatelser du allerede har gitt nettsteder og apper, kan gjelde for denne konto
 <translation id="5797521893972859201">Tømmer loggen, inkludert loggen i søkefeltet</translation>
 <translation id="5797934230382081317">Finn ut hvordan du kommer i gang i &lt;a target='_blank' href='<ph name="LINK_ANDROID" />'&gt;Android&lt;/a&gt; og &lt;a target='_blank' href='<ph name="LINK_IOS" />'&gt;iOS&lt;/a&gt;</translation>
 <translation id="5798079537501238810">Nettsteder kan installere betalingsbehandlere</translation>
+<translation id="5798086737841799234">Skriv inn bekreftelseskoden</translation>
 <translation id="579915268381781820">Sikkerhetsnøkkelen er fjernet.</translation>
 <translation id="5799478978078236781">Få tips om, tilbud på og oppdateringer for <ph name="DEVICE_TYPE" />, og gi tilbakemeldinger.</translation>
 <translation id="5799508265798272974">Virtuell Linux-maskin: <ph name="LINUX_VM_NAME" /></translation>
@@ -7252,6 +7259,7 @@ Du har # passord til som er utsatt for sikkerhetsbrudd. Google Passordlagring an
 <translation id="6815376457351236663">Åpne likevel</translation>
 <translation id="6815787852028615386">Denne filen er villedende og kan gjøre uventede endringer på enheten din</translation>
 <translation id="6816097980753839617">Blå/gul (tritanomali)</translation>
+<translation id="6816443526270499804">Ser etter tilgjengelige e-SIM-kortprofiler</translation>
 <translation id="6818198425579322765">Sidespråket du vil oversette</translation>
 <translation id="6818547713623251698">Se bildene, mediene, varslene og appene på telefonen din</translation>
 <translation id="6818802132960437751">Innebygd virusbeskyttelse</translation>
@@ -7815,6 +7823,7 @@ Du har # passord til som er utsatt for sikkerhetsbrudd. Google Passordlagring an
 <translation id="7283555985781738399">Gjestemodus</translation>
 <translation id="7284307451964417957">{DAYS,plural, =1{Denne enheten blir lagret i 1 dag, og du kan koble til uten noen kode neste gang. Dette er angitt av administratoren din.}other{Denne enheten blir lagret i {DAYS} dager, og du kan koble til uten noen kode neste gang. Dette er angitt av administratoren din.}}</translation>
 <translation id="7284411326658527427">Hver person kan gi kontoen sin et personlig preg og holde dataene sine private.</translation>
+<translation id="7286867818472074330">Velg passnøkkel</translation>
 <translation id="7287143125007575591">Ingen tilgang.</translation>
 <translation id="7287411021188441799">Gjenopprett standardbakgrunnen</translation>
 <translation id="7288676996127329262"><ph name="HORIZONTAL_DPI" />x<ph name="VERTICAL_DPI" /> ppt</translation>
@@ -8060,6 +8069,7 @@ Du har # passord til som er utsatt for sikkerhetsbrudd. Google Passordlagring an
 <translation id="7475742997309661417">Skjermleseren på ChromeOS, ChromeVox, brukes hovedsakelig av blinde eller svaksynte for å lese tekst som vises på skjermen, via talesyntetisering eller en leselist. Trykk og hold på begge volumtastene i fem sekunder for å slå på ChromeVox. Når ChromeVox er aktivert, får du en rask innføring.</translation>
 <translation id="7476454130948140105">Det er for lite batteri igjen til å starte oppdateringen (<ph name="BATTERY_PERCENT" /> %)</translation>
 <translation id="7476989672001283112">Blokkerte automatisk <ph name="PERMISSION" /> og <ph name="COUNT" /> til</translation>
+<translation id="7477460499687558352">Velg e-SIM-kortprofilen du vil laste ned</translation>
 <translation id="7477599578899108080">Høy minnebruk: <ph name="MEMORY_USAGE" /></translation>
 <translation id="7477748600276493962">Opprett en QR-kode for denne siden</translation>
 <translation id="7477793887173910789">Styr musikk, video og mer</translation>

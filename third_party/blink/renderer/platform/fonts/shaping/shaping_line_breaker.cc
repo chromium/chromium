@@ -271,23 +271,25 @@ scoped_refptr<const ShapeResultView> ShapingLineBreaker::ShapeLine(
   const bool is_break_after_any_space =
       break_iterator_->BreakSpace() == BreakSpaceType::kAfterEverySpace;
 
+  // Compute if the start is safe-to-break.
+  const EdgeOffset first_safe = FirstSafeOffset(start);
+  DCHECK_GE(first_safe.offset, start);
+
   // The start position in the original shape results.
-  float start_position = result_->CachedPositionForOffset(start - range_start);
+  const float start_position =
+      result_->CachedPositionForOffset(start - range_start);
 
   // Find a candidate break opportunity by identifying the last offset before
   // exceeding the available space and the determine the closest valid break
   // preceding the candidate.
-  TextDirection direction = result_->Direction();
-  float end_position = start_position + FlipRtl(available_space, direction);
+  const TextDirection direction = result_->Direction();
+  const float end_position =
+      start_position + FlipRtl(available_space, direction);
   DCHECK_GE(FlipRtl(LayoutUnit::FromFloatCeil(end_position - start_position),
                     direction),
             LayoutUnit(0));
   unsigned candidate_break =
       result_->CachedOffsetForPosition(end_position) + range_start;
-
-  const EdgeOffset first_safe = FirstSafeOffset(start);
-  DCHECK_GE(first_safe.offset, start);
-
   if (candidate_break >= range_end) {
     // The |result_| does not have glyphs to fill the available space,
     // and thus unable to compute. Return the result up to range_end.

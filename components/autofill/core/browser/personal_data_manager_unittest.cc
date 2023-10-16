@@ -2844,28 +2844,6 @@ TEST_F(PersonalDataManagerTest, RecordUseOf) {
   Check(*added_card, 2u, kSomeLaterTime, kArbitraryTime);
 }
 
-TEST_F(PersonalDataManagerTest, ClearAllServerData) {
-  // Add a server card.
-  std::vector<CreditCard> server_cards;
-  server_cards.emplace_back(CreditCard::RecordType::kMaskedServerCard, "a123");
-  test::SetCreditCardInfo(&server_cards.back(), "John Dillinger",
-                          "3456" /* Visa */, "01", "2999", "1");
-  server_cards.back().SetNetworkForMaskedCard(kVisaCard);
-  SetServerCards(server_cards);
-  personal_data_->Refresh();
-  PersonalDataProfileTaskWaiter(*personal_data_).Wait();
-
-  // The card and profile should be there.
-  ResetPersonalDataManager();
-  EXPECT_FALSE(personal_data_->GetCreditCards().empty());
-
-  personal_data_->ClearAllServerData();
-
-  // Reload the database, everything should be gone.
-  ResetPersonalDataManager();
-  EXPECT_TRUE(personal_data_->GetCreditCards().empty());
-}
-
 TEST_F(PersonalDataManagerTest, ClearAllLocalData) {
   // Add some local data.
   AddProfileToPersonalDataManager(test::GetFullProfile());

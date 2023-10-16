@@ -36,7 +36,6 @@
 <translation id="1173894706177603556">नाव बदला</translation>
 <translation id="1174479719160874822">स्क्रीन अरुंद असल्यास, Chrome मोबाइल साइटला विनंती करेल</translation>
 <translation id="1177863135347784049">कस्टम</translation>
-<translation id="1178581264944972037">विराम द्या</translation>
 <translation id="1181037720776840403">काढून टाका</translation>
 <translation id="1181366777303791449"><ph name="MAIN_FRAME_ETLD_PLUS_ONE" /> वर</translation>
 <translation id="1193729455103054076">क्लिष्ट पासवर्ड वापरायचा का?</translation>
@@ -476,7 +475,6 @@
 <translation id="3513704683820682405">ऑगमेंटेड रिअ‍ॅलिटी</translation>
 <translation id="3518985090088779359">स्वीकारा आणि सुरू ठेवा</translation>
 <translation id="3522247891732774234">अपडेट उपलब्ध आहे. आणखी पर्याय</translation>
-<translation id="3523426587027570423">“हे पेज ऐका” बंद करण्यासाठी टॅप करा.</translation>
 <translation id="3524138585025253783">डेव्हलपर UI</translation>
 <translation id="3524334353996115845"><ph name="ORIGIN" /> ला हे तुम्हीच आहात याची पडताळणी करू द्या</translation>
 <translation id="3527085408025491307">फोल्डर</translation>
@@ -679,7 +677,6 @@
 <translation id="4640331037679501949">{NUM_PASSWORDS,plural, =1{एक धोक्यात असलेला पासवर्ड}other{# धोक्यात असलेले पासवर्ड}}</translation>
 <translation id="4645146721047390964">वेगवेगळ्या साइटवरील तुमची ब्राउझिंग ॲक्टिव्हिटी पाहण्यासाठी गुप्त मोडमध्ये असताना साइट या तुमच्या कुकी वापरू शकत नाहीत, उदाहरणार्थ, जाहिराती पर्सनलाइझ करण्याकरिता. काही साइटवरील वैशिष्ट्यांमध्ये खंड पडू शकतो.</translation>
 <translation id="4650364565596261010">सिस्टम डीफॉल्ट</translation>
-<translation id="4654641641922242357">“हे पेज ऐका” प्लेअर.</translation>
 <translation id="465657074423018424">सुरक्षित ब्राउझिंग फसव्या वेबसाइटपासून तुमचे संरक्षण करते. तुम्ही ते बंद केल्यास, ब्राउझ करताना, विशेषत: पासवर्ड एंटर करताना अतिरिक्त सावधगिरी बाळगा.</translation>
 <translation id="4662373422909645029">टोपणनावामध्ये अंकांचा समावेश असू शकत नाही</translation>
 <translation id="4663499661119906179">तुमच्यासाठी टॉप साइट आणि स्टोरी पहा</translation>
@@ -696,7 +693,6 @@
 <translation id="4710167854527459075">नवीनतेनुसार क्रमाने लावा</translation>
 <translation id="4719927025381752090">भाषांतर करण्यास ऑफर करा</translation>
 <translation id="47217992755561375">तुमच्या टॉप साइट पहा</translation>
-<translation id="4731877163452936634">प्लेबॅकचा वेग: <ph name="PLAYBACK_SPEED" />. बदलण्यासाठी क्लिक करा.</translation>
 <translation id="4732120983431207637">स्टॅक अनवाइंडर</translation>
 <translation id="4736934858538408121">व्हर्च्युअल कार्ड</translation>
 <translation id="473775607612524610">अपडेट करा</translation>
@@ -812,7 +808,6 @@
 <translation id="5226378907213531272">प्रत्येक वेळेला कार वापरताना तुम्ही तुमची स्क्रीन अनलॉक कराल</translation>
 <translation id="5227554086496586518">शोध परिणाम पाहाण्यासाठी टॅप करा</translation>
 <translation id="5233638681132016545">नवीन टॅब</translation>
-<translation id="5234971936051226002">“हे पेज ऐका” प्लेअर लहान केला आहे.</translation>
 <translation id="5235196193381275927">साइन-इन करताना काहीतरी चूक झाली</translation>
 <translation id="5246093389635966745">टूलबार शॉर्टकट संपादित करा</translation>
 <translation id="5264813352784073502">मागील २४ तासांमधील</translation>
@@ -1108,7 +1103,6 @@
 <translation id="6770602306803890733">तुमच्यासाठी आणि वेबवरील प्रत्येकजणासाठी सुरक्षिततेत सुधारणा करते</translation>
 <translation id="6775840696761158817">तुम्ही अ‍ॅड्रेस बार किंवा सर्च बॉक्सवर टॅप अथवा टाइप करता, तेव्हा तुम्हाला तुमच्या डीफॉल्ट शोध इंजीनमधील सूचना दिसतील. हे गुप्त मोड मध्ये बंद असते.</translation>
 <translation id="6785476624617658922">Chrome आणि ChromeOS च्या अतिरिक्त सेवा अटी</translation>
-<translation id="6790428901817661496">प्ले करा</translation>
 <translation id="6795633245022906657">झटपट नवीन टॅब उघडा. हा शॉर्टकट संपादित करण्यासाठी, सेटिंग्ज वर जा.</translation>
 <translation id="6802555630140434547">विंडो बंद केली जाईल</translation>
 <translation id="6811034713472274749">पेज पाहाण्यासाठी तयार आहे</translation>
@@ -1267,7 +1261,6 @@
 <translation id="757855969265046257">{FILES,plural, =1{<ph name="FILES_DOWNLOADED_ONE" /> फाइल डाउनलोड केली}other{<ph name="FILES_DOWNLOADED_MANY" /> फाइल डाउनलोड केल्या}}</translation>
 <translation id="7581273696622423628">सर्वेक्षण घ्या</translation>
 <translation id="7583262514280211622">तुम्हाला तुमची वाचन सूची येथे आढळेल</translation>
-<translation id="7587250070160020374">Chrome आता प्ले करत आहे</translation>
 <translation id="7588219262685291874">तुमच्या डिव्हाइसचे बॅटरी सेव्हर सुरू असेल तेव्हा गडद थीम सुरू करा</translation>
 <translation id="7594687499944811403"><ph name="EMBEDDED_ORIGIN" /> ला <ph name="TOP_ORIGIN" /> साठी हे तुम्हीच आहात याची पडताळणी करू द्या</translation>
 <translation id="7596558890252710462">ऑपरेटिंग सिस्टम</translation>
@@ -1346,7 +1339,6 @@
 <translation id="7939485076072265087">हायलाइट वापरून स्टायलाइझ केलेले कार्ड तयार करा</translation>
 <translation id="7942131818088350342"><ph name="PRODUCT_NAME" /> कालबाह्य झाले आहे.</translation>
 <translation id="7944772052836377867">सिंकला हे तुम्हीच आहात याची पडताळणी करायची आहे</translation>
-<translation id="7945822420239537236"><ph name="NUMBER_OF_SECONDS" /> सेकंद फॉरवर्ड करा</translation>
 <translation id="7947953824732555851">स्वीकार करा आणि साइन इन करा</translation>
 <translation id="7957413488482743710">संभाव्य फसवणुकीपासून तुमचे संरक्षण करण्यात मदत करण्यासाठी, व्हर्च्युअल कार्ड तुमचे मूळ कार्ड लपवते. <ph name="BEGIN_LINK1" />व्हर्च्युअल कार्डबद्दल अधिक जाणून घ्या<ph name="END_LINK1" /></translation>
 <translation id="7960972236129063347">पेज इनसाइट मागे जा बटण</translation>
@@ -1355,7 +1347,6 @@
 <translation id="7965838025086216108">तुम्ही सेव्ह केलेले पासवर्ड कोणत्याही डिव्हाइसवर वापरू शकता. ते <ph name="ACCOUNT" /> साठी Google पासवर्ड व्यवस्थापक यामध्ये सेव्ह केले आहेत.</translation>
 <translation id="7968014550143838305">वाचन सूचीमध्ये जोडले</translation>
 <translation id="7971136598759319605">एका दिवसापूर्वी ॲक्टिव्ह होते</translation>
-<translation id="7972866381678406344"><ph name="NUMBER_OF_SECONDS" /> सेकंद मागे जा</translation>
 <translation id="7975379999046275268">पेज <ph name="BEGIN_NEW" />नवीन<ph name="END_NEW" /> चे पूर्वावलोकन करा</translation>
 <translation id="7977451675950311423">तुम्ही डेटा भंगामध्ये धोक्यात असलेला पासवर्ड वापरल्यास, तुम्हाला चेतावणी देते.</translation>
 <translation id="7986497153528221272">पासवर्ड पाहण्यासाठी, प्रथम तुमच्या डिव्हाइसवर स्क्रीन लॉक सेट करा</translation>
@@ -1401,7 +1392,6 @@
 <translation id="8127542551745560481">होमपेज संपादित करा</translation>
 <translation id="8130309322784422030">तुमची स्टोअर केलेली साइन-इनशी संबंधित माहिती कदाचित कालबाह्य झाली आहे</translation>
 <translation id="813082847718468539">साइटची माहिती पहा</translation>
-<translation id="8136852699834914183">या पेजसाठी प्लेबॅक उपलब्ध नाही.</translation>
 <translation id="8137562778192957619">तुम्ही हा पासवर्ड लक्षात ठेवण्याची आवश्यकता नाही. तो Google Password Manager यामध्ये सेव्ह केला जाईल.</translation>
 <translation id="8186512483418048923"><ph name="FILES" /> फाइल शिल्लक</translation>
 <translation id="8190358571722158785">1 दिवस शिल्लक</translation>
@@ -1550,7 +1540,6 @@
 <translation id="8937772741022875483">Digital wellbeing वरून तुमची Chrome ॲक्टिव्हिटी काढून टाकायची का?</translation>
 <translation id="8942627711005830162">इतर विंडोमध्ये उघडा</translation>
 <translation id="8945143127965743188"><ph name="LANG" /> - ही भाषा डाउनलोड करता आली नाही. नंतर पुन्हा प्रयत्न करा.</translation>
-<translation id="8953618380150219653">“हे पेज ऐका” प्लेअर पूर्ण उंचीवर उघडला आहे.</translation>
 <translation id="8955719471735800169">शीर्षस्थानाकडे परत जा</translation>
 <translation id="8964479563882643397">नवीन गुप्त टॅब उघडण्यासाठी, मेनू उघडा</translation>
 <translation id="8965591936373831584">प्रलंबित</translation>

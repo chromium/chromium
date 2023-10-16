@@ -5025,7 +5025,7 @@ TEST_P(SaveCvcTest, ShouldNotOfferCvcSaveWithEmptyCvc) {
 // Tests that we should only offer CVC Save if we have an existing
 // card that matches the card in the form.
 TEST_P(SaveCvcTest, ShouldNotOfferCvcSaveWithoutExistingCard) {
-  personal_data().ClearAllServerData();
+  personal_data().ClearAllServerDataForTesting();
   personal_data().ClearAllLocalData();
   CreditCard local_card = test::WithCvc(test::GetCreditCard());
   CreditCard server_card = test::WithCvc(test::GetMaskedServerCard());

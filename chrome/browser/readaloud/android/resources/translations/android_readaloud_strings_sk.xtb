@@ -1,1 +1,17 @@
-<?xml version="1.0" ?><!DOCTYPE translationbundle><translationbundle lang="sk"></translationbundle>
+<?xml version="1.0" ?>
+<!DOCTYPE translationbundle>
+<translationbundle lang="sk">
+<translation id="1178581264944972037">Pozastaviť</translation>
+<translation id="3523426587027570423">Klepnutím zavrite „Vypočuť obsah tejto stránky“.</translation>
+<translation id="4654641641922242357">Prehrávač „Vypočuť obsah tejto stránky“.</translation>
+<translation id="4731877163452936634">Rýchlosť prehrávania: <ph name="PLAYBACK_SPEED" />. Zmeňte kliknutím.</translation>
+<translation id="5234971936051226002">Prehrávač „Vypočuť obsah tejto stránky“ bol minimalizovaný.</translation>
+<translation id="5596627076506792578">Ďalšie možnosti</translation>
+<translation id="6790428901817661496">Prehrať</translation>
+<translation id="6846298663435243399">Načítava sa…</translation>
+<translation id="7587250070160020374">V Chrome teraz hrá</translation>
+<translation id="7945822420239537236">O <ph name="NUMBER_OF_SECONDS" /> s. dopredu</translation>
+<translation id="7972866381678406344">O <ph name="NUMBER_OF_SECONDS" /> s. dozadu</translation>
+<translation id="8136852699834914183">Prehrávanie nie je pre túto stránku k dispozícii.</translation>
+<translation id="8953618380150219653">Prehrávač „Vypočuť obsah tejto stránky“ bol otvorený na plnú výšku.</translation>
+</translationbundle>

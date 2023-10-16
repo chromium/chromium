@@ -33,12 +33,25 @@
   self.selectedItem = selectedItem;
 }
 
+- (void)selectItem:(TabSwitcherItem*)item {
+  self.selectedItem = item;
+}
+
 - (void)reloadItem:(TabSwitcherItem*)item {
   self.reloadedItem = item;
 }
 
-- (void)selectItem:(TabSwitcherItem*)item {
-  self.selectedItem = item;
+- (void)replaceItem:(TabSwitcherItem*)oldItem
+           withItem:(TabSwitcherItem*)newItem {
+  NSMutableArray<TabSwitcherItem*>* replacedItems = [NSMutableArray array];
+  for (NSUInteger index = 0; index < self.items.count; index++) {
+    if ([self.items[index] isEqual:oldItem]) {
+      [replacedItems addObject:newItem];
+    } else {
+      [replacedItems addObject:self.items[index]];
+    }
+  }
+  self.items = replacedItems;
 }
 
 @end
@@ -139,6 +152,27 @@ TEST_F(TabStripMediatorTest, SelectTab) {
             consumer_.selectedItem.identifier);
 }
 
+// Check that replacing a tab in the WebStateList is reflected in the TabStrip.
+TEST_F(TabStripMediatorTest, ReplacedTab) {
+  AddWebState();
+  AddWebState();
+
+  InitializeMediator();
+
+  ASSERT_EQ(1, web_state_list_->active_index());
+
+  auto web_state = std::make_unique<web::FakeWebState>();
+  web::WebStateID web_state_id = web_state->GetUniqueIdentifier();
+  web_state_list_->ReplaceWebStateAt(1, std::move(web_state));
+
+  ASSERT_EQ(2, web_state_list_->count());
+
+  EXPECT_EQ(web_state_id, consumer_.selectedItem.identifier);
+  EXPECT_EQ(web_state_list_->GetWebStateAt(0)->GetUniqueIdentifier(),
+            consumer_.items[0].identifier);
+  EXPECT_EQ(web_state_id, consumer_.items[1].identifier);
+}
+
 // Tests that closing a tab works.
 TEST_F(TabStripMediatorTest, WebStateChange) {
   AddWebState();
@@ -149,10 +183,26 @@ TEST_F(TabStripMediatorTest, WebStateChange) {
   ASSERT_EQ(1, web_state_list_->active_index());
   ASSERT_EQ(2, web_state_list_->count());
 
+  // Check title update.
   static_cast<web::FakeWebState*>(web_state_list_->GetWebStateAt(0))
       ->SetTitle(u"test test");
-
   EXPECT_EQ(web_state_list_->GetWebStateAt(0)->GetUniqueIdentifier(),
+            consumer_.reloadedItem.identifier);
+
+  consumer_.reloadedItem = nil;
+
+  // Check loading state update.
+  static_cast<web::FakeWebState*>(web_state_list_->GetWebStateAt(1))
+      ->SetLoading(true);
+  EXPECT_EQ(web_state_list_->GetWebStateAt(1)->GetUniqueIdentifier(),
+            consumer_.reloadedItem.identifier);
+
+  consumer_.reloadedItem = nil;
+
+  // Check loading state update.
+  static_cast<web::FakeWebState*>(web_state_list_->GetWebStateAt(1))
+      ->SetLoading(false);
+  EXPECT_EQ(web_state_list_->GetWebStateAt(1)->GetUniqueIdentifier(),
             consumer_.reloadedItem.identifier);
 }
 

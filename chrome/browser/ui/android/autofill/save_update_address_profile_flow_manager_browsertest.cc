@@ -16,6 +16,9 @@
 
 namespace autofill {
 
+using ::testing::Property;
+using profile_ref = base::optional_ref<const AutofillProfile>;
+
 class SaveUpdateAddressProfileFlowManagerBrowserTest
     : public AndroidBrowserTest {
  public:
@@ -74,7 +77,7 @@ IN_PROC_BROWSER_TEST_F(SaveUpdateAddressProfileFlowManagerBrowserTest,
   EXPECT_CALL(
       another_save_callback,
       Run(AutofillClient::SaveAddressProfileOfferUserDecision::kAutoDeclined,
-          another_profile));
+          Property(&profile_ref::has_value, false)));
   flow_manager_->OfferSave(GetWebContents(), another_profile,
                            /*original_profile=*/nullptr, kNotMigrationToAccount,
                            another_save_callback.Get());
@@ -98,7 +101,7 @@ IN_PROC_BROWSER_TEST_F(SaveUpdateAddressProfileFlowManagerBrowserTest,
   EXPECT_CALL(
       another_save_callback,
       Run(AutofillClient::SaveAddressProfileOfferUserDecision::kAutoDeclined,
-          another_profile));
+          Property(&profile_ref::has_value, false)));
   flow_manager_->OfferSave(GetWebContents(), another_profile,
                            /*original_profile=*/nullptr, kNotMigrationToAccount,
                            another_save_callback.Get());

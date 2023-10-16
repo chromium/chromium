@@ -711,6 +711,7 @@
 <translation id="4808744395915275922">अपडेटहरू</translation>
 <translation id="4818522717893377262">भाषा हाल्नुहोस्...</translation>
 <translation id="481968316161811770">कुकी, साइटको डेटा</translation>
+<translation id="4824480232751123840">आयतन</translation>
 <translation id="4824497107140370669">{count,plural, =0{{domain}}=1{{domain} र अन्य १}other{{domain} र अन्य {count}}}</translation>
 <translation id="4826218269716039351">तेस्रो पक्षीय कुकीहरूमाथि रोक लगाउनुहोस्</translation>
 <translation id="4826588772550366629">क्यामेरा र माइक्रोफोन</translation>
@@ -785,6 +786,7 @@
 <translation id="5181140330217080051">डाउनलोड गर्दै</translation>
 <translation id="5184329579814168207">Chrome मा खोल्नुहोस्</translation>
 <translation id="5186185447130319458">निजी</translation>
+<translation id="5186634140793586141">आफूलाई रुचि लाग्ने विषय र खोजहरू व्यवस्थापन गर्नुहोस्</translation>
 <translation id="5188482106078495165">तपाईंको कुकीसम्बन्धी सेटिङ सबै ट्याबमा लागू हुन्छ। कुनै खुला रहेको ट्याबमा नयाँ सेटिङ लागू गर्न उक्त ट्याब पुनः लोड गर्नुहोस्।</translation>
 <translation id="5190835502935405962">पृष्ठमञ्जूषा पट्टी</translation>
 <translation id="519530786644929958">डाउनलोड गर्न सकिएन र फेरि डाउनलोड गर्ने प्रयास गर्न मिल्दैन।</translation>
@@ -848,6 +850,7 @@
 <translation id="5556459405103347317">पुन: लोड गर्नुहोस्</translation>
 <translation id="555749644339804659">पासवर्डहरू जाँच गरिँदै छन्…</translation>
 <translation id="556042886152191864">बटन</translation>
+<translation id="5572684875078967866">जानकारीको भण्डारण</translation>
 <translation id="5597915316964418992">ट्याब ग्रिड खोल्नुहोस्</translation>
 <translation id="560322036295180549">तपाईंको सङ्गठनले यो विकल्प अफ गरेको छ</translation>
 <translation id="5614553682702429503">पासवर्ड सेभ गर्नुहोस्</translation>
@@ -909,6 +912,7 @@
 <translation id="5896576662943111387">iOS का लागि बनाइएको</translation>
 <translation id="5897749768294722429">आफूले खोलेका साइटहरू छिटोछरितो रूपमा फेरि खोल्न आफ्ना ट्याब र हिस्ट्री सिंक गर्नुहोस्।</translation>
 <translation id="5897956970858271241">प्रतिलिपि गरिएको लिंकमा जानुहोस्</translation>
+<translation id="5898848375214731122">पिण्ड</translation>
 <translation id="5899314093904173337">वरपर रहेका मान्छेहरूसँग सेयर गर्न उनीहरूलाई क्यामेरा वा QR स्क्यान गर्ने एप प्रयोग गरी यो QR कोड स्क्यान गर्न लगाउनुहोस्</translation>
 <translation id="5911030830365207728">Google अनुवादक</translation>
 <translation id="5913600720976431809">यो पृष्ठ अनुवाद गर्ने विकल्पहरू</translation>
@@ -926,6 +930,7 @@
 <translation id="5981230843984570095">निष्क्रिय रहेका सबै ट्याब बन्द गर्नुहोस्</translation>
 <translation id="5982717868370722439">विद्यमान डेटा <ph name="USER_EMAIL" /> मा थप्नुहोस्।</translation>
 <translation id="5984222099446776634">भर्खरै भ्रमण गरिएको</translation>
+<translation id="598634819525651074">क्षेत्रफल</translation>
 <translation id="5988097621740394599">आफ्ना ट्याबहरूमा मूल्य घटेको कुरासम्बन्धी जानकारी हेर्नुहोस्।</translation>
 <translation id="5988851877894965432">Chrome मा URL हरू खोल्नुहोस्</translation>
 <translation id="6006672969046233841">नयाँ ट्याब</translation>
@@ -1161,7 +1166,6 @@
 <translation id="7062545763355031412">स्वीकार गरी खाताहरू स्विच गर्नुहोस्</translation>
 <translation id="7063811929043357292">तपाईंका अभिभावक तपाईंको खाता व्यवस्थापन गर्नुहुन्छ।
 <ph name="BEGIN_LINK" />थप जान्नुहोस्<ph name="END_LINK" /></translation>
-<translation id="7064619810277839954">तपाईंले आफ्नो Google खाता प्रयोग गरेर अन्य डिभाइसमा ब्राउजर प्रयोग गरी गरेको क्रियाकलापका आधारमा यसले तपाईंलाई ट्याबमा दिइने सुझावहरू प्रदान गर्छ। तपाईंका डिभाइसहरूमा अनिवार्य रूपमा एउटै Google खाता प्रयोग गरेर साइन इन तथा सिंक गरिएको हुनु पर्छ।</translation>
 <translation id="7069695992271320873">यो डिभाइसबाट हटाउनुहोस्</translation>
 <translation id="7080806333218412752">यस सुविधाले URL हरूको जाँच गर्नका निम्ति तिनलाई सुरक्षित ब्राउजिङमा पठाउँछ। यस सुविधाले नयाँ जोखिमहरू पत्ता लगाउन पृष्ठ, डाउनलोड, एक्स्टेन्सनसम्बन्धी गतिविधि र प्रणालीसम्बन्धी जानकारीको सानो नमुना पनि सुरक्षित ब्राउजिङमा पठाउँछ। यस सुविधाले तपाईं साइन इन भएका बेला यो डेटा केही समयका लागि तपाईंको Google खातामा लिंक गर्छ। यसो गर्नुको उद्देश्य Google का एपहरूमा तपाईंको डेटा सुरक्षित राख्नु हो।</translation>
 <translation id="7082853213442715471">यो सेटिङ अन गरियो भने वेबका निश्चित प्रविधिहरू ब्लक गरिन्छन्। जसले गर्दा केही वेबसाइटहरू सुस्तरी लोड हुन वा राम्रोसँग काम नगर्न सक्छन्।</translation>
@@ -1362,6 +1366,7 @@
 <translation id="8156478151976189188">पासवर्ड सिंक गर्ने सुविधाले काम गरिरहेको छैन</translation>
 <translation id="8157532349231307196"><ph name="NUMBER_OF_ACCOUNTS" /> खाताहरू</translation>
 <translation id="8159358225423560600">अहिले भर्खरै</translation>
+<translation id="8173034266693057059">लम्बाइ</translation>
 <translation id="8179976553408161302">प्रविष्टि गर्नुहोस्</translation>
 <translation id="8182037667962849780">{count,plural, =1{{website_1} का लागि}=2{{website_2} र {website_1} का लागि}=3{{website_1}, {website_2} र थप एउटा वेबसाइटका लागि}other{{website_1}, {website_2} र थप {more_count} वटा वेबसाइटका लागि}}</translation>
 <translation id="8193953846147532858"><ph name="BEGIN_LINK" />तपाईंका डिभाइसहरू<ph name="END_LINK" /> · <ph name="EMAIL" /></translation>
@@ -1456,6 +1461,7 @@
 <translation id="8692689525339542358">खतरनाक साइट, डाउनलोड र एक्स्टेन्सनहरूबाट सुरक्षित रहनुहोस्।</translation>
 <translation id="8693663554456874301">{count,plural, =1{ट्याब बन्द गर्नुहोस्}other{ट्याबहरू बन्द गर्नुहोस्}}</translation>
 <translation id="8703536910991780768">तपाईंका पासवर्डहरू भरपर्दा देखिन्छन्</translation>
+<translation id="8706253136355675497">तापक्रम</translation>
 <translation id="8717864919010420084">लिंक प्रतिलिपि गर्नुहोस्</translation>
 <translation id="8721297211384281569">उपकरणहरू मेनु</translation>
 <translation id="8725066075913043281">पुन: प्रयास गर्नुहोस्</translation>
@@ -1561,6 +1567,7 @@
 <translation id="9188680907066685419">व्यवस्थापन गरिएको खाताबाट साइन आउट गर्ने</translation>
 <translation id="9200875785104711666"><ph name="TIME" /> दिनअघि</translation>
 <translation id="9203116392574189331">ह्यान्डअफ</translation>
+<translation id="9206887540681440657">गति</translation>
 <translation id="9219154867334666734">ट्याबहरू खोज्नुहोस्…</translation>
 <translation id="9223358826628549784">क्र्याश रिपोर्ट पठाइयो।</translation>
 <translation id="941747855997058526">पासवर्ड चयन गर्नुहोस्...</translation>

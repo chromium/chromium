@@ -96,7 +96,7 @@ class NGAbsoluteUtilsTest : public RenderingTest {
       const NGBlockNode& node,
       const NGConstraintSpace& space,
       const BoxStrut& border_padding,
-      const NGLogicalStaticPosition& static_position,
+      const LogicalStaticPosition& static_position,
       const WritingDirectionMode container_writing_direction,
       NGLogicalOutOfFlowDimensions* dimensions) {
     GetDocument().Lifecycle().AdvanceTo(DocumentLifecycle::kInStyleRecalc);
@@ -132,7 +132,7 @@ class NGAbsoluteUtilsTest : public RenderingTest {
       const NGBlockNode& node,
       const NGConstraintSpace& space,
       const BoxStrut& border_padding,
-      const NGLogicalStaticPosition& static_position,
+      const LogicalStaticPosition& static_position,
       const WritingDirectionMode container_writing_direction,
       NGLogicalOutOfFlowDimensions* dimensions) {
     GetDocument().Lifecycle().AdvanceTo(DocumentLifecycle::kInStyleRecalc);
@@ -186,15 +186,14 @@ TEST_F(NGAbsoluteUtilsTest, Horizontal) {
   BoxStrut vrl_border_padding = ComputeBorders(vrl_space_, node) +
                                 ComputePadding(vrl_space_, node.Style());
 
-  NGLogicalStaticPosition static_position = {
-      {LayoutUnit(), LayoutUnit()},
-      NGLogicalStaticPosition::kInlineStart,
-      NGLogicalStaticPosition::kBlockStart};
+  LogicalStaticPosition static_position = {{LayoutUnit(), LayoutUnit()},
+                                           LogicalStaticPosition::kInlineStart,
+                                           LogicalStaticPosition::kBlockStart};
   // Same as regular static position, but with the inline-end edge.
-  NGLogicalStaticPosition static_position_inline_end = {
+  LogicalStaticPosition static_position_inline_end = {
       {LayoutUnit(), LayoutUnit()},
-      NGLogicalStaticPosition::kInlineEnd,
-      NGLogicalStaticPosition::kBlockStart};
+      LogicalStaticPosition::kInlineEnd,
+      LogicalStaticPosition::kBlockStart};
 
   NGLogicalOutOfFlowDimensions dimensions;
 
@@ -346,14 +345,13 @@ TEST_F(NGAbsoluteUtilsTest, Vertical) {
   BoxStrut vrl_border_padding = ComputeBorders(vrl_space_, node) +
                                 ComputePadding(vrl_space_, node.Style());
 
-  NGLogicalStaticPosition static_position = {
+  LogicalStaticPosition static_position = {{LayoutUnit(), LayoutUnit()},
+                                           LogicalStaticPosition::kInlineStart,
+                                           LogicalStaticPosition::kBlockStart};
+  LogicalStaticPosition static_position_block_end = {
       {LayoutUnit(), LayoutUnit()},
-      NGLogicalStaticPosition::kInlineStart,
-      NGLogicalStaticPosition::kBlockStart};
-  NGLogicalStaticPosition static_position_block_end = {
-      {LayoutUnit(), LayoutUnit()},
-      NGLogicalStaticPosition::kInlineStart,
-      NGLogicalStaticPosition::kBlockEnd};
+      LogicalStaticPosition::kInlineStart,
+      LogicalStaticPosition::kBlockEnd};
 
   NGLogicalOutOfFlowDimensions dimensions;
 
@@ -453,10 +451,9 @@ TEST_F(NGAbsoluteUtilsTest, Vertical) {
 
 TEST_F(NGAbsoluteUtilsTest, CenterStaticPosition) {
   NGBlockNode node(element_->GetLayoutBox());
-  NGLogicalStaticPosition static_position = {
-      {LayoutUnit(150), LayoutUnit(200)},
-      NGLogicalStaticPosition::kInlineCenter,
-      NGLogicalStaticPosition::kBlockCenter};
+  LogicalStaticPosition static_position = {{LayoutUnit(150), LayoutUnit(200)},
+                                           LogicalStaticPosition::kInlineCenter,
+                                           LogicalStaticPosition::kBlockCenter};
 
   SetHorizontalStyle("auto", "auto", "auto", "auto", "auto");
   SetVerticalStyle("auto", "auto", "auto", "auto", "auto");
@@ -498,10 +495,9 @@ TEST_F(NGAbsoluteUtilsTest, MinMax) {
   BoxStrut ltr_border_padding = ComputeBorders(ltr_space_, node) +
                                 ComputePadding(ltr_space_, node.Style());
 
-  NGLogicalStaticPosition static_position = {
-      {LayoutUnit(), LayoutUnit()},
-      NGLogicalStaticPosition::kInlineStart,
-      NGLogicalStaticPosition::kBlockStart};
+  LogicalStaticPosition static_position = {{LayoutUnit(), LayoutUnit()},
+                                           LogicalStaticPosition::kInlineStart,
+                                           LogicalStaticPosition::kBlockStart};
 
   NGLogicalOutOfFlowDimensions dimensions;
 

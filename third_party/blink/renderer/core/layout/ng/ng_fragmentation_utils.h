@@ -486,7 +486,7 @@ NGConstraintSpace CreateConstraintSpaceForFragmentainer(
 NGBoxFragmentBuilder CreateContainerBuilderForMulticol(
     const NGBlockNode& multicol,
     const NGConstraintSpace& space,
-    const NGFragmentGeometry& fragment_geometry);
+    const FragmentGeometry& fragment_geometry);
 NGConstraintSpace CreateConstraintSpaceForMulticol(const NGBlockNode& multicol);
 
 // Return the adjusted child margin to be applied at the end of a fragment.

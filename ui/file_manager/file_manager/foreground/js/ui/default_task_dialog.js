@@ -48,7 +48,7 @@ export class DefaultTaskDialog extends FileManagerDialogBase {
     /**
      * RequestAnimationFrame id used for throllting the list scroll event
      * listener.
-     * @private {?number}
+     * @private @type {?number}
      */
     this.listScrollRaf_ = null;
     this.list_.addEventListener(
@@ -56,7 +56,7 @@ export class DefaultTaskDialog extends FileManagerDialogBase {
 
     this.initialFocusElement_ = this.list_;
 
-    /** @private {?function(*)} */
+    /** @private @type {?function(*)} */
     this.onSelectedItemCallback_ = null;
 
     const self = this;

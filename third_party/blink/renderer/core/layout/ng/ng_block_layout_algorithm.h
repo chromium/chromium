@@ -30,7 +30,7 @@ class NGFragment;
 // inflow child. This will be used to calculate the position of the next child.
 struct NGPreviousInflowPosition {
   LayoutUnit logical_block_offset;
-  NGMarginStrut margin_strut;
+  MarginStrut margin_strut;
   // > 0: Block-end annotation space of the previous line
   // < 0: Block-end annotation overflow of the previous line
   LayoutUnit block_end_annotation_space;
@@ -41,7 +41,7 @@ struct NGPreviousInflowPosition {
 // useful outside of handling this single inflow child.
 struct NGInflowChildData {
   NGInflowChildData(BfcOffset bfc_offset_estimate,
-                    const NGMarginStrut& margin_strut,
+                    const MarginStrut& margin_strut,
                     const BoxStrut& margins,
                     bool is_pushed_by_floats = false)
       : bfc_offset_estimate(bfc_offset_estimate),
@@ -52,7 +52,7 @@ struct NGInflowChildData {
   NGInflowChildData(const NGInflowChildData&) = default;
 
   BfcOffset bfc_offset_estimate;
-  NGMarginStrut margin_strut;
+  MarginStrut margin_strut;
   BoxStrut margins;
   bool is_pushed_by_floats = false;
 };
@@ -343,7 +343,7 @@ class CORE_EXPORT NGBlockLayoutAlgorithm
   // element, and is computed upfront for the |ClampIntrinsicBlockSize|
   // function.
   absl::optional<LayoutUnit> CalculateQuirkyBodyMarginBlockSum(
-      const NGMarginStrut& end_margin_strut);
+      const MarginStrut& end_margin_strut);
 
   // Return true if this is a list-item that may have to place a marker.
   bool ShouldPlaceUnpositionedListMarker() const {

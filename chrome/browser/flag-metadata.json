@@ -279,7 +279,7 @@
   {
     "name": "arc-enable-aaudio-mmap",
     "owners": [ "pteerapong", "chromeos-audio@google.com" ],
-    "expiry_milestone": 120
+    "expiry_milestone": 125
   },
   {
     "name": "arc-enable-virtio-blk-for-data",
@@ -459,7 +459,7 @@
   {
     "name": "audio-ap-noise-cancellation",
     "owners": ["aaronyu", "hunghsienchen", "chromeos-audio@google.com" ],
-    "expiry_milestone": 120
+    "expiry_milestone": 125
   },
   {
     "name": "audio-flexible-loopback",
@@ -1439,6 +1439,11 @@
     "name": "cros-labs-window-splitting",
     "owners": [ "aluh", "homi" ],
     "expiry_milestone": 130
+  },
+  {
+    "name": "cros-legacy-media-formats",
+    "owners": [ "dalecurtis", "tapted" ],
+    "expiry_milestone": 125
   },
   {
     "name": "cros-libassistant-v2-migration",
@@ -5689,11 +5694,6 @@
   {"name": "nearby-sharing-self-share",
    "owners": ["brandosocarras@google.com", "hansenmichael@google.com", "chromeos-cross-device-eng@google.com"],
    "expiry_milestone": 125
-  },
-  {
-    "name": "network-service-in-process",
-    "owners": [ "yhirano", "network-service-dev" ],
-    "expiry_milestone": 120
   },
   {
     "name": "new-confirmation-bubble-for-generated-passwords",

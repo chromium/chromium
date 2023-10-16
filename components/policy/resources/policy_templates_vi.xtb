@@ -6648,13 +6648,6 @@ Khi bạn đặt chính sách này thành False (Sai), hành vi cũ sẽ đượ
       Nếu bạn không thiết lập chính sách này, thì chế độ mặc định sẽ là cho phép cả người dùng do doanh nghiệp quản lý và người dùng không được quản lý.</translation>
 <translation id="6640748114867542396">Không cho phép các tiện ích được quản lý sử dụng API Enterprise Hardware Platform</translation>
 <translation id="6641981670621198190">Tắt hỗ trợ dành cho API đồ họa 3D</translation>
-<translation id="6644480111811011438">Chính sách này cho phép bạn chọn không sử dụng tính năng Nhóm bên thứ nhất.
-
-                  Khi bạn không đặt chính sách này hoặc đặt thành Bật, tính năng Nhóm bên thứ nhất sẽ được bật.
-
-                  Khi bạn đặt chính sách này thành Tắt, tính năng Nhóm bên thứ nhất sẽ bị tắt.
-
-                  Chính sách này kiểm soát việc liệu Chrome có hỗ trợ các công cụ tích hợp liên quan đến tính năng Nhóm bên thứ nhất hay không.</translation>
 <translation id="6646912445796087001">Bật hoặc tắt nhiều tính năng trên bàn phím ảo. Chính sách này chỉ có hiệu lực khi bạn bật chính sách "VirtualKeyboardEnabled".
 
       Nếu bạn đặt một tính năng trong chính sách này thành True, thì tính năng này sẽ bật trên bàn phím ảo.

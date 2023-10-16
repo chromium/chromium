@@ -79,8 +79,8 @@ struct NGInlineBoxState {
   bool has_end_edge = false;
   LayoutUnit margin_inline_start;
   LayoutUnit margin_inline_end;
-  NGLineBoxStrut borders;
-  NGLineBoxStrut padding;
+  LineBoxStrut borders;
+  LineBoxStrut padding;
 
   Vector<NGPendingPositions> pending_descendants;
   bool include_used_fonts = false;
@@ -283,8 +283,8 @@ class CORE_EXPORT NGInlineLayoutStateStack {
 
     bool has_line_left_edge = false;
     bool has_line_right_edge = false;
-    NGLineBoxStrut borders;
-    NGLineBoxStrut padding;
+    LineBoxStrut borders;
+    LineBoxStrut padding;
     // |CreateBoxFragment()| needs margin, border+padding, and the sum of them.
     LayoutUnit margin_line_left;
     LayoutUnit margin_line_right;

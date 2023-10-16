@@ -21,13 +21,13 @@ class StorageChangeTracker {
   constructor(storageNamespace) {
     /**
      * Storage onChanged event listeners for the current window.
-     * @private {!Array<OnChangedListener>}
+     * @private @type {!Array<OnChangedListener>}
      * */
     this.listeners_ = [];
 
     /**
      * Storage namespace argument added when calling listeners.
-     * @private {string}
+     * @private @type {string}
      */
     this.storageNamespace_ = storageNamespace;
 
@@ -119,7 +119,7 @@ class StorageAreaImpl {
    * @param {string} type
    */
   constructor(type) {
-    /** @private {!StorageChangeTracker} */
+    /** @private @type {!StorageChangeTracker} */
     this.storageChangeTracker_ = new StorageChangeTracker(type);
   }
 

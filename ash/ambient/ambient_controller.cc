@@ -67,6 +67,7 @@
 #include "cc/paint/skottie_wrapper.h"
 #include "chromeos/ash/components/assistant/buildflags.h"
 #include "chromeos/ash/services/assistant/public/cpp/assistant_service.h"
+#include "chromeos/components/kiosk/kiosk_utils.h"
 #include "chromeos/dbus/power/power_manager_client.h"
 #include "chromeos/dbus/power_manager/backlight.pb.h"
 #include "chromeos/dbus/power_manager/idle.pb.h"
@@ -167,7 +168,7 @@ bool IsAmbientModeManagedScreensaverEnabled() {
   PrefService* pref_service = GetActivePrefService();
 
   return ash::features::IsAmbientModeManagedScreensaverEnabled() &&
-         pref_service &&
+         !chromeos::IsKioskSession() && pref_service &&
          pref_service->GetBoolean(
              ambient::prefs::kAmbientModeManagedScreensaverEnabled);
 }

@@ -94,7 +94,7 @@ void PhysicalRect::UniteEvenIfEmpty(const PhysicalRect& other) {
   offset = {right - size.width, bottom - size.height};
 }
 
-void PhysicalRect::Expand(const NGPhysicalBoxStrut& strut) {
+void PhysicalRect::Expand(const PhysicalBoxStrut& strut) {
   ExpandEdges(strut.top, strut.right, strut.bottom, strut.left);
 }
 
@@ -109,7 +109,7 @@ void PhysicalRect::ExpandEdgesToPixelBoundaries() {
   size.height = LayoutUnit(max_bottom - top);
 }
 
-void PhysicalRect::Contract(const NGPhysicalBoxStrut& strut) {
+void PhysicalRect::Contract(const PhysicalBoxStrut& strut) {
   ExpandEdges(-strut.top, -strut.right, -strut.bottom, -strut.left);
 }
 

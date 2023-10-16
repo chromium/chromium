@@ -436,7 +436,6 @@ void AutofillAgent::FocusedElementChanged(const WebElement& element) {
     return;
 
   if (form_control_element.IsNull() || !form_control_element.IsEnabled() ||
-      form_control_element.IsReadOnly() ||
       !form_util::IsTextAreaElementOrTextInput(form_control_element)) {
     return;
   }
@@ -445,7 +444,8 @@ void AutofillAgent::FocusedElementChanged(const WebElement& element) {
 
   FormData form;
   FormFieldData field;
-  if (FindFormAndFieldForFormControlElement(
+  if (!form_control_element.IsReadOnly() &&
+      FindFormAndFieldForFormControlElement(
           last_queried_element_, field_data_manager_.get(),
           static_cast<ExtractMask>(form_util::EXTRACT_BOUNDS |
                                    GetExtractDatalistMask()),

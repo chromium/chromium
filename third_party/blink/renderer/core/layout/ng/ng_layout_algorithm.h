@@ -43,7 +43,7 @@ struct NGLayoutAlgorithmParams {
  public:
   NGLayoutAlgorithmParams(
       NGBlockNode node,
-      const NGFragmentGeometry& fragment_geometry,
+      const FragmentGeometry& fragment_geometry,
       const NGConstraintSpace& space,
       const NGBlockBreakToken* break_token = nullptr,
       const NGEarlyBreak* early_break = nullptr,
@@ -56,7 +56,7 @@ struct NGLayoutAlgorithmParams {
         additional_early_breaks(additional_early_breaks) {}
 
   NGBlockNode node;
-  const NGFragmentGeometry& fragment_geometry;
+  const FragmentGeometry& fragment_geometry;
   const NGConstraintSpace& space;
   const NGBlockBreakToken* break_token;
   const NGEarlyBreak* early_break;

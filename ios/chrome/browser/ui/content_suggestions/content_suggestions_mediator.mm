@@ -1481,6 +1481,10 @@ bool CredentialProviderPromoDismissed(PrefService* local_state) {
 
 // Shows the tab resumption tile if there is a `_tabResumptionItem` to present.
 - (void)showTabResumptionTile {
+  if (!self.webState) {
+    return;
+  }
+
   CHECK(IsTabResumptionEnabled());
   if (!self.consumer ||
       tab_resumption_prefs::IsTabResumptionDisabled(_localState)) {

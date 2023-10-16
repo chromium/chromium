@@ -1603,7 +1603,7 @@ bool InspectorHighlightBase::BuildNodeQuads(Node* node,
 
     // Include scrollbars and gutters in the padding highlight.
     padding_box = layout_box->PhysicalPaddingBoxRect();
-    NGPhysicalBoxStrut scrollbars = layout_box->ComputeScrollbars();
+    PhysicalBoxStrut scrollbars = layout_box->ComputeScrollbars();
     padding_box.SetX(padding_box.X() - scrollbars.left);
     padding_box.SetY(padding_box.Y() - scrollbars.top);
     padding_box.SetWidth(padding_box.Width() + scrollbars.HorizontalSum());

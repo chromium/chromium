@@ -15,13 +15,13 @@ export class MockMetadataModel {
   constructor(initial_properties) {
     /**
      * Dummy properties, which can be overwritten by a test.
-     * @public @const {Object}
+     * @public @const @type {Object}
      */
     this.properties = initial_properties;
 
     /**
      * Per entry properties, which can be set by a test.
-     * @private @const {Map<string, Object>}
+     * @private @const @type {Map<string, Object>}
      */
     this.propertiesMap_ = new Map();
   }

@@ -680,6 +680,32 @@ locale.  The strings in this file are specific to iOS.
       <message name="IDS_IOS_BULK_UPLOAD_ON_THIS_DEVICE_TITLE" desc="The text appears as the title of a confirmation dialog where the user can choose to save some data to their Google Account. When data is saved to the Google Account, it's backed up safely and is available on any device where they're signed in to Chrome.">
         On This Device
       </message>
+      <message name="IDS_IOS_BOOKMARKS_HOME_BULK_UPLOAD_SECTION_DESCRIPTION" desc="This text is shown above the batch upload button section in the bookmarks page to explain to the user how many bookmarks exist only locally and can be uploaded to their Google Account. [iOS Only]">
+        {count, plural,
+          =1 {1 bookmark is saved only to this device. To use it on your other devices, save it in your Google Account, {email}.}
+          other {{count} bookmarks are saved only to this device. To use them on your other devices, save them in your Google Account, {email}.}}
+      </message>
+      <message name="IDS_IOS_BOOKMARKS_HOME_BULK_UPLOAD_ALERT_TITLE" desc="Alert title in the bookmarks page asking the user that all their local bookmarks will be saved to their account. [iOS Only]">
+        {count, plural,
+          =1 {Save 1 Bookmark in your Google Account}
+          other {Save {count} Bookmarks in your Google Account}}
+      </message>
+      <message name="IDS_IOS_BOOKMARKS_HOME_BULK_UPLOAD_ALERT_DESCRIPTION" desc="Alert description in the bookmarks page confirming to the user that they can save all their local bookmarks to their account. [iOS Only]">
+        {count, plural,
+          =1 {You can save your bookmark in your Google Account, {email}.}
+          other {You can save your bookmarks in your Google Account, {email}.}}
+      </message>
+      <message name="IDS_IOS_BOOKMARKS_HOME_BULK_UPLOAD_ALERT_BUTTON" desc="Alert confirm button in the bookmarks page confirming the user wants to save alls their local bookmarks to their account. [iOS Only]">
+        Save in Account
+      </message>
+      <message name="IDS_IOS_BOOKMARKS_HOME_BULK_UPLOAD_ALERT_CANCEL" desc="Alert cancel button in the bookmarks page cancelling the save of all their local bookmarks to their account. [iOS Only]">
+        Cancel
+      </message>
+      <message name="IDS_IOS_BOOKMARKS_HOME_BULK_UPLOAD_SNACKBAR_MESSAGE" desc="Snackbar message in the bookmarks page confirming to the user that all their local bookmarks have been saved to their account. [iOS Only]">
+        {count, plural,
+          =1 {Bookmark saved in your Google Account, {email}.}
+          other {Bookmarks saved in your Google Account, {email}.}}
+      </message>
       <message name="IDS_IOS_CALENDARS_USAGE_DESCRIPTION" desc="Specifies the reason for accessing the user's calendar while the app is in use [Length: unlimited] [iOS only].">
           This will be used to create events in your Apple Calendar from Chrome and Google Lens.
       </message>

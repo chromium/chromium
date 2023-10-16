@@ -19,7 +19,7 @@ class NGBoxFragmentBuilder;
 class NGBlockNode;
 class NGConstraintSpace;
 class NGLayoutResult;
-struct NGLogicalStaticPosition;
+struct LogicalStaticPosition;
 
 struct CORE_EXPORT NGLogicalOutOfFlowDimensions {
   LayoutUnit MarginBoxInlineStart() const {
@@ -59,12 +59,12 @@ CORE_EXPORT LogicalRect
 ComputeOutOfFlowAvailableRect(const NGBlockNode&,
                               const NGConstraintSpace&,
                               const NGLogicalOutOfFlowInsets&,
-                              const NGLogicalStaticPosition&);
+                              const LogicalStaticPosition&);
 CORE_EXPORT LogicalRect
 ComputeOutOfFlowAvailableRect(const NGBlockNode&,
                               const LogicalSize& available_size,
                               const NGLogicalOutOfFlowInsets&,
-                              const NGLogicalStaticPosition&);
+                              const LogicalStaticPosition&);
 
 // The following routines implement the absolute size resolution algorithm.
 // https://www.w3.org/TR/css-position-3/#abs-non-replaced-width
@@ -86,7 +86,7 @@ CORE_EXPORT bool ComputeOutOfFlowInlineDimensions(
     const NGConstraintSpace&,
     const NGLogicalOutOfFlowInsets&,
     const BoxStrut& border_padding,
-    const NGLogicalStaticPosition&,
+    const LogicalStaticPosition&,
     LogicalSize computed_available_size,
     const absl::optional<LogicalSize>& replaced_size,
     const WritingDirectionMode container_writing_direction,
@@ -101,7 +101,7 @@ CORE_EXPORT const NGLayoutResult* ComputeOutOfFlowBlockDimensions(
     const NGConstraintSpace&,
     const NGLogicalOutOfFlowInsets&,
     const BoxStrut& border_padding,
-    const NGLogicalStaticPosition&,
+    const LogicalStaticPosition&,
     LogicalSize computed_available_size,
     const absl::optional<LogicalSize>& replaced_size,
     const WritingDirectionMode container_writing_direction,

@@ -258,6 +258,7 @@
 <translation id="5545693483061321551">Los sitios no pueden usar tus cookies para ver la actividad de navegación en diferentes sitios, por ejemplo, con el fin de personalizar anuncios. Es posible que algunas funciones no puedan utilizarse en algunos sitios.</translation>
 <translation id="5553374991681107062">Recientes</translation>
 <translation id="5556459405103347317">Volver a cargar</translation>
+<translation id="5591840828808741583">Se bloqueó <ph name="SITE_NAME" /></translation>
 <translation id="5649053991847567735">Descargas automáticas</translation>
 <translation id="5668404140385795438">Anular la solicitud de inhabilitación del zoom de un sitio web</translation>
 <translation id="5677928146339483299">Bloqueado</translation>
@@ -455,6 +456,7 @@
 <translation id="8959122750345127698">Navegación inaccesible: <ph name="URL" /></translation>
 <translation id="8986362086234534611">Borrar</translation>
 <translation id="8990043154272859344">Saldrás de todos los sitios</translation>
+<translation id="9011903857143958461">Se permitió <ph name="SITE_NAME" /></translation>
 <translation id="9019902583201351841">Administrado por tus padres</translation>
 <translation id="9039697262778250930">Es posible que salgas de estos sitios</translation>
 <translation id="9074739597929991885">Bluetooth</translation>

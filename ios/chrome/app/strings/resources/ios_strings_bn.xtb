@@ -711,6 +711,7 @@
 <translation id="4808744395915275922">আপডেট</translation>
 <translation id="4818522717893377262">ভাষা যোগ করুন…</translation>
 <translation id="481968316161811770">কুকিজ, সাইট ডেটা</translation>
+<translation id="4824480232751123840">ভলিউম</translation>
 <translation id="4824497107140370669">{count,plural, =0{{domain}}=1{{domain} এবং আরও ১টি}one{{domain} এবং আরও {count}টি}other{{domain} এবং আরও {count}টি}}</translation>
 <translation id="4826218269716039351">থার্ড-পার্টি ব্লক করুন</translation>
 <translation id="4826588772550366629">ক্যামেরা এবং মাইক্রোফোন</translation>
@@ -785,6 +786,7 @@
 <translation id="5181140330217080051">ডাউনলোড হচ্ছে</translation>
 <translation id="5184329579814168207">Chrome এ খুলুন</translation>
 <translation id="5186185447130319458">ব্যক্তিগত</translation>
+<translation id="5186634140793586141">আপনার আগ্রহের বিষয় ম্যানেজ ও সার্চ করুন</translation>
 <translation id="5188482106078495165">আপনার কুকি সেটিং সমস্ত ট্যাবের ক্ষেত্রেই প্রযোজ্য। কোনও খোলা ট্যাবে নতুন সেটিং প্রয়োগ করতে, ট্যাবটি আবার লোড করুন।</translation>
 <translation id="5190835502935405962">বুকমার্ক বার</translation>
 <translation id="519530786644929958">ডাউনলোড করা যায়নি এবং আবার চেষ্টা করা যাবে না।</translation>
@@ -849,6 +851,7 @@
 <translation id="5556459405103347317">রিলোড করুন</translation>
 <translation id="555749644339804659">পাসওয়ার্ড চেক করা হচ্ছে…</translation>
 <translation id="556042886152191864">বোতাম</translation>
+<translation id="5572684875078967866">তথ্যের স্টোরেজ</translation>
 <translation id="5597915316964418992">ট্যাব গ্রিড খুলুন</translation>
 <translation id="560322036295180549">আপনার সংস্থা বন্ধ করে দিয়েছে</translation>
 <translation id="5614553682702429503">পাসওয়ার্ড সেভ করবেন?</translation>
@@ -910,6 +913,7 @@
 <translation id="5896576662943111387">iOS-এর জন্য তৈরি করা হয়েছে</translation>
 <translation id="5897749768294722429">আপনার দেখা সাইটে ঝটপট ফিরে যেতে, ট্যাব ও ইতিহাস সিঙ্ক করুন।</translation>
 <translation id="5897956970858271241">কপি করা লিঙ্কে যান</translation>
+<translation id="5898848375214731122">ভর</translation>
 <translation id="5899314093904173337">কাছাকাছি থাকা লোকেদের সাথে শেয়ার করতে, তাদের ক্যামেরা বা QR স্ক্যানার অ্যাপ দিয়ে এই QR কোড স্ক্যান করতে দিন</translation>
 <translation id="5911030830365207728">Google Translate</translation>
 <translation id="5913600720976431809">পৃষ্ঠা অনুবাদ করার বিকল্প</translation>
@@ -927,6 +931,7 @@
 <translation id="5981230843984570095">অ্যাক্টিভ না থাকা সব ট্যাব বন্ধ করুন</translation>
 <translation id="5982717868370722439">বিদ্যমান ডেটা <ph name="USER_EMAIL" /> এ যোগ করুন।</translation>
 <translation id="5984222099446776634">সাম্প্রতিককালে দেখা</translation>
+<translation id="598634819525651074">এলাকা</translation>
 <translation id="5988097621740394599">ট্যাবে দাম কমার তথ্য দেখুন।</translation>
 <translation id="5988851877894965432">Chrome ব্রাউজার থেকে ইউআরএলগুলি খুলুন</translation>
 <translation id="6006672969046233841">নতুন ট্যাব</translation>
@@ -1162,7 +1167,6 @@
 <translation id="7062545763355031412">স্বীকার করে অ্যাকাউন্টগুলি সুইচ করুন</translation>
 <translation id="7063811929043357292">তোমার অ্যাকাউন্ট তোমার অভিভাবক ম্যানেজ করেন।
 <ph name="BEGIN_LINK" />আরও জানুন<ph name="END_LINK" /></translation>
-<translation id="7064619810277839954">আপনার Google অ্যাকাউন্টের মাধ্যমে অন্যান্য ডিভাইসে করা ব্রাউজিং অ্যাক্টিভিটির উপর নির্ভর করে আপনাকে ট্যাব সংক্রান্ত সাজেশন দেওয়া হয়। একই Google অ্যাকাউন্ট ব্যবহার করে ডিভাইসে সাইন-ইন ও সিঙ্ক করতে হবে।</translation>
 <translation id="7069695992271320873">এই ডিভাইস থেকে সরিয়ে দিন</translation>
 <translation id="7080806333218412752">Safe Browsing-এ ইউআরএল চেক করতে পাঠানো হয়। তাছাড়া, নতুন কোনও ঝুঁকি খুঁজে পেতে সাহায্য করার জন্য পৃষ্ঠার ছোট নমুনা, ডাউনলোড, এক্সটেনশন অ্যাক্টিভিটি এবং সিস্টেম সংক্রান্ত তথ্যও পাঠানো হয়। সমস্ত Google অ্যাপ জুড়ে আপনাকে সুরক্ষিত রাখতে, যখন আপনি সাইন-ইন করেন, তখন আপনার Google অ্যাকাউন্টে অস্থায়ীভাবে এই ডেটাকে লিঙ্ক করানো হয়।</translation>
 <translation id="7082853213442715471">চালু থাকাকালীন, নির্দিষ্ট ওয়েব প্রযুক্তি ব্লক করা থাকে, যার জন্য কিছু ওয়েবসাইট খুব ধীরগতিতে লোড হতে পারে বা সঠিকভাবে কাজ নাও করতে পারে।</translation>
@@ -1363,6 +1367,7 @@
 <translation id="8156478151976189188">'পাসওয়ার্ড সিঙ্ক' ফিচার কাজ করছে না</translation>
 <translation id="8157532349231307196"><ph name="NUMBER_OF_ACCOUNTS" />টি অ্যাকাউন্ট</translation>
 <translation id="8159358225423560600">এইমাত্র</translation>
+<translation id="8173034266693057059">দৈর্ঘ্য</translation>
 <translation id="8179976553408161302">Enter</translation>
 <translation id="8182037667962849780">{count,plural, =1{{website_1}-এর জন্য}=2{{website_2}, {website_1}-এর জন্য}=3{{website_1}, {website_2} এবং আরও ১টির জন্য}one{{website_1}, {website_2} এবং আরও {more_count}টির জন্য}other{{website_1}, {website_2} এবং আরও {more_count}টির জন্য}}</translation>
 <translation id="8193953846147532858"><ph name="BEGIN_LINK" />আপনার ডিভাইস<ph name="END_LINK" /> · <ph name="EMAIL" /></translation>
@@ -1457,6 +1462,7 @@
 <translation id="8692689525339542358">বিপজ্জনক সাইট, ডাউনলোড ও এক্সটেনশন থেকে সুরক্ষা পান।</translation>
 <translation id="8693663554456874301">{count,plural, =1{'ট্যাব' বন্ধ করুন}one{'ট্যাব' বন্ধ করুন}other{'ট্যাব' বন্ধ করুন}}</translation>
 <translation id="8703536910991780768">আপনার ব্যবহার করা পাসওয়ার্ড শক্তিশালী বলে মনে হচ্ছ</translation>
+<translation id="8706253136355675497">তাপমাত্রা</translation>
 <translation id="8717864919010420084">লিঙ্কটি কপি করুন</translation>
 <translation id="8721297211384281569">টুল মেনু</translation>
 <translation id="8725066075913043281">আবার চেষ্টা করুন</translation>
@@ -1562,6 +1568,7 @@
 <translation id="9188680907066685419">ম্যানেজ করা অ্যাকাউন্ট থেকে সাইন-আউট করুন</translation>
 <translation id="9200875785104711666"><ph name="TIME" /> দিন আগে</translation>
 <translation id="9203116392574189331">Handoff</translation>
+<translation id="9206887540681440657">গতিবেগ</translation>
 <translation id="9219154867334666734">ট্যাব সার্চ করুন…</translation>
 <translation id="9223358826628549784">ক্র্যাশ রিপোর্ট পাঠানো হয়েছে৷</translation>
 <translation id="941747855997058526">পাসওয়ার্ড বেছে নিন...</translation>

@@ -233,6 +233,7 @@ Vous pouvez vérifier vos mots de passe en tout temps dans le menu <ph name="GOO
 <translation id="1175364870820465910">Im&amp;primer...</translation>
 <translation id="1175914831232945926">Chiffres</translation>
 <translation id="1176471985365269981">Non autorisés à modifier les fichiers ni les dossiers qui se trouvent sur votre appareil</translation>
+<translation id="1177440945615690056">Vous pouvez vous connecter à n'importe quel réseau cellulaire admissible dans Paramètres</translation>
 <translation id="1177863135347784049">Personnalisé</translation>
 <translation id="1178581264944972037">Interrompre</translation>
 <translation id="1178601482396475810">Gérer la synchronisation des appareils</translation>
@@ -2090,6 +2091,7 @@ https://support.google.com/chrome/?p=applescript</translation>
 <translation id="2609980095400624569">Impossible d'établir la connexion</translation>
 <translation id="2610157865375787051">Veille</translation>
 <translation id="2610260699262139870">Taille ré&amp;elle</translation>
+<translation id="2610374175948698697">Peut afficher des fichiers ou des dossiers sur votre appareil</translation>
 <translation id="2610780100389066815">Signature de liste d'approbation Microsoft</translation>
 <translation id="261114180663074524">Connectez-vous à votre compte Microsoft, puis réessayez</translation>
 <translation id="2611776654555141051">Rectangle</translation>
@@ -2137,6 +2139,7 @@ https://support.google.com/chrome/?p=applescript</translation>
 <translation id="264897126871533291">Protanomalie</translation>
 <translation id="2649045351178520408">Chaîne de certificats codés Base 64 ASCII</translation>
 <translation id="265156376773362237">Préchargement standard</translation>
+<translation id="2652071759203138150">{COUNT,plural, =1{{COUNT} mot de passe est enregistré uniquement sur cet appareil. Pour l'utiliser sur vos autres appareils, <ph name="BEGIN_LINK" />enregistrez-le dans votre compte Google<ph name="END_LINK" />.}one{{COUNT} mot de passe est enregistré uniquement sur cet appareil. Pour l'utiliser sur vos autres appareils, <ph name="BEGIN_LINK" />enregistrez-le dans votre compte Google<ph name="END_LINK" />.}other{{COUNT} mots de passe sont enregistrés uniquement sur cet appareil. Pour les utiliser sur vos autres appareils, <ph name="BEGIN_LINK" />enregistrez-le dans votre compte Google<ph name="END_LINK" />.}}</translation>
 <translation id="2652129567809778422">Sélectionner un mot de passe</translation>
 <translation id="2653266418988778031">Si vous supprimez un certificat d'une autorité de certification (CA), votre navigateur ne fera plus confiance aux certificats émis par cette autorité.</translation>
 <translation id="2653275834716714682">Remplacement de texte</translation>
@@ -2211,6 +2214,7 @@ https://support.google.com/chrome/?p=applescript</translation>
 <translation id="2709516037105925701">Remplissage automatique</translation>
 <translation id="2710101514844343743">Données d'utilisation et de diagnostics</translation>
 <translation id="271033894570825754">Nouveau</translation>
+<translation id="2710507903599773521">Votre <ph name="DEVICE_TYPE" /> est maintenant déverrouillé</translation>
 <translation id="2711073837061989559">Essais</translation>
 <translation id="2713106313042589954">Désactiver la caméra</translation>
 <translation id="2713444072780614174">Blanc</translation>
@@ -3211,6 +3215,7 @@ https://support.google.com/chrome/?p=applescript</translation>
 <translation id="3521405806571557477">Supprimer les données enregistrées pour <ph name="SITE_NAME" /></translation>
 <translation id="3521606918211282604">Modifier la taille du disque</translation>
 <translation id="3522088408596898827">L'espace de stockage du disque est presque plein. Libérez de l'espace disque, puis réessayez.</translation>
+<translation id="3522979239100719575">Recherche des profils accessibles en cours… Cette opération peut prendre quelques minutes.</translation>
 <translation id="3524518036046613664">Découvrez des appareils sur votre réseau local, comme des imprimantes</translation>
 <translation id="3524965460886318643">Activités d'exportation</translation>
 <translation id="3525426269008462093">Vérifier la synchronisation de l'appareil après la configuration</translation>
@@ -3494,6 +3499,7 @@ https://support.google.com/chrome/?p=applescript</translation>
 <translation id="3752253558646317685">Demandez à votre enfant de continuer à lever et à déposer son doigt pour enregistrer l'empreinte digitale</translation>
 <translation id="3753033997400164841">Stocker une fois. Utiliser partout</translation>
 <translation id="3753142252662437130">Filtres de couleur</translation>
+<translation id="3753412199586870466">Panneau latéral ouvert</translation>
 <translation id="3755411799582650620">Votre téléphone <ph name="PHONE_NAME" /> peut désormais aussi déverrouiller ce <ph name="DEVICE_TYPE" />.</translation>
 <translation id="375636864092143889">Le site utilise votre microphone</translation>
 <translation id="3756485814916578707">Diffusion de l'écran en cours…</translation>
@@ -4022,6 +4028,7 @@ Cela peut inclure des renseignements sur les fichiers, les logiciels installés,
 <translation id="4150201353443180367">Affichage</translation>
 <translation id="4150569944729499860">Contexte à l'écran</translation>
 <translation id="4151449637210235443">Parlez-nous de votre expérience de jeu récente</translation>
+<translation id="4151503145138736576">Pas de stockage hors ligne à nettoyer</translation>
 <translation id="4152011295694446843">Vous trouverez vos favoris ici</translation>
 <translation id="4152670763139331043">{NUM_TABS,plural, =1{1 onglet}one{# onglet}other{# onglets}}</translation>
 <translation id="4154664944169082762">Empreintes</translation>
@@ -4232,6 +4239,7 @@ Cela peut inclure des renseignements sur les fichiers, les logiciels installés,
 <translation id="4341577178275615435">Pour activer ou désactiver la navigation au clavier, utilisez le raccourci F7</translation>
 <translation id="4341905082470253054">Vérification de l'état du TPM en cours…</translation>
 <translation id="434198521554309404">Rapide. Sécuritaire. Convivial.</translation>
+<translation id="4342417854108207000">Autorisées à modifier les fichiers ou les dossiers qui se trouvent sur votre appareil</translation>
 <translation id="4343250402091037179">Pour rechercher un site ou une partie de Chrome en particulier, entrez son raccourci dans la barre d'adresse, suivi de votre raccourci-clavier favori.</translation>
 <translation id="434404122609091467">Avec votre fournisseur de services actuel</translation>
 <translation id="4345457680916430965">&amp;Ouvrir dans <ph name="APP" /></translation>
@@ -5265,6 +5273,7 @@ Appuyez sur Ctrl+Alt+diminuer la luminosité pour dézoomer.</translation>
 <translation id="5197255632782567636">Internet</translation>
 <translation id="5198430103906431024">Envoyer les données d'utilisation et de diagnostic. Actuellement, cet appareil envoie automatiquement à Google des données de diagnostic, de l'appareil et d'utilisation des applications. Cela nous permettra d'assurer la stabilité du système et des applications, et d'apporter d'autres améliorations. Certaines données collectées contribueront également à améliorer les applications Google et aideront nos partenaires, comme les développeurs Android. Si le paramètre relatif aux autres activités sur le Web et dans les applications est activé, ces données peuvent être enregistrées dans votre compte Google.</translation>
 <translation id="5199729219167945352">Fonctionnalités expérimentales</translation>
+<translation id="5203035663139409780">Peut modifier des fichiers ou des dossiers sur votre appareil</translation>
 <translation id="5203920255089865054">{NUM_EXTENSIONS,plural, =1{Cliquer pour afficher l'extension}one{Cliquer pour afficher cette extension}other{Cliquer pour afficher ces extensions}}</translation>
 <translation id="5204249655833504508">Tablette graphique</translation>
 <translation id="5204673965307125349">Veuillez effectuer un Powerwash sur l'appareil et réessayer.</translation>
@@ -7153,6 +7162,9 @@ Vous avez # autres mots de passe compromis. Le gestionnaire de mots de passe de
 <translation id="6767566652486411142">Choisir une autre langue…</translation>
 <translation id="6767639283522617719">Impossible d'associer le domaine. Assurez-vous que les paramètres sont corrects pour l'unité organisationnelle.</translation>
 <translation id="6768034047581882264">Non autorisés à afficher le contenu non sécurisé</translation>
+<translation id="6769902329858794251"><ph name="BEGIN_PARAGRAPH1" />Pour que vous profitiez d'une expérience optimale, <ph name="DEVICE_OS" /> collecte des données matérielles relatives aux appareils et les partage avec Google pour déterminer quelles mises à jour doivent être fournies. Si vous le souhaitez, vous pouvez autoriser Google à utiliser ces données à d'autres fins, comme l'assistance ou l'amélioration de l'expérience et du service proposés par <ph name="DEVICE_OS" />.<ph name="END_PARAGRAPH1" />
+    <ph name="BEGIN_PARAGRAPH2" />Vous pouvez vous connecter sur cet appareil et afficher les champs répertoriés comme chromeosflex_ dans chrome://system pour savoir quelles données sont envoyées à Google aux fins de filtrage des mises à jour et pour découvrir les autres contextes où vous choisissez de partager des données avec Google.<ph name="END_PARAGRAPH2" />
+    <ph name="BEGIN_PARAGRAPH3" />Pour en savoir plus sur les données que <ph name="DEVICE_OS" /> peut partager avec Google et comment elles sont utilisées, consultez la page g.co/flex/HWDataCollection.<ph name="END_PARAGRAPH3" /></translation>
 <translation id="6770042910635026163">Sites que vous visitez et qui définissent vos centres d'intérêt</translation>
 <translation id="6770602306803890733">Il renforce votre sécurité et celle de tous les utilisateurs sur le Web</translation>
 <translation id="6771503742377376720">Est une autorité de certification</translation>
@@ -7795,6 +7807,7 @@ Vous avez # autres mots de passe compromis. Le gestionnaire de mots de passe de
 <translation id="7283555985781738399">Mode Invité</translation>
 <translation id="7284307451964417957">{DAYS,plural, =1{Cet appareil sera mémorisé pendant 1 jour, et vous pourrez vous connecter sans code la prochaine fois. Ce paramètre est défini par votre administrateur.}one{Cet appareil sera mémorisé pendant {DAYS} jour, et vous pourrez vous connecter sans code la prochaine fois. Ce paramètre est défini par votre administrateur.}other{Cet appareil sera mémorisé pendant {DAYS} jours, et vous pourrez vous connecter sans code la prochaine fois. Ce paramètre est défini par votre administrateur.}}</translation>
 <translation id="7284411326658527427">Et chaque personne peut personnaliser son compte et garder ses données privées.</translation>
+<translation id="7286867818472074330">Sélectionner la clé d'accès</translation>
 <translation id="7287143125007575591">Accès refusé.</translation>
 <translation id="7287411021188441799">Rétablir l'arrière-plan par défaut</translation>
 <translation id="7288676996127329262"><ph name="HORIZONTAL_DPI" /> x <ph name="VERTICAL_DPI" /> ppp</translation>
@@ -8637,6 +8650,7 @@ Appuyez sur un commutateur attribué ou une touche du clavier pour retirer l'att
 <translation id="793531125873261495">Erreur lors du téléchargement de la machine virtuelle. Veuillez réessayer.</translation>
 <translation id="7935451262452051102"><ph name="PERCENT" /> % terminé</translation>
 <translation id="7937809006412909895">Collecte des données de diagnostic en cours…</translation>
+<translation id="7938881824185772026">Labs</translation>
 <translation id="7939062555109487992">Options avancées</translation>
 <translation id="793923212791838">Votre appareil ne peut pas être utilisé avec ce site</translation>
 <translation id="7939328347457537652">Gérer les certificats sur l'appareil</translation>
@@ -10287,6 +10301,7 @@ Les autorisations que vous avez déjà accordées à des sites Web et à des app
 <translation id="956500788634395331">Vous êtes protégé contre les extensions potentiellement nuisibles</translation>
 <translation id="957179356621191750">6 points</translation>
 <translation id="957960681186851048">Ce site a tenté de télécharger plusieurs fichiers automatiquement</translation>
+<translation id="958571289841636277">Revenez en arrière et avancez avec un geste de balayage</translation>
 <translation id="960987915827980018">Il reste environ 1 heure</translation>
 <translation id="962802172452141067">Arborescence des dossiers de favoris</translation>
 <translation id="963000966785016697">Rechercher une image avec <ph name="VISUAL_SEARCH_PROVIDER" /></translation>

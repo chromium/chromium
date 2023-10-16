@@ -13,11 +13,11 @@
 #include "third_party/blink/renderer/core/html/forms/html_input_element.h"
 #include "third_party/blink/renderer/core/layout/layout_multi_column_flow_thread.h"
 #include "third_party/blink/renderer/core/layout/layout_object.h"
+#include "third_party/blink/renderer/core/layout/list/unpositioned_list_marker.h"
 #include "third_party/blink/renderer/core/layout/ng/inline/ng_inline_cursor.h"
 #include "third_party/blink/renderer/core/layout/ng/inline/ng_inline_node.h"
 #include "third_party/blink/renderer/core/layout/ng/inline/ng_physical_line_box_fragment.h"
 #include "third_party/blink/renderer/core/layout/ng/legacy_layout_tree_walking.h"
-#include "third_party/blink/renderer/core/layout/ng/list/ng_unpositioned_list_marker.h"
 #include "third_party/blink/renderer/core/layout/ng/ng_block_child_iterator.h"
 #include "third_party/blink/renderer/core/layout/ng/ng_block_layout_algorithm_utils.h"
 #include "third_party/blink/renderer/core/layout/ng/ng_box_fragment.h"
@@ -610,7 +610,7 @@ inline const NGLayoutResult* NGBlockLayoutAlgorithm::Layout(
   LayoutUnit content_edge = BorderScrollbarPadding().block_start;
 
   NGPreviousInflowPosition previous_inflow_position = {
-      LayoutUnit(), ConstraintSpace().MarginStrut(),
+      LayoutUnit(), ConstraintSpace().GetMarginStrut(),
       is_resuming_ ? LayoutUnit() : container_builder_.Padding().block_start,
       /* self_collapsing_child_had_clearance */ false};
 
@@ -676,7 +676,7 @@ inline const NGLayoutResult* NGBlockLayoutAlgorithm::Layout(
   // If this is a new formatting context, or if we're resuming from a break
   // token, no margin strut must be lingering around at this point.
   if (ConstraintSpace().IsNewFormattingContext() || is_resuming_)
-    DCHECK(ConstraintSpace().MarginStrut().IsEmpty());
+    DCHECK(ConstraintSpace().GetMarginStrut().IsEmpty());
 
   if (!container_builder_.BfcBlockOffset()) {
     // New formatting-contexts, and when we have a self-collapsing child
@@ -911,7 +911,7 @@ const NGLayoutResult* NGBlockLayoutAlgorithm::FinishLayout(
     NGPreviousInflowPosition* previous_inflow_position,
     NGInlineChildLayoutContext* inline_child_layout_context) {
   LogicalSize border_box_size = container_builder_.InitialBorderBoxSize();
-  NGMarginStrut end_margin_strut = previous_inflow_position->margin_strut;
+  MarginStrut end_margin_strut = previous_inflow_position->margin_strut;
 
   // Add line height for empty content editable or button with empty label, e.g.
   // <div contenteditable></div>, <input type="button" value="">
@@ -962,7 +962,7 @@ const NGLayoutResult* NGBlockLayoutAlgorithm::FinishLayout(
     DCHECK(container_builder_.BfcBlockOffset());
     intrinsic_block_size_ =
         *intrinsic_block_size_when_clamped_ + block_end_border_padding;
-    end_margin_strut = NGMarginStrut();
+    end_margin_strut = MarginStrut();
   } else if (block_end_border_padding ||
              previous_inflow_position->self_collapsing_child_had_clearance ||
              ConstraintSpace().IsNewFormattingContext()) {
@@ -1025,7 +1025,7 @@ const NGLayoutResult* NGBlockLayoutAlgorithm::FinishLayout(
       block_end_border_padding = LayoutUnit();
     }
     intrinsic_block_size_ += block_end_border_padding;
-    end_margin_strut = NGMarginStrut();
+    end_margin_strut = MarginStrut();
   } else {
     // Update our intrinsic block size to be just past the block-end border edge
     // of the last in-flow child. The pending margin is to be propagated to our
@@ -1084,7 +1084,7 @@ const NGLayoutResult* NGBlockLayoutAlgorithm::FinishLayout(
     //  - The parent has computed block-size != auto.
     if (border_box_size.block_size != intrinsic_block_size_ ||
         !BlockLengthUnresolvable(ConstraintSpace(), Style().LogicalHeight())) {
-      end_margin_strut = NGMarginStrut();
+      end_margin_strut = MarginStrut();
     }
   }
 
@@ -1434,7 +1434,7 @@ NGLayoutResult::EStatus NGBlockLayoutAlgorithm::HandleNewFormattingContext(
   // realize that the child isn't going to fit beside the floats at the current
   // position, and therefore re-resolve the BFC block offset with the child's
   // margin non-adjoining. This is akin to clearance.
-  NGMarginStrut adjoining_margin_strut(previous_inflow_position->margin_strut);
+  MarginStrut adjoining_margin_strut(previous_inflow_position->margin_strut);
   adjoining_margin_strut.Append(child_data.margins.block_start,
                                 child_style.HasMarginBeforeQuirk());
   LayoutUnit adjoining_bfc_offset_estimate =
@@ -2068,7 +2068,7 @@ NGLayoutResult::EStatus NGBlockLayoutAlgorithm::FinishInflow(
   // The resulting margin strut in the above example will be {40, -30}. See
   // |ComputeInflowPosition| for how this end margin strut is used.
   if (self_collapsing_child_had_clearance) {
-    NGMarginStrut margin_strut;
+    MarginStrut margin_strut;
     margin_strut.Append(child_data->margins.block_start,
                         child.Style().HasMarginBeforeQuirk());
 
@@ -2289,7 +2289,7 @@ NGInflowChildData NGBlockLayoutAlgorithm::ComputeChildData(
   // Append the current margin strut with child's block start margin.
   // Non empty border/padding, and new formatting-context use cases are handled
   // inside of the child's layout
-  NGMarginStrut margin_strut = previous_inflow_position.margin_strut;
+  MarginStrut margin_strut = previous_inflow_position.margin_strut;
 
   LayoutUnit logical_block_offset =
       previous_inflow_position.logical_block_offset;
@@ -2302,7 +2302,7 @@ NGInflowChildData NGBlockLayoutAlgorithm::ComputeChildData(
       // After a forced fragmentainer break we need to reset the margin strut,
       // in case it was set to discard all margins (which is the default at
       // breaks). Margins after a forced break should be retained.
-      margin_strut = NGMarginStrut();
+      margin_strut = MarginStrut();
     }
 
     if (child_block_break_token->MonolithicOverflow() &&
@@ -2414,7 +2414,7 @@ NGPreviousInflowPosition NGBlockLayoutAlgorithm::ComputeInflowPosition(
                                     layout_result.ClearanceAfterLine());
   }
 
-  NGMarginStrut margin_strut = layout_result.EndMarginStrut();
+  MarginStrut margin_strut = layout_result.EndMarginStrut();
 
   // Self collapsing child's end margin can "inherit" quirkiness from its start
   // margin. E.g.
@@ -2440,7 +2440,7 @@ NGPreviousInflowPosition NGBlockLayoutAlgorithm::ComputeInflowPosition(
         // (if any). It should only be applied after the fragment where we
         // reached the block-end of the node.
         if (!token->IsAtBlockEnd())
-          margin_strut = NGMarginStrut();
+          margin_strut = MarginStrut();
       }
     }
   }
@@ -3077,7 +3077,7 @@ bool NGBlockLayoutAlgorithm::ResolveBfcBlockOffset(
   // is empty (note that a strut that's set up to eat all margins will also be
   // considered to be empty).
   if (!is_resuming_)
-    previous_inflow_position->margin_strut = NGMarginStrut();
+    previous_inflow_position->margin_strut = MarginStrut();
   else
     DCHECK(previous_inflow_position->margin_strut.IsEmpty());
 
@@ -3096,7 +3096,7 @@ bool NGBlockLayoutAlgorithm::NeedsAbortOnBfcBlockOffsetChange() const {
 
 absl::optional<LayoutUnit>
 NGBlockLayoutAlgorithm::CalculateQuirkyBodyMarginBlockSum(
-    const NGMarginStrut& end_margin_strut) {
+    const MarginStrut& end_margin_strut) {
   if (!Node().IsQuirkyAndFillsViewport())
     return absl::nullopt;
 
@@ -3115,7 +3115,7 @@ NGBlockLayoutAlgorithm::CalculateQuirkyBodyMarginBlockSum(
   if (!container_builder_.BfcBlockOffset())
     return end_margin_strut.Sum() + block_end_margin;
 
-  NGMarginStrut body_strut = end_margin_strut;
+  MarginStrut body_strut = end_margin_strut;
   body_strut.Append(block_end_margin, Style().HasMarginAfterQuirk());
   return *container_builder_.BfcBlockOffset() -
          ConstraintSpace().GetBfcOffset().block_offset + body_strut.Sum();

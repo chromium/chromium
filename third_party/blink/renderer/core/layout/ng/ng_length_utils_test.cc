@@ -480,7 +480,7 @@ TEST_F(NGLengthUtilsTest, TestMargins) {
 
   NGConstraintSpace constraint_space = ConstructConstraintSpace(200, 300);
 
-  NGPhysicalBoxStrut margins = ComputePhysicalMargins(constraint_space, *style);
+  PhysicalBoxStrut margins = ComputePhysicalMargins(constraint_space, *style);
 
   EXPECT_EQ(LayoutUnit(20), margins.top);
   EXPECT_EQ(LayoutUnit(52), margins.right);

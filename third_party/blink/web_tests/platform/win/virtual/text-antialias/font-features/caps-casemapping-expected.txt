@@ -1,5 +1,7 @@
 This is a testharness.js-based test.
-FAIL Synthetic small caps should produce the same width as manually uppercased, downscaled text. assert_equals: expected 3709.1875 but got 3501.5625
-FAIL Strings containing uppercased sharp S should not be truncated. assert_equals: expected 70.046875 but got 57.53125
+[FAIL] Synthetic small caps should produce the same width as manually uppercased, downscaled text.
+  assert_equals: expected 3709.1875 but got 3501.5625
+[FAIL] Strings containing uppercased sharp S should not be truncated.
+  assert_equals: expected 70.046875 but got 57.53125
 Harness: the test ran to completion.
 

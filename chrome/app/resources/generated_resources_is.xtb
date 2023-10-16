@@ -3232,6 +3232,7 @@ Annars skaltu skrá þig út núna svo breytingarnar á þessum reikningi taki g
 <translation id="3521405806571557477">Eyða vistuðum gögnum fyrir <ph name="SITE_NAME" /></translation>
 <translation id="3521606918211282604">Breyta diskstærð</translation>
 <translation id="3522088408596898827">Mjög lítið pláss er á diskinum. Losaðu um pláss á diskinum og reyndu aftur.</translation>
+<translation id="3522979239100719575">Leitar að tiltækum prófílum. Þetta gæti tekið nokkrar mínútur.</translation>
 <translation id="3524518036046613664">Finna tæki á staðarnetinu, eins og prentara</translation>
 <translation id="3524965460886318643">Flytja út aðgerðir</translation>
 <translation id="3525426269008462093">Yfirfara samstillingu tækis eftir uppsetningu</translation>
@@ -7826,6 +7827,7 @@ Heimildir sem þú hefur þegar veitt vefsvæðum og forritum kunna að gilda á
 <translation id="7283555985781738399">Gestastilling</translation>
 <translation id="7284307451964417957">{DAYS,plural, =1{Þetta tæki verður vistað í 1 dag og þú getur tengst án kóða næst. Stjórnandinn þinn stillir þetta.}one{Þetta tæki verður vistað í {DAYS} dag og þú getur tengst án kóða næst. Stjórnandinn þinn stillir þetta.}other{Þetta tæki verður vistað í {DAYS} daga og þú getur tengst án kóða næst. Stjórnandinn þinn stillir þetta.}}</translation>
 <translation id="7284411326658527427">Hver einstaklingur getur sérsniðið reikninginn sinn og tryggt öryggi gagna.</translation>
+<translation id="7286867818472074330">Velja aðgangslykil</translation>
 <translation id="7287143125007575591">Aðgangur ekki veittur.</translation>
 <translation id="7287411021188441799">Endurheimta sjálfgefinn bakgrunn</translation>
 <translation id="7288676996127329262"><ph name="HORIZONTAL_DPI" />x<ph name="VERTICAL_DPI" /> dpi</translation>

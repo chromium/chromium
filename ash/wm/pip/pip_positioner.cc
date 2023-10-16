@@ -27,12 +27,15 @@ const float kPipDismissMovementProportion = 1.5f;
 }  // namespace
 
 gfx::Rect PipPositioner::GetBoundsForDrag(const display::Display& display,
-                                          const gfx::Rect& bounds_in_screen) {
-  gfx::Rect drag_bounds = bounds_in_screen;
+                                          const gfx::Rect& bounds_in_screen,
+                                          const gfx::Transform& transform) {
+  gfx::Rect drag_bounds(bounds_in_screen.origin(),
+                        transform.MapRect(bounds_in_screen).size());
   drag_bounds.AdjustToFit(CollisionDetectionUtils::GetMovementArea(display));
   drag_bounds = CollisionDetectionUtils::AvoidObstacles(
       display, drag_bounds,
       CollisionDetectionUtils::RelativePriority::kPictureInPicture);
+  drag_bounds.set_size(bounds_in_screen.size());
   return drag_bounds;
 }
 

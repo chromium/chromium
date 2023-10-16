@@ -25,7 +25,7 @@ export class CircularProgress extends HTMLElement {
     const fragment = htmlTemplate.content.cloneNode(true);
     this.attachShadow({mode: 'open'}).appendChild(fragment);
 
-    /** @private {number} */
+    /** @private @type {number} */
     this.progress_ = 0.0;
 
     /**
@@ -34,22 +34,22 @@ export class CircularProgress extends HTMLElement {
      * is calculated by using the circumference of the circle as the 100%
      * length and then setting the dash length to match the percentage of
      * the set 'progress_' value.
-     * @private {Element}
+     * @private @type {Element}
      */
     this.indicator_ = this.shadowRoot.querySelector('.top');
 
-    /** @private {Element} */
+    /** @private @type {Element} */
     this.errormark_ = assert(this.shadowRoot.querySelector('.errormark'));
 
-    /** @private {Element} */
+    /** @private @type {Element} */
     this.label_ = this.shadowRoot.querySelector('.label');
 
-    /** @private {number} */
+    /** @private @type {number} */
     this.maxProgress_ = 100.0;
 
     /**
      * The circumference for the circle (default 63 for radius r='10').
-     * @private {number}
+     * @private @type {number}
      */
     this.fullCircle_ = 63;
   }

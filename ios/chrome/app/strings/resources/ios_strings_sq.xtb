@@ -711,6 +711,7 @@ Shiko udhëzimet e motorit të kërkimit për fshirjen e historikut të kërkimi
 <translation id="4808744395915275922">Përditësimet</translation>
 <translation id="4818522717893377262">Shto gjuhë...</translation>
 <translation id="481968316161811770">Kukit, të dhënat e sajtit</translation>
+<translation id="4824480232751123840">Volumi</translation>
 <translation id="4824497107140370669">{count,plural, =0{{domain}}=1{{domain} dhe 1 tjetër}other{{domain} dhe {count} të tjerë}}</translation>
 <translation id="4826218269716039351">Blloko kukit e palëve të treta</translation>
 <translation id="4826588772550366629">kamerën dhe mikrofonin</translation>
@@ -785,6 +786,7 @@ Shiko udhëzimet e motorit të kërkimit për fshirjen e historikut të kërkimi
 <translation id="5181140330217080051">Po shkarkon</translation>
 <translation id="5184329579814168207">Hape në Chrome</translation>
 <translation id="5186185447130319458">Privat</translation>
+<translation id="5186634140793586141">Menaxho temat dhe kërkimet që të interesojnë</translation>
 <translation id="5188482106078495165">Cilësimet e tua të kukive zbatohen te të gjitha skedat. Për të zbatuar një cilësim të ri te një skedë e hapur, ringarkoje skedën.</translation>
 <translation id="5190835502935405962">Shiriti i faqeshënuesve</translation>
 <translation id="519530786644929958">Shkarkimi dështoi dhe nuk mund të riprovohet.</translation>
@@ -848,6 +850,7 @@ Handoff duhet gjithashtu të jetë i aktivizuar në seksionin "Të përgjithshme
 <translation id="5556459405103347317">Ringarko</translation>
 <translation id="555749644339804659">Po kontrollon fjalëkalimet…</translation>
 <translation id="556042886152191864">Buton</translation>
+<translation id="5572684875078967866">Hapësira ruajtëse e informacioneve</translation>
 <translation id="5597915316964418992">Hap rrjetën e skedave</translation>
 <translation id="560322036295180549">Çaktivizuar nga organizata jote</translation>
 <translation id="5614553682702429503">Të ruhet fjalëkalimi?</translation>
@@ -909,6 +912,7 @@ Handoff duhet gjithashtu të jetë i aktivizuar në seksionin "Të përgjithshme
 <translation id="5896576662943111387">Krijuar për iOS</translation>
 <translation id="5897749768294722429">Për t'u kthyer me shpejtësi te sajtet që ke vizituar, sinkronizo skedat dhe historikun.</translation>
 <translation id="5897956970858271241">Vizito lidhjen e kopjuar</translation>
+<translation id="5898848375214731122">Masa</translation>
 <translation id="5899314093904173337">Për të ndarë me personat në afërsi, lejoji të skanojnë këtë kod QR me kamerën e tyre ose aplikacionin e skanerit të kodeve QR</translation>
 <translation id="5911030830365207728">Përkthe me Google</translation>
 <translation id="5913600720976431809">Opsionet për përkthimin e faqes</translation>
@@ -926,6 +930,7 @@ Handoff duhet gjithashtu të jetë i aktivizuar në seksionin "Të përgjithshme
 <translation id="5981230843984570095">Mbyll të gjitha skedat joaktive</translation>
 <translation id="5982717868370722439">Shto të dhënat ekzistuese te <ph name="USER_EMAIL" />.</translation>
 <translation id="5984222099446776634">Vizituar kohët e fundit</translation>
+<translation id="598634819525651074">Zona</translation>
 <translation id="5988097621740394599">Shiko uljet e çmimeve në skeda.</translation>
 <translation id="5988851877894965432">Hap URL-të në Chrome</translation>
 <translation id="6006672969046233841">Skedë e re</translation>
@@ -1161,7 +1166,6 @@ Në modalitetin "e fshehtë", sajtet nuk mund t'i përdorin kukit për të parë
 <translation id="7062545763355031412">Pranoje dhe ndërro llogaritë</translation>
 <translation id="7063811929043357292">Llogaria jote menaxhohet nga prindi yt.
 <ph name="BEGIN_LINK" />Mëso më shumë<ph name="END_LINK" /></translation>
-<translation id="7064619810277839954">Të jep sugjerime për skedat bazuar në aktivitetin tënd të shfletimit në pajisjet e tjera duke përdorur "Llogarinë tënde të Google". Duhet të jesh i identifikuar në pajisjet e tua me të njëjtën "Llogari të Google" dhe ato duhet të jenë të sinkronizuara duke përdorur të njëjtën llogari.</translation>
 <translation id="7069695992271320873">Hiq nga kjo pajisje</translation>
 <translation id="7080806333218412752">I dërgon URL-të te "Shfletimi i sigurt" për t'i kontrolluar. Dërgon gjithashtu një shembull të vogël të faqeve, shkarkimeve, aktivitetit të shtesave dhe informacionit të sistemit për të ndihmuar në zbulimin e kërcënimeve të reja. I lidh përkohësisht këto të dhëna me "Llogarinë e Google" kur je i identifikuar, për të të mbrojtur nëpër aplikacionet e Google.</translation>
 <translation id="7082853213442715471">Kur është i aktivizuar, teknologji të caktuara të uebit janë të bllokuara, gjë që mund të bëjë që disa sajte uebi të ngarkohen më ngadalë ose të mos funksionojnë si duhet.</translation>
@@ -1362,6 +1366,7 @@ Sajtet mund t'i përdorin kukit për të parë aktivitetin tënd të shfletimit 
 <translation id="8156478151976189188">Sinkronizimi i fjalëkalimeve nuk po funksionon</translation>
 <translation id="8157532349231307196"><ph name="NUMBER_OF_ACCOUNTS" /> llogari</translation>
 <translation id="8159358225423560600">pikërisht tani</translation>
+<translation id="8173034266693057059">Kohëzgjatja</translation>
 <translation id="8179976553408161302">Enter</translation>
 <translation id="8182037667962849780">{count,plural, =1{Për {website_1}}=2{Për {website_1}, {website_2}}=3{Për {website_1}, {website_2} dhe 1 tjetër}other{Për {website_1}, {website_2} dhe {more_count} të tjerë}}</translation>
 <translation id="8193953846147532858"><ph name="BEGIN_LINK" />Pajisjet e tua<ph name="END_LINK" /> · <ph name="EMAIL" /></translation>
@@ -1456,6 +1461,7 @@ Të dhënat e tua janë enkriptuar me frazën tënde të kalimit më <ph name="T
 <translation id="8692689525339542358">Merr mbrojtjen nga sajtet, shkarkimet dhe shtesat e rrezikshme.</translation>
 <translation id="8693663554456874301">{count,plural, =1{Mbylle skedën}other{Mbylli skedat}}</translation>
 <translation id="8703536910991780768">Fjalëkalimet e tua duken të forta</translation>
+<translation id="8706253136355675497">Temperatura</translation>
 <translation id="8717864919010420084">Kopjo lidhjen</translation>
 <translation id="8721297211384281569">Menyja e veglave</translation>
 <translation id="8725066075913043281">Provo sërish</translation>
@@ -1561,6 +1567,7 @@ Të dhënat e tua janë enkriptuar me frazën tënde të kalimit më <ph name="T
 <translation id="9188680907066685419">Dil nga llogaria e menaxhuar</translation>
 <translation id="9200875785104711666"><ph name="TIME" /> ditë më parë</translation>
 <translation id="9203116392574189331">Handoff</translation>
+<translation id="9206887540681440657">Shpejtësia</translation>
 <translation id="9219154867334666734">Kërko te skedat…</translation>
 <translation id="9223358826628549784">Raporti i ndërprerjes aksidentale u dërgua.</translation>
 <translation id="941747855997058526">Zgjidh fjalëkalimin...</translation>

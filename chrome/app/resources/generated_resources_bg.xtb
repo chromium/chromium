@@ -2100,6 +2100,7 @@ https://www.chromium.org/chromium-os/how-tos-and-troubleshooting/debugging-featu
 <translation id="2609980095400624569">Не бе установена връзка</translation>
 <translation id="2610157865375787051">Спящ режим</translation>
 <translation id="2610260699262139870">&amp;Действителен размер</translation>
+<translation id="2610374175948698697">Може да преглежда файловете и папките на устройството ви</translation>
 <translation id="2610780100389066815">Подписване от Microsoft на списък с гаранти на сертификати</translation>
 <translation id="261114180663074524">Влезте в профила си в Microsoft и опитайте отново</translation>
 <translation id="2611776654555141051">Инструмент за правоъгълник</translation>
@@ -2147,6 +2148,7 @@ https://www.chromium.org/chromium-os/how-tos-and-troubleshooting/debugging-featu
 <translation id="264897126871533291">Протаномалия</translation>
 <translation id="2649045351178520408">ASCII с кодиране Base64, верига сертификати</translation>
 <translation id="265156376773362237">Стандартно предварит. зареждане</translation>
+<translation id="2652071759203138150">{COUNT,plural, =1{{COUNT} парола ще се запази само на това устройство. За да я използвате на другите си устройства, <ph name="BEGIN_LINK" />запазете я в профила си в Google<ph name="END_LINK" />.}other{{COUNT} пароли ще се запазят само на това устройство. За да ги използвате на другите си устройства, <ph name="BEGIN_LINK" />запазете ги в профила си в Google<ph name="END_LINK" />.}}</translation>
 <translation id="2652129567809778422">Изберете парола</translation>
 <translation id="2653266418988778031">Ако изтриете сертификат на сертифициращ орган (CA), браузърът ви повече няма да има доверие на нито един сертификат, издаден от този орган.</translation>
 <translation id="2653275834716714682">Text Replacement</translation>
@@ -3225,6 +3227,7 @@ https://www.chromium.org/chromium-os/how-tos-and-troubleshooting/debugging-featu
 <translation id="3521405806571557477">Изтриване на запазените данни за <ph name="SITE_NAME" /></translation>
 <translation id="3521606918211282604">Промяна на размера на диска</translation>
 <translation id="3522088408596898827">Свободното място на диска е критично малко. Освободете място и опитайте отново.</translation>
+<translation id="3522979239100719575">Търсят се налични профили за мобилна мрежа. Това може да отнеме няколко минути.</translation>
 <translation id="3524518036046613664">Откриване на устройства в локалната ви мрежа, като например принтери</translation>
 <translation id="3524965460886318643">Експортиране на активностите</translation>
 <translation id="3525426269008462093">Преглед на опциите за синхронизиране на устройството след настройване</translation>
@@ -4038,6 +4041,7 @@ https://www.chromium.org/chromium-os/how-tos-and-troubleshooting/debugging-featu
 <translation id="4150201353443180367">Екран</translation>
 <translation id="4150569944729499860">Контекст на екрана</translation>
 <translation id="4151449637210235443">Разкажете ни за скорошните си изживявания от играта</translation>
+<translation id="4151503145138736576">Няма офлайн хранилище за изчистване</translation>
 <translation id="4152011295694446843">Тук ще се показват отметките ви</translation>
 <translation id="4152670763139331043">{NUM_TABS,plural, =1{1 раздел}other{# раздела}}</translation>
 <translation id="4154664944169082762">Пръстови отпечатъци</translation>
@@ -4248,6 +4252,7 @@ https://www.chromium.org/chromium-os/how-tos-and-troubleshooting/debugging-featu
 <translation id="4341577178275615435">За да включите или изключите Caret Browsing, използвайте клавиша F7.</translation>
 <translation id="4341905082470253054">Проверява се състоянието на TPM...</translation>
 <translation id="434198521554309404">Бързо. Сигурно. Лесно.</translation>
+<translation id="4342417854108207000">С разрешение за редактиране на файловете и папките на устройството</translation>
 <translation id="4343250402091037179">За да търсите в конкретен сайт или в част от Chrome, въведете съответния пряк път в адресната лента и натиснете предпочитаната от вас клавишна комбинация.</translation>
 <translation id="434404122609091467">Посредством текущия ви доставчик на услуги</translation>
 <translation id="4345457680916430965">&amp;Отваряне в(ъв) <ph name="APP" /></translation>
@@ -5282,6 +5287,7 @@ https://www.chromium.org/chromium-os/how-tos-and-troubleshooting/debugging-featu
 <translation id="5197255632782567636">Интернет</translation>
 <translation id="5198430103906431024">Изпращане на данни за употребата и диагностиката. Понастоящем това устройство автоматично изпраща до Google диагностична информация и данни за употребата на устройството и приложенията. Това ще послужи за подобряване на стабилността на системата и приложенията и др. Някои обобщени данни също така ще подпомогнат приложенията и партньорите на Google, напр. програмистите за Android. Ако настройката „Допълнителна активност в мрежата и приложенията“ е включена за вас, тези данни може да се запазват в профила ви в Google.</translation>
 <translation id="5199729219167945352">Експерименти</translation>
+<translation id="5203035663139409780">Може да редактира файловете и папките на устройството ви</translation>
 <translation id="5203920255089865054">{NUM_EXTENSIONS,plural, =1{Кликнете, за да го прегледате}other{Кликнете, за да ги прегледате}}</translation>
 <translation id="5204249655833504508">Графичен таблет</translation>
 <translation id="5204673965307125349">Моля, извършете Powerwash на устройството и опитайте отново.</translation>
@@ -7817,6 +7823,7 @@ https://www.chromium.org/chromium-os/how-tos-and-troubleshooting/debugging-featu
 <translation id="7283555985781738399">Режим на гост</translation>
 <translation id="7284307451964417957">{DAYS,plural, =1{Това устройство ще бъде запазено за 1 ден. Следващия път ще можете да се свържете без код. Настройката е зададена от администратора ви.}other{Това устройство ще бъде запазено за {DAYS} дни. Следващия път ще можете да се свържете без код. Настройката е зададена от администратора ви.}}</translation>
 <translation id="7284411326658527427">Всеки човек има възможност да персонализира профила си и да запази данните си частни.</translation>
+<translation id="7286867818472074330">Избиране на ключ за достъп</translation>
 <translation id="7287143125007575591">Достъпът е отказан.</translation>
 <translation id="7287411021188441799">Възстановяване на стандартния фон</translation>
 <translation id="7288676996127329262"><ph name="HORIZONTAL_DPI" /> x <ph name="VERTICAL_DPI" /> точки на инч</translation>

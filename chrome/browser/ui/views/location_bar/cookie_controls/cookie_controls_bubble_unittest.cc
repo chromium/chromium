@@ -7,6 +7,7 @@
 #include <memory>
 #include "base/feature_list.h"
 #include "base/test/scoped_feature_list.h"
+#include "base/time/time_override.h"
 #include "chrome/browser/content_settings/cookie_settings_factory.h"
 #include "chrome/browser/content_settings/host_content_settings_map_factory.h"
 #include "chrome/browser/ui/views/frame/browser_view.h"
@@ -176,7 +177,19 @@ class CookieControlsBubbleViewControllerTest
 
   views::View* empty_reloading_view() { return empty_reloading_view_.get(); }
 
+  static base::Time GetReferenceTime() {
+    base::Time time;
+    EXPECT_TRUE(base::Time::FromString("Sat, 1 Sep 2023 11:00:00", &time));
+    return time;
+  }
+
  private:
+  // Overriding `base::Time::Now()` to obtain a consistent X days until
+  // exception expiration calculation regardless of the time the test runs.
+  base::subtle::ScopedTimeClockOverrides time_override_{
+      &CookieControlsBubbleViewControllerTest::GetReferenceTime,
+      /*time_ticks_override=*/nullptr,
+      /*thread_ticks_override=*/nullptr};
   base::test::ScopedFeatureList feature_list_;
   std::unique_ptr<content_settings::CookieControlsController> controller_;
   std::unique_ptr<MockCookieControlsContentView> mock_content_view_;
@@ -252,9 +265,8 @@ TEST_P(CookieControlsBubbleViewControllerTest,
                                          kBlockedSitesCount);
 }
 
-// TODO(crbug.com/1491331): Flaky in day computation.
 TEST_P(CookieControlsBubbleViewControllerTest,
-       DISABLED_ThirdPartyCookiesAllowedTemporary) {
+       ThirdPartyCookiesAllowedTemporary) {
   const int kDaysToExpiration = 30;
   const int kAllowedSitesCount = 2;
   const int kBlockedSitesCount = 3;

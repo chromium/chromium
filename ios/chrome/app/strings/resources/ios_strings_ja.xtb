@@ -775,6 +775,7 @@
 <translation id="5181140330217080051">ダウンロードしています</translation>
 <translation id="5184329579814168207">Chromeで開く</translation>
 <translation id="5186185447130319458">プライベート接続</translation>
+<translation id="5186634140793586141">関心のあるトピックと検索内容を管理する</translation>
 <translation id="5188482106078495165">Cookie の設定はすべてのタブに適用されます。開いているタブに新しい設定を適用するには、タブを再読み込みしてください。</translation>
 <translation id="5190835502935405962">ブックマーク バー</translation>
 <translation id="519530786644929958">ダウンロードに失敗し、再試行できません。</translation>
@@ -1148,7 +1149,6 @@
 <translation id="7062545763355031412">同意してアカウントを切り替える</translation>
 <translation id="7063811929043357292">ご利用のアカウントは保護者によって管理されています。
 <ph name="BEGIN_LINK" />詳細<ph name="END_LINK" /></translation>
-<translation id="7064619810277839954">Google アカウントを使用する他のデバイスでの閲覧アクティビティに基づいてタブの候補が表示されます。同じ Google アカウントを使用してデバイスにログインし、同期する必要があります。</translation>
 <translation id="7069695992271320873">このデバイスから削除</translation>
 <translation id="7080806333218412752">セーフ ブラウジングに URL を送信して安全性を確認します。また、新たな脅威を発見するため、ページ、ダウンロード、拡張機能のアクティビティ、システム情報の一部のサンプルも送信します。ログイン時には、このデータを一時的に Google アカウントにリンクして、すべての Google アプリを安全に利用できるように保護します。</translation>
 <translation id="7082853213442715471">オンにすると、一部のウェブ テクノロジーがブロックされ、ウェブサイトの読み込みが遅くなったり、正しく動作しなくなったりすることがあります。</translation>

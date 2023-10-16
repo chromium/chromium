@@ -686,7 +686,7 @@ IN_PROC_BROWSER_TEST_P(OfferNotificationBubbleViewsInteractiveUiTest,
   CloseBubbleWithReason(views::Widget::ClosedReason::kCloseButtonClicked);
 
   // Simulate the user clearing server data.
-  personal_data()->ClearAllServerData();
+  personal_data()->ClearAllServerDataForTesting();
 
   // Simulate the user re-showing the bubble by clicking on the icon.
   SimulateClickOnIconAndReshowBubble();

@@ -57,7 +57,7 @@ export function assertFileEntryPathsEqual(expectedPaths, fileEntries) {
  */
 export class TestCallRecorder {
   constructor() {
-    /** @private {!Array<!Arguments>} */
+    /** @private @type {!Array<!Arguments>} */
     this.calls_ = [];
 
     /**

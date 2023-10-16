@@ -368,7 +368,7 @@ union BlockDeviceInfo {
 
 // Information related to a specific non-removable block device.
 //
-// NextMinVersion: 2, NextIndex: 18
+// NextMinVersion: 3, NextIndex: 19
 [Stable]
 struct NonRemovableBlockDeviceInfo {
   // IO statistics
@@ -422,6 +422,8 @@ struct NonRemovableBlockDeviceInfo {
   uint8 manufacturer_id@15;
   // PSN: Product serial number, 32 bits
   uint32 serial@16;
+  // String representatil of the device FW version
+  [MinVersion=2] string? firmware_string@18;
 };
 
 // CPU probe result. Can either be populated with the CpuInfo or an error
@@ -769,7 +771,6 @@ struct StatefulPartitionInfo {
 
 // Bluetooth probe result. Can either be populated with the BluetoothAdapterInfo
 // or an error retrieving the information.
-[Stable]
 union BluetoothResult {
   // Valid BluetoothAdapterInfo.
   array<BluetoothAdapterInfo> bluetooth_adapter_info;
@@ -780,7 +781,6 @@ union BluetoothResult {
 // Information related to one of a device's Bluetooth adapters.
 //
 // NextMinVersion: 3, NextIndex: 11
-[Stable]
 struct BluetoothAdapterInfo {
   // The name of the adapter.
   string name@0;
@@ -802,14 +802,14 @@ struct BluetoothAdapterInfo {
   [MinVersion=1] string? modalias@8;
   // List of allowed system devices.
   [MinVersion=2] array<string>? service_allow_list@9;
-  // A dictionary of supported capabilities.
-  [MinVersion=2] SupportedCapabilities? supported_capabilities@10;
+  // A dictionary of supported capabilities. DEPRECATED.
+  [MinVersion=2] DEPRECATED_SupportedCapabilities? deprecated_supported_capabilities@10;
 };
 
 
 // Information related to one of a adapter's Bluetooth connected devices.
 //
-// NextMinVersion: 2, NextIndex: 9
+// NextMinVersion: 3, NextIndex: 10
 [Stable]
 struct BluetoothDeviceInfo {
   // The MAC address of the device.
@@ -830,6 +830,8 @@ struct BluetoothDeviceInfo {
   array<string>? uuids@7;
   // The battery percentage of the device.
   [MinVersion=1] NullableUint8? battery_percentage@8;
+  // The Bluetooth class of device (CoD) of the device.
+  [MinVersion=2] NullableUint32? bluetooth_class@9;
 };
 
 // An enumeration of type in Bluetooth device info.
@@ -849,11 +851,12 @@ enum BluetoothDeviceType {
   kDual = 4,
 };
 
-// Supported Capabilities related information.
+// Supported Capabilities related information. DEPRECATED.
 //
+// TODO(b/299415168): Deprecate it.
 // NextMinVersion: 1, NextIndex: 4
-[Stable]
-struct SupportedCapabilities {
+[RenamedFrom="ash.cros_healthd.mojom.SupportedCapabilities"]
+struct DEPRECATED_SupportedCapabilities {
   // Max advertising data length.
   uint8 max_adv_len@0;
   // Max advertising scan response length.
@@ -865,8 +868,8 @@ struct SupportedCapabilities {
 };
 
 // System probe result. DEPRECATED.
-[Stable]
-union DEPRECATE_SystemResult { ProbeError error; };
+[Stable, RenamedFrom="ash.cros_healthd.mojom.DEPRECATE_SystemResult"]
+union DEPRECATED_SystemResult { ProbeError error; };
 
 // System probe result. Can either be populated with the SystemInfo or an error
 // retrieving the information.
@@ -1376,7 +1379,7 @@ union BusInfo {
 
 // The info related to pci.
 //
-// NextMinVersion: 1, NextIndex: 6
+// NextMinVersion: 2, NextIndex: 8
 [Stable]
 struct PciBusInfo {
   // These fields can be used to classify / identify the pci devices. See the
@@ -1390,6 +1393,11 @@ struct PciBusInfo {
   // is registered in the kernel. See "{kernel root}/drivers/". for the list of
   // the built in drivers.
   string? driver@5;
+  // These fields can be used to classify / identify the pci subsystem devices.
+  // See the pci.ids database for the values. (https://github.com/gentoo/hwids)
+  // Note that not every device has these fields.
+  [MinVersion=1] NullableUint16? sub_vendor_id@6;
+  [MinVersion=1] NullableUint16? sub_device_id@7;
 };
 
 // The info related to usb.
@@ -1501,9 +1509,9 @@ enum UsbSpecSpeed {
   k1_5Mbps = 2,
   // Full speed.
   k12Mbps = 3,
-  // Deprecate. Should be a typo in
+  // Deprecated. Should be a typo in
   // https://www.kernel.org/doc/Documentation/ABI/testing/sysfs-bus-usb.
-  kDeprecateSpeed = 4,
+  kDeprecatedSpeed = 4,
   // High Speed.
   k480Mbps = 5,
   // Super Speed.
@@ -1989,7 +1997,6 @@ struct Sensor {
 // to fetch that information, but was unable to.
 //
 // NextMinVersion: 6, NextIndex: 22
-[Stable]
 struct TelemetryInfo {
   // Information about the device's main battery. Only present when kBattery was
   // included in the categories input to ProbeTelemetryInfo.
@@ -2021,7 +2028,7 @@ struct TelemetryInfo {
   // when kBluetooth was included in the categories input to ProbeTelemetryInfo.
   BluetoothResult? bluetooth_result@8;
   // Information about the system. DEPRECATED.
-  DEPRECATE_SystemResult? deprecate_system_result@9;
+  DEPRECATED_SystemResult? deprecated_system_result@9;
   // Information about the networking devices and associated networks of the
   // system. Only present when kNetwork was included in the categories input to
   // ProbeTelemetryInfo.

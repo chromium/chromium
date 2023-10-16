@@ -15446,6 +15446,91 @@ Called by update_protocol_commands_enum.py.-->
   <int value="2140268492" label="CSS.startRuleUsageTracking"/>
 </enum>
 
+<enum name="CellularCarrierLockConfigurationResult">
+  <int value="0" label="ModemLocked"/>
+  <int value="1" label="ModemNotLocked"/>
+  <int value="2" label="ModemUnlocked"/>
+  <int value="3" label="ModemRelocked"/>
+</enum>
+
+<enum name="CellularCarrierLockError">
+  <int value="1" label="Invalid signature in configuration"/>
+  <int value="2" label="Invalid IMEI in configuration"/>
+  <int value="3" label="Invalid timestamp in configuration"/>
+  <int value="4" label="Configuration network list too large"/>
+  <int value="5" label="Configuration algorithm not supported"/>
+  <int value="6" label="Configuration feature not supported"/>
+  <int value="7" label="Configuration decode or parsing error"/>
+  <int value="8" label="Modem handler not initialized"/>
+  <int value="9" label="Modem operation not supported"/>
+  <int value="10" label="Modem internal error"/>
+  <int value="11" label="Network handler not initialized"/>
+  <int value="12" label="Modem 3gpp handler not initialized"/>
+  <int value="13" label="Auxiliary classes not initialized"/>
+  <int value="14" label="Modem not found or invalid"/>
+  <int value="15" label="Failed to get serial number"/>
+  <int value="16" label="Handler busy"/>
+  <int value="17" label="Request failed"/>
+  <int value="18" label="Initialization failed"/>
+  <int value="19" label="Connection interrupted"/>
+  <int value="20" label="Invalid input parameters"/>
+  <int value="21" label="Server internal error"/>
+  <int value="22" label="Response invalid"/>
+  <int value="23" label="Failed to create PSM client"/>
+  <int value="24" label="Failed to create OPRF request"/>
+  <int value="25" label="Invalid reply to OPRF request"/>
+  <int value="26" label="Failed to create Query request"/>
+  <int value="27" label="Invalid reply to Query request"/>
+  <int value="28" label="Lock configuration not found"/>
+  <int value="29" label="Lock configuration invalid"/>
+  <int value="30" label="Locked configuration without topic"/>
+  <int value="31" label="Signed configuration not provided"/>
+</enum>
+
+<enum name="CellularCarrierLockFcmNotification">
+  <int value="0" label="UpdateProfile"/>
+  <int value="1" label="UnlockDevice"/>
+</enum>
+
+<enum name="CellularCarrierLockFcmResult">
+  <int value="0" label="Registered"/>
+  <int value="1" label="Subscribed"/>
+</enum>
+
+<enum name="CellularCarrierLockInitialState">
+  <int value="0" label="FirstConfiguration"/>
+  <int value="1" label="ObsoleteConfiguration"/>
+  <int value="2" label="ModemImeiChanged"/>
+  <int value="3" label="AlreadyConfigured"/>
+  <int value="4" label="EmptySignedConfig"/>
+</enum>
+
+<enum name="CellularCarrierLockLockState">
+  <int value="0" label="NotConfigured"/>
+  <int value="1" label="CompatibleSim"/>
+  <int value="2" label="IncompatibleSim"/>
+  <int value="3" label="ProperlyUnlocked"/>
+  <int value="4" label="IncorrectlyLocked"/>
+</enum>
+
+<enum name="CellularCarrierLockOobeResult">
+  <int value="0" label="DevModeCarrierLocked"/>
+  <int value="1" label="DevModeLocked"/>
+  <int value="2" label="DevModeUnlocked"/>
+</enum>
+
+<enum name="CellularCarrierLockProvisioningResult">
+  <int value="0" label="ConfigLocked"/>
+  <int value="1" label="ConfigUnlocked"/>
+  <int value="2" label="ConfigTempUnlocked"/>
+  <int value="3" label="ConfigInvalid"/>
+</enum>
+
+<enum name="CellularCarrierLockPsmResult">
+  <int value="0" label="DeviceUnlocked"/>
+  <int value="1" label="DeviceLocked"/>
+</enum>
+
 <enum name="CellularConfigurationFailureType">
   <int value="0" label="Failed to get shill properties"/>
   <int value="1" label="Fetched shill properties with no type"/>
@@ -27612,6 +27697,7 @@ Called by update_debug_scenarios.py.-->
   <int value="78" label="deleteOverridesTemporarilyEnable"/>
   <int value="79" label="networkPanelFilterBarRedesign"/>
   <int value="80" label="breadcrumbsPerformancePanel"/>
+  <int value="81" label="trackContextMenu"/>
 </enum>
 
 <enum name="DevToolsGridOverlayOpenedFrom">
@@ -53323,6 +53409,34 @@ Called by update_gpu_driver_bug_workaround_entries.py.-->
   <int value="8" label="kEndorsementFailure"/>
 </enum>
 
+<enum name="HwsecPinWeaverLogReplayResultEnum">
+  <int value="0" label="kSuccess">Succeeded.</int>
+  <int value="1" label="kInvalidLogEntry">
+    Invalid log entry from PinWeaver server (GSC).
+  </int>
+  <int value="2" label="kOperationFailed">
+    Failure to replay pinweaver log entries.
+  </int>
+  <int value="3" label="kRemoveInsertedCredentialsError">
+    Failed to remove re-inserted labels.
+  </int>
+</enum>
+
+<enum name="HwsecPinWeaverSyncOutcomeEnum">
+  <int value="0" label="kStateNotReady">
+    Attempted to sync hash tree but state isn't ready.
+  </int>
+  <int value="1" label="kSuccessAfterLocalReconstruct">
+    Succeeded without needing to perform log replay.
+  </int>
+  <int value="2" label="kGetLogFailed">
+    Failed to get log from PinWeaver server(GSC).
+  </int>
+  <int value="3" label="kLogReplay">
+    Performing log replay: check the ReplayLogResult histogram.
+  </int>
+</enum>
+
 <enum name="HwsecRetryActionEnum">
   <int value="0" label="kNone">Succeeded.</int>
   <int value="1" label="kCommunication">Communication failure.</int>
@@ -63163,6 +63277,7 @@ from previous Chrome versions.
       label="DesktopPWAsAdditionalWindowingControls:enabled"/>
   <int value="-981354827" label="SupportSearchSuggestionForPrerender2:enabled"/>
   <int value="-981237342" label="SyncUSSAutofillWalletMetadata:disabled"/>
+  <int value="-981090414" label="CrOSLegacyMediaFormats:enabled"/>
   <int value="-981033001" label="TabScrollingButtonPosition:enabled"/>
   <int value="-980889204" label="SharingRenameDevices:enabled"/>
   <int value="-980475527" label="DevToolsTabTarget:disabled"/>
@@ -68548,6 +68663,7 @@ from previous Chrome versions.
   <int value="1665349789" label="spurious-power-button-window"/>
   <int value="1665400247" label="OsSettingsDeepLinking:enabled"/>
   <int value="1665430464" label="force-control-face-ae"/>
+  <int value="1666226008" label="CrOSLegacyMediaFormats:disabled"/>
   <int value="1666933104" label="TabStripStartupRefactoring:enabled"/>
   <int value="1667533501" label="SameAppWindowCycle:disabled"/>
   <int value="1667584730" label="WebXR:disabled"/>

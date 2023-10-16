@@ -569,6 +569,9 @@
 // Removes the object for the provided `key` in NSUserDefaults.
 + (void)removeUserDefaultObjectForKey:(NSString*)key;
 
+// Returns the value for provided key from NSUserDefaults.
++ (id)userDefaultObjectForKey:(NSString*)key;
+
 #pragma mark - Pref Utilities (EG2)
 
 // Gets the value of a local state pref. Returns a

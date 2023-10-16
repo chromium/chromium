@@ -1,5 +1,5 @@
 CONSOLE WARNING: <link rel=preload> has an invalid `href` value
 This is a testharness.js-based test.
-PASS Makes sure that dynamically removed preloaded resource stop downloading
+[PASS] Makes sure that dynamically removed preloaded resource stop downloading
 Harness: the test ran to completion.
 

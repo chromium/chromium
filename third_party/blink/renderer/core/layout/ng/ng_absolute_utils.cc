@@ -22,25 +22,25 @@ namespace {
 enum AxisEdge { kStart, kCenter, kEnd };
 
 inline AxisEdge GetStaticPositionEdge(
-    NGLogicalStaticPosition::InlineEdge inline_edge) {
+    LogicalStaticPosition::InlineEdge inline_edge) {
   switch (inline_edge) {
-    case NGLogicalStaticPosition::InlineEdge::kInlineStart:
+    case LogicalStaticPosition::InlineEdge::kInlineStart:
       return kStart;
-    case NGLogicalStaticPosition::InlineEdge::kInlineCenter:
+    case LogicalStaticPosition::InlineEdge::kInlineCenter:
       return kCenter;
-    case NGLogicalStaticPosition::InlineEdge::kInlineEnd:
+    case LogicalStaticPosition::InlineEdge::kInlineEnd:
       return kEnd;
   }
 }
 
 inline AxisEdge GetStaticPositionEdge(
-    NGLogicalStaticPosition::BlockEdge block_edge) {
+    LogicalStaticPosition::BlockEdge block_edge) {
   switch (block_edge) {
-    case NGLogicalStaticPosition::BlockEdge::kBlockStart:
+    case LogicalStaticPosition::BlockEdge::kBlockStart:
       return kStart;
-    case NGLogicalStaticPosition::BlockEdge::kBlockCenter:
+    case LogicalStaticPosition::BlockEdge::kBlockCenter:
       return kCenter;
-    case NGLogicalStaticPosition::BlockEdge::kBlockEnd:
+    case LogicalStaticPosition::BlockEdge::kBlockEnd:
       return kEnd;
   }
 }
@@ -308,7 +308,7 @@ LogicalRect ComputeOutOfFlowAvailableRect(
     const NGBlockNode& node,
     const NGConstraintSpace& space,
     const NGLogicalOutOfFlowInsets& insets,
-    const NGLogicalStaticPosition& static_position) {
+    const LogicalStaticPosition& static_position) {
   return ComputeOutOfFlowAvailableRect(node, space.AvailableSize(), insets,
                                        static_position);
 }
@@ -317,7 +317,7 @@ LogicalRect ComputeOutOfFlowAvailableRect(
     const NGBlockNode& node,
     const LogicalSize& available_size,
     const NGLogicalOutOfFlowInsets& insets,
-    const NGLogicalStaticPosition& static_position) {
+    const LogicalStaticPosition& static_position) {
   LayoutUnit inline_offset, inline_size;
   std::tie(inline_offset, inline_size) = ComputeAvailableSpaceInOneAxis(
       available_size.inline_size, insets.inline_start, insets.inline_end,
@@ -337,7 +337,7 @@ bool ComputeOutOfFlowInlineDimensions(
     const NGConstraintSpace& space,
     const NGLogicalOutOfFlowInsets& insets,
     const BoxStrut& border_padding,
-    const NGLogicalStaticPosition& static_position,
+    const LogicalStaticPosition& static_position,
     LogicalSize computed_available_size,
     const absl::optional<LogicalSize>& replaced_size,
     const WritingDirectionMode container_writing_direction,
@@ -463,7 +463,7 @@ const NGLayoutResult* ComputeOutOfFlowBlockDimensions(
     const NGConstraintSpace& space,
     const NGLogicalOutOfFlowInsets& insets,
     const BoxStrut& border_padding,
-    const NGLogicalStaticPosition& static_position,
+    const LogicalStaticPosition& static_position,
     LogicalSize computed_available_size,
     const absl::optional<LogicalSize>& replaced_size,
     const WritingDirectionMode container_writing_direction,

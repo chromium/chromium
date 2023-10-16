@@ -53,22 +53,22 @@ PhysicalRect BoxModelObjectPainter::AdjustRectForScrolledContent(
   PhysicalRect scrolled_paint_rect = rect;
   scrolled_paint_rect.offset -=
       PhysicalOffset(this_box.PixelSnappedScrolledContentOffset());
-  NGPhysicalBoxStrut border = AdjustedBorderOutsets(info);
+  PhysicalBoxStrut border = AdjustedBorderOutsets(info);
   scrolled_paint_rect.SetWidth(border.HorizontalSum() + this_box.ScrollWidth());
   scrolled_paint_rect.SetHeight(this_box.BorderTop() + this_box.ScrollHeight() +
                                 this_box.BorderBottom());
   return scrolled_paint_rect;
 }
 
-NGPhysicalBoxStrut BoxModelObjectPainter::ComputeBorders() const {
+PhysicalBoxStrut BoxModelObjectPainter::ComputeBorders() const {
   return box_model_.BorderOutsets();
 }
 
-NGPhysicalBoxStrut BoxModelObjectPainter::ComputePadding() const {
+PhysicalBoxStrut BoxModelObjectPainter::ComputePadding() const {
   return box_model_.PaddingOutsets();
 }
 
-NGPhysicalBoxStrut BoxModelObjectPainter::ComputeMargins() const {
+PhysicalBoxStrut BoxModelObjectPainter::ComputeMargins() const {
   return box_model_.MarginOutsets();
 }
 

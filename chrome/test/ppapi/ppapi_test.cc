@@ -116,12 +116,12 @@ void PPAPITestBase::InfoBarObserver::OnManagerShuttingDown(
 
 void PPAPITestBase::InfoBarObserver::VerifyInfoBarState() {
   infobars::ContentInfoBarManager* infobar_manager = GetInfoBarManager();
-  EXPECT_EQ(expecting_infobar_ ? 1U : 0U, infobar_manager->infobar_count());
+  EXPECT_EQ(expecting_infobar_ ? 1U : 0U, infobar_manager->infobars().size());
   if (!expecting_infobar_)
     return;
   expecting_infobar_ = false;
 
-  infobars::InfoBar* infobar = infobar_manager->infobar_at(0);
+  infobars::InfoBar* infobar = infobar_manager->infobars()[0];
   ConfirmInfoBarDelegate* delegate =
       infobar->delegate()->AsConfirmInfoBarDelegate();
   ASSERT_TRUE(delegate != nullptr);

@@ -14,10 +14,10 @@ export class FileMetadataFormatter extends EventTarget {
   constructor() {
     super();
 
-    /** @private {?Intl.DateTimeFormat} */
+    /** @private @type {?Intl.DateTimeFormat} */
     this.timeFormatter_;
 
-    /** @private {?Intl.DateTimeFormat} */
+    /** @private @type {?Intl.DateTimeFormat} */
     this.dateFormatter_;
   }
 

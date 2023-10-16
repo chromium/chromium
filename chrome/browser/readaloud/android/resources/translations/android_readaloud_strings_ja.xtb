@@ -1,1 +1,17 @@
-<?xml version="1.0" ?><!DOCTYPE translationbundle><translationbundle lang="ja"></translationbundle>
+<?xml version="1.0" ?>
+<!DOCTYPE translationbundle>
+<translationbundle lang="ja">
+<translation id="1178581264944972037">一時停止</translation>
+<translation id="3523426587027570423">タップすると「このページを読み上げ」を閉じます。</translation>
+<translation id="4654641641922242357">「このページを読み上げ」プレーヤー。</translation>
+<translation id="4731877163452936634">再生速度: <ph name="PLAYBACK_SPEED" />。クリックすると変更できます。</translation>
+<translation id="5234971936051226002">「このページを読み上げ」プレーヤーが最小化されました。</translation>
+<translation id="5596627076506792578">その他のオプション</translation>
+<translation id="6790428901817661496">再生</translation>
+<translation id="6846298663435243399">読み込んでいます…</translation>
+<translation id="7587250070160020374">Chrome で再生中</translation>
+<translation id="7945822420239537236"><ph name="NUMBER_OF_SECONDS" /> 秒早送り</translation>
+<translation id="7972866381678406344"><ph name="NUMBER_OF_SECONDS" /> 秒巻き戻し</translation>
+<translation id="8136852699834914183">このページは再生できません。</translation>
+<translation id="8953618380150219653">「このページを読み上げ」プレーヤーが画面全体に表示されています。</translation>
+</translationbundle>

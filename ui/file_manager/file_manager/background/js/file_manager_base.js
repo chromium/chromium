@@ -69,7 +69,7 @@ export class FileManagerBase {
 
     /**
      * Event handler for progress center.
-     * @private {FileOperationHandler}
+     * @private @type {FileOperationHandler}
      */
     this.fileOperationHandler_ = null;
 
@@ -348,7 +348,10 @@ export class FileManagerBase {
   }
 }
 
-/** @private {number} Total number of retries for the resolve entries below.*/
+/**
+ * @private @type {number} Total number of retries for the resolve entries
+ *     below.
+ */
 const MAX_RETRIES = 6;
 
 /**

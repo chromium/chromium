@@ -17,7 +17,7 @@ class NGBlockBreakToken;
 class NGColumnSpannerPath;
 class NGConstraintSpace;
 struct LogicalSize;
-struct NGMarginStrut;
+struct MarginStrut;
 
 class CORE_EXPORT NGColumnLayoutAlgorithm
     : public NGLayoutAlgorithm<NGBlockNode,
@@ -47,7 +47,7 @@ class CORE_EXPORT NGColumnLayoutAlgorithm
   // row, nullptr is returned.
   const NGLayoutResult* LayoutRow(const NGBlockBreakToken* next_column_token,
                                   LayoutUnit miminum_column_block_size,
-                                  NGMarginStrut*);
+                                  MarginStrut*);
 
   // Lay out a column spanner. The return value will tell whether to break
   // before the spanner or not. If |NGBreakStatus::kContinue| is returned, and
@@ -55,7 +55,7 @@ class CORE_EXPORT NGColumnLayoutAlgorithm
   // columns.
   NGBreakStatus LayoutSpanner(NGBlockNode spanner_node,
                               const NGBlockBreakToken* break_token,
-                              NGMarginStrut*);
+                              MarginStrut*);
 
   // Attempt to position the list-item marker (if any) beside the child
   // fragment. This requires the fragment to have a baseline. If it doesn't,

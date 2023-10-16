@@ -4,6 +4,7 @@
 
 #import "ios/chrome/browser/ui/tab_switcher/web_state_tab_switcher_item.h"
 
+#import "base/apple/foundation_util.h"
 #import "base/memory/weak_ptr.h"
 #import "components/favicon/ios/web_favicon_driver.h"
 #import "ios/chrome/browser/shared/model/browser_state/chrome_browser_state.h"
@@ -138,6 +139,24 @@ const CGFloat kSymbolSize = 16;
 
 - (void)lowMemoryWarningReceived:(NSNotification*)notification {
   [self clearPrefetchedSnapshot];
+}
+
+#pragma mark - NSObject
+
+- (BOOL)isEqual:(id)object {
+  if (self == object) {
+    return YES;
+  }
+  if (![object isKindOfClass:[WebStateTabSwitcherItem class]]) {
+    return NO;
+  }
+  WebStateTabSwitcherItem* otherTabStrip =
+      base::apple::ObjCCastStrict<WebStateTabSwitcherItem>(object);
+  return self.identifier == otherTabStrip.identifier;
+}
+
+- (NSUInteger)hash {
+  return static_cast<NSUInteger>(self.identifier.identifier());
 }
 
 @end

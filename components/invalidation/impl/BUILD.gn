@@ -47,8 +47,6 @@ static_library("impl") {
     "profile_invalidation_provider.h",
     "status.cc",
     "status.h",
-    "unacked_invalidation_set.cc",
-    "unacked_invalidation_set.h",
   ]
 
   public_deps = [
@@ -107,7 +105,6 @@ source_set("unit_tests") {
     sources += [
       "single_topic_invalidation_set_unittest.cc",
       "topic_invalidation_map_unittest.cc",
-      "unacked_invalidation_set_unittest.cc",
     ]
   }
 }

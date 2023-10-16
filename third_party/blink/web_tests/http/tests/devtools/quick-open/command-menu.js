@@ -3,15 +3,16 @@
 // found in the LICENSE file.
 
 import {TestRunner} from 'test_runner';
+
+import * as QuickOpen from 'devtools/ui/legacy/components/quick_open/quick_open.js';
 import * as UI from 'devtools/ui/legacy/legacy.js';
 
 (async function() {
   TestRunner.addResult(`Test that the command menu is properly filled.\n`);
-  await TestRunner.loadLegacyModule('quick_open');
 
   var categories = new Set();
   var commands = new Map();
-  QuickOpen.CommandMenu.instance().commands().forEach(command => {
+  QuickOpen.CommandMenu.CommandMenu.instance().commands().forEach(command => {
     categories.add(command.category);
     commands.set(command.category + ': ' + command.title, command);
   });

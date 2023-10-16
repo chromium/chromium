@@ -13,6 +13,7 @@
 #include "components/metrics/structured/structured_metrics_scheduler.h"
 #include "components/metrics/unsent_log_store.h"
 
+#if BUILDFLAG(IS_CHROMEOS_ASH) || BUILDFLAG(IS_CHROMEOS_LACROS)
 FORWARD_DECLARE_TEST(StructuredMetricsServiceTest, RotateLogs);
 
 class PrefRegistrySimple;
@@ -24,6 +25,7 @@ class TestStructuredMetricsServiceDisabled;
 FORWARD_DECLARE_TEST(TestStructuredMetricsServiceDisabled,
                      ValidStateWhenDisabled);
 }  // namespace metrics
+#endif
 
 namespace metrics::structured {
 
@@ -65,6 +67,7 @@ class StructuredMetricsService final {
   static void RegisterPrefs(PrefRegistrySimple* registry);
 
  private:
+#if BUILDFLAG(IS_CHROMEOS_ASH) || BUILDFLAG(IS_CHROMEOS_LACROS)
   friend class StructuredMetricsServiceTest;
   friend class StructuredMetricsMixin;
   friend class metrics::StructuredMetricsServiceTestBase;
@@ -72,6 +75,7 @@ class StructuredMetricsService final {
   FRIEND_TEST_ALL_PREFIXES(StructuredMetricsServiceTest, RotateLogs);
   FRIEND_TEST_ALL_PREFIXES(metrics::TestStructuredMetricsServiceDisabled,
                            ValidStateWhenDisabled);
+#endif
 
   StructuredMetricsService(MetricsServiceClient* client,
                            PrefService* local_state,

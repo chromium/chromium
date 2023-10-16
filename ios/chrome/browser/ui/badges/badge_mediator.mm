@@ -461,12 +461,12 @@ const char kInfobarOverflowBadgeShownUserAction[] =
 // Returns the infobar in the active WebState's InfoBarManager with `type`.
 - (InfoBarIOS*)infobarWithType:(InfobarType)type {
   InfoBarManagerImpl* manager = InfoBarManagerImpl::FromWebState(self.webState);
-  for (size_t index = 0; index < manager->infobar_count(); ++index) {
-    InfoBarIOS* infobar = static_cast<InfoBarIOS*>(manager->infobar_at(index));
-    if (infobar->infobar_type() == type)
-      return infobar;
-  }
-  return nullptr;
+  const auto it =
+      base::ranges::find(manager->infobars(), type, [](const auto* infobar) {
+        return static_cast<const InfoBarIOS*>(infobar)->infobar_type();
+      });
+  return it != manager->infobars().cend() ? static_cast<InfoBarIOS*>(*it)
+                                          : nullptr;
 }
 
 // Records Badge tap Histograms through the InfobarMetricsRecorder and then

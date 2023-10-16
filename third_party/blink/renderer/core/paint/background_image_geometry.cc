@@ -402,8 +402,8 @@ void BackgroundImageGeometry::ComputeDestRectAdjustments(
     const FillLayer& fill_layer,
     const PhysicalRect& unsnapped_positioning_area,
     bool disallow_border_derived_adjustment,
-    NGPhysicalBoxStrut& unsnapped_dest_adjust,
-    NGPhysicalBoxStrut& snapped_dest_adjust) const {
+    PhysicalBoxStrut& unsnapped_dest_adjust,
+    PhysicalBoxStrut& snapped_dest_adjust) const {
   switch (fill_layer.Clip()) {
     case EFillBox::kNoClip: {
       PhysicalRect border_box;
@@ -417,10 +417,10 @@ void BackgroundImageGeometry::ComputeDestRectAdjustments(
           positioning_box_->Layer()
               ->LocalBoundingBoxIncludingSelfPaintingDescendants();
       unsnapped_dest_adjust =
-          NGPhysicalBoxStrut(visual_overflow.Y() - border_box.Y(),
-                             border_box.Right() - visual_overflow.Right(),
-                             border_box.Bottom() - visual_overflow.Bottom(),
-                             visual_overflow.X() - border_box.X());
+          PhysicalBoxStrut(visual_overflow.Y() - border_box.Y(),
+                           border_box.Right() - visual_overflow.Right(),
+                           border_box.Bottom() - visual_overflow.Bottom(),
+                           visual_overflow.X() - border_box.X());
       snapped_dest_adjust = unsnapped_dest_adjust;
       return;
     }
@@ -494,7 +494,7 @@ void BackgroundImageGeometry::ComputeDestRectAdjustments(
           RoundedBorderGeometry::PixelSnappedRoundedInnerBorder(
               positioning_box_->StyleRef(), unsnapped_positioning_area)
               .Rect();
-      NGPhysicalBoxStrut box_outsets = positioning_box_->BorderOutsets();
+      PhysicalBoxStrut box_outsets = positioning_box_->BorderOutsets();
       if (edges[static_cast<unsigned>(BoxSide::kTop)].ObscuresBackground()) {
         snapped_dest_adjust.top =
             LayoutUnit(inner_border_rect.y()) - unsnapped_dest_rect_.Y();
@@ -526,8 +526,8 @@ void BackgroundImageGeometry::ComputePositioningAreaAdjustments(
     const FillLayer& fill_layer,
     const PhysicalRect& unsnapped_positioning_area,
     bool disallow_border_derived_adjustment,
-    NGPhysicalBoxStrut& unsnapped_box_outset,
-    NGPhysicalBoxStrut& snapped_box_outset) const {
+    PhysicalBoxStrut& unsnapped_box_outset,
+    PhysicalBoxStrut& snapped_box_outset) const {
   switch (fill_layer.Origin()) {
     case EFillBox::kFillBox:
     case EFillBox::kStrokeBox:
@@ -574,7 +574,7 @@ void BackgroundImageGeometry::ComputePositioningAreaAdjustments(
       return;
     case EFillBox::kBorder:
       // All adjustments remain 0.
-      snapped_box_outset = unsnapped_box_outset = NGPhysicalBoxStrut();
+      snapped_box_outset = unsnapped_box_outset = PhysicalBoxStrut();
       return;
     case EFillBox::kNoClip:
     case EFillBox::kText:
@@ -637,13 +637,13 @@ void BackgroundImageGeometry::ComputePositioningArea(
 
     // Compute all the outsets we need to apply to the rectangles. These
     // outsets also include the snapping behavior.
-    NGPhysicalBoxStrut unsnapped_dest_adjust;
-    NGPhysicalBoxStrut snapped_dest_adjust;
+    PhysicalBoxStrut unsnapped_dest_adjust;
+    PhysicalBoxStrut snapped_dest_adjust;
     ComputeDestRectAdjustments(fill_layer, unsnapped_positioning_area,
                                disallow_border_derived_adjustment,
                                unsnapped_dest_adjust, snapped_dest_adjust);
-    NGPhysicalBoxStrut unsnapped_box_outset;
-    NGPhysicalBoxStrut snapped_box_outset;
+    PhysicalBoxStrut unsnapped_box_outset;
+    PhysicalBoxStrut snapped_box_outset;
     ComputePositioningAreaAdjustments(fill_layer, unsnapped_positioning_area,
                                       disallow_border_derived_adjustment,
                                       unsnapped_box_outset, snapped_box_outset);

@@ -659,7 +659,7 @@ PhysicalRect PaintLayerScrollableArea::LayoutContentRect(
   PhysicalSize layer_size = Size();
   LayoutUnit border_width = GetLayoutBox()->BorderWidth();
   LayoutUnit border_height = GetLayoutBox()->BorderHeight();
-  NGPhysicalBoxStrut scrollbars;
+  PhysicalBoxStrut scrollbars;
   if (scrollbar_inclusion == kExcludeScrollbars)
     scrollbars = GetLayoutBox()->ComputeScrollbars();
 
@@ -684,15 +684,14 @@ PhysicalRect PaintLayerScrollableArea::VisibleScrollSnapportRect(
   const ComputedStyle* style = GetLayoutBox()->Style();
   PhysicalRect layout_content_rect(LayoutContentRect(scrollbar_inclusion));
   layout_content_rect.Move(PhysicalOffset(-ScrollOrigin().OffsetFromOrigin()));
-  NGPhysicalBoxStrut padding(
-      MinimumValueForLength(style->ScrollPaddingTop(),
-                            layout_content_rect.Height()),
-      MinimumValueForLength(style->ScrollPaddingRight(),
-                            layout_content_rect.Width()),
-      MinimumValueForLength(style->ScrollPaddingBottom(),
-                            layout_content_rect.Height()),
-      MinimumValueForLength(style->ScrollPaddingLeft(),
-                            layout_content_rect.Width()));
+  PhysicalBoxStrut padding(MinimumValueForLength(style->ScrollPaddingTop(),
+                                                 layout_content_rect.Height()),
+                           MinimumValueForLength(style->ScrollPaddingRight(),
+                                                 layout_content_rect.Width()),
+                           MinimumValueForLength(style->ScrollPaddingBottom(),
+                                                 layout_content_rect.Height()),
+                           MinimumValueForLength(style->ScrollPaddingLeft(),
+                                                 layout_content_rect.Width()));
   layout_content_rect.Contract(padding);
   return layout_content_rect;
 }

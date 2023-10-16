@@ -2107,6 +2107,7 @@ Jei nenorite, dabar atsijunkite, kad šios paskyros pakeitimai būtų matomi ši
 <translation id="2609980095400624569">Nepavyko užmegzti ryšio</translation>
 <translation id="2610157865375787051">Miego būsena</translation>
 <translation id="2610260699262139870">T&amp;ikrasis dydis</translation>
+<translation id="2610374175948698697">Gali peržiūrėti failus ar aplankus jūsų įrenginyje</translation>
 <translation id="2610780100389066815">„Microsoft“ patikimo sąrašo pasirašymas</translation>
 <translation id="261114180663074524">Prisijunkite prie „Microsoft“ paskyros ir bandykite dar kartą</translation>
 <translation id="2611776654555141051">Stačiakampio įrankis</translation>
@@ -2154,6 +2155,7 @@ Jei nenorite, dabar atsijunkite, kad šios paskyros pakeitimai būtų matomi ši
 <translation id="264897126871533291">Protanomalija</translation>
 <translation id="2649045351178520408">„Base64“ užkoduotas ASCII, sertifikato grandinė</translation>
 <translation id="265156376773362237">Įprastas išankstinis įkėlimas</translation>
+<translation id="2652071759203138150">{COUNT,plural, =1{{COUNT} slaptažodis išsaugotas tik šiame įrenginyje. Jei norite jį naudoti kituose įrenginiuose, <ph name="BEGIN_LINK" />išsaugokite „Google“ paskyroje<ph name="END_LINK" />.}one{{COUNT} slaptažodis išsaugotas tik šiame įrenginyje. Jei norite juos naudoti kituose įrenginiuose, <ph name="BEGIN_LINK" />išsaugokite „Google“ paskyroje<ph name="END_LINK" />.}few{{COUNT} slaptažodžiai išsaugoti tik šiame įrenginyje. Jei norite juos naudoti kituose įrenginiuose, <ph name="BEGIN_LINK" />išsaugokite „Google“ paskyroje<ph name="END_LINK" />.}many{{COUNT} slaptažodžio išsaugota tik šiame įrenginyje. Jei norite juos naudoti kituose įrenginiuose, <ph name="BEGIN_LINK" />išsaugokite „Google“ paskyroje<ph name="END_LINK" />.}other{{COUNT} slaptažodžių išsaugota tik šiame įrenginyje. Jei norite juos naudoti kituose įrenginiuose, <ph name="BEGIN_LINK" />išsaugokite „Google“ paskyroje<ph name="END_LINK" />.}}</translation>
 <translation id="2652129567809778422">Pasirinkite slaptažodį</translation>
 <translation id="2653266418988778031">Jei ištrinsite sertifikavimo instituciją (angl. „Certification Authority“, CA), naršyklėje nebebus pasitikima jokiais tos CA išduotais sertifikatais.</translation>
 <translation id="2653275834716714682">Teksto pakeitimas</translation>
@@ -3232,6 +3234,7 @@ Jei nenorite, dabar atsijunkite, kad šios paskyros pakeitimai būtų matomi ši
 <translation id="3521405806571557477">Ištrinti išsaugotus „<ph name="SITE_NAME" />“ duomenis</translation>
 <translation id="3521606918211282604">Keisti disko dydį</translation>
 <translation id="3522088408596898827">Labai mažai vietos diske. Atlaisvinkite vietos diske ir bandykite dar kartą.</translation>
+<translation id="3522979239100719575">Ieškoma pasiekiamų profilių. Tai gali užtrukti kelias minutes.</translation>
 <translation id="3524518036046613664">Surasti vietinio tinklo įrenginius, pvz., spausdintuvus</translation>
 <translation id="3524965460886318643">Eksportuoti veiklos duomenis</translation>
 <translation id="3525426269008462093">Peržiūrėti įrenginio sinchronizavimą po sąrankos</translation>
@@ -4044,6 +4047,7 @@ Tai gali būti informacija apie įdiegtą programinę įrangą, failus, naršykl
 <translation id="4150201353443180367">Pateiktis</translation>
 <translation id="4150569944729499860">Ekrano kontekstas</translation>
 <translation id="4151449637210235443">Papasakokite apie naujausią žaidimo eigą</translation>
+<translation id="4151503145138736576">Nėra neprisijungus pasiekiamos saugyklos, kurią būtų galima išvalyti</translation>
 <translation id="4152011295694446843">Čia rasite žymes</translation>
 <translation id="4152670763139331043">{NUM_TABS,plural, =1{1 skirtukas}one{# skirtukas}few{# skirtukai}many{# skirtuko}other{# skirtukų}}</translation>
 <translation id="4154664944169082762">Pirštų atspaudai</translation>
@@ -4254,6 +4258,7 @@ Tai gali būti informacija apie įdiegtą programinę įrangą, failus, naršykl
 <translation id="4341577178275615435">Jei norite įjungti arba išjungti „Caret Browsing“, naudokite spartųjį klavišą F7</translation>
 <translation id="4341905082470253054">Tikrinama TPM būsena...</translation>
 <translation id="434198521554309404">Spartu. Saugu. Paprasta.</translation>
+<translation id="4342417854108207000">Leidžiama įrenginyje redaguoti failus ar aplankus</translation>
 <translation id="4343250402091037179">Jei norite ieškoti konkrečioje svetainėje ar „Chrome“ dalyje, įveskite šaukinį adreso juostoje ir paspauskite norimą spartųjį klavišą.</translation>
 <translation id="434404122609091467">Su dabartiniu paslaugos teikėju</translation>
 <translation id="4345457680916430965">Atidaryti naudojant <ph name="APP" /></translation>
@@ -5288,6 +5293,7 @@ Jei norite nutolinti, naudokite „Ctrl“ + „Alt“ + šviesumo mažinimo kla
 <translation id="5197255632782567636">Internetas</translation>
 <translation id="5198430103906431024">Siųskite naudojimo ir diagnostikos duomenis. Šiuo metu šis įrenginys automatiškai siunčia „Google“ diagnostikos, įrenginio ir programų naudojimo duomenis. Tai padės pagerinti sistemos bei programos stabilumą ir teikti kitus patobulinimus. Kai kurie sukaupti duomenys taip pat bus naudingi „Google“ programoms ir partneriams, pvz., „Android“ kūrėjams. Jei papildomas Žiniatinklio ir programų veiklos nustatymas įjungtas, šie duomenys gali būti išsaugoti „Google“ paskyroje.</translation>
 <translation id="5199729219167945352">Bandymai</translation>
+<translation id="5203035663139409780">Gali redaguoti failus ar aplankus jūsų įrenginyje</translation>
 <translation id="5203920255089865054">{NUM_EXTENSIONS,plural, =1{Spustelėkite ir peržiūrėkite plėtinį}one{Spustelėkite ir peržiūrėkite plėtinius}few{Spustelėkite ir peržiūrėkite plėtinius}many{Spustelėkite ir peržiūrėkite plėtinius}other{Spustelėkite ir peržiūrėkite plėtinius}}</translation>
 <translation id="5204249655833504508">Grafinis planšetinis kompiuteris</translation>
 <translation id="5204673965307125349">Vykdykite „Powerwash“ ir bandykite dar kartą.</translation>
@@ -7829,6 +7835,7 @@ Turite dar # pažeistų slaptažodžių. „Google“ slaptažodžių tvarkyklė
 <translation id="7283555985781738399">Svečio režimas</translation>
 <translation id="7284307451964417957">{DAYS,plural, =1{Šis įrenginys bus saugomas 1 dieną, ir kitą kartą galėsite prisijungti be kodo. Tai nustatė jūsų administratorius.}one{Šis įrenginys bus saugomas {DAYS} dieną, ir kitą kartą galėsite prisijungti be kodo. Tai nustatė jūsų administratorius.}few{Šis įrenginys bus saugomas {DAYS} dienas, ir kitą kartą galėsite prisijungti be kodo. Tai nustatė jūsų administratorius.}many{Šis įrenginys bus saugomas {DAYS} dienos, ir kitą kartą galėsite prisijungti be kodo. Tai nustatė jūsų administratorius.}other{Šis įrenginys bus saugomas {DAYS} dienų, ir kitą kartą galėsite prisijungti be kodo. Tai nustatė jūsų administratorius.}}</translation>
 <translation id="7284411326658527427">Kiekvienas asmuo gali suasmeninti paskyrą ir privačiai saugoti duomenis.</translation>
+<translation id="7286867818472074330">Pasirinkti prieigos raktą</translation>
 <translation id="7287143125007575591">Prieiga atmesta.</translation>
 <translation id="7287411021188441799">Atkurti numatytąjį foną</translation>
 <translation id="7288676996127329262"><ph name="HORIZONTAL_DPI" /> x <ph name="VERTICAL_DPI" /> dpi</translation>

@@ -3,7 +3,11 @@
 // found in the LICENSE file.
 
 #include "services/webnn/webnn_graph_impl.h"
+
+#include <limits>
+
 #include "base/strings/string_number_conversions.h"
+#include "base/strings/stringprintf.h"
 #include "base/test/bind.h"
 #include "base/test/task_environment.h"
 #include "components/ml/webnn/graph_validation_utils.h"
@@ -284,6 +288,153 @@ TEST_F(WebNNGraphImplTest, ClampTest) {
                   .dimensions = {2}},
         .output = {.type = mojom::Operand::DataType::kInt32, .dimensions = {2}},
         .expected = false}
+        .Test();
+  }
+}
+
+struct ConcatTester {
+  std::vector<OperandInfo> inputs;
+  uint32_t axis;
+  OperandInfo output;
+  bool expected;
+
+  void Test() {
+    // Build the graph with mojo type.
+    GraphInfoBuilder builder;
+    std::vector<uint64_t> input_operand_ids;
+    input_operand_ids.reserve(inputs.size());
+    for (size_t i = 0; i < inputs.size(); ++i) {
+      input_operand_ids.push_back(
+          builder.BuildInput(base::StringPrintf("input%zu", i),
+                             inputs[i].dimensions, inputs[i].type));
+    }
+    uint64_t output_operand_id =
+        builder.BuildOutput("output", output.dimensions, output.type);
+    builder.BuildConcat(std::move(input_operand_ids), output_operand_id, axis);
+    EXPECT_EQ(WebNNGraphImpl::ValidateGraph(builder.GetGraphInfo()), expected);
+  }
+};
+
+TEST_F(WebNNGraphImplTest, ConcatTest) {
+  {
+    // Test concat operator with three inputs.
+    ConcatTester{.inputs = {{.type = mojom::Operand::DataType::kFloat32,
+                             .dimensions = {3, 1, 5, 6}},
+                            {.type = mojom::Operand::DataType::kFloat32,
+                             .dimensions = {3, 2, 5, 6}},
+                            {.type = mojom::Operand::DataType::kFloat32,
+                             .dimensions = {3, 3, 5, 6}}},
+                 .axis = 1,
+                 .output = {.type = mojom::Operand::DataType::kFloat32,
+                            .dimensions = {3, 6, 5, 6}},
+                 .expected = true}
+        .Test();
+  }
+  {
+    // Test concat operator when the input is the same as output.
+    ConcatTester{.inputs = {{.type = mojom::Operand::DataType::kFloat32,
+                             .dimensions = {3, 1, 5, 6}}},
+                 .axis = 1,
+                 .output = {.type = mojom::Operand::DataType::kFloat32,
+                            .dimensions = {3, 1, 5, 6}},
+                 .expected = true}
+        .Test();
+  }
+  {
+    // Test concat operator with empty inputs.
+    ConcatTester{
+        .inputs = {},
+        .axis = 0,
+        .output = {.type = mojom::Operand::DataType::kInt32, .dimensions = {1}},
+        .expected = false}
+        .Test();
+  }
+  {
+    // Test concat operator when the inputs' datatypes don't match each other.
+    ConcatTester{.inputs = {{.type = mojom::Operand::DataType::kFloat32,
+                             .dimensions = {3, 1, 5, 6}},
+                            {.type = mojom::Operand::DataType::kInt32,
+                             .dimensions = {3, 2, 5, 6}}},
+                 .axis = 1,
+                 .output = {.type = mojom::Operand::DataType::kFloat32,
+                            .dimensions = {3, 3, 5, 6}},
+                 .expected = false}
+        .Test();
+  }
+  {
+    // Test concat operator when the inputs can not be concatenated.
+    ConcatTester{.inputs = {{.type = mojom::Operand::DataType::kFloat32,
+                             .dimensions = {3, 1, 5}},
+                            {.type = mojom::Operand::DataType::kFloat32,
+                             .dimensions = {3, 2, 5, 6}}},
+                 .axis = 1,
+                 .output = {.type = mojom::Operand::DataType::kFloat32,
+                            .dimensions = {3, 3, 5}},
+                 .expected = false}
+        .Test();
+  }
+  {
+    // Test concat operator when the axis is equal to or greater than the
+    // size of dimension.
+    ConcatTester{.inputs = {{.type = mojom::Operand::DataType::kFloat32,
+                             .dimensions = {3, 1, 5, 6}},
+                            {.type = mojom::Operand::DataType::kFloat32,
+                             .dimensions = {3, 1, 5, 6}}},
+                 .axis = 4,
+                 .output = {.type = mojom::Operand::DataType::kFloat32,
+                            .dimensions = {3, 1, 5, 12}},
+                 .expected = false}
+        .Test();
+  }
+  {
+    // Test concat operator when the inputs have other axes with different
+    // sizes except on the axis.
+    ConcatTester{.inputs = {{.type = mojom::Operand::DataType::kFloat32,
+                             .dimensions = {3, 1, 5, 6}},
+                            {.type = mojom::Operand::DataType::kFloat32,
+                             .dimensions = {3, 1, 5, 1}}},
+                 .axis = 1,
+                 .output = {.type = mojom::Operand::DataType::kFloat32,
+                            .dimensions = {3, 2, 5, 7}},
+                 .expected = false}
+        .Test();
+  }
+  {
+    // Test concat operator when the concatenated dimension size overflows.
+    ConcatTester{
+        .inputs = {{.type = mojom::Operand::DataType::kFloat32,
+                    .dimensions = {std::numeric_limits<uint32_t>::max()}},
+                   {.type = mojom::Operand::DataType::kFloat32,
+                    .dimensions = {1}}},
+        .axis = 0,
+        .output = {.type = mojom::Operand::DataType::kFloat32,
+                   .dimensions = {0}},
+        .expected = false}
+        .Test();
+  }
+  {
+    // Test concat operator when the output datatype doesn't match the inputs'
+    // datatypes.
+    ConcatTester{.inputs = {{.type = mojom::Operand::DataType::kFloat32,
+                             .dimensions = {3, 1, 5, 6}},
+                            {.type = mojom::Operand::DataType::kFloat32,
+                             .dimensions = {3, 2, 5, 6}}},
+                 .axis = 1,
+                 .output = {.type = mojom::Operand::DataType::kInt32,
+                            .dimensions = {3, 3, 5, 6}},
+                 .expected = false}
+        .Test();
+  }
+  {
+    // Test concat operator when the output dimension is incorrect.
+    ConcatTester{.inputs = {{.type = mojom::Operand::DataType::kFloat32,
+                             .dimensions = {3, 1, 2}},
+                            {.type = mojom::Operand::DataType::kFloat32,
+                             .dimensions = {1, 1, 2}}},
+                 .axis = 0,
+                 .output = {.type = mojom::Operand::DataType::kFloat32,
+                            .dimensions = {5, 1, 2}},
+                 .expected = false}
         .Test();
   }
 }
@@ -975,6 +1126,56 @@ TEST_F(WebNNGraphImplTest, ReluTest) {
                   .dimensions = {2}},
         .output = {.type = mojom::Operand::DataType::kInt32, .dimensions = {2}},
         .expected = false}
+        .Test();
+  }
+}
+
+struct Resample2dTester {
+  OperandInfo input;
+  mojom::Resample2d::InterpolationMode mode =
+      mojom::Resample2d::InterpolationMode::kNearestNeighbor;
+  OperandInfo output;
+  bool expected;
+
+  void Test() {
+    // Build the graph with mojo type.
+    GraphInfoBuilder builder;
+    uint64_t input_operand_id =
+        builder.BuildInput("input", input.dimensions, input.type);
+    uint64_t output_operand_id =
+        builder.BuildOutput("output", output.dimensions, output.type);
+    builder.BuildResample2d(input_operand_id, output_operand_id, mode);
+    EXPECT_EQ(WebNNGraphImpl::ValidateGraph(builder.GetGraphInfo()), expected);
+  }
+};
+
+TEST_F(WebNNGraphImplTest, Resample2dTest) {
+  {
+    Resample2dTester{.input = {.type = mojom::Operand::DataType::kFloat32,
+                               .dimensions = {1, 1, 2, 4}},
+                     .output = {.type = mojom::Operand::DataType::kFloat32,
+                                .dimensions = {1, 1, 2, 4}},
+                     .expected = true}
+        .Test();
+  }
+  {
+    // Test resample2d with mode =
+    // "mojom::Resample2d::InterpolationMode::kLinear".
+    Resample2dTester{.input = {.type = mojom::Operand::DataType::kFloat32,
+                               .dimensions = {1, 1, 2, 4}},
+                     .mode = mojom::Resample2d::InterpolationMode::kLinear,
+                     .output = {.type = mojom::Operand::DataType::kFloat32,
+                                .dimensions = {1, 1, 4, 8}},
+                     .expected = true}
+        .Test();
+  }
+  {
+    // Test the invalid graph for output types don't match.
+    Resample2dTester{.input = {.type = mojom::Operand::DataType::kFloat32,
+                               .dimensions = {1, 1, 2, 4}},
+                     .output = {.type = mojom::Operand::DataType::kFloat16,
+                                .dimensions = {1, 1, 4, 8}},
+                     .expected = false}
         .Test();
   }
 }

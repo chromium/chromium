@@ -75,6 +75,7 @@ class EditorMediator
       absl::optional<std::string_view> preset_query_id = absl::nullopt,
       absl::optional<std::string_view> freeform_text = absl::nullopt) override;
   EditorMode GetEditorMode() const override;
+  void CacheContextCaretBounds() override;
 
   // TabletModeObserver:
   void OnTabletModeStarting() override;

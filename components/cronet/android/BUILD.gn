@@ -172,13 +172,15 @@ source_set("cronet_static") {
     "//components/cronet:cronet_common",
     "//components/cronet:cronet_version_header",
     "//components/cronet:metrics_util",
-    "//components/cronet/native:cronet_native_impl",
     "//components/prefs",
     "//net",
     "//third_party/zlib:zlib",
     "//url",
     "//url:buildflags",
   ]
+  if (!is_cronet_for_aosp_build) {
+    deps += [ "//components/cronet/native:cronet_native_impl" ]
+  }
   sources = [
     "//components/cronet/android/cronet_bidirectional_stream_adapter.cc",
     "//components/cronet/android/cronet_bidirectional_stream_adapter.h",
@@ -1395,13 +1397,16 @@ test("cronet_unittests_android") {
     "//base",
     "//base/test:test_support",
     "//components/cronet:cronet_common_unittests",
-    "//components/cronet/native:cronet_native_unittests",
     "//components/prefs:test_support",
     "//net",
     "//net:test_support",
     "//net/android:net_java",
     "//testing/gtest",
   ]
+
+  if (!is_cronet_for_aosp_build) {
+    deps += [ "//components/cronet/native:cronet_native_unittests" ]
+  }
 
   sources = [ "../run_all_unittests.cc" ]
 
@@ -1418,13 +1423,16 @@ test("cronet_tests_android") {
     ":cronet_static",
     "//base",
     "//base/test:test_support",
-    "//components/cronet/native/test:cronet_native_tests",
     "//components/prefs:test_support",
     "//net",
     "//net:test_support",
     "//net/android:net_java",
     "//testing/gtest",
   ]
+
+  if (!is_cronet_for_aosp_build) {
+    deps += [ "//components/cronet/native/test:cronet_native_tests" ]
+  }
 
   allow_cleartext_traffic = true
 

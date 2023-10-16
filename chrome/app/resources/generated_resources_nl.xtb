@@ -3216,6 +3216,7 @@ Zichtbaar voor apparaten in de buurt als <ph name="QUICK_START_DEVICE_DISPLAY_NA
 <translation id="3521405806571557477">Opgeslagen gegevens voor <ph name="SITE_NAME" /> verwijderen</translation>
 <translation id="3521606918211282604">Schijfgrootte wijzigen</translation>
 <translation id="3522088408596898827">Er is zeer weinig schijfruimte beschikbaar. Maak schijfruimte vrij en probeer het opnieuw.</translation>
+<translation id="3522979239100719575">Zoeken naar beschikbare profielen. Dit kan een paar minuten duren.</translation>
 <translation id="3524518036046613664">Apparaten vinden in je lokale netwerk, zoals printers</translation>
 <translation id="3524965460886318643">Activiteiten exporteren</translation>
 <translation id="3525426269008462093">Apparaatsynchronisatie checken na het instellen</translation>
@@ -7801,6 +7802,7 @@ Je kunt instellingen beheren via het kaartmenu of meer opties bekijken in het ge
 <translation id="7283555985781738399">Gastmodus</translation>
 <translation id="7284307451964417957">{DAYS,plural, =1{Dit apparaat wordt 1 dag bewaard en je kunt de volgende keer verbinding maken zonder een code. Dit wordt ingesteld door je beheerder.}other{Dit apparaat wordt {DAYS} dagen bewaard en je kunt de volgende keer verbinding maken zonder een code. Dit wordt ingesteld door je beheerder.}}</translation>
 <translation id="7284411326658527427">Ze kunnen ieder hun account personaliseren en gegevens privé houden.</translation>
+<translation id="7286867818472074330">Toegangssleutel selecteren</translation>
 <translation id="7287143125007575591">Toegang geweigerd.</translation>
 <translation id="7287411021188441799">Standaard achtergrond herstellen</translation>
 <translation id="7288676996127329262"><ph name="HORIZONTAL_DPI" />x<ph name="VERTICAL_DPI" /> dpi</translation>

@@ -144,7 +144,7 @@ class CORE_EXPORT NGInlineLayoutAlgorithm final
 
   const NGColumnSpannerPath* column_spanner_path_;
 
-  NGMarginStrut end_margin_strut_;
+  MarginStrut end_margin_strut_;
   absl::optional<int> lines_until_clamp_;
 
   FontBaseline baseline_type_ = FontBaseline::kAlphabeticBaseline;

@@ -28,35 +28,35 @@ export class BaseDialog {
      * The default is false: BaseDialog handles focus traversal for the entire
      * DOM document. See findFocusableElements_(), also crbug.com/1078300.
      *
-     * @protected {boolean}
+     * @protected @type {boolean}
      */
     this.hasModalContainer = false;
 
     /** @private{boolean} */
     this.showing_ = false;
 
-    /** @protected {?Element} */
+    /** @protected @type {?Element} */
     this.container = null;
 
-    /** @protected {?Element} */
+    /** @protected @type {?Element} */
     this.frame = null;
 
-    /** @protected {?Element} */
+    /** @protected @type {?Element} */
     this.title = null;
 
-    /** @protected {?Element} */
+    /** @protected @type {?Element} */
     this.text = null;
 
-    /** @protected {?Element} */
+    /** @protected @type {?Element} */
     this.closeButton = null;
 
-    /** @protected {?Element} */
+    /** @protected @type {?Element} */
     this.okButton = null;
 
-    /** @protected {?Element} */
+    /** @protected @type {?Element} */
     this.cancelButton = null;
 
-    /** @protected {?Element} */
+    /** @protected @type {?Element} */
     this.buttons = null;
 
     /** @private @type {Function|undefined} */

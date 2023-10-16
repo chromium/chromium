@@ -17812,13 +17812,13 @@
                 {
                     "name": "Disabled",
                     "disable_features": [
-                        "ProduceCompileHints"
+                        "ProduceCompileHints2"
                     ]
                 },
                 {
                     "name": "Enabled",
                     "enable_features": [
-                        "ProduceCompileHints"
+                        "ProduceCompileHints2"
                     ]
                 }
             ]

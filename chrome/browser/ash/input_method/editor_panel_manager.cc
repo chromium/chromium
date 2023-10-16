@@ -81,6 +81,10 @@ void EditorPanelManager::BindEditorClient() {
 
 void EditorPanelManager::GetEditorPanelContext(
     GetEditorPanelContextCallback callback) {
+  // Cache the caret bounds of the current text context, so that we can properly
+  // anchor UI bubbles that are triggered by and shown after the editor panel.
+  delegate_->CacheContextCaretBounds();
+
   // TODO(b/295059934): Get the panel mode from the editor mediator.
   const auto editor_panel_mode = GetEditorPanelMode(delegate_->GetEditorMode());
 

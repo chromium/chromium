@@ -77,7 +77,7 @@ class CORE_EXPORT NGLayoutResult final
   // still replaced with |nullopt|.
   NGLayoutResult(const NGLayoutResult& other,
                  const NGConstraintSpace& new_space,
-                 const NGMarginStrut& new_end_margin_strut,
+                 const MarginStrut& new_end_margin_strut,
                  LayoutUnit bfc_line_offset,
                  absl::optional<LayoutUnit> bfc_block_offset,
                  LayoutUnit block_offset_delta);
@@ -282,8 +282,8 @@ class CORE_EXPORT NGLayoutResult final
     return BfcBlockOffset();
   }
 
-  const NGMarginStrut EndMarginStrut() const {
-    return rare_data_ ? rare_data_->end_margin_strut : NGMarginStrut();
+  const MarginStrut EndMarginStrut() const {
+    return rare_data_ ? rare_data_->end_margin_strut : MarginStrut();
   }
 
   // Get the intrinsic block-size of the fragment. This is the block-size the
@@ -895,7 +895,7 @@ class CORE_EXPORT NGLayoutResult final
     void Trace(Visitor* visitor) const;
 
     Member<const NGEarlyBreak> early_break;
-    NGMarginStrut end_margin_strut;
+    MarginStrut end_margin_strut;
     union {
       // Only set in the initial column balancing layout pass, when we have no
       // clue what the column block-size is going to be.

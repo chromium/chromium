@@ -670,23 +670,23 @@ export class RecentContentScanner extends ContentScanner {
     super();
 
     /**
-     * @private {string}
+     * @private @type {string}
      */
     this.query_ = query.toLowerCase();
 
     /**
-     * @private {VolumeManager}
+     * @private @type {VolumeManager}
      */
     this.volumeManager_ = volumeManager;
 
     /**
-     * @private {chrome.fileManagerPrivate.SourceRestriction}
+     * @private @type {chrome.fileManagerPrivate.SourceRestriction}
      */
     this.sourceRestriction_ = opt_sourceRestriction ||
         chrome.fileManagerPrivate.SourceRestriction.ANY_SOURCE;
 
     /**
-     * @private {chrome.fileManagerPrivate.FileCategory}
+     * @private @type {chrome.fileManagerPrivate.FileCategory}
      */
     this.fileCategory_ =
         opt_fileCategory || chrome.fileManagerPrivate.FileCategory.ALL;
@@ -815,7 +815,7 @@ export class GuestOsMounter extends ContentScanner {
   constructor(guest_id) {
     super();
 
-    /** @private @const {number} */
+    /** @private @const @type {number} */
     this.guest_id_ = guest_id;
   }
 
@@ -1034,14 +1034,14 @@ export class FileFilter extends EventTarget {
 
 /**
  * Top-level Android folders which are visible by default.
- * @const {!Array<string>}
+ * @const @type {!Array<string>}
  */
 FileFilter.DEFAULT_ANDROID_FOLDERS =
     ['Documents', 'Movies', 'Music', 'Pictures'];
 
 /**
  * Windows files or folders to hide by default.
- * @const {!Array<string>}
+ * @const @type {!Array<string>}
  */
 FileFilter.WINDOWS_HIDDEN = ['$RECYCLE.BIN'];
 
@@ -1063,7 +1063,7 @@ export class FileListContext {
     this.fileList = new FileListModel(metadataModel);
 
     /**
-     * @public {!MetadataModel}
+     * @public @type {!MetadataModel}
      * @const
      */
     this.metadataModel = metadataModel;
@@ -1074,7 +1074,7 @@ export class FileListContext {
     this.fileFilter = fileFilter;
 
     /**
-     * @public {!Array<string>}
+     * @public @type {!Array<string>}
      * @const
      */
     this.prefetchPropertyNames = Array.from(new Set([
@@ -1084,7 +1084,7 @@ export class FileListContext {
       ...constants.DLP_METADATA_PREFETCH_PROPERTY_NAMES,
     ]));
 
-    /** @public {!VolumeManager} */
+    /** @public @type {!VolumeManager} */
     this.volumeManager = volumeManager;
   }
 }
@@ -1110,10 +1110,10 @@ export class DirectoryContents extends EventTarget {
   constructor(context, isSearch, directoryEntry, scannerFactory) {
     super();
 
-    /** @private {FileListContext} */
+    /** @private @type {FileListContext} */
     this.context_ = context;
 
-    /** @private {FileListModel} */
+    /** @private @type {FileListModel} */
     this.fileList_ = context.fileList;
     this.fileList_.InitNewDirContents(context.volumeManager);
 

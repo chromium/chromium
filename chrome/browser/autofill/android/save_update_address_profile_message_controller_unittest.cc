@@ -32,6 +32,8 @@
 namespace autofill {
 
 using testing::_;
+using profile_ref = base::optional_ref<const AutofillProfile>;
+using ::testing::Property;
 
 class SaveUpdateAddressProfileMessageControllerTest
     : public ChromeRenderViewHostTestHarness {
@@ -279,7 +281,8 @@ TEST_F(SaveUpdateAddressProfileMessageControllerTest,
   EXPECT_CALL(action_callback_, Run(_, profile_, nullptr, false, _));
   TriggerActionClick();
 
-  EXPECT_CALL(save_callback_, Run(_, profile_)).Times(0);
+  EXPECT_CALL(save_callback_, Run(_, Property(&profile_ref::has_value, false)))
+      .Times(0);
   TriggerMessageDismissedCallback(messages::DismissReason::PRIMARY_ACTION);
 }
 
@@ -293,7 +296,8 @@ TEST_F(SaveUpdateAddressProfileMessageControllerTest,
   EXPECT_CALL(action_callback_, Run(_, profile_, &original_profile_, _, _));
   TriggerActionClick();
 
-  EXPECT_CALL(save_callback_, Run(_, profile_)).Times(0);
+  EXPECT_CALL(save_callback_, Run(_, Property(&profile_ref::has_value, false)))
+      .Times(0);
   TriggerMessageDismissedCallback(messages::DismissReason::PRIMARY_ACTION);
 }
 
@@ -308,7 +312,7 @@ TEST_F(SaveUpdateAddressProfileMessageControllerTest,
   EXPECT_CALL(
       save_callback_,
       Run(AutofillClient::SaveAddressProfileOfferUserDecision::kMessageDeclined,
-          profile_));
+          Property(&profile_ref::has_value, false)));
   TriggerMessageDismissedCallback(messages::DismissReason::GESTURE);
 }
 
@@ -323,7 +327,7 @@ TEST_F(SaveUpdateAddressProfileMessageControllerTest,
   EXPECT_CALL(
       save_callback_,
       Run(AutofillClient::SaveAddressProfileOfferUserDecision::kMessageTimeout,
-          profile_));
+          Property(&profile_ref::has_value, false)));
   TriggerMessageDismissedCallback(messages::DismissReason::TIMER);
 }
 
@@ -340,7 +344,7 @@ TEST_F(SaveUpdateAddressProfileMessageControllerTest, OnlyOnePromptAtATime) {
       another_action_callback;
   EXPECT_CALL(save_callback_,
               Run(AutofillClient::SaveAddressProfileOfferUserDecision::kIgnored,
-                  profile_));
+                  Property(&profile_ref::has_value, false)));
   ExpectDismissMessageCall();
   EnqueueSaveMessage(another_profile, /*is_migration_to_account=*/false,
                      another_save_callback.Get(),

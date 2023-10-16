@@ -195,7 +195,7 @@ infobars::ContentInfoBarManager* GetInfoBarManager(
 
 ConfirmInfoBarDelegate* GetDelegate(content::WebContents* web_contents) {
   return static_cast<ConfirmInfoBarDelegate*>(
-      GetInfoBarManager(web_contents)->infobar_at(0)->delegate());
+      GetInfoBarManager(web_contents)->infobars()[0]->delegate());
 }
 
 bool HasSecondaryButton(content::WebContents* web_contents) {
@@ -1225,11 +1225,11 @@ IN_PROC_BROWSER_TEST_P(GetDisplayMediaChangeSourceBrowserTest,
     base::RunLoop().RunUntilIdle();
   }
 
-  ASSERT_EQ(GetInfoBarManager(capturing_tab)->infobar_count(), 1u);
+  ASSERT_EQ(GetInfoBarManager(capturing_tab)->infobars().size(), 1u);
   StopAllTracks(capturing_tab);
   do {
     base::RunLoop().RunUntilIdle();
-  } while (GetInfoBarManager(capturing_tab)->infobar_count() > 0u);
+  } while (GetInfoBarManager(capturing_tab)->infobars().size() > 0u);
 }
 
 // TODO(1428806) Re-enable flaky test.

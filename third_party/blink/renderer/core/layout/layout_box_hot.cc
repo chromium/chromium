@@ -72,7 +72,7 @@ const NGLayoutResult* LayoutBox::CachedLayoutResult(
     const NGBlockBreakToken* break_token,
     const NGEarlyBreak* early_break,
     const NGColumnSpannerPath* column_spanner_path,
-    absl::optional<NGFragmentGeometry>* initial_fragment_geometry,
+    absl::optional<FragmentGeometry>* initial_fragment_geometry,
     NGLayoutCacheStatus* out_cache_status) {
   NOT_DESTROYED();
   *out_cache_status = NGLayoutCacheStatus::kNeedsLayout;
@@ -201,7 +201,7 @@ const NGLayoutResult* LayoutBox::CachedLayoutResult(
   absl::optional<LayoutUnit> bfc_block_offset =
       cached_layout_result->BfcBlockOffset();
   LayoutUnit block_offset_delta;
-  NGMarginStrut end_margin_strut = cached_layout_result->EndMarginStrut();
+  MarginStrut end_margin_strut = cached_layout_result->EndMarginStrut();
 
   bool are_bfc_offsets_equal;
   bool is_margin_strut_equal;
@@ -222,7 +222,8 @@ const NGLayoutResult* LayoutBox::CachedLayoutResult(
             old_space.ExpectedBfcBlockOffset() &&
         new_space.ForcedBfcBlockOffset() == old_space.ForcedBfcBlockOffset();
 
-    is_margin_strut_equal = new_space.MarginStrut() == old_space.MarginStrut();
+    is_margin_strut_equal =
+        new_space.GetMarginStrut() == old_space.GetMarginStrut();
     is_exclusion_space_equal =
         new_space.ExclusionSpace() == old_space.ExclusionSpace();
     bool is_clearance_offset_equal =

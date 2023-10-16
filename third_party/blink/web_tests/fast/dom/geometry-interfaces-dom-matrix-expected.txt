@@ -1,31 +1,31 @@
 This is a testharness.js-based test.
 Harness Error. harness_status.status = 1 , harness_status.message = 1 duplicate test name: "DOMMatrix(numberSequence) constructor"
-PASS DOMMatrix() constructor
-PASS DOMMatrix fromFloat32Array - 2D matrix
-PASS DOMMatrix fromFloat64Array - 2D matrix
-PASS DOMMatrix fromFloat32Array - 3D matrix
-PASS DOMMatrix fromFloat64Array - 3D matrix
-PASS DOMMatrix(transformList) - emptyString
-PASS DOMMatrix(transformList) - transformList
-PASS DOMMatrix(numberSequence) constructor
-PASS DOMMatrix(numberSequence) constructor
-PASS DOMMatrix attributes
-PASS DOMMatrix.is2D can never be set to 'true' when it was set to 'false' before calling setMatrixValue()
-PASS DOMMatrix fromFloat*Array - invalid array size of nearby 6
-PASS DOMMatrix fromFloat*Array - invalid array size of nearby 16
-PASS DOMMatrix fromFloat*Array - invalid array size
-PASS DOMMatrix fromFloat*Array - can't use SharedArrayBuffer view
-PASS DOMMatrix.fromMatrix() with no parameter
-PASS DOMMatrix.fromMatrix() with null
-PASS DOMMatrix.fromMatrix() with undefined
-PASS DOMMatrix.fromMatrix() with empty object
-PASS DOMMatrix.fromMatrix({a: 1, b: 2, c: 3, d: 4, e: 5, f: 6}) should create a 2D DOMMatrix
-PASS DOMMatrix.fromMatrix({m11: 1, m22: 2, m33: 3, m44: 4, m23: 5, m43: 6}) should create a 3D DOMMatrix
-PASS If 2d related properties don't be set, should set to fallback
-PASS DOMMatrix.fromMatrix(): NaN test
-PASS DOMMatrix toJSON() - identity matrix
-PASS DOMMatrix toJSON() - 2D matrix
-PASS DOMMatrix toJSON() - 3D matrix
-PASS DOMMatrix.fromMatrix(): Exception test
+[PASS] DOMMatrix() constructor
+[PASS] DOMMatrix fromFloat32Array - 2D matrix
+[PASS] DOMMatrix fromFloat64Array - 2D matrix
+[PASS] DOMMatrix fromFloat32Array - 3D matrix
+[PASS] DOMMatrix fromFloat64Array - 3D matrix
+[PASS] DOMMatrix(transformList) - emptyString
+[PASS] DOMMatrix(transformList) - transformList
+[PASS] DOMMatrix(numberSequence) constructor
+[PASS] DOMMatrix(numberSequence) constructor
+[PASS] DOMMatrix attributes
+[PASS] DOMMatrix.is2D can never be set to 'true' when it was set to 'false' before calling setMatrixValue()
+[PASS] DOMMatrix fromFloat*Array - invalid array size of nearby 6
+[PASS] DOMMatrix fromFloat*Array - invalid array size of nearby 16
+[PASS] DOMMatrix fromFloat*Array - invalid array size
+[PASS] DOMMatrix fromFloat*Array - can't use SharedArrayBuffer view
+[PASS] DOMMatrix.fromMatrix() with no parameter
+[PASS] DOMMatrix.fromMatrix() with null
+[PASS] DOMMatrix.fromMatrix() with undefined
+[PASS] DOMMatrix.fromMatrix() with empty object
+[PASS] DOMMatrix.fromMatrix({a: 1, b: 2, c: 3, d: 4, e: 5, f: 6}) should create a 2D DOMMatrix
+[PASS] DOMMatrix.fromMatrix({m11: 1, m22: 2, m33: 3, m44: 4, m23: 5, m43: 6}) should create a 3D DOMMatrix
+[PASS] If 2d related properties don't be set, should set to fallback
+[PASS] DOMMatrix.fromMatrix(): NaN test
+[PASS] DOMMatrix toJSON() - identity matrix
+[PASS] DOMMatrix toJSON() - 2D matrix
+[PASS] DOMMatrix toJSON() - 3D matrix
+[PASS] DOMMatrix.fromMatrix(): Exception test
 Harness: the test ran to completion.
 
