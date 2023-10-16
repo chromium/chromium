@@ -7,7 +7,6 @@
 
 #include "base/functional/callback.h"
 #include "base/memory/weak_ptr.h"
-#include "base/task/sequenced_task_runner.h"
 #include "base/timer/timer.h"
 #include "components/no_state_prefetch/common/prerender_canceler.mojom.h"
 #include "net/base/request_priority.h"
