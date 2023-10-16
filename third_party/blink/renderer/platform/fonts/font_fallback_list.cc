@@ -258,6 +258,13 @@ const FontData* FontFallbackList::FontDataAt(
   if (family_index_ == kCAllFamiliesScanned)
     return nullptr;
 
+  // RUN-2625: We cannot (yet) make up font data if its not loaded already.
+  if (recordreplay::IsInReplayCode() &&
+      recordreplay::FeatureEnabled("replay-code",
+                                   "FontFallbackList::FontDataAt")) {
+    return nullptr;
+  }
+
   // Ask the font cache for the font data.
   // We are obtaining this font for the first time.  We keep track of the
   // families we've looked at before in |family_index_|, so that we never scan

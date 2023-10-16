@@ -22,6 +22,8 @@
 #include "content/public/child/child_thread.h"
 #include "third_party/blink/public/common/thread_safe_browser_interface_broker_proxy.h"
 
+#include "base/record_replay.h"
+
 namespace mswr = Microsoft::WRL;
 
 namespace content {
@@ -500,6 +502,13 @@ bool DWriteFontCollectionProxy::LoadFamily(
     UINT32 family_index,
     IDWriteFontCollection** containing_collection) {
   TRACE_EVENT0("dwrite,fonts", "FontProxy::LoadFamily");
+
+  // RUN-2625: We cannot load fonts without accessing the recording stream.
+  if (recordreplay::IsInReplayCode() &&
+      recordreplay::FeatureEnabled("replay-code",
+                                   "DWriteFontCollectionProxy::LoadFamily")) {
+    return false;
+  }
 
   uint32_t index = family_index;
   // CreateCustomFontCollection ends up calling
