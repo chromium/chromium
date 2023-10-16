@@ -37,14 +37,19 @@
 
 namespace {
 
-constexpr char kPV[] = "pv";      // Key for storing product version.
-constexpr char kFP[] = "fp";      // Key for storing fingerprint.
-constexpr char kECP[] = "ecp";    // Key for storing existence checker path.
-constexpr char kBC[] = "bc";      // Key for storing brand code.
-constexpr char kBP[] = "bp";      // Key for storing brand path.
-constexpr char kAP[] = "ap";      // Key for storing ap.
-constexpr char kDLA[] = "dla";    // Key for storing date-last-active.
-constexpr char kDLRC[] = "dlrc";  // Key for storing date-last-rollcall.
+// PersistedData keys.
+constexpr char kPV[] = "pv";
+constexpr char kVersionPath[] = "pv_path";
+constexpr char kVersionKey[] = "pv_key";
+constexpr char kFP[] = "fp";
+constexpr char kECP[] = "ecp";
+constexpr char kBC[] = "bc";
+constexpr char kBP[] = "bp";
+constexpr char kAP[] = "ap";
+constexpr char kAPPath[] = "ap_path";
+constexpr char kAPKey[] = "ap_key";
+constexpr char kDLA[] = "dla";
+constexpr char kDLRC[] = "dlrc";
 constexpr char kCohort[] = "cohort";
 constexpr char kCohortName[] = "cohortname";
 constexpr char kCohortHint[] = "cohorthint";
@@ -80,6 +85,29 @@ void PersistedData::SetProductVersion(const std::string& id,
   DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
   CHECK(pv.IsValid());
   SetString(id, kPV, pv.GetString());
+}
+
+base::FilePath PersistedData::GetProductVersionPath(
+    const std::string& id) const {
+  DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
+  return base::FilePath::FromUTF8Unsafe(GetString(id, kVersionPath));
+}
+
+void PersistedData::SetProductVersionPath(const std::string& id,
+                                          const base::FilePath& path) {
+  DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
+  SetString(id, kVersionPath, path.AsUTF8Unsafe());
+}
+
+std::string PersistedData::GetProductVersionKey(const std::string& id) const {
+  DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
+  return GetString(id, kVersionKey);
+}
+
+void PersistedData::SetProductVersionKey(const std::string& id,
+                                         const std::string& key) {
+  DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
+  SetString(id, kVersionKey, key);
 }
 
 std::string PersistedData::GetFingerprint(const std::string& id) const {
@@ -162,6 +190,27 @@ void PersistedData::SetAP(const std::string& id, const std::string& ap) {
 #endif
 }
 
+base::FilePath PersistedData::GetAPPath(const std::string& id) const {
+  DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
+  return base::FilePath::FromUTF8Unsafe(GetString(id, kAPPath));
+}
+
+void PersistedData::SetAPPath(const std::string& id,
+                              const base::FilePath& path) {
+  DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
+  SetString(id, kAPPath, path.AsUTF8Unsafe());
+}
+
+std::string PersistedData::GetAPKey(const std::string& id) const {
+  DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
+  return GetString(id, kAPKey);
+}
+
+void PersistedData::SetAPKey(const std::string& id, const std::string& key) {
+  DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
+  SetString(id, kAPKey, key);
+}
+
 absl::optional<int> PersistedData::GetDateLastActive(
     const std::string& id) const {
   DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
@@ -239,6 +288,12 @@ void PersistedData::RegisterApp(const RegistrationRequest& rq) {
   if (rq.version.IsValid()) {
     SetProductVersion(rq.app_id, rq.version);
   }
+  if (!rq.version_path.empty()) {
+    SetProductVersionPath(rq.app_id, rq.version_path);
+  }
+  if (!rq.version_key.empty()) {
+    SetProductVersionKey(rq.app_id, rq.version_key);
+  }
   if (!rq.existence_checker_path.empty()) {
     SetExistenceCheckerPath(rq.app_id, rq.existence_checker_path);
   }
@@ -250,6 +305,12 @@ void PersistedData::RegisterApp(const RegistrationRequest& rq) {
   }
   if (!rq.ap.empty()) {
     SetAP(rq.app_id, rq.ap);
+  }
+  if (!rq.ap_path.empty()) {
+    SetAPPath(rq.app_id, rq.ap_path);
+  }
+  if (!rq.ap_key.empty()) {
+    SetAPKey(rq.app_id, rq.ap_key);
   }
   if (rq.dla) {
     SetDateLastActive(rq.app_id, rq.dla.value());

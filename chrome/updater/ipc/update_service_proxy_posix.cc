@@ -78,7 +78,19 @@ constexpr base::TimeDelta kConnectionTimeout = base::Minutes(3);
   UpdateService::AppState app_state;
   app_state.app_id = app_state_mojo->app_id;
   app_state.version = base::Version(app_state_mojo->version);
+  if (app_state_mojo->version_path) {
+    app_state.version_path = *app_state_mojo->version_path;
+  }
+  if (app_state_mojo->version_key) {
+    app_state.version_key = *app_state_mojo->version_key;
+  }
   app_state.ap = app_state_mojo->ap;
+  if (app_state_mojo->ap_path) {
+    app_state.ap_path = *app_state_mojo->ap_path;
+  }
+  if (app_state_mojo->ap_key) {
+    app_state.ap_key = *app_state_mojo->ap_key;
+  }
   app_state.brand_code = app_state_mojo->brand_code;
   app_state.brand_path = app_state_mojo->brand_path;
   app_state.ecp = app_state_mojo->ecp;
@@ -90,7 +102,9 @@ constexpr base::TimeDelta kConnectionTimeout = base::Minutes(3);
     const RegistrationRequest& request) {
   return mojom::RegistrationRequest::New(
       request.app_id, request.brand_code, request.brand_path, request.ap,
-      request.version.GetString(), request.existence_checker_path);
+      request.version.GetString(), request.existence_checker_path,
+      request.ap_path, request.ap_key, request.version_path,
+      request.version_key);
 }
 
 class StateChangeObserverImpl : public mojom::StateChangeObserver {

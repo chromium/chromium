@@ -329,7 +329,11 @@ void UpdateServiceImpl::GetAppStates(
     AppState app_state;
     app_state.app_id = app_id;
     app_state.version = persisted_data_->GetProductVersion(app_id);
+    app_state.version_path = persisted_data_->GetProductVersionPath(app_id);
+    app_state.version_key = persisted_data_->GetProductVersionKey(app_id);
     app_state.ap = persisted_data_->GetAP(app_id);
+    app_state.ap_path = persisted_data_->GetAPPath(app_id);
+    app_state.ap_key = persisted_data_->GetAPKey(app_id);
     app_state.brand_code = persisted_data_->GetBrandCode(app_id);
     app_state.brand_path = persisted_data_->GetBrandPath(app_id);
     app_state.ecp = persisted_data_->GetExistenceCheckerPath(app_id);

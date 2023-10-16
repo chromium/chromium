@@ -130,6 +130,35 @@ class UpdaterIPCTestCase : public testing::Test {
         .Then(run_loop.QuitClosure());
   }
 
+  static RegistrationRequest GetExampleRegistrationRequest() {
+    RegistrationRequest r;
+    r.app_id = "app_id";
+    r.brand_code = "BRND";
+    r.brand_path = base::FilePath("brand_path");
+    r.ap = "ap";
+    r.ap_path = base::FilePath("ap_path");
+    r.ap_key = "ap_key";
+    r.version = base::Version("1.2.3.4");
+    r.version_path = base::FilePath("version_path");
+    r.version_key = "version_key";
+    r.existence_checker_path = base::FilePath("ecp");
+    return r;
+  }
+
+  static void ExpectRegistrationRequestsEqual(const RegistrationRequest& a,
+                                              const RegistrationRequest& b) {
+    EXPECT_EQ(a.app_id, b.app_id);
+    EXPECT_EQ(a.brand_code, b.brand_code);
+    EXPECT_EQ(a.brand_path, b.brand_path);
+    EXPECT_EQ(a.ap, b.ap);
+    EXPECT_EQ(a.ap_path, b.ap_path);
+    EXPECT_EQ(a.ap_key, b.ap_key);
+    EXPECT_EQ(a.version, b.version);
+    EXPECT_EQ(a.version_path, b.version_path);
+    EXPECT_EQ(a.version_key, b.version_key);
+    EXPECT_EQ(a.existence_checker_path, b.existence_checker_path);
+  }
+
  protected:
   class MockUpdateService final : public UpdateService {
    public:
@@ -241,8 +270,10 @@ TEST_F(UpdaterIPCTestCase, AllRpcsComplete) {
       });
 
   EXPECT_CALL(*mock_service, RegisterApp)
-      .WillOnce([](const RegistrationRequest&,
+      .WillOnce([](const RegistrationRequest& request,
                    base::OnceCallback<void(int)> callback) {
+        ExpectRegistrationRequestsEqual(request,
+                                        GetExampleRegistrationRequest());
         std::move(callback).Run(42);
       });
 
@@ -362,9 +393,11 @@ MULTIPROCESS_TEST_MAIN(UpdateServiceClient) {
   }
   {
     base::RunLoop run_loop;
-    client_proxy->RegisterApp({}, base::BindOnce([](int result) {
-                                    EXPECT_EQ(result, 42);
-                                  }).Then(run_loop.QuitClosure()));
+    client_proxy->RegisterApp(
+        UpdaterIPCTestCase::GetExampleRegistrationRequest(),
+        base::BindOnce([](int result) {
+          EXPECT_EQ(result, 42);
+        }).Then(run_loop.QuitClosure()));
     run_loop.Run();
   }
   {
