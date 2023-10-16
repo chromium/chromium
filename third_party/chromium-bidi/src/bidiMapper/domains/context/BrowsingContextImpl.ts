@@ -735,26 +735,59 @@ export class BrowsingContextImpl {
         `Non-top-level 'context' (${params.context}) is currently not supported`
       );
     }
-
     const formatParameters = getImageFormatParameters(params);
 
     // XXX: Focus the original tab after the screenshot is taken.
     // This is needed because the screenshot gets blocked until the active tab gets focus.
     await this.#cdpTarget.cdpClient.sendCommand('Page.bringToFront');
 
-    const {cssVisualViewport} = await this.#cdpTarget.cdpClient.sendCommand(
-      'Page.getLayoutMetrics'
+    let captureBeyondViewport = false;
+    let script: string;
+    params.origin ??= 'viewport';
+    switch (params.origin) {
+      case 'document': {
+        script = String(() => {
+          const element = document.documentElement;
+          return {
+            x: 0,
+            y: 0,
+            width: element.scrollWidth,
+            height: element.scrollHeight,
+          };
+        });
+        captureBeyondViewport = true;
+        break;
+      }
+      case 'viewport': {
+        script = String(() => {
+          const viewport = window.visualViewport!;
+          return {
+            x: viewport.pageLeft,
+            y: viewport.pageTop,
+            width: viewport.width,
+            height: viewport.height,
+          };
+        });
+        break;
+      }
+    }
+    const realm = await this.getOrCreateSandbox(undefined);
+    const originResult = await realm.callFunction(
+      script,
+      {type: 'undefined'},
+      [],
+      false,
+      Script.ResultOwnership.None,
+      {},
+      false
     );
-    const viewport = {
-      x: cssVisualViewport.pageX,
-      y: cssVisualViewport.pageY,
-      width: cssVisualViewport.clientWidth,
-      height: cssVisualViewport.clientHeight,
-    };
+    assert(originResult.type === 'success');
+    const origin = deserializeDOMRect(originResult.result);
+    assert(origin);
 
     const rect = params.clip
-      ? getIntersectionRect(await this.#parseRect(params.clip), viewport)
-      : viewport;
+      ? getIntersectionRect(await this.#parseRect(params.clip), origin)
+      : origin;
 
     if (rect.width === 0 || rect.height === 0) {
       throw new UnableToCaptureScreenException(
@@ -762,13 +795,11 @@ export class BrowsingContextImpl {
       );
     }
 
-    const result = await this.#cdpTarget.cdpClient.sendCommand(
-      'Page.captureScreenshot',
-      {clip: {...rect, scale: 1.0}, ...formatParameters}
-    );
-    return {
-      data: result.data,
-    };
+    return this.#cdpTarget.cdpClient.sendCommand('Page.captureScreenshot', {
+      clip: {...rect, scale: 1.0},
+      ...formatParameters,
+      captureBeyondViewport,
+    });
   }
 
   async print(
