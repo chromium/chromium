@@ -27697,6 +27697,7 @@ Called by update_debug_scenarios.py.-->
   <int value="78" label="deleteOverridesTemporarilyEnable"/>
   <int value="79" label="networkPanelFilterBarRedesign"/>
   <int value="80" label="breadcrumbsPerformancePanel"/>
+  <int value="81" label="trackContextMenu"/>
 </enum>
 
 <enum name="DevToolsGridOverlayOpenedFrom">
