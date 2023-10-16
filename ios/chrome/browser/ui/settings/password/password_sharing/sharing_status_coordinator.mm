@@ -6,7 +6,6 @@
 
 #import "ios/chrome/browser/shared/model/browser/browser.h"
 #import "ios/chrome/browser/shared/model/browser_state/chrome_browser_state.h"
-#import "ios/chrome/browser/shared/ui/table_view/table_view_navigation_controller.h"
 #import "ios/chrome/browser/shared/ui/table_view/table_view_utils.h"
 #import "ios/chrome/browser/signin/authentication_service.h"
 #import "ios/chrome/browser/signin/authentication_service_factory.h"
@@ -18,12 +17,8 @@
 #import "ios/chrome/browser/ui/settings/password/password_sharing/sharing_status_view_controller_presentation_delegate.h"
 
 @interface SharingStatusCoordinator () <
-    SharingStatusViewControllerPresentationDelegate>
-
-// The navigation controller displaying the view controller.
-// TODO(crbug.com/1463882): Remove.
-@property(nonatomic, strong)
-    TableViewNavigationController* navigationController;
+    SharingStatusViewControllerPresentationDelegate,
+    UIAdaptivePresentationControllerDelegate>
 
 // Main view controller for this coordinator.
 @property(nonatomic, strong) SharingStatusViewController* viewController;
@@ -67,20 +62,11 @@
                  recipients:_recipients];
   self.mediator.consumer = self.viewController;
 
-  self.navigationController =
-      [[TableViewNavigationController alloc] initWithTable:self.viewController];
-  [self.navigationController
-      setModalPresentationStyle:UIModalPresentationPageSheet];
-  self.navigationController.navigationBar.hidden = YES;
+  self.viewController.sheetPresentationController.detents =
+      @[ [UISheetPresentationControllerDetent mediumDetent] ];
+  self.viewController.presentationController.delegate = self;
 
-  UISheetPresentationController* sheetPresentationController =
-      self.navigationController.sheetPresentationController;
-  if (sheetPresentationController) {
-    sheetPresentationController.detents =
-        @[ [UISheetPresentationControllerDetent mediumDetent] ];
-  }
-
-  [self.baseViewController presentViewController:self.navigationController
+  [self.baseViewController presentViewController:self.viewController
                                         animated:YES
                                       completion:nil];
 }
@@ -89,8 +75,15 @@
   [self.viewController.presentingViewController
       dismissViewControllerAnimated:YES
                          completion:nil];
-  self.navigationController = nil;
   self.viewController = nil;
+  self.mediator = nil;
+}
+
+#pragma mark - UIAdaptivePresentationControllerDelegate
+
+- (void)presentationControllerDidDismiss:
+    (UIPresentationController*)presentationController {
+  [self.delegate sharingStatusCoordinatorWasDismissed:self];
 }
 
 #pragma mark - SharingStatusViewControllerPresentationDelegate

@@ -11,7 +11,6 @@
 @protocol SharingStatusViewControllerPresentationDelegate <NSObject>
 
 // Called when the user clicks done button.
-// TODO(crbug.com/1463882): Handle dismissing by swiping.
 - (void)sharingStatusWasDismissed:(SharingStatusViewController*)controller;
 
 // Called when the sharing progress animation finishes (is not cancelled by the

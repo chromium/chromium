@@ -204,6 +204,13 @@ NSString* const kEndBoldTag = @"[ \t]*END_BOLD";
   [self.imagesSlidingOutAnimation startAnimation];
 }
 
+- (void)viewWillDisappear:(BOOL)animated {
+  [super viewWillDisappear:animated];
+  [self.imagesSlidingOutAnimation stopAnimation:YES];
+  [self.progressBarLoadingAnimation stopAnimation:YES];
+  [self.imagesSlidingInAnimation stopAnimation:YES];
+}
+
 #pragma mark - SharingStatusConsumer
 
 - (void)setSenderImage:(UIImage*)senderImage {
