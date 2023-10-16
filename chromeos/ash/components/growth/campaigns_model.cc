@@ -24,6 +24,8 @@ inline constexpr char kDemoModeCountries[] = "countries";
 inline constexpr char kDemoModeFeatureAware[] =
     "capability.isFeatureAwareDevice";
 inline constexpr char kDemoModeCloudGaming[] = "capability.isCloudGamingDevice";
+inline constexpr char kMinDemoModeAppVersion[] = "appVersion.min";
+inline constexpr char kMaxDemoModeAppVersion[] = "appVersion.max";
 
 // Device Targeting paths.
 inline constexpr char kDeviceTargeting[] = "device";
@@ -120,6 +122,14 @@ const base::Value::List* DemoModeTargeting::GetRetailers() const {
 
 const base::Value::List* DemoModeTargeting::GetCountries() const {
   return GetListCriteria(kDemoModeCountries);
+}
+
+const std::string* DemoModeTargeting::GetAppMinVersion() const {
+  return GetStringCriteria(kMinDemoModeAppVersion);
+}
+
+const std::string* DemoModeTargeting::GetAppMaxVersion() const {
+  return GetStringCriteria(kMaxDemoModeAppVersion);
 }
 
 const absl::optional<bool> DemoModeTargeting::TargetCloudGamingDevice() const {
