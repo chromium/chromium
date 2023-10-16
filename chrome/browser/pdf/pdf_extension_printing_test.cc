@@ -41,6 +41,39 @@
 #include "ui/base/ui_base_types.h"
 #endif
 
+#if BUILDFLAG(IS_CHROMEOS_ASH)
+#include "chrome/browser/ash/printing/cups_print_job_manager_factory.h"
+#include "chrome/browser/ash/printing/cups_printers_manager_factory.h"
+#include "chrome/browser/ash/printing/fake_cups_printers_manager.h"
+#include "chrome/browser/ash/printing/test_cups_print_job_manager.h"
+#endif
+
+namespace {
+
+#if BUILDFLAG(IS_CHROMEOS_ASH)
+
+std::unique_ptr<KeyedService> BuildTestCupsPrintJobManager(
+    content::BrowserContext* context) {
+  return std::make_unique<ash::TestCupsPrintJobManager>(
+      Profile::FromBrowserContext(context));
+}
+
+std::unique_ptr<KeyedService> BuildFakeCupsPrintersManager(
+    content::BrowserContext* context) {
+  return std::make_unique<ash::FakeCupsPrintersManager>();
+}
+
+void OnWillCreateBrowserContextServices(content::BrowserContext* context) {
+  ash::CupsPrintJobManagerFactory::GetInstance()->SetTestingFactory(
+      context, base::BindRepeating(&BuildTestCupsPrintJobManager));
+  ash::CupsPrintersManagerFactory::GetInstance()->SetTestingFactory(
+      context, base::BindRepeating(&BuildFakeCupsPrintersManager));
+}
+
+#endif
+
+}  // namespace
+
 using ::content::WebContents;
 using ::extensions::MimeHandlerViewGuest;
 using ::pdf_extension_test_util::SetInputFocusOnPlugin;
@@ -72,6 +105,14 @@ class PDFExtensionPrintingTest : public PDFExtensionTestBase,
     SetShowPrintErrorDialogForTest(base::DoNothing());
     PDFExtensionTestBase::SetUpOnMainThread();
   }
+#if BUILDFLAG(IS_CHROMEOS_ASH)
+  void SetUpInProcessBrowserTestFixture() override {
+    create_services_subscription_ =
+        BrowserContextDependencyManager::GetInstance()
+            ->RegisterCreateServicesCallbackForTesting(
+                base::BindRepeating(&OnWillCreateBrowserContextServices));
+  }
+#endif
   void TearDownOnMainThread() override {
     PDFExtensionTestBase::TearDownOnMainThread();
     SetShowPrintErrorDialogForTest(base::NullCallback());
@@ -130,6 +171,10 @@ class PDFExtensionPrintingTest : public PDFExtensionTestBase,
     }
     print_job_destroyed_ = true;
   }
+
+#if BUILDFLAG(IS_CHROMEOS_ASH)
+  base::CallbackListSubscription create_services_subscription_;
+#endif
 
   scoped_refptr<printing::TestPrintBackend> test_print_backend_ =
       base::MakeRefCounted<printing::TestPrintBackend>();
