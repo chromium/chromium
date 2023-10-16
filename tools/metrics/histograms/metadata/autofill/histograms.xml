@@ -5632,16 +5632,6 @@ chromium-metrics-reviews@google.com.
   </summary>
 </histogram>
 
-<histogram name="Autofill.WalletAddressConversionType"
-    enum="AutofillWalletAddressConversionType" expires_after="2023-12-12">
-  <owner>battre@chromium.org</owner>
-  <owner>chrome-autofill-alerts@google.com</owner>
-  <summary>
-    Tracks how the different wallet addresses are converted to local autofill
-    profiles.
-  </summary>
-</histogram>
-
 <histogram name="Autofill.WebOTP.OneTimeCode.FillDuration.FromInteraction"
     units="ms" expires_after="2024-02-11">
   <owner>yigu@chromium.org</owner>

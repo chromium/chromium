@@ -2052,14 +2052,6 @@ void AutofillMetrics::LogIsQueriedCreditCardFormSecure(bool is_secure) {
 }
 
 // static
-void AutofillMetrics::LogWalletAddressConversionType(
-    WalletAddressConversionType type) {
-  DCHECK_LT(type, NUM_CONVERTED_ADDRESS_CONVERSION_TYPES);
-  UMA_HISTOGRAM_ENUMERATION("Autofill.WalletAddressConversionType", type,
-                            NUM_CONVERTED_ADDRESS_CONVERSION_TYPES);
-}
-
-// static
 void AutofillMetrics::LogShowedHttpNotSecureExplanation() {
   base::RecordAction(
       base::UserMetricsAction("Autofill_ShowedHttpNotSecureExplanation"));

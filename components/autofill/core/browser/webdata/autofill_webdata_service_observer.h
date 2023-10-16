@@ -41,8 +41,6 @@ class AutofillWebDataServiceObserverOnUISequence {
   // Sync. Can be called multiple times for the same `model_type`.
   virtual void OnAutofillChangedBySync(syncer::ModelType model_type) {}
 
-  virtual void AutofillAddressConversionCompleted() {}
-
  protected:
   virtual ~AutofillWebDataServiceObserverOnUISequence() {}
 };

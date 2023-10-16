@@ -54,12 +54,6 @@ class AutofillWebDataBackend {
   // Autofill records of the database by the sync.
   // NOTE: The UI sequence notifications are asynchronous.
   virtual void NotifyOnAutofillChangedBySync(syncer::ModelType model_type) = 0;
-
-  // Notifies listeners on the UI sequence that conversion of server profiles
-  // into local profiles is completed.
-  // NOTE: This method is intended to be called from the DB sequence. The UI
-  // sequence notifications are asynchronous.
-  virtual void NotifyOfAddressConversionCompleted() = 0;
 };
 
 } // namespace autofill

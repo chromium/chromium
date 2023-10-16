@@ -9776,11 +9776,6 @@ Called by update_autofill_enums.py.-->
   <int value="3" label="[Deprecated] Bubble lost focus and was deactivated"/>
 </enum>
 
-<enum name="AutofillWalletAddressConversionType">
-  <int value="0" label="Merged with existing local profile"/>
-  <int value="1" label="Added as a new local profile"/>
-</enum>
-
 <enum name="AutofillWebauthnOptInPromoUserDecision">
   <int value="0" label="Accepted"/>
   <int value="1" label="Declined immediately"/>

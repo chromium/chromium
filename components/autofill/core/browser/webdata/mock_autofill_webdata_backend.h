@@ -48,7 +48,6 @@ class MockAutofillWebDataBackend : public AutofillWebDataBackend {
               NotifyOnAutofillChangedBySync,
               (syncer::ModelType model_type),
               (override));
-  MOCK_METHOD(void, NotifyOfAddressConversionCompleted, (), (override));
 };
 
 }  // namespace autofill

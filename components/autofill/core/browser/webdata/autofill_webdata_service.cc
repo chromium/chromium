@@ -39,15 +39,9 @@ AutofillWebDataService::AutofillWebDataService(
       on_autofill_changed_by_sync_callback = base::BindRepeating(
           &AutofillWebDataService::NotifyOnAutofillChangedBySyncOnUISequence,
           weak_ptr_factory_.GetWeakPtr());
-  base::RepeatingClosure on_address_conversion_completed_callback =
-      base::BindRepeating(
-          &AutofillWebDataService::
-              NotifyAutofillAddressConversionCompletedOnUISequence,
-          weak_ptr_factory_.GetWeakPtr());
   autofill_backend_ = new AutofillWebDataBackendImpl(
       wdbs_->GetBackend(), ui_task_runner_, db_task_runner_,
-      on_autofill_changed_by_sync_callback,
-      on_address_conversion_completed_callback);
+      on_autofill_changed_by_sync_callback);
 }
 
 AutofillWebDataService::AutofillWebDataService(
@@ -59,7 +53,6 @@ AutofillWebDataService::AutofillWebDataService(
       autofill_backend_(new AutofillWebDataBackendImpl(nullptr,
                                                        ui_task_runner_,
                                                        db_task_runner_,
-                                                       base::NullCallback(),
                                                        base::NullCallback())) {}
 
 void AutofillWebDataService::ShutdownOnUISequence() {
@@ -153,16 +146,6 @@ WebDataServiceBase::Handle AutofillWebDataService::GetServerProfiles(
       base::BindOnce(&AutofillWebDataBackendImpl::GetServerProfiles,
                      autofill_backend_),
       consumer);
-}
-
-void AutofillWebDataService::ConvertWalletAddressesAndUpdateWalletCards(
-    const std::string& app_locale,
-    const std::string& primary_account_email) {
-  wdbs_->ScheduleDBTask(
-      FROM_HERE,
-      base::BindOnce(&AutofillWebDataBackendImpl::
-                         ConvertWalletAddressesAndUpdateWalletCards,
-                     autofill_backend_, app_locale, primary_account_email));
 }
 
 WebDataServiceBase::Handle
@@ -458,13 +441,6 @@ void AutofillWebDataService::NotifyOnAutofillChangedBySyncOnUISequence(
   DCHECK(ui_task_runner_->RunsTasksInCurrentSequence());
   for (auto& ui_observer : ui_observer_list_)
     ui_observer.OnAutofillChangedBySync(model_type);
-}
-
-void AutofillWebDataService::
-    NotifyAutofillAddressConversionCompletedOnUISequence() {
-  DCHECK(ui_task_runner_->RunsTasksInCurrentSequence());
-  for (auto& ui_observer : ui_observer_list_)
-    ui_observer.AutofillAddressConversionCompleted();
 }
 
 }  // namespace autofill

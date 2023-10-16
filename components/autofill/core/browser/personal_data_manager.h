@@ -147,7 +147,6 @@ class PersonalDataManager : public KeyedService,
 
   // AutofillWebDataServiceObserverOnUISequence:
   void OnAutofillChangedBySync(syncer::ModelType model_type) override;
-  void AutofillAddressConversionCompleted() override;
 
   // SyncServiceObserver:
   void OnStateChanged(syncer::SyncService* sync) override;
@@ -841,33 +840,6 @@ class PersonalDataManager : public KeyedService,
   // Called when the value of prefs::kAutofillCreditCardEnabled or
   // prefs::kAutofillProfileEnabled changes.
   void EnableAutofillPrefChanged();
-
-  // Converts the Wallet addresses to local autofill profiles. This should be
-  // called after all the syncable data has been processed (local cards and
-  // profiles, Wallet data and metadata). Also updates Wallet cards' billing
-  // address id to point to the local profiles.
-  void ConvertWalletAddressesAndUpdateWalletCards();
-
-  // Converts the Wallet addresses into local profiles either by merging with an
-  // existing |local_profiles| of by adding a new one. Populates the
-  // |server_id_profiles_map| to be used when updating cards where the address
-  // was already converted. Also populates the |guids_merge_map| to keep the
-  // link between the Wallet address and the equivalent local profile (from
-  // merge or creation).
-  bool ConvertWalletAddressesToLocalProfiles(
-      std::vector<AutofillProfile>* local_profiles,
-      std::unordered_map<std::string, AutofillProfile*>* server_id_profiles_map,
-      std::unordered_map<std::string, std::string>* guids_merge_map);
-
-  // Goes through the Wallet cards to find cards where the billing address is a
-  // Wallet address which was already converted in a previous pass. Looks for a
-  // matching local profile and updates the |guids_merge_map| to make the card
-  // refer to it.
-  bool UpdateWalletCardsAlreadyConvertedBillingAddresses(
-      const std::vector<AutofillProfile>& local_profiles,
-      const std::unordered_map<std::string, AutofillProfile*>&
-          server_id_profiles_map,
-      std::unordered_map<std::string, std::string>* guids_merge_map) const;
 
   // Removes profile from web database according to |guid| and resets credit
   // card's billing address if that address is used by any credit cards.

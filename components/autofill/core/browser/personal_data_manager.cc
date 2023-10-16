@@ -644,23 +644,13 @@ void PersonalDataManager::OnWebDataServiceRequestDone(
 
 void PersonalDataManager::OnAutofillChangedBySync(
     syncer::ModelType model_type) {
-  // After each change coming from sync we go through a two-step process:
-  //  - First, we post a task on the DB sequence to (potentially) convert server
-  // addresses to local addresses and update cards accordingly.
-  //  - This conversion task is concluded by a
-  //  AutofillAddressConversionCompleted() notification. As a second step, we
-  // need to refresh the PDM's view of the data.
-  ConvertWalletAddressesAndUpdateWalletCards();
+  Refresh();
 
   // Note, it's possible that the cleanups are run on the stale data since
   // `Refresh` is an async operation. But, since the cleanups happen over the
   // local data, it should be fine.
   personal_data_manager_cleaner_->ApplyAddressAndCardFixesAndCleanups(
       model_type);
-}
-
-void PersonalDataManager::AutofillAddressConversionCompleted() {
-  Refresh();
 }
 
 void PersonalDataManager::OnStateChanged(syncer::SyncService* sync_service) {
@@ -2509,15 +2499,6 @@ void PersonalDataManager::NotifyPersonalDataObserver() {
 }
 
 void PersonalDataManager::OnCreditCardSaved(bool is_local_card) {}
-
-void PersonalDataManager::ConvertWalletAddressesAndUpdateWalletCards() {
-  // PDM expects that each call to
-  // ConvertWalletAddressesAndUpdateWalletCards() is followed by a
-  // AutofillAddressConversionCompleted() notification, simulate the
-  // notification here.
-  // TODO(crbug.com/1348294): Simplify this code.
-  AutofillAddressConversionCompleted();
-}
 
 void PersonalDataManager::UpdateProfileInDB(const AutofillProfile& profile) {
   if (!ProfileChangesAreOngoing(profile.guid())) {

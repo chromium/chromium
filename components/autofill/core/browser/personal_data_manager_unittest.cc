@@ -309,17 +309,6 @@ class PersonalDataManagerHelper : public PersonalDataManagerTestBase {
     test::SetServerCreditCards(GetServerDataTable(), server_cards);
   }
 
-  void SetServerProfiles(const std::vector<AutofillProfile>& server_profiles) {
-    GetServerDataTable()->SetServerProfiles(server_profiles);
-  }
-
-  void ConvertWalletAddressesAndUpdateWalletCards() {
-    // Simulate new data is coming from sync which triggers a conversion of
-    // wallet addresses which in turn triggers a refresh.
-    personal_data_->OnAutofillChangedBySync(syncer::AUTOFILL_WALLET_DATA);
-    PersonalDataProfileTaskWaiter(*personal_data_).Wait();
-  }
-
   void AddOfferDataForTest(AutofillOfferData offer_data) {
     personal_data_->AddOfferDataForTest(
         std::make_unique<AutofillOfferData>(offer_data));
@@ -2139,7 +2128,6 @@ TEST_F(PersonalDataManagerTest, GetProfilesToSuggest_ProfileAutofillDisabled) {
   // Disable Profile autofill.
   prefs::SetAutofillProfileEnabled(personal_data_->pref_service_, false);
   PersonalDataProfileTaskWaiter(*personal_data_).Wait();
-  ConvertWalletAddressesAndUpdateWalletCards();
 
   // Check that profiles were saved.
   const size_t expected_profiles = 1;
@@ -2164,7 +2152,6 @@ TEST_F(PersonalDataManagerTest,
 
   personal_data_->Refresh();
   PersonalDataProfileTaskWaiter(*personal_data_).Wait();
-  ConvertWalletAddressesAndUpdateWalletCards();
 
   // Expect that all profiles are suggested.
   const size_t expected_profiles = 1;
@@ -2916,64 +2903,6 @@ TEST_F(PersonalDataManagerTest, DeleteAllLocalCreditCards) {
   EXPECT_EQ(0U, personal_data_->GetLocalCreditCards().size());
 }
 
-// Tests that Wallet addresses do NOT get converted if they're stored in
-// ephemeral storage.
-TEST_F(PersonalDataManagerSyncTransportModeTest,
-       DoNotConvertWalletAddressesInEphemeralStorage) {
-  ///////////////////////////////////////////////////////////////////////
-  // Setup.
-  ///////////////////////////////////////////////////////////////////////
-  ASSERT_FALSE(personal_data_->IsSyncFeatureEnabledForPaymentsServerMetrics());
-
-  // Add a local profile.
-  AutofillProfile local_profile;
-  test::SetProfileInfo(&local_profile, "Josephine", "Alicia", "Saenz", "",
-                       "Fox", "1212 Center.", "Bld. 5", "", "", "", "", "");
-  AddProfileToPersonalDataManager(local_profile);
-
-  // Add two server profiles: The first is unique, the second is similar to the
-  // local one but has some additional info.
-  std::vector<AutofillProfile> server_profiles;
-  server_profiles.emplace_back(AutofillProfile::SERVER_PROFILE,
-                               "server_address1");
-  test::SetProfileInfo(&server_profiles.back(), "John", "", "Doe", "", "",
-                       "1212 Center", "Bld. 5", "Orlando", "FL", "32801", "US",
-                       "");
-  server_profiles.back().SetRawInfo(NAME_FULL, u"John Doe");
-
-  server_profiles.emplace_back(AutofillProfile::SERVER_PROFILE,
-                               "server_address2");
-  test::SetProfileInfo(&server_profiles.back(), "Josephine", "Alicia", "Saenz",
-                       "joewayne@me.xyz", "Fox", "1212 Center.", "Bld. 5",
-                       "Orlando", "FL", "32801", "US", "19482937549");
-  server_profiles.back().SetRawInfo(NAME_FULL, u"Josephine Alicia Saenz");
-  SetServerProfiles(server_profiles);
-
-  ASSERT_TRUE(AutofillProfileComparator(personal_data_->app_locale())
-                  .AreMergeable(local_profile, server_profiles.back()));
-
-  // Make sure everything is set up correctly.
-  personal_data_->Refresh();
-  PersonalDataProfileTaskWaiter(*personal_data_).Wait();
-  ASSERT_EQ(1U, personal_data_->GetProfiles().size());
-  ASSERT_EQ(2U, personal_data_->GetServerProfiles().size());
-
-  ///////////////////////////////////////////////////////////////////////
-  // Tested method.
-  ///////////////////////////////////////////////////////////////////////
-  // Since the wallet addresses are in ephemeral storage, they should *not* get
-  // converted to local addresses.
-  ConvertWalletAddressesAndUpdateWalletCards();
-
-  ///////////////////////////////////////////////////////////////////////
-  // Validation.
-  ///////////////////////////////////////////////////////////////////////
-  // There should be no changes to the local profiles: No new one added, and no
-  // changes to the existing one (even though the second server profile contains
-  // additional information and is mergeable in principle).
-  EXPECT_EQ(1U, personal_data_->GetProfiles().size());
-  EXPECT_EQ(local_profile, *personal_data_->GetProfiles()[0]);
-}
 
 TEST_F(PersonalDataManagerTest, RemoveByGUID_ResetsBillingAddress) {
   ///////////////////////////////////////////////////////////////////////

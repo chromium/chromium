@@ -577,15 +577,6 @@ class AutofillMetrics {
     NUM_WALLET_REQUIRED_ACTIONS
   };
 
-  // For measuring how wallet addresses are converted to local profiles.
-  enum WalletAddressConversionType : int {
-    // The converted wallet address was merged into an existing local profile.
-    CONVERTED_ADDRESS_MERGED,
-    // The converted wallet address was added as a new local profile.
-    CONVERTED_ADDRESS_ADDED,
-    NUM_CONVERTED_ADDRESS_CONVERSION_TYPES
-  };
-
   // To record whether the upload event was sent.
   enum class UploadEventStatus { kNotSent, kSent, kMaxValue = kSent };
 
@@ -1207,10 +1198,6 @@ class AutofillMetrics {
   // Log whether the Autofill query on a credit card form is made in a secure
   // context.
   static void LogIsQueriedCreditCardFormSecure(bool is_secure);
-
-  // Log how the converted wallet address was added to the local autofill
-  // profiles.
-  static void LogWalletAddressConversionType(WalletAddressConversionType type);
 
   // This should be called when the user selects the Form-Not-Secure warning
   // suggestion to show an explanation of the warning.

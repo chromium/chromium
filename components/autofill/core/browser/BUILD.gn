@@ -526,8 +526,6 @@ static_library("browser") {
     "webdata/autofill_webdata_backend.h",
     "webdata/autofill_webdata_backend_impl.cc",
     "webdata/autofill_webdata_backend_impl.h",
-    "webdata/autofill_webdata_backend_util.cc",
-    "webdata/autofill_webdata_backend_util.h",
     "webdata/autofill_webdata_service.cc",
     "webdata/autofill_webdata_service.h",
     "webdata/autofill_webdata_service_observer.h",
