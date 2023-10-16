@@ -3,16 +3,19 @@
 // found in the LICENSE file.
 
 import {PrivacyHubBrowserProxyImpl} from 'chrome://os-settings/lazy_load.js';
-import {CrDialogElement, OsSettingsPrivacyPageElement, OsSettingsRoutes, PeripheralDataAccessBrowserProxyImpl, Router, routes, SecureDnsMode, settingMojom, SettingsToggleButtonElement} from 'chrome://os-settings/os_settings.js';
+import {CrDialogElement, createRouterForTesting, CrRadioGroupElement, OsSettingsPrivacyPageElement, OsSettingsRoutes, PageStatus, PeripheralDataAccessBrowserProxyImpl, Router, routes, SecureDnsMode, settingMojom, SettingsToggleButtonElement, SyncBrowserProxy, SyncBrowserProxyImpl} from 'chrome://os-settings/os_settings.js';
+import {assert} from 'chrome://resources/js/assert.js';
+import {webUIListenerCallback} from 'chrome://resources/js/cr.js';
 import {loadTimeData} from 'chrome://resources/js/load_time_data.js';
 import {getDeepActiveElement} from 'chrome://resources/js/util_ts.js';
 import {flush} from 'chrome://resources/polymer/v3_0/polymer/polymer_bundled.min.js';
 import {assertEquals, assertFalse, assertNotEquals, assertNull, assertTrue} from 'chrome://webui-test/chai_assert.js';
-import {waitAfterNextRender} from 'chrome://webui-test/polymer_test_util.js';
+import {flushTasks, waitAfterNextRender} from 'chrome://webui-test/polymer_test_util.js';
 import {eventToPromise} from 'chrome://webui-test/test_util.js';
 
 import {FakeMetricsPrivate} from '../fake_metrics_private.js';
 import {FakeQuickUnlockPrivate} from '../fake_quick_unlock_private.js';
+import {TestSyncBrowserProxy} from '../test_os_sync_browser_proxy.js';
 
 import {TestPeripheralDataAccessBrowserProxy} from './test_peripheral_data_access_browser_proxy.js';
 import {TestPrivacyHubBrowserProxy} from './test_privacy_hub_browser_proxy.js';
@@ -25,6 +28,137 @@ interface SubpageTriggerData {
   triggerSelector: string;
   routeName: keyof OsSettingsRoutes;
 }
+
+suite('with isRevampWayfindingEnabled set to true', () => {
+  let privacyPage: OsSettingsPrivacyPageElement;
+  let browserProxy: TestPeripheralDataAccessBrowserProxy;
+  let syncBrowserProxy: SyncBrowserProxy&TestSyncBrowserProxy;
+
+  async function createPage(): Promise<void> {
+    privacyPage = document.createElement('os-settings-privacy-page');
+    document.body.appendChild(privacyPage);
+    flush();
+
+    await browserProxy.whenCalled('isThunderboltSupported');
+  }
+
+  setup(() => {
+    loadTimeData.overrideValues({
+      isRevampWayfindingEnabled: true,
+    });
+    const testRouter = createRouterForTesting();
+    Router.resetInstanceForTesting(testRouter);
+
+    browserProxy = new TestPeripheralDataAccessBrowserProxy();
+    PeripheralDataAccessBrowserProxyImpl.setInstanceForTesting(browserProxy);
+    syncBrowserProxy = new TestSyncBrowserProxy();
+    SyncBrowserProxyImpl.setInstance(syncBrowserProxy);
+
+    Router.getInstance().navigateTo(routes.OS_PRIVACY);
+  });
+
+  teardown(() => {
+    Router.getInstance().resetRouteForTesting();
+    privacyPage.remove();
+  });
+
+  test('Deep link to encryption options on old sync page', async () => {
+    createPage();
+    await waitAfterNextRender(privacyPage);
+
+    // Load the sync page.
+    Router.getInstance().navigateTo(routes.SYNC);
+    await flushTasks();
+
+    // Make the sync page configurable.
+    const syncPage =
+        privacyPage.shadowRoot!.querySelector('os-settings-sync-subpage');
+    assertTrue(!!syncPage);
+    syncPage.syncPrefs = {
+      customPassphraseAllowed: true,
+      passphraseRequired: false,
+      appsManaged: false,
+      appsRegistered: false,
+      appsSynced: false,
+      autofillManaged: false,
+      autofillRegistered: false,
+      autofillSynced: false,
+      bookmarksManaged: false,
+      bookmarksRegistered: false,
+      bookmarksSynced: false,
+      encryptAllData: false,
+      extensionsManaged: false,
+      extensionsRegistered: false,
+      extensionsSynced: false,
+      passwordsManaged: false,
+      passwordsRegistered: false,
+      passwordsSynced: false,
+      paymentsManaged: false,
+      paymentsRegistered: false,
+      paymentsSynced: false,
+      preferencesManaged: false,
+      preferencesRegistered: false,
+      preferencesSynced: false,
+      readingListManaged: false,
+      readingListRegistered: false,
+      readingListSynced: false,
+      savedTabGroupsManaged: false,
+      savedTabGroupsRegistered: false,
+      savedTabGroupsSynced: false,
+      syncAllDataTypes: false,
+      tabsManaged: false,
+      tabsRegistered: false,
+      tabsSynced: false,
+      themesManaged: false,
+      themesRegistered: false,
+      themesSynced: false,
+      trustedVaultKeysRequired: false,
+      typedUrlsManaged: false,
+      typedUrlsRegistered: false,
+      typedUrlsSynced: false,
+      wifiConfigurationsManaged: false,
+      wifiConfigurationsRegistered: false,
+      wifiConfigurationsSynced: false,
+    };
+
+    webUIListenerCallback('page-status-changed', PageStatus.CONFIGURE);
+    const configureElement = syncPage.shadowRoot!.querySelector<HTMLElement>(
+        `#${PageStatus.CONFIGURE}`);
+    assertTrue(!!configureElement);
+    assertFalse(configureElement.hidden);
+    const spinnerElement = syncPage.shadowRoot!.querySelector<HTMLElement>(
+        `#${PageStatus.SPINNER}`);
+    assertTrue(!!spinnerElement);
+    assertTrue(spinnerElement.hidden);
+
+    // Try the deep link.
+    const params = new URLSearchParams();
+    const syncEncryptionOptionsSettingId =
+        settingMojom.Setting.kNonSplitSyncEncryptionOptions.toString();
+    params.append('settingId', syncEncryptionOptionsSettingId);
+    Router.getInstance().navigateTo(routes.SYNC, params);
+
+    // Flush to make sure the dropdown expands.
+    flush();
+    const element = syncPage.shadowRoot!.querySelector(
+        'os-settings-sync-encryption-options');
+    assertTrue(!!element);
+    const radioGroupElement =
+        element.shadowRoot!.querySelector<CrRadioGroupElement>(
+            '#encryptionRadioGroup');
+    assertTrue(!!radioGroupElement);
+    const radioButton = radioGroupElement.get('buttons_')[0];
+    assertTrue(!!radioButton);
+    const deepLinkElement = radioButton.shadowRoot!.querySelector('#button');
+    assert(deepLinkElement);
+
+    await waitAfterNextRender(deepLinkElement);
+    assertEquals(
+        deepLinkElement, getDeepActiveElement(),
+        `Encryption option should be focused for settingId=${
+            syncEncryptionOptionsSettingId}.`);
+  });
+});
 
 suite('<os-settings-privacy-page>', () => {
   let privacyPage: OsSettingsPrivacyPageElement;

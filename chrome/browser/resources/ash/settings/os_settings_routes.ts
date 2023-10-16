@@ -317,10 +317,14 @@ export function createRoutes(): OsSettingsRoutes {
         r.BASIC, routesMojom.PEOPLE_SECTION_PATH, Section.kPeople);
     r.ACCOUNT_MANAGER = createSubpage(
         r.OS_PEOPLE, routesMojom.MY_ACCOUNTS_SUBPAGE_PATH, Subpage.kMyAccounts);
-    r.OS_SYNC = createSubpage(
-        r.OS_PEOPLE, routesMojom.SYNC_SUBPAGE_PATH, Subpage.kSync);
-    r.SYNC = createSubpage(
-        r.OS_PEOPLE, routesMojom.SYNC_SETUP_SUBPAGE_PATH, Subpage.kSyncSetup);
+
+    if (!isRevampWayfindingEnabled()) {
+      // TODO(b/305747266) : Disambiguate the names for OS_SYNC and SYNC.
+      r.OS_SYNC = createSubpage(
+          r.OS_PEOPLE, routesMojom.SYNC_SUBPAGE_PATH, Subpage.kSync);
+      r.SYNC = createSubpage(
+          r.OS_PEOPLE, routesMojom.SYNC_SETUP_SUBPAGE_PATH, Subpage.kSyncSetup);
+    }
   }
 
   // Kerberos section.
@@ -576,6 +580,17 @@ export function createRoutes(): OsSettingsRoutes {
       r.BRUSCHETTA_DETAILS = createSubpage(
           r.ABOUT, routesMojom.BRUSCHETTA_DETAILS_SUBPAGE_PATH,
           Subpage.kBruschettaDetails);
+    }
+
+    // Sync subpages.
+    if (!isGuest()) {
+      assert(r.OS_PRIVACY);
+      // TODO(b/305747266) : Disambiguate the names for OS_SYNC and SYNC.
+      r.OS_SYNC = createSubpage(
+          r.OS_PRIVACY, routesMojom.SYNC_SUBPAGE_PATH, Subpage.kSync);
+      r.SYNC = createSubpage(
+          r.OS_PRIVACY, routesMojom.SYNC_SETUP_SUBPAGE_PATH,
+          Subpage.kSyncSetup);
     }
   } else {
     // Date and Time section.
