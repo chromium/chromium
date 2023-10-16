@@ -8661,14 +8661,10 @@ void RenderFrameHostImpl::MaybeSendFencedFrameAutomaticReportingBeacon(
     return;
   }
 
-  // Before M119: If there is no automatic beacon declared, there is nothing to
-  //              send.
-  // After M119: If there is no automatic beacon data set, beacons will be sent
-  //             out for all registered destinations, but with no data.
+  // If there is no automatic beacon declared, there is nothing to send.
   absl::optional<AutomaticBeaconInfo> info =
       properties->automatic_beacon_info();
-  if (!info && !base::FeatureList::IsEnabled(
-                   blink::features::kFencedFramesM119Features)) {
+  if (!info.has_value()) {
     return;
   }
 
