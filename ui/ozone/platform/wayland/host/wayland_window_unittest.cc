@@ -3299,6 +3299,26 @@ TEST_P(WaylandWindowTest, PopupPassesSetAnchorInformation) {
                          nested_menu_window_positioner);
 }
 
+TEST_P(WaylandWindowTest, SetBoundsResizesEmptySizes) {
+  auto* toplevel_window = window_.get();
+  toplevel_window->SetBoundsInDIP(gfx::Rect(666, 666));
+
+  testing::NiceMock<MockWaylandPlatformWindowDelegate> popup_delegate;
+  gfx::Rect menu_window_bounds(gfx::Point(0, 0), {0, 0});
+  std::unique_ptr<WaylandWindow> popup = CreateWaylandWindowWithParams(
+      PlatformWindowType::kMenu, menu_window_bounds, &popup_delegate,
+      toplevel_window->GetWidget());
+  EXPECT_TRUE(popup);
+
+  popup->SetBoundsInDIP({0, 0, 0, 0});
+
+  VerifyXdgPopupPosition(
+      popup.get(),
+      {gfx::Rect(0, 0, 1, 1), gfx::Size(1, 1), XDG_POSITIONER_ANCHOR_TOP_LEFT,
+       XDG_POSITIONER_GRAVITY_BOTTOM_RIGHT,
+       XDG_POSITIONER_CONSTRAINT_ADJUSTMENT_FLIP_Y});
+}
+
 TEST_P(WaylandWindowTest, SetOpaqueRegion) {
   gfx::Rect new_bounds(500, 600);
   SkIRect rect =

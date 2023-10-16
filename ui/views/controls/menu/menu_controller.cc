@@ -2203,16 +2203,15 @@ void MenuController::OpenMenuImpl(MenuItemView* item, bool show) {
           : CalculateMenuBounds(item, preferred_open_direction,
                                 &resulting_direction, &anchor);
 
-  // TODO(crbug.com/1467321): Investigate why menu bounds can be zero. Remove
-  // the log when the crash is fixed.
 #if BUILDFLAG(IS_CHROMEOS_LACROS)
-  CHECK(!bounds.size().IsEmpty())
-      << "Menu size must NOT be empty but it is " << bounds.ToString()
-      << " calculated as "
-      << (calculate_as_bubble_menu ? "bubble menu" : "menu")
-      << ". The item count is "
-      << static_cast<int>(item->GetSubmenu()->GetMenuItems().size())
-      << ". See crbug.com/1467321.";
+  if (bounds.size().IsEmpty()) {
+    LOG(WARNING) << "Menu size is unexpectedly zero. Bounds: "
+                 << bounds.ToString()
+                 << ", anchor: " << anchor.anchor_rect.ToString()
+                 << ", display_bounds: " << state_.monitor_bounds.ToString()
+                 << ", calculated as bubble: " << calculate_as_bubble_menu;
+    base::debug::DumpWithoutCrashing();
+  }
 #endif
 
   SetChildMenuOpenDirectionAtDepth(menu_depth, resulting_direction);

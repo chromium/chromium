@@ -18,6 +18,8 @@ class WaylandConnection;
 class WaylandWindow;
 
 // Popup wrapper for xdg-shell stable
+// Note that XDG does not allow {0, 0} geometries in its protocol, but this is
+// allowed in Chrome. All {0, 0} bounds will be resized to {1, 1}.
 class XDGPopupWrapperImpl : public ShellPopupWrapper {
  public:
   XDGPopupWrapperImpl(std::unique_ptr<XDGSurfaceWrapperImpl> surface,
