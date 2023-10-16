@@ -75,7 +75,6 @@ class TabLifecycleUnitSource : public BrowserListObserver,
   friend class TabLifecycleStateObserver;
   friend class TabLifecycleUnitTest;
   friend class TabManagerTest;
-  friend class TabActivityWatcherTest;
   FRIEND_TEST_ALL_PREFIXES(TabManagerTest, TabManagerWasDiscarded);
   FRIEND_TEST_ALL_PREFIXES(TabManagerTest,
                            TabManagerWasDiscardedCrossSiteSubFrame);
