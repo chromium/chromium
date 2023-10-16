@@ -278,7 +278,7 @@ const NGLayoutResult* NGSimplifiedLayoutAlgorithm::Layout() {
     // ideal. We should save this on the physical fragment which initially
     // calculated it.
     const auto* layer = child.GetLayoutBox()->Layer();
-    NGLogicalStaticPosition position = layer->GetStaticPosition();
+    LogicalStaticPosition position = layer->GetStaticPosition();
     container_builder_.AddOutOfFlowChildCandidate(
         To<NGBlockNode>(child), position.offset, position.inline_edge,
         position.block_edge);

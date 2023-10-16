@@ -272,8 +272,8 @@ void NGFlexLayoutAlgorithm::HandleOutOfFlowPositionedItems(
     }
   }
 
-  using InlineEdge = NGLogicalStaticPosition::InlineEdge;
-  using BlockEdge = NGLogicalStaticPosition::BlockEdge;
+  using InlineEdge = LogicalStaticPosition::InlineEdge;
+  using BlockEdge = LogicalStaticPosition::BlockEdge;
 
   BoxStrut border_scrollbar_padding = BorderScrollbarPadding();
   border_scrollbar_padding.block_start =

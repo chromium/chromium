@@ -162,12 +162,12 @@ struct NGMulticolWithPendingOOFs
 struct CORE_EXPORT NGPhysicalOutOfFlowPositionedNode {
   DISALLOW_NEW();
 
-  using HorizontalEdge = NGPhysicalStaticPosition::HorizontalEdge;
-  using VerticalEdge = NGPhysicalStaticPosition::VerticalEdge;
+  using HorizontalEdge = PhysicalStaticPosition::HorizontalEdge;
+  using VerticalEdge = PhysicalStaticPosition::VerticalEdge;
 
  public:
   Member<LayoutBox> box;
-  // Unpacked NGPhysicalStaticPosition.
+  // Unpacked PhysicalStaticPosition.
   PhysicalOffset static_position;
   unsigned static_position_horizontal_edge : 2;
   unsigned static_position_vertical_edge : 2;
@@ -177,7 +177,7 @@ struct CORE_EXPORT NGPhysicalOutOfFlowPositionedNode {
 
   NGPhysicalOutOfFlowPositionedNode(
       NGBlockNode node,
-      NGPhysicalStaticPosition static_position,
+      PhysicalStaticPosition static_position,
       NGInlineContainer<PhysicalOffset> inline_container =
           NGInlineContainer<PhysicalOffset>())
       : box(node.GetLayoutBox()),
@@ -196,7 +196,7 @@ struct CORE_EXPORT NGPhysicalOutOfFlowPositionedNode {
   VerticalEdge GetStaticPositionVerticalEdge() const {
     return static_cast<VerticalEdge>(static_position_vertical_edge);
   }
-  NGPhysicalStaticPosition StaticPosition() const {
+  PhysicalStaticPosition StaticPosition() const {
     return {static_position, GetStaticPositionHorizontalEdge(),
             GetStaticPositionVerticalEdge()};
   }
@@ -216,14 +216,14 @@ struct CORE_EXPORT NGLogicalOutOfFlowPositionedNode {
 
  public:
   Member<LayoutBox> box;
-  NGLogicalStaticPosition static_position;
+  LogicalStaticPosition static_position;
   NGInlineContainer<LogicalOffset> inline_container;
   // Whether or not this is an NGLogicalOOFNodeForFragmentation.
   unsigned is_for_fragmentation : 1;
 
   NGLogicalOutOfFlowPositionedNode(
       NGBlockNode node,
-      NGLogicalStaticPosition static_position,
+      LogicalStaticPosition static_position,
       NGInlineContainer<LogicalOffset> inline_container =
           NGInlineContainer<LogicalOffset>())
       : box(node.GetLayoutBox()),
@@ -267,7 +267,7 @@ struct CORE_EXPORT NGPhysicalOOFNodeForFragmentation final
 
   NGPhysicalOOFNodeForFragmentation(
       NGBlockNode node,
-      NGPhysicalStaticPosition static_position,
+      PhysicalStaticPosition static_position,
       NGInlineContainer<PhysicalOffset> inline_container =
           NGInlineContainer<PhysicalOffset>(),
       NGContainingBlock<PhysicalOffset> containing_block =
@@ -305,7 +305,7 @@ struct CORE_EXPORT NGLogicalOOFNodeForFragmentation final
 
   NGLogicalOOFNodeForFragmentation(
       NGBlockNode node,
-      NGLogicalStaticPosition static_position,
+      LogicalStaticPosition static_position,
       NGInlineContainer<LogicalOffset> inline_container =
           NGInlineContainer<LogicalOffset>(),
       NGContainingBlock<LogicalOffset> containing_block =

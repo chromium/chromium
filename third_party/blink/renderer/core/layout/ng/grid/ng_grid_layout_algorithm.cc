@@ -3119,15 +3119,14 @@ LayoutUnit AlignmentOffset(LayoutUnit container_size,
   return LayoutUnit();
 }
 
-void AlignmentOffsetForOutOfFlow(
-    const AxisEdge inline_axis_edge,
-    const AxisEdge block_axis_edge,
-    const LogicalSize container_size,
-    NGLogicalStaticPosition::InlineEdge* inline_edge,
-    NGLogicalStaticPosition::BlockEdge* block_edge,
-    LogicalOffset* offset) {
-  using InlineEdge = NGLogicalStaticPosition::InlineEdge;
-  using BlockEdge = NGLogicalStaticPosition::BlockEdge;
+void AlignmentOffsetForOutOfFlow(const AxisEdge inline_axis_edge,
+                                 const AxisEdge block_axis_edge,
+                                 const LogicalSize container_size,
+                                 LogicalStaticPosition::InlineEdge* inline_edge,
+                                 LogicalStaticPosition::BlockEdge* block_edge,
+                                 LogicalOffset* offset) {
+  using InlineEdge = LogicalStaticPosition::InlineEdge;
+  using BlockEdge = LogicalStaticPosition::BlockEdge;
 
   switch (inline_axis_edge) {
     case AxisEdge::kStart:
@@ -4079,8 +4078,8 @@ void NGGridLayoutAlgorithm::PlaceOutOfFlowItems(
                                            ? containing_block_rect->size
                                            : default_containing_block_size;
 
-    NGLogicalStaticPosition::InlineEdge inline_edge;
-    NGLogicalStaticPosition::BlockEdge block_edge;
+    LogicalStaticPosition::InlineEdge inline_edge;
+    LogicalStaticPosition::BlockEdge block_edge;
 
     AlignmentOffsetForOutOfFlow(out_of_flow_item.InlineAxisAlignment(),
                                 out_of_flow_item.BlockAxisAlignment(),

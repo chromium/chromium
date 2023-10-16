@@ -1090,7 +1090,7 @@ void NGOutOfFlowLayoutPart::LayoutOOFsInMulticol(
       // fragment.
       const WritingModeConverter containing_block_converter(
           writing_direction, containing_block_fragment->Size());
-      NGLogicalStaticPosition static_position =
+      LogicalStaticPosition static_position =
           descendant.StaticPosition().ConvertToLogical(
               containing_block_converter);
 
@@ -1556,7 +1556,7 @@ NGOutOfFlowLayoutPart::NodeInfo NGOutOfFlowLayoutPart::SetupNodeInfo(
   // be relative to the container's padding-box. Since
   // |container_info.rect.offset| is relative to its fragmentainer in this
   // case, we also need to adjust the offset to account for this.
-  NGLogicalStaticPosition static_position = oof_node.static_position;
+  LogicalStaticPosition static_position = oof_node.static_position;
   static_position.offset -= container_info.rect.offset;
   if (containing_block_fragment) {
     const auto& containing_block_for_fragmentation =
@@ -1566,7 +1566,7 @@ NGOutOfFlowLayoutPart::NodeInfo NGOutOfFlowLayoutPart::SetupNodeInfo(
         containing_block_for_fragmentation.RequiresContentBeforeBreaking();
   }
 
-  NGLogicalStaticPosition oof_static_position =
+  LogicalStaticPosition oof_static_position =
       static_position
           .ConvertToPhysical({ConstraintSpace().GetWritingDirection(),
                               container_physical_content_size})
@@ -2725,7 +2725,7 @@ void NGOutOfFlowLayoutPart::ReplaceFragment(
 
 void NGOutOfFlowLayoutPart::SaveStaticPositionOnPaintLayer(
     LayoutBox* layout_box,
-    const NGLogicalStaticPosition& position) const {
+    const LogicalStaticPosition& position) const {
   const LayoutObject* parent =
       GetLayoutObjectForParentNode<const LayoutObject*>(layout_box);
   const LayoutObject* container = container_builder_->GetLayoutObject();
@@ -2737,8 +2737,8 @@ void NGOutOfFlowLayoutPart::SaveStaticPositionOnPaintLayer(
   }
 }
 
-NGLogicalStaticPosition NGOutOfFlowLayoutPart::ToStaticPositionForLegacy(
-    NGLogicalStaticPosition position) const {
+LogicalStaticPosition NGOutOfFlowLayoutPart::ToStaticPositionForLegacy(
+    LogicalStaticPosition position) const {
   // Legacy expects the static position to include the block contribution from
   // previous columns.
   if (const auto* break_token = container_builder_->PreviousBreakToken())

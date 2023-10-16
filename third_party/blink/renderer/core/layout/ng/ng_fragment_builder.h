@@ -202,12 +202,11 @@ class CORE_EXPORT NGFragmentBuilder {
   // NGOutOfFlowLayoutPart(container_style, builder).Run();
   //
   // See layout part for builder interaction.
-  void AddOutOfFlowChildCandidate(NGBlockNode,
-                                  const LogicalOffset& child_offset,
-                                  NGLogicalStaticPosition::InlineEdge =
-                                      NGLogicalStaticPosition::kInlineStart,
-                                  NGLogicalStaticPosition::BlockEdge =
-                                      NGLogicalStaticPosition::kBlockStart);
+  void AddOutOfFlowChildCandidate(
+      NGBlockNode,
+      const LogicalOffset& child_offset,
+      LogicalStaticPosition::InlineEdge = LogicalStaticPosition::kInlineStart,
+      LogicalStaticPosition::BlockEdge = LogicalStaticPosition::kBlockStart);
 
   void AddOutOfFlowChildCandidate(
       const NGLogicalOutOfFlowPositionedNode& candidate);
