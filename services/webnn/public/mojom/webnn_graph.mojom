@@ -153,6 +153,23 @@ struct Pool2d {
   InputOperandLayout layout;
 };
 
+struct StartAndSize {
+  uint32 start;
+  uint32 size;
+};
+
+struct Slice {
+  // The id of input operand is used to get the `Operand` description from
+  // `GraphInfo.id_to_operand_map`.
+  uint64 input_operand_id;
+  // The id of output operand is used to get the `Operand` description from
+  // `GraphInfo.id_to_operand_map`.
+  uint64 output_operand_id;
+  // An array containing the number of elements of the input window in each
+  // dimension.
+  array<StartAndSize> starts_and_sizes;
+};
+
 // Contains the attributes of gemm operator.
 struct GemmAttributes {
   // The optional third tensor in expression alpha * A * B + beta * C.
@@ -280,6 +297,7 @@ union Operation {
   Pool2d pool2d;
   Relu relu;
   Resample2d resample2d;
+  Slice slice;
   Softmax softmax;
   Split split;
   Transpose transpose;

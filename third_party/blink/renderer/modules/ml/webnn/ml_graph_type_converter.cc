@@ -467,6 +467,25 @@ OperationPtr CreateReshapeOperator(const OperandToIdMap& operand_to_id_map,
   return blink_mojom::Operation::NewGenericOperator(std::move(operator_mojo));
 }
 
+OperationPtr CreateSliceOperation(const OperandToIdMap& operand_to_id_map,
+                                  const MLOperator* slice) {
+  auto slice_mojo = webnn::mojom::blink::Slice::New();
+  slice_mojo->input_operand_id = GetOperatorInputId(slice, operand_to_id_map);
+  slice_mojo->output_operand_id = GetOperatorOutputId(slice, operand_to_id_map);
+  const MLSliceOperator* slice_operator =
+      static_cast<const MLSliceOperator*>(slice);
+  CHECK_EQ(slice_operator->Sizes().size(), slice_operator->Starts().size());
+  slice_mojo->starts_and_sizes.reserve(slice_operator->Starts().size());
+  for (uint32_t i = 0; i < slice_operator->Starts().size(); ++i) {
+    webnn::mojom::blink::StartAndSizePtr start_and_size =
+        webnn::mojom::blink::StartAndSize::New();
+    start_and_size->start = slice_operator->Starts()[i];
+    start_and_size->size = slice_operator->Sizes()[i];
+    slice_mojo->starts_and_sizes.push_back(std::move(start_and_size));
+  }
+  return webnn::mojom::blink::Operation::NewSlice(std::move(slice_mojo));
+}
+
 OperationPtr CreateSoftmaxOperation(const OperandToIdMap& operand_to_id_map,
                                     const MLOperator* softmax) {
   const uint64_t input_operand_id =
@@ -555,6 +574,8 @@ base::expected<OperationPtr, String> ConvertToMojoOperation(
       return CreateReluOperation(operand_to_id_map, op);
     case MLOperator::OperatorKind::kReshape:
       return CreateReshapeOperator(operand_to_id_map, op);
+    case MLOperator::OperatorKind::kSlice:
+      return CreateSliceOperation(operand_to_id_map, op);
     case MLOperator::OperatorKind::kSoftmax:
       return CreateSoftmaxOperation(operand_to_id_map, op);
     case MLOperator::OperatorKind::kSplit:
@@ -574,7 +595,6 @@ base::expected<OperationPtr, String> ConvertToMojoOperation(
     case MLOperator::OperatorKind::kCeil:
     case MLOperator::OperatorKind::kFloor:
     case MLOperator::OperatorKind::kNeg:
-    case MLOperator::OperatorKind::kSlice:
     case MLOperator::OperatorKind::kTanh:
       return base::unexpected(MLOperator::OperatorKindToString(op->Kind()) +
                               " is not implemented.");

@@ -142,6 +142,25 @@ void GraphInfoBuilder::BuildTranspose(uint64_t input_operand_id,
       mojom::Operation::NewTranspose(std::move(transpose)));
 }
 
+void GraphInfoBuilder::BuildSlice(uint64_t input_operand_id,
+                                  uint64_t output_operand_id,
+                                  std::vector<uint32_t> starts,
+                                  std::vector<uint32_t> sizes) {
+  CHECK(starts.size() == sizes.size());
+  mojom::SlicePtr slice = mojom::Slice::New();
+  slice->input_operand_id = input_operand_id;
+  slice->output_operand_id = output_operand_id;
+  for (uint32_t i = 0; i < starts.size(); ++i) {
+    mojom::StartAndSizePtr start_and_size = mojom::StartAndSize::New();
+    start_and_size->start = starts[i];
+    start_and_size->size = sizes[i];
+    slice->starts_and_sizes.push_back(std::move(start_and_size));
+  }
+
+  graph_info_->operations.push_back(
+      mojom::Operation::NewSlice(std::move(slice)));
+}
+
 mojom::GraphInfoPtr GraphInfoBuilder::CloneGraphInfo() const {
   CHECK_IS_TEST();
   mojom::GraphInfoPtr cloned_graph_info = mojom::GraphInfo::New();

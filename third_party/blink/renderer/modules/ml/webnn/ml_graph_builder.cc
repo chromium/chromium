@@ -1529,63 +1529,22 @@ MLOperand* MLGraphBuilder::slice(const MLOperand* input,
                                  const Vector<uint32_t>& starts,
                                  const Vector<uint32_t>& sizes,
                                  ExceptionState& exception_state) {
-  const auto input_rank = input->Dimensions().size();
-  if (starts.size() != input_rank) {
-    exception_state.ThrowDOMException(DOMExceptionCode::kDataError,
-                                      "The length of starts must be "
-                                      "equal to the rank of the input tensor.");
+  webnn::SliceAttributes attributes;
+  attributes.sizes.assign(sizes.begin(), sizes.end());
+  attributes.starts.assign(starts.begin(), starts.end());
+  auto validated_output = webnn::ValidateSliceAndInferOutput(
+      ConvertToComponentOperand(input), attributes);
+  if (!validated_output.has_value()) {
+    exception_state.ThrowDOMException(
+        DOMExceptionCode::kDataError,
+        WTF::String::FromUTF8(validated_output.error()));
     return nullptr;
-  }
-  if (sizes.size() != input_rank) {
-    exception_state.ThrowDOMException(DOMExceptionCode::kDataError,
-                                      "The length of sizes must be "
-                                      "equal to the rank of the input tensor.");
-    return nullptr;
-  }
-
-  for (wtf_size_t i = 0; i < input_rank; i++) {
-    if (starts[i] >= input->Dimensions()[i]) {
-      exception_state.ThrowDOMException(
-          DOMExceptionCode::kDataError,
-          String::Format("For dimension (%u): the starting index to slice must "
-                         "be less than input size (%u).",
-                         i, input->Dimensions()[i]));
-      return nullptr;
-    }
-    // WebNN plans to allow 0 size dimensions and an issue has been filed to
-    // track it: https://github.com/webmachinelearning/webnn/issues/391.
-    if (sizes[i] == 0) {
-      exception_state.ThrowDOMException(
-          DOMExceptionCode::kDataError,
-          String::Format("For dimension (%u): the number of elements to slice "
-                         "must not be 0.",
-                         i));
-      return nullptr;
-    }
-    auto checked_ending_index =
-        base::MakeCheckedNum<uint32_t>(starts[i]) + sizes[i];
-    if (!checked_ending_index.IsValid<uint32_t>()) {
-      exception_state.ThrowDOMException(
-          DOMExceptionCode::kDataError,
-          String::Format(
-              "For dimension (%u): the ending index to slice is too large.",
-              i));
-      return nullptr;
-    }
-    if (checked_ending_index.ValueOrDie() > input->Dimensions()[i]) {
-      exception_state.ThrowDOMException(
-          DOMExceptionCode::kDataError,
-          String::Format("For dimension (%u): the ending index to slice must "
-                         "not be greater "
-                         "than input size (%u).",
-                         i, input->Dimensions()[i]));
-      return nullptr;
-    }
   }
 
   auto* slice = MakeGarbageCollected<MLSliceOperator>(this, starts, sizes);
-  auto output =
-      MLOperand::ValidateAndCreateOutput(this, input->Type(), sizes, slice);
+  auto output = MLOperand::ValidateAndCreateOutput(
+      this, ComponentOperandTypeToBlink(validated_output->data_type),
+      Vector<uint32_t>(validated_output->dimensions), slice);
   if (!output.has_value()) {
     exception_state.ThrowDOMException(DOMExceptionCode::kDataError,
                                       output.error());

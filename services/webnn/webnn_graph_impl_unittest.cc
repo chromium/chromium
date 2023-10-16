@@ -1246,6 +1246,115 @@ TEST_F(WebNNGraphImplTest, ReshapeTest) {
         .Test();
   }
 }
+struct SliceTester {
+  struct SliceAttributes {
+    std::vector<uint32_t> starts;
+    std::vector<uint32_t> sizes;
+  };
+
+  OperandInfo input;
+  SliceAttributes attributes;
+  OperandInfo output;
+
+  bool expected;
+
+  void Test() {
+    // Build the graph with mojo type.
+    GraphInfoBuilder builder;
+    uint64_t input_operand_id =
+        builder.BuildInput("input", input.dimensions, input.type);
+    uint64_t output_operand_id =
+        builder.BuildOutput("output", output.dimensions, output.type);
+    builder.BuildSlice(input_operand_id, output_operand_id,
+                       std::move(attributes.starts),
+                       std::move(attributes.sizes));
+    EXPECT_EQ(WebNNGraphImpl::ValidateGraph(builder.GetGraphInfo()), expected);
+  }
+};
+
+TEST_F(WebNNGraphImplTest, SliceTest) {
+  {
+    // Test slice with output dimensions equal to input dimensions.
+    SliceTester{.input = {.type = mojom::Operand::DataType::kFloat32,
+                          .dimensions = {4, 4}},
+                .attributes = {.starts = {0, 0}, .sizes = {4, 4}},
+                .output = {.type = mojom::Operand::DataType::kFloat32,
+                           .dimensions = {4, 4}},
+                .expected = true}
+        .Test();
+  }
+  {
+    // Test 4x4 2-D Tensor to 2x2 slice
+    SliceTester{.input = {.type = mojom::Operand::DataType::kFloat32,
+                          .dimensions = {4, 4}},
+                .attributes = {.starts = {0, 0}, .sizes = {2, 2}},
+                .output = {.type = mojom::Operand::DataType::kFloat32,
+                           .dimensions = {2, 2}},
+                .expected = true}
+        .Test();
+  }
+  {
+    // Test 4x4 2-D Tensor to 2x2 slice with offsets
+    SliceTester{.input = {.type = mojom::Operand::DataType::kFloat32,
+                          .dimensions = {4, 4}},
+                .attributes = {.starts = {2, 2}, .sizes = {2, 2}},
+                .output = {.type = mojom::Operand::DataType::kFloat32,
+                           .dimensions = {2, 2}},
+                .expected = true}
+        .Test();
+  }
+  {
+    // Test that going out-of-bounds of the input tensor fails.
+    SliceTester{.input = {.type = mojom::Operand::DataType::kFloat32,
+                          .dimensions = {2, 2}},
+                .attributes = {.starts = {1, 0}, .sizes = {2, 2}},
+                .output = {.type = mojom::Operand::DataType::kFloat32,
+                           .dimensions = {2, 2}},
+                .expected = false}
+        .Test();
+  }
+  {
+    // Test that mismatched output dimensions and size attribute will fail.
+    SliceTester{.input = {.type = mojom::Operand::DataType::kFloat32,
+                          .dimensions = {2, 2}},
+                .attributes = {.starts = {0, 0}, .sizes = {1, 1}},
+                .output = {.type = mojom::Operand::DataType::kFloat32,
+                           .dimensions = {2, 1}},
+                .expected = false}
+        .Test();
+  }
+  {
+    // Test that using size zero will result in failure.
+    SliceTester{.input = {.type = mojom::Operand::DataType::kFloat32,
+                          .dimensions = {2, 2}},
+                .attributes = {.starts = {0, 0}, .sizes = {0, 1}},
+                .output = {.type = mojom::Operand::DataType::kFloat32,
+                           .dimensions = {1}},
+                .expected = false}
+        .Test();
+  }
+  {
+    // Test that having starts and sizes lengths not equal to the input rank
+    // will fail.
+    SliceTester{.input = {.type = mojom::Operand::DataType::kFloat32,
+                          .dimensions = {4, 4}},
+                .attributes = {.starts = {0}, .sizes = {4}},
+                .output = {.type = mojom::Operand::DataType::kFloat32,
+                           .dimensions = {4, 4}},
+                .expected = false}
+        .Test();
+  }
+  {
+    // Test that input data type not equal to the output data type will fail.
+    SliceTester{.input = {.type = mojom::Operand::DataType::kFloat16,
+                          .dimensions = {4, 4}},
+                .attributes = {.starts = {0, 0}, .sizes = {4, 4}},
+                .output = {.type = mojom::Operand::DataType::kFloat32,
+                           .dimensions = {4, 4}},
+                .expected = false}
+        .Test();
+  }
+}
 
 struct SoftmaxTester {
   OperandInfo input;

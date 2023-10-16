@@ -105,6 +105,8 @@ std::string OpTagToString(Operation::Tag tag) {
       return "resample2d";
     case Operation::Tag::kRelu:
       return "relu";
+    case Operation::Tag::kSlice:
+      return "slice";
     case Operation::Tag::kSplit:
       return "split";
     case Operation::Tag::kTranspose:

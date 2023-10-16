@@ -1668,6 +1668,87 @@ TEST_P(MLGraphTestMojo, ReshapeTest) {
   }
 }
 
+struct SliceTester {
+  struct SliceAttributes {
+    Vector<uint32_t> starts;
+    Vector<uint32_t> sizes;
+  };
+  OperandInfoBlink input;
+  SliceAttributes options;
+  OperandInfoMojo expected_operand;
+  SliceAttributes expected_attributes;
+
+  void Test(MLGraphTestMojo& helper,
+            V8TestingScope& scope,
+            MLGraphBuilder* builder) {
+    auto* input_operand = BuildInput(builder, "input", input.dimensions,
+                                     input.type, scope.GetExceptionState());
+    auto* output_operand =
+        builder->slice(input_operand, options.starts, options.sizes,
+                       scope.GetExceptionState());
+    auto [graph, build_exception] =
+        helper.BuildGraph(scope, builder, {{"output", output_operand}});
+    ASSERT_NE(graph, nullptr);
+
+    auto graph_info = helper.GetGraphInfo();
+    // Verify the graph information of mojo are as expected.
+    ASSERT_EQ(graph_info->operations.size(), 1u);
+    auto& operation = graph_info->operations[0];
+    EXPECT_EQ(operation->is_slice(), true);
+    auto& slice_mojo = operation->get_slice();
+
+    for (uint32_t i = 0; i < slice_mojo->starts_and_sizes.size(); ++i) {
+      EXPECT_EQ(slice_mojo->starts_and_sizes[i]->start,
+                expected_attributes.starts[i]);
+      EXPECT_EQ(slice_mojo->starts_and_sizes[i]->size,
+                expected_attributes.sizes[i]);
+    }
+
+    EXPECT_EQ(graph_info->output_operands.size(), 1u);
+    auto output_operand_id = graph_info->output_operands[0];
+    auto output_operand_iter =
+        graph_info->id_to_operand_map.find(output_operand_id);
+    ASSERT_TRUE(output_operand_iter != graph_info->id_to_operand_map.end());
+    EXPECT_EQ(output_operand_iter->value->data_type, expected_operand.type);
+    EXPECT_EQ(output_operand_iter->value->dimensions,
+              expected_operand.dimensions);
+  }
+};
+
+TEST_P(MLGraphTestMojo, SliceTest) {
+  V8TestingScope scope;
+  // Bind fake WebNN Context in the service for testing.
+  ScopedWebNNServiceBinder scoped_setup_binder(*this, scope);
+  base::test::ScopedFeatureList scoped_feature_list;
+  scoped_feature_list.InitAndEnableFeature(
+      webnn::features::kEnableMachineLearningNeuralNetworkService);
+  auto* options = MLContextOptions::Create();
+  // Create WebNN Context with GPU device preference.
+  options->setDevicePreference(V8MLDevicePreference::Enum::kGpu);
+  auto* builder = CreateMLGraphBuilder(scope.GetExecutionContext(), options);
+  {
+    SliceTester{
+        .input = {.type = V8MLOperandType::Enum::kFloat32,
+                  .dimensions = {4, 4}},
+        .options = {.starts = Vector<uint32_t>({0, 0}),
+                    .sizes = Vector<uint32_t>({4, 4})},
+        .expected_operand = {.type = blink_mojom::Operand::DataType::kFloat32,
+                             .dimensions = {4, 4}},
+        .expected_attributes = {.starts = {0, 0}, .sizes = {4, 4}}}
+        .Test(*this, scope, builder);
+    SliceTester{
+        .input = {.type = V8MLOperandType::Enum::kFloat32,
+                  .dimensions = {1, 2, 3, 4, 5}},
+        .options = {.starts = Vector<uint32_t>({0, 1, 2, 3, 4}),
+                    .sizes = Vector<uint32_t>({1, 1, 1, 1, 1})},
+        .expected_operand = {.type = blink_mojom::Operand::DataType::kFloat32,
+                             .dimensions = {1, 1, 1, 1, 1}},
+        .expected_attributes = {.starts = {0, 1, 2, 3, 4},
+                                .sizes = {1, 1, 1, 1, 1}}}
+        .Test(*this, scope, builder);
+  }
+}
+
 struct SoftmaxTester {
   OperandInfoBlink input;
   OperandInfoMojo expected;

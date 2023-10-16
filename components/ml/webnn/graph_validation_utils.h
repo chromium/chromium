@@ -161,6 +161,24 @@ struct GemmAttributes {
   bool b_transpose = false;
 };
 
+struct SliceAttributes {
+  SliceAttributes();
+  ~SliceAttributes();
+
+  SliceAttributes(SliceAttributes&& other);
+  SliceAttributes& operator=(SliceAttributes&& other);
+
+  SliceAttributes(const SliceAttributes&) = delete;
+  SliceAttributes& operator=(const SliceAttributes&) = delete;
+
+  // The sequence of unsigned integer values indicating the starting index to
+  // slice of each input dimension.
+  std::vector<uint32_t> starts;
+  // The sequence of unsigned integer values indicating the number of elements
+  // to slice of each input dimension.
+  std::vector<uint32_t> sizes;
+};
+
 // Validate softmax operator defined in WebIDL here
 // https://www.w3.org/TR/webnn/#api-mlgraphbuilder-softmax
 base::expected<Operand, std::string> ValidateSoftmaxAndInferOutput(
@@ -216,6 +234,12 @@ base::expected<Operand, std::string> ValidateConcatAndInferOutput(
 base::expected<Operand, std::string> ValidateTransposeAndInferOutput(
     const Operand& input,
     base::span<const uint32_t> permutation);
+
+// Validate slice operator defined in WebIDL here:
+// https://www.w3.org/TR/webnn/#api-mlgraphbuilder-slice
+base::expected<Operand, std::string> ValidateSliceAndInferOutput(
+    const Operand& input,
+    const SliceAttributes& attributes);
 
 base::expected<size_t, std::string> ValidateAndCalculateElementsNumber(
     base::span<const uint32_t> dimensions);

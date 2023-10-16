@@ -647,6 +647,69 @@ base::expected<Operand, std::string> ValidateTransposeAndInferOutput(
   return Operand(input.data_type, std::move(output_shape));
 }
 
+SliceAttributes::SliceAttributes() = default;
+SliceAttributes::~SliceAttributes() = default;
+
+SliceAttributes::SliceAttributes(SliceAttributes&& other) = default;
+SliceAttributes& SliceAttributes::operator=(SliceAttributes&& other) = default;
+
+base::expected<Operand, std::string> ValidateSliceAndInferOutput(
+    const Operand& input,
+    const SliceAttributes& attributes) {
+  if (!attributes.sizes.size()) {
+    return base::unexpected("The length of sizes must be not be zero.");
+  }
+
+  const auto input_rank = input.dimensions.size();
+  if (attributes.starts.size() != input_rank) {
+    return base::unexpected(
+        "The length of starts must be equal to the rank of the input tensor.");
+  }
+
+  if (attributes.sizes.size() != input_rank) {
+    return base::unexpected(
+        "The length of sizes must be equal to the rank of the input tensor.");
+  }
+
+  for (uint32_t i = 0; i < input_rank; ++i) {
+    if (attributes.starts[i] >= input.dimensions[i]) {
+      return base::unexpected(base::StringPrintf(
+          "For dimension (%u): the starting index to slice must "
+          "be less than input size (%u).",
+          i, input.dimensions[i]));
+    }
+
+    // WebNN plans to allow 0 size dimensions and an issue has been filed to
+    // track it: https://github.com/webmachinelearning/webnn/issues/391.
+    if (attributes.sizes[i] == 0) {
+      return base::unexpected(base::StringPrintf(
+          "For dimension (%u): the number of elements to slice "
+          "must not be 0.",
+          i));
+    }
+
+    auto checked_ending_index =
+        base::MakeCheckedNum<uint32_t>(attributes.starts[i]) +
+        attributes.sizes[i];
+    if (!checked_ending_index.IsValid<uint32_t>()) {
+      return base::unexpected(base::StringPrintf(
+          "For dimension (%u): the ending index to slice is too large.", i));
+    }
+
+    if (checked_ending_index.ValueOrDie() > input.dimensions[i]) {
+      return base::unexpected(
+          base::StringPrintf("For dimension (%u): the ending index to slice "
+                             "must not be greater than input size (%u).",
+                             i, input.dimensions[i]));
+    }
+  }
+
+  // The output is a tensor the same as the specified slice sizes.
+  std::vector<uint32_t> output_shape;
+  output_shape.assign(attributes.sizes.begin(), attributes.sizes.end());
+  return Operand(input.data_type, std::move(output_shape));
+}
+
 base::expected<size_t, std::string> ValidateAndCalculateElementsNumber(
     base::span<const uint32_t> dimensions) {
   if (dimensions.empty()) {

@@ -204,6 +204,18 @@ absl::optional<webnn::GemmAttributes> ConvertToGemmAttributes(
   return component_attributes;
 }
 
+webnn::SliceAttributes ConvertToSliceAttributes(
+    const webnn::mojom::SlicePtr& slice) {
+  webnn::SliceAttributes component_attributes;
+  component_attributes.starts.reserve(slice->starts_and_sizes.size());
+  component_attributes.sizes.reserve(slice->starts_and_sizes.size());
+  for (const auto& start_and_size : slice->starts_and_sizes) {
+    component_attributes.starts.push_back(start_and_size->start);
+    component_attributes.sizes.push_back(start_and_size->size);
+  }
+  return component_attributes;
+}
+
 // TODO(crbug.com/1273291): This function will replaced by `operation`
 const mojom::Operand* GetMojoOperand(
     const IdToOperandMap& id_to_operand_map,
@@ -464,6 +476,28 @@ bool ValidateReshape(const IdToOperandMap& id_to_operand_map,
   return true;
 }
 
+bool ValidateSlice(const IdToOperandMap& id_to_operand_map,
+                   const mojom::SlicePtr& slice) {
+  auto* input = GetMojoOperand(id_to_operand_map, slice->input_operand_id);
+  auto* output = GetMojoOperand(id_to_operand_map, slice->output_operand_id);
+
+  if (!input || !output || output == input) {
+    // The slice operator is invalid.
+    return false;
+  }
+
+  auto validated_output = ValidateSliceAndInferOutput(
+      ConvertToComponentOperand(input), ConvertToSliceAttributes(slice));
+  if (!validated_output.has_value()) {
+    return false;
+  }
+  if (validated_output != ConvertToComponentOperand(output)) {
+    return false;
+  }
+
+  return true;
+}
+
 bool ValidateSoftmax(const IdToOperandMap& id_to_operand_map,
                      const mojom::SoftmaxPtr& softmax) {
   auto* input = GetMojoOperand(id_to_operand_map, softmax->input_operand_id);
@@ -605,6 +639,8 @@ bool ValidateOperation(const IdToOperandMap& id_to_operand_map,
       return ValidateResample2d(id_to_operand_map, operation->get_resample2d());
     case mojom::Operation::Tag::kRelu:
       return ValidateRelu(id_to_operand_map, operation->get_relu());
+    case mojom::Operation::Tag::kSlice:
+      return ValidateSlice(id_to_operand_map, operation->get_slice());
     case mojom::Operation::Tag::kSoftmax:
       return ValidateSoftmax(id_to_operand_map, operation->get_softmax());
     case mojom::Operation::Tag::kSplit:
