@@ -58,10 +58,10 @@ bool ParseMatchPatterns(const std::vector<std::string>& matches,
                         bool can_execute_script_everywhere,
                         int valid_schemes,
                         bool all_urls_includes_chrome_urls,
+                        absl::optional<int> definition_index,
                         UserScript* result,
                         std::u16string* error,
-                        bool* wants_file_access,
-                        absl::optional<int> definition_index);
+                        bool* wants_file_access);
 
 // Parses the `js` and `css` fields, and updates `result` with the specified
 // file paths. Returns false and populates `error` if both `js` and `css` are

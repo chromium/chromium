@@ -89,9 +89,9 @@ std::unique_ptr<UserScript> ParseUserScript(
           *user_script.matches,
           base::OptionalToPtr(user_script.exclude_matches),
           extension.creation_flags(), scripting::kScriptsCanExecuteEverywhere,
-          valid_schemes, scripting::kAllUrlsIncludesChromeUrls, result.get(),
-          error, /*wants_file_access=*/nullptr,
-          /*definition_index=*/absl::nullopt)) {
+          valid_schemes, scripting::kAllUrlsIncludesChromeUrls,
+          /*definition_index=*/absl::nullopt, result.get(), error,
+          /*wants_file_access=*/nullptr)) {
     return nullptr;
   }
 

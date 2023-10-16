@@ -249,10 +249,10 @@ bool ParseMatchPatterns(const std::vector<std::string>& matches,
                         bool can_execute_script_everywhere,
                         int valid_schemes,
                         bool all_urls_includes_chrome_urls,
+                        absl::optional<int> definition_index,
                         UserScript* result,
                         std::u16string* error,
-                        bool* wants_file_access,
-                        absl::optional<int> definition_index) {
+                        bool* wants_file_access) {
   if (matches.empty()) {
     *error = GetEmptyMatchesError(result->id(), definition_index);
     return false;
