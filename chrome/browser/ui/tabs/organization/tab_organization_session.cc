@@ -78,7 +78,10 @@ void TabOrganizationSession::StartRequest() {
 void TabOrganizationSession::PopulateAndCreate(
     const TabOrganizationResponse* response) {
   PopulateOrganizations(response);
-  GetNextTabOrganization()->Accept();
+  TabOrganization* organization = GetNextTabOrganization();
+  if (organization->IsValidForOrganizing()) {
+    organization->Accept();
+  }
 }
 
 void TabOrganizationSession::PopulateOrganizations(
