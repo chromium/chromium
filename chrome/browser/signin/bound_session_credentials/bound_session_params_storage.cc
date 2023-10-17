@@ -7,6 +7,7 @@
 #include "base/base64.h"
 #include "chrome/browser/profiles/profile.h"
 #include "chrome/browser/signin/bound_session_credentials/bound_session_params.pb.h"
+#include "chrome/browser/signin/bound_session_credentials/bound_session_params_util.h"
 #include "components/pref_registry/pref_registry_syncable.h"
 #include "components/prefs/pref_service.h"
 #include "third_party/abseil-cpp/absl/types/optional.h"
@@ -41,7 +42,7 @@ BoundSessionParamsPrefsStorage::~BoundSessionParamsPrefsStorage() = default;
 
 bool BoundSessionParamsPrefsStorage::SaveParams(
     const bound_session_credentials::BoundSessionParams& params) {
-  if (!AreParamsValid(params)) {
+  if (!bound_session_credentials::AreParamsValid(params)) {
     return false;
   }
 
@@ -70,7 +71,8 @@ BoundSessionParamsPrefsStorage::ReadParams() const {
   }
 
   bound_session_credentials::BoundSessionParams params;
-  if (params.ParseFromString(params_str) && AreParamsValid(params)) {
+  if (params.ParseFromString(params_str) &&
+      bound_session_credentials::AreParamsValid(params)) {
     return params;
   }
   return absl::nullopt;
@@ -105,7 +107,7 @@ BoundSessionParamsInMemoryStorage::~BoundSessionParamsInMemoryStorage() =
 
 bool BoundSessionParamsInMemoryStorage::SaveParams(
     const bound_session_credentials::BoundSessionParams& params) {
-  if (!AreParamsValid(params)) {
+  if (!bound_session_credentials::AreParamsValid(params)) {
     return false;
   }
 
@@ -144,13 +146,4 @@ BoundSessionParamsStorage::CreatePrefsStorageForTesting(
 void BoundSessionParamsStorage::RegisterProfilePrefs(
     user_prefs::PrefRegistrySyncable* registry) {
   registry->RegisterStringPref(kBoundSessionParamsPref, std::string());
-}
-
-// static
-bool BoundSessionParamsStorage::AreParamsValid(
-    const bound_session_credentials::BoundSessionParams& bound_session_params) {
-  // TODO(crbug.com/1441168): Check for validity of other fields once they are
-  // available.
-  return bound_session_params.has_session_id() &&
-         bound_session_params.has_wrapped_key();
 }

@@ -20,4 +20,14 @@ base::Time TimestampToTime(const Timestamp& timestamp) {
       base::Microseconds(timestamp.microseconds()));
 }
 
+bool AreParamsValid(const BoundSessionParams& bound_session_params) {
+  // TODO(crbug.com/1441168): Check for validity of other fields once they are
+  // available.
+  // Note: The check for params validity checks for empty value as
+  // `bound_session_params.has*()` doesn't check against explicitly set empty
+  // value.
+  return !bound_session_params.session_id().empty() &&
+         !bound_session_params.site().empty() &&
+         !bound_session_params.wrapped_key().empty();
+}
 }  // namespace bound_session_credentials

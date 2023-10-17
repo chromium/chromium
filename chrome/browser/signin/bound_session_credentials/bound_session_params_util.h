@@ -14,6 +14,8 @@ Timestamp TimeToTimestamp(base::Time time);
 
 base::Time TimestampToTime(const Timestamp& timestamp);
 
+bool AreParamsValid(const BoundSessionParams& bound_session_params);
+
 }  // namespace bound_session_credentials
 
 #endif  // CHROME_BROWSER_SIGNIN_BOUND_SESSION_CREDENTIALS_BOUND_SESSION_PARAMS_UTIL_H_

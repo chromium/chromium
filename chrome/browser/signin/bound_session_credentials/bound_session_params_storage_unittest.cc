@@ -35,25 +35,6 @@ MATCHER_P(EqualsProto, message, "") {
 
 }  // namespace
 
-TEST(BoundSessionParamsStorageAreParamsValidTest, Valid) {
-  EXPECT_TRUE(BoundSessionParamsStorage::AreParamsValid(
-      CreateValidBoundSessionParams()));
-}
-
-TEST(BoundSessionParamsStorageAreParamsValidTest, InvalidMissingSessionId) {
-  bound_session_credentials::BoundSessionParams params =
-      CreateValidBoundSessionParams();
-  params.clear_session_id();
-  EXPECT_FALSE(BoundSessionParamsStorage::AreParamsValid(params));
-}
-
-TEST(BoundSessionParamsStorageAreParamsValidTest, InvalidMissingWrappedKey) {
-  bound_session_credentials::BoundSessionParams params =
-      CreateValidBoundSessionParams();
-  params.clear_wrapped_key();
-  EXPECT_FALSE(BoundSessionParamsStorage::AreParamsValid(params));
-}
-
 class BoundSessionParamsStorageTest : public testing::TestWithParam<bool> {
  public:
   BoundSessionParamsStorageTest() : storage_(CreateStorage()) {}

@@ -138,7 +138,7 @@ void BoundSessionRegistrationFetcherImpl::OnURLLoaderComplete(
           net::SchemefulSite(registration_params_.RegistrationEndpoint())
               .Serialize(),
           *session_id, wrapped_key_str_);
-  if (!BoundSessionParamsStorage::AreParamsValid(session_params)) {
+  if (!bound_session_credentials::AreParamsValid(session_params)) {
     RunCallbackAndRecordMetrics(
         base::unexpected(RegistrationError::kInvalidSessionParams));
     return;

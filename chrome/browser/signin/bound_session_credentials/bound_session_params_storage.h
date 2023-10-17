@@ -45,10 +45,6 @@ class BoundSessionParamsStorage {
 
   static void RegisterProfilePrefs(user_prefs::PrefRegistrySyncable* registry);
 
-  static bool AreParamsValid(
-      const bound_session_credentials::BoundSessionParams&
-          bound_session_params);
-
   // Saves `params` to storage. Overwrites existing params if any. `params` are
   // verified before being saved.
   // Returns whether the new parameters were saved. In case of a failure, keeps
