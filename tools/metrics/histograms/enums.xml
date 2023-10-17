@@ -33985,6 +33985,7 @@ Called by update_document_policy_enum.py.-->
   <int value="1168" label="RelatedWebsiteSetsOverrides"/>
   <int value="1169" label="ShowHumanPresenceSensorScreenEnabled"/>
   <int value="1170" label="PasswordSharingEnabled"/>
+  <int value="1171" label="ZstdContentEncodingEnabled"/>
 </enum>
 
 <enum name="EnterprisePoliciesSources">

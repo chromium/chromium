@@ -351,6 +351,9 @@ const PolicyToPreferenceMapEntry kSimplePolicyMap[] = {
   { key::kPolicyTestPageEnabled,
     policy_prefs::kPolicyTestPageEnabled,
     base::Value::Type::BOOLEAN},
+  { key::kZstdContentEncodingEnabled,
+    prefs::kZstdContentEncodingEnabled,
+    base::Value::Type::BOOLEAN},
 // Policies for all platforms - End
 #if BUILDFLAG(IS_ANDROID)
   { key::kAccessibilityPerformanceFilteringAllowed,

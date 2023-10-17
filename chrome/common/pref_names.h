@@ -3892,6 +3892,10 @@ inline constexpr char kHoverCardImagesEnabled[] =
 inline constexpr char kCompressionDictionaryTransportEnabled[] =
     "net.compression_dictionary_transport_enabled";
 
+// Boolean that specifies whether Zstd Content-Encoding is enabled.
+inline constexpr char kZstdContentEncodingEnabled[] =
+    "net.zstd_content_encoding_enabled";
+
 }  // namespace prefs
 
 #endif  // CHROME_COMMON_PREF_NAMES_H_
