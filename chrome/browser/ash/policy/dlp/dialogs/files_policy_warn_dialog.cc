@@ -29,6 +29,7 @@
 #include "ui/base/l10n/l10n_util.h"
 #include "ui/base/metadata/metadata_impl_macros.h"
 #include "ui/chromeos/strings/grit/ui_chromeos_strings.h"
+#include "ui/gfx/text_constants.h"
 #include "ui/views/background.h"
 #include "ui/views/controls/textarea/textarea.h"
 #include "ui/views/layout/box_layout.h"
@@ -315,7 +316,7 @@ void FilesPolicyWarnDialog::MaybeAddJustificationPanel() {
   justification_field_label->SetAllowCharacterBreak(true);
   justification_field_label->SetFontList(
       ash::TypographyProvider::Get()->ResolveTypographyToken(
-          ash::TypographyToken::kCrosLabel2));
+          ash::TypographyToken::kCrosLabel1));
   justification_field_label->SetEnabledColor(
       ash::ColorProvider::Get()->GetContentLayerColor(
           ash::ColorProvider::ContentLayerType::kTextColorPrimary));
@@ -344,11 +345,11 @@ void FilesPolicyWarnDialog::MaybeAddJustificationPanel() {
       views::CreateEmptyBorder(gfx::Insets::TLBR(8, 16, 8, 16)));
   justification_field_->SetFontList(
       ash::TypographyProvider::Get()->ResolveTypographyToken(
-          ash::TypographyToken::kCrosLabel1));
+          ash::TypographyToken::kCrosBody2));
 
   justification_field_length_label_ =
       justification_panel->AddChildView(std::make_unique<views::Label>());
-  justification_field_length_label_->SetHorizontalAlignment(gfx::ALIGN_LEFT);
+  justification_field_length_label_->SetHorizontalAlignment(gfx::ALIGN_RIGHT);
   justification_field_length_label_->SetText(l10n_util::GetStringFUTF16(
       IDS_DEEP_SCANNING_DIALOG_BYPASS_JUSTIFICATION_TEXT_LIMIT_LABEL,
       base::NumberToString16(0),
