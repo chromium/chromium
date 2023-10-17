@@ -31,5 +31,6 @@ PASS ":not(:is(div))" should be a valid selector
 PASS ":not(:where(div))" should be a valid selector
 PASS ":not(:is(div .foo))" should be a valid selector
 PASS ":not(:where(div .foo))" should be a valid selector
+FAIL ":is(# C4Ñ”Ð°Ð½Ð¹Ñ‚Ð¶â••/â”˜Ð“ÐÐ¶Ð®Ð¥Ñ”Ð°â–“â”ÐÐ­Ð‘ÐœÑ”Ð°Ð¡ÐµÐÐ­Ð–Ð%=[ÑÐ¼Ð¼0)" should be an invalid selector assert_throws_dom: ":is(# C4Ñ”Ð°Ð½Ð¹Ñ‚Ð¶â••/â”˜Ð“ÐÐ¶Ð®Ð¥Ñ”Ð°â–“â”ÐÐ­Ð‘ÐœÑ”Ð°Ð¡ÐµÐÐ­Ð–Ð%=[ÑÐ¼Ð¼0)" should throw in querySelector function "() => document.querySelector(selector)" did not throw
 Harness: the test ran to completion.
 

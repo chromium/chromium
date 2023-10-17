@@ -125,7 +125,7 @@ async def test_load_page_twice(
 
 @pytest.mark.parametrize(
     "status, status_text",
-    HTTP_STATUS_AND_STATUS_TEXT,
+    [(status, text) for (status, text) in HTTP_STATUS_AND_STATUS_TEXT if status not in [101, 407]],
 )
 @pytest.mark.asyncio
 async def test_response_status(
@@ -154,6 +154,7 @@ async def test_response_status(
     }
     assert_response_event(
         events[0],
+        expected_request=expected_request,
         expected_response=expected_response,
         redirect_count=0,
     )

@@ -1,0 +1,14 @@
+This is a testharness.js-based test.
+PASS Setup event listeners and wait for load
+PASS Removing an element at mousedown
+PASS Removing an element at mouseup
+PASS Removing an element at mousedown: mousedown should've been fired
+FAIL Removing an element at mousedown: mouseout and mouseleave should've been fired on the removed child assert_equals: expected "[{ 'mouseout' on 'child': button=0, buttons=4 }, { 'mouseleave' on 'child': button=0, buttons=4 }]" but got "[]"
+FAIL Removing an element at mousedown: mouseover should've been fired on the parent assert_equals: expected "[{ 'mouseover' on 'parent': button=0, buttons=4 }]" but got "[{ 'mouseover' on 'parent': button=0, buttons=1 }]"
+FAIL Removing an element at mousedown: mouseenter should not have been fired on the parent assert_equals: expected "[]" but got "[{ 'mouseenter' on 'parent': button=0, buttons=1 }]"
+PASS Removing an element at mouseup: mousedown should've been fired
+FAIL Removing an element at mouseup: mouseout and mouseleave should've been fired on the removed child assert_equals: expected "[{ 'mouseout' on 'child': button=0, buttons=0 }, { 'mouseleave' on 'child': button=0, buttons=0 }]" but got "[]"
+PASS Removing an element at mouseup: mouseover should've been fired on the parent
+FAIL Removing an element at mouseup: mouseenter should not have been fired on the parent assert_equals: expected "[]" but got "[{ 'mouseenter' on 'parent': button=0, buttons=0 }]"
+Harness: the test ran to completion.
+
