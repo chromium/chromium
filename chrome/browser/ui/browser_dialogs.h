@@ -17,7 +17,6 @@
 #include "chrome/browser/ui/bookmarks/bookmark_editor.h"
 #include "components/compose/buildflags.h"
 #include "content/public/browser/bluetooth_delegate.h"
-#include "content/public/browser/login_delegate.h"
 #include "extensions/buildflags/buildflags.h"
 #include "third_party/abseil-cpp/absl/types/optional.h"
 #include "third_party/skia/include/core/SkBitmap.h"
@@ -28,7 +27,6 @@
 #include "ui/gfx/native_widget_types.h"
 
 class Browser;
-class LoginHandler;
 class Profile;
 
 namespace base {
@@ -43,10 +41,6 @@ class WebContents;
 
 namespace extensions {
 class Extension;
-}
-
-namespace net {
-class AuthChallengeInfo;
 }
 
 namespace permissions {
@@ -143,16 +137,6 @@ task_manager::TaskManagerTableModel* ShowTaskManagerViews(Browser* browser);
 void HideTaskManagerViews();
 
 #endif  // BUILDFLAG(IS_MAC)
-
-#if defined(TOOLKIT_VIEWS)
-
-// Creates a toolkit-views based LoginHandler (e.g. HTTP-Auth dialog).
-std::unique_ptr<LoginHandler> CreateLoginHandlerViews(
-    const net::AuthChallengeInfo& auth_info,
-    content::WebContents* web_contents,
-    content::LoginDelegate::LoginAuthRequiredCallback auth_required_callback);
-
-#endif  // TOOLKIT_VIEWS
 
 // Returns a OnceClosure that client code can call to close the device chooser.
 // This OnceClosure references the actual dialog as a WeakPtr, so it's safe to
