@@ -94,6 +94,7 @@ void AccountConsistencyBrowserAgent::OnAddAccount() {
       initWithOperation:AuthenticationOperation::kAddAccount
             accessPoint:signin_metrics::AccessPoint::
                             ACCESS_POINT_ACCOUNT_CONSISTENCY_SERVICE];
+  command.skipIfUINotAvaible = YES;
   [handler_ showSignin:command baseViewController:base_view_controller_];
 }
 

@@ -83,8 +83,13 @@ enum class AuthenticationOperation {
 - (instancetype)initWithOperation:(AuthenticationOperation)operation
                       accessPoint:(signin_metrics::AccessPoint)accessPoint;
 
+// If YES, the sign-in command will not be presented and ignored if there is
+// any dialog already presented on the NTP.
+// Default value: NO.
+@property(nonatomic, assign) BOOL skipIfUINotAvaible;
+
 // The callback to be invoked after the operation is complete.
-@property(copy, nonatomic, readonly)
+@property(nonatomic, copy, readonly)
     ShowSigninCommandCompletionCallback callback;
 
 // The operation to perform during the sign-in flow.

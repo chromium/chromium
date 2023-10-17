@@ -447,10 +447,6 @@ void InjectNTP(Browser* browser) {
   }
 }
 
-- (BOOL)isPresentingSigninView {
-  return self.signinCoordinator != nil;
-}
-
 - (BOOL)isTabGridVisible {
   return self.mainCoordinator.isTabGridActive;
 }
@@ -1758,6 +1754,12 @@ void InjectNTP(Browser* browser) {
 // TODO(crbug.com/779791) : Do not pass `baseViewController` through dispatcher.
 - (void)showSignin:(ShowSigninCommand*)command
     baseViewController:(UIViewController*)baseViewController {
+  if (command.skipIfUINotAvaible &&
+      (baseViewController.presentedViewController ||
+       ![self isTabAvailableToPresentViewController])) {
+    // Make sure the UI is available to present the sign-in view.
+    return;
+  }
   DCHECK(!self.signinCoordinator)
       << "self.signinCoordinator: "
       << base::SysNSStringToUTF8([self.signinCoordinator description]);
@@ -1989,6 +1991,26 @@ void InjectNTP(Browser* browser) {
                               options:options
                          errorHandler:nil];
   }
+}
+
+// Returns YES if the current Tab is available to present a view controller.
+- (BOOL)isTabAvailableToPresentViewController {
+  if (self.signinCoordinator) {
+    return NO;
+  }
+  if (self.settingsNavigationController) {
+    return NO;
+  }
+  if (self.sceneState.appState.initStage <= InitStageFirstRun) {
+    return NO;
+  }
+  if (self.sceneState.appState.currentUIBlocker) {
+    return NO;
+  }
+  if (self.mainCoordinator.isTabGridActive) {
+    return NO;
+  }
+  return YES;
 }
 
 #pragma mark - ApplicationSettingsCommands
