@@ -128,8 +128,7 @@ class NET_EXPORT IOBufferWithSize : public IOBuffer {
 // the IOBuffer interface does not provide a proper way to modify it.
 class NET_EXPORT StringIOBuffer : public IOBuffer {
  public:
-  explicit StringIOBuffer(const std::string& s);
-  explicit StringIOBuffer(std::unique_ptr<std::string> s);
+  explicit StringIOBuffer(std::string s);
 
   int size() const { return static_cast<int>(string_data_.size()); }
 

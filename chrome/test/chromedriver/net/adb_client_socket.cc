@@ -418,7 +418,7 @@ class AdbSendFileSocket : AdbClientSocket {
       buffer.append(payload, payload_length);
 
     scoped_refptr<net::StringIOBuffer> request_buffer =
-        base::MakeRefCounted<net::StringIOBuffer>(buffer);
+        base::MakeRefCounted<net::StringIOBuffer>(std::move(buffer));
 
     auto split_callback = base::SplitOnceCallback(std::move(callback));
     int result = socket_->Write(request_buffer.get(), request_buffer->size(),

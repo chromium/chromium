@@ -60,12 +60,11 @@ void SecurityKeySocket::SendResponse(const std::string& response_data) {
   DCHECK(!write_buffer_);
 
   std::string response_length_string = GetResponseLengthAsBytes(response_data);
-  int response_len = response_length_string.size() + response_data.size();
-  std::unique_ptr<std::string> response(
-      new std::string(response_length_string + response_data));
+  std::string response = response_length_string + response_data;
+  const size_t response_size = response.size();
   write_buffer_ = base::MakeRefCounted<net::DrainableIOBuffer>(
       base::MakeRefCounted<net::StringIOBuffer>(std::move(response)),
-      response_len);
+      response_size);
 
   DCHECK(write_buffer_->BytesRemaining());
   DoWrite();

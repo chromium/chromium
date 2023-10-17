@@ -73,15 +73,13 @@ class FakeFileStreamReader : public FileStreamReader {
  public:
   explicit FakeFileStreamReader(const std::string& contents)
       : buffer_(base::MakeRefCounted<DrainableIOBuffer>(
-            base::MakeRefCounted<net::StringIOBuffer>(
-                std::make_unique<std::string>(contents)),
+            base::MakeRefCounted<net::StringIOBuffer>(contents),
             contents.size())),
         net_error_(net::OK),
         size_(contents.size()) {}
   FakeFileStreamReader(const std::string& contents, uint64_t size)
       : buffer_(base::MakeRefCounted<DrainableIOBuffer>(
-            base::MakeRefCounted<net::StringIOBuffer>(
-                std::make_unique<std::string>(contents)),
+            base::MakeRefCounted<net::StringIOBuffer>(contents),
             contents.size())),
         net_error_(net::OK),
         size_(size) {}

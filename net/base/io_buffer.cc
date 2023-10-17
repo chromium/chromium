@@ -4,6 +4,8 @@
 
 #include "net/base/io_buffer.h"
 
+#include <utility>
+
 #include "base/check_op.h"
 #include "base/numerics/safe_math.h"
 
@@ -52,17 +54,9 @@ IOBufferWithSize::IOBufferWithSize(char* data, size_t size)
 
 IOBufferWithSize::~IOBufferWithSize() = default;
 
-StringIOBuffer::StringIOBuffer(const std::string& s)
-    : IOBuffer(static_cast<char*>(nullptr)), string_data_(s) {
-  AssertValidBufferSize(s.size());
-  data_ = const_cast<char*>(string_data_.data());
-}
-
-StringIOBuffer::StringIOBuffer(std::unique_ptr<std::string> s)
-    : IOBuffer(static_cast<char*>(nullptr)) {
-  AssertValidBufferSize(s->size());
-  string_data_.swap(*s.get());
-  data_ = const_cast<char*>(string_data_.data());
+StringIOBuffer::StringIOBuffer(std::string s) : string_data_(std::move(s)) {
+  AssertValidBufferSize(string_data_.size());
+  data_ = string_data_.data();
 }
 
 StringIOBuffer::~StringIOBuffer() {
