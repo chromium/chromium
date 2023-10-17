@@ -535,4 +535,30 @@ void DismissSignOutSnackbar() {
       assertWithMatcher:grey_sufficientlyVisible()];
 }
 
+// Tests closing the account settings with a remote signout.
+- (void)testAccountSettingsWithRemoteSignout_SyncToSigninEnabled {
+  FakeSystemIdentity* fakeIdentity = [FakeSystemIdentity fakeIdentity1];
+  [SigninEarlGrey addFakeIdentity:fakeIdentity];
+
+  [SigninEarlGreyUI signinWithFakeIdentity:fakeIdentity];
+  [ChromeEarlGreyUI openSettingsMenu];
+  [ChromeEarlGreyUI tapSettingsMenuButton:SettingsAccountButton()];
+
+  // Remove fakeIdentity from device.
+  [SigninEarlGrey forgetFakeIdentity:fakeIdentity];
+  [ChromeEarlGreyUI waitForAppToIdle];
+  [SigninEarlGrey verifySignedOut];
+
+  // Check that Settings is presented.
+  [[EarlGrey
+      selectElementWithMatcher:chrome_test_util::SettingsCollectionView()]
+      assertWithMatcher:grey_notNil()];
+
+  // Verify the error section is not showing.
+  [[EarlGrey selectElementWithMatcher:
+                 grey_accessibilityLabel(l10n_util::GetNSString(
+                     IDS_IOS_ACCOUNT_TABLE_ERROR_ENTER_PASSPHRASE_BUTTON))]
+      assertWithMatcher:grey_notVisible()];
+}
+
 @end

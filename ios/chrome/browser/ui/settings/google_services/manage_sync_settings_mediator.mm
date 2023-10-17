@@ -579,15 +579,9 @@ constexpr CGFloat kBatchUploadSymbolPointSize = 22.;
   }
   // Creates the sign-out item and its section.
   TableViewModel* model = self.consumer.tableViewModel;
-  // TODO(crbug.com/1492132): During some auth error flows, it can happen that
-  // the UI doesn't load correctly and thus the data types section will not
-  // exist at this point. In that case, do not load the following section to
-  // avoid crashing.
-  if (![model hasSectionForSectionIdentifier:SyncDataTypeSectionIdentifier]) {
-    return;
-  }
   NSInteger syncDataTypeSectionIndex =
       [model sectionForSectionIdentifier:SyncDataTypeSectionIdentifier];
+  CHECK_NE(NSNotFound, syncDataTypeSectionIndex);
   [model insertSectionWithIdentifier:SignOutSectionIdentifier
                              atIndex:syncDataTypeSectionIndex + 1];
   TableViewTextItem* item =
@@ -662,13 +656,7 @@ constexpr CGFloat kBatchUploadSymbolPointSize = 22.;
           ? [model
                 sectionForSectionIdentifier:AdvancedSettingsSectionIdentifier]
           : [model sectionForSectionIdentifier:SyncDataTypeSectionIdentifier];
-  // TODO(crbug.com/1492132): During some auth error flows, it can happen that
-  // the UI doesn't load correctly and thus the previous section will not exist
-  // at this point. In that case, do not load the following section to avoid
-  // crashing.
-  if (previousSection == NSNotFound) {
-    return;
-  }
+  CHECK_NE(NSNotFound, previousSection);
   [model insertSectionWithIdentifier:SignOutSectionIdentifier
                              atIndex:previousSection + 1];
 
@@ -1036,11 +1024,7 @@ constexpr CGFloat kBatchUploadSymbolPointSize = 22.;
 - (SyncSettingsAccountState)syncAccountState {
   // As the manage sync settings mediator is running, the sync account state
   // does not change except only when the user signs out of their account.
-  //  The TransportState::PAUSED can show up temporarily if a signout is
-  //  triggered from another device.
-  if (_syncService->GetAccountInfo().IsEmpty() ||
-      _syncService->GetTransportState() ==
-          syncer::SyncService::TransportState::PAUSED) {
+  if (_syncService->GetAccountInfo().IsEmpty()) {
     return SyncSettingsAccountState::kSignedOut;
   }
   return _initialAccountState;
@@ -1443,6 +1427,14 @@ constexpr CGFloat kBatchUploadSymbolPointSize = 22.;
     // updating it's items.
     errorSectionAlreadyExists = NO;
     [self removeSyncErrorsSection:notifyConsumer];
+  }
+
+  if (self.syncAccountState == SyncSettingsAccountState::kSignedIn &&
+      GetAccountErrorUIInfo(_syncService) == nil) {
+    // In some transient states like in SyncService::TransportState::PAUSED,
+    // GetAccountErrorUIInfo returns nil and thus will not be able to fetch the
+    // current error data. In this case, do not update/add the error item.
+    return;
   }
 
   // Create the new sync error item.
