@@ -644,30 +644,6 @@ bool AHardwareBufferImageBackingFactory::ValidateUsage(
     return false;
   }
 
-  const FormatInfo& format_info = GetFormatInfo(format);
-
-  // SHARED_IMAGE_USAGE_RASTER is set when we want to write on Skia
-  // representation and SHARED_IMAGE_USAGE_DISPLAY_READ is used for cases we
-  // want to read from skia representation.
-  // TODO(vikassoni): Also check gpu_preferences.enable_vulkan to figure out
-  // if skia is using vulkan backing or GL backing.
-  const bool use_gles2 =
-      (usage &
-       (SHARED_IMAGE_USAGE_GLES2 | SHARED_IMAGE_USAGE_RASTER |
-        SHARED_IMAGE_USAGE_DISPLAY_READ | SHARED_IMAGE_USAGE_DISPLAY_WRITE));
-
-  // If usage flags indicated this backing can be used as a GL texture, then
-  // do below gl related checks.
-  if (use_gles2) {
-    // Check if the GL texture can be created from AHB with this format.
-    if (!format_info.gl_supported) {
-      LOG(ERROR)
-          << "viz::SharedImageFormat " << format.ToString()
-          << " can not be used to create a GL texture from AHardwareBuffer.";
-      return false;
-    }
-  }
-
   // Check if AHB can be created with the current size restrictions.
   // TODO(vikassoni): Check for VK size restrictions for VK import, GL size
   // restrictions for GL import OR both if this backing is needed to be used
@@ -850,6 +826,29 @@ bool AHardwareBufferImageBackingFactory::IsSupported(
 
   if (!AHardwareBufferSupportedFormat(format)) {
     return false;
+  }
+
+  const FormatInfo& format_info = GetFormatInfo(format);
+
+  // SHARED_IMAGE_USAGE_RASTER is set when we want to write on Skia
+  // representation and SHARED_IMAGE_USAGE_DISPLAY_READ is used for cases we
+  // want to read from skia representation.
+  bool used_by_skia = (usage & SHARED_IMAGE_USAGE_RASTER) ||
+                      (usage & SHARED_IMAGE_USAGE_DISPLAY_READ) ||
+                      (usage & SHARED_IMAGE_USAGE_DISPLAY_WRITE);
+  bool used_by_gl = (usage & SHARED_IMAGE_USAGE_GLES2) ||
+                    (used_by_skia && gr_context_type == GrContextType::kGL);
+
+  // If usage flags indicated this backing can be used as a GL texture, then
+  // do below gl related checks.
+  if (used_by_gl) {
+    // Check if the GL texture can be created from AHB with this format.
+    if (!format_info.gl_supported) {
+      LOG(ERROR)
+          << "viz::SharedImageFormat " << format.ToString()
+          << " can not be used to create a GL texture from AHardwareBuffer.";
+      return false;
+    }
   }
 
   return true;
