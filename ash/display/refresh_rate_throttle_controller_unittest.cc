@@ -19,6 +19,7 @@
 #include "ui/display/manager/test/fake_display_snapshot.h"
 #include "ui/display/manager/test/test_native_display_delegate.h"
 #include "ui/display/manager/util/display_manager_test_util.h"
+#include "ui/display/test/display_test_util.h"
 #include "ui/display/types/display_mode.h"
 #include "ui/display/types/display_snapshot.h"
 #include "ui/display/types/native_display_delegate.h"
@@ -30,6 +31,7 @@ using display::DisplayMode;
 using display::DisplaySnapshot;
 using display::FakeDisplaySnapshot;
 using display::NativeDisplayDelegate;
+using display::ScopedSetInternalDisplayIds;
 using display::test::ActionLogger;
 using display::test::TestNativeDisplayDelegate;
 using power_manager::PowerSupplyProperties;
@@ -92,8 +94,9 @@ class RefreshRateThrottleControllerTest : public AshTestBase {
   void SetUpDisplays(
       const std::vector<std::unique_ptr<DisplaySnapshot>>& snapshots) {
     std::vector<DisplaySnapshot*> outputs;
-    for (const std::unique_ptr<DisplaySnapshot>& snapshot : snapshots)
+    for (const std::unique_ptr<DisplaySnapshot>& snapshot : snapshots) {
       outputs.push_back(snapshot.get());
+    }
 
     display::DisplayConfigurator::TestApi test_api(
         display_manager()->configurator());
@@ -106,8 +109,9 @@ class RefreshRateThrottleControllerTest : public AshTestBase {
   const DisplaySnapshot* GetDisplaySnapshot(int64_t display_id) {
     for (const DisplaySnapshot* snapshot :
          display_manager()->configurator()->cached_displays()) {
-      if (snapshot->display_id() == display_id)
+      if (snapshot->display_id() == display_id) {
         return snapshot;
+      }
     }
     return nullptr;
   }
@@ -125,6 +129,7 @@ TEST_F(RefreshRateThrottleControllerTest, ShouldNotThrottleOnAC) {
   snapshots.push_back(BuildDualRefreshPanelSnapshot(
       kDisplayId, display::DISPLAY_CONNECTION_TYPE_INTERNAL));
   SetUpDisplays(snapshots);
+  ScopedSetInternalDisplayIds set_internal(kDisplayId);
 
   // Expect the initial state to be 120 Hz.
   {
@@ -154,6 +159,7 @@ TEST_F(RefreshRateThrottleControllerTest, ShouldThrottleWithBatterySaverMode) {
   snapshots.push_back(BuildDualRefreshPanelSnapshot(
       kDisplayId, display::DISPLAY_CONNECTION_TYPE_INTERNAL));
   SetUpDisplays(snapshots);
+  ScopedSetInternalDisplayIds set_internal(kDisplayId);
 
   // Expect the initial state to be 120 Hz.
   {
@@ -185,6 +191,7 @@ TEST_F(RefreshRateThrottleControllerTest, ShouldThrottleOnBattery) {
   snapshots.push_back(BuildDualRefreshPanelSnapshot(
       kDisplayId, display::DISPLAY_CONNECTION_TYPE_INTERNAL));
   SetUpDisplays(snapshots);
+  ScopedSetInternalDisplayIds set_internal(kDisplayId);
 
   // Expect the initial state to be 120 Hz.
   {
@@ -214,6 +221,7 @@ TEST_F(RefreshRateThrottleControllerTest, ShouldNotAffectExternalDisplay) {
   snapshots.push_back(BuildDualRefreshPanelSnapshot(
       kDisplayId, display::DISPLAY_CONNECTION_TYPE_HDMI));
   SetUpDisplays(snapshots);
+  ScopedSetInternalDisplayIds set_internal(kDisplayId);
 
   // Expect the initial state to be 120 Hz.
   {
@@ -243,6 +251,7 @@ TEST_F(RefreshRateThrottleControllerTest, ShouldThrottleOnUSBCharger) {
   snapshots.push_back(BuildDualRefreshPanelSnapshot(
       kDisplayId, display::DISPLAY_CONNECTION_TYPE_INTERNAL));
   SetUpDisplays(snapshots);
+  ScopedSetInternalDisplayIds set_internal(kDisplayId);
 
   // Expect the initial state to be 120 Hz.
   {

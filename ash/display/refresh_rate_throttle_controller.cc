@@ -25,16 +25,6 @@ display::RefreshRateThrottleState GetDesiredThrottleState(
   return display::kRefreshRateThrottleDisabled;
 }
 
-const display::DisplaySnapshot* GetInternalDisplay(
-    display::DisplayConfigurator* configurator) {
-  for (const display::DisplaySnapshot* snapshot :
-       configurator->cached_displays()) {
-    if (snapshot->type() == display::DISPLAY_CONNECTION_TYPE_INTERNAL)
-      return snapshot;
-  }
-  return nullptr;
-}
-
 }  // namespace
 
 RefreshRateThrottleController::RefreshRateThrottleController(
@@ -49,19 +39,15 @@ RefreshRateThrottleController::RefreshRateThrottleController(
 RefreshRateThrottleController::~RefreshRateThrottleController() = default;
 
 void RefreshRateThrottleController::OnPowerStatusChanged() {
-  const display::DisplaySnapshot* internal_display =
-      GetInternalDisplay(display_configurator_);
-  if (internal_display == nullptr) {
-    VLOG(4) << "No internal display present.";
-    return;
-  }
   VLOG(4) << "Battery percent: " << power_status_->GetBatteryPercent()
           << ", High Power Charger: "
           << (power_status_->IsMainsChargerConnected() ? "yes" : "no");
   display::RefreshRateThrottleState state =
       GetDesiredThrottleState(power_status_);
-  display_configurator_->MaybeSetRefreshRateThrottleState(
-      internal_display->display_id(), state);
+  if (display::HasInternalDisplay()) {
+    display_configurator_->MaybeSetRefreshRateThrottleState(
+        display::Display::InternalDisplayId(), state);
+  }
 }
 
 }  // namespace ash
