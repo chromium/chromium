@@ -397,4 +397,8 @@ bool WebContentsDelegate::IsPrivileged() {
   return false;
 }
 
+bool WebContentsDelegate::IsInPreviewMode() const {
+  return false;
+}
+
 }  // namespace content

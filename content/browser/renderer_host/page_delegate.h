@@ -32,6 +32,9 @@ class PageDelegate {
 
   // Called when `page` becomes primary in its FrameTree.
   virtual void NotifyPageBecamePrimary(PageImpl& page) = 0;
+
+  // Tells if `page` should be handled as in the preview mode.
+  virtual bool IsInPreviewMode() const = 0;
 };
 
 }  // namespace content

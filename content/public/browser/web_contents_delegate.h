@@ -773,6 +773,9 @@ class CONTENT_EXPORT WebContentsDelegate {
   // intercept.
   virtual void DidChangeCloseSignalInterceptStatus() {}
 
+  // Whether the WebContents is running in the Preview mode.
+  virtual bool IsInPreviewMode() const;
+
  protected:
   virtual ~WebContentsDelegate();
 

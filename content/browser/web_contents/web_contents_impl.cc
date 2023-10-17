@@ -9829,6 +9829,13 @@ void WebContentsImpl::NotifyPageBecamePrimary(PageImpl& page) {
   observers_.NotifyObservers(&WebContentsObserver::PrimaryPageChanged, page);
 }
 
+bool WebContentsImpl::IsInPreviewMode() const {
+  if (delegate_) {
+    return delegate_->IsInPreviewMode();
+  }
+  return false;
+}
+
 int WebContentsImpl::GetOuterDelegateFrameTreeNodeId() {
   return node_.outer_contents_frame_tree_node_id();
 }

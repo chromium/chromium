@@ -117,3 +117,7 @@ content::PreloadingEligibility PreviewTab::IsPrerender2Supported(
     content::WebContents& web_contents) {
   return content::PreloadingEligibility::kPreloadingDisabled;
 }
+
+bool PreviewTab::IsInPreviewMode() const {
+  return base::FeatureList::IsEnabled(blink::features::kLinkPreviewNavigation);
+}
