@@ -200,7 +200,7 @@ TEST_F(ImageFrameGeneratorTest, GetSupportedSizes) {
 }
 
 TEST_F(ImageFrameGeneratorTest, incompleteDecode) {
-#if BUILDFLAG(IS_ANDROID)
+#if BUILDFLAG(IS_ANDROID) || BUILDFLAG(IS_CHROMEOS)
   base::test::ScopedFeatureList feature_list;
   // Since PartialLowEndModeOnMidRangeDevices is enabled, image decoders
   // are destroyed because of the incomplete decode for saving memory.
@@ -255,7 +255,7 @@ TEST_F(ImageFrameGeneratorTest, LowEndDeviceDestroysDecoderOnPartialDecode) {
 }
 
 TEST_F(ImageFrameGeneratorTest, incompleteDecodeBecomesComplete) {
-#if BUILDFLAG(IS_ANDROID)
+#if BUILDFLAG(IS_ANDROID) || BUILDFLAG(IS_CHROMEOS)
   base::test::ScopedFeatureList feature_list;
   // Since PartialLowEndModeOnMidRangeDevices is enabled, image decoders
   // are destroyed because of the incomplete decode for saving memory.
@@ -341,7 +341,7 @@ TEST_F(ImageFrameGeneratorTest,
 }
 
 TEST_F(ImageFrameGeneratorTest, frameHasAlpha) {
-#if BUILDFLAG(IS_ANDROID)
+#if BUILDFLAG(IS_ANDROID) || BUILDFLAG(IS_CHROMEOS)
   base::test::ScopedFeatureList feature_list;
   // Since PartialLowEndModeOnMidRangeDevices is enabled, image decoders
   // are not cached because it makes ShouldDecodeToExternalMemory()

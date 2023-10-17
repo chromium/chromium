@@ -732,7 +732,7 @@ BLINK_COMMON_EXPORT BASE_DECLARE_FEATURE(kPaintHoldingCrossOrigin);
 
 BLINK_COMMON_EXPORT BASE_DECLARE_FEATURE(kParkableImagesToDisk);
 
-#if BUILDFLAG(IS_ANDROID)
+#if BUILDFLAG(IS_ANDROID) || BUILDFLAG(IS_CHROMEOS)
 BLINK_COMMON_EXPORT extern const base::FeatureParam<bool>
     kPartialLowEndModeExcludeCanvasFontCache;
 #endif

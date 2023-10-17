@@ -329,7 +329,7 @@ BASE_FEATURE(kPageAllocatorRetryOnCommitFailure,
              FEATURE_DISABLED_BY_DEFAULT);
 #endif
 
-#if BUILDFLAG(IS_ANDROID)
+#if BUILDFLAG(IS_ANDROID) || BUILDFLAG(IS_CHROMEOS)
 // A parameter to exclude or not exclude PartitionAllocSupport from
 // PartialLowModeOnMidRangeDevices. This is used to see how it affects
 // renderer performances, e.g. blink_perf.parser benchmark.

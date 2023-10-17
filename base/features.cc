@@ -34,11 +34,11 @@ BASE_FEATURE(kUseRustJsonParser,
 
 BASE_FEATURE(kJsonNegativeZero, "JsonNegativeZero", FEATURE_ENABLED_BY_DEFAULT);
 
-#if BUILDFLAG(IS_ANDROID)
-// Force to enable LowEndDeviceMode partially on Android mid-range devices.
-// Such devices aren't considered low-end, but we'd like experiment with
-// a subset of low-end features to see if we get a good memory vs. performance
-// tradeoff.
+#if BUILDFLAG(IS_ANDROID) || BUILDFLAG(IS_CHROMEOS)
+// Used to enable LowEndDeviceMode partially on Android and ChromeOS mid-range
+// devices. Such devices aren't considered low-end, but we'd like experiment
+// with a subset of low-end features to see if we get a good memory vs.
+// performance tradeoff.
 //
 // TODO(crbug.com/1434873): |#if| out 32-bit before launching or going to
 // high Stable %, because we will enable the feature only for <8GB 64-bit
@@ -46,8 +46,15 @@ BASE_FEATURE(kJsonNegativeZero, "JsonNegativeZero", FEATURE_ENABLED_BY_DEFAULT);
 // population to collect data.
 BASE_FEATURE(kPartialLowEndModeOnMidRangeDevices,
              "PartialLowEndModeOnMidRangeDevices",
+#if BUILDFLAG(IS_ANDROID)
              base::FEATURE_ENABLED_BY_DEFAULT);
+#elif BUILDFLAG(IS_CHROMEOS)
+             base::FEATURE_DISABLED_BY_DEFAULT);
+#endif
 
+#endif  // BUILDFLAG(IS_ANDROID) || BUILDFLAG(IS_CHROMEOS)
+
+#if BUILDFLAG(IS_ANDROID)
 // Whether to report frame metrics to the Android.FrameTimeline.* histograms.
 BASE_FEATURE(kCollectAndroidFrameTimelineMetrics,
              "CollectAndroidFrameTimelineMetrics",

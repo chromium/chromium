@@ -1303,7 +1303,7 @@ void PartitionAllocSupport::ReconfigureAfterTaskRunnerInit(
         base::features::kThreadCacheMultiplier.Get());
 #endif  // BUILDFLAG(IS_ANDROID)
   } else {
-#if BUILDFLAG(IS_ANDROID)
+#if BUILDFLAG(IS_ANDROID) || BUILDFLAG(IS_CHROMEOS)
     // If kEnableConfigurableThreadCacheMultiplier is not enabled, lower
     // thread cache limits on Android low end device to avoid stranding too much
     // memory in the caches.
@@ -1313,7 +1313,7 @@ void PartitionAllocSupport::ReconfigureAfterTaskRunnerInit(
           .SetThreadCacheMultiplier(
               ::partition_alloc::ThreadCache::kDefaultMultiplier / 2.);
     }
-#endif  // BUILDFLAG(IS_ANDROID)
+#endif  // BUILDFLAG(IS_ANDROID) || BUILDFLAG(IS_CHROMEOS)
   }
 
   // Renderer processes are more performance-sensitive, increase thread cache

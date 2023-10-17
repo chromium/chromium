@@ -48,7 +48,7 @@ BASE_FEATURE(kUserLevelMemoryPressureSignalOn6GbDevices,
 
 bool IsUserLevelMemoryPressureSignalEnabledOn3GbDevices() {
   static bool s_enabled =
-      base::SysInfo::IsAndroid3GbDevice() &&
+      base::SysInfo::Is3GbDevice() &&
       base::FeatureList::IsEnabled(kUserLevelMemoryPressureSignalOn3GbDevices);
   return s_enabled;
 }
@@ -58,14 +58,14 @@ bool IsUserLevelMemoryPressureSignalEnabledOn4GbDevices() {
   // than the actual memory size, So we will use a small lowerbound than 4GB
   // to discriminate real 4GB devices from lower memory ones.
   static bool s_enabled =
-      base::SysInfo::IsAndroid4GbDevice() &&
+      base::SysInfo::Is4GbDevice() &&
       base::FeatureList::IsEnabled(kUserLevelMemoryPressureSignalOn4GbDevices);
   return s_enabled;
 }
 
 bool IsUserLevelMemoryPressureSignalEnabledOn6GbDevices() {
   static bool s_enabled =
-      base::SysInfo::IsAndroid6GbDevice() &&
+      base::SysInfo::Is6GbDevice() &&
       base::FeatureList::IsEnabled(kUserLevelMemoryPressureSignalOn6GbDevices);
   return s_enabled;
 }

@@ -1258,14 +1258,14 @@ BASE_FEATURE(kParkableImagesToDisk,
              "ParkableImagesToDisk",
              base::FEATURE_ENABLED_BY_DEFAULT);
 
-#if BUILDFLAG(IS_ANDROID)
+#if BUILDFLAG(IS_ANDROID) || BUILDFLAG(IS_CHROMEOS)
 // A parameter to exclude or not exclude CanvasFontCache from
 // PartialLowModeOnMidRangeDevices. This is used to see how
 // CanvasFontCache affects graphics smoothness and renderer memory usage.
 const base::FeatureParam<bool> kPartialLowEndModeExcludeCanvasFontCache{
     &base::features::kPartialLowEndModeOnMidRangeDevices,
     "exclude-canvas-font-cache", false};
-#endif  // BUILDFLAG(IS_ANDROID)
+#endif  // BUILDFLAG(IS_ANDROID) || BUILDFLAG(IS_CHROMEOS)
 
 // Enables the use of the PaintCache for Path2D objects that are rasterized
 // out of process.  Has no effect when kCanvasOopRasterization is disabled.
