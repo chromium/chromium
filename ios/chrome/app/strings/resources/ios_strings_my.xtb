@@ -83,10 +83,12 @@
 <translation id="1360432990279830238">ထွက်ပြီး စင့်ခ်လုပ်ခြင်းကို ပိတ်လိုသလား။</translation>
 <translation id="1363028406613469049">သီချင်းပုဒ်</translation>
 <translation id="1365106417372288489">iPhone ကို မကြာသေးမီက ပြန်ပြောင်းထားသဖြင့် သင့်မူရင်းဘရောင်ဖာ ပြောင်းနေနိုင်သည်။</translation>
+<translation id="136942498637440594">ပုံနှင့် သင်မြင်ရသည့်အရာတို့ကို ရှာနိုင်သည်။</translation>
 <translation id="1375321115329958930">သိမ်းဆည်းထားသည့် စကားဝှက်များ</translation>
 <translation id="1377255359165588604">စင့်ခ်ပြုလုပ်ခြင်း ရပ်တန့်သွားပါပြီ။</translation>
 <translation id="1377321085342047638">ကဒ်နံပါတ်</translation>
 <translation id="1377508275003315939">စကားဝှက်များ</translation>
+<translation id="1380914240355562929"><ph name="BEGIN_BOLD" /><ph name="USERNAME" /><ph name="END_BOLD" /> က <ph name="BEGIN_BOLD" /><ph name="WEBSITE" /><ph name="END_BOLD" /> သို့ လက်မှတ်ထိုးဝင်ရန် Google Password Manager သုံးသောအခါ သင့်အသုံးပြုသူအမည်နှင့် စကားဝှက်တို့ကို ယခုသုံးနိုင်သည်။ <ph name="BEGIN_LINK" />ပိုမိုလေ့လာရန်<ph name="END_LINK" /></translation>
 <translation id="1383876407941801731">ရှာဖွေမှု</translation>
 <translation id="138618066238211776"><ph name="USER_NAME" /> အဖြစ် ရှေ့ဆက်ရန်</translation>
 <translation id="1400642268715879018">နောက်ဆုံး ၄ ပတ်</translation>
@@ -774,6 +776,7 @@
 <translation id="5121618895923301719">ဤထုတ်ကုန်ကို စောင့်ကြည့်ထားပြီးပြီ။ ဤစာမျက်နှာကို <ph name="BEGIN_LINK" />မိုဘိုင်းလိပ်စာများ<ph name="END_LINK" /> တွင် သိမ်းထားသည်။</translation>
 <translation id="512533434554095351">သင့်တွင် စကားဝှက်ပြဿနာအချို့ ရှိသည်။</translation>
 <translation id="5126465625664020024">လက်မှတ်ထိုးဝင်ပြီး စင့်ခ်လုပ်ခြင်း</translation>
+<translation id="5131062416352684089">မိသားစုဝင်များက <ph name="BEGIN_BOLD" /><ph name="WEBSITE" /><ph name="END_BOLD" /> သို့ လက်မှတ်ထိုးဝင်ရန် Google Password Manager သုံးသောအခါ သင့်အသုံးပြုသူအမည်နှင့် စကားဝှက်ကို ယခုသုံးနိုင်သည်။ <ph name="BEGIN_LINK" />ပိုမိုလေ့လာရန်<ph name="END_LINK" /></translation>
 <translation id="5132942445612118989">စက်ပစ္စည်းအားလုံးတွင် သင်၏ စကားဝှက်၊ မှတ်တမ်းနှင့် အခြားအရာများ စင့်ခ်လုပ်ပါ</translation>
 <translation id="5142890110117755815">{COUNT,plural, =1{အားနည်းသည့် စကားဝှက် {COUNT} ခု}other{အားနည်းသည့် စကားဝှက် {COUNT} ခု}}</translation>
 <translation id="5149188072385105201">စကားဝှက်ထည့်ရန်...</translation>

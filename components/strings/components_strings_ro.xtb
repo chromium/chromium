@@ -966,6 +966,7 @@
 <translation id="2977665033722899841"><ph name="ROW_NAME" /> selectat(ă). <ph name="ROW_CONTENT" /></translation>
 <translation id="2978824962390592855">Operă</translation>
 <translation id="2979424420072875974">Resurse pentru scriitori</translation>
+<translation id="2980742331521553164">Codul CVC al acestui card va fi criptat și salvat în Contul Google pentru finalizarea mai rapidă a achiziției</translation>
 <translation id="2983666748527428214">Deschide o filă incognito</translation>
 <translation id="2985306909656435243">Dacă opțiunea este activată, Chromium va stoca o copie a cardului pe dispozitiv pentru a completa formularul mai rapid.</translation>
 <translation id="2985398929374701810">Introdu o adresă validă</translation>
@@ -3397,6 +3398,7 @@ Detalii suplimentare:
 <translation id="79338296614623784">Introdu un număr de telefon valid</translation>
 <translation id="7934414805353235750"><ph name="URL" /> vrea să redea conținut protejat. Google va verifica identitatea dispozitivului tău.</translation>
 <translation id="7935318582918952113">DOM Distiller</translation>
+<translation id="7937163678541954811">Codul CVC al acestui card va fi criptat și salvat pe dispozitivul tău pentru finalizarea mai rapidă a achiziției</translation>
 <translation id="7937554595067888181">Expiră pe <ph name="EXPIRATION_DATE_ABBR" /></translation>
 <translation id="7938958445268990899">Certificatul serverului nu este încă valid.</translation>
 <translation id="7939713744218886332">Bucătărie internațională</translation>

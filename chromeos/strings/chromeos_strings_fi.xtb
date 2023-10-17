@@ -75,6 +75,7 @@
 <translation id="1499900233129743732"><ph name="MANAGER" /> ylläpitää tätä käyttäjää ja voi muuttaa asetuksia ja seurata käyttäjän toimia etänä.</translation>
 <translation id="150962533380566081">Virheellinen PUK-koodi</translation>
 <translation id="1510238584712386396">Käynnistysohjelma</translation>
+<translation id="1515129336378114413">selain etusivu</translation>
 <translation id="1526389707933164996">Näytönsäästäjän animaatio</translation>
 <translation id="152892567002884378">Lisää äänenvoimakkuutta</translation>
 <translation id="1555130319947370107">Sininen</translation>
@@ -336,7 +337,6 @@
 <translation id="3604713164406837697">Vaihda taustakuva</translation>
 <translation id="360565022852130722">Wi-Fi-verkko on suojattu heikolla WEP 802.1x -protokollalla</translation>
 <translation id="3606583719724308068">Pitkä viive HTTPS-sivustoille</translation>
-<translation id="3607216139080387279">Näytä näytönsäästäjä</translation>
 <translation id="361575905210396100">Kiitos palautteestasi</translation>
 <translation id="3632579075709132555">Yksityinen näkyvyys päälle/pois</translation>
 <translation id="3651050199673793219">Valitse lämpötilan yksikkö</translation>
@@ -348,7 +348,6 @@
 <translation id="3740976234706877572"><ph name="AVERAGE_SCORE" /> ★ (<ph name="AGGREGATED_COUNT" /> arvostelua)</translation>
 <translation id="3748026146096797577">Ei yhteyttä</translation>
 <translation id="3749289110408117711">Tiedostonimi</translation>
-<translation id="3766934827878963937">yhden tunnin ajaksi</translation>
 <translation id="3771294271822695279">Videotiedostot </translation>
 <translation id="3784455785234192852">Lukitse</translation>
 <translation id="380097101658023925">rgb-asetukset</translation>
@@ -691,7 +690,6 @@
 <translation id="629550705077076970">näppäimistön himmennys</translation>
 <translation id="6302401976930124515">Testi on peruttu: <ph name="TEST_NAME" /></translation>
 <translation id="631063167932043783">Tutustu sovellukseen</translation>
-<translation id="6318437367327684789">ikuisesti</translation>
 <translation id="6319207335391420837">Päivitä laiteohjelmisto: <ph name="DEVICE_NAME" /></translation>
 <translation id="6321407676395378991">Laita näytönsäästäjä päälle</translation>
 <translation id="6324916366299863871">Muokkaa pikanäppäintä</translation>
@@ -749,6 +747,7 @@
 <translation id="6659594942844771486">Välilehti</translation>
 <translation id="6673898378497337661">lisää näppäimistön kirkkautta</translation>
 <translation id="6692996468359469499">Tietoja valinnastasi</translation>
+<translation id="6694534975463174713">lukko</translation>
 <translation id="6704062477274546131">DNS-ratkaisu</translation>
 <translation id="6723839937902243910">Virta</translation>
 <translation id="6723847290197874913">Näppämistön taustavalo</translation>
@@ -1067,11 +1066,9 @@
 <translation id="9111102763498581341">Poista lukitus</translation>
 <translation id="9122602430962285795">Muodosta yhteys uudelleen avaamalla Asetukset</translation>
 <translation id="9126720536733509015">Tallenna useita sivuja yhteen PDF-tiedostoon</translation>
-<translation id="9133104754938025929">Näytönsäästäjä toimii vain latauksen aikana akun säästämiseksi.</translation>
 <translation id="9133772297793293778">Paina näppäimistöllä 1–4:ää muokkauspainiketta ja yhtä muuta näppäintä. Poistu muokkaustilasta painamalla alt + esc.</translation>
 <translation id="9137526406337347448">Googlen palvelut</translation>
 <translation id="9138630967333032450">Vasen vaihtonäppäin</translation>
-<translation id="9143347780818904997"><ph name="MINUTES" /> minuutin ajaksi</translation>
 <translation id="9149391708638971077">Suorita muistitesti</translation>
 <translation id="9161276708550942948">välilyönti</translation>
 <translation id="9173638680043580060">Alle minuutti jäljellä</translation>

@@ -191,6 +191,7 @@ Ecco alcune cose che puoi provare per iniziare.</translation>
 <translation id="1737078180382804488">Chiudi la configurazione della visualizzazione di notifiche dello smartphone</translation>
 <translation id="174102739345480129">Evidenziatore OFF.</translation>
 <translation id="1743570585616704562">Non riconosciuta</translation>
+<translation id="1743927604032653654">Comprimi la notifica <ph name="NOTIFICATION_TITLE" /></translation>
 <translation id="1746730358044914197">I metodi di immissione vengono configurati dall'amministratore.</translation>
 <translation id="1747336645387973286">data di scadenza <ph name="DUE_DATE" /></translation>
 <translation id="1747827819627189109">Tastiera sullo schermo attiva</translation>
@@ -208,7 +209,6 @@ Ecco alcune cose che puoi provare per iniziare.</translation>
 <translation id="178347895271755507">Configura la visualizzazione di notifiche, contenuti multimediali e foto recenti dello smartphone</translation>
 <translation id="1787955149152357925">Off</translation>
 <translation id="1796561540704213354">Siti web che includono le pagine che hai visitato e le pagine aperte</translation>
-<translation id="1797271123677381264">Password dimenticata</translation>
 <translation id="181103072419391116">Intensità del segnale <ph name="SIGNAL_STRENGTH" />, gestita dall'amministratore</translation>
 <translation id="1815245884418711390">Attiva/disattiva l'hotspot. L'hotspot è disattivato.</translation>
 <translation id="1816896987747843206">Consente l'accesso alla fotocamera per tutte le app e tutti i siti web che hanno l'autorizzazione di accesso alla fotocamera</translation>
@@ -532,6 +532,7 @@ Ecco alcune cose che puoi provare per iniziare.</translation>
 <translation id="3217205077783620295">Il volume è attivo. Selezionalo per disattivarlo.</translation>
 <translation id="3226991577105957773">+ altre <ph name="COUNT" /></translation>
 <translation id="3227137524299004712">Microfono</translation>
+<translation id="3233611303007751344">Risparmio energetico disattivato</translation>
 <translation id="324366796737464147">Cancellazione del rumore</translation>
 <translation id="3249513730522716925">La finestra <ph name="WINDOW_TITLE" /> è stata spostata dalla scrivania <ph name="ACTIVE_DESK" /> alla scrivania <ph name="TARGET_DESK" /></translation>
 <translation id="3253743281242075461">Tipo di lavori del corso: <ph name="GLANCEABLES_CLASSROOM_LIST_NAME" /></translation>
@@ -554,6 +555,7 @@ Ecco alcune cose che puoi provare per iniziare.</translation>
 <translation id="3308453408813785101"><ph name="USER_EMAIL_ADDRESS" /> può ancora accedere in seguito.</translation>
 <translation id="3321628682574733415">Codice genitore errato</translation>
 <translation id="332827762492701193">Le notifiche sono nascoste</translation>
+<translation id="3333674550998107387">Espandi la notifica <ph name="NOTIFICATION_TITLE" /></translation>
 <translation id="3339826665088060472">Cattura schermo, strumenti per acquisire screenshot e registrazione dello schermo</translation>
 <translation id="3340978935015468852">impostazioni</translation>
 <translation id="3341303451326249809">Screenshot acquisito</translation>
@@ -571,7 +573,6 @@ Ecco alcune cose che puoi provare per iniziare.</translation>
 <translation id="3387527074123400161">Chromium OS</translation>
 <translation id="3389599499324569679">Vuoi attivare la dettatura?</translation>
 <translation id="3394432020929931914">, espanso</translation>
-<translation id="3400357268283240774">Impostazioni aggiuntive</translation>
 <translation id="3405101454990027959">Attiva accesso al microfono</translation>
 <translation id="3408735331120433841">Al momento stai trasmettendo il tuo schermo.</translation>
 <translation id="3409584356742878290">Mostra o nascondi il controllo degli Strumenti per sviluppatori</translation>
@@ -768,6 +769,8 @@ Collega il dispositivo all'alimentazione.</translation>
 <translation id="4146671046252289537">Sposta alla fine della parola successiva</translation>
 <translation id="4146833061457621061">Fammi ascoltare musica</translation>
 <translation id="4150201353443180367">Display</translation>
+<translation id="4156293514828496577">Batteria rimanente: <ph name="PERCENTAGE" />% (circa <ph name="TIME_LEFT" />).
+Alcune funzionalità sono limitate per aumentare la durata della batteria.</translation>
 <translation id="4165275524535002941">Il cavo potrebbe non supportare i display</translation>
 <translation id="4177415338862979658">Fai clic per verificare i dettagli</translation>
 <translation id="4177913004758410636">{0,plural, =1{Aggiorna il dispositivo entro 1 giorno}other{Aggiorna il dispositivo entro # giorni}}</translation>
@@ -898,6 +901,7 @@ Collega il dispositivo all'alimentazione.</translation>
 <translation id="4659419629803378708">ChromeVox attivato</translation>
 <translation id="4666911709726371538">Altre app</translation>
 <translation id="4667099493359681081">Download di <ph name="FILENAME" /> in corso…</translation>
+<translation id="4672539464599646374">Risparmio energetico attivato</translation>
 <translation id="468293128311738995">App dal telefono</translation>
 <translation id="4690510401873698237">Barra delle app in basso</translation>
 <translation id="4696813013609194136">Sblocca con codice genitore</translation>
@@ -1058,6 +1062,8 @@ Collega il dispositivo all'alimentazione.</translation>
 <translation id="5297704307811127955">Off</translation>
 <translation id="5300589172476337783">Mostra</translation>
 <translation id="5302048478445481009">Lingua</translation>
+<translation id="5303319262469238330">Batteria rimanente: <ph name="PERCENTAGE" />%.
+Alcune funzionalità sono limitate per aumentare la durata della batteria.</translation>
 <translation id="5308380583665731573">Connetti</translation>
 <translation id="5313326810920013265">Impostazioni Bluetooth</translation>
 <translation id="5314219114274263156">Registrazione dello schermo acquisita</translation>
@@ -1299,6 +1305,7 @@ Collega il dispositivo all'alimentazione.</translation>
 <translation id="6231419273573514727">Le prestazioni delle periferiche potrebbero essere limitate</translation>
 <translation id="6232891689835436217"><ph name="APP_NAME" /> sta usando la fotocamera e il microfono</translation>
 <translation id="6237231532760393653">1X</translation>
+<translation id="62380141479352646">Batteria in esaurimento. Risparmio energetico attivato.</translation>
 <translation id="6247728804802644171">Apri le notifiche</translation>
 <translation id="6254629735336163724">Bloccata in orizzontale</translation>
 <translation id="6259254695169772643">Usa lo stilo per selezionare</translation>
@@ -1413,6 +1420,7 @@ Nuova installazione</translation>
 <translation id="6732800389263199929">+<ph name="COUNT" /></translation>
 <translation id="6737983188036277605">Videocamera e microfono in uso</translation>
 <translation id="6739144137573853180">VAI A IMPOSTAZIONI</translation>
+<translation id="6747985245839783873">Livello batteria: <ph name="PERCENTAGE" />%. Risparmio energetico attivo.</translation>
 <translation id="6751052314767925245">Applicata dall'amministratore</translation>
 <translation id="6751826523481687655">La traccia delle prestazioni è attiva</translation>
 <translation id="6752912906630585008">Scrivania <ph name="REMOVED_DESK" /> rimossa e unita alla scrivania <ph name="RECEIVE_DESK" /></translation>
@@ -1512,6 +1520,7 @@ Nuova installazione</translation>
 <translation id="7131634465328662194">Verrai disconnesso automaticamente.</translation>
 <translation id="7143207342074048698">Connessione</translation>
 <translation id="7144942256906679589">Stato della batteria</translation>
+<translation id="7145639536026937076">Batteria a <ph name="PERCENTAGE" />% e in carica. Risparmio energetico attivo.</translation>
 <translation id="7165278925115064263">ALT + MAIUSC + K</translation>
 <translation id="7167913274352523149"><ph name="HOTSPOT" />,
         <ph name="NETWORK" /></translation>
@@ -1521,6 +1530,7 @@ Nuova installazione</translation>
 <translation id="7189412385142492784">Quanto è distante Venere</translation>
 <translation id="7198435252016571249">Fotocamera allineata all'angolo in basso a destra. Conflitto con la piattaforma di sistema.</translation>
 <translation id="7229029500464092426">Memoria usata: <ph name="AVAILABLE_MEMORY" /> | Totale: <ph name="TOTAL_MEMORY" /></translation>
+<translation id="7244725679040769470">Batteria rimanente: <ph name="PERCENTAGE" />%. Collega il dispositivo all'alimentazione.</translation>
 <translation id="7246071203293827765"><ph name="UPDATE_TEXT" />. È richiesto il riavvio del Chromebook per installare un aggiornamento. L'operazione può richiedere fino a 1 minuto.</translation>
 <translation id="7256634071279256947">Microfono posteriore</translation>
 <translation id="7258828758145722155">Modificato ieri</translation>
@@ -1913,6 +1923,7 @@ Per arrestare il dispositivo, tieni di nuovo premuto il relativo tasto di accens
 <translation id="8878886163241303700">Estensione schermo</translation>
 <translation id="888982883502837004">Sono disponibili degli aggiornamenti del firmware per il tuo dispositivo. Fai clic per esaminarli ed eseguire gli aggiornamenti.</translation>
 <translation id="8896630965521842259">Il modello <ph name="DESK_TEMPLATE_NAME" /> verrà eliminato definitivamente</translation>
+<translation id="889790758758811533">Batteria rimanente: <ph name="PERCENTAGE" />% (circa <ph name="TIME_LEFT" />). Collega il dispositivo all'alimentazione.</translation>
 <translation id="88986195241502842">Pagina giù</translation>
 <translation id="8905919797434099235">(Senza titolo)</translation>
 <translation id="890616557918890486">Cambia origine</translation>

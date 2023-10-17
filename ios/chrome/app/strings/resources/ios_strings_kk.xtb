@@ -83,10 +83,12 @@
 <translation id="1360432990279830238">Шығып, синхрондауды өшіру керек пе?</translation>
 <translation id="1363028406613469049">Бақылау нөмірі</translation>
 <translation id="1365106417372288489">iPhone құрылғыңыз жақында қалпына келтірілді, бұл —әдепкі браузеріңізді өзгерткен болуы мүмкін.</translation>
+<translation id="136942498637440594">Суреттерді және өзіңізге көрінетін нәрселерді іздесеңіз болады.</translation>
 <translation id="1375321115329958930">Сақталған құпия сөздер</translation>
 <translation id="1377255359165588604">Синхрондау тоқтап қалды.</translation>
 <translation id="1377321085342047638">Карта нөмірі</translation>
 <translation id="1377508275003315939">Құпия сөздер</translation>
+<translation id="1380914240355562929"><ph name="BEGIN_BOLD" /><ph name="USERNAME" /><ph name="END_BOLD" /> <ph name="BEGIN_BOLD" /><ph name="WEBSITE" /> веб-сайтына кіру үшін Google Password Manager қызметін қолданған кезде, енді пайдаланушы атыңыз бен құпия сөзіңізді де пайдалана алады<ph name="END_BOLD" />. <ph name="BEGIN_LINK" />Толық ақпарат<ph name="END_LINK" /></translation>
 <translation id="1383876407941801731">Іздеу</translation>
 <translation id="138618066238211776"><ph name="USER_NAME" /> ретінде жалғастыру</translation>
 <translation id="1400642268715879018">Соңғы 4 апта</translation>
@@ -774,6 +776,7 @@
 <translation id="5121618895923301719">Бұл өнімді бұрыннан бақылап жатырсыз. Бұл бет <ph name="BEGIN_LINK" />Мобильді құрылғының бетбелгілері<ph name="END_LINK" /> ішінде сақталады</translation>
 <translation id="512533434554095351">Бірнеше құпия сөз мәселесі бар.</translation>
 <translation id="5126465625664020024">Аккаунтқа кіру және синхрондау</translation>
+<translation id="5131062416352684089">Отбасыңыздың мүшелері <ph name="BEGIN_BOLD" /><ph name="WEBSITE" /><ph name="END_BOLD" /> веб-сайтына кіру үшін Google Password Manager қызметін қолданған кезде, енді пайдаланушы атыңыз бен құпия сөзіңізді де пайдалана алады. <ph name="BEGIN_LINK" />Толық ақпарат<ph name="END_LINK" /></translation>
 <translation id="5132942445612118989">Құпия сөздеріңізді, әрекеттеріңіздің тарихын және басқа деректерді барлық құрылғыда синхрондау</translation>
 <translation id="5142890110117755815">{COUNT,plural, =1{{COUNT} оңай құпия сөз}other{{COUNT} оңай құпия сөз}}</translation>
 <translation id="5149188072385105201">Құпия сөз қосу…</translation>

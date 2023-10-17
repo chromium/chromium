@@ -83,10 +83,12 @@
 <translation id="1360432990279830238">സൈൻ ഔട്ട് ചെയ്‌ത് സമന്വയം ഓഫാക്കണോ?</translation>
 <translation id="1363028406613469049">ട്രാക്കുചെയ്യുക</translation>
 <translation id="1365106417372288489">നിങ്ങളുടെ iPhone അടുത്തിടെ പുനഃസ്ഥാപിച്ചു, അത് നിങ്ങളുടെ ഡിഫോൾട്ട് ബ്രൗസർ മാറ്റിയിരിക്കാം.</translation>
+<translation id="136942498637440594">ചിത്രങ്ങളും നിങ്ങൾ കാണുന്നവയും നിങ്ങൾക്ക് തിരയാം.</translation>
 <translation id="1375321115329958930">സംരക്ഷിച്ച പാസ്‌വേഡുകള്‍</translation>
 <translation id="1377255359165588604">സമന്വയിപ്പിക്കുന്നത് നിർത്തി.</translation>
 <translation id="1377321085342047638">കാർഡ് നമ്പർ</translation>
 <translation id="1377508275003315939">പാസ്‌വേഡുകൾ</translation>
+<translation id="1380914240355562929"><ph name="BEGIN_BOLD" /><ph name="USERNAME" /><ph name="END_BOLD" /> എന്നയാൾക്ക് ഇപ്പോൾ, <ph name="BEGIN_BOLD" /><ph name="WEBSITE" /><ph name="END_BOLD" /> എന്നതിലേക്ക് സൈൻ ഇൻ ചെയ്യാൻ Google Password Manager ഉപയോഗിക്കുമ്പോൾ നിങ്ങളുടെ ഉപയോക്തൃനാമവും പാസ്‌വേഡും ഉപയോഗിക്കാനാകും. <ph name="BEGIN_LINK" />കൂടുതലറിയുക<ph name="END_LINK" /></translation>
 <translation id="1383876407941801731">Search</translation>
 <translation id="138618066238211776"><ph name="USER_NAME" /> ആയി തുടരുക</translation>
 <translation id="1400642268715879018">കഴിഞ്ഞ 4 ആഴ്‌ചയിലെ</translation>
@@ -774,6 +776,7 @@
 <translation id="5121618895923301719">നിങ്ങൾ ഇതിനകം ഈ ഉൽപ്പന്നം ട്രാക്ക് ചെയ്യുന്നുണ്ട്. ഈ പേജ് <ph name="BEGIN_LINK" />മൊബൈൽ ബുക്ക്‌മാർക്കുകളിൽ<ph name="END_LINK" /> സംരക്ഷിച്ചിരിക്കുന്നു.</translation>
 <translation id="512533434554095351">നിങ്ങൾക്ക് പാസ്‌വേഡുകളുമായി ബന്ധപ്പെട്ട നിരവധി പ്രശ്‌നങ്ങളുണ്ട്.</translation>
 <translation id="5126465625664020024">പ്രവേശിച്ച്, സമന്വയിപ്പിക്കുക</translation>
+<translation id="5131062416352684089">നിങ്ങളുടെ കുടുംബാംഗങ്ങൾക്ക് ഇപ്പോൾ, <ph name="BEGIN_BOLD" /><ph name="WEBSITE" /><ph name="END_BOLD" /> എന്നതിലേക്ക് സൈൻ ഇൻ ചെയ്യാൻ Google Password Manager ഉപയോഗിക്കുമ്പോൾ നിങ്ങളുടെ ഉപയോക്തൃനാമവും പാസ്‌വേഡും ഉപയോഗിക്കാനാകും. <ph name="BEGIN_LINK" />കൂടുതലറിയുക<ph name="END_LINK" /></translation>
 <translation id="5132942445612118989">നിങ്ങളുടെ പാസ്‌വേഡുകളും ചരിത്രവും മറ്റും എല്ലാ ഉപകരണങ്ങളിലും സമന്വയിപ്പിക്കുക</translation>
 <translation id="5142890110117755815">{COUNT,plural, =1{ദുർബലമായ {COUNT} പാസ്‌വേഡ്}other{ദുർബലമായ {COUNT} പാസ്‌വേഡുകൾ}}</translation>
 <translation id="5149188072385105201">പാസ്‌വേഡ് ചേർക്കുക...</translation>

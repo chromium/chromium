@@ -75,6 +75,7 @@
 <translation id="1499900233129743732"><ph name="MANAGER" /> આ વપરાશકર્તાને મેનેજ કરે છે તથા સેટિંગ અને વપરાશકર્તાની પ્રવૃત્તિને દૂરથી મેનેજ અને તેનું નિરીક્ષણ કરે એવું બની શકે.</translation>
 <translation id="150962533380566081">અમાન્ય PUK.</translation>
 <translation id="1510238584712386396">લૉન્ચર</translation>
+<translation id="1515129336378114413">બ્રાઉઝર હોમ</translation>
 <translation id="1526389707933164996">સ્ક્રીન સેવર ઍનિમેશન</translation>
 <translation id="152892567002884378">વૉલ્યૂમ વધારો</translation>
 <translation id="1555130319947370107">વાદળી</translation>
@@ -336,7 +337,6 @@
 <translation id="3604713164406837697">વૉલપેપર બદલો</translation>
 <translation id="360565022852130722">વાઇ-ફાઇ નેટવર્કની સુરક્ષા પ્રમાણમાં નબળા WEP 802.1x પ્રોટોકૉલ વડે કરવામાં આવી છે</translation>
 <translation id="3606583719724308068">HTTPS વેબસાઇટ માટે વિલંબતાનો સમય ઘણો વધુ છે</translation>
-<translation id="3607216139080387279">સ્ક્રીન સેવર બતાવો</translation>
 <translation id="361575905210396100">તમારા પ્રતિસાદ બદલ આભાર</translation>
 <translation id="3632579075709132555">પ્રાઇવસી સ્ક્રીન ટૉગલ કરો</translation>
 <translation id="3651050199673793219">તાપમાનનો એકમ પસંદ કરો</translation>
@@ -348,7 +348,6 @@
 <translation id="3740976234706877572"><ph name="AVERAGE_SCORE" /> ★ (<ph name="AGGREGATED_COUNT" /> રિવ્યૂ)</translation>
 <translation id="3748026146096797577">કનેક્ટેડ નથી</translation>
 <translation id="3749289110408117711">ફાઇલનું નામ</translation>
-<translation id="3766934827878963937">1 કલાક માટે</translation>
 <translation id="3771294271822695279">વીડિયો ફાઇલો</translation>
 <translation id="3784455785234192852">લૉક છે</translation>
 <translation id="380097101658023925">RGBના નિયંત્રણો</translation>
@@ -691,7 +690,6 @@
 <translation id="629550705077076970">કીબોર્ડ ડિમ કરવું</translation>
 <translation id="6302401976930124515"><ph name="TEST_NAME" />નું પરીક્ષણ રદ કરવામાં આવ્યું</translation>
 <translation id="631063167932043783">Explore ઍપ</translation>
-<translation id="6318437367327684789">કાયમ માટે</translation>
 <translation id="6319207335391420837"><ph name="DEVICE_NAME" /> પર ફર્મવેયર અપડેટ કરો</translation>
 <translation id="6321407676395378991">સ્ક્રીન સેવર ચાલુ કરો</translation>
 <translation id="6324916366299863871">શૉર્ટકટમાંમાં ફેરફાર કરો</translation>
@@ -749,6 +747,7 @@
 <translation id="6659594942844771486">બ્રાઉઝર ટૅબ</translation>
 <translation id="6673898378497337661">કીબોર્ડનું બ્રાઇટનેસ વધારવાની કી</translation>
 <translation id="6692996468359469499">તમારી પસંદગી સંબંધિત માહિતી મેળવો</translation>
+<translation id="6694534975463174713">લૉક</translation>
 <translation id="6704062477274546131">DNSનો ઉકેલ</translation>
 <translation id="6723839937902243910">પાવર</translation>
 <translation id="6723847290197874913">કીબોર્ડ બૅકલાઇટ</translation>
@@ -1067,11 +1066,9 @@
 <translation id="9111102763498581341">અનલોક કરો</translation>
 <translation id="9122602430962285795">ફરીથી કનેક્ટ કરવા માટે, સેટિંગમાં જાઓ</translation>
 <translation id="9126720536733509015">એક PDFમાં એકથી વધુ પેજ સાચવો</translation>
-<translation id="9133104754938025929">બૅટરીનું સંરક્ષણ કરવા માટે, સ્ક્રીન સેવર ફક્ત ચાર્જિંગના સમયે જ કામ કરે છે.</translation>
 <translation id="9133772297793293778">તમારા કીબોર્ડ પર 1-4 મૉડિફાયર અને અન્ય 1 કી દબાવો. એડિટિંગ મોડમાંથી બહાર નીકળવા માટે, alt + esc દબાવો.</translation>
 <translation id="9137526406337347448">Google સેવાઓ</translation>
 <translation id="9138630967333032450">ડાબી Shift કી</translation>
-<translation id="9143347780818904997"><ph name="MINUTES" /> મિનિટ માટે</translation>
 <translation id="9149391708638971077">મેમરીનું પરીક્ષણ ચાલુ કરો</translation>
 <translation id="9161276708550942948">space</translation>
 <translation id="9173638680043580060">એક મિનિટ કરતાં ઓછો સમય બાકી છે</translation>

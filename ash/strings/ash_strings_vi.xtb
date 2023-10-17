@@ -191,6 +191,7 @@ Dưới đây là một số việc bạn có thể thử để bắt đầu.</t
 <translation id="1737078180382804488">Loại bỏ việc thiết lập tính năng xem thông báo có trên điện thoại</translation>
 <translation id="174102739345480129">Tính năng Đánh dấu đang tắt.</translation>
 <translation id="1743570585616704562">Không nhận dạng được</translation>
+<translation id="1743927604032653654">Thu gọn thông báo <ph name="NOTIFICATION_TITLE" /></translation>
 <translation id="1746730358044914197">Các phương thức nhập do quản trị viên của bạn định cấu hình.</translation>
 <translation id="1747336645387973286">ngày đến hạn: <ph name="DUE_DATE" /></translation>
 <translation id="1747827819627189109">Đã bật bàn phím ảo</translation>
@@ -208,7 +209,6 @@ Dưới đây là một số việc bạn có thể thử để bắt đầu.</t
 <translation id="178347895271755507">Thiết lập tính năng xem thông báo, nội dung nghe nhìn và ảnh gần đây có trên điện thoại</translation>
 <translation id="1787955149152357925">Tắt</translation>
 <translation id="1796561540704213354">Trang web, bao gồm các trang bạn đã truy cập và các trang đang mở</translation>
-<translation id="1797271123677381264">Quên mật khẩu</translation>
 <translation id="181103072419391116">Cường độ tín hiệu <ph name="SIGNAL_STRENGTH" />, Do quản trị viên của bạn quản lý</translation>
 <translation id="1815245884418711390">Bật/tắt điểm phát sóng. Điểm phát sóng đang tắt.</translation>
 <translation id="1816896987747843206">Điều này cho phép sử dụng máy ảnh đối với tất cả ứng dụng và trang web có quyền sử dụng máy ảnh</translation>
@@ -532,6 +532,7 @@ Dưới đây là một số việc bạn có thể thử để bắt đầu.</t
 <translation id="3217205077783620295">Âm lượng đang bật. Nếu bạn chuyển đổi, âm thanh sẽ bị tắt.</translation>
 <translation id="3226991577105957773">+<ph name="COUNT" /> mục khác</translation>
 <translation id="3227137524299004712">Micrô</translation>
+<translation id="3233611303007751344">Đã tắt Trình tiết kiệm pin</translation>
 <translation id="324366796737464147">Khử tiếng ồn</translation>
 <translation id="3249513730522716925">Đã di chuyển cửa sổ <ph name="WINDOW_TITLE" /> từ Không gian làm việc <ph name="ACTIVE_DESK" /> sang Không gian làm việc <ph name="TARGET_DESK" /></translation>
 <translation id="3253743281242075461">Loại bài tập trên lớp: <ph name="GLANCEABLES_CLASSROOM_LIST_NAME" /></translation>
@@ -554,6 +555,7 @@ Dưới đây là một số việc bạn có thể thử để bắt đầu.</t
 <translation id="3308453408813785101"><ph name="USER_EMAIL_ADDRESS" /> vẫn có thể đăng nhập vào lúc khác.</translation>
 <translation id="3321628682574733415">Mã dành cho cha mẹ không chính xác</translation>
 <translation id="332827762492701193">Thông báo bị ẩn</translation>
+<translation id="3333674550998107387">Mở rộng thông báo <ph name="NOTIFICATION_TITLE" /></translation>
 <translation id="3339826665088060472">Chụp ảnh màn hình, các công cụ để chụp ảnh màn hình và ghi màn hình</translation>
 <translation id="3340978935015468852">cài đặt</translation>
 <translation id="3341303451326249809">Đã chụp ảnh màn hình</translation>
@@ -571,7 +573,6 @@ Dưới đây là một số việc bạn có thể thử để bắt đầu.</t
 <translation id="3387527074123400161">ChromiumOS</translation>
 <translation id="3389599499324569679">Bật tính năng Nhập bằng giọng nói?</translation>
 <translation id="3394432020929931914">, đã mở rộng</translation>
-<translation id="3400357268283240774">Chế độ cài đặt bổ sung</translation>
 <translation id="3405101454990027959">Cho phép truy cập micrô</translation>
 <translation id="3408735331120433841">Bạn đang truyền màn hình của mình.</translation>
 <translation id="3409584356742878290">Hiển thị hoặc ẩn trình kiểm tra Công cụ cho nhà phát triển</translation>
@@ -771,6 +772,8 @@ Hãy sạc thiết bị.</translation>
 <translation id="4146671046252289537">Di chuyển đến cuối của từ kế tiếp</translation>
 <translation id="4146833061457621061">Phát nhạc</translation>
 <translation id="4150201353443180367">Hiển thị</translation>
+<translation id="4156293514828496577">Còn <ph name="PERCENTAGE" />% pin (khoảng <ph name="TIME_LEFT" />).
+Một số tính năng bị hạn chế nhằm tăng thời lượng pin.</translation>
 <translation id="4165275524535002941">Có thể cáp không hỗ trợ màn hình</translation>
 <translation id="4177415338862979658">Nhấp để xem thông tin chi tiết</translation>
 <translation id="4177913004758410636">{0,plural, =1{Cập nhật thiết bị trong vòng 1 ngày}other{Cập nhật thiết bị trong vòng # ngày}}</translation>
@@ -901,6 +904,7 @@ Hãy sạc thiết bị.</translation>
 <translation id="4659419629803378708">Đã bật ChromeVox</translation>
 <translation id="4666911709726371538">Hiện thêm ứng dụng</translation>
 <translation id="4667099493359681081">Đang tải <ph name="FILENAME" /> xuống</translation>
+<translation id="4672539464599646374">Đã bật Trình tiết kiệm pin</translation>
 <translation id="468293128311738995">Ứng dụng từ điện thoại của bạn</translation>
 <translation id="4690510401873698237">Giá ở dưới cùng</translation>
 <translation id="4696813013609194136">Mở khóa thiết bị bằng mã dành cho cha mẹ</translation>
@@ -1061,6 +1065,8 @@ Hãy sạc thiết bị.</translation>
 <translation id="5297704307811127955">Đang tắt</translation>
 <translation id="5300589172476337783">Hiển thị</translation>
 <translation id="5302048478445481009">Ngôn ngữ</translation>
+<translation id="5303319262469238330">Còn <ph name="PERCENTAGE" />% pin.
+Một số tính năng bị hạn chế nhằm tăng thời lượng pin.</translation>
 <translation id="5308380583665731573">Kết nối</translation>
 <translation id="5313326810920013265">Cài đặt Bluetooth</translation>
 <translation id="5314219114274263156">Đã ghi màn hình</translation>
@@ -1302,6 +1308,7 @@ Hãy sạc thiết bị.</translation>
 <translation id="6231419273573514727">Hiệu suất của thiết bị ngoại vi có thể bị hạn chế</translation>
 <translation id="6232891689835436217"><ph name="APP_NAME" /> hiện đang sử dụng máy ảnh và micrô của bạn</translation>
 <translation id="6237231532760393653">1X</translation>
+<translation id="62380141479352646">Pin yếu. Đã bật Trình tiết kiệm pin.</translation>
 <translation id="6247728804802644171">Mở thông báo</translation>
 <translation id="6254629735336163724">Đã khóa theo chiều ngang</translation>
 <translation id="6259254695169772643">Sử dụng bút cảm ứng để chọn</translation>
@@ -1416,6 +1423,7 @@ Mới cài đặt</translation>
 <translation id="6732800389263199929">+ <ph name="COUNT" /></translation>
 <translation id="6737983188036277605">Máy ảnh và micrô đang được sử dụng</translation>
 <translation id="6739144137573853180">CHUYỂN ĐẾN PHẦN CÀI ĐẶT</translation>
+<translation id="6747985245839783873">Pin ở mức <ph name="PERCENTAGE" />%. Trình tiết kiệm pin đang bật.</translation>
 <translation id="6751052314767925245">Do quản trị viên thực thi</translation>
 <translation id="6751826523481687655">Tính năng theo dõi hiệu suất đang bật</translation>
 <translation id="6752912906630585008">Đã xóa và hợp nhất Không gian làm việc <ph name="REMOVED_DESK" /> với Không gian làm việc <ph name="RECEIVE_DESK" /></translation>
@@ -1515,6 +1523,7 @@ Mới cài đặt</translation>
 <translation id="7131634465328662194">Bạn sẽ tự động bị đăng xuất.</translation>
 <translation id="7143207342074048698">Đang kết nối</translation>
 <translation id="7144942256906679589">Trạng thái pin</translation>
+<translation id="7145639536026937076">Pin ở mức <ph name="PERCENTAGE" />% và đang sạc. Trình tiết kiệm pin đang bật.</translation>
 <translation id="7165278925115064263">Alt+Shift+K</translation>
 <translation id="7167913274352523149"><ph name="HOTSPOT" />,
         <ph name="NETWORK" /></translation>
@@ -1524,6 +1533,7 @@ Mới cài đặt</translation>
 <translation id="7189412385142492784">Sao Kim cách đây bao xa</translation>
 <translation id="7198435252016571249">Máy ảnh đang bám theo góc dưới bên phải. Xung đột với khu vực hệ thống.</translation>
 <translation id="7229029500464092426">Bộ nhớ còn <ph name="AVAILABLE_MEMORY" /> | Tổng <ph name="TOTAL_MEMORY" /></translation>
+<translation id="7244725679040769470">Còn <ph name="PERCENTAGE" />% pin. Hãy sạc thiết bị.</translation>
 <translation id="7246071203293827765"><ph name="UPDATE_TEXT" />. Cần khởi động lại Chromebook này để áp dụng bản cập nhật. Quá trình này có thể mất tối đa 1 phút.</translation>
 <translation id="7256634071279256947">Micrô mặt sau</translation>
 <translation id="7258828758145722155">Chỉnh sửa hôm qua</translation>
@@ -1917,6 +1927,7 @@ Mới cài đặt</translation>
 <translation id="8878886163241303700">Mở rộng màn hình</translation>
 <translation id="888982883502837004">Bạn có thể tải bản cập nhật chương trình cơ sở xuống thiết bị của mình. Nhấp để xem lại và cập nhật.</translation>
 <translation id="8896630965521842259"><ph name="DESK_TEMPLATE_NAME" /> sẽ bị xoá vĩnh viễn</translation>
+<translation id="889790758758811533">Còn <ph name="PERCENTAGE" />% pin (khoảng <ph name="TIME_LEFT" />). Hãy sạc thiết bị.</translation>
 <translation id="88986195241502842">Trang dưới</translation>
 <translation id="8905919797434099235">(Không có tiêu đề)</translation>
 <translation id="890616557918890486">Thay đổi nguồn</translation>

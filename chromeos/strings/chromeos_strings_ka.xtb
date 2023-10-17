@@ -75,6 +75,7 @@
 <translation id="1499900233129743732">ამ მომხმარებელს მართავს <ph name="MANAGER" />, რომელსაც შეუძლია პარამეტრების დისტანციურად მართვა და მომხმარებლის აქტივობის მონიტორინგი.</translation>
 <translation id="150962533380566081">PUK კოდი არასწორია.</translation>
 <translation id="1510238584712386396">გამშვები</translation>
+<translation id="1515129336378114413">ბრაუზერის მთავარი გვერდი</translation>
 <translation id="1526389707933164996">ეკრანმზოგის ანიმაცია</translation>
 <translation id="152892567002884378">ხმის აწევა</translation>
 <translation id="1555130319947370107">ლურჯი</translation>
@@ -336,7 +337,6 @@
 <translation id="3604713164406837697">ფონის შეცვლა</translation>
 <translation id="360565022852130722">Wi-Fi ქსელი უზრუნველყოფილია სუსტი პროტოკოლით WEP 802.1x</translation>
 <translation id="3606583719724308068">HTTPS ვებსაიტების რეაგირების დიდი დრო</translation>
-<translation id="3607216139080387279">ეკრანმზოგის ჩვენება</translation>
 <translation id="361575905210396100">გმადლობთ გამოხმაურებისთვის</translation>
 <translation id="3632579075709132555">კონფიდენციალური ეკრანის გადართვა</translation>
 <translation id="3651050199673793219">აირჩიეთ ტემპერატურის ერთეული</translation>
@@ -348,7 +348,6 @@
 <translation id="3740976234706877572"><ph name="AVERAGE_SCORE" /> ★ (<ph name="AGGREGATED_COUNT" /> მიმოხილვა)</translation>
 <translation id="3748026146096797577">არ არის დაკავშირებული</translation>
 <translation id="3749289110408117711">ფაილის სახელი</translation>
-<translation id="3766934827878963937">1 საათით</translation>
 <translation id="3771294271822695279">ვიდეო ფაილები</translation>
 <translation id="3784455785234192852">დაბლოკვა</translation>
 <translation id="380097101658023925">RGB მართვის საშუალებები</translation>
@@ -691,7 +690,6 @@
 <translation id="629550705077076970">კლავიატურის დაბნელება</translation>
 <translation id="6302401976930124515">ტესტი „<ph name="TEST_NAME" />“ გაუქმდა</translation>
 <translation id="631063167932043783">გაცნობის აპი</translation>
-<translation id="6318437367327684789">ყოველთვის</translation>
 <translation id="6319207335391420837">განაახლეთ ჩაშენებული პროგრამული უზრუნველყოფა <ph name="DEVICE_NAME" />-ზე</translation>
 <translation id="6321407676395378991">ეკრანმზოგის ჩართვა</translation>
 <translation id="6324916366299863871">მალსახმობის რედაქტირება</translation>
@@ -749,6 +747,7 @@
 <translation id="6659594942844771486">ჩანართი</translation>
 <translation id="6673898378497337661">კლავიატურის სიკაშკაშის მომატება</translation>
 <translation id="6692996468359469499">მიიღეთ თქვენს არჩევანთან დაკავშირებული ინფორმაცია</translation>
+<translation id="6694534975463174713">საკეტი</translation>
 <translation id="6704062477274546131">DNS-ის დარეგულირება</translation>
 <translation id="6723839937902243910">ენერგია</translation>
 <translation id="6723847290197874913">კლავიატურის შენათება</translation>
@@ -1067,11 +1066,9 @@
 <translation id="9111102763498581341">განბლოკვა</translation>
 <translation id="9122602430962285795">ხელახლა დასაკავშირებლად გადადით პარამეტრებზე</translation>
 <translation id="9126720536733509015">რამდენიმე გვერდის შენახვა ერთიანი PDF-ის სახით</translation>
-<translation id="9133104754938025929">ბატარეის დაზოგვის მიზნით, ეკრანმზოგი მუშაობს მხოლოდ მაშინ, როცა დატენა მიმდინარეობს.</translation>
 <translation id="9133772297793293778">დააჭირეთ 1-4 მოდიფიკატორსა და 1 სხვა კლავიშს თქვენს კლავიატურაზე. რედაქტირების რეჟიმიდან გამოსასვლელად დააჭირეთ კლავიშთა კომბინაციას alt + esc.</translation>
 <translation id="9137526406337347448">Google სერვისები</translation>
 <translation id="9138630967333032450">მარცხენა shift</translation>
-<translation id="9143347780818904997"><ph name="MINUTES" /> წუთით</translation>
 <translation id="9149391708638971077">მეხსიერების ტესტის გაშვება</translation>
 <translation id="9161276708550942948">შორისი</translation>
 <translation id="9173638680043580060">დარჩენილია ერთ წუთზე ნაკლები</translation>

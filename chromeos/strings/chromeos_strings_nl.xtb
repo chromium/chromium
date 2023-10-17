@@ -336,7 +336,6 @@
 <translation id="3604713164406837697">Achtergrond wijzigen</translation>
 <translation id="360565022852130722">Wifi-netwerk is beveiligd met het zwakke protocol WEP 802.1x</translation>
 <translation id="3606583719724308068">Lange vertraging voor HTTPS-websites</translation>
-<translation id="3607216139080387279">Screensaver tonen</translation>
 <translation id="361575905210396100">Bedankt voor je feedback</translation>
 <translation id="3632579075709132555">Privacyscherm schakelen</translation>
 <translation id="3651050199673793219">Een temperatuureenheid selecteren</translation>
@@ -348,7 +347,6 @@
 <translation id="3740976234706877572"><ph name="AVERAGE_SCORE" /> ★ (<ph name="AGGREGATED_COUNT" /> reviews)</translation>
 <translation id="3748026146096797577">Niet verbonden</translation>
 <translation id="3749289110408117711">Bestandsnaam</translation>
-<translation id="3766934827878963937">gedurende 1 uur</translation>
 <translation id="3771294271822695279">Videobestanden</translation>
 <translation id="3784455785234192852">Vergrendelen</translation>
 <translation id="380097101658023925">rgb-bedieningselementen</translation>
@@ -691,7 +689,6 @@
 <translation id="629550705077076970">toetsenbord dimmen</translation>
 <translation id="6302401976930124515">Test <ph name="TEST_NAME" /> is geannuleerd</translation>
 <translation id="631063167932043783">App verkennen</translation>
-<translation id="6318437367327684789">oneindig</translation>
 <translation id="6319207335391420837">Firmware updaten op <ph name="DEVICE_NAME" /></translation>
 <translation id="6321407676395378991">Screensaver altijd aanzetten</translation>
 <translation id="6324916366299863871">Snelkoppeling bewerken</translation>
@@ -1067,11 +1064,9 @@
 <translation id="9111102763498581341">Ontgrendelen</translation>
 <translation id="9122602430962285795">Ga naar Instellingen als je weer verbinding wilt maken</translation>
 <translation id="9126720536733509015">Meerdere pagina's opslaan in 1 pdf-bestand</translation>
-<translation id="9133104754938025929">De screensaver werkt alleen tijdens het opladen om de batterij te sparen.</translation>
 <translation id="9133772297793293778">Druk op 1-4 functietoetsen en 1 andere toets op je toetsenbord. Druk op Alt + Esc om de bewerkingsmodus te sluiten.</translation>
 <translation id="9137526406337347448">Google-services</translation>
 <translation id="9138630967333032450">Shift links</translation>
-<translation id="9143347780818904997">gedurende <ph name="MINUTES" /> minuten</translation>
 <translation id="9149391708638971077">Geheugentest uitvoeren</translation>
 <translation id="9161276708550942948">spatie</translation>
 <translation id="9173638680043580060">Nog minder dan een minuut</translation>

@@ -966,6 +966,7 @@
 <translation id="2977665033722899841">Зараз вибрано: <ph name="ROW_NAME" /> (<ph name="ROW_CONTENT" />)</translation>
 <translation id="2978824962390592855">Опера</translation>
 <translation id="2979424420072875974">Ресурси для письменників</translation>
+<translation id="2980742331521553164">Код CVC цієї картки буде зашифровано й збережено в обліковому записі Google, щоб ви могли швидше оплачувати замовлення</translation>
 <translation id="2983666748527428214">Відкрити анонімну вкладку</translation>
 <translation id="2985306909656435243">Якщо цю функцію ввімкнено, Chromium зберігає копію даних вашої картки на пристрої, щоб ви могли швидше заповнювати форми.</translation>
 <translation id="2985398929374701810">Введіть дійсну адресу</translation>
@@ -3397,6 +3398,7 @@
 <translation id="79338296614623784">Введіть дійсний номер телефону</translation>
 <translation id="7934414805353235750">Сайт <ph name="URL" /> хоче відтворювати захищений вміст. Google перевірить ідентифікатор вашого пристрою.</translation>
 <translation id="7935318582918952113">Дистилятор DOM</translation>
+<translation id="7937163678541954811">Код CVC цієї картки буде зашифровано й збережено на вашому пристрої, щоб ви могли швидше оплачувати замовлення</translation>
 <translation id="7937554595067888181">Діє до <ph name="EXPIRATION_DATE_ABBR" /></translation>
 <translation id="7938958445268990899">Сертифікат сервера ще не дійсний.</translation>
 <translation id="7939713744218886332">Кухня народів світу</translation>
@@ -3667,7 +3669,7 @@
 <translation id="8438923942245957911">Ваша організація поскаржилася на цей сайт</translation>
 <translation id="8443613539889492016">Реп і хіп-хоп</translation>
 <translation id="8444543005280733648">Комп’ютерні мережі</translation>
-<translation id="8446275044635689572">Концерти й вистави</translation>
+<translation id="8446275044635689572">Виконавче мистецтво</translation>
 <translation id="8446884382197647889">Докладніше</translation>
 <translation id="8449155699563577224">17 x 24 дюйм.</translation>
 <translation id="8449836157089738489">Відкрити всі в новій групі вкладок</translation>

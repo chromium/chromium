@@ -75,6 +75,7 @@
 <translation id="1499900233129743732"><ph name="MANAGER" /> bu istifadəçini idarə edir və ayarları məsafədən idarə edə və istifadəçinin fəaliyyətini izləyə bilər.</translation>
 <translation id="150962533380566081">Yanlış PUK.</translation>
 <translation id="1510238584712386396">Başladıcı</translation>
+<translation id="1515129336378114413">brauzerin əsas səhifəsi</translation>
 <translation id="1526389707933164996">Ekran qoruyucu animasiyası</translation>
 <translation id="152892567002884378">Səsi artırın</translation>
 <translation id="1555130319947370107">Mavi</translation>
@@ -336,7 +337,6 @@
 <translation id="3604713164406837697">Divar kağızını dəyişin</translation>
 <translation id="360565022852130722">WiFi şəbəkəsi zəif protokol WEP 802.1x ilə qorunur</translation>
 <translation id="3606583719724308068">HTTPS veb saytlarında yüksək gecikmə</translation>
-<translation id="3607216139080387279">Ekran qoruyucusu göstərilsin</translation>
 <translation id="361575905210396100">Rəyinizə görə çox sağolun</translation>
 <translation id="3632579075709132555">Məxfilik ekranı keçiricisi</translation>
 <translation id="3651050199673793219">Temperatur vahidi seçin</translation>
@@ -348,7 +348,6 @@
 <translation id="3740976234706877572"><ph name="AVERAGE_SCORE" /> ★ (<ph name="AGGREGATED_COUNT" /> rəy)</translation>
 <translation id="3748026146096797577">Qoşulmayıb</translation>
 <translation id="3749289110408117711">Fayl adı</translation>
-<translation id="3766934827878963937">1 saat</translation>
 <translation id="3771294271822695279">Video Fayllar</translation>
 <translation id="3784455785234192852">Kilidləyin</translation>
 <translation id="380097101658023925">rgb nizamlayıcıları</translation>
@@ -691,7 +690,6 @@
 <translation id="629550705077076970">klaviaturanın qaraldılması</translation>
 <translation id="6302401976930124515"><ph name="TEST_NAME" /> testi ləğv edilib</translation>
 <translation id="631063167932043783">Tətbiqi araşdırın</translation>
-<translation id="6318437367327684789">həmişə</translation>
 <translation id="6319207335391420837"><ph name="DEVICE_NAME" /> cihazında proqramı güncəlləyin</translation>
 <translation id="6321407676395378991">Ekran qoruyucusunu aktiv edin</translation>
 <translation id="6324916366299863871">Qısayola düzəliş edin</translation>
@@ -749,6 +747,7 @@
 <translation id="6659594942844771486">Səkmə</translation>
 <translation id="6673898378497337661">klaviatura parlaqlığını artırın</translation>
 <translation id="6692996468359469499">Seçiminizlə bağlı məlumat əldə edin</translation>
+<translation id="6694534975463174713">kilid</translation>
 <translation id="6704062477274546131">DNS Həlli</translation>
 <translation id="6723839937902243910">Enerji</translation>
 <translation id="6723847290197874913">Klaviaturanın arxa işığı</translation>
@@ -1067,11 +1066,9 @@
 <translation id="9111102763498581341">Kiliddən çıxarın</translation>
 <translation id="9122602430962285795">Yenidən qoşulmaq üçün Ayarlara keçin</translation>
 <translation id="9126720536733509015">Birdən çox səhifəni bir PDF-də saxlayın</translation>
-<translation id="9133104754938025929">Batareya qənaəti üçün ekran qoruyucusu yalnız şarj zamanı işləyir.</translation>
 <translation id="9133772297793293778">Klaviaturada 1-4 dəyişdiricilərini və 1 digər düyməni basın. Redaktə rejimindən çıxmaq üçün alt + esc üzərinə basın.</translation>
 <translation id="9137526406337347448">Google Xidmətləri</translation>
 <translation id="9138630967333032450">Sol shift</translation>
-<translation id="9143347780818904997"><ph name="MINUTES" /> dəqiqə</translation>
 <translation id="9149391708638971077">Yaddaş Testi icra edin</translation>
 <translation id="9161276708550942948">boşluq</translation>
 <translation id="9173638680043580060">Bir dəqiqədən az qalıb</translation>

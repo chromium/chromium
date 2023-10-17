@@ -169,7 +169,9 @@
 <translation id="2152882202543497059"><ph name="NUMBER" /> ఫోటోలు</translation>
 <translation id="2157660087437850958">ఎమోజి సెలెక్టర్</translation>
 <translation id="2157959690810728433">క్యూలో ఉంచబడింది</translation>
+<translation id="2158450850127366833">{NUM_ROOL_APPS,plural,offset:2 =1{మీ అడ్మినిస్ట్రేటర్, మీరు లాగిన్ చేసిన ప్రతిసారీ <ph name="APP_NAME_1" /> ఆటోమేటిక్‌గా ఆన్ అయ్యేలా సెట్ చేశారు.}=2{మీ అడ్మినిస్ట్రేటర్, మీరు లాగిన్ చేసిన ప్రతిసారీ <ph name="APP_NAME_1" />, <ph name="APP_NAME_2" /> ఆటోమేటిక్‌గా ఆన్ అయ్యేలా సెట్ చేశారు.}=3{మీ అడ్మినిస్ట్రేటర్, మీరు లాగిన్ చేసిన ప్రతిసారీ <ph name="APP_NAME_1" />, <ph name="APP_NAME_2" />, ఇంకా <ph name="APP_NAME_3" /> ఆటోమేటిక్‌గా ఆన్ అయ్యేలా సెట్ చేశారు.}other{మీ అడ్మినిస్ట్రేటర్, మీరు లాగిన్ చేసిన ప్రతిసారీ <ph name="APP_NAME_1" />, <ph name="APP_NAME_2" />‌తో పాటు, ఇంకా # ఇతర యాప్‌లు ఆటోమేటిక్‌గా ఆన్ అయ్యేలా సెట్ చేశారు.}}</translation>
 <translation id="2158971754079422508"><ph name="DESC_TEXT" />: మళ్లీ ట్రై చేయండి</translation>
+<translation id="215916044711630446">APNను జోడించండి బటన్ డిజేబుల్ చేయబడింది</translation>
 <translation id="2161394479394250669">ప్రింట్ టాస్క్‌ను రద్దు చేయండి</translation>
 <translation id="2161656808144014275">వచనం</translation>
 <translation id="2163937499206714165">డార్క్ మోడ్‌ను ఆన్ చేయండి</translation>
@@ -337,7 +339,6 @@
 <translation id="3604713164406837697">వాల్‌పేపర్‌ను మార్చండి</translation>
 <translation id="360565022852130722">బలహీనమైన ప్రోటోకాల్ WEP 802.1xతో Wi-Fi నెట్‌వర్క్ సురక్షితం చేయబడింది</translation>
 <translation id="3606583719724308068">HTTPS వెబ్‌సైట్‌లలో ప్రతిస్పందన సమయం ఎక్కువగా ఉంది</translation>
-<translation id="3607216139080387279">స్క్రీన్ సేవర్‌ను చూపించండి</translation>
 <translation id="361575905210396100">మీ ఫీడ్‌బ్యాక్‌ను తెలిపినందుకు ధన్యవాదాలు</translation>
 <translation id="3632579075709132555">గోప్యతా స్క్రీన్ టోగుల్</translation>
 <translation id="3651050199673793219">ఉష్ణోగ్రత యూనిట్‌ను ఎంచుకోండి</translation>
@@ -349,7 +350,6 @@
 <translation id="3740976234706877572"><ph name="AVERAGE_SCORE" /> ★ (<ph name="AGGREGATED_COUNT" /> రివ్యూలు)</translation>
 <translation id="3748026146096797577">కనెక్ట్ కాలేదు</translation>
 <translation id="3749289110408117711">ఫైల్ పేరు</translation>
-<translation id="3766934827878963937">1 గంట కోసం</translation>
 <translation id="3771294271822695279">వీడియో ఫైళ్లు</translation>
 <translation id="3784455785234192852">లాక్ చేయి</translation>
 <translation id="380097101658023925">rgb కంట్రోల్స్</translation>
@@ -400,6 +400,7 @@
 <translation id="4117637339509843559">డార్క్ మోడ్</translation>
 <translation id="4130035430755296270">మరిన్ని లేఅవుట్ ఆప్షన్‌ల కోసం మౌస్ కర్సర్‌ని ఉంచడం కొనసాగించండి</translation>
 <translation id="4131410914670010031">నలుపు మరియు తెలుపు</translation>
+<translation id="4143820682073026914">{NUM_ROOL_APPS,plural, =1{<ph name="APP_NAME_1" /> ఆటోమేటిక్‌గా ప్రారంభించబడింది}other{# యాప్‌లు ఆటోమేటిక్‌గా ప్రారంభించబడ్డాయి}}</translation>
 <translation id="4145784616224233563">HTTP ఫైర్‌వాల్</translation>
 <translation id="4147897805161313378">Google Photos</translation>
 <translation id="4150201353443180367">డిస్‌ప్లే</translation>
@@ -445,6 +446,7 @@
 <translation id="445059817448385655">పాత పాస్‌వర్డ్</translation>
 <translation id="4453205916657964690">సబ్‌నెట్ మాస్క్</translation>
 <translation id="4454245904991689773">స్కాన్ చేసి ఇక్కడ సేవ్ చేయండి</translation>
+<translation id="4456812688969919973">APNను సేవ్ చేయండి బటన్ డిజేబుల్ చేయబడింది</translation>
 <translation id="4469288414739283461">ఎర్త్ ఫ్లో స్క్రీన్ సేవర్</translation>
 <translation id="4479639480957787382">ఈథర్నెట్</translation>
 <translation id="4483049906298469269">డిఫాల్ట్-యేతర నెట్‌వర్క్ గేట్‌వేను పింగ్ చేయడంలో విఫలమైంది</translation>
@@ -692,7 +694,6 @@
 <translation id="629550705077076970">కీబోర్డ్ బ్రైట్‌నెస్ తగ్గుతోంది</translation>
 <translation id="6302401976930124515"><ph name="TEST_NAME" /> టెస్ట్ రద్దు చేయబడింది</translation>
 <translation id="631063167932043783">అన్వేషణ యాప్</translation>
-<translation id="6318437367327684789">ఎప్పటికీ</translation>
 <translation id="6319207335391420837"><ph name="DEVICE_NAME" />‌లో ఫర్మ్‌వేర్‌ను అప్‌డేట్ చేయండి</translation>
 <translation id="6321407676395378991">స్క్రీన్ సేవర్ ఆన్ చేయి</translation>
 <translation id="6324916366299863871">షార్ట్‌కట్‌ను ఎడిట్ చేయండి</translation>
@@ -716,6 +717,7 @@
 <translation id="6423239382391657905">OpenVPN</translation>
 <translation id="6439505561246192797">బలహీనం (<ph name="SIGNAL_STRENGTH" />)</translation>
 <translation id="6447630859861661624">ఖాతా సెట్టింగ్‌లకు వెళ్లండి</translation>
+<translation id="6462978824459367242">APNను జోడించండి బటన్ ఎనేబుల్ చేయబడింది</translation>
 <translation id="6463239094587744704">{PAGE_NUMBER,plural, =0{పేజీని మళ్లీ స్కాన్ చేయాలా?}=1{{PAGE_NUMBER}వ పేజీని మళ్లీ స్కాన్ చేయాలా?}other{{PAGE_NUMBER}వ పేజీని మళ్లీ స్కాన్ చేయాలా?}}</translation>
 <translation id="6472207088655375767">OTP</translation>
 <translation id="6480327114083866287"><ph name="MANAGER" /> ద్వారా మేనేజ్ చేయబడుతోంది</translation>
@@ -1054,6 +1056,7 @@
 <translation id="902638246363752736">కీబోర్డ్ సెట్టింగ్‌లు</translation>
 <translation id="9028832514430399253">స్క్రీన్ సేవర్ ఆప్షన్‌లను ఎంచుకోవడానికి టోగుల్‌ను ఆన్ చేయండి</translation>
 <translation id="9039663905644212491">PEAP</translation>
+<translation id="9049868303458988905">APNను సేవ్ చేయండి బటన్ ఎనేబుల్ చేయబడింది</translation>
 <translation id="9058932992221914855">IPv6</translation>
 <translation id="9062831201344759865">DNS రిజల్యూషన్ అధిక ప్రతిస్పందన సమయాన్ని కలిగి ఉంది</translation>
 <translation id="9065203028668620118">ఎడిట్</translation>
@@ -1069,11 +1072,9 @@
 <translation id="9111102763498581341">అన్‌లాక్ చేయి</translation>
 <translation id="9122602430962285795">తిరిగి కనెక్ట్ చేయడానికి, సెట్టింగ్‌లకు వెళ్లండి</translation>
 <translation id="9126720536733509015">పలు పేజీలను ఒక PDFగా సేవ్ చేయండి</translation>
-<translation id="9133104754938025929">బ్యాటరీని ఆదా చేయడానికి, స్క్రీన్ సేవర్ ఛార్జింగ్ సమయంలో మాత్రమే పని చేస్తుంది.</translation>
 <translation id="9133772297793293778">మీ కీబోర్డ్‌లో 1-4 మోడిఫయర్‌లు, 1 ఇతర కీని నొక్కండి. ఎడిటింగ్ మోడ్ నుండి ఎగ్జిట్ అవ్వడానికి, alt + esc నొక్కండి.</translation>
 <translation id="9137526406337347448">Google సేవలు</translation>
 <translation id="9138630967333032450">ఎడమ వైపు షిఫ్ట్</translation>
-<translation id="9143347780818904997"><ph name="MINUTES" /> నిమిషాల కోసం</translation>
 <translation id="9149391708638971077">మెమరీ పరీక్షను రన్ చేయండి</translation>
 <translation id="9161276708550942948">స్పేస్</translation>
 <translation id="9173638680043580060">నిమిషం కంటే తక్కువ సమయం మిగిలి ఉంది</translation>

@@ -336,7 +336,6 @@
 <translation id="3604713164406837697">Změnit tapetu</translation>
 <translation id="360565022852130722">Síť Wi-Fi je zabezpečena slabým protokolem WEP 802.1x</translation>
 <translation id="3606583719724308068">Vysoká latence připojení k webům HTTPS</translation>
-<translation id="3607216139080387279">Zobrazovat spořič obrazovky</translation>
 <translation id="361575905210396100">Děkujeme vám za zpětnou vazbu</translation>
 <translation id="3632579075709132555">Přepínač obrazovky s ochranou soukromí</translation>
 <translation id="3651050199673793219">Vyberte jednotku teploty</translation>
@@ -348,7 +347,6 @@
 <translation id="3740976234706877572"><ph name="AVERAGE_SCORE" /> ★ (recenze: <ph name="AGGREGATED_COUNT" />)</translation>
 <translation id="3748026146096797577">Nepřipojeno</translation>
 <translation id="3749289110408117711">Název souboru</translation>
-<translation id="3766934827878963937">1 hodinu</translation>
 <translation id="3771294271822695279">Soubory videa</translation>
 <translation id="3784455785234192852">Uzamknout</translation>
 <translation id="380097101658023925">ovládání rgb</translation>
@@ -691,7 +689,6 @@
 <translation id="629550705077076970">stmívání klávesnice</translation>
 <translation id="6302401976930124515">Test <ph name="TEST_NAME" /> byl zrušen</translation>
 <translation id="631063167932043783">Prozkoumat aplikaci</translation>
-<translation id="6318437367327684789">navždy</translation>
 <translation id="6319207335391420837">Aktualizace firmwaru v zařízení <ph name="DEVICE_NAME" /></translation>
 <translation id="6321407676395378991">Zapnout spořič obrazovky</translation>
 <translation id="6324916366299863871">Upravit zkratku</translation>
@@ -1067,11 +1064,9 @@
 <translation id="9111102763498581341">Odemknout</translation>
 <translation id="9122602430962285795">Pokud se chcete znovu připojit, přejděte do Nastavení</translation>
 <translation id="9126720536733509015">Uložit více stránek do jednoho PDF</translation>
-<translation id="9133104754938025929">Aby se šetřila baterie, funguje spořič obrazovky pouze při nabíjení.</translation>
 <translation id="9133772297793293778">Stiskněte 1–4 modifikátory a 1 další klávesu. Režim úprav ukončíte stisknutím kláves Alt + Esc.</translation>
 <translation id="9137526406337347448">Služby Google</translation>
 <translation id="9138630967333032450">Levý Shift</translation>
-<translation id="9143347780818904997"><ph name="MINUTES" /> min</translation>
 <translation id="9149391708638971077">Spustit test paměti</translation>
 <translation id="9161276708550942948">mezera</translation>
 <translation id="9173638680043580060">Zbývá méně než minuta</translation>

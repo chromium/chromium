@@ -336,7 +336,6 @@
 <translation id="3604713164406837697">ওয়ালপেপার পরিবর্তন করুন</translation>
 <translation id="360565022852130722">দুর্বল WEP 802.1x প্রোটোকল ব্যবহার করে ওয়াই-ফাই নেটওয়ার্ক সুরক্ষিত করা হয়েছে</translation>
 <translation id="3606583719724308068">HTTPS ওয়েবসাইটে হাই লেটেন্সি</translation>
-<translation id="3607216139080387279">'স্ক্রিন সেভার' দেখুন</translation>
 <translation id="361575905210396100">মতামত জানানোর জন্য ধন্যবাদ</translation>
 <translation id="3632579075709132555">প্রাইভেসি স্ক্রিন টগল করার বোতাম</translation>
 <translation id="3651050199673793219">তাপমাত্রার ইউনিট বেছে নিন</translation>
@@ -348,7 +347,6 @@
 <translation id="3740976234706877572"><ph name="AVERAGE_SCORE" /> ★ (<ph name="AGGREGATED_COUNT" />টি রিভিউ)</translation>
 <translation id="3748026146096797577">সংযুক্ত নয়</translation>
 <translation id="3749289110408117711">ফাইলের নাম</translation>
-<translation id="3766934827878963937">১ ঘণ্টার জন্য</translation>
 <translation id="3771294271822695279">ভিডিও ফাইল</translation>
 <translation id="3784455785234192852">লক করুন</translation>
 <translation id="380097101658023925">RGB কন্ট্রোল</translation>
@@ -691,7 +689,6 @@
 <translation id="629550705077076970">কীবোর্ড অনুজ্জ্বল হচ্ছে</translation>
 <translation id="6302401976930124515"><ph name="TEST_NAME" /> পরীক্ষা বাতিল করা হয়েছে</translation>
 <translation id="631063167932043783">এক্সপ্লোর সংক্রান্ত অ্যাপ</translation>
-<translation id="6318437367327684789">সব সময়</translation>
 <translation id="6319207335391420837"><ph name="DEVICE_NAME" />-এ ফার্মওয়্যার আপডেট করুন</translation>
 <translation id="6321407676395378991">স্ক্রিন সেভার চালু করুন</translation>
 <translation id="6324916366299863871">শর্টকার্ট এডিট করুন</translation>
@@ -1067,11 +1064,9 @@
 <translation id="9111102763498581341">আনলক</translation>
 <translation id="9122602430962285795">আবার কানেক্ট করতে, সেটিংস বিকল্পে যান</translation>
 <translation id="9126720536733509015">একাধিক পৃষ্ঠা সেভ করে একটি পিডিএফ ফাইল তৈরি করুন</translation>
-<translation id="9133104754938025929">ব্যাটারির চার্জ বাঁচাতে, স্ক্রিন সেভার শুধুমাত্র চার্জ দেওয়ার সময় কাজ করে।</translation>
 <translation id="9133772297793293778">আপনার কীবোর্ডে ১-৪ পরিবর্তক ও অন্য ১টি 'কী' প্রেস করুন। এডিটিং মোড ছেড়ে বেরিয়ে আসতে, alt + esc প্রেস করুন।</translation>
 <translation id="9137526406337347448">Google পরিসেবাসমূহ</translation>
 <translation id="9138630967333032450">বাঁদিকের shift কী</translation>
-<translation id="9143347780818904997"><ph name="MINUTES" /> মিনিটের জন্য</translation>
 <translation id="9149391708638971077">মেমরি টেস্ট করুন</translation>
 <translation id="9161276708550942948">space</translation>
 <translation id="9173638680043580060">এক মিনিটেরও কম সময় বাকি আছে</translation>

@@ -75,6 +75,7 @@
 <translation id="1499900233129743732"><ph name="MANAGER" />에서 이 사용자를 관리하며, 원격으로 설정을 관리하고 사용자 활동을 모니터링할 수 있습니다.</translation>
 <translation id="150962533380566081">잘못된 PUK입니다.</translation>
 <translation id="1510238584712386396">런처</translation>
+<translation id="1515129336378114413">브라우저 홈</translation>
 <translation id="1526389707933164996">화면 보호기 애니메이션</translation>
 <translation id="152892567002884378">볼륨 크게</translation>
 <translation id="1555130319947370107">파란색</translation>
@@ -336,7 +337,6 @@
 <translation id="3604713164406837697">배경화면 변경</translation>
 <translation id="360565022852130722">Wi-Fi 네트워크가 약한 프로토콜 WEP 802.1x로 보호되었습니다.</translation>
 <translation id="3606583719724308068">HTTPS 웹사이트 연결의 지연 시간이 깁니다.</translation>
-<translation id="3607216139080387279">화면 보호기 표시</translation>
 <translation id="361575905210396100">의견을 보내 주셔서 감사합니다</translation>
 <translation id="3632579075709132555">개인 정보 보호 화면 전환</translation>
 <translation id="3651050199673793219">온도 단위 선택</translation>
@@ -348,7 +348,6 @@
 <translation id="3740976234706877572">★ <ph name="AVERAGE_SCORE" />개(리뷰 <ph name="AGGREGATED_COUNT" />개)</translation>
 <translation id="3748026146096797577">연결되어 있지 않음</translation>
 <translation id="3749289110408117711">파일 이름</translation>
-<translation id="3766934827878963937">1시간 동안</translation>
 <translation id="3771294271822695279">동영상 파일</translation>
 <translation id="3784455785234192852">잠금</translation>
 <translation id="380097101658023925">RGB 제어</translation>
@@ -691,7 +690,6 @@
 <translation id="629550705077076970">키보드 밝기 낮추기</translation>
 <translation id="6302401976930124515"><ph name="TEST_NAME" /> 테스트가 취소됨</translation>
 <translation id="631063167932043783">탐색 앱</translation>
-<translation id="6318437367327684789">계속</translation>
 <translation id="6319207335391420837"><ph name="DEVICE_NAME" /> 펌웨어 업데이트</translation>
 <translation id="6321407676395378991">화면 보호기 사용 설정</translation>
 <translation id="6324916366299863871">바로가기 수정</translation>
@@ -749,6 +747,7 @@
 <translation id="6659594942844771486">탭</translation>
 <translation id="6673898378497337661">키보드 밝기를 높입니다</translation>
 <translation id="6692996468359469499">선택 항목과 관련된 정보 얻기</translation>
+<translation id="6694534975463174713">잠금</translation>
 <translation id="6704062477274546131">DNS 변환</translation>
 <translation id="6723839937902243910">전원</translation>
 <translation id="6723847290197874913">키보드 백라이트</translation>
@@ -1067,11 +1066,9 @@
 <translation id="9111102763498581341">잠금 해제</translation>
 <translation id="9122602430962285795">다시 연결하려면 설정으로 이동하세요.</translation>
 <translation id="9126720536733509015">여러 페이지를 하나의 PDF로 저장</translation>
-<translation id="9133104754938025929">배터리 절약을 위해 충전하는 동안에만 화면 보호기가 작동합니다.</translation>
 <translation id="9133772297793293778">키보드에서 특수키 1~4개와 다른 키 1개를 누릅니다. 수정 모드를 종료하려면 Alt + Esc를 누르세요.</translation>
 <translation id="9137526406337347448">Google 서비스</translation>
 <translation id="9138630967333032450">왼쪽 시프트</translation>
-<translation id="9143347780818904997"><ph name="MINUTES" />분 동안</translation>
 <translation id="9149391708638971077">메모리 테스트 실행</translation>
 <translation id="9161276708550942948">스페이스</translation>
 <translation id="9173638680043580060">1분 미만 남음</translation>

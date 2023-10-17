@@ -41,7 +41,6 @@
 <translation id="187227595286001730">Související weby mohou sledovat vaši aktivitu ve skupině</translation>
 <translation id="1887786770086287077">Přístup k poloze je v tomto zařízení vypnut. Zapnete jej v <ph name="BEGIN_LINK" />Nastavení Android<ph name="END_LINK" />.</translation>
 <translation id="1915307458270490472">Zavěsit</translation>
-<translation id="1919345977826869612">Reklamy</translation>
 <translation id="1919950603503897840">Vyberte kontakty</translation>
 <translation id="1923695749281512248"><ph name="BYTES_DOWNLOADED_WITH_UNITS" /> / <ph name="FILE_SIZE_WITH_UNITS" /></translation>
 <translation id="1979673356880165407">Zvětšit nebo zmenšit text a obrázky na všech navštívených webech</translation>
@@ -71,7 +70,6 @@
 <translation id="2289270750774289114">Zeptat se, když chce web objevit zařízení Bluetooth v okolí (doporučeno)</translation>
 <translation id="2315043854645842844">Volbu certifikátu na straně klienta operační systém nepodporuje.</translation>
 <translation id="2321958826496381788">Přetahujte posuvník tak dlouho, dokud nebudete moci pohodlně přečíst tento text. Po dvojitém klepnutí na odstavec by měl být text alespoň takto velký.</translation>
-<translation id="2329473609445770916">Tento web stanovuje vaše zájmy, na základě kterých vám ostatní weby mohou zobrazovat reklamy</translation>
 <translation id="2359808026110333948">Pokračovat</translation>
 <translation id="2379925928934107488">Když Chrome používá tmavý motiv, použít ho i pro Chrome (pokud je to možné)</translation>
 <translation id="2387895666653383613">Zvětšení/zmenšení textu</translation>
@@ -111,7 +109,6 @@
 <translation id="2891975107962658722">Blokovat webu ukládání dat do zařízení</translation>
 <translation id="2903493209154104877">Adresy</translation>
 <translation id="2910701580606108292">Před povolením spuštění chráněného obsahu na webu se zeptat</translation>
-<translation id="2913331724188855103">Povolit webům ukládat a číst data souborů cookie (doporučeno)</translation>
 <translation id="2932883381142163287">Nahlásit zneužití</translation>
 <translation id="2968755619301702150">Prohlížeč certifikátů</translation>
 <translation id="3008272652534848354">Resetovat oprávnění</translation>
@@ -129,7 +126,6 @@
 <translation id="3198916472715691905">Uložená data: <ph name="STORAGE_AMOUNT" /></translation>
 <translation id="321187648315454507">Pokud aplikaci <ph name="APP_NAME" /> chcete povolit, aby vám zasílala oznámení, zapněte oznámení také v <ph name="BEGIN_LINK" />Natavení Android<ph name="END_LINK" />.</translation>
 <translation id="3227137524299004712">Mikrofon</translation>
-<translation id="3248611290851046188">Tento web stanovuje vaše zájmy, na základě kterých vám ostatní weby mohou zobrazovat reklamy. Tento web také získává vaše zájmy z Chromu, aby vám mohl zobrazovat relevantnější reklamy.</translation>
 <translation id="3277252321222022663">Povolit webům přístup k senzorům (doporučeno)</translation>
 <translation id="3285500645985761267">Povolit souvisejícím webům sledovat vaši aktivitu ve skupině</translation>
 <translation id="3295019059349372795">Kapitola 11: Smaragdové město v zemi Oz</translation>
@@ -156,7 +152,6 @@
 <translation id="3721953990244350188">Zavřít a zobrazit další dostupnou akci</translation>
 <translation id="3744111561329211289">Synchronizace na pozadí</translation>
 <translation id="3763247130972274048">Dvojitým klepnutím na šipku vlevo nebo vpravo přeskočíte video o 10 s</translation>
-<translation id="3794286421982011626">Web, který navštívíte, může ukládat informace o tom, co děláte, aby fungoval podle očekávání – například abyste zůstali přihlášeni nebo v košíku zůstaly přidané položky. Weby tato data často ukládají dočasně na vašem zařízení.</translation>
 <translation id="3797520601150691162">Nepoužívat tmavý motiv pro konkrétní web</translation>
 <translation id="3803367742635802571">Navštívené weby mohou přestat fungovat podle očekávání</translation>
 <translation id="3804247818991980532"><ph name="TYPE_1" />. <ph name="TYPE_2" />.</translation>
@@ -193,7 +188,6 @@
 <translation id="4338831206024587507">Všechny weby v doméně <ph name="DOMAIN" /></translation>
 <translation id="4402755511846832236">Nedovolit webům zjistit, kdy aktivně používáte toto zařízení</translation>
 <translation id="4412992751769744546">Povolit cookies třetích stran</translation>
-<translation id="4428065317363009941">Personalizace reklam</translation>
 <translation id="4434045419905280838">Vyskakovací okna a přesměrování</translation>
 <translation id="443552056913301231">Touto akcí vymažete všechna místní data, včetně souborů cookie, a resetujete všechna oprávnění pro <ph name="ORIGIN" /></translation>
 <translation id="4468959413250150279">Vypne zvuk na konkrétním webu.</translation>
@@ -247,10 +241,8 @@
 <translation id="5344522958567249764">Spravovat ochranu soukromí v reklamách</translation>
 <translation id="5394307150471348411">{DETAIL_COUNT,plural, =1{(+ 1 další)}few{(+ # další)}many{(+ # další)}other{(+ # dalších)}}</translation>
 <translation id="5403592356182871684">Názvy</translation>
-<translation id="5412236728747081950">Tento web získává z Chromu vaše zájmy, aby vám mohl zobrazovat relevantnější reklamy</translation>
 <translation id="5438097262470833822">Výběrem této možnosti resetujete oprávnění webu <ph name="WEBSITE" /></translation>
 <translation id="5489227211564503167">Uplynulá doba: <ph name="ELAPSED_TIME" /> z <ph name="TOTAL_TIME" />.</translation>
-<translation id="5494752089476963479">Blokovat reklamy na webech, které zobrazují obtěžující nebo zavádějící reklamy</translation>
 <translation id="5502860503640766021">Oprávnění <ph name="PERMISSION_1" /> je povoleno, oprávnění <ph name="PERMISSION_2" /> je blokováno</translation>
 <translation id="5505264765875738116">Weby nemohou žádat o oprávnění zasílat vám oznámení</translation>
 <translation id="5516455585884385570">Otevřít nastavení oznámení</translation>
@@ -363,7 +355,6 @@
 <translation id="7554752735887601236">Webové stránky používají váš mikrofon</translation>
 <translation id="7561196759112975576">Vždy</translation>
 <translation id="757524316907819857">Bránit webům v přehrávání chráněného obsahu</translation>
-<translation id="7577900504646297215">Spravovat zájmy</translation>
 <translation id="7594634374516752650">Telefon je připojen k zařízení Bluetooth</translation>
 <translation id="7641339528570811325">Vymazat údaje o prohlížení…</translation>
 <translation id="7649070708921625228">Nápověda</translation>

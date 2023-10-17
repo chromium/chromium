@@ -966,6 +966,7 @@
 <translation id="2977665033722899841">Ағымдағы таңдалғаны: <ph name="ROW_NAME" />, <ph name="ROW_CONTENT" /></translation>
 <translation id="2978824962390592855">Опера</translation>
 <translation id="2979424420072875974">Жазушылар ресурстары</translation>
+<translation id="2980742331521553164">Жылдам төлеу үшін бұл картаның CVC коды шифрланады және Google аккаунтыңызға сақталады.</translation>
 <translation id="2983666748527428214">Инкогнито қойындысын ашу</translation>
 <translation id="2985306909656435243">Іске қосылса, Chromium нысанды жылдамырақ толтыру үшін картаңыздың көшірмесін осы құрылғыға сақтайды.</translation>
 <translation id="2985398929374701810">Дұрыс мекенжайды енгізіңіз</translation>
@@ -3396,6 +3397,7 @@
 <translation id="79338296614623784">Дұрыс телефон нөмірін енгізіңіз</translation>
 <translation id="7934414805353235750"><ph name="URL" /> қорғалған контентті ойнатуға рұқсат сұрады. Google құрылғыңыздың идентификаторын тексереді.</translation>
 <translation id="7935318582918952113">DOM Distiller</translation>
+<translation id="7937163678541954811">Жылдам төлеу үшін бұл картаның CVC коды шифрланады және құрылғыңызға сақталады.</translation>
 <translation id="7937554595067888181">Жарамдылық мерзімі: <ph name="EXPIRATION_DATE_ABBR" /></translation>
 <translation id="7938958445268990899">Сервер сертификаты әлі жарамды емес.</translation>
 <translation id="7939713744218886332">Әлем халықтарының тағамдары</translation>

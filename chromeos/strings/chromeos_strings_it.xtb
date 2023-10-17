@@ -169,7 +169,9 @@
 <translation id="2152882202543497059"><ph name="NUMBER" /> foto</translation>
 <translation id="2157660087437850958">selettore di emoji</translation>
 <translation id="2157959690810728433">IN CODA</translation>
+<translation id="2158450850127366833">{NUM_ROOL_APPS,plural,offset:2 =1{L'amministratore ha impostato l'avvio automatico di <ph name="APP_NAME_1" /> ogni volta che accedi.}=2{L'amministratore ha impostato l'avvio automatico di <ph name="APP_NAME_1" /> e <ph name="APP_NAME_2" /> ogni volta che accedi.}=3{L'amministratore ha impostato l'avvio automatico di <ph name="APP_NAME_1" />, <ph name="APP_NAME_2" /> e <ph name="APP_NAME_3" /> ogni volta che accedi.}other{L'amministratore ha impostato l'avvio automatico di <ph name="APP_NAME_1" />, <ph name="APP_NAME_2" /> e altre # app ogni volta che accedi.}}</translation>
 <translation id="2158971754079422508"><ph name="DESC_TEXT" />. Riprova</translation>
+<translation id="215916044711630446">Il pulsante Aggiungi APN è ora disattivato</translation>
 <translation id="2161394479394250669">Annulla processo di stampa</translation>
 <translation id="2161656808144014275">Testo</translation>
 <translation id="2163937499206714165">Attiva la modalità Buio</translation>
@@ -337,7 +339,6 @@
 <translation id="3604713164406837697">Cambiare sfondo</translation>
 <translation id="360565022852130722">la rete Wi-Fi è protetta con un protocollo WEP 802.1x inefficace</translation>
 <translation id="3606583719724308068">Alta latenza a siti web HTTPS</translation>
-<translation id="3607216139080387279">Mostra salvaschermo</translation>
 <translation id="361575905210396100">Grazie per il tuo feedback</translation>
 <translation id="3632579075709132555">Attivazione/disattivazione della Schermata privata</translation>
 <translation id="3651050199673793219">Seleziona un'unità di temperatura</translation>
@@ -349,7 +350,6 @@
 <translation id="3740976234706877572"><ph name="AVERAGE_SCORE" /> ★ (<ph name="AGGREGATED_COUNT" /> recensioni)</translation>
 <translation id="3748026146096797577">Non connesso</translation>
 <translation id="3749289110408117711">Nome file</translation>
-<translation id="3766934827878963937">per 1 ora</translation>
 <translation id="3771294271822695279">File video</translation>
 <translation id="3784455785234192852">Blocca</translation>
 <translation id="380097101658023925">Controlli RGB</translation>
@@ -400,6 +400,7 @@
 <translation id="4117637339509843559">Modalità Buio</translation>
 <translation id="4130035430755296270">Continua a passare il mouse sopra per altre opzioni di layout</translation>
 <translation id="4131410914670010031">In bianco e nero</translation>
+<translation id="4143820682073026914">{NUM_ROOL_APPS,plural, =1{L'app <ph name="APP_NAME_1" /> è stata avviata automaticamente}other{# app sono state avviate automaticamente}}</translation>
 <translation id="4145784616224233563">Firewall HTTP</translation>
 <translation id="4147897805161313378">Google Foto</translation>
 <translation id="4150201353443180367">Display</translation>
@@ -445,6 +446,7 @@
 <translation id="445059817448385655">Vecchia password</translation>
 <translation id="4453205916657964690">Subnet mask</translation>
 <translation id="4454245904991689773">Salva scansioni in</translation>
+<translation id="4456812688969919973">Il pulsante Salva APN è ora disattivato</translation>
 <translation id="4469288414739283461">Salvaschermo Flusso terrestre</translation>
 <translation id="4479639480957787382">Ethernet</translation>
 <translation id="4483049906298469269">impossibile eseguire il ping del gateway di rete non predefinito</translation>
@@ -692,7 +694,6 @@
 <translation id="629550705077076970">Oscuramento della tastiera</translation>
 <translation id="6302401976930124515">Il test <ph name="TEST_NAME" /> è stato annullato</translation>
 <translation id="631063167932043783">App Esplora</translation>
-<translation id="6318437367327684789">per sempre</translation>
 <translation id="6319207335391420837">Aggiorna il firmware su <ph name="DEVICE_NAME" /></translation>
 <translation id="6321407676395378991">Attiva salvaschermo</translation>
 <translation id="6324916366299863871">Modifica scorciatoia</translation>
@@ -716,6 +717,7 @@
 <translation id="6423239382391657905">OpenVPN</translation>
 <translation id="6439505561246192797">Debole (<ph name="SIGNAL_STRENGTH" />)</translation>
 <translation id="6447630859861661624">Vai alle impostazioni dell'account</translation>
+<translation id="6462978824459367242">Il pulsante Aggiungi APN è ora attivo</translation>
 <translation id="6463239094587744704">{PAGE_NUMBER,plural, =0{Scansionare di nuovo la pagina?}=1{Scansionare di nuovo pagina {PAGE_NUMBER}?}other{Scansionare di nuovo pagina {PAGE_NUMBER}?}}</translation>
 <translation id="6472207088655375767">OTP</translation>
 <translation id="6480327114083866287">Gestito da <ph name="MANAGER" /></translation>
@@ -1054,6 +1056,7 @@
 <translation id="902638246363752736">Impostazioni tastiera</translation>
 <translation id="9028832514430399253">Usa l'opzione di attivazione/disattivazione per selezionare le opzioni per il salvaschermo</translation>
 <translation id="9039663905644212491">PEAP</translation>
+<translation id="9049868303458988905">Il pulsante Salva APN è ora attivo</translation>
 <translation id="9058932992221914855">IPv6</translation>
 <translation id="9062831201344759865">La risoluzione DNS ha una latenza elevata</translation>
 <translation id="9065203028668620118">Modifica</translation>
@@ -1069,11 +1072,9 @@
 <translation id="9111102763498581341">Sblocca</translation>
 <translation id="9122602430962285795">Per riconnetterti, vai alle Impostazioni</translation>
 <translation id="9126720536733509015">Salva più pagine in un unico PDF</translation>
-<translation id="9133104754938025929">Per risparmiare batteria, il salvaschermo funziona soltanto durante la ricarica.</translation>
 <translation id="9133772297793293778">Premi 1-4 tasti di modifica e 1 altro tasto della tastiera. Per uscire dalla modalità di modifica, premi Alt + Esc.</translation>
 <translation id="9137526406337347448">Google Services</translation>
 <translation id="9138630967333032450">Maiusc sinistro</translation>
-<translation id="9143347780818904997">per <ph name="MINUTES" /> minuti</translation>
 <translation id="9149391708638971077">Esegui test memoria</translation>
 <translation id="9161276708550942948">spazio</translation>
 <translation id="9173638680043580060">Manca meno di un minuto</translation>

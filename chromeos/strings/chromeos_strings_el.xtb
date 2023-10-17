@@ -75,6 +75,7 @@
 <translation id="1499900233129743732">Ο τομέας <ph name="MANAGER" /> διαχειρίζεται αυτόν τον χρήστη και ενδέχεται να διαχειρίζεται απομακρυσμένα τις ρυθμίσεις και να παρακολουθεί τη δραστηριότητα του χρήστη.</translation>
 <translation id="150962533380566081">Μη έγκυρος κωδικός PUK.</translation>
 <translation id="1510238584712386396">Λειτουργία εκκίνησης</translation>
+<translation id="1515129336378114413">αρχική σελίδα προγράμματος περιήγησης</translation>
 <translation id="1526389707933164996">Κινούμενη εικόνα προφύλαξης οθόνης</translation>
 <translation id="152892567002884378">Αύξηση έντασης ήχου</translation>
 <translation id="1555130319947370107">Μπλε</translation>
@@ -336,7 +337,6 @@
 <translation id="3604713164406837697">Αλλαγή ταπετσαρίας</translation>
 <translation id="360565022852130722">Η ασφάλεια του δικτύου Wi-Fi βασίζεται σε αδύναμο πρωτόκολλο WEP 802.1x.</translation>
 <translation id="3606583719724308068">Υψηλός λανθάνων χρόνος σε ιστοτόπους HTTPS</translation>
-<translation id="3607216139080387279">Εμφάνιση προστασίας οθόνης</translation>
 <translation id="361575905210396100">Σας ευχαριστούμε για τα σχόλιά σας</translation>
 <translation id="3632579075709132555">Εναλλαγή οθόνης απορρήτου</translation>
 <translation id="3651050199673793219">Επιλέξτε μια μονάδα θερμοκρασίας</translation>
@@ -348,7 +348,6 @@
 <translation id="3740976234706877572"><ph name="AVERAGE_SCORE" /> ★ (<ph name="AGGREGATED_COUNT" /> αξιολογήσεις)</translation>
 <translation id="3748026146096797577">Εκτός σύνδεσης</translation>
 <translation id="3749289110408117711">Όνομα αρχείου</translation>
-<translation id="3766934827878963937">για 1 ώρα</translation>
 <translation id="3771294271822695279">Αρχεία βίντεο </translation>
 <translation id="3784455785234192852">Κλείδωμα</translation>
 <translation id="380097101658023925">στοιχεία ελέγχου RGB</translation>
@@ -691,7 +690,6 @@
 <translation id="629550705077076970">μείωση φωτεινότητας πληκτρολογίου</translation>
 <translation id="6302401976930124515">Η δοκιμή <ph name="TEST_NAME" /> ακυρώθηκε</translation>
 <translation id="631063167932043783">Εφαρμογή Εξερεύνηση</translation>
-<translation id="6318437367327684789">για πάντα</translation>
 <translation id="6319207335391420837">Ενημέρωση υλικολογισμικού στη συσκευή <ph name="DEVICE_NAME" /></translation>
 <translation id="6321407676395378991">Ενεργοποίηση προφύλαξης οθόνης</translation>
 <translation id="6324916366299863871">Επεξεργασία συντόμευσης</translation>
@@ -749,6 +747,7 @@
 <translation id="6659594942844771486">Καρτέλα</translation>
 <translation id="6673898378497337661">αύξηση φωτεινότητας πληκτρολογίου</translation>
 <translation id="6692996468359469499">Λάβετε πληροφορίες σχετικά με την επιλογή σας.</translation>
+<translation id="6694534975463174713">κλειδαριά</translation>
 <translation id="6704062477274546131">Επίλυση DNS</translation>
 <translation id="6723839937902243910">Ενεργοποίηση</translation>
 <translation id="6723847290197874913">Οπίσθιος φωτισμός πληκτρολογίου</translation>
@@ -1067,11 +1066,9 @@
 <translation id="9111102763498581341">Ξεκλείδωμα</translation>
 <translation id="9122602430962285795">Για επανασύνδεση, μεταβείτε στις Ρυθμίσεις.</translation>
 <translation id="9126720536733509015">Αποθηκεύστε πολλές σελίδες σε ένα PDF</translation>
-<translation id="9133104754938025929">Για την εξοικονόμηση μπαταρίας, η προστασία οθόνης λειτουργεί μόνο κατά τη φόρτιση.</translation>
 <translation id="9133772297793293778">Πατήστε τους τροποποιητές 1-4 και 1 άλλο πλήκτρο στο πληκτρολόγιό σας. Για έξοδο από τη λειτουργία επεξεργασίας, πατήστε Alt + Esc.</translation>
 <translation id="9137526406337347448">Υπηρεσίες Google</translation>
 <translation id="9138630967333032450">Αριστερό shift</translation>
-<translation id="9143347780818904997">για <ph name="MINUTES" /> λεπτά</translation>
 <translation id="9149391708638971077">Εκτέλεση δοκιμής μνήμης</translation>
 <translation id="9161276708550942948">πλήκτρο διαστήματος</translation>
 <translation id="9173638680043580060">Απομένει λιγότερο από ένα λεπτό</translation>

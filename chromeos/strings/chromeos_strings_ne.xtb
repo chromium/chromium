@@ -337,7 +337,6 @@
 <translation id="3604713164406837697">वालपेपर परिवर्तन गर्नुहोस्</translation>
 <translation id="360565022852130722">WiFi नेटवर्क WEP 802.1x नामक कमजोर प्रोटोकोल प्रयोग गरी सुरक्षित गरिएको छ</translation>
 <translation id="3606583719724308068">HTTPS वेबसाइटहरू लोड हुन धेरै समय लागिरहेको छ</translation>
-<translation id="3607216139080387279">स्क्रिन सेभर देखाइयोस्</translation>
 <translation id="361575905210396100">प्रतिक्रिया दिनुभएकोमा धन्यवाद</translation>
 <translation id="3632579075709132555">प्राइभेसी स्क्रिन टगल</translation>
 <translation id="3651050199673793219">तापक्रमको एकाइ चयन गर्नुहोस्</translation>
@@ -349,7 +348,6 @@
 <translation id="3740976234706877572"><ph name="AVERAGE_SCORE" /> ★ (<ph name="AGGREGATED_COUNT" /> वटा समीक्षा)</translation>
 <translation id="3748026146096797577">कनेक्ट गरिएको छैन</translation>
 <translation id="3749289110408117711">फाइल नाम</translation>
-<translation id="3766934827878963937">१ घण्टासम्म</translation>
 <translation id="3771294271822695279">भिडियो फाइलहरू</translation>
 <translation id="3784455785234192852">लक गर्नुहोस्</translation>
 <translation id="380097101658023925">rgb कन्ट्रोलहरू</translation>
@@ -692,7 +690,6 @@
 <translation id="629550705077076970">किबोर्डको ब्याकलाइटको चमक कम गर्नुहोस्</translation>
 <translation id="6302401976930124515"><ph name="TEST_NAME" /> परीक्षण रद्द गरिएको छ</translation>
 <translation id="631063167932043783">एक्स्प्लोर एप</translation>
-<translation id="6318437367327684789">सधैँ</translation>
 <translation id="6319207335391420837"><ph name="DEVICE_NAME" /> को फर्मवेयर अपडेट गर्नुहोस्</translation>
 <translation id="6321407676395378991">स्क्रिन सेभर अन गर्नुहोस्</translation>
 <translation id="6324916366299863871">सर्टकट सम्पादन गर्नुहोस्</translation>
@@ -1069,11 +1066,9 @@
 <translation id="9111102763498581341">अनलक गर्नुहोस्</translation>
 <translation id="9122602430962285795">पुनः कनेक्ट गर्न सेटिङमा जानुहोस्</translation>
 <translation id="9126720536733509015">थुप्रै पेजहरू स्क्यान गरी एउटै PDF फाइलमा सेभ गर्नुहोस्</translation>
-<translation id="9133104754938025929">ब्याट्री जोगाउनका निम्ति डिभाइस चार्ज भइरहेका बेला मात्र स्क्रिन सेभर देखाइन्छ।</translation>
 <translation id="9133772297793293778">किबोर्डमा भएका १ देखि ४ वटा मोडिफायर र अर्को एउटा की थिच्नुहोस्। सम्पादन गर्ने मोडबाट बाहिरिन alt + esc थिच्नुहोस्।</translation>
 <translation id="9137526406337347448">Google का सेवाहरू</translation>
 <translation id="9138630967333032450">लेफ्ट सिफ्ट</translation>
-<translation id="9143347780818904997"><ph name="MINUTES" /> मिनेटसम्म</translation>
 <translation id="9149391708638971077">मेमोरीसम्बन्धी परीक्षण गर्नुहोस्</translation>
 <translation id="9161276708550942948">space</translation>
 <translation id="9173638680043580060">एक मिनेटभन्दा कम समय बाँकी छ</translation>

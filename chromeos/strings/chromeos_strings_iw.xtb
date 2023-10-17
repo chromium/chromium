@@ -335,7 +335,6 @@
 <translation id="3604713164406837697">החלפת הטפט</translation>
 <translation id="360565022852130722">‏רשת ה-Wi-Fi מאובטחת בפרוטוקול WEP 802.1x חלש.</translation>
 <translation id="3606583719724308068">‏זמן אחזור ארוך לאתרי HTTPS</translation>
-<translation id="3607216139080387279">הצגת שומר המסך</translation>
 <translation id="361575905210396100">תודה על המשוב</translation>
 <translation id="3632579075709132555">לחצן להחלפת מצב של מסך הפרטיות</translation>
 <translation id="3651050199673793219">בחירת יחידת מידה לטמפרטורה</translation>
@@ -347,7 +346,6 @@
 <translation id="3740976234706877572"><ph name="AVERAGE_SCORE" /> ★ (<ph name="AGGREGATED_COUNT" /> ביקורות)</translation>
 <translation id="3748026146096797577">לא מחובר</translation>
 <translation id="3749289110408117711">שם קובץ</translation>
-<translation id="3766934827878963937">למשך שעה</translation>
 <translation id="3771294271822695279">קובצי וידאו</translation>
 <translation id="3784455785234192852">נעילה</translation>
 <translation id="380097101658023925">‏פקדים לכוונון RGB</translation>
@@ -690,7 +688,6 @@
 <translation id="629550705077076970">עמעום התאורה במקלדת</translation>
 <translation id="6302401976930124515">בדיקת ה<ph name="TEST_NAME" /> בוטלה</translation>
 <translation id="631063167932043783">‏האפליקציה 'מה חדש ב-Chromebook'</translation>
-<translation id="6318437367327684789">ללא הפסקה</translation>
 <translation id="6319207335391420837">יש לעדכן את הקושחה של <ph name="DEVICE_NAME" /></translation>
 <translation id="6321407676395378991">הפעלת שומר מסך</translation>
 <translation id="6324916366299863871">עריכת קיצור דרך</translation>
@@ -1065,11 +1062,9 @@
 <translation id="9111102763498581341">ביטול נעילה</translation>
 <translation id="9122602430962285795">כדי להתחבר מחדש, צריך לעבור להגדרות</translation>
 <translation id="9126720536733509015">‏שמירת מספר דפים בקובץ PDF אחד</translation>
-<translation id="9133104754938025929">כדי לחסוך בצריכת הסוללה, שומר המסך פועל רק בזמן הטעינה.</translation>
 <translation id="9133772297793293778">‏מקישים על מקשי הצירוף 1-4 ועל מקש אחד אחר במקלדת. כדי לצאת ממצב העריכה, מקישים על Alt + Esc.</translation>
 <translation id="9137526406337347448">‏שירותי Google</translation>
 <translation id="9138630967333032450">‏shift שמאלי</translation>
-<translation id="9143347780818904997">למשך <ph name="MINUTES" /> דקות</translation>
 <translation id="9149391708638971077">הפעלה של בדיקת זיכרון</translation>
 <translation id="9161276708550942948">מקש רווח</translation>
 <translation id="9173638680043580060">נותרה פחות מדקה</translation>

@@ -68,6 +68,7 @@
 <translation id="2120620239521071941">Ушуну менен түзмөктөгү <ph name="ITEMS_COUNT" /> нерсе өчүрүлөт. Дайын-даректериңизди кийинчерээк чыгарып алуу үчүн Chrome'го <ph name="USER_EMAIL" /> аккаунту менен кириңиз.</translation>
 <translation id="2121284319307530122">&amp;Chrome'ду жаңыртуу үчүн кайра иштетиңиз</translation>
 <translation id="2123055963409958220"><ph name="BEGIN_LINK" />Учурдагы жөндөөлөр<ph name="END_LINK" /> жөнүндө кабар берип, Chrome'ду өркүндөтүүгө кол кабыш кылыңыз</translation>
+<translation id="2126108037660393668">Жүктөлүп алынган файл текшерүүдөн өтпөй калды.</translation>
 <translation id="2130870084309816036">Интернетке туташуу мүмкүн болбой жатат. Эгер тармактык коргоону колдонсоңуз, <ph name="PRODUCT_EXE_NAME" /> кеңейтүүсүнө уруксат бериңиз.</translation>
 <translation id="2131230230468101642">Купуялыгыңызды камсыздоо үчүн 4 апта мурун кызыккан нерселериңизди автоматтык түрдө жок кылып турабыз. Жаңы сайттарды карап чыккан сайын кызыккан нерселериңиздин тизмеси жаңыланып турат. Же болбосо кызыккан нерселерге кошкуңуз келбегендерин алып салсаңыз болот.</translation>
 <translation id="2139300032719313227">ChromeOS'ту өчүрүп-күйгүзүңүз</translation>
@@ -98,6 +99,7 @@
 <translation id="2580411288591421699">Учурда иштеп жаткан Google Chrome версиясын орнотуу мүмкүн эмес. Google Chrome'ду жаап, дагы бир жолу аракет кылып көрүңүз.</translation>
 <translation id="2586406160782125153">Ушуну менен бул түзмөктөн серептөө дайын-даректериңиз өчүрүлөт. Дайын-даректериңизди кийинчерээк чыгарып алуу үчүн Chrome'го <ph name="USER_EMAIL" /> аккаунту менен кириңиз.</translation>
 <translation id="2597976513418770460">Chrome серепчисиндеги нерселерге <ph name="ACCOUNT_EMAIL" /> аккаунту менен өтүңүз</translation>
+<translation id="259935314519650377">Жүктөлүп алынган орноткучтун кеши түзүлбөй калды. Ката: <ph name="UNPACK_CACHING_ERROR_CODE" />.</translation>
 <translation id="2622559029861875898">Chrome жаңыртууларды текшере алган жок. Интернет байланышын текшерип көрүңүз.</translation>
 <translation id="2645435784669275700">ChromeOS</translation>
 <translation id="2649768380733403658">Chrome серепчинин параметрлеринин коопсуздугун такай текшерип турат. Бир нерсеге көңүл бурушуңуз керек болсо, кабарлап коёбуз.</translation>
@@ -328,6 +330,7 @@ Google Chrome параметрлериңизди калыбына келтире
 <translation id="6676384891291319759">Интернетке кирүү</translation>
 <translation id="6679975945624592337">Google Chrome'го фондук режимде иштөөгө уруксат берүү</translation>
 <translation id="6696915334902295848">Chrome'го бул сайтта микрофонду колдонууга уруксат бериңиз</translation>
+<translation id="6712881677154121168">Жүктөп алуу катасы: <ph name="DOWNLOAD_ERROR" />.</translation>
 <translation id="6718739135284199302">Chrome'ду ылдамдатуу</translation>
 <translation id="6735387454586646204">ChromeOS Flex тутуму</translation>
 <translation id="6739177684496155661">Жаңы Chrome профилинде улантасызбы?</translation>
@@ -342,6 +345,7 @@ Google Chrome параметрлериңизди калыбына келтире
 <translation id="6943584222992551122">Бул адамдын серептөө дайындары бул түзмөктөн биротоло өчүрүлөт. Дайындарды калыбына келтирүү үчүн Chrome'го <ph name="USER_EMAIL" /> аккаунту менен кириңиз.</translation>
 <translation id="6967962315388095737">mDNS трафигине уруксат берүү үчүн Google Chrome Beta'нын кирүүчү туташуу эрежеси.</translation>
 <translation id="6989339256997917931">Google Chrome жаңырды, бирок аны 30 күндөн бери колдоно элексиз</translation>
+<translation id="7024536598735240744">Топтомдон чыгаруу катасы: <ph name="UNPACK_ERROR" />.</translation>
 <translation id="7025789849649390912">Орнотуу токтотулду.</translation>
 <translation id="7025800014283535195">Chrome профилдерин бул жерден которо аласыз</translation>
 <translation id="7036251913954633326">Бул аккаунтту бир жолу гана колдонгону жатсаңыз, Chrome серепчисинен <ph name="GUEST_LINK_BEGIN" />Конок режимине<ph name="GUEST_LINK_END" /> өтүңүз. Эгер кимдир бирөөнүн аккаунтун кошкуңуз келсе, <ph name="DEVICE_TYPE" /> түзмөгүңүзгө <ph name="LINK_BEGIN" />жаңы кишини кошуңуз<ph name="LINK_END" />.
@@ -435,6 +439,7 @@ Google Chrome параметрлериңизди калыбына келтире
 <translation id="8516431725144212809">Chrome'дун божомолу боюнча төмөнкү нерселерге кызыгасыз</translation>
 <translation id="8521348052903287641">mDNS трафигине уруксат берүү үчүн Google Chrome Dev'дин кирүүчү туташуу эрежеси.</translation>
 <translation id="8550334526674375523">Бул жумуш профили жеке профилиңизден толугу менен ажыратылган.</translation>
+<translation id="8555465886620020932">Тейлөө катасы: <ph name="SERVICE_ERROR" />.</translation>
 <translation id="8556340503434111824">Google Chrome'дун чагылгандай тездик менен иштеген жаңы версиясы бар.</translation>
 <translation id="8571790202382503603">Chrome профилдери менен Chrome'догу маалыматты өзүнчө сактай аласыз. Бул жумуш менен эс алууну бири-бири менен аралаштырбоого жардам берет.</translation>
 <translation id="8614913330719544658">Google Chrome жооп бербей жатат. Азыр өчүрүп кайра ишке киргизесизби?</translation>

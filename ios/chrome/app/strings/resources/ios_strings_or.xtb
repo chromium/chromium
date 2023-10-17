@@ -83,10 +83,12 @@
 <translation id="1360432990279830238">ସିଙ୍କ ସାଇନ୍‌ ଆଉଟ୍‍ ଏବଂ ବନ୍ଦ କରିବେ?</translation>
 <translation id="1363028406613469049">ଟ୍ରାକ୍‌ କରନ୍ତୁ</translation>
 <translation id="1365106417372288489">ଆପଣଙ୍କ iPhoneକୁ ବର୍ତ୍ତମାନ ରିଷ୍ଟୋର କରାଯାଇଛି, ଯାହା ଆପଣଙ୍କ ଡିଫଲ୍ଟ ବ୍ରାଉଜରକୁ ପରିବର୍ତ୍ତନ କରିଥାଇପାରେ।</translation>
+<translation id="136942498637440594">ଆପଣ ଇମେଜ ଏବଂ ଯାହା ଦେଖୁଛନ୍ତି ତାହା ସର୍ଚ୍ଚ କରିପାରିବେ।</translation>
 <translation id="1375321115329958930">ସେଭ୍ କରାଯାଇଥିବା ପାସ୍‌ୱର୍ଡଗୁଡ଼ିକ</translation>
 <translation id="1377255359165588604">ସିଙ୍କ୍ କାର୍ଯ୍ୟ କରିବା ବନ୍ଦ କରିଦେଇଛି।</translation>
 <translation id="1377321085342047638">କାର୍ଡ ନମ୍ଵର୍‌</translation>
 <translation id="1377508275003315939">ପାସୱାର୍ଡଗୁଡ଼ିକ</translation>
+<translation id="1380914240355562929"><ph name="BEGIN_BOLD" /><ph name="WEBSITE" /><ph name="END_BOLD" />ରେ ସାଇନ ଇନ କରିବାକୁ <ph name="BEGIN_BOLD" /><ph name="USERNAME" /> <ph name="END_BOLD" /> Google Password Manager ବ୍ୟବହାର କଲେ ସେ ବର୍ତ୍ତମାନ ଆପଣଙ୍କ ୟୁଜରନେମ ଏବଂ ପାସୱାର୍ଡ ବ୍ୟବହାର କରିପାରିବେ। <ph name="BEGIN_LINK" />ଅଧିକ ଜାଣନ୍ତୁ<ph name="END_LINK" /></translation>
 <translation id="1383876407941801731">Search</translation>
 <translation id="138618066238211776"><ph name="USER_NAME" /> ଭାବରେ ଜାରି ରଖନ୍ତୁ</translation>
 <translation id="1400642268715879018">ବିଗତ 4 ସପ୍ତାହ</translation>
@@ -774,6 +776,7 @@
 <translation id="5121618895923301719">ଆପଣ ପୂର୍ବରୁ ଏହି ପ୍ରଡକ୍ଟକୁ ଟ୍ରାକ କରୁଛନ୍ତି। ଏହି ପୃଷ୍ଠାକୁ <ph name="BEGIN_LINK" />ମୋବାଇଲ ବୁକମାର୍କ<ph name="END_LINK" />ରେ ସେଭ କରାଯାଏ।</translation>
 <translation id="512533434554095351">ଆପଣଙ୍କର ଅନେକ ପାସୱାର୍ଡ ସମସ୍ୟା ଅଛି।</translation>
 <translation id="5126465625664020024">ସାଇନ ଇନ କରି ସିଙ୍କ କରନ୍ତୁ</translation>
+<translation id="5131062416352684089"><ph name="BEGIN_BOLD" /><ph name="WEBSITE" /><ph name="END_BOLD" />ରେ ସାଇନ ଇନ କରିବାକୁ ଆପଣଙ୍କ ପରିବାରର ସଦସ୍ୟମାନେ Google Password Manager ବ୍ୟବହାର କଲେ ସେମାନେ ବର୍ତ୍ତମାନ ଆପଣଙ୍କ ୟୁଜରନେମ ଏବଂ ପାସୱାର୍ଡ ବ୍ୟବହାର କରିପାରିବେ। <ph name="BEGIN_LINK" />ଅଧିକ ଜାଣନ୍ତୁ<ph name="END_LINK" /></translation>
 <translation id="5132942445612118989">ସମସ୍ତ ଡିଭାଇସ୍‌ଗୁଡ଼ିକରେ ଆପଣଙ୍କର ପାସ୍‌ୱାର୍ଡ, ଇତିବୃତ୍ତି ଏବଂ ଆହୁରି ଅନେକ କିଛି ସିଙ୍କ୍‌ କରନ୍ତୁ</translation>
 <translation id="5142890110117755815">{COUNT,plural, =1{{COUNT}ଟି ଦୁର୍ବଳ ପାସୱାର୍ଡ}other{{COUNT}ଟି ଦୁର୍ବଳ ପାସୱାର୍ଡ}}</translation>
 <translation id="5149188072385105201">ପାସୱାର୍ଡ ଯୋଗ କରନ୍ତୁ...</translation>

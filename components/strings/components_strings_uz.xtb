@@ -965,6 +965,7 @@ Aks holda bu maxfiylik sozlamalaringiz tomonidan bloklanadi. Bunda siz ochgan sa
 <translation id="2977665033722899841"><ph name="ROW_NAME" />, hozirda tanlandi. <ph name="ROW_CONTENT" /></translation>
 <translation id="2978824962390592855">Opera</translation>
 <translation id="2979424420072875974">Yozuvchilik resurslari</translation>
+<translation id="2980742331521553164">Bu kartaning CVC kodi tezkor hisob-kitob uchun shifrlanadi va Google hisobingizga saqlanadi</translation>
 <translation id="2983666748527428214">Inkognito varaq ochish</translation>
 <translation id="2985306909656435243">Chromium shakllarni tezroq to‘ldirish uchun karta ma’lumotlarini ushbu qurilmaga saqlaydi.</translation>
 <translation id="2985398929374701810">Manzilni xatosiz kiriting</translation>
@@ -3393,6 +3394,7 @@ Batafsil axborot:
 <translation id="79338296614623784">Telefon raqamini xatosiz kiriting</translation>
 <translation id="7934414805353235750"><ph name="URL" /> sayti himoyalangan kontentni ijro etmoqchi. Google qurilmangiz identifikatorini tekshiradi</translation>
 <translation id="7935318582918952113">DOM Distiller</translation>
+<translation id="7937163678541954811">Bu kartaning CVC kodi tezkor hisob-kitob uchun shifrlanadi va qurilmangizga saqlanadi</translation>
 <translation id="7937554595067888181">Muddati: <ph name="EXPIRATION_DATE_ABBR" /></translation>
 <translation id="7938958445268990899">Sertifikat serveri hozircha yaroqli emas.</translation>
 <translation id="7939713744218886332">Jahon oshxonasi</translation>

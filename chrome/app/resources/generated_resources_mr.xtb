@@ -4753,7 +4753,6 @@
 <translation id="4750185073185658673">आणखी परवानग्यांचे पुनरावलोकन करण्यासाठी, तुमच्या फोनवर जा. तुमच्या फोनचे ब्लूटूथ आणि वाय-फाय सुरू केले असल्याची खात्री करा.</translation>
 <translation id="4750394297954878236">सूचना</translation>
 <translation id="475088594373173692">प्रथम वापरकर्ता</translation>
-<translation id="4756302371612574303">तुम्ही भेट देत असलेली साइट ही तुम्ही काय करत आहात याबद्दलची माहिती सेव्ह करू शकते, ज्याद्वारे ती तुमच्या अपेक्षेनुसार काम करते, उदाहरणार्थ तुम्हाला साइटवर साइन इन केलेले ठेवण्यासाठी किंवा तुमच्या शॉपिंग कार्टमधील आयटम सेव्ह करण्यासाठी. साइट बरेचदा तुमच्या डिव्हइसवर ही माहिती तात्पुरती सेव्ह करतात.</translation>
 <translation id="4756378406049221019">थांबा/पुन्हा लोड करा</translation>
 <translation id="4756388243121344051">&amp;इतिहास</translation>
 <translation id="4756671452988984333">ऑडिओसाठीचा मजकूर</translation>
@@ -5259,7 +5258,6 @@
 <translation id="5176787661653201403">व्हिडिओ फ्रेम कॉपी करा</translation>
 <translation id="5177479852722101802">कॅमेरा ब्लॉक करणे आणि मायक्रोफोन ॲक्सेस करणे सुरू ठेवा</translation>
 <translation id="5177549709747445269">तुम्ही मोबाइल डेटा वापरत आहात</translation>
-<translation id="5178106147333214179">सुरक्षितता हब वर जा</translation>
 <translation id="5178667623289523808">मागील शोधा</translation>
 <translation id="5181140330217080051">डाउनलोड करीत आहे</translation>
 <translation id="5181172023548002891"><ph name="ACCOUNT" /> साठी Google पासवर्ड व्यवस्थापक मध्ये</translation>
@@ -6051,7 +6049,6 @@
 <translation id="583673505367439042">साइट तुमच्या डिव्हाइसवरील फाइल आणि फोल्डर संपादित करण्यासाठी विचारू शकतात</translation>
 <translation id="5836999627049108525">ज्यामधून भाषांतर करायचे आहे ती भाषा</translation>
 <translation id="583756221537636748">केस</translation>
-<translation id="5839524803417937122"><ph name="SEARCH_ENGINE" /> वापरून अंतर्गत इमेज शोधा</translation>
 <translation id="5840680448799937675">फाइल नेहमी ऑफलाइन शेअर केल्या जातील</translation>
 <translation id="5841270259333717135">इथरनेट कॉंफिगर करा</translation>
 <translation id="5842497610951477805">ब्लूटूथ सक्षम आहे</translation>
@@ -6625,7 +6622,6 @@
 <translation id="628726841779494414">प्रिंटर सेटिंग्जमध्ये तुमचे प्रिंटर व्यवस्थापित करा</translation>
 <translation id="6287828400772161253">Android फोन (<ph name="HOST_DEVICE_NAME" />)</translation>
 <translation id="6290613030083731160">जवळपास शेअर करत असलेली कोणतीही डिव्हाइस उपलब्ध नाहीत. <ph name="LINK_BEGIN" />अधिक जाणून घ्या<ph name="LINK_END" /></translation>
-<translation id="6291086328725007688">अ‍ॅक्टिव्हेशन कोडची पडताळणी करत आहे. याला काही मिनिटे लागू शकतात.</translation>
 <translation id="6291741848715722067">कंफर्मेशन कोड</translation>
 <translation id="6291953229176937411">फाइंडर मध्ये &amp;दर्शवा</translation>
 <translation id="6292699686837272722">टॅब मध्यम रुंदीवर आक्रसतात</translation>
@@ -7961,6 +7957,7 @@
 <translation id="7396845648024431313">सिस्टीम सुरूाच्या वेळी <ph name="APP_NAME" /> लाँच होईल आणि एकदा तुम्ही सर्व अन्य <ph name="PRODUCT_NAME" /> विंडो बंद केल्यानंतर बॅकग्राउंडमध्ये चालणे सुरू ठेवेल.</translation>
 <translation id="7399045143794278225">सिंक कस्टमाइझ करा</translation>
 <translation id="7399616692258236448">तुम्ही अनुमती दिलेली साइट वगळता सर्व साइटसाठी स्थानाशी संबंधित विनंत्या या आपोआप ब्लॉक केल्या आहेत</translation>
+<translation id="7399802613464275309">सुरक्षितता तपासणी</translation>
 <translation id="7400418766976504921">URL</translation>
 <translation id="7400447915166857470"><ph name="OLD_SEARCH_PROVIDER" /> वर परत बदलायचे आहे का?</translation>
 <translation id="7400839060291901923">तुमच्या <ph name="PHONE_NAME" />वर कनेक्शन सेट अप करा</translation>
@@ -8128,7 +8125,6 @@
 <translation id="7522255036471229694">"Ok Google" म्हणा</translation>
 <translation id="7523117833414447032">कॅपिटल अक्षरे वाचताना</translation>
 <translation id="7523585675576642403">प्रोफाइलचे नाव बदला</translation>
-<translation id="7524849817690367493">सुरक्षितता हब</translation>
 <translation id="7525067979554623046">तयार करा</translation>
 <translation id="7526989658317409655">प्लेसहोल्डर</translation>
 <translation id="7528224636098571080">उघडू नका</translation>
@@ -8144,7 +8140,6 @@
 <translation id="7536815228183532290"><ph name="EMAIL" /> म्हणून साइन इन केले आहे</translation>
 <translation id="7537451260744431038">तुमच्या ब्राउझिंग अनुभवात सुधारणा करण्यासाठी, उदाहरणार्थ, तुम्हाला साइन इन केलेले ठेवण्यासाठी किंवा तुमच्या शॉपिंग कार्टमधील आयटम लक्षात ठेवण्यासाठी साइट कुकी वापरू शकत नाहीत</translation>
 <translation id="7538013435257102593">हा फाइल प्रकार सामान्यतः डाउनलोड केला जात नाही आणि तो धोकादायक असू शकतो</translation>
-<translation id="7538088324298143359"><ph name="SEARCH_ENGINE" /> वापरून अंतर्गत इमेज शोधा</translation>
 <translation id="7540972813190816353">अपडेट तपासताना एक एरर आली: <ph name="ERROR" /></translation>
 <translation id="7541076351905098232"><ph name="MANAGER" /> यांनी हे डिव्हाइस मागील आवृत्तीवर स्विच केले आहे. कृपया महत्त्वाच्या फाइल सेव्ह करा, त्यानंतर रीस्टार्ट करा. डिव्हाइसवरील सर्व डेटा हटवला जाईल.</translation>
 <translation id="7541773865713908457"><ph name="APP_NAME" /> ॲपसोबत <ph name="ACTION_NAME" /></translation>

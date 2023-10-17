@@ -64,6 +64,7 @@
 <translation id="2120620239521071941">З цього пристрою буде видалено стільки елементів: <ph name="ITEMS_COUNT" />. Щоб відновити дані пізніше, увійдіть в обліковий запис Chrome як <ph name="USER_EMAIL" />.</translation>
 <translation id="2121284319307530122">Перезапустити, щоб оновити &amp;Chrome</translation>
 <translation id="2123055963409958220">Допоможіть покращити Chrome, надсилаючи звіти про <ph name="BEGIN_LINK" />поточні налаштування<ph name="END_LINK" /></translation>
+<translation id="2126108037660393668">Завантажений файл не пройшов перевірку.</translation>
 <translation id="2131230230468101642">З міркувань конфіденційності ми автоматично видаляємо ваші інтереси через 4 тижні. Якщо ви й надалі переглядатимете веб-сторінки, відповідний інтерес може знову з’явитися в списку. Щоб Chrome не враховував певні інтереси, їх можна вилучити.</translation>
 <translation id="2139300032719313227">Перезапустіть ОС Chrome</translation>
 <translation id="2151406531797534936">Перезапустіть Chrome</translation>
@@ -92,6 +93,7 @@
 <translation id="2580411288591421699">Поки Google Chrome працює, неможливо встановити версію, аналогічну поточній. Закрийте Google Chrome і повторіть спробу.</translation>
 <translation id="2586406160782125153">Дані веб-перегляду буде видалено з цього пристрою. Щоб відновити дані пізніше, увійдіть в обліковий запис Chrome як <ph name="USER_EMAIL" />.</translation>
 <translation id="2597976513418770460">Отримуйте доступ до своїх даних у веб-переглядачі Chrome через обліковий запис <ph name="ACCOUNT_EMAIL" /></translation>
+<translation id="259935314519650377">Не вдалося кешувати завантажену програму встановлення. Помилка: <ph name="UNPACK_CACHING_ERROR_CODE" />.</translation>
 <translation id="2622559029861875898">Chrome не може перевірити наявність оновлень. Перевірте інтернет-з'єднання.</translation>
 <translation id="2645435784669275700">ОС Chrome</translation>
 <translation id="2649768380733403658">Chrome регулярно перевіряє, чи достатньо надійні налаштування вашого веб-переглядача. Ми повідомимо, якщо потрібно буде вжити заходів.</translation>
@@ -313,6 +315,7 @@
 <translation id="6676384891291319759">Доступ до Інтернету</translation>
 <translation id="6679975945624592337">Дозволити Google Chrome працювати у фоновому режимі</translation>
 <translation id="6696915334902295848">Веб-переглядачу Chrome потрібен доступ до мікрофона для цього сайту</translation>
+<translation id="6712881677154121168">Помилка завантаження: <ph name="DOWNLOAD_ERROR" />.</translation>
 <translation id="6718739135284199302">Пришвидшіть роботу Chrome</translation>
 <translation id="6735387454586646204">Операційна система Chrome Flex</translation>
 <translation id="6739177684496155661">Продовжити в новому профілі Chrome?</translation>
@@ -327,6 +330,7 @@
 <translation id="6943584222992551122">Дані веб-перегляду користувача буде видалено з цього пристрою. Щоб відновити їх, увійдіть в обліковий запис Chrome як <ph name="USER_EMAIL" />.</translation>
 <translation id="6967962315388095737">Вхідне правило для бета-версії Google Chrome дозволяє трафік mDNS.</translation>
 <translation id="6989339256997917931">Google Chrome оновлено, проте ви не користувалися цим веб-переглядачем щонайменше 30 днів.</translation>
+<translation id="7024536598735240744">Помилка розпакування: <ph name="UNPACK_ERROR" />.</translation>
 <translation id="7025789849649390912">Встановлення зупинено.</translation>
 <translation id="7025800014283535195">Тут можна перемикати профілі Chrome</translation>
 <translation id="7036251913954633326">Якщо ви хочете скористатися цим обліковим записом лише один раз, увімкніть <ph name="GUEST_LINK_BEGIN" />режим гостя<ph name="GUEST_LINK_END" /> в обліковому записі Chrome. Якщо ви хочете додати обліковий запис для іншого користувача, <ph name="LINK_BEGIN" />зробіть це<ph name="LINK_END" /> на пристрої <ph name="DEVICE_TYPE" />.
@@ -420,6 +424,7 @@
 <translation id="8516431725144212809">Ваші інтереси (за оцінкою Chrome)</translation>
 <translation id="8521348052903287641">Вхідне правило для Google Chrome для розробників дозволяє трафік mDNS.</translation>
 <translation id="8550334526674375523">Цей робочий профіль ніяк не пов'язаний із вашим особистим профілем.</translation>
+<translation id="8555465886620020932">Помилка сервісу: <ph name="SERVICE_ERROR" />.</translation>
 <translation id="8556340503434111824">Доступна нова версія Google Chrome – швидша, ніж будь-коли.</translation>
 <translation id="8571790202382503603">Створюйте профілі Chrome для різних цілей (наприклад, робочий і особистий), щоб розмежовувати роботу й дозвілля.</translation>
 <translation id="8614913330719544658">Google Chrome не відповідає. Перезапустити зараз?</translation>

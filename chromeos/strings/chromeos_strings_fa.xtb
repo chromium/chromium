@@ -75,6 +75,7 @@
 <translation id="1499900233129743732"><ph name="MANAGER" /> این کاربر را مدیریت می‌کند و می‌تواند ازراه‌دور تنظیمات را مدیریت کند و بر فعالیت کاربر نظارت داشته باشد.</translation>
 <translation id="150962533380566081">‏PUK نامعتبر.</translation>
 <translation id="1510238584712386396">راه‌انداز</translation>
+<translation id="1515129336378114413">صفحه اصلی مرورگر</translation>
 <translation id="1526389707933164996">پویانمایی محافظ صفحه‌نمایش</translation>
 <translation id="152892567002884378">افزایش صدا</translation>
 <translation id="1555130319947370107">آبی</translation>
@@ -336,7 +337,6 @@
 <translation id="3604713164406837697">تغییر کاغذدیواری</translation>
 <translation id="360565022852130722">‏شبکه Wi-Fi با پروتکل ضعیف WEP 802.1x ایمن شده است</translation>
 <translation id="3606583719724308068">‏تأخیر بالا در وب‌سایت‌های HTTPS</translation>
-<translation id="3607216139080387279">نمایش محافظ صفحه</translation>
 <translation id="361575905210396100">از بازخوردتان سپاس‌گزاریم</translation>
 <translation id="3632579075709132555">پنهان/ نمایان کردن صفحه حریم خصوصی</translation>
 <translation id="3651050199673793219">انتخاب واحد دما</translation>
@@ -348,7 +348,6 @@
 <translation id="3740976234706877572"><ph name="AVERAGE_SCORE" /> ★ (<ph name="AGGREGATED_COUNT" /> مرور)</translation>
 <translation id="3748026146096797577">متصل نیست</translation>
 <translation id="3749289110408117711">نام فایل</translation>
-<translation id="3766934827878963937">برای ۱ ساعت</translation>
 <translation id="3771294271822695279">فایل‌های ویدئویی</translation>
 <translation id="3784455785234192852">قفل</translation>
 <translation id="380097101658023925">‏کنترل‌های RGB</translation>
@@ -691,7 +690,6 @@
 <translation id="629550705077076970">کم‌نور کردن صفحه‌کلید</translation>
 <translation id="6302401976930124515">آزمایش <ph name="TEST_NAME" /> لغو شده است</translation>
 <translation id="631063167932043783">برنامه کاوش</translation>
-<translation id="6318437367327684789">همیشه</translation>
 <translation id="6319207335391420837">به‌روزرسانی سفت‌افزار در <ph name="DEVICE_NAME" /></translation>
 <translation id="6321407676395378991">روشن کردن محافظ صفحه</translation>
 <translation id="6324916366299863871">ویرایش میان‌بر</translation>
@@ -749,6 +747,7 @@
 <translation id="6659594942844771486">برگه</translation>
 <translation id="6673898378497337661">افزایش روشنایی صفحه‌کلید</translation>
 <translation id="6692996468359469499">دریافت اطلاعاتی که با انتخابتان مرتبط است</translation>
+<translation id="6694534975463174713">قفل کردن</translation>
 <translation id="6704062477274546131">وضوح ساناد</translation>
 <translation id="6723839937902243910">نیرو</translation>
 <translation id="6723847290197874913">نور پس‌زمینه صفحه‌کلید</translation>
@@ -1067,11 +1066,9 @@
 <translation id="9111102763498581341">باز کردن قفل</translation>
 <translation id="9122602430962285795">برای اتصال مجدد، به «تنظیمات» بروید</translation>
 <translation id="9126720536733509015">‏ذخیره چند صفحه در یک فایل PDF</translation>
-<translation id="9133104754938025929">برای صرفه‌جویی در باتری، محافظ صفحه‌نمایش فقط هنگام شارژ شدن کار می‌کند.</translation>
 <translation id="9133772297793293778">کلیدهای تغییردهنده ۱ تا ۴ و یک کلید دیگر را روی صفحه‌کلید فشار دهید. برای خروج از حالت ویرایش، دگرساز + گریز را فشار دهید.</translation>
 <translation id="9137526406337347448">‏سرویس‌های Google</translation>
 <translation id="9138630967333032450">کلید تبدیل چپ</translation>
-<translation id="9143347780818904997">برای <ph name="MINUTES" /> دقیقه</translation>
 <translation id="9149391708638971077">اجرای آزمایش حافظه</translation>
 <translation id="9161276708550942948">فاصله</translation>
 <translation id="9173638680043580060">کمتر از یک دقیقه باقیمانده است</translation>

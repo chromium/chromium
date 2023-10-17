@@ -1504,6 +1504,7 @@ Se questo criterio non viene configurato o se viene disattivato, il trasferiment
 
 Se il criterio viene disattivato o se non viene configurato, gli utenti potranno trasferire i file su Drive tramite la rete cellulare.</translation>
 <translation id="2269319728625047531">Abilita la visualizzazione del consenso alla sincronizzazione durante l'accesso</translation>
+<translation id="2269837888511509900">Attiva la condivisione delle credenziali utente</translation>
 <translation id="2270113153862588648">Se il criterio viene impostato su Attivato, l'attestazione remota è consentita per il dispositivo. Un certificato viene generato e caricato automaticamente sul server di gestione del dispositivo.
 
 Se il criterio viene impostato su Disattivato o se non viene configurato, non viene generato alcun certificato e le chiamate a <ph name="ENTERPRISE_PLATFORM_KEYS_API" /> non vengono eseguite correttamente.</translation>
@@ -1557,6 +1558,13 @@ Se il criterio viene impostato su Disattivato o se non viene configurato, non vi
 <translation id="2309284543927494965">Blocca aggiornamenti</translation>
 <translation id="2309341709647905294">Non segnalare informazioni sulle periferiche collegate al dispositivo</translation>
 <translation id="2309390639296060546">Impostazione di geolocalizzazione predefinita</translation>
+<translation id="2310254963100942637">Se il criterio viene attivato, gli utenti possono inviare le loro password ai membri del gruppo Famiglia (in base al servizio per le famiglie) e ricevere password dai membri.
+Se il criterio viene attivato o se non viene configurato, in Gestore delle password viene visualizzato un pulsante che consente di inviare una password.
+Le password ricevute vengono memorizzate nell'account dell'utente e sono disponibili in Gestore delle password.
+
+Se il criterio viene disattivato, gli utenti non possono inviare password da Gestore delle password ad altri utenti e non possono riceverle da altri utenti.
+
+La funzionalità non è disponibile se la sincronizzazione delle password viene disattivata (tramite le impostazioni dell'utente o attivando il criterio <ph name="SYNC_DISABLED" />).</translation>
 <translation id="2316700579410680894">La configurazione del criterio consente di elencare i pattern URL che specificano i siti a cui viene concessa automaticamente l'autorizzazione di accesso a un dispositivo USB con gli ID fornitore e prodotto indicati. Perché il criterio sia valido, ogni elemento nell'elenco richiede entrambi i campi <ph name="DEVICES_FIELD_NAME" /> e <ph name="URLS_FIELD_NAME" />. Ogni elemento nel campo <ph name="DEVICES_FIELD_NAME" /> può avere un campo <ph name="VENDOR_ID_FIELD_NAME" /> e un campo <ph name="PRODUCT_ID_FIELD_NAME" />. Se il campo <ph name="VENDOR_ID_FIELD_NAME" /> non viene specificato, il criterio può corrispondere a qualsiasi dispositivo. Se il campo <ph name="PRODUCT_ID_FIELD_NAME" /> non viene specificato, il criterio può corrispondere a qualsiasi dispositivo con l'ID fornitore specificato. Un criterio con un campo <ph name="PRODUCT_ID_FIELD_NAME" /> senza un campo <ph name="VENDOR_ID_FIELD_NAME" /> non è valido.
 
       Il modello di autorizzazioni USB consentirà all'URL specificato di accedere al dispositivo USB come origine di primo livello. Se i frame incorporati devono accedere ai dispositivi USB, per concedere l'accesso è necessario usare l'intestazione "usb" del criterio <ph name="FEATURE_POLICY_HEADER_NAME" />. Se l'URL non è valido, il criterio viene ignorato.
@@ -1737,6 +1745,15 @@ Se questo criterio non viene impostato, la Schermata sulla privacy verrà inizia
       Se questo criterio non viene impostato, la funzionalità Click-to-call sarà attiva per impostazione predefinita.</translation>
 <translation id="2482676533225429905">Messaggi nativi</translation>
 <translation id="2483146640187052324">Prevedi le azioni di rete su qualsiasi connessione di rete</translation>
+<translation id="2487495476672607707">La funzionalità di sincronizzazione file di <ph name="PRODUCT_OS_NAME" /> rende automaticamente disponibili offline i file di <ph name="GOOGLE_DRIVE_NAME" /> presenti nella sezione "Il mio Drive" di un utente (se lo spazio lo consente) sui dispositivi <ph name="CHROMEBOOK_PLUS_NAME" />.
+
+Una volta attivata la funzionalità, tutti i nuovi file verranno automaticamente resi disponibili offline. Se in un secondo momento lo spazio non sarà sufficiente, tutti i nuovi file non verranno più resi disponibili offline automaticamente. Tuttavia, l'utente può comunque rendere disponibili offline gli elementi manualmente.
+
+Se il criterio viene impostato su <ph name="POLICY_VALUE_VISIBLE" />, la funzionalità di sincronizzazione file viene mostrata nell'app File e nelle Impostazioni. L'utente può attivare o disattivare la sincronizzazione file.
+
+Se il criterio viene impostato su <ph name="POLICY_VALUE_DISABLEDE" />, la funzionalità di sincronizzazione file viene disattivata se era stata precedentemente attivata dall'utente. Consente di nascondere la funzionalità nell'app File e nelle Impostazioni in modo che l'utente non possa riattivarla. I file esistenti che sono stati resi disponibili offline dall'utente rimarranno disponibili offline. L'utente può comunque rendere disponibili offline gli elementi manualmente.
+
+Se il criterio non viene configurato, <ph name="POLICY_VALUE_VISIBLE" /> è la selezione predefinita.</translation>
 <translation id="2489558694350871332">Consenti al dispositivo di eseguire macchine virtuali</translation>
 <translation id="2492240920793040106">Attiva la segnalazione di informazioni di sistema e contenuti della pagina per migliorare Navigazione sicura</translation>
 <translation id="2496180316473517155">Cronologia di navigazione</translation>
@@ -2108,6 +2125,7 @@ Questo criterio può essere impostato soltanto come criterio relativo agli utent
 <translation id="2853649500575897584">Non vengono bloccati i punti di estensioni precedenti nel processo del browser</translation>
 <translation id="285480231336205327">Attiva modalità ad alto contrasto</translation>
 <translation id="285627849510728211">Imposta la configurazione giornaliera per la modalità di ricarica avanzata della batteria</translation>
+<translation id="2856932965866813330">Attiva la condivisione delle credenziali utente con altri utenti</translation>
 <translation id="28600673996840076">Consenti la personalizzazione dell'immagine dell'avatar dell'utente utilizzando immagini del profilo Google o immagini locali.</translation>
 <translation id="2864207379891420023">Configura la lista consentita per l'installazione delle estensioni</translation>
 <translation id="2866387633548787857">Disattiva Fast Transition</translation>
@@ -2559,6 +2577,7 @@ Su <ph name="MAC_OS_NAME" />, questo criterio è disponibile soltanto per le ist
           Se questo criterio non viene impostato, viene usato un periodo di tempo predefinito.
 
           Il valore del criterio deve essere specificato in millisecondi.</translation>
+<translation id="3198385910521788907">Non visualizzare la schermata del sensore della presenza di persone durante l'accesso</translation>
 <translation id="3205649498518960697">Consente di impostare un elenco di pattern URL che specificano i siti autorizzati a visualizzare contenuti misti (ossia contenuti HTTP su siti HTTPS) bloccabili (ossia attivi) e per i quali gli aggiornamenti dei contenuti misti bloccabili facoltativi verranno disattivati.
 
           Se questo criterio non viene impostato, i contenuti misti bloccabili verranno bloccati e quelli bloccabili facoltativi verranno aggiornati; inoltre, gli utenti potranno configurare eccezioni per consentire i contenuti misti per siti specifici.
@@ -3286,6 +3305,7 @@ Questo criterio è una soluzione alternativa temporanea e verrà rimosso dopo il
 
       Se il criterio non viene configurato o se viene lasciato vuoto, non vengono applicate limitazioni.</translation>
 <translation id="3799417300383048419">Mantieni i dati del profilo su disco al termine della sessione utente</translation>
+<translation id="3799436555130241393">Sincronizzazione file di <ph name="PRODUCT_OS_NAME" /></translation>
 <translation id="3803171355925844705">Non consentire il caricamento di contenuti misti in nessun sito</translation>
 <translation id="3808945828600697669">Specifica un elenco dei plug-in disattivati</translation>
 <translation id="3810642039169532482">Consente di attivare la funzione di accessibilità di dettatura nella schermata di accesso.
@@ -3329,6 +3349,15 @@ Questo criterio è una soluzione alternativa temporanea e verrà rimosso dopo il
 <translation id="3838094946886335701">Se il criterio viene impostato (solo come consigliato), puoi registrare un elenco di gestori di protocolli che vengono uniti a quelli registrati dall'utente, con conseguente utilizzo di entrambi i gruppi. Imposta la proprietà "protocollo" sullo schema (ad esempio "mailto") e la proprietà "URL" sul pattern URL dell'applicazione che gestisce lo schema specificato nel campo "protocollo". Il pattern può includere un segnaposto "%s", che viene sostituito dall'URL gestito.
 
       Gli utenti non possono rimuovere un gestore di protocollo registrato tramite il criterio. Se però installano un nuovo gestore predefinito, possono cambiare i gestori di protocolli installati in base al criterio.</translation>
+<translation id="3847858041725748756">Questo criterio è deprecato. Utilizza il criterio <ph name="RELATED_WEBSITE_SETS_ENABLED_POLICY_NAME" />.
+
+Questo criterio consente di disattivare la funzionalità degli insiemi proprietari.
+
+Se questo criterio non viene configurato o se viene attivato, la funzionalità degli insiemi proprietari viene attivata.
+
+Se questo criterio viene disattivato, la funzionalità degli insiemi proprietari viene disattivata.
+
+Consente inoltre di stabilire se Chrome supporta o meno le integrazioni correlate agli insiemi proprietari.</translation>
 <translation id="3851443303439635700">Controlla la soglia di nidificazione prima della quale la funzione JavaScript setTimeout() inizia a essere bloccata</translation>
 <translation id="3858658082795336534">Modalità di stampa fronte/retro predefinita</translation>
 <translation id="3859780406608282662">Consente di aggiungere un parametro al recupero del numero di inizializzazione delle varianti in <ph name="PRODUCT_OS_NAME" />.
@@ -3613,6 +3642,7 @@ Per informazioni dettagliate sui pattern <ph name="URL_LABEL" /> validi, visita 
 <translation id="4098920079809952737">Consenti la stampa con e senza immagini di sfondo</translation>
 <translation id="410061592404122032">Chiedi ogni volta che un sito vuole ottenere l'autorizzazione per la gestione delle finestre</translation>
 <translation id="410068710490553233">Consenti l'accesso ad altri Account Google</translation>
+<translation id="4101222634611892813">L'utente può utilizzare la funzionalità di sincronizzazione file di <ph name="PRODUCT_OS_NAME" />.</translation>
 <translation id="4101282687722389021">Timestamp UTC relativo all'ultimo aggiornamento della voce. Viene inviato sotto forma di stringa perché non rientrerebbe in un numero intero.</translation>
 <translation id="4102347680024644994">Segnala eventi di rilevamento e risposta estesi (XDR)</translation>
 <translation id="4105989332710272578">Disattiva l'imposizione di Certificate Transparency per un elenco di URL</translation>
@@ -3639,6 +3669,7 @@ Se questo criterio non viene configurato, tutte le origini richiederanno un gest
 
 Se il criterio non viene impostato, viene applicata la velocità predefinita di 1 giorno.</translation>
 <translation id="4121350739760194865">Impedisci la visualizzazione delle promozioni di applicazioni nella pagina Nuova scheda</translation>
+<translation id="4122432898152851612">L'utente non può vedere nessun elemento della UI relativa alla funzionalità di sincronizzazione file di <ph name="PRODUCT_OS_NAME" />.</translation>
 <translation id="4122473079291425973">La pagina Nuova scheda mostra le schede se sono disponibili contenuti, ma consente all'utente di modificare l'impostazione</translation>
 <translation id="4122565688998751716">Questo criterio è deprecato. Utilizza il criterio "<ph name="ALLOW_SYSTEM_NOTIFICATIONS_POLICY_NAME" />".
 
@@ -3857,6 +3888,9 @@ Su <ph name="MS_WIN_NAME" />, questo criterio è disponibile soltanto per le ist
 
 Su <ph name="MAC_OS_NAME" />, questo criterio è disponibile soltanto per le istanze che sono gestite tramite MDM, aggiunte a un dominio tramite MCX o registrate in <ph name="CHROME_BROWSER_CLOUD_MANAGEMENT_NAME" />.</translation>
 <translation id="4329095223358818804">Consenti a Risposte rapide di accedere ai contenuti selezionati</translation>
+<translation id="4330328220729237210">Questo criterio consente a <ph name="PRODUCT_NAME" /> di usare hash non sicuri precedenti durante la procedura di TLS handshake.
+
+      Se questo criterio non viene configurato, <ph name="PRODUCT_NAME" /> seguirà la procedura di implementazione predefinita per non consentire gli hash non sicuri. Se il criterio viene attivato, <ph name="PRODUCT_NAME" /> consentirà l'uso di hash non sicuri da parte di un server durante la negoziazione di un TLS handshake. Se viene disattivato, <ph name="PRODUCT_NAME" /> non consentirà l'uso di hash non sicuri da parte di un server durante la negoziazione di un TLS handshake. Questo criterio verrà rimosso nella versione 123.</translation>
 <translation id="4330908525441222205">Viene usato il comportamento AppCache predefinito</translation>
 <translation id="4331357743227845302">Questo criterio consente agli amministratori di configurare i servizi Bluetooth a cui <ph name="PRODUCT_OS_NAME" /> si può connettere.
 
@@ -4433,6 +4467,7 @@ Se il criterio viene impostato su False, verrà utilizzato il comportamento pred
 <translation id="4821987881803903281">Blocca l'autorizzazione per il posizionamento delle finestre su questi siti</translation>
 <translation id="4825777333376170738">Disattiva i report sulle sessioni kiosk del dispositivo</translation>
 <translation id="4826326557828204741">Azione da compiere quando il ritardo di inattività viene raggiunto durante l'utilizzo della batteria</translation>
+<translation id="4826701474986856664">Visualizza la schermata del sensore della presenza di persone durante l'accesso</translation>
 <translation id="4827727182370777723">Impostazione predefinita dell'autorizzazione per i caratteri locali</translation>
 <translation id="482803100714220060">Mostra URL completi</translation>
 <translation id="4832852360828533362">Report su dispositivi e utenti</translation>
@@ -4465,6 +4500,7 @@ Se il criterio viene disattivato, <ph name="PRODUCT_OS_NAME" /> disattiva il Blu
 <translation id="4860900625632464759">Consenti agli utenti di sincronizzare i messaggi SMS tra il telefono e Chromebook</translation>
 <translation id="486146220825734683">Non consentire agli utenti di memorizzare le password Kerberos</translation>
 <translation id="4861767323695239729">Configura i metodi di immissione consentiti in una sessione utente</translation>
+<translation id="4872803921706580974">Attiva la visualizzazione della schermata del sensore della presenza di persone durante l'accesso</translation>
 <translation id="4873380469296842901">Se questa impostazione viene attivata, gli utenti che hanno già attivato Phone Hub possono inviare e ricevere notifiche del loro telefono su ChromeOS.
 
       Se viene disattivata, gli utenti non possono usare questa funzionalità. Gli utenti non possono usare questa funzionalità anche se viene disattivato il criterio PhoneHubAllowed.
@@ -5446,6 +5482,7 @@ Se il criterio viene disattivato, <ph name="PRODUCT_NAME" /> viene disattivato.<
       Questo criterio è disponibile soltanto su <ph name="PRODUCT_NAME" /> e non ha effetto su <ph name="GOOGLE_UPDATE_NAME" />.</translation>
 <translation id="5705055136345677598">Disattiva la modalità in background</translation>
 <translation id="5705828032077475554">Segnala sessioni CRD</translation>
+<translation id="5706929446669049441">Disattiva la condivisione delle credenziali utente</translation>
 <translation id="57072195677044908">Disattiva la separazione dei profili</translation>
 <translation id="5708969689202733975">Configura le modalità di sblocco rapido consentite</translation>
 <translation id="5714563837055244378">Attiva la condivisione da Android alle app web.</translation>
@@ -7181,6 +7218,10 @@ Se questo criterio viene attivato o se non viene configurato, gli utenti possono
 
 Se il criterio viene disattivato, le password non vengono mai memorizzate e tutte le password salvate in precedenza vengono rimosse. Gli utenti devono inserire la propria password ogni volta che devono eseguire l'autenticazione con il sistema Kerberos. In base alle impostazioni del server, generalmente questa operazione deve essere svolta con una frequenza che varia da 8 ore e diversi mesi.</translation>
 <translation id="7126928806195745404">Impostazioni JavaScript</translation>
+<translation id="7127732963662601239">Questo criterio consente di stabilire se mostrare o meno all'utente la schermata del sensore della presenza di persone durante il primo accesso.
+    Se viene impostato su false, la schermata del sensore della presenza di persone non verrà visualizzata.
+    Se viene impostato su true, la schermata del sensore della presenza di persone verrà visualizzata.
+    Se il criterio non viene configurato, per gli utenti gestiti a livello aziendale viene applicato il valore predefinito false, mentre per gli utenti non gestiti viene utilizzato il valore true.</translation>
 <translation id="7127980134843952133">Cronologia download</translation>
 <translation id="7128513247945602297">Attiva l'upgrade automatico del contenuto misto sui siti HTTPS</translation>
 <translation id="712963038874313213">Fornisce un playbook Ansible che deve essere eseguito nel contenitore Crostini predefinito.
@@ -7778,6 +7819,15 @@ Se configuri questo criterio, il criterio <ph name="PRIVACY_SANDBOX_PROMPT_ENABL
 <translation id="7669630878711068277">Se il criterio viene impostato su Attivato o se non viene configurato, gli utenti possono stampare in <ph name="PRODUCT_NAME" /> e non possono modificare questa impostazione.
 
       Se il criterio viene impostato su Disattivato, gli utenti non possono stampare da <ph name="PRODUCT_NAME" />. L'opzione di stampa è disattivata nel menu con tre puntini, nelle estensioni e nelle applicazioni JavaScript.</translation>
+<translation id="7671234734316758429">Questo criterio consente agli amministratori di specificare le app che fungono da gestori predefiniti per le rispettive estensioni dei file su <ph name="PRODUCT_OS_NAME" /> che gli utenti non possono modificare.
+
+Per tutte le estensioni dei file non specificate nel criterio, gli utenti sono liberi di impostare le loro impostazioni predefinite riguardo al normale flusso di lavoro.
+
+Specifica app di Chrome tramite il relativo ID, ad esempio <ph name="DEFAULT_HANDLERS_FOR_FILE_EXTENSIONS_POLICY_CHROME_APP_EXAMPLE" />; app web tramite l'URL utilizzato in <ph name="WEB_APP_INSTALL_FORCE_LIST_POLICY_NAME" />, ad esempio <ph name="DEFAULT_HANDLERS_FOR_FILE_EXTENSIONS_POLICY_WEB_APP_EXAMPLE" />; app per Android tramite il relativo nome di pacchetto, ad esempio <ph name="DEFAULT_HANDLERS_FOR_FILE_EXTENSIONS_POLICY_ANDROID_APP_EXAMPLE" />; app web di sistema tramite il nome del relativo snake case, ad esempio <ph name="DEFAULT_HANDLERS_FOR_FILE_EXTENSIONS_POLICY_SYSTEM_WEB_APP_EXAMPLE" />; attività virtuali tramite il relativo nome designato preceduto da <ph name="DEFAULT_HANDLERS_FOR_FILE_EXTENSIONS_POLICY_VIRTUAL_TASK_PREFIX" />, ad esempio <ph name="DEFAULT_HANDLERS_FOR_FILE_EXTENSIONS_POLICY_VIRTUAL_TASK_EXAMPLE" />.
+
+Tieni presente che le app DEVONO dichiararsi come gestori di file per le estensioni specificate nel file manifest affinché la voce del criterio abbia effetto (ossia il criterio NON estende le funzionalità di app esistenti).
+
+Se il criterio non viene configurato, <ph name="PRODUCT_OS_NAME" /> può selezionare gestori predefiniti in base alla logica interna.</translation>
 <translation id="7673194325208122247">Periodo di tempo (millisecondi)</translation>
 <translation id="7677220829878081413">
       Se è impostato su ArcSession, questo criterio forza il riavvio del dispositivo all'uscita dell'utente se Android è stato avviato.
@@ -9534,6 +9584,33 @@ L'impostazione predefinita è RollbackDisabled.</translation>
 <translation id="9206472508136116830">Non consentire il rilevamento condivisioni NetBIOS</translation>
 <translation id="9207596996305971030">Gli eventi di accesso/uscita non vengono segnalati</translation>
 <translation id="9210647066889383361">Consenti agli utenti di accedere al proprio dispositivo con Smart Lock</translation>
+<translation id="9212819508924803630">Questo criterio è deprecato. Utilizza il criterio <ph name="RELATED_WEBSITE_SETS_OVERRIDES_POLICY_NAME" />.
+
+Questo criterio fornisce un modo per eseguire l'override dell'elenco di insiemi che il browser utilizza per le funzionalità degli insiemi proprietari.
+
+Ogni insieme nell'elenco di insiemi proprietari del browser deve soddisfare i requisiti di un insieme proprietario.
+Un insieme proprietario deve contenere un sito principale e uno o più siti membri.
+Un insieme può anche contenere un elenco di siti di servizi di sua proprietà, nonché una mappa di un sito a tutte le sue varianti ccTLD.
+Visita la pagina https://github.com/WICG/first-party-sets per avere maggiori informazioni sugli insiemi proprietari che vengono utilizzati da <ph name="PRODUCT_NAME" />.
+
+Tutti i siti di un insieme proprietario devono avere un dominio registrabile pubblicato su HTTPS. Ciascun sito di un insieme proprietario deve anche essere univoco, ovvero non può essere elencato più di una volta in un insieme proprietario.
+
+Quando a questo criterio viene dato un dizionario vuoto, il browser utilizza l'elenco pubblico di insiemi proprietari.
+
+Per tutti i siti in un insieme proprietario dell'elenco <ph name="REPLACEMENTS" />, se un sito è presente anche in un insieme proprietario nell'elenco del browser, quel sito verrà rimosso dall'insieme proprietario del browser.
+Dopodiché, l'insieme proprietario del criterio verrà aggiunto all'elenco di insiemi proprietari del browser.
+
+Per tutti i siti in un insieme proprietario dell'elenco <ph name="ADDITIONS" />, se un sito è presente anche in un insieme proprietario nell'elenco del browser, l'insieme proprietario del browser verrà aggiornato in modo che il nuovo insieme proprietario possa essere aggiunto all'elenco del browser. Una volta aggiornato l'elenco del browser, l'insieme proprietario del criterio verrà aggiunto all'elenco di insiemi proprietari del browser.
+
+L'elenco di insiemi proprietari del browser richiede che nessuno dei siti al suo interno sia presente in più di un insieme. Questo requisito è valido anche per gli elenchi <ph name="REPLACEMENTS" /> e <ph name="ADDITIONS" />. In modo simile, un sito non può essere presente in entrambi gli elenchi <ph name="REPLACEMENTS" /> e <ph name="ADDITIONS" />.
+
+I caratteri jolly (*) non sono supportati come valore del criterio, neppure all'interno di un insieme proprietario in questi elenchi.
+
+Tutti gli insiemi forniti da questo criterio devono essere insiemi proprietari validi. Qualora non lo fossero, verrà segnalato un errore adeguato.
+
+Su <ph name="MS_WIN_NAME" />, questo criterio è disponibile soltanto per le istanze che sono aggiunte a un dominio <ph name="MS_AD_NAME" />, aggiunte a <ph name="MS_AAD_NAME" /> o registrate in <ph name="CHROME_BROWSER_CLOUD_MANAGEMENT_NAME" />.
+
+Su <ph name="MAC_OS_NAME" />, questo criterio è disponibile soltanto per le istanze che sono gestite tramite MDM, aggiunte a un dominio tramite MCX o registrate in <ph name="CHROME_BROWSER_CLOUD_MANAGEMENT_NAME" />.</translation>
 <translation id="9213751049772256263">Disattiva tutte le varianti</translation>
 <translation id="9217154963008402249">Frequenza dei pacchetti di rete di monitoraggio</translation>
 <translation id="9220314833408124365">Viene usato un criterio relativo al referrer predefinito no-referrer-when-downgrade</translation>

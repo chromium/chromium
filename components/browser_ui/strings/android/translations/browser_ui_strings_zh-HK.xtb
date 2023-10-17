@@ -41,7 +41,6 @@
 <translation id="187227595286001730">相關網站可以查看您在群組中的活動</translation>
 <translation id="1887786770086287077">此裝置的位置資訊存取權已關閉，請在「<ph name="BEGIN_LINK" />Android 設定<ph name="END_LINK" />」中開啟。</translation>
 <translation id="1915307458270490472">結束通話</translation>
-<translation id="1919345977826869612">廣告</translation>
 <translation id="1919950603503897840">選取聯絡人</translation>
 <translation id="1923695749281512248">已下載：<ph name="BYTES_DOWNLOADED_WITH_UNITS" />，總大小：<ph name="FILE_SIZE_WITH_UNITS" /></translation>
 <translation id="1979673356880165407">在您瀏覽的所有網站上縮放文字和圖片</translation>
@@ -71,7 +70,6 @@
 <translation id="2289270750774289114">在網站要探索附近的藍牙裝置時詢問您 (建議)</translation>
 <translation id="2315043854645842844">作業系統不支援由客戶端選取憑證。</translation>
 <translation id="2321958826496381788">拖曳滑桿，將文字調整到您閱讀時感到舒適的大小。當您輕按兩下文字段落，文字至少應有這樣大。</translation>
-<translation id="2329473609445770916">其他網站可使用此網站定義的興趣來向您展示廣告</translation>
 <translation id="2359808026110333948">繼續</translation>
 <translation id="2379925928934107488">當 Chrome 採用深色主題背景時，盡可能對網站套用深色主題背景</translation>
 <translation id="2387895666653383613">文字大小</translation>
@@ -111,7 +109,6 @@
 <translation id="2891975107962658722">禁止網站在裝置上儲存資料</translation>
 <translation id="2903493209154104877">地址</translation>
 <translation id="2910701580606108292">網站播放受保護內容前先詢問您</translation>
-<translation id="2913331724188855103">允許網站儲存及讀取 Cookie 資料 (建議)</translation>
 <translation id="2932883381142163287">舉報濫用</translation>
 <translation id="2968755619301702150">憑證檢視者</translation>
 <translation id="3008272652534848354">重設權限</translation>
@@ -129,7 +126,6 @@
 <translation id="3198916472715691905">已使用 <ph name="STORAGE_AMOUNT" /> 儲存空間</translation>
 <translation id="321187648315454507">如要讓 <ph name="APP_NAME" /> 傳送通知，請一併在 <ph name="BEGIN_LINK" />Android 設定<ph name="END_LINK" />中開啟通知功能。</translation>
 <translation id="3227137524299004712">麥克風</translation>
-<translation id="3248611290851046188">其他網站可使用此網站定義的興趣來向您展示廣告。此網站亦會從 Chrome 取得您的興趣，以便為您顯示更相關的廣告。</translation>
 <translation id="3277252321222022663">允許網站存取感應器 (建議)</translation>
 <translation id="3285500645985761267">允許相關網站查看您在群組中的活動</translation>
 <translation id="3295019059349372795">第 11 章：奧茲國的奇妙翡翠城</translation>
@@ -156,7 +152,6 @@
 <translation id="3721953990244350188">閂同顯示下一個可以執行嘅操作</translation>
 <translation id="3744111561329211289">背景同步處理</translation>
 <translation id="3763247130972274048">輕按影片的左或右面兩下即可略過 10 秒</translation>
-<translation id="3794286421982011626">您瀏覽的網站可儲存您在網站上的活動資料，以便正常運作，例如在網站上保持登入狀態或儲存購物車內的商品。網站通常會暫時在裝置上儲存這些資料。</translation>
 <translation id="3797520601150691162">不要為特定網站套用深色主題背景</translation>
 <translation id="3803367742635802571">您瀏覽的網站可能無法正常運作</translation>
 <translation id="3804247818991980532"><ph name="TYPE_1" />。<ph name="TYPE_2" />。</translation>
@@ -193,7 +188,6 @@
 <translation id="4338831206024587507"><ph name="DOMAIN" /> 下的所有網站</translation>
 <translation id="4402755511846832236">禁止網站取得此裝置的使用狀態</translation>
 <translation id="4412992751769744546">允許第三方 Cookie</translation>
-<translation id="4428065317363009941">廣告個人化</translation>
 <translation id="4434045419905280838">彈出式視窗和重新導向</translation>
 <translation id="443552056913301231">此操作會刪除 Cookie 等所有本機資料，並重設 <ph name="ORIGIN" /> 的所有權限</translation>
 <translation id="4468959413250150279">將特定網站設為靜音。</translation>
@@ -247,10 +241,8 @@
 <translation id="5344522958567249764">管理廣告私隱權</translation>
 <translation id="5394307150471348411">{DETAIL_COUNT,plural, =1{(還有 1 個)}other{(還有 # 個)}}</translation>
 <translation id="5403592356182871684">名稱</translation>
-<translation id="5412236728747081950">此網站會從 Chrome 取得您的喜好，為您顯示更相關的廣告</translation>
 <translation id="5438097262470833822">此選項將會清除 <ph name="WEBSITE" /> 的權限</translation>
 <translation id="5489227211564503167">播咗嘅時間係 <ph name="ELAPSED_TIME" />，影片總長度係 <ph name="TOTAL_TIME" />。</translation>
-<translation id="5494752089476963479">在顯示滋擾或誤導廣告的網站上封鎖廣告</translation>
 <translation id="5502860503640766021">已允許「<ph name="PERMISSION_1" />」，已封鎖「<ph name="PERMISSION_2" />」</translation>
 <translation id="5505264765875738116">網站將無法要求向您傳送通知</translation>
 <translation id="5516455585884385570">開通知設定</translation>
@@ -363,7 +355,6 @@
 <translation id="7554752735887601236">有網站正在使用您的麥克風</translation>
 <translation id="7561196759112975576">永遠使用</translation>
 <translation id="757524316907819857">禁止網站播放受保護內容</translation>
-<translation id="7577900504646297215">管理興趣</translation>
 <translation id="7594634374516752650">已連線至藍牙裝置</translation>
 <translation id="7641339528570811325">清除瀏覽資料…</translation>
 <translation id="7649070708921625228">說明</translation>

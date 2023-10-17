@@ -337,7 +337,6 @@
 <translation id="3604713164406837697">Pakeisti ekrano foną</translation>
 <translation id="360565022852130722">„Wi-Fi“ tinklas apsaugotas naudojant nepatikimą protokolą WEP 802.1x</translation>
 <translation id="3606583719724308068">Didelė HTTPS svetainių delsa</translation>
-<translation id="3607216139080387279">Rodyti ekrano užsklandą</translation>
 <translation id="361575905210396100">Dėkojame už atsiliepimą</translation>
 <translation id="3632579075709132555">Privatumo ekrano perjungimas</translation>
 <translation id="3651050199673793219">Pasirinkti temperatūros matavimo vienetą</translation>
@@ -349,7 +348,6 @@
 <translation id="3740976234706877572"><ph name="AVERAGE_SCORE" /> ★ (apžvalgų: <ph name="AGGREGATED_COUNT" />)</translation>
 <translation id="3748026146096797577">Neprisijungta</translation>
 <translation id="3749289110408117711">Failo pavadinimas</translation>
-<translation id="3766934827878963937">1 val.</translation>
 <translation id="3771294271822695279">Vaizdo įrašų failai</translation>
 <translation id="3784455785234192852">Užrakinti</translation>
 <translation id="380097101658023925">RGB valdikliai</translation>
@@ -692,7 +690,6 @@
 <translation id="629550705077076970">klaviatūros pritemdymas</translation>
 <translation id="6302401976930124515">Bandymas „<ph name="TEST_NAME" />“ atšauktas</translation>
 <translation id="631063167932043783">Programa „Explore“</translation>
-<translation id="6318437367327684789">visada</translation>
 <translation id="6319207335391420837">„<ph name="DEVICE_NAME" />“ programinės aparatinės įrangos naujinys</translation>
 <translation id="6321407676395378991">Įjungti ekrano užsklandą</translation>
 <translation id="6324916366299863871">Redaguoti spartųjį klavišą</translation>
@@ -1069,11 +1066,9 @@
 <translation id="9111102763498581341">Atrakinti</translation>
 <translation id="9122602430962285795">Norėdami prisijungti iš naujo, eikite į Nustatymus</translation>
 <translation id="9126720536733509015">Išsaugokite kelis puslapius viename PDF</translation>
-<translation id="9133104754938025929">Kad būtų tausojama akumuliatoriaus energija, ekrano užsklanda veikia tik įkraunant.</translation>
 <translation id="9133772297793293778">Paspauskite klaviatūros 1–4 modifikatorius ir dar vieną klavišą. Kad išeitumėte iš redagavimo režimo, paspauskite „Alt“ + „Esc“.</translation>
 <translation id="9137526406337347448">„Google“ paslaugos</translation>
 <translation id="9138630967333032450">Kairysis antrojo lygio klavišas</translation>
-<translation id="9143347780818904997"><ph name="MINUTES" /> min.</translation>
 <translation id="9149391708638971077">Vykdyti atminties bandymą</translation>
 <translation id="9161276708550942948">tarpo klavišas</translation>
 <translation id="9173638680043580060">Liko mažiau nei minutė</translation>

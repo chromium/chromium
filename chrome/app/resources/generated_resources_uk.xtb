@@ -2058,6 +2058,7 @@
 <translation id="2564520396658920462">Виконання JavaScript через AppleScript вимкнено. Щоб увімкнути його, на панелі меню виберіть "Перегляд" &gt; "Для розробників" &gt; "Дозволити JavaScript від подій Apple". Щоб дізнатися більше, відвідайте сторінку https://support.google.com/chrome/?p=applescript</translation>
 <translation id="2564653188463346023">Покращена перевірка орфографії</translation>
 <translation id="256481480019204378">Ідентифікатор облікового запису Google</translation>
+<translation id="256517381556987641">Під час синхронізації знайдено стільки файлів: <ph name="ITEMS_FOUND" />. Триває перевірка обсягу пам’яті. Спробуйте знову ввімкнути синхронізацію файлів за кілька хвилин.</translation>
 <translation id="2565214867520763227">Увімкніть програму зчитування з екрана</translation>
 <translation id="2568694057933302218">У режимі анонімного перегляду сайти не можуть використовувати файли cookie для перегляду ваших дій у веб-переглядачі. Дані про такі дії не використовуються для персоналізації реклами. Функції на деяких сайтах можуть не працювати.</translation>
 <translation id="2568774940984945469">Контейнер інформаційної панелі</translation>
@@ -4377,6 +4378,7 @@
 <translation id="4427365070557649936">Перевірка коду підтвердження…</translation>
 <translation id="4429163740524851942">Розкладка фізичної клавіатури</translation>
 <translation id="4430019312045809116">Гучність</translation>
+<translation id="4430204941092622397">Можливо, пристрій на кілька хвилин від’єднається від мобільної мережі.</translation>
 <translation id="443031431654216610">Використовуйте лише цифри</translation>
 <translation id="4430369329743628066">Закладку додано</translation>
 <translation id="4430422687972614133">Увімкнути віртуальну картку</translation>
@@ -4589,6 +4591,7 @@
 <translation id="4610162781778310380">У плагіні <ph name="PLUGIN_NAME" /> сталася помилка</translation>
 <translation id="4610637590575890427">Ви мали на увазі перейти до <ph name="SITE" />?</translation>
 <translation id="4611114513649582138">Доступне передавання даних</translation>
+<translation id="4611759022973144129">За допомогою цього пароля ви можете входити на пристрої <ph name="DEVICE_TYPE" />.</translation>
 <translation id="4612841084470706111">Дозволити доступ до всіх сайтів, для яких надсилаються запити.</translation>
 <translation id="4613144866899789710">Скасовується встановлення Linux…</translation>
 <translation id="4613271546271159013">Розширення змінило сторінку, яка з’являється, коли ви відкриваєте нову вкладку.</translation>
@@ -4759,7 +4762,6 @@
 <translation id="4750185073185658673">Перейдіть на телефон і перегляньте ще кілька дозволів. Переконайтеся, що на ньому ввімкнено Bluetooth і Wi-Fi.</translation>
 <translation id="4750394297954878236">Пропозиції</translation>
 <translation id="475088594373173692">Перший користувач</translation>
-<translation id="4756302371612574303">Сайт, який ви відвідуєте, може зберігати інформацію про ваші дії, щоб вам було зручніше взаємодіяти з ним, наприклад не виходити з облікового запису чи запам’ятовувати товари в кошику для покупок. Часто сайти тимчасово зберігають таку інформацію на вашому пристрої.</translation>
 <translation id="4756378406049221019">Зупинити/оновити</translation>
 <translation id="4756388243121344051">&amp;Історія</translation>
 <translation id="4756671452988984333">Текст для аудіо</translation>
@@ -5088,6 +5090,7 @@
 <translation id="5027550639139316293">Сертифікат електронної пошти</translation>
 <translation id="5027562294707732951">Додати розширення</translation>
 <translation id="5028445315206872221">На цьому сайті заблоковано розширення</translation>
+<translation id="5029287942302939687">Пароль налаштовано</translation>
 <translation id="5029873138381728058">Не вдалося перевірити віртуальні машини</translation>
 <translation id="503155457707535043">Завантаження додатків</translation>
 <translation id="5032430150487044192">Не вдається створити QR-код</translation>
@@ -5116,6 +5119,7 @@
 <translation id="5054374119096692193">Перегляньте всі варіанти карток у розділі <ph name="BEGIN_LINK" />Налаштувати Chrome<ph name="END_LINK" /></translation>
 <translation id="5056950756634735043">Підключення до контейнера</translation>
 <translation id="5057110919553308744">Коли ви натискаєте розширення</translation>
+<translation id="5057127674016624293">Сканування триває довше, ніж очікувалося</translation>
 <translation id="5059241099014281248">Обмежити вхід</translation>
 <translation id="5059429103770496207">Стиль відображення</translation>
 <translation id="5059526285558225588">Виберіть, що показувати</translation>
@@ -5265,7 +5269,6 @@
 <translation id="5176787661653201403">К&amp;опіювати кадр відео</translation>
 <translation id="5177479852722101802">Продовжити блокувати доступ до камери та мікрофона</translation>
 <translation id="5177549709747445269">Ви використовуєте мобільний Інтернет</translation>
-<translation id="5178106147333214179">Перейти в Центр керування безпекою</translation>
 <translation id="5178667623289523808">Знайти попереднє</translation>
 <translation id="5181140330217080051">Завантаження</translation>
 <translation id="5181172023548002891">У Менеджері паролів Google для облікового запису <ph name="ACCOUNT" /></translation>
@@ -6005,6 +6008,7 @@
 <translation id="5797521893972859201">Буде очищено історію, зокрема в полі пошуку</translation>
 <translation id="5797934230382081317">Дізнайтеся, як почати роботу на пристроях &lt;a target='_blank' href='<ph name="LINK_ANDROID" />'&gt;Android&lt;/a&gt; і &lt;a target='_blank' href='<ph name="LINK_IOS" />'&gt;iOS&lt;/a&gt;</translation>
 <translation id="5798079537501238810">Сайти можуть установлювати обробники платежів</translation>
+<translation id="5798086737841799234">Введіть код підтвердження</translation>
 <translation id="579915268381781820">Ключ безпеки вилучено.</translation>
 <translation id="5799478978078236781">Отримуйте поради, пропозиції й оновлення для пристрою <ph name="DEVICE_TYPE" />, а також надсилайте відгуки.</translation>
 <translation id="5799508265798272974">Віртуальна машина Linux: <ph name="LINUX_VM_NAME" /></translation>
@@ -6055,7 +6059,6 @@
 <translation id="583673505367439042">Сайти можуть просити дозвіл змінювати файли та папки на пристрої</translation>
 <translation id="5836999627049108525">Вихідна мова</translation>
 <translation id="583756221537636748">Чохол</translation>
-<translation id="5839524803417937122">Пошук на зображенні через <ph name="SEARCH_ENGINE" /></translation>
 <translation id="5840680448799937675">Завжди передавати файли офлайн</translation>
 <translation id="5841270259333717135">Налаштувати Ethernet</translation>
 <translation id="5842497610951477805">Увімкнути Bluetooth</translation>
@@ -6627,7 +6630,6 @@
 <translation id="628726841779494414">Керуйте принтерами в налаштуваннях принтера</translation>
 <translation id="6287828400772161253">Телефон Android (<ph name="HOST_DEVICE_NAME" />)</translation>
 <translation id="6290613030083731160">Неподалік немає пристроїв, з якими можна обмінюватися даними. <ph name="LINK_BEGIN" />Докладніше<ph name="LINK_END" /></translation>
-<translation id="6291086328725007688">Триває перевірка коду активації. Це може зайняти кілька хвилин.</translation>
 <translation id="6291741848715722067">Код підтвердження</translation>
 <translation id="6291953229176937411">&amp;Показати в програмі Finder</translation>
 <translation id="6292699686837272722">Вкладки зменшуються до середньої ширини</translation>
@@ -7268,6 +7270,7 @@
 <translation id="6815376457351236663">Усе одно відкрити</translation>
 <translation id="6815787852028615386">Цей файл оманливий і може вносити неочікувані зміни на вашому пристрої</translation>
 <translation id="6816097980753839617">Синьо-жовтий (тританомалія)</translation>
+<translation id="6816443526270499804">Пошук доступних профілів eSIM</translation>
 <translation id="6818198425579322765">Мова сторінки для перекладу</translation>
 <translation id="6818547713623251698">Переглядати фотографії, медіафайли, сповіщення й додатки на вашому телефоні</translation>
 <translation id="6818802132960437751">Вбудований захист від вірусів</translation>
@@ -7969,6 +7972,7 @@
 <translation id="7396845648024431313">Програма <ph name="APP_NAME" /> запускатиметься під час запуску системи та продовжуватиме працювати у фоновому режимі навіть після закриття всіх інших вікон <ph name="PRODUCT_NAME" />.</translation>
 <translation id="7399045143794278225">Налаштувати синхронізацію</translation>
 <translation id="7399616692258236448">Запити на доступ до геоданих автоматично заблоковано для всіх сайтів, крім тих, які ви дозволили</translation>
+<translation id="7399802613464275309">Перевірка безпеки</translation>
 <translation id="7400418766976504921">URL-адреса</translation>
 <translation id="7400447915166857470">Знову ввімкнути систему <ph name="OLD_SEARCH_PROVIDER" />?</translation>
 <translation id="7400839060291901923">Налаштуйте з’єднання на пристрої <ph name="PHONE_NAME" /></translation>
@@ -8076,6 +8080,7 @@
 <translation id="7475742997309661417">Програма зчитування з екрана в ChromeOS – ChromeVox – переважно використовується незрячими людьми й людьми з поганим зором для читання тексту на екрані за допомогою синтезатора мовлення або брайлівського дисплея. Щоб увімкнути ChromeVox, утримуйте обидві клавіші гучності впродовж п’яти секунд. Після активації ви швидко ознайомитеся з можливостями програми.</translation>
 <translation id="7476454130948140105">Акумулятор недостатньо заряджений, щоб оновити дані (<ph name="BATTERY_PERCENT" />%)</translation>
 <translation id="7476989672001283112">Автоматично заблоковано: <ph name="PERMISSION" /> і ще <ph name="COUNT" /></translation>
+<translation id="7477460499687558352">Виберіть профіль eSIM, який хочете завантажити</translation>
 <translation id="7477599578899108080">Надмірне використання пам’яті: <ph name="MEMORY_USAGE" /></translation>
 <translation id="7477748600276493962">Створити QR-код для цієї сторінки</translation>
 <translation id="7477793887173910789">Керуйте музикою, відео й іншим контентом</translation>
@@ -8135,7 +8140,6 @@
 <translation id="7522255036471229694">Скажіть "Ok Google"</translation>
 <translation id="7523117833414447032">Озвучення великих літер</translation>
 <translation id="7523585675576642403">Перейменувати профіль</translation>
-<translation id="7524849817690367493">Центр керування безпекою</translation>
 <translation id="7525067979554623046">Створити</translation>
 <translation id="7526989658317409655">Заповнювач</translation>
 <translation id="7528224636098571080">Не відкривати</translation>
@@ -8151,7 +8155,6 @@
 <translation id="7536815228183532290">Ви ввійшли як <ph name="EMAIL" /></translation>
 <translation id="7537451260744431038">Сайти не можуть використовувати файли cookie, щоб покращувати веб-перегляд, наприклад не виходити з облікового запису чи запам'ятовувати товари в кошику для покупок</translation>
 <translation id="7538013435257102593">Файли такого типу рідко завантажують, вони можуть бути небезпечними</translation>
-<translation id="7538088324298143359">Пошук на зображенні через <ph name="SEARCH_ENGINE" /></translation>
 <translation id="7540972813190816353">Під час перевірки наявності оновлень сталася помилка: <ph name="ERROR" /></translation>
 <translation id="7541076351905098232"><ph name="MANAGER" /> повертає попередню версію на пристрої. Збережіть важливі файли, а тоді перезапустіть його. Після цього всі дані на ньому буде видалено.</translation>
 <translation id="7541773865713908457"><ph name="ACTION_NAME" /> у додатку <ph name="APP_NAME" /></translation>

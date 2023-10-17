@@ -75,6 +75,7 @@
 <translation id="1499900233129743732"><ph name="MANAGER" /> управлява този потребител и може отдалечено да контролира настройките и да наблюдава потребителската активност.</translation>
 <translation id="150962533380566081">Невалиден PUK код.</translation>
 <translation id="1510238584712386396">Стартов панел</translation>
+<translation id="1515129336378114413">начална страница на браузъра</translation>
 <translation id="1526389707933164996">Анимация за скрийнсейвъра</translation>
 <translation id="152892567002884378">Увеличаване на силата на звука</translation>
 <translation id="1555130319947370107">синьо</translation>
@@ -336,7 +337,6 @@
 <translation id="3604713164406837697">Промяна на тапета</translation>
 <translation id="360565022852130722">Wi-Fi мрежата е защитена със слабия протокол WEP 802.1x</translation>
 <translation id="3606583719724308068">Голямо закъснение на уебсайтове, работещи с HTTPS</translation>
-<translation id="3607216139080387279">Показване на скрийнсейвъра</translation>
 <translation id="361575905210396100">Благодарим ви за отзивите</translation>
 <translation id="3632579075709132555">Превключване на екрана за поверителност</translation>
 <translation id="3651050199673793219">Изберете единица за температура</translation>
@@ -348,7 +348,6 @@
 <translation id="3740976234706877572"><ph name="AVERAGE_SCORE" /> ★ (<ph name="AGGREGATED_COUNT" /> отзива)</translation>
 <translation id="3748026146096797577">Няма връзка</translation>
 <translation id="3749289110408117711">Име на файла</translation>
-<translation id="3766934827878963937">за 1 час</translation>
 <translation id="3771294271822695279">Видеофайлове</translation>
 <translation id="3784455785234192852">Заключване</translation>
 <translation id="380097101658023925">контроли за rgb</translation>
@@ -691,7 +690,6 @@
 <translation id="629550705077076970">затъмняване на клавиатурата</translation>
 <translation id="6302401976930124515">Тестът „<ph name="TEST_NAME" />“ бе прекратен</translation>
 <translation id="631063167932043783">Приложение Explore</translation>
-<translation id="6318437367327684789">завинаги</translation>
 <translation id="6319207335391420837">Актуализиране на фърмуера на <ph name="DEVICE_NAME" /></translation>
 <translation id="6321407676395378991">Включване на скрийнсейвъра</translation>
 <translation id="6324916366299863871">Редактиране на прекия път</translation>
@@ -749,6 +747,7 @@
 <translation id="6659594942844771486">Раздел</translation>
 <translation id="6673898378497337661">увеличаване на яркостта на клавиатурата</translation>
 <translation id="6692996468359469499">Получаване на информация, свързана с избраното от вас</translation>
+<translation id="6694534975463174713">катинар</translation>
 <translation id="6704062477274546131">Преобразуване от DNS</translation>
 <translation id="6723839937902243910">Захранване</translation>
 <translation id="6723847290197874913">Фоново осветление на клавиатурата</translation>
@@ -1067,11 +1066,9 @@
 <translation id="9111102763498581341">Отключване</translation>
 <translation id="9122602430962285795">За повторно свързване отворете „Настройки“</translation>
 <translation id="9126720536733509015">Запазване на няколко страници в един PDF файл</translation>
-<translation id="9133104754938025929">С цел запазване на батерията скрийнсейвърът работи само при зареждане.</translation>
 <translation id="9133772297793293778">Натиснете модификатор от 1 до 4 и още един клавиш на клавиатурата. За да излезете от режима на редактиране, натиснете Alt + Esc.</translation>
 <translation id="9137526406337347448">Услуги на Google</translation>
 <translation id="9138630967333032450">Клавиш „shift“ вляво</translation>
-<translation id="9143347780818904997">за <ph name="MINUTES" /> минути</translation>
 <translation id="9149391708638971077">Тестване на паметта</translation>
 <translation id="9161276708550942948">интервал</translation>
 <translation id="9173638680043580060">Остава по-малко от минута</translation>

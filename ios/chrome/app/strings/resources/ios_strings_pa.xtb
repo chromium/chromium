@@ -83,10 +83,12 @@
 <translation id="1360432990279830238">ਕੀ ਸਾਈਨ-ਆਊਟ ਕਰਕੇ ਸਿੰਕ ਬੰਦ ਕਰਨਾ ਹੈ?</translation>
 <translation id="1363028406613469049">ਟਰੈਕ</translation>
 <translation id="1365106417372288489">ਤੁਹਾਡੇ iPhone ਨੂੰ ਹਾਲ ਹੀ ਵਿੱਚ ਮੁੜ-ਬਹਾਲ ਕੀਤਾ ਗਿਆ ਸੀ, ਹੋ ਸਕਦਾ ਹੈ ਜਿਸ ਨਾਲ ਤੁਹਾਡਾ ਪੂਰਵ-ਨਿਰਧਾਰਿਤ ਬ੍ਰਾਊਜ਼ਰ ਬਦਲ ਗਿਆ ਹੋਵੇ।</translation>
+<translation id="136942498637440594">ਤੁਸੀਂ ਚਿੱਤਰਾਂ ਅਤੇ ਤੁਹਾਨੂੰ ਦਿਸਣ ਵਾਲੀਆਂ ਚੀਜ਼ਾਂ ਸੰਬੰਧੀ ਜਾਣਕਾਰੀ ਖੋਜ ਸਕਦੇ ਹੋ।</translation>
 <translation id="1375321115329958930">ਰੱਖਿਅਤ ਕੀਤੇ ਪਾਸਵਰਡ</translation>
 <translation id="1377255359165588604">ਸਿੰਕ ਨੇ ਕੰਮ ਕਰਨਾ ਬੰਦ ਕਰ ਦਿੱਤਾ ਹੈ।</translation>
 <translation id="1377321085342047638">ਕਾਰਡ ਨੰਬਰ</translation>
 <translation id="1377508275003315939">ਪਾਸਵਰਡ</translation>
+<translation id="1380914240355562929"><ph name="BEGIN_BOLD" /><ph name="USERNAME" /><ph name="END_BOLD" /> ਵੱਲੋਂ ਹੁਣ <ph name="BEGIN_BOLD" /><ph name="WEBSITE" /><ph name="END_BOLD" /> ਵਿੱਚ ਸਾਈਨ-ਇਨ ਕਰਨ ਲਈ Google Password Manager ਦੀ ਵਰਤੋਂ ਕਰਨ 'ਤੇ ਤੁਹਾਡੇ ਵਰਤੋਂਕਾਰ ਨਾਮ ਅਤੇ ਪਾਸਵਰਡ ਦੀ ਵਰਤੋਂ ਕੀਤੀ ਜਾ ਸਕਦੀ ਹੈ। <ph name="BEGIN_LINK" />ਹੋਰ ਜਾਣੋ<ph name="END_LINK" /></translation>
 <translation id="1383876407941801731">ਖੋਜੋ</translation>
 <translation id="138618066238211776"><ph name="USER_NAME" /> ਵਜੋਂ ਜਾਰੀ ਰੱਖੋ</translation>
 <translation id="1400642268715879018">ਪਿਛਲੇ 4 ਹਫ਼ਤੇ</translation>
@@ -774,6 +776,7 @@
 <translation id="5121618895923301719">ਤੁਸੀਂ ਪਹਿਲਾਂ ਹੀ ਇਸ ਉਤਪਾਦ ਨੂੰ ਟਰੈਕ ਕਰ ਰਹੇ ਹੋ। ਇਸ ਪੰਨੇ ਨੂੰ <ph name="BEGIN_LINK" />ਮੋਬਾਈਲ ਬੁੱਕਮਾਰਕਾਂ<ph name="END_LINK" /> ਵਿੱਚ ਰੱਖਿਅਤ ਕੀਤਾ ਗਿਆ ਹੈ।</translation>
 <translation id="512533434554095351">ਤੁਹਾਨੂੰ ਪਾਸਵਰਡ ਸੰਬੰਧੀ ਕਈ ਸਮੱਸਿਆਵਾਂ ਹਨ।</translation>
 <translation id="5126465625664020024">ਸਾਈਨ-ਇਨ ਕਰੋ ਅਤੇ ਸਿੰਕ ਕਰੋ</translation>
+<translation id="5131062416352684089">ਤੁਹਾਡੇ ਪਰਿਵਾਰਕ ਮੈਂਬਰਾਂ ਵੱਲੋਂ ਹੁਣ <ph name="BEGIN_BOLD" /><ph name="WEBSITE" /><ph name="END_BOLD" /> ਵਿੱਚ ਸਾਈਨ-ਇਨ ਕਰਨ ਲਈ Google Password Manager ਦੀ ਵਰਤੋਂ ਕਰਨ 'ਤੇ ਤੁਹਾਡੇ ਵਰਤੋਂਕਾਰ ਨਾਮ ਅਤੇ ਪਾਸਵਰਡ ਦੀ ਵਰਤੋਂ ਕੀਤੀ ਜਾ ਸਕਦੀ ਹੈ। <ph name="BEGIN_LINK" />ਹੋਰ ਜਾਣੋ<ph name="END_LINK" /></translation>
 <translation id="5132942445612118989">ਸਾਰੇ ਡੀਵਾਈਸਾਂ 'ਤੇ ਤੁਹਾਡੇ ਪਾਸਵਰਡਾਂ, ਇਤਿਹਾਸ ਅਤੇ ਹੋਰ ਬਹੁਤ ਕੁਝ ਦਾ ਸਿੰਕ ਕਰੋ</translation>
 <translation id="5142890110117755815">{COUNT,plural, =1{{COUNT} ਕਮਜ਼ੋਰ ਪਾਸਵਰਡ}one{{COUNT} ਕਮਜ਼ੋਰ ਪਾਸਵਰਡ}other{{COUNT} ਕਮਜ਼ੋਰ ਪਾਸਵਰਡ}}</translation>
 <translation id="5149188072385105201">ਪਾਸਵਰਡ ਸ਼ਾਮਲ ਕਰੋ...</translation>

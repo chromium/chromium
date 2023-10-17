@@ -41,7 +41,6 @@
 <translation id="187227595286001730">Els llocs web relacionats poden veure la teva activitat al grup</translation>
 <translation id="1887786770086287077">L'accés a la ubicació està desactivat en aquest dispositiu. Activa'l a la <ph name="BEGIN_LINK" />configuració d'Android<ph name="END_LINK" />.</translation>
 <translation id="1915307458270490472">Penja</translation>
-<translation id="1919345977826869612">Anuncis</translation>
 <translation id="1919950603503897840">Selecciona contactes</translation>
 <translation id="1923695749281512248"><ph name="BYTES_DOWNLOADED_WITH_UNITS" />/<ph name="FILE_SIZE_WITH_UNITS" /></translation>
 <translation id="1979673356880165407">Amplia o redueix el text i les imatges de tots els llocs web que visitis</translation>
@@ -71,7 +70,6 @@
 <translation id="2289270750774289114">Pregunta'm quan un lloc web vulgui descobrir dispositius Bluetooth propers (opció recomanada)</translation>
 <translation id="2315043854645842844">El sistema operatiu no permet seleccionar el certificat del client.</translation>
 <translation id="2321958826496381788">Arrossega el control lliscant fins que puguis llegir aquest text còmodament. El text ha de ser almenys així de gran després de tocar dos cops un paràgraf.</translation>
-<translation id="2329473609445770916">Aquest lloc web defineix interessos que altres llocs web poden utilitzar per mostrar-te anuncis</translation>
 <translation id="2359808026110333948">Continua</translation>
 <translation id="2379925928934107488">Aplica el tema fosc als llocs web quan Chrome l'utilitzi i sigui possible</translation>
 <translation id="2387895666653383613">Ajust del text</translation>
@@ -111,7 +109,6 @@
 <translation id="2891975107962658722">Impedeix que un lloc web desi dades al dispositiu</translation>
 <translation id="2903493209154104877">Adreces</translation>
 <translation id="2910701580606108292">Pregunta abans de permetre que els llocs web reprodueixin contingut protegit</translation>
-<translation id="2913331724188855103">Permet que els llocs web desin i llegeixin les dades de les galetes (opció recomanada)</translation>
 <translation id="2932883381142163287">Informa d'un ús abusiu</translation>
 <translation id="2968755619301702150">Lector de certificats</translation>
 <translation id="3008272652534848354">Restableix els permisos</translation>
@@ -129,7 +126,6 @@
 <translation id="3198916472715691905"><ph name="STORAGE_AMOUNT" /> de dades desades</translation>
 <translation id="321187648315454507">Perquè <ph name="APP_NAME" /> et pugui enviar notificacions, també has d'activar-les a la <ph name="BEGIN_LINK" />configuració d'Android<ph name="END_LINK" />.</translation>
 <translation id="3227137524299004712">Micròfon</translation>
-<translation id="3248611290851046188">Aquest lloc web defineix interessos que altres llocs web poden utilitzar per mostrar-te anuncis. També obté els teus interessos de Chrome per mostrar-te anuncis més rellevants.</translation>
 <translation id="3277252321222022663">Permet que els llocs web accedeixin als sensors (opció recomanada)</translation>
 <translation id="3285500645985761267">Permet que els llocs web relacionats vegin la teva activitat al grup</translation>
 <translation id="3295019059349372795">Capítol 11: La meravellosa Ciutat Maragda d'Oz</translation>
@@ -156,7 +152,6 @@
 <translation id="3721953990244350188">Ignora i mostra la següent acció disponible</translation>
 <translation id="3744111561329211289">Sincronització en segon pla</translation>
 <translation id="3763247130972274048">Fes doble toc a l'esquerra o a la dreta del vídeo per saltar 10 s</translation>
-<translation id="3794286421982011626">A fi de funcionar de la manera prevista, un lloc web que visites pot desar informació sobre el que estàs fent: per exemple, per mantenir la teva sessió iniciada en un lloc web o desar articles al carretó. Sovint, els llocs web desen temporalment aquesta informació al teu dispositiu.</translation>
 <translation id="3797520601150691162">No apliquis el tema fosc a un lloc web concret</translation>
 <translation id="3803367742635802571">És possible que els llocs web que visites deixin de funcionar de la manera prevista</translation>
 <translation id="3804247818991980532"><ph name="TYPE_1" /> i <ph name="TYPE_2" />.</translation>
@@ -193,7 +188,6 @@
 <translation id="4338831206024587507">Tots els llocs web de <ph name="DOMAIN" /></translation>
 <translation id="4402755511846832236">Bloqueja els llocs web perquè no sàpiguen quan estàs utilitzant aquest dispositiu de manera activa</translation>
 <translation id="4412992751769744546">Permet les galetes de tercers</translation>
-<translation id="4428065317363009941">Personalització d'anuncis</translation>
 <translation id="4434045419905280838">Finestres emergents i redireccions</translation>
 <translation id="443552056913301231">Aquesta acció suprimirà totes les dades locals, incloses les galetes, i restablirà tots els permisos de <ph name="ORIGIN" /></translation>
 <translation id="4468959413250150279">Silencia el so d'un lloc web concret.</translation>
@@ -247,10 +241,8 @@
 <translation id="5344522958567249764">Gestiona la privadesa d'anuncis</translation>
 <translation id="5394307150471348411">{DETAIL_COUNT,plural, =1{(i 1 més)}other{(i # més)}}</translation>
 <translation id="5403592356182871684">Noms</translation>
-<translation id="5412236728747081950">Aquest lloc web obté els teus interessos de Chrome per mostrar-te anuncis més rellevants</translation>
 <translation id="5438097262470833822">Amb aquesta opció, es restabliran els permisos per a <ph name="WEBSITE" /></translation>
 <translation id="5489227211564503167">Temps transcorregut: <ph name="ELAPSED_TIME" /> de <ph name="TOTAL_TIME" />.</translation>
-<translation id="5494752089476963479">Bloqueja els anuncis als llocs web que mostren publicitat intrusiva o enganyosa</translation>
 <translation id="5502860503640766021">S'ha permès <ph name="PERMISSION_1" />. S'ha bloquejat <ph name="PERMISSION_2" />.</translation>
 <translation id="5505264765875738116">Els llocs web no poden demanar-te permís per enviar-te notificacions</translation>
 <translation id="5516455585884385570">Obre la configuració de notificacions</translation>
@@ -363,7 +355,6 @@
 <translation id="7554752735887601236">Un lloc web està utilitzant el micròfon</translation>
 <translation id="7561196759112975576">Sempre</translation>
 <translation id="757524316907819857">Impedeix que els llocs web reprodueixin contingut protegit</translation>
-<translation id="7577900504646297215">Gestiona els interessos</translation>
 <translation id="7594634374516752650">Connectat a un dispositiu Bluetooth</translation>
 <translation id="7641339528570811325">Esborra les dades de navegació…</translation>
 <translation id="7649070708921625228">Ajuda</translation>

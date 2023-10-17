@@ -337,7 +337,6 @@
 <translation id="3604713164406837697">Endre bakgrunn</translation>
 <translation id="360565022852130722">Wifi-nettverket er sikret med den svake protokollen WEP 802.1x</translation>
 <translation id="3606583719724308068">Høy tidsforsinkelse til HTTPS-nettsteder</translation>
-<translation id="3607216139080387279">Vis skjermsparer</translation>
 <translation id="361575905210396100">Takk for tilbakemeldingen</translation>
 <translation id="3632579075709132555">Personvernskjerm av/på</translation>
 <translation id="3651050199673793219">Velg en temperaturenhet</translation>
@@ -349,7 +348,6 @@
 <translation id="3740976234706877572"><ph name="AVERAGE_SCORE" /> ★ (<ph name="AGGREGATED_COUNT" /> anmeldelser)</translation>
 <translation id="3748026146096797577">Ikke tilkoblet</translation>
 <translation id="3749289110408117711">Filnavn</translation>
-<translation id="3766934827878963937">i én time</translation>
 <translation id="3771294271822695279">Videofiler</translation>
 <translation id="3784455785234192852">Lås</translation>
 <translation id="380097101658023925">RGB-kontroller</translation>
@@ -692,7 +690,6 @@
 <translation id="629550705077076970">tastaturdimming</translation>
 <translation id="6302401976930124515"><ph name="TEST_NAME" />testen er avbrutt</translation>
 <translation id="631063167932043783">Utforsk-appen</translation>
-<translation id="6318437367327684789">for alltid</translation>
 <translation id="6319207335391420837">Oppdater fastvaren på <ph name="DEVICE_NAME" /></translation>
 <translation id="6321407676395378991">Slå på skjermspareren</translation>
 <translation id="6324916366299863871">Endre snarvei</translation>
@@ -1069,11 +1066,9 @@
 <translation id="9111102763498581341">Lås opp</translation>
 <translation id="9122602430962285795">For å koble til på nytt, gå til Innstillinger</translation>
 <translation id="9126720536733509015">Lagre flere sider som én PDF-fil</translation>
-<translation id="9133104754938025929">For å spare batteriet fungerer skjermspareren bare under lading.</translation>
 <translation id="9133772297793293778">Trykk på 1–4 modifikatorer og 1 annen tast på tastaturet. For å gå ut av redigeringsmodus, trykk på Alt + Esc.</translation>
 <translation id="9137526406337347448">Google-tjenester</translation>
 <translation id="9138630967333032450">Venstre Shift</translation>
-<translation id="9143347780818904997">i <ph name="MINUTES" /> minutter</translation>
 <translation id="9149391708638971077">Kjør minnetest</translation>
 <translation id="9161276708550942948">mellomrom</translation>
 <translation id="9173638680043580060">Mindre enn et minutt igjen</translation>

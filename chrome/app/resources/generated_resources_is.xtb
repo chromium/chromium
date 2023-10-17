@@ -2056,6 +2056,7 @@ Annars skaltu skrá þig út núna svo breytingarnar á þessum reikningi taki g
 <translation id="2564520396658920462">Slökkt er á keyrslu JavaScript í gegnum AppleScript. Þú getur kveikt á henni með því að fara í valmyndarstikuna og velja Yfirlit &gt; Þróunaraðili &gt; Leyfa JavaScript úr Apple Events. Nánari upplýsingar eru á: https://support.google.com/chrome/?p=applescript</translation>
 <translation id="2564653188463346023">Endurbætt villuleit</translation>
 <translation id="256481480019204378">Auðkenni Google-reiknings</translation>
+<translation id="256517381556987641">Skráasamstilling hefur fundið <ph name="ITEMS_FOUND" /> skrár og er enn að athuga geymslurýmið. Prófaðu að kveikja á skráasamstillingu aftur eftir nokkrar mínútur.</translation>
 <translation id="2565214867520763227">Kveikja á skjálesara</translation>
 <translation id="2568694057933302218">Í huliðsstillingu geta vefsvæði ekki notað fótspor til að sjá vafranotkun þína á vefsvæðum. Vafranotkun þín er ekki notuð fyrir hluti á borð við sérsniðnar auglýsingar. Óvíst er að eiginleikar á sumum vefsvæðum virki.</translation>
 <translation id="2568774940984945469">Rammi upplýsingastiku</translation>
@@ -4375,6 +4376,7 @@ Annars skaltu skrá þig út núna svo breytingarnar á þessum reikningi taki g
 <translation id="4427365070557649936">Staðfestir staðfestingarkóða...</translation>
 <translation id="4429163740524851942">Uppsetning vélbúnaðarlyklaborðs</translation>
 <translation id="4430019312045809116">Hljóðstyrkur</translation>
+<translation id="4430204941092622397">Þetta gæti valdið því að samband við farsímakerfið rofni í nokkrar mínútur.</translation>
 <translation id="443031431654216610">Notaðu aðeins tölustafi</translation>
 <translation id="4430369329743628066">Bókamerki bætt við</translation>
 <translation id="4430422687972614133">Kveikja á sýndarkorti</translation>
@@ -4587,6 +4589,7 @@ Annars skaltu skrá þig út núna svo breytingarnar á þessum reikningi taki g
 <translation id="4610162781778310380">Villa kom upp í <ph name="PLUGIN_NAME" /></translation>
 <translation id="4610637590575890427">Ætlaðirðu að fara á <ph name="SITE" />?</translation>
 <translation id="4611114513649582138">Gagnatenging í boði</translation>
+<translation id="4611759022973144129">Þú getur notað þetta aðgangsorð til að skrá þig inn í <ph name="DEVICE_TYPE" />.</translation>
 <translation id="4612841084470706111">Veita aðgang að öllum umbeðnum vefsvæðum.</translation>
 <translation id="4613144866899789710">Hættir við Linux-uppsetningu...</translation>
 <translation id="4613271546271159013">Viðbót hefur breytt því hvaða síða birtist þegar þú opnar nýjan flipa.</translation>
@@ -4757,7 +4760,6 @@ Notaðu Ctrl + Alt + minnka birtustig til að minnka aðdrátt.</translation>
 <translation id="4750185073185658673">Farðu í símann til að fara yfir nokkrar heimildir í viðbót. Gættu þess að kveikt sé á Bluetooth og Wi-Fi í símanum.</translation>
 <translation id="4750394297954878236">Tillögur</translation>
 <translation id="475088594373173692">Fyrsti notandi</translation>
-<translation id="4756302371612574303">Vefsvæði sem þú skoðar geta vistað upplýsingar um það sem þú ert að gera svo það virki líkt og búist er við — til dæmis til að halda þér innskráðri/innskráðum á vefsvæði eða til að vista vörur í innkaupakörfunni þinni. Oft vista vefsvæði þessar upplýsingar í tækinu tímabundið.</translation>
 <translation id="4756378406049221019">Stöðva/endurhlaða</translation>
 <translation id="4756388243121344051">Ferill</translation>
 <translation id="4756671452988984333">Texti með hljóði</translation>
@@ -5086,6 +5088,7 @@ Notaðu Ctrl + Alt + minnka birtustig til að minnka aðdrátt.</translation>
 <translation id="5027550639139316293">Vottorð tölvupósts</translation>
 <translation id="5027562294707732951">Bæta viðbót við</translation>
 <translation id="5028445315206872221">Lokað er fyrir viðbætur á þessari síðu</translation>
+<translation id="5029287942302939687">Aðgangsorð var stillt</translation>
 <translation id="5029873138381728058">Ekki tókst að leita að sýndarvélum</translation>
 <translation id="503155457707535043">Sækir forrit</translation>
 <translation id="5032430150487044192">Ekki hægt að búa til QR-kóða</translation>
@@ -5114,6 +5117,7 @@ Notaðu Ctrl + Alt + minnka birtustig til að minnka aðdrátt.</translation>
 <translation id="5054374119096692193">Sjáðu alla valkosti spjalda í <ph name="BEGIN_LINK" />Sérsníða Chrome<ph name="END_LINK" /></translation>
 <translation id="5056950756634735043">Tengist geyminum</translation>
 <translation id="5057110919553308744">Þegar þú smellir á viðbótina</translation>
+<translation id="5057127674016624293">Skönnun tekur lengri tíma en áætlað var</translation>
 <translation id="5059241099014281248">Takmarka innskráningu</translation>
 <translation id="5059429103770496207">Birtingarstíll</translation>
 <translation id="5059526285558225588">Veldu hverju þú deilir</translation>
@@ -5263,7 +5267,6 @@ Notaðu Ctrl + Alt + minnka birtustig til að minnka aðdrátt.</translation>
 <translation id="5176787661653201403">Afrita ramma myndskeiðs</translation>
 <translation id="5177479852722101802">Halda áfram að útiloka aðgang að myndavél og hljóðnema</translation>
 <translation id="5177549709747445269">Þú ert að nota farsímagögn</translation>
-<translation id="5178106147333214179">Opna öryggismiðstöð</translation>
 <translation id="5178667623289523808">Finna fyrra</translation>
 <translation id="5181140330217080051">Sækir</translation>
 <translation id="5181172023548002891">Í Aðgangsorðastjórnun Google fyrir <ph name="ACCOUNT" /></translation>
@@ -6005,6 +6008,7 @@ Heimildir sem þú hefur þegar veitt vefsvæðum og forritum kunna að gilda á
 <translation id="5797521893972859201">Hreinsar feril, einnig í leitarreitnum</translation>
 <translation id="5797934230382081317">Kynntu þér hvernig þú hefst handa í &lt;a target='_blank' href='<ph name="LINK_ANDROID" />'&gt;Android&lt;/a&gt; og &lt;a target='_blank' href='<ph name="LINK_IOS" />'&gt;iOS&lt;/a&gt;</translation>
 <translation id="5798079537501238810">Vefsvæði mega setja upp greiðslumiðlara</translation>
+<translation id="5798086737841799234">Sláðu inn staðfestingarkóða</translation>
 <translation id="579915268381781820">Öryggislykillinn var fjarlægður.</translation>
 <translation id="5799478978078236781">Fáðu ábendingar, tilboð og uppfærslur fyrir <ph name="DEVICE_TYPE" /> og komdu ábendingum á framfæri.</translation>
 <translation id="5799508265798272974">Sýndarvél Linux: <ph name="LINUX_VM_NAME" /></translation>
@@ -6055,7 +6059,6 @@ Heimildir sem þú hefur þegar veitt vefsvæðum og forritum kunna að gilda á
 <translation id="583673505367439042">Vefsvæði geta beðið um leyfi til að breyta skrám og möppum í tækinu þínu</translation>
 <translation id="5836999627049108525">Tungumál sem á að þýða úr</translation>
 <translation id="583756221537636748">Hulstur</translation>
-<translation id="5839524803417937122">Leita á mynd með <ph name="SEARCH_ENGINE" /></translation>
 <translation id="5840680448799937675">Skrám verður alltaf deilt án nettengingar</translation>
 <translation id="5841270259333717135">Stilla Ethernet</translation>
 <translation id="5842497610951477805">Virkjun á Bluetooth</translation>
@@ -6628,7 +6631,6 @@ Heimildir sem þú hefur þegar veitt vefsvæðum og forritum kunna að gilda á
 <translation id="628726841779494414">Stjórnaðu prenturunum í prentarastillingunum</translation>
 <translation id="6287828400772161253">Android-sími (<ph name="HOST_DEVICE_NAME" />)</translation>
 <translation id="6290613030083731160">Engin tæki eru að deila nálægt. <ph name="LINK_BEGIN" />Frekari upplýsingar<ph name="LINK_END" /></translation>
-<translation id="6291086328725007688">Staðfestir virkjunarkóða. Þetta gæti tekið nokkrar mínútur.</translation>
 <translation id="6291741848715722067">Staðfestingarkóði</translation>
 <translation id="6291953229176937411">&amp;Sýna í Finder</translation>
 <translation id="6292699686837272722">Flipar minnka í miðlungsbreidd</translation>
@@ -7265,6 +7267,7 @@ Heimildir sem þú hefur þegar veitt vefsvæðum og forritum kunna að gilda á
 <translation id="6815376457351236663">Opna samt</translation>
 <translation id="6815787852028615386">Þessi skrá er villandi og kann að gera óvæntar breytingar á tækinu þínu.</translation>
 <translation id="6816097980753839617">Blálitaskerðing (tritanomaly)</translation>
+<translation id="6816443526270499804">Leitar að tiltækum eSIM-prófílum</translation>
 <translation id="6818198425579322765">Tungumál síðu sem þýða á af</translation>
 <translation id="6818547713623251698">Skoðaðu myndir, margmiðlunarefni, tilkynningar og forrit símans</translation>
 <translation id="6818802132960437751">Innbyggð vírusvörn</translation>
@@ -7965,6 +7968,7 @@ Heimildir sem þú hefur þegar veitt vefsvæðum og forritum kunna að gilda á
 <translation id="7396845648024431313"><ph name="APP_NAME" /> verður opnað þegar kerfið er ræst og heldur áfram að keyra í bakgrunni, jafnvel þegar þú hefur lokað öllum öðrum <ph name="PRODUCT_NAME" /> gluggum.</translation>
 <translation id="7399045143794278225">Sérvalin samstilling</translation>
 <translation id="7399616692258236448">Sjálfkrafa er lokað á staðsetningarbeiðnir fyrir öll vefsvæði nema þau sem þú hefur gefið leyfi</translation>
+<translation id="7399802613464275309">Öryggisathugun</translation>
 <translation id="7400418766976504921">Vefslóð</translation>
 <translation id="7400447915166857470">Viltu skipta aftur yfir í <ph name="OLD_SEARCH_PROVIDER" />?</translation>
 <translation id="7400839060291901923">Settu upp tengingu í <ph name="PHONE_NAME" /></translation>
@@ -8073,6 +8077,7 @@ Heimildir sem þú hefur þegar veitt vefsvæðum og forritum kunna að gilda á
 <translation id="7475742997309661417">Skjálesarinn í ChromeOS, ChromeVox, er aðallega notaður af fólki sem er blint eða með lélega sjón til að lesa texta sem birtur er á skjánum með talgervli eða blindraletri. Haltu báðum hljóðstyrkstökkunum inni í fimm sekúndur til að kveikja á ChromeVox. Þegar kveikt hefur verið á ChromeVox er þér boðið upp á stutta kynningu.</translation>
 <translation id="7476454130948140105">Of lítil hleðsla á rafhlöðu til að uppfæra (<ph name="BATTERY_PERCENT" />%)</translation>
 <translation id="7476989672001283112">Lokaði sjálfkrafa á <ph name="PERMISSION" /> og <ph name="COUNT" /> í viðbót</translation>
+<translation id="7477460499687558352">Veldu eSIM-prófíl til að sækja</translation>
 <translation id="7477599578899108080">Mikil minnisnotkun: <ph name="MEMORY_USAGE" /></translation>
 <translation id="7477748600276493962">Búa til QR-kóða fyrir þessa síðu</translation>
 <translation id="7477793887173910789">Stjórnaðu tónlistinni, myndskeiðunum og fleiru</translation>
@@ -8132,7 +8137,6 @@ Heimildir sem þú hefur þegar veitt vefsvæðum og forritum kunna að gilda á
 <translation id="7522255036471229694">Segðu „Ok Google“</translation>
 <translation id="7523117833414447032">Þegar hástafir eru lesnir</translation>
 <translation id="7523585675576642403">Endurnefna prófíl</translation>
-<translation id="7524849817690367493">Öryggismiðstöð</translation>
 <translation id="7525067979554623046">Búa til</translation>
 <translation id="7526989658317409655">Staðgengill</translation>
 <translation id="7528224636098571080">Ekki opna</translation>
@@ -8148,7 +8152,6 @@ Heimildir sem þú hefur þegar veitt vefsvæðum og forritum kunna að gilda á
 <translation id="7536815228183532290">Skráð(ur) inn sem <ph name="EMAIL" /></translation>
 <translation id="7537451260744431038">Vefsvæði geta ekki notað fótspor til að bjóða þér upp á betri vefnotkun, til dæmis að vera áfram skráð(ur) inn eða muna hvað þú setur í innkaupakörfu</translation>
 <translation id="7538013435257102593">Ekki er algengt að þessi skráargerð sé sótt og hún kann að vera hættuleg</translation>
-<translation id="7538088324298143359">Leita á mynd með <ph name="SEARCH_ENGINE" /></translation>
 <translation id="7540972813190816353">Villa kom upp við að leita að uppfærslum: <ph name="ERROR" /></translation>
 <translation id="7541076351905098232"><ph name="MANAGER" /> hefur fært þetta tæki í fyrri útgáfu. Vistaðu mikilvægar skrár og endurræstu svo. Öllum gögnum í þessu tæki verður eytt.</translation>
 <translation id="7541773865713908457"><ph name="ACTION_NAME" /> með forritinu <ph name="APP_NAME" /></translation>

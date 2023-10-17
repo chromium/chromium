@@ -41,7 +41,6 @@
 <translation id="187227595286001730">Les sites connexes peuvent voir votre activité dans le groupe</translation>
 <translation id="1887786770086287077">L'accès à la localisation est désactivé pour cet appareil. Activez-le dans les <ph name="BEGIN_LINK" />paramètres Android<ph name="END_LINK" />.</translation>
 <translation id="1915307458270490472">Raccrocher</translation>
-<translation id="1919345977826869612">Annonces</translation>
 <translation id="1919950603503897840">Sélectionner des contacts</translation>
 <translation id="1923695749281512248"><ph name="BYTES_DOWNLOADED_WITH_UNITS" />/<ph name="FILE_SIZE_WITH_UNITS" /></translation>
 <translation id="1979673356880165407">Agrandir ou réduire le texte et les images pour tous les sites que vous visitez</translation>
@@ -71,7 +70,6 @@
 <translation id="2289270750774289114">Demander quand un site souhaite rechercher les appareils Bluetooth à proximité (recommandé)</translation>
 <translation id="2315043854645842844">La sélection du certificat client SSL n'est pas prise en charge par le système d'exploitation.</translation>
 <translation id="2321958826496381788">Faites glisser le curseur pour lire le texte aisément. Sa taille doit être similaire à celle-ci lorsque vous appuyez deux fois sur un paragraphe.</translation>
-<translation id="2329473609445770916">Ce site définit des centres d'intérêt que d'autres sites peuvent utiliser pour vous montrer des annonces</translation>
 <translation id="2359808026110333948">Continuer</translation>
 <translation id="2379925928934107488">Si possible, appliquer le thème sombre aux sites lorsque Chrome l'utilise</translation>
 <translation id="2387895666653383613">Mise à l'échelle texte</translation>
@@ -111,7 +109,6 @@
 <translation id="2891975107962658722">Empêcher un site d'enregistrer des données sur votre appareil</translation>
 <translation id="2903493209154104877">Adresses</translation>
 <translation id="2910701580606108292">Demander avant d'autoriser les sites à lire du contenu protégé</translation>
-<translation id="2913331724188855103">Autoriser les sites à enregistrer et à lire les données des témoins (recommandé)</translation>
 <translation id="2932883381142163287">Signaler un abus</translation>
 <translation id="2968755619301702150">Lecteur de certificats</translation>
 <translation id="3008272652534848354">Réinitialiser les autorisations</translation>
@@ -129,7 +126,6 @@
 <translation id="3198916472715691905">Stockage de données : <ph name="STORAGE_AMOUNT" /></translation>
 <translation id="321187648315454507">Pour autoriser <ph name="APP_NAME" /> à vous envoyer des notifications, vous devez aussi activer celles-ci dans les <ph name="BEGIN_LINK" />paramètres d'Android<ph name="END_LINK" />.</translation>
 <translation id="3227137524299004712">Microphone</translation>
-<translation id="3248611290851046188">Ce site définit des centres d'intérêt que d'autres sites peuvent utiliser pour vous montrer des annonces. Ce site récupère également vos centres d'intérêt de Chrome pour vous montrer des annonces plus pertinentes.</translation>
 <translation id="3277252321222022663">Autoriser les sites à accéder aux capteurs (recommandé)</translation>
 <translation id="3285500645985761267">Autoriser les sites connexes à voir votre activité dans le groupe</translation>
 <translation id="3295019059349372795">Chapitre 11 : La merveilleuse cité d'émeraude d'Oz</translation>
@@ -156,7 +152,6 @@
 <translation id="3721953990244350188">Ignorer et afficher la prochaine action proposée</translation>
 <translation id="3744111561329211289">Synchronisation en arrière-plan</translation>
 <translation id="3763247130972274048">Touchez deux fois à gauche ou à droite de la vidéo pour sauter 10 secondes</translation>
-<translation id="3794286421982011626">Un site que vous visitez peut enregistrer des renseignements en fonction de vos interactions pour qu’il fonctionne comme vous vous y attendez; par exemple, il peut vous permettre de rester connecté à un site ou d'enregistrer des articles dans votre panier. Les sites enregistrent souvent ces renseignements sur votre appareil de façon temporaire.</translation>
 <translation id="3797520601150691162">Ne pas appliquer le thème sombre à un site particulier</translation>
 <translation id="3803367742635802571">Les sites que vous visitez peuvent cesser de fonctionner comme prévu</translation>
 <translation id="3804247818991980532"><ph name="TYPE_1" />. <ph name="TYPE_2" />.</translation>
@@ -193,7 +188,6 @@
 <translation id="4338831206024587507">Tous les sites associés à <ph name="DOMAIN" /></translation>
 <translation id="4402755511846832236">Empêcher les sites de savoir quand vous êtes en train d'utiliser cet appareil</translation>
 <translation id="4412992751769744546">Autoriser les témoins tiers</translation>
-<translation id="4428065317363009941">Personnalisation des annonces</translation>
 <translation id="4434045419905280838">Fenêt. context. et redirections</translation>
 <translation id="443552056913301231">Cette action supprimera toutes les données locales, y compris les témoins, et réinitialisera toutes les autorisations pour <ph name="ORIGIN" /></translation>
 <translation id="4468959413250150279">Désactivez le son sur un site précis.</translation>
@@ -247,10 +241,8 @@
 <translation id="5344522958567249764">Gérer la confidentialité des annonces</translation>
 <translation id="5394307150471348411">{DETAIL_COUNT,plural, =1{(+ 1 autre)}one{(+ # autre)}other{(+ # autres)}}</translation>
 <translation id="5403592356182871684">Noms</translation>
-<translation id="5412236728747081950">Ce site récupère vos centres d'intérêt de Chrome pour vous montrer des annonces plus pertinentes</translation>
 <translation id="5438097262470833822">Ce choix réinitialisera les autorisations du site <ph name="WEBSITE" /></translation>
 <translation id="5489227211564503167">Temps écoulé : <ph name="ELAPSED_TIME" /> sur <ph name="TOTAL_TIME" /></translation>
-<translation id="5494752089476963479">Bloquer les annonces sur les sites qui diffusent des annonces intrusives ou trompeuses</translation>
 <translation id="5502860503640766021">Autorisation <ph name="PERMISSION_1" /> autorisée, autorisation <ph name="PERMISSION_2" /> bloquée</translation>
 <translation id="5505264765875738116">Les sites ne peuvent pas vous demander l'autorisation d'envoyer des notifications</translation>
 <translation id="5516455585884385570">Ouvrir les paramètres de notification</translation>
@@ -363,7 +355,6 @@
 <translation id="7554752735887601236">Un site utilise votre microphone</translation>
 <translation id="7561196759112975576">Toujours</translation>
 <translation id="757524316907819857">Empêcher les sites de lire du contenu protégé</translation>
-<translation id="7577900504646297215">Gérer les centres d'intérêt</translation>
 <translation id="7594634374516752650">Connecté à un appareil Bluetooth</translation>
 <translation id="7641339528570811325">Effacer les données de navigation…</translation>
 <translation id="7649070708921625228">Aide</translation>

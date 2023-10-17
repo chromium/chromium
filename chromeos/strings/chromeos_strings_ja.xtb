@@ -336,7 +336,6 @@
 <translation id="3604713164406837697">壁紙の変更</translation>
 <translation id="360565022852130722">安全性の低いプロトコル WEP 802.1x が Wi-Fi で使用されています</translation>
 <translation id="3606583719724308068">HTTPS ウェブサイトのレイテンシが高くなっています</translation>
-<translation id="3607216139080387279">スクリーン セーバーを表示</translation>
 <translation id="361575905210396100">ありがとうございました</translation>
 <translation id="3632579075709132555">プライバシー画面の切り替え</translation>
 <translation id="3651050199673793219">温度の単位を選択してください</translation>
@@ -348,7 +347,6 @@
 <translation id="3740976234706877572"><ph name="AVERAGE_SCORE" /> ★（<ph name="AGGREGATED_COUNT" /> 件のレビュー）</translation>
 <translation id="3748026146096797577">接続されていません</translation>
 <translation id="3749289110408117711">ファイル名</translation>
-<translation id="3766934827878963937">1 時間</translation>
 <translation id="3771294271822695279">動画ファイル</translation>
 <translation id="3784455785234192852">ロック</translation>
 <translation id="380097101658023925">RGB 設定</translation>
@@ -691,7 +689,6 @@
 <translation id="629550705077076970">キーボードを薄暗くする</translation>
 <translation id="6302401976930124515"><ph name="TEST_NAME" /> テストがキャンセルされました</translation>
 <translation id="631063167932043783">アプリについてもっと知る</translation>
-<translation id="6318437367327684789">ずっと</translation>
 <translation id="6319207335391420837"><ph name="DEVICE_NAME" /> のファームウェアをアップデート</translation>
 <translation id="6321407676395378991">スクリーン セーバーをオンにする</translation>
 <translation id="6324916366299863871">ショートカットの編集</translation>
@@ -1067,11 +1064,9 @@
 <translation id="9111102763498581341">ロック解除</translation>
 <translation id="9122602430962285795">再接続するには　[設定] に移動します</translation>
 <translation id="9126720536733509015">複数のページを保存して 1 つの PDF にまとめる</translation>
-<translation id="9133104754938025929">バッテリーを節約するため、スクリーン セーバーは充電中のみ有効になります。</translation>
 <translation id="9133772297793293778">キーボードで、1～4 個の修飾子と別の 1 個のキーを押します。編集モードを終了するには、Alt+Esc キーを押します。</translation>
 <translation id="9137526406337347448">Google サービス</translation>
 <translation id="9138630967333032450">左シフト</translation>
-<translation id="9143347780818904997"><ph name="MINUTES" /> 分間</translation>
 <translation id="9149391708638971077">メモリテストを実行</translation>
 <translation id="9161276708550942948">スペース</translation>
 <translation id="9173638680043580060">残り 1 分未満</translation>

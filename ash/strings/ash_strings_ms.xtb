@@ -191,6 +191,7 @@ Berikut ialah beberapa perkara yang boleh anda cuba untuk bermula.</translation>
 <translation id="1737078180382804488">Menolak penyediaan pemaparan pemberitahuan telefon anda</translation>
 <translation id="174102739345480129">Penanda dimatikan.</translation>
 <translation id="1743570585616704562">Tidak dikenali</translation>
+<translation id="1743927604032653654">Kuncupkan pemberitahuan <ph name="NOTIFICATION_TITLE" /></translation>
 <translation id="1746730358044914197">Kaedah masukan dikonfigurasi oleh pentadbir anda.</translation>
 <translation id="1747336645387973286">tarikh tamat <ph name="DUE_DATE" /></translation>
 <translation id="1747827819627189109">Papan kekunci pada skrin didayakan</translation>
@@ -208,7 +209,6 @@ Berikut ialah beberapa perkara yang boleh anda cuba untuk bermula.</translation>
 <translation id="178347895271755507">Menyediakan pemaparan foto, media dan pemberitahuan terbaharu telefon anda</translation>
 <translation id="1787955149152357925">Mati</translation>
 <translation id="1796561540704213354">Laman web termasuk halaman yang anda lawati dan halaman terbuka</translation>
-<translation id="1797271123677381264">Terlupa kata laluan</translation>
 <translation id="181103072419391116">Kekuatan Isyarat <ph name="SIGNAL_STRENGTH" />, Diurus oleh Pentadbir anda</translation>
 <translation id="1815245884418711390">Togol Tempat liputan. Tempat liputan dimatikan.</translation>
 <translation id="1816896987747843206">Ini membenarkan akses kamera untuk semua apl dan laman web dengan kebenaran kamera</translation>
@@ -532,6 +532,7 @@ Berikut ialah beberapa perkara yang boleh anda cuba untuk bermula.</translation>
 <translation id="3217205077783620295">Kelantangan dihidupkan. Tindakan menogol akan meredamkan audio.</translation>
 <translation id="3226991577105957773">+<ph name="COUNT" /> lagi</translation>
 <translation id="3227137524299004712">Mikrofon</translation>
+<translation id="3233611303007751344">Penjimat Bateri dimatikan</translation>
 <translation id="324366796737464147">Pembatalan hingar</translation>
 <translation id="3249513730522716925">Tetingkap <ph name="WINDOW_TITLE" /> dialihkan daripada Meja <ph name="ACTIVE_DESK" /> ke Meja <ph name="TARGET_DESK" /></translation>
 <translation id="3253743281242075461">Jenis kerja kelas: <ph name="GLANCEABLES_CLASSROOM_LIST_NAME" /></translation>
@@ -554,6 +555,7 @@ Berikut ialah beberapa perkara yang boleh anda cuba untuk bermula.</translation>
 <translation id="3308453408813785101"><ph name="USER_EMAIL_ADDRESS" /> masih dapat log masuk nanti.</translation>
 <translation id="3321628682574733415">Kod ibu bapa salah</translation>
 <translation id="332827762492701193">Pemberitahuan disembunyikan</translation>
+<translation id="3333674550998107387">Kembangkan pemberitahuan <ph name="NOTIFICATION_TITLE" /></translation>
 <translation id="3339826665088060472">Tangkapan skrin, alatan untuk mengambil tangkapan skrin dan rakaman skrin</translation>
 <translation id="3340978935015468852">tetapan</translation>
 <translation id="3341303451326249809">Tangkapan skrin ditangkap</translation>
@@ -571,7 +573,6 @@ Berikut ialah beberapa perkara yang boleh anda cuba untuk bermula.</translation>
 <translation id="3387527074123400161">Chromium OS</translation>
 <translation id="3389599499324569679">Hidupkan Pengimlakan?</translation>
 <translation id="3394432020929931914">, dikembangkan</translation>
-<translation id="3400357268283240774">Tetapan tambahan</translation>
 <translation id="3405101454990027959">Hidupkan akses mikrofon</translation>
 <translation id="3408735331120433841">Anda sedang menghantar skrin anda.</translation>
 <translation id="3409584356742878290">Tunjukkan atau sembunyikan pemeriksa Alatan Pembangun</translation>
@@ -772,6 +773,7 @@ Semua pengguna mesti log keluar untuk meneruskan.</translation>
 <translation id="4146671046252289537">Beralih kepada penghujung perkataan seterusnya</translation>
 <translation id="4146833061457621061">Mainkan muzik</translation>
 <translation id="4150201353443180367">Paparan</translation>
+<translation id="4156293514828496577">Baki bateri <ph name="PERCENTAGE" />% (kira-kira <ph name="TIME_LEFT" />). Sesetengah ciri dihadkan untuk meningkatkan hayat bateri.</translation>
 <translation id="4165275524535002941">Kabel mungkin tidak menyokong paparan</translation>
 <translation id="4177415338862979658">Klik untuk menyemak butiran</translation>
 <translation id="4177913004758410636">{0,plural, =1{Kemas kini peranti dalam masa sehari}other{Kemas kini peranti dalam masa # hari}}</translation>
@@ -902,6 +904,7 @@ Semua pengguna mesti log keluar untuk meneruskan.</translation>
 <translation id="4659419629803378708">ChromeVox didayakan</translation>
 <translation id="4666911709726371538">Lagi apl</translation>
 <translation id="4667099493359681081">Memuat turun <ph name="FILENAME" /></translation>
+<translation id="4672539464599646374">Penjimat Bateri dihidupkan</translation>
 <translation id="468293128311738995">Apl daripada telefon anda</translation>
 <translation id="4690510401873698237">Rak di bahagian bawah</translation>
 <translation id="4696813013609194136">Buka kunci peranti menggunakan kod ibu bapa</translation>
@@ -1062,6 +1065,8 @@ Semua pengguna mesti log keluar untuk meneruskan.</translation>
 <translation id="5297704307811127955">Dimatikan</translation>
 <translation id="5300589172476337783">Paparkan</translation>
 <translation id="5302048478445481009">Bahasa</translation>
+<translation id="5303319262469238330">Baki kuasa bateri <ph name="PERCENTAGE" />%.
+Sesetengah ciri dihadkan untuk meningkatkan hayat bateri.</translation>
 <translation id="5308380583665731573">Sambung</translation>
 <translation id="5313326810920013265">Tetapan Bluetooth</translation>
 <translation id="5314219114274263156">Perakam skrin diambil</translation>
@@ -1303,6 +1308,7 @@ Semua pengguna mesti log keluar untuk meneruskan.</translation>
 <translation id="6231419273573514727">Prestasi peranti persisian mungkin terhad</translation>
 <translation id="6232891689835436217"><ph name="APP_NAME" /> sedang menggunakan kamera dan mikrofon anda pada masa ini</translation>
 <translation id="6237231532760393653">1X</translation>
+<translation id="62380141479352646">Bateri lemah. Penjimat Bateri dihidupkan.</translation>
 <translation id="6247728804802644171">Buka pemberitahuan</translation>
 <translation id="6254629735336163724">Dikunci mendatar</translation>
 <translation id="6259254695169772643">Gunakan stilus anda untuk memilih</translation>
@@ -1417,6 +1423,7 @@ Pemasangan baharu</translation>
 <translation id="6732800389263199929">+<ph name="COUNT" /></translation>
 <translation id="6737983188036277605">Kamera dan mikrofon sedang digunakan</translation>
 <translation id="6739144137573853180">PERGI KE TETAPAN</translation>
+<translation id="6747985245839783873">Kuasa bateri pada tahap <ph name="PERCENTAGE" /> peratus. Penjimat Bateri dihidupkan.</translation>
 <translation id="6751052314767925245">Dikuatkuasakan oleh pentadbir anda</translation>
 <translation id="6751826523481687655">Pengesanan prestasi dihidupkan</translation>
 <translation id="6752912906630585008">Meja <ph name="REMOVED_DESK" /> dialih keluar dan digabungkan dengan Meja <ph name="RECEIVE_DESK" /></translation>
@@ -1516,6 +1523,7 @@ Pemasangan baharu</translation>
 <translation id="7131634465328662194">Anda akan dilog keluar secara automatik.</translation>
 <translation id="7143207342074048698">Menyambung</translation>
 <translation id="7144942256906679589">Status bateri</translation>
+<translation id="7145639536026937076">Kuasa bateri pada tahap <ph name="PERCENTAGE" />% dan sedang dicas. Penjimat Bateri dihidupkan.</translation>
 <translation id="7165278925115064263">Alt+Shift+K</translation>
 <translation id="7167913274352523149"><ph name="HOTSPOT" />,
         <ph name="NETWORK" /></translation>
@@ -1525,6 +1533,7 @@ Pemasangan baharu</translation>
 <translation id="7189412385142492784">Berapa jauhkah Venus</translation>
 <translation id="7198435252016571249">Kamera diautojajar ke penjuru kanan sebelah bawah. Bercanggah dengan permukaan sistem.</translation>
 <translation id="7229029500464092426"><ph name="AVAILABLE_MEMORY" /> memori | Jumlah <ph name="TOTAL_MEMORY" /></translation>
+<translation id="7244725679040769470">Baki kuasa bateri <ph name="PERCENTAGE" />(%). Sambungkan peranti anda kepada sumber kuasa.</translation>
 <translation id="7246071203293827765"><ph name="UPDATE_TEXT" />. Chromebook ini perlu dimulakan semula untuk menerapkan kemas kini. Proses ini boleh mengambil masa sehingga 1 minit.</translation>
 <translation id="7256634071279256947">Mikrofon belakang</translation>
 <translation id="7258828758145722155">Diedit semalam</translation>
@@ -1918,6 +1927,7 @@ Untuk mematikan peranti, tekan dan tahan butang kuasa pada peranti sekali lagi.<
 <translation id="8878886163241303700">Meluaskan skrin</translation>
 <translation id="888982883502837004">Kemaskinian Perisian tegar tersedia untuk peranti anda. Klik untuk menyemak dan mengemas kini.</translation>
 <translation id="8896630965521842259"><ph name="DESK_TEMPLATE_NAME" /> akan dipadamkan secara kekal</translation>
+<translation id="889790758758811533">Baki bateri <ph name="PERCENTAGE" />% (kira-kira <ph name="TIME_LEFT" />). Sambungkan peranti anda kepada sumber kuasa.</translation>
 <translation id="88986195241502842">Halaman bawah</translation>
 <translation id="8905919797434099235">(Tiada tajuk)</translation>
 <translation id="890616557918890486">Tukar sumber</translation>

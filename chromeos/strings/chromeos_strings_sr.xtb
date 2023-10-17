@@ -75,6 +75,7 @@
 <translation id="1499900233129743732"><ph name="MANAGER" /> управља овим корисником и може даљински да управља подешавањима и надгледа активности корисника.</translation>
 <translation id="150962533380566081">Неважећи PUK.</translation>
 <translation id="1510238584712386396">Покретач</translation>
+<translation id="1515129336378114413">почетна страница прегледача</translation>
 <translation id="1526389707933164996">Анимација чувара екрана</translation>
 <translation id="152892567002884378">Појачајте звук</translation>
 <translation id="1555130319947370107">Плава</translation>
@@ -336,7 +337,6 @@
 <translation id="3604713164406837697">Промените позадину</translation>
 <translation id="360565022852130722">WiFi мрежа је обезбеђена слабим протоколом WEP 802.1x</translation>
 <translation id="3606583719724308068">Велико кашњење до HTTPS веб-сајтова</translation>
-<translation id="3607216139080387279">Прикажи чувар екрана</translation>
 <translation id="361575905210396100">Хвала вам на повратним информацијама</translation>
 <translation id="3632579075709132555">Укључите/искључите екран за приватност</translation>
 <translation id="3651050199673793219">Изаберите јединицу температуре</translation>
@@ -348,7 +348,6 @@
 <translation id="3740976234706877572"><ph name="AVERAGE_SCORE" /> ★ (рецензије: <ph name="AGGREGATED_COUNT" />)</translation>
 <translation id="3748026146096797577">Није повезано</translation>
 <translation id="3749289110408117711">Назив датотеке</translation>
-<translation id="3766934827878963937">на 1 сат</translation>
 <translation id="3771294271822695279">Видео датотеке</translation>
 <translation id="3784455785234192852">Закључај</translation>
 <translation id="380097101658023925">RGB контроле</translation>
@@ -691,7 +690,6 @@
 <translation id="629550705077076970">затамњивање тастатуре</translation>
 <translation id="6302401976930124515">Тест <ph name="TEST_NAME" /> је отказан</translation>
 <translation id="631063167932043783">Истражите апликацију</translation>
-<translation id="6318437367327684789">заувек</translation>
 <translation id="6319207335391420837">Ажурирајте фирмвер на уређају <ph name="DEVICE_NAME" /></translation>
 <translation id="6321407676395378991">Укључите чувар екрана</translation>
 <translation id="6324916366299863871">Измени пречицу</translation>
@@ -749,6 +747,7 @@
 <translation id="6659594942844771486">Картица</translation>
 <translation id="6673898378497337661">повећајте осветљеност тастатуре</translation>
 <translation id="6692996468359469499">Пронађите информације у вези са вашим избором</translation>
+<translation id="6694534975463174713">брава</translation>
 <translation id="6704062477274546131">DNS разрешавање</translation>
 <translation id="6723839937902243910">Енергија</translation>
 <translation id="6723847290197874913">Позадинско осветљење тастатуре</translation>
@@ -1067,11 +1066,9 @@
 <translation id="9111102763498581341">Откључај</translation>
 <translation id="9122602430962285795">Да бисте се поново повезали, идите у Подешавања</translation>
 <translation id="9126720536733509015">Сачувајте више страница у један PDF документ</translation>
-<translation id="9133104754938025929">Да би се сачувала батерија, чувар екрана функционише само током пуњења.</translation>
 <translation id="9133772297793293778">Притисните модификаторе 1-4 и још 1 тастер на тастатури. Да бисте изашли из режима за измене, притисните alt + esc.</translation>
 <translation id="9137526406337347448">Google услуге</translation>
 <translation id="9138630967333032450">Леви тастер shift</translation>
-<translation id="9143347780818904997">на <ph name="MINUTES" /> минута</translation>
 <translation id="9149391708638971077">Покрени тест меморије</translation>
 <translation id="9161276708550942948">размак</translation>
 <translation id="9173638680043580060">Преостало је мање од минута</translation>

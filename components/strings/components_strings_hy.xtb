@@ -972,6 +972,7 @@
 <translation id="2977665033722899841"><ph name="ROW_NAME" />, ներկայումս ընտրված է: <ph name="ROW_CONTENT" /></translation>
 <translation id="2978824962390592855">Օպերա</translation>
 <translation id="2979424420072875974">Գրողների ռեսուրսներ</translation>
+<translation id="2980742331521553164">Այս քարտի CVC կոդը կգաղտնագրվի և կպահվի ձեր Google հաշվում՝ ավելի արագ վճարման համար</translation>
 <translation id="2983666748527428214">Բացել ինկոգնիտո ներդիր</translation>
 <translation id="2985306909656435243">Եթե միացված է, Chromium-ն այս սարքում կպահի ձեր քարտի կրկնօրինակը՝ ձևն արագ լրացնելու համար:</translation>
 <translation id="2985398929374701810">Մուտքագրեք վավեր հասցե</translation>
@@ -3408,6 +3409,7 @@
 <translation id="79338296614623784">Մուտքագրեք վավեր հեռախոսահամար</translation>
 <translation id="7934414805353235750"><ph name="URL" /> կայքն ուզում է պաշտպանված բովանդակություն նվագարկել: Ձեր սարքը կնույնականացվի Google-ի կողմից:</translation>
 <translation id="7935318582918952113">DOM Distiller</translation>
+<translation id="7937163678541954811">Այս քարտի CVC կոդը կգաղտնագրվի և կպահվի ձեր սարքում՝ ավելի արագ վճարման համար</translation>
 <translation id="7937554595067888181">Վավեր է մինչև <ph name="EXPIRATION_DATE_ABBR" /></translation>
 <translation id="7938958445268990899">Սերվերի վկայագիրը դեռ վավեր չէ:</translation>
 <translation id="7939713744218886332">Աշխարհի ժողովուրդների խոհանոց</translation>

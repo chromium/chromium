@@ -336,7 +336,6 @@
 <translation id="3604713164406837697">Ndrysho imazhin e sfondit</translation>
 <translation id="360565022852130722">Rrjeti Wi-Fi është i siguruar me protokollin e dobët WEP 802.1x</translation>
 <translation id="3606583719724308068">Vonesë e lartë në uebsajtet HTTPS</translation>
-<translation id="3607216139080387279">Shfaq mbrojtësin e ekranit</translation>
 <translation id="361575905210396100">Faleminderit për komentet e tua</translation>
 <translation id="3632579075709132555">Aktivizimi/çaktivizimi i ekranit të privatësisë</translation>
 <translation id="3651050199673793219">Zgjidh një njësi temperature</translation>
@@ -348,7 +347,6 @@
 <translation id="3740976234706877572"><ph name="AVERAGE_SCORE" /> ★ (<ph name="AGGREGATED_COUNT" /> komente)</translation>
 <translation id="3748026146096797577">Nuk është i lidhur</translation>
 <translation id="3749289110408117711">Emri i skedarit</translation>
-<translation id="3766934827878963937">për 1 orë</translation>
 <translation id="3771294271822695279">Skedarët video</translation>
 <translation id="3784455785234192852">Kyçe</translation>
 <translation id="380097101658023925">kontrollet me rbg</translation>
@@ -691,7 +689,6 @@
 <translation id="629550705077076970">zbehja e tastierës</translation>
 <translation id="6302401976930124515">Testi "<ph name="TEST_NAME" />" është anuluar</translation>
 <translation id="631063167932043783">Aplikacioni "Eksploro"</translation>
-<translation id="6318437367327684789">përgjithmonë</translation>
 <translation id="6319207335391420837">Përditëso firmuerin në <ph name="DEVICE_NAME" /></translation>
 <translation id="6321407676395378991">Aktivizo mbrojtësin e ekranit</translation>
 <translation id="6324916366299863871">Modifiko shkurtoren</translation>
@@ -1067,11 +1064,9 @@
 <translation id="9111102763498581341">Shkyç</translation>
 <translation id="9122602430962285795">Për t'u rilidhur, shko te "Cilësimet"</translation>
 <translation id="9126720536733509015">Ruaj shumë faqe në një skedar PDF</translation>
-<translation id="9133104754938025929">Për të kursyer baterinë, mbrojtësi i ekranit funksionon vetëm gjatë karikimit.</translation>
 <translation id="9133772297793293778">Shtyp modifikuesit 1-4 dhe 1 tast tjetër në tastierën tënde. Për të dalë nga modaliteti i modifikimit, shtyp Alt + Esc.</translation>
 <translation id="9137526406337347448">Shërbimet e Google</translation>
 <translation id="9138630967333032450">Tasti i majtë "Shift"</translation>
-<translation id="9143347780818904997">për <ph name="MINUTES" /> minuta</translation>
 <translation id="9149391708638971077">Ekzekuto testin e memories</translation>
 <translation id="9161276708550942948">hapësirë</translation>
 <translation id="9173638680043580060">Ka mbetur më pak se një minutë</translation>
