@@ -293,6 +293,12 @@ int StartHostMain(int argc, char** argv) {
   network::TransitionalURLLoaderFactoryOwner url_loader_factory_owner(
       url_request_context_getter);
 
+  // TODO(joedow): Modify TransitionalURLLoaderFactoryOwner to allow us to
+  // set `is_trusted` in the URLLoaderFactoryParams blob generated when
+  // GetURLLoaderFactory() is called, otherwise CorsURLLoaderFactory will block
+  // the service call since we pass in trusted_params (for handling certificate
+  // requests) but the UrlLoader isn't 'trusted'.
+
   // Start the host.
   std::unique_ptr<HostStarter> host_starter;
   if (useCorpMachineFlow) {

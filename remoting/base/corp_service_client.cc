@@ -85,7 +85,9 @@ void CorpServiceClient::ExecuteRequest(
   auto request_config =
       std::make_unique<ProtobufHttpRequestConfig>(traffic_annotation);
   request_config->path = path;
+  request_config->api_key = "TODO: REPLACE_ME_WITH_A_SRC_INTERNAL_CONSTANT";
   request_config->authenticated = false;
+  request_config->provide_certificate = true;
   request_config->request_message = std::move(request_message);
   auto request =
       std::make_unique<ProtobufHttpRequest>(std::move(request_config));
