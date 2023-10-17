@@ -4191,7 +4191,7 @@
       supports_incremental_style: true,
     },
     {
-      // TODO: This should be interpolable: true
+      interpolable: true,
       name: "scrollbar-color",
       property_methods: ["ParseSingleValue", "CSSValueFromComputedStyleInternal"],
       inherited: true,

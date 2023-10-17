@@ -47,6 +47,7 @@
 #include "third_party/blink/renderer/core/animation/css_resolution_interpolation_type.h"
 #include "third_party/blink/renderer/core/animation/css_rotate_interpolation_type.h"
 #include "third_party/blink/renderer/core/animation/css_scale_interpolation_type.h"
+#include "third_party/blink/renderer/core/animation/css_scrollbar_color_interpolation_type.h"
 #include "third_party/blink/renderer/core/animation/css_shadow_list_interpolation_type.h"
 #include "third_party/blink/renderer/core/animation/css_size_list_interpolation_type.h"
 #include "third_party/blink/renderer/core/animation/css_text_indent_interpolation_type.h"
@@ -447,6 +448,11 @@ const InterpolationTypes& CSSInterpolationTypesMap::Get(
         DCHECK(RuntimeEnabledFeatures::CSSTopLayerForTransitionsEnabled());
         applicable_types->push_back(
             std::make_unique<CSSOverlayInterpolationType>(used_property));
+        break;
+      case CSSPropertyID::kScrollbarColor:
+        applicable_types->push_back(
+            std::make_unique<CSSScrollbarColorInterpolationType>(
+                used_property));
         break;
       default:
         DCHECK(!css_property.IsInterpolable());
