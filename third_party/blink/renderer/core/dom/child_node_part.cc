@@ -53,7 +53,8 @@ void ChildNodePart::disconnect() {
   Part::disconnect();
 }
 
-PartRootUnion* ChildNodePart::clone(ExceptionState& exception_state) {
+PartRootUnion* ChildNodePart::clone(PartRootCloneOptions* options,
+                                    ExceptionState& exception_state) {
   // Since we're only cloning a part of the tree, not including this
   // ChildNodePart's `root`, we use a temporary DocumentFragment and its
   // PartRoot during the clone.
@@ -68,6 +69,7 @@ PartRootUnion* ChildNodePart::clone(ExceptionState& exception_state) {
   auto& document = GetDocument();
   auto* fragment = To<DocumentFragment>(DocumentFragment::Create(document));
   NodeCloningData data{CloneOption::kPreserveDOMParts};
+  data.SetPartRootCloneOptions(options);
   auto& fragment_part_root = fragment->getPartRoot();
   data.PushPartRoot(fragment_part_root);
   ContainerNode* new_parent = To<ContainerNode>(

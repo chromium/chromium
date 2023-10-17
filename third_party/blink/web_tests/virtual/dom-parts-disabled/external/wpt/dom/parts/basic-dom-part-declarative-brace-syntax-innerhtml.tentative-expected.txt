@@ -8,5 +8,6 @@ FAIL Declarative DOM Parts innerHTML <template><h1 parseparts>content... (expect
 FAIL Declarative DOM Parts innerHTML <template parseparts="" class="expect_success"><h1>content... (expect parts) contextEl.content.getPartRoot is not a function
 FAIL Declarative DOM Parts innerHTML <template parseparts="" class="expect_success"><h1 parseparts>content... (expect parts) contextEl.content.getPartRoot is not a function
 FAIL Basic NodePart parsing tmpl.content.getPartRoot is not a function
+FAIL Basic AttributePart cloning with values tmpl.content.getPartRoot is not a function
 Harness: the test ran to completion.
 
