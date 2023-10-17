@@ -200,6 +200,10 @@ static_library("video_test_environment") {
   if (use_ozone) {
     public_deps += [ "//ui/ozone" ]
   }
+
+  if (is_chromeos) {
+    deps += [ "//ui/gfx/linux:gbm" ]
+  }
 }
 
 static_library("video_player_test_environment") {

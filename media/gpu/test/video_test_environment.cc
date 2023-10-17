@@ -20,6 +20,10 @@
 #include "ui/ozone/public/ozone_platform.h"
 #endif
 
+#if BUILDFLAG(IS_CHROMEOS)
+#include "ui/gfx/linux/gbm_util.h"  // nogncheck
+#endif
+
 namespace media {
 namespace test {
 
@@ -28,6 +32,16 @@ VideoTestEnvironment::VideoTestEnvironment() : VideoTestEnvironment({}, {}) {}
 VideoTestEnvironment::VideoTestEnvironment(
     const std::vector<base::test::FeatureRef>& enabled_features,
     const std::vector<base::test::FeatureRef>& disabled_features) {
+#if BUILDFLAG(IS_CHROMEOS)
+  // At this point, the base::FeatureList has been initialized and the process
+  // should still be single threaded. Additionally, minigbm shouldn't have
+  // been used yet by this process. Therefore, it's a good time to ensure the
+  // Intel media compression environment flag for minigbm is correctly set
+  // (it's possible this environment variable wasn't inherited from the
+  // browser process).
+  ui::EnsureIntelMediaCompressionEnvVarIsSet();
+#endif  // BUILDFLAG(IS_CHROMEOS)
+
   // Using shared memory requires mojo to be initialized (crbug.com/849207).
   mojo::core::Init();
 
