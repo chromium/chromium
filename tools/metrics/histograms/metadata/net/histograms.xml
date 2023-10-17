@@ -1317,7 +1317,7 @@ chromium-metrics-reviews@google.com.
 </histogram>
 
 <histogram name="Net.DNS.HTTPSSVC.RecordHttps.{secure}.ExpectNoerror.DnsRcode"
-    enum="HttpssvcDnsRcode" expires_after="2023-10-01">
+    enum="HttpssvcDnsRcode" expires_after="2024-06-01">
   <owner>horo@chromium.org</owner>
   <owner>davidben@chromium.org</owner>
   <owner>src/net/OWNERS</owner>
@@ -1331,7 +1331,7 @@ chromium-metrics-reviews@google.com.
 </histogram>
 
 <histogram name="Net.DNS.HTTPSSVC.RecordHttps.{secure}.ExpectNoerror.Parsable"
-    enum="BooleanValid" expires_after="2023-10-01">
+    enum="BooleanValid" expires_after="2024-06-01">
   <owner>horo@chromium.org</owner>
   <owner>davidben@chromium.org</owner>
   <owner>src/net/OWNERS</owner>
@@ -1345,7 +1345,7 @@ chromium-metrics-reviews@google.com.
 
 <histogram
     name="Net.DNS.HTTPSSVC.RecordHttps.{secure}.ExpectNoerror.RecordWithError"
-    enum="Boolean" expires_after="2023-10-01">
+    enum="Boolean" expires_after="2024-06-01">
   <owner>horo@chromium.org</owner>
   <owner>davidben@chromium.org</owner>
   <owner>src/net/OWNERS</owner>
@@ -1359,7 +1359,7 @@ chromium-metrics-reviews@google.com.
 
 <histogram
     name="Net.DNS.HTTPSSVC.RecordHttps.{secure}.ExpectNoerror.ResolveTimeAddressRecord"
-    units="ms" expires_after="2023-10-01">
+    units="ms" expires_after="2024-06-01">
   <owner>horo@chromium.org</owner>
   <owner>davidben@chromium.org</owner>
   <owner>src/net/OWNERS</owner>
@@ -1372,7 +1372,7 @@ chromium-metrics-reviews@google.com.
 
 <histogram
     name="Net.DNS.HTTPSSVC.RecordHttps.{secure}.ExpectNoerror.ResolveTimeExperimental"
-    units="ms" expires_after="2023-10-01">
+    units="ms" expires_after="2024-06-01">
   <owner>horo@chromium.org</owner>
   <owner>davidben@chromium.org</owner>
   <owner>src/net/OWNERS</owner>
@@ -1385,7 +1385,7 @@ chromium-metrics-reviews@google.com.
 
 <histogram
     name="Net.DNS.HTTPSSVC.RecordHttps.{secure}.ExpectNoerror.ResolveTimeRatio"
-    units="scaled ratio (% / 10)" expires_after="2023-10-01">
+    units="scaled ratio (% / 10)" expires_after="2024-06-01">
   <owner>horo@chromium.org</owner>
   <owner>davidben@chromium.org</owner>
   <owner>src/net/OWNERS</owner>
