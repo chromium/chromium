@@ -4,8 +4,6 @@
 
 package org.chromium.chrome.browser.bookmarks;
 
-import android.graphics.drawable.Drawable;
-import android.util.Pair;
 import android.view.View;
 
 import org.chromium.ui.modelutil.PropertyKey;
@@ -25,9 +23,14 @@ class ImprovedBookmarkFolderViewBinder {
             folderView.setStartIconDrawable(
                     model.get(ImprovedBookmarkFolderViewProperties.START_ICON_DRAWABLE));
         } else if (key == ImprovedBookmarkFolderViewProperties.START_IMAGE_FOLDER_DRAWABLES) {
-            Pair<Drawable, Drawable> drawables =
-                    model.get(ImprovedBookmarkFolderViewProperties.START_IMAGE_FOLDER_DRAWABLES);
-            folderView.setStartImageDrawables(drawables.first, drawables.second);
+            folderView.setStartImageDrawables(null, null);
+            model.get(ImprovedBookmarkFolderViewProperties.START_IMAGE_FOLDER_DRAWABLES)
+                    .onAvailable(
+                            drawables -> {
+                                folderView.setStartImageDrawables(
+                                        drawables.first, drawables.second);
+                            });
+            model.get(ImprovedBookmarkFolderViewProperties.START_IMAGE_FOLDER_DRAWABLES).get();
         } else if (key == ImprovedBookmarkFolderViewProperties.FOLDER_CHILD_COUNT) {
             folderView.setChildCount(
                     model.get(ImprovedBookmarkFolderViewProperties.FOLDER_CHILD_COUNT));

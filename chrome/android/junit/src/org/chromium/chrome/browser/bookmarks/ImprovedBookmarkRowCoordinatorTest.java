@@ -98,9 +98,9 @@ public class ImprovedBookmarkRowCoordinatorTest {
     private ShoppingService mShoppingService;
     @Mock
     private CurrencyFormatter.Natives mCurrencyFormatterJniMock;
+    @Mock private ImprovedBookmarkRow mImprovedBookmarkRow;
 
     private Activity mActivity;
-    private ImprovedBookmarkRow mImprovedBookmarkRow;
     private PropertyModel mModel;
     private ImprovedBookmarkRowCoordinator mCoordinator;
 
@@ -172,7 +172,7 @@ public class ImprovedBookmarkRowCoordinatorTest {
     }
 
     @Test
-    public void testBookmark_visal() {
+    public void testBookmark_visual() {
         doReturn(BookmarkRowDisplayPref.VISUAL).when(mBookmarkUiPrefs).getBookmarkRowDisplayPref();
         PropertyModel model = mCoordinator.createBasePropertyModel(mBookmarkId);
 
@@ -180,24 +180,9 @@ public class ImprovedBookmarkRowCoordinatorTest {
         assertTrue(model.get(ImprovedBookmarkRowProperties.DESCRIPTION_VISIBLE));
         assertEquals(EXAMPLE_URL_FORMATTED, model.get(ImprovedBookmarkRowProperties.DESCRIPTION));
         assertNull(model.get(ImprovedBookmarkRowProperties.FOLDER_COORDINATOR));
-        assertEquals(mDrawable, model.get(ImprovedBookmarkRowProperties.START_ICON_DRAWABLE));
         assertNull(model.get(ImprovedBookmarkRowProperties.CONTENT_DESCRIPTION));
-    }
-
-    @Test
-    public void testBookmark_visal_nullOutImageWhenBound() {
-        doCallback(1, (Callback<Pair<Drawable, Drawable>> callback) -> {})
-                .when(mBookmarkImageFetcher)
-                .fetchImageForBookmarkWithFaviconFallback(any(), any());
-
-        doReturn(BookmarkRowDisplayPref.VISUAL).when(mBookmarkUiPrefs).getBookmarkRowDisplayPref();
-        PropertyModel model = mCoordinator.createBasePropertyModel(mBookmarkId);
-
-        assertEquals("Bookmark", model.get(ImprovedBookmarkRowProperties.TITLE));
-        assertTrue(model.get(ImprovedBookmarkRowProperties.DESCRIPTION_VISIBLE));
-        assertEquals(EXAMPLE_URL_FORMATTED, model.get(ImprovedBookmarkRowProperties.DESCRIPTION));
-        assertNull(model.get(ImprovedBookmarkRowProperties.FOLDER_COORDINATOR));
-        assertNull(model.get(ImprovedBookmarkRowProperties.START_ICON_DRAWABLE));
+        assertNotNull(model.get(ImprovedBookmarkRowProperties.START_ICON_DRAWABLE));
+        assertEquals(mDrawable, model.get(ImprovedBookmarkRowProperties.START_ICON_DRAWABLE).get());
     }
 
     @Test
@@ -209,22 +194,6 @@ public class ImprovedBookmarkRowCoordinatorTest {
         assertTrue(model.get(ImprovedBookmarkRowProperties.DESCRIPTION_VISIBLE));
         assertEquals(EXAMPLE_URL_FORMATTED, model.get(ImprovedBookmarkRowProperties.DESCRIPTION));
         assertNull(model.get(ImprovedBookmarkRowProperties.FOLDER_COORDINATOR));
-    }
-
-    @Test
-    public void testBookmark_compact_nullOutImageWhenBoun() {
-        doCallback(1, (Callback<Pair<Drawable, Drawable>> callback) -> {})
-                .when(mBookmarkImageFetcher)
-                .fetchFaviconForBookmark(any(), any());
-
-        doReturn(BookmarkRowDisplayPref.COMPACT).when(mBookmarkUiPrefs).getBookmarkRowDisplayPref();
-        PropertyModel model = mCoordinator.createBasePropertyModel(mBookmarkId);
-
-        assertEquals("Bookmark", model.get(ImprovedBookmarkRowProperties.TITLE));
-        assertTrue(model.get(ImprovedBookmarkRowProperties.DESCRIPTION_VISIBLE));
-        assertEquals(EXAMPLE_URL_FORMATTED, model.get(ImprovedBookmarkRowProperties.DESCRIPTION));
-        assertNull(model.get(ImprovedBookmarkRowProperties.FOLDER_COORDINATOR));
-        assertNull(model.get(ImprovedBookmarkRowProperties.START_ICON_DRAWABLE));
     }
 
     @Test

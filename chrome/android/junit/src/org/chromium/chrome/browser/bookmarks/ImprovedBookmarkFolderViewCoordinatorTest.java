@@ -103,8 +103,12 @@ public class ImprovedBookmarkFolderViewCoordinatorTest {
         assertNotNull(mModel.get(ImprovedBookmarkFolderViewProperties.START_ICON_DRAWABLE));
         assertEquals(FOLDER_CHILD_COUNT,
                 mModel.get(ImprovedBookmarkFolderViewProperties.FOLDER_CHILD_COUNT));
-        assertEquals(new Pair<>(mDrawable, mDrawable),
+        assertNotNull(
                 mModel.get(ImprovedBookmarkFolderViewProperties.START_IMAGE_FOLDER_DRAWABLES));
+        assertEquals(
+                new Pair<>(mDrawable, mDrawable),
+                mModel.get(ImprovedBookmarkFolderViewProperties.START_IMAGE_FOLDER_DRAWABLES)
+                        .get());
     }
 
     @Test
@@ -116,8 +120,12 @@ public class ImprovedBookmarkFolderViewCoordinatorTest {
         assertNotNull(mModel.get(ImprovedBookmarkFolderViewProperties.START_ICON_DRAWABLE));
         assertEquals(UNREAD_CHILD_COUNT,
                 mModel.get(ImprovedBookmarkFolderViewProperties.FOLDER_CHILD_COUNT));
-        assertEquals(new Pair<>(mDrawable, mDrawable),
+        assertNotNull(
                 mModel.get(ImprovedBookmarkFolderViewProperties.START_IMAGE_FOLDER_DRAWABLES));
+        assertEquals(
+                new Pair<>(mDrawable, mDrawable),
+                mModel.get(ImprovedBookmarkFolderViewProperties.START_IMAGE_FOLDER_DRAWABLES)
+                        .get());
     }
 
     @Test
@@ -125,10 +133,14 @@ public class ImprovedBookmarkFolderViewCoordinatorTest {
         doReturn(mFolderId).when(mBookmarkModel).getDesktopFolderId();
         createCoordinator();
         mCoordinator.setBookmarkItem(mFolderItem);
-
         mCoordinator.setView(mView);
-        assertEquals(new Pair<>(null, null),
+
+        assertNotNull(
                 mModel.get(ImprovedBookmarkFolderViewProperties.START_IMAGE_FOLDER_DRAWABLES));
+        assertEquals(
+                new Pair<>(null, null),
+                mModel.get(ImprovedBookmarkFolderViewProperties.START_IMAGE_FOLDER_DRAWABLES)
+                        .get());
     }
 
     @Test

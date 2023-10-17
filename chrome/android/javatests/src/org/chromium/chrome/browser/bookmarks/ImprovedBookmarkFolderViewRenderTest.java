@@ -10,6 +10,7 @@ import android.content.res.ColorStateList;
 import android.graphics.Bitmap;
 import android.graphics.Color;
 import android.graphics.drawable.BitmapDrawable;
+import android.graphics.drawable.Drawable;
 import android.util.Pair;
 import android.view.LayoutInflater;
 import android.view.ViewGroup;
@@ -28,6 +29,7 @@ import org.mockito.Mock;
 import org.mockito.junit.MockitoJUnit;
 import org.mockito.junit.MockitoRule;
 
+import org.chromium.base.supplier.LazyOneshotSupplierImpl;
 import org.chromium.base.test.BaseActivityTestRule;
 import org.chromium.base.test.params.ParameterAnnotations;
 import org.chromium.base.test.params.ParameterAnnotations.UseRunnerDelegate;
@@ -151,9 +153,16 @@ public class ImprovedBookmarkFolderViewRenderTest {
     public void testNoImage() throws IOException {
         TestThreadUtils.runOnUiThreadBlocking(
                 () -> {
+                    LazyOneshotSupplierImpl<Pair<Drawable, Drawable>> imageSupplier =
+                            new LazyOneshotSupplierImpl<>() {
+                                @Override
+                                public void doSet() {
+                                    set(new Pair<Drawable, Drawable>(null, null));
+                                }
+                            };
                     mModel.set(
                             ImprovedBookmarkFolderViewProperties.START_IMAGE_FOLDER_DRAWABLES,
-                            new Pair<>(null, null));
+                            imageSupplier);
                     mModel.set(
                             ImprovedBookmarkFolderViewProperties.START_ICON_DRAWABLE,
                             BookmarkUtils.getFolderIcon(
@@ -183,9 +192,15 @@ public class ImprovedBookmarkFolderViewRenderTest {
                 () -> {
                     BookmarkId bookmarksBarId = new BookmarkId(1, BookmarkType.NORMAL);
                     doReturn(bookmarksBarId).when(mBookmarkModel).getDesktopFolderId();
+
                     mModel.set(
                             ImprovedBookmarkFolderViewProperties.START_IMAGE_FOLDER_DRAWABLES,
-                            new Pair<>(null, null));
+                            new LazyOneshotSupplierImpl<>() {
+                                @Override
+                                public void doSet() {
+                                    set(new Pair<Drawable, Drawable>(null, null));
+                                }
+                            });
                     mModel.set(
                             ImprovedBookmarkFolderViewProperties.START_ICON_DRAWABLE,
                             BookmarkUtils.getFolderIcon(
@@ -214,7 +229,12 @@ public class ImprovedBookmarkFolderViewRenderTest {
                 () -> {
                     mModel.set(
                             ImprovedBookmarkFolderViewProperties.START_IMAGE_FOLDER_DRAWABLES,
-                            new Pair<>(null, null));
+                            new LazyOneshotSupplierImpl<>() {
+                                @Override
+                                public void doSet() {
+                                    set(new Pair<Drawable, Drawable>(null, null));
+                                }
+                            });
                     mModel.set(
                             ImprovedBookmarkFolderViewProperties.START_ICON_DRAWABLE,
                             BookmarkUtils.getFolderIcon(
@@ -241,9 +261,16 @@ public class ImprovedBookmarkFolderViewRenderTest {
     public void testOneImage() throws IOException {
         TestThreadUtils.runOnUiThreadBlocking(
                 () -> {
+                    LazyOneshotSupplierImpl<Pair<Drawable, Drawable>> imageSupplier =
+                            new LazyOneshotSupplierImpl<>() {
+                                @Override
+                                public void doSet() {
+                                    set(new Pair<Drawable, Drawable>(mPrimaryDrawable, null));
+                                }
+                            };
                     mModel.set(
                             ImprovedBookmarkFolderViewProperties.START_IMAGE_FOLDER_DRAWABLES,
-                            new Pair<>(mPrimaryDrawable, null));
+                            imageSupplier);
                 });
         mRenderTestRule.render(mContentView, "one_image");
     }
@@ -254,9 +281,18 @@ public class ImprovedBookmarkFolderViewRenderTest {
     public void testTwoImages() throws IOException {
         TestThreadUtils.runOnUiThreadBlocking(
                 () -> {
+                    LazyOneshotSupplierImpl<Pair<Drawable, Drawable>> imageSupplier =
+                            new LazyOneshotSupplierImpl<>() {
+                                @Override
+                                public void doSet() {
+                                    set(
+                                            new Pair<Drawable, Drawable>(
+                                                    mPrimaryDrawable, mSecondaryDrawable));
+                                }
+                            };
                     mModel.set(
                             ImprovedBookmarkFolderViewProperties.START_IMAGE_FOLDER_DRAWABLES,
-                            new Pair<>(mPrimaryDrawable, mSecondaryDrawable));
+                            imageSupplier);
                 });
         mRenderTestRule.render(mContentView, "two_images");
     }
@@ -267,10 +303,19 @@ public class ImprovedBookmarkFolderViewRenderTest {
     public void testTwoImages_99Children() throws IOException {
         TestThreadUtils.runOnUiThreadBlocking(
                 () -> {
+                    LazyOneshotSupplierImpl<Pair<Drawable, Drawable>> imageSupplier =
+                            new LazyOneshotSupplierImpl<>() {
+                                @Override
+                                public void doSet() {
+                                    set(
+                                            new Pair<Drawable, Drawable>(
+                                                    mPrimaryDrawable, mSecondaryDrawable));
+                                }
+                            };
                     mModel.set(ImprovedBookmarkFolderViewProperties.FOLDER_CHILD_COUNT, 99);
                     mModel.set(
                             ImprovedBookmarkFolderViewProperties.START_IMAGE_FOLDER_DRAWABLES,
-                            new Pair<>(mPrimaryDrawable, mSecondaryDrawable));
+                            imageSupplier);
                 });
         mRenderTestRule.render(mContentView, "two_images_99_children");
     }
@@ -281,10 +326,19 @@ public class ImprovedBookmarkFolderViewRenderTest {
     public void testTwoImages_999Children() throws IOException {
         TestThreadUtils.runOnUiThreadBlocking(
                 () -> {
+                    LazyOneshotSupplierImpl<Pair<Drawable, Drawable>> imageSupplier =
+                            new LazyOneshotSupplierImpl<>() {
+                                @Override
+                                public void doSet() {
+                                    set(
+                                            new Pair<Drawable, Drawable>(
+                                                    mPrimaryDrawable, mSecondaryDrawable));
+                                }
+                            };
                     mModel.set(ImprovedBookmarkFolderViewProperties.FOLDER_CHILD_COUNT, 999);
                     mModel.set(
                             ImprovedBookmarkFolderViewProperties.START_IMAGE_FOLDER_DRAWABLES,
-                            new Pair<>(mPrimaryDrawable, mSecondaryDrawable));
+                            imageSupplier);
                 });
         mRenderTestRule.render(mContentView, "two_images_999_children");
     }

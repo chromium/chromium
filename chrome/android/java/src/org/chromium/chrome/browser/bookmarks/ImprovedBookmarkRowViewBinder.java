@@ -32,7 +32,10 @@ public class ImprovedBookmarkRowViewBinder {
         } else if (key == ImprovedBookmarkRowProperties.START_ICON_TINT) {
             row.setStartIconTint(model.get(ImprovedBookmarkRowProperties.START_ICON_TINT));
         } else if (key == ImprovedBookmarkRowProperties.START_ICON_DRAWABLE) {
-            row.setStartIconDrawable(model.get(ImprovedBookmarkRowProperties.START_ICON_DRAWABLE));
+            row.setStartIconDrawable(null);
+            model.get(ImprovedBookmarkRowProperties.START_ICON_DRAWABLE)
+                    .onAvailable(row::setStartIconDrawable);
+            model.get(ImprovedBookmarkRowProperties.START_ICON_DRAWABLE).get();
         } else if (key == ImprovedBookmarkRowProperties.ACCESSORY_VIEW) {
             row.setAccessoryView(model.get(ImprovedBookmarkRowProperties.ACCESSORY_VIEW));
         } else if (key == ImprovedBookmarkRowProperties.LIST_MENU_BUTTON_DELEGATE) {

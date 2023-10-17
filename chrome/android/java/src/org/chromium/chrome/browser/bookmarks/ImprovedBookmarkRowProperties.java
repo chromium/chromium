@@ -10,6 +10,7 @@ import android.view.View;
 
 import androidx.annotation.IntDef;
 
+import org.chromium.base.supplier.LazyOneshotSupplier;
 import org.chromium.components.browser_ui.widget.listmenu.ListMenuButtonDelegate;
 import org.chromium.ui.modelutil.PropertyKey;
 import org.chromium.ui.modelutil.PropertyModel;
@@ -46,8 +47,8 @@ public class ImprovedBookmarkRowProperties {
     // Sets the tint color for the start image.
     public static final WritableObjectPropertyKey<ColorStateList> START_ICON_TINT =
             new WritableObjectPropertyKey<>();
-    public static final WritableObjectPropertyKey<Drawable> START_ICON_DRAWABLE =
-            new WritableObjectPropertyKey<>();
+    public static final WritableObjectPropertyKey<LazyOneshotSupplier<Drawable>>
+            START_ICON_DRAWABLE = new WritableObjectPropertyKey<>();
     public static final WritableObjectPropertyKey<View> ACCESSORY_VIEW =
             new WritableObjectPropertyKey<>();
     public static final WritableObjectPropertyKey<ListMenuButtonDelegate>

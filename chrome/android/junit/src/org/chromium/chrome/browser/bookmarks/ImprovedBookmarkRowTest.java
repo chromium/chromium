@@ -7,11 +7,13 @@ package org.chromium.chrome.browser.bookmarks;
 import static org.mockito.Mockito.doAnswer;
 import static org.mockito.Mockito.doReturn;
 import static org.mockito.Mockito.never;
+import static org.mockito.Mockito.times;
 import static org.mockito.Mockito.verify;
 
 import android.app.Activity;
 import android.graphics.Bitmap;
 import android.graphics.drawable.BitmapDrawable;
+import android.graphics.drawable.Drawable;
 import android.view.View;
 import android.view.ViewGroup;
 import android.view.ViewPropertyAnimator;
@@ -29,7 +31,9 @@ import org.mockito.Mock;
 import org.mockito.junit.MockitoJUnit;
 import org.mockito.junit.MockitoRule;
 import org.robolectric.annotation.Config;
+import org.robolectric.shadows.ShadowLooper;
 
+import org.chromium.base.supplier.LazyOneshotSupplierImpl;
 import org.chromium.base.test.BaseRobolectricTestRunner;
 import org.chromium.base.test.util.Batch;
 import org.chromium.chrome.R;
@@ -73,12 +77,28 @@ public class ImprovedBookmarkRowTest {
     ImprovedBookmarkRow mImprovedBookmarkRow;
     PropertyModel mModel;
     BitmapDrawable mDrawable;
+    LazyOneshotSupplierImpl<Drawable> mDrawableSupplier;
+    LazyOneshotSupplierImpl<Drawable> mNullDrawableSupplier;
 
     @Before
     public void setUp() {
         mActivityScenarioRule.getScenario().onActivity((activity) -> mActivity = activity);
 
         doReturn(mStartImageViewAnimator).when(mStartImageView).animate();
+        mDrawableSupplier =
+                new LazyOneshotSupplierImpl<>() {
+                    @Override
+                    public void doSet() {
+                        set(mDrawable);
+                    }
+                };
+        mNullDrawableSupplier =
+                new LazyOneshotSupplierImpl<>() {
+                    @Override
+                    public void doSet() {
+                        set(null);
+                    }
+                };
 
         mDrawable = new BitmapDrawable(
                 mActivity.getResources(), Bitmap.createBitmap(100, 100, Bitmap.Config.ARGB_8888));
@@ -229,8 +249,11 @@ public class ImprovedBookmarkRowTest {
         mImprovedBookmarkRow.setStartImageViewForTesting(mStartImageView);
 
         mModel.set(ImprovedBookmarkRowProperties.END_IMAGE_VISIBILITY, ImageVisibility.DRAWABLE);
-        mModel.set(ImprovedBookmarkRowProperties.START_ICON_DRAWABLE, mDrawable);
+        mModel.set(ImprovedBookmarkRowProperties.START_ICON_DRAWABLE, mDrawableSupplier);
 
+        ShadowLooper.runUiThreadTasks();
+
+        verify(mStartImageView).setImageDrawable(null);
         verify(mStartImageView).setImageDrawable(mDrawable);
         verify(mStartImageView).setAlpha(0f);
         verify(mStartImageView).animate();
@@ -241,13 +264,14 @@ public class ImprovedBookmarkRowTest {
 
     @Test
     public void testSetStartImageDrawable_nullDrawableDoesNotAnimate() {
-        mModel.set(ImprovedBookmarkRowProperties.START_ICON_DRAWABLE, mDrawable);
         mImprovedBookmarkRow.setStartImageViewForTesting(mStartImageView);
 
         mModel.set(ImprovedBookmarkRowProperties.END_IMAGE_VISIBILITY, ImageVisibility.DRAWABLE);
-        mModel.set(ImprovedBookmarkRowProperties.START_ICON_DRAWABLE, null);
+        mModel.set(ImprovedBookmarkRowProperties.START_ICON_DRAWABLE, mNullDrawableSupplier);
 
-        verify(mStartImageView).setImageDrawable(null);
+        ShadowLooper.runUiThreadTasks();
+
+        verify(mStartImageView, times(2)).setImageDrawable(null);
         verify(mStartImageView, never()).setAlpha(0f);
         verify(mStartImageView, never()).animate();
         verify(mStartImageViewAnimator, never()).alpha(1f);

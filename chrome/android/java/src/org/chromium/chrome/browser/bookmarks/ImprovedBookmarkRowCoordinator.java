@@ -5,7 +5,9 @@
 package org.chromium.chrome.browser.bookmarks;
 
 import android.content.Context;
+import android.graphics.drawable.Drawable;
 
+import org.chromium.base.supplier.LazyOneshotSupplierImpl;
 import org.chromium.chrome.R;
 import org.chromium.chrome.browser.bookmarks.BookmarkUiPrefs.BookmarkRowDisplayPref;
 import org.chromium.chrome.browser.bookmarks.ImprovedBookmarkRowProperties.ImageVisibility;
@@ -118,23 +120,28 @@ public class ImprovedBookmarkRowCoordinator {
                     BookmarkUtils.getIconBackground(mContext, mBookmarkModel, item));
             propertyModel.set(ImprovedBookmarkRowProperties.START_ICON_TINT,
                     BookmarkUtils.getIconTint(mContext, mBookmarkModel, item));
-            propertyModel.set(ImprovedBookmarkRowProperties.START_ICON_DRAWABLE,
-                    BookmarkUtils.getFolderIcon(
-                            mContext, item.getId(), mBookmarkModel, displayPref));
         } else {
             propertyModel.set(ImprovedBookmarkRowProperties.START_AREA_BACKGROUND_COLOR,
                     ChromeColors.getSurfaceColor(mContext, R.dimen.default_elevation_1));
             propertyModel.set(ImprovedBookmarkRowProperties.START_ICON_TINT, null);
-            propertyModel.set(ImprovedBookmarkRowProperties.START_ICON_DRAWABLE, null);
-            if (useImages) {
-                mBookmarkImageFetcher.fetchImageForBookmarkWithFaviconFallback(item, image -> {
-                    propertyModel.set(ImprovedBookmarkRowProperties.START_ICON_DRAWABLE, image);
-                });
-            } else {
-                mBookmarkImageFetcher.fetchFaviconForBookmark(item, image -> {
-                    propertyModel.set(ImprovedBookmarkRowProperties.START_ICON_DRAWABLE, image);
-                });
-            }
         }
+
+        LazyOneshotSupplierImpl<Drawable> drawableSupplier =
+                new LazyOneshotSupplierImpl<>() {
+                    @Override
+                    public void doSet() {
+                        if (item.isFolder()) {
+                            set(
+                                    BookmarkUtils.getFolderIcon(
+                                            mContext, item.getId(), mBookmarkModel, displayPref));
+                        } else if (useImages) {
+                            mBookmarkImageFetcher.fetchImageForBookmarkWithFaviconFallback(
+                                    item, this::set);
+                        } else {
+                            mBookmarkImageFetcher.fetchFaviconForBookmark(item, this::set);
+                        }
+                    }
+                };
+        propertyModel.set(ImprovedBookmarkRowProperties.START_ICON_DRAWABLE, drawableSupplier);
     }
 }

@@ -5,9 +5,11 @@
 package org.chromium.chrome.browser.bookmarks;
 
 import android.content.Context;
+import android.graphics.drawable.Drawable;
 import android.util.Pair;
 import android.view.View;
 
+import org.chromium.base.supplier.LazyOneshotSupplierImpl;
 import org.chromium.chrome.browser.bookmarks.BookmarkUiPrefs.BookmarkRowDisplayPref;
 import org.chromium.components.bookmarks.BookmarkId;
 import org.chromium.components.bookmarks.BookmarkItem;
@@ -52,14 +54,21 @@ public class ImprovedBookmarkFolderViewCoordinator {
                         mContext, bookmarkId, mBookmarkModel, BookmarkRowDisplayPref.VISUAL));
         mModel.set(ImprovedBookmarkFolderViewProperties.FOLDER_CHILD_COUNT,
                 BookmarkUtils.getChildCountForDisplay(bookmarkId, mBookmarkModel));
-        mModel.set(ImprovedBookmarkFolderViewProperties.START_IMAGE_FOLDER_DRAWABLES,
-                new Pair<>(null, null));
-        if (BookmarkUtils.shouldShowImagesForFolder(mBookmarkModel, bookmarkId)) {
-            mBookmarkImageFetcher.fetchFirstTwoImagesForFolder(mBookmarkItem, (imagePair) -> {
-                mModel.set(ImprovedBookmarkFolderViewProperties.START_IMAGE_FOLDER_DRAWABLES,
-                        imagePair);
-            });
-        }
+        LazyOneshotSupplierImpl<Pair<Drawable, Drawable>> drawablesSupplier =
+                new LazyOneshotSupplierImpl<>() {
+                    @Override
+                    public void doSet() {
+                        if (BookmarkUtils.shouldShowImagesForFolder(mBookmarkModel, bookmarkId)) {
+                            mBookmarkImageFetcher.fetchFirstTwoImagesForFolder(
+                                    mBookmarkItem, this::set);
+                        } else {
+                            set(new Pair<>(null, null));
+                        }
+                    }
+                };
+        mModel.set(
+                ImprovedBookmarkFolderViewProperties.START_IMAGE_FOLDER_DRAWABLES,
+                drawablesSupplier);
     }
 
     /**
