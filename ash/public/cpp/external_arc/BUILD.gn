@@ -71,6 +71,7 @@ source_set("unit_tests") {
     "keyboard/arc_input_method_surface_manager_unittest.cc",
     "message_center/arc_notification_content_view_unittest.cc",
     "message_center/arc_notification_manager_unittest.cc",
+    "message_center/arc_notification_surface_manager_impl_unittest.cc",
     "message_center/arc_notification_view_unittest.cc",
     "message_center/metadata_utils_unittest.cc",
     "overlay/arc_overlay_controller_impl_unittest.cc",
