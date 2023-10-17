@@ -57,7 +57,7 @@ bool ValidateAlarmCreateInfo(const std::string& alarm_name,
   // gets delayed past the boundary).  However, it's still worth warning about
   // relative delays that are shorter than we'll honor.
   if (create_info.delay_in_minutes) {
-    if (*create_info.delay_in_minutes <
+    if (base::Minutes(*create_info.delay_in_minutes) <
         alarms_api_constants::kReleaseDelayMinimum) {
       if (Manifest::IsUnpackedLocation(extension->location())) {
         warnings->push_back(ErrorUtils::FormatErrorMessage(
@@ -69,7 +69,7 @@ bool ValidateAlarmCreateInfo(const std::string& alarm_name,
     }
   }
   if (create_info.period_in_minutes) {
-    if (*create_info.period_in_minutes <
+    if (base::Minutes(*create_info.period_in_minutes) <
         alarms_api_constants::kReleaseDelayMinimum) {
       if (Manifest::IsUnpackedLocation(extension->location())) {
         warnings->push_back(ErrorUtils::FormatErrorMessage(
@@ -119,12 +119,10 @@ ExtensionFunction::ResponseAction AlarmsCreateFunction::Run() {
     WriteToConsole(blink::mojom::ConsoleMessageLevel::kWarning, warning);
   }
 
-  const int kSecondsPerMinute = 60;
   base::TimeDelta granularity =
-      base::Seconds((Manifest::IsUnpackedLocation(extension()->location())
-                         ? alarms_api_constants::kDevDelayMinimum
-                         : alarms_api_constants::kReleaseDelayMinimum)) *
-      kSecondsPerMinute;
+      Manifest::IsUnpackedLocation(extension()->location())
+          ? alarms_api_constants::kDevDelayMinimum
+          : alarms_api_constants::kReleaseDelayMinimum;
 
   Alarm alarm(alarm_name, params->alarm_info, granularity, clock_->Now());
   alarm_manager->AddAlarm(

@@ -38,8 +38,6 @@ namespace {
 const char kRegisteredAlarms[] = "alarms";
 const char kAlarmGranularity[] = "granularity";
 
-const int kSecondsPerMinute = 60;
-
 // The minimum period between polling for alarms to run.
 const base::TimeDelta kDefaultMinPollPeriod() {
   return base::Days(1);
@@ -90,10 +88,9 @@ AlarmManager::AlarmList AlarmsFromValue(const std::string extension_id,
         // No else branch. It's okay to ignore the failure since we have
         // minimum granularity.
       }
-      alarm.minimum_granularity = base::Seconds(
-          (is_unpacked ? alarms_api_constants::kDevDelayMinimum
-                       : alarms_api_constants::kReleaseDelayMinimum) *
-          kSecondsPerMinute);
+      alarm.minimum_granularity =
+          is_unpacked ? alarms_api_constants::kDevDelayMinimum
+                      : alarms_api_constants::kReleaseDelayMinimum;
       if (alarm.granularity < alarm.minimum_granularity)
         alarm.granularity = alarm.minimum_granularity;
       alarms.emplace_back(std::move(alarm));

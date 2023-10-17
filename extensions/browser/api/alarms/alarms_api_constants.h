@@ -5,14 +5,15 @@
 #ifndef EXTENSIONS_BROWSER_API_ALARMS_ALARMS_API_CONSTANTS_H_
 #define EXTENSIONS_BROWSER_API_ALARMS_ALARMS_API_CONSTANTS_H_
 
+#include "base/time/time.h"
+
 namespace extensions {
 namespace alarms_api_constants {
 
 // Minimum specifiable alarm period (in minutes) for unpacked extensions.
-extern const double kDevDelayMinimum;
-
+inline constexpr base::TimeDelta kDevDelayMinimum = base::Seconds(1);
 // Minimum specifiable alarm period (in minutes) for packed/crx extensions.
-extern const double kReleaseDelayMinimum;
+inline constexpr base::TimeDelta kReleaseDelayMinimum = base::Minutes(1);
 
 extern const char kWarningMinimumDevDelay[];
 extern const char kWarningMinimumReleaseDelay[];

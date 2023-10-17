@@ -695,7 +695,7 @@ void FrequencyTestGetAlarmsCallback(ExtensionAlarmsTest* test, Alarm* alarm) {
 TEST_F(ExtensionAlarmsSchedulingTest, PollFrequencyFromStoredAlarm) {
   struct {
     bool is_unpacked;
-    double delay_minimum;
+    base::TimeDelta delay_minimum;
   } test_data[] = {
       {true, alarms_api_constants::kDevDelayMinimum},
       {false, alarms_api_constants::kReleaseDelayMinimum},
@@ -726,8 +726,7 @@ TEST_F(ExtensionAlarmsSchedulingTest, PollFrequencyFromStoredAlarm) {
               // 10s initial clock.
               base::Time::FromJsTime(10000) +
                   // 10ms in FrequencyTestGetAlarmsCallback.
-                  base::Milliseconds(10) +
-                  base::Seconds(test_data[i].delay_minimum * 60));
+                  base::Milliseconds(10) + test_data[i].delay_minimum);
     RemoveAlarm("hello");
   }
 }
