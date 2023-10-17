@@ -1242,8 +1242,11 @@ void PasswordFormManager::CalculateSubmittedFormTypeMetric() {
 
 bool PasswordFormManager::IsPossibleSingleUsernameAvailable(
     const PossibleUsernameData& possible_username) const {
-  // The username form and password forms signon realms must be the same.
-  if (parsed_submitted_form_->signon_realm != possible_username.signon_realm) {
+  // The username form and password forms signon realms must be the same or
+  // an eTLD+1 match.
+  // TODO(crbug.com/1470586): Extend to match affiliated domains.
+  if (!IsPublicSuffixDomainMatch(possible_username.signon_realm,
+                                 parsed_submitted_form_->signon_realm)) {
     LogUsingPossibleUsername(client_, /*is_used*/ false, "Different domains");
     return false;
   }

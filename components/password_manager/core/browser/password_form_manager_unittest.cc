@@ -419,7 +419,7 @@ class PasswordFormManagerTest : public testing::Test,
     psl_saved_match_ = saved_match_;
     psl_saved_match_.url = psl_origin;
     psl_saved_match_.action = psl_action;
-    psl_saved_match_.signon_realm = "https://myaccounts.google.com/";
+    psl_saved_match_.signon_realm = "https://myaccount.google.com/";
     psl_saved_match_.match_type = PasswordForm::MatchType::kPSL;
 
     parsed_observed_form_ = saved_match_;
@@ -2544,6 +2544,36 @@ TEST_P(PasswordFormManagerTest, UsernameFirstFlowDifferentDomains) {
   // |possible_username_data| has different domain than |submitted_form|. Check
   // that no username is chosen.
   EXPECT_TRUE(form_manager_->GetPendingCredentials().username_value.empty());
+}
+
+// Tests that possible username with server prediction will be suggested in the
+// save prompt, if the possible username was found on a domain that is an eTLD+1
+// match.
+TEST_P(PasswordFormManagerTest, PossibleUsernameFromPSLMatch) {
+  CreateFormManager(observed_form_only_password_fields_);
+  fetcher_->NotifyFetchCompleted();
+
+  // Create possible username data.
+  std::u16string possible_username = u"possible_username";
+  PossibleUsernameData possible_username_data(
+      psl_saved_match_.signon_realm, kSingleUsernameFieldRendererId,
+      possible_username, base::Time::Now(),
+      /*driver_id=*/0, /*autocomplete_attribute_has_username=*/false,
+      /*is_likely_otp=*/false);
+  possible_username_data.form_predictions = MakeSingleUsernamePredictions();
+  base::LRUCache<PossibleUsernameFieldIdentifier, PossibleUsernameData>
+      possible_usernames = MakePossibleUsernamesCache({possible_username_data});
+
+  FormData submitted_form = observed_form_only_password_fields_;
+  submitted_form.fields[0].value = u"strongpassword";
+
+  ASSERT_TRUE(form_manager_->ProvisionallySave(submitted_form, &driver_,
+                                               &possible_usernames));
+
+  // |possible_username_data| has different domain than |submitted_form|. Check
+  // that username outside of the password form is still chosen.
+  EXPECT_EQ(possible_username,
+            form_manager_->GetPendingCredentials().username_value);
 }
 
 // Tests that username is not taken during the sign up flow (when there is no
