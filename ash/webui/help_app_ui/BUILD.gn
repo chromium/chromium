@@ -72,6 +72,9 @@ mojom("mojo_bindings") {
   sources = [ "help_app_ui.mojom" ]
   public_deps = [ "//url/mojom:url_mojom_gurl" ]
   webui_module_path = "/"
+
+  # Help app is still using JS + Closure Compiler.
+  use_typescript_sources = false
 }
 
 source_set("unit_tests") {
