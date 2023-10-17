@@ -1,9 +1,11 @@
+#!/usr/bin/env python3
 # Copyright 2013 The Chromium Authors
 # Use of this source code is governed by a BSD-style license that can be
 # found in the LICENSE file.
 
 """Script that is used by PRESUBMIT.py to run style checks on Java files."""
 
+import argparse
 import collections
 import os
 import subprocess
@@ -42,22 +44,29 @@ def run_checkstyle(local_path, style_file, java_files):
         _JAVA_PATH, '-cp', _CHECKSTYLE_ROOT,
         'com.puppycrawl.tools.checkstyle.Main', '-c', style_file, '-f', 'xml'
     ] + java_files
-    check = subprocess.Popen(cmd, stdout=subprocess.PIPE)
-    stdout = check.communicate()[0].decode('utf-8')
-    results = []
+    result = subprocess.run(cmd, capture_output=True, check=False, text=True)
 
-    lines = stdout.splitlines(keepends=True)
-    if 'Checkstyle ends with' in lines[-1]:
-        stdout = ''.join(lines[:-1])
+    stderr_lines = result.stderr.splitlines()
+    # One line is always: "Checkstyle ends with # warnings/errors".
+    if len(stderr_lines) > 1 or (stderr_lines
+                                 and 'ends with' not in stderr_lines[0]):
+        sys.stderr.write(result.stderr)
+        sys.stderr.write(
+            f'\nCheckstyle failed with returncode={result.returncode}.\n')
+        sys.stderr.write('This might mean you have a syntax error\n')
+        sys.exit(-1)
+
     try:
-        root = xml.dom.minidom.parseString(stdout)
+        root = xml.dom.minidom.parseString(result.stdout)
     except Exception:
-        print('Tried to parse:')
-        print(stdout)
+        sys.stderr.write('Tried to parse:\n')
+        sys.stderr.write(result.stdout)
+        sys.stderr.write('\n')
         raise
 
     inclusive_files = []
     inclusive_warning = ''
+    results = []
     for fileElement in root.getElementsByTagName('file'):
         filename = fileElement.attributes['name'].value
         if filename.startswith(local_path):
@@ -120,3 +129,20 @@ To remove unused imports: """ + input_api.os_path.relpath(
                 _REMOVE_UNUSED_IMPORTS_PATH, local_path)
         ret.append(output_api.PresubmitError(msg))
     return ret
+
+
+def main():
+    parser = argparse.ArgumentParser()
+    parser.add_argument('java_files', nargs='+')
+    args = parser.parse_args()
+
+    violations = run_checkstyle(CHROMIUM_SRC, _STYLE_FILE, args.java_files)
+    for v in violations:
+        print(f'{v} ({v.severity})')
+
+    if any(v.is_error() for v in violations):
+        sys.exit(1)
+
+
+if __name__ == '__main__':
+    main()
