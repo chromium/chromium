@@ -186,8 +186,8 @@ class RecursiveObserver : public AppRegistryCache::Observer {
       super_recursive.push_back(std::move(app));
     }
     if (!super_recursive.empty()) {
-      cache_->OnApps(std::move(super_recursive), AppType::kArc,
-                     false /* should_notify_initialized */);
+      cache_->OnAppsForTesting(std::move(super_recursive), AppType::kArc,
+                               false /* should_notify_initialized */);
     }
 
     num_apps_seen_on_app_update_++;
@@ -259,8 +259,8 @@ class InitializedObserver : public apps::AppRegistryCache::Observer {
     std::vector<AppPtr> deltas;
     deltas.push_back(MakeApp("n", "noodle", AppType::kArc));
     deltas.push_back(MakeApp("s", "salmon", AppType::kChromeApp));
-    cache_->OnApps(std::move(deltas), AppType::kUnknown,
-                   false /* should_notify_initialized */);
+    cache_->OnAppsForTesting(std::move(deltas), AppType::kUnknown,
+                             false /* should_notify_initialized */);
   }
 
   void OnAppTypeInitialized(apps::AppType app_type) override {
@@ -347,6 +347,13 @@ class AppRegistryCacheTest : public testing::Test,
     return name;
   }
 
+  void OnApps(AppRegistryCache& cache,
+              std::vector<AppPtr> deltas,
+              apps::AppType app_type,
+              bool should_notify_initialized) {
+    cache.OnApps(std::move(deltas), app_type, should_notify_initialized);
+  }
+
   void VerifyApp(AppRegistryCache& cache,
                  const char* app_id,
                  const char* name,
@@ -394,8 +401,8 @@ TEST_F(AppRegistryCacheTest, OnApps) {
   deltas.push_back(MakeApp("c", "cherry", AppType::kArc,
                            Readiness::kDisabledByPolicy,
                            /*timeline=*/10));
-  cache.OnApps(std::move(deltas), AppType::kUnknown,
-               false /* should_notify_initialized */);
+  OnApps(cache, std::move(deltas), AppType::kUnknown,
+         false /* should_notify_initialized */);
 
   EXPECT_EQ(3, AppCount(cache));
   VerifyApp(cache, "a", "apple");
@@ -421,8 +428,8 @@ TEST_F(AppRegistryCacheTest, OnApps) {
   deltas.clear();
   deltas.push_back(MakeApp("a", "apricot", AppType::kArc, Readiness::kReady));
   deltas.push_back(MakeApp("d", "durian"));
-  cache.OnApps(std::move(deltas), AppType::kUnknown,
-               false /* should_notify_initialized */);
+  OnApps(cache, std::move(deltas), AppType::kUnknown,
+         false /* should_notify_initialized */);
 
   EXPECT_EQ(4, AppCount(cache));
   VerifyApp(cache, "a", "apricot", Readiness::kReady);
@@ -481,8 +488,8 @@ TEST_F(AppRegistryCacheTest, Removed) {
 
   std::vector<AppPtr> apps;
   apps.push_back(MakeApp("app", "app", AppType::kArc, Readiness::kReady));
-  cache.OnApps(std::move(apps), AppType::kUnknown,
-               false /* should_notify_initialized */);
+  OnApps(cache, std::move(apps), AppType::kUnknown,
+         false /* should_notify_initialized */);
 
   CallForEachApp(cache);
   EXPECT_EQ(1u, updated_ids_.size());
@@ -513,8 +520,8 @@ TEST_F(AppRegistryCacheTest, Removed) {
         });
       }));
 
-  cache.OnApps(std::move(apps), AppType::kUnknown,
-               false /* should_notify_initialized */);
+  OnApps(cache, std::move(apps), AppType::kUnknown,
+         false /* should_notify_initialized */);
 
   // The cache is now empty.
   EXPECT_EQ(0, AppCount(cache));
@@ -535,8 +542,8 @@ TEST_F(AppRegistryCacheTest, RemovedAndAdded) {
   // We add the app, and expect to be notified.
   std::vector<AppPtr> apps;
   apps.push_back(MakeApp("app", "app", AppType::kArc, Readiness::kReady));
-  cache.OnApps(std::move(apps), AppType::kUnknown,
-               false /* should_notify_initialized */);
+  OnApps(cache, std::move(apps), AppType::kUnknown,
+         false /* should_notify_initialized */);
 
   // Verify "app" is notified via OnAppUpdate.
   CallForEachApp(cache);
@@ -560,8 +567,8 @@ TEST_F(AppRegistryCacheTest, RemovedAndAdded) {
   apps.push_back(MakeApp("app", "app", AppType::kArc, Readiness::kRemoved));
   apps.push_back(MakeApp("app", "app", AppType::kArc, Readiness::kReady));
 
-  cache.OnApps(std::move(apps), AppType::kUnknown,
-               false /* should_notify_initialized */);
+  OnApps(cache, std::move(apps), AppType::kUnknown,
+         false /* should_notify_initialized */);
 
   // The cache is not empty, "app" is still saved in the cache.
   EXPECT_EQ(1, AppCount(cache));
@@ -591,8 +598,8 @@ TEST_F(AppRegistryCacheTest, RemovedAndAddMultipleApps) {
   // We add the app, and expect to be notified.
   std::vector<AppPtr> apps;
   apps.push_back(MakeApp("app1", "app1", AppType::kArc, Readiness::kReady));
-  cache.OnApps(std::move(apps), AppType::kUnknown,
-               false /* should_notify_initialized */);
+  OnApps(cache, std::move(apps), AppType::kUnknown,
+         false /* should_notify_initialized */);
 
   // Verify "app1" is added to the cache and is notified via OnAppUpdate.
   CallForEachApp(cache);
@@ -620,8 +627,8 @@ TEST_F(AppRegistryCacheTest, RemovedAndAddMultipleApps) {
   apps.push_back(
       MakeApp("app2", "app2", AppType::kArc, Readiness::kDisabledByPolicy));
 
-  cache.OnApps(std::move(apps), AppType::kUnknown,
-               false /* should_notify_initialized */);
+  OnApps(cache, std::move(apps), AppType::kUnknown,
+         false /* should_notify_initialized */);
 
   // The cache is not empty. Verify both "app1" and "app2" exist in the cache.
   EXPECT_EQ(2, AppCount(cache));
@@ -666,8 +673,8 @@ TEST_F(AppRegistryCacheTest, Observer) {
       MakeApp("c", "cucumber", AppType::kArc, Readiness::kDisabledByPolicy));
   deltas.push_back(
       MakeApp("e", "eggfruit", AppType::kArc, Readiness::kDisabledByPolicy));
-  cache.OnApps(std::move(deltas), AppType::kArc,
-               true /* should_notify_initialized */);
+  OnApps(cache, std::move(deltas), AppType::kArc,
+         true /* should_notify_initialized */);
 
   EXPECT_EQ(0, num_freshly_installed_);
   EXPECT_EQ(3u, updated_ids_.size());
@@ -690,8 +697,8 @@ TEST_F(AppRegistryCacheTest, Observer) {
   deltas.push_back(
       MakeApp("b", "blueberry", AppType::kArc, Readiness::kDisabledByPolicy));
   deltas.push_back(MakeApp("c", "cucumber", AppType::kArc, Readiness::kReady));
-  cache.OnApps(std::move(deltas), AppType::kArc,
-               false /* should_notify_initialized */);
+  OnApps(cache, std::move(deltas), AppType::kArc,
+         false /* should_notify_initialized */);
 
   EXPECT_EQ(1, num_freshly_installed_);
   EXPECT_EQ(2u, updated_ids_.size());
@@ -712,8 +719,8 @@ TEST_F(AppRegistryCacheTest, Observer) {
   updated_ids_.clear();
   deltas.clear();
   deltas.push_back(MakeApp("f", "fig", AppType::kArc, Readiness::kReady));
-  cache.OnApps(std::move(deltas), AppType::kUnknown,
-               false /* should_notify_initialized */);
+  OnApps(cache, std::move(deltas), AppType::kUnknown,
+         false /* should_notify_initialized */);
 
   EXPECT_EQ(0, num_freshly_installed_);
   EXPECT_EQ(0u, updated_ids_.size());
@@ -740,8 +747,8 @@ TEST_F(AppRegistryCacheTest, Recursive) {
   deltas.clear();
   deltas.push_back(MakeApp("o", "orange"));
   deltas.push_back(MakeApp("p", "peach"));
-  cache.OnApps(std::move(deltas), AppType::kArc,
-               true /* should_notify_initialized */);
+  OnApps(cache, std::move(deltas), AppType::kArc,
+         true /* should_notify_initialized */);
   EXPECT_EQ(2, observer.NumAppsSeenOnAppUpdate());
 
   observer.PrepareForOnApps(3, "pear");
@@ -749,8 +756,8 @@ TEST_F(AppRegistryCacheTest, Recursive) {
   deltas.clear();
   deltas.push_back(MakeApp("p", "pear", AppType::kArc, Readiness::kReady));
   deltas.push_back(MakeApp("q", "quince"));
-  cache.OnApps(std::move(deltas), AppType::kUnknown,
-               false /* should_notify_initialized */);
+  OnApps(cache, std::move(deltas), AppType::kUnknown,
+         false /* should_notify_initialized */);
   EXPECT_EQ(2, observer.NumAppsSeenOnAppUpdate());
 
   observer.PrepareForOnApps(3, "plum");
@@ -759,8 +766,8 @@ TEST_F(AppRegistryCacheTest, Recursive) {
   deltas.push_back(MakeApp("p", "pear"));
   deltas.push_back(MakeApp("p", "pear"));
   deltas.push_back(MakeApp("p", "plum"));
-  cache.OnApps(std::move(deltas), AppType::kUnknown,
-               false /* should_notify_initialized */);
+  OnApps(cache, std::move(deltas), AppType::kUnknown,
+         false /* should_notify_initialized */);
 
   EXPECT_EQ(1, observer.NumAppsSeenOnAppUpdate());
   EXPECT_EQ(AppType::kArc, observer.app_type());
@@ -810,8 +817,8 @@ TEST_F(AppRegistryCacheTest, SuperRecursive) {
   deltas.push_back(MakeApp("a", "apple"));
   deltas.push_back(MakeApp("b", "banana"));
   deltas.push_back(MakeApp("c", "cherry"));
-  cache.OnApps(std::move(deltas), AppType::kArc,
-               true /* should_notify_initialized */);
+  OnApps(cache, std::move(deltas), AppType::kArc,
+         true /* should_notify_initialized */);
 
   // After all of that, check that for each app_id, the last delta won.
   EXPECT_EQ("avocado", GetName(cache, "a"));
@@ -837,8 +844,8 @@ TEST_F(AppRegistryCacheTest,
   std::vector<AppPtr> deltas1;
   deltas1.push_back(MakeApp("a", "avocado"));
   deltas1.push_back(MakeApp("c", "cucumber"));
-  cache.OnApps(std::move(deltas1), AppType::kArc,
-               true /* should_notify_initialized */);
+  OnApps(cache, std::move(deltas1), AppType::kArc,
+         true /* should_notify_initialized */);
 
   // Verify OnAppTypeInitialized is called when the non mojom Apps are
   // added.
@@ -857,8 +864,8 @@ TEST_F(AppRegistryCacheTest,
 
   std::vector<AppPtr> deltas2;
   deltas2.push_back(MakeApp("d", "durian"));
-  cache.OnApps(std::move(deltas2), AppType::kArc,
-               true /* should_notify_initialized */);
+  OnApps(cache, std::move(deltas2), AppType::kArc,
+         true /* should_notify_initialized */);
 
   // Verify OnAppTypeInitialized is not called when more Apps are
   // added.
@@ -891,8 +898,8 @@ TEST_F(AppRegistryCacheTest,
   std::vector<AppPtr> deltas1;
   deltas1.push_back(MakeApp("a", "avocado"));
   deltas1.push_back(MakeApp("c", "cucumber"));
-  cache.OnApps(std::move(deltas1), AppType::kArc,
-               true /* should_notify_initialized */);
+  OnApps(cache, std::move(deltas1), AppType::kArc,
+         true /* should_notify_initialized */);
 
   // Verify OnAppTypeInitialized is called when both the non mojom and mojom
   // Apps are added.
@@ -904,8 +911,8 @@ TEST_F(AppRegistryCacheTest,
 
   std::vector<AppPtr> deltas2;
   deltas2.push_back(MakeApp("d", "durian"));
-  cache.OnApps(std::move(deltas2), AppType::kArc,
-               true /* should_notify_initialized */);
+  OnApps(cache, std::move(deltas2), AppType::kArc,
+         true /* should_notify_initialized */);
 
   // Verify OnAppTypeInitialized is not called when the Apps are added.
   EXPECT_EQ(1, observer1.initialized_app_type_count());
@@ -929,8 +936,8 @@ TEST_F(AppRegistryCacheTest,
   std::vector<AppPtr> deltas1;
   deltas1.push_back(MakeApp("a", "avocado"));
   deltas1.push_back(MakeApp("c", "cucumber"));
-  cache.OnApps(std::move(deltas1), AppType::kArc,
-               true /* should_notify_initialized */);
+  OnApps(cache, std::move(deltas1), AppType::kArc,
+         true /* should_notify_initialized */);
 
   // Verify OnAppTypeInitialized is called when the non mojom Apps are
   // added.
@@ -957,8 +964,8 @@ TEST_F(AppRegistryCacheTest,
 
   std::vector<AppPtr> deltas2;
   deltas2.push_back(MakeApp("d", "durian", AppType::kChromeApp));
-  cache.OnApps(std::move(deltas2), AppType::kChromeApp,
-               true /* should_notify_initialized */);
+  OnApps(cache, std::move(deltas2), AppType::kChromeApp,
+         true /* should_notify_initialized */);
 
   // Verify OnAppTypeInitialized is called when both the non mojom and mojom
   // Apps are added.
@@ -983,8 +990,8 @@ TEST_F(AppRegistryCacheTest, OnAppTypeInitializedWithEnableFlagEmptyUpdate) {
   InitializedObserver observer1(&cache);
 
   std::vector<AppPtr> deltas1;
-  cache.OnApps(std::move(deltas1), AppType::kStandaloneBrowserChromeApp,
-               true /* should_notify_initialized */);
+  OnApps(cache, std::move(deltas1), AppType::kStandaloneBrowserChromeApp,
+         true /* should_notify_initialized */);
 
   // Verify OnAppTypeInitialized is called when the non mojom Apps are
   // initialized.
@@ -1005,8 +1012,8 @@ TEST_F(AppRegistryCacheTest, OnAppTypeInitializedWithEnableFlagEmptyUpdate) {
 
   std::vector<AppPtr> deltas2;
   deltas2.push_back(MakeApp("d", "durian"));
-  cache.OnApps(std::move(deltas2), AppType::kStandaloneBrowserChromeApp,
-               true /* should_notify_initialized */);
+  OnApps(cache, std::move(deltas2), AppType::kStandaloneBrowserChromeApp,
+         true /* should_notify_initialized */);
 
   // Verify OnAppTypeInitialized is not called when the non mojom Apps are
   // initialized again.
@@ -1026,8 +1033,8 @@ TEST_F(AppRegistryCacheTest, OnAppTypeInitializedWithEnableFlagEmptyUpdate) {
   EXPECT_EQ(1u, cache.InitializedAppTypes().size());
 
   std::vector<AppPtr> deltas3;
-  cache.OnApps(std::move(deltas3), AppType::kRemote,
-               true /* should_notify_initialized */);
+  OnApps(cache, std::move(deltas3), AppType::kRemote,
+         true /* should_notify_initialized */);
 
   // Verify OnAppTypeInitialized is called when both the mojom and non mojom
   // Apps are initialized.
@@ -1050,8 +1057,8 @@ TEST_F(AppRegistryCacheTest, IsAppInstalledForInstalledApp) {
   deltas.push_back(MakeApp("a", "avocado", AppType::kArc, Readiness::kReady));
   deltas.push_back(
       MakeApp("b", "banana", AppType::kArc, Readiness::kDisabledByUser));
-  cache.OnApps(std::move(deltas), AppType::kArc,
-               true /* should_notify_initialized */);
+  OnApps(cache, std::move(deltas), AppType::kArc,
+         true /* should_notify_initialized */);
 
   ASSERT_TRUE(cache.IsAppInstalled("a"));
   ASSERT_TRUE(cache.IsAppInstalled("b"));
@@ -1062,8 +1069,8 @@ TEST_F(AppRegistryCacheTest, IsAppInstalledForUninstalledApp) {
   std::vector<AppPtr> deltas;
   deltas.push_back(
       MakeApp("a", "avocado", AppType::kArc, Readiness::kUninstalledByUser));
-  cache.OnApps(std::move(deltas), AppType::kArc,
-               true /* should_notify_initialized */);
+  OnApps(cache, std::move(deltas), AppType::kArc,
+         true /* should_notify_initialized */);
 
   ASSERT_FALSE(cache.IsAppInstalled("a"));
   // App doesn't exist in the cache.

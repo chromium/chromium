@@ -48,14 +48,13 @@ class AppServiceLogSourceTest : public ::testing::Test {
               const std::string& publisher_id,
               apps::AppType app_type) {
     auto* proxy = apps::AppServiceProxyFactory::GetForProfile(profile_);
-    apps::AppRegistryCache& cache = proxy->AppRegistryCache();
     apps::AppPtr app = apps::AppPublisher::MakeApp(
         app_type, app_id, apps::Readiness::kReady, "app-name",
         apps::InstallReason::kUser, apps::InstallSource::kPlayStore);
     app->publisher_id = publisher_id;
     std::vector<apps::AppPtr> deltas;
     deltas.push_back(std::move(app));
-    cache.OnApps(std::move(deltas), app_type, true);
+    proxy->OnApps(std::move(deltas), app_type, true);
   }
 
   void RunApp(const std::string& app_id) {

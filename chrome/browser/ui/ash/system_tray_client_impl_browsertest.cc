@@ -470,9 +470,8 @@ class SystemTrayClientShowCalendarTest : public ash::LoginManagerTest {
   void InstallApp(const char* app_id, const char* name) {
     std::vector<apps::AppPtr> registry_deltas;
     registry_deltas.push_back(MakeApp(app_id, name));
-    proxy()->AppRegistryCache().OnApps(std::move(registry_deltas),
-                                       apps::AppType::kChromeApp,
-                                       /*should_notify_initialized=*/false);
+    proxy()->OnApps(std::move(registry_deltas), apps::AppType::kChromeApp,
+                    /*should_notify_initialized=*/false);
   }
 
   void SetPreferredApp(const char* app_id) {

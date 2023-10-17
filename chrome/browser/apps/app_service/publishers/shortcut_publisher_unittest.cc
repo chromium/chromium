@@ -111,8 +111,8 @@ class ShortcutPublisherTest : public testing::Test {
     app_deltas.push_back(apps::AppPublisher::MakeApp(
         type, app_id, apps::Readiness::kReady, "Some App Name",
         apps::InstallReason::kUser, apps::InstallSource::kSystem));
-    proxy()->AppRegistryCache().OnApps(std::move(app_deltas), type,
-                                       /* should_notify_initialized */ true);
+    proxy()->OnApps(std::move(app_deltas), type,
+                    /* should_notify_initialized */ true);
   }
 
  private:

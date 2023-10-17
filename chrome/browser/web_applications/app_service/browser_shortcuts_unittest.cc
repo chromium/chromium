@@ -224,8 +224,8 @@ TEST_F(BrowserShortcutsTest, LaunchShortcut) {
       apps::AppType::kChromeApp, app_constants::kChromeAppId,
       apps::Readiness::kReady, "Chrome", apps::InstallReason::kUser,
       apps::InstallSource::kSystem));
-  proxy->AppRegistryCache().OnApps(std::move(deltas), apps::AppType::kChromeApp,
-                                   /* should_notify_initialized */ true);
+  proxy->OnApps(std::move(deltas), apps::AppType::kChromeApp,
+                /* should_notify_initialized */ true);
 
   base::test::TestFuture<apps::AppLaunchParams, LaunchWebAppWindowSetting>
       future;
@@ -288,8 +288,8 @@ TEST_F(BrowserShortcutsTest, RemoveShortcut) {
       apps::AppType::kChromeApp, app_constants::kChromeAppId,
       apps::Readiness::kReady, "Chrome", apps::InstallReason::kUser,
       apps::InstallSource::kSystem));
-  proxy->AppRegistryCache().OnApps(std::move(deltas), apps::AppType::kChromeApp,
-                                   /* should_notify_initialized */ true);
+  proxy->OnApps(std::move(deltas), apps::AppType::kChromeApp,
+                /* should_notify_initialized */ true);
 
   base::test::TestFuture<apps::ShortcutId> future;
 

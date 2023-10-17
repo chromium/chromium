@@ -235,8 +235,8 @@ class FileManagerFileTaskWithAppServiceTest : public testing::Test {
 
     std::vector<apps::AppPtr> apps;
     apps.push_back(std::move(app));
-    app_service_proxy()->AppRegistryCache().OnApps(
-        std::move(apps), app_type, false /* should_notify_initialized */);
+    app_service_proxy()->OnApps(std::move(apps), app_type,
+                                false /* should_notify_initialized */);
   }
 
   TestingProfile* profile() { return profile_.get(); }

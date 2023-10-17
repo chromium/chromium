@@ -112,6 +112,13 @@ AppServiceProxyLacros::WebsiteMetricsService() {
   return metrics_service_.get();
 }
 
+void AppServiceProxyLacros::OnApps(std::vector<AppPtr> deltas,
+                                   AppType app_type,
+                                   bool should_notify_initialized) {
+  app_registry_cache_.OnApps(std::move(deltas), app_type,
+                             should_notify_initialized);
+}
+
 std::unique_ptr<IconLoader::Releaser> AppServiceProxyLacros::LoadIcon(
     AppType app_type,
     const std::string& app_id,
@@ -558,13 +565,6 @@ void AppServiceProxyLacros::Shutdown() {
   if (lacros_web_apps_controller_) {
     lacros_web_apps_controller_->Shutdown();
   }
-}
-
-void AppServiceProxyLacros::OnApps(std::vector<AppPtr> deltas,
-                                   AppType app_type,
-                                   bool should_notify_initialized) {
-  app_registry_cache_.OnApps(std::move(deltas), app_type,
-                             should_notify_initialized);
 }
 
 void AppServiceProxyLacros::OnPreferredAppsChanged(

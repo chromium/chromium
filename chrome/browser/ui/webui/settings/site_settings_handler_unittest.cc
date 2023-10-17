@@ -258,12 +258,11 @@ apps::AppPtr MakeApp(const std::string& app_id,
 }
 
 void RegisterWebApp(Profile* profile, apps::AppPtr app) {
-  apps::AppRegistryCache& cache =
-      apps::AppServiceProxyFactory::GetForProfile(profile)->AppRegistryCache();
   std::vector<apps::AppPtr> deltas;
   deltas.push_back(std::move(app));
-  cache.OnApps(std::move(deltas), apps::AppType::kWeb,
-               /*should_notify_initialized=*/true);
+  apps::AppServiceProxyFactory::GetForProfile(profile)->OnApps(
+      std::move(deltas), apps::AppType::kWeb,
+      /*should_notify_initialized=*/true);
 }
 
 struct TestModels {

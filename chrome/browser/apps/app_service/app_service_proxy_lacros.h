@@ -103,6 +103,11 @@ class AppServiceProxyLacros : public KeyedService,
 
   apps::WebsiteMetricsServiceLacros* WebsiteMetricsService();
 
+  // crosapi::mojom::AppServiceSubscriber overrides.
+  void OnApps(std::vector<AppPtr> deltas,
+              AppType app_type,
+              bool should_notify_initialized) override;
+
   // Convenience method that calls app_icon_loader()->LoadIcon to load app icons
   // with `app_id`. `callback` may be dispatched synchronously if it's possible
   // to quickly return a result.
@@ -299,9 +304,6 @@ class AppServiceProxyLacros : public KeyedService,
   void Shutdown() override;
 
   // crosapi::mojom::AppServiceSubscriber overrides.
-  void OnApps(std::vector<AppPtr> deltas,
-              AppType app_type,
-              bool should_notify_initialized) override;
   void OnPreferredAppsChanged(PreferredAppChangesPtr changes) override;
   void InitializePreferredApps(PreferredApps preferred_apps) override;
 

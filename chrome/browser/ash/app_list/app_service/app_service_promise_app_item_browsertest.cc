@@ -60,8 +60,7 @@ class AppServicePromiseAppItemBrowserTest
     AppListClientImpl* client = AppListClientImpl::GetInstance();
     ASSERT_TRUE(client);
     client->UpdateProfile();
-    cache_ = apps::AppServiceProxyFactory::GetForProfile(profile())
-                 ->PromiseAppRegistryCache();
+    cache_ = app_service_proxy()->PromiseAppRegistryCache();
   }
 
   ChromeAppListItem* GetChromeAppListItem(const PackageId& package_id) {
@@ -74,9 +73,8 @@ class AppServicePromiseAppItemBrowserTest
 
   apps::PromiseAppRegistryCache* cache() { return cache_; }
 
-  apps::AppRegistryCache& app_cache() {
-    return apps::AppServiceProxyFactory::GetForProfile(profile())
-        ->AppRegistryCache();
+  apps::AppServiceProxy* app_service_proxy() {
+    return apps::AppServiceProxyFactory::GetForProfile(profile());
   }
 
  private:
@@ -204,8 +202,8 @@ IN_PROC_BROWSER_TEST_F(AppServicePromiseAppItemBrowserTest,
   app->readiness = apps::Readiness::kReady;
   std::vector<apps::AppPtr> apps;
   apps.push_back(std::move(app));
-  app_cache().OnApps(std::move(apps), app_type,
-                     /*should_notify_initialized=*/false);
+  app_service_proxy()->OnApps(std::move(apps), app_type,
+                              /*should_notify_initialized=*/false);
 
   // Promise app item should no longer exist in the model.
   item = GetAppListItem(package_id.ToString());

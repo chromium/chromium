@@ -145,10 +145,9 @@ void SetAppIsDefaultForTest(Profile* profile, const std::string& id) {
 
   std::vector<apps::AppPtr> deltas;
   deltas.push_back(std::move(delta));
-  apps::AppServiceProxyFactory::GetForProfile(profile)
-      ->AppRegistryCache()
-      .OnApps(std::move(deltas), apps::AppType::kChromeApp,
-              false /* should_notify_initialized */);
+  apps::AppServiceProxyFactory::GetForProfile(profile)->OnApps(
+      std::move(deltas), apps::AppType::kChromeApp,
+      false /* should_notify_initialized */);
 }
 
 bool IsUnRemovableDefaultApp(const std::string& id) {

@@ -2335,8 +2335,8 @@ class ArcAppQueueRestoreHandlerArcAppBrowserTest
     auto* proxy = apps::AppServiceProxyFactory::GetForProfile(profile());
     std::vector<apps::AppPtr> deltas;
     deltas.push_back(std::move(app));
-    proxy->AppRegistryCache().OnApps(std::move(deltas), apps::AppType::kArc,
-                                     false /* should_notify_initialized */);
+    proxy->OnApps(std::move(deltas), apps::AppType::kArc,
+                  false /* should_notify_initialized */);
   }
 
   void RemoveApp(const std::string& app_id) {
@@ -2346,8 +2346,8 @@ class ArcAppQueueRestoreHandlerArcAppBrowserTest
     auto* proxy = apps::AppServiceProxyFactory::GetForProfile(profile());
     std::vector<apps::AppPtr> deltas;
     deltas.push_back(std::move(app));
-    proxy->AppRegistryCache().OnApps(std::move(deltas), apps::AppType::kArc,
-                                     false /* should_notify_initialized */);
+    proxy->OnApps(std::move(deltas), apps::AppType::kArc,
+                  false /* should_notify_initialized */);
   }
 
   bool HasRestoreData() {
@@ -2841,14 +2841,13 @@ class FullRestoreAppLaunchHandlerSystemWebAppsBrowserTest
     }
 
     auto* proxy = apps::AppServiceProxyFactory::GetForProfile(profile());
-    apps::AppRegistryCache& cache = proxy->AppRegistryCache();
     apps::AppPtr app = std::make_unique<apps::App>(
         app_type, *GetManager().GetAppIdForSystemApp(SystemWebAppType::HELP));
     app->readiness = readiness;
     std::vector<apps::AppPtr> deltas;
     deltas.push_back(std::move(app));
-    cache.OnApps(std::move(deltas), app_type,
-                 false /* should_notify_initialized */);
+    proxy->OnApps(std::move(deltas), app_type,
+                  false /* should_notify_initialized */);
   }
 
   void SetShouldRestore(FullRestoreAppLaunchHandler* app_launch_handler) {

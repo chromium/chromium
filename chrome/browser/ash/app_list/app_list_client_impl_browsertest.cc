@@ -443,14 +443,12 @@ class AppListClientImplBrowserPromiseAppTest
     extensions::PlatformAppBrowserTest::TearDownOnMainThread();
   }
 
-  apps::PromiseAppRegistryCache* cache() {
-    return apps::AppServiceProxyFactory::GetForProfile(profile())
-        ->PromiseAppRegistryCache();
+  apps::AppServiceProxy* app_service_proxy() {
+    return apps::AppServiceProxyFactory::GetForProfile(profile());
   }
 
-  apps::AppRegistryCache* app_cache() {
-    return &apps::AppServiceProxyFactory::GetForProfile(profile())
-                ->AppRegistryCache();
+  apps::PromiseAppRegistryCache* cache() {
+    return app_service_proxy()->PromiseAppRegistryCache();
   }
 
   // AppListModelUpdaterObserver:
@@ -518,8 +516,8 @@ IN_PROC_BROWSER_TEST_F(AppListClientImplBrowserPromiseAppTest,
 
   std::vector<apps::AppPtr> apps;
   apps.push_back(std::move(app));
-  app_cache()->OnApps(std::move(apps), apps::AppType::kArc,
-                      /*should_notify_initialized=*/false);
+  app_service_proxy()->OnApps(std::move(apps), apps::AppType::kArc,
+                              /*should_notify_initialized=*/false);
 
   EXPECT_EQ(1, GetAndResetUpdateCount());
   EXPECT_FALSE(model_updater->FindItem(kTestPackageId.ToString()));

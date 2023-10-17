@@ -90,9 +90,8 @@ class BrowserShortcutIconTest : public testing::Test {
         AppType::kChromeApp, app_constants::kChromeAppId,
         apps::Readiness::kReady, "Some App Name", apps::InstallReason::kUser,
         apps::InstallSource::kSystem));
-    app_service_proxy()->AppRegistryCache().OnApps(
-        std::move(app_deltas), AppType::kChromeApp,
-        /* should_notify_initialized */ true);
+    app_service_proxy()->OnApps(std::move(app_deltas), AppType::kChromeApp,
+                                /* should_notify_initialized */ true);
   }
 
   AppServiceProxy* app_service_proxy() { return proxy_; }

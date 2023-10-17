@@ -142,8 +142,8 @@ class AppInfoGeneratorTest : public ::testing::Test {
     apps::AppType app_type = app->app_type;
     std::vector<apps::AppPtr> deltas;
     deltas.push_back(std::move(app));
-    GetCache().OnApps(std::move(deltas), app_type,
-                      /*should_notify_initialized=*/false);
+    AppServiceProxy()->OnApps(std::move(deltas), app_type,
+                              /*should_notify_initialized=*/false);
   }
 
   void PushApp(const std::string& app_id,
@@ -204,9 +204,8 @@ class AppInfoGeneratorTest : public ::testing::Test {
     app_registrar_ = &provider->GetRegistrarMutable();
   }
 
-  apps::AppRegistryCache& GetCache() {
-    return apps::AppServiceProxyFactory::GetForProfile(profile_.get())
-        ->AppRegistryCache();
+  apps::AppServiceProxy* AppServiceProxy() {
+    return apps::AppServiceProxyFactory::GetForProfile(profile_.get());
   }
 
   apps::InstanceRegistry& GetInstanceRegistry() {

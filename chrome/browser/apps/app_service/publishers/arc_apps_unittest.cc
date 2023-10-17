@@ -841,7 +841,6 @@ TEST_F(ArcAppsPublisherTest, WebOnlyTwaInstallationReplacesArcPromiseApp) {
   app_service_proxy()->ReinitializeForTesting(profile());
   apps::PromiseAppRegistryCache* promise_cache =
       app_service_proxy()->PromiseAppRegistryCache();
-  apps::AppRegistryCache& app_cache = app_service_proxy()->AppRegistryCache();
 
   std::string package_name = "com.example.this";
   apps::PackageId package_id =
@@ -868,8 +867,8 @@ TEST_F(ArcAppsPublisherTest, WebOnlyTwaInstallationReplacesArcPromiseApp) {
   app->readiness = apps::Readiness::kReady;
   std::vector<apps::AppPtr> apps;
   apps.push_back(std::move(app));
-  app_cache.OnApps(std::move(apps), apps::AppType::kWeb,
-                   /*should_notify_initialized=*/false);
+  app_service_proxy()->OnApps(std::move(apps), apps::AppType::kWeb,
+                              /*should_notify_initialized=*/false);
 
   // Confirm that the promise app is now absent from the Promise App Registry.
   EXPECT_FALSE(promise_cache->HasPromiseApp(package_id));

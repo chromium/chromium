@@ -17,7 +17,6 @@
 #include "chrome/browser/profiles/profile.h"
 #include "chrome/browser/supervised_user/supervised_user_extensions_delegate_impl.h"
 #include "chrome/browser/supervised_user/supervised_user_test_util.h"
-#include "components/services/app_service/public/cpp/app_registry_cache.h"
 #include "components/services/app_service/public/cpp/app_types.h"
 #include "components/services/app_service/public/cpp/instance.h"
 #include "components/services/app_service/public/cpp/instance_registry.h"
@@ -142,9 +141,8 @@ class FamilyUserAppMetricsTest
 
   void InstallApps() {
     std::vector<apps::AppPtr> deltas;
-    apps::AppRegistryCache& cache =
-        apps::AppServiceProxyFactory::GetForProfile(profile())
-            ->AppRegistryCache();
+    apps::AppServiceProxy* proxy =
+        apps::AppServiceProxyFactory::GetForProfile(profile());
     deltas.push_back(MakeApp(/*app_id=*/"u", /*app_name=*/"unknown",
                              /*last_launch_time=*/base::Time::Now(),
                              apps::AppType::kUnknown));
@@ -190,12 +188,10 @@ class FamilyUserAppMetricsTest
     deltas.push_back(MakeApp(/*app_id=*/"s", /*app_name=*/"systemweb",
                              /*last_launch_time=*/base::Time::Now(),
                              apps::AppType::kSystemWeb));
-    cache.OnApps(std::move(deltas), apps::AppType::kUnknown,
-                 false /* should_notify_initialized */);
+    proxy->OnApps(std::move(deltas), apps::AppType::kUnknown,
+                  false /* should_notify_initialized */);
 
-    apps::InstanceRegistry& instance_registry =
-        apps::AppServiceProxyFactory::GetForProfile(profile())
-            ->InstanceRegistry();
+    apps::InstanceRegistry& instance_registry = proxy->InstanceRegistry();
     window_ = std::make_unique<aura::Window>(nullptr);
     window_->Init(ui::LAYER_NOT_DRAWN);
     instance_registry.CreateOrUpdateInstance(

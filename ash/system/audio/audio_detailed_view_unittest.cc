@@ -145,8 +145,9 @@ class AudioDetailedViewAgcInfoTest
                  absl::optional<bool> use_mic) {
     std::vector<apps::AppPtr> registry_deltas;
     registry_deltas.push_back(MakeApp(id, name));
-    registry_cache_.OnApps(std::move(registry_deltas), apps::AppType::kUnknown,
-                           /* should_notify_initialized = */ false);
+    registry_cache_.OnAppsForTesting(std::move(registry_deltas),
+                                     apps::AppType::kUnknown,
+                                     /* should_notify_initialized = */ false);
 
     std::vector<apps::CapabilityAccessPtr> capability_access_deltas;
     capability_access_deltas.push_back(MakeCapabilityAccess(id, use_mic));

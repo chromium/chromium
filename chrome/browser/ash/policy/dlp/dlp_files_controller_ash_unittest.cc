@@ -1952,8 +1952,8 @@ class DlpFilesAppServiceTest : public DlpFilesControllerAshTest {
 
   void UpdateAppRegistryCache(std::vector<apps::AppPtr> fake_apps,
                               apps::AppType app_type) {
-    app_service_proxy_->AppRegistryCache().OnApps(
-        std::move(fake_apps), app_type, /*should_notify_initialized=*/false);
+    app_service_proxy_->OnApps(std::move(fake_apps), app_type,
+                               /*should_notify_initialized=*/false);
   }
 
   raw_ptr<apps::AppServiceProxy, DanglingUntriaged | ExperimentalAsh>

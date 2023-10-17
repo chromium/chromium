@@ -496,10 +496,9 @@ void UpdateAppRegistryCache(Profile* profile,
 
   apps.push_back(std::move(app));
 
-  apps::AppServiceProxyFactory::GetForProfile(profile)
-      ->AppRegistryCache()
-      .OnApps(std::move(apps), apps::AppType::kChromeApp,
-              false /* should_notify_initialized */);
+  apps::AppServiceProxyFactory::GetForProfile(profile)->OnApps(
+      std::move(apps), apps::AppType::kChromeApp,
+      false /* should_notify_initialized */);
 }
 
 }  // namespace
@@ -2567,10 +2566,9 @@ TEST_F(ChromeShelfControllerTest, V1AppRunPinCloseUnpin) {
   apps::AppPtr app =
       std::make_unique<apps::App>(apps::AppType::kChromeApp, extension1_->id());
   apps.push_back(std::move(app));
-  apps::AppServiceProxyFactory::GetForProfile(profile())
-      ->AppRegistryCache()
-      .OnApps(std::move(apps), apps::AppType::kChromeApp,
-              /*should_notify_initialized=*/false);
+  apps::AppServiceProxyFactory::GetForProfile(profile())->OnApps(
+      std::move(apps), apps::AppType::kChromeApp,
+      /*should_notify_initialized=*/false);
 
   InitShelfController();
 
@@ -5790,10 +5788,9 @@ TEST_F(ChromeShelfControllerTest, DoNotShowInShelf) {
       std::make_unique<apps::App>(apps::AppType::kChromeApp, extension1_->id());
   app->show_in_shelf = false;
   apps.push_back(std::move(app));
-  apps::AppServiceProxyFactory::GetForProfile(profile())
-      ->AppRegistryCache()
-      .OnApps(std::move(apps), apps::AppType::kChromeApp,
-              false /* should_notify_initialized */);
+  apps::AppServiceProxyFactory::GetForProfile(profile())->OnApps(
+      std::move(apps), apps::AppType::kChromeApp,
+      false /* should_notify_initialized */);
 
   InitShelfController();
   EXPECT_EQ("Chrome, App2", GetPinnedAppStatus());
@@ -6224,11 +6221,6 @@ class ChromeShelfControllerPromiseAppsTest : public ChromeShelfControllerTest,
     return *image_with_effects.Get()->uncompressed.bitmap();
   }
 
-  apps::AppRegistryCache& app_cache() {
-    return apps::AppServiceProxyFactory::GetForProfile(profile())
-        ->AppRegistryCache();
-  }
-
   apps::PromiseAppRegistryCache* cache() {
     return apps::AppServiceProxyFactory::GetForProfile(profile())
         ->PromiseAppRegistryCache();
@@ -6419,8 +6411,9 @@ TEST_F(ChromeShelfControllerPromiseAppsTest, RemoveShelfItem) {
   app->readiness = apps::Readiness::kReady;
   std::vector<apps::AppPtr> apps;
   apps.push_back(std::move(app));
-  app_cache().OnApps(std::move(apps), app_type,
-                     /*should_notify_initialized=*/false);
+  apps::AppServiceProxyFactory::GetForProfile(profile())->OnApps(
+      std::move(apps), app_type,
+      /*should_notify_initialized=*/false);
 
   // Item should no longer be in the shelf.
   EXPECT_FALSE(model_->IsAppPinned(package_id.ToString()));

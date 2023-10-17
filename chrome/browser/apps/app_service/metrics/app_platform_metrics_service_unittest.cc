@@ -56,7 +56,6 @@
 #include "components/prefs/pref_service.h"
 #include "components/prefs/scoped_user_pref_update.h"
 #include "components/services/app_service/public/cpp/app_launch_util.h"
-#include "components/services/app_service/public/cpp/app_registry_cache.h"
 #include "components/services/app_service/public/cpp/app_types.h"
 #include "components/services/app_service/public/cpp/instance.h"
 #include "components/services/app_service/public/cpp/instance_registry.h"
@@ -258,19 +257,19 @@ class AppPlatformMetricsServiceTest
 
   void InstallApps() {
     auto* proxy = apps::AppServiceProxyFactory::GetForProfile(profile());
-    apps::AppRegistryCache& cache = proxy->AppRegistryCache();
+    CHECK(proxy);
 
-    AddApp(cache, kAndroidAppId, AppType::kArc, kAndroidAppPublisherId,
+    AddApp(proxy, kAndroidAppId, AppType::kArc, kAndroidAppPublisherId,
            Readiness::kReady, InstallReason::kUser, InstallSource::kPlayStore,
            true /* should_notify_initialized */);
 
-    AddApp(cache, /*app_id=*/borealis::kClientAppId, AppType::kBorealis, "",
+    AddApp(proxy, /*app_id=*/borealis::kClientAppId, AppType::kBorealis, "",
            Readiness::kReady, InstallReason::kUser, InstallSource::kUnknown,
            true /* should_notify_initialized */);
 
     borealis::CreateFakeApp(profile(), "borealistest", "steam://rungameid/123");
     std::string borealis_app(borealis::FakeAppId("borealistest"));
-    AddApp(cache, /*app_id=*/borealis_app.c_str(), AppType::kBorealis, "",
+    AddApp(proxy, /*app_id=*/borealis_app.c_str(), AppType::kBorealis, "",
            Readiness::kReady, InstallReason::kUser, InstallSource::kUnknown,
            true /* should_notify_initialized */);
 
@@ -278,35 +277,35 @@ class AppPlatformMetricsServiceTest
         crostini::CrostiniTestHelper::BasicAppList("test");
     guest_os::GuestOsRegistryServiceFactory::GetForProfile(profile())
         ->UpdateApplicationList(app_list);
-    AddApp(cache, /*app_id=*/
+    AddApp(proxy, /*app_id=*/
            crostini::CrostiniTestHelper::GenerateAppId("test"),
            AppType::kCrostini, "", Readiness::kReady, InstallReason::kUser,
            InstallSource::kUnknown, true /* should_notify_initialized */);
 
-    AddApp(cache, /*app_id=*/"w", AppType::kWeb, "https://foo.com",
+    AddApp(proxy, /*app_id=*/"w", AppType::kWeb, "https://foo.com",
            Readiness::kReady, InstallReason::kSync, InstallSource::kSync,
            false /* should_notify_initialized */);
 
-    AddApp(cache, /*app_id=*/"w2", AppType::kWeb, "https://foo2.com",
+    AddApp(proxy, /*app_id=*/"w2", AppType::kWeb, "https://foo2.com",
            Readiness::kReady, InstallReason::kSync, InstallSource::kSync,
            true /* should_notify_initialized */);
 
-    AddApp(cache, /*app_id=*/"s", AppType::kSystemWeb, "https://os-settings",
+    AddApp(proxy, /*app_id=*/"s", AppType::kSystemWeb, "https://os-settings",
            Readiness::kReady, InstallReason::kSystem, InstallSource::kSystem,
            true /* should_notify_initialized */);
 
-    AddApp(cache, /*app_id=*/app_constants::kLacrosAppId,
+    AddApp(proxy, /*app_id=*/app_constants::kLacrosAppId,
            AppType::kStandaloneBrowser, "Lacros", Readiness::kReady,
            InstallReason::kSystem, InstallSource::kSystem,
            true /* should_notify_initialized */);
 
-    AddApp(cache,
+    AddApp(proxy,
            /*app_id=*/kChromeAppId, AppType::kStandaloneBrowserChromeApp,
            "Vine", Readiness::kReady, InstallReason::kUser,
            InstallSource::kChromeWebStore, true /* should_notify_initialized */,
            true /*is_platform_app*/);
 
-    AddApp(cache,
+    AddApp(proxy,
            /*app_id=*/kExtensionId, AppType::kStandaloneBrowserExtension,
            "PDF Viewer", Readiness::kReady, InstallReason::kUser,
            InstallSource::kChromeWebStore,
@@ -328,8 +327,8 @@ class AppPlatformMetricsServiceTest
     deltas.push_back(MakeApp(
         /*app_id=*/"subapp", AppType::kWeb, "", Readiness::kReady,
         InstallReason::kSubApp, InstallSource::kUnknown));
-    cache.OnApps(std::move(deltas), AppType::kUnknown,
-                 false /* should_notify_initialized */);
+    proxy->OnApps(std::move(deltas), AppType::kUnknown,
+                  false /* should_notify_initialized */);
   }
 
   void VerifyMetrics() {
@@ -3064,13 +3063,12 @@ TEST_P(AppDiscoveryMetricsTest, AppActivityMetricsRecorded) {
   base::test::ScopedRunLoopTimeout default_timeout(FROM_HERE, base::Seconds(3));
 
   auto* proxy = apps::AppServiceProxyFactory::GetForProfile(profile());
-  apps::AppRegistryCache& cache = proxy->AppRegistryCache();
   proxy->SetAppPlatformMetricsServiceForTesting(GetAppPlatformMetricsService());
   const std::string expected_app_id =
       base::StrCat({"app://", kAndroidAppPublisherId});
 
   // Install an ARC app to test.
-  AddApp(cache, kAndroidAppId, AppType::kArc, kAndroidAppPublisherId,
+  AddApp(proxy, kAndroidAppId, AppType::kArc, kAndroidAppPublisherId,
          Readiness::kReady, InstallReason::kUser, InstallSource::kPlayStore,
          true /* should_notify_initialized */);
 
@@ -3175,13 +3173,12 @@ TEST_P(AppDiscoveryMetricsTest, AppActivityMetricsRecordedForTwoInstances) {
   base::test::ScopedRunLoopTimeout default_timeout(FROM_HERE, base::Seconds(3));
 
   auto* proxy = apps::AppServiceProxyFactory::GetForProfile(profile());
-  apps::AppRegistryCache& cache = proxy->AppRegistryCache();
   proxy->SetAppPlatformMetricsServiceForTesting(GetAppPlatformMetricsService());
   const std::string expected_app_id =
       base::StrCat({"app://", kAndroidAppPublisherId});
 
   // Install an ARC app to test.
-  AddApp(cache, kAndroidAppId, AppType::kArc, kAndroidAppPublisherId,
+  AddApp(proxy, kAndroidAppId, AppType::kArc, kAndroidAppPublisherId,
          Readiness::kReady, InstallReason::kUser, InstallSource::kPlayStore,
          true /* should_notify_initialized */);
 

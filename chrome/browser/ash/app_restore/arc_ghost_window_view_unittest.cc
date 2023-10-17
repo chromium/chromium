@@ -20,7 +20,6 @@
 #include "chrome/test/base/testing_profile.h"
 #include "chrome/test/base/testing_profile_manager.h"
 #include "chrome/test/views/chrome_test_views_delegate.h"
-#include "components/services/app_service/public/cpp/app_registry_cache.h"
 #include "components/services/app_service/public/cpp/app_types.h"
 #include "components/services/app_service/public/cpp/icon_types.h"
 #include "components/strings/grit/components_strings.h"
@@ -84,11 +83,10 @@ class ArcGhostWindowViewTest : public testing::Test {
   void InstallApp(const std::string& app_id) {
     auto* proxy = apps::AppServiceProxyFactory::GetForProfile(profile_);
     std::vector<apps::AppPtr> deltas;
-    apps::AppRegistryCache& cache = proxy->AppRegistryCache();
     deltas.push_back(MakeApp(app_id.c_str(), apps::AppType::kArc,
                              apps::InstallReason::kUser));
-    cache.OnApps(std::move(deltas), apps::AppType::kUnknown,
-                 false /* should_notify_initialized */);
+    proxy->OnApps(std::move(deltas), apps::AppType::kUnknown,
+                  false /* should_notify_initialized */);
   }
 
   void CreateView(arc::GhostWindowType type, uint32_t theme_color) {

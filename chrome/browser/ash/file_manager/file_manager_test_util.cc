@@ -236,8 +236,8 @@ void AddFakeAppWithIntentFilters(
   app->readiness = apps::Readiness::kReady;
   app->intent_filters = std::move(intent_filters);
   apps.push_back(std::move(app));
-  app_service_proxy->AppRegistryCache().OnApps(
-      std::move(apps), app_type, false /* should_notify_initialized */);
+  app_service_proxy->OnApps(std::move(apps), app_type,
+                            false /* should_notify_initialized */);
 }
 
 void AddFakeWebApp(const std::string& app_id,

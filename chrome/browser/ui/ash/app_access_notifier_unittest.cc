@@ -20,14 +20,16 @@
 #include "base/memory/raw_ptr.h"
 #include "base/test/metrics/histogram_tester.h"
 #include "base/test/scoped_feature_list.h"
+#include "chrome/browser/apps/app_service/app_service_proxy.h"
+#include "chrome/browser/apps/app_service/app_service_proxy_factory.h"
 #include "chrome/browser/ash/login/users/fake_chrome_user_manager.h"
+#include "chrome/browser/profiles/profile_manager.h"
 #include "chrome/test/base/testing_browser_process.h"
 #include "chrome/test/base/testing_profile_manager.h"
 #include "components/account_id/account_id.h"
 #include "components/prefs/testing_pref_service.h"
 #include "components/services/app_service/public/cpp/app_capability_access_cache.h"
 #include "components/services/app_service/public/cpp/app_capability_access_cache_wrapper.h"
-#include "components/services/app_service/public/cpp/app_registry_cache.h"
 #include "components/services/app_service/public/cpp/app_registry_cache_wrapper.h"
 #include "components/services/app_service/public/cpp/app_types.h"
 #include "components/services/app_service/public/cpp/capability_access.h"
@@ -210,15 +212,15 @@ class AppAccessNotifierBaseTest : public testing::Test {
       bool use_camera,
       bool use_microphone,
       apps::AppType app_type = apps::AppType::kChromeApp) {
-    apps::AppRegistryCache* reg_cache =
-        app_access_notifier_->GetActiveUserAppRegistryCache();
+    apps::AppServiceProxy* proxy = apps::AppServiceProxyFactory::GetForProfile(
+        ProfileManager::GetActiveUserProfile());
     apps::AppCapabilityAccessCache* cap_cache =
         app_access_notifier_->GetActiveUserAppCapabilityAccessCache();
 
     std::vector<apps::AppPtr> registry_deltas;
     registry_deltas.push_back(MakeApp(id, name, app_type));
-    reg_cache->OnApps(std::move(registry_deltas), apps::AppType::kUnknown,
-                      /*should_notify_initialized=*/false);
+    proxy->OnApps(std::move(registry_deltas), apps::AppType::kUnknown,
+                  /*should_notify_initialized=*/false);
 
     std::vector<apps::CapabilityAccessPtr> capability_access_deltas;
     capability_access_deltas.push_back(

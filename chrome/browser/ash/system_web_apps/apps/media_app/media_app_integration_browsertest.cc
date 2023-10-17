@@ -271,9 +271,8 @@ class MediaAppIntegrationPhotosIntegrationTest
     auto* proxy = apps::AppServiceProxyFactory::GetForProfile(profile);
     std::vector<apps::AppPtr> registry_deltas;
     registry_deltas.push_back(MakePhotosApp(photos_version));
-    proxy->AppRegistryCache().OnApps(std::move(registry_deltas),
-                                     apps::AppType::kUnknown,
-                                     /*should_notify_initialized=*/false);
+    proxy->OnApps(std::move(registry_deltas), apps::AppType::kUnknown,
+                  /*should_notify_initialized=*/false);
   }
 
   static bool GetFlagInApp(content::WebContents* web_ui, const char* flag) {

@@ -3061,9 +3061,7 @@ IN_PROC_BROWSER_TEST_P(DesksClientTest,
   std::vector<apps::AppPtr> deltas;
   deltas.push_back(
       std::make_unique<apps::App>(apps::AppType::kArc, kUnknownTestAppId));
-  apps::AppRegistryCacheWrapper::Get()
-      .GetAppRegistryCache(
-          multi_user_util::GetAccountIdFromProfile(browser()->profile()))
+  apps::AppServiceProxyFactory::GetForProfile(browser()->profile())
       ->OnApps(std::move(deltas), apps::AppType::kArc,
                /*should_notify_initializied=*/false);
 

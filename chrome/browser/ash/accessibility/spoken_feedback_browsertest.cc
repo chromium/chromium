@@ -789,9 +789,8 @@ IN_PROC_BROWSER_TEST_P(SpokenFeedbackTest,
   std::vector<apps::AppPtr> apps;
   apps.push_back(std::move(app));
   apps::AppServiceProxyFactory::GetForProfile(GetProfile())
-      ->AppRegistryCache()
-      .OnApps(std::move(apps), apps::AppType::kBuiltIn,
-              false /* should_notify_initialized */);
+      ->OnApps(std::move(apps), apps::AppType::kBuiltIn,
+               false /* should_notify_initialized */);
 
   // Create and add a test app to the shelf model.
   ShelfItem item;
@@ -875,9 +874,8 @@ IN_PROC_BROWSER_TEST_P(SpokenFeedbackTest,
   std::vector<apps::AppPtr> apps;
   apps.push_back(std::move(app));
   apps::AppServiceProxyFactory::GetForProfile(GetProfile())
-      ->AppRegistryCache()
-      .OnApps(std::move(apps), apps::AppType::kBuiltIn,
-              false /* should_notify_initialized */);
+      ->OnApps(std::move(apps), apps::AppType::kBuiltIn,
+               false /* should_notify_initialized */);
 
   // Create and add a test app to the shelf model.
   ShelfItem item;

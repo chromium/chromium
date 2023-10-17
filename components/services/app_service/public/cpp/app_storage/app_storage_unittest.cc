@@ -148,13 +148,18 @@ class AppStorageTest : public testing::Test {
     // Create a new AppStorage to read the AppStorage file to verify the app has
     // been written correctly.
     auto app_storage = std::make_unique<FakeAppStorage>(tmp_dir().GetPath(),
-                                                        app_registry_cache());
+                                                        app_registry_cache_);
     EXPECT_TRUE(IsEqual(apps, app_storage->GetAppInfo()));
   }
 
-  const base::ScopedTempDir& tmp_dir() { return tmp_dir_; }
+  void OnApps(std::vector<AppPtr> deltas,
+              apps::AppType app_type,
+              bool should_notify_initialized) {
+    app_registry_cache_.OnApps(std::move(deltas), kAppType1,
+                               /*should_notify_initialized=*/false);
+  }
 
-  AppRegistryCache& app_registry_cache() { return app_registry_cache_; }
+  const base::ScopedTempDir& tmp_dir() { return tmp_dir_; }
 
   FakeAppStorage* app_storage() { return app_storage_.get(); }
 
@@ -190,8 +195,8 @@ TEST_F(AppStorageTest, ReadAndWriteOneApp) {
   EXPECT_TRUE(app_storage()->GetAppInfo().empty());
 
   // Add 1 app.
-  app_registry_cache().OnApps(CreateOneApp(kAppType1, kAppId1), kAppType1,
-                              /*should_notify_initialized=*/false);
+  OnApps(CreateOneApp(kAppType1, kAppId1), kAppType1,
+         /*should_notify_initialized=*/false);
   app_storage()->WaitForSaveFinished(/*expect_app_count=*/1);
 
   // Verify the app is saved correctly.
@@ -213,8 +218,8 @@ TEST_F(AppStorageTest, ReadAndWriteMultipleApps) {
   EXPECT_TRUE(app_storage()->GetAppInfo().empty());
 
   // Add 2 apps.
-  app_registry_cache().OnApps(CreateTwoApps(), AppType::kUnknown,
-                              /*should_notify_initialized=*/false);
+  OnApps(CreateTwoApps(), AppType::kUnknown,
+         /*should_notify_initialized=*/false);
   app_storage()->WaitForSaveFinished(/*expect_app_count=*/2);
 
   // Verify the apps are saved correctly.
@@ -249,12 +254,12 @@ TEST_F(AppStorageTest, ReadAndWriteMultipleAppsAtSameTime) {
   EXPECT_TRUE(app_storage()->GetAppInfo().empty());
 
   // Add apps.
-  app_registry_cache().OnApps(CreateOneApp(kAppType1, kAppId1), kAppType1,
-                              /*should_notify_initialized=*/false);
-  app_registry_cache().OnApps(CreateOneApp(kAppType1, kAppId2), kAppType1,
-                              /*should_notify_initialized=*/false);
-  app_registry_cache().OnApps(CreateOneApp(kAppType1, kAppId3), kAppType1,
-                              /*should_notify_initialized=*/false);
+  OnApps(CreateOneApp(kAppType1, kAppId1), kAppType1,
+         /*should_notify_initialized=*/false);
+  OnApps(CreateOneApp(kAppType1, kAppId2), kAppType1,
+         /*should_notify_initialized=*/false);
+  OnApps(CreateOneApp(kAppType1, kAppId3), kAppType1,
+         /*should_notify_initialized=*/false);
 
   ModifyOneApp();
   app_storage()->WaitForSaveFinished(/*expect_app_count=*/3);
@@ -277,8 +282,8 @@ TEST_F(AppStorageTest, AddAndRemoveApp) {
   EXPECT_TRUE(app_storage()->GetAppInfo().empty());
 
   // Add 1 app.
-  app_registry_cache().OnApps(CreateOneApp(kAppType1, kAppId1), kAppType1,
-                              /*should_notify_initialized=*/false);
+  OnApps(CreateOneApp(kAppType1, kAppId1), kAppType1,
+         /*should_notify_initialized=*/false);
   app_storage()->WaitForSaveFinished(/*expect_app_count=*/1);
 
   // Verify the app is saved correctly.
@@ -299,8 +304,8 @@ TEST_F(AppStorageTest, AddAndRemoveApp) {
   AppPtr app3 = std::make_unique<App>(kAppType1, kAppId1);
   app3->readiness = kReadiness1;
   apps2.push_back(std::move(app3));
-  app_registry_cache().OnApps(std::move(apps2), kAppType1,
-                              /*should_notify_initialized=*/false);
+  OnApps(std::move(apps2), kAppType1,
+         /*should_notify_initialized=*/false);
   app_storage()->WaitForSaveFinished(/*expect_app_count=*/1);
 
   // Verify the app has been added.

@@ -19,7 +19,6 @@
 #include "chrome/browser/profiles/profile.h"
 #include "chrome/test/base/testing_profile.h"
 #include "chromeos/ash/components/system/fake_statistics_provider.h"
-#include "components/services/app_service/public/cpp/app_registry_cache.h"
 #include "components/services/app_service/public/cpp/app_types.h"
 #include "components/services/app_service/public/cpp/icon_types.h"
 #include "content/public/test/browser_task_environment.h"
@@ -52,9 +51,8 @@ class PromiseAppServiceTest : public testing::Test,
     test_shared_loader_factory_ =
         base::MakeRefCounted<network::WeakWrapperSharedURLLoaderFactory>(
             url_loader_factory_.get());
-    app_cache_ = &AppServiceProxyFactory::GetForProfile(profile_.get())
-                      ->AppRegistryCache();
-    service_ = std::make_unique<PromiseAppService>(profile_.get(), *app_cache_);
+    service_ = std::make_unique<PromiseAppService>(profile_.get(),
+                                                   proxy()->AppRegistryCache());
     service_->SetSkipApiKeyCheckForTesting(true);
   }
 
@@ -66,7 +64,9 @@ class PromiseAppServiceTest : public testing::Test,
     return service_->PromiseAppRegistryCache();
   }
 
-  AppRegistryCache* app_cache() { return app_cache_; }
+  AppServiceProxy* proxy() {
+    return AppServiceProxyFactory::GetForProfile(profile_.get());
+  }
 
   PromiseAppIconCache* icon_cache() { return service_->PromiseAppIconCache(); }
 
@@ -133,7 +133,6 @@ class PromiseAppServiceTest : public testing::Test,
   scoped_refptr<network::SharedURLLoaderFactory> test_shared_loader_factory_;
   ash::system::ScopedFakeStatisticsProvider fake_statistics_provider_;
   data_decoder::test::InProcessDataDecoder in_process_data_decoder_;
-  raw_ptr<AppRegistryCache> app_cache_;
 
   // Tracks how many times we should expect OnPromiseAppUpdate to be called
   // before proceeding with a unit test.
@@ -280,8 +279,8 @@ TEST_F(PromiseAppServiceTest, CompleteAppInstallationRemovesPromiseApp) {
 
   std::vector<apps::AppPtr> apps;
   apps.push_back(std::move(app));
-  app_cache()->OnApps(std::move(apps), app_type,
-                      /*should_notify_initialized=*/false);
+  proxy()->OnApps(std::move(apps), app_type,
+                  /*should_notify_initialized=*/false);
 
   // Confirm that the promise app is now absent from the Promise App Registry
   // and Promise App Icon Cache.
@@ -301,8 +300,8 @@ TEST_F(PromiseAppServiceTest,
   app->readiness = apps::Readiness::kReady;
   std::vector<apps::AppPtr> apps;
   apps.push_back(std::move(app));
-  app_cache()->OnApps(std::move(apps), app_type,
-                      /*should_notify_initialized=*/false);
+  proxy()->OnApps(std::move(apps), app_type,
+                  /*should_notify_initialized=*/false);
 
   // Attempt to register test promise app with a matching package ID.
   PromiseAppPtr promise_app = std::make_unique<PromiseApp>(package_id);
@@ -324,8 +323,8 @@ TEST_F(PromiseAppServiceTest, AllowPromiseAppsForReinstallingApps) {
   app->readiness = apps::Readiness::kUninstalledByUser;
   std::vector<apps::AppPtr> apps;
   apps.push_back(std::move(app));
-  app_cache()->OnApps(std::move(apps), app_type,
-                      /*should_notify_initialized=*/false);
+  proxy()->OnApps(std::move(apps), app_type,
+                  /*should_notify_initialized=*/false);
 
   // Register test promise app with a matching package ID.
   PromiseAppPtr promise_app = std::make_unique<PromiseApp>(package_id);

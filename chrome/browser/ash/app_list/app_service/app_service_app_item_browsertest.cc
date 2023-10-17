@@ -54,10 +54,9 @@ void UpdateAppRegistryCache(Profile* profile,
 
   std::vector<apps::AppPtr> apps;
   apps.push_back(std::move(app));
-  apps::AppServiceProxyFactory::GetForProfile(profile)
-      ->AppRegistryCache()
-      .OnApps(std::move(apps), apps::AppType::kChromeApp,
-              false /* should_notify_initialized */);
+  apps::AppServiceProxyFactory::GetForProfile(profile)->OnApps(
+      std::move(apps), apps::AppType::kChromeApp,
+      false /* should_notify_initialized */);
 }
 
 void UpdateAppNameInRegistryCache(Profile* profile,
@@ -69,10 +68,9 @@ void UpdateAppNameInRegistryCache(Profile* profile,
 
   std::vector<apps::AppPtr> apps;
   apps.push_back(std::move(app));
-  apps::AppServiceProxyFactory::GetForProfile(profile)
-      ->AppRegistryCache()
-      .OnApps(std::move(apps), apps::AppType::kChromeApp,
-              false /* should_notify_initialized */);
+  apps::AppServiceProxyFactory::GetForProfile(profile)->OnApps(
+      std::move(apps), apps::AppType::kChromeApp,
+      false /* should_notify_initialized */);
 }
 
 ash::AppListItem* GetAppListItem(const std::string& id) {

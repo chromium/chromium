@@ -190,9 +190,8 @@ class SharesheetBubbleViewPolicyBrowserTest
 
     fake_apps.push_back(std::move(fake_app));
 
-    app_service_proxy->AppRegistryCache().OnApps(
-        std::move(fake_apps), app_type,
-        /*should_notify_initialized=*/false);
+    app_service_proxy->OnApps(std::move(fake_apps), app_type,
+                              /*should_notify_initialized=*/false);
   }
 
   bool VerifyDlp(bool is_dlp_blocked) {
