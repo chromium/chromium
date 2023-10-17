@@ -32,16 +32,6 @@ VideoTestEnvironment::VideoTestEnvironment() : VideoTestEnvironment({}, {}) {}
 VideoTestEnvironment::VideoTestEnvironment(
     const std::vector<base::test::FeatureRef>& enabled_features,
     const std::vector<base::test::FeatureRef>& disabled_features) {
-#if BUILDFLAG(IS_CHROMEOS)
-  // At this point, the base::FeatureList has been initialized and the process
-  // should still be single threaded. Additionally, minigbm shouldn't have
-  // been used yet by this process. Therefore, it's a good time to ensure the
-  // Intel media compression environment flag for minigbm is correctly set
-  // (it's possible this environment variable wasn't inherited from the
-  // browser process).
-  ui::EnsureIntelMediaCompressionEnvVarIsSet();
-#endif  // BUILDFLAG(IS_CHROMEOS)
-
   // Using shared memory requires mojo to be initialized (crbug.com/849207).
   mojo::core::Init();
 
@@ -62,6 +52,14 @@ VideoTestEnvironment::VideoTestEnvironment(
   // Initialize features. Since some of them can be for VA-API, it is necessary
   // to initialize them before calling VaapiWrapper::PreSandboxInitialization().
   scoped_feature_list_.InitWithFeatures(enabled_features, disabled_features);
+
+#if BUILDFLAG(IS_CHROMEOS)
+  // At this point, the base::FeatureList has been initialized and the process
+  // should still be single threaded. Additionally, minigbm shouldn't have
+  // been used yet by this process. Therefore, it's a good time to ensure the
+  // Intel media compression environment flag for minigbm is correctly set
+  ui::EnsureIntelMediaCompressionEnvVarIsSet();
+#endif  // BUILDFLAG(IS_CHROMEOS)
 
   // Perform all static initialization that is required when running video
   // codecs in a test environment.
