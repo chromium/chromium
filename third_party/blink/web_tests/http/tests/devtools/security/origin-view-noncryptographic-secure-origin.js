@@ -6,6 +6,7 @@ import {TestRunner} from 'test_runner';
 import {SecurityTestRunner} from 'security_test_runner';
 
 import * as SDK from 'devtools/core/sdk/sdk.js';
+import * as Security from 'devtools/panels/security/security.js';
 
 (async function() {
   TestRunner.addResult(
@@ -17,10 +18,10 @@ import * as SDK from 'devtools/core/sdk/sdk.js';
   request1.setSecurityState(Protocol.Security.SecurityState.Secure);
   SecurityTestRunner.dispatchRequestFinished(request1);
 
-  Security.SecurityPanel.instance().sidebarTree.elementsByOrigin.get('chrome-test://test').select();
+  Security.SecurityPanel.SecurityPanel.instance().sidebarTree.elementsByOrigin.get('chrome-test://test').select();
 
   TestRunner.addResult('Panel on origin view:');
-  TestRunner.dumpDeepInnerHTML(Security.SecurityPanel.instance().visibleView.contentElement);
+  TestRunner.dumpDeepInnerHTML(Security.SecurityPanel.SecurityPanel.instance().visibleView.contentElement);
 
   TestRunner.completeTest();
 })();

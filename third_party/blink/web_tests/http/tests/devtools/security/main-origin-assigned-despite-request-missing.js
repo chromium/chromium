@@ -6,15 +6,16 @@ import {TestRunner} from 'test_runner';
 import {SecurityTestRunner} from 'security_test_runner';
 
 import * as Common from 'devtools/core/common/common.js';
+import * as Security from 'devtools/panels/security/security.js';
 
 (async function() {
   TestRunner.addResult(`Tests that the Main Origin is assigned even if there is no matching Request.\n`);
   await TestRunner.showPanel('security');
 
-  TestRunner.mainTarget.model(Security.SecurityModel)
+  TestRunner.mainTarget.model(Security.SecurityModel.SecurityModel)
       .dispatchEventToListeners(
         Security.SecurityModel.Events.VisibleSecurityStateChanged,
-        new Security.PageVisibleSecurityState(
+        new Security.SecurityModel.PageVisibleSecurityState(
           Protocol.Security.SecurityState.Neutral, /* certificateSecurityState= */ null,
           /* safetyTipInfo= */ null, /* securityStateIssueIds= */ ['scheme-is-not-cryptographic']));
 
@@ -26,7 +27,7 @@ import * as Common from 'devtools/core/common/common.js';
       .dispatchEventToListeners(
           SDK.ResourceTreeModel.Events.PrimaryPageChanged, {frame: TestRunner.resourceTreeModel.mainFrame, type: 'Navigation'});
   // Validate that this set the MainOrigin in the sidebar
-  const detectedMainOrigin = Security.SecurityPanel.instance().sidebarTree.mainOrigin;
+  const detectedMainOrigin = Security.SecurityPanel.SecurityPanel.instance().sidebarTree.mainOrigin;
   TestRunner.addResult('Detected main origin: ' + detectedMainOrigin);
 
   // Send subdownload resource requests to other origins.

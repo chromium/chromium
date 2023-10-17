@@ -6,6 +6,7 @@ import {TestRunner} from 'test_runner';
 import {SecurityTestRunner} from 'security_test_runner';
 
 import * as SDK from 'devtools/core/sdk/sdk.js';
+import * as Security from 'devtools/panels/security/security.js';
 
 (async function() {
   TestRunner.addResult(`Tests that the security details for an origin are updated if its security state changes.\n`);
@@ -118,9 +119,9 @@ import * as SDK from 'devtools/core/sdk/sdk.js';
       "https://ech.foo.test",
   ];
   for (const origin of origins) {
-    Security.SecurityPanel.instance().sidebarTree.elementsByOrigin.get(origin).select();
+    Security.SecurityPanel.SecurityPanel.instance().sidebarTree.elementsByOrigin.get(origin).select();
     TestRunner.addResult('Origin view (' + origin + ') ' + '-'.repeat(33 - origin.length));
-    TestRunner.dumpDeepInnerHTML(Security.SecurityPanel.instance().visibleView.contentElement);
+    TestRunner.dumpDeepInnerHTML(Security.SecurityPanel.SecurityPanel.instance().visibleView.contentElement);
   }
 
   TestRunner.completeTest();
