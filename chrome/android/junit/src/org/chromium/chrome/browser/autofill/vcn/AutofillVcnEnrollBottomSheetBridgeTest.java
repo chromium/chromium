@@ -37,7 +37,6 @@ import org.chromium.base.FeatureList;
 import org.chromium.base.supplier.ObservableSupplier;
 import org.chromium.base.test.BaseRobolectricTestRunner;
 import org.chromium.base.test.util.JniMocker;
-import org.chromium.chrome.R;
 import org.chromium.chrome.browser.flags.ChromeFeatureList;
 import org.chromium.chrome.browser.layouts.LayoutStateProvider;
 import org.chromium.chrome.browser.layouts.LayoutType;
@@ -88,7 +87,6 @@ public final class AutofillVcnEnrollBottomSheetBridgeTest {
         MockitoAnnotations.initMocks(this);
         mJniMocker.mock(AutofillVcnEnrollBottomSheetBridgeJni.TEST_HOOKS, mBridgeNatives);
         Activity activity = Robolectric.buildActivity(Activity.class).create().get();
-        activity.setTheme(R.style.Theme_BrowserUI_DayNight);
         mShadowActivity = shadowOf(activity);
         mWindow = new WindowAndroid(activity);
         BottomSheetControllerFactory.attach(mWindow, mBottomSheetController);
