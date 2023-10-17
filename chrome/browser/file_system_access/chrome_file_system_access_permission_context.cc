@@ -747,26 +747,31 @@ class ChromeFileSystemAccessPermissionContext::PermissionGrantImpl
     return type_;
   }
 
-  void SetStatus(PermissionStatus status,
-                 PersistedPermissionOptions persisted_status) {
+  void SetStatus(PermissionStatus new_status,
+                 PersistedPermissionOptions update_options) {
     DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
-    bool should_notify = status_ != status;
-    status_ = status;
+
+    if (status_ == new_status) {
+      return;
+    }
+
+    status_ = new_status;
 
     if (context_ &&
-        persisted_status ==
+        update_options ==
             PersistedPermissionOptions::kUpdatePersistedPermission &&
         base::FeatureList::IsEnabled(
             features::kFileSystemAccessPersistentPermissions)) {
-      if (status == PermissionStatus::GRANTED) {
-        const std::unique_ptr<Object> object =
-            context_->GetGrantedObject(origin_, PathAsPermissionKey(path_));
+      const std::unique_ptr<Object> object =
+          context_->GetGrantedObject(origin_, PathAsPermissionKey(path_));
+      auto opposite_type =
+          type_ == GrantType::kRead ? GrantType::kWrite : GrantType::kRead;
+
+      if (new_status == PermissionStatus::GRANTED) {
         if (object) {
           // Persisted permissions include both read and write information in
           // one object. Figure out if the other grant type is already
           // persisted and update the existing one.
-          auto opposite_type =
-              type_ == GrantType::kRead ? GrantType::kWrite : GrantType::kRead;
           auto type_exists =
               object->value.FindBool(GetGrantKeyFromGrantType(type_))
                   .value_or(false);
@@ -783,13 +788,30 @@ class ChromeFileSystemAccessPermissionContext::PermissionGrantImpl
           base::Value::Dict grant = AsValue();
           context_->GrantObjectPermission(origin_, std::move(grant));
         }
-      } else {
-        context_->RevokeObjectPermission(origin_, GetKey());
+      } else if (object) {
+        // Permission is not granted anymore. Remove the grant object entirely
+        // if only this grant type exists in the grant object; otherwise, remove
+        // the grant type key from the grant object.
+        auto type_exists =
+            object->value.FindBool(GetGrantKeyFromGrantType(type_))
+                .value_or(false);
+        auto opposite_type_exists =
+            object->value.FindBool(GetGrantKeyFromGrantType(opposite_type))
+                .value_or(false);
+        if (type_exists) {
+          if (opposite_type_exists) {
+            base::Value::Dict new_object = object->value.Clone();
+            new_object.Remove(GetGrantKeyFromGrantType(type_));
+            context_->UpdateObjectPermission(origin_, object->value,
+                                             std::move(new_object));
+          } else {
+            context_->RevokeObjectPermission(origin_, GetKey());
+          }
+        }
       }
     }
-    if (should_notify) {
-      NotifyPermissionStatusChanged();
-    }
+
+    NotifyPermissionStatusChanged();
   }
 
   base::Value::Dict AsValue() const {
@@ -800,15 +822,6 @@ class ChromeFileSystemAccessPermissionContext::PermissionGrantImpl
     value.Set(kPermissionIsDirectoryKey,
               handle_type_ == HandleType::kDirectory);
     value.Set(GetGrantKeyFromGrantType(type_), true);
-
-    // Persisted permissions include both read and write information in one
-    // object. Figure out if the other grant type is already persisted.
-    auto opposite_type =
-        type_ == GrantType::kRead ? GrantType::kWrite : GrantType::kRead;
-    if (context_->HasExtendedPermission(origin_, path_, handle_type_,
-                                        opposite_type)) {
-      value.Set(GetGrantKeyFromGrantType(opposite_type), true);
-    }
     return value;
   }
 
@@ -986,15 +999,18 @@ class ChromeFileSystemAccessPermissionContext::PermissionGrantImpl
       return;
     }
 
+    path_ = new_path;
+
     if (base::FeatureList::IsEnabled(
             features::kFileSystemAccessPersistentPermissions)) {
-      const auto& grant_before = AsValue();
-      path_ = new_path;
-      // If there is an existing dormant or extended object, update with the
-      // new object.
-      context_->UpdateObjectPermission(origin_, grant_before, AsValue());
-    } else {
-      path_ = new_path;
+      const std::unique_ptr<Object> object =
+          context_->GetGrantedObject(origin_, PathAsPermissionKey(path_));
+      if (object) {
+        base::Value::Dict new_object = object->value.Clone();
+        new_object.Set(kPermissionPathKey, base::FilePathToValue(new_path));
+        context_->UpdateObjectPermission(origin_, object->value,
+                                         std::move(new_object));
+      }
     }
 
     NotifyPermissionStatusChanged();

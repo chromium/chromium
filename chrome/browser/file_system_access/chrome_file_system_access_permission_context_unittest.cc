@@ -2091,35 +2091,33 @@ TEST_F(ChromeFileSystemAccessPermissionContextTest,
 }
 
 TEST_F(ChromeFileSystemAccessPermissionContextTest,
-       PersistedPermission_SharedFateReadAndWrite) {
+       PersistedPermission_ReadWriteGrants) {
   permission_context()->SetOriginHasExtendedPermissionForTesting(kTestOrigin);
-  auto read_grant = permission_context()->GetReadPermissionGrant(
-      kTestOrigin, kTestPath, HandleType::kFile, UserAction::kSave);
-  EXPECT_EQ(read_grant->GetStatus(), PermissionStatus::GRANTED);
-  EXPECT_TRUE(permission_context()->HasExtendedPermissionForTesting(
-      kTestOrigin, kTestPath, HandleType::kFile, GrantType::kRead));
 
+  // Grant the write access.
   auto write_grant = permission_context()->GetWritePermissionGrant(
-      kTestOrigin, kTestPath, HandleType::kFile, UserAction::kSave);
+      kTestOrigin, kTestPath, HandleType::kDirectory, UserAction::kSave);
   EXPECT_EQ(write_grant->GetStatus(), PermissionStatus::GRANTED);
   EXPECT_TRUE(permission_context()->HasExtendedPermissionForTesting(
-      kTestOrigin, kTestPath, HandleType::kFile, GrantType::kWrite));
+      kTestOrigin, kTestPath, HandleType::kDirectory, GrantType::kWrite));
 
-  read_grant.reset();
-
-  // Auto-grant because active permissions exist. This should update the
-  // timestamp of the persisted permission for the `write_grant`.
+  // Deny the read access.
+  auto read_grant = permission_context()->GetReadPermissionGrant(
+      kTestOrigin, kTestPath, HandleType::kDirectory, UserAction::kOpen);
+  FileSystemAccessPermissionRequestManager::FromWebContents(web_contents())
+      ->set_auto_response_for_test(PermissionAction::DENIED);
   base::test::TestFuture<PermissionRequestOutcome> future;
-  write_grant->RequestPermission(frame_id(), UserActivationState::kNotRequired,
-                                 future.GetCallback());
-  EXPECT_EQ(future.Get(), PermissionRequestOutcome::kRequestAborted);
+  read_grant->RequestPermission(frame_id(), UserActivationState::kNotRequired,
+                                future.GetCallback());
+  EXPECT_EQ(future.Get(), PermissionRequestOutcome::kUserDenied);
+  EXPECT_EQ(read_grant->GetStatus(), PermissionStatus::DENIED);
+  EXPECT_FALSE(permission_context()->HasExtendedPermissionForTesting(
+      kTestOrigin, kTestPath, HandleType::kDirectory, GrantType::kRead));
 
-  // Even though only the `write_grant` was accessed, we should not lose read
-  // access.
+  // Denying read access should not remove write access.
+  EXPECT_EQ(write_grant->GetStatus(), PermissionStatus::GRANTED);
   EXPECT_TRUE(permission_context()->HasExtendedPermissionForTesting(
-      kTestOrigin, kTestPath, HandleType::kFile, GrantType::kRead));
-  EXPECT_TRUE(permission_context()->HasExtendedPermissionForTesting(
-      kTestOrigin, kTestPath, HandleType::kFile, GrantType::kWrite));
+      kTestOrigin, kTestPath, HandleType::kDirectory, GrantType::kWrite));
 }
 
 TEST_F(ChromeFileSystemAccessPermissionContextTest,
