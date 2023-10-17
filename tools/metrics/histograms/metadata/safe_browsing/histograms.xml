@@ -1153,6 +1153,26 @@ chromium-metrics-reviews@google.com.
   </summary>
 </histogram>
 
+<histogram name="SafeBrowsing.HPRT.CacheDuration.InitialOnSet" units="ms"
+    expires_after="2024-04-16">
+  <owner>thefrog@chromium.org</owner>
+  <owner>chrome-counter-abuse-alerts@google.com</owner>
+  <summary>
+    Logs the cache duration that an item will have for a hash-prefix real-time
+    lookup. Logged when the item is added to the cache.
+  </summary>
+</histogram>
+
+<histogram name="SafeBrowsing.HPRT.CacheDuration.RemainingOnHit" units="ms"
+    expires_after="2024-04-16">
+  <owner>thefrog@chromium.org</owner>
+  <owner>chrome-counter-abuse-alerts@google.com</owner>
+  <summary>
+    Logs the remaining cache duration that an item has for a hash-prefix
+    real-time lookup. Logged when there is a cache hit for the item.
+  </summary>
+</histogram>
+
 <histogram name="SafeBrowsing.HPRT.CacheHit" enum="BooleanCacheHit"
     expires_after="2024-02-04">
   <owner>thefrog@chromium.org</owner>

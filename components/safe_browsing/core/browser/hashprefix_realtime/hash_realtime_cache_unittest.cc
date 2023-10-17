@@ -50,6 +50,31 @@ class HashRealTimeCacheTest : public PlatformTest {
                                          /*expected_count=*/num_misses);
     histogram_tester_ = std::make_unique<base::HistogramTester>();
   }
+  void CheckAndResetCacheDurationLogs(
+      absl::optional<int> initial_cache_duration_sec,
+      absl::optional<int> remaining_cache_duration_sec) {
+    if (initial_cache_duration_sec.has_value()) {
+      histogram_tester_->ExpectUniqueSample(
+          /*name=*/"SafeBrowsing.HPRT.CacheDuration.InitialOnSet",
+          /*sample=*/initial_cache_duration_sec.value() * 1000,  // sec to ms
+          /*expected_bucket_count=*/1);
+    } else {
+      histogram_tester_->ExpectTotalCount(
+          /*name=*/"SafeBrowsing.HPRT.CacheDuration.InitialOnSet",
+          /*expected_count=*/0);
+    }
+    if (remaining_cache_duration_sec.has_value()) {
+      histogram_tester_->ExpectUniqueSample(
+          /*name=*/"SafeBrowsing.HPRT.CacheDuration.RemainingOnHit",
+          /*sample=*/remaining_cache_duration_sec.value() * 1000,  // sec to ms
+          /*expected_bucket_count=*/1);
+    } else {
+      histogram_tester_->ExpectTotalCount(
+          /*name=*/"SafeBrowsing.HPRT.CacheDuration.RemainingOnHit",
+          /*expected_count=*/0);
+    }
+    histogram_tester_ = std::make_unique<base::HistogramTester>();
+  }
   void CheckAndResetCacheSizeOnClear(int num_hash_prefixes,
                                      int num_full_hashes) {
     histogram_tester_->ExpectBucketCount(
@@ -405,6 +430,34 @@ TEST_F(HashRealTimeCacheTest, TestCacheMatching_OverwrittenEntry) {
   task_environment_.FastForwardBy(base::Seconds(1));
   EXPECT_TRUE(cache->SearchCache({"aaaa"}).empty());
   CheckAndResetCacheHitsAndMisses(/*num_hits=*/0, /*num_misses=*/1);
+}
+
+TEST_F(HashRealTimeCacheTest, TestCacheMatching_CacheDurationLogging) {
+  auto cache = std::make_unique<HashRealTimeCache>();
+  std::vector<std::string> requested_hash_prefixes = {"aaaa"};
+  std::vector<V5::FullHash> response_full_hashes = {
+      CreateBasicFullHash("aaaa1111111111111111111111111111",
+                          {V5::ThreatType::SOCIAL_ENGINEERING}),
+  };
+  cache->CacheSearchHashesResponse(requested_hash_prefixes,
+                                   response_full_hashes,
+                                   CreateCacheDuration(300, 0));
+  CheckAndResetCacheDurationLogs(
+      /*initial_cache_duration_sec=*/300,
+      /*remaining_cache_duration_sec=*/absl::nullopt);
+
+  cache->SearchCache({"aaaa"});
+  CheckAndResetCacheDurationLogs(/*initial_cache_duration_sec=*/absl::nullopt,
+                                 /*remaining_cache_duration_sec=*/300);
+  task_environment_.FastForwardBy(base::Seconds(299));
+  cache->SearchCache({"aaaa"});
+  CheckAndResetCacheDurationLogs(/*initial_cache_duration_sec=*/absl::nullopt,
+                                 /*remaining_cache_duration_sec=*/1);
+  task_environment_.FastForwardBy(base::Seconds(1));
+  cache->SearchCache({"aaaa"});
+  CheckAndResetCacheDurationLogs(
+      /*initial_cache_duration_sec=*/absl::nullopt,
+      /*remaining_cache_duration_sec=*/absl::nullopt);
 }
 
 TEST_F(HashRealTimeCacheTest, TestClearExpiredResults_EmptyCache) {
