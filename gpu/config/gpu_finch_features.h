@@ -87,8 +87,6 @@ GPU_EXPORT BASE_DECLARE_FEATURE(kEnableWatchdogReportOnlyModeOnGpuInit);
 
 GPU_EXPORT BASE_DECLARE_FEATURE(kEnableVkPipelineCache);
 
-GPU_EXPORT BASE_DECLARE_FEATURE(kReduceOpsTaskSplitting);
-
 GPU_EXPORT BASE_DECLARE_FEATURE(kNoDiscardableMemoryForGpuDecodePath);
 
 GPU_EXPORT BASE_DECLARE_FEATURE(kEnableDrDc);
