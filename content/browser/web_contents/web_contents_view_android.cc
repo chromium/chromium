@@ -410,7 +410,9 @@ void WebContentsViewAndroid::StartDragging(
 void WebContentsViewAndroid::UpdateDragOperation(
     ui::mojom::DragOperation op,
     bool document_is_handling_drag) {
-  // Intentional no-op because Android does not have cursor.
+  // Intentional not storing `op` because Android does not support drag and
+  // drop cursor yet.
+  document_is_handling_drag_ = document_is_handling_drag;
 }
 
 bool WebContentsViewAndroid::OnDragEvent(const ui::DragEventAndroid& event) {
@@ -430,6 +432,7 @@ bool WebContentsViewAndroid::OnDragEvent(const ui::DragEventAndroid& event) {
     case JNI_DragEvent::ACTION_DROP: {
       DropData drop_data;
       drop_data.did_originate_from_renderer = false;
+      drop_data.document_is_handling_drag = document_is_handling_drag_;
       JNIEnv* env = AttachCurrentThread();
       std::u16string drop_content =
           ConvertJavaStringToUTF16(env, event.GetJavaContent());
