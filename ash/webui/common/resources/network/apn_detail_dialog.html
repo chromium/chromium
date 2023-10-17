@@ -175,6 +175,8 @@
     <template is="dom-if"
         if="[[isUiElementVisible_(UiElement.DONE_BUTTON, mode)]]" restamp>
       <cr-button id="apnDoneBtn" class="action-button"
+          aria-describedby="apnInput usernameInput
+              authenticationTypeSelection checkboxContainer ipTypeSelection"
           on-click="onCancelClicked_">
         [[i18n('apnDetailDialogDone')]]
       </cr-button>
