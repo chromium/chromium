@@ -1568,25 +1568,6 @@ void InjectNTP(Browser* browser) {
   }
 }
 
-// TODO(crbug.com/779791) : Remove showing settings from MainController.
-- (void)showAutofillSettingsFromViewController:
-    (UIViewController*)baseViewController {
-  DCHECK(!self.signinCoordinator)
-      << "self.signinCoordinator: "
-      << base::SysNSStringToUTF8([self.signinCoordinator description]);
-  if (self.settingsNavigationController) {
-    return;
-  }
-
-  Browser* browser = self.mainInterface.browser;
-  self.settingsNavigationController =
-      [SettingsNavigationController autofillProfileControllerForBrowser:browser
-                                                               delegate:self];
-  [baseViewController presentViewController:self.settingsNavigationController
-                                   animated:YES
-                                 completion:nil];
-}
-
 - (void)showPrivacySettingsFromViewController:
     (UIViewController*)baseViewController {
   if (self.settingsNavigationController) {

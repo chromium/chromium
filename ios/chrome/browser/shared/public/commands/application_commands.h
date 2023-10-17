@@ -194,10 +194,6 @@ enum class WarningType;
 - (void)displayRegularTabSwitcherInGridLayout;
 
 // TODO(crbug.com/779791) : Do not pass baseViewController through dispatcher.
-// Shows the Autofill Settings UI, presenting from `baseViewController`.
-- (void)showAutofillSettingsFromViewController:
-    (UIViewController*)baseViewController;
-
 // Shows the settings Privacy UI.
 - (void)showPrivacySettingsFromViewController:
     (UIViewController*)baseViewController;
