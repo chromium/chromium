@@ -147,10 +147,8 @@ void CreateDiskImage::OnConciergeAvailable(BorealisContext* context,
   request.set_image_type(vm_tools::concierge::DISK_IMAGE_AUTO);
   request.set_storage_location(vm_tools::concierge::STORAGE_CRYPTOHOME_ROOT);
   request.set_disk_size(0);
-  if (base::FeatureList::IsEnabled(ash::features::kBorealisStorageBallooning)) {
-    request.set_filesystem_type(vm_tools::concierge::EXT4);
-    request.set_storage_ballooning(true);
-  }
+  request.set_filesystem_type(vm_tools::concierge::EXT4);
+  request.set_storage_ballooning(true);
 
   ash::ConciergeClient::Get()->CreateDiskImage(
       std::move(request), base::BindOnce(&CreateDiskImage::OnCreateDiskImage,
@@ -225,9 +223,7 @@ void StartBorealisVm::StartBorealisWithExternalDisk(
     request.set_enable_big_gl(true);
   }
   request.set_name(context->vm_name());
-  if (base::FeatureList::IsEnabled(ash::features::kBorealisStorageBallooning)) {
-    request.set_storage_ballooning(true);
-  }
+  request.set_storage_ballooning(true);
   if (base::FeatureList::IsEnabled(ash::features::kBorealisDGPU)) {
     request.set_enable_dgpu_passthrough(true);
   }

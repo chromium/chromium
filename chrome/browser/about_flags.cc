@@ -2999,8 +2999,6 @@ constexpr char kBorealisLinuxModeInternalName[] = "borealis-linux-mode";
 // internally to refer to whether borealis is installed or not.
 constexpr char kBorealisPermittedInternalName[] = "borealis-enabled";
 constexpr char kBorealisProvisionInternalName[] = "borealis-provision";
-constexpr char kBorealisStorageBallooningInternalName[] =
-    "borealis-storage-ballooning";
 constexpr char kBorealisWebUIInstallerInternalName[] =
     "borealis-web-ui-installer";
 constexpr char kVmPerBootShaderCacheName[] = "vm-per-boot-shader-cache";
@@ -9242,10 +9240,6 @@ const FeatureEntry kFeatureEntries[] = {
     {kBorealisProvisionInternalName, flag_descriptions::kBorealisProvisionName,
      flag_descriptions::kBorealisProvisionDescription, kOsCrOS,
      FEATURE_VALUE_TYPE(ash::features::kBorealisProvision)},
-    {kBorealisStorageBallooningInternalName,
-     flag_descriptions::kBorealisStorageBallooningName,
-     flag_descriptions::kBorealisStorageBallooningDescription, kOsCrOS,
-     FEATURE_VALUE_TYPE(ash::features::kBorealisStorageBallooning)},
     {kBorealisWebUIInstallerInternalName,
      flag_descriptions::kBorealisWebUIInstallerName,
      flag_descriptions::kBorealisWebUIInstallerDescription, kOsCrOS,
@@ -11222,9 +11216,6 @@ bool ShouldSkipConditionalFeatureEntry(const flags_ui::FlagsStorage* storage,
     return !base::FeatureList::IsEnabled(features::kBorealis);
   }
 
-  if (!strcmp(kBorealisStorageBallooningInternalName, entry.internal_name)) {
-    return !base::FeatureList::IsEnabled(features::kBorealis);
-  }
   if (!strcmp(kBorealisWebUIInstallerInternalName, entry.internal_name)) {
     return !base::FeatureList::IsEnabled(features::kBorealis);
   }

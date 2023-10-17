@@ -408,9 +408,6 @@ extern const char kBorealisPermittedDescription[];
 extern const char kBorealisProvisionName[];
 extern const char kBorealisProvisionDescription[];
 
-extern const char kBorealisStorageBallooningName[];
-extern const char kBorealisStorageBallooningDescription[];
-
 extern const char kBorealisWebUIInstallerName[];
 extern const char kBorealisWebUIInstallerDescription[];
 

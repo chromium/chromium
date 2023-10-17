@@ -706,11 +706,6 @@ const char kBorealisProvisionDescription[] =
     "Resulting in allocations in the Borealis being backed by physical "
     "storage.";
 
-const char kBorealisStorageBallooningName[] = "Borealis Storage Ballooning";
-const char kBorealisStorageBallooningDescription[] =
-    "Enables storage balloning for Borealis. This takes precedence over the "
-    "other Borealis Disk management flag.";
-
 const char kBorealisWebUIInstallerName[] = "Borealis WebUI Installer";
 const char kBorealisWebUIInstallerDescription[] =
     "Use the new WebUI installer instead of views installer.";
