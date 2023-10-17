@@ -38,6 +38,7 @@ import org.chromium.net.CronetTestRule.RequiresMinApi;
 import org.chromium.net.NetworkChangeNotifierAutoDetect.ConnectivityManagerDelegate;
 import org.chromium.net.TestUrlRequestCallback.FailureType;
 import org.chromium.net.TestUrlRequestCallback.ResponseStep;
+import org.chromium.net.apihelpers.UploadDataProviders;
 import org.chromium.net.impl.CronetUrlRequest;
 import org.chromium.net.impl.NetworkExceptionImpl;
 import org.chromium.net.impl.UrlResponseInfoImpl;
@@ -168,7 +169,10 @@ public class CronetUrlRequestTest {
                 "Connection", "close", "Content-Length", "3", "Content-Type", "text/plain");
         mTestRule.assertResponseEquals(urlResponseInfo, callback.getResponseInfoWithChecks());
         checkResponseInfo(
-                callback.getResponseInfoWithChecks(), NativeTestServer.getEchoMethodURL(), 200, "OK");
+                callback.getResponseInfoWithChecks(),
+                NativeTestServer.getEchoMethodURL(),
+                200,
+                "OK");
     }
 
     UrlResponseInfo createUrlResponseInfo(
@@ -268,7 +272,8 @@ public class CronetUrlRequestTest {
         assertThat(callback.mResponseStep).isEqualTo(ResponseStep.ON_RESPONSE_STARTED);
         assertThat(callback.mRedirectResponseInfoList).hasSize(1);
         assertThat(callback.getResponseInfoWithChecks()).hasHttpStatusCodeThat().isEqualTo(200);
-        checkResponseInfo(callback.getResponseInfoWithChecks(), NativeTestServer.getSuccessURL(), 200, "OK");
+        checkResponseInfo(
+                callback.getResponseInfoWithChecks(), NativeTestServer.getSuccessURL(), 200, "OK");
         assertThat(callback.getResponseInfoWithChecks())
                 .hasUrlChainThat()
                 .containsExactly(
@@ -905,7 +910,10 @@ public class CronetUrlRequestTest {
         assertThat(callback.getResponseInfoWithChecks()).hasHttpStatusCodeThat().isEqualTo(200);
         assertThat(callback.mResponseAsString).isEqualTo("GET");
         checkResponseInfo(
-                callback.getResponseInfoWithChecks(), NativeTestServer.getEchoMethodURL(), 200, "OK");
+                callback.getResponseInfoWithChecks(),
+                NativeTestServer.getEchoMethodURL(),
+                200,
+                "OK");
 
         // Check that buffer contents were not modified.
         assertThat(bufferContentsToString(readBuffer, 0, 5)).isEqualTo("FORTE");

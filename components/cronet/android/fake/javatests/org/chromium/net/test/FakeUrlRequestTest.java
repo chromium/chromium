@@ -31,12 +31,12 @@ import org.chromium.net.TestUploadDataProvider;
 import org.chromium.net.TestUrlRequestCallback;
 import org.chromium.net.TestUrlRequestCallback.ResponseStep;
 import org.chromium.net.UploadDataProvider;
-import org.chromium.net.UploadDataProviders;
 import org.chromium.net.UploadDataSink;
 import org.chromium.net.UrlRequest;
 import org.chromium.net.UrlRequest.Status;
 import org.chromium.net.UrlRequest.StatusListener;
 import org.chromium.net.UrlResponseInfo;
+import org.chromium.net.apihelpers.UploadDataProviders;
 
 import java.io.IOException;
 import java.net.URI;
