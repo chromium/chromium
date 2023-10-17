@@ -210,7 +210,7 @@ class Xcode11LogParser(object):
     return result
 
   @staticmethod
-  def _parse_app_side_failure(test_name, output_path):
+  def _get_app_side_failure(test_name, output_path):
     """Parses and returns app side failure reason in the event that a test
     causes the app to crash.
 
@@ -221,19 +221,14 @@ class Xcode11LogParser(object):
           running xcodebuild.
 
     Returns:
-      (string) Formatted app side failure message or a message saying failure
-          reason is missing
+      (str) Formatted app side failure message or a message saying failure
+        reason is missing
     """
     attempt_num = output_path.split('/')[-1]
     app_side_failure_message = ''
     parent_output_dir = os.path.join(output_path, os.pardir)
     files = os.listdir(parent_output_dir)
-    app_crashed_message = '%s\nShowing logs from application under test. ' + \
-      'For complete logs see %s in CAS outputs, which can be found in the ' + \
-      'swarming task of the shard this test ran on.\n\n%s\n'
-    failure_reason_missing = 'App side failure reason not found for ' + \
-      'crashed test: %s. For complete logs see CAS outputs, which can be ' + \
-      'found in the swarming task of the shard this test ran on.\n'
+    log_file_name = ''
 
     for file in files:
       # the '-' is important since it distinguishes the app side log file from
@@ -253,11 +248,32 @@ class Xcode11LogParser(object):
                   'Standard output and standard error from' in line):
                 # test name is only expected to appear in a single log file
                 # so it's safe to return early
-                return app_crashed_message % (constants.CRASH_MESSAGE,
-                                              file, app_side_failure_message)
+                log_file_name = file
+                break
               else:
                 app_side_failure_message += line
-    return failure_reason_missing % test_name
+
+    if not app_side_failure_message:
+      failure_reason_missing = 'App side failure reason not found for ' + \
+        'crashed test: %s. For complete logs see CAS outputs, which can be ' + \
+        'found in the swarming task of the shard this test ran on.\n'
+      return failure_reason_missing % test_name
+
+    # omit layout constraint warnings since they can clutter logs and make the
+    # actual reason why the app crashed difficult to find
+    layout_constraint_warning_pattern = \
+      r'Unable to simultaneously satisfy constraints.(.*?)may also be helpful'
+    app_side_failure_message = re.sub(
+        layout_constraint_warning_pattern,
+        constants.LAYOUT_CONSTRAINT_MSG,
+        app_side_failure_message,
+        flags=re.DOTALL)
+
+    app_crashed_message = '%s\nShowing logs from application under test. ' + \
+      'For complete logs see %s in CAS outputs, which can be found in the ' + \
+      'swarming task of the shard this test ran on.\n\n%s\n'
+    return app_crashed_message % (constants.CRASH_MESSAGE, log_file_name,
+                                  app_side_failure_message)
 
   @staticmethod
   def _get_test_statuses(output_path):
@@ -342,7 +358,7 @@ class Xcode11LogParser(object):
 
               if (constants.CRASH_MESSAGE in failure['message']['_value']):
                 failure_message += \
-                  Xcode11LogParser._parse_app_side_failure(
+                  Xcode11LogParser._get_app_side_failure(
                     test_name, output_path)
               else:
                 failure_message += _sanitize_str(

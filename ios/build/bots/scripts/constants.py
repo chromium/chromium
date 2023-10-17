@@ -11,3 +11,5 @@ MAX_RUNTIME_KEPT_DAYS = '3'
 
 # Message checked for in EG test logs to determine if the app crashed
 CRASH_MESSAGE = 'App crashed and disconnected.'
+
+LAYOUT_CONSTRAINT_MSG = 'Omitting layout constraint warnings'
