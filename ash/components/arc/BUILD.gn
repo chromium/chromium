@@ -194,7 +194,6 @@ static_library("prefs") {
     "arc_export.h",
     "arc_prefs.cc",
     "arc_prefs.h",
-    "metrics/arc_daily_metrics_prefs.h",
   ]
 
   defines = [ "ARC_IMPLEMENTATION" ]
@@ -203,6 +202,7 @@ static_library("prefs") {
     "//ash/components/arc/session:arc_base_enums",
     "//build:chromeos_buildflags",
     "//components/guest_os:prefs",
+    "//components/metrics",
     "//components/prefs",
   ]
 }
