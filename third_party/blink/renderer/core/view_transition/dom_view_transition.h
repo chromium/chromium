@@ -55,16 +55,7 @@ class CORE_EXPORT DOMViewTransition
   // to kFinished state but before any finalization has run.
   void DidFinishAnimating();
 
-  // Returns the result of invoking the callback.
-  // kFailed: Indicates that there was a failure in running the callback and the
-  //          transition should be skipped.
-  // kFinished: Indicates that there was no callback to run so we can move to
-  //            finished state synchronously.
-  // kRunning: Indicates that the callback is in running state. Note that even
-  //           if the callback is synchronous, the notification that it has
-  //           finished running is async.
-  enum class DOMCallbackResult { kFailed, kFinished, kRunning };
-  DOMCallbackResult InvokeDOMChangeCallback();
+  void InvokeDOMChangeCallback();
 
   // ActiveScriptWrappable functionality.
   // TODO(bokan): `this` doesn't actually need to be ActiveScriptWrappable but
@@ -111,8 +102,17 @@ class CORE_EXPORT DOMViewTransition
   Member<PromiseProperty> dom_updated_promise_property_;
 
   // The result of running the `update_dom_callback_`. This is set from
-  // InvokeDOMChangeCallback and is empty until then.
-  absl::optional<DOMCallbackResult> dom_callback_result_;
+  // InvokeDOMChangeCallback.
+  //
+  // kNotInvoked: The state before InvokeDOMChangeCallback is run.
+  // kRunning: Indicates that the callback is in running state. Note that even
+  //           if the callback is synchronous, or there is no callback, the
+  //           notification that it has finished running is async.
+  // kFailed: Indicates that there was a failure in running the callback and the
+  //          transition should be skipped.
+  // kSucceeded: Indicates that the callback has completed successfully.
+  enum class DOMCallbackResult { kNotInvoked, kRunning, kFailed, kSucceeded };
+  DOMCallbackResult dom_callback_result_ = DOMCallbackResult::kNotInvoked;
 };
 
 }  // namespace blink

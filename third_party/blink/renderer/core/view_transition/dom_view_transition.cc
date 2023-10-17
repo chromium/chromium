@@ -78,32 +78,27 @@ void DOMViewTransition::DidSkipTransition(
   // If we haven't run the dom change callback yet, schedule a task to do so.
   // The finished promise will propagate the result of the updateCallbackDone
   // promise when this callback runs.
-  if (!dom_callback_result_) {
+  if (dom_callback_result_ == DOMCallbackResult::kNotInvoked) {
     execution_context_->GetTaskRunner(TaskType::kMiscPlatformAPI)
-        ->PostTask(
-            FROM_HERE,
-            WTF::BindOnce(
-                base::IgnoreResult(&DOMViewTransition::InvokeDOMChangeCallback),
-                WrapPersistent(this)));
-  } else if (dom_callback_result_ != DOMCallbackResult::kRunning) {
+        ->PostTask(FROM_HERE,
+                   WTF::BindOnce(&DOMViewTransition::InvokeDOMChangeCallback,
+                                 WrapPersistent(this)));
+  } else if (dom_callback_result_ == DOMCallbackResult::kFailed) {
     // If the DOM callback finished and there was a failure then the finished
     // promise should have been rejected with updateCallbackDone.
-    if (dom_callback_result_ == DOMCallbackResult::kFailed) {
-      CHECK_EQ(finished_promise_property_->GetState(),
-               PromiseProperty::State::kRejected);
-    } else {
-      CHECK_EQ(*dom_callback_result_, DOMCallbackResult::kFinished);
-      // But if the callback was successful, we need to resolve the finished
-      // promise while skipping the transition.
-      AtMicrotask(ViewTransition::PromiseResponse::kResolve,
-                  finished_promise_property_);
-    }
+    CHECK_EQ(finished_promise_property_->GetState(),
+             PromiseProperty::State::kRejected);
+  } else if (dom_callback_result_ == DOMCallbackResult::kSucceeded) {
+    // But if the callback was successful, we need to resolve the finished
+    // promise while skipping the transition.
+    AtMicrotask(ViewTransition::PromiseResponse::kResolve,
+                finished_promise_property_);
   }
 }
 
 void DOMViewTransition::NotifyDOMCallbackFinished(bool success,
                                                   ScriptValue value) {
-  CHECK_EQ(*dom_callback_result_, DOMCallbackResult::kRunning);
+  CHECK_EQ(dom_callback_result_, DOMCallbackResult::kRunning);
   // Handle all promises which depend on this callback.
   if (success) {
     dom_updated_promise_property_->ResolveWithUndefined();
@@ -128,7 +123,7 @@ void DOMViewTransition::NotifyDOMCallbackFinished(bool success,
   }
 
   dom_callback_result_ =
-      success ? DOMCallbackResult::kFinished : DOMCallbackResult::kFailed;
+      success ? DOMCallbackResult::kSucceeded : DOMCallbackResult::kFailed;
   view_transition_->NotifyDOMCallbackFinished(success);
 }
 
@@ -142,42 +137,41 @@ void DOMViewTransition::DidFinishAnimating() {
               finished_promise_property_);
 }
 
-DOMViewTransition::DOMCallbackResult
-DOMViewTransition::InvokeDOMChangeCallback() {
-  CHECK(!dom_callback_result_) << "UpdateDOM callback invoked multiple times.";
-
-  if (!update_dom_callback_) {
-    // TODO(bokan): The no-callback case doesn't need to be special, it should
-    // go through the NotifyDOMCallbackFinished flow.
-    dom_callback_result_ = DOMCallbackResult::kFinished;
-    AtMicrotask(ViewTransition::PromiseResponse::kResolve,
-                dom_updated_promise_property_);
-
-    // If we're already at the terminal state, the dom update callback was
-    // scheduled to run after the transition was skipped.
-    if (view_transition_->IsDone()) {
-      AtMicrotask(ViewTransition::PromiseResponse::kResolve,
-                  finished_promise_property_);
-    }
-    return *dom_callback_result_;
-  }
-
-  v8::Maybe<ScriptPromise> result = update_dom_callback_->Invoke(nullptr);
-
-  // TODO(vmpstr): Should this be a DCHECK?
-  if (result.IsNothing()) {
-    dom_callback_result_ = DOMCallbackResult::kFailed;
-    AtMicrotask(ViewTransition::PromiseResponse::kRejectAbort,
-                dom_updated_promise_property_);
-    AtMicrotask(ViewTransition::PromiseResponse::kRejectAbort,
-                finished_promise_property_);
-    return *dom_callback_result_;
-  }
-
+void DOMViewTransition::InvokeDOMChangeCallback() {
+  CHECK_EQ(dom_callback_result_, DOMCallbackResult::kNotInvoked)
+      << "UpdateDOM callback invoked multiple times.";
   dom_callback_result_ = DOMCallbackResult::kRunning;
 
-  ScriptState::Scope scope(script_state_);
+  v8::Maybe<ScriptPromise> result = v8::Nothing<ScriptPromise>();
+  ScriptState* script_state = nullptr;
 
+  if (update_dom_callback_) {
+    script_state = update_dom_callback_->CallbackRelevantScriptState();
+    result = update_dom_callback_->Invoke(nullptr);
+
+    // If the callback couldn't be run for some reason, treat it as an empty
+    // promise rejected with an abort exception.
+    if (result.IsNothing()) {
+      auto value = ScriptValue::From(
+          script_state, MakeGarbageCollected<DOMException>(
+                            DOMExceptionCode::kAbortError, kAbortedMessage));
+      result = v8::Just(ScriptPromise::Reject(script_state, value));
+    }
+  } else {
+    // It's ok to use the main world here since we're only using it to call
+    // DOMChangeFinishedCallback which doesn't use the script state or execute
+    // any script.
+    script_state =
+        ToScriptState(execution_context_, DOMWrapperWorld::MainWorld());
+    ScriptState::Scope scope(script_state);
+
+    // If there's no callback provided, treat the same as an empty promise
+    // resolved without a value.
+    result = v8::Just(ScriptPromise::CastUndefined(script_state));
+  }
+
+  // Note, the DOMChangeFinishedCallback will be invoked asynchronously.
+  ScriptState::Scope scope(script_state);
   result.ToChecked().Then(
       MakeGarbageCollected<ScriptFunction>(
           script_state_,
@@ -185,8 +179,6 @@ DOMViewTransition::InvokeDOMChangeCallback() {
       MakeGarbageCollected<ScriptFunction>(
           script_state_,
           MakeGarbageCollected<DOMChangeFinishedCallback>(*this, false)));
-
-  return *dom_callback_result_;
 }
 
 bool DOMViewTransition::HasPendingActivity() const {

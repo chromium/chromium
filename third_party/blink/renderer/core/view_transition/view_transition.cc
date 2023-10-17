@@ -437,8 +437,7 @@ void ViewTransition::ProcessCurrentState() {
         // created by the script API.
         CHECK_EQ(creation_type_, CreationType::kScript);
         CHECK(script_delegate_);
-        DOMViewTransition::DOMCallbackResult result =
-            script_delegate_->InvokeDOMChangeCallback();
+        script_delegate_->InvokeDOMChangeCallback();
 
         // Since invoking the callback could yield (at least when devtools
         // breakpoint is hit, but maybe in other situations), we could have
@@ -448,21 +447,8 @@ void ViewTransition::ProcessCurrentState() {
           break;
         }
 
-        switch (result) {
-          case DOMViewTransition::DOMCallbackResult::kFinished:
-            process_next_state = AdvanceTo(State::kDOMCallbackFinished);
-            DCHECK(process_next_state);
-            break;
-          case DOMViewTransition::DOMCallbackResult::kFailed:
-            process_next_state = AdvanceTo(State::kDOMCallbackFinished);
-            DCHECK(process_next_state);
-            SkipTransition(PromiseResponse::kRejectAbort);
-            break;
-          case DOMViewTransition::DOMCallbackResult::kRunning:
-            process_next_state = AdvanceTo(State::kDOMCallbackRunning);
-            DCHECK(process_next_state);
-            break;
-        }
+        process_next_state = AdvanceTo(State::kDOMCallbackRunning);
+        DCHECK(process_next_state);
         break;
       }
 
@@ -600,6 +586,8 @@ void ViewTransition::NotifyCaptureFinished() {
 void ViewTransition::NotifyDOMCallbackFinished(bool success) {
   if (IsTerminalState(state_))
     return;
+
+  CHECK_EQ(state_, State::kDOMCallbackRunning);
 
   bool process_next_state = AdvanceTo(State::kDOMCallbackFinished);
   DCHECK(process_next_state);
