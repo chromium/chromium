@@ -1308,55 +1308,62 @@ void PasswordFormManager::UpdateFormManagerWithFormChanges(
 
 void PasswordFormManager::HandleUsernameFirstFlow(
     const UsernameFoundOutsideOfForm& possible_username) {
-  if (IsPossibleSingleUsernameAvailable(possible_username.data)) {
-    // Suggest the possible username value in a prompt in three cases:
-    // (1) If single username field is a server override.
-    // (2) If the server prediction tells that it is a single username field and
-    // there is no `USERNAME` server prediction inside the password form.
-    // (3) If the field has autocomplete = "username" attribute (used only if
-    // there are no server predictions, which lets us override the attribute).
-    // Otherwise, |possible_username| is used only for voting.
-    if (possible_username.priority ==
-            UsernameFoundOutsideOfFormType::kSingleUsernameOverride ||
-        possible_username.priority ==
-            UsernameFoundOutsideOfFormType::kSingleUsernamePrediction ||
-        (possible_username.priority ==
-             UsernameFoundOutsideOfFormType::kUsernameAutocomplete &&
-         base::FeatureList::IsEnabled(
-             password_manager::features::
-                 kUsernameFirstFlowHonorAutocomplete))) {
-      if (!possible_username.password_form_had_matching_username) {
-        SetUsernameValueFromOutsideOfForm(possible_username.data.value,
-                                          *parsed_submitted_form_.get());
-      }
-      metrics_recorder_->set_possible_username_used(true);
-      if (possible_username.data.autocomplete_attribute_has_username) {
-        LogUsingPossibleUsername(
-            client_, /*is_used=*/true,
-            "Single username by autocomplete attribute, "
-            "retrieved from PossibleUsernameData, populated in prompt");
-      } else {
-        LogUsingPossibleUsername(
-            client_, /*is_used=*/true,
-            "Single username predicted by the server, "
-            "retrieved from PossibleUsernameData, populated in prompt");
-      }
-    } else {
+  if (!IsPossibleSingleUsernameAvailable(possible_username.data)) {
+    // If no single username typing preceded single password typing, set
+    // empty single username vote data for the fallback classifier.
+    votes_uploader_.set_single_username_vote_data(SingleUsernameVoteData());
+    return;
+  }
+  votes_uploader_.set_single_username_vote_data(SingleUsernameVoteData(
+      possible_username.data.renderer_id, possible_username.data.value,
+      possible_username.data.form_predictions.value_or(FormPredictions()),
+      form_fetcher_->GetBestMatches(),
+      possible_username.password_form_had_matching_username));
+
+  // Suggest the possible username value in a prompt in three cases:
+  // (1) If single username field is a server override.
+  // (2) If the server prediction tells that it is a single username field and
+  // there is no `USERNAME` server prediction inside the password form.
+  // (3) If the field has autocomplete = "username" attribute (used only if
+  // there are no server predictions, which lets us override the attribute).
+  // Otherwise, |possible_username| is used only for voting.
+  switch (possible_username.priority) {
+    case UsernameFoundOutsideOfFormType::kSingleUsernamePrediction:
+    case UsernameFoundOutsideOfFormType::kSingleUsernameOverride:
+      // Case (1) & (2).
+      LogUsingPossibleUsername(
+          client_, /*is_used=*/true,
+          "Single username predicted by the server, "
+          "retrieved from PossibleUsernameData, populated in prompt");
+      break;
+    case UsernameFoundOutsideOfFormType::kUsernameAutocomplete:
+      // Case (3).
+      LogUsingPossibleUsername(
+          client_, /*is_used=*/true,
+          "Single username by autocomplete attribute, "
+          "retrieved from PossibleUsernameData, populated in prompt");
+      break;
+    case UsernameFoundOutsideOfFormType::kMatchingUsername:
+      // Password prompt is already populated with the same value.
+      LogUsingPossibleUsername(
+          client_, /*is_used=*/true,
+          "Single username matches username found in the PasswordForm, "
+          "already populated in prompt");
+      break;
+    case UsernameFoundOutsideOfFormType::kUserModifiedTextField:
+      // None of the above, doesn't change prompt and used only for voting.
       LogUsingPossibleUsername(
           client_, /*is_used=*/true,
           "Single username by local heuristics, "
           "retrieved from PossibleUsernameData, not populated in prompt");
-    }
-    votes_uploader_.set_single_username_vote_data(SingleUsernameVoteData(
-        possible_username.data.renderer_id, possible_username.data.value,
-        possible_username.data.form_predictions.value_or(FormPredictions()),
-        form_fetcher_->GetBestMatches(),
-        possible_username.password_form_had_matching_username));
-  } else {  // !IsPossibleSingleUsernameAvailable(possible_username)
-    // If no single username typing preceded single password typing, set
-    // empty single username vote data for the fallback classifier.
-    votes_uploader_.set_single_username_vote_data(SingleUsernameVoteData());
+      // Return early since the value is not used in the prompt.
+      return;
   }
+  if (!possible_username.password_form_had_matching_username) {
+    SetUsernameValueFromOutsideOfForm(possible_username.data.value,
+                                      *parsed_submitted_form_.get());
+  }
+  metrics_recorder_->set_possible_username_used(true);
 }
 
 void PasswordFormManager::HandleForgotPasswordFormData() {
