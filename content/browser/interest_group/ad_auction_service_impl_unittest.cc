@@ -14,8 +14,8 @@
 #include "base/containers/contains.h"
 #include "base/containers/flat_map.h"
 #include "base/containers/flat_set.h"
-#include "base/feature_list.h"
 #include "base/functional/bind.h"
+#include "base/functional/callback.h"
 #include "base/json/json_string_value_serializer.h"
 #include "base/memory/raw_ptr.h"
 #include "base/memory/raw_ref.h"
@@ -67,6 +67,7 @@
 #include "crypto/sha2.h"
 #include "mojo/public/cpp/bindings/remote.h"
 #include "mojo/public/cpp/test_support/test_utils.h"
+#include "net/base/isolation_info.h"
 #include "net/third_party/quiche/src/quiche/oblivious_http/oblivious_http_gateway.h"
 #include "services/data_decoder/public/cpp/test_support/in_process_data_decoder.h"
 #include "testing/gtest/include/gtest/gtest.h"
@@ -191,7 +192,8 @@ class AllowInterestGroupContentBrowserClient : public TestContentBrowserClient {
 
     // Can join A interest groups on A top frames, B interest groups on B top
     // frames, C interest groups on C top frames, C interest groups on A top
-    // frames, and no.update.test interest groups on no.update.test top frames.
+    // frames, C interest groups on D top frames, and no.update.test interest
+    // groups on no.update.test top frames.
     return (top_frame_origin.host() == "a.test" &&
             api_origin.host() == "a.test") ||
            (top_frame_origin.host() == "b.test" &&
@@ -199,6 +201,8 @@ class AllowInterestGroupContentBrowserClient : public TestContentBrowserClient {
            (top_frame_origin.host() == "c.test" &&
             api_origin.host() == "c.test") ||
            (top_frame_origin.host() == "a.test" &&
+            api_origin.host() == "c.test") ||
+           (top_frame_origin.host() == "d.test" &&
             api_origin.host() == "c.test") ||
            (top_frame_origin.host() == "no.update.test" &&
             api_origin.host() == "no.update.test");
@@ -247,8 +251,11 @@ constexpr char kFledgeReportHeaders[] =
 // own URLLoaderInterceptor...so these are combined in this same class.
 class NetworkResponder {
  public:
-  // Register interest group update `response` to be served with JSON content
-  // type when a request to `url_path` is made.
+  using NetCallback =
+      base::RepeatingCallback<void(URLLoaderInterceptor::RequestParams*)>;
+
+  // Register interest group update `response` to be served with JSON
+  // content type when a request to `url_path` is made.
   void RegisterUpdateResponse(const std::string& url_path,
                               const std::string& response) {
     base::AutoLock auto_lock(lock_);
@@ -269,6 +276,14 @@ class NetworkResponder {
                               const std::string& response) {
     base::AutoLock auto_lock(lock_);
     report_map_[url_path] = response;
+  }
+
+  // Register a repeat callback to be served when a request to `url_path` is
+  // made.
+  void RegisterRepeatCallback(const std::string& url_path,
+                              const NetCallback callback) {
+    base::AutoLock auto_lock(lock_);
+    net_callback_map_[url_path] = callback;
   }
 
   // Registers a URL to use a "deferred" script response. For a deferred
@@ -398,8 +413,14 @@ class NetworkResponder {
  private:
   bool RequestHandler(URLLoaderInterceptor::RequestParams* params) {
     base::AutoLock auto_lock(lock_);
+    // Check if there is a registered repeat callback.
+    const auto callback_it =
+        net_callback_map_.find(params->url_request.url.path());
+    if (callback_it != net_callback_map_.end()) {
+      callback_it->second.Run(params);
+    }
 
-    // Check deferred responses map first.
+    // Check deferred responses map.
     const auto deferred_it =
         deferred_responses_map_.find(params->url_request.url.path());
     if (deferred_it != deferred_responses_map_.end()) {
@@ -541,6 +562,10 @@ class NetworkResponder {
 
   // Like `json_update_map_`, but for reporting requests.
   base::flat_map<std::string, std::string> report_map_ GUARDED_BY(lock_);
+
+  // Like `json_update_map_`, but for registered callbacks that will be given
+  // the `URLLoaderInterceptor::RequestParams*`.
+  base::flat_map<std::string, NetCallback> net_callback_map_ GUARDED_BY(lock_);
 
   // Only saves reporting requests that auctually received responses.
   std::vector<std::string> sent_reports_ GUARDED_BY(lock_);
@@ -2055,6 +2080,831 @@ TEST_F(AdAuctionServiceImplTest, UpdateMultipleInterestGroups) {
   ASSERT_EQ(second_group.ads->size(), 1u);
   EXPECT_EQ(second_group.ads.value()[0].render_url.spec(),
             "https://example.com/new_render2");
+}
+
+class AdAuctionServiceImplDifferentNIKDuringUpdateTest
+    : public AdAuctionServiceImplTest {
+ public:
+  AdAuctionServiceImplDifferentNIKDuringUpdateTest() {
+    feature_list_.InitAndEnableFeature(features::kGroupNIKByJoiningOrigin);
+  }
+
+ protected:
+  base::test::ScopedFeatureList feature_list_;
+};
+
+// Join two interest groups with two different owners but one joining origin.
+// Check if they reuse same isolation info.
+TEST_F(AdAuctionServiceImplDifferentNIKDuringUpdateTest,
+       UpdateCheckNIKForTwoOwnersOneJoiningOrigin) {
+  constexpr char kGroupNameA[] = "groupA";
+  constexpr char kGroupNameC[] = "groupC";
+  net::IsolationInfo isolation_info1;
+  net::IsolationInfo isolation_info2;
+  base::RunLoop run_loop1;
+  base::RunLoop run_loop2;
+
+  network_responder_->RegisterRepeatCallback(
+      kUpdateUrlPath,
+      base::BindLambdaForTesting(
+          [&isolation_info1,
+           &run_loop1](URLLoaderInterceptor::RequestParams* params) {
+            if (params && params->url_request.trusted_params) {
+              isolation_info1 =
+                  params->url_request.trusted_params->isolation_info;
+            } else {
+              ADD_FAILURE() << "No params or trusted_params";
+            }
+            run_loop1.Quit();
+          }));
+  network_responder_->RegisterRepeatCallback(
+      kUpdateUrlPath2,
+      base::BindLambdaForTesting(
+          [&isolation_info2,
+           &run_loop2](URLLoaderInterceptor::RequestParams* params) {
+            if (params && params->url_request.trusted_params) {
+              isolation_info2 =
+                  params->url_request.trusted_params->isolation_info;
+            } else {
+              ADD_FAILURE() << "No params or trusted_params";
+            }
+            run_loop2.Quit();
+          }));
+  network_responder_->RegisterUpdateResponse(kUpdateUrlPath, R"({
+"ads": [{"renderURL": "https://example.com/new_render1"}]
+})");
+  network_responder_->RegisterUpdateResponse(kUpdateUrlPath2, R"({
+"ads": [{"renderURL": "https://example.com/new_render2"}]
+})");
+
+  // Navigate to top frame KUrlA.
+  NavigateAndCommit(kUrlA);
+  content::RenderFrameHostTester* rfh_tester =
+      content::RenderFrameHostTester::For(main_rfh());
+
+  // Attach a subframe with KUrlA to the top frame KUrlA.
+  // Create and update an interest group owned by kOriginA.
+  content::RenderFrameHost* subframeA = rfh_tester->AppendChild("subframeA");
+  subframeA =
+      NavigationSimulator::NavigateAndCommitFromDocument(kUrlA, subframeA);
+  blink::InterestGroup interest_group = CreateInterestGroup();
+  interest_group.name = kGroupNameA;
+  interest_group.update_url = kUrlA.Resolve(kUpdateUrlPath);
+  interest_group.bidding_url = kBiddingLogicUrlA;
+  interest_group.ads.emplace();
+  blink::InterestGroup::Ad ad(
+      /*render_url=*/GURL("https://example.com/render"),
+      /*metadata=*/absl::nullopt);
+  interest_group.ads->emplace_back(std::move(ad));
+  JoinInterestGroupAndFlush(interest_group, subframeA);
+  EXPECT_EQ(1, GetJoinCount(kOriginA, kGroupNameA));
+  UpdateInterestGroupNoFlushForFrame(subframeA);
+
+  // Attach a subframe with KUrlC to the top frame KUrlA.
+  // Create and update an interest group owned by kOriginC.
+  content::RenderFrameHost* subframeC = rfh_tester->AppendChild("subframeC");
+  subframeC =
+      NavigationSimulator::NavigateAndCommitFromDocument(kUrlC, subframeC);
+  blink::InterestGroup interest_group_2 = CreateInterestGroup();
+  interest_group_2.name = kGroupNameC;
+  interest_group_2.owner = kOriginC;
+  interest_group_2.update_url = kUrlC.Resolve(kUpdateUrlPath2);
+  interest_group_2.bidding_url = kUrlC.Resolve(kBiddingUrlPath);
+  interest_group_2.ads.emplace();
+  ad = blink::InterestGroup::Ad(
+      /*render_url=*/GURL("https://example.com/render"),
+      /*metadata=*/absl::nullopt);
+  interest_group_2.ads->emplace_back(std::move(ad));
+  JoinInterestGroupAndFlush(interest_group_2, subframeC);
+  EXPECT_EQ(1, GetJoinCount(kOriginC, kGroupNameC));
+  UpdateInterestGroupNoFlushForFrame(subframeC);
+
+  run_loop1.Run();
+  run_loop2.Run();
+  task_environment()->RunUntilIdle();
+  ASSERT_TRUE(isolation_info1.IsEqualForTesting(isolation_info2));
+}
+
+// Join two interest groups with one owner but two different joining origins.
+// Check if they use different isolation info.
+TEST_F(AdAuctionServiceImplDifferentNIKDuringUpdateTest,
+       UpdateCheckNIKForOneOwnerTwoJoiningOrigins) {
+  constexpr char kGroupName1[] = "group1";
+  constexpr char kGroupName2[] = "group2";
+  net::IsolationInfo isolation_info1;
+  net::IsolationInfo isolation_info2;
+  base::RunLoop run_loop1;
+  base::RunLoop run_loop2;
+
+  network_responder_->RegisterRepeatCallback(
+      kUpdateUrlPath,
+      base::BindLambdaForTesting(
+          [&isolation_info1,
+           &run_loop1](URLLoaderInterceptor::RequestParams* params) {
+            if (params && params->url_request.trusted_params) {
+              isolation_info1 =
+                  params->url_request.trusted_params->isolation_info;
+            } else {
+              ADD_FAILURE() << "No params or trusted_params";
+            }
+            run_loop1.Quit();
+          }));
+  network_responder_->RegisterRepeatCallback(
+      kUpdateUrlPath2,
+      base::BindLambdaForTesting(
+          [&isolation_info2,
+           &run_loop2](URLLoaderInterceptor::RequestParams* params) {
+            if (params && params->url_request.trusted_params) {
+              isolation_info2 =
+                  params->url_request.trusted_params->isolation_info;
+            } else {
+              ADD_FAILURE() << "No params or trusted_params";
+            }
+            run_loop2.Quit();
+          }));
+  network_responder_->RegisterUpdateResponse(kUpdateUrlPath, R"({
+"ads": [{"renderURL": "https://example.com/new_render1"}]
+})");
+  network_responder_->RegisterUpdateResponse(kUpdateUrlPath2, R"({
+"ads": [{"renderURL": "https://example.com/new_render2"}]
+})");
+
+  // Navigate to top frame KUrlA.
+  NavigateAndCommit(kUrlA);
+  content::RenderFrameHostTester* rfh_tester_1 =
+      content::RenderFrameHostTester::For(main_rfh());
+
+  // Attach a subframe with KUrlC to the top frame KUrlA.
+  // Create and update an interest group owned by kOriginC.
+  content::RenderFrameHost* subframe_1 = rfh_tester_1->AppendChild("subframe1");
+  subframe_1 =
+      NavigationSimulator::NavigateAndCommitFromDocument(kUrlC, subframe_1);
+  blink::InterestGroup interest_group = CreateInterestGroup();
+  interest_group.name = kGroupName1;
+  interest_group.owner = kOriginC;
+  interest_group.update_url = kUrlC.Resolve(kUpdateUrlPath);
+  interest_group.bidding_url = kUrlC.Resolve(kBiddingUrlPath);
+  interest_group.ads.emplace();
+  blink::InterestGroup::Ad ad(
+      /*render_url=*/GURL("https://example.com/render"),
+      /*metadata=*/absl::nullopt);
+  interest_group.ads->emplace_back(std::move(ad));
+  JoinInterestGroupAndFlush(interest_group, subframe_1);
+  EXPECT_EQ(1, GetJoinCount(kOriginC, kGroupName1));
+  UpdateInterestGroupNoFlushForFrame(subframe_1);
+
+  // Navigate to top frame kUrlC.
+  NavigateAndCommit(kUrlC);
+  content::RenderFrameHostTester* rfh_tester_2 =
+      content::RenderFrameHostTester::For(main_rfh());
+
+  // Attach a subframe with KUrlC to the top frame KUrlC.
+  // Create and update an interest group owned by kOriginC.
+  content::RenderFrameHost* subframe_2 = rfh_tester_2->AppendChild("subframe2");
+  subframe_2 =
+      NavigationSimulator::NavigateAndCommitFromDocument(kUrlC, subframe_2);
+  blink::InterestGroup interest_group_2 = CreateInterestGroup();
+  interest_group_2.name = kGroupName2;
+  interest_group_2.owner = kOriginC;
+  interest_group_2.update_url = kUrlC.Resolve(kUpdateUrlPath2);
+  interest_group_2.bidding_url = kUrlC.Resolve(kBiddingUrlPath);
+  interest_group_2.ads.emplace();
+  ad = blink::InterestGroup::Ad(
+      /*render_url=*/GURL("https://example.com/render"),
+      /*metadata=*/absl::nullopt);
+  interest_group_2.ads->emplace_back(std::move(ad));
+  JoinInterestGroupAndFlush(interest_group_2, subframe_2);
+  EXPECT_EQ(1, GetJoinCount(kOriginC, kGroupName2));
+  UpdateInterestGroupNoFlushForFrame(subframe_2);
+
+  run_loop1.Run();
+  run_loop2.Run();
+  ASSERT_FALSE(isolation_info1.IsEqualForTesting(isolation_info2));
+}
+
+// Join two interest groups with two different owners but one joining origin.
+// Ensure the second one join after all updating work completes and the queue is
+// popped empty. Check that the isolation info is different.
+TEST_F(AdAuctionServiceImplDifferentNIKDuringUpdateTest,
+       UpdatePopOwnerQueueToEmptyTriggerClearIsolationMap) {
+  constexpr char kGroupNameA[] = "groupA";
+  constexpr char kGroupNameC[] = "groupC";
+  net::IsolationInfo isolation_info1;
+  net::IsolationInfo isolation_info2;
+  base::RunLoop run_loop1;
+  base::RunLoop run_loop2;
+
+  network_responder_->RegisterRepeatCallback(
+      kUpdateUrlPath,
+      base::BindLambdaForTesting(
+          [&isolation_info1,
+           &run_loop1](URLLoaderInterceptor::RequestParams* params) {
+            if (params && params->url_request.trusted_params) {
+              isolation_info1 =
+                  params->url_request.trusted_params->isolation_info;
+            } else {
+              ADD_FAILURE() << "No params or trusted_params";
+            }
+            run_loop1.Quit();
+          }));
+  network_responder_->RegisterRepeatCallback(
+      kUpdateUrlPath2,
+      base::BindLambdaForTesting(
+          [&isolation_info2,
+           &run_loop2](URLLoaderInterceptor::RequestParams* params) {
+            if (params && params->url_request.trusted_params) {
+              isolation_info2 =
+                  params->url_request.trusted_params->isolation_info;
+            } else {
+              ADD_FAILURE() << "No params or trusted_params";
+            }
+            run_loop2.Quit();
+          }));
+  network_responder_->RegisterUpdateResponse(kUpdateUrlPath, R"({
+"ads": [{"renderURL": "https://example.com/new_render1"}]
+})");
+  network_responder_->RegisterUpdateResponse(kUpdateUrlPath2, R"({
+"ads": [{"renderURL": "https://example.com/new_render2"}]
+})");
+
+  // Navigate to top frame KUrlA.
+  NavigateAndCommit(kUrlA);
+  content::RenderFrameHostTester* rfh_tester =
+      content::RenderFrameHostTester::For(main_rfh());
+
+  // Attach a subframe with KUrlA to the top frame KUrlA.
+  // Create and update an interest group owned by kOriginA.
+  content::RenderFrameHost* subframeA = rfh_tester->AppendChild("subframeA");
+  subframeA =
+      NavigationSimulator::NavigateAndCommitFromDocument(kUrlA, subframeA);
+  blink::InterestGroup interest_group = CreateInterestGroup();
+  interest_group.name = kGroupNameA;
+  interest_group.update_url = kUrlA.Resolve(kUpdateUrlPath);
+  interest_group.bidding_url = kBiddingLogicUrlA;
+  interest_group.ads.emplace();
+  blink::InterestGroup::Ad ad(
+      /*render_url=*/GURL("https://example.com/render"),
+      /*metadata=*/absl::nullopt);
+  interest_group.ads->emplace_back(std::move(ad));
+  JoinInterestGroupAndFlush(interest_group, subframeA);
+  EXPECT_EQ(1, GetJoinCount(kOriginA, kGroupNameA));
+  UpdateInterestGroupNoFlushForFrame(subframeA);
+  run_loop1.Run();
+
+  // Ensure the update process is done for the first interest group.
+  task_environment()->RunUntilIdle();
+
+  // Attach a subframe with KUrlC to the top frame KUrlA.
+  // Create and update an interest group owned by kOriginC.
+  content::RenderFrameHost* subframeC = rfh_tester->AppendChild("subframeC");
+  subframeC =
+      NavigationSimulator::NavigateAndCommitFromDocument(kUrlC, subframeC);
+  blink::InterestGroup interest_group_2 = CreateInterestGroup();
+  interest_group_2.name = kGroupNameC;
+  interest_group_2.owner = kOriginC;
+  interest_group_2.update_url = kUrlC.Resolve(kUpdateUrlPath2);
+  interest_group_2.bidding_url = kUrlC.Resolve(kBiddingUrlPath);
+  interest_group_2.ads.emplace();
+  ad = blink::InterestGroup::Ad(
+      /*render_url=*/GURL("https://example.com/render"),
+      /*metadata=*/absl::nullopt);
+  interest_group_2.ads->emplace_back(std::move(ad));
+  JoinInterestGroupAndFlush(interest_group_2, subframeC);
+  EXPECT_EQ(1, GetJoinCount(kOriginC, kGroupNameC));
+  UpdateInterestGroupNoFlushForFrame(subframeC);
+  run_loop2.Run();
+
+  ASSERT_FALSE(isolation_info1.IsEqualForTesting(isolation_info2));
+}
+
+// Join two interest groups with two different owners but one joining origin.
+// Ensure the owner queue gets cleared before the second interest group join.
+TEST_F(AdAuctionServiceImplDifferentNIKDuringUpdateTest,
+       UpdateClearOwnerQueueTriggerClearIsolationMap) {
+  constexpr char kGroupNameA[] = "groupA";
+  constexpr char kGroupNameC[] = "groupC";
+  net::IsolationInfo isolation_info1;
+  net::IsolationInfo isolation_info2;
+  base::RunLoop run_loop1;
+  base::RunLoop run_loop2;
+
+  network_responder_->RegisterRepeatCallback(
+      kUpdateUrlPath,
+      base::BindLambdaForTesting(
+          [&isolation_info1,
+           &run_loop1](URLLoaderInterceptor::RequestParams* params) {
+            if (params && params->url_request.trusted_params) {
+              isolation_info1 =
+                  params->url_request.trusted_params->isolation_info;
+            } else {
+              ADD_FAILURE() << "No params or trusted_params";
+            }
+            run_loop1.Quit();
+          }));
+  network_responder_->RegisterRepeatCallback(
+      kUpdateUrlPath2,
+      base::BindLambdaForTesting(
+          [&isolation_info2,
+           &run_loop2](URLLoaderInterceptor::RequestParams* params) {
+            if (params && params->url_request.trusted_params) {
+              isolation_info2 =
+                  params->url_request.trusted_params->isolation_info;
+            } else {
+              ADD_FAILURE() << "No params or trusted_params";
+            }
+            run_loop2.Quit();
+          }));
+
+  // Disconnect the network during the update process and use network
+  // disconnected error to trigger the clear owner queue action.
+  network_responder_->FailUpdateRequestWithError(
+      kUpdateUrlPath, net::ERR_INTERNET_DISCONNECTED);
+  network_responder_->RegisterUpdateResponse(kUpdateUrlPath2, R"({
+"ads": [{"renderURL": "https://example.com/new_render2"}]
+})");
+
+  // Navigate to top frame KUrlA.
+  NavigateAndCommit(kUrlA);
+  content::RenderFrameHostTester* rfh_tester =
+      content::RenderFrameHostTester::For(main_rfh());
+
+  // Attach a subframe with KUrlA to the top frame KUrlA.
+  // Create and update an interest group owned by kOriginA.
+  content::RenderFrameHost* subframeA = rfh_tester->AppendChild("subframeA");
+  subframeA =
+      NavigationSimulator::NavigateAndCommitFromDocument(kUrlA, subframeA);
+  blink::InterestGroup interest_group = CreateInterestGroup();
+  interest_group.name = kGroupNameA;
+  interest_group.update_url = kUrlA.Resolve(kUpdateUrlPath);
+  interest_group.bidding_url = kBiddingLogicUrlA;
+  interest_group.ads.emplace();
+  blink::InterestGroup::Ad ad(
+      /*render_url=*/GURL("https://example.com/render"),
+      /*metadata=*/absl::nullopt);
+  interest_group.ads->emplace_back(std::move(ad));
+  JoinInterestGroupAndFlush(interest_group, subframeA);
+  EXPECT_EQ(1, GetJoinCount(kOriginA, kGroupNameA));
+  UpdateInterestGroupNoFlushForFrame(subframeA);
+  run_loop1.Run();
+
+  // Attach a subframe with KUrlC to the top frame KUrlA.
+  // Create and update an interest group owned by kOriginC.
+  content::RenderFrameHost* subframeC = rfh_tester->AppendChild("subframeC");
+  subframeC =
+      NavigationSimulator::NavigateAndCommitFromDocument(kUrlC, subframeC);
+  blink::InterestGroup interest_group_2 = CreateInterestGroup();
+  interest_group_2.name = kGroupNameC;
+  interest_group_2.owner = kOriginC;
+  interest_group_2.update_url = kUrlC.Resolve(kUpdateUrlPath2);
+  interest_group_2.bidding_url = kUrlC.Resolve(kBiddingUrlPath);
+  interest_group_2.ads.emplace();
+  ad = blink::InterestGroup::Ad(
+      /*render_url=*/GURL("https://example.com/render"),
+      /*metadata=*/absl::nullopt);
+  interest_group_2.ads->emplace_back(std::move(ad));
+  JoinInterestGroupAndFlush(interest_group_2, subframeC);
+  EXPECT_EQ(1, GetJoinCount(kOriginC, kGroupNameC));
+  UpdateInterestGroupNoFlushForFrame(subframeC);
+  run_loop2.Run();
+
+  ASSERT_FALSE(isolation_info1.IsEqualForTesting(isolation_info2));
+}
+
+// If there are two groups with joining origin A, two groups with joining origin
+// C, and batch limitation size as three, it cannot mix different joining
+// origins together in one batch.
+TEST_F(AdAuctionServiceImplDifferentNIKDuringUpdateTest,
+       UpdateMultipleJoiningOriginsAllLessThanBatchSize) {
+  manager_->set_max_parallel_updates_for_testing(3);
+  constexpr char kServerResponse[] = R"({
+"ads": [{"renderURL": "https://example.com/new_render"}]
+})";
+  constexpr char kGroupName1[] = "group1";
+  constexpr char kGroupName2[] = "group2";
+  constexpr char kGroupName3[] = "group3";
+  constexpr char kGroupName4[] = "group4";
+
+  // Navigate to top frame KUrlA.
+  NavigateAndCommit(kUrlA);
+  content::RenderFrameHostTester* rfh_tester_1 =
+      content::RenderFrameHostTester::For(main_rfh());
+
+  // Attach a subframe with KUrlC to the top frame KUrlA.
+  // Create and update an interest group owned by kOriginC.
+  content::RenderFrameHost* subframe_1 = rfh_tester_1->AppendChild("subframe1");
+  subframe_1 =
+      NavigationSimulator::NavigateAndCommitFromDocument(kUrlC, subframe_1);
+
+  blink::InterestGroup interest_group = CreateInterestGroup();
+  interest_group.name = kGroupName1;
+  interest_group.owner = kOriginC;
+  interest_group.update_url = kUrlC.Resolve(kUpdateUrlPath);
+  interest_group.bidding_url = kUrlC.Resolve(kBiddingUrlPath);
+  interest_group.ads.emplace();
+  blink::InterestGroup::Ad ad(
+      /*render_url=*/GURL("https://example.com/render"),
+      /*metadata=*/absl::nullopt);
+  interest_group.ads->emplace_back(std::move(ad));
+  JoinInterestGroupAndFlush(interest_group, subframe_1);
+  EXPECT_EQ(1, GetJoinCount(kOriginC, kGroupName1));
+
+  blink::InterestGroup interest_group_2 = CreateInterestGroup();
+  interest_group_2.name = kGroupName2;
+  interest_group_2.owner = kOriginC;
+  interest_group_2.update_url = kUrlC.Resolve(kUpdateUrlPath2);
+  interest_group_2.bidding_url = kUrlC.Resolve(kBiddingUrlPath);
+  interest_group_2.ads.emplace();
+  ad = blink::InterestGroup::Ad(
+      /*render_url=*/GURL("https://example.com/render"),
+      /*metadata=*/absl::nullopt);
+  interest_group_2.ads->emplace_back(std::move(ad));
+  JoinInterestGroupAndFlush(interest_group_2, subframe_1);
+  EXPECT_EQ(1, GetJoinCount(kOriginC, kGroupName2));
+
+  // Navigate to top frame kUrlC.
+  NavigateAndCommit(kUrlC);
+  content::RenderFrameHostTester* rfh_tester_2 =
+      content::RenderFrameHostTester::For(main_rfh());
+
+  // Attach a subframe with KUrlC to the top frame KUrlC.
+  // Create and update an interest group owned by kOriginC.
+  content::RenderFrameHost* subframe_2 = rfh_tester_2->AppendChild("subframe2");
+  subframe_2 =
+      NavigationSimulator::NavigateAndCommitFromDocument(kUrlC, subframe_2);
+
+  blink::InterestGroup interest_group_3 = CreateInterestGroup();
+  interest_group_3.name = kGroupName3;
+  interest_group_3.owner = kOriginC;
+  interest_group_3.update_url = kUrlC.Resolve(kUpdateUrlPath3);
+  interest_group_3.bidding_url = kUrlC.Resolve(kBiddingUrlPath);
+  interest_group_3.ads.emplace();
+  ad = blink::InterestGroup::Ad(
+      /*render_url=*/GURL("https://example.com/render"),
+      /*metadata=*/absl::nullopt);
+  interest_group_3.ads->emplace_back(std::move(ad));
+  JoinInterestGroupAndFlush(interest_group_3, subframe_2);
+  EXPECT_EQ(1, GetJoinCount(kOriginC, kGroupName3));
+
+  blink::InterestGroup interest_group_4 = CreateInterestGroup();
+  interest_group_4.name = kGroupName4;
+  interest_group_4.owner = kOriginC;
+  interest_group_4.update_url = kUrlC.Resolve(kUpdateUrlPath4);
+  interest_group_4.bidding_url = kUrlC.Resolve(kBiddingUrlPath);
+  interest_group_4.ads.emplace();
+  ad = blink::InterestGroup::Ad(
+      /*render_url=*/GURL("https://example.com/render"),
+      /*metadata=*/absl::nullopt);
+  interest_group_4.ads->emplace_back(std::move(ad));
+  JoinInterestGroupAndFlush(interest_group_4, subframe_2);
+  EXPECT_EQ(1, GetJoinCount(kOriginC, kGroupName3));
+
+  network_responder_->RegisterDeferredUpdateResponse(kUpdateUrlPath);
+  network_responder_->RegisterDeferredUpdateResponse(kUpdateUrlPath2);
+  network_responder_->RegisterDeferredUpdateResponse(kUpdateUrlPath3);
+  network_responder_->RegisterDeferredUpdateResponse(kUpdateUrlPath4);
+  UpdateInterestGroupNoFlush();
+  task_environment()->RunUntilIdle();
+  EXPECT_EQ(network_responder_->UpdateCount(), 2u);
+
+  network_responder_->DoDeferredUpdateResponse(kUpdateUrlPath, kServerResponse);
+  network_responder_->DoDeferredUpdateResponse(kUpdateUrlPath2,
+                                               kServerResponse);
+  task_environment()->RunUntilIdle();
+  EXPECT_EQ(network_responder_->UpdateCount(), 4u);
+}
+
+// If there are three groups with joining origin A, one group with joining
+// origin C, and batch limitation size as three, it can send three groups with
+// joining origin A in one batch.
+TEST_F(AdAuctionServiceImplDifferentNIKDuringUpdateTest,
+       UpdateMultipleJoiningOriginsAndOneEqualToBatchSize) {
+  manager_->set_max_parallel_updates_for_testing(3);
+  constexpr char kServerResponse[] = R"({
+"ads": [{"renderURL": "https://example.com/new_render"}]
+})";
+  constexpr char kGroupName1[] = "group1";
+  constexpr char kGroupName2[] = "group2";
+  constexpr char kGroupName3[] = "group3";
+  constexpr char kGroupName4[] = "group4";
+
+  // Navigate to top frame KUrlA.
+  NavigateAndCommit(kUrlA);
+  content::RenderFrameHostTester* rfh_tester_1 =
+      content::RenderFrameHostTester::For(main_rfh());
+
+  // Attach a subframe with KUrlC to the top frame KUrlA.
+  // Create and update an interest group owned by kOriginC.
+  content::RenderFrameHost* subframe_1 = rfh_tester_1->AppendChild("subframe1");
+  subframe_1 =
+      NavigationSimulator::NavigateAndCommitFromDocument(kUrlC, subframe_1);
+
+  blink::InterestGroup interest_group = CreateInterestGroup();
+  interest_group.name = kGroupName1;
+  interest_group.owner = kOriginC;
+  interest_group.update_url = kUrlC.Resolve(kUpdateUrlPath);
+  interest_group.bidding_url = kUrlC.Resolve(kBiddingUrlPath);
+  interest_group.ads.emplace();
+  blink::InterestGroup::Ad ad(
+      /*render_url=*/GURL("https://example.com/render"),
+      /*metadata=*/absl::nullopt);
+  interest_group.ads->emplace_back(std::move(ad));
+  JoinInterestGroupAndFlush(interest_group, subframe_1);
+  EXPECT_EQ(1, GetJoinCount(kOriginC, kGroupName1));
+
+  blink::InterestGroup interest_group_2 = CreateInterestGroup();
+  interest_group_2.name = kGroupName2;
+  interest_group_2.owner = kOriginC;
+  interest_group_2.update_url = kUrlC.Resolve(kUpdateUrlPath2);
+  interest_group_2.bidding_url = kUrlC.Resolve(kBiddingUrlPath);
+  interest_group_2.ads.emplace();
+  ad = blink::InterestGroup::Ad(
+      /*render_url=*/GURL("https://example.com/render"),
+      /*metadata=*/absl::nullopt);
+  interest_group_2.ads->emplace_back(std::move(ad));
+  JoinInterestGroupAndFlush(interest_group_2, subframe_1);
+  EXPECT_EQ(1, GetJoinCount(kOriginC, kGroupName2));
+
+  blink::InterestGroup interest_group_3 = CreateInterestGroup();
+  interest_group_3.name = kGroupName3;
+  interest_group_3.owner = kOriginC;
+  interest_group_3.update_url = kUrlC.Resolve(kUpdateUrlPath3);
+  interest_group_3.bidding_url = kUrlC.Resolve(kBiddingUrlPath);
+  interest_group_3.ads.emplace();
+  ad = blink::InterestGroup::Ad(
+      /*render_url=*/GURL("https://example.com/render"),
+      /*metadata=*/absl::nullopt);
+  interest_group_3.ads->emplace_back(std::move(ad));
+  JoinInterestGroupAndFlush(interest_group_3, subframe_1);
+  EXPECT_EQ(1, GetJoinCount(kOriginC, kGroupName3));
+
+  // Navigate to top frame kUrlC.
+  NavigateAndCommit(kUrlC);
+  content::RenderFrameHostTester* rfh_tester_2 =
+      content::RenderFrameHostTester::For(main_rfh());
+
+  // Attach a subframe with KUrlC to the top frame KUrlC.
+  // Create and update an interest group owned by kOriginC.
+  content::RenderFrameHost* subframe_2 = rfh_tester_2->AppendChild("subframe2");
+  subframe_2 =
+      NavigationSimulator::NavigateAndCommitFromDocument(kUrlC, subframe_2);
+
+  blink::InterestGroup interest_group_4 = CreateInterestGroup();
+  interest_group_4.name = kGroupName4;
+  interest_group_4.owner = kOriginC;
+  interest_group_4.update_url = kUrlC.Resolve(kUpdateUrlPath4);
+  interest_group_4.bidding_url = kUrlC.Resolve(kBiddingUrlPath);
+  interest_group_4.ads.emplace();
+  ad = blink::InterestGroup::Ad(
+      /*render_url=*/GURL("https://example.com/render"),
+      /*metadata=*/absl::nullopt);
+  interest_group_4.ads->emplace_back(std::move(ad));
+  JoinInterestGroupAndFlush(interest_group_4, subframe_2);
+  EXPECT_EQ(1, GetJoinCount(kOriginC, kGroupName4));
+
+  network_responder_->RegisterDeferredUpdateResponse(kUpdateUrlPath);
+  network_responder_->RegisterDeferredUpdateResponse(kUpdateUrlPath2);
+  network_responder_->RegisterDeferredUpdateResponse(kUpdateUrlPath3);
+  network_responder_->RegisterDeferredUpdateResponse(kUpdateUrlPath4);
+  UpdateInterestGroupNoFlush();
+  task_environment()->RunUntilIdle();
+  EXPECT_EQ(network_responder_->UpdateCount(), 3u);
+
+  network_responder_->DoDeferredUpdateResponse(kUpdateUrlPath, kServerResponse);
+  network_responder_->DoDeferredUpdateResponse(kUpdateUrlPath2,
+                                               kServerResponse);
+  network_responder_->DoDeferredUpdateResponse(kUpdateUrlPath3,
+                                               kServerResponse);
+  task_environment()->RunUntilIdle();
+  EXPECT_EQ(network_responder_->UpdateCount(), 4u);
+}
+
+// If there are three groups with joining origin A, one group with joining
+// origin C, and batch limitation size as two, it can send two groups with
+// joining origin A in the first batch, and remain two groups with different
+// joining origins together in the second batch.
+TEST_F(AdAuctionServiceImplDifferentNIKDuringUpdateTest,
+       UpdateMultipleJoiningOriginsAndOneMoreThanBatchSize) {
+  manager_->set_max_parallel_updates_for_testing(2);
+  constexpr char kServerResponse[] = R"({
+"ads": [{"renderURL": "https://example.com/new_render"}]
+})";
+  constexpr char kGroupName1[] = "group1";
+  constexpr char kGroupName2[] = "group2";
+  constexpr char kGroupName3[] = "group3";
+  constexpr char kGroupName4[] = "group4";
+
+  // Navigate to top frame KUrlA.
+  NavigateAndCommit(kUrlA);
+  content::RenderFrameHostTester* rfh_tester_1 =
+      content::RenderFrameHostTester::For(main_rfh());
+
+  // Attach a subframe with KUrlC to the top frame KUrlA.
+  // Create and update an interest group owned by kOriginC.
+  content::RenderFrameHost* subframe_1 = rfh_tester_1->AppendChild("subframe1");
+  subframe_1 =
+      NavigationSimulator::NavigateAndCommitFromDocument(kUrlC, subframe_1);
+
+  blink::InterestGroup interest_group = CreateInterestGroup();
+  interest_group.name = kGroupName1;
+  interest_group.owner = kOriginC;
+  interest_group.update_url = kUrlC.Resolve(kUpdateUrlPath);
+  interest_group.bidding_url = kUrlC.Resolve(kBiddingUrlPath);
+  interest_group.ads.emplace();
+  blink::InterestGroup::Ad ad(
+      /*render_url=*/GURL("https://example.com/render"),
+      /*metadata=*/absl::nullopt);
+  interest_group.ads->emplace_back(std::move(ad));
+  JoinInterestGroupAndFlush(interest_group, subframe_1);
+  EXPECT_EQ(1, GetJoinCount(kOriginC, kGroupName1));
+
+  blink::InterestGroup interest_group_2 = CreateInterestGroup();
+  interest_group_2.name = kGroupName2;
+  interest_group_2.owner = kOriginC;
+  interest_group_2.update_url = kUrlC.Resolve(kUpdateUrlPath2);
+  interest_group_2.bidding_url = kUrlC.Resolve(kBiddingUrlPath);
+  interest_group_2.ads.emplace();
+  ad = blink::InterestGroup::Ad(
+      /*render_url=*/GURL("https://example.com/render"),
+      /*metadata=*/absl::nullopt);
+  interest_group_2.ads->emplace_back(std::move(ad));
+  JoinInterestGroupAndFlush(interest_group_2, subframe_1);
+  EXPECT_EQ(1, GetJoinCount(kOriginC, kGroupName2));
+
+  blink::InterestGroup interest_group_3 = CreateInterestGroup();
+  interest_group_3.name = kGroupName3;
+  interest_group_3.owner = kOriginC;
+  interest_group_3.update_url = kUrlC.Resolve(kUpdateUrlPath3);
+  interest_group_3.bidding_url = kUrlC.Resolve(kBiddingUrlPath);
+  interest_group_3.ads.emplace();
+  ad = blink::InterestGroup::Ad(
+      /*render_url=*/GURL("https://example.com/render"),
+      /*metadata=*/absl::nullopt);
+  interest_group_3.ads->emplace_back(std::move(ad));
+  JoinInterestGroupAndFlush(interest_group_3, subframe_1);
+  EXPECT_EQ(1, GetJoinCount(kOriginC, kGroupName3));
+
+  // Navigate to top frame kUrlC.
+  NavigateAndCommit(kUrlC);
+  content::RenderFrameHostTester* rfh_tester_2 =
+      content::RenderFrameHostTester::For(main_rfh());
+
+  // Attach a subframe with KUrlC to the top frame KUrlC.
+  // Create and update an interest group owned by kOriginC.
+  content::RenderFrameHost* subframe_2 = rfh_tester_2->AppendChild("subframe2");
+  subframe_2 =
+      NavigationSimulator::NavigateAndCommitFromDocument(kUrlC, subframe_2);
+
+  blink::InterestGroup interest_group_4 = CreateInterestGroup();
+  interest_group_4.name = kGroupName4;
+  interest_group_4.owner = kOriginC;
+  interest_group_4.update_url = kUrlC.Resolve(kUpdateUrlPath4);
+  interest_group_4.bidding_url = kUrlC.Resolve(kBiddingUrlPath);
+  interest_group_4.ads.emplace();
+  ad = blink::InterestGroup::Ad(
+      /*render_url=*/GURL("https://example.com/render"),
+      /*metadata=*/absl::nullopt);
+  interest_group_4.ads->emplace_back(std::move(ad));
+  JoinInterestGroupAndFlush(interest_group_4, subframe_2);
+  EXPECT_EQ(1, GetJoinCount(kOriginC, kGroupName3));
+
+  network_responder_->RegisterDeferredUpdateResponse(kUpdateUrlPath);
+  network_responder_->RegisterDeferredUpdateResponse(kUpdateUrlPath2);
+  network_responder_->RegisterDeferredUpdateResponse(kUpdateUrlPath3);
+  network_responder_->RegisterDeferredUpdateResponse(kUpdateUrlPath4);
+  UpdateInterestGroupNoFlush();
+  task_environment()->RunUntilIdle();
+  EXPECT_EQ(network_responder_->UpdateCount(), 2u);
+
+  if (network_responder_->HasPendingResponse(kUpdateUrlPath)) {
+    network_responder_->DoDeferredUpdateResponse(kUpdateUrlPath,
+                                                 kServerResponse);
+  }
+  if (network_responder_->HasPendingResponse(kUpdateUrlPath2)) {
+    network_responder_->DoDeferredUpdateResponse(kUpdateUrlPath2,
+                                                 kServerResponse);
+  }
+  if (network_responder_->HasPendingResponse(kUpdateUrlPath3)) {
+    network_responder_->DoDeferredUpdateResponse(kUpdateUrlPath3,
+                                                 kServerResponse);
+  }
+  task_environment()->RunUntilIdle();
+  EXPECT_EQ(network_responder_->UpdateCount(), 4u);
+}
+
+// Test if the interest group can still be able to update after delaying once.
+TEST_F(AdAuctionServiceImplDifferentNIKDuringUpdateTest,
+       UpdateMultipleBatches) {
+  manager_->set_max_parallel_updates_for_testing(2);
+  constexpr char kServerResponse[] = R"({
+"ads": [{"renderURL": "https://example.com/new_render"}]
+})";
+  constexpr char kGroupName1[] = "group1";
+  constexpr char kGroupName2[] = "group2";
+  constexpr char kGroupName3[] = "group3";
+  constexpr char kGroupName4[] = "group4";
+
+  // Navigate to top frame KUrlA.
+  NavigateAndCommit(kUrlA);
+  content::RenderFrameHostTester* rfh_tester_1 =
+      content::RenderFrameHostTester::For(main_rfh());
+
+  // Attach a subframe with KUrlC to the top frame KUrlA.
+  // Create and update an interest group owned by kOriginC.
+  content::RenderFrameHost* subframe_1 = rfh_tester_1->AppendChild("subframe1");
+  subframe_1 =
+      NavigationSimulator::NavigateAndCommitFromDocument(kUrlC, subframe_1);
+
+  blink::InterestGroup interest_group = CreateInterestGroup();
+  interest_group.name = kGroupName1;
+  interest_group.owner = kOriginC;
+  interest_group.update_url = kUrlC.Resolve(kUpdateUrlPath);
+  interest_group.bidding_url = kUrlC.Resolve(kBiddingUrlPath);
+  interest_group.ads.emplace();
+  blink::InterestGroup::Ad ad(
+      /*render_url=*/GURL("https://example.com/render"),
+      /*metadata=*/absl::nullopt);
+  interest_group.ads->emplace_back(std::move(ad));
+  JoinInterestGroupAndFlush(interest_group, subframe_1);
+  EXPECT_EQ(1, GetJoinCount(kOriginC, kGroupName1));
+
+  // Navigate to top frame kUrlC.
+  NavigateAndCommit(kUrlC);
+  content::RenderFrameHostTester* rfh_tester_2 =
+      content::RenderFrameHostTester::For(main_rfh());
+
+  // Attach a subframe with KUrlC to the top frame KUrlC.
+  // Create and update an interest group owned by kOriginC.
+  content::RenderFrameHost* subframe_2 = rfh_tester_2->AppendChild("subframe2");
+  subframe_2 =
+      NavigationSimulator::NavigateAndCommitFromDocument(kUrlC, subframe_2);
+
+  blink::InterestGroup interest_group_2 = CreateInterestGroup();
+  interest_group_2.name = kGroupName2;
+  interest_group_2.owner = kOriginC;
+  interest_group_2.update_url = kUrlC.Resolve(kUpdateUrlPath2);
+  interest_group_2.bidding_url = kUrlC.Resolve(kBiddingUrlPath);
+  interest_group_2.ads.emplace();
+  ad = blink::InterestGroup::Ad(
+      /*render_url=*/GURL("https://example.com/render"),
+      /*metadata=*/absl::nullopt);
+  interest_group_2.ads->emplace_back(std::move(ad));
+  JoinInterestGroupAndFlush(interest_group_2, subframe_2);
+  EXPECT_EQ(1, GetJoinCount(kOriginC, kGroupName2));
+
+  blink::InterestGroup interest_group_3 = CreateInterestGroup();
+  interest_group_3.name = kGroupName3;
+  interest_group_3.owner = kOriginC;
+  interest_group_3.update_url = kUrlC.Resolve(kUpdateUrlPath3);
+  interest_group_3.bidding_url = kUrlC.Resolve(kBiddingUrlPath);
+  interest_group_3.ads.emplace();
+  ad = blink::InterestGroup::Ad(
+      /*render_url=*/GURL("https://example.com/render"),
+      /*metadata=*/absl::nullopt);
+  interest_group_3.ads->emplace_back(std::move(ad));
+  JoinInterestGroupAndFlush(interest_group_3, subframe_2);
+  EXPECT_EQ(1, GetJoinCount(kOriginC, kGroupName3));
+
+  // Navigate to top frame kUrlD.
+  NavigateAndCommit(kUrlD);
+  content::RenderFrameHostTester* rfh_tester_3 =
+      content::RenderFrameHostTester::For(main_rfh());
+
+  // Attach a subframe with KUrlC to the top frame KUrlD.
+  // Create and update an interest group owned by kOriginC.
+  content::RenderFrameHost* subframe_3 = rfh_tester_3->AppendChild("subframe3");
+  subframe_3 =
+      NavigationSimulator::NavigateAndCommitFromDocument(kUrlC, subframe_3);
+  blink::InterestGroup interest_group_4 = CreateInterestGroup();
+  interest_group_4.name = kGroupName4;
+  interest_group_4.owner = kOriginC;
+  interest_group_4.update_url = kUrlC.Resolve(kUpdateUrlPath4);
+  interest_group_4.bidding_url = kUrlC.Resolve(kBiddingUrlPath);
+  interest_group_4.ads.emplace();
+  ad = blink::InterestGroup::Ad(
+      /*render_url=*/GURL("https://example.com/render"),
+      /*metadata=*/absl::nullopt);
+  interest_group_4.ads->emplace_back(std::move(ad));
+  JoinInterestGroupAndFlush(interest_group_4, subframe_3);
+  EXPECT_EQ(1, GetJoinCount(kOriginC, kGroupName4));
+
+  network_responder_->RegisterDeferredUpdateResponse(kUpdateUrlPath);
+  network_responder_->RegisterDeferredUpdateResponse(kUpdateUrlPath2);
+  network_responder_->RegisterDeferredUpdateResponse(kUpdateUrlPath3);
+  network_responder_->RegisterDeferredUpdateResponse(kUpdateUrlPath4);
+  UpdateInterestGroupNoFlushForFrame(subframe_3);
+  task_environment()->RunUntilIdle();
+  EXPECT_EQ(network_responder_->UpdateCount(), 1u);
+
+  network_responder_->DoDeferredUpdateResponse(kUpdateUrlPath, kServerResponse);
+  task_environment()->RunUntilIdle();
+  EXPECT_EQ(network_responder_->UpdateCount(), 3u);
+
+  network_responder_->DoDeferredUpdateResponse(kUpdateUrlPath2,
+                                               kServerResponse);
+  network_responder_->DoDeferredUpdateResponse(kUpdateUrlPath3,
+                                               kServerResponse);
+  task_environment()->RunUntilIdle();
+  EXPECT_EQ(network_responder_->UpdateCount(), 4u);
 }
 
 // Join 2 interest groups, each with a different owner. When updating interest

@@ -138,8 +138,8 @@ class CONTENT_EXPORT InterestGroupCachingStorage {
   void GetInterestGroupsForUpdate(
       const url::Origin& owner,
       int groups_limit,
-      base::OnceCallback<void(
-          std::vector<std::pair<blink::InterestGroupKey, GURL>>)> callback);
+      base::OnceCallback<void(std::vector<InterestGroupUpdateParameter>)>
+          callback);
 
   // Gets all KAnonymityData for ads part of the interest group specified by
   // `interest_group_key`.

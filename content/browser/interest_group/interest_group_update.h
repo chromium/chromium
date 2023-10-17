@@ -55,6 +55,22 @@ struct CONTENT_EXPORT InterestGroupUpdate {
   absl::optional<url::Origin> aggregation_coordinator_origin;
 };
 
+// InitialInterestGroupUpdateInfo contains required fields when the update
+// process is initialized, which includes interest_group_key for
+// KAnonymity update, update_url for generating update request and
+// joining_origin for grouped isolation info.
+struct CONTENT_EXPORT InterestGroupUpdateParameter {
+  InterestGroupUpdateParameter();
+  InterestGroupUpdateParameter(blink::InterestGroupKey k,
+                               GURL u,
+                               url::Origin o);
+  ~InterestGroupUpdateParameter();
+
+  blink::InterestGroupKey interest_group_key;
+  GURL update_url;
+  url::Origin joining_origin;
+};
+
 }  // namespace content
 
 #endif  // CONTENT_BROWSER_INTEREST_GROUP_INTEREST_GROUP_UPDATE_H_

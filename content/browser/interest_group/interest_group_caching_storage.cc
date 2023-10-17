@@ -174,8 +174,8 @@ void InterestGroupCachingStorage::GetAllInterestGroupOwners(
 void InterestGroupCachingStorage::GetInterestGroupsForUpdate(
     const url::Origin& owner,
     int groups_limit,
-    base::OnceCallback<
-        void(std::vector<std::pair<blink::InterestGroupKey, GURL>>)> callback) {
+    base::OnceCallback<void(std::vector<InterestGroupUpdateParameter>)>
+        callback) {
   interest_group_storage_
       .AsyncCall(&InterestGroupStorage::GetInterestGroupsForUpdate)
       .WithArgs(owner, groups_limit)

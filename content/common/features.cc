@@ -227,7 +227,17 @@ BASE_FEATURE(kGpuInfoCollectionSeparatePrefetch,
              base::FEATURE_ENABLED_BY_DEFAULT);
 #endif
 
-// Supports proxying thread type changes of child processes to the browser
+// Group network isolation key(NIK) by storage interest group joining origin to
+// improve privacy and performance -- IGs of the same joining origin can reuse
+// sockets, so we don't need to renegotiate those connections.
+//
+// TODO(crbug.com/1479754): Keep this feature DISABLED until all the cross site
+// leaks are fixed. Check comments for more information.
+BASE_FEATURE(kGroupNIKByJoiningOrigin,
+             "GroupNIKByJoiningOrigin",
+             base::FEATURE_DISABLED_BY_DEFAULT);
+
+// Supports proxying thread type changes of renderer processes to browser
 // process and having browser process handle adjusting thread properties (nice
 // value, c-group, latency sensitivity...) for children which have sandbox
 // restrictions.

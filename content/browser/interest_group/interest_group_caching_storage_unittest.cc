@@ -83,17 +83,17 @@ class InterestGroupCachingStorageTest : public testing::Test {
     return result;
   }
 
-  std::vector<std::pair<blink::InterestGroupKey, GURL>>
-  GetInterestGroupsForUpdate(InterestGroupCachingStorage* caching_storage,
-                             const url::Origin& owner,
-                             int groups_limit) {
-    std::vector<std::pair<blink::InterestGroupKey, GURL>> result;
+  std::vector<InterestGroupUpdateParameter> GetInterestGroupsForUpdate(
+      InterestGroupCachingStorage* caching_storage,
+      const url::Origin& owner,
+      int groups_limit) {
+    std::vector<InterestGroupUpdateParameter> result;
     base::RunLoop run_loop;
     caching_storage->GetInterestGroupsForUpdate(
         owner, groups_limit,
         base::BindLambdaForTesting(
-            [&result, &run_loop](
-                std::vector<std::pair<blink::InterestGroupKey, GURL>> res) {
+            [&result,
+             &run_loop](std::vector<InterestGroupUpdateParameter> res) {
               result = std::move(res);
               run_loop.Quit();
             }));

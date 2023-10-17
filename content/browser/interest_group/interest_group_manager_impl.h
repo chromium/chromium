@@ -450,14 +450,18 @@ class CONTENT_EXPORT InterestGroupManagerImpl : public InterestGroupManager {
       const url::Origin& owner,
       std::vector<std::string> left_interest_group_names);
 
-  // For a given owner, gets interest group keys along with their update urls.
+  // Gets a list of `InterestGroupUpdateParameter` for all interest groups
+  // associated with the provided owner.
+  //
   // `groups_limit` sets a limit on the maximum number of interest group keys
   // that may be returned.
+  //
+  // To be called only by `update_manager_`.
   void GetInterestGroupsForUpdate(
       const url::Origin& owner,
       int groups_limit,
-      base::OnceCallback<void(
-          std::vector<std::pair<blink::InterestGroupKey, GURL>>)> callback);
+      base::OnceCallback<void(std::vector<InterestGroupUpdateParameter>)>
+          callback);
 
   // Updates the interest group of the same name based on the information in
   // the provided group. This does not update the interest group expiration

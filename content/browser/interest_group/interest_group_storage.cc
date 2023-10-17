@@ -10,6 +10,7 @@
 #include <algorithm>
 #include <limits>
 #include <memory>
+#include <string>
 #include <utility>
 #include <vector>
 
@@ -22,7 +23,6 @@
 #include "base/metrics/histogram_functions.h"
 #include "base/metrics/histogram_macros.h"
 #include "base/notreached.h"
-#include "base/rand_util.h"
 #include "base/sequence_checker.h"
 #include "base/strings/escape.h"
 #include "base/strings/string_number_conversions.h"
@@ -3067,42 +3067,52 @@ absl::optional<StorageInterestGroup> DoGetStoredInterestGroup(
   return db_interest_group;
 }
 
-absl::optional<std::vector<std::pair<blink::InterestGroupKey, GURL>>>
+absl::optional<std::vector<InterestGroupUpdateParameter>>
 DoGetInterestGroupsForUpdate(sql::Database& db,
                              const url::Origin& owner,
                              base::Time now,
                              size_t groups_limit) {
-  std::vector<std::pair<blink::InterestGroupKey, GURL>> result;
+  std::vector<InterestGroupUpdateParameter> result;
 
-  sql::Statement get_name_and_update_url(db.GetCachedStatement(
+  // To maximize the chance of reusing open sockets from a previous batch, sort
+  // the storage groups by joining origin.
+  //
+  // To mitigate potential side-channel vulnerabilities and prevent updates from
+  // occurring in a predictable sequence, such as the order of expiration, data
+  // is shuffled when reading from the database.
+  sql::Statement get_interest_group_update_parameters(db.GetCachedStatement(
       SQL_FROM_HERE,
-      "SELECT name, update_url "
+      "SELECT name, update_url, joining_origin "
       "FROM interest_groups "
       "WHERE owner=? AND expiration>? AND ?>=next_update_after "
-      "ORDER BY RANDOM() "
+      "ORDER BY joining_origin, RANDOM() "
       "LIMIT ?"));
 
-  if (!get_name_and_update_url.is_valid()) {
+  if (!get_interest_group_update_parameters.is_valid()) {
     return absl::nullopt;
   }
 
-  get_name_and_update_url.Reset(true);
-  get_name_and_update_url.BindString(0, Serialize(owner));
-  get_name_and_update_url.BindTime(1, now);
-  get_name_and_update_url.BindTime(2, now);
-  get_name_and_update_url.BindInt64(3, groups_limit);
+  get_interest_group_update_parameters.Reset(true);
+  get_interest_group_update_parameters.BindString(0, Serialize(owner));
+  get_interest_group_update_parameters.BindTime(1, now);
+  get_interest_group_update_parameters.BindTime(2, now);
+  get_interest_group_update_parameters.BindInt64(3, groups_limit);
 
-  while (get_name_and_update_url.Step()) {
+  while (get_interest_group_update_parameters.Step()) {
     absl::optional<GURL> update_url =
-        DeserializeURL(get_name_and_update_url.ColumnString(1));
+        DeserializeURL(get_interest_group_update_parameters.ColumnString(1));
     if (!update_url.has_value()) {
       continue;
     }
+
     result.emplace_back(
-        blink::InterestGroupKey(owner, get_name_and_update_url.ColumnString(0)),
-        update_url.value());
+        blink::InterestGroupKey(
+            owner, get_interest_group_update_parameters.ColumnString(0)),
+        update_url.value(),
+        DeserializeOrigin(
+            get_interest_group_update_parameters.ColumnString(2)));
   }
-  if (!get_name_and_update_url.Succeeded()) {
+  if (!get_interest_group_update_parameters.Succeeded()) {
     return absl::nullopt;
   }
   return result;
@@ -3971,7 +3981,7 @@ InterestGroupStorage::GetInterestGroupsForOwner(const url::Origin& owner) {
   return std::move(maybe_result.value());
 }
 
-std::vector<std::pair<blink::InterestGroupKey, GURL>>
+std::vector<InterestGroupUpdateParameter>
 InterestGroupStorage::GetInterestGroupsForUpdate(const url::Origin& owner,
                                                  size_t groups_limit) {
   DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
@@ -3979,9 +3989,9 @@ InterestGroupStorage::GetInterestGroupsForUpdate(const url::Origin& owner,
     return {};
   }
 
-  absl::optional<std::vector<std::pair<blink::InterestGroupKey, GURL>>>
-      maybe_result = DoGetInterestGroupsForUpdate(
-          *db_, owner, base::Time::Now(), groups_limit);
+  absl::optional<std::vector<InterestGroupUpdateParameter>> maybe_result =
+      DoGetInterestGroupsForUpdate(*db_, owner, base::Time::Now(),
+                                   groups_limit);
   if (!maybe_result) {
     return {};
   }

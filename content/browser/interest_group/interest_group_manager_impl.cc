@@ -589,8 +589,8 @@ void InterestGroupManagerImpl::
 void InterestGroupManagerImpl::GetInterestGroupsForUpdate(
     const url::Origin& owner,
     int groups_limit,
-    base::OnceCallback<
-        void(std::vector<std::pair<blink::InterestGroupKey, GURL>>)> callback) {
+    base::OnceCallback<void(std::vector<InterestGroupUpdateParameter>)>
+        callback) {
   impl_.AsyncCall(&InterestGroupStorage::GetInterestGroupsForUpdate)
       .WithArgs(owner, groups_limit)
       .Then(std::move(callback));

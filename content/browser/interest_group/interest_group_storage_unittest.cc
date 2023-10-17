@@ -610,25 +610,27 @@ TEST_F(InterestGroupStorageTest, GetInterestGroupsForUpdate) {
   storage->JoinInterestGroup(NewInterestGroup(test_origin2, "example"),
                              test_origin2.GetURL());
 
-  std::vector<std::pair<blink::InterestGroupKey, GURL>> update_groups =
+  std::vector<InterestGroupUpdateParameter> update_infos =
       storage->GetInterestGroupsForUpdate(test_origin1,
                                           /*groups_limit=*/kSmallFetchGroups);
 
   GURL expected_update_url = test_origin1.GetURL().Resolve("/update_script.js");
-  EXPECT_EQ(kSmallFetchGroups, update_groups.size());
-  for (const auto& [ig_key, update_url] : update_groups) {
+  EXPECT_EQ(kSmallFetchGroups, update_infos.size());
+  for (const auto& [ig_key, update_url, joining_origin] : update_infos) {
     EXPECT_EQ(test_origin1, ig_key.owner);
     EXPECT_EQ(update_url, expected_update_url);
+    EXPECT_EQ(test_origin1, joining_origin);
   }
 
-  update_groups =
+  update_infos =
       storage->GetInterestGroupsForUpdate(test_origin1,
                                           /*groups_limit=*/kLargeFetchGroups);
 
-  EXPECT_EQ(kNumOrigin1Groups, update_groups.size());
-  for (const auto& [ig_key, update_url] : update_groups) {
+  EXPECT_EQ(kNumOrigin1Groups, update_infos.size());
+  for (const auto& [ig_key, update_url, joining_origin] : update_infos) {
     EXPECT_EQ(test_origin1, ig_key.owner);
     EXPECT_EQ(update_url, expected_update_url);
+    EXPECT_EQ(test_origin1, joining_origin);
   }
 }
 

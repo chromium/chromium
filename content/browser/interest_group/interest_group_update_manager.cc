@@ -7,6 +7,9 @@
 #include <stddef.h>
 #include <stdint.h>
 
+#include <algorithm>
+#include <cstddef>
+#include <map>
 #include <memory>
 #include <string>
 #include <utility>
@@ -27,6 +30,8 @@
 #include "content/browser/interest_group/interest_group_storage.h"
 #include "content/browser/interest_group/interest_group_update.h"
 #include "content/browser/interest_group/storage_interest_group.h"
+#include "content/common/features.h"
+#include "content/public/browser/interest_group_manager.h"
 #include "content/services/auction_worklet/public/cpp/auction_downloader.h"
 #include "net/base/isolation_info.h"
 #include "net/base/net_errors.h"
@@ -669,11 +674,32 @@ bool InterestGroupUpdateManager::OwnersToUpdate::Enqueue(
 void InterestGroupUpdateManager::OwnersToUpdate::PopFront() {
   security_state_map_.erase(owners_to_update_.front());
   owners_to_update_.pop_front();
+
+  if (owners_to_update_.empty()) {
+    joining_origin_isolation_info_map_.clear();
+  }
+}
+
+net::IsolationInfo*
+InterestGroupUpdateManager::OwnersToUpdate::GetIsolationInfoByJoiningOrigin(
+    const url::Origin& joining_origin) {
+  auto isolation_info_it =
+      joining_origin_isolation_info_map_.find(joining_origin);
+  if (isolation_info_it != joining_origin_isolation_info_map_.end()) {
+    return &isolation_info_it->second;
+  } else {
+    net::IsolationInfo isolation_info = net::IsolationInfo::CreateTransient();
+    const auto [it, success] = joining_origin_isolation_info_map_.insert(
+        {joining_origin, std::move(isolation_info)});
+    CHECK(success);
+    return &it->second;
+  }
 }
 
 void InterestGroupUpdateManager::OwnersToUpdate::Clear() {
   owners_to_update_.clear();
   security_state_map_.clear();
+  joining_origin_isolation_info_map_.clear();
 }
 
 void InterestGroupUpdateManager::MaybeContinueUpdatingCurrentOwner() {
@@ -708,37 +734,34 @@ void InterestGroupUpdateManager::MaybeContinueUpdatingCurrentOwner() {
 
 void InterestGroupUpdateManager::GetInterestGroupsForUpdate(
     const url::Origin& owner,
-    base::OnceCallback<
-        void(std::vector<std::pair<blink::InterestGroupKey, GURL>>)> callback) {
+    base::OnceCallback<void(std::vector<InterestGroupUpdateParameter>)>
+        callback) {
   DCHECK_EQ(num_in_flight_updates_, 0);
   DCHECK(!waiting_on_db_read_);
   waiting_on_db_read_ = true;
+
+  // Read one more interest group than `max_parallel_updates_` from database to
+  //  support the batching logic in `DidUpdateInterestGroupsOfOwnerDbLoad()`.
   manager_->GetInterestGroupsForUpdate(
-      owner, /*groups_limit=*/max_parallel_updates_, std::move(callback));
+      owner, /*groups_limit=*/max_parallel_updates_ + 1, std::move(callback));
 }
 
-void InterestGroupUpdateManager::DidUpdateInterestGroupsOfOwnerDbLoad(
-    url::Origin owner,
-    std::vector<std::pair<blink::InterestGroupKey, GURL>> ig_to_update_urls) {
-  DCHECK_EQ(owner, owners_to_update_.FrontOwner());
-  DCHECK_EQ(num_in_flight_updates_, 0);
-  DCHECK(waiting_on_db_read_);
-  DCHECK_LE(ig_to_update_urls.size(),
+void InterestGroupUpdateManager::UpdateInterestGroupByBatch(
+    const url::Origin& owner,
+    std::vector<InterestGroupUpdateParameter> update_parameters) {
+  DCHECK_LE(update_parameters.size(),
             static_cast<unsigned int>(max_parallel_updates_));
-  waiting_on_db_read_ = false;
-  if (ig_to_update_urls.empty()) {
-    // All interest groups for `owner` are up to date, so we can pop it off the
-    // queue.
-    owners_to_update_.PopFront();
-    MaybeContinueUpdatingCurrentOwner();
-    return;
-  }
-  net::IsolationInfo per_update_isolation_info =
-      net::IsolationInfo::CreateTransient();
 
-  for (auto& [interest_group_key, update_url] : ig_to_update_urls) {
+  // If feature kGroupNIKByJoiningOriginPerOwner is not enabled, use one single
+  // NIK for all storage interest groups.
+  net::IsolationInfo per_update_isolation_info;
+  if (!base::FeatureList::IsEnabled(features::kGroupNIKByJoiningOrigin)) {
+    per_update_isolation_info = net::IsolationInfo::CreateTransient();
+  }
+
+  for (auto& [interest_group_key, update_url, joining_origin] :
+       update_parameters) {
     manager_->QueueKAnonymityUpdateForInterestGroup(interest_group_key);
-    // TODO(behamilton): Don't update unless daily update url is k-anonymous
     ++num_in_flight_updates_;
     base::UmaHistogramCounts100000(
         "Ads.InterestGroup.Net.RequestUrlSizeBytes.Update",
@@ -750,8 +773,13 @@ void InterestGroupUpdateManager::DidUpdateInterestGroupsOfOwnerDbLoad(
     resource_request->request_initiator = owner;
     resource_request->trusted_params =
         network::ResourceRequest::TrustedParams();
-    resource_request->trusted_params->isolation_info =
-        per_update_isolation_info;
+    if (base::FeatureList::IsEnabled(features::kGroupNIKByJoiningOrigin)) {
+      resource_request->trusted_params->isolation_info =
+          *owners_to_update_.GetIsolationInfoByJoiningOrigin(joining_origin);
+    } else {
+      resource_request->trusted_params->isolation_info =
+          per_update_isolation_info;
+    }
     resource_request->trusted_params->client_security_state =
         owners_to_update_.FrontSecurityState();
     auto simple_url_loader = network::SimpleURLLoader::Create(
@@ -768,6 +796,84 @@ void InterestGroupUpdateManager::DidUpdateInterestGroupsOfOwnerDbLoad(
                            interest_group_key),
             kMaxUpdateSize);
   }
+}
+
+void InterestGroupUpdateManager::DidUpdateInterestGroupsOfOwnerDbLoad(
+    url::Origin owner,
+    std::vector<InterestGroupUpdateParameter> update_parameters) {
+  DCHECK_EQ(owner, owners_to_update_.FrontOwner());
+  DCHECK_EQ(num_in_flight_updates_, 0);
+  DCHECK(waiting_on_db_read_);
+  waiting_on_db_read_ = false;
+
+  if (update_parameters.empty()) {
+    // All interest groups for `owner` are up to date, so we can pop it off the
+    // queue.
+    owners_to_update_.PopFront();
+    MaybeContinueUpdatingCurrentOwner();
+    return;
+  }
+
+  if (!base::FeatureList::IsEnabled(features::kGroupNIKByJoiningOrigin)) {
+    update_parameters.resize(std::min(
+        update_parameters.size(), static_cast<size_t>(max_parallel_updates_)));
+    DCHECK_LE(update_parameters.size(),
+              static_cast<unsigned int>(max_parallel_updates_));
+    UpdateInterestGroupByBatch(owner, std::move(update_parameters));
+    return;
+  }
+
+  // A group of IGs of the same joining origin and update NIK may only be
+  // updated across batches if all but the last of those batches contain only
+  // IGs of that joining origin / NIK -- otherwise, a server that knows the
+  // batch size could deduce information about the number of interest groups
+  // that had a different joining origin for prior batches. For details, see the
+  // discussion at
+  // https://chromium-review.googlesource.com/c/chromium/src/+/4794574/17..20/content/browser/interest_group/interest_group_update_manager.cc#b736.
+
+  // If the size of storage groups vector is not larger than the limitation,
+  // the storage groups can be put into one batch and update together.
+  if (update_parameters.size() <= static_cast<size_t>(max_parallel_updates_)) {
+    UpdateInterestGroupByBatch(owner, std::move(update_parameters));
+    return;
+  }
+
+  // If the first group and the last group have same joining origin, it is
+  // safe to put them in the same update batch.
+  if (update_parameters.at(0).joining_origin.IsSameOriginWith(
+          update_parameters.at(static_cast<size_t>(max_parallel_updates_) - 1)
+              .joining_origin)) {
+    update_parameters.resize(max_parallel_updates_);
+    UpdateInterestGroupByBatch(owner, std::move(update_parameters));
+    return;
+  }
+
+  // Resize the interest group to the limit if the last storage group has
+  // different joining origin than the next storage group after the batch
+  // limit.
+  if (!update_parameters.at(max_parallel_updates_ - 1)
+           .joining_origin.IsSameOriginWith(
+               update_parameters.at(max_parallel_updates_).joining_origin)) {
+    update_parameters.resize(max_parallel_updates_);
+  } else {
+    // Interest groups with same joining origin cannot be put into
+    // different batches, unless it can fill all the batches except the
+    // last one. Therefore, after resize, all the interest groups with
+    // same joining origin as the last one need to be popped out to be
+    // loaded in the next batch.
+    update_parameters.resize(max_parallel_updates_);
+    url::Origin pop_out_origin =
+        update_parameters.at(max_parallel_updates_ - 1).joining_origin;
+
+    while (update_parameters.size() > 0 and
+           update_parameters.back().joining_origin.IsSameOriginWith(
+               pop_out_origin)) {
+      update_parameters.pop_back();
+    }
+  }
+
+  UpdateInterestGroupByBatch(owner, std::move(update_parameters));
+  return;
 }
 
 void InterestGroupUpdateManager::DidUpdateInterestGroupsOfOwnerNetFetch(
