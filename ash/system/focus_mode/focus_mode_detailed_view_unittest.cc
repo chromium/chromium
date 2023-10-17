@@ -13,6 +13,7 @@
 #include "ash/style/switch.h"
 #include "ash/style/system_textfield.h"
 #include "ash/system/focus_mode/focus_mode_controller.h"
+#include "ash/system/focus_mode/focus_mode_countdown_view.h"
 #include "ash/system/focus_mode/focus_mode_util.h"
 #include "ash/system/model/system_tray_model.h"
 #include "ash/system/tray/fake_detailed_view_delegate.h"
@@ -87,7 +88,6 @@ class FocusModeDetailedViewTest : public AshTestBase {
   }
 
   views::BoxLayoutView* GetTimerSettingView() {
-    CHECK(!FocusModeController::Get()->in_focus_session());
     return focus_mode_detailed_view_->timer_setting_view_;
   }
 
@@ -106,6 +106,10 @@ class FocusModeDetailedViewTest : public AshTestBase {
 
   Switch* GetDoNotDisturbToggleButton() {
     return focus_mode_detailed_view_->do_not_disturb_toggle_button_;
+  }
+
+  FocusModeCountdownView* GetTimerCountdownView() {
+    return focus_mode_detailed_view_->timer_countdown_view_;
   }
 
  private:
@@ -404,6 +408,39 @@ TEST_F(FocusModeDetailedViewTest, TimerSettingViewDecrements) {
   EXPECT_EQ(u"1", timer_textfield->GetText());
   LeftClickOn(decrement_button);
   EXPECT_EQ(u"1", timer_textfield->GetText());
+}
+
+// Tests that the timer setting view is visible outside of a focus session and
+// the countdown view is visible in a focus session.
+TEST_F(FocusModeDetailedViewTest, TimerViewVisibility) {
+  auto* focus_mode_controller = FocusModeController::Get();
+  auto* timer_setting_view = GetTimerSettingView();
+  auto* countdown_view = GetTimerCountdownView();
+
+  // Before turning on a focus session both views should exist and the setting
+  // view should be visible.
+  ASSERT_TRUE(countdown_view);
+  ASSERT_TRUE(timer_setting_view);
+  EXPECT_FALSE(countdown_view->GetVisible());
+  EXPECT_TRUE(timer_setting_view->GetVisible());
+
+  // In a focus session the countdown view should be visible and the timer view
+  // hidden.
+  focus_mode_controller->ToggleFocusMode();
+  EXPECT_TRUE(focus_mode_controller->in_focus_session());
+  // Starting the focus session closes the bubble, so we need to recreate the
+  // detailed view.
+  CreateFakeFocusModeDetailedView();
+  timer_setting_view = GetTimerSettingView();
+  countdown_view = GetTimerCountdownView();
+  EXPECT_TRUE(countdown_view->GetVisible());
+  EXPECT_FALSE(timer_setting_view->GetVisible());
+
+  // Turning the focus session back off should swap the visibilities again.
+  focus_mode_controller->ToggleFocusMode();
+  EXPECT_FALSE(focus_mode_controller->in_focus_session());
+  EXPECT_FALSE(countdown_view->GetVisible());
+  EXPECT_TRUE(timer_setting_view->GetVisible());
 }
 
 }  // namespace ash

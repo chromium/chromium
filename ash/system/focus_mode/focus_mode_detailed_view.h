@@ -18,6 +18,7 @@ class BoxLayoutView;
 
 namespace ash {
 
+class FocusModeCountdownView;
 class HoverHighlightView;
 class IconButton;
 class RoundedContainer;
@@ -56,14 +57,13 @@ class ASH_EXPORT FocusModeDetailedView
   // Creates the row with functionality to start and stop focus mode.
   void CreateToggleView();
 
-  // Creates and populates the `timer_view_container_`. If we are in a focus
-  // mode session, then it creates `timer_setting_view_` and adds it to the
-  // `timer_view_container_`.
+  // Creates the row with the timer and functionality to add time to the focus
+  // session.
   void CreateTimerView();
 
-  // Creates the row that allows for the user to adjust or set the timer
-  // duration for the focus mode session.
-  void CreateTimerSettingView();
+  // Updates the row with the timer and functionality to add time to the focus
+  // session based on whether focus is in session.
+  void UpdateTimerView(bool in_focus_session);
 
   // Creates the DND rounded container.
   void CreateDoNotDisturbContainer();
@@ -82,18 +82,22 @@ class ASH_EXPORT FocusModeDetailedView
   // This is only used outside of a focus session.
   void AdjustInactiveSessionDuration(bool decrement);
 
-  // Called whenever the session duration is adjusted.
-  void OnInactiveSessionDurationChanged();
+  // Called whenever the session duration is adjusted. Updates the labels and
+  // button visibilities in the timer setting view.
+  void UpdateTimerSettingViewUI();
 
   // Sets the session duration for the focus controller and calls
-  // `OnInactiveSessionDurationChanged`.
+  // `UpdateTimerSettingViewUI`.
   void SetInactiveSessionDuration(base::TimeDelta duration);
 
   // This view contains a description of the focus session, as well as a toggle
   // button for staring/ending focus mode.
   raw_ptr<HoverHighlightView> toggle_view_ = nullptr;
-  // Container that holds a header and the `timer_setting_view_`.
+  // This view contains the timer view for the user to adjust the focus session
+  // duration.
   raw_ptr<RoundedContainer> timer_view_container_ = nullptr;
+  // The countdown view inside `timer_view_container_` when focus is in session.
+  raw_ptr<FocusModeCountdownView> timer_countdown_view_ = nullptr;
   // This view contains the timer view for the user to adjust the focus session
   // duration when we are not in a focus session.
   raw_ptr<views::BoxLayoutView> timer_setting_view_ = nullptr;

@@ -8,7 +8,6 @@
 
 #include "ash/accessibility/accessibility_controller_impl.h"
 #include "ash/resources/vector_icons/vector_icons.h"
-#include "ash/root_window_controller.h"
 #include "ash/shell.h"
 #include "ash/strings/grit/ash_strings.h"
 #include "ash/style/icon_button.h"
@@ -18,18 +17,14 @@
 #include "ash/style/system_textfield.h"
 #include "ash/style/system_textfield_controller.h"
 #include "ash/style/typography.h"
-#include "ash/system/focus_mode/focus_mode_controller.h"
+#include "ash/system/focus_mode/focus_mode_countdown_view.h"
 #include "ash/system/focus_mode/focus_mode_util.h"
 #include "ash/system/palette/palette_tray.h"
-#include "ash/system/status_area_widget.h"
 #include "ash/system/time/time_view_utils.h"
 #include "ash/system/tray/hover_highlight_view.h"
 #include "ash/system/tray/tri_view.h"
-#include "ash/system/unified/unified_system_tray.h"
 #include "ash/wm/desks/templates/saved_desk_item_view.h"
-#include "base/functional/callback_forward.h"
 #include "base/i18n/time_formatting.h"
-#include "base/location.h"
 #include "base/strings/string_number_conversions.h"
 #include "base/time/time.h"
 #include "ui/base/l10n/l10n_util.h"
@@ -48,10 +43,8 @@
 #include "ui/views/layout/box_layout_view.h"
 #include "ui/views/view_class_properties.h"
 #include "ui/views/view_observer.h"
-#include "ui/views/view_utils.h"
 #include "ui/views/widget/widget.h"
 #include "ui/views/widget/widget_delegate.h"
-#include "ui/views/widget/widget_utils.h"
 
 namespace ash {
 
@@ -66,7 +59,7 @@ constexpr auto kToggleViewInsets = gfx::Insets::VH(13, 24);
 // Margins between children in the `toggle_view_`.
 constexpr int kToggleViewBetweenChildSpacing = 16;
 
-// Constants for the `timer_setting_view_`.
+// Timer view constants.
 constexpr auto kTimerViewBorderInsets = gfx::Insets::VH(8, 0);
 constexpr auto kTimerViewHeaderInsets = gfx::Insets::VH(10, 24);
 constexpr auto kTimerSettingViewInsets = gfx::Insets::TLBR(8, 16, 12, 16);
@@ -74,6 +67,7 @@ constexpr int kTimerSettingViewMaxCharacters = 3;
 constexpr int kTimerSettingViewTextHeight = 32;
 constexpr int kTimerSettingViewBetweenChildSpacing = 8;
 constexpr auto kTimerAdjustmentButtonSize = gfx::Size(63, 36);
+constexpr auto kTimerCountdownViewInsets = gfx::Insets::VH(0, 24);
 
 // Creates the appropriately formatted string to display for the time remaining
 // display in the detailed view. When focus mode is active, this function
@@ -343,11 +337,7 @@ void FocusModeDetailedView::OnFocusModeChanged(bool in_focus_session) {
               ? IDS_ASH_STATUS_TRAY_FOCUS_MODE_TOGGLE_END_BUTTON
               : IDS_ASH_STATUS_TRAY_FOCUS_MODE_TOGGLE_START_BUTTON));
 
-  if (!in_focus_session && !timer_setting_view_) {
-    CreateTimerSettingView();
-  } else {
-    timer_setting_view_->SetVisible(!in_focus_session);
-  }
+  UpdateTimerView(in_focus_session);
 
   if (in_focus_session) {
     clock_timer_.Stop();
@@ -361,6 +351,7 @@ void FocusModeDetailedView::OnFocusModeChanged(bool in_focus_session) {
 
 void FocusModeDetailedView::OnTimerTick() {
   toggle_view_->SetSubText(CreateTimeRemainingString());
+  timer_countdown_view_->UpdateUI();
 }
 
 void FocusModeDetailedView::CreateToggleView() {
@@ -413,12 +404,14 @@ void FocusModeDetailedView::CreateToggleView() {
 }
 
 void FocusModeDetailedView::CreateTimerView() {
+  // Create the timer view container.
   timer_view_container_ =
       scroll_content()->AddChildView(std::make_unique<RoundedContainer>(
           RoundedContainer::Behavior::kNotRounded));
   timer_view_container_->SetProperty(views::kMarginsKey, kContainerMargins);
   timer_view_container_->SetBorderInsets(kTimerViewBorderInsets);
 
+  // Create the timer header.
   auto timer_view_header = std::make_unique<views::Label>();
   timer_view_header->SetText(l10n_util::GetStringUTF16(
       IDS_ASH_STATUS_TRAY_FOCUS_MODE_TIMER_SUBHEADER));
@@ -431,12 +424,13 @@ void FocusModeDetailedView::CreateTimerView() {
                                         *timer_view_header);
   timer_view_container_->AddChildView(std::move(timer_view_header));
 
-  if (!FocusModeController::Get()->in_focus_session()) {
-    CreateTimerSettingView();
-  }
-}
+  // Create the countdown view.
+  timer_countdown_view_ = timer_view_container_->AddChildView(
+      std::make_unique<FocusModeCountdownView>(/*include_end_button=*/false));
+  timer_countdown_view_->SetBorder(
+      views::CreateEmptyBorder(kTimerCountdownViewInsets));
 
-void FocusModeDetailedView::CreateTimerSettingView() {
+  // Create the timer setting view.
   timer_setting_view_ = timer_view_container_->AddChildView(
       std::make_unique<views::BoxLayoutView>());
   timer_setting_view_->SetOrientation(
@@ -455,12 +449,8 @@ void FocusModeDetailedView::CreateTimerSettingView() {
   timer_textfield_->SetFontList(
       TypographyProvider::Get()->ResolveTypographyToken(
           TypographyToken::kCrosDisplay6Regular));
-  std::u16string default_time_text = base::NumberToString16(
-      FocusModeController::Get()->session_duration().InMinutes());
-  timer_textfield_->SetText(default_time_text);
   timer_textfield_controller_ =
       std::make_unique<TimerTextfieldController>(timer_textfield_, this);
-  timer_textfield_controller_->RefreshTextfieldSize(default_time_text);
   timer_textfield_->SetAccessibleName(l10n_util::GetStringUTF16(
       IDS_ASH_STATUS_TRAY_FOCUS_MODE_TIMER_TEXTFIELD));
 
@@ -496,6 +486,20 @@ void FocusModeDetailedView::CreateTimerSettingView() {
               /*decrement=*/false),
           kChevronUpIcon, cros_tokens::kCrosSysHighlightShape,
           IDS_ASH_STATUS_TRAY_FOCUS_MODE_TIMER_INCREMENT_BUTTON));
+
+  UpdateTimerView(FocusModeController::Get()->in_focus_session());
+}
+
+void FocusModeDetailedView::UpdateTimerView(bool in_focus_session) {
+  CHECK(timer_setting_view_ && timer_countdown_view_);
+  timer_setting_view_->SetVisible(!in_focus_session);
+  timer_countdown_view_->SetVisible(in_focus_session);
+
+  if (in_focus_session) {
+    timer_countdown_view_->UpdateUI();
+  } else {
+    UpdateTimerSettingViewUI();
+  }
 }
 
 void FocusModeDetailedView::CreateDoNotDisturbContainer() {
@@ -581,7 +585,7 @@ void FocusModeDetailedView::AdjustInactiveSessionDuration(bool decrement) {
       decrement));
 }
 
-void FocusModeDetailedView::OnInactiveSessionDurationChanged() {
+void FocusModeDetailedView::UpdateTimerSettingViewUI() {
   FocusModeController* focus_mode_controller = FocusModeController::Get();
   CHECK(!focus_mode_controller->in_focus_session());
   toggle_view_->SetSubText(CreateTimeRemainingString());
@@ -602,7 +606,7 @@ void FocusModeDetailedView::OnInactiveSessionDurationChanged() {
 void FocusModeDetailedView::SetInactiveSessionDuration(
     base::TimeDelta duration) {
   FocusModeController::Get()->SetSessionDuration(duration);
-  OnInactiveSessionDurationChanged();
+  UpdateTimerSettingViewUI();
 }
 
 BEGIN_METADATA(FocusModeDetailedView, TrayDetailedView)

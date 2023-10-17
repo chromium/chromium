@@ -17,28 +17,26 @@ namespace ash {
 
 class PillButton;
 
-// The bubble associated with the `FocusModeTray`. Contains a timer with the
-// amount of time left in the focus session, buttons to end the focus session
-// and add 10 minutes to the focus session, and a progress bar showing the
-// total focus session time and how much of the focus session has already
-// elapsed.
-class ASH_EXPORT FocusModeCountdownView : public views::FlexLayoutView,
-                                          public FocusModeController::Observer {
+// Contains a timer with the amount of time left in the focus session, buttons
+// to end the focus session and add 10 minutes to the focus session, and a
+// progress bar showing the total focus session time and how much of the focus
+// session has already elapsed. The button to end the focus session is only
+// included if `include_end_button`, otherwise just the button to add 10 minutes
+// is included. This view's parent needs to call `UpdateUI()` to first populate
+// the UI before it is shown for the first time, and on timer tick.
+class ASH_EXPORT FocusModeCountdownView : public views::FlexLayoutView {
  public:
-  FocusModeCountdownView();
+  FocusModeCountdownView(bool include_end_button);
   FocusModeCountdownView(const FocusModeCountdownView&) = delete;
   FocusModeCountdownView& operator=(const FocusModeCountdownView&) = delete;
-  ~FocusModeCountdownView() override;
+  ~FocusModeCountdownView() override = default;
 
-  // FocusModeController::Observer:
-  void OnFocusModeChanged(bool in_focus_session) override {}
-  void OnTimerTick() override;
+  // Updates the timers and progress bar. This must be called from this view's
+  // parent's `OnTimerTick()` and when the view is first created.
+  void UpdateUI();
 
  private:
   friend class FocusModeCountdownViewTest;
-
-  void UpdateUI();
-
   // The main timer label, displays the amount of time left in the focus
   // session.
   raw_ptr<views::Label, ExperimentalAsh> time_remaining_label_ = nullptr;
@@ -55,6 +53,9 @@ class ASH_EXPORT FocusModeCountdownView : public views::FlexLayoutView,
 
   // The `+10 min` button.
   raw_ptr<PillButton> extend_session_duration_button_ = nullptr;
+
+  // Whether to create the "End" button to end the focus session.
+  const bool include_end_button_;
 };
 
 }  // namespace ash
