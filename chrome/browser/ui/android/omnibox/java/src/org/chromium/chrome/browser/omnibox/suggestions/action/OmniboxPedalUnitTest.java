@@ -28,9 +28,7 @@ import org.chromium.components.omnibox.action.OmniboxPedalId;
 
 import java.util.List;
 
-/**
- * Tests for {@link OmniboxPedal}s.
- */
+/** Tests for {@link OmniboxPedal}s. */
 @RunWith(BaseRobolectricTestRunner.class)
 @Config(manifest = Config.NONE)
 public class OmniboxPedalUnitTest {
@@ -41,7 +39,8 @@ public class OmniboxPedalUnitTest {
 
     @Test
     public void creation_usesExpectedCustomIconForDinoGame() {
-        assertEquals(OmniboxPedal.DINO_GAME_ICON,
+        assertEquals(
+                OmniboxPedal.DINO_GAME_ICON,
                 new OmniboxPedal(0, "hint", "accessibility", OmniboxPedalId.PLAY_CHROME_DINO_GAME)
                         .icon);
     }
@@ -50,22 +49,25 @@ public class OmniboxPedalUnitTest {
     public void creation_usesDefaultIconForAllNonCustomizedCases() {
         for (int type = OmniboxPedalId.NONE; type < OmniboxPedalId.TOTAL_COUNT; type++) {
             if (sPedalsWithCustomIcons.contains(type)) continue;
-            assertEquals(OmniboxAction.DEFAULT_ICON,
+            assertEquals(
+                    OmniboxAction.DEFAULT_ICON,
                     new OmniboxPedal(0, "hint", "accessibility", type).icon);
         }
     }
 
     @Test
     public void creation_failsWithNullHint() {
-        assertThrows(AssertionError.class,
-                ()
-                        -> new OmniboxPedal(
+        assertThrows(
+                AssertionError.class,
+                () ->
+                        new OmniboxPedal(
                                 0, null, "accessibility", OmniboxPedalId.CLEAR_BROWSING_DATA));
     }
 
     @Test
     public void creation_failsWithEmptyHint() {
-        assertThrows(AssertionError.class,
+        assertThrows(
+                AssertionError.class,
                 () -> new OmniboxPedal(0, "", "accessibility", OmniboxPedalId.CLEAR_BROWSING_DATA));
     }
 
@@ -76,17 +78,21 @@ public class OmniboxPedalUnitTest {
 
     @Test
     public void safeCasting_assertsWithWrongClassType() {
-        assertThrows(AssertionError.class,
-                () -> OmniboxPedal.from(new OmniboxAction(OmniboxActionId.PEDAL, 0, "", "", null) {
-                    @Override
-                    public void execute(OmniboxActionDelegate d) {}
-                }));
+        assertThrows(
+                AssertionError.class,
+                () ->
+                        OmniboxPedal.from(
+                                new OmniboxAction(OmniboxActionId.PEDAL, 0, "", "", null) {
+                                    @Override
+                                    public void execute(OmniboxActionDelegate d) {}
+                                }));
     }
 
     @Test
     public void safeCasting_successWithFactoryBuiltAction() {
-        OmniboxPedal.from(OmniboxActionFactoryImpl.get().buildOmniboxPedal(
-                0, "hint", "accessibility", OmniboxPedalId.NONE));
+        OmniboxPedal.from(
+                OmniboxActionFactoryImpl.get()
+                        .buildOmniboxPedal(0, "hint", "accessibility", OmniboxPedalId.NONE));
     }
 
     @Test

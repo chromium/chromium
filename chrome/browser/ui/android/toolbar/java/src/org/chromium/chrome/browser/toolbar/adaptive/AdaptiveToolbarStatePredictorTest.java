@@ -33,15 +33,15 @@ import org.chromium.ui.permissions.AndroidPermissionDelegate;
 /** Unit tests for the {@code AdaptiveToolbarStatePredictor} */
 @Config(manifest = Config.NONE)
 @RunWith(BaseRobolectricTestRunner.class)
-@DisableFeatures({ChromeFeatureList.ADAPTIVE_BUTTON_IN_TOP_TOOLBAR,
-        ChromeFeatureList.VOICE_BUTTON_IN_TOP_TOOLBAR})
+@DisableFeatures({
+    ChromeFeatureList.ADAPTIVE_BUTTON_IN_TOP_TOOLBAR,
+    ChromeFeatureList.VOICE_BUTTON_IN_TOP_TOOLBAR
+})
 @EnableFeatures(ChromeFeatureList.ADAPTIVE_BUTTON_IN_TOP_TOOLBAR_CUSTOMIZATION_V2)
 public class AdaptiveToolbarStatePredictorTest {
-    @Rule
-    public TestRule mProcessor = new Features.JUnitProcessor();
+    @Rule public TestRule mProcessor = new Features.JUnitProcessor();
 
-    @Mock
-    private AndroidPermissionDelegate mAndroidPermissionDelegate;
+    @Mock private AndroidPermissionDelegate mAndroidPermissionDelegate;
 
     @Before
     public void setUp() {
@@ -61,10 +61,18 @@ public class AdaptiveToolbarStatePredictorTest {
     public void testDisableFeature() {
         AdaptiveToolbarFeatures.setDefaultSegmentForTesting(AdaptiveToolbarFeatures.SHARE);
         AdaptiveToolbarFeatures.setIgnoreSegmentationResultsForTesting(false);
-        AdaptiveToolbarStatePredictor statePredictor = buildStatePredictor(
-                true, AdaptiveToolbarButtonVariant.VOICE, true, AdaptiveToolbarButtonVariant.SHARE);
-        UiState expected = new UiState(false, AdaptiveToolbarButtonVariant.UNKNOWN,
-                AdaptiveToolbarButtonVariant.UNKNOWN, AdaptiveToolbarButtonVariant.UNKNOWN);
+        AdaptiveToolbarStatePredictor statePredictor =
+                buildStatePredictor(
+                        true,
+                        AdaptiveToolbarButtonVariant.VOICE,
+                        true,
+                        AdaptiveToolbarButtonVariant.SHARE);
+        UiState expected =
+                new UiState(
+                        false,
+                        AdaptiveToolbarButtonVariant.UNKNOWN,
+                        AdaptiveToolbarButtonVariant.UNKNOWN,
+                        AdaptiveToolbarButtonVariant.UNKNOWN);
         statePredictor.recomputeUiState(verifyResultCallback(expected));
     }
 
@@ -74,10 +82,18 @@ public class AdaptiveToolbarStatePredictorTest {
         AdaptiveToolbarFeatures.setDefaultSegmentForTesting(AdaptiveToolbarFeatures.SHARE);
         AdaptiveToolbarFeatures.setIgnoreSegmentationResultsForTesting(false);
 
-        AdaptiveToolbarStatePredictor statePredictor = buildStatePredictor(
-                true, AdaptiveToolbarButtonVariant.VOICE, true, AdaptiveToolbarButtonVariant.SHARE);
-        UiState expected = new UiState(true, AdaptiveToolbarButtonVariant.VOICE,
-                AdaptiveToolbarButtonVariant.VOICE, AdaptiveToolbarButtonVariant.SHARE);
+        AdaptiveToolbarStatePredictor statePredictor =
+                buildStatePredictor(
+                        true,
+                        AdaptiveToolbarButtonVariant.VOICE,
+                        true,
+                        AdaptiveToolbarButtonVariant.SHARE);
+        UiState expected =
+                new UiState(
+                        true,
+                        AdaptiveToolbarButtonVariant.VOICE,
+                        AdaptiveToolbarButtonVariant.VOICE,
+                        AdaptiveToolbarButtonVariant.SHARE);
         statePredictor.recomputeUiState(verifyResultCallback(expected));
     }
 
@@ -87,10 +103,18 @@ public class AdaptiveToolbarStatePredictorTest {
         AdaptiveToolbarFeatures.setDefaultSegmentForTesting(AdaptiveToolbarFeatures.SHARE);
         AdaptiveToolbarFeatures.setIgnoreSegmentationResultsForTesting(true);
 
-        AdaptiveToolbarStatePredictor statePredictor = buildStatePredictor(true,
-                AdaptiveToolbarButtonVariant.UNKNOWN, true, AdaptiveToolbarButtonVariant.VOICE);
-        UiState expected = new UiState(true, AdaptiveToolbarButtonVariant.SHARE,
-                AdaptiveToolbarButtonVariant.AUTO, AdaptiveToolbarButtonVariant.SHARE);
+        AdaptiveToolbarStatePredictor statePredictor =
+                buildStatePredictor(
+                        true,
+                        AdaptiveToolbarButtonVariant.UNKNOWN,
+                        true,
+                        AdaptiveToolbarButtonVariant.VOICE);
+        UiState expected =
+                new UiState(
+                        true,
+                        AdaptiveToolbarButtonVariant.SHARE,
+                        AdaptiveToolbarButtonVariant.AUTO,
+                        AdaptiveToolbarButtonVariant.SHARE);
         statePredictor.recomputeUiState(verifyResultCallback(expected));
     }
 
@@ -100,10 +124,18 @@ public class AdaptiveToolbarStatePredictorTest {
         AdaptiveToolbarFeatures.setDefaultSegmentForTesting(AdaptiveToolbarFeatures.SHARE);
         AdaptiveToolbarFeatures.setIgnoreSegmentationResultsForTesting(false);
 
-        AdaptiveToolbarStatePredictor statePredictor = buildStatePredictor(true,
-                AdaptiveToolbarButtonVariant.UNKNOWN, true, AdaptiveToolbarButtonVariant.VOICE);
-        UiState expected = new UiState(true, AdaptiveToolbarButtonVariant.VOICE,
-                AdaptiveToolbarButtonVariant.AUTO, AdaptiveToolbarButtonVariant.VOICE);
+        AdaptiveToolbarStatePredictor statePredictor =
+                buildStatePredictor(
+                        true,
+                        AdaptiveToolbarButtonVariant.UNKNOWN,
+                        true,
+                        AdaptiveToolbarButtonVariant.VOICE);
+        UiState expected =
+                new UiState(
+                        true,
+                        AdaptiveToolbarButtonVariant.VOICE,
+                        AdaptiveToolbarButtonVariant.AUTO,
+                        AdaptiveToolbarButtonVariant.VOICE);
         statePredictor.recomputeUiState(verifyResultCallback(expected));
     }
 
@@ -114,10 +146,18 @@ public class AdaptiveToolbarStatePredictorTest {
         AdaptiveToolbarFeatures.setIgnoreSegmentationResultsForTesting(false);
 
         VoiceRecognitionUtil.setIsVoiceSearchEnabledForTesting(false);
-        AdaptiveToolbarStatePredictor statePredictor = buildStatePredictor(true,
-                AdaptiveToolbarButtonVariant.UNKNOWN, true, AdaptiveToolbarButtonVariant.VOICE);
-        UiState expected = new UiState(true, AdaptiveToolbarButtonVariant.SHARE,
-                AdaptiveToolbarButtonVariant.AUTO, AdaptiveToolbarButtonVariant.SHARE);
+        AdaptiveToolbarStatePredictor statePredictor =
+                buildStatePredictor(
+                        true,
+                        AdaptiveToolbarButtonVariant.UNKNOWN,
+                        true,
+                        AdaptiveToolbarButtonVariant.VOICE);
+        UiState expected =
+                new UiState(
+                        true,
+                        AdaptiveToolbarButtonVariant.SHARE,
+                        AdaptiveToolbarButtonVariant.AUTO,
+                        AdaptiveToolbarButtonVariant.SHARE);
         statePredictor.recomputeUiState(verifyResultCallback(expected));
     }
 
@@ -127,10 +167,18 @@ public class AdaptiveToolbarStatePredictorTest {
         AdaptiveToolbarFeatures.setDefaultSegmentForTesting(AdaptiveToolbarFeatures.SHARE);
         AdaptiveToolbarFeatures.setIgnoreSegmentationResultsForTesting(false);
 
-        AdaptiveToolbarStatePredictor statePredictor = buildStatePredictor(true,
-                AdaptiveToolbarButtonVariant.UNKNOWN, true, AdaptiveToolbarButtonVariant.UNKNOWN);
-        UiState expected = new UiState(true, AdaptiveToolbarButtonVariant.SHARE,
-                AdaptiveToolbarButtonVariant.AUTO, AdaptiveToolbarButtonVariant.SHARE);
+        AdaptiveToolbarStatePredictor statePredictor =
+                buildStatePredictor(
+                        true,
+                        AdaptiveToolbarButtonVariant.UNKNOWN,
+                        true,
+                        AdaptiveToolbarButtonVariant.UNKNOWN);
+        UiState expected =
+                new UiState(
+                        true,
+                        AdaptiveToolbarButtonVariant.SHARE,
+                        AdaptiveToolbarButtonVariant.AUTO,
+                        AdaptiveToolbarButtonVariant.SHARE);
         statePredictor.recomputeUiState(verifyResultCallback(expected));
     }
 
@@ -140,10 +188,18 @@ public class AdaptiveToolbarStatePredictorTest {
         AdaptiveToolbarFeatures.setDefaultSegmentForTesting(AdaptiveToolbarFeatures.SHARE);
         AdaptiveToolbarFeatures.setIgnoreSegmentationResultsForTesting(false);
 
-        AdaptiveToolbarStatePredictor statePredictor = buildStatePredictor(false,
-                AdaptiveToolbarButtonVariant.VOICE, true, AdaptiveToolbarButtonVariant.SHARE);
-        UiState expected = new UiState(true, AdaptiveToolbarButtonVariant.UNKNOWN,
-                AdaptiveToolbarButtonVariant.VOICE, AdaptiveToolbarButtonVariant.SHARE);
+        AdaptiveToolbarStatePredictor statePredictor =
+                buildStatePredictor(
+                        false,
+                        AdaptiveToolbarButtonVariant.VOICE,
+                        true,
+                        AdaptiveToolbarButtonVariant.SHARE);
+        UiState expected =
+                new UiState(
+                        true,
+                        AdaptiveToolbarButtonVariant.UNKNOWN,
+                        AdaptiveToolbarButtonVariant.VOICE,
+                        AdaptiveToolbarButtonVariant.SHARE);
         statePredictor.recomputeUiState(verifyResultCallback(expected));
     }
 
@@ -154,10 +210,18 @@ public class AdaptiveToolbarStatePredictorTest {
         AdaptiveToolbarFeatures.setIgnoreSegmentationResultsForTesting(false);
         AdaptiveToolbarFeatures.setDisableUiForTesting(true);
 
-        AdaptiveToolbarStatePredictor statePredictor = buildStatePredictor(true,
-                AdaptiveToolbarButtonVariant.UNKNOWN, true, AdaptiveToolbarButtonVariant.VOICE);
-        UiState expected = new UiState(false, AdaptiveToolbarButtonVariant.VOICE,
-                AdaptiveToolbarButtonVariant.AUTO, AdaptiveToolbarButtonVariant.VOICE);
+        AdaptiveToolbarStatePredictor statePredictor =
+                buildStatePredictor(
+                        true,
+                        AdaptiveToolbarButtonVariant.UNKNOWN,
+                        true,
+                        AdaptiveToolbarButtonVariant.VOICE);
+        UiState expected =
+                new UiState(
+                        false,
+                        AdaptiveToolbarButtonVariant.VOICE,
+                        AdaptiveToolbarButtonVariant.AUTO,
+                        AdaptiveToolbarButtonVariant.VOICE);
         statePredictor.recomputeUiState(verifyResultCallback(expected));
     }
 
@@ -171,24 +235,48 @@ public class AdaptiveToolbarStatePredictorTest {
         AdaptiveToolbarFeatures.setShowUiOnlyAfterReadyForTesting(true);
 
         // Before backend is ready.
-        AdaptiveToolbarStatePredictor statePredictor = buildStatePredictor(true,
-                AdaptiveToolbarButtonVariant.UNKNOWN, false, AdaptiveToolbarButtonVariant.VOICE);
-        UiState expected = new UiState(false, AdaptiveToolbarButtonVariant.VOICE,
-                AdaptiveToolbarButtonVariant.AUTO, AdaptiveToolbarButtonVariant.VOICE);
+        AdaptiveToolbarStatePredictor statePredictor =
+                buildStatePredictor(
+                        true,
+                        AdaptiveToolbarButtonVariant.UNKNOWN,
+                        false,
+                        AdaptiveToolbarButtonVariant.VOICE);
+        UiState expected =
+                new UiState(
+                        false,
+                        AdaptiveToolbarButtonVariant.VOICE,
+                        AdaptiveToolbarButtonVariant.AUTO,
+                        AdaptiveToolbarButtonVariant.VOICE);
         statePredictor.recomputeUiState(verifyResultCallback(expected));
 
         // Backend isn't ready and doesn't give a valid segment.
-        statePredictor = buildStatePredictor(true, AdaptiveToolbarButtonVariant.UNKNOWN, false,
-                AdaptiveToolbarButtonVariant.UNKNOWN);
-        expected = new UiState(false, AdaptiveToolbarButtonVariant.SHARE,
-                AdaptiveToolbarButtonVariant.AUTO, AdaptiveToolbarButtonVariant.SHARE);
+        statePredictor =
+                buildStatePredictor(
+                        true,
+                        AdaptiveToolbarButtonVariant.UNKNOWN,
+                        false,
+                        AdaptiveToolbarButtonVariant.UNKNOWN);
+        expected =
+                new UiState(
+                        false,
+                        AdaptiveToolbarButtonVariant.SHARE,
+                        AdaptiveToolbarButtonVariant.AUTO,
+                        AdaptiveToolbarButtonVariant.SHARE);
         statePredictor.recomputeUiState(verifyResultCallback(expected));
 
         // After backend is ready.
-        statePredictor = buildStatePredictor(true, AdaptiveToolbarButtonVariant.UNKNOWN, true,
-                AdaptiveToolbarButtonVariant.VOICE);
-        expected = new UiState(true, AdaptiveToolbarButtonVariant.VOICE,
-                AdaptiveToolbarButtonVariant.AUTO, AdaptiveToolbarButtonVariant.VOICE);
+        statePredictor =
+                buildStatePredictor(
+                        true,
+                        AdaptiveToolbarButtonVariant.UNKNOWN,
+                        true,
+                        AdaptiveToolbarButtonVariant.VOICE);
+        expected =
+                new UiState(
+                        true,
+                        AdaptiveToolbarButtonVariant.VOICE,
+                        AdaptiveToolbarButtonVariant.AUTO,
+                        AdaptiveToolbarButtonVariant.VOICE);
         statePredictor.recomputeUiState(verifyResultCallback(expected));
     }
 
@@ -202,42 +290,66 @@ public class AdaptiveToolbarStatePredictorTest {
         AdaptiveToolbarFeatures.setShowUiOnlyAfterReadyForTesting(false);
 
         // Before backend is ready.
-        AdaptiveToolbarStatePredictor statePredictor = buildStatePredictor(true,
-                AdaptiveToolbarButtonVariant.UNKNOWN, false, AdaptiveToolbarButtonVariant.VOICE);
-        UiState expected = new UiState(true, AdaptiveToolbarButtonVariant.VOICE,
-                AdaptiveToolbarButtonVariant.AUTO, AdaptiveToolbarButtonVariant.VOICE);
+        AdaptiveToolbarStatePredictor statePredictor =
+                buildStatePredictor(
+                        true,
+                        AdaptiveToolbarButtonVariant.UNKNOWN,
+                        false,
+                        AdaptiveToolbarButtonVariant.VOICE);
+        UiState expected =
+                new UiState(
+                        true,
+                        AdaptiveToolbarButtonVariant.VOICE,
+                        AdaptiveToolbarButtonVariant.AUTO,
+                        AdaptiveToolbarButtonVariant.VOICE);
         statePredictor.recomputeUiState(verifyResultCallback(expected));
 
         // Backend isn't ready and doesn't give a valid segment.
-        statePredictor = buildStatePredictor(true, AdaptiveToolbarButtonVariant.UNKNOWN, false,
-                AdaptiveToolbarButtonVariant.UNKNOWN);
-        expected = new UiState(true, AdaptiveToolbarButtonVariant.SHARE,
-                AdaptiveToolbarButtonVariant.AUTO, AdaptiveToolbarButtonVariant.SHARE);
+        statePredictor =
+                buildStatePredictor(
+                        true,
+                        AdaptiveToolbarButtonVariant.UNKNOWN,
+                        false,
+                        AdaptiveToolbarButtonVariant.UNKNOWN);
+        expected =
+                new UiState(
+                        true,
+                        AdaptiveToolbarButtonVariant.SHARE,
+                        AdaptiveToolbarButtonVariant.AUTO,
+                        AdaptiveToolbarButtonVariant.SHARE);
         statePredictor.recomputeUiState(verifyResultCallback(expected));
     }
 
     @Test
     @SmallTest
     public void testSegmentIdToAdaptiveToolbarButtonVariantConversion() {
-        Assert.assertEquals(AdaptiveToolbarButtonVariant.NEW_TAB,
+        Assert.assertEquals(
+                AdaptiveToolbarButtonVariant.NEW_TAB,
                 AdaptiveToolbarStatePredictor.getAdaptiveToolbarButtonVariantFromSegmentId(
                         SegmentId.OPTIMIZATION_TARGET_SEGMENTATION_NEW_TAB));
-        Assert.assertEquals(AdaptiveToolbarButtonVariant.SHARE,
+        Assert.assertEquals(
+                AdaptiveToolbarButtonVariant.SHARE,
                 AdaptiveToolbarStatePredictor.getAdaptiveToolbarButtonVariantFromSegmentId(
                         SegmentId.OPTIMIZATION_TARGET_SEGMENTATION_SHARE));
-        Assert.assertEquals(AdaptiveToolbarButtonVariant.VOICE,
+        Assert.assertEquals(
+                AdaptiveToolbarButtonVariant.VOICE,
                 AdaptiveToolbarStatePredictor.getAdaptiveToolbarButtonVariantFromSegmentId(
                         SegmentId.OPTIMIZATION_TARGET_SEGMENTATION_VOICE));
-        Assert.assertEquals(AdaptiveToolbarButtonVariant.UNKNOWN,
+        Assert.assertEquals(
+                AdaptiveToolbarButtonVariant.UNKNOWN,
                 AdaptiveToolbarStatePredictor.getAdaptiveToolbarButtonVariantFromSegmentId(
                         SegmentId.OPTIMIZATION_TARGET_SEGMENTATION_SHOPPING_USER));
-        Assert.assertEquals(AdaptiveToolbarButtonVariant.UNKNOWN,
+        Assert.assertEquals(
+                AdaptiveToolbarButtonVariant.UNKNOWN,
                 AdaptiveToolbarStatePredictor.getAdaptiveToolbarButtonVariantFromSegmentId(
                         SegmentId.OPTIMIZATION_TARGET_UNKNOWN));
     }
 
-    private AdaptiveToolbarStatePredictor buildStatePredictor(boolean toolbarSettingsToggleEnabled,
-            Integer manualOverride, boolean isReady, Integer segmentationResult) {
+    private AdaptiveToolbarStatePredictor buildStatePredictor(
+            boolean toolbarSettingsToggleEnabled,
+            Integer manualOverride,
+            boolean isReady,
+            Integer segmentationResult) {
         return new AdaptiveToolbarStatePredictor(mAndroidPermissionDelegate) {
             @Override
             int readManualOverrideFromPrefs() {
@@ -259,11 +371,17 @@ public class AdaptiveToolbarStatePredictorTest {
     private Callback<UiState> verifyResultCallback(UiState expected) {
         return result -> {
             Assert.assertEquals("canShowUi doesn't match", expected.canShowUi, result.canShowUi);
-            Assert.assertEquals("toolbarButtonState doesn't match", expected.toolbarButtonState,
+            Assert.assertEquals(
+                    "toolbarButtonState doesn't match",
+                    expected.toolbarButtonState,
                     result.toolbarButtonState);
-            Assert.assertEquals("preferenceSelection doesn't match", expected.preferenceSelection,
+            Assert.assertEquals(
+                    "preferenceSelection doesn't match",
+                    expected.preferenceSelection,
                     result.preferenceSelection);
-            Assert.assertEquals("autoButtonCaption doesn't match", expected.autoButtonCaption,
+            Assert.assertEquals(
+                    "autoButtonCaption doesn't match",
+                    expected.autoButtonCaption,
                     result.autoButtonCaption);
         };
     }

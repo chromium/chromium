@@ -39,30 +39,20 @@ import org.chromium.ui.modelutil.PropertyModel;
 import java.util.List;
 import java.util.concurrent.atomic.AtomicBoolean;
 
-/**
- * Tests for {@link FeedOptionsCoordinator}.
- */
+/** Tests for {@link FeedOptionsCoordinator}. */
 @RunWith(BaseRobolectricTestRunner.class)
 @Config(manifest = Config.NONE)
 @EnableFeatures({ChromeFeatureList.FEED_HEADER_STICK_TO_TOP})
 public class FeedOptionsCoordinatorTest {
-    @Mock
-    private FeedServiceBridge.Natives mFeedServiceBridgeJniMock;
-    @Mock
-    private FeedOptionsView mView;
-    @Mock
-    private FeedOptionsView mStickyHeaderOptionsView;
-    @Mock
-    private ChipView mChipView;
-    @Mock
-    private ChipView mStickyHeaderChipView;
-    @Mock
-    private TextView mTextView;
-    @Mock
-    private TextView mStickyHeaderTextView;
+    @Mock private FeedServiceBridge.Natives mFeedServiceBridgeJniMock;
+    @Mock private FeedOptionsView mView;
+    @Mock private FeedOptionsView mStickyHeaderOptionsView;
+    @Mock private ChipView mChipView;
+    @Mock private ChipView mStickyHeaderChipView;
+    @Mock private TextView mTextView;
+    @Mock private TextView mStickyHeaderTextView;
 
-    @Rule
-    public JniMocker mMocker = new JniMocker();
+    @Rule public JniMocker mMocker = new JniMocker();
 
     private FeedOptionsCoordinator mCoordinator;
     private Context mContext;
@@ -141,7 +131,10 @@ public class FeedOptionsCoordinatorTest {
     @Test
     public void testOptionsSelected() {
         AtomicBoolean listenerCalled = new AtomicBoolean(false);
-        mCoordinator.setOptionsListener(() -> { listenerCalled.set(true); });
+        mCoordinator.setOptionsListener(
+                () -> {
+                    listenerCalled.set(true);
+                });
         List<PropertyModel> chipModels = mCoordinator.getChipModelsForTest();
         chipModels.get(0).set(ChipProperties.SELECTED, false);
         chipModels.get(1).set(ChipProperties.SELECTED, true);

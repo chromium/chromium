@@ -49,18 +49,15 @@ public class NoPasskeysBottomSheetModuleTest {
     private static final long TEST_NATIVE = 42069;
     private static final String TEST_ORIGIN = "origin.com";
 
-    @Rule
-    public MockitoRule mMockitoRule = MockitoJUnit.rule().strictness(Strictness.STRICT_STUBS);
-    @Rule
-    public JniMocker jniMocker = new JniMocker();
+    @Rule public MockitoRule mMockitoRule = MockitoJUnit.rule().strictness(Strictness.STRICT_STUBS);
+    @Rule public JniMocker jniMocker = new JniMocker();
 
-    @Mock
-    private NoPasskeysBottomSheetBridge.Natives mNativeMock;
-    @Mock
-    private BottomSheetController mBottomSheetController;
+    @Mock private NoPasskeysBottomSheetBridge.Natives mNativeMock;
+    @Mock private BottomSheetController mBottomSheetController;
 
-    private final Context mContext = new ContextThemeWrapper(
-            ApplicationProvider.getApplicationContext(), R.style.Theme_BrowserUI_DayNight);
+    private final Context mContext =
+            new ContextThemeWrapper(
+                    ApplicationProvider.getApplicationContext(), R.style.Theme_BrowserUI_DayNight);
 
     private NoPasskeysBottomSheetBridge mBridge;
 
@@ -71,8 +68,11 @@ public class NoPasskeysBottomSheetModuleTest {
         doReturn(true)
                 .when(mBottomSheetController)
                 .requestShowContent(any(NoPasskeysBottomSheetContent.class), anyBoolean());
-        mBridge = new NoPasskeysBottomSheetBridge(TEST_NATIVE, new WeakReference<>(mContext),
-                new WeakReference<>(mBottomSheetController));
+        mBridge =
+                new NoPasskeysBottomSheetBridge(
+                        TEST_NATIVE,
+                        new WeakReference<>(mContext),
+                        new WeakReference<>(mBottomSheetController));
     }
 
     @Test
@@ -131,12 +131,16 @@ public class NoPasskeysBottomSheetModuleTest {
         mBridge.show(TEST_ORIGIN);
         verify(mBottomSheetController).requestShowContent(contentCaptor.capture(), eq(true));
 
-        TextView view = contentCaptor.getValue().getContentView().findViewById(
-                R.id.no_passkeys_sheet_subtitle);
+        TextView view =
+                contentCaptor
+                        .getValue()
+                        .getContentView()
+                        .findViewById(R.id.no_passkeys_sheet_subtitle);
         int originStartIndex = view.getText().toString().indexOf(TEST_ORIGIN);
         Spanned spannedMessage = (Spanned) view.getText();
-        StyleSpan[] spans = spannedMessage.getSpans(
-                originStartIndex, originStartIndex + TEST_ORIGIN.length(), StyleSpan.class);
+        StyleSpan[] spans =
+                spannedMessage.getSpans(
+                        originStartIndex, originStartIndex + TEST_ORIGIN.length(), StyleSpan.class);
 
         assertEquals(spans.length, 1);
         assertEquals(spans[0].getStyle(), Typeface.BOLD);

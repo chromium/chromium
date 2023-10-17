@@ -42,8 +42,7 @@ import java.util.concurrent.TimeoutException;
 @CommandLineFlags.Add({ChromeSwitches.DISABLE_FIRST_RUN_EXPERIENCE})
 @Batch(value = PER_CLASS)
 public class SegmentationPlatformServiceFactoryTest {
-    @Rule
-    public Features.JUnitProcessor mFeaturesProcessor = new Features.JUnitProcessor();
+    @Rule public Features.JUnitProcessor mFeaturesProcessor = new Features.JUnitProcessor();
 
     @Rule
     public ChromeTabbedActivityTestRule mActivityTestRule = new ChromeTabbedActivityTestRule();
@@ -56,25 +55,32 @@ public class SegmentationPlatformServiceFactoryTest {
         LibraryLoader.getInstance().ensureInitialized();
         mActivityTestRule.startMainActivityOnBlankPage();
 
-        mActivityTestRule.runOnUiThread(new Runnable() {
-            @Override
-            public void run() {
-                SegmentationPlatformService segmentationPlatformService =
-                        SegmentationPlatformServiceFactory.getForProfile(
-                                Profile.getLastUsedRegularProfile());
+        mActivityTestRule.runOnUiThread(
+                new Runnable() {
+                    @Override
+                    public void run() {
+                        SegmentationPlatformService segmentationPlatformService =
+                                SegmentationPlatformServiceFactory.getForProfile(
+                                        Profile.getLastUsedRegularProfile());
 
-                PredictionOptions options = new PredictionOptions(true);
-                segmentationPlatformService.getClassificationResult(
-                        "intentional_user", options, null, new Callback<ClassificationResult>() {
-                            @Override
-                            public void onResult(ClassificationResult result) {
-                                Assert.assertEquals(PredictionStatus.NOT_READY, result.status);
-                                assertThat(result.orderedLabels, org.hamcrest.Matchers.empty());
-                                mCallbackHelper.notifyCalled();
-                            }
-                        });
-            }
-        });
+                        PredictionOptions options = new PredictionOptions(true);
+                        segmentationPlatformService.getClassificationResult(
+                                "intentional_user",
+                                options,
+                                null,
+                                new Callback<ClassificationResult>() {
+                                    @Override
+                                    public void onResult(ClassificationResult result) {
+                                        Assert.assertEquals(
+                                                PredictionStatus.NOT_READY, result.status);
+                                        assertThat(
+                                                result.orderedLabels,
+                                                org.hamcrest.Matchers.empty());
+                                        mCallbackHelper.notifyCalled();
+                                    }
+                                });
+                    }
+                });
 
         mCallbackHelper.waitForNext();
     }
@@ -85,33 +91,41 @@ public class SegmentationPlatformServiceFactoryTest {
         LibraryLoader.getInstance().ensureInitialized();
         mActivityTestRule.startMainActivityOnBlankPage();
 
-        mActivityTestRule.runOnUiThread(new Runnable() {
-            @Override
-            public void run() {
-                SegmentationPlatformService segmentationPlatformService =
-                        SegmentationPlatformServiceFactory.getForProfile(
-                                Profile.getLastUsedRegularProfile());
+        mActivityTestRule.runOnUiThread(
+                new Runnable() {
+                    @Override
+                    public void run() {
+                        SegmentationPlatformService segmentationPlatformService =
+                                SegmentationPlatformServiceFactory.getForProfile(
+                                        Profile.getLastUsedRegularProfile());
 
-                PredictionOptions options = new PredictionOptions(true);
-                InputContext inputContext = new InputContext();
-                inputContext.addEntry(Constants.CONTEXTUAL_PAGE_ACTIONS_PRICE_TRACKING_INPUT,
-                        ProcessedValue.fromFloat(1.0f));
-                inputContext.addEntry(Constants.CONTEXTUAL_PAGE_ACTIONS_READER_MODE_INPUT,
-                        ProcessedValue.fromFloat(0.0f));
-                inputContext.addEntry("url", ProcessedValue.fromGURL(GURL.emptyGURL()));
+                        PredictionOptions options = new PredictionOptions(true);
+                        InputContext inputContext = new InputContext();
+                        inputContext.addEntry(
+                                Constants.CONTEXTUAL_PAGE_ACTIONS_PRICE_TRACKING_INPUT,
+                                ProcessedValue.fromFloat(1.0f));
+                        inputContext.addEntry(
+                                Constants.CONTEXTUAL_PAGE_ACTIONS_READER_MODE_INPUT,
+                                ProcessedValue.fromFloat(0.0f));
+                        inputContext.addEntry("url", ProcessedValue.fromGURL(GURL.emptyGURL()));
 
-                segmentationPlatformService.getClassificationResult("contextual_page_actions",
-                        options, inputContext, new Callback<ClassificationResult>() {
-                            @Override
-                            public void onResult(ClassificationResult result) {
-                                Assert.assertEquals(PredictionStatus.SUCCEEDED, result.status);
-                                assertThat(result.orderedLabels, hasSize(1));
-                                assertThat(result.orderedLabels, contains("price_tracking"));
-                                mCallbackHelper.notifyCalled();
-                            }
-                        });
-            }
-        });
+                        segmentationPlatformService.getClassificationResult(
+                                "contextual_page_actions",
+                                options,
+                                inputContext,
+                                new Callback<ClassificationResult>() {
+                                    @Override
+                                    public void onResult(ClassificationResult result) {
+                                        Assert.assertEquals(
+                                                PredictionStatus.SUCCEEDED, result.status);
+                                        assertThat(result.orderedLabels, hasSize(1));
+                                        assertThat(
+                                                result.orderedLabels, contains("price_tracking"));
+                                        mCallbackHelper.notifyCalled();
+                                    }
+                                });
+                    }
+                });
 
         mCallbackHelper.waitForNext();
     }

@@ -52,9 +52,7 @@ import org.chromium.ui.test.util.ViewUtils;
 
 import java.io.IOException;
 
-/**
- * Render tests of account picker bottom sheet.
- */
+/** Render tests of account picker bottom sheet. */
 @RunWith(ParameterizedRunner.class)
 @ParameterAnnotations.UseRunnerDelegate(ChromeJUnit4RunnerDelegate.class)
 @CommandLineFlags.Add({ChromeSwitches.DISABLE_FIRST_RUN_EXPERIENCE})
@@ -127,9 +125,10 @@ public class AccountPickerBottomSheetRenderTest {
 
     @ParameterAnnotations.UseMethodParameterBefore(NightModeTestUtils.NightModeParams.class)
     public void setupNightMode(boolean nightModeEnabled) {
-        TestThreadUtils.runOnUiThreadBlocking(() -> {
-            ChromeNightModeTestUtils.setUpNightModeForChromeActivity(nightModeEnabled);
-        });
+        TestThreadUtils.runOnUiThreadBlocking(
+                () -> {
+                    ChromeNightModeTestUtils.setUpNightModeForChromeActivity(nightModeEnabled);
+                });
         mRenderTestRule.setNightModeEnabled(nightModeEnabled);
     }
 
@@ -173,7 +172,8 @@ public class AccountPickerBottomSheetRenderTest {
         buildAndShowCollapsedBottomSheet();
         ViewUtils.waitForVisibleView(allOf(withText(TEST_EMAIL1), isDisplayed()));
         ViewUtils.waitForVisibleView(allOf(withText(FULL_NAME1), isDisplayed()));
-        mRenderTestRule.render(mCoordinator.getBottomSheetViewForTesting(),
+        mRenderTestRule.render(
+                mCoordinator.getBottomSheetViewForTesting(),
                 "collapsed_sheet_with_account_for_send_tab_to_self");
     }
 
@@ -251,11 +251,14 @@ public class AccountPickerBottomSheetRenderTest {
         mAccountManagerTestRule.addAccount(TEST_EMAIL1);
         mAccountPickerDelegate.setError(State.CONNECTION_FAILED);
         buildAndShowCollapsedBottomSheet();
-        TestThreadUtils.runOnUiThreadBlocking(() -> {
-            View bottomSheetView = mCoordinator.getBottomSheetViewForTesting();
-            bottomSheetView.findViewById(R.id.account_picker_continue_as_button).performClick();
-            mCoordinator.setTryAgainBottomSheetView();
-        });
+        TestThreadUtils.runOnUiThreadBlocking(
+                () -> {
+                    View bottomSheetView = mCoordinator.getBottomSheetViewForTesting();
+                    bottomSheetView
+                            .findViewById(R.id.account_picker_continue_as_button)
+                            .performClick();
+                    mCoordinator.setTryAgainBottomSheetView();
+                });
         mRenderTestRule.render(
                 mCoordinator.getBottomSheetViewForTesting(), "signin_general_error_sheet");
     }
@@ -275,19 +278,28 @@ public class AccountPickerBottomSheetRenderTest {
 
     private void clickContinueButtonAndWaitForErrorView() {
         View bottomSheetView = mCoordinator.getBottomSheetViewForTesting();
-        TestThreadUtils.runOnUiThreadBlocking(() -> {
-            bottomSheetView.findViewById(R.id.account_picker_continue_as_button).performClick();
-        });
-        CriteriaHelper.pollUiThread(() -> {
-            return !bottomSheetView.findViewById(R.id.account_picker_selected_account).isShown();
-        });
+        TestThreadUtils.runOnUiThreadBlocking(
+                () -> {
+                    bottomSheetView
+                            .findViewById(R.id.account_picker_continue_as_button)
+                            .performClick();
+                });
+        CriteriaHelper.pollUiThread(
+                () -> {
+                    return !bottomSheetView
+                            .findViewById(R.id.account_picker_selected_account)
+                            .isShown();
+                });
     }
 
     private void clickContinueButtonAndCheckSigninInProgressView() throws IOException {
         View bottomSheetView = mCoordinator.getBottomSheetViewForTesting();
-        TestThreadUtils.runOnUiThreadBlocking(() -> {
-            bottomSheetView.findViewById(R.id.account_picker_continue_as_button).performClick();
-        });
+        TestThreadUtils.runOnUiThreadBlocking(
+                () -> {
+                    bottomSheetView
+                            .findViewById(R.id.account_picker_continue_as_button)
+                            .performClick();
+                });
         CriteriaHelper.pollUiThread(
                 bottomSheetView.findViewById(R.id.account_picker_signin_spinner_view)::isShown);
         // Currently the ProgressBar animation cannot be disabled on android-marshmallow-arm64-rel
@@ -295,10 +307,12 @@ public class AccountPickerBottomSheetRenderTest {
         // checks of other elements on the screen.
         // TODO(https://crbug.com/1115067): Delete this line and use DisableAnimationsTestRule
         //  once DisableAnimationsTestRule is fixed.
-        TestThreadUtils.runOnUiThreadBlocking(() -> {
-            bottomSheetView.findViewById(R.id.account_picker_signin_spinner_view)
-                    .setVisibility(View.INVISIBLE);
-        });
+        TestThreadUtils.runOnUiThreadBlocking(
+                () -> {
+                    bottomSheetView
+                            .findViewById(R.id.account_picker_signin_spinner_view)
+                            .setVisibility(View.INVISIBLE);
+                });
         mRenderTestRule.render(
                 mCoordinator.getBottomSheetViewForTesting(), "signin_in_progress_sheet");
     }
@@ -306,25 +320,33 @@ public class AccountPickerBottomSheetRenderTest {
     private void expandBottomSheet() {
         View view = mCoordinator.getBottomSheetViewForTesting();
         TestThreadUtils.runOnUiThreadBlocking(
-                () -> { view.findViewById(R.id.account_picker_selected_account).performClick(); });
+                () -> {
+                    view.findViewById(R.id.account_picker_selected_account).performClick();
+                });
         ViewUtils.onViewWaiting(allOf(withId(R.id.account_picker_account_list), isDisplayed()));
     }
 
     private void buildAndShowCollapsedBottomSheet() {
         AccountPickerBottomSheetStrings accountPickerBottomSheetStrings =
                 mAccountPickerDelegate.getEntryPoint() == EntryPoint.SEND_TAB_TO_SELF
-                ? new SendTabToSelfCoordinator.BottomSheetStrings()
-                : new AccountPickerBottomSheetStrings() {};
-        TestThreadUtils.runOnUiThreadBlocking(() -> {
-            mCoordinator = new AccountPickerBottomSheetCoordinator(
-                    mActivityTestRule.getActivity().getWindowAndroid(), getBottomSheetController(),
-                    mAccountPickerDelegate, accountPickerBottomSheetStrings, null);
-        });
+                        ? new SendTabToSelfCoordinator.BottomSheetStrings()
+                        : new AccountPickerBottomSheetStrings() {};
+        TestThreadUtils.runOnUiThreadBlocking(
+                () -> {
+                    mCoordinator =
+                            new AccountPickerBottomSheetCoordinator(
+                                    mActivityTestRule.getActivity().getWindowAndroid(),
+                                    getBottomSheetController(),
+                                    mAccountPickerDelegate,
+                                    accountPickerBottomSheetStrings,
+                                    null);
+                });
         ViewUtils.onViewWaiting(allOf(withId(R.id.account_picker_selected_account), isDisplayed()));
     }
 
     private BottomSheetController getBottomSheetController() {
-        return mActivityTestRule.getActivity()
+        return mActivityTestRule
+                .getActivity()
                 .getRootUiCoordinatorForTesting()
                 .getBottomSheetController();
     }

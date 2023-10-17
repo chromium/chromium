@@ -34,9 +34,7 @@ import org.chromium.ui.modelutil.PropertyModel;
 import org.chromium.ui.modelutil.PropertyModelChangeProcessor;
 import org.chromium.ui.text.EmptyTextWatcher;
 
-/**
- * Unit test for {@link TextFieldView}.
- */
+/** Unit test for {@link TextFieldView}. */
 @RunWith(BaseRobolectricTestRunner.class)
 public final class TextFieldViewUnitTest {
     private Activity mActivity;
@@ -73,7 +71,8 @@ public final class TextFieldViewUnitTest {
     public void testNoError() {
         PropertyModel model = buildDefaultPropertyModel();
         model.set(IS_REQUIRED, true);
-        model.set(VALIDATOR,
+        model.set(
+                VALIDATOR,
                 EditorFieldValidator.builder()
                         .withRequiredErrorMessage("required error message")
                         .build());
@@ -83,15 +82,18 @@ public final class TextFieldViewUnitTest {
         assertNull(field.getInputLayoutForTesting().getError());
     }
 
-    /**
-     * Test the error message is hidden when the user edits the field.
-     */
+    /** Test the error message is hidden when the user edits the field. */
     @Test
     public void testEditHideErrorMessage() {
         PropertyModel model = buildDefaultPropertyModel();
-        model.set(VALIDATOR,
+        model.set(
+                VALIDATOR,
                 EditorFieldValidator.builder()
-                        .withValidationPredicate((value) -> { return false; }, "Error Message")
+                        .withValidationPredicate(
+                                (value) -> {
+                                    return false;
+                                },
+                                "Error Message")
                         .build());
         TextFieldView field = attachTextFieldView(model);
 
@@ -116,9 +118,14 @@ public final class TextFieldViewUnitTest {
     @Test
     public void testUnfocusFieldStillInvalid() {
         PropertyModel model = buildDefaultPropertyModel();
-        model.set(VALIDATOR,
+        model.set(
+                VALIDATOR,
                 EditorFieldValidator.builder()
-                        .withValidationPredicate((value) -> { return false; }, "Error Message")
+                        .withValidationPredicate(
+                                (value) -> {
+                                    return false;
+                                },
+                                "Error Message")
                         .build());
         TextFieldView field = attachTextFieldView(model);
 
@@ -145,10 +152,14 @@ public final class TextFieldViewUnitTest {
     @Test
     public void testUnfocusFieldNowValid() {
         PropertyModel model = buildDefaultPropertyModel();
-        model.set(VALIDATOR,
+        model.set(
+                VALIDATOR,
                 EditorFieldValidator.builder()
                         .withValidationPredicate(
-                                (value) -> { return "valid".equals(value); }, "Error Message")
+                                (value) -> {
+                                    return "valid".equals(value);
+                                },
+                                "Error Message")
                         .build());
         TextFieldView field = attachTextFieldView(model);
 
@@ -174,7 +185,8 @@ public final class TextFieldViewUnitTest {
     @Test
     public void testInitialErrorMessageValueNotEdited() {
         PropertyModel model = buildDefaultPropertyModel();
-        model.set(VALIDATOR,
+        model.set(
+                VALIDATOR,
                 EditorFieldValidator.builder()
                         .withInitialErrorMessage("Initial error message")
                         .build());
@@ -201,7 +213,8 @@ public final class TextFieldViewUnitTest {
     @Test
     public void testInitialErrorMessageValueEdited() {
         PropertyModel model = buildDefaultPropertyModel();
-        model.set(VALIDATOR,
+        model.set(
+                VALIDATOR,
                 EditorFieldValidator.builder()
                         .withInitialErrorMessage("Initial error message")
                         .build());
@@ -229,21 +242,23 @@ public final class TextFieldViewUnitTest {
     @Test
     public void testInitialErrorMessageSetValue() {
         PropertyModel model = buildDefaultPropertyModel();
-        model.set(VALIDATOR,
+        model.set(
+                VALIDATOR,
                 EditorFieldValidator.builder()
                         .withInitialErrorMessage("Initial error message")
                         .build());
         final TextFieldView field = attachTextFieldView(model);
 
         // Set text formatter in order to test nested calls of {@link TextFieldView#setValue(()}.
-        field.setTextFormatter(new EmptyTextWatcher() {
-            @Override
-            public void afterTextChanged(Editable s) {
-                if (!s.toString().startsWith("formatted")) {
-                    s.insert(0, "formatted");
-                }
-            }
-        });
+        field.setTextFormatter(
+                new EmptyTextWatcher() {
+                    @Override
+                    public void afterTextChanged(Editable s) {
+                        if (!s.toString().startsWith("formatted")) {
+                            s.insert(0, "formatted");
+                        }
+                    }
+                });
 
         AutoCompleteTextView fieldEditText = field.getEditText();
         TextInputLayout inputLayout = field.getInputLayoutForTesting();
@@ -267,7 +282,8 @@ public final class TextFieldViewUnitTest {
     @Test
     public void testValidatingMultipleTimesInitialMessage() {
         PropertyModel model = buildDefaultPropertyModel();
-        model.set(VALIDATOR,
+        model.set(
+                VALIDATOR,
                 EditorFieldValidator.builder()
                         .withInitialErrorMessage("Initial error message")
                         .build());
@@ -288,15 +304,20 @@ public final class TextFieldViewUnitTest {
      * Test that calling {@link #validate()} shows the error message in the case that the error
      * message is hidden by the user editing the field.
      *
-     * This behavior is needed when validation is triggered by submitting the form via the virtual
-     * keyboard.
+     * <p>This behavior is needed when validation is triggered by submitting the form via the
+     * virtual keyboard.
      */
     @Test
     public void testValidateShowsErrorMessage() {
         PropertyModel model = buildDefaultPropertyModel();
-        model.set(VALIDATOR,
+        model.set(
+                VALIDATOR,
                 EditorFieldValidator.builder()
-                        .withValidationPredicate((value) -> { return false; }, "Error Message")
+                        .withValidationPredicate(
+                                (value) -> {
+                                    return false;
+                                },
+                                "Error Message")
                         .build());
         TextFieldView field = attachTextFieldView(model);
 
@@ -314,9 +335,7 @@ public final class TextFieldViewUnitTest {
         assertTrue(inputLayout.getError() != null);
     }
 
-    /**
-     * Test that {@link #validate()} returns true when there is no validator.
-     */
+    /** Test that {@link #validate()} returns true when there is no validator. */
     @Test
     public void testNullValidator() {
         PropertyModel model = buildDefaultPropertyModel();

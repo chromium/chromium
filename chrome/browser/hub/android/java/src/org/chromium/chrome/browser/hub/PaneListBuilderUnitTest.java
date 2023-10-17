@@ -24,8 +24,7 @@ import org.chromium.base.test.BaseRobolectricTestRunner;
 /** Unit tests for {@link PaneListBuilder}. */
 @RunWith(BaseRobolectricTestRunner.class)
 public class PaneListBuilderUnitTest {
-    @Mock
-    private Supplier<Pane> mMockSupplier;
+    @Mock private Supplier<Pane> mMockSupplier;
 
     @Before
     public void setUp() {
@@ -45,11 +44,12 @@ public class PaneListBuilderUnitTest {
     public void testRegisterAllWithDefaultOrder() {
         PaneOrderController orderController = new DefaultPaneOrderController();
 
-        var panes = new PaneListBuilder(orderController)
-                            .registerPane(PaneId.BOOKMARKS, mMockSupplier)
-                            .registerPane(PaneId.INCOGNITO_TAB_SWITCHER, mMockSupplier)
-                            .registerPane(PaneId.TAB_SWITCHER, mMockSupplier)
-                            .build();
+        var panes =
+                new PaneListBuilder(orderController)
+                        .registerPane(PaneId.BOOKMARKS, mMockSupplier)
+                        .registerPane(PaneId.INCOGNITO_TAB_SWITCHER, mMockSupplier)
+                        .registerPane(PaneId.TAB_SWITCHER, mMockSupplier)
+                        .build();
 
         assertEquals(3, panes.size());
         assertEquals(orderController.getPaneOrder(), panes.keySet());
@@ -60,11 +60,12 @@ public class PaneListBuilderUnitTest {
     public void testRegisterAllWithReverseDefaultOrder() {
         PaneOrderController orderController = createReverseDefaultOrderController();
 
-        var panes = new PaneListBuilder(orderController)
-                            .registerPane(PaneId.TAB_SWITCHER, mMockSupplier)
-                            .registerPane(PaneId.INCOGNITO_TAB_SWITCHER, mMockSupplier)
-                            .registerPane(PaneId.BOOKMARKS, mMockSupplier)
-                            .build();
+        var panes =
+                new PaneListBuilder(orderController)
+                        .registerPane(PaneId.TAB_SWITCHER, mMockSupplier)
+                        .registerPane(PaneId.INCOGNITO_TAB_SWITCHER, mMockSupplier)
+                        .registerPane(PaneId.BOOKMARKS, mMockSupplier)
+                        .build();
 
         assertEquals(3, panes.size());
         assertEquals(orderController.getPaneOrder().asList(), panes.keySet().asList());
@@ -75,9 +76,10 @@ public class PaneListBuilderUnitTest {
     public void testRegisterSubsetOfPanesInPaneOrderController() {
         PaneOrderController orderController = createReverseDefaultOrderController();
 
-        var panes = new PaneListBuilder(orderController)
-                            .registerPane(PaneId.TAB_SWITCHER, mMockSupplier)
-                            .build();
+        var panes =
+                new PaneListBuilder(orderController)
+                        .registerPane(PaneId.TAB_SWITCHER, mMockSupplier)
+                        .build();
 
         assertEquals(1, panes.size());
         assertTrue(panes.containsKey(PaneId.TAB_SWITCHER));

@@ -21,15 +21,13 @@ import org.chromium.chrome.browser.intents.BrowserIntentUtils;
 
 import java.util.ArrayList;
 
-/**
- * Tests for {@link WebappIntentUtils}.
- */
+/** Tests for {@link WebappIntentUtils}. */
 @RunWith(BaseRobolectricTestRunner.class)
 @Config(manifest = Config.NONE)
 public class WebappIntentUtilsTest {
     /**
-     * Test that {@link WebappIntentUtils#copyWebappLaunchIntentExtras()} does not set intent
-     * extras on the destination intent if they are not present in the source intent.
+     * Test that {@link WebappIntentUtils#copyWebappLaunchIntentExtras()} does not set intent extras
+     * on the destination intent if they are not present in the source intent.
      */
     @Test
     public void testCopyWebappLaunchIntentExtrasMissingKeys() {

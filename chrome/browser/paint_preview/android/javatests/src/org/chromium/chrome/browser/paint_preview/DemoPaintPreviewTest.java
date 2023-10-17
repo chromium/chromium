@@ -38,9 +38,7 @@ import org.chromium.content_public.browser.test.util.TestThreadUtils;
 
 import java.util.concurrent.ExecutionException;
 
-/**
- * Tests for the {@link DemoPaintPreview} class.
- */
+/** Tests for the {@link DemoPaintPreview} class. */
 @RunWith(ChromeJUnit4ClassRunner.class)
 @EnableFeatures({ChromeFeatureList.PAINT_PREVIEW_DEMO})
 @Batch(PER_CLASS)
@@ -48,6 +46,7 @@ public class DemoPaintPreviewTest {
     @ClassRule
     public static ChromeTabbedActivityTestRule sActivityTestRule =
             new ChromeTabbedActivityTestRule();
+
     @Rule
     public final BlankCTATabInitialStateRule mInitialStateRule =
             new BlankCTATabInitialStateRule(sActivityTestRule, true);
@@ -55,8 +54,7 @@ public class DemoPaintPreviewTest {
     private static final String TEST_URL = "/chrome/test/data/android/about.html";
 
     // @Mock to tell R8 not to break the ability to mock the class.
-    @Mock
-    private static PaintPreviewTabService sMockService;
+    @Mock private static PaintPreviewTabService sMockService;
 
     @BeforeClass
     public static void setUp() {
@@ -90,19 +88,25 @@ public class DemoPaintPreviewTest {
         // When PaintPreviewTabService#captureTab is called, return true for future calls to
         // PaintPreviewTabService#hasCaptureForTab and call the success callback with true.
         ArgumentCaptor<Callback<Boolean>> callbackCaptor = ArgumentCaptor.forClass(Callback.class);
-        Mockito.doAnswer(invocation -> {
-                   Mockito.doReturn(true).when(sMockService).hasCaptureForTab(Mockito.anyInt());
-                   callbackCaptor.getValue().onResult(true);
-                   return null;
-               })
+        Mockito.doAnswer(
+                        invocation -> {
+                            Mockito.doReturn(true)
+                                    .when(sMockService)
+                                    .hasCaptureForTab(Mockito.anyInt());
+                            callbackCaptor.getValue().onResult(true);
+                            return null;
+                        })
                 .when(sMockService)
                 .captureTab(Mockito.any(Tab.class), callbackCaptor.capture());
 
         AppMenuCoordinator coordinator = sActivityTestRule.getAppMenuCoordinator();
         TestThreadUtils.runOnUiThreadBlocking(
-                () -> { AppMenuTestSupport.showAppMenu(coordinator, null, false); });
-        Assert.assertNotNull(AppMenuTestSupport.getMenuItemPropertyModel(
-                coordinator, R.id.paint_preview_show_id));
+                () -> {
+                    AppMenuTestSupport.showAppMenu(coordinator, null, false);
+                });
+        Assert.assertNotNull(
+                AppMenuTestSupport.getMenuItemPropertyModel(
+                        coordinator, R.id.paint_preview_show_id));
         TestThreadUtils.runOnUiThreadBlocking(
                 () -> AppMenuTestSupport.callOnItemClick(coordinator, R.id.paint_preview_show_id));
 

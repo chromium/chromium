@@ -70,11 +70,9 @@ public class TouchToFillIntegrationTest {
 
     private TouchToFillComponent mTouchToFill;
 
-    @Mock
-    private TouchToFillComponent.Delegate mMockBridge;
+    @Mock private TouchToFillComponent.Delegate mMockBridge;
 
-    @Mock
-    private BottomSheetFocusHelper mMockFocusHelper;
+    @Mock private BottomSheetFocusHelper mMockFocusHelper;
 
     @Rule
     public ChromeTabbedActivityTestRule mActivityTestRule = new ChromeTabbedActivityTestRule();
@@ -89,21 +87,41 @@ public class TouchToFillIntegrationTest {
     public void setUp() throws InterruptedException {
         sExampleUrl = new GURL("https://www.example.xyz");
         // TODO(https://crbug.com/783819): Migrate Credential to GURL.
-        sAna = new Credential("Ana", "S3cr3t", "Ana", sExampleUrl.getSpec(), "example.xyz",
-                GetLoginMatchType.EXACT, 0);
-        sBob = new Credential(
-                "Bob", "*****", "Bob", MOBILE_URL, "m.example.xyz", GetLoginMatchType.PSL, 0);
-        sCam = new WebAuthnCredential(
-                "example.net", new byte[] {1}, new byte[] {2}, "cam@example.net");
+        sAna =
+                new Credential(
+                        "Ana",
+                        "S3cr3t",
+                        "Ana",
+                        sExampleUrl.getSpec(),
+                        "example.xyz",
+                        GetLoginMatchType.EXACT,
+                        0);
+        sBob =
+                new Credential(
+                        "Bob",
+                        "*****",
+                        "Bob",
+                        MOBILE_URL,
+                        "m.example.xyz",
+                        GetLoginMatchType.PSL,
+                        0);
+        sCam =
+                new WebAuthnCredential(
+                        "example.net", new byte[] {1}, new byte[] {2}, "cam@example.net");
 
         mActivityTestRule.startMainActivityOnBlankPage();
-        runOnUiThreadBlocking(() -> {
-            mTouchToFill = new TouchToFillCoordinator();
-            mBottomSheetController = BottomSheetControllerProvider.from(
-                    mActivityTestRule.getActivity().getWindowAndroid());
-            mTouchToFill.initialize(mActivityTestRule.getActivity(), mBottomSheetController,
-                    mMockBridge, mMockFocusHelper);
-        });
+        runOnUiThreadBlocking(
+                () -> {
+                    mTouchToFill = new TouchToFillCoordinator();
+                    mBottomSheetController =
+                            BottomSheetControllerProvider.from(
+                                    mActivityTestRule.getActivity().getWindowAndroid());
+                    mTouchToFill.initialize(
+                            mActivityTestRule.getActivity(),
+                            mBottomSheetController,
+                            mMockBridge,
+                            mMockFocusHelper);
+                });
     }
 
     @Test
@@ -221,11 +239,14 @@ public class TouchToFillIntegrationTest {
         BottomSheetTestSupport sheetSupport = new BottomSheetTestSupport(mBottomSheetController);
 
         // Swipe the sheet up to its full state in order to see the 'Manage Passwords' button.
-        runOnUiThreadBlocking(() -> { sheetSupport.setSheetState(SheetState.FULL, false); });
+        runOnUiThreadBlocking(
+                () -> {
+                    sheetSupport.setSheetState(SheetState.FULL, false);
+                });
 
         pollUiThread(() -> getManagePasswordsButton() != null);
         TouchCommon.singleClickView(getManagePasswordsButton());
-        waitForEvent(mMockBridge).onManagePasswordsSelected(/*passkeysShown=*/false);
+        waitForEvent(mMockBridge).onManagePasswordsSelected(/* passkeysShown= */ false);
         verify(mMockBridge, never()).onDismissed();
         verify(mMockBridge, never()).onCredentialSelected(any());
     }
@@ -251,7 +272,10 @@ public class TouchToFillIntegrationTest {
 
         // Swipe the sheet up to its full state in order to see the 'Use a Passkey on a Different
         // Device' button.
-        runOnUiThreadBlocking(() -> { sheetSupport.setSheetState(SheetState.FULL, false); });
+        runOnUiThreadBlocking(
+                () -> {
+                    sheetSupport.setSheetState(SheetState.FULL, false);
+                });
 
         pollUiThread(() -> getHybridSignInButton() != null);
         TouchCommon.singleClickView(getHybridSignInButton());
@@ -264,63 +288,68 @@ public class TouchToFillIntegrationTest {
     @MediumTest
     @SuppressLint("SetTextI18n")
     public void testDismissedIfUnableToShow() throws Exception {
-        BottomSheetContent otherBottomSheetContent = runOnUiThreadBlocking(() -> {
-            TextView highPriorityBottomSheetContentView =
-                    new TextView(mActivityTestRule.getActivity());
-            highPriorityBottomSheetContentView.setText("Another bottom sheet content");
-            BottomSheetContent content = new BottomSheetContent() {
-                @Override
-                public View getContentView() {
-                    return highPriorityBottomSheetContentView;
-                }
+        BottomSheetContent otherBottomSheetContent =
+                runOnUiThreadBlocking(
+                        () -> {
+                            TextView highPriorityBottomSheetContentView =
+                                    new TextView(mActivityTestRule.getActivity());
+                            highPriorityBottomSheetContentView.setText(
+                                    "Another bottom sheet content");
+                            BottomSheetContent content =
+                                    new BottomSheetContent() {
+                                        @Override
+                                        public View getContentView() {
+                                            return highPriorityBottomSheetContentView;
+                                        }
 
-                @Nullable
-                @Override
-                public View getToolbarView() {
-                    return null;
-                }
+                                        @Nullable
+                                        @Override
+                                        public View getToolbarView() {
+                                            return null;
+                                        }
 
-                @Override
-                public int getVerticalScrollOffset() {
-                    return 0;
-                }
+                                        @Override
+                                        public int getVerticalScrollOffset() {
+                                            return 0;
+                                        }
 
-                @Override
-                public void destroy() {}
+                                        @Override
+                                        public void destroy() {}
 
-                @Override
-                public int getPriority() {
-                    return ContentPriority.HIGH;
-                }
+                                        @Override
+                                        public int getPriority() {
+                                            return ContentPriority.HIGH;
+                                        }
 
-                @Override
-                public boolean swipeToDismissEnabled() {
-                    return false;
-                }
+                                        @Override
+                                        public boolean swipeToDismissEnabled() {
+                                            return false;
+                                        }
 
-                @Override
-                public int getSheetContentDescriptionStringId() {
-                    return 0;
-                }
+                                        @Override
+                                        public int getSheetContentDescriptionStringId() {
+                                            return 0;
+                                        }
 
-                @Override
-                public int getSheetHalfHeightAccessibilityStringId() {
-                    return 0;
-                }
+                                        @Override
+                                        public int getSheetHalfHeightAccessibilityStringId() {
+                                            return 0;
+                                        }
 
-                @Override
-                public int getSheetFullHeightAccessibilityStringId() {
-                    return 0;
-                }
+                                        @Override
+                                        public int getSheetFullHeightAccessibilityStringId() {
+                                            return 0;
+                                        }
 
-                @Override
-                public int getSheetClosedAccessibilityStringId() {
-                    return 0;
-                }
-            };
-            mBottomSheetController.requestShowContent(content, /* animate = */ false);
-            return content;
-        });
+                                        @Override
+                                        public int getSheetClosedAccessibilityStringId() {
+                                            return 0;
+                                        }
+                                    };
+                            mBottomSheetController.requestShowContent(
+                                    content, /* animate= */ false);
+                            return content;
+                        });
         pollUiThread(() -> getBottomSheetState() == SheetState.PEEK);
         Espresso.onView(withText("Another bottom sheet content")).check(matches(isDisplayed()));
 
@@ -340,9 +369,11 @@ public class TouchToFillIntegrationTest {
         verify(mMockBridge, never()).onCredentialSelected(any());
         Espresso.onView(withText("Another bottom sheet content")).check(matches(isDisplayed()));
 
-        runOnUiThreadBlocking(() -> {
-            mBottomSheetController.hideContent(otherBottomSheetContent, /* animate = */ false);
-        });
+        runOnUiThreadBlocking(
+                () -> {
+                    mBottomSheetController.hideContent(
+                            otherBottomSheetContent, /* animate= */ false);
+                });
         pollUiThread(() -> getBottomSheetState() == BottomSheetController.SheetState.HIDDEN);
     }
 
@@ -381,13 +412,15 @@ public class TouchToFillIntegrationTest {
     }
 
     private TextView getManagePasswordsButton() {
-        return mActivityTestRule.getActivity().findViewById(
-                R.id.touch_to_fill_sheet_manage_passwords);
+        return mActivityTestRule
+                .getActivity()
+                .findViewById(R.id.touch_to_fill_sheet_manage_passwords);
     }
 
     private TextView getHybridSignInButton() {
-        return mActivityTestRule.getActivity().findViewById(
-                R.id.touch_to_fill_sheet_use_passkeys_other_device);
+        return mActivityTestRule
+                .getActivity()
+                .findViewById(R.id.touch_to_fill_sheet_use_passkeys_other_device);
     }
 
     private TextView getMorePasskeysItem() {
@@ -395,7 +428,8 @@ public class TouchToFillIntegrationTest {
     }
 
     public static <T> T waitForEvent(T mock) {
-        return verify(mock,
+        return verify(
+                mock,
                 timeout(ScalableTimeout.scaleTimeout(CriteriaHelper.DEFAULT_MAX_TIME_TO_POLL)));
     }
 

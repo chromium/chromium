@@ -21,9 +21,7 @@ import org.chromium.base.test.BaseRobolectricTestRunner;
 import org.chromium.base.test.util.CallbackHelper;
 import org.chromium.components.browser_ui.widget.gesture.BackPressHandler;
 
-/**
- * Unit tests for {@link BackPressManager}.
- */
+/** Unit tests for {@link BackPressManager}. */
 @RunWith(BaseRobolectricTestRunner.class)
 @Config(manifest = Config.NONE)
 public class BackPressManagerUnitTest {
@@ -69,22 +67,28 @@ public class BackPressManagerUnitTest {
         EmptyBackPressHandler h1 = new EmptyBackPressHandler();
         manager.addHandler(h1, 0);
 
-        Assert.assertFalse("Callback should be disabled if none of handlers are enabled",
+        Assert.assertFalse(
+                "Callback should be disabled if none of handlers are enabled",
                 manager.getCallback().isEnabled());
         try {
             manager.getCallback().handleOnBackPressed();
         } catch (AssertionError ignored) {
         }
-        Assert.assertEquals("Handler's callback should not be executed if it is disabled", 0,
+        Assert.assertEquals(
+                "Handler's callback should not be executed if it is disabled",
+                0,
                 h1.getCallbackHelper().getCallCount());
 
         h1.getHandleBackPressChangedSupplier().set(true);
         Assert.assertEquals(
                 "Should return the active handler", h1, manager.getEnabledBackPressHandler());
-        Assert.assertTrue("Callback should be enabled if any of handlers are enabled",
+        Assert.assertTrue(
+                "Callback should be enabled if any of handlers are enabled",
                 manager.getCallback().isEnabled());
         manager.getCallback().handleOnBackPressed();
-        Assert.assertEquals("Handler's callback should be executed if it is enabled", 1,
+        Assert.assertEquals(
+                "Handler's callback should be executed if it is enabled",
+                1,
                 h1.getCallbackHelper().getCallCount());
 
         h1.getHandleBackPressChangedSupplier().set(false);
@@ -92,7 +96,9 @@ public class BackPressManagerUnitTest {
             manager.getCallback().handleOnBackPressed();
         } catch (AssertionError ignored) {
         }
-        Assert.assertEquals("Handler's callback should not be executed if it is disabled", 1,
+        Assert.assertEquals(
+                "Handler's callback should not be executed if it is disabled",
+                1,
                 h1.getCallbackHelper().getCallCount());
     }
 
@@ -105,32 +111,43 @@ public class BackPressManagerUnitTest {
         manager.addHandler(h2, 1);
 
         h1.getHandleBackPressChangedSupplier().set(true);
-        Assert.assertTrue("Callback should be enabled if any of handlers are enabled.",
+        Assert.assertTrue(
+                "Callback should be enabled if any of handlers are enabled.",
                 manager.getCallback().isEnabled());
 
         h1.getHandleBackPressChangedSupplier().set(false);
-        Assert.assertFalse("Callback should be disabled if none of handlers are enabled.",
+        Assert.assertFalse(
+                "Callback should be disabled if none of handlers are enabled.",
                 manager.getCallback().isEnabled());
 
         h2.getHandleBackPressChangedSupplier().set(true);
         Assert.assertEquals(
                 "Should return the first active handler", h2, manager.getEnabledBackPressHandler());
-        Assert.assertTrue("Callback should be enabled if any of handlers are enabled.",
+        Assert.assertTrue(
+                "Callback should be enabled if any of handlers are enabled.",
                 manager.getCallback().isEnabled());
 
         manager.getCallback().handleOnBackPressed();
-        Assert.assertEquals("Handler's callback should not be triggered if it's disabled", 0,
+        Assert.assertEquals(
+                "Handler's callback should not be triggered if it's disabled",
+                0,
                 h1.getCallbackHelper().getCallCount());
-        Assert.assertEquals("Handler's callback should be triggered if it's enabled", 1,
+        Assert.assertEquals(
+                "Handler's callback should be triggered if it's enabled",
+                1,
                 h2.getCallbackHelper().getCallCount());
 
         h1.getHandleBackPressChangedSupplier().set(true);
         manager.getCallback().handleOnBackPressed();
-        Assert.assertEquals("Handler's callback should be triggered if it's enabled", 1,
+        Assert.assertEquals(
+                "Handler's callback should be triggered if it's enabled",
+                1,
                 h1.getCallbackHelper().getCallCount());
         Assert.assertEquals(
-                "Handler's callback should not be triggered if other earlier handler has already consumed the event",
-                1, h2.getCallbackHelper().getCallCount());
+                "Handler's callback should not be triggered if other earlier handler has already"
+                        + " consumed the event",
+                1,
+                h2.getCallbackHelper().getCallCount());
     }
 
     @Test
@@ -144,19 +161,27 @@ public class BackPressManagerUnitTest {
         h1.getHandleBackPressChangedSupplier().set(true);
         h2.getHandleBackPressChangedSupplier().set(true);
         manager.getCallback().handleOnBackPressed();
-        Assert.assertEquals("Should return the active handler of higher priority", h1,
+        Assert.assertEquals(
+                "Should return the active handler of higher priority",
+                h1,
                 manager.getEnabledBackPressHandler());
-        Assert.assertEquals("Enabled handler of higher priority should intercept the back gesture",
-                1, h1.getCallbackHelper().getCallCount());
+        Assert.assertEquals(
+                "Enabled handler of higher priority should intercept the back gesture",
+                1,
+                h1.getCallbackHelper().getCallCount());
 
         h1.getHandleBackPressChangedSupplier().set(false);
         h2.getHandleBackPressChangedSupplier().set(true);
         manager.getCallback().handleOnBackPressed();
-        Assert.assertEquals("Disabled handler should be unable to intercept the back gesture", 1,
+        Assert.assertEquals(
+                "Disabled handler should be unable to intercept the back gesture",
+                1,
                 h1.getCallbackHelper().getCallCount());
         Assert.assertEquals(
-                "Enabled handler of lower priority should be able to intercept the back gesture if there is no other enabled handler of higher priority..",
-                1, h2.getCallbackHelper().getCallCount());
+                "Enabled handler of lower priority should be able to intercept the back gesture if"
+                        + " there is no other enabled handler of higher priority..",
+                1,
+                h2.getCallbackHelper().getCallCount());
     }
 
     @Test
@@ -185,27 +210,36 @@ public class BackPressManagerUnitTest {
         manager.addHandler(h1, 0);
         manager.addHandler(h2, 1);
         Assert.assertEquals("Two handlers should be registered", 2, getHandlerCount(manager));
-        Assert.assertFalse("Callback should be disabled if no handler is enabled.", manager.getCallback().isEnabled());
+        Assert.assertFalse(
+                "Callback should be disabled if no handler is enabled.",
+                manager.getCallback().isEnabled());
 
         h1.getHandleBackPressChangedSupplier().set(true);
         h2.getHandleBackPressChangedSupplier().set(true);
-        Assert.assertTrue("Callback should be enabled if any handler is enabled.", manager.getCallback().isEnabled());
+        Assert.assertTrue(
+                "Callback should be enabled if any handler is enabled.",
+                manager.getCallback().isEnabled());
 
         manager.removeHandler(h2);
         Assert.assertEquals("One handler should be removed", 1, getHandlerCount(manager));
         Assert.assertFalse("One handler should be removed", manager.has(2));
-        Assert.assertTrue("Callback should be enabled if any handler is enabled.", manager.getCallback().isEnabled());
+        Assert.assertTrue(
+                "Callback should be enabled if any handler is enabled.",
+                manager.getCallback().isEnabled());
 
         manager.removeHandler(h1);
         Assert.assertEquals("All handlers should have been removed", 0, getHandlerCount(manager));
         Assert.assertFalse("All handlers should have been removed", manager.has(1));
-        Assert.assertFalse("Callback should be disabled if no handler is registered.", manager.getCallback().isEnabled());
+        Assert.assertFalse(
+                "Callback should be disabled if no handler is registered.",
+                manager.getCallback().isEnabled());
     }
 
     @Test
     public void testNoHandlerRegistered() {
         BackPressManager manager = new BackPressManager();
-        Assert.assertFalse("Callback should be disabled if no handler is registered",
+        Assert.assertFalse(
+                "Callback should be disabled if no handler is registered",
                 manager.getCallback().isEnabled());
     }
 
@@ -217,42 +251,58 @@ public class BackPressManagerUnitTest {
         manager.addHandler(h1, 0);
         manager.addHandler(h2, 1);
 
-        Assert.assertFalse("Callback should be disabled if no value is provided by handler",
+        Assert.assertFalse(
+                "Callback should be disabled if no value is provided by handler",
                 manager.getCallback().isEnabled());
         try {
             manager.getCallback().handleOnBackPressed();
         } catch (AssertionError ignored) {
         }
-        Assert.assertEquals("Callback should be disabled if no value is provided by handler", 0,
+        Assert.assertEquals(
+                "Callback should be disabled if no value is provided by handler",
+                0,
                 h1.getCallbackHelper().getCallCount());
-        Assert.assertEquals("Callback should be disabled if no value is provided by handler", 0,
+        Assert.assertEquals(
+                "Callback should be disabled if no value is provided by handler",
+                0,
                 h2.getCallbackHelper().getCallCount());
 
         h1.getHandleBackPressChangedSupplier().set(false);
-        Assert.assertFalse("Callback should be disabled if handler is disabled",
+        Assert.assertFalse(
+                "Callback should be disabled if handler is disabled",
                 manager.getCallback().isEnabled());
         try {
             manager.getCallback().handleOnBackPressed();
         } catch (AssertionError ignored) {
         }
-        Assert.assertEquals("Callback should be disabled if handler is disabled", 0,
+        Assert.assertEquals(
+                "Callback should be disabled if handler is disabled",
+                0,
                 h1.getCallbackHelper().getCallCount());
-        Assert.assertEquals("Callback should be disabled if handler is disabled", 0,
+        Assert.assertEquals(
+                "Callback should be disabled if handler is disabled",
+                0,
                 h2.getCallbackHelper().getCallCount());
 
         h2.getHandleBackPressChangedSupplier().set(false);
-        Assert.assertFalse("Callback should be disabled if handler is disabled",
+        Assert.assertFalse(
+                "Callback should be disabled if handler is disabled",
                 manager.getCallback().isEnabled());
         try {
             manager.getCallback().handleOnBackPressed();
         } catch (AssertionError ignored) {
         }
-        Assert.assertEquals("Callback should be disabled if handler is disabled", 0,
+        Assert.assertEquals(
+                "Callback should be disabled if handler is disabled",
+                0,
                 h1.getCallbackHelper().getCallCount());
-        Assert.assertEquals("Callback should be disabled if handler is disabled", 0,
+        Assert.assertEquals(
+                "Callback should be disabled if handler is disabled",
+                0,
                 h2.getCallbackHelper().getCallCount());
 
-        Assert.assertFalse("Callback should be disabled if no value is provided by handler",
+        Assert.assertFalse(
+                "Callback should be disabled if no value is provided by handler",
                 manager.getCallback().isEnabled());
     }
 
@@ -264,11 +314,13 @@ public class BackPressManagerUnitTest {
         manager.addHandler(h1, 0);
         manager.addHandler(h2, 1);
         h1.getHandleBackPressChangedSupplier().set(true);
-        Assert.assertTrue("Callback should be enabled if any of handlers are enabled",
+        Assert.assertTrue(
+                "Callback should be enabled if any of handlers are enabled",
                 manager.getCallback().isEnabled());
 
         manager.destroy();
-        Assert.assertFalse("Callback should be disabled if manager class has been destroyed",
+        Assert.assertFalse(
+                "Callback should be disabled if manager class has been destroyed",
                 manager.getCallback().isEnabled());
     }
 
@@ -280,11 +332,13 @@ public class BackPressManagerUnitTest {
         manager.addHandler(h1, 0);
         manager.addHandler(h2, 1);
         h1.getHandleBackPressChangedSupplier().set(true);
-        Assert.assertTrue("Callback should be enabled if any of handlers are enabled",
+        Assert.assertTrue(
+                "Callback should be enabled if any of handlers are enabled",
                 manager.getCallback().isEnabled());
 
         h1.getHandleBackPressChangedSupplier().set(null);
-        Assert.assertFalse("Callback should be disabled if no handler is enabled",
+        Assert.assertFalse(
+                "Callback should be disabled if no handler is enabled",
                 manager.getCallback().isEnabled());
     }
 
@@ -298,7 +352,8 @@ public class BackPressManagerUnitTest {
         manager.addHandler(h1, 0);
         manager.addHandler(h2, 1);
         h1.getHandleBackPressChangedSupplier().set(true);
-        Assert.assertTrue("Callback should be enabled if any of handlers are enabled",
+        Assert.assertTrue(
+                "Callback should be enabled if any of handlers are enabled",
                 manager.getCallback().isEnabled());
         h1.getHandleBackPressChangedSupplier().set(false);
         Assert.assertFalse("No handler is enabled", manager.shouldInterceptBackPress());
@@ -314,11 +369,13 @@ public class BackPressManagerUnitTest {
         manager.addHandler(h1, 0);
         manager.addHandler(h2, 1);
         h1.getHandleBackPressChangedSupplier().set(true);
-        Assert.assertTrue("Callback should be enabled if any of handlers are enabled",
+        Assert.assertTrue(
+                "Callback should be enabled if any of handlers are enabled",
                 manager.getCallback().isEnabled());
         h1.getHandleBackPressChangedSupplier().set(false);
         Assert.assertFalse("No handler is enabled", manager.shouldInterceptBackPress());
-        Assert.assertFalse("Callback should not be always enabled on non tabbed activity",
+        Assert.assertFalse(
+                "Callback should not be always enabled on non tabbed activity",
                 manager.getCallback().isEnabled());
     }
 
@@ -348,9 +405,12 @@ public class BackPressManagerUnitTest {
         manager.getCallback().handleOnBackPressed();
         Mockito.verify(h2).handleBackPress();
 
-        Mockito.verify(h2,
-                       Mockito.never().description(
-                               "Cancelled should never be called if back is not cancelled"))
+        Mockito.verify(
+                        h2,
+                        Mockito.never()
+                                .description(
+                                        "Cancelled should never be called if back is not"
+                                                + " cancelled"))
                 .handleOnBackCancelled();
     }
 
@@ -380,9 +440,12 @@ public class BackPressManagerUnitTest {
         manager.getCallback().handleOnBackCancelled();
         Mockito.verify(h2).handleOnBackCancelled();
 
-        Mockito.verify(h2,
-                       Mockito.never().description(
-                               "handleBackPress should never be called if back is cancelled"))
+        Mockito.verify(
+                        h2,
+                        Mockito.never()
+                                .description(
+                                        "handleBackPress should never be called if back is"
+                                                + " cancelled"))
                 .handleBackPress();
     }
 

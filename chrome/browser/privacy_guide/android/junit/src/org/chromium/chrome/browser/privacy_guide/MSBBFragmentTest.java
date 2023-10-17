@@ -35,20 +35,14 @@ import org.chromium.chrome.browser.signin.services.UnifiedConsentServiceBridgeJn
 import org.chromium.chrome.test.util.browser.Features.DisableFeatures;
 import org.chromium.chrome.test.util.browser.Features.EnableFeatures;
 
-/**
- * JUnit tests of the class {@link MSBBFragment}.
- */
+/** JUnit tests of the class {@link MSBBFragment}. */
 @RunWith(BaseRobolectricTestRunner.class)
 public class MSBBFragmentTest {
-    @Rule
-    public JniMocker mocker = new JniMocker();
-    @Rule
-    public MockitoRule mMockitoRule = MockitoJUnit.rule();
+    @Rule public JniMocker mocker = new JniMocker();
+    @Rule public MockitoRule mMockitoRule = MockitoJUnit.rule();
 
-    @Mock
-    private Profile mProfile;
-    @Mock
-    private UnifiedConsentServiceBridge.Natives mNativeMock;
+    @Mock private Profile mProfile;
+    @Mock private UnifiedConsentServiceBridge.Natives mNativeMock;
 
     private FragmentScenario mScenario;
     private SwitchCompat mMSBBButton;
@@ -70,19 +64,23 @@ public class MSBBFragmentTest {
     private void initFragmentWithMSBBState(boolean isMSBBOn) {
         Mockito.when(mNativeMock.isUrlKeyedAnonymizedDataCollectionEnabled(mProfile))
                 .thenReturn(isMSBBOn);
-        mScenario = FragmentScenario.launchInContainer(MSBBFragment.class, Bundle.EMPTY,
-                R.style.Theme_MaterialComponents, new FragmentFactory() {
-                    @NonNull
-                    @Override
-                    public Fragment instantiate(
-                            @NonNull ClassLoader classLoader, @NonNull String className) {
-                        Fragment fragment = super.instantiate(classLoader, className);
-                        if (fragment instanceof MSBBFragment) {
-                            ((MSBBFragment) fragment).setProfile(mProfile);
-                        }
-                        return fragment;
-                    }
-                });
+        mScenario =
+                FragmentScenario.launchInContainer(
+                        MSBBFragment.class,
+                        Bundle.EMPTY,
+                        R.style.Theme_MaterialComponents,
+                        new FragmentFactory() {
+                            @NonNull
+                            @Override
+                            public Fragment instantiate(
+                                    @NonNull ClassLoader classLoader, @NonNull String className) {
+                                Fragment fragment = super.instantiate(classLoader, className);
+                                if (fragment instanceof MSBBFragment) {
+                                    ((MSBBFragment) fragment).setProfile(mProfile);
+                                }
+                                return fragment;
+                            }
+                        });
         mScenario.onFragment(
                 fragment -> mMSBBButton = fragment.getView().findViewById(R.id.msbb_switch));
     }

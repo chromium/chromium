@@ -12,7 +12,6 @@ import static org.chromium.components.omnibox.GroupConfigTestSupport.SECTION_2_W
 import android.content.Context;
 import android.view.View;
 
-
 import org.junit.Assert;
 import org.junit.Before;
 import org.junit.Rule;
@@ -42,9 +41,7 @@ import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.List;
 
-/**
- * Tests for {@link DropdownItemViewInfoListManager}.
- */
+/** Tests for {@link DropdownItemViewInfoListManager}. */
 @RunWith(BaseRobolectricTestRunner.class)
 @Config(manifest = Config.NONE)
 @EnableFeatures({ChromeFeatureList.OMNIBOX_MODERNIZE_VISUAL_UPDATE})
@@ -81,15 +78,17 @@ public class DropdownItemViewInfoListManagerUnitTest {
     }
 
     /**
-     * Verify that the content of the resulting Suggestions list matches the supplied list.
-     * Asserts if the two lists differ.
+     * Verify that the content of the resulting Suggestions list matches the supplied list. Asserts
+     * if the two lists differ.
      */
     private void verifyModelEquals(List<DropdownItemViewInfo> expected) {
         Assert.assertEquals(expected.size(), mSuggestionModels.size());
 
         for (int index = 0; index < expected.size(); index++) {
-            Assert.assertEquals("Element at position " + index + " does not match",
-                    expected.get(index), mSuggestionModels.get(index));
+            Assert.assertEquals(
+                    "Element at position " + index + " does not match",
+                    expected.get(index),
+                    mSuggestionModels.get(index));
         }
     }
 
@@ -99,14 +98,20 @@ public class DropdownItemViewInfoListManagerUnitTest {
     private void verifyPropertyValues(
             int layoutDirection, @BrandedColorScheme int brandedColorScheme) {
         for (int index = 0; index < mSuggestionModels.size(); index++) {
-            Assert.assertEquals("Unexpected layout direction for suggestion at position " + index,
+            Assert.assertEquals(
+                    "Unexpected layout direction for suggestion at position " + index,
                     layoutDirection,
-                    mSuggestionModels.get(index).model.get(
-                            SuggestionCommonProperties.LAYOUT_DIRECTION));
-            Assert.assertEquals("Unexpected visual theme for suggestion at position " + index,
+                    mSuggestionModels
+                            .get(index)
+                            .model
+                            .get(SuggestionCommonProperties.LAYOUT_DIRECTION));
+            Assert.assertEquals(
+                    "Unexpected visual theme for suggestion at position " + index,
                     brandedColorScheme,
-                    mSuggestionModels.get(index).model.get(
-                            SuggestionCommonProperties.COLOR_SCHEME));
+                    mSuggestionModels
+                            .get(index)
+                            .model
+                            .get(SuggestionCommonProperties.COLOR_SCHEME));
         }
     }
 
@@ -124,10 +129,13 @@ public class DropdownItemViewInfoListManagerUnitTest {
         list1.add(new DropdownItemViewInfo(mBasicSuggestionProcessor, mModel, SECTION_1_NO_HEADER));
         list1.add(new DropdownItemViewInfo(mBasicSuggestionProcessor, mModel, SECTION_1_NO_HEADER));
 
-        final List<DropdownItemViewInfo> list2 = Arrays.asList(
-                new DropdownItemViewInfo(mHeaderProcessor, mModel, SECTION_1_NO_HEADER),
-                new DropdownItemViewInfo(mBasicSuggestionProcessor, mModel, SECTION_1_NO_HEADER),
-                new DropdownItemViewInfo(mBasicSuggestionProcessor, mModel, SECTION_1_NO_HEADER));
+        final List<DropdownItemViewInfo> list2 =
+                Arrays.asList(
+                        new DropdownItemViewInfo(mHeaderProcessor, mModel, SECTION_1_NO_HEADER),
+                        new DropdownItemViewInfo(
+                                mBasicSuggestionProcessor, mModel, SECTION_1_NO_HEADER),
+                        new DropdownItemViewInfo(
+                                mBasicSuggestionProcessor, mModel, SECTION_1_NO_HEADER));
 
         mManager.setSourceViewInfoList(list1);
         verifyModelEquals(list1);
@@ -141,13 +149,17 @@ public class DropdownItemViewInfoListManagerUnitTest {
     @Test
     public void updateSuggestionsList_uiChangesArePropagatedToSuggestions() {
         List<DropdownItemViewInfo> list =
-                Arrays.asList(new DropdownItemViewInfo(mHeaderProcessor,
-                                      new PropertyModel(SuggestionCommonProperties.ALL_KEYS),
-                                      SECTION_1_NO_HEADER),
-                        new DropdownItemViewInfo(mBasicSuggestionProcessor,
+                Arrays.asList(
+                        new DropdownItemViewInfo(
+                                mHeaderProcessor,
                                 new PropertyModel(SuggestionCommonProperties.ALL_KEYS),
                                 SECTION_1_NO_HEADER),
-                        new DropdownItemViewInfo(mBasicSuggestionProcessor,
+                        new DropdownItemViewInfo(
+                                mBasicSuggestionProcessor,
+                                new PropertyModel(SuggestionCommonProperties.ALL_KEYS),
+                                SECTION_1_NO_HEADER),
+                        new DropdownItemViewInfo(
+                                mBasicSuggestionProcessor,
                                 new PropertyModel(SuggestionCommonProperties.ALL_KEYS),
                                 SECTION_1_NO_HEADER));
 
@@ -165,18 +177,24 @@ public class DropdownItemViewInfoListManagerUnitTest {
         verifyPropertyValues(View.LAYOUT_DIRECTION_RTL, BrandedColorScheme.INCOGNITO);
 
         // Finally, set the new list and confirm that the values are still applied.
-        list = Arrays.asList(new DropdownItemViewInfo(mHeaderProcessor,
-                                     new PropertyModel(SuggestionCommonProperties.ALL_KEYS),
-                                     SECTION_2_WITH_HEADER),
-                new DropdownItemViewInfo(mBasicSuggestionProcessor,
-                        new PropertyModel(SuggestionCommonProperties.ALL_KEYS),
-                        SECTION_2_WITH_HEADER),
-                new DropdownItemViewInfo(mBasicSuggestionProcessor,
-                        new PropertyModel(SuggestionCommonProperties.ALL_KEYS),
-                        SECTION_2_WITH_HEADER),
-                new DropdownItemViewInfo(mBasicSuggestionProcessor,
-                        new PropertyModel(SuggestionCommonProperties.ALL_KEYS),
-                        SECTION_2_WITH_HEADER));
+        list =
+                Arrays.asList(
+                        new DropdownItemViewInfo(
+                                mHeaderProcessor,
+                                new PropertyModel(SuggestionCommonProperties.ALL_KEYS),
+                                SECTION_2_WITH_HEADER),
+                        new DropdownItemViewInfo(
+                                mBasicSuggestionProcessor,
+                                new PropertyModel(SuggestionCommonProperties.ALL_KEYS),
+                                SECTION_2_WITH_HEADER),
+                        new DropdownItemViewInfo(
+                                mBasicSuggestionProcessor,
+                                new PropertyModel(SuggestionCommonProperties.ALL_KEYS),
+                                SECTION_2_WITH_HEADER),
+                        new DropdownItemViewInfo(
+                                mBasicSuggestionProcessor,
+                                new PropertyModel(SuggestionCommonProperties.ALL_KEYS),
+                                SECTION_2_WITH_HEADER));
         mManager.setSourceViewInfoList(list);
         verifyModelEquals(list);
         verifyPropertyValues(View.LAYOUT_DIRECTION_RTL, BrandedColorScheme.INCOGNITO);
@@ -185,16 +203,21 @@ public class DropdownItemViewInfoListManagerUnitTest {
     @Test
     public void suggestionsListRoundedCorners() {
         List<DropdownItemViewInfo> list =
-                Arrays.asList(new DropdownItemViewInfo(mBasicSuggestionProcessor,
-                                      new PropertyModel(SuggestionCommonProperties.ALL_KEYS),
-                                      SECTION_1_NO_HEADER),
-                        new DropdownItemViewInfo(mHeaderProcessor,
+                Arrays.asList(
+                        new DropdownItemViewInfo(
+                                mBasicSuggestionProcessor,
+                                new PropertyModel(SuggestionCommonProperties.ALL_KEYS),
+                                SECTION_1_NO_HEADER),
+                        new DropdownItemViewInfo(
+                                mHeaderProcessor,
                                 new PropertyModel(SuggestionCommonProperties.ALL_KEYS),
                                 SECTION_2_WITH_HEADER),
-                        new DropdownItemViewInfo(mBasicSuggestionProcessor,
+                        new DropdownItemViewInfo(
+                                mBasicSuggestionProcessor,
                                 new PropertyModel(SuggestionCommonProperties.ALL_KEYS),
                                 SECTION_2_WITH_HEADER),
-                        new DropdownItemViewInfo(mBasicSuggestionProcessor,
+                        new DropdownItemViewInfo(
+                                mBasicSuggestionProcessor,
                                 new PropertyModel(SuggestionCommonProperties.ALL_KEYS),
                                 SECTION_2_WITH_HEADER));
 
@@ -217,20 +240,32 @@ public class DropdownItemViewInfoListManagerUnitTest {
         //
         Assert.assertTrue(
                 mSuggestionModels.get(0).model.get(DropdownCommonProperties.BG_TOP_CORNER_ROUNDED));
-        Assert.assertTrue(mSuggestionModels.get(0).model.get(
-                DropdownCommonProperties.BG_BOTTOM_CORNER_ROUNDED));
+        Assert.assertTrue(
+                mSuggestionModels
+                        .get(0)
+                        .model
+                        .get(DropdownCommonProperties.BG_BOTTOM_CORNER_ROUNDED));
         Assert.assertFalse(
                 mSuggestionModels.get(1).model.get(DropdownCommonProperties.BG_TOP_CORNER_ROUNDED));
-        Assert.assertFalse(mSuggestionModels.get(1).model.get(
-                DropdownCommonProperties.BG_BOTTOM_CORNER_ROUNDED));
+        Assert.assertFalse(
+                mSuggestionModels
+                        .get(1)
+                        .model
+                        .get(DropdownCommonProperties.BG_BOTTOM_CORNER_ROUNDED));
         Assert.assertTrue(
                 mSuggestionModels.get(2).model.get(DropdownCommonProperties.BG_TOP_CORNER_ROUNDED));
-        Assert.assertFalse(mSuggestionModels.get(2).model.get(
-                DropdownCommonProperties.BG_BOTTOM_CORNER_ROUNDED));
+        Assert.assertFalse(
+                mSuggestionModels
+                        .get(2)
+                        .model
+                        .get(DropdownCommonProperties.BG_BOTTOM_CORNER_ROUNDED));
         Assert.assertFalse(
                 mSuggestionModels.get(3).model.get(DropdownCommonProperties.BG_TOP_CORNER_ROUNDED));
-        Assert.assertTrue(mSuggestionModels.get(3).model.get(
-                DropdownCommonProperties.BG_BOTTOM_CORNER_ROUNDED));
+        Assert.assertTrue(
+                mSuggestionModels
+                        .get(3)
+                        .model
+                        .get(DropdownCommonProperties.BG_BOTTOM_CORNER_ROUNDED));
     }
 
     @Test
@@ -243,23 +278,31 @@ public class DropdownItemViewInfoListManagerUnitTest {
         mManager.onNativeInitialized();
 
         int suggestionListTopMargin = 0;
-        int groupBottomSpacing = mContext.getResources().getDimensionPixelSize(
-                R.dimen.omnibox_suggestion_group_vertical_smallest_margin);
-        int postHeaderTopSpacing = mContext.getResources().getDimensionPixelSize(
-                R.dimen.omnibox_suggestion_group_vertical_margin);
+        int groupBottomSpacing =
+                mContext.getResources()
+                        .getDimensionPixelSize(
+                                R.dimen.omnibox_suggestion_group_vertical_smallest_margin);
+        int postHeaderTopSpacing =
+                mContext.getResources()
+                        .getDimensionPixelSize(R.dimen.omnibox_suggestion_group_vertical_margin);
         int suggestionVerticalSpacing = 0;
 
         List<DropdownItemViewInfo> list =
-                Arrays.asList(new DropdownItemViewInfo(mBasicSuggestionProcessor,
-                                      new PropertyModel(SuggestionCommonProperties.ALL_KEYS),
-                                      SECTION_1_NO_HEADER),
-                        new DropdownItemViewInfo(mHeaderProcessor,
+                Arrays.asList(
+                        new DropdownItemViewInfo(
+                                mBasicSuggestionProcessor,
+                                new PropertyModel(SuggestionCommonProperties.ALL_KEYS),
+                                SECTION_1_NO_HEADER),
+                        new DropdownItemViewInfo(
+                                mHeaderProcessor,
                                 new PropertyModel(SuggestionCommonProperties.ALL_KEYS),
                                 SECTION_2_WITH_HEADER),
-                        new DropdownItemViewInfo(mBasicSuggestionProcessor,
+                        new DropdownItemViewInfo(
+                                mBasicSuggestionProcessor,
                                 new PropertyModel(SuggestionCommonProperties.ALL_KEYS),
                                 SECTION_2_WITH_HEADER),
-                        new DropdownItemViewInfo(mBasicSuggestionProcessor,
+                        new DropdownItemViewInfo(
+                                mBasicSuggestionProcessor,
                                 new PropertyModel(SuggestionCommonProperties.ALL_KEYS),
                                 SECTION_2_WITH_HEADER));
 
@@ -280,19 +323,24 @@ public class DropdownItemViewInfoListManagerUnitTest {
         // * basic suggestion *
         // ******************** <--- very last one, no margin.
         //
-        Assert.assertEquals(suggestionListTopMargin,
+        Assert.assertEquals(
+                suggestionListTopMargin,
                 mSuggestionModels.get(0).model.get(DropdownCommonProperties.TOP_MARGIN));
-        Assert.assertEquals(groupBottomSpacing,
+        Assert.assertEquals(
+                groupBottomSpacing,
                 mSuggestionModels.get(0).model.get(DropdownCommonProperties.BOTTOM_MARGIN));
         Assert.assertEquals(
                 0, mSuggestionModels.get(1).model.get(DropdownCommonProperties.TOP_MARGIN));
         Assert.assertEquals(
                 0, mSuggestionModels.get(1).model.get(DropdownCommonProperties.BOTTOM_MARGIN));
-        Assert.assertEquals(postHeaderTopSpacing,
+        Assert.assertEquals(
+                postHeaderTopSpacing,
                 mSuggestionModels.get(2).model.get(DropdownCommonProperties.TOP_MARGIN));
-        Assert.assertEquals(suggestionVerticalSpacing,
+        Assert.assertEquals(
+                suggestionVerticalSpacing,
                 mSuggestionModels.get(2).model.get(DropdownCommonProperties.BOTTOM_MARGIN));
-        Assert.assertEquals(suggestionVerticalSpacing,
+        Assert.assertEquals(
+                suggestionVerticalSpacing,
                 mSuggestionModels.get(3).model.get(DropdownCommonProperties.TOP_MARGIN));
         Assert.assertEquals(
                 0, mSuggestionModels.get(3).model.get(DropdownCommonProperties.BOTTOM_MARGIN));
@@ -304,23 +352,31 @@ public class DropdownItemViewInfoListManagerUnitTest {
         OmniboxFeatures.MODERNIZE_VISUAL_UPDATE_ACTIVE_COLOR_ON_OMNIBOX.setForTesting(true);
         OmniboxFeatures.MODERNIZE_VISUAL_UPDATE_SMALL_BOTTOM_MARGIN.setForTesting(true);
 
-        int groupTopSpacing = mContext.getResources().getDimensionPixelSize(
-                R.dimen.omnibox_suggestion_group_vertical_margin);
-        int groupBottomSpacing = mContext.getResources().getDimensionPixelSize(
-                R.dimen.omnibox_suggestion_group_vertical_smallest_margin);
+        int groupTopSpacing =
+                mContext.getResources()
+                        .getDimensionPixelSize(R.dimen.omnibox_suggestion_group_vertical_margin);
+        int groupBottomSpacing =
+                mContext.getResources()
+                        .getDimensionPixelSize(
+                                R.dimen.omnibox_suggestion_group_vertical_smallest_margin);
         int suggestionVerticalSpacing = 0;
 
         List<DropdownItemViewInfo> list =
-                Arrays.asList(new DropdownItemViewInfo(mEditUrlSuggestionProcessor,
-                                      new PropertyModel(SuggestionCommonProperties.ALL_KEYS),
-                                      SECTION_1_NO_HEADER),
-                        new DropdownItemViewInfo(mHeaderProcessor,
+                Arrays.asList(
+                        new DropdownItemViewInfo(
+                                mEditUrlSuggestionProcessor,
+                                new PropertyModel(SuggestionCommonProperties.ALL_KEYS),
+                                SECTION_1_NO_HEADER),
+                        new DropdownItemViewInfo(
+                                mHeaderProcessor,
                                 new PropertyModel(SuggestionCommonProperties.ALL_KEYS),
                                 SECTION_2_WITH_HEADER),
-                        new DropdownItemViewInfo(mBasicSuggestionProcessor,
+                        new DropdownItemViewInfo(
+                                mBasicSuggestionProcessor,
                                 new PropertyModel(SuggestionCommonProperties.ALL_KEYS),
                                 SECTION_2_WITH_HEADER),
-                        new DropdownItemViewInfo(mBasicSuggestionProcessor,
+                        new DropdownItemViewInfo(
+                                mBasicSuggestionProcessor,
                                 new PropertyModel(SuggestionCommonProperties.ALL_KEYS),
                                 SECTION_2_WITH_HEADER));
 
@@ -343,17 +399,21 @@ public class DropdownItemViewInfoListManagerUnitTest {
         //
         Assert.assertEquals(
                 0, mSuggestionModels.get(0).model.get(DropdownCommonProperties.TOP_MARGIN));
-        Assert.assertEquals(groupBottomSpacing,
+        Assert.assertEquals(
+                groupBottomSpacing,
                 mSuggestionModels.get(0).model.get(DropdownCommonProperties.BOTTOM_MARGIN));
         Assert.assertEquals(
                 0, mSuggestionModels.get(1).model.get(DropdownCommonProperties.TOP_MARGIN));
         Assert.assertEquals(
                 0, mSuggestionModels.get(1).model.get(DropdownCommonProperties.BOTTOM_MARGIN));
-        Assert.assertEquals(groupTopSpacing,
+        Assert.assertEquals(
+                groupTopSpacing,
                 mSuggestionModels.get(2).model.get(DropdownCommonProperties.TOP_MARGIN));
-        Assert.assertEquals(suggestionVerticalSpacing,
+        Assert.assertEquals(
+                suggestionVerticalSpacing,
                 mSuggestionModels.get(2).model.get(DropdownCommonProperties.BOTTOM_MARGIN));
-        Assert.assertEquals(suggestionVerticalSpacing,
+        Assert.assertEquals(
+                suggestionVerticalSpacing,
                 mSuggestionModels.get(3).model.get(DropdownCommonProperties.TOP_MARGIN));
         Assert.assertEquals(
                 0, mSuggestionModels.get(3).model.get(DropdownCommonProperties.BOTTOM_MARGIN));

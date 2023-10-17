@@ -60,9 +60,7 @@ import java.util.Arrays;
 import java.util.List;
 import java.util.Set;
 
-/**
- * Tests for {@link MostVisitedTilesProcessor}.
- */
+/** Tests for {@link MostVisitedTilesProcessor}. */
 @RunWith(BaseRobolectricTestRunner.class)
 public final class MostVisitedTilesProcessorUnitTest {
     private static final GURL NAV_URL = JUnitTestGURLs.URL_1;
@@ -86,8 +84,9 @@ public final class MostVisitedTilesProcessorUnitTest {
 
     @Before
     public void setUp() {
-        mContext = new ContextThemeWrapper(
-                ContextUtils.getApplicationContext(), R.style.Theme_BrowserUI_DayNight);
+        mContext =
+                new ContextThemeWrapper(
+                        ContextUtils.getApplicationContext(), R.style.Theme_BrowserUI_DayNight);
 
         lenient()
                 .doNothing()
@@ -115,9 +114,10 @@ public final class MostVisitedTilesProcessorUnitTest {
             int placement, AutocompleteMatch.SuggestTile... tiles) {
         mPropertyModel = mProcessor.createModel();
         mMatches = new ArrayList<>();
-        var match = new AutocompleteMatchBuilder(OmniboxSuggestionType.TILE_NAVSUGGEST)
-                            .setSuggestTiles(Arrays.asList(tiles))
-                            .build();
+        var match =
+                new AutocompleteMatchBuilder(OmniboxSuggestionType.TILE_NAVSUGGEST)
+                        .setSuggestTiles(Arrays.asList(tiles))
+                        .build();
         mProcessor.populateModel(match, mPropertyModel, placement);
         mMatches.add(match);
 
@@ -136,13 +136,15 @@ public final class MostVisitedTilesProcessorUnitTest {
         mMatches = new ArrayList<>();
         for (int index = 0; index < tiles.length; index++) {
             var tile = tiles[index];
-            var match = new AutocompleteMatchBuilder(tile.isSearch
-                            ? OmniboxSuggestionType.TILE_REPEATABLE_QUERY
-                            : OmniboxSuggestionType.TILE_MOST_VISITED_SITE)
-                                .setIsSearch(tile.isSearch)
-                                .setDisplayText(tile.title)
-                                .setUrl(tile.url)
-                                .build();
+            var match =
+                    new AutocompleteMatchBuilder(
+                                    tile.isSearch
+                                            ? OmniboxSuggestionType.TILE_REPEATABLE_QUERY
+                                            : OmniboxSuggestionType.TILE_MOST_VISITED_SITE)
+                            .setIsSearch(tile.isSearch)
+                            .setDisplayText(tile.title)
+                            .setUrl(tile.url)
+                            .build();
             mProcessor.populateModel(match, mPropertyModel, placement);
             mMatches.add(match);
         }
@@ -163,14 +165,15 @@ public final class MostVisitedTilesProcessorUnitTest {
 
         assertEquals("title", tileModel.get(TileViewProperties.TITLE));
         assertEquals(BaseCarouselSuggestionItemViewBuilder.ViewType.TILE_VIEW, tileItem.type);
-        assertEquals(R.drawable.ic_suggestion_magnifier,
+        assertEquals(
+                R.drawable.ic_suggestion_magnifier,
                 shadowOf(tileModel.get(TileViewProperties.ICON)).getCreatedFromResId());
     }
 
     @Test
     public void populateModel_navTileIcon_fallbackIcon() {
         mProcessor =
-                new MostVisitedTilesProcessor(mContext, mSuggestionHost, /*imageSupplier=*/null);
+                new MostVisitedTilesProcessor(mContext, mSuggestionHost, /* imageSupplier= */ null);
         List<ListItem> tileList =
                 populateTilePropertiesForTiles(0, new SuggestTile("title", NAV_URL, false));
 
@@ -232,8 +235,9 @@ public final class MostVisitedTilesProcessorUnitTest {
                 populateTilePropertiesForTiles(0, new SuggestTile("title", NAV_URL, false));
         assertEquals("title", tileList.get(0).model.get(TileViewProperties.TITLE));
 
-        tileList = populateMatchesForHorizontalRenderGroup(
-                0, new SuggestTile("title", NAV_URL, false));
+        tileList =
+                populateMatchesForHorizontalRenderGroup(
+                        0, new SuggestTile("title", NAV_URL, false));
         assertEquals("title", tileList.get(0).model.get(TileViewProperties.TITLE));
     }
 
@@ -249,9 +253,12 @@ public final class MostVisitedTilesProcessorUnitTest {
 
     @Test
     public void testInteractions_onClick() {
-        List<ListItem> tileList = populateTilePropertiesForTiles(3,
-                new SuggestTile("search1", SEARCH_URL, true),
-                new SuggestTile("nav1", NAV_URL, false), new SuggestTile("nav2", NAV_URL_2, false));
+        List<ListItem> tileList =
+                populateTilePropertiesForTiles(
+                        3,
+                        new SuggestTile("search1", SEARCH_URL, true),
+                        new SuggestTile("nav1", NAV_URL, false),
+                        new SuggestTile("nav2", NAV_URL_2, false));
 
         InOrder ordered = inOrder(mSuggestionHost);
 
@@ -273,28 +280,36 @@ public final class MostVisitedTilesProcessorUnitTest {
         verifyNoMoreInteractions(mSuggestionHost);
 
         // Verify histogram increased for delete attempt.
-        assertEquals(1,
+        assertEquals(
+                1,
                 RecordHistogram.getHistogramValueCountForTesting(
                         "Omnibox.SuggestTiles.SelectedTileType", SuggestTileType.SEARCH));
-        assertEquals(2,
+        assertEquals(
+                2,
                 RecordHistogram.getHistogramValueCountForTesting(
                         "Omnibox.SuggestTiles.SelectedTileType", SuggestTileType.URL));
-        assertEquals(1,
+        assertEquals(
+                1,
                 RecordHistogram.getHistogramValueCountForTesting(
                         "Omnibox.SuggestTiles.SelectedTileIndex", 0));
-        assertEquals(1,
+        assertEquals(
+                1,
                 RecordHistogram.getHistogramValueCountForTesting(
                         "Omnibox.SuggestTiles.SelectedTileIndex", 1));
-        assertEquals(1,
+        assertEquals(
+                1,
                 RecordHistogram.getHistogramValueCountForTesting(
                         "Omnibox.SuggestTiles.SelectedTileIndex", 2));
     }
 
     @Test
     public void testInteractions_onClick_horizontalGroup() {
-        List<ListItem> tileList = populateMatchesForHorizontalRenderGroup(3,
-                new SuggestTile("search1", SEARCH_URL, true),
-                new SuggestTile("nav1", NAV_URL, false), new SuggestTile("nav2", NAV_URL_2, false));
+        List<ListItem> tileList =
+                populateMatchesForHorizontalRenderGroup(
+                        3,
+                        new SuggestTile("search1", SEARCH_URL, true),
+                        new SuggestTile("nav1", NAV_URL, false),
+                        new SuggestTile("nav2", NAV_URL_2, false));
 
         InOrder ordered = inOrder(mSuggestionHost);
 
@@ -316,28 +331,36 @@ public final class MostVisitedTilesProcessorUnitTest {
         verifyNoMoreInteractions(mSuggestionHost);
 
         // Verify histogram increased for delete attempt.
-        assertEquals(1,
+        assertEquals(
+                1,
                 RecordHistogram.getHistogramValueCountForTesting(
                         "Omnibox.SuggestTiles.SelectedTileType", SuggestTileType.SEARCH));
-        assertEquals(2,
+        assertEquals(
+                2,
                 RecordHistogram.getHistogramValueCountForTesting(
                         "Omnibox.SuggestTiles.SelectedTileType", SuggestTileType.URL));
-        assertEquals(1,
+        assertEquals(
+                1,
                 RecordHistogram.getHistogramValueCountForTesting(
                         "Omnibox.SuggestTiles.SelectedTileIndex", 0));
-        assertEquals(1,
+        assertEquals(
+                1,
                 RecordHistogram.getHistogramValueCountForTesting(
                         "Omnibox.SuggestTiles.SelectedTileIndex", 1));
-        assertEquals(1,
+        assertEquals(
+                1,
                 RecordHistogram.getHistogramValueCountForTesting(
                         "Omnibox.SuggestTiles.SelectedTileIndex", 2));
     }
 
     @Test
     public void testInteractions_onLongClick() {
-        List<ListItem> tileList = populateTilePropertiesForTiles(1,
-                new SuggestTile("search1", SEARCH_URL, true),
-                new SuggestTile("nav1", NAV_URL, true), new SuggestTile("nav2", NAV_URL_2, true));
+        List<ListItem> tileList =
+                populateTilePropertiesForTiles(
+                        1,
+                        new SuggestTile("search1", SEARCH_URL, true),
+                        new SuggestTile("nav1", NAV_URL, true),
+                        new SuggestTile("nav2", NAV_URL_2, true));
 
         InOrder ordered = inOrder(mSuggestionHost);
 
@@ -362,9 +385,12 @@ public final class MostVisitedTilesProcessorUnitTest {
 
     @Test
     public void testInteractions_onLongClick_horizontalGroup() {
-        List<ListItem> tileList = populateMatchesForHorizontalRenderGroup(1,
-                new SuggestTile("search1", SEARCH_URL, true),
-                new SuggestTile("nav1", NAV_URL, true), new SuggestTile("nav2", NAV_URL_2, true));
+        List<ListItem> tileList =
+                populateMatchesForHorizontalRenderGroup(
+                        1,
+                        new SuggestTile("search1", SEARCH_URL, true),
+                        new SuggestTile("nav1", NAV_URL, true),
+                        new SuggestTile("nav2", NAV_URL_2, true));
 
         InOrder ordered = inOrder(mSuggestionHost);
 
@@ -386,9 +412,12 @@ public final class MostVisitedTilesProcessorUnitTest {
 
     @Test
     public void testInteractions_movingFocus() {
-        List<ListItem> tileList = populateMatchesForHorizontalRenderGroup(1,
-                new SuggestTile("search1", SEARCH_URL, true),
-                new SuggestTile("nav1", NAV_URL, true), new SuggestTile("nav2", NAV_URL_2, true));
+        List<ListItem> tileList =
+                populateMatchesForHorizontalRenderGroup(
+                        1,
+                        new SuggestTile("search1", SEARCH_URL, true),
+                        new SuggestTile("nav1", NAV_URL, true),
+                        new SuggestTile("nav2", NAV_URL_2, true));
 
         InOrder ordered = inOrder(mSuggestionHost);
 
@@ -409,37 +438,43 @@ public final class MostVisitedTilesProcessorUnitTest {
 
     @Test
     public void testAccessibility_searchTile() {
-        List<ListItem> tileList = populateMatchesForHorizontalRenderGroup(
-                0, new SuggestTile("title", SEARCH_URL, true));
+        List<ListItem> tileList =
+                populateMatchesForHorizontalRenderGroup(
+                        0, new SuggestTile("title", SEARCH_URL, true));
 
         ListItem tileItem = tileList.get(0);
         PropertyModel tileModel = tileItem.model;
 
         // Expect the search string in announcement.
-        String expectedDescription = mContext.getString(
-                R.string.accessibility_omnibox_most_visited_tile_search, "title");
+        String expectedDescription =
+                mContext.getString(
+                        R.string.accessibility_omnibox_most_visited_tile_search, "title");
         assertEquals(expectedDescription, tileModel.get(TileViewProperties.CONTENT_DESCRIPTION));
     }
 
     @Test
     public void testAccessibility_navTile() {
-        List<ListItem> tileList = populateMatchesForHorizontalRenderGroup(
-                0, new SuggestTile("title", NAV_URL, false));
+        List<ListItem> tileList =
+                populateMatchesForHorizontalRenderGroup(
+                        0, new SuggestTile("title", NAV_URL, false));
 
         ListItem tileItem = tileList.get(0);
         PropertyModel tileModel = tileItem.model;
 
         // Expect the navigation string in announcement.
         String expectedDescription =
-                mContext.getString(R.string.accessibility_omnibox_most_visited_tile_navigate,
-                        "title", NAV_URL.getHost());
+                mContext.getString(
+                        R.string.accessibility_omnibox_most_visited_tile_navigate,
+                        "title",
+                        NAV_URL.getHost());
         assertEquals(expectedDescription, tileModel.get(TileViewProperties.CONTENT_DESCRIPTION));
     }
 
     @Test
     public void testDescriptionWrapping_singleLine() {
-        List<ListItem> tileList = populateMatchesForHorizontalRenderGroup(
-                0, new SuggestTile("title", NAV_URL, false));
+        List<ListItem> tileList =
+                populateMatchesForHorizontalRenderGroup(
+                        0, new SuggestTile("title", NAV_URL, false));
 
         ListItem tileItem = tileList.get(0);
         PropertyModel tileModel = tileItem.model;
@@ -448,9 +483,11 @@ public final class MostVisitedTilesProcessorUnitTest {
 
     @Test
     public void doesProcessSuggestion_checkSupportedSuggestionTypes() {
-        var supportedTypes = Set.of(OmniboxSuggestionType.TILE_NAVSUGGEST,
-                OmniboxSuggestionType.TILE_MOST_VISITED_SITE,
-                OmniboxSuggestionType.TILE_REPEATABLE_QUERY);
+        var supportedTypes =
+                Set.of(
+                        OmniboxSuggestionType.TILE_NAVSUGGEST,
+                        OmniboxSuggestionType.TILE_MOST_VISITED_SITE,
+                        OmniboxSuggestionType.TILE_REPEATABLE_QUERY);
 
         for (@OmniboxSuggestionType int type = 0; type < OmniboxSuggestionType.NUM_TYPES; type++) {
             var match = AutocompleteMatchBuilder.searchWithType(type).build();
@@ -465,7 +502,8 @@ public final class MostVisitedTilesProcessorUnitTest {
 
     @Test
     public void getMinimumCarouselItemViewHeight_forFullTestCoverage() {
-        assertEquals(mContext.getResources().getDimensionPixelSize(R.dimen.tile_view_min_height),
+        assertEquals(
+                mContext.getResources().getDimensionPixelSize(R.dimen.tile_view_min_height),
                 mProcessor.getMinimumCarouselItemViewHeight());
     }
 }

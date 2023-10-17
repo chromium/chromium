@@ -21,8 +21,7 @@ import org.chromium.chrome.test.util.browser.Features;
 /** Unit tests for {@link HubFieldTrial}. */
 @RunWith(BaseRobolectricTestRunner.class)
 public class HubFieldTrialTest {
-    @Rule
-    public TestRule mProcessor = new Features.JUnitProcessor();
+    @Rule public TestRule mProcessor = new Features.JUnitProcessor();
 
     @Test
     @SmallTest

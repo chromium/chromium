@@ -68,9 +68,7 @@ import java.util.Arrays;
 import java.util.List;
 import java.util.Set;
 
-/**
- * Tests {@link ShareSheetCoordinator}.
- */
+/** Tests {@link ShareSheetCoordinator}. */
 @RunWith(BaseRobolectricTestRunner.class)
 @EnableFeatures({ChromeFeatureList.PREEMPTIVE_LINK_TO_TEXT_GENERATION})
 @LooperMode(LooperMode.Mode.LEGACY)
@@ -78,27 +76,17 @@ import java.util.Set;
 public final class ShareSheetCoordinatorTest {
     private static final String MOCK_URL = JUnitTestGURLs.EXAMPLE_URL.getSpec();
 
-    @Rule
-    public TestRule mFeatureProcessor = new Features.JUnitProcessor();
-    @Rule
-    public JniMocker mJniMocker = new JniMocker();
+    @Rule public TestRule mFeatureProcessor = new Features.JUnitProcessor();
+    @Rule public JniMocker mJniMocker = new JniMocker();
 
-    @Mock
-    private DomDistillerUrlUtils.Natives mDistillerUrlUtilsJniMock;
-    @Mock
-    private ActivityLifecycleDispatcher mLifecycleDispatcher;
-    @Mock
-    private BottomSheetController mController;
-    @Mock
-    private ShareParams.TargetChosenCallback mTargetChosenCallback;
-    @Mock
-    private Supplier<Tab> mTabProvider;
-    @Mock
-    private WindowAndroid mWindow;
-    @Mock
-    private Profile mProfile;
-    @Mock
-    Tracker mTracker;
+    @Mock private DomDistillerUrlUtils.Natives mDistillerUrlUtilsJniMock;
+    @Mock private ActivityLifecycleDispatcher mLifecycleDispatcher;
+    @Mock private BottomSheetController mController;
+    @Mock private ShareParams.TargetChosenCallback mTargetChosenCallback;
+    @Mock private Supplier<Tab> mTabProvider;
+    @Mock private WindowAndroid mWindow;
+    @Mock private Profile mProfile;
+    @Mock Tracker mTracker;
 
     private Activity mActivity;
     private ShareParams mParams;
@@ -114,16 +102,18 @@ public final class ShareSheetCoordinatorTest {
         mShadowPackageManager = Shadows.shadowOf(context.getPackageManager());
 
         mActivity = Robolectric.setupActivity(Activity.class);
-        PropertyModel testModel1 = new PropertyModel.Builder(ShareSheetItemViewProperties.ALL_KEYS)
-                                           .with(ShareSheetItemViewProperties.ICON, null)
-                                           .with(ShareSheetItemViewProperties.LABEL, "testModel1")
-                                           .with(ShareSheetItemViewProperties.CLICK_LISTENER, null)
-                                           .build();
-        PropertyModel testModel2 = new PropertyModel.Builder(ShareSheetItemViewProperties.ALL_KEYS)
-                                           .with(ShareSheetItemViewProperties.ICON, null)
-                                           .with(ShareSheetItemViewProperties.LABEL, "testModel2")
-                                           .with(ShareSheetItemViewProperties.CLICK_LISTENER, null)
-                                           .build();
+        PropertyModel testModel1 =
+                new PropertyModel.Builder(ShareSheetItemViewProperties.ALL_KEYS)
+                        .with(ShareSheetItemViewProperties.ICON, null)
+                        .with(ShareSheetItemViewProperties.LABEL, "testModel1")
+                        .with(ShareSheetItemViewProperties.CLICK_LISTENER, null)
+                        .build();
+        PropertyModel testModel2 =
+                new PropertyModel.Builder(ShareSheetItemViewProperties.ALL_KEYS)
+                        .with(ShareSheetItemViewProperties.ICON, null)
+                        .with(ShareSheetItemViewProperties.LABEL, "testModel2")
+                        .with(ShareSheetItemViewProperties.CLICK_LISTENER, null)
+                        .build();
 
         ArrayList<PropertyModel> thirdPartyPropertyModels =
                 new ArrayList<>(Arrays.asList(testModel1, testModel2));
@@ -133,11 +123,22 @@ public final class ShareSheetCoordinatorTest {
                 .thenReturn(new GURL(MOCK_URL));
         TrackerFactory.setTrackerForTests(mTracker);
 
-        mParams = new ShareParams.Builder(mWindow, "title", MOCK_URL)
-                          .setCallback(mTargetChosenCallback)
-                          .build();
-        mShareSheetCoordinator = new ShareSheetCoordinator(mController, mLifecycleDispatcher,
-                mTabProvider, null, null, false, null, null, mProfile, null);
+        mParams =
+                new ShareParams.Builder(mWindow, "title", MOCK_URL)
+                        .setCallback(mTargetChosenCallback)
+                        .build();
+        mShareSheetCoordinator =
+                new ShareSheetCoordinator(
+                        mController,
+                        mLifecycleDispatcher,
+                        mTabProvider,
+                        null,
+                        null,
+                        false,
+                        null,
+                        null,
+                        mProfile,
+                        null);
     }
 
     @After
@@ -150,9 +151,12 @@ public final class ShareSheetCoordinatorTest {
     public void disableFirstPartyFeatures() {
         mShareSheetCoordinator.disableFirstPartyFeaturesForTesting();
 
-        List<PropertyModel> propertyModels = mShareSheetCoordinator.createFirstPartyPropertyModels(
-                mActivity, mParams, /*chromeShareExtras=*/null,
-                ShareContentTypeHelper.ALL_CONTENT_TYPES_FOR_TEST);
+        List<PropertyModel> propertyModels =
+                mShareSheetCoordinator.createFirstPartyPropertyModels(
+                        mActivity,
+                        mParams,
+                        /* chromeShareExtras= */ null,
+                        ShareContentTypeHelper.ALL_CONTENT_TYPES_FOR_TEST);
         assertEquals("Property model list should be empty.", 0, propertyModels.size());
     }
 
@@ -199,9 +203,13 @@ public final class ShareSheetCoordinatorTest {
         static List<PropertyModel> sThirdPartyModels;
 
         @Implementation
-        protected List<PropertyModel> selectThirdPartyApps(ShareSheetBottomSheetContent bottomSheet,
-                Set<Integer> contentTypes, ShareParams params, boolean saveLastUsed,
-                long shareStartTime, @LinkGeneration int linkGenerationStatusForMetrics,
+        protected List<PropertyModel> selectThirdPartyApps(
+                ShareSheetBottomSheetContent bottomSheet,
+                Set<Integer> contentTypes,
+                ShareParams params,
+                boolean saveLastUsed,
+                long shareStartTime,
+                @LinkGeneration int linkGenerationStatusForMetrics,
                 LinkToggleMetricsDetails linkToggleMetricsDetails) {
             return sThirdPartyModels == null ? new ArrayList<>() : sThirdPartyModels;
         }

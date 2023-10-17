@@ -36,9 +36,7 @@ import org.chromium.components.sync.ModelType;
 import org.chromium.components.sync.SyncService;
 import org.chromium.content_public.browser.test.util.TestThreadUtils;
 
-/**
- * Tests for {@link PriceTrackingFeatures}.
- */
+/** Tests for {@link PriceTrackingFeatures}. */
 @RunWith(ChromeJUnit4ClassRunner.class)
 @Batch(Batch.PER_CLASS)
 public class PriceTrackingFeaturesTest {
@@ -49,17 +47,14 @@ public class PriceTrackingFeaturesTest {
     @Rule
     public BlankCTATabInitialStateRule mInitialStateRule =
             new BlankCTATabInitialStateRule(sActivityTestRule, false);
-    @Rule
-    public TestRule mProcessor = new Features.InstrumentationProcessor();
 
-    @Mock
-    private IdentityManager mIdentityManagerMock;
+    @Rule public TestRule mProcessor = new Features.InstrumentationProcessor();
 
-    @Mock
-    private IdentityServicesProvider mIdentityServicesProviderMock;
+    @Mock private IdentityManager mIdentityManagerMock;
 
-    @Mock
-    private SyncService mSyncServiceMock;
+    @Mock private IdentityServicesProvider mIdentityServicesProviderMock;
+
+    @Mock private SyncService mSyncServiceMock;
 
     @Before
     public void setUp() throws Exception {
@@ -120,8 +115,8 @@ public class PriceTrackingFeaturesTest {
 
     private void setMbbStatus(boolean isEnabled) {
         TestThreadUtils.runOnUiThreadBlocking(
-                ()
-                        -> UnifiedConsentServiceBridge.setUrlKeyedAnonymizedDataCollectionEnabled(
+                () ->
+                        UnifiedConsentServiceBridge.setUrlKeyedAnonymizedDataCollectionEnabled(
                                 Profile.getLastUsedRegularProfile(), isEnabled));
     }
 
@@ -132,7 +127,9 @@ public class PriceTrackingFeaturesTest {
     private void setTabSyncStatus(boolean isSyncFeatureEnabled, boolean hasSessions) {
         when(mSyncServiceMock.isSyncFeatureEnabled()).thenReturn(isSyncFeatureEnabled);
         when(mSyncServiceMock.getActiveDataTypes())
-                .thenReturn(hasSessions ? CollectionUtil.newHashSet(ModelType.SESSIONS)
-                                        : CollectionUtil.newHashSet(ModelType.AUTOFILL));
+                .thenReturn(
+                        hasSessions
+                                ? CollectionUtil.newHashSet(ModelType.SESSIONS)
+                                : CollectionUtil.newHashSet(ModelType.AUTOFILL));
     }
 }

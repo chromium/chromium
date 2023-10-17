@@ -27,9 +27,7 @@ import org.chromium.chrome.test.partnercustomizations.TestPartnerBrowserCustomiz
 import org.chromium.chrome.test.partnercustomizations.TestPartnerBrowserCustomizationsProvider;
 import org.chromium.content_public.browser.test.util.TestThreadUtils;
 
-/**
- * Unit tests for the partner disabling bookmarks editing functionality.
- */
+/** Unit tests for the partner disabling bookmarks editing functionality. */
 @RunWith(ChromeJUnit4ClassRunner.class)
 public class PartnerDisableBookmarksEditingUnitTest {
     @Rule
@@ -39,13 +37,16 @@ public class PartnerDisableBookmarksEditingUnitTest {
     private PartnerBrowserCustomizations mPartnerBrowserCustomizations;
 
     private void setBookmarksEditingDisabled(boolean disabled) {
-        Uri uri = CustomizationProviderDelegateUpstreamImpl.buildQueryUri(
-                PartnerBrowserCustomizations.PARTNER_DISABLE_BOOKMARKS_EDITING_PATH);
+        Uri uri =
+                CustomizationProviderDelegateUpstreamImpl.buildQueryUri(
+                        PartnerBrowserCustomizations.PARTNER_DISABLE_BOOKMARKS_EDITING_PATH);
         Bundle bundle = new Bundle();
         bundle.putBoolean(
                 TestPartnerBrowserCustomizationsProvider.BOOKMARKS_EDITING_DISABLED_KEY, disabled);
-        mTestRule.getContextWrapper().getContentResolver().call(
-                uri, "setBookmarksEditingDisabled", null, bundle);
+        mTestRule
+                .getContextWrapper()
+                .getContentResolver()
+                .call(uri, "setBookmarksEditingDisabled", null, bundle);
     }
 
     @Before
@@ -70,10 +71,11 @@ public class PartnerDisableBookmarksEditingUnitTest {
                 false);
         CustomizationProviderDelegateUpstreamImpl.setProviderAuthorityForTesting(
                 PARTNER_BROWSER_CUSTOMIZATIONS_PROVIDER);
-        TestThreadUtils.runOnUiThreadBlocking(() -> {
-            mPartnerBrowserCustomizations.initializeAsync(
-                    mTestRule.getContextWrapper(), DEFAULT_TIMEOUT_MS);
-        });
+        TestThreadUtils.runOnUiThreadBlocking(
+                () -> {
+                    mPartnerBrowserCustomizations.initializeAsync(
+                            mTestRule.getContextWrapper(), DEFAULT_TIMEOUT_MS);
+                });
         mPartnerBrowserCustomizations.setOnInitializeAsyncFinished(
                 mTestRule.getCallback(), DEFAULT_TIMEOUT_MS);
 
@@ -89,10 +91,11 @@ public class PartnerDisableBookmarksEditingUnitTest {
     public void testNoProvider() throws InterruptedException {
         CustomizationProviderDelegateUpstreamImpl.setProviderAuthorityForTesting(
                 PARTNER_BROWSER_CUSTOMIZATIONS_NO_PROVIDER);
-        TestThreadUtils.runOnUiThreadBlocking(() -> {
-            mPartnerBrowserCustomizations.initializeAsync(
-                    mTestRule.getContextWrapper(), DEFAULT_TIMEOUT_MS);
-        });
+        TestThreadUtils.runOnUiThreadBlocking(
+                () -> {
+                    mPartnerBrowserCustomizations.initializeAsync(
+                            mTestRule.getContextWrapper(), DEFAULT_TIMEOUT_MS);
+                });
         mPartnerBrowserCustomizations.setOnInitializeAsyncFinished(
                 mTestRule.getCallback(), DEFAULT_TIMEOUT_MS);
         mTestRule.getCallbackLock().acquire();
@@ -108,10 +111,11 @@ public class PartnerDisableBookmarksEditingUnitTest {
         CustomizationProviderDelegateUpstreamImpl.setProviderAuthorityForTesting(
                 PARTNER_BROWSER_CUSTOMIZATIONS_PROVIDER);
         setBookmarksEditingDisabled(false);
-        TestThreadUtils.runOnUiThreadBlocking(() -> {
-            mPartnerBrowserCustomizations.initializeAsync(
-                    mTestRule.getContextWrapper(), DEFAULT_TIMEOUT_MS);
-        });
+        TestThreadUtils.runOnUiThreadBlocking(
+                () -> {
+                    mPartnerBrowserCustomizations.initializeAsync(
+                            mTestRule.getContextWrapper(), DEFAULT_TIMEOUT_MS);
+                });
         mPartnerBrowserCustomizations.setOnInitializeAsyncFinished(
                 mTestRule.getCallback(), DEFAULT_TIMEOUT_MS);
 
@@ -128,10 +132,11 @@ public class PartnerDisableBookmarksEditingUnitTest {
         CustomizationProviderDelegateUpstreamImpl.setProviderAuthorityForTesting(
                 PARTNER_BROWSER_CUSTOMIZATIONS_PROVIDER);
         setBookmarksEditingDisabled(true);
-        TestThreadUtils.runOnUiThreadBlocking(() -> {
-            mPartnerBrowserCustomizations.initializeAsync(
-                    mTestRule.getContextWrapper(), DEFAULT_TIMEOUT_MS);
-        });
+        TestThreadUtils.runOnUiThreadBlocking(
+                () -> {
+                    mPartnerBrowserCustomizations.initializeAsync(
+                            mTestRule.getContextWrapper(), DEFAULT_TIMEOUT_MS);
+                });
         mPartnerBrowserCustomizations.setOnInitializeAsyncFinished(
                 mTestRule.getCallback(), DEFAULT_TIMEOUT_MS);
 
@@ -150,9 +155,11 @@ public class PartnerDisableBookmarksEditingUnitTest {
         mTestRule.setDelayProviderUriPathForDelay(
                 PartnerBrowserCustomizations.PARTNER_DISABLE_BOOKMARKS_EDITING_PATH);
         setBookmarksEditingDisabled(true);
-        TestThreadUtils.runOnUiThreadBlocking(() -> {
-            mPartnerBrowserCustomizations.initializeAsync(mTestRule.getContextWrapper(), 2000);
-        });
+        TestThreadUtils.runOnUiThreadBlocking(
+                () -> {
+                    mPartnerBrowserCustomizations.initializeAsync(
+                            mTestRule.getContextWrapper(), 2000);
+                });
         mPartnerBrowserCustomizations.setOnInitializeAsyncFinished(mTestRule.getCallback());
 
         Assert.assertFalse(mPartnerBrowserCustomizations.isInitialized());

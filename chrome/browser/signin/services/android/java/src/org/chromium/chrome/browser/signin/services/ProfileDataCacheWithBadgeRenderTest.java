@@ -31,8 +31,8 @@ import org.chromium.ui.widget.ChromeImageView;
 import java.io.IOException;
 
 /**
- * Tests for ProfileDataCache with a badge. Leverages RenderTest instead of reimplementing
- * bitmap comparison to simplify access to the compared images on buildbots (via result_details).
+ * Tests for ProfileDataCache with a badge. Leverages RenderTest instead of reimplementing bitmap
+ * comparison to simplify access to the compared images on buildbots (via result_details).
  */
 @RunWith(ChromeJUnit4ClassRunner.class)
 @Batch(ProfileDataCacheRenderTest.PROFILE_DATA_BATCH_NAME)
@@ -56,14 +56,17 @@ public class ProfileDataCacheWithBadgeRenderTest extends BlankUiTestActivityTest
     public void setUp() {
         mAccountManagerTestRule.addAccount(TEST_ACCOUNT_NAME);
 
-        TestThreadUtils.runOnUiThreadBlocking(() -> {
-            Activity activity = getActivity();
-            mContentView = new FrameLayout(activity);
-            mImageView = new ChromeImageView(activity);
-            mContentView.addView(mImageView, ViewGroup.LayoutParams.WRAP_CONTENT,
-                    ViewGroup.LayoutParams.WRAP_CONTENT);
-            activity.setContentView(mContentView);
-        });
+        TestThreadUtils.runOnUiThreadBlocking(
+                () -> {
+                    Activity activity = getActivity();
+                    mContentView = new FrameLayout(activity);
+                    mImageView = new ChromeImageView(activity);
+                    mContentView.addView(
+                            mImageView,
+                            ViewGroup.LayoutParams.WRAP_CONTENT,
+                            ViewGroup.LayoutParams.WRAP_CONTENT);
+                    activity.setContentView(mContentView);
+                });
     }
 
     @Test
@@ -121,30 +124,49 @@ public class ProfileDataCacheWithBadgeRenderTest extends BlankUiTestActivityTest
     }
 
     private void setUpProfileDataCache(@DrawableRes int badgeResId) {
-        TestThreadUtils.runOnUiThreadBlocking(() -> {
-            mProfileDataCache = badgeResId != 0
-                    ? ProfileDataCache.createWithDefaultImageSize(getActivity(), badgeResId)
-                    : ProfileDataCache.createWithoutBadge(getActivity(), R.dimen.user_picture_size);
-        });
-        CriteriaHelper.pollUiThread(() -> {
-            return !TextUtils.isEmpty(
-                    mProfileDataCache.getProfileDataOrDefault(TEST_ACCOUNT_NAME).getFullName());
-        });
-        TestThreadUtils.runOnUiThreadBlocking(() -> {
-            mImageView.setImageDrawable(
-                    mProfileDataCache.getProfileDataOrDefault(TEST_ACCOUNT_NAME).getImage());
-        });
+        TestThreadUtils.runOnUiThreadBlocking(
+                () -> {
+                    mProfileDataCache =
+                            badgeResId != 0
+                                    ? ProfileDataCache.createWithDefaultImageSize(
+                                            getActivity(), badgeResId)
+                                    : ProfileDataCache.createWithoutBadge(
+                                            getActivity(), R.dimen.user_picture_size);
+                });
+        CriteriaHelper.pollUiThread(
+                () -> {
+                    return !TextUtils.isEmpty(
+                            mProfileDataCache
+                                    .getProfileDataOrDefault(TEST_ACCOUNT_NAME)
+                                    .getFullName());
+                });
+        TestThreadUtils.runOnUiThreadBlocking(
+                () -> {
+                    mImageView.setImageDrawable(
+                            mProfileDataCache
+                                    .getProfileDataOrDefault(TEST_ACCOUNT_NAME)
+                                    .getImage());
+                });
     }
 
     private void setBadgeConfig(@DrawableRes int badgeResId) {
-        TestThreadUtils.runOnUiThreadBlocking(() -> { mProfileDataCache.setBadge(badgeResId); });
-        CriteriaHelper.pollUiThread(() -> {
-            return !TextUtils.isEmpty(
-                    mProfileDataCache.getProfileDataOrDefault(TEST_ACCOUNT_NAME).getFullName());
-        });
-        TestThreadUtils.runOnUiThreadBlocking(() -> {
-            mImageView.setImageDrawable(
-                    mProfileDataCache.getProfileDataOrDefault(TEST_ACCOUNT_NAME).getImage());
-        });
+        TestThreadUtils.runOnUiThreadBlocking(
+                () -> {
+                    mProfileDataCache.setBadge(badgeResId);
+                });
+        CriteriaHelper.pollUiThread(
+                () -> {
+                    return !TextUtils.isEmpty(
+                            mProfileDataCache
+                                    .getProfileDataOrDefault(TEST_ACCOUNT_NAME)
+                                    .getFullName());
+                });
+        TestThreadUtils.runOnUiThreadBlocking(
+                () -> {
+                    mImageView.setImageDrawable(
+                            mProfileDataCache
+                                    .getProfileDataOrDefault(TEST_ACCOUNT_NAME)
+                                    .getImage());
+                });
     }
 }

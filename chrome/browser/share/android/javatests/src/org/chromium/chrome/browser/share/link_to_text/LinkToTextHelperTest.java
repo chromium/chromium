@@ -18,9 +18,7 @@ import org.chromium.base.test.BaseRobolectricTestRunner;
 import org.chromium.url.GURL;
 import org.chromium.url.JUnitTestGURLs;
 
-/**
- * Tests for {@link LinkToTextHelper}.
- */
+/** Tests for {@link LinkToTextHelper}. */
 @RunWith(BaseRobolectricTestRunner.class)
 public class LinkToTextHelperTest {
     private static final String VISIBLE_URL = JUnitTestGURLs.EXAMPLE_URL.getSpec();
@@ -45,7 +43,8 @@ public class LinkToTextHelperTest {
     public void getUrlToShareTest_URLWithFragment() {
         String selector = "selector";
         String expectedUrlToShare = VISIBLE_URL + "#:~:text=selector";
-        Assert.assertEquals(expectedUrlToShare,
+        Assert.assertEquals(
+                expectedUrlToShare,
                 LinkToTextHelper.getUrlToShare(VISIBLE_URL + "#elementid", selector));
     }
 

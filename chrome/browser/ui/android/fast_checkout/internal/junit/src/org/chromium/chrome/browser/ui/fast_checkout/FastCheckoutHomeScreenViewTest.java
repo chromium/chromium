@@ -42,36 +42,45 @@ import org.chromium.chrome.test.util.browser.Features.DisableFeatures;
 import org.chromium.ui.base.TestActivity;
 import org.chromium.ui.modelutil.PropertyModel;
 
-/**
- * Simple unit tests for the home screen view.
- */
+/** Simple unit tests for the home screen view. */
 @RunWith(BaseRobolectricTestRunner.class)
 @Config(manifest = Config.NONE)
 @DisableFeatures(ChromeFeatureList.AUTOFILL_ENABLE_NEW_CARD_ART_AND_NETWORK_IMAGES)
-@CommandLineFlags.
-Add({ChromeSwitches.DISABLE_FIRST_RUN_EXPERIENCE, ChromeSwitches.DISABLE_NATIVE_INITIALIZATION})
+@CommandLineFlags.Add({
+    ChromeSwitches.DISABLE_FIRST_RUN_EXPERIENCE,
+    ChromeSwitches.DISABLE_NATIVE_INITIALIZATION
+})
 public class FastCheckoutHomeScreenViewTest {
-    @Rule
-    public MockitoRule mMockitoRule = MockitoJUnit.rule();
+    @Rule public MockitoRule mMockitoRule = MockitoJUnit.rule();
+
     @Rule
     public ActivityScenarioRule<TestActivity> mActivityScenarioRule =
             new ActivityScenarioRule<>(TestActivity.class);
-    @Mock
-    private HomeScreenCoordinator.Delegate mMockDelegate;
+
+    @Mock private HomeScreenCoordinator.Delegate mMockDelegate;
 
     private View mHomeScreenView;
     private PropertyModel mModel;
     private FastCheckoutMediator mMediator;
     private static final FastCheckoutAutofillProfile sSelectedProfile =
             FastCheckoutTestUtils.createDetailedProfile(
-                    /*guid=*/"111", /*name=*/"John Moe", /*streetAddress=*/"Park Avenue 234",
-                    /*city=*/"New York", /*postalCode=*/"12345", /*email=*/"john.moe@gmail.com",
-                    /*phoneNumber=*/"+1-345-543-645");
+                    /* guid= */ "111",
+                    /* name= */ "John Moe",
+                    /* streetAddress= */ "Park Avenue 234",
+                    /* city= */ "New York",
+                    /* postalCode= */ "12345",
+                    /* email= */ "john.moe@gmail.com",
+                    /* phoneNumber= */ "+1-345-543-645");
     private static final FastCheckoutCreditCard sSelectedCreditCard =
-            FastCheckoutTestUtils.createDetailedLocalCreditCard(/*guid=*/"123",
-                    /*origin=*/"https://example.com", /*name=*/"John Moe", /*number=*/"75675675656",
-                    /*obfuscatedNumber=*/"5656", /*month=*/"05", /*year=*/"2031",
-                    /*issuerIconString=*/"visaCC");
+            FastCheckoutTestUtils.createDetailedLocalCreditCard(
+                    /* guid= */ "123",
+                    /* origin= */ "https://example.com",
+                    /* name= */ "John Moe",
+                    /* number= */ "75675675656",
+                    /* obfuscatedNumber= */ "5656",
+                    /* month= */ "05",
+                    /* year= */ "2031",
+                    /* issuerIconString= */ "visaCC");
 
     @Before
     public void setUp() {
@@ -80,50 +89,77 @@ public class FastCheckoutHomeScreenViewTest {
                 ChromeFeatureList.AUTOFILL_ENABLE_NEW_CARD_ART_AND_NETWORK_IMAGES, false);
         FeatureList.setTestValues(featureTestValues);
 
-        mActivityScenarioRule.getScenario().onActivity(activity -> {
-            mModel = FastCheckoutProperties.createDefaultModel();
-            mModel.set(FastCheckoutProperties.VISIBLE, true);
-            mModel.set(FastCheckoutProperties.SELECTED_PROFILE, sSelectedProfile);
-            mModel.set(FastCheckoutProperties.SELECTED_CREDIT_CARD, sSelectedCreditCard);
-            mModel.set(FastCheckoutProperties.HOME_SCREEN_DELEGATE, mMockDelegate);
+        mActivityScenarioRule
+                .getScenario()
+                .onActivity(
+                        activity -> {
+                            mModel = FastCheckoutProperties.createDefaultModel();
+                            mModel.set(FastCheckoutProperties.VISIBLE, true);
+                            mModel.set(FastCheckoutProperties.SELECTED_PROFILE, sSelectedProfile);
+                            mModel.set(
+                                    FastCheckoutProperties.SELECTED_CREDIT_CARD,
+                                    sSelectedCreditCard);
+                            mModel.set(FastCheckoutProperties.HOME_SCREEN_DELEGATE, mMockDelegate);
 
-            // Create the view.
-            mHomeScreenView = LayoutInflater.from(activity).inflate(
-                    R.layout.fast_checkout_home_screen_sheet, null);
+                            // Create the view.
+                            mHomeScreenView =
+                                    LayoutInflater.from(activity)
+                                            .inflate(
+                                                    R.layout.fast_checkout_home_screen_sheet, null);
 
-            // Let the coordinator connect model and view.
-            new HomeScreenCoordinator(activity, mHomeScreenView, mModel);
-            activity.setContentView(mHomeScreenView);
-            assertNotNull(mHomeScreenView);
-        });
+                            // Let the coordinator connect model and view.
+                            new HomeScreenCoordinator(activity, mHomeScreenView, mModel);
+                            activity.setContentView(mHomeScreenView);
+                            assertNotNull(mHomeScreenView);
+                        });
     }
 
     @Test
     @SmallTest
     public void testViewDisplaysCorrectData() {
-        assertThat(getTextFromView(R.id.fast_checkout_home_sheet_profile_name),
+        assertThat(
+                getTextFromView(R.id.fast_checkout_home_sheet_profile_name),
                 equalTo(sSelectedProfile.getFullName()));
-        assertThat(getTextFromView(R.id.fast_checkout_home_sheet_profile_street),
-                equalTo(sSelectedProfile.getStreetAddress() + ", "
-                        + sSelectedProfile.getPostalCode()));
-        assertThat(getTextFromView(R.id.fast_checkout_home_sheet_profile_email),
+        assertThat(
+                getTextFromView(R.id.fast_checkout_home_sheet_profile_street),
+                equalTo(
+                        sSelectedProfile.getStreetAddress()
+                                + ", "
+                                + sSelectedProfile.getPostalCode()));
+        assertThat(
+                getTextFromView(R.id.fast_checkout_home_sheet_profile_email),
                 equalTo(sSelectedProfile.getEmailAddress()));
-        assertThat(getTextFromView(R.id.fast_checkout_home_sheet_profile_phone_number),
+        assertThat(
+                getTextFromView(R.id.fast_checkout_home_sheet_profile_phone_number),
                 equalTo(sSelectedProfile.getPhoneNumber()));
-        assertThat(getTextFromView(R.id.fast_checkout_sheet_selected_credit_card_header),
+        assertThat(
+                getTextFromView(R.id.fast_checkout_sheet_selected_credit_card_header),
                 equalTo(sSelectedCreditCard.getObfuscatedNumber()));
 
         // Test the accessibility strings for the "expand" icons.
-        assertThat(getContentDescriptionFromView(R.id.fast_checkout_expand_icon_autofill_profile),
-                equalTo(mHomeScreenView.getContext().getResources().getString(
-                        R.string.fast_checkout_home_sheet_expand_icon_autofill_profile_description)));
-        assertThat(getContentDescriptionFromView(R.id.fast_checkout_expand_icon_credit_card),
-                equalTo(mHomeScreenView.getContext().getResources().getString(
-                        R.string.fast_checkout_home_sheet_expand_icon_credit_card_description)));
+        assertThat(
+                getContentDescriptionFromView(R.id.fast_checkout_expand_icon_autofill_profile),
+                equalTo(
+                        mHomeScreenView
+                                .getContext()
+                                .getResources()
+                                .getString(
+                                        R.string
+                                                .fast_checkout_home_sheet_expand_icon_autofill_profile_description)));
+        assertThat(
+                getContentDescriptionFromView(R.id.fast_checkout_expand_icon_credit_card),
+                equalTo(
+                        mHomeScreenView
+                                .getContext()
+                                .getResources()
+                                .getString(
+                                        R.string
+                                                .fast_checkout_home_sheet_expand_icon_credit_card_description)));
 
         ImageView mCreditCardImageView =
                 (ImageView) mHomeScreenView.findViewById(R.id.fast_checkout_credit_card_icon);
-        assertThat(shadowOf(mCreditCardImageView.getDrawable()).getCreatedFromResId(),
+        assertThat(
+                shadowOf(mCreditCardImageView.getDrawable()).getCreatedFromResId(),
                 equalTo(sSelectedCreditCard.getIssuerIconDrawableId()));
     }
 

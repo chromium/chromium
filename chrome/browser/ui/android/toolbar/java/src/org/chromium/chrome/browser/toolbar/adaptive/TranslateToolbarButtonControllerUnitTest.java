@@ -34,19 +34,13 @@ import org.chromium.content_public.browser.WebContents;
 @RunWith(BaseRobolectricTestRunner.class)
 @Config(manifest = Config.NONE)
 public class TranslateToolbarButtonControllerUnitTest {
-    @Rule
-    public final JniMocker mJniMocker = new JniMocker();
+    @Rule public final JniMocker mJniMocker = new JniMocker();
 
-    @Mock
-    private WebContents mWebContents;
-    @Mock
-    private Tab mTab;
-    @Mock
-    private Drawable mDrawable;
-    @Mock
-    private Tracker mTracker;
-    @Mock
-    TranslateBridge.Natives mMockTranslateBridge;
+    @Mock private WebContents mWebContents;
+    @Mock private Tab mTab;
+    @Mock private Drawable mDrawable;
+    @Mock private Tracker mTracker;
+    @Mock TranslateBridge.Natives mMockTranslateBridge;
 
     private UserActionTester mActionTester;
 
@@ -84,8 +78,8 @@ public class TranslateToolbarButtonControllerUnitTest {
         translateToolbarButtonController.onClick(null);
 
         Assert.assertEquals(1, mActionTester.getActionCount("MobileTopToolbarTranslateButton"));
-        verify(mTracker).notifyEvent(
-                EventConstants.ADAPTIVE_TOOLBAR_CUSTOMIZATION_TRANSLATE_OPENED);
+        verify(mTracker)
+                .notifyEvent(EventConstants.ADAPTIVE_TOOLBAR_CUSTOMIZATION_TRANSLATE_OPENED);
         verify(mMockTranslateBridge).manualTranslateWhenReady(mWebContents);
     }
 }

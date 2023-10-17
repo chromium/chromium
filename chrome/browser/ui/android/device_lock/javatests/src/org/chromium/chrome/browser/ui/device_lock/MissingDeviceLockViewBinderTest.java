@@ -29,9 +29,7 @@ import org.chromium.ui.test.util.BlankUiTestActivityTestCase;
 
 import java.util.concurrent.atomic.AtomicBoolean;
 
-/**
- * Tests for {@link MissingDeviceLockViewBinder}.
- */
+/** Tests for {@link MissingDeviceLockViewBinder}. */
 @RunWith(ChromeJUnit4ClassRunner.class)
 @Batch(Batch.UNIT_TESTS)
 public class MissingDeviceLockViewBinderTest extends BlankUiTestActivityTestCase {
@@ -49,24 +47,30 @@ public class MissingDeviceLockViewBinderTest extends BlankUiTestActivityTestCase
 
         ViewGroup view = new LinearLayout(getActivity());
 
-        TestThreadUtils.runOnUiThreadBlocking(() -> {
-            getActivity().setContentView(view);
+        TestThreadUtils.runOnUiThreadBlocking(
+                () -> {
+                    getActivity().setContentView(view);
 
-            mView = MissingDeviceLockView.create(getActivity().getLayoutInflater());
-            view.addView(mView);
+                    mView = MissingDeviceLockView.create(getActivity().getLayoutInflater());
+                    view.addView(mView);
 
-            mViewModel = new PropertyModel.Builder(MissingDeviceLockProperties.ALL_KEYS)
-                                 .with(REMOVE_ALL_LOCAL_DATA_CHECKED, true)
-                                 .with(MissingDeviceLockProperties.ON_CREATE_DEVICE_LOCK_CLICKED,
-                                         v -> mCreateDeviceLockButtonClicked.set(true))
-                                 .with(ON_CONTINUE_CLICKED, v -> mContinueClicked.set(true))
-                                 .with(ON_CHECKBOX_TOGGLED,
-                                         (v, isChecked) -> mCheckboxToggled.set(isChecked))
-                                 .build();
+                    mViewModel =
+                            new PropertyModel.Builder(MissingDeviceLockProperties.ALL_KEYS)
+                                    .with(REMOVE_ALL_LOCAL_DATA_CHECKED, true)
+                                    .with(
+                                            MissingDeviceLockProperties
+                                                    .ON_CREATE_DEVICE_LOCK_CLICKED,
+                                            v -> mCreateDeviceLockButtonClicked.set(true))
+                                    .with(ON_CONTINUE_CLICKED, v -> mContinueClicked.set(true))
+                                    .with(
+                                            ON_CHECKBOX_TOGGLED,
+                                            (v, isChecked) -> mCheckboxToggled.set(isChecked))
+                                    .build();
 
-            mModelChangeProcessor = PropertyModelChangeProcessor.create(
-                    mViewModel, mView, MissingDeviceLockViewBinder::bind);
-        });
+                    mModelChangeProcessor =
+                            PropertyModelChangeProcessor.create(
+                                    mViewModel, mView, MissingDeviceLockViewBinder::bind);
+                });
     }
 
     @Override
@@ -82,7 +86,8 @@ public class MissingDeviceLockViewBinderTest extends BlankUiTestActivityTestCase
         mCreateDeviceLockButtonClicked.set(false);
 
         mView.getCreateDeviceLockButton().performClick();
-        assertTrue("A click on the create device lock button should trigger the handler.",
+        assertTrue(
+                "A click on the create device lock button should trigger the handler.",
                 mCreateDeviceLockButtonClicked.get());
     }
 
@@ -93,7 +98,8 @@ public class MissingDeviceLockViewBinderTest extends BlankUiTestActivityTestCase
         mContinueClicked.set(false);
 
         mView.getContinueButton().performClick();
-        assertTrue("A click on the continue button should trigger the continue handler.",
+        assertTrue(
+                "A click on the continue button should trigger the continue handler.",
                 mContinueClicked.get());
     }
 

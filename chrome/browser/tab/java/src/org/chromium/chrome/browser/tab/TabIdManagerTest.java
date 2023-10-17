@@ -24,8 +24,7 @@ import org.chromium.chrome.browser.preferences.ChromeSharedPreferences;
 @RunWith(BaseRobolectricTestRunner.class)
 @Config(manifest = Config.NONE)
 public class TabIdManagerTest {
-    @Mock
-    private Context mContext;
+    @Mock private Context mContext;
 
     @Before
     public void setUp() {
@@ -48,7 +47,9 @@ public class TabIdManagerTest {
         Assert.assertEquals(
                 "Wrong Tab ID was generated", 11684, manager.generateValidId(Tab.INVALID_TAB_ID));
 
-        Assert.assertEquals("Wrong next Tab ID", 11685,
+        Assert.assertEquals(
+                "Wrong next Tab ID",
+                11685,
                 prefs.readInt(ChromePreferenceKeys.TAB_ID_MANAGER_NEXT_ID, -1));
     }
 
@@ -62,15 +63,21 @@ public class TabIdManagerTest {
         Assert.assertEquals(
                 "Wrong Tab ID was generated", 11684, manager.generateValidId(Tab.INVALID_TAB_ID));
 
-        Assert.assertEquals("Wrong next Tab ID", 11685,
+        Assert.assertEquals(
+                "Wrong next Tab ID",
+                11685,
                 prefs.readInt(ChromePreferenceKeys.TAB_ID_MANAGER_NEXT_ID, -1));
 
         manager.incrementIdCounterTo(100);
-        Assert.assertEquals("Didn't stay the same", 11685,
+        Assert.assertEquals(
+                "Didn't stay the same",
+                11685,
                 prefs.readInt(ChromePreferenceKeys.TAB_ID_MANAGER_NEXT_ID, -1));
 
         manager.incrementIdCounterTo(1000000);
-        Assert.assertEquals("Didn't increase", 1000000,
+        Assert.assertEquals(
+                "Didn't increase",
+                1000000,
                 prefs.readInt(ChromePreferenceKeys.TAB_ID_MANAGER_NEXT_ID, -1));
     }
 }

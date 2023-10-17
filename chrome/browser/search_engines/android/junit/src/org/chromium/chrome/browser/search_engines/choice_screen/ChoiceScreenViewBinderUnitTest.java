@@ -47,8 +47,10 @@ public class ChoiceScreenViewBinderUnitTest {
     public void setUp() {
         mActivityController = Robolectric.buildActivity(Activity.class);
 
-        mView = (ChoiceScreenView) LayoutInflater.from(mActivityController.setup().get())
-                        .inflate(R.layout.search_engine_choice_view, /*root=*/null);
+        mView =
+                (ChoiceScreenView)
+                        LayoutInflater.from(mActivityController.setup().get())
+                                .inflate(R.layout.search_engine_choice_view, /* root= */ null);
 
         PropertyModelChangeProcessor.create(mModel, mView, ChoiceScreenViewBinder::bindContentView);
     }

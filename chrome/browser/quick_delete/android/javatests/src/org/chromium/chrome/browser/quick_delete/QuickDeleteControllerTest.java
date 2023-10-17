@@ -74,9 +74,7 @@ import java.io.IOException;
 import java.util.concurrent.TimeUnit;
 import java.util.concurrent.TimeoutException;
 
-/**
- * Tests for quick delete controller.
- */
+/** Tests for quick delete controller. */
 @RunWith(ChromeJUnit4ClassRunner.class)
 @CommandLineFlags.Add({ChromeSwitches.DISABLE_FIRST_RUN_EXPERIENCE})
 @EnableFeatures(ChromeFeatureList.QUICK_DELETE_FOR_ANDROID)
@@ -88,16 +86,16 @@ public class QuickDeleteControllerTest {
 
     @Rule
     public ChromeTabbedActivityTestRule mActivityTestRule = new ChromeTabbedActivityTestRule();
+
     @Rule
     public ChromeRenderTestRule mRenderTestRule =
             ChromeRenderTestRule.Builder.withPublicCorpus()
                     .setBugComponent(ChromeRenderTestRule.Component.PRIVACY)
                     .build();
-    @Rule
-    public JniMocker mJniMocker = new JniMocker();
 
-    @Mock
-    private BrowsingDataBridge.Natives mBrowsingDataBridgeMock;
+    @Rule public JniMocker mJniMocker = new JniMocker();
+
+    @Mock private BrowsingDataBridge.Natives mBrowsingDataBridgeMock;
 
     @Before
     public void setUp() {
@@ -106,11 +104,12 @@ public class QuickDeleteControllerTest {
 
         // Set the time for the initial tab to outside of the quick delete timespan.
         Tab initialTab = mActivityTestRule.getActivity().getActivityTab();
-        TestThreadUtils.runOnUiThreadBlocking(() -> {
-            ((TabImpl) initialTab)
-                    .setLastNavigationCommittedTimestampMillis(
-                            System.currentTimeMillis() - FIFTEEN_MINUTES_IN_MS);
-        });
+        TestThreadUtils.runOnUiThreadBlocking(
+                () -> {
+                    ((TabImpl) initialTab)
+                            .setLastNavigationCommittedTimestampMillis(
+                                    System.currentTimeMillis() - FIFTEEN_MINUTES_IN_MS);
+                });
 
         // Open new tab for tests.
         mActivityTestRule.loadUrlInNewTab("about:blank");
@@ -119,36 +118,44 @@ public class QuickDeleteControllerTest {
     @After
     public void tearDown() {
         ChromeTabbedActivity activity = mActivityTestRule.getActivity();
-        TestThreadUtils.runOnUiThreadBlocking(() -> {
-            TabModel model = activity.getTabModelSelector().getModel(false);
-            // Close all tabs for the next test.
-            model.closeAllTabs();
-        });
+        TestThreadUtils.runOnUiThreadBlocking(
+                () -> {
+                    TabModel model = activity.getTabModelSelector().getModel(false);
+                    // Close all tabs for the next test.
+                    model.closeAllTabs();
+                });
     }
 
     private void openQuickDeleteDialog() {
         // Open 3 dot menu.
-        TestThreadUtils.runOnUiThreadBlocking(() -> {
-            AppMenuTestSupport.showAppMenu(mActivityTestRule.getAppMenuCoordinator(), null, false);
-        });
+        TestThreadUtils.runOnUiThreadBlocking(
+                () -> {
+                    AppMenuTestSupport.showAppMenu(
+                            mActivityTestRule.getAppMenuCoordinator(), null, false);
+                });
         onViewWaiting(withId(R.id.app_menu_list))
                 .check(matches(withEffectiveVisibility(ViewMatchers.Visibility.VISIBLE)));
 
         // Click on quick delete menu item.
-        TestThreadUtils.runOnUiThreadBlocking(() -> {
-            AppMenuTestSupport.callOnItemClick(
-                    mActivityTestRule.getAppMenuCoordinator(), R.id.quick_delete_menu_id);
-        });
+        TestThreadUtils.runOnUiThreadBlocking(
+                () -> {
+                    AppMenuTestSupport.callOnItemClick(
+                            mActivityTestRule.getAppMenuCoordinator(), R.id.quick_delete_menu_id);
+                });
         onViewWaiting(withId(R.id.quick_delete_spinner))
                 .check(matches(withEffectiveVisibility(ViewMatchers.Visibility.VISIBLE)));
     }
 
     private void resetCookies() throws TimeoutException {
         CallbackHelper helper = new CallbackHelper();
-        TestThreadUtils.runOnUiThreadBlocking(() -> {
-            BrowsingDataBridge.getInstance().clearBrowsingData(helper::notifyCalled,
-                    new int[] {BrowsingDataType.COOKIES}, TimePeriod.LAST_15_MINUTES);
-        });
+        TestThreadUtils.runOnUiThreadBlocking(
+                () -> {
+                    BrowsingDataBridge.getInstance()
+                            .clearBrowsingData(
+                                    helper::notifyCalled,
+                                    new int[] {BrowsingDataType.COOKIES},
+                                    TimePeriod.LAST_15_MINUTES);
+                });
         helper.waitForCallback(0);
     }
 
@@ -180,13 +187,19 @@ public class QuickDeleteControllerTest {
         onViewWaiting(withId(R.id.positive_button)).perform(click());
 
         onViewWaiting(withId(R.id.snackbar)).check(matches(isDisplayed()));
-        onView(withText(mActivityTestRule.getActivity().getString(
-                       R.string.quick_delete_snackbar_message,
-                       TimePeriodUtils.getTimePeriodString(
-                               mActivityTestRule.getActivity(), TimePeriod.LAST_15_MINUTES))))
+        onView(
+                        withText(
+                                mActivityTestRule
+                                        .getActivity()
+                                        .getString(
+                                                R.string.quick_delete_snackbar_message,
+                                                TimePeriodUtils.getTimePeriodString(
+                                                        mActivityTestRule.getActivity(),
+                                                        TimePeriod.LAST_15_MINUTES))))
                 .check(matches(isDisplayed()));
 
-        mRenderTestRule.render(mActivityTestRule.getActivity().findViewById(R.id.snackbar),
+        mRenderTestRule.render(
+                mActivityTestRule.getActivity().findViewById(R.id.snackbar),
                 "quick_delete_snackbar");
     }
 
@@ -196,17 +209,21 @@ public class QuickDeleteControllerTest {
     public void testSnackbarShown_WhenClickingDelete_AllTimeSelected() {
         openQuickDeleteDialog();
         onView(withId(R.id.quick_delete_spinner)).check(matches(isDisplayed()));
-        View dialogView = mActivityTestRule.getActivity()
-                                  .getModalDialogManager()
-                                  .getCurrentDialogForTest()
-                                  .get(ModalDialogProperties.CUSTOM_VIEW);
+        View dialogView =
+                mActivityTestRule
+                        .getActivity()
+                        .getModalDialogManager()
+                        .getCurrentDialogForTest()
+                        .get(ModalDialogProperties.CUSTOM_VIEW);
 
-        TestThreadUtils.runOnUiThreadBlocking(() -> {
-            Spinner spinnerView = dialogView.findViewById(R.id.quick_delete_spinner);
-            spinnerView.setSelection(5);
-            var option = (TimePeriodUtils.TimePeriodSpinnerOption) spinnerView.getSelectedItem();
-            assertEquals(TimePeriod.ALL_TIME, option.getTimePeriod());
-        });
+        TestThreadUtils.runOnUiThreadBlocking(
+                () -> {
+                    Spinner spinnerView = dialogView.findViewById(R.id.quick_delete_spinner);
+                    spinnerView.setSelection(5);
+                    var option =
+                            (TimePeriodUtils.TimePeriodSpinnerOption) spinnerView.getSelectedItem();
+                    assertEquals(TimePeriod.ALL_TIME, option.getTimePeriod());
+                });
 
         onViewWaiting(withId(R.id.positive_button)).perform(click());
         onViewWaiting(withId(R.id.snackbar)).check(matches(isDisplayed()));
@@ -220,7 +237,8 @@ public class QuickDeleteControllerTest {
         openQuickDeleteDialog();
 
         HistogramWatcher histogramWatcher =
-                HistogramWatcher.newSingleRecordWatcher(QuickDeleteMetricsDelegate.HISTOGRAM_NAME,
+                HistogramWatcher.newSingleRecordWatcher(
+                        QuickDeleteMetricsDelegate.HISTOGRAM_NAME,
                         QuickDeleteMetricsDelegate.QuickDeleteAction.DELETE_CLICKED);
 
         onViewWaiting(withId(R.id.positive_button)).perform(click());
@@ -233,8 +251,9 @@ public class QuickDeleteControllerTest {
     public void testQuickDeleteHistogram_WhenClickingDelete() throws IOException {
         openQuickDeleteDialog();
 
-        HistogramWatcher histogramWatcher = HistogramWatcher.newSingleRecordWatcher(
-                "Privacy.DeleteBrowsingData.Action", DeleteBrowsingDataAction.QUICK_DELETE);
+        HistogramWatcher histogramWatcher =
+                HistogramWatcher.newSingleRecordWatcher(
+                        "Privacy.DeleteBrowsingData.Action", DeleteBrowsingDataAction.QUICK_DELETE);
 
         onViewWaiting(withId(R.id.positive_button)).perform(click());
 
@@ -248,25 +267,36 @@ public class QuickDeleteControllerTest {
         // Wait for the dialog to show-up so we can retrieve the dialog in the next line.
         onViewWaiting(withId(R.id.quick_delete_spinner)).check(matches(isDisplayed()));
 
-        View dialogView = mActivityTestRule.getActivity()
-                                  .getModalDialogManager()
-                                  .getCurrentDialogForTest()
-                                  .get(ModalDialogProperties.CUSTOM_VIEW);
+        View dialogView =
+                mActivityTestRule
+                        .getActivity()
+                        .getModalDialogManager()
+                        .getCurrentDialogForTest()
+                        .get(ModalDialogProperties.CUSTOM_VIEW);
 
-        TestThreadUtils.runOnUiThreadBlocking(() -> {
-            Spinner spinnerView = dialogView.findViewById(R.id.quick_delete_spinner);
-            // Set the time selection for LAST_HOUR.
-            spinnerView.setSelection(1);
-            var option = (TimePeriodUtils.TimePeriodSpinnerOption) spinnerView.getSelectedItem();
-            assertEquals(TimePeriod.LAST_HOUR, option.getTimePeriod());
+        TestThreadUtils.runOnUiThreadBlocking(
+                () -> {
+                    Spinner spinnerView = dialogView.findViewById(R.id.quick_delete_spinner);
+                    // Set the time selection for LAST_HOUR.
+                    spinnerView.setSelection(1);
+                    var option =
+                            (TimePeriodUtils.TimePeriodSpinnerOption) spinnerView.getSelectedItem();
+                    assertEquals(TimePeriod.LAST_HOUR, option.getTimePeriod());
 
-            // Check below that the browsing data bridge is called for LAST_HOUR.
-            mJniMocker.mock(BrowsingDataBridgeJni.TEST_HOOKS, mBrowsingDataBridgeMock);
-            doNothing()
-                    .when(mBrowsingDataBridgeMock)
-                    .clearBrowsingData(any(), any(), any(), eq(TimePeriod.LAST_HOUR), any(), any(),
-                            any(), any());
-        });
+                    // Check below that the browsing data bridge is called for LAST_HOUR.
+                    mJniMocker.mock(BrowsingDataBridgeJni.TEST_HOOKS, mBrowsingDataBridgeMock);
+                    doNothing()
+                            .when(mBrowsingDataBridgeMock)
+                            .clearBrowsingData(
+                                    any(),
+                                    any(),
+                                    any(),
+                                    eq(TimePeriod.LAST_HOUR),
+                                    any(),
+                                    any(),
+                                    any(),
+                                    any());
+                });
 
         onViewWaiting(withId(R.id.positive_button)).perform(click());
         verify(mBrowsingDataBridgeMock)
@@ -280,7 +310,8 @@ public class QuickDeleteControllerTest {
         openQuickDeleteDialog();
 
         HistogramWatcher histogramWatcher =
-                HistogramWatcher.newSingleRecordWatcher(QuickDeleteMetricsDelegate.HISTOGRAM_NAME,
+                HistogramWatcher.newSingleRecordWatcher(
+                        QuickDeleteMetricsDelegate.HISTOGRAM_NAME,
                         QuickDeleteMetricsDelegate.QuickDeleteAction.CANCEL_CLICKED);
 
         onViewWaiting(withId(R.id.negative_button)).perform(click());
@@ -295,9 +326,11 @@ public class QuickDeleteControllerTest {
 
         HistogramWatcher histogramWatcher =
                 HistogramWatcher.newBuilder()
-                        .expectIntRecord(QuickDeleteMetricsDelegate.HISTOGRAM_NAME,
+                        .expectIntRecord(
+                                QuickDeleteMetricsDelegate.HISTOGRAM_NAME,
                                 QuickDeleteMetricsDelegate.QuickDeleteAction.MORE_OPTIONS_CLICKED)
-                        .expectIntRecord(QuickDeleteMetricsDelegate.HISTOGRAM_NAME,
+                        .expectIntRecord(
+                                QuickDeleteMetricsDelegate.HISTOGRAM_NAME,
                                 QuickDeleteMetricsDelegate.QuickDeleteAction
                                         .DIALOG_DISMISSED_IMPLICITLY)
                         .build();
@@ -313,7 +346,8 @@ public class QuickDeleteControllerTest {
         openQuickDeleteDialog();
 
         HistogramWatcher histogramWatcher =
-                HistogramWatcher.newSingleRecordWatcher(QuickDeleteMetricsDelegate.HISTOGRAM_NAME,
+                HistogramWatcher.newSingleRecordWatcher(
+                        QuickDeleteMetricsDelegate.HISTOGRAM_NAME,
                         QuickDeleteMetricsDelegate.QuickDeleteAction.DIALOG_DISMISSED_IMPLICITLY);
 
         // Implicitly dismiss pop up by pressing Clank's back button.
@@ -371,8 +405,9 @@ public class QuickDeleteControllerTest {
         onView(withId(R.id.quick_delete_more_options)).perform(click());
 
         SettingsActivity activity =
-                (SettingsActivity) InstrumentationRegistry.getInstrumentation()
-                        .waitForMonitorWithTimeout(activityMonitor, ACTIVITY_WAIT_LONG_MS);
+                (SettingsActivity)
+                        InstrumentationRegistry.getInstrumentation()
+                                .waitForMonitorWithTimeout(activityMonitor, ACTIVITY_WAIT_LONG_MS);
 
         assertTrue(activity.getMainFragment() instanceof ClearBrowsingDataFragmentAdvanced);
     }

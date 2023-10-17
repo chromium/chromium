@@ -3,6 +3,7 @@
 // found in the LICENSE file.
 
 package org.chromium.chrome.browser.ui.autofill;
+
 import static com.google.common.truth.Truth.assertThat;
 
 import static org.junit.Assert.assertTrue;
@@ -46,14 +47,11 @@ import org.chromium.ui.test.util.modaldialog.FakeModalDialogManager;
 
 import java.util.Optional;
 
-/**
- * Unit tests for {@link OtpVerificationDialogView}.
- */
+/** Unit tests for {@link OtpVerificationDialogView}. */
 @RunWith(BaseRobolectricTestRunner.class)
 @EnableFeatures({ChromeFeatureList.AUTOFILL_ENABLE_MOVING_GPAY_LOGO_TO_THE_RIGHT_ON_CLANK})
 public class OtpVerificationDialogTest {
-    @Rule
-    public TestRule mFeaturesProcessorRule = new Features.JUnitProcessor();
+    @Rule public TestRule mFeaturesProcessorRule = new Features.JUnitProcessor();
 
     private static final String ERROR_MESSAGE = "Error message";
     private static final String VALID_OTP = "123456";
@@ -63,20 +61,23 @@ public class OtpVerificationDialogTest {
     private OtpVerificationDialogCoordinator mOtpVerificationDialogCoordinator;
     private Resources mResources;
 
-    @Mock
-    private OtpVerificationDialogCoordinator.Delegate mDelegate;
+    @Mock private OtpVerificationDialogCoordinator.Delegate mDelegate;
 
     @Before
     public void setUp() {
         MockitoAnnotations.initMocks(this);
         mModalDialogManager = new FakeModalDialogManager(ModalDialogType.TAB);
         mResources = ApplicationProvider.getApplicationContext().getResources();
-        mOtpVerificationDialogView = (OtpVerificationDialogView) LayoutInflater
-                                             .from(ApplicationProvider.getApplicationContext())
-                                             .inflate(R.layout.otp_verification_dialog, null);
+        mOtpVerificationDialogView =
+                (OtpVerificationDialogView)
+                        LayoutInflater.from(ApplicationProvider.getApplicationContext())
+                                .inflate(R.layout.otp_verification_dialog, null);
         mOtpVerificationDialogCoordinator =
-                new OtpVerificationDialogCoordinator(ApplicationProvider.getApplicationContext(),
-                        mModalDialogManager, mOtpVerificationDialogView, mDelegate);
+                new OtpVerificationDialogCoordinator(
+                        ApplicationProvider.getApplicationContext(),
+                        mModalDialogManager,
+                        mOtpVerificationDialogView,
+                        mDelegate);
     }
 
     @Test
@@ -92,16 +93,19 @@ public class OtpVerificationDialogTest {
         // Verify that the hint shown in the OTP input field contains the value of the otpLength set
         // above.
         assertThat(((EditText) view.findViewById(R.id.otp_input)).getHint())
-                .isEqualTo(ApplicationProvider.getApplicationContext().getString(
-                        R.string.autofill_payments_otp_verification_dialog_otp_input_hint,
-                        otpLength));
+                .isEqualTo(
+                        ApplicationProvider.getApplicationContext()
+                                .getString(
+                                        R.string
+                                                .autofill_payments_otp_verification_dialog_otp_input_hint,
+                                        otpLength));
         // Verify that the positive button is disabled.
         assertThat(model.get(ModalDialogProperties.POSITIVE_BUTTON_DISABLED)).isTrue();
     }
 
     @Test
     public void testShowHideErrorMessage() {
-        mOtpVerificationDialogCoordinator.show(/*otpLength=*/6);
+        mOtpVerificationDialogCoordinator.show(/* otpLength= */ 6);
         mOtpVerificationDialogView.showOtpErrorMessage(Optional.of(ERROR_MESSAGE));
 
         PropertyModel model = mModalDialogManager.getShownDialogModel();
@@ -119,7 +123,7 @@ public class OtpVerificationDialogTest {
 
     @Test
     public void testPositiveButtonDisabledState() {
-        mOtpVerificationDialogCoordinator.show(/*otpLength=*/6);
+        mOtpVerificationDialogCoordinator.show(/* otpLength= */ 6);
         PropertyModel model = mModalDialogManager.getShownDialogModel();
         View view = model.get(ModalDialogProperties.CUSTOM_VIEW);
 
@@ -140,7 +144,7 @@ public class OtpVerificationDialogTest {
 
     @Test
     public void testOtpSubmission() {
-        mOtpVerificationDialogCoordinator.show(/*otpLength=*/6);
+        mOtpVerificationDialogCoordinator.show(/* otpLength= */ 6);
         PropertyModel model = mModalDialogManager.getShownDialogModel();
         View view = model.get(ModalDialogProperties.CUSTOM_VIEW);
         EditText otpInputEditText = (EditText) view.findViewById(R.id.otp_input);
@@ -157,7 +161,7 @@ public class OtpVerificationDialogTest {
 
     @Test
     public void testGetNewCode() {
-        mOtpVerificationDialogCoordinator.show(/*otpLength=*/6);
+        mOtpVerificationDialogCoordinator.show(/* otpLength= */ 6);
         PropertyModel model = mModalDialogManager.getShownDialogModel();
         View view = model.get(ModalDialogProperties.CUSTOM_VIEW);
         TextView otpResendMessageTextView = (TextView) view.findViewById(R.id.otp_resend_message);
@@ -172,9 +176,10 @@ public class OtpVerificationDialogTest {
 
     @Test
     public void testDialogDismissal() {
-        mOtpVerificationDialogCoordinator.show(/*otpLength=*/6);
+        mOtpVerificationDialogCoordinator.show(/* otpLength= */ 6);
 
-        mModalDialogManager.dismissDialog(mModalDialogManager.getShownDialogModel(),
+        mModalDialogManager.dismissDialog(
+                mModalDialogManager.getShownDialogModel(),
                 DialogDismissalCause.NEGATIVE_BUTTON_CLICKED);
 
         verify(mDelegate, times(1)).onDialogDismissed();
@@ -183,7 +188,7 @@ public class OtpVerificationDialogTest {
     @Test
     @DisableFeatures({ChromeFeatureList.AUTOFILL_ENABLE_MOVING_GPAY_LOGO_TO_THE_RIGHT_ON_CLANK})
     public void testDefaultTitleView() throws Exception {
-        mOtpVerificationDialogCoordinator.show(/*otpLength=*/6);
+        mOtpVerificationDialogCoordinator.show(/* otpLength= */ 6);
 
         PropertyModel model = mModalDialogManager.getShownDialogModel();
         assertThat(model).isNotNull();
@@ -195,10 +200,13 @@ public class OtpVerificationDialogTest {
 
         // Verify that the title icon set by modal dialog is correct.
         Drawable expectedDrawable =
-                ResourcesCompat.getDrawable(mResources, R.drawable.google_pay_with_divider,
+                ResourcesCompat.getDrawable(
+                        mResources,
+                        R.drawable.google_pay_with_divider,
                         ApplicationProvider.getApplicationContext().getTheme());
-        assertTrue(getBitmap(expectedDrawable)
-                           .sameAs(getBitmap(model.get(ModalDialogProperties.TITLE_ICON))));
+        assertTrue(
+                getBitmap(expectedDrawable)
+                        .sameAs(getBitmap(model.get(ModalDialogProperties.TITLE_ICON))));
 
         // Verify that title and title icon is not set by custom view.
         View customView = model.get(ModalDialogProperties.CUSTOM_VIEW);
@@ -208,7 +216,7 @@ public class OtpVerificationDialogTest {
 
     @Test
     public void testCustomTitleView() throws Exception {
-        mOtpVerificationDialogCoordinator.show(/*otpLength=*/6);
+        mOtpVerificationDialogCoordinator.show(/* otpLength= */ 6);
 
         PropertyModel model = mModalDialogManager.getShownDialogModel();
         assertThat(model).isNotNull();
@@ -224,8 +232,11 @@ public class OtpVerificationDialogTest {
 
         // Verify that the title icon set by custom view is correct.
         ImageView title_icon = (ImageView) customView.findViewById(R.id.title_icon);
-        Drawable expectedDrawable = ResourcesCompat.getDrawable(mResources, R.drawable.google_pay,
-                ApplicationProvider.getApplicationContext().getTheme());
+        Drawable expectedDrawable =
+                ResourcesCompat.getDrawable(
+                        mResources,
+                        R.drawable.google_pay,
+                        ApplicationProvider.getApplicationContext().getTheme());
         assertThat(title_icon.getVisibility()).isEqualTo(View.VISIBLE);
         assertTrue(getBitmap(expectedDrawable).sameAs(getBitmap(title_icon.getDrawable())));
 
@@ -236,8 +247,11 @@ public class OtpVerificationDialogTest {
 
     // Convert a drawable to a Bitmap for comparison.
     private static Bitmap getBitmap(Drawable drawable) {
-        Bitmap bitmap = Bitmap.createBitmap(drawable.getIntrinsicWidth(),
-                drawable.getIntrinsicHeight(), Bitmap.Config.ARGB_8888);
+        Bitmap bitmap =
+                Bitmap.createBitmap(
+                        drawable.getIntrinsicWidth(),
+                        drawable.getIntrinsicHeight(),
+                        Bitmap.Config.ARGB_8888);
         Canvas canvas = new Canvas(bitmap);
         drawable.setBounds(0, 0, canvas.getWidth(), canvas.getHeight());
         drawable.draw(canvas);

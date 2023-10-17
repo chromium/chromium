@@ -33,16 +33,12 @@ import org.chromium.components.prefs.PrefService;
 
 import java.time.Duration;
 
-/**
- * Unit tests for {@link FeedFeatures}.
- */
+/** Unit tests for {@link FeedFeatures}. */
 @RunWith(BaseRobolectricTestRunner.class)
 public class FeedFeaturesTest {
-    @Rule
-    public MockitoRule rule = MockitoJUnit.rule().strictness(Strictness.WARN);
+    @Rule public MockitoRule rule = MockitoJUnit.rule().strictness(Strictness.WARN);
 
-    @Mock
-    private PrefService mPrefService;
+    @Mock private PrefService mPrefService;
 
     private FeatureList.TestValues mParamsTestValues;
     private @StreamTabId int mPrefStoredTab;
@@ -55,11 +51,12 @@ public class FeedFeaturesTest {
         FeedFeatures.setFakePrefsForTest(mPrefService);
         when(mPrefService.getInteger(Pref.LAST_SEEN_FEED_TYPE))
                 .thenAnswer((InvocationOnMock i) -> mPrefStoredTab);
-        doAnswer((InvocationOnMock invocation) -> {
-            Object[] args = invocation.getArguments();
-            mPrefStoredTab = (Integer) args[1];
-            return null;
-        })
+        doAnswer(
+                        (InvocationOnMock invocation) -> {
+                            Object[] args = invocation.getArguments();
+                            mPrefStoredTab = (Integer) args[1];
+                            return null;
+                        })
                 .when(mPrefService)
                 .setInteger(eq(Pref.LAST_SEEN_FEED_TYPE), anyInt());
 
@@ -85,8 +82,10 @@ public class FeedFeaturesTest {
 
     @Test
     public void testResetUponRestartFromFinchParam() {
-        mParamsTestValues.addFieldTrialParamOverride(ChromeFeatureList.WEB_FEED,
-                "feed_tab_stickiness_logic", "reset_upon_chrome_restart");
+        mParamsTestValues.addFieldTrialParamOverride(
+                ChromeFeatureList.WEB_FEED,
+                "feed_tab_stickiness_logic",
+                "reset_upon_chrome_restart");
         FeatureList.setTestValues(mParamsTestValues);
 
         assertEquals(StreamTabId.FOR_YOU, FeedFeatures.getFeedTabIdToRestore());

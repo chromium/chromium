@@ -27,18 +27,12 @@ import org.chromium.chrome.browser.toolbar.TabCountProvider.TabCountObserver;
 /** Unit tests for {@link TabCountProvider}. */
 @RunWith(BaseRobolectricTestRunner.class)
 public final class TabCountProviderUnitTest {
-    @Mock
-    private TabModelSelector mMockTabModelSelector;
-    @Mock
-    private TabModelFilterProvider mMockFilterProvider;
-    @Captor
-    private ArgumentCaptor<TabModelObserver> mTabModelObserverCaptor;
-    @Captor
-    private ArgumentCaptor<TabModelSelectorObserver> mTabModelSelectorObserverCaptor;
-    @Mock
-    private TabModelFilter mMockTabModelFilter;
-    @Mock
-    private TabCountObserver mTabCountObserver;
+    @Mock private TabModelSelector mMockTabModelSelector;
+    @Mock private TabModelFilterProvider mMockFilterProvider;
+    @Captor private ArgumentCaptor<TabModelObserver> mTabModelObserverCaptor;
+    @Captor private ArgumentCaptor<TabModelSelectorObserver> mTabModelSelectorObserverCaptor;
+    @Mock private TabModelFilter mMockTabModelFilter;
+    @Mock private TabCountObserver mTabCountObserver;
     private TabCountProvider mProvider = new TabCountProvider();
 
     @Before
@@ -56,7 +50,9 @@ public final class TabCountProviderUnitTest {
         when(mMockTabModelFilter.getTotalTabCount()).thenReturn(tabCount);
         mProvider.setTabModelSelector(mMockTabModelSelector);
 
-        assertEquals("Tab count from provider is not same as expected", tabCount,
+        assertEquals(
+                "Tab count from provider is not same as expected",
+                tabCount,
                 mProvider.getTabCount());
     }
 
@@ -67,7 +63,9 @@ public final class TabCountProviderUnitTest {
         when(mMockTabModelFilter.getTotalTabCount()).thenReturn(tabCount);
         mProvider.setTabModelSelector(mMockTabModelSelector);
 
-        assertEquals("Tab count from provider is not same as expected", tabCount,
+        assertEquals(
+                "Tab count from provider is not same as expected",
+                tabCount,
                 mProvider.getTabCount());
     }
 
@@ -83,13 +81,17 @@ public final class TabCountProviderUnitTest {
         int tabCount1 = 10;
         when(mMockTabModelFilter.getTotalTabCount()).thenReturn(tabCount1);
         observer.onTabModelSelected(null, null);
-        assertEquals("Tab count from provider is not same as expected", tabCount1,
+        assertEquals(
+                "Tab count from provider is not same as expected",
+                tabCount1,
                 mProvider.getTabCount());
 
         int tabCount2 = 20;
         when(mMockTabModelFilter.getTotalTabCount()).thenReturn(tabCount2);
         observer.onTabStateInitialized();
-        assertEquals("Tab count from provider is not same as expected", tabCount2,
+        assertEquals(
+                "Tab count from provider is not same as expected",
+                tabCount2,
                 mProvider.getTabCount());
     }
 
@@ -105,43 +107,57 @@ public final class TabCountProviderUnitTest {
         int tabCount1 = 10;
         when(mMockTabModelFilter.getTotalTabCount()).thenReturn(tabCount1);
         observer.didAddTab(null, 0, 0, false);
-        assertEquals("Tab count from provider is not same as expected", tabCount1,
+        assertEquals(
+                "Tab count from provider is not same as expected",
+                tabCount1,
                 mProvider.getTabCount());
 
         int tabCount2 = 20;
         when(mMockTabModelFilter.getTotalTabCount()).thenReturn(tabCount2);
         observer.tabClosureUndone(null);
-        assertEquals("Tab count from provider is not same as expected", tabCount2,
+        assertEquals(
+                "Tab count from provider is not same as expected",
+                tabCount2,
                 mProvider.getTabCount());
 
         int tabCount3 = 30;
         when(mMockTabModelFilter.getTotalTabCount()).thenReturn(tabCount3);
         observer.onFinishingTabClosure(null);
-        assertEquals("Tab count from provider is not same as expected", tabCount3,
+        assertEquals(
+                "Tab count from provider is not same as expected",
+                tabCount3,
                 mProvider.getTabCount());
 
         int tabCount4 = 40;
         when(mMockTabModelFilter.getTotalTabCount()).thenReturn(tabCount4);
         observer.tabPendingClosure(null);
-        assertEquals("Tab count from provider is not same as expected", tabCount4,
+        assertEquals(
+                "Tab count from provider is not same as expected",
+                tabCount4,
                 mProvider.getTabCount());
 
         int tabCount5 = 50;
         when(mMockTabModelFilter.getTotalTabCount()).thenReturn(tabCount5);
         observer.multipleTabsPendingClosure(null, false);
-        assertEquals("Tab count from provider is not same as expected", tabCount5,
+        assertEquals(
+                "Tab count from provider is not same as expected",
+                tabCount5,
                 mProvider.getTabCount());
 
         int tabCount6 = 60;
         when(mMockTabModelFilter.getTotalTabCount()).thenReturn(tabCount6);
         observer.tabRemoved(null);
-        assertEquals("Tab count from provider is not same as expected", tabCount6,
+        assertEquals(
+                "Tab count from provider is not same as expected",
+                tabCount6,
                 mProvider.getTabCount());
 
         int tabCount7 = 70;
         when(mMockTabModelFilter.getTotalTabCount()).thenReturn(tabCount7);
         observer.restoreCompleted();
-        assertEquals("Tab count from provider is not same as expected", tabCount7,
+        assertEquals(
+                "Tab count from provider is not same as expected",
+                tabCount7,
                 mProvider.getTabCount());
     }
 

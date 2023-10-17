@@ -27,9 +27,7 @@ import org.robolectric.annotation.Config;
 
 import org.chromium.base.test.BaseRobolectricTestRunner;
 
-/**
- * Unit tests for the `FastCheckoutSheetContent` class.
- */
+/** Unit tests for the `FastCheckoutSheetContent` class. */
 @RunWith(BaseRobolectricTestRunner.class)
 @Config(manifest = Config.NONE)
 public class FastCheckoutSheetContentTest {
@@ -41,16 +39,11 @@ public class FastCheckoutSheetContentTest {
     private static final int CONTAINER_HEIGHT = 100;
 
     private FastCheckoutSheetContent mSheetContent;
-    @Mock
-    private View mContentView;
-    @Mock
-    private ViewGroup mContentViewParent;
-    @Mock
-    private Context mContext;
-    @Mock
-    private Resources mResources;
-    @Mock
-    private FastCheckoutSheetState mState;
+    @Mock private View mContentView;
+    @Mock private ViewGroup mContentViewParent;
+    @Mock private Context mContext;
+    @Mock private Resources mResources;
+    @Mock private FastCheckoutSheetState mState;
 
     @Before
     public void setUp() {
@@ -60,10 +53,10 @@ public class FastCheckoutSheetContentTest {
         when(mResources.getDimensionPixelSize(R.dimen.fast_checkout_detail_sheet_header_height))
                 .thenReturn(HEADER_HEIGHT);
         when(mResources.getDimensionPixelSize(
-                     R.dimen.fast_checkout_detail_sheet_height_single_address))
+                        R.dimen.fast_checkout_detail_sheet_height_single_address))
                 .thenReturn(PROFILE_HEIGHT);
         when(mResources.getDimensionPixelSize(
-                     R.dimen.fast_checkout_detail_sheet_height_single_credit_card))
+                        R.dimen.fast_checkout_detail_sheet_height_single_credit_card))
                 .thenReturn(CREDIT_CARD_HEIGHT);
         when(mContext.getResources()).thenReturn(mResources);
         when(mContentView.getContext()).thenReturn(mContext);
@@ -86,7 +79,7 @@ public class FastCheckoutSheetContentTest {
 
     @Test
     public void
-    getFullHeightRatio_ProfileScreenAboveThreshold_ReturnsBottomsheetHeightByContainerHeight() {
+            getFullHeightRatio_ProfileScreenAboveThreshold_ReturnsBottomsheetHeightByContainerHeight() {
         when(mState.getCurrentScreen()).thenReturn(AUTOFILL_PROFILE_SCREEN);
         when(mState.getNumOfAutofillProfiles()).thenReturn(3);
         assertEquals(0.4f, mSheetContent.getFullHeightRatio(), DELTA);
@@ -101,7 +94,7 @@ public class FastCheckoutSheetContentTest {
 
     @Test
     public void
-    getHalfHeightRatio_ProfileScreenAboveThreshold_ReturnsDesiredHeightByContainerHeight() {
+            getHalfHeightRatio_ProfileScreenAboveThreshold_ReturnsDesiredHeightByContainerHeight() {
         when(mState.getCurrentScreen()).thenReturn(AUTOFILL_PROFILE_SCREEN);
         when(mState.getNumOfAutofillProfiles()).thenReturn(3);
         assertEquals(0.48f, mSheetContent.getHalfHeightRatio(), DELTA);
@@ -116,7 +109,7 @@ public class FastCheckoutSheetContentTest {
 
     @Test
     public void
-    getFullHeightRatio_CreditCardScreenAboveThreshold_ReturnsBottomsheetHeightByContainerHeight() {
+            getFullHeightRatio_CreditCardScreenAboveThreshold_ReturnsBottomsheetHeightByContainerHeight() {
         when(mState.getCurrentScreen()).thenReturn(CREDIT_CARD_SCREEN);
         when(mState.getNumOfCreditCards()).thenReturn(4);
         assertEquals(0.4f, mSheetContent.getFullHeightRatio(), DELTA);
@@ -131,7 +124,7 @@ public class FastCheckoutSheetContentTest {
 
     @Test
     public void
-    getHalfHeightRatio_CreditCardScreenAboveThreshold_ReturnsDesiredHeightByContainerHeight() {
+            getHalfHeightRatio_CreditCardScreenAboveThreshold_ReturnsDesiredHeightByContainerHeight() {
         when(mState.getCurrentScreen()).thenReturn(CREDIT_CARD_SCREEN);
         when(mState.getNumOfCreditCards()).thenReturn(4);
         assertEquals(0.45f, mSheetContent.getHalfHeightRatio(), DELTA);

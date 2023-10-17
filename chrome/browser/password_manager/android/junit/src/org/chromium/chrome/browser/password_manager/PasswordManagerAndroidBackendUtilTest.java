@@ -30,21 +30,22 @@ import org.chromium.chrome.browser.password_manager.PasswordStoreAndroidBackend.
 import org.chromium.chrome.test.util.browser.Features;
 
 /**
- *  Tests for the utility methods used by various parts of the password manager backend (e.g.
- *  the password store, the settings accessor).
+ * Tests for the utility methods used by various parts of the password manager backend (e.g. the
+ * password store, the settings accessor).
  */
 @RunWith(BaseRobolectricTestRunner.class)
 @Config(manifest = Config.NONE)
 @Batch(Batch.PER_CLASS)
 public class PasswordManagerAndroidBackendUtilTest {
-    @Rule
-    public TestRule mProcessor = new Features.JUnitProcessor();
+    @Rule public TestRule mProcessor = new Features.JUnitProcessor();
 
     @Test
     public void testUtilsForBackendException() {
-        BackendException exception = new BackendException(
-                "Cannot call API without context.", AndroidBackendErrorType.NO_CONTEXT);
-        Assert.assertEquals(AndroidBackendErrorType.NO_CONTEXT,
+        BackendException exception =
+                new BackendException(
+                        "Cannot call API without context.", AndroidBackendErrorType.NO_CONTEXT);
+        Assert.assertEquals(
+                AndroidBackendErrorType.NO_CONTEXT,
                 PasswordManagerAndroidBackendUtil.getBackendError(exception));
         Assert.assertEquals(0, PasswordManagerAndroidBackendUtil.getApiErrorCode(exception));
     }
@@ -52,36 +53,44 @@ public class PasswordManagerAndroidBackendUtilTest {
     @Test
     public void testUtilsForApiException() {
         ApiException apiException = new ApiException(new Status(CommonStatusCodes.ERROR, ""));
-        Assert.assertEquals(AndroidBackendErrorType.EXTERNAL_ERROR,
+        Assert.assertEquals(
+                AndroidBackendErrorType.EXTERNAL_ERROR,
                 PasswordManagerAndroidBackendUtil.getBackendError(apiException));
-        Assert.assertEquals(CommonStatusCodes.ERROR,
+        Assert.assertEquals(
+                CommonStatusCodes.ERROR,
                 PasswordManagerAndroidBackendUtil.getApiErrorCode(apiException));
         Assert.assertNull(PasswordManagerAndroidBackendUtil.getConnectionResultCode(apiException));
     }
 
     @Test
     public void testUtilsForApiExceptionWithConnectionResult() {
-        ApiException apiException = new ApiException(
-                new Status(new ConnectionResult(ConnectionResult.API_UNAVAILABLE), ""));
-        Assert.assertEquals(AndroidBackendErrorType.EXTERNAL_ERROR,
+        ApiException apiException =
+                new ApiException(
+                        new Status(new ConnectionResult(ConnectionResult.API_UNAVAILABLE), ""));
+        Assert.assertEquals(
+                AndroidBackendErrorType.EXTERNAL_ERROR,
                 PasswordManagerAndroidBackendUtil.getBackendError(apiException));
-        Assert.assertEquals(CommonStatusCodes.API_NOT_CONNECTED,
+        Assert.assertEquals(
+                CommonStatusCodes.API_NOT_CONNECTED,
                 PasswordManagerAndroidBackendUtil.getApiErrorCode(apiException));
-        Assert.assertEquals(ConnectionResult.API_UNAVAILABLE,
+        Assert.assertEquals(
+                ConnectionResult.API_UNAVAILABLE,
                 PasswordManagerAndroidBackendUtil.getConnectionResultCode(apiException).intValue());
     }
 
     @Test
     public void testUtilsReturnNullConnectionResultForNonApiException() {
-        BackendException exception = new BackendException(
-                "Cannot call API without context.", AndroidBackendErrorType.NO_CONTEXT);
+        BackendException exception =
+                new BackendException(
+                        "Cannot call API without context.", AndroidBackendErrorType.NO_CONTEXT);
         Assert.assertNull(PasswordManagerAndroidBackendUtil.getConnectionResultCode(exception));
     }
 
     @Test
     public void testUtilsForUncategorizedException() {
         Exception exception = new Exception();
-        Assert.assertEquals(AndroidBackendErrorType.UNCATEGORIZED,
+        Assert.assertEquals(
+                AndroidBackendErrorType.UNCATEGORIZED,
                 PasswordManagerAndroidBackendUtil.getBackendError(exception));
         Assert.assertEquals(0, PasswordManagerAndroidBackendUtil.getApiErrorCode(exception));
     }
@@ -89,8 +98,10 @@ public class PasswordManagerAndroidBackendUtilTest {
     @Test
     public void testUtilsForResolvableApiExceptionAuth() throws CanceledException {
         PendingIntent pendingIntentMock = mock(PendingIntent.class);
-        ResolvableApiException apiException = new ResolvableApiException(
-                new Status(ChromeSyncStatusCode.AUTH_ERROR_RESOLVABLE, "", pendingIntentMock));
+        ResolvableApiException apiException =
+                new ResolvableApiException(
+                        new Status(
+                                ChromeSyncStatusCode.AUTH_ERROR_RESOLVABLE, "", pendingIntentMock));
         PasswordManagerAndroidBackendUtil.handleResolvableApiException(apiException);
         verify(pendingIntentMock, never()).send();
     }
@@ -98,8 +109,9 @@ public class PasswordManagerAndroidBackendUtilTest {
     @Test
     public void testUtilsForResolvableApiExceptionNonAuth() throws CanceledException {
         PendingIntent pendingIntentMock = mock(PendingIntent.class);
-        ResolvableApiException apiException = new ResolvableApiException(
-                new Status(CommonStatusCodes.RESOLUTION_REQUIRED, "", pendingIntentMock));
+        ResolvableApiException apiException =
+                new ResolvableApiException(
+                        new Status(CommonStatusCodes.RESOLUTION_REQUIRED, "", pendingIntentMock));
         PasswordManagerAndroidBackendUtil.handleResolvableApiException(apiException);
         verify(pendingIntentMock).send();
     }

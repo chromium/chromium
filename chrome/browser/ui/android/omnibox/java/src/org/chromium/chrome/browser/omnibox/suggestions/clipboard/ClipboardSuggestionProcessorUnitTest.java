@@ -50,9 +50,7 @@ import org.chromium.url.JUnitTestGURLs;
 
 import java.io.ByteArrayOutputStream;
 
-/**
- * Tests for {@link ClipboardSuggestionProcessor}.
- */
+/** Tests for {@link ClipboardSuggestionProcessor}. */
 @RunWith(BaseRobolectricTestRunner.class)
 @Config(manifest = Config.NONE)
 public class ClipboardSuggestionProcessorUnitTest {
@@ -76,20 +74,22 @@ public class ClipboardSuggestionProcessorUnitTest {
 
     @Before
     public void setUp() {
-        mContext = new ContextThemeWrapper(
-                ContextUtils.getApplicationContext(), R.style.Theme_BrowserUI_DayNight);
+        mContext =
+                new ContextThemeWrapper(
+                        ContextUtils.getApplicationContext(), R.style.Theme_BrowserUI_DayNight);
         mBitmap = Bitmap.createBitmap(10, 5, Bitmap.Config.ARGB_8888);
         mProcessor = new ClipboardSuggestionProcessor(mContext, mSuggestionHost, mImageSupplier);
         mRootView = new LinearLayout(mContext);
         mTitleTextView = new TextView(mContext);
         mTitleTextView.setId(R.id.line_1);
-        mContentTextView = new TextView(mContext) {
-            @Override
-            public void setTextDirection(int textDirection) {
-                super.setTextDirection(textDirection);
-                mLastSetTextDirection = textDirection;
-            }
-        };
+        mContentTextView =
+                new TextView(mContext) {
+                    @Override
+                    public void setTextDirection(int textDirection) {
+                        super.setTextDirection(textDirection);
+                        mLastSetTextDirection = textDirection;
+                    }
+                };
         mContentTextView.setId(R.id.line_2);
         mRootView.addView(mTitleTextView);
         mRootView.addView(mContentTextView);
@@ -119,11 +119,12 @@ public class ClipboardSuggestionProcessorUnitTest {
 
     /** Create clipboard suggestion for test. */
     private void createClipboardSuggestion(int type, GURL url, byte[] clipboardImageData) {
-        mSuggestion = AutocompleteMatchBuilder.searchWithType(type)
-                              .setIsSearch(type != OmniboxSuggestionType.CLIPBOARD_URL)
-                              .setUrl(url)
-                              .setClipboardImageData(clipboardImageData)
-                              .build();
+        mSuggestion =
+                AutocompleteMatchBuilder.searchWithType(type)
+                        .setIsSearch(type != OmniboxSuggestionType.CLIPBOARD_URL)
+                        .setUrl(url)
+                        .setClipboardImageData(clipboardImageData)
+                        .build();
         mModel = mProcessor.createModel();
         mProcessor.populateModel(mSuggestion, mModel, 0);
         SuggestionViewViewBinder.bind(mModel, mRootView, SuggestionViewProperties.TEXT_LINE_1_TEXT);
@@ -216,8 +217,9 @@ public class ClipboardSuggestionProcessorUnitTest {
     @Test
     @SmallTest
     public void clipboardSuggestion_thumbnailShouldResizeIfTooLarge() {
-        int size = mContext.getResources().getDimensionPixelSize(
-                R.dimen.omnibox_suggestion_decoration_image_size);
+        int size =
+                mContext.getResources()
+                        .getDimensionPixelSize(R.dimen.omnibox_suggestion_decoration_image_size);
 
         Bitmap largeBitmap = Bitmap.createBitmap(size * 2, size * 2, Bitmap.Config.ARGB_8888);
         ByteArrayOutputStream baos = new ByteArrayOutputStream();

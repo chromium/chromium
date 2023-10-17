@@ -43,15 +43,12 @@ import org.chromium.components.sync.protocol.PasswordSpecificsData;
 
 import java.util.Optional;
 
-/**
- * Tests that dispatcher bridge calls as invoked by the password store reach the backend.
- */
+/** Tests that dispatcher bridge calls as invoked by the password store reach the backend. */
 @RunWith(BaseRobolectricTestRunner.class)
 @Config(manifest = Config.NONE)
 @Batch(Batch.PER_CLASS)
 public class PasswordStoreAndroidBackendDispatcherBridgeTest {
-    @Rule
-    public TestRule mProcessor = new Features.JUnitProcessor();
+    @Rule public TestRule mProcessor = new Features.JUnitProcessor();
 
     private static final PasswordSpecificsData.Builder sTestProfile =
             PasswordSpecificsData.newBuilder()
@@ -69,18 +66,17 @@ public class PasswordStoreAndroidBackendDispatcherBridgeTest {
     private static final Optional<Account> sTestAccount =
             Optional.of(AccountUtils.createAccountFromName(sTestAccountEmail));
 
-    @Mock
-    private PasswordStoreAndroidBackendReceiverBridgeImpl mBackendReceiverBridgeMock;
-    @Mock
-    private PasswordStoreAndroidBackend mBackendMock;
+    @Mock private PasswordStoreAndroidBackendReceiverBridgeImpl mBackendReceiverBridgeMock;
+    @Mock private PasswordStoreAndroidBackend mBackendMock;
 
     private PasswordStoreAndroidBackendDispatcherBridgeImpl mBackendDispatcherBridge;
 
     @Before
     public void setUp() {
         MockitoAnnotations.initMocks(this);
-        mBackendDispatcherBridge = new PasswordStoreAndroidBackendDispatcherBridgeImpl(
-                mBackendReceiverBridgeMock, mBackendMock);
+        mBackendDispatcherBridge =
+                new PasswordStoreAndroidBackendDispatcherBridgeImpl(
+                        mBackendReceiverBridgeMock, mBackendMock);
     }
 
     @Test
@@ -126,8 +122,9 @@ public class PasswordStoreAndroidBackendDispatcherBridgeTest {
         verify(mBackendMock).getAllLogins(eq(sTestAccount), any(), failureCallback.capture());
         assertNotNull(failureCallback.getValue());
 
-        Exception kExpectedException = new PasswordStoreAndroidBackend.BackendException(
-                "Sample failure", AndroidBackendErrorType.NO_ACCOUNT);
+        Exception kExpectedException =
+                new PasswordStoreAndroidBackend.BackendException(
+                        "Sample failure", AndroidBackendErrorType.NO_ACCOUNT);
         failureCallback.getValue().onResult(kExpectedException);
         verify(mBackendReceiverBridgeMock)
                 .handleAndroidBackendException(kTestTaskId, kExpectedException);
@@ -144,8 +141,9 @@ public class PasswordStoreAndroidBackendDispatcherBridgeTest {
         verify(mBackendMock).getAllLogins(eq(Optional.empty()), any(), failureCallback.capture());
         assertNotNull(failureCallback.getValue());
 
-        Exception kExpectedException = new ApiException(
-                new Status(new ConnectionResult(ConnectionResult.API_UNAVAILABLE), ""));
+        Exception kExpectedException =
+                new ApiException(
+                        new Status(new ConnectionResult(ConnectionResult.API_UNAVAILABLE), ""));
         failureCallback.getValue().onResult(kExpectedException);
         verify(mBackendReceiverBridgeMock)
                 .handleAndroidBackendException(kTestTaskId, kExpectedException);
@@ -163,8 +161,9 @@ public class PasswordStoreAndroidBackendDispatcherBridgeTest {
         assertNotNull(failureCallback.getValue());
 
         PendingIntent pendingIntentMock = mock(PendingIntent.class);
-        Exception kExpectedException = new ResolvableApiException(
-                new Status(CommonStatusCodes.RESOLUTION_REQUIRED, "", pendingIntentMock));
+        Exception kExpectedException =
+                new ResolvableApiException(
+                        new Status(CommonStatusCodes.RESOLUTION_REQUIRED, "", pendingIntentMock));
         failureCallback.getValue().onResult(kExpectedException);
         verify(pendingIntentMock, never()).send();
         verify(mBackendReceiverBridgeMock)
@@ -258,8 +257,8 @@ public class PasswordStoreAndroidBackendDispatcherBridgeTest {
         AffiliatedPassword affiliatedPassword =
                 AffiliatedPassword.newBuilder().setPasswordData(sTestPwdWithLocalData).build();
         ListAffiliatedPasswordsResult.Builder affiliatedPasswordsResult =
-                ListAffiliatedPasswordsResult.newBuilder().addAffiliatedPasswords(
-                        affiliatedPassword);
+                ListAffiliatedPasswordsResult.newBuilder()
+                        .addAffiliatedPasswords(affiliatedPassword);
         byte[] kExpectedList = affiliatedPasswordsResult.build().toByteArray();
         successCallback.getValue().onResult(kExpectedList);
         verify(mBackendReceiverBridgeMock)

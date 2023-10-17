@@ -31,22 +31,14 @@ import org.chromium.components.browser_ui.widget.scrim.ScrimCoordinator;
 @RunWith(BaseRobolectricTestRunner.class)
 @Config(manifest = Config.NONE)
 public class LocationBarFocusScrimHandlerTest {
-    @Mock
-    private View mScrimTarget;
-    @Mock
-    private Runnable mClickDelegate;
-    @Mock
-    private LocationBarDataProvider mLocationBarDataProvider;
-    @Mock
-    private Context mContext;
-    @Mock
-    private Resources mResources;
-    @Mock
-    private Configuration mConfiguration;
-    @Mock
-    private ScrimCoordinator mScrimCoordinator;
-    @Mock
-    private NewTabPageDelegate mNewTabPageDelegate;
+    @Mock private View mScrimTarget;
+    @Mock private Runnable mClickDelegate;
+    @Mock private LocationBarDataProvider mLocationBarDataProvider;
+    @Mock private Context mContext;
+    @Mock private Resources mResources;
+    @Mock private Configuration mConfiguration;
+    @Mock private ScrimCoordinator mScrimCoordinator;
+    @Mock private NewTabPageDelegate mNewTabPageDelegate;
 
     LocationBarFocusScrimHandler mScrimHandler;
 
@@ -55,8 +47,14 @@ public class LocationBarFocusScrimHandlerTest {
         MockitoAnnotations.initMocks(this);
         doReturn(mResources).when(mContext).getResources();
         doReturn(mConfiguration).when(mResources).getConfiguration();
-        mScrimHandler = new LocationBarFocusScrimHandler(mScrimCoordinator, (visible) -> {},
-                mContext, mLocationBarDataProvider, mClickDelegate, mScrimTarget);
+        mScrimHandler =
+                new LocationBarFocusScrimHandler(
+                        mScrimCoordinator,
+                        (visible) -> {},
+                        mContext,
+                        mLocationBarDataProvider,
+                        mClickDelegate,
+                        mScrimTarget);
     }
 
     @Test

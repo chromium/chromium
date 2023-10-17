@@ -47,15 +47,11 @@ public class AutoDarkFeedbackSourceUnitTest {
         }
     }
 
-    @Rule
-    public MockitoRule mMockitoRule = MockitoJUnit.rule();
-    @Rule
-    public TestRule mProcessor = new Features.JUnitProcessor();
+    @Rule public MockitoRule mMockitoRule = MockitoJUnit.rule();
+    @Rule public TestRule mProcessor = new Features.JUnitProcessor();
 
-    @Mock
-    Profile mProfile;
-    @Mock
-    Context mContext;
+    @Mock Profile mProfile;
+    @Mock Context mContext;
 
     @Before
     public void setup() {
@@ -94,8 +90,9 @@ public class AutoDarkFeedbackSourceUnitTest {
 
     private void doTestFeedbackSource(String expectedPsdValue) {
         AutoDarkFeedbackSource source = new AutoDarkFeedbackSource(mProfile, mContext, null);
-        String feedbackPsdValue = source.getFeedback().getOrDefault(
-                AutoDarkFeedbackSource.AUTO_DARK_FEEDBACK_KEY, "");
+        String feedbackPsdValue =
+                source.getFeedback()
+                        .getOrDefault(AutoDarkFeedbackSource.AUTO_DARK_FEEDBACK_KEY, "");
         Assert.assertEquals(
                 "Expected PSD value does not match.", feedbackPsdValue, expectedPsdValue);
     }

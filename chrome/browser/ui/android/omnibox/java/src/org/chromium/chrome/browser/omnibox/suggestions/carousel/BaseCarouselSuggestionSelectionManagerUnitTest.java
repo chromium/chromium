@@ -26,28 +26,21 @@ import org.robolectric.annotation.Config;
 
 import org.chromium.base.test.BaseRobolectricTestRunner;
 
-/**
- * Tests for {@link BaseCarouselSuggestionRecyclerViewAdapter}.
- */
+/** Tests for {@link BaseCarouselSuggestionRecyclerViewAdapter}. */
 @RunWith(BaseRobolectricTestRunner.class)
 @Config(manifest = Config.NONE)
 public class BaseCarouselSuggestionSelectionManagerUnitTest {
     BaseCarouselSuggestionSelectionManager mSelectionManager;
 
-    @Mock
-    RecyclerView mRecyclerView;
+    @Mock RecyclerView mRecyclerView;
 
-    @Mock
-    LayoutManager mLayoutManager;
+    @Mock LayoutManager mLayoutManager;
 
-    @Mock
-    View mChildView1;
+    @Mock View mChildView1;
 
-    @Mock
-    View mChildView2;
+    @Mock View mChildView2;
 
-    @Mock
-    View mChildView3;
+    @Mock View mChildView3;
 
     @Before
     public void setUp() {

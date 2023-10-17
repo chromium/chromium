@@ -25,26 +25,19 @@ import org.chromium.components.optimization_guide.proto.HintsProto;
 
 import java.util.Arrays;
 
-/**
- * Unit tests for OptimizationGuideBridgeFactory
- */
+/** Unit tests for OptimizationGuideBridgeFactory */
 @RunWith(BaseJUnit4ClassRunner.class)
 @Batch(Batch.PER_CLASS)
 public class OptimizationGuideBridgeFactoryUnitTest {
-    @Rule
-    public JniMocker mocker = new JniMocker();
+    @Rule public JniMocker mocker = new JniMocker();
 
-    @Rule
-    public final ChromeBrowserTestRule mBrowserTestRule = new ChromeBrowserTestRule();
+    @Rule public final ChromeBrowserTestRule mBrowserTestRule = new ChromeBrowserTestRule();
 
-    @Mock
-    OptimizationGuideBridge.Natives mOptimizationGuideBridgeJniMock;
+    @Mock OptimizationGuideBridge.Natives mOptimizationGuideBridgeJniMock;
 
-    @Mock
-    private Profile mProfile1;
+    @Mock private Profile mProfile1;
 
-    @Mock
-    private Profile mProfile2;
+    @Mock private Profile mProfile2;
 
     @Before
     public void setUp() {
@@ -57,8 +50,9 @@ public class OptimizationGuideBridgeFactoryUnitTest {
     @UiThreadTest
     @Feature({"OptimizationHints"})
     public void testFactoryMethod() {
-        OptimizationGuideBridgeFactory bridgeFactory = new OptimizationGuideBridgeFactory(
-                Arrays.asList(HintsProto.OptimizationType.SHOPPING_PAGE_PREDICTOR));
+        OptimizationGuideBridgeFactory bridgeFactory =
+                new OptimizationGuideBridgeFactory(
+                        Arrays.asList(HintsProto.OptimizationType.SHOPPING_PAGE_PREDICTOR));
         OptimizationGuideBridge bridgeRegularProfile = bridgeFactory.create();
         Assert.assertEquals(bridgeRegularProfile, bridgeFactory.create());
 

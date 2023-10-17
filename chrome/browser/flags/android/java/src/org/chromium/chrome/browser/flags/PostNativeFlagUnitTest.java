@@ -16,13 +16,10 @@ import org.junit.runner.RunWith;
 import org.chromium.base.FeatureList;
 import org.chromium.base.test.BaseRobolectricTestRunner;
 
-/**
- * Unit Tests for {@link PostNativeFlag}.
- */
+/** Unit Tests for {@link PostNativeFlag}. */
 @RunWith(BaseRobolectricTestRunner.class)
 public class PostNativeFlagUnitTest {
-    @Rule
-    public final BaseFlagTestRule mBaseFlagTestRule = new BaseFlagTestRule();
+    @Rule public final BaseFlagTestRule mBaseFlagTestRule = new BaseFlagTestRule();
 
     @Test(expected = AssertionError.class)
     public void testDuplicateFeature_throwsException() {

@@ -34,27 +34,18 @@ import org.chromium.chrome.R;
 import org.chromium.ui.modelutil.PropertyModel;
 import org.chromium.ui.modelutil.SimpleRecyclerViewAdapter;
 
-/**
- * Tests for {@link SuggestionHorizontalDivider}.
- */
+/** Tests for {@link SuggestionHorizontalDivider}. */
 @RunWith(BaseRobolectricTestRunner.class)
 @Config(manifest = Config.NONE)
 public class SuggestionHorizontalDividerTest {
     public @Rule MockitoRule mockitoRule = MockitoJUnit.rule();
-    @Mock
-    private RecyclerView mRecyclerView;
-    @Mock
-    private View mChildViewWithDivider;
-    @Mock
-    private View mChildViewWithNoDivider;
-    @Mock
-    private RecyclerView.State mState;
-    @Mock
-    private SimpleRecyclerViewAdapter.ViewHolder mShowDividerViewHolder;
-    @Mock
-    private SimpleRecyclerViewAdapter.ViewHolder mNoDividerViewHolder;
-    @Mock
-    private Canvas mCanvas;
+    @Mock private RecyclerView mRecyclerView;
+    @Mock private View mChildViewWithDivider;
+    @Mock private View mChildViewWithNoDivider;
+    @Mock private RecyclerView.State mState;
+    @Mock private SimpleRecyclerViewAdapter.ViewHolder mShowDividerViewHolder;
+    @Mock private SimpleRecyclerViewAdapter.ViewHolder mNoDividerViewHolder;
+    @Mock private Canvas mCanvas;
 
     private PropertyModel mShowDividerModel =
             new PropertyModel.Builder(DropdownCommonProperties.ALL_KEYS)
@@ -97,10 +88,11 @@ public class SuggestionHorizontalDividerTest {
     @Test
     @SmallTest
     public void testDraw() {
-        doAnswer((invocation -> {
-            ((Rect) invocation.getArgument(1)).set(0, 0, 100, 30);
-            return null;
-        }))
+        doAnswer(
+                        (invocation -> {
+                            ((Rect) invocation.getArgument(1)).set(0, 0, 100, 30);
+                            return null;
+                        }))
                 .when(mRecyclerView)
                 .getDecoratedBoundsWithMargins(any(View.class), any(Rect.class));
 

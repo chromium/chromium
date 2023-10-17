@@ -27,17 +27,13 @@ import org.chromium.ui.modaldialog.ModalDialogManager;
 import org.chromium.ui.modaldialog.ModalDialogProperties;
 import org.chromium.ui.modelutil.PropertyModel;
 
-/**
- *  Tests for the outdated GMS Core dialog.
- */
+/** Tests for the outdated GMS Core dialog. */
 @RunWith(BaseRobolectricTestRunner.class)
 @Config(manifest = Config.NONE)
 public class OutdatedGmsCoreDialogTest {
-    @Rule
-    public MockitoRule mMockitoRule = MockitoJUnit.rule();
+    @Rule public MockitoRule mMockitoRule = MockitoJUnit.rule();
 
-    @Mock
-    private Callback<Boolean> mResultHandler;
+    @Mock private Callback<Boolean> mResultHandler;
 
     private ModalDialogManager mModalDialogManager;
 
@@ -45,10 +41,15 @@ public class OutdatedGmsCoreDialogTest {
 
     @Before
     public void setUp() throws Exception {
-        mModalDialogManager = new ModalDialogManager(
-                mock(ModalDialogManager.Presenter.class), ModalDialogManager.ModalDialogType.APP);
-        mOutdatedGmsCoreDialog = new OutdatedGmsCoreDialog(
-                mModalDialogManager, ApplicationProvider.getApplicationContext(), mResultHandler);
+        mModalDialogManager =
+                new ModalDialogManager(
+                        mock(ModalDialogManager.Presenter.class),
+                        ModalDialogManager.ModalDialogType.APP);
+        mOutdatedGmsCoreDialog =
+                new OutdatedGmsCoreDialog(
+                        mModalDialogManager,
+                        ApplicationProvider.getApplicationContext(),
+                        mResultHandler);
     }
 
     @Test
@@ -56,7 +57,8 @@ public class OutdatedGmsCoreDialogTest {
         mOutdatedGmsCoreDialog.show();
         PropertyModel dialogModel = mModalDialogManager.getCurrentDialogForTest();
         assertNotNull(dialogModel);
-        dialogModel.get(ModalDialogProperties.CONTROLLER)
+        dialogModel
+                .get(ModalDialogProperties.CONTROLLER)
                 .onClick(dialogModel, ModalDialogProperties.ButtonType.POSITIVE);
 
         verify(mResultHandler).onResult(true);
@@ -68,7 +70,8 @@ public class OutdatedGmsCoreDialogTest {
         mOutdatedGmsCoreDialog.show();
         PropertyModel dialogModel = mModalDialogManager.getCurrentDialogForTest();
         assertNotNull(dialogModel);
-        dialogModel.get(ModalDialogProperties.CONTROLLER)
+        dialogModel
+                .get(ModalDialogProperties.CONTROLLER)
                 .onClick(dialogModel, ModalDialogProperties.ButtonType.NEGATIVE);
 
         verify(mResultHandler).onResult(false);

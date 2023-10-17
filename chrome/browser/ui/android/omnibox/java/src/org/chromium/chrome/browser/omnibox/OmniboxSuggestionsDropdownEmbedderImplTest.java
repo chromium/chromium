@@ -45,9 +45,7 @@ import org.chromium.ui.display.DisplayAndroid;
 
 import java.lang.ref.WeakReference;
 
-/**
- * Unit tests for {@link OmniboxSuggestionsDropdownEmbedderImpl}.
- */
+/** Unit tests for {@link OmniboxSuggestionsDropdownEmbedderImpl}. */
 @RunWith(BaseRobolectricTestRunner.class)
 public class OmniboxSuggestionsDropdownEmbedderImplTest {
     private static final int ANCHOR_WIDTH = 600;
@@ -95,8 +93,9 @@ public class OmniboxSuggestionsDropdownEmbedderImplTest {
         // operate solely in terms of dp so values that are 10x their correct size are probably
         // being inadvertently converted to px.
         doReturn(10.0f).when(mDisplay).getDipScale();
-        mImpl = new OmniboxSuggestionsDropdownEmbedderImpl(
-                mWindowAndroid, mWindowDelegate, mAnchorView, mHorizontalAlignmentView);
+        mImpl =
+                new OmniboxSuggestionsDropdownEmbedderImpl(
+                        mWindowAndroid, mWindowDelegate, mAnchorView, mHorizontalAlignmentView);
     }
 
     @Test
@@ -123,24 +122,26 @@ public class OmniboxSuggestionsDropdownEmbedderImplTest {
         doReturn(60).when(mHorizontalAlignmentView).getTop();
         mImpl.recalculateOmniboxAlignment();
         OmniboxAlignment alignment = mImpl.getCurrentAlignment();
-        assertEquals(new OmniboxAlignment(0, ANCHOR_HEIGHT + ANCHOR_TOP, ANCHOR_WIDTH, 0, 0, 0),
+        assertEquals(
+                new OmniboxAlignment(0, ANCHOR_HEIGHT + ANCHOR_TOP, ANCHOR_WIDTH, 0, 0, 0),
                 alignment);
     }
 
     @Test
     @EnableFeatures(ChromeFeatureList.OMNIBOX_MODERNIZE_VISUAL_UPDATE)
-    @CommandLineFlags.
-    Add({"enable-features=" + ChromeFeatureList.OMNIBOX_MODERNIZE_VISUAL_UPDATE + "<Study",
-            "force-fieldtrials=Study/Group",
-            "force-fieldtrial-params=Study.Group:enable_modernize_visual_update_on_tablet/true"})
-    public void
-    testRecalculateOmniboxAlignment_phoneRevampEnabled() {
+    @CommandLineFlags.Add({
+        "enable-features=" + ChromeFeatureList.OMNIBOX_MODERNIZE_VISUAL_UPDATE + "<Study",
+        "force-fieldtrials=Study/Group",
+        "force-fieldtrial-params=Study.Group:enable_modernize_visual_update_on_tablet/true"
+    })
+    public void testRecalculateOmniboxAlignment_phoneRevampEnabled() {
         OmniboxFeatures.ENABLE_MODERNIZE_VISUAL_UPDATE_ON_TABLET.setForTesting(true);
         doReturn(mAnchorView).when(mHorizontalAlignmentView).getParent();
         doReturn(60).when(mHorizontalAlignmentView).getTop();
         mImpl.recalculateOmniboxAlignment();
         OmniboxAlignment alignment = mImpl.getCurrentAlignment();
-        assertEquals(new OmniboxAlignment(0, ANCHOR_HEIGHT + ANCHOR_TOP, ANCHOR_WIDTH, 0, 0, 0),
+        assertEquals(
+                new OmniboxAlignment(0, ANCHOR_HEIGHT + ANCHOR_TOP, ANCHOR_WIDTH, 0, 0, 0),
                 alignment);
     }
 
@@ -182,12 +183,12 @@ public class OmniboxSuggestionsDropdownEmbedderImplTest {
     @Test
     @Config(qualifiers = "ldltr-sw600dp")
     @EnableFeatures({ChromeFeatureList.OMNIBOX_MODERNIZE_VISUAL_UPDATE})
-    @CommandLineFlags.
-    Add({"enable-features=" + ChromeFeatureList.OMNIBOX_MODERNIZE_VISUAL_UPDATE + "<Study",
-            "force-fieldtrials=Study/Group",
-            "force-fieldtrial-params=Study.Group:enable_modernize_visual_update_on_tablet/true"})
-    public void
-    testRecalculateOmniboxAlignment_tabletToPhoneSwitch() {
+    @CommandLineFlags.Add({
+        "enable-features=" + ChromeFeatureList.OMNIBOX_MODERNIZE_VISUAL_UPDATE + "<Study",
+        "force-fieldtrials=Study/Group",
+        "force-fieldtrial-params=Study.Group:enable_modernize_visual_update_on_tablet/true"
+    })
+    public void testRecalculateOmniboxAlignment_tabletToPhoneSwitch() {
         OmniboxFeatures.ENABLE_MODERNIZE_VISUAL_UPDATE_ON_TABLET.setForTesting(true);
         int sideSpacing = OmniboxResourceProvider.getSideSpacing(mContextWeakRef.get());
         doReturn(mAnchorView).when(mHorizontalAlignmentView).getParent();
@@ -209,19 +210,20 @@ public class OmniboxSuggestionsDropdownEmbedderImplTest {
         mImpl.onConfigurationChanged(newConfig);
         assertFalse(mImpl.isTablet());
         OmniboxAlignment newAlignment = mImpl.getCurrentAlignment();
-        assertEquals(new OmniboxAlignment(0, ANCHOR_HEIGHT + ANCHOR_TOP, ANCHOR_WIDTH, 0, 0, 0),
+        assertEquals(
+                new OmniboxAlignment(0, ANCHOR_HEIGHT + ANCHOR_TOP, ANCHOR_WIDTH, 0, 0, 0),
                 newAlignment);
     }
 
     @Test
     @EnableFeatures({ChromeFeatureList.OMNIBOX_MODERNIZE_VISUAL_UPDATE})
-    @CommandLineFlags.
-    Add({"enable-features=" + ChromeFeatureList.OMNIBOX_MODERNIZE_VISUAL_UPDATE + "<Study",
-            "force-fieldtrials=Study/Group",
-            "force-fieldtrial-params=Study.Group:enable_modernize_visual_update_on_tablet/true"})
+    @CommandLineFlags.Add({
+        "enable-features=" + ChromeFeatureList.OMNIBOX_MODERNIZE_VISUAL_UPDATE + "<Study",
+        "force-fieldtrials=Study/Group",
+        "force-fieldtrial-params=Study.Group:enable_modernize_visual_update_on_tablet/true"
+    })
     @Config(qualifiers = "ldltr-sw600dp")
-    public void
-    testRecalculateOmniboxAlignment_phoneToTabletSwitch() {
+    public void testRecalculateOmniboxAlignment_phoneToTabletSwitch() {
         OmniboxFeatures.ENABLE_MODERNIZE_VISUAL_UPDATE_ON_TABLET.setForTesting(true);
         int sideSpacing = OmniboxResourceProvider.getSideSpacing(mContextWeakRef.get());
         Configuration newConfig = new Configuration();
@@ -231,7 +233,8 @@ public class OmniboxSuggestionsDropdownEmbedderImplTest {
         assertFalse(mImpl.isTablet());
         mImpl.recalculateOmniboxAlignment();
         OmniboxAlignment alignment = mImpl.getCurrentAlignment();
-        assertEquals(new OmniboxAlignment(0, ANCHOR_HEIGHT + ANCHOR_TOP, ANCHOR_WIDTH, 0, 0, 0),
+        assertEquals(
+                new OmniboxAlignment(0, ANCHOR_HEIGHT + ANCHOR_TOP, ANCHOR_WIDTH, 0, 0, 0),
                 alignment);
 
         newConfig.screenWidthDp = DeviceFormFactor.MINIMUM_TABLET_WIDTH_DP + 1;
@@ -282,19 +285,20 @@ public class OmniboxSuggestionsDropdownEmbedderImplTest {
         mImpl.onConfigurationChanged(newConfig);
         assertFalse(mImpl.isTablet());
         OmniboxAlignment newAlignment = mImpl.getCurrentAlignment();
-        assertEquals(new OmniboxAlignment(0, ANCHOR_HEIGHT + ANCHOR_TOP, ANCHOR_WIDTH, 0, 0, 0),
+        assertEquals(
+                new OmniboxAlignment(0, ANCHOR_HEIGHT + ANCHOR_TOP, ANCHOR_WIDTH, 0, 0, 0),
                 newAlignment);
     }
 
     @Test
     @Config(qualifiers = "ldltr-sw600dp")
     @EnableFeatures(ChromeFeatureList.OMNIBOX_MODERNIZE_VISUAL_UPDATE)
-    @CommandLineFlags.
-    Add({"enable-features=" + ChromeFeatureList.OMNIBOX_MODERNIZE_VISUAL_UPDATE + "<Study",
-            "force-fieldtrials=Study/Group",
-            "force-fieldtrial-params=Study.Group:enable_modernize_visual_update_on_tablet/true"})
-    public void
-    testRecalculateOmniboxAlignment_tabletRevampEnabled_ltr() {
+    @CommandLineFlags.Add({
+        "enable-features=" + ChromeFeatureList.OMNIBOX_MODERNIZE_VISUAL_UPDATE + "<Study",
+        "force-fieldtrials=Study/Group",
+        "force-fieldtrial-params=Study.Group:enable_modernize_visual_update_on_tablet/true"
+    })
+    public void testRecalculateOmniboxAlignment_tabletRevampEnabled_ltr() {
         OmniboxFeatures.ENABLE_MODERNIZE_VISUAL_UPDATE_ON_TABLET.setForTesting(true);
         int sideSpacing = OmniboxResourceProvider.getSideSpacing(mContextWeakRef.get());
         doReturn(mAnchorView).when(mHorizontalAlignmentView).getParent();
@@ -315,12 +319,12 @@ public class OmniboxSuggestionsDropdownEmbedderImplTest {
     @Test
     @Config(qualifiers = "ldrtl-sw600dp")
     @EnableFeatures(ChromeFeatureList.OMNIBOX_MODERNIZE_VISUAL_UPDATE)
-    @CommandLineFlags.
-    Add({"enable-features=" + ChromeFeatureList.OMNIBOX_MODERNIZE_VISUAL_UPDATE + "<Study",
-            "force-fieldtrials=Study/Group",
-            "force-fieldtrial-params=Study.Group:enable_modernize_visual_update_on_tablet/true"})
-    public void
-    testRecalculateOmniboxAlignment_tabletRevampEnabled_rtl() {
+    @CommandLineFlags.Add({
+        "enable-features=" + ChromeFeatureList.OMNIBOX_MODERNIZE_VISUAL_UPDATE + "<Study",
+        "force-fieldtrials=Study/Group",
+        "force-fieldtrial-params=Study.Group:enable_modernize_visual_update_on_tablet/true"
+    })
+    public void testRecalculateOmniboxAlignment_tabletRevampEnabled_rtl() {
         OmniboxFeatures.ENABLE_MODERNIZE_VISUAL_UPDATE_ON_TABLET.setForTesting(true);
         int sideSpacing = OmniboxResourceProvider.getSideSpacing(mContextWeakRef.get());
         doReturn(View.LAYOUT_DIRECTION_RTL).when(mAnchorView).getLayoutDirection();

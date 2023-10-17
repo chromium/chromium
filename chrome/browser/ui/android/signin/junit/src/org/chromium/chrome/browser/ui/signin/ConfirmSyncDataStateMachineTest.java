@@ -36,20 +36,15 @@ public class ConfirmSyncDataStateMachineTest {
     @Rule
     public final MockitoRule mMockitoRule = MockitoJUnit.rule().strictness(Strictness.STRICT_STUBS);
 
-    @Mock
-    private ConfirmSyncDataStateMachineDelegate mDelegateMock;
+    @Mock private ConfirmSyncDataStateMachineDelegate mDelegateMock;
 
-    @Mock
-    private ConfirmSyncDataStateMachine.Listener mStateMachineListenerMock;
+    @Mock private ConfirmSyncDataStateMachine.Listener mStateMachineListenerMock;
 
-    @Mock
-    private SigninManager mSigninManagerMock;
+    @Mock private SigninManager mSigninManagerMock;
 
-    @Mock
-    private Profile mProfile;
+    @Mock private Profile mProfile;
 
-    @Captor
-    private ArgumentCaptor<Callback<Boolean>> mCallbackArgument;
+    @Captor private ArgumentCaptor<Callback<Boolean>> mCallbackArgument;
 
     private final String mOldAccountName = "old.account.test@testdomain.com";
 
@@ -65,28 +60,36 @@ public class ConfirmSyncDataStateMachineTest {
     @Test(expected = AssertionError.class)
     public void testNewAccountNameCannotBeEmpty() {
         mMockitoRule.strictness(Strictness.LENIENT);
-        ConfirmSyncDataStateMachine stateMachine = new ConfirmSyncDataStateMachine(
-                mDelegateMock, mOldAccountName, null, mStateMachineListenerMock);
+        ConfirmSyncDataStateMachine stateMachine =
+                new ConfirmSyncDataStateMachine(
+                        mDelegateMock, mOldAccountName, null, mStateMachineListenerMock);
     }
 
     @Test
     public void testImportSyncDataDialogShownWhenOldAndNewAccountNamesAreDifferent() {
-        ConfirmSyncDataStateMachine stateMachine = new ConfirmSyncDataStateMachine(
-                mDelegateMock, mOldAccountName, mNewAccountName, mStateMachineListenerMock);
+        ConfirmSyncDataStateMachine stateMachine =
+                new ConfirmSyncDataStateMachine(
+                        mDelegateMock, mOldAccountName, mNewAccountName, mStateMachineListenerMock);
         verify(mDelegateMock)
                 .showConfirmImportSyncDataDialog(
                         any(ConfirmImportSyncDataDialogCoordinator.Listener.class),
-                        eq(mOldAccountName), eq(mNewAccountName));
+                        eq(mOldAccountName),
+                        eq(mNewAccountName));
     }
 
     @Test
     public void testProgressDialogShownWhenOldAndNewAccountNamesAreEqual() {
         String oldAndNewAccountName = "test.old.new@testdomain.com";
-        ConfirmSyncDataStateMachine stateMachine = new ConfirmSyncDataStateMachine(mDelegateMock,
-                oldAndNewAccountName, oldAndNewAccountName, mStateMachineListenerMock);
+        ConfirmSyncDataStateMachine stateMachine =
+                new ConfirmSyncDataStateMachine(
+                        mDelegateMock,
+                        oldAndNewAccountName,
+                        oldAndNewAccountName,
+                        mStateMachineListenerMock);
         verify(mDelegateMock, never())
                 .showConfirmImportSyncDataDialog(
-                        any(ConfirmImportSyncDataDialogCoordinator.Listener.class), anyString(),
+                        any(ConfirmImportSyncDataDialogCoordinator.Listener.class),
+                        anyString(),
                         anyString());
         verify(mDelegateMock)
                 .showFetchManagementPolicyProgressDialog(
@@ -95,11 +98,13 @@ public class ConfirmSyncDataStateMachineTest {
 
     @Test
     public void testProgressDialogShownWhenOldAccountNameIsEmpty() {
-        ConfirmSyncDataStateMachine stateMachine = new ConfirmSyncDataStateMachine(
-                mDelegateMock, null, mNewAccountName, mStateMachineListenerMock);
+        ConfirmSyncDataStateMachine stateMachine =
+                new ConfirmSyncDataStateMachine(
+                        mDelegateMock, null, mNewAccountName, mStateMachineListenerMock);
         verify(mDelegateMock, never())
                 .showConfirmImportSyncDataDialog(
-                        any(ConfirmImportSyncDataDialogCoordinator.Listener.class), anyString(),
+                        any(ConfirmImportSyncDataDialogCoordinator.Listener.class),
+                        anyString(),
                         anyString());
         verify(mDelegateMock)
                 .showFetchManagementPolicyProgressDialog(
@@ -109,8 +114,9 @@ public class ConfirmSyncDataStateMachineTest {
     @Test
     public void testListenerConfirmedWhenNewAccountIsNotManaged() {
         mockSigninManagerIsAccountManaged(false);
-        ConfirmSyncDataStateMachine stateMachine = new ConfirmSyncDataStateMachine(
-                mDelegateMock, null, mNewAccountName, mStateMachineListenerMock);
+        ConfirmSyncDataStateMachine stateMachine =
+                new ConfirmSyncDataStateMachine(
+                        mDelegateMock, null, mNewAccountName, mStateMachineListenerMock);
         verify(mDelegateMock).dismissAllDialogs();
         verify(mStateMachineListenerMock).onConfirm(false);
     }
@@ -119,8 +125,9 @@ public class ConfirmSyncDataStateMachineTest {
     public void testManagedAccountDialogShownWhenNewAccountIsManaged() {
         mockSigninManagerIsAccountManaged(true);
         when(mSigninManagerMock.extractDomainName(anyString())).thenReturn(mNewAccountName);
-        ConfirmSyncDataStateMachine stateMachine = new ConfirmSyncDataStateMachine(
-                mDelegateMock, null, mNewAccountName, mStateMachineListenerMock);
+        ConfirmSyncDataStateMachine stateMachine =
+                new ConfirmSyncDataStateMachine(
+                        mDelegateMock, null, mNewAccountName, mStateMachineListenerMock);
         verify(mDelegateMock)
                 .showSignInToManagedAccountDialog(
                         any(ConfirmManagedSyncDataDialogCoordinator.Listener.class),
@@ -132,8 +139,9 @@ public class ConfirmSyncDataStateMachineTest {
         String newAccountName = "test.account@manageddomain.com";
         String domain = "manageddomain.com";
         when(mSigninManagerMock.extractDomainName(newAccountName)).thenReturn(domain);
-        ConfirmSyncDataStateMachine stateMachine = new ConfirmSyncDataStateMachine(
-                mDelegateMock, null, newAccountName, mStateMachineListenerMock);
+        ConfirmSyncDataStateMachine stateMachine =
+                new ConfirmSyncDataStateMachine(
+                        mDelegateMock, null, newAccountName, mStateMachineListenerMock);
         verify(mDelegateMock, never())
                 .showSignInToManagedAccountDialog(
                         any(ConfirmManagedSyncDataDialogCoordinator.Listener.class), anyString());
@@ -148,8 +156,9 @@ public class ConfirmSyncDataStateMachineTest {
 
     @Test
     public void testCancelWhenIsNotBeingDestroyed() {
-        ConfirmSyncDataStateMachine stateMachine = new ConfirmSyncDataStateMachine(
-                mDelegateMock, mOldAccountName, mNewAccountName, mStateMachineListenerMock);
+        ConfirmSyncDataStateMachine stateMachine =
+                new ConfirmSyncDataStateMachine(
+                        mDelegateMock, mOldAccountName, mNewAccountName, mStateMachineListenerMock);
         stateMachine.onCancel();
         verify(mStateMachineListenerMock).onCancel();
         verify(mDelegateMock).dismissAllDialogs();
@@ -157,8 +166,9 @@ public class ConfirmSyncDataStateMachineTest {
 
     @Test
     public void testCancelWhenIsBeingDestroyed() {
-        ConfirmSyncDataStateMachine stateMachine = new ConfirmSyncDataStateMachine(
-                mDelegateMock, mOldAccountName, mNewAccountName, mStateMachineListenerMock);
+        ConfirmSyncDataStateMachine stateMachine =
+                new ConfirmSyncDataStateMachine(
+                        mDelegateMock, mOldAccountName, mNewAccountName, mStateMachineListenerMock);
         stateMachine.cancel(true);
         verify(mStateMachineListenerMock, never()).onCancel();
         verify(mDelegateMock, never()).dismissAllDialogs();
@@ -166,18 +176,20 @@ public class ConfirmSyncDataStateMachineTest {
 
     @Test(expected = IllegalStateException.class)
     public void testStateCannotChangeOnceDone() {
-        ConfirmSyncDataStateMachine stateMachine = new ConfirmSyncDataStateMachine(
-                mDelegateMock, mOldAccountName, mNewAccountName, mStateMachineListenerMock);
+        ConfirmSyncDataStateMachine stateMachine =
+                new ConfirmSyncDataStateMachine(
+                        mDelegateMock, mOldAccountName, mNewAccountName, mStateMachineListenerMock);
         stateMachine.cancel(true);
         stateMachine.onConfirm();
     }
 
     private void mockSigninManagerIsAccountManaged(boolean isAccountManaged) {
-        doAnswer(invocation -> {
-            Callback<Boolean> callback = invocation.getArgument(1);
-            callback.onResult(isAccountManaged);
-            return null;
-        })
+        doAnswer(
+                        invocation -> {
+                            Callback<Boolean> callback = invocation.getArgument(1);
+                            callback.onResult(isAccountManaged);
+                            return null;
+                        })
                 .when(mSigninManagerMock)
                 .isAccountManaged(anyString(), any());
     }

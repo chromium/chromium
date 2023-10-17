@@ -35,23 +35,16 @@ import org.chromium.components.browser_ui.bottomsheet.BottomSheetController;
 import org.chromium.components.browser_ui.widget.RadioButtonWithDescription;
 import org.chromium.components.browser_ui.widget.RadioButtonWithDescriptionAndAuxButton;
 
-/**
- * JUnit tests of the class {@link PreloadFragment}
- */
+/** JUnit tests of the class {@link PreloadFragment} */
 @RunWith(BaseRobolectricTestRunner.class)
 public class PreloadFragmentTest {
     // TODO(crbug.com/1357003): Use Espresso for view interactions.
-    @Rule
-    public JniMocker mMocker = new JniMocker();
-    @Rule
-    public MockitoRule mMockitoRule = MockitoJUnit.rule();
-    @Rule
-    public TestRule mProcessor = new Features.JUnitProcessor();
+    @Rule public JniMocker mMocker = new JniMocker();
+    @Rule public MockitoRule mMockitoRule = MockitoJUnit.rule();
+    @Rule public TestRule mProcessor = new Features.JUnitProcessor();
 
-    @Mock
-    private PreloadPagesSettingsBridge.Natives mNativeMock;
-    @Mock
-    private OneshotSupplierImpl<BottomSheetController> mBottomSheetControllerSupplier;
+    @Mock private PreloadPagesSettingsBridge.Natives mNativeMock;
+    @Mock private OneshotSupplierImpl<BottomSheetController> mBottomSheetControllerSupplier;
 
     private FragmentScenario mScenario;
     private RadioButtonWithDescriptionAndAuxButton mStandardPreloadingButton;
@@ -73,47 +66,46 @@ public class PreloadFragmentTest {
 
     private void initFragmentWithPreloadState(@PreloadPagesState int state) {
         when(mNativeMock.getState()).thenReturn(state);
-        mScenario = FragmentScenario.launchInContainer(
-                PreloadFragment.class, Bundle.EMPTY, R.style.Theme_MaterialComponents);
-        mScenario.onFragment(fragment -> {
-            mStandardPreloadingButton = fragment.getView().findViewById(R.id.standard_option);
-            mDisabledPreloadingButton = fragment.getView().findViewById(R.id.disabled_option);
-        });
+        mScenario =
+                FragmentScenario.launchInContainer(
+                        PreloadFragment.class, Bundle.EMPTY, R.style.Theme_MaterialComponents);
+        mScenario.onFragment(
+                fragment -> {
+                    mStandardPreloadingButton =
+                            fragment.getView().findViewById(R.id.standard_option);
+                    mDisabledPreloadingButton =
+                            fragment.getView().findViewById(R.id.disabled_option);
+                });
     }
 
     @Test
-    public void
-    testInitWhenPreloadStandard() {
+    public void testInitWhenPreloadStandard() {
         initFragmentWithPreloadState(PreloadPagesState.STANDARD_PRELOADING);
         assertTrue(mStandardPreloadingButton.isChecked());
         assertFalse(mDisabledPreloadingButton.isChecked());
     }
 
     @Test
-    public void
-    testInitWhenPreloadDisabled() {
+    public void testInitWhenPreloadDisabled() {
         initFragmentWithPreloadState(PreloadPagesState.NO_PRELOADING);
         assertFalse(mStandardPreloadingButton.isChecked());
         assertTrue(mDisabledPreloadingButton.isChecked());
     }
 
     @Test(expected = AssertionError.class)
-    public void
-    testInitWhenPreloadOff() {
+    public void testInitWhenPreloadOff() {
         initFragmentWithPreloadState(PreloadPagesState.EXTENDED_PRELOADING);
     }
 
     @Test
-    public void
-    testSelectStandard() {
+    public void testSelectStandard() {
         initFragmentWithPreloadState(PreloadPagesState.NO_PRELOADING);
         mStandardPreloadingButton.performClick();
         verify(mNativeMock).setState(PreloadPagesState.STANDARD_PRELOADING);
     }
 
     @Test
-    public void
-    testSelectDisabled() {
+    public void testSelectDisabled() {
         initFragmentWithPreloadState(PreloadPagesState.STANDARD_PRELOADING);
         mDisabledPreloadingButton.performClick();
         verify(mNativeMock).setState(PreloadPagesState.NO_PRELOADING);

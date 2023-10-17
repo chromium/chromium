@@ -47,15 +47,18 @@ import org.chromium.ui.modelutil.PropertyModel;
 import org.chromium.url.GURL;
 import org.chromium.url.JUnitTestGURLs;
 
-/**
- * Tests for {@link BaseSuggestionViewProcessor}.
- */
+/** Tests for {@link BaseSuggestionViewProcessor}. */
 @RunWith(BaseRobolectricTestRunner.class)
-@Config(manifest = Config.NONE, shadows = {ShadowLog.class})
+@Config(
+        manifest = Config.NONE,
+        shadows = {ShadowLog.class})
 public class BaseSuggestionProcessorUnitTest {
     private class TestBaseSuggestionProcessor extends BaseSuggestionViewProcessor {
         private final Context mContext;
-        public TestBaseSuggestionProcessor(Context context, SuggestionHost suggestionHost,
+
+        public TestBaseSuggestionProcessor(
+                Context context,
+                SuggestionHost suggestionHost,
                 OmniboxImageSupplier imageSupplier) {
             super(context, suggestionHost, imageSupplier);
             mContext = context;
@@ -98,13 +101,12 @@ public class BaseSuggestionProcessorUnitTest {
 
     @Before
     public void setUp() {
-        mProcessor = new TestBaseSuggestionProcessor(
-                ContextUtils.getApplicationContext(), mSuggestionHost, mImageSupplier);
+        mProcessor =
+                new TestBaseSuggestionProcessor(
+                        ContextUtils.getApplicationContext(), mSuggestionHost, mImageSupplier);
     }
 
-    /**
-     * Create Suggestion for test.
-     */
+    /** Create Suggestion for test. */
     private void createSuggestion(int type, boolean isSearch, GURL url) {
         mSuggestion = new AutocompleteMatchBuilder(type).setIsSearch(isSearch).setUrl(url).build();
         mModel = mProcessor.createModel();
@@ -172,7 +174,7 @@ public class BaseSuggestionProcessorUnitTest {
         touchDownListener.run();
 
         histogramWatcher.assertExpected();
-        verify(mSuggestionHost, times(1)).onSuggestionTouchDown(mSuggestion, /*matchIndex=*/0);
+        verify(mSuggestionHost, times(1)).onSuggestionTouchDown(mSuggestion, /* matchIndex= */ 0);
     }
 
     @Test

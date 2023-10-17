@@ -24,9 +24,7 @@ import java.util.Arrays;
 import java.util.HashSet;
 import java.util.Set;
 
-/**
- * Robolectric tests for {@link VisibleNetworks}.
- */
+/** Robolectric tests for {@link VisibleNetworks}. */
 @RunWith(BaseRobolectricTestRunner.class)
 @Config(manifest = Config.NONE)
 public class VisibleNetworksTest {
@@ -41,40 +39,47 @@ public class VisibleNetworksTest {
 
     private final VisibleWifi mVisibleWifi1 = VisibleWifi.create(SSID1, BSSID1, LEVEL1, TIMESTAMP1);
     private final VisibleWifi mVisibleWifi2 = VisibleWifi.create(SSID2, BSSID2, LEVEL2, TIMESTAMP2);
-    private final VisibleCell.Builder mVisibleCellCommunBuilder = VisibleCell.builder(RadioType.GSM)
-                                                                          .setCellId(10)
-                                                                          .setLocationAreaCode(11)
-                                                                          .setMobileCountryCode(12)
-                                                                          .setMobileNetworkCode(13);
-    private final VisibleCell mVisibleCell1 = mVisibleCellCommunBuilder.setPhysicalCellId(14)
-                                                      .setPrimaryScramblingCode(15)
-                                                      .setTrackingAreaCode(16)
-                                                      .setTimestamp(10L)
-                                                      .build();
+    private final VisibleCell.Builder mVisibleCellCommunBuilder =
+            VisibleCell.builder(RadioType.GSM)
+                    .setCellId(10)
+                    .setLocationAreaCode(11)
+                    .setMobileCountryCode(12)
+                    .setMobileNetworkCode(13);
+    private final VisibleCell mVisibleCell1 =
+            mVisibleCellCommunBuilder
+                    .setPhysicalCellId(14)
+                    .setPrimaryScramblingCode(15)
+                    .setTrackingAreaCode(16)
+                    .setTimestamp(10L)
+                    .build();
     private final VisibleCell mVisibleCell1DifferentTimestamp =
             mVisibleCellCommunBuilder.setTimestamp(20L).build();
-    private final VisibleCell mVisibleCell2 = VisibleCell.builder(RadioType.GSM)
-                                                      .setCellId(30)
-                                                      .setLocationAreaCode(31)
-                                                      .setMobileCountryCode(32)
-                                                      .setMobileNetworkCode(33)
-                                                      .setTimestamp(30L)
-                                                      .build();
+    private final VisibleCell mVisibleCell2 =
+            VisibleCell.builder(RadioType.GSM)
+                    .setCellId(30)
+                    .setLocationAreaCode(31)
+                    .setMobileCountryCode(32)
+                    .setMobileNetworkCode(33)
+                    .setTimestamp(30L)
+                    .build();
     private final VisibleCell mEmptyCell = VisibleCell.builder(RadioType.UNKNOWN).build();
     private final VisibleWifi mEmptyWifi = VisibleWifi.create(null, null, null, null);
 
     private final Set<VisibleCell> mAllVisibleCells =
             new HashSet<>(Arrays.asList(mVisibleCell1, mVisibleCell2));
-    private final Set<VisibleCell> mAllVisibleCells2 = new HashSet<>(
-            Arrays.asList(mVisibleCell1, mVisibleCell2, mVisibleCell1DifferentTimestamp));
+    private final Set<VisibleCell> mAllVisibleCells2 =
+            new HashSet<>(
+                    Arrays.asList(mVisibleCell1, mVisibleCell2, mVisibleCell1DifferentTimestamp));
     private final Set<VisibleWifi> mAllVisibleWifis =
             new HashSet<>(Arrays.asList(mVisibleWifi1, mVisibleWifi2));
 
-    private final VisibleNetworks mVisibleNetworks1 = VisibleNetworks.create(
-            mVisibleWifi1, mVisibleCell1, mAllVisibleWifis, mAllVisibleCells);
+    private final VisibleNetworks mVisibleNetworks1 =
+            VisibleNetworks.create(
+                    mVisibleWifi1, mVisibleCell1, mAllVisibleWifis, mAllVisibleCells);
 
-    private final VisibleNetworks mVisibleNetworks2 = VisibleNetworks.create(
-            mVisibleWifi2, mVisibleCell2, mAllVisibleWifis, mAllVisibleCells2);
+    private final VisibleNetworks mVisibleNetworks2 =
+            VisibleNetworks.create(
+                    mVisibleWifi2, mVisibleCell2, mAllVisibleWifis, mAllVisibleCells2);
 
     private static final String VISIBLE_CELL1_PROTO_ENCODED =
             "CAEQDLoBFhIQCAEQChgLIAwoDTAPOA5AEBgBIAo=";
@@ -94,8 +99,12 @@ public class VisibleNetworksTest {
 
     @Test
     public void testVisibleWifiEquals() {
-        VisibleWifi copyOfVisibleWifi1 = VisibleWifi.create(mVisibleWifi1.ssid(),
-                mVisibleWifi1.bssid(), mVisibleWifi1.level(), mVisibleWifi1.timestampMs());
+        VisibleWifi copyOfVisibleWifi1 =
+                VisibleWifi.create(
+                        mVisibleWifi1.ssid(),
+                        mVisibleWifi1.bssid(),
+                        mVisibleWifi1.level(),
+                        mVisibleWifi1.timestampMs());
 
         assertEquals(mVisibleWifi1, copyOfVisibleWifi1);
         assertNotEquals(mVisibleWifi1, mVisibleWifi2);
@@ -112,8 +121,12 @@ public class VisibleNetworksTest {
 
     @Test
     public void testVisibleWifiHash() {
-        VisibleWifi copyOfVisibleWifi1 = VisibleWifi.create(mVisibleWifi1.ssid(),
-                mVisibleWifi1.bssid(), mVisibleWifi1.level(), mVisibleWifi1.timestampMs());
+        VisibleWifi copyOfVisibleWifi1 =
+                VisibleWifi.create(
+                        mVisibleWifi1.ssid(),
+                        mVisibleWifi1.bssid(),
+                        mVisibleWifi1.level(),
+                        mVisibleWifi1.timestampMs());
 
         assertEquals(mVisibleWifi1.hashCode(), copyOfVisibleWifi1.hashCode());
         assertNotEquals(mVisibleWifi1.hashCode(), mVisibleWifi2.hashCode());
@@ -157,7 +170,8 @@ public class VisibleNetworksTest {
 
     @Test
     public void testVisibleCellBuilder() {
-        for (@RadioType int radioType = RadioType.UNKNOWN; radioType < RadioType.NUM_ENTRIES;
+        for (@RadioType int radioType = RadioType.UNKNOWN;
+                radioType < RadioType.NUM_ENTRIES;
                 radioType++) {
             VisibleCell visibleCell = VisibleCell.builder(radioType).build();
             assertEquals(radioType, visibleCell.radioType());
@@ -258,8 +272,9 @@ public class VisibleNetworksTest {
                 new HashSet<VisibleCell>(Arrays.asList(mVisibleCell1, mVisibleCell2));
         Set<VisibleWifi> expectedVisibleWifis =
                 new HashSet<VisibleWifi>(Arrays.asList(mVisibleWifi1, mVisibleWifi2));
-        VisibleNetworks visibleNetworks = VisibleNetworks.create(
-                mVisibleWifi1, mVisibleCell1, expectedVisibleWifis, expectedVisibleCells);
+        VisibleNetworks visibleNetworks =
+                VisibleNetworks.create(
+                        mVisibleWifi1, mVisibleCell1, expectedVisibleWifis, expectedVisibleCells);
         assertEquals(mVisibleWifi1, visibleNetworks.connectedWifi());
         assertEquals(mVisibleCell1, visibleNetworks.connectedCell());
         assertEquals(expectedVisibleWifis, visibleNetworks.allVisibleWifis());
@@ -268,9 +283,10 @@ public class VisibleNetworksTest {
 
     @Test
     public void testVisibleNetworksEquals() {
-        VisibleNetworks copyOfVisibleNetworks1 = VisibleNetworks.create(
-                mVisibleNetworks1.connectedWifi(), mVisibleNetworks1.connectedCell(),
-                mVisibleNetworks1.allVisibleWifis(), mVisibleNetworks1.allVisibleCells());
+        VisibleNetworks copyOfVisibleNetworks1 =
+                VisibleNetworks.create(
+                        mVisibleNetworks1.connectedWifi(), mVisibleNetworks1.connectedCell(),
+                        mVisibleNetworks1.allVisibleWifis(), mVisibleNetworks1.allVisibleCells());
 
         assertEquals(mVisibleNetworks1, copyOfVisibleNetworks1);
         assertNotEquals(mVisibleNetworks1, mVisibleNetworks2);
@@ -278,9 +294,10 @@ public class VisibleNetworksTest {
 
     @Test
     public void testVisibleNetworksHash() {
-        VisibleNetworks copyOfVisibleNetworks1 = VisibleNetworks.create(
-                mVisibleNetworks1.connectedWifi(), mVisibleNetworks1.connectedCell(),
-                mVisibleNetworks1.allVisibleWifis(), mVisibleNetworks1.allVisibleCells());
+        VisibleNetworks copyOfVisibleNetworks1 =
+                VisibleNetworks.create(
+                        mVisibleNetworks1.connectedWifi(), mVisibleNetworks1.connectedCell(),
+                        mVisibleNetworks1.allVisibleWifis(), mVisibleNetworks1.allVisibleCells());
 
         assertEquals(mVisibleNetworks1.hashCode(), copyOfVisibleNetworks1.hashCode());
         assertNotEquals(mVisibleNetworks1.hashCode(), mVisibleNetworks2.hashCode());

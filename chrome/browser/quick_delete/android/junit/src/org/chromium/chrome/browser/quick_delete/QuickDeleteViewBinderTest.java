@@ -31,9 +31,7 @@ import org.chromium.ui.modelutil.PropertyModel;
 import org.chromium.ui.modelutil.PropertyModelChangeProcessor;
 import org.chromium.ui.widget.TextViewWithClickableSpans;
 
-/**
- * Robolectric tests for {@link QuickDeleteViewBinder}.
- */
+/** Robolectric tests for {@link QuickDeleteViewBinder}. */
 @RunWith(BaseRobolectricTestRunner.class)
 @Config(manifest = Config.NONE)
 @LooperMode(LooperMode.Mode.PAUSED)
@@ -49,11 +47,13 @@ public class QuickDeleteViewBinderTest {
         mActivity = Robolectric.buildActivity(TestActivity.class).setup().get();
         mQuickDeleteView =
                 LayoutInflater.from(mActivity).inflate(R.layout.quick_delete_dialog, null);
-        mPropertyModel = new PropertyModel.Builder(QuickDeleteProperties.ALL_KEYS)
-                                 .with(QuickDeleteProperties.CONTEXT, mActivity)
-                                 .build();
-        mPropertyModelChangeProcessor = PropertyModelChangeProcessor.create(
-                mPropertyModel, mQuickDeleteView, QuickDeleteViewBinder::bind);
+        mPropertyModel =
+                new PropertyModel.Builder(QuickDeleteProperties.ALL_KEYS)
+                        .with(QuickDeleteProperties.CONTEXT, mActivity)
+                        .build();
+        mPropertyModelChangeProcessor =
+                PropertyModelChangeProcessor.create(
+                        mPropertyModel, mQuickDeleteView, QuickDeleteViewBinder::bind);
     }
 
     @After
@@ -79,9 +79,10 @@ public class QuickDeleteViewBinderTest {
                 mQuickDeleteView.findViewById(R.id.quick_delete_history_row_title);
 
         String timePeriodString = mActivity.getString(R.string.quick_delete_time_period_15_minutes);
-        String expected = mActivity.getString(
-                R.string.quick_delete_dialog_zero_browsing_history_domain_count_text,
-                timePeriodString);
+        String expected =
+                mActivity.getString(
+                        R.string.quick_delete_dialog_zero_browsing_history_domain_count_text,
+                        timePeriodString);
         assertEquals(expected, quickDeleteBrowsingHistoryRowTitle.getText().toString());
     }
 
@@ -94,8 +95,10 @@ public class QuickDeleteViewBinderTest {
         TextView quickDeleteBrowsingHistoryRowTitle =
                 mQuickDeleteView.findViewById(R.id.quick_delete_history_row_title);
 
-        String expected = mActivity.getString(
-                R.string.quick_delete_dialog_zero_browsing_history_domain_count_all_time_text);
+        String expected =
+                mActivity.getString(
+                        R.string
+                                .quick_delete_dialog_zero_browsing_history_domain_count_all_time_text);
         assertEquals(expected, quickDeleteBrowsingHistoryRowTitle.getText().toString());
     }
 
@@ -174,7 +177,8 @@ public class QuickDeleteViewBinderTest {
         TextView quickDeleteBrowsingHistoryRowSubtitle =
                 mQuickDeleteView.findViewById(R.id.quick_delete_history_row_subtitle);
 
-        assertEquals(mActivity.getString(R.string.quick_delete_dialog_data_pending),
+        assertEquals(
+                mActivity.getString(R.string.quick_delete_dialog_data_pending),
                 quickDeleteBrowsingHistoryRowTitle.getText().toString());
         assertEquals(View.GONE, quickDeleteBrowsingHistoryRowSubtitle.getVisibility());
     }
@@ -189,8 +193,9 @@ public class QuickDeleteViewBinderTest {
                 mQuickDeleteView.findViewById(R.id.quick_delete_tabs_close_row);
 
         String timePeriodString = mActivity.getString(R.string.quick_delete_time_period_15_minutes);
-        String expected = mActivity.getString(
-                R.string.quick_delete_dialog_zero_tabs_closed_text, timePeriodString);
+        String expected =
+                mActivity.getString(
+                        R.string.quick_delete_dialog_zero_tabs_closed_text, timePeriodString);
         assertEquals(expected, quickDeleteTabsCloseRowTextView.getText());
     }
 
@@ -216,8 +221,13 @@ public class QuickDeleteViewBinderTest {
         TextViewWithCompoundDrawables quickDeleteTabsCloseRowTextView =
                 mQuickDeleteView.findViewById(R.id.quick_delete_tabs_close_row);
 
-        String expected = mActivity.getResources().getQuantityString(
-                R.plurals.quick_delete_dialog_tabs_closed_text, tabsToBeClosed, tabsToBeClosed);
+        String expected =
+                mActivity
+                        .getResources()
+                        .getQuantityString(
+                                R.plurals.quick_delete_dialog_tabs_closed_text,
+                                tabsToBeClosed,
+                                tabsToBeClosed);
         assertEquals(expected, quickDeleteTabsCloseRowTextView.getText());
     }
 
@@ -229,8 +239,13 @@ public class QuickDeleteViewBinderTest {
         TextViewWithCompoundDrawables quickDeleteTabsCloseRowTextView =
                 mQuickDeleteView.findViewById(R.id.quick_delete_tabs_close_row);
 
-        String expected = mActivity.getResources().getQuantityString(
-                R.plurals.quick_delete_dialog_tabs_closed_text, tabsToBeClosed, tabsToBeClosed);
+        String expected =
+                mActivity
+                        .getResources()
+                        .getQuantityString(
+                                R.plurals.quick_delete_dialog_tabs_closed_text,
+                                tabsToBeClosed,
+                                tabsToBeClosed);
         assertEquals(expected, quickDeleteTabsCloseRowTextView.getText());
     }
 
@@ -255,15 +270,20 @@ public class QuickDeleteViewBinderTest {
     @Test
     @SmallTest
     public void testQuickDeleteTimePeriodStringBindings() {
-        assertEquals(mActivity.getString(R.string.quick_delete_time_period_15_minutes),
+        assertEquals(
+                mActivity.getString(R.string.quick_delete_time_period_15_minutes),
                 QuickDeleteViewBinder.getTimePeriodString(mActivity, TimePeriod.LAST_15_MINUTES));
-        assertEquals(mActivity.getString(R.string.quick_delete_time_period_hour),
+        assertEquals(
+                mActivity.getString(R.string.quick_delete_time_period_hour),
                 QuickDeleteViewBinder.getTimePeriodString(mActivity, TimePeriod.LAST_HOUR));
-        assertEquals(mActivity.getString(R.string.quick_delete_time_period_24_hours),
+        assertEquals(
+                mActivity.getString(R.string.quick_delete_time_period_24_hours),
                 QuickDeleteViewBinder.getTimePeriodString(mActivity, TimePeriod.LAST_DAY));
-        assertEquals(mActivity.getString(R.string.quick_delete_time_period_7_days),
+        assertEquals(
+                mActivity.getString(R.string.quick_delete_time_period_7_days),
                 QuickDeleteViewBinder.getTimePeriodString(mActivity, TimePeriod.LAST_WEEK));
-        assertEquals(mActivity.getString(R.string.quick_delete_time_period_four_weeks),
+        assertEquals(
+                mActivity.getString(R.string.quick_delete_time_period_four_weeks),
                 QuickDeleteViewBinder.getTimePeriodString(mActivity, TimePeriod.FOUR_WEEKS));
     }
 }

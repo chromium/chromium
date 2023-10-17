@@ -46,25 +46,25 @@ public class HomeButtonCoordinatorTest {
     private static final GURL NTP_URL = JUnitTestGURLs.NTP_URL;
     private static final GURL NOT_NTP_URL = JUnitTestGURLs.EXAMPLE_URL;
 
-    private static final ImmutableMap<Integer, String> ID_TO_STRING_MAP = ImmutableMap.of(
-            R.string.iph_ntp_with_feed_text, "feed", R.string.iph_ntp_without_feed_text, "no_feed",
-            R.string.iph_ntp_with_feed_accessibility_text, "feed_a11y",
-            R.string.iph_ntp_without_feed_accessibility_text, "no_feed_ally");
+    private static final ImmutableMap<Integer, String> ID_TO_STRING_MAP =
+            ImmutableMap.of(
+                    R.string.iph_ntp_with_feed_text,
+                    "feed",
+                    R.string.iph_ntp_without_feed_text,
+                    "no_feed",
+                    R.string.iph_ntp_with_feed_accessibility_text,
+                    "feed_a11y",
+                    R.string.iph_ntp_without_feed_accessibility_text,
+                    "no_feed_ally");
 
-    @Rule
-    public TestRule mFeaturesProcessorRule = new Features.JUnitProcessor();
+    @Rule public TestRule mFeaturesProcessorRule = new Features.JUnitProcessor();
 
-    @Mock
-    private Context mContext;
-    @Mock
-    private HomeButton mHomeButton;
-    @Mock
-    private android.content.res.Resources mResources;
-    @Mock
-    private UserEducationHelper mUserEducationHelper;
+    @Mock private Context mContext;
+    @Mock private HomeButton mHomeButton;
+    @Mock private android.content.res.Resources mResources;
+    @Mock private UserEducationHelper mUserEducationHelper;
 
-    @Captor
-    private ArgumentCaptor<IPHCommand> mIPHCommandCaptor;
+    @Captor private ArgumentCaptor<IPHCommand> mIPHCommandCaptor;
 
     private boolean mIsIncognito;
     private final OneshotSupplierImpl<Boolean> mPromoShownOneshotSupplier =
@@ -87,9 +87,15 @@ public class HomeButtonCoordinatorTest {
     }
 
     private HomeButtonCoordinator newHomeButtonCoordinator(View view) {
-        return new HomeButtonCoordinator(mContext, view, mUserEducationHelper, () -> mIsIncognito,
+        return new HomeButtonCoordinator(
+                mContext,
+                view,
+                mUserEducationHelper,
+                () -> mIsIncognito,
                 mPromoShownOneshotSupplier,
-                () -> mIsHomepageNonNtp, () -> mIsFeedEnabled, new ObservableSupplierImpl<>());
+                () -> mIsHomepageNonNtp,
+                () -> mIsFeedEnabled,
+                new ObservableSupplierImpl<>());
     }
 
     private void verifyIphNotShown() {
@@ -103,8 +109,10 @@ public class HomeButtonCoordinatorTest {
         verifyIphShownWithStringIds(
                 R.string.iph_ntp_with_feed_text, R.string.iph_ntp_with_feed_accessibility_text);
     }
+
     private void verifyIphShownWithoutFeed() {
-        verifyIphShownWithStringIds(R.string.iph_ntp_without_feed_text,
+        verifyIphShownWithStringIds(
+                R.string.iph_ntp_without_feed_text,
                 R.string.iph_ntp_without_feed_accessibility_text);
     }
 
@@ -113,11 +121,17 @@ public class HomeButtonCoordinatorTest {
         // Note that we aren't actually showing the IPH (unit tests) so resources aren't resolved
         // unless we force it.
         mIPHCommandCaptor.getValue().fetchFromResources();
-        Assert.assertEquals("Wrong feature name", FeatureConstants.NEW_TAB_PAGE_HOME_BUTTON_FEATURE,
+        Assert.assertEquals(
+                "Wrong feature name",
+                FeatureConstants.NEW_TAB_PAGE_HOME_BUTTON_FEATURE,
                 mIPHCommandCaptor.getValue().featureName);
-        Assert.assertEquals("Wrong text id", ID_TO_STRING_MAP.get(contentId),
+        Assert.assertEquals(
+                "Wrong text id",
+                ID_TO_STRING_MAP.get(contentId),
                 mIPHCommandCaptor.getValue().contentString);
-        Assert.assertEquals("Wrong accessibility text id", ID_TO_STRING_MAP.get(accessibilityId),
+        Assert.assertEquals(
+                "Wrong accessibility text id",
+                ID_TO_STRING_MAP.get(accessibilityId),
                 mIPHCommandCaptor.getValue().accessibilityText);
 
         // Reset so subsequent checks in the test start with a clean slate.

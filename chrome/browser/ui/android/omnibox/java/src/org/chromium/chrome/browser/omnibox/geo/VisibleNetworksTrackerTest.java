@@ -33,25 +33,28 @@ import java.util.HashSet;
 import java.util.LinkedList;
 import java.util.List;
 
-/**
- * Robolectric tests for {@link VisibleNetworksTracker}.
- */
+/** Robolectric tests for {@link VisibleNetworksTracker}. */
 @RunWith(BaseRobolectricTestRunner.class)
-@Config(manifest = Config.NONE,
-        shadows = {ShadowPlatformNetworksManager.class, CustomShadowAsyncTask.class,
-                ShadowSystemClock.class})
+@Config(
+        manifest = Config.NONE,
+        shadows = {
+            ShadowPlatformNetworksManager.class,
+            CustomShadowAsyncTask.class,
+            ShadowSystemClock.class
+        })
 public class VisibleNetworksTrackerTest {
     private static final VisibleWifi VISIBLE_WIFI_1 =
             VisibleWifi.create("ssid1", "11:11:11:11:11:11", 1, 10L);
     private static final VisibleWifi VISIBLE_WIFI_2 =
             VisibleWifi.create("ssid2", "11:11:11:11:11:12", 2, 20L);
-    private static final VisibleCell VISIBLE_CELL_1 = VisibleCell.builder(VisibleCell.RadioType.GSM)
-                                                              .setCellId(30)
-                                                              .setLocationAreaCode(31)
-                                                              .setMobileCountryCode(32)
-                                                              .setMobileNetworkCode(33)
-                                                              .setTimestamp(30L)
-                                                              .build();
+    private static final VisibleCell VISIBLE_CELL_1 =
+            VisibleCell.builder(VisibleCell.RadioType.GSM)
+                    .setCellId(30)
+                    .setLocationAreaCode(31)
+                    .setMobileCountryCode(32)
+                    .setMobileNetworkCode(33)
+                    .setTimestamp(30L)
+                    .build();
     private static final VisibleCell VISIBLE_CELL_2 =
             VisibleCell.builder(VisibleCell.RadioType.CDMA)
                     .setCellId(40)
@@ -62,12 +65,17 @@ public class VisibleNetworksTrackerTest {
                     .build();
 
     private static final VisibleNetworks FIRST_ALL_VISIBLE_NETWORKS =
-            VisibleNetworks.create(VISIBLE_WIFI_1, VISIBLE_CELL_1,
+            VisibleNetworks.create(
+                    VISIBLE_WIFI_1,
+                    VISIBLE_CELL_1,
                     new HashSet<VisibleWifi>(Arrays.asList(VISIBLE_WIFI_1, VISIBLE_WIFI_2)),
                     new HashSet<VisibleCell>(Arrays.asList(VISIBLE_CELL_1, VISIBLE_CELL_2)));
-    private static final VisibleNetworks SECOND_ALL_VISIBLE_NETWORKS = VisibleNetworks.create(
-            VISIBLE_WIFI_2, VISIBLE_CELL_2, new HashSet<VisibleWifi>(Arrays.asList(VISIBLE_WIFI_1)),
-            new HashSet<VisibleCell>(Arrays.asList(VISIBLE_CELL_1)));
+    private static final VisibleNetworks SECOND_ALL_VISIBLE_NETWORKS =
+            VisibleNetworks.create(
+                    VISIBLE_WIFI_2,
+                    VISIBLE_CELL_2,
+                    new HashSet<VisibleWifi>(Arrays.asList(VISIBLE_WIFI_1)),
+                    new HashSet<VisibleCell>(Arrays.asList(VISIBLE_CELL_1)));
     private static final VisibleNetworks FIRST_ONLY_CONNECTED_NETWORKS =
             VisibleNetworks.create(VISIBLE_WIFI_1, VISIBLE_CELL_1, null, null);
     private static final VisibleNetworks SECOND_ONLY_CONNECTED_NETWORKS =
@@ -79,20 +87,25 @@ public class VisibleNetworksTrackerTest {
     private static final long ELAPSED_OVER_THRESHOLD_TIME_MS =
             VisibleNetworksTracker.AGE_THRESHOLD + 1000L;
 
-    @Mock
-    private static Context sContext;
+    @Mock private static Context sContext;
 
     @Before
     public void setUp() {
         MockitoAnnotations.initMocks(this);
         SystemClock.setCurrentTimeMillis(CURRENT_TIME_MS);
-        ShadowPlatformNetworksManager.sAllVisibleNetworks = new LinkedList<>(
-                Arrays.asList(FIRST_ALL_VISIBLE_NETWORKS, SECOND_ALL_VISIBLE_NETWORKS));
-        ShadowPlatformNetworksManager.sOnlyConnectedNetworks = new LinkedList<>(
-                Arrays.asList(FIRST_ONLY_CONNECTED_NETWORKS, SECOND_ONLY_CONNECTED_NETWORKS));
+        ShadowPlatformNetworksManager.sAllVisibleNetworks =
+                new LinkedList<>(
+                        Arrays.asList(FIRST_ALL_VISIBLE_NETWORKS, SECOND_ALL_VISIBLE_NETWORKS));
+        ShadowPlatformNetworksManager.sOnlyConnectedNetworks =
+                new LinkedList<>(
+                        Arrays.asList(
+                                FIRST_ONLY_CONNECTED_NETWORKS, SECOND_ONLY_CONNECTED_NETWORKS));
 
         // Make sure that the cache is empty before every test.
-        TestThreadUtils.runOnUiThreadBlocking(() -> { VisibleNetworksTracker.clearCache(); });
+        TestThreadUtils.runOnUiThreadBlocking(
+                () -> {
+                    VisibleNetworksTracker.clearCache();
+                });
     }
 
     @Test
@@ -146,7 +159,8 @@ public class VisibleNetworksTrackerTest {
         ShadowLooper.runUiThreadTasksIncludingDelayedTasks();
         assertEquals(
                 SECOND_ALL_VISIBLE_NETWORKS, VisibleNetworksTracker.getCachedVisibleNetworks());
-        assertEquals(CURRENT_TIME_MS + ELAPSED_OVER_THRESHOLD_TIME_MS,
+        assertEquals(
+                CURRENT_TIME_MS + ELAPSED_OVER_THRESHOLD_TIME_MS,
                 VisibleNetworksTracker.getCachedVisibleNetworksTime());
     }
 
@@ -191,13 +205,12 @@ public class VisibleNetworksTrackerTest {
 
         assertEquals(
                 SECOND_ALL_VISIBLE_NETWORKS, VisibleNetworksTracker.getCachedVisibleNetworks());
-        assertEquals(CURRENT_TIME_MS + ELAPSED_OVER_THRESHOLD_TIME_MS,
+        assertEquals(
+                CURRENT_TIME_MS + ELAPSED_OVER_THRESHOLD_TIME_MS,
                 VisibleNetworksTracker.getCachedVisibleNetworksTime());
     }
 
-    /**
-     * Shadow PlatformNetworksManager for robolectric tests.
-     */
+    /** Shadow PlatformNetworksManager for robolectric tests. */
     @Implements(PlatformNetworksManager.class)
     public static class ShadowPlatformNetworksManager {
         private static List<VisibleNetworks> sAllVisibleNetworks;

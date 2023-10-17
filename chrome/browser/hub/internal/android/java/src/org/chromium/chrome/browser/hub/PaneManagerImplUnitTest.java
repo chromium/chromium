@@ -22,10 +22,8 @@ import org.chromium.base.test.BaseRobolectricTestRunner;
 /** Unit tests for {@link PaneManagerImpl}. */
 @RunWith(BaseRobolectricTestRunner.class)
 public class PaneManagerImplUnitTest {
-    @Mock
-    private Pane mTabSwitcherPane;
-    @Mock
-    private Pane mIncognitoTabSwitcherPane;
+    @Mock private Pane mTabSwitcherPane;
+    @Mock private Pane mIncognitoTabSwitcherPane;
 
     @Before
     public void setUp() {
@@ -35,10 +33,11 @@ public class PaneManagerImplUnitTest {
     @Test
     @SmallTest
     public void testFocusChangesPane() {
-        PaneListBuilder builder = new PaneListBuilder(new DefaultPaneOrderController())
-                                          .registerPane(PaneId.TAB_SWITCHER, () -> mTabSwitcherPane)
-                                          .registerPane(PaneId.INCOGNITO_TAB_SWITCHER,
-                                                  () -> mIncognitoTabSwitcherPane);
+        PaneListBuilder builder =
+                new PaneListBuilder(new DefaultPaneOrderController())
+                        .registerPane(PaneId.TAB_SWITCHER, () -> mTabSwitcherPane)
+                        .registerPane(
+                                PaneId.INCOGNITO_TAB_SWITCHER, () -> mIncognitoTabSwitcherPane);
         PaneManager paneManager = new PaneManagerImpl(builder);
 
         assertNull(paneManager.getFocusedPane());
@@ -76,9 +75,10 @@ public class PaneManagerImplUnitTest {
     @Test
     @SmallTest
     public void testFocusUnsuppliedPane() {
-        PaneListBuilder builder = new PaneListBuilder(new DefaultPaneOrderController())
-                                          .registerPane(PaneId.TAB_SWITCHER, () -> mTabSwitcherPane)
-                                          .registerPane(PaneId.BOOKMARKS, () -> null);
+        PaneListBuilder builder =
+                new PaneListBuilder(new DefaultPaneOrderController())
+                        .registerPane(PaneId.TAB_SWITCHER, () -> mTabSwitcherPane)
+                        .registerPane(PaneId.BOOKMARKS, () -> null);
         PaneManager paneManager = new PaneManagerImpl(builder);
 
         assertNull(paneManager.getFocusedPane());

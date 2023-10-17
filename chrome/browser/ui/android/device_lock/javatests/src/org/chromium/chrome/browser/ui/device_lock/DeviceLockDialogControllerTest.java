@@ -38,26 +38,20 @@ import org.chromium.ui.test.util.BlankUiTestActivity;
 
 import java.util.concurrent.atomic.AtomicBoolean;
 
-/**
- * Tests for {@link DeviceLockDialogController}.
- */
+/** Tests for {@link DeviceLockDialogController}. */
 @RunWith(ChromeJUnit4ClassRunner.class)
 @Batch(Batch.UNIT_TESTS)
 public class DeviceLockDialogControllerTest {
-    @Rule
-    public final MockitoRule mMockitoRule = MockitoJUnit.rule();
+    @Rule public final MockitoRule mMockitoRule = MockitoJUnit.rule();
+
     @Rule
     public final BaseActivityTestRule<BlankUiTestActivity> mActivityTestRule =
             new BaseActivityTestRule<>(BlankUiTestActivity.class);
 
-    @Mock
-    private Activity mActivity;
-    @Mock
-    private ModalDialogManager mModalDialogManager;
-    @Mock
-    private View mView;
-    @Mock
-    private ReauthenticatorBridge mReauthenticatorBridge;
+    @Mock private Activity mActivity;
+    @Mock private ModalDialogManager mModalDialogManager;
+    @Mock private View mView;
+    @Mock private ReauthenticatorBridge mReauthenticatorBridge;
 
     private AtomicBoolean mDeviceLockReady = new AtomicBoolean();
     private AtomicBoolean mDeviceLockRefused = new AtomicBoolean();
@@ -91,11 +85,14 @@ public class DeviceLockDialogControllerTest {
     @SmallTest
     public void testDeviceLockLauncher_showAndHideDialog() {
         DeviceLockDialogController deviceLockDialogController =
-                new DeviceLockDialogController(()
-                                                       -> mDeviceLockReady.set(true),
-                        ()
-                                -> mDeviceLockRefused.set(true),
-                        null, mActivity, mModalDialogManager, null, true);
+                new DeviceLockDialogController(
+                        () -> mDeviceLockReady.set(true),
+                        () -> mDeviceLockRefused.set(true),
+                        null,
+                        mActivity,
+                        mModalDialogManager,
+                        null,
+                        true);
         assertNotNull("The Device Lock launcher should not be null.", deviceLockDialogController);
 
         deviceLockDialogController.showDialog();
@@ -110,11 +107,14 @@ public class DeviceLockDialogControllerTest {
     @SmallTest
     public void testDeviceLockLauncher_showAndHideDialog_deviceLockReauthenticationNotRequired() {
         DeviceLockDialogController deviceLockDialogController =
-                new DeviceLockDialogController(()
-                                                       -> mDeviceLockReady.set(true),
-                        ()
-                                -> mDeviceLockRefused.set(true),
-                        null, mActivity, mModalDialogManager, null, false);
+                new DeviceLockDialogController(
+                        () -> mDeviceLockReady.set(true),
+                        () -> mDeviceLockRefused.set(true),
+                        null,
+                        mActivity,
+                        mModalDialogManager,
+                        null,
+                        false);
         assertNotNull("The Device Lock launcher should not be null.", deviceLockDialogController);
 
         deviceLockDialogController.showDialog();
@@ -129,18 +129,23 @@ public class DeviceLockDialogControllerTest {
     @SmallTest
     public void testDeviceLockLauncher_onDeviceLockReady() {
         DeviceLockDialogController deviceLockDialogController =
-                new DeviceLockDialogController(()
-                                                       -> mDeviceLockReady.set(true),
-                        ()
-                                -> mDeviceLockRefused.set(true),
-                        null, mActivity, mModalDialogManager, null, true);
+                new DeviceLockDialogController(
+                        () -> mDeviceLockReady.set(true),
+                        () -> mDeviceLockRefused.set(true),
+                        null,
+                        mActivity,
+                        mModalDialogManager,
+                        null,
+                        true);
         assertNotNull("The Device Lock launcher should not be null.", deviceLockDialogController);
 
         deviceLockDialogController.setView(mView);
         deviceLockDialogController.onDeviceLockReady();
-        assertTrue("The launcher's #onDeviceLockReady should have been called.",
+        assertTrue(
+                "The launcher's #onDeviceLockReady should have been called.",
                 mDeviceLockReady.get());
-        assertFalse("The launcher's #onDeviceLockRefused should not have been called.",
+        assertFalse(
+                "The launcher's #onDeviceLockRefused should not have been called.",
                 mDeviceLockRefused.get());
     }
 
@@ -148,18 +153,23 @@ public class DeviceLockDialogControllerTest {
     @SmallTest
     public void testDeviceLockLauncher_onDeviceLockRefused() {
         DeviceLockDialogController deviceLockDialogController =
-                new DeviceLockDialogController(()
-                                                       -> mDeviceLockReady.set(true),
-                        ()
-                                -> mDeviceLockRefused.set(true),
-                        null, mActivity, mModalDialogManager, null, true);
+                new DeviceLockDialogController(
+                        () -> mDeviceLockReady.set(true),
+                        () -> mDeviceLockRefused.set(true),
+                        null,
+                        mActivity,
+                        mModalDialogManager,
+                        null,
+                        true);
         assertNotNull("The Device Lock launcher should not be null.", deviceLockDialogController);
 
         deviceLockDialogController.setView(mView);
         deviceLockDialogController.onDeviceLockRefused();
-        assertFalse("The launcher's #onDeviceLockReady should not have been called.",
+        assertFalse(
+                "The launcher's #onDeviceLockReady should not have been called.",
                 mDeviceLockReady.get());
-        assertTrue("The launcher's #onDeviceLockRefused should have been called.",
+        assertTrue(
+                "The launcher's #onDeviceLockRefused should have been called.",
                 mDeviceLockRefused.get());
     }
 }

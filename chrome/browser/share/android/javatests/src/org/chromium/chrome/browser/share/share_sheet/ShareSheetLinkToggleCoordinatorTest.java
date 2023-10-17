@@ -33,18 +33,13 @@ import org.chromium.components.dom_distiller.core.DomDistillerUrlUtils;
 import org.chromium.components.dom_distiller.core.DomDistillerUrlUtilsJni;
 import org.chromium.url.JUnitTestGURLs;
 
-/**
- * Tests {@link ShareSheetLinkToggleCoordinator}.
- */
+/** Tests {@link ShareSheetLinkToggleCoordinator}. */
 @RunWith(BaseRobolectricTestRunner.class)
 public class ShareSheetLinkToggleCoordinatorTest {
-    @Rule
-    public JniMocker jniMocker = new JniMocker();
+    @Rule public JniMocker jniMocker = new JniMocker();
 
-    @Mock
-    private DomDistillerUrlUtils.Natives mDistillerUrlUtilsJniMock;
-    @Mock
-    private LinkToTextCoordinator mLinkToTextCoordinator;
+    @Mock private DomDistillerUrlUtils.Natives mDistillerUrlUtilsJniMock;
+    @Mock private LinkToTextCoordinator mLinkToTextCoordinator;
 
     @Before
     public void setUp() {
@@ -54,15 +49,16 @@ public class ShareSheetLinkToggleCoordinatorTest {
         when(mDistillerUrlUtilsJniMock.getOriginalUrlFromDistillerUrl(any(String.class)))
                 .thenReturn(JUnitTestGURLs.EXAMPLE_URL);
         ShareParams shareParamsWithLinkToText =
-                new ShareParams
-                        .Builder(
-                                /*window=*/null, /*title=*/"", JUnitTestGURLs.EXAMPLE_URL.getSpec())
+                new ShareParams.Builder(
+                                /* window= */ null,
+                                /* title= */ "",
+                                JUnitTestGURLs.EXAMPLE_URL.getSpec())
                         .setText("text")
                         .build();
         when(mLinkToTextCoordinator.getShareParams(LinkToggleState.LINK))
                 .thenReturn(shareParamsWithLinkToText);
         ShareParams shareParamsWithTextOnly =
-                new ShareParams.Builder(/*window=*/null, /*title=*/"", /*url=*/"")
+                new ShareParams.Builder(/* window= */ null, /* title= */ "", /* url= */ "")
                         .setText("text")
                         .build();
         when(mLinkToTextCoordinator.getShareParams(LinkToggleState.NO_LINK))
@@ -81,23 +77,27 @@ public class ShareSheetLinkToggleCoordinatorTest {
 
     @Test
     public void getShareParams_urlShare_sameShareParams() {
-        ShareParams shareParams = new ShareParams
-                                          .Builder(/*window=*/null, /*title=*/"",
-                                                  JUnitTestGURLs.EXAMPLE_URL.getSpec())
-                                          .build();
+        ShareParams shareParams =
+                new ShareParams.Builder(
+                                /* window= */ null,
+                                /* title= */ "",
+                                JUnitTestGURLs.EXAMPLE_URL.getSpec())
+                        .build();
         ChromeShareExtras chromeShareExtras = new ChromeShareExtras.Builder().build();
         ShareSheetLinkToggleCoordinator shareSheetLinkToggleCoordinator =
                 new ShareSheetLinkToggleCoordinator(
-                        shareParams, chromeShareExtras, /*linkToTextCoordinator=*/null);
+                        shareParams, chromeShareExtras, /* linkToTextCoordinator= */ null);
 
-        assertEquals("ShareParams should be the same as the original.", shareParams,
+        assertEquals(
+                "ShareParams should be the same as the original.",
+                shareParams,
                 shareSheetLinkToggleCoordinator.getShareParams(LinkToggleState.NO_LINK));
     }
 
     @Test
     public void getShareParams_nonUrlShare_noLink() {
         ShareParams shareParams =
-                new ShareParams.Builder(/*window=*/null, /*title=*/"", "").build();
+                new ShareParams.Builder(/* window= */ null, /* title= */ "", "").build();
         ChromeShareExtras chromeShareExtras =
                 new ChromeShareExtras.Builder()
                         .setDetailedContentType(DetailedContentType.IMAGE)
@@ -105,18 +105,20 @@ public class ShareSheetLinkToggleCoordinatorTest {
                         .build();
         ShareSheetLinkToggleCoordinator shareSheetLinkToggleCoordinator =
                 new ShareSheetLinkToggleCoordinator(
-                        shareParams, chromeShareExtras, /*linkToTextCoordinator=*/null);
+                        shareParams, chromeShareExtras, /* linkToTextCoordinator= */ null);
 
-        assertTrue("ShareParams should not have a URL.",
+        assertTrue(
+                "ShareParams should not have a URL.",
                 TextUtils.isEmpty(
-                        shareSheetLinkToggleCoordinator.getShareParams(LinkToggleState.NO_LINK)
+                        shareSheetLinkToggleCoordinator
+                                .getShareParams(LinkToggleState.NO_LINK)
                                 .getUrl()));
     }
 
     @Test
     public void getShareParams_nonUrlShare_link() {
         ShareParams shareParams =
-                new ShareParams.Builder(/*window=*/null, /*title=*/"", "").build();
+                new ShareParams.Builder(/* window= */ null, /* title= */ "", "").build();
         ChromeShareExtras chromeShareExtras =
                 new ChromeShareExtras.Builder()
                         .setContentUrl(JUnitTestGURLs.EXAMPLE_URL)
@@ -124,31 +126,39 @@ public class ShareSheetLinkToggleCoordinatorTest {
                         .build();
         ShareSheetLinkToggleCoordinator shareSheetLinkToggleCoordinator =
                 new ShareSheetLinkToggleCoordinator(
-                        shareParams, chromeShareExtras, /*linkToTextCoordinator=*/null);
+                        shareParams, chromeShareExtras, /* linkToTextCoordinator= */ null);
 
-        assertEquals("ShareParams should include the link.", JUnitTestGURLs.EXAMPLE_URL.getSpec(),
+        assertEquals(
+                "ShareParams should include the link.",
+                JUnitTestGURLs.EXAMPLE_URL.getSpec(),
                 shareSheetLinkToggleCoordinator.getShareParams(LinkToggleState.LINK).getUrl());
     }
 
     @Test
     public void getShareParams_linkToText_noLink() {
         ShareParams shareParams =
-                new ShareParams.Builder(/*window=*/null, /*title=*/"", "").setText("text").build();
+                new ShareParams.Builder(/* window= */ null, /* title= */ "", "")
+                        .setText("text")
+                        .build();
         ChromeShareExtras chromeShareExtras = new ChromeShareExtras.Builder().build();
         ShareSheetLinkToggleCoordinator shareSheetLinkToggleCoordinator =
                 new ShareSheetLinkToggleCoordinator(
                         shareParams, chromeShareExtras, mLinkToTextCoordinator);
 
-        assertTrue("ShareParams should not have a URL.",
+        assertTrue(
+                "ShareParams should not have a URL.",
                 TextUtils.isEmpty(
-                        shareSheetLinkToggleCoordinator.getShareParams(LinkToggleState.NO_LINK)
+                        shareSheetLinkToggleCoordinator
+                                .getShareParams(LinkToggleState.NO_LINK)
                                 .getUrl()));
     }
 
     @Test
     public void getShareParams_linkToText_link() {
         ShareParams shareParams =
-                new ShareParams.Builder(/*window=*/null, /*title=*/"", "").setText("text").build();
+                new ShareParams.Builder(/* window= */ null, /* title= */ "", "")
+                        .setText("text")
+                        .build();
         ChromeShareExtras chromeShareExtras =
                 new ChromeShareExtras.Builder()
                         .setDetailedContentType(DetailedContentType.HIGHLIGHTED_TEXT)
@@ -157,21 +167,25 @@ public class ShareSheetLinkToggleCoordinatorTest {
                 new ShareSheetLinkToggleCoordinator(
                         shareParams, chromeShareExtras, mLinkToTextCoordinator);
 
-        assertEquals("ShareParams should include the link.", JUnitTestGURLs.EXAMPLE_URL.getSpec(),
+        assertEquals(
+                "ShareParams should include the link.",
+                JUnitTestGURLs.EXAMPLE_URL.getSpec(),
                 shareSheetLinkToggleCoordinator.getShareParams(LinkToggleState.LINK).getUrl());
     }
 
     @Test
     public void shouldShowToggle_noDetailedContentType_returnsFalse() {
-        ShareParams shareParams = new ShareParams
-                                          .Builder(/*window=*/null, /*title=*/"",
-                                                  JUnitTestGURLs.EXAMPLE_URL.getSpec())
-                                          .build();
+        ShareParams shareParams =
+                new ShareParams.Builder(
+                                /* window= */ null,
+                                /* title= */ "",
+                                JUnitTestGURLs.EXAMPLE_URL.getSpec())
+                        .build();
         ChromeShareExtras chromeShareExtras =
                 new ChromeShareExtras.Builder().setContentUrl(JUnitTestGURLs.EXAMPLE_URL).build();
         ShareSheetLinkToggleCoordinator shareSheetLinkToggleCoordinator =
                 new ShareSheetLinkToggleCoordinator(
-                        shareParams, chromeShareExtras, /*linkToTextCoordinator=*/null);
+                        shareParams, chromeShareExtras, /* linkToTextCoordinator= */ null);
 
         assertFalse("Should not show toggle.", shareSheetLinkToggleCoordinator.shouldShowToggle());
     }
@@ -179,14 +193,14 @@ public class ShareSheetLinkToggleCoordinatorTest {
     @Test
     public void shouldShowToggle_noContentUrl_returnsFalse() {
         ShareParams shareParams =
-                new ShareParams.Builder(/*window=*/null, /*title=*/"", /*url=*/"").build();
+                new ShareParams.Builder(/* window= */ null, /* title= */ "", /* url= */ "").build();
         ChromeShareExtras chromeShareExtras =
                 new ChromeShareExtras.Builder()
                         .setDetailedContentType(DetailedContentType.IMAGE)
                         .build();
         ShareSheetLinkToggleCoordinator shareSheetLinkToggleCoordinator =
                 new ShareSheetLinkToggleCoordinator(
-                        shareParams, chromeShareExtras, /*linkToTextCoordinator=*/null);
+                        shareParams, chromeShareExtras, /* linkToTextCoordinator= */ null);
 
         assertFalse("Should not show toggle.", shareSheetLinkToggleCoordinator.shouldShowToggle());
     }
@@ -194,7 +208,7 @@ public class ShareSheetLinkToggleCoordinatorTest {
     @Test
     public void shouldShowToggle_contentUrlAndDetailedContentType_returnsTrue() {
         ShareParams shareParams =
-                new ShareParams.Builder(/*window=*/null, /*title=*/"", /*url=*/"").build();
+                new ShareParams.Builder(/* window= */ null, /* title= */ "", /* url= */ "").build();
         ChromeShareExtras chromeShareExtras =
                 new ChromeShareExtras.Builder()
                         .setDetailedContentType(DetailedContentType.IMAGE)
@@ -202,7 +216,7 @@ public class ShareSheetLinkToggleCoordinatorTest {
                         .build();
         ShareSheetLinkToggleCoordinator shareSheetLinkToggleCoordinator =
                 new ShareSheetLinkToggleCoordinator(
-                        shareParams, chromeShareExtras, /*linkToTextCoordinator=*/null);
+                        shareParams, chromeShareExtras, /* linkToTextCoordinator= */ null);
 
         assertTrue("Should show toggle.", shareSheetLinkToggleCoordinator.shouldShowToggle());
     }
@@ -210,7 +224,7 @@ public class ShareSheetLinkToggleCoordinatorTest {
     @Test
     public void shouldShowToggle_linkToText_returnsTrue() {
         ShareParams shareParams =
-                new ShareParams.Builder(/*window=*/null, /*title=*/"", /*url=*/"").build();
+                new ShareParams.Builder(/* window= */ null, /* title= */ "", /* url= */ "").build();
         ChromeShareExtras chromeShareExtras =
                 new ChromeShareExtras.Builder()
                         .setDetailedContentType(DetailedContentType.HIGHLIGHTED_TEXT)
@@ -225,41 +239,48 @@ public class ShareSheetLinkToggleCoordinatorTest {
     @Test
     public void shouldEnableToggleByDefault_false() {
         ShareParams shareParams =
-                new ShareParams.Builder(/*window=*/null, /*title=*/"", /*url=*/"").build();
+                new ShareParams.Builder(/* window= */ null, /* title= */ "", /* url= */ "").build();
         ChromeShareExtras chromeShareExtras = new ChromeShareExtras.Builder().build();
         ShareSheetLinkToggleCoordinator shareSheetLinkToggleCoordinator =
                 new ShareSheetLinkToggleCoordinator(
                         shareParams, chromeShareExtras, mLinkToTextCoordinator);
 
-        assertFalse("Should not enable toggle by default.",
+        assertFalse(
+                "Should not enable toggle by default.",
                 shareSheetLinkToggleCoordinator.shouldEnableToggleByDefault());
 
-        shareSheetLinkToggleCoordinator.setShareParamsAndExtras(shareParams,
+        shareSheetLinkToggleCoordinator.setShareParamsAndExtras(
+                shareParams,
                 new ChromeShareExtras.Builder()
                         .setDetailedContentType(DetailedContentType.GIF)
                         .build());
-        assertFalse("Should not enable toggle by default.",
+        assertFalse(
+                "Should not enable toggle by default.",
                 shareSheetLinkToggleCoordinator.shouldEnableToggleByDefault());
 
-        shareSheetLinkToggleCoordinator.setShareParamsAndExtras(shareParams,
+        shareSheetLinkToggleCoordinator.setShareParamsAndExtras(
+                shareParams,
                 new ChromeShareExtras.Builder()
                         .setDetailedContentType(DetailedContentType.SCREENSHOT)
                         .build());
-        assertFalse("Should not enable toggle by default.",
+        assertFalse(
+                "Should not enable toggle by default.",
                 shareSheetLinkToggleCoordinator.shouldEnableToggleByDefault());
 
-        shareSheetLinkToggleCoordinator.setShareParamsAndExtras(shareParams,
+        shareSheetLinkToggleCoordinator.setShareParamsAndExtras(
+                shareParams,
                 new ChromeShareExtras.Builder()
                         .setDetailedContentType(DetailedContentType.IMAGE)
                         .build());
-        assertFalse("Should not enable toggle by default.",
+        assertFalse(
+                "Should not enable toggle by default.",
                 shareSheetLinkToggleCoordinator.shouldEnableToggleByDefault());
     }
 
     @Test
     public void shouldEnableToggleByDefault_true() {
         ShareParams shareParams =
-                new ShareParams.Builder(/*window=*/null, /*title=*/"", /*url=*/"").build();
+                new ShareParams.Builder(/* window= */ null, /* title= */ "", /* url= */ "").build();
         ChromeShareExtras chromeShareExtras =
                 new ChromeShareExtras.Builder()
                         .setDetailedContentType(DetailedContentType.HIGHLIGHTED_TEXT)
@@ -268,21 +289,26 @@ public class ShareSheetLinkToggleCoordinatorTest {
                 new ShareSheetLinkToggleCoordinator(
                         shareParams, chromeShareExtras, mLinkToTextCoordinator);
 
-        assertTrue("Should enable toggle by default.",
+        assertTrue(
+                "Should enable toggle by default.",
                 shareSheetLinkToggleCoordinator.shouldEnableToggleByDefault());
 
-        shareSheetLinkToggleCoordinator.setShareParamsAndExtras(shareParams,
+        shareSheetLinkToggleCoordinator.setShareParamsAndExtras(
+                shareParams,
                 new ChromeShareExtras.Builder()
                         .setDetailedContentType(DetailedContentType.WEB_NOTES)
                         .build());
-        assertTrue("Should enable toggle by default.",
+        assertTrue(
+                "Should enable toggle by default.",
                 shareSheetLinkToggleCoordinator.shouldEnableToggleByDefault());
 
-        shareSheetLinkToggleCoordinator.setShareParamsAndExtras(shareParams,
+        shareSheetLinkToggleCoordinator.setShareParamsAndExtras(
+                shareParams,
                 new ChromeShareExtras.Builder()
                         .setDetailedContentType(DetailedContentType.LIGHTWEIGHT_REACTION)
                         .build());
-        assertTrue("Should enable toggle by default.",
+        assertTrue(
+                "Should enable toggle by default.",
                 shareSheetLinkToggleCoordinator.shouldEnableToggleByDefault());
     }
 }

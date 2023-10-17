@@ -21,9 +21,7 @@ import org.chromium.chrome.browser.flags.ChromeSwitches;
 import org.chromium.chrome.browser.ui.hats.SurveyThrottler.FilteringResult;
 import org.chromium.content_public.browser.test.util.TestThreadUtils;
 
-/**
- * Unit tests for {@link SurveyThrottler}.
- */
+/** Unit tests for {@link SurveyThrottler}. */
 @RunWith(BaseRobolectricTestRunner.class)
 @Config(manifest = Config.NONE)
 public class SurveyThrottlerUnitTest {
@@ -42,11 +40,13 @@ public class SurveyThrottlerUnitTest {
 
     @Test
     public void testSuccessfullyShown() {
-        RiggedSurveyThrottler throttler = new RiggedSurveyThrottler(/*randomlySelected=*/true, 1);
+        RiggedSurveyThrottler throttler =
+                new RiggedSurveyThrottler(/* randomlySelected= */ true, 1);
 
-        try (HistogramWatcher ignored = HistogramWatcher.newSingleRecordWatcher(
-                     "Android.Survey.SurveyFilteringResults",
-                     FilteringResult.USER_SELECTED_FOR_SURVEY)) {
+        try (HistogramWatcher ignored =
+                HistogramWatcher.newSingleRecordWatcher(
+                        "Android.Survey.SurveyFilteringResults",
+                        FilteringResult.USER_SELECTED_FOR_SURVEY)) {
             Assert.assertTrue("Survey should be shown.", throttler.canShowSurvey());
         }
     }
@@ -55,10 +55,11 @@ public class SurveyThrottlerUnitTest {
     public void testFirstTimeUser() {
         FirstRunStatus.setFirstRunTriggeredForTesting(true);
         RiggedSurveyThrottler throttler =
-                new RiggedSurveyThrottler(/*randomlySelected=*/true, /*dayOfYear=*/1);
+                new RiggedSurveyThrottler(/* randomlySelected= */ true, /* dayOfYear= */ 1);
 
-        try (HistogramWatcher ignored = HistogramWatcher.newSingleRecordWatcher(
-                     "Android.Survey.SurveyFilteringResults", FilteringResult.FIRST_TIME_USER)) {
+        try (HistogramWatcher ignored =
+                HistogramWatcher.newSingleRecordWatcher(
+                        "Android.Survey.SurveyFilteringResults", FilteringResult.FIRST_TIME_USER)) {
             Assert.assertFalse(
                     "Survey shouldn't shown for first time users.", throttler.canShowSurvey());
         }
@@ -76,9 +77,10 @@ public class SurveyThrottlerUnitTest {
         int newDateOfYear = dateOfYear + 100;
         RiggedSurveyThrottler throttlerNew =
                 new RiggedSurveyThrottler(true, newDateOfYear, triggerId1);
-        try (HistogramWatcher ignored = HistogramWatcher.newSingleRecordWatcher(
-                     "Android.Survey.SurveyFilteringResults",
-                     FilteringResult.SURVEY_PROMPT_ALREADY_DISPLAYED)) {
+        try (HistogramWatcher ignored =
+                HistogramWatcher.newSingleRecordWatcher(
+                        "Android.Survey.SurveyFilteringResults",
+                        FilteringResult.SURVEY_PROMPT_ALREADY_DISPLAYED)) {
             Assert.assertFalse("Survey can't shown if shown before.", throttlerNew.canShowSurvey());
         }
     }
@@ -96,12 +98,13 @@ public class SurveyThrottlerUnitTest {
                         System.currentTimeMillis())
                 .apply();
 
-        RiggedSurveyThrottler throttler2 = new RiggedSurveyThrottler(
-                /*randomlySelected=*/true, dateOfYear, triggerId2);
+        RiggedSurveyThrottler throttler2 =
+                new RiggedSurveyThrottler(/* randomlySelected= */ true, dateOfYear, triggerId2);
 
-        try (HistogramWatcher ignored = HistogramWatcher.newSingleRecordWatcher(
-                     "Android.Survey.SurveyFilteringResults",
-                     FilteringResult.USER_SELECTED_FOR_SURVEY)) {
+        try (HistogramWatcher ignored =
+                HistogramWatcher.newSingleRecordWatcher(
+                        "Android.Survey.SurveyFilteringResults",
+                        FilteringResult.USER_SELECTED_FOR_SURVEY)) {
             Assert.assertTrue(
                     "Survey with different triggerId can show.", throttler2.canShowSurvey());
         }
@@ -132,11 +135,12 @@ public class SurveyThrottlerUnitTest {
     public void testEligibilityRolledYesterday() {
         setSurveyLastRequestedDate(TEST_TRIGGER_ID, 4);
         RiggedSurveyThrottler throttler =
-                new RiggedSurveyThrottler(/*randomlySelected=*/true, /*dayOfYear=*/5);
+                new RiggedSurveyThrottler(/* randomlySelected= */ true, /* dayOfYear= */ 5);
 
-        try (HistogramWatcher ignored = HistogramWatcher.newSingleRecordWatcher(
-                     "Android.Survey.SurveyFilteringResults",
-                     FilteringResult.USER_SELECTED_FOR_SURVEY)) {
+        try (HistogramWatcher ignored =
+                HistogramWatcher.newSingleRecordWatcher(
+                        "Android.Survey.SurveyFilteringResults",
+                        FilteringResult.USER_SELECTED_FOR_SURVEY)) {
             Assert.assertTrue("Random selection should be true", throttler.canShowSurvey());
         }
     }
@@ -144,11 +148,12 @@ public class SurveyThrottlerUnitTest {
     @Test
     public void testEligibilityRollingTwiceSameDay() {
         RiggedSurveyThrottler throttler =
-                new RiggedSurveyThrottler(/*randomlySelected=*/true, /*dayOfYear=*/5);
+                new RiggedSurveyThrottler(/* randomlySelected= */ true, /* dayOfYear= */ 5);
         setSurveyLastRequestedDate(TEST_TRIGGER_ID, 5);
-        try (HistogramWatcher ignored = HistogramWatcher.newSingleRecordWatcher(
-                     "Android.Survey.SurveyFilteringResults",
-                     FilteringResult.USER_ALREADY_SAMPLED_TODAY)) {
+        try (HistogramWatcher ignored =
+                HistogramWatcher.newSingleRecordWatcher(
+                        "Android.Survey.SurveyFilteringResults",
+                        FilteringResult.USER_ALREADY_SAMPLED_TODAY)) {
             Assert.assertFalse("Random selection should be false.", throttler.canShowSurvey());
         }
     }
@@ -156,7 +161,7 @@ public class SurveyThrottlerUnitTest {
     @Test
     public void testEligibilityFirstTimeRollingQualifies() {
         RiggedSurveyThrottler throttler =
-                new RiggedSurveyThrottler(/*randomlySelected=*/true, /*dayOfYear=*/5);
+                new RiggedSurveyThrottler(/* randomlySelected= */ true, /* dayOfYear= */ 5);
         Assert.assertEquals(
                 "Last requested date do not exist yet.",
                 -1,
@@ -168,10 +173,11 @@ public class SurveyThrottlerUnitTest {
     @Test
     public void testEligibilityFirstTimeRollingDoesNotQualify() {
         RiggedSurveyThrottler throttler =
-                new RiggedSurveyThrottler(/*randomlySelected=*/false, /*dayOfYear=*/1);
-        try (HistogramWatcher ignored = HistogramWatcher.newSingleRecordWatcher(
-                     "Android.Survey.SurveyFilteringResults",
-                     FilteringResult.ROLLED_NON_ZERO_NUMBER)) {
+                new RiggedSurveyThrottler(/* randomlySelected= */ false, /* dayOfYear= */ 1);
+        try (HistogramWatcher ignored =
+                HistogramWatcher.newSingleRecordWatcher(
+                        "Android.Survey.SurveyFilteringResults",
+                        FilteringResult.ROLLED_NON_ZERO_NUMBER)) {
             Assert.assertFalse("Random selection should be false.", throttler.canShowSurvey());
         }
         Assert.assertEquals("Numbers should match", 1, getSurveyLastRequestedDate(TEST_TRIGGER_ID));
@@ -198,10 +204,11 @@ public class SurveyThrottlerUnitTest {
     @CommandLineFlags.Add(ChromeSwitches.CHROME_FORCE_ENABLE_SURVEY)
     public void testCommandLineForceEnableSurvey() {
         RiggedSurveyThrottler throttler =
-                new RiggedSurveyThrottler(/*randomlySelected=*/false, /*dayOfYear=*/1);
-        try (HistogramWatcher ignored = HistogramWatcher.newSingleRecordWatcher(
-                     "Android.Survey.SurveyFilteringResults",
-                     FilteringResult.FORCE_SURVEY_ON_COMMAND_PRESENT)) {
+                new RiggedSurveyThrottler(/* randomlySelected= */ false, /* dayOfYear= */ 1);
+        try (HistogramWatcher ignored =
+                HistogramWatcher.newSingleRecordWatcher(
+                        "Android.Survey.SurveyFilteringResults",
+                        FilteringResult.FORCE_SURVEY_ON_COMMAND_PRESENT)) {
             Assert.assertTrue(
                     "Survey should be enabled by commandline flag.", throttler.canShowSurvey());
         }

@@ -58,9 +58,7 @@ import org.chromium.ui.test.util.BlankUiTestActivity;
 
 import java.util.function.Predicate;
 
-/**
- * Instrumentation tests for {@link ConfirmImportSyncDataDialogCoordinator}.
- */
+/** Instrumentation tests for {@link ConfirmImportSyncDataDialogCoordinator}. */
 @RunWith(ChromeJUnit4ClassRunner.class)
 @CommandLineFlags.Add({ChromeSwitches.DISABLE_FIRST_RUN_EXPERIENCE})
 @Batch(Batch.PER_CLASS)
@@ -94,11 +92,9 @@ public class ConfirmImportSyncDataDialogTest {
     public static final BaseActivityTestRule<BlankUiTestActivity> sActivityTestRule =
             new BaseActivityTestRule<>(BlankUiTestActivity.class);
 
-    @Mock
-    private ConfirmImportSyncDataDialogCoordinator.Listener mListenerMock;
+    @Mock private ConfirmImportSyncDataDialogCoordinator.Listener mListenerMock;
 
-    @Mock
-    private SigninManager mSigninManagerMock;
+    @Mock private SigninManager mSigninManagerMock;
 
     private ModalDialogManager mDialogManager;
     private ConfirmImportSyncDataDialogCoordinator mDialogCoordinator;
@@ -110,14 +106,18 @@ public class ConfirmImportSyncDataDialogTest {
 
     @Before
     public void setUp() {
-        TestThreadUtils.runOnUiThreadBlocking(() -> {
-            IdentityServicesProvider.setInstanceForTests(mock(IdentityServicesProvider.class));
-            Profile.setLastUsedProfileForTesting(mock(Profile.class));
-            when(IdentityServicesProvider.get().getSigninManager(any()))
-                    .thenReturn(mSigninManagerMock);
-            mDialogManager = new ModalDialogManager(
-                    new AppModalPresenter(sActivityTestRule.getActivity()), ModalDialogType.APP);
-        });
+        TestThreadUtils.runOnUiThreadBlocking(
+                () -> {
+                    IdentityServicesProvider.setInstanceForTests(
+                            mock(IdentityServicesProvider.class));
+                    Profile.setLastUsedProfileForTesting(mock(Profile.class));
+                    when(IdentityServicesProvider.get().getSigninManager(any()))
+                            .thenReturn(mSigninManagerMock);
+                    mDialogManager =
+                            new ModalDialogManager(
+                                    new AppModalPresenter(sActivityTestRule.getActivity()),
+                                    ModalDialogType.APP);
+                });
     }
 
     @Test
@@ -179,7 +179,10 @@ public class ConfirmImportSyncDataDialogTest {
     @Test
     @MediumTest
     public void testForNonDisplayableAccountEmail() {
-        showConfirmImportSyncDataDialog((String email) -> { return false; });
+        showConfirmImportSyncDataDialog(
+                (String email) -> {
+                    return false;
+                });
         final Activity activity = sActivityTestRule.getActivity();
         final String defaultAccountName =
                 activity.getString(R.string.default_google_account_username);
@@ -192,19 +195,29 @@ public class ConfirmImportSyncDataDialogTest {
     }
 
     private void showConfirmImportSyncDataDialog() {
-        TestThreadUtils.runOnUiThreadBlocking(() -> {
-            mDialogCoordinator = new ConfirmImportSyncDataDialogCoordinator(
-                    sActivityTestRule.getActivity(), mDialogManager, mListenerMock,
-                    "old.testaccount@gmail.com", "new.testaccount@gmail.com");
-        });
+        TestThreadUtils.runOnUiThreadBlocking(
+                () -> {
+                    mDialogCoordinator =
+                            new ConfirmImportSyncDataDialogCoordinator(
+                                    sActivityTestRule.getActivity(),
+                                    mDialogManager,
+                                    mListenerMock,
+                                    "old.testaccount@gmail.com",
+                                    "new.testaccount@gmail.com");
+                });
     }
 
     private void showConfirmImportSyncDataDialog(Predicate<String> checkIfDisplayableEmailAddress) {
-        TestThreadUtils.runOnUiThreadBlocking(() -> {
-            mDialogCoordinator =
-                    new ConfirmImportSyncDataDialogCoordinator(sActivityTestRule.getActivity(),
-                            mDialogManager, mListenerMock, "old.testaccount@gmail.com",
-                            "new.testaccount@gmail.com", checkIfDisplayableEmailAddress);
-        });
+        TestThreadUtils.runOnUiThreadBlocking(
+                () -> {
+                    mDialogCoordinator =
+                            new ConfirmImportSyncDataDialogCoordinator(
+                                    sActivityTestRule.getActivity(),
+                                    mDialogManager,
+                                    mListenerMock,
+                                    "old.testaccount@gmail.com",
+                                    "new.testaccount@gmail.com",
+                                    checkIfDisplayableEmailAddress);
+                });
     }
 }

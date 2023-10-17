@@ -45,26 +45,20 @@ import org.chromium.ui.modaldialog.ModalDialogProperties;
 import org.chromium.ui.modelutil.PropertyModel;
 import org.chromium.ui.test.util.modaldialog.FakeModalDialogManager;
 
-/**
- * Unit tests for {@link AutofillErrorDialogBridge}
- */
+/** Unit tests for {@link AutofillErrorDialogBridge} */
 @RunWith(BaseRobolectricTestRunner.class)
 @EnableFeatures({ChromeFeatureList.AUTOFILL_ENABLE_MOVING_GPAY_LOGO_TO_THE_RIGHT_ON_CLANK})
 public class AutofillErrorDialogBridgeTest {
-    @Rule
-    public MockitoRule mMockitoRule = MockitoJUnit.rule();
-    @Rule
-    public JniMocker mMocker = new JniMocker();
-    @Rule
-    public TestRule mFeaturesProcessorRule = new Features.JUnitProcessor();
+    @Rule public MockitoRule mMockitoRule = MockitoJUnit.rule();
+    @Rule public JniMocker mMocker = new JniMocker();
+    @Rule public TestRule mFeaturesProcessorRule = new Features.JUnitProcessor();
 
     private static final String ERROR_DIALOG_TITLE = "title";
     private static final String ERROR_DIALOG_DESCRIPTION = "description";
     private static final String ERROR_DIALOG_BUTTON_LABEL = "Close";
     private static final long NATIVE_AUTOFILL_ERROR_DIALOG_VIEW = 100L;
 
-    @Mock
-    private AutofillErrorDialogBridge.Natives mNativeMock;
+    @Mock private AutofillErrorDialogBridge.Natives mNativeMock;
 
     private AutofillErrorDialogBridge mAutofillErrorDialogBridge;
     private FakeModalDialogManager mModalDialogManager;
@@ -76,8 +70,10 @@ public class AutofillErrorDialogBridgeTest {
         mModalDialogManager = new FakeModalDialogManager(ModalDialogType.TAB);
         mResources = ApplicationProvider.getApplicationContext().getResources();
         mAutofillErrorDialogBridge =
-                new AutofillErrorDialogBridge(NATIVE_AUTOFILL_ERROR_DIALOG_VIEW,
-                        mModalDialogManager, ApplicationProvider.getApplicationContext());
+                new AutofillErrorDialogBridge(
+                        NATIVE_AUTOFILL_ERROR_DIALOG_VIEW,
+                        mModalDialogManager,
+                        ApplicationProvider.getApplicationContext());
         mMocker.mock(AutofillErrorDialogBridgeJni.TEST_HOOKS, mNativeMock);
     }
 
@@ -117,10 +113,14 @@ public class AutofillErrorDialogBridgeTest {
         assertThat(model.get(ModalDialogProperties.TITLE)).isEqualTo(ERROR_DIALOG_TITLE);
 
         // Verify that the title icon set by modal dialog is correct.
-        Drawable expectedDrawable = ResourcesCompat.getDrawable(
-                mResources, titleIconId, ApplicationProvider.getApplicationContext().getTheme());
-        assertTrue(getBitmap(expectedDrawable)
-                           .sameAs(getBitmap(model.get(ModalDialogProperties.TITLE_ICON))));
+        Drawable expectedDrawable =
+                ResourcesCompat.getDrawable(
+                        mResources,
+                        titleIconId,
+                        ApplicationProvider.getApplicationContext().getTheme());
+        assertTrue(
+                getBitmap(expectedDrawable)
+                        .sameAs(getBitmap(model.get(ModalDialogProperties.TITLE_ICON))));
 
         // Verify that title and title icon is not set by custom view.
         View customView = model.get(ModalDialogProperties.CUSTOM_VIEW);
@@ -146,8 +146,11 @@ public class AutofillErrorDialogBridgeTest {
 
         // Verify that the title icon set by custom view is correct.
         ImageView title_icon = (ImageView) customView.findViewById(R.id.title_icon);
-        Drawable expectedDrawable = ResourcesCompat.getDrawable(
-                mResources, titleIconId, ApplicationProvider.getApplicationContext().getTheme());
+        Drawable expectedDrawable =
+                ResourcesCompat.getDrawable(
+                        mResources,
+                        titleIconId,
+                        ApplicationProvider.getApplicationContext().getTheme());
         assertThat(title_icon.getVisibility()).isEqualTo(View.VISIBLE);
         assertTrue(getBitmap(expectedDrawable).sameAs(getBitmap(title_icon.getDrawable())));
 
@@ -157,15 +160,20 @@ public class AutofillErrorDialogBridgeTest {
     }
 
     private void showErrorDialog(int titleIconId) {
-        mAutofillErrorDialogBridge.show(ERROR_DIALOG_TITLE, ERROR_DIALOG_DESCRIPTION,
+        mAutofillErrorDialogBridge.show(
+                ERROR_DIALOG_TITLE,
+                ERROR_DIALOG_DESCRIPTION,
                 ERROR_DIALOG_BUTTON_LABEL,
                 /* iconId= */ titleIconId);
     }
 
     // Convert a drawable to a Bitmap for comparison.
     private static Bitmap getBitmap(Drawable drawable) {
-        Bitmap bitmap = Bitmap.createBitmap(drawable.getIntrinsicWidth(),
-                drawable.getIntrinsicHeight(), Bitmap.Config.ARGB_8888);
+        Bitmap bitmap =
+                Bitmap.createBitmap(
+                        drawable.getIntrinsicWidth(),
+                        drawable.getIntrinsicHeight(),
+                        Bitmap.Config.ARGB_8888);
         Canvas canvas = new Canvas(bitmap);
         drawable.setBounds(0, 0, canvas.getWidth(), canvas.getHeight());
         drawable.draw(canvas);

@@ -33,9 +33,7 @@ import org.chromium.ui.modelutil.PropertyModelChangeProcessor;
 import java.util.Arrays;
 import java.util.List;
 
-/**
- * Unit test for {@link DropdownFieldView}.
- */
+/** Unit test for {@link DropdownFieldView}. */
 @RunWith(BaseRobolectricTestRunner.class)
 public final class DropdownFieldViewUnitTest {
     private Activity mActivity;
@@ -48,8 +46,10 @@ public final class DropdownFieldViewUnitTest {
     }
 
     private PropertyModel buildDefaultPropertyModel() {
-        List<DropdownKeyValue> keyValues = Arrays.asList(
-                new DropdownKeyValue("key1", "value1"), new DropdownKeyValue("key2", "value2"));
+        List<DropdownKeyValue> keyValues =
+                Arrays.asList(
+                        new DropdownKeyValue("key1", "value1"),
+                        new DropdownKeyValue("key2", "value2"));
         return new PropertyModel.Builder(DROPDOWN_ALL_KEYS)
                 .with(IS_REQUIRED, false)
                 .with(DROPDOWN_KEY_VALUE_LIST, keyValues)
@@ -64,9 +64,7 @@ public final class DropdownFieldViewUnitTest {
         return field;
     }
 
-    /**
-     * Test that no error message is displayed if there aren't any validation errors.
-     */
+    /** Test that no error message is displayed if there aren't any validation errors. */
     @Test
     public void testNoErrors() {
         PropertyModel model = buildDefaultPropertyModel();
@@ -78,13 +76,12 @@ public final class DropdownFieldViewUnitTest {
         assertTrue(TextUtils.isEmpty(field.getErrorLabelForTests().getText()));
     }
 
-    /**
-     * Test that the initial error message is cleared when the user changes the dropdown value.
-     */
+    /** Test that the initial error message is cleared when the user changes the dropdown value. */
     @Test
     public void testInitialErrorMessage() {
         PropertyModel model = buildDefaultPropertyModel();
-        model.set(VALIDATOR,
+        model.set(
+                VALIDATOR,
                 EditorFieldValidator.builder()
                         .withInitialErrorMessage("Initial error message")
                         .build());
@@ -109,9 +106,14 @@ public final class DropdownFieldViewUnitTest {
     @Test
     public void testEditKeepInvalid() {
         PropertyModel model = buildDefaultPropertyModel();
-        model.set(VALIDATOR,
+        model.set(
+                VALIDATOR,
                 EditorFieldValidator.builder()
-                        .withValidationPredicate((value) -> { return false; }, "Error Message")
+                        .withValidationPredicate(
+                                (value) -> {
+                                    return false;
+                                },
+                                "Error Message")
                         .build());
         DropdownFieldView field = attachDropdownFieldView(model);
         model.set(VALUE, "value2");

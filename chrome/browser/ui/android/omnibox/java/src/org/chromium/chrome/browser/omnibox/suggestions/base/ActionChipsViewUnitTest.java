@@ -26,9 +26,7 @@ import org.mockito.junit.MockitoRule;
 import org.chromium.base.ContextUtils;
 import org.chromium.base.test.BaseRobolectricTestRunner;
 
-/**
- * Tests for {@link ActionChipsView}.
- */
+/** Tests for {@link ActionChipsView}. */
 @RunWith(BaseRobolectricTestRunner.class)
 public class ActionChipsViewUnitTest {
     public @Rule MockitoRule mMockitoRule = MockitoJUnit.rule();
@@ -71,8 +69,14 @@ public class ActionChipsViewUnitTest {
     public void keyDispatch_shiftTabSelectsPreviousItem() {
         installAdapter();
 
-        var event = new KeyEvent(
-                0, 0, KeyEvent.ACTION_DOWN, KeyEvent.KEYCODE_TAB, 0, KeyEvent.META_SHIFT_ON);
+        var event =
+                new KeyEvent(
+                        0,
+                        0,
+                        KeyEvent.ACTION_DOWN,
+                        KeyEvent.KEYCODE_TAB,
+                        0,
+                        KeyEvent.META_SHIFT_ON);
         assertTrue(event.dispatch(mView));
 
         verify(mView, times(1)).onKeyDown(event.getKeyCode(), event);

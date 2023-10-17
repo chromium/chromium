@@ -39,23 +39,71 @@ public final class HeaderIphScrollListenerTest {
         public Iterable<ParameterSet> getParameters() {
             List<ParameterSet> parameters = new ArrayList<>();
             // Trigger IPH.
-            parameters.add(new ParameterSet().value(true, ScrollState.IDLE,
-                    TriggerState.HAS_NOT_BEEN_DISPLAYED, 10, true, true, true));
+            parameters.add(
+                    new ParameterSet()
+                            .value(
+                                    true,
+                                    ScrollState.IDLE,
+                                    TriggerState.HAS_NOT_BEEN_DISPLAYED,
+                                    10,
+                                    true,
+                                    true,
+                                    true));
             // Don't trigger the IPH because the state is not set to has been displayed.
-            parameters.add(new ParameterSet().value(false, ScrollState.IDLE,
-                    TriggerState.HAS_BEEN_DISPLAYED, 10, true, true, true));
+            parameters.add(
+                    new ParameterSet()
+                            .value(
+                                    false,
+                                    ScrollState.IDLE,
+                                    TriggerState.HAS_BEEN_DISPLAYED,
+                                    10,
+                                    true,
+                                    true,
+                                    true));
             // Don't trigger the IPH because there was not enough scroll done.
-            parameters.add(new ParameterSet().value(false, ScrollState.IDLE,
-                    TriggerState.HAS_NOT_BEEN_DISPLAYED, 1, true, true, true));
+            parameters.add(
+                    new ParameterSet()
+                            .value(
+                                    false,
+                                    ScrollState.IDLE,
+                                    TriggerState.HAS_NOT_BEEN_DISPLAYED,
+                                    1,
+                                    true,
+                                    true,
+                                    true));
             // Don't trigger the IPH because the position in the stream is not suitable for the IPH.
-            parameters.add(new ParameterSet().value(false, ScrollState.IDLE,
-                    TriggerState.HAS_NOT_BEEN_DISPLAYED, 10, false, true, true));
+            parameters.add(
+                    new ParameterSet()
+                            .value(
+                                    false,
+                                    ScrollState.IDLE,
+                                    TriggerState.HAS_NOT_BEEN_DISPLAYED,
+                                    10,
+                                    false,
+                                    true,
+                                    true));
             // Don't trigger the IPH because the feed is not expanded.
-            parameters.add(new ParameterSet().value(false, ScrollState.IDLE,
-                    TriggerState.HAS_NOT_BEEN_DISPLAYED, 10, false, false, true));
+            parameters.add(
+                    new ParameterSet()
+                            .value(
+                                    false,
+                                    ScrollState.IDLE,
+                                    TriggerState.HAS_NOT_BEEN_DISPLAYED,
+                                    10,
+                                    false,
+                                    false,
+                                    true));
             // Don't trigger the IPH because the user is not signed in.
-            parameters.add(new ParameterSet().value(false, ScrollState.IDLE,
-                    TriggerState.HAS_NOT_BEEN_DISPLAYED, 10, false, true, false));
+            parameters.add(
+                    new ParameterSet()
+                            .value(
+                                    false,
+                                    ScrollState.IDLE,
+                                    TriggerState.HAS_NOT_BEEN_DISPLAYED,
+                                    10,
+                                    false,
+                                    true,
+                                    false));
             return parameters;
         }
     }
@@ -69,8 +117,16 @@ public final class HeaderIphScrollListenerTest {
                 parameters.add(parameter);
             }
             // Don't trigger the IPH because the scroll state is not IDLE.
-            parameters.add(new ParameterSet().value(false, ScrollState.DRAGGING,
-                    TriggerState.HAS_NOT_BEEN_DISPLAYED, 10, true, true, true));
+            parameters.add(
+                    new ParameterSet()
+                            .value(
+                                    false,
+                                    ScrollState.DRAGGING,
+                                    TriggerState.HAS_NOT_BEEN_DISPLAYED,
+                                    10,
+                                    true,
+                                    true,
+                                    true));
             return parameters;
         }
     }
@@ -84,16 +140,23 @@ public final class HeaderIphScrollListenerTest {
                 parameters.add(parameter);
             }
             // Don't trigger the IPH because the vertical offset is 0.
-            parameters.add(new ParameterSet().value(false, ScrollState.IDLE,
-                    TriggerState.HAS_NOT_BEEN_DISPLAYED, 0, true, true, true));
+            parameters.add(
+                    new ParameterSet()
+                            .value(
+                                    false,
+                                    ScrollState.IDLE,
+                                    TriggerState.HAS_NOT_BEEN_DISPLAYED,
+                                    0,
+                                    true,
+                                    true,
+                                    true));
             return parameters;
         }
     }
 
     private static final int FEED_VIEW_HEIGHT = 100;
 
-    @Mock
-    private Tracker mTracker;
+    @Mock private Tracker mTracker;
 
     private boolean mHasShownMenuIph;
 
@@ -105,80 +168,100 @@ public final class HeaderIphScrollListenerTest {
     @Test
     @Feature({"Feed"})
     @ParameterAnnotations.UseMethodParameter(TestParamsForOnScroll.class)
-    public void onScrollStateChanged_triggerIph(boolean expectEnabled, int scrollState,
-            int triggerState, int verticalScrollOffset,
-            boolean isFeedHeaderPositionInRecyclerViewSuitableForIPH, boolean isFeedExpanded,
+    public void onScrollStateChanged_triggerIph(
+            boolean expectEnabled,
+            int scrollState,
+            int triggerState,
+            int verticalScrollOffset,
+            boolean isFeedHeaderPositionInRecyclerViewSuitableForIPH,
+            boolean isFeedExpanded,
             boolean isSignedIn) {
         // Set Tracker mock.
         when(mTracker.getTriggerState(FeatureConstants.FEED_HEADER_MENU_FEATURE))
                 .thenReturn(triggerState);
 
-        FeedBubbleDelegate delegate = new FeedBubbleDelegate() {
-            @Override
-            public Tracker getFeatureEngagementTracker() {
-                return mTracker;
-            }
-            @Override
-            public boolean isFeedExpanded() {
-                return isFeedExpanded;
-            }
-            @Override
-            public boolean isSignedIn() {
-                return isSignedIn;
-            }
-            @Override
-            public boolean isFeedHeaderPositionInContainerSuitableForIPH(
-                    float headerMaxPosFraction) {
-                return isFeedHeaderPositionInRecyclerViewSuitableForIPH;
-            }
-            @Override
-            public long getCurrentTimeMs() {
-                return 0;
-            }
-            @Override
-            public long getLastFetchTimeMs() {
-                return 0;
-            }
-            @Override
-            public boolean canScrollUp() {
-                return false;
-            }
-            @Override
-            public boolean isShowingBackToTopBubble() {
-                return false;
-            }
-            @Override
-            public int getHeaderCount() {
-                return 0;
-            }
-            @Override
-            public int getItemCount() {
-                return 0;
-            }
-            @Override
-            public int getFirstVisiblePosition() {
-                return 0;
-            }
-            @Override
-            public int getLastVisiblePosition() {
-                return 0;
-            }
-        };
+        FeedBubbleDelegate delegate =
+                new FeedBubbleDelegate() {
+                    @Override
+                    public Tracker getFeatureEngagementTracker() {
+                        return mTracker;
+                    }
+
+                    @Override
+                    public boolean isFeedExpanded() {
+                        return isFeedExpanded;
+                    }
+
+                    @Override
+                    public boolean isSignedIn() {
+                        return isSignedIn;
+                    }
+
+                    @Override
+                    public boolean isFeedHeaderPositionInContainerSuitableForIPH(
+                            float headerMaxPosFraction) {
+                        return isFeedHeaderPositionInRecyclerViewSuitableForIPH;
+                    }
+
+                    @Override
+                    public long getCurrentTimeMs() {
+                        return 0;
+                    }
+
+                    @Override
+                    public long getLastFetchTimeMs() {
+                        return 0;
+                    }
+
+                    @Override
+                    public boolean canScrollUp() {
+                        return false;
+                    }
+
+                    @Override
+                    public boolean isShowingBackToTopBubble() {
+                        return false;
+                    }
+
+                    @Override
+                    public int getHeaderCount() {
+                        return 0;
+                    }
+
+                    @Override
+                    public int getItemCount() {
+                        return 0;
+                    }
+
+                    @Override
+                    public int getFirstVisiblePosition() {
+                        return 0;
+                    }
+
+                    @Override
+                    public int getLastVisiblePosition() {
+                        return 0;
+                    }
+                };
 
         ScrollableContainerDelegate scrollableContainerDelegate =
                 new ScrollableContainerDelegate() {
                     @Override
                     public void addScrollListener(ScrollListener listener) {}
+
                     @Override
                     public void removeScrollListener(ScrollListener listener) {}
+
                     @Override
                     public int getVerticalScrollOffset() {
                         return verticalScrollOffset;
                     }
+
                     @Override
                     public int getRootViewHeight() {
                         return FEED_VIEW_HEIGHT;
                     }
+
                     @Override
                     public int getTopPositionRelativeToContainerView(View childView) {
                         return 0;
@@ -186,8 +269,13 @@ public final class HeaderIphScrollListenerTest {
                 };
 
         // Trigger IPH through the scroll listener.
-        HeaderIphScrollListener listener = new HeaderIphScrollListener(
-                delegate, scrollableContainerDelegate, () -> { mHasShownMenuIph = true; });
+        HeaderIphScrollListener listener =
+                new HeaderIphScrollListener(
+                        delegate,
+                        scrollableContainerDelegate,
+                        () -> {
+                            mHasShownMenuIph = true;
+                        });
         listener.onScrollStateChanged(scrollState);
 
         if (expectEnabled) {
@@ -200,80 +288,100 @@ public final class HeaderIphScrollListenerTest {
     @Test
     @Feature({"Feed"})
     @ParameterAnnotations.UseMethodParameter(TestParamsForOnOffsetChanged.class)
-    public void onScrollStateChanged_onHeaderOffsetChanged(boolean expectEnabled, int scrollState,
-            int triggerState, int verticalScrollOffset,
-            boolean isFeedHeaderPositionInRecyclerViewSuitableForIPH, boolean isFeedExpanded,
+    public void onScrollStateChanged_onHeaderOffsetChanged(
+            boolean expectEnabled,
+            int scrollState,
+            int triggerState,
+            int verticalScrollOffset,
+            boolean isFeedHeaderPositionInRecyclerViewSuitableForIPH,
+            boolean isFeedExpanded,
             boolean isSignedIn) {
         // Set Tracker mock.
         when(mTracker.getTriggerState(FeatureConstants.FEED_HEADER_MENU_FEATURE))
                 .thenReturn(triggerState);
 
-        FeedBubbleDelegate delegate = new FeedBubbleDelegate() {
-            @Override
-            public Tracker getFeatureEngagementTracker() {
-                return mTracker;
-            }
-            @Override
-            public boolean isFeedExpanded() {
-                return isFeedExpanded;
-            }
-            @Override
-            public boolean isSignedIn() {
-                return isSignedIn;
-            }
-            @Override
-            public boolean isFeedHeaderPositionInContainerSuitableForIPH(
-                    float headerMaxPosFraction) {
-                return isFeedHeaderPositionInRecyclerViewSuitableForIPH;
-            }
-            @Override
-            public long getCurrentTimeMs() {
-                return 0;
-            }
-            @Override
-            public long getLastFetchTimeMs() {
-                return 0;
-            }
-            @Override
-            public boolean canScrollUp() {
-                return false;
-            }
-            @Override
-            public boolean isShowingBackToTopBubble() {
-                return false;
-            }
-            @Override
-            public int getHeaderCount() {
-                return 0;
-            }
-            @Override
-            public int getItemCount() {
-                return 0;
-            }
-            @Override
-            public int getFirstVisiblePosition() {
-                return 0;
-            }
-            @Override
-            public int getLastVisiblePosition() {
-                return 0;
-            }
-        };
+        FeedBubbleDelegate delegate =
+                new FeedBubbleDelegate() {
+                    @Override
+                    public Tracker getFeatureEngagementTracker() {
+                        return mTracker;
+                    }
+
+                    @Override
+                    public boolean isFeedExpanded() {
+                        return isFeedExpanded;
+                    }
+
+                    @Override
+                    public boolean isSignedIn() {
+                        return isSignedIn;
+                    }
+
+                    @Override
+                    public boolean isFeedHeaderPositionInContainerSuitableForIPH(
+                            float headerMaxPosFraction) {
+                        return isFeedHeaderPositionInRecyclerViewSuitableForIPH;
+                    }
+
+                    @Override
+                    public long getCurrentTimeMs() {
+                        return 0;
+                    }
+
+                    @Override
+                    public long getLastFetchTimeMs() {
+                        return 0;
+                    }
+
+                    @Override
+                    public boolean canScrollUp() {
+                        return false;
+                    }
+
+                    @Override
+                    public boolean isShowingBackToTopBubble() {
+                        return false;
+                    }
+
+                    @Override
+                    public int getHeaderCount() {
+                        return 0;
+                    }
+
+                    @Override
+                    public int getItemCount() {
+                        return 0;
+                    }
+
+                    @Override
+                    public int getFirstVisiblePosition() {
+                        return 0;
+                    }
+
+                    @Override
+                    public int getLastVisiblePosition() {
+                        return 0;
+                    }
+                };
 
         ScrollableContainerDelegate scrollableContainerDelegate =
                 new ScrollableContainerDelegate() {
                     @Override
                     public void addScrollListener(ScrollListener listener) {}
+
                     @Override
                     public void removeScrollListener(ScrollListener listener) {}
+
                     @Override
                     public int getVerticalScrollOffset() {
                         return 0;
                     }
+
                     @Override
                     public int getRootViewHeight() {
                         return FEED_VIEW_HEIGHT;
                     }
+
                     @Override
                     public int getTopPositionRelativeToContainerView(View childView) {
                         return 0;
@@ -281,8 +389,13 @@ public final class HeaderIphScrollListenerTest {
                 };
 
         // Trigger IPH through the scroll listener.
-        HeaderIphScrollListener listener = new HeaderIphScrollListener(
-                delegate, scrollableContainerDelegate, () -> { mHasShownMenuIph = true; });
+        HeaderIphScrollListener listener =
+                new HeaderIphScrollListener(
+                        delegate,
+                        scrollableContainerDelegate,
+                        () -> {
+                            mHasShownMenuIph = true;
+                        });
         listener.onHeaderOffsetChanged(-verticalScrollOffset);
 
         if (expectEnabled) {

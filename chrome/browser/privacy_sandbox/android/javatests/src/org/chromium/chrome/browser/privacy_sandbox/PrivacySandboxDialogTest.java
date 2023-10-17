@@ -81,15 +81,13 @@ public final class PrivacySandboxDialogTest {
                     .setBugComponent(ChromeRenderTestRule.Component.UI_SETTINGS_PRIVACY)
                     .build();
 
-    @Rule
-    public JniMocker mocker = new JniMocker();
+    @Rule public JniMocker mocker = new JniMocker();
 
     private BottomSheetController mBottomSheetController;
 
     private FakePrivacySandboxBridge mFakePrivacySandboxBridge;
 
-    @Mock
-    private SettingsLauncher mSettingsLauncher;
+    @Mock private SettingsLauncher mSettingsLauncher;
 
     private Dialog mDialog;
 
@@ -98,49 +96,59 @@ public final class PrivacySandboxDialogTest {
         MockitoAnnotations.initMocks(this);
         mFakePrivacySandboxBridge = new FakePrivacySandboxBridge();
         mocker.mock(PrivacySandboxBridgeJni.TEST_HOOKS, mFakePrivacySandboxBridge);
-        mBottomSheetController = sActivityTestRule.getActivity()
-                                         .getRootUiCoordinatorForTesting()
-                                         .getBottomSheetController();
+        mBottomSheetController =
+                sActivityTestRule
+                        .getActivity()
+                        .getRootUiCoordinatorForTesting()
+                        .getBottomSheetController();
         PrivacySandboxDialogController.resetShowNewNoticeForTesting();
         PrivacySandboxDialogController.disableAnimationsForTesting(true);
     }
 
     @After
     public void tearDown() {
-        TestThreadUtils.runOnUiThreadBlocking(() -> {
-            // Dismiss the dialog between the tests. Necessary due to batching.
-            if (mDialog != null) {
-                mDialog.dismiss();
-                mDialog = null;
-            }
-        });
+        TestThreadUtils.runOnUiThreadBlocking(
+                () -> {
+                    // Dismiss the dialog between the tests. Necessary due to batching.
+                    if (mDialog != null) {
+                        mDialog.dismiss();
+                        mDialog = null;
+                    }
+                });
     }
 
     private void renderViewWithId(int id, String renderId) {
         onViewWaiting(withId(id));
-        onView(withId(id)).check((v, noMatchException) -> {
-            if (noMatchException != null) throw noMatchException;
-            // Allow disk writes and slow calls to render from UI thread.
-            try (StrictModeContext ignored = StrictModeContext.allowAllThreadPolicies()) {
-                TestThreadUtils.runOnUiThreadBlocking(() -> RenderTestRule.sanitize(v));
-                mRenderTestRule.render(v, renderId);
-            } catch (IOException e) {
-                assert false : "Render test failed due to " + e;
-            }
-        });
+        onView(withId(id))
+                .check(
+                        (v, noMatchException) -> {
+                            if (noMatchException != null) throw noMatchException;
+                            // Allow disk writes and slow calls to render from UI thread.
+                            try (StrictModeContext ignored =
+                                    StrictModeContext.allowAllThreadPolicies()) {
+                                TestThreadUtils.runOnUiThreadBlocking(
+                                        () -> RenderTestRule.sanitize(v));
+                                mRenderTestRule.render(v, renderId);
+                            } catch (IOException e) {
+                                assert false : "Render test failed due to " + e;
+                            }
+                        });
     }
 
     private void launchDialog() {
-        TestThreadUtils.runOnUiThreadBlocking(() -> {
-            if (mDialog != null) {
-                mDialog.dismiss();
-                mDialog = null;
-            }
-            PrivacySandboxDialogController.maybeLaunchPrivacySandboxDialog(
-                    sActivityTestRule.getActivity(), mSettingsLauncher, /*isIncognito=*/false,
-                    mBottomSheetController);
-            mDialog = PrivacySandboxDialogController.getDialogForTesting();
-        });
+        TestThreadUtils.runOnUiThreadBlocking(
+                () -> {
+                    if (mDialog != null) {
+                        mDialog.dismiss();
+                        mDialog = null;
+                    }
+                    PrivacySandboxDialogController.maybeLaunchPrivacySandboxDialog(
+                            sActivityTestRule.getActivity(),
+                            mSettingsLauncher,
+                            /* isIncognito= */ false,
+                            mBottomSheetController);
+                    mDialog = PrivacySandboxDialogController.getDialogForTesting();
+                });
     }
 
     private void tryClickOn(Matcher<View> viewMatcher) {
@@ -154,14 +162,19 @@ public final class PrivacySandboxDialogTest {
                 onView(withId(R.id.more_button)).perform(click());
                 var promptType = mFakePrivacySandboxBridge.getRequiredPromptType();
                 if (promptType == PromptType.M1_CONSENT) {
-                    assertEquals("Last dialog action", PromptAction.CONSENT_MORE_BUTTON_CLICKED,
+                    assertEquals(
+                            "Last dialog action",
+                            PromptAction.CONSENT_MORE_BUTTON_CLICKED,
                             (int) mFakePrivacySandboxBridge.getLastPromptAction());
                 } else if (promptType == PromptType.M1_NOTICE_EEA
                         || promptType == PromptType.M1_NOTICE_ROW) {
-                    assertEquals("Last dialog action", PromptAction.NOTICE_MORE_BUTTON_CLICKED,
+                    assertEquals(
+                            "Last dialog action",
+                            PromptAction.NOTICE_MORE_BUTTON_CLICKED,
                             (int) mFakePrivacySandboxBridge.getLastPromptAction());
                 } else if (promptType == PromptType.M1_NOTICE_RESTRICTED) {
-                    assertEquals("Last dialog action",
+                    assertEquals(
+                            "Last dialog action",
                             PromptAction.RESTRICTED_NOTICE_MORE_BUTTON_CLICKED,
                             (int) mFakePrivacySandboxBridge.getLastPromptAction());
                 }
@@ -175,10 +188,11 @@ public final class PrivacySandboxDialogTest {
     @SmallTest
     @Feature({"RenderTest"})
     public void testRenderConsent() throws IOException {
-        TestThreadUtils.runOnUiThreadBlocking(() -> {
-            mDialog = new PrivacySandboxDialogConsent(sActivityTestRule.getActivity());
-            mDialog.show();
-        });
+        TestThreadUtils.runOnUiThreadBlocking(
+                () -> {
+                    mDialog = new PrivacySandboxDialogConsent(sActivityTestRule.getActivity());
+                    mDialog.show();
+                });
         renderViewWithId(R.id.privacy_sandbox_dialog, "privacy_sandbox_consent_dialog");
     }
 
@@ -186,10 +200,11 @@ public final class PrivacySandboxDialogTest {
     @SmallTest
     @Feature({"RenderTest"})
     public void testRenderConsentExpanded() throws IOException {
-        TestThreadUtils.runOnUiThreadBlocking(() -> {
-            mDialog = new PrivacySandboxDialogConsent(sActivityTestRule.getActivity());
-            mDialog.show();
-        });
+        TestThreadUtils.runOnUiThreadBlocking(
+                () -> {
+                    mDialog = new PrivacySandboxDialogConsent(sActivityTestRule.getActivity());
+                    mDialog.show();
+                });
         onViewWaiting(withId(R.id.privacy_sandbox_dialog));
         onView(withId(R.id.dropdown_element)).perform(scrollTo(), click());
         onView(withId(R.id.privacy_sandbox_consent_dropdown)).perform(scrollTo());
@@ -200,11 +215,13 @@ public final class PrivacySandboxDialogTest {
     @SmallTest
     @Feature({"RenderTest"})
     public void testRenderNotice() throws IOException {
-        TestThreadUtils.runOnUiThreadBlocking(() -> {
-            mDialog = new PrivacySandboxDialogNotice(
-                    sActivityTestRule.getActivity(), mSettingsLauncher);
-            mDialog.show();
-        });
+        TestThreadUtils.runOnUiThreadBlocking(
+                () -> {
+                    mDialog =
+                            new PrivacySandboxDialogNotice(
+                                    sActivityTestRule.getActivity(), mSettingsLauncher);
+                    mDialog.show();
+                });
         renderViewWithId(R.id.privacy_sandbox_dialog, "privacy_sandbox_notice_dialog");
     }
 
@@ -212,11 +229,15 @@ public final class PrivacySandboxDialogTest {
     @SmallTest
     @Feature({"RenderTest"})
     public void testRenderEEAConsent() throws IOException {
-        TestThreadUtils.runOnUiThreadBlocking(() -> {
-            mDialog = new PrivacySandboxDialogConsentEEAV4(
-                    sActivityTestRule.getActivity(), mSettingsLauncher, /*animate = */ false);
-            mDialog.show();
-        });
+        TestThreadUtils.runOnUiThreadBlocking(
+                () -> {
+                    mDialog =
+                            new PrivacySandboxDialogConsentEEAV4(
+                                    sActivityTestRule.getActivity(),
+                                    mSettingsLauncher,
+                                    /* animate= */ false);
+                    mDialog.show();
+                });
         renderViewWithId(R.id.privacy_sandbox_dialog, "privacy_sandbox_eea_consent_dialog");
     }
 
@@ -224,11 +245,13 @@ public final class PrivacySandboxDialogTest {
     @SmallTest
     @Feature({"RenderTest"})
     public void testRenderEEANotice() throws IOException {
-        TestThreadUtils.runOnUiThreadBlocking(() -> {
-            mDialog = new PrivacySandboxDialogNoticeEEAV4(
-                    sActivityTestRule.getActivity(), mSettingsLauncher);
-            mDialog.show();
-        });
+        TestThreadUtils.runOnUiThreadBlocking(
+                () -> {
+                    mDialog =
+                            new PrivacySandboxDialogNoticeEEAV4(
+                                    sActivityTestRule.getActivity(), mSettingsLauncher);
+                    mDialog.show();
+                });
         renderViewWithId(R.id.privacy_sandbox_dialog, "privacy_sandbox_eea_notice_dialog");
     }
 
@@ -236,11 +259,13 @@ public final class PrivacySandboxDialogTest {
     @SmallTest
     @Feature({"RenderTest"})
     public void testRenderROWNotice() throws IOException {
-        TestThreadUtils.runOnUiThreadBlocking(() -> {
-            mDialog = new PrivacySandboxDialogNoticeROWV4(
-                    sActivityTestRule.getActivity(), mSettingsLauncher);
-            mDialog.show();
-        });
+        TestThreadUtils.runOnUiThreadBlocking(
+                () -> {
+                    mDialog =
+                            new PrivacySandboxDialogNoticeROWV4(
+                                    sActivityTestRule.getActivity(), mSettingsLauncher);
+                    mDialog.show();
+                });
         renderViewWithId(R.id.privacy_sandbox_dialog, "privacy_sandbox_row_notice_dialog");
     }
 
@@ -248,22 +273,27 @@ public final class PrivacySandboxDialogTest {
     @SmallTest
     @Feature({"RenderTest"})
     public void testRenderRestrictedNotice() throws IOException {
-        TestThreadUtils.runOnUiThreadBlocking(() -> {
-            mDialog = new PrivacySandboxDialogNoticeRestrictedV4(
-                    sActivityTestRule.getActivity(), mSettingsLauncher);
-            mDialog.show();
-        });
+        TestThreadUtils.runOnUiThreadBlocking(
+                () -> {
+                    mDialog =
+                            new PrivacySandboxDialogNoticeRestrictedV4(
+                                    sActivityTestRule.getActivity(), mSettingsLauncher);
+                    mDialog.show();
+                });
         renderViewWithId(R.id.privacy_sandbox_dialog, "privacy_sandbox_restricted_notice_dialog");
     }
 
     @Test
     @SmallTest
     public void testControllerIncognito() throws IOException {
-        TestThreadUtils.runOnUiThreadBlocking(() -> {
-            PrivacySandboxDialogController.maybeLaunchPrivacySandboxDialog(
-                    sActivityTestRule.getActivity(), mSettingsLauncher, /*isIncognito=*/true,
-                    mBottomSheetController);
-        });
+        TestThreadUtils.runOnUiThreadBlocking(
+                () -> {
+                    PrivacySandboxDialogController.maybeLaunchPrivacySandboxDialog(
+                            sActivityTestRule.getActivity(),
+                            mSettingsLauncher,
+                            /* isIncognito= */ true,
+                            mBottomSheetController);
+                });
         // Verify that nothing is shown. Notice & Consent share a title.
         onView(withText(R.string.privacy_sandbox_consent_title)).check(doesNotExist());
     }
@@ -284,11 +314,15 @@ public final class PrivacySandboxDialogTest {
         launchDialog();
         // Verify that the consent is shown and the action is recorded.
         onViewWaiting(withId(R.id.privacy_sandbox_consent_title));
-        assertEquals("Last dialog action", PromptAction.CONSENT_SHOWN,
+        assertEquals(
+                "Last dialog action",
+                PromptAction.CONSENT_SHOWN,
                 (int) mFakePrivacySandboxBridge.getLastPromptAction());
         // Accept the consent and verify it worked correctly.
         onView(withText(R.string.privacy_sandbox_dialog_yes_button)).perform(click());
-        assertEquals("Last dialog action", PromptAction.CONSENT_ACCEPTED,
+        assertEquals(
+                "Last dialog action",
+                PromptAction.CONSENT_ACCEPTED,
                 (int) mFakePrivacySandboxBridge.getLastPromptAction());
         onView(withId(R.id.privacy_sandbox_consent_title)).check(doesNotExist());
 
@@ -296,18 +330,24 @@ public final class PrivacySandboxDialogTest {
         // Click on the expanding section and verify it worked correctly.
         onViewWaiting(withId(R.id.privacy_sandbox_consent_title));
         onView(withId(R.id.dropdown_element)).perform(scrollTo(), click());
-        assertEquals("Last dialog action", PromptAction.CONSENT_MORE_INFO_OPENED,
+        assertEquals(
+                "Last dialog action",
+                PromptAction.CONSENT_MORE_INFO_OPENED,
                 (int) mFakePrivacySandboxBridge.getLastPromptAction());
         onView(withId(R.id.privacy_sandbox_consent_dropdown)).perform(scrollTo());
         onView(withId(R.id.privacy_sandbox_consent_dropdown)).check(matches(isDisplayed()));
         onView(withId(R.id.dropdown_element)).perform(scrollTo(), click());
-        assertEquals("Last dialog action", PromptAction.CONSENT_MORE_INFO_CLOSED,
+        assertEquals(
+                "Last dialog action",
+                PromptAction.CONSENT_MORE_INFO_CLOSED,
                 (int) mFakePrivacySandboxBridge.getLastPromptAction());
         onView(withId(R.id.privacy_sandbox_consent_dropdown)).check(doesNotExist());
 
         // Decline the consent and verify it worked correctly.
         onView(withText(R.string.privacy_sandbox_dialog_no_button)).perform(click());
-        assertEquals("Last dialog action", PromptAction.CONSENT_DECLINED,
+        assertEquals(
+                "Last dialog action",
+                PromptAction.CONSENT_DECLINED,
                 (int) mFakePrivacySandboxBridge.getLastPromptAction());
         onView(withId(R.id.privacy_sandbox_consent_title)).check(doesNotExist());
     }
@@ -336,11 +376,15 @@ public final class PrivacySandboxDialogTest {
 
         // Verify that the EEA consent is shown
         onViewWaiting(withId(R.id.privacy_sandbox_m1_consent_title));
-        assertEquals("Last dialog action", PromptAction.CONSENT_SHOWN,
+        assertEquals(
+                "Last dialog action",
+                PromptAction.CONSENT_SHOWN,
                 (int) mFakePrivacySandboxBridge.getLastPromptAction());
         // Accept the consent and verify it worked correctly.
         tryClickOn(withId(R.id.ack_button));
-        assertEquals("Last dialog action", PromptAction.CONSENT_ACCEPTED,
+        assertEquals(
+                "Last dialog action",
+                PromptAction.CONSENT_ACCEPTED,
                 (int) mFakePrivacySandboxBridge.getLastPromptAction());
         onView(withId(R.id.privacy_sandbox_consent_eea_dropdown)).check(doesNotExist());
     }
@@ -356,19 +400,25 @@ public final class PrivacySandboxDialogTest {
         // Click on the expanding section and verify it worked correctly.
         onViewWaiting(withId(R.id.privacy_sandbox_m1_consent_title));
         onView(withId(R.id.dropdown_element)).perform(scrollTo(), click());
-        assertEquals("Last dialog action", PromptAction.CONSENT_MORE_INFO_OPENED,
+        assertEquals(
+                "Last dialog action",
+                PromptAction.CONSENT_MORE_INFO_OPENED,
                 (int) mFakePrivacySandboxBridge.getLastPromptAction());
 
         onView(withId(R.id.privacy_sandbox_consent_eea_dropdown)).perform(scrollTo());
         onView(withId(R.id.privacy_sandbox_consent_eea_dropdown)).check(matches(isDisplayed()));
         onView(withId(R.id.dropdown_element)).perform(scrollTo(), click());
-        assertEquals("Last dialog action", PromptAction.CONSENT_MORE_INFO_CLOSED,
+        assertEquals(
+                "Last dialog action",
+                PromptAction.CONSENT_MORE_INFO_CLOSED,
                 (int) mFakePrivacySandboxBridge.getLastPromptAction());
         onView(withId(R.id.privacy_sandbox_consent_eea_dropdown)).check(doesNotExist());
 
         // Decline the consent and verify it worked correctly.
         tryClickOn(withId(R.id.no_button));
-        assertEquals("Last dialog action", PromptAction.CONSENT_DECLINED,
+        assertEquals(
+                "Last dialog action",
+                PromptAction.CONSENT_DECLINED,
                 (int) mFakePrivacySandboxBridge.getLastPromptAction());
         onView(withId(R.id.privacy_sandbox_consent_eea_dropdown)).check(doesNotExist());
     }
@@ -415,11 +465,15 @@ public final class PrivacySandboxDialogTest {
         launchDialog();
         // Verify that the EEA notice is shown
         onViewWaiting(withId(R.id.privacy_sandbox_notice_title));
-        assertEquals("Last dialog action", PromptAction.NOTICE_SHOWN,
+        assertEquals(
+                "Last dialog action",
+                PromptAction.NOTICE_SHOWN,
                 (int) mFakePrivacySandboxBridge.getLastPromptAction());
         // Ack the notice and verify it worked correctly.
         tryClickOn(withId(R.id.ack_button));
-        assertEquals("Last dialog action", PromptAction.NOTICE_ACKNOWLEDGE,
+        assertEquals(
+                "Last dialog action",
+                PromptAction.NOTICE_ACKNOWLEDGE,
                 (int) mFakePrivacySandboxBridge.getLastPromptAction());
         onView(withId(R.id.privacy_sandbox_notice_title)).check(doesNotExist());
 
@@ -427,24 +481,32 @@ public final class PrivacySandboxDialogTest {
         // Click on the expanding section and verify it worked correctly.
         onViewWaiting(withId(R.id.privacy_sandbox_notice_title));
         onView(withId(R.id.dropdown_element)).perform(scrollTo(), click());
-        assertEquals("Last dialog action", PromptAction.NOTICE_MORE_INFO_OPENED,
+        assertEquals(
+                "Last dialog action",
+                PromptAction.NOTICE_MORE_INFO_OPENED,
                 (int) mFakePrivacySandboxBridge.getLastPromptAction());
 
         onView(withId(R.id.privacy_sandbox_notice_eea_dropdown)).perform(scrollTo());
         onView(withId(R.id.privacy_sandbox_notice_eea_dropdown)).check(matches(isDisplayed()));
         onView(withId(R.id.dropdown_element)).perform(scrollTo(), click());
-        assertEquals("Last dialog action", PromptAction.NOTICE_MORE_INFO_CLOSED,
+        assertEquals(
+                "Last dialog action",
+                PromptAction.NOTICE_MORE_INFO_CLOSED,
                 (int) mFakePrivacySandboxBridge.getLastPromptAction());
         onView(withId(R.id.privacy_sandbox_notice_eea_dropdown)).check(doesNotExist());
 
         // Click on the settings button and verify it worked correctly.
         tryClickOn(withId(R.id.settings_button));
         onView(withId(R.id.privacy_sandbox_notice_title)).check(doesNotExist());
-        assertEquals("Last dialog action", PromptAction.NOTICE_OPEN_SETTINGS,
+        assertEquals(
+                "Last dialog action",
+                PromptAction.NOTICE_OPEN_SETTINGS,
                 (int) mFakePrivacySandboxBridge.getLastPromptAction());
         Mockito.verify(mSettingsLauncher)
-                .launchSettingsActivity(any(Context.class),
-                        eq(PrivacySandboxSettingsFragmentV4.class), any(Bundle.class));
+                .launchSettingsActivity(
+                        any(Context.class),
+                        eq(PrivacySandboxSettingsFragmentV4.class),
+                        any(Bundle.class));
     }
 
     @Test
@@ -454,11 +516,15 @@ public final class PrivacySandboxDialogTest {
         launchDialog();
         // Verify that the ROW notice is shown
         onViewWaiting(withId(R.id.privacy_sandbox_notice_title));
-        assertEquals("Last dialog action", PromptAction.NOTICE_SHOWN,
+        assertEquals(
+                "Last dialog action",
+                PromptAction.NOTICE_SHOWN,
                 (int) mFakePrivacySandboxBridge.getLastPromptAction());
         // Ack the notice and verify it worked correctly.
         tryClickOn(withId(R.id.ack_button));
-        assertEquals("Last dialog action", PromptAction.NOTICE_ACKNOWLEDGE,
+        assertEquals(
+                "Last dialog action",
+                PromptAction.NOTICE_ACKNOWLEDGE,
                 (int) mFakePrivacySandboxBridge.getLastPromptAction());
         onView(withId(R.id.privacy_sandbox_notice_title)).check(doesNotExist());
 
@@ -466,23 +532,31 @@ public final class PrivacySandboxDialogTest {
         // Click on the expanding section and verify it worked correctly.
         onViewWaiting(withId(R.id.privacy_sandbox_notice_title));
         onView(withId(R.id.dropdown_element)).perform(scrollTo(), click());
-        assertEquals("Last dialog action", PromptAction.NOTICE_MORE_INFO_OPENED,
+        assertEquals(
+                "Last dialog action",
+                PromptAction.NOTICE_MORE_INFO_OPENED,
                 (int) mFakePrivacySandboxBridge.getLastPromptAction());
 
         onView(withId(R.id.privacy_sandbox_notice_row_dropdown)).check(matches(isDisplayed()));
         onView(withId(R.id.dropdown_element)).perform(scrollTo(), click());
-        assertEquals("Last dialog action", PromptAction.NOTICE_MORE_INFO_CLOSED,
+        assertEquals(
+                "Last dialog action",
+                PromptAction.NOTICE_MORE_INFO_CLOSED,
                 (int) mFakePrivacySandboxBridge.getLastPromptAction());
         onView(withId(R.id.privacy_sandbox_notice_row_dropdown)).check(doesNotExist());
 
         // Click on the settings button and verify it worked correctly.
         tryClickOn(withId(R.id.settings_button));
-        assertEquals("Last dialog action", PromptAction.NOTICE_OPEN_SETTINGS,
+        assertEquals(
+                "Last dialog action",
+                PromptAction.NOTICE_OPEN_SETTINGS,
                 (int) mFakePrivacySandboxBridge.getLastPromptAction());
         onView(withId(R.id.privacy_sandbox_notice_title)).check(doesNotExist());
         Mockito.verify(mSettingsLauncher)
-                .launchSettingsActivity(any(Context.class),
-                        eq(PrivacySandboxSettingsFragmentV4.class), any(Bundle.class));
+                .launchSettingsActivity(
+                        any(Context.class),
+                        eq(PrivacySandboxSettingsFragmentV4.class),
+                        any(Bundle.class));
     }
 
     @Test
@@ -492,18 +566,24 @@ public final class PrivacySandboxDialogTest {
         launchDialog();
         // Verify that the restricted notice is shown
         onViewWaiting(withId(R.id.privacy_sandbox_notice_title));
-        assertEquals("Last dialog action", PromptAction.RESTRICTED_NOTICE_SHOWN,
+        assertEquals(
+                "Last dialog action",
+                PromptAction.RESTRICTED_NOTICE_SHOWN,
                 (int) mFakePrivacySandboxBridge.getLastPromptAction());
         // Ack the notice and verify it worked correctly.
         tryClickOn(withId(R.id.ack_button));
-        assertEquals("Last dialog action", PromptAction.RESTRICTED_NOTICE_ACKNOWLEDGE,
+        assertEquals(
+                "Last dialog action",
+                PromptAction.RESTRICTED_NOTICE_ACKNOWLEDGE,
                 (int) mFakePrivacySandboxBridge.getLastPromptAction());
         onView(withId(R.id.privacy_sandbox_notice_title)).check(doesNotExist());
 
         // Click on the settings button and verify it worked correctly.
         launchDialog();
         tryClickOn(withId(R.id.settings_button));
-        assertEquals("Last dialog action", PromptAction.RESTRICTED_NOTICE_OPEN_SETTINGS,
+        assertEquals(
+                "Last dialog action",
+                PromptAction.RESTRICTED_NOTICE_OPEN_SETTINGS,
                 (int) mFakePrivacySandboxBridge.getLastPromptAction());
         onView(withId(R.id.privacy_sandbox_notice_title)).check(doesNotExist());
         Mockito.verify(mSettingsLauncher)

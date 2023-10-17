@@ -35,14 +35,13 @@ import org.chromium.chrome.browser.ui.theme.BrandedColorScheme;
 import org.chromium.ui.modelutil.PropertyModel;
 import org.chromium.ui.modelutil.PropertyModelChangeProcessor;
 
-/**
- * Unit tests for {@link UrlBarViewBinder}.
- */
+/** Unit tests for {@link UrlBarViewBinder}. */
 @RunWith(BaseRobolectricTestRunner.class)
-@Config(manifest = Config.NONE, shadows = {ShadowOmniboxResourceProvider.class})
+@Config(
+        manifest = Config.NONE,
+        shadows = {ShadowOmniboxResourceProvider.class})
 public class UrlBarViewBinderUnitTest {
-    @Mock
-    Callback<Boolean> mFocusChangeCallback;
+    @Mock Callback<Boolean> mFocusChangeCallback;
 
     private Activity mActivity;
     PropertyModel mModel;
@@ -70,8 +69,9 @@ public class UrlBarViewBinderUnitTest {
         mActivity = Robolectric.buildActivity(Activity.class).setup().get();
 
         mModel = new PropertyModel(UrlBarProperties.ALL_KEYS);
-        mMediator = new UrlBarMediator(
-                ContextUtils.getApplicationContext(), mModel, mFocusChangeCallback);
+        mMediator =
+                new UrlBarMediator(
+                        ContextUtils.getApplicationContext(), mModel, mFocusChangeCallback);
         mUrlBar = new UrlBarApi26(mActivity, null);
         PropertyModelChangeProcessor.create(mModel, mUrlBar, UrlBarViewBinder::bind);
     }

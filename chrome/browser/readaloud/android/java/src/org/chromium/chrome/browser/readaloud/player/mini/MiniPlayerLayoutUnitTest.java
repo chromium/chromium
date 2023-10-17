@@ -50,16 +50,18 @@ public class MiniPlayerLayoutUnitTest {
     private final Activity mActivity;
     private final MiniPlayerLayout mLayout;
 
-    @Mock
-    private InteractionHandler mInteractionHandler;
+    @Mock private InteractionHandler mInteractionHandler;
     @Mock private MiniPlayerMediator mMediator;
 
     public MiniPlayerLayoutUnitTest() {
         mActivity = Robolectric.buildActivity(AppCompatActivity.class).setup().get();
         // Need to set theme before inflating layout.
         mActivity.setTheme(R.style.Theme_BrowserUI_DayNight);
-        mLayout = (MiniPlayerLayout) mActivity.getLayoutInflater().inflate(
-                R.layout.readaloud_mini_player_layout, null);
+        mLayout =
+                (MiniPlayerLayout)
+                        mActivity
+                                .getLayoutInflater()
+                                .inflate(R.layout.readaloud_mini_player_layout, null);
         assertNotNull(mLayout);
     }
 

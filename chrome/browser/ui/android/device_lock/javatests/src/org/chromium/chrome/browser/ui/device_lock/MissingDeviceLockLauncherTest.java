@@ -53,40 +53,27 @@ import org.chromium.ui.test.util.BlankUiTestActivity;
 
 import java.util.concurrent.atomic.AtomicBoolean;
 
-/**
- * Tests for the {@link MissingDeviceLockLauncher}.
- */
+/** Tests for the {@link MissingDeviceLockLauncher}. */
 @RunWith(ChromeJUnit4ClassRunner.class)
 @Batch(Batch.PER_CLASS)
 public class MissingDeviceLockLauncherTest {
-    @Rule
-    public final MockitoRule mMockitoRule = MockitoJUnit.rule();
+    @Rule public final MockitoRule mMockitoRule = MockitoJUnit.rule();
+
     @Rule
     public final BaseActivityTestRule<BlankUiTestActivity> mActivityTestRule =
             new BaseActivityTestRule<>(BlankUiTestActivity.class);
 
-    @Mock
-    private KeyguardManager mKeyguardManager;
-    @Mock
-    private Context mContext;
-    @Mock
-    private MissingDeviceLockCoordinator mMissingDeviceLockCoordinator;
-    @Mock
-    private ModalDialogManager mModalDialogManager;
-    @Mock
-    private IdentityServicesProvider mIdentityServicesProvider;
-    @Mock
-    private SigninManager mSigninManager;
-    @Mock
-    private IdentityManager mIdentityManager;
-    @Mock
-    private PersonalDataManager mPersonalDataManager;
-    @Mock
-    private Profile mProfile;
-    @Mock
-    private CoreAccountInfo mCoreAccountInfo;
-    @Mock
-    private PasswordStoreBridge mPasswordStoreBridge;
+    @Mock private KeyguardManager mKeyguardManager;
+    @Mock private Context mContext;
+    @Mock private MissingDeviceLockCoordinator mMissingDeviceLockCoordinator;
+    @Mock private ModalDialogManager mModalDialogManager;
+    @Mock private IdentityServicesProvider mIdentityServicesProvider;
+    @Mock private SigninManager mSigninManager;
+    @Mock private IdentityManager mIdentityManager;
+    @Mock private PersonalDataManager mPersonalDataManager;
+    @Mock private Profile mProfile;
+    @Mock private CoreAccountInfo mCoreAccountInfo;
+    @Mock private PasswordStoreBridge mPasswordStoreBridge;
 
     private MissingDeviceLockLauncher mMissingDeviceLockLauncher;
     private SharedPreferencesManager mSharedPreferencesManager;
@@ -117,11 +104,12 @@ public class MissingDeviceLockLauncherTest {
         doReturn(mKeyguardManager).when(mContext).getSystemService(eq(Context.KEYGUARD_SERVICE));
         doReturn(mSigninManager).when(mIdentityServicesProvider).getSigninManager(any());
         doReturn(mIdentityManager).when(mIdentityServicesProvider).getIdentityManager(any());
-        doAnswer((invocation) -> {
-            Runnable runnable = invocation.getArgument(0);
-            runnable.run();
-            return null;
-        })
+        doAnswer(
+                        (invocation) -> {
+                            Runnable runnable = invocation.getArgument(0);
+                            runnable.run();
+                            return null;
+                        })
                 .when(mSigninManager)
                 .runAfterOperationInProgress(any());
     }
@@ -131,9 +119,11 @@ public class MissingDeviceLockLauncherTest {
     public void testCheckPrivateDataIsProtectedByDeviceLock_deviceIsSecure_nullMissingDeviceLock() {
         doReturn(true).when(mKeyguardManager).isDeviceSecure();
 
-        assertNull("The missing device lock dialog should not be shown when the device is secure.",
+        assertNull(
+                "The missing device lock dialog should not be shown when the device is secure.",
                 mMissingDeviceLockLauncher.checkPrivateDataIsProtectedByDeviceLock());
-        assertTrue("The preference should be set to show the alert if the device lock is later "
+        assertTrue(
+                "The preference should be set to show the alert if the device lock is later "
                         + "removed.",
                 mSharedPreferencesManager.readBoolean(
                         ChromePreferenceKeys.DEVICE_LOCK_SHOW_ALERT_IF_REMOVED,
@@ -150,7 +140,8 @@ public class MissingDeviceLockLauncherTest {
 
         assertNull(mMissingDeviceLockLauncher.checkPrivateDataIsProtectedByDeviceLock());
         verify(mMissingDeviceLockCoordinator, times(1)).hideDialog(anyInt());
-        assertTrue("The preference should be set to show the alert if the device lock is later "
+        assertTrue(
+                "The preference should be set to show the alert if the device lock is later "
                         + "removed.",
                 mSharedPreferencesManager.readBoolean(
                         ChromePreferenceKeys.DEVICE_LOCK_SHOW_ALERT_IF_REMOVED,
@@ -175,11 +166,13 @@ public class MissingDeviceLockLauncherTest {
                 missingDeviceLockLauncher.checkPrivateDataIsProtectedByDeviceLock();
         missingDeviceLockCoordinator.hideDialog(DialogDismissalCause.POSITIVE_BUTTON_CLICKED);
 
-        assertNotNull("The missing device dialog should have been created.",
+        assertNotNull(
+                "The missing device dialog should have been created.",
                 missingDeviceLockCoordinator);
         verify(mModalDialogManager, times(1)).showDialog(any(), anyInt(), anyInt());
         verify(mModalDialogManager, times(1)).dismissDialog(any(), anyInt());
-        assertTrue("The preference should still be set to show the alert after the missing "
+        assertTrue(
+                "The preference should still be set to show the alert after the missing "
                         + "device lock dialog is shown.",
                 mSharedPreferencesManager.readBoolean(
                         ChromePreferenceKeys.DEVICE_LOCK_SHOW_ALERT_IF_REMOVED,
@@ -193,18 +186,20 @@ public class MissingDeviceLockLauncherTest {
                 ChromePreferenceKeys.DEVICE_LOCK_SHOW_ALERT_IF_REMOVED, true);
 
         doReturn(mCoreAccountInfo).when(mIdentityManager).getPrimaryAccountInfo(anyInt());
-        doAnswer((invocation) -> {
-            SigninManager.SignOutCallback callback = invocation.getArgument(1);
-            callback.signOutComplete();
-            return null;
-        })
+        doAnswer(
+                        (invocation) -> {
+                            SigninManager.SignOutCallback callback = invocation.getArgument(1);
+                            callback.signOutComplete();
+                            return null;
+                        })
                 .when(mSigninManager)
                 .signOut(anyInt(), any(), anyBoolean());
 
-        TestThreadUtils.runOnUiThreadBlocking(() -> {
-            mMissingDeviceLockLauncher.ensureSignOutAndDeleteSensitiveData(
-                    () -> mWipeDataCallbackCalled.set(true), /* wipeAllData */ true);
-        });
+        TestThreadUtils.runOnUiThreadBlocking(
+                () -> {
+                    mMissingDeviceLockLauncher.ensureSignOutAndDeleteSensitiveData(
+                            () -> mWipeDataCallbackCalled.set(true), /* wipeAllData */ true);
+                });
         verify(mSigninManager, times(1)).runAfterOperationInProgress(any());
         verify(mSigninManager, times(1)).signOut(anyInt(), any(), eq(true));
         verify(mSigninManager, times(0))
@@ -213,7 +208,8 @@ public class MissingDeviceLockLauncherTest {
         verify(mPersonalDataManager, never()).deleteAllLocalCreditCards();
         assertTrue(
                 "The wipe data callback should have been called.", mWipeDataCallbackCalled.get());
-        assertFalse("The preference should be set to not show the device lock dialog again.",
+        assertFalse(
+                "The preference should be set to not show the device lock dialog again.",
                 mSharedPreferencesManager.readBoolean(
                         ChromePreferenceKeys.DEVICE_LOCK_SHOW_ALERT_IF_REMOVED, true));
     }
@@ -225,18 +221,20 @@ public class MissingDeviceLockLauncherTest {
                 ChromePreferenceKeys.DEVICE_LOCK_SHOW_ALERT_IF_REMOVED, true);
 
         doReturn(mCoreAccountInfo).when(mIdentityManager).getPrimaryAccountInfo(anyInt());
-        doAnswer((invocation) -> {
-            SigninManager.SignOutCallback callback = invocation.getArgument(1);
-            callback.signOutComplete();
-            return null;
-        })
+        doAnswer(
+                        (invocation) -> {
+                            SigninManager.SignOutCallback callback = invocation.getArgument(1);
+                            callback.signOutComplete();
+                            return null;
+                        })
                 .when(mSigninManager)
                 .signOut(anyInt(), any(), anyBoolean());
 
-        TestThreadUtils.runOnUiThreadBlocking(() -> {
-            mMissingDeviceLockLauncher.ensureSignOutAndDeleteSensitiveData(
-                    () -> mWipeDataCallbackCalled.set(true), /* wipeAllData */ false);
-        });
+        TestThreadUtils.runOnUiThreadBlocking(
+                () -> {
+                    mMissingDeviceLockLauncher.ensureSignOutAndDeleteSensitiveData(
+                            () -> mWipeDataCallbackCalled.set(true), /* wipeAllData */ false);
+                });
         verify(mSigninManager, times(1)).runAfterOperationInProgress(any());
         verify(mSigninManager, times(1)).signOut(anyInt(), any(), eq(false));
         verify(mSigninManager, times(0))
@@ -245,7 +243,8 @@ public class MissingDeviceLockLauncherTest {
         verify(mPersonalDataManager, times(1)).deleteAllLocalCreditCards();
         assertTrue(
                 "The wipe data callback should have been called.", mWipeDataCallbackCalled.get());
-        assertFalse("The preference should be set to not show the device lock dialog again.",
+        assertFalse(
+                "The preference should be set to not show the device lock dialog again.",
                 mSharedPreferencesManager.readBoolean(
                         ChromePreferenceKeys.DEVICE_LOCK_SHOW_ALERT_IF_REMOVED, true));
     }
@@ -257,18 +256,20 @@ public class MissingDeviceLockLauncherTest {
                 ChromePreferenceKeys.DEVICE_LOCK_SHOW_ALERT_IF_REMOVED, true);
 
         doReturn(null).when(mIdentityManager).getPrimaryAccountInfo(anyInt());
-        doAnswer((invocation) -> {
-            Runnable callback = invocation.getArgument(0);
-            callback.run();
-            return null;
-        })
+        doAnswer(
+                        (invocation) -> {
+                            Runnable callback = invocation.getArgument(0);
+                            callback.run();
+                            return null;
+                        })
                 .when(mSigninManager)
                 .wipeSyncUserData(any(), anyInt());
 
-        TestThreadUtils.runOnUiThreadBlocking(() -> {
-            mMissingDeviceLockLauncher.ensureSignOutAndDeleteSensitiveData(
-                    () -> mWipeDataCallbackCalled.set(true), /* wipeAllData */ true);
-        });
+        TestThreadUtils.runOnUiThreadBlocking(
+                () -> {
+                    mMissingDeviceLockLauncher.ensureSignOutAndDeleteSensitiveData(
+                            () -> mWipeDataCallbackCalled.set(true), /* wipeAllData */ true);
+                });
         verify(mSigninManager, times(1)).runAfterOperationInProgress(any());
         verify(mSigninManager, times(0)).signOut(anyInt(), any(), anyBoolean());
         verify(mSigninManager, times(1))
@@ -277,7 +278,8 @@ public class MissingDeviceLockLauncherTest {
         verify(mPersonalDataManager, never()).deleteAllLocalCreditCards();
         assertTrue(
                 "The wipe data callback should have been called.", mWipeDataCallbackCalled.get());
-        assertFalse("The preference should be set to not show the device lock dialog again.",
+        assertFalse(
+                "The preference should be set to not show the device lock dialog again.",
                 mSharedPreferencesManager.readBoolean(
                         ChromePreferenceKeys.DEVICE_LOCK_SHOW_ALERT_IF_REMOVED, true));
     }
@@ -285,16 +287,17 @@ public class MissingDeviceLockLauncherTest {
     @Test
     @MediumTest
     public void
-    testEnsureSignOutAndDeleteSensitiveData_notSignedIn_onlyWipePasswordsAndCreditCards() {
+            testEnsureSignOutAndDeleteSensitiveData_notSignedIn_onlyWipePasswordsAndCreditCards() {
         mSharedPreferencesManager.writeBoolean(
                 ChromePreferenceKeys.DEVICE_LOCK_SHOW_ALERT_IF_REMOVED, true);
 
         doReturn(null).when(mIdentityManager).getPrimaryAccountInfo(anyInt());
 
-        TestThreadUtils.runOnUiThreadBlocking(() -> {
-            mMissingDeviceLockLauncher.ensureSignOutAndDeleteSensitiveData(
-                    () -> mWipeDataCallbackCalled.set(true), /* wipeAllData */ false);
-        });
+        TestThreadUtils.runOnUiThreadBlocking(
+                () -> {
+                    mMissingDeviceLockLauncher.ensureSignOutAndDeleteSensitiveData(
+                            () -> mWipeDataCallbackCalled.set(true), /* wipeAllData */ false);
+                });
         verify(mSigninManager, times(1)).runAfterOperationInProgress(any());
         verify(mSigninManager, never()).signOut(anyInt(), any(), anyBoolean());
         verify(mSigninManager, never())
@@ -303,7 +306,8 @@ public class MissingDeviceLockLauncherTest {
         verify(mPersonalDataManager, times(1)).deleteAllLocalCreditCards();
         assertTrue(
                 "The wipe data callback should have been called.", mWipeDataCallbackCalled.get());
-        assertFalse("The preference should be set to not show the device lock dialog again.",
+        assertFalse(
+                "The preference should be set to not show the device lock dialog again.",
                 mSharedPreferencesManager.readBoolean(
                         ChromePreferenceKeys.DEVICE_LOCK_SHOW_ALERT_IF_REMOVED, true));
     }
@@ -315,7 +319,8 @@ public class MissingDeviceLockLauncherTest {
         mSharedPreferencesManager.writeBoolean(
                 ChromePreferenceKeys.DEVICE_LOCK_SHOW_ALERT_IF_REMOVED, false);
 
-        assertNull("The Missing Device Lock dialog should not be created.",
+        assertNull(
+                "The Missing Device Lock dialog should not be created.",
                 mMissingDeviceLockLauncher.checkPrivateDataIsProtectedByDeviceLock());
         verify(mModalDialogManager, never()).showDialog(any(), anyInt(), anyInt());
     }

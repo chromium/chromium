@@ -30,20 +30,16 @@ import org.chromium.ui.base.TestActivity;
 @RunWith(BaseRobolectricTestRunner.class)
 @Batch(Batch.PER_CLASS)
 public class TouchToFillPasswordGenerationBridgeTest {
-    @Rule
-    public MockitoRule mMockitoRule = MockitoJUnit.rule().strictness(Strictness.STRICT_STUBS);
-    @Rule
-    public JniMocker mJniMocker = new JniMocker();
+    @Rule public MockitoRule mMockitoRule = MockitoJUnit.rule().strictness(Strictness.STRICT_STUBS);
+    @Rule public JniMocker mJniMocker = new JniMocker();
+
     @Rule
     public ActivityScenarioRule<TestActivity> mActivityScenarioRule =
             new ActivityScenarioRule<>(TestActivity.class);
 
-    @Mock
-    private BottomSheetController mBottomSheetController;
-    @Mock
-    private TouchToFillPasswordGenerationBridge.Natives mBridgeJniMock;
-    @Mock
-    private WebContents mWebContents;
+    @Mock private BottomSheetController mBottomSheetController;
+    @Mock private TouchToFillPasswordGenerationBridge.Natives mBridgeJniMock;
+    @Mock private WebContents mWebContents;
     @Mock private PrefService mPrefService;
 
     private static final long sTestNativePointer = 1;

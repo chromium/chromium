@@ -30,9 +30,7 @@ import org.chromium.ui.modelutil.MVCListAdapter.ListItem;
 import org.chromium.ui.modelutil.MVCListAdapter.ModelList;
 import org.chromium.ui.modelutil.PropertyModel;
 
-/**
- * Tests for {@link ActionChipsAdapter}.
- */
+/** Tests for {@link ActionChipsAdapter}. */
 @RunWith(BaseRobolectricTestRunner.class)
 @Config(manifest = Config.NONE)
 public class ActionChipsAdapterUnitTest {
@@ -52,18 +50,24 @@ public class ActionChipsAdapterUnitTest {
     @Before
     public void setUp() {
         // Chip with View, 0
-        mModel.add(new ListItem(
-                ActionChipsProperties.ViewType.CHIP, new PropertyModel(ChipProperties.ALL_KEYS)));
+        mModel.add(
+                new ListItem(
+                        ActionChipsProperties.ViewType.CHIP,
+                        new PropertyModel(ChipProperties.ALL_KEYS)));
         doReturn(mChip1).when(mLayoutManager).findViewByPosition(CHIP_1_INDEX);
 
         // Chip with View, 1
-        mModel.add(new ListItem(
-                ActionChipsProperties.ViewType.CHIP, new PropertyModel(ChipProperties.ALL_KEYS)));
+        mModel.add(
+                new ListItem(
+                        ActionChipsProperties.ViewType.CHIP,
+                        new PropertyModel(ChipProperties.ALL_KEYS)));
         doReturn(mChip2).when(mLayoutManager).findViewByPosition(CHIP_2_INDEX);
 
         // Chip with no View, 2
-        mModel.add(new ListItem(
-                ActionChipsProperties.ViewType.CHIP, new PropertyModel(ChipProperties.ALL_KEYS)));
+        mModel.add(
+                new ListItem(
+                        ActionChipsProperties.ViewType.CHIP,
+                        new PropertyModel(ChipProperties.ALL_KEYS)));
 
         mRecyclerView = new RecyclerView(ContextUtils.getApplicationContext());
         mRecyclerView.setLayoutManager(mLayoutManager);

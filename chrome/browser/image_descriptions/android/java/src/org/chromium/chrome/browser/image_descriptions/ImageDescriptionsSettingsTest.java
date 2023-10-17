@@ -41,9 +41,7 @@ import org.chromium.components.prefs.PrefService;
 import org.chromium.components.user_prefs.UserPrefs;
 import org.chromium.content_public.browser.test.util.TestThreadUtils;
 
-/**
- *  Unit tests for {@link ImageDescriptionsSettings}
- */
+/** Unit tests for {@link ImageDescriptionsSettings} */
 @RunWith(ChromeJUnit4ClassRunner.class)
 @CommandLineFlags.Add({ChromeSwitches.DISABLE_FIRST_RUN_EXPERIENCE})
 public class ImageDescriptionsSettingsTest {
@@ -63,11 +61,9 @@ public class ImageDescriptionsSettingsTest {
     public SettingsActivityTestRule<ImageDescriptionsSettings> mSettingsActivityTestRule =
             new SettingsActivityTestRule<>(ImageDescriptionsSettings.class);
 
-    @Rule
-    public final ChromeBrowserTestRule mBrowserTestRule = new ChromeBrowserTestRule();
+    @Rule public final ChromeBrowserTestRule mBrowserTestRule = new ChromeBrowserTestRule();
 
-    @Mock
-    private ImageDescriptionsControllerDelegate mDelegate;
+    @Mock private ImageDescriptionsControllerDelegate mDelegate;
 
     private Profile mProfile;
 
@@ -85,10 +81,12 @@ public class ImageDescriptionsSettingsTest {
         ImageDescriptionsSettings mImageDescriptionsSettings =
                 mSettingsActivityTestRule.getFragment();
 
-        mDescriptionsSwitch = mImageDescriptionsSettings.findPreference(
-                ImageDescriptionsSettings.IMAGE_DESCRIPTIONS);
-        mDataPolicyPreference = mImageDescriptionsSettings.findPreference(
-                ImageDescriptionsSettings.IMAGE_DESCRIPTIONS_DATA_POLICY);
+        mDescriptionsSwitch =
+                mImageDescriptionsSettings.findPreference(
+                        ImageDescriptionsSettings.IMAGE_DESCRIPTIONS);
+        mDataPolicyPreference =
+                mImageDescriptionsSettings.findPreference(
+                        ImageDescriptionsSettings.IMAGE_DESCRIPTIONS_DATA_POLICY);
     }
 
     // Helper method for fetching PrefService
@@ -149,77 +147,99 @@ public class ImageDescriptionsSettingsTest {
 
         Assert.assertNotNull("Image Descriptions toggle should not be null", mDescriptionsSwitch);
         Assert.assertNotNull("Data Policy radio buttons should not be null", mDataPolicyPreference);
-        Assert.assertNotNull("Image Descriptions toggle should have a preference change listener",
+        Assert.assertNotNull(
+                "Image Descriptions toggle should have a preference change listener",
                 mDescriptionsSwitch.getOnPreferenceChangeListener());
-        Assert.assertNotNull("Data Policy radio buttons should have a preference change listener",
+        Assert.assertNotNull(
+                "Data Policy radio buttons should have a preference change listener",
                 mDataPolicyPreference.getOnPreferenceChangeListener());
 
         Assert.assertEquals(
                 CONTENT_ERROR, "Get image descriptions", mDescriptionsSwitch.getTitle());
-        Assert.assertEquals(CONTENT_ERROR,
+        Assert.assertEquals(
+                CONTENT_ERROR,
                 "Some images are sent to Google to improve descriptions for you",
                 mDescriptionsSwitch.getSummary());
 
-        onlyOnWifiRadioButton().check((view, e) -> {
-            Assert.assertEquals(CONTENT_ERROR, "Only on Wi-Fi",
-                    ((RadioButtonWithDescription) view).getPrimaryText());
-            Assert.assertEquals(
-                    CONTENT_ERROR, "", ((RadioButtonWithDescription) view).getDescriptionText());
-        });
-        useMobileDataRadioButton().check((view, e) -> {
-            Assert.assertEquals(CONTENT_ERROR, "Use mobile data",
-                    ((RadioButtonWithDescription) view).getPrimaryText());
-            Assert.assertEquals(CONTENT_ERROR, "Wi-Fi is used when available",
-                    ((RadioButtonWithDescription) view).getDescriptionText());
-        });
+        onlyOnWifiRadioButton()
+                .check(
+                        (view, e) -> {
+                            Assert.assertEquals(
+                                    CONTENT_ERROR,
+                                    "Only on Wi-Fi",
+                                    ((RadioButtonWithDescription) view).getPrimaryText());
+                            Assert.assertEquals(
+                                    CONTENT_ERROR,
+                                    "",
+                                    ((RadioButtonWithDescription) view).getDescriptionText());
+                        });
+        useMobileDataRadioButton()
+                .check(
+                        (view, e) -> {
+                            Assert.assertEquals(
+                                    CONTENT_ERROR,
+                                    "Use mobile data",
+                                    ((RadioButtonWithDescription) view).getPrimaryText());
+                            Assert.assertEquals(
+                                    CONTENT_ERROR,
+                                    "Wi-Fi is used when available",
+                                    ((RadioButtonWithDescription) view).getDescriptionText());
+                        });
     }
 
     @Test
     @SmallTest
     public void testInitialState_RadioGroupDisabled() {
         // When Switch is disabled, then the radio button group should also be disabled.
-        TestThreadUtils.runOnUiThreadBlocking(() -> {
-            getPrefService().setBoolean(Pref.ACCESSIBILITY_IMAGE_LABELS_ENABLED_ANDROID, false);
-            getPrefService().setBoolean(Pref.ACCESSIBILITY_IMAGE_LABELS_ONLY_ON_WIFI, true);
-        });
+        TestThreadUtils.runOnUiThreadBlocking(
+                () -> {
+                    getPrefService()
+                            .setBoolean(Pref.ACCESSIBILITY_IMAGE_LABELS_ENABLED_ANDROID, false);
+                    getPrefService().setBoolean(Pref.ACCESSIBILITY_IMAGE_LABELS_ONLY_ON_WIFI, true);
+                });
         launchSettings();
 
         Assert.assertFalse(TOGGLE + DISABLED_ERROR, mDescriptionsSwitch.isChecked());
 
         // Radio button group should be visible, disabled, and unchecked.
-        onlyOnWifiRadioButton().check(
-                (view, e) -> assertVisibleDisabledAndChecked(view, ONLY_ON_WIFI));
-        useMobileDataRadioButton().check(
-                (view, e) -> assertVisibleDisabledAndUnchecked(view, USE_MOBILE_DATA));
+        onlyOnWifiRadioButton()
+                .check((view, e) -> assertVisibleDisabledAndChecked(view, ONLY_ON_WIFI));
+        useMobileDataRadioButton()
+                .check((view, e) -> assertVisibleDisabledAndUnchecked(view, USE_MOBILE_DATA));
     }
 
     @Test
     @SmallTest
     public void testInitialState_RadioGroupEnabled() {
         // When Switch is enabled, then the radio button group should also be enabled.
-        TestThreadUtils.runOnUiThreadBlocking(() -> {
-            getPrefService().setBoolean(Pref.ACCESSIBILITY_IMAGE_LABELS_ENABLED_ANDROID, true);
-            getPrefService().setBoolean(Pref.ACCESSIBILITY_IMAGE_LABELS_ONLY_ON_WIFI, false);
-        });
+        TestThreadUtils.runOnUiThreadBlocking(
+                () -> {
+                    getPrefService()
+                            .setBoolean(Pref.ACCESSIBILITY_IMAGE_LABELS_ENABLED_ANDROID, true);
+                    getPrefService()
+                            .setBoolean(Pref.ACCESSIBILITY_IMAGE_LABELS_ONLY_ON_WIFI, false);
+                });
         launchSettings();
 
         Assert.assertTrue(TOGGLE + ENABLED_ERROR, mDescriptionsSwitch.isChecked());
 
         // Radio button group should be visible, enabled, and unchecked.
-        onlyOnWifiRadioButton().check(
-                (view, e) -> assertVisibleEnabledAndUnchecked(view, ONLY_ON_WIFI));
-        useMobileDataRadioButton().check(
-                (view, e) -> assertVisibleEnabledAndChecked(view, USE_MOBILE_DATA));
+        onlyOnWifiRadioButton()
+                .check((view, e) -> assertVisibleEnabledAndUnchecked(view, ONLY_ON_WIFI));
+        useMobileDataRadioButton()
+                .check((view, e) -> assertVisibleEnabledAndChecked(view, USE_MOBILE_DATA));
     }
 
     @Test
     @SmallTest
     public void testUserTogglesSwitch_On() {
         // When we toggle switch to On, it should enable radio buttons and descriptions
-        TestThreadUtils.runOnUiThreadBlocking(() -> {
-            getPrefService().setBoolean(Pref.ACCESSIBILITY_IMAGE_LABELS_ENABLED_ANDROID, false);
-            getPrefService().setBoolean(Pref.ACCESSIBILITY_IMAGE_LABELS_ONLY_ON_WIFI, true);
-        });
+        TestThreadUtils.runOnUiThreadBlocking(
+                () -> {
+                    getPrefService()
+                            .setBoolean(Pref.ACCESSIBILITY_IMAGE_LABELS_ENABLED_ANDROID, false);
+                    getPrefService().setBoolean(Pref.ACCESSIBILITY_IMAGE_LABELS_ONLY_ON_WIFI, true);
+                });
         launchSettings();
 
         Assert.assertFalse(TOGGLE + DISABLED_ERROR, mDescriptionsSwitch.isChecked());
@@ -234,20 +254,23 @@ public class ImageDescriptionsSettingsTest {
         Assert.assertTrue(TOGGLE + ENABLED_ERROR, mDescriptionsSwitch.isChecked());
 
         // Radio button group should be visible, enabled, and unchecked.
-        onlyOnWifiRadioButton().check(
-                (view, e) -> assertVisibleEnabledAndChecked(view, ONLY_ON_WIFI));
-        useMobileDataRadioButton().check(
-                (view, e) -> assertVisibleEnabledAndUnchecked(view, USE_MOBILE_DATA));
+        onlyOnWifiRadioButton()
+                .check((view, e) -> assertVisibleEnabledAndChecked(view, ONLY_ON_WIFI));
+        useMobileDataRadioButton()
+                .check((view, e) -> assertVisibleEnabledAndUnchecked(view, USE_MOBILE_DATA));
     }
 
     @Test
     @SmallTest
     public void testUserTogglesSwitch_Off() {
         // When we toggle switch to Off, it should disable radio buttons and descriptions
-        TestThreadUtils.runOnUiThreadBlocking(() -> {
-            getPrefService().setBoolean(Pref.ACCESSIBILITY_IMAGE_LABELS_ENABLED_ANDROID, true);
-            getPrefService().setBoolean(Pref.ACCESSIBILITY_IMAGE_LABELS_ONLY_ON_WIFI, false);
-        });
+        TestThreadUtils.runOnUiThreadBlocking(
+                () -> {
+                    getPrefService()
+                            .setBoolean(Pref.ACCESSIBILITY_IMAGE_LABELS_ENABLED_ANDROID, true);
+                    getPrefService()
+                            .setBoolean(Pref.ACCESSIBILITY_IMAGE_LABELS_ONLY_ON_WIFI, false);
+                });
         launchSettings();
 
         Assert.assertTrue(TOGGLE + ENABLED_ERROR, mDescriptionsSwitch.isChecked());
@@ -262,36 +285,39 @@ public class ImageDescriptionsSettingsTest {
         Assert.assertFalse(TOGGLE + DISABLED_ERROR, mDescriptionsSwitch.isChecked());
 
         // Radio button group should be visible, disabled, and unchecked.
-        onlyOnWifiRadioButton().check(
-                (view, e) -> assertVisibleDisabledAndUnchecked(view, ONLY_ON_WIFI));
-        useMobileDataRadioButton().check(
-                (view, e) -> assertVisibleDisabledAndChecked(view, USE_MOBILE_DATA));
+        onlyOnWifiRadioButton()
+                .check((view, e) -> assertVisibleDisabledAndUnchecked(view, ONLY_ON_WIFI));
+        useMobileDataRadioButton()
+                .check((view, e) -> assertVisibleDisabledAndChecked(view, USE_MOBILE_DATA));
     }
 
     @Test
     @SmallTest
     public void testUserSelectsRadioButton_onlyOnWifi() {
-        TestThreadUtils.runOnUiThreadBlocking(() -> {
-            getPrefService().setBoolean(Pref.ACCESSIBILITY_IMAGE_LABELS_ENABLED_ANDROID, true);
-            getPrefService().setBoolean(Pref.ACCESSIBILITY_IMAGE_LABELS_ONLY_ON_WIFI, false);
-        });
+        TestThreadUtils.runOnUiThreadBlocking(
+                () -> {
+                    getPrefService()
+                            .setBoolean(Pref.ACCESSIBILITY_IMAGE_LABELS_ENABLED_ANDROID, true);
+                    getPrefService()
+                            .setBoolean(Pref.ACCESSIBILITY_IMAGE_LABELS_ONLY_ON_WIFI, false);
+                });
         launchSettings();
 
         // Toggle should be on, radio buttons visible, enabled, and onlyOnWifi unchecked
         Assert.assertTrue(TOGGLE + ENABLED_ERROR, mDescriptionsSwitch.isChecked());
-        onlyOnWifiRadioButton().check(
-                (view, e) -> assertVisibleEnabledAndUnchecked(view, ONLY_ON_WIFI));
-        useMobileDataRadioButton().check(
-                (view, e) -> assertVisibleEnabledAndChecked(view, USE_MOBILE_DATA));
+        onlyOnWifiRadioButton()
+                .check((view, e) -> assertVisibleEnabledAndUnchecked(view, ONLY_ON_WIFI));
+        useMobileDataRadioButton()
+                .check((view, e) -> assertVisibleEnabledAndChecked(view, USE_MOBILE_DATA));
 
         // User selects the onlyOnWifi radio button
         onlyOnWifiRadioButton().perform(click());
 
         // Radio buttons should remain visible, enabled, but checked status switched
-        onlyOnWifiRadioButton().check(
-                (view, e) -> assertVisibleEnabledAndChecked(view, ONLY_ON_WIFI));
-        useMobileDataRadioButton().check(
-                (view, e) -> assertVisibleEnabledAndUnchecked(view, USE_MOBILE_DATA));
+        onlyOnWifiRadioButton()
+                .check((view, e) -> assertVisibleEnabledAndChecked(view, ONLY_ON_WIFI));
+        useMobileDataRadioButton()
+                .check((view, e) -> assertVisibleEnabledAndUnchecked(view, USE_MOBILE_DATA));
 
         // Verify controller was updated
         verify(mDelegate, never()).enableImageDescriptions(any());
@@ -303,27 +329,29 @@ public class ImageDescriptionsSettingsTest {
     @Test
     @SmallTest
     public void testUserSelectsRadioButton_useMobileData() {
-        TestThreadUtils.runOnUiThreadBlocking(() -> {
-            getPrefService().setBoolean(Pref.ACCESSIBILITY_IMAGE_LABELS_ENABLED_ANDROID, true);
-            getPrefService().setBoolean(Pref.ACCESSIBILITY_IMAGE_LABELS_ONLY_ON_WIFI, true);
-        });
+        TestThreadUtils.runOnUiThreadBlocking(
+                () -> {
+                    getPrefService()
+                            .setBoolean(Pref.ACCESSIBILITY_IMAGE_LABELS_ENABLED_ANDROID, true);
+                    getPrefService().setBoolean(Pref.ACCESSIBILITY_IMAGE_LABELS_ONLY_ON_WIFI, true);
+                });
         launchSettings();
 
         // Toggle should be on, radio buttons visible, enabled, and useMobileData unchecked
         Assert.assertTrue(TOGGLE + ENABLED_ERROR, mDescriptionsSwitch.isChecked());
-        onlyOnWifiRadioButton().check(
-                (view, e) -> assertVisibleEnabledAndChecked(view, ONLY_ON_WIFI));
-        useMobileDataRadioButton().check(
-                (view, e) -> assertVisibleEnabledAndUnchecked(view, USE_MOBILE_DATA));
+        onlyOnWifiRadioButton()
+                .check((view, e) -> assertVisibleEnabledAndChecked(view, ONLY_ON_WIFI));
+        useMobileDataRadioButton()
+                .check((view, e) -> assertVisibleEnabledAndUnchecked(view, USE_MOBILE_DATA));
 
         // User selects the onlyOnWifi radio button
         useMobileDataRadioButton().perform(click());
 
         // Radio buttons should remain visible, enabled, but checked status switched
-        onlyOnWifiRadioButton().check(
-                (view, e) -> assertVisibleEnabledAndUnchecked(view, ONLY_ON_WIFI));
-        useMobileDataRadioButton().check(
-                (view, e) -> assertVisibleEnabledAndChecked(view, USE_MOBILE_DATA));
+        onlyOnWifiRadioButton()
+                .check((view, e) -> assertVisibleEnabledAndUnchecked(view, ONLY_ON_WIFI));
+        useMobileDataRadioButton()
+                .check((view, e) -> assertVisibleEnabledAndChecked(view, USE_MOBILE_DATA));
 
         // Verify controller was updated
         verify(mDelegate, never()).enableImageDescriptions(any());

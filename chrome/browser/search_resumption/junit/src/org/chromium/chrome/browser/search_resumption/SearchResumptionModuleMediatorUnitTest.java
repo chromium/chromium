@@ -58,50 +58,30 @@ import org.chromium.url.JUnitTestGURLs;
 import java.util.Arrays;
 import java.util.List;
 
-/**
- * Unit tests for {@link SearchResumptionModuleMediator}.
- */
+/** Unit tests for {@link SearchResumptionModuleMediator}. */
 @RunWith(BaseRobolectricTestRunner.class)
 @Config(manifest = Config.NONE)
 @SuppressWarnings("DoNotMock") // Mocking GURL
 public class SearchResumptionModuleMediatorUnitTest {
-    @Mock
-    private Tab mTabToTrack;
-    @Mock
-    private Tab mTab;
-    @Mock
-    private ViewStub mParent;
-    @Mock
-    private SearchResumptionModuleView mModuleLayoutView;
-    @Mock
-    private SearchResumptionTileContainerView mSuggestionTilesContainerView;
-    @Mock
-    private AutocompleteControllerProvider mAutocompleteProvider;
-    @Mock
-    private AutocompleteController mAutocompleteController;
-    @Mock
-    SearchResumptionTileBuilder mTileBuilder;
-    @Mock
-    private Profile mProfile;
-    @Mock
-    private TemplateUrlService mTemplateUrlService;
-    @Captor
-    private ArgumentCaptor<OnSuggestionsReceivedListener> mListener;
+    @Mock private Tab mTabToTrack;
+    @Mock private Tab mTab;
+    @Mock private ViewStub mParent;
+    @Mock private SearchResumptionModuleView mModuleLayoutView;
+    @Mock private SearchResumptionTileContainerView mSuggestionTilesContainerView;
+    @Mock private AutocompleteControllerProvider mAutocompleteProvider;
+    @Mock private AutocompleteController mAutocompleteController;
+    @Mock SearchResumptionTileBuilder mTileBuilder;
+    @Mock private Profile mProfile;
+    @Mock private TemplateUrlService mTemplateUrlService;
+    @Captor private ArgumentCaptor<OnSuggestionsReceivedListener> mListener;
 
-    @Mock
-    private AutocompleteMatch mSearchSuggest1;
-    @Mock
-    private AutocompleteMatch mSearchSuggest2;
-    @Mock
-    private AutocompleteMatch mNonSearchSuggest1;
-    @Mock
-    private AutocompleteResult mAutocompleteResult;
-    @Mock
-    private IdentityServicesProvider mIdentityServicesProvider;
-    @Mock
-    private SigninManager mSignInManager;
-    @Mock
-    private SyncService mSyncServiceMock;
+    @Mock private AutocompleteMatch mSearchSuggest1;
+    @Mock private AutocompleteMatch mSearchSuggest2;
+    @Mock private AutocompleteMatch mNonSearchSuggest1;
+    @Mock private AutocompleteResult mAutocompleteResult;
+    @Mock private IdentityServicesProvider mIdentityServicesProvider;
+    @Mock private SigninManager mSignInManager;
+    @Mock private SyncService mSyncServiceMock;
 
     private GURL mUrlToTrack;
     private String[] mSuggestionTexts;
@@ -164,10 +144,12 @@ public class SearchResumptionModuleMediatorUnitTest {
 
         mMediator.onSuggestionsReceived(mAutocompleteResult, "", true);
         verify(mParent, times(0)).inflate();
-        Assert.assertEquals(0,
+        Assert.assertEquals(
+                0,
                 RecordHistogram.getHistogramValueCountForTesting(
                         SearchResumptionModuleUtils.UMA_MODULE_SHOW, ModuleShowStatus.EXPANDED));
-        Assert.assertEquals(1,
+        Assert.assertEquals(
+                1,
                 RecordHistogram.getHistogramValueCountForTesting(
                         SearchResumptionModuleUtils.UMA_MODULE_NOT_SHOW,
                         ModuleNotShownReason.NOT_ENOUGH_RESULT));
@@ -184,7 +166,8 @@ public class SearchResumptionModuleMediatorUnitTest {
         mMediator.onSuggestionsReceived(mAutocompleteResult, "", true);
         verify(mParent, times(1)).inflate();
         Assert.assertEquals(View.VISIBLE, mSuggestionTilesContainerView.getVisibility());
-        Assert.assertEquals(1,
+        Assert.assertEquals(
+                1,
                 RecordHistogram.getHistogramValueCountForTesting(
                         SearchResumptionModuleUtils.UMA_MODULE_SHOW, ModuleShowStatus.EXPANDED));
     }
@@ -199,7 +182,8 @@ public class SearchResumptionModuleMediatorUnitTest {
         createMediator(suggestionResult, false /* useNewServiceEnabled */);
         verify(mParent, times(1)).inflate();
         Assert.assertEquals(View.VISIBLE, mSuggestionTilesContainerView.getVisibility());
-        Assert.assertEquals(1,
+        Assert.assertEquals(
+                1,
                 RecordHistogram.getHistogramValueCountForTesting(
                         SearchResumptionModuleUtils.UMA_MODULE_SHOW_CACHED,
                         ModuleShowStatus.EXPANDED));
@@ -214,10 +198,12 @@ public class SearchResumptionModuleMediatorUnitTest {
         createMediator(null, true /* useNewServiceEnabled */);
         mMediator.onSuggestionsAvailable(texts, gUrls);
         verify(mParent, times(0)).inflate();
-        Assert.assertEquals(0,
+        Assert.assertEquals(
+                0,
                 RecordHistogram.getHistogramValueCountForTesting(
                         SearchResumptionModuleUtils.UMA_MODULE_SHOW, ModuleShowStatus.EXPANDED));
-        Assert.assertEquals(1,
+        Assert.assertEquals(
+                1,
                 RecordHistogram.getHistogramValueCountForTesting(
                         SearchResumptionModuleUtils.UMA_MODULE_NOT_SHOW,
                         ModuleNotShownReason.NOT_ENOUGH_RESULT));
@@ -232,7 +218,8 @@ public class SearchResumptionModuleMediatorUnitTest {
         mMediator.onSuggestionsAvailable(mSuggestionTexts, mSuggestionUrls);
         verify(mParent, times(1)).inflate();
         Assert.assertEquals(View.VISIBLE, mSuggestionTilesContainerView.getVisibility());
-        Assert.assertEquals(1,
+        Assert.assertEquals(
+                1,
                 RecordHistogram.getHistogramValueCountForTesting(
                         SearchResumptionModuleUtils.UMA_MODULE_SHOW, ModuleShowStatus.EXPANDED));
 
@@ -254,7 +241,8 @@ public class SearchResumptionModuleMediatorUnitTest {
         createMediator(suggestionResult, true /* useNewServiceEnabled */);
         verify(mParent, times(1)).inflate();
         Assert.assertEquals(View.VISIBLE, mSuggestionTilesContainerView.getVisibility());
-        Assert.assertEquals(1,
+        Assert.assertEquals(
+                1,
                 RecordHistogram.getHistogramValueCountForTesting(
                         SearchResumptionModuleUtils.UMA_MODULE_SHOW_CACHED,
                         ModuleShowStatus.EXPANDED));
@@ -297,8 +285,15 @@ public class SearchResumptionModuleMediatorUnitTest {
     }
 
     private void createMediator(SuggestionResult cachedSuggestions, boolean useNewServiceEnabled) {
-        mMediator = new SearchResumptionModuleMediator(mParent, mAutocompleteProvider, mTabToTrack,
-                mTab, mProfile, mTileBuilder, cachedSuggestions);
+        mMediator =
+                new SearchResumptionModuleMediator(
+                        mParent,
+                        mAutocompleteProvider,
+                        mTabToTrack,
+                        mTab,
+                        mProfile,
+                        mTileBuilder,
+                        cachedSuggestions);
         if (!useNewServiceEnabled && cachedSuggestions == null) {
             verify(mAutocompleteController).addOnSuggestionsReceivedListener(mListener.capture());
             verify(mAutocompleteController, times(1))

@@ -26,9 +26,7 @@ import org.chromium.url.JUnitTestGURLs;
 
 import java.util.List;
 
-/**
- * Tests BluetoothNotificationManager behaviour and its delegate.
- */
+/** Tests BluetoothNotificationManager behaviour and its delegate. */
 @RunWith(BaseRobolectricTestRunner.class)
 public class BluetoothNotificationManagerTest {
     private static final int NOTIFICATION_ID = 0;
@@ -44,10 +42,12 @@ public class BluetoothNotificationManagerTest {
                     mTabsBroughtToFront++;
                     return new Intent();
                 }
+
                 @Override
                 public void stopSelf() {
                     mServiceStopped = true;
                 }
+
                 @Override
                 public void stopSelf(int startId) {
                     mServiceStopped = true;
@@ -55,14 +55,16 @@ public class BluetoothNotificationManagerTest {
                 }
             };
 
-    private class FakeService {};
+    private class FakeService {}
+    ;
+
     private BluetoothNotificationManager mManager;
     private boolean mServiceStopped;
     private int mLastStartId;
     private int mTabsBroughtToFront;
 
     private Intent createIntent(@BluetoothNotificationManager.BluetoothType int bluetoothType) {
-        return createIntent(bluetoothType, /*isIncognito=*/false);
+        return createIntent(bluetoothType, /* isIncognito= */ false);
     }
 
     private Intent createIntent(
@@ -81,9 +83,11 @@ public class BluetoothNotificationManagerTest {
         List<MockNotificationManagerProxy.NotificationEntry> notifications =
                 mMockNotificationManager.getNotifications();
         assertEquals(1, notifications.size());
-        assertEquals(expectedTitle,
+        assertEquals(
+                expectedTitle,
                 notifications.get(0).notification.extras.getString(Notification.EXTRA_TITLE));
-        assertEquals(expectedText,
+        assertEquals(
+                expectedText,
                 notifications.get(0).notification.extras.getString(Notification.EXTRA_TEXT));
     }
 
@@ -98,7 +102,7 @@ public class BluetoothNotificationManagerTest {
     @Test
     public void test_nullIntentStopsService() {
         mServiceStopped = false;
-        mManager.onStartCommand(null, 0, /*startId=*/0);
+        mManager.onStartCommand(null, 0, /* startId= */ 0);
         assertTrue(mServiceStopped);
         assertEquals(0, mLastStartId);
         assertEquals(0, mTabsBroughtToFront);
@@ -108,7 +112,7 @@ public class BluetoothNotificationManagerTest {
     @Test
     public void test_nullIntentWithStartIdStopsService() {
         mServiceStopped = false;
-        mManager.onStartCommand(null, 0, /*startId=*/42);
+        mManager.onStartCommand(null, 0, /* startId= */ 42);
         assertTrue(mServiceStopped);
         assertEquals(0, mLastStartId);
         assertEquals(0, mTabsBroughtToFront);
@@ -159,7 +163,7 @@ public class BluetoothNotificationManagerTest {
     @Test
     public void test_disconnectHidesNotification() {
         Intent intent1 = createIntent(BluetoothNotificationManager.BluetoothType.IS_CONNECTED);
-        mManager.onStartCommand(intent1, 0, /*startId=*/42);
+        mManager.onStartCommand(intent1, 0, /* startId= */ 42);
 
         assertFalse(mServiceStopped);
         assertEquals(1, mTabsBroughtToFront);
@@ -168,7 +172,7 @@ public class BluetoothNotificationManagerTest {
                 "Connected to a Bluetooth device", "Tap to return to " + TEST_URL_FORMATTED);
 
         Intent intent2 = createIntent(BluetoothNotificationManager.BluetoothType.NO_BLUETOOTH);
-        mManager.onStartCommand(intent2, 0, /*startId=*/42);
+        mManager.onStartCommand(intent2, 0, /* startId= */ 42);
 
         assertTrue(mServiceStopped);
         assertEquals(42, mLastStartId);
@@ -178,8 +182,10 @@ public class BluetoothNotificationManagerTest {
 
     @Test
     public void test_connectedInIncognitoShowsNotification() {
-        Intent intent = createIntent(
-                BluetoothNotificationManager.BluetoothType.IS_CONNECTED, /*isIncognito=*/true);
+        Intent intent =
+                createIntent(
+                        BluetoothNotificationManager.BluetoothType.IS_CONNECTED,
+                        /* isIncognito= */ true);
         mManager.onStartCommand(intent, 0, 0);
 
         assertFalse(mServiceStopped);
@@ -189,8 +195,10 @@ public class BluetoothNotificationManagerTest {
 
     @Test
     public void test_scanningInIncognitoShowsNotification() {
-        Intent intent = createIntent(
-                BluetoothNotificationManager.BluetoothType.IS_SCANNING, /*isIncognito=*/true);
+        Intent intent =
+                createIntent(
+                        BluetoothNotificationManager.BluetoothType.IS_SCANNING,
+                        /* isIncognito= */ true);
         mManager.onStartCommand(intent, 0, 0);
 
         assertFalse(mServiceStopped);

@@ -31,35 +31,35 @@ import org.chromium.url.JUnitTestGURLs;
 public class LongScreenshotsCoordinatorTest {
     private LongScreenshotsCoordinator mCoordinator;
 
-    @Mock
-    private FragmentActivity mActivity;
+    @Mock private FragmentActivity mActivity;
 
-    @Mock
-    private ChromeOptionShareCallback mChromeOptionShareCallback;
+    @Mock private ChromeOptionShareCallback mChromeOptionShareCallback;
 
-    @Mock
-    private ImageEditorModuleProvider mImageEditorModuleProviderMock;
+    @Mock private ImageEditorModuleProvider mImageEditorModuleProviderMock;
 
-    @Mock
-    private BottomSheetController mBottomSheetControllerMock;
+    @Mock private BottomSheetController mBottomSheetControllerMock;
 
-    @Mock
-    private Tab mTab;
+    @Mock private Tab mTab;
 
-    @Mock
-    private EntryManager mManager;
+    @Mock private EntryManager mManager;
 
-    @Mock
-    private LongScreenshotsMediator mMediator;
+    @Mock private LongScreenshotsMediator mMediator;
 
     @Before
     public void setUp() {
         MockitoAnnotations.initMocks(this);
 
         // Instantiate the object under test.
-        mCoordinator = LongScreenshotsCoordinator.createForTests(mActivity, mTab,
-                JUnitTestGURLs.EXAMPLE_URL.getSpec(), mChromeOptionShareCallback,
-                mBottomSheetControllerMock, mImageEditorModuleProviderMock, mManager, mMediator);
+        mCoordinator =
+                LongScreenshotsCoordinator.createForTests(
+                        mActivity,
+                        mTab,
+                        JUnitTestGURLs.EXAMPLE_URL.getSpec(),
+                        mChromeOptionShareCallback,
+                        mBottomSheetControllerMock,
+                        mImageEditorModuleProviderMock,
+                        mManager,
+                        mMediator);
     }
 
     @Test

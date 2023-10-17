@@ -49,11 +49,11 @@ import org.chromium.ui.test.util.BlankUiTestActivityTestCase;
 /**
  * This class regroups the integration tests for {@link ConfirmSyncDataStateMachine}.
  *
- * In this class we use a real {@link ConfirmSyncDataStateMachineDelegate} to walk through
- * different states of the state machine by clicking on the dialogs shown with the delegate.
- * This way we tested the invocation of delegate inside state machine and vice versa.
+ * <p>In this class we use a real {@link ConfirmSyncDataStateMachineDelegate} to walk through
+ * different states of the state machine by clicking on the dialogs shown with the delegate. This
+ * way we tested the invocation of delegate inside state machine and vice versa.
  *
- * In contrast, {@link ConfirmSyncDataStateMachineTest} takes a delegate mock to check the
+ * <p>In contrast, {@link ConfirmSyncDataStateMachineTest} takes a delegate mock to check the
  * interaction between the state machine and its delegate in one level.
  */
 @RunWith(ChromeJUnit4ClassRunner.class)
@@ -67,17 +67,13 @@ public class ConfirmSyncDataIntegrationTest extends BlankUiTestActivityTestCase 
     @Rule
     public final MockitoRule mMockitoRule = MockitoJUnit.rule().strictness(Strictness.STRICT_STUBS);
 
-    @Mock
-    private SigninManager mSigninManagerMock;
+    @Mock private SigninManager mSigninManagerMock;
 
-    @Mock
-    private IdentityServicesProvider mIdentityServicesProviderMock;
+    @Mock private IdentityServicesProvider mIdentityServicesProviderMock;
 
-    @Mock
-    private ConfirmSyncDataStateMachine.Listener mListenerMock;
+    @Mock private ConfirmSyncDataStateMachine.Listener mListenerMock;
 
-    @Mock
-    private Profile mProfile;
+    @Mock private Profile mProfile;
 
     private ConfirmSyncDataStateMachineDelegate mDelegate;
 
@@ -86,12 +82,16 @@ public class ConfirmSyncDataIntegrationTest extends BlankUiTestActivityTestCase 
         IdentityServicesProvider.setInstanceForTests(mIdentityServicesProviderMock);
         Profile.setLastUsedProfileForTesting(mProfile);
         when(IdentityServicesProvider.get().getSigninManager(any())).thenReturn(mSigninManagerMock);
-        mDelegate = TestThreadUtils.runOnUiThreadBlockingNoException(() -> {
-            return new ConfirmSyncDataStateMachineDelegate(getActivity(),
-                    getActivity().getSupportFragmentManager(),
-                    new ModalDialogManager(
-                            new AppModalPresenter(getActivity()), ModalDialogType.APP));
-        });
+        mDelegate =
+                TestThreadUtils.runOnUiThreadBlockingNoException(
+                        () -> {
+                            return new ConfirmSyncDataStateMachineDelegate(
+                                    getActivity(),
+                                    getActivity().getSupportFragmentManager(),
+                                    new ModalDialogManager(
+                                            new AppModalPresenter(getActivity()),
+                                            ModalDialogType.APP));
+                        });
     }
 
     @Test
@@ -171,18 +171,21 @@ public class ConfirmSyncDataIntegrationTest extends BlankUiTestActivityTestCase 
     }
 
     private void startConfirmSyncFlow(String oldAccountName, String newAccountName) {
-        TestThreadUtils.runOnUiThreadBlocking(() -> {
-            ConfirmSyncDataStateMachine stateMachine = new ConfirmSyncDataStateMachine(
-                    mDelegate, oldAccountName, newAccountName, mListenerMock);
-        });
+        TestThreadUtils.runOnUiThreadBlocking(
+                () -> {
+                    ConfirmSyncDataStateMachine stateMachine =
+                            new ConfirmSyncDataStateMachine(
+                                    mDelegate, oldAccountName, newAccountName, mListenerMock);
+                });
     }
 
     private void mockSigninManagerIsAccountManaged(boolean isAccountManaged) {
-        doAnswer(invocation -> {
-            Callback<Boolean> callback = invocation.getArgument(1);
-            callback.onResult(isAccountManaged);
-            return null;
-        })
+        doAnswer(
+                        invocation -> {
+                            Callback<Boolean> callback = invocation.getArgument(1);
+                            callback.onResult(isAccountManaged);
+                            return null;
+                        })
                 .when(mSigninManagerMock)
                 .isAccountManaged(anyString(), any());
     }

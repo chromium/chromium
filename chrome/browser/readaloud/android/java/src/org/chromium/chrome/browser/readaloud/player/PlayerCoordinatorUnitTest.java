@@ -32,16 +32,12 @@ import org.chromium.ui.modelutil.PropertyModel;
 @RunWith(BaseRobolectricTestRunner.class)
 @Config(manifest = Config.NONE)
 public class PlayerCoordinatorUnitTest {
-    @Mock
-    private ViewStub mMiniPlayerViewStub;
-    @Mock
-    private MiniPlayerLayout mMiniPlayerLayout;
+    @Mock private ViewStub mMiniPlayerViewStub;
+    @Mock private MiniPlayerLayout mMiniPlayerLayout;
     @Mock private MiniPlayerCoordinator mMiniPlayerCoordinator;
     @Mock private Playback mPlayback;
-    @Mock
-    private PlayerCoordinator.Observer mObserver;
-    @Mock
-    private PlayerMediator mMediator;
+    @Mock private PlayerCoordinator.Observer mObserver;
+    @Mock private PlayerMediator mMediator;
     @Mock private MiniPlayerCoordinator mMiniPlayer;
 
     private PlayerCoordinator mPlayerCoordinator;

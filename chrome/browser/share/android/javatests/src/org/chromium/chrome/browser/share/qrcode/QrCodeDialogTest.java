@@ -30,9 +30,7 @@ import org.chromium.ui.test.util.BlankUiTestActivity;
 
 import java.util.ArrayList;
 
-/**
- * Tests for the {@link QrCodeDialog}.
- */
+/** Tests for the {@link QrCodeDialog}. */
 @RunWith(ChromeJUnit4ClassRunner.class)
 @CommandLineFlags.Add({ChromeSwitches.DISABLE_FIRST_RUN_EXPERIENCE})
 @Batch(Batch.UNIT_TESTS)
@@ -103,7 +101,9 @@ public class QrCodeDialogTest {
         ViewPager viewPager = dialog.findViewById(org.chromium.chrome.R.id.qrcode_view_pager);
         TabLayout tabLayout = dialog.findViewById(org.chromium.chrome.R.id.tab_layout);
 
-        assertEquals("Tab is disabled and should not be in adapter.", 0,
+        assertEquals(
+                "Tab is disabled and should not be in adapter.",
+                0,
                 viewPager.getAdapter().getCount());
         assertEquals(
                 "Tab is disabled and should not be in tab layout.", 0, tabLayout.getTabCount());

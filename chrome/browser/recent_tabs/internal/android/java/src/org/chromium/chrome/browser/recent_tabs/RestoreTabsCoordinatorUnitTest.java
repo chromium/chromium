@@ -42,29 +42,19 @@ import org.chromium.ui.modelutil.PropertyModel;
 
 import java.util.ArrayList;
 
-/**
- * Unit tests for RestoreTabsCoordinator.
- */
+/** Unit tests for RestoreTabsCoordinator. */
 @RunWith(BaseRobolectricTestRunner.class)
 @Config(manifest = Config.NONE)
 public class RestoreTabsCoordinatorUnitTest {
-    @Rule
-    public JniMocker jniMocker = new JniMocker();
+    @Rule public JniMocker jniMocker = new JniMocker();
 
-    @Mock
-    FaviconHelper.Natives mFaviconHelperJniMock;
-    @Mock
-    private RestoreTabsMediator mMediator;
-    @Mock
-    private Profile mProfile;
-    @Mock
-    private RestoreTabsControllerDelegate mDelegate;
-    @Mock
-    private TabCreatorManager mTabCreatorManager;
-    @Mock
-    private BottomSheetController mBottomSheetController;
-    @Mock
-    private ForeignSessionHelper mForeignSessionHelper;
+    @Mock FaviconHelper.Natives mFaviconHelperJniMock;
+    @Mock private RestoreTabsMediator mMediator;
+    @Mock private Profile mProfile;
+    @Mock private RestoreTabsControllerDelegate mDelegate;
+    @Mock private TabCreatorManager mTabCreatorManager;
+    @Mock private BottomSheetController mBottomSheetController;
+    @Mock private ForeignSessionHelper mForeignSessionHelper;
 
     private RestoreTabsCoordinator mCoordinator;
     private Activity mActivity;
@@ -77,8 +67,9 @@ public class RestoreTabsCoordinatorUnitTest {
         jniMocker.mock(FaviconHelperJni.TEST_HOOKS, mFaviconHelperJniMock);
         when(mFaviconHelperJniMock.init()).thenReturn(1L);
         mActivity = Robolectric.buildActivity(Activity.class).setup().get();
-        mCoordinator = new RestoreTabsCoordinator(
-                mActivity, mProfile, mMediator, mTabCreatorManager, mBottomSheetController);
+        mCoordinator =
+                new RestoreTabsCoordinator(
+                        mActivity, mProfile, mMediator, mTabCreatorManager, mBottomSheetController);
         mModel = mCoordinator.getPropertyModelForTesting();
         mViewFlipperView = mCoordinator.getViewFlipperForTesting();
     }
@@ -92,7 +83,9 @@ public class RestoreTabsCoordinatorUnitTest {
     public void testRestoreTabsCoordinator_showHomeScreen() {
         mCoordinator.showHomeScreen(mForeignSessionHelper, new ArrayList<>(), mDelegate);
         verify(mMediator, times(1))
-                .showHomeScreen(any(ForeignSessionHelper.class), anyList(),
+                .showHomeScreen(
+                        any(ForeignSessionHelper.class),
+                        anyList(),
                         any(RestoreTabsControllerDelegate.class));
     }
 

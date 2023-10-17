@@ -23,9 +23,7 @@ import org.mockito.junit.MockitoRule;
 
 import org.chromium.base.test.BaseRobolectricTestRunner;
 
-/**
- * Tests for {@link SimpleVerticalLayoutView}.
- */
+/** Tests for {@link SimpleVerticalLayoutView}. */
 @RunWith(BaseRobolectricTestRunner.class)
 public class SpacingRecyclerViewItemDecorationUnitTest {
     private static final int LEAD_IN_SPACE = 10;
@@ -48,7 +46,7 @@ public class SpacingRecyclerViewItemDecorationUnitTest {
     public void testSpacing_firstElementLTR() {
         doReturn(0).when(mRecyclerView).getChildAdapterPosition(mChildView);
         doReturn(View.LAYOUT_DIRECTION_LTR).when(mRecyclerView).getLayoutDirection();
-        mDecoration.getItemOffsets(mOffsets, mChildView, mRecyclerView, /*state=*/null);
+        mDecoration.getItemOffsets(mOffsets, mChildView, mRecyclerView, /* state= */ null);
         assertEquals(LEAD_IN_SPACE, mOffsets.left);
         assertEquals(ELEMENT_SPACE, mOffsets.right);
         assertEquals(0, mOffsets.top);
@@ -59,7 +57,7 @@ public class SpacingRecyclerViewItemDecorationUnitTest {
     public void testSpacing_firstElementRTL() {
         doReturn(0).when(mRecyclerView).getChildAdapterPosition(mChildView);
         doReturn(View.LAYOUT_DIRECTION_RTL).when(mRecyclerView).getLayoutDirection();
-        mDecoration.getItemOffsets(mOffsets, mChildView, mRecyclerView, /*state=*/null);
+        mDecoration.getItemOffsets(mOffsets, mChildView, mRecyclerView, /* state= */ null);
         assertEquals(ELEMENT_SPACE, mOffsets.left);
         assertEquals(LEAD_IN_SPACE, mOffsets.right);
         assertEquals(0, mOffsets.top);
@@ -69,7 +67,7 @@ public class SpacingRecyclerViewItemDecorationUnitTest {
     @Test
     public void testSpacing_nonFirstElement() {
         doReturn(1).when(mRecyclerView).getChildAdapterPosition(mChildView);
-        mDecoration.getItemOffsets(mOffsets, mChildView, mRecyclerView, /*state=*/null);
+        mDecoration.getItemOffsets(mOffsets, mChildView, mRecyclerView, /* state= */ null);
         assertEquals(ELEMENT_SPACE, mOffsets.left);
         assertEquals(ELEMENT_SPACE, mOffsets.right);
         assertEquals(0, mOffsets.top);

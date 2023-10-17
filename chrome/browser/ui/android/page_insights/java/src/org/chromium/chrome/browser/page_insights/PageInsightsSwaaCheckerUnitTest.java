@@ -39,26 +39,19 @@ import org.chromium.chrome.browser.preferences.ChromePreferenceKeys;
 import org.chromium.chrome.browser.preferences.ChromeSharedPreferences;
 import org.chromium.chrome.browser.profiles.Profile;
 
-/**
- * Unit tests for {@link PageInsightsSwaaChecker}.
- */
+/** Unit tests for {@link PageInsightsSwaaChecker}. */
 @LooperMode(LooperMode.Mode.PAUSED)
 @RunWith(BaseRobolectricTestRunner.class)
 public class PageInsightsSwaaCheckerUnitTest {
-    @Rule
-    public JniMocker mJniMocker = new JniMocker();
+    @Rule public JniMocker mJniMocker = new JniMocker();
 
-    @Mock
-    private PageInsightsSwaaChecker.Natives mPageInsightsSwaaCheckerJni;
+    @Mock private PageInsightsSwaaChecker.Natives mPageInsightsSwaaCheckerJni;
 
-    @Mock
-    private Profile mProfile;
+    @Mock private Profile mProfile;
 
-    @Mock
-    private Runnable mActivateCallback;
+    @Mock private Runnable mActivateCallback;
 
-    @Mock
-    private Handler mHandler;
+    @Mock private Handler mHandler;
 
     private SharedPreferencesManager mSharedPreferencesManager;
 

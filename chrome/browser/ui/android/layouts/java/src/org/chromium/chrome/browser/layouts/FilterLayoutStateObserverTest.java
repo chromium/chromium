@@ -32,32 +32,33 @@ public class FilterLayoutStateObserverTest {
     public void setUp() {
         MockitoAnnotations.initMocks(this);
 
-        mBaseObserver = new LayoutStateObserver() {
-            @Override
-            public void onStartedShowing(int layoutType) {
-                mStartedShowingCallbackHelper.notifyCalled();
-            }
+        mBaseObserver =
+                new LayoutStateObserver() {
+                    @Override
+                    public void onStartedShowing(int layoutType) {
+                        mStartedShowingCallbackHelper.notifyCalled();
+                    }
 
-            @Override
-            public void onFinishedShowing(int layoutType) {
-                mFinishedShowingCallbackHelper.notifyCalled();
-            }
+                    @Override
+                    public void onFinishedShowing(int layoutType) {
+                        mFinishedShowingCallbackHelper.notifyCalled();
+                    }
 
-            @Override
-            public void onStartedHiding(int layoutType) {
-                mStartedHidingCallbackHelper.notifyCalled();
-            }
+                    @Override
+                    public void onStartedHiding(int layoutType) {
+                        mStartedHidingCallbackHelper.notifyCalled();
+                    }
 
-            @Override
-            public void onFinishedHiding(int layoutType) {
-                mFinishedHidingCallbackHelper.notifyCalled();
-            }
+                    @Override
+                    public void onFinishedHiding(int layoutType) {
+                        mFinishedHidingCallbackHelper.notifyCalled();
+                    }
 
-            @Override
-            public void onTabSelectionHinted(int tabId) {
-                mSelectionHintedCallbackHelper.notifyCalled();
-            }
-        };
+                    @Override
+                    public void onTabSelectionHinted(int tabId) {
+                        mSelectionHintedCallbackHelper.notifyCalled();
+                    }
+                };
     }
 
     @Test
@@ -66,23 +67,35 @@ public class FilterLayoutStateObserverTest {
                 new FilterLayoutStateObserver(LayoutType.BROWSING, mBaseObserver);
 
         int initialCount = mStartedShowingCallbackHelper.getCallCount();
-        assertEquals("Event should not have triggered.", initialCount,
+        assertEquals(
+                "Event should not have triggered.",
+                initialCount,
                 mStartedShowingCallbackHelper.getCallCount());
         observer.onStartedShowing(LayoutType.TAB_SWITCHER);
-        assertEquals("Event should not have triggered with the specified layout.", initialCount,
+        assertEquals(
+                "Event should not have triggered with the specified layout.",
+                initialCount,
                 mStartedShowingCallbackHelper.getCallCount());
         observer.onStartedShowing(LayoutType.BROWSING);
-        assertEquals("Event should have triggered with the specified layout.", initialCount + 1,
+        assertEquals(
+                "Event should have triggered with the specified layout.",
+                initialCount + 1,
                 mStartedShowingCallbackHelper.getCallCount());
 
         initialCount = mFinishedShowingCallbackHelper.getCallCount();
-        assertEquals("Event should not have triggered.", initialCount,
+        assertEquals(
+                "Event should not have triggered.",
+                initialCount,
                 mFinishedShowingCallbackHelper.getCallCount());
         observer.onFinishedShowing(LayoutType.SIMPLE_ANIMATION);
-        assertEquals("Event should not have triggered with the specified layout.", initialCount,
+        assertEquals(
+                "Event should not have triggered with the specified layout.",
+                initialCount,
                 mFinishedShowingCallbackHelper.getCallCount());
         observer.onFinishedShowing(LayoutType.BROWSING);
-        assertEquals("Event should have triggered with the specified layout.", initialCount + 1,
+        assertEquals(
+                "Event should have triggered with the specified layout.",
+                initialCount + 1,
                 mFinishedShowingCallbackHelper.getCallCount());
     }
 
@@ -92,11 +105,15 @@ public class FilterLayoutStateObserverTest {
                 new FilterLayoutStateObserver(LayoutType.TAB_SWITCHER, mBaseObserver);
 
         int initialCount = mSelectionHintedCallbackHelper.getCallCount();
-        assertEquals("Event should not have triggered.", initialCount,
+        assertEquals(
+                "Event should not have triggered.",
+                initialCount,
                 mSelectionHintedCallbackHelper.getCallCount());
 
         observer.onTabSelectionHinted(0);
-        assertEquals("Event should have triggered.", initialCount + 1,
+        assertEquals(
+                "Event should have triggered.",
+                initialCount + 1,
                 mSelectionHintedCallbackHelper.getCallCount());
     }
 }

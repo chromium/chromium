@@ -32,10 +32,8 @@ import org.chromium.ui.modelutil.PropertyModel;
 /** Test for the WebFeedDialogMediatorTest class. */
 @RunWith(BaseRobolectricTestRunner.class)
 public final class WebFeedDialogMediatorTest {
-    @Mock
-    private View mView;
-    @Mock
-    private Callback<Integer> mButtonCallback;
+    @Mock private View mView;
+    @Mock private Callback<Integer> mButtonCallback;
 
     private WebFeedDialogMediator mMediator;
     private ModalDialogManager mModalDialogManager;
@@ -44,6 +42,7 @@ public final class WebFeedDialogMediatorTest {
     private class Presenter extends ModalDialogManager.Presenter {
         @Override
         protected void addDialogView(PropertyModel model) {}
+
         @Override
         protected void removeDialogView(PropertyModel model) {}
     }
@@ -56,16 +55,23 @@ public final class WebFeedDialogMediatorTest {
                 new ModalDialogManager(new Presenter(), ModalDialogManager.ModalDialogType.APP);
         mMediator = new WebFeedDialogMediator(mModalDialogManager);
 
-        mMediator.initialize(mView,
-                new WebFeedDialogContents("title", "details", /*illustrationId=*/2,
-                        "primary button", "secondary button", mButtonCallback));
+        mMediator.initialize(
+                mView,
+                new WebFeedDialogContents(
+                        "title",
+                        "details",
+                        /* illustrationId= */ 2,
+                        "primary button",
+                        "secondary button",
+                        mButtonCallback));
     }
 
     @Test
     @SmallTest
     public void showAndClickPositive_callsCallbackOnce() {
         mMediator.showDialog();
-        mModalDialogManager.getCurrentDialogForTest()
+        mModalDialogManager
+                .getCurrentDialogForTest()
                 .get(ModalDialogProperties.CONTROLLER)
                 .onClick(null, ModalDialogProperties.ButtonType.POSITIVE);
 
@@ -78,7 +84,8 @@ public final class WebFeedDialogMediatorTest {
     @SmallTest
     public void showAndClickNegative_callsCallbackOnce() {
         mMediator.showDialog();
-        mModalDialogManager.getCurrentDialogForTest()
+        mModalDialogManager
+                .getCurrentDialogForTest()
                 .get(ModalDialogProperties.CONTROLLER)
                 .onClick(null, ModalDialogProperties.ButtonType.NEGATIVE);
 

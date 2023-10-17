@@ -24,7 +24,9 @@ import java.util.OptionalInt;
  * Tests that metric reporter correctly writes the histograms depending on the function and setting.
  */
 @RunWith(BaseRobolectricTestRunner.class)
-@Config(manifest = Config.NONE, shadows = {ShadowSystemClock.class})
+@Config(
+        manifest = Config.NONE,
+        shadows = {ShadowSystemClock.class})
 public class PasswordSettingsUpdaterMetricsRecorderTest {
     private static final String HISTOGRAM_NAME_BASE = "PasswordManager.PasswordSettings";
 
@@ -36,16 +38,21 @@ public class PasswordSettingsUpdaterMetricsRecorderTest {
     private void checkSuccessHistograms(String functionSuffix, String settingSuffix) {
         final String nameWithSuffixes =
                 HISTOGRAM_NAME_BASE + "." + functionSuffix + "." + settingSuffix;
-        assertEquals(1,
+        assertEquals(
+                1,
                 RecordHistogram.getHistogramValueCountForTesting(nameWithSuffixes + ".Success", 1));
-        assertEquals(1,
+        assertEquals(
+                1,
                 RecordHistogram.getHistogramValueCountForTesting(nameWithSuffixes + ".Latency", 0));
-        assertEquals(0,
+        assertEquals(
+                0,
                 RecordHistogram.getHistogramTotalCountForTesting(
                         nameWithSuffixes + ".ErrorLatency"));
-        assertEquals(0,
+        assertEquals(
+                0,
                 RecordHistogram.getHistogramTotalCountForTesting(nameWithSuffixes + ".ErrorCode"));
-        assertEquals(0,
+        assertEquals(
+                0,
                 RecordHistogram.getHistogramTotalCountForTesting(nameWithSuffixes + ".APIError1"));
     }
 
@@ -53,22 +60,28 @@ public class PasswordSettingsUpdaterMetricsRecorderTest {
             String functionSuffix, String settingSuffix, int errorCode, OptionalInt apiErrorCode) {
         final String nameWithSuffixes =
                 HISTOGRAM_NAME_BASE + "." + functionSuffix + "." + settingSuffix;
-        assertEquals(1,
+        assertEquals(
+                1,
                 RecordHistogram.getHistogramValueCountForTesting(nameWithSuffixes + ".Success", 0));
         assertEquals(
                 0, RecordHistogram.getHistogramTotalCountForTesting(nameWithSuffixes + ".Latency"));
-        assertEquals(1,
+        assertEquals(
+                1,
                 RecordHistogram.getHistogramValueCountForTesting(
                         nameWithSuffixes + ".ErrorLatency", 0));
-        assertEquals(1,
+        assertEquals(
+                1,
                 RecordHistogram.getHistogramValueCountForTesting(
                         nameWithSuffixes + ".ErrorCode", errorCode));
-        apiErrorCode.ifPresentOrElse(apiError
-                -> assertEquals(1,
-                        RecordHistogram.getHistogramValueCountForTesting(
-                                nameWithSuffixes + ".APIError1", apiError)),
-                ()
-                        -> assertEquals(0,
+        apiErrorCode.ifPresentOrElse(
+                apiError ->
+                        assertEquals(
+                                1,
+                                RecordHistogram.getHistogramValueCountForTesting(
+                                        nameWithSuffixes + ".APIError1", apiError)),
+                () ->
+                        assertEquals(
+                                0,
                                 RecordHistogram.getHistogramTotalCountForTesting(
                                         nameWithSuffixes + ".APIError1")));
     }
@@ -87,7 +100,8 @@ public class PasswordSettingsUpdaterMetricsRecorderTest {
     @Test
     public void testRecordsSuccessHistogramForGetAutoSignIn() {
         PasswordSettingsUpdaterMetricsRecorder metricsRecorder =
-                new PasswordSettingsUpdaterMetricsRecorder(PasswordManagerSetting.AUTO_SIGN_IN,
+                new PasswordSettingsUpdaterMetricsRecorder(
+                        PasswordManagerSetting.AUTO_SIGN_IN,
                         PasswordSettingsUpdaterMetricsRecorder.GET_VALUE_FUNCTION_SUFFIX);
 
         metricsRecorder.recordMetrics(null);
@@ -104,21 +118,28 @@ public class PasswordSettingsUpdaterMetricsRecorderTest {
         Exception expectedException = new Exception("Sample failure");
 
         metricsRecorder.recordMetrics(expectedException);
-        checkFailureHistograms("GetSettingValue", "OfferToSavePasswords",
-                AndroidBackendErrorType.UNCATEGORIZED, OptionalInt.empty());
+        checkFailureHistograms(
+                "GetSettingValue",
+                "OfferToSavePasswords",
+                AndroidBackendErrorType.UNCATEGORIZED,
+                OptionalInt.empty());
     }
 
     @Test
     public void testRecordsErrorHistogramForGetAutoSignIn() {
         PasswordSettingsUpdaterMetricsRecorder metricsRecorder =
-                new PasswordSettingsUpdaterMetricsRecorder(PasswordManagerSetting.AUTO_SIGN_IN,
+                new PasswordSettingsUpdaterMetricsRecorder(
+                        PasswordManagerSetting.AUTO_SIGN_IN,
                         PasswordSettingsUpdaterMetricsRecorder.GET_VALUE_FUNCTION_SUFFIX);
 
         Exception expectedException = new Exception("Sample failure");
 
         metricsRecorder.recordMetrics(expectedException);
-        checkFailureHistograms("GetSettingValue", "AutoSignIn",
-                AndroidBackendErrorType.UNCATEGORIZED, OptionalInt.empty());
+        checkFailureHistograms(
+                "GetSettingValue",
+                "AutoSignIn",
+                AndroidBackendErrorType.UNCATEGORIZED,
+                OptionalInt.empty());
     }
 
     @Test
@@ -132,7 +153,9 @@ public class PasswordSettingsUpdaterMetricsRecorderTest {
                 new ApiException(new Status(ChromeSyncStatusCode.AUTH_ERROR_UNRESOLVABLE));
 
         metricsRecorder.recordMetrics(expectedException);
-        checkFailureHistograms("GetSettingValue", "OfferToSavePasswords",
+        checkFailureHistograms(
+                "GetSettingValue",
+                "OfferToSavePasswords",
                 AndroidBackendErrorType.EXTERNAL_ERROR,
                 OptionalInt.of(ChromeSyncStatusCode.AUTH_ERROR_UNRESOLVABLE));
     }
@@ -140,14 +163,17 @@ public class PasswordSettingsUpdaterMetricsRecorderTest {
     @Test
     public void testRecordsApiErrorHistogramForGetAutoSignIn() {
         PasswordSettingsUpdaterMetricsRecorder metricsRecorder =
-                new PasswordSettingsUpdaterMetricsRecorder(PasswordManagerSetting.AUTO_SIGN_IN,
+                new PasswordSettingsUpdaterMetricsRecorder(
+                        PasswordManagerSetting.AUTO_SIGN_IN,
                         PasswordSettingsUpdaterMetricsRecorder.GET_VALUE_FUNCTION_SUFFIX);
 
         Exception expectedException =
                 new ApiException(new Status(ChromeSyncStatusCode.AUTH_ERROR_UNRESOLVABLE));
 
         metricsRecorder.recordMetrics(expectedException);
-        checkFailureHistograms("GetSettingValue", "AutoSignIn",
+        checkFailureHistograms(
+                "GetSettingValue",
+                "AutoSignIn",
                 AndroidBackendErrorType.EXTERNAL_ERROR,
                 OptionalInt.of(ChromeSyncStatusCode.AUTH_ERROR_UNRESOLVABLE));
     }
@@ -166,7 +192,8 @@ public class PasswordSettingsUpdaterMetricsRecorderTest {
     @Test
     public void testRecordsSuccessHistogramForSetAutoSignIn() {
         PasswordSettingsUpdaterMetricsRecorder metricsRecorder =
-                new PasswordSettingsUpdaterMetricsRecorder(PasswordManagerSetting.AUTO_SIGN_IN,
+                new PasswordSettingsUpdaterMetricsRecorder(
+                        PasswordManagerSetting.AUTO_SIGN_IN,
                         PasswordSettingsUpdaterMetricsRecorder.SET_VALUE_FUNCTION_SUFFIX);
 
         metricsRecorder.recordMetrics(null);
@@ -183,21 +210,28 @@ public class PasswordSettingsUpdaterMetricsRecorderTest {
         Exception expectedException = new Exception("Sample failure");
 
         metricsRecorder.recordMetrics(expectedException);
-        checkFailureHistograms("SetSettingValue", "OfferToSavePasswords",
-                AndroidBackendErrorType.UNCATEGORIZED, OptionalInt.empty());
+        checkFailureHistograms(
+                "SetSettingValue",
+                "OfferToSavePasswords",
+                AndroidBackendErrorType.UNCATEGORIZED,
+                OptionalInt.empty());
     }
 
     @Test
     public void testRecordsErrorHistogramForSetAutoSignIn() {
         PasswordSettingsUpdaterMetricsRecorder metricsRecorder =
-                new PasswordSettingsUpdaterMetricsRecorder(PasswordManagerSetting.AUTO_SIGN_IN,
+                new PasswordSettingsUpdaterMetricsRecorder(
+                        PasswordManagerSetting.AUTO_SIGN_IN,
                         PasswordSettingsUpdaterMetricsRecorder.SET_VALUE_FUNCTION_SUFFIX);
 
         Exception expectedException = new Exception("Sample failure");
 
         metricsRecorder.recordMetrics(expectedException);
-        checkFailureHistograms("SetSettingValue", "AutoSignIn",
-                AndroidBackendErrorType.UNCATEGORIZED, OptionalInt.empty());
+        checkFailureHistograms(
+                "SetSettingValue",
+                "AutoSignIn",
+                AndroidBackendErrorType.UNCATEGORIZED,
+                OptionalInt.empty());
     }
 
     @Test
@@ -211,7 +245,9 @@ public class PasswordSettingsUpdaterMetricsRecorderTest {
                 new ApiException(new Status(ChromeSyncStatusCode.AUTH_ERROR_UNRESOLVABLE));
 
         metricsRecorder.recordMetrics(expectedException);
-        checkFailureHistograms("SetSettingValue", "OfferToSavePasswords",
+        checkFailureHistograms(
+                "SetSettingValue",
+                "OfferToSavePasswords",
                 AndroidBackendErrorType.EXTERNAL_ERROR,
                 OptionalInt.of(ChromeSyncStatusCode.AUTH_ERROR_UNRESOLVABLE));
     }
@@ -219,14 +255,17 @@ public class PasswordSettingsUpdaterMetricsRecorderTest {
     @Test
     public void testRecordsApiErrorHistogramForSetAutoSignIn() {
         PasswordSettingsUpdaterMetricsRecorder metricsRecorder =
-                new PasswordSettingsUpdaterMetricsRecorder(PasswordManagerSetting.AUTO_SIGN_IN,
+                new PasswordSettingsUpdaterMetricsRecorder(
+                        PasswordManagerSetting.AUTO_SIGN_IN,
                         PasswordSettingsUpdaterMetricsRecorder.SET_VALUE_FUNCTION_SUFFIX);
 
         Exception expectedException =
                 new ApiException(new Status(ChromeSyncStatusCode.AUTH_ERROR_UNRESOLVABLE));
 
         metricsRecorder.recordMetrics(expectedException);
-        checkFailureHistograms("SetSettingValue", "AutoSignIn",
+        checkFailureHistograms(
+                "SetSettingValue",
+                "AutoSignIn",
                 AndroidBackendErrorType.EXTERNAL_ERROR,
                 OptionalInt.of(ChromeSyncStatusCode.AUTH_ERROR_UNRESOLVABLE));
     }

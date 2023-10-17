@@ -33,9 +33,7 @@ import org.chromium.ui.base.TestActivity;
 import org.chromium.ui.modelutil.PropertyModel;
 import org.chromium.ui.modelutil.PropertyModelChangeProcessor;
 
-/**
- * Tests for {@link DividerLineViewBinder}.
- */
+/** Tests for {@link DividerLineViewBinder}. */
 @RunWith(BaseRobolectricTestRunner.class)
 public class DividerLineViewBinderUnitTest {
     @Rule
@@ -46,17 +44,19 @@ public class DividerLineViewBinderUnitTest {
     PropertyModel mModel;
 
     DividerLineView mDividerLineView;
-    @Mock
-    View mDividerLine;
+    @Mock View mDividerLine;
 
     @Before
     public void setUp() {
         MockitoAnnotations.initMocks(this);
         mActivityScenarioRule.getScenario().onActivity((activity) -> mActivity = activity);
 
-        mDividerLineView = mock(DividerLineView.class,
-                Mockito.withSettings().useConstructor(mActivity).defaultAnswer(
-                        Mockito.CALLS_REAL_METHODS));
+        mDividerLineView =
+                mock(
+                        DividerLineView.class,
+                        Mockito.withSettings()
+                                .useConstructor(mActivity)
+                                .defaultAnswer(Mockito.CALLS_REAL_METHODS));
 
         when(mDividerLineView.getDivider()).thenReturn(mDividerLine);
 

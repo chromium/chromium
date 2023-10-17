@@ -22,9 +22,7 @@ import org.chromium.components.omnibox.action.OmniboxAction;
 import org.chromium.components.omnibox.action.OmniboxActionDelegate;
 import org.chromium.components.omnibox.action.OmniboxActionId;
 
-/**
- * Tests for {@link HistoryClustersAction}.
- */
+/** Tests for {@link HistoryClustersAction}. */
 @RunWith(BaseRobolectricTestRunner.class)
 @Config(manifest = Config.NONE)
 public class HistoryClustersActionUnitTest {
@@ -39,25 +37,29 @@ public class HistoryClustersActionUnitTest {
 
     @Test
     public void creation_failsWithNullHint() {
-        assertThrows(AssertionError.class,
+        assertThrows(
+                AssertionError.class,
                 () -> new HistoryClustersAction(0, null, "accessibility", "query"));
     }
 
     @Test
     public void creation_failsWithEmptyHint() {
-        assertThrows(AssertionError.class,
+        assertThrows(
+                AssertionError.class,
                 () -> new HistoryClustersAction(0, "", "accessibility", "query"));
     }
 
     @Test
     public void creation_failsWithNullQuery() {
-        assertThrows(AssertionError.class,
+        assertThrows(
+                AssertionError.class,
                 () -> new HistoryClustersAction(0, "hint", "accessibility", null));
     }
 
     @Test
     public void creation_failsWithEmptyQuery() {
-        assertThrows(AssertionError.class,
+        assertThrows(
+                AssertionError.class,
                 () -> new HistoryClustersAction(0, "hint", "accessibility", ""));
     }
 
@@ -68,19 +70,22 @@ public class HistoryClustersActionUnitTest {
 
     @Test
     public void safeCasting_assertsWithWrongClassType() {
-        assertThrows(AssertionError.class,
-                ()
-                        -> HistoryClustersAction.from(new OmniboxAction(
-                                OmniboxActionId.HISTORY_CLUSTERS, 0, "", "", null) {
-                    @Override
-                    public void execute(OmniboxActionDelegate d) {}
-                }));
+        assertThrows(
+                AssertionError.class,
+                () ->
+                        HistoryClustersAction.from(
+                                new OmniboxAction(
+                                        OmniboxActionId.HISTORY_CLUSTERS, 0, "", "", null) {
+                                    @Override
+                                    public void execute(OmniboxActionDelegate d) {}
+                                }));
     }
 
     @Test
     public void safeCasting_successWithFactoryBuiltAction() {
-        HistoryClustersAction.from(OmniboxActionFactoryImpl.get().buildHistoryClustersAction(
-                0, "hint", "accessibility", "query"));
+        HistoryClustersAction.from(
+                OmniboxActionFactoryImpl.get()
+                        .buildHistoryClustersAction(0, "hint", "accessibility", "query"));
     }
 
     @Test

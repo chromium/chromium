@@ -35,29 +35,20 @@ import java.util.List;
 @RunWith(BaseRobolectricTestRunner.class)
 @Config(manifest = Config.NONE)
 public class OptionalBrowsingModeButtonControllerTest {
-    @Mock
-    UserEducationHelper mUserEducationHelper;
-    @Mock
-    ToolbarLayout mToolbarLayout;
-    @Mock
-    ButtonDataProvider mButtonDataProvider1;
-    @Mock
-    ButtonDataProvider mButtonDataProvider2;
-    @Mock
-    ButtonDataProvider mButtonDataProvider3;
-    @Mock
-    Tab mTab;
+    @Mock UserEducationHelper mUserEducationHelper;
+    @Mock ToolbarLayout mToolbarLayout;
+    @Mock ButtonDataProvider mButtonDataProvider1;
+    @Mock ButtonDataProvider mButtonDataProvider2;
+    @Mock ButtonDataProvider mButtonDataProvider3;
+    @Mock Tab mTab;
 
     ButtonDataImpl mNewTabButtonData;
     ButtonDataImpl mShareButtonData;
     ButtonDataImpl mVoiceButtonData;
 
-    @Captor
-    ArgumentCaptor<ButtonDataProvider.ButtonDataObserver> mObserverCaptor1;
-    @Captor
-    ArgumentCaptor<ButtonDataProvider.ButtonDataObserver> mObserverCaptor2;
-    @Captor
-    ArgumentCaptor<ButtonDataProvider.ButtonDataObserver> mObserverCaptor3;
+    @Captor ArgumentCaptor<ButtonDataProvider.ButtonDataObserver> mObserverCaptor1;
+    @Captor ArgumentCaptor<ButtonDataProvider.ButtonDataObserver> mObserverCaptor2;
+    @Captor ArgumentCaptor<ButtonDataProvider.ButtonDataObserver> mObserverCaptor3;
 
     OptionalBrowsingModeButtonController mButtonController;
 
@@ -74,8 +65,9 @@ public class OptionalBrowsingModeButtonControllerTest {
 
         List<ButtonDataProvider> buttonDataProviders =
                 Arrays.asList(mButtonDataProvider1, mButtonDataProvider2, mButtonDataProvider3);
-        mButtonController = new OptionalBrowsingModeButtonController(
-                buttonDataProviders, mUserEducationHelper, mToolbarLayout, () -> mTab);
+        mButtonController =
+                new OptionalBrowsingModeButtonController(
+                        buttonDataProviders, mUserEducationHelper, mToolbarLayout, () -> mTab);
         verify(mButtonDataProvider1, times(1)).addObserver(mObserverCaptor1.capture());
         verify(mButtonDataProvider2, times(1)).addObserver(mObserverCaptor2.capture());
         verify(mButtonDataProvider3, times(1)).addObserver(mObserverCaptor3.capture());
@@ -211,9 +203,15 @@ public class OptionalBrowsingModeButtonControllerTest {
     private static ButtonDataImpl createButtonData(
             @AdaptiveToolbarButtonVariant int buttonVariant) {
         return new ButtonDataImpl(
-                /*canShow=*/true, /*drawable=*/null, /*onClickListener=*/null,
-                /*contentDescription=*/"", /*supportsTinting=*/false,
-                /*iphCommandBuilder=*/null, /*isEnabled=*/true, buttonVariant,
-                /*tooltipTextResId=*/Resources.ID_NULL, /*showHoverHighlight=*/false);
+                /* canShow= */ true,
+                /* drawable= */ null,
+                /* onClickListener= */ null,
+                /* contentDescription= */ "",
+                /* supportsTinting= */ false,
+                /* iphCommandBuilder= */ null,
+                /* isEnabled= */ true,
+                buttonVariant,
+                /* tooltipTextResId= */ Resources.ID_NULL,
+                /* showHoverHighlight= */ false);
     }
 }

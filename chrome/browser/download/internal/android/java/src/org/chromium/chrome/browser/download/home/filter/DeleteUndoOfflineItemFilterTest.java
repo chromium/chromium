@@ -30,14 +30,11 @@ import java.util.Collections;
 @RunWith(BaseRobolectricTestRunner.class)
 @Config(manifest = Config.NONE)
 public class DeleteUndoOfflineItemFilterTest {
-    @Mock
-    private OfflineItemFilterSource mSource;
+    @Mock private OfflineItemFilterSource mSource;
 
-    @Mock
-    private OfflineItemFilterObserver mObserver;
+    @Mock private OfflineItemFilterObserver mObserver;
 
-    @Rule
-    public MockitoRule mMockitoRule = MockitoJUnit.rule();
+    @Rule public MockitoRule mMockitoRule = MockitoJUnit.rule();
 
     @Test
     public void testFiltering() {

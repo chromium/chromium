@@ -44,14 +44,11 @@ import org.chromium.ui.base.TestActivity;
 import java.util.concurrent.atomic.AtomicReference;
 import java.util.function.Consumer;
 
-/**
- * Tests for {@link OmniboxActionDelegateImpl}.
- */
+/** Tests for {@link OmniboxActionDelegateImpl}. */
 @RunWith(BaseRobolectricTestRunner.class)
 public class OmniboxActionDelegateImplUnitTest {
     public @Rule MockitoRule mMockitoRule = MockitoJUnit.rule();
-    @Rule
-    public TestRule mFeaturesProcessor = new Features.JUnitProcessor();
+    @Rule public TestRule mFeaturesProcessor = new Features.JUnitProcessor();
     private @Mock Consumer<String> mMockOpenUrl;
     private @Mock OpenHistoryClustersDelegate mMockOpenHistoryClustersUi;
     private @Mock Runnable mMockOpenIncognitoPage;
@@ -67,11 +64,16 @@ public class OmniboxActionDelegateImplUnitTest {
     public void setUp() {
         mContext = ContextUtils.getApplicationContext();
         mTabReference.set(mTab);
-        mDelegate = new OmniboxActionDelegateImpl(mContext,
-                ()
-                        -> mTabReference.get(),
-                mMockSettingsLauncher, mMockOpenUrl, mMockOpenIncognitoPage,
-                mMockOpenPasswordSettings, mMockOpenHistoryClustersUi, mMockOpenQuickDeleteDialog);
+        mDelegate =
+                new OmniboxActionDelegateImpl(
+                        mContext,
+                        () -> mTabReference.get(),
+                        mMockSettingsLauncher,
+                        mMockOpenUrl,
+                        mMockOpenIncognitoPage,
+                        mMockOpenPasswordSettings,
+                        mMockOpenHistoryClustersUi,
+                        mMockOpenQuickDeleteDialog);
     }
 
     @After

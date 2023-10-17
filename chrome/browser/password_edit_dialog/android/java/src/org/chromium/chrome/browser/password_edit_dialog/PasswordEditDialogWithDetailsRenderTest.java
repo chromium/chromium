@@ -52,14 +52,14 @@ import java.util.List;
 public class PasswordEditDialogWithDetailsRenderTest {
     @ParameterAnnotations.ClassParameter
     private static List<ParameterSet> sClassParams =
-            Arrays.asList(new ParameterSet().value(false).name("Default"),
+            Arrays.asList(
+                    new ParameterSet().value(false).name("Default"),
                     new ParameterSet().value(true).name("NightMode"));
 
     private static final String USERNAME = "John Doe";
     private static final String PASSWORD = "passwordForTest";
 
-    @Rule
-    public TestRule mProcessor = new Features.JUnitProcessor();
+    @Rule public TestRule mProcessor = new Features.JUnitProcessor();
 
     @Rule
     public final ChromeRenderTestRule mRenderTestRule =
@@ -82,13 +82,19 @@ public class PasswordEditDialogWithDetailsRenderTest {
     public void setUp() throws InterruptedException {
         mActivityTestRule.launchActivity(null);
         mActivityTestRule.getActivity().setTheme(Theme_BrowserUI_DayNight);
-        runOnUiThreadBlocking(() -> {
-            mDialogView = (PasswordEditDialogWithDetailsView) mActivityTestRule.getActivity()
-                                  .getLayoutInflater()
-                                  .inflate(R.layout.password_edit_dialog_with_details, null);
-            mActivityTestRule.getActivity().setContentView(mDialogView);
-            ChromeRenderTestRule.sanitize(mDialogView);
-        });
+        runOnUiThreadBlocking(
+                () -> {
+                    mDialogView =
+                            (PasswordEditDialogWithDetailsView)
+                                    mActivityTestRule
+                                            .getActivity()
+                                            .getLayoutInflater()
+                                            .inflate(
+                                                    R.layout.password_edit_dialog_with_details,
+                                                    null);
+                    mActivityTestRule.getActivity().setContentView(mDialogView);
+                    ChromeRenderTestRule.sanitize(mDialogView);
+                });
     }
 
     @After
@@ -110,20 +116,24 @@ public class PasswordEditDialogWithDetailsRenderTest {
     }
 
     private void setupViewWithModel() {
-        runOnUiThreadBlocking(() -> {
-            PropertyModel model =
-                    new PropertyModel.Builder(PasswordEditDialogProperties.ALL_KEYS)
-                            .with(PasswordEditDialogProperties.USERNAMES,
-                                    Arrays.asList(new String[] {USERNAME}))
-                            .with(PasswordEditDialogProperties.USERNAME, USERNAME)
-                            .with(PasswordEditDialogProperties.PASSWORD, PASSWORD)
-                            .with(PasswordEditDialogProperties.USERNAME_CHANGED_CALLBACK,
-                                    (String u) -> {})
-                            .with(PasswordEditDialogProperties.PASSWORD_CHANGED_CALLBACK,
-                                    (String u) -> {})
-                            .build();
-            PropertyModelChangeProcessor.create(
-                    model, mDialogView, PasswordEditDialogViewBinder::bind);
-        });
+        runOnUiThreadBlocking(
+                () -> {
+                    PropertyModel model =
+                            new PropertyModel.Builder(PasswordEditDialogProperties.ALL_KEYS)
+                                    .with(
+                                            PasswordEditDialogProperties.USERNAMES,
+                                            Arrays.asList(new String[] {USERNAME}))
+                                    .with(PasswordEditDialogProperties.USERNAME, USERNAME)
+                                    .with(PasswordEditDialogProperties.PASSWORD, PASSWORD)
+                                    .with(
+                                            PasswordEditDialogProperties.USERNAME_CHANGED_CALLBACK,
+                                            (String u) -> {})
+                                    .with(
+                                            PasswordEditDialogProperties.PASSWORD_CHANGED_CALLBACK,
+                                            (String u) -> {})
+                                    .build();
+                    PropertyModelChangeProcessor.create(
+                            model, mDialogView, PasswordEditDialogViewBinder::bind);
+                });
     }
 }

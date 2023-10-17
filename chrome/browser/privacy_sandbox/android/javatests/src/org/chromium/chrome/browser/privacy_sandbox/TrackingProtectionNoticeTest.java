@@ -66,13 +66,11 @@ public final class TrackingProtectionNoticeTest {
                     .setBugComponent(Component.PRIVACY)
                     .build();
 
-    @Rule
-    public JniMocker mocker = new JniMocker();
+    @Rule public JniMocker mocker = new JniMocker();
 
     private FakeTrackingProtectionBridge mFakeTrackingProtectionBridge;
 
-    @Mock
-    SecurityStateModel.Natives mSecurityStateModelNatives;
+    @Mock SecurityStateModel.Natives mSecurityStateModelNatives;
 
     @Before
     public void setUp() throws ExecutionException {

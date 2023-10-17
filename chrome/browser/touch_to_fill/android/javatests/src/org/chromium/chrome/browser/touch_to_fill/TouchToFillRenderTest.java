@@ -69,9 +69,7 @@ import org.chromium.url.JUnitTestGURLs;
 import java.util.Arrays;
 import java.util.List;
 
-/**
- * These tests render screenshots of touch to fill sheet and compare them to a gold standard.
- */
+/** These tests render screenshots of touch to fill sheet and compare them to a gold standard. */
 @RunWith(ParameterizedRunner.class)
 @ParameterAnnotations.UseRunnerDelegate(ChromeJUnit4RunnerDelegate.class)
 @DoNotBatch(reason = "The tests can't be batched because they run for different set-ups.")
@@ -79,7 +77,8 @@ import java.util.List;
 public class TouchToFillRenderTest {
     @ParameterAnnotations.ClassParameter
     private static List<ParameterSet> sClassParams =
-            Arrays.asList(new ParameterSet().value(false, false).name("Default"),
+            Arrays.asList(
+                    new ParameterSet().value(false, false).name("Default"),
                     new ParameterSet().value(false, true).name("RTL"),
                     new ParameterSet().value(true, false).name("NightMode"));
 
@@ -98,10 +97,8 @@ public class TouchToFillRenderTest {
     private static final WebAuthnCredential SPOR =
             new WebAuthnCredential("example.com", RANDOM_ID, RANDOM_ID, "spor");
 
-    @Mock
-    private Callback<Integer> mDismissHandler;
-    @Mock
-    private Callback<Credential> mCredentialCallback;
+    @Mock private Callback<Integer> mDismissHandler;
+    @Mock private Callback<Credential> mCredentialCallback;
 
     private PropertyModel mModel;
     private TouchToFillView mTouchToFillView;
@@ -117,8 +114,7 @@ public class TouchToFillRenderTest {
                     .setBugComponent(Component.UI_BROWSER_AUTOFILL)
                     .build();
 
-    @Rule
-    public TestRule mProcessor = new Features.JUnitProcessor();
+    @Rule public TestRule mProcessor = new Features.JUnitProcessor();
 
     public TouchToFillRenderTest(boolean nightModeEnabled, boolean useRtlLayout) {
         setRtlForTesting(useRtlLayout);
@@ -132,16 +128,20 @@ public class TouchToFillRenderTest {
         MockitoAnnotations.initMocks(this);
         mActivityTestRule.startMainActivityOnBlankPage();
         mActivityTestRule.waitForActivityCompletelyLoaded();
-        mBottomSheetController = mActivityTestRule.getActivity()
-                                         .getRootUiCoordinatorForTesting()
-                                         .getBottomSheetController();
+        mBottomSheetController =
+                mActivityTestRule
+                        .getActivity()
+                        .getRootUiCoordinatorForTesting()
+                        .getBottomSheetController();
         mResourceProvider = PasswordManagerResourceProviderFactory.create();
-        TestThreadUtils.runOnUiThreadBlocking(() -> {
-            mModel = TouchToFillProperties.createDefaultModel(mDismissHandler);
-            mTouchToFillView =
-                    new TouchToFillView(mActivityTestRule.getActivity(), mBottomSheetController);
-            TouchToFillCoordinator.setUpModelChangeProcessors(mModel, mTouchToFillView);
-        });
+        TestThreadUtils.runOnUiThreadBlocking(
+                () -> {
+                    mModel = TouchToFillProperties.createDefaultModel(mDismissHandler);
+                    mTouchToFillView =
+                            new TouchToFillView(
+                                    mActivityTestRule.getActivity(), mBottomSheetController);
+                    TouchToFillCoordinator.setUpModelChangeProcessors(mModel, mTouchToFillView);
+                });
     }
 
     @After
@@ -152,9 +152,10 @@ public class TouchToFillRenderTest {
         } catch (Exception e) {
             // Activity was already closed (e.g. due to last test tearing down the suite).
         }
-        TestThreadUtils.runOnUiThreadBlocking(() -> {
-            ChromeNightModeTestUtils.tearDownNightModeAfterChromeActivityDestroyed();
-        });
+        TestThreadUtils.runOnUiThreadBlocking(
+                () -> {
+                    ChromeNightModeTestUtils.tearDownNightModeAfterChromeActivityDestroyed();
+                });
     }
 
     @Test
@@ -197,9 +198,9 @@ public class TouchToFillRenderTest {
 
         BottomSheetTestSupport.waitForOpen(mBottomSheetController);
 
-        ViewGroup bottomSheetParentView = (ViewGroup) mActivityTestRule.getActivity()
-                                                  .findViewById(R.id.bottom_sheet)
-                                                  .getParent();
+        ViewGroup bottomSheetParentView =
+                (ViewGroup)
+                        mActivityTestRule.getActivity().findViewById(R.id.bottom_sheet).getParent();
         mRenderTestRule.render(
                 bottomSheetParentView, "ttf_shows_one_credential_modern_ui_half_state");
     }
@@ -246,9 +247,9 @@ public class TouchToFillRenderTest {
 
         BottomSheetTestSupport.waitForOpen(mBottomSheetController);
 
-        ViewGroup bottomSheetParentView = (ViewGroup) mActivityTestRule.getActivity()
-                                                  .findViewById(R.id.bottom_sheet)
-                                                  .getParent();
+        ViewGroup bottomSheetParentView =
+                (ViewGroup)
+                        mActivityTestRule.getActivity().findViewById(R.id.bottom_sheet).getParent();
         mRenderTestRule.render(
                 bottomSheetParentView, "ttf_shows_two_credentials_modern_ui_half_state");
     }
@@ -301,9 +302,9 @@ public class TouchToFillRenderTest {
 
         BottomSheetTestSupport.waitForOpen(mBottomSheetController);
 
-        ViewGroup bottomSheetParentView = (ViewGroup) mActivityTestRule.getActivity()
-                                                  .findViewById(R.id.bottom_sheet)
-                                                  .getParent();
+        ViewGroup bottomSheetParentView =
+                (ViewGroup)
+                        mActivityTestRule.getActivity().findViewById(R.id.bottom_sheet).getParent();
         mRenderTestRule.render(
                 bottomSheetParentView, "ttf_shows_three_credentials_modern_ui_half_state");
     }
@@ -356,9 +357,12 @@ public class TouchToFillRenderTest {
     }
 
     private static MVCListAdapter.ListItem buildSheetItem(
-            @TouchToFillProperties.ItemType int itemType, Credential credential,
-            Callback<Credential> callback, boolean showSubmitButton) {
-        return new MVCListAdapter.ListItem(itemType,
+            @TouchToFillProperties.ItemType int itemType,
+            Credential credential,
+            Callback<Credential> callback,
+            boolean showSubmitButton) {
+        return new MVCListAdapter.ListItem(
+                itemType,
                 new PropertyModel.Builder(TouchToFillProperties.CredentialProperties.ALL_KEYS)
                         .with(CREDENTIAL, credential)
                         .with(ON_CLICK_LISTENER, callback)
@@ -369,24 +373,32 @@ public class TouchToFillRenderTest {
 
     private void addHeader(String title) {
         mModel.get(SHEET_ITEMS)
-                .add(new MVCListAdapter.ListItem(TouchToFillProperties.ItemType.HEADER,
-                        new PropertyModel.Builder(HeaderProperties.ALL_KEYS)
-                                .with(TITLE, title)
-                                .with(FORMATTED_URL, TEST_URL.getSpec())
-                                .with(ORIGIN_SECURE, true)
-                                .with(IMAGE_DRAWABLE_ID, mResourceProvider.getPasswordManagerIcon())
-                                .build()));
+                .add(
+                        new MVCListAdapter.ListItem(
+                                TouchToFillProperties.ItemType.HEADER,
+                                new PropertyModel.Builder(HeaderProperties.ALL_KEYS)
+                                        .with(TITLE, title)
+                                        .with(FORMATTED_URL, TEST_URL.getSpec())
+                                        .with(ORIGIN_SECURE, true)
+                                        .with(
+                                                IMAGE_DRAWABLE_ID,
+                                                mResourceProvider.getPasswordManagerIcon())
+                                        .build()));
     }
 
     private void addButton(Credential credential) {
         mModel.get(SHEET_ITEMS)
-                .add(new MVCListAdapter.ListItem(TouchToFillProperties.ItemType.FILL_BUTTON,
-                        new PropertyModel.Builder(CredentialProperties.ALL_KEYS)
-                                .with(CREDENTIAL, ARON)
-                                .with(ON_CLICK_LISTENER, (Credential clickedCredential) -> {})
-                                .with(FORMATTED_ORIGIN, credential.getDisplayName())
-                                .with(SHOW_SUBMIT_BUTTON, true)
-                                .build()));
+                .add(
+                        new MVCListAdapter.ListItem(
+                                TouchToFillProperties.ItemType.FILL_BUTTON,
+                                new PropertyModel.Builder(CredentialProperties.ALL_KEYS)
+                                        .with(CREDENTIAL, ARON)
+                                        .with(
+                                                ON_CLICK_LISTENER,
+                                                (Credential clickedCredential) -> {})
+                                        .with(FORMATTED_ORIGIN, credential.getDisplayName())
+                                        .with(SHOW_SUBMIT_BUTTON, true)
+                                        .build()));
     }
 
     private void addFooter() {

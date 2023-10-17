@@ -28,14 +28,11 @@ import java.util.Collection;
 @RunWith(BaseRobolectricTestRunner.class)
 @Config(manifest = Config.NONE)
 public class TypeOfflineItemFilterTest {
-    @Mock
-    private OfflineItemFilterSource mSource;
+    @Mock private OfflineItemFilterSource mSource;
 
-    @Mock
-    private OfflineItemFilterObserver mObserver;
+    @Mock private OfflineItemFilterObserver mObserver;
 
-    @Rule
-    public MockitoRule mMockitoRule = MockitoJUnit.rule();
+    @Rule public MockitoRule mMockitoRule = MockitoJUnit.rule();
 
     @Test
     public void testTypeFiltering() {
@@ -53,7 +50,8 @@ public class TypeOfflineItemFilterTest {
 
         TypeOfflineItemFilter filter = new TypeOfflineItemFilter(mSource);
         filter.addObserver(mObserver);
-        Assert.assertEquals(CollectionUtil.newHashSet(item1, item2, item3, item4, item5, item6),
+        Assert.assertEquals(
+                CollectionUtil.newHashSet(item1, item2, item3, item4, item5, item6),
                 filter.getItems());
 
         filter.onFilterSelected(Filters.FilterType.VIDEOS);
@@ -89,7 +87,8 @@ public class TypeOfflineItemFilterTest {
         filter.onFilterSelected(Filters.FilterType.NONE);
         verify(mObserver, times(1))
                 .onItemsAdded(CollectionUtil.newHashSet(item1, item2, item3, item4, item5, item6));
-        Assert.assertEquals(CollectionUtil.newHashSet(item1, item2, item3, item4, item5, item6),
+        Assert.assertEquals(
+                CollectionUtil.newHashSet(item1, item2, item3, item4, item5, item6),
                 filter.getItems());
     }
 

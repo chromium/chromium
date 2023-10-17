@@ -4,33 +4,23 @@
 
 package org.chromium.chrome.browser.autofill.editors;
 
-/**
- * A test-only observer for Editor UI.
- */
+/** A test-only observer for Editor UI. */
 public interface EditorObserverForTest {
-    /**
-     * Called when edit dialog is showing.
-     */
+    /** Called when edit dialog is showing. */
     void onEditorReadyToEdit();
 
     /**
-     * Called when editor validation completes with error. This can happen, for example, when
-     * user doesn't fill in required fields.
+     * Called when editor validation completes with error. This can happen, for example, when user
+     * doesn't fill in required fields.
      */
     void onEditorValidationError();
 
-    /**
-     * Called when an editor field text has changed.
-     */
+    /** Called when an editor field text has changed. */
     void onEditorTextUpdate();
 
-    /**
-     * Called when the editor is dismissed.
-     */
+    /** Called when the editor is dismissed. */
     void onEditorDismiss();
 
-    /**
-     * Called when the delete confirmation dialog shown.
-     */
+    /** Called when the delete confirmation dialog shown. */
     void onEditorConfirmationDialogShown();
 }

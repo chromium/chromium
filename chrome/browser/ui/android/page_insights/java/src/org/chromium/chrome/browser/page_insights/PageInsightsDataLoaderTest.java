@@ -47,11 +47,9 @@ import org.chromium.url.JUnitTestGURLs;
 public class PageInsightsDataLoaderTest {
     @Rule public JniMocker jniMocker = new JniMocker();
 
-    @Mock
-    private OptimizationGuideBridge.Natives mOptimizationGuideBridgeJniMock;
+    @Mock private OptimizationGuideBridge.Natives mOptimizationGuideBridgeJniMock;
 
-    @Mock
-    private Profile mProfile;
+    @Mock private Profile mProfile;
 
     private PageInsightsDataLoader mPageInsightsDataLoader;
 

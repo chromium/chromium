@@ -38,18 +38,12 @@ import org.chromium.net.NetworkChangeNotifier;
 @RunWith(BaseRobolectricTestRunner.class)
 @Config
 public class DeviceConditionsTest {
-    @Mock
-    private Context mContext;
-    @Mock
-    private ConnectivityManager mConnectivityManager;
-    @Mock
-    private PowerManager mPowerManager;
-    @Mock
-    private NetworkChangeNotifier mNetworkChangeNotifier;
-    @Mock
-    private NetworkInfo mNetworkInfo;
-    @Mock
-    private KeyguardManager mKeyguardManager;
+    @Mock private Context mContext;
+    @Mock private ConnectivityManager mConnectivityManager;
+    @Mock private PowerManager mPowerManager;
+    @Mock private NetworkChangeNotifier mNetworkChangeNotifier;
+    @Mock private NetworkInfo mNetworkInfo;
+    @Mock private KeyguardManager mKeyguardManager;
 
     private Intent mBatteryStatus;
 
@@ -197,8 +191,9 @@ public class DeviceConditionsTest {
         intent.putExtra(BatteryManager.EXTRA_SCALE, 0);
         intent.putExtra(BatteryManager.EXTRA_LEVEL, 50);
         doReturn(intent).when(mContext).registerReceiver(isNull(), any(), isNull(), isNull());
-        doReturn(intent).when(mContext).registerReceiver(
-                isNull(), any(), isNull(), isNull(), eq(0));
+        doReturn(intent)
+                .when(mContext)
+                .registerReceiver(isNull(), any(), isNull(), isNull(), eq(0));
 
         deviceConditions = DeviceConditions.getCurrent(mContext);
         assertNotNull(deviceConditions);
@@ -252,9 +247,11 @@ public class DeviceConditionsTest {
     @Test
     public void testForceConnectionTypeNoneForTesting() {
         DeviceConditions.sForceConnectionTypeForTesting = true;
-        assertEquals(ConnectionType.CONNECTION_NONE,
+        assertEquals(
+                ConnectionType.CONNECTION_NONE,
                 DeviceConditions.getCurrentNetConnectionType(mContext));
-        assertEquals(ConnectionType.CONNECTION_NONE,
+        assertEquals(
+                ConnectionType.CONNECTION_NONE,
                 DeviceConditions.getCurrent(mContext).getNetConnectionType());
         DeviceConditions.sForceConnectionTypeForTesting = false;
     }
@@ -262,11 +259,18 @@ public class DeviceConditionsTest {
     @Test
     public void testNcnConnectionType() {
         @ConnectionType
-        int[] connectionTypes = new int[] {ConnectionType.CONNECTION_UNKNOWN,
-                ConnectionType.CONNECTION_ETHERNET, ConnectionType.CONNECTION_WIFI,
-                ConnectionType.CONNECTION_2G, ConnectionType.CONNECTION_3G,
-                ConnectionType.CONNECTION_4G, ConnectionType.CONNECTION_NONE,
-                ConnectionType.CONNECTION_BLUETOOTH, ConnectionType.CONNECTION_5G};
+        int[] connectionTypes =
+                new int[] {
+                    ConnectionType.CONNECTION_UNKNOWN,
+                    ConnectionType.CONNECTION_ETHERNET,
+                    ConnectionType.CONNECTION_WIFI,
+                    ConnectionType.CONNECTION_2G,
+                    ConnectionType.CONNECTION_3G,
+                    ConnectionType.CONNECTION_4G,
+                    ConnectionType.CONNECTION_NONE,
+                    ConnectionType.CONNECTION_BLUETOOTH,
+                    ConnectionType.CONNECTION_5G
+                };
         assertEquals(ConnectionType.CONNECTION_LAST + 1, connectionTypes.length);
 
         for (@ConnectionType int connectionType : connectionTypes) {
@@ -283,41 +287,53 @@ public class DeviceConditionsTest {
         NetworkChangeNotifier.resetInstanceForTests(null);
 
         setNetworkInfoToNull();
-        assertEquals(ConnectionType.CONNECTION_NONE,
+        assertEquals(
+                ConnectionType.CONNECTION_NONE,
                 DeviceConditions.getCurrentNetConnectionType(mContext));
-        assertEquals(ConnectionType.CONNECTION_NONE,
+        assertEquals(
+                ConnectionType.CONNECTION_NONE,
                 DeviceConditions.getCurrent(mContext).getNetConnectionType());
 
         setNetworkInfoDisconnected();
-        assertEquals(ConnectionType.CONNECTION_NONE,
+        assertEquals(
+                ConnectionType.CONNECTION_NONE,
                 DeviceConditions.getCurrentNetConnectionType(mContext));
-        assertEquals(ConnectionType.CONNECTION_NONE,
+        assertEquals(
+                ConnectionType.CONNECTION_NONE,
                 DeviceConditions.getCurrent(mContext).getNetConnectionType());
 
         setNetworkInfoConnectionType(ConnectivityManager.TYPE_WIFI);
-        assertEquals(ConnectionType.CONNECTION_WIFI,
+        assertEquals(
+                ConnectionType.CONNECTION_WIFI,
                 DeviceConditions.getCurrentNetConnectionType(mContext));
-        assertEquals(ConnectionType.CONNECTION_WIFI,
+        assertEquals(
+                ConnectionType.CONNECTION_WIFI,
                 DeviceConditions.getCurrent(mContext).getNetConnectionType());
 
         // Connection of type mobile is presumed to have lowest possible quality, i.e. 2G.
         // This inference is only relevant when native is not loaded.
         setNetworkInfoConnectionType(ConnectivityManager.TYPE_MOBILE);
-        assertEquals(ConnectionType.CONNECTION_2G,
+        assertEquals(
+                ConnectionType.CONNECTION_2G,
                 DeviceConditions.getCurrentNetConnectionType(mContext));
-        assertEquals(ConnectionType.CONNECTION_2G,
+        assertEquals(
+                ConnectionType.CONNECTION_2G,
                 DeviceConditions.getCurrent(mContext).getNetConnectionType());
 
         setNetworkInfoConnectionType(ConnectivityManager.TYPE_BLUETOOTH);
-        assertEquals(ConnectionType.CONNECTION_BLUETOOTH,
+        assertEquals(
+                ConnectionType.CONNECTION_BLUETOOTH,
                 DeviceConditions.getCurrentNetConnectionType(mContext));
-        assertEquals(ConnectionType.CONNECTION_BLUETOOTH,
+        assertEquals(
+                ConnectionType.CONNECTION_BLUETOOTH,
                 DeviceConditions.getCurrent(mContext).getNetConnectionType());
 
         setNetworkInfoConnectionType(ConnectivityManager.TYPE_DUMMY);
-        assertEquals(ConnectionType.CONNECTION_UNKNOWN,
+        assertEquals(
+                ConnectionType.CONNECTION_UNKNOWN,
                 DeviceConditions.getCurrentNetConnectionType(mContext));
-        assertEquals(ConnectionType.CONNECTION_UNKNOWN,
+        assertEquals(
+                ConnectionType.CONNECTION_UNKNOWN,
                 DeviceConditions.getCurrent(mContext).getNetConnectionType());
     }
 

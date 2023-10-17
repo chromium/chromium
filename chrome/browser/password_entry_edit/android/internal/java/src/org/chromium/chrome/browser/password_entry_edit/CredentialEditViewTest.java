@@ -50,9 +50,7 @@ import org.chromium.ui.modelutil.PropertyModel;
 import org.chromium.ui.widget.ButtonCompat;
 import org.chromium.ui.widget.ChromeImageButton;
 
-/**
- * View tests for the credential editing UI displaying a saved credential.
- */
+/** View tests for the credential editing UI displaying a saved credential. */
 @RunWith(ChromeJUnit4ClassRunner.class)
 @CommandLineFlags.Add({ChromeSwitches.DISABLE_FIRST_RUN_EXPERIENCE})
 public class CredentialEditViewTest {
@@ -60,8 +58,7 @@ public class CredentialEditViewTest {
     private static final String TEST_USERNAME = "TestUsername";
     private static final String TEST_PASSWORD = "TestPassword";
 
-    @Mock
-    private ComponentStateDelegate mMockComponentStateDelegate;
+    @Mock private ComponentStateDelegate mMockComponentStateDelegate;
 
     private CredentialEditFragmentView mCredentialEditView;
     private PropertyModel mModel;
@@ -73,18 +70,22 @@ public class CredentialEditViewTest {
     @Before
     public void setUp() throws InterruptedException {
         MockitoAnnotations.initMocks(this);
-        CredentialEditUiFactory.setCreationStrategy((fragmentView, helpLauncher) -> {
-            mCredentialEditView = (CredentialEditFragmentView) fragmentView;
-            mCredentialEditView.setComponentStateDelegate(mMockComponentStateDelegate);
-        });
+        CredentialEditUiFactory.setCreationStrategy(
+                (fragmentView, helpLauncher) -> {
+                    mCredentialEditView = (CredentialEditFragmentView) fragmentView;
+                    mCredentialEditView.setComponentStateDelegate(mMockComponentStateDelegate);
+                });
         mTestRule.startSettingsActivity();
-        runOnUiThreadBlocking(() -> {
-            mModel = new PropertyModel.Builder(ALL_KEYS)
-                             .with(URL_OR_APP, TEST_URL)
-                             .with(FEDERATION_ORIGIN, "")
-                             .build();
-            CredentialEditCoordinator.setupModelChangeProcessor(mModel, mCredentialEditView);
-        });
+        runOnUiThreadBlocking(
+                () -> {
+                    mModel =
+                            new PropertyModel.Builder(ALL_KEYS)
+                                    .with(URL_OR_APP, TEST_URL)
+                                    .with(FEDERATION_ORIGIN, "")
+                                    .build();
+                    CredentialEditCoordinator.setupModelChangeProcessor(
+                            mModel, mCredentialEditView);
+                });
     }
 
     @Test
@@ -94,7 +95,8 @@ public class CredentialEditViewTest {
         assertThat(urlOrAppView.getText(), hasToString(TEST_URL));
 
         TextView editInfoView = mCredentialEditView.getView().findViewById(R.id.edit_info);
-        assertThat(editInfoView.getText(),
+        assertThat(
+                editInfoView.getText(),
                 hasToString(mCredentialEditView.getString(R.string.password_edit_hint, TEST_URL)));
     }
 
@@ -109,10 +111,11 @@ public class CredentialEditViewTest {
     @Test
     @MediumTest
     public void testDisplaysPasswordWhenVisible() {
-        runOnUiThreadBlocking(() -> {
-            mModel.set(PASSWORD, TEST_PASSWORD);
-            mModel.set(PASSWORD_VISIBLE, true);
-        });
+        runOnUiThreadBlocking(
+                () -> {
+                    mModel.set(PASSWORD, TEST_PASSWORD);
+                    mModel.set(PASSWORD_VISIBLE, true);
+                });
         TextInputEditText passwordView = mCredentialEditView.getView().findViewById(R.id.password);
         assertThat(passwordView.getText(), hasToString(TEST_PASSWORD));
 
@@ -120,44 +123,57 @@ public class CredentialEditViewTest {
 
         ChromeImageButton hideButton =
                 mCredentialEditView.getView().findViewById(R.id.password_visibility_button);
-        assertThat(hideButton.getContentDescription(),
-                equalTo(mCredentialEditView.getString(
-                        R.string.password_entry_viewer_hide_stored_password)));
+        assertThat(
+                hideButton.getContentDescription(),
+                equalTo(
+                        mCredentialEditView.getString(
+                                R.string.password_entry_viewer_hide_stored_password)));
     }
 
     @Test
     @MediumTest
     public void testContainsHiddenPassword() {
-        runOnUiThreadBlocking(() -> {
-            mModel.set(PASSWORD, TEST_PASSWORD);
-            mModel.set(PASSWORD_VISIBLE, false);
-        });
+        runOnUiThreadBlocking(
+                () -> {
+                    mModel.set(PASSWORD, TEST_PASSWORD);
+                    mModel.set(PASSWORD_VISIBLE, false);
+                });
         TextInputEditText passwordView = mCredentialEditView.getView().findViewById(R.id.password);
         assertThat(passwordView.getText(), hasToString(TEST_PASSWORD));
         assertThat(passwordView, isVisiblePasswordInput(false));
 
         ChromeImageButton showButton =
                 mCredentialEditView.getView().findViewById(R.id.password_visibility_button);
-        assertThat(showButton.getContentDescription(),
-                equalTo(mCredentialEditView.getString(
-                        R.string.password_entry_viewer_show_stored_password)));
+        assertThat(
+                showButton.getContentDescription(),
+                equalTo(
+                        mCredentialEditView.getString(
+                                R.string.password_entry_viewer_show_stored_password)));
     }
 
     @Test
     @MediumTest
     public void testDisplaysUsernameErrorAndDisablesDoneButton() {
-        runOnUiThreadBlocking(() -> { mModel.set(DUPLICATE_USERNAME_ERROR, true); });
+        runOnUiThreadBlocking(
+                () -> {
+                    mModel.set(DUPLICATE_USERNAME_ERROR, true);
+                });
         TextInputLayout usernameInputLayout =
                 mCredentialEditView.getView().findViewById(R.id.username_text_input_layout);
-        assertThat(usernameInputLayout.getError(),
-                equalTo(mCredentialEditView.getString(
-                        R.string.password_entry_edit_duplicate_username_error)));
+        assertThat(
+                usernameInputLayout.getError(),
+                equalTo(
+                        mCredentialEditView.getString(
+                                R.string.password_entry_edit_duplicate_username_error)));
 
         ButtonCompat doneButton = mCredentialEditView.getView().findViewById(R.id.button_primary);
         assertFalse(doneButton.isEnabled());
         assertFalse(doneButton.isClickable());
 
-        runOnUiThreadBlocking(() -> { mModel.set(DUPLICATE_USERNAME_ERROR, false); });
+        runOnUiThreadBlocking(
+                () -> {
+                    mModel.set(DUPLICATE_USERNAME_ERROR, false);
+                });
         assertNull(usernameInputLayout.getError());
         assertTrue(doneButton.isEnabled());
         assertTrue(doneButton.isClickable());
@@ -166,20 +182,26 @@ public class CredentialEditViewTest {
     @Test
     @MediumTest
     public void testDisplaysPasswordErrorAndDisablesDoneButton() {
-        runOnUiThreadBlocking(() -> { mModel.set(EMPTY_PASSWORD_ERROR, true); });
+        runOnUiThreadBlocking(
+                () -> {
+                    mModel.set(EMPTY_PASSWORD_ERROR, true);
+                });
         TextInputLayout passwordInputLayout =
                 mCredentialEditView.getView().findViewById(R.id.password_text_input_layout);
         assertThat(
-
                 passwordInputLayout.getError(),
-                equalTo(mCredentialEditView.getString(
-                        R.string.password_entry_edit_empty_password_error)));
+                equalTo(
+                        mCredentialEditView.getString(
+                                R.string.password_entry_edit_empty_password_error)));
 
         ButtonCompat doneButton = mCredentialEditView.getView().findViewById(R.id.button_primary);
         assertFalse(doneButton.isEnabled());
         assertFalse(doneButton.isClickable());
 
-        runOnUiThreadBlocking(() -> { mModel.set(EMPTY_PASSWORD_ERROR, false); });
+        runOnUiThreadBlocking(
+                () -> {
+                    mModel.set(EMPTY_PASSWORD_ERROR, false);
+                });
         assertNull(passwordInputLayout.getError());
         assertTrue(doneButton.isEnabled());
         assertTrue(doneButton.isClickable());
@@ -187,6 +209,7 @@ public class CredentialEditViewTest {
 
     /**
      * Matches any {@link EditText} which has the content visibility matching to |shouldBeVisible|.
+     *
      * @return The matcher checking the input type.
      */
     private static Matcher<EditText> isVisiblePasswordInput(boolean shouldBeVisible) {
@@ -195,7 +218,7 @@ public class CredentialEditViewTest {
             public boolean matches(Object o) {
                 EditText editText = (EditText) o;
                 return ((editText.getInputType() & TYPE_TEXT_VARIATION_VISIBLE_PASSWORD)
-                               == TYPE_TEXT_VARIATION_VISIBLE_PASSWORD)
+                                == TYPE_TEXT_VARIATION_VISIBLE_PASSWORD)
                         == shouldBeVisible;
             }
 

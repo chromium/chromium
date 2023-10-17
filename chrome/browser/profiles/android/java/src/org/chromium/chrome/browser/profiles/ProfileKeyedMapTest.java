@@ -23,18 +23,13 @@ import org.chromium.base.test.BaseRobolectricTestRunner;
 import java.util.HashSet;
 import java.util.Set;
 
-/**
- * Tests for ProfileKeyedMap.
- */
+/** Tests for ProfileKeyedMap. */
 @RunWith(BaseRobolectricTestRunner.class)
 @Config(manifest = Config.NONE)
 public class ProfileKeyedMapTest {
-    @Mock
-    private Profile mProfile1;
-    @Mock
-    private Profile mProfile2;
-    @Mock
-    private Profile mProfile3;
+    @Mock private Profile mProfile1;
+    @Mock private Profile mProfile2;
+    @Mock private Profile mProfile3;
 
     @Before
     public void setUp() {

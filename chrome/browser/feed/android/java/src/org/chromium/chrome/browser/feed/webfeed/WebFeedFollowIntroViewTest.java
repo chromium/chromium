@@ -42,19 +42,13 @@ public final class WebFeedFollowIntroViewTest {
     private Activity mActivity;
     private View mMenuButtonAnchorView;
 
-    @Rule
-    public JniMocker mJniMocker = new JniMocker();
+    @Rule public JniMocker mJniMocker = new JniMocker();
 
-    @Mock
-    private Profile mProfile;
-    @Mock
-    private PrefService mPrefService;
-    @Mock
-    private UserPrefs.Natives mUserPrefsJniMock;
-    @Mock
-    private Tracker mTracker;
-    @Mock
-    private UserEducationHelper mHelper;
+    @Mock private Profile mProfile;
+    @Mock private PrefService mPrefService;
+    @Mock private UserPrefs.Natives mUserPrefsJniMock;
+    @Mock private Tracker mTracker;
+    @Mock private UserEducationHelper mHelper;
 
     @Before
     public void setUp() {
@@ -72,8 +66,12 @@ public final class WebFeedFollowIntroViewTest {
         // Build the class under test.
         Runnable noOp = () -> {};
         mWebFeedFollowIntroView =
-                new WebFeedFollowIntroView(mActivity, null, mMenuButtonAnchorView, mTracker,
-                        /*introDismissedCallback=*/noOp);
+                new WebFeedFollowIntroView(
+                        mActivity,
+                        null,
+                        mMenuButtonAnchorView,
+                        mTracker,
+                        /* introDismissedCallback= */ noOp);
     }
 
     @Test

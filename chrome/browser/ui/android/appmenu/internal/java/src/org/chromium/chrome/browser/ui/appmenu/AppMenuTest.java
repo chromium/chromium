@@ -66,11 +66,9 @@ public class AppMenuTest extends BlankUiTestActivityTestCase {
     private TestActivityLifecycleDispatcher mLifecycleDispatcher;
     private TestMenuButtonDelegate mTestMenuButtonDelegate;
 
-    @Mock
-    private Canvas mCanvas;
+    @Mock private Canvas mCanvas;
     // Tell R8 not to break the ability to mock the class.
-    @Mock
-    private AppMenu mUnused;
+    @Mock private AppMenu mUnused;
 
     @BeforeClass
     public static void setUpBeforeActivityLaunched() {
@@ -92,9 +90,15 @@ public class AppMenuTest extends BlankUiTestActivityTestCase {
         mLifecycleDispatcher = new TestActivityLifecycleDispatcher();
         mDelegate = new TestAppMenuDelegate();
         mTestMenuButtonDelegate = new TestMenuButtonDelegate();
-        mAppMenuCoordinator = new AppMenuCoordinatorImpl(getActivity(), mLifecycleDispatcher,
-                mTestMenuButtonDelegate, mDelegate, getActivity().getWindow().getDecorView(),
-                getActivity().findViewById(R.id.menu_anchor_stub), this::getAppRect);
+        mAppMenuCoordinator =
+                new AppMenuCoordinatorImpl(
+                        getActivity(),
+                        mLifecycleDispatcher,
+                        mTestMenuButtonDelegate,
+                        mDelegate,
+                        getActivity().getWindow().getDecorView(),
+                        getActivity().findViewById(R.id.menu_anchor_stub),
+                        this::getAppRect);
         mAppMenuHandler = mAppMenuCoordinator.getAppMenuHandlerImplForTesting();
         mMenuObserver = new TestAppMenuObserver();
         mAppMenuCoordinator.getAppMenuHandler().addObserver(mMenuObserver);
@@ -116,11 +120,15 @@ public class AppMenuTest extends BlankUiTestActivityTestCase {
         TestThreadUtils.runOnUiThreadBlocking(() -> mAppMenuHandler.hideAppMenu());
         mMenuObserver.menuHiddenCallback.waitForCallback(0);
 
-        Assert.assertEquals("Incorrect number of calls to #onMenuDismissed after hide", 1,
+        Assert.assertEquals(
+                "Incorrect number of calls to #onMenuDismissed after hide",
+                1,
                 mPropertiesDelegate.menuDismissedCallback.getCallCount());
 
         TestThreadUtils.runOnUiThreadBlocking(() -> mAppMenuCoordinator.destroy());
-        Assert.assertEquals("Incorrect number of calls to #onMenuDismissed after destroy", 1,
+        Assert.assertEquals(
+                "Incorrect number of calls to #onMenuDismissed after destroy",
+                1,
                 mPropertiesDelegate.menuDismissedCallback.getCallCount());
     }
 
@@ -132,11 +140,15 @@ public class AppMenuTest extends BlankUiTestActivityTestCase {
         TestThreadUtils.runOnUiThreadBlocking(() -> mAppMenuHandler.getAppMenu().dismiss());
         mMenuObserver.menuHiddenCallback.waitForCallback(0);
 
-        Assert.assertEquals("Incorrect number of calls to #onMenuDismissed after first call", 1,
+        Assert.assertEquals(
+                "Incorrect number of calls to #onMenuDismissed after first call",
+                1,
                 mPropertiesDelegate.menuDismissedCallback.getCallCount());
 
         TestThreadUtils.runOnUiThreadBlocking(() -> mAppMenuHandler.getAppMenu().dismiss());
-        Assert.assertEquals("Incorrect number of calls to #onMenuDismissed after second call", 1,
+        Assert.assertEquals(
+                "Incorrect number of calls to #onMenuDismissed after second call",
+                1,
                 mPropertiesDelegate.menuDismissedCallback.getCallCount());
     }
 
@@ -152,15 +164,27 @@ public class AppMenuTest extends BlankUiTestActivityTestCase {
 
         // Check that top right corner of app menu aligns with the top right corner of the anchor.
         int alignmentSlop = viewRect.bottom - viewRect.top;
-        Assert.assertEquals("Popup should overlap top anchor. Anchor rect: " + viewRect
-                        + ", popup rect: " + popupRect,
-                viewRect.top, popupRect.top, alignmentSlop);
-        Assert.assertTrue("Popup should overlap top anchor. Anchor rect: " + viewRect
-                        + ", popup rect: " + popupRect,
+        Assert.assertEquals(
+                "Popup should overlap top anchor. Anchor rect: "
+                        + viewRect
+                        + ", popup rect: "
+                        + popupRect,
+                viewRect.top,
+                popupRect.top,
+                alignmentSlop);
+        Assert.assertTrue(
+                "Popup should overlap top anchor. Anchor rect: "
+                        + viewRect
+                        + ", popup rect: "
+                        + popupRect,
                 viewRect.top <= popupRect.top);
-        Assert.assertEquals("Popup should be aligned with right of anchor. Anchor rect: " + viewRect
-                        + ", popup rect: " + popupRect,
-                viewRect.right, popupRect.right);
+        Assert.assertEquals(
+                "Popup should be aligned with right of anchor. Anchor rect: "
+                        + viewRect
+                        + ", popup rect: "
+                        + popupRect,
+                viewRect.right,
+                popupRect.right);
     }
 
     @Test
@@ -174,9 +198,14 @@ public class AppMenuTest extends BlankUiTestActivityTestCase {
         Rect popupRect = getPopupLocationRect();
 
         // Check a basic alignment property. Full coverage checked in unit tests.
-        Assert.assertNotEquals("Popup should be offset from right of anchor."
-                        + "Anchor rect: " + viewRect + ", popup rect: " + popupRect,
-                viewRect.right, popupRect.right);
+        Assert.assertNotEquals(
+                "Popup should be offset from right of anchor."
+                        + "Anchor rect: "
+                        + viewRect
+                        + ", popup rect: "
+                        + popupRect,
+                viewRect.right,
+                popupRect.right);
     }
 
     @Test
@@ -186,7 +215,9 @@ public class AppMenuTest extends BlankUiTestActivityTestCase {
 
         TestThreadUtils.runOnUiThreadBlocking(() -> mAppMenuCoordinator.destroy());
 
-        Assert.assertEquals("Incorrect number of calls to #onMenuDismissed after destroy", 1,
+        Assert.assertEquals(
+                "Incorrect number of calls to #onMenuDismissed after destroy",
+                1,
                 mPropertiesDelegate.menuDismissedCallback.getCallCount());
     }
 
@@ -196,12 +227,14 @@ public class AppMenuTest extends BlankUiTestActivityTestCase {
         showMenuAndAssert();
 
         TestThreadUtils.runOnUiThreadBlocking(
-                ()
-                        -> AppMenuTestSupport.callOnItemClick(
+                () ->
+                        AppMenuTestSupport.callOnItemClick(
                                 mAppMenuCoordinator, R.id.menu_item_three));
 
         mDelegate.itemSelectedCallbackHelper.waitForCallback(0);
-        Assert.assertEquals("Incorrect id for last selected item.", R.id.menu_item_three,
+        Assert.assertEquals(
+                "Incorrect id for last selected item.",
+                R.id.menu_item_three,
                 mDelegate.lastSelectedItemId);
     }
 
@@ -213,7 +246,9 @@ public class AppMenuTest extends BlankUiTestActivityTestCase {
         TestThreadUtils.runOnUiThreadBlocking(
                 () -> AppMenuTestSupport.callOnItemClick(mAppMenuCoordinator, R.id.menu_item_two));
 
-        Assert.assertEquals("Item selected callback should not have been called.", 0,
+        Assert.assertEquals(
+                "Item selected callback should not have been called.",
+                0,
                 mDelegate.itemSelectedCallbackHelper.getCallCount());
     }
 
@@ -226,7 +261,9 @@ public class AppMenuTest extends BlankUiTestActivityTestCase {
                 () -> mAppMenuHandler.getAppMenu().onItemClick(null, null, 0, 0));
 
         mDelegate.itemSelectedCallbackHelper.waitForCallback(0);
-        Assert.assertEquals("Incorrect id for last selected item.", R.id.menu_item_one,
+        Assert.assertEquals(
+                "Incorrect id for last selected item.",
+                R.id.menu_item_one,
                 mDelegate.lastSelectedItemId);
     }
 
@@ -238,11 +275,12 @@ public class AppMenuTest extends BlankUiTestActivityTestCase {
         AppMenu spiedMenu = Mockito.spy(mAppMenuHandler.getAppMenu());
 
         View dummyView = new View(getActivity());
-        TestThreadUtils.runOnUiThreadBlocking(() -> {
-            spiedMenu.onItemLongClick(
-                    mAppMenuHandler.getAppMenu().getMenuItemPropertyModel(R.id.icon_one),
-                    dummyView);
-        });
+        TestThreadUtils.runOnUiThreadBlocking(
+                () -> {
+                    spiedMenu.onItemLongClick(
+                            mAppMenuHandler.getAppMenu().getMenuItemPropertyModel(R.id.icon_one),
+                            dummyView);
+                });
 
         Mockito.verify(spiedMenu, Mockito.times(1)).showToastForItem("Icon One", dummyView);
     }
@@ -255,11 +293,12 @@ public class AppMenuTest extends BlankUiTestActivityTestCase {
         AppMenu spiedMenu = Mockito.spy(mAppMenuHandler.getAppMenu());
 
         View dummyView = new View(getActivity());
-        TestThreadUtils.runOnUiThreadBlocking(() -> {
-            spiedMenu.onItemLongClick(
-                    mAppMenuHandler.getAppMenu().getMenuItemPropertyModel(R.id.icon_two),
-                    dummyView);
-        });
+        TestThreadUtils.runOnUiThreadBlocking(
+                () -> {
+                    spiedMenu.onItemLongClick(
+                            mAppMenuHandler.getAppMenu().getMenuItemPropertyModel(R.id.icon_two),
+                            dummyView);
+                });
 
         Mockito.verify(spiedMenu, Mockito.times(1)).showToastForItem("2", dummyView);
     }
@@ -272,11 +311,12 @@ public class AppMenuTest extends BlankUiTestActivityTestCase {
         AppMenu spiedMenu = Mockito.spy(mAppMenuHandler.getAppMenu());
 
         View dummyView = new View(getActivity());
-        TestThreadUtils.runOnUiThreadBlocking(() -> {
-            spiedMenu.onItemLongClick(
-                    mAppMenuHandler.getAppMenu().getMenuItemPropertyModel(R.id.icon_three),
-                    dummyView);
-        });
+        TestThreadUtils.runOnUiThreadBlocking(
+                () -> {
+                    spiedMenu.onItemLongClick(
+                            mAppMenuHandler.getAppMenu().getMenuItemPropertyModel(R.id.icon_three),
+                            dummyView);
+                });
 
         Mockito.verify(spiedMenu, Mockito.times(0))
                 .showToastForItem(Mockito.any(CharSequence.class), Mockito.any(View.class));
@@ -285,7 +325,8 @@ public class AppMenuTest extends BlankUiTestActivityTestCase {
     @Test
     @MediumTest
     public void testAppMenuBlockers() throws TimeoutException {
-        Assert.assertTrue("App menu should be allowed to show, no blockers registered",
+        Assert.assertTrue(
+                "App menu should be allowed to show, no blockers registered",
                 AppMenuTestSupport.shouldShowAppMenu(mAppMenuCoordinator));
 
         AppMenuBlocker blocker1 = () -> false;
@@ -293,7 +334,8 @@ public class AppMenuTest extends BlankUiTestActivityTestCase {
 
         mAppMenuCoordinator.registerAppMenuBlocker(blocker1);
         mAppMenuCoordinator.registerAppMenuBlocker(blocker2);
-        Assert.assertFalse("App menu should not be allowed to show, both blockers registered",
+        Assert.assertFalse(
+                "App menu should not be allowed to show, both blockers registered",
                 AppMenuTestSupport.shouldShowAppMenu(mAppMenuCoordinator));
         TestThreadUtils.runOnUiThreadBlocking(
                 () -> mAppMenuCoordinator.showAppMenuForKeyboardEvent());
@@ -301,7 +343,8 @@ public class AppMenuTest extends BlankUiTestActivityTestCase {
                 "App menu should not have been shown.", mAppMenuHandler.isAppMenuShowing());
 
         mAppMenuCoordinator.unregisterAppMenuBlocker(blocker1);
-        Assert.assertTrue("App menu should be allowed to show, only blocker2 registered",
+        Assert.assertTrue(
+                "App menu should be allowed to show, only blocker2 registered",
                 AppMenuTestSupport.shouldShowAppMenu(mAppMenuCoordinator));
         showMenuAndAssert();
     }
@@ -341,13 +384,21 @@ public class AppMenuTest extends BlankUiTestActivityTestCase {
         mPropertiesDelegate.footerInflatedCallback.waitForCallback(0);
 
         ChipView chipView =
-                (ChipView) mAppMenuHandler.getAppMenu().getListView().getRootView().findViewById(
-                        R.id.menu_footer_chip_view);
+                (ChipView)
+                        mAppMenuHandler
+                                .getAppMenu()
+                                .getListView()
+                                .getRootView()
+                                .findViewById(R.id.menu_footer_chip_view);
         checkHighlightOn(chipView);
 
         ViewHighlighterTestUtils.drawPulseDrawable(chipView, mCanvas);
-        Mockito.verify(mCanvas).drawRoundRect(Mockito.any(), eq((float) chipView.getCornerRadius()),
-                eq((float) chipView.getCornerRadius()), Mockito.any());
+        Mockito.verify(mCanvas)
+                .drawRoundRect(
+                        Mockito.any(),
+                        eq((float) chipView.getCornerRadius()),
+                        eq((float) chipView.getCornerRadius()),
+                        Mockito.any());
 
         TestThreadUtils.runOnUiThreadBlocking(() -> mAppMenuHandler.clearMenuHighlight());
         mMenuObserver.menuHighlightChangedCallback.waitForCallback(1);
@@ -381,19 +432,25 @@ public class AppMenuTest extends BlankUiTestActivityTestCase {
     public void testMenuItemContentChanged() throws TimeoutException {
         showMenuAndAssert();
         View itemView = getViewAtPosition(1);
-        Assert.assertEquals("Menu item text incorrect", "Menu Item Two",
+        Assert.assertEquals(
+                "Menu item text incorrect",
+                "Menu Item Two",
                 ((TextView) itemView.findViewById(R.id.menu_item_text)).getText());
 
         String newText = "Test!";
-        TestThreadUtils.runOnUiThreadBlocking(() -> {
-            mAppMenuHandler.getAppMenu()
-                    .getMenuItemPropertyModel(R.id.menu_item_two)
-                    .set(AppMenuItemProperties.TITLE, newText);
-            mAppMenuHandler.menuItemContentChanged(R.id.menu_item_two);
-        });
+        TestThreadUtils.runOnUiThreadBlocking(
+                () -> {
+                    mAppMenuHandler
+                            .getAppMenu()
+                            .getMenuItemPropertyModel(R.id.menu_item_two)
+                            .set(AppMenuItemProperties.TITLE, newText);
+                    mAppMenuHandler.menuItemContentChanged(R.id.menu_item_two);
+                });
 
         itemView = getViewAtPosition(1);
-        Assert.assertEquals("Menu item text incorrect", newText,
+        Assert.assertEquals(
+                "Menu item text incorrect",
+                newText,
                 ((TextView) itemView.findViewById(R.id.menu_item_text)).getText());
     }
 
@@ -407,11 +464,17 @@ public class AppMenuTest extends BlankUiTestActivityTestCase {
         mPropertiesDelegate.headerInflatedCallback.waitForCallback(0);
         mPropertiesDelegate.footerInflatedCallback.waitForCallback(0);
 
-        Assert.assertEquals("Incorrect number of header views", 1,
+        Assert.assertEquals(
+                "Incorrect number of header views",
+                1,
                 mAppMenuHandler.getAppMenu().getListView().getHeaderViewsCount());
-        Assert.assertNotNull("Footer stub not inflated.",
-                mAppMenuHandler.getAppMenu().getPopup().getContentView().findViewById(
-                        R.id.app_menu_footer));
+        Assert.assertNotNull(
+                "Footer stub not inflated.",
+                mAppMenuHandler
+                        .getAppMenu()
+                        .getPopup()
+                        .getContentView()
+                        .findViewById(R.id.app_menu_footer));
     }
 
     @Test
@@ -436,12 +499,13 @@ public class AppMenuTest extends BlankUiTestActivityTestCase {
         showMenuAndAssert();
 
         AppMenu appMenu = mAppMenuHandler.getAppMenu();
-        TestThreadUtils.runOnUiThreadBlocking(() -> {
-            KeyEvent down = new KeyEvent(KeyEvent.ACTION_DOWN, KeyEvent.KEYCODE_MENU);
-            KeyEvent up = new KeyEvent(KeyEvent.ACTION_UP, KeyEvent.KEYCODE_MENU);
-            appMenu.onKey(appMenu.getListView(), KeyEvent.KEYCODE_MENU, down);
-            appMenu.onKey(appMenu.getListView(), KeyEvent.KEYCODE_MENU, up);
-        });
+        TestThreadUtils.runOnUiThreadBlocking(
+                () -> {
+                    KeyEvent down = new KeyEvent(KeyEvent.ACTION_DOWN, KeyEvent.KEYCODE_MENU);
+                    KeyEvent up = new KeyEvent(KeyEvent.ACTION_UP, KeyEvent.KEYCODE_MENU);
+                    appMenu.onKey(appMenu.getListView(), KeyEvent.KEYCODE_MENU, down);
+                    appMenu.onKey(appMenu.getListView(), KeyEvent.KEYCODE_MENU, up);
+                });
         mMenuObserver.menuHiddenCallback.waitForCallback(0);
     }
 
@@ -452,7 +516,8 @@ public class AppMenuTest extends BlankUiTestActivityTestCase {
 
         AppMenu appMenu = mAppMenuHandler.getAppMenu();
         KeyEvent unrelated = new KeyEvent(KeyEvent.ACTION_DOWN, KeyEvent.KEYCODE_BOOKMARK);
-        Assert.assertFalse("#onKeyEvent should return false for unrelated codes",
+        Assert.assertFalse(
+                "#onKeyEvent should return false for unrelated codes",
                 appMenu.onKey(null, KeyEvent.KEYCODE_BOOKMARK, unrelated));
     }
 
@@ -463,7 +528,8 @@ public class AppMenuTest extends BlankUiTestActivityTestCase {
 
         AppMenu appMenu = mAppMenuHandler.getAppMenu();
         KeyEvent unrelated = new KeyEvent(KeyEvent.ACTION_MULTIPLE, KeyEvent.KEYCODE_MENU);
-        Assert.assertFalse("#onKeyEvent should return false for unrelated events",
+        Assert.assertFalse(
+                "#onKeyEvent should return false for unrelated events",
                 appMenu.onKey(null, KeyEvent.KEYCODE_MENU, unrelated));
     }
 
@@ -478,7 +544,8 @@ public class AppMenuTest extends BlankUiTestActivityTestCase {
         AppMenu appMenu = mAppMenuHandler.getAppMenu();
         Assert.assertNull("ListView should be null.", appMenu.getListView());
         KeyEvent down = new KeyEvent(KeyEvent.ACTION_DOWN, KeyEvent.KEYCODE_MENU);
-        Assert.assertFalse("#onKeyEvent should return false when app menu hidden",
+        Assert.assertFalse(
+                "#onKeyEvent should return false when app menu hidden",
                 appMenu.onKey(null, KeyEvent.KEYCODE_MENU, null));
     }
 
@@ -488,7 +555,8 @@ public class AppMenuTest extends BlankUiTestActivityTestCase {
         AppMenuButtonHelperImpl buttonHelper =
                 (AppMenuButtonHelperImpl) mAppMenuHandler.createAppMenuButtonHelper();
 
-        Assert.assertFalse("View should start unpressed",
+        Assert.assertFalse(
+                "View should start unpressed",
                 mTestMenuButtonDelegate.getMenuButtonView().isPressed());
         Assert.assertFalse("App menu should be not be active", buttonHelper.isAppMenuActive());
 
@@ -506,7 +574,8 @@ public class AppMenuTest extends BlankUiTestActivityTestCase {
         sendMotionEventToButtonHelper(
                 buttonHelper, mTestMenuButtonDelegate.getMenuButtonView(), upMotionEvent);
 
-        Assert.assertFalse("View should no longer be pressed",
+        Assert.assertFalse(
+                "View should no longer be pressed",
                 mTestMenuButtonDelegate.getMenuButtonView().isPressed());
         Assert.assertTrue("App menu should still be active", buttonHelper.isAppMenuActive());
     }
@@ -516,7 +585,8 @@ public class AppMenuTest extends BlankUiTestActivityTestCase {
     public void testAppMenuButtonHelper_DownCancel() throws Exception {
         AppMenuButtonHelperImpl buttonHelper =
                 (AppMenuButtonHelperImpl) mAppMenuHandler.createAppMenuButtonHelper();
-        Assert.assertFalse("View should start unpressed",
+        Assert.assertFalse(
+                "View should start unpressed",
                 mTestMenuButtonDelegate.getMenuButtonView().isPressed());
 
         MotionEvent downMotionEvent = MotionEvent.obtain(0, 0, MotionEvent.ACTION_DOWN, 0, 0, 0);
@@ -534,14 +604,16 @@ public class AppMenuTest extends BlankUiTestActivityTestCase {
         sendMotionEventToButtonHelper(
                 buttonHelper, mTestMenuButtonDelegate.getMenuButtonView(), cancelMotionEvent);
 
-        Assert.assertFalse("View should no longer be pressed",
+        Assert.assertFalse(
+                "View should no longer be pressed",
                 mTestMenuButtonDelegate.getMenuButtonView().isPressed());
     }
 
     @Test
     @MediumTest
     public void testAppMenuButtonHelper_ClickRunnable() throws Exception {
-        Assert.assertFalse("View should start unpressed",
+        Assert.assertFalse(
+                "View should start unpressed",
                 mTestMenuButtonDelegate.getMenuButtonView().isPressed());
 
         AppMenuButtonHelperImpl buttonHelper =
@@ -580,7 +652,9 @@ public class AppMenuTest extends BlankUiTestActivityTestCase {
         sendMotionEventToButtonHelper(
                 buttonHelper, mTestMenuButtonDelegate.getMenuButtonView(), downMotionEvent);
 
-        Assert.assertEquals("Runnable should still only have been called once", 1,
+        Assert.assertEquals(
+                "Runnable should still only have been called once",
+                1,
                 showCallbackHelper.getCallCount());
     }
 
@@ -611,19 +685,21 @@ public class AppMenuTest extends BlankUiTestActivityTestCase {
                 (AppMenuButtonHelperImpl) mAppMenuHandler.createAppMenuButtonHelper();
 
         TestThreadUtils.runOnUiThreadBlocking(
-                ()
-                        -> buttonHelper.performAccessibilityAction(
+                () ->
+                        buttonHelper.performAccessibilityAction(
                                 mTestMenuButtonDelegate.getMenuButtonView(),
-                                AccessibilityNodeInfo.ACTION_CLICK, null));
+                                AccessibilityNodeInfo.ACTION_CLICK,
+                                null));
 
         waitForMenuToShow(0);
         Assert.assertTrue("Menu should be showing", mAppMenuHandler.isAppMenuShowing());
 
         TestThreadUtils.runOnUiThreadBlocking(
-                ()
-                        -> buttonHelper.performAccessibilityAction(
+                () ->
+                        buttonHelper.performAccessibilityAction(
                                 mTestMenuButtonDelegate.getMenuButtonView(),
-                                AccessibilityNodeInfo.ACTION_CLICK, null));
+                                AccessibilityNodeInfo.ACTION_CLICK,
+                                null));
 
         mMenuObserver.menuHiddenCallback.waitForCallback(0);
         Assert.assertFalse("Menu should be hidden", mAppMenuHandler.isAppMenuShowing());
@@ -650,7 +726,8 @@ public class AppMenuTest extends BlankUiTestActivityTestCase {
         AppMenuButtonHelperImpl buttonHelper =
                 (AppMenuButtonHelperImpl) mAppMenuHandler.createAppMenuButtonHelper();
 
-        Assert.assertFalse("View should start unpressed",
+        Assert.assertFalse(
+                "View should start unpressed",
                 mTestMenuButtonDelegate.getMenuButtonView().isPressed());
         Assert.assertFalse("App menu should be not be active", buttonHelper.isAppMenuActive());
 
@@ -678,7 +755,9 @@ public class AppMenuTest extends BlankUiTestActivityTestCase {
         mDelegate.itemSelectedCallbackHelper.waitForCallback(
                 "itemRect: " + firstItemScreenRect + " eventX: " + eventX + " eventY: " + eventY,
                 0);
-        Assert.assertEquals("Incorrect id for last selected item.", R.id.menu_item_one,
+        Assert.assertEquals(
+                "Incorrect id for last selected item.",
+                R.id.menu_item_one,
                 mDelegate.lastSelectedItemId);
     }
 
@@ -693,8 +772,14 @@ public class AppMenuTest extends BlankUiTestActivityTestCase {
         createMenuItem(menuItemIds, heightList, 1 /* id */, 10 /* height */);
         createMenuItem(menuItemIds, heightList, 2 /* id */, 10 /* height */);
 
-        int height = mAppMenuHandler.getAppMenu().calculateHeightForItems(menuItemIds, heightList,
-                -1 /* groupDividerResourceId */, 35 /* availableScreenSpace */);
+        int height =
+                mAppMenuHandler
+                        .getAppMenu()
+                        .calculateHeightForItems(
+                                menuItemIds,
+                                heightList,
+                                -1 /* groupDividerResourceId */,
+                                35 /* availableScreenSpace */);
         Assert.assertEquals(30, height);
     }
 
@@ -709,8 +794,14 @@ public class AppMenuTest extends BlankUiTestActivityTestCase {
         createMenuItem(menuItemIds, heightList, 1 /* id */, 10 /* height */);
         createMenuItem(menuItemIds, heightList, 2 /* id */, 10 /* height */);
 
-        int height = mAppMenuHandler.getAppMenu().calculateHeightForItems(menuItemIds, heightList,
-                -1 /* groupDividerResourceId */, 26 /* availableScreenSpace */);
+        int height =
+                mAppMenuHandler
+                        .getAppMenu()
+                        .calculateHeightForItems(
+                                menuItemIds,
+                                heightList,
+                                -1 /* groupDividerResourceId */,
+                                26 /* availableScreenSpace */);
         // The space only can fit the 1st and 2nd items and the partial 3rd item.
         Assert.assertEquals(25, height);
     }
@@ -726,8 +817,14 @@ public class AppMenuTest extends BlankUiTestActivityTestCase {
         createMenuItem(menuItemIds, heightList, 1 /* id */, 10 /* height */);
         createMenuItem(menuItemIds, heightList, 2 /* id */, 10 /* height */);
 
-        int height = mAppMenuHandler.getAppMenu().calculateHeightForItems(menuItemIds, heightList,
-                -1 /* groupDividerResourceId */, 24 /* availableScreenSpace */);
+        int height =
+                mAppMenuHandler
+                        .getAppMenu()
+                        .calculateHeightForItems(
+                                menuItemIds,
+                                heightList,
+                                -1 /* groupDividerResourceId */,
+                                24 /* availableScreenSpace */);
         // The space only can fit the full 1st item, the full 2nd items and the partial 3rd item.
         // The space for the 3rd item is 4, but since the menu is small enough, we show the maximum
         // available height instead of switching to the partial 3rd item.
@@ -746,8 +843,14 @@ public class AppMenuTest extends BlankUiTestActivityTestCase {
         createMenuItem(menuItemIds, heightList, 2 /* id */, 10 /* height */);
         createMenuItem(menuItemIds, heightList, 3 /* id */, 10 /* height */);
 
-        int height = mAppMenuHandler.getAppMenu().calculateHeightForItems(menuItemIds, heightList,
-                -1 /* groupDividerResourceId */, 34 /* availableScreenSpace */);
+        int height =
+                mAppMenuHandler
+                        .getAppMenu()
+                        .calculateHeightForItems(
+                                menuItemIds,
+                                heightList,
+                                -1 /* groupDividerResourceId */,
+                                34 /* availableScreenSpace */);
         // The space only can fit the full 1st item, the full 2nd item, the full 3rd item, and the
         // partial 4th item. But the space for 4th item is 4, which is not enough to show partial
         // 3rd item(5 = LAST_ITEM_SHOW_FRACTION * 10), we show the partial 3rd item instead.
@@ -767,8 +870,14 @@ public class AppMenuTest extends BlankUiTestActivityTestCase {
         createMenuItem(menuItemIds, heightList, 3 /* id */, 10 /* height */);
         createMenuItem(menuItemIds, heightList, 4 /* id */, 10 /* height */);
 
-        int height = mAppMenuHandler.getAppMenu().calculateHeightForItems(menuItemIds, heightList,
-                3 /* groupDividerResourceId */, 36 /* availableScreenSpace */);
+        int height =
+                mAppMenuHandler
+                        .getAppMenu()
+                        .calculateHeightForItems(
+                                menuItemIds,
+                                heightList,
+                                3 /* groupDividerResourceId */,
+                                36 /* availableScreenSpace */);
         // The space only can fit the 1st, 2nd, 3rd, and partial 4th item. But the 4th item is a
         // divider line, so we show only the partial 3rd item.
         Assert.assertEquals(25, height);
@@ -786,8 +895,14 @@ public class AppMenuTest extends BlankUiTestActivityTestCase {
         createMenuItem(menuItemIds, heightList, 2 /* id */, 10 /* height */);
         createMenuItem(menuItemIds, heightList, 3 /* id */, 10 /* height */);
 
-        int height = mAppMenuHandler.getAppMenu().calculateHeightForItems(menuItemIds, heightList,
-                2 /* groupDividerResourceId */, 26 /* availableScreenSpace */);
+        int height =
+                mAppMenuHandler
+                        .getAppMenu()
+                        .calculateHeightForItems(
+                                menuItemIds,
+                                heightList,
+                                2 /* groupDividerResourceId */,
+                                26 /* availableScreenSpace */);
         // The space only can fit the 1st, 2nd and the partial 3rd item. The third item
         // is a divider line, and the menu is small enough that we still want to use all available
         // space.
@@ -807,8 +922,14 @@ public class AppMenuTest extends BlankUiTestActivityTestCase {
         createMenuItem(menuItemIds, heightList, 2 /* id */, 10 /* height */);
         createMenuItem(menuItemIds, heightList, 3 /* id */, 10 /* height */);
 
-        int height = mAppMenuHandler.getAppMenu().calculateHeightForItems(menuItemIds, heightList,
-                2 /* groupDividerResourceId */, 34 /* availableScreenSpace */);
+        int height =
+                mAppMenuHandler
+                        .getAppMenu()
+                        .calculateHeightForItems(
+                                menuItemIds,
+                                heightList,
+                                2 /* groupDividerResourceId */,
+                                34 /* availableScreenSpace */);
         // The space only can fit the full 1st, 2nd and 3rd item and the partial 4th item.
         // But the space for 4th item is 4, which is not enough to show partial 4th item(5 =
         // LAST_ITEM_SHOW_FRACTION * 10), so we should show the partial 3rd item instead. The third
@@ -828,8 +949,14 @@ public class AppMenuTest extends BlankUiTestActivityTestCase {
         createMenuItem(menuItemIds, heightList, 1 /* id */, 10 /* height */);
         createMenuItem(menuItemIds, heightList, 2 /* id */, 10 /* height */);
 
-        int height = mAppMenuHandler.getAppMenu().calculateHeightForItems(menuItemIds, heightList,
-                -1 /* groupDividerResourceId */, 4 /* availableScreenSpace */);
+        int height =
+                mAppMenuHandler
+                        .getAppMenu()
+                        .calculateHeightForItems(
+                                menuItemIds,
+                                heightList,
+                                -1 /* groupDividerResourceId */,
+                                4 /* availableScreenSpace */);
         // The space is not enough for any item, but we still show 1 and half items at least.
         Assert.assertEquals(15, height);
     }
@@ -846,8 +973,14 @@ public class AppMenuTest extends BlankUiTestActivityTestCase {
         createMenuItem(menuItemIds, heightList, 1 /* id */, 10 /* height */);
         createMenuItem(menuItemIds, heightList, 2 /* id */, 10 /* height */);
 
-        int height = mAppMenuHandler.getAppMenu().calculateHeightForItems(menuItemIds, heightList,
-                1 /* groupDividerResourceId */, 6 /* availableScreenSpace */);
+        int height =
+                mAppMenuHandler
+                        .getAppMenu()
+                        .calculateHeightForItems(
+                                menuItemIds,
+                                heightList,
+                                1 /* groupDividerResourceId */,
+                                6 /* availableScreenSpace */);
         // The space is not enough for any item, but we still show 1 and half items at least.
         Assert.assertEquals(15, height);
     }
@@ -860,8 +993,14 @@ public class AppMenuTest extends BlankUiTestActivityTestCase {
         List<Integer> menuItemIds = new ArrayList<Integer>();
         List<Integer> heightList = new ArrayList<Integer>();
 
-        int height = mAppMenuHandler.getAppMenu().calculateHeightForItems(menuItemIds, heightList,
-                1 /* groupDividerResourceId */, -1 /* availableScreenSpace */);
+        int height =
+                mAppMenuHandler
+                        .getAppMenu()
+                        .calculateHeightForItems(
+                                menuItemIds,
+                                heightList,
+                                1 /* groupDividerResourceId */,
+                                -1 /* availableScreenSpace */);
         // Make sure there are no crashes.
         Assert.assertEquals(0, height);
     }
@@ -889,6 +1028,7 @@ public class AppMenuTest extends BlankUiTestActivityTestCase {
 
     private class TestActivityLifecycleDispatcher implements ActivityLifecycleDispatcher {
         public CallbackHelper observerRegisteredCallbackHelper = new CallbackHelper();
+
         @Override
         public void register(LifecycleObserver observer) {
             observerRegisteredCallbackHelper.notifyCalled();
@@ -924,9 +1064,9 @@ public class AppMenuTest extends BlankUiTestActivityTestCase {
     private View getViewAtPosition(int index) {
         // Wait for the view to be available. This is necessary when the menu is first shown.
         CriteriaHelper.pollUiThread(
-                ()
-                        -> AppMenuTestSupport.getListView(mAppMenuCoordinator).getChildAt(index)
-                        != null);
+                () ->
+                        AppMenuTestSupport.getListView(mAppMenuCoordinator).getChildAt(index)
+                                != null);
         return AppMenuTestSupport.getListView(mAppMenuCoordinator).getChildAt(index);
     }
 
@@ -960,8 +1100,9 @@ public class AppMenuTest extends BlankUiTestActivityTestCase {
                 () -> mAppMenuHandler.getAppMenuDragHelper().getScreenVisibleRect(view));
     }
 
-    private void sendMotionEventToButtonHelper(AppMenuButtonHelperImpl helper, View view,
-            MotionEvent event) throws ExecutionException {
+    private void sendMotionEventToButtonHelper(
+            AppMenuButtonHelperImpl helper, View view, MotionEvent event)
+            throws ExecutionException {
         TestThreadUtils.runOnUiThreadBlocking(() -> helper.onTouch(view, event));
     }
 

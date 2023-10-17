@@ -36,16 +36,18 @@ public class MiniPlayerMediatorUnitTest {
 
     @Test
     public void testShow() {
-        mMediator.show(/*animate=*/false);
-        assertEquals(false,
+        mMediator.show(/* animate= */ false);
+        assertEquals(
+                false,
                 (boolean) mModel.get(PlayerProperties.MINI_PLAYER_ANIMATE_VISIBILITY_CHANGES));
         assertEquals(VisibilityState.SHOWING, mMediator.getVisibility());
     }
 
     @Test
     public void testDismiss() {
-        mMediator.dismiss(/*animate=*/false);
-        assertEquals(false,
+        mMediator.dismiss(/* animate= */ false);
+        assertEquals(
+                false,
                 (boolean) mModel.get(PlayerProperties.MINI_PLAYER_ANIMATE_VISIBILITY_CHANGES));
         assertEquals(VisibilityState.HIDING, mMediator.getVisibility());
     }

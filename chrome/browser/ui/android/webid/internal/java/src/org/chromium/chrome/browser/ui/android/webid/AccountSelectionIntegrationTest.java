@@ -94,8 +94,7 @@ public class AccountSelectionIntegrationTest {
 
     private AccountSelectionComponent mAccountSelection;
 
-    @Mock
-    private AccountSelectionComponent.Delegate mMockBridge;
+    @Mock private AccountSelectionComponent.Delegate mMockBridge;
 
     @Rule
     public ChromeTabbedActivityTestRule mActivityTestRule = new ChromeTabbedActivityTestRule();
@@ -110,31 +109,43 @@ public class AccountSelectionIntegrationTest {
     public void setUp() throws InterruptedException {
         MockitoAnnotations.initMocks(this);
         mActivityTestRule.startMainActivityOnBlankPage();
-        runOnUiThreadBlocking(() -> {
-            mBottomSheetController = BottomSheetControllerProvider.from(
-                    mActivityTestRule.getActivity().getWindowAndroid());
-            mAccountSelection = new AccountSelectionCoordinator(
-                    mActivityTestRule.getActivity().getActivityTab(),
-                    mActivityTestRule.getActivity().getWindowAndroid(), mBottomSheetController,
-                    mMockBridge);
-        });
+        runOnUiThreadBlocking(
+                () -> {
+                    mBottomSheetController =
+                            BottomSheetControllerProvider.from(
+                                    mActivityTestRule.getActivity().getWindowAndroid());
+                    mAccountSelection =
+                            new AccountSelectionCoordinator(
+                                    mActivityTestRule.getActivity().getActivityTab(),
+                                    mActivityTestRule.getActivity().getWindowAndroid(),
+                                    mBottomSheetController,
+                                    mMockBridge);
+                });
 
         mTestUrlTermsOfService =
                 mActivityTestRule.getTestServer().getURL("/chrome/test/data/title1.html");
         mTestUrlPrivacyPolicy =
                 mActivityTestRule.getTestServer().getURL("/chrome/test/data/title2.html");
-        mClientIdMetadata = new ClientIdMetadata(
-                new GURL(mTestUrlTermsOfService), new GURL(mTestUrlPrivacyPolicy));
+        mClientIdMetadata =
+                new ClientIdMetadata(
+                        new GURL(mTestUrlTermsOfService), new GURL(mTestUrlPrivacyPolicy));
     }
 
     @Test
     @MediumTest
     public void testBackDismissesAndCallsCallback() {
-        runOnUiThreadBlocking(() -> {
-            mAccountSelection.showAccounts(EXAMPLE_ETLD_PLUS_ONE, TEST_ETLD_PLUS_ONE_1,
-                    TEST_ETLD_PLUS_ONE_2, Arrays.asList(ANA, BOB), IDP_METADATA, mClientIdMetadata,
-                    false /* isAutoReauthn */, "signin" /* rpContext */);
-        });
+        runOnUiThreadBlocking(
+                () -> {
+                    mAccountSelection.showAccounts(
+                            EXAMPLE_ETLD_PLUS_ONE,
+                            TEST_ETLD_PLUS_ONE_1,
+                            TEST_ETLD_PLUS_ONE_2,
+                            Arrays.asList(ANA, BOB),
+                            IDP_METADATA,
+                            mClientIdMetadata,
+                            false /* isAutoReauthn */,
+                            "signin" /* rpContext */);
+                });
         pollUiThread(() -> getBottomSheetState() == BottomSheetController.SheetState.FULL);
 
         Espresso.pressBack();
@@ -146,26 +157,41 @@ public class AccountSelectionIntegrationTest {
     @Test
     @MediumTest
     public void testSwipeDismissesAndCallsCallback() {
-        runOnUiThreadBlocking(() -> {
-            mAccountSelection.showAccounts(EXAMPLE_ETLD_PLUS_ONE, TEST_ETLD_PLUS_ONE_1,
-                    TEST_ETLD_PLUS_ONE_2, Arrays.asList(ANA, BOB), IDP_METADATA, mClientIdMetadata,
-                    false /* isAutoReauthn */, "signin" /* rpContext */);
-        });
+        runOnUiThreadBlocking(
+                () -> {
+                    mAccountSelection.showAccounts(
+                            EXAMPLE_ETLD_PLUS_ONE,
+                            TEST_ETLD_PLUS_ONE_1,
+                            TEST_ETLD_PLUS_ONE_2,
+                            Arrays.asList(ANA, BOB),
+                            IDP_METADATA,
+                            mClientIdMetadata,
+                            false /* isAutoReauthn */,
+                            "signin" /* rpContext */);
+                });
         pollUiThread(() -> getBottomSheetState() == BottomSheetController.SheetState.FULL);
         BottomSheetTestSupport sheetSupport = new BottomSheetTestSupport(mBottomSheetController);
-        runOnUiThreadBlocking(() -> {
-            sheetSupport.suppressSheet(BottomSheetController.StateChangeReason.SWIPE);
-        });
+        runOnUiThreadBlocking(
+                () -> {
+                    sheetSupport.suppressSheet(BottomSheetController.StateChangeReason.SWIPE);
+                });
         waitForEvent(mMockBridge).onDismissed(IdentityRequestDialogDismissReason.SWIPE);
         verify(mMockBridge, never()).onAccountSelected(any(), any());
     }
 
     private void testClickOnConsentLink(int linkIndex, String expectedUrl) {
-        runOnUiThreadBlocking(() -> {
-            mAccountSelection.showAccounts(EXAMPLE_ETLD_PLUS_ONE, TEST_ETLD_PLUS_ONE_1,
-                    TEST_ETLD_PLUS_ONE_2, Arrays.asList(BOB), IDP_METADATA, mClientIdMetadata,
-                    false /* isAutoReauthn */, "signin" /* rpContext */);
-        });
+        runOnUiThreadBlocking(
+                () -> {
+                    mAccountSelection.showAccounts(
+                            EXAMPLE_ETLD_PLUS_ONE,
+                            TEST_ETLD_PLUS_ONE_1,
+                            TEST_ETLD_PLUS_ONE_2,
+                            Arrays.asList(BOB),
+                            IDP_METADATA,
+                            mClientIdMetadata,
+                            false /* isAutoReauthn */,
+                            "signin" /* rpContext */);
+                });
         pollUiThread(() -> getBottomSheetState() == BottomSheetController.SheetState.FULL);
 
         View contentView = mBottomSheetController.getCurrentSheetContent().getContentView();
@@ -183,12 +209,16 @@ public class AccountSelectionIntegrationTest {
                 spannedString.getSpans(0, spannedString.length(), ClickableSpan.class);
         assertEquals("Expected two clickable links", 2, spans.length);
 
-        CustomTabActivity activity = ApplicationTestUtils.waitForActivityWithClass(
-                CustomTabActivity.class, Stage.RESUMED, () -> spans[linkIndex].onClick(null));
-        CriteriaHelper.pollUiThread(() -> {
-            return activity.getActivityTab() != null
-                    && activity.getActivityTab().getUrl().getSpec().equals(expectedUrl);
-        });
+        CustomTabActivity activity =
+                ApplicationTestUtils.waitForActivityWithClass(
+                        CustomTabActivity.class,
+                        Stage.RESUMED,
+                        () -> spans[linkIndex].onClick(null));
+        CriteriaHelper.pollUiThread(
+                () -> {
+                    return activity.getActivityTab() != null
+                            && activity.getActivityTab().getUrl().getSpec().equals(expectedUrl);
+                });
     }
 
     @Test
@@ -207,39 +237,57 @@ public class AccountSelectionIntegrationTest {
     @MediumTest
     @SuppressLint("SetTextI18n")
     public void testDismissedIfUnableToShow() throws Exception {
-        BottomSheetContent otherBottomSheetContent = runOnUiThreadBlocking(() -> {
-            TextView highPriorityBottomSheetContentView =
-                    new TextView(mActivityTestRule.getActivity());
-            highPriorityBottomSheetContentView.setText("Another bottom sheet content");
-            BottomSheetContent content =
-                    createTestBottomSheetContent(highPriorityBottomSheetContentView);
-            mBottomSheetController.requestShowContent(content, false);
-            return content;
-        });
+        BottomSheetContent otherBottomSheetContent =
+                runOnUiThreadBlocking(
+                        () -> {
+                            TextView highPriorityBottomSheetContentView =
+                                    new TextView(mActivityTestRule.getActivity());
+                            highPriorityBottomSheetContentView.setText(
+                                    "Another bottom sheet content");
+                            BottomSheetContent content =
+                                    createTestBottomSheetContent(
+                                            highPriorityBottomSheetContentView);
+                            mBottomSheetController.requestShowContent(content, false);
+                            return content;
+                        });
         pollUiThread(() -> getBottomSheetState() == SheetState.PEEK);
         Espresso.onView(withText("Another bottom sheet content")).check(matches(isDisplayed()));
 
-        runOnUiThreadBlocking(() -> {
-            mAccountSelection.showAccounts(EXAMPLE_ETLD_PLUS_ONE, TEST_ETLD_PLUS_ONE_1,
-                    TEST_ETLD_PLUS_ONE_2, Arrays.asList(ANA, BOB), IDP_METADATA, mClientIdMetadata,
-                    false /* isAutoReauthn */, "signin" /* rpContext */);
-        });
+        runOnUiThreadBlocking(
+                () -> {
+                    mAccountSelection.showAccounts(
+                            EXAMPLE_ETLD_PLUS_ONE,
+                            TEST_ETLD_PLUS_ONE_1,
+                            TEST_ETLD_PLUS_ONE_2,
+                            Arrays.asList(ANA, BOB),
+                            IDP_METADATA,
+                            mClientIdMetadata,
+                            false /* isAutoReauthn */,
+                            "signin" /* rpContext */);
+                });
         waitForEvent(mMockBridge).onDismissed(IdentityRequestDialogDismissReason.OTHER);
         verify(mMockBridge, never()).onAccountSelected(any(), any());
         Espresso.onView(withText("Another bottom sheet content")).check(matches(isDisplayed()));
 
         runOnUiThreadBlocking(
-                () -> { mBottomSheetController.hideContent(otherBottomSheetContent, false); });
+                () -> {
+                    mBottomSheetController.hideContent(otherBottomSheetContent, false);
+                });
         pollUiThread(() -> getBottomSheetState() == BottomSheetController.SheetState.HIDDEN);
     }
 
     @Test
     @MediumTest
     public void testFailureDialogBackDismissesAndCallsCallback() {
-        runOnUiThreadBlocking(() -> {
-            mAccountSelection.showFailureDialog(EXAMPLE_ETLD_PLUS_ONE, TEST_ETLD_PLUS_ONE_1,
-                    TEST_ETLD_PLUS_ONE_2, IDP_METADATA, "signin" /* rpContext */);
-        });
+        runOnUiThreadBlocking(
+                () -> {
+                    mAccountSelection.showFailureDialog(
+                            EXAMPLE_ETLD_PLUS_ONE,
+                            TEST_ETLD_PLUS_ONE_1,
+                            TEST_ETLD_PLUS_ONE_2,
+                            IDP_METADATA,
+                            "signin" /* rpContext */);
+                });
         pollUiThread(() -> getBottomSheetState() == BottomSheetController.SheetState.FULL);
 
         Espresso.pressBack();
@@ -251,15 +299,21 @@ public class AccountSelectionIntegrationTest {
     @Test
     @MediumTest
     public void testFailureDialogSwipeDismissesAndCallsCallback() {
-        runOnUiThreadBlocking(() -> {
-            mAccountSelection.showFailureDialog(EXAMPLE_ETLD_PLUS_ONE, TEST_ETLD_PLUS_ONE_1,
-                    TEST_ETLD_PLUS_ONE_2, IDP_METADATA, "signin" /* rpContext */);
-        });
+        runOnUiThreadBlocking(
+                () -> {
+                    mAccountSelection.showFailureDialog(
+                            EXAMPLE_ETLD_PLUS_ONE,
+                            TEST_ETLD_PLUS_ONE_1,
+                            TEST_ETLD_PLUS_ONE_2,
+                            IDP_METADATA,
+                            "signin" /* rpContext */);
+                });
         pollUiThread(() -> getBottomSheetState() == BottomSheetController.SheetState.FULL);
         BottomSheetTestSupport sheetSupport = new BottomSheetTestSupport(mBottomSheetController);
-        runOnUiThreadBlocking(() -> {
-            sheetSupport.suppressSheet(BottomSheetController.StateChangeReason.SWIPE);
-        });
+        runOnUiThreadBlocking(
+                () -> {
+                    sheetSupport.suppressSheet(BottomSheetController.StateChangeReason.SWIPE);
+                });
         waitForEvent(mMockBridge).onDismissed(IdentityRequestDialogDismissReason.SWIPE);
         verify(mMockBridge, never()).onAccountSelected(any(), any());
     }
@@ -268,23 +322,32 @@ public class AccountSelectionIntegrationTest {
     @MediumTest
     public void testShowAndCloseModalDialog() {
         CustomTabActivity activity =
-                ApplicationTestUtils.waitForActivityWithClass(CustomTabActivity.class,
-                        Stage.RESUMED, () -> mAccountSelection.showModalDialog(TEST_URL));
-        CriteriaHelper.pollUiThread(() -> {
-            Criteria.checkThat(activity.getActivityTab(), Matchers.notNullValue());
-            Criteria.checkThat(activity.getActivityTab().getUrl(), is(TEST_URL));
-            Criteria.checkThat(activity.getIntent(), Matchers.notNullValue());
-            Criteria.checkThat(activity.getIntent().getIntExtra(IntentHandler.EXTRA_FEDCM_ID, -1),
-                    Matchers.not(-1));
-        });
+                ApplicationTestUtils.waitForActivityWithClass(
+                        CustomTabActivity.class,
+                        Stage.RESUMED,
+                        () -> mAccountSelection.showModalDialog(TEST_URL));
+        CriteriaHelper.pollUiThread(
+                () -> {
+                    Criteria.checkThat(activity.getActivityTab(), Matchers.notNullValue());
+                    Criteria.checkThat(activity.getActivityTab().getUrl(), is(TEST_URL));
+                    Criteria.checkThat(activity.getIntent(), Matchers.notNullValue());
+                    Criteria.checkThat(
+                            activity.getIntent().getIntExtra(IntentHandler.EXTRA_FEDCM_ID, -1),
+                            Matchers.not(-1));
+                });
 
         ApplicationTestUtils.waitForActivityWithClass(
-                CustomTabActivity.class, Stage.DESTROYED, () -> {
+                CustomTabActivity.class,
+                Stage.DESTROYED,
+                () -> {
                     BottomSheetController customTabController =
                             BottomSheetControllerProvider.from(activity.getWindowAndroid());
                     AccountSelectionComponent customTabComponent =
-                            new AccountSelectionCoordinator(activity.getActivityTab(),
-                                    activity.getWindowAndroid(), customTabController, mMockBridge);
+                            new AccountSelectionCoordinator(
+                                    activity.getActivityTab(),
+                                    activity.getWindowAndroid(),
+                                    customTabController,
+                                    mMockBridge);
                     customTabComponent.closeModalDialog();
                 });
     }
@@ -293,9 +356,14 @@ public class AccountSelectionIntegrationTest {
     @MediumTest
     public void testShowModalDialogAndFinish() {
         CustomTabActivity activity =
-                ApplicationTestUtils.waitForActivityWithClass(CustomTabActivity.class,
-                        Stage.RESUMED, () -> mAccountSelection.showModalDialog(TEST_URL));
-        runOnUiThreadBlocking(() -> { activity.finish(); });
+                ApplicationTestUtils.waitForActivityWithClass(
+                        CustomTabActivity.class,
+                        Stage.RESUMED,
+                        () -> mAccountSelection.showModalDialog(TEST_URL));
+        runOnUiThreadBlocking(
+                () -> {
+                    activity.finish();
+                });
         CriteriaHelper.pollUiThread(() -> activity.isDestroyed());
         waitForEvent(mMockBridge).onDismissed(IdentityRequestDialogDismissReason.OTHER);
         verify(mMockBridge, never()).onAccountSelected(any(), any());
@@ -305,19 +373,30 @@ public class AccountSelectionIntegrationTest {
     @MediumTest
     public void testIncorrectCloseModalDialog() {
         // closeModalDialog() on the mAccountSelection should do nothing.
-        runOnUiThreadBlocking(() -> { mAccountSelection.closeModalDialog(); });
-        CriteriaHelper.pollUiThread(() -> {
-            Criteria.checkThat(mActivityTestRule.getActivity().isDestroyed(), Matchers.is(false));
-        });
+        runOnUiThreadBlocking(
+                () -> {
+                    mAccountSelection.closeModalDialog();
+                });
+        CriteriaHelper.pollUiThread(
+                () -> {
+                    Criteria.checkThat(
+                            mActivityTestRule.getActivity().isDestroyed(), Matchers.is(false));
+                });
     }
 
     @Test
     @MediumTest
     public void testErrorDialogBackDismissesAndCallsCallback() {
-        runOnUiThreadBlocking(() -> {
-            mAccountSelection.showErrorDialog(EXAMPLE_ETLD_PLUS_ONE, TEST_ETLD_PLUS_ONE_1,
-                    TEST_ETLD_PLUS_ONE_2, IDP_METADATA, "signin" /* rpContext */, TOKEN_ERROR);
-        });
+        runOnUiThreadBlocking(
+                () -> {
+                    mAccountSelection.showErrorDialog(
+                            EXAMPLE_ETLD_PLUS_ONE,
+                            TEST_ETLD_PLUS_ONE_1,
+                            TEST_ETLD_PLUS_ONE_2,
+                            IDP_METADATA,
+                            "signin" /* rpContext */,
+                            TOKEN_ERROR);
+                });
         pollUiThread(() -> getBottomSheetState() == BottomSheetController.SheetState.FULL);
 
         Espresso.pressBack();
@@ -329,21 +408,29 @@ public class AccountSelectionIntegrationTest {
     @Test
     @MediumTest
     public void testErrorDialogSwipeDismissesAndCallsCallback() {
-        runOnUiThreadBlocking(() -> {
-            mAccountSelection.showErrorDialog(EXAMPLE_ETLD_PLUS_ONE, TEST_ETLD_PLUS_ONE_1,
-                    TEST_ETLD_PLUS_ONE_2, IDP_METADATA, "signin" /* rpContext */, TOKEN_ERROR);
-        });
+        runOnUiThreadBlocking(
+                () -> {
+                    mAccountSelection.showErrorDialog(
+                            EXAMPLE_ETLD_PLUS_ONE,
+                            TEST_ETLD_PLUS_ONE_1,
+                            TEST_ETLD_PLUS_ONE_2,
+                            IDP_METADATA,
+                            "signin" /* rpContext */,
+                            TOKEN_ERROR);
+                });
         pollUiThread(() -> getBottomSheetState() == BottomSheetController.SheetState.FULL);
         BottomSheetTestSupport sheetSupport = new BottomSheetTestSupport(mBottomSheetController);
-        runOnUiThreadBlocking(() -> {
-            sheetSupport.suppressSheet(BottomSheetController.StateChangeReason.SWIPE);
-        });
+        runOnUiThreadBlocking(
+                () -> {
+                    sheetSupport.suppressSheet(BottomSheetController.StateChangeReason.SWIPE);
+                });
         waitForEvent(mMockBridge).onDismissed(IdentityRequestDialogDismissReason.SWIPE);
         verify(mMockBridge, never()).onAccountSelected(any(), any());
     }
 
     public static <T> T waitForEvent(T mock) {
-        return verify(mock,
+        return verify(
+                mock,
                 timeout(ScalableTimeout.scaleTimeout(CriteriaHelper.DEFAULT_MAX_TIME_TO_POLL)));
     }
 

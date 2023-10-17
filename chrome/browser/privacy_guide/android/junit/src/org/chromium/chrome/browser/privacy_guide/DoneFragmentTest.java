@@ -34,24 +34,16 @@ import org.chromium.chrome.browser.signin.services.IdentityServicesProvider;
 import org.chromium.components.signin.identitymanager.ConsentLevel;
 import org.chromium.components.signin.identitymanager.IdentityManager;
 
-/**
- * Tests for {@link DoneFragment}
- */
+/** Tests for {@link DoneFragment} */
 @RunWith(BaseRobolectricTestRunner.class)
 public class DoneFragmentTest {
-    @Rule
-    public MockitoRule mMockitoRule = MockitoJUnit.rule();
-    @Rule
-    public JniMocker mMocker = new JniMocker();
+    @Rule public MockitoRule mMockitoRule = MockitoJUnit.rule();
+    @Rule public JniMocker mMocker = new JniMocker();
 
-    @Mock
-    private Profile mProfile;
-    @Mock
-    private IdentityServicesProvider mIdentityServicesProvider;
-    @Mock
-    private IdentityManager mIdentityManager;
-    @Mock
-    private PrivacySandboxBridge.Natives mPrivacySandboxBridge;
+    @Mock private Profile mProfile;
+    @Mock private IdentityServicesProvider mIdentityServicesProvider;
+    @Mock private IdentityManager mIdentityManager;
+    @Mock private PrivacySandboxBridge.Natives mPrivacySandboxBridge;
 
     private FragmentScenario mScenario;
     private DoneFragment mFragment;
@@ -59,24 +51,29 @@ public class DoneFragmentTest {
     private View mWaaButton;
 
     private void initFragment() {
-        mScenario = FragmentScenario.launchInContainer(DoneFragment.class, Bundle.EMPTY,
-                R.style.Theme_MaterialComponents, new FragmentFactory() {
-                    @NonNull
-                    @Override
-                    public Fragment instantiate(
-                            @NonNull ClassLoader classLoader, @NonNull String className) {
-                        Fragment fragment = super.instantiate(classLoader, className);
-                        if (fragment instanceof DoneFragment) {
-                            ((DoneFragment) fragment).setProfile(mProfile);
-                        }
-                        return fragment;
-                    }
+        mScenario =
+                FragmentScenario.launchInContainer(
+                        DoneFragment.class,
+                        Bundle.EMPTY,
+                        R.style.Theme_MaterialComponents,
+                        new FragmentFactory() {
+                            @NonNull
+                            @Override
+                            public Fragment instantiate(
+                                    @NonNull ClassLoader classLoader, @NonNull String className) {
+                                Fragment fragment = super.instantiate(classLoader, className);
+                                if (fragment instanceof DoneFragment) {
+                                    ((DoneFragment) fragment).setProfile(mProfile);
+                                }
+                                return fragment;
+                            }
+                        });
+        mScenario.onFragment(
+                fragment -> {
+                    mFragment = (DoneFragment) fragment;
+                    mPsButton = fragment.getView().findViewById(R.id.ps_button);
+                    mWaaButton = fragment.getView().findViewById(R.id.waa_button);
                 });
-        mScenario.onFragment(fragment -> {
-            mFragment = (DoneFragment) fragment;
-            mPsButton = fragment.getView().findViewById(R.id.ps_button);
-            mWaaButton = fragment.getView().findViewById(R.id.waa_button);
-        });
     }
 
     private void setSignedInState(boolean isSignedIn) {

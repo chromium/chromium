@@ -43,15 +43,11 @@ public class PlayerMediatorUnitTest {
     private static final long POSITION_NS = 1_000_000_000L; // one second
     private static final long DURATION_NS = 10_000_000_000L; // ten seconds
 
-    @Mock
-    private PlayerCoordinator mPlayerCoordinator;
-    @Mock
-    private Playback mPlayback;
-    @Mock
-    private Playback.Metadata mPlaybackMetadata;
+    @Mock private PlayerCoordinator mPlayerCoordinator;
+    @Mock private Playback mPlayback;
+    @Mock private Playback.Metadata mPlaybackMetadata;
 
-    @Captor
-    private ArgumentCaptor<PlaybackListener> mPlaybackListenerCaptor;
+    @Captor private ArgumentCaptor<PlaybackListener> mPlaybackListenerCaptor;
 
     private PropertyModel mModel;
 
@@ -94,6 +90,7 @@ public class PlayerMediatorUnitTest {
             return mTotalDurationNanos;
         }
     }
+
     private TestPlaybackData mPlaybackData;
 
     private static class TestPlayer implements Player.Delegate {
@@ -215,7 +212,7 @@ public class PlayerMediatorUnitTest {
         mPlaybackData.mTotalDurationNanos = DURATION_NS;
         mPlaybackListenerCaptor.getValue().onPlaybackDataChanged(mPlaybackData);
 
-        assertEquals(0.1f, (float) mModel.get(PlayerProperties.PROGRESS), /*delta=*/1e-8f);
+        assertEquals(0.1f, (float) mModel.get(PlayerProperties.PROGRESS), /* delta= */ 1e-8f);
     }
 
     @Test

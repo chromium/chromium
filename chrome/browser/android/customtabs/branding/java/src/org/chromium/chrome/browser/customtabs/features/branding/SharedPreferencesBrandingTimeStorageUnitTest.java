@@ -20,20 +20,22 @@ import org.chromium.base.test.util.InMemorySharedPreferences;
 
 import java.util.function.Function;
 
-/**
- * Unit test for {@link SharedPreferencesBrandingTimeStorage}.
- */
+/** Unit test for {@link SharedPreferencesBrandingTimeStorage}. */
 @RunWith(BaseRobolectricTestRunner.class)
-@Config(manifest = Config.NONE, shadows = {ShadowPostTask.class})
+@Config(
+        manifest = Config.NONE,
+        shadows = {ShadowPostTask.class})
 public class SharedPreferencesBrandingTimeStorageUnitTest {
     @Before
     public void setup() {
-        var shadowPostTaskImpl = new ShadowPostTask.TestImpl() {
-            @Override
-            public void postDelayedTask(@TaskTraits int taskTraits, Runnable task, long delay) {
-                task.run();
-            }
-        };
+        var shadowPostTaskImpl =
+                new ShadowPostTask.TestImpl() {
+                    @Override
+                    public void postDelayedTask(
+                            @TaskTraits int taskTraits, Runnable task, long delay) {
+                        task.run();
+                    }
+                };
         ShadowPostTask.setTestImpl(shadowPostTaskImpl);
     }
 
@@ -46,12 +48,16 @@ public class SharedPreferencesBrandingTimeStorageUnitTest {
             storage.put("id-" + i, brandingTime.apply(i));
         }
         assertEquals(0, storage.get("id-0"), brandingTime.apply(0));
-        assertEquals("The number of entries can't be bigger than |MAX_NON_PACKAGE_ENTRIES|",
-                MAX_NON_PACKAGE_ENTRIES, storage.getSize());
+        assertEquals(
+                "The number of entries can't be bigger than |MAX_NON_PACKAGE_ENTRIES|",
+                MAX_NON_PACKAGE_ENTRIES,
+                storage.getSize());
 
         storage.put("id-max+1", (MAX_NON_PACKAGE_ENTRIES + 1) * 10);
-        assertEquals("The number of entries can't be bigger than |MAX_NON_PACKAGE_ENTRIES|",
-                MAX_NON_PACKAGE_ENTRIES, storage.getSize());
+        assertEquals(
+                "The number of entries can't be bigger than |MAX_NON_PACKAGE_ENTRIES|",
+                MAX_NON_PACKAGE_ENTRIES,
+                storage.getSize());
 
         // The oldest entry should be evicted.
         assertEquals(BrandingChecker.BRANDING_TIME_NOT_FOUND, storage.get("id-0"));

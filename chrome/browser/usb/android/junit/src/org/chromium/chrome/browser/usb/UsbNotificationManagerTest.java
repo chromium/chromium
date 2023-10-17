@@ -25,9 +25,7 @@ import org.chromium.url.JUnitTestGURLs;
 
 import java.util.List;
 
-/**
- * Tests UsbNotificationManager behaviour and its delegate.
- */
+/** Tests UsbNotificationManager behaviour and its delegate. */
 @RunWith(BaseRobolectricTestRunner.class)
 public class UsbNotificationManagerTest {
     private static final int NOTIFICATION_ID = 0;
@@ -36,31 +34,36 @@ public class UsbNotificationManagerTest {
             UrlFormatter.formatUrlForSecurityDisplay(TEST_URL, SchemeDisplay.OMIT_HTTP_AND_HTTPS);
 
     private MockNotificationManagerProxy mMockNotificationManager;
-    private UsbNotificationManagerDelegate mDelegate = new UsbNotificationManagerDelegate() {
-        @Override
-        public Intent createTrustedBringTabToFrontIntent(int tabId) {
-            mTabsBroughtToFront++;
-            return new Intent();
-        }
-        @Override
-        public void stopSelf() {
-            mServiceStopped = true;
-        }
-        @Override
-        public void stopSelf(int startId) {
-            mServiceStopped = true;
-            mLastStartId = startId;
-        }
-    };
+    private UsbNotificationManagerDelegate mDelegate =
+            new UsbNotificationManagerDelegate() {
+                @Override
+                public Intent createTrustedBringTabToFrontIntent(int tabId) {
+                    mTabsBroughtToFront++;
+                    return new Intent();
+                }
 
-    private class FakeService {};
+                @Override
+                public void stopSelf() {
+                    mServiceStopped = true;
+                }
+
+                @Override
+                public void stopSelf(int startId) {
+                    mServiceStopped = true;
+                    mLastStartId = startId;
+                }
+            };
+
+    private class FakeService {}
+    ;
+
     private UsbNotificationManager mManager;
     private boolean mServiceStopped;
     private int mLastStartId;
     private int mTabsBroughtToFront;
 
     private Intent createIntent(boolean isConnected) {
-        return createIntent(isConnected, /*isIncognito=*/false);
+        return createIntent(isConnected, /* isIncognito= */ false);
     }
 
     private Intent createIntent(boolean isConnected, boolean isIncognito) {
@@ -77,9 +80,11 @@ public class UsbNotificationManagerTest {
         List<MockNotificationManagerProxy.NotificationEntry> notifications =
                 mMockNotificationManager.getNotifications();
         assertEquals(1, notifications.size());
-        assertEquals(expectedTitle,
+        assertEquals(
+                expectedTitle,
                 notifications.get(0).notification.extras.getString(Notification.EXTRA_TITLE));
-        assertEquals(expectedText,
+        assertEquals(
+                expectedText,
                 notifications.get(0).notification.extras.getString(Notification.EXTRA_TEXT));
     }
 
@@ -92,7 +97,7 @@ public class UsbNotificationManagerTest {
     @Test
     public void test_nullIntentStopsService() {
         mServiceStopped = false;
-        mManager.onStartCommand(null, 0, /*startId=*/0);
+        mManager.onStartCommand(null, 0, /* startId= */ 0);
         assertTrue(mServiceStopped);
         assertEquals(0, mLastStartId);
         assertEquals(0, mTabsBroughtToFront);
@@ -102,7 +107,7 @@ public class UsbNotificationManagerTest {
     @Test
     public void test_nullIntentWithStartIdStopsService() {
         mServiceStopped = false;
-        mManager.onStartCommand(null, 0, /*startId=*/42);
+        mManager.onStartCommand(null, 0, /* startId= */ 42);
         assertTrue(mServiceStopped);
         assertEquals(0, mLastStartId);
         assertEquals(0, mTabsBroughtToFront);
@@ -111,7 +116,7 @@ public class UsbNotificationManagerTest {
 
     @Test
     public void test_connectedShowsNotification() {
-        Intent intent = createIntent(/*isConnected=*/true);
+        Intent intent = createIntent(/* isConnected= */ true);
         mManager.onStartCommand(intent, 0, 0);
 
         assertFalse(mServiceStopped);
@@ -122,8 +127,8 @@ public class UsbNotificationManagerTest {
 
     @Test
     public void test_disconnectHidesNotification() {
-        Intent intent1 = createIntent(/*isConnected=*/true);
-        mManager.onStartCommand(intent1, 0, /*startId=*/42);
+        Intent intent1 = createIntent(/* isConnected= */ true);
+        mManager.onStartCommand(intent1, 0, /* startId= */ 42);
 
         assertFalse(mServiceStopped);
         assertEquals(1, mTabsBroughtToFront);
@@ -131,8 +136,8 @@ public class UsbNotificationManagerTest {
         assertNotificationEquals(
                 "Connected to a USB device", "Tap to return to " + TEST_URL_FORMATTED);
 
-        Intent intent2 = createIntent(/*isConnected=*/false);
-        mManager.onStartCommand(intent2, 0, /*startId=*/42);
+        Intent intent2 = createIntent(/* isConnected= */ false);
+        mManager.onStartCommand(intent2, 0, /* startId= */ 42);
 
         assertTrue(mServiceStopped);
         assertEquals(42, mLastStartId);
@@ -142,7 +147,7 @@ public class UsbNotificationManagerTest {
 
     @Test
     public void test_connectedInIncognitoShowsNotification() {
-        Intent intent = createIntent(/*isConnected=*/true, /*isIncognito=*/true);
+        Intent intent = createIntent(/* isConnected= */ true, /* isIncognito= */ true);
         mManager.onStartCommand(intent, 0, 0);
 
         assertFalse(mServiceStopped);

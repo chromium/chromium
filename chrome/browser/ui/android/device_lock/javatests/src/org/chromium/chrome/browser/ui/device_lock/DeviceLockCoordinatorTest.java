@@ -30,22 +30,18 @@ import org.chromium.base.test.util.Batch;
 import org.chromium.chrome.test.ChromeJUnit4ClassRunner;
 import org.chromium.ui.test.util.BlankUiTestActivity;
 
-/**
- * Tests for {@link DeviceLockCoordinator}.
- */
+/** Tests for {@link DeviceLockCoordinator}. */
 @RunWith(ChromeJUnit4ClassRunner.class)
 @Batch(Batch.UNIT_TESTS)
 public class DeviceLockCoordinatorTest {
-    @Rule
-    public final MockitoRule mMockitoRule = MockitoJUnit.rule();
+    @Rule public final MockitoRule mMockitoRule = MockitoJUnit.rule();
+
     @Rule
     public final BaseActivityTestRule<BlankUiTestActivity> mActivityTestRule =
             new BaseActivityTestRule<>(BlankUiTestActivity.class);
 
-    @Mock
-    private MockDelegate mMockDelegate;
-    @Mock
-    private Activity mActivity;
+    @Mock private MockDelegate mMockDelegate;
+    @Mock private Activity mActivity;
 
     @Before
     public void setUpTest() {

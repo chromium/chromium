@@ -31,9 +31,7 @@ import org.chromium.url.GURL;
 
 import java.util.Arrays;
 
-/**
- *  Unit tests for {@link TargetSelectorCoordinatorTest}.
- */
+/** Unit tests for {@link TargetSelectorCoordinatorTest}. */
 @RunWith(ChromeJUnit4ClassRunner.class)
 @CommandLineFlags.Add({ChromeSwitches.DISABLE_FIRST_RUN_EXPERIENCE})
 public class TargetSelectorCoordinatorTest extends BlankUiTestActivityTestCase {
@@ -46,34 +44,47 @@ public class TargetSelectorCoordinatorTest extends BlankUiTestActivityTestCase {
     public void setUp() throws Exception {
         super.setUpTest();
 
-        TestThreadUtils.runOnUiThreadBlocking(() -> {
-            mAppModalPresenter = new AppModalPresenter(getActivity());
-            mModalDialogManager = new ModalDialogManager(
-                    mAppModalPresenter, ModalDialogManager.ModalDialogType.APP);
-        });
-        mIconBridge = new LargeIconBridge() {
-            @Override
-            public boolean getLargeIconForUrl(
-                    final GURL pageUrl, int desiredSizePx, final LargeIconCallback callback) {
-                return true;
-            }
-        };
+        TestThreadUtils.runOnUiThreadBlocking(
+                () -> {
+                    mAppModalPresenter = new AppModalPresenter(getActivity());
+                    mModalDialogManager =
+                            new ModalDialogManager(
+                                    mAppModalPresenter, ModalDialogManager.ModalDialogType.APP);
+                });
+        mIconBridge =
+                new LargeIconBridge() {
+                    @Override
+                    public boolean getLargeIconForUrl(
+                            final GURL pageUrl,
+                            int desiredSizePx,
+                            final LargeIconCallback callback) {
+                        return true;
+                    }
+                };
     }
 
     @Test
     @SmallTest
     public void testTargetSelectorCoordinatorTest_moveWindow() throws Exception {
-        InstanceInfo[] instances = new InstanceInfo[] {
-                new InstanceInfo(0, 57, InstanceInfo.Type.CURRENT, "url0", "title0", 1, 0, false),
-                new InstanceInfo(1, 58, InstanceInfo.Type.OTHER, "ur11", "title1", 2, 0, false),
-                new InstanceInfo(2, 59, InstanceInfo.Type.OTHER, "url2", "title2", 1, 1, false)};
+        InstanceInfo[] instances =
+                new InstanceInfo[] {
+                    new InstanceInfo(
+                            0, 57, InstanceInfo.Type.CURRENT, "url0", "title0", 1, 0, false),
+                    new InstanceInfo(1, 58, InstanceInfo.Type.OTHER, "ur11", "title1", 2, 0, false),
+                    new InstanceInfo(2, 59, InstanceInfo.Type.OTHER, "url2", "title2", 1, 1, false)
+                };
         final CallbackHelper itemClickCallbackHelper = new CallbackHelper();
         final int itemClickCount = itemClickCallbackHelper.getCallCount();
         Callback<InstanceInfo> moveCallback = (item) -> itemClickCallbackHelper.notifyCalled();
-        TestThreadUtils.runOnUiThreadBlocking(() -> {
-            TargetSelectorCoordinator.showDialog(getActivity(), mModalDialogManager, mIconBridge,
-                    moveCallback, Arrays.asList(instances));
-        });
+        TestThreadUtils.runOnUiThreadBlocking(
+                () -> {
+                    TargetSelectorCoordinator.showDialog(
+                            getActivity(),
+                            mModalDialogManager,
+                            mIconBridge,
+                            moveCallback,
+                            Arrays.asList(instances));
+                });
 
         // Choose a target window.
         onData(anything()).atPosition(1).perform(click());

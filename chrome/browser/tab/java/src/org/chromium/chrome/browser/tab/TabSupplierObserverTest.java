@@ -30,22 +30,16 @@ import org.chromium.base.test.util.Feature;
 @RunWith(BaseRobolectricTestRunner.class)
 @Config(manifest = Config.NONE)
 public class TabSupplierObserverTest {
-    @Mock
-    private Tab mMockTab;
+    @Mock private Tab mMockTab;
 
-    @Mock
-    private Tab mAnotherMockedTab;
+    @Mock private Tab mAnotherMockedTab;
 
     private ObservableSupplierImpl<Tab> mObservableTabSupplier =
             new ObservableSupplierImpl<>(mMockTab);
 
-    /**
-     * A test observer that provides access to the tab being observed.
-     */
+    /** A test observer that provides access to the tab being observed. */
     private static class TestTabSupplierObserver extends TabSupplierObserver {
-        /**
-         * The tab currently being observed.
-         */
+        /** The tab currently being observed. */
         private Tab mObservedTab;
 
         private boolean mDidCallObservingDifferentTab;
@@ -75,9 +69,7 @@ public class TabSupplierObserverTest {
         return mObservableTabSupplier.get();
     }
 
-    /**
-     * Test that the {@link TabSupplierObserver} switches between tabs as the tab changes.
-     */
+    /** Test that the {@link TabSupplierObserver} switches between tabs as the tab changes. */
     @Test
     @SmallTest
     @Feature({"TabSupplierObserver"})
@@ -86,16 +78,21 @@ public class TabSupplierObserverTest {
 
         TestTabSupplierObserver tabSupplierObserver =
                 new TestTabSupplierObserver(mObservableTabSupplier);
-        assertFalse("Unexpected initial call to onObservingDifferentTab!",
+        assertFalse(
+                "Unexpected initial call to onObservingDifferentTab!",
                 tabSupplierObserver.mDidCallObservingDifferentTab);
-        assertEquals("The observer should be attached to the starting tab.", startingTab,
+        assertEquals(
+                "The observer should be attached to the starting tab.",
+                startingTab,
                 tabSupplierObserver.mObservedTab);
 
         // Now tell the supplier to switch tabs.
         mObservableTabSupplier.set(mAnotherMockedTab);
 
         assertNotEquals("The tab should have changed.", startingTab, getCurrentTab());
-        assertEquals("The observer should be attached to the new tab.", getCurrentTab(),
+        assertEquals(
+                "The observer should be attached to the new tab.",
+                getCurrentTab(),
                 tabSupplierObserver.mObservedTab);
 
         tabSupplierObserver.destroy();
@@ -107,7 +104,8 @@ public class TabSupplierObserverTest {
     public void initialTrigger() {
         TestTabSupplierObserver tabSupplierObserver =
                 new TestTabSupplierObserver(mObservableTabSupplier, true);
-        assertTrue("Expected initial call to onObservingDifferentTab!",
+        assertTrue(
+                "Expected initial call to onObservingDifferentTab!",
                 tabSupplierObserver.mDidCallObservingDifferentTab);
     }
 

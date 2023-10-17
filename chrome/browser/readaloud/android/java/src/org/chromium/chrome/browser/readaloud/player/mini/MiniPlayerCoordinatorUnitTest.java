@@ -34,10 +34,8 @@ public class MiniPlayerCoordinatorUnitTest {
     private static final String TITLE = "Title";
     private static final String PUBLISHER = "Publisher";
 
-    @Mock
-    private ViewStub mViewStub;
-    @Mock
-    private MiniPlayerLayout mLayout;
+    @Mock private ViewStub mViewStub;
+    @Mock private MiniPlayerLayout mLayout;
     @Mock private MiniPlayerMediator mMediator;
     private PropertyModel mModel;
 
@@ -62,13 +60,13 @@ public class MiniPlayerCoordinatorUnitTest {
 
     @Test
     public void testShow() {
-        mCoordinator.show(/*animate=*/false);
+        mCoordinator.show(/* animate= */ false);
         verify(mViewStub).inflate();
         verify(mMediator).show(eq(false));
 
         // Second show() shouldn't inflate the stub again.
         reset(mViewStub);
-        mCoordinator.show(/*animate=*/false);
+        mCoordinator.show(/* animate= */ false);
         verify(mViewStub, never()).inflate();
         verify(mMediator, times(2)).show(eq(false));
     }
@@ -82,34 +80,34 @@ public class MiniPlayerCoordinatorUnitTest {
 
     @Test
     public void testDismiss() {
-        mCoordinator.dismiss(/*animate=*/false);
+        mCoordinator.dismiss(/* animate= */ false);
         verify(mMediator).dismiss(eq(false));
     }
 
     @Test
     public void testBindPlaybackState() {
-        mCoordinator.show(/*animate=*/true);
+        mCoordinator.show(/* animate= */ true);
         mModel.set(PlayerProperties.PLAYBACK_STATE, PlaybackListener.State.PLAYING);
         verify(mLayout).onPlaybackStateChanged(eq(PlaybackListener.State.PLAYING));
     }
 
     @Test
     public void testBindTitle() {
-        mCoordinator.show(/*animate=*/true);
+        mCoordinator.show(/* animate= */ true);
         mModel.set(PlayerProperties.TITLE, TITLE);
         verify(mLayout).setTitle(eq(TITLE));
     }
 
     @Test
     public void testBindPublisher() {
-        mCoordinator.show(/*animate=*/true);
+        mCoordinator.show(/* animate= */ true);
         mModel.set(PlayerProperties.PUBLISHER, PUBLISHER);
         verify(mLayout).setPublisher(eq(PUBLISHER));
     }
 
     @Test
     public void testBindProgress() {
-        mCoordinator.show(/*animate=*/true);
+        mCoordinator.show(/* animate= */ true);
         mModel.set(PlayerProperties.PROGRESS, 0.5f);
         verify(mLayout).setProgress(eq(0.5f));
     }

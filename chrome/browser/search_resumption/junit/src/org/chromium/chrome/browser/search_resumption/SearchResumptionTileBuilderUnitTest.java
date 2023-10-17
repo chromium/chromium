@@ -32,39 +32,25 @@ import org.chromium.content_public.browser.LoadUrlParams;
 import java.util.Arrays;
 import java.util.List;
 
-/**
- * Unit tests for {@link SearchResumptionTileBuilder}.
- */
+/** Unit tests for {@link SearchResumptionTileBuilder}. */
 @RunWith(BaseRobolectricTestRunner.class)
 @Config(manifest = Config.NONE)
 public class SearchResumptionTileBuilderUnitTest {
     // The search suggestions are meant to be shown on any website.
 
-    @Rule
-    public JniMocker mJniMocker = new JniMocker();
+    @Rule public JniMocker mJniMocker = new JniMocker();
 
-    @Mock
-    private Tab mTab;
-    @Mock
-    private SearchResumptionTileContainerView mSuggestionTilesContainerView;
-    @Mock
-    SearchResumptionTileView mTileView1;
-    @Mock
-    SearchResumptionTileView mTileView2;
-    @Mock
-    SearchResumptionTileView mTileView3;
-    @Mock
-    private AutocompleteMatch mSearchSuggest1;
-    @Mock
-    private AutocompleteMatch mSearchSuggest2;
-    @Mock
-    private AutocompleteMatch mSearchSuggest3;
-    @Mock
-    private AutocompleteMatch mSearchSuggest4;
-    @Mock
-    private AutocompleteMatch mNonSearchSuggest1;
-    @Mock
-    private AutocompleteResult mAutocompleteResult;
+    @Mock private Tab mTab;
+    @Mock private SearchResumptionTileContainerView mSuggestionTilesContainerView;
+    @Mock SearchResumptionTileView mTileView1;
+    @Mock SearchResumptionTileView mTileView2;
+    @Mock SearchResumptionTileView mTileView3;
+    @Mock private AutocompleteMatch mSearchSuggest1;
+    @Mock private AutocompleteMatch mSearchSuggest2;
+    @Mock private AutocompleteMatch mSearchSuggest3;
+    @Mock private AutocompleteMatch mSearchSuggest4;
+    @Mock private AutocompleteMatch mNonSearchSuggest1;
+    @Mock private AutocompleteResult mAutocompleteResult;
 
     private SearchResumptionTileBuilder mTileBuilder;
 
@@ -104,8 +90,13 @@ public class SearchResumptionTileBuilderUnitTest {
     @Test
     @MediumTest
     public void testBuildUpToMaxNumberOfTiles() {
-        List<AutocompleteMatch> suggestionList = Arrays.asList(mNonSearchSuggest1, mSearchSuggest1,
-                mSearchSuggest2, mSearchSuggest3, mSearchSuggest4);
+        List<AutocompleteMatch> suggestionList =
+                Arrays.asList(
+                        mNonSearchSuggest1,
+                        mSearchSuggest1,
+                        mSearchSuggest2,
+                        mSearchSuggest3,
+                        mSearchSuggest4);
         doReturn(suggestionList).when(mAutocompleteResult).getSuggestionsList();
         when(mSuggestionTilesContainerView.buildTileView())
                 .thenReturn(mTileView1, mTileView2, mTileView3);
@@ -116,9 +107,10 @@ public class SearchResumptionTileBuilderUnitTest {
     }
 
     private void createTileBuilder() {
-        OnSuggestionClickCallback callback = (gUrl) -> {
-            mTab.loadUrl(new LoadUrlParams(gUrl));
-        };
+        OnSuggestionClickCallback callback =
+                (gUrl) -> {
+                    mTab.loadUrl(new LoadUrlParams(gUrl));
+                };
         mTileBuilder = new SearchResumptionTileBuilder(callback);
     }
 }

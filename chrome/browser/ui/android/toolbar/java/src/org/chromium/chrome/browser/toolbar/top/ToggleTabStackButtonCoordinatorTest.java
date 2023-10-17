@@ -39,30 +39,20 @@ import org.chromium.chrome.test.util.browser.Features;
 import java.util.HashSet;
 import java.util.Set;
 
-/**
- * Unit tests for ToggleTabStackButtonCoordinator.
- */
+/** Unit tests for ToggleTabStackButtonCoordinator. */
 @RunWith(BaseRobolectricTestRunner.class)
 @LooperMode(LooperMode.Mode.LEGACY)
 public class ToggleTabStackButtonCoordinatorTest {
-    @Rule
-    public TestRule mFeaturesProcessorRule = new Features.JUnitProcessor();
+    @Rule public TestRule mFeaturesProcessorRule = new Features.JUnitProcessor();
 
-    @Mock
-    private Context mContext;
-    @Mock
-    private LayoutStateProvider mLayoutStateProvider;
-    @Mock
-    private ToggleTabStackButton mToggleTabStackButton;
-    @Mock
-    private android.content.res.Resources mResources;
-    @Mock
-    private UserEducationHelper mUserEducationHelper;
-    @Mock
-    private Callback<Boolean> mSetNewTabButtonHighlightCallback;
+    @Mock private Context mContext;
+    @Mock private LayoutStateProvider mLayoutStateProvider;
+    @Mock private ToggleTabStackButton mToggleTabStackButton;
+    @Mock private android.content.res.Resources mResources;
+    @Mock private UserEducationHelper mUserEducationHelper;
+    @Mock private Callback<Boolean> mSetNewTabButtonHighlightCallback;
 
-    @Captor
-    private ArgumentCaptor<IPHCommand> mIPHCommandCaptor;
+    @Captor private ArgumentCaptor<IPHCommand> mIPHCommandCaptor;
 
     private boolean mIsIncognito;
     private boolean mOverviewOpen;
@@ -80,16 +70,18 @@ public class ToggleTabStackButtonCoordinatorTest {
         doAnswer(invocation -> mOverviewOpen)
                 .when(mLayoutStateProvider)
                 .isLayoutVisible(LayoutType.TAB_SWITCHER);
-        doAnswer(invocation -> {
-            mLayoutStateObserverSet.add(invocation.getArgument(0));
-            return null;
-        })
+        doAnswer(
+                        invocation -> {
+                            mLayoutStateObserverSet.add(invocation.getArgument(0));
+                            return null;
+                        })
                 .when(mLayoutStateProvider)
                 .addObserver(any(LayoutStateProvider.LayoutStateObserver.class));
-        doAnswer(invocation -> {
-            mLayoutStateObserverSet.remove(invocation.getArgument(0));
-            return null;
-        })
+        doAnswer(
+                        invocation -> {
+                            mLayoutStateObserverSet.remove(invocation.getArgument(0));
+                            return null;
+                        })
                 .when(mLayoutStateProvider)
                 .removeObserver(any(LayoutStateProvider.LayoutStateObserver.class));
 
@@ -103,10 +95,15 @@ public class ToggleTabStackButtonCoordinatorTest {
 
     private ToggleTabStackButtonCoordinator newToggleTabStackButtonCoordinator(
             ToggleTabStackButton toggleTabStackButton) {
-        return new ToggleTabStackButtonCoordinator(mContext, toggleTabStackButton,
-                mUserEducationHelper, () -> mIsIncognito,
-                mPromoShownOneshotSupplier, mLayoutSateProviderOneshotSupplier,
-                mSetNewTabButtonHighlightCallback, new ObservableSupplierImpl<>());
+        return new ToggleTabStackButtonCoordinator(
+                mContext,
+                toggleTabStackButton,
+                mUserEducationHelper,
+                () -> mIsIncognito,
+                mPromoShownOneshotSupplier,
+                mLayoutSateProviderOneshotSupplier,
+                mSetNewTabButtonHighlightCallback,
+                new ObservableSupplierImpl<>());
     }
 
     private void showOverviewMode() {
@@ -139,8 +136,6 @@ public class ToggleTabStackButtonCoordinatorTest {
         verify(mUserEducationHelper, never()).requestShowIPH(any());
         reset(mUserEducationHelper);
     }
-
-
 
     private void verifyNtpButtonHighlightChanged(boolean expectedHighlight) {
         verify(mSetNewTabButtonHighlightCallback).onResult(expectedHighlight);

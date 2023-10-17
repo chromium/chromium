@@ -40,8 +40,7 @@ public class BitmapGeneratorTest {
     public final ChromeTabbedActivityTestRule mActivityTestRule =
             new ChromeTabbedActivityTestRule();
 
-    @Rule
-    public TemporaryFolder mTemporaryFolder = new TemporaryFolder();
+    @Rule public TemporaryFolder mTemporaryFolder = new TemporaryFolder();
 
     private Tab mTab;
     private BitmapGenerator mGenerator;
@@ -57,43 +56,45 @@ public class BitmapGeneratorTest {
 
     @After
     public void tearDown() throws Exception {
-        TestThreadUtils.runOnUiThreadBlocking(() -> {
-            if (mGenerator != null) {
-                mGenerator.destroy();
-            }
-        });
+        TestThreadUtils.runOnUiThreadBlocking(
+                () -> {
+                    if (mGenerator != null) {
+                        mGenerator.destroy();
+                    }
+                });
     }
 
-    /**
-     * Verifies that a Tab's contents are captured and rastered.
-     */
+    /** Verifies that a Tab's contents are captured and rastered. */
     @Test
     @LargeTest
     @Feature({"LongScreenshots"})
     public void testCapturedNewOne() throws Exception {
-        Runnable onErrorCallback = new Runnable() {
-            @Override
-            public void run() {
-                Assert.fail("Error should not be thrown");
-            }
-        };
+        Runnable onErrorCallback =
+                new Runnable() {
+                    @Override
+                    public void run() {
+                        Assert.fail("Error should not be thrown");
+                    }
+                };
 
-        Callback<Bitmap> onBitmapGenerated = new Callback<Bitmap>() {
-            @Override
-            public void onResult(Bitmap result) {
-                Assert.assertNotNull(result);
-                mBitmapCreated = true;
-            }
-        };
+        Callback<Bitmap> onBitmapGenerated =
+                new Callback<Bitmap>() {
+                    @Override
+                    public void onResult(Bitmap result) {
+                        Assert.assertNotNull(result);
+                        mBitmapCreated = true;
+                    }
+                };
 
         class Listener implements BitmapGenerator.GeneratorCallBack {
             @Override
             public void onCompositorResult(@CompositorStatus int status) {
                 Assert.assertEquals(CompositorStatus.OK, status);
-                TestThreadUtils.runOnUiThreadBlocking(() -> {
-                    mGenerator.compositeBitmap(
-                            new Rect(0, 0, 100, 100), onErrorCallback, onBitmapGenerated);
-                });
+                TestThreadUtils.runOnUiThreadBlocking(
+                        () -> {
+                            mGenerator.compositeBitmap(
+                                    new Rect(0, 0, 100, 100), onErrorCallback, onBitmapGenerated);
+                        });
             }
 
             @Override
@@ -102,22 +103,29 @@ public class BitmapGeneratorTest {
             }
         }
 
+        TestThreadUtils.runOnUiThreadBlocking(
+                () -> {
+                    mGenerator =
+                            new BitmapGenerator(
+                                    mTab,
+                                    new ScreenshotBoundsManager(
+                                            mActivityTestRule.getActivity(), mTab),
+                                    new Listener());
+                    PaintPreviewCompositorUtils.warmupCompositor();
+                    mGenerator.captureTab(/* inMemory= */ false);
+                });
 
-        TestThreadUtils.runOnUiThreadBlocking(() -> {
-            mGenerator = new BitmapGenerator(mTab,
-                    new ScreenshotBoundsManager(mActivityTestRule.getActivity(), mTab),
-                    new Listener());
-            PaintPreviewCompositorUtils.warmupCompositor();
-            mGenerator.captureTab(/*inMemory=*/false);
-        });
-
-        CriteriaHelper.pollUiThread(() -> {
-            Criteria.checkThat(mGenerator.getContentSize(), Matchers.notNullValue());
-        });
-        CriteriaHelper.pollUiThread(() -> {
-            Criteria.checkThat(mGenerator.getScrollOffset(), Matchers.notNullValue());
-        });
+        CriteriaHelper.pollUiThread(
+                () -> {
+                    Criteria.checkThat(mGenerator.getContentSize(), Matchers.notNullValue());
+                });
+        CriteriaHelper.pollUiThread(
+                () -> {
+                    Criteria.checkThat(mGenerator.getScrollOffset(), Matchers.notNullValue());
+                });
         CriteriaHelper.pollInstrumentationThread(
-                () -> { Criteria.checkThat(mBitmapCreated, Matchers.equalTo(true)); });
+                () -> {
+                    Criteria.checkThat(mBitmapCreated, Matchers.equalTo(true));
+                });
     }
 }

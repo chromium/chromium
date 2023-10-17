@@ -63,11 +63,18 @@ public class NativeViewListRendererTest {
 
         // Note: this behaves both like a mock and a real object.
         // Methods calls can be mocked or tracked to validate class behavior.
-        mManager = Mockito.mock(FeedListContentManager.class,
-                Mockito.withSettings().useConstructor().defaultAnswer(Mockito.CALLS_REAL_METHODS));
-        mRenderer = Mockito.mock(NativeViewListRenderer.class,
-                Mockito.withSettings().useConstructor(mContext).defaultAnswer(
-                        Mockito.CALLS_REAL_METHODS));
+        mManager =
+                Mockito.mock(
+                        FeedListContentManager.class,
+                        Mockito.withSettings()
+                                .useConstructor()
+                                .defaultAnswer(Mockito.CALLS_REAL_METHODS));
+        mRenderer =
+                Mockito.mock(
+                        NativeViewListRenderer.class,
+                        Mockito.withSettings()
+                                .useConstructor(mContext)
+                                .defaultAnswer(Mockito.CALLS_REAL_METHODS));
     }
 
     @Test
@@ -79,12 +86,16 @@ public class NativeViewListRendererTest {
     @Test
     @SmallTest
     public void testOnCreateViewHolder() {
-        mManager.addContents(0,
-                Arrays.asList(new FeedListContentManager.FeedContent[] {
-                        createContent("1"), createContent("2"), createContent("3")}));
+        mManager.addContents(
+                0,
+                Arrays.asList(
+                        new FeedListContentManager.FeedContent[] {
+                            createContent("1"), createContent("2"), createContent("3")
+                        }));
         mRenderer.bind(mManager);
-        NativeViewListRenderer.ViewHolder viewHolder = mRenderer.onCreateViewHolder(
-                new DummyViewGroup(mContext), mRenderer.getItemViewType(1));
+        NativeViewListRenderer.ViewHolder viewHolder =
+                mRenderer.onCreateViewHolder(
+                        new DummyViewGroup(mContext), mRenderer.getItemViewType(1));
         assertThat(viewHolder.itemView, instanceOf(FrameLayout.class));
         FrameLayout frameLayout = (FrameLayout) viewHolder.itemView;
         assertThat(frameLayout.getChildAt(0), instanceOf(TextView.class));
@@ -94,12 +105,16 @@ public class NativeViewListRendererTest {
     @Test
     @SmallTest
     public void testOnBindViewHolder() {
-        mManager.addContents(0,
-                Arrays.asList(new FeedListContentManager.FeedContent[] {
-                        createContent("1"), createContent("2"), createContent("3")}));
+        mManager.addContents(
+                0,
+                Arrays.asList(
+                        new FeedListContentManager.FeedContent[] {
+                            createContent("1"), createContent("2"), createContent("3")
+                        }));
         mRenderer.bind(mManager);
-        NativeViewListRenderer.ViewHolder viewHolder = mRenderer.onCreateViewHolder(
-                new DummyViewGroup(mContext), mRenderer.getItemViewType(2));
+        NativeViewListRenderer.ViewHolder viewHolder =
+                mRenderer.onCreateViewHolder(
+                        new DummyViewGroup(mContext), mRenderer.getItemViewType(2));
         mRenderer.onBindViewHolder(viewHolder, 2);
         verify(mManager, times(1)).bindNativeView(2, viewHolder.itemView);
     }
@@ -107,9 +122,12 @@ public class NativeViewListRendererTest {
     @Test
     @SmallTest
     public void testUnbind() {
-        mManager.addContents(0,
-                Arrays.asList(new FeedListContentManager.FeedContent[] {
-                        createContent("1"), createContent("2"), createContent("3")}));
+        mManager.addContents(
+                0,
+                Arrays.asList(
+                        new FeedListContentManager.FeedContent[] {
+                            createContent("1"), createContent("2"), createContent("3")
+                        }));
         RecyclerView view = (RecyclerView) mRenderer.bind(mManager);
         assertNotNull(view.getAdapter());
         assertNotNull(view.getLayoutManager());
@@ -122,9 +140,12 @@ public class NativeViewListRendererTest {
 
     @Test
     public void testObserver_itemsAddedOnBind() {
-        mManager.addContents(0,
-                Arrays.asList(new FeedListContentManager.FeedContent[] {
-                        createContent("1"), createContent("2"), createContent("3")}));
+        mManager.addContents(
+                0,
+                Arrays.asList(
+                        new FeedListContentManager.FeedContent[] {
+                            createContent("1"), createContent("2"), createContent("3")
+                        }));
         mRenderer.bind(mManager);
         verify(mRenderer, times(1)).onItemRangeInserted(0, 3);
     }
@@ -132,17 +153,23 @@ public class NativeViewListRendererTest {
     @Test
     public void testObserver_itemsAddedLater() {
         mRenderer.bind(mManager);
-        mManager.addContents(0,
-                Arrays.asList(new FeedListContentManager.FeedContent[] {
-                        createContent("1"), createContent("2"), createContent("3")}));
+        mManager.addContents(
+                0,
+                Arrays.asList(
+                        new FeedListContentManager.FeedContent[] {
+                            createContent("1"), createContent("2"), createContent("3")
+                        }));
         verify(mRenderer, times(1)).onItemRangeInserted(0, 3);
     }
 
     @Test
     public void testObserver_itemsRemoved() {
-        mManager.addContents(0,
-                Arrays.asList(new FeedListContentManager.FeedContent[] {
-                        createContent("1"), createContent("2"), createContent("3")}));
+        mManager.addContents(
+                0,
+                Arrays.asList(
+                        new FeedListContentManager.FeedContent[] {
+                            createContent("1"), createContent("2"), createContent("3")
+                        }));
         mRenderer.bind(mManager);
 
         mManager.removeContents(1, 2);
@@ -151,9 +178,12 @@ public class NativeViewListRendererTest {
 
     @Test
     public void testObserver_itemsRemovedOnUnbind() {
-        mManager.addContents(0,
-                Arrays.asList(new FeedListContentManager.FeedContent[] {
-                        createContent("1"), createContent("2"), createContent("3")}));
+        mManager.addContents(
+                0,
+                Arrays.asList(
+                        new FeedListContentManager.FeedContent[] {
+                            createContent("1"), createContent("2"), createContent("3")
+                        }));
         mRenderer.bind(mManager);
 
         mRenderer.unbind();
@@ -162,22 +192,31 @@ public class NativeViewListRendererTest {
 
     @Test
     public void testObserver_itemsUpdated() {
-        mManager.addContents(0,
-                Arrays.asList(new FeedListContentManager.FeedContent[] {
-                        createContent("1"), createContent("2"), createContent("3")}));
+        mManager.addContents(
+                0,
+                Arrays.asList(
+                        new FeedListContentManager.FeedContent[] {
+                            createContent("1"), createContent("2"), createContent("3")
+                        }));
         mRenderer.bind(mManager);
 
-        mManager.updateContents(1,
-                Arrays.asList(new FeedListContentManager.FeedContent[] {
-                        createContent("a"), createContent("b")}));
+        mManager.updateContents(
+                1,
+                Arrays.asList(
+                        new FeedListContentManager.FeedContent[] {
+                            createContent("a"), createContent("b")
+                        }));
         verify(mRenderer, times(1)).onItemRangeChanged(1, 2);
     }
 
     @Test
     public void testObserver_itemMoved() {
-        mManager.addContents(0,
-                Arrays.asList(new FeedListContentManager.FeedContent[] {
-                        createContent("1"), createContent("2"), createContent("3")}));
+        mManager.addContents(
+                0,
+                Arrays.asList(
+                        new FeedListContentManager.FeedContent[] {
+                            createContent("1"), createContent("2"), createContent("3")
+                        }));
         mRenderer.bind(mManager);
 
         mManager.moveContent(2, 1);
@@ -192,25 +231,33 @@ public class NativeViewListRendererTest {
 
     @Test
     public void testGetListLayoutHelper() {
-        mManager.addContents(0,
-                Arrays.asList(new FeedListContentManager.FeedContent[] {
-                        createContent("1"), createContent("2"), createContent("3")}));
+        mManager.addContents(
+                0,
+                Arrays.asList(
+                        new FeedListContentManager.FeedContent[] {
+                            createContent("1"), createContent("2"), createContent("3")
+                        }));
         mRenderer.bind(mManager);
 
         ListLayoutHelper helper = mRenderer.getListLayoutHelper();
         LinearLayoutManager expectedLayoutManager =
                 (LinearLayoutManager) mRenderer.getListViewForTest().getLayoutManager();
-        assertEquals(expectedLayoutManager.findFirstVisibleItemPosition(),
+        assertEquals(
+                expectedLayoutManager.findFirstVisibleItemPosition(),
                 helper.findFirstVisibleItemPosition());
-        assertEquals(expectedLayoutManager.findLastVisibleItemPosition(),
+        assertEquals(
+                expectedLayoutManager.findLastVisibleItemPosition(),
                 helper.findLastVisibleItemPosition());
     }
 
     @Test
     public void testLayoutHelperSetColumnCount() {
-        mManager.addContents(0,
-                Arrays.asList(new FeedListContentManager.FeedContent[] {
-                        createContent("1"), createContent("2"), createContent("3")}));
+        mManager.addContents(
+                0,
+                Arrays.asList(
+                        new FeedListContentManager.FeedContent[] {
+                            createContent("1"), createContent("2"), createContent("3")
+                        }));
         mRenderer.bind(mManager);
 
         boolean res = mRenderer.getListLayoutHelper().setColumnCount(3);

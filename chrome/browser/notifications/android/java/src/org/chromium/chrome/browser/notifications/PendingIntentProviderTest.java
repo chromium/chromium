@@ -21,9 +21,7 @@ import org.robolectric.shadows.ShadowLog;
 import org.chromium.base.test.BaseRobolectricTestRunner;
 import org.chromium.components.browser_ui.notifications.PendingIntentProvider;
 
-/**
- * Test pending intent generation.
- */
+/** Test pending intent generation. */
 // TODO(xingliu): Test R+ when robolectric supports it.
 @RunWith(BaseRobolectricTestRunner.class)
 public class PendingIntentProviderTest {
@@ -42,10 +40,13 @@ public class PendingIntentProviderTest {
         Intent contentIntent = new Intent(TEST_ACTION);
 
         // By default, FLAG_IMMUTABLE is added from M to R.
-        PendingIntentProvider pendingIntentProvider = PendingIntentProvider.getBroadcast(
-                mContext, 0, contentIntent, PendingIntent.FLAG_UPDATE_CURRENT);
+        PendingIntentProvider pendingIntentProvider =
+                PendingIntentProvider.getBroadcast(
+                        mContext, 0, contentIntent, PendingIntent.FLAG_UPDATE_CURRENT);
         String msg = "FLAG_IMMUTABLE should be added by default to the PendingIntent on Q.";
-        Assert.assertEquals(msg, PendingIntent.FLAG_IMMUTABLE | PendingIntent.FLAG_UPDATE_CURRENT,
+        Assert.assertEquals(
+                msg,
+                PendingIntent.FLAG_IMMUTABLE | PendingIntent.FLAG_UPDATE_CURRENT,
                 pendingIntentProvider.getFlags());
         pendingIntentProvider = PendingIntentProvider.getActivity(mContext, 0, contentIntent, 0);
         Assert.assertEquals(msg, PendingIntent.FLAG_IMMUTABLE, pendingIntentProvider.getFlags());
@@ -53,26 +54,41 @@ public class PendingIntentProviderTest {
         Assert.assertEquals(msg, PendingIntent.FLAG_IMMUTABLE, pendingIntentProvider.getFlags());
 
         msg = "FLAG_IMMUTABLE should not present when mutable is true.";
-        pendingIntentProvider = PendingIntentProvider.getBroadcast(
-                mContext, 0, contentIntent, PendingIntent.FLAG_UPDATE_CURRENT, /*mutable=*/true);
+        pendingIntentProvider =
+                PendingIntentProvider.getBroadcast(
+                        mContext,
+                        0,
+                        contentIntent,
+                        PendingIntent.FLAG_UPDATE_CURRENT,
+                        /* mutable= */ true);
         Assert.assertEquals(
                 msg, PendingIntent.FLAG_UPDATE_CURRENT, pendingIntentProvider.getFlags());
         pendingIntentProvider =
-                PendingIntentProvider.getActivity(mContext, 0, contentIntent, 0, /*mutable=*/true);
+                PendingIntentProvider.getActivity(
+                        mContext, 0, contentIntent, 0, /* mutable= */ true);
         Assert.assertEquals(msg, 0, pendingIntentProvider.getFlags());
         pendingIntentProvider =
-                PendingIntentProvider.getService(mContext, 0, contentIntent, 0, /*mutable=*/true);
+                PendingIntentProvider.getService(
+                        mContext, 0, contentIntent, 0, /* mutable= */ true);
         Assert.assertEquals(msg, 0, pendingIntentProvider.getFlags());
     }
 
     @Test
     public void testRequestCode() {
         Intent contentIntent = new Intent(TEST_ACTION);
-        PendingIntentProvider pendingIntentProvider = PendingIntentProvider.getBroadcast(
-                mContext, /*requestCode=*/0, contentIntent, PendingIntent.FLAG_UPDATE_CURRENT);
+        PendingIntentProvider pendingIntentProvider =
+                PendingIntentProvider.getBroadcast(
+                        mContext,
+                        /* requestCode= */ 0,
+                        contentIntent,
+                        PendingIntent.FLAG_UPDATE_CURRENT);
         Assert.assertEquals(0, pendingIntentProvider.getRequestCode());
-        pendingIntentProvider = PendingIntentProvider.getBroadcast(
-                mContext, /*requestCode=*/1, contentIntent, PendingIntent.FLAG_UPDATE_CURRENT);
+        pendingIntentProvider =
+                PendingIntentProvider.getBroadcast(
+                        mContext,
+                        /* requestCode= */ 1,
+                        contentIntent,
+                        PendingIntent.FLAG_UPDATE_CURRENT);
         Assert.assertEquals(1, pendingIntentProvider.getRequestCode());
     }
 }

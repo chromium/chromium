@@ -34,53 +34,46 @@ import org.chromium.ui.modaldialog.ModalDialogManager;
 import org.chromium.ui.modelutil.PropertyModel;
 import org.chromium.ui.modelutil.PropertyModelChangeProcessor;
 
-/**
- * Robolectric tests for {@link FullScreenIncognitoReauthCoordinator}.
- */
+/** Robolectric tests for {@link FullScreenIncognitoReauthCoordinator}. */
 @RunWith(BaseRobolectricTestRunner.class)
 @Config(manifest = Config.NONE)
 @LooperMode(LooperMode.Mode.PAUSED)
 @Batch(UNIT_TESTS)
 public class FullScreenIncognitoReauthCoordinatorTest {
-    @Mock
-    private Context mContextMock;
-    @Mock
-    private IncognitoReauthManager mIncognitoReauthManagerMock;
-    @Mock
-    private IncognitoReauthManager.IncognitoReauthCallback mIncognitoReauthCallbackMock;
-    @Mock
-    private Runnable mSeeOtherTabsRunnableMock;
-    @Mock
-    private ModalDialogManager mModalDialogManagerMock;
-    @Mock
-    private IncognitoReauthMenuDelegate mIncognitoReauthMenuDelegateMock;
-    @Mock
-    private ListMenuButtonDelegate mIncognitoReauthListMenuButtonDelegateMock;
+    @Mock private Context mContextMock;
+    @Mock private IncognitoReauthManager mIncognitoReauthManagerMock;
+    @Mock private IncognitoReauthManager.IncognitoReauthCallback mIncognitoReauthCallbackMock;
+    @Mock private Runnable mSeeOtherTabsRunnableMock;
+    @Mock private ModalDialogManager mModalDialogManagerMock;
+    @Mock private IncognitoReauthMenuDelegate mIncognitoReauthMenuDelegateMock;
+    @Mock private ListMenuButtonDelegate mIncognitoReauthListMenuButtonDelegateMock;
 
-    @Mock
-    private View mIncognitoReauthViewMock;
-    @Mock
-    private PropertyModel mPropertyModelMock;
-    @Mock
-    private PropertyModelChangeProcessor mPropertyModelChangeProcessorMock;
+    @Mock private View mIncognitoReauthViewMock;
+    @Mock private PropertyModel mPropertyModelMock;
+    @Mock private PropertyModelChangeProcessor mPropertyModelChangeProcessorMock;
 
-    @Mock
-    private IncognitoReauthDialog mIncognitoReauthDialogMock;
+    @Mock private IncognitoReauthDialog mIncognitoReauthDialogMock;
 
-    private OnBackPressedCallback mOnBackPressedCallbackMock = new OnBackPressedCallback(false) {
-        @Override
-        public void handleOnBackPressed() {}
-    };
+    private OnBackPressedCallback mOnBackPressedCallbackMock =
+            new OnBackPressedCallback(false) {
+                @Override
+                public void handleOnBackPressed() {}
+            };
 
     private FullScreenIncognitoReauthCoordinator mFullScreenIncognitoReauthCoordinator;
 
     @Before
     public void setUp() {
         MockitoAnnotations.initMocks(this);
-        mFullScreenIncognitoReauthCoordinator = new FullScreenIncognitoReauthCoordinator(
-                mContextMock, mIncognitoReauthManagerMock, mIncognitoReauthCallbackMock,
-                mSeeOtherTabsRunnableMock, mModalDialogManagerMock,
-                mIncognitoReauthMenuDelegateMock, mOnBackPressedCallbackMock);
+        mFullScreenIncognitoReauthCoordinator =
+                new FullScreenIncognitoReauthCoordinator(
+                        mContextMock,
+                        mIncognitoReauthManagerMock,
+                        mIncognitoReauthCallbackMock,
+                        mSeeOtherTabsRunnableMock,
+                        mModalDialogManagerMock,
+                        mIncognitoReauthMenuDelegateMock,
+                        mOnBackPressedCallbackMock);
         // Allows to bypass assertion checks inside this class for testing.
         mFullScreenIncognitoReauthCoordinator.mIgnoreViewAndModelCreationForTesting = true;
         mFullScreenIncognitoReauthCoordinator.mIgnoreDialogCreationForTesting = true;

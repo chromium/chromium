@@ -55,7 +55,8 @@ import java.util.List;
 public class TouchToFillPasswordGenerationRenderTest {
     @ParameterAnnotations.ClassParameter
     private static List<ParameterSet> sClassParams =
-            Arrays.asList(new ParameterSet().value(false, false).name("Default"),
+            Arrays.asList(
+                    new ParameterSet().value(false, false).name("Default"),
                     new ParameterSet().value(false, true).name("RTL"),
                     new ParameterSet().value(true, false).name("NightMode"));
 
@@ -71,8 +72,7 @@ public class TouchToFillPasswordGenerationRenderTest {
                     .setBugComponent(Component.UI_BROWSER_AUTOFILL)
                     .build();
 
-    @Mock
-    private TouchToFillPasswordGenerationCoordinator.Delegate mDelegateMock;
+    @Mock private TouchToFillPasswordGenerationCoordinator.Delegate mDelegateMock;
     @Mock private PrefService mPrefService;
 
     private BottomSheetController mBottomSheetController;
@@ -92,9 +92,11 @@ public class TouchToFillPasswordGenerationRenderTest {
         MockitoAnnotations.openMocks(this);
         mActivityTestRule.startMainActivityOnBlankPage();
         mActivityTestRule.waitForActivityCompletelyLoaded();
-        mBottomSheetController = mActivityTestRule.getActivity()
-                                         .getRootUiCoordinatorForTesting()
-                                         .getBottomSheetController();
+        mBottomSheetController =
+                mActivityTestRule
+                        .getActivity()
+                        .getRootUiCoordinatorForTesting()
+                        .getBottomSheetController();
         runOnUiThreadBlocking(
                 () -> {
                     View content =
@@ -129,7 +131,10 @@ public class TouchToFillPasswordGenerationRenderTest {
     @MediumTest
     @Feature({"RenderTest"})
     public void testShowsOneCard() throws IOException {
-        runOnUiThreadBlocking(() -> { mCoordinator.show(sGeneratedPassword, sTestEmailAddress); });
+        runOnUiThreadBlocking(
+                () -> {
+                    mCoordinator.show(sGeneratedPassword, sTestEmailAddress);
+                });
         BottomSheetTestSupport.waitForOpen(mBottomSheetController);
 
         View bottomSheetView = mActivityTestRule.getActivity().findViewById(R.id.bottom_sheet);

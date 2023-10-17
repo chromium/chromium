@@ -59,16 +59,20 @@ public class FeedSurfaceScopeDependencyProviderImplTest {
                         /* activity= */ null, /* activityContext= */ null, /* darkMode= */ false);
         ArrayList<String> calls = new ArrayList<String>();
 
-        TestThreadUtils.runOnUiThreadBlocking(() -> {
-            PersistentKeyValueCache cache = dependencyProvider.getPersistentKeyValueCache();
-            cache.put(VALUE_1, VALUE_2, () -> calls.add("put"));
-            cache.lookup(VALUE_1, (byte[] v) -> calls.add("lookup1 " + toString(v)));
-            cache.lookup(VALUE_2, (byte[] v) -> calls.add("lookup2 " + toString(v)));
-        });
-        CriteriaHelper.pollUiThread(() -> {
-            Criteria.checkThat(
-                    "Calls match", calls, Matchers.contains("put", "lookup1 two", "lookup2 null"));
-        });
+        TestThreadUtils.runOnUiThreadBlocking(
+                () -> {
+                    PersistentKeyValueCache cache = dependencyProvider.getPersistentKeyValueCache();
+                    cache.put(VALUE_1, VALUE_2, () -> calls.add("put"));
+                    cache.lookup(VALUE_1, (byte[] v) -> calls.add("lookup1 " + toString(v)));
+                    cache.lookup(VALUE_2, (byte[] v) -> calls.add("lookup2 " + toString(v)));
+                });
+        CriteriaHelper.pollUiThread(
+                () -> {
+                    Criteria.checkThat(
+                            "Calls match",
+                            calls,
+                            Matchers.contains("put", "lookup1 two", "lookup2 null"));
+                });
     }
 
     @Test
@@ -80,17 +84,19 @@ public class FeedSurfaceScopeDependencyProviderImplTest {
                         /* activity= */ null, /* activityContext= */ null, /* darkMode= */ false);
         ArrayList<String> calls = new ArrayList<String>();
 
-        TestThreadUtils.runOnUiThreadBlocking(() -> {
-            PersistentKeyValueCache cache = dependencyProvider.getPersistentKeyValueCache();
-            cache.put(VALUE_1, VALUE_2, () -> calls.add("put"));
-            cache.evict(VALUE_1, () -> calls.add("evict"));
-            cache.lookup(VALUE_1, (byte[] v) -> calls.add("lookup " + toString(v)));
-        });
+        TestThreadUtils.runOnUiThreadBlocking(
+                () -> {
+                    PersistentKeyValueCache cache = dependencyProvider.getPersistentKeyValueCache();
+                    cache.put(VALUE_1, VALUE_2, () -> calls.add("put"));
+                    cache.evict(VALUE_1, () -> calls.add("evict"));
+                    cache.lookup(VALUE_1, (byte[] v) -> calls.add("lookup " + toString(v)));
+                });
 
-        CriteriaHelper.pollUiThread(() -> {
-            Criteria.checkThat(
-                    "Calls match", calls, Matchers.contains("put", "evict", "lookup null"));
-        });
+        CriteriaHelper.pollUiThread(
+                () -> {
+                    Criteria.checkThat(
+                            "Calls match", calls, Matchers.contains("put", "evict", "lookup null"));
+                });
     }
 
     @Test
@@ -103,14 +109,17 @@ public class FeedSurfaceScopeDependencyProviderImplTest {
                         /* activity= */ null, /* activityContext= */ null, /* darkMode= */ false);
         ArrayList<String> calls = new ArrayList<String>();
 
-        TestThreadUtils.runOnUiThreadBlocking(() -> {
-            PersistentKeyValueCache cache = dependencyProvider.getPersistentKeyValueCache();
-            cache.put(VALUE_1, VALUE_2, null);
-            cache.evict(VALUE_1, null);
-            cache.put(VALUE_1, VALUE_2, () -> calls.add("put"));
-        });
+        TestThreadUtils.runOnUiThreadBlocking(
+                () -> {
+                    PersistentKeyValueCache cache = dependencyProvider.getPersistentKeyValueCache();
+                    cache.put(VALUE_1, VALUE_2, null);
+                    cache.evict(VALUE_1, null);
+                    cache.put(VALUE_1, VALUE_2, () -> calls.add("put"));
+                });
 
         CriteriaHelper.pollUiThread(
-                () -> { Criteria.checkThat("Calls match", calls, Matchers.contains("put")); });
+                () -> {
+                    Criteria.checkThat("Calls match", calls, Matchers.contains("put"));
+                });
     }
 }

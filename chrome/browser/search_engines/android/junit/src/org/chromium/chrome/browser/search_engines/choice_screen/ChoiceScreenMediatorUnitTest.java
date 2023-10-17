@@ -53,7 +53,8 @@ public class ChoiceScreenMediatorUnitTest {
     public void testConfirmChoice() {
         PropertyModel itemModel;
         ImmutableList<TemplateUrl> searchEngines =
-                ImmutableList.of(new FakeTemplateUrl("Search Engine A", "sea"),
+                ImmutableList.of(
+                        new FakeTemplateUrl("Search Engine A", "sea"),
                         new FakeTemplateUrl("Search Engine B", "seb"),
                         new FakeTemplateUrl("Search Engine C", "sec"));
         createMediatorWithItems(searchEngines);
@@ -66,7 +67,8 @@ public class ChoiceScreenMediatorUnitTest {
             TemplateUrl templateUrl = searchEngines.get(i);
             itemModel = mModel.get(ChoiceScreenProperties.ITEM_MODELS).get(i).model;
 
-            assertEquals(templateUrl.getShortName(),
+            assertEquals(
+                    templateUrl.getShortName(),
                     itemModel.get(ChoiceScreenProperties.Item.SHORT_NAME));
             // Initially, no item is selected.
             assertFalse(itemModel.get(ChoiceScreenProperties.Item.IS_SELECTED));
@@ -103,7 +105,8 @@ public class ChoiceScreenMediatorUnitTest {
     @Test
     public void testChangeSelection() {
         ImmutableList<TemplateUrl> searchEngines =
-                ImmutableList.of(new FakeTemplateUrl("Search Engine A", "sea"),
+                ImmutableList.of(
+                        new FakeTemplateUrl("Search Engine A", "sea"),
                         new FakeTemplateUrl("Search Engine B", "seb"),
                         new FakeTemplateUrl("Search Engine C", "sec"));
         createMediatorWithItems(searchEngines);

@@ -65,9 +65,7 @@ import org.chromium.ui.test.util.ViewUtils;
 
 import java.io.IOException;
 
-/**
- * Tests {@link FledgeFragmentV4}
- */
+/** Tests {@link FledgeFragmentV4} */
 @RunWith(ChromeJUnit4ClassRunner.class)
 @Batch(Batch.PER_CLASS)
 @CommandLineFlags.Add({ChromeSwitches.DISABLE_FIRST_RUN_EXPERIENCE})
@@ -75,8 +73,7 @@ public final class FledgeFragmentV4Test {
     private static final String SITE_NAME_1 = "first.com";
     private static final String SITE_NAME_2 = "second.com";
 
-    @Rule
-    public ChromeBrowserTestRule mChromeBrowserTestRule = new ChromeBrowserTestRule();
+    @Rule public ChromeBrowserTestRule mChromeBrowserTestRule = new ChromeBrowserTestRule();
 
     @Rule
     public ChromeRenderTestRule mRenderTestRule =
@@ -88,8 +85,7 @@ public final class FledgeFragmentV4Test {
     public SettingsActivityTestRule<FledgeFragmentV4> mSettingsActivityTestRule =
             new SettingsActivityTestRule<>(FledgeFragmentV4.class);
 
-    @Rule
-    public JniMocker mocker = new JniMocker();
+    @Rule public JniMocker mocker = new JniMocker();
 
     private FakePrivacySandboxBridge mFakePrivacySandboxBridge;
     private UserActionTester mUserActionTester;
@@ -104,24 +100,30 @@ public final class FledgeFragmentV4Test {
 
     @After
     public void tearDown() {
-        TestThreadUtils.runOnUiThreadBlocking(() -> {
-            PrefService prefService = UserPrefs.get(Profile.getLastUsedRegularProfile());
-            prefService.clearPref(Pref.PRIVACY_SANDBOX_M1_FLEDGE_ENABLED);
-        });
+        TestThreadUtils.runOnUiThreadBlocking(
+                () -> {
+                    PrefService prefService = UserPrefs.get(Profile.getLastUsedRegularProfile());
+                    prefService.clearPref(Pref.PRIVACY_SANDBOX_M1_FLEDGE_ENABLED);
+                });
 
         mUserActionTester.tearDown();
     }
 
     private void startFledgeSettings() {
         mSettingsActivityTestRule.startSettingsActivity();
-        ViewUtils.onViewWaiting(allOf(withText(R.string.settings_fledge_page_title),
-                withParent(withId(R.id.action_bar))));
+        ViewUtils.onViewWaiting(
+                allOf(
+                        withText(R.string.settings_fledge_page_title),
+                        withParent(withId(R.id.action_bar))));
     }
 
     private Matcher<View> getFledgeToggleMatcher() {
-        return allOf(withId(R.id.switchWidget),
-                withParent(withParent(
-                        hasDescendant(withText(R.string.settings_fledge_page_toggle_label)))));
+        return allOf(
+                withId(R.id.switchWidget),
+                withParent(
+                        withParent(
+                                hasDescendant(
+                                        withText(R.string.settings_fledge_page_toggle_label)))));
     }
 
     private View getFledgeRootView() {
@@ -142,8 +144,8 @@ public final class FledgeFragmentV4Test {
 
     private void setFledgePrefEnabled(boolean isEnabled) {
         TestThreadUtils.runOnUiThreadBlocking(
-                ()
-                        -> FledgeFragmentV4.setFledgePrefEnabled(
+                () ->
+                        FledgeFragmentV4.setFledgePrefEnabled(
                                 Profile.getLastUsedRegularProfile(), isEnabled));
     }
 
@@ -304,7 +306,8 @@ public final class FledgeFragmentV4Test {
         onView(withText(R.string.settings_fledge_page_current_sites_description_empty))
                 .check(doesNotExist());
 
-        assertThat(mUserActionTester.getActions(),
+        assertThat(
+                mUserActionTester.getActions(),
                 hasItems("Settings.PrivacySandbox.Fledge.Disabled"));
     }
 
@@ -350,7 +353,8 @@ public final class FledgeFragmentV4Test {
         onView(withText(firstNotDisplayedSite)).check(matches(isDisplayed()));
 
         // Verify actions are reported
-        assertThat(mUserActionTester.getActions(),
+        assertThat(
+                mUserActionTester.getActions(),
                 hasItems("Settings.PrivacySandbox.Fledge.AllSitesOpened"));
     }
 
@@ -386,8 +390,10 @@ public final class FledgeFragmentV4Test {
         onView(withText(SITE_NAME_2)).check(matches(isDisplayed()));
 
         // Verify that actions are reported
-        assertThat(mUserActionTester.getActions(),
-                hasItems("Settings.PrivacySandbox.Fledge.BlockedSitesOpened",
+        assertThat(
+                mUserActionTester.getActions(),
+                hasItems(
+                        "Settings.PrivacySandbox.Fledge.BlockedSitesOpened",
                         "Settings.PrivacySandbox.Fledge.SiteRemoved"));
     }
 
@@ -427,8 +433,10 @@ public final class FledgeFragmentV4Test {
         onView(withText(SITE_NAME_2)).check(matches(isDisplayed()));
 
         // Verify that actions are reported
-        assertThat(mUserActionTester.getActions(),
-                hasItems("Settings.PrivacySandbox.Fledge.BlockedSitesOpened",
+        assertThat(
+                mUserActionTester.getActions(),
+                hasItems(
+                        "Settings.PrivacySandbox.Fledge.BlockedSitesOpened",
                         "Settings.PrivacySandbox.Fledge.SiteAdded"));
     }
 
@@ -444,7 +452,8 @@ public final class FledgeFragmentV4Test {
         onView(withText(SITE_NAME_1)).check(matches(isDisplayed()));
         onView(withText(SITE_NAME_2)).check(matches(isDisplayed()));
 
-        assertThat(mUserActionTester.getActions(),
+        assertThat(
+                mUserActionTester.getActions(),
                 hasItems("Settings.PrivacySandbox.Fledge.BlockedSitesOpened"));
     }
 
@@ -460,18 +469,18 @@ public final class FledgeFragmentV4Test {
         onView(withText(SITE_NAME_1)).check(matches(isDisplayed()));
         onView(withText(SITE_NAME_2)).check(matches(isDisplayed()));
 
-        assertThat(mUserActionTester.getActions(),
+        assertThat(
+                mUserActionTester.getActions(),
                 hasItems("Settings.PrivacySandbox.Fledge.BlockedSitesOpened"));
     }
 
     @Test
     @SmallTest
     @Policies.Add({
-        @Policies.Item(key = "PrivacySandboxSiteEnabledAdsEnabled", string = "false")
-        , @Policies.Item(key = "PrivacySandboxPromptEnabled", string = "false")
+        @Policies.Item(key = "PrivacySandboxSiteEnabledAdsEnabled", string = "false"),
+        @Policies.Item(key = "PrivacySandboxPromptEnabled", string = "false")
     })
-    public void
-    testFledgeManaged() {
+    public void testFledgeManaged() {
         startFledgeSettings();
 
         // Check default state and try to press the toggle.
@@ -494,7 +503,8 @@ public final class FledgeFragmentV4Test {
                 .check(matches(isDisplayed()));
         // Close the additional activity
         pressBack();
-        assertThat(mUserActionTester.getActions(),
+        assertThat(
+                mUserActionTester.getActions(),
                 hasItems("Settings.PrivacySandbox.Fledge.LearnMoreClicked"));
     }
 

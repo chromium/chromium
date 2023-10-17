@@ -28,9 +28,7 @@ import org.chromium.chrome.test.util.browser.Features.EnableFeatures;
 import java.util.HashMap;
 import java.util.Map;
 
-/**
- * Tests the behavior of {@link ChromeFeatureList} in instrumentation tests.
- */
+/** Tests the behavior of {@link ChromeFeatureList} in instrumentation tests. */
 @RunWith(ChromeJUnit4ClassRunner.class)
 @CommandLineFlags.Add({ChromeSwitches.DISABLE_FIRST_RUN_EXPERIENCE})
 @Batch(Batch.PER_CLASS)
@@ -76,11 +74,14 @@ public class ChromeFeatureListInstrumentationTest {
     @Test
     @MediumTest
     @EnableFeatures({ChromeFeatureList.EXPERIMENTS_FOR_AGSA + "<Trial"})
-    @CommandLineFlags.
-    Add({"force-fieldtrials=Trial/Group", "force-fieldtrial-params=Trial.Group:101/x/y/z"})
+    @CommandLineFlags.Add({
+        "force-fieldtrials=Trial/Group",
+        "force-fieldtrial-params=Trial.Group:101/x/y/z"
+    })
     public void testGetFieldTrialParamsForFeature() {
-        Map<String, String> features = ChromeFeatureList.getFieldTrialParamsForFeature(
-                ChromeFeatureList.EXPERIMENTS_FOR_AGSA);
+        Map<String, String> features =
+                ChromeFeatureList.getFieldTrialParamsForFeature(
+                        ChromeFeatureList.EXPERIMENTS_FOR_AGSA);
         Map<String, String> expectedFeatures = new HashMap<String, String>();
         expectedFeatures.put("101", "x");
         expectedFeatures.put("y", "z");

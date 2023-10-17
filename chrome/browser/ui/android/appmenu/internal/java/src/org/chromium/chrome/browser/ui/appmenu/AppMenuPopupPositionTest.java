@@ -18,9 +18,7 @@ import org.robolectric.annotation.Config;
 
 import org.chromium.base.test.BaseRobolectricTestRunner;
 
-/**
- * Tests AppMenu#getPopupPosition.
- */
+/** Tests AppMenu#getPopupPosition. */
 @RunWith(BaseRobolectricTestRunner.class)
 @Config(manifest = Config.NONE)
 public class AppMenuPopupPositionTest {
@@ -41,19 +39,21 @@ public class AppMenuPopupPositionTest {
 
     @Before
     public void setUp() {
-        Mockito.doAnswer((InvocationOnMock invocation) -> {
-                   mTempLocation[0] = mAnchorX;
-                   mTempLocation[1] = mAnchorY;
-                   return null;
-               })
+        Mockito.doAnswer(
+                        (InvocationOnMock invocation) -> {
+                            mTempLocation[0] = mAnchorX;
+                            mTempLocation[1] = mAnchorY;
+                            return null;
+                        })
                 .when(mAnchorView)
                 .getLocationInWindow(mTempLocation);
 
-        Mockito.doAnswer((InvocationOnMock invocation) -> {
-                   mTempLocation[0] = mAnchorX;
-                   mTempLocation[1] = mAnchorY;
-                   return null;
-               })
+        Mockito.doAnswer(
+                        (InvocationOnMock invocation) -> {
+                            mTempLocation[0] = mAnchorX;
+                            mTempLocation[1] = mAnchorY;
+                            return null;
+                        })
                 .when(mAnchorView)
                 .getLocationOnScreen(mTempLocation);
 

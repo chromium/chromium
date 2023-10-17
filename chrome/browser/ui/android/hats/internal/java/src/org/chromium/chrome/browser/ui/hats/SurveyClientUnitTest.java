@@ -47,14 +47,10 @@ public class SurveyClientUnitTest {
     private TestSurveyUtils.TestSurveyUiDelegate mSurveyUiDelegate;
     private TestSurveyUtils.TestSurveyController mSurveyController;
 
-    @Rule
-    public MockitoRule mockitoRule = MockitoJUnit.rule();
-    @Mock
-    private ActivityLifecycleDispatcher mLifecycleDispatcher;
-    @Mock
-    private Activity mActivity;
-    @Captor
-    private ArgumentCaptor<PauseResumeWithNativeObserver> mLifecycleObserverCaptor;
+    @Rule public MockitoRule mockitoRule = MockitoJUnit.rule();
+    @Mock private ActivityLifecycleDispatcher mLifecycleDispatcher;
+    @Mock private Activity mActivity;
+    @Captor private ArgumentCaptor<PauseResumeWithNativeObserver> mLifecycleObserverCaptor;
 
     @Before
     public void setup() {
@@ -66,12 +62,14 @@ public class SurveyClientUnitTest {
         SurveyClientFactory.initialize(mCrashUploadPermissionSupplier);
         SurveyMetadata.initializeForTesting(new InMemorySharedPreferences(), null);
 
-        ShadowPostTask.setTestImpl(new ShadowPostTask.TestImpl() {
-            @Override
-            public void postDelayedTask(@TaskTraits int taskTraits, Runnable task, long delay) {
-                task.run();
-            }
-        });
+        ShadowPostTask.setTestImpl(
+                new ShadowPostTask.TestImpl() {
+                    @Override
+                    public void postDelayedTask(
+                            @TaskTraits int taskTraits, Runnable task, long delay) {
+                        task.run();
+                    }
+                });
         TestThreadUtils.setThreadAssertsDisabled(true);
     }
 
@@ -93,8 +91,12 @@ public class SurveyClientUnitTest {
         mCrashUploadPermissionSupplier.set(true);
 
         SurveyConfig config = newSurveyConfigWithoutPsd();
-        SurveyClientImpl client = new SurveyClientImpl(
-                config, mSurveyUiDelegate, mSurveyController, mCrashUploadPermissionSupplier);
+        SurveyClientImpl client =
+                new SurveyClientImpl(
+                        config,
+                        mSurveyUiDelegate,
+                        mSurveyController,
+                        mCrashUploadPermissionSupplier);
         client.showSurvey(mActivity, mLifecycleDispatcher);
         ShadowLooper.idleMainLooper();
 
@@ -105,7 +107,8 @@ public class SurveyClientUnitTest {
         assertTrue("Survey UI delegate isn't showing.", mSurveyUiDelegate.isShowing());
         mSurveyUiDelegate.acceptSurvey();
         assertTrue("Survey should be shown.", mSurveyController.isSurveyShown(TEST_TRIGGER_ID));
-        assertFalse("Client should not be destroyed after survey being accepted.",
+        assertFalse(
+                "Client should not be destroyed after survey being accepted.",
                 client.isDestroyed());
     }
 
@@ -114,51 +117,78 @@ public class SurveyClientUnitTest {
         mCrashUploadPermissionSupplier.set(false);
 
         SurveyConfig config = newSurveyConfigWithoutPsd();
-        SurveyClientImpl client = new SurveyClientImpl(
-                config, mSurveyUiDelegate, mSurveyController, mCrashUploadPermissionSupplier);
+        SurveyClientImpl client =
+                new SurveyClientImpl(
+                        config,
+                        mSurveyUiDelegate,
+                        mSurveyController,
+                        mCrashUploadPermissionSupplier);
         client.showSurvey(mActivity, mLifecycleDispatcher);
         ShadowLooper.idleMainLooper();
 
-        assertFalse("No survey download should be requested.",
+        assertFalse(
+                "No survey download should be requested.",
                 mSurveyController.hasSurveyDownloadInQueue());
     }
 
     @Test
     public void doNotDownloadedWithThrottling() {
         float probability = 0.0f;
-        SurveyConfig config = new SurveyConfig(TEST_SURVEY_TRIGGER, TEST_TRIGGER_ID, probability,
-                false, new String[0], new String[0]);
-        SurveyClientImpl client = new SurveyClientImpl(
-                config, mSurveyUiDelegate, mSurveyController, mCrashUploadPermissionSupplier);
+        SurveyConfig config =
+                new SurveyConfig(
+                        TEST_SURVEY_TRIGGER,
+                        TEST_TRIGGER_ID,
+                        probability,
+                        false,
+                        new String[0],
+                        new String[0]);
+        SurveyClientImpl client =
+                new SurveyClientImpl(
+                        config,
+                        mSurveyUiDelegate,
+                        mSurveyController,
+                        mCrashUploadPermissionSupplier);
         client.showSurvey(mActivity, mLifecycleDispatcher);
         ShadowLooper.idleMainLooper();
 
-        assertFalse("No survey download should be requested.",
+        assertFalse(
+                "No survey download should be requested.",
                 mSurveyController.hasSurveyDownloadInQueue());
     }
 
     @Test
     public void doNotPresentWhenCrashUploadDisabledAfterDownload() {
         SurveyConfig config = newSurveyConfigWithoutPsd();
-        SurveyClientImpl client = new SurveyClientImpl(
-                config, mSurveyUiDelegate, mSurveyController, mCrashUploadPermissionSupplier);
+        SurveyClientImpl client =
+                new SurveyClientImpl(
+                        config,
+                        mSurveyUiDelegate,
+                        mSurveyController,
+                        mCrashUploadPermissionSupplier);
         client.showSurvey(mActivity, mLifecycleDispatcher);
 
         mCrashUploadPermissionSupplier.set(false);
         ShadowLooper.idleMainLooper();
-        assertFalse("Survey invitation should not shown when crash upload disabled.",
+        assertFalse(
+                "Survey invitation should not shown when crash upload disabled.",
                 mSurveyController.isSurveyShown(TEST_TRIGGER_ID));
-        verify(mLifecycleDispatcher,
-                never().description(
-                        "Should not observe lifecycle dispatcher when download result is dropped."))
+        verify(
+                        mLifecycleDispatcher,
+                        never().description(
+                                        "Should not observe lifecycle dispatcher when download"
+                                                + " result is dropped."))
                 .register(any());
     }
 
     @Test
     public void destroyWhenDownloadFailed() {
         SurveyConfig config = newSurveyConfigWithoutPsd();
-        SurveyClientImpl client = new SurveyClientImpl(
-                config, mSurveyUiDelegate, mSurveyController, mCrashUploadPermissionSupplier);
+        SurveyClientImpl client =
+                new SurveyClientImpl(
+                        config,
+                        mSurveyUiDelegate,
+                        mSurveyController,
+                        mCrashUploadPermissionSupplier);
         client.showSurvey(mActivity, mLifecycleDispatcher);
         ShadowLooper.idleMainLooper();
 
@@ -171,8 +201,12 @@ public class SurveyClientUnitTest {
         mSurveyUiDelegate.setPresentationWillFail();
 
         SurveyConfig config = newSurveyConfigWithoutPsd();
-        SurveyClientImpl client = new SurveyClientImpl(
-                config, mSurveyUiDelegate, mSurveyController, mCrashUploadPermissionSupplier);
+        SurveyClientImpl client =
+                new SurveyClientImpl(
+                        config,
+                        mSurveyUiDelegate,
+                        mSurveyController,
+                        mCrashUploadPermissionSupplier);
         client.showSurvey(mActivity, mLifecycleDispatcher);
         ShadowLooper.idleMainLooper();
 
@@ -184,8 +218,12 @@ public class SurveyClientUnitTest {
     @Test
     public void destroyWhenSurveyDeclined() {
         SurveyConfig config = newSurveyConfigWithoutPsd();
-        SurveyClientImpl client = new SurveyClientImpl(
-                config, mSurveyUiDelegate, mSurveyController, mCrashUploadPermissionSupplier);
+        SurveyClientImpl client =
+                new SurveyClientImpl(
+                        config,
+                        mSurveyUiDelegate,
+                        mSurveyController,
+                        mCrashUploadPermissionSupplier);
         client.showSurvey(mActivity, mLifecycleDispatcher);
         ShadowLooper.idleMainLooper();
 
@@ -197,8 +235,12 @@ public class SurveyClientUnitTest {
     @Test
     public void dismissByLifecycleObserver() {
         SurveyConfig config = newSurveyConfigWithoutPsd();
-        SurveyClientImpl client = new SurveyClientImpl(
-                config, mSurveyUiDelegate, mSurveyController, mCrashUploadPermissionSupplier);
+        SurveyClientImpl client =
+                new SurveyClientImpl(
+                        config,
+                        mSurveyUiDelegate,
+                        mSurveyController,
+                        mCrashUploadPermissionSupplier);
         client.showSurvey(mActivity, mLifecycleDispatcher);
         ShadowLooper.idleMainLooper();
         mSurveyController.simulateDownloadFinished(TEST_TRIGGER_ID, true);
@@ -207,7 +249,8 @@ public class SurveyClientUnitTest {
         verify(mLifecycleDispatcher).register(mLifecycleObserverCaptor.capture());
 
         mLifecycleObserverCaptor.getValue().onResumeWithNative();
-        assertTrue("Survey invitation should still showing since not expired.",
+        assertTrue(
+                "Survey invitation should still showing since not expired.",
                 mSurveyUiDelegate.isShowing());
 
         // Assume survey expired on resume.
@@ -221,8 +264,12 @@ public class SurveyClientUnitTest {
     @Test
     public void dismissByCrashUploadSupplier() {
         SurveyConfig config = newSurveyConfigWithoutPsd();
-        SurveyClientImpl client = new SurveyClientImpl(
-                config, mSurveyUiDelegate, mSurveyController, mCrashUploadPermissionSupplier);
+        SurveyClientImpl client =
+                new SurveyClientImpl(
+                        config,
+                        mSurveyUiDelegate,
+                        mSurveyController,
+                        mCrashUploadPermissionSupplier);
         client.showSurvey(mActivity, mLifecycleDispatcher);
         ShadowLooper.idleMainLooper();
         mSurveyController.simulateDownloadFinished(TEST_TRIGGER_ID, true);
@@ -240,40 +287,66 @@ public class SurveyClientUnitTest {
 
         final Map<String, String> stringValues = new HashMap<>();
         final Map<String, Boolean> bitValues = new HashMap<>();
-        SurveyConfig config = new SurveyConfig(TEST_SURVEY_TRIGGER, TEST_TRIGGER_ID, 1.0f, false,
-                new String[] {"bitField"}, new String[] {"stringField"});
-        SurveyClientImpl client = new SurveyClientImpl(
-                config, mSurveyUiDelegate, mSurveyController, mCrashUploadPermissionSupplier);
-        Assert.assertThrows("Expected PSD(s) are missing.", AssertionError.class,
-                () -> { client.showSurvey(mActivity, mLifecycleDispatcher); });
-        Assert.assertThrows("Expected PSD(s) are missing.", AssertionError.class, () -> {
-            client.showSurvey(mActivity, mLifecycleDispatcher, bitValues, stringValues);
-        });
+        SurveyConfig config =
+                new SurveyConfig(
+                        TEST_SURVEY_TRIGGER,
+                        TEST_TRIGGER_ID,
+                        1.0f,
+                        false,
+                        new String[] {"bitField"},
+                        new String[] {"stringField"});
+        SurveyClientImpl client =
+                new SurveyClientImpl(
+                        config,
+                        mSurveyUiDelegate,
+                        mSurveyController,
+                        mCrashUploadPermissionSupplier);
+        Assert.assertThrows(
+                "Expected PSD(s) are missing.",
+                AssertionError.class,
+                () -> {
+                    client.showSurvey(mActivity, mLifecycleDispatcher);
+                });
+        Assert.assertThrows(
+                "Expected PSD(s) are missing.",
+                AssertionError.class,
+                () -> {
+                    client.showSurvey(mActivity, mLifecycleDispatcher, bitValues, stringValues);
+                });
 
         // Provide bit values without strings values.
         stringValues.clear();
         bitValues.clear();
         bitValues.put("bitField", true);
-        Assert.assertThrows("Expected PSD(s) are missing.", AssertionError.class, () -> {
-            client.showSurvey(mActivity, mLifecycleDispatcher, bitValues, stringValues);
-        });
+        Assert.assertThrows(
+                "Expected PSD(s) are missing.",
+                AssertionError.class,
+                () -> {
+                    client.showSurvey(mActivity, mLifecycleDispatcher, bitValues, stringValues);
+                });
 
         // Provide string values without bit values.
         stringValues.clear();
         bitValues.clear();
         stringValues.put("stringField", "value");
-        Assert.assertThrows("Expected PSD(s) are missing.", AssertionError.class, () -> {
-            client.showSurvey(mActivity, mLifecycleDispatcher, bitValues, stringValues);
-        });
+        Assert.assertThrows(
+                "Expected PSD(s) are missing.",
+                AssertionError.class,
+                () -> {
+                    client.showSurvey(mActivity, mLifecycleDispatcher, bitValues, stringValues);
+                });
 
         // Provide extra string values without bit values.
         stringValues.clear();
         bitValues.clear();
         stringValues.put("stringField", "value");
         stringValues.put("stringField2", "value2");
-        Assert.assertThrows("Extra string PSDs were provided.", AssertionError.class, () -> {
-            client.showSurvey(mActivity, mLifecycleDispatcher, bitValues, stringValues);
-        });
+        Assert.assertThrows(
+                "Extra string PSDs were provided.",
+                AssertionError.class,
+                () -> {
+                    client.showSurvey(mActivity, mLifecycleDispatcher, bitValues, stringValues);
+                });
 
         // Provide both value.
         stringValues.clear();

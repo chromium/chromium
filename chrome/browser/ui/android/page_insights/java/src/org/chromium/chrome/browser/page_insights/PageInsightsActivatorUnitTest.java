@@ -29,29 +29,21 @@ import org.chromium.chrome.browser.signin.services.SigninManager;
 import org.chromium.chrome.browser.sync.SyncServiceFactory;
 import org.chromium.components.sync.SyncService;
 
-/**
- * Unit tests for {@link PageInsightsActivator.java}.
- */
+/** Unit tests for {@link PageInsightsActivator.java}. */
 @LooperMode(LooperMode.Mode.PAUSED)
 @RunWith(BaseRobolectricTestRunner.class)
 public class PageInsightsActivatorUnitTest {
-    @Mock
-    private Profile mProfile;
+    @Mock private Profile mProfile;
 
-    @Mock
-    private IdentityServicesProvider mIdentityServicesProvider;
+    @Mock private IdentityServicesProvider mIdentityServicesProvider;
 
-    @Mock
-    private SigninManager mSigninManager;
+    @Mock private SigninManager mSigninManager;
 
-    @Mock
-    private SyncService mSyncService;
+    @Mock private SyncService mSyncService;
 
-    @Mock
-    private PageInsightsSwaaChecker mSwaaChecker;
+    @Mock private PageInsightsSwaaChecker mSwaaChecker;
 
-    @Mock
-    private Runnable mActivateCallback;
+    @Mock private Runnable mActivateCallback;
 
     private PageInsightsActivator mActivator;
 

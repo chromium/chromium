@@ -28,9 +28,7 @@ import java.io.FileOutputStream;
 import java.io.IOException;
 import java.nio.channels.FileChannel;
 
-/**
- * Unit tests for {@link TabStateFileManager}.
- */
+/** Unit tests for {@link TabStateFileManager}. */
 @RunWith(BaseRobolectricTestRunner.class)
 @Config(manifest = Config.NONE)
 public class TabStateFileManagerUnitTest {
@@ -44,8 +42,7 @@ public class TabStateFileManagerUnitTest {
     private static final int ROOT_ID = 1;
     private static final @TabUserAgent int USER_AGENT = TabUserAgent.MOBILE;
 
-    @Rule
-    public TemporaryFolder temporaryFolder = new TemporaryFolder();
+    @Rule public TemporaryFolder temporaryFolder = new TemporaryFolder();
 
     @Test
     public void testSaveTabStateWithMemoryMappedContentsState() throws IOException {
@@ -62,9 +59,14 @@ public class TabStateFileManagerUnitTest {
 
         try {
             fileInputStream = new FileInputStream(file);
-            state.contentsState = new WebContentsState(
-                    fileInputStream.getChannel().map(FileChannel.MapMode.READ_ONLY,
-                            fileInputStream.getChannel().position(), file.length()));
+            state.contentsState =
+                    new WebContentsState(
+                            fileInputStream
+                                    .getChannel()
+                                    .map(
+                                            FileChannel.MapMode.READ_ONLY,
+                                            fileInputStream.getChannel().position(),
+                                            file.length()));
             state.contentsState.setVersion(VERSION);
             state.timestampMillis = TIMESTAMP;
             state.parentId = PARENT_ID;

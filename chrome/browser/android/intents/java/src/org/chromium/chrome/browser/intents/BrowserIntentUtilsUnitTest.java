@@ -30,9 +30,11 @@ public class BrowserIntentUtilsUnitTest {
         long before = SystemClock.elapsedRealtime();
         BrowserIntentUtils.addStartupTimestampsToIntent(intent);
         long after = SystemClock.elapsedRealtime();
-        Assert.assertTrue("Time should be increasing",
+        Assert.assertTrue(
+                "Time should be increasing",
                 before <= BrowserIntentUtils.getStartupRealtimeMillis(intent));
-        Assert.assertTrue("Time should be increasing",
+        Assert.assertTrue(
+                "Time should be increasing",
                 BrowserIntentUtils.getStartupRealtimeMillis(intent) <= after);
 
         // Check both before and after to make sure that the returned value is
@@ -40,9 +42,11 @@ public class BrowserIntentUtilsUnitTest {
         before = SystemClock.uptimeMillis();
         BrowserIntentUtils.addStartupTimestampsToIntent(intent);
         after = SystemClock.uptimeMillis();
-        Assert.assertTrue("Time should be increasing",
+        Assert.assertTrue(
+                "Time should be increasing",
                 before <= BrowserIntentUtils.getStartupUptimeMillis(intent));
-        Assert.assertTrue("Time should be increasing",
+        Assert.assertTrue(
+                "Time should be increasing",
                 BrowserIntentUtils.getStartupUptimeMillis(intent) <= after);
     }
 }

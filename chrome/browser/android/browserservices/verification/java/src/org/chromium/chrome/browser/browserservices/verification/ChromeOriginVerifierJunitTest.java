@@ -49,20 +49,15 @@ public class ChromeOriginVerifierJunitTest {
 
     private ChromeOriginVerifier mChromeVerifier;
 
-    @Rule
-    public MockitoRule mMockitoRule = MockitoJUnit.rule().strictness(Strictness.WARN);
+    @Rule public MockitoRule mMockitoRule = MockitoJUnit.rule().strictness(Strictness.WARN);
 
-    @Mock
-    private Profile mProfile;
+    @Mock private Profile mProfile;
 
-    @Rule
-    public JniMocker mJniMocker = new JniMocker();
+    @Rule public JniMocker mJniMocker = new JniMocker();
 
-    @Mock
-    private OriginVerifier.Natives mMockOriginVerifierJni;
+    @Mock private OriginVerifier.Natives mMockOriginVerifierJni;
 
-    @Mock
-    private ChromeOriginVerifier.Natives mMockChromeOriginVerifierJni;
+    @Mock private ChromeOriginVerifier.Natives mMockChromeOriginVerifierJni;
 
     private CountDownLatch mVerificationResultLatch = new CountDownLatch(1);
 
@@ -91,39 +86,53 @@ public class ChromeOriginVerifierJunitTest {
         Profile.setLastUsedProfileForTesting(mProfile);
         OriginVerifierUnitTestSupport.registerPackageWithSignature(
                 shadowOf(ApplicationProvider.getApplicationContext().getPackageManager()),
-                PACKAGE_NAME, mUid);
+                PACKAGE_NAME,
+                mUid);
 
         mJniMocker.mock(ChromeOriginVerifierJni.TEST_HOOKS, mMockChromeOriginVerifierJni);
-        Mockito.doAnswer(args -> { return 100L; })
+        Mockito.doAnswer(
+                        args -> {
+                            return 100L;
+                        })
                 .when(mMockChromeOriginVerifierJni)
                 .init(Mockito.any(), Mockito.any());
 
         mJniMocker.mock(OriginVerifierJni.TEST_HOOKS, mMockOriginVerifierJni);
-        Mockito.doAnswer(args -> {
-                   String[] fingerprints = args.getArgument(3);
-                   if (fingerprints == null) {
-                       mChromeVerifier.onOriginVerificationResult(
-                               args.getArgument(4), RelationshipCheckResult.FAILURE);
-                       return false;
-                   }
-                   // Ensure parsing of signature works.
-                   assert fingerprints.length == 1;
-                   assert fingerprints[0] != null;
-                   mChromeVerifier.onOriginVerificationResult(
-                           args.getArgument(4), RelationshipCheckResult.SUCCESS);
-                   return true;
-               })
+        Mockito.doAnswer(
+                        args -> {
+                            String[] fingerprints = args.getArgument(3);
+                            if (fingerprints == null) {
+                                mChromeVerifier.onOriginVerificationResult(
+                                        args.getArgument(4), RelationshipCheckResult.FAILURE);
+                                return false;
+                            }
+                            // Ensure parsing of signature works.
+                            assert fingerprints.length == 1;
+                            assert fingerprints[0] != null;
+                            mChromeVerifier.onOriginVerificationResult(
+                                    args.getArgument(4), RelationshipCheckResult.SUCCESS);
+                            return true;
+                        })
                 .when(mMockOriginVerifierJni)
-                .verifyOrigin(ArgumentMatchers.anyLong(), Mockito.any(),
-                        ArgumentMatchers.anyString(), Mockito.any(), ArgumentMatchers.anyString(),
-                        ArgumentMatchers.anyString(), Mockito.any());
+                .verifyOrigin(
+                        ArgumentMatchers.anyLong(),
+                        Mockito.any(),
+                        ArgumentMatchers.anyString(),
+                        Mockito.any(),
+                        ArgumentMatchers.anyString(),
+                        ArgumentMatchers.anyString(),
+                        Mockito.any());
     }
 
     @Test
     public void testValidFingerprint() throws Exception {
         mChromeVerifier =
-                new ChromeOriginVerifier(PACKAGE_NAME, CustomTabsService.RELATION_HANDLE_ALL_URLS,
-                        null, null, ChromeVerificationResultStore.getInstance());
+                new ChromeOriginVerifier(
+                        PACKAGE_NAME,
+                        CustomTabsService.RELATION_HANDLE_ALL_URLS,
+                        null,
+                        null,
+                        ChromeVerificationResultStore.getInstance());
         TestOriginVerificationListener resultListener =
                 new TestOriginVerificationListener(mVerificationResultLatch);
         TestThreadUtils.runOnUiThreadBlocking(
@@ -139,8 +148,12 @@ public class ChromeOriginVerifierJunitTest {
         shadowOf(ApplicationProvider.getApplicationContext().getPackageManager())
                 .removePackage(PACKAGE_NAME);
         mChromeVerifier =
-                new ChromeOriginVerifier(PACKAGE_NAME, CustomTabsService.RELATION_HANDLE_ALL_URLS,
-                        null, null, ChromeVerificationResultStore.getInstance());
+                new ChromeOriginVerifier(
+                        PACKAGE_NAME,
+                        CustomTabsService.RELATION_HANDLE_ALL_URLS,
+                        null,
+                        null,
+                        ChromeVerificationResultStore.getInstance());
         TestOriginVerificationListener resultListener =
                 new TestOriginVerificationListener(mVerificationResultLatch);
         TestThreadUtils.runOnUiThreadBlocking(

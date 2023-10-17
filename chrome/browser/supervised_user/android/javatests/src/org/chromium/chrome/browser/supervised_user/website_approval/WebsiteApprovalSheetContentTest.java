@@ -16,9 +16,7 @@ import org.chromium.base.test.BaseJUnit4ClassRunner;
 import org.chromium.base.test.util.Batch;
 import org.chromium.url.GURL;
 
-/**
- * Unit tests for {@link WebsiteApprovalSheetContent}.
- */
+/** Unit tests for {@link WebsiteApprovalSheetContent}. */
 @RunWith(BaseJUnit4ClassRunner.class)
 @Batch(Batch.UNIT_TESTS)
 public class WebsiteApprovalSheetContentTest {
@@ -26,8 +24,9 @@ public class WebsiteApprovalSheetContentTest {
 
     private static final String BASE_URL = "somehost.com";
 
-    private static final String PATH_WITHIN_LIMIT = "/path0/path1/path2/path3/path4/path5/path6/"
-            + "path7/path8/path9/path10/path11/path12/path13/path14/path15";
+    private static final String PATH_WITHIN_LIMIT =
+            "/path0/path1/path2/path3/path4/path5/path6/"
+                    + "path7/path8/path9/path10/path11/path12/path13/path14/path15";
 
     @Test
     @SmallTest
@@ -81,8 +80,9 @@ public class WebsiteApprovalSheetContentTest {
                     <= WebsiteApprovalSheetContent.SUBSTRING_LIMIT) {
                 subpath = subpath + PATH_WITHIN_LIMIT;
             } else if (subpath.length() < WebsiteApprovalSheetContent.SUBSTRING_LIMIT) {
-                for (int i = 0; i < PATH_WITHIN_LIMIT.length()
-                        && subpath.length() < WebsiteApprovalSheetContent.SUBSTRING_LIMIT;
+                for (int i = 0;
+                        i < PATH_WITHIN_LIMIT.length()
+                                && subpath.length() < WebsiteApprovalSheetContent.SUBSTRING_LIMIT;
                         i++) {
                     subpath = subpath + PATH_WITHIN_LIMIT.charAt(i);
                 }

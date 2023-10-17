@@ -29,9 +29,7 @@ import org.chromium.chrome.browser.settings.SettingsActivityTestRule;
 import org.chromium.chrome.test.ChromeJUnit4ClassRunner;
 import org.chromium.components.browser_ui.settings.PlaceholderSettingsForTest;
 
-/**
- * Tests of {@link IncognitoReauthSettingSwitchPreference}.
- */
+/** Tests of {@link IncognitoReauthSettingSwitchPreference}. */
 @RunWith(ChromeJUnit4ClassRunner.class)
 public class IncognitoReauthSettingSwitchPreferenceTest {
     private static final String TITLE = "Preference Title";
@@ -44,16 +42,15 @@ public class IncognitoReauthSettingSwitchPreferenceTest {
     private IncognitoReauthSettingSwitchPreference mPreference;
     private Context mContext;
 
-    @Mock
-    private Runnable mLinkClickDelegate;
+    @Mock private Runnable mLinkClickDelegate;
 
     @Before
     public void setUp() {
         MockitoAnnotations.initMocks(this);
         mSettingsActivityTestRule.startSettingsActivity();
         PreferenceFragmentCompat fragment =
-                (PreferenceFragmentCompat) mSettingsActivityTestRule.getActivity()
-                        .getMainFragment();
+                (PreferenceFragmentCompat)
+                        mSettingsActivityTestRule.getActivity().getMainFragment();
         mContext = fragment.getPreferenceManager().getContext();
 
         mPreference = new IncognitoReauthSettingSwitchPreference(mContext);

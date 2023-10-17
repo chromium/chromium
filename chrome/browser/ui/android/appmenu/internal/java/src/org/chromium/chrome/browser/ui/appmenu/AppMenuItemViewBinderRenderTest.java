@@ -44,15 +44,14 @@ import java.io.IOException;
 import java.util.Arrays;
 import java.util.List;
 
-/**
- * Render tests for {@link AppMenuItemViewBinder}.
- */
+/** Render tests for {@link AppMenuItemViewBinder}. */
 @RunWith(ParameterizedRunner.class)
 @ParameterAnnotations.UseRunnerDelegate(ChromeJUnit4RunnerDelegate.class)
 public class AppMenuItemViewBinderRenderTest {
     @ParameterAnnotations.ClassParameter
     private static List<ParameterSet> sClassParams =
-            Arrays.asList(new ParameterSet().value(false, true).name("LiteMode_MenuItemEnabled"),
+            Arrays.asList(
+                    new ParameterSet().value(false, true).name("LiteMode_MenuItemEnabled"),
                     new ParameterSet().value(false, false).name("LiteMode_MenuItemDisabled"),
                     new ParameterSet().value(true, true).name("NightMode_MenuItemEnabled"),
                     new ParameterSet().value(true, false).name("NightMode_MenuItemDisabled"));
@@ -60,11 +59,13 @@ public class AppMenuItemViewBinderRenderTest {
     @ClassRule
     public static BaseActivityTestRule<BlankUiTestActivity> sActivityTestRule =
             new BaseActivityTestRule<>(BlankUiTestActivity.class);
+
     @Rule
     public ChromeRenderTestRule mRenderTestRule =
             ChromeRenderTestRule.Builder.withPublicCorpus()
                     .setBugComponent(ChromeRenderTestRule.Component.UI_BROWSER_MOBILE_APP_MENU)
                     .build();
+
     private static Activity sActivity;
     private static ListView sListView;
     private static View sContentView;
@@ -95,37 +96,46 @@ public class AppMenuItemViewBinderRenderTest {
     public void setUpTest() throws Exception {
         sActivityTestRule.launchActivity(null);
 
-        TestThreadUtils.runOnUiThreadBlocking(() -> {
-            sActivity = sActivityTestRule.getActivity();
-            mMenuList = new ModelListAdapter.ModelList();
-            mModelListAdapter = new ModelListAdapter(mMenuList);
+        TestThreadUtils.runOnUiThreadBlocking(
+                () -> {
+                    sActivity = sActivityTestRule.getActivity();
+                    mMenuList = new ModelListAdapter.ModelList();
+                    mModelListAdapter = new ModelListAdapter(mMenuList);
 
-            sActivity.setContentView(R.layout.app_menu_layout);
-            sContentView = sActivity.findViewById(android.R.id.content);
-            sListView = sContentView.findViewById(R.id.app_menu_list);
-            sListView.setAdapter(mModelListAdapter);
+                    sActivity.setContentView(R.layout.app_menu_layout);
+                    sContentView = sActivity.findViewById(android.R.id.content);
+                    sListView = sContentView.findViewById(R.id.app_menu_list);
+                    sListView.setAdapter(mModelListAdapter);
 
-            mModelListAdapter.registerType(AppMenuItemType.STANDARD,
-                    new LayoutViewBuilder(R.layout.menu_item_start_with_icon),
-                    AppMenuItemViewBinder::bindStandardItem);
-            mModelListAdapter.registerType(AppMenuItemType.TITLE_BUTTON,
-                    new LayoutViewBuilder(R.layout.title_button_menu_item),
-                    AppMenuItemViewBinder::bindTitleButtonItem);
-            mModelListAdapter.registerType(AppMenuItemType.THREE_BUTTON_ROW,
-                    new LayoutViewBuilder(R.layout.icon_row_menu_item),
-                    AppMenuItemViewBinder::bindIconRowItem);
-            mModelListAdapter.registerType(AppMenuItemType.FOUR_BUTTON_ROW,
-                    new LayoutViewBuilder(R.layout.icon_row_menu_item),
-                    AppMenuItemViewBinder::bindIconRowItem);
-            mModelListAdapter.registerType(AppMenuItemType.FIVE_BUTTON_ROW,
-                    new LayoutViewBuilder(R.layout.icon_row_menu_item),
-                    AppMenuItemViewBinder::bindIconRowItem);
-        });
+                    mModelListAdapter.registerType(
+                            AppMenuItemType.STANDARD,
+                            new LayoutViewBuilder(R.layout.menu_item_start_with_icon),
+                            AppMenuItemViewBinder::bindStandardItem);
+                    mModelListAdapter.registerType(
+                            AppMenuItemType.TITLE_BUTTON,
+                            new LayoutViewBuilder(R.layout.title_button_menu_item),
+                            AppMenuItemViewBinder::bindTitleButtonItem);
+                    mModelListAdapter.registerType(
+                            AppMenuItemType.THREE_BUTTON_ROW,
+                            new LayoutViewBuilder(R.layout.icon_row_menu_item),
+                            AppMenuItemViewBinder::bindIconRowItem);
+                    mModelListAdapter.registerType(
+                            AppMenuItemType.FOUR_BUTTON_ROW,
+                            new LayoutViewBuilder(R.layout.icon_row_menu_item),
+                            AppMenuItemViewBinder::bindIconRowItem);
+                    mModelListAdapter.registerType(
+                            AppMenuItemType.FIVE_BUTTON_ROW,
+                            new LayoutViewBuilder(R.layout.icon_row_menu_item),
+                            AppMenuItemViewBinder::bindIconRowItem);
+                });
     }
 
     @After
     public void tearDownTest() throws Exception {
-        TestThreadUtils.runOnUiThreadBlocking(() -> { mMenuList.clear(); });
+        TestThreadUtils.runOnUiThreadBlocking(
+                () -> {
+                    mMenuList.clear();
+                });
     }
 
     @AfterClass
@@ -135,11 +145,12 @@ public class AppMenuItemViewBinderRenderTest {
 
     private PropertyModel createStandardMenuItem(
             int menuId, String title, boolean enabled, @Nullable Drawable icon) {
-        PropertyModel model = new PropertyModel.Builder(AppMenuItemProperties.ALL_KEYS)
-                                      .with(AppMenuItemProperties.MENU_ITEM_ID, menuId)
-                                      .with(AppMenuItemProperties.TITLE, title)
-                                      .with(AppMenuItemProperties.ENABLED, enabled)
-                                      .build();
+        PropertyModel model =
+                new PropertyModel.Builder(AppMenuItemProperties.ALL_KEYS)
+                        .with(AppMenuItemProperties.MENU_ITEM_ID, menuId)
+                        .with(AppMenuItemProperties.TITLE, title)
+                        .with(AppMenuItemProperties.ENABLED, enabled)
+                        .build();
         if (icon != null) {
             model.set(AppMenuItemProperties.ICON, icon);
         }
@@ -148,30 +159,41 @@ public class AppMenuItemViewBinderRenderTest {
         return model;
     }
 
-    private PropertyModel createTitleMenuItem(int mainMenuId, int titleMenuId, String title,
-            boolean enabled, @Nullable Drawable menuIcon, int buttonMenuId, String buttonTitle,
-            boolean checkable, boolean checked, boolean buttonEnabled,
+    private PropertyModel createTitleMenuItem(
+            int mainMenuId,
+            int titleMenuId,
+            String title,
+            boolean enabled,
+            @Nullable Drawable menuIcon,
+            int buttonMenuId,
+            String buttonTitle,
+            boolean checkable,
+            boolean checked,
+            boolean buttonEnabled,
             @Nullable Drawable buttonIcon) {
-        PropertyModel model = new PropertyModel.Builder(AppMenuItemProperties.ALL_KEYS)
-                                      .with(AppMenuItemProperties.MENU_ITEM_ID, mainMenuId)
-                                      .build();
+        PropertyModel model =
+                new PropertyModel.Builder(AppMenuItemProperties.ALL_KEYS)
+                        .with(AppMenuItemProperties.MENU_ITEM_ID, mainMenuId)
+                        .build();
 
         ModelListAdapter.ModelList subList = new ModelListAdapter.ModelList();
-        PropertyModel titleModel = new PropertyModel.Builder(AppMenuItemProperties.ALL_KEYS)
-                                           .with(AppMenuItemProperties.MENU_ITEM_ID, titleMenuId)
-                                           .with(AppMenuItemProperties.TITLE, title)
-                                           .with(AppMenuItemProperties.ENABLED, enabled)
-                                           .build();
+        PropertyModel titleModel =
+                new PropertyModel.Builder(AppMenuItemProperties.ALL_KEYS)
+                        .with(AppMenuItemProperties.MENU_ITEM_ID, titleMenuId)
+                        .with(AppMenuItemProperties.TITLE, title)
+                        .with(AppMenuItemProperties.ENABLED, enabled)
+                        .build();
         if (menuIcon != null) {
             titleModel.set(AppMenuItemProperties.ICON, menuIcon);
         }
-        PropertyModel buttonModel = new PropertyModel.Builder(AppMenuItemProperties.ALL_KEYS)
-                                            .with(AppMenuItemProperties.MENU_ITEM_ID, buttonMenuId)
-                                            .with(AppMenuItemProperties.TITLE, buttonTitle)
-                                            .with(AppMenuItemProperties.CHECKABLE, checkable)
-                                            .with(AppMenuItemProperties.CHECKED, checked)
-                                            .with(AppMenuItemProperties.ENABLED, buttonEnabled)
-                                            .build();
+        PropertyModel buttonModel =
+                new PropertyModel.Builder(AppMenuItemProperties.ALL_KEYS)
+                        .with(AppMenuItemProperties.MENU_ITEM_ID, buttonMenuId)
+                        .with(AppMenuItemProperties.TITLE, buttonTitle)
+                        .with(AppMenuItemProperties.CHECKABLE, checkable)
+                        .with(AppMenuItemProperties.CHECKED, checked)
+                        .with(AppMenuItemProperties.ENABLED, buttonEnabled)
+                        .build();
         if (buttonIcon != null) {
             buttonModel.set(AppMenuItemProperties.ICON, buttonIcon);
         }
@@ -183,14 +205,28 @@ public class AppMenuItemViewBinderRenderTest {
         return model;
     }
 
-    private PropertyModel createIconRowMenuItem(int menuId, int subId1, String titleCondensed1,
-            Drawable icon1, int subId2, String titleCondensed2, Drawable icon2, int subId3,
-            String titleCondensed3, Drawable icon3, int subId4, @Nullable String titleCondensed4,
-            @Nullable Drawable icon4, int subId5, @Nullable String titleCondensed5,
-            @Nullable Drawable icon5, boolean enabled) {
-        PropertyModel model = new PropertyModel.Builder(AppMenuItemProperties.ALL_KEYS)
-                                      .with(AppMenuItemProperties.MENU_ITEM_ID, menuId)
-                                      .build();
+    private PropertyModel createIconRowMenuItem(
+            int menuId,
+            int subId1,
+            String titleCondensed1,
+            Drawable icon1,
+            int subId2,
+            String titleCondensed2,
+            Drawable icon2,
+            int subId3,
+            String titleCondensed3,
+            Drawable icon3,
+            int subId4,
+            @Nullable String titleCondensed4,
+            @Nullable Drawable icon4,
+            int subId5,
+            @Nullable String titleCondensed5,
+            @Nullable Drawable icon5,
+            boolean enabled) {
+        PropertyModel model =
+                new PropertyModel.Builder(AppMenuItemProperties.ALL_KEYS)
+                        .with(AppMenuItemProperties.MENU_ITEM_ID, menuId)
+                        .build();
 
         ModelListAdapter.ModelList subList = new ModelListAdapter.ModelList();
         int menutype = AppMenuItemType.THREE_BUTTON_ROW;
@@ -212,20 +248,27 @@ public class AppMenuItemViewBinderRenderTest {
         return model;
     }
 
-    private void createIconMenuItem(ModelListAdapter.ModelList list, int id, String titleCondensed,
-            Drawable icon, boolean enabled) {
-        PropertyModel model = new PropertyModel.Builder(AppMenuItemProperties.ALL_KEYS)
-                                      .with(AppMenuItemProperties.MENU_ITEM_ID, id)
-                                      .with(AppMenuItemProperties.TITLE_CONDENSED, titleCondensed)
-                                      .with(AppMenuItemProperties.ICON, icon)
-                                      .with(AppMenuItemProperties.ENABLED, enabled)
-                                      .build();
+    private void createIconMenuItem(
+            ModelListAdapter.ModelList list,
+            int id,
+            String titleCondensed,
+            Drawable icon,
+            boolean enabled) {
+        PropertyModel model =
+                new PropertyModel.Builder(AppMenuItemProperties.ALL_KEYS)
+                        .with(AppMenuItemProperties.MENU_ITEM_ID, id)
+                        .with(AppMenuItemProperties.TITLE_CONDENSED, titleCondensed)
+                        .with(AppMenuItemProperties.ICON, icon)
+                        .with(AppMenuItemProperties.ENABLED, enabled)
+                        .build();
         list.add(new ModelListAdapter.ListItem(0, model));
     }
 
     private void waitListViewToBeDrawn() {
         CriteriaHelper.pollUiThread(
-                () -> { Criteria.checkThat(sListView.getChildAt(0), Matchers.notNullValue()); });
+                () -> {
+                    Criteria.checkThat(sListView.getChildAt(0), Matchers.notNullValue());
+                });
     }
 
     @Test
@@ -233,7 +276,9 @@ public class AppMenuItemViewBinderRenderTest {
     @Feature("RenderTest")
     public void testStandardMenuItem() throws IOException {
         TestThreadUtils.runOnUiThreadBlocking(
-                () -> { createStandardMenuItem(MENU_ID1, TITLE_1, mMenuItemEnabled, null); });
+                () -> {
+                    createStandardMenuItem(MENU_ID1, TITLE_1, mMenuItemEnabled, null);
+                });
         waitListViewToBeDrawn();
         mRenderTestRule.render(sContentView, "standard");
     }
@@ -242,11 +287,15 @@ public class AppMenuItemViewBinderRenderTest {
     @MediumTest
     @Feature("RenderTest")
     public void testStandardMenuItem_Icon() throws IOException {
-        TestThreadUtils.runOnUiThreadBlocking(() -> {
-            Drawable icon = AppCompatResources.getDrawable(sActivity,
-                    org.chromium.chrome.browser.ui.appmenu.test.R.drawable.test_ic_vintage_filter);
-            createStandardMenuItem(MENU_ID1, TITLE_1, mMenuItemEnabled, icon);
-        });
+        TestThreadUtils.runOnUiThreadBlocking(
+                () -> {
+                    Drawable icon =
+                            AppCompatResources.getDrawable(
+                                    sActivity,
+                                    org.chromium.chrome.browser.ui.appmenu.test.R.drawable
+                                            .test_ic_vintage_filter);
+                    createStandardMenuItem(MENU_ID1, TITLE_1, mMenuItemEnabled, icon);
+                });
         waitListViewToBeDrawn();
         mRenderTestRule.render(sContentView, "standard_with_icon");
     }
@@ -255,13 +304,26 @@ public class AppMenuItemViewBinderRenderTest {
     @MediumTest
     @Feature("RenderTest")
     public void testTitleButtonMenuItem_Icon() throws IOException {
-        TestThreadUtils.runOnUiThreadBlocking(() -> {
-            Drawable buttonIcon = AppCompatResources.getDrawable(sActivity,
-                    org.chromium.chrome.browser.ui.appmenu.test.R.drawable
-                            .test_ic_arrow_forward_black_24dp);
-            createTitleMenuItem(MENU_ID1, MENU_ID2, TITLE_2, mMenuItemEnabled, null, MENU_ID3,
-                    TITLE_3, false, false, mMenuItemEnabled, buttonIcon);
-        });
+        TestThreadUtils.runOnUiThreadBlocking(
+                () -> {
+                    Drawable buttonIcon =
+                            AppCompatResources.getDrawable(
+                                    sActivity,
+                                    org.chromium.chrome.browser.ui.appmenu.test.R.drawable
+                                            .test_ic_arrow_forward_black_24dp);
+                    createTitleMenuItem(
+                            MENU_ID1,
+                            MENU_ID2,
+                            TITLE_2,
+                            mMenuItemEnabled,
+                            null,
+                            MENU_ID3,
+                            TITLE_3,
+                            false,
+                            false,
+                            mMenuItemEnabled,
+                            buttonIcon);
+                });
         waitListViewToBeDrawn();
         mRenderTestRule.render(sContentView, "title_button_icon");
     }
@@ -270,10 +332,21 @@ public class AppMenuItemViewBinderRenderTest {
     @MediumTest
     @Feature("RenderTest")
     public void testTitleButtonMenuItem_Checkbox_Checked() throws IOException {
-        TestThreadUtils.runOnUiThreadBlocking(() -> {
-            createTitleMenuItem(MENU_ID1, MENU_ID2, TITLE_2, mMenuItemEnabled, null, MENU_ID3,
-                    TITLE_3, true, true, mMenuItemEnabled, null);
-        });
+        TestThreadUtils.runOnUiThreadBlocking(
+                () -> {
+                    createTitleMenuItem(
+                            MENU_ID1,
+                            MENU_ID2,
+                            TITLE_2,
+                            mMenuItemEnabled,
+                            null,
+                            MENU_ID3,
+                            TITLE_3,
+                            true,
+                            true,
+                            mMenuItemEnabled,
+                            null);
+                });
         waitListViewToBeDrawn();
         mRenderTestRule.render(sContentView, "title_button_checkbox_checked");
     }
@@ -282,10 +355,21 @@ public class AppMenuItemViewBinderRenderTest {
     @MediumTest
     @Feature("RenderTest")
     public void testTitleButtonMenuItem_Checkbox_Unchecked() throws IOException {
-        TestThreadUtils.runOnUiThreadBlocking(() -> {
-            createTitleMenuItem(MENU_ID1, MENU_ID2, TITLE_2, mMenuItemEnabled, null, MENU_ID3,
-                    TITLE_3, true, false, mMenuItemEnabled, null);
-        });
+        TestThreadUtils.runOnUiThreadBlocking(
+                () -> {
+                    createTitleMenuItem(
+                            MENU_ID1,
+                            MENU_ID2,
+                            TITLE_2,
+                            mMenuItemEnabled,
+                            null,
+                            MENU_ID3,
+                            TITLE_3,
+                            true,
+                            false,
+                            mMenuItemEnabled,
+                            null);
+                });
         waitListViewToBeDrawn();
         mRenderTestRule.render(sContentView, "title_button_checkbox_unchecked");
     }
@@ -294,12 +378,26 @@ public class AppMenuItemViewBinderRenderTest {
     @MediumTest
     @Feature("RenderTest")
     public void testTitleButtonMenuItem_Checkbox_Unchecked_IconBeforeItem() throws IOException {
-        TestThreadUtils.runOnUiThreadBlocking(() -> {
-            Drawable icon = AppCompatResources.getDrawable(sActivity,
-                    org.chromium.chrome.browser.ui.appmenu.test.R.drawable.test_ic_vintage_filter);
-            createTitleMenuItem(MENU_ID1, MENU_ID2, TITLE_2, mMenuItemEnabled, icon, MENU_ID3,
-                    TITLE_3, true, false, mMenuItemEnabled, null);
-        });
+        TestThreadUtils.runOnUiThreadBlocking(
+                () -> {
+                    Drawable icon =
+                            AppCompatResources.getDrawable(
+                                    sActivity,
+                                    org.chromium.chrome.browser.ui.appmenu.test.R.drawable
+                                            .test_ic_vintage_filter);
+                    createTitleMenuItem(
+                            MENU_ID1,
+                            MENU_ID2,
+                            TITLE_2,
+                            mMenuItemEnabled,
+                            icon,
+                            MENU_ID3,
+                            TITLE_3,
+                            true,
+                            false,
+                            mMenuItemEnabled,
+                            null);
+                });
         waitListViewToBeDrawn();
         mRenderTestRule.render(sContentView, "title_button_checkbox_unchecked_icon_before_item");
     }
@@ -308,20 +406,42 @@ public class AppMenuItemViewBinderRenderTest {
     @MediumTest
     @Feature("RenderTest")
     public void testIconRow_ThreeIcons() throws IOException {
-        TestThreadUtils.runOnUiThreadBlocking(() -> {
-            Drawable icon1 = AppCompatResources.getDrawable(sActivity,
-                    org.chromium.chrome.browser.ui.appmenu.test.R.drawable
-                            .test_ic_arrow_forward_black_24dp);
-            Drawable icon2 = AppCompatResources.getDrawable(sActivity,
-                    org.chromium.chrome.browser.ui.appmenu.test.R.drawable
-                            .test_ic_star_border_black_24dp);
-            Drawable icon3 = AppCompatResources.getDrawable(sActivity,
-                    org.chromium.chrome.browser.ui.appmenu.test.R.drawable
-                            .test_ic_arrow_downward_black_24dp);
-            createIconRowMenuItem(1, MENU_ID1, TITLE_1, icon1, MENU_ID2, TITLE_2, icon2, MENU_ID3,
-                    TITLE_3, icon3, View.NO_ID, null, null, View.NO_ID, null, null,
-                    mMenuItemEnabled);
-        });
+        TestThreadUtils.runOnUiThreadBlocking(
+                () -> {
+                    Drawable icon1 =
+                            AppCompatResources.getDrawable(
+                                    sActivity,
+                                    org.chromium.chrome.browser.ui.appmenu.test.R.drawable
+                                            .test_ic_arrow_forward_black_24dp);
+                    Drawable icon2 =
+                            AppCompatResources.getDrawable(
+                                    sActivity,
+                                    org.chromium.chrome.browser.ui.appmenu.test.R.drawable
+                                            .test_ic_star_border_black_24dp);
+                    Drawable icon3 =
+                            AppCompatResources.getDrawable(
+                                    sActivity,
+                                    org.chromium.chrome.browser.ui.appmenu.test.R.drawable
+                                            .test_ic_arrow_downward_black_24dp);
+                    createIconRowMenuItem(
+                            1,
+                            MENU_ID1,
+                            TITLE_1,
+                            icon1,
+                            MENU_ID2,
+                            TITLE_2,
+                            icon2,
+                            MENU_ID3,
+                            TITLE_3,
+                            icon3,
+                            View.NO_ID,
+                            null,
+                            null,
+                            View.NO_ID,
+                            null,
+                            null,
+                            mMenuItemEnabled);
+                });
         waitListViewToBeDrawn();
         mRenderTestRule.render(sContentView, "iconrow_three_icons");
     }
@@ -330,23 +450,47 @@ public class AppMenuItemViewBinderRenderTest {
     @MediumTest
     @Feature("RenderTest")
     public void testIconRow_FourIcons() throws IOException {
-        TestThreadUtils.runOnUiThreadBlocking(() -> {
-            Drawable icon1 = AppCompatResources.getDrawable(sActivity,
-                    org.chromium.chrome.browser.ui.appmenu.test.R.drawable
-                            .test_ic_arrow_forward_black_24dp);
-            Drawable icon2 = AppCompatResources.getDrawable(sActivity,
-                    org.chromium.chrome.browser.ui.appmenu.test.R.drawable
-                            .test_ic_star_border_black_24dp);
-            Drawable icon3 = AppCompatResources.getDrawable(sActivity,
-                    org.chromium.chrome.browser.ui.appmenu.test.R.drawable
-                            .test_ic_arrow_downward_black_24dp);
-            Drawable icon4 = AppCompatResources.getDrawable(sActivity,
-                    org.chromium.chrome.browser.ui.appmenu.test.R.drawable
-                            .test_ic_info_outline_black_24dp);
-            createIconRowMenuItem(1, MENU_ID1, TITLE_1, icon1, MENU_ID2, TITLE_2, icon2, MENU_ID3,
-                    TITLE_3, icon3, MENU_ID4, TITLE_4, icon4, View.NO_ID, null, null,
-                    mMenuItemEnabled);
-        });
+        TestThreadUtils.runOnUiThreadBlocking(
+                () -> {
+                    Drawable icon1 =
+                            AppCompatResources.getDrawable(
+                                    sActivity,
+                                    org.chromium.chrome.browser.ui.appmenu.test.R.drawable
+                                            .test_ic_arrow_forward_black_24dp);
+                    Drawable icon2 =
+                            AppCompatResources.getDrawable(
+                                    sActivity,
+                                    org.chromium.chrome.browser.ui.appmenu.test.R.drawable
+                                            .test_ic_star_border_black_24dp);
+                    Drawable icon3 =
+                            AppCompatResources.getDrawable(
+                                    sActivity,
+                                    org.chromium.chrome.browser.ui.appmenu.test.R.drawable
+                                            .test_ic_arrow_downward_black_24dp);
+                    Drawable icon4 =
+                            AppCompatResources.getDrawable(
+                                    sActivity,
+                                    org.chromium.chrome.browser.ui.appmenu.test.R.drawable
+                                            .test_ic_info_outline_black_24dp);
+                    createIconRowMenuItem(
+                            1,
+                            MENU_ID1,
+                            TITLE_1,
+                            icon1,
+                            MENU_ID2,
+                            TITLE_2,
+                            icon2,
+                            MENU_ID3,
+                            TITLE_3,
+                            icon3,
+                            MENU_ID4,
+                            TITLE_4,
+                            icon4,
+                            View.NO_ID,
+                            null,
+                            null,
+                            mMenuItemEnabled);
+                });
         waitListViewToBeDrawn();
         mRenderTestRule.render(sContentView, "iconrow_four_icons");
     }
@@ -355,26 +499,52 @@ public class AppMenuItemViewBinderRenderTest {
     @MediumTest
     @Feature("RenderTest")
     public void testIconRow_FiveIcons() throws IOException {
-        TestThreadUtils.runOnUiThreadBlocking(() -> {
-            Drawable icon1 = AppCompatResources.getDrawable(sActivity,
-                    org.chromium.chrome.browser.ui.appmenu.test.R.drawable
-                            .test_ic_arrow_forward_black_24dp);
-            Drawable icon2 = AppCompatResources.getDrawable(sActivity,
-                    org.chromium.chrome.browser.ui.appmenu.test.R.drawable
-                            .test_ic_star_border_black_24dp);
-            Drawable icon3 = AppCompatResources.getDrawable(sActivity,
-                    org.chromium.chrome.browser.ui.appmenu.test.R.drawable
-                            .test_ic_arrow_downward_black_24dp);
-            Drawable icon4 = AppCompatResources.getDrawable(sActivity,
-                    org.chromium.chrome.browser.ui.appmenu.test.R.drawable
-                            .test_ic_info_outline_black_24dp);
-            Drawable icon5 = AppCompatResources.getDrawable(sActivity,
-                    org.chromium.chrome.browser.ui.appmenu.test.R.drawable
-                            .test_ic_refresh_black_24dp);
-            createIconRowMenuItem(1, MENU_ID1, TITLE_1, icon1, MENU_ID2, TITLE_2, icon2, MENU_ID3,
-                    TITLE_3, icon3, MENU_ID4, TITLE_4, icon4, MENU_ID5, TITLE_5, icon5,
-                    mMenuItemEnabled);
-        });
+        TestThreadUtils.runOnUiThreadBlocking(
+                () -> {
+                    Drawable icon1 =
+                            AppCompatResources.getDrawable(
+                                    sActivity,
+                                    org.chromium.chrome.browser.ui.appmenu.test.R.drawable
+                                            .test_ic_arrow_forward_black_24dp);
+                    Drawable icon2 =
+                            AppCompatResources.getDrawable(
+                                    sActivity,
+                                    org.chromium.chrome.browser.ui.appmenu.test.R.drawable
+                                            .test_ic_star_border_black_24dp);
+                    Drawable icon3 =
+                            AppCompatResources.getDrawable(
+                                    sActivity,
+                                    org.chromium.chrome.browser.ui.appmenu.test.R.drawable
+                                            .test_ic_arrow_downward_black_24dp);
+                    Drawable icon4 =
+                            AppCompatResources.getDrawable(
+                                    sActivity,
+                                    org.chromium.chrome.browser.ui.appmenu.test.R.drawable
+                                            .test_ic_info_outline_black_24dp);
+                    Drawable icon5 =
+                            AppCompatResources.getDrawable(
+                                    sActivity,
+                                    org.chromium.chrome.browser.ui.appmenu.test.R.drawable
+                                            .test_ic_refresh_black_24dp);
+                    createIconRowMenuItem(
+                            1,
+                            MENU_ID1,
+                            TITLE_1,
+                            icon1,
+                            MENU_ID2,
+                            TITLE_2,
+                            icon2,
+                            MENU_ID3,
+                            TITLE_3,
+                            icon3,
+                            MENU_ID4,
+                            TITLE_4,
+                            icon4,
+                            MENU_ID5,
+                            TITLE_5,
+                            icon5,
+                            mMenuItemEnabled);
+                });
         waitListViewToBeDrawn();
         mRenderTestRule.render(sContentView, "iconrow_five_icons");
     }

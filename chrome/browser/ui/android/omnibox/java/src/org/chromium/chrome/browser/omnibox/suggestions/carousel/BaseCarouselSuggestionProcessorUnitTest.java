@@ -22,9 +22,7 @@ import org.chromium.chrome.test.util.browser.Features;
 import org.chromium.components.omnibox.AutocompleteMatch;
 import org.chromium.ui.modelutil.PropertyModel;
 
-/**
- * Tests for {@link BaseCarouselSuggestionProcessor}.
- */
+/** Tests for {@link BaseCarouselSuggestionProcessor}. */
 @RunWith(BaseRobolectricTestRunner.class)
 @Config(manifest = Config.NONE)
 public class BaseCarouselSuggestionProcessorUnitTest {
@@ -34,9 +32,7 @@ public class BaseCarouselSuggestionProcessorUnitTest {
     private PropertyModel mModel;
     private BaseCarouselSuggestionProcessorTestClass mProcessor;
 
-    /**
-     * Test class to instantiate BaseCarouselSuggestionProcessor class
-     */
+    /** Test class to instantiate BaseCarouselSuggestionProcessor class */
     public class BaseCarouselSuggestionProcessorTestClass extends BaseCarouselSuggestionProcessor {
         /**
          * Constructs a new BaseCarouselSuggestionProcessor.

@@ -42,11 +42,9 @@ public class PlusAddressCreationPromptTest {
     private static final String MODAL_OK = "ok";
     private static final String MODAL_CANCEL = "cancel";
 
-    @Rule
-    public JniMocker mJniMocker = new JniMocker();
+    @Rule public JniMocker mJniMocker = new JniMocker();
 
-    @Mock
-    private PlusAddressCreationViewBridge.Natives mPromptDelegateJni;
+    @Mock private PlusAddressCreationViewBridge.Natives mPromptDelegateJni;
 
     private Activity mActivity;
     private FakeModalDialogManager mModalDialogManager;
@@ -83,8 +81,9 @@ public class PlusAddressCreationPromptTest {
     @SmallTest
     public void dialogShown() {
         createAndShowPrompt();
-        TextView primaryEmailView = mPrompt.getDialogViewForTesting().findViewById(
-                R.id.plus_address_modal_primary_email);
+        TextView primaryEmailView =
+                mPrompt.getDialogViewForTesting()
+                        .findViewById(R.id.plus_address_modal_primary_email);
         TextView modalTitleView =
                 mPrompt.getDialogViewForTesting().findViewById(R.id.plus_address_notice_title);
         TextView modalExplanationView =

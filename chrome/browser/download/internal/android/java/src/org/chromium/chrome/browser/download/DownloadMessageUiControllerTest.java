@@ -42,8 +42,7 @@ import java.util.UUID;
 @RunWith(ChromeJUnit4ClassRunner.class)
 @Batch(Batch.PER_CLASS)
 public class DownloadMessageUiControllerTest {
-    @Rule
-    public final ChromeBrowserTestRule mBrowserTestRule = new ChromeBrowserTestRule();
+    @Rule public final ChromeBrowserTestRule mBrowserTestRule = new ChromeBrowserTestRule();
 
     private static final String MESSAGE_DOWNLOADING_FILE = "Downloading file…";
     private static final String MESSAGE_DOWNLOADING_TWO_FILES = "Downloading 2 files…";
@@ -65,7 +64,9 @@ public class DownloadMessageUiControllerTest {
     @Before
     public void before() {
         TestThreadUtils.runOnUiThreadBlocking(
-                () -> { mTestController = new TestDownloadMessageUiController(); });
+                () -> {
+                    mTestController = new TestDownloadMessageUiController();
+                });
     }
 
     static class TestDelegate implements DownloadMessageUiController.Delegate {
@@ -157,10 +158,11 @@ public class DownloadMessageUiControllerTest {
     }
 
     private void waitForMessage(String message) {
-        CriteriaHelper.pollInstrumentationThread(() -> {
-            Criteria.checkThat(mTestController.mInfo, Matchers.notNullValue());
-            Criteria.checkThat(mTestController.mInfo.message, Matchers.is(message));
-        });
+        CriteriaHelper.pollInstrumentationThread(
+                () -> {
+                    Criteria.checkThat(mTestController.mInfo, Matchers.notNullValue());
+                    Criteria.checkThat(mTestController.mInfo.message, Matchers.is(message));
+                });
     }
 
     @Test

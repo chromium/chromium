@@ -31,8 +31,7 @@ import org.chromium.chrome.browser.preferences.ChromeSharedPreferences;
 @Batch(UniqueIdentificationGeneratorFactoryTest.IDENTITY_GENERATOR_BATCH_NAME)
 public class UuidBasedUniqueIdentificationGeneratorTest {
     // Tell R8 this class is spied on and shouldn't be made final.
-    @Spy
-    UuidBasedUniqueIdentificationGenerator mGenerator;
+    @Spy UuidBasedUniqueIdentificationGenerator mGenerator;
 
     @Before
     public void setUp() {

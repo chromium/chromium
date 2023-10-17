@@ -12,9 +12,7 @@ import org.junit.Test;
 import org.junit.runner.RunWith;
 import org.junit.runners.BlockJUnit4ClassRunner;
 
-/**
- * Junit tests for class {@link NavbarVisibilityDelegate}
- */
+/** Junit tests for class {@link NavbarVisibilityDelegate} */
 @RunWith(BlockJUnit4ClassRunner.class)
 public class NavbarVisibilityDelegateTest {
     // For totalSteps = 3 the currentStepIdx represents the following:

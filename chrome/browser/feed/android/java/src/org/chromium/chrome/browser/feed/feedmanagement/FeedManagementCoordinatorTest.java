@@ -26,26 +26,22 @@ import org.chromium.chrome.test.util.browser.Features;
 import org.chromium.chrome.test.util.browser.Features.EnableFeatures;
 import org.chromium.ui.base.TestActivity;
 
-/**
- * Tests {@link FeedManagementCoordinator}.
- */
+/** Tests {@link FeedManagementCoordinator}. */
 @RunWith(BaseRobolectricTestRunner.class)
 @EnableFeatures(ChromeFeatureList.FEED_FOLLOW_UI_UPDATE)
 public class FeedManagementCoordinatorTest {
     private TestActivity mActivity;
     private FeedManagementCoordinator mFeedManagementCoordinator;
 
-    @Rule
-    public JniMocker mocker = new JniMocker();
+    @Rule public JniMocker mocker = new JniMocker();
+
     @Rule
     public ActivityScenarioRule<TestActivity> mActivityScenarioRule =
             new ActivityScenarioRule<>(TestActivity.class);
 
-    @Rule
-    public TestRule mProcessor = new Features.JUnitProcessor();
+    @Rule public TestRule mProcessor = new Features.JUnitProcessor();
 
-    @Mock
-    private FeedServiceBridge.Natives mFeedServiceBridgeJniMock;
+    @Mock private FeedServiceBridge.Natives mFeedServiceBridgeJniMock;
 
     @Before
     public void setUpTest() {

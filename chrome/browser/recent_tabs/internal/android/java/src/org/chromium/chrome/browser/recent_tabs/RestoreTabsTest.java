@@ -68,9 +68,7 @@ import org.chromium.url.JUnitTestGURLs;
 import java.util.ArrayList;
 import java.util.List;
 
-/**
- * Integration tests for the RestoreTabs feature.
- */
+/** Integration tests for the RestoreTabs feature. */
 @RunWith(ChromeJUnit4ClassRunner.class)
 @CommandLineFlags.Add({ChromeSwitches.DISABLE_FIRST_RUN_EXPERIENCE})
 @Restriction(UiRestriction.RESTRICTION_TYPE_PHONE)
@@ -81,17 +79,14 @@ public class RestoreTabsTest {
 
     @Rule
     public ChromeTabbedActivityTestRule mActivityTestRule = new ChromeTabbedActivityTestRule();
-    @Rule
-    public JniMocker jniMocker = new JniMocker();
 
-    @Spy
-    ForeignSessionHelper.Natives mForeignSessionHelperJniSpy;
+    @Rule public JniMocker jniMocker = new JniMocker();
+
+    @Spy ForeignSessionHelper.Natives mForeignSessionHelperJniSpy;
     // Tell R8 not to break the ability to mock the class.
-    @Spy
-    ForeignSessionHelperJni mUnused;
+    @Spy ForeignSessionHelperJni mUnused;
 
-    @Mock
-    private Tracker mMockTracker;
+    @Mock private Tracker mMockTracker;
 
     private BottomSheetController mBottomSheetController;
 
@@ -106,9 +101,11 @@ public class RestoreTabsTest {
         jniMocker.mock(ForeignSessionHelperJni.TEST_HOOKS, mForeignSessionHelperJniSpy);
         doReturn(true).when(mForeignSessionHelperJniSpy).isTabSyncEnabled(anyLong());
 
-        mBottomSheetController = mActivityTestRule.getActivity()
-                                         .getRootUiCoordinatorForTesting()
-                                         .getBottomSheetController();
+        mBottomSheetController =
+                mActivityTestRule
+                        .getActivity()
+                        .getRootUiCoordinatorForTesting()
+                        .getBottomSheetController();
     }
 
     @After
@@ -119,11 +116,11 @@ public class RestoreTabsTest {
 
     @Test
     @MediumTest
-    @DisableIf.
-    Build(supported_abis_includes = "armeabi-v7a", sdk_is_less_than = Build.VERSION_CODES.O,
+    @DisableIf.Build(
+            supported_abis_includes = "armeabi-v7a",
+            sdk_is_less_than = Build.VERSION_CODES.O,
             message = "Flaky only on test-n-phone, crbug.com/1469008")
-    public void
-    testRestoreTabsPromo_triggerBottomSheetView() {
+    public void testRestoreTabsPromo_triggerBottomSheetView() {
         // Test using triggerHelpUI methods instead of skip_feature_engagement param
         RestoreTabsFeatureHelper.RESTORE_TABS_PROMO_SKIP_FEATURE_ENGAGEMENT.setForTesting(false);
 
@@ -141,22 +138,26 @@ public class RestoreTabsTest {
 
         doReturn(true).when(mMockTracker).wouldTriggerHelpUI(eq(RESTORE_TABS_FEATURE));
         doReturn(true).when(mMockTracker).shouldTriggerHelpUI(eq(RESTORE_TABS_FEATURE));
-        doAnswer(invocation -> {
-            List<ForeignSession> invoked_sessions = invocation.getArgument(1);
-            invoked_sessions.addAll(sessions);
-            return true;
-        })
+        doAnswer(
+                        invocation -> {
+                            List<ForeignSession> invoked_sessions = invocation.getArgument(1);
+                            invoked_sessions.addAll(sessions);
+                            return true;
+                        })
                 .when(mForeignSessionHelperJniSpy)
                 .getMobileAndTabletForeignSessions(anyLong(), anyList());
 
         TabUiTestHelper.enterTabSwitcher(mActivityTestRule.getActivity());
-        CriteriaHelper.pollUiThread(() -> {
-            Criteria.checkThat("Bottom sheet never fully loaded",
-                    mBottomSheetController.getCurrentSheetContent(),
-                    Matchers.instanceOf(RestoreTabsPromoSheetContent.class));
-        });
-        Assert.assertTrue(mBottomSheetController.getCurrentSheetContent()
-                                  instanceof RestoreTabsPromoSheetContent);
+        CriteriaHelper.pollUiThread(
+                () -> {
+                    Criteria.checkThat(
+                            "Bottom sheet never fully loaded",
+                            mBottomSheetController.getCurrentSheetContent(),
+                            Matchers.instanceOf(RestoreTabsPromoSheetContent.class));
+                });
+        Assert.assertTrue(
+                mBottomSheetController.getCurrentSheetContent()
+                        instanceof RestoreTabsPromoSheetContent);
 
         pressBack();
         verify(mMockTracker, times(1)).dismissed(eq(RESTORE_TABS_FEATURE));
@@ -188,18 +189,30 @@ public class RestoreTabsTest {
 
         // Clicking on it opens the device sheet.
         onView(withId(R.id.restore_tabs_selected_device_view)).perform(click());
-        onView(withText(mActivityTestRule.getActivity().getString(
-                       R.string.restore_tabs_device_screen_sheet_title)))
+        onView(
+                        withText(
+                                mActivityTestRule
+                                        .getActivity()
+                                        .getString(
+                                                R.string.restore_tabs_device_screen_sheet_title)))
                 .check(matches(isDisplayed()));
 
         // Clicking on another device opens the promo sheet again.
         onView(withText("John's iPhone 6")).check(matches(isDisplayed()));
         onView(withText("John's iPhone 6")).perform(click());
-        onView(withText(mActivityTestRule.getActivity().getString(
-                       R.string.restore_tabs_promo_sheet_title)))
+        onView(
+                        withText(
+                                mActivityTestRule
+                                        .getActivity()
+                                        .getString(R.string.restore_tabs_promo_sheet_title)))
                 .check(matches(isDisplayed()));
-        onView(withText(mActivityTestRule.getActivity().getString(
-                       R.string.restore_tabs_promo_sheet_subtitle_multi_device)))
+        onView(
+                        withText(
+                                mActivityTestRule
+                                        .getActivity()
+                                        .getString(
+                                                R.string
+                                                        .restore_tabs_promo_sheet_subtitle_multi_device)))
                 .check(matches(isDisplayed()));
 
         // Accept the bottom sheet.
@@ -211,15 +224,19 @@ public class RestoreTabsTest {
         int tabSwitcherParentViewId =
                 TabUiTestHelper.getTabSwitcherParentId(mActivityTestRule.getActivity());
         // Make sure the grid tab switcher is scrolled down to show the selected tab.
-        onView(allOf(withId(org.chromium.chrome.test.R.id.tab_list_recycler_view),
-                       withParent(withId(tabSwitcherParentViewId))))
-                .check((v, noMatchException) -> {
-                    if (noMatchException != null) throw noMatchException;
-                    Assert.assertTrue(v instanceof RecyclerView);
-                    LinearLayoutManager layoutManager =
-                            (LinearLayoutManager) ((RecyclerView) v).getLayoutManager();
-                    Assert.assertEquals(4, layoutManager.findFirstCompletelyVisibleItemPosition());
-                });
+        onView(
+                        allOf(
+                                withId(org.chromium.chrome.test.R.id.tab_list_recycler_view),
+                                withParent(withId(tabSwitcherParentViewId))))
+                .check(
+                        (v, noMatchException) -> {
+                            if (noMatchException != null) throw noMatchException;
+                            Assert.assertTrue(v instanceof RecyclerView);
+                            LinearLayoutManager layoutManager =
+                                    (LinearLayoutManager) ((RecyclerView) v).getLayoutManager();
+                            Assert.assertEquals(
+                                    4, layoutManager.findFirstCompletelyVisibleItemPosition());
+                        });
     }
 
     @Test
@@ -232,8 +249,13 @@ public class RestoreTabsTest {
 
         // Clicking on the review tabs button.
         onView(withId(R.id.restore_tabs_button_review_tabs)).perform(click());
-        onView(withText(mActivityTestRule.getActivity().getString(
-                       R.string.restore_tabs_review_tabs_screen_sheet_title)))
+        onView(
+                        withText(
+                                mActivityTestRule
+                                        .getActivity()
+                                        .getString(
+                                                R.string
+                                                        .restore_tabs_review_tabs_screen_sheet_title)))
                 .check(matches(isDisplayed()));
 
         // Deselect a tab.
@@ -249,11 +271,19 @@ public class RestoreTabsTest {
 
         // Clicking on the back button opens the promo sheet again.
         onView(withId(R.id.restore_tabs_toolbar_back_image_button)).perform(click());
-        onView(withText(mActivityTestRule.getActivity().getString(
-                       R.string.restore_tabs_promo_sheet_title)))
+        onView(
+                        withText(
+                                mActivityTestRule
+                                        .getActivity()
+                                        .getString(R.string.restore_tabs_promo_sheet_title)))
                 .check(matches(isDisplayed()));
-        onView(withText(mActivityTestRule.getActivity().getString(
-                       R.string.restore_tabs_promo_sheet_subtitle_multi_device)))
+        onView(
+                        withText(
+                                mActivityTestRule
+                                        .getActivity()
+                                        .getString(
+                                                R.string
+                                                        .restore_tabs_promo_sheet_subtitle_multi_device)))
                 .check(matches(isDisplayed()));
 
         // Check that tab selection state for the selected device is persistent.
@@ -273,8 +303,13 @@ public class RestoreTabsTest {
 
         // Clicking on the review tabs button.
         onView(withId(R.id.restore_tabs_button_review_tabs)).perform(click());
-        onView(withText(mActivityTestRule.getActivity().getString(
-                       R.string.restore_tabs_review_tabs_screen_sheet_title)))
+        onView(
+                        withText(
+                                mActivityTestRule
+                                        .getActivity()
+                                        .getString(
+                                                R.string
+                                                        .restore_tabs_review_tabs_screen_sheet_title)))
                 .check(matches(isDisplayed()));
 
         // Ensure tabs exist
@@ -295,11 +330,19 @@ public class RestoreTabsTest {
 
         // Clicking on the back button opens the promo sheet again.
         onView(withId(R.id.restore_tabs_toolbar_back_image_button)).perform(click());
-        onView(withText(mActivityTestRule.getActivity().getString(
-                       R.string.restore_tabs_promo_sheet_title)))
+        onView(
+                        withText(
+                                mActivityTestRule
+                                        .getActivity()
+                                        .getString(R.string.restore_tabs_promo_sheet_title)))
                 .check(matches(isDisplayed()));
-        onView(withText(mActivityTestRule.getActivity().getString(
-                       R.string.restore_tabs_promo_sheet_subtitle_multi_device)))
+        onView(
+                        withText(
+                                mActivityTestRule
+                                        .getActivity()
+                                        .getString(
+                                                R.string
+                                                        .restore_tabs_promo_sheet_subtitle_multi_device)))
                 .check(matches(isDisplayed()));
 
         // Check that tab selection state for the selected device is persistent.
@@ -332,8 +375,13 @@ public class RestoreTabsTest {
 
         // Clicking on the review tabs button.
         onView(withId(R.id.restore_tabs_button_review_tabs)).perform(click());
-        onView(withText(mActivityTestRule.getActivity().getString(
-                       R.string.restore_tabs_review_tabs_screen_sheet_title)))
+        onView(
+                        withText(
+                                mActivityTestRule
+                                        .getActivity()
+                                        .getString(
+                                                R.string
+                                                        .restore_tabs_review_tabs_screen_sheet_title)))
                 .check(matches(isDisplayed()));
 
         // Deselect all and select all.
@@ -391,11 +439,12 @@ public class RestoreTabsTest {
 
         doReturn(true).when(mMockTracker).wouldTriggerHelpUI(eq(RESTORE_TABS_FEATURE));
         doReturn(true).when(mMockTracker).shouldTriggerHelpUI(eq(RESTORE_TABS_FEATURE));
-        doAnswer(invocation -> {
-            List<ForeignSession> invoked_sessions = invocation.getArgument(1);
-            invoked_sessions.addAll(sessions);
-            return true;
-        })
+        doAnswer(
+                        invocation -> {
+                            List<ForeignSession> invoked_sessions = invocation.getArgument(1);
+                            invoked_sessions.addAll(sessions);
+                            return true;
+                        })
                 .when(mForeignSessionHelperJniSpy)
                 .getMobileAndTabletForeignSessions(anyLong(), anyList());
     }

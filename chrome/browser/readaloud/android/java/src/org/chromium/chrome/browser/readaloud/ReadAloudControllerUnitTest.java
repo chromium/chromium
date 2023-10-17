@@ -65,39 +65,26 @@ public class ReadAloudControllerUnitTest {
     private MockTab mTab;
     private ReadAloudController mController;
 
-    @Rule
-    public JniMocker mJniMocker = new JniMocker();
-    @Rule
-    public TestRule mProcessor = new Features.JUnitProcessor();
+    @Rule public JniMocker mJniMocker = new JniMocker();
+    @Rule public TestRule mProcessor = new Features.JUnitProcessor();
 
     private FakeTranslateBridgeJni mFakeTranslateBridge;
-    @Mock
-    private ObservableSupplier<Profile> mMockProfileSupplier;
-    @Mock
-    private Profile mMockProfile;
-    @Mock
-    Context mContext;
-    @Mock
-    private ReadAloudReadabilityHooksImpl mHooksImpl;
-    @Mock
-    private ReadAloudPlaybackHooks mPlaybackHooks;
-    @Mock
-    private ViewStub mViewStub;
-    @Mock
-    private PlayerCoordinator mPlayerCoordinator;
-    @Mock
-    private BottomSheetController mBottomSheetController;
+    @Mock private ObservableSupplier<Profile> mMockProfileSupplier;
+    @Mock private Profile mMockProfile;
+    @Mock Context mContext;
+    @Mock private ReadAloudReadabilityHooksImpl mHooksImpl;
+    @Mock private ReadAloudPlaybackHooks mPlaybackHooks;
+    @Mock private ViewStub mViewStub;
+    @Mock private PlayerCoordinator mPlayerCoordinator;
+    @Mock private BottomSheetController mBottomSheetController;
     @Mock private Highlighter mHighlighter;
     @Mock private PlaybackListener.PhraseTiming mPhraseTiming;
 
     MockTabModelSelector mTabModelSelector;
 
-    @Captor
-    ArgumentCaptor<ReadAloudReadabilityHooks.ReadabilityCallback> mCallbackCaptor;
-    @Captor
-    ArgumentCaptor<ReadAloudPlaybackHooks.CreatePlaybackCallback> mPlaybackCallbackCaptor;
-    @Mock
-    private Playback mPlayback;
+    @Captor ArgumentCaptor<ReadAloudReadabilityHooks.ReadabilityCallback> mCallbackCaptor;
+    @Captor ArgumentCaptor<ReadAloudPlaybackHooks.CreatePlaybackCallback> mPlaybackCallbackCaptor;
+    @Mock private Playback mPlayback;
     @Mock private Playback.Metadata mMetadata;
     @Mock private WebContents mWebContents;
     @Mock private RenderFrameHost mRenderFrameHost;
@@ -125,8 +112,13 @@ public class ReadAloudControllerUnitTest {
         ReadAloudController.setPlayerCoordinator(mPlayerCoordinator);
         ReadAloudController.setReadabilityHooks(mHooksImpl);
         ReadAloudController.setPlaybackHooks(mPlaybackHooks);
-        mController = new ReadAloudController(mContext, mMockProfileSupplier,
-                mTabModelSelector.getModel(false), mViewStub, mBottomSheetController);
+        mController =
+                new ReadAloudController(
+                        mContext,
+                        mMockProfileSupplier,
+                        mTabModelSelector.getModel(false),
+                        mViewStub,
+                        mBottomSheetController);
 
         mTab = mTabModelSelector.getCurrentTab();
         mTab.setGurlOverrideForTesting(sTestGURL);
@@ -164,7 +156,8 @@ public class ReadAloudControllerUnitTest {
         mController.maybeCheckReadability(mTab.getUrl());
 
         verify(mHooksImpl, never())
-                .isPageReadable(Mockito.anyString(),
+                .isPageReadable(
+                        Mockito.anyString(),
                         Mockito.any(ReadAloudReadabilityHooks.ReadabilityCallback.class));
     }
 
@@ -195,7 +188,8 @@ public class ReadAloudControllerUnitTest {
         mController.maybeCheckReadability(sTestGURL);
 
         verify(mHooksImpl, times(1))
-                .isPageReadable(Mockito.anyString(),
+                .isPageReadable(
+                        Mockito.anyString(),
                         Mockito.any(ReadAloudReadabilityHooks.ReadabilityCallback.class));
     }
 
@@ -229,8 +223,9 @@ public class ReadAloudControllerUnitTest {
                 .isPageReadable(eq(sTestGURL.getSpec()), mCallbackCaptor.capture());
         assertFalse(mController.isReadable(mTab));
 
-        mCallbackCaptor.getValue().onFailure(
-                sTestGURL.getSpec(), new Throwable("Something went wrong"));
+        mCallbackCaptor
+                .getValue()
+                .onFailure(sTestGURL.getSpec(), new Throwable("Something went wrong"));
         assertFalse(mController.isReadable(mTab));
         assertFalse(mController.timepointsSupported(mTab));
 
@@ -238,7 +233,8 @@ public class ReadAloudControllerUnitTest {
         mController.maybeCheckReadability(sTestGURL);
 
         verify(mHooksImpl, times(2))
-                .isPageReadable(Mockito.anyString(),
+                .isPageReadable(
+                        Mockito.anyString(),
                         Mockito.any(ReadAloudReadabilityHooks.ReadabilityCallback.class));
     }
 
@@ -255,7 +251,8 @@ public class ReadAloudControllerUnitTest {
         mController.maybeCheckReadability(JUnitTestGURLs.GOOGLE_URL_CAT);
 
         verify(mHooksImpl, times(1))
-                .isPageReadable(Mockito.anyString(),
+                .isPageReadable(
+                        Mockito.anyString(),
                         Mockito.any(ReadAloudReadabilityHooks.ReadabilityCallback.class));
     }
 
@@ -269,7 +266,8 @@ public class ReadAloudControllerUnitTest {
                 .createPlayback(Mockito.any(), mPlaybackCallbackCaptor.capture());
 
         mPlaybackCallbackCaptor.getValue().onSuccess(mPlayback);
-        verify(mPlayerCoordinator, times(1)).playbackReady(eq(mPlayback), eq(PlaybackListener.State.PLAYING));
+        verify(mPlayerCoordinator, times(1))
+                .playbackReady(eq(mPlayback), eq(PlaybackListener.State.PLAYING));
         verify(mPlayerCoordinator).addObserver(mController);
 
         // test that previous playback is released when another playback is called

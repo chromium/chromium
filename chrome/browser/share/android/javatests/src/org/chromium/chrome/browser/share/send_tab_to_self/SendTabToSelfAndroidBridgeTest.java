@@ -31,11 +31,9 @@ import java.util.List;
 @RunWith(BaseRobolectricTestRunner.class)
 @Config(manifest = Config.NONE)
 public class SendTabToSelfAndroidBridgeTest {
-    @Rule
-    public JniMocker mocker = new JniMocker();
+    @Rule public JniMocker mocker = new JniMocker();
 
-    @Mock
-    SendTabToSelfAndroidBridge.Natives mNativeMock;
+    @Mock SendTabToSelfAndroidBridge.Natives mNativeMock;
     private Profile mProfile;
     private WebContents mWebContents;
 
@@ -62,10 +60,12 @@ public class SendTabToSelfAndroidBridgeTest {
     @SmallTest
     @SuppressWarnings("unchecked")
     public void testGetAllTargetDeviceInfos() {
-        TargetDeviceInfo[] expected = new TargetDeviceInfo[] {
-                new TargetDeviceInfo("name1", "guid1", FormFactor.DESKTOP, 123L),
-                new TargetDeviceInfo("name2", "guid2", FormFactor.DESKTOP, 456L),
-                new TargetDeviceInfo("name3", "guid3", FormFactor.PHONE, 789L)};
+        TargetDeviceInfo[] expected =
+                new TargetDeviceInfo[] {
+                    new TargetDeviceInfo("name1", "guid1", FormFactor.DESKTOP, 123L),
+                    new TargetDeviceInfo("name2", "guid2", FormFactor.DESKTOP, 456L),
+                    new TargetDeviceInfo("name3", "guid3", FormFactor.PHONE, 789L)
+                };
         when(mNativeMock.getAllTargetDeviceInfos(eq(mProfile))).thenReturn(expected);
 
         List<TargetDeviceInfo> actual =

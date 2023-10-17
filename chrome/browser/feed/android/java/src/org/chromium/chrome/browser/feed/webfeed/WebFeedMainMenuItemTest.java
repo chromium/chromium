@@ -65,42 +65,34 @@ import org.chromium.url.JUnitTestGURLs;
 
 import java.util.ArrayList;
 
-/**
- * Tests {@link WebFeedMainMenuItem}.
- */
+/** Tests {@link WebFeedMainMenuItem}. */
 @RunWith(BaseRobolectricTestRunner.class)
-@Config(manifest = Config.NONE, shadows = {ShadowUrlUtilities.class})
+@Config(
+        manifest = Config.NONE,
+        shadows = {ShadowUrlUtilities.class})
 @LooperMode(LooperMode.Mode.LEGACY)
 @EnableFeatures({ChromeFeatureList.CORMORANT})
 @SmallTest
 public final class WebFeedMainMenuItemTest {
     private static final GURL TEST_URL = JUnitTestGURLs.EXAMPLE_URL;
 
-    @Rule
-    public JniMocker mJniMocker = new JniMocker();
+    @Rule public JniMocker mJniMocker = new JniMocker();
+
     @Rule
     public ActivityScenarioRule<TestActivity> mActivityScenarioRule =
             new ActivityScenarioRule<>(TestActivity.class);
-    @Rule
-    public TestRule mFeaturesProcessorRule = new Features.JUnitProcessor();
 
-    @Captor
-    ArgumentCaptor<Intent> mIntentCaptor;
+    @Rule public TestRule mFeaturesProcessorRule = new Features.JUnitProcessor();
 
-    @Mock
-    private Context mContext;
-    @Mock
-    private FeedLauncher mFeedLauncher;
-    @Mock
-    private AppMenuHandler mAppMenuHandler;
-    @Mock
-    private ModalDialogManager mDialogManager;
-    @Mock
-    private SnackbarManager mSnackBarManager;
-    @Mock
-    private Tab mTab;
-    @Mock
-    public WebFeedBridge.Natives mWebFeedBridgeJniMock;
+    @Captor ArgumentCaptor<Intent> mIntentCaptor;
+
+    @Mock private Context mContext;
+    @Mock private FeedLauncher mFeedLauncher;
+    @Mock private AppMenuHandler mAppMenuHandler;
+    @Mock private ModalDialogManager mDialogManager;
+    @Mock private SnackbarManager mSnackBarManager;
+    @Mock private Tab mTab;
+    @Mock public WebFeedBridge.Natives mWebFeedBridgeJniMock;
 
     private Activity mActivity;
     private Class<?> mCreatorActivityClass;
@@ -125,24 +117,31 @@ public final class WebFeedMainMenuItemTest {
         mActivityScenarioRule.getScenario().onActivity(activity -> mActivity = activity);
 
         // Add requests for web feed information to mWaitingMetadataCallbacks.
-        doAnswer(invocation -> {
-            assertEquals("Incorrect WebFeedPageInformationRequestReason was used.",
-                    WebFeedPageInformationRequestReason.MENU_ITEM_PRESENTATION,
-                    invocation.<Integer>getArgument(1).intValue());
-            mWaitingMetadataCallbacks.add(
-                    invocation.<Callback<WebFeedBridge.WebFeedMetadata>>getArgument(2));
-            return null;
-        })
+        doAnswer(
+                        invocation -> {
+                            assertEquals(
+                                    "Incorrect WebFeedPageInformationRequestReason was used.",
+                                    WebFeedPageInformationRequestReason.MENU_ITEM_PRESENTATION,
+                                    invocation.<Integer>getArgument(1).intValue());
+                            mWaitingMetadataCallbacks.add(
+                                    invocation.<Callback<WebFeedBridge.WebFeedMetadata>>getArgument(
+                                            2));
+                            return null;
+                        })
                 .when(mWebFeedBridgeJniMock)
-                .findWebFeedInfoForPage(any(WebFeedBridge.WebFeedPageInformation.class), anyInt(),
+                .findWebFeedInfoForPage(
+                        any(WebFeedBridge.WebFeedPageInformation.class),
+                        anyInt(),
                         any(Callback.class));
 
         // Initialize an empty class for mCreatorActivityClass
         class CreatorActivityClassTest {}
         mCreatorActivityClass = CreatorActivityClassTest.class;
 
-        mWebFeedMainMenuItem = (WebFeedMainMenuItem) (LayoutInflater.from(mActivity).inflate(
-                R.layout.web_feed_main_menu_item, null));
+        mWebFeedMainMenuItem =
+                (WebFeedMainMenuItem)
+                        (LayoutInflater.from(mActivity)
+                                .inflate(R.layout.web_feed_main_menu_item, null));
 
         LoadingView.setDisableAnimationForTest(true);
     }
@@ -164,8 +163,14 @@ public final class WebFeedMainMenuItemTest {
     @UiThreadTest
     public void initialize_emptyUrl_removesIcon() {
         doReturn(GURL.emptyGURL()).when(mTab).getOriginalUrl();
-        mWebFeedMainMenuItem.initialize(mTab, mAppMenuHandler, mFaviconFetcher, mFeedLauncher,
-                mDialogManager, mSnackBarManager, mCreatorActivityClass);
+        mWebFeedMainMenuItem.initialize(
+                mTab,
+                mAppMenuHandler,
+                mFaviconFetcher,
+                mFeedLauncher,
+                mDialogManager,
+                mSnackBarManager,
+                mCreatorActivityClass);
         respondWithFeedMetadata(null);
         mFaviconFetcher.answerWithNull();
 
@@ -180,7 +185,8 @@ public final class WebFeedMainMenuItemTest {
         respondWithFeedMetadata(null);
 
         TextView textView = mWebFeedMainMenuItem.findViewById(R.id.menu_item_text);
-        assertEquals("Title should be shortened URL.",
+        assertEquals(
+                "Title should be shortened URL.",
                 UrlFormatter.formatUrlForDisplayOmitSchemePathAndTrivialSubdomains(TEST_URL),
                 textView.getText());
     }
@@ -266,8 +272,9 @@ public final class WebFeedMainMenuItemTest {
     @UiThreadTest
     public void initialize_unfollowInProgress() {
         initializeWebFeedMainMenuItem();
-        respondWithFeedMetadata(createWebFeedMetadata(
-                WebFeedSubscriptionStatus.UNSUBSCRIBE_IN_PROGRESS, GURL.emptyGURL()));
+        respondWithFeedMetadata(
+                createWebFeedMetadata(
+                        WebFeedSubscriptionStatus.UNSUBSCRIBE_IN_PROGRESS, GURL.emptyGURL()));
 
         // ChipView imposes a delay.
         assertEquals("invisible", getChipState());
@@ -279,8 +286,9 @@ public final class WebFeedMainMenuItemTest {
     @UiThreadTest
     public void initialize_unfollowInProgress_succeeds() {
         initializeWebFeedMainMenuItem();
-        respondWithFeedMetadata(createWebFeedMetadata(
-                WebFeedSubscriptionStatus.UNSUBSCRIBE_IN_PROGRESS, GURL.emptyGURL()));
+        respondWithFeedMetadata(
+                createWebFeedMetadata(
+                        WebFeedSubscriptionStatus.UNSUBSCRIBE_IN_PROGRESS, GURL.emptyGURL()));
         ShadowLooper.runUiThreadTasksIncludingDelayedTasks();
 
         respondWithFeedMetadata(
@@ -294,8 +302,9 @@ public final class WebFeedMainMenuItemTest {
     @UiThreadTest
     public void initialize_unfollowInProgress_fails() {
         initializeWebFeedMainMenuItem();
-        respondWithFeedMetadata(createWebFeedMetadata(
-                WebFeedSubscriptionStatus.UNSUBSCRIBE_IN_PROGRESS, GURL.emptyGURL()));
+        respondWithFeedMetadata(
+                createWebFeedMetadata(
+                        WebFeedSubscriptionStatus.UNSUBSCRIBE_IN_PROGRESS, GURL.emptyGURL()));
         ShadowLooper.runUiThreadTasksIncludingDelayedTasks();
 
         respondWithFeedMetadata(
@@ -309,8 +318,9 @@ public final class WebFeedMainMenuItemTest {
     @UiThreadTest
     public void initialize_followInProgress_succeeds() {
         initializeWebFeedMainMenuItem();
-        respondWithFeedMetadata(createWebFeedMetadata(
-                WebFeedSubscriptionStatus.SUBSCRIBE_IN_PROGRESS, GURL.emptyGURL()));
+        respondWithFeedMetadata(
+                createWebFeedMetadata(
+                        WebFeedSubscriptionStatus.SUBSCRIBE_IN_PROGRESS, GURL.emptyGURL()));
 
         // ChipView imposes a delay.
         assertEquals("invisible", getChipState());
@@ -328,8 +338,9 @@ public final class WebFeedMainMenuItemTest {
     @UiThreadTest
     public void initialize_followInProgress_fails() {
         initializeWebFeedMainMenuItem();
-        respondWithFeedMetadata(createWebFeedMetadata(
-                WebFeedSubscriptionStatus.SUBSCRIBE_IN_PROGRESS, GURL.emptyGURL()));
+        respondWithFeedMetadata(
+                createWebFeedMetadata(
+                        WebFeedSubscriptionStatus.SUBSCRIBE_IN_PROGRESS, GURL.emptyGURL()));
 
         ShadowLooper.runUiThreadTasksIncludingDelayedTasks();
         respondWithFeedMetadata(
@@ -350,14 +361,16 @@ public final class WebFeedMainMenuItemTest {
         if (followingChip.getVisibility() != View.GONE) {
             assertEquals(View.GONE, followChip.getVisibility());
             if (followingChip.getVisibility() == View.VISIBLE) {
-                assertEquals(mActivity.getResources().getString(R.string.menu_following),
+                assertEquals(
+                        mActivity.getResources().getString(R.string.menu_following),
                         followingChip.getPrimaryTextView().getText());
                 return (followingChip.isEnabled() ? "" : "disabled ") + "following";
             }
             return "invisible";
         } else if (followChip.getVisibility() != View.GONE) {
             if (followChip.getVisibility() == View.VISIBLE) {
-                assertEquals(mActivity.getResources().getString(R.string.menu_follow),
+                assertEquals(
+                        mActivity.getResources().getString(R.string.menu_follow),
                         followChip.getPrimaryTextView().getText());
                 return (followChip.isEnabled() ? "" : "disabled ") + "follow";
             }
@@ -367,13 +380,17 @@ public final class WebFeedMainMenuItemTest {
         }
     }
 
-    /**
-     * Helper method to initialize {@code mWebFeedMainMenuItem} with standard parameters.
-     */
+    /** Helper method to initialize {@code mWebFeedMainMenuItem} with standard parameters. */
     private void initializeWebFeedMainMenuItem() {
         doReturn(TEST_URL).when(mTab).getOriginalUrl();
-        mWebFeedMainMenuItem.initialize(mTab, mAppMenuHandler, mFaviconFetcher, mFeedLauncher,
-                mDialogManager, mSnackBarManager, mCreatorActivityClass);
+        mWebFeedMainMenuItem.initialize(
+                mTab,
+                mAppMenuHandler,
+                mFaviconFetcher,
+                mFeedLauncher,
+                mDialogManager,
+                mSnackBarManager,
+                mCreatorActivityClass);
     }
 
     /**
@@ -383,8 +400,13 @@ public final class WebFeedMainMenuItemTest {
      */
     private WebFeedBridge.WebFeedMetadata createWebFeedMetadata(
             @WebFeedSubscriptionStatus int subscriptionStatus, GURL faviconUrl) {
-        return new WebFeedBridge.WebFeedMetadata("id".getBytes(), "title", TEST_URL,
-                subscriptionStatus, WebFeedAvailabilityStatus.INACTIVE, /*isRecommended=*/false,
+        return new WebFeedBridge.WebFeedMetadata(
+                "id".getBytes(),
+                "title",
+                TEST_URL,
+                subscriptionStatus,
+                WebFeedAvailabilityStatus.INACTIVE,
+                /* isRecommended= */ false,
                 faviconUrl);
     }
 

@@ -30,15 +30,12 @@ import org.chromium.components.password_manager.core.browser.proto.ListPasswords
 import org.chromium.components.password_manager.core.browser.proto.PasswordWithLocalData;
 import org.chromium.components.sync.protocol.PasswordSpecificsData;
 
-/**
- * Tests that backend consumer bridge calls for operation callbacks reach native backend.
- */
+/** Tests that backend consumer bridge calls for operation callbacks reach native backend. */
 @RunWith(BaseRobolectricTestRunner.class)
 @Config(manifest = Config.NONE)
 @Batch(Batch.PER_CLASS)
 public class PasswordStoreAndroidBackendReceiverBridgeTest {
-    @Rule
-    public TestRule mProcessor = new Features.JUnitProcessor();
+    @Rule public TestRule mProcessor = new Features.JUnitProcessor();
 
     private static final PasswordSpecificsData.Builder sTestProfile =
             PasswordSpecificsData.newBuilder()
@@ -55,8 +52,7 @@ public class PasswordStoreAndroidBackendReceiverBridgeTest {
     private static final long sFakeNativePointer = 4;
     private static final int sTestJobId = 1337;
 
-    @Rule
-    public JniMocker mJniMocker = new JniMocker();
+    @Rule public JniMocker mJniMocker = new JniMocker();
 
     @Mock
     private PasswordStoreAndroidBackendReceiverBridgeImpl.Natives mBackendReceiverBridgeJniMock;
@@ -66,7 +62,8 @@ public class PasswordStoreAndroidBackendReceiverBridgeTest {
     @Before
     public void setUp() {
         MockitoAnnotations.initMocks(this);
-        mJniMocker.mock(PasswordStoreAndroidBackendReceiverBridgeImplJni.TEST_HOOKS,
+        mJniMocker.mock(
+                PasswordStoreAndroidBackendReceiverBridgeImplJni.TEST_HOOKS,
                 mBackendReceiverBridgeJniMock);
         mBackendReceiverBridge =
                 new PasswordStoreAndroidBackendReceiverBridgeImpl(sFakeNativePointer);
@@ -87,8 +84,8 @@ public class PasswordStoreAndroidBackendReceiverBridgeTest {
                 AffiliatedPassword.newBuilder().setPasswordData(sTestPwdWithLocalData).build();
 
         ListAffiliatedPasswordsResult.Builder affiliatedPasswordsResult =
-                ListAffiliatedPasswordsResult.newBuilder().addAffiliatedPasswords(
-                        affiliatedPassword);
+                ListAffiliatedPasswordsResult.newBuilder()
+                        .addAffiliatedPasswords(affiliatedPassword);
         final byte[] kExpectedList = affiliatedPasswordsResult.build().toByteArray();
 
         mBackendReceiverBridge.onCompleteWithAffiliatedLogins(sTestJobId, kExpectedList);
@@ -98,23 +95,36 @@ public class PasswordStoreAndroidBackendReceiverBridgeTest {
 
     @Test
     public void testOnApiExceptionCallsBridgeOnError() {
-        Exception kExpectedException = new ApiException(new Status(
-                new ConnectionResult(ConnectionResult.API_UNAVAILABLE), "Test API error"));
+        Exception kExpectedException =
+                new ApiException(
+                        new Status(
+                                new ConnectionResult(ConnectionResult.API_UNAVAILABLE),
+                                "Test API error"));
         mBackendReceiverBridge.handleAndroidBackendException(sTestJobId, kExpectedException);
         verify(mBackendReceiverBridgeJniMock)
-                .onError(sFakeNativePointer, sTestJobId, AndroidBackendErrorType.EXTERNAL_ERROR,
-                        CommonStatusCodes.API_NOT_CONNECTED, true,
+                .onError(
+                        sFakeNativePointer,
+                        sTestJobId,
+                        AndroidBackendErrorType.EXTERNAL_ERROR,
+                        CommonStatusCodes.API_NOT_CONNECTED,
+                        true,
                         ConnectionResult.API_UNAVAILABLE);
     }
 
     @Test
     public void testOnBackendExceptionCallsBridgeOnError() {
-        Exception kExpectedException = new PasswordStoreAndroidBackend.BackendException(
-                "Test backend error", AndroidBackendErrorType.NO_ACCOUNT);
+        Exception kExpectedException =
+                new PasswordStoreAndroidBackend.BackendException(
+                        "Test backend error", AndroidBackendErrorType.NO_ACCOUNT);
         mBackendReceiverBridge.handleAndroidBackendException(sTestJobId, kExpectedException);
         verify(mBackendReceiverBridgeJniMock)
-                .onError(sFakeNativePointer, sTestJobId, AndroidBackendErrorType.NO_ACCOUNT, 0,
-                        false, -1);
+                .onError(
+                        sFakeNativePointer,
+                        sTestJobId,
+                        AndroidBackendErrorType.NO_ACCOUNT,
+                        0,
+                        false,
+                        -1);
     }
 
     @Test
@@ -122,8 +132,13 @@ public class PasswordStoreAndroidBackendReceiverBridgeTest {
         Exception kExpectedException = new Exception("Test error");
         mBackendReceiverBridge.handleAndroidBackendException(sTestJobId, kExpectedException);
         verify(mBackendReceiverBridgeJniMock)
-                .onError(sFakeNativePointer, sTestJobId, AndroidBackendErrorType.UNCATEGORIZED, 0,
-                        false, -1);
+                .onError(
+                        sFakeNativePointer,
+                        sTestJobId,
+                        AndroidBackendErrorType.UNCATEGORIZED,
+                        0,
+                        false,
+                        -1);
     }
 
     @Test

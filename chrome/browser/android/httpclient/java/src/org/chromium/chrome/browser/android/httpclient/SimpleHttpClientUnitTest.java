@@ -36,20 +36,14 @@ import java.util.Map;
 public class SimpleHttpClientUnitTest {
     private static final long FAKE_NATIVE_POINTER = 123456789L;
 
-    @Rule
-    public JniMocker mMocker = new JniMocker();
-    @Rule
-    public MockitoRule mRule = MockitoJUnit.rule();
+    @Rule public JniMocker mMocker = new JniMocker();
+    @Rule public MockitoRule mRule = MockitoJUnit.rule();
 
-    @Mock
-    public SimpleHttpClient.Natives mNativeMock;
-    @Mock
-    public Profile mMockProfile;
+    @Mock public SimpleHttpClient.Natives mNativeMock;
+    @Mock public Profile mMockProfile;
 
-    @Captor
-    public ArgumentCaptor<String[]> mHeaderKeysCaptor;
-    @Captor
-    public ArgumentCaptor<String[]> mHeaderValuesCaptor;
+    @Captor public ArgumentCaptor<String[]> mHeaderKeysCaptor;
+    @Captor public ArgumentCaptor<String[]> mHeaderValuesCaptor;
 
     private SimpleHttpClient mHttpClient;
 
@@ -85,13 +79,21 @@ public class SimpleHttpClientUnitTest {
         final byte[] requestBody = {};
         final String requestType = "requestType";
 
-        mHttpClient.send(JUnitTestGURLs.BLUE_1, requestType, requestBody, headers,
+        mHttpClient.send(
+                JUnitTestGURLs.BLUE_1,
+                requestType,
+                requestBody,
+                headers,
                 NetworkTrafficAnnotationTag.TRAFFIC_ANNOTATION_FOR_TESTS,
                 (response) -> responseCallback.notifyCalled());
 
         Mockito.verify(mNativeMock)
-                .sendNetworkRequest(eq(FAKE_NATIVE_POINTER), eq(JUnitTestGURLs.BLUE_1),
-                        eq(requestType), eq(requestBody), mHeaderKeysCaptor.capture(),
+                .sendNetworkRequest(
+                        eq(FAKE_NATIVE_POINTER),
+                        eq(JUnitTestGURLs.BLUE_1),
+                        eq(requestType),
+                        eq(requestBody),
+                        mHeaderKeysCaptor.capture(),
                         mHeaderValuesCaptor.capture(),
                         eq(NetworkTrafficAnnotationTag.TRAFFIC_ANNOTATION_FOR_TESTS.getHashCode()),
                         any());
@@ -103,10 +105,14 @@ public class SimpleHttpClientUnitTest {
         Assert.assertEquals("Header key array length is different.", 2, headerKeys.length);
         Assert.assertEquals("Header value array length is different.", 2, headerValues.length);
 
-        Assert.assertEquals("Header keys and values should match at the index 0.",
-                "val" + headerKeys[0], headerValues[0]);
-        Assert.assertEquals("Header keys and values should match at the index 1.",
-                "val" + headerKeys[1], headerValues[1]);
+        Assert.assertEquals(
+                "Header keys and values should match at the index 0.",
+                "val" + headerKeys[0],
+                headerValues[0]);
+        Assert.assertEquals(
+                "Header keys and values should match at the index 1.",
+                "val" + headerKeys[1],
+                headerValues[1]);
     }
 
     @Test
@@ -115,8 +121,9 @@ public class SimpleHttpClientUnitTest {
         String[] responseHeaderValues = {"valFoo1", "valFoo2", "valBar"};
         byte[] responseBody = "responseBody".getBytes();
 
-        HttpResponse response = SimpleHttpClient.createHttpResponse(
-                200, 0, responseBody, responseHeaderKeys, responseHeaderValues);
+        HttpResponse response =
+                SimpleHttpClient.createHttpResponse(
+                        200, 0, responseBody, responseHeaderKeys, responseHeaderValues);
 
         Assert.assertNotNull(response.mHeaders.get("Foo"));
         Assert.assertNotNull(response.mHeaders.get("Bar"));

@@ -38,15 +38,11 @@ import java.lang.ref.WeakReference;
 @RunWith(BaseRobolectricTestRunner.class)
 @Batch(Batch.PER_CLASS)
 public class AddUsernameDialogBridgeTest {
-    @Rule
-    public MockitoRule mMockitoRule = MockitoJUnit.rule().strictness(Strictness.STRICT_STUBS);
-    @Rule
-    public JniMocker mJniMocker = new JniMocker();
+    @Rule public MockitoRule mMockitoRule = MockitoJUnit.rule().strictness(Strictness.STRICT_STUBS);
+    @Rule public JniMocker mJniMocker = new JniMocker();
 
-    @Mock
-    private AddUsernameDialogBridge.Natives mBridgeJniMock;
-    @Mock
-    private WindowAndroid mWindowAndroid;
+    @Mock private AddUsernameDialogBridge.Natives mBridgeJniMock;
+    @Mock private WindowAndroid mWindowAndroid;
 
     private static final long sTestNativePointer = 1;
 

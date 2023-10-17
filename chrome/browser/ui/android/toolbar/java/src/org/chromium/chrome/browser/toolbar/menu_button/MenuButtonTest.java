@@ -37,14 +37,11 @@ import org.chromium.base.test.BaseRobolectricTestRunner;
 import org.chromium.chrome.browser.toolbar.R;
 import org.chromium.chrome.browser.ui.theme.BrandedColorScheme;
 
-/**
- * Unit tests for MenuButton.
- */
+/** Unit tests for MenuButton. */
 @RunWith(BaseRobolectricTestRunner.class)
 @Config(manifest = Config.NONE)
 public class MenuButtonTest {
-    @Mock
-    private ColorStateList mColorStateList;
+    @Mock private ColorStateList mColorStateList;
 
     private Activity mActivity;
     private MenuButton mMenuButton;
@@ -55,9 +52,14 @@ public class MenuButtonTest {
         MockitoAnnotations.initMocks(this);
         mActivity = Robolectric.buildActivity(Activity.class).setup().get();
         mActivity.setTheme(R.style.Theme_MaterialComponents);
-        mMenuButton = (MenuButton) ((ViewGroup) LayoutInflater.from(mActivity).inflate(
-                                            R.layout.menu_button, new LinearLayout(mActivity)))
-                              .getChildAt(0);
+        mMenuButton =
+                (MenuButton)
+                        ((ViewGroup)
+                                        LayoutInflater.from(mActivity)
+                                                .inflate(
+                                                        R.layout.menu_button,
+                                                        new LinearLayout(mActivity)))
+                                .getChildAt(0);
 
         mMenuUiState = new MenuUiState();
         mMenuUiState.buttonState = new MenuButtonState();
@@ -86,10 +88,14 @@ public class MenuButtonTest {
         // The underlying image resource for the badged MenuButton is selected at runtime, so we
         // need to check that the drawn Drawable refers to the same resource id as the one specified
         // by UpdateMenuItemHelper.
-        ShadowDrawable lightDrawable = shadowOf(ApiCompatibilityUtils.getDrawable(
-                mActivity.getResources(), mMenuUiState.buttonState.lightBadgeIcon));
-        ShadowDrawable darkDrawable = shadowOf(ApiCompatibilityUtils.getDrawable(
-                mActivity.getResources(), mMenuUiState.buttonState.darkBadgeIcon));
+        ShadowDrawable lightDrawable =
+                shadowOf(
+                        ApiCompatibilityUtils.getDrawable(
+                                mActivity.getResources(), mMenuUiState.buttonState.lightBadgeIcon));
+        ShadowDrawable darkDrawable =
+                shadowOf(
+                        ApiCompatibilityUtils.getDrawable(
+                                mActivity.getResources(), mMenuUiState.buttonState.darkBadgeIcon));
 
         mMenuButton.showAppMenuUpdateBadge(false);
         ShadowDrawable drawnDrawable = shadowOf(mMenuButton.getTabSwitcherAnimationDrawable());

@@ -20,14 +20,11 @@ import org.chromium.base.metrics.UmaRecorderHolder;
 import org.chromium.base.test.BaseRobolectricTestRunner;
 import org.chromium.chrome.test.util.browser.Features;
 
-/**
- * Tests for {@link MerchantTrustMessageContext}.
- */
+/** Tests for {@link MerchantTrustMessageContext}. */
 @RunWith(BaseRobolectricTestRunner.class)
 @Config(manifest = Config.NONE)
 public class MerchantTrustMetricsTest {
-    @Rule
-    public TestRule mProcessor = new Features.JUnitProcessor();
+    @Rule public TestRule mProcessor = new Features.JUnitProcessor();
 
     private MerchantTrustMetrics mMetrics;
 
@@ -42,21 +39,25 @@ public class MerchantTrustMetricsTest {
         mMetrics.startRecordingMessageImpact("fakeHost1", 4.7);
         mMetrics.updateRecordingMessageImpact("fakeHost2");
 
-        assertThat(RecordHistogram.getHistogramTotalCountForTesting(
-                           MerchantTrustMetrics.MESSAGE_IMPACT_BROWSING_TIME_HISTOGRAM),
+        assertThat(
+                RecordHistogram.getHistogramTotalCountForTesting(
+                        MerchantTrustMetrics.MESSAGE_IMPACT_BROWSING_TIME_HISTOGRAM),
                 equalTo(1));
-        assertThat(RecordHistogram.getHistogramTotalCountForTesting(
-                           MerchantTrustMetrics.MESSAGE_IMPACT_BROWSING_TIME_HISTOGRAM
-                           + ".RatingAboveFourPointFive"),
+        assertThat(
+                RecordHistogram.getHistogramTotalCountForTesting(
+                        MerchantTrustMetrics.MESSAGE_IMPACT_BROWSING_TIME_HISTOGRAM
+                                + ".RatingAboveFourPointFive"),
                 equalTo(1));
 
-        assertThat(RecordHistogram.getHistogramValueCountForTesting(
-                           MerchantTrustMetrics.MESSAGE_IMPACT_NAVIGATION_COUNT_HISTOGRAM, 0),
+        assertThat(
+                RecordHistogram.getHistogramValueCountForTesting(
+                        MerchantTrustMetrics.MESSAGE_IMPACT_NAVIGATION_COUNT_HISTOGRAM, 0),
                 equalTo(1));
-        assertThat(RecordHistogram.getHistogramValueCountForTesting(
-                           MerchantTrustMetrics.MESSAGE_IMPACT_NAVIGATION_COUNT_HISTOGRAM
-                                   + ".RatingAboveFourPointFive",
-                           0),
+        assertThat(
+                RecordHistogram.getHistogramValueCountForTesting(
+                        MerchantTrustMetrics.MESSAGE_IMPACT_NAVIGATION_COUNT_HISTOGRAM
+                                + ".RatingAboveFourPointFive",
+                        0),
                 equalTo(1));
     }
 
@@ -67,21 +68,25 @@ public class MerchantTrustMetricsTest {
         mMetrics.updateRecordingMessageImpact("fakeHost1");
         mMetrics.finishRecordingMessageImpact();
 
-        assertThat(RecordHistogram.getHistogramTotalCountForTesting(
-                           MerchantTrustMetrics.MESSAGE_IMPACT_BROWSING_TIME_HISTOGRAM),
+        assertThat(
+                RecordHistogram.getHistogramTotalCountForTesting(
+                        MerchantTrustMetrics.MESSAGE_IMPACT_BROWSING_TIME_HISTOGRAM),
                 equalTo(1));
-        assertThat(RecordHistogram.getHistogramTotalCountForTesting(
-                           MerchantTrustMetrics.MESSAGE_IMPACT_BROWSING_TIME_HISTOGRAM
-                           + ".RatingAboveFour"),
+        assertThat(
+                RecordHistogram.getHistogramTotalCountForTesting(
+                        MerchantTrustMetrics.MESSAGE_IMPACT_BROWSING_TIME_HISTOGRAM
+                                + ".RatingAboveFour"),
                 equalTo(1));
 
-        assertThat(RecordHistogram.getHistogramValueCountForTesting(
-                           MerchantTrustMetrics.MESSAGE_IMPACT_NAVIGATION_COUNT_HISTOGRAM, 2),
+        assertThat(
+                RecordHistogram.getHistogramValueCountForTesting(
+                        MerchantTrustMetrics.MESSAGE_IMPACT_NAVIGATION_COUNT_HISTOGRAM, 2),
                 equalTo(1));
-        assertThat(RecordHistogram.getHistogramValueCountForTesting(
-                           MerchantTrustMetrics.MESSAGE_IMPACT_NAVIGATION_COUNT_HISTOGRAM
-                                   + ".RatingAboveFour",
-                           2),
+        assertThat(
+                RecordHistogram.getHistogramValueCountForTesting(
+                        MerchantTrustMetrics.MESSAGE_IMPACT_NAVIGATION_COUNT_HISTOGRAM
+                                + ".RatingAboveFour",
+                        2),
                 equalTo(1));
     }
 }

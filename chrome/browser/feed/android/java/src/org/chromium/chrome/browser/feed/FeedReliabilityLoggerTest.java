@@ -30,10 +30,8 @@ import org.chromium.components.feed.proto.wire.ReliabilityLoggingEnums.DiscoverL
 @RunWith(BaseRobolectricTestRunner.class)
 @Config(manifest = Config.NONE)
 public class FeedReliabilityLoggerTest {
-    @Mock
-    FeedLaunchReliabilityLogger mLaunchLogger;
-    @Mock
-    FeedUserInteractionReliabilityLogger mUserInteractionLogger;
+    @Mock FeedLaunchReliabilityLogger mLaunchLogger;
+    @Mock FeedUserInteractionReliabilityLogger mUserInteractionLogger;
 
     FeedReliabilityLogger mFeedReliabilityLogger;
 
@@ -86,28 +84,28 @@ public class FeedReliabilityLoggerTest {
     @Test
     public void testOnUrlFocusChange_gainFocus_launchInProgress() {
         when(mLaunchLogger.isLaunchInProgress()).thenReturn(true);
-        mFeedReliabilityLogger.onUrlFocusChange(/*hasFocus=*/true);
+        mFeedReliabilityLogger.onUrlFocusChange(/* hasFocus= */ true);
         verify(mLaunchLogger, never()).cancelPendingFinished();
     }
 
     @Test
     public void testOnUrlFocusChange_gainFocus_launchNotInProgress() {
         when(mLaunchLogger.isLaunchInProgress()).thenReturn(false);
-        mFeedReliabilityLogger.onUrlFocusChange(/*hasFocus=*/true);
+        mFeedReliabilityLogger.onUrlFocusChange(/* hasFocus= */ true);
         verify(mLaunchLogger, never()).cancelPendingFinished();
     }
 
     @Test
     public void testOnUrlFocusChange_loseFocus_launchInProgress() {
         when(mLaunchLogger.isLaunchInProgress()).thenReturn(true);
-        mFeedReliabilityLogger.onUrlFocusChange(/*hasFocus=*/false);
+        mFeedReliabilityLogger.onUrlFocusChange(/* hasFocus= */ false);
         verify(mLaunchLogger, times(1)).cancelPendingFinished();
     }
 
     @Test
     public void testOnUrlFocusChange_loseFocus_launchNotInProgress() {
         when(mLaunchLogger.isLaunchInProgress()).thenReturn(false);
-        mFeedReliabilityLogger.onUrlFocusChange(/*hasFocus=*/false);
+        mFeedReliabilityLogger.onUrlFocusChange(/* hasFocus= */ false);
         verify(mLaunchLogger, never()).cancelPendingFinished();
     }
 

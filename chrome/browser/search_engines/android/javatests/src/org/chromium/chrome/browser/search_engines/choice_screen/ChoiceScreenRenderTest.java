@@ -58,9 +58,11 @@ public class ChoiceScreenRenderTest {
 
     @Before
     public void setUp() {
-        doReturn(ImmutableList.of(new FakeTemplateUrl("Search Engine A", "sea"),
-                         new FakeTemplateUrl("Search Engine B", "seb"),
-                         new FakeTemplateUrl("Search Engine C", "sec")))
+        doReturn(
+                        ImmutableList.of(
+                                new FakeTemplateUrl("Search Engine A", "sea"),
+                                new FakeTemplateUrl("Search Engine B", "seb"),
+                                new FakeTemplateUrl("Search Engine C", "sec")))
                 .when(mDelegate)
                 .getSearchEnginesForPromoDialog(anyInt());
 
@@ -76,17 +78,21 @@ public class ChoiceScreenRenderTest {
 
     private View showChoiceScreenDialog() throws Exception {
         assertNull(mChoiceDialogCoordinator);
-        return TestThreadUtils.runOnUiThreadBlocking(() -> {
-            mChoiceDialogCoordinator = new ChoiceDialogCoordinator(
-                    mActivityTestRule.getActivity(), mDelegate, (unused) -> {});
-            mChoiceDialogCoordinator.show();
+        return TestThreadUtils.runOnUiThreadBlocking(
+                () -> {
+                    mChoiceDialogCoordinator =
+                            new ChoiceDialogCoordinator(
+                                    mActivityTestRule.getActivity(), mDelegate, (unused) -> {});
+                    mChoiceDialogCoordinator.show();
 
-            PropertyModel dialogModel = mActivityTestRule.getActivity()
-                                                .getModalDialogManager()
-                                                .getCurrentDialogForTest();
-            assertNotNull(dialogModel);
+                    PropertyModel dialogModel =
+                            mActivityTestRule
+                                    .getActivity()
+                                    .getModalDialogManager()
+                                    .getCurrentDialogForTest();
+                    assertNotNull(dialogModel);
 
-            return dialogModel.get(ModalDialogProperties.CUSTOM_VIEW);
-        });
+                    return dialogModel.get(ModalDialogProperties.CUSTOM_VIEW);
+                });
     }
 }

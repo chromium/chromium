@@ -34,36 +34,47 @@ public class UiUtilsTest {
         Context context = ContextUtils.getApplicationContext();
         mShadowPackageManager = Shadows.shadowOf(context.getPackageManager());
     }
+
     @Test
     public void testCanShare_completeLegacyDownload_returnsTrue() {
-        assertTrue(UiUtils.canShare(createOfflineItem(
-                new ContentId("LEGACY_DOWNLOAD", "A"), OfflineItemState.COMPLETE)));
+        assertTrue(
+                UiUtils.canShare(
+                        createOfflineItem(
+                                new ContentId("LEGACY_DOWNLOAD", "A"), OfflineItemState.COMPLETE)));
     }
 
     @Test
     public void testCanShare_completeLegacyOfflinePage_returnsTrue() {
-        assertTrue(UiUtils.canShare(createOfflineItem(
-                new ContentId("LEGACY_OFFLINE_PAGE", "A"), OfflineItemState.COMPLETE)));
+        assertTrue(
+                UiUtils.canShare(
+                        createOfflineItem(
+                                new ContentId("LEGACY_OFFLINE_PAGE", "A"),
+                                OfflineItemState.COMPLETE)));
     }
 
     @Test
     public void testCanShare_pendingDownload_returnsFalse() {
-        assertFalse(UiUtils.canShare(createOfflineItem(
-                new ContentId("LEGACY_DOWNLOAD", "A"), OfflineItemState.PENDING)));
+        assertFalse(
+                UiUtils.canShare(
+                        createOfflineItem(
+                                new ContentId("LEGACY_DOWNLOAD", "A"), OfflineItemState.PENDING)));
     }
 
     @Test
     public void testCanShare_nonLegacyDownload_returnsFalse() {
-        assertFalse(UiUtils.canShare(
-                createOfflineItem(new ContentId("test", "A"), OfflineItemState.COMPLETE)));
+        assertFalse(
+                UiUtils.canShare(
+                        createOfflineItem(new ContentId("test", "A"), OfflineItemState.COMPLETE)));
     }
 
     @Test
     public void testCanShare_isAutomotive_returnsFalse() {
         mShadowPackageManager.setSystemFeature(
                 PackageManager.FEATURE_AUTOMOTIVE, /* supported= */ true);
-        assertFalse(UiUtils.canShare(createOfflineItem(
-                new ContentId("LEGACY_DOWNLOAD", "A"), OfflineItemState.COMPLETE)));
+        assertFalse(
+                UiUtils.canShare(
+                        createOfflineItem(
+                                new ContentId("LEGACY_DOWNLOAD", "A"), OfflineItemState.COMPLETE)));
     }
 
     private static OfflineItem createOfflineItem(ContentId id, @OfflineItemState int state) {

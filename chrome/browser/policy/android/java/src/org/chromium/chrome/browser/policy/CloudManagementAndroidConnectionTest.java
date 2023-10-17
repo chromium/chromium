@@ -14,9 +14,7 @@ import org.robolectric.annotation.Config;
 
 import org.chromium.base.test.BaseRobolectricTestRunner;
 
-/**
- * Unit tests for CloudManagementAndroidConnection.
- */
+/** Unit tests for CloudManagementAndroidConnection. */
 @RunWith(BaseRobolectricTestRunner.class)
 @Config(manifest = Config.NONE)
 public final class CloudManagementAndroidConnectionTest {

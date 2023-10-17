@@ -26,15 +26,12 @@ import org.chromium.chrome.browser.tab.TabLaunchType;
 import org.chromium.chrome.browser.tab.TabSelectionType;
 import org.chromium.chrome.test.util.browser.tabmodel.MockTabModel;
 
-/**
- * Tests for the TabModelTabObserver.
- */
+/** Tests for the TabModelTabObserver. */
 @RunWith(BaseRobolectricTestRunner.class)
 @Config(manifest = Config.NONE)
 public class TabModelTabObserverUnitTest {
     private MockTabModel mTabModel;
-    @Mock
-    private Profile mProfile;
+    @Mock private Profile mProfile;
     private TabModelTabObserver mTabModelTabObserver;
 
     private Tab mTab = new MockTab(1, false);
