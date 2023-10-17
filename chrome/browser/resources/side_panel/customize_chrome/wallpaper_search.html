@@ -143,17 +143,15 @@
 </div>
 
 <!-- demo -->
-<customize-chrome-combobox label="My label">
-  <div role="group">
-    Group 1
-    <div role="option">Option 1</div>
-    <div role="option">Option 2</div>
-    <div role="option">Option 3</div>
-  </div>
-  <div role="group">
-    Group 2
-    <div role="option">Option 4</div>
-    <div role="option">Option 5</div>
-    <div role="option">Option 6</div>
-  </div>
+<customize-chrome-combobox id="combobox" label="Descriptor A"
+    value="[[selectedDescriptorA_]]"
+    on-value-changed="onComboboxDemoChange_">
+  <template is="dom-repeat" items="[[descriptors_.descriptorA]]">
+    <div role="group">
+      [[item.category]]
+      <template is="dom-repeat" items="[[item.labels]]">
+        <div role="option" value="[[item]]">[[item]]</div>
+      </template>
+    </div>
+  </template>
 </customize-chrome-combobox>

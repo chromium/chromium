@@ -4,10 +4,10 @@
 
 import 'chrome://customize-chrome-side-panel.top-chrome/combobox/customize_chrome_combobox.js';
 
-import {CustomizeChromeCombobox} from 'chrome://customize-chrome-side-panel.top-chrome/combobox/customize_chrome_combobox.js';
+import {CustomizeChromeCombobox, OptionElement} from 'chrome://customize-chrome-side-panel.top-chrome/combobox/customize_chrome_combobox.js';
 import {assertEquals, assertFalse, assertTrue} from 'chrome://webui-test/chai_assert.js';
 import {flushTasks} from 'chrome://webui-test/polymer_test_util.js';
-import {isVisible} from 'chrome://webui-test/test_util.js';
+import {eventToPromise, isVisible} from 'chrome://webui-test/test_util.js';
 
 suite('ComboboxTest', () => {
   let combobox: CustomizeChromeCombobox;
@@ -19,10 +19,11 @@ suite('ComboboxTest', () => {
     return group;
   }
 
-  function addOption(parent: HTMLElement = combobox): HTMLElement {
-    const option = document.createElement('div');
+  function addOption(parent: HTMLElement = combobox): OptionElement {
+    const option = document.createElement('div') as OptionElement;
     option.setAttribute('role', 'option');
     option.innerText = 'Option';
+    option.value = 'value';
     parent.appendChild(option);
     return option;
   }
@@ -139,5 +140,40 @@ suite('ComboboxTest', () => {
     assertFalse(groupA.hasAttribute('selected'));
     assertTrue(optionA2.hasAttribute('selected'));
     assertTrue(isVisible(combobox.$.dropdown));
+  });
+
+  test('NotifiesValueChange', async () => {
+    const option1 = addOption();
+    option1.value = 'option-1-value';
+    const option2 = addOption();
+    option2.value = 'option-2-value';
+
+    let valueChangeEvent = eventToPromise('value-changed', combobox);
+    combobox.$.input.click();
+    option1.dispatchEvent(new Event('click', {composed: true, bubbles: true}));
+    await valueChangeEvent;
+    assertEquals('option-1-value', combobox.value);
+    assertTrue(option1.hasAttribute('selected'));
+
+    valueChangeEvent = eventToPromise('value-changed', combobox);
+    combobox.$.input.click();
+    option2.dispatchEvent(new Event('click', {composed: true, bubbles: true}));
+    assertEquals('option-2-value', combobox.value);
+    assertTrue(option2.hasAttribute('selected'));
+  });
+
+  test('UpdatesWithBoundValue', async () => {
+    const option1 = addOption();
+    option1.value = 'option-1-value';
+    const option2 = addOption();
+    option2.value = 'option-2-value';
+
+    combobox.value = 'option-1-value';
+    assertTrue(option1.hasAttribute('selected'));
+    assertFalse(option2.hasAttribute('selected'));
+
+    combobox.value = 'option-2-value';
+    assertFalse(option1.hasAttribute('selected'));
+    assertTrue(option2.hasAttribute('selected'));
   });
 });

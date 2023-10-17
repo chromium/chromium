@@ -16,12 +16,14 @@ import {CrButtonElement} from 'chrome://resources/cr_elements/cr_button/cr_butto
 import {assert} from 'chrome://resources/js/assert.js';
 import {DomRepeatEvent, PolymerElement} from 'chrome://resources/polymer/v3_0/polymer/polymer_bundled.min.js';
 
+import {CustomizeChromeCombobox} from './combobox/customize_chrome_combobox.js';
 import {CustomizeChromePageHandlerInterface, DescriptorA, DescriptorB, Descriptors, WallpaperSearchResult} from './customize_chrome.mojom-webui.js';
 import {CustomizeChromeApiProxy} from './customize_chrome_api_proxy.js';
 import {getTemplate} from './wallpaper_search.html.js';
 
 export interface WallpaperSearchElement {
   $: {
+    combobox: CustomizeChromeCombobox,
     descriptorMenuA: CrActionMenuElement,
     descriptorMenuB: CrActionMenuElement,
     descriptorMenuC: CrActionMenuElement,
@@ -82,6 +84,10 @@ export class WallpaperSearchElement extends PolymerElement {
 
   private async onBackClick_() {
     this.dispatchEvent(new Event('back-click'));
+  }
+
+  private onComboboxDemoChange_() {
+    this.selectedDescriptorA_ = this.$.combobox.value || null;
   }
 
   private onDescriptorLabelClickA_(e: DomRepeatEvent<string>) {

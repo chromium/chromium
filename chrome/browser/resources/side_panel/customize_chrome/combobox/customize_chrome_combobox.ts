@@ -15,6 +15,8 @@ const HIGHLIGHTABLE_ITEMS_SELECTOR = '[role=group], [role=option]';
 /* Selector for selectable options in the dropdown. */
 const SELECTABLE_ITEMS_SELECTOR = '[role=option]';
 
+export type OptionElement = HTMLElement&{value?: string};
+
 export interface CustomizeChromeCombobox {
   $: {
     input: HTMLDivElement,
@@ -40,7 +42,15 @@ export class CustomizeChromeCombobox extends PolymerElement {
         observer: 'onExpandedChange_',
       },
       label: String,
-      selectedElement_: Object,
+      selectedElement_: {
+        type: Object,
+        observer: 'onSelectedElementChanged_',
+      },
+      value: {
+        type: String,
+        notify: true,
+        observer: 'onValueChanged_',
+      },
     };
   }
 
@@ -49,7 +59,8 @@ export class CustomizeChromeCombobox extends PolymerElement {
   private highlightedElement_: HTMLElement|null = null;
   label: string;
   private domObserver_: MutationObserver|null = null;
-  private selectedElement_: HTMLElement|null = null;
+  private selectedElement_: OptionElement|null = null;
+  value: string|undefined;
 
   override connectedCallback() {
     super.connectedCallback();
@@ -215,6 +226,32 @@ export class CustomizeChromeCombobox extends PolymerElement {
     this.highlightElement_(this.highlightableElements_[index]!);
   }
 
+  private onSelectedElementChanged_() {
+    if (!this.selectedElement_) {
+      this.value = undefined;
+      return;
+    }
+
+    this.value = this.selectedElement_.value;
+  }
+
+  private onValueChanged_() {
+    if (!this.value) {
+      return;
+    }
+
+    if (this.selectedElement_ && this.selectedElement_.value === this.value) {
+      // Selected element matches the value. Nothing left to do.
+      return;
+    }
+
+    this.selectItem_(
+        (Array.from(this.querySelectorAll(SELECTABLE_ITEMS_SELECTOR)) as
+         OptionElement[])
+            .find(option => option.value === this.value) ||
+        null);
+  }
+
   private selectItem_(item: HTMLElement|null): boolean {
     if (!item) {
       return false;
@@ -229,7 +266,7 @@ export class CustomizeChromeCombobox extends PolymerElement {
     }
 
     item.toggleAttribute('selected', true);
-    this.selectedElement_ = item;
+    this.selectedElement_ = item as OptionElement;
     return true;
   }
 }
