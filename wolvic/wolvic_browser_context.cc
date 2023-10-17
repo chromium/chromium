@@ -15,6 +15,7 @@
 #include "base/path_service.h"
 #include "base/threading/thread.h"
 #include "build/build_config.h"
+#include "components/cdm/browser/media_drm_storage_impl.h"
 #include "components/keyed_service/content/browser_context_dependency_manager.h"
 #include "components/keyed_service/core/simple_dependency_manager.h"
 #include "components/keyed_service/core/simple_factory_key.h"
@@ -125,7 +126,8 @@ void WolvicBrowserContext::CreateUserPrefService() {
 }
 
 void WolvicBrowserContext::RegisterPrefs(PrefRegistrySimple* registry, PrefNameSet* persistent_prefs) {
-  // TODO(zvoit): Register any prefs used by Wolvic here
+  cdm::MediaDrmStorageImpl::RegisterProfilePrefs(registry);
+  persistent_prefs->insert(cdm::prefs::kMediaDrmStorage);
 }
 
 std::unique_ptr<ZoomLevelDelegate>

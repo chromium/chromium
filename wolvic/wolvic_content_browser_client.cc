@@ -5,12 +5,15 @@
 #include "wolvic/wolvic_content_browser_client.h"
 
 #include "base/path_service.h"
+#include "components/cdm/browser/media_drm_storage_impl.h"
 #include "components/embedder_support/user_agent_utils.h"
 #include "components/prefs/pref_service.h"
+#include "content/public/browser/render_frame_host.h"
 #include "content/public/browser/user_level_memory_pressure_signal_features.h"
 #include "content/public/common/content_switches.h"
 #include "content/shell/browser/shell.h"
 #include "content/shell/browser/shell_devtools_manager_delegate.h"
+#include "media/mojo/mojom/media_drm_storage.mojom.h"
 #include "services/network/public/mojom/network_context.mojom.h"
 #include "wolvic/browser/session_settings.h"
 #include "wolvic/browser/youtube/youtube_url_loader_request_interceptor.h"
@@ -23,6 +26,40 @@ namespace content {
 namespace {
 
 WolvicContentBrowserClient* g_instance = nullptr;
+
+void CreateOriginId(cdm::MediaDrmStorageImpl::OriginIdObtainedCB callback) {
+  std::move(callback).Run(true, base::UnguessableToken::Create());
+}
+
+void AllowEmptyOriginIdCB(base::OnceCallback<void(bool)> callback) {
+  // Since CreateOriginId() always returns a non-empty origin ID, we don't need
+  // to allow empty origin ID.
+  std::move(callback).Run(false);
+}
+
+void CreateMediaDrmStorage(
+    content::RenderFrameHost* render_frame_host,
+    mojo::PendingReceiver<::media::mojom::MediaDrmStorage> receiver) {
+  CHECK(render_frame_host);
+
+  if (render_frame_host->GetLastCommittedOrigin().opaque()) {
+    LOG(ERROR) << __func__ << ": Unique origin.";
+    return;
+  }
+
+  auto* wolvic_browser_context = static_cast<WolvicBrowserContext*>(
+      render_frame_host->GetBrowserContext());
+  CHECK(wolvic_browser_context) << "WolvicBrowserContext not available.";
+
+  PrefService* pref_service = wolvic_browser_context->GetPrefService();
+  CHECK(pref_service);
+
+  // The object will be deleted on connection error, or when the frame navigates
+  // away.
+  new cdm::MediaDrmStorageImpl(
+      *render_frame_host, pref_service, base::BindRepeating(&CreateOriginId),
+      base::BindRepeating(&AllowEmptyOriginIdCB), std::move(receiver));
+}
 
 }  // namespace
 
@@ -159,6 +196,14 @@ WolvicContentBrowserClient::WillCreateURLLoaderRequestInterceptors(
       std::make_unique<wolvic::YoutubeURLLoaderRequestInterceptor>());
 
   return interceptors;
+}
+
+void WolvicContentBrowserClient::BindMediaServiceReceiver(
+    RenderFrameHost* render_frame_host,
+    mojo::GenericPendingReceiver receiver) {
+  if (auto r = receiver.As<media::mojom::MediaDrmStorage>()) {
+    CreateMediaDrmStorage(render_frame_host, std::move(r));
+  }
 }
 
 }  // namespace content

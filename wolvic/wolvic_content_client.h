@@ -24,6 +24,10 @@ class WolvicContentClient : public ContentClient {
   std::string GetDataResourceString(int resource_id) override;
   gfx::Image& GetNativeImageNamed(int resource_id) override;
   void AddAdditionalSchemes(Schemes* schemes) override;
+  void AddContentDecryptionModules(
+      std::vector<content::CdmInfo>* cdms,
+      std::vector<media::CdmHostFilePath>* cdm_host_file_paths) override;
+  media::MediaDrmBridgeClient* GetMediaDrmBridgeClient() override;
 };
 
 }  // namespace content

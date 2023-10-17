@@ -31,6 +31,8 @@ shared_library("libcontent_native") {
     "../content/shell/common/shell_switches.h",
     "browser/downloads/wolvic_download_manager_delegate.cc",
     "browser/downloads/wolvic_download_manager_delegate.h",
+    "browser/media/wolvic_media_drm_bridge_client.cc",
+    "browser/media/wolvic_media_drm_bridge_client.h",
     "browser/session_settings.cc",
     "browser/session_settings.h",
     "browser/session_settings_jni.cc",
@@ -56,6 +58,8 @@ shared_library("libcontent_native") {
     "wolvic_browser_context.h",
     "wolvic_content_browser_client.cc",
     "wolvic_content_browser_client.h",
+    "wolvic_content_renderer_client.cc",
+    "wolvic_content_renderer_client.h",
     "wolvic_content_client.cc",
     "wolvic_content_client.h",
     "wolvic_content_main_delegate.cc",
@@ -74,6 +78,7 @@ shared_library("libcontent_native") {
     "//media",
     "//services/network/public/mojom",
     "//skia",
+    "//third_party/widevine/cdm:buildflags",
   ]
 
   # Explicit dependency required for JNI registration to be able to
@@ -115,6 +120,7 @@ static_library("content_native_lib") {
     "//base/third_party/dynamic_annotations",
     "//build:chromeos_buildflags",
     "//cc/base",
+    "//components/cdm/browser",
     "//components/cdm/renderer",
     "//components/custom_handlers",
     "//components/custom_handlers:test_support",
