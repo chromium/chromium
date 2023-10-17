@@ -63,6 +63,8 @@ shared_library("libcontent_native") {
     "wolvic_library_loader.cc",
     "wolvic_main_parts.cc",
     "wolvic_main_parts.h",
+    "wolvic_permission_manager.cc",
+    "wolvic_permission_manager.h",
   ]
   deps = [
     ":content_native_lib",

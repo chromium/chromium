@@ -39,6 +39,7 @@
 #include "content/test/mock_reduce_accept_language_controller_delegate.h"
 #include "third_party/blink/public/common/origin_trials/trial_token_validator.h"
 #include "wolvic/browser/downloads/wolvic_download_manager_delegate.h"
+#include "wolvic/wolvic_permission_manager.h"
 
 namespace content {
 
@@ -140,7 +141,12 @@ SSLHostStateDelegate* WolvicBrowserContext::GetSSLHostStateDelegate() {
 
 PermissionControllerDelegate*
 WolvicBrowserContext::GetPermissionControllerDelegate() {
-  return nullptr;
+  if (!permission_manager_) {
+    permission_manager_ =
+        std::make_unique<wolvic::WolvicPermissionManager>(this);
+  }
+
+  return permission_manager_.get();
 }
 
 ClientHintsControllerDelegate*
