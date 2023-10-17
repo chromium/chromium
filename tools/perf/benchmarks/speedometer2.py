@@ -202,7 +202,7 @@ class Speedometer2MinorMC(Speedometer2):
 
   @classmethod
   def Name(cls):
-    return 'speedometer2-minormc'
+    return 'speedometer2-nominorms'
 
   def SetExtraBrowserOptions(self, options):
-    options.AppendExtraBrowserArgs('--js-flags=--minor-ms')
+    options.AppendExtraBrowserArgs('--js-flags=--no-minor-ms')

@@ -92,7 +92,7 @@ class JetStream2MinorMC(JetStream2):
   """
   @classmethod
   def Name(cls):
-    return 'jetstream2-minormc'
+    return 'jetstream2-nominorms'
 
   def SetExtraBrowserOptions(self, options):
-    options.AppendExtraBrowserArgs('--js-flags=--minor-ms')
+    options.AppendExtraBrowserArgs('--js-flags=--no-minor-ms')

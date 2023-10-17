@@ -228,10 +228,10 @@ OFFICIAL_BENCHMARK_CONFIGS = OFFICIAL_BENCHMARK_CONFIGS.Remove([
     'blink_perf.sanitizer-api',
     'blink_perf.svg',
     'blink_perf.paint',
-    'jetstream2-minormc',
-    'octane-minormc',
-    'speedometer2-minormc',
-    'speedometer3-minormc',
+    'jetstream2-nominorms',
+    'octane-nominorms',
+    'speedometer2-nominorms',
+    'speedometer3-nominorms',
     # TODO(crbug.com/1473955) Make speedometer3 and speedometer3-future part
     # of OFFICIAL_BENCHMARK_CONFIGS after confirming that they are stable.
     'speedometer3',
@@ -391,9 +391,9 @@ _LINUX_BENCHMARK_CONFIGS = PerfSuite(OFFICIAL_BENCHMARK_CONFIGS).Remove([
 ])
 _LINUX_BENCHMARK_CONFIGS_WITH_MINORMC = PerfSuite(_LINUX_BENCHMARK_CONFIGS).Add(
     [
-        'jetstream2-minormc',
-        'octane-minormc',
-        'speedometer2-minormc',
+        'jetstream2-nominorms',
+        'octane-nominorms',
+        'speedometer2-nominorms',
     ])
 _LINUX_EXECUTABLE_CONFIGS = frozenset([
     # TODO(crbug.com/811766): Add views_perftests.
@@ -425,11 +425,11 @@ _MAC_M1_MINI_2020_BENCHMARK_CONFIGS = PerfSuite(
         'blink_perf.display_locking',
         'v8.runtime_stats.top_25',
     ]).Add([
-        'jetstream2-minormc',
-        'speedometer2-minormc',
+        'jetstream2-nominorms',
+        'speedometer2-nominorms',
         'speedometer3',
         'speedometer3-future',
-        'speedometer3-minormc',
+        'speedometer3-nominorms',
     ])
 _MAC_M1_MINI_2020_PGO_BENCHMARK_CONFIGS = PerfSuite([
     _GetBenchmarkConfig('jetstream2'),

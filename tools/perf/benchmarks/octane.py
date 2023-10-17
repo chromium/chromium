@@ -42,10 +42,10 @@ class OctaneMinorMC(press._PressBenchmark):  # pylint: disable=protected-access
   """
   @classmethod
   def Name(cls):
-    return 'octane-minormc'
+    return 'octane-nominorms'
 
   def CreateStorySet(self, options):
     return page_sets.OctaneStorySet()
 
   def SetExtraBrowserOptions(self, options):
-    options.AppendExtraBrowserArgs('--js-flags=--minor-ms')
+    options.AppendExtraBrowserArgs('--js-flags=--no-minor-ms')
