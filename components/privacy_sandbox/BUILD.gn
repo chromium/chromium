@@ -44,6 +44,7 @@ source_set("tracking_protection_onboarding") {
     "//components/keyed_service/core:core",
     "//components/pref_registry:pref_registry",
     "//components/prefs",
+    "//components/version_info",
   ]
 
   public_deps = [ "//base" ]
@@ -183,6 +184,7 @@ source_set("unit_tests") {
     "//base/test:test_support",
     "//components/prefs:test_support",
     "//components/sync_preferences:test_support",
+    "//components/version_info",
     "//testing/gtest",
   ]
 

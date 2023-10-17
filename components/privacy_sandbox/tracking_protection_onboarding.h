@@ -9,6 +9,7 @@
 #include "base/observer_list.h"
 #include "components/keyed_service/core/keyed_service.h"
 #include "components/prefs/pref_change_registrar.h"
+#include "components/version_info/channel.h"
 
 class PrefService;
 
@@ -62,7 +63,8 @@ class TrackingProtectionOnboarding : public KeyedService {
     virtual void OnShouldShowNoticeUpdated() {}
   };
 
-  explicit TrackingProtectionOnboarding(PrefService* pref_service);
+  TrackingProtectionOnboarding(PrefService* pref_service,
+                               version_info::Channel channel);
   ~TrackingProtectionOnboarding() override;
 
   virtual void AddObserver(Observer* observer);
@@ -75,6 +77,10 @@ class TrackingProtectionOnboarding : public KeyedService {
   // To be called by the Mode B experiment service to indicate that the profile
   // is no longer eligible for onboarding.
   void MaybeMarkIneligible();
+
+  // To be called by the Mode B experiment service in BETA, DEV and CANARY only
+  // to reset the user's prefs for testing.
+  void MaybeResetOnboardingPrefs();
 
   // Indicates the onboarding status for the user. Return value is the enum
   // defined above.
@@ -111,6 +117,7 @@ class TrackingProtectionOnboarding : public KeyedService {
   base::ObserverList<Observer>::Unchecked observers_;
   raw_ptr<PrefService> pref_service_;
   PrefChangeRegistrar pref_change_registrar_;
+  const version_info::Channel channel_;
 };
 
 }  // namespace privacy_sandbox

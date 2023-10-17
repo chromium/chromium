@@ -12,6 +12,7 @@
 #include "components/prefs/pref_service.h"
 #include "components/privacy_sandbox/privacy_sandbox_features.h"
 #include "components/privacy_sandbox/tracking_protection_prefs.h"
+#include "components/version_info/channel.h"
 
 namespace privacy_sandbox {
 namespace {
@@ -73,8 +74,9 @@ void RecordActionMetrics(TrackingProtectionOnboarding::NoticeAction action) {
 }  // namespace
 
 TrackingProtectionOnboarding::TrackingProtectionOnboarding(
-    PrefService* pref_service)
-    : pref_service_(pref_service) {
+    PrefService* pref_service,
+    version_info::Channel channel)
+    : pref_service_(pref_service), channel_(channel) {
   CHECK(pref_service_);
 
   pref_change_registrar_.Init(pref_service_);
@@ -148,6 +150,26 @@ void TrackingProtectionOnboarding::MaybeMarkIneligible() {
       prefs::kTrackingProtectionOnboardingStatus,
       static_cast<int>(
           TrackingProtectionOnboarding::OnboardingStatus::kIneligible));
+}
+
+void TrackingProtectionOnboarding::MaybeResetOnboardingPrefs() {
+  // Clearing the prefs is only allowed in Beta, Canary and Dev for testing.
+  switch (channel_) {
+    case version_info::Channel::BETA:
+    case version_info::Channel::CANARY:
+    case version_info::Channel::DEV:
+      break;
+    default:
+      return;
+  }
+
+  // Clear all Onboarding Prefs.
+  pref_service_->ClearPref(prefs::kTrackingProtectionOnboardingStatus);
+  pref_service_->ClearPref(prefs::kTrackingProtectionEligibleSince);
+  pref_service_->ClearPref(prefs::kTrackingProtectionOnboardedSince);
+  pref_service_->ClearPref(prefs::kTrackingProtectionNoticeLastShown);
+  pref_service_->ClearPref(prefs::kTrackingProtectionOnboardingAcked);
+  pref_service_->ClearPref(prefs::kTrackingProtectionOnboardingAckAction);
 }
 
 void TrackingProtectionOnboarding::OnboardingNoticeShown() {

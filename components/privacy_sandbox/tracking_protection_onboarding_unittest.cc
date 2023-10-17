@@ -12,6 +12,7 @@
 #include "components/prefs/testing_pref_service.h"
 #include "components/privacy_sandbox/privacy_sandbox_features.h"
 #include "components/privacy_sandbox/tracking_protection_prefs.h"
+#include "components/version_info/channel.h"
 #include "testing/gmock/include/gmock/gmock.h"
 #include "testing/gtest/include/gtest/gtest.h"
 
@@ -45,7 +46,8 @@ class TrackingProtectionOnboardingTest : public testing::Test {
 
   void SetUp() override {
     tracking_protection_onboarding_service_ =
-        std::make_unique<TrackingProtectionOnboarding>(prefs());
+        std::make_unique<TrackingProtectionOnboarding>(
+            prefs(), version_info::Channel::UNKNOWN);
   }
 
   TrackingProtectionOnboarding* tracking_protection_onboarding() {
@@ -81,8 +83,7 @@ TEST_F(TrackingProtectionOnboardingTest,
   tracking_protection_onboarding()->AddObserver(&observer);
   EXPECT_CALL(observer,
               OnTrackingProtectionOnboardingUpdated(
-                  TrackingProtectionOnboarding::OnboardingStatus::kEligible))
-      .Times(1);
+                  TrackingProtectionOnboarding::OnboardingStatus::kEligible));
 
   prefs()->SetInteger(
       prefs::kTrackingProtectionOnboardingStatus,
@@ -346,6 +347,71 @@ TEST_F(TrackingProtectionOnboardingTest,
             false);
 }
 
+TEST_F(TrackingProtectionOnboardingTest, MaybeResetOnboardingPrefsInStable) {
+  // Setup
+  tracking_protection_onboarding_service_ =
+      std::make_unique<TrackingProtectionOnboarding>(
+          prefs(), version_info::Channel::STABLE);
+  prefs()->SetInteger(
+      prefs::kTrackingProtectionOnboardingStatus,
+      static_cast<int>(TrackingProtectionOnboardingStatus::kOnboarded));
+  prefs()->SetBoolean(prefs::kTrackingProtectionOnboardingAcked, true);
+
+  // Action
+  tracking_protection_onboarding()->MaybeResetOnboardingPrefs();
+
+  // Verification
+  EXPECT_EQ(static_cast<TrackingProtectionOnboardingStatus>(prefs()->GetInteger(
+                prefs::kTrackingProtectionOnboardingStatus)),
+            TrackingProtectionOnboardingStatus::kOnboarded);
+  EXPECT_TRUE(prefs()->GetBoolean(prefs::kTrackingProtectionOnboardingAcked));
+}
+
+TEST_F(TrackingProtectionOnboardingTest, MaybeResetOnboardingPrefsInCanary) {
+  // Setup
+  tracking_protection_onboarding_service_ =
+      std::make_unique<TrackingProtectionOnboarding>(
+          prefs(), version_info::Channel::CANARY);
+  prefs()->SetInteger(
+      prefs::kTrackingProtectionOnboardingStatus,
+      static_cast<int>(TrackingProtectionOnboardingStatus::kOnboarded));
+  prefs()->SetBoolean(prefs::kTrackingProtectionOnboardingAcked, true);
+
+  // Action
+  tracking_protection_onboarding()->MaybeResetOnboardingPrefs();
+
+  // Verification
+  EXPECT_FALSE(prefs()
+                   ->FindPreference(prefs::kTrackingProtectionOnboardingStatus)
+                   ->HasUserSetting());
+
+  EXPECT_FALSE(prefs()
+                   ->FindPreference(prefs::kTrackingProtectionOnboardingAcked)
+                   ->HasUserSetting());
+}
+
+TEST_F(TrackingProtectionOnboardingTest,
+       MaybeResetOnboardingPrefsInCanaryTriggersObserver) {
+  // Setup
+  tracking_protection_onboarding_service_ =
+      std::make_unique<TrackingProtectionOnboarding>(
+          prefs(), version_info::Channel::CANARY);
+  prefs()->SetInteger(
+      prefs::kTrackingProtectionOnboardingStatus,
+      static_cast<int>(TrackingProtectionOnboardingStatus::kOnboarded));
+  prefs()->SetBoolean(prefs::kTrackingProtectionOnboardingAcked, true);
+  MockTrackingProtectionObserver observer;
+  tracking_protection_onboarding()->AddObserver(&observer);
+  EXPECT_CALL(observer,
+              OnTrackingProtectionOnboardingUpdated(
+                  TrackingProtectionOnboarding::OnboardingStatus::kIneligible));
+  // Action
+  tracking_protection_onboarding()->MaybeResetOnboardingPrefs();
+
+  // Expectation
+  testing::Mock::VerifyAndClearExpectations(&observer);
+}
+
 TEST_F(TrackingProtectionOnboardingTest, UserActionMetrics) {
   base::UserActionTester user_action_tester;
 
@@ -447,7 +513,8 @@ class TrackingProtectionOnboardingWithFeatureOverrideTest
     feature_list_.InitAndEnableFeature(
         privacy_sandbox::kTrackingProtectionOnboardingForceEligibility);
     tracking_protection_onboarding_service_ =
-        std::make_unique<TrackingProtectionOnboarding>(prefs());
+        std::make_unique<TrackingProtectionOnboarding>(
+            prefs(), version_info::Channel::UNKNOWN);
   }
 
  private:

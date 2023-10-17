@@ -11,6 +11,7 @@
 #include "components/privacy_sandbox/tracking_protection_prefs.h"
 #include "components/privacy_sandbox/tracking_protection_settings_observer.h"
 #include "components/sync_preferences/testing_pref_service_syncable.h"
+#include "components/version_info/channel.h"
 #include "testing/gmock/include/gmock/gmock.h"
 #include "testing/gtest/include/gtest/gtest.h"
 
@@ -29,8 +30,8 @@ class TrackingProtectionSettingsTest : public testing::Test {
  public:
   TrackingProtectionSettingsTest() {
     RegisterProfilePrefs(prefs()->registry());
-    onboarding_service_ =
-        std::make_unique<TrackingProtectionOnboarding>(&prefs_);
+    onboarding_service_ = std::make_unique<TrackingProtectionOnboarding>(
+        &prefs_, version_info::Channel::UNKNOWN);
   }
 
   void SetUp() override {
