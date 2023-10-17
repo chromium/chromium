@@ -56,6 +56,11 @@ export class WallpaperSearchElement extends PolymerElement {
       },
       emptyContainers_: Object,
       results_: Object,
+      submitBtnText_: {
+        type: String,
+        computed: 'computeSubmitBtnText_(results_)',
+        value: 'Search',
+      },
     };
   }
 
@@ -65,6 +70,7 @@ export class WallpaperSearchElement extends PolymerElement {
   private selectedDescriptorA_: string|null;
   private selectedDescriptorB_: string|null;
   private selectedDescriptorC_: string|null;
+  private submitBtnText_: string;
 
   private pageHandler_: CustomizeChromePageHandlerInterface;
 
@@ -80,6 +86,11 @@ export class WallpaperSearchElement extends PolymerElement {
 
   focusOnBackButton() {
     this.$.heading.getBackButton().focus();
+  }
+
+  private computeSubmitBtnText_() {
+    return this.results_ && this.results_.length > 0 ? 'Search Again' :
+                                                       'Search';
   }
 
   private async onBackClick_() {

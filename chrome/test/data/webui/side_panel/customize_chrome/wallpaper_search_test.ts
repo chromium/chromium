@@ -254,5 +254,23 @@ suite('WallpaperSearchTest', () => {
       assertEquals(
           1, handler.getArgs('setBackgroundToWallpaperSearchResult')[0].low);
     });
+
+    test('handles changing submit button text', async () => {
+      handler.setResultFor(
+          'getWallpaperSearchResults',
+          Promise.resolve({results: [{image: '123', id: {high: 10, low: 1}}]}));
+      createWallpaperSearchElementWithDescriptors();
+      await flushTasks();
+
+      // Check submit button text without results.
+      assertEquals(wallpaperSearchElement.$.submitButton.innerText, 'Search');
+
+      wallpaperSearchElement.$.submitButton.click();
+      await waitAfterNextRender(wallpaperSearchElement);
+
+      // Check submit button text with results.
+      assertEquals(
+          wallpaperSearchElement.$.submitButton.innerText, 'Search Again');
+    });
   });
 });
