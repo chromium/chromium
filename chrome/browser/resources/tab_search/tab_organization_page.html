@@ -6,21 +6,19 @@
 
 <div class="body">
   <tab-organization-not-started
-      hidden="[[!isState_(tabOrganizationStateEnum_.NOT_STARTED, state_)]]"
+      hidden="[[!isState_(tabOrganizationStateEnum_.kNotStarted, state_)]]"
       on-organize-tabs-click="onOrganizeTabsClick_">
   </tab-organization-not-started>
   <tab-organization-in-progress
-      hidden="[[!isState_(tabOrganizationStateEnum_.IN_PROGRESS, state_)]]"
-      on-click="onCycleStateClick_">
+      hidden="[[!isState_(tabOrganizationStateEnum_.kInProgress, state_)]]">
   </tab-organization-in-progress>
   <tab-organization-results
-      hidden="[[!isState_(tabOrganizationStateEnum_.SUCCESS, state_)]]"
+      hidden="[[!isState_(tabOrganizationStateEnum_.kSuccess, state_)]]"
       name="[[name_]]"
       tabs="[[tabs_]]"
       on-create-group-click="onCreateGroupClick_">
   </tab-organization-results>
   <tab-organization-failure
-      hidden="[[!isState_(tabOrganizationStateEnum_.FAILURE, state_)]]"
-      on-click="onCycleStateClick_">
+      hidden="[[!isState_(tabOrganizationStateEnum_.kFailure, state_)]]">
   </tab-organization-failure>
 </div>

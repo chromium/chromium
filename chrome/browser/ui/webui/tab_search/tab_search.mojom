@@ -10,6 +10,19 @@ import "mojo/public/mojom/base/token.mojom";
 import "url/mojom/url.mojom";
 import "chrome/browser/ui/webui/tabs/tabs.mojom";
 
+enum TabOrganizationState {
+  kNotStarted,
+  kInProgress,
+  kSuccess,
+  kFailure,
+};
+
+enum TabOrganizationError {
+  kNone,
+  kGrouping,
+  kGeneric,
+};
+
 // Collection of tab searching details associated with a profile.
 struct ProfileData {
   array<Window> windows;
@@ -138,6 +151,19 @@ struct SwitchToTabInfo {
   int32 tab_id;
 };
 
+struct TabOrganization {
+  int32 organization_id;
+  array<Tab> tabs;
+  string name;
+};
+
+struct TabOrganizationSession {
+  int32 session_id;
+  TabOrganizationState state;
+  array<TabOrganization> organizations;
+  TabOrganizationError error;
+};
+
 // Information about a tab update.
 struct TabUpdateInfo {
   // Whether the tab is in the active window.
@@ -168,8 +194,20 @@ interface PageHandler {
   // Close a specific tab.
   CloseTab(int32 tab_id);
 
+  // Accept the tab organization, updated with the specified name and tab list.
+  AcceptTabOrganization(int32 session_id,
+                        int32 organization_id,
+                        string name,
+                        array<Tab> tabs);
+
+  // Reject the tab organization.
+  RejectTabOrganization(int32 session_id, int32 organization_id);
+
   // Get window and tab data for the current profile.
   GetProfileData() => (ProfileData profile_data);
+
+  // Get the current tab organization session info.
+  GetTabOrganizationSession() => (TabOrganizationSession session);
 
   // Switch to a specific tab.
   SwitchToTab(SwitchToTabInfo switch_to_tab_info);
@@ -177,8 +215,8 @@ interface PageHandler {
   // Open a recently closed tab or tab group.
   OpenRecentlyClosedEntry(int32 session_id);
 
-  // Manually trigger a new tab organization request and return the result.
-  RequestTabOrganization() => (string name, array<Tab> tabs);
+  // Manually trigger a new tab organization request.
+  RequestTabOrganization();
 
   // Save a user's preference for the state of the expandable 'Recently Closed'
   // list section.
@@ -190,6 +228,9 @@ interface PageHandler {
 
 // WebUI-side handler for requests from the browser.
 interface Page {
+  // Called when the tab organization session state changes.
+  TabOrganizationSessionUpdated(TabOrganizationSession session);
+
   // Called when we require a full refresh of the JS's tab list data structures.
   // Typically used when tabs in the current profile are deleted, inserted,
   // moved or replaced.

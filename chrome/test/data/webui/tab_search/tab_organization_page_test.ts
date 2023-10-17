@@ -2,7 +2,7 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-import {Tab, TabOrganizationPageElement, TabOrganizationResultsElement, TabSearchApiProxyImpl} from 'chrome://tab-search.top-chrome/tab_search.js';
+import {Tab, TabOrganizationError, TabOrganizationPageElement, TabOrganizationResultsElement, TabOrganizationSession, TabOrganizationState, TabSearchApiProxyImpl} from 'chrome://tab-search.top-chrome/tab_search.js';
 import {assertEquals, assertFalse, assertTrue} from 'chrome://webui-test/chai_assert.js';
 import {flushTasks} from 'chrome://webui-test/polymer_test_util.js';
 import {isVisible} from 'chrome://webui-test/test_util.js';
@@ -16,6 +16,7 @@ suite('TabOrganizationPageTest', () => {
 
   async function tabOrganizationPageSetup() {
     testProxy = new TestTabSearchApiProxy();
+    testProxy.setSession(createSession());
     TabSearchApiProxyImpl.setInstance(testProxy);
 
     tabOrganizationPage = document.createElement('tab-organization-page');
@@ -27,15 +28,13 @@ suite('TabOrganizationPageTest', () => {
 
   async function tabOrganizationResultsSetup() {
     testProxy = new TestTabSearchApiProxy();
+    const session = createSession();
+    testProxy.setSession(session);
     TabSearchApiProxyImpl.setInstance(testProxy);
 
     tabOrganizationResults = document.createElement('tab-organization-results');
-    tabOrganizationResults.name = 'Test name';
-    tabOrganizationResults.tabs = [
-      createTab({title: 'Tab 1', url: {url: 'https://tab-1.com/'}}),
-      createTab({title: 'Tab 2', url: {url: 'https://tab-2.com/'}}),
-      createTab({title: 'Tab 3', url: {url: 'https://tab-3.com/'}}),
-    ];
+    tabOrganizationResults.name = session.organizations[0]!.name;
+    tabOrganizationResults.tabs = session.organizations[0]!.tabs;
 
     document.body.innerHTML = window.trustedTypes!.emptyHTML;
     document.body.appendChild(tabOrganizationResults);
@@ -61,6 +60,26 @@ suite('TabOrganizationPageTest', () => {
         override);
   }
 
+  function createSession(override: Partial<TabOrganizationSession> = {}):
+      TabOrganizationSession {
+    return Object.assign(
+        {
+          sessionId: 1,
+          state: TabOrganizationState.kNotStarted,
+          organizations: [{
+            organizationId: 1,
+            name: 'foo',
+            tabs: [
+              createTab({title: 'Tab 1', url: {url: 'https://tab-1.com/'}}),
+              createTab({title: 'Tab 2', url: {url: 'https://tab-2.com/'}}),
+              createTab({title: 'Tab 3', url: {url: 'https://tab-3.com/'}}),
+            ],
+          }],
+          error: TabOrganizationError.kNone,
+        },
+        override);
+  }
+
   test('Organize tabs starts request', async () => {
     await tabOrganizationPageSetup();
     assertEquals(0, testProxy.getCallCount('requestTabOrganization'));
@@ -75,9 +94,6 @@ suite('TabOrganizationPageTest', () => {
     organizeTabsButton.click();
 
     assertEquals(1, testProxy.getCallCount('requestTabOrganization'));
-    // TODO(emshack): Replace with check against in progress state once in
-    // progress state exists as a separate component
-    assertFalse(isVisible(notStarted));
   });
 
   test('Input blurs on enter', async () => {
@@ -110,5 +126,24 @@ suite('TabOrganizationPageTest', () => {
         tabOrganizationResults.shadowRoot!.querySelectorAll('tab-search-item');
     assertTrue(!!tabRowsAfterCancel);
     assertEquals(2, tabRowsAfterCancel.length);
+  });
+
+  test('Create group accepts organization', async () => {
+    await tabOrganizationPageSetup();
+
+    testProxy.getCallbackRouterRemote().tabOrganizationSessionUpdated(
+        createSession({state: TabOrganizationState.kSuccess}));
+
+    assertEquals(0, testProxy.getCallCount('acceptTabOrganization'));
+
+    const results = tabOrganizationPage.shadowRoot!.querySelector(
+        'tab-organization-results');
+    assertTrue(!!results);
+    const createGroupButton = results.shadowRoot!.querySelector('cr-button');
+    assertTrue(!!createGroupButton);
+    createGroupButton.click();
+    await flushTasks();
+
+    assertEquals(1, testProxy.getCallCount('acceptTabOrganization'));
   });
 });

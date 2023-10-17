@@ -14,15 +14,8 @@ import './tab_organization_results.js';
 import {PolymerElement} from 'chrome://resources/polymer/v3_0/polymer/polymer_bundled.min.js';
 
 import {getTemplate} from './tab_organization_page.html.js';
-import {Tab} from './tab_search.mojom-webui.js';
+import {Tab, TabOrganization, TabOrganizationSession, TabOrganizationState} from './tab_search.mojom-webui.js';
 import {TabSearchApiProxy, TabSearchApiProxyImpl} from './tab_search_api_proxy.js';
-
-export enum TabOrganizationState {
-  NOT_STARTED = 0,
-  IN_PROGRESS = 1,
-  SUCCESS = 2,
-  FAILURE = 3,
-}
 
 export class TabOrganizationPageElement extends PolymerElement {
   static get is() {
@@ -43,70 +36,65 @@ export class TabOrganizationPageElement extends PolymerElement {
   }
 
   private apiProxy_: TabSearchApiProxy = TabSearchApiProxyImpl.getInstance();
-  private state_: TabOrganizationState = TabOrganizationState.NOT_STARTED;
+  private listenerIds_: number[] = [];
+  private state_: TabOrganizationState = TabOrganizationState.kNotStarted;
   private name_: string;
   private tabs_: Tab[];
+  private sessionId_: number = -1;
+  private organizationId_: number = -1;
 
   static get template() {
     return getTemplate();
+  }
+
+  override connectedCallback() {
+    super.connectedCallback();
+    this.apiProxy_.getTabOrganizationSession().then(
+        ({session}) => this.setSession_(session));
+    const callbackRouter = this.apiProxy_.getCallbackRouter();
+    this.listenerIds_.push(
+        callbackRouter.tabOrganizationSessionUpdated.addListener(
+            this.setSession_.bind(this)));
+  }
+
+  override disconnectedCallback() {
+    super.disconnectedCallback();
+    this.listenerIds_.forEach(
+        id => this.apiProxy_.getCallbackRouter().removeListener(id));
+
+    if (this.sessionId_ > -1 && this.organizationId_ > -1) {
+      this.apiProxy_.rejectTabOrganization(
+          this.sessionId_, this.organizationId_);
+    }
+  }
+
+  private setSession_(session: TabOrganizationSession) {
+    this.sessionId_ = session.sessionId;
+    this.state_ = session.state;
+    if (session.state === TabOrganizationState.kSuccess) {
+      const organization: TabOrganization = session.organizations[0];
+      this.name_ = organization.name;
+      this.tabs_ = organization.tabs;
+      this.organizationId_ = organization.organizationId;
+    } else {
+      this.organizationId_ = -1;
+    }
   }
 
   private isState_(state: TabOrganizationState): boolean {
     return this.state_ === state;
   }
 
-  // TODO(emshack): Remove once actual data is available.
-  private createTab_(override: Partial<Tab> = {}): Tab {
-    return Object.assign(
-        {
-          active: false,
-          alertStates: [],
-          index: -1,
-          tabId: -1,
-          groupId: -1,
-          pinned: false,
-          title: '',
-          url: {url: 'about:blank'},
-          isDefaultFavicon: false,
-          showIcon: false,
-          lastActiveTimeTicks: -1,
-          lastActiveElapsedText: '',
-        },
-        override);
-  }
-
   private onOrganizeTabsClick_() {
     this.apiProxy_.requestTabOrganization();
-    // TODO(emshack): Replace placeholders with actual data once available.
-    this.tabs_ = [
-      this.createTab_({title: 'Tab 1', url: {url: 'https://tab-1.com/'}}),
-      this.createTab_({title: 'Tab 2', url: {url: 'https://tab-2.com/'}}),
-      this.createTab_({title: 'Tab 3', url: {url: 'https://tab-3.com/'}}),
-    ];
-    this.name_ = 'Placeholder name';
-
-    // TODO(emshack): Remove once the above triggers an observable state
-    // change.
-    this.state_ = TabOrganizationState.IN_PROGRESS;
   }
 
   private onCreateGroupClick_(event: CustomEvent<{name: string, tabs: Tab[]}>) {
     this.name_ = event.detail.name;
     this.tabs_ = event.detail.tabs;
 
-    // TODO(emshack): Implement this & remove the below call
-    this.onCycleStateClick_();
-  }
-
-  // TODO(emshack): Remove once there's another way to move between states.
-  private onCycleStateClick_() {
-    if (this.state_ === TabOrganizationState.IN_PROGRESS) {
-      this.state_ = TabOrganizationState.SUCCESS;
-    } else if (this.state_ === TabOrganizationState.SUCCESS) {
-      this.state_ = TabOrganizationState.FAILURE;
-    } else if (this.state_ === TabOrganizationState.FAILURE) {
-      this.state_ = TabOrganizationState.NOT_STARTED;
-    }
+    this.apiProxy_.acceptTabOrganization(
+        this.sessionId_, this.organizationId_, this.name_, this.tabs_);
   }
 }
 
