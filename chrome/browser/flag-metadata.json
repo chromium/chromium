@@ -7899,7 +7899,7 @@
   {
     "name": "terminal-alternative-emulator",
     "owners": [ "lxj", "joelhockey", "//chrome/browser/ash/guest_os/OWNERS" ],
-    "expiry_milestone": 120
+    "expiry_milestone": 122
   },
   {
     "name": "terminal-dev",
