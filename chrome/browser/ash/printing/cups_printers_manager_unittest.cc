@@ -1242,5 +1242,25 @@ TEST_F(CupsPrintersManagerTest, LocalPrintersDetected) {
   EXPECT_EQ(3u, observer1.num_observer_calls());
 }
 
+// Tests that the polling printer status requests trigger the local printers
+// observer up until the max time allocated for polling statuses.
+TEST_F(CupsPrintersManagerTest, PrinterStatusPolling) {
+  feature_list_.InitAndEnableFeature(::features::kLocalPrinterObserving);
+
+  // Add a saved printer to be queried for status.
+  synced_printers_manager_.AddSavedPrinters({Printer("Printer1")});
+  task_environment_.RunUntilIdle();
+
+  // Add the observer to capture the triggers from printer status queries.
+  FakeLocalPrintersObserver observer;
+  manager_->AddLocalPrintersObserver(&observer);
+  task_environment_.FastForwardUntilNoTasksRemain();
+
+  // 1 call when observer added + 1 call from initial printer status query +
+  // 30 calls from polling (every 10 seconds for 5 minutes).
+  const size_t expected_obsever_calls = 32;
+  EXPECT_EQ(expected_obsever_calls, observer.num_observer_calls());
+}
+
 }  // namespace
 }  // namespace ash

@@ -18,6 +18,7 @@
 #include "base/sequence_checker.h"
 #include "base/strings/stringprintf.h"
 #include "base/task/sequenced_task_runner.h"
+#include "base/timer/elapsed_timer.h"
 #include "base/timer/timer.h"
 #include "chrome/browser/ash/printing/automatic_usb_printer_configurer.h"
 #include "chrome/browser/ash/printing/cups_printer_status_creator.h"
@@ -61,6 +62,8 @@
 namespace ash {
 
 constexpr base::TimeDelta kMetricsDelayTimerInterval = base::Minutes(1);
+constexpr base::TimeDelta kMaxPrinterStatusPollingTime = base::Minutes(5);
+constexpr base::TimeDelta kPrinterStatusQueryInterval = base::Seconds(10);
 
 bool IsIppUri(const chromeos::Uri& uri) {
   return (uri.GetScheme() == chromeos::kIppScheme ||
@@ -250,6 +253,9 @@ class CupsPrintersManagerImpl
       local_printers_observer_list_.AddObserver(observer);
       observer->OnLocalPrintersUpdated();
     }
+
+    // Begin polling printers for printer status for 5 minutes.
+    StartPrinterStatusPolling();
   }
 
   // Public API function.
@@ -410,6 +416,33 @@ class CupsPrintersManagerImpl
     }
   }
 
+  // Resets the overall polling timer then executes the first round of printer
+  // status queries.
+  void StartPrinterStatusPolling() {
+    CHECK(base::FeatureList::IsEnabled(::features::kLocalPrinterObserving));
+    printer_status_polling_timer_.Start(FROM_HERE, kMaxPrinterStatusPollingTime,
+                                        base::DoNothing());
+    OnPrinterStatusTimerElapsed();
+  }
+
+  // Starts printer status requests for all Saved printers then queues the next
+  // round of requests if the overall timer hasn't elapsed.
+  void OnPrinterStatusTimerElapsed() {
+    const auto printers = printers_.Get(chromeos::PrinterClass::kSaved);
+    for (const auto& printer : printers) {
+      FetchPrinterStatus(printer.id(),
+                         /*PrinterStatusCallback=*/base::DoNothing());
+    }
+
+    // Only restart requests when the 5 minute timer hasn't elapsed.
+    if (printer_status_polling_timer_.IsRunning()) {
+      printer_status_query_timer_.Start(
+          FROM_HERE, kPrinterStatusQueryInterval,
+          base::BindOnce(&CupsPrintersManagerImpl::OnPrinterStatusTimerElapsed,
+                         weak_ptr_factory_.GetWeakPtr()));
+    }
+  }
+
   void FetchPrinterStatus(const std::string& printer_id,
                           PrinterStatusCallback cb) override {
     absl::optional<Printer> printer = GetPrinter(printer_id);
@@ -421,7 +454,7 @@ class CupsPrintersManagerImpl
           CupsPrinterStatus::CupsPrinterStatusReason::Reason::
               kPrinterUnreachable,
           CupsPrinterStatus::CupsPrinterStatusReason::Severity::kError);
-      std::move(cb).Run(std::move(printer_status));
+      SendPrinterStatus(printer_status, std::move(cb));
       return;
     }
 
@@ -440,7 +473,7 @@ class CupsPrintersManagerImpl
                 kPrinterUnreachable,
             CupsPrinterStatus::CupsPrinterStatusReason::Severity::kError);
       }
-      std::move(cb).Run(std::move(printer_status));
+      SendPrinterStatus(printer_status, std::move(cb));
       return;
     }
 
@@ -453,7 +486,7 @@ class CupsPrintersManagerImpl
       printer_status.AddStatusReason(
           CupsPrinterStatus::CupsPrinterStatusReason::Reason::kUnknownReason,
           CupsPrinterStatus::CupsPrinterStatusReason::Severity::kWarning);
-      std::move(cb).Run(std::move(printer_status));
+      SendPrinterStatus(printer_status, std::move(cb));
       return;
     }
 
@@ -502,15 +535,16 @@ class CupsPrintersManagerImpl
       const std::vector<std::string>& document_formats,
       bool ipp_everywhere,
       const chromeos::PrinterAuthenticationInfo& auth_info) {
-    SendPrinterStatus(printer_id, std::move(cb), result, printer_status,
-                      auth_info);
+    ParsePrinterStatusFromPrinterQuery(printer_id, std::move(cb), result,
+                                       printer_status, auth_info);
   }
 
-  void SendPrinterStatus(const std::string& printer_id,
-                         PrinterStatusCallback cb,
-                         PrinterQueryResult result,
-                         const ::printing::PrinterStatus& printer_status,
-                         const chromeos::PrinterAuthenticationInfo& auth_info) {
+  void ParsePrinterStatusFromPrinterQuery(
+      const std::string& printer_id,
+      PrinterStatusCallback cb,
+      PrinterQueryResult result,
+      const ::printing::PrinterStatus& printer_status,
+      const chromeos::PrinterAuthenticationInfo& auth_info) {
     base::UmaHistogramEnumeration("Printing.CUPS.PrinterStatusQueryResult",
                                   result);
     switch (result) {
@@ -524,7 +558,7 @@ class CupsPrintersManagerImpl
             CupsPrinterStatus::CupsPrinterStatusReason::Reason::
                 kPrinterUnreachable,
             CupsPrinterStatus::CupsPrinterStatusReason::Severity::kError);
-        std::move(cb).Run(std::move(error_printer_status));
+        SendPrinterStatus(error_printer_status, std::move(cb));
         break;
       }
       case PrinterQueryResult::kUnknownFailure: {
@@ -535,7 +569,7 @@ class CupsPrintersManagerImpl
         error_printer_status.AddStatusReason(
             CupsPrinterStatus::CupsPrinterStatusReason::Reason::kUnknownReason,
             CupsPrinterStatus::CupsPrinterStatusReason::Severity::kWarning);
-        std::move(cb).Run(std::move(error_printer_status));
+        SendPrinterStatus(error_printer_status, std::move(cb));
         break;
       }
       case PrinterQueryResult::kSuccess: {
@@ -557,10 +591,18 @@ class CupsPrintersManagerImpl
         printers_.SavePrinterStatus(printer_id, cups_printers_status);
 
         // Send status back to the handler through PrinterStatusCallback.
-        std::move(cb).Run(std::move(cups_printers_status));
+        SendPrinterStatus(cups_printers_status, std::move(cb));
         break;
       }
     }
+  }
+
+  // Sends the printer status via callback then notifies the local printer
+  // observers.
+  void SendPrinterStatus(CupsPrinterStatus printer_status,
+                         PrinterStatusCallback cb) {
+    std::move(cb).Run(std::move(printer_status));
+    NotifyLocalPrinterObservers();
   }
 
   void QueryPrinterForAutoConf(
@@ -620,6 +662,13 @@ class CupsPrintersManagerImpl
       for (auto& observer : observer_list_) {
         observer.OnPrintersChanged(printer_class, printers);
       }
+    }
+  }
+
+  // Notify observers that a local printer has updated.
+  void NotifyLocalPrinterObservers() {
+    for (auto& observer : local_printers_observer_list_) {
+      observer.OnLocalPrintersUpdated();
     }
   }
 
@@ -778,9 +827,7 @@ class CupsPrintersManagerImpl
       }
 
       detected_printers_seen_.insert(printer.id());
-      for (auto& observer : local_printers_observer_list_) {
-        observer.OnLocalPrintersUpdated();
-      }
+      NotifyLocalPrinterObservers();
     }
   }
 
@@ -1006,6 +1053,12 @@ class CupsPrintersManagerImpl
   // TODO(b/304269962): Remove detected printers from here when disconnected
   // from the device.
   base::flat_set<std::string> detected_printers_seen_;
+
+  // Once elapsed, executes a round of printer status queries.
+  base::OneShotTimer printer_status_query_timer_;
+
+  // Used to limit the total duration of printer status polling.
+  base::OneShotTimer printer_status_polling_timer_;
 
   base::WeakPtrFactory<CupsPrintersManagerImpl> weak_ptr_factory_{this};
 };
