@@ -58,9 +58,7 @@ import org.chromium.url.GURL;
 import java.util.ArrayList;
 import java.util.List;
 
-/**
- * Tests that exercise functionality when showing details for a single site.
- */
+/** Tests that exercise functionality when showing details for a single site. */
 @RunWith(ParameterizedRunner.class)
 @UseRunnerDelegate(ChromeJUnit4RunnerDelegate.class)
 @CommandLineFlags.Add(ChromeSwitches.DISABLE_FIRST_RUN_EXPERIENCE)
@@ -80,11 +78,11 @@ public class SingleWebsiteSettingsTest {
     /**
      * A provider supplying params for {@link #testExceptionToggleShowing}.
      *
-     * Entries in SingleWebsiteSettings should only have Allow/Block values (independent of what the
-     * global toggle specifies), because if there's a ContentSettingValue entry for the site, then
-     * the user has already made a decision. That decision can only be Allow/Block (a decision of
-     * ASK doesn't make sense because we don't support 'Ask me every time' for a given site).
-     * */
+     * <p>Entries in SingleWebsiteSettings should only have Allow/Block values (independent of what
+     * the global toggle specifies), because if there's a ContentSettingValue entry for the site,
+     * then the user has already made a decision. That decision can only be Allow/Block (a decision
+     * of ASK doesn't make sense because we don't support 'Ask me every time' for a given site).
+     */
     public static class SingleWebsiteSettingsParams implements ParameterProvider {
         @Override
         public Iterable<ParameterSet> getParameters() {
@@ -102,11 +100,13 @@ public class SingleWebsiteSettingsTest {
     @Test
     @SmallTest
     @UseMethodParameter(SingleWebsiteSettingsParams.class)
-    public void testExceptionToggleShowing(@ContentSettingsType int contentSettingsType,
+    public void testExceptionToggleShowing(
+            @ContentSettingsType int contentSettingsType,
             @ContentSettingValues int contentSettingValue) {
         // Preference for Notification on O+ is added as a ChromeImageViewPreference. See
         // SingleWebsiteSettings#setUpNotificationsPreference
-        Assume.assumeFalse("Preference for Notification is not a toggle on Android N-.",
+        Assume.assumeFalse(
+                "Preference for Notification is not a toggle on Android N-.",
                 contentSettingsType == ContentSettingsType.NOTIFICATIONS
                         && Build.VERSION.SDK_INT >= Build.VERSION_CODES.O);
 
@@ -115,20 +115,25 @@ public class SingleWebsiteSettingsTest {
 
     @Test
     @SmallTest
-    @DisableIf.Build(sdk_is_less_than = Build.VERSION_CODES.O,
+    @DisableIf.Build(
+            sdk_is_less_than = Build.VERSION_CODES.O,
             message = "Notification does not have a toggle when disabled.")
     public void testNotificationException() {
-        SettingsActivity settingsActivity = SiteSettingsTestUtils.startSingleWebsitePreferences(
-                createWebsiteWithContentSettingException(
-                        ContentSettingsType.NOTIFICATIONS, ContentSettingValues.BLOCK));
+        SettingsActivity settingsActivity =
+                SiteSettingsTestUtils.startSingleWebsitePreferences(
+                        createWebsiteWithContentSettingException(
+                                ContentSettingsType.NOTIFICATIONS, ContentSettingValues.BLOCK));
 
-        TestThreadUtils.runOnUiThreadBlocking(() -> {
-            SingleWebsiteSettings websitePreferences =
-                    (SingleWebsiteSettings) settingsActivity.getMainFragment();
-            Assert.assertNotNull("Notification Preference not found.",
-                    websitePreferences.findPreference(SingleWebsiteSettings.getPreferenceKey(
-                            ContentSettingsType.NOTIFICATIONS)));
-        });
+        TestThreadUtils.runOnUiThreadBlocking(
+                () -> {
+                    SingleWebsiteSettings websitePreferences =
+                            (SingleWebsiteSettings) settingsActivity.getMainFragment();
+                    Assert.assertNotNull(
+                            "Notification Preference not found.",
+                            websitePreferences.findPreference(
+                                    SingleWebsiteSettings.getPreferenceKey(
+                                            ContentSettingsType.NOTIFICATIONS)));
+                });
 
         settingsActivity.finish();
     }
@@ -136,15 +141,21 @@ public class SingleWebsiteSettingsTest {
     @Test
     @SmallTest
     public void testDesktopSiteException() {
-        SettingsActivity settingsActivity = SiteSettingsTestUtils.startSingleWebsitePreferences(
-                createWebsiteWithContentSettingException(
-                        ContentSettingsType.REQUEST_DESKTOP_SITE, ContentSettingValues.ALLOW));
-        TestThreadUtils.runOnUiThreadBlocking(() -> {
-            var websitePreferences = (SingleWebsiteSettings) settingsActivity.getMainFragment();
-            Assert.assertNotNull("Desktop site preference should be present.",
-                    websitePreferences.findPreference(SingleWebsiteSettings.getPreferenceKey(
-                            ContentSettingsType.REQUEST_DESKTOP_SITE)));
-        });
+        SettingsActivity settingsActivity =
+                SiteSettingsTestUtils.startSingleWebsitePreferences(
+                        createWebsiteWithContentSettingException(
+                                ContentSettingsType.REQUEST_DESKTOP_SITE,
+                                ContentSettingValues.ALLOW));
+        TestThreadUtils.runOnUiThreadBlocking(
+                () -> {
+                    var websitePreferences =
+                            (SingleWebsiteSettings) settingsActivity.getMainFragment();
+                    Assert.assertNotNull(
+                            "Desktop site preference should be present.",
+                            websitePreferences.findPreference(
+                                    SingleWebsiteSettings.getPreferenceKey(
+                                            ContentSettingsType.REQUEST_DESKTOP_SITE)));
+                });
         settingsActivity.finish();
     }
 
@@ -156,14 +167,24 @@ public class SingleWebsiteSettingsTest {
         GURL example = new GURL("https://example.com");
         GURL embedded2 = new GURL("https://embedded2.com");
 
-        Website website = createWebsiteWithStorageAccessPermission(
-                "https://[*.]embedded.com", "https://[*.]example.com", ContentSettingValues.ALLOW);
-        Website website2 = createWebsiteWithStorageAccessPermission(
-                "https://[*.]embedded2.com", "https://[*.]example.com", ContentSettingValues.BLOCK);
-        Website other = createWebsiteWithStorageAccessPermission(
-                "https://[*.]embedded.com", "https://[*.]foo.com", ContentSettingValues.BLOCK);
-        Website merged = SingleWebsiteSettings.mergePermissionAndStorageInfoForTopLevelOrigin(
-                WebsiteAddress.create(EXAMPLE_ADDRESS), List.of(website, website2, other));
+        Website website =
+                createWebsiteWithStorageAccessPermission(
+                        "https://[*.]embedded.com",
+                        "https://[*.]example.com",
+                        ContentSettingValues.ALLOW);
+        Website website2 =
+                createWebsiteWithStorageAccessPermission(
+                        "https://[*.]embedded2.com",
+                        "https://[*.]example.com",
+                        ContentSettingValues.BLOCK);
+        Website other =
+                createWebsiteWithStorageAccessPermission(
+                        "https://[*.]embedded.com",
+                        "https://[*.]foo.com",
+                        ContentSettingValues.BLOCK);
+        Website merged =
+                SingleWebsiteSettings.mergePermissionAndStorageInfoForTopLevelOrigin(
+                        WebsiteAddress.create(EXAMPLE_ADDRESS), List.of(website, website2, other));
 
         var exceptions = merged.getEmbeddedPermissions().get(type);
         assertThat(exceptions.size()).isEqualTo(2);
@@ -190,18 +211,23 @@ public class SingleWebsiteSettingsTest {
     private static int getStorageAccessSetting(
             @ContentSettingsType int contentSettingType, GURL primaryUrl, GURL secondaryUrl) {
         int[] result = {0};
-        TestThreadUtils.runOnUiThreadBlocking(() -> {
-            result[0] =
-                    WebsitePreferenceBridge.getContentSetting(Profile.getLastUsedRegularProfile(),
-                            contentSettingType, primaryUrl, secondaryUrl);
-        });
+        TestThreadUtils.runOnUiThreadBlocking(
+                () -> {
+                    result[0] =
+                            WebsitePreferenceBridge.getContentSetting(
+                                    Profile.getLastUsedRegularProfile(),
+                                    contentSettingType,
+                                    primaryUrl,
+                                    secondaryUrl);
+                });
         return result[0];
     }
 
     /**
      * Helper function for creating a {@link ParameterSet} for {@link SingleWebsiteSettingsParams}.
      */
-    private static ParameterSet createParameterSet(String namePrefix,
+    private static ParameterSet createParameterSet(
+            String namePrefix,
             @ContentSettingsType int contentSettingsType,
             @ContentSettingValues int contentSettingValue) {
         String prefKey = SingleWebsiteSettings.getPreferenceKey(contentSettingsType);
@@ -216,29 +242,30 @@ public class SingleWebsiteSettingsTest {
 
     /** Test case class that check whether a toggle exists for a given content setting. */
     private static class SingleExceptionTestCase {
-        @ContentSettingValues
-        int mContentSettingValue;
-        @ContentSettingsType
-        int mContentSettingsType;
+        @ContentSettingValues int mContentSettingValue;
+        @ContentSettingsType int mContentSettingsType;
 
         private SettingsActivity mSettingsActivity;
 
-        SingleExceptionTestCase(@ContentSettingsType int contentSettingsType,
+        SingleExceptionTestCase(
+                @ContentSettingsType int contentSettingsType,
                 @ContentSettingValues int contentSettingValue) {
             mContentSettingsType = contentSettingsType;
             mContentSettingValue = contentSettingValue;
         }
 
         public void run() {
-            Website website = createWebsiteWithContentSettingException(
-                    mContentSettingsType, mContentSettingValue);
+            Website website =
+                    createWebsiteWithContentSettingException(
+                            mContentSettingsType, mContentSettingValue);
             mSettingsActivity = SiteSettingsTestUtils.startSingleWebsitePreferences(website);
 
-            TestThreadUtils.runOnUiThreadBlocking(() -> {
-                SingleWebsiteSettings websitePreferences =
-                        (SingleWebsiteSettings) mSettingsActivity.getMainFragment();
-                doTest(websitePreferences);
-            });
+            TestThreadUtils.runOnUiThreadBlocking(
+                    () -> {
+                        SingleWebsiteSettings websitePreferences =
+                                (SingleWebsiteSettings) mSettingsActivity.getMainFragment();
+                        doTest(websitePreferences);
+                    });
 
             mSettingsActivity.finish();
         }
@@ -247,8 +274,10 @@ public class SingleWebsiteSettingsTest {
             String prefKey = SingleWebsiteSettings.getPreferenceKey(mContentSettingsType);
             ChromeSwitchPreference switchPref = websitePreferences.findPreference(prefKey);
             Assert.assertNotNull("Preference cannot be found on screen.", switchPref);
-            assertEquals("Switch check state is different than test setting.",
-                    mContentSettingValue == ContentSettingValues.ALLOW, switchPref.isChecked());
+            assertEquals(
+                    "Switch check state is different than test setting.",
+                    mContentSettingValue == ContentSettingValues.ALLOW,
+                    switchPref.isChecked());
         }
     }
 
@@ -256,9 +285,14 @@ public class SingleWebsiteSettingsTest {
             @ContentSettingsType int type, @ContentSettingValues int value) {
         WebsiteAddress address = WebsiteAddress.create(EXAMPLE_ADDRESS);
         Website website = new Website(address, address);
-        website.setContentSettingException(type,
-                new ContentSettingException(type, website.getAddress().getOrigin(), value,
-                        "preference", /*isEmbargoed=*/false));
+        website.setContentSettingException(
+                type,
+                new ContentSettingException(
+                        type,
+                        website.getAddress().getOrigin(),
+                        value,
+                        "preference",
+                        /* isEmbargoed= */ false));
 
         return website;
     }
@@ -267,12 +301,20 @@ public class SingleWebsiteSettingsTest {
             String origin, String embedder, @ContentSettingValues int setting) {
         Website website =
                 new Website(WebsiteAddress.create(origin), WebsiteAddress.create(embedder));
-        ContentSettingException info = new ContentSettingException(
-                ContentSettingsType.STORAGE_ACCESS, origin, embedder, ContentSettingValues.ASK,
-                /*source=*/"", /*expiration=*/0, /*isEmbargoed=*/false);
+        ContentSettingException info =
+                new ContentSettingException(
+                        ContentSettingsType.STORAGE_ACCESS,
+                        origin,
+                        embedder,
+                        ContentSettingValues.ASK,
+                        /* source= */ "",
+                        /* expiration= */ 0,
+                        /* isEmbargoed= */ false);
         // Set setting explicitly to write it to prefs.
         TestThreadUtils.runOnUiThreadBlocking(
-                () -> { info.setContentSetting(Profile.getLastUsedRegularProfile(), setting); });
+                () -> {
+                    info.setContentSetting(Profile.getLastUsedRegularProfile(), setting);
+                });
         website.addEmbeddedPermission(info);
         return website;
     }

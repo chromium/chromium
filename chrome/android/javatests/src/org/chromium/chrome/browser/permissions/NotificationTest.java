@@ -19,9 +19,7 @@ import org.chromium.chrome.browser.tab.Tab;
 import org.chromium.chrome.test.ChromeJUnit4ClassRunner;
 import org.chromium.content_public.browser.test.util.TestThreadUtils;
 
-/**
- * Test suite for notifications permissions requests.
- */
+/** Test suite for notifications permissions requests. */
 @RunWith(ChromeJUnit4ClassRunner.class)
 @CommandLineFlags.Add({ChromeSwitches.DISABLE_FIRST_RUN_EXPERIENCE})
 public class NotificationTest {
@@ -41,8 +39,9 @@ public class NotificationTest {
     @Feature({"Notifications"})
     public void testNotificationDialog() throws Exception {
         Tab tab = mPermissionRule.getActivity().getActivityTab();
-        PermissionUpdateWaiter updateWaiter = new PermissionUpdateWaiter(
-                "request-callback-granted", mPermissionRule.getActivity());
+        PermissionUpdateWaiter updateWaiter =
+                new PermissionUpdateWaiter(
+                        "request-callback-granted", mPermissionRule.getActivity());
         TestThreadUtils.runOnUiThreadBlocking(() -> tab.addObserver(updateWaiter));
         mPermissionRule.runAllowTest(
                 updateWaiter, TEST_FILE, "requestPermission()", 0, false, true);

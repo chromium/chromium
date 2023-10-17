@@ -25,7 +25,7 @@ import javax.crypto.Cipher;
  * Functional tests for the {@link CipherFactory}. Confirms that saving and restoring data works, as
  * well as that {@link Cipher} instances properly encrypt and decrypt data.
  *
- * Tests that confirm that the class is thread-safe would require putting potentially flaky hooks
+ * <p>Tests that confirm that the class is thread-safe would require putting potentially flaky hooks
  * throughout the class to simulate artificial blockages.
  */
 @RunWith(BaseJUnit4ClassRunner.class)
@@ -63,8 +63,8 @@ public class CipherFactoryTest {
     }
 
     /**
-     * Restoring a {@link Bundle} containing the same parameters already in use by the
-     * {@link CipherFactory} should keep the same keys.
+     * Restoring a {@link Bundle} containing the same parameters already in use by the {@link
+     * CipherFactory} should keep the same keys.
      */
     @Test
     @MediumTest
@@ -121,9 +121,7 @@ public class CipherFactoryTest {
         sameOutputDifferentCiphers(INPUT_DATA, aCipher, bCipher);
     }
 
-    /**
-     * Restoration from a {@link Bundle} missing data should fail.
-     */
+    /** Restoration from a {@link Bundle} missing data should fail. */
     @Test
     @MediumTest
     public void testIncompleteBundleRestoration() {
@@ -210,6 +208,7 @@ public class CipherFactoryTest {
 
     /**
      * Confirm that the two {@link Cipher}s are functionally equivalent.
+     *
      * @return The input after it has been operated on (e.g. decrypted or encrypted).
      */
     private byte[] sameOutputDifferentCiphers(byte[] input, Cipher aCipher, Cipher bCipher)

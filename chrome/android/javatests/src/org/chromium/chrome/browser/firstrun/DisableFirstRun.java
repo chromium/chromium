@@ -11,12 +11,12 @@ import org.chromium.chrome.browser.flags.ChromeSwitches;
 import org.chromium.content_public.browser.test.util.TestThreadUtils;
 
 /**
- * JUnit 4 rule that disables the First-Run Flow for tests.
- * This is needed to correctly populate the Context Menu.
- * <p>
- * The CommandLineFlags setting is redundant, but helps ensure that clients know that they don't
- * need to add it themselves.  This is also set in ChromeActivityTest, but having this here
- * adds resilience to changes in that class.
+ * JUnit 4 rule that disables the First-Run Flow for tests. This is needed to correctly populate the
+ * Context Menu.
+ *
+ * <p>The CommandLineFlags setting is redundant, but helps ensure that clients know that they don't
+ * need to add it themselves. This is also set in ChromeActivityTest, but having this here adds
+ * resilience to changes in that class.
  */
 @CommandLineFlags.Add(ChromeSwitches.DISABLE_FIRST_RUN_EXPERIENCE)
 public class DisableFirstRun extends ExternalResource {

@@ -23,14 +23,11 @@ import org.chromium.chrome.browser.flags.ChromeSwitches;
 import org.chromium.chrome.test.ChromeJUnit4ClassRunner;
 import org.chromium.chrome.test.R;
 
-/**
- * Tests for splash screens with an icon registered in WebappRegistry.
- */
+/** Tests for splash screens with an icon registered in WebappRegistry. */
 @RunWith(ChromeJUnit4ClassRunner.class)
 @CommandLineFlags.Add({ChromeSwitches.DISABLE_FIRST_RUN_EXPERIENCE})
 public class WebappSplashScreenIconTest {
-    @Rule
-    public final WebappActivityTestRule mActivityTestRule = new WebappActivityTestRule();
+    @Rule public final WebappActivityTestRule mActivityTestRule = new WebappActivityTestRule();
 
     private ViewGroup mSplashScreen;
 
@@ -39,9 +36,13 @@ public class WebappSplashScreenIconTest {
         WebappRegistry.getInstance()
                 .getWebappDataStorage(WebappActivityTestRule.WEBAPP_ID)
                 .updateSplashScreenImage(WebappActivityTestRule.TEST_SPLASH_ICON);
-        mSplashScreen = mActivityTestRule.startWebappActivityAndWaitForSplashScreen(
-                mActivityTestRule.createIntent().putExtra(
-                        WebappConstants.EXTRA_ICON, WebappActivityTestRule.TEST_ICON));
+        mSplashScreen =
+                mActivityTestRule.startWebappActivityAndWaitForSplashScreen(
+                        mActivityTestRule
+                                .createIntent()
+                                .putExtra(
+                                        WebappConstants.EXTRA_ICON,
+                                        WebappActivityTestRule.TEST_ICON));
     }
 
     @Test

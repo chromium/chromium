@@ -29,19 +29,19 @@ import org.chromium.chrome.test.ChromeJUnit4RunnerDelegate;
 import java.util.List;
 import java.util.concurrent.Callable;
 
-/**
- * End-to-end tests for testing WebXR for AR's hit testing behavior.
- */
+/** End-to-end tests for testing WebXR for AR's hit testing behavior. */
 @RunWith(ParameterizedRunner.class)
 @UseRunnerDelegate(ChromeJUnit4RunnerDelegate.class)
-@CommandLineFlags.Add({ChromeSwitches.DISABLE_FIRST_RUN_EXPERIENCE,
-        "enable-features=WebXR,WebXRARModule,WebXRHitTest,LogJsConsoleMessages"})
+@CommandLineFlags.Add({
+    ChromeSwitches.DISABLE_FIRST_RUN_EXPERIENCE,
+    "enable-features=WebXR,WebXRARModule,WebXRHitTest,LogJsConsoleMessages"
+})
 public class WebXrArHitTestTest {
     @ClassParameter
     private static List<ParameterSet> sClassParams =
             ArTestRuleUtils.generateDefaultTestRuleParameters();
-    @Rule
-    public RuleChain mRuleChain;
+
+    @Rule public RuleChain mRuleChain;
 
     private ChromeActivityTestRule mTestRule;
     private WebXrArTestFramework mWebXrArTestFramework;
@@ -56,9 +56,7 @@ public class WebXrArHitTestTest {
         mWebXrArTestFramework = new WebXrArTestFramework(mTestRule);
     }
 
-    /**
-     * Tests that hit test returns a valid result when there is a plane present.
-     */
+    /** Tests that hit test returns a valid result when there is a plane present. */
     @Test
     @MediumTest
     @XrActivityRestriction({XrActivityRestriction.SupportedActivity.ALL})
@@ -72,8 +70,8 @@ public class WebXrArHitTestTest {
     }
 
     /**
-     * Tests that hit test results are available in the subsequent frame after hit
-     * test source was returned.
+     * Tests that hit test results are available in the subsequent frame after hit test source was
+     * returned.
      */
     @Test
     @MediumTest
@@ -87,9 +85,7 @@ public class WebXrArHitTestTest {
         mWebXrArTestFramework.endTest();
     }
 
-    /**
-     * Tests that hit test cancellation works for hit test sources when the session has ended.
-     */
+    /** Tests that hit test cancellation works for hit test sources when the session has ended. */
     @Test
     @MediumTest
     @XrActivityRestriction({XrActivityRestriction.SupportedActivity.ALL})

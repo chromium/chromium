@@ -51,10 +51,11 @@ public class IncognitoDescriptionViewRenderTest extends BlankUiTestActivityTestC
     @Override
     public void setUpTest() throws Exception {
         super.setUpTest();
-        TestThreadUtils.runOnUiThreadBlocking(() -> {
-            Activity activity = getActivity();
-            activity.setContentView(R.layout.incognito_description_layout);
-        });
+        TestThreadUtils.runOnUiThreadBlocking(
+                () -> {
+                    Activity activity = getActivity();
+                    activity.setContentView(R.layout.incognito_description_layout);
+                });
     }
 
     @Test
@@ -62,9 +63,10 @@ public class IncognitoDescriptionViewRenderTest extends BlankUiTestActivityTestC
     @Feature({"RenderTest"})
     public void testRender_IncognitoDescriptionView() throws IOException {
         View view = getActivity().findViewById(android.R.id.content);
-        TestThreadUtils.runOnUiThreadBlocking(() -> {
-            view.setBackgroundResource(R.color.ntp_bg_incognito);
-        });
+        TestThreadUtils.runOnUiThreadBlocking(
+                () -> {
+                    view.setBackgroundResource(R.color.ntp_bg_incognito);
+                });
         mRenderTestRule.render(view, "incognito_description_view");
     }
 }

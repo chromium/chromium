@@ -37,9 +37,7 @@ import org.chromium.ui.modelutil.PropertyModel;
 import org.chromium.ui.modelutil.PropertyModelChangeProcessor;
 import org.chromium.ui.test.util.BlankUiTestActivityTestCase;
 
-/**
- * On-device unit tests for {@link MinimizedCardViewBinder}.
- */
+/** On-device unit tests for {@link MinimizedCardViewBinder}. */
 @RunWith(ChromeJUnit4ClassRunner.class)
 @Batch(Batch.UNIT_TESTS)
 public class MinimizedCardViewBinderTest extends BlankUiTestActivityTestCase {
@@ -61,36 +59,41 @@ public class MinimizedCardViewBinderTest extends BlankUiTestActivityTestCase {
     public void setUpTest() throws Exception {
         super.setUpTest();
 
-        TestThreadUtils.runOnUiThreadBlocking(() -> {
-            float density = getActivity().getResources().getDisplayMetrics().density;
-            int height = Math.round(HEIGHT_DP * density);
-            int width = Math.round(ASPECT_RATIO.floatValue() * height);
-            var layoutParams = new FrameLayout.LayoutParams(width, height);
-            ViewGroup content = new FrameLayout(getActivity());
-            getActivity().setContentView(content, layoutParams);
-            mView = LayoutInflater.from(getActivity())
-                            .inflate(R.layout.custom_tabs_minimized_card, content, true);
-            mModel = new PropertyModel.Builder(MinimizedCardProperties.ALL_KEYS)
-                             .with(MinimizedCardProperties.TITLE, "")
-                             .with(MinimizedCardProperties.URL, "")
-                             .with(MinimizedCardProperties.FAVICON, null)
-                             .build();
-            PropertyModelChangeProcessor.create(mModel, mView, MinimizedCardViewBinder::bind);
-            mTitle = mView.findViewById(R.id.title);
-            mUrl = mView.findViewById(R.id.url);
-            mFavicon = mView.findViewById(R.id.favicon);
-        });
+        TestThreadUtils.runOnUiThreadBlocking(
+                () -> {
+                    float density = getActivity().getResources().getDisplayMetrics().density;
+                    int height = Math.round(HEIGHT_DP * density);
+                    int width = Math.round(ASPECT_RATIO.floatValue() * height);
+                    var layoutParams = new FrameLayout.LayoutParams(width, height);
+                    ViewGroup content = new FrameLayout(getActivity());
+                    getActivity().setContentView(content, layoutParams);
+                    mView =
+                            LayoutInflater.from(getActivity())
+                                    .inflate(R.layout.custom_tabs_minimized_card, content, true);
+                    mModel =
+                            new PropertyModel.Builder(MinimizedCardProperties.ALL_KEYS)
+                                    .with(MinimizedCardProperties.TITLE, "")
+                                    .with(MinimizedCardProperties.URL, "")
+                                    .with(MinimizedCardProperties.FAVICON, null)
+                                    .build();
+                    PropertyModelChangeProcessor.create(
+                            mModel, mView, MinimizedCardViewBinder::bind);
+                    mTitle = mView.findViewById(R.id.title);
+                    mUrl = mView.findViewById(R.id.url);
+                    mFavicon = mView.findViewById(R.id.favicon);
+                });
     }
 
     @Test
     @SmallTest
     public void testTitleUrlFavicon() {
         var favicon = Bitmap.createBitmap(4, 4, Bitmap.Config.ARGB_8888);
-        TestThreadUtils.runOnUiThreadBlocking(() -> {
-            mModel.set(MinimizedCardProperties.TITLE, SHORT_TITLE);
-            mModel.set(MinimizedCardProperties.URL, SHORT_URL);
-            mModel.set(MinimizedCardProperties.FAVICON, favicon);
-        });
+        TestThreadUtils.runOnUiThreadBlocking(
+                () -> {
+                    mModel.set(MinimizedCardProperties.TITLE, SHORT_TITLE);
+                    mModel.set(MinimizedCardProperties.URL, SHORT_URL);
+                    mModel.set(MinimizedCardProperties.FAVICON, favicon);
+                });
 
         onView(withId(R.id.title)).check(matches(withText(SHORT_TITLE)));
         onView(withId(R.id.url)).check(matches(withText(SHORT_URL)));
@@ -102,11 +105,12 @@ public class MinimizedCardViewBinderTest extends BlankUiTestActivityTestCase {
     @SmallTest
     public void testTitleUrlFaviconLong() {
         var favicon = Bitmap.createBitmap(4, 4, Bitmap.Config.ARGB_8888);
-        TestThreadUtils.runOnUiThreadBlocking(() -> {
-            mModel.set(MinimizedCardProperties.TITLE, LONG_TITLE);
-            mModel.set(MinimizedCardProperties.URL, LONG_URL);
-            mModel.set(MinimizedCardProperties.FAVICON, favicon);
-        });
+        TestThreadUtils.runOnUiThreadBlocking(
+                () -> {
+                    mModel.set(MinimizedCardProperties.TITLE, LONG_TITLE);
+                    mModel.set(MinimizedCardProperties.URL, LONG_URL);
+                    mModel.set(MinimizedCardProperties.FAVICON, favicon);
+                });
 
         onView(withId(R.id.title)).check(matches(withText(LONG_TITLE)));
         assertEquals(1, mTitle.getLineCount());

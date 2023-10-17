@@ -37,26 +37,30 @@ import java.util.concurrent.Callable;
 /**
  * End-to-end tests for installing the VR DFM on Daydream-ready phones on startup.
  *
- * TODO(agrieve): This test may be better as a robolectric test.
+ * <p>TODO(agrieve): This test may be better as a robolectric test.
  */
 @RunWith(ParameterizedRunner.class)
 @UseRunnerDelegate(ChromeJUnit4RunnerDelegate.class)
-@CommandLineFlags.
-Add({ChromeSwitches.DISABLE_FIRST_RUN_EXPERIENCE, "enable-features=LogJsConsoleMessages"})
+@CommandLineFlags.Add({
+    ChromeSwitches.DISABLE_FIRST_RUN_EXPERIENCE,
+    "enable-features=LogJsConsoleMessages"
+})
 public class GvrDaydreamReadyModuleInstallTest {
     @ClassParameter
     private static List<ParameterSet> sClassParams =
             GvrTestRuleUtils.generateDefaultTestRuleParameters();
-    @Rule
-    public RuleChain mRuleChain;
+
+    @Rule public RuleChain mRuleChain;
 
     private final Set<String> mModulesRequestedDeferred = new HashSet<>();
 
     public GvrDaydreamReadyModuleInstallTest(Callable<ChromeActivityTestRule> callable)
             throws Exception {
-        mRuleChain = RuleChain.outerRule(new VrModuleInstallerRule())
-                             .around(GvrTestRuleUtils.wrapRuleInActivityRestrictionRule(
-                                     callable.call()));
+        mRuleChain =
+                RuleChain.outerRule(new VrModuleInstallerRule())
+                        .around(
+                                GvrTestRuleUtils.wrapRuleInActivityRestrictionRule(
+                                        callable.call()));
     }
 
     /** Tests that the install is requested deferred. */
@@ -66,7 +70,8 @@ public class GvrDaydreamReadyModuleInstallTest {
     @Restriction({RESTRICTION_TYPE_DEVICE_DAYDREAM})
     @VrModuleNotInstalled
     public void testDeferredRequestOnStartup() {
-        Assert.assertTrue("VR module should have been deferred installed at startup",
+        Assert.assertTrue(
+                "VR module should have been deferred installed at startup",
                 mModulesRequestedDeferred.contains("vr"));
     }
 
@@ -75,12 +80,13 @@ public class GvrDaydreamReadyModuleInstallTest {
         private final InstallEngine mStubModuleInstaller;
 
         public VrModuleInstallerRule() {
-            mStubModuleInstaller = new InstallEngine() {
-                @Override
-                public void installDeferred(String moduleName) {
-                    mModulesRequestedDeferred.add(moduleName);
-                }
-            };
+            mStubModuleInstaller =
+                    new InstallEngine() {
+                        @Override
+                        public void installDeferred(String moduleName) {
+                            mModulesRequestedDeferred.add(moduleName);
+                        }
+                    };
             mOldModuleInstaller = VrModule.getInstallEngine();
         }
 

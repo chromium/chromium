@@ -34,16 +34,15 @@ import java.util.Arrays;
 import java.util.List;
 import java.util.concurrent.TimeoutException;
 
-/**
- * Instrumentation Render tests for default {@link CustomTabActivity} UI.
- */
+/** Instrumentation Render tests for default {@link CustomTabActivity} UI. */
 @RunWith(ParameterizedRunner.class)
 @ParameterAnnotations.UseRunnerDelegate(ChromeJUnit4RunnerDelegate.class)
 @CommandLineFlags.Add({ChromeSwitches.DISABLE_FIRST_RUN_EXPERIENCE})
 public class IncognitoCustomTabActivityRenderTest {
     @ParameterAnnotations.ClassParameter
     private static final List<ParameterSet> sClassParameter =
-            Arrays.asList(new ParameterSet().name("HTTPS").value(true),
+            Arrays.asList(
+                    new ParameterSet().name("HTTPS").value(true),
                     new ParameterSet().name("HTTP").value(false));
 
     private static final String TEST_PAGE = "/chrome/test/data/android/google.html";
@@ -80,8 +79,9 @@ public class IncognitoCustomTabActivityRenderTest {
 
     private void prepareCCTIntent() {
         String url = mEmbeddedTestServerRule.getServer().getURL(TEST_PAGE);
-        mIntent = CustomTabsIntentTestUtils.createMinimalIncognitoCustomTabIntent(
-                ApplicationProvider.getApplicationContext(), url);
+        mIntent =
+                CustomTabsIntentTestUtils.createMinimalIncognitoCustomTabIntent(
+                        ApplicationProvider.getApplicationContext(), url);
     }
 
     private void startActivity(String renderTestId, int mScreenOrientation) throws IOException {
@@ -107,7 +107,8 @@ public class IncognitoCustomTabActivityRenderTest {
     @MediumTest
     @Feature("RenderTest")
     public void testCCTToolbarInLandscapeMode() throws IOException {
-        startActivity("default_incognito_cct_toolbar_in_landscape_with_https_" + mRunWithHttps,
+        startActivity(
+                "default_incognito_cct_toolbar_in_landscape_with_https_" + mRunWithHttps,
                 ActivityInfo.SCREEN_ORIENTATION_LANDSCAPE);
     }
 }

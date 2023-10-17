@@ -26,9 +26,7 @@ import org.chromium.content_public.browser.test.util.TestThreadUtils;
 import java.util.List;
 import java.util.concurrent.TimeoutException;
 
-/**
- * Tests for ScreenshotTabObserver class.
- */
+/** Tests for ScreenshotTabObserver class. */
 @RunWith(ChromeJUnit4ClassRunner.class)
 @CommandLineFlags.Add({ChromeSwitches.DISABLE_FIRST_RUN_EXPERIENCE})
 public class ScreenshotTabObserverTest {
@@ -53,10 +51,12 @@ public class ScreenshotTabObserverTest {
         UserActionTester userActionTester = new UserActionTester();
         mObserver.onScreenshotTaken();
         // Must wait for the user action to arrive on the UI thread before checking it.
-        TestThreadUtils.runOnUiThreadBlocking((Runnable) () -> {
-            List<String> actions = userActionTester.getActions();
-            Assert.assertEquals("Tab.Screenshot", actions.get(0));
-        });
+        TestThreadUtils.runOnUiThreadBlocking(
+                (Runnable)
+                        () -> {
+                            List<String> actions = userActionTester.getActions();
+                            Assert.assertEquals("Tab.Screenshot", actions.get(0));
+                        });
     }
 
     @Test
@@ -70,7 +70,9 @@ public class ScreenshotTabObserverTest {
 
         mObserver.onScreenshotTaken();
         TestThreadUtils.runOnUiThreadBlocking(
-                () -> { mActivityTestRule.getActivity().getTabModelSelector().closeTab(mTab); });
+                () -> {
+                    mActivityTestRule.getActivity().getTabModelSelector().closeTab(mTab);
+                });
         callbackHelper.waitForCallback(count);
 
         histogramWatcher.assertExpected("Should be one page with one snapshot reported.");
@@ -88,7 +90,9 @@ public class ScreenshotTabObserverTest {
         mObserver.onScreenshotTaken();
         mObserver.onScreenshotTaken();
         TestThreadUtils.runOnUiThreadBlocking(
-                () -> { mActivityTestRule.getActivity().getTabModelSelector().closeTab(mTab); });
+                () -> {
+                    mActivityTestRule.getActivity().getTabModelSelector().closeTab(mTab);
+                });
         callbackHelper.waitForCallback(count);
 
         histogramWatcher.assertExpected("Should be one page with two snapshots reported.");
@@ -105,7 +109,9 @@ public class ScreenshotTabObserverTest {
         mObserver.onScreenshotTaken();
         mObserver.onActionPerformedAfterScreenshot(ScreenshotTabObserver.SCREENSHOT_ACTION_SHARE);
         TestThreadUtils.runOnUiThreadBlocking(
-                () -> { mActivityTestRule.getActivity().getTabModelSelector().closeTab(mTab); });
+                () -> {
+                    mActivityTestRule.getActivity().getTabModelSelector().closeTab(mTab);
+                });
         callbackHelper.waitForCallback(count);
 
         histogramWatcher.assertExpected(
@@ -113,11 +119,12 @@ public class ScreenshotTabObserverTest {
     }
 
     private void setupOnReportCompleteCallbackHelper(CallbackHelper callbackHelper) {
-        mObserver.setOnReportCompleteForTesting(new Runnable() {
-            @Override
-            public void run() {
-                callbackHelper.notifyCalled();
-            }
-        });
+        mObserver.setOnReportCompleteForTesting(
+                new Runnable() {
+                    @Override
+                    public void run() {
+                        callbackHelper.notifyCalled();
+                    }
+                });
     }
 }

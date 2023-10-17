@@ -34,9 +34,7 @@ import org.chromium.ui.test.util.UiRestriction;
 import java.util.concurrent.Callable;
 import java.util.concurrent.ExecutionException;
 
-/**
- * Tests for the UndoBarController.
- */
+/** Tests for the UndoBarController. */
 @RunWith(ChromeJUnit4ClassRunner.class)
 @CommandLineFlags.Add({ChromeSwitches.DISABLE_FIRST_RUN_EXPERIENCE})
 public class UndoBarControllerTest {
@@ -143,10 +141,11 @@ public class UndoBarControllerTest {
     @SmallTest
     // When both START_SURFACE_ANDROID and START_SURFACE_WITH_ACCESSIBILITY are enabled, changing
     // accessibility status won't recreate ChromeTabbedActivity.
-    @EnableFeatures({ChromeFeatureList.START_SURFACE_ANDROID,
-            ChromeFeatureList.START_SURFACE_WITH_ACCESSIBILITY})
-    public void
-    testUndoSnackbarDisabled_AccessibilityEnabled() throws Exception {
+    @EnableFeatures({
+        ChromeFeatureList.START_SURFACE_ANDROID,
+        ChromeFeatureList.START_SURFACE_WITH_ACCESSIBILITY
+    })
+    public void testUndoSnackbarDisabled_AccessibilityEnabled() throws Exception {
         TestThreadUtils.runOnUiThreadBlocking(
                 () -> ChromeAccessibilityUtil.get().setAccessibilityEnabledForTesting(true));
         ChromeTabUtils.newTabFromMenu(
@@ -178,7 +177,8 @@ public class UndoBarControllerTest {
 
         Snackbar currentSnackbar = getCurrentSnackbar();
         Assert.assertEquals("Incorrect snackbar text", "Closed about:blank", getSnackbarText());
-        Assert.assertTrue("Incorrect SnackbarController type",
+        Assert.assertTrue(
+                "Incorrect SnackbarController type",
                 currentSnackbar.getController() instanceof UndoBarController);
         Assert.assertEquals(
                 "Tab Model should contain 0 tab after tab closed", 0, mTabModel.getCount());
@@ -186,15 +186,17 @@ public class UndoBarControllerTest {
 
     private void clickSnackbar() {
         TestThreadUtils.runOnUiThreadBlocking(
-                ()
-                        -> mSnackbarManager.onClick(mActivityTestRule.getActivity().findViewById(
-                                R.id.snackbar_button)));
+                () ->
+                        mSnackbarManager.onClick(
+                                mActivityTestRule
+                                        .getActivity()
+                                        .findViewById(R.id.snackbar_button)));
     }
 
     private void dismissSnackbars() {
         TestThreadUtils.runOnUiThreadBlocking(
-                ()
-                        -> mSnackbarManager.dismissSnackbars(
+                () ->
+                        mSnackbarManager.dismissSnackbars(
                                 mSnackbarManager.getCurrentSnackbarForTesting().getController()));
     }
 
@@ -205,11 +207,12 @@ public class UndoBarControllerTest {
     }
 
     private Snackbar getCurrentSnackbar() throws ExecutionException {
-        return TestThreadUtils.runOnUiThreadBlocking(new Callable<Snackbar>() {
-            @Override
-            public Snackbar call() {
-                return mSnackbarManager.getCurrentSnackbarForTesting();
-            }
-        });
+        return TestThreadUtils.runOnUiThreadBlocking(
+                new Callable<Snackbar>() {
+                    @Override
+                    public Snackbar call() {
+                        return mSnackbarManager.getCurrentSnackbarForTesting();
+                    }
+                });
     }
 }

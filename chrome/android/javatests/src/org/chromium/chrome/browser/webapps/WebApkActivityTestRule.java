@@ -33,13 +33,14 @@ public class WebApkActivityTestRule extends ChromeActivityTestRule<WebappActivit
 
     @Override
     public Statement apply(final Statement base, Description description) {
-        Statement webApkUpdateManagerStatement = new Statement() {
-            @Override
-            public void evaluate() throws Throwable {
-                WebApkUpdateManager.setUpdatesDisabledForTesting(true);
-                base.evaluate();
-            }
-        };
+        Statement webApkUpdateManagerStatement =
+                new Statement() {
+                    @Override
+                    public void evaluate() throws Throwable {
+                        WebApkUpdateManager.setUpdatesDisabledForTesting(true);
+                        base.evaluate();
+                    }
+                };
         return super.apply(webApkUpdateManagerStatement, description);
     }
 
@@ -72,14 +73,17 @@ public class WebApkActivityTestRule extends ChromeActivityTestRule<WebappActivit
 
     private WebappActivity startWebApkActivity(final Intent intent, final String startUrl) {
         final WebappActivity webApkActivity =
-                (WebappActivity) InstrumentationRegistry.getInstrumentation().startActivitySync(
-                        intent);
+                (WebappActivity)
+                        InstrumentationRegistry.getInstrumentation().startActivitySync(intent);
         setActivity(webApkActivity);
         InstrumentationRegistry.getInstrumentation().waitForIdleSync();
 
-        CriteriaHelper.pollInstrumentationThread(() -> {
-            Criteria.checkThat(webApkActivity.getActivityTab(), Matchers.notNullValue());
-        }, STARTUP_TIMEOUT, CriteriaHelper.DEFAULT_POLLING_INTERVAL);
+        CriteriaHelper.pollInstrumentationThread(
+                () -> {
+                    Criteria.checkThat(webApkActivity.getActivityTab(), Matchers.notNullValue());
+                },
+                STARTUP_TIMEOUT,
+                CriteriaHelper.DEFAULT_POLLING_INTERVAL);
 
         ChromeTabUtils.waitForTabPageLoaded(webApkActivity.getActivityTab(), startUrl);
         WebappActivityTestRule.waitUntilSplashHides(webApkActivity);

@@ -40,18 +40,18 @@ import org.chromium.net.test.EmbeddedTestServerRule;
 
 import java.util.concurrent.TimeoutException;
 
-/**
- * Test suite for fullscreen video implementation.
- */
+/** Test suite for fullscreen video implementation. */
 @RunWith(ChromeJUnit4ClassRunner.class)
-@CommandLineFlags.Add({ChromeSwitches.DISABLE_FIRST_RUN_EXPERIENCE,
-        MediaSwitches.AUTOPLAY_NO_GESTURE_REQUIRED_POLICY})
+@CommandLineFlags.Add({
+    ChromeSwitches.DISABLE_FIRST_RUN_EXPERIENCE,
+    MediaSwitches.AUTOPLAY_NO_GESTURE_REQUIRED_POLICY
+})
 @Batch(Batch.PER_CLASS)
 public class FullscreenVideoTest {
     @Rule
     public ChromeTabbedActivityTestRule mActivityTestRule = new ChromeTabbedActivityTestRule();
-    @Rule
-    public EmbeddedTestServerRule mTestServerRule = new EmbeddedTestServerRule();
+
+    @Rule public EmbeddedTestServerRule mTestServerRule = new EmbeddedTestServerRule();
 
     private ChromeActivity mActivity;
 
@@ -62,8 +62,8 @@ public class FullscreenVideoTest {
     }
 
     /**
-     * Test that when playing a fullscreen video, hitting the back button will let the tab
-     * exit fullscreen mode without changing its URL.
+     * Test that when playing a fullscreen video, hitting the back button will let the tab exit
+     * fullscreen mode without changing its URL.
      */
     @Test
     @MediumTest
@@ -87,15 +87,16 @@ public class FullscreenVideoTest {
         Espresso.pressBack();
 
         waitForTabToExitFullscreen();
-        TestThreadUtils.runOnUiThreadBlocking(() -> {
-            Assert.assertEquals("URL mismatch after exiting fullscreen video", url,
-                    mActivity.getActivityTab().getUrl().getSpec());
-        });
+        TestThreadUtils.runOnUiThreadBlocking(
+                () -> {
+                    Assert.assertEquals(
+                            "URL mismatch after exiting fullscreen video",
+                            url,
+                            mActivity.getActivityTab().getUrl().getSpec());
+                });
     }
 
-    /**
-     * Tests that the dimensions of the fullscreen video are propagated correctly.
-     */
+    /** Tests that the dimensions of the fullscreen video are propagated correctly. */
     @Test
     @MediumTest
     public void testFullscreenDimensions() throws TimeoutException {
@@ -120,17 +121,20 @@ public class FullscreenVideoTest {
         waitForVideoToEnterFullscreen();
 
         // It can take a while for the fullscreen video to register.
-        CriteriaHelper.pollInstrumentationThread(() -> {
-            Criteria.checkThat(
-                    tab.getWebContents().getFullscreenVideoSize(), Matchers.notNullValue());
-        });
+        CriteriaHelper.pollInstrumentationThread(
+                () -> {
+                    Criteria.checkThat(
+                            tab.getWebContents().getFullscreenVideoSize(), Matchers.notNullValue());
+                });
 
         Assert.assertEquals(expectedSize, tab.getWebContents().getFullscreenVideoSize());
     }
 
     private String launchOnFullscreenMode() {
-        String url = mTestServerRule.getServer().getURL(
-                "/chrome/test/data/android/media/video-fullscreen.html");
+        String url =
+                mTestServerRule
+                        .getServer()
+                        .getURL("/chrome/test/data/android/media/video-fullscreen.html");
         mActivityTestRule.loadUrl(url);
         final Tab tab = mActivity.getActivityTab();
 

@@ -34,21 +34,18 @@ import org.chromium.url.GURL;
 import java.util.concurrent.Callable;
 import java.util.concurrent.TimeoutException;
 
-/**
- * Tests for {@link ImageFetcher}.
- */
+/** Tests for {@link ImageFetcher}. */
 @RunWith(ChromeJUnit4ClassRunner.class)
 @CommandLineFlags.Add({ChromeSwitches.DISABLE_FIRST_RUN_EXPERIENCE})
 @Batch(Batch.UNIT_TESTS)
 public class ImageFetcherIntegrationTest {
-    @ClassRule
-    public static final ChromeBrowserTestRule sRule = new ChromeBrowserTestRule();
+    @ClassRule public static final ChromeBrowserTestRule sRule = new ChromeBrowserTestRule();
 
     @ClassRule
     public static final EmbeddedTestServerRule sTestServerRule = new EmbeddedTestServerRule();
 
-    private static class TestImageFetcherCallback
-            extends CallbackHelper implements Callback<Bitmap> {
+    private static class TestImageFetcherCallback extends CallbackHelper
+            implements Callback<Bitmap> {
         public Bitmap mBitmap;
 
         @Override
@@ -58,26 +55,32 @@ public class ImageFetcherIntegrationTest {
         }
     }
 
-    /**
-     * Fetches image from ImageFetcher and waits for callback.
-     */
-    private static Bitmap fetchImageAndWait(String url, int desiredWidth, int desiredHeight,
-            boolean shouldResize) throws Exception {
+    /** Fetches image from ImageFetcher and waits for callback. */
+    private static Bitmap fetchImageAndWait(
+            String url, int desiredWidth, int desiredHeight, boolean shouldResize)
+            throws Exception {
         TestImageFetcherCallback callbackWaiter = new TestImageFetcherCallback();
-        TestThreadUtils.runOnUiThreadBlocking(new Callable<Void>() {
-            @Override
-            public Void call() throws TimeoutException {
-                ImageFetcher.Params params = shouldResize
-                        ? ImageFetcher.Params.create(url, "random", desiredWidth, desiredHeight)
-                        : ImageFetcher.Params.createNoResizing(
-                                new GURL(url), "random", desiredWidth, desiredHeight);
-                ImageFetcher imageFetcher =
-                        ImageFetcherFactory.createImageFetcher(ImageFetcherConfig.NETWORK_ONLY,
-                                Profile.getLastUsedRegularProfile().getProfileKey());
-                imageFetcher.fetchImage(params, callbackWaiter);
-                return null;
-            }
-        });
+        TestThreadUtils.runOnUiThreadBlocking(
+                new Callable<Void>() {
+                    @Override
+                    public Void call() throws TimeoutException {
+                        ImageFetcher.Params params =
+                                shouldResize
+                                        ? ImageFetcher.Params.create(
+                                                url, "random", desiredWidth, desiredHeight)
+                                        : ImageFetcher.Params.createNoResizing(
+                                                new GURL(url),
+                                                "random",
+                                                desiredWidth,
+                                                desiredHeight);
+                        ImageFetcher imageFetcher =
+                                ImageFetcherFactory.createImageFetcher(
+                                        ImageFetcherConfig.NETWORK_ONLY,
+                                        Profile.getLastUsedRegularProfile().getProfileKey());
+                        imageFetcher.fetchImage(params, callbackWaiter);
+                        return null;
+                    }
+                });
         callbackWaiter.waitForFirst();
         return callbackWaiter.mBitmap;
     }
@@ -89,20 +92,22 @@ public class ImageFetcherIntegrationTest {
     @Test
     @MediumTest
     public void testDesiredFrameSizeFavicon() throws Exception {
-        String icoUrl = sTestServerRule.getServer().getURL(
-                "/chrome/test/data/android/image_fetcher/icon.ico");
+        String icoUrl =
+                sTestServerRule
+                        .getServer()
+                        .getURL("/chrome/test/data/android/image_fetcher/icon.ico");
 
-        Bitmap bitmap = fetchImageAndWait(icoUrl, 59, 59, /*shouldResize=*/false);
+        Bitmap bitmap = fetchImageAndWait(icoUrl, 59, 59, /* shouldResize= */ false);
         assertNotNull(bitmap);
         assertEquals(Color.RED, bitmap.getPixel(0, 0));
         assertEquals(60, bitmap.getWidth());
 
-        bitmap = fetchImageAndWait(icoUrl, 59, 59, /*shouldResize=*/true);
+        bitmap = fetchImageAndWait(icoUrl, 59, 59, /* shouldResize= */ true);
         assertNotNull(bitmap);
         assertEquals(Color.RED, bitmap.getPixel(0, 0));
         assertEquals(59, bitmap.getWidth());
 
-        bitmap = fetchImageAndWait(icoUrl, 120, 120, /*shouldResize=*/false);
+        bitmap = fetchImageAndWait(icoUrl, 120, 120, /* shouldResize= */ false);
         assertNotNull(bitmap);
         assertEquals(Color.GREEN, bitmap.getPixel(0, 0));
         assertEquals(120, bitmap.getWidth());

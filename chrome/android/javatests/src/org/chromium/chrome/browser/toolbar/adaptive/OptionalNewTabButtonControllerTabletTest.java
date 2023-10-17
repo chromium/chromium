@@ -40,9 +40,12 @@ import org.chromium.ui.test.util.ViewUtils;
 @RunWith(ChromeJUnit4ClassRunner.class)
 @Batch(Batch.PER_CLASS)
 @EnableFeatures(ChromeFeatureList.ADAPTIVE_BUTTON_IN_TOP_TOOLBAR)
-@CommandLineFlags.Add({ChromeSwitches.DISABLE_FIRST_RUN_EXPERIENCE,
-        "enable-features=" + ChromeFeatureList.ADAPTIVE_BUTTON_IN_TOP_TOOLBAR + "<Study",
-        "force-fieldtrials=Study/Group", "force-fieldtrial-params=Study.Group:mode/always-new-tab"})
+@CommandLineFlags.Add({
+    ChromeSwitches.DISABLE_FIRST_RUN_EXPERIENCE,
+    "enable-features=" + ChromeFeatureList.ADAPTIVE_BUTTON_IN_TOP_TOOLBAR + "<Study",
+    "force-fieldtrials=Study/Group",
+    "force-fieldtrial-params=Study.Group:mode/always-new-tab"
+})
 @Restriction({UiRestriction.RESTRICTION_TYPE_TABLET})
 public class OptionalNewTabButtonControllerTabletTest {
     private static final String TEST_PAGE = "/chrome/test/data/android/navigate/simple.html";
@@ -53,7 +56,7 @@ public class OptionalNewTabButtonControllerTabletTest {
 
     @Rule
     public final BlankCTATabInitialStateRule mInitialStateRule =
-            new BlankCTATabInitialStateRule(sActivityTestRule, /*clearAllTabState=*/false);
+            new BlankCTATabInitialStateRule(sActivityTestRule, /* clearAllTabState= */ false);
 
     private String mTestPageUrl;
 
@@ -83,7 +86,7 @@ public class OptionalNewTabButtonControllerTabletTest {
     public void testButton_hiddenOnTablet_landscape() {
         ActivityTestUtils.rotateActivityToOrientation(
                 sActivityTestRule.getActivity(), Configuration.ORIENTATION_LANDSCAPE);
-        sActivityTestRule.loadUrl(mTestPageUrl, /*secondsToWait=*/10);
+        sActivityTestRule.loadUrl(mTestPageUrl, /* secondsToWait= */ 10);
 
         ViewUtils.waitForViewCheckingState(
                 withId(R.id.optional_toolbar_button), ViewUtils.VIEW_GONE | ViewUtils.VIEW_NULL);
@@ -94,7 +97,7 @@ public class OptionalNewTabButtonControllerTabletTest {
     public void testButton_hiddenOnTablet_portrait() {
         ActivityTestUtils.rotateActivityToOrientation(
                 sActivityTestRule.getActivity(), Configuration.ORIENTATION_PORTRAIT);
-        sActivityTestRule.loadUrl(mTestPageUrl, /*secondsToWait=*/10);
+        sActivityTestRule.loadUrl(mTestPageUrl, /* secondsToWait= */ 10);
 
         ViewUtils.waitForViewCheckingState(
                 withId(R.id.optional_toolbar_button), ViewUtils.VIEW_GONE | ViewUtils.VIEW_NULL);

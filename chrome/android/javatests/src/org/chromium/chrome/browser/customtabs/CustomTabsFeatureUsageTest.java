@@ -35,12 +35,12 @@ import org.chromium.content_public.browser.test.util.TestThreadUtils;
 import org.chromium.net.test.EmbeddedTestServer;
 import org.chromium.ui.test.util.BlankUiTestActivity;
 
-/**
- * Instrumentation tests for app menu, context menu, and toolbar of a {@link CustomTabActivity}.
- */
+/** Instrumentation tests for app menu, context menu, and toolbar of a {@link CustomTabActivity}. */
 @RunWith(ChromeJUnit4ClassRunner.class)
-@DoNotBatch(reason = "Some tests are Testing CCT start up behavior. "
-                + "Unit test conversion tracked in crbug.com/1217031")
+@DoNotBatch(
+        reason =
+                "Some tests are Testing CCT start up behavior. "
+                        + "Unit test conversion tracked in crbug.com/1217031")
 public class CustomTabsFeatureUsageTest {
     private static final String TEST_PAGE = "/chrome/test/data/android/google.html";
 
@@ -58,9 +58,10 @@ public class CustomTabsFeatureUsageTest {
     public void setUp() throws Exception {
         TestThreadUtils.runOnUiThreadBlocking(() -> FirstRunStatus.setFirstRunFlowComplete(true));
 
-        Context appContext = InstrumentationRegistry.getInstrumentation()
-                                     .getTargetContext()
-                                     .getApplicationContext();
+        Context appContext =
+                InstrumentationRegistry.getInstrumentation()
+                        .getTargetContext()
+                        .getApplicationContext();
         mTestServer = EmbeddedTestServer.createAndStartServer(appContext);
         mTestPage = mTestServer.getURL(TEST_PAGE);
         UmaRecorderHolder.resetForTesting();
@@ -92,15 +93,22 @@ public class CustomTabsFeatureUsageTest {
     @EnableFeatures({ChromeFeatureList.CCT_FEATURE_USAGE})
     public void testNormalFeatureUsage() throws Exception {
         Activity emptyActivity = startBlankUiTestActivity();
-        Intent intent = CustomTabsIntentTestUtils.createCustomTabIntent(
-                ApplicationProvider.getApplicationContext(), mTestPage, false, builder -> {});
+        Intent intent =
+                CustomTabsIntentTestUtils.createCustomTabIntent(
+                        ApplicationProvider.getApplicationContext(),
+                        mTestPage,
+                        false,
+                        builder -> {});
         CustomTabsConnection connection = CustomTabsTestUtils.warmUpAndWait();
         CustomTabsSessionToken token = CustomTabsSessionToken.getSessionTokenFromIntent(intent);
         connection.newSession(token);
         intent.setData(Uri.parse(mTestPage));
 
-        CustomTabActivity cctActivity = ApplicationTestUtils.waitForActivityWithClass(
-                CustomTabActivity.class, Stage.CREATED, () -> emptyActivity.startActivity(intent));
+        CustomTabActivity cctActivity =
+                ApplicationTestUtils.waitForActivityWithClass(
+                        CustomTabActivity.class,
+                        Stage.CREATED,
+                        () -> emptyActivity.startActivity(intent));
         mCustomTabActivityTestRule.setActivity(cctActivity);
         mCustomTabActivityTestRule.waitForActivityCompletelyLoaded();
 
@@ -114,8 +122,9 @@ public class CustomTabsFeatureUsageTest {
     @EnableFeatures({ChromeFeatureList.CCT_FEATURE_USAGE})
     public void testNormalFeatureUsageIncognito() throws Exception {
         startBlankUiTestActivity();
-        Intent intent = CustomTabsIntentTestUtils.createMinimalIncognitoCustomTabIntent(
-                ApplicationProvider.getApplicationContext(), mTestPage);
+        Intent intent =
+                CustomTabsIntentTestUtils.createMinimalIncognitoCustomTabIntent(
+                        ApplicationProvider.getApplicationContext(), mTestPage);
         mIncognitoCustomTabActivityTestRule.startCustomTabActivityWithIntent(intent);
         CustomTabsConnection connection = CustomTabsTestUtils.warmUpAndWait();
         CustomTabsSessionToken token = CustomTabsSessionToken.getSessionTokenFromIntent(intent);

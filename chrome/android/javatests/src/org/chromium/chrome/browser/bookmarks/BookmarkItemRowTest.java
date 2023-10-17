@@ -41,27 +41,18 @@ import org.chromium.content_public.browser.test.util.TestThreadUtils;
 import org.chromium.ui.test.util.BlankUiTestActivityTestCase;
 import org.chromium.url.JUnitTestGURLs;
 
-/**
- * Tests for the bookmark item row.
- */
+/** Tests for the bookmark item row. */
 @RunWith(ChromeJUnit4ClassRunner.class)
 public class BookmarkItemRowTest extends BlankUiTestActivityTestCase {
     private static final String TITLE = "BookmarkItemRow";
 
-    @Mock
-    BookmarkModel mModel;
-    @Mock
-    BookmarkDelegate mDelegate;
-    @Mock
-    SelectionDelegate<BookmarkId> mSelectionDelegate;
-    @Mock
-    DragStateDelegate mDragStateDelegate;
-    @Mock
-    BookmarkItem mBookmarkItem;
-    @Mock
-    LargeIconBridge mLargeIconBridge;
-    @Mock
-    RoundedIconGenerator mRoundedIconGenerator;
+    @Mock BookmarkModel mModel;
+    @Mock BookmarkDelegate mDelegate;
+    @Mock SelectionDelegate<BookmarkId> mSelectionDelegate;
+    @Mock DragStateDelegate mDragStateDelegate;
+    @Mock BookmarkItem mBookmarkItem;
+    @Mock LargeIconBridge mLargeIconBridge;
+    @Mock RoundedIconGenerator mRoundedIconGenerator;
 
     private BookmarkId mBookmarkId;
     private BookmarkItemRow mBookmarkItemRow;
@@ -72,11 +63,12 @@ public class BookmarkItemRowTest extends BlankUiTestActivityTestCase {
         super.setUpTest();
         MockitoAnnotations.initMocks(this);
 
-        doAnswer((invocation) -> {
-            ((LargeIconCallback) invocation.getArgument(2))
-                    .onLargeIconAvailable(null, 0, false, IconType.FAVICON);
-            return null;
-        })
+        doAnswer(
+                        (invocation) -> {
+                            ((LargeIconCallback) invocation.getArgument(2))
+                                    .onLargeIconAvailable(null, 0, false, IconType.FAVICON);
+                            return null;
+                        })
                 .when(mLargeIconBridge)
                 .getLargeIconForUrl(any(), anyInt(), any());
 
@@ -90,17 +82,21 @@ public class BookmarkItemRowTest extends BlankUiTestActivityTestCase {
         doReturn(JUnitTestGURLs.EXAMPLE_URL.getSpec()).when(mBookmarkItem).getUrlForDisplay();
         doReturn(mBookmarkItem).when(mModel).getBookmarkById(mBookmarkId);
 
-        TestThreadUtils.runOnUiThreadBlocking(() -> {
-            mContentView = new LinearLayout(getActivity());
+        TestThreadUtils.runOnUiThreadBlocking(
+                () -> {
+                    mContentView = new LinearLayout(getActivity());
 
-            FrameLayout.LayoutParams params = new FrameLayout.LayoutParams(
-                    ViewGroup.LayoutParams.MATCH_PARENT, ViewGroup.LayoutParams.WRAP_CONTENT);
+                    FrameLayout.LayoutParams params =
+                            new FrameLayout.LayoutParams(
+                                    ViewGroup.LayoutParams.MATCH_PARENT,
+                                    ViewGroup.LayoutParams.WRAP_CONTENT);
 
-            getActivity().setContentView(mContentView, params);
-            mBookmarkItemRow = BookmarkManagerCoordinator.buildBookmarkItemView(mContentView);
-            mBookmarkItemRow.setRoundedIconGeneratorForTesting(mRoundedIconGenerator);
-            mBookmarkItemRow.onDelegateInitialized(mDelegate);
-        });
+                    getActivity().setContentView(mContentView, params);
+                    mBookmarkItemRow =
+                            BookmarkManagerCoordinator.buildBookmarkItemView(mContentView);
+                    mBookmarkItemRow.setRoundedIconGeneratorForTesting(mRoundedIconGenerator);
+                    mBookmarkItemRow.onDelegateInitialized(mDelegate);
+                });
     }
 
     @Test
@@ -108,7 +104,9 @@ public class BookmarkItemRowTest extends BlankUiTestActivityTestCase {
     public void testSetBookmarkId() {
         doReturn(BookmarkUiMode.FOLDER).when(mDelegate).getCurrentUiMode();
         TestThreadUtils.runOnUiThreadBlocking(
-                () -> { mBookmarkItemRow.setBookmarkId(mBookmarkId, Location.TOP, false); });
+                () -> {
+                    mBookmarkItemRow.setBookmarkId(mBookmarkId, Location.TOP, false);
+                });
 
         Assert.assertFalse(mBookmarkItemRow.getFaviconCancelledForTesting());
 
@@ -126,7 +124,9 @@ public class BookmarkItemRowTest extends BlankUiTestActivityTestCase {
     public void testSetBookmarkId_LoadingWhileClicked() {
         doReturn(BookmarkUiMode.LOADING).when(mDelegate).getCurrentUiMode();
         TestThreadUtils.runOnUiThreadBlocking(
-                () -> { mBookmarkItemRow.setBookmarkId(mBookmarkId, Location.TOP, false); });
+                () -> {
+                    mBookmarkItemRow.setBookmarkId(mBookmarkId, Location.TOP, false);
+                });
 
         mBookmarkItemRow.onClick();
         verify(mDelegate, Mockito.times(0)).openBookmark(mBookmarkId);
@@ -136,7 +136,9 @@ public class BookmarkItemRowTest extends BlankUiTestActivityTestCase {
     @SmallTest
     public void testSetBookmarkId_InvalidStateWhileClicked() {
         TestThreadUtils.runOnUiThreadBlocking(
-                () -> { mBookmarkItemRow.setBookmarkId(mBookmarkId, Location.TOP, false); });
+                () -> {
+                    mBookmarkItemRow.setBookmarkId(mBookmarkId, Location.TOP, false);
+                });
 
         mBookmarkItemRow.onClick();
         verify(mDelegate, Mockito.times(0)).openBookmark(mBookmarkId);

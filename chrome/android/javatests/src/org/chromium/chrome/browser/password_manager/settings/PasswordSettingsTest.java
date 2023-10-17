@@ -74,11 +74,9 @@ public class PasswordSettingsTest {
     public AutomotiveContextWrapperTestRule mAutomotiveContextWrapperTestRule =
             new AutomotiveContextWrapperTestRule();
 
-    @Mock
-    private PasswordCheck mPasswordCheck;
+    @Mock private PasswordCheck mPasswordCheck;
 
-    @Mock
-    private SyncService mMockSyncService;
+    @Mock private SyncService mMockSyncService;
 
     private final PasswordSettingsTestHelper mTestHelper = new PasswordSettingsTestHelper();
 
@@ -105,9 +103,7 @@ public class PasswordSettingsTest {
         mTestHelper.tearDown();
     }
 
-    /**
-     * Ensure that resetting of empty passwords list works.
-     */
+    /** Ensure that resetting of empty passwords list works. */
     @Test
     @SmallTest
     @Feature({"Preferences"})
@@ -116,12 +112,13 @@ public class PasswordSettingsTest {
         mTestHelper.startPasswordSettingsFromMainSettings(mPasswordSettingsActivityTestRule);
         onViewWaiting(withText(R.string.password_manager_settings_title));
 
-        TestThreadUtils.runOnUiThreadBlocking(() -> {
-            PasswordSettings savePasswordPreferences =
-                    mPasswordSettingsActivityTestRule.getFragment();
-            // Emulate an update from PasswordStore. This should not crash.
-            savePasswordPreferences.passwordListAvailable(0);
-        });
+        TestThreadUtils.runOnUiThreadBlocking(
+                () -> {
+                    PasswordSettings savePasswordPreferences =
+                            mPasswordSettingsActivityTestRule.getFragment();
+                    // Emulate an update from PasswordStore. This should not crash.
+                    savePasswordPreferences.passwordListAvailable(0);
+                });
     }
 
     /**
@@ -133,50 +130,61 @@ public class PasswordSettingsTest {
     @Feature({"Preferences"})
     public void testSavePasswordsSwitch() {
         TestThreadUtils.runOnUiThreadBlocking(
-                () -> { getPrefService().setBoolean(Pref.CREDENTIALS_ENABLE_SERVICE, true); });
+                () -> {
+                    getPrefService().setBoolean(Pref.CREDENTIALS_ENABLE_SERVICE, true);
+                });
 
-        final SettingsActivity settingsActivity = mTestHelper.startPasswordSettingsFromMainSettings(
-                mPasswordSettingsActivityTestRule);
+        final SettingsActivity settingsActivity =
+                mTestHelper.startPasswordSettingsFromMainSettings(
+                        mPasswordSettingsActivityTestRule);
         onViewWaiting(withText(R.string.password_manager_settings_title));
 
-        TestThreadUtils.runOnUiThreadBlocking(() -> {
-            PasswordSettings savedPasswordPrefs = mPasswordSettingsActivityTestRule.getFragment();
-            ChromeSwitchPreference onOffSwitch =
-                    (ChromeSwitchPreference) savedPasswordPrefs.findPreference(
-                            PasswordSettings.PREF_SAVE_PASSWORDS_SWITCH);
-            assertTrue(onOffSwitch.isChecked());
+        TestThreadUtils.runOnUiThreadBlocking(
+                () -> {
+                    PasswordSettings savedPasswordPrefs =
+                            mPasswordSettingsActivityTestRule.getFragment();
+                    ChromeSwitchPreference onOffSwitch =
+                            (ChromeSwitchPreference)
+                                    savedPasswordPrefs.findPreference(
+                                            PasswordSettings.PREF_SAVE_PASSWORDS_SWITCH);
+                    assertTrue(onOffSwitch.isChecked());
 
-            onOffSwitch.performClick();
-            assertFalse(getPrefService().getBoolean(Pref.CREDENTIALS_ENABLE_SERVICE));
-            Assert.assertEquals(1,
-                    RecordHistogram.getHistogramValueCountForTesting(
-                            OFFER_TO_SAVE_PASSWORDS_HISTOGRAM, 0));
+                    onOffSwitch.performClick();
+                    assertFalse(getPrefService().getBoolean(Pref.CREDENTIALS_ENABLE_SERVICE));
+                    Assert.assertEquals(
+                            1,
+                            RecordHistogram.getHistogramValueCountForTesting(
+                                    OFFER_TO_SAVE_PASSWORDS_HISTOGRAM, 0));
 
-            onOffSwitch.performClick();
-            assertTrue(getPrefService().getBoolean(Pref.CREDENTIALS_ENABLE_SERVICE));
-            Assert.assertEquals(1,
-                    RecordHistogram.getHistogramValueCountForTesting(
-                            OFFER_TO_SAVE_PASSWORDS_HISTOGRAM, 1));
+                    onOffSwitch.performClick();
+                    assertTrue(getPrefService().getBoolean(Pref.CREDENTIALS_ENABLE_SERVICE));
+                    Assert.assertEquals(
+                            1,
+                            RecordHistogram.getHistogramValueCountForTesting(
+                                    OFFER_TO_SAVE_PASSWORDS_HISTOGRAM, 1));
 
-            settingsActivity.finish();
+                    settingsActivity.finish();
 
-            getPrefService().setBoolean(Pref.CREDENTIALS_ENABLE_SERVICE, false);
-        });
+                    getPrefService().setBoolean(Pref.CREDENTIALS_ENABLE_SERVICE, false);
+                });
 
         mTestHelper.startPasswordSettingsFromMainSettings(mPasswordSettingsActivityTestRule);
         onViewWaiting(withText(R.string.password_manager_settings_title));
-        TestThreadUtils.runOnUiThreadBlocking(() -> {
-            PasswordSettings savedPasswordPrefs = mPasswordSettingsActivityTestRule.getFragment();
-            ChromeSwitchPreference onOffSwitch =
-                    (ChromeSwitchPreference) savedPasswordPrefs.findPreference(
-                            PasswordSettings.PREF_SAVE_PASSWORDS_SWITCH);
-            assertFalse(onOffSwitch.isChecked());
-        });
+        TestThreadUtils.runOnUiThreadBlocking(
+                () -> {
+                    PasswordSettings savedPasswordPrefs =
+                            mPasswordSettingsActivityTestRule.getFragment();
+                    ChromeSwitchPreference onOffSwitch =
+                            (ChromeSwitchPreference)
+                                    savedPasswordPrefs.findPreference(
+                                            PasswordSettings.PREF_SAVE_PASSWORDS_SWITCH);
+                    assertFalse(onOffSwitch.isChecked());
+                });
     }
 
     /**
-     *  Tests that the link pointing to managing passwords in the user's account is not displayed
-     *  for non signed in users.
+     * Tests that the link pointing to managing passwords in the user's account is not displayed for
+     * non signed in users.
      */
     @Test
     @SmallTest
@@ -193,8 +201,8 @@ public class PasswordSettingsTest {
     }
 
     /**
-     *  Tests that the link pointing to managing passwords in the user's account is not displayed
-     *  for signed in users, not syncing passwords.
+     * Tests that the link pointing to managing passwords in the user's account is not displayed for
+     * signed in users, not syncing passwords.
      */
     @Test
     @SmallTest
@@ -214,8 +222,8 @@ public class PasswordSettingsTest {
     }
 
     /**
-     *  Tests that the link pointing to managing passwords in the user's account is displayed for
-     *  users syncing passwords.
+     * Tests that the link pointing to managing passwords in the user's account is displayed for
+     * users syncing passwords.
      */
     @Test
     @SmallTest
@@ -235,8 +243,8 @@ public class PasswordSettingsTest {
     }
 
     /**
-     *  Tests that the link pointing to managing passwords in the user's account is not displayed
-     *  for users syncing passwords with custom passphrase.
+     * Tests that the link pointing to managing passwords in the user's account is not displayed for
+     * users syncing passwords with custom passphrase.
      */
     @Test
     @SmallTest
@@ -265,41 +273,54 @@ public class PasswordSettingsTest {
     public void testAutoSignInCheckbox() {
         mAutomotiveContextWrapperTestRule.setIsAutomotive(false);
         TestThreadUtils.runOnUiThreadBlocking(
-                () -> { getPrefService().setBoolean(Pref.CREDENTIALS_ENABLE_AUTOSIGNIN, true); });
+                () -> {
+                    getPrefService().setBoolean(Pref.CREDENTIALS_ENABLE_AUTOSIGNIN, true);
+                });
 
-        final SettingsActivity settingsActivity = mTestHelper.startPasswordSettingsFromMainSettings(
-                mPasswordSettingsActivityTestRule);
+        final SettingsActivity settingsActivity =
+                mTestHelper.startPasswordSettingsFromMainSettings(
+                        mPasswordSettingsActivityTestRule);
 
-        TestThreadUtils.runOnUiThreadBlocking(() -> {
-            PasswordSettings passwordPrefs = mPasswordSettingsActivityTestRule.getFragment();
-            ChromeSwitchPreference onOffSwitch =
-                    (ChromeSwitchPreference) passwordPrefs.findPreference(
-                            PasswordSettings.PREF_AUTOSIGNIN_SWITCH);
-            assertTrue(onOffSwitch.isChecked());
+        TestThreadUtils.runOnUiThreadBlocking(
+                () -> {
+                    PasswordSettings passwordPrefs =
+                            mPasswordSettingsActivityTestRule.getFragment();
+                    ChromeSwitchPreference onOffSwitch =
+                            (ChromeSwitchPreference)
+                                    passwordPrefs.findPreference(
+                                            PasswordSettings.PREF_AUTOSIGNIN_SWITCH);
+                    assertTrue(onOffSwitch.isChecked());
 
-            onOffSwitch.performClick();
-            assertFalse(getPrefService().getBoolean(Pref.CREDENTIALS_ENABLE_AUTOSIGNIN));
-            Assert.assertEquals(
-                    1, RecordHistogram.getHistogramValueCountForTesting(AUTO_SIGNIN_HISTOGRAM, 0));
+                    onOffSwitch.performClick();
+                    assertFalse(getPrefService().getBoolean(Pref.CREDENTIALS_ENABLE_AUTOSIGNIN));
+                    Assert.assertEquals(
+                            1,
+                            RecordHistogram.getHistogramValueCountForTesting(
+                                    AUTO_SIGNIN_HISTOGRAM, 0));
 
-            onOffSwitch.performClick();
-            assertTrue(getPrefService().getBoolean(Pref.CREDENTIALS_ENABLE_AUTOSIGNIN));
-            Assert.assertEquals(
-                    1, RecordHistogram.getHistogramValueCountForTesting(AUTO_SIGNIN_HISTOGRAM, 1));
+                    onOffSwitch.performClick();
+                    assertTrue(getPrefService().getBoolean(Pref.CREDENTIALS_ENABLE_AUTOSIGNIN));
+                    Assert.assertEquals(
+                            1,
+                            RecordHistogram.getHistogramValueCountForTesting(
+                                    AUTO_SIGNIN_HISTOGRAM, 1));
 
-            settingsActivity.finish();
+                    settingsActivity.finish();
 
-            getPrefService().setBoolean(Pref.CREDENTIALS_ENABLE_AUTOSIGNIN, false);
-        });
+                    getPrefService().setBoolean(Pref.CREDENTIALS_ENABLE_AUTOSIGNIN, false);
+                });
 
         mTestHelper.startPasswordSettingsFromMainSettings(mPasswordSettingsActivityTestRule);
-        TestThreadUtils.runOnUiThreadBlocking(() -> {
-            PasswordSettings passwordPrefs = mPasswordSettingsActivityTestRule.getFragment();
-            ChromeSwitchPreference onOffSwitch =
-                    (ChromeSwitchPreference) passwordPrefs.findPreference(
-                            PasswordSettings.PREF_AUTOSIGNIN_SWITCH);
-            assertFalse(onOffSwitch.isChecked());
-        });
+        TestThreadUtils.runOnUiThreadBlocking(
+                () -> {
+                    PasswordSettings passwordPrefs =
+                            mPasswordSettingsActivityTestRule.getFragment();
+                    ChromeSwitchPreference onOffSwitch =
+                            (ChromeSwitchPreference)
+                                    passwordPrefs.findPreference(
+                                            PasswordSettings.PREF_AUTOSIGNIN_SWITCH);
+                    assertFalse(onOffSwitch.isChecked());
+                });
     }
 
     /**
@@ -312,32 +333,36 @@ public class PasswordSettingsTest {
     public void testAutoSignInCheckboxIsNotPresentOnAutomotive() {
         mAutomotiveContextWrapperTestRule.setIsAutomotive(true);
 
-        final SettingsActivity settingsActivity = mTestHelper.startPasswordSettingsFromMainSettings(
-                mPasswordSettingsActivityTestRule);
+        final SettingsActivity settingsActivity =
+                mTestHelper.startPasswordSettingsFromMainSettings(
+                        mPasswordSettingsActivityTestRule);
 
-        TestThreadUtils.runOnUiThreadBlocking(() -> {
-            PasswordSettings passwordPrefs = mPasswordSettingsActivityTestRule.getFragment();
-            ChromeSwitchPreference onOffSwitch =
-                    (ChromeSwitchPreference) passwordPrefs.findPreference(
-                            PasswordSettings.PREF_AUTOSIGNIN_SWITCH);
-            assertNull("There should be no autosignin switch.", onOffSwitch);
-            settingsActivity.finish();
-        });
+        TestThreadUtils.runOnUiThreadBlocking(
+                () -> {
+                    PasswordSettings passwordPrefs =
+                            mPasswordSettingsActivityTestRule.getFragment();
+                    ChromeSwitchPreference onOffSwitch =
+                            (ChromeSwitchPreference)
+                                    passwordPrefs.findPreference(
+                                            PasswordSettings.PREF_AUTOSIGNIN_SWITCH);
+                    assertNull("There should be no autosignin switch.", onOffSwitch);
+                    settingsActivity.finish();
+                });
     }
 
-    /**
-     * Check that the check passwords preference is shown.
-     */
+    /** Check that the check passwords preference is shown. */
     @Test
     @SmallTest
     @Feature({"Preferences"})
     public void testCheckPasswordsEnabled() {
         mTestHelper.startPasswordSettingsFromMainSettings(mPasswordSettingsActivityTestRule);
-        TestThreadUtils.runOnUiThreadBlocking(() -> {
-            PasswordSettings passwordPrefs = mPasswordSettingsActivityTestRule.getFragment();
-            Assert.assertNotNull(
-                    passwordPrefs.findPreference(PasswordSettings.PREF_CHECK_PASSWORDS));
-        });
+        TestThreadUtils.runOnUiThreadBlocking(
+                () -> {
+                    PasswordSettings passwordPrefs =
+                            mPasswordSettingsActivityTestRule.getFragment();
+                    Assert.assertNotNull(
+                            passwordPrefs.findPreference(PasswordSettings.PREF_CHECK_PASSWORDS));
+                });
     }
 
     @Test
@@ -357,8 +382,9 @@ public class PasswordSettingsTest {
     @Feature({"Preferences"})
     public void testDoesNotDestroyPasswordCheckIfNotFirstInSettingsStack() {
         setSyncServiceState(true, true);
-        SettingsActivity activity = mTestHelper.startPasswordSettingsFromMainSettings(
-                mPasswordSettingsActivityTestRule);
+        SettingsActivity activity =
+                mTestHelper.startPasswordSettingsFromMainSettings(
+                        mPasswordSettingsActivityTestRule);
         activity.finish();
         CriteriaHelper.pollUiThread(() -> activity.isDestroyed());
         Assert.assertNotNull(PasswordCheckFactory.getPasswordCheckInstance());
@@ -382,16 +408,23 @@ public class PasswordSettingsTest {
 
     private void setSyncServiceState(
             final boolean usingCustomPassphrase, final boolean syncingPasswords) {
-        TestThreadUtils.runOnUiThreadBlocking(() -> {
-            when(mMockSyncService.hasSyncConsent()).thenReturn(syncingPasswords);
-            when(mMockSyncService.isEngineInitialized()).thenReturn(true);
-            when(mMockSyncService.isUsingExplicitPassphrase()).thenReturn(usingCustomPassphrase);
-            when(mMockSyncService.getPassphraseType())
-                    .thenReturn(usingCustomPassphrase ? PassphraseType.CUSTOM_PASSPHRASE
-                                                      : PassphraseType.KEYSTORE_PASSPHRASE);
-            when(mMockSyncService.getActiveDataTypes())
-                    .thenReturn(CollectionUtil.newHashSet(
-                            syncingPasswords ? ModelType.PASSWORDS : ModelType.AUTOFILL));
-        });
+        TestThreadUtils.runOnUiThreadBlocking(
+                () -> {
+                    when(mMockSyncService.hasSyncConsent()).thenReturn(syncingPasswords);
+                    when(mMockSyncService.isEngineInitialized()).thenReturn(true);
+                    when(mMockSyncService.isUsingExplicitPassphrase())
+                            .thenReturn(usingCustomPassphrase);
+                    when(mMockSyncService.getPassphraseType())
+                            .thenReturn(
+                                    usingCustomPassphrase
+                                            ? PassphraseType.CUSTOM_PASSPHRASE
+                                            : PassphraseType.KEYSTORE_PASSPHRASE);
+                    when(mMockSyncService.getActiveDataTypes())
+                            .thenReturn(
+                                    CollectionUtil.newHashSet(
+                                            syncingPasswords
+                                                    ? ModelType.PASSWORDS
+                                                    : ModelType.AUTOFILL));
+                });
     }
 }

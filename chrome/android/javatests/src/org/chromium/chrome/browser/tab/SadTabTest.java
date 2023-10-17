@@ -35,9 +35,7 @@ import org.chromium.net.test.util.TestWebServer;
 
 import java.util.concurrent.ExecutionException;
 
-/**
- * Tests related to the sad tab logic.
- */
+/** Tests related to the sad tab logic. */
 @RunWith(ChromeJUnit4ClassRunner.class)
 @Batch(Batch.PER_CLASS)
 @CommandLineFlags.Add({ChromeSwitches.DISABLE_FIRST_RUN_EXPERIENCE})
@@ -64,17 +62,16 @@ public class SadTabTest {
 
     @After
     public void tearDown() {
-        TestThreadUtils.runOnUiThreadBlocking(() -> {
-            Tab tab = sActivityTestRule.getActivity().getActivityTab();
-            tab.show(TabSelectionType.FROM_USER, LoadIfNeededCaller.OTHER);
-            SadTab sadTab = SadTab.from(tab);
-            sadTab.removeIfPresent();
-        });
+        TestThreadUtils.runOnUiThreadBlocking(
+                () -> {
+                    Tab tab = sActivityTestRule.getActivity().getActivityTab();
+                    tab.show(TabSelectionType.FROM_USER, LoadIfNeededCaller.OTHER);
+                    SadTab sadTab = SadTab.from(tab);
+                    sadTab.removeIfPresent();
+                });
     }
 
-    /**
-     * Verify that the sad tab is shown when the renderer crashes.
-     */
+    /** Verify that the sad tab is shown when the renderer crashes. */
     @Test
     @SmallTest
     @Feature({"SadTab"})
@@ -101,9 +98,7 @@ public class SadTabTest {
         Assert.assertFalse(isShowingSadTab(tab));
     }
 
-    /**
-     * Verify that a tab navigating to a page that is killed in the background is reloaded.
-     */
+    /** Verify that a tab navigating to a page that is killed in the background is reloaded. */
     @Test
     @SmallTest
     @Feature({"SadTab"})
@@ -122,9 +117,7 @@ public class SadTabTest {
         }
     }
 
-    /**
-     * Verify that a tab killed in the background is not reloaded if another load has started.
-     */
+    /** Verify that a tab killed in the background is not reloaded if another load has started. */
     @Test
     @SmallTest
     @Feature({"SadTab"})
@@ -149,6 +142,7 @@ public class SadTabTest {
      * Confirm that after a successive refresh of a failed tab that failed to load, change the
      * button from "Reload" to "Send Feedback". If reloaded a third time and it is successful it
      * reverts from "Send Feedback" to "Reload".
+     *
      * @throws IllegalArgumentException
      */
     @Test
@@ -161,7 +155,8 @@ public class SadTabTest {
         simulateRendererKilled(tab, true);
         Assert.assertTrue(isShowingSadTab(tab));
         String actualText = getSadTabButton(tab).getText().toString();
-        Assert.assertEquals("Expected the sad tab button to have the reload label",
+        Assert.assertEquals(
+                "Expected the sad tab button to have the reload label",
                 sActivityTestRule.getActivity().getString(R.string.sad_tab_reload_label),
                 actualText);
 
@@ -203,25 +198,23 @@ public class SadTabTest {
         FullscreenManagerTestUtils.waitForBrowserControlsPosition(sActivityTestRule, 0);
     }
 
-    /**
-     * Helper method that kills the renderer on a UI thread.
-     */
+    /** Helper method that kills the renderer on a UI thread. */
     private static void simulateRendererKilled(final Tab tab, final boolean visible) {
-        TestThreadUtils.runOnUiThreadBlocking(() -> {
-            if (!visible) tab.hide(TabHidingType.CHANGED_TABS);
-            ChromeTabUtils.simulateRendererKilledForTesting(tab);
-        });
+        TestThreadUtils.runOnUiThreadBlocking(
+                () -> {
+                    if (!visible) tab.hide(TabHidingType.CHANGED_TABS);
+                    ChromeTabUtils.simulateRendererKilledForTesting(tab);
+                });
     }
 
-    /**
-     * Helper method that reloads a tab with a SadTabView currently displayed.
-     */
+    /** Helper method that reloads a tab with a SadTabView currently displayed. */
     private static void reloadSadTab(final Tab tab) {
-        TestThreadUtils.runOnUiThreadBlocking(() -> {
-            SadTab sadTab = SadTab.from(tab);
-            sadTab.removeIfPresent();
-            sadTab.show(tab.getContext(), () -> {}, () -> {});
-        });
+        TestThreadUtils.runOnUiThreadBlocking(
+                () -> {
+                    SadTab sadTab = SadTab.from(tab);
+                    sadTab.removeIfPresent();
+                    sadTab.show(tab.getContext(), () -> {}, () -> {});
+                });
     }
 
     private static boolean showSendFeedbackView(final Tab tab) {
@@ -235,9 +228,9 @@ public class SadTabTest {
 
     /**
      * If there is a SadTabView, this method will get the button for the sad tab.
+     *
      * @param tab The tab that needs to contain a SadTabView.
-     * @return Returns the button that is on the SadTabView, null if SadTabView.
-     *         doesn't exist.
+     * @return Returns the button that is on the SadTabView, null if SadTabView. doesn't exist.
      */
     private static Button getSadTabButton(Tab tab) {
         InstrumentationRegistry.getInstrumentation().waitForIdleSync();

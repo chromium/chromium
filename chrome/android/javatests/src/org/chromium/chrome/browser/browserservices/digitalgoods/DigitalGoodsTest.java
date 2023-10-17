@@ -48,12 +48,13 @@ import org.chromium.url.GURL;
 
 import java.util.concurrent.TimeoutException;
 
-/**
- * Tests for the Digital Goods flow.
- */
+/** Tests for the Digital Goods flow. */
 @RunWith(ChromeJUnit4ClassRunner.class)
-@CommandLineFlags.Add({ChromeSwitches.DISABLE_FIRST_RUN_EXPERIENCE,
-        "enable-experimental-web-platform-features", "enable-blink-features=DigitalGoods"})
+@CommandLineFlags.Add({
+    ChromeSwitches.DISABLE_FIRST_RUN_EXPERIENCE,
+    "enable-experimental-web-platform-features",
+    "enable-blink-features=DigitalGoods"
+})
 public class DigitalGoodsTest {
     @Rule
     public CustomTabActivityTestRule mCustomTabActivityTestRule = new CustomTabActivityTestRule();
@@ -71,14 +72,18 @@ public class DigitalGoodsTest {
         LibraryLoader.getInstance().ensureInitialized();
 
         ChromeAppComponent component = ChromeApplicationImpl.getComponent();
-        component.resolvePermissionManager().addDelegateApp(
-                Origin.createOrThrow(TWA_SERVICE_SCOPE), "org.chromium.chrome.tests.support");
+        component
+                .resolvePermissionManager()
+                .addDelegateApp(
+                        Origin.createOrThrow(TWA_SERVICE_SCOPE),
+                        "org.chromium.chrome.tests.support");
         mClient = component.resolveTrustedWebActivityClient();
 
         // TWAs only work with HTTPS.
-        mTestServer = EmbeddedTestServer.createAndStartHTTPSServer(
-                InstrumentationRegistry.getInstrumentation().getContext(),
-                ServerCertificate.CERT_OK);
+        mTestServer =
+                EmbeddedTestServer.createAndStartHTTPSServer(
+                        InstrumentationRegistry.getInstrumentation().getContext(),
+                        ServerCertificate.CERT_OK);
         mTestPage = mTestServer.getURL(TEST_PAGE);
 
         mCustomTabActivityTestRule.startCustomTabActivityWithIntent(
@@ -108,32 +113,36 @@ public class DigitalGoodsTest {
     }
 
     /**
-     * Tests that plumbing between the {@link DigitalGoodsImpl} and the TrustedWebActivityService
-     * in the TWA is working.
+     * Tests that plumbing between the {@link DigitalGoodsImpl} and the TrustedWebActivityService in
+     * the TWA is working.
      */
     @Test
     @MediumTest
     public void twaServiceConnected() throws TimeoutException {
         DigitalGoodsImpl impl = createFixedDigitalGoods();
 
-        setTwaServiceResponse(GetDetailsConverter.RESPONSE_COMMAND,
-                GetDetailsConverter.createResponseBundle(0,
+        setTwaServiceResponse(
+                GetDetailsConverter.RESPONSE_COMMAND,
+                GetDetailsConverter.createResponseBundle(
+                        0,
                         GetDetailsConverter.createItemDetailsBundle(
                                 "id1", "Item 1", "Desc 1", "GBP", "10")));
 
         CallbackHelper helper = new CallbackHelper();
-        impl.getDetails(new String[] {"id1"}, new GetDetails_Response() {
-            @Override
-            public void call(Integer responseCode, ItemDetails[] details) {
-                assertEquals(0, responseCode.intValue());
-                assertEquals("id1", details[0].itemId);
-                assertEquals("Item 1", details[0].title);
-                assertEquals("Desc 1", details[0].description);
-                assertEquals("GBP", details[0].price.currency);
-                assertEquals("10", details[0].price.value);
-                helper.notifyCalled();
-            }
-        });
+        impl.getDetails(
+                new String[] {"id1"},
+                new GetDetails_Response() {
+                    @Override
+                    public void call(Integer responseCode, ItemDetails[] details) {
+                        assertEquals(0, responseCode.intValue());
+                        assertEquals("id1", details[0].itemId);
+                        assertEquals("Item 1", details[0].title);
+                        assertEquals("Desc 1", details[0].description);
+                        assertEquals("GBP", details[0].price.currency);
+                        assertEquals("10", details[0].price.value);
+                        helper.notifyCalled();
+                    }
+                });
         helper.waitForFirst();
     }
 
@@ -160,26 +169,31 @@ public class DigitalGoodsTest {
 
         final CallbackHelper helper = new CallbackHelper();
 
-        mClient.connectAndExecute(Uri.parse(TWA_SERVICE_SCOPE),
-                (origin1, service) -> service.sendExtraCommand(COMMAND_SET_RESPONSE, response,
-                        new TrustedWebActivityCallback() {
-                            @Override
-                            public void onExtraCallback(@NonNull String callbackName,
-                                    @Nullable Bundle args) {
-                                helper.notifyCalled();
-                            }
-                        }));
+        mClient.connectAndExecute(
+                Uri.parse(TWA_SERVICE_SCOPE),
+                (origin1, service) ->
+                        service.sendExtraCommand(
+                                COMMAND_SET_RESPONSE,
+                                response,
+                                new TrustedWebActivityCallback() {
+                                    @Override
+                                    public void onExtraCallback(
+                                            @NonNull String callbackName, @Nullable Bundle args) {
+                                        helper.notifyCalled();
+                                    }
+                                }));
         helper.waitForFirst();
     }
 
     private void waitForNonNull(String variable) {
-        CriteriaHelper.pollInstrumentationThread(() -> {
-            try {
-                Assert.assertNotEquals("null", exec(variable));
-            } catch (TimeoutException e) {
-                Assert.fail();
-            }
-        });
+        CriteriaHelper.pollInstrumentationThread(
+                () -> {
+                    try {
+                        Assert.assertNotEquals("null", exec(variable));
+                    } catch (TimeoutException e) {
+                        Assert.fail();
+                    }
+                });
     }
 
     private String exec(String command) throws TimeoutException {

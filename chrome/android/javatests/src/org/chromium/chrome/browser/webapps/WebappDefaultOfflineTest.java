@@ -29,9 +29,7 @@ import org.chromium.chrome.test.util.browser.webapps.WebappTestPage;
 import org.chromium.content_public.browser.test.NativeLibraryTestUtils;
 import org.chromium.content_public.browser.test.util.JavaScriptUtils;
 
-/**
- * Tests for the Default Offline behavior.
- */
+/** Tests for the Default Offline behavior. */
 @RunWith(ChromeJUnit4ClassRunner.class)
 @CommandLineFlags.Add({ChromeSwitches.DISABLE_FIRST_RUN_EXPERIENCE})
 public class WebappDefaultOfflineTest {
@@ -42,9 +40,7 @@ public class WebappDefaultOfflineTest {
         NativeLibraryTestUtils.loadNativeLibraryNoBrowserProcess();
     }
 
-    /**
-     * Simulates what happens when you launch a web app when the network is down.
-     */
+    /** Simulates what happens when you launch a web app when the network is down. */
     @Test
     @SmallTest
     @Feature({"Webapps"})
@@ -62,17 +58,23 @@ public class WebappDefaultOfflineTest {
 
         // Ensure that web_app_default_offline.html is showing the correct values.
         Tab tab = mActivityTestRule.getActivity().getActivityTab();
-        assertEquals("\"shortname\"",
+        assertEquals(
+                "\"shortname\"",
                 JavaScriptUtils.executeJavaScriptAndWaitForResult(
                         tab.getWebContents(), "document.title;"));
-        assertEquals("\"You're offline\"",
-                JavaScriptUtils.executeJavaScriptAndWaitForResult(tab.getWebContents(),
+        assertEquals(
+                "\"You're offline\"",
+                JavaScriptUtils.executeJavaScriptAndWaitForResult(
+                        tab.getWebContents(),
                         "document.getElementById('default-web-app-msg').textContent;"));
-        assertEquals("\"data:image/png;base64," + WebappActivityTestRule.TEST_ICON + "\"",
+        assertEquals(
+                "\"data:image/png;base64," + WebappActivityTestRule.TEST_ICON + "\"",
                 JavaScriptUtils.executeJavaScriptAndWaitForResult(
                         tab.getWebContents(), "document.getElementById('icon').src;"));
-        assertEquals("\"inline\"",
-                JavaScriptUtils.executeJavaScriptAndWaitForResult(tab.getWebContents(),
+        assertEquals(
+                "\"inline\"",
+                JavaScriptUtils.executeJavaScriptAndWaitForResult(
+                        tab.getWebContents(),
                         "document.getElementById('offlineIcon').style.display;"));
     }
 

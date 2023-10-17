@@ -26,9 +26,7 @@ import org.chromium.components.payments.NotShownReason;
 
 import java.util.concurrent.TimeoutException;
 
-/**
- * A payment integration test for a merchant that calls show() twice.
- */
+/** A payment integration test for a merchant that calls show() twice. */
 @RunWith(ChromeJUnit4ClassRunner.class)
 @CommandLineFlags.Add({ChromeSwitches.DISABLE_FIRST_RUN_EXPERIENCE})
 public class PaymentRequestShowTwiceTest {
@@ -39,17 +37,19 @@ public class PaymentRequestShowTwiceTest {
     @Before
     public void setUp() throws TimeoutException {
         AutofillTestHelper helper = new AutofillTestHelper();
-        String billingAddressId = helper.setProfile(AutofillProfile.builder()
-                                                            .setFullName("Jon Doe")
-                                                            .setCompanyName("Google")
-                                                            .setStreetAddress("340 Main St")
-                                                            .setRegion("CA")
-                                                            .setLocality("Los Angeles")
-                                                            .setPostalCode("90291")
-                                                            .setCountryCode("US")
-                                                            .setPhoneNumber("555-555-5555")
-                                                            .setEmailAddress("en-US")
-                                                            .build());
+        String billingAddressId =
+                helper.setProfile(
+                        AutofillProfile.builder()
+                                .setFullName("Jon Doe")
+                                .setCompanyName("Google")
+                                .setStreetAddress("340 Main St")
+                                .setRegion("CA")
+                                .setLocality("Los Angeles")
+                                .setPostalCode("90291")
+                                .setCountryCode("US")
+                                .setPhoneNumber("555-555-5555")
+                                .setEmailAddress("en-US")
+                                .build());
     }
 
     @Test
@@ -65,14 +65,16 @@ public class PaymentRequestShowTwiceTest {
         mPaymentRequestTestRule.runJavaScriptAndWaitForUIEvent(
                 "showFirst()", mPaymentRequestTestRule.getReadyToPay());
         Assert.assertEquals(
-                "\"Second request: AbortError: Another PaymentRequest UI is already showing in a different tab or window.\"",
+                "\"Second request: AbortError: Another PaymentRequest UI is already showing in a"
+                        + " different tab or window.\"",
                 mPaymentRequestTestRule.runJavaScriptAndWaitForPromise("showSecond()"));
 
         // The web payments UI was not aborted.
         mPaymentRequestTestRule.assertOnlySpecificAbortMetricLogged(-1 /* none */);
 
         // The second UI was never shown due to another web payments UI already showing.
-        Assert.assertEquals(1,
+        Assert.assertEquals(
+                1,
                 RecordHistogram.getHistogramValueCountForTesting(
                         "PaymentRequest.CheckoutFunnel.NoShow",
                         NotShownReason.CONCURRENT_REQUESTS));

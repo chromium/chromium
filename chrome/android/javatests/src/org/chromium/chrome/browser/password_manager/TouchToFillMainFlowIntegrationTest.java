@@ -40,12 +40,12 @@ import org.chromium.url.GURL;
 
 import java.util.concurrent.TimeoutException;
 
-/**
- * Integration tests that check the main flow using Touch to Fill component.
- */
+/** Integration tests that check the main flow using Touch to Fill component. */
 @RunWith(ChromeJUnit4ClassRunner.class)
-@DoNotBatch(reason = "TODO(crbug.com/1346583): add resetting logic for"
-                + "FakePasswordStoreAndroidBackend to allow batching")
+@DoNotBatch(
+        reason =
+                "TODO(crbug.com/1346583): add resetting logic for"
+                        + "FakePasswordStoreAndroidBackend to allow batching")
 @CommandLineFlags.Add({ChromeSwitches.DISABLE_FIRST_RUN_EXPERIENCE, "show-autofill-signatures"})
 public class TouchToFillMainFlowIntegrationTest {
     private static final String FORM_URL = "/chrome/test/data/password/simple_password.html";
@@ -61,19 +61,22 @@ public class TouchToFillMainFlowIntegrationTest {
 
     @Rule
     public ChromeTabbedActivityTestRule mActivityTestRule = new ChromeTabbedActivityTestRule();
-    @Rule
-    public SigninTestRule mSigninTestRule = new SigninTestRule();
+
+    @Rule public SigninTestRule mSigninTestRule = new SigninTestRule();
 
     @Before
     public void setUp() {
         PasswordStoreAndroidBackendFactory.setFactoryInstanceForTesting(
                 new FakePasswordStoreAndroidBackendFactoryImpl());
-        TestThreadUtils.runOnUiThreadBlocking(() -> {
-            ((FakePasswordStoreAndroidBackend) PasswordStoreAndroidBackendFactory.getInstance()
-                            .createBackend())
-                    .setSyncingAccount(
-                            AccountUtils.createAccountFromName(SigninTestRule.TEST_ACCOUNT_EMAIL));
-        });
+        TestThreadUtils.runOnUiThreadBlocking(
+                () -> {
+                    ((FakePasswordStoreAndroidBackend)
+                                    PasswordStoreAndroidBackendFactory.getInstance()
+                                            .createBackend())
+                            .setSyncingAccount(
+                                    AccountUtils.createAccountFromName(
+                                            SigninTestRule.TEST_ACCOUNT_EMAIL));
+                });
         PasswordSyncControllerDelegateFactory.setFactoryInstanceForTesting(
                 new FakePasswordSyncControllerDelegateFactoryImpl());
 
@@ -81,19 +84,24 @@ public class TouchToFillMainFlowIntegrationTest {
         PasswordManagerTestUtilsBridge.disableServerPredictions();
         mSigninTestRule.addTestAccountThenSigninAndEnableSync();
 
-        mTestServer = EmbeddedTestServer.createAndStartHTTPSServer(
-                InstrumentationRegistry.getInstrumentation().getContext(),
-                ServerCertificate.CERT_OK);
+        mTestServer =
+                EmbeddedTestServer.createAndStartHTTPSServer(
+                        InstrumentationRegistry.getInstrumentation().getContext(),
+                        ServerCertificate.CERT_OK);
 
-        runOnUiThreadBlocking(() -> {
-            mBottomSheetController = BottomSheetControllerProvider.from(
-                    mActivityTestRule.getActivity().getWindowAndroid());
-        });
+        runOnUiThreadBlocking(
+                () -> {
+                    mBottomSheetController =
+                            BottomSheetControllerProvider.from(
+                                    mActivityTestRule.getActivity().getWindowAndroid());
+                });
 
         mWebContents = mActivityTestRule.getWebContents();
 
         TestThreadUtils.runOnUiThreadBlocking(
-                () -> { mPasswordStoreBridge = new PasswordStoreBridge(); });
+                () -> {
+                    mPasswordStoreBridge = new PasswordStoreBridge();
+                });
     }
 
     @After
@@ -106,10 +114,14 @@ public class TouchToFillMainFlowIntegrationTest {
     public void testClickingSuggestionPopulatesForm()
             throws TimeoutException, InterruptedException {
         // Fill the password store.
-        TestThreadUtils.runOnUiThreadBlocking(() -> {
-            mPasswordStoreBridge.insertPasswordCredential(new PasswordStoreCredential(
-                    new GURL(mTestServer.getURL("/")), TEST_ACCOUNT_NAME, TEST_ACCOUNT_PASSWORD));
-        });
+        TestThreadUtils.runOnUiThreadBlocking(
+                () -> {
+                    mPasswordStoreBridge.insertPasswordCredential(
+                            new PasswordStoreCredential(
+                                    new GURL(mTestServer.getURL("/")),
+                                    TEST_ACCOUNT_NAME,
+                                    TEST_ACCOUNT_PASSWORD));
+                });
 
         mActivityTestRule.loadUrl(mTestServer.getURL(FORM_URL));
 
@@ -126,11 +138,13 @@ public class TouchToFillMainFlowIntegrationTest {
         CriteriaHelper.pollUiThread(() -> getCredentials().getChildAt(1) != null);
 
         // Check if the correct credential is shown.
-        CriteriaHelper.pollUiThread(() -> {
-            LinearLayout credentialItemLayout = (LinearLayout) getCredentials().getChildAt(1);
-            TextView usernameTextView = credentialItemLayout.findViewById(R.id.username);
-            return TEST_ACCOUNT_NAME.equals(usernameTextView.getText());
-        });
+        CriteriaHelper.pollUiThread(
+                () -> {
+                    LinearLayout credentialItemLayout =
+                            (LinearLayout) getCredentials().getChildAt(1);
+                    TextView usernameTextView = credentialItemLayout.findViewById(R.id.username);
+                    return TEST_ACCOUNT_NAME.equals(usernameTextView.getText());
+                });
     }
 
     private RecyclerView getCredentials() {
@@ -143,10 +157,15 @@ public class TouchToFillMainFlowIntegrationTest {
     }
 
     private void waitForPasswordElementLabel() {
-        CriteriaHelper.pollInstrumentationThread(() -> {
-            String attribute = DOMUtils.getNodeAttribute(
-                    PASSWORD_ATTRIBUTE_NAME, mWebContents, PASSWORD_NODE_ID, String.class);
-            return attribute != null;
-        });
+        CriteriaHelper.pollInstrumentationThread(
+                () -> {
+                    String attribute =
+                            DOMUtils.getNodeAttribute(
+                                    PASSWORD_ATTRIBUTE_NAME,
+                                    mWebContents,
+                                    PASSWORD_NODE_ID,
+                                    String.class);
+                    return attribute != null;
+                });
     }
 }

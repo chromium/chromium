@@ -45,8 +45,11 @@ public class MockCertVerifierRuleAndroid extends ExternalResource {
     @NativeMethods
     interface Natives {
         long init();
+
         void setUp(long nativeMockCertVerifierRuleAndroid);
+
         void setResult(long nativeMockCertVerifierRuleAndroid, int result);
+
         void tearDown(long nativeMockCertVerifierRuleAndroid);
     }
 }

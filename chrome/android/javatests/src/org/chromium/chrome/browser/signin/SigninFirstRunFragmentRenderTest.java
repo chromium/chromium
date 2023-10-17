@@ -73,19 +73,29 @@ import java.util.List;
 public class SigninFirstRunFragmentRenderTest extends BlankUiTestActivityTestCase {
     /** Parameter provider for night mode state and device orientation. */
     public static class NightModeAndOrientationParameterProvider implements ParameterProvider {
-        private static List<ParameterSet> sParams = Arrays.asList(
-                new ParameterSet()
-                        .value(/*nightModeEnabled=*/false, Configuration.ORIENTATION_PORTRAIT)
-                        .name("NightModeDisabled_Portrait"),
-                new ParameterSet()
-                        .value(/*nightModeEnabled=*/false, Configuration.ORIENTATION_LANDSCAPE)
-                        .name("NightModeDisabled_Landscape"),
-                new ParameterSet()
-                        .value(/*nightModeEnabled=*/true, Configuration.ORIENTATION_PORTRAIT)
-                        .name("NightModeEnabled_Portrait"),
-                new ParameterSet()
-                        .value(/*nightModeEnabled=*/true, Configuration.ORIENTATION_LANDSCAPE)
-                        .name("NightModeEnabled_Landscape"));
+        private static List<ParameterSet> sParams =
+                Arrays.asList(
+                        new ParameterSet()
+                                .value(
+                                        /* nightModeEnabled= */ false,
+                                        Configuration.ORIENTATION_PORTRAIT)
+                                .name("NightModeDisabled_Portrait"),
+                        new ParameterSet()
+                                .value(
+                                        /* nightModeEnabled= */ false,
+                                        Configuration.ORIENTATION_LANDSCAPE)
+                                .name("NightModeDisabled_Landscape"),
+                        new ParameterSet()
+                                .value(
+                                        /* nightModeEnabled= */ true,
+                                        Configuration.ORIENTATION_PORTRAIT)
+                                .name("NightModeEnabled_Portrait"),
+                        new ParameterSet()
+                                .value(
+                                        /* nightModeEnabled= */ true,
+                                        Configuration.ORIENTATION_LANDSCAPE)
+                                .name("NightModeEnabled_Landscape"));
+
         @Override
         public Iterable<ParameterSet> getParameters() {
             return sParams;
@@ -96,8 +106,7 @@ public class SigninFirstRunFragmentRenderTest extends BlankUiTestActivityTestCas
     private static final String CHILD_ACCOUNT_NAME =
             AccountManagerTestRule.generateChildEmail("account@gmail.com");
 
-    @Rule
-    public final MockitoRule mMockitoRule = MockitoJUnit.rule();
+    @Rule public final MockitoRule mMockitoRule = MockitoJUnit.rule();
 
     @Rule
     public final RenderTestRule mRenderTestRule =
@@ -108,34 +117,27 @@ public class SigninFirstRunFragmentRenderTest extends BlankUiTestActivityTestCas
     @Rule
     public final AccountManagerTestRule mAccountManagerTestRule = new AccountManagerTestRule();
 
-    @Mock
-    private Profile mProfileMock;
-    @Mock
-    private ExternalAuthUtils mExternalAuthUtilsMock;
-    @Mock
-    private FirstRunPageDelegate mFirstRunPageDelegateMock;
-    @Mock
-    private PolicyLoadListener mPolicyLoadListenerMock;
-    @Mock
-    private SigninManager mSigninManagerMock;
-    @Mock
-    private SigninChecker mSigninCheckerMock;
-    @Mock
-    private IdentityManager mIdentityManagerMock;
-    @Mock
-    private IdentityServicesProvider mIdentityServicesProviderMock;
-    @Mock
-    private PrivacyPreferencesManagerImpl mPrivacyPreferencesManagerMock;
+    @Mock private Profile mProfileMock;
+    @Mock private ExternalAuthUtils mExternalAuthUtilsMock;
+    @Mock private FirstRunPageDelegate mFirstRunPageDelegateMock;
+    @Mock private PolicyLoadListener mPolicyLoadListenerMock;
+    @Mock private SigninManager mSigninManagerMock;
+    @Mock private SigninChecker mSigninCheckerMock;
+    @Mock private IdentityManager mIdentityManagerMock;
+    @Mock private IdentityServicesProvider mIdentityServicesProviderMock;
+    @Mock private PrivacyPreferencesManagerImpl mPrivacyPreferencesManagerMock;
 
     private CustomSigninFirstRunFragment mFragment;
 
     @ParameterAnnotations.UseMethodParameterBefore(NightModeAndOrientationParameterProvider.class)
     public void setupNightModeAndDeviceOrientation(boolean nightModeEnabled, int orientation) {
-        TestThreadUtils.runOnUiThreadBlocking(() -> {
-            AppCompatDelegate.setDefaultNightMode(nightModeEnabled
-                            ? AppCompatDelegate.MODE_NIGHT_YES
-                            : AppCompatDelegate.MODE_NIGHT_NO);
-        });
+        TestThreadUtils.runOnUiThreadBlocking(
+                () -> {
+                    AppCompatDelegate.setDefaultNightMode(
+                            nightModeEnabled
+                                    ? AppCompatDelegate.MODE_NIGHT_YES
+                                    : AppCompatDelegate.MODE_NIGHT_NO);
+                });
         mRenderTestRule.setNightModeEnabled(nightModeEnabled);
         mRenderTestRule.setVariantPrefix(
                 orientation == Configuration.ORIENTATION_PORTRAIT ? "Portrait" : "Landscape");
@@ -144,22 +146,24 @@ public class SigninFirstRunFragmentRenderTest extends BlankUiTestActivityTestCas
     @Before
     public void setUp() {
         OneshotSupplierImpl<Profile> profileSupplier =
-                TestThreadUtils.runOnUiThreadBlockingNoException(() -> {
-                    OneshotSupplierImpl<Profile> supplier = new OneshotSupplierImpl<>();
-                    supplier.set(mProfileMock);
-                    return supplier;
-                });
+                TestThreadUtils.runOnUiThreadBlockingNoException(
+                        () -> {
+                            OneshotSupplierImpl<Profile> supplier = new OneshotSupplierImpl<>();
+                            supplier.set(mProfileMock);
+                            return supplier;
+                        });
         when(mFirstRunPageDelegateMock.getProfileSupplier()).thenReturn(profileSupplier);
 
         when(mExternalAuthUtilsMock.canUseGooglePlayServices()).thenReturn(true);
         ExternalAuthUtils.setInstanceForTesting(mExternalAuthUtilsMock);
         IdentityServicesProvider.setInstanceForTests(mIdentityServicesProviderMock);
-        TestThreadUtils.runOnUiThreadBlocking(() -> {
-            when(IdentityServicesProvider.get().getSigninManager(mProfileMock))
-                    .thenReturn(mSigninManagerMock);
-            when(IdentityServicesProvider.get().getIdentityManager(mProfileMock))
-                    .thenReturn(mIdentityManagerMock);
-        });
+        TestThreadUtils.runOnUiThreadBlocking(
+                () -> {
+                    when(IdentityServicesProvider.get().getSigninManager(mProfileMock))
+                            .thenReturn(mSigninManagerMock);
+                    when(IdentityServicesProvider.get().getIdentityManager(mProfileMock))
+                            .thenReturn(mIdentityManagerMock);
+                });
         SigninCheckerProvider.setForTests(mSigninCheckerMock);
         FREMobileIdentityConsistencyFieldTrial.setFirstRunVariationsTrialGroupForTesting(
                 VariationsGroup.DEFAULT);
@@ -168,17 +172,19 @@ public class SigninFirstRunFragmentRenderTest extends BlankUiTestActivityTestCas
         when(mFirstRunPageDelegateMock.canUseLandscapeLayout()).thenReturn(true);
         mFragment = new CustomSigninFirstRunFragment();
         mFragment.setPageDelegate(mFirstRunPageDelegateMock);
-        TestThreadUtils.runOnUiThreadBlocking(() -> {
-            Promise<Void> nativeSideIsInitialized = new Promise<>();
-            nativeSideIsInitialized.fulfill(null);
-            when(mFirstRunPageDelegateMock.getNativeInitializationPromise())
-                    .thenReturn(nativeSideIsInitialized);
+        TestThreadUtils.runOnUiThreadBlocking(
+                () -> {
+                    Promise<Void> nativeSideIsInitialized = new Promise<>();
+                    nativeSideIsInitialized.fulfill(null);
+                    when(mFirstRunPageDelegateMock.getNativeInitializationPromise())
+                            .thenReturn(nativeSideIsInitialized);
 
-            OneshotSupplierImpl<Boolean> childAccountStatusListener = new OneshotSupplierImpl<>();
-            childAccountStatusListener.set(false);
-            when(mFirstRunPageDelegateMock.getChildAccountStatusSupplier())
-                    .thenReturn(childAccountStatusListener);
-        });
+                    OneshotSupplierImpl<Boolean> childAccountStatusListener =
+                            new OneshotSupplierImpl<>();
+                    childAccountStatusListener.set(false);
+                    when(mFirstRunPageDelegateMock.getChildAccountStatusSupplier())
+                            .thenReturn(childAccountStatusListener);
+                });
     }
 
     @Test
@@ -190,9 +196,10 @@ public class SigninFirstRunFragmentRenderTest extends BlankUiTestActivityTestCas
 
         ActivityTestUtils.rotateActivityToOrientation(
                 getActivity(), Configuration.ORIENTATION_LANDSCAPE);
-        CriteriaHelper.pollUiThread(() -> {
-            return mFragment.getView().findViewById(R.id.account_text_secondary).isShown();
-        });
+        CriteriaHelper.pollUiThread(
+                () -> {
+                    return mFragment.getView().findViewById(R.id.account_text_secondary).isShown();
+                });
         mRenderTestRule.render(
                 mFragment.getView(), "signin_first_run_fragment_with_account_landscape");
     }
@@ -206,9 +213,10 @@ public class SigninFirstRunFragmentRenderTest extends BlankUiTestActivityTestCas
 
         ActivityTestUtils.rotateActivityToOrientation(
                 getActivity(), Configuration.ORIENTATION_PORTRAIT);
-        CriteriaHelper.pollUiThread(() -> {
-            return mFragment.getView().findViewById(R.id.account_text_secondary).isShown();
-        });
+        CriteriaHelper.pollUiThread(
+                () -> {
+                    return mFragment.getView().findViewById(R.id.account_text_secondary).isShown();
+                });
         mRenderTestRule.render(
                 mFragment.getView(), "signin_first_run_fragment_with_account_portrait");
     }
@@ -223,9 +231,10 @@ public class SigninFirstRunFragmentRenderTest extends BlankUiTestActivityTestCas
 
         launchActivityWithFragment(orientation);
 
-        CriteriaHelper.pollUiThread(() -> {
-            return mFragment.getView().findViewById(R.id.account_text_secondary).isShown();
-        });
+        CriteriaHelper.pollUiThread(
+                () -> {
+                    return mFragment.getView().findViewById(R.id.account_text_secondary).isShown();
+                });
         mRenderTestRule.render(mFragment.getView(), "signin_first_run_fragment_with_account");
     }
 
@@ -240,9 +249,10 @@ public class SigninFirstRunFragmentRenderTest extends BlankUiTestActivityTestCas
 
         launchActivityWithFragment(orientation);
 
-        CriteriaHelper.pollUiThread(() -> {
-            return mFragment.getView().findViewById(R.id.account_text_secondary).isShown();
-        });
+        CriteriaHelper.pollUiThread(
+                () -> {
+                    return mFragment.getView().findViewById(R.id.account_text_secondary).isShown();
+                });
         mRenderTestRule.render(
                 mFragment.getView(), "signin_first_run_fragment_with_account_managed");
     }
@@ -260,10 +270,12 @@ public class SigninFirstRunFragmentRenderTest extends BlankUiTestActivityTestCas
 
         launchActivityWithFragment(orientation);
 
-        CriteriaHelper.pollUiThread(() -> {
-            return mFragment.getView().findViewById(R.id.account_text_secondary).isShown();
-        });
-        mRenderTestRule.render(mFragment.getView(),
+        CriteriaHelper.pollUiThread(
+                () -> {
+                    return mFragment.getView().findViewById(R.id.account_text_secondary).isShown();
+                });
+        mRenderTestRule.render(
+                mFragment.getView(),
                 "signin_first_run_fragment_with_account_managed_and_string_variation");
     }
 
@@ -297,7 +309,8 @@ public class SigninFirstRunFragmentRenderTest extends BlankUiTestActivityTestCas
 
         launchActivityWithFragment(orientation);
 
-        mRenderTestRule.render(mFragment.getView(),
+        mRenderTestRule.render(
+                mFragment.getView(),
                 "signin_first_run_fragment_when_signin_disabled_by_policy_and_string_variation");
     }
 
@@ -335,9 +348,10 @@ public class SigninFirstRunFragmentRenderTest extends BlankUiTestActivityTestCas
 
         launchActivityWithFragment(orientation);
 
-        CriteriaHelper.pollUiThread(() -> {
-            return mFragment.getView().findViewById(R.id.account_text_secondary).isShown();
-        });
+        CriteriaHelper.pollUiThread(
+                () -> {
+                    return mFragment.getView().findViewById(R.id.account_text_secondary).isShown();
+                });
         mRenderTestRule.render(mFragment.getView(), "signin_first_run_fragment_with_child_account");
     }
 
@@ -353,10 +367,12 @@ public class SigninFirstRunFragmentRenderTest extends BlankUiTestActivityTestCas
 
         launchActivityWithFragment(orientation);
 
-        CriteriaHelper.pollUiThread(() -> {
-            return mFragment.getView().findViewById(R.id.account_text_secondary).isShown();
-        });
-        mRenderTestRule.render(mFragment.getView(),
+        CriteriaHelper.pollUiThread(
+                () -> {
+                    return mFragment.getView().findViewById(R.id.account_text_secondary).isShown();
+                });
+        mRenderTestRule.render(
+                mFragment.getView(),
                 "signin_first_run_fragment_with_child_account_and_string_variation");
     }
 
@@ -388,7 +404,8 @@ public class SigninFirstRunFragmentRenderTest extends BlankUiTestActivityTestCas
 
         launchActivityWithFragment(orientation);
 
-        mRenderTestRule.render(mFragment.getView(),
+        mRenderTestRule.render(
+                mFragment.getView(),
                 "signin_first_run_fragment_when_metrics_reporting_is_disabled_by_policy");
     }
 
@@ -408,10 +425,12 @@ public class SigninFirstRunFragmentRenderTest extends BlankUiTestActivityTestCas
 
         launchActivityWithFragment(orientation);
 
-        CriteriaHelper.pollUiThread(() -> {
-            return mFragment.getView().findViewById(R.id.account_text_secondary).isShown();
-        });
-        mRenderTestRule.render(mFragment.getView(),
+        CriteriaHelper.pollUiThread(
+                () -> {
+                    return mFragment.getView().findViewById(R.id.account_text_secondary).isShown();
+                });
+        mRenderTestRule.render(
+                mFragment.getView(),
                 "signin_first_run_fragment_when_metrics_reporting_is_disabled_by_policy_with_account");
     }
 
@@ -431,10 +450,12 @@ public class SigninFirstRunFragmentRenderTest extends BlankUiTestActivityTestCas
 
         launchActivityWithFragment(orientation);
 
-        CriteriaHelper.pollUiThread(() -> {
-            return mFragment.getView().findViewById(R.id.account_text_secondary).isShown();
-        });
-        mRenderTestRule.render(mFragment.getView(),
+        CriteriaHelper.pollUiThread(
+                () -> {
+                    return mFragment.getView().findViewById(R.id.account_text_secondary).isShown();
+                });
+        mRenderTestRule.render(
+                mFragment.getView(),
                 "signin_first_run_fragment_when_metrics_reporting_is_disabled_by_policy_with_child_account");
     }
 
@@ -461,7 +482,8 @@ public class SigninFirstRunFragmentRenderTest extends BlankUiTestActivityTestCas
                 VariationsGroup.WELCOME_TO_CHROME_MOST_OUT_OF_CHROME);
         launchActivityWithFragment(orientation);
 
-        mRenderTestRule.render(mFragment.getView(),
+        mRenderTestRule.render(
+                mFragment.getView(),
                 "signin_first_run_fragment_welcome_to_chrome_most_out_of_chrome");
     }
 
@@ -475,7 +497,8 @@ public class SigninFirstRunFragmentRenderTest extends BlankUiTestActivityTestCas
                 VariationsGroup.WELCOME_TO_CHROME_ADDITIONAL_FEATURES);
         launchActivityWithFragment(orientation);
 
-        mRenderTestRule.render(mFragment.getView(),
+        mRenderTestRule.render(
+                mFragment.getView(),
                 "signin_first_run_fragment_welcome_to_chrome_additional_features");
     }
 
@@ -489,7 +512,8 @@ public class SigninFirstRunFragmentRenderTest extends BlankUiTestActivityTestCas
                 VariationsGroup.WELCOME_TO_CHROME_EASIER_ACROSS_DEVICES);
         launchActivityWithFragment(orientation);
 
-        mRenderTestRule.render(mFragment.getView(),
+        mRenderTestRule.render(
+                mFragment.getView(),
                 "signin_first_run_fragment_welcome_to_chrome_easier_across_devices");
     }
 
@@ -522,13 +546,14 @@ public class SigninFirstRunFragmentRenderTest extends BlankUiTestActivityTestCas
 
     private void launchActivityWithFragment(int orientation) {
         ActivityTestUtils.rotateActivityToOrientation(getActivity(), orientation);
-        TestThreadUtils.runOnUiThreadBlocking(() -> {
-            getActivity()
-                    .getSupportFragmentManager()
-                    .beginTransaction()
-                    .add(android.R.id.content, mFragment)
-                    .commit();
-        });
+        TestThreadUtils.runOnUiThreadBlocking(
+                () -> {
+                    getActivity()
+                            .getSupportFragmentManager()
+                            .beginTransaction()
+                            .add(android.R.id.content, mFragment)
+                            .commit();
+                });
         ApplicationTestUtils.waitForActivityState(getActivity(), Stage.RESUMED);
         // Parts of SigninFirstRunFragment are initialized asynchronously, so ensure the load
         // spinner is not displayed before grabbing a screenshot.

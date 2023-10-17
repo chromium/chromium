@@ -24,28 +24,30 @@ import org.chromium.chrome.test.util.browser.Features.EnableFeatures;
 import org.chromium.chrome.test.util.browser.TabTitleObserver;
 import org.chromium.content_public.browser.test.util.TestThreadUtils;
 
-/**
- * Unit tests for CloseWatcher's ability to receive signals from the
- * system back button.
- */
+/** Unit tests for CloseWatcher's ability to receive signals from the system back button. */
 @RunWith(ChromeJUnit4ClassRunner.class)
-@CommandLineFlags.Add({ChromeSwitches.DISABLE_FIRST_RUN_EXPERIENCE,
-        "enable-experimental-web-platform-features", "enable-features=CloseWatcher"})
+@CommandLineFlags.Add({
+    ChromeSwitches.DISABLE_FIRST_RUN_EXPERIENCE,
+    "enable-experimental-web-platform-features",
+    "enable-features=CloseWatcher"
+})
 public class CloseWatcherTest {
     @Rule
     public ChromeTabbedActivityTestRule mActivityTestRule = new ChromeTabbedActivityTestRule();
 
     private static final String TEST_URL =
-            UrlUtils.encodeHtmlDataUri("<body><script>let watcher = new CloseWatcher(); "
-                    + "watcher.onclose = () => window.document.title = 'SUCCESS';</script></body>");
+            UrlUtils.encodeHtmlDataUri(
+                    "<body><script>let watcher = new CloseWatcher(); watcher.onclose = () =>"
+                            + " window.document.title = 'SUCCESS';</script></body>");
 
     private Tab mTab;
 
     @Before
     public void setUp() {
         mActivityTestRule.startMainActivityOnBlankPage();
-        mTab = TestThreadUtils.runOnUiThreadBlockingNoException(
-                () -> mActivityTestRule.getActivity().getActivityTab());
+        mTab =
+                TestThreadUtils.runOnUiThreadBlockingNoException(
+                        () -> mActivityTestRule.getActivity().getActivityTab());
     }
 
     @Test
@@ -73,9 +75,11 @@ public class CloseWatcherTest {
     @DisableFeatures(ChromeFeatureList.BACK_GESTURE_REFACTOR)
     public void testBackButtonClosesDialogElement() throws Throwable {
         ChromeTabbedActivity activity = mActivityTestRule.getActivity();
-        mActivityTestRule.loadUrl(UrlUtils.encodeHtmlDataUri("<dialog id=mydialog>hello</dialog>"
-                + "<script>mydialog.showModal();"
-                + "mydialog.onclose = () => window.document.title = 'SUCCESS';</script>"));
+        mActivityTestRule.loadUrl(
+                UrlUtils.encodeHtmlDataUri(
+                        "<dialog id=mydialog>hello</dialog>"
+                                + "<script>mydialog.showModal();mydialog.onclose = () =>"
+                                + " window.document.title = 'SUCCESS';</script>"));
         TestThreadUtils.runOnUiThreadBlocking(() -> activity.onBackPressed());
         new TabTitleObserver(mTab, "SUCCESS").waitForTitleUpdate(3);
     }
@@ -85,9 +89,11 @@ public class CloseWatcherTest {
     @EnableFeatures(ChromeFeatureList.BACK_GESTURE_REFACTOR)
     public void testBackButtonClosesDialogElement_BackGestureRefactor() throws Throwable {
         ChromeTabbedActivity activity = mActivityTestRule.getActivity();
-        mActivityTestRule.loadUrl(UrlUtils.encodeHtmlDataUri("<dialog id=mydialog>hello</dialog>"
-                + "<script>mydialog.showModal();"
-                + "mydialog.onclose = () => window.document.title = 'SUCCESS';</script>"));
+        mActivityTestRule.loadUrl(
+                UrlUtils.encodeHtmlDataUri(
+                        "<dialog id=mydialog>hello</dialog>"
+                                + "<script>mydialog.showModal();mydialog.onclose = () =>"
+                                + " window.document.title = 'SUCCESS';</script>"));
         TestThreadUtils.runOnUiThreadBlocking(() -> activity.onBackPressed());
         new TabTitleObserver(mTab, "SUCCESS").waitForTitleUpdate(3);
     }

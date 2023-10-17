@@ -42,20 +42,20 @@ import java.util.concurrent.Callable;
 import java.util.concurrent.CountDownLatch;
 import java.util.concurrent.TimeUnit;
 
-/**
- * End-to-end tests for transitioning between WebXR's magic window and
- * presentation modes.
- */
+/** End-to-end tests for transitioning between WebXR's magic window and presentation modes. */
 @RunWith(ParameterizedRunner.class)
 @UseRunnerDelegate(ChromeJUnit4RunnerDelegate.class)
-@CommandLineFlags.Add({ChromeSwitches.DISABLE_FIRST_RUN_EXPERIENCE,
-        "enable-features=LogJsConsoleMessages", "force-webxr-runtime=gvr"})
+@CommandLineFlags.Add({
+    ChromeSwitches.DISABLE_FIRST_RUN_EXPERIENCE,
+    "enable-features=LogJsConsoleMessages",
+    "force-webxr-runtime=gvr"
+})
 public class WebXrGvrTransitionTest {
     @ClassParameter
     private static List<ParameterSet> sClassParams =
             GvrTestRuleUtils.generateDefaultTestRuleParameters();
-    @Rule
-    public RuleChain mRuleChain;
+
+    @Rule public RuleChain mRuleChain;
 
     private ChromeActivityTestRule mTestRule;
     private WebXrGvrTestFramework mWebXrVrTestFramework;
@@ -71,8 +71,8 @@ public class WebXrGvrTransitionTest {
     }
 
     /**
-     * Tests that WebXR is not exposed if the flag is not on and the page does
-     * not have an origin trial token.
+     * Tests that WebXR is not exposed if the flag is not on and the page does not have an origin
+     * trial token.
      */
     @Test
     @MediumTest
@@ -89,9 +89,7 @@ public class WebXrGvrTransitionTest {
         framework.endTest();
     }
 
-    /**
-     * Tests that the immersive session promise is rejected if the DON flow is canceled.
-     */
+    /** Tests that the immersive session promise is rejected if the DON flow is canceled. */
     @Test
     @MediumTest
     @Restriction({RESTRICTION_TYPE_DEVICE_DAYDREAM, RESTRICTION_TYPE_VR_DON_ENABLED})
@@ -99,7 +97,6 @@ public class WebXrGvrTransitionTest {
     @XrActivityRestriction({XrActivityRestriction.SupportedActivity.ALL})
     public void testPresentationPromiseRejectedIfDonCanceled_WebXr() {
         presentationPromiseRejectedIfDonCanceledImpl(
-
                 "webxr_test_presentation_promise_rejected_if_don_canceled", mWebXrVrTestFramework);
     }
 
@@ -112,18 +109,21 @@ public class WebXrGvrTransitionTest {
         // Wait until the DON flow appears to be triggered
         // TODO(bsheedy): Make this less hacky if there's ever an explicit way to check if the
         // DON flow is currently active https://crbug.com/758296
-        CriteriaHelper.pollUiThread(() -> {
-            String currentPackageName = uiDevice.getCurrentPackageName();
-            return currentPackageName != null && currentPackageName.equals("com.google.vr.vrcore");
-        }, "DON flow did not start", POLL_TIMEOUT_LONG_MS, POLL_CHECK_INTERVAL_SHORT_MS);
+        CriteriaHelper.pollUiThread(
+                () -> {
+                    String currentPackageName = uiDevice.getCurrentPackageName();
+                    return currentPackageName != null
+                            && currentPackageName.equals("com.google.vr.vrcore");
+                },
+                "DON flow did not start",
+                POLL_TIMEOUT_LONG_MS,
+                POLL_CHECK_INTERVAL_SHORT_MS);
         uiDevice.pressBack();
         framework.waitOnJavaScriptStep();
         framework.endTest();
     }
 
-    /**
-     * Tests that the omnibox reappears after exiting an immersive session.
-     */
+    /** Tests that the omnibox reappears after exiting an immersive session. */
     @Test
     @MediumTest
     @CommandLineFlags.Add({"enable-features=WebXR"})
@@ -142,13 +142,16 @@ public class WebXrGvrTransitionTest {
         // to propagate. In the worst case this test will erroneously pass, but should never
         // erroneously fail, and should only be flaky if omnibox showing is broken.
         Thread.sleep(100);
-        CriteriaHelper.pollUiThread(()
-                                            -> framework.getRule()
-                                                       .getActivity()
-                                                       .getBrowserControlsManager()
-                                                       .getBrowserControlHiddenRatio()
-                        == 0.0,
-                "Browser controls did not unhide after exiting VR", POLL_TIMEOUT_SHORT_MS,
+        CriteriaHelper.pollUiThread(
+                () ->
+                        framework
+                                        .getRule()
+                                        .getActivity()
+                                        .getBrowserControlsManager()
+                                        .getBrowserControlHiddenRatio()
+                                == 0.0,
+                "Browser controls did not unhide after exiting VR",
+                POLL_TIMEOUT_SHORT_MS,
                 POLL_CHECK_INTERVAL_SHORT_MS);
         framework.assertNoJavaScriptErrors();
     }
@@ -163,7 +166,6 @@ public class WebXrGvrTransitionTest {
     @XrActivityRestriction({XrActivityRestriction.SupportedActivity.ALL})
     public void testWindowRafStopsFiringWhilePresenting_WebXr() throws InterruptedException {
         windowRafStopsFiringWhilePresentingImpl(
-
                 "webxr_test_window_raf_stops_firing_during_immersive_session",
                 mWebXrVrTestFramework);
     }
@@ -174,8 +176,11 @@ public class WebXrGvrTransitionTest {
         framework.executeStepAndWait("stepVerifyBeforePresent()");
         // Pausing of window.rAF is done asynchronously, so wait until that's done.
         final CountDownLatch vsyncPausedLatch = new CountDownLatch(1);
-        TestVrShellDelegate.getInstance().setVrShellOnVSyncPausedCallback(
-                () -> { vsyncPausedLatch.countDown(); });
+        TestVrShellDelegate.getInstance()
+                .setVrShellOnVSyncPausedCallback(
+                        () -> {
+                            vsyncPausedLatch.countDown();
+                        });
         framework.enterSessionWithUserGestureOrFail();
         vsyncPausedLatch.await(POLL_TIMEOUT_SHORT_MS, TimeUnit.MILLISECONDS);
         framework.executeStepAndWait("stepVerifyDuringPresent()");
@@ -184,9 +189,7 @@ public class WebXrGvrTransitionTest {
         framework.endTest();
     }
 
-    /**
-     * Tests that window.rAF continues to fire when we have a non-immersive session.
-     */
+    /** Tests that window.rAF continues to fire when we have a non-immersive session. */
     @Test
     @MediumTest
     @CommandLineFlags.Add({"enable-features=WebXR"})
@@ -219,8 +222,8 @@ public class WebXrGvrTransitionTest {
     }
 
     /**
-     * Tests that a permission prompt dismisses by itself when the page navigates away from
-     * the current page.
+     * Tests that a permission prompt dismisses by itself when the page navigates away from the
+     * current page.
      */
     @Test
     @MediumTest

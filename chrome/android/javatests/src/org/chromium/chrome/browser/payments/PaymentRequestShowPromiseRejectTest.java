@@ -19,9 +19,7 @@ import org.chromium.chrome.test.ChromeJUnit4ClassRunner;
 
 import java.util.concurrent.TimeoutException;
 
-/**
- * A payment integration test for the show promise that is rejected.
- */
+/** A payment integration test for the show promise that is rejected. */
 @RunWith(ChromeJUnit4ClassRunner.class)
 @CommandLineFlags.Add({ChromeSwitches.DISABLE_FIRST_RUN_EXPERIENCE})
 public class PaymentRequestShowPromiseRejectTest {

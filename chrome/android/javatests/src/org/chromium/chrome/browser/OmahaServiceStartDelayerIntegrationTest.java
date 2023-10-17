@@ -36,10 +36,11 @@ public class OmahaServiceStartDelayerIntegrationTest {
     @Feature({"Omaha"})
     public void testEnsureOmahaServiceStartDelayerIsInitializedWhenLaunched() throws Exception {
         final CallbackHelper callback = new CallbackHelper();
-        OmahaServiceStartDelayer receiver = TestThreadUtils.runOnUiThreadBlocking(
-                ()
-                        -> ChromeActivitySessionTracker.getInstance()
-                                   .getOmahaServiceStartDelayerForTesting());
+        OmahaServiceStartDelayer receiver =
+                TestThreadUtils.runOnUiThreadBlocking(
+                        () ->
+                                ChromeActivitySessionTracker.getInstance()
+                                        .getOmahaServiceStartDelayerForTesting());
         receiver.setOmahaRunnableForTesting(() -> callback.notifyCalled());
         mActivityTestRule.startMainActivityOnBlankPage();
         try {

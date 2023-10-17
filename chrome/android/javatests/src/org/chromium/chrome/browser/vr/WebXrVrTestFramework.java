@@ -13,13 +13,14 @@ import org.chromium.content_public.browser.WebContents;
 import java.lang.annotation.Retention;
 import java.lang.annotation.RetentionPolicy;
 
-/**
- * Extension of VrTestFramework containing WebXR for VR-specific functionality.
- */
+/** Extension of VrTestFramework containing WebXR for VR-specific functionality. */
 public class WebXrVrTestFramework extends WebXrTestFramework {
     @Retention(RetentionPolicy.SOURCE)
-    @IntDef({PERMISSION_PROMPT_ACTION_DO_NOTHING, PERMISSION_PROMPT_ACTION_ALLOW,
-            PERMISSION_PROMPT_ACTION_DENY})
+    @IntDef({
+        PERMISSION_PROMPT_ACTION_DO_NOTHING,
+        PERMISSION_PROMPT_ACTION_ALLOW,
+        PERMISSION_PROMPT_ACTION_DENY
+    })
     public @interface PermissionPromptAction {}
 
     public static final int PERMISSION_PROMPT_ACTION_DO_NOTHING = 0;
@@ -94,8 +95,10 @@ public class WebXrVrTestFramework extends WebXrTestFramework {
             PermissionUtils.acceptPermissionPrompt();
         }
 
-        pollJavaScriptBooleanOrFail("sessionInfos[sessionTypes.IMMERSIVE].currentSession != null",
-                POLL_TIMEOUT_LONG_MS, webContents);
+        pollJavaScriptBooleanOrFail(
+                "sessionInfos[sessionTypes.IMMERSIVE].currentSession != null",
+                POLL_TIMEOUT_LONG_MS,
+                webContents);
     }
 
     /**
@@ -107,12 +110,16 @@ public class WebXrVrTestFramework extends WebXrTestFramework {
     public void endSession(WebContents webContents) {
         // Use a long timeout for session.end(), this can unexpectedly take more than
         // a second. TODO(https://crbug.com/1014159): investigate why.
-        runJavaScriptOrFail("sessionInfos[sessionTypes.IMMERSIVE].currentSession.end()",
-                POLL_TIMEOUT_LONG_MS, webContents);
+        runJavaScriptOrFail(
+                "sessionInfos[sessionTypes.IMMERSIVE].currentSession.end()",
+                POLL_TIMEOUT_LONG_MS,
+                webContents);
 
         // Wait for the session to end before proceeding with followup tests.
-        pollJavaScriptBooleanOrFail("sessionInfos[sessionTypes.IMMERSIVE].currentSession == null",
-                POLL_TIMEOUT_LONG_MS, webContents);
+        pollJavaScriptBooleanOrFail(
+                "sessionInfos[sessionTypes.IMMERSIVE].currentSession == null",
+                POLL_TIMEOUT_LONG_MS,
+                webContents);
     }
 
     /**
@@ -120,8 +127,7 @@ public class WebXrVrTestFramework extends WebXrTestFramework {
      *
      * @param webContents The WebContents to check in.
      * @return True if an immersive VR session request would trigger the permission prompt,
-     *         otherwise
-     *     false.
+     *     otherwise false.
      */
     @Override
     public boolean shouldExpectPermissionPrompt(WebContents webContents) {

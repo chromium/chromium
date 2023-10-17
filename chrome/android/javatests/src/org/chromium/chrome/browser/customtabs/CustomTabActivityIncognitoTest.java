@@ -107,23 +107,20 @@ public class CustomTabActivityIncognitoTest {
     public IncognitoCustomTabActivityTestRule mCustomTabActivityTestRule =
             new IncognitoCustomTabActivityTestRule();
 
-    @Rule
-    public TestRule mProcessor = new Features.InstrumentationProcessor();
+    @Rule public TestRule mProcessor = new Features.InstrumentationProcessor();
 
-    @Rule
-    public EmbeddedTestServerRule mEmbeddedTestServerRule = new EmbeddedTestServerRule();
+    @Rule public EmbeddedTestServerRule mEmbeddedTestServerRule = new EmbeddedTestServerRule();
 
-    @Rule
-    public JniMocker jniMocker = new JniMocker();
-    @Mock
-    private TranslateBridge.Natives mTranslateBridgeJniMock;
+    @Rule public JniMocker jniMocker = new JniMocker();
+    @Mock private TranslateBridge.Natives mTranslateBridgeJniMock;
 
     @Before
     public void setUp() throws TimeoutException {
         MockitoAnnotations.initMocks(this);
 
         // Mock translate bridge so "Translate..." menu item doesn't unexpectedly show up.
-        jniMocker.mock(org.chromium.chrome.browser.translate.TranslateBridgeJni.TEST_HOOKS,
+        jniMocker.mock(
+                org.chromium.chrome.browser.translate.TranslateBridgeJni.TEST_HOOKS,
                 mTranslateBridgeJniMock);
         jniMocker.mock(TranslateBridgeJni.TEST_HOOKS, mTranslateBridgeJniMock);
 
@@ -156,10 +153,11 @@ public class CustomTabActivityIncognitoTest {
     }
 
     private static int getToolbarColor(CustomTabActivity activity) throws ExecutionException {
-        return TestThreadUtils.runOnUiThreadBlocking(() -> {
-            CustomTabToolbar toolbar = activity.findViewById(R.id.toolbar);
-            return toolbar.getBackground().getColor();
-        });
+        return TestThreadUtils.runOnUiThreadBlocking(
+                () -> {
+                    CustomTabToolbar toolbar = activity.findViewById(R.id.toolbar);
+                    return toolbar.getBackground().getColor();
+                });
     }
 
     private void launchMenuItem() throws Exception {
@@ -171,30 +169,36 @@ public class CustomTabActivityIncognitoTest {
     private void launchAndTestMenuItemIsVisible(int itemId, String screenshotName)
             throws Exception {
         launchMenuItem();
-        assertNotNull(AppMenuTestSupport.getMenuItemPropertyModel(
-                mCustomTabActivityTestRule.getAppMenuCoordinator(), itemId));
+        assertNotNull(
+                AppMenuTestSupport.getMenuItemPropertyModel(
+                        mCustomTabActivityTestRule.getAppMenuCoordinator(), itemId));
     }
 
     private void launchAndTestMenuItemIsNotVisible(int itemId, String screenshotName)
             throws Exception {
         launchMenuItem();
-        assertNull(AppMenuTestSupport.getMenuItemPropertyModel(
-                mCustomTabActivityTestRule.getAppMenuCoordinator(), itemId));
+        assertNull(
+                AppMenuTestSupport.getMenuItemPropertyModel(
+                        mCustomTabActivityTestRule.getAppMenuCoordinator(), itemId));
     }
 
     private void testTopActionIconsIsVisible() throws Exception {
-        assertNotNull(AppMenuTestSupport.getMenuItemPropertyModel(
-                mCustomTabActivityTestRule.getAppMenuCoordinator(), R.id.forward_menu_id));
-        assertNotNull(AppMenuTestSupport.getMenuItemPropertyModel(
-                mCustomTabActivityTestRule.getAppMenuCoordinator(), R.id.reload_menu_id));
-        assertNotNull(AppMenuTestSupport.getMenuItemPropertyModel(
-                mCustomTabActivityTestRule.getAppMenuCoordinator(), R.id.bookmark_this_page_id));
-        assertNotNull(AppMenuTestSupport.getMenuItemPropertyModel(
-                mCustomTabActivityTestRule.getAppMenuCoordinator(), R.id.info_menu_id));
+        assertNotNull(
+                AppMenuTestSupport.getMenuItemPropertyModel(
+                        mCustomTabActivityTestRule.getAppMenuCoordinator(), R.id.forward_menu_id));
+        assertNotNull(
+                AppMenuTestSupport.getMenuItemPropertyModel(
+                        mCustomTabActivityTestRule.getAppMenuCoordinator(), R.id.reload_menu_id));
+        assertNotNull(
+                AppMenuTestSupport.getMenuItemPropertyModel(
+                        mCustomTabActivityTestRule.getAppMenuCoordinator(),
+                        R.id.bookmark_this_page_id));
+        assertNotNull(
+                AppMenuTestSupport.getMenuItemPropertyModel(
+                        mCustomTabActivityTestRule.getAppMenuCoordinator(), R.id.info_menu_id));
 
         ModelList iconRowModelList =
-                AppMenuTestSupport
-                        .getMenuItemPropertyModel(
+                AppMenuTestSupport.getMenuItemPropertyModel(
                                 mCustomTabActivityTestRule.getAppMenuCoordinator(),
                                 R.id.icon_row_menu_id)
                         .get(AppMenuItemProperties.SUBMENU);
@@ -207,12 +211,16 @@ public class CustomTabActivityIncognitoTest {
     }
 
     private void assertProfileUsedIsNonPrimary() throws TimeoutException {
-        TestThreadUtils.runOnUiThreadBlocking(() -> {
-            Profile profile = Profile.fromWebContents(
-                    mCustomTabActivityTestRule.getActivity().getCurrentWebContents());
-            assertTrue(profile.isOffTheRecord());
-            assertFalse(profile.isPrimaryOTRProfile());
-        });
+        TestThreadUtils.runOnUiThreadBlocking(
+                () -> {
+                    Profile profile =
+                            Profile.fromWebContents(
+                                    mCustomTabActivityTestRule
+                                            .getActivity()
+                                            .getCurrentWebContents());
+                    assertTrue(profile.isOffTheRecord());
+                    assertFalse(profile.isPrimaryOTRProfile());
+                });
     }
 
     @Test
@@ -248,25 +256,28 @@ public class CustomTabActivityIncognitoTest {
 
         CustomTabToolbar customTabToolbar =
                 mCustomTabActivityTestRule.getActivity().findViewById(R.id.toolbar);
-        TestThreadUtils.runOnUiThreadBlocking(() -> {
-            Profile profile = customTabToolbar.getToolbarDataProvider().getProfile();
-            assertTrue(profile.isOffTheRecord());
-            assertFalse(profile.isPrimaryOTRProfile());
-        });
+        TestThreadUtils.runOnUiThreadBlocking(
+                () -> {
+                    Profile profile = customTabToolbar.getToolbarDataProvider().getProfile();
+                    assertTrue(profile.isOffTheRecord());
+                    assertFalse(profile.isPrimaryOTRProfile());
+                });
     }
 
     @Test
     @MediumTest
     public void toolbarHasRegularProfile_ForRegularCCT() {
-        Intent intent = CustomTabsIntentTestUtils.createMinimalCustomTabIntent(
-                ApplicationProvider.getApplicationContext(), "about:blank");
+        Intent intent =
+                CustomTabsIntentTestUtils.createMinimalCustomTabIntent(
+                        ApplicationProvider.getApplicationContext(), "about:blank");
         mCustomTabActivityTestRule.startCustomTabActivityWithIntent(intent);
         CustomTabToolbar customTabToolbar =
                 mCustomTabActivityTestRule.getActivity().findViewById(R.id.toolbar);
-        TestThreadUtils.runOnUiThreadBlocking(() -> {
-            Profile profile = customTabToolbar.getToolbarDataProvider().getProfile();
-            assertFalse(profile.isOffTheRecord());
-        });
+        TestThreadUtils.runOnUiThreadBlocking(
+                () -> {
+                    Profile profile = customTabToolbar.getToolbarDataProvider().getProfile();
+                    assertFalse(profile.isOffTheRecord());
+                });
     }
 
     @Test
@@ -336,8 +347,10 @@ public class CustomTabActivityIncognitoTest {
         CustomTabActivity activity = launchIncognitoCustomTab(intent);
         CustomTabsTestUtils.openAppMenuAndAssertMenuShown(activity);
 
-        assertNotNull(AppMenuTestSupport.getMenuItemPropertyModel(
-                mCustomTabActivityTestRule.getAppMenuCoordinator(), R.id.share_row_menu_id));
+        assertNotNull(
+                AppMenuTestSupport.getMenuItemPropertyModel(
+                        mCustomTabActivityTestRule.getAppMenuCoordinator(),
+                        R.id.share_row_menu_id));
     }
 
     @Test
@@ -355,17 +368,21 @@ public class CustomTabActivityIncognitoTest {
         CustomTabActivity activity = launchIncognitoCustomTab(intent);
         CustomTabsTestUtils.openAppMenuAndAssertMenuShown(activity);
 
-        ModelList menuItemsModelList = AppMenuTestSupport.getMenuModelList(
-                mCustomTabActivityTestRule.getAppMenuCoordinator());
+        ModelList menuItemsModelList =
+                AppMenuTestSupport.getMenuModelList(
+                        mCustomTabActivityTestRule.getAppMenuCoordinator());
         // Check the menu items have only 3 items visible including the top icon row menu.
         CustomTabsTestUtils.assertMenuSize(menuItemsModelList, 3);
-        assertNotNull(AppMenuTestSupport.getMenuItemPropertyModel(
-                mCustomTabActivityTestRule.getAppMenuCoordinator(), R.id.icon_row_menu_id));
-        assertNotNull(AppMenuTestSupport.getMenuItemPropertyModel(
-                mCustomTabActivityTestRule.getAppMenuCoordinator(), R.id.find_in_page_id));
-        assertNotNull(AppMenuTestSupport.getMenuItemPropertyModel(
-                mCustomTabActivityTestRule.getAppMenuCoordinator(),
-                R.id.request_desktop_site_row_menu_id));
+        assertNotNull(
+                AppMenuTestSupport.getMenuItemPropertyModel(
+                        mCustomTabActivityTestRule.getAppMenuCoordinator(), R.id.icon_row_menu_id));
+        assertNotNull(
+                AppMenuTestSupport.getMenuItemPropertyModel(
+                        mCustomTabActivityTestRule.getAppMenuCoordinator(), R.id.find_in_page_id));
+        assertNotNull(
+                AppMenuTestSupport.getMenuItemPropertyModel(
+                        mCustomTabActivityTestRule.getAppMenuCoordinator(),
+                        R.id.request_desktop_site_row_menu_id));
 
         // Check top icons are still the same.
         testTopActionIconsIsVisible();
@@ -381,20 +398,26 @@ public class CustomTabActivityIncognitoTest {
         CustomTabActivity activity = launchIncognitoCustomTab(intent);
         CustomTabsTestUtils.openAppMenuAndAssertMenuShown(activity);
 
-        ModelList menuItemsModelList = AppMenuTestSupport.getMenuModelList(
-                mCustomTabActivityTestRule.getAppMenuCoordinator());
+        ModelList menuItemsModelList =
+                AppMenuTestSupport.getMenuModelList(
+                        mCustomTabActivityTestRule.getAppMenuCoordinator());
         // Check the menu items have only 2 items visible "not" including the top icon row menu.
         CustomTabsTestUtils.assertMenuSize(menuItemsModelList, 2);
-        assertNotNull(AppMenuTestSupport.getMenuItemPropertyModel(
-                mCustomTabActivityTestRule.getAppMenuCoordinator(), R.id.reader_mode_prefs_id));
-        assertNotNull(AppMenuTestSupport.getMenuItemPropertyModel(
-                mCustomTabActivityTestRule.getAppMenuCoordinator(), R.id.find_in_page_id));
+        assertNotNull(
+                AppMenuTestSupport.getMenuItemPropertyModel(
+                        mCustomTabActivityTestRule.getAppMenuCoordinator(),
+                        R.id.reader_mode_prefs_id));
+        assertNotNull(
+                AppMenuTestSupport.getMenuItemPropertyModel(
+                        mCustomTabActivityTestRule.getAppMenuCoordinator(), R.id.find_in_page_id));
 
-        assertNull(AppMenuTestSupport.getMenuItemPropertyModel(
-                mCustomTabActivityTestRule.getAppMenuCoordinator(), R.id.icon_row_menu_id));
-        assertNull(AppMenuTestSupport.getMenuItemPropertyModel(
-                mCustomTabActivityTestRule.getAppMenuCoordinator(),
-                R.id.request_desktop_site_row_menu_id));
+        assertNull(
+                AppMenuTestSupport.getMenuItemPropertyModel(
+                        mCustomTabActivityTestRule.getAppMenuCoordinator(), R.id.icon_row_menu_id));
+        assertNull(
+                AppMenuTestSupport.getMenuItemPropertyModel(
+                        mCustomTabActivityTestRule.getAppMenuCoordinator(),
+                        R.id.request_desktop_site_row_menu_id));
     }
 
     @Test
@@ -432,7 +455,8 @@ public class CustomTabActivityIncognitoTest {
         // constraint that a) it already exists in production code, and b) it only contains
         // views with the @RemoteView annotation.
         RemoteViews remoteViews =
-                new RemoteViews(ApplicationProvider.getApplicationContext().getPackageName(),
+                new RemoteViews(
+                        ApplicationProvider.getApplicationContext().getPackageName(),
                         R.layout.share_sheet_item);
         remoteViews.setTextViewText(R.id.text, "Kittens!");
         remoteViews.setTextViewText(R.id.display_new, "So fluffy");
@@ -464,10 +488,15 @@ public class CustomTabActivityIncognitoTest {
         mCustomTabActivityTestRule.buildSessionWithHiddenTab(connection, token);
         Assert.assertFalse(
                 connection.mayLaunchUrl(token, Uri.parse(mTestPage), intent.getExtras(), null));
-        CriteriaHelper.pollUiThread(() -> {
-            Criteria.checkThat("Tab was created", connection.getSpeculationParamsForTesting(),
-                    Matchers.nullValue());
-        }, LONG_TIMEOUT_MS, CriteriaHelper.DEFAULT_POLLING_INTERVAL);
+        CriteriaHelper.pollUiThread(
+                () -> {
+                    Criteria.checkThat(
+                            "Tab was created",
+                            connection.getSpeculationParamsForTesting(),
+                            Matchers.nullValue());
+                },
+                LONG_TIMEOUT_MS,
+                CriteriaHelper.DEFAULT_POLLING_INTERVAL);
         mCustomTabActivityTestRule.setCustomSessionInitiatedForIntent();
         mCustomTabActivityTestRule.startCustomTabActivityWithIntent(intent);
     }
@@ -486,10 +515,15 @@ public class CustomTabActivityIncognitoTest {
         // Passes null intent here to mimic not having incognito extra in intent at the connection.
         mCustomTabActivityTestRule.buildSessionWithHiddenTab(connection, token);
         Assert.assertTrue(connection.mayLaunchUrl(token, Uri.parse(mTestPage), null, null));
-        CriteriaHelper.pollUiThread(() -> {
-            Criteria.checkThat("Tab was not created", connection.getSpeculationParamsForTesting(),
-                    Matchers.notNullValue());
-        }, LONG_TIMEOUT_MS, CriteriaHelper.DEFAULT_POLLING_INTERVAL);
+        CriteriaHelper.pollUiThread(
+                () -> {
+                    Criteria.checkThat(
+                            "Tab was not created",
+                            connection.getSpeculationParamsForTesting(),
+                            Matchers.notNullValue());
+                },
+                LONG_TIMEOUT_MS,
+                CriteriaHelper.DEFAULT_POLLING_INTERVAL);
         ChromeTabUtils.waitForTabPageLoaded(
                 connection.getSpeculationParamsForTesting().tab, mTestPage);
         mCustomTabActivityTestRule.setCustomSessionInitiatedForIntent();
@@ -497,9 +531,7 @@ public class CustomTabActivityIncognitoTest {
         connection.cleanUpSession(token);
     }
 
-    /**
-     * Regression test for crbug.com/1325331.
-     */
+    /** Regression test for crbug.com/1325331. */
     @Test
     @MediumTest
     @EnableFeatures(ChromeFeatureList.INCOGNITO_REAUTHENTICATION_FOR_ANDROID)
@@ -510,17 +542,21 @@ public class CustomTabActivityIncognitoTest {
         CustomTabActivity customTabActivity = launchIncognitoCustomTab(intent);
         CallbackHelper callbackHelper = new CallbackHelper();
         // Ensure that we did indeed create the re-auth controller.
-        TestThreadUtils.runOnUiThreadBlocking(() -> {
-            OneshotSupplier<IncognitoReauthController> incognitoReauthControllerOneshotSupplier =
-                    customTabActivity.getRootUiCoordinatorForTesting()
-                            .getIncognitoReauthControllerSupplier();
-            CallbackController callbackController = new CallbackController();
-            incognitoReauthControllerOneshotSupplier.onAvailable(
-                    callbackController.makeCancelable(incognitoReauthController -> {
-                        assertNotNull(incognitoReauthController);
-                        callbackHelper.notifyCalled();
-                    }));
-        });
+        TestThreadUtils.runOnUiThreadBlocking(
+                () -> {
+                    OneshotSupplier<IncognitoReauthController>
+                            incognitoReauthControllerOneshotSupplier =
+                                    customTabActivity
+                                            .getRootUiCoordinatorForTesting()
+                                            .getIncognitoReauthControllerSupplier();
+                    CallbackController callbackController = new CallbackController();
+                    incognitoReauthControllerOneshotSupplier.onAvailable(
+                            callbackController.makeCancelable(
+                                    incognitoReauthController -> {
+                                        assertNotNull(incognitoReauthController);
+                                        callbackHelper.notifyCalled();
+                                    }));
+                });
         callbackHelper.waitForCallback(0);
     }
 
@@ -534,41 +570,49 @@ public class CustomTabActivityIncognitoTest {
         Intent intent = createMinimalIncognitoCustomTabIntent();
         CustomTabActivity customTabActivity = launchIncognitoCustomTab(intent);
         CallbackHelper callbackHelper = new CallbackHelper();
-        TestThreadUtils.runOnUiThreadBlocking(() -> {
-            OneshotSupplier<IncognitoReauthController> incognitoReauthControllerOneshotSupplier =
-                    customTabActivity.getRootUiCoordinatorForTesting()
-                            .getIncognitoReauthControllerSupplier();
-            CallbackController callbackController = new CallbackController();
-            incognitoReauthControllerOneshotSupplier.onAvailable(
-                    callbackController.makeCancelable(incognitoReauthController -> {
-                        assertNotNull(incognitoReauthController);
-                        callbackHelper.notifyCalled();
-                    }));
-        });
+        TestThreadUtils.runOnUiThreadBlocking(
+                () -> {
+                    OneshotSupplier<IncognitoReauthController>
+                            incognitoReauthControllerOneshotSupplier =
+                                    customTabActivity
+                                            .getRootUiCoordinatorForTesting()
+                                            .getIncognitoReauthControllerSupplier();
+                    CallbackController callbackController = new CallbackController();
+                    incognitoReauthControllerOneshotSupplier.onAvailable(
+                            callbackController.makeCancelable(
+                                    incognitoReauthController -> {
+                                        assertNotNull(incognitoReauthController);
+                                        callbackHelper.notifyCalled();
+                                    }));
+                });
         callbackHelper.waitForCallback(0);
 
-        TestThreadUtils.runOnUiThreadBlocking(() -> {
-            UserPrefs.get(Profile.getLastUsedRegularProfile())
-                    .setBoolean(Pref.INCOGNITO_REAUTHENTICATION_FOR_ANDROID, true);
-            IncognitoReauthController incognitoReauthController =
-                    customTabActivity.getRootUiCoordinatorForTesting()
-                            .getIncognitoReauthControllerSupplier()
-                            .get();
+        TestThreadUtils.runOnUiThreadBlocking(
+                () -> {
+                    UserPrefs.get(Profile.getLastUsedRegularProfile())
+                            .setBoolean(Pref.INCOGNITO_REAUTHENTICATION_FOR_ANDROID, true);
+                    IncognitoReauthController incognitoReauthController =
+                            customTabActivity
+                                    .getRootUiCoordinatorForTesting()
+                                    .getIncognitoReauthControllerSupplier()
+                                    .get();
 
-            // Fake Chrome going background and coming back to foreground.
-            ApplicationStatus.TaskVisibilityListener visibilityListener =
-                    (ApplicationStatus.TaskVisibilityListener) incognitoReauthController;
-            visibilityListener.onTaskVisibilityChanged(customTabActivity.getTaskId(), false);
+                    // Fake Chrome going background and coming back to foreground.
+                    ApplicationStatus.TaskVisibilityListener visibilityListener =
+                            (ApplicationStatus.TaskVisibilityListener) incognitoReauthController;
+                    visibilityListener.onTaskVisibilityChanged(
+                            customTabActivity.getTaskId(), false);
 
-            StartStopWithNativeObserver observer =
-                    (StartStopWithNativeObserver) incognitoReauthController;
-            observer.onStartWithNative();
+                    StartStopWithNativeObserver observer =
+                            (StartStopWithNativeObserver) incognitoReauthController;
+                    observer.onStartWithNative();
 
-            assertTrue("Re-auth screen should be shown.",
-                    incognitoReauthController.isReauthPageShowing());
-            UserPrefs.get(Profile.getLastUsedRegularProfile())
-                    .setBoolean(Pref.INCOGNITO_REAUTHENTICATION_FOR_ANDROID, false);
-        });
+                    assertTrue(
+                            "Re-auth screen should be shown.",
+                            incognitoReauthController.isReauthPageShowing());
+                    UserPrefs.get(Profile.getLastUsedRegularProfile())
+                            .setBoolean(Pref.INCOGNITO_REAUTHENTICATION_FOR_ANDROID, false);
+                });
 
         IncognitoReauthManager.setIsIncognitoReauthFeatureAvailableForTesting(false);
     }

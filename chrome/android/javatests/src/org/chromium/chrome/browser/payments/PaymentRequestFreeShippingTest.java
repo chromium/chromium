@@ -34,16 +34,15 @@ import org.chromium.ui.test.util.RenderTestRule;
 
 import java.util.concurrent.TimeoutException;
 
-/**
- * A payment integration test for a merchant that provides free shipping regardless of address.
- */
+/** A payment integration test for a merchant that provides free shipping regardless of address. */
 @RunWith(ParameterizedRunner.class)
 @ParameterAnnotations.UseRunnerDelegate(ChromeJUnit4RunnerDelegate.class)
 @CommandLineFlags.Add({ChromeSwitches.DISABLE_FIRST_RUN_EXPERIENCE})
 public class PaymentRequestFreeShippingTest {
     @Rule
-    public PaymentRequestTestRule mPaymentRequestTestRule = new PaymentRequestTestRule(
-            "payment_request_free_shipping_test.html", /*delayStartActivity=*/true);
+    public PaymentRequestTestRule mPaymentRequestTestRule =
+            new PaymentRequestTestRule(
+                    "payment_request_free_shipping_test.html", /* delayStartActivity= */ true);
 
     private static final int RENDER_TEST_REVISION = 1;
     private static final String RENDER_TEST_REVISION_DESCRIPTION =
@@ -79,17 +78,18 @@ public class PaymentRequestFreeShippingTest {
         mPaymentRequestTestRule.setObserversAndWaitForInitialPageLoad();
         AutofillTestHelper helper = new AutofillTestHelper();
         // The user has a shipping address on disk.
-        helper.setProfile(AutofillProfile.builder()
-                                  .setFullName("Jon Doe")
-                                  .setCompanyName("Google")
-                                  .setStreetAddress("340 Main St")
-                                  .setRegion("CA")
-                                  .setLocality("Los Angeles")
-                                  .setPostalCode("90291")
-                                  .setCountryCode("US")
-                                  .setPhoneNumber("650-253-0000")
-                                  .setLanguageCode("en-US")
-                                  .build());
+        helper.setProfile(
+                AutofillProfile.builder()
+                        .setFullName("Jon Doe")
+                        .setCompanyName("Google")
+                        .setStreetAddress("340 Main St")
+                        .setRegion("CA")
+                        .setLocality("Los Angeles")
+                        .setPostalCode("90291")
+                        .setCountryCode("US")
+                        .setPhoneNumber("650-253-0000")
+                        .setLanguageCode("en-US")
+                        .build());
         mPaymentRequestTestRule.addPaymentAppFactory(
                 AppPresence.HAVE_APPS, FactorySpeed.FAST_FACTORY);
     }
@@ -106,8 +106,18 @@ public class PaymentRequestFreeShippingTest {
         mRenderTestRule.render(mPaymentRequestTestRule.getPaymentRequestView(), "free_shipping");
         mPaymentRequestTestRule.clickAndWait(
                 R.id.button_primary, mPaymentRequestTestRule.getDismissed());
-        mPaymentRequestTestRule.expectResultContains(new String[] {"Jon Doe", "Google",
-                "340 Main St", "CA", "Los Angeles", "90291", "US", "en", "freeShippingOption"});
+        mPaymentRequestTestRule.expectResultContains(
+                new String[] {
+                    "Jon Doe",
+                    "Google",
+                    "340 Main St",
+                    "CA",
+                    "Los Angeles",
+                    "90291",
+                    "US",
+                    "en",
+                    "freeShippingOption"
+                });
     }
 
     /** Attempt to add an invalid address and cancel the transaction. */
@@ -145,15 +155,30 @@ public class PaymentRequestFreeShippingTest {
         mPaymentRequestTestRule.clickInShippingAddressAndWait(
                 R.id.payments_add_option_button, mPaymentRequestTestRule.getReadyToEdit());
         mPaymentRequestTestRule.setTextInEditorAndWait(
-                new String[] {"Bob", "Google", "1600 Amphitheatre Pkwy", "Mountain View", "CA",
-                        "94043", "650-253-0000"},
+                new String[] {
+                    "Bob",
+                    "Google",
+                    "1600 Amphitheatre Pkwy",
+                    "Mountain View",
+                    "CA",
+                    "94043",
+                    "650-253-0000"
+                },
                 mPaymentRequestTestRule.getEditorTextUpdate());
         mPaymentRequestTestRule.clickInEditorAndWait(
                 R.id.editor_dialog_done_button, mPaymentRequestTestRule.getReadyToPay());
         mPaymentRequestTestRule.clickAndWait(
                 R.id.button_primary, mPaymentRequestTestRule.getDismissed());
-        mPaymentRequestTestRule.expectResultContains(new String[] {"Bob", "Google",
-                "1600 Amphitheatre Pkwy", "Mountain View", "CA", "94043", "+16502530000"});
+        mPaymentRequestTestRule.expectResultContains(
+                new String[] {
+                    "Bob",
+                    "Google",
+                    "1600 Amphitheatre Pkwy",
+                    "Mountain View",
+                    "CA",
+                    "94043",
+                    "+16502530000"
+                });
     }
 
     /** Change the country in the spinner, add a valid address, and complete the transaction. */
@@ -172,14 +197,17 @@ public class PaymentRequestFreeShippingTest {
                 0 /* Afghanistan */, mPaymentRequestTestRule.getEditorTextUpdate());
         mPaymentRequestTestRule.setTextInEditorAndWait(
                 new String[] {
-                        "Alice", "Supreme Court", "Airport Road", "Kabul", "1043", "020-253-0000"},
+                    "Alice", "Supreme Court", "Airport Road", "Kabul", "1043", "020-253-0000"
+                },
                 mPaymentRequestTestRule.getEditorTextUpdate());
         mPaymentRequestTestRule.clickInEditorAndWait(
                 R.id.editor_dialog_done_button, mPaymentRequestTestRule.getReadyToPay());
         mPaymentRequestTestRule.clickAndWait(
                 R.id.button_primary, mPaymentRequestTestRule.getDismissed());
-        mPaymentRequestTestRule.expectResultContains(new String[] {
-                "Alice", "Supreme Court", "Airport Road", "Kabul", "1043", "+93202530000"});
+        mPaymentRequestTestRule.expectResultContains(
+                new String[] {
+                    "Alice", "Supreme Court", "Airport Road", "Kabul", "1043", "+93202530000"
+                });
     }
 
     /** Quickly pressing on "add address" and then [X] should not crash. */
@@ -195,16 +223,19 @@ public class PaymentRequestFreeShippingTest {
 
         // Quickly press on "add address" and then [X].
         int callCount = mPaymentRequestTestRule.getReadyToEdit().getCallCount();
-        TestThreadUtils.runOnUiThreadBlocking(() -> {
-            mPaymentRequestTestRule.getPaymentRequestUI()
-                    .getShippingAddressSectionForTest()
-                    .findViewById(R.id.payments_add_option_button)
-                    .performClick();
-            mPaymentRequestTestRule.getPaymentRequestUI()
-                    .getDialogForTest()
-                    .findViewById(R.id.close_button)
-                    .performClick();
-        });
+        TestThreadUtils.runOnUiThreadBlocking(
+                () -> {
+                    mPaymentRequestTestRule
+                            .getPaymentRequestUI()
+                            .getShippingAddressSectionForTest()
+                            .findViewById(R.id.payments_add_option_button)
+                            .performClick();
+                    mPaymentRequestTestRule
+                            .getPaymentRequestUI()
+                            .getDialogForTest()
+                            .findViewById(R.id.close_button)
+                            .performClick();
+                });
         mPaymentRequestTestRule.getReadyToEdit().waitForCallback(callCount);
 
         mPaymentRequestTestRule.clickInEditorAndWait(
@@ -228,16 +259,19 @@ public class PaymentRequestFreeShippingTest {
 
         // Quickly press on [X] and then "add address."
         int callCount = mPaymentRequestTestRule.getDismissed().getCallCount();
-        TestThreadUtils.runOnUiThreadBlocking(() -> {
-            mPaymentRequestTestRule.getPaymentRequestUI()
-                    .getDialogForTest()
-                    .findViewById(R.id.close_button)
-                    .performClick();
-            mPaymentRequestTestRule.getPaymentRequestUI()
-                    .getShippingAddressSectionForTest()
-                    .findViewById(R.id.payments_add_option_button)
-                    .performClick();
-        });
+        TestThreadUtils.runOnUiThreadBlocking(
+                () -> {
+                    mPaymentRequestTestRule
+                            .getPaymentRequestUI()
+                            .getDialogForTest()
+                            .findViewById(R.id.close_button)
+                            .performClick();
+                    mPaymentRequestTestRule
+                            .getPaymentRequestUI()
+                            .getShippingAddressSectionForTest()
+                            .findViewById(R.id.payments_add_option_button)
+                            .performClick();
+                });
         mPaymentRequestTestRule.getDismissed().waitForCallback(callCount);
 
         mPaymentRequestTestRule.expectResultContains(
@@ -257,16 +291,19 @@ public class PaymentRequestFreeShippingTest {
 
         // Quickly press on "add address" and then "cancel."
         int callCount = mPaymentRequestTestRule.getReadyToEdit().getCallCount();
-        TestThreadUtils.runOnUiThreadBlocking(() -> {
-            mPaymentRequestTestRule.getPaymentRequestUI()
-                    .getShippingAddressSectionForTest()
-                    .findViewById(R.id.payments_add_option_button)
-                    .performClick();
-            mPaymentRequestTestRule.getPaymentRequestUI()
-                    .getDialogForTest()
-                    .findViewById(R.id.button_secondary)
-                    .performClick();
-        });
+        TestThreadUtils.runOnUiThreadBlocking(
+                () -> {
+                    mPaymentRequestTestRule
+                            .getPaymentRequestUI()
+                            .getShippingAddressSectionForTest()
+                            .findViewById(R.id.payments_add_option_button)
+                            .performClick();
+                    mPaymentRequestTestRule
+                            .getPaymentRequestUI()
+                            .getDialogForTest()
+                            .findViewById(R.id.button_secondary)
+                            .performClick();
+                });
         mPaymentRequestTestRule.getReadyToEdit().waitForCallback(callCount);
 
         mPaymentRequestTestRule.clickInEditorAndWait(
@@ -290,16 +327,19 @@ public class PaymentRequestFreeShippingTest {
 
         // Quickly press on "cancel" and then "add address."
         int callCount = mPaymentRequestTestRule.getDismissed().getCallCount();
-        TestThreadUtils.runOnUiThreadBlocking(() -> {
-            mPaymentRequestTestRule.getPaymentRequestUI()
-                    .getDialogForTest()
-                    .findViewById(R.id.button_secondary)
-                    .performClick();
-            mPaymentRequestTestRule.getPaymentRequestUI()
-                    .getShippingAddressSectionForTest()
-                    .findViewById(R.id.payments_add_option_button)
-                    .performClick();
-        });
+        TestThreadUtils.runOnUiThreadBlocking(
+                () -> {
+                    mPaymentRequestTestRule
+                            .getPaymentRequestUI()
+                            .getDialogForTest()
+                            .findViewById(R.id.button_secondary)
+                            .performClick();
+                    mPaymentRequestTestRule
+                            .getPaymentRequestUI()
+                            .getShippingAddressSectionForTest()
+                            .findViewById(R.id.payments_add_option_button)
+                            .performClick();
+                });
         mPaymentRequestTestRule.getDismissed().waitForCallback(callCount);
 
         mPaymentRequestTestRule.expectResultContains(
@@ -323,10 +363,16 @@ public class PaymentRequestFreeShippingTest {
         mPaymentRequestTestRule.expectResultContains(
                 new String[] {"User closed the Payment Request UI."});
 
-        int expectedSample = Event.SHOWN | Event.USER_ABORTED | Event.HAD_INITIAL_FORM_OF_PAYMENT
-                | Event.HAD_NECESSARY_COMPLETE_SUGGESTIONS | Event.REQUEST_SHIPPING
-                | Event.REQUEST_METHOD_OTHER | Event.AVAILABLE_METHOD_OTHER;
-        Assert.assertEquals(1,
+        int expectedSample =
+                Event.SHOWN
+                        | Event.USER_ABORTED
+                        | Event.HAD_INITIAL_FORM_OF_PAYMENT
+                        | Event.HAD_NECESSARY_COMPLETE_SUGGESTIONS
+                        | Event.REQUEST_SHIPPING
+                        | Event.REQUEST_METHOD_OTHER
+                        | Event.AVAILABLE_METHOD_OTHER;
+        Assert.assertEquals(
+                1,
                 RecordHistogram.getHistogramValueCountForTesting(
                         "PaymentRequest.Events", expectedSample));
     }

@@ -28,9 +28,7 @@ import java.util.Arrays;
 import java.util.List;
 import java.util.concurrent.TimeoutException;
 
-/**
- * Integration tests for browsing data deletion.
- */
+/** Integration tests for browsing data deletion. */
 @RunWith(ChromeJUnit4ClassRunner.class)
 @CommandLineFlags.Add({ChromeSwitches.DISABLE_FIRST_RUN_EXPERIENCE})
 @Batch(Batch.PER_CLASS)
@@ -47,6 +45,7 @@ public class BrowsingDataTest {
     @Rule
     public BlankCTATabInitialStateRule mBlankCTATabInitialStateRule =
             new BlankCTATabInitialStateRule(sActivityTestRule, false);
+
     @Before
     public void setUp() throws Exception {
         mTestServer = sActivityTestRule.getTestServer();
@@ -55,10 +54,12 @@ public class BrowsingDataTest {
 
     private void clearBrowsingData(int dataType, int timePeriod) throws TimeoutException {
         CallbackHelper helper = new CallbackHelper();
-        TestThreadUtils.runOnUiThreadBlocking(() -> {
-            BrowsingDataBridge.getInstance().clearBrowsingData(
-                    helper::notifyCalled, new int[] {dataType}, timePeriod);
-        });
+        TestThreadUtils.runOnUiThreadBlocking(
+                () -> {
+                    BrowsingDataBridge.getInstance()
+                            .clearBrowsingData(
+                                    helper::notifyCalled, new int[] {dataType}, timePeriod);
+                });
         helper.waitForCallback(0);
     }
 
@@ -66,15 +67,20 @@ public class BrowsingDataTest {
         String[] out = {""};
         BrowsingDataCounterBridge[] counter = {null};
         CallbackHelper helper = new CallbackHelper();
-        BrowsingDataCounterBridge.BrowsingDataCounterCallback callback = (result) -> {
-            if (result.equals("Calculating…")) return;
-            out[0] = result;
-            helper.notifyCalled();
-        };
-        TestThreadUtils.runOnUiThreadBlocking(() -> {
-            counter[0] = new BrowsingDataCounterBridge(
-                    callback, BrowsingDataType.COOKIES, ClearBrowsingDataTab.ADVANCED);
-        });
+        BrowsingDataCounterBridge.BrowsingDataCounterCallback callback =
+                (result) -> {
+                    if (result.equals("Calculating…")) return;
+                    out[0] = result;
+                    helper.notifyCalled();
+                };
+        TestThreadUtils.runOnUiThreadBlocking(
+                () -> {
+                    counter[0] =
+                            new BrowsingDataCounterBridge(
+                                    callback,
+                                    BrowsingDataType.COOKIES,
+                                    ClearBrowsingDataTab.ADVANCED);
+                });
         helper.waitForCallback(0);
         // The counter returns a result like "3 sites" or "None".
         if (out[0].equals("None")) return 0;
@@ -93,9 +99,7 @@ public class BrowsingDataTest {
                 sActivityTestRule.getWebContents(), type);
     }
 
-    /**
-     * Test cookies deletion.
-     */
+    /** Test cookies deletion. */
     @Test
     @SmallTest
     public void testCookiesDeleted() throws Exception {
@@ -112,15 +116,18 @@ public class BrowsingDataTest {
         Assert.assertEquals(0, getCookieCount());
     }
 
-    /**
-     * Test site data deletion.
-     */
+    /** Test site data deletion. */
     @Test
     @SmallTest
     public void testSiteDataDeleted() throws Exception {
         // TODO(dullweber): Investigate, why WebSql fails this test.
-        List<String> siteData = Arrays.asList("LocalStorage", "ServiceWorker", "CacheStorage",
-                "FileSystem", "IndexedDb" /*, "WebSql"*/);
+        List<String> siteData =
+                Arrays.asList(
+                        "LocalStorage",
+                        "ServiceWorker",
+                        "CacheStorage",
+                        "FileSystem",
+                        "IndexedDb" /*, "WebSql"*/);
         sActivityTestRule.loadUrl(mUrl);
 
         for (String type : siteData) {
@@ -150,20 +157,24 @@ public class BrowsingDataTest {
         // TODO(roagarwal) : Crashes on BrowsingDataType.SITE_SETTINGS, BrowsingDataType.BOOKMARKS
         // data types.
         CallbackHelper helper = new CallbackHelper();
-        TestThreadUtils.runOnUiThreadBlocking(() -> {
-            BrowsingDataBridge.getInstance().clearBrowsingDataIncognitoForTesting(
-                    helper::notifyCalled,
-                    new int[] {BrowsingDataType.HISTORY, BrowsingDataType.CACHE,
-                            BrowsingDataType.COOKIES, BrowsingDataType.PASSWORDS,
-                            BrowsingDataType.FORM_DATA},
-                    TimePeriod.LAST_HOUR);
-        });
+        TestThreadUtils.runOnUiThreadBlocking(
+                () -> {
+                    BrowsingDataBridge.getInstance()
+                            .clearBrowsingDataIncognitoForTesting(
+                                    helper::notifyCalled,
+                                    new int[] {
+                                        BrowsingDataType.HISTORY,
+                                        BrowsingDataType.CACHE,
+                                        BrowsingDataType.COOKIES,
+                                        BrowsingDataType.PASSWORDS,
+                                        BrowsingDataType.FORM_DATA
+                                    },
+                                    TimePeriod.LAST_HOUR);
+                });
         helper.waitForCallback(0);
     }
 
-    /**
-     * Test history deletion.
-     */
+    /** Test history deletion. */
     @Test
     @SmallTest
     public void testHistoryDeleted() throws Exception {

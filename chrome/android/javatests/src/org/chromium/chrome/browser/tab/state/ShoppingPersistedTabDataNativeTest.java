@@ -26,25 +26,25 @@ import java.util.Arrays;
 import java.util.concurrent.Semaphore;
 import java.util.concurrent.TimeoutException;
 
-/**
- * Test relating to {@link ShoppingPersistedTabData} where native is not mocked.
- */
+/** Test relating to {@link ShoppingPersistedTabData} where native is not mocked. */
 @RunWith(BaseJUnit4ClassRunner.class)
 @EnableFeatures({ChromeFeatureList.COMMERCE_PRICE_TRACKING + "<Study"})
-@CommandLineFlags.
-Add({ChromeSwitches.DISABLE_FIRST_RUN_EXPERIENCE, "force-fieldtrials=Study/Group"})
+@CommandLineFlags.Add({
+    ChromeSwitches.DISABLE_FIRST_RUN_EXPERIENCE,
+    "force-fieldtrials=Study/Group"
+})
 public class ShoppingPersistedTabDataNativeTest {
-    @Rule
-    public final ChromeBrowserTestRule mBrowserTestRule = new ChromeBrowserTestRule();
+    @Rule public final ChromeBrowserTestRule mBrowserTestRule = new ChromeBrowserTestRule();
 
-    @Rule
-    public TestRule mProcessor = new Features.InstrumentationProcessor();
+    @Rule public TestRule mProcessor = new Features.InstrumentationProcessor();
 
     @SmallTest
     @Test
     public void testMaintenance() throws TimeoutException {
         TestThreadUtils.runOnUiThreadBlocking(
-                () -> { ShoppingPersistedTabData.onDeferredStartup(); });
+                () -> {
+                    ShoppingPersistedTabData.onDeferredStartup();
+                });
         final Tab tab0 = ShoppingPersistedTabDataTestUtils.createTabOnUiThread(0, false);
         final Tab tab1 = ShoppingPersistedTabDataTestUtils.createTabOnUiThread(1, false);
         final Tab tab2 = ShoppingPersistedTabDataTestUtils.createTabOnUiThread(2, false);
@@ -65,18 +65,22 @@ public class ShoppingPersistedTabDataNativeTest {
         verifySPTD(tab1, false);
         verifySPTD(tab2, true);
     }
+
     private static void verifySPTD(final Tab tab, final boolean expectedExists) {
         final Semaphore semaphore = new Semaphore(0);
-        TestThreadUtils.runOnUiThreadBlocking(() -> {
-            ShoppingPersistedTabData.from(tab, (res) -> {
-                if (expectedExists) {
-                    Assert.assertNotNull(res);
-                } else {
-                    Assert.assertNull(res.getPriceDrop());
-                }
-                semaphore.release();
-            });
-        });
+        TestThreadUtils.runOnUiThreadBlocking(
+                () -> {
+                    ShoppingPersistedTabData.from(
+                            tab,
+                            (res) -> {
+                                if (expectedExists) {
+                                    Assert.assertNotNull(res);
+                                } else {
+                                    Assert.assertNull(res.getPriceDrop());
+                                }
+                                semaphore.release();
+                            });
+                });
         ShoppingPersistedTabDataTestUtils.acquireSemaphore(semaphore);
     }
 }

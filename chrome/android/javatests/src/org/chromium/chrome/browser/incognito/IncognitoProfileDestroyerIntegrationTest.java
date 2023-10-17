@@ -35,32 +35,30 @@ import org.chromium.content_public.browser.test.util.TestThreadUtils;
 
 import java.util.concurrent.ExecutionException;
 
-/**
- * Integration tests for {@link IncognitoProfileDestroyer}.
- */
+/** Integration tests for {@link IncognitoProfileDestroyer}. */
 @RunWith(ChromeJUnit4ClassRunner.class)
 @CommandLineFlags.Add({ChromeSwitches.DISABLE_FIRST_RUN_EXPERIENCE})
 public class IncognitoProfileDestroyerIntegrationTest {
     @Rule
     public ChromeTabbedActivityTestRule mActivityTestRule = new ChromeTabbedActivityTestRule();
+
     private TabModel mIncognitoTabModel;
 
-    @Mock
-    ProfileManager.Observer mMockProfileManagerObserver;
+    @Mock ProfileManager.Observer mMockProfileManagerObserver;
 
-    @Mock
-    AutocompleteController mAutocompleteController;
+    @Mock AutocompleteController mAutocompleteController;
 
     @Before
     public void setUp() throws InterruptedException {
         MockitoAnnotations.initMocks(this);
         AutocompleteControllerProvider.setControllerForTesting(mAutocompleteController);
         mActivityTestRule.startMainActivityOnBlankPage();
-        TestThreadUtils.runOnUiThreadBlocking(() -> {
-            ProfileManager.addObserver(mMockProfileManagerObserver);
-            mIncognitoTabModel =
-                    mActivityTestRule.getActivity().getTabModelSelector().getModel(true);
-        });
+        TestThreadUtils.runOnUiThreadBlocking(
+                () -> {
+                    ProfileManager.addObserver(mMockProfileManagerObserver);
+                    mIncognitoTabModel =
+                            mActivityTestRule.getActivity().getTabModelSelector().getModel(true);
+                });
     }
 
     @Test

@@ -27,9 +27,7 @@ import org.chromium.content_public.browser.test.util.TestThreadUtils;
 
 import java.util.concurrent.TimeoutException;
 
-/**
- * A payment integration test for a merchant that does not require shipping address.
- */
+/** A payment integration test for a merchant that does not require shipping address. */
 @RunWith(ChromeJUnit4ClassRunner.class)
 @CommandLineFlags.Add({ChromeSwitches.DISABLE_FIRST_RUN_EXPERIENCE})
 public class PaymentRequestNoShippingTest {
@@ -40,18 +38,19 @@ public class PaymentRequestNoShippingTest {
     @Before
     public void setUp() throws TimeoutException {
         AutofillTestHelper helper = new AutofillTestHelper();
-        helper.setProfile(AutofillProfile.builder()
-                                  .setFullName("Jon Doe")
-                                  .setCompanyName("Google")
-                                  .setStreetAddress("340 Main St")
-                                  .setRegion("CA")
-                                  .setLocality("Los Angeles")
-                                  .setPostalCode("90291")
-                                  .setCountryCode("US")
-                                  .setPhoneNumber("650-253-0000")
-                                  .setEmailAddress("jon.doe@gmail.com")
-                                  .setLanguageCode("en-US")
-                                  .build());
+        helper.setProfile(
+                AutofillProfile.builder()
+                        .setFullName("Jon Doe")
+                        .setCompanyName("Google")
+                        .setStreetAddress("340 Main St")
+                        .setRegion("CA")
+                        .setLocality("Los Angeles")
+                        .setPostalCode("90291")
+                        .setCountryCode("US")
+                        .setPhoneNumber("650-253-0000")
+                        .setEmailAddress("jon.doe@gmail.com")
+                        .setLanguageCode("en-US")
+                        .build());
 
         // This test uses two payment apps, so that the PaymentRequest UI is shown rather than
         // skipped.
@@ -72,7 +71,8 @@ public class PaymentRequestNoShippingTest {
                 mPaymentRequestTestRule.getReadyToPay());
         mPaymentRequestTestRule.clickAndWait(
                 R.id.close_button, mPaymentRequestTestRule.getDismissed());
-        Assert.assertEquals("\"User closed the Payment Request UI.\"",
+        Assert.assertEquals(
+                "\"User closed the Payment Request UI.\"",
                 mPaymentRequestTestRule.runJavaScriptAndWaitForPromise("getResult()"));
     }
 
@@ -90,7 +90,8 @@ public class PaymentRequestNoShippingTest {
                 R.id.button_secondary, mPaymentRequestTestRule.getReadyForInput());
         mPaymentRequestTestRule.clickAndWait(
                 R.id.close_button, mPaymentRequestTestRule.getDismissed());
-        Assert.assertEquals("\"User closed the Payment Request UI.\"",
+        Assert.assertEquals(
+                "\"User closed the Payment Request UI.\"",
                 mPaymentRequestTestRule.runJavaScriptAndWaitForPromise("getResult()"));
     }
 
@@ -108,7 +109,8 @@ public class PaymentRequestNoShippingTest {
                 R.id.button_secondary, mPaymentRequestTestRule.getReadyForInput());
         mPaymentRequestTestRule.clickAndWait(
                 R.id.button_secondary, mPaymentRequestTestRule.getDismissed());
-        Assert.assertEquals("\"User closed the Payment Request UI.\"",
+        Assert.assertEquals(
+                "\"User closed the Payment Request UI.\"",
                 mPaymentRequestTestRule.runJavaScriptAndWaitForPromise("getResult()"));
     }
 
@@ -127,13 +129,18 @@ public class PaymentRequestNoShippingTest {
 
         // Quickly dismiss and then press on "Continue"
         int callCount = mPaymentRequestTestRule.getDismissed().getCallCount();
-        TestThreadUtils.runOnUiThreadBlocking(() -> {
-            mPaymentRequestTestRule.getPaymentRequestUI().getDialogForTest().onBackPressed();
-            mPaymentRequestTestRule.getPaymentRequestUI()
-                    .getDialogForTest()
-                    .findViewById(R.id.button_primary)
-                    .performClick();
-        });
+        TestThreadUtils.runOnUiThreadBlocking(
+                () -> {
+                    mPaymentRequestTestRule
+                            .getPaymentRequestUI()
+                            .getDialogForTest()
+                            .onBackPressed();
+                    mPaymentRequestTestRule
+                            .getPaymentRequestUI()
+                            .getDialogForTest()
+                            .findViewById(R.id.button_primary)
+                            .performClick();
+                });
         mPaymentRequestTestRule.getDismissed().waitForCallback(callCount);
 
         // Currently, the above calls for the back button and pay button result in the
@@ -143,7 +150,8 @@ public class PaymentRequestNoShippingTest {
         // PaymentRequest state - including setting the must-call-complete timer to failed.
         //
         // TODO(crbug.com/1375286): Avoid ending up in this state.
-        Assert.assertEquals("\"Failed to execute 'complete' on 'PaymentResponse': "
+        Assert.assertEquals(
+                "\"Failed to execute 'complete' on 'PaymentResponse': "
                         + "Timed out after 60 seconds, complete() called too late\"",
                 mPaymentRequestTestRule.runJavaScriptAndWaitForPromise("getResult()"));
     }
@@ -163,16 +171,22 @@ public class PaymentRequestNoShippingTest {
 
         // Quickly dismiss and then press on [X].
         int callCount = mPaymentRequestTestRule.getDismissed().getCallCount();
-        TestThreadUtils.runOnUiThreadBlocking(() -> {
-            mPaymentRequestTestRule.getPaymentRequestUI().getDialogForTest().onBackPressed();
-            mPaymentRequestTestRule.getPaymentRequestUI()
-                    .getDialogForTest()
-                    .findViewById(R.id.close_button)
-                    .performClick();
-        });
+        TestThreadUtils.runOnUiThreadBlocking(
+                () -> {
+                    mPaymentRequestTestRule
+                            .getPaymentRequestUI()
+                            .getDialogForTest()
+                            .onBackPressed();
+                    mPaymentRequestTestRule
+                            .getPaymentRequestUI()
+                            .getDialogForTest()
+                            .findViewById(R.id.close_button)
+                            .performClick();
+                });
         mPaymentRequestTestRule.getDismissed().waitForCallback(callCount);
 
-        Assert.assertEquals("\"User closed the Payment Request UI.\"",
+        Assert.assertEquals(
+                "\"User closed the Payment Request UI.\"",
                 mPaymentRequestTestRule.runJavaScriptAndWaitForPromise("getResult()"));
     }
 
@@ -191,23 +205,28 @@ public class PaymentRequestNoShippingTest {
 
         // Quickly press on [X] and then dismiss.
         int callCount = mPaymentRequestTestRule.getDismissed().getCallCount();
-        TestThreadUtils.runOnUiThreadBlocking(() -> {
-            mPaymentRequestTestRule.getPaymentRequestUI()
-                    .getDialogForTest()
-                    .findViewById(R.id.close_button)
-                    .performClick();
-            mPaymentRequestTestRule.getPaymentRequestUI().getDialogForTest().onBackPressed();
-        });
+        TestThreadUtils.runOnUiThreadBlocking(
+                () -> {
+                    mPaymentRequestTestRule
+                            .getPaymentRequestUI()
+                            .getDialogForTest()
+                            .findViewById(R.id.close_button)
+                            .performClick();
+                    mPaymentRequestTestRule
+                            .getPaymentRequestUI()
+                            .getDialogForTest()
+                            .onBackPressed();
+                });
         mPaymentRequestTestRule.getDismissed().waitForCallback(callCount);
 
-        Assert.assertEquals("\"User closed the Payment Request UI.\"",
+        Assert.assertEquals(
+                "\"User closed the Payment Request UI.\"",
                 mPaymentRequestTestRule.runJavaScriptAndWaitForPromise("getResult()"));
     }
 
     /**
      * Test that ending a payment request that requires user information except for the payment
-     * results in the appropriate metric being logged in PaymentRequest.Events.
-     * histogram.
+     * results in the appropriate metric being logged in PaymentRequest.Events. histogram.
      */
     @Test
     @MediumTest
@@ -220,13 +239,19 @@ public class PaymentRequestNoShippingTest {
                 mPaymentRequestTestRule.getReadyToPay());
         mPaymentRequestTestRule.clickAndWait(
                 R.id.close_button, mPaymentRequestTestRule.getDismissed());
-        Assert.assertEquals("\"User closed the Payment Request UI.\"",
+        Assert.assertEquals(
+                "\"User closed the Payment Request UI.\"",
                 mPaymentRequestTestRule.runJavaScriptAndWaitForPromise("getResult()"));
 
-        int expectedSample = Event.SHOWN | Event.USER_ABORTED | Event.HAD_INITIAL_FORM_OF_PAYMENT
-                | Event.HAD_NECESSARY_COMPLETE_SUGGESTIONS | Event.REQUEST_METHOD_OTHER
-                | Event.AVAILABLE_METHOD_OTHER;
-        Assert.assertEquals(1,
+        int expectedSample =
+                Event.SHOWN
+                        | Event.USER_ABORTED
+                        | Event.HAD_INITIAL_FORM_OF_PAYMENT
+                        | Event.HAD_NECESSARY_COMPLETE_SUGGESTIONS
+                        | Event.REQUEST_METHOD_OTHER
+                        | Event.AVAILABLE_METHOD_OTHER;
+        Assert.assertEquals(
+                1,
                 RecordHistogram.getHistogramValueCountForTesting(
                         "PaymentRequest.Events", expectedSample));
     }

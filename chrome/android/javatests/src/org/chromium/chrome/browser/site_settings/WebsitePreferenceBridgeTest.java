@@ -32,41 +32,49 @@ import org.chromium.url.GURL;
 
 import java.util.concurrent.TimeoutException;
 
-/**
- * Tests for WebsitePreferenceBridgeTest.
- */
+/** Tests for WebsitePreferenceBridgeTest. */
 @RunWith(ChromeJUnit4ClassRunner.class)
 @CommandLineFlags.Add({ChromeSwitches.DISABLE_FIRST_RUN_EXPERIENCE})
 @Batch(Batch.PER_CLASS)
 public class WebsitePreferenceBridgeTest {
-    @Rule
-    public final ChromeBrowserTestRule mBrowserTestRule = new ChromeBrowserTestRule();
+    @Rule public final ChromeBrowserTestRule mBrowserTestRule = new ChromeBrowserTestRule();
 
     @After
     public void tearDown() throws TimeoutException {
         // Clean up content settings.
         CallbackHelper helper = new CallbackHelper();
-        TestThreadUtils.runOnUiThreadBlocking(() -> {
-            BrowsingDataBridge.getInstance().clearBrowsingData(helper::notifyCalled,
-                    new int[] {BrowsingDataType.SITE_SETTINGS}, TimePeriod.ALL_TIME);
-        });
+        TestThreadUtils.runOnUiThreadBlocking(
+                () -> {
+                    BrowsingDataBridge.getInstance()
+                            .clearBrowsingData(
+                                    helper::notifyCalled,
+                                    new int[] {BrowsingDataType.SITE_SETTINGS},
+                                    TimePeriod.ALL_TIME);
+                });
         helper.waitForCallback(0);
     }
 
     @Test
     @SmallTest
     public void testModifyContentSettings() {
-        TestThreadUtils.runOnUiThreadBlocking(() -> {
-            BrowserContextHandle browserContext = Profile.getLastUsedRegularProfile();
-            GURL url = new GURL("https://example.com");
-            assertEquals(ContentSettingValues.ALLOW,
-                    WebsitePreferenceBridge.getContentSetting(
-                            browserContext, ContentSettingsType.JAVASCRIPT, url, url));
-            WebsitePreferenceBridge.setContentSettingDefaultScope(browserContext,
-                    ContentSettingsType.JAVASCRIPT, url, url, ContentSettingValues.BLOCK);
-            assertEquals(ContentSettingValues.BLOCK,
-                    WebsitePreferenceBridge.getContentSetting(
-                            browserContext, ContentSettingsType.JAVASCRIPT, url, url));
-        });
+        TestThreadUtils.runOnUiThreadBlocking(
+                () -> {
+                    BrowserContextHandle browserContext = Profile.getLastUsedRegularProfile();
+                    GURL url = new GURL("https://example.com");
+                    assertEquals(
+                            ContentSettingValues.ALLOW,
+                            WebsitePreferenceBridge.getContentSetting(
+                                    browserContext, ContentSettingsType.JAVASCRIPT, url, url));
+                    WebsitePreferenceBridge.setContentSettingDefaultScope(
+                            browserContext,
+                            ContentSettingsType.JAVASCRIPT,
+                            url,
+                            url,
+                            ContentSettingValues.BLOCK);
+                    assertEquals(
+                            ContentSettingValues.BLOCK,
+                            WebsitePreferenceBridge.getContentSetting(
+                                    browserContext, ContentSettingsType.JAVASCRIPT, url, url));
+                });
     }
 }

@@ -18,13 +18,12 @@ import java.lang.annotation.RetentionPolicy;
 import java.util.concurrent.TimeUnit;
 
 /**
- * Wrapper for the ControllerTestApi class to handle more complex actions such
- * as clicking and dragging.
+ * Wrapper for the ControllerTestApi class to handle more complex actions such as clicking and
+ * dragging.
  *
- * Requires that VrCore's settings file is modified to use the test API:
- *   - UseAutomatedController: true
- *   - PairedControllerDriver: "DRIVER_AUTOMATED"
- *   - PairedControllerAddress: "FOO"
+ * <p>Requires that VrCore's settings file is modified to use the test API: -
+ * UseAutomatedController: true - PairedControllerDriver: "DRIVER_AUTOMATED" -
+ * PairedControllerAddress: "FOO"
  */
 public class EmulatedGvrController {
     @IntDef({ScrollDirection.UP, ScrollDirection.DOWN, ScrollDirection.LEFT, ScrollDirection.RIGHT})
@@ -60,16 +59,14 @@ public class EmulatedGvrController {
     }
 
     /**
-     * Resets the flag used to keep track of whether we have sent input since entering VR. Should
-     * be called anytime the emulated controller is used and a test re-enters VR.
+     * Resets the flag used to keep track of whether we have sent input since entering VR. Should be
+     * called anytime the emulated controller is used and a test re-enters VR.
      */
     public void resetFirstInputFlag() {
         mHaveSentInputSinceEnteringVr = false;
     }
 
-    /**
-     * Touch and release the touchpad to perform a controller click.
-     */
+    /** Touch and release the touchpad to perform a controller click. */
     public void performControllerClick() {
         // pressReleaseTouchpadButton() appears to be flaky for clicking on things, as sometimes
         // it happens too fast for Chrome to register. So, manually press and release with a delay
@@ -79,16 +76,16 @@ public class EmulatedGvrController {
     }
 
     /**
-     * Either presses or releases the Daydream controller's touchpad button depending on whether
-     * the button is currently pressed or not.
+     * Either presses or releases the Daydream controller's touchpad button depending on whether the
+     * button is currently pressed or not.
      */
     public void sendClickButtonToggleEvent() {
         getApi().buttonEvent.sendClickButtonToggleEvent();
     }
 
     /**
-     * Presses and quickly releases the Daydream controller's touchpad button.
-     * Or, if the button is already pressed, releases and quickly presses again.
+     * Presses and quickly releases the Daydream controller's touchpad button. Or, if the button is
+     * already pressed, releases and quickly presses again.
      */
     public void pressReleaseTouchpadButton() {
         getApi().buttonEvent.sendClickButtonEvent();
@@ -103,16 +100,16 @@ public class EmulatedGvrController {
     }
 
     /**
-     * Presses and quickly releases the Daydream controller's app button.
-     * Or, if the button is already pressed, releases and quickly presses again.
+     * Presses and quickly releases the Daydream controller's app button. Or, if the button is
+     * already pressed, releases and quickly presses again.
      */
     public void pressReleaseAppButton() {
         getApi().buttonEvent.sendAppButtonEvent();
     }
 
     /**
-     * Holds the home button to recenter the view using an arbitrary, but valid
-     * orientation quaternion.
+     * Holds the home button to recenter the view using an arbitrary, but valid orientation
+     * quaternion.
      */
     public void recenterView() {
         getApi().buttonEvent.sendHomeButtonToggleEvent();
@@ -122,24 +119,21 @@ public class EmulatedGvrController {
         getApi().buttonEvent.sendHomeButtonToggleEvent();
     }
 
-    /**
-     * Performs a short home button press/release, which launches the Daydream Home app.
-     */
+    /** Performs a short home button press/release, which launches the Daydream Home app. */
     public void goToDaydreamHome() {
         getApi().buttonEvent.sendShortHomeButtonEvent();
     }
 
     /**
-     * Performs an swipe on the touchpad in order to scroll in the specified
-     * direction while in the VR browser.
-     * Note that scrolling this way is not consistent, i.e. scrolling down then
-     * scrolling up at the same speed won't necessarily scroll back to the exact
-     * starting position on the page.
+     * Performs an swipe on the touchpad in order to scroll in the specified direction while in the
+     * VR browser. Note that scrolling this way is not consistent, i.e. scrolling down then
+     * scrolling up at the same speed won't necessarily scroll back to the exact starting position
+     * on the page.
      *
      * @param direction the ScrollDirection to scroll with.
      * @param steps the number of intermediate steps to send while scrolling.
-     * @param speed how long to wait between steps in the scroll, with higher
-     *        numbers resulting in a faster scroll.
+     * @param speed how long to wait between steps in the scroll, with higher numbers resulting in a
+     *     faster scroll.
      */
     public void scroll(@ScrollDirection int direction, int steps, int speed) {
         float startX;
@@ -170,9 +164,7 @@ public class EmulatedGvrController {
         performLinearTouchpadMovement(startX, startY, endX, endY, steps, speed);
     }
 
-    /**
-     * Touches then releases the touchpad to cancel fling scroll.
-     */
+    /** Touches then releases the touchpad to cancel fling scroll. */
     public void cancelFlingScroll() {
         // Arbitrary amount of delay to both ensure that the touchpad press is properly registered
         // and long enough that we don't accidentally trigger any functionality bound to quick
@@ -191,9 +183,9 @@ public class EmulatedGvrController {
      * @param xEnd the x coordinate to end the touch sequence at, in range [0.0f, 1.0f].
      * @param yEnd the y coordinate to end the touch sequence at, in range [0.0f, 1.0f].
      * @param steps the number of steps the drag will have.
-     * @param speed how long to wait between steps in the sequence. Generally, higher numbers
-     *        result in faster movement, e.g. when used for scrolling, a higher number results in
-     *        faster scrolling.
+     * @param speed how long to wait between steps in the sequence. Generally, higher numbers result
+     *     in faster movement, e.g. when used for scrolling, a higher number results in faster
+     *     scrolling.
      */
     public void performLinearTouchpadMovement(
             float xStart, float yStart, float xEnd, float yEnd, int steps, int speed) {
@@ -202,8 +194,9 @@ public class EmulatedGvrController {
         // between sending events, which is determined by the given speed.
         long simulatedDelay = TimeUnit.MILLISECONDS.toNanos(speed);
         long timestamp = mApi.touchEvent.startTouchSequence(xStart, yStart, simulatedDelay, speed);
-        timestamp = mApi.touchEvent.dragFromTo(
-                xStart, yStart, xEnd, yEnd, steps, timestamp, simulatedDelay, speed);
+        timestamp =
+                mApi.touchEvent.dragFromTo(
+                        xStart, yStart, xEnd, yEnd, steps, timestamp, simulatedDelay, speed);
         getApi().touchEvent.endTouchSequence(xEnd, yEnd, timestamp, simulatedDelay, speed);
     }
 
@@ -240,8 +233,12 @@ public class EmulatedGvrController {
         if (startAngles.length != 3 || endAngles.length != 3) {
             throw new IllegalArgumentException("Angle arrays must be length 3");
         }
-        getApi().moveEvent.sendMoveEvent(new float[] {startAngles[0], endAngles[0]},
-                new float[] {startAngles[1], endAngles[1]},
-                new float[] {startAngles[2], endAngles[2]}, steps, delayBetweenSteps);
+        getApi().moveEvent
+                .sendMoveEvent(
+                        new float[] {startAngles[0], endAngles[0]},
+                        new float[] {startAngles[1], endAngles[1]},
+                        new float[] {startAngles[2], endAngles[2]},
+                        steps,
+                        delayBetweenSteps);
     }
 }

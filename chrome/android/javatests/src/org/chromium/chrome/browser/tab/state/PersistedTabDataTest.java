@@ -32,23 +32,18 @@ import java.nio.ByteBuffer;
 import java.util.concurrent.ExecutionException;
 import java.util.concurrent.TimeoutException;
 
-/**
- * Test relating to {@link PersistedTabData}
- */
+/** Test relating to {@link PersistedTabData} */
 @RunWith(BaseJUnit4ClassRunner.class)
 @Batch(Batch.UNIT_TESTS)
 public class PersistedTabDataTest {
     private static final int INITIAL_VALUE = 42;
     private static final int CHANGED_VALUE = 51;
 
-    @Mock
-    ShoppingPersistedTabData mShoppingPersistedTabDataMock;
+    @Mock ShoppingPersistedTabData mShoppingPersistedTabDataMock;
 
-    @Mock
-    private PersistedTabData.Natives mPersistedTabDataJni;
+    @Mock private PersistedTabData.Natives mPersistedTabDataJni;
 
-    @Rule
-    public JniMocker jniMocker = new JniMocker();
+    @Rule public JniMocker jniMocker = new JniMocker();
 
     @Before
     public void setUp() throws Exception {
@@ -56,7 +51,10 @@ public class PersistedTabDataTest {
         // ShoppingPersistedTabData must be mocked on the ui thread, otherwise a thread assert will
         // fail. An ObserverList is created when creating the mock. The same ObserverList is used
         // later in the test.
-        ThreadUtils.runOnUiThreadBlocking(() -> { MockitoAnnotations.initMocks(this); });
+        ThreadUtils.runOnUiThreadBlocking(
+                () -> {
+                    MockitoAnnotations.initMocks(this);
+                });
         jniMocker.mock(PersistedTabDataJni.TEST_HOOKS, mPersistedTabDataJni);
     }
 
@@ -65,43 +63,57 @@ public class PersistedTabDataTest {
     public void testCacheCallbacks()
             throws InterruptedException, TimeoutException, ExecutionException {
         PersistedTabDataConfiguration.setUseTestConfig(true);
-        Tab tab = ThreadUtils.runOnUiThreadBlocking(() -> {
-            Tab t = MockTab.createAndInitialize(1, false);
-            return t;
-        });
-        MockPersistedTabData mockPersistedTabData = ThreadUtils.runOnUiThreadBlocking(() -> {
-            MockPersistedTabData mptd = new MockPersistedTabData(tab, INITIAL_VALUE);
-            registerObserverSupplier(mptd);
-            mptd.save();
-            return mptd;
-        });
+        Tab tab =
+                ThreadUtils.runOnUiThreadBlocking(
+                        () -> {
+                            Tab t = MockTab.createAndInitialize(1, false);
+                            return t;
+                        });
+        MockPersistedTabData mockPersistedTabData =
+                ThreadUtils.runOnUiThreadBlocking(
+                        () -> {
+                            MockPersistedTabData mptd =
+                                    new MockPersistedTabData(tab, INITIAL_VALUE);
+                            registerObserverSupplier(mptd);
+                            mptd.save();
+                            return mptd;
+                        });
 
         CallbackHelper helper = new CallbackHelper();
-        ThreadUtils.runOnUiThreadBlocking(() -> {
-            // 1
-            MockPersistedTabData.from(tab, (res) -> {
-                Assert.assertEquals(INITIAL_VALUE, res.getField());
-                registerObserverSupplier(
-                        tab.getUserDataHost().getUserData(MockPersistedTabData.class));
-                tab.getUserDataHost()
-                        .getUserData(MockPersistedTabData.class)
-                        .setField(CHANGED_VALUE);
-                // Caching callbacks means 2) shouldn't overwrite CHANGED_VALUE
-                // back to INITIAL_VALUE in the callback.
-                MockPersistedTabData.from(tab, (ares) -> {
-                    Assert.assertEquals(CHANGED_VALUE, ares.getField());
-                    helper.notifyCalled();
+        ThreadUtils.runOnUiThreadBlocking(
+                () -> {
+                    // 1
+                    MockPersistedTabData.from(
+                            tab,
+                            (res) -> {
+                                Assert.assertEquals(INITIAL_VALUE, res.getField());
+                                registerObserverSupplier(
+                                        tab.getUserDataHost()
+                                                .getUserData(MockPersistedTabData.class));
+                                tab.getUserDataHost()
+                                        .getUserData(MockPersistedTabData.class)
+                                        .setField(CHANGED_VALUE);
+                                // Caching callbacks means 2) shouldn't overwrite CHANGED_VALUE
+                                // back to INITIAL_VALUE in the callback.
+                                MockPersistedTabData.from(
+                                        tab,
+                                        (ares) -> {
+                                            Assert.assertEquals(CHANGED_VALUE, ares.getField());
+                                            helper.notifyCalled();
+                                        });
+                            });
                 });
-            });
-        });
-        ThreadUtils.runOnUiThreadBlocking(() -> {
-            // 2
-            MockPersistedTabData.from(tab, (res) -> {
-                Assert.assertEquals(CHANGED_VALUE, res.getField());
-                mockPersistedTabData.delete();
-                helper.notifyCalled();
-            });
-        });
+        ThreadUtils.runOnUiThreadBlocking(
+                () -> {
+                    // 2
+                    MockPersistedTabData.from(
+                            tab,
+                            (res) -> {
+                                Assert.assertEquals(CHANGED_VALUE, res.getField());
+                                mockPersistedTabData.delete();
+                                helper.notifyCalled();
+                            });
+                });
         helper.waitForCallback(0, 2);
         PersistedTabDataConfiguration.setUseTestConfig(false);
     }
@@ -132,13 +144,14 @@ public class PersistedTabDataTest {
     public void testSerializeSupplierUiBackgroundThread() throws TimeoutException {
         CallbackHelper helper = new CallbackHelper();
         int count = helper.getCallCount();
-        ThreadUtils.runOnUiThreadBlocking(() -> {
-            Tab tab = MockTab.createAndInitialize(1, false);
-            ThreadVerifierMockPersistedTabData threadVerifierMockPersistedTabData =
-                    new ThreadVerifierMockPersistedTabData(tab);
-            threadVerifierMockPersistedTabData.save();
-            helper.notifyCalled();
-        });
+        ThreadUtils.runOnUiThreadBlocking(
+                () -> {
+                    Tab tab = MockTab.createAndInitialize(1, false);
+                    ThreadVerifierMockPersistedTabData threadVerifierMockPersistedTabData =
+                            new ThreadVerifierMockPersistedTabData(tab);
+                    threadVerifierMockPersistedTabData.save();
+                    helper.notifyCalled();
+                });
         helper.waitForCallback(count);
     }
 
@@ -147,15 +160,18 @@ public class PersistedTabDataTest {
     @Test
     public void testOnTabClose() throws TimeoutException {
         TabImpl tab = MockTab.createAndInitialize(1, false);
-        tab.getUserDataHost().setUserData(
-                ShoppingPersistedTabData.class, mShoppingPersistedTabDataMock);
+        tab.getUserDataHost()
+                .setUserData(ShoppingPersistedTabData.class, mShoppingPersistedTabDataMock);
         PersistedTabData.onTabClose(tab);
         verify(mShoppingPersistedTabDataMock, times(1)).disableSaving();
     }
 
     static class ThreadVerifierMockPersistedTabData extends MockPersistedTabData {
         ThreadVerifierMockPersistedTabData(Tab tab) {
-            super(tab, 0 /** unused in ThreadVerifierMockPersistedTabData */);
+            super(
+                    tab, 0
+                    /** unused in ThreadVerifierMockPersistedTabData */
+                    );
         }
 
         @Override
@@ -175,8 +191,12 @@ public class PersistedTabDataTest {
 
     static class OutOfMemoryMockPersistedTabDataGet extends MockPersistedTabData {
         OutOfMemoryMockPersistedTabDataGet(Tab tab) {
-            super(tab, 0 /** unused in OutOfMemoryMockPersistedTabData */);
+            super(
+                    tab, 0
+                    /** unused in OutOfMemoryMockPersistedTabData */
+                    );
         }
+
         @Override
         public Serializer<ByteBuffer> getSerializer() {
             return () -> {
@@ -188,8 +208,12 @@ public class PersistedTabDataTest {
 
     static class OutOfMemoryMockPersistedTabData extends MockPersistedTabData {
         OutOfMemoryMockPersistedTabData(Tab tab) {
-            super(tab, 0 /** unused in OutOfMemoryMockPersistedTabData */);
+            super(
+                    tab, 0
+                    /** unused in OutOfMemoryMockPersistedTabData */
+                    );
         }
+
         @Override
         public Serializer<ByteBuffer> getSerializer() {
             // OutOfMemoryError thrown on getSerializer

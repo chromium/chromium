@@ -20,10 +20,7 @@ import org.chromium.ui.modelutil.PropertyModel;
 import java.util.List;
 import java.util.concurrent.ExecutionException;
 
-/**
- * Class containing utility functions for interacting with messages at
- * a high level.
- */
+/** Class containing utility functions for interacting with messages at a high level. */
 public class VrMessageUtils {
     /**
      * Determines whether messages are present in the current activity.
@@ -44,9 +41,10 @@ public class VrMessageUtils {
      */
     public static void expectMessagePresent(
             final ChromeActivityTestRule rule, final boolean present) {
-        CriteriaHelper.pollUiThread(()
-                                            -> isMessagePresent(rule) == present,
-                "Message did not " + (present ? "appear" : "disappear"), POLL_TIMEOUT_SHORT_MS,
+        CriteriaHelper.pollUiThread(
+                () -> isMessagePresent(rule) == present,
+                "Message did not " + (present ? "appear" : "disappear"),
+                POLL_TIMEOUT_SHORT_MS,
                 POLL_CHECK_INTERVAL_SHORT_MS);
     }
 
@@ -55,14 +53,18 @@ public class VrMessageUtils {
      *
      * @param rule The ChromeActivityTestRule to get the messages from.
      * @return The {@link PropertyModel} of an enqueued VR install/update message, null if the
-     *         message is not present.
+     *     message is not present.
      */
     public static PropertyModel getVrInstallUpdateMessage(ChromeActivityTestRule rule)
             throws ExecutionException {
-        MessageDispatcher messageDispatcher = TestThreadUtils.runOnUiThreadBlocking(
-                () -> MessageDispatcherProvider.from(rule.getActivity().getWindowAndroid()));
-        List<MessageStateHandler> messages = MessagesTestHelper.getEnqueuedMessages(
-                messageDispatcher, MessageIdentifier.VR_SERVICES_UPGRADE);
+        MessageDispatcher messageDispatcher =
+                TestThreadUtils.runOnUiThreadBlocking(
+                        () ->
+                                MessageDispatcherProvider.from(
+                                        rule.getActivity().getWindowAndroid()));
+        List<MessageStateHandler> messages =
+                MessagesTestHelper.getEnqueuedMessages(
+                        messageDispatcher, MessageIdentifier.VR_SERVICES_UPGRADE);
         return messages == null || messages.isEmpty()
                 ? null
                 : MessagesTestHelper.getCurrentMessage(messages.get(0));

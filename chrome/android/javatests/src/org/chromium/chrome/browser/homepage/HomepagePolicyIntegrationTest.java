@@ -47,9 +47,9 @@ import org.chromium.url.GURL;
 import java.util.concurrent.atomic.AtomicReference;
 
 /**
- * Integration test for {@link HomepagePolicyManager}.
- * Checking if enabling HomepageLocation policy will reflect the expected behaviors for
- * {@link HomepageSettings} and {@link org.chromium.chrome.browser.toolbar.HomeButton}
+ * Integration test for {@link HomepagePolicyManager}. Checking if enabling HomepageLocation policy
+ * will reflect the expected behaviors for {@link HomepageSettings} and {@link
+ * org.chromium.chrome.browser.toolbar.HomeButton}
  */
 @RunWith(ChromeJUnit4ClassRunner.class)
 @CommandLineFlags.Add({ChromeSwitches.DISABLE_FIRST_RUN_EXPERIENCE})
@@ -74,8 +74,7 @@ public class HomepagePolicyIntegrationTest {
     public final RuleChain mRuleChain =
             RuleChain.outerRule(mActivityTestRule).around(mSettingsActivityTestRule);
 
-    @Rule
-    public HomepageTestRule mHomepageTestRule = new HomepageTestRule();
+    @Rule public HomepageTestRule mHomepageTestRule = new HomepageTestRule();
 
     @Before
     public void setUp() {
@@ -86,8 +85,9 @@ public class HomepagePolicyIntegrationTest {
 
         mActivityTestRule.startMainActivityFromLauncher();
 
-        mTestServer = EmbeddedTestServer.createAndStartServer(
-                InstrumentationRegistry.getInstrumentation().getContext());
+        mTestServer =
+                EmbeddedTestServer.createAndStartServer(
+                        InstrumentationRegistry.getInstrumentation().getContext());
     }
 
     @Test
@@ -95,28 +95,36 @@ public class HomepagePolicyIntegrationTest {
     @Feature({"Homepage"})
     public void testStartUpPage() {
         TestThreadUtils.runOnUiThreadBlocking(
-                ()
-                        -> Assert.assertTrue("HomepageLocation Policy should be enforced",
+                () ->
+                        Assert.assertTrue(
+                                "HomepageLocation Policy should be enforced",
                                 HomepagePolicyManager.isHomepageManagedByPolicy()));
 
         // The first time when the page starts, the homepage is fetched from shared preference
         // So the homepage policy is not enforced yet at this point.
         // Instead, we verify the shared preference to see if right policy URL were stored.
-        String homepageGurlSerialized = ChromeSharedPreferences.getInstance().readString(
-                ChromePreferenceKeys.HOMEPAGE_LOCATION_POLICY_GURL, "");
+        String homepageGurlSerialized =
+                ChromeSharedPreferences.getInstance()
+                        .readString(ChromePreferenceKeys.HOMEPAGE_LOCATION_POLICY_GURL, "");
         GURL homepageGurl = GURL.deserialize(homepageGurlSerialized);
-        Assert.assertEquals("URL stored in shared preference should be the same as policy setting",
-                TEST_URL, homepageGurl.getSpec());
+        Assert.assertEquals(
+                "URL stored in shared preference should be the same as policy setting",
+                TEST_URL,
+                homepageGurl.getSpec());
 
         // METRICS_HOMEPAGE_LOCATION_TYPE is recorded once in deferred start up tasks.
-        Assert.assertEquals("Settings.Homepage.LocationType should record POLICY_OTHER once.", 1,
+        Assert.assertEquals(
+                "Settings.Homepage.LocationType should record POLICY_OTHER once.",
+                1,
                 RecordHistogram.getHistogramValueCountForTesting(
                         METRICS_HOMEPAGE_LOCATION_TYPE, HomepageLocationType.POLICY_OTHER));
 
         // Start the page again. This time, the homepage should be set to what policy is.
         destroyAndRestartActivity();
 
-        Assert.assertEquals("Start up homepage should be the same as the policy setting", TEST_URL,
+        Assert.assertEquals(
+                "Start up homepage should be the same as the policy setting",
+                TEST_URL,
                 ChromeTabUtils.getUrlStringOnUiThread(
                         mActivityTestRule.getActivity().getActivityTab()));
     }
@@ -129,31 +137,43 @@ public class HomepagePolicyIntegrationTest {
         new TabLoadObserver(mActivityTestRule.getActivity().getActivityTab())
                 .fullyLoadUrl(anotherUrl);
 
-        Assert.assertNotEquals("Did not switch to a different URL", TEST_URL,
+        Assert.assertNotEquals(
+                "Did not switch to a different URL",
+                TEST_URL,
                 ChromeTabUtils.getUrlStringOnUiThread(
                         mActivityTestRule.getActivity().getActivityTab()));
 
-        CriteriaHelper.pollUiThread(() -> {
-            ToolbarManager toolbarManager = mActivityTestRule.getActivity().getToolbarManager();
-            Criteria.checkThat(toolbarManager, Matchers.notNullValue());
+        CriteriaHelper.pollUiThread(
+                () -> {
+                    ToolbarManager toolbarManager =
+                            mActivityTestRule.getActivity().getToolbarManager();
+                    Criteria.checkThat(toolbarManager, Matchers.notNullValue());
 
-            HomeButton homeButton = toolbarManager.getHomeButtonForTesting();
-            Criteria.checkThat(homeButton, Matchers.notNullValue());
-            Criteria.checkThat("Home Button should be visible", homeButton.getVisibility(),
-                    Matchers.is(View.VISIBLE));
-            Criteria.checkThat("Long press for home button should be disabled",
-                    homeButton.isLongClickable(), Matchers.is(false));
-        });
+                    HomeButton homeButton = toolbarManager.getHomeButtonForTesting();
+                    Criteria.checkThat(homeButton, Matchers.notNullValue());
+                    Criteria.checkThat(
+                            "Home Button should be visible",
+                            homeButton.getVisibility(),
+                            Matchers.is(View.VISIBLE));
+                    Criteria.checkThat(
+                            "Long press for home button should be disabled",
+                            homeButton.isLongClickable(),
+                            Matchers.is(false));
+                });
 
         ChromeTabUtils.waitForTabPageLoaded(
-                mActivityTestRule.getActivity().getActivityTab(), TEST_URL, () -> {
+                mActivityTestRule.getActivity().getActivityTab(),
+                TEST_URL,
+                () -> {
                     ToolbarManager toolbarManager =
                             mActivityTestRule.getActivity().getToolbarManager();
                     HomeButton homeButton = toolbarManager.getHomeButtonForTesting();
                     TouchCommon.singleClickView(homeButton);
                 });
 
-        Assert.assertEquals("After clicking HomeButton, URL should be back to Homepage", TEST_URL,
+        Assert.assertEquals(
+                "After clicking HomeButton, URL should be back to Homepage",
+                TEST_URL,
                 ChromeTabUtils.getUrlStringOnUiThread(
                         mActivityTestRule.getActivity().getActivityTab()));
     }
@@ -168,17 +188,23 @@ public class HomepagePolicyIntegrationTest {
 
         // Close all tabs so the new activity will create another initial tab with current homepage.
         TestThreadUtils.runOnUiThreadBlocking(
-                () -> { activity.getTabModelSelector().closeAllTabs(); });
+                () -> {
+                    activity.getTabModelSelector().closeAllTabs();
+                });
 
         activity.finish();
-        CriteriaHelper.pollUiThread(() -> {
-            Criteria.checkThat(ApplicationStatus.getStateForActivity(activity),
-                    Matchers.is(ActivityState.DESTROYED));
-        });
+        CriteriaHelper.pollUiThread(
+                () -> {
+                    Criteria.checkThat(
+                            ApplicationStatus.getStateForActivity(activity),
+                            Matchers.is(ActivityState.DESTROYED));
+                });
 
         // Start a new ChromeActivity.
         mActivityTestRule.startActivityCompletely(intent);
-        Assert.assertEquals("Start up page is not homepage", getHomepageUrlOnUiThread(),
+        Assert.assertEquals(
+                "Start up page is not homepage",
+                getHomepageUrlOnUiThread(),
                 ChromeTabUtils.getUrlStringOnUiThread(
                         mActivityTestRule.getActivity().getActivityTab()));
     }
@@ -186,7 +212,9 @@ public class HomepagePolicyIntegrationTest {
     private String getHomepageUrlOnUiThread() {
         AtomicReference<String> res = new AtomicReference<>();
         TestThreadUtils.runOnUiThreadBlocking(
-                () -> { res.set(HomepageManager.getHomepageGurl().getSpec()); });
+                () -> {
+                    res.set(HomepageManager.getHomepageGurl().getSpec());
+                });
         return res.get();
     }
 }

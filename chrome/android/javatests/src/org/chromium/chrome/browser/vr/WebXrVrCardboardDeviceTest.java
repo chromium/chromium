@@ -36,14 +36,17 @@ import java.util.concurrent.Callable;
  */
 @RunWith(ParameterizedRunner.class)
 @UseRunnerDelegate(ChromeJUnit4RunnerDelegate.class)
-@CommandLineFlags.Add({ChromeSwitches.DISABLE_FIRST_RUN_EXPERIENCE,
-        "enable-features=LogJsConsoleMessages", "force-webxr-runtime=cardboard"})
+@CommandLineFlags.Add({
+    ChromeSwitches.DISABLE_FIRST_RUN_EXPERIENCE,
+    "enable-features=LogJsConsoleMessages",
+    "force-webxr-runtime=cardboard"
+})
 public class WebXrVrCardboardDeviceTest {
     @ClassParameter
     private static List<ParameterSet> sClassParams =
             VrCardboardTestRuleUtils.generateDefaultTestRuleParameters();
-    @Rule
-    public RuleChain mRuleChain;
+
+    @Rule public RuleChain mRuleChain;
 
     private ChromeActivityTestRule mTestRule;
     private WebXrVrTestFramework mWebXrVrTestFramework;
@@ -58,9 +61,7 @@ public class WebXrVrCardboardDeviceTest {
         mWebXrVrTestFramework = new WebXrVrTestFramework(mTestRule);
     }
 
-    /**
-     * Tests that reported WebXR capabilities match expectations.
-     */
+    /** Tests that reported WebXR capabilities match expectations. */
     @Test
     @MediumTest
     @Restriction({RESTRICTION_TYPE_VIEWER_NON_DAYDREAM})

@@ -64,9 +64,7 @@ import org.chromium.content_public.browser.test.util.TestThreadUtils;
 import java.io.IOException;
 import java.util.concurrent.ExecutionException;
 
-/**
- * Tests for {@link PrivacySettings}.
- */
+/** Tests for {@link PrivacySettings}. */
 @RunWith(ChromeJUnit4ClassRunner.class)
 @CommandLineFlags.Add({ChromeSwitches.DISABLE_FIRST_RUN_EXPERIENCE})
 @DoNotBatch(reason = "Child account can leak to other tests in the suite.")
@@ -91,17 +89,19 @@ public class PrivacySettingsFragmentTest {
                     .setBugComponent(ChromeRenderTestRule.Component.UI_SETTINGS_PRIVACY)
                     .build();
 
-    @Rule
-    public JniMocker mocker = new JniMocker();
+    @Rule public JniMocker mocker = new JniMocker();
 
     private FakePrivacySandboxBridge mFakePrivacySandboxBridge;
     private UserActionTester mActionTester;
 
     private void waitForOptionsMenu() {
-        CriteriaHelper.pollUiThread(() -> {
-            return mSettingsActivityTestRule.getActivity().findViewById(R.id.menu_id_targeted_help)
-                    != null;
-        });
+        CriteriaHelper.pollUiThread(
+                () -> {
+                    return mSettingsActivityTestRule
+                                    .getActivity()
+                                    .findViewById(R.id.menu_id_targeted_help)
+                            != null;
+                });
     }
 
     private void scrollToSetting(Matcher<View> matcher) {
@@ -110,11 +110,14 @@ public class PrivacySettingsFragmentTest {
     }
 
     private View getIncognitoReauthSettingView(PrivacySettings privacySettings) {
-        String incognito_lock_title = mSettingsActivityTestRule.getActivity().getString(
-                R.string.settings_incognito_tab_lock_title);
+        String incognito_lock_title =
+                mSettingsActivityTestRule
+                        .getActivity()
+                        .getString(R.string.settings_incognito_tab_lock_title);
         onView(withId(R.id.recycler_view))
-                .perform(RecyclerViewActions.scrollTo(
-                        hasDescendant(withText(incognito_lock_title))));
+                .perform(
+                        RecyclerViewActions.scrollTo(
+                                hasDescendant(withText(incognito_lock_title))));
         onView(withText(incognito_lock_title)).check(matches(isDisplayed()));
         for (int i = 0; i < privacySettings.getListView().getChildCount(); ++i) {
             View view = privacySettings.getListView().getChildAt(i);
@@ -131,23 +134,23 @@ public class PrivacySettingsFragmentTest {
 
     private void setPrivacyGuideViewed(boolean isViewed) {
         TestThreadUtils.runOnUiThreadBlocking(
-                ()
-                        -> UserPrefs.get(Profile.getLastUsedRegularProfile())
-                                   .setBoolean(Pref.PRIVACY_GUIDE_VIEWED, isViewed));
+                () ->
+                        UserPrefs.get(Profile.getLastUsedRegularProfile())
+                                .setBoolean(Pref.PRIVACY_GUIDE_VIEWED, isViewed));
     }
 
     private boolean isPrivacyGuideViewed() throws ExecutionException {
         return TestThreadUtils.runOnUiThreadBlocking(
-                ()
-                        -> UserPrefs.get(Profile.getLastUsedRegularProfile())
-                                   .getBoolean(Pref.PRIVACY_GUIDE_VIEWED));
+                () ->
+                        UserPrefs.get(Profile.getLastUsedRegularProfile())
+                                .getBoolean(Pref.PRIVACY_GUIDE_VIEWED));
     }
 
     private void setShowTrackingProtection(boolean show) {
         TestThreadUtils.runOnUiThreadBlocking(
-                ()
-                        -> UserPrefs.get(Profile.getLastUsedRegularProfile())
-                                   .setBoolean(Pref.TRACKING_PROTECTION3PCD_ENABLED, show));
+                () ->
+                        UserPrefs.get(Profile.getLastUsedRegularProfile())
+                                .setBoolean(Pref.TRACKING_PROTECTION3PCD_ENABLED, show));
     }
 
     @Before
@@ -168,9 +171,11 @@ public class PrivacySettingsFragmentTest {
     public void testRenderTopView() throws IOException {
         mSettingsActivityTestRule.startSettingsActivity();
         waitForOptionsMenu();
-        View view = mSettingsActivityTestRule.getActivity()
-                            .findViewById(android.R.id.content)
-                            .getRootView();
+        View view =
+                mSettingsActivityTestRule
+                        .getActivity()
+                        .findViewById(android.R.id.content)
+                        .getRootView();
         mRenderTestRule.render(view, "privacy_and_security_settings_top_view");
     }
 
@@ -181,13 +186,16 @@ public class PrivacySettingsFragmentTest {
         mSettingsActivityTestRule.startSettingsActivity();
         waitForOptionsMenu();
         PrivacySettings fragment = mSettingsActivityTestRule.getFragment();
-        TestThreadUtils.runOnUiThreadBlocking(() -> {
-            RecyclerView recyclerView = fragment.getView().findViewById(R.id.recycler_view);
-            recyclerView.scrollToPosition(recyclerView.getAdapter().getItemCount() - 1);
-        });
-        View view = mSettingsActivityTestRule.getActivity()
-                            .findViewById(android.R.id.content)
-                            .getRootView();
+        TestThreadUtils.runOnUiThreadBlocking(
+                () -> {
+                    RecyclerView recyclerView = fragment.getView().findViewById(R.id.recycler_view);
+                    recyclerView.scrollToPosition(recyclerView.getAdapter().getItemCount() - 1);
+                });
+        View view =
+                mSettingsActivityTestRule
+                        .getActivity()
+                        .findViewById(android.R.id.content)
+                        .getRootView();
         mRenderTestRule.render(view, "privacy_and_security_settings_bottom_view");
     }
 
@@ -199,9 +207,11 @@ public class PrivacySettingsFragmentTest {
         setPrivacyGuideViewed(true);
         mSettingsActivityTestRule.startSettingsActivity();
         waitForOptionsMenu();
-        View view = mSettingsActivityTestRule.getActivity()
-                            .findViewById(android.R.id.content)
-                            .getRootView();
+        View view =
+                mSettingsActivityTestRule
+                        .getActivity()
+                        .findViewById(android.R.id.content)
+                        .getRootView();
         mRenderTestRule.render(view, "privacy_and_security_privacy_guide_label_without_new");
     }
 
@@ -213,9 +223,11 @@ public class PrivacySettingsFragmentTest {
         setPrivacyGuideViewed(false);
         mSettingsActivityTestRule.startSettingsActivity();
         waitForOptionsMenu();
-        View view = mSettingsActivityTestRule.getActivity()
-                            .findViewById(android.R.id.content)
-                            .getRootView();
+        View view =
+                mSettingsActivityTestRule
+                        .getActivity()
+                        .findViewById(android.R.id.content)
+                        .getRootView();
         mRenderTestRule.render(view, "privacy_and_security_privacy_guide_label_with_new");
     }
 
@@ -270,10 +282,11 @@ public class PrivacySettingsFragmentTest {
         mSettingsActivityTestRule.startSettingsActivity();
         PrivacySettings fragment = mSettingsActivityTestRule.getFragment();
         // Scroll down and verify that the Privacy Sandbox is not there.
-        TestThreadUtils.runOnUiThreadBlocking(() -> {
-            RecyclerView recyclerView = fragment.getView().findViewById(R.id.recycler_view);
-            recyclerView.scrollToPosition(PRIVACY_SANDBOX_V4_POS_IDX);
-        });
+        TestThreadUtils.runOnUiThreadBlocking(
+                () -> {
+                    RecyclerView recyclerView = fragment.getView().findViewById(R.id.recycler_view);
+                    recyclerView.scrollToPosition(PRIVACY_SANDBOX_V4_POS_IDX);
+                });
         onView(withText(R.string.ad_privacy_link_row_label)).check(doesNotExist());
     }
 
@@ -298,7 +311,8 @@ public class PrivacySettingsFragmentTest {
         waitForOptionsMenu();
         PrivacySettings fragment = mSettingsActivityTestRule.getFragment();
 
-        mRenderTestRule.render(getIncognitoReauthSettingView(fragment),
+        mRenderTestRule.render(
+                getIncognitoReauthSettingView(fragment),
                 "incognito_reauth_setting_screen_lock_disabled");
     }
 
@@ -313,7 +327,8 @@ public class PrivacySettingsFragmentTest {
         waitForOptionsMenu();
         PrivacySettings fragment = mSettingsActivityTestRule.getFragment();
 
-        mRenderTestRule.render(getIncognitoReauthSettingView(fragment),
+        mRenderTestRule.render(
+                getIncognitoReauthSettingView(fragment),
                 "incognito_reauth_setting_screen_lock_enabled");
     }
 
@@ -337,8 +352,9 @@ public class PrivacySettingsFragmentTest {
     public void testPrivacyGuideLinkRowEntryExitHistogram() throws IOException {
         mSettingsActivityTestRule.startSettingsActivity();
 
-        var histogram = HistogramWatcher.newSingleRecordWatcher(
-                ENTRY_EXIT_HISTOGRAM, PrivacyGuideInteractions.SETTINGS_LINK_ROW_ENTRY);
+        var histogram =
+                HistogramWatcher.newSingleRecordWatcher(
+                        ENTRY_EXIT_HISTOGRAM, PrivacyGuideInteractions.SETTINGS_LINK_ROW_ENTRY);
 
         // Scroll down and open Privacy Guide page.
         scrollToSetting(withText(R.string.privacy_guide_pref_summary));
@@ -365,7 +381,7 @@ public class PrivacySettingsFragmentTest {
     @LargeTest
     @EnableFeatures(ChromeFeatureList.PRIVACY_GUIDE)
     // A random policy is required to make the device managed
-    @Policies.Add({ @Policies.Item(key = "RandomPolicy", string = "true") })
+    @Policies.Add({@Policies.Item(key = "RandomPolicy", string = "true")})
     public void testPrivacyGuideNotDisplayedWhenDeviceIsManaged() {
         mSettingsActivityTestRule.startSettingsActivity();
         onView(withText(R.string.privacy_guide_pref_summary)).check(doesNotExist());

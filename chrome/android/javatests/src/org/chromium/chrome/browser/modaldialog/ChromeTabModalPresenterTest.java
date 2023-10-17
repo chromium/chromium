@@ -74,9 +74,7 @@ import org.chromium.ui.modaldialog.ModalDialogProperties;
 import org.chromium.ui.modelutil.PropertyModel;
 import org.chromium.ui.test.util.UiRestriction;
 
-/**
- * Tests for {@link ChromeTabModalPresenter}.
- */
+/** Tests for {@link ChromeTabModalPresenter}. */
 @RunWith(ChromeJUnit4ClassRunner.class)
 @Batch(Batch.PER_CLASS)
 @CommandLineFlags.Add({ChromeSwitches.DISABLE_FIRST_RUN_EXPERIENCE})
@@ -126,20 +124,25 @@ public class ChromeTabModalPresenterTest {
         mManager =
                 TestThreadUtils.runOnUiThreadBlockingNoException(mActivity::getModalDialogManager);
         mTestObserver = new TestObserver();
-        TestThreadUtils.runOnUiThreadBlocking(() -> {
-            mActivity.getToolbarManager()
-                    .getToolbarLayoutForTesting()
-                    .getLocationBar()
-                    .getOmniboxStub()
-                    .addUrlFocusChangeListener(mTestObserver);
-        });
+        TestThreadUtils.runOnUiThreadBlocking(
+                () -> {
+                    mActivity
+                            .getToolbarManager()
+                            .getToolbarLayoutForTesting()
+                            .getLocationBar()
+                            .getOmniboxStub()
+                            .addUrlFocusChangeListener(mTestObserver);
+                });
         mTabModalPresenter =
                 (ChromeTabModalPresenter) mManager.getPresenterForTest(ModalDialogType.TAB);
     }
 
     @After
     public void tearDown() {
-        TestThreadUtils.runOnUiThreadBlocking(() -> { mManager.destroy(); });
+        TestThreadUtils.runOnUiThreadBlocking(
+                () -> {
+                    mManager.destroy();
+                });
     }
 
     @Test
@@ -156,29 +159,35 @@ public class ChromeTabModalPresenterTest {
 
         ensureDialogContainerVisible();
 
-        TestThreadUtils.runOnUiThreadBlocking(() -> {
-            assertThat(containerParent.indexOfChild(dialogContainer),
-                    Matchers.greaterThan(containerParent.indexOfChild(controlContainer)));
-        });
+        TestThreadUtils.runOnUiThreadBlocking(
+                () -> {
+                    assertThat(
+                            containerParent.indexOfChild(dialogContainer),
+                            Matchers.greaterThan(containerParent.indexOfChild(controlContainer)));
+                });
 
         // When editing URL, it should be shown on top of the dialog.
         UrlBar urlBar = mActivity.findViewById(R.id.url_bar);
         int callCount = mTestObserver.onUrlFocusChangedCallback.getCallCount();
         mOmnibox.requestFocus();
         mTestObserver.onUrlFocusChangedCallback.waitForCallback(callCount);
-        TestThreadUtils.runOnUiThreadBlocking(() -> {
-            assertThat(containerParent.indexOfChild(dialogContainer),
-                    Matchers.lessThan(containerParent.indexOfChild(controlContainer)));
-        });
+        TestThreadUtils.runOnUiThreadBlocking(
+                () -> {
+                    assertThat(
+                            containerParent.indexOfChild(dialogContainer),
+                            Matchers.lessThan(containerParent.indexOfChild(controlContainer)));
+                });
 
         // When URL bar is not focused, the dialog should be shown on top of the toolbar again.
         callCount = mTestObserver.onUrlFocusChangedCallback.getCallCount();
         mOmnibox.clearFocus();
         mTestObserver.onUrlFocusChangedCallback.waitForCallback(callCount);
-        TestThreadUtils.runOnUiThreadBlocking(() -> {
-            assertThat(containerParent.indexOfChild(dialogContainer),
-                    Matchers.greaterThan(containerParent.indexOfChild(controlContainer)));
-        });
+        TestThreadUtils.runOnUiThreadBlocking(
+                () -> {
+                    assertThat(
+                            containerParent.indexOfChild(dialogContainer),
+                            Matchers.greaterThan(containerParent.indexOfChild(controlContainer)));
+                });
 
         // Dismiss the dialog by clicking OK.
         onView(withText(R.string.ok)).perform(click());
@@ -206,8 +215,11 @@ public class ChromeTabModalPresenterTest {
         showDialog(mManager, dialog2, ModalDialogType.TAB);
         checkPendingSize(mManager, ModalDialogType.TAB, 1);
         onViewWaiting(withId(R.id.tab_modal_dialog_container))
-                .check(matches(
-                        allOf(hasDescendant(withText("1")), not(hasDescendant(withText("2"))))));
+                .check(
+                        matches(
+                                allOf(
+                                        hasDescendant(withText("1")),
+                                        not(hasDescendant(withText("2"))))));
         ChromeModalDialogTestUtils.checkBrowserControls(mActivity, true);
         checkCurrentPresenter(mManager, ModalDialogType.TAB);
 
@@ -215,8 +227,11 @@ public class ChromeTabModalPresenterTest {
         onView(withId(R.id.tab_switcher_button)).perform(click());
         checkPendingSize(mManager, ModalDialogType.TAB, 2);
         onView(withId(R.id.tab_modal_dialog_container))
-                .check(matches(allOf(
-                        not(hasDescendant(withText("1"))), not(hasDescendant(withText("2"))))));
+                .check(
+                        matches(
+                                allOf(
+                                        not(hasDescendant(withText("1"))),
+                                        not(hasDescendant(withText("2"))))));
         ChromeModalDialogTestUtils.checkBrowserControls(mActivity, false);
         checkCurrentPresenter(mManager, null);
 
@@ -241,8 +256,11 @@ public class ChromeTabModalPresenterTest {
         checkPendingSize(mManager, ModalDialogType.TAB, 1);
         ensureDialogContainerVisible();
         onView(withId(R.id.tab_modal_dialog_container))
-                .check(matches(
-                        allOf(hasDescendant(withText("1")), not(hasDescendant(withText("2"))))));
+                .check(
+                        matches(
+                                allOf(
+                                        hasDescendant(withText("1")),
+                                        not(hasDescendant(withText("2"))))));
         ChromeModalDialogTestUtils.checkBrowserControls(mActivity, true);
         checkCurrentPresenter(mManager, ModalDialogType.TAB);
 
@@ -250,8 +268,11 @@ public class ChromeTabModalPresenterTest {
         onView(withText(R.string.ok)).perform(click());
         checkPendingSize(mManager, ModalDialogType.TAB, 0);
         onView(withId(R.id.tab_modal_dialog_container))
-                .check(matches(
-                        allOf(not(hasDescendant(withText("1"))), hasDescendant(withText("2")))));
+                .check(
+                        matches(
+                                allOf(
+                                        not(hasDescendant(withText("1"))),
+                                        hasDescendant(withText("2")))));
         ChromeModalDialogTestUtils.checkBrowserControls(mActivity, true);
         checkCurrentPresenter(mManager, ModalDialogType.TAB);
 
@@ -421,8 +442,11 @@ public class ChromeTabModalPresenterTest {
         Espresso.pressBack();
         checkPendingSize(mManager, ModalDialogType.TAB, 0);
         onView(withId(R.id.tab_modal_dialog_container))
-                .check(matches(
-                        allOf(not(hasDescendant(withText("1"))), hasDescendant(withText("2")))));
+                .check(
+                        matches(
+                                allOf(
+                                        not(hasDescendant(withText("1"))),
+                                        hasDescendant(withText("2")))));
         ChromeModalDialogTestUtils.checkBrowserControls(mActivity, true);
         checkCurrentPresenter(mManager, ModalDialogType.TAB);
 
@@ -431,8 +455,11 @@ public class ChromeTabModalPresenterTest {
         checkPendingSize(mManager, ModalDialogType.APP, 0);
         checkPendingSize(mManager, ModalDialogType.TAB, 0);
         onView(withId(R.id.tab_modal_dialog_container))
-                .check(matches(allOf(
-                        not(hasDescendant(withText("1"))), not(hasDescendant(withText("2"))))));
+                .check(
+                        matches(
+                                allOf(
+                                        not(hasDescendant(withText("1"))),
+                                        not(hasDescendant(withText("2"))))));
         ChromeModalDialogTestUtils.checkBrowserControls(mActivity, false);
         checkCurrentPresenter(mManager, null);
     }
@@ -530,8 +557,9 @@ public class ChromeTabModalPresenterTest {
 
         // Show a tab modal dialog and then navigate to a different page.
         showDialog(mManager, dialog1, ModalDialogType.TAB);
-        EmbeddedTestServer server = EmbeddedTestServer.createAndStartServer(
-                ApplicationProvider.getApplicationContext());
+        EmbeddedTestServer server =
+                EmbeddedTestServer.createAndStartServer(
+                        ApplicationProvider.getApplicationContext());
         sActivityTestRule.loadUrl(server.getURL("/chrome/test/data/android/simple.html"));
         mTestObserver.onDialogDismissedCallback.waitForCallback(callCount);
 
@@ -547,8 +575,8 @@ public class ChromeTabModalPresenterTest {
         showDialog(mManager, dialog1, ModalDialogType.TAB);
         Assert.assertEquals(BrowserControlsState.SHOWN, getBrowserControlsConstraints());
         TestThreadUtils.runOnUiThreadBlocking(
-                ()
-                        -> mManager.dismissDialog(
+                () ->
+                        mManager.dismissDialog(
                                 dialog1, DialogDismissalCause.NEGATIVE_BUTTON_CLICKED));
         Assert.assertEquals(BrowserControlsState.BOTH, getBrowserControlsConstraints());
     }
@@ -561,14 +589,16 @@ public class ChromeTabModalPresenterTest {
     // attached to a Window. See https://crbug.com/1127254 for the specifics.
     public void testDismissAfterRemovingView() throws Throwable {
         PropertyModel dialog1 = createDialog(mActivity, mManager, "1", null);
-        TestThreadUtils.runOnUiThreadBlocking(() -> {
-            mManager.showDialog(dialog1, ModalDialogType.TAB);
-            ViewGroup containerParent = (ViewGroup) mTabModalPresenter.getContainerParentForTest();
-            // This is a bit hacky and intended to correspond to a case where the hosting
-            // ViewGroup is no longer attached to a Window.
-            containerParent.removeAllViews();
-            mManager.dismissAllDialogs(DialogDismissalCause.UNKNOWN);
-        });
+        TestThreadUtils.runOnUiThreadBlocking(
+                () -> {
+                    mManager.showDialog(dialog1, ModalDialogType.TAB);
+                    ViewGroup containerParent =
+                            (ViewGroup) mTabModalPresenter.getContainerParentForTest();
+                    // This is a bit hacky and intended to correspond to a case where the hosting
+                    // ViewGroup is no longer attached to a Window.
+                    containerParent.removeAllViews();
+                    mManager.dismissAllDialogs(DialogDismissalCause.UNKNOWN);
+                });
     }
 
     private @BrowserControlsState int getBrowserControlsConstraints() {

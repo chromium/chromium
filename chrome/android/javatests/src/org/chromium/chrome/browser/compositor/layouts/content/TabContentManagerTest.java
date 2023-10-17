@@ -39,9 +39,9 @@ import org.chromium.content_public.browser.test.util.TestThreadUtils;
 import org.chromium.ui.test.util.RenderTestRule;
 
 /**
- * Tests for the {@link TabContentManager}.
- * TODO(crbug.com/1402843): Tests are being added in the process of refactoring
- * and optimizing the TabContentManager for modern usage. Add more tests here.
+ * Tests for the {@link TabContentManager}. TODO(crbug.com/1402843): Tests are being added in the
+ * process of refactoring and optimizing the TabContentManager for modern usage. Add more tests
+ * here.
  */
 @RunWith(ChromeJUnit4ClassRunner.class)
 @CommandLineFlags.Add({ChromeSwitches.DISABLE_FIRST_RUN_EXPERIENCE})
@@ -66,9 +66,9 @@ public class TabContentManagerTest {
                     .build();
 
     /**
-     * With {@link ChromeFeatureList.THUMBNAIL_CACHE_REFACTOR} enabled the live layer is vended
-     * to the compositor via a pull mechanism rather than a push mechanism. Ensure the tab still
-     * draws its live layer.
+     * With {@link ChromeFeatureList.THUMBNAIL_CACHE_REFACTOR} enabled the live layer is vended to
+     * the compositor via a pull mechanism rather than a push mechanism. Ensure the tab still draws
+     * its live layer.
      */
     @Test
     @MediumTest
@@ -98,23 +98,33 @@ public class TabContentManagerTest {
 
         final CallbackHelper helper = new CallbackHelper();
         final Bitmap[] bitmapHolder = new Bitmap[1];
-        Callback<Bitmap> bitmapCallback = (bitmap) -> {
-            bitmapHolder[0] = bitmap;
-            helper.notifyCalled();
-        };
+        Callback<Bitmap> bitmapCallback =
+                (bitmap) -> {
+                    bitmapHolder[0] = bitmap;
+                    helper.notifyCalled();
+                };
 
-        TestThreadUtils.runOnUiThreadBlocking(() -> {
-            final TabContentManager tabContentManager =
-                    sActivityTestRule.getActivity().getTabContentManagerSupplier().get();
-            final int height = 100;
-            final int width = Math.round(height
-                    * TabUtils.getTabThumbnailAspectRatio(sActivityTestRule.getActivity(),
-                            sActivityTestRule.getActivity().getBrowserControlsManager()));
-            tabContentManager.cacheTabThumbnail(currentTab);
-            tabContentManager.getTabThumbnailWithCallback(currentTab.getId(),
-                    new Size(width, height), bitmapCallback, /*forceUpdate=*/false,
-                    /*writeToCache=*/false);
-        });
+        TestThreadUtils.runOnUiThreadBlocking(
+                () -> {
+                    final TabContentManager tabContentManager =
+                            sActivityTestRule.getActivity().getTabContentManagerSupplier().get();
+                    final int height = 100;
+                    final int width =
+                            Math.round(
+                                    height
+                                            * TabUtils.getTabThumbnailAspectRatio(
+                                                    sActivityTestRule.getActivity(),
+                                                    sActivityTestRule
+                                                            .getActivity()
+                                                            .getBrowserControlsManager()));
+                    tabContentManager.cacheTabThumbnail(currentTab);
+                    tabContentManager.getTabThumbnailWithCallback(
+                            currentTab.getId(),
+                            new Size(width, height),
+                            bitmapCallback,
+                            /* forceUpdate= */ false,
+                            /* writeToCache= */ false);
+                });
 
         helper.waitForFirst();
         Assert.assertNotNull(bitmapHolder[0]);
@@ -128,36 +138,49 @@ public class TabContentManagerTest {
         CallbackHelper helper = new CallbackHelper();
         Bitmap[] bitmapHolder = new Bitmap[1];
         CompositorView compositorView =
-                ((CompositorViewHolder) sActivityTestRule.getActivity().findViewById(
-                         R.id.compositor_view_holder))
+                ((CompositorViewHolder)
+                                sActivityTestRule
+                                        .getActivity()
+                                        .findViewById(R.id.compositor_view_holder))
                         .getCompositorView();
         Assert.assertNotNull(compositorView);
         // Put the compositor view in a mode that supports readback (this is used by the magnifier
         // normally). Note that this might fail if surface control isn't supported by the GPU under
         // test.
         TestThreadUtils.runOnUiThreadBlocking(
-                () -> { compositorView.onSelectionHandlesStateChanged(true); });
+                () -> {
+                    compositorView.onSelectionHandlesStateChanged(true);
+                });
         // TODO(crbug.com/1402843): It unfortunately may take time for the SurfaceView buffer to
         // contain anything and there is no signal to listen to.
         Thread.sleep(1000);
         // Capture the surface using PixelCopy repeating until it works.
-        TestThreadUtils.runOnUiThreadBlocking(() -> {
-            SurfaceView surfaceView = (SurfaceView) compositorView.getActiveSurfaceView();
-            Assert.assertNotNull(surfaceView);
-            // Assume surface view size will be constant and only allocate the bitmap once.
-            bitmapHolder[0] = Bitmap.createBitmap(
-                    surfaceView.getWidth(), surfaceView.getHeight(), Bitmap.Config.ARGB_8888);
-            captureBitmapInner(compositorView, bitmapHolder, helper, new Handler());
-        });
+        TestThreadUtils.runOnUiThreadBlocking(
+                () -> {
+                    SurfaceView surfaceView = (SurfaceView) compositorView.getActiveSurfaceView();
+                    Assert.assertNotNull(surfaceView);
+                    // Assume surface view size will be constant and only allocate the bitmap once.
+                    bitmapHolder[0] =
+                            Bitmap.createBitmap(
+                                    surfaceView.getWidth(),
+                                    surfaceView.getHeight(),
+                                    Bitmap.Config.ARGB_8888);
+                    captureBitmapInner(compositorView, bitmapHolder, helper, new Handler());
+                });
         helper.waitForFirst();
         Assert.assertNotNull(bitmapHolder[0]);
         TestThreadUtils.runOnUiThreadBlocking(
-                () -> { compositorView.onSelectionHandlesStateChanged(false); });
+                () -> {
+                    compositorView.onSelectionHandlesStateChanged(false);
+                });
         return bitmapHolder[0];
     }
 
-    private void captureBitmapInner(CompositorView compositorView, Bitmap[] bitmapHolder,
-            CallbackHelper helper, Handler handler) {
+    private void captureBitmapInner(
+            CompositorView compositorView,
+            Bitmap[] bitmapHolder,
+            CallbackHelper helper,
+            Handler handler) {
         SurfaceView surfaceView = (SurfaceView) compositorView.getActiveSurfaceView();
         Assert.assertNotNull(surfaceView);
         PixelCopy.OnPixelCopyFinishedListener listener =
@@ -170,9 +193,12 @@ public class TabContentManagerTest {
                         }
                         // Backoff if the surface buffer isn't working yet. The test will time out
                         // if this takes too long.
-                        handler.postDelayed(() -> {
-                            captureBitmapInner(compositorView, bitmapHolder, helper, handler);
-                        }, 500);
+                        handler.postDelayed(
+                                () -> {
+                                    captureBitmapInner(
+                                            compositorView, bitmapHolder, helper, handler);
+                                },
+                                500);
                     }
                 };
         PixelCopy.request(surfaceView, bitmapHolder[0], listener, handler);

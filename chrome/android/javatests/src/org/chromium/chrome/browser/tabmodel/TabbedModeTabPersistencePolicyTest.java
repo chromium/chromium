@@ -45,8 +45,8 @@ import org.chromium.url.GURL;
 import java.nio.ByteBuffer;
 
 /**
- * Tests for the tabbed-mode persisitence policy.
- * TODO: Consider turning this into a unit test after resolving the task involving disk I/O.
+ * Tests for the tabbed-mode persisitence policy. TODO: Consider turning this into a unit test after
+ * resolving the task involving disk I/O.
  */
 @RunWith(ChromeJUnit4ClassRunner.class)
 public class TabbedModeTabPersistencePolicyTest {
@@ -58,9 +58,11 @@ public class TabbedModeTabPersistencePolicyTest {
     private static final TabModelSelectorFactory sMockTabModelSelectorFactory =
             new TabModelSelectorFactory() {
                 @Override
-                public TabModelSelector buildSelector(Activity activity,
+                public TabModelSelector buildSelector(
+                        Activity activity,
                         TabCreatorManager tabCreatorManager,
-                        NextTabPolicySupplier nextTabPolicySupplier, int selectorIndex) {
+                        NextTabPolicySupplier nextTabPolicySupplier,
+                        int selectorIndex) {
                     return new MockTabModelSelector(0, 0, null);
                 }
             };
@@ -69,13 +71,18 @@ public class TabbedModeTabPersistencePolicyTest {
     public void setUp() throws Exception {
         TabWindowManagerSingleton.setTabModelSelectorFactoryForTesting(
                 sMockTabModelSelectorFactory);
-        mAppContext = new AdvancedMockContext(InstrumentationRegistry.getInstrumentation()
-                                                      .getTargetContext()
-                                                      .getApplicationContext());
+        mAppContext =
+                new AdvancedMockContext(
+                        InstrumentationRegistry.getInstrumentation()
+                                .getTargetContext()
+                                .getApplicationContext());
         ContextUtils.initApplicationContextForTests(mAppContext);
 
-        mMockDirectory = new TestTabModelDirectory(mAppContext,
-                "TabbedModeTabPersistencePolicyTest", TabStateDirectory.TABBED_MODE_DIRECTORY);
+        mMockDirectory =
+                new TestTabModelDirectory(
+                        mAppContext,
+                        "TabbedModeTabPersistencePolicyTest",
+                        TabStateDirectory.TABBED_MODE_DIRECTORY);
         TabStateDirectory.setBaseStateDirectoryForTests(mMockDirectory.getBaseDirectory());
     }
 
@@ -99,53 +106,68 @@ public class TabbedModeTabPersistencePolicyTest {
                 new MockTabModel.MockTabModelDelegate() {
                     @Override
                     public MockTab createTab(int id, boolean incognito) {
-                        MockTab tab = new MockTab(id, incognito) {
-                            @Override
-                            public GURL getUrl() {
-                                return new GURL("https://www.google.com");
-                            }
-                        };
+                        MockTab tab =
+                                new MockTab(id, incognito) {
+                                    @Override
+                                    public GURL getUrl() {
+                                        return new GURL("https://www.google.com");
+                                    }
+                                };
                         tab.initialize(null, null, null, null, null, false, null, false);
                         return tab;
                     }
                 };
 
-        final MockTabModel normalTabModel = TestThreadUtils.runOnUiThreadBlocking(
-                () -> new MockTabModel(false, tabModelDelegate));
-        final MockTabModel incognitoTabModel = TestThreadUtils.runOnUiThreadBlocking(
-                () -> new MockTabModel(true, tabModelDelegate));
-        TabbedModeTabModelOrchestrator orchestrator = TestThreadUtils.runOnUiThreadBlocking(() -> {
-            TabbedModeTabModelOrchestrator tmpOrchestrator =
-                    new TabbedModeTabModelOrchestrator(false);
-            tmpOrchestrator.createTabModels(new ChromeTabbedActivity(), null, null, 0);
-            TabModelSelector selector = tmpOrchestrator.getTabModelSelector();
-            ((MockTabModelSelector) selector)
-                    .initializeTabModels(normalTabModel, incognitoTabModel);
-            return tmpOrchestrator;
-        });
-        TabPersistentStore store = TestThreadUtils.runOnUiThreadBlocking(() -> {
-            TabPersistentStore tmpStore = orchestrator.getTabPersistentStoreForTesting();
-            tmpStore.addObserver(new TabPersistentStoreObserver() {
-                @Override
-                public void onMetadataSavedAsynchronously(TabModelSelectorMetadata metadata) {
-                    callbackSignal.notifyCalled();
-                }
-            });
-            return tmpStore;
-        });
+        final MockTabModel normalTabModel =
+                TestThreadUtils.runOnUiThreadBlocking(
+                        () -> new MockTabModel(false, tabModelDelegate));
+        final MockTabModel incognitoTabModel =
+                TestThreadUtils.runOnUiThreadBlocking(
+                        () -> new MockTabModel(true, tabModelDelegate));
+        TabbedModeTabModelOrchestrator orchestrator =
+                TestThreadUtils.runOnUiThreadBlocking(
+                        () -> {
+                            TabbedModeTabModelOrchestrator tmpOrchestrator =
+                                    new TabbedModeTabModelOrchestrator(false);
+                            tmpOrchestrator.createTabModels(
+                                    new ChromeTabbedActivity(), null, null, 0);
+                            TabModelSelector selector = tmpOrchestrator.getTabModelSelector();
+                            ((MockTabModelSelector) selector)
+                                    .initializeTabModels(normalTabModel, incognitoTabModel);
+                            return tmpOrchestrator;
+                        });
+        TabPersistentStore store =
+                TestThreadUtils.runOnUiThreadBlocking(
+                        () -> {
+                            TabPersistentStore tmpStore =
+                                    orchestrator.getTabPersistentStoreForTesting();
+                            tmpStore.addObserver(
+                                    new TabPersistentStoreObserver() {
+                                        @Override
+                                        public void onMetadataSavedAsynchronously(
+                                                TabModelSelectorMetadata metadata) {
+                                            callbackSignal.notifyCalled();
+                                        }
+                                    });
+                            return tmpStore;
+                        });
 
         // Adding tabs results in writing to disk running on AsyncTasks. Run on the main thread
         // to turn the async operations + completion callback into a synchronous operation.
-        InstrumentationRegistry.getInstrumentation().runOnMainSync(() -> {
-            for (int tabId : normalTabIds) {
-                addTabToSaveQueue(store, normalTabModel, normalTabModel.addTab(tabId));
-            }
-            for (int tabId : incognitoTabIds) {
-                addTabToSaveQueue(store, incognitoTabModel, incognitoTabModel.addTab(tabId));
-            }
-            TabModelUtils.setIndex(normalTabModel, 0, false);
-            TabModelUtils.setIndex(incognitoTabModel, 0, false);
-        });
+        InstrumentationRegistry.getInstrumentation()
+                .runOnMainSync(
+                        () -> {
+                            for (int tabId : normalTabIds) {
+                                addTabToSaveQueue(
+                                        store, normalTabModel, normalTabModel.addTab(tabId));
+                            }
+                            for (int tabId : incognitoTabIds) {
+                                addTabToSaveQueue(
+                                        store, incognitoTabModel, incognitoTabModel.addTab(tabId));
+                            }
+                            TabModelUtils.setIndex(normalTabModel, 0, false);
+                            TabModelUtils.setIndex(incognitoTabModel, 0, false);
+                        });
         callbackSignal.waitForCallback(callCount);
         return orchestrator;
     }
@@ -159,8 +181,8 @@ public class TabbedModeTabPersistencePolicyTest {
 
     /**
      * Test the cleanup task path that deletes all the persistent state files for an instance.
-     * Ensure tabs not used by other instances only are collected for deletion. This may not
-     * be a real scenario likey to happen.
+     * Ensure tabs not used by other instances only are collected for deletion. This may not be a
+     * real scenario likey to happen.
      */
     @Test
     @Feature("TabPersistentStore")

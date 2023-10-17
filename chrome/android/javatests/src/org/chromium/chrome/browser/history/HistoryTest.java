@@ -27,14 +27,12 @@ import org.chromium.url.GURL;
 
 import java.util.concurrent.TimeoutException;
 
-/**
- * Tests for history feature.
- */
+/** Tests for history feature. */
 @RunWith(ChromeJUnit4ClassRunner.class)
 @CommandLineFlags.Add({ChromeSwitches.DISABLE_FIRST_RUN_EXPERIENCE})
 public class HistoryTest {
-    private static class FaviconWaiter
-            extends CallbackHelper implements FaviconHelper.FaviconImageCallback {
+    private static class FaviconWaiter extends CallbackHelper
+            implements FaviconHelper.FaviconImageCallback {
         private Bitmap mFavicon;
 
         @Override
@@ -53,8 +51,8 @@ public class HistoryTest {
     public ChromeTabbedActivityTestRule mActivityTestRule = new ChromeTabbedActivityTestRule();
 
     /**
-     * Check that the favicons for {@link UrlConstants#HISTORY_URL} and for
-     * {@link UrlConstants#NATIVE_HISTORY_URL} are identical.
+     * Check that the favicons for {@link UrlConstants#HISTORY_URL} and for {@link
+     * UrlConstants#NATIVE_HISTORY_URL} are identical.
      */
     @Test
     @SmallTest
@@ -69,10 +67,11 @@ public class HistoryTest {
 
     public Bitmap getFavicon(FaviconHelper helper, GURL pageUrl) throws TimeoutException {
         FaviconWaiter waiter = new FaviconWaiter();
-        TestThreadUtils.runOnUiThreadBlocking(() -> {
-            helper.getLocalFaviconImageForURL(
-                    Profile.getLastUsedRegularProfile(), pageUrl, 0, waiter);
-        });
+        TestThreadUtils.runOnUiThreadBlocking(
+                () -> {
+                    helper.getLocalFaviconImageForURL(
+                            Profile.getLastUsedRegularProfile(), pageUrl, 0, waiter);
+                });
         return waiter.waitForFavicon();
     }
 }

@@ -14,24 +14,29 @@ import org.chromium.chrome.browser.vr.util.GvrTestRuleUtils;
 import org.chromium.chrome.browser.webapps.WebappActivityTestRule;
 
 /**
- * VR extension of WebappActivityTestRule. Applies WebappActivityTestRule then opens
- * up a WebappActivity to a blank page while performing some additional VR-only setup.
+ * VR extension of WebappActivityTestRule. Applies WebappActivityTestRule then opens up a
+ * WebappActivity to a blank page while performing some additional VR-only setup.
  */
 public class WebappActivityGvrTestRule extends WebappActivityTestRule implements VrTestRule {
     private boolean mDonEnabled;
 
     @Override
     public Statement apply(final Statement base, final Description desc) {
-        return super.apply(new Statement() {
-            @Override
-            public void evaluate() throws Throwable {
-                GvrTestRuleUtils.evaluateVrTestRuleImpl(
-                        base, desc, WebappActivityGvrTestRule.this, () -> {
-                            startWebappActivity();
-                            TestVrShellDelegate.createTestVrShellDelegate(getActivity());
-                        });
-            }
-        }, desc);
+        return super.apply(
+                new Statement() {
+                    @Override
+                    public void evaluate() throws Throwable {
+                        GvrTestRuleUtils.evaluateVrTestRuleImpl(
+                                base,
+                                desc,
+                                WebappActivityGvrTestRule.this,
+                                () -> {
+                                    startWebappActivity();
+                                    TestVrShellDelegate.createTestVrShellDelegate(getActivity());
+                                });
+                    }
+                },
+                desc);
     }
 
     @Override

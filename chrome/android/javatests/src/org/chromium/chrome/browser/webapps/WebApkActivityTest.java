@@ -45,8 +45,7 @@ public final class WebApkActivityTest {
     private static final String TEST_WEBAPK_ID =
             WebApkConstants.WEBAPK_ID_PREFIX + TEST_WEBAPK_PACKAGE_NAME;
 
-    @Rule
-    public final WebApkActivityTestRule mActivityTestRule = new WebApkActivityTestRule();
+    @Rule public final WebApkActivityTestRule mActivityTestRule = new WebApkActivityTestRule();
 
     @Before
     public void setUp() {
@@ -54,9 +53,12 @@ public final class WebApkActivityTest {
 
         // WebAPK is not installed. Ensure that WebappRegistry#unregisterOldWebapps() does not
         // delete the WebAPK's shared preferences.
-        SharedPreferences sharedPrefs = ContextUtils.getApplicationContext().getSharedPreferences(
-                WebappRegistry.REGISTRY_FILE_NAME, Context.MODE_PRIVATE);
-        sharedPrefs.edit()
+        SharedPreferences sharedPrefs =
+                ContextUtils.getApplicationContext()
+                        .getSharedPreferences(
+                                WebappRegistry.REGISTRY_FILE_NAME, Context.MODE_PRIVATE);
+        sharedPrefs
+                .edit()
                 .putLong(WebappRegistry.KEY_LAST_CLEANUP, System.currentTimeMillis())
                 .apply();
     }
@@ -70,9 +72,12 @@ public final class WebApkActivityTest {
     @Feature({"WebApk"})
     public void testLaunchAndNavigateOutsideScope() throws Exception {
         WebappActivity webApkActivity =
-                mActivityTestRule.startWebApkActivity(createIntentDataProvider(
-                        getTestServerUrl("scope_a/page_1.html"), getTestServerUrl("scope_a/")));
-        assertEquals(BrowserControlsState.HIDDEN,
+                mActivityTestRule.startWebApkActivity(
+                        createIntentDataProvider(
+                                getTestServerUrl("scope_a/page_1.html"),
+                                getTestServerUrl("scope_a/")));
+        assertEquals(
+                BrowserControlsState.HIDDEN,
                 WebappActivityTestRule.getToolbarShowState(webApkActivity));
 
         // We navigate outside scope and expect CCT toolbar to show on top of WebAPK Activity.
@@ -93,8 +98,10 @@ public final class WebApkActivityTest {
     public void testActivateWebApkLPlus() throws Exception {
         // Launch WebAPK.
         WebappActivity webApkActivity =
-                mActivityTestRule.startWebApkActivity(createIntentDataProvider(
-                        getTestServerUrl("manifest_test_page.html"), getTestServerUrl("/")));
+                mActivityTestRule.startWebApkActivity(
+                        createIntentDataProvider(
+                                getTestServerUrl("manifest_test_page.html"),
+                                getTestServerUrl("/")));
 
         Class<? extends ChromeActivity> mainClass = ChromeTabbedActivity.class;
 
@@ -106,11 +113,12 @@ public final class WebApkActivityTest {
 
         ApplicationTestUtils.waitForActivityState(webApkActivity, Stage.STOPPED);
 
-        TestThreadUtils.runOnUiThreadBlocking(() -> {
-            TabWebContentsDelegateAndroid tabDelegate =
-                    TabTestUtils.getTabWebContentsDelegate(webApkActivity.getActivityTab());
-            tabDelegate.activateContents();
-        });
+        TestThreadUtils.runOnUiThreadBlocking(
+                () -> {
+                    TabWebContentsDelegateAndroid tabDelegate =
+                            TabTestUtils.getTabWebContentsDelegate(webApkActivity.getActivityTab());
+                    tabDelegate.activateContents();
+                });
 
         // WebAPK Activity should have been brought back to the foreground.
         ChromeActivityTestRule.waitFor(WebappActivity.class);
@@ -125,8 +133,10 @@ public final class WebApkActivityTest {
     }
 
     private String getTestServerUrl(String relativeUrl) {
-        return mActivityTestRule.getEmbeddedTestServerRule().getServer().getURL(
-                "/chrome/test/data/banners/" + relativeUrl);
+        return mActivityTestRule
+                .getEmbeddedTestServerRule()
+                .getServer()
+                .getURL("/chrome/test/data/banners/" + relativeUrl);
     }
 
     /** Register WebAPK with WebappDataStorage */

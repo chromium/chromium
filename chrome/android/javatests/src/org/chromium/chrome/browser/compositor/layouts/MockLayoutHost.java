@@ -127,6 +127,5 @@ class MockLayoutHost implements LayoutManagerHost, LayoutRenderHost {
     public void onContentChanged() {}
 
     @Override
-    public void hideKeyboard(Runnable postHideTask) {
-    }
+    public void hideKeyboard(Runnable postHideTask) {}
 }

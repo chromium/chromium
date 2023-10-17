@@ -55,8 +55,7 @@ public class DigitalCredentialProviderTest {
 
     @Rule public MockitoRule mMockitoRule = MockitoJUnit.rule().strictness(Strictness.STRICT_STUBS);
 
-    @Mock
-    public MockIdentityCredentialsDelegate mDelegate;
+    @Mock public MockIdentityCredentialsDelegate mDelegate;
 
     @Before
     public void setUp() throws Exception {

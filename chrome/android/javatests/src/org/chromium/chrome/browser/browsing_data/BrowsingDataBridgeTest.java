@@ -54,9 +54,7 @@ import java.util.HashSet;
 import java.util.Iterator;
 import java.util.List;
 
-/**
- * Integration tests for ClearBrowsingDataPreferences.
- */
+/** Integration tests for ClearBrowsingDataPreferences. */
 @RunWith(ChromeJUnit4ClassRunner.class)
 @CommandLineFlags.Add({ChromeSwitches.DISABLE_FIRST_RUN_EXPERIENCE})
 @Batch(Batch.PER_CLASS)
@@ -87,41 +85,47 @@ public class BrowsingDataBridgeTest {
         mActionTester.tearDown();
     }
 
-    /**
-     * Test no clear browsing data calls.
-     */
+    /** Test no clear browsing data calls. */
     @Test
     @SmallTest
     public void testNoCalls() throws Exception {
-        TestThreadUtils.runOnUiThreadBlocking(() -> {
-            BrowsingDataBridge.getInstance().clearBrowsingData(
-                    mListener, new int[] {}, TimePeriod.ALL_TIME);
-        });
+        TestThreadUtils.runOnUiThreadBlocking(
+                () -> {
+                    BrowsingDataBridge.getInstance()
+                            .clearBrowsingData(mListener, new int[] {}, TimePeriod.ALL_TIME);
+                });
         mCallbackHelper.waitForCallback(0);
-        assertThat(mActionTester.toString(), getActions(),
+        assertThat(
+                mActionTester.toString(),
+                getActions(),
                 Matchers.contains("ClearBrowsingData_Everything"));
     }
 
-    /**
-     * Test cookies deletion.
-     */
+    /** Test cookies deletion. */
     @Test
     @SmallTest
     public void testCookiesDeleted() throws Exception {
-        TestThreadUtils.runOnUiThreadBlocking(() -> {
-            BrowsingDataBridge.getInstance().clearBrowsingData(
-                    mListener, new int[] {BrowsingDataType.COOKIES}, TimePeriod.LAST_HOUR);
-        });
+        TestThreadUtils.runOnUiThreadBlocking(
+                () -> {
+                    BrowsingDataBridge.getInstance()
+                            .clearBrowsingData(
+                                    mListener,
+                                    new int[] {BrowsingDataType.COOKIES},
+                                    TimePeriod.LAST_HOUR);
+                });
         mCallbackHelper.waitForCallback(0);
-        assertThat(mActionTester.toString(), getActions(),
-                Matchers.containsInAnyOrder("ClearBrowsingData_LastHour",
-                        "ClearBrowsingData_MaskContainsUnprotectedWeb", "ClearBrowsingData_Cookies",
-                        "ClearBrowsingData_SiteUsageData", "ClearBrowsingData_ContentLicenses"));
+        assertThat(
+                mActionTester.toString(),
+                getActions(),
+                Matchers.containsInAnyOrder(
+                        "ClearBrowsingData_LastHour",
+                        "ClearBrowsingData_MaskContainsUnprotectedWeb",
+                        "ClearBrowsingData_Cookies",
+                        "ClearBrowsingData_SiteUsageData",
+                        "ClearBrowsingData_ContentLicenses"));
     }
 
-    /**
-     * Get ClearBrowsingData related actions, filter all other actions to avoid flakes.
-     */
+    /** Get ClearBrowsingData related actions, filter all other actions to avoid flakes. */
     private List<String> getActions() {
         List<String> actions = new ArrayList<>(mActionTester.getActions());
         Iterator<String> it = actions.iterator();
@@ -133,100 +137,125 @@ public class BrowsingDataBridgeTest {
         return actions;
     }
 
-    /**
-     * Test history deletion.
-     */
+    /** Test history deletion. */
     @Test
     @SmallTest
     public void testHistoryDeleted() throws Exception {
-        TestThreadUtils.runOnUiThreadBlocking(() -> {
-            BrowsingDataBridge.getInstance().clearBrowsingData(
-                    mListener, new int[] {BrowsingDataType.HISTORY}, TimePeriod.LAST_DAY);
-        });
+        TestThreadUtils.runOnUiThreadBlocking(
+                () -> {
+                    BrowsingDataBridge.getInstance()
+                            .clearBrowsingData(
+                                    mListener,
+                                    new int[] {BrowsingDataType.HISTORY},
+                                    TimePeriod.LAST_DAY);
+                });
         mCallbackHelper.waitForCallback(0);
-        assertThat(mActionTester.toString(), getActions(),
-                Matchers.containsInAnyOrder("ClearBrowsingData_LastDay",
+        assertThat(
+                mActionTester.toString(),
+                getActions(),
+                Matchers.containsInAnyOrder(
+                        "ClearBrowsingData_LastDay",
                         "ClearBrowsingData_MaskContainsUnprotectedWeb",
                         "ClearBrowsingData_History"));
     }
 
-    /**
-     * Test deleting cache and content settings.
-     */
+    /** Test deleting cache and content settings. */
     @Test
     @SmallTest
     public void testClearingSiteSettingsAndCache() throws Exception {
-        TestThreadUtils.runOnUiThreadBlocking(() -> {
-            BrowsingDataBridge.getInstance().clearBrowsingData(mListener,
-                    new int[] {
-                            BrowsingDataType.CACHE,
-                            BrowsingDataType.SITE_SETTINGS,
-                    },
-                    TimePeriod.FOUR_WEEKS);
-        });
+        TestThreadUtils.runOnUiThreadBlocking(
+                () -> {
+                    BrowsingDataBridge.getInstance()
+                            .clearBrowsingData(
+                                    mListener,
+                                    new int[] {
+                                        BrowsingDataType.CACHE, BrowsingDataType.SITE_SETTINGS,
+                                    },
+                                    TimePeriod.FOUR_WEEKS);
+                });
         mCallbackHelper.waitForCallback(0);
-        assertThat(mActionTester.toString(), getActions(),
-                Matchers.containsInAnyOrder("ClearBrowsingData_LastMonth",
-                        "ClearBrowsingData_MaskContainsUnprotectedWeb", "ClearBrowsingData_Cache",
-                        "ClearBrowsingData_ShaderCache", "ClearBrowsingData_ContentSettings"));
+        assertThat(
+                mActionTester.toString(),
+                getActions(),
+                Matchers.containsInAnyOrder(
+                        "ClearBrowsingData_LastMonth",
+                        "ClearBrowsingData_MaskContainsUnprotectedWeb",
+                        "ClearBrowsingData_Cache",
+                        "ClearBrowsingData_ShaderCache",
+                        "ClearBrowsingData_ContentSettings"));
     }
 
-    /**
-     * Test deleting cache and content settings with important sites.
-     */
+    /** Test deleting cache and content settings with important sites. */
     @Test
     @SmallTest
     public void testClearingSiteSettingsAndCacheWithImportantSites() throws Exception {
-        TestThreadUtils.runOnUiThreadBlocking(() -> {
-            BrowsingDataBridge.getInstance().clearBrowsingDataExcludingDomains(mListener,
-                    new int[] {
-                            BrowsingDataType.CACHE,
-                            BrowsingDataType.SITE_SETTINGS,
-                    },
-                    TimePeriod.FOUR_WEEKS, new String[] {"google.com"}, new int[] {1},
-                    new String[0], new int[0]);
-        });
+        TestThreadUtils.runOnUiThreadBlocking(
+                () -> {
+                    BrowsingDataBridge.getInstance()
+                            .clearBrowsingDataExcludingDomains(
+                                    mListener,
+                                    new int[] {
+                                        BrowsingDataType.CACHE, BrowsingDataType.SITE_SETTINGS,
+                                    },
+                                    TimePeriod.FOUR_WEEKS,
+                                    new String[] {"google.com"},
+                                    new int[] {1},
+                                    new String[0],
+                                    new int[0]);
+                });
         mCallbackHelper.waitForCallback(0);
-        assertThat(mActionTester.toString(), getActions(),
-                Matchers.containsInAnyOrder("ClearBrowsingData_LastMonth",
+        assertThat(
+                mActionTester.toString(),
+                getActions(),
+                Matchers.containsInAnyOrder(
+                        "ClearBrowsingData_LastMonth",
                         // ClearBrowsingData_MaskContainsUnprotectedWeb is logged
                         // twice because important storage is deleted separately.
                         "ClearBrowsingData_MaskContainsUnprotectedWeb",
-                        "ClearBrowsingData_MaskContainsUnprotectedWeb", "ClearBrowsingData_Cache",
-                        "ClearBrowsingData_ShaderCache", "ClearBrowsingData_ContentSettings"));
+                        "ClearBrowsingData_MaskContainsUnprotectedWeb",
+                        "ClearBrowsingData_Cache",
+                        "ClearBrowsingData_ShaderCache",
+                        "ClearBrowsingData_ContentSettings"));
     }
 
-    /**
-     * Test deleting all browsing data. (Except bookmarks, they are deleted in Java code)
-     */
+    /** Test deleting all browsing data. (Except bookmarks, they are deleted in Java code) */
     @Test
     @SmallTest
     public void testClearingAll() throws Exception {
-        TestThreadUtils.runOnUiThreadBlocking(() -> {
-            BrowsingDataBridge.getInstance().clearBrowsingData(mListener,
-                    new int[] {
-                            BrowsingDataType.CACHE,
-                            BrowsingDataType.COOKIES,
-                            BrowsingDataType.FORM_DATA,
-                            BrowsingDataType.HISTORY,
-                            BrowsingDataType.PASSWORDS,
-                            BrowsingDataType.SITE_SETTINGS,
-                    },
-                    TimePeriod.LAST_WEEK);
-        });
+        TestThreadUtils.runOnUiThreadBlocking(
+                () -> {
+                    BrowsingDataBridge.getInstance()
+                            .clearBrowsingData(
+                                    mListener,
+                                    new int[] {
+                                        BrowsingDataType.CACHE,
+                                        BrowsingDataType.COOKIES,
+                                        BrowsingDataType.FORM_DATA,
+                                        BrowsingDataType.HISTORY,
+                                        BrowsingDataType.PASSWORDS,
+                                        BrowsingDataType.SITE_SETTINGS,
+                                    },
+                                    TimePeriod.LAST_WEEK);
+                });
         mCallbackHelper.waitForCallback(0);
-        assertThat(mActionTester.toString(), getActions(),
-                Matchers.containsInAnyOrder("ClearBrowsingData_LastWeek",
-                        "ClearBrowsingData_MaskContainsUnprotectedWeb", "ClearBrowsingData_Cache",
-                        "ClearBrowsingData_ShaderCache", "ClearBrowsingData_Cookies",
-                        "ClearBrowsingData_Autofill", "ClearBrowsingData_History",
-                        "ClearBrowsingData_Passwords", "ClearBrowsingData_ContentSettings",
-                        "ClearBrowsingData_SiteUsageData", "ClearBrowsingData_ContentLicenses"));
+        assertThat(
+                mActionTester.toString(),
+                getActions(),
+                Matchers.containsInAnyOrder(
+                        "ClearBrowsingData_LastWeek",
+                        "ClearBrowsingData_MaskContainsUnprotectedWeb",
+                        "ClearBrowsingData_Cache",
+                        "ClearBrowsingData_ShaderCache",
+                        "ClearBrowsingData_Cookies",
+                        "ClearBrowsingData_Autofill",
+                        "ClearBrowsingData_History",
+                        "ClearBrowsingData_Passwords",
+                        "ClearBrowsingData_ContentSettings",
+                        "ClearBrowsingData_SiteUsageData",
+                        "ClearBrowsingData_ContentLicenses"));
     }
 
-    /**
-     * Tests navigation entries from frozen state are removed by history deletions.
-     */
+    /** Tests navigation entries from frozen state are removed by history deletions. */
     @Test
     @MediumTest
     public void testFrozenNavigationDeletion() throws Exception {
@@ -238,14 +267,19 @@ public class BrowsingDataBridgeTest {
         sActivityTestRule.loadUrl(url2);
         Tab[] frozen = new Tab[1];
         WebContents[] restored = new WebContents[1];
-        TestThreadUtils.runOnUiThreadBlocking(() -> {
-            TabState state = TabStateExtractor.from(tab);
-            sActivityTestRule.getActivity().getCurrentTabModel().closeTab(tab);
-            frozen[0] = sActivityTestRule.getActivity().getCurrentTabCreator().createFrozenTab(
-                    state, tab.getId(), tab.isIncognito(), 1);
-            restored[0] = WebContentsStateBridge.restoreContentsFromByteBuffer(
-                    TabStateExtractor.from(frozen[0]).contentsState, false);
-        });
+        TestThreadUtils.runOnUiThreadBlocking(
+                () -> {
+                    TabState state = TabStateExtractor.from(tab);
+                    sActivityTestRule.getActivity().getCurrentTabModel().closeTab(tab);
+                    frozen[0] =
+                            sActivityTestRule
+                                    .getActivity()
+                                    .getCurrentTabCreator()
+                                    .createFrozenTab(state, tab.getId(), tab.isIncognito(), 1);
+                    restored[0] =
+                            WebContentsStateBridge.restoreContentsFromByteBuffer(
+                                    TabStateExtractor.from(frozen[0]).contentsState, false);
+                });
 
         // Check content of frozen state.
         NavigationController controller = restored[0].getNavigationController();
@@ -253,21 +287,26 @@ public class BrowsingDataBridgeTest {
         assertThat(getUrls(controller), Matchers.contains(url1, url2));
         assertNull(frozen[0].getWebContents());
 
-        TestThreadUtils.runOnUiThreadBlocking(() -> {
-            BrowsingDataBridge.getInstance().clearBrowsingData(mListener,
-                    new int[] {
-                            BrowsingDataType.HISTORY,
-                    },
-                    TimePeriod.LAST_WEEK);
-        });
+        TestThreadUtils.runOnUiThreadBlocking(
+                () -> {
+                    BrowsingDataBridge.getInstance()
+                            .clearBrowsingData(
+                                    mListener,
+                                    new int[] {
+                                        BrowsingDataType.HISTORY,
+                                    },
+                                    TimePeriod.LAST_WEEK);
+                });
 
         mCallbackHelper.waitForCallback(0);
 
         // Check that frozen state was cleaned up.
-        TestThreadUtils.runOnUiThreadBlocking(() -> {
-            restored[0] = WebContentsStateBridge.restoreContentsFromByteBuffer(
-                    TabStateExtractor.from(frozen[0]).contentsState, false);
-        });
+        TestThreadUtils.runOnUiThreadBlocking(
+                () -> {
+                    restored[0] =
+                            WebContentsStateBridge.restoreContentsFromByteBuffer(
+                                    TabStateExtractor.from(frozen[0]).contentsState, false);
+                });
 
         controller = restored[0].getNavigationController();
         assertEquals(0, controller.getLastCommittedEntryIndex());
@@ -276,9 +315,8 @@ public class BrowsingDataBridgeTest {
     }
 
     /**
-     * Tests that calling getContentsStateAsByteBuffer on a tab that has never
-     * committed a navigation results in a null ByteBuffer.
-     * Regression test for https://crbug.com/1240138.
+     * Tests that calling getContentsStateAsByteBuffer on a tab that has never committed a
+     * navigation results in a null ByteBuffer. Regression test for https://crbug.com/1240138.
      */
     @Test
     @MediumTest
@@ -286,14 +324,15 @@ public class BrowsingDataBridgeTest {
         TestWebServer webServer = TestWebServer.start();
         final String noContentUrl = webServer.setResponseWithNoContentStatus("/nocontent.html");
         Tab tab = sActivityTestRule.loadUrlInNewTab(noContentUrl);
-        TestThreadUtils.runOnUiThreadBlocking(() -> {
-            assertNull(WebContentsStateBridge.getContentsStateAsByteBuffer(tab.getWebContents()));
-        });
+        TestThreadUtils.runOnUiThreadBlocking(
+                () -> {
+                    assertNull(
+                            WebContentsStateBridge.getContentsStateAsByteBuffer(
+                                    tab.getWebContents()));
+                });
     }
 
-    /**
-     * Tests navigation entries are removed by history deletions.
-     */
+    /** Tests navigation entries are removed by history deletions. */
     @Test
     @MediumTest
     public void testNavigationDeletion() throws Exception {
@@ -308,13 +347,16 @@ public class BrowsingDataBridgeTest {
         assertEquals(1, controller.getLastCommittedEntryIndex());
         assertThat(getUrls(controller), Matchers.contains(url1, url2));
 
-        TestThreadUtils.runOnUiThreadBlocking(() -> {
-            BrowsingDataBridge.getInstance().clearBrowsingData(mListener,
-                    new int[] {
-                            BrowsingDataType.HISTORY,
-                    },
-                    TimePeriod.LAST_WEEK);
-        });
+        TestThreadUtils.runOnUiThreadBlocking(
+                () -> {
+                    BrowsingDataBridge.getInstance()
+                            .clearBrowsingData(
+                                    mListener,
+                                    new int[] {
+                                        BrowsingDataType.HISTORY,
+                                    },
+                                    TimePeriod.LAST_WEEK);
+                });
         mCallbackHelper.waitForCallback(0);
 
         // Check navigation entries.
@@ -323,25 +365,28 @@ public class BrowsingDataBridgeTest {
         assertThat(getUrls(controller), Matchers.contains(url2));
     }
 
-    /**
-     * Tests that web apps are cleared when the "cookies and site data" option is selected.
-     */
+    /** Tests that web apps are cleared when the "cookies and site data" option is selected. */
     @Test
     @MediumTest
     public void testClearingSiteDataClearsWebapps() throws Exception {
         TestFetchStorageCallback callback = new TestFetchStorageCallback();
         WebappRegistry.getInstance().register("first", callback);
         callback.waitForCallback(0);
-        Assert.assertEquals(new HashSet<>(Arrays.asList("first")),
+        Assert.assertEquals(
+                new HashSet<>(Arrays.asList("first")),
                 WebappRegistry.getRegisteredWebappIdsForTesting());
 
-        TestThreadUtils.runOnUiThreadBlocking(() -> {
-            BrowsingDataBridge.getInstance().clearBrowsingData(mListener,
-                    new int[] {
-                            org.chromium.chrome.browser.browsing_data.BrowsingDataType.COOKIES,
-                    },
-                    TimePeriod.LAST_WEEK);
-        });
+        TestThreadUtils.runOnUiThreadBlocking(
+                () -> {
+                    BrowsingDataBridge.getInstance()
+                            .clearBrowsingData(
+                                    mListener,
+                                    new int[] {
+                                        org.chromium.chrome.browser.browsing_data.BrowsingDataType
+                                                .COOKIES,
+                                    },
+                                    TimePeriod.LAST_WEEK);
+                });
 
         Assert.assertTrue(WebappRegistry.getRegisteredWebappIdsForTesting().isEmpty());
     }
@@ -360,17 +405,23 @@ public class BrowsingDataBridgeTest {
         callback.waitForCallback(0);
         callback.getStorage().updateFromWebappIntentDataProvider(intentDataProvider);
 
-        Assert.assertEquals(new HashSet<>(Arrays.asList("first")),
+        Assert.assertEquals(
+                new HashSet<>(Arrays.asList("first")),
                 WebappRegistry.getRegisteredWebappIdsForTesting());
 
-        TestThreadUtils.runOnUiThreadBlocking(() -> {
-            BrowsingDataBridge.getInstance().clearBrowsingData(mListener,
-                    new int[] {
-                            org.chromium.chrome.browser.browsing_data.BrowsingDataType.HISTORY,
-                    },
-                    TimePeriod.LAST_WEEK);
-        });
-        Assert.assertEquals(new HashSet<>(Arrays.asList("first")),
+        TestThreadUtils.runOnUiThreadBlocking(
+                () -> {
+                    BrowsingDataBridge.getInstance()
+                            .clearBrowsingData(
+                                    mListener,
+                                    new int[] {
+                                        org.chromium.chrome.browser.browsing_data.BrowsingDataType
+                                                .HISTORY,
+                                    },
+                                    TimePeriod.LAST_WEEK);
+                });
+        Assert.assertEquals(
+                new HashSet<>(Arrays.asList("first")),
                 WebappRegistry.getRegisteredWebappIdsForTesting());
 
         // URL and scope should be empty, and last used time should be 0.

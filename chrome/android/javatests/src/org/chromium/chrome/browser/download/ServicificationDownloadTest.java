@@ -35,15 +35,11 @@ import org.chromium.url.GURL;
 
 import java.util.List;
 
-/**
- * Tests interrupted download can be resumed with minimal browser mode.
- */
+/** Tests interrupted download can be resumed with minimal browser mode. */
 @RunWith(ChromeJUnit4ClassRunner.class)
 public final class ServicificationDownloadTest {
-    @Rule
-    public EmbeddedTestServerRule mEmbeddedTestServerRule = new EmbeddedTestServerRule();
-    @Rule
-    public ReducedModeNativeTestRule mNativeTestRule = new ReducedModeNativeTestRule();
+    @Rule public EmbeddedTestServerRule mEmbeddedTestServerRule = new EmbeddedTestServerRule();
+    @Rule public ReducedModeNativeTestRule mNativeTestRule = new ReducedModeNativeTestRule();
 
     private static final String TEST_DOWNLOAD_FILE = "/chrome/test/data/android/download/test.gzip";
     private static final String DOWNLOAD_GUID = "F7FB1F59-7DE1-4845-AFDB-8A688F70F583";
@@ -54,10 +50,19 @@ public final class ServicificationDownloadTest {
         private boolean mDownloadCompleted;
 
         @Override
-        public int notifyDownloadSuccessful(ContentId id, String filePath, String fileName,
-                long systemDownloadId, OTRProfileID otrProfileID, boolean isSupportedMimeType,
-                boolean isOpenable, Bitmap icon, GURL originalUrl, boolean shouldPromoteOrigin,
-                GURL referrer, long totalBytes) {
+        public int notifyDownloadSuccessful(
+                ContentId id,
+                String filePath,
+                String fileName,
+                long systemDownloadId,
+                OTRProfileID otrProfileID,
+                boolean isSupportedMimeType,
+                boolean isOpenable,
+                Bitmap icon,
+                GURL originalUrl,
+                boolean shouldPromoteOrigin,
+                GURL referrer,
+                long totalBytes) {
             mDownloadCompleted = true;
             return 0;
         }
@@ -90,10 +95,11 @@ public final class ServicificationDownloadTest {
 
     @Before
     public void setUp() {
-        TestThreadUtils.runOnUiThreadBlocking(() -> {
-            mNotificationService = new MockDownloadNotificationService();
-            mDownloadUpdateObserver = new DownloadUpdateObserver();
-        });
+        TestThreadUtils.runOnUiThreadBlocking(
+                () -> {
+                    mNotificationService = new MockDownloadNotificationService();
+                    mDownloadUpdateObserver = new DownloadUpdateObserver();
+                });
     }
 
     private static boolean useDownloadOfflineContentProvider() {
@@ -108,28 +114,33 @@ public final class ServicificationDownloadTest {
         if (useDownloadOfflineContentProvider()) return;
         mNativeTestRule.assertMinimalBrowserStarted();
 
-        String tempFile = InstrumentationRegistry.getInstrumentation()
-                                  .getTargetContext()
-                                  .getCacheDir()
-                                  .getPath()
-                + "/test.gzip";
+        String tempFile =
+                InstrumentationRegistry.getInstrumentation()
+                                .getTargetContext()
+                                .getCacheDir()
+                                .getPath()
+                        + "/test.gzip";
         TestFileUtil.deleteFile(tempFile);
-        DownloadItem item = new DownloadItem(false,
-                new DownloadInfo.Builder()
-                        .setDownloadGuid(DOWNLOAD_GUID)
-                        .setOTRProfileId(null)
-                        .build());
+        DownloadItem item =
+                new DownloadItem(
+                        false,
+                        new DownloadInfo.Builder()
+                                .setDownloadGuid(DOWNLOAD_GUID)
+                                .setOTRProfileId(null)
+                                .build());
         final String url = mEmbeddedTestServerRule.getServer().getURL(TEST_DOWNLOAD_FILE);
-        TestThreadUtils.runOnUiThreadBlocking(() -> {
-            DownloadManagerService downloadManagerService =
-                    DownloadManagerService.getDownloadManagerService();
-            downloadManagerService.disableAddCompletedDownloadToDownloadManager();
-            ((SystemDownloadNotifier) downloadManagerService.getDownloadNotifier())
-                    .setDownloadNotificationService(mNotificationService);
-            downloadManagerService.createInterruptedDownloadForTest(url, DOWNLOAD_GUID, tempFile);
-            downloadManagerService.resumeDownload(
-                    new ContentId("download", DOWNLOAD_GUID), item, true);
-        });
+        TestThreadUtils.runOnUiThreadBlocking(
+                () -> {
+                    DownloadManagerService downloadManagerService =
+                            DownloadManagerService.getDownloadManagerService();
+                    downloadManagerService.disableAddCompletedDownloadToDownloadManager();
+                    ((SystemDownloadNotifier) downloadManagerService.getDownloadNotifier())
+                            .setDownloadNotificationService(mNotificationService);
+                    downloadManagerService.createInterruptedDownloadForTest(
+                            url, DOWNLOAD_GUID, tempFile);
+                    downloadManagerService.resumeDownload(
+                            new ContentId("download", DOWNLOAD_GUID), item, true);
+                });
         mNotificationService.waitForDownloadCompletion();
     }
 
@@ -141,24 +152,27 @@ public final class ServicificationDownloadTest {
         if (!useDownloadOfflineContentProvider()) return;
         mNativeTestRule.assertMinimalBrowserStarted();
 
-        String tempFile = InstrumentationRegistry.getInstrumentation()
-                                  .getTargetContext()
-                                  .getCacheDir()
-                                  .getPath()
-                + "/test.gzip";
+        String tempFile =
+                InstrumentationRegistry.getInstrumentation()
+                                .getTargetContext()
+                                .getCacheDir()
+                                .getPath()
+                        + "/test.gzip";
         TestFileUtil.deleteFile(tempFile);
         final String url = mEmbeddedTestServerRule.getServer().getURL(TEST_DOWNLOAD_FILE);
-        TestThreadUtils.runOnUiThreadBlocking(() -> {
-            DownloadManagerService downloadManagerService =
-                    DownloadManagerService.getDownloadManagerService();
-            downloadManagerService.disableAddCompletedDownloadToDownloadManager();
-            ((SystemDownloadNotifier) downloadManagerService.getDownloadNotifier())
-                    .setDownloadNotificationService(mNotificationService);
-            downloadManagerService.createInterruptedDownloadForTest(url, DOWNLOAD_GUID, tempFile);
-            OfflineContentAggregatorFactory.get().addObserver(mDownloadUpdateObserver);
-            OfflineContentAggregatorFactory.get().resumeDownload(
-                    new ContentId("LEGACY_DOWNLOAD", DOWNLOAD_GUID), true);
-        });
+        TestThreadUtils.runOnUiThreadBlocking(
+                () -> {
+                    DownloadManagerService downloadManagerService =
+                            DownloadManagerService.getDownloadManagerService();
+                    downloadManagerService.disableAddCompletedDownloadToDownloadManager();
+                    ((SystemDownloadNotifier) downloadManagerService.getDownloadNotifier())
+                            .setDownloadNotificationService(mNotificationService);
+                    downloadManagerService.createInterruptedDownloadForTest(
+                            url, DOWNLOAD_GUID, tempFile);
+                    OfflineContentAggregatorFactory.get().addObserver(mDownloadUpdateObserver);
+                    OfflineContentAggregatorFactory.get()
+                            .resumeDownload(new ContentId("LEGACY_DOWNLOAD", DOWNLOAD_GUID), true);
+                });
         mDownloadUpdateObserver.waitForDownloadCompletion();
     }
 }

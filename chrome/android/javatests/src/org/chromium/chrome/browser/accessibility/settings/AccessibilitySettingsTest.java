@@ -63,7 +63,7 @@ import java.text.NumberFormat;
 /**
  * Tests for the Accessibility Settings menu.
  *
- * TODO(crbug.com/1296642): This tests the class in //components/browser_ui, but we don't have a
+ * <p>TODO(crbug.com/1296642): This tests the class in //components/browser_ui, but we don't have a
  * good way of testing with native code there.
  */
 @RunWith(ChromeJUnit4ClassRunner.class)
@@ -75,8 +75,8 @@ public class AccessibilitySettingsTest {
     @Rule
     public SettingsActivityTestRule<AccessibilitySettings> mSettingsActivityTestRule =
             new SettingsActivityTestRule<>(AccessibilitySettings.class);
-    @Rule
-    public TestRule mProcessor = new Features.InstrumentationProcessor();
+
+    @Rule public TestRule mProcessor = new Features.InstrumentationProcessor();
 
     @Before
     public void setUp() {
@@ -95,8 +95,8 @@ public class AccessibilitySettingsTest {
     }
 
     /**
-     * Tests setting FontScaleFactor and ForceEnableZoom in AccessibilitySettings and ensures
-     * that ForceEnableZoom changes corresponding to FontScaleFactor.
+     * Tests setting FontScaleFactor and ForceEnableZoom in AccessibilitySettings and ensures that
+     * ForceEnableZoom changes corresponding to FontScaleFactor.
      */
     @Test
     @SmallTest
@@ -104,11 +104,13 @@ public class AccessibilitySettingsTest {
     @DisableFeatures({ContentFeatureList.ACCESSIBILITY_PAGE_ZOOM, ContentFeatureList.SMART_ZOOM})
     public void testAccessibilitySettings() throws Exception {
         TextScalePreference textScalePref =
-                (TextScalePreference) mAccessibilitySettings.findPreference(
-                        AccessibilitySettings.PREF_TEXT_SCALE);
+                (TextScalePreference)
+                        mAccessibilitySettings.findPreference(
+                                AccessibilitySettings.PREF_TEXT_SCALE);
         ChromeSwitchPreference forceEnableZoomPref =
-                (ChromeSwitchPreference) mAccessibilitySettings.findPreference(
-                        AccessibilitySettings.PREF_FORCE_ENABLE_ZOOM);
+                (ChromeSwitchPreference)
+                        mAccessibilitySettings.findPreference(
+                                AccessibilitySettings.PREF_FORCE_ENABLE_ZOOM);
         NumberFormat percentFormat = NumberFormat.getPercentInstance();
         // Arbitrary value 0.4f to be larger and smaller than threshold.
         float fontSmallerThanThreshold =
@@ -129,7 +131,8 @@ public class AccessibilitySettingsTest {
         UiUtils.settleDownUI(InstrumentationRegistry.getInstrumentation());
         // Since below the threshold and userSetForceEnableZoom is false, this will uncheck
         // the force enable zoom button.
-        Assert.assertEquals(percentFormat.format(fontSmallerThanThreshold),
+        Assert.assertEquals(
+                percentFormat.format(fontSmallerThanThreshold),
                 textScalePref.getAmountForTesting());
         Assert.assertFalse(forceEnableZoomPref.isChecked());
         assertFontSizePrefs(false, fontSmallerThanThreshold);
@@ -157,17 +160,23 @@ public class AccessibilitySettingsTest {
         userSetTextScale(mAccessibilitySettings, textScalePref, 0.5f);
         userSetTextScale(mAccessibilitySettings, textScalePref, 1.75f);
 
-        Assert.assertEquals("Histogram should not be recorded yet.", 0,
+        Assert.assertEquals(
+                "Histogram should not be recorded yet.",
+                0,
                 RecordHistogram.getHistogramTotalCountForTesting(
                         FontSizePrefs.FONT_SIZE_CHANGE_HISTOGRAM));
 
         // Simulate activity stopping.
         TestThreadUtils.runOnUiThreadBlocking(() -> mAccessibilitySettings.onStop());
 
-        Assert.assertEquals("Histogram should have been recorded once.", 1,
+        Assert.assertEquals(
+                "Histogram should have been recorded once.",
+                1,
                 RecordHistogram.getHistogramTotalCountForTesting(
                         FontSizePrefs.FONT_SIZE_CHANGE_HISTOGRAM));
-        Assert.assertEquals("Histogram should have recorded final value.", 1,
+        Assert.assertEquals(
+                "Histogram should have recorded final value.",
+                1,
                 RecordHistogram.getHistogramValueCountForTesting(
                         FontSizePrefs.FONT_SIZE_CHANGE_HISTOGRAM, 175));
     }
@@ -179,7 +188,9 @@ public class AccessibilitySettingsTest {
     public void testUnchangedFontPrefNotSavedOnStop() {
         // Simulate activity stopping.
         TestThreadUtils.runOnUiThreadBlocking(() -> mAccessibilitySettings.onStop());
-        Assert.assertEquals("Histogram should not have been recorded.", 0,
+        Assert.assertEquals(
+                "Histogram should not have been recorded.",
+                0,
                 RecordHistogram.getHistogramTotalCountForTesting(
                         FontSizePrefs.FONT_SIZE_CHANGE_HISTOGRAM));
     }
@@ -194,13 +205,15 @@ public class AccessibilitySettingsTest {
         Assert.assertNotNull(captionsPref.getOnPreferenceClickListener());
 
         Instrumentation.ActivityMonitor monitor =
-                InstrumentationRegistry.getInstrumentation().addMonitor(
-                        new IntentFilter(Settings.ACTION_CAPTIONING_SETTINGS), null, false);
+                InstrumentationRegistry.getInstrumentation()
+                        .addMonitor(
+                                new IntentFilter(Settings.ACTION_CAPTIONING_SETTINGS), null, false);
 
         // First scroll to the Captions preference, then click.
         onView(withId(R.id.recycler_view))
-                .perform(RecyclerViewActions.scrollTo(
-                        hasDescendant(withText(R.string.accessibility_captions_title))));
+                .perform(
+                        RecyclerViewActions.scrollTo(
+                                hasDescendant(withText(R.string.accessibility_captions_title))));
         onView(withText(R.string.accessibility_captions_title)).perform(click());
         monitor.waitForActivityWithTimeout(CriteriaHelper.DEFAULT_MAX_TIME_TO_POLL);
         Assert.assertEquals("Monitor for has not been called", 1, monitor.getHits());
@@ -220,13 +233,15 @@ public class AccessibilitySettingsTest {
                 "Image Descriptions option should be visible", imageDescriptionsPref.isVisible());
 
         Instrumentation.ActivityMonitor monitor =
-                InstrumentationRegistry.getInstrumentation().addMonitor(
-                        new IntentFilter(Intent.ACTION_MAIN), null, true);
+                InstrumentationRegistry.getInstrumentation()
+                        .addMonitor(new IntentFilter(Intent.ACTION_MAIN), null, true);
 
         // First scroll to the Image Descriptions preference, then click.
         onView(withId(R.id.recycler_view))
-                .perform(RecyclerViewActions.scrollTo(
-                        hasDescendant(withText(R.string.image_descriptions_settings_title))));
+                .perform(
+                        RecyclerViewActions.scrollTo(
+                                hasDescendant(
+                                        withText(R.string.image_descriptions_settings_title))));
         onView(withText(R.string.image_descriptions_settings_title)).perform(click());
 
         // The activity is blocked, so just wait for the ActivityMonitor to capture an Intent.
@@ -247,18 +262,19 @@ public class AccessibilitySettingsTest {
         Assert.assertNotNull(zoomInfoPref.getOnPreferenceClickListener());
 
         Instrumentation.ActivityMonitor monitor =
-                InstrumentationRegistry.getInstrumentation().addMonitor(
-                        new IntentFilter(), null, false);
+                InstrumentationRegistry.getInstrumentation()
+                        .addMonitor(new IntentFilter(), null, false);
 
         // First scroll to the "Saved zoom levels" preference, then click.
         onView(withId(R.id.recycler_view))
-                .perform(RecyclerViewActions.scrollTo(
-                        hasDescendant(withText(R.string.zoom_info_preference_title))));
+                .perform(
+                        RecyclerViewActions.scrollTo(
+                                hasDescendant(withText(R.string.zoom_info_preference_title))));
         onView(withText(R.string.zoom_info_preference_title)).perform(click());
 
         // The activity is blocked, so just wait for the ActivityMonitor to capture an Intent.
-        CriteriaHelper.pollInstrumentationThread(()
-                                                         -> monitor.getHits() >= 1,
+        CriteriaHelper.pollInstrumentationThread(
+                () -> monitor.getHits() >= 1,
                 "Clicking 'Saved zoom levels' should open Site Settings page.");
 
         InstrumentationRegistry.getInstrumentation().removeMonitor(monitor);
@@ -269,10 +285,13 @@ public class AccessibilitySettingsTest {
     @Feature({"Accessibility"})
     @DisableFeatures({ContentFeatureList.ACCESSIBILITY_PAGE_ZOOM, ContentFeatureList.SMART_ZOOM})
     public void testPageZoomPreference_hiddenWhenDisabled() {
-        mPageZoomPref = (PageZoomPreference) mAccessibilitySettings.findPreference(
-                AccessibilitySettings.PREF_PAGE_ZOOM_DEFAULT_ZOOM);
+        mPageZoomPref =
+                (PageZoomPreference)
+                        mAccessibilitySettings.findPreference(
+                                AccessibilitySettings.PREF_PAGE_ZOOM_DEFAULT_ZOOM);
         Assert.assertNotNull(mPageZoomPref);
-        Assert.assertFalse("Page Zoom default zoom option should not be visible when disabled",
+        Assert.assertFalse(
+                "Page Zoom default zoom option should not be visible when disabled",
                 mPageZoomPref.isVisible());
     }
 
@@ -345,7 +364,10 @@ public class AccessibilitySettingsTest {
     @DisableFeatures(ContentFeatureList.SMART_ZOOM)
     public void testPageZoomPreference_decreaseButtonProperlyDisabled() {
         getPageZoomPref();
-        TestThreadUtils.runOnUiThreadBlocking(() -> { mPageZoomPref.setZoomValueForTesting(0); });
+        TestThreadUtils.runOnUiThreadBlocking(
+                () -> {
+                    mPageZoomPref.setZoomValueForTesting(0);
+                });
         onView(withId(R.id.page_zoom_decrease_zoom_button)).check(matches(sDisabled));
     }
 
@@ -369,9 +391,11 @@ public class AccessibilitySettingsTest {
     @DisableFeatures(ContentFeatureList.SMART_ZOOM)
     public void testPageZoomPreference_increaseButtonProperlyDisabled() {
         getPageZoomPref();
-        TestThreadUtils.runOnUiThreadBlocking(() -> {
-            mPageZoomPref.setZoomValueForTesting(PageZoomUtils.PAGE_ZOOM_MAXIMUM_SEEKBAR_VALUE);
-        });
+        TestThreadUtils.runOnUiThreadBlocking(
+                () -> {
+                    mPageZoomPref.setZoomValueForTesting(
+                            PageZoomUtils.PAGE_ZOOM_MAXIMUM_SEEKBAR_VALUE);
+                });
         onView(withId(R.id.page_zoom_increase_zoom_button)).check(matches(sDisabled));
     }
 
@@ -394,7 +418,9 @@ public class AccessibilitySettingsTest {
         getPageZoomPref();
 
         TestThreadUtils.runOnUiThreadBlocking(
-                () -> { mPageZoomPref.setTextContrastValueForTesting(20); });
+                () -> {
+                    mPageZoomPref.setTextContrastValueForTesting(20);
+                });
         int startingVal = mPageZoomPref.getTextSizeContrastSliderForTesting().getProgress();
         onView(withId(R.id.text_size_contrast_decrease_zoom_button)).perform(click());
         Assert.assertTrue(
@@ -408,7 +434,9 @@ public class AccessibilitySettingsTest {
     public void testPageZoomPreference_smartZoom_decreaseButtonProperlyDisabled() {
         getPageZoomPref();
         TestThreadUtils.runOnUiThreadBlocking(
-                () -> { mPageZoomPref.setTextContrastValueForTesting(0); });
+                () -> {
+                    mPageZoomPref.setTextContrastValueForTesting(0);
+                });
         onView(withId(R.id.text_size_contrast_decrease_zoom_button)).check(matches(sDisabled));
     }
 
@@ -431,10 +459,11 @@ public class AccessibilitySettingsTest {
     @EnableFeatures({ContentFeatureList.ACCESSIBILITY_PAGE_ZOOM, ContentFeatureList.SMART_ZOOM})
     public void testPageZoomPreference_smartZoom_increaseButtonProperlyDisabled() {
         getPageZoomPref();
-        TestThreadUtils.runOnUiThreadBlocking(() -> {
-            mPageZoomPref.setTextContrastValueForTesting(
-                    PageZoomUtils.TEXT_SIZE_CONTRAST_MAX_LEVEL);
-        });
+        TestThreadUtils.runOnUiThreadBlocking(
+                () -> {
+                    mPageZoomPref.setTextContrastValueForTesting(
+                            PageZoomUtils.TEXT_SIZE_CONTRAST_MAX_LEVEL);
+                });
         onView(withId(R.id.text_size_contrast_increase_zoom_button)).check(matches(sDisabled));
     }
 
@@ -450,21 +479,24 @@ public class AccessibilitySettingsTest {
                 startingVal, mPageZoomPref.getTextSizeContrastSliderForTesting().getProgress());
     }
 
-    private static final BaseMatcher<View> sDisabled = new BaseMatcher<View>() {
-        @Override
-        public boolean matches(Object o) {
-            return !((ChromeImageButton) o).isEnabled();
-        }
+    private static final BaseMatcher<View> sDisabled =
+            new BaseMatcher<View>() {
+                @Override
+                public boolean matches(Object o) {
+                    return !((ChromeImageButton) o).isEnabled();
+                }
 
-        @Override
-        public void describeTo(Description description) {
-            description.appendText("View was enabled, but should have been disabled.");
-        }
-    };
+                @Override
+                public void describeTo(Description description) {
+                    description.appendText("View was enabled, but should have been disabled.");
+                }
+            };
 
     private void getPageZoomPref() {
-        mPageZoomPref = (PageZoomPreference) mAccessibilitySettings.findPreference(
-                AccessibilitySettings.PREF_PAGE_ZOOM_DEFAULT_ZOOM);
+        mPageZoomPref =
+                (PageZoomPreference)
+                        mAccessibilitySettings.findPreference(
+                                AccessibilitySettings.PREF_PAGE_ZOOM_DEFAULT_ZOOM);
         Assert.assertNotNull(mPageZoomPref);
         Assert.assertTrue(
                 "Page Zoom pref should be visible when enabled.", mPageZoomPref.isVisible());
@@ -472,23 +504,32 @@ public class AccessibilitySettingsTest {
 
     private void assertFontSizePrefs(
             final boolean expectedForceEnableZoom, final float expectedFontScale) {
-        TestThreadUtils.runOnUiThreadBlocking(() -> {
-            FontSizePrefs fontSizePrefs =
-                    FontSizePrefs.getInstance(Profile.getLastUsedRegularProfile());
-            Assert.assertEquals(expectedForceEnableZoom, fontSizePrefs.getForceEnableZoom());
-            Assert.assertEquals(expectedFontScale, fontSizePrefs.getFontScaleFactor(), 0.001f);
-        });
+        TestThreadUtils.runOnUiThreadBlocking(
+                () -> {
+                    FontSizePrefs fontSizePrefs =
+                            FontSizePrefs.getInstance(Profile.getLastUsedRegularProfile());
+                    Assert.assertEquals(
+                            expectedForceEnableZoom, fontSizePrefs.getForceEnableZoom());
+                    Assert.assertEquals(
+                            expectedFontScale, fontSizePrefs.getFontScaleFactor(), 0.001f);
+                });
     }
 
-    private static void userSetTextScale(final AccessibilitySettings accessibilitySettings,
-            final TextScalePreference textScalePref, final float textScale) {
-        PostTask.runOrPostTask(TaskTraits.UI_DEFAULT,
+    private static void userSetTextScale(
+            final AccessibilitySettings accessibilitySettings,
+            final TextScalePreference textScalePref,
+            final float textScale) {
+        PostTask.runOrPostTask(
+                TaskTraits.UI_DEFAULT,
                 () -> accessibilitySettings.onPreferenceChange(textScalePref, textScale));
     }
 
-    private static void userSetForceEnableZoom(final AccessibilitySettings accessibilitySettings,
-            final ChromeSwitchPreference forceEnableZoomPref, final boolean enabled) {
-        PostTask.runOrPostTask(TaskTraits.UI_DEFAULT,
+    private static void userSetForceEnableZoom(
+            final AccessibilitySettings accessibilitySettings,
+            final ChromeSwitchPreference forceEnableZoomPref,
+            final boolean enabled) {
+        PostTask.runOrPostTask(
+                TaskTraits.UI_DEFAULT,
                 () -> accessibilitySettings.onPreferenceChange(forceEnableZoomPref, enabled));
     }
 }

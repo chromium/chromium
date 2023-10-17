@@ -48,16 +48,23 @@ class MockPackageManagerDelegate extends PackageManagerDelegate {
      * @param label The user visible name of the app.
      * @param packageName The identifying package name.
      * @param defaultPaymentMethodName The name of the default payment method name for this app. If
-     *          null, then this app will not have metadata. If empty, then the default payment
-     * method name will not be set.
+     *     null, then this app will not have metadata. If empty, then the default payment method
+     *     name will not be set.
      * @param signature The signature of the app. The SHA256 hash of this signature is called
-     *         "fingerprint" and should be present in the app's web app manifest. If null, then this
-     *         app will not have package info. If empty, then this app will not have any signatures.
+     *     "fingerprint" and should be present in the app's web app manifest. If null, then this app
+     *     will not have package info. If empty, then this app will not have any signatures.
      */
-    public void installPaymentApp(CharSequence label, String packageName,
-            String defaultPaymentMethodName, String signature) {
-        installPaymentApp(label, packageName, defaultPaymentMethodName,
-                /*supportedDelegations=*/null, signature);
+    public void installPaymentApp(
+            CharSequence label,
+            String packageName,
+            String defaultPaymentMethodName,
+            String signature) {
+        installPaymentApp(
+                label,
+                packageName,
+                defaultPaymentMethodName,
+                /* supportedDelegations= */ null,
+                signature);
     }
 
     /**
@@ -66,16 +73,20 @@ class MockPackageManagerDelegate extends PackageManagerDelegate {
      * @param label The user visible name of the app.
      * @param packageName The identifying package name.
      * @param defaultPaymentMethodName The name of the default payment method name for this app. If
-     *         empty, then the default payment method name will not be set.
+     *     empty, then the default payment method name will not be set.
      * @param supportedDelegations The delegations that the app can support. If both
-     *         supportedDelegations and defaultPaymentMethodName null, then this app will not have
-     *         metadata.
+     *     supportedDelegations and defaultPaymentMethodName null, then this app will not have
+     *     metadata.
      * @param signature The signature of the app. The SHA256 hash of this signature is called
-     *         "fingerprint" and should be present in the app's web app manifest. If null, then this
-     *         app will not have package info. If empty, then this app will not have any signatures.
+     *     "fingerprint" and should be present in the app's web app manifest. If null, then this app
+     *     will not have package info. If empty, then this app will not have any signatures.
      */
-    public void installPaymentApp(CharSequence label, String packageName,
-            String defaultPaymentMethodName, String[] supportedDelegations, String signature) {
+    public void installPaymentApp(
+            CharSequence label,
+            String packageName,
+            String defaultPaymentMethodName,
+            String[] supportedDelegations,
+            String signature) {
         ResolveInfo paymentApp = new ResolveInfo();
         paymentApp.activityInfo = new ActivityInfo();
         paymentApp.activityInfo.packageName = packageName;
@@ -89,7 +100,8 @@ class MockPackageManagerDelegate extends PackageManagerDelegate {
                         defaultPaymentMethodName);
             }
             if (supportedDelegations != null && supportedDelegations.length > 0) {
-                metaData.putInt(AndroidPaymentAppFinder.META_DATA_NAME_OF_SUPPORTED_DELEGATIONS,
+                metaData.putInt(
+                        AndroidPaymentAppFinder.META_DATA_NAME_OF_SUPPORTED_DELEGATIONS,
                         SUPPORTED_DELEGATIONS_STRING_ARRAY_RESOURCE_ID);
                 List<String[]> resources = Arrays.asList(new String[RESOURCES_SIZE][]);
                 resources.set(
@@ -133,7 +145,7 @@ class MockPackageManagerDelegate extends PackageManagerDelegate {
      * Simulates META_DATA_NAME_OF_PAYMENT_METHOD_NAMES metadata in a payment app.
      *
      * @param packageName The name of the simulated package that contains the metadata.
-     * @param metadata    The metadata to simulate.
+     * @param metadata The metadata to simulate.
      */
     public void setStringArrayMetaData(String packageName, String[] metadata) {
         for (int i = 0; i < mActivities.size(); i++) {
@@ -209,6 +221,7 @@ class MockPackageManagerDelegate extends PackageManagerDelegate {
 
     /**
      * Sets the package name of the invoked payment app.
+     *
      * @param packageName The package name of the invoked payment app.
      */
     public void setInvokedAppPackageName(String packageName) {
@@ -223,10 +236,11 @@ class MockPackageManagerDelegate extends PackageManagerDelegate {
 
     /**
      * Mock the installer of a specified package.
+     *
      * @param packageName The package name that is intended to mock a installer for, not allowed to
-     *         be null.
+     *     be null.
      * @param installerPackageName The package name intended to be set as the installer of the
-     *         specified package.
+     *     specified package.
      */
     public void mockInstallerForPackage(String packageName, @Nullable String installerPackageName) {
         assert packageName != null;

@@ -47,11 +47,9 @@ public class CustomTabActivityIncognitoMetricTest {
     public IncognitoCustomTabActivityTestRule mCustomTabActivityTestRule =
             new IncognitoCustomTabActivityTestRule();
 
-    @Rule
-    public TestRule mProcessor = new Features.InstrumentationProcessor();
+    @Rule public TestRule mProcessor = new Features.InstrumentationProcessor();
 
-    @Rule
-    public EmbeddedTestServerRule mEmbeddedTestServerRule = new EmbeddedTestServerRule();
+    @Rule public EmbeddedTestServerRule mEmbeddedTestServerRule = new EmbeddedTestServerRule();
 
     @Before
     public void setUp() throws TimeoutException {
@@ -72,7 +70,8 @@ public class CustomTabActivityIncognitoMetricTest {
         mCustomTabActivityTestRule.startCustomTabActivityWithIntent(intent);
 
         assertEquals(1, RecordHistogram.getHistogramTotalCountForTesting(UMA_KEY));
-        assertEquals(1,
+        assertEquals(
+                1,
                 RecordHistogram.getHistogramValueCountForTesting(
                         UMA_KEY, IntentHandler.IncognitoCCTCallerId.GOOGLE_APPS));
     }
@@ -88,7 +87,8 @@ public class CustomTabActivityIncognitoMetricTest {
 
         mCustomTabActivityTestRule.startCustomTabActivityWithIntent(intent);
         assertEquals(1, RecordHistogram.getHistogramTotalCountForTesting(UMA_KEY));
-        assertEquals(1,
+        assertEquals(
+                1,
                 RecordHistogram.getHistogramValueCountForTesting(
                         UMA_KEY, IntentHandler.IncognitoCCTCallerId.READER_MODE));
     }
@@ -104,7 +104,8 @@ public class CustomTabActivityIncognitoMetricTest {
 
         mCustomTabActivityTestRule.startCustomTabActivityWithIntent(intent);
         assertEquals(1, RecordHistogram.getHistogramTotalCountForTesting(UMA_KEY));
-        assertEquals(1,
+        assertEquals(
+                1,
                 RecordHistogram.getHistogramValueCountForTesting(
                         UMA_KEY, IntentHandler.IncognitoCCTCallerId.OTHER_APPS));
     }

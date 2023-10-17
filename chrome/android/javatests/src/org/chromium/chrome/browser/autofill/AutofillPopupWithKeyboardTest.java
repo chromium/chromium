@@ -36,9 +36,7 @@ import org.chromium.ui.DropdownPopupWindowInterface;
 import java.util.concurrent.TimeoutException;
 import java.util.concurrent.atomic.AtomicReference;
 
-/**
- * Integration tests for interaction of the AutofillPopup and a keyboard.
- */
+/** Integration tests for interaction of the AutofillPopup and a keyboard. */
 @RunWith(ChromeJUnit4ClassRunner.class)
 @CommandLineFlags.Add({ChromeSwitches.DISABLE_FIRST_RUN_EXPERIENCE})
 public class AutofillPopupWithKeyboardTest {
@@ -52,52 +50,52 @@ public class AutofillPopupWithKeyboardTest {
         Features.getInstance().enable(ChromeFeatureList.AUTOFILL_ALLOW_NON_HTTP_ACTIVATION);
     }
 
-    /**
-     * Test that showing autofill popup and keyboard will not hide the autofill popup.
-     */
+    /** Test that showing autofill popup and keyboard will not hide the autofill popup. */
     @Test
     @MediumTest
     @Feature({"autofill-keyboard"})
     @DisabledTest(message = "crbug.com/921062")
     public void testShowAutofillPopupAndKeyboardimultaneously() throws TimeoutException {
-        mActivityTestRule.startMainActivityWithURL(UrlUtils.encodeHtmlDataUri("<html><head>"
-                + "<meta name=\"viewport\""
-                + "content=\"width=device-width, initial-scale=1.0, maximum-scale=1.0\" /></head>"
-                + "<body><form method=\"POST\">"
-                + "<input type=\"text\" id=\"fn\" autocomplete=\"given-name\" /><br>"
-                + "<input type=\"text\" id=\"ln\" autocomplete=\"family-name\" /><br>"
-                + "<textarea id=\"sa\" autocomplete=\"street-address\"></textarea><br>"
-                + "<input type=\"text\" id=\"a1\" autocomplete=\"address-line1\" /><br>"
-                + "<input type=\"text\" id=\"a2\" autocomplete=\"address-line2\" /><br>"
-                + "<input type=\"text\" id=\"ct\" autocomplete=\"locality\" /><br>"
-                + "<input type=\"text\" id=\"zc\" autocomplete=\"postal-code\" /><br>"
-                + "<input type=\"text\" id=\"em\" autocomplete=\"email\" /><br>"
-                + "<input type=\"text\" id=\"ph\" autocomplete=\"tel\" /><br>"
-                + "<input type=\"text\" id=\"fx\" autocomplete=\"fax\" /><br>"
-                + "<select id=\"co\" autocomplete=\"country\"><br>"
-                + "<option value=\"BR\">Brazil</option>"
-                + "<option value=\"US\">United States</option>"
-                + "</select>"
-                + "<input type=\"submit\" />"
-                + "</form></body></html>"));
-        new AutofillTestHelper().setProfile(AutofillProfile.builder()
-                                                    .setFullName("John Smith")
-                                                    .setCompanyName("Acme Inc")
-                                                    .setStreetAddress("1 Main\nApt A")
-                                                    .setRegion("CA")
-                                                    .setLocality("San Francisco")
-                                                    .setPostalCode("94102")
-                                                    .setCountryCode("US")
-                                                    .setPhoneNumber("(415) 888-9999")
-                                                    .setEmailAddress("john@acme.inc")
-                                                    .setLanguageCode("en")
-                                                    .build());
+        mActivityTestRule.startMainActivityWithURL(
+                UrlUtils.encodeHtmlDataUri(
+                        "<html><head><meta name=\"viewport\"content=\"width=device-width,"
+                            + " initial-scale=1.0, maximum-scale=1.0\" /></head><body><form"
+                            + " method=\"POST\"><input type=\"text\" id=\"fn\""
+                            + " autocomplete=\"given-name\" /><br><input type=\"text\" id=\"ln\""
+                            + " autocomplete=\"family-name\" /><br><textarea id=\"sa\""
+                            + " autocomplete=\"street-address\"></textarea><br><input type=\"text\""
+                            + " id=\"a1\" autocomplete=\"address-line1\" /><br><input type=\"text\""
+                            + " id=\"a2\" autocomplete=\"address-line2\" /><br><input type=\"text\""
+                            + " id=\"ct\" autocomplete=\"locality\" /><br><input type=\"text\""
+                            + " id=\"zc\" autocomplete=\"postal-code\" /><br><input type=\"text\""
+                            + " id=\"em\" autocomplete=\"email\" /><br><input type=\"text\""
+                            + " id=\"ph\" autocomplete=\"tel\" /><br><input type=\"text\" id=\"fx\""
+                            + " autocomplete=\"fax\" /><br><select id=\"co\""
+                            + " autocomplete=\"country\"><br><option"
+                            + " value=\"BR\">Brazil</option><option value=\"US\">United"
+                            + " States</option></select><input type=\"submit\" />"
+                            + "</form></body></html>"));
+        new AutofillTestHelper()
+                .setProfile(
+                        AutofillProfile.builder()
+                                .setFullName("John Smith")
+                                .setCompanyName("Acme Inc")
+                                .setStreetAddress("1 Main\nApt A")
+                                .setRegion("CA")
+                                .setLocality("San Francisco")
+                                .setPostalCode("94102")
+                                .setCountryCode("US")
+                                .setPhoneNumber("(415) 888-9999")
+                                .setEmailAddress("john@acme.inc")
+                                .setLanguageCode("en")
+                                .build());
         final AtomicReference<WebContents> webContentsRef = new AtomicReference<WebContents>();
         final AtomicReference<ViewGroup> viewRef = new AtomicReference<ViewGroup>();
-        TestThreadUtils.runOnUiThreadBlocking(() -> {
-            webContentsRef.set(mActivityTestRule.getActivity().getCurrentWebContents());
-            viewRef.set(mActivityTestRule.getActivity().getActivityTab().getContentView());
-        });
+        TestThreadUtils.runOnUiThreadBlocking(
+                () -> {
+                    webContentsRef.set(mActivityTestRule.getActivity().getCurrentWebContents());
+                    viewRef.set(mActivityTestRule.getActivity().getActivityTab().getContentView());
+                });
         DOMUtils.waitForNonZeroNodeBounds(webContentsRef.get(), "fn");
 
         // Click on the unfocused input element for the first time to focus on it. This brings up
@@ -106,20 +104,30 @@ public class AutofillPopupWithKeyboardTest {
         DOMUtils.clickNode(webContentsRef.get(), "fn");
 
         // Wait until the keyboard is showing.
-        CriteriaHelper.pollUiThread(() -> {
-            return mActivityTestRule.getKeyboardDelegate().isKeyboardShowing(
-                    mActivityTestRule.getActivity(),
-                    mActivityTestRule.getActivity().getActivityTab().getContentView());
-        }, "Keyboard was never shown.");
+        CriteriaHelper.pollUiThread(
+                () -> {
+                    return mActivityTestRule
+                            .getKeyboardDelegate()
+                            .isKeyboardShowing(
+                                    mActivityTestRule.getActivity(),
+                                    mActivityTestRule
+                                            .getActivity()
+                                            .getActivityTab()
+                                            .getContentView());
+                },
+                "Keyboard was never shown.");
 
         // Verify that the autofill popup is showing.
-        CriteriaHelper.pollUiThread(() -> {
-            Criteria.checkThat("Autofill Popup anchor view was never added.",
-                    viewRef.get().findViewById(R.id.dropdown_popup_window),
-                    Matchers.notNullValue());
-        });
-        Object popupObject = TestThreadUtils.runOnUiThreadBlockingNoException(
-                () -> viewRef.get().findViewById(R.id.dropdown_popup_window).getTag());
+        CriteriaHelper.pollUiThread(
+                () -> {
+                    Criteria.checkThat(
+                            "Autofill Popup anchor view was never added.",
+                            viewRef.get().findViewById(R.id.dropdown_popup_window),
+                            Matchers.notNullValue());
+                });
+        Object popupObject =
+                TestThreadUtils.runOnUiThreadBlockingNoException(
+                        () -> viewRef.get().findViewById(R.id.dropdown_popup_window).getTag());
         Assert.assertTrue(popupObject instanceof DropdownPopupWindowInterface);
         final DropdownPopupWindowInterface popup = (DropdownPopupWindowInterface) popupObject;
         CriteriaHelper.pollUiThread(() -> popup.isShowing(), "Autofill Popup was never shown.");

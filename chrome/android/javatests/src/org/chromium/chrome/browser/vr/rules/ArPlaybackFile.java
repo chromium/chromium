@@ -12,7 +12,7 @@ import java.lang.annotation.Target;
 /**
  * An annotation for specifying which playback file ArCore should use for the test.
  *
- * The specified path must be relative to the Chromium src directory, typically in
+ * <p>The specified path must be relative to the Chromium src directory, typically in
  * //chrome/test/data/xr/ar_playback_datasets/.
  */
 @Target({ElementType.METHOD})

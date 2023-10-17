@@ -68,7 +68,8 @@ public class CookieSettingsTest {
     @Before
     public void setUp() {
         Bundle fragmentArgs = new Bundle();
-        fragmentArgs.putString(SingleCategorySettings.EXTRA_CATEGORY,
+        fragmentArgs.putString(
+                SingleCategorySettings.EXTRA_CATEGORY,
                 SiteSettingsCategory.preferenceKey(SiteSettingsCategory.Type.COOKIES));
         mSettingsActivity = mSettingsActivityTestRule.startSettingsActivity(fragmentArgs);
     }
@@ -94,8 +95,10 @@ public class CookieSettingsTest {
     @EnableFeatures(ChromeFeatureList.PRIVACY_SANDBOX_FPS_UI)
     public void testRenderCookieFPSSubpage() throws IOException {
         onView(withId(R.id.block_third_party_with_aux)).perform(click());
-        onView(allOf(withId(R.id.expand_arrow),
-                       isDescendantOfA(withId(R.id.block_third_party_with_aux))))
+        onView(
+                        allOf(
+                                withId(R.id.expand_arrow),
+                                isDescendantOfA(withId(R.id.block_third_party_with_aux))))
                 .perform(click());
 
         mRenderTestRule.render(
@@ -104,19 +107,23 @@ public class CookieSettingsTest {
     }
 
     private void setCookiesEnabled(final SettingsActivity settingsActivity, final boolean enabled) {
-        TestThreadUtils.runOnUiThreadBlocking(new Runnable() {
-            @Override
-            public void run() {
-                final SingleCategorySettings websitePreferences =
-                        (SingleCategorySettings) settingsActivity.getMainFragment();
-                final FourStateCookieSettingsPreference cookies =
-                        (FourStateCookieSettingsPreference) websitePreferences.findPreference(
-                                SingleCategorySettings.FOUR_STATE_COOKIE_TOGGLE_KEY);
+        TestThreadUtils.runOnUiThreadBlocking(
+                new Runnable() {
+                    @Override
+                    public void run() {
+                        final SingleCategorySettings websitePreferences =
+                                (SingleCategorySettings) settingsActivity.getMainFragment();
+                        final FourStateCookieSettingsPreference cookies =
+                                (FourStateCookieSettingsPreference)
+                                        websitePreferences.findPreference(
+                                                SingleCategorySettings
+                                                        .FOUR_STATE_COOKIE_TOGGLE_KEY);
 
-                websitePreferences.onPreferenceChange(
-                        cookies, enabled ? CookieSettingsState.ALLOW : CookieSettingsState.BLOCK);
-            }
-        });
+                        websitePreferences.onPreferenceChange(
+                                cookies,
+                                enabled ? CookieSettingsState.ALLOW : CookieSettingsState.BLOCK);
+                    }
+                });
     }
 
     private View getRootView(int text) {

@@ -42,31 +42,36 @@ import java.util.Locale;
 import java.util.Map;
 
 /**
- * Rule for taking screen shots within tests. Screenshots are saved as
- * {@code screenshot_dir/shot_name random.png}.
- * The associated JSON file describing the screenshot is saved as
- * {@code screenshot_dir/shot_name random.json}.
- * <p>
- * {@code screenshot_dir} comes from the instrumentation test command line, which is set by the
+ * Rule for taking screen shots within tests. Screenshots are saved as {@code
+ * screenshot_dir/shot_name random.png}. The associated JSON file describing the screenshot is saved
+ * as {@code screenshot_dir/shot_name random.json}.
+ *
+ * <p>{@code screenshot_dir} comes from the instrumentation test command line, which is set by the
  * test runners
- * <p>
- * {@code shot_name} is the argument to {@code shoot()}
- * </p>
- * {@code random} is a random value to make the filenames unique.
- * <p>
- * The JSON file contains three categories of data:
+ *
+ * <p>{@code shot_name} is the argument to {@code shoot()} {@code random} is a random value to make
+ * the filenames unique.
+ *
+ * <p>The JSON file contains three categories of data:
+ *
  * <dl>
- * <dt>filters</dt><dd><dd>System defined key/value pairs (e.g. the name of the test) that are
- *                          available for filtering test sets in the UiCatalogue</dd>
- * <dt>tags</dt><dd>User defined strings that further define the test. Tags include all features of
- *                  the test (as defined by the &#064Feature annotation), and all the tags provided
- *                  as arguments to the the {@code shoot} call</dd>
- * <dt>metadata</dt><dd>Other metadata (e.g. the exact time at which the test was run) that is not
- *                      suitable for filtering</dd>
+ *   <dt>filters
+ *   <dd>
+ *   <dd>System defined key/value pairs (e.g. the name of the test) that are available for filtering
+ *       test sets in the UiCatalogue
+ *   <dt>tags
+ *   <dd>User defined strings that further define the test. Tags include all features of the test
+ *       (as defined by the &#064Feature annotation), and all the tags provided as arguments to the
+ *       the {@code shoot} call
+ *   <dt>metadata
+ *   <dd>Other metadata (e.g. the exact time at which the test was run) that is not suitable for
+ *       filtering
  * </dl>
+ *
+ * <p>A simple example:
+ *
  * <p>
- * A simple example:
- * <p>
+ *
  * <pre>
  * &#064;RunWith(ChromeJUnit4ClassRunner.class)
  * &#064;CommandLineFlags.Add({ChromeSwitches.DISABLE_FIRST_RUN_EXPERIENCE})
@@ -122,10 +127,19 @@ public class ScreenShooter extends TestWatcher {
     private final String mBaseDir;
     private String mTestClassName;
     private String mTestMethodName;
-    private static final String[] FILTERS = {TEST_CLASS_FILTER, TEST_METHOD_FILTER,
-            SCREENSHOT_NAME_FILTER, DEVICE_MODEL_FILTER, DISPLAY_SIZE_FILTER, ORIENTATION_FILTER,
-            ANDROID_VERSION_FILTER, CHROME_VERSION_FILTER, CHROME_CHANNEL_FILTER, LOCALE_FILTER,
-            UPLOAD_TIME_FILTER};
+    private static final String[] FILTERS = {
+        TEST_CLASS_FILTER,
+        TEST_METHOD_FILTER,
+        SCREENSHOT_NAME_FILTER,
+        DEVICE_MODEL_FILTER,
+        DISPLAY_SIZE_FILTER,
+        ORIENTATION_FILTER,
+        ANDROID_VERSION_FILTER,
+        CHROME_VERSION_FILTER,
+        CHROME_CHANNEL_FILTER,
+        LOCALE_FILTER,
+        UPLOAD_TIME_FILTER
+    };
     private String[] mFeatures;
 
     /**
@@ -170,17 +184,27 @@ public class ScreenShooter extends TestWatcher {
         setFilterValue(filters, SCREENSHOT_NAME_FILTER, shotName);
         setFilterValue(filters, DEVICE_MODEL_FILTER, Build.MANUFACTURER + " " + Build.MODEL);
         Point displaySize = mDevice.getDisplaySizeDp();
-        setFilterValue(filters, DISPLAY_SIZE_FILTER,
-                String.format(Locale.US, "%d X %d", Math.min(displaySize.x, displaySize.y),
+        setFilterValue(
+                filters,
+                DISPLAY_SIZE_FILTER,
+                String.format(
+                        Locale.US,
+                        "%d X %d",
+                        Math.min(displaySize.x, displaySize.y),
                         Math.max(displaySize.x, displaySize.y)));
-        int orientation = ApplicationProvider.getApplicationContext()
-                                  .getResources()
-                                  .getConfiguration()
-                                  .orientation;
-        setFilterValue(filters, ORIENTATION_FILTER,
+        int orientation =
+                ApplicationProvider.getApplicationContext()
+                        .getResources()
+                        .getConfiguration()
+                        .orientation;
+        setFilterValue(
+                filters,
+                ORIENTATION_FILTER,
                 orientation == Configuration.ORIENTATION_LANDSCAPE ? "landscape" : "portrait");
         setFilterValue(filters, ANDROID_VERSION_FILTER, Build.VERSION.RELEASE);
-        setFilterValue(filters, CHROME_VERSION_FILTER,
+        setFilterValue(
+                filters,
+                CHROME_VERSION_FILTER,
                 Integer.toString(VersionInfo.getProductMajorVersion()));
         String channelName = "Unknown";
         if (VersionInfo.isLocalBuild()) {
@@ -219,8 +243,12 @@ public class ScreenShooter extends TestWatcher {
         }
     }
 
-    private void writeImageDescription(File shotFile, Map<String, String> filters, TagsEnum[] tags,
-            Map<String, String> metadata) throws IOException {
+    private void writeImageDescription(
+            File shotFile,
+            Map<String, String> filters,
+            TagsEnum[] tags,
+            Map<String, String> metadata)
+            throws IOException {
         JSONObject imageDescription = new JSONObject();
         String shotFileName = shotFile.getName();
         List<String> tagStrings = new ArrayList<>();
@@ -240,7 +268,7 @@ public class ScreenShooter extends TestWatcher {
         }
         String jsonFileName =
                 shotFileName.substring(0, shotFileName.length() - IMAGE_SUFFIX.length())
-                + JSON_SUFFIX;
+                        + JSON_SUFFIX;
         File descriptionFile = new File(mBaseDir, jsonFileName);
         try (FileWriter fileWriter = new FileWriter(descriptionFile)) {
             fileWriter.write(imageDescription.toString());

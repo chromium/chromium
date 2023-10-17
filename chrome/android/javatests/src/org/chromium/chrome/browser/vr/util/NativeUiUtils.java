@@ -68,17 +68,20 @@ public class NativeUiUtils {
      */
     public static void waitNumFrames(int numFrames) {
         final CountDownLatch frameLatch = new CountDownLatch(numFrames);
-        PostTask.runOrPostTask(TaskTraits.UI_DEFAULT, () -> {
-            final Choreographer.FrameCallback callback = new Choreographer.FrameCallback() {
-                @Override
-                public void doFrame(long frameTimeNanos) {
-                    if (frameLatch.getCount() == 0) return;
-                    Choreographer.getInstance().postFrameCallback(this);
-                    frameLatch.countDown();
-                }
-            };
-            Choreographer.getInstance().postFrameCallback(callback);
-        });
+        PostTask.runOrPostTask(
+                TaskTraits.UI_DEFAULT,
+                () -> {
+                    final Choreographer.FrameCallback callback =
+                            new Choreographer.FrameCallback() {
+                                @Override
+                                public void doFrame(long frameTimeNanos) {
+                                    if (frameLatch.getCount() == 0) return;
+                                    Choreographer.getInstance().postFrameCallback(this);
+                                    frameLatch.countDown();
+                                }
+                            };
+                    Choreographer.getInstance().postFrameCallback(callback);
+                });
         try {
             frameLatch.await();
         } catch (InterruptedException e) {
@@ -86,14 +89,11 @@ public class NativeUiUtils {
         }
     }
 
-    /**
-     * Waits until a modal dialog is or is not shown.
-     */
+    /** Waits until a modal dialog is or is not shown. */
     public static void waitForModalDialogStatus(
             final boolean shouldBeShown, final ChromeActivity activity) {
         CriteriaHelper.pollUiThread(
-                ()
-                        -> {
+                () -> {
                     return shouldBeShown == activity.getModalDialogManager().isShowing();
                 },
                 "Timed out waiting for modal dialog to "

@@ -35,9 +35,7 @@ import org.chromium.chrome.test.ChromeTabbedActivityTestRule;
 import org.chromium.chrome.test.R;
 import org.chromium.chrome.test.util.ChromeTabUtils;
 
-/**
- * Instrumentation tests for Share intents.
- */
+/** Instrumentation tests for Share intents. */
 @RunWith(ChromeJUnit4ClassRunner.class)
 @CommandLineFlags.Add({ChromeSwitches.DISABLE_FIRST_RUN_EXPERIENCE})
 @Batch(Batch.PER_CLASS)
@@ -52,14 +50,23 @@ public class ShareIntentTest {
 
         ComponentName target = new ComponentName("test.package", "test.activity");
         ActivityMonitor monitor =
-                InstrumentationRegistry.getInstrumentation().addMonitor(target.getClassName(),
-                        new Instrumentation.ActivityResult(Activity.RESULT_OK, null), true);
-        ThreadUtils.runOnUiThreadBlocking(() -> {
-            ShareHelper.setLastShareComponentName(Profile.getLastUsedRegularProfile(), target);
-            mActivityTestRule.getActivity().onMenuOrKeyboardAction(R.id.direct_share_menu_id, true);
-        });
+                InstrumentationRegistry.getInstrumentation()
+                        .addMonitor(
+                                target.getClassName(),
+                                new Instrumentation.ActivityResult(Activity.RESULT_OK, null),
+                                true);
+        ThreadUtils.runOnUiThreadBlocking(
+                () -> {
+                    ShareHelper.setLastShareComponentName(
+                            Profile.getLastUsedRegularProfile(), target);
+                    mActivityTestRule
+                            .getActivity()
+                            .onMenuOrKeyboardAction(R.id.direct_share_menu_id, true);
+                });
         CriteriaHelper.pollUiThread(
-                () -> { Criteria.checkThat(monitor.getHits(), Matchers.is(1)); });
+                () -> {
+                    Criteria.checkThat(monitor.getHits(), Matchers.is(1));
+                });
     }
 
     @Test
@@ -73,7 +80,8 @@ public class ShareIntentTest {
         intent.setPackage(ContextUtils.getApplicationContext().getPackageName());
         mActivityTestRule.startActivityCompletely(intent);
         ChromeTabUtils.waitForTabPageLoaded(mActivityTestRule.getActivity().getActivityTab(), url);
-        Assert.assertEquals(1,
+        Assert.assertEquals(
+                1,
                 RecordHistogram.getHistogramValueCountForTesting(
                         LaunchCauseMetrics.LAUNCH_CAUSE_HISTOGRAM,
                         LaunchCauseMetrics.LaunchCause.SHARE_INTENT));

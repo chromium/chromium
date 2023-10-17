@@ -87,14 +87,14 @@ import java.util.Set;
 
 // TODO(donnd): Create class with limited API to encapsulate the internals of simulations.
 
-/**
- * Tests the Contextual Search Manager using instrumentation tests.
- */
+/** Tests the Contextual Search Manager using instrumentation tests. */
 @RunWith(ParameterizedRunner.class)
 @ParameterAnnotations.UseRunnerDelegate(ChromeJUnit4RunnerDelegate.class)
 // NOTE: Disable online detection so we we'll default to online on test bots with no network.
-@CommandLineFlags.Add({ChromeSwitches.DISABLE_FIRST_RUN_EXPERIENCE,
-        "disable-features=" + ChromeFeatureList.CONTEXTUAL_SEARCH_THIN_WEB_VIEW_IMPLEMENTATION})
+@CommandLineFlags.Add({
+    ChromeSwitches.DISABLE_FIRST_RUN_EXPERIENCE,
+    "disable-features=" + ChromeFeatureList.CONTEXTUAL_SEARCH_THIN_WEB_VIEW_IMPLEMENTATION
+})
 @EnableFeatures(ChromeFeatureList.CONTEXTUAL_SEARCH_DISABLE_ONLINE_DETECTION)
 @Restriction(RESTRICTION_TYPE_NON_LOW_END_DEVICE)
 @Batch(Batch.PER_CLASS)
@@ -107,9 +107,7 @@ public class ContextualSearchManagerTest extends ContextualSearchInstrumentation
      */
     private static final String SIMPLE_SEARCH_NODE_ID = "search";
 
-    /**
-     * Feature maps that we use for parameterized tests.
-     */
+    /** Feature maps that we use for parameterized tests. */
 
     /** This represents the current fully-launched configuration. */
     private static final ImmutableMap<String, Boolean> ENABLE_NONE = ImmutableMap.of();
@@ -129,21 +127,19 @@ public class ContextualSearchManagerTest extends ContextualSearchInstrumentation
         if (mActionTester != null) mActionTester.tearDown();
     }
 
-    //============================================================================================
+    // ============================================================================================
     // UMA assertions
-    //============================================================================================
+    // ============================================================================================
 
     private void assertUserActionRecorded(String userActionFullName) throws Exception {
         Assert.assertTrue(mActionTester.getActions().contains(userActionFullName));
     }
 
-    //============================================================================================
+    // ============================================================================================
     // Test Cases
-    //============================================================================================
+    // ============================================================================================
 
-    /**
-     * Tests swiping the overlay open, after an initial trigger that activates the peeking card.
-     */
+    /** Tests swiping the overlay open, after an initial trigger that activates the peeking card. */
     @Test
     @SmallTest
     @Feature({"ContextualSearch"})
@@ -158,8 +154,8 @@ public class ContextualSearchManagerTest extends ContextualSearchInstrumentation
         assertNoSearchesLoaded();
 
         // Fake a search term resolution response.
-        fakeResponse(false, 200, "Intelligence", "United States Intelligence", "alternate-term",
-                false);
+        fakeResponse(
+                false, 200, "Intelligence", "United States Intelligence", "alternate-term", false);
         assertContainsParameters("Intelligence", "alternate-term");
         Assert.assertEquals(1, mFakeServer.getLoadedUrlCount());
         assertLoadedLowPriorityUrl();
@@ -173,9 +169,8 @@ public class ContextualSearchManagerTest extends ContextualSearchInstrumentation
 
     /**
      * Tests swiping the overlay open, after an initial non-resolve search that activates the
-     * peeking card, followed by closing the panel.
-     * This test also verifies that we don't create any {@link WebContents} or load any URL
-     * until the panel is opened.
+     * peeking card, followed by closing the panel. This test also verifies that we don't create any
+     * {@link WebContents} or load any URL until the panel is opened.
      */
     @Test
     @SmallTest
@@ -198,9 +193,7 @@ public class ContextualSearchManagerTest extends ContextualSearchInstrumentation
         assertNoWebContents();
     }
 
-    /**
-     * Tests that long-press selects text, and a subsequent tap will unselect text.
-     */
+    /** Tests that long-press selects text, and a subsequent tap will unselect text. */
     @Test
     @SmallTest
     @Feature({"ContextualSearch"})
@@ -216,9 +209,7 @@ public class ContextualSearchManagerTest extends ContextualSearchInstrumentation
         assertLoadedNoUrl();
     }
 
-    /**
-     * Tests that a Resolve gesture selects the expected text.
-     */
+    /** Tests that a Resolve gesture selects the expected text. */
     @Test
     @SmallTest
     @Feature({"ContextualSearch"})
@@ -233,9 +224,9 @@ public class ContextualSearchManagerTest extends ContextualSearchInstrumentation
         Assert.assertTrue(getSelectedText() == null || getSelectedText().isEmpty());
     }
 
-    //============================================================================================
+    // ============================================================================================
     // Various Tests
-    //============================================================================================
+    // ============================================================================================
 
     /*
      * Test that tapping on the open-new-tab icon before having a resolved search term does not
@@ -250,12 +241,13 @@ public class ContextualSearchManagerTest extends ContextualSearchInstrumentation
         // Track Tab creation with this helper.
         final CallbackHelper tabCreatedHelper = new CallbackHelper();
         int tabCreatedHelperCallCount = tabCreatedHelper.getCallCount();
-        TabModelSelectorObserver observer = new TabModelSelectorObserver() {
-            @Override
-            public void onNewTabCreated(Tab tab, @TabCreationState int creationState) {
-                tabCreatedHelper.notifyCalled();
-            }
-        };
+        TabModelSelectorObserver observer =
+                new TabModelSelectorObserver() {
+                    @Override
+                    public void onNewTabCreated(Tab tab, @TabCreationState int creationState) {
+                        tabCreatedHelper.notifyCalled();
+                    }
+                };
         TestThreadUtils.runOnUiThreadBlocking(
                 () -> sActivityTestRule.getActivity().getTabModelSelector().addObserver(observer));
         // Track User Actions
@@ -289,18 +281,17 @@ public class ContextualSearchManagerTest extends ContextualSearchInstrumentation
         assertUserActionRecorded("ContextualSearch.TabPromotion");
 
         // -------- CLEAN UP ---------
-        TestThreadUtils.runOnUiThreadBlocking(() -> {
-            sActivityTestRule.getActivity().getTabModelSelector().removeObserver(observer);
-        });
+        TestThreadUtils.runOnUiThreadBlocking(
+                () -> {
+                    sActivityTestRule.getActivity().getTabModelSelector().removeObserver(observer);
+                });
     }
 
-    //============================================================================================
+    // ============================================================================================
     // Undecided/Decided users.
-    //============================================================================================
+    // ============================================================================================
 
-    /**
-     * Tests that we do not resolve or preload when the privacy Opt-in has not been accepted.
-     */
+    /** Tests that we do not resolve or preload when the privacy Opt-in has not been accepted. */
     @Test
     @SmallTest
     @Feature({"ContextualSearch"})
@@ -311,9 +302,7 @@ public class ContextualSearchManagerTest extends ContextualSearchInstrumentation
         simulateResolvableSearchAndAssertResolveAndPreload("states", false);
     }
 
-    /**
-     * Tests that we do resolve and preload when the privacy Opt-in has been accepted.
-     */
+    /** Tests that we do resolve and preload when the privacy Opt-in has been accepted. */
     @Test
     @SmallTest
     @Feature({"ContextualSearch"})
@@ -325,8 +314,8 @@ public class ContextualSearchManagerTest extends ContextualSearchInstrumentation
     }
 
     /**
-     * Tests ContextualSearchManager#shouldInterceptNavigation for a case that an initial
-     * navigation has a user gesture but the redirected external navigation doesn't.
+     * Tests ContextualSearchManager#shouldInterceptNavigation for a case that an initial navigation
+     * has a user gesture but the redirected external navigation doesn't.
      */
     @Test
     @SmallTest
@@ -335,28 +324,42 @@ public class ContextualSearchManagerTest extends ContextualSearchInstrumentation
         ExternalNavigationHandler.sAllowIntentsToSelfForTesting = true;
         simulateResolveSearch("intelligence");
         GURL initialUrl = new GURL("http://test.com");
-        final NavigationHandle navigationHandle = NavigationHandle.createForTesting(initialUrl,
-                true /* isRendererInitiated */, PageTransition.LINK, true /* hasUserGesture */);
+        final NavigationHandle navigationHandle =
+                NavigationHandle.createForTesting(
+                        initialUrl,
+                        true /* isRendererInitiated */,
+                        PageTransition.LINK,
+                        true /* hasUserGesture */);
 
         GURL redirectUrl = new GURL(EXTERNAL_APP_URL);
 
-        InstrumentationRegistry.getInstrumentation().runOnMainSync(new Runnable() {
-            @Override
-            public void run() {
-                Assert.assertFalse(mPanel.getOverlayPanelContent()
-                                           .getInterceptNavigationDelegateForTesting()
-                                           .shouldIgnoreNavigation(
-                                                   navigationHandle, initialUrl, false, false));
-                Assert.assertEquals(0, mActivityMonitor.getHits());
+        InstrumentationRegistry.getInstrumentation()
+                .runOnMainSync(
+                        new Runnable() {
+                            @Override
+                            public void run() {
+                                Assert.assertFalse(
+                                        mPanel.getOverlayPanelContent()
+                                                .getInterceptNavigationDelegateForTesting()
+                                                .shouldIgnoreNavigation(
+                                                        navigationHandle,
+                                                        initialUrl,
+                                                        false,
+                                                        false));
+                                Assert.assertEquals(0, mActivityMonitor.getHits());
 
-                navigationHandle.didRedirect(redirectUrl, true);
-                Assert.assertTrue(mPanel.getOverlayPanelContent()
-                                          .getInterceptNavigationDelegateForTesting()
-                                          .shouldIgnoreNavigation(
-                                                  navigationHandle, redirectUrl, false, false));
-                Assert.assertEquals(1, mActivityMonitor.getHits());
-            }
-        });
+                                navigationHandle.didRedirect(redirectUrl, true);
+                                Assert.assertTrue(
+                                        mPanel.getOverlayPanelContent()
+                                                .getInterceptNavigationDelegateForTesting()
+                                                .shouldIgnoreNavigation(
+                                                        navigationHandle,
+                                                        redirectUrl,
+                                                        false,
+                                                        false));
+                                Assert.assertEquals(1, mActivityMonitor.getHits());
+                            }
+                        });
     }
 
     /**
@@ -386,28 +389,30 @@ public class ContextualSearchManagerTest extends ContextualSearchInstrumentation
     private void testExternalNavigationImpl(boolean hasGesture) throws Exception {
         simulateResolveSearch("intelligence");
         GURL url = new GURL(EXTERNAL_APP_URL);
-        final NavigationHandle navigationHandle = NavigationHandle.createForTesting(
-                url, true /* isRendererInitiated */, PageTransition.LINK, hasGesture);
+        final NavigationHandle navigationHandle =
+                NavigationHandle.createForTesting(
+                        url, true /* isRendererInitiated */, PageTransition.LINK, hasGesture);
 
-        InstrumentationRegistry.getInstrumentation().runOnMainSync(new Runnable() {
-            @Override
-            public void run() {
-                Assert.assertTrue(
-                        mPanel.getOverlayPanelContent()
-                                .getInterceptNavigationDelegateForTesting()
-                                .shouldIgnoreNavigation(navigationHandle, url, false, false));
-            }
-        });
+        InstrumentationRegistry.getInstrumentation()
+                .runOnMainSync(
+                        new Runnable() {
+                            @Override
+                            public void run() {
+                                Assert.assertTrue(
+                                        mPanel.getOverlayPanelContent()
+                                                .getInterceptNavigationDelegateForTesting()
+                                                .shouldIgnoreNavigation(
+                                                        navigationHandle, url, false, false));
+                            }
+                        });
         Assert.assertEquals(hasGesture ? 1 : 0, mActivityMonitor.getHits());
     }
 
-    //============================================================================================
+    // ============================================================================================
     // Translate Tests
-    //============================================================================================
+    // ============================================================================================
 
-    /**
-     * Tests that a simple Tap without language determination does not trigger translation.
-     */
+    /** Tests that a simple Tap without language determination does not trigger translation. */
     @Test
     @SmallTest
     @Feature({"ContextualSearch"})
@@ -420,9 +425,7 @@ public class ContextualSearchManagerTest extends ContextualSearchInstrumentation
         Assert.assertFalse(mManager.getRequest().isTranslationForced());
     }
 
-    /**
-     * Tests the Translate Caption on a resolve gesture forces a translation.
-     */
+    /** Tests the Translate Caption on a resolve gesture forces a translation. */
     @Test
     @LargeTest
     @Feature({"ContextualSearch"})
@@ -432,14 +435,15 @@ public class ContextualSearchManagerTest extends ContextualSearchInstrumentation
         simulateResolveSearch("german");
 
         // Make sure we tried to trigger translate.
-        Assert.assertTrue("Translation was not forced with the current request URL: "
+        Assert.assertTrue(
+                "Translation was not forced with the current request URL: "
                         + mManager.getRequest().getSearchUrl(),
                 mManager.getRequest().isTranslationForced());
     }
 
-    //============================================================================================
+    // ============================================================================================
     // END Translate Tests
-    //============================================================================================
+    // ============================================================================================
 
     /**
      * Tests that Contextual Search works in fullscreen. Specifically, tests that tapping a word
@@ -456,7 +460,8 @@ public class ContextualSearchManagerTest extends ContextualSearchInstrumentation
             throws Exception {
         // Toggle tab to fulllscreen.
         FullscreenTestUtils.togglePersistentFullscreenAndAssert(
-                sActivityTestRule.getActivity().getActivityTab(), true,
+                sActivityTestRule.getActivity().getActivityTab(),
+                true,
                 sActivityTestRule.getActivity());
 
         // Simulate a resolving search and assert that the panel peeks.
@@ -473,9 +478,7 @@ public class ContextualSearchManagerTest extends ContextualSearchInstrumentation
         tapBasePageToClosePanel();
     }
 
-    /**
-     * Tests that the Contextual Search panel is dismissed when entering or exiting fullscreen.
-     */
+    /** Tests that the Contextual Search panel is dismissed when entering or exiting fullscreen. */
     @Test
     @SmallTest
     @Feature({"ContextualSearch"})
@@ -506,8 +509,8 @@ public class ContextualSearchManagerTest extends ContextualSearchInstrumentation
     }
 
     /**
-     * Tests that ContextualSearchImageControl correctly sets either the icon sprite or thumbnail
-     * as visible.
+     * Tests that ContextualSearchImageControl correctly sets either the icon sprite or thumbnail as
+     * visible.
      */
     @Test
     @SmallTest
@@ -521,10 +524,11 @@ public class ContextualSearchManagerTest extends ContextualSearchInstrumentation
         Assert.assertFalse(imageControl.getThumbnailVisible());
         Assert.assertTrue(TextUtils.isEmpty(imageControl.getThumbnailUrl()));
 
-        TestThreadUtils.runOnUiThreadBlocking(() -> {
-            imageControl.setThumbnailUrl("http://someimageurl.com/image.png");
-            imageControl.onThumbnailFetched(true);
-        });
+        TestThreadUtils.runOnUiThreadBlocking(
+                () -> {
+                    imageControl.setThumbnailUrl("http://someimageurl.com/image.png");
+                    imageControl.onThumbnailFetched(true);
+                });
 
         Assert.assertTrue(imageControl.getThumbnailVisible());
         Assert.assertEquals(imageControl.getThumbnailUrl(), "http://someimageurl.com/image.png");
@@ -553,9 +557,13 @@ public class ContextualSearchManagerTest extends ContextualSearchInstrumentation
         // Simulate a resolving search to show the Bar, then set the quick action data.
         simulateResolveSearch("search");
         TestThreadUtils.runOnUiThreadBlocking(
-                ()
-                        -> mPanel.onSearchTermResolved("search", null, "geo:47.6,-122.3",
-                                QuickActionCategory.ADDRESS, CardTag.CT_LOCATION,
+                () ->
+                        mPanel.onSearchTermResolved(
+                                "search",
+                                null,
+                                "geo:47.6,-122.3",
+                                QuickActionCategory.ADDRESS,
+                                CardTag.CT_LOCATION,
                                 null /* relatedSearchesInBar */));
 
         ContextualSearchBarControl barControl = mPanel.getSearchBarControl();
@@ -568,7 +576,8 @@ public class ContextualSearchManagerTest extends ContextualSearchInstrumentation
         // There may be different Map apps on different devices, so we just check that we got an
         // open intent of some kind.
         final String expectedCaptionStart = "Open in ";
-        Assert.assertEquals(expectedCaptionStart,
+        Assert.assertEquals(
+                expectedCaptionStart,
                 barControl.getCaptionText().subSequence(0, expectedCaptionStart.length()));
         Assert.assertEquals(1.f, imageControl.getCustomImageVisibilityPercentage(), 0);
 
@@ -584,7 +593,8 @@ public class ContextualSearchManagerTest extends ContextualSearchInstrumentation
 
         // Assert that the quick action data is showing.
         Assert.assertTrue(barControl.getCaptionVisible());
-        Assert.assertEquals(expectedCaptionStart,
+        Assert.assertEquals(
+                expectedCaptionStart,
                 barControl.getCaptionText().subSequence(0, expectedCaptionStart.length()));
         // TODO(donnd): figure out why we get ~0.65 on Oreo rather than 1. https://crbug.com/818515.
         if (Build.VERSION.SDK_INT < Build.VERSION_CODES.O) {
@@ -596,9 +606,7 @@ public class ContextualSearchManagerTest extends ContextualSearchInstrumentation
         CompositorAnimationHandler.setTestingMode(false);
     }
 
-    /**
-     * Tests that an intent is sent when the bar is tapped and a quick action is available.
-     */
+    /** Tests that an intent is sent when the bar is tapped and a quick action is available. */
     @Test
     @SmallTest
     @Feature({"ContextualSearch"})
@@ -613,25 +621,33 @@ public class ContextualSearchManagerTest extends ContextualSearchInstrumentation
         // (unless we removed it here first). When ActivityMonitors leak, Instrumentation silently
         // ignores matching ones added after and tests will fail.
         ActivityMonitor activityMonitor =
-                InstrumentationRegistry.getInstrumentation().addMonitor(quickActionFilter,
-                        new Instrumentation.ActivityResult(Activity.RESULT_OK, null), true);
+                InstrumentationRegistry.getInstrumentation()
+                        .addMonitor(
+                                quickActionFilter,
+                                new Instrumentation.ActivityResult(Activity.RESULT_OK, null),
+                                true);
 
         // Simulate a resolving search to show the Bar, then set the quick action data.
         simulateResolveSearch("search");
         TestThreadUtils.runOnUiThreadBlocking(
-                ()
-                        -> mPanel.onSearchTermResolved("search", null, "geo:47.6,-122.3",
-                                QuickActionCategory.ADDRESS, CardTag.CT_LOCATION,
+                () ->
+                        mPanel.onSearchTermResolved(
+                                "search",
+                                null,
+                                "geo:47.6,-122.3",
+                                QuickActionCategory.ADDRESS,
+                                CardTag.CT_LOCATION,
                                 null /* relatedSearchesInBar */));
 
         sActivityTestRule.getActivity().onUserInteraction();
         // Expand the panel to trigger the quick action intent to be fired.
         expandPanelAndAssert();
 
-        CriteriaHelper.pollUiThread(() -> {
-            int intentHits = activityMonitor.getHits();
-            Criteria.checkThat(intentHits, Matchers.is(1));
-        });
+        CriteriaHelper.pollUiThread(
+                () -> {
+                    int intentHits = activityMonitor.getHits();
+                    Criteria.checkThat(intentHits, Matchers.is(1));
+                });
 
         // Assert that an intent was fired.
         Assert.assertEquals(1, activityMonitor.getHits());
@@ -651,9 +667,13 @@ public class ContextualSearchManagerTest extends ContextualSearchInstrumentation
         // Simulate a resolving search to show the Bar, then set the quick action data.
         simulateResolveSearch("search");
         TestThreadUtils.runOnUiThreadBlocking(
-                ()
-                        -> mPanel.onSearchTermResolved("search", null, testUrl,
-                                QuickActionCategory.WEBSITE, CardTag.CT_URL,
+                () ->
+                        mPanel.onSearchTermResolved(
+                                "search",
+                                null,
+                                testUrl,
+                                QuickActionCategory.WEBSITE,
+                                CardTag.CT_URL,
                                 null /* relatedSearchesInBar */));
 
         sActivityTestRule.getActivity().onUserInteraction();
@@ -661,28 +681,34 @@ public class ContextualSearchManagerTest extends ContextualSearchInstrumentation
         expandPanel();
 
         // Wait for that URL to be loaded.
-        CriteriaHelper.pollUiThread(() -> {
-            Criteria.checkThat(ChromeTabUtils.getUrlStringOnUiThread(
-                                       sActivityTestRule.getActivity().getActivityTab()),
-                    Matchers.is(testUrl));
-        });
+        CriteriaHelper.pollUiThread(
+                () -> {
+                    Criteria.checkThat(
+                            ChromeTabUtils.getUrlStringOnUiThread(
+                                    sActivityTestRule.getActivity().getActivityTab()),
+                            Matchers.is(testUrl));
+                });
     }
 
     private void runDictionaryCardTest(@CardTag int cardTag) throws Exception {
         // Simulate a resolving search to show the Bar, then set the quick action data.
         simulateResolveSearch("search");
         TestThreadUtils.runOnUiThreadBlocking(
-                ()
-                        -> mPanel.onSearchTermResolved("obscure · əbˈskyo͝or", null, null,
-                                QuickActionCategory.NONE, cardTag,
+                () ->
+                        mPanel.onSearchTermResolved(
+                                "obscure · əbˈskyo͝or",
+                                null,
+                                null,
+                                QuickActionCategory.NONE,
+                                cardTag,
                                 null /* relatedSearchesInBar */));
 
         expandPanelAndAssert();
     }
 
     /**
-     * Tests that the flow for showing dictionary definitions works, and that tapping in the
-     * bar just opens the panel instead of taking some action.
+     * Tests that the flow for showing dictionary definitions works, and that tapping in the bar
+     * just opens the panel instead of taking some action.
      */
     @Test
     @SmallTest
@@ -694,8 +720,8 @@ public class ContextualSearchManagerTest extends ContextualSearchInstrumentation
     }
 
     /**
-     * Tests that the flow for showing dictionary definitions works, and that tapping in the
-     * bar just opens the panel instead of taking some action.
+     * Tests that the flow for showing dictionary definitions works, and that tapping in the bar
+     * just opens the panel instead of taking some action.
      */
     @Test
     @SmallTest
@@ -706,9 +732,7 @@ public class ContextualSearchManagerTest extends ContextualSearchInstrumentation
         runDictionaryCardTest(CardTag.CT_CONTEXTUAL_DEFINITION);
     }
 
-    /**
-     * Tests accessibility mode: Tap and Long-press don't activate CS.
-     */
+    /** Tests accessibility mode: Tap and Long-press don't activate CS. */
     @Test
     @SmallTest
     @Feature({"ContextualSearch"})
@@ -728,9 +752,7 @@ public class ContextualSearchManagerTest extends ContextualSearchInstrumentation
         mManager.onAccessibilityModeChanged(false);
     }
 
-    /**
-     * Tests when FirstRun is not completed: Tap and Long-press don't activate CS.
-     */
+    /** Tests when FirstRun is not completed: Tap and Long-press don't activate CS. */
     @Test
     @SmallTest
     @Feature({"ContextualSearch"})
@@ -740,8 +762,9 @@ public class ContextualSearchManagerTest extends ContextualSearchInstrumentation
         // for this test case.
         // Getting value from shared preference rather than FirstRunStatus#getFirstRunFlowComplete
         // to get rid of the impact from commandline switch. See https://crbug.com/1158467
-        boolean originalIsFirstRunComplete = ChromeSharedPreferences.getInstance().readBoolean(
-                ChromePreferenceKeys.FIRST_RUN_FLOW_COMPLETE, false);
+        boolean originalIsFirstRunComplete =
+                ChromeSharedPreferences.getInstance()
+                        .readBoolean(ChromePreferenceKeys.FIRST_RUN_FLOW_COMPLETE, false);
         FirstRunStatus.setFirstRunFlowComplete(false);
 
         // Simulate a tap that resolves to show the Bar.
@@ -758,10 +781,10 @@ public class ContextualSearchManagerTest extends ContextualSearchInstrumentation
         FirstRunStatus.setFirstRunFlowComplete(originalIsFirstRunComplete);
     }
 
-    //============================================================================================
+    // ============================================================================================
     // Internal State Controller tests, which ensure that the internal logic flows as expected for
     // each type of triggering gesture.
-    //============================================================================================
+    // ============================================================================================
 
     /**
      * Tests that the Manager cycles through all the expected Internal States on Tap that Resolves.
@@ -780,7 +803,8 @@ public class ContextualSearchManagerTest extends ContextualSearchInstrumentation
         // Simulate a gesture that resolves to show the Bar.
         simulateResolveSearch("search");
 
-        Assert.assertEquals("Some states were started but never finished",
+        Assert.assertEquals(
+                "Some states were started but never finished",
                 internalStateControllerWrapper.getStartedStates(),
                 internalStateControllerWrapper.getFinishedStates());
         Assert.assertEquals(
@@ -790,7 +814,8 @@ public class ContextualSearchManagerTest extends ContextualSearchInstrumentation
         Assert.assertEquals(
                 "The Tap gesture did not trigger a resolved search, or the resolve sequence did "
                         + "not complete.",
-                InternalState.SEARCH_COMPLETED, internalStateControllerWrapper.getState());
+                InternalState.SEARCH_COMPLETED,
+                internalStateControllerWrapper.getState());
     }
 
     /**
@@ -813,7 +838,8 @@ public class ContextualSearchManagerTest extends ContextualSearchInstrumentation
         longPressNode(SIMPLE_SEARCH_NODE_ID);
         fakeAResponse();
 
-        Assert.assertEquals("Some states were started but never finished",
+        Assert.assertEquals(
+                "Some states were started but never finished",
                 internalStateControllerWrapper.getStartedStates(),
                 internalStateControllerWrapper.getFinishedStates());
         Assert.assertEquals(
@@ -823,20 +849,18 @@ public class ContextualSearchManagerTest extends ContextualSearchInstrumentation
         Assert.assertEquals(
                 "The Long-press gesture did not trigger a resolved search, or the resolve sequence "
                         + "did not complete.",
-                InternalState.SEARCH_COMPLETED, internalStateControllerWrapper.getState());
+                InternalState.SEARCH_COMPLETED,
+                internalStateControllerWrapper.getState());
     }
 
-    /**
-     * Tests that the Manager cycles through all the expected Internal States on a Long-press.
-     */
+    /** Tests that the Manager cycles through all the expected Internal States on a Long-press. */
     @Test
     @SmallTest
     @Feature({"ContextualSearch"})
     // Previously flaky and disabled 4/2021.  https://crbug.com/1192285
     @DisabledTest(
             message = "TODO(donnd): reenable after unifying resolving and non-resolving longpress.")
-    public void
-    testAllInternalStatesVisitedNonResolveLongpress() throws Exception {
+    public void testAllInternalStatesVisitedNonResolveLongpress() throws Exception {
         FeatureList.setTestFeatures(ENABLE_NONE);
 
         // Set up a tracking version of the Internal State Controller.
@@ -848,7 +872,8 @@ public class ContextualSearchManagerTest extends ContextualSearchInstrumentation
         // Simulate a Long-press to show the Bar.
         simulateNonResolveSearch("search");
 
-        Assert.assertEquals("Some states were started but never finished",
+        Assert.assertEquals(
+                "Some states were started but never finished",
                 internalStateControllerWrapper.getStartedStates(),
                 internalStateControllerWrapper.getFinishedStates());
         Assert.assertEquals(
@@ -858,9 +883,9 @@ public class ContextualSearchManagerTest extends ContextualSearchInstrumentation
                 internalStateControllerWrapper.getFinishedStates());
     }
 
-    //============================================================================================
+    // ============================================================================================
     // Various tests
-    //============================================================================================
+    // ============================================================================================
 
     @Test
     @SmallTest
@@ -869,16 +894,20 @@ public class ContextualSearchManagerTest extends ContextualSearchInstrumentation
     // Previously flaky and disabled 4/2021.  https://crbug.com/1180304
     public void testTriggeringContextualSearchHidesFindInPageOverlay(
             @EnabledFeature int enabledFeature) throws Exception {
-        MenuUtils.invokeCustomMenuActionSync(InstrumentationRegistry.getInstrumentation(),
-                sActivityTestRule.getActivity(), R.id.find_in_page_id);
+        MenuUtils.invokeCustomMenuActionSync(
+                InstrumentationRegistry.getInstrumentation(),
+                sActivityTestRule.getActivity(),
+                R.id.find_in_page_id);
 
-        CriteriaHelper.pollUiThread(() -> {
-            FindToolbar findToolbar =
-                    (FindToolbar) sActivityTestRule.getActivity().findViewById(R.id.find_toolbar);
-            Criteria.checkThat(findToolbar, Matchers.notNullValue());
-            Criteria.checkThat(findToolbar.isShown(), Matchers.is(true));
-            Criteria.checkThat(findToolbar.isAnimating(), Matchers.is(false));
-        });
+        CriteriaHelper.pollUiThread(
+                () -> {
+                    FindToolbar findToolbar =
+                            (FindToolbar)
+                                    sActivityTestRule.getActivity().findViewById(R.id.find_toolbar);
+                    Criteria.checkThat(findToolbar, Matchers.notNullValue());
+                    Criteria.checkThat(findToolbar.isShown(), Matchers.is(true));
+                    Criteria.checkThat(findToolbar.isAnimating(), Matchers.is(false));
+                });
 
         // Don't type anything to Find because that may cause scrolling which makes clicking in the
         // page flaky.
@@ -895,8 +924,8 @@ public class ContextualSearchManagerTest extends ContextualSearchInstrumentation
     }
 
     /**
-     * Tests Tab reparenting.  When a tab moves from one activity to another the
-     * ContextualSearchTabHelper should detect the change and handle gestures for it too.  This
+     * Tests Tab reparenting. When a tab moves from one activity to another the
+     * ContextualSearchTabHelper should detect the change and handle gestures for it too. This
      * happens with multiwindow modes.
      */
     @Test
@@ -914,7 +943,9 @@ public class ContextualSearchManagerTest extends ContextualSearchInstrumentation
         ChromeTabUtils.switchTabInCurrentTabModel(ca, 0);
 
         int testTabId = ca.getActivityTab().getId();
-        MenuUtils.invokeCustomMenuActionSync(InstrumentationRegistry.getInstrumentation(), ca,
+        MenuUtils.invokeCustomMenuActionSync(
+                InstrumentationRegistry.getInstrumentation(),
+                ca,
                 R.id.move_to_other_window_menu_id);
 
         // Wait for the second activity to start up and be ready for interaction.
@@ -923,13 +954,16 @@ public class ContextualSearchManagerTest extends ContextualSearchInstrumentation
 
         // Trigger on a word and wait for the selection to be established.
         triggerNode(activity2.getActivityTab(), "search");
-        CriteriaHelper.pollUiThread(() -> {
-            String selection = activity2.getContextualSearchManagerSupplier()
-                                       .get()
-                                       .getSelectionController()
-                                       .getSelectedText();
-            Criteria.checkThat(selection, Matchers.is("Search"));
-        });
+        CriteriaHelper.pollUiThread(
+                () -> {
+                    String selection =
+                            activity2
+                                    .getContextualSearchManagerSupplier()
+                                    .get()
+                                    .getSelectionController()
+                                    .getSelectedText();
+                    Criteria.checkThat(selection, Matchers.is("Search"));
+                });
         TestThreadUtils.runOnUiThreadBlocking(() -> activity2.getCurrentTabModel().closeAllTabs());
         ApplicationTestUtils.finishActivity(activity2);
     }
@@ -961,15 +995,15 @@ public class ContextualSearchManagerTest extends ContextualSearchInstrumentation
         assertContainsParameters("states", "alternate-term");
     }
 
-    /**
-     * Monitor user action UMA recording operations.
-     */
+    /** Monitor user action UMA recording operations. */
     private static class UserActionMonitor extends UserActionTester {
         // TODO(donnd): merge into UserActionTester. See https://crbug.com/1103757.
         private Set<String> mUserActionPrefixes;
         private Map<String, Integer> mUserActionCounts;
 
-        /** @param userActionPrefixes A set of plain prefix strings for user actions to monitor. */
+        /**
+         * @param userActionPrefixes A set of plain prefix strings for user actions to monitor.
+         */
         UserActionMonitor(Set<String> userActionPrefixes) {
             mUserActionPrefixes = userActionPrefixes;
             mUserActionCounts = new HashMap<String, Integer>();
@@ -989,6 +1023,7 @@ public class ContextualSearchManagerTest extends ContextualSearchInstrumentation
 
         /**
          * Gets the count of user actions recorded for the given prefix.
+         *
          * @param actionPrefix The plain string prefix to lookup (must match a constructed entry)
          * @return The count of user actions recorded for that prefix.
          */
@@ -1038,27 +1073,33 @@ public class ContextualSearchManagerTest extends ContextualSearchInstrumentation
         assertLoadedNoUrl();
         assertSearchTermRequested();
 
-        Assert.assertEquals("Default height for the bar should be 70 DP.", defaultHeight,
-                mPanel.getBarHeight(), 0.001f);
+        Assert.assertEquals(
+                "Default height for the bar should be 70 DP.",
+                defaultHeight,
+                mPanel.getBarHeight(),
+                0.001f);
 
         // Increase the selected TextView height to be taller than the default height.
-        TestThreadUtils.runOnUiThreadBlocking(() -> {
-            mPanel.getSearchBarControl().setCaption("Increase Height");
-            TextView textView = mPanel.getSearchBarControl().getCaptionTextView();
-            float dpToPx = InstrumentationRegistry.getInstrumentation()
-                                   .getContext()
-                                   .getResources()
-                                   .getDisplayMetrics()
-                                   .density;
-            textView.getLayoutParams().height = (int) ((defaultHeight * 2) * dpToPx);
-            ViewUtils.requestLayout(textView, "Update the selected TextView height");
-        });
+        TestThreadUtils.runOnUiThreadBlocking(
+                () -> {
+                    mPanel.getSearchBarControl().setCaption("Increase Height");
+                    TextView textView = mPanel.getSearchBarControl().getCaptionTextView();
+                    float dpToPx =
+                            InstrumentationRegistry.getInstrumentation()
+                                    .getContext()
+                                    .getResources()
+                                    .getDisplayMetrics()
+                                    .density;
+                    textView.getLayoutParams().height = (int) ((defaultHeight * 2) * dpToPx);
+                    ViewUtils.requestLayout(textView, "Update the selected TextView height");
+                });
 
         fakeResponse(false, 200, "states", "United States Intelligence", "alternate-term", false);
         waitForPanelToPeek();
 
-        CriteriaHelper.pollUiThread(() -> {
-            Criteria.checkThat(mPanel.getBarHeight(), Matchers.greaterThan(defaultHeight));
-        });
+        CriteriaHelper.pollUiThread(
+                () -> {
+                    Criteria.checkThat(mPanel.getBarHeight(), Matchers.greaterThan(defaultHeight));
+                });
     }
 }

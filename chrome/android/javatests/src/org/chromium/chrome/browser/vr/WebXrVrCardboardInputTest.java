@@ -38,19 +38,20 @@ import org.chromium.content_public.browser.test.util.TestThreadUtils;
 import java.util.List;
 import java.util.concurrent.Callable;
 
-/**
- * End-to-end tests for sending input while using WebXR.
- */
+/** End-to-end tests for sending input while using WebXR. */
 @RunWith(ParameterizedRunner.class)
 @UseRunnerDelegate(ChromeJUnit4RunnerDelegate.class)
-@CommandLineFlags.Add({ChromeSwitches.DISABLE_FIRST_RUN_EXPERIENCE,
-        "enable-features=LogJsConsoleMessages", "force-webxr-runtime=cardboard"})
+@CommandLineFlags.Add({
+    ChromeSwitches.DISABLE_FIRST_RUN_EXPERIENCE,
+    "enable-features=LogJsConsoleMessages",
+    "force-webxr-runtime=cardboard"
+})
 public class WebXrVrCardboardInputTest {
     @ClassParameter
     private static List<ParameterSet> sClassParams =
             VrCardboardTestRuleUtils.generateDefaultTestRuleParameters();
-    @Rule
-    public RuleChain mRuleChain;
+
+    @Rule public RuleChain mRuleChain;
 
     private ChromeActivityTestRule mTestRule;
     private WebXrVrTestFramework mWebXrVrTestFramework;
@@ -68,20 +69,23 @@ public class WebXrVrCardboardInputTest {
 
     private long sendScreenTouchDownToView(final View view, final int x, final int y) {
         long downTime = SystemClock.uptimeMillis();
-        TestThreadUtils.runOnUiThreadBlocking(() -> {
-            view.dispatchTouchEvent(
-                    MotionEvent.obtain(downTime, downTime, MotionEvent.ACTION_DOWN, x, y, 0));
-        });
+        TestThreadUtils.runOnUiThreadBlocking(
+                () -> {
+                    view.dispatchTouchEvent(
+                            MotionEvent.obtain(
+                                    downTime, downTime, MotionEvent.ACTION_DOWN, x, y, 0));
+                });
         return downTime;
     }
 
     private void sendScreenTouchUpToView(
             final View view, final int x, final int y, final long downTime) {
-        TestThreadUtils.runOnUiThreadBlocking(() -> {
-            long now = SystemClock.uptimeMillis();
-            view.dispatchTouchEvent(
-                    MotionEvent.obtain(downTime, now, MotionEvent.ACTION_UP, x, y, 0));
-        });
+        TestThreadUtils.runOnUiThreadBlocking(
+                () -> {
+                    long now = SystemClock.uptimeMillis();
+                    view.dispatchTouchEvent(
+                            MotionEvent.obtain(downTime, now, MotionEvent.ACTION_UP, x, y, 0));
+                });
     }
 
     private void sendScreenTapToView(final View view, final int x, final int y) {
@@ -112,18 +116,22 @@ public class WebXrVrCardboardInputTest {
     private void sendScreenTouchDownToXrSession(
             final XrSessionCoordinator xrSession, final int x, final int y) {
         TestThreadUtils.runOnUiThreadBlocking(
-                () -> { xrSession.onDrawingSurfaceTouch(true, true, 0, x, y); });
+                () -> {
+                    xrSession.onDrawingSurfaceTouch(true, true, 0, x, y);
+                });
     }
 
     private void sendScreenTouchUpToXrSession(
             final XrSessionCoordinator xrSession, final int x, final int y) {
         TestThreadUtils.runOnUiThreadBlocking(
-                () -> { xrSession.onDrawingSurfaceTouch(true, false, 0, x, y); });
+                () -> {
+                    xrSession.onDrawingSurfaceTouch(true, false, 0, x, y);
+                });
     }
 
     /**
-     * Tests that screen touches are registered as XR input in immersive sessions,
-     *  when the viewer is Cardboard.
+     * Tests that screen touches are registered as XR input in immersive sessions, when the viewer
+     * is Cardboard.
      */
     @Test
     @MediumTest
@@ -152,8 +160,8 @@ public class WebXrVrCardboardInputTest {
     }
 
     /**
-     * Tests that screen touches are registered as transient XR input in inline sessions,
-     * when the viewer is Cardboard.
+     * Tests that screen touches are registered as transient XR input in inline sessions, when the
+     * viewer is Cardboard.
      */
     @Test
     @MediumTest
@@ -184,8 +192,8 @@ public class WebXrVrCardboardInputTest {
     }
 
     /**
-     * Tests that focus is locked to the device with an immersive session for the purposes of
-     * VR input.
+     * Tests that focus is locked to the device with an immersive session for the purposes of VR
+     * input.
      */
     @Test
     @MediumTest
@@ -200,9 +208,8 @@ public class WebXrVrCardboardInputTest {
     }
 
     /**
-     * Verifies that the XRSession has an input source when using WebXR and
-     * Cardboard. There should be no gamepads on the input source or navigator
-     * array.
+     * Verifies that the XRSession has an input source when using WebXR and Cardboard. There should
+     * be no gamepads on the input source or navigator array.
      */
     @Test
     @MediumTest

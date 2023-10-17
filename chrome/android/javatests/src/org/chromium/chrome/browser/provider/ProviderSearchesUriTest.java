@@ -25,15 +25,12 @@ import org.chromium.chrome.test.ChromeJUnit4ClassRunner;
 
 import java.util.Date;
 
-/**
- * Tests the use of the Searches URI as part of the Android provider public API.
- */
+/** Tests the use of the Searches URI as part of the Android provider public API. */
 @RunWith(ChromeJUnit4ClassRunner.class)
 @CommandLineFlags.Add({ChromeSwitches.DISABLE_FIRST_RUN_EXPERIENCE})
 @Batch(Batch.UNIT_TESTS)
 public class ProviderSearchesUriTest {
-    @Rule
-    public ProviderTestRule mProviderTestRule = new ProviderTestRule();
+    @Rule public ProviderTestRule mProviderTestRule = new ProviderTestRule();
 
     private Uri mSearchesUri;
 
@@ -67,7 +64,8 @@ public class ProviderSearchesUriTest {
         values.put(SearchColumns.SEARCH, "chromium");
         values.put(SearchColumns.DATE, System.currentTimeMillis());
 
-        Assert.assertEquals(0,
+        Assert.assertEquals(
+                0,
                 mProviderTestRule.getContentResolver().update(Uri.parse(""), values, null, null));
     }
 
@@ -93,9 +91,15 @@ public class ProviderSearchesUriTest {
         value.put(SearchColumns.SEARCH, insertSearch);
         value.put(SearchColumns.DATE, createDate);
 
-        Cursor cursor = mProviderTestRule.getContentResolver().query(mSearchesUri,
-                ChromeBrowserProviderImpl.SEARCHES_PROJECTION, SearchColumns.SEARCH + " = ?",
-                new String[] {insertSearch}, null);
+        Cursor cursor =
+                mProviderTestRule
+                        .getContentResolver()
+                        .query(
+                                mSearchesUri,
+                                ChromeBrowserProviderImpl.SEARCHES_PROJECTION,
+                                SearchColumns.SEARCH + " = ?",
+                                new String[] {insertSearch},
+                                null);
         try {
             Assert.assertEquals(0, cursor.getCount());
         } finally {

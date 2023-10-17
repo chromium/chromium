@@ -46,9 +46,9 @@ import org.chromium.net.test.EmbeddedTestServerRule;
 import java.util.concurrent.TimeoutException;
 
 /**
- * Instrumentation tests for launching
- * {@link org.chromium.chrome.browser.customtabs.CustomTabActivity} in Trusted Web Activity Mode
- * with default orientation set.
+ * Instrumentation tests for launching {@link
+ * org.chromium.chrome.browser.customtabs.CustomTabActivity} in Trusted Web Activity Mode with
+ * default orientation set.
  */
 @RunWith(ChromeJUnit4ClassRunner.class)
 @CommandLineFlags.Add({ChromeSwitches.DISABLE_FIRST_RUN_EXPERIENCE})
@@ -57,9 +57,10 @@ public class TrustedWebActivityOrientationTest {
     public EmbeddedTestServerRule mEmbeddedTestServerRule = new EmbeddedTestServerRule();
 
     @Rule
-    public RuleChain mRuleChain = RuleChain.emptyRuleChain()
-                                          .around(mCustomTabActivityTestRule)
-                                          .around(mEmbeddedTestServerRule);
+    public RuleChain mRuleChain =
+            RuleChain.emptyRuleChain()
+                    .around(mCustomTabActivityTestRule)
+                    .around(mEmbeddedTestServerRule);
 
     private static final String PACKAGE_NAME =
             ContextUtils.getApplicationContext().getPackageName();
@@ -74,8 +75,9 @@ public class TrustedWebActivityOrientationTest {
         // Map non-localhost-URLs to localhost. Navigations to non-localhost URLs will throw a
         // certificate error.
         Uri mapToUri = Uri.parse(mEmbeddedTestServerRule.getServer().getURL("/"));
-        CommandLine.getInstance().appendSwitchWithValue(
-                ContentSwitches.HOST_RESOLVER_RULES, "MAP * " + mapToUri.getAuthority());
+        CommandLine.getInstance()
+                .appendSwitchWithValue(
+                        ContentSwitches.HOST_RESOLVER_RULES, "MAP * " + mapToUri.getAuthority());
     }
 
     @Test
@@ -85,7 +87,8 @@ public class TrustedWebActivityOrientationTest {
                 mEmbeddedTestServerRule.getServer().getURL("/chrome/test/data/android/simple.html");
 
         Intent intent = createTrustedWebActivityIntent(mTestPage);
-        intent.putExtra(TrustedWebActivityIntentBuilder.EXTRA_SCREEN_ORIENTATION,
+        intent.putExtra(
+                TrustedWebActivityIntentBuilder.EXTRA_SCREEN_ORIENTATION,
                 ScreenOrientation.LANDSCAPE);
         launchCustomTabActivity(intent);
 
@@ -103,16 +106,20 @@ public class TrustedWebActivityOrientationTest {
 
         JavaScriptUtils.executeJavaScript(
                 tab.getWebContents(), "screen.orientation.lock('portrait');");
-        CriteriaHelper.pollUiThread(() -> {
-            Criteria.checkThat(mCustomTabActivityTestRule.getActivity().getRequestedOrientation(),
-                    Matchers.is(ActivityInfo.SCREEN_ORIENTATION_SENSOR_PORTRAIT));
-        });
+        CriteriaHelper.pollUiThread(
+                () -> {
+                    Criteria.checkThat(
+                            mCustomTabActivityTestRule.getActivity().getRequestedOrientation(),
+                            Matchers.is(ActivityInfo.SCREEN_ORIENTATION_SENSOR_PORTRAIT));
+                });
 
         JavaScriptUtils.executeJavaScript(tab.getWebContents(), "screen.orientation.unlock();");
-        CriteriaHelper.pollUiThread(() -> {
-            Criteria.checkThat(mCustomTabActivityTestRule.getActivity().getRequestedOrientation(),
-                    Matchers.is(ActivityInfo.SCREEN_ORIENTATION_SENSOR_LANDSCAPE));
-        });
+        CriteriaHelper.pollUiThread(
+                () -> {
+                    Criteria.checkThat(
+                            mCustomTabActivityTestRule.getActivity().getRequestedOrientation(),
+                            Matchers.is(ActivityInfo.SCREEN_ORIENTATION_SENSOR_LANDSCAPE));
+                });
     }
 
     public void launchCustomTabActivity(Intent intent) throws TimeoutException {

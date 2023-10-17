@@ -46,9 +46,7 @@ import org.chromium.net.test.EmbeddedTestServer;
 
 import java.util.concurrent.TimeoutException;
 
-/**
- * Tests for the Default Offline behavior when loading a TWA (and failing to).
- */
+/** Tests for the Default Offline behavior when loading a TWA (and failing to). */
 @RunWith(ChromeJUnit4ClassRunner.class)
 @CommandLineFlags.Add({ChromeSwitches.DISABLE_FIRST_RUN_EXPERIENCE})
 public class WebappDefaultOfflineTwaTest {
@@ -71,8 +69,9 @@ public class WebappDefaultOfflineTwaTest {
 
     private static BitmapDrawable getTestIconDrawable(Resources resources, String imageAsString) {
         byte[] bytes = Base64.decode(imageAsString.getBytes(), Base64.DEFAULT);
-        BitmapDrawable bitmapDrawable = new BitmapDrawable(
-                resources, BitmapFactory.decodeByteArray(bytes, 0, bytes.length));
+        BitmapDrawable bitmapDrawable =
+                new BitmapDrawable(
+                        resources, BitmapFactory.decodeByteArray(bytes, 0, bytes.length));
         return bitmapDrawable;
     }
 
@@ -149,23 +148,29 @@ public class WebappDefaultOfflineTwaTest {
 
         // Ensure that web_app_default_offline.html is showing the correct values.
         Tab tab = mCustomTabActivityTestRule.getActivity().getActivityTab();
-        assertEquals("\"shortname\"",
+        assertEquals(
+                "\"shortname\"",
                 JavaScriptUtils.executeJavaScriptAndWaitForResult(
                         tab.getWebContents(), "document.title;"));
-        assertEquals("\"You're offline\"",
-                JavaScriptUtils.executeJavaScriptAndWaitForResult(tab.getWebContents(),
+        assertEquals(
+                "\"You're offline\"",
+                JavaScriptUtils.executeJavaScriptAndWaitForResult(
+                        tab.getWebContents(),
                         "document.getElementById('default-web-app-msg').textContent;"));
 
-        String imageAsString = JavaScriptUtils.executeJavaScriptAndWaitForResult(
-                tab.getWebContents(), "document.getElementById('icon').src;");
+        String imageAsString =
+                JavaScriptUtils.executeJavaScriptAndWaitForResult(
+                        tab.getWebContents(), "document.getElementById('icon').src;");
         // Remove the base64 prefix and convert the line-feeds (%0A) so that the strings can be
         // compared.
-        imageAsString = imageAsString.substring(
-                "\"data:image/png;base64,".length(), imageAsString.length() - 1);
+        imageAsString =
+                imageAsString.substring(
+                        "\"data:image/png;base64,".length(), imageAsString.length() - 1);
         imageAsString = imageAsString.replaceAll("%0A", "\n");
 
         BitmapDrawable expectedDrawable =
-                getTestIconDrawable(mCustomTabActivityTestRule.getActivity().getResources(),
+                getTestIconDrawable(
+                        mCustomTabActivityTestRule.getActivity().getResources(),
                         WebappActivityTestRule.TEST_ICON);
         String expectedString =
                 BitmapHelper.encodeBitmapAsString(expectedDrawable.getBitmap()).trim();

@@ -23,8 +23,8 @@ import org.chromium.chrome.test.ChromeTabbedActivityTestRule;
 import org.chromium.chrome.test.batch.BlankCTATabInitialStateRule;
 
 /**
- * Class responsible for testing the ContextualSearchRequest.
- * TODO(donnd): Switch to a pure-java test.
+ * Class responsible for testing the ContextualSearchRequest. TODO(donnd): Switch to a pure-java
+ * test.
  */
 @RunWith(ChromeJUnit4ClassRunner.class)
 @CommandLineFlags.Add({ChromeSwitches.DISABLE_FIRST_RUN_EXPERIENCE})
@@ -43,11 +43,16 @@ public class ContextualSearchRequestTest {
 
     @Before
     public void setUp() throws Exception {
-        InstrumentationRegistry.getInstrumentation().runOnMainSync(() -> {
-            mRequest = new ContextualSearchRequest("barack obama", "barack", "", true, null, null);
-            mNormalPriorityOnlyRequest =
-                    new ContextualSearchRequest("woody allen", "allen", "", false, null, null);
-        });
+        InstrumentationRegistry.getInstrumentation()
+                .runOnMainSync(
+                        () -> {
+                            mRequest =
+                                    new ContextualSearchRequest(
+                                            "barack obama", "barack", "", true, null, null);
+                            mNormalPriorityOnlyRequest =
+                                    new ContextualSearchRequest(
+                                            "woody allen", "allen", "", false, null, null);
+                        });
     }
 
     @Test
@@ -86,12 +91,16 @@ public class ContextualSearchRequestTest {
     public void testServerProvidedUrls() {
         String serverUrlFull = "https://www.google.com/search?obama&ctxs=2";
         String serverUrlPreload = "https://www.google.com/s?obama&ctxs=2&pf=c&sns=1";
-        InstrumentationRegistry.getInstrumentation().runOnMainSync(() -> {
-            mRequest =
-                    new ContextualSearchRequest("", "", "", true, serverUrlFull, serverUrlPreload);
-            mNormalPriorityOnlyRequest =
-                    new ContextualSearchRequest("", "", "", false, serverUrlFull, null);
-        });
+        InstrumentationRegistry.getInstrumentation()
+                .runOnMainSync(
+                        () -> {
+                            mRequest =
+                                    new ContextualSearchRequest(
+                                            "", "", "", true, serverUrlFull, serverUrlPreload);
+                            mNormalPriorityOnlyRequest =
+                                    new ContextualSearchRequest(
+                                            "", "", "", false, serverUrlFull, null);
+                        });
         Assert.assertTrue(mRequest.isUsingLowPriority());
         Assert.assertEquals(serverUrlPreload, mRequest.getSearchUrl());
         mRequest.setNormalPriority();

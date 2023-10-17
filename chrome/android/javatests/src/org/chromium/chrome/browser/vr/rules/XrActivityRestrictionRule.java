@@ -13,8 +13,8 @@ import org.chromium.chrome.browser.vr.rules.XrActivityRestriction.SupportedActiv
 import org.chromium.chrome.browser.vr.util.XrTestRuleUtils;
 
 /**
- * Rule that conditionally skips a test if the current XrTestRule's Activity is not
- * one of the supported Activity types for the test.
+ * Rule that conditionally skips a test if the current XrTestRule's Activity is not one of the
+ * supported Activity types for the test.
  */
 public class XrActivityRestrictionRule implements TestRule {
     private @SupportedActivity int mCurrentRestriction;
@@ -35,8 +35,7 @@ public class XrActivityRestrictionRule implements TestRule {
             return generateIgnoreStatement();
         }
 
-        @SupportedActivity
-        int[] activities = annotation.value();
+        @SupportedActivity int[] activities = annotation.value();
         for (int i = 0; i < activities.length; i++) {
             if (activities[i] == mCurrentRestriction || activities[i] == SupportedActivity.ALL) {
                 return base;
@@ -49,7 +48,8 @@ public class XrActivityRestrictionRule implements TestRule {
         return new Statement() {
             @Override
             public void evaluate() {
-                Assume.assumeTrue("Test ignored because "
+                Assume.assumeTrue(
+                        "Test ignored because "
                                 + XrTestRuleUtils.supportedActivityToString(mCurrentRestriction)
                                 + " was not one of the specified activities to run the test in.",
                         false);

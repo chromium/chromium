@@ -30,8 +30,10 @@ import java.util.concurrent.TimeoutException;
  * A payment integration test for a merchant that retries payment request with payment validation.
  */
 @RunWith(ChromeJUnit4ClassRunner.class)
-@CommandLineFlags.Add({ChromeSwitches.DISABLE_FIRST_RUN_EXPERIENCE,
-        PaymentRequestTestRule.ENABLE_EXPERIMENTAL_WEB_PLATFORM_FEATURES})
+@CommandLineFlags.Add({
+    ChromeSwitches.DISABLE_FIRST_RUN_EXPERIENCE,
+    PaymentRequestTestRule.ENABLE_EXPERIMENTAL_WEB_PLATFORM_FEATURES
+})
 public class PaymentRequestRetryTest {
     @Rule
     public PaymentRequestTestRule mPaymentRequestTestRule =
@@ -47,18 +49,19 @@ public class PaymentRequestRetryTest {
     @Before
     public void setUp() throws TimeoutException {
         AutofillTestHelper helper = new AutofillTestHelper();
-        helper.setProfile(AutofillProfile.builder()
-                                  .setFullName("Jon Doe")
-                                  .setCompanyName("Google")
-                                  .setStreetAddress("340 Main St")
-                                  .setRegion("CA")
-                                  .setLocality("Los Angeles")
-                                  .setPostalCode("90291")
-                                  .setCountryCode("US")
-                                  .setPhoneNumber("333-333-3333")
-                                  .setEmailAddress("jon.doe@gmail.com")
-                                  .setLanguageCode("en-US")
-                                  .build());
+        helper.setProfile(
+                AutofillProfile.builder()
+                        .setFullName("Jon Doe")
+                        .setCompanyName("Google")
+                        .setStreetAddress("340 Main St")
+                        .setRegion("CA")
+                        .setLocality("Los Angeles")
+                        .setPostalCode("90291")
+                        .setCountryCode("US")
+                        .setPhoneNumber("333-333-3333")
+                        .setEmailAddress("jon.doe@gmail.com")
+                        .setLanguageCode("en-US")
+                        .build());
 
         mPaymentRequestTestRule.addPaymentAppFactory(
                 AppPresence.HAVE_APPS, FactorySpeed.FAST_FACTORY);
@@ -87,9 +90,7 @@ public class PaymentRequestRetryTest {
         Assert.assertEquals(1, mPaymentRequestTestRule.getNumberOfPaymentApps());
     }
 
-    /**
-     * Test for retry() with default error message
-     */
+    /** Test for retry() with default error message */
     @Test
     @MediumTest
     @Feature({"Payments"})
@@ -106,9 +107,7 @@ public class PaymentRequestRetryTest {
                 mPaymentRequestTestRule.getRetryErrorMessage());
     }
 
-    /**
-     * Test for retry() with custom error message.
-     */
+    /** Test for retry() with custom error message. */
     @Test
     @MediumTest
     @Feature({"Payments"})
@@ -118,17 +117,13 @@ public class PaymentRequestRetryTest {
         mPaymentRequestTestRule.clickAndWait(
                 R.id.button_primary, mPaymentRequestTestRule.getPaymentResponseReady());
 
-        mPaymentRequestTestRule.retryPaymentRequest("{"
-                        + "  error: 'ERROR'"
-                        + "}",
-                mPaymentRequestTestRule.getReadyToPay());
+        mPaymentRequestTestRule.retryPaymentRequest(
+                "{" + "  error: 'ERROR'" + "}", mPaymentRequestTestRule.getReadyToPay());
 
         Assert.assertEquals("ERROR", mPaymentRequestTestRule.getRetryErrorMessage());
     }
 
-    /**
-     * Test for retry() with shipping address errors.
-     */
+    /** Test for retry() with shipping address errors. */
     @Test
     @MediumTest
     @Feature({"Payments", "RenderTest"})
@@ -138,7 +133,8 @@ public class PaymentRequestRetryTest {
         mPaymentRequestTestRule.clickAndWait(
                 R.id.button_primary, mPaymentRequestTestRule.getPaymentResponseReady());
 
-        mPaymentRequestTestRule.retryPaymentRequest("{"
+        mPaymentRequestTestRule.retryPaymentRequest(
+                "{"
                         + "  shippingAddress: {"
                         + "    country: 'COUNTRY ERROR',"
                         + "    recipient: 'RECIPIENT ERROR',"
@@ -155,26 +151,27 @@ public class PaymentRequestRetryTest {
         mPaymentRequestTestRule.clickInEditorAndWait(
                 R.id.editor_dialog_done_button, mPaymentRequestTestRule.getReadyToEdit());
 
-        mPaymentRequestTestRule.getKeyboardDelegate().hideKeyboard(
-                mPaymentRequestTestRule.getEditorDialogView());
+        mPaymentRequestTestRule
+                .getKeyboardDelegate()
+                .hideKeyboard(mPaymentRequestTestRule.getEditorDialogView());
 
         ChromeRenderTestRule.sanitize(mPaymentRequestTestRule.getEditorDialogView());
-        mRenderTestRule.render(mPaymentRequestTestRule.getEditorDialogView(),
+        mRenderTestRule.render(
+                mPaymentRequestTestRule.getEditorDialogView(),
                 "retry_with_shipping_address_errors");
 
         mPaymentRequestTestRule.setSpinnerSelectionInEditorAndWait(
                 0 /* Afghanistan */, mPaymentRequestTestRule.getEditorTextUpdate());
         mPaymentRequestTestRule.setTextInEditorAndWait(
                 new String[] {
-                        "Alice", "Supreme Court", "Airport Road", "Kabul", "1043", "020-253-0000"},
+                    "Alice", "Supreme Court", "Airport Road", "Kabul", "1043", "020-253-0000"
+                },
                 mPaymentRequestTestRule.getEditorTextUpdate());
         mPaymentRequestTestRule.clickInEditorAndWait(
                 R.id.editor_dialog_done_button, mPaymentRequestTestRule.getReadyToPay());
     }
 
-    /**
-     * Test for retry() with payer errors.
-     */
+    /** Test for retry() with payer errors. */
     @Test
     @MediumTest
     @Feature({"Payments", "RenderTest"})
@@ -184,7 +181,8 @@ public class PaymentRequestRetryTest {
         mPaymentRequestTestRule.clickAndWait(
                 R.id.button_primary, mPaymentRequestTestRule.getPaymentResponseReady());
 
-        mPaymentRequestTestRule.retryPaymentRequest("{"
+        mPaymentRequestTestRule.retryPaymentRequest(
+                "{"
                         + "  payer: {"
                         + "    email: 'EMAIL ERROR',"
                         + "    name: 'NAME ERROR',"
@@ -196,8 +194,9 @@ public class PaymentRequestRetryTest {
         mPaymentRequestTestRule.clickInEditorAndWait(
                 R.id.editor_dialog_done_button, mPaymentRequestTestRule.getReadyToEdit());
 
-        mPaymentRequestTestRule.getKeyboardDelegate().hideKeyboard(
-                mPaymentRequestTestRule.getEditorDialogView());
+        mPaymentRequestTestRule
+                .getKeyboardDelegate()
+                .hideKeyboard(mPaymentRequestTestRule.getEditorDialogView());
 
         ChromeRenderTestRule.sanitize(mPaymentRequestTestRule.getEditorDialogView());
         mRenderTestRule.render(
@@ -210,9 +209,7 @@ public class PaymentRequestRetryTest {
                 R.id.editor_dialog_done_button, mPaymentRequestTestRule.getReadyToPay());
     }
 
-    /**
-     * Test for retry() with shipping address errors and payer errors.
-     */
+    /** Test for retry() with shipping address errors and payer errors. */
     @Test
     @MediumTest
     @Feature({"Payments"})
@@ -222,7 +219,8 @@ public class PaymentRequestRetryTest {
         mPaymentRequestTestRule.clickAndWait(
                 R.id.button_primary, mPaymentRequestTestRule.getPaymentResponseReady());
 
-        mPaymentRequestTestRule.retryPaymentRequest("{"
+        mPaymentRequestTestRule.retryPaymentRequest(
+                "{"
                         + "  shippingAddress: {"
                         + "    addressLine: 'ADDRESS LINE ERROR',"
                         + "    city: 'CITY ERROR'"
@@ -248,9 +246,7 @@ public class PaymentRequestRetryTest {
                 R.id.editor_dialog_done_button, mPaymentRequestTestRule.getReadyToPay());
     }
 
-    /**
-     * Test for onpayerdetailchange event after retry().
-     */
+    /** Test for onpayerdetailchange event after retry(). */
     @Test
     @MediumTest
     @Feature({"Payments"})
@@ -279,9 +275,7 @@ public class PaymentRequestRetryTest {
                 new String[] {"Jane Doe", "6502530000", "jane.doe@gmail.com"});
     }
 
-    /**
-     * Test for reselecting contact detail after retry().
-     */
+    /** Test for reselecting contact detail after retry(). */
     @Test
     @MediumTest
     @Feature({"Payments"})

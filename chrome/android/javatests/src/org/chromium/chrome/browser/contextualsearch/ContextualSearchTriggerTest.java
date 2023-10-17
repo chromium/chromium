@@ -33,9 +33,7 @@ import org.chromium.content_public.browser.SelectionClient;
 import org.chromium.content_public.browser.test.util.TestThreadUtils;
 import org.chromium.ui.test.util.UiRestriction;
 
-/**
- * Tests the Related Searches Feature of Contextual Search using instrumentation tests.
- */
+/** Tests the Related Searches Feature of Contextual Search using instrumentation tests. */
 @RunWith(ParameterizedRunner.class)
 @ParameterAnnotations.UseRunnerDelegate(ChromeJUnit4RunnerDelegate.class)
 // NOTE: Disable online detection so we we'll default to online on test bots with no network.
@@ -51,34 +49,31 @@ public class ContextualSearchTriggerTest extends ContextualSearchInstrumentation
         super.setUp();
     }
 
-    //============================================================================================
+    // ============================================================================================
     // Test Cases
-    //============================================================================================
+    // ============================================================================================
 
-    /**
-     * Tests the doesContainAWord method.
-     * TODO(donnd): Change to a unit test.
-     */
+    /** Tests the doesContainAWord method. TODO(donnd): Change to a unit test. */
     @Test
     @SmallTest
     @Feature({"ContextualSearch"})
     public void testDoesContainAWord() {
         Assert.assertTrue(mSelectionController.doesContainAWord("word"));
         Assert.assertTrue(mSelectionController.doesContainAWord("word "));
-        Assert.assertFalse("Emtpy string should not be considered a word!",
+        Assert.assertFalse(
+                "Emtpy string should not be considered a word!",
                 mSelectionController.doesContainAWord(""));
-        Assert.assertFalse("Special symbols should not be considered a word!",
+        Assert.assertFalse(
+                "Special symbols should not be considered a word!",
                 mSelectionController.doesContainAWord("@"));
-        Assert.assertFalse("White space should not be considered a word",
+        Assert.assertFalse(
+                "White space should not be considered a word",
                 mSelectionController.doesContainAWord(" "));
         Assert.assertTrue(mSelectionController.doesContainAWord("Q2"));
         Assert.assertTrue(mSelectionController.doesContainAWord("123"));
     }
 
-    /**
-     * Tests the isValidSelection method.
-     * TODO(donnd): Change to a unit test.
-     */
+    /** Tests the isValidSelection method. TODO(donnd): Change to a unit test. */
     @Test
     @SmallTest
     @Feature({"ContextualSearch"})
@@ -105,9 +100,7 @@ public class ContextualSearchTriggerTest extends ContextualSearchInstrumentation
         }
     }
 
-    /**
-     * Tests a simple non-resolving gesture, without opening the panel.
-     */
+    /** Tests a simple non-resolving gesture, without opening the panel. */
     @Test
     @SmallTest
     @Feature({"ContextualSearch"})
@@ -121,13 +114,11 @@ public class ContextualSearchTriggerTest extends ContextualSearchInstrumentation
         assertNoWebContents();
     }
 
-    //============================================================================================
+    // ============================================================================================
     // Tap=gesture Tests
-    //============================================================================================
+    // ============================================================================================
 
-    /**
-     * Tests that a Tap gesture on a special character does not select or show the panel.
-     */
+    /** Tests that a Tap gesture on a special character does not select or show the panel. */
     @Test
     @SmallTest
     @Feature({"ContextualSearch"})
@@ -141,9 +132,7 @@ public class ContextualSearchTriggerTest extends ContextualSearchInstrumentation
         assertLoadedNoUrl();
     }
 
-    /**
-     * Tests that a Tap gesture followed by scrolling clears the selection.
-     */
+    /** Tests that a Tap gesture followed by scrolling clears the selection. */
     @Test
     @DisabledTest(message = "crbug.com/841017")
     @SmallTest
@@ -161,9 +150,7 @@ public class ContextualSearchTriggerTest extends ContextualSearchInstrumentation
         Assert.assertTrue(TextUtils.isEmpty(mSelectionController.getSelectedText()));
     }
 
-    /**
-     * Tests that a Tap gesture followed by tapping an invalid character doesn't select.
-     */
+    /** Tests that a Tap gesture followed by tapping an invalid character doesn't select. */
     @Test
     @SmallTest
     @Feature({"ContextualSearch"})
@@ -192,9 +179,7 @@ public class ContextualSearchTriggerTest extends ContextualSearchInstrumentation
         waitForPanelToCloseAndSelectionEmpty();
     }
 
-    /**
-     * Tests that a Tap gesture far away toggles selecting text.
-     */
+    /** Tests that a Tap gesture far away toggles selecting text. */
     @Test
     @SmallTest
     @Feature({"ContextualSearch"})
@@ -212,9 +197,7 @@ public class ContextualSearchTriggerTest extends ContextualSearchInstrumentation
         Assert.assertEquals("States", getSelectedText());
     }
 
-    /**
-     * Tests a "tap-near" -- that sequential Tap gestures nearby keep selecting.
-     */
+    /** Tests a "tap-near" -- that sequential Tap gestures nearby keep selecting. */
     @Test
     @SmallTest
     @Feature({"ContextualSearch"})
@@ -242,13 +225,11 @@ public class ContextualSearchTriggerTest extends ContextualSearchInstrumentation
         waitForSelectionToBe("States");
     }
 
-    //============================================================================================
+    // ============================================================================================
     // Long-press non-triggering gesture tests.
-    //============================================================================================
+    // ============================================================================================
 
-    /**
-     * Tests that a long-press gesture followed by scrolling does not clear the selection.
-     */
+    /** Tests that a long-press gesture followed by scrolling does not clear the selection. */
     @Test
     @SmallTest
     @Feature({"ContextualSearch"})
@@ -290,7 +271,8 @@ public class ContextualSearchTriggerTest extends ContextualSearchInstrumentation
         FeatureList.TestValues testValues = new FeatureList.TestValues();
         testValues.addFieldTrialParamOverride(
                 ChromeFeatureList.CONTEXTUAL_SEARCH_SUPPRESS_SHORT_VIEW,
-                ContextualSearchFieldTrial.CONTEXTUAL_SEARCH_MINIMUM_PAGE_HEIGHT_NAME, "100");
+                ContextualSearchFieldTrial.CONTEXTUAL_SEARCH_MINIMUM_PAGE_HEIGHT_NAME,
+                "100");
         FeatureList.setTestValues(testValues);
         Assert.assertFalse(mContextualSearchManager.isSuppressed());
     }
@@ -304,26 +286,24 @@ public class ContextualSearchTriggerTest extends ContextualSearchInstrumentation
         FeatureList.TestValues testValues = new FeatureList.TestValues();
         testValues.addFieldTrialParamOverride(
                 ChromeFeatureList.CONTEXTUAL_SEARCH_SUPPRESS_SHORT_VIEW,
-                ContextualSearchFieldTrial.CONTEXTUAL_SEARCH_MINIMUM_PAGE_HEIGHT_NAME, "500000");
+                ContextualSearchFieldTrial.CONTEXTUAL_SEARCH_MINIMUM_PAGE_HEIGHT_NAME,
+                "500000");
         FeatureList.setTestValues(testValues);
         Assert.assertTrue(mContextualSearchManager.isSuppressed());
     }
 
-    //============================================================================================
+    // ============================================================================================
     // Tap-non-triggering when ARIA annotated as interactive.
-    //============================================================================================
+    // ============================================================================================
 
-    /**
-     * Tests that a Tap gesture on an element with an ARIA role does not trigger.
-     */
+    /** Tests that a Tap gesture on an element with an ARIA role does not trigger. */
     @Test
     @SmallTest
     @Feature({"ContextualSearch"})
     public void testTapOnRoleIgnored() throws Exception {
         FeatureList.setTestFeatures(ENABLE_NONE);
 
-        @OverlayPanel.PanelState
-        int initialState = mPanel.getPanelState();
+        @OverlayPanel.PanelState int initialState = mPanel.getPanelState();
         clickNode("role");
         assertPanelStillInState(initialState);
     }
@@ -338,34 +318,30 @@ public class ContextualSearchTriggerTest extends ContextualSearchInstrumentation
     public void testTapOnARIAIgnored() throws Exception {
         FeatureList.setTestFeatures(ENABLE_NONE);
 
-        @OverlayPanel.PanelState
-        int initialState = mPanel.getPanelState();
+        @OverlayPanel.PanelState int initialState = mPanel.getPanelState();
         clickNode("aria");
         assertPanelStillInState(initialState);
     }
 
-    /**
-     * Tests that a Tap gesture on an element that is focusable does not trigger.
-     */
+    /** Tests that a Tap gesture on an element that is focusable does not trigger. */
     @Test
     @SmallTest
     @Feature({"ContextualSearch"})
     public void testTapOnFocusableIgnored() throws Exception {
         FeatureList.setTestFeatures(ENABLE_NONE);
 
-        @OverlayPanel.PanelState
-        int initialState = mPanel.getPanelState();
+        @OverlayPanel.PanelState int initialState = mPanel.getPanelState();
         clickNode("focusable");
         assertPanelStillInState(initialState);
     }
 
-    //============================================================================================
+    // ============================================================================================
     // Search-term resolution (server request to determine a search).
-    //============================================================================================
+    // ============================================================================================
 
     /**
-     * Tests expanding the panel before the search term has resolved, verifies that nothing
-     * loads until the resolve completes and that it's now a normal priority URL.
+     * Tests expanding the panel before the search term has resolved, verifies that nothing loads
+     * until the resolve completes and that it's now a normal priority URL.
      */
     @Test
     @SmallTest
@@ -390,8 +366,8 @@ public class ContextualSearchTriggerTest extends ContextualSearchInstrumentation
 
     /**
      * Tests that the Contextual Search panel does not reappear when a long-press selection is
-     * modified after the user has taken an action to explicitly dismiss the panel. Also tests
-     * that the panel reappears when a new selection is made.
+     * modified after the user has taken an action to explicitly dismiss the panel. Also tests that
+     * the panel reappears when a new selection is made.
      */
     @Test
     @SmallTest
@@ -407,15 +383,20 @@ public class ContextualSearchTriggerTest extends ContextualSearchInstrumentation
         Assert.assertEquals("Search", getSelectedText());
 
         // Simulate a selection change event and assert that the panel has not reappeared.
-        TestThreadUtils.runOnUiThreadBlocking(() -> {
-            SelectionClient selectionClient = mManager.getContextualSearchSelectionClient();
-            selectionClient.onSelectionEvent(org.chromium.ui.touch_selection.SelectionEventType
-                                                     .SELECTION_HANDLE_DRAG_STARTED,
-                    333, 450);
-            selectionClient.onSelectionEvent(org.chromium.ui.touch_selection.SelectionEventType
-                                                     .SELECTION_HANDLE_DRAG_STOPPED,
-                    303, 450);
-        });
+        TestThreadUtils.runOnUiThreadBlocking(
+                () -> {
+                    SelectionClient selectionClient = mManager.getContextualSearchSelectionClient();
+                    selectionClient.onSelectionEvent(
+                            org.chromium.ui.touch_selection.SelectionEventType
+                                    .SELECTION_HANDLE_DRAG_STARTED,
+                            333,
+                            450);
+                    selectionClient.onSelectionEvent(
+                            org.chromium.ui.touch_selection.SelectionEventType
+                                    .SELECTION_HANDLE_DRAG_STOPPED,
+                            303,
+                            450);
+                });
         assertPanelClosedOrUndefined();
 
         // Select a different word and assert that the panel has appeared.
@@ -435,8 +416,8 @@ public class ContextualSearchTriggerTest extends ContextualSearchInstrumentation
         waitForPanelToPeek();
 
         ResolvedSearchTerm resolvedSearchTerm =
-                new ResolvedSearchTerm
-                        .Builder(false, 200, "Intelligence", "United States Intelligence")
+                new ResolvedSearchTerm.Builder(
+                                false, 200, "Intelligence", "United States Intelligence")
                         .setSelectionStartAdjust(-14)
                         .build();
         fakeResponse(resolvedSearchTerm);

@@ -46,13 +46,17 @@ import java.util.Queue;
 
 /** Test suite for navigator.getEnvironmentIntegrity functionality. */
 @RunWith(ChromeJUnit4ClassRunner.class)
-@CommandLineFlags.Add({ChromeSwitches.DISABLE_FIRST_RUN_EXPERIENCE,
-        ContentSwitches.HOST_RESOLVER_RULES + "=MAP * 127.0.0.1",
-        "enable-features=WebEnvironmentIntegrity", "ignore-certificate-errors"})
+@CommandLineFlags.Add({
+    ChromeSwitches.DISABLE_FIRST_RUN_EXPERIENCE,
+    ContentSwitches.HOST_RESOLVER_RULES + "=MAP * 127.0.0.1",
+    "enable-features=WebEnvironmentIntegrity",
+    "ignore-certificate-errors"
+})
 @Batch(Batch.PER_CLASS)
 public class EnvironmentIntegrityTest {
     @Rule
     public ChromeTabbedActivityTestRule mActivityTestRule = new ChromeTabbedActivityTestRule();
+
     private static final String TEST_HOSTNAME = "test.host";
     private static final long HANDLE = 123456789L;
     private static final long ALTERNATE_HANDLE = 987654321L;
@@ -73,9 +77,7 @@ public class EnvironmentIntegrityTest {
     private EnvironmentIntegrityUpdateWaiter mUpdateWaiter;
     private final TestIntegrityServiceBridge mIntegrityDelegate = new TestIntegrityServiceBridge();
 
-    /**
-     * Helper class to pass parsed title string.
-     */
+    /** Helper class to pass parsed title string. */
     private static class ExecutionResult {
         public ExecutionResult(boolean success, String message) {
             this.success = success;
@@ -109,9 +111,7 @@ public class EnvironmentIntegrityTest {
         }
     }
 
-    /**
-     * Class to store parameters passed to attester for token requests.
-     */
+    /** Class to store parameters passed to attester for token requests. */
     private static class TokenRequest {
         public TokenRequest(long handle, byte[] requestHash) {
             this.handle = handle;
@@ -122,9 +122,7 @@ public class EnvironmentIntegrityTest {
         public final byte[] requestHash;
     }
 
-    /**
-     * Test implementation of IntegrityServiceBridge to control attester behavior.
-     */
+    /** Test implementation of IntegrityServiceBridge to control attester behavior. */
     private static class TestIntegrityServiceBridge implements IntegrityServiceBridgeDelegate {
         private boolean mCanUseGms;
 
@@ -184,15 +182,14 @@ public class EnvironmentIntegrityTest {
         mUrl = mTestServer.getURLWithHostName(TEST_HOSTNAME, TEST_FILE);
         mTab = mActivityTestRule.getActivity().getActivityTab();
         mUpdateWaiter = new EnvironmentIntegrityUpdateWaiter();
-        TestThreadUtils.runOnUiThreadBlocking(() -> {
-            IntegrityServiceBridge.setDelegateForTesting(mIntegrityDelegate);
-            mTab.addObserver(mUpdateWaiter);
-        });
+        TestThreadUtils.runOnUiThreadBlocking(
+                () -> {
+                    IntegrityServiceBridge.setDelegateForTesting(mIntegrityDelegate);
+                    mTab.addObserver(mUpdateWaiter);
+                });
     }
 
-    /**
-     * Verify that navigator.getEnvironmentIntegrity succeeds.
-     */
+    /** Verify that navigator.getEnvironmentIntegrity succeeds. */
     @Test
     @MediumTest
     public void testGetEnvironmentIntegrity() throws Exception {
@@ -236,8 +233,12 @@ public class EnvironmentIntegrityTest {
     @MediumTest
     public void testTimeoutResultsInTimeoutException() throws Exception {
         mIntegrityDelegate.setCanUseGms(true);
-        mIntegrityDelegate.addHandleFuture(Futures.immediateFailedFuture(new IntegrityException("",
-                org.chromium.components.environment_integrity.enums.IntegrityResponse.TIMEOUT)));
+        mIntegrityDelegate.addHandleFuture(
+                Futures.immediateFailedFuture(
+                        new IntegrityException(
+                                "",
+                                org.chromium.components.environment_integrity.enums
+                                        .IntegrityResponse.TIMEOUT)));
 
         final String contentBinding = "contentBinding";
         final ExecutionResult result = runDoGetEnvironmentIntegrity(contentBinding);
@@ -258,10 +259,12 @@ public class EnvironmentIntegrityTest {
         mIntegrityDelegate.addHandleFuture(Futures.immediateFuture(ALTERNATE_HANDLE));
 
         // First token request should abort with invalid handle - we should get a second request.
-        mIntegrityDelegate.addTokenFuture(Futures.immediateFailedFuture(
-                new IntegrityException("First request uses invalid handle",
-                        org.chromium.components.environment_integrity.enums.IntegrityResponse
-                                .INVALID_HANDLE)));
+        mIntegrityDelegate.addTokenFuture(
+                Futures.immediateFailedFuture(
+                        new IntegrityException(
+                                "First request uses invalid handle",
+                                org.chromium.components.environment_integrity.enums
+                                        .IntegrityResponse.INVALID_HANDLE)));
         mIntegrityDelegate.addTokenFuture(Futures.immediateFuture(TOKEN));
 
         final String contentBinding = "contentBinding";
@@ -321,7 +324,8 @@ public class EnvironmentIntegrityTest {
             // We expect the handle was re-used.
             Assert.assertEquals(HANDLE, mIntegrityDelegate.getTokenRequests().get(1).handle);
             // We expect the requestHash to match the content binding used.
-            Assert.assertArrayEquals(expectedHash(contentBinding2),
+            Assert.assertArrayEquals(
+                    expectedHash(contentBinding2),
                     mIntegrityDelegate.getTokenRequests().get(1).requestHash);
         }
     }
@@ -350,8 +354,8 @@ public class EnvironmentIntegrityTest {
         // Do the same here, to ensure test values match.
         String schemefulSite = "https://" + TEST_HOSTNAME;
         String hashedBinding = contentBinding + ";" + schemefulSite;
-        return MessageDigest.getInstance("SHA-256").digest(
-                hashedBinding.getBytes(StandardCharsets.UTF_8));
+        return MessageDigest.getInstance("SHA-256")
+                .digest(hashedBinding.getBytes(StandardCharsets.UTF_8));
     }
 
     @NonNull

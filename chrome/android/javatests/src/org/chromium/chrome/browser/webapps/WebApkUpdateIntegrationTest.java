@@ -51,8 +51,10 @@ import java.io.FileInputStream;
 /** Integration tests for WebAPK feature. */
 @RunWith(ChromeJUnit4ClassRunner.class)
 @DoNotBatch(reason = "The update pipeline runs once per startup.")
-@CommandLineFlags.Add({ChromeSwitches.DISABLE_FIRST_RUN_EXPERIENCE,
-        ChromeSwitches.CHECK_FOR_WEB_MANIFEST_UPDATE_ON_STARTUP})
+@CommandLineFlags.Add({
+    ChromeSwitches.DISABLE_FIRST_RUN_EXPERIENCE,
+    ChromeSwitches.CHECK_FOR_WEB_MANIFEST_UPDATE_ON_STARTUP
+})
 public class WebApkUpdateIntegrationTest {
     public final WebApkActivityTestRule mActivityTestRule = new WebApkActivityTestRule();
 
@@ -152,33 +154,46 @@ public class WebApkUpdateIntegrationTest {
         bundle.putString(WebApkMetaDataKeys.SCOPE, mTestServer.getURL(WEBAPK_SCOPE_URL));
         Resources res =
                 mTestContext.getPackageManager().getResourcesForApplication(WEBAPK_PACKAGE_NAME);
-        bundle.putInt(WebApkMetaDataKeys.ICON_ID,
+        bundle.putInt(
+                WebApkMetaDataKeys.ICON_ID,
                 res.getIdentifier("app_icon", "mipmap", WEBAPK_PACKAGE_NAME));
-        bundle.putInt(WebApkMetaDataKeys.SPLASH_ID,
+        bundle.putInt(
+                WebApkMetaDataKeys.SPLASH_ID,
                 res.getIdentifier("splash_icon", "drawable", WEBAPK_PACKAGE_NAME));
 
-        bundle.putString(WebApkMetaDataKeys.ICON_URLS_AND_ICON_MURMUR2_HASHES,
-                String.join(" ", mTestServer.getURL(ICON_URL), ICON_MURMUR2_HASH,
-                        mTestServer.getURL(ICON_URL2), ICON_MURMUR2_HASH2));
+        bundle.putString(
+                WebApkMetaDataKeys.ICON_URLS_AND_ICON_MURMUR2_HASHES,
+                String.join(
+                        " ",
+                        mTestServer.getURL(ICON_URL),
+                        ICON_MURMUR2_HASH,
+                        mTestServer.getURL(ICON_URL2),
+                        ICON_MURMUR2_HASH2));
         return bundle;
     }
 
     // Wait for the name change dialog and dismiss it.
     private void waitForDialog() {
-        CriteriaHelper.pollUiThread(() -> {
-            ModalDialogManager manager = mActivityTestRule.getActivity().getModalDialogManager();
-            PropertyModel dialog = manager.getCurrentDialogForTest();
-            if (dialog == null) return false;
-            dialog.get(ModalDialogProperties.CONTROLLER)
-                    .onClick(dialog, ModalDialogProperties.ButtonType.POSITIVE);
-            return true;
-        });
+        CriteriaHelper.pollUiThread(
+                () -> {
+                    ModalDialogManager manager =
+                            mActivityTestRule.getActivity().getModalDialogManager();
+                    PropertyModel dialog = manager.getCurrentDialogForTest();
+                    if (dialog == null) return false;
+                    dialog.get(ModalDialogProperties.CONTROLLER)
+                            .onClick(dialog, ModalDialogProperties.ButtonType.POSITIVE);
+                    return true;
+                });
     }
 
     private void waitForHistogram(String name, int count) {
-        CriteriaHelper.pollUiThread(() -> {
-            return RecordHistogram.getHistogramTotalCountForTesting(name) >= count;
-        }, "waitForHistogram timeout", 10000, 200);
+        CriteriaHelper.pollUiThread(
+                () -> {
+                    return RecordHistogram.getHistogramTotalCountForTesting(name) >= count;
+                },
+                "waitForHistogram timeout",
+                10000,
+                200);
     }
 
     private WebApkProto.WebApk parseRequestProto(String path) throws Exception {
@@ -202,8 +217,10 @@ public class WebApkUpdateIntegrationTest {
         waitForDialog();
         waitForHistogram("WebApk.Update.RequestQueued", 1);
 
-        WebappDataStorage storage = WebappRegistry.getInstance().getWebappDataStorage(
-                WebApkConstants.WEBAPK_ID_PREFIX + WEBAPK_PACKAGE_NAME);
+        WebappDataStorage storage =
+                WebappRegistry.getInstance()
+                        .getWebappDataStorage(
+                                WebApkConstants.WEBAPK_ID_PREFIX + WEBAPK_PACKAGE_NAME);
         String updateRequestPath = storage.getPendingUpdateRequestPath();
         assertNotNull(updateRequestPath);
 

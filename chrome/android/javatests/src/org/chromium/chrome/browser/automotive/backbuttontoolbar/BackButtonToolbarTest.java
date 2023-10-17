@@ -55,9 +55,7 @@ import org.chromium.content_public.browser.test.util.TestThreadUtils;
 import org.chromium.ui.test.util.BlankUiTestActivityTestCase;
 import org.chromium.ui.test.util.DeviceRestriction;
 
-/**
- * Instrumentation tests for the persistent back button toolbar in automotive.
- */
+/** Instrumentation tests for the persistent back button toolbar in automotive. */
 @RunWith(ChromeJUnit4ClassRunner.class)
 @DoNotBatch(reason = "Each test case launches different Activities.")
 @Add({ChromeSwitches.DISABLE_FIRST_RUN_EXPERIENCE})
@@ -93,16 +91,19 @@ public class BackButtonToolbarTest extends BlankUiTestActivityTestCase {
 
         // Check that the automotive toolbar is present with only a back button.
         assertTrue(chromeTabbedActivity.getSupportActionBar().isShowing());
-        assertEquals("Automotive toolbar should only contain a back button", DISPLAY_HOME_AS_UP,
+        assertEquals(
+                "Automotive toolbar should only contain a back button",
+                DISPLAY_HOME_AS_UP,
                 chromeTabbedActivity.getSupportActionBar().getDisplayOptions());
 
         // Simulate a back button press on the automotive toolbar.
         addOnBackPressedCallback(chromeTabbedActivity, mBackPressCallbackHelper);
-        TestThreadUtils.runOnUiThreadBlocking(() -> {
-            MenuItem backButton = mock(MenuItem.class);
-            when(backButton.getItemId()).thenReturn(android.R.id.home);
-            chromeTabbedActivity.onOptionsItemSelected(backButton);
-        });
+        TestThreadUtils.runOnUiThreadBlocking(
+                () -> {
+                    MenuItem backButton = mock(MenuItem.class);
+                    when(backButton.getItemId()).thenReturn(android.R.id.home);
+                    chromeTabbedActivity.onOptionsItemSelected(backButton);
+                });
 
         // Verify that #onBackPressed was called.
         mBackPressCallbackHelper.waitForFirst();
@@ -126,7 +127,10 @@ public class BackButtonToolbarTest extends BlankUiTestActivityTestCase {
 
         // Click the back button in the automotive toolbar.
         addOnBackPressedCallback(settingsActivity, mBackPressCallbackHelper);
-        TestThreadUtils.runOnUiThreadBlocking(() -> { toolbar.getChildAt(0).performClick(); });
+        TestThreadUtils.runOnUiThreadBlocking(
+                () -> {
+                    toolbar.getChildAt(0).performClick();
+                });
 
         // Verify that #onBackPressed was called.
         mBackPressCallbackHelper.waitForFirst();
@@ -149,7 +153,10 @@ public class BackButtonToolbarTest extends BlankUiTestActivityTestCase {
 
         // Click the back button in the automotive toolbar.
         addOnBackPressedCallback(dialog, mBackPressCallbackHelper);
-        TestThreadUtils.runOnUiThreadBlocking(() -> { toolbar.getChildAt(0).performClick(); });
+        TestThreadUtils.runOnUiThreadBlocking(
+                () -> {
+                    toolbar.getChildAt(0).performClick();
+                });
 
         // Verify that #onBackPressed was called.
         mBackPressCallbackHelper.waitForFirst();
@@ -172,7 +179,10 @@ public class BackButtonToolbarTest extends BlankUiTestActivityTestCase {
 
         // Click the back button in the automotive toolbar.
         addOnBackPressedCallback(dialog, mBackPressCallbackHelper);
-        TestThreadUtils.runOnUiThreadBlocking(() -> { toolbar.getChildAt(0).performClick(); });
+        TestThreadUtils.runOnUiThreadBlocking(
+                () -> {
+                    toolbar.getChildAt(0).performClick();
+                });
 
         // Verify that #onBackPressed was called.
         mBackPressCallbackHelper.waitForFirst();
@@ -195,7 +205,10 @@ public class BackButtonToolbarTest extends BlankUiTestActivityTestCase {
 
         // Click the back button in the automotive toolbar.
         addOnBackPressedCallback(dialog, mBackPressCallbackHelper);
-        TestThreadUtils.runOnUiThreadBlocking(() -> { toolbar.getChildAt(0).performClick(); });
+        TestThreadUtils.runOnUiThreadBlocking(
+                () -> {
+                    toolbar.getChildAt(0).performClick();
+                });
 
         // Verify that #onBackPressed was called.
         mBackPressCallbackHelper.waitForFirst();
@@ -218,7 +231,10 @@ public class BackButtonToolbarTest extends BlankUiTestActivityTestCase {
 
         // Click the back button in the automotive toolbar.
         addOnBackPressedCallback(dialog, mBackPressCallbackHelper);
-        TestThreadUtils.runOnUiThreadBlocking(() -> { toolbar.getChildAt(0).performClick(); });
+        TestThreadUtils.runOnUiThreadBlocking(
+                () -> {
+                    toolbar.getChildAt(0).performClick();
+                });
 
         // Verify that #onBackPressed was called.
         mBackPressCallbackHelper.waitForFirst();
@@ -226,68 +242,79 @@ public class BackButtonToolbarTest extends BlankUiTestActivityTestCase {
 
     private void addOnBackPressedCallback(
             AppCompatActivity activity, CallbackHelper backPressCallback) {
-        activity.getOnBackPressedDispatcher().addCallback(new OnBackPressedCallback(true) {
-            @Override
-            public void handleOnBackPressed() {
-                backPressCallback.notifyCalled();
-            }
-        });
+        activity.getOnBackPressedDispatcher()
+                .addCallback(
+                        new OnBackPressedCallback(true) {
+                            @Override
+                            public void handleOnBackPressed() {
+                                backPressCallback.notifyCalled();
+                            }
+                        });
     }
 
     private void addOnBackPressedCallback(AlertDialog dialog, CallbackHelper backPressCallback) {
-        dialog.getOnBackPressedDispatcher().addCallback(new OnBackPressedCallback(true) {
-            @Override
-            public void handleOnBackPressed() {
-                backPressCallback.notifyCalled();
-            }
-        });
+        dialog.getOnBackPressedDispatcher()
+                .addCallback(
+                        new OnBackPressedCallback(true) {
+                            @Override
+                            public void handleOnBackPressed() {
+                                backPressCallback.notifyCalled();
+                            }
+                        });
     }
 
     private void addOnBackPressedCallback(
             ComponentDialog dialog, CallbackHelper backPressCallback) {
-        dialog.getOnBackPressedDispatcher().addCallback(new OnBackPressedCallback(true) {
-            @Override
-            public void handleOnBackPressed() {
-                backPressCallback.notifyCalled();
-            }
-        });
+        dialog.getOnBackPressedDispatcher()
+                .addCallback(
+                        new OnBackPressedCallback(true) {
+                            @Override
+                            public void handleOnBackPressed() {
+                                backPressCallback.notifyCalled();
+                            }
+                        });
     }
 
     private FullscreenAlertDialog createAndShowFullscreenAlertDialog(Context context)
             throws Exception {
-        return TestThreadUtils.runOnUiThreadBlocking(() -> {
-            final FullscreenAlertDialog dialog = new FullscreenAlertDialog(context);
-            View testView = LayoutInflater.from(context).inflate(TEST_DIALOG_LAYOUT, null);
-            dialog.setView(testView);
-            dialog.show();
-            return dialog;
-        });
+        return TestThreadUtils.runOnUiThreadBlocking(
+                () -> {
+                    final FullscreenAlertDialog dialog = new FullscreenAlertDialog(context);
+                    View testView = LayoutInflater.from(context).inflate(TEST_DIALOG_LAYOUT, null);
+                    dialog.setView(testView);
+                    dialog.show();
+                    return dialog;
+                });
     }
 
     private AlertDialog createAndShowFullscreenAlertDialogFromBuilder(Context context)
             throws Exception {
-        return TestThreadUtils.runOnUiThreadBlocking(() -> {
-            final AlertDialog dialog =
-                    new FullscreenAlertDialog.Builder(context).setView(TEST_DIALOG_LAYOUT).create();
-            dialog.show();
-            return dialog;
-        });
+        return TestThreadUtils.runOnUiThreadBlocking(
+                () -> {
+                    final AlertDialog dialog =
+                            new FullscreenAlertDialog.Builder(context)
+                                    .setView(TEST_DIALOG_LAYOUT)
+                                    .create();
+                    dialog.show();
+                    return dialog;
+                });
     }
 
     private ChromeDialog createAndShowFullscreenChromeDialog(
             Context context, boolean setContentView) throws Exception {
-        return TestThreadUtils.runOnUiThreadBlocking(() -> {
-            final ChromeDialog dialog =
-                    new ChromeDialog(context, R.style.ThemeOverlay_BrowserUI_Fullscreen);
-            if (setContentView) {
-                dialog.setContentView(TEST_DIALOG_LAYOUT);
-            } else {
-                dialog.addContentView(
-                        LayoutInflater.from(context).inflate(TEST_DIALOG_LAYOUT, null),
-                        new LayoutParams(MATCH_PARENT, MATCH_PARENT));
-            }
-            dialog.show();
-            return dialog;
-        });
+        return TestThreadUtils.runOnUiThreadBlocking(
+                () -> {
+                    final ChromeDialog dialog =
+                            new ChromeDialog(context, R.style.ThemeOverlay_BrowserUI_Fullscreen);
+                    if (setContentView) {
+                        dialog.setContentView(TEST_DIALOG_LAYOUT);
+                    } else {
+                        dialog.addContentView(
+                                LayoutInflater.from(context).inflate(TEST_DIALOG_LAYOUT, null),
+                                new LayoutParams(MATCH_PARENT, MATCH_PARENT));
+                    }
+                    dialog.show();
+                    return dialog;
+                });
     }
 }

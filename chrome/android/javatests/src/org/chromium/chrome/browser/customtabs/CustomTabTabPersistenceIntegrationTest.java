@@ -26,9 +26,7 @@ import org.chromium.content_public.common.ContentUrlConstants;
 
 import java.io.File;
 
-/**
- * Integration testing for the CustomTab Tab persistence logic.
- */
+/** Integration testing for the CustomTab Tab persistence logic. */
 @RunWith(ChromeJUnit4ClassRunner.class)
 @CommandLineFlags.Add({ChromeSwitches.DISABLE_FIRST_RUN_EXPERIENCE})
 public class CustomTabTabPersistenceIntegrationTest {
@@ -50,8 +48,11 @@ public class CustomTabTabPersistenceIntegrationTest {
         Tab tab = mCustomTabActivityTestRule.getActivity().getActivityTab();
         String expectedTabFileName = TabStateFileManager.getTabStateFilename(tab.getId(), false);
 
-        CustomTabTabPersistencePolicy tabPersistencePolicy = mCustomTabActivityTestRule
-                .getActivity().getComponent().resolveTabPersistencePolicy();
+        CustomTabTabPersistencePolicy tabPersistencePolicy =
+                mCustomTabActivityTestRule
+                        .getActivity()
+                        .getComponent()
+                        .resolveTabPersistencePolicy();
 
         String expectedMetadataFileName = tabPersistencePolicy.getStateFileName();
         File stateDir = tabPersistencePolicy.getOrCreateStateDirectory();
@@ -59,8 +60,11 @@ public class CustomTabTabPersistenceIntegrationTest {
         waitForFileExistState(true, expectedTabFileName, stateDir);
         waitForFileExistState(true, expectedMetadataFileName, stateDir);
 
-        mCustomTabActivityTestRule.getActivity().getComponent()
-                .resolveNavigationController().finish(FinishReason.OTHER);
+        mCustomTabActivityTestRule
+                .getActivity()
+                .getComponent()
+                .resolveNavigationController()
+                .finish(FinishReason.OTHER);
 
         waitForFileExistState(false, expectedTabFileName, stateDir);
         waitForFileExistState(false, expectedMetadataFileName, stateDir);
@@ -68,11 +72,13 @@ public class CustomTabTabPersistenceIntegrationTest {
 
     private void waitForFileExistState(
             final boolean exists, final String fileName, final File filePath) {
-        CriteriaHelper.pollInstrumentationThread(() -> {
-            File file = new File(filePath, fileName);
-            Criteria.checkThat("Invalid file existence state for: " + fileName, file.exists(),
-                    Matchers.is(exists));
-        });
+        CriteriaHelper.pollInstrumentationThread(
+                () -> {
+                    File file = new File(filePath, fileName);
+                    Criteria.checkThat(
+                            "Invalid file existence state for: " + fileName,
+                            file.exists(),
+                            Matchers.is(exists));
+                });
     }
-
 }

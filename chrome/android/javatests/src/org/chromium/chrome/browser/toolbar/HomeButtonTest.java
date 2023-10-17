@@ -36,10 +36,7 @@ import org.chromium.content_public.browser.test.util.TestThreadUtils;
 import org.chromium.ui.modelutil.MVCListAdapter.ModelList;
 import org.chromium.ui.test.util.BlankUiTestActivityTestCase;
 
-/**
- * Test related to {@link HomeButton}.
- * TODO: Add more test when features related has update.
- */
+/** Test related to {@link HomeButton}. TODO: Add more test when features related has update. */
 @RunWith(ChromeJUnit4ClassRunner.class)
 public class HomeButtonTest extends BlankUiTestActivityTestCase {
     private static final String ASSERT_MSG_MENU_IS_CREATED =
@@ -47,17 +44,13 @@ public class HomeButtonTest extends BlankUiTestActivityTestCase {
     private static final String ASSERT_MSG_MENU_SIZE =
             "ContextMenu has a different size than test setting.";
 
-    @Rule
-    public TestRule mProcessor = new Features.JUnitProcessor();
-    @Rule
-    public HomepageTestRule mHomepageTestRule = new HomepageTestRule();
+    @Rule public TestRule mProcessor = new Features.JUnitProcessor();
+    @Rule public HomepageTestRule mHomepageTestRule = new HomepageTestRule();
 
-    @Mock
-    private SettingsLauncher mSettingsLauncher;
+    @Mock private SettingsLauncher mSettingsLauncher;
 
     private HomeButton mHomeButton;
     private int mIdHomeButton;
-
 
     @Override
     public void setUpTest() throws Exception {
@@ -69,25 +62,31 @@ public class HomeButtonTest extends BlankUiTestActivityTestCase {
         // By default, the homepage is <b>enabled</b> and with customized URL.
         mHomepageTestRule.useCustomizedHomepageForTest("https://www.chromium.org/");
 
-        TestThreadUtils.runOnUiThreadBlocking(() -> {
-            FrameLayout content = new FrameLayout(getActivity());
-            getActivity().setContentView(content);
+        TestThreadUtils.runOnUiThreadBlocking(
+                () -> {
+                    FrameLayout content = new FrameLayout(getActivity());
+                    getActivity().setContentView(content);
 
-            mIdHomeButton = View.generateViewId();
-            mHomeButton = new HomeButton(getActivity(), null);
-            // For a view created in a test, we can make the view not important for accessibility
-            // to prevent failures from AccessibilityChecks. Do not do this for views outside tests.
-            mHomeButton.setImportantForAccessibility(View.IMPORTANT_FOR_ACCESSIBILITY_NO);
-            ObservableSupplierImpl<Boolean> homepagePolicySupplier = new ObservableSupplierImpl<>();
-            homepagePolicySupplier.set(false);
-            mHomeButton.init(new ObservableSupplierImpl<Boolean>(),
-                    HomepageManager.getInstance()::onMenuClick, homepagePolicySupplier);
-            mHomeButton.setId(mIdHomeButton);
-            HomepageManager.getInstance().setSettingsLauncherForTesting(mSettingsLauncher);
-            HomeButton.setSaveContextMenuForTests(true);
+                    mIdHomeButton = View.generateViewId();
+                    mHomeButton = new HomeButton(getActivity(), null);
+                    // For a view created in a test, we can make the view not important for
+                    // accessibility
+                    // to prevent failures from AccessibilityChecks. Do not do this for views
+                    // outside tests.
+                    mHomeButton.setImportantForAccessibility(View.IMPORTANT_FOR_ACCESSIBILITY_NO);
+                    ObservableSupplierImpl<Boolean> homepagePolicySupplier =
+                            new ObservableSupplierImpl<>();
+                    homepagePolicySupplier.set(false);
+                    mHomeButton.init(
+                            new ObservableSupplierImpl<Boolean>(),
+                            HomepageManager.getInstance()::onMenuClick,
+                            homepagePolicySupplier);
+                    mHomeButton.setId(mIdHomeButton);
+                    HomepageManager.getInstance().setSettingsLauncherForTesting(mSettingsLauncher);
+                    HomeButton.setSaveContextMenuForTests(true);
 
-            content.addView(mHomeButton);
-        });
+                    content.addView(mHomeButton);
+                });
     }
 
     @Test

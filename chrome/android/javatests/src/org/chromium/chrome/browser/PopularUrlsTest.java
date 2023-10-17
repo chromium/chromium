@@ -48,8 +48,8 @@ import java.util.concurrent.TimeoutException;
 
 /**
  * Popular URL tests (ported from {@link com.android.browser.PopularUrlsTest}).
- * <p>
- * These tests read popular URLs from /sdcard/popular_urls.txt, open them one by one and verify
+ *
+ * <p>These tests read popular URLs from /sdcard/popular_urls.txt, open them one by one and verify
  * page load. When aborted, they save the last opened URL in /sdcard/test_status.txt, so that they
  * can continue opening the next URL when they are restarted.
  */
@@ -226,6 +226,7 @@ public class PopularUrlsTest {
     /**
      * Navigates to a URL directly without going through the UrlBar. This bypasses the page
      * preloading mechanism of the UrlBar.
+     *
      * @param url the page URL
      * @param failureWriter the writer where failures/crashes/timeouts are logged.
      * @throws IOException unable to read from input or write to writer.
@@ -236,28 +237,32 @@ public class PopularUrlsTest {
         final CallbackHelper failedCallback = new CallbackHelper();
         final CallbackHelper crashedCallback = new CallbackHelper();
 
-        tab.addObserver(new EmptyTabObserver() {
-            @Override
-            public void onPageLoadFinished(Tab tab, GURL url) {
-                loadedCallback.notifyCalled();
-            }
+        tab.addObserver(
+                new EmptyTabObserver() {
+                    @Override
+                    public void onPageLoadFinished(Tab tab, GURL url) {
+                        loadedCallback.notifyCalled();
+                    }
 
-            @Override
-            public void onPageLoadFailed(Tab tab, int errorCode) {
-                failedCallback.notifyCalled();
-            }
+                    @Override
+                    public void onPageLoadFailed(Tab tab, int errorCode) {
+                        failedCallback.notifyCalled();
+                    }
 
-            @Override
-            public void onCrash(Tab tab) {
-                crashedCallback.notifyCalled();
-            }
-        });
+                    @Override
+                    public void onCrash(Tab tab) {
+                        crashedCallback.notifyCalled();
+                    }
+                });
 
-        InstrumentationRegistry.getInstrumentation().runOnMainSync(() -> {
-            Tab tab1 = mActivityTestRule.getActivity().getActivityTab();
-            int pageTransition = PageTransition.TYPED | PageTransition.FROM_ADDRESS_BAR;
-            tab1.loadUrl(new LoadUrlParams(url, pageTransition));
-        });
+        InstrumentationRegistry.getInstrumentation()
+                .runOnMainSync(
+                        () -> {
+                            Tab tab1 = mActivityTestRule.getActivity().getActivityTab();
+                            int pageTransition =
+                                    PageTransition.TYPED | PageTransition.FROM_ADDRESS_BAR;
+                            tab1.loadUrl(new LoadUrlParams(url, pageTransition));
+                        });
         // There are a combination of events ordering in a failure case.
         // There might be TAB_CRASHED with or without PAGE_LOAD_FINISHED preceding it.
         // It is possible to get PAGE_LOAD_FINISHED followed by PAGE_LOAD_FAILED due to redirects.
@@ -306,8 +311,9 @@ public class PopularUrlsTest {
             mFailed = true;
         }
         // Try to stop page load.
-        InstrumentationRegistry.getInstrumentation().runOnMainSync(
-                () -> mActivityTestRule.getActivity().getActivityTab().stopLoading());
+        InstrumentationRegistry.getInstrumentation()
+                .runOnMainSync(
+                        () -> mActivityTestRule.getActivity().getActivityTab().stopLoading());
         InstrumentationRegistry.getInstrumentation().waitForIdleSync();
     }
 
@@ -321,8 +327,12 @@ public class PopularUrlsTest {
      * @param loopCount the number of times to loop through the list of pages.
      * @throws IOException unable to read from input or write to writer.
      */
-    private void loopUrls(BufferedReader input, OutputStreamWriter outputWriter,
-            OutputStreamWriter failureWriter, boolean clearCache, int loopCount)
+    private void loopUrls(
+            BufferedReader input,
+            OutputStreamWriter outputWriter,
+            OutputStreamWriter failureWriter,
+            boolean clearCache,
+            int loopCount)
             throws IOException {
         List<String> pages = new ArrayList<>();
 
@@ -371,6 +381,7 @@ public class PopularUrlsTest {
 
     /**
      * Navigate to all the pages listed in the input.
+     *
      * @param perf Whether this is a performance test or stability test.
      * @throws IOException
      */
@@ -406,18 +417,14 @@ public class PopularUrlsTest {
         }
     }
 
-    /**
-     * Repeats loading all URLs by PERF_LOOPCOUNT times, and records the time each load takes.
-     */
+    /** Repeats loading all URLs by PERF_LOOPCOUNT times, and records the time each load takes. */
     @Test
     @Manual
     public void testLoadPerformance() throws IOException {
         loadPages(true);
     }
 
-    /**
-     * Loads all URLs.
-     */
+    /** Loads all URLs. */
     @Test
     @Manual
     public void testStability() throws IOException {

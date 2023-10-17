@@ -52,9 +52,7 @@ import org.chromium.content_public.browser.test.util.TestThreadUtils;
 import org.chromium.content_public.browser.test.util.TouchCommon;
 import org.chromium.content_public.browser.test.util.UiUtils;
 
-/**
- * Find in page tests.
- */
+/** Find in page tests. */
 @RunWith(ChromeJUnit4ClassRunner.class)
 @CommandLineFlags.Add({ChromeSwitches.DISABLE_FIRST_RUN_EXPERIENCE})
 @Batch(Batch.PER_CLASS)
@@ -78,14 +76,17 @@ public class FindTest {
 
     @After
     public void tearDown() {
-        TestThreadUtils.runOnUiThreadBlocking(() -> {
-            sActivityTestRule.getActivity().getTabModelSelector().getModel(true).closeAllTabs();
-        });
+        TestThreadUtils.runOnUiThreadBlocking(
+                () -> {
+                    sActivityTestRule
+                            .getActivity()
+                            .getTabModelSelector()
+                            .getModel(true)
+                            .closeAllTabs();
+                });
     }
 
-    /**
-     * Returns the FindResults text.
-     */
+    /** Returns the FindResults text. */
     private String waitForFindResults(String expectedResult) {
         final TextView findResults =
                 (TextView) sActivityTestRule.getActivity().findViewById(R.id.find_status);
@@ -96,32 +97,34 @@ public class FindTest {
         return findResults.getText().toString();
     }
 
-    /**
-     * Find in page by invoking the 'find in page' menu item.
-     */
+    /** Find in page by invoking the 'find in page' menu item. */
     private void findInPageFromMenu() {
         CriteriaHelper.pollUiThread(
                 sActivityTestRule.getActivity().findViewById(R.id.menu_button_wrapper)::isShown);
 
-        MenuUtils.invokeCustomMenuActionSync(InstrumentationRegistry.getInstrumentation(),
-                sActivityTestRule.getActivity(), R.id.find_in_page_id);
+        MenuUtils.invokeCustomMenuActionSync(
+                InstrumentationRegistry.getInstrumentation(),
+                sActivityTestRule.getActivity(),
+                R.id.find_in_page_id);
 
         waitForFindInPageVisibility(true);
     }
 
     private void waitForFindInPageVisibility(final boolean visible) {
-        CriteriaHelper.pollUiThread(() -> {
-            FindToolbar findToolbar =
-                    (FindToolbar) sActivityTestRule.getActivity().findViewById(R.id.find_toolbar);
-            if (visible) {
-                Criteria.checkThat(findToolbar, Matchers.notNullValue());
-                Criteria.checkThat(findToolbar.isShown(), Matchers.is(true));
-            } else {
-                if (findToolbar == null) return;
-                Criteria.checkThat(findToolbar.isShown(), Matchers.is(false));
-            }
-            Criteria.checkThat(findToolbar.isAnimating(), Matchers.is(false));
-        });
+        CriteriaHelper.pollUiThread(
+                () -> {
+                    FindToolbar findToolbar =
+                            (FindToolbar)
+                                    sActivityTestRule.getActivity().findViewById(R.id.find_toolbar);
+                    if (visible) {
+                        Criteria.checkThat(findToolbar, Matchers.notNullValue());
+                        Criteria.checkThat(findToolbar.isShown(), Matchers.is(true));
+                    } else {
+                        if (findToolbar == null) return;
+                        Criteria.checkThat(findToolbar.isShown(), Matchers.is(false));
+                    }
+                    Criteria.checkThat(findToolbar.isAnimating(), Matchers.is(false));
+                });
     }
 
     private String findStringInPage(final String query, String expectedResult) {
@@ -134,21 +137,27 @@ public class FindTest {
         KeyCharacterMap keyCharacterMap = KeyCharacterMap.load(KeyCharacterMap.VIRTUAL_KEYBOARD);
         final KeyEvent[] events = keyCharacterMap.getEvents(query.toCharArray());
         Assert.assertNotNull(events);
-        TestThreadUtils.runOnUiThreadBlocking(() -> {
-            for (int i = 0; i < events.length; i++) {
-                if (!findQueryText.dispatchKeyEventPreIme(events[i])) {
-                    findQueryText.dispatchKeyEvent(events[i]);
-                }
-            }
-        });
+        TestThreadUtils.runOnUiThreadBlocking(
+                () -> {
+                    for (int i = 0; i < events.length; i++) {
+                        if (!findQueryText.dispatchKeyEventPreIme(events[i])) {
+                            findQueryText.dispatchKeyEvent(events[i]);
+                        }
+                    }
+                });
         return waitForFindResults(expectedResult);
     }
 
     private void loadTestAndVerifyFindInPage(String query, String expectedResult) {
         sActivityTestRule.loadUrl(sActivityTestRule.getTestServer().getURL(FILEPATH));
         String findResults = findStringInPage(query, expectedResult);
-        Assert.assertTrue("Expected: " + expectedResult + " Got: " + findResults
-                        + " for: " + sActivityTestRule.getTestServer().getURL(FILEPATH),
+        Assert.assertTrue(
+                "Expected: "
+                        + expectedResult
+                        + " Got: "
+                        + findResults
+                        + " for: "
+                        + sActivityTestRule.getTestServer().getURL(FILEPATH),
                 findResults.contains(expectedResult));
     }
 
@@ -166,9 +175,7 @@ public class FindTest {
         return findQueryText;
     }
 
-    /**
-     * Verify Find In Page is not case sensitive.
-     */
+    /** Verify Find In Page is not case sensitive. */
     @Test
     @MediumTest
     @Feature({"FindInPage", "Main"})
@@ -176,9 +183,7 @@ public class FindTest {
         loadTestAndVerifyFindInPage("pitts", "1/7");
     }
 
-    /**
-     * Verify Find In Page with just one result.
-     */
+    /** Verify Find In Page with just one result. */
     @Test
     @MediumTest
     @Feature({"FindInPage"})
@@ -186,34 +191,32 @@ public class FindTest {
         loadTestAndVerifyFindInPage("it", "1/101");
     }
 
-    /**
-     * Verify Find In Page with a multi-line string.
-     */
+    /** Verify Find In Page with a multi-line string. */
     @Test
     @MediumTest
     @Feature({"FindInPage"})
     public void testFindMultiLine() {
-        String multiLineSearchTerm = "This is the text of this document.\n"
-                + " I am going to write the word \'Pitts\' 7 times. (That was one.)";
+        String multiLineSearchTerm =
+                "This is the text of this document.\n"
+                        + " I am going to write the word \'Pitts\' 7 times. (That was one.)";
         loadTestAndVerifyFindInPage(multiLineSearchTerm, "1/1");
     }
 
     /**
-     * Test for Find In Page with a multi-line string. Search string has an extra character
-     * added to the end so it should not be found.
+     * Test for Find In Page with a multi-line string. Search string has an extra character added to
+     * the end so it should not be found.
      */
     @Test
     @MediumTest
     @Feature({"FindInPage"})
     public void testFindMultiLineFalse() {
-        String multiLineSearchTerm = "aThis is the text of this document.\n"
-                + " I am going to write the word \'Pitts\' 7 times. (That was one.)";
+        String multiLineSearchTerm =
+                "aThis is the text of this document.\n"
+                        + " I am going to write the word \'Pitts\' 7 times. (That was one.)";
         loadTestAndVerifyFindInPage(multiLineSearchTerm, "0/0");
     }
 
-    /**
-     * Verify Find In Page Next button.
-     */
+    /** Verify Find In Page Next button. */
     @Test
     @MediumTest
     @Feature({"FindInPage"})
@@ -231,9 +234,7 @@ public class FindTest {
         waitForFindResults("1/7");
     }
 
-    /**
-     * Verify Find In Page Next/Previous button.
-     */
+    /** Verify Find In Page Next/Previous button. */
     @Test
     @MediumTest
     @Feature({"FindInPage"})
@@ -249,9 +250,7 @@ public class FindTest {
         waitForFindResults("1/7");
     }
 
-    /**
-     * Verify that Find in page toolbar is dismissed on entering fullscreen.
-     */
+    /** Verify that Find in page toolbar is dismissed on entering fullscreen. */
     @Test
     @MediumTest
     @Feature({"FindInPage"})
@@ -300,8 +299,7 @@ public class FindTest {
     }
 
     /**
-     * Verify Find In Page isn't dismissed and matches no results
-     * if invoked with an empty string.
+     * Verify Find In Page isn't dismissed and matches no results if invoked with an empty string.
      */
     @Test
     @MediumTest
@@ -317,7 +315,9 @@ public class FindTest {
                 InstrumentationRegistry.getInstrumentation(), findQueryText, KeyEvent.KEYCODE_T);
         KeyUtils.singleKeyEventView(
                 InstrumentationRegistry.getInstrumentation(), findQueryText, KeyEvent.KEYCODE_DEL);
-        KeyUtils.singleKeyEventView(InstrumentationRegistry.getInstrumentation(), findQueryText,
+        KeyUtils.singleKeyEventView(
+                InstrumentationRegistry.getInstrumentation(),
+                findQueryText,
                 KeyEvent.KEYCODE_ENTER);
 
         Assert.assertEquals(View.VISIBLE, findToolbar.getVisibility());
@@ -326,9 +326,7 @@ public class FindTest {
         Assert.assertEquals(0, findResults.length());
     }
 
-    /**
-     * Verify FIP in IncognitoTabs.
-     */
+    /** Verify FIP in IncognitoTabs. */
     @Test
     @SmallTest
     @Feature({"FindInPage"})
@@ -345,9 +343,7 @@ public class FindTest {
         waitForFindResults("1/7");
     }
 
-    /**
-     * Verify Find in Page text isnt restored on Incognito Tabs.
-     */
+    /** Verify Find in Page text isnt restored on Incognito Tabs. */
     @Test
     @MediumTest
     @Feature({"FindInPage"})
@@ -368,9 +364,7 @@ public class FindTest {
         Assert.assertTrue("expected empty string : " + myText, myText.isEmpty());
     }
 
-    /**
-     * Verify pasted text in the FindQuery text box doesn't retain formatting
-     */
+    /** Verify pasted text in the FindQuery text box doesn't retain formatting */
     @Test
     @SmallTest
     @Feature({"FindInPage"})
@@ -386,18 +380,21 @@ public class FindTest {
         // DiskWrite and UnBufferedIo violations during copying under
         // emulator environment.
         try (CloseableOnMainThread ignored =
-                        CloseableOnMainThread.StrictMode.allowAllThreadPolicies()) {
+                CloseableOnMainThread.StrictMode.allowAllThreadPolicies()) {
             // Emulate pasting the text into the find query text box
-            TestThreadUtils.runOnUiThreadBlocking(() -> {
-                // Setup the clipboard with a selection of stylized text
-                ClipboardManager clipboard =
-                        (ClipboardManager) InstrumentationRegistry.getInstrumentation()
-                                .getTargetContext()
-                                .getSystemService(Context.CLIPBOARD_SERVICE);
-                clipboard.setPrimaryClip(ClipData.newHtmlText("label", "text", "<b>text</b>"));
+            TestThreadUtils.runOnUiThreadBlocking(
+                    () -> {
+                        // Setup the clipboard with a selection of stylized text
+                        ClipboardManager clipboard =
+                                (ClipboardManager)
+                                        InstrumentationRegistry.getInstrumentation()
+                                                .getTargetContext()
+                                                .getSystemService(Context.CLIPBOARD_SERVICE);
+                        clipboard.setPrimaryClip(
+                                ClipData.newHtmlText("label", "text", "<b>text</b>"));
 
-                findQueryText.onTextContextMenuItem(android.R.id.paste);
-            });
+                        findQueryText.onTextContextMenuItem(android.R.id.paste);
+                    });
         }
 
         // Resulting text in the find query box should be unstyled
@@ -408,8 +405,8 @@ public class FindTest {
 
     /**
      * Verify Find in page toolbar is not dismissed when device back key is pressed with the
-     * presence of IME. First back key should dismiss IME and second back key should dismiss
-     * Find in page toolbar.
+     * presence of IME. First back key should dismiss IME and second back key should dismiss Find in
+     * page toolbar.
      */
     @Test
     @MediumTest
@@ -431,8 +428,8 @@ public class FindTest {
     }
 
     /**
-     * Same with {@link #testBackKeyDoesNotDismissFindWhenImeIsPresent()}, but with
-     * predictive back gesture enabled.
+     * Same with {@link #testBackKeyDoesNotDismissFindWhenImeIsPresent()}, but with predictive back
+     * gesture enabled.
      */
     @Test
     @MediumTest
@@ -454,8 +451,8 @@ public class FindTest {
     }
 
     /**
-     * Verify Find in page toolbar is dismissed when device back key is pressed when IME
-     * is not present. First back key press itself will dismiss Find in page toolbar.
+     * Verify Find in page toolbar is dismissed when device back key is pressed when IME is not
+     * present. First back key press itself will dismiss Find in page toolbar.
      */
     @Test
     @MediumTest
@@ -472,9 +469,7 @@ public class FindTest {
         waitForFindInPageVisibility(false);
     }
 
-    /**
-     * Same with {@link #testBackKeyDismissesFind()} but with predictive back gesture enabled.
-     */
+    /** Same with {@link #testBackKeyDismissesFind()} but with predictive back gesture enabled. */
     @Test
     @MediumTest
     @Feature({"FindInPage"})
@@ -493,10 +488,14 @@ public class FindTest {
 
     private void waitForIME(final boolean imePresent) {
         // Wait for IME to appear.
-        CriteriaHelper.pollUiThread(() -> {
-            Criteria.checkThat(sActivityTestRule.getKeyboardDelegate().isKeyboardShowing(
-                                       sActivityTestRule.getActivity(), getFindQueryText()),
-                    Matchers.is(imePresent));
-        });
+        CriteriaHelper.pollUiThread(
+                () -> {
+                    Criteria.checkThat(
+                            sActivityTestRule
+                                    .getKeyboardDelegate()
+                                    .isKeyboardShowing(
+                                            sActivityTestRule.getActivity(), getFindQueryText()),
+                            Matchers.is(imePresent));
+                });
     }
 }

@@ -54,43 +54,27 @@ import org.chromium.content_public.browser.test.util.TestThreadUtils;
 import org.chromium.ui.test.util.BlankUiTestActivityTestCase;
 import org.chromium.url.JUnitTestGURLs;
 
-/**
- * Tests for the Shopping power bookmarks experience.
- */
+/** Tests for the Shopping power bookmarks experience. */
 @RunWith(ChromeJUnit4ClassRunner.class)
 @EnableFeatures(ChromeFeatureList.BOOKMARKS_REFRESH)
 public class PowerBookmarkShoppingItemRowTest extends BlankUiTestActivityTestCase {
     private static final String TITLE = "PowerBookmarkShoppingItemRow";
 
-    @Rule
-    public MockitoRule mMockitoRule = MockitoJUnit.rule();
-    @Rule
-    public JniMocker mJniMocker = new JniMocker();
+    @Rule public MockitoRule mMockitoRule = MockitoJUnit.rule();
+    @Rule public JniMocker mJniMocker = new JniMocker();
 
-    @Mock
-    private PriceTrackingUtils.Natives mMockPriceTrackingUtilsJni;
-    @Mock
-    private ImageFetcher mImageFetcher;
-    @Mock
-    private CurrencyFormatter mCurrencyFormatter;
-    @Mock
-    private BookmarkModel mBookmarkModel;
-    @Mock
-    private SnackbarManager mSnackbarManager;
-    @Mock
-    private Profile mProfile;
-    @Mock
-    private BookmarkItem mBookmarkItem;
-    @Mock
-    private BookmarkDelegate mDelegate;
-    @Mock
-    private SelectionDelegate<BookmarkId> mSelectionDelegate;
-    @Mock
-    private DragStateDelegate mDragStateDelegate;
-    @Mock
-    private LargeIconBridge mLargeIconBridge;
-    @Mock
-    private RoundedIconGenerator mRoundedIconGenerator;
+    @Mock private PriceTrackingUtils.Natives mMockPriceTrackingUtilsJni;
+    @Mock private ImageFetcher mImageFetcher;
+    @Mock private CurrencyFormatter mCurrencyFormatter;
+    @Mock private BookmarkModel mBookmarkModel;
+    @Mock private SnackbarManager mSnackbarManager;
+    @Mock private Profile mProfile;
+    @Mock private BookmarkItem mBookmarkItem;
+    @Mock private BookmarkDelegate mDelegate;
+    @Mock private SelectionDelegate<BookmarkId> mSelectionDelegate;
+    @Mock private DragStateDelegate mDragStateDelegate;
+    @Mock private LargeIconBridge mLargeIconBridge;
+    @Mock private RoundedIconGenerator mRoundedIconGenerator;
 
     private BookmarkId mBookmarkId;
     private Bitmap mBitmap;
@@ -110,7 +94,10 @@ public class PowerBookmarkShoppingItemRowTest extends BlankUiTestActivityTestCas
         mBitmap.eraseColor(Color.GREEN);
 
         ArgumentCaptor<String> currencyCaptor = ArgumentCaptor.forClass(String.class);
-        doAnswer((invocation) -> { return "$" + currencyCaptor.getValue(); })
+        doAnswer(
+                        (invocation) -> {
+                            return "$" + currencyCaptor.getValue();
+                        })
                 .when(mCurrencyFormatter)
                 .format(currencyCaptor.capture());
 
@@ -131,38 +118,46 @@ public class PowerBookmarkShoppingItemRowTest extends BlankUiTestActivityTestCas
         doReturn(mBookmarkItem).when(mBookmarkModel).getBookmarkById(mBookmarkId);
         doReturn(meta).when(mBookmarkModel).getPowerBookmarkMeta(mBookmarkId);
 
-        TestThreadUtils.runOnUiThreadBlocking(() -> {
-            mContentView = new LinearLayout(getActivity());
-            mContentView.setBackgroundColor(Color.WHITE);
+        TestThreadUtils.runOnUiThreadBlocking(
+                () -> {
+                    mContentView = new LinearLayout(getActivity());
+                    mContentView.setBackgroundColor(Color.WHITE);
 
-            FrameLayout.LayoutParams params = new FrameLayout.LayoutParams(
-                    ViewGroup.LayoutParams.MATCH_PARENT, ViewGroup.LayoutParams.WRAP_CONTENT);
+                    FrameLayout.LayoutParams params =
+                            new FrameLayout.LayoutParams(
+                                    ViewGroup.LayoutParams.MATCH_PARENT,
+                                    ViewGroup.LayoutParams.WRAP_CONTENT);
 
-            getActivity().setContentView(mContentView, params);
-            mPowerBookmarkShoppingItemRow =
-                    BookmarkManagerCoordinator.buildShoppingItemView(mContentView);
-            mPowerBookmarkShoppingItemRow.setRoundedIconGeneratorForTesting(mRoundedIconGenerator);
-            mPowerBookmarkShoppingItemRow.onDelegateInitialized(mDelegate);
-            mPowerBookmarkShoppingItemRow.init(
-                    mImageFetcher, mBookmarkModel, mSnackbarManager, mProfile);
-            mPowerBookmarkShoppingItemRow.setCurrencyFormatterForTesting(mCurrencyFormatter);
-        });
+                    getActivity().setContentView(mContentView, params);
+                    mPowerBookmarkShoppingItemRow =
+                            BookmarkManagerCoordinator.buildShoppingItemView(mContentView);
+                    mPowerBookmarkShoppingItemRow.setRoundedIconGeneratorForTesting(
+                            mRoundedIconGenerator);
+                    mPowerBookmarkShoppingItemRow.onDelegateInitialized(mDelegate);
+                    mPowerBookmarkShoppingItemRow.init(
+                            mImageFetcher, mBookmarkModel, mSnackbarManager, mProfile);
+                    mPowerBookmarkShoppingItemRow.setCurrencyFormatterForTesting(
+                            mCurrencyFormatter);
+                });
     }
 
     @Test
     @SmallTest
     public void initPriceTrackingUI_NullImage() {
-        doAnswer((invocation) -> {
-            TestThreadUtils.runOnUiThreadBlocking(
-                    () -> ((Callback) invocation.getArgument(1)).onResult(null));
-            return null;
-        })
+        doAnswer(
+                        (invocation) -> {
+                            TestThreadUtils.runOnUiThreadBlocking(
+                                    () -> ((Callback) invocation.getArgument(1)).onResult(null));
+                            return null;
+                        })
                 .when(mImageFetcher)
                 .fetchImage(any(), any());
 
-        TestThreadUtils.runOnUiThreadBlocking(() -> {
-            mPowerBookmarkShoppingItemRow.initPriceTrackingUI("http://foo.com/img", true, 100, 100);
-        });
+        TestThreadUtils.runOnUiThreadBlocking(
+                () -> {
+                    mPowerBookmarkShoppingItemRow.initPriceTrackingUI(
+                            "http://foo.com/img", true, 100, 100);
+                });
 
         Assert.assertFalse(mPowerBookmarkShoppingItemRow.getFaviconCancelledForTesting());
     }
@@ -170,11 +165,12 @@ public class PowerBookmarkShoppingItemRowTest extends BlankUiTestActivityTestCas
     @Test
     @SmallTest
     public void testIconPropsAreInitialized() {
-        TestThreadUtils.runOnUiThreadBlocking(() -> {
-            mPowerBookmarkShoppingItemRow.setBookmarkId(mBookmarkId, Location.TOP, false);
-            // This will crash if the icon properties aren't initialized.
-            mPowerBookmarkShoppingItemRow.onLargeIconAvailable(
-                    mBitmap, Color.GREEN, false, IconType.FAVICON);
-        });
+        TestThreadUtils.runOnUiThreadBlocking(
+                () -> {
+                    mPowerBookmarkShoppingItemRow.setBookmarkId(mBookmarkId, Location.TOP, false);
+                    // This will crash if the icon properties aren't initialized.
+                    mPowerBookmarkShoppingItemRow.onLargeIconAvailable(
+                            mBitmap, Color.GREEN, false, IconType.FAVICON);
+                });
     }
 }

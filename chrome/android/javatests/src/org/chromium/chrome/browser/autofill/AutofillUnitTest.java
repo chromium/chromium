@@ -56,17 +56,23 @@ public class AutofillUnitTest {
     @Before
     public void setUp() throws Exception {
         mMockAutofillCallback = new MockAutofillCallback();
-        final ViewAndroidDelegate viewDelegate = ViewAndroidDelegate.createBasicDelegate(
-                sActivityTestRule.getActivity().findViewById(android.R.id.content));
+        final ViewAndroidDelegate viewDelegate =
+                ViewAndroidDelegate.createBasicDelegate(
+                        sActivityTestRule.getActivity().findViewById(android.R.id.content));
 
-        TestThreadUtils.runOnUiThreadBlocking(() -> {
-            View anchorView = viewDelegate.acquireView();
-            viewDelegate.setViewPosition(anchorView, 50f, 500f, 500f, 500f, 10, 10);
+        TestThreadUtils.runOnUiThreadBlocking(
+                () -> {
+                    View anchorView = viewDelegate.acquireView();
+                    viewDelegate.setViewPosition(anchorView, 50f, 500f, 500f, 500f, 10, 10);
 
-            mAutofillPopup = new AutofillPopup(
-                    sActivityTestRule.getActivity(), anchorView, mMockAutofillCallback, null);
-            mAutofillPopup.filterAndShow(new AutofillSuggestion[0], /* isRtl= */ false);
-        });
+                    mAutofillPopup =
+                            new AutofillPopup(
+                                    sActivityTestRule.getActivity(),
+                                    anchorView,
+                                    mMockAutofillCallback,
+                                    null);
+                    mAutofillPopup.filterAndShow(new AutofillSuggestion[0], /* isRtl= */ false);
+                });
     }
 
     private static final long CALLBACK_TIMEOUT_MS = 4000L;
@@ -160,10 +166,11 @@ public class AutofillUnitTest {
     public void openAutofillPopupAndWaitUntilReady(final AutofillSuggestion[] suggestions) {
         TestThreadUtils.runOnUiThreadBlocking(
                 () -> mAutofillPopup.filterAndShow(suggestions, /* isRtl= */ false));
-        CriteriaHelper.pollInstrumentationThread(() -> {
-            Criteria.checkThat(
-                    mAutofillPopup.getListView().getChildCount(), Matchers.greaterThan(0));
-        });
+        CriteriaHelper.pollInstrumentationThread(
+                () -> {
+                    Criteria.checkThat(
+                            mAutofillPopup.getListView().getChildCount(), Matchers.greaterThan(0));
+                });
     }
 
     @Test

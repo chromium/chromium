@@ -43,7 +43,7 @@ import org.chromium.url.GURL;
 import java.util.concurrent.TimeoutException;
 
 /**
- * Tests the Preview Tab, also known as the Ephemeral Tab.  Based on the
+ * Tests the Preview Tab, also known as the Ephemeral Tab. Based on the
  * FocusedEditableTextFieldZoomTest and TabsTest.
  */
 @RunWith(ChromeJUnit4ClassRunner.class)
@@ -52,12 +52,10 @@ public class PreviewTabTest {
     @Rule
     public ChromeTabbedActivityTestRule mActivityTestRule = new ChromeTabbedActivityTestRule();
 
-    @Rule
-    public EmbeddedTestServerRule mTestServer = new EmbeddedTestServerRule();
+    @Rule public EmbeddedTestServerRule mTestServer = new EmbeddedTestServerRule();
 
     /** Needed to ensure the First Run Flow is disabled automatically during setUp, etc. */
-    @Rule
-    public DisableFirstRun mDisableFirstRunFlowRule = new DisableFirstRun();
+    @Rule public DisableFirstRun mDisableFirstRunFlowRule = new DisableFirstRun();
 
     private static final String BASE_PAGE = "/chrome/test/data/android/previewtab/base_page.html";
     private static final String PREVIEW_TAB =
@@ -81,7 +79,8 @@ public class PreviewTabTest {
         }
 
         @Override
-        public void onNavigationStarted(GURL clickedUrl,
+        public void onNavigationStarted(
+                GURL clickedUrl,
                 BottomSheetController bottomSheetController,
                 EphemeralTabSheetContent ephemeralTabSheetContent) {
             onNavigationStartedCallback.notifyCalled();
@@ -96,22 +95,28 @@ public class PreviewTabTest {
     @Before
     public void setUp() {
         mActivityTestRule.startMainActivityWithURL(mTestServer.getServer().getURL(BASE_PAGE));
-        TestThreadUtils.runOnUiThreadBlocking(() -> {
-            TabbedRootUiCoordinator tabbedRootUiCoordinator =
-                    ((TabbedRootUiCoordinator) mActivityTestRule.getActivity()
-                                    .getRootUiCoordinatorForTesting());
-            mEphemeralTabCoordinator =
-                    tabbedRootUiCoordinator.getEphemeralTabCoordinatorSupplier().get();
-        });
-        mSheetTestSupport = new BottomSheetTestSupport(mActivityTestRule.getActivity()
-                                                               .getRootUiCoordinatorForTesting()
-                                                               .getBottomSheetController());
+        TestThreadUtils.runOnUiThreadBlocking(
+                () -> {
+                    TabbedRootUiCoordinator tabbedRootUiCoordinator =
+                            ((TabbedRootUiCoordinator)
+                                    mActivityTestRule
+                                            .getActivity()
+                                            .getRootUiCoordinatorForTesting());
+                    mEphemeralTabCoordinator =
+                            tabbedRootUiCoordinator.getEphemeralTabCoordinatorSupplier().get();
+                });
+        mSheetTestSupport =
+                new BottomSheetTestSupport(
+                        mActivityTestRule
+                                .getActivity()
+                                .getRootUiCoordinatorForTesting()
+                                .getBottomSheetController());
         mEphemeralTabObserver = new TestEphemeralTabObserver();
     }
 
     /**
-     * End all animations that already started before so that the UI will be in a state ready
-     * for the next command.
+     * End all animations that already started before so that the UI will be in a state ready for
+     * the next command.
      */
     private void endAnimations() {
         TestThreadUtils.runOnUiThreadBlocking(mSheetTestSupport::endAllAnimations);
@@ -120,7 +125,8 @@ public class PreviewTabTest {
     private void closePreviewTab() {
         TestThreadUtils.runOnUiThreadBlocking(mEphemeralTabCoordinator::close);
         endAnimations();
-        Assert.assertFalse("The Preview Tab should have closed but did not indicate closed",
+        Assert.assertFalse(
+                "The Preview Tab should have closed but did not indicate closed",
                 mEphemeralTabCoordinator.isOpened());
     }
 
@@ -131,61 +137,71 @@ public class PreviewTabTest {
     @MediumTest
     @Feature({"PreviewTab"})
     public void testOpenAndClose() throws Throwable {
-        Assert.assertFalse("Test should have started without any Preview Tab",
+        Assert.assertFalse(
+                "Test should have started without any Preview Tab",
                 mEphemeralTabCoordinator.isOpened());
 
         ChromeActivity activity = mActivityTestRule.getActivity();
         Tab tab = activity.getActivityTab();
-        ContextMenuUtils.selectContextMenuItem(InstrumentationRegistry.getInstrumentation(),
-                activity, tab, PREVIEW_TAB_DOM_ID, R.id.contextmenu_open_in_ephemeral_tab);
+        ContextMenuUtils.selectContextMenuItem(
+                InstrumentationRegistry.getInstrumentation(),
+                activity,
+                tab,
+                PREVIEW_TAB_DOM_ID,
+                R.id.contextmenu_open_in_ephemeral_tab);
         endAnimations();
         Assert.assertTrue("The Preview Tab did not open", mEphemeralTabCoordinator.isOpened());
 
         // Scroll the base page.
         DOMUtils.scrollNodeIntoView(tab.getWebContents(), NEAR_BOTTOM_DOM_ID);
         endAnimations();
-        Assert.assertTrue("The Preview Tab did not stay open after a scroll action",
+        Assert.assertTrue(
+                "The Preview Tab did not stay open after a scroll action",
                 mEphemeralTabCoordinator.isOpened());
 
         closePreviewTab();
     }
 
     /**
-     * Test that closing all incognito tabs successfully handles the base tab and
-     * its preview tab opened in incognito mode. This makes sure an incognito profile
-     * shared by the tabs is destroyed safely.
+     * Test that closing all incognito tabs successfully handles the base tab and its preview tab
+     * opened in incognito mode. This makes sure an incognito profile shared by the tabs is
+     * destroyed safely.
      */
     @Test
     @MediumTest
     @Feature({"PreviewTab"})
     public void testCloseAllIncognitoTabsClosesPreviewTab() throws Throwable {
-        Assert.assertFalse("Test should have started without any Preview Tab",
+        Assert.assertFalse(
+                "Test should have started without any Preview Tab",
                 mEphemeralTabCoordinator.isOpened());
 
-        mActivityTestRule.loadUrlInNewTab(mTestServer.getServer().getURL(BASE_PAGE),
-                /*incognito=*/true);
+        mActivityTestRule.loadUrlInNewTab(
+                mTestServer.getServer().getURL(BASE_PAGE), /* incognito= */ true);
         mActivityTestRule.getActivity().getTabModelSelector().selectModel(true);
         ChromeActivity activity = mActivityTestRule.getActivity();
         Tab tab = activity.getActivityTab();
         Assert.assertTrue(tab.isIncognito());
 
-        ContextMenuUtils.selectContextMenuItem(InstrumentationRegistry.getInstrumentation(),
-                activity, tab, PREVIEW_TAB_DOM_ID, R.id.contextmenu_open_in_ephemeral_tab);
+        ContextMenuUtils.selectContextMenuItem(
+                InstrumentationRegistry.getInstrumentation(),
+                activity,
+                tab,
+                PREVIEW_TAB_DOM_ID,
+                R.id.contextmenu_open_in_ephemeral_tab);
         endAnimations();
         BottomSheetController bottomSheet =
                 activity.getRootUiCoordinatorForTesting().getBottomSheetController();
-        TestThreadUtils.runOnUiThreadBlocking(() -> {
-            bottomSheet.expandSheet();
-            endAnimations();
-            IncognitoTabHostUtils.closeAllIncognitoTabs();
-            endAnimations();
-        });
+        TestThreadUtils.runOnUiThreadBlocking(
+                () -> {
+                    bottomSheet.expandSheet();
+                    endAnimations();
+                    IncognitoTabHostUtils.closeAllIncognitoTabs();
+                    endAnimations();
+                });
         Assert.assertEquals(SheetState.HIDDEN, bottomSheet.getSheetState());
     }
 
-    /**
-     * Test preview tab suppresses contextual search.
-     */
+    /** Test preview tab suppresses contextual search. */
     @Test
     @MediumTest
     @Feature({"PreviewTab"})
@@ -196,9 +212,10 @@ public class PreviewTabTest {
         Assert.assertFalse("Contextual Search should be active", csManager.isSuppressed());
 
         TestThreadUtils.runOnUiThreadBlocking(
-                ()
-                        -> mEphemeralTabCoordinator.requestOpenSheet(
-                                new GURL(mTestServer.getServer().getURL(PREVIEW_TAB)), "PreviewTab",
+                () ->
+                        mEphemeralTabCoordinator.requestOpenSheet(
+                                new GURL(mTestServer.getServer().getURL(PREVIEW_TAB)),
+                                "PreviewTab",
                                 false));
         endAnimations();
         Assert.assertTrue("The Preview Tab did not open", mEphemeralTabCoordinator.isOpened());
@@ -208,9 +225,7 @@ public class PreviewTabTest {
         Assert.assertFalse("Contextual Search should be active", csManager.isSuppressed());
     }
 
-    /**
-     * Test that the observer methods are being notified on events.
-     */
+    /** Test that the observer methods are being notified on events. */
     @Test
     @MediumTest
     @Feature({"PreviewTab"})
@@ -221,10 +236,12 @@ public class PreviewTabTest {
 
         // Open Preview Tab.
         TestThreadUtils.runOnUiThreadBlocking(
-                ()
-                        -> mEphemeralTabCoordinator.requestOpenSheetWithFullPageUrl(
-                                new GURL(mTestServer.getServer().getURL(PREVIEW_TAB)), null,
-                                "PreviewTab", false));
+                () ->
+                        mEphemeralTabCoordinator.requestOpenSheetWithFullPageUrl(
+                                new GURL(mTestServer.getServer().getURL(PREVIEW_TAB)),
+                                null,
+                                "PreviewTab",
+                                false));
         endAnimations();
 
         mEphemeralTabObserver.onToolbarCreatedCallback.waitForCallback(0, 1);

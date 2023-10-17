@@ -11,22 +11,22 @@ import org.chromium.chrome.browser.vr.VrShellDelegate;
 import org.chromium.content_public.browser.test.util.TestThreadUtils;
 
 /**
- * Class containing utility functions for transitioning between different
- * states in VR, such as fullscreen, WebVR presentation, and the VR browser.
+ * Class containing utility functions for transitioning between different states in VR, such as
+ * fullscreen, WebVR presentation, and the VR browser.
  *
- * Methods in this class are applicable to any form of VR, e.g. they will work for both WebXR for VR
- * and the VR Browser.
+ * <p>Methods in this class are applicable to any form of VR, e.g. they will work for both WebXR for
+ * VR and the VR Browser.
  *
- * All the transitions in this class are performed directly through Chrome,
- * as opposed to NFC tag simulation which involves receiving an intent from
- * an outside application (VR Services).
+ * <p>All the transitions in this class are performed directly through Chrome, as opposed to NFC tag
+ * simulation which involves receiving an intent from an outside application (VR Services).
  */
 public class GvrTransitionUtils {
-    /**
-     * Forces Chrome out of VR mode.
-     */
+    /** Forces Chrome out of VR mode. */
     public static void forceExitVr() {
-        TestThreadUtils.runOnUiThreadBlocking(() -> { VrShellDelegate.forceExitVrImmediately(); });
+        TestThreadUtils.runOnUiThreadBlocking(
+                () -> {
+                    VrShellDelegate.forceExitVrImmediately();
+                });
     }
 
     /**
@@ -36,8 +36,12 @@ public class GvrTransitionUtils {
      */
     public static void waitForVrEntry(final int timeout) {
         // Relatively long timeout because sometimes GVR takes a while to enter VR
-        CriteriaHelper.pollUiThread(() -> {
-            return VrShellDelegateUtils.getDelegateInstance().isVrEntryComplete();
-        }, "VR not entered in allotted time", timeout, POLL_CHECK_INTERVAL_SHORT_MS);
+        CriteriaHelper.pollUiThread(
+                () -> {
+                    return VrShellDelegateUtils.getDelegateInstance().isVrEntryComplete();
+                },
+                "VR not entered in allotted time",
+                timeout,
+                POLL_CHECK_INTERVAL_SHORT_MS);
     }
 }

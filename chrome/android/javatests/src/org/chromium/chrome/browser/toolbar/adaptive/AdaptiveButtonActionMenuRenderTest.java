@@ -44,9 +44,12 @@ import java.util.List;
 @RunWith(ParameterizedRunner.class)
 @ParameterAnnotations.UseRunnerDelegate(ChromeJUnit4RunnerDelegate.class)
 @EnableFeatures(ChromeFeatureList.ADAPTIVE_BUTTON_IN_TOP_TOOLBAR)
-@CommandLineFlags.Add({ChromeSwitches.DISABLE_FIRST_RUN_EXPERIENCE,
-        "enable-features=" + ChromeFeatureList.ADAPTIVE_BUTTON_IN_TOP_TOOLBAR + "<Study",
-        "force-fieldtrials=Study/Group", "force-fieldtrial-params=Study.Group:mode/always-share"})
+@CommandLineFlags.Add({
+    ChromeSwitches.DISABLE_FIRST_RUN_EXPERIENCE,
+    "enable-features=" + ChromeFeatureList.ADAPTIVE_BUTTON_IN_TOP_TOOLBAR + "<Study",
+    "force-fieldtrials=Study/Group",
+    "force-fieldtrial-params=Study.Group:mode/always-share"
+})
 public class AdaptiveButtonActionMenuRenderTest {
     @ParameterAnnotations.ClassParameter
     public static List<ParameterSet> sClassParams =
@@ -73,25 +76,30 @@ public class AdaptiveButtonActionMenuRenderTest {
     @Before
     public void setUpTest() throws Exception {
         mActivityTestRule.launchActivity(null);
-        TestThreadUtils.runOnUiThreadBlocking(() -> {
-            Activity activity = mActivityTestRule.getActivity();
-            AdaptiveButtonActionMenuCoordinator coordinator =
-                    new AdaptiveButtonActionMenuCoordinator();
+        TestThreadUtils.runOnUiThreadBlocking(
+                () -> {
+                    Activity activity = mActivityTestRule.getActivity();
+                    AdaptiveButtonActionMenuCoordinator coordinator =
+                            new AdaptiveButtonActionMenuCoordinator();
 
-            coordinator.displayMenu(activity, new ListMenuButton(activity, null),
-                    coordinator.buildMenuItems(), null);
+                    coordinator.displayMenu(
+                            activity,
+                            new ListMenuButton(activity, null),
+                            coordinator.buildMenuItems(),
+                            null);
 
-            mView = coordinator.getContentViewForTesting();
-            if (mView.getParent() != null) {
-                ((ViewGroup) mView.getParent()).removeView(mView);
-            }
+                    mView = coordinator.getContentViewForTesting();
+                    if (mView.getParent() != null) {
+                        ((ViewGroup) mView.getParent()).removeView(mView);
+                    }
 
-            int popupWidth =
-                    activity.getResources().getDimensionPixelSize(R.dimen.tab_switcher_menu_width);
-            mView.setBackground(
-                    AppCompatResources.getDrawable(activity, R.drawable.menu_bg_tinted));
-            activity.setContentView(mView, new LayoutParams(popupWidth, WRAP_CONTENT));
-        });
+                    int popupWidth =
+                            activity.getResources()
+                                    .getDimensionPixelSize(R.dimen.tab_switcher_menu_width);
+                    mView.setBackground(
+                            AppCompatResources.getDrawable(activity, R.drawable.menu_bg_tinted));
+                    activity.setContentView(mView, new LayoutParams(popupWidth, WRAP_CONTENT));
+                });
     }
 
     @After

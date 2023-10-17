@@ -37,20 +37,22 @@ import java.util.concurrent.Callable;
 import java.util.concurrent.ExecutionException;
 
 /**
- * End-to-end tests for the message that prompts the user to update or install
- * VrCore (VR Services) when attempting to use a VR feature with an outdated
- * or entirely missing version or other VR-related update prompts.
+ * End-to-end tests for the message that prompts the user to update or install VrCore (VR Services)
+ * when attempting to use a VR feature with an outdated or entirely missing version or other
+ * VR-related update prompts.
  */
 @RunWith(ParameterizedRunner.class)
 @UseRunnerDelegate(ChromeJUnit4RunnerDelegate.class)
-@CommandLineFlags.
-Add({ChromeSwitches.DISABLE_FIRST_RUN_EXPERIENCE, "enable-features=LogJsConsoleMessages"})
+@CommandLineFlags.Add({
+    ChromeSwitches.DISABLE_FIRST_RUN_EXPERIENCE,
+    "enable-features=LogJsConsoleMessages"
+})
 public class GvrInstallUpdateMessageTest {
     @ClassParameter
     private static List<ParameterSet> sClassParams =
             GvrTestRuleUtils.generateDefaultTestRuleParameters();
-    @Rule
-    public RuleChain mRuleChain;
+
+    @Rule public RuleChain mRuleChain;
 
     private ChromeActivityTestRule mVrTestRule;
 
@@ -64,16 +66,20 @@ public class GvrInstallUpdateMessageTest {
      * VrCoreVersionChecker instance.
      *
      * @param compatibility An int corresponding to a VrCoreCompatibility value that the mock
-     *        version checker will return.
+     *     version checker will return.
      * @return The MockGvrVrCoreVersionCheckerImpl that was set as VrShellDelegate's
-     *        VrCoreVersionChecker instance.
+     *     VrCoreVersionChecker instance.
      */
     private static MockGvrVrCoreVersionChecker setVrCoreCompatibility(int compatibility) {
         final MockGvrVrCoreVersionChecker mockChecker = new MockGvrVrCoreVersionChecker();
         mockChecker.setMockReturnValue(compatibility);
         TestThreadUtils.runOnUiThreadBlocking(
-                () -> { VrCoreInstallUtils.overrideVrCoreVersionChecker(mockChecker); });
-        Assert.assertEquals("Overriding VrCoreVersionChecker failed", compatibility,
+                () -> {
+                    VrCoreInstallUtils.overrideVrCoreVersionChecker(mockChecker);
+                });
+        Assert.assertEquals(
+                "Overriding VrCoreVersionChecker failed",
+                compatibility,
                 mockChecker.getLastReturnValue());
         return mockChecker;
     }
@@ -87,10 +93,11 @@ public class GvrInstallUpdateMessageTest {
     private void messageTestHelper(final int checkerReturnCompatibility) throws ExecutionException {
         VrCoreInstallUtils vrCoreInstallUtils = VrCoreInstallUtils.create(0);
         setVrCoreCompatibility(checkerReturnCompatibility);
-        TestThreadUtils.runOnUiThreadBlocking(() -> {
-            vrCoreInstallUtils.requestInstallVrCore(
-                    mVrTestRule.getActivity().getCurrentWebContents());
-        });
+        TestThreadUtils.runOnUiThreadBlocking(
+                () -> {
+                    vrCoreInstallUtils.requestInstallVrCore(
+                            mVrTestRule.getActivity().getCurrentWebContents());
+                });
         if (checkerReturnCompatibility == VrCoreVersionChecker.VrCoreCompatibility.VR_READY) {
             VrMessageUtils.expectMessagePresent(mVrTestRule, false);
         } else if (checkerReturnCompatibility
@@ -114,13 +121,18 @@ public class GvrInstallUpdateMessageTest {
             PropertyModel message = VrMessageUtils.getVrInstallUpdateMessage(mVrTestRule);
             Assert.assertNotNull("VR install/update message should be present.", message);
 
-            Assert.assertEquals("VR install/update message text did not match expectation.",
-                    expectedTitle, message.get(MessageBannerProperties.TITLE));
-            Assert.assertEquals("VR install/update message description did not match expectation.",
+            Assert.assertEquals(
+                    "VR install/update message text did not match expectation.",
+                    expectedTitle,
+                    message.get(MessageBannerProperties.TITLE));
+            Assert.assertEquals(
+                    "VR install/update message description did not match expectation.",
                     context.getString(R.string.vr_services_check_message_description),
                     message.get(MessageBannerProperties.DESCRIPTION));
-            Assert.assertEquals("VR install/update message button text did not match expectation.",
-                    expectedButton, message.get(MessageBannerProperties.PRIMARY_BUTTON_TEXT));
+            Assert.assertEquals(
+                    "VR install/update message button text did not match expectation.",
+                    expectedButton,
+                    message.get(MessageBannerProperties.PRIMARY_BUTTON_TEXT));
         } else if (checkerReturnCompatibility
                 == VrCoreVersionChecker.VrCoreCompatibility.VR_NOT_SUPPORTED) {
             VrMessageUtils.expectMessagePresent(mVrTestRule, false);
@@ -142,27 +154,25 @@ public class GvrInstallUpdateMessageTest {
         messageTestHelper(VrCoreVersionChecker.VrCoreCompatibility.VR_READY);
     }
 
-    /**
-     * Tests that the upgrade VR Services message is present when VR Services is outdated.
-     */
+    /** Tests that the upgrade VR Services message is present when VR Services is outdated. */
     @Test
     @MediumTest
-    @XrActivityRestriction({XrActivityRestriction.SupportedActivity.CTA,
-            XrActivityRestriction.SupportedActivity.CCT})
-    public void
-    testMessagePresentWhenVrServicesOutdated() throws ExecutionException {
+    @XrActivityRestriction({
+        XrActivityRestriction.SupportedActivity.CTA,
+        XrActivityRestriction.SupportedActivity.CCT
+    })
+    public void testMessagePresentWhenVrServicesOutdated() throws ExecutionException {
         messageTestHelper(VrCoreVersionChecker.VrCoreCompatibility.VR_OUT_OF_DATE);
     }
 
-    /**
-     * Tests that the install VR Services message is present when VR Services is missing.
-     */
+    /** Tests that the install VR Services message is present when VR Services is missing. */
     @Test
     @MediumTest
-    @XrActivityRestriction({XrActivityRestriction.SupportedActivity.CTA,
-            XrActivityRestriction.SupportedActivity.CCT})
-    public void
-    testMessagePresentWhenVrServicesMissing() throws ExecutionException {
+    @XrActivityRestriction({
+        XrActivityRestriction.SupportedActivity.CTA,
+        XrActivityRestriction.SupportedActivity.CCT
+    })
+    public void testMessagePresentWhenVrServicesMissing() throws ExecutionException {
         messageTestHelper(VrCoreVersionChecker.VrCoreCompatibility.VR_NOT_AVAILABLE);
     }
 

@@ -16,9 +16,7 @@ import org.chromium.components.browser_ui.settings.SettingsLauncher;
 
 import java.util.ArrayList;
 
-/**
- * Fake implementation for the PasswordManagerHandler.
- */
+/** Fake implementation for the PasswordManagerHandler. */
 public final class FakePasswordManagerHandler implements PasswordManagerHandler {
     // This class has exactly one observer, set on construction and expected to last at least as
     // long as this object (a good candidate is the owner of this object).
@@ -31,14 +29,11 @@ public final class FakePasswordManagerHandler implements PasswordManagerHandler 
     private ArrayList<String> mSavedPasswordExeptions = new ArrayList<>();
 
     // The following three data members are set once {@link #serializePasswords()} is called.
-    @Nullable
-    private IntStringCallback mExportSuccessCallback;
+    @Nullable private IntStringCallback mExportSuccessCallback;
 
-    @Nullable
-    private Callback<String> mExportErrorCallback;
+    @Nullable private Callback<String> mExportErrorCallback;
 
-    @Nullable
-    private String mExportTargetPath;
+    @Nullable private String mExportTargetPath;
 
     private boolean mShowWarningWasCalled;
 
@@ -51,6 +46,7 @@ public final class FakePasswordManagerHandler implements PasswordManagerHandler 
     void setSavedPasswordExceptions(ArrayList<String> savedPasswordExceptions) {
         mSavedPasswordExeptions = savedPasswordExceptions;
     }
+
     public IntStringCallback getExportSuccessCallback() {
         return mExportSuccessCallback;
     }
@@ -69,6 +65,7 @@ public final class FakePasswordManagerHandler implements PasswordManagerHandler 
 
     /**
      * Constructor.
+     *
      * @param observer The only observer.
      */
     public FakePasswordManagerHandler(PasswordListObserver observer) {
@@ -78,6 +75,7 @@ public final class FakePasswordManagerHandler implements PasswordManagerHandler 
 
     /**
      * A getter for the faked contents of the password store.
+     *
      * @return the faked contents of the password store.
      */
     public ArrayList<SavedPasswordEntry> getSavedPasswordEntriesForTesting() {
@@ -131,6 +129,7 @@ public final class FakePasswordManagerHandler implements PasswordManagerHandler 
             Context context, SettingsLauncher launcher, int index, boolean isBlockedCredential) {
         assert false : "Define this method before starting to use it in tests.";
     }
+
     @Override
     public void showMigrationWarning(
             Activity activity, BottomSheetController bottomSheetController) {

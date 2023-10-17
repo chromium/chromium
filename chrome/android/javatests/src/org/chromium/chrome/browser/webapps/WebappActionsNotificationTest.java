@@ -55,19 +55,24 @@ import org.chromium.net.test.EmbeddedTestServer;
 public class WebappActionsNotificationTest {
     private static final String WEB_APP_PATH = "/chrome/test/data/banners/manifest_test_page.html";
 
-    @Rule
-    public final WebappActivityTestRule mActivityTestRule = new WebappActivityTestRule();
+    @Rule public final WebappActivityTestRule mActivityTestRule = new WebappActivityTestRule();
 
     private final TestRule mModuleOverridesRule =
-            new ModuleOverridesRule().setOverride(BaseCustomTabActivityModule.Factory.class,
-                    (BrowserServicesIntentDataProvider intentDataProvider,
-                            CustomTabNightModeStateController nightModeController,
-                            CustomTabIntentHandler.IntentIgnoringCriterion intentIgnoringCriterion,
-                            TopUiThemeColorProvider topUiThemeColorProvider,
-                            DefaultBrowserProviderImpl customTabDefaultBrowserProvider)
-                            -> new BaseCustomTabActivityModule(intentDataProvider,
-                                    nightModeController, intentIgnoringCriterion,
-                                    topUiThemeColorProvider, new FakeDefaultBrowserProviderImpl()));
+            new ModuleOverridesRule()
+                    .setOverride(
+                            BaseCustomTabActivityModule.Factory.class,
+                            (BrowserServicesIntentDataProvider intentDataProvider,
+                                    CustomTabNightModeStateController nightModeController,
+                                    CustomTabIntentHandler.IntentIgnoringCriterion
+                                            intentIgnoringCriterion,
+                                    TopUiThemeColorProvider topUiThemeColorProvider,
+                                    DefaultBrowserProviderImpl customTabDefaultBrowserProvider) ->
+                                    new BaseCustomTabActivityModule(
+                                            intentDataProvider,
+                                            nightModeController,
+                                            intentIgnoringCriterion,
+                                            topUiThemeColorProvider,
+                                            new FakeDefaultBrowserProviderImpl()));
 
     @Rule
     public RuleChain mRuleChain =
@@ -77,12 +82,15 @@ public class WebappActionsNotificationTest {
 
     @Before
     public void startWebapp() {
-        Context appContext = InstrumentationRegistry.getInstrumentation()
-                                     .getTargetContext()
-                                     .getApplicationContext();
+        Context appContext =
+                InstrumentationRegistry.getInstrumentation()
+                        .getTargetContext()
+                        .getApplicationContext();
         mTestServer = EmbeddedTestServer.createAndStartServer(appContext);
-        mActivityTestRule.startWebappActivity(mActivityTestRule.createIntent().putExtra(
-                WebappConstants.EXTRA_URL, mTestServer.getURL(WEB_APP_PATH)));
+        mActivityTestRule.startWebappActivity(
+                mActivityTestRule
+                        .createIntent()
+                        .putExtra(WebappConstants.EXTRA_URL, mTestServer.getURL(WEB_APP_PATH)));
     }
 
     @Test
@@ -107,9 +115,10 @@ public class WebappActionsNotificationTest {
                 InstrumentationRegistry.getInstrumentation().addMonitor(filter, null, false);
 
         notification.actions[1].actionIntent.send();
-        CriteriaHelper.pollInstrumentationThread(() -> {
-            return InstrumentationRegistry.getInstrumentation().checkMonitorHit(monitor, 1);
-        });
+        CriteriaHelper.pollInstrumentationThread(
+                () -> {
+                    return InstrumentationRegistry.getInstrumentation().checkMonitorHit(monitor, 1);
+                });
 
         Assert.assertNull("Notification should no longer be shown", getWebappNotification());
     }
@@ -124,19 +133,25 @@ public class WebappActionsNotificationTest {
 
         notification.contentIntent.send();
 
-        TestThreadUtils.runOnUiThreadBlocking(() -> {
-            ClipboardManager clipboard =
-                    (ClipboardManager) mActivityTestRule.getActivity().getSystemService(
-                            Context.CLIPBOARD_SERVICE);
-            Assert.assertEquals(mActivityTestRule.getTestServer().getURL(WEB_APP_PATH),
-                    clipboard.getPrimaryClip().getItemAt(0).getText().toString());
-        });
+        TestThreadUtils.runOnUiThreadBlocking(
+                () -> {
+                    ClipboardManager clipboard =
+                            (ClipboardManager)
+                                    mActivityTestRule
+                                            .getActivity()
+                                            .getSystemService(Context.CLIPBOARD_SERVICE);
+                    Assert.assertEquals(
+                            mActivityTestRule.getTestServer().getURL(WEB_APP_PATH),
+                            clipboard.getPrimaryClip().getItemAt(0).getText().toString());
+                });
     }
 
     private @Nullable Notification getWebappNotification() {
         NotificationManager nm =
-                (NotificationManager) mActivityTestRule.getActivity().getSystemService(
-                        Context.NOTIFICATION_SERVICE);
+                (NotificationManager)
+                        mActivityTestRule
+                                .getActivity()
+                                .getSystemService(Context.NOTIFICATION_SERVICE);
         for (StatusBarNotification sbn : nm.getActiveNotifications()) {
             if (sbn.getId() == NotificationConstants.NOTIFICATION_ID_WEBAPP_ACTIONS) {
                 return sbn.getNotification();

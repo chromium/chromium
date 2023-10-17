@@ -33,9 +33,7 @@ import org.chromium.net.test.EmbeddedTestServer;
 import java.util.ArrayList;
 import java.util.List;
 
-/**
- * Tests for {@link TabObserverRegistrar}.
- */
+/** Tests for {@link TabObserverRegistrar}. */
 @RunWith(ChromeJUnit4ClassRunner.class)
 @CommandLineFlags.Add({ChromeSwitches.DISABLE_FIRST_RUN_EXPERIENCE})
 public class TabObserverRegistrarTest {
@@ -56,9 +54,8 @@ public class TabObserverRegistrarTest {
     public CustomTabActivityTestRule mCustomTabActivityTestRule = new CustomTabActivityTestRule();
 
     /**
-     * Tests that the TabObserver registered by
-     * {@link TabObserverRegistrar#registerActivityTabObserver()} switches when the active tab is
-     * switched.
+     * Tests that the TabObserver registered by {@link
+     * TabObserverRegistrar#registerActivityTabObserver()} switches when the active tab is switched.
      */
     @Test
     @MediumTest
@@ -86,26 +83,32 @@ public class TabObserverRegistrarTest {
 
         // Open and wait for popup.
         final CallbackHelper openTabHelper = new CallbackHelper();
-        TestThreadUtils.runOnUiThreadBlocking(() -> {
-            tabSelector.getModel(false).addObserver(new TabModelObserver() {
-                @Override
-                public void didSelectTab(Tab tab, @TabSelectionType int type, int lastId) {
-                    if (tab != initialActiveTab) {
-                        openTabHelper.notifyCalled();
-                    }
-                }
-            });
-        });
+        TestThreadUtils.runOnUiThreadBlocking(
+                () -> {
+                    tabSelector
+                            .getModel(false)
+                            .addObserver(
+                                    new TabModelObserver() {
+                                        @Override
+                                        public void didSelectTab(
+                                                Tab tab, @TabSelectionType int type, int lastId) {
+                                            if (tab != initialActiveTab) {
+                                                openTabHelper.notifyCalled();
+                                            }
+                                        }
+                                    });
+                });
         DOMUtils.clickNode(mCustomTabActivityTestRule.getWebContents(), "new_window");
         openTabHelper.waitForCallback(0, 1);
 
         assertEquals(2, tabSelector.getModel(false).getCount());
         final Tab activeTab = tabSelector.getCurrentTab();
 
-        TestThreadUtils.runOnUiThreadBlocking(() -> {
-            initialActiveTab.loadUrl(new LoadUrlParams(url1));
-            activeTab.loadUrl(new LoadUrlParams(url2));
-        });
+        TestThreadUtils.runOnUiThreadBlocking(
+                () -> {
+                    initialActiveTab.loadUrl(new LoadUrlParams(url1));
+                    activeTab.loadUrl(new LoadUrlParams(url2));
+                });
 
         List<String> urlRequests = loadUrlTabObserver.getLoadUrlRequests();
         assertEquals(1, urlRequests.size());

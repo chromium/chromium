@@ -28,9 +28,8 @@ import org.chromium.components.webapk.lib.client.WebApkValidator;
 import org.chromium.webapk.lib.common.WebApkConstants;
 
 /**
- * Instrumentation tests for launching site settings for WebApks.
- * Site settings are added as a dynamic android shortcut.
- * The shortcut launches a {@link ManageTrustedWebActivityDataActivity}
+ * Instrumentation tests for launching site settings for WebApks. Site settings are added as a
+ * dynamic android shortcut. The shortcut launches a {@link ManageTrustedWebActivityDataActivity}
  * intent that validates the WebApk and launches the chromium SettingsActivity.
  */
 @RunWith(ChromeJUnit4ClassRunner.class)
@@ -51,14 +50,17 @@ public class ManageTrustedWebActivityDataActivityTest {
         launchSettings(TEST_PACKAGE_NAME, Uri.parse(WEBAPK_TEST_URL));
 
         // Check settings activity is running.
-        CriteriaHelper.pollUiThread(() -> {
-            try {
-                Criteria.checkThat("Site settings activity was not launched",
-                        siteSettingsActivityRunning(), Matchers.is(true));
-            } catch (PackageManager.NameNotFoundException e) {
-                e.printStackTrace();
-            }
-        });
+        CriteriaHelper.pollUiThread(
+                () -> {
+                    try {
+                        Criteria.checkThat(
+                                "Site settings activity was not launched",
+                                siteSettingsActivityRunning(),
+                                Matchers.is(true));
+                    } catch (PackageManager.NameNotFoundException e) {
+                        e.printStackTrace();
+                    }
+                });
     }
 
     private boolean siteSettingsActivityRunning() throws PackageManager.NameNotFoundException {

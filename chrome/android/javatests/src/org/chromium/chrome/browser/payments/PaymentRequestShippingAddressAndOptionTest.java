@@ -25,9 +25,7 @@ import org.chromium.components.autofill.AutofillProfile;
 
 import java.util.concurrent.TimeoutException;
 
-/**
- * A payment integration test for shipping address labels.
- */
+/** A payment integration test for shipping address labels. */
 @RunWith(ChromeJUnit4ClassRunner.class)
 @CommandLineFlags.Add({ChromeSwitches.DISABLE_FIRST_RUN_EXPERIENCE})
 public class PaymentRequestShippingAddressAndOptionTest {
@@ -39,30 +37,34 @@ public class PaymentRequestShippingAddressAndOptionTest {
     public void setUp() throws TimeoutException {
         AutofillTestHelper helper = new AutofillTestHelper();
         // The user has a shipping address associated with a credit card.
-        String firstAddressId = helper.setProfile(AutofillProfile.builder()
-                                                          .setFullName("Jon Doe")
-                                                          .setCompanyName("Google")
-                                                          .setStreetAddress("340 Main St")
-                                                          .setRegion("CA")
-                                                          .setLocality("Los Angeles")
-                                                          .setPostalCode("90291")
-                                                          .setCountryCode("US")
-                                                          .setPhoneNumber("555-555-5555")
-                                                          .setLanguageCode("en-US")
-                                                          .build());
+        String firstAddressId =
+                helper.setProfile(
+                        AutofillProfile.builder()
+                                .setFullName("Jon Doe")
+                                .setCompanyName("Google")
+                                .setStreetAddress("340 Main St")
+                                .setRegion("CA")
+                                .setLocality("Los Angeles")
+                                .setPostalCode("90291")
+                                .setCountryCode("US")
+                                .setPhoneNumber("555-555-5555")
+                                .setLanguageCode("en-US")
+                                .build());
 
         // The user has a second address.
-        String secondAddressId = helper.setProfile(AutofillProfile.builder()
-                                                           .setFullName("Fred Doe")
-                                                           .setCompanyName("Google")
-                                                           .setStreetAddress("340 Main St")
-                                                           .setRegion("CA")
-                                                           .setLocality("Los Angeles")
-                                                           .setPostalCode("90291")
-                                                           .setCountryCode("US")
-                                                           .setPhoneNumber("555-555-5555")
-                                                           .setEmailAddress("en-US")
-                                                           .build());
+        String secondAddressId =
+                helper.setProfile(
+                        AutofillProfile.builder()
+                                .setFullName("Fred Doe")
+                                .setCompanyName("Google")
+                                .setStreetAddress("340 Main St")
+                                .setRegion("CA")
+                                .setLocality("Los Angeles")
+                                .setPostalCode("90291")
+                                .setCountryCode("US")
+                                .setPhoneNumber("555-555-5555")
+                                .setEmailAddress("en-US")
+                                .build());
 
         // Set the fist profile to have a better frecency score that the second one.
         helper.setProfileUseStatsForTesting(firstAddressId, 10, 0);
@@ -81,7 +83,8 @@ public class PaymentRequestShippingAddressAndOptionTest {
                 mPaymentRequestTestRule.getReadyToPay());
 
         // Make sure that the shipping label on the bottomsheet does not include the country.
-        Assert.assertEquals("Jon Doe\nGoogle, 340 Main St, Los Angeles, CA 90291\n555-555-5555",
+        Assert.assertEquals(
+                "Jon Doe\nGoogle, 340 Main St, Los Angeles, CA 90291\n555-555-5555",
                 mPaymentRequestTestRule.getShippingAddressSummaryLabel());
 
         // Make sure shipping option summary on bottom sheet is displayed in a single line
@@ -107,14 +110,17 @@ public class PaymentRequestShippingAddressAndOptionTest {
                 R.id.payments_section, mPaymentRequestTestRule.getReadyForInput());
 
         // Make sure that the shipping label on the fullsheet does not include the country.
-        Assert.assertEquals("Jon Doe\nGoogle, 340 Main St, Los Angeles, CA 90291\n555-555-5555",
-                mPaymentRequestTestRule.getShippingAddressOptionRowAtIndex(0)
+        Assert.assertEquals(
+                "Jon Doe\nGoogle, 340 Main St, Los Angeles, CA 90291\n555-555-5555",
+                mPaymentRequestTestRule
+                        .getShippingAddressOptionRowAtIndex(0)
                         .getLabelText()
                         .toString());
 
         // Make sure shipping option summary on the full sheet is displayed on multiple lines
         // as expected.
-        Assert.assertEquals("Free global shipping\n$0.00",
+        Assert.assertEquals(
+                "Free global shipping\n$0.00",
                 mPaymentRequestTestRule.getShippingOptionSummaryLabel());
     }
 
@@ -133,21 +139,25 @@ public class PaymentRequestShippingAddressAndOptionTest {
 
         // Make sure that the shipping label in expanded mode includes the country.
         Assert.assertTrue(
-                mPaymentRequestTestRule.getShippingAddressOptionRowAtIndex(0)
+                mPaymentRequestTestRule
+                        .getShippingAddressOptionRowAtIndex(0)
                         .getLabelText()
                         .toString()
-                        .equals("Jon Doe\n"
-                                + "Google, 340 Main St, Los Angeles, CA 90291, United States\n"
-                                + "555-555-5555"));
+                        .equals(
+                                "Jon Doe\n"
+                                    + "Google, 340 Main St, Los Angeles, CA 90291, United States\n"
+                                    + "555-555-5555"));
 
         // Make sure that the second profile's shipping label also includes the country.
         Assert.assertTrue(
-                mPaymentRequestTestRule.getShippingAddressOptionRowAtIndex(1)
+                mPaymentRequestTestRule
+                        .getShippingAddressOptionRowAtIndex(1)
                         .getLabelText()
                         .toString()
-                        .equals("Fred Doe\n"
-                                + "Google, 340 Main St, Los Angeles, CA 90291, United States\n"
-                                + "555-555-5555"));
+                        .equals(
+                                "Fred Doe\n"
+                                    + "Google, 340 Main St, Los Angeles, CA 90291, United States\n"
+                                    + "555-555-5555"));
     }
 
     /** Verifies that the shipping address format of a new address is as expected. */
@@ -165,16 +175,19 @@ public class PaymentRequestShippingAddressAndOptionTest {
         mPaymentRequestTestRule.clickInShippingAddressAndWait(
                 R.id.payments_add_option_button, mPaymentRequestTestRule.getReadyToEdit());
         mPaymentRequestTestRule.setTextInEditorAndWait(
-                new String[] {"Seb Doe", "Google", "340 Main St", "Los Angeles", "CA", "90291",
-                        "650-253-0000"},
+                new String[] {
+                    "Seb Doe", "Google", "340 Main St", "Los Angeles", "CA", "90291", "650-253-0000"
+                },
                 mPaymentRequestTestRule.getEditorTextUpdate());
         mPaymentRequestTestRule.clickInEditorAndWait(
                 R.id.editor_dialog_done_button, mPaymentRequestTestRule.getReadyToPay());
 
         // Make sure that the shipping label does not include the country.
-        Assert.assertEquals(mPaymentRequestTestRule.getShippingAddressOptionRowAtIndex(0)
-                                    .getLabelText()
-                                    .toString(),
+        Assert.assertEquals(
+                mPaymentRequestTestRule
+                        .getShippingAddressOptionRowAtIndex(0)
+                        .getLabelText()
+                        .toString(),
                 "Seb Doe\nGoogle, 340 Main St, Los Angeles, CA 90291\n+1 650-253-0000");
     }
 
@@ -230,8 +243,8 @@ public class PaymentRequestShippingAddressAndOptionTest {
     }
 
     /**
-     * Test that going into the "add" flow  and clicking 'CANCEL' button to cancel editor will
-     * leave the existing row checked.
+     * Test that going into the "add" flow and clicking 'CANCEL' button to cancel editor will leave
+     * the existing row checked.
      */
     @Test
     @MediumTest
@@ -256,7 +269,7 @@ public class PaymentRequestShippingAddressAndOptionTest {
     }
 
     /**
-     * Test that going into the "add" flow  and clicking Android back button to cancel editor will
+     * Test that going into the "add" flow and clicking Android back button to cancel editor will
      * leave the existing row checked.
      */
     @Test

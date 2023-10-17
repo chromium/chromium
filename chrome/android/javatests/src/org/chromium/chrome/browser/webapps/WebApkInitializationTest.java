@@ -33,9 +33,7 @@ import java.util.HashSet;
 import java.util.Set;
 import java.util.concurrent.TimeoutException;
 
-/**
- * Tests that the expected classes are constructed when a WebAPK Activity is launched.
- */
+/** Tests that the expected classes are constructed when a WebAPK Activity is launched. */
 @RunWith(ChromeJUnit4ClassRunner.class)
 @CommandLineFlags.Add({ChromeSwitches.DISABLE_FIRST_RUN_EXPERIENCE})
 @DoNotBatch(reason = "Activity initialzation test")
@@ -91,35 +89,75 @@ public class WebApkInitializationTest {
     private final TrackingActivityLifecycleDispatcher mTrackingActivityLifecycleDispatcher =
             new TrackingActivityLifecycleDispatcher();
 
-    private final TestRule mModuleOverridesRule = new ModuleOverridesRule().setOverride(
-            ChromeActivityCommonsModule.Factory.class,
-            (activity, bottomSheetControllerSupplier, tabModelSelectorSupplier,
-                    browserControlsManager, browserControlsVisibilityManager, browserControlsSizer,
-                    fullscreenManager, layoutManagerSupplier, lifecycleDispatcher,
-                    snackbarManagerSupplier, activityTabProvider, tabContentManager,
-                    activityWindowAndroid, compositorViewHolderSupplier, tabCreatorManager,
-                    tabCreatorSupplier, isPromotableToTabSupplier, statusBarColorController,
-                    screenOrientationProvider, notificationManagerProxySupplier,
-                    tabContentManagerSupplier, activityTabStartupMetricsTrackerSupplier,
-                    compositorViewHolderInitializer, chromeActivityNativeDelegate,
-                    modalDialogManagerSupplier, browserControlsStateProvider,
-                    savedInstanceStateSupplier, autofillUiBottomInsetSupplier,
-                    shareDelegateSupplier, tabModelInitializer, activityType) -> {
-                mTrackingActivityLifecycleDispatcher.init(lifecycleDispatcher);
-                return new ChromeActivityCommonsModule(activity, bottomSheetControllerSupplier,
-                        tabModelSelectorSupplier, browserControlsManager,
-                        browserControlsVisibilityManager, browserControlsSizer, fullscreenManager,
-                        layoutManagerSupplier, mTrackingActivityLifecycleDispatcher,
-                        snackbarManagerSupplier, activityTabProvider, tabContentManager,
-                        activityWindowAndroid, compositorViewHolderSupplier, tabCreatorManager,
-                        tabCreatorSupplier, isPromotableToTabSupplier, statusBarColorController,
-                        screenOrientationProvider, notificationManagerProxySupplier,
-                        tabContentManagerSupplier, activityTabStartupMetricsTrackerSupplier,
-                        compositorViewHolderInitializer, chromeActivityNativeDelegate,
-                        modalDialogManagerSupplier, browserControlsStateProvider,
-                        savedInstanceStateSupplier, autofillUiBottomInsetSupplier,
-                        shareDelegateSupplier, tabModelInitializer, activityType);
-            });
+    private final TestRule mModuleOverridesRule =
+            new ModuleOverridesRule()
+                    .setOverride(
+                            ChromeActivityCommonsModule.Factory.class,
+                            (activity,
+                                    bottomSheetControllerSupplier,
+                                    tabModelSelectorSupplier,
+                                    browserControlsManager,
+                                    browserControlsVisibilityManager,
+                                    browserControlsSizer,
+                                    fullscreenManager,
+                                    layoutManagerSupplier,
+                                    lifecycleDispatcher,
+                                    snackbarManagerSupplier,
+                                    activityTabProvider,
+                                    tabContentManager,
+                                    activityWindowAndroid,
+                                    compositorViewHolderSupplier,
+                                    tabCreatorManager,
+                                    tabCreatorSupplier,
+                                    isPromotableToTabSupplier,
+                                    statusBarColorController,
+                                    screenOrientationProvider,
+                                    notificationManagerProxySupplier,
+                                    tabContentManagerSupplier,
+                                    activityTabStartupMetricsTrackerSupplier,
+                                    compositorViewHolderInitializer,
+                                    chromeActivityNativeDelegate,
+                                    modalDialogManagerSupplier,
+                                    browserControlsStateProvider,
+                                    savedInstanceStateSupplier,
+                                    autofillUiBottomInsetSupplier,
+                                    shareDelegateSupplier,
+                                    tabModelInitializer,
+                                    activityType) -> {
+                                mTrackingActivityLifecycleDispatcher.init(lifecycleDispatcher);
+                                return new ChromeActivityCommonsModule(
+                                        activity,
+                                        bottomSheetControllerSupplier,
+                                        tabModelSelectorSupplier,
+                                        browserControlsManager,
+                                        browserControlsVisibilityManager,
+                                        browserControlsSizer,
+                                        fullscreenManager,
+                                        layoutManagerSupplier,
+                                        mTrackingActivityLifecycleDispatcher,
+                                        snackbarManagerSupplier,
+                                        activityTabProvider,
+                                        tabContentManager,
+                                        activityWindowAndroid,
+                                        compositorViewHolderSupplier,
+                                        tabCreatorManager,
+                                        tabCreatorSupplier,
+                                        isPromotableToTabSupplier,
+                                        statusBarColorController,
+                                        screenOrientationProvider,
+                                        notificationManagerProxySupplier,
+                                        tabContentManagerSupplier,
+                                        activityTabStartupMetricsTrackerSupplier,
+                                        compositorViewHolderInitializer,
+                                        chromeActivityNativeDelegate,
+                                        modalDialogManagerSupplier,
+                                        browserControlsStateProvider,
+                                        savedInstanceStateSupplier,
+                                        autofillUiBottomInsetSupplier,
+                                        shareDelegateSupplier,
+                                        tabModelInitializer,
+                                        activityType);
+                            });
 
     private final WebApkActivityTestRule mActivityRule = new WebApkActivityTestRule();
 
@@ -128,10 +166,9 @@ public class WebApkInitializationTest {
             RuleChain.outerRule(mModuleOverridesRule).around(mActivityRule);
 
     /**
-     * Test that {@link WebappActionsNotificationManager},
-     * {@link WebappDisclosureSnackbarController}, {@link WebApkActivityLifecycleUmaTracker} and
-     * {@link CustomTabOrientationController} are constructed when a {@link WebApkActivity} is
-     * launched.
+     * Test that {@link WebappActionsNotificationManager}, {@link
+     * WebappDisclosureSnackbarController}, {@link WebApkActivityLifecycleUmaTracker} and {@link
+     * CustomTabOrientationController} are constructed when a {@link WebApkActivity} is launched.
      */
     @Test
     @LargeTest
@@ -140,19 +177,22 @@ public class WebApkInitializationTest {
         EmbeddedTestServer embeddedTestServer =
                 mActivityRule.getEmbeddedTestServerRule().getServer();
         WebApkIntentDataProviderBuilder intentDataProviderBuilder =
-                new WebApkIntentDataProviderBuilder("org.chromium.webapk.for.testing",
+                new WebApkIntentDataProviderBuilder(
+                        "org.chromium.webapk.for.testing",
                         embeddedTestServer.getURL(
                                 "/chrome/test/data/banners/manifest_test_page.html"));
         mActivityRule.startWebApkActivity(intentDataProviderBuilder.build());
 
         Set<String> registeredObserverClassNames =
                 mTrackingActivityLifecycleDispatcher.getRegisteredObserverClassNames();
-        assertTrue(registeredObserverClassNames.contains(
-                WebappActionsNotificationManager.class.getName()));
+        assertTrue(
+                registeredObserverClassNames.contains(
+                        WebappActionsNotificationManager.class.getName()));
         assertTrue(
                 registeredObserverClassNames.contains(WebappDisclosureController.class.getName()));
-        assertTrue(registeredObserverClassNames.contains(
-                WebApkActivityLifecycleUmaTracker.class.getName()));
+        assertTrue(
+                registeredObserverClassNames.contains(
+                        WebApkActivityLifecycleUmaTracker.class.getName()));
         assertTrue(
                 registeredObserverClassNames.contains(SharedActivityCoordinator.class.getName()));
     }

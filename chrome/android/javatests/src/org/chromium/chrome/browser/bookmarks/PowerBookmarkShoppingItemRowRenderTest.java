@@ -54,9 +54,7 @@ import org.chromium.ui.test.util.NightModeTestUtils.NightModeParams;
 import java.io.IOException;
 import java.util.List;
 
-/**
- * Render tests for the Shopping power bookmarks experience.
- */
+/** Render tests for the Shopping power bookmarks experience. */
 @RunWith(ParameterizedRunner.class)
 @ParameterAnnotations.UseRunnerDelegate(ChromeJUnit4RunnerDelegate.class)
 @EnableFeatures(ChromeFeatureList.BOOKMARKS_REFRESH)
@@ -76,22 +74,15 @@ public class PowerBookmarkShoppingItemRowRenderTest {
                     .setBugComponent(ChromeRenderTestRule.Component.UI_BROWSER_BOOKMARKS)
                     .build();
 
-    @Rule
-    public MockitoRule mMockitoRule = MockitoJUnit.rule();
+    @Rule public MockitoRule mMockitoRule = MockitoJUnit.rule();
 
-    @Rule
-    public TestRule mProcessor = new Features.JUnitProcessor();
+    @Rule public TestRule mProcessor = new Features.JUnitProcessor();
 
-    @Mock
-    private ImageFetcher mImageFetcher;
-    @Mock
-    private CurrencyFormatter mCurrencyFormatter;
-    @Mock
-    private BookmarkModel mBookmarkModel;
-    @Mock
-    private SnackbarManager mSnackbarManager;
-    @Mock
-    private Profile mProfile;
+    @Mock private ImageFetcher mImageFetcher;
+    @Mock private CurrencyFormatter mCurrencyFormatter;
+    @Mock private BookmarkModel mBookmarkModel;
+    @Mock private SnackbarManager mSnackbarManager;
+    @Mock private Profile mProfile;
 
     private Bitmap mBitmap;
     private PowerBookmarkShoppingItemRow mPowerBookmarkShoppingItemRow;
@@ -113,52 +104,66 @@ public class PowerBookmarkShoppingItemRowRenderTest {
 
         ArgumentCaptor<Callback<Bitmap>> bitmapCallbackCaptor =
                 ArgumentCaptor.forClass(Callback.class);
-        doAnswer((invocation) -> {
-            TestThreadUtils.runOnUiThreadBlocking(
-                    () -> bitmapCallbackCaptor.getValue().onResult(mBitmap));
-            return null;
-        })
+        doAnswer(
+                        (invocation) -> {
+                            TestThreadUtils.runOnUiThreadBlocking(
+                                    () -> bitmapCallbackCaptor.getValue().onResult(mBitmap));
+                            return null;
+                        })
                 .when(mImageFetcher)
                 .fetchImage(any(), bitmapCallbackCaptor.capture());
 
         ArgumentCaptor<String> currencyCaptor = ArgumentCaptor.forClass(String.class);
-        doAnswer((invocation) -> { return "$" + currencyCaptor.getValue(); })
+        doAnswer(
+                        (invocation) -> {
+                            return "$" + currencyCaptor.getValue();
+                        })
                 .when(mCurrencyFormatter)
                 .format(currencyCaptor.capture());
 
-        TestThreadUtils.runOnUiThreadBlocking(() -> {
-            ShoppingFeatures.setShoppingListEligibleForTesting(true);
-            mContentView = new LinearLayout(mActivityTestRule.getActivity());
-            mContentView.setBackgroundColor(Color.WHITE);
+        TestThreadUtils.runOnUiThreadBlocking(
+                () -> {
+                    ShoppingFeatures.setShoppingListEligibleForTesting(true);
+                    mContentView = new LinearLayout(mActivityTestRule.getActivity());
+                    mContentView.setBackgroundColor(Color.WHITE);
 
-            FrameLayout.LayoutParams params = new FrameLayout.LayoutParams(
-                    ViewGroup.LayoutParams.MATCH_PARENT, ViewGroup.LayoutParams.WRAP_CONTENT);
-            mActivityTestRule.getActivity().setContentView(mContentView, params);
+                    FrameLayout.LayoutParams params =
+                            new FrameLayout.LayoutParams(
+                                    ViewGroup.LayoutParams.MATCH_PARENT,
+                                    ViewGroup.LayoutParams.WRAP_CONTENT);
+                    mActivityTestRule.getActivity().setContentView(mContentView, params);
 
-            mPowerBookmarkShoppingItemRow =
-                    BookmarkManagerCoordinator.buildShoppingItemView(mContentView);
-            mContentView.addView(mPowerBookmarkShoppingItemRow);
-            mPowerBookmarkShoppingItemRow.setBackgroundColor(
-                    SemanticColorUtils.getDefaultBgColor(mActivityTestRule.getActivity()));
-            ((TextView) mPowerBookmarkShoppingItemRow.findViewById(R.id.title))
-                    .setText("Test Bookmark");
-            ((TextView) mPowerBookmarkShoppingItemRow.findViewById(R.id.description))
-                    .setText("http://google.com");
-            mPowerBookmarkShoppingItemRow.findViewById(R.id.more).setVisibility(View.VISIBLE);
-            mPowerBookmarkShoppingItemRow.init(
-                    mImageFetcher, mBookmarkModel, mSnackbarManager, mProfile);
-            mPowerBookmarkShoppingItemRow.setCurrencyFormatterForTesting(mCurrencyFormatter);
-        });
+                    mPowerBookmarkShoppingItemRow =
+                            BookmarkManagerCoordinator.buildShoppingItemView(mContentView);
+                    mContentView.addView(mPowerBookmarkShoppingItemRow);
+                    mPowerBookmarkShoppingItemRow.setBackgroundColor(
+                            SemanticColorUtils.getDefaultBgColor(mActivityTestRule.getActivity()));
+                    ((TextView) mPowerBookmarkShoppingItemRow.findViewById(R.id.title))
+                            .setText("Test Bookmark");
+                    ((TextView) mPowerBookmarkShoppingItemRow.findViewById(R.id.description))
+                            .setText("http://google.com");
+                    mPowerBookmarkShoppingItemRow
+                            .findViewById(R.id.more)
+                            .setVisibility(View.VISIBLE);
+                    mPowerBookmarkShoppingItemRow.init(
+                            mImageFetcher, mBookmarkModel, mSnackbarManager, mProfile);
+                    mPowerBookmarkShoppingItemRow.setCurrencyFormatterForTesting(
+                            mCurrencyFormatter);
+                });
     }
 
     @Test
     @MediumTest
     @Feature({"RenderTest"})
     public void testShoppingNormalPriceWithTrackingEnabled() throws IOException {
-        TestThreadUtils.runOnUiThreadBlocking(() -> {
-            mPowerBookmarkShoppingItemRow.initPriceTrackingUI("http://foo.com/img", true,
-                    100 * CURRENCY_MUTLIPLIER, 100 * CURRENCY_MUTLIPLIER);
-        });
+        TestThreadUtils.runOnUiThreadBlocking(
+                () -> {
+                    mPowerBookmarkShoppingItemRow.initPriceTrackingUI(
+                            "http://foo.com/img",
+                            true,
+                            100 * CURRENCY_MUTLIPLIER,
+                            100 * CURRENCY_MUTLIPLIER);
+                });
         mRenderTestRule.render(mContentView, "shopping_normal_price_with_tracking_enabled");
     }
 
@@ -166,10 +171,14 @@ public class PowerBookmarkShoppingItemRowRenderTest {
     @MediumTest
     @Feature({"RenderTest"})
     public void testShoppingNormalPriceWithTrackingDisabled() throws IOException {
-        TestThreadUtils.runOnUiThreadBlocking(() -> {
-            mPowerBookmarkShoppingItemRow.initPriceTrackingUI("http://foo.com/img", false,
-                    100 * CURRENCY_MUTLIPLIER, 100 * CURRENCY_MUTLIPLIER);
-        });
+        TestThreadUtils.runOnUiThreadBlocking(
+                () -> {
+                    mPowerBookmarkShoppingItemRow.initPriceTrackingUI(
+                            "http://foo.com/img",
+                            false,
+                            100 * CURRENCY_MUTLIPLIER,
+                            100 * CURRENCY_MUTLIPLIER);
+                });
         mRenderTestRule.render(mContentView, "shopping_normal_price_with_tracking_disabled");
     }
 
@@ -177,10 +186,14 @@ public class PowerBookmarkShoppingItemRowRenderTest {
     @MediumTest
     @Feature({"RenderTest"})
     public void testShoppingPriceDrop() throws IOException {
-        TestThreadUtils.runOnUiThreadBlocking(() -> {
-            mPowerBookmarkShoppingItemRow.initPriceTrackingUI("http://foo.com/img", false,
-                    100 * CURRENCY_MUTLIPLIER, 50 * CURRENCY_MUTLIPLIER);
-        });
+        TestThreadUtils.runOnUiThreadBlocking(
+                () -> {
+                    mPowerBookmarkShoppingItemRow.initPriceTrackingUI(
+                            "http://foo.com/img",
+                            false,
+                            100 * CURRENCY_MUTLIPLIER,
+                            50 * CURRENCY_MUTLIPLIER);
+                });
         mRenderTestRule.render(mContentView, "shopping_price_drop");
     }
 
@@ -188,34 +201,54 @@ public class PowerBookmarkShoppingItemRowRenderTest {
     @MediumTest
     @Feature({"RenderTest"})
     public void testShoppingRebindUI() throws IOException {
-        TestThreadUtils.runOnUiThreadBlocking(() -> {
-            mPowerBookmarkShoppingItemRow.initPriceTrackingUI("http://foo.com/img", false,
-                    100 * CURRENCY_MUTLIPLIER, 100 * CURRENCY_MUTLIPLIER);
-        });
+        TestThreadUtils.runOnUiThreadBlocking(
+                () -> {
+                    mPowerBookmarkShoppingItemRow.initPriceTrackingUI(
+                            "http://foo.com/img",
+                            false,
+                            100 * CURRENCY_MUTLIPLIER,
+                            100 * CURRENCY_MUTLIPLIER);
+                });
         mRenderTestRule.render(mContentView, "shopping_rebind_normal_price_tracking_disabled");
 
-        TestThreadUtils.runOnUiThreadBlocking(() -> {
-            mPowerBookmarkShoppingItemRow.initPriceTrackingUI("http://foo.com/img", true,
-                    100 * CURRENCY_MUTLIPLIER, 100 * CURRENCY_MUTLIPLIER);
-        });
+        TestThreadUtils.runOnUiThreadBlocking(
+                () -> {
+                    mPowerBookmarkShoppingItemRow.initPriceTrackingUI(
+                            "http://foo.com/img",
+                            true,
+                            100 * CURRENCY_MUTLIPLIER,
+                            100 * CURRENCY_MUTLIPLIER);
+                });
         mRenderTestRule.render(mContentView, "shopping_rebind_normal_price_tracking_enabled");
 
-        TestThreadUtils.runOnUiThreadBlocking(() -> {
-            mPowerBookmarkShoppingItemRow.initPriceTrackingUI("http://foo.com/img", true,
-                    100 * CURRENCY_MUTLIPLIER, 200 * CURRENCY_MUTLIPLIER);
-        });
+        TestThreadUtils.runOnUiThreadBlocking(
+                () -> {
+                    mPowerBookmarkShoppingItemRow.initPriceTrackingUI(
+                            "http://foo.com/img",
+                            true,
+                            100 * CURRENCY_MUTLIPLIER,
+                            200 * CURRENCY_MUTLIPLIER);
+                });
         mRenderTestRule.render(mContentView, "shopping_rebind_price_increase_tracking_enabled");
 
-        TestThreadUtils.runOnUiThreadBlocking(() -> {
-            mPowerBookmarkShoppingItemRow.initPriceTrackingUI("http://foo.com/img", true,
-                    200 * CURRENCY_MUTLIPLIER, 100 * CURRENCY_MUTLIPLIER);
-        });
+        TestThreadUtils.runOnUiThreadBlocking(
+                () -> {
+                    mPowerBookmarkShoppingItemRow.initPriceTrackingUI(
+                            "http://foo.com/img",
+                            true,
+                            200 * CURRENCY_MUTLIPLIER,
+                            100 * CURRENCY_MUTLIPLIER);
+                });
         mRenderTestRule.render(mContentView, "shopping_rebind_price_decrease_tracking_enabled");
 
-        TestThreadUtils.runOnUiThreadBlocking(() -> {
-            mPowerBookmarkShoppingItemRow.initPriceTrackingUI("http://foo.com/img", true,
-                    100 * CURRENCY_MUTLIPLIER, 100 * CURRENCY_MUTLIPLIER);
-        });
+        TestThreadUtils.runOnUiThreadBlocking(
+                () -> {
+                    mPowerBookmarkShoppingItemRow.initPriceTrackingUI(
+                            "http://foo.com/img",
+                            true,
+                            100 * CURRENCY_MUTLIPLIER,
+                            100 * CURRENCY_MUTLIPLIER);
+                });
         mRenderTestRule.render(
                 mContentView, "shopping_rebind_back_to_normal_price_tracking_enabled");
     }

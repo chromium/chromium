@@ -32,9 +32,7 @@ import org.chromium.chrome.test.batch.BlankCTATabInitialStateRule;
 import org.chromium.content_public.browser.test.util.TestThreadUtils;
 import org.chromium.ui.permissions.AndroidPermissionDelegate;
 
-/**
- * Tests for startup timing histograms.
- */
+/** Tests for startup timing histograms. */
 @RunWith(ChromeJUnit4ClassRunner.class)
 @CommandLineFlags.Add(ChromeSwitches.DISABLE_FIRST_RUN_EXPERIENCE)
 @Batch(Batch.PER_CLASS)
@@ -47,8 +45,7 @@ public class StartupPermissionsMetricsTest {
     public BlankCTATabInitialStateRule mInitialStateRule =
             new BlankCTATabInitialStateRule(sActivityTestRule, false);
 
-    @Mock
-    private AndroidPermissionDelegate mPermissionDelegate;
+    @Mock private AndroidPermissionDelegate mPermissionDelegate;
 
     private UmaSessionStats mUmaSessionStats;
 
@@ -56,12 +53,15 @@ public class StartupPermissionsMetricsTest {
     public void setUp() {
         MockitoAnnotations.initMocks(this);
 
-        Context appContext = InstrumentationRegistry.getInstrumentation()
-                                     .getTargetContext()
-                                     .getApplicationContext();
+        Context appContext =
+                InstrumentationRegistry.getInstrumentation()
+                        .getTargetContext()
+                        .getApplicationContext();
 
         TestThreadUtils.runOnUiThreadBlocking(
-                () -> { mUmaSessionStats = new UmaSessionStats(appContext); });
+                () -> {
+                    mUmaSessionStats = new UmaSessionStats(appContext);
+                });
     }
 
     @Test
@@ -74,9 +74,10 @@ public class StartupPermissionsMetricsTest {
                 .when(mPermissionDelegate)
                 .canRequestPermission(eq(Manifest.permission.RECORD_AUDIO));
 
-        var histogramWatcher = HistogramWatcher.newSingleRecordWatcher(
-                "VoiceInteraction.AudioPermissionEvent.SessionStart",
-                VoiceRecognitionHandler.AudioPermissionState.GRANTED);
+        var histogramWatcher =
+                HistogramWatcher.newSingleRecordWatcher(
+                        "VoiceInteraction.AudioPermissionEvent.SessionStart",
+                        VoiceRecognitionHandler.AudioPermissionState.GRANTED);
         TestThreadUtils.runOnUiThreadBlocking(
                 () -> mUmaSessionStats.startNewSession(null, mPermissionDelegate));
         histogramWatcher.assertExpected();
@@ -92,9 +93,10 @@ public class StartupPermissionsMetricsTest {
                 .when(mPermissionDelegate)
                 .canRequestPermission(eq(Manifest.permission.RECORD_AUDIO));
 
-        var histogramWatcher = HistogramWatcher.newSingleRecordWatcher(
-                "VoiceInteraction.AudioPermissionEvent.SessionStart",
-                VoiceRecognitionHandler.AudioPermissionState.DENIED_CAN_ASK_AGAIN);
+        var histogramWatcher =
+                HistogramWatcher.newSingleRecordWatcher(
+                        "VoiceInteraction.AudioPermissionEvent.SessionStart",
+                        VoiceRecognitionHandler.AudioPermissionState.DENIED_CAN_ASK_AGAIN);
         TestThreadUtils.runOnUiThreadBlocking(
                 () -> mUmaSessionStats.startNewSession(null, mPermissionDelegate));
         histogramWatcher.assertExpected();
@@ -110,9 +112,10 @@ public class StartupPermissionsMetricsTest {
                 .when(mPermissionDelegate)
                 .canRequestPermission(eq(Manifest.permission.RECORD_AUDIO));
 
-        var histogramWatcher = HistogramWatcher.newSingleRecordWatcher(
-                "VoiceInteraction.AudioPermissionEvent.SessionStart",
-                VoiceRecognitionHandler.AudioPermissionState.DENIED_CANNOT_ASK_AGAIN);
+        var histogramWatcher =
+                HistogramWatcher.newSingleRecordWatcher(
+                        "VoiceInteraction.AudioPermissionEvent.SessionStart",
+                        VoiceRecognitionHandler.AudioPermissionState.DENIED_CANNOT_ASK_AGAIN);
         TestThreadUtils.runOnUiThreadBlocking(
                 () -> mUmaSessionStats.startNewSession(null, mPermissionDelegate));
         histogramWatcher.assertExpected();

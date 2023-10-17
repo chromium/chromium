@@ -33,9 +33,7 @@ import org.chromium.chrome.test.ChromeTabbedActivityTestRule;
 import org.chromium.chrome.test.R;
 import org.chromium.ui.test.util.UiRestriction;
 
-/**
- * Instrumentation tests for tab switcher long-press menu popup
- */
+/** Instrumentation tests for tab switcher long-press menu popup */
 @RunWith(ChromeJUnit4ClassRunner.class)
 @CommandLineFlags.Add({ChromeSwitches.DISABLE_FIRST_RUN_EXPERIENCE})
 @Restriction(UiRestriction.RESTRICTION_TYPE_PHONE)
@@ -85,30 +83,35 @@ public class TabSwitcherActionMenuTest {
 
         // only one incognito tab opened
         Assert.assertEquals(1, mActivityTestRule.getActivity().getCurrentTabModel().getCount());
-        assertTrue(
-                mActivityTestRule.getActivity().getTabModelSelector().isIncognitoSelected());
+        assertTrue(mActivityTestRule.getActivity().getTabModelSelector().isIncognitoSelected());
     }
 
-    /**
-     * Regression test for crbug.com/1448791
-     */
+    /** Regression test for crbug.com/1448791 */
     @Test
     @SmallTest
     public void testClosingAllRegularTabs_DoNotFinishActivity() {
-        mActivityTestRule.loadUrlInNewTab("about:blank", /*incognito=*/true);
-        mActivityTestRule.loadUrlInNewTab("about:blank", /*incognito=*/false);
+        mActivityTestRule.loadUrlInNewTab("about:blank", /* incognito= */ true);
+        mActivityTestRule.loadUrlInNewTab("about:blank", /* incognito= */ false);
 
         int tabsToClose =
-                mActivityTestRule.getActivity().getTabModelSelector().getModel(/*incognito=*/
-                        false).getCount();
+                mActivityTestRule
+                        .getActivity()
+                        .getTabModelSelector()
+                        .getModel(/* incognito= */ false)
+                        .getCount();
         while (tabsToClose-- > 0) {
             onView(withId(R.id.tab_switcher_button)).perform(longClick());
             onView(withText(R.string.close_tab)).check(matches(isDisplayed()));
             onView(withText(R.string.close_tab)).perform(click());
-         }
+        }
 
         // Incognito tabs should still remain.
-        assertTrue(mActivityTestRule.getActivity().getTabModelSelector().getModel(/*incognito=*/
-                true).getCount() > 0);
+        assertTrue(
+                mActivityTestRule
+                                .getActivity()
+                                .getTabModelSelector()
+                                .getModel(/* incognito= */ true)
+                                .getCount()
+                        > 0);
     }
 }

@@ -36,9 +36,7 @@ import org.chromium.ui.test.util.RenderTestRule;
 
 import java.io.IOException;
 
-/**
- * Tests to make sure that PassphraseTypeDialogFragment presents the correct options.
- */
+/** Tests to make sure that PassphraseTypeDialogFragment presents the correct options. */
 @RunWith(ChromeJUnit4ClassRunner.class)
 @CommandLineFlags.Add({ChromeSwitches.DISABLE_FIRST_RUN_EXPERIENCE})
 public class PassphraseTypeDialogFragmentTest extends BlankUiTestActivityTestCase {

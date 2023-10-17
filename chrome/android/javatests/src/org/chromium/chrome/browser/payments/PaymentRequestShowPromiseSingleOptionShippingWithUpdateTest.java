@@ -39,28 +39,30 @@ public class PaymentRequestShowPromiseSingleOptionShippingWithUpdateTest {
     @Before
     public void setUp() throws TimeoutException {
         AutofillTestHelper autofillTestHelper = new AutofillTestHelper();
-        autofillTestHelper.setProfile(AutofillProfile.builder()
-                                              .setFullName("Jon Doe")
-                                              .setCompanyName("Google")
-                                              .setStreetAddress("340 Main St")
-                                              .setRegion("California")
-                                              .setLocality("Los Angeles")
-                                              .setPostalCode("90291")
-                                              .setCountryCode("US")
-                                              .setPhoneNumber("555-222-2222")
-                                              .setLanguageCode("en-US")
-                                              .build());
-        autofillTestHelper.setProfile(AutofillProfile.builder()
-                                              .setFullName("Jane Smith")
-                                              .setCompanyName("Google")
-                                              .setStreetAddress("340 Main St")
-                                              .setRegion("California")
-                                              .setLocality("Los Angeles")
-                                              .setPostalCode("90291")
-                                              .setCountryCode("US")
-                                              .setPhoneNumber("555-111-1111")
-                                              .setLanguageCode("en-US")
-                                              .build());
+        autofillTestHelper.setProfile(
+                AutofillProfile.builder()
+                        .setFullName("Jon Doe")
+                        .setCompanyName("Google")
+                        .setStreetAddress("340 Main St")
+                        .setRegion("California")
+                        .setLocality("Los Angeles")
+                        .setPostalCode("90291")
+                        .setCountryCode("US")
+                        .setPhoneNumber("555-222-2222")
+                        .setLanguageCode("en-US")
+                        .build());
+        autofillTestHelper.setProfile(
+                AutofillProfile.builder()
+                        .setFullName("Jane Smith")
+                        .setCompanyName("Google")
+                        .setStreetAddress("340 Main St")
+                        .setRegion("California")
+                        .setLocality("Los Angeles")
+                        .setPostalCode("90291")
+                        .setCountryCode("US")
+                        .setPhoneNumber("555-111-1111")
+                        .setLanguageCode("en-US")
+                        .build());
     }
 
     @Test
@@ -82,8 +84,11 @@ public class PaymentRequestShowPromiseSingleOptionShippingWithUpdateTest {
     @MediumTest
     @Feature({"Payments"})
     public void testSlowApp() throws TimeoutException {
-        mRule.addPaymentAppFactory("https://example.test", AppPresence.HAVE_APPS,
-                FactorySpeed.SLOW_FACTORY, AppSpeed.SLOW_APP);
+        mRule.addPaymentAppFactory(
+                "https://example.test",
+                AppPresence.HAVE_APPS,
+                FactorySpeed.SLOW_FACTORY,
+                AppSpeed.SLOW_APP);
         mRule.triggerUIAndWait("buy", mRule.getReadyToPay());
         Assert.assertEquals("USD $1.00", mRule.getOrderSummaryTotal());
         Assert.assertEquals("$0.00", mRule.getShippingOptionCostSummaryOnBottomSheet());

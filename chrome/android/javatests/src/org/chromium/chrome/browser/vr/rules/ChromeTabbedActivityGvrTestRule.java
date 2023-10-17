@@ -14,26 +14,30 @@ import org.chromium.chrome.browser.vr.util.GvrTestRuleUtils;
 import org.chromium.chrome.test.ChromeTabbedActivityTestRule;
 
 /**
- * VR extension of ChromeTabbedActivityTestRule. Applies ChromeTabbedActivityTestRule
- * then opens up a ChromeTabbedActivity to a blank page while performing some additional VR-only
- * setup.
+ * VR extension of ChromeTabbedActivityTestRule. Applies ChromeTabbedActivityTestRule then opens up
+ * a ChromeTabbedActivity to a blank page while performing some additional VR-only setup.
  */
-public class ChromeTabbedActivityGvrTestRule
-        extends ChromeTabbedActivityTestRule implements VrTestRule {
+public class ChromeTabbedActivityGvrTestRule extends ChromeTabbedActivityTestRule
+        implements VrTestRule {
     private boolean mDonEnabled;
 
     @Override
     public Statement apply(final Statement base, final Description desc) {
-        return super.apply(new Statement() {
-            @Override
-            public void evaluate() throws Throwable {
-                GvrTestRuleUtils.evaluateVrTestRuleImpl(
-                        base, desc, ChromeTabbedActivityGvrTestRule.this, () -> {
-                            startMainActivityOnBlankPage();
-                            TestVrShellDelegate.createTestVrShellDelegate(getActivity());
-                        });
-            }
-        }, desc);
+        return super.apply(
+                new Statement() {
+                    @Override
+                    public void evaluate() throws Throwable {
+                        GvrTestRuleUtils.evaluateVrTestRuleImpl(
+                                base,
+                                desc,
+                                ChromeTabbedActivityGvrTestRule.this,
+                                () -> {
+                                    startMainActivityOnBlankPage();
+                                    TestVrShellDelegate.createTestVrShellDelegate(getActivity());
+                                });
+                    }
+                },
+                desc);
     }
 
     @Override

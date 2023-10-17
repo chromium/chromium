@@ -11,9 +11,7 @@ import org.chromium.chrome.test.pagecontroller.utils.Ui2Locators;
 import org.chromium.chrome.test.pagecontroller.utils.UiAutomatorUtils;
 import org.chromium.chrome.test.pagecontroller.utils.UiLocatorHelper;
 
-/**
- * FirstRunNavigator is used to Navigate through FRE page.
- */
+/** FirstRunNavigator is used to Navigate through FRE page. */
 public class FirstRunNavigator {
     public static final String TAG = "FirstRunNavigator";
 
@@ -45,15 +43,16 @@ public class FirstRunNavigator {
         UiLocatorHelper uiLocatorHelper = UiAutomatorUtils.getInstance().getLocatorHelper();
 
         // These locators show up in one FRE page or another
-        IUi2Locator[] frePageDetectors = new IUi2Locator[] {
-                playServicesUpdateText,
-                signinSkipButton,
-                signinContinueButton,
-                signinProgressSpinner,
-                noAddAccountButton,
-                defaultSearchEngineNextButton,
-                urlBar,
-        };
+        IUi2Locator[] frePageDetectors =
+                new IUi2Locator[] {
+                    playServicesUpdateText,
+                    signinSkipButton,
+                    signinContinueButton,
+                    signinProgressSpinner,
+                    noAddAccountButton,
+                    defaultSearchEngineNextButton,
+                    urlBar,
+                };
 
         // Manually go through FRE.
         while (true) {

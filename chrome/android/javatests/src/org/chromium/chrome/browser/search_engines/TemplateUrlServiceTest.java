@@ -37,13 +37,10 @@ import java.util.concurrent.Callable;
 import java.util.concurrent.ExecutionException;
 import java.util.concurrent.atomic.AtomicBoolean;
 
-/**
- * Tests for Chrome on Android's usage of the TemplateUrlService API.
- */
+/** Tests for Chrome on Android's usage of the TemplateUrlService API. */
 @RunWith(BaseJUnit4ClassRunner.class)
 public class TemplateUrlServiceTest {
-    @Rule
-    public final ChromeBrowserTestRule mChromeBrowserTestRule = new ChromeBrowserTestRule();
+    @Rule public final ChromeBrowserTestRule mChromeBrowserTestRule = new ChromeBrowserTestRule();
 
     private static final String QUERY_PARAMETER = "q";
     private static final String QUERY_VALUE = "cat";
@@ -72,8 +69,11 @@ public class TemplateUrlServiceTest {
 
     @Before
     public void setUp() {
-        mTemplateUrlService = TestThreadUtils.runOnUiThreadBlockingNoException(
-                () -> TemplateUrlServiceFactory.getForProfile(Profile.getLastUsedRegularProfile()));
+        mTemplateUrlService =
+                TestThreadUtils.runOnUiThreadBlockingNoException(
+                        () ->
+                                TemplateUrlServiceFactory.getForProfile(
+                                        Profile.getLastUsedRegularProfile()));
     }
 
     @Test
@@ -82,12 +82,14 @@ public class TemplateUrlServiceTest {
     public void testUrlForContextualSearchQueryValid() throws ExecutionException {
         waitForTemplateUrlServiceToLoad();
 
-        Assert.assertTrue(TestThreadUtils.runOnUiThreadBlockingNoException(new Callable<Boolean>() {
-            @Override
-            public Boolean call() {
-                return mTemplateUrlService.isLoaded();
-            }
-        }));
+        Assert.assertTrue(
+                TestThreadUtils.runOnUiThreadBlockingNoException(
+                        new Callable<Boolean>() {
+                            @Override
+                            public Boolean call() {
+                                return mTemplateUrlService.isLoaded();
+                            }
+                        }));
 
         validateQuery(QUERY_VALUE, ALTERNATIVE_VALUE, true, VERSION_VALUE_TWO_REQUEST_PROTOCOL);
         validateQuery(QUERY_VALUE, ALTERNATIVE_VALUE, false, VERSION_VALUE_TWO_REQUEST_PROTOCOL);
@@ -96,16 +98,21 @@ public class TemplateUrlServiceTest {
         validateQuery(QUERY_VALUE, null, true, VERSION_VALUE_SINGLE_REQUEST_PROTOCOL);
     }
 
-    private void validateQuery(final String query, final String alternative, final boolean prefetch,
+    private void validateQuery(
+            final String query,
+            final String alternative,
+            final boolean prefetch,
             final String protocolVersion)
             throws ExecutionException {
-        GURL result = TestThreadUtils.runOnUiThreadBlocking(new Callable<GURL>() {
-            @Override
-            public GURL call() {
-                return mTemplateUrlService.getUrlForContextualSearchQuery(
-                        query, alternative, prefetch, protocolVersion);
-            }
-        });
+        GURL result =
+                TestThreadUtils.runOnUiThreadBlocking(
+                        new Callable<GURL>() {
+                            @Override
+                            public GURL call() {
+                                return mTemplateUrlService.getUrlForContextualSearchQuery(
+                                        query, alternative, prefetch, protocolVersion);
+                            }
+                        });
         Assert.assertNotNull(result);
         Uri uri = Uri.parse(result.getSpec());
         Assert.assertEquals(query, uri.getQueryParameter(QUERY_PARAMETER));
@@ -118,14 +125,20 @@ public class TemplateUrlServiceTest {
         }
     }
 
-    private void validateSearchQuery(final String query, final List<String> searchParams,
-            final Map<String, String> expectedParams) throws ExecutionException {
-        String result = TestThreadUtils.runOnUiThreadBlocking(new Callable<String>() {
-            @Override
-            public String call() {
-                return mTemplateUrlService.getUrlForSearchQuery(query, searchParams);
-            }
-        });
+    private void validateSearchQuery(
+            final String query,
+            final List<String> searchParams,
+            final Map<String, String> expectedParams)
+            throws ExecutionException {
+        String result =
+                TestThreadUtils.runOnUiThreadBlocking(
+                        new Callable<String>() {
+                            @Override
+                            public String call() {
+                                return mTemplateUrlService.getUrlForSearchQuery(
+                                        query, searchParams);
+                            }
+                        });
         Assert.assertNotNull(result);
         Uri uri = Uri.parse(result);
         Assert.assertEquals(query, uri.getQueryParameter(QUERY_PARAMETER));
@@ -142,27 +155,33 @@ public class TemplateUrlServiceTest {
     public void testLoadUrlService() {
         waitForTemplateUrlServiceToLoad();
 
-        Assert.assertTrue(TestThreadUtils.runOnUiThreadBlockingNoException(new Callable<Boolean>() {
-            @Override
-            public Boolean call() {
-                return mTemplateUrlService.isLoaded();
-            }
-        }));
+        Assert.assertTrue(
+                TestThreadUtils.runOnUiThreadBlockingNoException(
+                        new Callable<Boolean>() {
+                            @Override
+                            public Boolean call() {
+                                return mTemplateUrlService.isLoaded();
+                            }
+                        }));
 
         // Add another load listener and ensure that is notified without needing to call load()
         // again.
         final AtomicBoolean observerNotified = new AtomicBoolean(false);
-        TestThreadUtils.runOnUiThreadBlocking(() -> {
-            mTemplateUrlService.registerLoadListener(new LoadListener() {
-                @Override
-                public void onTemplateUrlServiceLoaded() {
-                    observerNotified.set(true);
-                }
-            });
-        });
-        CriteriaHelper.pollInstrumentationThread(() -> {
-            return observerNotified.get();
-        }, "Observer wasn't notified of TemplateUrlService load.");
+        TestThreadUtils.runOnUiThreadBlocking(
+                () -> {
+                    mTemplateUrlService.registerLoadListener(
+                            new LoadListener() {
+                                @Override
+                                public void onTemplateUrlServiceLoaded() {
+                                    observerNotified.set(true);
+                                }
+                            });
+                });
+        CriteriaHelper.pollInstrumentationThread(
+                () -> {
+                    return observerNotified.get();
+                },
+                "Observer wasn't notified of TemplateUrlService load.");
     }
 
     @Test
@@ -178,11 +197,13 @@ public class TemplateUrlServiceTest {
         Assert.assertEquals(searchEngines.get(0), defaultSearchEngine);
 
         // Set search engine index and verified it stuck.
-        TestThreadUtils.runOnUiThreadBlocking(() -> {
-            Assert.assertTrue("There must be more than one search engine to change searchEngines",
-                    searchEngines.size() > 1);
-            mTemplateUrlService.setSearchEngine(searchEngines.get(1).getKeyword());
-        });
+        TestThreadUtils.runOnUiThreadBlocking(
+                () -> {
+                    Assert.assertTrue(
+                            "There must be more than one search engine to change searchEngines",
+                            searchEngines.size() > 1);
+                    mTemplateUrlService.setSearchEngine(searchEngines.get(1).getKeyword());
+                });
 
         defaultSearchEngine = getDefaultSearchEngine(mTemplateUrlService);
         Assert.assertEquals(searchEngines.get(1), defaultSearchEngine);
@@ -195,11 +216,21 @@ public class TemplateUrlServiceTest {
         waitForTemplateUrlServiceToLoad();
 
         // Adding Play API search engine should succeed.
-        Assert.assertTrue(setPlayAPISearchEngine(mTemplateUrlService, "SearchEngine1", "keyword1",
-                PLAY_API_SEARCH_URL, PLAY_API_SUGGEST_URL, PLAY_API_FAVICON_URL,
-                PLAY_API_NEW_TAB_URL, PLAY_API_IMAGE_URL, PLAY_API_IMAGE_POST_PARAM,
-                PLAY_API_IMAGE_TRANSLATE_URL, PLAY_API_IMAGE_TRANSLATE_SOURCE_KEY,
-                PLAY_API_IMAGE_TRANSLATE_DEST_KEY, true));
+        Assert.assertTrue(
+                setPlayAPISearchEngine(
+                        mTemplateUrlService,
+                        "SearchEngine1",
+                        "keyword1",
+                        PLAY_API_SEARCH_URL,
+                        PLAY_API_SUGGEST_URL,
+                        PLAY_API_FAVICON_URL,
+                        PLAY_API_NEW_TAB_URL,
+                        PLAY_API_IMAGE_URL,
+                        PLAY_API_IMAGE_POST_PARAM,
+                        PLAY_API_IMAGE_TRANSLATE_URL,
+                        PLAY_API_IMAGE_TRANSLATE_SOURCE_KEY,
+                        PLAY_API_IMAGE_TRANSLATE_DEST_KEY,
+                        true));
 
         TemplateUrl defaultSearchEngine = getDefaultSearchEngine(mTemplateUrlService);
         Assert.assertEquals("keyword1", defaultSearchEngine.getKeyword());
@@ -221,9 +252,20 @@ public class TemplateUrlServiceTest {
 
         // Adding Play API search engine with the same keyword should succeed.
         Assert.assertTrue(
-                setPlayAPISearchEngine(mTemplateUrlService, defaultSearchEngine.getShortName(),
-                        originalKeyword, PLAY_API_SEARCH_URL, PLAY_API_SUGGEST_URL,
-                        PLAY_API_FAVICON_URL, null, null, null, null, null, null, true));
+                setPlayAPISearchEngine(
+                        mTemplateUrlService,
+                        defaultSearchEngine.getShortName(),
+                        originalKeyword,
+                        PLAY_API_SEARCH_URL,
+                        PLAY_API_SUGGEST_URL,
+                        PLAY_API_FAVICON_URL,
+                        null,
+                        null,
+                        null,
+                        null,
+                        null,
+                        null,
+                        true));
 
         defaultSearchEngine = getDefaultSearchEngine(mTemplateUrlService);
         Assert.assertEquals(originalKeyword, defaultSearchEngine.getKeyword());
@@ -245,12 +287,26 @@ public class TemplateUrlServiceTest {
 
         // Add regular search engine. It will be used to test conflict with Play API search engine.
         TestThreadUtils.runOnUiThreadBlocking(
-                () -> { mTemplateUrlService.addSearchEngineForTesting("keyword1", 0); });
+                () -> {
+                    mTemplateUrlService.addSearchEngineForTesting("keyword1", 0);
+                });
 
         // Adding Play API search engine with the same keyword should succeed.
-        Assert.assertTrue(setPlayAPISearchEngine(mTemplateUrlService, "SearchEngine1", "keyword1",
-                PLAY_API_SEARCH_URL, PLAY_API_SUGGEST_URL, PLAY_API_FAVICON_URL, null, null, null,
-                null, null, null, true));
+        Assert.assertTrue(
+                setPlayAPISearchEngine(
+                        mTemplateUrlService,
+                        "SearchEngine1",
+                        "keyword1",
+                        PLAY_API_SEARCH_URL,
+                        PLAY_API_SUGGEST_URL,
+                        PLAY_API_FAVICON_URL,
+                        null,
+                        null,
+                        null,
+                        null,
+                        null,
+                        null,
+                        true));
 
         TemplateUrl defaultSearchEngine = getDefaultSearchEngine(mTemplateUrlService);
         Assert.assertEquals("keyword1", defaultSearchEngine.getKeyword());
@@ -258,9 +314,21 @@ public class TemplateUrlServiceTest {
         Assert.assertEquals(PLAY_API_SEARCH_URL, defaultSearchEngine.getURL());
 
         // Adding Play API search engine again should fail.
-        Assert.assertFalse(setPlayAPISearchEngine(mTemplateUrlService, "SearchEngine2", "keyword2",
-                PLAY_API_SEARCH_URL, PLAY_API_SUGGEST_URL, PLAY_API_FAVICON_URL, null, null, null,
-                null, null, null, true));
+        Assert.assertFalse(
+                setPlayAPISearchEngine(
+                        mTemplateUrlService,
+                        "SearchEngine2",
+                        "keyword2",
+                        PLAY_API_SEARCH_URL,
+                        PLAY_API_SUGGEST_URL,
+                        PLAY_API_FAVICON_URL,
+                        null,
+                        null,
+                        null,
+                        null,
+                        null,
+                        null,
+                        true));
 
         defaultSearchEngine = getDefaultSearchEngine(mTemplateUrlService);
         Assert.assertEquals("keyword1", defaultSearchEngine.getKeyword());
@@ -272,12 +340,14 @@ public class TemplateUrlServiceTest {
     public void testGetUrlForSearchQuery() throws ExecutionException {
         waitForTemplateUrlServiceToLoad();
 
-        Assert.assertTrue(TestThreadUtils.runOnUiThreadBlockingNoException(new Callable<Boolean>() {
-            @Override
-            public Boolean call() {
-                return mTemplateUrlService.isLoaded();
-            }
-        }));
+        Assert.assertTrue(
+                TestThreadUtils.runOnUiThreadBlockingNoException(
+                        new Callable<Boolean>() {
+                            @Override
+                            public Boolean call() {
+                                return mTemplateUrlService.isLoaded();
+                            }
+                        }));
 
         validateSearchQuery("cat", null, null);
         Map<String, String> params = new HashMap();
@@ -287,17 +357,36 @@ public class TemplateUrlServiceTest {
         validateSearchQuery("cat", new ArrayList<String>(Arrays.asList("xyz=a", "abc=b")), params);
     }
 
-    private boolean setPlayAPISearchEngine(TemplateUrlService templateUrlService, String name,
-            String keyword, String searchUrl, String suggestUrl, String faviconUrl,
-            String newTabUrl, String imageUrl, String imageUrlPostParams, String imageTranslateUrl,
+    private boolean setPlayAPISearchEngine(
+            TemplateUrlService templateUrlService,
+            String name,
+            String keyword,
+            String searchUrl,
+            String suggestUrl,
+            String faviconUrl,
+            String newTabUrl,
+            String imageUrl,
+            String imageUrlPostParams,
+            String imageTranslateUrl,
             String imageTranslateSourceLanguageParamKey,
-            String imageTranslateTargetLanguageParamKey, boolean setAsDefault) {
-        return TestThreadUtils.runOnUiThreadBlockingNoException(() -> {
-            return templateUrlService.setPlayAPISearchEngine(name, keyword, searchUrl, suggestUrl,
-                    faviconUrl, newTabUrl, imageUrl, imageUrlPostParams, imageTranslateUrl,
-                    imageTranslateSourceLanguageParamKey, imageTranslateTargetLanguageParamKey,
-                    setAsDefault);
-        });
+            String imageTranslateTargetLanguageParamKey,
+            boolean setAsDefault) {
+        return TestThreadUtils.runOnUiThreadBlockingNoException(
+                () -> {
+                    return templateUrlService.setPlayAPISearchEngine(
+                            name,
+                            keyword,
+                            searchUrl,
+                            suggestUrl,
+                            faviconUrl,
+                            newTabUrl,
+                            imageUrl,
+                            imageUrlPostParams,
+                            imageTranslateUrl,
+                            imageTranslateSourceLanguageParamKey,
+                            imageTranslateTargetLanguageParamKey,
+                            setAsDefault);
+                });
     }
 
     private TemplateUrl getDefaultSearchEngine(TemplateUrlService templateUrlService) {
@@ -316,19 +405,23 @@ public class TemplateUrlServiceTest {
 
     private void waitForTemplateUrlServiceToLoad() {
         final AtomicBoolean observerNotified = new AtomicBoolean(false);
-        final LoadListener listener = new LoadListener() {
-            @Override
-            public void onTemplateUrlServiceLoaded() {
-                observerNotified.set(true);
-            }
-        };
+        final LoadListener listener =
+                new LoadListener() {
+                    @Override
+                    public void onTemplateUrlServiceLoaded() {
+                        observerNotified.set(true);
+                    }
+                };
 
-        TestThreadUtils.runOnUiThreadBlocking(() -> {
-            mTemplateUrlService.registerLoadListener(listener);
-            mTemplateUrlService.load();
-        });
-        CriteriaHelper.pollInstrumentationThread(() -> {
-            return observerNotified.get();
-        }, "Observer wasn't notified of TemplateUrlService load.");
+        TestThreadUtils.runOnUiThreadBlocking(
+                () -> {
+                    mTemplateUrlService.registerLoadListener(listener);
+                    mTemplateUrlService.load();
+                });
+        CriteriaHelper.pollInstrumentationThread(
+                () -> {
+                    return observerNotified.get();
+                },
+                "Observer wasn't notified of TemplateUrlService load.");
     }
 }

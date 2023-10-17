@@ -26,26 +26,21 @@ import org.mockito.junit.MockitoRule;
 import org.chromium.chrome.test.ChromeJUnit4ClassRunner;
 import org.chromium.ui.base.WindowAndroid;
 
-/**
- * Tests for the {@link DeviceLockActivity}.
- */
+/** Tests for the {@link DeviceLockActivity}. */
 @RunWith(ChromeJUnit4ClassRunner.class)
 public class DeviceLockActivityLauncherImplTest {
-    @Rule
-    public final MockitoRule mMockitoRule = MockitoJUnit.rule();
+    @Rule public final MockitoRule mMockitoRule = MockitoJUnit.rule();
 
-    @Mock
-    private Context mContext;
-    @Mock
-    private WindowAndroid mWindowAndroid;
-    @Mock
-    private WindowAndroid.IntentCallback mIntentCallback;
+    @Mock private Context mContext;
+    @Mock private WindowAndroid mWindowAndroid;
+    @Mock private WindowAndroid.IntentCallback mIntentCallback;
 
     @Test
     @MediumTest
     public void testLaunchDeviceLockActivity_launchesIntent() {
-        DeviceLockActivityLauncherImpl.get().launchDeviceLockActivity(
-                mContext, "testSelectedAccount", true, mWindowAndroid, mIntentCallback);
+        DeviceLockActivityLauncherImpl.get()
+                .launchDeviceLockActivity(
+                        mContext, "testSelectedAccount", true, mWindowAndroid, mIntentCallback);
         verify(mWindowAndroid, times(1))
                 .showIntent(any(Intent.class), eq(mIntentCallback), isNull());
     }
@@ -53,14 +48,18 @@ public class DeviceLockActivityLauncherImplTest {
     @Test
     @MediumTest
     public void testLaunchDeviceLockActivity_launchesDeviceLockActivity() {
-        doAnswer((invocation) -> {
-            Intent intent = invocation.getArgument(0);
-            assertEquals(DeviceLockActivity.class.getName(), intent.getComponent().getClassName());
-            return null;
-        })
+        doAnswer(
+                        (invocation) -> {
+                            Intent intent = invocation.getArgument(0);
+                            assertEquals(
+                                    DeviceLockActivity.class.getName(),
+                                    intent.getComponent().getClassName());
+                            return null;
+                        })
                 .when(mWindowAndroid)
                 .showIntent(any(Intent.class), any(WindowAndroid.IntentCallback.class), any());
-        DeviceLockActivityLauncherImpl.get().launchDeviceLockActivity(
-                mContext, "testSelectedAccount", true, mWindowAndroid, mIntentCallback);
+        DeviceLockActivityLauncherImpl.get()
+                .launchDeviceLockActivity(
+                        mContext, "testSelectedAccount", true, mWindowAndroid, mIntentCallback);
     }
 }

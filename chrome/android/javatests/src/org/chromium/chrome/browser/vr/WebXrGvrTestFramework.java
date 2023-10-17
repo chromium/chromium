@@ -8,9 +8,7 @@ import org.junit.Assert;
 
 import org.chromium.chrome.test.ChromeActivityTestRule;
 
-/**
- * Extension of WebXrGvrTestFramework containing WebXR for Gvr-specific functionality.
- */
+/** Extension of WebXrGvrTestFramework containing WebXR for Gvr-specific functionality. */
 public class WebXrGvrTestFramework extends WebXrVrTestFramework {
     public WebXrGvrTestFramework(ChromeActivityTestRule rule) {
         super(rule);

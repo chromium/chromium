@@ -30,37 +30,38 @@ import org.chromium.content_public.browser.test.util.TestThreadUtils;
 import org.chromium.net.test.EmbeddedTestServer;
 import org.chromium.ui.base.PageTransition;
 
-/**
- * Test integration with the SafetyNetApiHandler.
- */
+/** Test integration with the SafetyNetApiHandler. */
 @RunWith(ChromeJUnit4ClassRunner.class)
 @CommandLineFlags.Add({ChromeSwitches.DISABLE_FIRST_RUN_EXPERIENCE})
 @DisableFeatures({ChromeFeatureList.SAFE_BROWSING_DELAYED_WARNINGS})
 public final class SafeBrowsingTest {
     @Rule
     public ChromeTabbedActivityTestRule mActivityTestRule = new ChromeTabbedActivityTestRule();
+
     private EmbeddedTestServer mTestServer;
 
     /**
-     * Wait for an interstitial (or lack thereof) to be shown.
-     * Disclaimer: when |shouldBeShown| is false, it isn't clear that the interstitial would never
-     * be shown at some point in the near future. There isn't currently a way to wait for some event
-     * that would indicate this, unfortunately.
+     * Wait for an interstitial (or lack thereof) to be shown. Disclaimer: when |shouldBeShown| is
+     * false, it isn't clear that the interstitial would never be shown at some point in the near
+     * future. There isn't currently a way to wait for some event that would indicate this,
+     * unfortunately.
      */
     private void waitForInterstitial(final boolean shouldBeShown) {
-        CriteriaHelper.pollUiThread(() -> {
-            // TODO(carlosil): For now, we check the presence of an interstitial through the
-            // title since isShowingInterstitialPage does not work with committed interstitials.
-            // Once we fully migrate to committed interstitials, this should be changed to a
-            // more robust check.
-            String title = getWebContents().getTitle();
-            String errorTitle = "Security error";
-            if (shouldBeShown) {
-                Criteria.checkThat(title, Matchers.is(errorTitle));
-            } else {
-                Criteria.checkThat(title, Matchers.not(errorTitle));
-            }
-        });
+        CriteriaHelper.pollUiThread(
+                () -> {
+                    // TODO(carlosil): For now, we check the presence of an interstitial through the
+                    // title since isShowingInterstitialPage does not work with committed
+                    // interstitials.
+                    // Once we fully migrate to committed interstitials, this should be changed to a
+                    // more robust check.
+                    String title = getWebContents().getTitle();
+                    String errorTitle = "Security error";
+                    if (shouldBeShown) {
+                        Criteria.checkThat(title, Matchers.is(errorTitle));
+                    } else {
+                        Criteria.checkThat(title, Matchers.not(errorTitle));
+                    }
+                });
     }
 
     private WebContents getWebContents() {
@@ -90,8 +91,9 @@ public final class SafeBrowsingTest {
     @Test
     @MediumTest
     public void noInterstitialPage() throws Exception {
-        mTestServer = EmbeddedTestServer.createAndStartServer(
-                ApplicationProvider.getApplicationContext());
+        mTestServer =
+                EmbeddedTestServer.createAndStartServer(
+                        ApplicationProvider.getApplicationContext());
         mActivityTestRule.startMainActivityOnBlankPage();
 
         String url = mTestServer.getURL("/chrome/test/data/android/about.html");
@@ -102,8 +104,9 @@ public final class SafeBrowsingTest {
     @Test
     @MediumTest
     public void interstitialPage() throws Exception {
-        mTestServer = EmbeddedTestServer.createAndStartServer(
-                ApplicationProvider.getApplicationContext());
+        mTestServer =
+                EmbeddedTestServer.createAndStartServer(
+                        ApplicationProvider.getApplicationContext());
         String url = mTestServer.getURL("/chrome/test/data/android/about.html");
         MockSafetyNetApiHandler.addMockResponse(url, "{\"matches\":[{\"threat_type\":\"5\"}]}");
         mActivityTestRule.startMainActivityOnBlankPage();

@@ -41,8 +41,8 @@ import org.chromium.content_public.browser.test.util.TestThreadUtils;
 import java.util.concurrent.TimeoutException;
 
 /**
- * Tests for the translate infobar, assumes it runs on a system with language
- * preferences set to English.
+ * Tests for the translate infobar, assumes it runs on a system with language preferences set to
+ * English.
  */
 @RunWith(ChromeJUnit4ClassRunner.class)
 @Batch(Batch.PER_CLASS)
@@ -64,12 +64,13 @@ public class TranslateCompactInfoBarTest {
 
     @Before
     public void setUp() throws Exception {
-        TestThreadUtils.runOnUiThreadBlocking(() -> {
-            TranslateBridge.setIgnoreMissingKeyForTesting(true);
-            mInfoBarContainer = sActivityTestRule.getInfoBarContainer();
-            mListener = new InfoBarTestAnimationListener();
-            mInfoBarContainer.addAnimationListener(mListener);
-        });
+        TestThreadUtils.runOnUiThreadBlocking(
+                () -> {
+                    TranslateBridge.setIgnoreMissingKeyForTesting(true);
+                    mInfoBarContainer = sActivityTestRule.getInfoBarContainer();
+                    mListener = new InfoBarTestAnimationListener();
+                    mInfoBarContainer.addAnimationListener(mListener);
+                });
     }
 
     @After
@@ -88,15 +89,15 @@ public class TranslateCompactInfoBarTest {
         return !ChromeFeatureList.isEnabled("NetworkServiceInProcess2");
     }
 
-    /**
-     * Test that the new translate compact UI appears and has at least 2 tabs.
-     */
+    /** Test that the new translate compact UI appears and has at least 2 tabs. */
     @Test
     @MediumTest
     @Feature({"Browser", "Main"})
     @Restriction({Restriction.RESTRICTION_TYPE_INTERNET})
-    @Features.
-    DisableFeatures({ChromeFeatureList.TRANSLATE_MESSAGE_UI, ChromeFeatureList.TRANSLATE_TFLITE})
+    @Features.DisableFeatures({
+        ChromeFeatureList.TRANSLATE_MESSAGE_UI,
+        ChromeFeatureList.TRANSLATE_TFLITE
+    })
     public void testTranslateCompactInfoBarAppears() throws TimeoutException {
         if (shouldSkipDueToNetworkService()) return;
         sActivityTestRule.loadUrl(sActivityTestRule.getTestServer().getURL(TRANSLATE_PAGE));
@@ -106,15 +107,15 @@ public class TranslateCompactInfoBarTest {
         TranslateUtil.assertHasAtLeastTwoLanguageTabs((TranslateCompactInfoBar) infoBar);
     }
 
-    /**
-     * Test the overflow menus of new translate compact UI.
-     */
+    /** Test the overflow menus of new translate compact UI. */
     @Test
     @MediumTest
     @Feature({"Browser", "Main"})
     @Restriction({Restriction.RESTRICTION_TYPE_INTERNET})
-    @Features.
-    DisableFeatures({ChromeFeatureList.TRANSLATE_MESSAGE_UI, ChromeFeatureList.TRANSLATE_TFLITE})
+    @Features.DisableFeatures({
+        ChromeFeatureList.TRANSLATE_MESSAGE_UI,
+        ChromeFeatureList.TRANSLATE_TFLITE
+    })
     public void testTranslateCompactInfoBarOverflowMenus() throws TimeoutException {
         if (shouldSkipDueToNetworkService()) return;
         sActivityTestRule.loadUrl(sActivityTestRule.getTestServer().getURL(TRANSLATE_PAGE));
@@ -131,15 +132,15 @@ public class TranslateCompactInfoBarTest {
                 InstrumentationRegistry.getInstrumentation(), infoBar);
     }
 
-    /**
-     * Tests that the overflow menu is dismissed when the orientation changes.
-     */
+    /** Tests that the overflow menu is dismissed when the orientation changes. */
     @Test
     @MediumTest
     @Feature({"Browser", "Main"})
     @Restriction({Restriction.RESTRICTION_TYPE_INTERNET})
-    @Features.
-    DisableFeatures({ChromeFeatureList.TRANSLATE_MESSAGE_UI, ChromeFeatureList.TRANSLATE_TFLITE})
+    @Features.DisableFeatures({
+        ChromeFeatureList.TRANSLATE_MESSAGE_UI,
+        ChromeFeatureList.TRANSLATE_TFLITE
+    })
     public void testTabMenuDismissedOnOrientationChange() throws Exception {
         if (shouldSkipDueToNetworkService()) return;
         sActivityTestRule.loadUrl(sActivityTestRule.getTestServer().getURL(TRANSLATE_PAGE));
@@ -150,33 +151,36 @@ public class TranslateCompactInfoBarTest {
         TranslateUtil.clickMenuButtonAndAssertMenuShown(infoBar);
 
         // 1. Set orientation to portrait
-        sActivityTestRule.getActivity().setRequestedOrientation(
-                ActivityInfo.SCREEN_ORIENTATION_PORTRAIT);
+        sActivityTestRule
+                .getActivity()
+                .setRequestedOrientation(ActivityInfo.SCREEN_ORIENTATION_PORTRAIT);
         InstrumentationRegistry.getInstrumentation().waitForIdleSync();
 
         // 2. Check if overflow menu is dismissed
         Assert.assertFalse(infoBar.isShowingLanguageMenuForTesting());
 
         // 3. Reset orientation
-        sActivityTestRule.getActivity().setRequestedOrientation(
-                ActivityInfo.SCREEN_ORIENTATION_PORTRAIT);
+        sActivityTestRule
+                .getActivity()
+                .setRequestedOrientation(ActivityInfo.SCREEN_ORIENTATION_PORTRAIT);
         InstrumentationRegistry.getInstrumentation().waitForIdleSync();
     }
 
-    /**
-     * Test tab focus is correct, even after closing and (manually) re-opening infobar.
-     */
+    /** Test tab focus is correct, even after closing and (manually) re-opening infobar. */
     @Test
     @MediumTest
     @Feature({"Browser", "Main"})
     @Restriction({Restriction.RESTRICTION_TYPE_INTERNET})
-    @Features.
-    DisableFeatures({ChromeFeatureList.TRANSLATE_MESSAGE_UI, ChromeFeatureList.TRANSLATE_TFLITE})
+    @Features.DisableFeatures({
+        ChromeFeatureList.TRANSLATE_MESSAGE_UI,
+        ChromeFeatureList.TRANSLATE_TFLITE
+    })
     public void testTranslateCompactInfoBarReopenOnTarget() throws TimeoutException {
         if (shouldSkipDueToNetworkService()) return;
         sActivityTestRule.loadUrl(sActivityTestRule.getTestServer().getURL(TRANSLATE_PAGE));
 
-        TranslateUtil.waitForTranslateInfoBarState(mInfoBarContainer, /*expectTranslated=*/false);
+        TranslateUtil.waitForTranslateInfoBarState(
+                mInfoBarContainer, /* expectTranslated= */ false);
 
         TranslateCompactInfoBar infoBar =
                 (TranslateCompactInfoBar) mInfoBarContainer.getInfoBarsForTesting().get(0);
@@ -186,15 +190,15 @@ public class TranslateCompactInfoBarTest {
         InfoBarUtil.clickCloseButton(infoBar);
 
         // Invoke bar by clicking the manual translate button.
-        MenuUtils.invokeCustomMenuActionSync(InstrumentationRegistry.getInstrumentation(),
-                sActivityTestRule.getActivity(), R.id.translate_id);
+        MenuUtils.invokeCustomMenuActionSync(
+                InstrumentationRegistry.getInstrumentation(),
+                sActivityTestRule.getActivity(),
+                R.id.translate_id);
 
-        TranslateUtil.waitForTranslateInfoBarState(mInfoBarContainer, /*expectTranslated=*/true);
+        TranslateUtil.waitForTranslateInfoBarState(mInfoBarContainer, /* expectTranslated= */ true);
     }
 
-    /**
-     * Test that translation starts automatically when "Translate..." is pressed in the menu.
-     */
+    /** Test that translation starts automatically when "Translate..." is pressed in the menu. */
     @Test
     @MediumTest
     @Feature({"Browser", "Main"})
@@ -208,10 +212,12 @@ public class TranslateCompactInfoBarTest {
         Assert.assertTrue(mInfoBarContainer.getInfoBarsForTesting().isEmpty());
 
         // Invoke bar by clicking the manual translate button.
-        MenuUtils.invokeCustomMenuActionSync(InstrumentationRegistry.getInstrumentation(),
-                sActivityTestRule.getActivity(), R.id.translate_id);
+        MenuUtils.invokeCustomMenuActionSync(
+                InstrumentationRegistry.getInstrumentation(),
+                sActivityTestRule.getActivity(),
+                R.id.translate_id);
 
-        TranslateUtil.waitForTranslateInfoBarState(mInfoBarContainer, /*expectTranslated=*/true);
+        TranslateUtil.waitForTranslateInfoBarState(mInfoBarContainer, /* expectTranslated= */ true);
     }
 
     /**
@@ -221,23 +227,30 @@ public class TranslateCompactInfoBarTest {
     @MediumTest
     @Feature({"Browser", "Main"})
     @Restriction({Restriction.RESTRICTION_TYPE_INTERNET})
-    @Features.
-    DisableFeatures({ChromeFeatureList.TRANSLATE_MESSAGE_UI, ChromeFeatureList.TRANSLATE_TFLITE})
+    @Features.DisableFeatures({
+        ChromeFeatureList.TRANSLATE_MESSAGE_UI,
+        ChromeFeatureList.TRANSLATE_TFLITE
+    })
     public void testManualInitiationWithBarOpen() throws TimeoutException {
         if (shouldSkipDueToNetworkService()) return;
         sActivityTestRule.loadUrl(sActivityTestRule.getTestServer().getURL(TRANSLATE_PAGE));
 
-        TranslateUtil.waitForTranslateInfoBarState(mInfoBarContainer, /*expectTranslated=*/false);
+        TranslateUtil.waitForTranslateInfoBarState(
+                mInfoBarContainer, /* expectTranslated= */ false);
 
-        MenuUtils.invokeCustomMenuActionSync(InstrumentationRegistry.getInstrumentation(),
-                sActivityTestRule.getActivity(), R.id.translate_id);
+        MenuUtils.invokeCustomMenuActionSync(
+                InstrumentationRegistry.getInstrumentation(),
+                sActivityTestRule.getActivity(),
+                R.id.translate_id);
 
-        TranslateUtil.waitForTranslateInfoBarState(mInfoBarContainer, /*expectTranslated=*/true);
+        TranslateUtil.waitForTranslateInfoBarState(mInfoBarContainer, /* expectTranslated= */ true);
 
         // Verify that hitting "Translate..." again doesn't revert the translation.
-        MenuUtils.invokeCustomMenuActionSync(InstrumentationRegistry.getInstrumentation(),
-                sActivityTestRule.getActivity(), R.id.translate_id);
+        MenuUtils.invokeCustomMenuActionSync(
+                InstrumentationRegistry.getInstrumentation(),
+                sActivityTestRule.getActivity(),
+                R.id.translate_id);
 
-        TranslateUtil.waitForTranslateInfoBarState(mInfoBarContainer, /*expectTranslated=*/true);
+        TranslateUtil.waitForTranslateInfoBarState(mInfoBarContainer, /* expectTranslated= */ true);
     }
 }

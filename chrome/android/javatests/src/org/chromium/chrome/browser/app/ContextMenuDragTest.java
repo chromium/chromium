@@ -52,14 +52,14 @@ import org.chromium.ui.dragdrop.DropDataAndroid;
 
 import java.util.concurrent.TimeoutException;
 
-/**
- * Integration tests for drag interactions with context menu.
- */
+/** Integration tests for drag interactions with context menu. */
 @RunWith(ChromeJUnit4ClassRunner.class)
 @MinAndroidSdkLevel(value = VERSION_CODES.O)
 @CommandLineFlags.Add(ChromeSwitches.DISABLE_FIRST_RUN_EXPERIENCE)
-@EnableFeatures({ContentFeatures.TOUCH_DRAG_AND_CONTEXT_MENU,
-                          ChromeFeatureList.CONTEXT_MENU_POPUP_FOR_ALL_SCREEN_SIZES})
+@EnableFeatures({
+    ContentFeatures.TOUCH_DRAG_AND_CONTEXT_MENU,
+    ChromeFeatureList.CONTEXT_MENU_POPUP_FOR_ALL_SCREEN_SIZES
+})
 @Batch(Batch.PER_CLASS)
 public class ContextMenuDragTest {
 
@@ -98,8 +98,9 @@ public class ContextMenuDragTest {
 
     @Before
     public void setUp() {
-        mTestServer = EmbeddedTestServer.createAndStartServer(
-                ApplicationProvider.getApplicationContext());
+        mTestServer =
+                EmbeddedTestServer.createAndStartServer(
+                        ApplicationProvider.getApplicationContext());
         mTestUrl = mTestServer.getURL(TEST_PATH);
 
         sActivityTestRule.loadUrl(mTestUrl);
@@ -111,9 +112,10 @@ public class ContextMenuDragTest {
 
     @After
     public void tearDown() {
-        TestThreadUtils.runOnUiThreadBlocking(() -> {
-            if (mContextMenu != null) mContextMenu.dismiss();
-        });
+        TestThreadUtils.runOnUiThreadBlocking(
+                () -> {
+                    if (mContextMenu != null) mContextMenu.dismiss();
+                });
         sTestDragAndDropDelegate.reset();
     }
 
@@ -132,13 +134,12 @@ public class ContextMenuDragTest {
 
     @Test
     @SmallTest
-    @CommandLineFlags.
-    Add({"enable-features=" + ContentFeatures.TOUCH_DRAG_AND_CONTEXT_MENU + "<Study",
-            "force-fieldtrials=Study/Group",
-            "force-fieldtrial-params=Study.Group:DragAndDropMovementThresholdDipParam/"
-                    + TEST_MIN_DIST})
-    public void
-    testTriggerContextMenuWithDrag() throws TimeoutException {
+    @CommandLineFlags.Add({
+        "enable-features=" + ContentFeatures.TOUCH_DRAG_AND_CONTEXT_MENU + "<Study",
+        "force-fieldtrials=Study/Group",
+        "force-fieldtrial-params=Study.Group:DragAndDropMovementThresholdDipParam/" + TEST_MIN_DIST
+    })
+    public void testTriggerContextMenuWithDrag() throws TimeoutException {
         longPressOpenContextMenu(TEST_IMAGE_ID);
 
         final Rect location = DOMUtils.getNodeBounds(mTab.getWebContents(), TEST_IMAGE_ID);
@@ -146,23 +147,39 @@ public class ContextMenuDragTest {
 
         // Clank is not forwarding drag start event to blink; instead, browser only remembers the
         // first drag events as the starting point of context menu.
-        DragEvent event1 = mockDragEvent(
-                location.centerX(), location.centerY(), DragEvent.ACTION_DRAG_LOCATION);
-        DragEvent event2 = mockDragEvent(location.centerX() + jitterRange,
-                location.centerY() + jitterRange, DragEvent.ACTION_DRAG_LOCATION);
-        TestThreadUtils.runOnUiThreadBlocking(() -> {
-            mTab.getContentView().onDragEvent(event1);
-            mTab.getContentView().onDragEvent(event2);
-        });
+        DragEvent event1 =
+                mockDragEvent(
+                        location.centerX(), location.centerY(), DragEvent.ACTION_DRAG_LOCATION);
+        DragEvent event2 =
+                mockDragEvent(
+                        location.centerX() + jitterRange,
+                        location.centerY() + jitterRange,
+                        DragEvent.ACTION_DRAG_LOCATION);
+        TestThreadUtils.runOnUiThreadBlocking(
+                () -> {
+                    mTab.getContentView().onDragEvent(event1);
+                    mTab.getContentView().onDragEvent(event2);
+                });
         assertContextMenuShowing(true);
 
         final int minDragThresholdPx =
-                (int) (sActivityTestRule.getActivity().getResources().getDisplayMetrics().density
-                        * TEST_MIN_DIST)
-                + 1;
-        DragEvent event3 = mockDragEvent(location.centerX() + minDragThresholdPx,
-                location.centerY() + minDragThresholdPx, DragEvent.ACTION_DRAG_LOCATION);
-        TestThreadUtils.runOnUiThreadBlocking(() -> { mTab.getContentView().onDragEvent(event3); });
+                (int)
+                                (sActivityTestRule
+                                                .getActivity()
+                                                .getResources()
+                                                .getDisplayMetrics()
+                                                .density
+                                        * TEST_MIN_DIST)
+                        + 1;
+        DragEvent event3 =
+                mockDragEvent(
+                        location.centerX() + minDragThresholdPx,
+                        location.centerY() + minDragThresholdPx,
+                        DragEvent.ACTION_DRAG_LOCATION);
+        TestThreadUtils.runOnUiThreadBlocking(
+                () -> {
+                    mTab.getContentView().onDragEvent(event3);
+                });
         assertContextMenuShowing(false);
     }
 
@@ -174,12 +191,16 @@ public class ContextMenuDragTest {
 
     private void assertContextMenuShowing(boolean showing) {
         Assert.assertNotNull("Context menu dialog is null.", mContextMenu.getDialogForTest());
-        Assert.assertEquals("Context menu dialog is not showing.", showing,
+        Assert.assertEquals(
+                "Context menu dialog is not showing.",
+                showing,
                 mContextMenu.getDialogForTest().isShowing());
     }
 
     private DropDataAndroid getDropData() {
-        Assert.assertEquals("#startDragAndDrop is not called.", 1,
+        Assert.assertEquals(
+                "#startDragAndDrop is not called.",
+                1,
                 sTestDragAndDropDelegate.startDragAndDropCallCount);
         Assert.assertNotNull("DropDataAndroid is null.", sTestDragAndDropDelegate.lastDropData);
         return sTestDragAndDropDelegate.lastDropData;
@@ -200,9 +221,14 @@ public class ContextMenuDragTest {
         public int startDragAndDropCallCount;
 
         @Override
-        public boolean startDragAndDrop(View containerView, Bitmap shadowImage,
-                DropDataAndroid dropData, int cursorOffsetX, int cursorOffsetY,
-                int dragObjRectWidth, int dragObjRectHeight) {
+        public boolean startDragAndDrop(
+                View containerView,
+                Bitmap shadowImage,
+                DropDataAndroid dropData,
+                int cursorOffsetX,
+                int cursorOffsetY,
+                int dragObjRectWidth,
+                int dragObjRectHeight) {
             return startDragAndDrop(containerView, null, dropData);
         }
 

@@ -84,9 +84,12 @@ public class CloseTabDirectActionHandlerTest {
 
     private void performAction(String name) {
         List<Bundle> responses = new ArrayList<>();
-        TestThreadUtils.runOnUiThreadBlocking(() -> {
-            assertTrue(mHandler.performDirectAction(name, Bundle.EMPTY, (r) -> responses.add(r)));
-        });
+        TestThreadUtils.runOnUiThreadBlocking(
+                () -> {
+                    assertTrue(
+                            mHandler.performDirectAction(
+                                    name, Bundle.EMPTY, (r) -> responses.add(r)));
+                });
         assertThat(responses, Matchers.hasSize(1));
     }
 

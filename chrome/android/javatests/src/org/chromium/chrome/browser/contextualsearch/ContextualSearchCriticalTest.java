@@ -28,9 +28,7 @@ import org.chromium.chrome.test.util.browser.Features.EnableFeatures;
 import org.chromium.content_public.browser.WebContents;
 import org.chromium.ui.test.util.UiRestriction;
 
-/**
- * Tests the Contextual Search Manager using instrumentation tests.
- */
+/** Tests the Contextual Search Manager using instrumentation tests. */
 // NOTE: Disable online detection so we we'll default to online on test bots with no network.
 @RunWith(ParameterizedRunner.class)
 @ParameterAnnotations.UseRunnerDelegate(ChromeJUnit4RunnerDelegate.class)
@@ -46,13 +44,11 @@ public class ContextualSearchCriticalTest extends ContextualSearchInstrumentatio
         super.setUp();
     }
 
-    //============================================================================================
+    // ============================================================================================
     // Test Cases
-    //============================================================================================
+    // ============================================================================================
 
-    /**
-     * Tests that only a single low-priority request is issued for a trigger/open sequence.
-     */
+    /** Tests that only a single low-priority request is issued for a trigger/open sequence. */
     @Test
     @SmallTest
     @Feature({"ContextualSearch"})
@@ -82,9 +78,7 @@ public class ContextualSearchCriticalTest extends ContextualSearchInstrumentatio
         assertLoadedLowPriorityUrl();
     }
 
-    /**
-     * Tests that a failover for a prefetch request is issued after the panel is opened.
-     */
+    /** Tests that a failover for a prefetch request is issued after the panel is opened. */
     @Test
     @SmallTest
     @Feature({"ContextualSearch"})
@@ -112,9 +106,7 @@ public class ContextualSearchCriticalTest extends ContextualSearchInstrumentatio
         Assert.assertEquals(2, mFakeServer.getLoadedUrlCount());
     }
 
-    /**
-     * Tests a simple triggering gesture with disable-preload set.
-     */
+    /** Tests a simple triggering gesture with disable-preload set. */
     @Test
     @SmallTest
     @Feature({"ContextualSearch"})
@@ -133,8 +125,8 @@ public class ContextualSearchCriticalTest extends ContextualSearchInstrumentatio
     }
 
     /**
-     * Tests that an error from the Search Term Resolution request causes a fallback to a
-     * search request for the literal selection.
+     * Tests that an error from the Search Term Resolution request causes a fallback to a search
+     * request for the literal selection.
      */
     @Test
     @SmallTest
@@ -150,13 +142,11 @@ public class ContextualSearchCriticalTest extends ContextualSearchInstrumentatio
         assertLoadedNormalPriorityUrl();
     }
 
-    //============================================================================================
+    // ============================================================================================
     // Content Tests
-    //============================================================================================
+    // ============================================================================================
 
-    /**
-     * Tests that resolve followed by expand makes Content visible.
-     */
+    /** Tests that resolve followed by expand makes Content visible. */
     @Test
     @SmallTest
     @Feature({"ContextualSearch"})
@@ -278,9 +268,9 @@ public class ContextualSearchCriticalTest extends ContextualSearchInstrumentatio
     }
 
     /**
-     * Tests that chained tap searches create new Content.
-     * Chained Tap searches allow immediate triggering of a tap when quite close to a previous tap
-     * selection since the user may have just missed the intended target.
+     * Tests that chained tap searches create new Content. Chained Tap searches allow immediate
+     * triggering of a tap when quite close to a previous tap selection since the user may have just
+     * missed the intended target.
      */
     @Test
     @SmallTest
@@ -323,9 +313,7 @@ public class ContextualSearchCriticalTest extends ContextualSearchInstrumentatio
         Assert.assertEquals(3, mFakeServer.getLoadedUrlCount());
     }
 
-    /**
-     * Tests that chained searches load correctly.
-     */
+    /** Tests that chained searches load correctly. */
     @Test
     @DisabledTest(message = "crbug.com/549805")
     @SmallTest
@@ -372,9 +360,7 @@ public class ContextualSearchCriticalTest extends ContextualSearchInstrumentatio
         Assert.assertEquals(2, mFakeServer.getLoadedUrlCount());
     }
 
-    /**
-     * Tests that chained searches make Content visible when opening the Panel.
-     */
+    /** Tests that chained searches make Content visible when opening the Panel. */
     @Test
     @SmallTest
     @Feature({"ContextualSearch"})
@@ -408,9 +394,9 @@ public class ContextualSearchCriticalTest extends ContextualSearchInstrumentatio
     }
 
     /**
-     * Tests that separate searches make Content visible when opening the Panel.
-     * If this test passes, but testChainedSearchContentVisibility() fails, then perhaps something's
-     * wrong with retap.
+     * Tests that separate searches make Content visible when opening the Panel. If this test
+     * passes, but testChainedSearchContentVisibility() fails, then perhaps something's wrong with
+     * retap.
      */
     @Test
     @SmallTest
@@ -446,13 +432,11 @@ public class ContextualSearchCriticalTest extends ContextualSearchInstrumentatio
         Assert.assertNotSame(wc1, wc2);
     }
 
-    //============================================================================================
+    // ============================================================================================
     // History Removal Tests.  These are important for privacy, and are not easy to test manually.
-    //============================================================================================
+    // ============================================================================================
 
-    /**
-     * Tests that a tap followed by closing the Panel removes the loaded URL from history.
-     */
+    /** Tests that a tap followed by closing the Panel removes the loaded URL from history. */
     @Test
     @SmallTest
     @Feature({"ContextualSearch"})

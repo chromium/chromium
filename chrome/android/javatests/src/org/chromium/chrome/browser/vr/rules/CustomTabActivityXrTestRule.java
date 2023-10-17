@@ -14,21 +14,24 @@ import org.chromium.chrome.browser.customtabs.CustomTabsIntentTestUtils;
 import org.chromium.chrome.browser.vr.rules.XrActivityRestriction.SupportedActivity;
 
 /**
- * XR extension of CustomTabActivityTestRule. Applies CustomTabActivityTestRule then
- * opens up a CustomTabActivity to a blank page.
+ * XR extension of CustomTabActivityTestRule. Applies CustomTabActivityTestRule then opens up a
+ * CustomTabActivity to a blank page.
  */
 public class CustomTabActivityXrTestRule extends CustomTabActivityTestRule implements XrTestRule {
     @Override
     public Statement apply(final Statement base, final Description desc) {
-        return super.apply(new Statement() {
-            @Override
-            public void evaluate() throws Throwable {
-                startCustomTabActivityWithIntent(
-                        CustomTabsIntentTestUtils.createMinimalCustomTabIntent(
-                                ApplicationProvider.getApplicationContext(), "about:blank"));
-                base.evaluate();
-            }
-        }, desc);
+        return super.apply(
+                new Statement() {
+                    @Override
+                    public void evaluate() throws Throwable {
+                        startCustomTabActivityWithIntent(
+                                CustomTabsIntentTestUtils.createMinimalCustomTabIntent(
+                                        ApplicationProvider.getApplicationContext(),
+                                        "about:blank"));
+                        base.evaluate();
+                    }
+                },
+                desc);
     }
 
     @Override

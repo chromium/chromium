@@ -37,8 +37,7 @@ import java.util.concurrent.TimeoutException;
 @RunWith(ChromeJUnit4ClassRunner.class)
 @Batch(Batch.PER_CLASS)
 public class ContentSettingsObserverTest {
-    @Rule
-    public final ChromeBrowserTestRule mBrowserTestRule = new ChromeBrowserTestRule();
+    @Rule public final ChromeBrowserTestRule mBrowserTestRule = new ChromeBrowserTestRule();
 
     private CallbackHelper mCallbackHelper = new CallbackHelper();
 
@@ -50,10 +49,14 @@ public class ContentSettingsObserverTest {
     public void tearDown() throws TimeoutException {
         // Clean up content settings.
         CallbackHelper helper = new CallbackHelper();
-        TestThreadUtils.runOnUiThreadBlocking(() -> {
-            BrowsingDataBridge.getInstance().clearBrowsingData(helper::notifyCalled,
-                    new int[] {BrowsingDataType.SITE_SETTINGS}, TimePeriod.ALL_TIME);
-        });
+        TestThreadUtils.runOnUiThreadBlocking(
+                () -> {
+                    BrowsingDataBridge.getInstance()
+                            .clearBrowsingData(
+                                    helper::notifyCalled,
+                                    new int[] {BrowsingDataType.SITE_SETTINGS},
+                                    TimePeriod.ALL_TIME);
+                });
         helper.waitForCallback(0);
     }
 
@@ -62,17 +65,20 @@ public class ContentSettingsObserverTest {
     @UiThreadTest
     public void testContentSettingChanges() throws TimeoutException {
         Profile profile = Profile.getLastUsedRegularProfile();
-        ContentSettingsObserver observer = new ContentSettingsObserver(profile) {
-            @Override
-            protected void onContentSettingChanged(String primaryPattern, String secondaryPattern,
-                    ContentSettingsTypeSet lastTypeSet) {
-                mCallbackHelper.notifyCalled();
+        ContentSettingsObserver observer =
+                new ContentSettingsObserver(profile) {
+                    @Override
+                    protected void onContentSettingChanged(
+                            String primaryPattern,
+                            String secondaryPattern,
+                            ContentSettingsTypeSet lastTypeSet) {
+                        mCallbackHelper.notifyCalled();
 
-                mLastPrimaryPattern = primaryPattern;
-                mLastSecondaryPattern = secondaryPattern;
-                mLastTypeSet = lastTypeSet;
-            }
-        };
+                        mLastPrimaryPattern = primaryPattern;
+                        mLastSecondaryPattern = secondaryPattern;
+                        mLastTypeSet = lastTypeSet;
+                    }
+                };
 
         GURL url = new GURL("https://www.chromium.org");
         WebsitePreferenceBridge.setContentSettingDefaultScope(
@@ -85,18 +91,22 @@ public class ContentSettingsObserverTest {
                 mLastTypeSet.contains(ContentSettingsType.JAVASCRIPT));
         Assert.assertFalse(
                 "The primary pattern should not be empty.", TextUtils.isEmpty(mLastPrimaryPattern));
-        Assert.assertFalse("The secondary pattern should not be empty.",
+        Assert.assertFalse(
+                "The secondary pattern should not be empty.",
                 TextUtils.isEmpty(mLastSecondaryPattern));
 
         // Destroy the observer and no updates should be posted for mCallbackHelper.
         observer.destroy();
         WebsitePreferenceBridge.setContentSettingDefaultScope(
                 profile, ContentSettingsType.JAVASCRIPT, url, url, ContentSettingValues.DEFAULT);
-        Assert.assertEquals("Content settings should be updated for URL.",
+        Assert.assertEquals(
+                "Content settings should be updated for URL.",
                 ContentSettingValues.ALLOW,
                 WebsitePreferenceBridge.getContentSetting(
                         profile, ContentSettingsType.JAVASCRIPT, url, url));
-        Assert.assertEquals("Updates should no longer notify ContentSettingsObserver.", 1,
+        Assert.assertEquals(
+                "Updates should no longer notify ContentSettingsObserver.",
+                1,
                 mCallbackHelper.getCallCount());
     }
 }

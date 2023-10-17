@@ -47,9 +47,7 @@ import org.chromium.chrome.test.util.MenuUtils;
 import org.chromium.components.browser_ui.settings.PlaceholderSettingsForTest;
 import org.chromium.content_public.browser.test.util.TestThreadUtils;
 
-/**
- * Tests the metrics recording for main intent behaviours.
- */
+/** Tests the metrics recording for main intent behaviours. */
 @RunWith(ChromeJUnit4ClassRunner.class)
 @CommandLineFlags.Add({ChromeSwitches.DISABLE_FIRST_RUN_EXPERIENCE})
 @SuppressLint({"ApplySharedPref", "CommitPrefEdits"})
@@ -58,6 +56,7 @@ public class MainIntentBehaviorMetricsIntegrationTest {
 
     @Rule
     public ChromeTabbedActivityTestRule mActivityTestRule = new ChromeTabbedActivityTestRule();
+
     @Rule
     public SettingsActivityTestRule<PlaceholderSettingsForTest> mSettingsActivityTestRule =
             new SettingsActivityTestRule<>(PlaceholderSettingsForTest.class);
@@ -116,7 +115,8 @@ public class MainIntentBehaviorMetricsIntegrationTest {
         prefs.writeIntSync(ChromePreferenceKeys.METRICS_MAIN_INTENT_LAUNCH_COUNT, 10);
         mActivityTestRule.startMainActivityFromLauncher();
 
-        assertEquals(1,
+        assertEquals(
+                1,
                 RecordHistogram.getHistogramValueCountForTesting(
                         "MobileStartup.DailyLaunchCount", 10));
 
@@ -137,13 +137,15 @@ public class MainIntentBehaviorMetricsIntegrationTest {
         prefs.writeIntSync(ChromePreferenceKeys.METRICS_MAIN_INTENT_LAUNCH_COUNT, 1);
         mActivityTestRule.startMainActivityFromLauncher();
 
-        assertEquals(0,
+        assertEquals(
+                0,
                 RecordHistogram.getHistogramValueCountForTesting(
                         "MobileStartup.DailyLaunchCount", 1));
 
         assertEquals(2, prefs.readInt(ChromePreferenceKeys.METRICS_MAIN_INTENT_LAUNCH_COUNT, 0));
 
-        assertEquals(timestamp,
+        assertEquals(
+                timestamp,
                 prefs.readLong(ChromePreferenceKeys.METRICS_MAIN_INTENT_LAUNCH_TIMESTAMP, 0));
     }
 
@@ -164,26 +166,38 @@ public class MainIntentBehaviorMetricsIntegrationTest {
             ChromeActivityTestRule.waitForActivityNativeInitializationComplete(
                     ChromeActivityTestRule.waitFor(ChromeTabbedActivity.class));
 
-            BookmarkActivity bookmarkActivity = ActivityTestUtils.waitForActivity(
-                    InstrumentationRegistry.getInstrumentation(), BookmarkActivity.class,
-                    new MenuUtils.MenuActivityTrigger(InstrumentationRegistry.getInstrumentation(),
-                            mActivityTestRule.getActivity(), R.id.all_bookmarks_menu_id));
+            BookmarkActivity bookmarkActivity =
+                    ActivityTestUtils.waitForActivity(
+                            InstrumentationRegistry.getInstrumentation(),
+                            BookmarkActivity.class,
+                            new MenuUtils.MenuActivityTrigger(
+                                    InstrumentationRegistry.getInstrumentation(),
+                                    mActivityTestRule.getActivity(),
+                                    R.id.all_bookmarks_menu_id));
             bookmarkActivity.finish();
             ChromeActivityTestRule.waitForActivityNativeInitializationComplete(
                     ChromeActivityTestRule.waitFor(ChromeTabbedActivity.class));
 
-            DownloadActivity downloadActivity = ActivityTestUtils.waitForActivity(
-                    InstrumentationRegistry.getInstrumentation(), DownloadActivity.class,
-                    new MenuUtils.MenuActivityTrigger(InstrumentationRegistry.getInstrumentation(),
-                            mActivityTestRule.getActivity(), R.id.downloads_menu_id));
+            DownloadActivity downloadActivity =
+                    ActivityTestUtils.waitForActivity(
+                            InstrumentationRegistry.getInstrumentation(),
+                            DownloadActivity.class,
+                            new MenuUtils.MenuActivityTrigger(
+                                    InstrumentationRegistry.getInstrumentation(),
+                                    mActivityTestRule.getActivity(),
+                                    R.id.downloads_menu_id));
             downloadActivity.finish();
             ChromeActivityTestRule.waitForActivityNativeInitializationComplete(
                     ChromeActivityTestRule.waitFor(ChromeTabbedActivity.class));
 
-            HistoryActivity historyActivity = ActivityTestUtils.waitForActivity(
-                    InstrumentationRegistry.getInstrumentation(), HistoryActivity.class,
-                    new MenuUtils.MenuActivityTrigger(InstrumentationRegistry.getInstrumentation(),
-                            mActivityTestRule.getActivity(), R.id.open_history_menu_id));
+            HistoryActivity historyActivity =
+                    ActivityTestUtils.waitForActivity(
+                            InstrumentationRegistry.getInstrumentation(),
+                            HistoryActivity.class,
+                            new MenuUtils.MenuActivityTrigger(
+                                    InstrumentationRegistry.getInstrumentation(),
+                                    mActivityTestRule.getActivity(),
+                                    R.id.open_history_menu_id));
             historyActivity.finish();
 
             assertEquals(
@@ -197,21 +211,29 @@ public class MainIntentBehaviorMetricsIntegrationTest {
     private void assertBackgroundDurationLogged(long duration, String expectedMetric) {
         startActivity(false);
         mActionTester = new UserActionTester();
-        TestThreadUtils.runOnUiThreadBlocking(() -> {
-            mActivityTestRule.getActivity()
-                    .getInactivityTrackerForTesting()
-                    .setLastBackgroundedTimeInPrefs(System.currentTimeMillis() - duration);
-        });
+        TestThreadUtils.runOnUiThreadBlocking(
+                () -> {
+                    mActivityTestRule
+                            .getActivity()
+                            .getInactivityTrackerForTesting()
+                            .setLastBackgroundedTimeInPrefs(System.currentTimeMillis() - duration);
+                });
 
         Intent intent = new Intent(Intent.ACTION_MAIN);
         intent.addCategory(Intent.CATEGORY_LAUNCHER);
         TestThreadUtils.runOnUiThreadBlocking(
-                () -> { mActivityTestRule.getActivity().onNewIntent(intent); });
+                () -> {
+                    mActivityTestRule.getActivity().onNewIntent(intent);
+                });
 
-        assertThat(mActionTester.toString(), mActionTester.getActions(),
+        assertThat(
+                mActionTester.toString(),
+                mActionTester.getActions(),
                 Matchers.hasItem("MobileStartup.MainIntentReceived"));
         if (expectedMetric != null) {
-            assertThat(mActionTester.toString(), mActionTester.getActions(),
+            assertThat(
+                    mActionTester.toString(),
+                    mActionTester.getActions(),
                     Matchers.hasItem(expectedMetric));
         }
     }
@@ -221,8 +243,9 @@ public class MainIntentBehaviorMetricsIntegrationTest {
         intent.addFlags(Intent.FLAG_ACTIVITY_NEW_TASK);
         intent.setData(Uri.parse("about:blank"));
         if (addLauncherCategory) intent.addCategory(Intent.CATEGORY_LAUNCHER);
-        intent.setComponent(new ComponentName(
-                ApplicationProvider.getApplicationContext(), ChromeTabbedActivity.class));
+        intent.setComponent(
+                new ComponentName(
+                        ApplicationProvider.getApplicationContext(), ChromeTabbedActivity.class));
 
         mActivityTestRule.startActivityCompletely(intent);
         mActivityTestRule.waitForActivityNativeInitializationComplete();
@@ -232,8 +255,9 @@ public class MainIntentBehaviorMetricsIntegrationTest {
         Intent intent = new Intent(Intent.ACTION_MAIN);
         intent.addFlags(Intent.FLAG_ACTIVITY_NEW_TASK);
         if (addLauncherCategory) intent.addCategory(Intent.CATEGORY_LAUNCHER);
-        intent.setComponent(new ComponentName(
-                ApplicationProvider.getApplicationContext(), ChromeTabbedActivity.class));
+        intent.setComponent(
+                new ComponentName(
+                        ApplicationProvider.getApplicationContext(), ChromeTabbedActivity.class));
 
         mActivityTestRule.startActivityCompletely(intent);
         mActivityTestRule.waitForActivityNativeInitializationComplete();

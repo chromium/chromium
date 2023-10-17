@@ -38,9 +38,7 @@ import org.chromium.ui.test.util.UiRestriction;
 
 import java.util.concurrent.TimeoutException;
 
-/**
- * Tests for the UpdateMenuItemHelper.
- */
+/** Tests for the UpdateMenuItemHelper. */
 @RunWith(ChromeJUnit4ClassRunner.class)
 @CommandLineFlags.Add({ChromeSwitches.DISABLE_FIRST_RUN_EXPERIENCE, "enable_update_menu_item"})
 public class UpdateMenuItemHelperTest {
@@ -104,7 +102,6 @@ public class UpdateMenuItemHelperTest {
         }
     }
 
-
     private MockVersionNumberGetter mMockVersionNumberGetter;
     private MockMarketURLGetter mMockMarketURLGetter;
     private TestAppMenuObserver mMenuObserver;
@@ -116,8 +113,9 @@ public class UpdateMenuItemHelperTest {
     }
 
     /**
-     * Prepares Main before actually launching it.  This is required since we don't have all of the
+     * Prepares Main before actually launching it. This is required since we don't have all of the
      * info we need in setUp().
+     *
      * @param currentVersion Version to report as the current version of Chrome
      * @param latestVersion Version to report is available by Omaha
      */
@@ -140,33 +138,35 @@ public class UpdateMenuItemHelperTest {
     }
 
     private void versionNumbersQueried() {
-        CriteriaHelper.pollInstrumentationThread(() -> {
-            Criteria.checkThat(
-                    mMockVersionNumberGetter.askedForCurrentVersion(), Matchers.is(true));
-            Criteria.checkThat(mMockVersionNumberGetter.askedForLatestVersion(), Matchers.is(true));
-        }, MS_TIMEOUT, MS_INTERVAL);
+        CriteriaHelper.pollInstrumentationThread(
+                () -> {
+                    Criteria.checkThat(
+                            mMockVersionNumberGetter.askedForCurrentVersion(), Matchers.is(true));
+                    Criteria.checkThat(
+                            mMockVersionNumberGetter.askedForLatestVersion(), Matchers.is(true));
+                },
+                MS_TIMEOUT,
+                MS_INTERVAL);
     }
 
-    /**
-     * Checks that the menu item is shown when a new version is available.
-     */
+    /** Checks that the menu item is shown when a new version is available. */
     private void checkUpdateMenuItemIsShowing(String currentVersion, String latestVersion)
             throws Exception {
         prepareAndStartMainActivity(currentVersion, latestVersion);
         showAppMenuAndAssertMenuShown();
-        Assert.assertNotNull("Update menu item is not showing.",
+        Assert.assertNotNull(
+                "Update menu item is not showing.",
                 AppMenuTestSupport.getMenuItemPropertyModel(
                         mActivityTestRule.getAppMenuCoordinator(), R.id.update_menu_id));
     }
 
-    /**
-     * Checks that the menu item is not shown when a new version is not available.
-     */
+    /** Checks that the menu item is not shown when a new version is not available. */
     private void checkUpdateMenuItemIsNotShowing(String currentVersion, String latestVersion)
             throws Exception {
         prepareAndStartMainActivity(currentVersion, latestVersion);
         showAppMenuAndAssertMenuShown();
-        Assert.assertNull("Update menu item is showing.",
+        Assert.assertNull(
+                "Update menu item is showing.",
                 AppMenuTestSupport.getMenuItemPropertyModel(
                         mActivityTestRule.getAppMenuCoordinator(), R.id.update_menu_id));
     }
@@ -230,7 +230,8 @@ public class UpdateMenuItemHelperTest {
 
         // Make sure the item is not shown in tab switcher app menu.
         showAppMenuAndAssertMenuShown();
-        Assert.assertNull("Update menu item is showing.",
+        Assert.assertNull(
+                "Update menu item is showing.",
                 AppMenuTestSupport.getMenuItemPropertyModel(
                         mActivityTestRule.getAppMenuCoordinator(), R.id.update_menu_id));
     }
@@ -247,8 +248,8 @@ public class UpdateMenuItemHelperTest {
         Intents.intending(IntentMatchers.hasData(TEST_MARKET_URL)).respondWith(intentResult);
 
         TestThreadUtils.runOnUiThreadBlocking(
-                ()
-                        -> AppMenuTestSupport.callOnItemClick(
+                () ->
+                        AppMenuTestSupport.callOnItemClick(
                                 mActivityTestRule.getAppMenuCoordinator(), R.id.update_menu_id));
 
         Intents.intended(Matchers.allOf(IntentMatchers.hasData(TEST_MARKET_URL)));
@@ -272,9 +273,11 @@ public class UpdateMenuItemHelperTest {
 
     private void showAppMenuAndAssertMenuShown() throws TimeoutException {
         int currentCallCount = mMenuObserver.menuShownCallback.getCallCount();
-        TestThreadUtils.runOnUiThreadBlocking(() -> {
-            AppMenuTestSupport.showAppMenu(mActivityTestRule.getAppMenuCoordinator(), null, false);
-        });
+        TestThreadUtils.runOnUiThreadBlocking(
+                () -> {
+                    AppMenuTestSupport.showAppMenu(
+                            mActivityTestRule.getAppMenuCoordinator(), null, false);
+                });
         mMenuObserver.menuShownCallback.waitForCallback(currentCallCount);
     }
 
@@ -288,8 +291,10 @@ public class UpdateMenuItemHelperTest {
     }
 
     private void waitForAppMenuDimissedRunnable() {
-        CriteriaHelper.pollInstrumentationThread(() -> {
-            return UpdateMenuItemHelper.getInstance().getMenuDismissedRunnableExecutedForTests();
-        });
+        CriteriaHelper.pollInstrumentationThread(
+                () -> {
+                    return UpdateMenuItemHelper.getInstance()
+                            .getMenuDismissedRunnableExecutedForTests();
+                });
     }
 }

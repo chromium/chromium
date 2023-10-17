@@ -23,22 +23,23 @@ import org.chromium.chrome.browser.flags.ChromeSwitches;
 import org.chromium.chrome.test.ChromeJUnit4ClassRunner;
 import org.chromium.chrome.test.R;
 
-/**
- * Tests for splash screens with EXTRA_ICON specified in the Intent.
- */
+/** Tests for splash screens with EXTRA_ICON specified in the Intent. */
 @RunWith(ChromeJUnit4ClassRunner.class)
 @CommandLineFlags.Add({ChromeSwitches.DISABLE_FIRST_RUN_EXPERIENCE})
 public class WebappSplashScreenHomescreenIconTest {
-    @Rule
-    public final WebappActivityTestRule mActivityTestRule = new WebappActivityTestRule();
+    @Rule public final WebappActivityTestRule mActivityTestRule = new WebappActivityTestRule();
 
     private ViewGroup mSplashScreen;
 
     @Before
     public void setUp() {
-        mSplashScreen = mActivityTestRule.startWebappActivityAndWaitForSplashScreen(
-                mActivityTestRule.createIntent().putExtra(
-                        WebappConstants.EXTRA_ICON, WebappActivityTestRule.TEST_ICON));
+        mSplashScreen =
+                mActivityTestRule.startWebappActivityAndWaitForSplashScreen(
+                        mActivityTestRule
+                                .createIntent()
+                                .putExtra(
+                                        WebappConstants.EXTRA_ICON,
+                                        WebappActivityTestRule.TEST_ICON));
     }
 
     @Test

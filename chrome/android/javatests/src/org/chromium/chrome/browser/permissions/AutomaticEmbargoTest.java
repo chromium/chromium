@@ -26,9 +26,7 @@ import org.chromium.device.geolocation.LocationProviderOverrider;
 import org.chromium.device.geolocation.MockLocationProvider;
 import org.chromium.ui.modaldialog.DialogDismissalCause;
 
-/**
- * Test suite for permissions automatic embargo logic.
- */
+/** Test suite for permissions automatic embargo logic. */
 @RunWith(ChromeJUnit4ClassRunner.class)
 @CommandLineFlags.Add({ChromeSwitches.DISABLE_FIRST_RUN_EXPERIENCE})
 public class AutomaticEmbargoTest {
@@ -50,8 +48,12 @@ public class AutomaticEmbargoTest {
         mPermissionRule.setUpActivity();
     }
 
-    private void runTest(final String testFile, final String javascript, final String updaterPrefix,
-            final boolean withGesture) throws Exception {
+    private void runTest(
+            final String testFile,
+            final String javascript,
+            final String updaterPrefix,
+            final boolean withGesture)
+            throws Exception {
         Tab tab = mPermissionRule.getActivity().getActivityTab();
         PermissionUpdateWaiter updateWaiter =
                 new PermissionUpdateWaiter(updaterPrefix, mPermissionRule.getActivity());
@@ -65,17 +67,25 @@ public class AutomaticEmbargoTest {
                 mPermissionRule.runJavaScriptCodeInCurrentTab(javascript);
             }
             PermissionTestRule.waitForDialog(mPermissionRule.getActivity());
-            TestThreadUtils.runOnUiThreadBlocking(() -> {
-                mPermissionRule.getActivity()
-                        .getModalDialogManager()
-                        .getCurrentPresenterForTest()
-                        .dismissCurrentDialog(DialogDismissalCause.NAVIGATE_BACK_OR_TOUCH_OUTSIDE);
-            });
+            TestThreadUtils.runOnUiThreadBlocking(
+                    () -> {
+                        mPermissionRule
+                                .getActivity()
+                                .getModalDialogManager()
+                                .getCurrentPresenterForTest()
+                                .dismissCurrentDialog(
+                                        DialogDismissalCause.NAVIGATE_BACK_OR_TOUCH_OUTSIDE);
+                    });
             InstrumentationRegistry.getInstrumentation().waitForIdleSync();
         }
 
-        mPermissionRule.runNoPromptTest(updateWaiter, testFile, javascript, 0 /* nUpdates */,
-                withGesture, true /* isDialog */);
+        mPermissionRule.runNoPromptTest(
+                updateWaiter,
+                testFile,
+                javascript,
+                0 /* nUpdates */,
+                withGesture,
+                true /* isDialog */);
         TestThreadUtils.runOnUiThreadBlocking(() -> tab.removeObserver(updateWaiter));
     }
 
@@ -93,7 +103,10 @@ public class AutomaticEmbargoTest {
     @LargeTest
     @Feature({"Notifications"})
     public void testNotificationsEmbargo() throws Exception {
-        runTest(NOTIFICATIONS_TEST_FILE, "requestPermission()", "request-callback-denied",
+        runTest(
+                NOTIFICATIONS_TEST_FILE,
+                "requestPermission()",
+                "request-callback-denied",
                 false /* withGesture */);
     }
 

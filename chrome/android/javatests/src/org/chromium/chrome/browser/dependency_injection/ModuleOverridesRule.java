@@ -12,9 +12,7 @@ import org.junit.runner.Description;
 import java.util.ArrayList;
 import java.util.List;
 
-/**
- * A TestRule for overriding Dagger Module factories.
- */
+/** A TestRule for overriding Dagger Module factories. */
 public class ModuleOverridesRule extends TestWatcher {
     private final List<Pair<Class<?>, ?>> mOverrides = new ArrayList<>();
 

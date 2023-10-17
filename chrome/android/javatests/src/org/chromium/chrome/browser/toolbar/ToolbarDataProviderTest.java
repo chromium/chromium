@@ -30,16 +30,13 @@ import org.chromium.chrome.test.util.browser.Features;
 import org.chromium.content_public.browser.test.util.TestThreadUtils;
 import org.chromium.ui.test.util.UiRestriction;
 
-/**
- * Instrumentation tests for {@link ToolbarDataProvider}.
- */
+/** Instrumentation tests for {@link ToolbarDataProvider}. */
 @RunWith(ChromeJUnit4ClassRunner.class)
 @CommandLineFlags.Add({ChromeSwitches.DISABLE_FIRST_RUN_EXPERIENCE})
 @Restriction(UiRestriction.RESTRICTION_TYPE_PHONE)
 @Batch(PER_CLASS)
 public class ToolbarDataProviderTest {
-    @Rule
-    public TestRule mProcessor = new Features.InstrumentationProcessor();
+    @Rule public TestRule mProcessor = new Features.InstrumentationProcessor();
 
     @Rule
     public ChromeTabbedActivityTestRule mActivityTestRule = new ChromeTabbedActivityTestRule();
@@ -51,22 +48,24 @@ public class ToolbarDataProviderTest {
     @Test
     @MediumTest
     public void testPrimaryOTRProfileUsedForIncognitoTabbedActivity() {
-        mActivityTestRule.loadUrlInNewTab("about:blank", /*incognito=*/true);
+        mActivityTestRule.loadUrlInNewTab("about:blank", /* incognito= */ true);
         ToolbarPhone toolbar = mActivityTestRule.getActivity().findViewById(R.id.toolbar);
-        TestThreadUtils.runOnUiThreadBlocking(() -> {
-            Profile profile = toolbar.getToolbarDataProvider().getProfile();
-            assertTrue(profile.isPrimaryOTRProfile());
-        });
+        TestThreadUtils.runOnUiThreadBlocking(
+                () -> {
+                    Profile profile = toolbar.getToolbarDataProvider().getProfile();
+                    assertTrue(profile.isPrimaryOTRProfile());
+                });
     }
 
     @Test
     @MediumTest
     public void testRegularProfileUsedForRegularTabbedActivity() {
-        mActivityTestRule.loadUrlInNewTab("about:blank", /*incognito=*/false);
+        mActivityTestRule.loadUrlInNewTab("about:blank", /* incognito= */ false);
         ToolbarPhone toolbar = mActivityTestRule.getActivity().findViewById(R.id.toolbar);
-        TestThreadUtils.runOnUiThreadBlocking(() -> {
-            Profile profile = toolbar.getToolbarDataProvider().getProfile();
-            assertFalse(profile.isOffTheRecord());
-        });
+        TestThreadUtils.runOnUiThreadBlocking(
+                () -> {
+                    Profile profile = toolbar.getToolbarDataProvider().getProfile();
+                    assertFalse(profile.isOffTheRecord());
+                });
     }
 }

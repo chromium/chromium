@@ -67,41 +67,49 @@ public class OfflinePageArchivePublisherBridgeTest {
 
     private void initializeBridgeForProfile() throws InterruptedException {
         final Semaphore semaphore = new Semaphore(0);
-        PostTask.runOrPostTask(TaskTraits.UI_DEFAULT, () -> {
-            // Ensure we start in an offline state.
-            mOfflinePageBridge = OfflinePageBridge.getForProfile(mProfile);
-            if (mOfflinePageBridge == null || mOfflinePageBridge.isOfflinePageModelLoaded()) {
-                semaphore.release();
-                return;
-            }
-            mOfflinePageBridge.addObserver(new OfflinePageModelObserver() {
-                @Override
-                public void offlinePageModelLoaded() {
-                    semaphore.release();
-                    mOfflinePageBridge.removeObserver(this);
-                }
-            });
-        });
+        PostTask.runOrPostTask(
+                TaskTraits.UI_DEFAULT,
+                () -> {
+                    // Ensure we start in an offline state.
+                    mOfflinePageBridge = OfflinePageBridge.getForProfile(mProfile);
+                    if (mOfflinePageBridge == null
+                            || mOfflinePageBridge.isOfflinePageModelLoaded()) {
+                        semaphore.release();
+                        return;
+                    }
+                    mOfflinePageBridge.addObserver(
+                            new OfflinePageModelObserver() {
+                                @Override
+                                public void offlinePageModelLoaded() {
+                                    semaphore.release();
+                                    mOfflinePageBridge.removeObserver(this);
+                                }
+                            });
+                });
         Assert.assertTrue(semaphore.tryAcquire(TIMEOUT_MS, TimeUnit.MILLISECONDS));
     }
 
     @Before
     public void setUp() throws Exception {
-        TestThreadUtils.runOnUiThreadBlocking(() -> {
-            // Ensure we start in an offline state.
-            NetworkChangeNotifier.forceConnectivityState(false);
-            if (!NetworkChangeNotifier.isInitialized()) {
-                NetworkChangeNotifier.init();
-            }
-        });
+        TestThreadUtils.runOnUiThreadBlocking(
+                () -> {
+                    // Ensure we start in an offline state.
+                    NetworkChangeNotifier.forceConnectivityState(false);
+                    if (!NetworkChangeNotifier.isInitialized()) {
+                        NetworkChangeNotifier.init();
+                    }
+                });
 
         TestThreadUtils.runOnUiThreadBlocking(
-                () -> { mProfile = Profile.getLastUsedRegularProfile(); });
+                () -> {
+                    mProfile = Profile.getLastUsedRegularProfile();
+                });
         initializeBridgeForProfile();
         Assert.assertNotNull(mOfflinePageBridge);
 
-        mTestServer = EmbeddedTestServer.createAndStartServer(
-                ApplicationProvider.getApplicationContext());
+        mTestServer =
+                EmbeddedTestServer.createAndStartServer(
+                        ApplicationProvider.getApplicationContext());
         mTestPage = mTestServer.getURL(TEST_PAGE);
     }
 
@@ -112,38 +120,52 @@ public class OfflinePageArchivePublisherBridgeTest {
 
     @Test
     @SmallTest
-    @MaxAndroidSdkLevel(value = Build.VERSION_CODES.P,
-            reason = "On Android Q+, publish offline pages to the downloads collection "
-                    + "rather than DownloadManager.")
-    public void
-    testAddCompletedDownload() throws InterruptedException, TimeoutException {
+    @MaxAndroidSdkLevel(
+            value = Build.VERSION_CODES.P,
+            reason =
+                    "On Android Q+, publish offline pages to the downloads collection "
+                            + "rather than DownloadManager.")
+    public void testAddCompletedDownload() throws InterruptedException, TimeoutException {
         Assert.assertTrue(OfflinePageArchivePublisherBridge.isAndroidDownloadManagerInstalled());
 
         sActivityTestRule.loadUrl(mTestPage);
         savePage(TEST_CLIENT_ID);
         OfflinePageItem page = OfflineTestUtil.getAllPages().get(0);
 
-        long downloadId = OfflinePageArchivePublisherBridge.addCompletedDownload(page.getTitle(),
-                "description", page.getFilePath(), page.getFileSize(), page.getUrl(), "");
+        long downloadId =
+                OfflinePageArchivePublisherBridge.addCompletedDownload(
+                        page.getTitle(),
+                        "description",
+                        page.getFilePath(),
+                        page.getFileSize(),
+                        page.getUrl(),
+                        "");
 
         Assert.assertNotEquals(0L, downloadId);
     }
 
     @Test
     @SmallTest
-    @MaxAndroidSdkLevel(value = Build.VERSION_CODES.P,
-            reason = "On Android Q+, publish offline pages to the downloads collection "
-                    + "rather than DownloadManager.")
-    public void
-    testRemove() throws InterruptedException, TimeoutException {
+    @MaxAndroidSdkLevel(
+            value = Build.VERSION_CODES.P,
+            reason =
+                    "On Android Q+, publish offline pages to the downloads collection "
+                            + "rather than DownloadManager.")
+    public void testRemove() throws InterruptedException, TimeoutException {
         Assert.assertTrue(OfflinePageArchivePublisherBridge.isAndroidDownloadManagerInstalled());
 
         sActivityTestRule.loadUrl(mTestPage);
         savePage(TEST_CLIENT_ID);
         OfflinePageItem page = OfflineTestUtil.getAllPages().get(0);
 
-        long downloadId = OfflinePageArchivePublisherBridge.addCompletedDownload(page.getTitle(),
-                "description", page.getFilePath(), page.getFileSize(), page.getUrl(), "");
+        long downloadId =
+                OfflinePageArchivePublisherBridge.addCompletedDownload(
+                        page.getTitle(),
+                        "description",
+                        page.getFilePath(),
+                        page.getFileSize(),
+                        page.getUrl(),
+                        "");
 
         Assert.assertNotEquals(0L, downloadId);
 
@@ -177,16 +199,16 @@ public class OfflinePageArchivePublisherBridgeTest {
      * Tests that Chrome will gracefully handle Android not being able to generate unique filenames
      * with a large enough unique number. See https://crbug.com/1010916#c2 for context.
      *
-     * TODO(https://crbug.com/1068408): This test fails on Android Q/10 (SDK 29). Leaving it enabled
-     * for now as there's currently no bot running tests with that OS version.
+     * <p>TODO(https://crbug.com/1068408): This test fails on Android Q/10 (SDK 29). Leaving it
+     * enabled for now as there's currently no bot running tests with that OS version.
      */
     @Test
     @SmallTest
     @MinAndroidSdkLevel(29)
     @DisabledTest(message = "https://crbug.com/1068408")
     public void
-    testPublishArchiveToDownloadsCollection_NoCrashWhenAndroidCantGenerateUniqueFilename()
-            throws InterruptedException, TimeoutException {
+            testPublishArchiveToDownloadsCollection_NoCrashWhenAndroidCantGenerateUniqueFilename()
+                    throws InterruptedException, TimeoutException {
         // Save a page and publish.
         sActivityTestRule.loadUrl(mTestPage);
         savePage(TEST_CLIENT_ID);
@@ -194,7 +216,8 @@ public class OfflinePageArchivePublisherBridgeTest {
 
         final int supportedDuplicatesCount = 32;
         for (int i = 0; i < supportedDuplicatesCount; i++) {
-            Assert.assertFalse("At re-publish iteration #" + i,
+            Assert.assertFalse(
+                    "At re-publish iteration #" + i,
                     OfflinePageArchivePublisherBridge.publishArchiveToDownloadsCollection(page)
                             .isEmpty());
         }
@@ -208,16 +231,20 @@ public class OfflinePageArchivePublisherBridgeTest {
     private void savePage(final ClientId clientId) throws InterruptedException {
         final Semaphore semaphore = new Semaphore(0);
         final AtomicInteger result = new AtomicInteger(SavePageResult.MAX_VALUE);
-        TestThreadUtils.runOnUiThreadBlocking(() -> {
-            mOfflinePageBridge.savePage(
-                    sActivityTestRule.getWebContents(), clientId, new SavePageCallback() {
-                        @Override
-                        public void onSavePageDone(int savePageResult, String url, long offlineId) {
-                            result.set(savePageResult);
-                            semaphore.release();
-                        }
-                    });
-        });
+        TestThreadUtils.runOnUiThreadBlocking(
+                () -> {
+                    mOfflinePageBridge.savePage(
+                            sActivityTestRule.getWebContents(),
+                            clientId,
+                            new SavePageCallback() {
+                                @Override
+                                public void onSavePageDone(
+                                        int savePageResult, String url, long offlineId) {
+                                    result.set(savePageResult);
+                                    semaphore.release();
+                                }
+                            });
+                });
         Assert.assertTrue(semaphore.tryAcquire(TIMEOUT_MS, TimeUnit.MILLISECONDS));
         Assert.assertEquals(SavePageResult.SUCCESS, result.get());
     }

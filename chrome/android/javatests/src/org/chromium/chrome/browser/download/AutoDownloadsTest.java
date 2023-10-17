@@ -32,14 +32,11 @@ import org.chromium.ui.modaldialog.ModalDialogManager.ModalDialogType;
 
 import java.util.ArrayList;
 
-/**
- * Test suite for multiple downloads permissions requests.
- */
+/** Test suite for multiple downloads permissions requests. */
 @RunWith(ChromeJUnit4ClassRunner.class)
 @CommandLineFlags.Add({ChromeSwitches.DISABLE_FIRST_RUN_EXPERIENCE})
 public class AutoDownloadsTest implements CustomMainActivityStart {
-    @Rule
-    public DownloadTestRule mDownloadTestRule = new DownloadTestRule(this);
+    @Rule public DownloadTestRule mDownloadTestRule = new DownloadTestRule(this);
 
     private static final String TEST_FILE =
             "/content/test/data/android/auto_downloads_permissions.html";
@@ -52,8 +49,9 @@ public class AutoDownloadsTest implements CustomMainActivityStart {
 
     @Override
     public void customMainActivityStart() throws InterruptedException {
-        mTestServer = EmbeddedTestServer.createAndStartServer(
-                ApplicationProvider.getApplicationContext());
+        mTestServer =
+                EmbeddedTestServer.createAndStartServer(
+                        ApplicationProvider.getApplicationContext());
 
         mDownloadTestRule.startMainActivityOnBlankPage();
     }
@@ -65,11 +63,13 @@ public class AutoDownloadsTest implements CustomMainActivityStart {
     }
 
     private void waitForDownloadDialog(ModalDialogManager manager) {
-        CriteriaHelper.pollUiThread(() -> {
-            Criteria.checkThat(manager.isShowing(), Matchers.is(true));
-            Criteria.checkThat(manager.getCurrentPresenterForTest(),
-                    Matchers.is(manager.getPresenterForTest(ModalDialogType.APP)));
-        });
+        CriteriaHelper.pollUiThread(
+                () -> {
+                    Criteria.checkThat(manager.isShowing(), Matchers.is(true));
+                    Criteria.checkThat(
+                            manager.getCurrentPresenterForTest(),
+                            Matchers.is(manager.getPresenterForTest(ModalDialogType.APP)));
+                });
     }
 
     @Test
@@ -78,10 +78,15 @@ public class AutoDownloadsTest implements CustomMainActivityStart {
     public void testAutoDownloadsDialog() throws Exception {
         try (CloseableOnMainThread ignored = CloseableOnMainThread.StrictMode.allowDiskWrites()) {
             ArrayList<DirectoryOption> dirOptions = new ArrayList<>();
-            dirOptions.add(new DirectoryOption("Download", PathUtils.getExternalStorageDirectory(),
-                    1024000, 1024000, DirectoryOption.DownloadLocationDirectoryType.DEFAULT));
-            DownloadDirectoryProvider.getInstance().setDirectoryProviderForTesting(
-                    new TestDownloadDirectoryProvider(dirOptions));
+            dirOptions.add(
+                    new DirectoryOption(
+                            "Download",
+                            PathUtils.getExternalStorageDirectory(),
+                            1024000,
+                            1024000,
+                            DirectoryOption.DownloadLocationDirectoryType.DEFAULT));
+            DownloadDirectoryProvider.getInstance()
+                    .setDirectoryProviderForTesting(new TestDownloadDirectoryProvider(dirOptions));
         }
 
         mDownloadTestRule.loadUrl(mTestServer.getURL(TEST_FILE));
@@ -91,11 +96,14 @@ public class AutoDownloadsTest implements CustomMainActivityStart {
         PermissionTestRule.waitForDialog(activity);
         PermissionTestRule.replyToDialog(true, activity);
 
-        CriteriaHelper.pollUiThread(() -> {
-            Criteria.checkThat(
-                    mDownloadTestRule.hasDownloaded("test-image0.png", null), Matchers.is(true));
-            Criteria.checkThat(
-                    mDownloadTestRule.hasDownloaded("test-image1.png", null), Matchers.is(true));
-        });
+        CriteriaHelper.pollUiThread(
+                () -> {
+                    Criteria.checkThat(
+                            mDownloadTestRule.hasDownloaded("test-image0.png", null),
+                            Matchers.is(true));
+                    Criteria.checkThat(
+                            mDownloadTestRule.hasDownloaded("test-image1.png", null),
+                            Matchers.is(true));
+                });
     }
 }

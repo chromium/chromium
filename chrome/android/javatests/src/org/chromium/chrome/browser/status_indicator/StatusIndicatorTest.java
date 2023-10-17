@@ -54,8 +54,8 @@ import org.chromium.content_public.browser.test.util.TestThreadUtils;
 import org.chromium.ui.test.util.UiRestriction;
 
 /**
- * Integration tests for status indicator covering related code in
- * {@link StatusIndicatorCoordinator} and {@link TabbedRootUiCoordinator}.
+ * Integration tests for status indicator covering related code in {@link
+ * StatusIndicatorCoordinator} and {@link TabbedRootUiCoordinator}.
  */
 @RunWith(ChromeJUnit4ClassRunner.class)
 @CommandLineFlags.Add({ChromeSwitches.DISABLE_FIRST_RUN_EXPERIENCE})
@@ -75,9 +75,10 @@ public class StatusIndicatorTest {
     public void setUp() throws InterruptedException {
         TabbedRootUiCoordinator.setDisableStatusIndicatorAnimationsForTesting(true);
         mActivityTestRule.startMainActivityOnBlankPage();
-        mStatusIndicatorCoordinator = ((TabbedRootUiCoordinator) mActivityTestRule.getActivity()
-                                               .getRootUiCoordinatorForTesting())
-                                              .getStatusIndicatorCoordinatorForTesting();
+        mStatusIndicatorCoordinator =
+                ((TabbedRootUiCoordinator)
+                                mActivityTestRule.getActivity().getRootUiCoordinatorForTesting())
+                        .getStatusIndicatorCoordinatorForTesting();
         mStatusIndicatorSceneLayer = mStatusIndicatorCoordinator.getSceneLayer();
         mControlContainer = mActivityTestRule.getActivity().findViewById(R.id.control_container);
         mBrowserControlsStateProvider = mActivityTestRule.getActivity().getBrowserControlsManager();
@@ -88,61 +89,89 @@ public class StatusIndicatorTest {
     public void testInitialState() {
         InstrumentationRegistry.getInstrumentation().waitForIdleSync();
 
-        Assert.assertNull("Status indicator shouldn't be in the hierarchy initially.",
-                getStatusIndicator());
-        Assert.assertNotNull("Status indicator stub should be in the hierarchy initially.",
+        Assert.assertNull(
+                "Status indicator shouldn't be in the hierarchy initially.", getStatusIndicator());
+        Assert.assertNotNull(
+                "Status indicator stub should be in the hierarchy initially.",
                 mActivityTestRule.getActivity().findViewById(R.id.status_indicator_stub));
-        Assert.assertFalse("Wrong initial composited view visibility.",
+        Assert.assertFalse(
+                "Wrong initial composited view visibility.",
                 mStatusIndicatorSceneLayer.isSceneOverlayTreeShowing());
-        Assert.assertEquals("Wrong initial control container top margin.", 0,
+        Assert.assertEquals(
+                "Wrong initial control container top margin.",
+                0,
                 getTopMarginOf(mControlContainer));
     }
 
     @Test
     @MediumTest
-    @DisableIf.Build(message = "https://crbug.com/1473240", sdk_is_greater_than = VERSION_CODES.M,
+    @DisableIf.Build(
+            message = "https://crbug.com/1473240",
+            sdk_is_greater_than = VERSION_CODES.M,
             sdk_is_less_than = VERSION_CODES.P)
     public void testShowAndHide() {
         InstrumentationRegistry.getInstrumentation().waitForIdleSync();
 
-        TestThreadUtils.runOnUiThreadBlocking(() -> mStatusIndicatorCoordinator.show(
-        "Status", null, Color.BLACK, Color.WHITE, Color.WHITE));
+        TestThreadUtils.runOnUiThreadBlocking(
+                () ->
+                        mStatusIndicatorCoordinator.show(
+                                "Status", null, Color.BLACK, Color.WHITE, Color.WHITE));
         InstrumentationRegistry.getInstrumentation().waitForIdleSync();
 
         // Wait until the status indicator finishes animating, or becomes fully visible.
-        CriteriaHelper.pollUiThread(() -> {
-            Criteria.checkThat(mBrowserControlsStateProvider.getTopControlsMinHeightOffset(),
-                    Matchers.is(getStatusIndicator().getHeight()));
-        });
+        CriteriaHelper.pollUiThread(
+                () -> {
+                    Criteria.checkThat(
+                            mBrowserControlsStateProvider.getTopControlsMinHeightOffset(),
+                            Matchers.is(getStatusIndicator().getHeight()));
+                });
 
         // Now, the Android view should be visible.
-        Assert.assertEquals("Wrong Android view visibility.", View.VISIBLE,
+        Assert.assertEquals(
+                "Wrong Android view visibility.",
+                View.VISIBLE,
                 getStatusIndicator().getVisibility());
-        Assert.assertEquals("Wrong background color.", Color.BLACK,
+        Assert.assertEquals(
+                "Wrong background color.",
+                Color.BLACK,
                 ((ColorDrawable) getStatusIndicator().getBackground()).getColor());
 
-        TestThreadUtils.runOnUiThreadBlocking(() -> mStatusIndicatorCoordinator.updateContent(
-                "Exit status", null, Color.WHITE, Color.BLACK, Color.BLACK, () -> {}));
+        TestThreadUtils.runOnUiThreadBlocking(
+                () ->
+                        mStatusIndicatorCoordinator.updateContent(
+                                "Exit status",
+                                null,
+                                Color.WHITE,
+                                Color.BLACK,
+                                Color.BLACK,
+                                () -> {}));
         InstrumentationRegistry.getInstrumentation().waitForIdleSync();
 
         // The Android view should be visible.
-        Assert.assertEquals("Wrong Android view visibility.", View.VISIBLE,
+        Assert.assertEquals(
+                "Wrong Android view visibility.",
+                View.VISIBLE,
                 getStatusIndicator().getVisibility());
-        Assert.assertEquals("Wrong background color.", Color.WHITE,
+        Assert.assertEquals(
+                "Wrong background color.",
+                Color.WHITE,
                 ((ColorDrawable) getStatusIndicator().getBackground()).getColor());
 
         TestThreadUtils.runOnUiThreadBlocking(mStatusIndicatorCoordinator::hide);
         InstrumentationRegistry.getInstrumentation().waitForIdleSync();
 
         // Wait until the status indicator finishes animating, or becomes fully hidden.
-        CriteriaHelper.pollUiThread(() -> {
-            Criteria.checkThat(
-                    mBrowserControlsStateProvider.getTopControlsMinHeightOffset(), Matchers.is(0));
-        });
+        CriteriaHelper.pollUiThread(
+                () -> {
+                    Criteria.checkThat(
+                            mBrowserControlsStateProvider.getTopControlsMinHeightOffset(),
+                            Matchers.is(0));
+                });
 
         Assert.assertEquals(
                 "Wrong Android view visibility.", View.GONE, getStatusIndicator().getVisibility());
-        Assert.assertFalse("Composited view shouldn't be visible.",
+        Assert.assertFalse(
+                "Composited view shouldn't be visible.",
                 mStatusIndicatorSceneLayer.isSceneOverlayTreeShowing());
     }
 
@@ -151,46 +180,61 @@ public class StatusIndicatorTest {
     public void testShowAfterHide() {
         InstrumentationRegistry.getInstrumentation().waitForIdleSync();
 
-        TestThreadUtils.runOnUiThreadBlocking(() -> mStatusIndicatorCoordinator.show(
-                "Status", null, Color.BLACK, Color.WHITE, Color.WHITE));
+        TestThreadUtils.runOnUiThreadBlocking(
+                () ->
+                        mStatusIndicatorCoordinator.show(
+                                "Status", null, Color.BLACK, Color.WHITE, Color.WHITE));
         InstrumentationRegistry.getInstrumentation().waitForIdleSync();
 
         // Wait until the status indicator finishes animating, or becomes fully visible.
-        CriteriaHelper.pollUiThread(() -> {
-            Criteria.checkThat(mBrowserControlsStateProvider.getTopControlsMinHeightOffset(),
-                    Matchers.is(getStatusIndicator().getHeight()));
-        });
+        CriteriaHelper.pollUiThread(
+                () -> {
+                    Criteria.checkThat(
+                            mBrowserControlsStateProvider.getTopControlsMinHeightOffset(),
+                            Matchers.is(getStatusIndicator().getHeight()));
+                });
 
         // Now, the Android view should be visible.
-        Assert.assertEquals("Wrong Android view visibility.", View.VISIBLE,
+        Assert.assertEquals(
+                "Wrong Android view visibility.",
+                View.VISIBLE,
                 getStatusIndicator().getVisibility());
 
         TestThreadUtils.runOnUiThreadBlocking(mStatusIndicatorCoordinator::hide);
         InstrumentationRegistry.getInstrumentation().waitForIdleSync();
 
         // Wait until the status indicator finishes animating, or becomes fully hidden.
-        CriteriaHelper.pollUiThread(() -> {
-            Criteria.checkThat(
-                    mBrowserControlsStateProvider.getTopControlsMinHeightOffset(), Matchers.is(0));
-        });
+        CriteriaHelper.pollUiThread(
+                () -> {
+                    Criteria.checkThat(
+                            mBrowserControlsStateProvider.getTopControlsMinHeightOffset(),
+                            Matchers.is(0));
+                });
 
         Assert.assertEquals(
                 "Wrong Android view visibility.", View.GONE, getStatusIndicator().getVisibility());
-        Assert.assertFalse("Composited view shouldn't be visible.",
+        Assert.assertFalse(
+                "Composited view shouldn't be visible.",
                 mStatusIndicatorSceneLayer.isSceneOverlayTreeShowing());
 
-        TestThreadUtils.runOnUiThreadBlocking(() -> mStatusIndicatorCoordinator.show(
-                "Status", null, Color.BLACK, Color.WHITE, Color.WHITE));
+        TestThreadUtils.runOnUiThreadBlocking(
+                () ->
+                        mStatusIndicatorCoordinator.show(
+                                "Status", null, Color.BLACK, Color.WHITE, Color.WHITE));
         InstrumentationRegistry.getInstrumentation().waitForIdleSync();
 
         // Wait until the status indicator finishes animating, or becomes fully visible.
-        CriteriaHelper.pollUiThread(() -> {
-            Criteria.checkThat(mBrowserControlsStateProvider.getTopControlsMinHeightOffset(),
-                    Matchers.is(getStatusIndicator().getHeight()));
-        });
+        CriteriaHelper.pollUiThread(
+                () -> {
+                    Criteria.checkThat(
+                            mBrowserControlsStateProvider.getTopControlsMinHeightOffset(),
+                            Matchers.is(getStatusIndicator().getHeight()));
+                });
 
         // Now, the Android view should be visible.
-        Assert.assertEquals("Wrong Android view visibility.", View.VISIBLE,
+        Assert.assertEquals(
+                "Wrong Android view visibility.",
+                View.VISIBLE,
                 getStatusIndicator().getVisibility());
     }
 
@@ -209,58 +253,79 @@ public class StatusIndicatorTest {
         // first time and the corresponding ViewStub is inflated.
         onView(withId(R.id.status_indicator)).check(doesNotExist());
         onView(withId(R.id.control_container)).check(matches(withTopMargin(0)));
-        Assert.assertFalse("Wrong initial composited view visibility.",
+        Assert.assertFalse(
+                "Wrong initial composited view visibility.",
                 mStatusIndicatorSceneLayer.isSceneOverlayTreeShowing());
 
-        TestThreadUtils.runOnUiThreadBlocking(() -> {
-            mStatusIndicatorCoordinator.show("Status", null, Color.BLACK, Color.WHITE, Color.WHITE);
-            mStatusIndicatorCoordinator.getMediatorForTesting().finishAnimationsForTesting();
-        });
+        TestThreadUtils.runOnUiThreadBlocking(
+                () -> {
+                    mStatusIndicatorCoordinator.show(
+                            "Status", null, Color.BLACK, Color.WHITE, Color.WHITE);
+                    mStatusIndicatorCoordinator
+                            .getMediatorForTesting()
+                            .finishAnimationsForTesting();
+                });
 
         // The status indicator will be immediately visible.
         onView(withId(R.id.status_indicator)).check(matches(withEffectiveVisibility(VISIBLE)));
 
-        CriteriaHelper.pollUiThread(() -> {
-            Criteria.checkThat(mBrowserControlsStateProvider.getTopControlsMinHeightOffset(),
-                    Matchers.is(getStatusIndicator().getHeight()));
-        });
+        CriteriaHelper.pollUiThread(
+                () -> {
+                    Criteria.checkThat(
+                            mBrowserControlsStateProvider.getTopControlsMinHeightOffset(),
+                            Matchers.is(getStatusIndicator().getHeight()));
+                });
 
         onView(withId(R.id.control_container))
                 .check(matches(withTopMargin(getStatusIndicator().getHeight())));
         onView(withId(R.id.secondary_tasks_surface_view))
-                .check(matches(
-                        withTopMargin(mBrowserControlsStateProvider.getTopControlsHeight())));
+                .check(
+                        matches(
+                                withTopMargin(
+                                        mBrowserControlsStateProvider.getTopControlsHeight())));
 
-        TestThreadUtils.runOnUiThreadBlocking(() -> {
-            mStatusIndicatorCoordinator.updateContent(
-                    "Exit status", null, Color.WHITE, Color.BLACK, Color.BLACK, () -> {});
-            mStatusIndicatorCoordinator.getMediatorForTesting().finishAnimationsForTesting();
-        });
+        TestThreadUtils.runOnUiThreadBlocking(
+                () -> {
+                    mStatusIndicatorCoordinator.updateContent(
+                            "Exit status", null, Color.WHITE, Color.BLACK, Color.BLACK, () -> {});
+                    mStatusIndicatorCoordinator
+                            .getMediatorForTesting()
+                            .finishAnimationsForTesting();
+                });
 
         // #updateContent shouldn't change the layout.
         onView(withId(R.id.status_indicator)).check(matches(withEffectiveVisibility(VISIBLE)));
         onView(withId(R.id.control_container))
                 .check(matches(withTopMargin(getStatusIndicator().getHeight())));
         onView(withId(R.id.secondary_tasks_surface_view))
-                .check(matches(
-                        withTopMargin(mBrowserControlsStateProvider.getTopControlsHeight())));
+                .check(
+                        matches(
+                                withTopMargin(
+                                        mBrowserControlsStateProvider.getTopControlsHeight())));
 
-        TestThreadUtils.runOnUiThreadBlocking(() -> {
-            mStatusIndicatorCoordinator.hide();
-            mStatusIndicatorCoordinator.getMediatorForTesting().finishAnimationsForTesting();
-        });
+        TestThreadUtils.runOnUiThreadBlocking(
+                () -> {
+                    mStatusIndicatorCoordinator.hide();
+                    mStatusIndicatorCoordinator
+                            .getMediatorForTesting()
+                            .finishAnimationsForTesting();
+                });
 
         // Wait until the status indicator finishes animating, or becomes fully hidden.
-        CriteriaHelper.pollUiThread(() -> {
-            Criteria.checkThat(
-                    mBrowserControlsStateProvider.getTopControlsMinHeightOffset(), Matchers.is(0));
-        });
+        CriteriaHelper.pollUiThread(
+                () -> {
+                    Criteria.checkThat(
+                            mBrowserControlsStateProvider.getTopControlsMinHeightOffset(),
+                            Matchers.is(0));
+                });
 
         onView(withId(R.id.status_indicator)).check(matches(withEffectiveVisibility(GONE)));
         onView(withId(R.id.control_container)).check(matches(withTopMargin(0)));
         onView(withId(R.id.secondary_tasks_surface_view))
-                .check(matches(
-                        withTopMargin(mBrowserControlsStateProvider.getTopControlsHeight())));
+                .check(
+                        matches(
+                                withTopMargin(
+                                        mBrowserControlsStateProvider.getTopControlsHeight())));
     }
 
     @Test
@@ -278,19 +343,26 @@ public class StatusIndicatorTest {
         onView(withId(R.id.status_indicator)).check(doesNotExist());
         onView(withId(R.id.control_container)).check(matches(withTopMargin(0)));
         onView(withId(viewId)).check(matches(withTopMargin(0)));
-        Assert.assertFalse("Wrong initial composited view visibility.",
+        Assert.assertFalse(
+                "Wrong initial composited view visibility.",
                 mStatusIndicatorSceneLayer.isSceneOverlayTreeShowing());
 
-        TestThreadUtils.runOnUiThreadBlocking(() -> {
-            mStatusIndicatorCoordinator.show("Status", null, Color.BLACK, Color.WHITE, Color.WHITE);
-            mStatusIndicatorCoordinator.getMediatorForTesting().finishAnimationsForTesting();
-        });
+        TestThreadUtils.runOnUiThreadBlocking(
+                () -> {
+                    mStatusIndicatorCoordinator.show(
+                            "Status", null, Color.BLACK, Color.WHITE, Color.WHITE);
+                    mStatusIndicatorCoordinator
+                            .getMediatorForTesting()
+                            .finishAnimationsForTesting();
+                });
 
         // Wait until the status indicator finishes animating.
-        CriteriaHelper.pollUiThread(() -> {
-            Criteria.checkThat(mBrowserControlsStateProvider.getTopControlsMinHeightOffset(),
-                    Matchers.is(getStatusIndicator().getHeight()));
-        });
+        CriteriaHelper.pollUiThread(
+                () -> {
+                    Criteria.checkThat(
+                            mBrowserControlsStateProvider.getTopControlsMinHeightOffset(),
+                            Matchers.is(getStatusIndicator().getHeight()));
+                });
 
         // The status indicator will be immediately visible.
         onView(withId(R.id.status_indicator)).check(matches(withEffectiveVisibility(VISIBLE)));
@@ -298,11 +370,14 @@ public class StatusIndicatorTest {
                 .check(matches(withTopMargin(getStatusIndicator().getHeight())));
         onView(withId(viewId)).check(matches(withTopMargin(getStatusIndicator().getHeight())));
 
-        TestThreadUtils.runOnUiThreadBlocking(() -> {
-            mStatusIndicatorCoordinator.updateContent(
-                    "Exit status", null, Color.WHITE, Color.BLACK, Color.BLACK, () -> {});
-            mStatusIndicatorCoordinator.getMediatorForTesting().finishAnimationsForTesting();
-        });
+        TestThreadUtils.runOnUiThreadBlocking(
+                () -> {
+                    mStatusIndicatorCoordinator.updateContent(
+                            "Exit status", null, Color.WHITE, Color.BLACK, Color.BLACK, () -> {});
+                    mStatusIndicatorCoordinator
+                            .getMediatorForTesting()
+                            .finishAnimationsForTesting();
+                });
 
         // #updateContent shouldn't change the layout.
         onView(withId(R.id.status_indicator)).check(matches(withEffectiveVisibility(VISIBLE)));
@@ -310,16 +385,21 @@ public class StatusIndicatorTest {
                 .check(matches(withTopMargin(getStatusIndicator().getHeight())));
         onView(withId(viewId)).check(matches(withTopMargin(getStatusIndicator().getHeight())));
 
-        TestThreadUtils.runOnUiThreadBlocking(() -> {
-            mStatusIndicatorCoordinator.hide();
-            mStatusIndicatorCoordinator.getMediatorForTesting().finishAnimationsForTesting();
-        });
+        TestThreadUtils.runOnUiThreadBlocking(
+                () -> {
+                    mStatusIndicatorCoordinator.hide();
+                    mStatusIndicatorCoordinator
+                            .getMediatorForTesting()
+                            .finishAnimationsForTesting();
+                });
 
         // Wait until the status indicator finishes animating, or becomes fully hidden.
-        CriteriaHelper.pollUiThread(() -> {
-            Criteria.checkThat(
-                    mBrowserControlsStateProvider.getTopControlsMinHeightOffset(), Matchers.is(0));
-        });
+        CriteriaHelper.pollUiThread(
+                () -> {
+                    Criteria.checkThat(
+                            mBrowserControlsStateProvider.getTopControlsMinHeightOffset(),
+                            Matchers.is(0));
+                });
 
         onView(withId(R.id.status_indicator)).check(matches(withEffectiveVisibility(GONE)));
         onView(withId(R.id.control_container)).check(matches(withTopMargin(0)));
@@ -338,57 +418,79 @@ public class StatusIndicatorTest {
         onView(withId(R.id.status_indicator)).check(doesNotExist());
         onView(withId(R.id.control_container)).check(matches(withTopMargin(0)));
         onView(withId(R.id.recent_tabs_root))
-                .check(matches(
-                        withTopMargin(mBrowserControlsStateProvider.getTopControlsHeight())));
+                .check(
+                        matches(
+                                withTopMargin(
+                                        mBrowserControlsStateProvider.getTopControlsHeight())));
 
-        TestThreadUtils.runOnUiThreadBlocking(() -> {
-            mStatusIndicatorCoordinator.show("Status", null, Color.BLACK, Color.WHITE, Color.WHITE);
-            mStatusIndicatorCoordinator.getMediatorForTesting().finishAnimationsForTesting();
-        });
+        TestThreadUtils.runOnUiThreadBlocking(
+                () -> {
+                    mStatusIndicatorCoordinator.show(
+                            "Status", null, Color.BLACK, Color.WHITE, Color.WHITE);
+                    mStatusIndicatorCoordinator
+                            .getMediatorForTesting()
+                            .finishAnimationsForTesting();
+                });
 
         // Wait until the status indicator finishes animating.
-        CriteriaHelper.pollUiThread(() -> {
-            Criteria.checkThat(mBrowserControlsStateProvider.getTopControlsMinHeightOffset(),
-                    Matchers.is(getStatusIndicator().getHeight()));
-        });
+        CriteriaHelper.pollUiThread(
+                () -> {
+                    Criteria.checkThat(
+                            mBrowserControlsStateProvider.getTopControlsMinHeightOffset(),
+                            Matchers.is(getStatusIndicator().getHeight()));
+                });
 
         onView(withId(R.id.status_indicator)).check(matches(withEffectiveVisibility(VISIBLE)));
         onView(withId(R.id.control_container))
                 .check(matches(withTopMargin(getStatusIndicator().getHeight())));
         onView(withId(R.id.recent_tabs_root))
-                .check(matches(
-                        withTopMargin(mBrowserControlsStateProvider.getTopControlsHeight())));
+                .check(
+                        matches(
+                                withTopMargin(
+                                        mBrowserControlsStateProvider.getTopControlsHeight())));
 
-        TestThreadUtils.runOnUiThreadBlocking(() -> {
-            mStatusIndicatorCoordinator.updateContent(
-                    "Exit status", null, Color.WHITE, Color.BLACK, Color.BLACK, () -> {});
-            mStatusIndicatorCoordinator.getMediatorForTesting().finishAnimationsForTesting();
-        });
+        TestThreadUtils.runOnUiThreadBlocking(
+                () -> {
+                    mStatusIndicatorCoordinator.updateContent(
+                            "Exit status", null, Color.WHITE, Color.BLACK, Color.BLACK, () -> {});
+                    mStatusIndicatorCoordinator
+                            .getMediatorForTesting()
+                            .finishAnimationsForTesting();
+                });
 
         // #updateContent shouldn't change the layout.
         onView(withId(R.id.status_indicator)).check(matches(withEffectiveVisibility(VISIBLE)));
         onView(withId(R.id.control_container))
                 .check(matches(withTopMargin(getStatusIndicator().getHeight())));
         onView(withId(R.id.recent_tabs_root))
-                .check(matches(
-                        withTopMargin(mBrowserControlsStateProvider.getTopControlsHeight())));
+                .check(
+                        matches(
+                                withTopMargin(
+                                        mBrowserControlsStateProvider.getTopControlsHeight())));
 
-        TestThreadUtils.runOnUiThreadBlocking(() -> {
-            mStatusIndicatorCoordinator.hide();
-            mStatusIndicatorCoordinator.getMediatorForTesting().finishAnimationsForTesting();
-        });
+        TestThreadUtils.runOnUiThreadBlocking(
+                () -> {
+                    mStatusIndicatorCoordinator.hide();
+                    mStatusIndicatorCoordinator
+                            .getMediatorForTesting()
+                            .finishAnimationsForTesting();
+                });
 
         // Wait until the status indicator finishes animating, or becomes fully hidden.
-        CriteriaHelper.pollUiThread(() -> {
-            Criteria.checkThat(
-                    mBrowserControlsStateProvider.getTopControlsMinHeightOffset(), Matchers.is(0));
-        });
+        CriteriaHelper.pollUiThread(
+                () -> {
+                    Criteria.checkThat(
+                            mBrowserControlsStateProvider.getTopControlsMinHeightOffset(),
+                            Matchers.is(0));
+                });
 
         onView(withId(R.id.status_indicator)).check(matches(withEffectiveVisibility(GONE)));
         onView(withId(R.id.control_container)).check(matches(withTopMargin(0)));
         onView(withId(R.id.recent_tabs_root))
-                .check(matches(
-                        withTopMargin(mBrowserControlsStateProvider.getTopControlsHeight())));
+                .check(
+                        matches(
+                                withTopMargin(
+                                        mBrowserControlsStateProvider.getTopControlsHeight())));
     }
 
     private View getStatusIndicator() {
@@ -398,17 +500,20 @@ public class StatusIndicatorTest {
     private static Matcher<View> withTopMargin(final int expected) {
         return new TypeSafeMatcher<View>() {
             private int mActual;
+
             @Override
             public boolean matchesSafely(final View view) {
                 mActual = getTopMarginOf(view);
                 return mActual == expected;
             }
+
             @Override
             public void describeTo(final Description description) {
                 // TODO(sinansahin): This is a work-around because the message from
                 // #describeMismatchSafely is ignored. If it is fixed one day, we can implement
                 // #describeMismatchSafely.
-                description.appendText("View should have a topMargin of " + expected)
+                description
+                        .appendText("View should have a topMargin of " + expected)
                         .appendText(System.lineSeparator())
                         .appendText("but actually has " + mActual);
             }

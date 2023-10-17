@@ -44,8 +44,7 @@ public class PasswordGenerationDialogTest {
     private String mGeneratedPassword = "generatedpassword";
     private String mExplanationString = "Explanation string.";
 
-    @Mock
-    private Callback<Boolean> mOnPasswordAcceptedOrRejectedCallback;
+    @Mock private Callback<Boolean> mOnPasswordAcceptedOrRejectedCallback;
 
     @ClassRule
     public static ChromeTabbedActivityTestRule sActivityTestRule =
@@ -55,18 +54,22 @@ public class PasswordGenerationDialogTest {
     public BlankCTATabInitialStateRule mBlankCTATabInitialStateRule =
             new BlankCTATabInitialStateRule(sActivityTestRule, false);
 
-    @Rule
-    public MockitoRule mMockitoRule = MockitoJUnit.rule().strictness(Strictness.STRICT_STUBS);
+    @Rule public MockitoRule mMockitoRule = MockitoJUnit.rule().strictness(Strictness.STRICT_STUBS);
 
     @Before
     public void setUp() throws InterruptedException {
-        mDialog = TestThreadUtils.runOnUiThreadBlockingNoException(() -> {
-            PasswordGenerationDialogCoordinator dialog = new PasswordGenerationDialogCoordinator(
-                    sActivityTestRule.getActivity().getWindowAndroid());
-            dialog.showDialog(
-                    mGeneratedPassword, mExplanationString, mOnPasswordAcceptedOrRejectedCallback);
-            return dialog;
-        });
+        mDialog =
+                TestThreadUtils.runOnUiThreadBlockingNoException(
+                        () -> {
+                            PasswordGenerationDialogCoordinator dialog =
+                                    new PasswordGenerationDialogCoordinator(
+                                            sActivityTestRule.getActivity().getWindowAndroid());
+                            dialog.showDialog(
+                                    mGeneratedPassword,
+                                    mExplanationString,
+                                    mOnPasswordAcceptedOrRejectedCallback);
+                            return dialog;
+                        });
     }
 
     @Test

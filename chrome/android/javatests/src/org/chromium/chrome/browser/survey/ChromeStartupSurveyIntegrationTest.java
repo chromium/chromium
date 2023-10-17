@@ -33,17 +33,19 @@ import org.chromium.ui.modelutil.PropertyModel;
 
 import java.util.List;
 
-/**
- * Integration test for {@link ChromeSurveyController} using {@link SurveyClient}.
- */
+/** Integration test for {@link ChromeSurveyController} using {@link SurveyClient}. */
 @RunWith(ChromeJUnit4ClassRunner.class)
-@CommandLineFlags.Add({"force-fieldtrials=Study/Group",
-        "force-fieldtrial-params=Study.Group:autodismiss_duration_ms/500/"
-                + TestSurveyUtils.TEST_SURVEY_TRIGGER_ID_OVERRIDE_TEMPLATE
-                + TestSurveyUtils.TEST_TRIGGER_ID_FOO})
-@Features.EnableFeatures({ChromeFeatureList.ANDROID_HATS_REFACTOR + "<Study",
-        ChromeFeatureList.CHROME_SURVEY_NEXT_ANDROID + "<Study",
-        ChromeFeatureList.MESSAGES_FOR_ANDROID_INFRASTRUCTURE + "<Study"})
+@CommandLineFlags.Add({
+    "force-fieldtrials=Study/Group",
+    "force-fieldtrial-params=Study.Group:autodismiss_duration_ms/500/"
+            + TestSurveyUtils.TEST_SURVEY_TRIGGER_ID_OVERRIDE_TEMPLATE
+            + TestSurveyUtils.TEST_TRIGGER_ID_FOO
+})
+@Features.EnableFeatures({
+    ChromeFeatureList.ANDROID_HATS_REFACTOR + "<Study",
+    ChromeFeatureList.CHROME_SURVEY_NEXT_ANDROID + "<Study",
+    ChromeFeatureList.MESSAGES_FOR_ANDROID_INFRASTRUCTURE + "<Study"
+})
 @Batch(Batch.PER_CLASS)
 public class ChromeStartupSurveyIntegrationTest {
     @Rule
@@ -52,6 +54,7 @@ public class ChromeStartupSurveyIntegrationTest {
     @Rule
     public TestSurveyUtils.TestSurveyComponentRule mTestSurveyComponentRule =
             new TestSurveyUtils.TestSurveyComponentRule();
+
     private MessageDispatcher mMessageDispatcher;
     private PropertyModel mSurveyMessage;
 
@@ -66,8 +69,11 @@ public class ChromeStartupSurveyIntegrationTest {
     @MediumTest
     public void acceptSurvey() {
         TestThreadUtils.runOnUiThreadBlocking(
-                () -> { mSurveyMessage.get(MessageBannerProperties.ON_PRIMARY_ACTION).get(); });
-        Assert.assertEquals("Last shown survey triggerId not match.",
+                () -> {
+                    mSurveyMessage.get(MessageBannerProperties.ON_PRIMARY_ACTION).get();
+                });
+        Assert.assertEquals(
+                "Last shown survey triggerId not match.",
                 TestSurveyUtils.TEST_TRIGGER_ID_FOO,
                 mTestSurveyComponentRule.getLastShownTriggerId());
     }
@@ -87,19 +93,23 @@ public class ChromeStartupSurveyIntegrationTest {
         Tab tab = mActivityTestRule.getActivity().getActivityTab();
         CriteriaHelper.pollUiThread(() -> !tab.isLoading() && tab.isUserInteractable());
 
-        TestThreadUtils.runOnUiThreadBlocking(() -> {
-            mMessageDispatcher = MessageDispatcherProvider.from(
-                    mActivityTestRule.getActivity().getWindowAndroid());
-        });
-        CriteriaHelper.pollUiThread(() -> {
-            mSurveyMessage = getSurveyMessage();
-            return mSurveyMessage != null;
-        });
+        TestThreadUtils.runOnUiThreadBlocking(
+                () -> {
+                    mMessageDispatcher =
+                            MessageDispatcherProvider.from(
+                                    mActivityTestRule.getActivity().getWindowAndroid());
+                });
+        CriteriaHelper.pollUiThread(
+                () -> {
+                    mSurveyMessage = getSurveyMessage();
+                    return mSurveyMessage != null;
+                });
     }
 
     private PropertyModel getSurveyMessage() {
-        List<MessageStateHandler> messages = MessagesTestHelper.getEnqueuedMessages(
-                mMessageDispatcher, MessageIdentifier.CHROME_SURVEY);
+        List<MessageStateHandler> messages =
+                MessagesTestHelper.getEnqueuedMessages(
+                        mMessageDispatcher, MessageIdentifier.CHROME_SURVEY);
         return messages.size() == 0 ? null : MessagesTestHelper.getCurrentMessage(messages.get(0));
     }
 }

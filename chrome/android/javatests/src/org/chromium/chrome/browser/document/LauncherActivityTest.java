@@ -36,9 +36,7 @@ import org.chromium.chrome.test.ChromeTabbedActivityTestRule;
 import java.util.List;
 import java.util.concurrent.atomic.AtomicReference;
 
-/**
- * Tests for launching Chrome.
- */
+/** Tests for launching Chrome. */
 @RunWith(ChromeJUnit4ClassRunner.class)
 @CommandLineFlags.Add({ChromeSwitches.DISABLE_FIRST_RUN_EXPERIENCE})
 public class LauncherActivityTest {
@@ -99,44 +97,52 @@ public class LauncherActivityTest {
 
         // Could crash after the activity is created, wait for the tab to stop loading.
         final ChromeActivity activity = (ChromeActivity) tryLaunchingChrome(intent);
-        CriteriaHelper.pollUiThread(() -> {
-            Tab tab = activity.getActivityTab();
-            Criteria.checkThat(tab, Matchers.notNullValue());
-            Criteria.checkThat(tab.isLoading(), Matchers.is(false));
-        }, DEVICE_STARTUP_TIMEOUT_MS, CriteriaHelper.DEFAULT_POLLING_INTERVAL);
+        CriteriaHelper.pollUiThread(
+                () -> {
+                    Tab tab = activity.getActivityTab();
+                    Criteria.checkThat(tab, Matchers.notNullValue());
+                    Criteria.checkThat(tab.isLoading(), Matchers.is(false));
+                },
+                DEVICE_STARTUP_TIMEOUT_MS,
+                CriteriaHelper.DEFAULT_POLLING_INTERVAL);
     }
 
     private Activity tryLaunchingChrome(final Intent intent) {
         mContext.startActivity(intent);
 
         // Check that ChromeLauncher Activity successfully launched
-        CriteriaHelper.pollInstrumentationThread(() -> {
-            Criteria.checkThat(ApplicationStatus.getStateForApplication(),
-                    Matchers.is(ApplicationState.HAS_RUNNING_ACTIVITIES));
-        });
+        CriteriaHelper.pollInstrumentationThread(
+                () -> {
+                    Criteria.checkThat(
+                            ApplicationStatus.getStateForApplication(),
+                            Matchers.is(ApplicationState.HAS_RUNNING_ACTIVITIES));
+                });
 
         // Check that Chrome proper was successfully launched as a follow-up
         final AtomicReference<Activity> launchedActivity = new AtomicReference<>();
-        CriteriaHelper.pollInstrumentationThread(() -> {
-            final List<Activity> activities = ApplicationStatus.getRunningActivities();
-            Criteria.checkThat(activities.size(), Matchers.is(1));
-            launchedActivity.set(activities.get(0));
-            Criteria.checkThat(launchedActivity.get(), Matchers.instanceOf(ChromeActivity.class));
-        }, DEVICE_STARTUP_TIMEOUT_MS, CriteriaHelper.DEFAULT_POLLING_INTERVAL);
+        CriteriaHelper.pollInstrumentationThread(
+                () -> {
+                    final List<Activity> activities = ApplicationStatus.getRunningActivities();
+                    Criteria.checkThat(activities.size(), Matchers.is(1));
+                    launchedActivity.set(activities.get(0));
+                    Criteria.checkThat(
+                            launchedActivity.get(), Matchers.instanceOf(ChromeActivity.class));
+                },
+                DEVICE_STARTUP_TIMEOUT_MS,
+                CriteriaHelper.DEFAULT_POLLING_INTERVAL);
         return launchedActivity.get();
     }
 
     /**
      * This Parcelable does not adhere to the form standards of a well formed Parcelable and will
-     * thus cause a BadParcelableException.  The lint suppression is needed since it detects that
+     * thus cause a BadParcelableException. The lint suppression is needed since it detects that
      * this will throw a BadParcelableException.
      */
     @SuppressLint("ParcelCreator")
     @SuppressWarnings("ParcelableCreator")
     private static class InvalidParcelable implements Parcelable {
         @Override
-        public void writeToParcel(Parcel parcel, int params) {
-        }
+        public void writeToParcel(Parcel parcel, int params) {}
 
         @Override
         public int describeContents() {

@@ -22,9 +22,7 @@ import org.chromium.chrome.test.ChromeJUnit4ClassRunner;
 import org.chromium.content_public.browser.test.util.TestThreadUtils;
 import org.chromium.ui.resources.dynamics.DynamicResourceLoader;
 
-/**
- * Mock touch events with Contextual Search to test behavior of its panel and manager.
- */
+/** Mock touch events with Contextual Search to test behavior of its panel and manager. */
 @RunWith(ChromeJUnit4ClassRunner.class)
 @CommandLineFlags.Add({ChromeSwitches.DISABLE_FIRST_RUN_EXPERIENCE})
 @Batch(Batch.PER_CLASS)
@@ -39,19 +37,21 @@ public class ContextualSearchTest extends ContextualSearchInstrumentationBase {
         MockitoAnnotations.initMocks(this);
         mocker.mock(ContextualSearchManagerJni.TEST_HOOKS, mContextualSearchManagerJniMock);
 
-        TestThreadUtils.runOnUiThreadBlocking(() -> {
-            ChromeActivity activity = (ChromeActivity) mManager.getActivity();
-            mPanel = new ContextualSearchPanelWrapper(activity,
-                    activity.getCompositorViewHolderForTesting().getLayoutManager(), mPanelManager);
-            mPanel.setManagementDelegate(mContextualSearchManager);
-            mContextualSearchManager.setContextualSearchPanel(mPanel);
-            mPanelManager.setDynamicResourceLoader(new DynamicResourceLoader(0, null));
-        });
+        TestThreadUtils.runOnUiThreadBlocking(
+                () -> {
+                    ChromeActivity activity = (ChromeActivity) mManager.getActivity();
+                    mPanel =
+                            new ContextualSearchPanelWrapper(
+                                    activity,
+                                    activity.getCompositorViewHolderForTesting().getLayoutManager(),
+                                    mPanelManager);
+                    mPanel.setManagementDelegate(mContextualSearchManager);
+                    mContextualSearchManager.setContextualSearchPanel(mPanel);
+                    mPanelManager.setDynamicResourceLoader(new DynamicResourceLoader(0, null));
+                });
     }
 
-    /**
-     * Tests that a Long-press gesture followed by tapping empty space closes the panel.
-     */
+    /** Tests that a Long-press gesture followed by tapping empty space closes the panel. */
     @Test
     @SmallTest
     @Feature({"ContextualSearch"})
@@ -78,9 +78,7 @@ public class ContextualSearchTest extends ContextualSearchInstrumentationBase {
         Assert.assertNull(mContextualSearchManager.getSelectionController().getSelectedText());
     }
 
-    /**
-     * Tests that a Tap gesture followed by tapping empty space closes the panel.
-     */
+    /** Tests that a Tap gesture followed by tapping empty space closes the panel. */
     @Test
     @SmallTest
     @Feature({"ContextualSearch"})
@@ -101,7 +99,7 @@ public class ContextualSearchTest extends ContextualSearchInstrumentationBase {
 
     /**
      * Tests that a Tap gesture processing is robust even when the selection somehow gets cleared
-     * during that process.  This tests a failure-case found in crbug.com/728644.
+     * during that process. This tests a failure-case found in crbug.com/728644.
      */
     @Test
     @SmallTest

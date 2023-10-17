@@ -28,9 +28,7 @@ import org.chromium.content_public.browser.test.util.TestThreadUtils;
 
 import java.util.concurrent.TimeoutException;
 
-/**
- * Tests for the appearance of InfoBars.
- */
+/** Tests for the appearance of InfoBars. */
 @RunWith(ChromeJUnit4ClassRunner.class)
 @CommandLineFlags.Add({ChromeSwitches.DISABLE_FIRST_RUN_EXPERIENCE})
 @Batch(Batch.PER_CLASS)
@@ -40,8 +38,7 @@ public class InfoBarAppearanceTest {
     public static ChromeTabbedActivityTestRule sActivityTestRule =
             new ChromeTabbedActivityTestRule();
 
-    @ClassRule
-    public static ScreenShooter sScreenShooter = new ScreenShooter();
+    @ClassRule public static ScreenShooter sScreenShooter = new ScreenShooter();
 
     @Rule
     public BlankCTATabInitialStateRule mInitialStateRule =
@@ -54,21 +51,23 @@ public class InfoBarAppearanceTest {
     public void setUp() throws InterruptedException {
         mListener = new InfoBarTestAnimationListener();
 
-        TestThreadUtils.runOnUiThreadBlocking(() -> {
-            mTab = sActivityTestRule.getActivity().getActivityTab();
-            sActivityTestRule.getInfoBarContainer().addAnimationListener(mListener);
-        });
+        TestThreadUtils.runOnUiThreadBlocking(
+                () -> {
+                    mTab = sActivityTestRule.getActivity().getActivityTab();
+                    sActivityTestRule.getInfoBarContainer().addAnimationListener(mListener);
+                });
     }
 
     @After
     public void tearDown() {
         InfoBarContainer container = sActivityTestRule.getInfoBarContainer();
         if (container != null) {
-            TestThreadUtils.runOnUiThreadBlocking(() -> {
-                container.removeAnimationListener(mListener);
-                InfoBarContainer.removeInfoBarContainerForTesting(
-                        sActivityTestRule.getActivity().getActivityTab());
-            });
+            TestThreadUtils.runOnUiThreadBlocking(
+                    () -> {
+                        container.removeAnimationListener(mListener);
+                        InfoBarContainer.removeInfoBarContainerForTesting(
+                                sActivityTestRule.getActivity().getActivityTab());
+                    });
         }
     }
 

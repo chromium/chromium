@@ -26,14 +26,14 @@ import org.chromium.chrome.test.ChromeJUnit4RunnerDelegate;
 import org.chromium.chrome.test.util.browser.Features.EnableFeatures;
 import org.chromium.ui.test.util.UiRestriction;
 
-/**
- * Tests the Contextual Search Manager using instrumentation tests.
- */
+/** Tests the Contextual Search Manager using instrumentation tests. */
 // NOTE: Disable online detection so we we'll default to online on test bots with no network.
 @RunWith(ParameterizedRunner.class)
 @ParameterAnnotations.UseRunnerDelegate(ChromeJUnit4RunnerDelegate.class)
-@CommandLineFlags.Add({ChromeSwitches.DISABLE_FIRST_RUN_EXPERIENCE,
-        "disable-features=" + ChromeFeatureList.CONTEXTUAL_SEARCH_THIN_WEB_VIEW_IMPLEMENTATION})
+@CommandLineFlags.Add({
+    ChromeSwitches.DISABLE_FIRST_RUN_EXPERIENCE,
+    "disable-features=" + ChromeFeatureList.CONTEXTUAL_SEARCH_THIN_WEB_VIEW_IMPLEMENTATION
+})
 @EnableFeatures(ChromeFeatureList.CONTEXTUAL_SEARCH_DISABLE_ONLINE_DETECTION)
 @Restriction(RESTRICTION_TYPE_NON_LOW_END_DEVICE)
 @Batch(Batch.PER_CLASS)
@@ -45,14 +45,14 @@ public class ContextualSearchInstrumentationTest extends ContextualSearchInstrum
         super.setUp();
     }
 
-    //============================================================================================
+    // ============================================================================================
     // Test Cases
-    //============================================================================================
+    // ============================================================================================
 
     /**
-     * Tests a non-resolving gesture that peeks the panel followed by close panel.
-     * TODO(donnd): Convert this test to test non-resolve action controlled through the privacy
-     * setting since we are phasing out the non-resolve gesture.
+     * Tests a non-resolving gesture that peeks the panel followed by close panel. TODO(donnd):
+     * Convert this test to test non-resolve action controlled through the privacy setting since we
+     * are phasing out the non-resolve gesture.
      */
     @Test
     @SmallTest
@@ -66,9 +66,7 @@ public class ContextualSearchInstrumentationTest extends ContextualSearchInstrum
         assertPanelNeverOpened();
     }
 
-    /**
-     * Tests a resolving gesture that peeks the panel followed by close panel.
-     */
+    /** Tests a resolving gesture that peeks the panel followed by close panel. */
     @Test
     @SmallTest
     @Feature({"ContextualSearch"})
@@ -81,9 +79,7 @@ public class ContextualSearchInstrumentationTest extends ContextualSearchInstrum
         assertPanelNeverOpened();
     }
 
-    /**
-     * Tests a privacy neutral use case with a peek/expand/close panel sequence.
-     */
+    /** Tests a privacy neutral use case with a peek/expand/close panel sequence. */
     @Test
     @SmallTest
     @Feature({"ContextualSearch"})

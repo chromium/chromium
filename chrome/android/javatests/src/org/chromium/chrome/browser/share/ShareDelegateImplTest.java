@@ -25,23 +25,23 @@ import org.chromium.url.GURL;
 
 import java.util.concurrent.ExecutionException;
 
-/**
- * Tests (requiring native) of the ShareDelegateImpl.
- */
+/** Tests (requiring native) of the ShareDelegateImpl. */
 @Batch(Batch.PER_CLASS)
 @RunWith(BaseJUnit4ClassRunner.class)
 public class ShareDelegateImplTest {
     @ClassRule
     public static final ChromeBrowserTestRule sBrowserTestRule = new ChromeBrowserTestRule();
 
-    @Rule
-    public final SadTabRule mSadTabRule = new SadTabRule();
+    @Rule public final SadTabRule mSadTabRule = new SadTabRule();
 
     @Test
     @SmallTest
     public void testShouldFetchCanonicalUrl() throws ExecutionException {
         MockUrlTab mockTab =
-                TestThreadUtils.runOnUiThreadBlocking(() -> { return new MockUrlTab(); });
+                TestThreadUtils.runOnUiThreadBlocking(
+                        () -> {
+                            return new MockUrlTab();
+                        });
         MockWebContents mockWebContents = new MockWebContents();
         MockRenderFrameHost mockRenderFrameHost = new MockRenderFrameHost();
         mSadTabRule.setTab(mockTab);

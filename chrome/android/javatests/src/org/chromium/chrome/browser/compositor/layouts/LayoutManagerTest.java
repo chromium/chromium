@@ -93,9 +93,7 @@ import org.chromium.ui.test.util.UiRestriction;
 import java.util.List;
 import java.util.concurrent.TimeoutException;
 
-/**
- * Unit tests for {@link org.chromium.chrome.browser.compositor.layouts.LayoutManagerChrome}
- */
+/** Unit tests for {@link org.chromium.chrome.browser.compositor.layouts.LayoutManagerChrome} */
 @RunWith(ChromeJUnit4ClassRunner.class)
 @EnableFeatures(ChromeFeatureList.DEFER_TAB_SWITCHER_LAYOUT_CREATION)
 public class LayoutManagerTest implements MockTabModelDelegate {
@@ -104,24 +102,18 @@ public class LayoutManagerTest implements MockTabModelDelegate {
     @Rule
     public ChromeTabbedActivityTestRule mActivityTestRule = new ChromeTabbedActivityTestRule();
 
-    @Mock
-    private TopUiThemeColorProvider mTopUiThemeColorProvider;
+    @Mock private TopUiThemeColorProvider mTopUiThemeColorProvider;
 
-    @Mock
-    private StartSurface mStartSurface;
+    @Mock private StartSurface mStartSurface;
 
-    @Mock
-    private TabSwitcher mTabSwitcher;
+    @Mock private TabSwitcher mTabSwitcher;
 
-    @Mock
-    private TabSwitcher.TabListDelegate mTabListDelegate;
-    @Mock
-    private TabSwitcher.Controller mTabSwitcherController;
-    @Mock
-    private BrowserControlsStateProvider mBrowserControlsStateProvider;
+    @Mock private TabSwitcher.TabListDelegate mTabListDelegate;
+    @Mock private TabSwitcher.Controller mTabSwitcherController;
+    @Mock private BrowserControlsStateProvider mBrowserControlsStateProvider;
 
-    @Captor
-    private ArgumentCaptor<TabSwitcherViewObserver> mTabSwitcherViewObserverArgumentCaptor;
+    @Captor private ArgumentCaptor<TabSwitcherViewObserver> mTabSwitcherViewObserverArgumentCaptor;
+
     @Captor
     private ArgumentCaptor<TabSwitcher.TabSwitcherViewObserver>
             mRefactorTabSwitcherViewObserverArgumentCaptor;
@@ -141,8 +133,7 @@ public class LayoutManagerTest implements MockTabModelDelegate {
     private float mDpToPx;
 
     class LayoutObserverCallbackHelper extends CallbackHelper {
-        @LayoutType
-        public int layoutType;
+        @LayoutType public int layoutType;
     }
 
     private void initializeMotionEvent() {
@@ -172,10 +163,11 @@ public class LayoutManagerTest implements MockTabModelDelegate {
 
     /**
      * Simulates time so the animation updates.
+     *
      * @param layoutManager The {@link LayoutManagerChrome} to update.
      * @param maxFrameCount The maximum number of frames to simulate before the motion ends.
-     * @return              Whether the maximum number of frames was enough for the
-     *                      {@link LayoutManagerChrome} to reach the end of the animations.
+     * @return Whether the maximum number of frames was enough for the {@link LayoutManagerChrome}
+     *     to reach the end of the animations.
      */
     private static boolean simulateTime(LayoutManagerChrome layoutManager, int maxFrameCount) {
         // Simulating time
@@ -191,14 +183,24 @@ public class LayoutManagerTest implements MockTabModelDelegate {
     }
 
     private void initializeLayoutManagerPhone(int standardTabCount, int incognitoTabCount) {
-        initializeLayoutManagerPhone(standardTabCount, incognitoTabCount,
-                TabModel.INVALID_TAB_INDEX, TabModel.INVALID_TAB_INDEX, false);
+        initializeLayoutManagerPhone(
+                standardTabCount,
+                incognitoTabCount,
+                TabModel.INVALID_TAB_INDEX,
+                TabModel.INVALID_TAB_INDEX,
+                false);
     }
 
-    private void initializeLayoutManagerPhone(int standardTabCount, int incognitoTabCount,
-            int standardIndexSelected, int incognitoIndexSelected, boolean incognitoSelected) {
-        Context context = new ContextThemeWrapper(
-                ApplicationProvider.getApplicationContext(), R.style.Theme_BrowserUI_DayNight);
+    private void initializeLayoutManagerPhone(
+            int standardTabCount,
+            int incognitoTabCount,
+            int standardIndexSelected,
+            int incognitoIndexSelected,
+            boolean incognitoSelected) {
+        Context context =
+                new ContextThemeWrapper(
+                        ApplicationProvider.getApplicationContext(),
+                        R.style.Theme_BrowserUI_DayNight);
 
         mDpToPx = context.getResources().getDisplayMetrics().density;
 
@@ -235,12 +237,19 @@ public class LayoutManagerTest implements MockTabModelDelegate {
                 new ObservableSupplierImpl<>();
 
         mTabSwitcherSupplier = new OneshotSupplierImpl();
-        mManagerPhone = new LayoutManagerChromePhone(layoutManagerHost, container,
-                mStartSurfaceSupplier, mTabSwitcherSupplier, mBrowserControlsStateProvider,
-                tabContentManagerSupplier, () -> mTopUiThemeColorProvider, () -> {
-                    mTabSwitcherSupplier.set(mTabSwitcher);
-                    return container;
-                });
+        mManagerPhone =
+                new LayoutManagerChromePhone(
+                        layoutManagerHost,
+                        container,
+                        mStartSurfaceSupplier,
+                        mTabSwitcherSupplier,
+                        mBrowserControlsStateProvider,
+                        tabContentManagerSupplier,
+                        () -> mTopUiThemeColorProvider,
+                        () -> {
+                            mTabSwitcherSupplier.set(mTabSwitcher);
+                            return container;
+                        });
 
         setUpLayouts();
 
@@ -255,18 +264,26 @@ public class LayoutManagerTest implements MockTabModelDelegate {
         if (!mIsStartSurfaceRefactorEnabled) {
             verify(mStartSurface)
                     .addTabSwitcherViewObserver(mTabSwitcherViewObserverArgumentCaptor.capture());
-            doAnswer((Answer<Void>) invocation -> {
-                mTabSwitcherViewObserverArgumentCaptor.getValue().finishedShowing();
-                simulateTime(mManager, 1000);
-                return null;
-            })
+            doAnswer(
+                            (Answer<Void>)
+                                    invocation -> {
+                                        mTabSwitcherViewObserverArgumentCaptor
+                                                .getValue()
+                                                .finishedShowing();
+                                        simulateTime(mManager, 1000);
+                                        return null;
+                                    })
                     .when(mStartSurface)
                     .showOverview(anyBoolean());
 
-            doAnswer((Answer<Void>) invocation -> {
-                mTabSwitcherViewObserverArgumentCaptor.getValue().finishedHiding();
-                return null;
-            })
+            doAnswer(
+                            (Answer<Void>)
+                                    invocation -> {
+                                        mTabSwitcherViewObserverArgumentCaptor
+                                                .getValue()
+                                                .finishedHiding();
+                                        return null;
+                                    })
                     .when(mStartSurface)
                     .hideTabSwitcherView(anyBoolean());
         }
@@ -421,15 +438,19 @@ public class LayoutManagerTest implements MockTabModelDelegate {
         LayoutObserverCallbackHelper startedHidingCallback = new LayoutObserverCallbackHelper();
         LayoutObserverCallbackHelper finishedHidingCallback = new LayoutObserverCallbackHelper();
 
-        setUpShowAndHideLayoutObserverNotification(startedShowingCallback, finishedShowingCallback,
-                startedHidingCallback, finishedHidingCallback);
+        setUpShowAndHideLayoutObserverNotification(
+                startedShowingCallback,
+                finishedShowingCallback,
+                startedHidingCallback,
+                finishedHidingCallback);
 
-        TestThreadUtils.runOnUiThreadBlocking(() -> {
-            performToolbarSideSwipe(ScrollDirection.RIGHT);
-            Assert.assertEquals(
-                    LayoutType.TOOLBAR_SWIPE, mManager.getActiveLayout().getLayoutType());
-            Assert.assertTrue(mManager.isLayoutVisible(LayoutType.TOOLBAR_SWIPE));
-        });
+        TestThreadUtils.runOnUiThreadBlocking(
+                () -> {
+                    performToolbarSideSwipe(ScrollDirection.RIGHT);
+                    Assert.assertEquals(
+                            LayoutType.TOOLBAR_SWIPE, mManager.getActiveLayout().getLayoutType());
+                    Assert.assertTrue(mManager.isLayoutVisible(LayoutType.TOOLBAR_SWIPE));
+                });
 
         startedShowingCallback.waitForCallback(0);
         Assert.assertEquals(LayoutType.TOOLBAR_SWIPE, startedShowingCallback.layoutType);
@@ -437,11 +458,13 @@ public class LayoutManagerTest implements MockTabModelDelegate {
         finishedShowingCallback.waitForCallback(0);
         Assert.assertEquals(LayoutType.TOOLBAR_SWIPE, finishedShowingCallback.layoutType);
 
-        TestThreadUtils.runOnUiThreadBlocking(() -> {
-            finishToolbarSideSwipe();
-            Assert.assertEquals(LayoutType.BROWSING, mManager.getActiveLayout().getLayoutType());
-            Assert.assertTrue(mManager.isLayoutVisible(LayoutType.BROWSING));
-        });
+        TestThreadUtils.runOnUiThreadBlocking(
+                () -> {
+                    finishToolbarSideSwipe();
+                    Assert.assertEquals(
+                            LayoutType.BROWSING, mManager.getActiveLayout().getLayoutType());
+                    Assert.assertTrue(mManager.isLayoutVisible(LayoutType.BROWSING));
+                });
 
         startedHidingCallback.waitForCallback(0);
         Assert.assertEquals(LayoutType.TOOLBAR_SWIPE, startedHidingCallback.layoutType);
@@ -466,18 +489,23 @@ public class LayoutManagerTest implements MockTabModelDelegate {
         LayoutObserverCallbackHelper startedHidingCallback = new LayoutObserverCallbackHelper();
         LayoutObserverCallbackHelper finishedHidingCallback = new LayoutObserverCallbackHelper();
 
-        setUpShowAndHideLayoutObserverNotification(startedShowingCallback, finishedShowingCallback,
-                startedHidingCallback, finishedHidingCallback);
+        setUpShowAndHideLayoutObserverNotification(
+                startedShowingCallback,
+                finishedShowingCallback,
+                startedHidingCallback,
+                finishedHidingCallback);
 
-        TestThreadUtils.runOnUiThreadBlocking(() -> {
-            mManager.showLayout(LayoutType.TAB_SWITCHER, true);
+        TestThreadUtils.runOnUiThreadBlocking(
+                () -> {
+                    mManager.showLayout(LayoutType.TAB_SWITCHER, true);
 
-            Assert.assertTrue(
-                    "layoutManager is way too long to end motion", simulateTime(mManager, 1000));
-            Assert.assertEquals(
-                    LayoutType.TAB_SWITCHER, mManager.getActiveLayout().getLayoutType());
-            Assert.assertTrue(mManager.isLayoutVisible(LayoutType.TAB_SWITCHER));
-        });
+                    Assert.assertTrue(
+                            "layoutManager is way too long to end motion",
+                            simulateTime(mManager, 1000));
+                    Assert.assertEquals(
+                            LayoutType.TAB_SWITCHER, mManager.getActiveLayout().getLayoutType());
+                    Assert.assertTrue(mManager.isLayoutVisible(LayoutType.TAB_SWITCHER));
+                });
 
         // The |startedShowingCallback| callCount 0 is reserved for the default layout during
         // initialization. Because LayoutManager does not explicitly hide the old layout when a new
@@ -491,13 +519,15 @@ public class LayoutManagerTest implements MockTabModelDelegate {
         finishedShowingCallback.waitForCallback(0);
         Assert.assertEquals(LayoutType.TAB_SWITCHER, finishedShowingCallback.layoutType);
 
-        TestThreadUtils.runOnUiThreadBlocking(() -> {
-            mManager.showLayout(LayoutType.BROWSING, true);
-            Assert.assertTrue(
-                    "layoutManager is way too long to end motion", simulateTime(mManager, 1000));
+        TestThreadUtils.runOnUiThreadBlocking(
+                () -> {
+                    mManager.showLayout(LayoutType.BROWSING, true);
+                    Assert.assertTrue(
+                            "layoutManager is way too long to end motion",
+                            simulateTime(mManager, 1000));
 
-            Assert.assertTrue(mManager.isLayoutVisible(LayoutType.BROWSING));
-        });
+                    Assert.assertTrue(mManager.isLayoutVisible(LayoutType.BROWSING));
+                });
 
         startedHidingCallback.waitForCallback(0);
         Assert.assertEquals(LayoutType.TAB_SWITCHER, startedHidingCallback.layoutType);
@@ -521,96 +551,130 @@ public class LayoutManagerTest implements MockTabModelDelegate {
         LayoutObserverCallbackHelper startedHidingCallback = new LayoutObserverCallbackHelper();
         LayoutObserverCallbackHelper finishedHidingCallback = new LayoutObserverCallbackHelper();
 
-        setUpShowAndHideLayoutObserverNotification(startedShowingCallback, finishedShowingCallback,
-                startedHidingCallback, finishedHidingCallback);
+        setUpShowAndHideLayoutObserverNotification(
+                startedShowingCallback,
+                finishedShowingCallback,
+                startedHidingCallback,
+                finishedHidingCallback);
 
-        TestThreadUtils.runOnUiThreadBlocking(() -> {
-            Tab tab = createTab(123, false);
-            mTabModelSelector.getModel(false).addTab(
-                    tab, -1, TabLaunchType.FROM_LONGPRESS_BACKGROUND, LIVE_IN_BACKGROUND);
-            Assert.assertTrue("LayoutManager took too long to finish the animations",
-                    simulateTime(mManager, 1000));
-            assertThat("Incorrect active LayoutType", mManager.getActiveLayout().getLayoutType(),
-                    is(LayoutType.SIMPLE_ANIMATION));
-            assertThat("Incorrect active Layout",
-                    mManager.isLayoutVisible(LayoutType.SIMPLE_ANIMATION), is(true));
-        });
+        TestThreadUtils.runOnUiThreadBlocking(
+                () -> {
+                    Tab tab = createTab(123, false);
+                    mTabModelSelector
+                            .getModel(false)
+                            .addTab(
+                                    tab,
+                                    -1,
+                                    TabLaunchType.FROM_LONGPRESS_BACKGROUND,
+                                    LIVE_IN_BACKGROUND);
+                    Assert.assertTrue(
+                            "LayoutManager took too long to finish the animations",
+                            simulateTime(mManager, 1000));
+                    assertThat(
+                            "Incorrect active LayoutType",
+                            mManager.getActiveLayout().getLayoutType(),
+                            is(LayoutType.SIMPLE_ANIMATION));
+                    assertThat(
+                            "Incorrect active Layout",
+                            mManager.isLayoutVisible(LayoutType.SIMPLE_ANIMATION),
+                            is(true));
+                });
 
         startedShowingCallback.waitForCallback(0);
-        assertThat("startedShowingCallback with incorrect LayoutType",
-                startedShowingCallback.layoutType, is(LayoutType.SIMPLE_ANIMATION));
+        assertThat(
+                "startedShowingCallback with incorrect LayoutType",
+                startedShowingCallback.layoutType,
+                is(LayoutType.SIMPLE_ANIMATION));
 
         finishedShowingCallback.waitForCallback(0);
-        assertThat("finishedShowingCallback with incorrect LayoutType",
-                finishedShowingCallback.layoutType, is(LayoutType.SIMPLE_ANIMATION));
+        assertThat(
+                "finishedShowingCallback with incorrect LayoutType",
+                finishedShowingCallback.layoutType,
+                is(LayoutType.SIMPLE_ANIMATION));
 
-        CriteriaHelper.pollUiThread(() -> {
-            return mManagerPhone.getActiveLayout().getLayoutType() == LayoutType.SIMPLE_ANIMATION
-                    && mManagerPhone.getActiveLayout().isStartingToHide();
-        });
+        CriteriaHelper.pollUiThread(
+                () -> {
+                    return mManagerPhone.getActiveLayout().getLayoutType()
+                                    == LayoutType.SIMPLE_ANIMATION
+                            && mManagerPhone.getActiveLayout().isStartingToHide();
+                });
 
-        TestThreadUtils.runOnUiThreadBlocking(() -> {
-            // Simulate hiding animation.
-            Assert.assertTrue("LayoutManager took too long to finish the animations",
-                    simulateTime(mManager, 1000));
-        });
+        TestThreadUtils.runOnUiThreadBlocking(
+                () -> {
+                    // Simulate hiding animation.
+                    Assert.assertTrue(
+                            "LayoutManager took too long to finish the animations",
+                            simulateTime(mManager, 1000));
+                });
 
         startedHidingCallback.waitForCallback(0);
-        assertThat("startedHidingCallback with incorrect LayoutType",
-                startedHidingCallback.layoutType, is(LayoutType.SIMPLE_ANIMATION));
+        assertThat(
+                "startedHidingCallback with incorrect LayoutType",
+                startedHidingCallback.layoutType,
+                is(LayoutType.SIMPLE_ANIMATION));
 
         finishedHidingCallback.waitForCallback(0);
-        assertThat("finishedHidingCallback with incorrectLayoutType",
-                finishedHidingCallback.layoutType, is(LayoutType.SIMPLE_ANIMATION));
+        assertThat(
+                "finishedHidingCallback with incorrectLayoutType",
+                finishedHidingCallback.layoutType,
+                is(LayoutType.SIMPLE_ANIMATION));
 
         startedShowingCallback.waitForCallback(1);
-        assertThat("startedShowingCallback with incorrectLayoutType",
-                startedShowingCallback.layoutType, is(LayoutType.BROWSING));
+        assertThat(
+                "startedShowingCallback with incorrectLayoutType",
+                startedShowingCallback.layoutType,
+                is(LayoutType.BROWSING));
 
         finishedShowingCallback.waitForCallback(1);
-        assertThat("finishedShowingCallback with incorrectLayoutType",
-                finishedShowingCallback.layoutType, is(LayoutType.BROWSING));
+        assertThat(
+                "finishedShowingCallback with incorrectLayoutType",
+                finishedShowingCallback.layoutType,
+                is(LayoutType.BROWSING));
     }
 
     private void setUpShowAndHideLayoutObserverNotification(
             LayoutObserverCallbackHelper startedShowingCallback,
             LayoutObserverCallbackHelper finishedShowingCallback,
             LayoutObserverCallbackHelper startedHidingCallback,
-            LayoutObserverCallbackHelper finishedHidingCallback) throws TimeoutException {
-        TestThreadUtils.runOnUiThreadBlocking(() -> {
-            initializeLayoutManagerPhone(2, 0);
-            mManager.addObserver(new LayoutStateProvider.LayoutStateObserver() {
-                @Override
-                public void onStartedShowing(int layoutType) {
-                    Log.d(TAG, "Started to show: " + layoutType);
-                    startedShowingCallback.layoutType = layoutType;
-                    startedShowingCallback.notifyCalled();
-                }
+            LayoutObserverCallbackHelper finishedHidingCallback)
+            throws TimeoutException {
+        TestThreadUtils.runOnUiThreadBlocking(
+                () -> {
+                    initializeLayoutManagerPhone(2, 0);
+                    mManager.addObserver(
+                            new LayoutStateProvider.LayoutStateObserver() {
+                                @Override
+                                public void onStartedShowing(int layoutType) {
+                                    Log.d(TAG, "Started to show: " + layoutType);
+                                    startedShowingCallback.layoutType = layoutType;
+                                    startedShowingCallback.notifyCalled();
+                                }
 
-                @Override
-                public void onFinishedShowing(int layoutType) {
-                    Log.d(TAG, "Finished showing: " + layoutType);
-                    finishedShowingCallback.layoutType = layoutType;
-                    finishedShowingCallback.notifyCalled();
-                }
+                                @Override
+                                public void onFinishedShowing(int layoutType) {
+                                    Log.d(TAG, "Finished showing: " + layoutType);
+                                    finishedShowingCallback.layoutType = layoutType;
+                                    finishedShowingCallback.notifyCalled();
+                                }
 
-                @Override
-                public void onStartedHiding(int layoutType) {
-                    Log.d(TAG, "Started to hide: " + layoutType);
-                    startedHidingCallback.layoutType = layoutType;
-                    startedHidingCallback.notifyCalled();
-                }
+                                @Override
+                                public void onStartedHiding(int layoutType) {
+                                    Log.d(TAG, "Started to hide: " + layoutType);
+                                    startedHidingCallback.layoutType = layoutType;
+                                    startedHidingCallback.notifyCalled();
+                                }
 
-                @Override
-                public void onFinishedHiding(int layoutType) {
-                    Log.d(TAG, "Finished hiding: " + layoutType);
-                    finishedHidingCallback.layoutType = layoutType;
-                    finishedHidingCallback.notifyCalled();
-                }
-            });
+                                @Override
+                                public void onFinishedHiding(int layoutType) {
+                                    Log.d(TAG, "Finished hiding: " + layoutType);
+                                    finishedHidingCallback.layoutType = layoutType;
+                                    finishedHidingCallback.notifyCalled();
+                                }
+                            });
 
-            Assert.assertEquals(LayoutType.BROWSING, mManager.getActiveLayout().getLayoutType());
-        });
+                    Assert.assertEquals(
+                            LayoutType.BROWSING, mManager.getActiveLayout().getLayoutType());
+                });
 
         if (mManager.isLayoutVisible(LayoutType.BROWSING)) {
             startedShowingCallback.layoutType = LayoutType.BROWSING;
@@ -626,28 +690,33 @@ public class LayoutManagerTest implements MockTabModelDelegate {
     public void testLayoutObserverNotification_TabSelectionHinted() throws TimeoutException {
         CallbackHelper tabSelectionHintedCallback = new CallbackHelper();
 
-        TestThreadUtils.runOnUiThreadBlocking(() -> {
-            initializeLayoutManagerPhone(2, 0);
-            mManager.addObserver(new LayoutStateProvider.LayoutStateObserver() {
-                @Override
-                public void onTabSelectionHinted(int tabId) {
-                    Log.d(TAG, "onTabSelectionHinted");
-                    tabSelectionHintedCallback.notifyCalled();
-                }
-            });
+        TestThreadUtils.runOnUiThreadBlocking(
+                () -> {
+                    initializeLayoutManagerPhone(2, 0);
+                    mManager.addObserver(
+                            new LayoutStateProvider.LayoutStateObserver() {
+                                @Override
+                                public void onTabSelectionHinted(int tabId) {
+                                    Log.d(TAG, "onTabSelectionHinted");
+                                    tabSelectionHintedCallback.notifyCalled();
+                                }
+                            });
 
-            mManager.showLayout(LayoutType.TAB_SWITCHER, true);
-            Assert.assertTrue(
-                    "layoutManager is way too long to end motion", simulateTime(mManager, 1000));
-            Assert.assertEquals(
-                    LayoutType.TAB_SWITCHER, mManager.getActiveLayout().getLayoutType());
+                    mManager.showLayout(LayoutType.TAB_SWITCHER, true);
+                    Assert.assertTrue(
+                            "layoutManager is way too long to end motion",
+                            simulateTime(mManager, 1000));
+                    Assert.assertEquals(
+                            LayoutType.TAB_SWITCHER, mManager.getActiveLayout().getLayoutType());
 
-            mManager.showLayout(LayoutType.BROWSING, true);
-            Assert.assertTrue(
-                    "layoutManager is way too long to end motion", simulateTime(mManager, 1000));
+                    mManager.showLayout(LayoutType.BROWSING, true);
+                    Assert.assertTrue(
+                            "layoutManager is way too long to end motion",
+                            simulateTime(mManager, 1000));
 
-            Assert.assertEquals(LayoutType.BROWSING, mManager.getActiveLayout().getLayoutType());
-        });
+                    Assert.assertEquals(
+                            LayoutType.BROWSING, mManager.getActiveLayout().getLayoutType());
+                });
 
         tabSelectionHintedCallback.waitForCallback(0);
     }
@@ -658,12 +727,16 @@ public class LayoutManagerTest implements MockTabModelDelegate {
 
         // Load the browser process.
         TestThreadUtils.runOnUiThreadBlocking(
-                () -> { ChromeBrowserInitializer.getInstance().handleSynchronousStartup(); });
+                () -> {
+                    ChromeBrowserInitializer.getInstance().handleSynchronousStartup();
+                });
 
-        TestThreadUtils.runOnUiThreadBlocking(() -> {
-            mIsStartSurfaceRefactorEnabled = ReturnToChromeUtil.isStartSurfaceRefactorEnabled(
-                    ApplicationProvider.getApplicationContext());
-        });
+        TestThreadUtils.runOnUiThreadBlocking(
+                () -> {
+                    mIsStartSurfaceRefactorEnabled =
+                            ReturnToChromeUtil.isStartSurfaceRefactorEnabled(
+                                    ApplicationProvider.getApplicationContext());
+                });
 
         mStartSurfaceSupplier = () -> mStartSurface;
     }
@@ -676,23 +749,28 @@ public class LayoutManagerTest implements MockTabModelDelegate {
     private void verifyTabSwitcherLayoutEnable(
             @TabListCoordinator.TabListMode int expectedTabListMode) {
         launchedChromeAndEnterTabSwitcher();
-        TestThreadUtils.runOnUiThreadBlocking(() -> {
-            Layout activeLayout = getActiveLayout();
-            Assert.assertEquals(LayoutType.TAB_SWITCHER, activeLayout.getLayoutType());
-            int tabListMode;
-            if (mIsStartSurfaceRefactorEnabled) {
-                tabListMode = mActivityTestRule.getActivity()
-                                      .getTabSwitcherForTesting()
-                                      .getTabListDelegate()
-                                      .getListModeForTesting();
-            } else {
-                tabListMode = mActivityTestRule.getActivity()
-                                      .getStartSurface()
-                                      .getGridTabListDelegate()
-                                      .getListModeForTesting();
-            }
-            Assert.assertEquals(expectedTabListMode, tabListMode);
-        });
+        TestThreadUtils.runOnUiThreadBlocking(
+                () -> {
+                    Layout activeLayout = getActiveLayout();
+                    Assert.assertEquals(LayoutType.TAB_SWITCHER, activeLayout.getLayoutType());
+                    int tabListMode;
+                    if (mIsStartSurfaceRefactorEnabled) {
+                        tabListMode =
+                                mActivityTestRule
+                                        .getActivity()
+                                        .getTabSwitcherForTesting()
+                                        .getTabListDelegate()
+                                        .getListModeForTesting();
+                    } else {
+                        tabListMode =
+                                mActivityTestRule
+                                        .getActivity()
+                                        .getStartSurface()
+                                        .getGridTabListDelegate()
+                                        .getListModeForTesting();
+                    }
+                    Assert.assertEquals(expectedTabListMode, tabListMode);
+                });
     }
 
     private void launchedChromeAndEnterTabSwitcher() {
@@ -727,18 +805,22 @@ public class LayoutManagerTest implements MockTabModelDelegate {
         performToolbarSideSwipe(direction);
         finishToolbarSideSwipe();
 
-        Assert.assertEquals("Unexpected model change after side swipe", model.isIncognito(),
+        Assert.assertEquals(
+                "Unexpected model change after side swipe",
+                model.isIncognito(),
                 mTabModelSelector.isIncognitoSelected());
 
         Assert.assertEquals("Wrong index after side swipe", finalIndex, model.index());
         Assert.assertEquals(
                 "Wrong current tab id", finalId, TabModelUtils.getCurrentTab(model).getId());
-        Assert.assertTrue("LayoutManager#getActiveLayout() should be StaticLayout",
+        Assert.assertTrue(
+                "LayoutManager#getActiveLayout() should be StaticLayout",
                 mManager.getActiveLayout() instanceof StaticLayout);
     }
 
     private void performToolbarSideSwipe(@ScrollDirection int direction) {
-        Assert.assertTrue("Unexpected direction for side swipe " + direction,
+        Assert.assertTrue(
+                "Unexpected direction for side swipe " + direction,
                 direction == ScrollDirection.LEFT || direction == ScrollDirection.RIGHT);
 
         final Layout layout = mManager.getActiveLayout();
@@ -757,9 +839,11 @@ public class LayoutManagerTest implements MockTabModelDelegate {
         MotionEvent ev = createMotionEvent(deltaX * mDpToPx, 0.f);
         eventHandler.onSwipeUpdated(ev, deltaX * mDpToPx, 0.f, deltaX * mDpToPx, 0.f);
         eventHandler.onSwipeUpdated(ev, deltaX * mDpToPx, 0.f, deltaX * mDpToPx, 0.f);
-        Assert.assertTrue("LayoutManager#getActiveLayout() should be ToolbarSwipeLayout",
+        Assert.assertTrue(
+                "LayoutManager#getActiveLayout() should be ToolbarSwipeLayout",
                 mManager.getActiveLayout() instanceof ToolbarSwipeLayout);
-        Assert.assertTrue("LayoutManager took too long to finish the animations",
+        Assert.assertTrue(
+                "LayoutManager took too long to finish the animations",
                 simulateTime(mManager, 1000));
     }
 
@@ -768,7 +852,8 @@ public class LayoutManagerTest implements MockTabModelDelegate {
         Assert.assertNotNull("LayoutManager#getToolbarSwipeHandler() returned null", eventHandler);
 
         eventHandler.onSwipeFinished();
-        Assert.assertTrue("LayoutManager took too long to finish the animations",
+        Assert.assertTrue(
+                "LayoutManager took too long to finish the animations",
                 simulateTime(mManager, 1000));
     }
 
@@ -776,6 +861,7 @@ public class LayoutManagerTest implements MockTabModelDelegate {
     private static class LayoutStateLayoutType {
         public final @LayoutState int layoutState;
         public final @LayoutType int layoutType;
+
         public LayoutStateLayoutType(@LayoutState int layoutState, @LayoutType int layoutType) {
             this.layoutState = layoutState;
             this.layoutType = layoutType;
@@ -783,35 +869,42 @@ public class LayoutManagerTest implements MockTabModelDelegate {
     }
 
     private void observeLayoutManager(List<LayoutStateLayoutType> observationSequence) {
-        TestThreadUtils.runOnUiThreadBlocking(() -> {
-            LayoutManagerChrome layoutManagerChrome = getLayoutManagerChrome();
-            Assert.assertNotNull("Must be called after initialization", layoutManagerChrome);
-            layoutManagerChrome.addObserver(new LayoutStateProvider.LayoutStateObserver() {
-                @Override
-                public void onStartedShowing(int layoutType) {
-                    observationSequence.add(
-                            new LayoutStateLayoutType(LayoutState.STARTING_TO_SHOW, layoutType));
-                }
+        TestThreadUtils.runOnUiThreadBlocking(
+                () -> {
+                    LayoutManagerChrome layoutManagerChrome = getLayoutManagerChrome();
+                    Assert.assertNotNull(
+                            "Must be called after initialization", layoutManagerChrome);
+                    layoutManagerChrome.addObserver(
+                            new LayoutStateProvider.LayoutStateObserver() {
+                                @Override
+                                public void onStartedShowing(int layoutType) {
+                                    observationSequence.add(
+                                            new LayoutStateLayoutType(
+                                                    LayoutState.STARTING_TO_SHOW, layoutType));
+                                }
 
-                @Override
-                public void onFinishedShowing(int layoutType) {
-                    observationSequence.add(
-                            new LayoutStateLayoutType(LayoutState.SHOWING, layoutType));
-                }
+                                @Override
+                                public void onFinishedShowing(int layoutType) {
+                                    observationSequence.add(
+                                            new LayoutStateLayoutType(
+                                                    LayoutState.SHOWING, layoutType));
+                                }
 
-                @Override
-                public void onStartedHiding(int layoutType) {
-                    observationSequence.add(
-                            new LayoutStateLayoutType(LayoutState.STARTING_TO_HIDE, layoutType));
-                }
+                                @Override
+                                public void onStartedHiding(int layoutType) {
+                                    observationSequence.add(
+                                            new LayoutStateLayoutType(
+                                                    LayoutState.STARTING_TO_HIDE, layoutType));
+                                }
 
-                @Override
-                public void onFinishedHiding(int layoutType) {
-                    observationSequence.add(
-                            new LayoutStateLayoutType(LayoutState.HIDDEN, layoutType));
-                }
-            });
-        });
+                                @Override
+                                public void onFinishedHiding(int layoutType) {
+                                    observationSequence.add(
+                                            new LayoutStateLayoutType(
+                                                    LayoutState.HIDDEN, layoutType));
+                                }
+                            });
+                });
     }
 
     @Override

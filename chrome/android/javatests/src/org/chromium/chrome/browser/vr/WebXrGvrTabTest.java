@@ -28,19 +28,20 @@ import org.chromium.content_public.browser.WebContents;
 import java.util.List;
 import java.util.concurrent.Callable;
 
-/**
- * End-to-end tests for WebXR's behavior when multiple tabs are involved.
- */
+/** End-to-end tests for WebXR's behavior when multiple tabs are involved. */
 @RunWith(ParameterizedRunner.class)
 @UseRunnerDelegate(ChromeJUnit4RunnerDelegate.class)
-@CommandLineFlags.Add({ChromeSwitches.DISABLE_FIRST_RUN_EXPERIENCE,
-        "enable-features=LogJsConsoleMessages", "force-webxr-runtime=gvr"})
+@CommandLineFlags.Add({
+    ChromeSwitches.DISABLE_FIRST_RUN_EXPERIENCE,
+    "enable-features=LogJsConsoleMessages",
+    "force-webxr-runtime=gvr"
+})
 public class WebXrGvrTabTest {
     @ClassParameter
     private static List<ParameterSet> sClassParams =
             GvrTestRuleUtils.generateDefaultTestRuleParameters();
-    @Rule
-    public RuleChain mRuleChain;
+
+    @Rule public RuleChain mRuleChain;
 
     private ChromeActivityTestRule mTestRule;
     private WebXrGvrTestFramework mWebXrVrTestFramework;
@@ -56,9 +57,9 @@ public class WebXrGvrTabTest {
     }
 
     /**
-     * Tests that non-focused tabs don't get WebXR rAFs called. Disabled on standalones because
-     * they will always be in the VR Browser, and thus shouldn't be getting inline poses even
-     * if the tab is focused.
+     * Tests that non-focused tabs don't get WebXR rAFs called. Disabled on standalones because they
+     * will always be in the VR Browser, and thus shouldn't be getting inline poses even if the tab
+     * is focused.
      */
     @Test
     @MediumTest

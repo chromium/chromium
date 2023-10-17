@@ -37,14 +37,11 @@ import org.chromium.chrome.test.ChromeJUnit4ClassRunner;
 import org.chromium.chrome.test.R;
 import org.chromium.ui.test.util.UiRestriction;
 
-/**
- * Tests for splash screens.
- */
+/** Tests for splash screens. */
 @RunWith(ChromeJUnit4ClassRunner.class)
 @CommandLineFlags.Add({ChromeSwitches.DISABLE_FIRST_RUN_EXPERIENCE})
 public class WebappSplashScreenTest {
-    @Rule
-    public final WebappActivityTestRule mActivityTestRule = new WebappActivityTestRule();
+    @Rule public final WebappActivityTestRule mActivityTestRule = new WebappActivityTestRule();
 
     private int getHistogramTotalCountFor(String histogram, int buckets) {
         int count = 0;
@@ -72,7 +69,8 @@ public class WebappSplashScreenTest {
         ViewGroup splashScreen = mActivityTestRule.startWebappActivityAndWaitForSplashScreen();
         ColorDrawable background = (ColorDrawable) splashScreen.getBackground();
 
-        Assert.assertEquals(mActivityTestRule.getActivity().getColor(R.color.webapp_default_bg),
+        Assert.assertEquals(
+                mActivityTestRule.getActivity().getColor(R.color.webapp_default_bg),
                 background.getColor());
     }
 
@@ -96,9 +94,10 @@ public class WebappSplashScreenTest {
         mActivityTestRule.startWebappActivityAndWaitForSplashScreen();
         Assert.assertTrue(mActivityTestRule.isSplashScreenVisible());
 
-        PostTask.runOrPostTask(TaskTraits.UI_DEFAULT,
-                ()
-                        -> TabTestUtils.simulateFirstVisuallyNonEmptyPaint(
+        PostTask.runOrPostTask(
+                TaskTraits.UI_DEFAULT,
+                () ->
+                        TabTestUtils.simulateFirstVisuallyNonEmptyPaint(
                                 mActivityTestRule.getActivity().getActivityTab()));
 
         mActivityTestRule.waitUntilSplashscreenHides();
@@ -111,9 +110,10 @@ public class WebappSplashScreenTest {
         mActivityTestRule.startWebappActivityAndWaitForSplashScreen();
         Assert.assertTrue(mActivityTestRule.isSplashScreenVisible());
 
-        PostTask.runOrPostTask(TaskTraits.UI_DEFAULT,
-                ()
-                        -> TabTestUtils.simulateCrash(
+        PostTask.runOrPostTask(
+                TaskTraits.UI_DEFAULT,
+                () ->
+                        TabTestUtils.simulateCrash(
                                 mActivityTestRule.getActivity().getActivityTab(), true));
 
         mActivityTestRule.waitUntilSplashscreenHides();
@@ -126,9 +126,10 @@ public class WebappSplashScreenTest {
         mActivityTestRule.startWebappActivityAndWaitForSplashScreen();
         Assert.assertTrue(mActivityTestRule.isSplashScreenVisible());
 
-        PostTask.runOrPostTask(TaskTraits.UI_DEFAULT,
-                ()
-                        -> TabTestUtils.simulatePageLoadFinished(
+        PostTask.runOrPostTask(
+                TaskTraits.UI_DEFAULT,
+                () ->
+                        TabTestUtils.simulatePageLoadFinished(
                                 mActivityTestRule.getActivity().getActivityTab()));
 
         mActivityTestRule.waitUntilSplashscreenHides();
@@ -141,9 +142,10 @@ public class WebappSplashScreenTest {
         mActivityTestRule.startWebappActivityAndWaitForSplashScreen();
         Assert.assertTrue(mActivityTestRule.isSplashScreenVisible());
 
-        PostTask.runOrPostTask(TaskTraits.UI_DEFAULT,
-                ()
-                        -> TabTestUtils.simulatePageLoadFailed(
+        PostTask.runOrPostTask(
+                TaskTraits.UI_DEFAULT,
+                () ->
+                        TabTestUtils.simulatePageLoadFailed(
                                 mActivityTestRule.getActivity().getActivityTab(), 0));
 
         mActivityTestRule.waitUntilSplashscreenHides();
@@ -156,13 +158,15 @@ public class WebappSplashScreenTest {
         mActivityTestRule.startWebappActivityAndWaitForSplashScreen();
         Assert.assertTrue(mActivityTestRule.isSplashScreenVisible());
 
-        PostTask.runOrPostTask(TaskTraits.UI_DEFAULT, () -> {
-            Tab tab = mActivityTestRule.getActivity().getActivityTab();
+        PostTask.runOrPostTask(
+                TaskTraits.UI_DEFAULT,
+                () -> {
+                    Tab tab = mActivityTestRule.getActivity().getActivityTab();
 
-            TabTestUtils.simulatePageLoadFinished(tab);
-            TabTestUtils.simulatePageLoadFailed(tab, 0);
-            TabTestUtils.simulateFirstVisuallyNonEmptyPaint(tab);
-        });
+                    TabTestUtils.simulatePageLoadFinished(tab);
+                    TabTestUtils.simulatePageLoadFailed(tab, 0);
+                    TabTestUtils.simulateFirstVisuallyNonEmptyPaint(tab);
+                });
 
         mActivityTestRule.waitUntilSplashscreenHides();
     }
@@ -173,8 +177,9 @@ public class WebappSplashScreenTest {
     public void testRegularSplashScreenAppears() throws Exception {
         // Register a properly-sized icon for the splash screen.
         Context context = InstrumentationRegistry.getInstrumentation().getTargetContext();
-        int thresholdSize = context.getResources().getDimensionPixelSize(
-                R.dimen.webapp_splash_image_size_minimum);
+        int thresholdSize =
+                context.getResources()
+                        .getDimensionPixelSize(R.dimen.webapp_splash_image_size_minimum);
         int size = thresholdSize + 1;
         Bitmap splashBitmap = Bitmap.createBitmap(size, size, Bitmap.Config.ARGB_8888);
         String bitmapString = BitmapHelper.encodeBitmapAsString(splashBitmap);
@@ -204,8 +209,10 @@ public class WebappSplashScreenTest {
     public void testSplashScreenWithoutImageAppears() throws Exception {
         // Register an image that's too small for the splash screen.
         Context context = InstrumentationRegistry.getInstrumentation().getTargetContext();
-        int size = context.getResources().getDimensionPixelSize(
-                R.dimen.webapp_splash_image_size_minimum) - 1;
+        int size =
+                context.getResources()
+                                .getDimensionPixelSize(R.dimen.webapp_splash_image_size_minimum)
+                        - 1;
         Bitmap splashBitmap = Bitmap.createBitmap(size, size, Bitmap.Config.ARGB_8888);
         String bitmapString = BitmapHelper.encodeBitmapAsString(splashBitmap);
 
@@ -214,9 +221,11 @@ public class WebappSplashScreenTest {
         callback.waitForCallback(0);
         callback.getStorage().updateSplashScreenImage(bitmapString);
 
-        ViewGroup splashScreen = mActivityTestRule.startWebappActivityAndWaitForSplashScreen(
-                mActivityTestRule.createIntent().putExtra(
-                        WebappConstants.EXTRA_IS_ICON_GENERATED, true));
+        ViewGroup splashScreen =
+                mActivityTestRule.startWebappActivityAndWaitForSplashScreen(
+                        mActivityTestRule
+                                .createIntent()
+                                .putExtra(WebappConstants.EXTRA_IS_ICON_GENERATED, true));
         Assert.assertTrue(mActivityTestRule.isSplashScreenVisible());
 
         // There's no icon displayed.

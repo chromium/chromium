@@ -86,22 +86,18 @@ public class BookmarkSearchBoxRowTest {
 
     @Rule
     public final DisableAnimationsTestRule mDisableAnimationsRule = new DisableAnimationsTestRule();
+
     @Rule
     public BaseActivityTestRule<BlankUiTestActivity> mActivityTestRule =
             new BaseActivityTestRule<>(BlankUiTestActivity.class);
-    @Rule
-    public TestRule mProcessor = new Features.JUnitProcessor();
-    @Rule
-    public final MockitoRule mMockitoRule = MockitoJUnit.rule();
 
-    @Mock
-    private Callback<String> mSearchTextChangeCallback;
-    @Mock
-    private Runnable mClearSearchTextRunnable;
-    @Mock
-    private Callback<Boolean> mFocusChangeCallback;
-    @Mock
-    private Callback<Boolean> mToggleCallback;
+    @Rule public TestRule mProcessor = new Features.JUnitProcessor();
+    @Rule public final MockitoRule mMockitoRule = MockitoJUnit.rule();
+
+    @Mock private Callback<String> mSearchTextChangeCallback;
+    @Mock private Runnable mClearSearchTextRunnable;
+    @Mock private Callback<Boolean> mFocusChangeCallback;
+    @Mock private Callback<Boolean> mToggleCallback;
 
     private BookmarkSearchBoxRow mBookmarkSearchBoxRow;
     private EditText mEditText;
@@ -112,40 +108,57 @@ public class BookmarkSearchBoxRowTest {
     public void setUp() throws Exception {
         mActivityTestRule.launchActivity(null);
 
-        TestThreadUtils.runOnUiThreadBlocking(() -> {
-            Activity activity = mActivityTestRule.getActivity();
-            LinearLayout contentView = new LinearLayout(activity);
+        TestThreadUtils.runOnUiThreadBlocking(
+                () -> {
+                    Activity activity = mActivityTestRule.getActivity();
+                    LinearLayout contentView = new LinearLayout(activity);
 
-            // Older Android versions need this otherwise {@link View#clearFocus()} will be ignored.
-            // This also mirrors what {@link SelectableListLayout} does.
-            contentView.setFocusableInTouchMode(true);
+                    // Older Android versions need this otherwise {@link View#clearFocus()} will be
+                    // ignored.
+                    // This also mirrors what {@link SelectableListLayout} does.
+                    contentView.setFocusableInTouchMode(true);
 
-            FrameLayout.LayoutParams params = new FrameLayout.LayoutParams(
-                    ViewGroup.LayoutParams.MATCH_PARENT, ViewGroup.LayoutParams.WRAP_CONTENT);
-            activity.setContentView(contentView, params);
+                    FrameLayout.LayoutParams params =
+                            new FrameLayout.LayoutParams(
+                                    ViewGroup.LayoutParams.MATCH_PARENT,
+                                    ViewGroup.LayoutParams.WRAP_CONTENT);
+                    activity.setContentView(contentView, params);
 
-            LayoutInflater layoutInflater = LayoutInflater.from(activity);
-            mBookmarkSearchBoxRow =
-                    layoutInflater.inflate(R.layout.bookmark_search_box_row, contentView)
-                            .findViewById(R.id.bookmark_toolbar);
-            mEditText = mBookmarkSearchBoxRow.findViewById(R.id.search_text);
-            mShoppingFilterChip = mBookmarkSearchBoxRow.findViewById(R.id.shopping_filter_chip);
+                    LayoutInflater layoutInflater = LayoutInflater.from(activity);
+                    mBookmarkSearchBoxRow =
+                            layoutInflater
+                                    .inflate(R.layout.bookmark_search_box_row, contentView)
+                                    .findViewById(R.id.bookmark_toolbar);
+                    mEditText = mBookmarkSearchBoxRow.findViewById(R.id.search_text);
+                    mShoppingFilterChip =
+                            mBookmarkSearchBoxRow.findViewById(R.id.shopping_filter_chip);
 
-            mPropertyModel =
-                    new PropertyModel.Builder(BookmarkSearchBoxRowProperties.ALL_KEYS)
-                            .with(BookmarkSearchBoxRowProperties.SHOPPING_CHIP_VISIBILITY, true)
-                            .with(BookmarkSearchBoxRowProperties.SEARCH_TEXT_CHANGE_CALLBACK,
-                                    mSearchTextChangeCallback)
-                            .with(BookmarkSearchBoxRowProperties.CLEAR_SEARCH_TEXT_RUNNABLE,
-                                    mClearSearchTextRunnable)
-                            .with(BookmarkSearchBoxRowProperties.FOCUS_CHANGE_CALLBACK,
-                                    mFocusChangeCallback)
-                            .with(BookmarkSearchBoxRowProperties.SHOPPING_CHIP_TOGGLE_CALLBACK,
-                                    mToggleCallback)
-                            .build();
-            PropertyModelChangeProcessor.create(mPropertyModel, mBookmarkSearchBoxRow,
-                    BookmarkSearchBoxRowViewBinder.createViewBinder());
-        });
+                    mPropertyModel =
+                            new PropertyModel.Builder(BookmarkSearchBoxRowProperties.ALL_KEYS)
+                                    .with(
+                                            BookmarkSearchBoxRowProperties.SHOPPING_CHIP_VISIBILITY,
+                                            true)
+                                    .with(
+                                            BookmarkSearchBoxRowProperties
+                                                    .SEARCH_TEXT_CHANGE_CALLBACK,
+                                            mSearchTextChangeCallback)
+                                    .with(
+                                            BookmarkSearchBoxRowProperties
+                                                    .CLEAR_SEARCH_TEXT_RUNNABLE,
+                                            mClearSearchTextRunnable)
+                                    .with(
+                                            BookmarkSearchBoxRowProperties.FOCUS_CHANGE_CALLBACK,
+                                            mFocusChangeCallback)
+                                    .with(
+                                            BookmarkSearchBoxRowProperties
+                                                    .SHOPPING_CHIP_TOGGLE_CALLBACK,
+                                            mToggleCallback)
+                                    .build();
+                    PropertyModelChangeProcessor.create(
+                            mPropertyModel,
+                            mBookmarkSearchBoxRow,
+                            BookmarkSearchBoxRowViewBinder.createViewBinder());
+                });
     }
 
     private <T> void setProperty(WritableObjectPropertyKey<T> property, T value) {
@@ -162,10 +175,13 @@ public class BookmarkSearchBoxRowTest {
         onView(withId(R.id.search_text)).perform(click());
         CriteriaHelper.pollUiThread(() -> checkThat(mEditText.hasFocus(), is(true)));
 
-        TestThreadUtils.runOnUiThreadBlocking(() -> {
-            KeyUtils.singleKeyEventView(InstrumentationRegistry.getInstrumentation(), mEditText,
-                    KeyEvent.KEYCODE_ENTER);
-        });
+        TestThreadUtils.runOnUiThreadBlocking(
+                () -> {
+                    KeyUtils.singleKeyEventView(
+                            InstrumentationRegistry.getInstrumentation(),
+                            mEditText,
+                            KeyEvent.KEYCODE_ENTER);
+                });
         CriteriaHelper.pollUiThread(() -> checkThat(mEditText.hasFocus(), is(false)));
     }
 
@@ -269,12 +285,17 @@ public class BookmarkSearchBoxRowTest {
     @Test
     @MediumTest
     public void testRebindSingleSearchTextChangeCallback() {
-        TestThreadUtils.runOnUiThreadBlocking(() -> {
-            PropertyModelChangeProcessor.create(mPropertyModel, mBookmarkSearchBoxRow,
-                    BookmarkSearchBoxRowViewBinder.createViewBinder());
-            PropertyModelChangeProcessor.create(mPropertyModel, mBookmarkSearchBoxRow,
-                    BookmarkSearchBoxRowViewBinder.createViewBinder());
-        });
+        TestThreadUtils.runOnUiThreadBlocking(
+                () -> {
+                    PropertyModelChangeProcessor.create(
+                            mPropertyModel,
+                            mBookmarkSearchBoxRow,
+                            BookmarkSearchBoxRowViewBinder.createViewBinder());
+                    PropertyModelChangeProcessor.create(
+                            mPropertyModel,
+                            mBookmarkSearchBoxRow,
+                            BookmarkSearchBoxRowViewBinder.createViewBinder());
+                });
 
         String searchText = "foo";
         setProperty(BookmarkSearchBoxRowProperties.SEARCH_TEXT, searchText);

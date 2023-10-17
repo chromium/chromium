@@ -30,9 +30,7 @@ import org.chromium.ui.modaldialog.ModalDialogProperties;
 
 import java.util.concurrent.TimeoutException;
 
-/**
- * A payment integration test for the correct log of the CanMakePayment metrics.
- */
+/** A payment integration test for the correct log of the CanMakePayment metrics. */
 @RunWith(ChromeJUnit4ClassRunner.class)
 @CommandLineFlags.Add({ChromeSwitches.DISABLE_FIRST_RUN_EXPERIENCE})
 public class PaymentRequestCanMakePaymentMetricsTest {
@@ -41,9 +39,9 @@ public class PaymentRequestCanMakePaymentMetricsTest {
             new PaymentRequestTestRule("payment_request_can_make_payment_metrics_test.html");
 
     /**
-     * Tests that the CanMakePayment metrics are correctly logged for the case of a merchant
-     * calling it, receiving no as a response, still showing the Payment Request and the user aborts
-     * the flow.
+     * Tests that the CanMakePayment metrics are correctly logged for the case of a merchant calling
+     * it, receiving no as a response, still showing the Payment Request and the user aborts the
+     * flow.
      */
     @Test
     @MediumTest
@@ -64,28 +62,35 @@ public class PaymentRequestCanMakePaymentMetricsTest {
         // Press the back button.
         int callCount = mPaymentRequestTestRule.getDismissed().getCallCount();
         TestThreadUtils.runOnUiThreadBlocking(
-                ()
-                        -> mPaymentRequestTestRule.getPaymentRequestUI()
-                                   .getDialogForTest()
-                                   .onBackPressed());
+                () ->
+                        mPaymentRequestTestRule
+                                .getPaymentRequestUI()
+                                .getDialogForTest()
+                                .onBackPressed());
         mPaymentRequestTestRule.getDismissed().waitForCallback(callCount);
         mPaymentRequestTestRule.expectResultContains(
                 new String[] {"User closed the Payment Request UI."});
 
         // Make sure the canMakePayment events were logged correctly.
-        int expectedSample = Event.SHOWN | Event.USER_ABORTED | Event.HAD_INITIAL_FORM_OF_PAYMENT
-                | Event.HAD_NECESSARY_COMPLETE_SUGGESTIONS | Event.CAN_MAKE_PAYMENT_TRUE
-                | Event.REQUEST_METHOD_OTHER | Event.HAS_ENROLLED_INSTRUMENT_TRUE
-                | Event.AVAILABLE_METHOD_OTHER;
-        Assert.assertEquals(1,
+        int expectedSample =
+                Event.SHOWN
+                        | Event.USER_ABORTED
+                        | Event.HAD_INITIAL_FORM_OF_PAYMENT
+                        | Event.HAD_NECESSARY_COMPLETE_SUGGESTIONS
+                        | Event.CAN_MAKE_PAYMENT_TRUE
+                        | Event.REQUEST_METHOD_OTHER
+                        | Event.HAS_ENROLLED_INSTRUMENT_TRUE
+                        | Event.AVAILABLE_METHOD_OTHER;
+        Assert.assertEquals(
+                1,
                 RecordHistogram.getHistogramValueCountForTesting(
                         "PaymentRequest.Events", expectedSample));
     }
 
     /**
-     * Tests that the CanMakePayment metrics are correctly logged for the case of a merchant
-     * calling it, receiving no as a response, still showing the Payment Request and the user
-     * completes the flow.
+     * Tests that the CanMakePayment metrics are correctly logged for the case of a merchant calling
+     * it, receiving no as a response, still showing the Payment Request and the user completes the
+     * flow.
      */
     @Test
     @MediumTest
@@ -125,25 +130,31 @@ public class PaymentRequestCanMakePaymentMetricsTest {
                 ModalDialogProperties.ButtonType.POSITIVE, mPaymentRequestTestRule.getDismissed());
 
         // Make sure the canMakePayment events were logged correctly.
-        int expectedSample = Event.SHOWN | Event.PAY_CLICKED | Event.RECEIVED_INSTRUMENT_DETAILS
-                | Event.COMPLETED | Event.CAN_MAKE_PAYMENT_TRUE
-                | Event.HAS_ENROLLED_INSTRUMENT_FALSE | Event.REQUEST_METHOD_OTHER
-                | Event.SELECTED_CREDIT_CARD | Event.NEEDS_COMPLETION_PAYMENT;
-        Assert.assertEquals(1,
+        int expectedSample =
+                Event.SHOWN
+                        | Event.PAY_CLICKED
+                        | Event.RECEIVED_INSTRUMENT_DETAILS
+                        | Event.COMPLETED
+                        | Event.CAN_MAKE_PAYMENT_TRUE
+                        | Event.HAS_ENROLLED_INSTRUMENT_FALSE
+                        | Event.REQUEST_METHOD_OTHER
+                        | Event.SELECTED_CREDIT_CARD
+                        | Event.NEEDS_COMPLETION_PAYMENT;
+        Assert.assertEquals(
+                1,
                 RecordHistogram.getHistogramValueCountForTesting(
                         "PaymentRequest.Events", expectedSample));
     }
 
     /**
-     * Tests that the CanMakePayment metrics are correctly logged for the case of a merchant
-     * calling it, receiving yes as a response, showing the Payment Request and the merchant aborts
-     * the flow.
+     * Tests that the CanMakePayment metrics are correctly logged for the case of a merchant calling
+     * it, receiving yes as a response, showing the Payment Request and the merchant aborts the
+     * flow.
      */
     @Test
     @MediumTest
     @Feature({"Payments"})
-    public void
-    testCanMakePayment_MerchantAbort() throws TimeoutException {
+    public void testCanMakePayment_MerchantAbort() throws TimeoutException {
         // Install the apps so CanMakePayment returns true.
         mPaymentRequestTestRule.addPaymentAppFactory(
                 "https://bobpay.test", AppPresence.HAVE_APPS, FactorySpeed.FAST_FACTORY);
@@ -159,25 +170,29 @@ public class PaymentRequestCanMakePaymentMetricsTest {
         mPaymentRequestTestRule.expectResultContains(new String[] {"Abort"});
 
         // Make sure the canMakePayment events were logged correctly.
-        int expectedSample = Event.SHOWN | Event.OTHER_ABORTED | Event.HAD_INITIAL_FORM_OF_PAYMENT
-                | Event.HAD_NECESSARY_COMPLETE_SUGGESTIONS | Event.CAN_MAKE_PAYMENT_TRUE
-                | Event.HAS_ENROLLED_INSTRUMENT_TRUE | Event.REQUEST_METHOD_OTHER
-                | Event.AVAILABLE_METHOD_OTHER;
-        Assert.assertEquals(1,
+        int expectedSample =
+                Event.SHOWN
+                        | Event.OTHER_ABORTED
+                        | Event.HAD_INITIAL_FORM_OF_PAYMENT
+                        | Event.HAD_NECESSARY_COMPLETE_SUGGESTIONS
+                        | Event.CAN_MAKE_PAYMENT_TRUE
+                        | Event.HAS_ENROLLED_INSTRUMENT_TRUE
+                        | Event.REQUEST_METHOD_OTHER
+                        | Event.AVAILABLE_METHOD_OTHER;
+        Assert.assertEquals(
+                1,
                 RecordHistogram.getHistogramValueCountForTesting(
                         "PaymentRequest.Events", expectedSample));
     }
 
     /**
-     * Tests that the CanMakePayment metrics are correctly logged for the case of a merchant
-     * calling it, receiving yes as a response, showing the Payment Request and the user completes
-     * the flow.
+     * Tests that the CanMakePayment metrics are correctly logged for the case of a merchant calling
+     * it, receiving yes as a response, showing the Payment Request and the user completes the flow.
      */
     @Test
     @MediumTest
     @Feature({"Payments"})
-    public void
-    testCanMakePayment_Complete() throws TimeoutException {
+    public void testCanMakePayment_Complete() throws TimeoutException {
         // Install the apps so CanMakePayment returns true.
         mPaymentRequestTestRule.addPaymentAppFactory(
                 "https://bobpay.test", AppPresence.HAVE_APPS, FactorySpeed.FAST_FACTORY);
@@ -191,31 +206,43 @@ public class PaymentRequestCanMakePaymentMetricsTest {
                 R.id.button_primary, mPaymentRequestTestRule.getDismissed());
 
         // Make sure the canMakePayment events were logged correctly.
-        int expectedSample = Event.SHOWN | Event.PAY_CLICKED | Event.RECEIVED_INSTRUMENT_DETAILS
-                | Event.COMPLETED | Event.HAD_INITIAL_FORM_OF_PAYMENT
-                | Event.HAD_NECESSARY_COMPLETE_SUGGESTIONS | Event.CAN_MAKE_PAYMENT_TRUE
-                | Event.HAS_ENROLLED_INSTRUMENT_TRUE | Event.REQUEST_METHOD_OTHER
-                | Event.SELECTED_OTHER | Event.AVAILABLE_METHOD_OTHER;
-        Assert.assertEquals(1,
+        int expectedSample =
+                Event.SHOWN
+                        | Event.PAY_CLICKED
+                        | Event.RECEIVED_INSTRUMENT_DETAILS
+                        | Event.COMPLETED
+                        | Event.HAD_INITIAL_FORM_OF_PAYMENT
+                        | Event.HAD_NECESSARY_COMPLETE_SUGGESTIONS
+                        | Event.CAN_MAKE_PAYMENT_TRUE
+                        | Event.HAS_ENROLLED_INSTRUMENT_TRUE
+                        | Event.REQUEST_METHOD_OTHER
+                        | Event.SELECTED_OTHER
+                        | Event.AVAILABLE_METHOD_OTHER;
+        Assert.assertEquals(
+                1,
                 RecordHistogram.getHistogramValueCountForTesting(
                         "PaymentRequest.Events", expectedSample));
     }
 
     /**
-     * Tests that the CanMakePayment metrics are correctly logged for the case of a merchant
-     * calling it, receiving false as a response because can make payment is disabled, showing the
-     * Payment Request and the user completes the flow.
+     * Tests that the CanMakePayment metrics are correctly logged for the case of a merchant calling
+     * it, receiving false as a response because can make payment is disabled, showing the Payment
+     * Request and the user completes the flow.
      */
     @Test
     @MediumTest
     @Feature({"Payments"})
-    public void
-    testCanMakePaymentDisabled_Complete() throws TimeoutException {
-        TestThreadUtils.runOnUiThreadBlocking(() -> {
-            PrefService prefs = UserPrefs.get(Profile.fromWebContents(
-                    mPaymentRequestTestRule.getActivity().getCurrentWebContents()));
-            prefs.setBoolean(Pref.CAN_MAKE_PAYMENT_ENABLED, false);
-        });
+    public void testCanMakePaymentDisabled_Complete() throws TimeoutException {
+        TestThreadUtils.runOnUiThreadBlocking(
+                () -> {
+                    PrefService prefs =
+                            UserPrefs.get(
+                                    Profile.fromWebContents(
+                                            mPaymentRequestTestRule
+                                                    .getActivity()
+                                                    .getCurrentWebContents()));
+                    prefs.setBoolean(Pref.CAN_MAKE_PAYMENT_ENABLED, false);
+                });
 
         // Install the apps so CanMakePayment returns true if it is enabled.
         mPaymentRequestTestRule.addPaymentAppFactory(
@@ -230,19 +257,27 @@ public class PaymentRequestCanMakePaymentMetricsTest {
                 R.id.button_primary, mPaymentRequestTestRule.getDismissed());
 
         // Make sure the canMakePayment events were logged correctly.
-        int expectedSample = Event.SHOWN | Event.PAY_CLICKED | Event.RECEIVED_INSTRUMENT_DETAILS
-                | Event.COMPLETED | Event.HAD_INITIAL_FORM_OF_PAYMENT
-                | Event.HAD_NECESSARY_COMPLETE_SUGGESTIONS | Event.CAN_MAKE_PAYMENT_FALSE
-                | Event.HAS_ENROLLED_INSTRUMENT_FALSE | Event.REQUEST_METHOD_OTHER
-                | Event.SELECTED_OTHER | Event.AVAILABLE_METHOD_OTHER;
-        Assert.assertEquals(1,
+        int expectedSample =
+                Event.SHOWN
+                        | Event.PAY_CLICKED
+                        | Event.RECEIVED_INSTRUMENT_DETAILS
+                        | Event.COMPLETED
+                        | Event.HAD_INITIAL_FORM_OF_PAYMENT
+                        | Event.HAD_NECESSARY_COMPLETE_SUGGESTIONS
+                        | Event.CAN_MAKE_PAYMENT_FALSE
+                        | Event.HAS_ENROLLED_INSTRUMENT_FALSE
+                        | Event.REQUEST_METHOD_OTHER
+                        | Event.SELECTED_OTHER
+                        | Event.AVAILABLE_METHOD_OTHER;
+        Assert.assertEquals(
+                1,
                 RecordHistogram.getHistogramValueCountForTesting(
                         "PaymentRequest.Events", expectedSample));
     }
 
     /**
-     * Tests that the CanMakePayment metrics are correctly logged for the case of a merchant
-     * not calling it but still showing the Payment Request and the user aborts the flow.
+     * Tests that the CanMakePayment metrics are correctly logged for the case of a merchant not
+     * calling it but still showing the Payment Request and the user aborts the flow.
      */
     @Test
     @MediumTest
@@ -261,32 +296,37 @@ public class PaymentRequestCanMakePaymentMetricsTest {
         // Press the back button.
         int callCount = mPaymentRequestTestRule.getDismissed().getCallCount();
         TestThreadUtils.runOnUiThreadBlocking(
-                ()
-                        -> mPaymentRequestTestRule.getPaymentRequestUI()
-                                   .getDialogForTest()
-                                   .onBackPressed());
+                () ->
+                        mPaymentRequestTestRule
+                                .getPaymentRequestUI()
+                                .getDialogForTest()
+                                .onBackPressed());
         mPaymentRequestTestRule.getDismissed().waitForCallback(callCount);
         mPaymentRequestTestRule.expectResultContains(
                 new String[] {"User closed the Payment Request UI."});
 
         // Make sure no canMakePayment events were logged.
-        int expectedSample = Event.SHOWN | Event.USER_ABORTED | Event.HAD_INITIAL_FORM_OF_PAYMENT
-                | Event.HAD_NECESSARY_COMPLETE_SUGGESTIONS | Event.REQUEST_METHOD_OTHER
-                | Event.AVAILABLE_METHOD_OTHER;
-        Assert.assertEquals(1,
+        int expectedSample =
+                Event.SHOWN
+                        | Event.USER_ABORTED
+                        | Event.HAD_INITIAL_FORM_OF_PAYMENT
+                        | Event.HAD_NECESSARY_COMPLETE_SUGGESTIONS
+                        | Event.REQUEST_METHOD_OTHER
+                        | Event.AVAILABLE_METHOD_OTHER;
+        Assert.assertEquals(
+                1,
                 RecordHistogram.getHistogramValueCountForTesting(
                         "PaymentRequest.Events", expectedSample));
     }
 
     /**
-     * Tests that the CanMakePayment metrics are correctly logged for the case of a merchant
-     * not calling it but still showing the Payment Request and the user completes the flow.
+     * Tests that the CanMakePayment metrics are correctly logged for the case of a merchant not
+     * calling it but still showing the Payment Request and the user completes the flow.
      */
     @Test
     @MediumTest
     @Feature({"Payments"})
-    public void
-    testNoQuery_Complete() throws TimeoutException {
+    public void testNoQuery_Complete() throws TimeoutException {
         // Install the apps so the user can complete the Payment Request.
         mPaymentRequestTestRule.addPaymentAppFactory(
                 "https://bobpay.test", AppPresence.HAVE_APPS, FactorySpeed.FAST_FACTORY);
@@ -300,11 +340,18 @@ public class PaymentRequestCanMakePaymentMetricsTest {
                 R.id.button_primary, mPaymentRequestTestRule.getDismissed());
 
         // Make sure no canMakePayment events were logged.
-        int expectedSample = Event.SHOWN | Event.PAY_CLICKED | Event.RECEIVED_INSTRUMENT_DETAILS
-                | Event.COMPLETED | Event.HAD_INITIAL_FORM_OF_PAYMENT
-                | Event.HAD_NECESSARY_COMPLETE_SUGGESTIONS | Event.REQUEST_METHOD_OTHER
-                | Event.SELECTED_OTHER | Event.AVAILABLE_METHOD_OTHER;
-        Assert.assertEquals(1,
+        int expectedSample =
+                Event.SHOWN
+                        | Event.PAY_CLICKED
+                        | Event.RECEIVED_INSTRUMENT_DETAILS
+                        | Event.COMPLETED
+                        | Event.HAD_INITIAL_FORM_OF_PAYMENT
+                        | Event.HAD_NECESSARY_COMPLETE_SUGGESTIONS
+                        | Event.REQUEST_METHOD_OTHER
+                        | Event.SELECTED_OTHER
+                        | Event.AVAILABLE_METHOD_OTHER;
+        Assert.assertEquals(
+                1,
                 RecordHistogram.getHistogramValueCountForTesting(
                         "PaymentRequest.Events", expectedSample));
     }

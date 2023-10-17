@@ -40,9 +40,7 @@ import org.chromium.content_public.browser.test.util.TestThreadUtils;
 import java.util.ArrayList;
 import java.util.List;
 
-/**
- * Tests the integration of {@link MenuDirectActionHandler} with {@link ChromeActivity}.
- */
+/** Tests the integration of {@link MenuDirectActionHandler} with {@link ChromeActivity}. */
 @RunWith(ChromeJUnit4ClassRunner.class)
 @CommandLineFlags.Add({ChromeSwitches.DISABLE_FIRST_RUN_EXPERIENCE})
 @Batch(Batch.PER_CLASS)
@@ -73,17 +71,23 @@ public class MenuDirectActionHandlerTest {
         mHandler.allowAllActions();
 
         List<Bundle> results = new ArrayList<>();
-        TestThreadUtils.runOnUiThreadBlocking(() -> {
-            assertTrue(
-                    mHandler.performDirectAction("new_tab", Bundle.EMPTY, (r) -> results.add(r)));
-        });
+        TestThreadUtils.runOnUiThreadBlocking(
+                () -> {
+                    assertTrue(
+                            mHandler.performDirectAction(
+                                    "new_tab", Bundle.EMPTY, (r) -> results.add(r)));
+                });
         assertThat(results, Matchers.hasSize(1));
         assertEquals(2, mTabModelSelector.getTotalTabCount());
 
-        TestThreadUtils.runOnUiThreadBlocking(() -> {
-            assertFalse(mHandler.performDirectAction(
-                    "doesnotexist", Bundle.EMPTY, (r) -> fail("Unexpected result: " + r)));
-        });
+        TestThreadUtils.runOnUiThreadBlocking(
+                () -> {
+                    assertFalse(
+                            mHandler.performDirectAction(
+                                    "doesnotexist",
+                                    Bundle.EMPTY,
+                                    (r) -> fail("Unexpected result: " + r)));
+                });
     }
 
     @Test
@@ -92,15 +96,27 @@ public class MenuDirectActionHandlerTest {
     public void testReportAvailableActions() {
         mHandler.allowAllActions();
 
-        assertThat(getDirectActions(),
-                Matchers.containsInAnyOrder("bookmark_this_page", "reload", "downloads", "help",
-                        "new_tab", "open_history", "preferences", "close_all_tabs"));
+        assertThat(
+                getDirectActions(),
+                Matchers.containsInAnyOrder(
+                        "bookmark_this_page",
+                        "reload",
+                        "downloads",
+                        "help",
+                        "new_tab",
+                        "open_history",
+                        "preferences",
+                        "close_all_tabs"));
 
-        TestThreadUtils.runOnUiThreadBlocking(() -> { mTabModelSelector.closeAllTabs(); });
+        TestThreadUtils.runOnUiThreadBlocking(
+                () -> {
+                    mTabModelSelector.closeAllTabs();
+                });
         // Wait for any pending animations for tab closures to complete.
         CriteriaHelper.pollUiThread(
                 () -> Criteria.checkThat(mTabModelSelector.getTotalTabCount(), Matchers.is(0)));
-        assertThat(getDirectActions(),
+        assertThat(
+                getDirectActions(),
                 Matchers.containsInAnyOrder("downloads", "help", "new_tab", "preferences"));
     }
 
@@ -120,10 +136,12 @@ public class MenuDirectActionHandlerTest {
         assertThat(getDirectActions(), Matchers.containsInAnyOrder("new_tab", "downloads"));
 
         // Other actions cannot be called.
-        TestThreadUtils.runOnUiThreadBlocking(() -> {
-            assertFalse(mHandler.performDirectAction(
-                    "help", Bundle.EMPTY, (r) -> fail("Unexpected result: " + r)));
-        });
+        TestThreadUtils.runOnUiThreadBlocking(
+                () -> {
+                    assertFalse(
+                            mHandler.performDirectAction(
+                                    "help", Bundle.EMPTY, (r) -> fail("Unexpected result: " + r)));
+                });
 
         // Allow all actions. This allows "help", never allowlisted explicitly
         mHandler.allowAllActions();
@@ -138,7 +156,9 @@ public class MenuDirectActionHandlerTest {
     private List<String> getDirectActions() {
         FakeDirectActionReporter reporter = new FakeDirectActionReporter();
         TestThreadUtils.runOnUiThreadBlocking(
-                () -> { mHandler.reportAvailableDirectActions(reporter); });
+                () -> {
+                    mHandler.reportAvailableDirectActions(reporter);
+                });
         return reporter.getDirectActions();
     }
 }

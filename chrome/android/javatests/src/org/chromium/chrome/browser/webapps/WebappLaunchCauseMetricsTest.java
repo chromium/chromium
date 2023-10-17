@@ -32,41 +32,40 @@ import org.chromium.components.webapps.ShortcutSource;
 import org.chromium.components.webapps.WebApkDistributor;
 import org.chromium.content_public.browser.test.util.TestThreadUtils;
 
-/**
- * Tests basic functionality of WebappLaunchCauseMetrics.
- */
+/** Tests basic functionality of WebappLaunchCauseMetrics. */
 @RunWith(BaseJUnit4ClassRunner.class)
 @Batch(Batch.UNIT_TESTS)
 public final class WebappLaunchCauseMetricsTest {
-    @Mock
-    private Activity mActivity;
-    @Mock
-    private WebappInfo mWebappInfo;
+    @Mock private Activity mActivity;
+    @Mock private WebappInfo mWebappInfo;
 
-    @Rule
-    public MockitoRule mMockitoRule = MockitoJUnit.rule().strictness(Strictness.STRICT_STUBS);
+    @Rule public MockitoRule mMockitoRule = MockitoJUnit.rule().strictness(Strictness.STRICT_STUBS);
 
     @Before
     public void setUp() {
-        TestThreadUtils.runOnUiThreadBlocking(() -> {
-            ApplicationStatus.onStateChangeForTesting(mActivity, ActivityState.CREATED);
-        });
+        TestThreadUtils.runOnUiThreadBlocking(
+                () -> {
+                    ApplicationStatus.onStateChangeForTesting(mActivity, ActivityState.CREATED);
+                });
     }
 
     @After
     public void tearDown() {
-        TestThreadUtils.runOnUiThreadBlocking(() -> {
-            ApplicationStatus.resetActivitiesForInstrumentationTests();
-            LaunchCauseMetrics.resetForTests();
-        });
+        TestThreadUtils.runOnUiThreadBlocking(
+                () -> {
+                    ApplicationStatus.resetActivitiesForInstrumentationTests();
+                    LaunchCauseMetrics.resetForTests();
+                });
     }
 
     @Test
     @SmallTest
     @UiThreadTest
     public void testHomescreenLaunch() throws Throwable {
-        var histogram = HistogramWatcher.newSingleRecordWatcher(
-                LaunchCauseMetrics.LAUNCH_CAUSE_HISTOGRAM, LaunchCause.WEBAPK_CHROME_DISTRIBUTOR);
+        var histogram =
+                HistogramWatcher.newSingleRecordWatcher(
+                        LaunchCauseMetrics.LAUNCH_CAUSE_HISTOGRAM,
+                        LaunchCause.WEBAPK_CHROME_DISTRIBUTOR);
         Mockito.when(mWebappInfo.isLaunchedFromHomescreen()).thenReturn(true);
         Mockito.when(mWebappInfo.isForWebApk()).thenReturn(true);
         Mockito.when(mWebappInfo.distributor()).thenReturn(WebApkDistributor.BROWSER);
@@ -79,8 +78,10 @@ public final class WebappLaunchCauseMetricsTest {
 
         LaunchCauseMetrics.resetForTests();
 
-        histogram = HistogramWatcher.newSingleRecordWatcher(
-                LaunchCauseMetrics.LAUNCH_CAUSE_HISTOGRAM, LaunchCause.WEBAPK_OTHER_DISTRIBUTOR);
+        histogram =
+                HistogramWatcher.newSingleRecordWatcher(
+                        LaunchCauseMetrics.LAUNCH_CAUSE_HISTOGRAM,
+                        LaunchCause.WEBAPK_OTHER_DISTRIBUTOR);
         Mockito.when(mWebappInfo.distributor()).thenReturn(WebApkDistributor.OTHER);
         metrics.onReceivedIntent();
         metrics.recordLaunchCause();
@@ -88,8 +89,10 @@ public final class WebappLaunchCauseMetricsTest {
 
         LaunchCauseMetrics.resetForTests();
 
-        histogram = HistogramWatcher.newSingleRecordWatcher(
-                LaunchCauseMetrics.LAUNCH_CAUSE_HISTOGRAM, LaunchCause.WEBAPK_CHROME_DISTRIBUTOR);
+        histogram =
+                HistogramWatcher.newSingleRecordWatcher(
+                        LaunchCauseMetrics.LAUNCH_CAUSE_HISTOGRAM,
+                        LaunchCause.WEBAPK_CHROME_DISTRIBUTOR);
         Mockito.when(mWebappInfo.isForWebApk()).thenReturn(false);
         metrics.onReceivedIntent();
         metrics.recordLaunchCause();
@@ -100,8 +103,10 @@ public final class WebappLaunchCauseMetricsTest {
     @SmallTest
     @UiThreadTest
     public void testViewIntentLaunch() throws Throwable {
-        var histogram = HistogramWatcher.newSingleRecordWatcher(
-                LaunchCauseMetrics.LAUNCH_CAUSE_HISTOGRAM, LaunchCause.EXTERNAL_VIEW_INTENT);
+        var histogram =
+                HistogramWatcher.newSingleRecordWatcher(
+                        LaunchCauseMetrics.LAUNCH_CAUSE_HISTOGRAM,
+                        LaunchCause.EXTERNAL_VIEW_INTENT);
         Mockito.when(mWebappInfo.isLaunchedFromHomescreen()).thenReturn(false);
         Mockito.when(mWebappInfo.source()).thenReturn(ShortcutSource.EXTERNAL_INTENT);
 
@@ -116,8 +121,9 @@ public final class WebappLaunchCauseMetricsTest {
     @SmallTest
     @UiThreadTest
     public void testNullWebAppInfo() throws Throwable {
-        var histogram = HistogramWatcher.newSingleRecordWatcher(
-                LaunchCauseMetrics.LAUNCH_CAUSE_HISTOGRAM, LaunchCause.OTHER);
+        var histogram =
+                HistogramWatcher.newSingleRecordWatcher(
+                        LaunchCauseMetrics.LAUNCH_CAUSE_HISTOGRAM, LaunchCause.OTHER);
 
         WebappLaunchCauseMetrics metrics = new WebappLaunchCauseMetrics(mActivity, null);
 

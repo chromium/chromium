@@ -83,9 +83,7 @@ import org.chromium.ui.test.util.DisableAnimationsTestRule;
 import java.util.Arrays;
 import java.util.List;
 
-/**
- * Tests of the Omnibox Pedals feature.
- */
+/** Tests of the Omnibox Pedals feature. */
 @RunWith(ChromeJUnit4ClassRunner.class)
 @CommandLineFlags.Add({ChromeSwitches.DISABLE_FIRST_RUN_EXPERIENCE})
 @Batch(Batch.PER_CLASS)
@@ -128,24 +126,25 @@ public class OmniboxPedalsTest {
     @After
     public void tearDown() throws Exception {
         TestThreadUtils.runOnUiThreadBlocking(
-                () -> { IncognitoTabHostUtils.closeAllIncognitoTabs(); });
+                () -> {
+                    IncognitoTabHostUtils.closeAllIncognitoTabs();
+                });
         if (mTargetActivity != null) {
             ApplicationTestUtils.finishActivity(mTargetActivity);
         }
         TestThreadUtils.runOnUiThreadBlocking(
-                ()
-                        -> sActivityTestRule.getActivity()
-                                   .getModalDialogManager()
-                                   .dismissAllDialogs(
-                                           DialogDismissalCause.NEGATIVE_BUTTON_CLICKED));
+                () ->
+                        sActivityTestRule
+                                .getActivity()
+                                .getModalDialogManager()
+                                .dismissAllDialogs(DialogDismissalCause.NEGATIVE_BUTTON_CLICKED));
         mJniMocker.mock(AutocompleteControllerJni.TEST_HOOKS, null);
         mJniMocker.mock(OmniboxActionJni.TEST_HOOKS, null);
     }
 
     /**
-     * Apply suggestions to the Omnibox.
-     * Requires at least one of the suggestions to include at least one OmniboxAction.
-     * Verifies that suggestions - and actions - are shown.
+     * Apply suggestions to the Omnibox. Requires at least one of the suggestions to include at
+     * least one OmniboxAction. Verifies that suggestions - and actions - are shown.
      *
      * @param matches the matches to show
      */
@@ -177,14 +176,20 @@ public class OmniboxPedalsTest {
      * @param fragmentType The class type of the displayed settings fragment.
      */
     private void clickOnPedalToSettings(Runnable activate, Class<? extends Fragment> fragmentType) {
-        mTargetActivity = ActivityTestUtils.waitForActivity(
-                InstrumentationRegistry.getInstrumentation(), SettingsActivity.class, activate);
+        mTargetActivity =
+                ActivityTestUtils.waitForActivity(
+                        InstrumentationRegistry.getInstrumentation(),
+                        SettingsActivity.class,
+                        activate);
 
-        CriteriaHelper.pollUiThread(() -> {
-            Fragment fragment =
-                    mTargetActivity.getSupportFragmentManager().findFragmentById(R.id.content);
-            Criteria.checkThat(fragment, Matchers.instanceOf(fragmentType));
-        });
+        CriteriaHelper.pollUiThread(
+                () -> {
+                    Fragment fragment =
+                            mTargetActivity
+                                    .getSupportFragmentManager()
+                                    .findFragmentById(R.id.content);
+                    Criteria.checkThat(fragment, Matchers.instanceOf(fragmentType));
+                });
     }
 
     @Test
@@ -196,7 +201,9 @@ public class OmniboxPedalsTest {
                 () -> mOmniboxUtils.clickOnAction(0, 0), ClearBrowsingDataFragmentAdvanced.class);
         verify(mOmniboxActionJni, times(1))
                 .recordActionShown(
-                        OmniboxPedalId.CLEAR_BROWSING_DATA, /*position=*/0, /*executed=*/true);
+                        OmniboxPedalId.CLEAR_BROWSING_DATA,
+                        /* position= */ 0,
+                        /* executed= */ true);
         verifyNoMoreInteractions(mOmniboxActionJni);
     }
 
@@ -210,7 +217,9 @@ public class OmniboxPedalsTest {
         onViewWaiting(withId(R.id.quick_delete_spinner)).check(matches(isDisplayed()));
         verify(mOmniboxActionJni)
                 .recordActionShown(
-                        OmniboxPedalId.CLEAR_BROWSING_DATA, /*position=*/0, /*executed=*/true);
+                        OmniboxPedalId.CLEAR_BROWSING_DATA,
+                        /* position= */ 0,
+                        /* executed= */ true);
         verifyNoMoreInteractions(mOmniboxActionJni);
     }
 
@@ -221,7 +230,7 @@ public class OmniboxPedalsTest {
         clickOnPedalToSettings(() -> mOmniboxUtils.clickOnAction(0, 0), PasswordSettings.class);
         verify(mOmniboxActionJni, times(1))
                 .recordActionShown(
-                        OmniboxPedalId.MANAGE_PASSWORDS, /*position=*/0, /*executed=*/true);
+                        OmniboxPedalId.MANAGE_PASSWORDS, /* position= */ 0, /* executed= */ true);
         verifyNoMoreInteractions(mOmniboxActionJni);
     }
 
@@ -233,7 +242,7 @@ public class OmniboxPedalsTest {
                 () -> mOmniboxUtils.clickOnAction(0, 0), AutofillPaymentMethodsFragment.class);
         verify(mOmniboxActionJni, times(1))
                 .recordActionShown(
-                        OmniboxPedalId.UPDATE_CREDIT_CARD, /*position=*/0, /*executed=*/true);
+                        OmniboxPedalId.UPDATE_CREDIT_CARD, /* position= */ 0, /* executed= */ true);
         verifyNoMoreInteractions(mOmniboxActionJni);
     }
 
@@ -243,15 +252,16 @@ public class OmniboxPedalsTest {
         setSuggestions(createDummyPedalSuggestion(OmniboxPedalId.LAUNCH_INCOGNITO));
 
         mOmniboxUtils.clickOnAction(0, 0);
-        CriteriaHelper.pollUiThread(() -> {
-            Tab tab = sActivityTestRule.getActivity().getActivityTab();
-            Criteria.checkThat(tab, Matchers.notNullValue());
-            Criteria.checkThat(tab.isIncognito(), Matchers.is(true));
-        });
+        CriteriaHelper.pollUiThread(
+                () -> {
+                    Tab tab = sActivityTestRule.getActivity().getActivityTab();
+                    Criteria.checkThat(tab, Matchers.notNullValue());
+                    Criteria.checkThat(tab.isIncognito(), Matchers.is(true));
+                });
 
         verify(mOmniboxActionJni, times(1))
                 .recordActionShown(
-                        OmniboxPedalId.LAUNCH_INCOGNITO, /*position=*/0, /*executed=*/true);
+                        OmniboxPedalId.LAUNCH_INCOGNITO, /* position= */ 0, /* executed= */ true);
         verifyNoMoreInteractions(mOmniboxActionJni);
     }
 
@@ -268,7 +278,9 @@ public class OmniboxPedalsTest {
                 () -> mOmniboxUtils.clickOnAction(0, 0), SafetyCheckSettingsFragment.class);
         verify(mOmniboxActionJni, times(1))
                 .recordActionShown(
-                        OmniboxPedalId.RUN_CHROME_SAFETY_CHECK, /*position=*/0, /*executed=*/true);
+                        OmniboxPedalId.RUN_CHROME_SAFETY_CHECK,
+                        /* position= */ 0,
+                        /* executed= */ true);
         // Make sure the safety check was ran.
         safetyCheckHistogramWatcher.pollInstrumentationThreadUntilSatisfied();
         verifyNoMoreInteractions(mOmniboxActionJni);
@@ -281,7 +293,9 @@ public class OmniboxPedalsTest {
         clickOnPedalToSettings(() -> mOmniboxUtils.clickOnAction(0, 0), SiteSettings.class);
         verify(mOmniboxActionJni, times(1))
                 .recordActionShown(
-                        OmniboxPedalId.MANAGE_SITE_SETTINGS, /*position=*/0, /*executed=*/true);
+                        OmniboxPedalId.MANAGE_SITE_SETTINGS,
+                        /* position= */ 0,
+                        /* executed= */ true);
         verifyNoMoreInteractions(mOmniboxActionJni);
     }
 
@@ -293,7 +307,9 @@ public class OmniboxPedalsTest {
         clickOnPedalToSettings(() -> mOmniboxUtils.clickOnAction(0, 0), MainSettings.class);
         verify(mOmniboxActionJni, times(1))
                 .recordActionShown(
-                        OmniboxPedalId.MANAGE_CHROME_SETTINGS, /*position=*/0, /*executed=*/true);
+                        OmniboxPedalId.MANAGE_CHROME_SETTINGS,
+                        /* position= */ 0,
+                        /* executed= */ true);
         verifyNoMoreInteractions(mOmniboxActionJni);
     }
 
@@ -303,16 +319,19 @@ public class OmniboxPedalsTest {
         setSuggestions(createDummyPedalSuggestion(OmniboxPedalId.VIEW_CHROME_HISTORY));
 
         mOmniboxUtils.clickOnAction(0, 0);
-        CriteriaHelper.pollUiThread(() -> {
-            Tab tab = sActivityTestRule.getActivity().getActivityTab();
-            Criteria.checkThat(tab, Matchers.notNullValue());
-            Criteria.checkThat(
-                    tab.getUrl().getSpec(), Matchers.startsWith(UrlConstants.HISTORY_URL));
-        });
+        CriteriaHelper.pollUiThread(
+                () -> {
+                    Tab tab = sActivityTestRule.getActivity().getActivityTab();
+                    Criteria.checkThat(tab, Matchers.notNullValue());
+                    Criteria.checkThat(
+                            tab.getUrl().getSpec(), Matchers.startsWith(UrlConstants.HISTORY_URL));
+                });
 
         verify(mOmniboxActionJni, times(1))
                 .recordActionShown(
-                        OmniboxPedalId.VIEW_CHROME_HISTORY, /*position=*/0, /*executed=*/true);
+                        OmniboxPedalId.VIEW_CHROME_HISTORY,
+                        /* position= */ 0,
+                        /* executed= */ true);
         verifyNoMoreInteractions(mOmniboxActionJni);
     }
 
@@ -323,8 +342,10 @@ public class OmniboxPedalsTest {
         clickOnPedalToSettings(
                 () -> mOmniboxUtils.clickOnAction(0, 0), AccessibilitySettings.class);
         verify(mOmniboxActionJni, times(1))
-                .recordActionShown(OmniboxPedalId.MANAGE_CHROME_ACCESSIBILITY, /*position=*/0,
-                        /*executed=*/true);
+                .recordActionShown(
+                        OmniboxPedalId.MANAGE_CHROME_ACCESSIBILITY,
+                        /* position= */ 0,
+                        /* executed= */ true);
         verifyNoMoreInteractions(mOmniboxActionJni);
     }
 
@@ -335,13 +356,17 @@ public class OmniboxPedalsTest {
 
         onView(withId(R.id.url_bar)).perform(pressKey(KeyEvent.KEYCODE_DPAD_DOWN));
         onView(withId(R.id.url_bar)).perform(pressKey(KeyEvent.KEYCODE_TAB));
-        clickOnPedalToSettings(() -> {
-            onView(withId(R.id.url_bar)).perform(pressKey(KeyEvent.KEYCODE_ENTER));
-        }, AccessibilitySettings.class);
+        clickOnPedalToSettings(
+                () -> {
+                    onView(withId(R.id.url_bar)).perform(pressKey(KeyEvent.KEYCODE_ENTER));
+                },
+                AccessibilitySettings.class);
 
         verify(mOmniboxActionJni, times(1))
-                .recordActionShown(OmniboxPedalId.MANAGE_CHROME_ACCESSIBILITY, /*position=*/0,
-                        /*executed=*/true);
+                .recordActionShown(
+                        OmniboxPedalId.MANAGE_CHROME_ACCESSIBILITY,
+                        /* position= */ 0,
+                        /* executed= */ true);
         verifyNoMoreInteractions(mOmniboxActionJni);
     }
 
@@ -351,15 +376,18 @@ public class OmniboxPedalsTest {
         setSuggestions(createDummyPedalSuggestion(OmniboxPedalId.PLAY_CHROME_DINO_GAME));
 
         mOmniboxUtils.clickOnAction(0, 0);
-        CriteriaHelper.pollUiThread(() -> {
-            Tab tab = sActivityTestRule.getActivity().getActivityTab();
-            Criteria.checkThat(tab, Matchers.notNullValue());
-            Criteria.checkThat(
-                    tab.getUrl().getSpec(), Matchers.equalTo(UrlConstants.CHROME_DINO_URL));
-        });
+        CriteriaHelper.pollUiThread(
+                () -> {
+                    Tab tab = sActivityTestRule.getActivity().getActivityTab();
+                    Criteria.checkThat(tab, Matchers.notNullValue());
+                    Criteria.checkThat(
+                            tab.getUrl().getSpec(), Matchers.equalTo(UrlConstants.CHROME_DINO_URL));
+                });
         verify(mOmniboxActionJni, times(1))
                 .recordActionShown(
-                        OmniboxPedalId.PLAY_CHROME_DINO_GAME, /*position=*/0, /*executed=*/true);
+                        OmniboxPedalId.PLAY_CHROME_DINO_GAME,
+                        /* position= */ 0,
+                        /* executed= */ true);
         verifyNoMoreInteractions(mOmniboxActionJni);
     }
 }

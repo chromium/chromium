@@ -43,9 +43,7 @@ import java.util.concurrent.Semaphore;
 import java.util.concurrent.TimeUnit;
 import java.util.concurrent.atomic.AtomicInteger;
 
-/**
- * Tests ScreenshotMonitor.
- */
+/** Tests ScreenshotMonitor. */
 @RunWith(ChromeJUnit4ClassRunner.class)
 @Batch(Batch.PER_CLASS)
 public class ScreenshotMonitorTest {
@@ -58,8 +56,7 @@ public class ScreenshotMonitorTest {
 
     private MockContentResolver mMockContentResolver = new MockContentResolver();
 
-    @Mock
-    private DisplayAndroid mDisplayAndroid;
+    @Mock private DisplayAndroid mDisplayAndroid;
 
     static class TestScreenshotMonitorDelegate implements ScreenshotMonitorDelegate {
         // This is modified on the UI thread and accessed on the test thread.
@@ -91,41 +88,57 @@ public class ScreenshotMonitorTest {
         Context context = new TestContext(ApplicationProvider.getApplicationContext());
         ContextUtils.initApplicationContextForTests(context);
         Assume.assumeTrue(
-                ContextCompat.checkSelfPermission(ContextUtils.getApplicationContext(),
-                        MimeTypeUtils.getPermissionNameForMimeType(MimeTypeUtils.Type.IMAGE))
-                == PackageManager.PERMISSION_GRANTED);
+                ContextCompat.checkSelfPermission(
+                                ContextUtils.getApplicationContext(),
+                                MimeTypeUtils.getPermissionNameForMimeType(
+                                        MimeTypeUtils.Type.IMAGE))
+                        == PackageManager.PERMISSION_GRANTED);
 
         MockitoAnnotations.initMocks(this);
         mTestScreenshotMonitorDelegate = new TestScreenshotMonitorDelegate();
 
-        TestThreadUtils.runOnUiThreadBlocking(() -> {
-            mTestScreenshotMonitor = new ScreenshotMonitorImpl(
-                    mTestScreenshotMonitorDelegate, null, mMockContentResolver, mDisplayAndroid);
-            mContentObserver = mTestScreenshotMonitor.getContentObserver();
-        });
+        TestThreadUtils.runOnUiThreadBlocking(
+                () -> {
+                    mTestScreenshotMonitor =
+                            new ScreenshotMonitorImpl(
+                                    mTestScreenshotMonitorDelegate,
+                                    null,
+                                    mMockContentResolver,
+                                    mDisplayAndroid);
+                    mContentObserver = mTestScreenshotMonitor.getContentObserver();
+                });
     }
 
     private void mockValidContentResolver(String path, String width, String height) {
         final Cursor cursor = Mockito.mock(Cursor.class);
         Mockito.doReturn(true).when(cursor).moveToNext();
 
-        Mockito.doReturn(1).when(cursor).getColumnIndexOrThrow(
-                Mockito.eq(MediaStore.MediaColumns.DATA));
-        Mockito.doReturn(2).when(cursor).getColumnIndexOrThrow(
-                Mockito.eq(MediaStore.MediaColumns.WIDTH));
-        Mockito.doReturn(3).when(cursor).getColumnIndexOrThrow(
-                Mockito.eq(MediaStore.MediaColumns.HEIGHT));
+        Mockito.doReturn(1)
+                .when(cursor)
+                .getColumnIndexOrThrow(Mockito.eq(MediaStore.MediaColumns.DATA));
+        Mockito.doReturn(2)
+                .when(cursor)
+                .getColumnIndexOrThrow(Mockito.eq(MediaStore.MediaColumns.WIDTH));
+        Mockito.doReturn(3)
+                .when(cursor)
+                .getColumnIndexOrThrow(Mockito.eq(MediaStore.MediaColumns.HEIGHT));
         Mockito.doReturn(path).when(cursor).getString(Mockito.eq(1));
         Mockito.doReturn(width).when(cursor).getString(Mockito.eq(2));
         Mockito.doReturn(height).when(cursor).getString(Mockito.eq(3));
 
-        mMockContentResolver.addProvider("media", new MockContentProvider() {
-            @Override
-            public Cursor query(Uri uri, String[] projection, String selection,
-                    String[] selectionArgs, String sortOrder) {
-                return cursor;
-            }
-        });
+        mMockContentResolver.addProvider(
+                "media",
+                new MockContentProvider() {
+                    @Override
+                    public Cursor query(
+                            Uri uri,
+                            String[] projection,
+                            String selection,
+                            String[] selectionArgs,
+                            String sortOrder) {
+                        return cursor;
+                    }
+                });
     }
 
     private void mockDisplay(int width, int height) {
@@ -136,8 +149,8 @@ public class ScreenshotMonitorTest {
     private void mockValidScreenshot() {}
 
     /**
-     * Verify that if monitoring starts, the delegate should be called. Also verify that the
-     * inner TestFileObserver monitors as expected.
+     * Verify that if monitoring starts, the delegate should be called. Also verify that the inner
+     * TestFileObserver monitors as expected.
      */
     @Test
     @SmallTest
@@ -155,9 +168,7 @@ public class ScreenshotMonitorTest {
         stopMonitoringOnUiThreadBlocking();
     }
 
-    /**
-     * Verify that the delegate is called after a restart.
-     */
+    /** Verify that the delegate is called after a restart. */
     @Test
     @SmallTest
     @Feature({"FeatureEngagement", "Screenshot"})
@@ -181,9 +192,7 @@ public class ScreenshotMonitorTest {
         assertScreenshotShowUiCountOnUiThreadBlocking(2);
     }
 
-    /**
-     * Verify that if monitoring stops, the delegate should not be called.
-     */
+    /** Verify that if monitoring stops, the delegate should not be called. */
     @Test
     @SmallTest
     @Feature({"FeatureEngagement", "Screenshot"})
@@ -200,9 +209,7 @@ public class ScreenshotMonitorTest {
         assertScreenshotShowUiCountOnUiThreadBlocking(0);
     }
 
-    /**
-     * Verify that if monitoring is never started, the delegate should not be called.
-     */
+    /** Verify that if monitoring is never started, the delegate should not be called. */
     @Test
     @SmallTest
     @Feature({"FeatureEngagement", "Screenshot"})
@@ -248,13 +255,15 @@ public class ScreenshotMonitorTest {
     private void startMonitoringOnUiThreadBlocking() {
         final Semaphore semaphore = new Semaphore(0);
 
-        PostTask.postTask(TaskTraits.UI_DEFAULT, new Runnable() {
-            @Override
-            public void run() {
-                mTestScreenshotMonitor.startMonitoring();
-                semaphore.release();
-            }
-        });
+        PostTask.postTask(
+                TaskTraits.UI_DEFAULT,
+                new Runnable() {
+                    @Override
+                    public void run() {
+                        mTestScreenshotMonitor.startMonitoring();
+                        semaphore.release();
+                    }
+                });
         try {
             Assert.assertTrue(semaphore.tryAcquire(10, TimeUnit.SECONDS));
         } catch (InterruptedException e) {
@@ -266,13 +275,15 @@ public class ScreenshotMonitorTest {
     private void stopMonitoringOnUiThreadBlocking() {
         final Semaphore semaphore = new Semaphore(0);
 
-        PostTask.postTask(TaskTraits.UI_DEFAULT, new Runnable() {
-            @Override
-            public void run() {
-                mTestScreenshotMonitor.stopMonitoring();
-                semaphore.release();
-            }
-        });
+        PostTask.postTask(
+                TaskTraits.UI_DEFAULT,
+                new Runnable() {
+                    @Override
+                    public void run() {
+                        mTestScreenshotMonitor.stopMonitoring();
+                        semaphore.release();
+                    }
+                });
         try {
             Assert.assertTrue(semaphore.tryAcquire(10, TimeUnit.SECONDS));
         } catch (InterruptedException e) {
@@ -285,12 +296,14 @@ public class ScreenshotMonitorTest {
     private void assertScreenshotShowUiCountOnUiThreadBlocking(int expectedCount) {
         final Semaphore semaphore = new Semaphore(0);
 
-        PostTask.postTask(TaskTraits.UI_DEFAULT, new Runnable() {
-            @Override
-            public void run() {
-                semaphore.release();
-            }
-        });
+        PostTask.postTask(
+                TaskTraits.UI_DEFAULT,
+                new Runnable() {
+                    @Override
+                    public void run() {
+                        semaphore.release();
+                    }
+                });
         try {
             Assert.assertTrue(semaphore.tryAcquire(10, TimeUnit.SECONDS));
         } catch (InterruptedException e) {

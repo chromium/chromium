@@ -75,8 +75,9 @@ public class IncognitoStorageLeakageTest {
 
     @Before
     public void setUp() throws TimeoutException {
-        mTestServer = EmbeddedTestServer.createAndStartServer(
-                ApplicationProvider.getApplicationContext());
+        mTestServer =
+                EmbeddedTestServer.createAndStartServer(
+                        ApplicationProvider.getApplicationContext());
         mSiteDataTestPage = mTestServer.getURL(SITE_DATA_HTML_PATH);
     }
 
@@ -94,29 +95,34 @@ public class IncognitoStorageLeakageTest {
         ActivityType activity1 = ActivityType.valueOf(activityType1);
         ActivityType activity2 = ActivityType.valueOf(activityType2);
 
-        Tab tab1 = activity1.launchUrl(
-                mChromeActivityTestRule, mCustomTabActivityTestRule, mSiteDataTestPage);
+        Tab tab1 =
+                activity1.launchUrl(
+                        mChromeActivityTestRule, mCustomTabActivityTestRule, mSiteDataTestPage);
         CriteriaHelper.pollUiThread(
                 () -> Criteria.checkThat(tab1.getWebContents(), Matchers.notNullValue()));
 
         // Sets the session storage in tab1
-        assertEquals("true",
+        assertEquals(
+                "true",
                 JavaScriptUtils.executeJavaScriptAndWaitForResult(
                         tab1.getWebContents(), "setSessionStorage()"));
 
         // Checks the sessions storage is set in tab1
-        assertEquals("true",
+        assertEquals(
+                "true",
                 JavaScriptUtils.executeJavaScriptAndWaitForResult(
                         tab1.getWebContents(), "hasSessionStorage()"));
 
-        Tab tab2 = activity2.launchUrl(
-                mChromeActivityTestRule, mCustomTabActivityTestRule, mSiteDataTestPage);
+        Tab tab2 =
+                activity2.launchUrl(
+                        mChromeActivityTestRule, mCustomTabActivityTestRule, mSiteDataTestPage);
         CriteriaHelper.pollUiThread(
                 () -> Criteria.checkThat(tab2.getWebContents(), Matchers.notNullValue()));
 
         // Checks the session storage in tab2. Session storage set in tab1 should not be accessible.
         // The session storage is per tab basis.
-        assertEquals("false",
+        assertEquals(
+                "false",
                 JavaScriptUtils.executeJavaScriptAndWaitForResult(
                         tab2.getWebContents(), "hasSessionStorage()"));
     }
@@ -124,16 +130,19 @@ public class IncognitoStorageLeakageTest {
     @Test
     @LargeTest
     @UseMethodParameter(TestParams.AllTypesToAllTypes.class)
-    public void testStorageDoesNotLeakFromActivityToActivity(String activityType1,
-            String activityType2) throws ExecutionException, TimeoutException {
+    public void testStorageDoesNotLeakFromActivityToActivity(
+            String activityType1, String activityType2)
+            throws ExecutionException, TimeoutException {
         ActivityType activity1 = ActivityType.valueOf(activityType1);
         ActivityType activity2 = ActivityType.valueOf(activityType2);
 
-        Tab tab1 = activity1.launchUrl(
-                mChromeActivityTestRule, mCustomTabActivityTestRule, mSiteDataTestPage);
+        Tab tab1 =
+                activity1.launchUrl(
+                        mChromeActivityTestRule, mCustomTabActivityTestRule, mSiteDataTestPage);
 
-        Tab tab2 = activity2.launchUrl(
-                mChromeActivityTestRule, mCustomTabActivityTestRule, mSiteDataTestPage);
+        Tab tab2 =
+                activity2.launchUrl(
+                        mChromeActivityTestRule, mCustomTabActivityTestRule, mSiteDataTestPage);
 
         for (String type : sSiteData) {
             String expected = "false";
@@ -153,11 +162,13 @@ public class IncognitoStorageLeakageTest {
             CriteriaHelper.pollUiThread(
                     () -> Criteria.checkThat(tab1.getWebContents(), Matchers.notNullValue()));
             // Set the storage in tab1
-            assertEquals("true",
+            assertEquals(
+                    "true",
                     JavaScriptUtils.runJavascriptWithAsyncResult(
                             tab1.getWebContents(), "set" + type + "Async()"));
             // Checks the storage is set in tab1
-            assertEquals("true",
+            assertEquals(
+                    "true",
                     JavaScriptUtils.runJavascriptWithAsyncResult(
                             tab1.getWebContents(), "has" + type + "Async()"));
 
@@ -166,7 +177,8 @@ public class IncognitoStorageLeakageTest {
             CriteriaHelper.pollUiThread(
                     () -> Criteria.checkThat(tab2.getWebContents(), Matchers.notNullValue()));
             // Access the storage from tab2
-            assertEquals(expected,
+            assertEquals(
+                    expected,
                     JavaScriptUtils.runJavascriptWithAsyncResult(
                             tab2.getWebContents(), "has" + type + "Async()"));
         }

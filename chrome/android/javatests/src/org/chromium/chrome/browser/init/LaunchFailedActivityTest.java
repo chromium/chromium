@@ -33,8 +33,7 @@ import org.chromium.chrome.test.util.browser.Features;
 @RunWith(ChromeJUnit4ClassRunner.class)
 @DoNotBatch(reason = "This test interacts with startup.")
 public class LaunchFailedActivityTest {
-    @Rule
-    public TestRule mProcessor = new Features.JUnitProcessor();
+    @Rule public TestRule mProcessor = new Features.JUnitProcessor();
 
     private static class MockContext extends ContextWrapper {
         public MockContext(Context context) {
@@ -42,6 +41,7 @@ public class LaunchFailedActivityTest {
         }
 
         private Intent mLastIntent;
+
         @Override
         public void startActivity(Intent intent, Bundle options) {
             mLastIntent = intent;
@@ -81,10 +81,16 @@ public class LaunchFailedActivityTest {
 
         // Check for the intent instead of using an ActivityMonitor since LaunchFailedActivity is
         // started in a different process that is not instrumented.
-        CriteriaHelper.pollUiThread(() -> {
-            return mockContext.mLastIntent != null
-                    && mockContext.mLastIntent.getComponent().getClassName().equals(
-                            SplitCompatApplication.LAUNCH_FAILED_ACTIVITY_CLASS_NAME);
-        });
+        CriteriaHelper.pollUiThread(
+                () -> {
+                    return mockContext.mLastIntent != null
+                            && mockContext
+                                    .mLastIntent
+                                    .getComponent()
+                                    .getClassName()
+                                    .equals(
+                                            SplitCompatApplication
+                                                    .LAUNCH_FAILED_ACTIVITY_CLASS_NAME);
+                });
     }
 }

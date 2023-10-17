@@ -36,14 +36,13 @@ import org.chromium.url.GURL;
 
 import java.util.ArrayList;
 
-/**
- * PolicyAuditor integration test.
- */
+/** PolicyAuditor integration test. */
 @RunWith(ChromeJUnit4ClassRunner.class)
 @Batch(Batch.PER_CLASS)
 public class PolicyAuditorBridgeTest {
     static class FakePolicyAuditor extends PolicyAuditor {
         private static FakePolicyAuditor sInstance;
+
         private FakePolicyAuditor() {
             mEntries = new ArrayList<>();
         }
@@ -93,12 +92,13 @@ public class PolicyAuditorBridgeTest {
 
     @BeforeClass
     public static void beforeClass() {
-        AppHooks.setInstanceForTesting(new AppHooksImpl() {
-            @Override
-            public PolicyAuditor getPolicyAuditor() {
-                return FakePolicyAuditor.get();
-            }
-        });
+        AppHooks.setInstanceForTesting(
+                new AppHooksImpl() {
+                    @Override
+                    public PolicyAuditor getPolicyAuditor() {
+                        return FakePolicyAuditor.get();
+                    }
+                });
     }
 
     @Before
@@ -143,23 +143,30 @@ public class PolicyAuditorBridgeTest {
         // the invalid url.
         Tab tab = mActivityTestRule.getActivity().getActivityTab();
         final CallbackHelper loadFinishCallback = new CallbackHelper();
-        WebContentsObserver observer = new WebContentsObserver() {
-            @Override
-            public void didFinishLoadInPrimaryMainFrame(GlobalRenderFrameHostId rfhId, GURL url,
-                    boolean isKnownValid, @LifecycleState int rfhLifecycleState) {
-                loadFinishCallback.notifyCalled();
-            }
-        };
-        TestThreadUtils.runOnUiThreadBlocking(() -> {
-            tab.getWebContents().addObserver(observer);
-            tab.loadUrl(new LoadUrlParams(invalidUrl));
-        });
+        WebContentsObserver observer =
+                new WebContentsObserver() {
+                    @Override
+                    public void didFinishLoadInPrimaryMainFrame(
+                            GlobalRenderFrameHostId rfhId,
+                            GURL url,
+                            boolean isKnownValid,
+                            @LifecycleState int rfhLifecycleState) {
+                        loadFinishCallback.notifyCalled();
+                    }
+                };
+        TestThreadUtils.runOnUiThreadBlocking(
+                () -> {
+                    tab.getWebContents().addObserver(observer);
+                    tab.loadUrl(new LoadUrlParams(invalidUrl));
+                });
 
         try {
             loadFinishCallback.waitForCallback(0);
         } finally {
             TestThreadUtils.runOnUiThreadBlocking(
-                    () -> { tab.getWebContents().removeObserver(observer); });
+                    () -> {
+                        tab.getWebContents().removeObserver(observer);
+                    });
         }
 
         FakePolicyAuditor fakePolicyAuditor = (FakePolicyAuditor) AppHooks.get().getPolicyAuditor();

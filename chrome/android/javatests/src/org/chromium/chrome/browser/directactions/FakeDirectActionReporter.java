@@ -55,14 +55,16 @@ public class FakeDirectActionReporter implements DirectActionReporter {
     /**
      * A simple action definition for testing.
      *
-     * TODO(crbug.com/806868): Share these fakes. There is another one in
+     * <p>TODO(crbug.com/806868): Share these fakes. There is another one in
      * chrome/android/junit/...directactions/
      */
     public static class FakeDefinition implements Definition {
         /** Action name string. */
         public final String mId;
+
         /** Parameter list for this action definition. */
         public List<FakeParameter> mParameters = new ArrayList<>();
+
         /** Result list for this action definition. */
         public List<FakeParameter> mResults = new ArrayList<>();
 
@@ -89,8 +91,7 @@ public class FakeDirectActionReporter implements DirectActionReporter {
         public final String mName;
 
         /** Parameter type. */
-        @Type
-        public final int mType;
+        @Type public final int mType;
 
         /** Whether the parameter is required or not. */
         public final boolean mRequired;

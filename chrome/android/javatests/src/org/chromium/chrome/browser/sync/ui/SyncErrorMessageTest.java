@@ -53,25 +53,23 @@ import org.chromium.ui.modelutil.PropertyModel;
 
 import java.io.IOException;
 
-/**
- * Test suites for {@link SyncErrorMessage}.
- */
+/** Test suites for {@link SyncErrorMessage}. */
 @RunWith(ChromeJUnit4ClassRunner.class)
 @DoNotBatch(reason = "TODO(crbug.com/1168590): SyncTestRule doesn't support batching.")
 @EnableFeatures(ChromeFeatureList.MESSAGES_FOR_ANDROID_INFRASTRUCTURE)
 @CommandLineFlags.Add({ChromeSwitches.DISABLE_FIRST_RUN_EXPERIENCE})
 public class SyncErrorMessageTest {
-    @Mock
-    private MessageDispatcher mMessageDispatcher;
+    @Mock private MessageDispatcher mMessageDispatcher;
     private FakeSyncServiceImpl mFakeSyncServiceImpl;
 
     @Rule
-    public final SyncTestRule mSyncTestRule = new SyncTestRule() {
-        @Override
-        protected FakeSyncServiceImpl createSyncServiceImpl() {
-            return new FakeSyncServiceImpl();
-        }
-    };
+    public final SyncTestRule mSyncTestRule =
+            new SyncTestRule() {
+                @Override
+                protected FakeSyncServiceImpl createSyncServiceImpl() {
+                    return new FakeSyncServiceImpl();
+                }
+            };
 
     @Rule
     public final ChromeRenderTestRule mRenderTestRule =
@@ -86,12 +84,13 @@ public class SyncErrorMessageTest {
         SyncErrorMessageImpressionTracker.resetLastShownTime();
         mFakeSyncServiceImpl = (FakeSyncServiceImpl) mSyncTestRule.getSyncService();
         SyncErrorMessage.setMessageDispatcherForTesting(mMessageDispatcher);
-        doAnswer((invocation) -> {
-            PropertyModel model = invocation.getArgument(0);
-            int dismissReason = invocation.getArgument(1);
-            model.get(MessageBannerProperties.ON_DISMISSED).onResult(dismissReason);
-            return null;
-        })
+        doAnswer(
+                        (invocation) -> {
+                            PropertyModel model = invocation.getArgument(0);
+                            int dismissReason = invocation.getArgument(1);
+                            model.get(MessageBannerProperties.ON_DISMISSED).onResult(dismissReason);
+                            return null;
+                        })
                 .when(mMessageDispatcher)
                 .dismissMessage(any(), anyInt());
     }
@@ -117,10 +116,11 @@ public class SyncErrorMessageTest {
         verifyHasShownMessage();
 
         // Resolving the error should dismiss the current message.
-        TestThreadUtils.runOnUiThreadBlocking(() -> {
-            mFakeSyncServiceImpl.setInitialSyncFeatureSetupComplete(
-                    SyncFirstSetupCompleteSource.BASIC_FLOW);
-        });
+        TestThreadUtils.runOnUiThreadBlocking(
+                () -> {
+                    mFakeSyncServiceImpl.setInitialSyncFeatureSetupComplete(
+                            SyncFirstSetupCompleteSource.BASIC_FLOW);
+                });
         verifyHasDismissedMessage();
     }
 
@@ -189,11 +189,13 @@ public class SyncErrorMessageTest {
         mFakeSyncServiceImpl.setRequiresClientUpgrade(false);
 
         @SyncError
-        int syncError = TestThreadUtils.runOnUiThreadBlockingNoException(() -> {
-            mFakeSyncServiceImpl.setInitialSyncFeatureSetupComplete(
-                    SyncFirstSetupCompleteSource.BASIC_FLOW);
-            return SyncSettingsUtils.getSyncError(mSyncTestRule.getSyncService());
-        });
+        int syncError =
+                TestThreadUtils.runOnUiThreadBlockingNoException(
+                        () -> {
+                            mFakeSyncServiceImpl.setInitialSyncFeatureSetupComplete(
+                                    SyncFirstSetupCompleteSource.BASIC_FLOW);
+                            return SyncSettingsUtils.getSyncError(mSyncTestRule.getSyncService());
+                        });
 
         Assert.assertEquals(MessageType.NOT_SHOWN, SyncErrorMessage.getMessageType(syncError));
 
@@ -257,33 +259,40 @@ public class SyncErrorMessageTest {
     }
 
     private void verifyHasShownMessage() {
-        verify(mMessageDispatcher,
-                description("Message should be displayed when sync error occurs."))
+        verify(
+                        mMessageDispatcher,
+                        description("Message should be displayed when sync error occurs."))
                 .enqueueWindowScopedMessage(any(), anyBoolean());
         Assert.assertNotNull(getSyncErrorMessage());
     }
 
     private void verifyHasNeverShownMessage() {
-        verify(mMessageDispatcher,
-                never().description(
-                        "Message should be never displayed when sync error does not occur."))
+        verify(
+                        mMessageDispatcher,
+                        never().description(
+                                        "Message should be never displayed when sync error does not"
+                                                + " occur."))
                 .enqueueWindowScopedMessage(any(), anyBoolean());
         Assert.assertNull(getSyncErrorMessage());
     }
 
     private void verifyHasDismissedMessage() {
-        verify(mMessageDispatcher,
-                description("Message should be dismissed when sync error has been resolved."))
+        verify(
+                        mMessageDispatcher,
+                        description(
+                                "Message should be dismissed when sync error has been resolved."))
                 .dismissMessage(any(), anyInt());
         Assert.assertNull(getSyncErrorMessage());
     }
 
     private @Nullable SyncErrorMessage getSyncErrorMessage() {
         return TestThreadUtils.runOnUiThreadBlockingNoException(
-                ()
-                        -> SyncErrorMessage.getKeyForTesting().retrieveDataFromHost(
-                                mSyncTestRule.getActivity()
-                                        .getWindowAndroid()
-                                        .getUnownedUserDataHost()));
+                () ->
+                        SyncErrorMessage.getKeyForTesting()
+                                .retrieveDataFromHost(
+                                        mSyncTestRule
+                                                .getActivity()
+                                                .getWindowAndroid()
+                                                .getUnownedUserDataHost()));
     }
 }
