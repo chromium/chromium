@@ -862,11 +862,29 @@ class PageInfoBubbleViewCookiesSubpageBrowserTest
   base::test::ScopedFeatureList feature_list_;
 };
 
+// TODO(crbug.com/1491942): This fails with the field trial testing config.
+class PageInfoBubbleViewCookiesSubpageBrowserTestNoTestingConfig
+    : public PageInfoBubbleViewCookiesSubpageBrowserTest {
+ public:
+  void SetUpCommandLine(base::CommandLine* command_line) override {
+    PageInfoBubbleViewCookiesSubpageBrowserTest::SetUpCommandLine(command_line);
+    command_line->AppendSwitch("disable-field-trial-config");
+  }
+};
+INSTANTIATE_TEST_SUITE_P(
+    /*no prefix*/,
+    PageInfoBubbleViewCookiesSubpageBrowserTestNoTestingConfig,
+    testing::ValuesIn({UserBypassFeatureState::kOff,
+                       UserBypassFeatureState::kOnTemporaryExceptions,
+                       UserBypassFeatureState::kOnPermanentExceptions,
+                       UserBypassFeatureState::kOn3pcdCookiesLimited}));
+
 // Show different sets of buttons in cookies subpage with different
 // enforcements:
 
-IN_PROC_BROWSER_TEST_P(PageInfoBubbleViewCookiesSubpageBrowserTest,
-                       InvokeUi_CookiesSubpageFpsBlocked3pcAllowed) {
+IN_PROC_BROWSER_TEST_P(
+    PageInfoBubbleViewCookiesSubpageBrowserTestNoTestingConfig,
+    InvokeUi_CookiesSubpageFpsBlocked3pcAllowed) {
   ShowAndVerifyUi();
 }
 IN_PROC_BROWSER_TEST_P(PageInfoBubbleViewCookiesSubpageBrowserTest,
@@ -886,12 +904,12 @@ IN_PROC_BROWSER_TEST_P(PageInfoBubbleViewCookiesSubpageBrowserTest,
   ShowAndVerifyUi();
 }
 IN_PROC_BROWSER_TEST_P(
-    PageInfoBubbleViewCookiesSubpageBrowserTest,
+    PageInfoBubbleViewCookiesSubpageBrowserTestNoTestingConfig,
     InvokeUi_CookiesSubpageFpsAllowed3pcEnforcedByExtension) {
   ShowAndVerifyUi();
 }
 IN_PROC_BROWSER_TEST_P(
-    PageInfoBubbleViewCookiesSubpageBrowserTest,
+    PageInfoBubbleViewCookiesSubpageBrowserTestNoTestingConfig,
     InvokeUi_CookiesSubpageFpsAllowed3pcEnforcedByCookieSetting) {
   ShowAndVerifyUi();
 }
