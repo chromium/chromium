@@ -17,6 +17,7 @@
 #include "build/chromeos_buildflags.h"
 #include "components/safe_search_api/url_checker.h"
 #include "components/supervised_user/core/browser/supervised_user_error_page.h"
+#include "components/supervised_user/core/common/supervised_user_constants.h"
 #include "ui/base/page_transition_types.h"
 
 class GURL;
@@ -126,10 +127,7 @@ class SupervisedUserURLFilter {
       ValidateURLSupportCallback check_webstore_url_callback,
       std::unique_ptr<Delegate> delegate);
 
-  SupervisedUserURLFilter(const SupervisedUserURLFilter&) = delete;
-  SupervisedUserURLFilter& operator=(const SupervisedUserURLFilter&) = delete;
-
-  ~SupervisedUserURLFilter();
+  virtual ~SupervisedUserURLFilter();
 
   static const char* GetWebFilterTypeHistogramNameForTest();
   static const char* GetManagedSiteListHistogramNameForTest();
@@ -254,6 +252,15 @@ class SupervisedUserURLFilter {
  private:
   friend class SupervisedUserURLFilterTest;
 
+  // Converts FilteringBehavior to the SupervisedUserFilterTopLevelResult
+  // histogram value in tools/metrics/histograms/enums.xml to be used in the
+  // "ManagedUsers.TopLevelFilteringResult" histogram.
+  static SupervisedUserFilterTopLevelResult
+  GetHistogramValueForTopLevelFilteringBehavior(
+      FilteringBehavior behavior,
+      FilteringBehaviorReason reason,
+      bool is_filtering_behavior_known);
+
   // Converts FilteringBehavior to SupervisedUserSafetyFilterResult histogram
   // value in tools/metrics/histograms/enums.xml.
   static int GetHistogramValueForFilteringBehavior(
@@ -266,7 +273,7 @@ class SupervisedUserURLFilter {
   bool RunAsyncChecker(const GURL& url,
                        FilteringBehaviorCallback callback) const;
 
-  FilteringBehavior GetFilteringBehaviorForURL(
+  virtual FilteringBehavior GetFilteringBehaviorForURL(
       const GURL& url,
       supervised_user::FilteringBehaviorReason* reason);
   FilteringBehavior GetManualFilteringBehaviorForURL(const GURL& url);

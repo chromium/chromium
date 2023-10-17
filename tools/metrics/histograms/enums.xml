@@ -103879,6 +103879,25 @@ would be helpful to identify which type is being sent.
   <int value="1" label="Favicon Unavailable"/>
 </enum>
 
+<enum name="SupervisedUserFilterTopLevelResult">
+  <int value="0" label="ALLOWED">
+    Records sites that have been allowed explicitly through the allowlist; when
+    SafeSites is enabled and the website is not blocked; and when all sites are
+    enabled through parental settings.
+  </int>
+  <int value="1" label="BLOCKED_SAFESITES">
+    Sites blocked due to the safe sites filtering.
+  </int>
+  <int value="2" label="BLOCKED_MANUAL">
+    Sites blocked due to being on the blocklist. Includes visits to sites on
+    blocklist while &quot;Only allow certain sites&quot; setting is turned on.
+  </int>
+  <int value="3" label="BLOCKED_NOT_IN_ALLOWLIST">
+    Sites that are blocked when &quot;Only allow certain sites&quot; setting is
+    turned on
+  </int>
+</enum>
+
 <enum name="SupervisedUserParentPermissionDialog">
   <summary>
     Tracks the actions of a parent on the Parent Permission Dialog.

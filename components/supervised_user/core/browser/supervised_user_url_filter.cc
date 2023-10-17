@@ -18,6 +18,7 @@
 #include "components/supervised_user/core/browser/kids_chrome_management_client.h"
 #include "components/supervised_user/core/browser/kids_management_url_checker_client.h"
 #include "components/supervised_user/core/common/supervised_user_constants.h"
+#include "components/supervised_user/core/common/supervised_user_utils.h"
 #include "components/url_matcher/url_util.h"
 #include "net/base/registry_controlled_domains/registry_controlled_domain.h"
 #include "url/gurl.h"
@@ -275,6 +276,36 @@ std::string SupervisedUserURLFilter::WebFilterTypeToDisplayString(
   }
 }
 
+SupervisedUserFilterTopLevelResult
+SupervisedUserURLFilter::GetHistogramValueForTopLevelFilteringBehavior(
+    FilteringBehavior behavior,
+    FilteringBehaviorReason reason,
+    bool is_filtering_behavior_known) {
+  switch (behavior) {
+    case ALLOW:
+      return SupervisedUserFilterTopLevelResult::kAllow;
+    case BLOCK:
+      switch (reason) {
+        case FilteringBehaviorReason::ASYNC_CHECKER:
+          return SupervisedUserFilterTopLevelResult::kBlockSafeSites;
+        case FilteringBehaviorReason::ALLOWLIST:
+          NOTREACHED();
+          break;
+        case FilteringBehaviorReason::MANUAL:
+          return SupervisedUserFilterTopLevelResult::kBlockManual;
+        case FilteringBehaviorReason::DEFAULT:
+          return SupervisedUserFilterTopLevelResult::kBlockNotInAllowlist;
+        case FilteringBehaviorReason::NOT_SIGNED_IN:
+          NOTREACHED();
+      }
+      [[fallthrough]];
+    case INVALID:
+      NOTREACHED();
+  }
+  NOTREACHED();
+  return SupervisedUserFilterTopLevelResult::kAllow;
+}
+
 // static
 int SupervisedUserURLFilter::GetHistogramValueForFilteringBehavior(
     FilteringBehavior behavior,
@@ -321,6 +352,13 @@ void SupervisedUserURLFilter::RecordFilterResultEvent(
     FilteringBehaviorReason reason,
     bool is_filtering_behavior_known,
     ui::PageTransition transition_type) {
+  SupervisedUserFilterTopLevelResult top_level_filter_behaviour =
+      GetHistogramValueForTopLevelFilteringBehavior(
+          behavior, reason, is_filtering_behavior_known);
+  base::UmaHistogramSparse(
+      kSupervisedUserTopLevelURLFilteringResultHistogramName,
+      static_cast<int>(top_level_filter_behaviour));
+
   int value = GetHistogramValueForFilteringBehavior(
                   behavior, reason, is_filtering_behavior_known) *
                   kHistogramFilteringBehaviorSpacing +

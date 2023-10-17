@@ -6,6 +6,7 @@
 #define COMPONENTS_SUPERVISED_USER_CORE_BROWSER_SUPERVISED_USER_SERVICE_H_
 
 #include <stddef.h>
+#include <memory>
 #include <string>
 
 #include "base/functional/callback.h"
@@ -180,6 +181,12 @@ class SupervisedUserService : public KeyedService,
       SupervisedUserServiceExtensionTest,
       ExtensionManagementPolicyProviderWithSUInitiatedInstalls);
   FRIEND_TEST_ALL_PREFIXES(SupervisedUserServiceTest, InterstitialBannerState);
+  FRIEND_TEST_ALL_PREFIXES(SupervisedUserNavigationThrottleTest,
+                           BlockedMatureSitesRecordedInBlockSafeSitesBucket);
+
+  // Method used in testing to set the given test_filter as the url_filter_
+  void SetURLFilterForTesting(
+      std::unique_ptr<SupervisedUserURLFilter> test_filter);
 
   FirstTimeInterstitialBannerState GetUpdatedBannerState(
       FirstTimeInterstitialBannerState original_state);
@@ -229,7 +236,7 @@ class SupervisedUserService : public KeyedService,
   // True only when |Shutdown()| method has been called.
   bool did_shutdown_ = false;
 
-  SupervisedUserURLFilter url_filter_;
+  std::unique_ptr<SupervisedUserURLFilter> url_filter_;
 
   const bool can_show_first_time_interstitial_banner_;
 

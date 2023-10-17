@@ -109,4 +109,7 @@ const char kFamilyLinkUserLogSegmentHistogramName[] =
 const char kSupervisedUserURLFilteringResultHistogramName[] =
     "ManagedUsers.FilteringResult";
 
+const char kSupervisedUserTopLevelURLFilteringResultHistogramName[] =
+    "ManagedUsers.TopLevelFilteringResult";
+
 }  // namespace supervised_user

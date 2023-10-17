@@ -733,7 +733,7 @@ chromium-metrics-reviews@google.com.
     The counts of results from supervised user URL filtering. Each entry
     includes the outcome of the filter (i.e. allowed, blocked, or unknown) and
     the page transition type (how the user got there, e.g. typed URL, clicked
-    link).
+    link). For a more general metric see ManagedUsers.TopLevelFilteringResult
   </summary>
 </histogram>
 
@@ -782,6 +782,18 @@ chromium-metrics-reviews@google.com.
   <owner>cros-families-eng@google.com</owner>
   <summary>
     The counts of request for permission sent from main frame or sub-frame.
+  </summary>
+</histogram>
+
+<histogram name="ManagedUsers.TopLevelFilteringResult"
+    enum="SupervisedUserFilterTopLevelResult" expires_after="2024-09-25">
+  <owner>fernandex@chromium.org</owner>
+  <owner>chrome-kids-eng@google.com</owner>
+  <summary>
+    Records counts of results from supervised user URL filtering. Each entry
+    includes the outcome of the filter (allowed or blocked). If outcome is
+    blocked reason for the block (e.g. SafeSites, Blocklist) is also recorded.
+    For more granular information see ManagedUsers.FilteringResult.
   </summary>
 </histogram>
 

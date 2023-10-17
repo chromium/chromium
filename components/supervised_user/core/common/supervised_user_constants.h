@@ -25,6 +25,22 @@ enum SupervisedUserSafetyFilterResult {
   FILTERING_BEHAVIOR_MAX = FILTERING_BEHAVIOR_ALLOW_ALLOWLIST
 };
 
+// These enum values describe the result of filtering and are logged to UMA.
+// Please keep in sync with "SupervisedUserFilterTopLevelResult" in
+// tools/metrics/histograms/enums.xml.
+enum class SupervisedUserFilterTopLevelResult {
+  // A parent has explicitly allowed the domain on the allowlist or all sites
+  // are allowed through parental controls.
+  kAllow = 1,
+  // Site is blocked by the safe sites filter
+  kBlockSafeSites = 2,
+  // Sites that were blocked due to being on the blocklist
+  kBlockManual = 3,
+  // Sites are blocked by default when the "Only allow certain sites" setting is
+  // enabled for the supervised user. Sites on the allowlist are not blocked.
+  kBlockNotInAllowlist = 4,
+};
+
 // Constants used by SupervisedUserURLFilter::RecordFilterResultEvent.
 extern const int kHistogramFilteringBehaviorSpacing;
 extern const int kSupervisedUserURLFilteringResultHistogramMax;
@@ -70,8 +86,12 @@ GURL KidsManagementClassifyURLRequestURL();
 // Histogram name to log FamilyLink user type segmentation.
 extern const char kFamilyLinkUserLogSegmentHistogramName[];
 
-// Histogram name to log URL filtering results.
+// Histogram name to log URL filtering results with reason for filter and page
+// transition.
 extern const char kSupervisedUserURLFilteringResultHistogramName[];
+
+// Histogram name to log top level URL filtering results with reason for filter.
+extern const char kSupervisedUserTopLevelURLFilteringResultHistogramName[];
 
 }  // namespace supervised_user
 
