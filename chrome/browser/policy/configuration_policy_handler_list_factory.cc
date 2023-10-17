@@ -2030,6 +2030,9 @@ const PolicyToPreferenceMapEntry kSimplePolicyMap[] = {
     policy::policy_prefs::kPPAPISharedImagesForVideoDecoderAllowed,
     base::Value::Type::BOOLEAN },
 #endif
+  { key::kIPv6ReachabilityOverrideEnabled,
+    prefs::kIPv6ReachabilityOverrideEnabled,
+    base::Value::Type::BOOLEAN },
 };
 // clang-format on
 

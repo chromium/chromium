@@ -3181,6 +3181,11 @@ void HostResolverManager::SetTickClockForTesting(
   tick_clock_ = tick_clock;
 }
 
+void HostResolverManager::SetIPv6ReachabilityOverride(
+    bool reachability_override) {
+  ipv6_reachability_override_ = reachability_override;
+}
+
 void HostResolverManager::SetMaxQueuedJobsForTesting(size_t value) {
   DCHECK_EQ(0u, dispatcher_->num_queued_jobs());
   DCHECK_GE(value, 0u);

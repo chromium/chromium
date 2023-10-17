@@ -853,6 +853,10 @@ void NetworkService::EnableDataUseUpdates(bool enable) {
   data_use_updates_enabled_ = enable;
 }
 
+void NetworkService::SetIPv6ReachabilityOverride(bool reachability_override) {
+  host_resolver_manager_->SetIPv6ReachabilityOverride(reachability_override);
+}
+
 #if BUILDFLAG(IS_CT_SUPPORTED)
 void NetworkService::ClearSCTAuditingCache() {
   sct_auditing_cache_->ClearCache();

@@ -187,6 +187,8 @@ class NET_EXPORT HostResolverManager
   // read from the system for DnsClient resolution.
   void SetDnsConfigOverrides(DnsConfigOverrides overrides);
 
+  void SetIPv6ReachabilityOverride(bool reachability_override);
+
   // Support for invalidating cached per-context data on changes to network or
   // DNS configuration. ContextHostResolvers should register/deregister
   // themselves here rather than attempting to listen for relevant network

@@ -594,6 +594,12 @@ SystemNetworkContextManager::SystemNetworkContextManager(
     network_process_launch_watcher_ =
         std::make_unique<NetworkProcessLaunchWatcher>();
   }
+
+  pref_change_registrar_.Add(
+      prefs::kIPv6ReachabilityOverrideEnabled,
+      base::BindRepeating(
+          &SystemNetworkContextManager::UpdateIPv6ReachabilityOverrideEnabled,
+          base::Unretained(this)));
 }
 
 SystemNetworkContextManager::~SystemNetworkContextManager() {
@@ -674,6 +680,8 @@ void SystemNetworkContextManager::RegisterPrefs(PrefRegistrySimple* registry) {
 #endif  // BUILDFLAG(IS_LINUX)
 
   registry->RegisterBooleanPref(prefs::kZstdContentEncodingEnabled, true);
+
+  registry->RegisterBooleanPref(prefs::kIPv6ReachabilityOverrideEnabled, false);
 }
 
 // static
@@ -800,6 +808,8 @@ void SystemNetworkContextManager::OnNetworkServiceCreated(
       ->ReconfigureAfterNetworkRestart();
 
   UpdateExplicitlyAllowedNetworkPorts();
+
+  UpdateIPv6ReachabilityOverrideEnabled();
 }
 
 void SystemNetworkContextManager::DisableQuic() {
@@ -1048,6 +1058,12 @@ void SystemNetworkContextManager::UpdateEnforceLocalAnchorConstraintsEnabled() {
 
 void SystemNetworkContextManager::UpdateReferrersEnabled() {
   GetContext()->SetEnableReferrers(enable_referrers_.GetValue());
+}
+
+void SystemNetworkContextManager::UpdateIPv6ReachabilityOverrideEnabled() {
+  bool value =
+      local_state_->GetBoolean(prefs::kIPv6ReachabilityOverrideEnabled);
+  content::GetNetworkService()->SetIPv6ReachabilityOverride(value);
 }
 
 // static

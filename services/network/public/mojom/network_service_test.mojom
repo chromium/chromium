@@ -249,6 +249,9 @@ interface NetworkServiceTest {
   ResolveOwnHostnameWithSystemDns()
       => (network.mojom.AddressList addr_list, int32 os_error, int32 net_error);
 
+  // Sets the last IPv6 probe result.
+  SetIPv6ProbeResult(bool success) => ();
+
   [Sync, EnableIf=use_network_interface_change_listener]
   GetAddressMapCacheLinux()
       => (network.mojom.AddressMap addr_map, network.mojom.OnlineLinks links);

@@ -196,6 +196,7 @@ class COMPONENT_EXPORT(NETWORK_SERVICE) NetworkService
                     const scoped_refptr<net::HttpResponseHeaders>& headers,
                     ParseHeadersCallback callback) override;
   void EnableDataUseUpdates(bool enable) override;
+  void SetIPv6ReachabilityOverride(bool reachability_override) override;
 #if BUILDFLAG(IS_CT_SUPPORTED)
   void ClearSCTAuditingCache() override;
   void ConfigureSCTAuditing(

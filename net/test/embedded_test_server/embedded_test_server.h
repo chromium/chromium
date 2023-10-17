@@ -368,11 +368,14 @@ class EmbeddedTestServer {
 
   // Equivalent of StartAndReturnHandle(), but requires manual Shutdown() by
   // the caller.
-  [[nodiscard]] bool Start(int port = 0);
+  [[nodiscard]] bool Start(int port = 0,
+                           base::StringPiece address = "127.0.0.1");
 
   // Starts listening for incoming connections but will not yet accept them.
-  // Returns whether a listening socket has been succesfully created.
-  [[nodiscard]] bool InitializeAndListen(int port = 0);
+  // Returns whether a listening socket has been successfully created.
+  [[nodiscard]] bool InitializeAndListen(
+      int port = 0,
+      base::StringPiece address = "127.0.0.1");
 
   // Starts the Accept IO Thread and begins accepting connections.
   [[nodiscard]] EmbeddedTestServerHandle

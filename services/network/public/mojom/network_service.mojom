@@ -401,6 +401,10 @@ interface NetworkService {
   // enabled.
   EnableDataUseUpdates(bool enable);
 
+  // Set IPv6 reachability override. When `reachability_override` is true, the
+  // DNS stack queries AAAA record even when the IPv6 reachability probe fails.
+  SetIPv6ReachabilityOverride(bool reachability_override);
+
   // Set the GssapiLibraryLoadObserver for this network service.
   // Will only be notified once unless the observer is set again.
   // TODO(crbug.com/1474362): remove this observer once GSSAPI is brokered

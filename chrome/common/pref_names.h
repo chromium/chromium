@@ -3896,6 +3896,10 @@ inline constexpr char kCompressionDictionaryTransportEnabled[] =
 inline constexpr char kZstdContentEncodingEnabled[] =
     "net.zstd_content_encoding_enabled";
 
+// Boolean that specifies whether IPv6 reachability check override is enabled.
+inline constexpr char kIPv6ReachabilityOverrideEnabled[] =
+    "net.ipv6_reachability_override_enabled";
+
 }  // namespace prefs
 
 #endif  // CHROME_COMMON_PREF_NAMES_H_

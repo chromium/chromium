@@ -758,6 +758,14 @@ class NetworkServiceTestHelper::NetworkServiceTestImpl
     system_task_ptr->Start(std::move(results_cb));
   }
 
+  void SetIPv6ProbeResult(bool success,
+                          SetIPv6ProbeResultCallback callback) override {
+    network::NetworkService::GetNetworkServiceForTesting()
+        ->host_resolver_manager()
+        ->SetLastIPv6ProbeResultForTesting(success);
+    std::move(callback).Run();
+  }
+
 #if BUILDFLAG(IS_LINUX)
   void GetAddressMapCacheLinux(
       GetAddressMapCacheLinuxCallback callback) override {
