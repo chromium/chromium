@@ -12789,6 +12789,11 @@ Called by update_bad_message_reasons.py.-->
   <int value="1" label="Installed"/>
 </enum>
 
+<enum name="BooleanInteractive">
+  <int value="0" label="Non-interactive"/>
+  <int value="1" label="Interactive"/>
+</enum>
+
 <enum name="BooleanInvalid">
   <int value="0" label="Valid"/>
   <int value="1" label="Invalid"/>
