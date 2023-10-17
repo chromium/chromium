@@ -2089,6 +2089,55 @@ TEST_F(AmbientControllerForManagedScreensaverLoginScreenTest,
             AmbientUiVisibility::kClosed);
 }
 
+TEST_F(AmbientControllerForManagedScreensaverLoginScreenTest,
+       ManagedScreensaverDoesNotShowCursorWhenDisabledOrNotStarted) {
+  SetAmbientModeManagedScreensaverEnabled(/*enabled=*/false);
+  TriggerScreensaverOnLoginScreen();
+  ASSERT_FALSE(GetContainerView());
+
+  // Hide the cursor.
+  Shell::Get()->cursor_manager()->HideCursor();
+
+  // Disabling an already disabled screensaver shouldn't show the cursor.
+  SetAmbientModeManagedScreensaverEnabled(/*enabled=*/false);
+  EXPECT_FALSE(Shell::Get()->cursor_manager()->IsCursorVisible());
+
+  // Just enabling the screensaver and updating the images one by one should not
+  // change the cursor visibility.
+  SetAmbientModeManagedScreensaverEnabled(/*enabled=*/true);
+  managed_policy_handler()->SetImagesForTesting({image_file_paths_[0]});
+  managed_policy_handler()->SetImagesForTesting(image_file_paths_);
+  EXPECT_FALSE(Shell::Get()->cursor_manager()->IsCursorVisible());
+
+  // Waiting for some time without activity should not change the cursor
+  // visibility.
+  FastForwardByLockScreenInactivityTimeout(/*factor=*/0.5f);
+  EXPECT_FALSE(ambient_controller()->ShouldShowAmbientUi());
+  EXPECT_FALSE(Shell::Get()->cursor_manager()->IsCursorVisible());
+}
+
+TEST_F(AmbientControllerForManagedScreensaverLoginScreenTest,
+       ManagedScreensaverInsufficientImagesErrorClearedOnGettingNewData) {
+  TriggerScreensaverOnLoginScreen();
+  // TODO(b/305199163) Remove after investigating the flakiness root cause and
+  // coming up with a general solution.
+  FastForwardByLockScreenInactivityTimeout(/*factor=*/0.2f);
+  EXPECT_TRUE(ambient_controller()->ShouldShowAmbientUi());
+  EXPECT_FALSE(managed_photo_controller()->HasScreenUpdateErrors());
+
+  // Only set one image to trigger insufficient images error.
+  managed_policy_handler()->SetImagesForTesting({image_file_paths_[0]});
+  EXPECT_FALSE(ambient_controller()->ShouldShowAmbientUi());
+  EXPECT_TRUE(managed_photo_controller()->HasScreenUpdateErrors());
+
+  managed_policy_handler()->SetImagesForTesting(image_file_paths_);
+  FastForwardByLockScreenInactivityTimeout(/*factor=*/1.2f);
+
+  // Confirm that the screensaver is shown and errors are cleared.
+  EXPECT_TRUE(ambient_controller()->ShouldShowAmbientUi());
+  EXPECT_FALSE(managed_photo_controller()->HasScreenUpdateErrors());
+}
+
 TEST_F(AmbientControllerForManagedScreensaverTest,
        ManagedScreensaverNotShownOnScreenDim) {
   SetAmbientModeManagedScreensaverEnabled(/*enabled=*/true);

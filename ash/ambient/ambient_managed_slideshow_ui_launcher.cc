@@ -70,6 +70,13 @@ void AmbientManagedSlideshowUiLauncher::Initialize(
 
 void AmbientManagedSlideshowUiLauncher::UpdateImageFilePaths(
     const std::vector<base::FilePath>& path_to_images) {
+  // If the photo controller has screen update errors, still allow adding
+  // more images to it, even when it is inactive. So that, errors like
+  // insufficient images or decoding failures can be cleared when new data
+  // is available.
+  if (!IsActive() && !photo_controller_.HasScreenUpdateErrors()) {
+    return;
+  }
   photo_controller_.UpdateImageFilePaths(path_to_images);
 }
 
