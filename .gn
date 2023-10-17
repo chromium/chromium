@@ -150,6 +150,10 @@ exec_script_whitelist =
       # in the Chromium repo outside of //build.
       "//build_overrides/build.gni",
 
+      # This is to check existence of a reclient config file and show user
+      # friendly error message.
+      "//build/toolchain/rbe.gni",
+
       "//chrome/android/webapk/shell_apk/prepare_upload_dir/BUILD.gn",
       "//chrome/version.gni",
 
