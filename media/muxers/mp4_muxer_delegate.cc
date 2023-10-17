@@ -26,6 +26,7 @@ namespace {
 using mp4::writable_boxes::FragmentSampleFlags;
 using mp4::writable_boxes::TrackFragmentHeaderFlags;
 using mp4::writable_boxes::TrackFragmentRunFlags;
+using mp4::writable_boxes::TrackHeaderFlags;
 
 constexpr char kVideoHandlerName[] = "VideoHandler";
 constexpr char kAudioHandlerName[] = "SoundHandler";
@@ -54,6 +55,9 @@ void BuildTrack(
     const mp4::writable_boxes::SampleDescription& sample_description) {
   mp4::writable_boxes::Track& track = moov.tracks[track_index];
   // `tkhd`.
+  track.header.flags = BuildFlags<TrackHeaderFlags>(
+      {TrackHeaderFlags::kTrackEnabled, TrackHeaderFlags::kTrackInMovie});
+
   track.header.track_id = track_index + 1;
   track.header.is_audio = is_audio;
 
@@ -153,6 +157,7 @@ void AddNewTrack(Mp4MuxerDelegate::Fragment& fragment,
           fragment_run_flags);
 
   // `tfdt`.
+  track_fragment.decode_time.track_id = track_fragment.header.track_id;
   track_fragment.decode_time.base_media_decode_time = decode_time;
 }
 
