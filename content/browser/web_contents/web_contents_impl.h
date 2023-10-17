@@ -678,11 +678,9 @@ class CONTENT_EXPORT WebContentsImpl : public WebContents,
       RenderFrameHostImpl* rfh,
       bool is_fullscreen,
       blink::mojom::FullscreenOptionsPtr options) override;
-#if defined(USE_AURA)
   void Maximize() override;
   void Minimize() override;
   void Restore() override;
-#endif
 #if BUILDFLAG(IS_ANDROID)
   void UpdateUserGestureCarryoverInfo() override;
 #endif
@@ -993,11 +991,7 @@ class CONTENT_EXPORT WebContentsImpl : public WebContents,
   // The following function is already listed under WebContents overrides:
   // bool IsFullscreen() const override;
   blink::mojom::DisplayMode GetDisplayMode() const override;
-
-#if defined(USE_AURA)
   ui::WindowShowState GetWindowShowState() override;
-#endif
-
   bool GetResizable() override;
   void LostMouseLock(RenderWidgetHostImpl* render_widget_host) override;
   bool HasMouseLock(RenderWidgetHostImpl* render_widget_host) override;
@@ -1784,11 +1778,9 @@ class CONTENT_EXPORT WebContentsImpl : public WebContents,
   // Returns the size that the main frame should be sized to.
   gfx::Size GetSizeForMainFrame();
 
-#if defined(USE_AURA)
   // Sets the window's state to the given `ui::WindowShowState` and synchronizes
   // the visual properties of the `RenderWidgetHost`.
   void SetWindowShowState(ui::WindowShowState state);
-#endif
 
   // Helper method that's called whenever |preferred_size_| or
   // |preferred_size_for_capture_| changes, to propagate the new value to the

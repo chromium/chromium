@@ -6670,6 +6670,13 @@ void RenderFrameHostImpl::FullscreenStateChanged(
 
 bool RenderFrameHostImpl::CanUseWindowingControls(
     base::StringPiece js_api_name) {
+#if BUILDFLAG(IS_ANDROID) || BUILDFLAG(IS_IOS)
+  mojo::ReportBadMessage(
+      base::StrCat({js_api_name,
+                    " API is only supported on Desktop platforms. This "
+                    "excludes mobile platforms."}));
+  return false;
+#else
   if (!base::FeatureList::IsEnabled(
           blink::features::kDesktopPWAsAdditionalWindowingControls)) {
     mojo::ReportBadMessage(base::StrCat(
@@ -6695,11 +6702,18 @@ bool RenderFrameHostImpl::CanUseWindowingControls(
     return false;
   }
   return true;
+#endif
 }
 
-#if defined(USE_AURA)
 void RenderFrameHostImpl::Maximize() {
-  if (!CanUseWindowingControls("window.maximize")) {
+  const std::string js_api_name = "window.maximize";
+#if !defined(USE_AURA)
+  // TODO(laurila, crbug.com/1466851): Enable on Mac, when it's supported.
+  mojo::ReportBadMessage(
+      base::StrCat({js_api_name, " API is not supported on MacOS yet."}));
+#endif
+
+  if (!CanUseWindowingControls(js_api_name)) {
     return;
   }
 
@@ -6707,7 +6721,15 @@ void RenderFrameHostImpl::Maximize() {
 }
 
 void RenderFrameHostImpl::Minimize() {
-  if (!CanUseWindowingControls("window.minimize")) {
+  const std::string js_api_name = "window.minimize";
+
+#if !defined(USE_AURA)
+  // TODO(laurila, crbug.com/1466851): Enable on Mac, when it's supported.
+  mojo::ReportBadMessage(
+      base::StrCat({js_api_name, " API is not supported on MacOS yet."}));
+#endif
+
+  if (!CanUseWindowingControls(js_api_name)) {
     return;
   }
 
@@ -6715,22 +6737,27 @@ void RenderFrameHostImpl::Minimize() {
 }
 
 void RenderFrameHostImpl::Restore() {
+  const std::string js_api_name = "window.restore";
+
+#if !defined(USE_AURA)
+  // TODO(laurila, crbug.com/1466851): Enable on Mac, when it's supported.
+  mojo::ReportBadMessage(
+      base::StrCat({js_api_name, " API is not supported on MacOS yet."}));
+#endif
+
   if (!CanUseWindowingControls("window.restore")) {
     return;
   }
 
   delegate_->Restore();
 }
-#endif
 
-#if !BUILDFLAG(IS_ANDROID) && !BUILDFLAG(IS_IOS)
 void RenderFrameHostImpl::SetResizable(bool resizable) {
   if (!CanUseWindowingControls("window.setResizable")) {
     return;
   }
   GetContentClient()->browser()->SetCanResizeFromWebAPI(&GetPage(), resizable);
 }
-#endif
 
 void RenderFrameHostImpl::RegisterProtocolHandler(const std::string& scheme,
                                                   const GURL& url,

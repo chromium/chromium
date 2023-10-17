@@ -238,17 +238,14 @@ interface LocalFrameHost {
 
   // Request browser to maximize window. Link to I2P:
   // https://groups.google.com/a/chromium.org/g/blink-dev/c/oCxWg8q_OQY/m/LUTw0T5cCQAJ
-  [EnableIf=use_aura]
   Maximize();
 
   // Request browser to minimize window. Link to I2P:
   // https://groups.google.com/a/chromium.org/g/blink-dev/c/oCxWg8q_OQY/m/LUTw0T5cCQAJ
-  [EnableIf=use_aura]
   Minimize();
 
   // Request browser to restore window. Link to I2P:
   // https://groups.google.com/a/chromium.org/g/blink-dev/c/oCxWg8q_OQY/m/LUTw0T5cCQAJ
-  [EnableIf=use_aura]
   Restore();
 
   // Register a new handler for URL requests with the given scheme. |scheme|
@@ -1271,6 +1268,5 @@ interface LocalMainFrameHost {
 
   // Set the browser window to resizable or not. Link to I2P:
   // https://groups.google.com/a/chromium.org/g/blink-dev/c/oCxWg8q_OQY/m/LUTw0T5cCQAJ
-  [EnableIfNot=is_android_or_ios]
   SetResizable(bool resizable);
 };

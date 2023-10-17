@@ -1360,10 +1360,6 @@ mojom("mojom_core") {
     enabled_features += [ "use_aura" ]
   }
 
-  if (is_android || is_ios) {
-    enabled_features += [ "is_android_or_ios" ]
-  }
-
   shared_cpp_typemaps = [
     {
       types = [

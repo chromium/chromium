@@ -177,6 +177,7 @@
 #include "ui/accessibility/ax_tree_combiner.h"
 #include "ui/base/ime/mojom/virtual_keyboard_types.mojom.h"
 #include "ui/base/pointer/pointer_device.h"
+#include "ui/base/ui_base_types.h"
 #include "ui/base/window_open_disposition.h"
 #include "ui/color/color_provider_key.h"
 #include "ui/color/color_provider_manager.h"
@@ -3839,7 +3840,6 @@ void WebContentsImpl::FullscreenStateChanged(
     FullscreenFrameSetUpdated();
 }
 
-#if defined(USE_AURA)
 void WebContentsImpl::Maximize() {
   SetWindowShowState(ui::SHOW_STATE_MAXIMIZED);
 }
@@ -3853,9 +3853,10 @@ void WebContentsImpl::Restore() {
 }
 
 void WebContentsImpl::SetWindowShowState(ui::WindowShowState state) {
+#if defined(USE_AURA)
   aura::Window* window = GetTopLevelNativeWindow();
 
-  // TODO(isandrk, crbug.com/1466855): This API function currently works only on
+  // TODO(laurila, crbug.com/1466855): This API function currently works only on
   // Aura platforms (Win/Lin/CrOS/Fuchsia), make it also work on Mac.
   wm::SetWindowState(window, state);
 
@@ -3864,13 +3865,19 @@ void WebContentsImpl::SetWindowShowState(ui::WindowShowState state) {
           GetPrimaryMainFrame()->GetRenderWidgetHost()) {
     render_widget_host->SynchronizeVisualProperties();
   }
+#endif
 }
 
 ui::WindowShowState WebContentsImpl::GetWindowShowState() {
+#if defined(USE_AURA)
   aura::Window* window = GetTopLevelNativeWindow();
   return wm::GetWindowState(window);
-}
+#else
+  // TODO(laurila, crbug.com/1466855): This API function currently works only on
+  // Aura platforms (Win/Lin/CrOS/Fuchsia), make it also work on Mac.
+  return ui::SHOW_STATE_DEFAULT;
 #endif
+}
 
 bool WebContentsImpl::GetResizable() {
   return GetContentClient()->browser()->GetCanResize(&GetPrimaryPage());

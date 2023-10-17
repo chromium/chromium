@@ -3047,12 +3047,10 @@ void WebViewImpl::DidAccessInitialMainDocument() {
   local_main_frame_host_remote_->DidAccessInitialMainDocument();
 }
 
-#if !BUILDFLAG(IS_ANDROID) && !BUILDFLAG(IS_IOS)
 void WebViewImpl::SetResizable(bool resizable) {
   DCHECK(local_main_frame_host_remote_);
   local_main_frame_host_remote_->SetResizable(resizable);
 }
-#endif
 
 void WebViewImpl::UpdateTargetURL(const WebURL& url,
                                   const WebURL& fallback_url) {
