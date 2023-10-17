@@ -472,7 +472,7 @@ TEST_F(AutofillAgentTest, UndoAutofillSetsLastQueriedElement) {
   FormData form;
   EXPECT_TRUE(form_util::WebFormElementToFormData(
       forms[0], blink::WebFormControlElement(), nullptr,
-      form_util::EXTRACT_VALUE, &form, nullptr));
+      {form_util::ExtractOption::kValue}, &form, nullptr));
 
   ASSERT_TRUE(autofill_agent_->focused_element().IsNull());
   autofill_agent_->ApplyFormAction(mojom::ActionType::kUndo,

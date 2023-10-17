@@ -83,6 +83,7 @@ using password_manager::util::IsRendererRecognizedCredentialForm;
 
 namespace autofill {
 
+using form_util::ExtractOption;
 using form_util::FindFormByRendererId;
 using form_util::FindFormControlByRendererId;
 using form_util::FindFormControlsByRendererId;
@@ -1707,7 +1708,8 @@ void PasswordAutofillAgent::ShowSuggestionPopup(
   FormData form;
   FormFieldData field;
   form_util::FindFormAndFieldForFormControlElement(
-      user_input, field_data_manager_.get(), &form, &field);
+      user_input, field_data_manager_.get(), /*extract_options=*/{}, &form,
+      &field);
 
   int options = 0;
   if (show_all)
@@ -2220,11 +2222,10 @@ bool PasswordAutofillAgent::IsPasswordFieldFilledByUser(
 
 void PasswordAutofillAgent::NotifyPasswordManagerAboutClearedForm(
     const WebFormElement& cleared_form) {
-  const auto extract_mask = static_cast<form_util::ExtractMask>(
-      form_util::EXTRACT_VALUE | form_util::EXTRACT_OPTIONS);
+  const auto extract_options = {ExtractOption::kValue, ExtractOption::kOptions};
   FormData form_data;
   if (WebFormElementToFormData(cleared_form, WebFormControlElement(),
-                               field_data_manager_.get(), extract_mask,
+                               field_data_manager_.get(), extract_options,
                                &form_data, /*field=*/nullptr)) {
     GetPasswordManagerDriver().PasswordFormCleared(form_data);
   }

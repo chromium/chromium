@@ -284,8 +284,9 @@ class AutofillAgent : public content::RenderFrameObserver,
   // successful, and all conditions for firing events are true.
   bool CollectFormlessElements(
       FormData* output,
-      form_util::ExtractMask extract_mask = static_cast<form_util::ExtractMask>(
-          form_util::EXTRACT_VALUE | form_util::EXTRACT_OPTIONS)) const;
+      DenseSet<form_util::ExtractOption> extract_options = {
+          form_util::ExtractOption::kValue,
+          form_util::ExtractOption::kOptions}) const;
   FRIEND_TEST_ALL_PREFIXES(FormAutocompleteTest, CollectFormlessElements);
 
   void OnTextFieldDidChange(const blink::WebInputElement& element);

@@ -92,7 +92,7 @@ using blink::WebVector;
 
 namespace autofill {
 
-using form_util::ExtractMask;
+using form_util::ExtractOption;
 using form_util::FindContentEditableByRendererId;
 using form_util::FindFormAndFieldForFormControlElement;
 using form_util::FindFormByRendererId;
@@ -110,12 +110,12 @@ namespace {
 // will be acted upon, instead of multiple in close succession (debounce time).
 size_t kWaitTimeForOptionsChangesMs = 50;
 
-// Helper function to return EXTRACT_DATALIST if kAutofillExtractAllDatalist is
-// enabled, otherwise EXTRACT_NONE is returned.
-ExtractMask GetExtractDatalistMask() {
-  return base::FeatureList::IsEnabled(features::kAutofillExtractAllDatalists)
-             ? form_util::EXTRACT_DATALIST
-             : form_util::EXTRACT_NONE;
+DenseSet<ExtractOption> MaybeExtractDatalist(
+    DenseSet<ExtractOption> extract_options) {
+  if (base::FeatureList::IsEnabled(features::kAutofillExtractAllDatalists)) {
+    extract_options.insert(ExtractOption::kDatalist);
+  }
+  return extract_options;
 }
 
 }  // namespace
@@ -385,9 +385,7 @@ void AutofillAgent::DidChangeScrollOffsetImpl(
   FormFieldData field;
   if (FindFormAndFieldForFormControlElement(
           element, field_data_manager_.get(),
-          static_cast<ExtractMask>(form_util::EXTRACT_BOUNDS |
-                                   GetExtractDatalistMask()),
-          &form, &field)) {
+          MaybeExtractDatalist({ExtractOption::kBounds}), &form, &field)) {
     if (auto* autofill_driver = unsafe_autofill_driver()) {
       autofill_driver->TextFieldDidScroll(form, field, field.bounds);
     }
@@ -450,9 +448,7 @@ void AutofillAgent::FocusedElementChanged(const WebElement& element) {
   if (!form_control_element.IsReadOnly() &&
       FindFormAndFieldForFormControlElement(
           last_queried_element_, field_data_manager_.get(),
-          static_cast<ExtractMask>(form_util::EXTRACT_BOUNDS |
-                                   GetExtractDatalistMask()),
-          &form, &field)) {
+          MaybeExtractDatalist({ExtractOption::kBounds}), &form, &field)) {
     if (auto* autofill_driver = unsafe_autofill_driver()) {
       autofill_driver->FocusOnFormField(form, field, field.bounds);
     }
@@ -551,9 +547,7 @@ void AutofillAgent::OnTextFieldDidChange(const WebInputElement& element) {
   FormFieldData field;
   if (FindFormAndFieldForFormControlElement(
           element, field_data_manager_.get(),
-          static_cast<ExtractMask>(form_util::EXTRACT_BOUNDS |
-                                   GetExtractDatalistMask()),
-          &form, &field)) {
+          MaybeExtractDatalist({ExtractOption::kBounds}), &form, &field)) {
     if (auto* autofill_driver = unsafe_autofill_driver()) {
       autofill_driver->TextFieldDidChange(form, field, field.bounds,
                                           AutofillTickClock::NowTicks());
@@ -872,8 +866,9 @@ void AutofillAgent::PreviewPasswordGenerationSuggestion(
   password_generation_agent_->PreviewGenerationSuggestion(password);
 }
 
-bool AutofillAgent::CollectFormlessElements(FormData* output,
-                                            ExtractMask extract_mask) const {
+bool AutofillAgent::CollectFormlessElements(
+    FormData* output,
+    DenseSet<ExtractOption> extract_options) const {
   if (!unsafe_render_frame()) {
     return false;
   }
@@ -891,7 +886,8 @@ bool AutofillAgent::CollectFormlessElements(FormData* output,
 
   return form_util::UnownedFormElementsToFormData(
       control_elements, iframe_elements, nullptr, document,
-      field_data_manager_.get(), extract_mask, output,
+      field_data_manager_.get(),
+      {ExtractOption::kValue, ExtractOption::kOptions}, output,
       /*field=*/nullptr);
 }
 
@@ -1014,16 +1010,12 @@ void AutofillAgent::QueryAutofillSuggestions(
   FormFieldData field;
   if (!FindFormAndFieldForFormControlElement(
           element, field_data_manager_.get(),
-          static_cast<ExtractMask>(form_util::EXTRACT_BOUNDS |
-                                   GetExtractDatalistMask()),
-          &form, &field)) {
+          MaybeExtractDatalist({ExtractOption::kBounds}), &form, &field)) {
     // If we didn't find the cached form, at least let autocomplete have a shot
     // at providing suggestions.
     WebFormControlElementToFormField(
         form_util::GetOwningForm(element), element, nullptr,
-        static_cast<ExtractMask>(form_util::EXTRACT_VALUE |
-                                 form_util::EXTRACT_BOUNDS |
-                                 GetExtractDatalistMask()),
+        MaybeExtractDatalist({ExtractOption::kValue, ExtractOption::kBounds}),
         &field);
   }
 
@@ -1084,13 +1076,12 @@ void AutofillAgent::ExtractForm(
     std::move(callback).Run(std::nullopt);
     return;
   }
-  form_util::ExtractMask extract_mask = static_cast<form_util::ExtractMask>(
-      GetExtractDatalistMask() | form_util::EXTRACT_BOUNDS |
-      form_util::EXTRACT_OPTIONS | form_util::EXTRACT_OPTION_TEXT |
-      form_util::EXTRACT_VALUE);
+  DenseSet<ExtractOption> extract_options =
+      MaybeExtractDatalist({ExtractOption::kBounds, ExtractOption::kOptions,
+                            ExtractOption::kOptionText, ExtractOption::kValue});
   if (!form_id) {
     FormData form;
-    if (CollectFormlessElements(&form, extract_mask)) {
+    if (CollectFormlessElements(&form, extract_options)) {
       std::move(callback).Run(std::move(form));
       return;
     }
@@ -1099,8 +1090,8 @@ void AutofillAgent::ExtractForm(
   if (WebFormElement fe = FindFormByRendererId(doc, form_id); !fe.IsNull()) {
     FormData form;
     if (WebFormElementToFormData(fe, WebFormControlElement(),
-                                 field_data_manager_.get(), extract_mask, &form,
-                                 nullptr)) {
+                                 field_data_manager_.get(), extract_options,
+                                 &form, nullptr)) {
       std::move(callback).Run(std::move(form));
       return;
     }
@@ -1257,7 +1248,8 @@ void AutofillAgent::BatchSelectOrSelectListOptionChange(
   FormData form;
   FormFieldData field;
   if (FindFormAndFieldForFormControlElement(element, field_data_manager_.get(),
-                                            &form, &field) &&
+                                            /*extract_options=*/{}, &form,
+                                            &field) &&
       !field.options.empty()) {
     if (auto* autofill_driver = unsafe_autofill_driver()) {
       autofill_driver->SelectOrSelectListFieldOptionsDidChange(form);
@@ -1380,7 +1372,8 @@ void AutofillAgent::JavaScriptChangedAutofilledValue(
   FormData form;
   FormFieldData field;
   if (FindFormAndFieldForFormControlElement(element, field_data_manager_.get(),
-                                            &form, &field)) {
+                                            /*extract_options=*/{}, &form,
+                                            &field)) {
     if (auto* autofill_driver = unsafe_autofill_driver()) {
       autofill_driver->JavaScriptChangedAutofilledValue(form, field,
                                                         old_value.Utf16());
@@ -1440,9 +1433,8 @@ void AutofillAgent::OnProvisionallySaveForm(
       FormFieldData field;
       if (FindFormAndFieldForFormControlElement(
               element, field_data_manager_.get(),
-              static_cast<ExtractMask>(form_util::EXTRACT_BOUNDS |
-                                       GetExtractDatalistMask()),
-              &form_data, &field)) {
+              MaybeExtractDatalist({ExtractOption::kBounds}), &form_data,
+              &field)) {
         if (auto* autofill_driver = unsafe_autofill_driver()) {
           autofill_driver->SelectControlDidChange(form_data, field,
                                                   field.bounds);

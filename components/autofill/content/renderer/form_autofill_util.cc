@@ -1496,7 +1496,7 @@ void MaybeEmitInputAssignedAutocompleteValueToIdOrNameAttributesDevtoolsIssue(
 // Optionally, |optional_field| is set to the FormFieldData that corresponds to
 // |form_control_element|.
 //
-// |field_data_manager| and |extract_mask| are only passed to
+// |field_data_manager| and |extract_options| are only passed to
 // WebFormControlElementToFormField().
 bool OwnedOrUnownedFormToFormData(
     const WebFrame* frame,
@@ -1505,7 +1505,7 @@ bool OwnedOrUnownedFormToFormData(
     const WebVector<WebFormControlElement>& control_elements,
     const std::vector<blink::WebElement>& iframe_elements,
     const FieldDataManager* field_data_manager,
-    ExtractMask extract_mask,
+    DenseSet<ExtractOption> extract_options,
     FormData* form,
     FormFieldData* optional_field) {
   DCHECK(form);
@@ -1545,7 +1545,7 @@ bool OwnedOrUnownedFormToFormData(
     form->fields.emplace_back();
     shadow_fields.emplace_back();
     WebFormControlElementToFormField(
-        form_element, control_element, field_data_manager, extract_mask,
+        form_element, control_element, field_data_manager, extract_options,
         &form->fields.back(), &shadow_fields.back());
     fields_extracted[i] = true;
 
@@ -1878,10 +1878,10 @@ bool ExtractFormData(const WebFormElement& form_element,
                      FormData* data) {
   return WebFormElementToFormData(
       form_element, WebFormControlElement(), &field_data_manager,
-      static_cast<form_util::ExtractMask>(form_util::EXTRACT_VALUE |
-                                          form_util::EXTRACT_OPTION_TEXT |
-                                          form_util::EXTRACT_OPTIONS),
-      data, /*field=*/nullptr);
+      {ExtractOption::kValue, ExtractOption::kOptionText,
+       ExtractOption::kOptions},
+      data,
+      /*field=*/nullptr);
 }
 
 bool IsSomeControlElementVisible(
@@ -2140,7 +2140,7 @@ void WebFormControlElementToFormField(
     const WebFormElement& form_element,
     const WebFormControlElement& element,
     const FieldDataManager* field_data_manager,
-    ExtractMask extract_mask,
+    DenseSet<ExtractOption> extract_options,
     FormFieldData* field,
     ShadowFieldData* shadow_data) {
   DCHECK(field);
@@ -2244,7 +2244,7 @@ void WebFormControlElementToFormField(
                    input_element.IsChecked());
   } else if (IsTextAreaElement(element)) {
     // Nothing more to do in this case.
-  } else if (extract_mask & EXTRACT_OPTIONS) {
+  } else if (extract_options.contains(ExtractOption::kOptions)) {
     // Set option strings on the field if available.
     DCHECK(IsSelectOrSelectListElement(element));
     WebVector<WebElement> element_list_items =
@@ -2252,7 +2252,7 @@ void WebFormControlElementToFormField(
     FilterOptionElementsAndGetOptionStrings(element_list_items,
                                             &field->options);
   }
-  if (extract_mask & EXTRACT_BOUNDS) {
+  if (extract_options.contains(ExtractOption::kBounds)) {
     if (auto* local_frame = element.GetDocument().GetFrame()) {
       if (auto* render_frame =
               content::RenderFrame::FromWebFrame(local_frame)) {
@@ -2260,7 +2260,7 @@ void WebFormControlElementToFormField(
       }
     }
   }
-  if (extract_mask & EXTRACT_DATALIST) {
+  if (extract_options.contains(ExtractOption::kDatalist)) {
     if (WebInputElement input = element.DynamicTo<WebInputElement>();
         !input.IsNull()) {
       GetDataListSuggestions(input, &field->datalist_values,
@@ -2268,13 +2268,14 @@ void WebFormControlElementToFormField(
     }
   }
 
-  if (!(extract_mask & EXTRACT_VALUE))
+  if (!extract_options.contains(ExtractOption::kValue)) {
     return;
+  }
 
   std::u16string value = element.Value().Utf16();
 
   if (IsSelectOrSelectListElement(element) &&
-      (extract_mask & EXTRACT_OPTION_TEXT)) {
+      extract_options.contains(ExtractOption::kOptionText)) {
     // Convert the |element| value to text if requested.
     WebVector<WebElement> list_items =
         GetListItemsForSelectOrSelectList(element);
@@ -2322,7 +2323,7 @@ bool WebFormElementToFormData(
     const blink::WebFormElement& form_element,
     const blink::WebFormControlElement& form_control_element,
     const FieldDataManager* field_data_manager,
-    ExtractMask extract_mask,
+    DenseSet<ExtractOption> extract_options,
     FormData* form,
     FormFieldData* field) {
   WebLocalFrame* frame = form_element.GetDocument().GetFrame();
@@ -2356,7 +2357,7 @@ bool WebFormElementToFormData(
   return OwnedOrUnownedFormToFormData(
       frame, form_element, &form_control_element,
       form_element.GetFormControlElements(), owned_iframes, field_data_manager,
-      extract_mask, form, field);
+      extract_options, form, field);
 }
 
 WebFormElement GetOwningForm(const WebFormControlElement& form_control) {
@@ -2415,7 +2416,7 @@ bool UnownedFormElementsToFormData(
     const blink::WebFormControlElement* element,
     const blink::WebDocument& document,
     const FieldDataManager* field_data_manager,
-    ExtractMask extract_mask,
+    DenseSet<ExtractOption> extract_options,
     FormData* form,
     FormFieldData* field) {
   blink::WebLocalFrame* frame = document.GetFrame();
@@ -2429,13 +2430,13 @@ bool UnownedFormElementsToFormData(
 
   return OwnedOrUnownedFormToFormData(
       frame, WebFormElement(), element, control_elements, iframe_elements,
-      field_data_manager, extract_mask, form, field);
+      field_data_manager, extract_options, form, field);
 }
 
 bool FindFormAndFieldForFormControlElement(
     const WebFormControlElement& element,
     const FieldDataManager* field_data_manager,
-    ExtractMask extract_mask,
+    DenseSet<ExtractOption> extract_options,
     FormData* form,
     FormFieldData* field) {
   DCHECK(!element.IsNull());
@@ -2443,8 +2444,7 @@ bool FindFormAndFieldForFormControlElement(
   if (!IsAutofillableElement(element))
     return false;
 
-  extract_mask =
-      static_cast<ExtractMask>(EXTRACT_VALUE | EXTRACT_OPTIONS | extract_mask);
+  extract_options.insert_all({ExtractOption::kValue, ExtractOption::kOptions});
   WebFormElement form_element = GetOwningForm(element);
 
   if (form_element.IsNull()) {
@@ -2456,20 +2456,11 @@ bool FindFormAndFieldForFormControlElement(
         GetUnownedIframeElements(document);
     return UnownedFormElementsToFormData(control_elements, iframe_elements,
                                          &element, document, field_data_manager,
-                                         extract_mask, form, field);
+                                         extract_options, form, field);
   }
 
   return WebFormElementToFormData(form_element, element, field_data_manager,
-                                  extract_mask, form, field);
-}
-
-bool FindFormAndFieldForFormControlElement(
-    const WebFormControlElement& element,
-    const FieldDataManager* field_data_manager,
-    FormData* form,
-    FormFieldData* field) {
-  return FindFormAndFieldForFormControlElement(
-      element, field_data_manager, form_util::EXTRACT_NONE, form, field);
+                                  extract_options, form, field);
 }
 
 std::optional<FormData> FindFormForContentEditable(
