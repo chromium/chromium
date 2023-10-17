@@ -198,7 +198,7 @@ const char kHighEfficiencyModeTabDiscardingHelpUrl[] =
     "https://support.google.com/chrome/?p=performance_site_exclusion";
 
 const char kIncognitoHelpCenterURL[] =
-    "https://support.google.com/chrome/answer/9845881";
+    "https://support.google.com/chrome?p=incognito";
 
 // TODO(crbug.com/1480695): Update this URL with proper user-facing explainer.
 const char kIsolatedWebAppsLearnMoreUrl[] =
@@ -247,7 +247,7 @@ const char kPasswordCheckLearnMoreURL[] =
 #endif
 
 const char kPasswordGenerationLearnMoreURL[] =
-    "https://support.google.com/chrome/answer/7570435";
+    "https://support.google.com/chrome?p=generate_password";
 
 const char kPasswordManagerLearnMoreURL[] =
 #if BUILDFLAG(IS_CHROMEOS_ASH)
@@ -302,7 +302,7 @@ const char kSafeBrowsingInChromeHelpCenterURL[] =
     "https://support.google.com/chrome?p=safebrowsing_in_chrome";
 
 const char kSafeBrowsingPTourURL[] =
-    "https://support.google.com/chrome/answer/13844634";
+    "https://support.google.com/chrome?p=safebrowsing_in_chrome";
 
 const char kSafetyTipHelpCenterURL[] =
     "https://support.google.com/chrome/?p=safety_tip";
@@ -466,7 +466,7 @@ const char kKerberosAccountsLearnMoreURL[] =
     "https://support.google.com/chromebook/?p=kerberos_accounts";
 
 const char kLanguageSettingsLearnMoreUrl[] =
-    "https://support.google.com/chromebook/answer/1059490";
+    "https://support.google.com/chromebook?p=order_languages";
 
 const char kLanguagePacksLearnMoreURL[] =
     "https://support.google.com/chromebook?p=language_packs";
@@ -532,7 +532,7 @@ const char kSpeakOnMuteDetectionLearnMoreURL[] =
     "https://support.google.com/chromebook?p=mic-mute";
 
 const char kGeolocationToggleLearnMoreURL[] =
-    "https://support.google.com/chromebook/answer/142065";
+    "https://support.google.com/chromebook?p=cpn_location_sharing";
 
 const char kSuggestedContentLearnMoreURL[] =
     "https://support.google.com/chromebook/?p=explorecontent";
@@ -565,7 +565,7 @@ extern const char kRecoveryLearnMoreURL[] =
 
 #if BUILDFLAG(IS_MAC)
 const char kChromeEnterpriseSignInLearnMoreURL[] =
-    "https://support.google.com/chromebook/answer/1331549";
+    "https://support.google.com/chromebook?p=is_chrome_managed";
 
 const char kMacOsObsoleteURL[] =
     "https://support.google.com/chrome/?p=unsupported_mac";
@@ -580,7 +580,7 @@ const char kWindows78DeprecationURL[] =
 #endif  // BUILDFLAG(IS_WIN)
 
 const char kChromeSyncLearnMoreURL[] =
-    "https://support.google.com/chrome/answer/165139";
+    "https://support.google.com/chrome?p=chrome_sync";
 
 #if BUILDFLAG(ENABLE_PLUGINS)
 const char kOutdatedPluginLearnMoreURL[] =
