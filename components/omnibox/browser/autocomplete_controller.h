@@ -268,6 +268,7 @@ class AutocompleteController : public AutocompleteProviderListener,
   FRIEND_TEST_ALL_PREFIXES(OmniboxPopupViewViewsTest, EmitAccessibilityEvents);
   FRIEND_TEST_ALL_PREFIXES(OmniboxPopupViewViewsTest,
                            EmitAccessibilityEventsOnButtonFocusHint);
+  FRIEND_TEST_ALL_PREFIXES(OmniboxPopupViewViewsTest, DeleteSuggestion);
   FRIEND_TEST_ALL_PREFIXES(OmniboxViewTest, DoesNotUpdateAutocompleteOnBlur);
   FRIEND_TEST_ALL_PREFIXES(OmniboxViewViewsTest, CloseOmniboxPopupOnTextDrag);
   FRIEND_TEST_ALL_PREFIXES(OmniboxViewViewsTest, FriendlyAccessibleLabel);
@@ -315,7 +316,8 @@ class AutocompleteController : public AutocompleteProviderListener,
   // character, the edit model needs to repaint (highlighting changed)
   // even if the default match didn't change.
   void UpdateResult(bool regenerate_result,
-                    bool force_notify_default_match_changed);
+                    bool force_notify_default_match_changed,
+                    bool score_urls);
 
   // When the preserve default feature param is enabled, the default match
   // that would have been shown before ML scoring is preserved. In this case,

@@ -26,6 +26,7 @@
 #include "chrome/common/chrome_features.h"
 #include "chrome/test/base/ui_test_utils.h"
 #include "components/omnibox/browser/actions/tab_switch_action.h"
+#include "components/omnibox/browser/fake_autocomplete_provider.h"
 #include "components/omnibox/browser/omnibox_field_trial.h"
 #include "components/omnibox/browser/omnibox_popup_selection.h"
 #include "components/omnibox/browser/omnibox_triggered_feature_service.h"
@@ -41,6 +42,7 @@
 #include "ui/views/accessibility/ax_event_manager.h"
 #include "ui/views/accessibility/ax_event_observer.h"
 #include "ui/views/accessibility/view_accessibility.h"
+#include "ui/views/test/views_test_utils.h"
 #include "ui/views/widget/widget.h"
 
 #if defined(USE_AURA)
@@ -541,4 +543,89 @@ IN_PROC_BROWSER_TEST_F(OmniboxPopupViewViewsTest,
       popup_node_data_while_open.HasState(ax::mojom::State::kInvisible));
   EXPECT_TRUE(popup_node_data_while_open.HasIntAttribute(
       ax::mojom::IntAttribute::kPopupForId));
+}
+
+IN_PROC_BROWSER_TEST_F(OmniboxPopupViewViewsTest, DeleteSuggestion) {
+  scoped_refptr<FakeAutocompleteProvider> provider =
+      new FakeAutocompleteProvider(AutocompleteProvider::TYPE_SEARCH);
+  controller()->autocomplete_controller()->providers_.push_back(provider);
+
+  ACMatches matches;
+  {
+    std::u16string match_url = u"https://example.com/";
+    AutocompleteMatch match(nullptr, 500, /*deletable=*/true,
+                            AutocompleteMatchType::HISTORY_TITLE);
+    match.contents = match_url;
+    match.contents_class.emplace_back(0, ACMatchClassification::URL);
+    match.destination_url = GURL(match_url);
+    match.description = u"Deletable Match";
+    match.description_class.emplace_back(0, ACMatchClassification::URL);
+    match.allowed_to_be_default_match = true;
+    match.provider = provider.get();
+    matches.push_back(match);
+  }
+  {
+    std::u16string match_url = u"https://google.com/";
+    AutocompleteMatch match(nullptr, 500, false,
+                            AutocompleteMatchType::HISTORY_TITLE);
+    match.contents = match_url;
+    match.contents_class.emplace_back(0, ACMatchClassification::URL);
+    match.destination_url = GURL(match_url);
+    match.description = u"Other Match";
+    match.description_class.emplace_back(0, ACMatchClassification::URL);
+    match.allowed_to_be_default_match = true;
+    match.provider = provider.get();
+    metrics::OmniboxEventProto::Suggestion::ScoringSignals scoring_signals;
+    scoring_signals.set_first_bookmark_title_match_position(3);
+    scoring_signals.set_allowed_to_be_default_match(true);
+    scoring_signals.set_length_of_url(20);
+    match.scoring_signals = scoring_signals;
+    matches.push_back(match);
+  }
+  provider->matches_ = matches;
+
+  edit_model()->SetUserText(u"foo");
+  AutocompleteInput input(
+      u"foo", metrics::OmniboxEventProto::BLANK,
+      ChromeAutocompleteSchemeClassifier(browser()->profile()));
+  input.set_omit_asynchronous_matches(true);
+  controller()->autocomplete_controller()->Start(input);
+  ASSERT_TRUE(popup_view()->IsOpen());
+
+  // Select deletable match at index 1 (input is index 0).
+  edit_model()->SetPopupSelection(OmniboxPopupSelection(1));
+  OmniboxResultView* result_view = popup_view()->result_view_at(1);
+  EXPECT_EQ(u"Deletable Match", result_view->match_.contents);
+  EXPECT_TRUE(result_view->remove_suggestion_button_->GetVisible());
+
+  // Lay out `remove_suggestion_button_` so that it has non-zero size.
+  views::test::RunScheduledLayout(result_view);
+
+  // Click button.
+  gfx::Rect button_local_bounds =
+      result_view->remove_suggestion_button_->GetLocalBounds();
+  ui::MouseEvent mouse_pressed_event(
+      ui::ET_MOUSE_PRESSED, button_local_bounds.CenterPoint(),
+      button_local_bounds.CenterPoint(), base::TimeTicks(),
+      ui::EF_LEFT_MOUSE_BUTTON, ui::EF_LEFT_MOUSE_BUTTON);
+  result_view->remove_suggestion_button_->OnMousePressed(mouse_pressed_event);
+  ui::MouseEvent mouse_released_event(
+      ui::ET_MOUSE_RELEASED, button_local_bounds.CenterPoint(),
+      button_local_bounds.CenterPoint(), base::TimeTicks(),
+      ui::EF_LEFT_MOUSE_BUTTON, ui::EF_LEFT_MOUSE_BUTTON);
+  result_view->remove_suggestion_button_->OnMouseReleased(mouse_released_event);
+
+  EXPECT_EQ(1u, provider->deleted_matches_.size());
+  // Make sure the deleted match's OmniboxResultView was hidden.
+  // (OmniboxResultViews are never deleted.)
+  int visible_children = 0;
+  for (auto* child : popup_view()->children()) {
+    if (child->GetVisible()) {
+      visible_children++;
+    }
+  }
+  EXPECT_EQ(2, visible_children);
+  EXPECT_EQ(u"foo", popup_view()->result_view_at(0)->match_.contents);
+  EXPECT_EQ(u"Other Match", popup_view()->result_view_at(1)->match_.contents);
+  EXPECT_EQ(OmniboxPopupSelection(1), edit_model()->GetPopupSelection());
 }
