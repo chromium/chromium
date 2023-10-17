@@ -40,6 +40,7 @@ import org.mockito.Mock;
 import org.mockito.junit.MockitoJUnit;
 import org.mockito.junit.MockitoRule;
 import org.robolectric.annotation.Config;
+import org.robolectric.shadows.ShadowLooper;
 
 import org.chromium.base.test.BaseRobolectricTestRunner;
 import org.chromium.base.test.util.JniMocker;
@@ -65,7 +66,7 @@ import java.util.Collections;
 /**
  * Unit tests for {@link HubLayout}.
  *
- * TODO(crbug/1487209): Once integrated with LayoutManager we should also add integration tests.
+ * <p>TODO(crbug/1487209): Once integrated with LayoutManager we should also add integration tests.
  */
 @RunWith(BaseRobolectricTestRunner.class)
 @Config(manifest = Config.NONE)
@@ -93,8 +94,8 @@ public class HubLayoutUnitTest {
     private LayoutRenderHost mRenderHost;
     @Mock
     private LayoutStateProvider mLayoutStateProvider;
-    @Mock
-    private Tab mTab;
+    @Mock private HubController mHubController;
+    @Mock private Tab mTab;
     @Mock
     private TabModelSelector mTabModelSelector;
     @Mock
@@ -112,6 +113,7 @@ public class HubLayoutUnitTest {
     private FrameLayout mFrameLayout;
 
     private HubLayout mHubLayout;
+    private HubContainerView mHubContainerView;
 
     @Before
     public void setUp() {
@@ -133,16 +135,29 @@ public class HubLayoutUnitTest {
                 .when(mStaticTabSceneLayerJni)
                 .init(any());
 
-        mActivityScenarioRule.getScenario().onActivity((activity) -> {
-            mActivity = activity;
-            mFrameLayout = new FrameLayout(mActivity);
-            mActivity.setContentView(mFrameLayout);
-        });
+        mActivityScenarioRule
+                .getScenario()
+                .onActivity(
+                        (activity) -> {
+                            mActivity = activity;
+                            mFrameLayout = new FrameLayout(mActivity);
+                            mHubContainerView = new HubContainerView(mActivity);
+                            mActivity.setContentView(mFrameLayout);
 
-        mHubLayout = new HubLayout(mActivity, mUpdateHost, mRenderHost, mLayoutStateProvider);
-        mHubLayout.setTabModelSelector(mTabModelSelector);
-        mHubLayout.setTabContentManager(mTabContentManager);
-        mHubLayout.onFinishNativeInitialization();
+                            when(mHubController.getContainerView()).thenReturn(mHubContainerView);
+
+                            mHubLayout =
+                                    new HubLayout(
+                                            mActivity,
+                                            mUpdateHost,
+                                            mRenderHost,
+                                            mLayoutStateProvider,
+                                            mFrameLayout,
+                                            mHubController);
+                            mHubLayout.setTabModelSelector(mTabModelSelector);
+                            mHubLayout.setTabContentManager(mTabContentManager);
+                            mHubLayout.onFinishNativeInitialization();
+                        });
 
         doAnswer(invocation -> {
             var args = invocation.getArguments();
@@ -208,8 +223,7 @@ public class HubLayoutUnitTest {
         mHubLayout.updateLayout(FAKE_TIME, FAKE_TIME);
         verify(mUpdateHost, times(1)).requestUpdate();
 
-        // TODO(crbug/1487209): This should be replace with looping until an animation finishes.
-        mHubLayout.doneShowing();
+        ShadowLooper.runUiThreadTasks();
 
         assertThat(mHubLayout.getSceneLayer(), instanceOf(SceneLayer.class));
         layoutTabs = mHubLayout.getLayoutTabsToRender();
@@ -263,6 +277,36 @@ public class HubLayoutUnitTest {
         hide(LayoutType.BROWSING, NEW_TAB_ID, false, HubLayoutAnimationType.NEW_TAB);
     }
 
+    @Test
+    @SmallTest
+    public void testShowInterruptedByHide() {
+        assertFalse(mHubLayout.isRunningAnimations());
+        assertFalse(mHubLayout.onUpdateAnimation(FAKE_TIME, false));
+
+        startShowing(LayoutType.BROWSING, true);
+
+        verify(mHubController, times(1)).onHubLayoutShow();
+        assertEquals(1, mFrameLayout.getChildCount());
+
+        assertEquals(HubLayoutAnimationType.SHRINK_TAB, mHubLayout.getCurrentAnimationType());
+        assertTrue(mHubLayout.isRunningAnimations());
+        assertTrue(mHubLayout.onUpdateAnimation(FAKE_TIME, false));
+
+        startHiding(LayoutType.BROWSING, NEW_TAB_ID, false);
+
+        assertEquals(HubLayoutAnimationType.EXPAND_TAB, mHubLayout.getCurrentAnimationType());
+        assertTrue(mHubLayout.isRunningAnimations());
+        assertTrue(mHubLayout.onUpdateAnimation(FAKE_TIME, false));
+
+        ShadowLooper.runUiThreadTasks();
+
+        assertFalse(mHubLayout.isRunningAnimations());
+        assertFalse(mHubLayout.onUpdateAnimation(FAKE_TIME, false));
+
+        verify(mHubController, times(1)).onHubLayoutDoneHiding();
+        assertEquals(0, mFrameLayout.getChildCount());
+    }
+
     private void show(@LayoutType int fromLayout, boolean animate,
             @HubLayoutAnimationType int expectedAnimationType) {
         assertFalse(mHubLayout.isRunningAnimations());
@@ -270,14 +314,16 @@ public class HubLayoutUnitTest {
 
         startShowing(fromLayout, animate);
 
+        verify(mHubController, times(1)).onHubLayoutShow();
+        assertEquals(1, mFrameLayout.getChildCount());
+
         if (animate) {
             assertEquals(expectedAnimationType, mHubLayout.getCurrentAnimationType());
             assertTrue(mHubLayout.isRunningAnimations());
             assertTrue(mHubLayout.onUpdateAnimation(FAKE_TIME, false));
         }
 
-        // TODO(crbug/1487209): This should be replace with looping until an animation finishes.
-        mHubLayout.doneShowing();
+        ShadowLooper.runUiThreadTasks();
 
         assertFalse(mHubLayout.isRunningAnimations());
         assertFalse(mHubLayout.onUpdateAnimation(FAKE_TIME, false));
@@ -299,11 +345,13 @@ public class HubLayoutUnitTest {
         assertTrue(mHubLayout.isRunningAnimations());
         assertTrue(mHubLayout.onUpdateAnimation(FAKE_TIME, false));
 
-        // TODO(crbug/1487209): This should be replace with looping until an animation finishes.
-        mHubLayout.doneHiding();
+        ShadowLooper.runUiThreadTasks();
 
         assertFalse(mHubLayout.isRunningAnimations());
         assertFalse(mHubLayout.onUpdateAnimation(FAKE_TIME, false));
+
+        verify(mHubController, times(1)).onHubLayoutDoneHiding();
+        assertEquals(0, mFrameLayout.getChildCount());
     }
 
     private void startShowing(@LayoutType int fromLayout, boolean animate) {

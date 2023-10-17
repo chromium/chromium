@@ -6,9 +6,14 @@ package org.chromium.chrome.browser.hub;
 
 import android.content.Context;
 import android.graphics.RectF;
+import android.view.View;
+import android.view.ViewGroup;
+import android.view.ViewGroup.LayoutParams;
 
 import androidx.annotation.Nullable;
 
+import org.chromium.base.task.PostTask;
+import org.chromium.base.task.TaskTraits;
 import org.chromium.chrome.browser.browser_controls.BrowserControlsStateProvider;
 import org.chromium.chrome.browser.compositor.layouts.Layout;
 import org.chromium.chrome.browser.compositor.layouts.Layout.ViewportMode;
@@ -39,6 +44,8 @@ import java.util.Collections;
  * capture and animations it may transiently host a {@link StaticTabSceneLayer}.
  */
 public class HubLayout extends Layout {
+    private static final long TIMEOUT_MS = 300L;
+
     private SceneLayer mCurrentSceneLayer;
     /** Scene layer to facilitate thumbnail capture prior to starting a transition animation. */
     private StaticTabSceneLayer mTabSceneLayer;
@@ -46,8 +53,10 @@ public class HubLayout extends Layout {
     private SceneLayer mEmptySceneLayer;
 
     private final LayoutStateProvider mLayoutStateProvider;
+    private final ViewGroup mRootView;
+    private final HubController mHubController;
 
-    private HubLayoutAnimatorProvider mCurrentAnimatorProvider;
+    private HubLayoutAnimationRunner mCurrentAnimationRunner;
 
     /**
      * The previous {@link LayoutType}, valid between {@link #show(long, boolean)} and
@@ -57,22 +66,32 @@ public class HubLayout extends Layout {
 
     /**
      * Create the {@link Layout} to show the Hub on.
+     *
      * @param context The current Android {@link Context}.
      * @param updateHost The {@link LayoutUpdateHost} for the {@link LayoutManager}.
      * @param renderHost The {@link LayoutRenderHost} for the {@link LayoutManager}.
      * @param layoutStateProvider The {@link LayoutStateProvider} for the {@link LayoutManager}.
+     * @param rootView The {@link ViewGroup} to attach the Hub to.
+     * @param hubController The {@link HubController} for controlling the Hub.
      */
-    public HubLayout(Context context, LayoutUpdateHost updateHost, LayoutRenderHost renderHost,
-            LayoutStateProvider layoutStateProvider) {
+    public HubLayout(
+            Context context,
+            LayoutUpdateHost updateHost,
+            LayoutRenderHost renderHost,
+            LayoutStateProvider layoutStateProvider,
+            ViewGroup rootView,
+            HubController hubController) {
         super(context, updateHost, renderHost);
         mLayoutStateProvider = layoutStateProvider;
+        mRootView = rootView;
+        mHubController = hubController;
     }
 
     /** Returns the current {@link HubLayoutAnimationType}. */
     @HubLayoutAnimationType
     int getCurrentAnimationType() {
-        return mCurrentAnimatorProvider != null
-                ? mCurrentAnimatorProvider.getPlannedAnimationType()
+        return mCurrentAnimationRunner != null
+                ? mCurrentAnimationRunner.getAnimationType()
                 : HubLayoutAnimationType.NONE;
     }
 
@@ -140,25 +159,46 @@ public class HubLayout extends Layout {
 
         forceAnimationToFinish();
 
-        final Tab currentTab = mTabModelSelector.getCurrentTab();
-        createLayoutTabsForTab(currentTab);
-        mCurrentSceneLayer = mTabSceneLayer;
+        if (mPreviousLayoutType == LayoutType.BROWSING) {
+            final Tab currentTab = mTabModelSelector.getCurrentTab();
+            createLayoutTabsForTab(currentTab);
+            mCurrentSceneLayer = mTabSceneLayer;
+        } else {
+            mCurrentSceneLayer = mEmptySceneLayer;
+        }
+
+        mHubController.onHubLayoutShow();
 
         // TODO(crbug/1487209): Get the animations from a Pane or HubManager and forward some events
         // along so visibility and animation timing are synced.
+        HubLayoutAnimatorProvider animatorProvider;
         if (DeviceFormFactor.isNonMultiDisplayContextOnTablet(getContext())) {
-            mCurrentAnimatorProvider =
+            animatorProvider =
                     new EmptyHubLayoutAnimatorProvider(HubLayoutAnimationType.TRANSLATE_UP);
         } else if (mPreviousLayoutType == LayoutType.START_SURFACE) {
-            mCurrentAnimatorProvider =
-                    new EmptyHubLayoutAnimatorProvider(HubLayoutAnimationType.FADE_IN);
+            animatorProvider = new EmptyHubLayoutAnimatorProvider(HubLayoutAnimationType.FADE_IN);
         } else {
-            mCurrentAnimatorProvider =
+            animatorProvider =
                     new EmptyHubLayoutAnimatorProvider(HubLayoutAnimationType.SHRINK_TAB);
         }
 
-        // TODO(crbug/1487209): Make this transition async and play an animation before calling
-        // doneShowing().
+        assert mCurrentAnimationRunner == null;
+        mCurrentAnimationRunner =
+                HubLayoutAnimationRunnerFactory.createHubLayoutAnimationRunner(animatorProvider);
+        mCurrentAnimationRunner.addListener(
+                new HubLayoutAnimationListener() {
+                    @Override
+                    public void onEnd(boolean wasForcedToFinish) {
+                        doneShowing();
+                    }
+                });
+
+        HubContainerView containerView = mHubController.getContainerView();
+        containerView.setVisibility(View.INVISIBLE);
+        mRootView.addView(
+                containerView,
+                new LayoutParams(LayoutParams.MATCH_PARENT, LayoutParams.MATCH_PARENT));
+        containerView.runOnNextLayout(this::queueAnimation);
     }
 
     @Override
@@ -166,7 +206,7 @@ public class HubLayout extends Layout {
         super.doneShowing();
         mCurrentSceneLayer = mEmptySceneLayer;
         mPreviousLayoutType = LayoutType.NONE;
-        mCurrentAnimatorProvider = null;
+        mCurrentAnimationRunner = null;
         resetLayoutTabs();
     }
 
@@ -176,8 +216,11 @@ public class HubLayout extends Layout {
 
         super.startHiding(nextTabId, hintAtTabSelection);
 
-        // Let the new tab animation handle the transition.
-        if (getCurrentAnimationType() == HubLayoutAnimationType.NEW_TAB) return;
+        // Use the NEW_TAB animation if it is already prepared.
+        if (getCurrentAnimationType() == HubLayoutAnimationType.NEW_TAB) {
+            PostTask.postTask(TaskTraits.UI_DEFAULT, this::queueAnimation);
+            return;
+        }
 
         forceAnimationToFinish();
 
@@ -188,30 +231,51 @@ public class HubLayout extends Layout {
 
         // TODO(crbug/1487209): Get the animations from a Pane or HubManager and forward some events
         // along so visibility and animation timing are synced.
+        HubLayoutAnimatorProvider animatorProvider;
         if (DeviceFormFactor.isNonMultiDisplayContextOnTablet(getContext())) {
-            mCurrentAnimatorProvider =
+            animatorProvider =
                     new EmptyHubLayoutAnimatorProvider(HubLayoutAnimationType.TRANSLATE_DOWN);
         } else if (nextLayoutType == LayoutType.START_SURFACE) {
-            mCurrentAnimatorProvider =
-                    new EmptyHubLayoutAnimatorProvider(HubLayoutAnimationType.FADE_OUT);
+            animatorProvider = new EmptyHubLayoutAnimatorProvider(HubLayoutAnimationType.FADE_OUT);
         } else {
-            mCurrentAnimatorProvider =
+            animatorProvider =
                     new EmptyHubLayoutAnimatorProvider(HubLayoutAnimationType.EXPAND_TAB);
         }
 
-        // TODO(crbug/1487209): Make this transition async and play an animation before calling
-        // doneHiding().
+        assert mCurrentAnimationRunner == null;
+        mCurrentAnimationRunner =
+                HubLayoutAnimationRunnerFactory.createHubLayoutAnimationRunner(animatorProvider);
+        mCurrentAnimationRunner.addListener(
+                new HubLayoutAnimationListener() {
+                    @Override
+                    public void onEnd(boolean wasForcedToFinish) {
+                        doneHiding();
+                    }
+                });
+
+        PostTask.postTask(TaskTraits.UI_DEFAULT, this::queueAnimation);
     }
 
     @Override
     public void doneHiding() {
         super.doneHiding();
-        mCurrentAnimatorProvider = null;
+        HubContainerView containerView = mHubController.getContainerView();
+        mRootView.removeView(containerView);
+        containerView.setVisibility(View.INVISIBLE);
+        mCurrentAnimationRunner = null;
+        mHubController.onHubLayoutDoneHiding();
     }
 
     @Override
     protected void forceAnimationToFinish() {
-        // TODO(crbug/1487209): implement this functionality.
+        if (mCurrentAnimationRunner == null) return;
+
+        // Immediately start any pending animations.
+        mHubController.getContainerView().runOnNextLayoutRunnables();
+
+        // Force the animation to run to completion.
+        mCurrentAnimationRunner.forceAnimationToFinish();
+        mCurrentAnimationRunner = null;
     }
 
     @Override
@@ -228,7 +292,7 @@ public class HubLayout extends Layout {
                 time, tabId, tabIndex, sourceTabId, newIsIncognito, background, originX, originY);
 
         // Tablet Hub doesn't handle new tab animations.
-        if (DeviceFormFactor.isNonMultiDisplayContextOnTablet(getContext())) {
+        if (background || DeviceFormFactor.isNonMultiDisplayContextOnTablet(getContext())) {
             return;
         }
 
@@ -236,17 +300,24 @@ public class HubLayout extends Layout {
 
         mCurrentSceneLayer = mEmptySceneLayer;
 
-        mCurrentAnimatorProvider =
+        HubLayoutAnimatorProvider animatorProvider =
                 new EmptyHubLayoutAnimatorProvider(HubLayoutAnimationType.NEW_TAB);
-
-        // TODO(crbug/1487209): Make this transition async and play an animation before calling
-        // doneHiding().
+        mCurrentAnimationRunner =
+                HubLayoutAnimationRunnerFactory.createHubLayoutAnimationRunner(animatorProvider);
+        mCurrentAnimationRunner.addListener(
+                new HubLayoutAnimationListener() {
+                    @Override
+                    public void onEnd(boolean wasForcedToFinish) {
+                        doneHiding();
+                    }
+                });
+        // The animation will run as part of startHiding which will be called soon.
     }
 
     @Override
     protected boolean onUpdateAnimation(long time, boolean jumpToEnd) {
         // Return whether an animation is running. Ignore the inputs like TabSwitcherLayout.
-        return mCurrentAnimatorProvider != null;
+        return mCurrentAnimationRunner != null;
     }
 
     @Override
@@ -303,10 +374,16 @@ public class HubLayout extends Layout {
 
     @Override
     public boolean isRunningAnimations() {
-        return mCurrentAnimatorProvider != null;
+        return mCurrentAnimationRunner != null;
     }
 
     // Internal helpers
+
+    private void queueAnimation() {
+        if (mCurrentAnimationRunner == null) return;
+
+        mCurrentAnimationRunner.runWithWaitForAnimatorTimeout(TIMEOUT_MS);
+    }
 
     private void ensureSceneLayersExist() {
         if (mTabSceneLayer == null) {
