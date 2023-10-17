@@ -24,11 +24,12 @@ import android.os.Build;
 import android.os.ParcelUuid;
 import android.util.SparseArray;
 
+import org.jni_zero.CalledByNative;
+import org.jni_zero.JNINamespace;
+
 import org.chromium.base.ContextUtils;
 import org.chromium.base.Log;
 import org.chromium.base.ThreadUtils;
-import org.chromium.base.annotations.CalledByNative;
-import org.chromium.base.annotations.JNINamespace;
 
 import java.util.ArrayList;
 import java.util.HashMap;
@@ -126,8 +127,10 @@ class Wrappers {
                                 == PackageManager.PERMISSION_GRANTED;
 
                 if (!hasPermission) {
-                    Log.w(TAG,
-                            "BluetoothAdapterWrapper.create failed: Lacking Bluetooth permissions.");
+                    Log.w(
+                            TAG,
+                            "BluetoothAdapterWrapper.create failed: Lacking Bluetooth"
+                                    + " permissions.");
                     return null;
                 }
             }

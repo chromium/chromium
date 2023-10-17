@@ -489,11 +489,11 @@ if (is_android) {
     sources = bluetooth_java_sources_needing_jni
     deps = [
       "//base:base_java",
-      "//base:jni_java",
       "//components/location/android:location_java",
       "//device/bluetooth:java",
       "//third_party/android_sdk:android_test_mock_java",
       "//third_party/androidx:androidx_annotation_annotation_java",
+      "//third_party/jni_zero:jni_zero_java",
     ]
 
     srcjar_deps = [
