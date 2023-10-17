@@ -867,6 +867,7 @@ interface CrosHealthdEventService {
 // Probe interface exposed by the cros_healthd daemon.
 //
 // NextMinVersion: 2, NextIndex: 3
+[Stable]
 interface CrosHealthdProbeService {
   // Returns information about a specific process running on the device.
   //

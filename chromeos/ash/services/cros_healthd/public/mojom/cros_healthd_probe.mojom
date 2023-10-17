@@ -771,6 +771,7 @@ struct StatefulPartitionInfo {
 
 // Bluetooth probe result. Can either be populated with the BluetoothAdapterInfo
 // or an error retrieving the information.
+[Stable]
 union BluetoothResult {
   // Valid BluetoothAdapterInfo.
   array<BluetoothAdapterInfo> bluetooth_adapter_info;
@@ -781,6 +782,7 @@ union BluetoothResult {
 // Information related to one of a device's Bluetooth adapters.
 //
 // NextMinVersion: 3, NextIndex: 11
+[Stable]
 struct BluetoothAdapterInfo {
   // The name of the adapter.
   string name@0;
@@ -803,7 +805,7 @@ struct BluetoothAdapterInfo {
   // List of allowed system devices.
   [MinVersion=2] array<string>? service_allow_list@9;
   // A dictionary of supported capabilities. DEPRECATED.
-  [MinVersion=2] DEPRECATED_SupportedCapabilities? deprecated_supported_capabilities@10;
+  [MinVersion=2] DEPRECATED_SupportedCapabilities? deprecated_capabilities@10;
 };
 
 
@@ -852,23 +854,11 @@ enum BluetoothDeviceType {
 };
 
 // Supported Capabilities related information. DEPRECATED.
-//
-// TODO(b/299415168): Deprecate it.
-// NextMinVersion: 1, NextIndex: 4
-[RenamedFrom="ash.cros_healthd.mojom.SupportedCapabilities"]
-struct DEPRECATED_SupportedCapabilities {
-  // Max advertising data length.
-  uint8 max_adv_len@0;
-  // Max advertising scan response length.
-  uint8 max_scn_rsp_len@1;
-  // Min advertising tx power (dBm).
-  int16 min_tx_power@2;
-  // Max advertising tx power (dBm).
-  int16 max_tx_power@3;
-};
+[Stable]
+struct DEPRECATED_SupportedCapabilities {};
 
 // System probe result. DEPRECATED.
-[Stable, RenamedFrom="ash.cros_healthd.mojom.DEPRECATE_SystemResult"]
+[Stable]
 union DEPRECATED_SystemResult { ProbeError error; };
 
 // System probe result. Can either be populated with the SystemInfo or an error
@@ -1997,6 +1987,7 @@ struct Sensor {
 // to fetch that information, but was unable to.
 //
 // NextMinVersion: 6, NextIndex: 22
+[Stable]
 struct TelemetryInfo {
   // Information about the device's main battery. Only present when kBattery was
   // included in the categories input to ProbeTelemetryInfo.
