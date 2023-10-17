@@ -15,6 +15,7 @@
 #include "ash/wm/window_util.h"
 #include "base/command_line.h"
 #include "ui/aura/client/aura_constants.h"
+#include "ui/display/tablet_state.h"
 #include "ui/views/animation/animation_builder.h"
 #include "ui/wm/public/activation_client.h"
 
@@ -66,6 +67,10 @@ void TabletModeMultitaskCueController::MaybeShowCue(
     return;
   }
 
+  if (pre_cue_shown_callback_for_test_) {
+    std::move(pre_cue_shown_callback_for_test_).Run();
+  }
+
   window_ = active_window;
 
   cue_layer_ = std::make_unique<ui::Layer>(ui::LAYER_SOLID_COLOR);
@@ -105,6 +110,15 @@ bool TabletModeMultitaskCueController::CanShowCue(aura::Window* window) const {
   // The cue may interfere with some integration tests.
   if (base::CommandLine::ForCurrentProcess()->HasSwitch(
           switches::kAshNoNudges)) {
+    return false;
+  }
+
+  // When we go back to clamshell mode while in single split view (only one
+  // window open), overview mode will shutdown and try to restore activation
+  // to the window, and therefore call `MaybeShowCue()`. We do not want the cue
+  // and nudge to show in this case.
+  if (Shell::Get()->display_manager()->GetTabletState() ==
+      display::TabletState::kExitingTabletMode) {
     return false;
   }
 
