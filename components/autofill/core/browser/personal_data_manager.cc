@@ -1474,6 +1474,36 @@ std::vector<const Iban*> PersonalDataManager::GetServerIbans() const {
   return result;
 }
 
+std::vector<const Iban*> PersonalDataManager::GetIbans() const {
+  std::vector<const Iban*> result;
+  result.reserve(local_ibans_.size() + server_ibans_.size());
+  if (IsAutofillWalletImportEnabled()) {
+    for (const std::unique_ptr<Iban>& iban : server_ibans_) {
+      result.push_back(iban.get());
+    }
+  }
+
+  for (const std::unique_ptr<Iban>& iban : local_ibans_) {
+    result.push_back(iban.get());
+  }
+  return result;
+}
+
+std::vector<const Iban*> PersonalDataManager::GetIbansToSuggest() const {
+  std::vector<const Iban*> ibans_to_suggest = GetIbans();
+  // Remove any IBAN from the returned list if it's a local IBAN and its
+  // prefix, suffix, and length matches any existing server IBAN.
+  base::EraseIf(ibans_to_suggest, [this](const Iban* iban) {
+    return iban->record_type() == Iban::kLocalIban &&
+           base::ranges::any_of(
+               server_ibans_, [&](const std::unique_ptr<Iban>& server_iban) {
+                 return server_iban->MatchesPrefixSuffixAndLength(*iban);
+               });
+  });
+
+  return ibans_to_suggest;
+}
+
 PaymentsCustomerData* PersonalDataManager::GetPaymentsCustomerData() const {
   return payments_customer_data_ ? payments_customer_data_.get() : nullptr;
 }

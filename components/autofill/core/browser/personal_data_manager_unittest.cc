@@ -979,6 +979,60 @@ TEST_F(PersonalDataManagerTest, AddAndReloadServerIbans) {
   ExpectSameElements(expected_ibans, personal_data_->GetServerIbans());
 }
 
+// Test that all (local and server) IBANs can be returned.
+TEST_F(PersonalDataManagerTest, GetIbans) {
+  personal_data_->SetSyncingForTest(true);
+
+  Iban local_iban1;
+  local_iban1.set_value(base::UTF8ToUTF16(std::string(test::kIbanValue)));
+  Iban local_iban2;
+  local_iban2.set_value(base::UTF8ToUTF16(std::string(test::kIbanValue_1)));
+  Iban server_iban1 = test::GetServerIban();
+  Iban server_iban2 = test::GetServerIban2();
+
+  AddLocalIban(local_iban1);
+  AddLocalIban(local_iban2);
+
+  GetServerDataTable()->SetServerIbans({server_iban1, server_iban2});
+  personal_data_->Refresh();
+  PersonalDataProfileTaskWaiter(*personal_data_).Wait();
+
+  std::vector<const Iban*> all_ibans = {&local_iban1, &local_iban2,
+                                        &server_iban1, &server_iban2};
+  ExpectSameElements(all_ibans, personal_data_->GetIbans());
+}
+
+// Test that deduplication works correctly when a local IBAN has a matching
+// prefix and suffix (either equal or starting with) and the same length as the
+// server IBANs.
+TEST_F(PersonalDataManagerTest, GetIbansToSuggest) {
+  personal_data_->SetSyncingForTest(true);
+
+  // Create two IBANs, and two server IBANs.
+  // `local_iban1` and `server_iban1` have the same prefix, suffix and length.
+  Iban local_iban1;
+  local_iban1.set_value(u"FR76 3000 6000 0112 3456 7890 189");
+  Iban local_iban2;
+  local_iban2.set_value(u"CH56 0483 5012 3456 7800 9");
+  Iban server_iban1(Iban::InstrumentId("1234567"));
+  server_iban1.set_prefix(u"FR76");
+  server_iban1.set_suffix(u"0189");
+  server_iban1.set_length(27);
+  Iban server_iban2 = test::GetServerIban2();
+  server_iban2.set_length(34);
+
+  AddLocalIban(local_iban1);
+  AddLocalIban(local_iban2);
+
+  GetServerDataTable()->SetServerIbans({server_iban1, server_iban2});
+  personal_data_->Refresh();
+  PersonalDataProfileTaskWaiter(*personal_data_).Wait();
+
+  std::vector<const Iban*> ibans_to_suggest = {&server_iban1, &server_iban2,
+                                               &local_iban2};
+  ExpectSameElements(ibans_to_suggest, personal_data_->GetIbansToSuggest());
+}
+
 TEST_F(PersonalDataManagerTest, NoIbansAddedIfDisabled) {
   prefs::SetAutofillPaymentMethodsEnabled(prefs_.get(), false);
 

@@ -377,6 +377,12 @@ class PersonalDataManager : public KeyedService,
   virtual std::vector<Iban*> GetLocalIbans() const;
   // Returns server IBANs.
   virtual std::vector<const Iban*> GetServerIbans() const;
+  // Returns all IBANs, server and local.
+  virtual std::vector<const Iban*> GetIbans() const;
+  // Returns all IBANs, server and local. All local IBANs that share the same
+  // prefix, suffix, and length as any existing server IBAN will be considered a
+  // duplicate IBAN. These duplicate IBANs will not be returned in the list.
+  virtual std::vector<const Iban*> GetIbansToSuggest() const;
 
   // Returns the Payments customer data. Returns nullptr if no data is present.
   virtual PaymentsCustomerData* GetPaymentsCustomerData() const;
