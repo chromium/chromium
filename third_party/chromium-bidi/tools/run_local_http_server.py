@@ -31,4 +31,6 @@ local_http_server = local_http_server.LocalHttpServer(httpserver)
 print(f"""Local http server started...
   - 200: {local_http_server.url_200()}
   - 301 / permanent redirect: {local_http_server.url_permanent_redirect()}
+  - 401 / basic auth: {local_http_server.url_basic_auth()}
+  - hangs forever: {local_http_server.url_hang_forever()}
 """)
