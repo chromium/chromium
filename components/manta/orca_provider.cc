@@ -31,7 +31,7 @@ constexpr char kHttpContentType[] = "application/x-protobuf";
 constexpr char kEndpointUrl[] =
     "https://autopush-aratea-pa.sandbox.googleapis.com/generate";
 constexpr char kOAuthScope[] = "https://www.googleapis.com/auth/mdi.aratea";
-constexpr base::TimeDelta kTimeoutMs = base::Seconds(90);
+constexpr base::TimeDelta kTimeoutMs = base::Seconds(30);
 
 using Tone = proto::RequestConfig::Tone;
 
