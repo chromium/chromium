@@ -755,6 +755,7 @@ LayerTreeTest::LayerTreeTest(viz::RendererType renderer_type)
     // Force the use of Graphite even if disallowed for other reasons e.g.
     // ANGLE Metal is not enabled on Mac. Use dawn-swiftshader backend if
     // kUseGpuInTests is not set.
+    command_line->AppendSwitch(::switches::kEnableSkiaGraphite);
     command_line->AppendSwitchASCII(
         ::switches::kSkiaGraphiteBackend,
         use_gpu ? ::switches::kSkiaGraphiteBackendDawn

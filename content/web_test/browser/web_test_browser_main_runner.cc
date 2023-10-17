@@ -271,6 +271,13 @@ void WebTestBrowserMainRunner::Initialize() {
   if (!command_line.HasSwitch(switches::kEnableGpuRasterization))
     command_line.AppendSwitch(switches::kDisableGpuRasterization);
 
+  // If Graphite is not explicitly enabled, disable it. This is to keep using
+  // Ganesh as renderer for web tests for now until we finish rebaselining all
+  // images for Graphite renderer.
+  if (!command_line.HasSwitch(switches::kEnableSkiaGraphite)) {
+    command_line.AppendSwitch(switches::kDisableSkiaGraphite);
+  }
+
   // If the virtual test suite didn't specify a display color space, then
   // force sRGB.
   if (!command_line.HasSwitch(switches::kForceDisplayColorProfile))

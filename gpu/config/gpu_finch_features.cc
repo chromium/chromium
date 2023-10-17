@@ -352,6 +352,8 @@ const base::FeatureParam<std::string> kDrDcBlockListByAndroidBuildFP{
 // Enable Skia Graphite. This will use the Dawn backend by default, but can be
 // overridden with command line flags for testing on non-official developer
 // builds. See --skia-graphite-backend flag in gpu_switches.h.
+// Note: This can also be overridden by
+// --enable-skia-graphite & --disable-skia-graphite.
 BASE_FEATURE(kSkiaGraphite,
              "SkiaGraphite",
 #if BUILDFLAG(IS_IOS)
@@ -590,8 +592,13 @@ bool IsANGLEValidationEnabled() {
 }
 
 bool IsSkiaGraphiteEnabled(const base::CommandLine* command_line) {
-  // Force Graphite on if --skia-graphite-backend flag is specified.
-  if (command_line->HasSwitch(switches::kSkiaGraphiteBackend)) {
+  // Force disabling graphite if --disable-skia-graphite flag is specified.
+  if (command_line->HasSwitch(switches::kDisableSkiaGraphite)) {
+    return false;
+  }
+
+  // Force Graphite on if --enable-skia-graphite flag is specified.
+  if (command_line->HasSwitch(switches::kEnableSkiaGraphite)) {
     return true;
   }
 #if BUILDFLAG(IS_APPLE)

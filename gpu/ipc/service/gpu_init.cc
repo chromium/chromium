@@ -480,7 +480,7 @@ bool GpuInit::InitializeAndStartSandbox(base::CommandLine* command_line,
 
     // If graphite is requested from command line, fallback is not needed.
     if (base::CommandLine::ForCurrentProcess()->HasSwitch(
-            switches::kSkiaGraphiteBackend)) {
+            switches::kEnableSkiaGraphite)) {
       return false;
     }
 
