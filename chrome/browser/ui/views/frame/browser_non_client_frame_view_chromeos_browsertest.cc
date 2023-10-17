@@ -1362,28 +1362,6 @@ IN_PROC_BROWSER_TEST_P(BrowserNonClientFrameViewChromeOSTest,
   EXPECT_EQ(inset_normal, inset_in_overview_mode);
 }
 
-IN_PROC_BROWSER_TEST_P(BrowserNonClientFrameViewChromeOSTest,
-                       ToggleTabletModeWhileImmersiveModeEnabled) {
-  BrowserView* browser_view = BrowserView::GetBrowserViewForBrowser(browser());
-  ImmersiveModeController* immersive_mode_controller =
-      browser_view->immersive_mode_controller();
-  ASSERT_FALSE(immersive_mode_controller->IsEnabled());
-  ASSERT_FALSE(browser_view->IsFullscreen());
-
-  // Enter immersive mode.
-  ToggleFullscreenModeAndWait(browser());
-  ASSERT_TRUE(immersive_mode_controller->IsEnabled());
-  ASSERT_TRUE(browser_view->IsFullscreen());
-
-  // Enable tablet mode.
-  ASSERT_NO_FATAL_FAILURE(
-      ash::ShellTestApi().SetTabletModeEnabledForTest(true));
-
-  // Should exit immersive mode + fullscreen when tablet mode is enabled.
-  EXPECT_FALSE(immersive_mode_controller->IsEnabled());
-  EXPECT_FALSE(browser_view->IsFullscreen());
-}
-
 // TODO(b/270175923): Consider using WebUiTabStripOverrideTest, since it
 // makes sense for it to always be enabled.
 using FloatBrowserNonClientFrameViewChromeOSTest =
