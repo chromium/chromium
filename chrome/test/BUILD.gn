@@ -4674,7 +4674,7 @@ if (!is_android) {
         # actually needed and also which should be pulled in via
         # data or data_deps and through which dependencies.
         "//chromeos/test/data/",
-        "//ui/file_manager/integration_tests/",
+        "//ui/file_manager/integration_tests/testing_provider/",
         "$root_out_dir/chromevox_test_data/",
         "$root_out_dir/content_shell.pak",
         "$root_out_dir/resources/chromeos/",
@@ -4688,6 +4688,7 @@ if (!is_android) {
         "//ash/keyboard/ui:resources",
         "//chrome",
         "//testing/buildbot/filters:chromeos_filters",
+        "//ui/file_manager/integration_tests:build",
       ]
       if (use_dbus) {
         deps += [ "//dbus:test_support" ]
@@ -4967,6 +4968,7 @@ if (!is_android) {
         "//ui/events/devices:test_support",
         "//ui/file_manager:file_manager_gen_resources_grit",
         "//ui/file_manager:resources_grit",
+        "//ui/file_manager/integration_tests:build",
         "//ui/webui/resources/cr_components/app_management:mojo_bindings",
         "//ui/wm/public",
         "//url",

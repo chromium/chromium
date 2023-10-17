@@ -3,6 +3,7 @@
 // found in the LICENSE file.
 
 #include "chrome/browser/ash/file_manager/file_manager_browsertest_base.h"
+#include "base/base_paths.h"
 #include "base/memory/raw_ptr.h"
 
 #include <stddef.h>
@@ -2621,9 +2622,10 @@ void FileManagerBrowserTestBase::StartTest() {
       ->InstallSystemAppsForTesting();
   const std::string full_test_name = GetFullTestCaseName();
   LOG(INFO) << "FileManagerBrowserTest::StartTest " << full_test_name;
-  static const base::FilePath test_extension_dir =
-      base::FilePath(FILE_PATH_LITERAL("ui/file_manager/integration_tests"));
-  LaunchExtension(test_extension_dir, GetTestExtensionManifestName());
+  static const base::FilePath test_extension_dir = base::FilePath(
+      FILE_PATH_LITERAL("ui/file_manager/integration_tests/preprocessed"));
+  LaunchExtension(base::DIR_GEN_TEST_DATA_ROOT, test_extension_dir,
+                  GetTestExtensionManifestName());
   RunTestMessageLoop();
 
   if (devtools_code_coverage_dir_.empty()) {
@@ -2651,15 +2653,17 @@ void FileManagerBrowserTestBase::StartTest() {
   content::RunAllTasksUntilIdle();
 }
 
-void FileManagerBrowserTestBase::LaunchExtension(const base::FilePath& path,
+void FileManagerBrowserTestBase::LaunchExtension(base::BasePathKey root,
+                                                 const base::FilePath& path,
                                                  const char* manifest_name) {
-  base::FilePath source_dir;
-  CHECK(base::PathService::Get(base::DIR_SRC_TEST_DATA_ROOT, &source_dir));
+  base::FilePath root_dir;
+  CHECK(base::PathService::Get(root, &root_dir));
 
-  const base::FilePath source_path = source_dir.Append(path);
+  const base::FilePath source_path = root_dir.Append(path);
   const extensions::Extension* const extension_launched =
       LoadExtensionAsComponentWithManifest(source_path, manifest_name);
-  CHECK(extension_launched) << "Launching: " << manifest_name;
+  CHECK(extension_launched)
+      << "Launching: " << source_path << "/" << manifest_name;
 }
 
 void FileManagerBrowserTestBase::RunTestMessageLoop() {
@@ -3538,7 +3542,8 @@ void FileManagerBrowserTestBase::OnCommand(const std::string& name,
   if (name == "launchProviderExtension") {
     const std::string* manifest = value.FindString("manifest");
     ASSERT_TRUE(manifest);
-    LaunchExtension(base::FilePath(FILE_PATH_LITERAL(
+    LaunchExtension(base::DIR_SRC_TEST_DATA_ROOT,
+                    base::FilePath(FILE_PATH_LITERAL(
                         "ui/file_manager/integration_tests/testing_provider")),
                     (*manifest).c_str());
     return;

@@ -10,6 +10,7 @@
 #include <string>
 #include <vector>
 
+#include "base/base_paths.h"
 #include "base/containers/flat_map.h"
 #include "base/memory/raw_ptr.h"
 #include "base/test/metrics/histogram_tester.h"
@@ -256,10 +257,12 @@ class FileManagerBrowserTestBase
 
   class MockFileTasksObserver;
 
-  // Launches the test extension with manifest |manifest_name|. The extension
-  // manifest_name file should reside in the specified |path| relative to the
-  // Chromium src directory.
-  void LaunchExtension(const base::FilePath& path, const char* manifest_name);
+  // Launches the test extension with manifest `manifest_name`. The extension
+  // manifest_name file should reside in the specified `path` relative to the
+  // Chromium `root` directory.
+  void LaunchExtension(base::BasePathKey root,
+                       const base::FilePath& path,
+                       const char* manifest_name);
 
   // Runs the test: awaits chrome.test messsage commands and chrome.test PASS
   // or FAIL messsages to process. |OnCommand| is used to handle the commands
