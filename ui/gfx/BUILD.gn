@@ -758,7 +758,6 @@ test("gfx_unittests") {
   sources = [
     "animation/keyframe/keyframe_animation_unittest.cc",
     "animation/keyframe/keyframed_animation_curve_unittest.cc",
-    "font_names_testing.cc",
     "font_names_testing.h",
     "font_unittest.cc",
     "geometry/linear_gradient_unittest.cc",

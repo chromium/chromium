@@ -130,7 +130,7 @@ class NotificationListTest : public testing::Test {
     return iter->second;
   }
 
-  static const char kIdFormat[];
+  static constexpr char kIdFormat[] = "id%zu";
   static const char16_t kDisplaySource[];
   static const char kExtensionId[];
 
@@ -149,7 +149,6 @@ bool IsInNotifications(const NotificationList::Notifications& notifications,
   return false;
 }
 
-const char NotificationListTest::kIdFormat[] = "id%ld";
 const char16_t NotificationListTest::kDisplaySource[] = u"source";
 const char NotificationListTest::kExtensionId[] = "ext";
 
