@@ -1478,7 +1478,9 @@ WRAPPED_INSTANTIATE_TEST_SUITE_P(
         TestCase("searchHierarchy").EnableSearchV2(),
         TestCase("hideSearchInTrash").EnableSearchV2(),
 // TODO(b/287169303): test is flaky on ChromiumOS MSan
-#if !defined(MEMORY_SANITIZER)
+// TODO(crbug.com/1493224): Test is flaky on ChromiumOS Asan / Lsan.
+#if !defined(ADDRESS_SANITIZER) && !defined(LEAK_SANITIZER) && \
+    !defined(MEMORY_SANITIZER)
         TestCase("searchTrashedFiles").EnableSearchV2(),
 #endif
         TestCase("matchDriveFilesByName").EnableSearchV2(),
