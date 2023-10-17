@@ -552,11 +552,11 @@ DownloadDBEntry CreateDownloadDBEntryFromItem(const DownloadItemImpl& item) {
   in_progress_info.range_request_from = range_request_offset.first;
   in_progress_info.range_request_to = range_request_offset.second;
 
-  download_info.in_progress_info = in_progress_info;
+  download_info.in_progress_info = std::move(in_progress_info);
 
   download_info.ukm_info =
       UkmInfo(item.GetDownloadSource(), item.ukm_download_id());
-  entry.download_info = download_info;
+  entry.download_info = std::move(download_info);
   return entry;
 }
 
