@@ -304,12 +304,9 @@
 - (UIAction*)actionToSearchImageUsingLensWithBlock:(ProceduralBlock)block {
   UIImage* image =
       CustomSymbolWithPointSize(kCameraLensSymbol, kSymbolActionPointSize);
-  int actionTitleMessageId =
-      base::FeatureList::IsEnabled(kEnableLensContextMenuAltText)
-          ? IDS_IOS_CONTEXT_MENU_SEARCHIMAGEWITHGOOGLE_ALT_TEXT
-          : IDS_IOS_CONTEXT_MENU_SEARCHIMAGEWITHGOOGLE;
   UIAction* action =
-      [self actionWithTitle:l10n_util::GetNSString(actionTitleMessageId)
+      [self actionWithTitle:l10n_util::GetNSString(
+                                IDS_IOS_CONTEXT_MENU_SEARCHIMAGEWITHGOOGLE)
                       image:image
                        type:MenuActionType::SearchImageWithLens
                       block:block];
