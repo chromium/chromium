@@ -1150,13 +1150,18 @@ std::vector<Suggestion> AutofillSuggestionGenerator::GetSuggestionsForIbans(
   std::vector<Suggestion> suggestions;
   suggestions.reserve(ibans.size() + 2);
   for (const Iban* iban : ibans) {
-    Suggestion& suggestion = suggestions.emplace_back(iban->value());
+    Suggestion& suggestion =
+        suggestions.emplace_back(iban->GetIdentifierStringForAutofillDisplay());
     suggestion.custom_icon =
         ui::ResourceBundle::GetSharedInstance().GetImageNamed(
             IDR_AUTOFILL_IBAN);
     suggestion.popup_item_id = PopupItemId::kIbanEntry;
-    suggestion.payload = Suggestion::ValueToFill(iban->GetStrippedValue());
-    suggestion.main_text.value = iban->GetIdentifierStringForAutofillDisplay();
+    if (iban->record_type() == Iban::kLocalIban) {
+      suggestion.payload = Suggestion::ValueToFill(iban->GetStrippedValue());
+    } else {
+      CHECK(iban->record_type() == Iban::kServerIban);
+      suggestion.payload = Suggestion::BackendId(iban->instrument_id());
+    }
     if (!iban->nickname().empty())
       suggestion.labels = {{Suggestion::Text(iban->nickname())}};
   }
