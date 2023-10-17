@@ -990,6 +990,36 @@
     "owners": ["gastonr@microsoft.com", "gerchiko@microsoft.com", "yshalivskyy@microsoft.com"]
   },
   {
+    "prefix": "fluent-overlay-scrollbar",
+    "platforms": ["Win"],
+    "bases": ["virtual/fluent-non-overlay-scrollbar/hover-over-scrollbar-thumb.html"],
+    "args": ["--enable-features=FluentOverlayScrollbar",
+             "--enable-threaded-compositing",
+             "--disable-smooth-scrolling"],
+    "expires": "Jul 1, 2024",
+    "owners": ["gastonr@microsoft.com", "gerchiko@microsoft.com", "yshalivskyy@microsoft.com"]
+  },
+  {
+    "prefix": "fluent-overlay-scrollbar-dark-mode",
+    "platforms": ["Win"],
+    "bases": ["virtual/fluent-non-overlay-scrollbar/hover-over-scrollbar-thumb.html"],
+    "args": ["--enable-features=FluentOverlayScrollbar",
+             "--enable-threaded-compositing",
+             "--blink-settings=preferredColorScheme=0,forceDarkModeEnabled=true"],
+    "expires": "Jul 1, 2024",
+    "owners": ["gastonr@microsoft.com", "gerchiko@microsoft.com", "yshalivskyy@microsoft.com"]
+  },
+  {
+    "prefix": "fluent-overlay-scrollbar-hc",
+    "platforms": ["Win"],
+    "bases": ["virtual/fluent-non-overlay-scrollbar/hover-over-scrollbar-thumb.html"],
+    "args": ["--enable-features=FluentOverlayScrollbar",
+             "--enable-threaded-compositing",
+             "--force-high-contrast"],
+    "expires": "Jul 1, 2024",
+    "owners": ["gastonr@microsoft.com", "gerchiko@microsoft.com", "yshalivskyy@microsoft.com"]
+  },
+  {
     "prefix": "text-antialias",
     "platforms": ["Linux", "Mac", "Win", "Fuchsia"],
     "bases": [],

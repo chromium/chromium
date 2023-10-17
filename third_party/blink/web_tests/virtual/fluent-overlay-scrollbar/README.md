@@ -1,6 +1,6 @@
-The suit contains web tests for Fluent non-overlay scrollbar that can be
-enabled via the following feature flag: `--enable-features=FluentScrollbar`.
-Please see more details here: https://crbug.com/1351598.
+The suit contains web tests for Fluent overlay scrollbar that can be
+enabled via the following feature flag: `--enable-features=FluentOverlayScrollbar`.
+Please see more details here: https://crbug.com/1479156.
 
 If you are trying to rebase Win10 expectations in a Win11 machine, you can
 follow these instructions to temporarily disable Win11 arrows:
@@ -11,4 +11,3 @@ follow these instructions to temporarily disable Win11 arrows:
 
 3. Rebuild;
 `$ autoninja blink_web_tests`
-
