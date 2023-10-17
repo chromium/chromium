@@ -94,4 +94,6 @@ enum SegmentId {
   TAB_RESUMPTION_CLASSIFIER = 1006;
   // Segment for users who use password manager features.
   PASSWORD_MANAGER_USER = 1007;
+  // Segment for users who use most visited tiles.
+  MOST_VISITED_TILES_USER = 1008;
 };

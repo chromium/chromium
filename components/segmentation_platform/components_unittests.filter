@@ -28,6 +28,7 @@ ModelExecutionSchedulerTest.*
 ModelExecutorTest.*
 ModelManagerTest.*
 ModelProviderFactoryImplTest.*
+MostVisitedTilesUserTest.*
 OptimizationGuideSegmentationModelProviderTest.*
 OptimizationTargetSegmentationDummyTest.*
 PasswordManagerUserModelTest.*

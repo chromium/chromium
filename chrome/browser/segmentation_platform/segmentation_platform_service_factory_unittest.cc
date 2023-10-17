@@ -15,6 +15,7 @@
 #include "components/prefs/pref_change_registrar.h"
 #include "components/prefs/pref_observer.h"
 #include "components/prefs/pref_service.h"
+#include "components/segmentation_platform/embedder/default_model/most_visited_tiles_user.h"
 #include "components/segmentation_platform/internal/constants.h"
 #include "components/segmentation_platform/internal/database/client_result_prefs.h"
 #include "components/segmentation_platform/public/constants.h"
@@ -363,6 +364,20 @@ TEST_F(SegmentationPlatformServiceFactoryTest, TestPowerUserSegment) {
       /*expected_status=*/PredictionStatus::kSucceeded,
       /*expected_labels=*/
       std::vector<std::string>{"None"});
+}
+
+TEST_F(SegmentationPlatformServiceFactoryTest, MostVisitedTilesUser) {
+  InitServiceAndCacheResults(
+      segmentation_platform::MostVisitedTilesUser::kMostVisitedTilesUserKey);
+
+  segmentation_platform::PredictionOptions prediction_options;
+
+  ExpectGetClassificationResult(
+      segmentation_platform::MostVisitedTilesUser::kMostVisitedTilesUserKey,
+      prediction_options, nullptr,
+      /*expected_status=*/segmentation_platform::PredictionStatus::kSucceeded,
+      /*expected_labels=*/
+      std::vector<std::string>(1, "None"));
 }
 
 #endif  // BUILDFLAG(IS_ANDROID)
