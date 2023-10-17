@@ -10,7 +10,6 @@
 #include <vector>
 
 #include "base/memory/raw_ptr.h"
-#include "media/gpu/vaapi/test/fake_libva_driver/vpx_decoder_delegate.h"
 
 namespace media::internal {
 

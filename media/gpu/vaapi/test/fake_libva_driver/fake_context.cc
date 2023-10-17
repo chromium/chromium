@@ -5,6 +5,7 @@
 #include "media/gpu/vaapi/test/fake_libva_driver/fake_context.h"
 
 #include "media/gpu/vaapi/test/fake_libva_driver/fake_buffer.h"
+#include "media/gpu/vaapi/test/fake_libva_driver/vpx_decoder_delegate.h"
 
 namespace media::internal {
 
