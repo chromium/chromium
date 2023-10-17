@@ -101,6 +101,12 @@ TrackingProtectionOnboarding::TrackingProtectionOnboarding(
 TrackingProtectionOnboarding::~TrackingProtectionOnboarding() = default;
 
 void TrackingProtectionOnboarding::OnOnboardingPrefChanged() const {
+  // We notify observers of all changes to the onboarding pref.
+  auto onboarding_status = GetOnboardingStatus();
+  for (auto& observer : observers_) {
+    observer.OnTrackingProtectionOnboardingUpdated(onboarding_status);
+  }
+
   switch (GetInternalOnboardingStatus(pref_service_)) {
     case tracking_protection::TrackingProtectionOnboardingStatus::kIneligible:
     case tracking_protection::TrackingProtectionOnboardingStatus::kEligible:
@@ -108,10 +114,7 @@ void TrackingProtectionOnboarding::OnOnboardingPrefChanged() const {
         observer.OnShouldShowNoticeUpdated();
       }
       break;
-    case tracking_protection::TrackingProtectionOnboardingStatus::kOnboarded:
-      for (auto& observer : observers_) {
-        observer.OnTrackingProtectionOnboarded();
-      }
+    default:
       break;
   }
 }

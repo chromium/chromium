@@ -57,7 +57,8 @@ TrackingProtectionSettings::TrackingProtectionSettings(
     // we offboard only after seeing notice.
     if (onboarding_service_->IsOffboarded() &&
         IsTrackingProtection3pcdEnabled()) {
-      OnTrackingProtectionOffboarded();
+      OnTrackingProtectionOnboardingUpdated(
+          onboarding_service_->GetOnboardingStatus());
     }
   }
 
@@ -94,12 +95,18 @@ void TrackingProtectionSettings::OnEnterpriseControlForPrefsChanged() {
   }
 }
 
-void TrackingProtectionSettings::OnTrackingProtectionOnboarded() {
-  pref_service_->SetBoolean(prefs::kTrackingProtection3pcdEnabled, true);
-}
-
-void TrackingProtectionSettings::OnTrackingProtectionOffboarded() {
-  pref_service_->SetBoolean(prefs::kTrackingProtection3pcdEnabled, false);
+void TrackingProtectionSettings::OnTrackingProtectionOnboardingUpdated(
+    TrackingProtectionOnboarding::OnboardingStatus onboarding_status) {
+  switch (onboarding_status) {
+    case TrackingProtectionOnboarding::OnboardingStatus::kIneligible:
+    case TrackingProtectionOnboarding::OnboardingStatus::kEligible:
+    case TrackingProtectionOnboarding::OnboardingStatus::kOffboarded:
+      pref_service_->SetBoolean(prefs::kTrackingProtection3pcdEnabled, false);
+      return;
+    case TrackingProtectionOnboarding::OnboardingStatus::kOnboarded:
+      pref_service_->SetBoolean(prefs::kTrackingProtection3pcdEnabled, true);
+      return;
+  }
 }
 
 void TrackingProtectionSettings::OnDoNotTrackEnabledPrefChanged() {

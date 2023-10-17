@@ -41,8 +41,9 @@ class TrackingProtectionSettings
   bool AreAllThirdPartyCookiesBlocked() const;
 
   // From TrackingProtectionOnboarding::Observer
-  void OnTrackingProtectionOnboarded() override;
-  void OnTrackingProtectionOffboarded() override;
+  void OnTrackingProtectionOnboardingUpdated(
+      TrackingProtectionOnboarding::OnboardingStatus onboarding_status)
+      override;
 
  private:
   void OnEnterpriseControlForPrefsChanged();

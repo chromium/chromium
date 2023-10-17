@@ -28,7 +28,11 @@ using ::privacy_sandbox::tracking_protection::
 class MockTrackingProtectionObserver
     : public TrackingProtectionOnboarding::Observer {
  public:
-  MOCK_METHOD(void, OnTrackingProtectionOnboarded, (), (override));
+  MOCK_METHOD(
+      void,
+      OnTrackingProtectionOnboardingUpdated,
+      (TrackingProtectionOnboarding::OnboardingStatus onboarding_status),
+      (override));
   MOCK_METHOD(void, OnShouldShowNoticeUpdated, (), (override));
 };
 
@@ -61,7 +65,9 @@ TEST_F(TrackingProtectionOnboardingTest,
        OnboardingProfileTriggersOnboardingObservers) {
   MockTrackingProtectionObserver observer;
   tracking_protection_onboarding()->AddObserver(&observer);
-  EXPECT_CALL(observer, OnTrackingProtectionOnboarded());
+  EXPECT_CALL(observer,
+              OnTrackingProtectionOnboardingUpdated(
+                  TrackingProtectionOnboarding::OnboardingStatus::kOnboarded));
 
   prefs()->SetInteger(
       prefs::kTrackingProtectionOnboardingStatus,
@@ -70,10 +76,13 @@ TEST_F(TrackingProtectionOnboardingTest,
 }
 
 TEST_F(TrackingProtectionOnboardingTest,
-       EligibleProfileDoesntTriggersOnboardingObservers) {
+       EligibleProfileTriggersOnboardingObservers) {
   MockTrackingProtectionObserver observer;
   tracking_protection_onboarding()->AddObserver(&observer);
-  EXPECT_CALL(observer, OnTrackingProtectionOnboarded()).Times(0);
+  EXPECT_CALL(observer,
+              OnTrackingProtectionOnboardingUpdated(
+                  TrackingProtectionOnboarding::OnboardingStatus::kEligible))
+      .Times(1);
 
   prefs()->SetInteger(
       prefs::kTrackingProtectionOnboardingStatus,

@@ -54,13 +54,9 @@ class TrackingProtectionOnboarding : public KeyedService {
 
   class Observer {
    public:
-    // Fired when a profile is onboarded (shown the TrackingProtection
-    // onboarding notice)
-    virtual void OnTrackingProtectionOnboarded() {}
-
-    // Fired when a profile is offboarded (shown the TrackingProtection
-    // offboarding notice)
-    virtual void OnTrackingProtectionOffboarded() {}
+    // Fired when a profile's tracking protection onboarding state is changed.
+    virtual void OnTrackingProtectionOnboardingUpdated(
+        OnboardingStatus onboarding_status) {}
 
     // Fired when the ShouldShowNotice is updated (to True or False).
     virtual void OnShouldShowNoticeUpdated() {}
