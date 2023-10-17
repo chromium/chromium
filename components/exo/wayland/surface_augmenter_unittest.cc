@@ -146,8 +146,8 @@ class ShellClientData : public ClientData {
   std::unique_ptr<zaura_toplevel> aura_toplevel_;
 };
 
-// Flaky on Linux MSan: https://crbug.com/1491391.
-#if BUILDFLAG(IS_LINUX) && defined(MEMORY_SANITIZER)
+// Flaky on Linux & ChromeOS MSan: https://crbug.com/1491391.
+#if (BUILDFLAG(IS_LINUX) || BUILDFLAG(IS_CHROMEOS)) && defined(MEMORY_SANITIZER)
 #define MAYBE_SubSurfacesOfAugmentedSurfacesAreNotAttachedToLayerTree \
   DISABLED_SubSurfacesOfAugmentedSurfacesAreNotAttachedToLayerTree
 #else
