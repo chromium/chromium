@@ -452,8 +452,12 @@ TraceTimestamps::TraceTimestamps() = default;
 
 TraceTimestamps::~TraceTimestamps() = default;
 
-void TraceTimestamps::Add(base::TimeTicks timestamp) {
-  ticks_ms.emplace_back((timestamp - base::TimeTicks()).InMicroseconds());
+void TraceTimestamps::AddCommit(base::TimeTicks commit_ts) {
+  commits.emplace_back((commit_ts - base::TimeTicks()).InMicroseconds());
+}
+
+void TraceTimestamps::AddPresent(base::TimeTicks present_ts) {
+  presents.emplace_back((present_ts - base::TimeTicks()).InMicroseconds());
 }
 
 ArcTracingGraphicsModel::ArcTracingGraphicsModel() = default;
@@ -461,7 +465,7 @@ ArcTracingGraphicsModel::ArcTracingGraphicsModel() = default;
 ArcTracingGraphicsModel::~ArcTracingGraphicsModel() = default;
 
 bool ArcTracingGraphicsModel::Build(const ArcTracingModel& common_model,
-                                    const TraceTimestamps& commits) {
+                                    const TraceTimestamps& timestamps) {
   Reset();
 
   // TODO(b/296595454): Remove the mapping mechanism as it was only needed
@@ -474,8 +478,12 @@ bool ArcTracingGraphicsModel::Build(const ArcTracingModel& common_model,
   auto& buffer_events =
       view_buffers_[ViewId(1 /* task_id */, kUnknownActivity)].buffer_events();
   buffer_events.emplace_back();
-  for (int64_t ticks : commits.ticks_ms) {
+  for (int64_t ticks : timestamps.commits) {
     buffer_events[0].emplace_back(BufferEventType::kExoSurfaceCommit, ticks);
+  }
+  for (int64_t ticks : timestamps.presents) {
+    chrome_top_level_.global_events().emplace_back(
+        BufferEventType::kChromeOSPresentationDone, ticks);
   }
 
   // TODO(khmel): Add more information to resolve owner of custom events. At

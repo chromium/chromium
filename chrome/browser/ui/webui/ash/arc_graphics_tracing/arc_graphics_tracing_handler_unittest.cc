@@ -12,6 +12,7 @@
 #include "base/test/test_file_util.h"
 #include "base/time/time.h"
 #include "chrome/browser/ash/app_list/arc/arc_app_test.h"
+#include "chrome/browser/ash/arc/tracing/arc_tracing_graphics_model.h"
 #include "chrome/test/base/chrome_ash_test_base.h"
 #include "chrome/test/base/testing_browser_process.h"
 #include "chrome/test/base/testing_profile.h"
@@ -23,10 +24,20 @@
 #include "content/public/test/browser_task_environment.h"
 #include "content/public/test/test_web_ui.h"
 #include "testing/gtest/include/gtest/gtest.h"
+#include "ui/gfx/presentation_feedback.h"
 
 namespace ash {
 
+using EventType = arc::ArcTracingGraphicsModel::BufferEventType;
+
 namespace {
+
+constexpr std::string_view kBasicSystrace =
+    "{\"traceEvents\":[],\"systemTraceEvents\":\""
+    // clang-format off
+    "          <idle>-0     [003] d..0 44442.000001: cpu_idle: state=0 cpu_id=3\n"
+    // clang-format on
+    "\"}";
 
 class TestHandler : public ArcGraphicsTracingHandler {
  public:
@@ -282,12 +293,8 @@ TEST_F(ArcGraphicsTracingHandlerTest, SwitchWindowDuringModelBuild) {
   other_arc_widget->Activate();
 
   // Pass results from trace controller to handler.
-  handler_->StopTracingOnControllerRespond(std::make_unique<std::string>(
-      "{\"traceEvents\":[],\"systemTraceEvents\":\""
-      // clang-format off
-      "          <idle>-0     [003] d..0 44442.000001: cpu_idle: state=0 cpu_id=3\n"
-      // clang-format on
-      "\"}"));
+  handler_->StopTracingOnControllerRespond(
+      std::make_unique<std::string>(kBasicSystrace));
 
   task_environment()->RunUntilIdle();
 
@@ -337,12 +344,8 @@ TEST_F(ArcGraphicsTracingHandlerTest, SwitchWindowDuringTrace) {
   FastForwardClockAndTaskQueue(base::Milliseconds(4500));
 
   // Pass results from trace controller to handler.
-  handler_->StopTracingOnControllerRespond(std::make_unique<std::string>(
-      "{\"traceEvents\":[],\"systemTraceEvents\":\""
-      // clang-format off
-      "          <idle>-0     [003] d..0 44442.000001: cpu_idle: state=0 cpu_id=3\n"
-      // clang-format on
-      "\"}"));
+  handler_->StopTracingOnControllerRespond(
+      std::make_unique<std::string>(kBasicSystrace));
 
   task_environment()->RunUntilIdle();
 
@@ -354,6 +357,76 @@ TEST_F(ArcGraphicsTracingHandlerTest, SwitchWindowDuringTrace) {
   const auto& dict = web_ui_->call_data().back()->arg1()->GetDict();
   EXPECT_EQ(*dict.FindStringByDottedPath("information.title"), "the first app");
   EXPECT_TRUE(handler_->GetWebUIWindow()->HasFocus());
+}
+
+TEST_F(ArcGraphicsTracingHandlerTest, CommitAndPresentTimestampsInModel) {
+  handler_->set_now(base::Time::FromJavaTime(1'600'044'440'000));
+  handler_->set_trace_time_base(base::Time::FromJavaTime(1'600'000'000'000));
+  handler_->max_tracing_time_ = base::Seconds(5);
+
+  exo::Surface s;
+  auto arc_widget = arc::ArcTaskWindowBuilder()
+                        .SetTaskId(22)
+                        .SetPackageName("org.funstuff.client")
+                        .SetShellRootSurface(&s)
+                        .SetTitle("the first app")
+                        .BuildOwnsNativeWidget();
+
+  arc_widget->Show();
+  SendStartStopKey();
+  handler_->StartTracingOnControllerRespond();
+
+  FastForwardClockAndTaskQueue(base::Seconds(1));
+
+  for (int i = 0; i < 5; i++) {
+    s.Commit();
+    std::list<exo::Surface::FrameCallback> frame_callbacks;
+    std::list<exo::Surface::PresentationCallback> presentation_callbacks;
+    s.AppendSurfaceHierarchyCallbacks(&frame_callbacks,
+                                      &presentation_callbacks);
+    gfx::PresentationFeedback feedback(handler_->SystemTicksNow(),
+                                       base::TimeDelta() /* interval */,
+                                       0 /* flags */);
+    for (auto& cb : presentation_callbacks) {
+      cb.Run(feedback);
+    }
+    FastForwardClockAndTaskQueue(base::Milliseconds(42));
+  }
+
+  FastForwardClockAndTaskQueue(base::Seconds(5));
+
+  handler_->StopTracingOnControllerRespond(
+      std::make_unique<std::string>(kBasicSystrace));
+
+  task_environment()->RunUntilIdle();
+
+  const auto& dict = web_ui_->call_data().back()->arg1()->GetDict();
+
+  LOG(INFO) << "checking JSON model: " << dict;
+
+  auto validate_events = [&](EventType type, const base::Value::List* events) {
+    ASSERT_TRUE(events);
+    std::queue<double> expected_times({0, 42000, 84000, 126000, 168000});
+    ASSERT_EQ(events->size(), expected_times.size());
+    for (const auto& event : *events) {
+      const auto& list = event.GetList();
+      ASSERT_EQ(list.size(), 2ul);
+      ASSERT_EQ(list[0].GetInt(), static_cast<int>(type));
+      ASSERT_EQ(list[1].GetDouble(), expected_times.front());
+      expected_times.pop();
+    }
+  };
+
+  validate_events(EventType::kChromeOSPresentationDone,
+                  dict.FindListByDottedPath("chrome.global_events"));
+  const auto* events_by_buffer =
+      (*dict.FindListByDottedPath("views"))[0].GetDict().FindListByDottedPath(
+          "buffers");
+
+  ASSERT_TRUE(events_by_buffer);
+  ASSERT_EQ(events_by_buffer->size(), 1ul);
+  validate_events(EventType::kExoSurfaceCommit,
+                  (*events_by_buffer)[0].GetIfList());
 }
 
 }  // namespace

@@ -20,8 +20,8 @@ namespace arc {
 
 class ArcTracingModel;
 
-// Timestamps in tick counts accumulated over the course of a trace. Backed by a
-// deque to give O(1) non-amortized insertion time.
+// Timestamps in tick counts (ms) accumulated over the course of a trace. Backed
+// by deques to give O(1) non-amortized insertion time.
 struct TraceTimestamps {
   TraceTimestamps();
   ~TraceTimestamps();
@@ -30,9 +30,10 @@ struct TraceTimestamps {
   TraceTimestamps(const TraceTimestamps&) = delete;
   TraceTimestamps& operator=(const TraceTimestamps&) = delete;
 
-  void Add(base::TimeTicks timestamp);
+  void AddCommit(base::TimeTicks commit_ts);
+  void AddPresent(base::TimeTicks present_ts);
 
-  std::deque<int64_t> ticks_ms;
+  std::deque<int64_t> commits, presents;
 };
 
 // Graphic buffers events model. It is build from the generic |ArcTracingModel|
@@ -98,7 +99,7 @@ class ArcTracingGraphicsModel {
     kChromeOSDraw             = 500,  // Obsolete
     kChromeOSSwap             = 501,  // Obsolete
     kChromeOSWaitForAck       = 502,  // Obsolete
-    kChromeOSPresentationDone = 503,  // Obsolete
+    kChromeOSPresentationDone = 503,
     kChromeOSSwapDone         = 504,
     kChromeOSJank             = 505,  // Obsolete
 

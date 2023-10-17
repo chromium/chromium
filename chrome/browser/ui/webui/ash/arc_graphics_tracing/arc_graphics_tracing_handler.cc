@@ -45,6 +45,7 @@
 #include "ui/events/event_constants.h"
 #include "ui/gfx/codec/png_codec.h"
 #include "ui/gfx/image/image_skia_rep.h"
+#include "ui/gfx/presentation_feedback.h"
 
 namespace ash {
 
@@ -68,7 +69,7 @@ struct ArcGraphicsTracingHandler::ActiveTrace {
   // with absl::optional.
   absl::optional<base::OneShotTimer> stop_timer;
 
-  arc::TraceTimestamps commits;
+  arc::TraceTimestamps stamps;
 };
 
 namespace {
@@ -179,7 +180,7 @@ std::pair<base::Value, std::string> BuildGraphicsModel(
                                      &common_model.system_model());
 
   trace->model.set_skip_structure_validation();
-  if (!trace->model.Build(common_model, trace->commits)) {
+  if (!trace->model.Build(common_model, trace->stamps)) {
     return std::make_pair(base::Value(), "Failed to build tracing model");
   }
 
@@ -371,10 +372,14 @@ void ArcGraphicsTracingHandler::OnSurfaceDestroying(exo::Surface* surface) {
 
 void ArcGraphicsTracingHandler::OnCommit(exo::Surface* surface) {
   DCHECK_CURRENTLY_ON(content::BrowserThread::UI);
-  // TODO(b/296595454): Listen for subsequent presentation of the frame by exo.
-  if (active_trace_) {
-    active_trace_->commits.Add(SystemTicksNow());
+  if (!active_trace_) {
+    return;
   }
+
+  active_trace_->stamps.AddCommit(SystemTicksNow());
+  surface->RequestPresentationCallback(
+      base::BindRepeating(&ArcGraphicsTracingHandler::RecordPresentedFrame,
+                          weak_ptr_factory_.GetWeakPtr()));
 }
 
 void ArcGraphicsTracingHandler::UpdateActiveArcWindowInfo() {
@@ -540,6 +545,17 @@ void ArcGraphicsTracingHandler::OnTracingStopped(
                      std::move(trace), model_path),
       base::BindOnce(&ArcGraphicsTracingHandler::OnGraphicsModelReady,
                      weak_ptr_factory_.GetWeakPtr()));
+}
+
+void ArcGraphicsTracingHandler::RecordPresentedFrame(
+    const gfx::PresentationFeedback& frame) {
+  if (frame.failed()) {
+    VLOG(5) << "Presentation failed";
+  } else if (frame.timestamp == base::TimeTicks()) {
+    VLOG(5) << "Discarded frame";
+  } else if (active_trace_) {
+    active_trace_->stamps.AddPresent(frame.timestamp);
+  }
 }
 
 void ArcGraphicsTracingHandler::OnGraphicsModelReady(

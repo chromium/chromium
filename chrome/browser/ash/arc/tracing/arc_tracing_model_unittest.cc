@@ -190,9 +190,9 @@ TEST_F(ArcTracingModelTest, TopLevel) {
   // Continue in this test to avoid heavy calculations for building base model.
   // Make sure we can create graphics model.
   ArcTracingGraphicsModel graphics_model;
-  TraceTimestamps commits;
-  commits.Add(base::TimeTicks::FromUptimeMillis(42));
-  ASSERT_TRUE(graphics_model.Build(model, commits));
+  TraceTimestamps timestamps;
+  timestamps.AddCommit(base::TimeTicks::FromUptimeMillis(42));
+  ASSERT_TRUE(graphics_model.Build(model, timestamps));
 
   EXPECT_EQ(1U, graphics_model.chrome_top_level().buffer_events().size());
   for (const auto& chrome_top_level_band :
