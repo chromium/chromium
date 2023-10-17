@@ -122,6 +122,7 @@ after discussions on the right group.
       <annotation id="ftl_messaging_client_send_messages"/>
       <annotation id="ftl_registration_manager"/>
       <annotation id="remoting_log_to_server"/>
+      <annotation id="remoting_provision_corp_machine"/>
       <annotation id="omnibox_result_change"/>
       <annotation id="browser_switcher_ieem_sitelist"/>
       <annotation id="adb_client_socket"/>

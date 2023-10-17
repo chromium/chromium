@@ -437,4 +437,5 @@ Refer to README.md for content description and update process.
  <item id="plus_address_confirmation" added_in_milestone="119" content_hash_code="04783158" os_list="linux,windows,android,chromeos" file_path="components/plus_addresses/plus_address_client.cc" />
  <item id="customize_chrome_page_handler" added_in_milestone="120" content_hash_code="003c50db" os_list="linux,windows,chromeos" file_path="chrome/browser/ui/webui/side_panel/customize_chrome/customize_chrome_page_handler.cc" />
  <item id="almanac_icon_cache" added_in_milestone="120" content_hash_code="04ca8028" os_list="chromeos" file_path="chrome/browser/apps/almanac_api_client/almanac_icon_cache.cc" />
+ <item id="remoting_provision_corp_machine" added_in_milestone="120" content_hash_code="043ecef7" os_list="linux,windows,android,chromeos" file_path="remoting/base/corp_service_client.cc" />
 </annotations>
