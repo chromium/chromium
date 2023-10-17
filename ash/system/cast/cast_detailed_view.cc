@@ -9,7 +9,6 @@
 #include <utility>
 #include <vector>
 
-#include "ash/constants/ash_features.h"
 #include "ash/public/cpp/system_tray_client.h"
 #include "ash/resources/vector_icons/vector_icons.h"
 #include "ash/shell.h"
@@ -106,8 +105,9 @@ void CastDetailedView::OnDevicesUpdated(
     const std::vector<SinkAndRoute>& sinks_routes) {
   sinks_and_routes_.clear();
   // Add/update existing.
-  for (const auto& device : sinks_routes)
+  for (const auto& device : sinks_routes) {
     sinks_and_routes_.insert(std::make_pair(device.sink.id, device));
+  }
 
   // Update UI.
   UpdateReceiverListFromCachedData();
@@ -117,12 +117,8 @@ void CastDetailedView::OnDevicesUpdated(
 void CastDetailedView::UpdateReceiverListFromCachedData() {
   RemoveAllViews();
 
-  // QsRevamp places items in a rounded container.
-  const bool is_qs_revamp_enabled = features::IsQsRevampEnabled();
   views::View* item_container =
-      is_qs_revamp_enabled
-          ? scroll_content()->AddChildView(std::make_unique<RoundedContainer>())
-          : scroll_content();
+      scroll_content()->AddChildView(std::make_unique<RoundedContainer>());
 
   // Per product requirement, access code receiver should be shown before other
   // receivers.
@@ -143,14 +139,13 @@ void CastDetailedView::UpdateReceiverListFromCachedData() {
 
     // Add receiver action buttons if this machine ("local source") is casting
     // to the device. See also CastNotificationController::OnDevicesUpdated().
-    if (is_qs_revamp_enabled && !route.id.empty() && route.is_local_source) {
+    if (!route.id.empty() && route.is_local_source) {
       AddReceiverActionButtons(sink, route, container, item_container);
     }
   }
 
   // If there are no receiver views, show the zero state view.
-  if (features::IsQsRevampEnabled() && !add_access_code_device_ &&
-      view_to_sink_map_.empty()) {
+  if (!add_access_code_device_ && view_to_sink_map_.empty()) {
     AddZeroStateView();
     scroller()->SetVisible(false);
   } else {
@@ -181,7 +176,7 @@ void CastDetailedView::HandleViewClicked(views::View* view) {
     base::RecordAction(
         base::UserMetricsAction("StatusArea_Cast_Detailed_Launch_Cast"));
     // Close the system tray to emphasize the pinned Cast notification.
-    if (weak_this && features::IsQsRevampEnabled()) {
+    if (weak_this) {
       weak_this->CloseBubble();  // Deletes `this`.
     }
   } else if (view == add_access_code_device_) {
@@ -194,14 +189,12 @@ void CastDetailedView::HandleViewClicked(views::View* view) {
 }
 
 void CastDetailedView::StopCasting(const std::string& route_id) {
-  DCHECK(features::IsQsRevampEnabled());
   CastConfigController::Get()->StopCasting(route_id);
   CloseBubble();  // Deletes `this`.
 }
 
 void CastDetailedView::FreezePressed(const std::string& route_id,
                                      bool is_frozen) {
-  DCHECK(features::IsQsRevampEnabled());
   if (is_frozen) {
     CastConfigController::Get()->UnfreezeRoute(route_id);
   } else {

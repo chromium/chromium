@@ -7,7 +7,6 @@
 #include <memory>
 #include <vector>
 
-#include "ash/constants/ash_features.h"
 #include "ash/public/cpp/test/test_cast_config_controller.h"
 #include "ash/public/cpp/test/test_system_tray_client.h"
 #include "ash/style/pill_button.h"
@@ -17,7 +16,6 @@
 #include "base/functional/bind.h"
 #include "base/functional/callback.h"
 #include "base/memory/raw_ptr.h"
-#include "base/test/scoped_feature_list.h"
 #include "ui/gfx/geometry/point.h"
 #include "ui/views/view.h"
 #include "ui/views/view_utils.h"
@@ -27,9 +25,7 @@ namespace ash {
 
 class CastDetailedViewTest : public AshTestBase {
  public:
-  CastDetailedViewTest() {
-    feature_list_.InitAndEnableFeature(features::kQsRevamp);
-  }
+  CastDetailedViewTest() = default;
 
   // AshTestBase:
   void SetUp() override {
@@ -91,7 +87,6 @@ class CastDetailedViewTest : public AshTestBase {
     return detailed_view_->add_access_code_device_;
   }
 
-  base::test::ScopedFeatureList feature_list_;
   std::unique_ptr<views::Widget> widget_;
   TestCastConfigController cast_config_;
   std::unique_ptr<FakeDetailedViewDelegate> delegate_;

@@ -53,7 +53,7 @@ class ASH_EXPORT CastDetailedView : public TrayDetailedView,
 
   void UpdateReceiverListFromCachedData();
 
-  // Adds the view shown when no cast devices are available (with QsRevamp).
+  // Adds the view shown when no cast devices are available.
   void AddZeroStateView();
 
   // TrayDetailedView:
@@ -98,7 +98,7 @@ class ASH_EXPORT CastDetailedView : public TrayDetailedView,
   raw_ptr<HoverHighlightView, ExperimentalAsh> add_access_code_device_ =
       nullptr;
 
-  // View shown when no cast devices are available (with QsRevamp).
+  // View shown when no cast devices are available.
   raw_ptr<views::View, DanglingUntriaged | ExperimentalAsh> zero_state_view_ =
       nullptr;
 
