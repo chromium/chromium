@@ -13,7 +13,7 @@
 #include "chrome/browser/supervised_user/supervised_user_service_factory.h"
 #include "chrome/browser/supervised_user/supervised_user_settings_service_factory.h"
 #include "chrome/browser/supervised_user/supervised_user_test_util.h"
-#include "chrome/browser/supervised_user/test_support_jni_headers/SupervisedUserSettingsBridge_jni.h"
+#include "chrome/browser/supervised_user/test_support_jni_headers/SupervisedUserSettingsTestBridge_jni.h"
 #include "components/signin/public/identity_manager/identity_manager.h"
 #include "components/signin/public/identity_manager/identity_test_environment.h"
 #include "components/signin/public/identity_manager/identity_test_utils.h"
@@ -28,7 +28,7 @@
 
 using base::android::JavaParamRef;
 
-void JNI_SupervisedUserSettingsBridge_SetFilteringBehavior(
+void JNI_SupervisedUserSettingsTestBridge_SetFilteringBehavior(
     JNIEnv* env,
     const JavaParamRef<jobject>& j_profile,
     jint setting) {
@@ -42,7 +42,7 @@ void JNI_SupervisedUserSettingsBridge_SetFilteringBehavior(
       base::Value(setting));
 }
 
-void JNI_SupervisedUserSettingsBridge_SetManualFilterForHost(
+void JNI_SupervisedUserSettingsTestBridge_SetManualFilterForHost(
     JNIEnv* env,
     const JavaParamRef<jobject>& j_profile,
     const JavaParamRef<jstring>& host,
@@ -80,7 +80,7 @@ class TestUrlLoaderFactoryHelper {
   scoped_refptr<network::SharedURLLoaderFactory> shared_url_loader_factory_;
 };
 
-void JNI_SupervisedUserSettingsBridge_SetSafeSearchResponseForTesting(  // IN-TEST
+void JNI_SupervisedUserSettingsTestBridge_SetSafeSearchResponseForTesting(  // IN-TEST
     JNIEnv* env,
     const JavaParamRef<jobject>& j_profile,
     jboolean is_allowed) {
@@ -115,12 +115,12 @@ void JNI_SupervisedUserSettingsBridge_SetSafeSearchResponseForTesting(  // IN-TE
       test_kids_chrome_management_client_.get());
 }
 
-void JNI_SupervisedUserSettingsBridge_SetUpTestUrlLoaderFactoryHelper(
+void JNI_SupervisedUserSettingsTestBridge_SetUpTestUrlLoaderFactoryHelper(
     JNIEnv* env) {
   TestUrlLoaderFactoryHelper::SharedInstance()->SetUp();
 }
 
-void JNI_SupervisedUserSettingsBridge_TearDownTestUrlLoaderFactoryHelper(
+void JNI_SupervisedUserSettingsTestBridge_TearDownTestUrlLoaderFactoryHelper(
     JNIEnv* env) {
   TestUrlLoaderFactoryHelper::SharedInstance()->TearDown();
 }

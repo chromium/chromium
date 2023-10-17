@@ -101,10 +101,11 @@ public class WebsiteParentApprovalTest {
         });
 
         mSigninTestRule.addChildTestAccountThenWaitForSignin();
-        TestThreadUtils.runOnUiThreadBlocking(() -> {
-            SupervisedUserSettingsBridge.setFilteringBehavior(
-                    Profile.getLastUsedRegularProfile(), FilteringBehavior.BLOCK);
-        });
+        TestThreadUtils.runOnUiThreadBlocking(
+                () -> {
+                    SupervisedUserSettingsTestBridge.setFilteringBehavior(
+                            Profile.getLastUsedRegularProfile(), FilteringBehavior.BLOCK);
+                });
         mWebContents = mTabbedActivityTestRule.getWebContents();
 
         mocker.mock(WebsiteParentApprovalJni.TEST_HOOKS, mWebsiteParentApprovalNativesMock);

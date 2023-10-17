@@ -14,34 +14,34 @@ import org.chromium.chrome.browser.superviseduser.FilteringBehavior;
  *
  * This should only be used in tests.
  */
-class SupervisedUserSettingsBridge {
+class SupervisedUserSettingsTestBridge {
     /** Set the website filtering behaviour for this user. */
     static void setFilteringBehavior(Profile profile, @FilteringBehavior int setting) {
-        SupervisedUserSettingsBridgeJni.get().setFilteringBehavior(profile, setting);
+        SupervisedUserSettingsTestBridgeJni.get().setFilteringBehavior(profile, setting);
     }
 
     /** Adds the given host to the manuel allowlist or denylist*/
     static void setManualFilterForHost(Profile profile, String host, boolean allowlist) {
-        SupervisedUserSettingsBridgeJni.get().setManualFilterForHost(profile, host, allowlist);
+        SupervisedUserSettingsTestBridgeJni.get().setManualFilterForHost(profile, host, allowlist);
     }
 
     /** Sets response to the kids management API */
     static void setSafeSearchResponseForTesting(Profile profile, boolean isAllowed) {
-        SupervisedUserSettingsBridgeJni.get().setSafeSearchResponseForTesting(profile, isAllowed);
+        SupervisedUserSettingsTestBridgeJni.get().setSafeSearchResponseForTesting(profile, isAllowed);
     }
 
     /**
      * Sets up the TestUrlLoaderFactoryHelper, to be used in tests
      */
     static void setUpTestUrlLoaderFactoryHelper() {
-        SupervisedUserSettingsBridgeJni.get().setUpTestUrlLoaderFactoryHelper();
+        SupervisedUserSettingsTestBridgeJni.get().setUpTestUrlLoaderFactoryHelper();
     }
 
     /**
      * Tears down up the TestUrlLoaderFactoryHelper, to be used in tests
      */
     static void tearDownTestUrlLoaderFactoryHelper() {
-        SupervisedUserSettingsBridgeJni.get().tearDownTestUrlLoaderFactoryHelper();
+        SupervisedUserSettingsTestBridgeJni.get().tearDownTestUrlLoaderFactoryHelper();
     }
 
     @NativeMethods

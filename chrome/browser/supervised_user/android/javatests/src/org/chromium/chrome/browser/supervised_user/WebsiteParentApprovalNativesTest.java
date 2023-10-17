@@ -94,10 +94,11 @@ public class WebsiteParentApprovalNativesTest {
         });
 
         mSigninTestRule.addChildTestAccountThenWaitForSignin();
-        TestThreadUtils.runOnUiThreadBlocking(() -> {
-            SupervisedUserSettingsBridge.setFilteringBehavior(
-                    Profile.getLastUsedRegularProfile(), FilteringBehavior.BLOCK);
-        });
+        TestThreadUtils.runOnUiThreadBlocking(
+                () -> {
+                    SupervisedUserSettingsTestBridge.setFilteringBehavior(
+                            Profile.getLastUsedRegularProfile(), FilteringBehavior.BLOCK);
+                });
         mWebContents = mTabbedActivityTestRule.getWebContents();
 
         // TODO(b/243916194): Once we start consuming mParentAuthDelegateMock
