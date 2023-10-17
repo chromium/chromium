@@ -147,6 +147,10 @@ tast_disabled_tests_from_chrome_all = [
   # b/302415044: Until LKGM 15643.0.0
   "crostini.BackupRestore.bullseye_stable",
 
+  # b/305258176: Until LKGM 15646.0.0
+  "terminal.Crosh",
+  "terminal.SSH",
+
   # READ COMMENT AT TOP BEFORE ADDING NEW TESTS HERE.
 ]
 
