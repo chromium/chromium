@@ -26,7 +26,7 @@ import {PrefsMixin} from 'chrome://resources/cr_components/settings_prefs/prefs_
 import {I18nMixin} from 'chrome://resources/cr_elements/i18n_mixin.js';
 import {assertNotReached} from 'chrome://resources/js/assert.js';
 import {loadTimeData} from 'chrome://resources/js/load_time_data.js';
-import {FastInitiationNotificationState, Visibility} from 'chrome://resources/mojo/chromeos/ash/services/nearby/public/mojom/nearby_share_settings.mojom-webui.js';
+import {DataUsage, FastInitiationNotificationState, Visibility} from 'chrome://resources/mojo/chromeos/ash/services/nearby/public/mojom/nearby_share_settings.mojom-webui.js';
 import {flush, PolymerElement} from 'chrome://resources/polymer/v3_0/polymer/polymer_bundled.min.js';
 
 import {DeepLinkingMixin} from '../deep_linking_mixin.js';
@@ -38,7 +38,7 @@ import {NearbyAccountManagerBrowserProxyImpl} from './nearby_account_manager_bro
 import {NearbyShareReceiveDialogElement} from './nearby_share_receive_dialog.js';
 import {observeReceiveManager} from './nearby_share_receive_manager.js';
 import {getTemplate} from './nearby_share_subpage.html.js';
-import {dataUsageStringToEnum, NearbyShareDataUsage} from './types.js';
+import {dataUsageStringToEnum} from './types.js';
 
 const DEFAULT_HIGH_VISIBILITY_TIMEOUT_S: number = 300;
 
@@ -330,11 +330,9 @@ export class SettingsNearbyShareSubpageElement extends
   }
 
   private getDataUsageLabel_(dataUsageValue: string): string {
-    if (dataUsageStringToEnum(dataUsageValue) === NearbyShareDataUsage.ONLINE) {
+    if (dataUsageStringToEnum(dataUsageValue) === DataUsage.kOnline) {
       return this.i18n('nearbyShareDataUsageDataLabel');
-    } else if (
-        dataUsageStringToEnum(dataUsageValue) ===
-        NearbyShareDataUsage.OFFLINE) {
+    } else if (dataUsageStringToEnum(dataUsageValue) === DataUsage.kOffline) {
       return this.i18n('nearbyShareDataUsageOfflineLabel');
     } else {
       return this.i18n('nearbyShareDataUsageWifiOnlyLabel');
@@ -342,11 +340,9 @@ export class SettingsNearbyShareSubpageElement extends
   }
 
   private getDataUsageSubLabel_(dataUsageValue: string): string {
-    if (dataUsageStringToEnum(dataUsageValue) === NearbyShareDataUsage.ONLINE) {
+    if (dataUsageStringToEnum(dataUsageValue) === DataUsage.kOnline) {
       return this.i18n('nearbyShareDataUsageDataDescription');
-    } else if (
-        dataUsageStringToEnum(dataUsageValue) ===
-        NearbyShareDataUsage.OFFLINE) {
+    } else if (dataUsageStringToEnum(dataUsageValue) === DataUsage.kOffline) {
       return this.i18n('nearbyShareDataUsageOfflineDescription');
     } else {
       return this.i18n('nearbyShareDataUsageWifiOnlyDescription');
@@ -355,11 +351,9 @@ export class SettingsNearbyShareSubpageElement extends
 
   private getEditDataUsageButtonAriaDescription_(dataUsageValue: string):
       string {
-    if (dataUsageStringToEnum(dataUsageValue) === NearbyShareDataUsage.ONLINE) {
+    if (dataUsageStringToEnum(dataUsageValue) === DataUsage.kOnline) {
       return this.i18n('nearbyShareDataUsageDataEditButtonDescription');
-    } else if (
-        dataUsageStringToEnum(dataUsageValue) ===
-        NearbyShareDataUsage.OFFLINE) {
+    } else if (dataUsageStringToEnum(dataUsageValue) === DataUsage.kOffline) {
       return this.i18n('nearbyShareDataUsageOfflineEditButtonDescription');
     } else {
       return this.i18n('nearbyShareDataUsageWifiOnlyEditButtonDescription');

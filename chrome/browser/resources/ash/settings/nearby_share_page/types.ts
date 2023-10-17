@@ -24,12 +24,12 @@ export enum NearbyShareDataUsage {
 export function dataUsageStringToEnum(s: string): DataUsage {
   switch (parseInt(s, 10)) {
     case NearbyShareDataUsage.OFFLINE:
-      return NearbyShareDataUsage.OFFLINE;
+      return DataUsage.kOffline;
     case NearbyShareDataUsage.ONLINE:
-      return NearbyShareDataUsage.ONLINE;
+      return DataUsage.kOnline;
     case NearbyShareDataUsage.WIFI_ONLY:
-      return NearbyShareDataUsage.WIFI_ONLY;
+      return DataUsage.kWifiOnly;
     default:
-      return NearbyShareDataUsage.UNKNOWN;
+      return DataUsage.kUnknown;
   }
 }

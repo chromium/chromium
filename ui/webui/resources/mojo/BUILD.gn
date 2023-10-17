@@ -47,14 +47,11 @@ if (is_ios) {
 if (is_chromeos_ash) {
   mojo_js_files += [
     "chromeos/ash/components/multidevice/mojom/multidevice_types.mojom-webui.js",
-    "chromeos/ash/services/auth_factor_config/public/mojom/auth_factor_config.mojom-webui.js",
     "chromeos/ash/services/bluetooth_config/public/mojom/cros_bluetooth_config.mojom-webui.js",
     "chromeos/ash/services/cellular_setup/public/mojom/cellular_setup.mojom-webui.js",
     "chromeos/ash/services/cellular_setup/public/mojom/esim_manager.mojom-webui.js",
     "chromeos/ash/services/device_sync/public/mojom/device_sync.mojom-webui.js",
     "chromeos/ash/services/multidevice_setup/public/mojom/multidevice_setup.mojom-webui.js",
-    "chromeos/ash/services/nearby/public/mojom/nearby_share_settings.mojom-webui.js",
-    "chromeos/ash/services/nearby/public/mojom/nearby_share_target_types.mojom-webui.js",
     "chromeos/services/network_config/public/mojom/constants.mojom-webui.js",
     "chromeos/services/network_config/public/mojom/cros_network_config.mojom-webui.js",
     "chromeos/services/network_config/public/mojom/network_types.mojom-webui.js",
@@ -62,15 +59,18 @@ if (is_chromeos_ash) {
     "chromeos/services/network_health/public/mojom/network_health.mojom-webui.js",
     "chromeos/services/network_health/public/mojom/network_health_types.mojom-webui.js",
     "services/network/public/mojom/ip_address.mojom-webui.js",
-    "ui/latency/mojom/latency_info.mojom-webui.js",
   ]
 
   mojo_ts_files += [
+    "chromeos/ash/services/auth_factor_config/public/mojom/auth_factor_config.mojom-webui.ts",
     "chromeos/ash/services/connectivity/public/mojom/passpoint.mojom-webui.ts",
     "chromeos/ash/services/hotspot_config/public/mojom/cros_hotspot_config.mojom-webui.ts",
+    "chromeos/ash/services/nearby/public/mojom/nearby_share_settings.mojom-webui.ts",
+    "chromeos/ash/services/nearby/public/mojom/nearby_share_target_types.mojom-webui.ts",
     "ui/base/accelerators/mojom/accelerator.mojom-webui.ts",
     "ui/events/mojom/event.mojom-webui.ts",
     "ui/events/mojom/event_constants.mojom-webui.ts",
+    "ui/latency/mojom/latency_info.mojom-webui.ts",
   ]
 }
 
@@ -91,10 +91,13 @@ preprocess_if_expr("copy_mojo_ts") {
 
   if (is_chromeos_ash) {
     deps += [
+      "//chromeos/ash/services/auth_factor_config/public/mojom:mojom_ts__generator",
       "//chromeos/ash/services/connectivity/public/mojom:mojom_ts__generator",
       "//chromeos/ash/services/hotspot_config/public/mojom:mojom_ts__generator",
+      "//chromeos/ash/services/nearby/public/mojom:nearby_share_settings_ts__generator",
       "//ui/base/accelerators/mojom:mojom_ts__generator",
       "//ui/events/mojom:mojom_ts__generator",
+      "//ui/latency/mojom:mojom_ts__generator",
     ]
   }
 }
@@ -115,18 +118,15 @@ preprocess_if_expr("copy_mojo") {
   if (is_chromeos_ash) {
     deps += [
       "//chromeos/ash/components/multidevice/mojom:mojom_js__generator",
-      "//chromeos/ash/services/auth_factor_config/public/mojom:mojom_js__generator",
       "//chromeos/ash/services/bluetooth_config/public/mojom:mojom_js__generator",
       "//chromeos/ash/services/cellular_setup/public/mojom:mojom_js__generator",
       "//chromeos/ash/services/device_sync/public/mojom:mojom_js__generator",
       "//chromeos/ash/services/multidevice_setup/public/mojom:mojom_js__generator",
-      "//chromeos/ash/services/nearby/public/mojom:nearby_share_settings_js__generator",
       "//chromeos/services/network_config/public/mojom:mojom_js__generator",
       "//chromeos/services/network_config/public/mojom:network_types_js__generator",
       "//chromeos/services/network_health/public/mojom:mojom_js__generator",
       "//chromeos/services/network_health/public/mojom:types_js__generator",
       "//services/network/public/mojom:mojom_ip_address_js__generator",
-      "//ui/latency/mojom:mojom_js__generator",
     ]
   }
 }
