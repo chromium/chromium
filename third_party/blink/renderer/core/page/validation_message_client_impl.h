@@ -86,7 +86,6 @@ class CORE_EXPORT ValidationMessageClientImpl final
   Member<Page> page_;
   Member<Element> current_anchor_;
   String message_;
-  base::TimeTicks finish_time_;
   Member<DisallowNewWrapper<HeapTaskRunnerTimer<ValidationMessageClientImpl>>>
       timer_;
   Member<FrameOverlay> overlay_;
