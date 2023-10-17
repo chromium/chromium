@@ -16,40 +16,49 @@ import org.chromium.components.omnibox.SuggestionAnswer;
 
 import java.util.List;
 
-/**
- * AnswerText specifies details to be presented in a single line of omnibox suggestion.
- */
+/** AnswerText specifies details to be presented in a single line of omnibox suggestion. */
 abstract class AnswerText {
     final Context mContext;
+
     /** Density of current display. */
     final float mDensity;
+
     /** Content of the line of text in omnibox suggestion. */
     SpannableStringBuilder mText;
+
     /**
-     * Accessibility description - used to announce the details of the answer.
-     * This carries text to be read out loud to the user when talkback mode is enabled.
-     * Content of the Accessibility Description may be different from the content of
-     * presented string:
-     * - visually we want to highlight the answer part of AiS suggestion,
-     * - audibly we want to make sure the AiS suggestion is clear to understand.
+     * Accessibility description - used to announce the details of the answer. This carries text to
+     * be read out loud to the user when talkback mode is enabled. Content of the Accessibility
+     * Description may be different from the content of presented string:
+     *
+     * <ul>
+     *   <li>visually we want to highlight the answer part of AiS suggestion,
+     *   <li>audibly we want to make sure the AiS suggestion is clear to understand.
+     * </ul>
+     *
      * This frequently means we are presenting answers in different order than we're announcing
      * them.
      */
     String mAccessibilityDescription;
 
     /**
-     * Height of the mText.
-     * Each AnswerText can be a combination of multiple text styles (both sizes and colors).
-     * This height holds either
-     * - running maximum (during build phase)
-     * - final maximum (after build phase)
+     * Height of the mText. Each AnswerText can be a combination of multiple text styles (both sizes
+     * and colors). This height holds either
+     *
+     * <ul>
+     *   <li>running maximum (during build phase)
+     *   <li>final maximum (after build phase)
+     * </ul>
+     *
      * height of the text contained in mText.
-     * Note: since all our AnswerTexts always use the largest text as the very first span of the
+     *
+     * <p>Note: since all our AnswerTexts always use the largest text as the very first span of the
      * whole content, it is safe to assume that this field contains the height of the largest text
      * element in all cases, except when computing styles for the first span (= during the very
      * first call to getAppearanceForText()).
      */
     int mHeightSp;
+
     /** Whether content can wrap around to present more details. */
     int mMaxLines;
 
@@ -87,12 +96,14 @@ abstract class AnswerText {
 
         if (line.hasAdditionalText()) {
             mText.append("  ");
-            appendAndStyleText(line.getAdditionalText().getText(),
+            appendAndStyleText(
+                    line.getAdditionalText().getText(),
                     getAppearanceForText(line.getAdditionalText().getType()));
         }
         if (line.hasStatusText()) {
             mText.append("  ");
-            appendAndStyleText(line.getStatusText().getText(),
+            appendAndStyleText(
+                    line.getStatusText().getText(),
                     getAppearanceForText(line.getStatusText().getType()));
         }
 

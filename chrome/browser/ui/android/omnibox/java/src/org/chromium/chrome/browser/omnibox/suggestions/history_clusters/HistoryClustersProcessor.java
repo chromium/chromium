@@ -45,10 +45,13 @@ public class HistoryClustersProcessor extends BasicSuggestionProcessor {
      * See {@link BasicSuggestionProcessor#BasicSuggestionProcessor(Context, SuggestionHost,
      * OmniboxActionDelegate, UrlBarEditingTextStateProvider, OmniboxImageSupplier, BookmarkState)}
      */
-    public HistoryClustersProcessor(OpenHistoryClustersDelegate openHistoryClustersDelegate,
-            @NonNull Context context, @NonNull SuggestionHost suggestionHost,
+    public HistoryClustersProcessor(
+            OpenHistoryClustersDelegate openHistoryClustersDelegate,
+            @NonNull Context context,
+            @NonNull SuggestionHost suggestionHost,
             @NonNull UrlBarEditingTextStateProvider editingTextProvider,
-            @NonNull OmniboxImageSupplier imageSupplier, @NonNull BookmarkState bookmarkState) {
+            @NonNull OmniboxImageSupplier imageSupplier,
+            @NonNull BookmarkState bookmarkState) {
         super(context, suggestionHost, editingTextProvider, imageSupplier, bookmarkState);
         mOpenHistoryClustersDelegate = openHistoryClustersDelegate;
     }
@@ -84,9 +87,11 @@ public class HistoryClustersProcessor extends BasicSuggestionProcessor {
     public void populateModel(AutocompleteMatch match, PropertyModel model, int position) {
         HistoryClustersAction action = getHistoryClustersAction(match);
         super.populateModel(match, model, position);
-        model.set(BaseSuggestionViewProperties.ON_CLICK,
+        model.set(
+                BaseSuggestionViewProperties.ON_CLICK,
                 () -> onJourneysSuggestionClicked(action, position));
-        model.set(BaseSuggestionViewProperties.ON_LONG_CLICK,
+        model.set(
+                BaseSuggestionViewProperties.ON_LONG_CLICK,
                 () -> onJourneysSuggestionClicked(action, position));
         // We want to behave like a search suggestion w.r.t. secondary text coloring.
         model.set(SuggestionViewProperties.IS_SEARCH_SUGGESTION, true);
@@ -110,10 +115,13 @@ public class HistoryClustersProcessor extends BasicSuggestionProcessor {
     /**
      * Returns the associated history clusters action for a suggestion if one exists. Returns null
      * if:
-     * * No history clusters actions is present.
-     * * The suggestion has 0 associated actions.
-     * * The suggestion has >1 associated actions.
-     * */
+     *
+     * <ul>
+     *   <li>No history clusters actions is present.
+     *   <li>The suggestion has 0 associated actions.
+     *   <li>The suggestion has >1 associated actions.
+     * </ul>
+     */
     private static @Nullable HistoryClustersAction getHistoryClustersAction(
             AutocompleteMatch suggestion) {
         List<OmniboxAction> actions = suggestion.getActions();

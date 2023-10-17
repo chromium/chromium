@@ -12,31 +12,39 @@ import org.chromium.ui.modelutil.PropertyModel;
 import org.chromium.ui.modelutil.PropertyModel.WritableIntPropertyKey;
 import org.chromium.ui.modelutil.PropertyModel.WritableObjectPropertyKey;
 
-/**
- * The properties associated with rendering the answer suggestion view.
- */
+/** The properties associated with rendering the answer suggestion view. */
 @interface AnswerSuggestionViewProperties {
     /** The maximum number of lines to be shown for the first line of text. */
     static final WritableIntPropertyKey TEXT_LINE_1_MAX_LINES = new WritableIntPropertyKey();
+
     /** The actual text content for the first line of text. */
     static final WritableObjectPropertyKey<Spannable> TEXT_LINE_1_TEXT =
             new WritableObjectPropertyKey<>();
+
     /** The accessibility description to be announced with this line. */
     static final WritableObjectPropertyKey<String> TEXT_LINE_1_ACCESSIBILITY_DESCRIPTION =
             new WritableObjectPropertyKey<>();
 
     /** The maximum number of lines to be shown for the second line of text. */
     static final WritableIntPropertyKey TEXT_LINE_2_MAX_LINES = new WritableIntPropertyKey();
+
     /** The actual text content for the second line of text. */
     static final WritableObjectPropertyKey<Spannable> TEXT_LINE_2_TEXT =
             new WritableObjectPropertyKey<>();
+
     /** The accessibility description to be announced with this line. */
     static final WritableObjectPropertyKey<String> TEXT_LINE_2_ACCESSIBILITY_DESCRIPTION =
             new WritableObjectPropertyKey<>();
 
-    static final PropertyKey[] ALL_UNIQUE_KEYS = new PropertyKey[] {TEXT_LINE_1_TEXT,
-            TEXT_LINE_1_MAX_LINES, TEXT_LINE_1_ACCESSIBILITY_DESCRIPTION, TEXT_LINE_2_TEXT,
-            TEXT_LINE_2_MAX_LINES, TEXT_LINE_2_ACCESSIBILITY_DESCRIPTION};
+    static final PropertyKey[] ALL_UNIQUE_KEYS =
+            new PropertyKey[] {
+                TEXT_LINE_1_TEXT,
+                TEXT_LINE_1_MAX_LINES,
+                TEXT_LINE_1_ACCESSIBILITY_DESCRIPTION,
+                TEXT_LINE_2_TEXT,
+                TEXT_LINE_2_MAX_LINES,
+                TEXT_LINE_2_ACCESSIBILITY_DESCRIPTION
+            };
 
     static final PropertyKey[] ALL_KEYS =
             PropertyModel.concatKeys(ALL_UNIQUE_KEYS, BaseSuggestionViewProperties.ALL_KEYS);

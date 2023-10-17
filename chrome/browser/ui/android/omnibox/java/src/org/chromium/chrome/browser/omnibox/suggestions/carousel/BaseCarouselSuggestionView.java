@@ -16,9 +16,7 @@ import org.chromium.chrome.browser.omnibox.styles.OmniboxResourceProvider;
 import org.chromium.chrome.browser.util.KeyNavigationUtil;
 import org.chromium.ui.modelutil.SimpleRecyclerViewAdapter;
 
-/**
- * View for Carousel Suggestions.
- */
+/** View for Carousel Suggestions. */
 @MockedInTests
 public class BaseCarouselSuggestionView extends RecyclerView {
     private final BaseCarouselSuggestionSelectionManager mSelectionManager;

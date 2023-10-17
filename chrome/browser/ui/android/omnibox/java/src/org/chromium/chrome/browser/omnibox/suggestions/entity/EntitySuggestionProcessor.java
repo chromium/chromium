@@ -25,10 +25,12 @@ import org.chromium.ui.modelutil.PropertyModel;
 
 /** A class that handles model and view creation for the Entity suggestions. */
 public class EntitySuggestionProcessor extends BasicSuggestionProcessor {
-    public EntitySuggestionProcessor(@NonNull Context context,
+    public EntitySuggestionProcessor(
+            @NonNull Context context,
             @NonNull SuggestionHost suggestionHost,
             @NonNull UrlBarEditingTextStateProvider editingTextProvider,
-            @Nullable OmniboxImageSupplier imageSupplier, @NonNull BookmarkState bookmarkState) {
+            @Nullable OmniboxImageSupplier imageSupplier,
+            @NonNull BookmarkState bookmarkState) {
         super(context, suggestionHost, editingTextProvider, imageSupplier, bookmarkState);
     }
 

@@ -29,14 +29,14 @@ import java.util.Set;
 /**
  * Bridge to the native AutocompleteControllerAndroid.
  *
- * The bridge is created and maintained by the AutocompleteControllerAndroid native class.
- * The Native class is created on request for supplied profiles and remains available until the
- * Profile gets destroyed, making this instance follow the same life cycle.
+ * <p>The bridge is created and maintained by the AutocompleteControllerAndroid native class. The
+ * Native class is created on request for supplied profiles and remains available until the Profile
+ * gets destroyed, making this instance follow the same life cycle.
  *
- * Instances of this class should not be acquired directly; instead, when a profile-specific
+ * <p>Instances of this class should not be acquired directly; instead, when a profile-specific
  * AutocompleteController is required, please acquire one using the AutocompleteControllerFactory.
  *
- * When User Profile gets destroyed, native class gets destroyed as well, and during the
+ * <p>When User Profile gets destroyed, native class gets destroyed as well, and during the
  * destruction calls the #notifyNativeDestroyed() method, which signals the Java
  * AutocompleteController is no longer valid, and removes it from the AutocompleteControllerFactory
  * cache.
@@ -50,21 +50,21 @@ public class AutocompleteController implements Destroyable {
     private long mNativeController;
     private @NonNull AutocompleteResult mAutocompleteResult = AutocompleteResult.EMPTY_RESULT;
 
-    /**
-     * Listener for receiving OmniboxSuggestions.
-     */
+    /** Listener for receiving OmniboxSuggestions. */
     public interface OnSuggestionsReceivedListener {
         /**
          * Receive autocomplete matches for currently executing query.
          *
          * @param autocompleteResult The current set of autocomplete matches for previously supplied
-         *         query.
+         *     query.
          * @param inlineAutocompleteText The text to offer as an inline autocompletion.
          * @param isFinal Whether this result is transitory (false) or final (true). Final result
-         *         always comes in last, even if the query is canceled.
+         *     always comes in last, even if the query is canceled.
          */
-        void onSuggestionsReceived(AutocompleteResult autocompleteResult,
-                String inlineAutocompleteText, boolean isFinal);
+        void onSuggestionsReceived(
+                AutocompleteResult autocompleteResult,
+                String inlineAutocompleteText,
+                boolean isFinal);
     }
 
     /**
@@ -72,7 +72,7 @@ public class AutocompleteController implements Destroyable {
      *
      * @param profile The profile to get the AutocompleteController for.
      * @return An existing (if one is available) or new (otherwise) instance of the
-     *         AutocompleteController associated with the supplied profile.
+     *     AutocompleteController associated with the supplied profile.
      */
     /* package */ AutocompleteController(@NonNull Profile profile) {
         assert profile != null : "AutocompleteController cannot be created for null profile";
@@ -81,12 +81,16 @@ public class AutocompleteController implements Destroyable {
         assert mNativeController != 0 : "Failed to instantiate native AutocompleteController";
     }
 
-    /** @param listener The listener to be notified when new suggestions are available. */
+    /**
+     * @param listener The listener to be notified when new suggestions are available.
+     */
     public void addOnSuggestionsReceivedListener(@NonNull OnSuggestionsReceivedListener listener) {
         mListeners.add(listener);
     }
 
-    /** @param listener A previously registered new suggestions listener to be removed. */
+    /**
+     * @param listener A previously registered new suggestions listener to be removed.
+     */
     public void removeOnSuggestionsReceivedListener(
             @NonNull OnSuggestionsReceivedListener listener) {
         mListeners.remove(listener);
@@ -98,30 +102,44 @@ public class AutocompleteController implements Destroyable {
      * @param url The URL of the current tab, used to suggest query refinements.
      * @param pageClassification The page classification of the current tab.
      * @param text The text to query autocomplete suggestions for.
-     * @param cursorPosition The position of the cursor within the text.  Set to -1 if the cursor is
-     *                       not focused on the text.
+     * @param cursorPosition The position of the cursor within the text. Set to -1 if the cursor is
+     *     not focused on the text.
      * @param preventInlineAutocomplete Whether autocomplete suggestions should be prevented.
      */
     @VisibleForTesting(otherwise = VisibleForTesting.PACKAGE_PRIVATE)
-    public void start(@NonNull GURL url, int pageClassification, @NonNull String text,
-            int cursorPosition, boolean preventInlineAutocomplete) {
+    public void start(
+            @NonNull GURL url,
+            int pageClassification,
+            @NonNull String text,
+            int cursorPosition,
+            boolean preventInlineAutocomplete) {
         if (mNativeController == 0) return;
 
-        AutocompleteControllerJni.get().start(mNativeController, text, cursorPosition, null,
-                url.getSpec(), pageClassification, preventInlineAutocomplete, false, false, true);
+        AutocompleteControllerJni.get()
+                .start(
+                        mNativeController,
+                        text,
+                        cursorPosition,
+                        null,
+                        url.getSpec(),
+                        pageClassification,
+                        preventInlineAutocomplete,
+                        false,
+                        false,
+                        true);
     }
 
     /**
-     * Issue a prefetch request for zero prefix suggestions.
-     * Prefetch is a fire-and-forget operation that yields no results.
+     * Issue a prefetch request for zero prefix suggestions. Prefetch is a fire-and-forget operation
+     * that yields no results.
      *
      * @param url The URL of the current tab, used to suggest query refinements.
      * @param pageClassification The page classification of the current tab.
      */
     void startPrefetch(@NonNull GURL url, int pageClassification) {
         if (mNativeController == 0) return;
-        AutocompleteControllerJni.get().startPrefetch(
-                mNativeController, url.getSpec(), pageClassification);
+        AutocompleteControllerJni.get()
+                .startPrefetch(mNativeController, url.getSpec(), pageClassification);
     }
 
     /**
@@ -129,20 +147,20 @@ public class AutocompleteController implements Destroyable {
      * be interpreted. This is a fallback in case the user didn't select a visible suggestion (e.g.
      * the user pressed enter before omnibox suggestions had been shown).
      *
-     * Note: this updates the internal state of the autocomplete controller just as start() does.
+     * <p>Note: this updates the internal state of the autocomplete controller just as start() does.
      * Future calls that reference autocomplete results by index, e.g. onSuggestionSelected(),
      * should reference the returned suggestion by index 0.
      *
      * @param text The user's input text to classify (i.e. what they typed in the omnibox)
      * @param focusedFromFakebox Whether the user entered the omnibox by tapping the fakebox on the
-     *                           native NTP. This should be false on all other pages.
-     * @return The AutocompleteMatch specifying where to navigate, the transition type, etc. May
-     *         be null if the input is invalid.
+     *     native NTP. This should be false on all other pages.
+     * @return The AutocompleteMatch specifying where to navigate, the transition type, etc. May be
+     *     null if the input is invalid.
      */
     public AutocompleteMatch classify(@NonNull String text, boolean focusedFromFakebox) {
         if (mNativeController == 0) return null;
-        return AutocompleteControllerJni.get().classify(
-                mNativeController, text, focusedFromFakebox);
+        return AutocompleteControllerJni.get()
+                .classify(mNativeController, text, focusedFromFakebox);
     }
 
     /**
@@ -153,21 +171,25 @@ public class AutocompleteController implements Destroyable {
      * @param pageClassification The page classification of the current tab.
      * @param title The title of the currently loaded web page.
      */
-    public void startZeroSuggest(@NonNull String omniboxText, @NonNull GURL url,
-            int pageClassification, @NonNull String title) {
+    public void startZeroSuggest(
+            @NonNull String omniboxText,
+            @NonNull GURL url,
+            int pageClassification,
+            @NonNull String title) {
         if (mNativeController == 0) return;
 
-        AutocompleteControllerJni.get().onOmniboxFocused(
-                mNativeController, omniboxText, url.getSpec(), pageClassification, title);
+        AutocompleteControllerJni.get()
+                .onOmniboxFocused(
+                        mNativeController, omniboxText, url.getSpec(), pageClassification, title);
     }
 
     /**
-     * Stops generating autocomplete suggestions for the currently specified text from
-     * {@link #start(Profile,String, String, boolean)}.
+     * Stops generating autocomplete suggestions for the currently specified text from {@link
+     * #start(Profile,String, String, boolean)}.
      *
-     * @param clear Whether to clear the most recent autocomplete results. When true, the
-     *         {@link #onSuggestionsReceived(AutocompleteResult, String)} will be called with an
-     *         empty result set.
+     * @param clear Whether to clear the most recent autocomplete results. When true, the {@link
+     *     #onSuggestionsReceived(AutocompleteResult, String)} will be called with an empty result
+     *     set.
      */
     @VisibleForTesting(otherwise = VisibleForTesting.PACKAGE_PRIVATE)
     public void stop(boolean clear) {
@@ -176,8 +198,8 @@ public class AutocompleteController implements Destroyable {
     }
 
     /**
-     * Resets session for autocomplete controller. This happens every time we start typing
-     * new input into the omnibox.
+     * Resets session for autocomplete controller. This happens every time we start typing new input
+     * into the omnibox.
      */
     @VisibleForTesting(otherwise = VisibleForTesting.PACKAGE_PRIVATE)
     public void resetSession() {
@@ -194,9 +216,9 @@ public class AutocompleteController implements Destroyable {
     }
 
     /**
-     * Partially deletes an omnibox suggestion.
-     * This call should be used by compound suggestion types (such as carousel) that host multiple
-     * components inside (eg. MostVisitedTiles).
+     * Partially deletes an omnibox suggestion. This call should be used by compound suggestion
+     * types (such as carousel) that host multiple components inside (eg. MostVisitedTiles).
+     *
      * @param match the match to delete elements of
      * @param elementIndex the element within the match that needs to be deleted
      */
@@ -207,12 +229,13 @@ public class AutocompleteController implements Destroyable {
 
         // Skip suggestions from cache.
         if (match.getNativeObjectRef() == 0L) return;
-        AutocompleteControllerJni.get().deleteMatchElement(
-                mNativeController, match.getNativeObjectRef(), elementIndex);
+        AutocompleteControllerJni.get()
+                .deleteMatchElement(mNativeController, match.getNativeObjectRef(), elementIndex);
     }
 
     /**
      * Deletes an omnibox suggestion, if possible.
+     *
      * @param match the match to delete
      */
     @VisibleForTesting(otherwise = VisibleForTesting.PACKAGE_PRIVATE)
@@ -227,8 +250,10 @@ public class AutocompleteController implements Destroyable {
 
     @CalledByNative
     @VisibleForTesting
-    public void onSuggestionsReceived(@NonNull AutocompleteResult autocompleteResult,
-            @NonNull String inlineAutocompleteText, boolean isFinal) {
+    public void onSuggestionsReceived(
+            @NonNull AutocompleteResult autocompleteResult,
+            @NonNull String inlineAutocompleteText,
+            boolean isFinal) {
         mAutocompleteResult = autocompleteResult;
         // Notify callbacks of suggestions.
         for (OnSuggestionsReceivedListener listener : mListeners) {
@@ -253,21 +278,35 @@ public class AutocompleteController implements Destroyable {
      * @param disposition the window open disposition
      * @param currentPageUrl the URL of the current page
      * @param pageClassification the page classification of the current tab
-     * @param elapsedTimeSinceModified the number of ms that passed between the user first
-     *         modifying text in the omnibox and selecting a suggestion
+     * @param elapsedTimeSinceModified the number of ms that passed between the user first modifying
+     *     text in the omnibox and selecting a suggestion
      * @param completedLength the length of the default match's inline autocompletion if any
      * @param webContents the web contents for the tab where the selected suggestion will be shown
      */
     @VisibleForTesting(otherwise = VisibleForTesting.PACKAGE_PRIVATE)
-    public void onSuggestionSelected(AutocompleteMatch match, int suggestionLine, int disposition,
-            @NonNull GURL currentPageUrl, int pageClassification, long elapsedTimeSinceModified,
-            int completedLength, @Nullable WebContents webContents) {
+    public void onSuggestionSelected(
+            AutocompleteMatch match,
+            int suggestionLine,
+            int disposition,
+            @NonNull GURL currentPageUrl,
+            int pageClassification,
+            long elapsedTimeSinceModified,
+            int completedLength,
+            @Nullable WebContents webContents) {
         if (mNativeController == 0) return;
         if (!hasValidNativeObjectRef(match, VerificationPoint.SELECT_MATCH)) return;
 
-        AutocompleteControllerJni.get().onSuggestionSelected(mNativeController,
-                match.getNativeObjectRef(), suggestionLine, disposition, currentPageUrl.getSpec(),
-                pageClassification, elapsedTimeSinceModified, completedLength, webContents);
+        AutocompleteControllerJni.get()
+                .onSuggestionSelected(
+                        mNativeController,
+                        match.getNativeObjectRef(),
+                        suggestionLine,
+                        disposition,
+                        currentPageUrl.getSpec(),
+                        pageClassification,
+                        elapsedTimeSinceModified,
+                        completedLength,
+                        webContents);
     }
 
     /**
@@ -283,12 +322,14 @@ public class AutocompleteController implements Destroyable {
         if (mNativeController == 0) return false;
         if (!hasValidNativeObjectRef(match, VerificationPoint.ON_TOUCH_MATCH)) return false;
 
-        return AutocompleteControllerJni.get().onSuggestionTouchDown(
-                mNativeController, match.getNativeObjectRef(), matchIndex, webContents);
+        return AutocompleteControllerJni.get()
+                .onSuggestionTouchDown(
+                        mNativeController, match.getNativeObjectRef(), matchIndex, webContents);
     }
 
     /**
      * Pass the voice provider a list representing the results of a voice recognition.
+     *
      * @param results A list containing the results of a voice recognition.
      */
     void onVoiceResults(@Nullable List<VoiceResult> results) {
@@ -301,8 +342,8 @@ public class AutocompleteController implements Destroyable {
             voiceMatches[i] = results.get(i).getMatch();
             confidenceScores[i] = results.get(i).getConfidence();
         }
-        AutocompleteControllerJni.get().setVoiceMatches(
-                mNativeController, voiceMatches, confidenceScores);
+        AutocompleteControllerJni.get()
+                .setVoiceMatches(mNativeController, voiceMatches, confidenceScores);
     }
 
     /**
@@ -310,8 +351,8 @@ public class AutocompleteController implements Destroyable {
      * updated URL.
      *
      * @param match the AutocompleteMatch object to get the updated destination URL for
-     * @param elapsedTimeSinceInputChange the number of ms between the time the user started
-     *         typing in the omnibox and the time the user has selected a suggestion
+     * @param elapsedTimeSinceInputChange the number of ms between the time the user started typing
+     *     in the omnibox and the time the user has selected a suggestion
      */
     @Nullable
     GURL updateMatchDestinationUrlWithQueryFormulationTime(
@@ -334,31 +375,61 @@ public class AutocompleteController implements Destroyable {
     Tab getMatchingTabForSuggestion(AutocompleteMatch match) {
         if (mNativeController == 0) return null;
         if (!hasValidNativeObjectRef(match, VerificationPoint.GET_MATCHING_TAB)) return null;
-        return AutocompleteControllerJni.get().getMatchingTabForSuggestion(
-                mNativeController, match.getNativeObjectRef());
+        return AutocompleteControllerJni.get()
+                .getMatchingTabForSuggestion(mNativeController, match.getNativeObjectRef());
     }
 
     @VisibleForTesting(otherwise = VisibleForTesting.PACKAGE_PRIVATE)
     @NativeMethods
     public interface Natives {
-        void start(long nativeAutocompleteControllerAndroid, String text, int cursorPosition,
-                String desiredTld, String currentUrl, int pageClassification,
-                boolean preventInlineAutocomplete, boolean preferKeyword,
-                boolean allowExactKeywordMatch, boolean wantAsynchronousMatches);
+        void start(
+                long nativeAutocompleteControllerAndroid,
+                String text,
+                int cursorPosition,
+                String desiredTld,
+                String currentUrl,
+                int pageClassification,
+                boolean preventInlineAutocomplete,
+                boolean preferKeyword,
+                boolean allowExactKeywordMatch,
+                boolean wantAsynchronousMatches);
+
         AutocompleteMatch classify(
                 long nativeAutocompleteControllerAndroid, String text, boolean focusedFromFakebox);
+
         void stop(long nativeAutocompleteControllerAndroid, boolean clearResults);
+
         void resetSession(long nativeAutocompleteControllerAndroid);
-        void onSuggestionSelected(long nativeAutocompleteControllerAndroid,
-                long nativeAutocompleteMatch, int matchIndex, int disposition,
-                String currentPageUrl, int pageClassification, long elapsedTimeSinceModified,
-                int completedLength, WebContents webContents);
-        boolean onSuggestionTouchDown(long nativeAutocompleteControllerAndroid,
-                long nativeAutocompleteMatch, int matchIndex, WebContents webContents);
-        void onOmniboxFocused(long nativeAutocompleteControllerAndroid, String omniboxText,
-                String currentUrl, int pageClassification, String currentTitle);
-        void deleteMatchElement(long nativeAutocompleteControllerAndroid,
-                long nativeAutocompleteMatch, int elementIndex);
+
+        void onSuggestionSelected(
+                long nativeAutocompleteControllerAndroid,
+                long nativeAutocompleteMatch,
+                int matchIndex,
+                int disposition,
+                String currentPageUrl,
+                int pageClassification,
+                long elapsedTimeSinceModified,
+                int completedLength,
+                WebContents webContents);
+
+        boolean onSuggestionTouchDown(
+                long nativeAutocompleteControllerAndroid,
+                long nativeAutocompleteMatch,
+                int matchIndex,
+                WebContents webContents);
+
+        void onOmniboxFocused(
+                long nativeAutocompleteControllerAndroid,
+                String omniboxText,
+                String currentUrl,
+                int pageClassification,
+                String currentTitle);
+
+        void deleteMatchElement(
+                long nativeAutocompleteControllerAndroid,
+                long nativeAutocompleteMatch,
+                int elementIndex);
+
         void deleteMatch(long nativeAutocompleteControllerAndroid, long nativeAutocompleteMatch);
 
         GURL updateMatchDestinationURLWithAdditionalAssistedQueryStats(
@@ -368,7 +439,10 @@ public class AutocompleteController implements Destroyable {
 
         Tab getMatchingTabForSuggestion(
                 long nativeAutocompleteControllerAndroid, long nativeAutocompleteMatch);
-        void setVoiceMatches(long nativeAutocompleteControllerAndroid, String[] matches,
+
+        void setVoiceMatches(
+                long nativeAutocompleteControllerAndroid,
+                String[] matches,
                 float[] confidenceScores);
 
         // Destroy supplied instance of the AutocompleteControllerAndroid.
@@ -376,7 +450,9 @@ public class AutocompleteController implements Destroyable {
         void destroy(long nativeAutocompleteControllerAndroid);
 
         // Sends a zero suggest request to the server in order to pre-populate the result cache.
-        void startPrefetch(long nativeAutocompleteControllerAndroid, String currentUrl,
+        void startPrefetch(
+                long nativeAutocompleteControllerAndroid,
+                String currentUrl,
                 int pageClassification);
 
         // Create an instance of AutocompleteController associated with the supplied profile.

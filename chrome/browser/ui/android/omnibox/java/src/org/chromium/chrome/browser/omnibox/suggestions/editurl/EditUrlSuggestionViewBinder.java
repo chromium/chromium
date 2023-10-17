@@ -30,9 +30,11 @@ public class EditUrlSuggestionViewBinder
         mBinder.bind(model, view.getBaseSuggestionView(), propertyKey);
 
         if (SuggestionCommonProperties.COLOR_SCHEME == propertyKey) {
-            Drawable drawable = OmniboxResourceProvider.resolveAttributeToDrawable(
-                    view.getContext(), model.get(SuggestionCommonProperties.COLOR_SCHEME),
-                    android.R.attr.listDivider);
+            Drawable drawable =
+                    OmniboxResourceProvider.resolveAttributeToDrawable(
+                            view.getContext(),
+                            model.get(SuggestionCommonProperties.COLOR_SCHEME),
+                            android.R.attr.listDivider);
             view.getDivider().setBackground(drawable);
         } else if (DropdownCommonProperties.BG_TOP_CORNER_ROUNDED == propertyKey) {
             // No divider line when the background shadow is present.

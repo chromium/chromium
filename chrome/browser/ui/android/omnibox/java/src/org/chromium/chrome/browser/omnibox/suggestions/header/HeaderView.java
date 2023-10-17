@@ -11,9 +11,7 @@ import android.widget.TextView;
 
 import org.chromium.components.browser_ui.styles.ChromeColors;
 
-/**
- * View for Group Headers.
- */
+/** View for Group Headers. */
 public class HeaderView extends TextView {
     /**
      * Constructs a new header view.

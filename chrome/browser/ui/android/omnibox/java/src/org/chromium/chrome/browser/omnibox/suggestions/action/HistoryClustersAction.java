@@ -22,13 +22,21 @@ public class HistoryClustersAction extends OmniboxAction {
     /** The default action icon for Journeys. */
     @VisibleForTesting
     static final ChipIcon JOURNEYS_ICON =
-            new ChipIcon(R.drawable.action_journeys, /*tintWithTextColor=*/true);
+            new ChipIcon(R.drawable.action_journeys, /* tintWithTextColor= */ true);
+
     /** Associated user query, guaranteed to be a non-empty string. */
     public final @NonNull String query;
 
-    public HistoryClustersAction(long nativeInstance, @NonNull String hint,
-            @NonNull String accessibilityHint, @NonNull String query) {
-        super(OmniboxActionId.HISTORY_CLUSTERS, nativeInstance, hint, accessibilityHint,
+    public HistoryClustersAction(
+            long nativeInstance,
+            @NonNull String hint,
+            @NonNull String accessibilityHint,
+            @NonNull String query) {
+        super(
+                OmniboxActionId.HISTORY_CLUSTERS,
+                nativeInstance,
+                hint,
+                accessibilityHint,
                 JOURNEYS_ICON);
         assert !TextUtils.isEmpty(query);
         this.query = query;
@@ -40,9 +48,8 @@ public class HistoryClustersAction extends OmniboxAction {
     }
 
     /**
-     * Cast supplied OmniboxAction to HistoryClustersAction.
-     * Requires the supplied input to be a valid instance of an HistoryClustersAction whose
-     * actionId is the HISTORY_CLUSTERS_ACTION.
+     * Cast supplied OmniboxAction to HistoryClustersAction. Requires the supplied input to be a
+     * valid instance of an HistoryClustersAction whose actionId is the HISTORY_CLUSTERS_ACTION.
      */
     public static @NonNull HistoryClustersAction from(@NonNull OmniboxAction action) {
         assert action != null;

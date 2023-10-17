@@ -44,8 +44,10 @@ public class OmniboxSuggestionsDropdownAdapter extends SimpleRecyclerViewAdapter
 
     /* package */ void recordSessionMetrics() {
         if (mNumSessionViewsBound > 0) {
-            OmniboxMetrics.recordSuggestionViewReuseStats(mNumSessionViewsCreated,
-                    100 * (mNumSessionViewsBound - mNumSessionViewsCreated)
+            OmniboxMetrics.recordSuggestionViewReuseStats(
+                    mNumSessionViewsCreated,
+                    100
+                            * (mNumSessionViewsBound - mNumSessionViewsCreated)
                             / mNumSessionViewsBound);
         }
         mNumSessionViewsCreated = 0;
@@ -66,7 +68,9 @@ public class OmniboxSuggestionsDropdownAdapter extends SimpleRecyclerViewAdapter
         return mSelectedItem;
     }
 
-    /** @return Currently selected view. */
+    /**
+     * @return Currently selected view.
+     */
     @Nullable
     View getSelectedView() {
         if (mLayoutManager == null) return null;

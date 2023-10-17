@@ -25,8 +25,9 @@ public abstract class BaseCarouselSuggestionProcessor implements SuggestionProce
      */
     public BaseCarouselSuggestionProcessor(Context context) {
         mContext = context;
-        mCarouselViewDecorationHeightPx = context.getResources().getDimensionPixelSize(
-                R.dimen.omnibox_suggestion_header_height);
+        mCarouselViewDecorationHeightPx =
+                context.getResources()
+                        .getDimensionPixelSize(R.dimen.omnibox_suggestion_header_height);
     }
 
     /**

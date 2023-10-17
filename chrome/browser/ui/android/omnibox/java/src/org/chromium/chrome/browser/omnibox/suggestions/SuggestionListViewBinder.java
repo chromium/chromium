@@ -15,9 +15,7 @@ import org.chromium.ui.modelutil.MVCListAdapter.ModelList;
 import org.chromium.ui.modelutil.PropertyKey;
 import org.chromium.ui.modelutil.PropertyModel;
 
-/**
- * Handles property updates to the suggestion list component.
- */
+/** Handles property updates to the suggestion list component. */
 class SuggestionListViewBinder {
     /** Holds the view components needed to renderer the suggestion list. */
     public static class SuggestionListViewHolder {
@@ -31,9 +29,7 @@ class SuggestionListViewBinder {
     }
 
     /**
-     * @see
-     * PropertyModelChangeProcessor.ViewBinder#bind(Object,
-     * Object, Object)
+     * @see PropertyModelChangeProcessor.ViewBinder#bind(Object, Object, Object)
      */
     public static void bind(
             PropertyModel model, SuggestionListViewHolder view, PropertyKey propertyKey) {
@@ -75,23 +71,29 @@ class SuggestionListViewBinder {
             }
         } else if (SuggestionListProperties.SUGGESTION_MODELS.equals(propertyKey)) {
             ModelList listItems = model.get(SuggestionListProperties.SUGGESTION_MODELS);
-            listItems.addObserver(new ListObservable.ListObserver<Void>() {
-                @Override
-                public void onItemRangeChanged(
-                        ListObservable<Void> source, int index, int count, @Nullable Void payload) {
-                    view.dropdown.resetSelection();
-                }
+            listItems.addObserver(
+                    new ListObservable.ListObserver<Void>() {
+                        @Override
+                        public void onItemRangeChanged(
+                                ListObservable<Void> source,
+                                int index,
+                                int count,
+                                @Nullable Void payload) {
+                            view.dropdown.resetSelection();
+                        }
 
-                @Override
-                public void onItemRangeInserted(ListObservable source, int index, int count) {
-                    updateContainerVisibility(model, view.container);
-                }
+                        @Override
+                        public void onItemRangeInserted(
+                                ListObservable source, int index, int count) {
+                            updateContainerVisibility(model, view.container);
+                        }
 
-                @Override
-                public void onItemRangeRemoved(ListObservable source, int index, int count) {
-                    updateContainerVisibility(model, view.container);
-                }
-            });
+                        @Override
+                        public void onItemRangeRemoved(
+                                ListObservable source, int index, int count) {
+                            updateContainerVisibility(model, view.container);
+                        }
+                    });
         } else if (SuggestionListProperties.COLOR_SCHEME.equals(propertyKey)) {
             view.dropdown.refreshPopupBackground(model.get(SuggestionListProperties.COLOR_SCHEME));
         }

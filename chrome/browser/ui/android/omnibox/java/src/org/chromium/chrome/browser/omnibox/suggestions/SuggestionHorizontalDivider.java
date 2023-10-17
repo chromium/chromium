@@ -21,9 +21,9 @@ import org.chromium.ui.modelutil.SimpleRecyclerViewAdapter;
 import org.chromium.ui.modelutil.SimpleRecyclerViewAdapter.ViewHolder;
 
 /**
- * Horizontal divider item decoration that clips the bottom of items with a rect of height  1dp.
- * Only clips for items with an associated property model with DropdownCommonProperties.SHOW_DIVIDER
- * == true.
+ * Horizontal divider item decoration that clips the bottom of items with a rect of height 1dp. Only
+ * clips for items with an associated property model with DropdownCommonProperties.SHOW_DIVIDER ==
+ * true.
  */
 public class SuggestionHorizontalDivider extends ItemDecoration {
     private final Rect mBounds = new Rect();
@@ -41,7 +41,11 @@ public class SuggestionHorizontalDivider extends ItemDecoration {
             View child = parent.getChildAt(i);
             if (!shouldDrawDivider(child, parent)) continue;
             parent.getDecoratedBoundsWithMargins(child, mBounds);
-            canvas.clipRect(mBounds.left, mBounds.bottom - mHeight, mBounds.right, mBounds.bottom,
+            canvas.clipRect(
+                    mBounds.left,
+                    mBounds.bottom - mHeight,
+                    mBounds.right,
+                    mBounds.bottom,
                     Op.DIFFERENCE);
         }
     }

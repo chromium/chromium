@@ -9,9 +9,7 @@ import android.view.View;
 import androidx.recyclerview.widget.RecyclerView;
 import androidx.recyclerview.widget.RecyclerView.LayoutManager;
 
-/**
- * Selection manager for BaseCarouselSuggestion.
- */
+/** Selection manager for BaseCarouselSuggestion. */
 public class BaseCarouselSuggestionSelectionManager
         implements RecyclerView.OnChildAttachStateChangeListener {
     private int mSelectedItem = RecyclerView.NO_POSITION;
@@ -37,16 +35,12 @@ public class BaseCarouselSuggestionSelectionManager
         setSelectedItem(mSelectedItem, true);
     }
 
-    /**
-     * Reset the active selection.
-     */
+    /** Reset the active selection. */
     void resetSelection() {
         setSelectedItem(RecyclerView.NO_POSITION, false);
     }
 
-    /**
-     * Move selection to the next element on the list.
-     */
+    /** Move selection to the next element on the list. */
     void selectNextItem() {
         if (mLayoutManager == null) return;
 
@@ -62,9 +56,7 @@ public class BaseCarouselSuggestionSelectionManager
         setSelectedItem(newSelectedItem, false);
     }
 
-    /**
-     * Move selection to the previous element on the list.
-     */
+    /** Move selection to the previous element on the list. */
     void selectPreviousItem() {
         if (mLayoutManager == null) return;
 
@@ -85,7 +77,7 @@ public class BaseCarouselSuggestionSelectionManager
      *
      * @param index Index of the child view to be selected.
      * @param force Whether to apply the selection even if the current selected item has not
-     *         changed.
+     *     changed.
      */
     void setSelectedItem(int index, boolean force) {
         if (mLayoutManager == null) return;
@@ -109,9 +101,7 @@ public class BaseCarouselSuggestionSelectionManager
         }
     }
 
-    /**
-     * Returns the selected item index.
-     */
+    /** Returns the selected item index. */
     int getSelectedItemForTest() {
         return mSelectedItem;
     }

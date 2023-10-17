@@ -19,12 +19,13 @@ import org.chromium.ui.modelutil.PropertyKey;
 import org.chromium.ui.modelutil.PropertyModel;
 import org.chromium.ui.modelutil.SimpleRecyclerViewAdapter;
 
-/**
- * Binder for the Carousel suggestions.
- */
+/** Binder for the Carousel suggestions. */
 public final class BaseCarouselSuggestionViewBinder {
     private static int sTileViewPadding = -1;
-    /** @see PropertyModelChangeProcessor.ViewBinder#bind(Object, Object, Object) */
+
+    /**
+     * @see PropertyModelChangeProcessor.ViewBinder#bind(Object, Object, Object)
+     */
     public static void bind(PropertyModel model, BaseCarouselSuggestionView view, PropertyKey key) {
         // Initialize resources we will be frequently accessing.
         if (sTileViewPadding < 0) {
@@ -49,11 +50,15 @@ public final class BaseCarouselSuggestionViewBinder {
             var context = view.getContext();
             // Adjust the initial offset of the MV Carousel to match the offset of the
             // suggestion header.
-            int initialSpacing = OmniboxFeatures.shouldShowModernizeVisualUpdate(context)
-                    ? OmniboxResourceProvider.getHeaderStartPadding(context) - sTileViewPadding
-                    : OmniboxResourceProvider.getSideSpacing(context);
-            int itemSpacing = getItemSpacingPx(
-                    model.get(SuggestionCommonProperties.DEVICE_FORM_FACTOR), view.getResources());
+            int initialSpacing =
+                    OmniboxFeatures.shouldShowModernizeVisualUpdate(context)
+                            ? OmniboxResourceProvider.getHeaderStartPadding(context)
+                                    - sTileViewPadding
+                            : OmniboxResourceProvider.getSideSpacing(context);
+            int itemSpacing =
+                    getItemSpacingPx(
+                            model.get(SuggestionCommonProperties.DEVICE_FORM_FACTOR),
+                            view.getResources());
             view.addItemDecoration(
                     new SpacingRecyclerViewItemDecoration(initialSpacing, itemSpacing / 2));
         } else if (key == BaseCarouselSuggestionViewProperties.HORIZONTAL_FADE) {
@@ -66,7 +71,7 @@ public final class BaseCarouselSuggestionViewBinder {
      * Calculate the margin between tiles based on screen size.
      *
      * @param formFactor the form factor of the device, from which we differentiate between PHONE
-     *         and TABLET.
+     *     and TABLET.
      * @param resources Android resources object, used to read the dimension.
      * @return The requested item spacing, expressed in Pixels.
      */
@@ -82,9 +87,11 @@ public final class BaseCarouselSuggestionViewBinder {
             case FormFactor.PHONE:
                 int screenWidth = resources.getDisplayMetrics().widthPixels;
                 int tileViewWidth = resources.getDimensionPixelOffset(R.dimen.tile_view_width);
-                return Integer.max(-resources.getDimensionPixelOffset(R.dimen.tile_view_padding),
-                        (int) ((screenWidth - tileViewPortraitEdgePadding - tileViewWidth * 4.5)
-                                / 4));
+                return Integer.max(
+                        -resources.getDimensionPixelOffset(R.dimen.tile_view_padding),
+                        (int)
+                                ((screenWidth - tileViewPortraitEdgePadding - tileViewWidth * 4.5)
+                                        / 4));
             case FormFactor.TABLET:
                 return tileViewPortraitEdgePadding;
             default:

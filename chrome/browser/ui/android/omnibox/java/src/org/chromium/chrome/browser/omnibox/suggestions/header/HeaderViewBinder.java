@@ -18,13 +18,16 @@ import org.chromium.ui.modelutil.PropertyModel;
 
 /** Properties associated with the header suggestion view. */
 public class HeaderViewBinder {
-    /** @see PropertyModelChangeProcessor.ViewBinder#bind(Object, Object, Object) */
+    /**
+     * @see PropertyModelChangeProcessor.ViewBinder#bind(Object, Object, Object)
+     */
     public static void bind(PropertyModel model, HeaderView view, PropertyKey propertyKey) {
         if (HeaderViewProperties.TITLE == propertyKey) {
             view.setText(model.get(HeaderViewProperties.TITLE));
         } else if (propertyKey == SuggestionCommonProperties.COLOR_SCHEME) {
-            final boolean isIncognito = model.get(SuggestionCommonProperties.COLOR_SCHEME)
-                    == BrandedColorScheme.INCOGNITO;
+            final boolean isIncognito =
+                    model.get(SuggestionCommonProperties.COLOR_SCHEME)
+                            == BrandedColorScheme.INCOGNITO;
             view.setTextAppearance(ChromeColors.getTextMediumThickSecondaryStyle(isIncognito));
         } else if (propertyKey == SuggestionCommonProperties.LAYOUT_DIRECTION) {
             ViewCompat.setLayoutDirection(

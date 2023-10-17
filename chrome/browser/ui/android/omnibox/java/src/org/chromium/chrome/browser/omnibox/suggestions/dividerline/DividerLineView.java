@@ -13,9 +13,7 @@ import androidx.core.view.ViewCompat;
 
 import org.chromium.chrome.browser.omnibox.R;
 
-/**
- * View for divider line.
- */
+/** View for divider line. */
 public class DividerLineView extends FrameLayout {
     private View mDivider;
 
@@ -37,12 +35,16 @@ public class DividerLineView extends FrameLayout {
         dividerLayoutParams.height = getResources().getDimensionPixelSize(R.dimen.divider_height);
         addView(mDivider, dividerLayoutParams);
 
-        int paddingBottom = context.getResources().getDimensionPixelOffset(
-                R.dimen.omnibox_suggestion_list_divider_line_padding);
+        int paddingBottom =
+                context.getResources()
+                        .getDimensionPixelOffset(
+                                R.dimen.omnibox_suggestion_list_divider_line_padding);
         ViewCompat.setPaddingRelative(this, 0, 0, 0, paddingBottom);
     }
 
-    /** @return The divider of this view. */
+    /**
+     * @return The divider of this view.
+     */
     View getDivider() {
         return mDivider;
     }

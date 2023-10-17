@@ -38,6 +38,7 @@ public class BasicSuggestionProcessor extends BaseSuggestionViewProcessor {
          */
         boolean isBookmarked(GURL url);
     }
+
     private final @NonNull UrlBarEditingTextStateProvider mUrlBarEditingTextProvider;
     private final @NonNull BookmarkState mBookmarkState;
 
@@ -48,10 +49,12 @@ public class BasicSuggestionProcessor extends BaseSuggestionViewProcessor {
      * @param imageSupplier Supplier of suggestion images.
      * @param bookmarkState Provider of information about whether a given url is bookmarked.
      */
-    public BasicSuggestionProcessor(@NonNull Context context,
+    public BasicSuggestionProcessor(
+            @NonNull Context context,
             @NonNull SuggestionHost suggestionHost,
             @NonNull UrlBarEditingTextStateProvider editingTextProvider,
-            @NonNull OmniboxImageSupplier imageSupplier, @NonNull BookmarkState bookmarkState) {
+            @NonNull OmniboxImageSupplier imageSupplier,
+            @NonNull BookmarkState bookmarkState) {
         super(context, suggestionHost, imageSupplier);
 
         mUrlBarEditingTextProvider = editingTextProvider;
@@ -89,17 +92,19 @@ public class BasicSuggestionProcessor extends BaseSuggestionViewProcessor {
                     break;
 
                 default:
-                    if (suggestion.getSubtypes().contains(/* SUBTYPE_TRENDS = */ 143)) {
+                    if (suggestion.getSubtypes().contains(/* SUBTYPE_TRENDS= */ 143)) {
                         icon = R.drawable.trending_up_black_24dp;
                     }
                     break;
             }
-        } else if (/* !isSearchSuggestion && */ mBookmarkState.isBookmarked(suggestion.getUrl())) {
+        } else if (
+        /* !isSearchSuggestion && */ mBookmarkState.isBookmarked(suggestion.getUrl())) {
             icon = R.drawable.btn_star;
         }
 
-        return icon == 0 ? super.getFallbackIcon(suggestion)
-                         : OmniboxDrawableState.forSmallIcon(mContext, icon, true);
+        return icon == 0
+                ? super.getFallbackIcon(suggestion)
+                : OmniboxDrawableState.forSmallIcon(mContext, icon, true);
     }
 
     @Override
@@ -114,8 +119,9 @@ public class BasicSuggestionProcessor extends BaseSuggestionViewProcessor {
             if (!suggestion.getUrl().isEmpty()
                     && UrlBarData.shouldShowUrl(suggestion.getUrl(), false)) {
                 SuggestionSpannable str = new SuggestionSpannable(suggestion.getDisplayText());
-                urlHighlighted = applyHighlightToMatchRegions(
-                        str, suggestion.getDisplayTextClassifications());
+                urlHighlighted =
+                        applyHighlightToMatchRegions(
+                                str, suggestion.getDisplayTextClassifications());
                 textLine2 = str;
             }
         } else {
@@ -133,8 +139,10 @@ public class BasicSuggestionProcessor extends BaseSuggestionViewProcessor {
             fetchSuggestionFavicon(model, suggestion.getUrl());
         }
 
-        if (!mUrlBarEditingTextProvider.getTextWithoutAutocomplete().trim().equalsIgnoreCase(
-                    suggestion.getDisplayText())) {
+        if (!mUrlBarEditingTextProvider
+                .getTextWithoutAutocomplete()
+                .trim()
+                .equalsIgnoreCase(suggestion.getDisplayText())) {
             setTabSwitchOrRefineAction(model, suggestion, position);
         }
     }
@@ -145,17 +153,21 @@ public class BasicSuggestionProcessor extends BaseSuggestionViewProcessor {
 
     /**
      * Get the first line for a text based omnibox suggestion.
+     *
      * @param suggestion The item containing the suggestion data.
-     * @param showDescriptionIfPresent Whether to show the description text of the suggestion if
-     *                                 the item contains valid data.
+     * @param showDescriptionIfPresent Whether to show the description text of the suggestion if the
+     *     item contains valid data.
      * @param shouldHighlight Whether the query should be highlighted.
      * @return The first line of text.
      */
-    private SuggestionSpannable getSuggestedQuery(AutocompleteMatch suggestion,
-            boolean showDescriptionIfPresent, boolean shouldHighlight) {
+    private SuggestionSpannable getSuggestedQuery(
+            AutocompleteMatch suggestion,
+            boolean showDescriptionIfPresent,
+            boolean shouldHighlight) {
         String suggestedQuery = null;
         List<AutocompleteMatch.MatchClassification> classifications;
-        if (showDescriptionIfPresent && !suggestion.getUrl().isEmpty()
+        if (showDescriptionIfPresent
+                && !suggestion.getUrl().isEmpty()
                 && !TextUtils.isEmpty(suggestion.getDescription())) {
             suggestedQuery = suggestion.getDescription();
             classifications = suggestion.getDescriptionClassifications();

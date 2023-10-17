@@ -50,7 +50,7 @@ import java.util.List;
 /**
  * Binds base suggestion view properties.
  *
- * This binder should be used by all suggestions that also utilize BaseSuggestionView<T> to
+ * <p>This binder should be used by all suggestions that also utilize BaseSuggestionView<T> to
  * construct the view, and manages shared suggestion properties (such as decorations or theme).
  *
  * @param <T> The inner content view type being updated.
@@ -58,17 +58,16 @@ import java.util.List;
 public final class BaseSuggestionViewBinder<T extends View>
         implements ViewBinder<PropertyModel, BaseSuggestionView<T>, PropertyKey> {
     /**
-     * Holder of metadata about a view's current state w.r.t. a suggestion's visual properties.
-     * This allows us to avoid calling setters when the current state of the view is already
-     * correct.
+     * Holder of metadata about a view's current state w.r.t. a suggestion's visual properties. This
+     * allows us to avoid calling setters when the current state of the view is already correct.
      */
     private static class BaseSuggestionViewMetadata {
-        @Nullable
-        public Drawable.ConstantState backgroundConstantState;
+        @Nullable public Drawable.ConstantState backgroundConstantState;
     }
 
     /** Drawable ConstantState used to expedite creation of Focus ripples. */
     private static Drawable.ConstantState sFocusableDrawableState;
+
     private static @BrandedColorScheme int sFocusableDrawableStateTheme;
     private static boolean sFocusableDrawableStateInNightMode;
     private final ViewBinder<PropertyModel, T, PropertyKey> mContentBinder;
@@ -104,7 +103,8 @@ public final class BaseSuggestionViewBinder<T extends View>
             updateColorScheme(model, view);
         } else if (DropdownCommonProperties.BG_BOTTOM_CORNER_ROUNDED == propertyKey
                 || DropdownCommonProperties.BG_TOP_CORNER_ROUNDED == propertyKey) {
-            view.setRoundingEdges(model.get(DropdownCommonProperties.BG_TOP_CORNER_ROUNDED),
+            view.setRoundingEdges(
+                    model.get(DropdownCommonProperties.BG_TOP_CORNER_ROUNDED),
                     model.get(DropdownCommonProperties.BG_BOTTOM_CORNER_ROUNDED));
         } else if (DropdownCommonProperties.TOP_MARGIN == propertyKey
                 || DropdownCommonProperties.BOTTOM_MARGIN == propertyKey) {
@@ -126,22 +126,24 @@ public final class BaseSuggestionViewBinder<T extends View>
             if (listener == null) {
                 view.setOnLongClickListener(null);
             } else {
-                view.setOnLongClickListener(v -> {
-                    listener.run();
-                    return true;
-                });
+                view.setOnLongClickListener(
+                        v -> {
+                            listener.run();
+                            return true;
+                        });
             }
         } else if (BaseSuggestionViewProperties.ON_TOUCH_DOWN_EVENT == propertyKey) {
             Runnable listener = model.get(BaseSuggestionViewProperties.ON_TOUCH_DOWN_EVENT);
             if (listener == null) {
                 view.setOnTouchListener(null);
             } else {
-                view.setOnTouchListener((v, event) -> {
-                    if (event.getActionMasked() == MotionEvent.ACTION_DOWN) {
-                        listener.run();
-                    }
-                    return false;
-                });
+                view.setOnTouchListener(
+                        (v, event) -> {
+                            if (event.getActionMasked() == MotionEvent.ACTION_DOWN) {
+                                listener.run();
+                            }
+                            return false;
+                        });
             }
         }
     }
@@ -160,27 +162,31 @@ public final class BaseSuggestionViewBinder<T extends View>
             actionView.setOnClickListener(v -> action.callback.run());
             actionView.setContentDescription(action.accessibilityDescription);
             applySelectableBackground(model, actionView);
-            updateIcon(actionView, action.icon,
+            updateIcon(
+                    actionView,
+                    action.icon,
                     ChromeColors.getPrimaryIconTintRes(isIncognito(model)));
 
-            actionView.setAccessibilityDelegate(new AccessibilityDelegate() {
-                @Override
-                public void onInitializeAccessibilityNodeInfo(
-                        View host, AccessibilityNodeInfo info) {
-                    super.onInitializeAccessibilityNodeInfo(host, info);
-                    info.addAction(AccessibilityAction.ACTION_CLICK);
-                }
+            actionView.setAccessibilityDelegate(
+                    new AccessibilityDelegate() {
+                        @Override
+                        public void onInitializeAccessibilityNodeInfo(
+                                View host, AccessibilityNodeInfo info) {
+                            super.onInitializeAccessibilityNodeInfo(host, info);
+                            info.addAction(AccessibilityAction.ACTION_CLICK);
+                        }
 
-                @Override
-                public boolean performAccessibilityAction(
-                        View host, int accessibilityAction, Bundle arguments) {
-                    if (accessibilityAction == AccessibilityNodeInfo.ACTION_CLICK
-                            && action.onClickAnnouncement != null) {
-                        actionView.announceForAccessibility(action.onClickAnnouncement);
-                    }
-                    return super.performAccessibilityAction(host, accessibilityAction, arguments);
-                }
-            });
+                        @Override
+                        public boolean performAccessibilityAction(
+                                View host, int accessibilityAction, Bundle arguments) {
+                            if (accessibilityAction == AccessibilityNodeInfo.ACTION_CLICK
+                                    && action.onClickAnnouncement != null) {
+                                actionView.announceForAccessibility(action.onClickAnnouncement);
+                            }
+                            return super.performAccessibilityAction(
+                                    host, accessibilityAction, arguments);
+                        }
+                    });
         }
     }
 
@@ -200,12 +206,16 @@ public final class BaseSuggestionViewBinder<T extends View>
         for (int index = 0; index < actionViews.size(); index++) {
             ImageView actionView = actionViews.get(index);
             applySelectableBackground(model, actionView);
-            updateIcon(actionView, actions.get(index).icon,
+            updateIcon(
+                    actionView,
+                    actions.get(index).icon,
                     ChromeColors.getPrimaryIconTintRes(isIncognito(model)));
         }
     }
 
-    /** @return Whether the current {@link BrandedColorScheme} is INCOGNITO. */
+    /**
+     * @return Whether the current {@link BrandedColorScheme} is INCOGNITO.
+     */
     private static boolean isIncognito(PropertyModel model) {
         return model.get(SuggestionCommonProperties.COLOR_SCHEME) == BrandedColorScheme.INCOGNITO;
     }
@@ -240,8 +250,8 @@ public final class BaseSuggestionViewBinder<T extends View>
     }
 
     /**
-     * Access the BaseSuggestionViewMetadata for the given view, creating and attaching a new one
-     * if none is currently associated. Returns an unattached metadata if {@link
+     * Access the BaseSuggestionViewMetadata for the given view, creating and attaching a new one if
+     * none is currently associated. Returns an unattached metadata if {@link
      * OmniboxFeatures#shouldCacheSuggestionResources} returns false.
      */
     private static @NonNull BaseSuggestionViewMetadata ensureViewMetadata(View view) {
@@ -261,7 +271,7 @@ public final class BaseSuggestionViewBinder<T extends View>
     /**
      * Applies selectable drawable from cache (where possible) or resources (otherwise).
      *
-     * The method internally stores the ConstantState for the drawable to be returned to
+     * <p>The method internally stores the ConstantState for the drawable to be returned to
      * accelerate creation of subsequent objects.
      *
      * @param model A property model to look up relevant properties.
@@ -283,9 +293,11 @@ public final class BaseSuggestionViewBinder<T extends View>
         var ctx = view.getContext();
         var background = new ColorDrawable(getSuggestionBackgroundColor(model, view.getContext()));
         // Ripple effect to use when the user interacts with the suggestion.
-        var ripple = OmniboxResourceProvider.resolveAttributeToDrawable(ctx,
-                model.get(SuggestionCommonProperties.COLOR_SCHEME),
-                R.attr.selectableItemBackground);
+        var ripple =
+                OmniboxResourceProvider.resolveAttributeToDrawable(
+                        ctx,
+                        model.get(SuggestionCommonProperties.COLOR_SCHEME),
+                        R.attr.selectableItemBackground);
 
         var layer = new LayerDrawable(new Drawable[] {background, ripple});
 
@@ -312,7 +324,7 @@ public final class BaseSuggestionViewBinder<T extends View>
     /**
      * Checks whether cached FocusableDrawableState should be reset.
      *
-     * TODO(ender): Relocate this to appropriate OmniboxResourceManager class.
+     * <p>TODO(ender): Relocate this to appropriate OmniboxResourceManager class.
      *
      * @param model The model to supply app-driven changes.
      * @param view The view to supply additional information, such as UI configuration.
@@ -395,7 +407,9 @@ public final class BaseSuggestionViewBinder<T extends View>
                 resources.getDimensionPixelSize(R.dimen.omnibox_small_icon_rounding_radius);
     }
 
-    /** @return Cached ConstantState for testing. */
+    /**
+     * @return Cached ConstantState for testing.
+     */
     public static Drawable.ConstantState getFocusableDrawableStateForTesting() {
         return sFocusableDrawableState;
     }

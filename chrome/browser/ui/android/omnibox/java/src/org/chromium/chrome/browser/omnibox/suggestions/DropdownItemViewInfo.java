@@ -15,6 +15,7 @@ import org.chromium.ui.modelutil.PropertyModel;
 public class DropdownItemViewInfo extends MVCListAdapter.ListItem {
     /** Processor managing the item. */
     public final DropdownItemProcessor processor;
+
     /** Group ID this ViewInfo belongs to. */
     public final GroupConfig groupConfig;
 

@@ -14,6 +14,7 @@ import org.chromium.ui.modelutil.PropertyModel.WritableObjectPropertyKey;
 @interface HeaderViewProperties {
     /** The text content to be displayed as a header text. */
     static final WritableObjectPropertyKey<String> TITLE = new WritableObjectPropertyKey<>();
+
     /**
      * The flag to state whether to use the updated padding on suggestion header for omnibox revamp
      * phase 2.

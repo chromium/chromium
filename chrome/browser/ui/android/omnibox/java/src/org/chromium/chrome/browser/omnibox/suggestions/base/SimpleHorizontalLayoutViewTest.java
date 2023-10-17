@@ -106,7 +106,13 @@ public class SimpleHorizontalLayoutViewTest {
         Assert.assertEquals("view height", bottom - top, v.getMeasuredHeight());
     }
 
-    /** LTR layout with dynamic view in the middle. [ LARGE | DYNAMIC |SMALL] */
+    /**
+     * LTR layout with dynamic view in the middle.
+     *
+     * <pre>
+     * [   LARGE   | DYNAMIC         |SMALL]
+     * </pre>
+     */
     @Test
     public void layout_LtrWithDynamicInbetween() {
         final int useContentWidth = 123;
@@ -148,7 +154,13 @@ public class SimpleHorizontalLayoutViewTest {
                 giveContentHeight);
     }
 
-    /** RTL layout with dynamic view in the middle. [SMALL| DYNAMIC | LARGE ] */
+    /**
+     * RTL layout with dynamic view in the middle.
+     *
+     * <pre>
+     * [SMALL| DYNAMIC         |   LARGE   ]
+     * </pre>
+     */
     @Test
     public void layout_RtlWithDynamicInbetween() {
         final int useContentWidth = 234;
@@ -192,7 +204,10 @@ public class SimpleHorizontalLayoutViewTest {
 
     /**
      * LTR layout with dynamic view in the middle, and first fixed-size view element hidden.
-     * [DYNAMIC |SMALL]
+     *
+     * <pre>
+     * [DYNAMIC          |SMALL]
+     * </pre>
      */
     @Test
     public void layout_LtrWithDynamicInbetween_FirstViewHidden() {
@@ -228,8 +243,11 @@ public class SimpleHorizontalLayoutViewTest {
     }
 
     /**
-     * RTL layout with dynamic view in the middle, and last fixed-size view element hidden. [DYNAMIC
-     * | LARGE ]
+     * RTL layout with dynamic view in the middle, and last fixed-size view element hidden.
+     *
+     * <pre>
+     * [DYNAMIC          |   LARGE   ]
+     * </pre>
      */
     @Test
     public void layout_RtlWithDynamicInbetween_LastViewHidden() {
@@ -264,7 +282,13 @@ public class SimpleHorizontalLayoutViewTest {
                 giveContentHeight);
     }
 
-    /** LTR layout with dynamic view positioned first. [ DYNAMIC | LARGE |SMALL] */
+    /**
+     * LTR layout with dynamic view positioned first.
+     *
+     * <pre>
+     * [ DYNAMIC         |   LARGE   |SMALL]
+     * </pre>
+     */
     @Test
     public void layout_LtrWithDynamicFirst() {
         final int useContentWidth = 135;
@@ -306,7 +330,13 @@ public class SimpleHorizontalLayoutViewTest {
                 giveContentHeight);
     }
 
-    /** RTL layout with dynamic view positioned first [ LARGE |SMALL| DYNAMIC ] */
+    /**
+     * RTL layout with dynamic view positioned first
+     *
+     * <pre>
+     * [   LARGE   |SMALL| DYNAMIC         ]
+     * </pre>
+     */
     @Test
     public void layout_RtlWithDynamicFirst() {
         final int useContentWidth = 246;
@@ -348,7 +378,13 @@ public class SimpleHorizontalLayoutViewTest {
                 giveContentHeight);
     }
 
-    /** LTR layout with dynamic view positioned last. [ LARGE |SMALL| DYNAMIC ] */
+    /**
+     * LTR layout with dynamic view positioned last.
+     *
+     * <pre>
+     * [   LARGE   |SMALL| DYNAMIC         ]
+     * </pre>
+     */
     @Test
     public void layout_LtrWithDynamicLast() {
         final int useContentWidth = 147;
@@ -390,7 +426,13 @@ public class SimpleHorizontalLayoutViewTest {
                 giveContentHeight);
     }
 
-    /** RTL layout with dynamic view positioned last. [ DYNAMIC | LARGE |SMALL] */
+    /**
+     * RTL layout with dynamic view positioned last.
+     *
+     * <pre>
+     * [ DYNAMIC         |   LARGE   |SMALL]
+     * </pre>
+     */
     @Test
     public void layout_RtlWithDynamicLast() {
         final int useContentWidth = 258;

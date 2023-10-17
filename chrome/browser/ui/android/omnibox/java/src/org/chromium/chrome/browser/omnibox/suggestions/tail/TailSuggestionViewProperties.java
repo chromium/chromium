@@ -15,9 +15,11 @@ import org.chromium.ui.modelutil.PropertyModel.WritableObjectPropertyKey;
     /** The text content to be displayed as a tail suggestion. */
     static final WritableObjectPropertyKey<SuggestionSpannable> TEXT =
             new WritableObjectPropertyKey<>();
+
     /** The text content to be used to replace contents of the Omnibox. */
     static final WritableObjectPropertyKey<String> FILL_INTO_EDIT =
             new WritableObjectPropertyKey<>();
+
     /** Manager taking care of suggestions alignment. */
     static final WritableObjectPropertyKey<AlignmentManager> ALIGNMENT_MANAGER =
             new WritableObjectPropertyKey<>();

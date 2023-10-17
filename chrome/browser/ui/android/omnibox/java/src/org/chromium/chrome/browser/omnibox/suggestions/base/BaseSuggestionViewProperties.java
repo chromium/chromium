@@ -34,9 +34,7 @@ public @interface BaseSuggestionViewProperties {
         int COMPACT = 1;
     }
 
-    /**
-     * Describes the content and behavior of the interactive Action Icon.
-     */
+    /** Describes the content and behavior of the interactive Action Icon. */
     public static final class Action {
         public final OmniboxDrawableState icon;
         public final Runnable callback;
@@ -49,11 +47,14 @@ public @interface BaseSuggestionViewProperties {
          * @param icon OmniboxDrawableState describing the icon to show.
          * @param description Content description for the action view.
          * @param onClickAnnouncement action announcement for the action view when the action view
-         *         is clicked.
+         *     is clicked.
          * @param callback Callback to invoke when user interacts with the icon.
          */
-        public Action(@NonNull OmniboxDrawableState icon, @NonNull String description,
-                @Nullable String onClickAnnouncement, @NonNull Runnable callback) {
+        public Action(
+                @NonNull OmniboxDrawableState icon,
+                @NonNull String description,
+                @Nullable String onClickAnnouncement,
+                @NonNull Runnable callback) {
             this.icon = icon;
             this.accessibilityDescription = description;
             this.onClickAnnouncement = onClickAnnouncement;
@@ -79,7 +80,10 @@ public @interface BaseSuggestionViewProperties {
          * @param descriptionRes Resource to use as a content description for the action view.
          * @param callback Callback to invoke when user interacts with the icon.
          */
-        public Action(Context context, OmniboxDrawableState icon, @StringRes int descriptionRes,
+        public Action(
+                Context context,
+                OmniboxDrawableState icon,
+                @StringRes int descriptionRes,
                 Runnable callback) {
             this(icon, OmniboxResourceProvider.getString(context, descriptionRes), callback);
         }
@@ -119,10 +123,20 @@ public @interface BaseSuggestionViewProperties {
     public static final WritableObjectPropertyKey<Runnable> ON_TOUCH_DOWN_EVENT =
             new WritableObjectPropertyKey<>();
 
-    public static final PropertyKey[] ALL_UNIQUE_KEYS = new PropertyKey[] {ICON, ACTION_BUTTONS,
-            ON_FOCUS_VIA_SELECTION, DENSITY, ON_CLICK, ON_LONG_CLICK, ON_TOUCH_DOWN_EVENT};
+    public static final PropertyKey[] ALL_UNIQUE_KEYS =
+            new PropertyKey[] {
+                ICON,
+                ACTION_BUTTONS,
+                ON_FOCUS_VIA_SELECTION,
+                DENSITY,
+                ON_CLICK,
+                ON_LONG_CLICK,
+                ON_TOUCH_DOWN_EVENT
+            };
 
-    public static final PropertyKey[] ALL_KEYS = PropertyModel.concatKeys(
-            PropertyModel.concatKeys(ALL_UNIQUE_KEYS, ActionChipsProperties.ALL_UNIQUE_KEYS),
-            SuggestionCommonProperties.ALL_KEYS);
+    public static final PropertyKey[] ALL_KEYS =
+            PropertyModel.concatKeys(
+                    PropertyModel.concatKeys(
+                            ALL_UNIQUE_KEYS, ActionChipsProperties.ALL_UNIQUE_KEYS),
+                    SuggestionCommonProperties.ALL_KEYS);
 }

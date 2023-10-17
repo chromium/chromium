@@ -20,9 +20,11 @@ public class DividerLineProcessor implements DropdownItemProcessor {
      * @param context An Android context.
      */
     public DividerLineProcessor(Context context) {
-        mMinimumHeight = context.getResources().getDimensionPixelSize(R.dimen.divider_height)
-                + context.getResources().getDimensionPixelSize(
-                        R.dimen.omnibox_suggestion_list_divider_line_padding);
+        mMinimumHeight =
+                context.getResources().getDimensionPixelSize(R.dimen.divider_height)
+                        + context.getResources()
+                                .getDimensionPixelSize(
+                                        R.dimen.omnibox_suggestion_list_divider_line_padding);
     }
 
     @Override

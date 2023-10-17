@@ -20,9 +20,8 @@ import org.chromium.chrome.browser.util.KeyNavigationUtil;
 import org.chromium.components.browser_ui.widget.chips.ChipView;
 
 /**
- * Container view for the {@link ChipView}.
- * Chips should be initially horizontally aligned with the Content view and stretch to the end of
- * the encompassing BaseSuggestionView.
+ * Container view for the {@link ChipView}. Chips should be initially horizontally aligned with the
+ * Content view and stretch to the end of the encompassing BaseSuggestionView.
  */
 public class ActionChipsView extends RecyclerView {
     private @Nullable ActionChipsAdapter mAdapter;
@@ -38,9 +37,13 @@ public class ActionChipsView extends RecyclerView {
         setItemAnimator(null);
         setId(R.id.omnibox_actions_carousel);
         setLayoutManager(new LinearLayoutManager(context, LinearLayoutManager.HORIZONTAL, false));
-        setMinimumHeight(getResources().getDimensionPixelSize(
-                R.dimen.omnibox_action_chips_container_height));
-        setPaddingRelative(0, 0, 0,
+        setMinimumHeight(
+                getResources()
+                        .getDimensionPixelSize(R.dimen.omnibox_action_chips_container_height));
+        setPaddingRelative(
+                0,
+                0,
+                0,
                 getResources().getDimensionPixelSize(R.dimen.omnibox_suggestion_content_padding));
 
         final @Px int leadInSpace =
@@ -71,8 +74,8 @@ public class ActionChipsView extends RecyclerView {
     }
 
     /**
-     * Proxy calls to super.onKeyDown; call exposed for testing purposes.
-     * There is no way to detect calls to super using robolectric.
+     * Proxy calls to super.onKeyDown; call exposed for testing purposes. There is no way to detect
+     * calls to super using robolectric.
      */
     @CheckDiscard("Should be inlined except for testing")
     @VisibleForTesting
