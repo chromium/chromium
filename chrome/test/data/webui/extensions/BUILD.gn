@@ -9,8 +9,6 @@ import("../build_webui_tests.gni")
 assert(enable_extensions, "enable extensions check failed")
 
 build_webui_tests("build") {
-  resource_path_prefix = "extensions"
-
   files = [
     "toolbar_test.ts",
     "activity_log_history_item_test.ts",

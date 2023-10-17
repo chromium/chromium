@@ -8,8 +8,6 @@ import("../build_webui_tests.gni")
 assert(!is_chromeos_ash && !is_android)
 
 build_webui_tests("build") {
-  resource_path_prefix = "welcome"
-
   files = [
     "app_chooser_test.ts",
     "module_metrics_test.ts",

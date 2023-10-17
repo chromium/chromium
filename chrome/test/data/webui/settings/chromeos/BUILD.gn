@@ -19,8 +19,6 @@ mojom("test_api_mojom") {
 }
 
 build_webui_tests("build") {
-  resource_path_prefix = "webui_settings_chromeos"
-
   files = [
     "apn_subpage_tests.js",
     "apn_detail_dialog_test.ts",

@@ -71,6 +71,4 @@ build_webui_tests("build_webui_tests") {
     "//ui/webui/resources/js:build_ts",
     "//ui/webui/resources/mojo:build_ts",
   ]
-
-  resource_path_prefix = "chromeos_personalization_app"
 }

@@ -5,8 +5,6 @@
 import("../../build_webui_tests.gni")
 
 build_webui_tests("build") {
-  resource_path_prefix = "side_panel_customize_chrome"
-
   files = [
     "app_test.ts",
     "appearance_test.ts",

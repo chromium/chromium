@@ -8,8 +8,6 @@ import("../build_webui_tests.gni")
 assert(!is_chromeos_ash)
 
 build_webui_tests("build") {
-  resource_path_prefix = "intro"
-
   files = [ "test_intro_browser_proxy.ts" ]
   if (enable_dice_support) {
     files += [

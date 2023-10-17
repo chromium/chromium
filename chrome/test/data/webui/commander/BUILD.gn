@@ -5,8 +5,6 @@
 import("../build_webui_tests.gni")
 
 build_webui_tests("build") {
-  resource_path_prefix = "commander"
-
   files = [
     "commander_app_test.ts",
     "test_commander_browser_proxy.ts",

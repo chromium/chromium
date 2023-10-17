@@ -15,8 +15,6 @@ mojom("mojo_bindings") {
 }
 
 build_webui_tests("build") {
-  resource_path_prefix = "mojo"
-
   static_files = [
     "mojo_file_system_access_test.html",
     "mojo_js_interface_broker_test_bar.html",

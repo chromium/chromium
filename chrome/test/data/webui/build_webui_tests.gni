@@ -105,10 +105,6 @@ template("build_webui_tests") {
   generate_grd("build_grdp") {
     resource_path_prefix = rebase_path(".", "//chrome/test/data/webui")
     grd_prefix = "webui_" + string_replace(resource_path_prefix, "/", "_")
-
-    # TODO(dpapad): Delete `resource_path_prefix` parameter, not needed.
-    not_needed(invoker, [ "resource_path_prefix" ])
-
     out_grd = "$target_gen_dir/resources.grdp"
     deps = [ ":build_ts" ]
     manifest_files =

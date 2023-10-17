@@ -7,8 +7,6 @@ import("../../build_webui_tests.gni")
 assert(is_chromeos_ash)
 
 build_webui_tests("build") {
-  resource_path_prefix = "enterprise_reporting"
-
   files = [ "enterprise_reporting_test.ts" ]
 
   ts_path_mappings = [ "chrome://enterprise-reporting/*|" + rebase_path(

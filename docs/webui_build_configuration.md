@@ -661,10 +661,6 @@ ts_tsconfig_base: See |tsconfig_base| in ts_library(). Optional parameter. If
 ts_definitions: See |definitions| in ts_library(). Optional parameter.
 ts_deps: See |deps| in ts_library(). Required parameter.
 ts_path_mappings: See |path_mappings| in ts_library(). Optional parameter.
-
-Other params:
-resource_path_prefix: See |resource_path_prefix| in generate_grd(). Required
-                      parameter.
 ```
 
 #### **Example**
@@ -672,8 +668,6 @@ resource_path_prefix: See |resource_path_prefix| in generate_grd(). Required
 import("//chrome/test/data/webui/settings/tools/build_webui_tests.gni")
 
 build_webui_tests("build") {
-  resource_path_prefix = "settings"
-
   files = [
     "checkbox_tests.ts",
     "collapse_radio_button_tests.ts",

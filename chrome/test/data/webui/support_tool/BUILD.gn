@@ -7,8 +7,6 @@ import("../build_webui_tests.gni")
 assert(!is_android)
 
 build_webui_tests("build") {
-  resource_path_prefix = "support_tool"
-
   files = [ "support_tool_test.ts" ]
 
   ts_path_mappings =
