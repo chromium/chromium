@@ -9,7 +9,6 @@
 * [lint.md](lint.md)
 * [life_of_a_resource.md](life_of_a_resource.md)
 * [../incremental_install/README.md](../incremental_install/README.md)
-* [//docs/ui/android/bytecode_rewriting.md](/docs/ui/android/bytecode_rewriting.md)
 * [go/doubledown](https://goto.google.com/doubledown) (Googlers only)
 
 See also:

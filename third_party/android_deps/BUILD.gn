@@ -820,8 +820,6 @@ if (!limit_android_deps) {
       "//third_party/androidx:androidx_core_core_java",
       "//third_party/androidx:androidx_fragment_fragment_java",
     ]
-    bytecode_rewriter_target =
-        "//build/android/bytecode:fragment_activity_replacer"
   }
 
   # This is generated, do not edit. Update BuildConfigGenerator.groovy instead.
@@ -846,8 +844,6 @@ if (!limit_android_deps) {
     # https://crbug.com/989505
     jar_excluded_patterns += [ "META-INF/proguard/*" ]
     input_jars_paths = [ "$android_sdk/optional/org.apache.http.legacy.jar" ]
-    bytecode_rewriter_target =
-        "//build/android/bytecode:fragment_activity_replacer"
   }
 
   # This is generated, do not edit. Update BuildConfigGenerator.groovy instead.

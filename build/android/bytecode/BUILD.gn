@@ -4,42 +4,6 @@
 
 import("//build/config/android/rules.gni")
 
-# A bytecode rewriter that replaces all calls to
-# `FragmentActivity Fragment.getActivity()` with
-# `Activity Fragment.getActivity()`.
-java_binary("fragment_activity_replacer") {
-  main_class = "org.chromium.bytecode.FragmentActivityReplacer"
-  deps = [ ":fragment_activity_replacer_java" ]
-  wrapper_script_name = "helper/fragment_activity_replacer"
-}
-
-# A bytecode rewriter that replaces all calls to
-# `FragmentActivity Fragment.getActivity()` with
-# `Activity Fragment.getActivity()`  followed by a cast to FragmentActivity.
-# Prefer :fragment_activity_replacer. This rewriter should only be used for
-# libraries that rely on getActivity() returning a FragmentActivity *and* are
-# not going to be used in an app that contains multiple copies of the AndroidX
-# Fragment library (i.e. WebLayer).
-java_binary("fragment_activity_replacer_single_androidx") {
-  main_class = "org.chromium.bytecode.FragmentActivityReplacer"
-  deps = [ ":fragment_activity_replacer_java" ]
-  wrapper_script_name = "helper/fragment_activity_replacer_single_androidx"
-  wrapper_script_args = [ "--single-androidx" ]
-}
-
-java_library("fragment_activity_replacer_java") {
-  visibility = [ ":*" ]
-  sources = [
-    "java/org/chromium/bytecode/ByteCodeRewriter.java",
-    "java/org/chromium/bytecode/FragmentActivityReplacer.java",
-  ]
-  deps = [
-    "//third_party/android_deps:org_ow2_asm_asm_commons_java",
-    "//third_party/android_deps:org_ow2_asm_asm_java",
-    "//third_party/android_deps:org_ow2_asm_asm_util_java",
-  ]
-}
-
 java_binary("trace_event_adder") {
   main_class = "org.chromium.bytecode.TraceEventAdder"
   deps = [ ":trace_event_adder_java" ]
