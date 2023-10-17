@@ -3,38 +3,34 @@
 // found in the LICENSE file.
 
 import {fakeCriticalFirmwareUpdate, fakeFirmwareUpdate} from 'chrome://accessory-update/fake_data.js';
+import {FirmwareUpdate} from 'chrome://accessory-update/firmware_update.mojom-webui.js';
 import {UpdateCardElement} from 'chrome://accessory-update/update_card.js';
+import {strictQuery} from 'chrome://resources/ash/common/typescript_utils/strict_query.js';
+import {assert} from 'chrome://resources/js/assert.js';
 import {mojoString16ToString} from 'chrome://resources/js/mojo_type_util.js';
 import {assertEquals, assertFalse, assertTrue} from 'chrome://webui-test/chromeos/chai_assert.js';
 import {flushTasks} from 'chrome://webui-test/polymer_test_util.js';
-
-import {isVisible} from '../test_util.js';
+import {isVisible} from 'chrome://webui-test/test_util.js';
 
 export function updateCardTest() {
-  /** @type {?UpdateCardElement} */
-  let updateCardElement = null;
+  let updateCardElement: UpdateCardElement|null = null;
 
   setup(() => {
+    // @ts-ignore
     document.body.innerHTML = window.trustedTypes.emptyHTML;
   });
 
   teardown(() => {
-    if (updateCardElement) {
-      updateCardElement.remove();
-    }
+    updateCardElement?.remove();
     updateCardElement = null;
   });
 
-  /**
-   * @param {!FirmwareUpdate} update
-   * @return {!Promise}
-   */
-  function initializeUpdateList(update) {
+  function initializeUpdateList(update: FirmwareUpdate): Promise<void> {
     assertFalse(!!updateCardElement);
 
     // Add the update card to the DOM.
-    updateCardElement = /** @type {!UpdateCardElement} */ (
-        document.createElement('update-card'));
+    updateCardElement =
+        document.createElement('update-card') as UpdateCardElement;
     assertTrue(!!updateCardElement);
     updateCardElement.update = update;
     document.body.appendChild(updateCardElement);
@@ -42,19 +38,34 @@ export function updateCardTest() {
     return flushTasks();
   }
 
-  function getPriorityTextElement() {
-    return /** @type {!HTMLSpanElement} */ (
-        updateCardElement.shadowRoot.querySelector('#priorityText'));
+  function getNameText(): string {
+    assert(updateCardElement);
+    const name =
+        strictQuery('#name', updateCardElement.shadowRoot, HTMLElement);
+    assertTrue(!!name);
+    return name!.innerText;
+  }
+
+  function getVersionText(): string {
+    assert(updateCardElement);
+    const version =
+        strictQuery('#version', updateCardElement.shadowRoot, HTMLElement);
+    assertTrue(!!version);
+    return version!.innerText;
+  }
+
+  function getPriorityTextElement(): HTMLSpanElement {
+    assert(updateCardElement);
+    return strictQuery(
+        '#priorityText', updateCardElement.shadowRoot, HTMLSpanElement)!;
   }
 
   test('UpdateCardPopulated', () => {
     return initializeUpdateList(fakeFirmwareUpdate).then(() => {
       assertEquals(
-          mojoString16ToString(fakeFirmwareUpdate.deviceName),
-          updateCardElement.$.name.innerText);
+          mojoString16ToString(fakeFirmwareUpdate.deviceName), getNameText());
       assertEquals(
-          `Version ${fakeFirmwareUpdate.deviceVersion}`,
-          updateCardElement.$.version.innerText);
+          `Version ${fakeFirmwareUpdate.deviceVersion}`, getVersionText());
       assertFalse(isVisible(getPriorityTextElement()));
     });
   });
