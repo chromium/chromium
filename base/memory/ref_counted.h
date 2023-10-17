@@ -135,7 +135,7 @@ class BASE_EXPORT RefCountedBase {
 #endif
 
   mutable uint32_t ref_count_ = 0;
-  static_assert(std::is_unsigned<decltype(ref_count_)>::value,
+  static_assert(std::is_unsigned_v<decltype(ref_count_)>,
                 "ref_count_ must be an unsigned type.");
 
 #if DCHECK_IS_ON()

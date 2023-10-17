@@ -284,18 +284,18 @@ TEST_F(JavaObjectArrayReaderTest, InputIteratorRequirements) {
   JavaObjectArrayReader<jobject> reader(array_);
   It i = reader.begin();
 
-  EXPECT_TRUE(std::is_copy_constructible<It>::value);
+  EXPECT_TRUE(std::is_copy_constructible_v<It>);
   It copy = i;
   EXPECT_EQ(copy, i);
   EXPECT_EQ(It(i), i);
 
-  EXPECT_TRUE(std::is_copy_assignable<It>::value);
+  EXPECT_TRUE(std::is_copy_assignable_v<It>);
   It assign = reader.end();
   It& assign2 = (assign = i);
   EXPECT_EQ(assign, i);
   EXPECT_EQ(assign2, assign);
 
-  EXPECT_TRUE(std::is_destructible<It>::value);
+  EXPECT_TRUE(std::is_destructible_v<It>);
 
   // Swappable
   It left = reader.begin(), right = reader.end();

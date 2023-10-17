@@ -44,7 +44,7 @@ struct NeedsScopedRefptrButGetsRawPtr
                            IsRefCountedType<base::RemoveRawRefT<T>>>,
           std::conjunction<base::IsPointer<T>,
                            IsRefCountedType<base::RemovePointerT<T>>>> {
-  static_assert(!std::is_reference<T>::value,
+  static_assert(!std::is_reference_v<T>,
                 "NeedsScopedRefptrButGetsRawPtr requires non-reference type.");
 };
 

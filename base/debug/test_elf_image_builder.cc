@@ -287,8 +287,7 @@ TestElfImage TestElfImageBuilder::Build() {
 // static
 template <typename T>
 uint8_t* TestElfImageBuilder::AppendHdr(const T& hdr, uint8_t* loc) {
-  static_assert(std::is_trivially_copyable<T>::value,
-                "T should be a plain struct");
+  static_assert(std::is_trivially_copyable_v<T>, "T should be a plain struct");
   memcpy(loc, &hdr, sizeof(T));
   return loc + sizeof(T);
 }

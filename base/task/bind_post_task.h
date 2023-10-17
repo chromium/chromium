@@ -68,7 +68,7 @@ OnceCallback<void(Args...)> BindPostTask(
     scoped_refptr<TaskRunner> task_runner,
     OnceCallback<ReturnType(Args...)> callback,
     const Location& location = FROM_HERE) {
-  static_assert(std::is_same<ReturnType, void>::value,
+  static_assert(std::is_same_v<ReturnType, void>,
                 "OnceCallback must have void return type in order to produce a "
                 "closure for PostTask(). Use base::IgnoreResult() to drop the "
                 "return value if desired.");
@@ -89,7 +89,7 @@ RepeatingCallback<void(Args...)> BindPostTask(
     scoped_refptr<TaskRunner> task_runner,
     RepeatingCallback<ReturnType(Args...)> callback,
     const Location& location = FROM_HERE) {
-  static_assert(std::is_same<ReturnType, void>::value,
+  static_assert(std::is_same_v<ReturnType, void>,
                 "RepeatingCallback must have void return type in order to "
                 "produce a closure for PostTask(). Use base::IgnoreResult() to "
                 "drop the return value if desired.");

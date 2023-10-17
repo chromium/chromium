@@ -172,7 +172,7 @@ class BASE_EXPORT ScopedCrashKeyString {
                                    ::base::debug::CrashKeySize::Size1024)
 
 #define SCOPED_CRASH_KEY_BOOL(category, name, data)                       \
-  static_assert(std::is_same<std::decay_t<decltype(data)>, bool>::value,  \
+  static_assert(std::is_same_v<std::decay_t<decltype(data)>, bool>,       \
                 "SCOPED_CRASH_KEY_BOOL must be passed a boolean value."); \
   SCOPED_CRASH_KEY_STRING32(category, name, (data) ? "true" : "false")
 

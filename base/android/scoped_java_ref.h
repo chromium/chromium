@@ -125,7 +125,7 @@ class JavaRef : public JavaRef<jobject> {
   // template parameter.
   template <typename ElementType,
             typename T_ = T,
-            typename = std::enable_if_t<std::is_same<T_, jobjectArray>::value>>
+            typename = std::enable_if_t<std::is_same_v<T_, jobjectArray>>>
   JavaObjectArrayReader<ElementType> ReadElements() const {
     return JavaObjectArrayReader<ElementType>(*this);
   }
@@ -192,7 +192,7 @@ class ScopedJavaLocalRef : public JavaRef<T> {
 
   // Copy conversion constructor.
   template <typename U,
-            typename = std::enable_if_t<std::is_convertible<U, T>::value>>
+            typename = std::enable_if_t<std::is_convertible_v<U, T>>>
   ScopedJavaLocalRef(const ScopedJavaLocalRef<U>& other) : env_(other.env_) {
     JavaRef<T>::SetNewLocalRef(env_, other.obj());
   }
@@ -205,7 +205,7 @@ class ScopedJavaLocalRef : public JavaRef<T> {
 
   // Move conversion constructor.
   template <typename U,
-            typename = std::enable_if_t<std::is_convertible<U, T>::value>>
+            typename = std::enable_if_t<std::is_convertible_v<U, T>>>
   ScopedJavaLocalRef(ScopedJavaLocalRef<U>&& other) : env_(other.env_) {
     JavaRef<T>::steal(std::move(other));
   }
@@ -235,7 +235,7 @@ class ScopedJavaLocalRef : public JavaRef<T> {
 
   // Copy conversion assignment.
   template <typename U,
-            typename = std::enable_if_t<std::is_convertible<U, T>::value>>
+            typename = std::enable_if_t<std::is_convertible_v<U, T>>>
   ScopedJavaLocalRef& operator=(const ScopedJavaLocalRef<U>& other) {
     Reset(other);
     return *this;
@@ -243,7 +243,7 @@ class ScopedJavaLocalRef : public JavaRef<T> {
 
   // Move assignment.
   template <typename U,
-            typename = std::enable_if_t<std::is_convertible<U, T>::value>>
+            typename = std::enable_if_t<std::is_convertible_v<U, T>>>
   ScopedJavaLocalRef& operator=(ScopedJavaLocalRef<U>&& other) {
     env_ = other.env_;
     Reset();
@@ -260,7 +260,7 @@ class ScopedJavaLocalRef : public JavaRef<T> {
   void Reset() { JavaRef<T>::ResetLocalRef(env_); }
 
   template <typename U,
-            typename = std::enable_if_t<std::is_convertible<U, T>::value>>
+            typename = std::enable_if_t<std::is_convertible_v<U, T>>>
   void Reset(const ScopedJavaLocalRef<U>& other) {
     // We can copy over env_ here as |other| instance must be from the same
     // thread as |this| local ref. (See class comment for multi-threading
@@ -316,7 +316,7 @@ class ScopedJavaGlobalRef : public JavaRef<T> {
 
   // Copy conversion constructor.
   template <typename U,
-            typename = std::enable_if_t<std::is_convertible<U, T>::value>>
+            typename = std::enable_if_t<std::is_convertible_v<U, T>>>
   ScopedJavaGlobalRef(const ScopedJavaGlobalRef<U>& other) {
     Reset(other);
   }
@@ -329,7 +329,7 @@ class ScopedJavaGlobalRef : public JavaRef<T> {
 
   // Move conversion constructor.
   template <typename U,
-            typename = std::enable_if_t<std::is_convertible<U, T>::value>>
+            typename = std::enable_if_t<std::is_convertible_v<U, T>>>
   ScopedJavaGlobalRef(ScopedJavaGlobalRef<U>&& other) {
     JavaRef<T>::steal(std::move(other));
   }
@@ -357,7 +357,7 @@ class ScopedJavaGlobalRef : public JavaRef<T> {
 
   // Copy conversion assignment.
   template <typename U,
-            typename = std::enable_if_t<std::is_convertible<U, T>::value>>
+            typename = std::enable_if_t<std::is_convertible_v<U, T>>>
   ScopedJavaGlobalRef& operator=(const ScopedJavaGlobalRef<U>& other) {
     Reset(other);
     return *this;
@@ -365,7 +365,7 @@ class ScopedJavaGlobalRef : public JavaRef<T> {
 
   // Move assignment.
   template <typename U,
-            typename = std::enable_if_t<std::is_convertible<U, T>::value>>
+            typename = std::enable_if_t<std::is_convertible_v<U, T>>>
   ScopedJavaGlobalRef& operator=(ScopedJavaGlobalRef<U>&& other) {
     Reset();
     JavaRef<T>::steal(std::move(other));
@@ -381,7 +381,7 @@ class ScopedJavaGlobalRef : public JavaRef<T> {
   void Reset() { JavaRef<T>::ResetGlobalRef(); }
 
   template <typename U,
-            typename = std::enable_if_t<std::is_convertible<U, T>::value>>
+            typename = std::enable_if_t<std::is_convertible_v<U, T>>>
   void Reset(const ScopedJavaGlobalRef<U>& other) {
     Reset(nullptr, other.obj());
   }
