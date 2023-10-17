@@ -1,30 +1,28 @@
-caption: Make the <ph name="GOOGLE_DRIVE_NAME">Google Drive</ph> File Sync
-  feature visible and available to toggle on supported devices in the
-  <ph name="PRODUCT_OS_NAME">$2<ex>Google ChromeOS</ex></ph> Files app
+caption: <ph name="PRODUCT_OS_NAME">$2<ex>ChromeOS</ex></ph> file sync
 default: visible
 desc: |-
-  <ph name="GOOGLE_DRIVE_NAME">Google Drive</ph> file sync automatically makes
-  files in a user's My drive available offline (space permitting) on supported
-  devices. After initially making all files available offline, all new files
-  will also be made available offline automatically. Once the feature is on, if
-  later there is insufficient space to keep the feature on, all new files will
-  stop being automatically made available offline, however, a user can still
-  manually toggle items.
+  <ph name="PRODUCT_OS_NAME">$2<ex>ChromeOS</ex></ph> file sync automatically
+  makes <ph name="GOOGLE_DRIVE_NAME">Google Drive</ph> files in a user's “My
+  Drive” available offline (space permitting) on
+  <ph name="CHROMEBOOK_PLUS_NAME">Chromebook Plus</ph> devices.
 
-  Setting the policy to <ph name="POLICY_VALUE_VISIBLE">visible</ph> shows the
-  file sync functionality in the Files app and in the Settings page. Users are
-  still required to toggle the file sync functionality on themselves.
+  Once the feature is on, all new files will also be made available offline
+  automatically. If later there is insufficient space, all new files will stop
+  being made available offline automatically. However, the user can still
+  manually make items available offline.
 
-  Setting the policy to <ph name="POLICY_VALUE_DISABLED">disabled</ph> will turn
-  off the file sync functionality if previously turned on by the user and will
-  also hide the feature from Files app and Settings so the user can’t re-enable
-  it. If there are any existing files that were made available offline by the
-  user, they will remain available offline and the user can manually make
-  individual files available offline (they will not be automatically made
-  available offline).
+  Setting the policy to <ph name="POLICY_VALUE_VISIBLE">visible</ph>: Shows
+  file sync in the Files app and Settings. The user can turn file sync on or
+  off.
 
-  If the policy is unset, it will use
-  <ph name="POLICY_VALUE_VISIBLE">visible</ph> as the default value.
+  Setting the policy to <ph name="POLICY_VALUE_DISABLEDE">disabled</ph>: Turns
+  off file sync if it was previously turned on by the user. Hides the feature
+  from the Files app and Settings so the user can’t turn it back on. Existing
+  files that were made available offline by the user will remain available
+  offline. The user can still manually make items available offline.
+
+  If the policy is unset: <ph name="POLICY_VALUE_VISIBLE">visible</ph> is the
+  default selection.
 example_value: visible
 features:
   dynamic_refresh: false
@@ -32,10 +30,10 @@ features:
 supported_on:
 - chrome_os:119-
 items:
-- caption: The user can't see any of the UI relating to the <ph name="GOOGLE_DRIVE_NAME">Google Drive</ph> File Sync feature.
+- caption: The user can't see any of the UI relating to the <ph name="PRODUCT_OS_NAME">$2<ex>ChromeOS</ex></ph> file sync feature.
   name: Disabled
   value: disabled
-- caption: The user can use the <ph name="GOOGLE_DRIVE_NAME">Google Drive</ph> File Sync feature.
+- caption: The user can use the <ph name="PRODUCT_OS_NAME">$2<ex>ChromeOS</ex></ph> file sync feature.
   name: Visible
   value: visible
 owners:
