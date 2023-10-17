@@ -154,8 +154,7 @@ bool CdmStorageDatabase::DeleteFile(const blink::StorageKey& storage_key,
 }
 
 bool CdmStorageDatabase::DeleteDataForStorageKey(
-    const blink::StorageKey& storage_key,
-    const media::CdmType& cdm_type) {
+    const blink::StorageKey& storage_key) {
   DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
 
   if (OpenDatabase() != CdmStorageOpenError::kOk) {

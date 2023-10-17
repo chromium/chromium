@@ -133,12 +133,11 @@ void CdmStorageManager::DeleteFile(const blink::StorageKey& storage_key,
 
 void CdmStorageManager::DeleteDataForStorageKey(
     const blink::StorageKey& storage_key,
-    const media::CdmType& cdm_type,
     base::OnceCallback<void(bool)> callback) {
   DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
 
   db_.AsyncCall(&CdmStorageDatabase::DeleteDataForStorageKey)
-      .WithArgs(storage_key, cdm_type)
+      .WithArgs(storage_key)
       .Then(base::BindOnce(&CdmStorageManager::DidDeleteForStorageKey,
                            weak_factory_.GetWeakPtr(), std::move(callback)));
 }

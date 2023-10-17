@@ -53,7 +53,6 @@ class CONTENT_EXPORT CdmStorageManager : public media::mojom::CdmStorage {
                   base::OnceCallback<void(bool)> callback);
 
   void DeleteDataForStorageKey(const blink::StorageKey& storage_key,
-                               const media::CdmType& cdm_type,
                                base::OnceCallback<void(bool)> callback);
 
   void DeleteDatabase();
