@@ -13,9 +13,12 @@
 #include "base/time/clock.h"
 #include "base/time/default_clock.h"
 #include "base/time/time.h"
+#include "chrome/browser/content_settings/cookie_settings_factory.h"
 #include "chrome/browser/dips/dips_bounce_detector.h"
 #include "chrome/browser/dips/dips_service.h"
 #include "chrome/browser/dips/dips_utils.h"
+#include "chrome/browser/profiles/profile.h"
+#include "chrome/browser/tpcd/experiment/tpcd_experiment_features.h"
 #include "chrome/browser/tpcd/heuristics/opener_heuristic_metrics.h"
 #include "chrome/browser/tpcd/heuristics/opener_heuristic_utils.h"
 #include "content/public/browser/navigation_handle.h"
@@ -138,9 +141,10 @@ OpenerHeuristicTabHelper::PopupObserver::PopupObserver(
       opener_page_id_(opener->page_id()),
       opener_source_id_(
           opener->web_contents()->GetPrimaryMainFrame()->GetPageUkmSourceId()),
-      opener_url_(opener->web_contents()
-                      ->GetPrimaryMainFrame()
-                      ->GetLastCommittedURL()) {}
+      opener_url_(
+          opener->web_contents()->GetPrimaryMainFrame()->GetLastCommittedURL()),
+      cookie_settings_(CookieSettingsFactory::GetForProfile(
+          Profile::FromBrowserContext(web_contents->GetBrowserContext()))) {}
 
 OpenerHeuristicTabHelper::PopupObserver::~PopupObserver() = default;
 
@@ -162,6 +166,13 @@ void OpenerHeuristicTabHelper::PopupObserver::EmitPastInteractionIfReady() {
   if (!time_since_interaction_.has_value() || !initial_source_id_.has_value()) {
     // Not enough information to emit event yet.
     return;
+  }
+
+  base::TimeDelta grant_duration =
+      tpcd::experiment::kTpcdWritePopupPastInteractionHeuristicsGrants.Get();
+  if (grant_duration.is_positive()) {
+    cookie_settings_->SetTemporaryCookieGrantForHeuristic(
+        initial_url_, opener_url_, grant_duration);
   }
 
   auto has_iframe = GetOpenerHasSameSiteIframe(initial_url_);
@@ -222,6 +233,13 @@ void OpenerHeuristicTabHelper::PopupObserver::FrameReceivedUserActivation(
     // Not sure if this can happen. What happens if the user clicks before the
     // popup loads its initial URL?
     return;
+  }
+
+  base::TimeDelta grant_duration =
+      tpcd::experiment::kTpcdWritePopupCurrentInteractionHeuristicsGrants.Get();
+  if (grant_duration.is_positive()) {
+    cookie_settings_->SetTemporaryCookieGrantForHeuristic(
+        initial_url_, opener_url_, grant_duration);
   }
 
   auto time_since_committed = GetClock()->Now() - *commit_time_;

@@ -328,10 +328,6 @@ NET_EXPORT BASE_DECLARE_FEATURE(kTpcdSupportSettings);
 // component updater.
 NET_EXPORT BASE_DECLARE_FEATURE(kTpcdMetadataGrants);
 
-// Whether temporary storage access grants awarded by all 3PCD heuristics should
-// be considered to override cookie behavior.
-NET_EXPORT BASE_DECLARE_FEATURE(kTpcdReadHeuristicsGrants);
-
 // Whether ALPS parsing is on for any type of frame.
 NET_EXPORT BASE_DECLARE_FEATURE(kAlpsParsing);
 

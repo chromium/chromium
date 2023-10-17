@@ -5,17 +5,24 @@
 #include "base/functional/callback_forward.h"
 #include "base/memory/raw_ptr.h"
 #include "base/test/bind.h"
+#include "base/test/scoped_feature_list.h"
 #include "base/test/simple_test_clock.h"
 #include "base/time/time.h"
 #include "build/build_config.h"
+#include "chrome/browser/content_settings/cookie_settings_factory.h"
 #include "chrome/browser/dips/dips_service.h"
 #include "chrome/browser/dips/dips_storage.h"
 #include "chrome/browser/dips/dips_test_utils.h"
 #include "chrome/browser/dips/dips_utils.h"
+#include "chrome/browser/profiles/profile.h"
 #include "chrome/browser/tpcd/heuristics/opener_heuristic_metrics.h"
 #include "chrome/browser/tpcd/heuristics/opener_heuristic_tab_helper.h"
 #include "chrome/browser/tpcd/heuristics/opener_heuristic_utils.h"
 #include "chrome/test/base/chrome_test_utils.h"
+#include "components/content_settings/core/browser/cookie_settings.h"
+#include "components/content_settings/core/common/features.h"
+#include "components/content_settings/core/common/pref_names.h"
+#include "components/prefs/pref_service.h"
 #include "components/ukm/test_ukm_recorder.h"
 #include "content/public/browser/navigation_handle.h"
 #include "content/public/browser/render_frame_host.h"
@@ -27,6 +34,10 @@
 #include "services/metrics/public/cpp/ukm_source.h"
 #include "services/metrics/public/cpp/ukm_source_id.h"
 #include "third_party/blink/public/common/switches.h"
+
+#if !BUILDFLAG(IS_ANDROID)
+#include "chrome/browser/ui/browser.h"
+#endif  // !BUILDFLAG(IS_ANDROID)
 
 using content::NavigationHandle;
 using content::RenderFrameHost;
@@ -94,6 +105,22 @@ class NavigationFinishObserver : public WebContentsObserver {
 
 class OpenerHeuristicBrowserTest : public PlatformBrowserTest {
  public:
+  explicit OpenerHeuristicBrowserTest(
+      bool current_interaction_grant_enabled = false,
+      bool past_interaction_grant_enabled = false) {
+    std::string current_interaction_grant_enabled_ttl =
+        current_interaction_grant_enabled ? "10s" : "0s";
+    std::string past_interaction_grant_enabled_ttl =
+        past_interaction_grant_enabled ? "10s" : "0s";
+    feature_list_.InitAndEnableFeatureWithParameters(
+        content_settings::features::kTpcdHeuristicsGrants,
+        {{"TpcdReadHeuristicsGrants", "true"},
+         {"TpcdWritePopupCurrentInteractionHeuristicsGrants",
+          current_interaction_grant_enabled_ttl},
+         {"TpcdWritePopupPastInteractionHeuristicsGrants",
+          past_interaction_grant_enabled_ttl}});
+  }
+
   void SetUp() override {
     OpenerHeuristicTabHelper::SetClockForTesting(&clock_);
     PlatformBrowserTest::SetUp();
@@ -186,6 +213,7 @@ class OpenerHeuristicBrowserTest : public PlatformBrowserTest {
   }
 
   base::SimpleTestClock clock_;
+  base::test::ScopedFeatureList feature_list_;
 };
 
 IN_PROC_BROWSER_TEST_F(OpenerHeuristicBrowserTest,
@@ -300,6 +328,52 @@ IN_PROC_BROWSER_TEST_F(OpenerHeuristicBrowserTest,
   EXPECT_THAT(entries[0].metrics,
               ElementsAre(Pair("HoursSinceLastInteraction", 3)));
 }
+
+// chrome/browser/ui/browser.h (for changing profile prefs) is not available on
+// Android.
+#if !BUILDFLAG(IS_ANDROID)
+class OpenerHeuristicPastInteractionGrantBrowserTest
+    : public OpenerHeuristicBrowserTest,
+      public testing::WithParamInterface<bool> {
+ public:
+  OpenerHeuristicPastInteractionGrantBrowserTest()
+      : OpenerHeuristicBrowserTest(
+            /*current_interaction_grant_enabled=*/false,
+            /*past_interaction_grant_enabled=*/GetParam()) {}
+
+  void SetUpOnMainThread() override {
+    OpenerHeuristicBrowserTest::SetUpOnMainThread();
+
+    browser()->profile()->GetPrefs()->SetInteger(
+        prefs::kCookieControlsMode,
+        static_cast<int>(
+            content_settings::CookieControlsMode::kBlockThirdParty));
+    browser()->profile()->GetPrefs()->SetBoolean(
+        prefs::kTrackingProtection3pcdEnabled, true);
+  }
+};
+
+IN_PROC_BROWSER_TEST_P(OpenerHeuristicPastInteractionGrantBrowserTest,
+                       PopupPastInteractionIsReported_WithStorageAccessGrant) {
+  GURL opener_url = embedded_test_server()->GetURL("a.test", "/title1.html");
+  GURL popup_url = embedded_test_server()->GetURL("b.test", "/title1.html");
+  RecordInteraction(popup_url, clock_.Now() - base::Hours(3));
+  ASSERT_TRUE(content::NavigateToURL(GetActiveWebContents(), opener_url));
+  ASSERT_TRUE(OpenPopup(popup_url).has_value());
+
+  // Expect that cookie access was granted for the Popup With Past Interaction
+  // heuristic, if the feature is enabled.
+  auto cookie_settings = CookieSettingsFactory::GetForProfile(
+      Profile::FromBrowserContext(GetActiveWebContents()->GetBrowserContext()));
+  EXPECT_EQ(cookie_settings->GetCookieSetting(
+                popup_url, opener_url, net::CookieSettingOverrides(), nullptr),
+            GetParam() ? CONTENT_SETTING_ALLOW : CONTENT_SETTING_BLOCK);
+}
+
+INSTANTIATE_TEST_SUITE_P(All,
+                         OpenerHeuristicPastInteractionGrantBrowserTest,
+                         ::testing::Values(true, false));
+#endif  // !BUILDFLAG(IS_ANDROID)
 
 // TODO(crbug.com/1457925): Test is flaky on Android.
 #if BUILDFLAG(IS_ANDROID)
@@ -492,6 +566,53 @@ IN_PROC_BROWSER_TEST_F(OpenerHeuristicBrowserTest, PopupInteraction) {
   // The user clicked on *final_url*, which was the third URL.
   EXPECT_EQ(entries[0].metrics["UrlIndex"], 3);
 }
+
+// chrome/browser/ui/browser.h (for changing profile prefs) is not available on
+// Android.
+#if !BUILDFLAG(IS_ANDROID)
+class OpenerHeuristicCurrentInteractionGrantBrowserTest
+    : public OpenerHeuristicBrowserTest,
+      public testing::WithParamInterface<bool> {
+ public:
+  OpenerHeuristicCurrentInteractionGrantBrowserTest()
+      : OpenerHeuristicBrowserTest(
+            /*current_interaction_grant_enabled=*/GetParam(),
+            /*past_interaction_grant_enabled=*/false) {}
+
+  void SetUpOnMainThread() override {
+    OpenerHeuristicBrowserTest::SetUpOnMainThread();
+
+    browser()->profile()->GetPrefs()->SetInteger(
+        prefs::kCookieControlsMode,
+        static_cast<int>(
+            content_settings::CookieControlsMode::kBlockThirdParty));
+    browser()->profile()->GetPrefs()->SetBoolean(
+        prefs::kTrackingProtection3pcdEnabled, true);
+  }
+};
+
+IN_PROC_BROWSER_TEST_P(OpenerHeuristicCurrentInteractionGrantBrowserTest,
+                       PopupInteractionWithStorageAccessGrant) {
+  GURL opener_url = embedded_test_server()->GetURL("a.test", "/title1.html");
+  GURL popup_url = embedded_test_server()->GetURL("b.test", "/title1.html");
+  ASSERT_TRUE(content::NavigateToURL(GetActiveWebContents(), opener_url));
+  auto maybe_popup = OpenPopup(popup_url);
+  clock_.Advance(base::Minutes(1));
+  SimulateMouseClick(*maybe_popup);
+
+  // Expect that cookie access was granted for the Popup With Current
+  // Interaction heuristic.
+  auto cookie_settings = CookieSettingsFactory::GetForProfile(
+      Profile::FromBrowserContext(GetActiveWebContents()->GetBrowserContext()));
+  EXPECT_EQ(cookie_settings->GetCookieSetting(
+                popup_url, opener_url, net::CookieSettingOverrides(), nullptr),
+            GetParam() ? CONTENT_SETTING_ALLOW : CONTENT_SETTING_BLOCK);
+}
+
+INSTANTIATE_TEST_SUITE_P(All,
+                         OpenerHeuristicCurrentInteractionGrantBrowserTest,
+                         ::testing::Values(true, false));
+#endif  // !BUILDFLAG(IS_ANDROID)
 
 IN_PROC_BROWSER_TEST_F(OpenerHeuristicBrowserTest,
                        PopupInteractionIsOnlyReportedOnce) {

@@ -20,6 +20,16 @@ extern const base::FeatureParam<bool> kDisable3PCookies;
 extern const base::FeatureParam<base::TimeDelta> kDecisionDelayTime;
 extern const base::FeatureParam<bool> kForceEligibleForTesting;
 
+// Whether to create a short-term grant when observing the Popup With Current
+// Interaction scenario.
+extern const base::FeatureParam<base::TimeDelta>
+    kTpcdWritePopupCurrentInteractionHeuristicsGrants;
+
+// Whether to create a short-term grant when observing the Popup With Past
+// Interaction scenario.
+extern const base::FeatureParam<base::TimeDelta>
+    kTpcdWritePopupPastInteractionHeuristicsGrants;
+
 }  // namespace tpcd::experiment
 
 #endif  // CHROME_BROWSER_TPCD_EXPERIMENT_TPCD_EXPERIMENT_FEATURES_H_

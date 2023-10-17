@@ -275,6 +275,8 @@ class CookieSettingsBase {
 
   bool ShouldConsider3pcdMetadataGrantsSettings() const;
 
+  bool ShouldConsider3pcdHeuristicsGrantsSettings() const;
+
   // Returns true iff the query should consider Storage Access API permission
   // grants.
   bool ShouldConsiderStorageAccessGrants(

@@ -6,6 +6,7 @@
 
 #include "base/metrics/field_trial_params.h"
 #include "base/time/time.h"
+#include "components/content_settings/core/common/features.h"
 #include "content/public/common/content_features.h"
 
 namespace tpcd::experiment {
@@ -36,5 +37,17 @@ const base::FeatureParam<bool> kForceEligibleForTesting{
     &features::kCookieDeprecationFacilitatedTesting,
     /*name=*/kForceEligibleForTestingName,
     /*default_value=*/false};
+
+const base::FeatureParam<base::TimeDelta>
+    kTpcdWritePopupCurrentInteractionHeuristicsGrants{
+        &content_settings::features::kTpcdHeuristicsGrants,
+        /*name=*/"TpcdWritePopupCurrentInteractionHeuristicsGrants",
+        base::TimeDelta()};
+
+const base::FeatureParam<base::TimeDelta>
+    kTpcdWritePopupPastInteractionHeuristicsGrants{
+        &content_settings::features::kTpcdHeuristicsGrants,
+        /*name=*/"TpcdWritePopupPastInteractionHeuristicsGrants",
+        base::TimeDelta()};
 
 }  // namespace tpcd::experiment
