@@ -7,6 +7,7 @@
 #include "ash/constants/ash_features.h"
 #include "ash/constants/ash_pref_names.h"
 #include "ash/constants/ash_switches.h"
+#include "base/check.h"
 #include "base/feature_list.h"
 #include "base/metrics/histogram_functions.h"
 #include "base/no_destructor.h"
@@ -17,11 +18,11 @@
 #include "chrome/browser/ash/profiles/profile_helper.h"
 #include "chrome/browser/browser_process.h"
 #include "chrome/browser/ui/ash/auth/legacy_fingerprint_engine.h"
-#include "chrome/browser/ui/webui/ash/settings/search/search_tag_registry.h"
 #include "chrome/browser/ui/webui/ash/settings/pages/privacy/metrics_consent_handler.h"
-#include "chrome/browser/ui/webui/settings/ash/os_settings_features_util.h"
 #include "chrome/browser/ui/webui/ash/settings/pages/privacy/peripheral_data_access_handler.h"
 #include "chrome/browser/ui/webui/ash/settings/pages/privacy/privacy_hub_handler.h"
+#include "chrome/browser/ui/webui/ash/settings/search/search_tag_registry.h"
+#include "chrome/browser/ui/webui/settings/ash/os_settings_features_util.h"
 #include "chrome/browser/ui/webui/settings/settings_secure_dns_handler.h"
 #include "chrome/browser/ui/webui/settings/shared_settings_localized_strings_provider.h"
 #include "chrome/browser/ui/webui/webui_util.h"
@@ -308,9 +309,17 @@ PrivacySection::PrivacySection(Profile* profile,
                                SearchTagRegistry* search_tag_registry,
                                PrefService* pref_service)
     : OsSettingsSection(profile, search_tag_registry),
+      sync_subsection_(
+          ash::features::IsOsSettingsRevampWayfindingEnabled()
+              ? absl::make_optional<SyncSection>(profile, search_tag_registry)
+              : absl::nullopt),
       pref_service_(pref_service),
       auth_performer_(UserDataAuthClient::Get()),
       fp_engine_(&auth_performer_) {
+  if (ash::features::IsOsSettingsRevampWayfindingEnabled()) {
+    CHECK(sync_subsection_);
+  }
+
   SearchTagRegistry::ScopedTagUpdater updater = registry()->StartUpdate();
   updater.AddSearchTags(GetPrivacySearchConcepts());
 #if BUILDFLAG(GOOGLE_CHROME_BRANDING)
@@ -354,6 +363,12 @@ void PrivacySection::AddHandlers(content::WebUI* web_ui) {
 
   if (IsSecureDnsAvailable())
     web_ui->AddMessageHandler(std::make_unique<::settings::SecureDnsHandler>());
+
+  // `sync_subsection_` is initialized only if the feature revamp wayfinding is
+  // enabled.
+  if (sync_subsection_) {
+    sync_subsection_->AddHandlers(web_ui);
+  }
 }
 
 void PrivacySection::AddLoadTimeData(content::WebUIDataSource* html_source) {
@@ -515,6 +530,12 @@ void PrivacySection::AddLoadTimeData(content::WebUIDataSource* html_source) {
             l10n_util::GetStringUTF16(IDS_INSTALLED_PRODUCT_OS_NAME)));
     // TODO(dkuzmin): add learn more link here once available b/190964241
   }
+
+  // `sync_subsection_` is initialized only if the feature revamp wayfinding is
+  // enabled.
+  if (sync_subsection_) {
+    sync_subsection_->AddLoadTimeData(html_source);
+  }
 }
 
 int PrivacySection::GetSectionNameMessageId() const {
@@ -634,6 +655,12 @@ void PrivacySection::RegisterHierarchy(HierarchyGenerator* generator) const {
       mojom::Subpage::kPrivacyHubMicrophone, mojom::SearchResultIcon::kShield,
       mojom::SearchResultDefaultRank::kMedium,
       mojom::kPrivacyHubMicrophoneSubpagePath);
+
+  // `sync_subsection_` is initialized only if the feature revamp wayfinding is
+  // enabled.
+  if (sync_subsection_) {
+    sync_subsection_->RegisterHierarchy(generator);
+  }
 }
 
 bool PrivacySection::AreFingerprintSettingsAllowed() {

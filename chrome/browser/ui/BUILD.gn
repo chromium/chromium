@@ -3451,6 +3451,8 @@ static_library("ui") {
       "webui/ash/settings/pages/privacy/privacy_hub_handler.h",
       "webui/ash/settings/pages/privacy/privacy_section.cc",
       "webui/ash/settings/pages/privacy/privacy_section.h",
+      "webui/ash/settings/pages/privacy/sync_section.cc",
+      "webui/ash/settings/pages/privacy/sync_section.h",
       "webui/ash/settings/pages/reset/reset_section.cc",
       "webui/ash/settings/pages/reset/reset_section.h",
       "webui/ash/settings/pages/search/search_section.cc",
