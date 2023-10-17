@@ -398,7 +398,7 @@ class COMPONENT_EXPORT(CHROMEOS_ASH_COMPONENTS_DRIVEFS) PinningManager
   // After a file has been pinned, this ensures the in progress map has the item
   // emplaced. Note the file being pinned is just an update in drivefs, not the
   // actually completion of the file being downloaded, that is monitored via
-  // `OnSyncingStatusUpdate`.
+  // `OnItemProgress`.
   void OnFilePinned(Id id, const Path& path, drive::FileError status);
 
   // Invoked at a regular interval to look at the map of in progress items and
@@ -534,7 +534,6 @@ class COMPONENT_EXPORT(CHROMEOS_ASH_COMPONENTS_DRIVEFS) PinningManager
   FRIEND_TEST_ALL_PREFIXES(DriveFsPinningManagerTest, Update);
   FRIEND_TEST_ALL_PREFIXES(DriveFsPinningManagerTest, Remove);
   FRIEND_TEST_ALL_PREFIXES(DriveFsPinningManagerTest, OnSyncingEvent);
-  FRIEND_TEST_ALL_PREFIXES(DriveFsPinningManagerTest, OnSyncingStatusUpdate);
   FRIEND_TEST_ALL_PREFIXES(DriveFsPinningManagerTest, OnItemProgress);
   FRIEND_TEST_ALL_PREFIXES(DriveFsPinningManagerTest, CanPin);
   FRIEND_TEST_ALL_PREFIXES(DriveFsPinningManagerTest, OnFileCreated);
