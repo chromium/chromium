@@ -10,6 +10,7 @@
 
 #import "base/ios/block_types.h"
 #import "ios/chrome/browser/favicon/favicon_loader.h"
+#import "url/gurl.h"
 
 class Browser;
 class FaviconLoader;
@@ -43,6 +44,9 @@ class TabResumptionHelper {
  private:
   // Bool that tracks if a most recent tab item can be displayed.
   bool can_show_most_recent_item_ = true;
+  // Last distant tab resumption item URL.
+  GURL last_distant_item_url_;
+
   // The owning Browser.
   raw_ptr<Browser> browser_ = nullptr;
   // Loads favicons.

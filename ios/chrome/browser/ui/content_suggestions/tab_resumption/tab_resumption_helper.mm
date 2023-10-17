@@ -140,9 +140,12 @@ void TabResumptionHelper::LastTabResumptionItem(
     LastActiveDistantTab last_distant_tab = GetLastActiveDistantTab(
         synced_sessions.get(), TabResumptionForXDevicesTimeThreshold());
     if (last_distant_tab.tab) {
-      session = last_distant_tab.session;
       tab = last_distant_tab.tab;
-      last_synced_tab_synced_time = last_distant_tab.tab->last_active_time;
+      if (last_distant_item_url_ != tab->virtual_url) {
+        last_distant_item_url_ = tab->virtual_url;
+        session = last_distant_tab.session;
+        last_synced_tab_synced_time = tab->last_active_time;
+      }
     }
   }
 
