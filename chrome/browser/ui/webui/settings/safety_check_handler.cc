@@ -430,7 +430,7 @@ std::u16string SafetyCheckHandler::GetStringForUpdates(UpdateStatus status) {
     case UpdateStatus::kDisabledByAdmin:
       return l10n_util::GetStringFUTF16(
           IDS_SETTINGS_SAFETY_CHECK_UPDATES_DISABLED_BY_ADMIN,
-          base::ASCIIToUTF16(chrome::kWhoIsMyAdministratorHelpURL));
+          chrome::kWhoIsMyAdministratorHelpURL);
     // This status is only used in ChromeOS.
     case UpdateStatus::kUpdateToRollbackVersionDisallowed:
       return l10n_util::GetStringUTF16(
@@ -441,7 +441,7 @@ std::u16string SafetyCheckHandler::GetStringForUpdates(UpdateStatus status) {
     case UpdateStatus::kFailed:
       return l10n_util::GetStringFUTF16(
           IDS_SETTINGS_SAFETY_CHECK_UPDATES_FAILED,
-          base::ASCIIToUTF16(chrome::kChromeFixUpdateProblems));
+          chrome::kChromeFixUpdateProblems);
     case UpdateStatus::kUnknown:
       return VersionUI::GetAnnotatedVersionStringForUi();
     // This state is only used on Android for recording metrics. This codepath
@@ -469,7 +469,7 @@ std::u16string SafetyCheckHandler::GetStringForSafeBrowsing(
     case SafeBrowsingStatus::kDisabledByAdmin:
       return l10n_util::GetStringFUTF16(
           IDS_SETTINGS_SAFETY_CHECK_SAFE_BROWSING_DISABLED_BY_ADMIN,
-          base::ASCIIToUTF16(chrome::kWhoIsMyAdministratorHelpURL));
+          chrome::kWhoIsMyAdministratorHelpURL);
     case SafeBrowsingStatus::kDisabledByExtension:
       return l10n_util::GetStringUTF16(
           IDS_SETTINGS_SAFETY_CHECK_SAFE_BROWSING_DISABLED_BY_EXTENSION);

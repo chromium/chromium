@@ -431,10 +431,10 @@ void AboutSection::AddLoadTimeData(content::WebUIDataSource* html_source) {
           l10n_util::GetStringUTF16(IDS_ABOUT_VERSION_COPYRIGHT),
           base::Time::Now()));
 
-  html_source->AddString("aboutProductLicenseChromium",
-                         l10n_util::GetStringFUTF16(
-                             IDS_VERSION_UI_LICENSE_CHROMIUM,
-                             base::ASCIIToUTF16(chrome::kChromiumProjectURL)));
+  html_source->AddString(
+      "aboutProductLicenseChromium",
+      l10n_util::GetStringFUTF16(IDS_VERSION_UI_LICENSE_CHROMIUM,
+                                 chrome::kChromiumProjectURL));
   html_source->AddString(
       "aboutProductLicenseOther",
       l10n_util::GetStringUTF16(IDS_VERSION_UI_LICENSE_OTHER));
@@ -460,11 +460,11 @@ void AboutSection::AddLoadTimeData(content::WebUIDataSource* html_source) {
   html_source->AddBoolean("isHostnameSettingEnabled",
                           features::IsHostnameSettingEnabled());
 
-  html_source->AddString("endOfLifeMessage",
-                         l10n_util::GetStringFUTF16(
-                             IDS_SETTINGS_ABOUT_PAGE_LAST_UPDATE_MESSAGE,
-                             ui::GetChromeOSDeviceName(),
-                             base::ASCIIToUTF16(chrome::kEolNotificationURL)));
+  html_source->AddString(
+      "endOfLifeMessage",
+      l10n_util::GetStringFUTF16(IDS_SETTINGS_ABOUT_PAGE_LAST_UPDATE_MESSAGE,
+                                 ui::GetChromeOSDeviceName(),
+                                 chrome::kEolNotificationURL));
 
   html_source->AddString("eolIncentiveOfferTitle",
                          l10n_util::GetStringUTF16(

@@ -112,7 +112,7 @@ void StorageSection::AddLoadTimeData(content::WebUIDataSource* html_source) {
       "storageAndroidAppsExternalDrivesNote",
       l10n_util::GetStringFUTF16(
           IDS_SETTINGS_STORAGE_ANDROID_APPS_ACCESS_EXTERNAL_DRIVES_NOTE,
-          base::ASCIIToUTF16(chrome::kArcExternalStorageLearnMoreURL)));
+          chrome::kArcExternalStorageLearnMoreURL));
 
   html_source->AddBoolean("isExternalStorageEnabled",
                           IsExternalStorageEnabled(profile()));

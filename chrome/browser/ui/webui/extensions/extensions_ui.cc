@@ -394,9 +394,8 @@ content::WebUIDataSource* CreateAndAddExtensionsSource(Profile* profile,
                              GURL(chrome::kRemoveNonCWSExtensionURL),
                              g_browser_process->GetApplicationLocale())
                              .spec()));
-  source->AddString(
-      "enhancedSafeBrowsingWarningHelpUrl",
-      base::ASCIIToUTF16(chrome::kCwsEnhancedSafeBrowsingLearnMoreURL));
+  source->AddString("enhancedSafeBrowsingWarningHelpUrl",
+                    chrome::kCwsEnhancedSafeBrowsingLearnMoreURL);
 #if BUILDFLAG(IS_CHROMEOS_ASH)
   source->AddString(
       "kioskDisableBailoutWarningBody",

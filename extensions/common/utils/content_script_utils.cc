@@ -416,8 +416,7 @@ bool ValidateMatchOriginAsFallback(
   if (match_origin_as_fallback == MatchOriginAsFallbackBehavior::kAlways) {
     for (const auto& pattern : url_patterns) {
       if (pattern.path() != "/*") {
-        *error_out =
-            base::ASCIIToUTF16(errors::kMatchOriginAsFallbackCantHavePaths);
+        *error_out = errors::kMatchOriginAsFallbackCantHavePaths;
         return false;
       }
     }

@@ -522,7 +522,7 @@ void CrostiniSection::AddLoadTimeData(content::WebUIDataSource* html_source) {
       "crostiniArcAdbPowerwashRequiredSublabel",
       l10n_util::GetStringFUTF16(
           IDS_SETTINGS_CROSTINI_ARC_ADB_POWERWASH_REQUIRED_SUBLABEL,
-          base::ASCIIToUTF16(chrome::kArcAdbSideloadingLearnMoreURL)));
+          chrome::kArcAdbSideloadingLearnMoreURL));
   html_source->AddString(
       "crostiniArcAdbConfirmationMessageEnable",
       l10n_util::GetStringFUTF16(

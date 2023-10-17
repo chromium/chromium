@@ -7,6 +7,7 @@
 #include <string>
 
 #include "base/feature_list.h"
+#include "base/strings/strcat.h"
 #include "base/strings/utf_string_conversions.h"
 #include "base/system/sys_info.h"
 #include "build/build_config.h"
@@ -51,9 +52,10 @@ namespace {
 // Generates a Google Help URL which includes a "board type" parameter. Some
 // help pages need to be adjusted depending on the type of CrOS device that is
 // accessing the page.
-std::u16string GetHelpUrlWithBoard(const std::string& original_url) {
-  return base::ASCIIToUTF16(original_url +
-                            "&b=" + base::SysInfo::GetLsbReleaseBoard());
+std::u16string GetHelpUrlWithBoard(const std::u16string& original_url) {
+  return base::StrCat(
+      {original_url, u"&b=",
+       base::ASCIIToUTF16(base::SysInfo::GetLsbReleaseBoard())});
 }
 
 }  // namespace
@@ -240,7 +242,7 @@ void AddSharedSyncPageStrings(content::WebUIDataSource* html_source) {
 #if BUILDFLAG(IS_CHROMEOS_ASH)
           GetHelpUrlWithBoard(chrome::kSyncEncryptionHelpURL)));
 #else
-          base::ASCIIToUTF16(chrome::kSyncEncryptionHelpURL)));
+                              chrome::kSyncEncryptionHelpURL));
 #endif
 #if BUILDFLAG(IS_CHROMEOS_ASH)
   html_source->AddBoolean(

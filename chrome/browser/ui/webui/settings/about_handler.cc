@@ -678,14 +678,13 @@ void AboutHandler::OnGetEndOfLifeInfo(
     int eol_string_id =
         has_eol_passed ? IDS_SETTINGS_ABOUT_PAGE_END_OF_LIFE_MESSAGE_PAST
                        : IDS_SETTINGS_ABOUT_PAGE_END_OF_LIFE_MESSAGE_FUTURE;
-    response.Set(
-        "aboutPageEndOfLifeMessage",
-        l10n_util::GetStringFUTF16(
-            eol_string_id,
-            base::TimeFormatMonthAndYearForTimeZone(eol_info.eol_date,
-                                                    icu::TimeZone::getGMT()),
-            base::ASCIIToUTF16(has_eol_passed ? chrome::kEolNotificationURL
-                                              : chrome::kAutoUpdatePolicyURL)));
+    response.Set("aboutPageEndOfLifeMessage",
+                 l10n_util::GetStringFUTF16(
+                     eol_string_id,
+                     base::TimeFormatMonthAndYearForTimeZone(
+                         eol_info.eol_date, icu::TimeZone::getGMT()),
+                     has_eol_passed ? chrome::kEolNotificationURL
+                                    : chrome::kAutoUpdatePolicyURL));
     const ash::eol_incentive_util::EolIncentiveType eolIncentiveType =
         ash::eol_incentive_util::ShouldShowEolIncentive(
             profile_, eol_info.eol_date, clock_->Now());

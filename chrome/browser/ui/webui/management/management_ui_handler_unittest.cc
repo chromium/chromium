@@ -783,12 +783,12 @@ TEST_F(ManagementUIHandlerTests,
   EXPECT_EQ(
       GetManagedWebsitesTitle(),
       l10n_util::GetStringUTF16(IDS_MANAGEMENT_MANAGED_WEBSITES_EXPLANATION));
-  EXPECT_EQ(GetBrowserManagementNotice(),
-            l10n_util::GetStringFUTF16(
-                IDS_MANAGEMENT_NOT_MANAGED_NOTICE,
-                base::UTF8ToUTF16(chrome::kManagedUiLearnMoreUrl),
-                base::EscapeForHTML(l10n_util::GetStringUTF16(
-                    IDS_MANAGEMENT_LEARN_MORE_ACCCESSIBILITY_TEXT))));
+  EXPECT_EQ(
+      GetBrowserManagementNotice(),
+      l10n_util::GetStringFUTF16(
+          IDS_MANAGEMENT_NOT_MANAGED_NOTICE, chrome::kManagedUiLearnMoreUrl,
+          base::EscapeForHTML(l10n_util::GetStringUTF16(
+              IDS_MANAGEMENT_LEARN_MORE_ACCCESSIBILITY_TEXT))));
   EXPECT_EQ(GetPageSubtitle(),
             l10n_util::GetStringUTF16(IDS_MANAGEMENT_NOT_MANAGED_SUBTITLE));
 }
@@ -805,8 +805,7 @@ TEST_F(ManagementUIHandlerTests,
       l10n_util::GetStringUTF16(IDS_MANAGEMENT_MANAGED_WEBSITES_EXPLANATION));
   EXPECT_EQ(GetBrowserManagementNotice(),
             l10n_util::GetStringFUTF16(
-                IDS_MANAGEMENT_BROWSER_NOTICE,
-                base::UTF8ToUTF16(chrome::kManagedUiLearnMoreUrl),
+                IDS_MANAGEMENT_BROWSER_NOTICE, chrome::kManagedUiLearnMoreUrl,
                 base::EscapeForHTML(l10n_util::GetStringUTF16(
                     IDS_MANAGEMENT_LEARN_MORE_ACCCESSIBILITY_TEXT))));
   EXPECT_EQ(GetPageSubtitle(),
@@ -827,8 +826,7 @@ TEST_F(ManagementUIHandlerTests,
       l10n_util::GetStringUTF16(IDS_MANAGEMENT_MANAGED_WEBSITES_EXPLANATION));
   EXPECT_EQ(GetBrowserManagementNotice(),
             l10n_util::GetStringFUTF16(
-                IDS_MANAGEMENT_BROWSER_NOTICE,
-                base::UTF8ToUTF16(chrome::kManagedUiLearnMoreUrl),
+                IDS_MANAGEMENT_BROWSER_NOTICE, chrome::kManagedUiLearnMoreUrl,
                 base::EscapeForHTML(l10n_util::GetStringUTF16(
                     IDS_MANAGEMENT_LEARN_MORE_ACCCESSIBILITY_TEXT))));
   EXPECT_EQ(GetPageSubtitle(),
@@ -852,12 +850,12 @@ TEST_F(ManagementUIHandlerTests,
       GetManagedWebsitesTitle(),
       l10n_util::GetStringFUTF16(IDS_MANAGEMENT_MANAGED_WEBSITES_BY_EXPLANATION,
                                  base::UTF8ToUTF16(domain)));
-  EXPECT_EQ(GetBrowserManagementNotice(),
-            l10n_util::GetStringFUTF16(
-                IDS_MANAGEMENT_NOT_MANAGED_NOTICE,
-                base::UTF8ToUTF16(chrome::kManagedUiLearnMoreUrl),
-                base::EscapeForHTML(l10n_util::GetStringUTF16(
-                    IDS_MANAGEMENT_LEARN_MORE_ACCCESSIBILITY_TEXT))));
+  EXPECT_EQ(
+      GetBrowserManagementNotice(),
+      l10n_util::GetStringFUTF16(
+          IDS_MANAGEMENT_NOT_MANAGED_NOTICE, chrome::kManagedUiLearnMoreUrl,
+          base::EscapeForHTML(l10n_util::GetStringUTF16(
+              IDS_MANAGEMENT_LEARN_MORE_ACCCESSIBILITY_TEXT))));
   EXPECT_EQ(GetPageSubtitle(),
             l10n_util::GetStringUTF16(IDS_MANAGEMENT_NOT_MANAGED_SUBTITLE));
   EXPECT_FALSE(GetManaged());
@@ -874,12 +872,12 @@ TEST_F(ManagementUIHandlerTests,
   EXPECT_EQ(
       GetManagedWebsitesTitle(),
       l10n_util::GetStringUTF16(IDS_MANAGEMENT_MANAGED_WEBSITES_EXPLANATION));
-  EXPECT_EQ(GetBrowserManagementNotice(),
-            l10n_util::GetStringFUTF16(
-                IDS_MANAGEMENT_NOT_MANAGED_NOTICE,
-                base::UTF8ToUTF16(chrome::kManagedUiLearnMoreUrl),
-                base::EscapeForHTML(l10n_util::GetStringUTF16(
-                    IDS_MANAGEMENT_LEARN_MORE_ACCCESSIBILITY_TEXT))));
+  EXPECT_EQ(
+      GetBrowserManagementNotice(),
+      l10n_util::GetStringFUTF16(
+          IDS_MANAGEMENT_NOT_MANAGED_NOTICE, chrome::kManagedUiLearnMoreUrl,
+          base::EscapeForHTML(l10n_util::GetStringUTF16(
+              IDS_MANAGEMENT_LEARN_MORE_ACCCESSIBILITY_TEXT))));
   EXPECT_EQ(GetPageSubtitle(),
             l10n_util::GetStringUTF16(IDS_MANAGEMENT_NOT_MANAGED_SUBTITLE));
   EXPECT_FALSE(GetManaged());
@@ -902,8 +900,7 @@ TEST_F(ManagementUIHandlerTests,
                                  base::UTF8ToUTF16(domain)));
   EXPECT_EQ(GetBrowserManagementNotice(),
             l10n_util::GetStringFUTF16(
-                IDS_MANAGEMENT_BROWSER_NOTICE,
-                base::UTF8ToUTF16(chrome::kManagedUiLearnMoreUrl),
+                IDS_MANAGEMENT_BROWSER_NOTICE, chrome::kManagedUiLearnMoreUrl,
                 base::EscapeForHTML(l10n_util::GetStringUTF16(
                     IDS_MANAGEMENT_LEARN_MORE_ACCCESSIBILITY_TEXT))));
   EXPECT_EQ(GetPageSubtitle(),

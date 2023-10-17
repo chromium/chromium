@@ -459,9 +459,8 @@ void InputsSection::AddLoadTimeData(content::WebUIDataSource* html_source) {
 
   html_source->AddString(
       "languagePacksNotice",
-      l10n_util::GetStringFUTF16(
-          IDS_SETTINGS_LANGUAGES_LANGUAGE_PACKS_NOTICE,
-          base::ASCIIToUTF16(chrome::kLanguagePacksLearnMoreURL)));
+      l10n_util::GetStringFUTF16(IDS_SETTINGS_LANGUAGES_LANGUAGE_PACKS_NOTICE,
+                                 chrome::kLanguagePacksLearnMoreURL));
   html_source->AddBoolean(
       "onDeviceGrammarCheckEnabled",
       base::FeatureList::IsEnabled(features::kOnDeviceGrammarCheck));

@@ -940,7 +940,7 @@ base::Value::Dict ManagementUIHandler::GetContextualManagedData(
                l10n_util::GetStringFUTF16(
                    managed_() ? IDS_MANAGEMENT_BROWSER_NOTICE
                               : IDS_MANAGEMENT_NOT_MANAGED_NOTICE,
-                   base::UTF8ToUTF16(chrome::kManagedUiLearnMoreUrl),
+                   chrome::kManagedUiLearnMoreUrl,
                    base::EscapeForHTML(l10n_util::GetStringUTF16(
                        IDS_MANAGEMENT_LEARN_MORE_ACCCESSIBILITY_TEXT))));
 #endif

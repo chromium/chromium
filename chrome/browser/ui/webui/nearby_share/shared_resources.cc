@@ -143,9 +143,8 @@ void RegisterNearbySharedStrings(content::WebUIDataSource* data_source) {
   data_source->AddLocalizedStrings(kLocalizedStrings);
 
   data_source->AddString("nearbyShareLearnMoreLink",
-                         base::ASCIIToUTF16(chrome::kNearbyShareLearnMoreURL));
+                         chrome::kNearbyShareLearnMoreURL);
 
-  data_source->AddString(
-      "nearbyShareManageContactsUrl",
-      base::ASCIIToUTF16(chrome::kNearbyShareManageContactsURL));
+  data_source->AddString("nearbyShareManageContactsUrl",
+                         chrome::kNearbyShareManageContactsURL);
 }

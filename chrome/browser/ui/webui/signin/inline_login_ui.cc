@@ -266,7 +266,7 @@ void CreateAndAddWebUIDataSource(Profile* profile) {
         l10n_util::GetStringFUTF16(
             message_id,
             // "add a new person" link:
-            base::ASCIIToUTF16(chrome::kAddNewUserURL),
+            chrome::kAddNewUserURL,
             // Device type:
             ui::GetChromeOSDeviceName(),
             // Settings > Accounts link:
@@ -280,7 +280,7 @@ void CreateAndAddWebUIDataSource(Profile* profile) {
         l10n_util::GetStringFUTF16(
             IDS_ACCOUNT_MANAGER_DIALOG_WELCOME_BODY_ARC,
             // "add a new person" link:
-            base::ASCIIToUTF16(chrome::kAddNewUserURL),
+            chrome::kAddNewUserURL,
             // Device type:
             ui::GetChromeOSDeviceName(),
             // "Apps Settings" link:

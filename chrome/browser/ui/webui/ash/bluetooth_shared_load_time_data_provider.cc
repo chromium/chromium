@@ -69,9 +69,8 @@ void AddLocalizedStrings(content::WebUIDataSource* html_source) {
   html_source->AddLocalizedStrings(kLocalizedStrings);
   html_source->AddString(
       "bluetoothPairingLearnMoreLabel",
-      l10n_util::GetStringFUTF16(
-          IDS_BLUETOOTH_PAIRING_LEARN_MORE,
-          base::ASCIIToUTF16(chrome::kBluetoothPairingLearnMoreUrl)));
+      l10n_util::GetStringFUTF16(IDS_BLUETOOTH_PAIRING_LEARN_MORE,
+                                 chrome::kBluetoothPairingLearnMoreUrl));
 }
 
 void AddLoadTimeData(content::WebUIDataSource* html_source) {

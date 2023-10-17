@@ -380,8 +380,8 @@ const char kInvalidFileHandlerExtension[] =
     "Invalid value for 'file_handlers[*].extensions'.";
 const char kInvalidFileHandlerExtensionElement[] =
     "Invalid value for 'file_handlers[*].extensions[*]'.";
-const char kInvalidFileHandlerIncludeDirectories[] =
-    "Invalid value for 'include_directories'.";
+const char16_t kInvalidFileHandlerIncludeDirectories[] =
+    u"Invalid value for 'include_directories'.";
 const char kInvalidFileHandlerNoTypeOrExtension[] =
     "'file_handlers[*]' must contain a non-empty 'types', 'extensions' "
     "or 'include_directories'.";
@@ -523,8 +523,7 @@ const char kInvalidPermissionWithDetail[] =
     "Invalid value for 'permissions[*]': *.";
 const char kInvalidPermission[] =
     "Invalid value for 'permissions[*]'.";
-const char kInvalidPermissions[] =
-    "Invalid value for 'permissions'.";
+const char16_t kInvalidPermissions[] = u"Invalid value for 'permissions'.";
 const char kInvalidPermissionScheme[] = "Invalid scheme for '*[*]'.";
 const char16_t kInvalidReplacementWebApp[] =
     u"Invalid value for 'replacement_web_app'.";
@@ -648,8 +647,8 @@ const char kManifestVersionTooHighWarning[] =
     "Certain features may not work as expected.";
 const char kMissingFile[] =
     "At least one js or css file is required for 'content_scripts[*]'.";
-const char kMatchOriginAsFallbackCantHavePaths[] =
-    "The path component for scripts with 'match_origin_as_fallback' must be "
+const char16_t kMatchOriginAsFallbackCantHavePaths[] =
+    u"The path component for scripts with 'match_origin_as_fallback' must be "
     "'*'.";
 const char kMatchOriginAsFallbackRestrictedToMV3[] =
     "The 'match_origin_as_fallback' property is restricted to extensions with "
