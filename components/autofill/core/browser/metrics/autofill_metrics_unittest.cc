@@ -1732,27 +1732,11 @@ TEST_F(AutofillMetricsTest, AddressSuggestionsCount) {
       CreateTestFormField("Email", "email", "b", FormControlType::kInputEmail);
   {
     // Simulate activating the autofill popup for the email field after typing.
-    // No new metric should be logged, since we're still on the same page.
-    base::HistogramTester histogram_tester;
-    autofill_manager().OnAskForValuesToFillTest(form, email_field);
-    histogram_tester.ExpectTotalCount("Autofill.AddressSuggestionsCount", 0);
-  }
-
-  // Reset the autofill manager state.
-  autofill_manager().Reset();
-  autofill_manager().AddSeenForm(form, field_types);
-
-  {
-    // Simulate activating the autofill popup for the email field after typing.
     base::HistogramTester histogram_tester;
     autofill_manager().OnAskForValuesToFillTest(form, email_field);
     histogram_tester.ExpectUniqueSample("Autofill.AddressSuggestionsCount", 1,
                                         1);
   }
-
-  // Reset the autofill manager state again.
-  autofill_manager().Reset();
-  autofill_manager().AddSeenForm(form, field_types);
 
   {
     // Simulate activating the autofill popup for the email field after a fill.

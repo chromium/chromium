@@ -1208,15 +1208,8 @@ void BrowserAutofillManager::OnAskForValuesToFillImpl(
       if (context.is_filling_credit_card) {
         AutofillMetrics::LogIsQueriedCreditCardFormSecure(
             context.is_context_secure);
-      }
-
-      // The first time we show suggestions on this page, log the number of
-      // suggestions available.
-      // TODO(mathp): Differentiate between number of suggestions available
-      // (current metric) and number shown to the user.
-      if (!has_logged_address_suggestions_count_) {
+      } else {
         AutofillMetrics::LogAddressSuggestionsCount(suggestions.size());
-        has_logged_address_suggestions_count_ = true;
       }
     }
   }
@@ -2244,7 +2237,6 @@ void BrowserAutofillManager::Reset() {
       autofill_metrics::AutocompleteUnrecognizedFallbackEventLogger>();
 
   has_logged_autofill_enabled_ = false;
-  has_logged_address_suggestions_count_ = false;
   did_show_suggestions_ = false;
   user_did_type_ = false;
   user_did_autofill_ = false;
