@@ -80,7 +80,8 @@ constexpr base::TimeDelta kCooldownTimeout = base::Seconds(5);
 constexpr size_t kEntriesLimit = 100;
 
 // FileSystemContext instance set for testing.
-storage::FileSystemContext* g_file_system_context_for_testing = nullptr;
+absl::optional<storage::FileSystemContext*> g_file_system_context_for_testing =
+    absl::nullopt;
 
 // Returns true if `file_path` is in My Files directory.
 bool IsInLocalFileSystem(Profile* profile, const base::FilePath& file_path) {
@@ -129,11 +130,8 @@ absl::optional<DlpFileDestination> GetFileDestinationForApp(
 // Returns |g_file_system_context_for_testing| if set, otherwise
 // it returns FileSystemContext* for the primary profile.
 storage::FileSystemContext* GetFileSystemContext(Profile* profile) {
-  if (g_file_system_context_for_testing) {
-    return g_file_system_context_for_testing;
-  }
-
-  return file_manager::util::GetFileManagerFileSystemContext(profile);
+  return g_file_system_context_for_testing.value_or(
+      file_manager::util::GetFileManagerFileSystemContext(profile));
 }
 
 // Gets all files inside |root| recursively and runs |callback_| with the
@@ -533,6 +531,12 @@ void DlpFilesControllerAsh::CheckIfDownloadAllowed(
     const DlpFileDestination& download_src,
     const base::FilePath& file_path,
     CheckIfDlpAllowedCallback result_callback) {
+  if (!download_src.url().has_value()) {
+    // Currently we only support urls as sources.
+    std::move(result_callback).Run(true);
+    return;
+  }
+
   auto dst_component =
       MapFilePathToPolicyComponent(profile_, base::FilePath(file_path));
   if (!dst_component.has_value()) {
@@ -542,20 +546,11 @@ void DlpFilesControllerAsh::CheckIfDownloadAllowed(
     return;
   }
 
-  if (!download_src.url().has_value()) {
-    // Currently we only support urls as sources.
-    std::move(result_callback).Run(true);
-    return;
-  }
-
+  DlpFileDestination dlp_destination = DlpFileDestination(*dst_component);
   // TODO(b/290200170): Check whether referrer_url could be set too.
-  FileDaemonInfo file_info({}, {}, file_path, download_src.url()->spec(),
+  FileDaemonInfo file_info(/*inode=*/{}, /*crtime=*/{}, file_path,
+                           download_src.url()->spec(),
                            /*referrer_url=*/"");
-
-  absl::optional<data_controls::Component> component =
-      MapFilePathToPolicyComponent(profile_, file_path);
-  DlpFileDestination dlp_destination =
-      component ? DlpFileDestination(*component) : DlpFileDestination();
   IsFilesTransferRestricted(
       absl::nullopt, {std::move(file_info)}, dlp_destination,
       dlp::FileAction::kDownload,
