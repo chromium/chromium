@@ -9,6 +9,7 @@
 
 #include "base/compiler_specific.h"
 #include "base/component_export.h"
+#include "base/functional/callback.h"
 #include "base/memory/raw_ref.h"
 #include "base/memory/scoped_refptr.h"
 #include "base/memory/weak_ptr.h"
@@ -31,7 +32,8 @@ class COMPONENT_EXPORT(APP_UPDATE) AppStorage
     : public apps::AppRegistryCache::Observer {
  public:
   explicit AppStorage(const base::FilePath& base_path,
-                      apps::AppRegistryCache& app_registry_cache);
+                      apps::AppRegistryCache& app_registry_cache,
+                      base::OnceCallback<void()> on_get_app_info_callback);
 
   AppStorage(const AppStorage&) = delete;
   AppStorage& operator=(const AppStorage&) = delete;
@@ -48,7 +50,8 @@ class COMPONENT_EXPORT(APP_UPDATE) AppStorage
 
   // Invoked when reading the app info data from the AppStorage file is
   // finished.
-  virtual void OnGetAppInfoData(std::vector<AppPtr> apps);
+  virtual void OnGetAppInfoData(base::OnceCallback<void()> callback,
+                                std::vector<AppPtr> apps);
 
   // Returns true if the app info is changed compared with the app info saved in
   // the AppStorage file.

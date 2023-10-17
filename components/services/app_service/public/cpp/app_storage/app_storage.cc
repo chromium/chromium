@@ -27,7 +27,8 @@ namespace apps {
   }
 
 AppStorage::AppStorage(const base::FilePath& base_path,
-                       apps::AppRegistryCache& app_registry_cache)
+                       apps::AppRegistryCache& app_registry_cache,
+                       base::OnceCallback<void()> on_get_app_info_callback)
     : app_registry_cache_(app_registry_cache) {
   file_handler_ = base::MakeRefCounted<AppStorageFileHandler>(base_path);
   app_registry_cache_observer_.Observe(&app_registry_cache);
@@ -42,8 +43,8 @@ AppStorage::AppStorage(const base::FilePath& base_path,
   file_handler_->owning_task_runner()->PostTaskAndReplyWithResult(
       FROM_HERE,
       base::BindOnce(&AppStorageFileHandler::ReadFromFile, file_handler_.get()),
-      base::BindOnce(&AppStorage::OnGetAppInfoData,
-                     weak_factory_.GetWeakPtr()));
+      base::BindOnce(&AppStorage::OnGetAppInfoData, weak_factory_.GetWeakPtr(),
+                     std::move(on_get_app_info_callback)));
 }
 
 AppStorage::~AppStorage() = default;
@@ -68,7 +69,8 @@ void AppStorage::OnAppRegistryCacheWillBeDestroyed(
   app_registry_cache_observer_.Reset();
 }
 
-void AppStorage::OnGetAppInfoData(std::vector<AppPtr> apps) {
+void AppStorage::OnGetAppInfoData(base::OnceCallback<void()> callback,
+                                  std::vector<AppPtr> apps) {
   onapps_in_progress_ = true;
 
   app_registry_cache_->OnApps(std::move(apps), AppType::kUnknown,
@@ -76,11 +78,13 @@ void AppStorage::OnGetAppInfoData(std::vector<AppPtr> apps) {
 
   onapps_in_progress_ = false;
 
-  // As the reading process is done, set io_in_progress_` as false, and call
-  // MaybeSaveAppInfo to write the pending app info to the AppStorage file if
-  // there are some app info changes.
+  // As the reading process is done, set io_in_progress_` as false to unblock
+  // the writing process.
   io_in_progress_ = false;
-  MaybeSaveAppInfo();
+
+  if (!callback.is_null()) {
+    std::move(callback).Run();
+  }
 
   // TODO(crbug.com/1385932): Get the app types to set initialized for app
   // types.

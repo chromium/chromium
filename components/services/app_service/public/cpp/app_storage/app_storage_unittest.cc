@@ -9,6 +9,8 @@
 
 #include "base/files/file_util.h"
 #include "base/files/scoped_temp_dir.h"
+#include "base/functional/callback.h"
+#include "base/run_loop.h"
 #include "base/test/task_environment.h"
 #include "base/test/test_future.h"
 #include "components/services/app_service/public/cpp/app_registry_cache.h"
@@ -58,10 +60,11 @@ constexpr char kAppShortName2[] = "b";
 class FakeAppStorage : public AppStorage {
  public:
   FakeAppStorage(const base::FilePath& base_path,
-                 AppRegistryCache& app_registry_cache)
-      : AppStorage(base_path, app_registry_cache) {
+                 AppRegistryCache& app_registry_cache,
+                 std::unique_ptr<base::RunLoop> run_loop)
+      : AppStorage(base_path, app_registry_cache, run_loop->QuitClosure()) {
     // Wait for OnGetAppInfoData to be invoked.
-    EXPECT_TRUE(read_result_.Wait());
+    run_loop->Run();
   }
 
   FakeAppStorage(const FakeAppStorage&) = delete;
@@ -79,13 +82,13 @@ class FakeAppStorage : public AppStorage {
 
  private:
   // Override to call to AppStorage::OnGetAppInfoData.
-  void OnGetAppInfoData(std::vector<AppPtr> apps) override {
+  void OnGetAppInfoData(base::OnceCallback<void()> callback,
+                        std::vector<AppPtr> apps) override {
     for (const auto& app : apps) {
       apps_.push_back(app->Clone());
     }
 
-    AppStorage::OnGetAppInfoData(std::move(apps));
-    std::move(read_result_.GetCallback()).Run();
+    AppStorage::OnGetAppInfoData(std::move(callback), std::move(apps));
   }
 
   void OnSaveFinished() override {
@@ -99,7 +102,6 @@ class FakeAppStorage : public AppStorage {
 
   std::vector<AppPtr> apps_;
 
-  base::test::TestFuture<void> read_result_;
   std::unique_ptr<base::test::TestFuture<void>> write_result_;
   size_t expect_app_count_ = -1;
 };
@@ -115,8 +117,9 @@ class AppStorageTest : public testing::Test {
   void SetUp() override { ASSERT_TRUE(tmp_dir_.CreateUniqueTempDir()); }
 
   void CreateAppStorage() {
-    app_storage_ = std::make_unique<FakeAppStorage>(tmp_dir_.GetPath(),
-                                                    app_registry_cache_);
+    app_storage_ = std::make_unique<FakeAppStorage>(
+        tmp_dir_.GetPath(), app_registry_cache_,
+        std::make_unique<base::RunLoop>());
   }
 
   std::vector<AppPtr> CreateOneApp(AppType app_type,
@@ -171,8 +174,9 @@ class AppStorageTest : public testing::Test {
   void VerifySavedApps(std::vector<AppPtr>& apps) {
     // Create a new AppStorage to read the AppStorage file to verify the app has
     // been written correctly.
-    auto app_storage = std::make_unique<FakeAppStorage>(tmp_dir().GetPath(),
-                                                        app_registry_cache_);
+    auto app_storage = std::make_unique<FakeAppStorage>(
+        tmp_dir().GetPath(), app_registry_cache_,
+        std::make_unique<base::RunLoop>());
     EXPECT_TRUE(IsEqual(apps, app_storage->GetAppInfo()));
   }
 

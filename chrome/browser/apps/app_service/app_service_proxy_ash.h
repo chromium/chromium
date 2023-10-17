@@ -8,6 +8,7 @@
 #include <map>
 #include <memory>
 #include <string>
+#include <vector>
 
 #include "base/containers/flat_map.h"
 #include "base/containers/unique_ptr_adapters.h"
@@ -15,6 +16,7 @@
 #include "base/gtest_prod_util.h"
 #include "base/memory/raw_ptr.h"
 #include "base/memory/weak_ptr.h"
+#include "base/one_shot_event.h"
 #include "base/scoped_observation.h"
 #include "chrome/browser/apps/app_service/app_icon/app_icon_reader.h"
 #include "chrome/browser/apps/app_service/app_icon/app_icon_writer.h"
@@ -102,6 +104,12 @@ class AppServiceProxyAsh : public AppServiceProxyBase,
 
   // Registers `crosapi_subscriber_`.
   void RegisterCrosApiSubScriber(SubscriberCrosapi* subscriber);
+
+  // Signals when AppServiceProxy becomes ready after reading the AppStorage
+  // file, and init publishers.
+  const base::OneShotEvent* OnReady() const {
+    return on_ready_ ? on_ready_.get() : nullptr;
+  }
 
   // apps::AppServiceProxyBase overrides:
   void Uninstall(const std::string& app_id,
@@ -269,8 +277,23 @@ class AppServiceProxyAsh : public AppServiceProxyBase,
     raw_ptr<apps::IconLoader> overriding_icon_loader_for_testing_;
   };
 
+  // OnAppsRequest is used to save the parameters of the OnApps calling.
+  struct OnAppsRequest {
+    OnAppsRequest(std::vector<AppPtr> deltas,
+                  AppType app_type,
+                  bool should_notify_initialized);
+    OnAppsRequest(const OnAppsRequest&) = delete;
+    OnAppsRequest& operator=(const OnAppsRequest&) = delete;
+    ~OnAppsRequest();
+
+    std::vector<AppPtr> deltas_;
+    AppType app_type_;
+    bool should_notify_initialized_;
+  };
+
   // For access to Initialize.
   friend class AppServiceProxyFactory;
+  friend class AppServiceProxyTest;
   FRIEND_TEST_ALL_PREFIXES(AppServiceProxyTest, LaunchCallback);
 
   using UninstallDialogs =
@@ -365,6 +388,10 @@ class AppServiceProxyAsh : public AppServiceProxyBase,
       apps::AppRegistryCache* cache) override;
 
   void PerformPostLaunchTasks(apps::LaunchSource launch_source) override;
+
+  // Invoked after reading the app info from the AppStorage file. Publishers are
+  // initialized, and other OnApps operations can be executed too.
+  void OnAppsReady();
 
   void RecordAppPlatformMetrics(Profile* profile,
                                 const apps::AppUpdate& update,
@@ -523,6 +550,20 @@ class AppServiceProxyAsh : public AppServiceProxyBase,
 
   UninstallDialogs uninstall_dialogs_;
   ShortcutRemovalDialogs shortcut_removal_dialogs_;
+
+  // Whether AppRegistryCache is ready to publish apps. Returns true when
+  // AppServiceProxy is ready, and the apps can be published to
+  // AppRegistryCache.
+  bool is_on_apps_ready_ = false;
+
+  // Represents an event when AppServiceProxy is ready after reading the
+  // AppStorage file and publishers have been initiated for `publisher_host_`.
+  std::unique_ptr<base::OneShotEvent> on_ready_;
+
+  // Saves the parameters for OnApps callings. Before reading the AppStorage
+  // file, OnApps requests are cached in `pending_on_apps_requests_`, and after
+  // reading the AppStorage file, all requests saved will be executed.
+  std::vector<std::unique_ptr<OnAppsRequest>> pending_on_apps_requests_;
 
   // When the icon folder is being deleted, the `ReadIcons` request is added to
   // `pending_read_icon_requests_` to wait for the deletion. When the icon

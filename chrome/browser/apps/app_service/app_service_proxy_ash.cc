@@ -64,6 +64,16 @@ constexpr int32_t kAppDialogIconBadgeSize = 24;
 }  // namespace
 
 namespace apps {
+
+AppServiceProxyAsh::OnAppsRequest::OnAppsRequest(std::vector<AppPtr> deltas,
+                                                 AppType app_type,
+                                                 bool should_notify_initialized)
+    : deltas_(std::move(deltas)),
+      app_type_(app_type),
+      should_notify_initialized_(should_notify_initialized) {}
+
+AppServiceProxyAsh::OnAppsRequest::~OnAppsRequest() = default;
+
 AppServiceProxyAsh::AppServiceProxyAsh(Profile* profile)
     : AppServiceProxyBase(profile),
       shortcut_inner_icon_loader_(this),
@@ -116,8 +126,16 @@ void AppServiceProxyAsh::Initialize() {
   }
 
   if (base::FeatureList::IsEnabled(kAppServiceStorage)) {
-    app_storage_ = std::make_unique<apps::AppStorage>(profile_->GetPath(),
-                                                      app_registry_cache_);
+    on_ready_ = std::make_unique<base::OneShotEvent>();
+
+    // After reading the app info data from the AppStorage file, call
+    // OnAppsReady to init `publisher_host_` and other OnApps tasks to prevent
+    // AppStorage overwriting the `fresh` apps from publishers during the system
+    // init phase.
+    app_storage_ = std::make_unique<apps::AppStorage>(
+        profile_->GetPath(), app_registry_cache_,
+        base::BindOnce(&AppServiceProxyAsh::OnAppsReady,
+                       weak_ptr_factory_.GetWeakPtr()));
   }
 
   const user_manager::User* user =
@@ -151,7 +169,9 @@ void AppServiceProxyAsh::Initialize() {
     app_registry_cache_observer_.Observe(cache);
   }
 
-  publisher_host_ = std::make_unique<PublisherHost>(this);
+  if (!base::FeatureList::IsEnabled(kAppServiceStorage)) {
+    publisher_host_ = std::make_unique<PublisherHost>(this);
+  }
 
   if (crosapi::browser_util::IsLacrosEnabled() &&
       ash::ProfileHelper::IsPrimaryProfile(profile_) &&
@@ -234,6 +254,18 @@ void AppServiceProxyAsh::Uninstall(const std::string& app_id,
 void AppServiceProxyAsh::OnApps(std::vector<AppPtr> deltas,
                                 AppType app_type,
                                 bool should_notify_initialized) {
+  if (base::FeatureList::IsEnabled(kAppServiceStorage) && !is_on_apps_ready_) {
+    // Add the OnApps request to `pending_on_apps_requests_`, and wait for the
+    // AppStorage file reading finished to execute the OnApps request.
+    //
+    // We don't queue these on the OneShotEvent to guarantee that these requests
+    // are loaded in AppRegistryCache following the requested sequence before
+    // any queued events are posted.
+    pending_on_apps_requests_.push_back(std::make_unique<OnAppsRequest>(
+        std::move(deltas), app_type, should_notify_initialized));
+    return;
+  }
+
   // Delete app icon folders for uninstalled apps or the icon updated app.
   std::vector<std::string> app_ids;
   for (const auto& delta : deltas) {
@@ -913,6 +945,21 @@ void AppServiceProxyAsh::OnAppUpdate(const apps::AppUpdate& update) {
 void AppServiceProxyAsh::OnAppRegistryCacheWillBeDestroyed(
     apps::AppRegistryCache* cache) {
   app_registry_cache_observer_.Reset();
+}
+
+void AppServiceProxyAsh::OnAppsReady() {
+  is_on_apps_ready_ = true;
+
+  // Read and execute OnApps requests from `pending_on_apps_requests_`.
+  for (auto& request : pending_on_apps_requests_) {
+    OnApps(std::move(request->deltas_), request->app_type_,
+           request->should_notify_initialized_);
+  }
+  pending_on_apps_requests_.clear();
+
+  publisher_host_ = std::make_unique<PublisherHost>(this);
+  CHECK(on_ready_);
+  on_ready_->Signal();
 }
 
 void AppServiceProxyAsh::RecordAppPlatformMetrics(
