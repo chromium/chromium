@@ -26,11 +26,11 @@ android_library("js_sandbox_service_java") {
   deps = [
     ":js_sandbox_jni_headers",
     "//base:base_java",
-    "//base:jni_java",
     "//build/android:build_java",
     "//third_party/android_deps:com_google_code_findbugs_jsr305_java",
     "//third_party/androidx:androidx_annotation_annotation_java",
     "//third_party/androidx_javascriptengine:javascriptengine_common_java",
     "//third_party/androidx_javascriptengine:js_sandbox_aidl_java",
+    "//third_party/jni_zero:jni_zero_java",
   ]
 }

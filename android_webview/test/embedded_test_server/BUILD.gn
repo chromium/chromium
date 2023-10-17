@@ -16,11 +16,11 @@ android_library("aw_net_java_test_support") {
   ]
   deps = [
     "//base:base_java_test_support",
-    "//base:jni_java",
     "//net/android:embedded_test_server_aidl_java",
     "//net/android:net_java",
     "//net/android:net_java_test_support",
     "//net/android:net_test_support_provider_java",
+    "//third_party/jni_zero:jni_zero_java",
   ]
 }
 

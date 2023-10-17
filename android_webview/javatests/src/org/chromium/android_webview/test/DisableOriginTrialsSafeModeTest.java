@@ -9,6 +9,7 @@ import static org.junit.Assert.assertTrue;
 
 import androidx.test.filters.SmallTest;
 
+import org.jni_zero.JNINamespace;
 import org.junit.After;
 import org.junit.Rule;
 import org.junit.Test;
@@ -18,7 +19,6 @@ import org.chromium.android_webview.common.SafeModeAction;
 import org.chromium.android_webview.common.SafeModeController;
 import org.chromium.android_webview.common.origin_trial.DisableOriginTrialsSafeModeAction;
 import org.chromium.android_webview.test.util.DisableOriginTrialsSafeModeTestUtilsJni;
-import org.chromium.base.annotations.JNINamespace;
 import org.chromium.base.test.util.Feature;
 
 import java.util.Set;

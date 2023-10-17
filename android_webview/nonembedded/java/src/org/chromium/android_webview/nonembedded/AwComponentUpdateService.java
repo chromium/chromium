@@ -13,6 +13,9 @@ import android.os.SystemClock;
 
 import androidx.annotation.VisibleForTesting;
 
+import org.jni_zero.JNINamespace;
+import org.jni_zero.NativeMethods;
+
 import org.chromium.android_webview.devui.ComponentsListFragment;
 import org.chromium.android_webview.services.ComponentUpdaterSafeModeUtils;
 import org.chromium.android_webview.services.ComponentsProviderPathUtil;
@@ -20,8 +23,6 @@ import org.chromium.base.Callback;
 import org.chromium.base.FileUtils;
 import org.chromium.base.IntentUtils;
 import org.chromium.base.Log;
-import org.chromium.base.annotations.JNINamespace;
-import org.chromium.base.annotations.NativeMethods;
 import org.chromium.base.metrics.RecordHistogram;
 import org.chromium.base.metrics.UmaRecorderHolder;
 

@@ -8,6 +8,8 @@ import android.content.Intent;
 
 import androidx.test.filters.MediumTest;
 
+import org.jni_zero.CalledByNative;
+import org.jni_zero.JNINamespace;
 import org.junit.After;
 import org.junit.Assert;
 import org.junit.Before;
@@ -22,8 +24,6 @@ import org.chromium.android_webview.test.AwJUnit4ClassRunner;
 import org.chromium.android_webview.test.util.EmbeddedComponentLoaderFactory;
 import org.chromium.base.ContextUtils;
 import org.chromium.base.FileUtils;
-import org.chromium.base.annotations.CalledByNative;
-import org.chromium.base.annotations.JNINamespace;
 import org.chromium.base.test.util.CallbackHelper;
 import org.chromium.components.component_updater.EmbeddedComponentLoader;
 

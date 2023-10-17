@@ -6,8 +6,8 @@ package org.chromium.android_webview.common.crash;
 
 import androidx.annotation.VisibleForTesting;
 
-import org.chromium.base.annotations.CalledByNative;
-import org.chromium.base.annotations.JNINamespace;
+import org.jni_zero.CalledByNative;
+import org.jni_zero.JNINamespace;
 
 /**
  * A helper class for WebView-specific handling of Java crashes.

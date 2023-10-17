@@ -672,7 +672,6 @@ android_library("browser_java") {
     ":resources",
     "//android_webview/proto:metrics_bridge_records_proto_java",
     "//base:base_java",
-    "//base:jni_java",
     "//build/android:build_java",
     "//cc/mojom:mojom_java",
     "//components/android_autofill/browser:java",
@@ -711,6 +710,7 @@ android_library("browser_java") {
     "//third_party/androidx:androidx_core_core_java",
     "//third_party/blink/public:blink_headers_java",
     "//third_party/blink/public/mojom:mojom_platform_java",
+    "//third_party/jni_zero:jni_zero_java",
     "//third_party/metrics_proto:metrics_proto_java",
     "//ui/android:ui_no_recycler_view_java",
     "//url:gurl_java",
@@ -783,8 +783,8 @@ android_library("crash_client_java") {
 
   deps = [
     "//base:base_java",
-    "//base:jni_java",
     "//third_party/androidx:androidx_annotation_annotation_java",
+    "//third_party/jni_zero:jni_zero_java",
   ]
 }
 
@@ -797,8 +797,8 @@ android_library("common_origin_trials_java") {
   deps = [
     ":common_java",
     "//base:base_java",
-    "//base:jni_java",
     "//third_party/androidx:androidx_annotation_annotation_java",
+    "//third_party/jni_zero:jni_zero_java",
   ]
 }
 
@@ -834,7 +834,6 @@ android_library("common_java") {
   ]
   deps = [
     "//base:base_java",
-    "//base:jni_java",
     "//build/android:build_java",
     "//cc/base:cc_base_java",
     "//components/android_autofill/browser:features_java",
@@ -857,6 +856,7 @@ android_library("common_java") {
     "//third_party/androidx:androidx_annotation_annotation_java",
     "//third_party/blink/public/common:common_java",
     "//third_party/blink/renderer/platform/scheduler:blink_scheduler_java",
+    "//third_party/jni_zero:jni_zero_java",
     "//ui/accessibility:accessibility_features_java",
     "//ui/android:ui_android_features_java",
   ]

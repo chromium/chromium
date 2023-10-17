@@ -4,10 +4,11 @@
 
 package org.chromium.android_webview.metrics;
 
+import org.jni_zero.JNINamespace;
+import org.jni_zero.NativeMethods;
+
 import org.chromium.android_webview.ManifestMetadataUtil;
 import org.chromium.base.ThreadUtils;
-import org.chromium.base.annotations.JNINamespace;
-import org.chromium.base.annotations.NativeMethods;
 
 /**
  * Determines user consent and app opt-out for metrics. See aw_metrics_service_client.h for more

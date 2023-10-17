@@ -4,9 +4,10 @@
 
 package org.chromium.android_webview.unittest;
 
+import org.jni_zero.CalledByNative;
+
 import org.chromium.android_webview.AwContentsClientBridge;
 import org.chromium.android_webview.ClientCertLookupTable;
-import org.chromium.base.annotations.CalledByNative;
 
 class MockAwContentsClientBridge extends AwContentsClientBridge {
 

@@ -6,10 +6,11 @@ package org.chromium.android_webview.safe_browsing;
 
 import androidx.annotation.NonNull;
 
+import org.jni_zero.CalledByNative;
+import org.jni_zero.JNINamespace;
+
 import org.chromium.android_webview.common.Lifetime;
 import org.chromium.android_webview.common.SafeModeAction;
-import org.chromium.base.annotations.CalledByNative;
-import org.chromium.base.annotations.JNINamespace;
 
 /**
  * A {@link SafeModeAction} to disable safe browsing.
