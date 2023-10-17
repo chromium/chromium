@@ -128,6 +128,11 @@ int GetTabIdForExtensions(const WebContents* web_contents) {
   return sessions::SessionTabHelper::IdForTab(web_contents).id();
 }
 
+bool IsFileUrl(const GURL& url) {
+  return url.SchemeIsFile() || (url.SchemeIs(content::kViewSourceScheme) &&
+                                GURL(url.GetContent()).SchemeIsFile());
+}
+
 ExtensionTabUtil::ScrubTabBehaviorType GetScrubTabBehaviorImpl(
     const Extension* extension,
     Feature::Context context,
@@ -895,7 +900,7 @@ base::expected<GURL, std::string> ExtensionTabUtil::PrepareURLForNavigation(
   // non-extension contexts (e.g. WebUI pages). In that case, we allow the
   // navigation as such contexts are trusted and do not have a concept of file
   // access.
-  if (extension && url.SchemeIsFile() &&
+  if (extension && IsFileUrl(url) &&
       // PDF viewer extension can navigate to file URLs.
       extension->id() != extension_misc::kPdfExtensionId &&
       !util::AllowFileAccess(extension->id(), browser_context) &&

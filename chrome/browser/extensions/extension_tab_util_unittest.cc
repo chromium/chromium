@@ -161,6 +161,15 @@ TEST_F(ChromeExtensionNavigationTest, PrepareURLForNavigation) {
     EXPECT_EQ(tabs_constants::kFileUrlsNotAllowedInExtensionNavigations,
               url.error());
   }
+  // File URLs with view-source scheme should return false and set the error.
+  {
+    const std::string kViewSourceFileURL("view-source:file:///etc/passwd");
+    auto url = ExtensionTabUtil::PrepareURLForNavigation(
+        kViewSourceFileURL, extension.get(), browser_context());
+    ASSERT_FALSE(url.has_value());
+    EXPECT_EQ(tabs_constants::kFileUrlsNotAllowedInExtensionNavigations,
+              url.error());
+  }
   // File URLs are returned when the extension has access to file.
   {
     util::SetAllowFileAccess(extension->id(), browser_context(), true);
