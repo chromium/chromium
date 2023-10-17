@@ -884,19 +884,25 @@ TEST_F(SessionRestorationBrowserAgentTest,
 TEST_F(SessionRestorationBrowserAgentTest, RestoreSessionFilterOutDuplicates) {
   CreateSessionRestorationBrowserAgent(true);
 
-  SessionWindowIOS* window = CreateSessionWindow(SessionInfo<2>{
+  SessionWindowIOS* window = CreateSessionWindow(SessionInfo<7>{
       .active_index = 1,
       .tab_infos =
           {
-              TabInfo{.stable_identifier = @"I have an identical twin"},
-              TabInfo{.stable_identifier = @"I have an identical twin"},
+              TabInfo{.pinned = true, .stable_identifier = @"quadruplet"},
+              TabInfo{.pinned = true, .stable_identifier = @"quadruplet"},
+              TabInfo{.stable_identifier = @"twin"},
+              TabInfo{.stable_identifier = @"quadruplet"},
+              TabInfo{.stable_identifier = @"quadruplet"},
+              TabInfo{.stable_identifier = @"twin"},
+              TabInfo{.stable_identifier = @"single"},
           },
   });
 
   session_restoration_agent_->RestoreSessionWindow(
       window, SessionRestorationScope::kAll);
-  EXPECT_EQ(1, browser_->GetWebStateList()->count());
-  EXPECT_EQ(0, browser_->GetWebStateList()->active_index());
+  EXPECT_EQ(3, browser_->GetWebStateList()->count());
+  EXPECT_EQ(1, browser_->GetWebStateList()->pinned_tabs_count());
+  EXPECT_EQ(1, browser_->GetWebStateList()->active_index());
 }
 
 }  // anonymous namespace

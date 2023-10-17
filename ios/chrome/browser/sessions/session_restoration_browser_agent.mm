@@ -166,8 +166,7 @@ SessionWindowIOS* FilterInvalidTabs(SessionWindowIOS* session_window) {
   const int sessions_count = static_cast<int>(session_window.sessions.count);
 
   std::vector<int> items_to_drop;
-  NSMutableDictionary<NSString*, NSNumber*>* mapping =
-      [NSMutableDictionary dictionary];
+  NSMutableSet<NSString*>* seen_identifiers = [NSMutableSet set];
   for (int index = 0; index < sessions_count; ++index) {
     CRWSessionStorage* session = session_window.sessions[index];
     if (session.itemStorages.count == 0) {
@@ -176,12 +175,10 @@ SessionWindowIOS* FilterInvalidTabs(SessionWindowIOS* session_window) {
     } else {
       // Filter out session items that are duplicate (after something went bad
       // somewhere).
-      NSNumber* previous_index = mapping[session.stableIdentifier];
-      if (previous_index != nil) {
-        // In case of duplicate, drop the previous occurrence.
-        items_to_drop.push_back(previous_index.intValue);
+      if ([seen_identifiers containsObject:session.stableIdentifier]) {
+        items_to_drop.push_back(index);
       }
-      mapping[session.stableIdentifier] = @(index);
+      [seen_identifiers addObject:session.stableIdentifier];
     }
   }
 
