@@ -166,7 +166,8 @@ TEST_F(IsolatedWebAppResponseReaderTest, Close) {
   base::FilePath web_bundle_path = CreateSignedBundleAndWriteToDisk();
   auto reader = SignedWebBundleReader::Create(web_bundle_path, base_url_);
   // TODO: handle return value.
-  std::ignore = ReadIntegrityBlockAndMetadata(*reader.get());
+  auto status = ReadIntegrityBlockAndMetadata(*reader.get());
+  ASSERT_THAT(status, HasValue());
   auto* raw_reader = reader.get();
 
   auto response_reader =
