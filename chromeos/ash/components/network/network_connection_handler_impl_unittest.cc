@@ -743,7 +743,7 @@ TEST_F(NetworkConnectionHandlerImplTest, IgnoreConnectInProgressError_Fails) {
 
 namespace {
 
-const char* kPolicyWithCertPatternTemplate =
+constexpr char kPolicyWithCertPatternTemplate[] =
     "[ { \"GUID\": \"wifi4\","
     "    \"Name\": \"wifi4\","
     "    \"Type\": \"WiFi\","

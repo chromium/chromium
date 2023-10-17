@@ -353,7 +353,7 @@ class ClientCertResolverTest : public testing::Test,
   // particular it will match the test client cert.
   void SetupPolicyMatchingIssuerPEM(::onc::ONCSource onc_source,
                                     const std::string& identity) {
-    const char* test_policy_template = R"(
+    static constexpr char kTestPolicyTemplate[] = R"(
         [ { "GUID": "wifi_stub",
             "Name": "wifi_stub",
             "Type": "WiFi",
@@ -371,7 +371,7 @@ class ClientCertResolverTest : public testing::Test,
             }
         } ])";
     std::string policy_json = base::StringPrintf(
-        test_policy_template, identity.c_str(), test_ca_cert_pem_.c_str());
+        kTestPolicyTemplate, identity.c_str(), test_ca_cert_pem_.c_str());
     ASSERT_NO_FATAL_FAILURE(SetManagedNetworkPolicy(onc_source, policy_json));
   }
 

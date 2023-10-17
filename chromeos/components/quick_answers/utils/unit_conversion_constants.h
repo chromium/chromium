@@ -9,17 +9,18 @@
 
 namespace quick_answers {
 
-extern const char kRuleSetPath[];
-extern const char kSourceUnitPath[];
-extern const char kSourceAmountPath[];
-extern const char kDestAmountPath[];
-extern const char kDestTextPath[];
+inline constexpr char kRuleSetPath[] = "unitConversionResult.conversions";
+inline constexpr char kSourceUnitPath[] = "unitConversionResult.sourceUnit";
+inline constexpr char kSourceAmountPath[] = "unitConversionResult.sourceAmount";
+inline constexpr char kDestAmountPath[] = "unitConversionResult.destAmount";
+inline constexpr char kDestTextPath[] =
+    "unitConversionResult.destination.valueAndUnit.rawText";
 
-extern const char kCategoryPath[];
-extern const char kConversionRateAPath[];
-extern const char kResultValueTemplate[];
-extern const char kNamePath[];
-extern const char kUnitsPath[];
+inline constexpr char kCategoryPath[] = "category";
+inline constexpr char kConversionRateAPath[] = "conversionToSiA";
+inline constexpr char kResultValueTemplate[] = "%.3f";
+inline constexpr char kNamePath[] = "name";
+inline constexpr char kUnitsPath[] = "units";
 
 std::string GetUnitDisplayText(const std::string& name);
 
