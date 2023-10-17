@@ -24,13 +24,16 @@ source_set("unit_tests") {
   deps = [
     ":media_effects",
     "//base",
+    "//build:buildflag_header_h",
     "//components/prefs:test_support",
     "//components/user_prefs/test:test_support",
     "//content/test:test_support",
     "//testing/gtest",
+    "//third_party/mediapipe",
   ]
   sources = [
     "media_effects_manager_binder_unittest.cc",
+    "media_effects_mediapipe_unittests.cc",
     "media_effects_service_factory_unittest.cc",
     "media_effects_service_unittest.cc",
     "video_effects_manager_impl_unittest.cc",
