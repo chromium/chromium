@@ -78,9 +78,7 @@ class AutocompleteControllerAndroid : public AutocompleteController::Observer {
   UpdateMatchDestinationURLWithAdditionalAssistedQueryStats(
       JNIEnv* env,
       uintptr_t match_ptr,
-      jlong elapsed_time_since_input_change,
-      const base::android::JavaParamRef<jstring>& jnew_query_text,
-      const base::android::JavaParamRef<jobjectArray>& jnew_query_params);
+      jlong elapsed_time_since_input_change);
   base::android::ScopedJavaLocalRef<jobject> GetMatchingTabForSuggestion(
       JNIEnv* env,
       uintptr_t match_ptr);

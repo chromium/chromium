@@ -316,46 +316,12 @@ public class AutocompleteController implements Destroyable {
     @Nullable
     GURL updateMatchDestinationUrlWithQueryFormulationTime(
             AutocompleteMatch match, long elapsedTimeSinceInputChange) {
-        return updateMatchDestinationUrlWithQueryFormulationTime(
-                match, elapsedTimeSinceInputChange, null, null);
-    }
-
-    /**
-     * Updates destination url on the selected match that we will navigate to and returns the
-     * updated URL.
-     *
-     * If |newQueryText| and |newQueryParams| are not empty, they will be used to replace the
-     * existing query string and query params. For example, if:
-     * - |elapsedTimeSinceInputChange| > 0,
-     * - |newQyeryText| is "Politics news",
-     * - existing destination URL is "www.google.com/search?q=News+&aqs=chrome.0.69i...l3",
-     * the returned new URL will be of the format
-     *   "www.google.com/search?q=Politics+news&aqs=chrome.0.69i...l3.1409j0j9"
-     * where ".1409j0j9" is the encoded elapsed time.
-     *
-     * @param match the AutocompleteMatch to update
-     * @param elapsedTimeSinceInputChange the number of ms between the time the user started
-     *         typing in the omnibox and the time the user has selected a suggestion
-     * @param newQueryText the new query string that will replace the existing one
-     * @param newQueryParams a list of search params to be appended to the query
-     * @return the url to navigate to for this match with aqs parameter, query string and parameters
-     *         updated, if we are making a Google search query
-     */
-    @Nullable
-    GURL updateMatchDestinationUrlWithQueryFormulationTime(AutocompleteMatch match,
-            long elapsedTimeSinceInputChange, @Nullable String newQueryText,
-            @Nullable List<String> newQueryParams) {
         if (mNativeController == 0) return null;
         if (!hasValidNativeObjectRef(match, VerificationPoint.UPDATE_MATCH)) return null;
 
-        // Skip suggestions from cache.
-        if (match.getNativeObjectRef() == 0) return null;
         return AutocompleteControllerJni.get()
-                .updateMatchDestinationURLWithAdditionalAssistedQueryStats(mNativeController,
-                        match.getNativeObjectRef(), elapsedTimeSinceInputChange, newQueryText,
-                        newQueryParams == null
-                                ? null
-                                : newQueryParams.toArray(new String[newQueryParams.size()]));
+                .updateMatchDestinationURLWithAdditionalAssistedQueryStats(
+                        mNativeController, match.getNativeObjectRef(), elapsedTimeSinceInputChange);
     }
 
     /**
@@ -394,9 +360,12 @@ public class AutocompleteController implements Destroyable {
         void deleteMatchElement(long nativeAutocompleteControllerAndroid,
                 long nativeAutocompleteMatch, int elementIndex);
         void deleteMatch(long nativeAutocompleteControllerAndroid, long nativeAutocompleteMatch);
+
         GURL updateMatchDestinationURLWithAdditionalAssistedQueryStats(
-                long nativeAutocompleteControllerAndroid, long nativeAutocompleteMatch,
-                long elapsedTimeSinceInputChange, String newQueryText, String[] newQueryParams);
+                long nativeAutocompleteControllerAndroid,
+                long nativeAutocompleteMatch,
+                long elapsedTimeSinceInputChange);
+
         Tab getMatchingTabForSuggestion(
                 long nativeAutocompleteControllerAndroid, long nativeAutocompleteMatch);
         void setVoiceMatches(long nativeAutocompleteControllerAndroid, String[] matches,

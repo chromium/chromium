@@ -692,8 +692,7 @@ class AutocompleteMediator implements OnSuggestionsReceivedListener,
         if (!mNativeInitialized || mAutocomplete == null) return url;
         // TODO(crbug/1474087): this should exclude TILE variants when horizontal render group is
         // ready.
-        if (suggestion.getType() == OmniboxSuggestionType.TILE_SUGGESTION
-                || suggestion.getType() == OmniboxSuggestionType.TILE_NAVSUGGEST) {
+        if (suggestion.getType() == OmniboxSuggestionType.TILE_NAVSUGGEST) {
             return url;
         }
 

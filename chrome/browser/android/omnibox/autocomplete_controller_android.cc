@@ -415,34 +415,12 @@ ScopedJavaLocalRef<jobject> AutocompleteControllerAndroid::
     UpdateMatchDestinationURLWithAdditionalAssistedQueryStats(
         JNIEnv* env,
         uintptr_t match_ptr,
-        jlong elapsed_time_since_input_change,
-        const JavaParamRef<jstring>& jnew_query_text,
-        const JavaParamRef<jobjectArray>& jnew_query_params) {
-  AutocompleteMatch& match = *reinterpret_cast<AutocompleteMatch*>(match_ptr);
-
-  if (!jnew_query_text.is_null()) {
-    std::u16string query = ConvertJavaStringToUTF16(env, jnew_query_text);
-    if (!match.search_terms_args) {
-      match.search_terms_args =
-          std::make_unique<TemplateURLRef::SearchTermsArgs>(query);
-    } else {
-      match.search_terms_args->search_terms = query;
-    }
-  }
-
-  if (!jnew_query_params.is_null() && match.search_terms_args) {
-    std::vector<std::string> params;
-    base::android::AppendJavaStringArrayToStringVector(env, jnew_query_params,
-                                                       &params);
-    // The query params are from the query tiles server and doesn't need to be
-    // escaped.
-    match.search_terms_args->additional_query_params =
-        base::JoinString(params, "&");
-  }
+        jlong elapsed_time_since_input_change) {
+  auto* match = reinterpret_cast<AutocompleteMatch*>(match_ptr);
   autocomplete_controller_
       ->UpdateMatchDestinationURLWithAdditionalAssistedQueryStats(
-          base::Milliseconds(elapsed_time_since_input_change), &match);
-  return url::GURLAndroid::FromNativeGURL(env, match.destination_url);
+          base::Milliseconds(elapsed_time_since_input_change), match);
+  return url::GURLAndroid::FromNativeGURL(env, match->destination_url);
 }
 
 ScopedJavaLocalRef<jobject>
