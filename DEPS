@@ -4116,7 +4116,7 @@ deps = {
 
   'src/google_apis/internal': {
       'url': Var('chrome_git') + '/chrome/google_apis/internal.git' + '@' +
-        '813444e74e282dd37ac77cac0aba276ad58cb622',
+        '5e58468fff99dbb1482cb9a211e30bd7ca71fb03',
       'condition': 'checkout_src_internal',
   },
 
