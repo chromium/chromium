@@ -89,8 +89,8 @@ export class MlTableElement extends CustomElement {
        result.contents,
        result.description,
        result.relevance,
-       additionalInfo['ml model output'] || 'null',
-       additionalInfo['ml legacy relevance'] || 'null',
+       additionalInfo['ml model output'] || '',
+       additionalInfo['ml legacy relevance'] || '',
        ...Object.values(result.scoringSignals),
       ].forEach(value => createEl('div', tr, ['td'], value));
 

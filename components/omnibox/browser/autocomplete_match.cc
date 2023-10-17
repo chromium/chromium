@@ -1143,6 +1143,11 @@ void AutocompleteMatch::RecordAdditionalInfo(const std::string& property,
 }
 
 void AutocompleteMatch::RecordAdditionalInfo(const std::string& property,
+                                             double value) {
+  RecordAdditionalInfo(property, base::NumberToString(value));
+}
+
+void AutocompleteMatch::RecordAdditionalInfo(const std::string& property,
                                              base::Time value) {
   RecordAdditionalInfo(
       property, base::StringPrintf("%d hours ago",

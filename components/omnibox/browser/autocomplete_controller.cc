@@ -1787,7 +1787,7 @@ void AutocompleteController::OnUrlScoringModelDone(
       match_itr->RecordAdditionalInfo("ml legacy relevance",
                                       match_itr->relevance);
       match_itr->RecordAdditionalInfo(
-          "ml model output", (prediction_and_match_itr_heap.top().first * 100));
+          "ml model output", prediction_and_match_itr_heap.top().first);
       match_itr->relevance = relevance_heap.top();
     }
     relevance_heap.pop();

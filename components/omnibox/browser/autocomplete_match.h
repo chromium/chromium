@@ -483,6 +483,7 @@ struct AutocompleteMatch {
   void RecordAdditionalInfo(const std::string& property,
                             const std::u16string& value);
   void RecordAdditionalInfo(const std::string& property, int value);
+  void RecordAdditionalInfo(const std::string& property, double value);
   void RecordAdditionalInfo(const std::string& property, base::Time value);
 
   // Returns the value recorded for |property| in the |additional_info|
