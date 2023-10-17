@@ -87,6 +87,8 @@ source_set("base") {
     "telemetry_log_writer.cc",
     "telemetry_log_writer.h",
     "typed_buffer.h",
+    "url_loader_network_service_observer.cc",
+    "url_loader_network_service_observer.h",
     "url_request_context_getter.cc",
     "url_request_context_getter.h",
     "util.cc",
@@ -112,6 +114,7 @@ source_set("base") {
   deps = [
     ":authorization",
     ":buildflags",
+    ":logging",
     ":protobuf_http_client_messages_proto",
     "//base/third_party/dynamic_annotations",
     "//build:chromeos_buildflags",
