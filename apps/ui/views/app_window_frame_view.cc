@@ -13,7 +13,6 @@
 #include "cc/paint/paint_flags.h"
 #include "chrome/grit/theme_resources.h"
 #include "extensions/browser/app_window/native_app_window.h"
-#include "extensions/common/draggable_region.h"
 #include "third_party/skia/include/core/SkPath.h"
 #include "third_party/skia/include/core/SkRegion.h"
 #include "ui/base/hit_test.h"

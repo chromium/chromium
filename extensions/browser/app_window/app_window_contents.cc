@@ -19,7 +19,6 @@
 #include "extensions/browser/app_window/native_app_window.h"
 #include "extensions/browser/bad_message.h"
 #include "extensions/browser/extension_web_contents_observer.h"
-#include "extensions/common/extension_messages.h"
 #include "third_party/blink/public/common/renderer_preferences/renderer_preferences.h"
 
 namespace extensions {
@@ -97,18 +96,6 @@ WindowController* AppWindowContentsImpl::GetWindowController() const {
   return nullptr;
 }
 
-bool AppWindowContentsImpl::OnMessageReceived(
-    const IPC::Message& message,
-    content::RenderFrameHost* sender) {
-  bool handled = true;
-  IPC_BEGIN_MESSAGE_MAP_WITH_PARAM(AppWindowContentsImpl, message, sender)
-    IPC_MESSAGE_HANDLER(ExtensionHostMsg_UpdateDraggableRegions,
-                        UpdateDraggableRegions)
-    IPC_MESSAGE_UNHANDLED(handled = false)
-  IPC_END_MESSAGE_MAP()
-  return handled;
-}
-
 void AppWindowContentsImpl::DidFinishNavigation(
     content::NavigationHandle* handle) {
   if (!handle->IsInPrimaryMainFrame())
@@ -116,20 +103,6 @@ void AppWindowContentsImpl::DidFinishNavigation(
 
   // The callback inside app_window will be moved after the first call.
   host_->OnDidFinishFirstNavigation();
-}
-
-void AppWindowContentsImpl::UpdateDraggableRegions(
-    content::RenderFrameHost* sender,
-    const std::vector<DraggableRegion>& regions) {
-  // This message should come from a primary main frame.
-  if (!sender->IsInPrimaryMainFrame()) {
-    bad_message::ReceivedBadMessage(
-        web_contents_->GetPrimaryMainFrame()->GetProcess(),
-        bad_message::AWCI_INVALID_CALL_FROM_NOT_PRIMARY_MAIN_FRAME);
-    return;
-  }
-
-  host_->UpdateDraggableRegions(regions);
 }
 
 }  // namespace extensions

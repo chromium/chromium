@@ -26,7 +26,6 @@
 #include "extensions/common/api/messaging/port_id.h"
 #include "extensions/common/common_param_traits.h"
 #include "extensions/common/constants.h"
-#include "extensions/common/draggable_region.h"
 #include "extensions/common/extension.h"
 #include "extensions/common/extension_guid.h"
 #include "extensions/common/extension_param_traits.h"
@@ -127,11 +126,6 @@ IPC_STRUCT_BEGIN(ExtensionMsg_ExternalConnectionInfo)
   // The render frame routing ID of the webview that initiated the request.
   IPC_STRUCT_MEMBER(int, guest_render_frame_routing_id)
 IPC_STRUCT_END()
-
-IPC_STRUCT_TRAITS_BEGIN(extensions::DraggableRegion)
-  IPC_STRUCT_TRAITS_MEMBER(draggable)
-  IPC_STRUCT_TRAITS_MEMBER(bounds)
-IPC_STRUCT_TRAITS_END()
 
 IPC_STRUCT_TRAITS_BEGIN(content::SocketPermissionRequest)
   IPC_STRUCT_TRAITS_MEMBER(type)
@@ -300,10 +294,6 @@ IPC_SYNC_MESSAGE_CONTROL1_1(
 // Notify the browser that an app window is ready and can resume resource
 // requests.
 IPC_MESSAGE_ROUTED0(ExtensionHostMsg_AppWindowReady)
-
-// Sent by the renderer when the draggable regions are updated.
-IPC_MESSAGE_ROUTED1(ExtensionHostMsg_UpdateDraggableRegions,
-                    std::vector<extensions::DraggableRegion> /* regions */)
 
 // Asks the browser to wake the event page of an extension.
 // The browser will reply with ExtensionHostMsg_WakeEventPageResponse.

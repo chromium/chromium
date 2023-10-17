@@ -589,16 +589,15 @@ void ExtensionFrameHelper::DraggableRegionsChanged() {
 
   blink::WebVector<blink::WebDraggableRegion> webregions =
       render_frame()->GetWebFrame()->GetDocument().DraggableRegions();
-  std::vector<DraggableRegion> regions;
+  std::vector<mojom::DraggableRegionPtr> regions;
+  regions.reserve(webregions.size());
   for (blink::WebDraggableRegion& webregion : webregions) {
     render_frame()->ConvertViewportToWindow(&webregion.bounds);
 
-    regions.push_back(DraggableRegion());
-    DraggableRegion& region = regions.back();
-    region.bounds = webregion.bounds;
-    region.draggable = webregion.draggable;
+    regions.push_back(
+        mojom::DraggableRegion::New(webregion.draggable, webregion.bounds));
   }
-  Send(new ExtensionHostMsg_UpdateDraggableRegions(routing_id(), regions));
+  GetLocalFrameHost()->UpdateDraggableRegions(std::move(regions));
 }
 
 void ExtensionFrameHelper::DidClearWindowObject() {

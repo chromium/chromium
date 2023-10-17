@@ -120,7 +120,8 @@ class NativeAppWindowViews : public extensions::NativeAppWindow,
   void UpdateWindowIcon() override;
   void UpdateWindowTitle() override;
   void UpdateDraggableRegions(
-      const std::vector<extensions::DraggableRegion>& regions) override;
+      const std::vector<extensions::mojom::DraggableRegionPtr>& regions)
+      override;
   SkRegion* GetDraggableRegion() override;
   void UpdateShape(std::unique_ptr<ShapeRects> rects) override;
   bool HandleKeyboardEvent(

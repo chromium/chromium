@@ -11,7 +11,6 @@
 #include "content/public/browser/render_widget_host_view.h"
 #include "content/public/browser/web_contents.h"
 #include "extensions/browser/app_window/app_window.h"
-#include "extensions/common/draggable_region.h"
 #include "third_party/skia/include/core/SkRegion.h"
 #include "ui/base/metadata/metadata_impl_macros.h"
 #include "ui/views/controls/webview/webview.h"
@@ -313,7 +312,7 @@ void NativeAppWindowViews::UpdateWindowTitle() {
 }
 
 void NativeAppWindowViews::UpdateDraggableRegions(
-    const std::vector<extensions::DraggableRegion>& regions) {
+    const std::vector<extensions::mojom::DraggableRegionPtr>& regions) {
   // Draggable region is not supported for non-frameless window.
   if (!frameless_)
     return;

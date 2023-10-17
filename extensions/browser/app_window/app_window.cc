@@ -44,7 +44,6 @@
 #include "extensions/browser/process_manager.h"
 #include "extensions/browser/suggest_permission_util.h"
 #include "extensions/browser/view_type_utils.h"
-#include "extensions/common/draggable_region.h"
 #include "extensions/common/extension.h"
 #include "extensions/common/extension_messages.h"
 #include "extensions/common/manifest_handlers/icons_handler.h"
@@ -596,7 +595,7 @@ void AppWindow::UpdateShape(std::unique_ptr<ShapeRects> rects) {
 }
 
 void AppWindow::UpdateDraggableRegions(
-    const std::vector<DraggableRegion>& regions) {
+    const std::vector<mojom::DraggableRegionPtr>& regions) {
   native_app_window_->UpdateDraggableRegions(regions);
 }
 
@@ -1065,14 +1064,13 @@ AppWindow::CreateParams AppWindow::LoadDefaults(CreateParams params) const {
 
 // static
 SkRegion* AppWindow::RawDraggableRegionsToSkRegion(
-    const std::vector<DraggableRegion>& regions) {
+    const std::vector<mojom::DraggableRegionPtr>& regions) {
   SkRegion* sk_region = new SkRegion;
-  for (auto iter = regions.cbegin(); iter != regions.cend(); ++iter) {
-    const DraggableRegion& region = *iter;
+  for (const auto& region : regions) {
     sk_region->op(
-        SkIRect::MakeLTRB(region.bounds.x(), region.bounds.y(),
-                          region.bounds.right(), region.bounds.bottom()),
-        region.draggable ? SkRegion::kUnion_Op : SkRegion::kDifference_Op);
+        SkIRect::MakeLTRB(region->bounds.x(), region->bounds.y(),
+                          region->bounds.right(), region->bounds.bottom()),
+        region->draggable ? SkRegion::kUnion_Op : SkRegion::kDifference_Op);
   }
   return sk_region;
 }

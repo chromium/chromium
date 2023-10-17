@@ -245,8 +245,6 @@ static_library("common") {
     "csp_validator.cc",
     "csp_validator.h",
     "dom_action_types.h",
-    "draggable_region.cc",
-    "draggable_region.h",
     "error_utils.cc",
     "error_utils.h",
     "event_filter.cc",

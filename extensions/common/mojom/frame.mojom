@@ -14,6 +14,7 @@ import "extensions/common/mojom/stack_frame.mojom";
 import "extensions/common/mojom/view_type.mojom";
 import "mojo/public/mojom/base/string16.mojom";
 import "mojo/public/mojom/base/values.mojom";
+import "ui/gfx/geometry/mojom/geometry.mojom";
 import "url/mojom/url.mojom";
 import "third_party/blink/public/mojom/devtools/console_message.mojom";
 
@@ -83,6 +84,13 @@ struct RequestParams {
   // worker version id. Otherwise, this is set to
   // blink::mojom::kInvalidServiceWorkerVersionId.
   int64 service_worker_version_id;
+};
+
+// Region articulated from the renderer to the browser that is a draggable
+// hotspot.
+struct DraggableRegion{
+  bool draggable;
+  gfx.mojom.Rect bounds;
 };
 
 // Implemented in the renderer, this interface defines the local frame specific
@@ -192,4 +200,7 @@ interface LocalFrameHost {
   // Informs the browser there is one less thing keeping the lazy background
   // page alive.
   DecrementLazyKeepaliveCount();
+
+  // Sent by the renderer when the draggable regions are updated.
+  UpdateDraggableRegions(array<DraggableRegion> regions);
 };

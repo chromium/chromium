@@ -7,6 +7,8 @@
 #include <string>
 
 #include "content/public/browser/render_process_host.h"
+#include "extensions/browser/app_window/app_window.h"
+#include "extensions/browser/app_window/app_window_registry.h"
 #include "extensions/browser/bad_message.h"
 #include "extensions/browser/extension_function_dispatcher.h"
 #include "extensions/browser/extension_host.h"
@@ -110,6 +112,30 @@ const Extension* ExtensionFrameHost::GetExtension(
     return nullptr;
   }
   return extension_host->extension();
+}
+
+void ExtensionFrameHost::UpdateDraggableRegions(
+    std::vector<mojom::DraggableRegionPtr> regions) {
+  content::RenderFrameHost* render_frame_host =
+      receivers_.GetCurrentTargetFrame();
+  // This message should come from a primary main frame.
+  if (!render_frame_host->IsInPrimaryMainFrame()) {
+    bad_message::ReceivedBadMessage(
+        render_frame_host->GetProcess(),
+        bad_message::AWCI_INVALID_CALL_FROM_NOT_PRIMARY_MAIN_FRAME);
+    return;
+  }
+
+  AppWindowRegistry* registry =
+      AppWindowRegistry::Get(render_frame_host->GetBrowserContext());
+  if (!registry) {
+    return;
+  }
+  AppWindow* app_window = registry->GetAppWindowForWebContents(web_contents_);
+  if (!app_window) {
+    return;
+  }
+  app_window->UpdateDraggableRegions(std::move(regions));
 }
 
 }  // namespace extensions

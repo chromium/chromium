@@ -9,6 +9,7 @@
 #include <vector>
 
 #include "components/web_modal/web_contents_modal_dialog_host.h"
+#include "extensions/common/mojom/frame.mojom-forward.h"
 #include "third_party/skia/include/core/SkColor.h"
 #include "ui/base/base_window.h"
 #include "ui/gfx/geometry/insets.h"
@@ -20,8 +21,6 @@ struct NativeWebKeyboardEvent;
 }
 
 namespace extensions {
-
-struct DraggableRegion;
 
 // This is an interface to a native implementation of a app window, used for
 // new-style packaged apps. App windows contain a web contents, but no tabs
@@ -46,7 +45,7 @@ class NativeAppWindow : public ui::BaseWindow,
 
   // Called when the draggable regions are changed.
   virtual void UpdateDraggableRegions(
-      const std::vector<DraggableRegion>& regions) = 0;
+      const std::vector<mojom::DraggableRegionPtr>& regions) = 0;
 
   // Returns the region used by frameless windows for dragging. May return
   // nullptr.
