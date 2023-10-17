@@ -48,12 +48,20 @@ class ChromeContentBrowserClientParts {
 
   virtual void RenderProcessWillLaunch(content::RenderProcessHost* host) {}
   virtual void SiteInstanceGotProcess(content::SiteInstance* site_instance) {}
+
+  // Subclasses that override webkit preferences are responsible for ensuring
+  // that their modifications are mututally exclusive.
+  // This is called at startup, and when the user changes their webkit
+  // preferences.
   virtual void OverrideWebkitPrefs(content::WebContents* web_contents,
                                    blink::web_pref::WebPreferences* web_prefs) {
   }
+  // This is called after each navigation. Return |true| if any changes were
+  // made. A response value of |true| will result in IPC to the renderer.
   virtual bool OverrideWebPreferencesAfterNavigation(
       content::WebContents* web_contents,
       blink::web_pref::WebPreferences* web_prefs);
+
   virtual void BrowserURLHandlerCreated(content::BrowserURLHandler* handler) {}
   virtual void GetAdditionalAllowedSchemesForFileSystem(
       std::vector<std::string>* additional_allowed_schemes) {}
