@@ -185,14 +185,18 @@ public class AccountSelectionViewTest {
                 return initialDescription
                         + " "
                         + mResources.getString(
-                                R.string.signin_error_dialog_try_other_ways_prompt,
+                                AccountSelectionViewBinder.TEMPORARILY_UNAVAILABLE.equals(code)
+                                        ? R.string.signin_error_dialog_try_other_ways_retry_prompt
+                                        : R.string.signin_error_dialog_try_other_ways_prompt,
                                 TEST_RP_ETLD_PLUS_ONE);
             }
             return initialDescription
                     + " "
                     + mResources
                             .getString(
-                                    R.string.signin_error_dialog_more_details_prompt,
+                                    AccountSelectionViewBinder.TEMPORARILY_UNAVAILABLE.equals(code)
+                                            ? R.string.signin_error_dialog_more_details_retry_prompt
+                                            : R.string.signin_error_dialog_more_details_prompt,
                                     TEST_IDP_ETLD_PLUS_ONE)
                             .replaceAll(LINK_TAG_REGEX, "");
         }

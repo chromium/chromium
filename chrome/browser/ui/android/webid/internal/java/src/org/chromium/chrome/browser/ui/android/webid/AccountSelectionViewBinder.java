@@ -323,7 +323,10 @@ class AccountSelectionViewBinder {
             description +=
                     String.format(
                             context.getString(
-                                    R.string.signin_error_dialog_try_other_ways_prompt,
+                                    TEMPORARILY_UNAVAILABLE.equals(code)
+                                            ? R.string
+                                                    .signin_error_dialog_try_other_ways_retry_prompt
+                                            : R.string.signin_error_dialog_try_other_ways_prompt,
                                     topFrameForDisplay));
             return new ErrorText(summary, description);
         }
@@ -332,7 +335,10 @@ class AccountSelectionViewBinder {
         description +=
                 String.format(
                         context.getString(
-                                R.string.signin_error_dialog_more_details_prompt, idpForDisplay));
+                                TEMPORARILY_UNAVAILABLE.equals(code)
+                                        ? R.string.signin_error_dialog_more_details_retry_prompt
+                                        : R.string.signin_error_dialog_more_details_prompt,
+                                idpForDisplay));
         return new ErrorText(summary, description, context, properties.mMoreDetailsClickRunnable);
     }
 
