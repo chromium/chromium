@@ -14,9 +14,10 @@ import android.os.Process;
 import android.system.ErrnoException;
 import android.system.Os;
 
+import org.jni_zero.JNINamespace;
+import org.jni_zero.NativeMethods;
+
 import org.chromium.base.Log;
-import org.chromium.base.annotations.JNINamespace;
-import org.chromium.base.annotations.NativeMethods;
 import org.chromium.base.test.util.UrlUtils;
 import org.chromium.build.gtest_apk.NativeTestIntent;
 import org.chromium.test.reporter.TestStatusReporter;
