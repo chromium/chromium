@@ -9,12 +9,15 @@
 
 #include "base/files/file_path.h"
 #include "base/memory/raw_ptr.h"
+#include "components/prefs/pref_name_set.h"
 #include "content/public/browser/browser_context.h"
 #include "content/public/browser/content_browser_client.h"
 #include "content/public/browser/resource_context.h"
 #include "wolvic/browser/downloads/wolvic_download_manager_delegate.h"
 
 class SimpleFactoryKey;
+class PrefService;
+class PrefRegistrySimple;
 
 namespace content {
 
@@ -28,6 +31,8 @@ class WolvicBrowserContext : public BrowserContext {
   WolvicBrowserContext& operator=(const WolvicBrowserContext&) = delete;
 
   ~WolvicBrowserContext() override;
+
+  PrefService* GetPrefService() const { return user_pref_service_.get(); }
 
   // BrowserContext implementation.
   base::FilePath GetPath() override;
@@ -71,8 +76,14 @@ class WolvicBrowserContext : public BrowserContext {
   void InitWhileIOAllowed();
   void FinishInitWhileIOAllowed();
 
+  base::FilePath GetPrefStorePath();
+  void CreateUserPrefService();
+  void RegisterPrefs(PrefRegistrySimple* registry, PrefNameSet* persistent_prefs);
+  void MigrateLocalStatePrefs();
+
   const bool off_the_record_;
   std::unique_ptr<ResourceContext> resource_context_;
+  std::unique_ptr<PrefService> user_pref_service_;
   base::FilePath path_;
   std::unique_ptr<SimpleFactoryKey> key_;
 };
