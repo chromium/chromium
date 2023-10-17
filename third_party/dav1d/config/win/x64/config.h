@@ -25,8 +25,6 @@
 
 #define ENDIANNESS_BIG 0
 
-#define HAVE_ALIGNED_MALLOC 1
-
 #define HAVE_ASM 1
 
 #define HAVE_C11_GENERIC 1

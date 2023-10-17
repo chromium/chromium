@@ -49,6 +49,7 @@ x86_asm_sources = [
   "libdav1d/src/x86/mc_avx512.asm",
   "libdav1d/src/x86/mc_sse.asm",
   "libdav1d/src/x86/msac.asm",
+  "libdav1d/src/x86/pal.asm",
   "libdav1d/src/x86/refmvs.asm",
 ]
 
@@ -140,6 +141,7 @@ c_headers = [
   "libdav1d/src/mem.h",
   "libdav1d/src/msac.h",
   "libdav1d/src/obu.h",
+  "libdav1d/src/pal.h",
   "libdav1d/src/picture.h",
   "libdav1d/src/qm.h",
   "libdav1d/src/recon.h",
@@ -169,6 +171,7 @@ c_sources = [
   "libdav1d/src/mem.c",
   "libdav1d/src/msac.c",
   "libdav1d/src/obu.c",
+  "libdav1d/src/pal.c",
   "libdav1d/src/picture.c",
   "libdav1d/src/qm.c",
   "libdav1d/src/ref.c",
