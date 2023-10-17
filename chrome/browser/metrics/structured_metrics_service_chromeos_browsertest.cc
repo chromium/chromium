@@ -8,7 +8,6 @@
 #include "base/run_loop.h"
 #include "base/test/scoped_feature_list.h"
 #include "chrome/browser/browser_process.h"
-#include "chrome/browser/metrics/chrome_metrics_service_accessor.h"
 #include "chrome/browser/metrics/structured/test/structured_metrics_mixin.h"
 #include "chrome/browser/metrics/testing/sync_metrics_test_utils.h"
 #include "chrome/browser/profiles/profile_manager.h"
@@ -23,12 +22,8 @@
 #include "components/metrics/structured/structured_events.h"
 #include "components/metrics/structured/structured_metrics_features.h"
 #include "components/metrics/structured/structured_metrics_service.h"
-#include "components/metrics/unsent_log_store.h"
 #include "components/metrics_services_manager/metrics_services_manager.h"
-#include "components/sync/test/fake_server_network_resources.h"
-#include "components/unified_consent/unified_consent_service.h"
 #include "content/public/test/browser_test.h"
-#include "content/public/test/browser_test_utils.h"
 
 namespace metrics {
 namespace {
@@ -198,8 +193,11 @@ IN_PROC_BROWSER_TEST_F(TestStructuredMetricsService,
   // There shouldn't be any staged or un-staged logs and no in-memory events.
   EXPECT_FALSE(HasUnsentLogs());
   EXPECT_FALSE(HasStagedLog());
-  EXPECT_EQ(sm_service->recorder()->events()->non_uma_events_size(), 0);
-  EXPECT_EQ(sm_service->recorder()->events()->uma_events_size(), 0);
+  EXPECT_EQ(sm_service->recorder()->LocalStateEvents()->non_uma_events_size(),
+            0);
+  EXPECT_EQ(sm_service->recorder()->LocalStateEvents()->uma_events_size(), 0);
+  EXPECT_EQ(sm_service->recorder()->ProfileEvents()->non_uma_events_size(), 0);
+  EXPECT_EQ(sm_service->recorder()->ProfileEvents()->uma_events_size(), 0);
 }
 
 // TODO(crbug.com/1482059): Re-enable this test
@@ -253,8 +251,11 @@ IN_PROC_BROWSER_TEST_F(TestStructuredMetricsService,
   // There shouldn't be any staged or un-staged logs and no in-memory events.
   EXPECT_FALSE(HasUnsentLogs());
   EXPECT_FALSE(HasStagedLog());
-  EXPECT_EQ(sm_service->recorder()->events()->non_uma_events_size(), 0);
-  EXPECT_EQ(sm_service->recorder()->events()->uma_events_size(), 0);
+  EXPECT_EQ(sm_service->recorder()->LocalStateEvents()->non_uma_events_size(),
+            0);
+  EXPECT_EQ(sm_service->recorder()->LocalStateEvents()->uma_events_size(), 0);
+  EXPECT_EQ(sm_service->recorder()->ProfileEvents()->non_uma_events_size(), 0);
+  EXPECT_EQ(sm_service->recorder()->ProfileEvents()->uma_events_size(), 0);
 }
 
 IN_PROC_BROWSER_TEST_F(TestStructuredMetricsService, SystemProfilePopulated) {

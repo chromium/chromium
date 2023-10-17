@@ -74,16 +74,12 @@ bool StructuredMetricsProvider::HasIndependentMetrics() {
     return false;
   }
 
-  if (!recorder().can_provide_metrics()) {
-    return false;
-  }
-
   if (base::Time::Now() - last_provided_independent_metrics_ <
       min_independent_metrics_interval_) {
     return false;
   }
 
-  return recorder().events()->non_uma_events_size() != 0;
+  return recorder().HasIndependentMetrics();
 }
 
 void StructuredMetricsProvider::ProvideIndependentMetrics(

@@ -78,7 +78,7 @@ bool KeyDataProviderAsh::HasProfileKey() {
 }
 
 bool KeyDataProviderAsh::HasDeviceKey() {
-  return profile_key_ != nullptr;
+  return device_key_ != nullptr;
 }
 
 }  // namespace metrics::structured

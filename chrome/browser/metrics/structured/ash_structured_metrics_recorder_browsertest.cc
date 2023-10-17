@@ -13,10 +13,8 @@
 #include "chrome/browser/metrics/structured/test/structured_metrics_mixin.h"
 #include "chrome/test/base/mixin_based_in_process_browser_test.h"
 #include "components/metrics/structured/event.h"
-#include "components/metrics/structured/recorder.h"
 #include "components/metrics/structured/structured_events.h"
 #include "content/public/test/browser_test.h"
-#include "testing/gmock/include/gmock/gmock.h"
 #include "testing/gtest/include/gtest/gtest.h"
 #include "third_party/abseil-cpp/absl/types/optional.h"
 

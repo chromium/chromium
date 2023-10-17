@@ -93,6 +93,12 @@ class StructuredMetricsProviderTest : public testing::Test {
         .Append("device_keys");
   }
 
+  base::FilePath DeviceEventsFilePath() {
+    return temp_dir_.GetPath()
+        .Append("structured_metrics")
+        .Append("device_events");
+  }
+
   void Wait() { task_environment_.RunUntilIdle(); }
 
   // Simulates the three external events that the structure metrics system cares
@@ -102,8 +108,9 @@ class StructuredMetricsProviderTest : public testing::Test {
     system_profile_provider_ = std::make_unique<TestSystemProfileProvider>();
     // Create a system profile, normally done by ChromeMetricsServiceClient.
     structured_metrics_recorder_ = std::unique_ptr<StructuredMetricsRecorder>(
-        new StructuredMetricsRecorder(/*write_delay=*/base::Seconds(0),
-                                      system_profile_provider_.get()));
+        new StructuredMetricsRecorder(
+            /*write_delay=*/base::Seconds(0), system_profile_provider_.get(),
+            DeviceEventsFilePath()));
     structured_metrics_recorder_->InitializeKeyDataProvider(
         std::make_unique<TestKeyDataProvider>(DeviceKeyFilePath(),
                                               ProfileKeyFilePath()));
@@ -151,8 +158,8 @@ class StructuredMetricsProviderTest : public testing::Test {
   }
 
   bool RecorderInitialized() {
-    return provider_->recorder().is_init_state(
-        StructuredMetricsRecorder::InitState::kInitialized);
+    return provider_->recorder().IsReadyToRecordLocalStateEvents() &&
+           provider_->recorder().IsReadyToRecordProfileEvents();
   }
 
  protected:

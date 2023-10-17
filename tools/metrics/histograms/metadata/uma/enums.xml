@@ -13,8 +13,7 @@ at src/tools/metrics/histograms/enums.xml when multiple files use them.
 For best practices on writing enumerations descriptions, see
 https://chromium.googlesource.com/chromium/src.git/+/HEAD/tools/metrics/histograms/README.md#Enum-Histograms
 
-Please follow the instructions in the OWNERS file in this directory to find a
-reviewer. If no OWNERS file exists, please consider signing up at
+Please follow the instructions in the OWNERS file in this directory to find a reviewer. If no OWNERS file exists, please consider signing up at
 go/reviewing-metrics (Googlers only), as all subdirectories are expected to
 have an OWNERS file. As a last resort you can send the CL to
 chromium-metrics-reviews@google.com.
@@ -351,6 +350,7 @@ chromium-metrics-reviews@google.com.
   <int value="3" label="Provider missing"/>
   <int value="4" label="Project disallowed"/>
   <int value="5" label="Max proto size exceeded"/>
+  <int value="6" label="Profile event recorded before profile key"/>
 </enum>
 
 <enum name="StructuredMetricsInternalError2">
