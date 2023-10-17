@@ -75,6 +75,11 @@ const std::string& GetVariationParam(
   return it->second;
 }
 
+bool doesVariationParamExist(const std::map<std::string, std::string>& params,
+                             const std::string& key) {
+  return params.find(key) != params.end();
+}
+
 spdy::SettingsMap GetHttp2Settings(
     const VariationParameters& http2_trial_params) {
   spdy::SettingsMap http2_settings;
@@ -586,8 +591,11 @@ void ConfigureQuicParams(const base::CommandLine& command_line,
     }
     quic_params->estimate_initial_rtt =
         ShouldQuicEstimateInitialRtt(quic_trial_params);
-    quic_params->migrate_sessions_on_network_change_v2 =
-        ShouldQuicMigrateSessionsOnNetworkChangeV2(quic_trial_params);
+    if (doesVariationParamExist(quic_trial_params,
+                                "migrate_sessions_on_network_change_v2")) {
+      quic_params->migrate_sessions_on_network_change_v2 =
+          ShouldQuicMigrateSessionsOnNetworkChangeV2(quic_trial_params);
+    }
     quic_params->migrate_sessions_early_v2 =
         ShouldQuicMigrateSessionsEarlyV2(quic_trial_params);
     quic_params->allow_port_migration =
