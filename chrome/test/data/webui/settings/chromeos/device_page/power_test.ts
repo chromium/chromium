@@ -8,6 +8,7 @@ import {SettingsPowerElement} from 'chrome://os-settings/lazy_load.js';
 import {Router, routes, settingMojom} from 'chrome://os-settings/os_settings.js';
 import {webUIListenerCallback} from 'chrome://resources/js/cr.js';
 import {loadTimeData} from 'chrome://resources/js/load_time_data.js';
+import {PromiseResolver} from 'chrome://resources/js/promise_resolver.js';
 import {assertEquals, assertFalse, assertTrue} from 'chrome://webui-test/chai_assert.js';
 import {flushTasks, waitAfterNextRender} from 'chrome://webui-test/polymer_test_util.js';
 import {isVisible} from 'chrome://webui-test/test_util.js';
@@ -15,13 +16,19 @@ import {isVisible} from 'chrome://webui-test/test_util.js';
 suite('<settings-power>', () => {
   const isRevampWayfindingEnabled =
       loadTimeData.getBoolean('isRevampWayfindingEnabled');
-
   let powerSubpage: SettingsPowerElement;
 
-  async function createSubpage(): Promise<void> {
+  async function initSubpage(): Promise<void> {
+    const batteryStatusPromise = new PromiseResolver();
     powerSubpage = document.createElement('settings-power');
+    powerSubpage.addWebUiListener(
+        'battery-status-changed', batteryStatusPromise.resolve);
     document.body.appendChild(powerSubpage);
     await flushTasks();
+
+    // Wait until the initial battery status is fetched before continuing to
+    // tests that might retrigger a 'battery-status-changed' event.
+    await batteryStatusPromise;
   }
 
   async function deepLinkToSetting(setting: settingMojom.Setting):
@@ -41,11 +48,12 @@ suite('<settings-power>', () => {
   }
 
   setup(async () => {
-    await createSubpage();
+    await initSubpage();
   });
 
   teardown(() => {
     powerSubpage.remove();
+    Router.getInstance().resetRouteForTesting();
   });
 
   suite('When battery status is present', () => {

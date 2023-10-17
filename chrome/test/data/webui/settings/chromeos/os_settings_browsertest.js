@@ -379,12 +379,11 @@ TEST_F(
    'device_page/power_test.js',
    {disabled: ['ash::features::kOsSettingsRevampWayfinding']},
  ],
- // Disabled because of flakiness b/303702729.
- //  [
- //    'DevicePagePowerRevamp',
- //    'device_page/power_test.js',
- //    {enabled: ['ash::features::kOsSettingsRevampWayfinding']},
- //  ],
+ [
+   'DevicePagePowerRevamp',
+   'device_page/power_test.js',
+   {enabled: ['ash::features::kOsSettingsRevampWayfinding']},
+ ],
  [
    'DevicePagePrintingSettingsCard',
    'os_printing_page/printing_settings_card_test.js',
