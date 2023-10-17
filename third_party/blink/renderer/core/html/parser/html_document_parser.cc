@@ -1371,6 +1371,14 @@ void HTMLDocumentParser::ProcessPreloadData(
             PreloadHelper::LoadLinksFromHeaderMode::
                 kDocumentAfterCommitWithViewport);
       }
+      if (base::FeatureList::IsEnabled(
+              blink::features::kLCPPFontURLPredictor)) {
+        TRACE_EVENT0("blink", "HTMLDocumentParser::DispatchLcppFontPreloads");
+        GetDocument()->Loader()->DispatchLcppFontPreloads(
+            base::OptionalToPtr(preload_data->viewport),
+            PreloadHelper::LoadLinksFromHeaderMode::
+                kSubresourceNotFromMemoryCache);
+      }
       if (GetDocument()->Loader()->GetPrefetchedSignedExchangeManager()) {
         TRACE_EVENT0("blink",
                      "HTMLDocumentParser::DispatchSignedExchangeManager");

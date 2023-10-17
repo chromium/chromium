@@ -2351,6 +2351,26 @@
     ]
   },
   {
+    "prefix": "lcpp-fetched-fonts",
+    "platforms": [
+      "Linux",
+      "Mac",
+      "Win"
+    ],
+    "bases": [
+      "http/tests/lcpp_fetched_fonts"
+    ],
+    "exclusive_tests": "ALL",
+    "args": [
+      "--enable-features=LCPCriticalPathPredictor,LCPPFontURLPredictor"
+    ],
+    "expires": "Oct 16, 2024",
+    "owners": [
+      "yyanagisawa@chromium.org",
+      "kouhei@chromium.org"
+    ]
+  },
+  {
     "prefix": "lcp-script-observer",
     "platforms": [
       "Linux",

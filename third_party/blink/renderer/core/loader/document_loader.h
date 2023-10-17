@@ -327,6 +327,8 @@ class CORE_EXPORT DocumentLoader : public GarbageCollected<DocumentLoader>,
 
   void DispatchLinkHeaderPreloads(const ViewportDescription*,
                                   PreloadHelper::LoadLinksFromHeaderMode);
+  void DispatchLcppFontPreloads(const ViewportDescription*,
+                                PreloadHelper::LoadLinksFromHeaderMode);
 
   void LoadFailed(const ResourceError&);
 

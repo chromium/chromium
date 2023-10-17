@@ -102,6 +102,7 @@
 #include "third_party/blink/renderer/core/inspector/console_message.h"
 #include "third_party/blink/renderer/core/inspector/inspector_trace_events.h"
 #include "third_party/blink/renderer/core/inspector/main_thread_debugger.h"
+#include "third_party/blink/renderer/core/lcp_critical_path_predictor/lcp_critical_path_predictor.h"
 #include "third_party/blink/renderer/core/loader/alternate_signed_exchange_resource_info.h"
 #include "third_party/blink/renderer/core/loader/frame_client_hints_preferences_context.h"
 #include "third_party/blink/renderer/core/loader/frame_fetch_context.h"
@@ -752,6 +753,31 @@ void DocumentLoader::DispatchLinkHeaderPreloads(
       GetResponse().CurrentRequestUrl(), *frame_, frame_->GetDocument(), mode,
       viewport, nullptr /* alternate_resource_info */,
       nullptr /* recursive_prefetch_token */);
+}
+
+void DocumentLoader::DispatchLcppFontPreloads(
+    const ViewportDescription* viewport,
+    PreloadHelper::LoadLinksFromHeaderMode mode) {
+  DCHECK_GE(state_, kCommitted);
+  StringBuilder fonts_link;
+  LCPCriticalPathPredictor* lcpp = frame_->GetLCPP();
+  if (!lcpp) {
+    return;
+  }
+  // Generate link header for fonts.
+  for (const auto& font : lcpp->fetched_fonts()) {
+    if (!fonts_link.empty()) {
+      fonts_link.Append(",");
+    }
+    fonts_link.Append("<");
+    fonts_link.Append(font.GetString());
+    fonts_link.Append(">; rel=\"preload\"; as=\"font\"");
+  }
+  PreloadHelper::LoadLinksFromHeader(fonts_link.ToString(),
+                                     GetResponse().CurrentRequestUrl(), *frame_,
+                                     frame_->GetDocument(), mode, viewport,
+                                     nullptr /* alternate_resource_info */,
+                                     nullptr /* recursive_prefetch_token */);
 }
 
 void DocumentLoader::DidChangePerformanceTiming() {
