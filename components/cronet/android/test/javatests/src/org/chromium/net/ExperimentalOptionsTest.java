@@ -244,7 +244,6 @@ public class ExperimentalOptionsTest {
 
         // Do a request for the test URL to make sure it's cached.
         TestUrlRequestCallback callback = new TestUrlRequestCallback();
-        ;
         UrlRequest urlRequest =
                 context.newUrlRequestBuilder(testUrl, callback, callback.getExecutor()).build();
         urlRequest.start();

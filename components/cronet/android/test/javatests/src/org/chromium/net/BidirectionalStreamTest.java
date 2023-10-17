@@ -1062,7 +1062,7 @@ public class BidirectionalStreamTest {
         stream.start();
         // Write first.
         callback.waitForNextWriteStep(); // onStreamReady
-        for (String expected : testData) {
+        for (int i = 0; i < testData.length; i++) {
             // Write next chunk of test data.
             callback.startNextWrite(stream);
             callback.waitForNextWriteStep(); // onWriteCompleted
