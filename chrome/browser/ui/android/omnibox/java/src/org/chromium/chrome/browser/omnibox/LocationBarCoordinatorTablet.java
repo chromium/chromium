@@ -6,9 +6,7 @@ package org.chromium.chrome.browser.omnibox;
 
 import androidx.annotation.ColorInt;
 
-/**
- * A supplement to {@link LocationBarCoordinator} with methods specific to larger devices.
- */
+/** A supplement to {@link LocationBarCoordinator} with methods specific to larger devices. */
 public class LocationBarCoordinatorTablet implements LocationBarCoordinator.SubCoordinator {
     private LocationBarTablet mLocationBarTablet;
 
@@ -23,6 +21,7 @@ public class LocationBarCoordinatorTablet implements LocationBarCoordinator.SubC
 
     /**
      * Sets the color of the background.
+     *
      * <p>TODO(1133482): Hide this View interaction if possible.
      */
     public void tintBackground(@ColorInt int color) {

@@ -12,9 +12,7 @@ import org.chromium.chrome.browser.omnibox.status.StatusCoordinator;
 
 import java.util.List;
 
-/**
- * A supplement to {@link LocationBarCoordinator} with methods specific to smaller devices.
- */
+/** A supplement to {@link LocationBarCoordinator} with methods specific to smaller devices. */
 public class LocationBarCoordinatorPhone implements LocationBarCoordinator.SubCoordinator {
     private LocationBarPhone mLocationBarPhone;
     private StatusCoordinator mStatusCoordinator;
@@ -158,8 +156,7 @@ public class LocationBarCoordinatorPhone implements LocationBarCoordinator.SubCo
     }
 
     /**
-     * Returns true if this view has focus itself, or is the ancestor of the view that has
-     * focus.
+     * Returns true if this view has focus itself, or is the ancestor of the view that has focus.
      *
      * <p>TODO(1133482): Hide this View interaction if possible.
      *

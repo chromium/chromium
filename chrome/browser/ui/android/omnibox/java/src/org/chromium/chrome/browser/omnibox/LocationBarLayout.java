@@ -35,10 +35,7 @@ import org.chromium.ui.base.DeviceFormFactor;
 import java.util.ArrayList;
 import java.util.List;
 
-/**
- * This class represents the location bar where the user types in URLs and
- * search terms.
- */
+/** This class represents the location bar where the user types in URLs and search terms. */
 public class LocationBarLayout extends FrameLayout {
     protected ImageButton mDeleteButton;
     protected ImageButton mMicButton;
@@ -88,9 +85,7 @@ public class LocationBarLayout extends FrameLayout {
                 context.getResources().getDimensionPixelSize(R.dimen.location_bar_min_url_width);
     }
 
-    /**
-     * Called when activity is being destroyed.
-     */
+    /** Called when activity is being destroyed. */
     void destroy() {
         if (mAutocompleteCoordinator != null) {
             // Don't call destroy() on mAutocompleteCoordinator since we don't own it.
@@ -121,15 +116,17 @@ public class LocationBarLayout extends FrameLayout {
      * construction time.
      *
      * @param autocompleteCoordinator The coordinator for interacting with the autocomplete
-     *         subsystem.
+     *     subsystem.
      * @param urlCoordinator The coordinator for interacting with the url bar.
      * @param statusCoordinator The coordinator for interacting with the status icon.
      * @param locationBarDataProvider Provider of LocationBar data, e.g. url and title.
      * @param searchEngineLogoUtils Allows querying the state of the search engine logo feature.
      */
     @CallSuper
-    public void initialize(@NonNull AutocompleteCoordinator autocompleteCoordinator,
-            @NonNull UrlBarCoordinator urlCoordinator, @NonNull StatusCoordinator statusCoordinator,
+    public void initialize(
+            @NonNull AutocompleteCoordinator autocompleteCoordinator,
+            @NonNull UrlBarCoordinator urlCoordinator,
+            @NonNull StatusCoordinator statusCoordinator,
             @NonNull LocationBarDataProvider locationBarDataProvider,
             @NonNull SearchEngineLogoUtils searchEngineLogoUtils) {
         mAutocompleteCoordinator = autocompleteCoordinator;
@@ -145,7 +142,7 @@ public class LocationBarLayout extends FrameLayout {
     }
 
     /**
-     *  Signals to LocationBarLayout that's it safe to call code that requires native to be loaded.
+     * Signals to LocationBarLayout that's it safe to call code that requires native to be loaded.
      */
     public void onFinishNativeInitialization() {
         mNativeInitialized = true;
@@ -191,20 +188,22 @@ public class LocationBarLayout extends FrameLayout {
             for (View childView : getUrlContainerViewsForMargin()) {
                 ViewGroup.MarginLayoutParams childLayoutParams =
                         (ViewGroup.MarginLayoutParams) childView.getLayoutParams();
-                urlContainerMarginEnd += childLayoutParams.width
-                        + MarginLayoutParamsCompat.getMarginStart(childLayoutParams)
-                        + MarginLayoutParamsCompat.getMarginEnd(childLayoutParams);
+                urlContainerMarginEnd +=
+                        childLayoutParams.width
+                                + MarginLayoutParamsCompat.getMarginStart(childLayoutParams)
+                                + MarginLayoutParamsCompat.getMarginEnd(childLayoutParams);
             }
             ViewGroup.MarginLayoutParams urlActionContainerLayoutParams =
                     (ViewGroup.MarginLayoutParams) mUrlActionContainer.getLayoutParams();
             urlContainerMarginEnd +=
                     MarginLayoutParamsCompat.getMarginStart(urlActionContainerLayoutParams)
-                    + MarginLayoutParamsCompat.getMarginEnd(urlActionContainerLayoutParams);
+                            + MarginLayoutParamsCompat.getMarginEnd(urlActionContainerLayoutParams);
         }
-        urlContainerMarginEnd += mStatusCoordinator.isSearchEngineStatusIconVisible()
-                        && mStatusCoordinator.shouldDisplaySearchEngineIcon()
-                ? getEndPaddingPixelSizeOnFocusDelta()
-                : 0;
+        urlContainerMarginEnd +=
+                mStatusCoordinator.isSearchEngineStatusIconVisible()
+                                && mStatusCoordinator.shouldDisplaySearchEngineIcon()
+                        ? getEndPaddingPixelSizeOnFocusDelta()
+                        : 0;
         // Account for the URL action container end padding on tablets.
         if (DeviceFormFactor.isNonMultiDisplayContextOnTablet(getContext())) {
             urlContainerMarginEnd +=
@@ -213,9 +212,7 @@ public class LocationBarLayout extends FrameLayout {
         return urlContainerMarginEnd;
     }
 
-    /**
-     * Updates the layout params for the location bar start aligned views.
-     */
+    /** Updates the layout params for the location bar start aligned views. */
     void updateLayoutParams(int parentWidthMeasureSpec) {
         int startMargin = 0;
         for (int i = 0; i < getChildCount(); i++) {
@@ -252,8 +249,9 @@ public class LocationBarLayout extends FrameLayout {
                     widthMeasureSpec =
                             MeasureSpec.makeMeasureSpec(getMeasuredWidth(), MeasureSpec.EXACTLY);
                 } else {
-                    widthMeasureSpec = MeasureSpec.makeMeasureSpec(
-                            childLayoutParams.width, MeasureSpec.EXACTLY);
+                    widthMeasureSpec =
+                            MeasureSpec.makeMeasureSpec(
+                                    childLayoutParams.width, MeasureSpec.EXACTLY);
                 }
                 if (childLayoutParams.height == LayoutParams.WRAP_CONTENT) {
                     heightMeasureSpec =
@@ -262,8 +260,9 @@ public class LocationBarLayout extends FrameLayout {
                     heightMeasureSpec =
                             MeasureSpec.makeMeasureSpec(getMeasuredHeight(), MeasureSpec.EXACTLY);
                 } else {
-                    heightMeasureSpec = MeasureSpec.makeMeasureSpec(
-                            childLayoutParams.height, MeasureSpec.EXACTLY);
+                    heightMeasureSpec =
+                            MeasureSpec.makeMeasureSpec(
+                                    childLayoutParams.height, MeasureSpec.EXACTLY);
                 }
                 childView.measure(widthMeasureSpec, heightMeasureSpec);
                 startMargin += childView.getMeasuredWidth();
@@ -297,7 +296,7 @@ public class LocationBarLayout extends FrameLayout {
      * URL bar.
      *
      * @return A {@link List} of the views to be taken into account for URL bar margin to avoid
-     *         overlapping text and buttons.
+     *     overlapping text and buttons.
      */
     protected List<View> getUrlContainerViewsForMargin() {
         List<View> outList = new ArrayList<View>();
@@ -352,8 +351,8 @@ public class LocationBarLayout extends FrameLayout {
         }
         int focusedPaddingDimen =
                 modernizeVisualUpdate && OmniboxFeatures.shouldShowSmallBottomMargin()
-                ? R.dimen.location_bar_icon_end_padding_focused_smaller
-                : R.dimen.location_bar_icon_end_padding_focused;
+                        ? R.dimen.location_bar_icon_end_padding_focused_smaller
+                        : R.dimen.location_bar_icon_end_padding_focused;
         if (modernizeVisualUpdate && mLocationBarDataProvider.isIncognito()) {
             focusedPaddingDimen = R.dimen.location_bar_icon_end_padding_focused_incognito;
         }
@@ -388,9 +387,11 @@ public class LocationBarLayout extends FrameLayout {
         // The tablet UI doesn't have status view spacer elements so must use translation.
         if (OmniboxFeatures.shouldAvoidRelayoutDuringFocusAnimation()
                 || mStatusViewLeftSpace == null) {
-            mStatusCoordinator.setTranslationX(MathUtils.flipSignIf(
-                    OmniboxResourceProvider.getFocusedStatusViewLeftSpacing(getContext()) * percent,
-                    getLayoutDirection() == LAYOUT_DIRECTION_RTL));
+            mStatusCoordinator.setTranslationX(
+                    MathUtils.flipSignIf(
+                            OmniboxResourceProvider.getFocusedStatusViewLeftSpacing(getContext())
+                                    * percent,
+                            getLayoutDirection() == LAYOUT_DIRECTION_RTL));
         } else {
             // Set the left space expansion width.
             ViewGroup.LayoutParams leftSpacingParams = mStatusViewLeftSpace.getLayoutParams();
@@ -424,18 +425,22 @@ public class LocationBarLayout extends FrameLayout {
                                 && UrlUtilities.isNTPUrl(mLocationBarDataProvider.getCurrentGurl())
                                 && !DeviceFormFactor.isNonMultiDisplayContextOnTablet(getContext());
                 if (scrollingOnNtp) {
-                    translationX -= (1.0f - percent)
-                            * (mStatusCoordinator.getStatusIconWidth()
-                                    - getResources().getDimensionPixelSize(
-                                            R.dimen.location_bar_status_icon_holding_space_size));
+                    translationX -=
+                            (1.0f - percent)
+                                    * (mStatusCoordinator.getStatusIconWidth()
+                                            - getResources()
+                                                    .getDimensionPixelSize(
+                                                            R.dimen
+                                                                    .location_bar_status_icon_holding_space_size));
                 }
             } else {
                 // No compensation is needed at 0% because the margin is reset to normal.
                 translationX = 0.0f;
             }
 
-            mUrlBar.setTranslationX(MathUtils.flipSignIf(
-                    translationX, getLayoutDirection() == LAYOUT_DIRECTION_RTL));
+            mUrlBar.setTranslationX(
+                    MathUtils.flipSignIf(
+                            translationX, getLayoutDirection() == LAYOUT_DIRECTION_RTL));
         } else {
             // Set the right space expansion width.
             ViewGroup.LayoutParams rightSpacingParams = mStatusViewRightSpace.getLayoutParams();
