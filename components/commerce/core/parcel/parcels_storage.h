@@ -58,6 +58,9 @@ class ParcelsStorage {
   // Deletes all the parcel status from db.
   virtual void DeleteAllParcelStatus(StorageUpdateCallback callback);
 
+  // Modify old parcels that are done if necessary.
+  virtual void ModifyOldDoneParcels();
+
  private:
   void OnAllParcelsLoaded(OnInitializedCallback callback,
                           bool success,

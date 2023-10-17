@@ -82811,6 +82811,14 @@ Called by update_net_trust_anchors.py.-->
   <int value="10" label="Download is resumed without slices."/>
 </enum>
 
+<enum name="ParcelRequestStatus">
+  <summary>Request status from parcel tracking server</summary>
+  <int value="0" label="Request succeeded"/>
+  <int value="1" label="Invalid parcel identifiers"/>
+  <int value="2" label="Server error"/>
+  <int value="3" label="Error parsing server response"/>
+</enum>
+
 <enum name="ParentAccessCodeAction">
   <summary>Action resulting from parent access code dialog</summary>
   <int value="0" label="Validation success"/>

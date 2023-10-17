@@ -293,4 +293,46 @@ TEST_F(ParcelsStorageTest, TestUpdateParcelStatus) {
   ASSERT_EQ(status2.parcel_state(), status_map[kTrackingId2].parcel_state());
 }
 
+TEST_F(ParcelsStorageTest, TestModifyOldDoneParcels) {
+  EXPECT_CALL(*proto_db_, UpdateEntries(_, _, _)).Times(2);
+
+  int64_t delivery_time =
+      clock_.Now().ToDeltaSinceWindowsEpoch().InMicroseconds();
+
+  std::vector<ParcelStatus> status;
+  ParcelStatus status1 = CreateParcelStatus(kCarrier1, kTrackingId1,
+                                            commerce::ParcelStatus::FINISHED);
+  status1.set_estimated_delivery_time_usec(delivery_time);
+  ParcelStatus status2 =
+      CreateParcelStatus(kCarrier1, kTrackingId2, kDefaultState);
+  status2.set_estimated_delivery_time_usec(delivery_time);
+  status.emplace_back(status1);
+  status.emplace_back(status2);
+  storage_->UpdateParcelStatus(status, base::BindOnce(&DoNothing));
+  task_environment_.RunUntilIdle();
+
+  clock_.Advance(base::Days(20));
+  storage_->ModifyOldDoneParcels();
+  auto all_parcels = storage_->GetAllParcelTrackingContents();
+  ASSERT_EQ(2u, all_parcels->size());
+  for (int i = 0; i < 2; ++i) {
+    ASSERT_EQ(delivery_time,
+              (*all_parcels)[i].parcel_status().estimated_delivery_time_usec());
+  }
+  task_environment_.RunUntilIdle();
+
+  clock_.Advance(base::Days(10));
+  storage_->ModifyOldDoneParcels();
+  all_parcels = storage_->GetAllParcelTrackingContents();
+  ASSERT_EQ(2u, all_parcels->size());
+  std::map<std::string, ParcelStatus> status_map;
+  for (int i = 0; i < 2; ++i) {
+    auto p = (*all_parcels)[i].parcel_status();
+    status_map.emplace(p.parcel_identifier().tracking_id(), p);
+  }
+  ASSERT_EQ(0, status_map[kTrackingId1].estimated_delivery_time_usec());
+  ASSERT_EQ(delivery_time,
+            status_map[kTrackingId2].estimated_delivery_time_usec());
+}
+
 }  // namespace commerce
