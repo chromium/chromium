@@ -134,8 +134,8 @@ ArcScreenCaptureSession::Initialize(content::DesktopMediaID desktop_id,
   scaler_ = gl_helper_->CreateScaler(
       gpu::GLHelper::ScalerQuality::SCALER_QUALITY_GOOD,
       gfx::Vector2d(desktop_size.width(), desktop_size.height()),
-      gfx::Vector2d(size_.width(), size_.height()), /*flipped_source=*/true,
-      /*flip_output=*/true, /*swizzle=*/false);
+      gfx::Vector2d(size_.width(), size_.height()), /*flipped_source=*/false,
+      /*flip_output=*/false, /*swizzle=*/false);
 
   display_root_window_->GetHost()->compositor()->AddAnimationObserver(this);
 
