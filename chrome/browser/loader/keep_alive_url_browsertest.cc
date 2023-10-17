@@ -19,6 +19,7 @@
 #include "components/safe_browsing/content/browser/safe_browsing_service_interface.h"
 #include "components/safe_browsing/core/browser/db/fake_database_manager.h"
 #include "components/safe_browsing/core/browser/db/v4_protocol_manager_util.h"
+#include "components/safe_browsing/core/common/features.h"
 #include "components/variations/net/variations_http_headers.h"
 #include "content/public/browser/back_forward_cache.h"
 #include "content/public/test/back_forward_cache_util.h"
@@ -372,6 +373,8 @@ IN_PROC_BROWSER_TEST_P(ChromeKeepAliveURLBrowserTest,
 // This test fixture utilizes a fake SafeBrowsingServiceFactory to reliably
 // reproduce safe browsing behaviors. Otherwise, the normal behavior may rely on
 // querying local URL database & remote server that changes from times to times.
+// TODO(crbug.com/1487858): Remove this test once kSafeBrowsingSkipSubresources
+// is fully rolled out.
 class ChromeKeepAliveURLSafeBrowsingBrowserTest
     : public ChromeKeepAliveURLBrowserTestBase,
       public ::testing::WithParamInterface<std::string> {
@@ -379,6 +382,13 @@ class ChromeKeepAliveURLSafeBrowsingBrowserTest
   ChromeKeepAliveURLSafeBrowsingBrowserTest()
       : safe_browsing_factory_(
             std::make_unique<safe_browsing::TestSafeBrowsingServiceFactory>()) {
+    feature_list_.InitWithFeaturesAndParameters(
+        content::GetDefaultEnabledBackForwardCacheFeaturesForTesting(
+            {{blink::features::kKeepAliveInBrowserMigration, {}}}),
+        content::GetDefaultDisabledBackForwardCacheFeaturesForTesting(
+            // We need to disable the skip subresource flag because fetch() is
+            // not checked by Safe Browsing when the flag is enabled.
+            {safe_browsing::kSafeBrowsingSkipSubresources}));
   }
 
  protected:
@@ -418,6 +428,7 @@ class ChromeKeepAliveURLSafeBrowsingBrowserTest
   }
 
  private:
+  base::test::ScopedFeatureList feature_list_;
   const std::unique_ptr<safe_browsing::TestSafeBrowsingServiceFactory>
       safe_browsing_factory_;
 };

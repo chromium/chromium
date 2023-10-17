@@ -258,7 +258,12 @@ BASE_FEATURE(kSafeBrowsingSkipImageCssFont,
 
 BASE_FEATURE(kSafeBrowsingSkipSubresources,
              "SafeBrowsingSkipSubResources",
-             base::FEATURE_DISABLED_BY_DEFAULT);
+#if BUILDFLAG(IS_ANDROID) || BUILDFLAG(IS_IOS)
+             base::FEATURE_DISABLED_BY_DEFAULT
+#else
+             base::FEATURE_ENABLED_BY_DEFAULT
+#endif
+);
 
 BASE_FEATURE(kSafeBrowsingSkipSubresources2,
              "SafeBrowsingSkipSubResources2",
