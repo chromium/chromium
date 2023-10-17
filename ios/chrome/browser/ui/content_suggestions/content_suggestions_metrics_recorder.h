@@ -49,8 +49,8 @@ enum class SetUpListItemType;
 // Logs a trending query opened at `index` in the module.
 - (void)recordTrendingQueryTappedAtIndex:(int)index;
 
-// Logs a most recent tab opened.
-- (void)recordMostRecentTabOpened;
+// Logs a tab resumption tab opened.
+- (void)recordTabResumptionTabOpened;
 
 // Logs the most visited tiles being shown.
 - (void)recordMostVisitedTilesShown;

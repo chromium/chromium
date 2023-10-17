@@ -155,7 +155,7 @@
                             kMaxTrendingQueries);
 }
 
-- (void)recordMostRecentTabOpened {
+- (void)recordTabResumptionTabOpened {
   base::RecordAction(base::UserMetricsAction(kOpenMostRecentTabAction));
   [self recordMagicStackModuleEngagementForType:ContentSuggestionsModuleType::
                                                     kTabResumption];

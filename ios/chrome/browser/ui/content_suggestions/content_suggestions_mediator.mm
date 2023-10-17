@@ -674,7 +674,7 @@ bool CredentialProviderPromoDismissed(PrefService* local_state) {
 
 - (void)openMostRecentTab {
   [self.NTPMetricsDelegate recentTabTileOpened];
-  [self.contentSuggestionsMetricsRecorder recordMostRecentTabOpened];
+  [self.contentSuggestionsMetricsRecorder recordTabResumptionTabOpened];
   [IntentDonationHelper donateIntent:IntentType::kOpenLatestTab];
   [self hideRecentTabTile];
   WebStateList* web_state_list = self.browser->GetWebStateList();
@@ -691,15 +691,15 @@ bool CredentialProviderPromoDismissed(PrefService* local_state) {
 - (void)openTabResumptionItem {
   switch (_tabResumptionItem.itemType) {
     case TabResumptionItemType::kLastSyncedTab:
-      // TODO(crbug.com/1478156): Add metrics.
+      [self.NTPMetricsDelegate distantTabResumptionOpened];
       // TODO(crbug.com/1478156): Derank or hide the tile.
       break;
     case TabResumptionItemType::kMostRecentTab: {
       [self.NTPMetricsDelegate recentTabTileOpened];
-      [self.contentSuggestionsMetricsRecorder recordMostRecentTabOpened];
       break;
     }
   }
+  [self.contentSuggestionsMetricsRecorder recordTabResumptionTabOpened];
 
   web::NavigationManager::WebLoadParams webLoadParams =
       web::NavigationManager::WebLoadParams(_tabResumptionItem.tabURL);

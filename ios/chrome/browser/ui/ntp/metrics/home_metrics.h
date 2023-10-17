@@ -9,6 +9,7 @@
 
 // These values are persisted to IOS.Start/NTP.Click histograms.
 // Entries should not be renumbered and numeric values should never be reused.
+// LINT.IfChange
 enum class IOSHomeActionType {
   kMostVisitedTile = 0,
   kShortcuts = 1,
@@ -19,8 +20,10 @@ enum class IOSHomeActionType {
   kOmnibox = 6,
   kSafetyCheck = 7,
   kParcelTracking = 8,
-  kMaxValue = kParcelTracking,
+  kOpenDistantTabResumption = 9,
+  kMaxValue = kOpenDistantTabResumption,
 };
+// LINT.ThenChange(/tools/metrics/histograms/enums.xml)
 
 // Logs a Home action and attributes it to the NTP or Start surface.
 void RecordHomeAction(IOSHomeActionType type, bool isStartSurface);

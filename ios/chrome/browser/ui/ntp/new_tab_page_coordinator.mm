@@ -1259,6 +1259,11 @@
                    [self isStartSurface]);
 }
 
+- (void)distantTabResumptionOpened {
+  RecordHomeAction(IOSHomeActionType::kOpenDistantTabResumption,
+                   [self isStartSurface]);
+}
+
 - (void)feedArticleOpened {
   RecordHomeAction(IOSHomeActionType::kFeedCard, [self isStartSurface]);
 }
