@@ -6,6 +6,7 @@
 
 #include "third_party/blink/renderer/platform/fonts/shaping/shape_result.h"
 #include "third_party/blink/renderer/platform/fonts/shaping/shape_result_view.h"
+#include "third_party/blink/renderer/platform/fonts/shaping/text_auto_space.h"
 #include "third_party/blink/renderer/platform/text/text_break_iterator.h"
 
 namespace blink {
@@ -290,6 +291,13 @@ scoped_refptr<const ShapeResultView> ShapingLineBreaker::ShapeLine(
             LayoutUnit(0));
   unsigned candidate_break =
       result_->CachedOffsetForPosition(end_position) + range_start;
+  if (candidate_break < range_end &&
+      UNLIKELY(result_->HasAutoSpacingAfter(candidate_break))) {
+    // If there's an auto-space after the `candidate_break`, check if it can fit
+    // without the auto-space.
+    candidate_break =
+        result_->AdjustOffsetForAutoSpacing(candidate_break, end_position);
+  }
   if (candidate_break >= range_end) {
     // The |result_| does not have glyphs to fill the available space,
     // and thus unable to compute. Return the result up to range_end.

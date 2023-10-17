@@ -296,12 +296,17 @@ class PLATFORM_EXPORT ShapeResult : public RefCounted<ShapeResult> {
       const Vector<OffsetWithSpacing, 16>& offsets_with_spacing);
 
   // True if the auto-spacing is applied. See `ApplyTextAutoSpacing`.
+  bool HasAutoSpacingAfter(unsigned offset) const;
   bool HasAutoSpacingBefore(unsigned offset) const;
 
   // Returns a line-end `ShapeResult` when breaking at `break_offset`, and the
   // glyph before `break_offset` has auto-spacing.
   scoped_refptr<ShapeResult> UnapplyAutoSpacing(unsigned start_offset,
                                                 unsigned break_offset) const;
+
+  // Adjust the offset from `OffsetForPosition` when the offset has
+  // `HasAutoSpacingAfter`.
+  unsigned AdjustOffsetForAutoSpacing(unsigned offset, float position) const;
 
   // Append a copy of a range within an existing result to another result.
   //

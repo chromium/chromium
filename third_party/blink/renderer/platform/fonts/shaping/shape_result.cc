@@ -971,11 +971,15 @@ scoped_refptr<ShapeResult> ShapeResult::ApplySpacingToCopy(
   return result;
 }
 
-bool ShapeResult::HasAutoSpacingBefore(unsigned offset) const {
-  if (character_position_ && offset > StartIndex() && offset <= EndIndex()) {
-    return CharacterData(offset - 1).has_auto_spacing_after;
+bool ShapeResult::HasAutoSpacingAfter(unsigned offset) const {
+  if (character_position_ && offset >= StartIndex() && offset < EndIndex()) {
+    return CharacterData(offset).has_auto_spacing_after;
   }
   return false;
+}
+
+bool ShapeResult::HasAutoSpacingBefore(unsigned offset) const {
+  return HasAutoSpacingAfter(offset - 1);
 }
 
 void ShapeResult::ApplyTextAutoSpacing(
@@ -1103,6 +1107,46 @@ scoped_refptr<ShapeResult> ShapeResult::UnapplyAutoSpacing(
   last_run.width_ -= width;
   sub_range->width_ -= width;
   return sub_range;
+}
+
+unsigned ShapeResult::AdjustOffsetForAutoSpacing(unsigned offset,
+                                                 float position) const {
+  DCHECK(character_position_);
+  DCHECK(HasAutoSpacingAfter(offset));
+  DCHECK(PrimaryFont());
+  const float autospace_width = TextAutoSpace::GetSpacingWidth(*PrimaryFont());
+  DCHECK_GE(offset, StartIndex());
+  offset -= StartIndex();
+  DCHECK_LT(offset, NumCharacters());
+  // If the next character fits in `position + autospace_width`, then advance
+  // the break offset. The auto-spacing at line edges will be removed by
+  // `UnapplyAutoSpacing`.
+  if (IsLtr()) {
+    position += autospace_width;
+    if (offset + 1 < NumCharacters()) {
+      const ShapeResultCharacterData& data = (*character_position_)[offset + 1];
+      if (data.x_position <= position) {
+        ++offset;
+      }
+    } else {
+      if (Width() <= position) {
+        offset = NumCharacters();
+      }
+    }
+  } else {
+    position -= autospace_width;
+    if (offset + 1 < NumCharacters()) {
+      const ShapeResultCharacterData& data = (*character_position_)[offset + 1];
+      if (data.x_position >= position) {
+        ++offset;
+      }
+    } else {
+      if (Width() <= -position) {
+        offset = NumCharacters();
+      }
+    }
+  }
+  return offset + StartIndex();
 }
 
 namespace {
