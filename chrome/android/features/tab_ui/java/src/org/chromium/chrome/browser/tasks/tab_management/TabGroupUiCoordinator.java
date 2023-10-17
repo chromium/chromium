@@ -15,7 +15,7 @@ import androidx.annotation.NonNull;
 import org.chromium.base.Callback;
 import org.chromium.base.TraceEvent;
 import org.chromium.base.metrics.RecordHistogram;
-import org.chromium.base.supplier.LazyOneshotSupplier;
+import org.chromium.base.supplier.LazyOneshotSupplierImpl;
 import org.chromium.base.supplier.ObservableSupplier;
 import org.chromium.base.supplier.OneshotSupplier;
 import org.chromium.base.supplier.Supplier;
@@ -74,7 +74,7 @@ public class TabGroupUiCoordinator implements TabGroupUiMediator.ResetHandler, T
     private final TabContentManager mTabContentManager;
     private PropertyModelChangeProcessor mModelChangeProcessor;
     private TabGridDialogCoordinator mTabGridDialogCoordinator;
-    private LazyOneshotSupplier<TabGridDialogMediator.DialogController>
+    private LazyOneshotSupplierImpl<TabGridDialogMediator.DialogController>
             mTabGridDialogControllerSupplier;
     private TabListCoordinator mTabStripCoordinator;
     private TabGroupUiMediator mMediator;
@@ -155,12 +155,13 @@ public class TabGroupUiCoordinator implements TabGroupUiMediator.ResetHandler, T
             // TODO(crbug.com/972217): find a way to enable interactions between grid tab switcher
             //  and the dialog here.
             if (mScrimCoordinator != null) {
-                mTabGridDialogControllerSupplier = new LazyOneshotSupplier<>() {
-                    @Override
-                    public void doSet() {
-                        initTabGridDialogCoordinator();
-                    }
-                };
+                mTabGridDialogControllerSupplier =
+                        new LazyOneshotSupplierImpl<>() {
+                            @Override
+                            public void doSet() {
+                                initTabGridDialogCoordinator();
+                            }
+                        };
             } else {
                 mTabGridDialogControllerSupplier = null;
             }
