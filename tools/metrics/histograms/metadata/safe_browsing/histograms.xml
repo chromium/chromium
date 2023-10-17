@@ -1420,17 +1420,26 @@ chromium-metrics-reviews@google.com.
   </summary>
 </histogram>
 
-<histogram name="SafeBrowsing.HPRT.ThreatInfoSize" units="verdicts"
-    expires_after="2024-02-04">
+<histogram name="SafeBrowsing.HPRT.ThreatInfoSize{SourceDetails}"
+    units="verdicts" expires_after="2024-02-04">
   <owner>thefrog@chromium.org</owner>
   <owner>chrome-counter-abuse-alerts@google.com</owner>
   <summary>
     Logs the number of unsafe threat type verdicts received in the check
     response (including cached results) that are relevant to hash-prefix
-    real-time checks. Logged each time a lookup request completes without errors
-    or when the request does not need to be sent because all the results are in
-    the local cache.
+    real-time checks. {SourceDetails}
   </summary>
+  <token key="SourceDetails">
+    <variant name=""
+        summary="Logged each time a lookup request completes without errors
+                 or when the request does not need to be sent because all the
+                 results are in the local cache."/>
+    <variant name=".LocalCache"
+        summary="Logged each time a lookup request does not need to be sent
+                 because all the results are in the local cache."/>
+    <variant name=".NetworkRequest"
+        summary="Logged each time a lookup request completes without errors."/>
+  </token>
 </histogram>
 
 <histogram name="SafeBrowsing.HPRTExperiment.Redirects.AllChecksEligible"

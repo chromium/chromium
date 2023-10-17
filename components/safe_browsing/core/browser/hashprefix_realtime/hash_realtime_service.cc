@@ -39,6 +39,15 @@ const size_t kMaxBackOffResetDurationInSeconds = 30 * 60;  // 30 minutes.
 
 const size_t kLookupTimeoutDurationInSeconds = 3;
 
+void LogThreatInfoSize(int num_full_hash_matches, bool is_source_local_cache) {
+  base::UmaHistogramCounts100("SafeBrowsing.HPRT.ThreatInfoSize",
+                              num_full_hash_matches);
+  std::string breakout_histogram =
+      is_source_local_cache ? "SafeBrowsing.HPRT.ThreatInfoSize.LocalCache"
+                            : "SafeBrowsing.HPRT.ThreatInfoSize.NetworkRequest";
+  base::UmaHistogramCounts100(breakout_histogram, num_full_hash_matches);
+}
+
 SBThreatType MapFullHashDetailToSbThreatType(
     const V5::FullHash::FullHashDetail& detail) {
   // Note that for hash-prefix real-time checks, there is no need to use
@@ -171,11 +180,14 @@ bool HashRealTimeService::CanCheckUrl(
   return hash_realtime_utils::CanCheckUrl(url, request_destination);
 }
 
+HashRealTimeService::SBThreatInfo::SBThreatInfo(SBThreatType threat_type,
+                                                int num_full_hash_matches)
+    : threat_type(threat_type), num_full_hash_matches(num_full_hash_matches) {}
+
 // static
-SBThreatType HashRealTimeService::DetermineSBThreatType(
+HashRealTimeService::SBThreatInfo HashRealTimeService::DetermineSBThreatInfo(
     const GURL& url,
-    const std::vector<V5::FullHash>& result_full_hashes,
-    bool log_threat_info_size) {
+    const std::vector<V5::FullHash>& result_full_hashes) {
   std::vector<std::string> url_full_hashes_vector;
   V4ProtocolManagerUtil::UrlToFullHashes(url, &url_full_hashes_vector);
   std::set<std::string> url_full_hashes(url_full_hashes_vector.begin(),
@@ -197,11 +209,7 @@ SBThreatType HashRealTimeService::DetermineSBThreatType(
       }
     }
   }
-  if (log_threat_info_size) {
-    base::UmaHistogramCounts100("SafeBrowsing.HPRT.ThreatInfoSize",
-                                num_full_hash_matches);
-  }
-  return sb_threat_type;
+  return SBThreatInfo(sb_threat_type, num_full_hash_matches);
 }
 int HashRealTimeService::GetThreatSeverity(
     const V5::FullHash::FullHashDetail& detail) {
@@ -295,17 +303,20 @@ void HashRealTimeService::StartLookup(
   // If all the prefixes are in the cache, no need to send a request. Return
   // early with the cached results.
   if (hash_prefixes_to_request.empty()) {
-    auto sb_threat_type = DetermineSBThreatType(url, cached_full_hashes,
-                                                /*log_threat_info_size=*/true);
+    SBThreatInfo sb_threat_info =
+        DetermineSBThreatInfo(url, cached_full_hashes);
+    LogThreatInfoSize(sb_threat_info.num_full_hash_matches,
+                      /*is_source_local_cache=*/true);
     callback_task_runner->PostTask(
         FROM_HERE,
-        base::BindOnce(std::move(response_callback),
-                       /*is_lookup_successful=*/true, sb_threat_type,
-                       /*locally_cached_results_threat_type=*/sb_threat_type));
+        base::BindOnce(
+            std::move(response_callback),
+            /*is_lookup_successful=*/true, sb_threat_info.threat_type,
+            /*locally_cached_results_threat_type=*/sb_threat_info.threat_type));
     return;
   }
-  SBThreatType locally_cached_results_threat_type = DetermineSBThreatType(
-      url, cached_full_hashes, /*log_threat_info_size=*/false);
+  SBThreatType locally_cached_results_threat_type =
+      DetermineSBThreatInfo(url, cached_full_hashes).threat_type;
 
   // If the service is in backoff mode, don't send a request.
   bool in_backoff = backoff_operator_->IsInBackoffMode();
@@ -533,8 +544,11 @@ void HashRealTimeService::OnURLLoaderComplete(
     for (const auto& response_hash : response.value()->full_hashes()) {
       result_full_hashes.push_back(response_hash);
     }
-    sb_threat_type = DetermineSBThreatType(url, result_full_hashes,
-                                           /*log_threat_info_size=*/true);
+    SBThreatInfo sb_threat_info =
+        DetermineSBThreatInfo(url, result_full_hashes);
+    sb_threat_type = sb_threat_info.threat_type;
+    LogThreatInfoSize(sb_threat_info.num_full_hash_matches,
+                      /*is_source_local_cache=*/false);
   }
 
   response_callback_task_runner->PostTask(
