@@ -18,14 +18,27 @@
 
 namespace cups_proxy {
 
+namespace {
+
+CupsProxyService* GetCupsProxyService() {
+  static base::NoDestructor<CupsProxyService> service;
+  return service.get();
+}
+
+}  // namespace
+
 CupsProxyService::CupsProxyService() = default;
 CupsProxyService::~CupsProxyService() = default;
 
 // static
 void CupsProxyService::Spawn(
     std::unique_ptr<CupsProxyServiceDelegate> delegate) {
-  static base::NoDestructor<CupsProxyService> service;
-  service->BindToCupsProxyDaemon(std::move(delegate));
+  GetCupsProxyService()->BindToCupsProxyDaemon(std::move(delegate));
+}
+
+// static
+void CupsProxyService::Shutdown() {
+  GetCupsProxyService()->ShutdownImpl();
 }
 
 void CupsProxyService::BindToCupsProxyDaemon(
@@ -69,6 +82,10 @@ void CupsProxyService::OnBindToCupsProxyDaemon(bool success) {
   }
 
   DVLOG(1) << "CupsProxyService: bootstrap success!";
+}
+
+void CupsProxyService::ShutdownImpl() {
+  proxy_manager_.reset();
 }
 
 }  // namespace cups_proxy

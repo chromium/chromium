@@ -32,6 +32,9 @@ class CupsProxyService {
   // Spawns the global service instance.
   static void Spawn(std::unique_ptr<CupsProxyServiceDelegate> delegate);
 
+  // Shuts down the global service instance.
+  static void Shutdown();
+
  private:
   friend base::NoDestructor<CupsProxyService>;
   CupsProxyService();
@@ -44,6 +47,8 @@ class CupsProxyService {
   void BindToCupsProxyDaemon(
       std::unique_ptr<CupsProxyServiceDelegate> delegate);
   void OnBindToCupsProxyDaemon(bool success);
+
+  void ShutdownImpl();
 
   // Handler that implements the top-level mojom interface (mojom::CupsProxier)
   std::unique_ptr<ProxyManager> proxy_manager_;

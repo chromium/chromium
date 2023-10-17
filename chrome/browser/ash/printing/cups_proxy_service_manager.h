@@ -31,10 +31,12 @@ class CupsProxyServiceManager : public KeyedService {
 
   ~CupsProxyServiceManager() override;
 
+  void Shutdown() override;
+
  private:
   void OnDaemonAvailable(bool daemon_available);
 
-  const raw_ptr<Profile, ExperimentalAsh> profile_;
+  raw_ptr<Profile, ExperimentalAsh> profile_;
   base::WeakPtrFactory<CupsProxyServiceManager> weak_factory_{this};
 };
 

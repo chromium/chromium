@@ -38,4 +38,9 @@ void CupsProxyServiceManager::OnDaemonAvailable(bool daemon_available) {
       std::make_unique<CupsProxyServiceDelegateImpl>(profile_));
 }
 
+void CupsProxyServiceManager::Shutdown() {
+  cups_proxy::CupsProxyService::Shutdown();
+  profile_ = nullptr;
+}
+
 }  // namespace ash
