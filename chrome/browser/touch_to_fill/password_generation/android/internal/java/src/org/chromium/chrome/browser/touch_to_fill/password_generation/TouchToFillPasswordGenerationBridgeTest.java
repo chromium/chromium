@@ -71,8 +71,8 @@ public class TouchToFillPasswordGenerationBridgeTest {
 
     @Test
     public void testOnDismissed() {
-        mBridge.onDismissed();
-        verify(mBridgeJniMock).onDismissed(sTestNativePointer);
+        mBridge.onDismissed(/* passwordAccepted= */ false);
+        verify(mBridgeJniMock).onDismissed(sTestNativePointer, /* passwordAccepted= */ false);
     }
 
     @Test

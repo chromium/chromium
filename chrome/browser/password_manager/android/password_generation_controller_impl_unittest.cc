@@ -642,7 +642,8 @@ TEST_F(PasswordGenerationControllerTest,
       active_driver(), GetTestGenerationUIData1(),
       /*has_saved_credentials=*/false, gfx::RectF(100, 20));
 
-  ttf_password_generation_bridge_ptr->OnDismissed(nullptr);
+  ttf_password_generation_bridge_ptr->OnDismissed(
+      /*env=*/nullptr, /*generated_password_accepted=*/false);
 
   // Keyboard accessory should be displayed.
   EXPECT_CALL(mock_manual_filling_controller_,
@@ -672,4 +673,29 @@ TEST_F(PasswordGenerationControllerTest,
       pref_service()->GetInteger(
           password_manager::prefs::kPasswordGenerationBottomSheetDismissCount),
       0);
+}
+
+TEST_F(PasswordGenerationControllerTest,
+       ShowsBottomSheetWhenManualGenerationRequestedWithFeatureOn) {
+  base::test::ScopedFeatureList feature_list(
+      password_manager::features::kPasswordGenerationBottomSheet);
+
+  controller()->OnGenerationRequested(PasswordGenerationType::kManual);
+
+  EXPECT_CALL(create_ttf_generation_controller_, Run);
+  controller()->ShowManualGenerationDialog(password_manager_driver_.get(),
+                                           GetTestGenerationUIData1());
+}
+
+TEST_F(PasswordGenerationControllerTest,
+       ShowsBottomSheetWhenAutomaticGenerationRequestedWithFeatureOn) {
+  base::test::ScopedFeatureList feature_list(
+      password_manager::features::kPasswordGenerationBottomSheet);
+
+  controller()->OnAutomaticGenerationAvailable(
+      active_driver(), GetTestGenerationUIData1(),
+      /*has_saved_credentials=*/false, gfx::RectF(100, 20));
+
+  EXPECT_CALL(create_ttf_generation_controller_, Run);
+  controller()->OnGenerationRequested(PasswordGenerationType::kAutomatic);
 }

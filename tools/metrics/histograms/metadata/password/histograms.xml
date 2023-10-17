@@ -3564,6 +3564,19 @@ chromium-metrics-reviews@google.com.
   </summary>
 </histogram>
 
+<histogram name="PasswordManager.TouchToFill.PasswordGeneration.UserChoice"
+    enum="GenerationDialogChoice" expires_after="2024-06-01">
+  <owner>atsvirchkova@google.com</owner>
+  <owner>ioanap@chromium.org</owner>
+  <summary>
+    Records whether the user chose to use the proposed automatically generated
+    password in the bottom sheet. The metric is recorded only when the password
+    generation bottom sheet was automatically triggered (not triggered by using
+    manual password generation or from the keyboard accessory). The metric is
+    logged when the bottom sheet is dismissed.
+  </summary>
+</histogram>
+
 <histogram name="PasswordManager.TouchToFill.SubmissionReadiness"
     enum="TouchToFill.SubmissionReadiness" expires_after="2024-03-17">
   <owner>kolos@chromium.org</owner>

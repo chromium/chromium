@@ -11,6 +11,7 @@ source_set("public") {
     "//chrome/browser/autofill:autofill",
     "//chrome/browser/password_manager/android:password_generation_utils",
     "//components/password_manager/content/browser:browser",
+    "//components/password_manager/core/browser:browser",
     "//components/prefs:prefs",
     "//content/public/browser",
   ]

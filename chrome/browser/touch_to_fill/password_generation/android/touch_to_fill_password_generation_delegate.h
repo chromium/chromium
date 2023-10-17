@@ -14,7 +14,7 @@ class TouchToFillPasswordGenerationDelegate {
 
   // Handles the bottom sheet dismissal. It's called in every execution path no
   // matter how the bottom sheet is dismissed.
-  virtual void OnDismissed() = 0;
+  virtual void OnDismissed(bool generated_password_accepted) = 0;
 
   // Called if the user accepts the proposed generated password. Here the
   // password should be saved and filled into the form.

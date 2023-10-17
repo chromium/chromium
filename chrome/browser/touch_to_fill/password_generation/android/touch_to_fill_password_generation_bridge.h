@@ -23,7 +23,7 @@ class TouchToFillPasswordGenerationBridge {
                     std::u16string password,
                     std::string account) = 0;
   virtual void Hide() = 0;
-  virtual void OnDismissed(JNIEnv* env) = 0;
+  virtual void OnDismissed(JNIEnv* env, bool generated_password_accepted) = 0;
   virtual void OnGeneratedPasswordAccepted(
       JNIEnv* env,
       const base::android::JavaParamRef<jstring>& password) = 0;

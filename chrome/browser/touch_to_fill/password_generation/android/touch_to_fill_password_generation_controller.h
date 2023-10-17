@@ -12,6 +12,7 @@
 #include "chrome/browser/password_manager/android/password_generation_element_data.h"
 #include "chrome/browser/touch_to_fill/password_generation/android/touch_to_fill_password_generation_bridge.h"
 #include "chrome/browser/touch_to_fill/password_generation/android/touch_to_fill_password_generation_delegate.h"
+#include "components/autofill/core/common/password_generation_util.h"
 #include "components/prefs/pref_service.h"
 #include "content/public/browser/render_widget_host.h"
 #include "content/public/browser/web_contents.h"
@@ -48,10 +49,12 @@ class TouchToFillPasswordGenerationController
   ~TouchToFillPasswordGenerationController() override;
 
   // Shows the password generation bottom sheet.
-  bool ShowTouchToFill(std::string account_display_name,
-                       PrefService* pref_service);
+  bool ShowTouchToFill(
+      std::string account_display_name,
+      autofill::password_generation::PasswordGenerationType type,
+      PrefService* pref_service);
 
-  void OnDismissed() override;
+  void OnDismissed(bool generated_password_accepted) override;
 
   void OnGeneratedPasswordAccepted(const std::u16string& password) override;
 
@@ -78,6 +81,9 @@ class TouchToFillPasswordGenerationController
   content::RenderWidgetHost::SuppressShowingImeCallback
       suppress_showing_ime_callback_;
   bool suppress_showing_ime_callback_added_ = false;
+
+  autofill::password_generation::PasswordGenerationType
+      password_generation_type_;
 };
 
 #endif  // CHROME_BROWSER_TOUCH_TO_FILL_PASSWORD_GENERATION_ANDROID_TOUCH_TO_FILL_PASSWORD_GENERATION_CONTROLLER_H_

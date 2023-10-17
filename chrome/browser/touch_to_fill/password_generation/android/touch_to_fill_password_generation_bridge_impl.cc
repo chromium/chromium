@@ -60,9 +60,17 @@ void TouchToFillPasswordGenerationBridgeImpl::Hide() {
       base::android::AttachCurrentThread(), java_object_);
 }
 
-void TouchToFillPasswordGenerationBridgeImpl::OnDismissed(JNIEnv* env) {
+void TouchToFillPasswordGenerationBridgeImpl::OnDismissed(
+    JNIEnv* env,
+    bool generated_password_accepted) {
   CHECK(delegate_);
-  delegate_->OnDismissed();
+
+  // Calling `delegate_->OnDismissed` will trigger the bridge's destructor,
+  // which in its turn will trigger `Hide`. `java_object_` needs to be reset
+  // before that, otherwise `Hide` will trigger the second `OnDismissed`
+  // call.
+  java_object_.Reset();
+  delegate_->OnDismissed(generated_password_accepted);
 }
 
 void TouchToFillPasswordGenerationBridgeImpl::OnGeneratedPasswordAccepted(

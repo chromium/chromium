@@ -36,8 +36,8 @@ import java.lang.annotation.RetentionPolicy;
  */
 class TouchToFillPasswordGenerationCoordinator {
     interface Delegate {
-        /** Called when the bottom sheet is hidden (both by user and programmatically). */
-        void onDismissed();
+        /** Called when the bottom sheet is hidden (both by the user and programmatically). */
+        void onDismissed(boolean passwordAccepted);
 
         /**
          * Called, when user agrees to use the generated password.
@@ -140,7 +140,8 @@ class TouchToFillPasswordGenerationCoordinator {
     private void onDismissed(@InteractionResult int interactionResult) {
         mBottomSheetController.removeObserver(mBottomSheetObserver);
         mBottomSheetController.hideContent(mTouchToFillPasswordGenerationView, true);
-        mTouchToFillPasswordGenerationDelegate.onDismissed();
+        mTouchToFillPasswordGenerationDelegate.onDismissed(
+                interactionResult == InteractionResult.USED_GENERATED_PASSWORD);
 
         setPasswordGenerationBottomSheetDismissCount(interactionResult);
     }

@@ -125,7 +125,7 @@ public class TouchToFillPasswordGenerationModuleTest {
 
         mCoordinator.hideFromNative();
         verify(mBottomSheetController).hideContent(any(), anyBoolean());
-        verify(mDelegate).onDismissed();
+        verify(mDelegate).onDismissed(/* passwordAccepted= */ false);
     }
 
     @Test
@@ -144,7 +144,7 @@ public class TouchToFillPasswordGenerationModuleTest {
         Button acceptPasswordButton = mContent.findViewById(R.id.use_password_button);
         acceptPasswordButton.performClick();
         verify(mBottomSheetController).hideContent(any(), anyBoolean());
-        verify(mDelegate).onDismissed();
+        verify(mDelegate).onDismissed(/* passwordAccepted= */ true);
     }
 
     @Test
@@ -193,7 +193,7 @@ public class TouchToFillPasswordGenerationModuleTest {
         Button rejectPasswordButton = mContent.findViewById(R.id.reject_password_button);
         rejectPasswordButton.performClick();
         verify(mBottomSheetController).hideContent(any(), anyBoolean());
-        verify(mDelegate).onDismissed();
+        verify(mDelegate).onDismissed(/* passwordAccepted= */ false);
     }
 
     @Test

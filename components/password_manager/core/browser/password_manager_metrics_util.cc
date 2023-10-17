@@ -305,6 +305,10 @@ void LogGenerationDialogChoice(GenerationDialogChoice choice,
       base::UmaHistogramEnumeration(
           "KeyboardAccessory.GenerationDialogChoice.Manual", choice);
       break;
+    case PasswordGenerationType::kTouchToFill:
+      base::UmaHistogramEnumeration(
+          "PasswordManager.TouchToFill.PasswordGeneration.UserChoice", choice);
+      break;
   };
 }  // namespace metrics_util
 

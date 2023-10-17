@@ -108,7 +108,12 @@ void PasswordGenerationControllerImpl::ShowManualGenerationDialog(
     return;
   generation_element_data_ =
       std::make_unique<PasswordGenerationElementData>(ui_data);
-  ShowDialog(PasswordGenerationType::kManual);
+  if (!base::FeatureList::IsEnabled(
+          password_manager::features::kPasswordGenerationBottomSheet)) {
+    ShowDialog(PasswordGenerationType::kManual);
+  } else {
+    ShowBottomSheet(PasswordGenerationType::kManual);
+  }
 }
 
 void PasswordGenerationControllerImpl::FocusedInputChanged(
@@ -132,7 +137,12 @@ void PasswordGenerationControllerImpl::OnGenerationRequested(
     manual_generation_requested_ = true;
     client_->GeneratePassword(type);
   } else {
-    ShowDialog(PasswordGenerationType::kAutomatic);
+    if (!base::FeatureList::IsEnabled(
+            password_manager::features::kPasswordGenerationBottomSheet)) {
+      ShowDialog(PasswordGenerationType::kAutomatic);
+    } else {
+      ShowBottomSheet(PasswordGenerationType::kAutomatic);
+    }
   }
   ResetPasswordGenerationDismissBottomSheetCount();
 }
@@ -286,13 +296,17 @@ bool PasswordGenerationControllerImpl::TryToShowGenerationTouchToFill(
       dismissed_4_times_in_a_row) {
     return false;
   }
+  return ShowBottomSheet(PasswordGenerationType::kTouchToFill);
+}
 
+bool PasswordGenerationControllerImpl::ShowBottomSheet(
+    PasswordGenerationType type) {
   touch_to_fill_generation_controller_ =
       create_touch_to_fill_generation_controller_.Run();
   std::string account =
       password_manager::GetDisplayableAccountName(&GetWebContents());
   if (!touch_to_fill_generation_controller_->ShowTouchToFill(
-          std::move(account), client_->GetPrefs())) {
+          std::move(account), type, client_->GetPrefs())) {
     return false;
   }
 
