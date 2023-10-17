@@ -9,11 +9,14 @@
 #include <string>
 
 #include "base/containers/flat_map.h"
+#include "chrome/browser/compose/proto/compose_optimization_guide.pb.h"
+#include "chrome/browser/optimization_guide/optimization_guide_keyed_service.h"
 #include "chrome/common/compose/compose.mojom.h"
 #include "components/autofill/core/common/unique_ids.h"
 #include "components/compose/core/browser/compose_client.h"
 #include "components/compose/core/browser/compose_manager.h"
 #include "components/compose/core/browser/compose_manager_impl.h"
+#include "components/optimization_guide/core/optimization_guide_decision.h"
 #include "components/optimization_guide/core/optimization_guide_model_executor.h"
 #include "content/public/browser/web_contents_user_data.h"
 #include "mojo/public/cpp/bindings/pending_receiver.h"
@@ -59,11 +62,21 @@ class ChromeComposeClient
       optimization_guide::OptimizationGuideModelExecutor* model_executor);
   void SetSkipShowDialogForTest();
 
+  void SetOptimizationGuideForTest(
+      optimization_guide::OptimizationGuideDecider* opt_guide);
+
+  // This API gets optimization guidance for a web site.  We use this
+  // to guide our decision to enable the feature and trigger the nudge.
+  compose::ComposeNudgeDecision GetOptimizationGuidanceForUrl(const GURL& url);
+
+ protected:
+  optimization_guide::OptimizationGuideModelExecutor* GetModelExecutor();
+  optimization_guide::OptimizationGuideDecider* GetOptimizationGuide();
+
  private:
   friend class content::WebContentsUserData<ChromeComposeClient>;
   explicit ChromeComposeClient(content::WebContents* web_contents);
-
-  optimization_guide::OptimizationGuideModelExecutor* GetModelExecutor();
+  raw_ptr<Profile> profile_;
 
   void ModelExecutionCallback(
       ComposeCallback callback,
@@ -86,6 +99,10 @@ class ChromeComposeClient
                                       const std::string& response_text);
 
   compose::ComposeManagerImpl manager_;
+  // A handle to optimization guide for information about URLs that have
+  // recently been navigated to.
+  raw_ptr<optimization_guide::OptimizationGuideDecider> opt_guide_;
+
   std::unique_ptr<mojo::Receiver<compose::mojom::ComposeDialogPageHandler>>
       handler_receiver_;
   std::unique_ptr<mojo::Remote<compose::mojom::ComposeDialog>> dialog_remote_;

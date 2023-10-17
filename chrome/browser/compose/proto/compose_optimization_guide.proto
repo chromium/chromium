@@ -1,0 +1,21 @@
+// Copyright 2023 The Chromium Authors
+// Use of this source code is governed by a BSD-style license that can be
+// found in the LICENSE file.
+
+syntax = "proto2";
+
+package compose;
+
+// Whether we should show the nudge, disable the nudge, or disable the whole
+// feature for this URL.
+enum ComposeNudgeDecision {
+  UNKNOWN = 0;
+  SHOW_NUDGE = 1;
+  DISABLE_NUDGE = 2;
+  COMPOSE_DISABLED = 3;
+}
+
+// Guidance from the optimization guide for the compose feature on this URL.
+message ComposeHintMetadata {
+  optional ComposeNudgeDecision decision = 1;
+}

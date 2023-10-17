@@ -9,6 +9,16 @@
 #include "components/compose/core/browser/compose_features.h"
 #include "components/unified_consent/url_keyed_data_collection_consent_helper.h"
 
+bool ComposeEnabling::enabled_for_testing_ = false;
+
+void ComposeEnabling::SetEnabledForTesting() {
+  ComposeEnabling::enabled_for_testing_ = true;
+}
+
+void ComposeEnabling::ClearEnabledForTesting() {
+  ComposeEnabling::enabled_for_testing_ = false;
+}
+
 bool ComposeEnabling::IsEnabledForProfile(Profile* profile) {
 #if BUILDFLAG(ENABLE_COMPOSE)
   signin::IdentityManager* identity_manager =
@@ -21,13 +31,18 @@ bool ComposeEnabling::IsEnabledForProfile(Profile* profile) {
 
 bool ComposeEnabling::IsEnabled(Profile* profile,
                                 signin::IdentityManager* identity_manager) {
+  if (enabled_for_testing_) {
+    return true;
+  }
+
   if (profile == nullptr || identity_manager == nullptr) {
     return false;
   }
 
   // Check that the feature flag is enabled.
   if (!base::FeatureList::IsEnabled(compose::features::kEnableCompose)) {
-    DVLOG(2) << "feature not enabled " << __func__;
+    DVLOG(2) << "feature not enabled "
+             << "ComposeEnabling::IsEnabled";
     return false;
   }
 

@@ -11,9 +11,12 @@
 class ComposeEnabling {
  public:
   static bool IsEnabledForProfile(Profile* profile);
+  static void SetEnabledForTesting();
+  static void ClearEnabledForTesting();
 
  private:
   friend class ComposeEnablingTest;
+  static bool enabled_for_testing_;
   static bool IsEnabled(Profile* profile,
                         signin::IdentityManager* identity_manager);
 };

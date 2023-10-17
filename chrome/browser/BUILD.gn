@@ -7941,11 +7941,22 @@ static_library("browser") {
     ]
 
     deps += [
+      ":compose_optimization_guide_proto",
       "//chrome/common/compose",
+      "//chrome/common/compose:mojo_bindings",
       "//components/autofill/core/common",
       "//components/compose/core/browser",
       "//components/compose/proto",
+      "//components/optimization_guide/core",
+      "//components/optimization_guide/proto:optimization_guide_proto",
     ]
+  }
+}
+
+if (enable_compose) {
+  proto_library("compose_optimization_guide_proto") {
+    sources = [ "compose/proto/compose_optimization_guide.proto" ]
+    cc_generator_options = "lite=true:"
   }
 }
 

@@ -11,9 +11,11 @@
 #include "base/functional/bind.h"
 #include "base/strings/utf_string_conversions.h"
 #include "base/task/thread_pool.h"
+#include "chrome/browser/compose/compose_enabling.h"
 #include "chrome/browser/optimization_guide/optimization_guide_keyed_service.h"
 #include "chrome/browser/optimization_guide/optimization_guide_keyed_service_factory.h"
 #include "chrome/browser/profiles/profile.h"
+#include "chrome/browser/profiles/profile_manager.h"
 #include "chrome/browser/ui/browser.h"
 #include "chrome/browser/ui/browser_dialogs.h"
 #include "chrome/browser/ui/browser_finder.h"
@@ -21,6 +23,7 @@
 #include "components/autofill/core/common/form_field_data.h"
 #include "components/compose/core/browser/compose_manager_impl.h"
 #include "components/compose/proto/compose_metadata.pb.h"
+#include "components/optimization_guide/core/optimization_guide_decider.h"
 #include "components/optimization_guide/core/optimization_guide_features.h"
 #include "components/optimization_guide/core/optimization_guide_util.h"
 #include "components/strings/grit/components_strings.h"
@@ -31,7 +34,21 @@
 
 ChromeComposeClient::ChromeComposeClient(content::WebContents* web_contents)
     : content::WebContentsUserData<ChromeComposeClient>(*web_contents),
-      manager_(this) {}
+      manager_(this) {
+  profile_ = Profile::FromBrowserContext(GetWebContents().GetBrowserContext());
+  opt_guide_ = OptimizationGuideKeyedServiceFactory::GetForProfile(profile_);
+
+  if (GetOptimizationGuide()) {
+    std::vector<optimization_guide::proto::OptimizationType> types;
+    if (ComposeEnabling::IsEnabledForProfile(profile_)) {
+      types.push_back(optimization_guide::proto::OptimizationType::COMPOSE);
+    }
+
+    if (!types.empty()) {
+      GetOptimizationGuide()->RegisterOptimizationTypes(types);
+    }
+  }
+}
 
 ChromeComposeClient::~ChromeComposeClient() = default;
 
@@ -193,6 +210,11 @@ ChromeComposeClient::GetModelExecutor() {
           Profile::FromBrowserContext(GetWebContents().GetBrowserContext())));
 }
 
+optimization_guide::OptimizationGuideDecider*
+ChromeComposeClient::GetOptimizationGuide() {
+  return opt_guide_;
+}
+
 void ChromeComposeClient::SetModelExecutorForTest(
     optimization_guide::OptimizationGuideModelExecutor* model_executor) {
   model_executor_for_test_ = model_executor;
@@ -200,6 +222,40 @@ void ChromeComposeClient::SetModelExecutorForTest(
 
 void ChromeComposeClient::SetSkipShowDialogForTest() {
   skip_show_dialog_for_test_ = true;
+}
+
+void ChromeComposeClient::SetOptimizationGuideForTest(
+    optimization_guide::OptimizationGuideDecider* opt_guide) {
+  opt_guide_ = opt_guide;
+}
+
+compose::ComposeNudgeDecision
+ChromeComposeClient::GetOptimizationGuidanceForUrl(const GURL& url) {
+  if (!GetOptimizationGuide()) {
+    return compose::ComposeNudgeDecision::UNKNOWN;
+  }
+
+  if (!ComposeEnabling::IsEnabledForProfile(profile_)) {
+    return compose::ComposeNudgeDecision::COMPOSE_DISABLED;
+  }
+
+  optimization_guide::OptimizationMetadata metadata;
+
+  auto opt_guide_has_hint = GetOptimizationGuide()->CanApplyOptimization(
+      url, optimization_guide::proto::OptimizationType::COMPOSE, &metadata);
+  if (opt_guide_has_hint !=
+      optimization_guide::OptimizationGuideDecision::kTrue) {
+    return compose::ComposeNudgeDecision::UNKNOWN;
+  }
+
+  absl::optional<compose::ComposeHintMetadata> compose_metadata =
+      optimization_guide::ParsedAnyMetadata<compose::ComposeHintMetadata>(
+          metadata.any_metadata().value());
+  if (!compose_metadata.has_value()) {
+    return compose::ComposeNudgeDecision::UNKNOWN;
+  }
+
+  return compose_metadata->decision();
 }
 
 WEB_CONTENTS_USER_DATA_KEY_IMPL(ChromeComposeClient);

@@ -13,6 +13,7 @@
 #include "base/test/scoped_feature_list.h"
 #include "base/test/task_environment.h"
 #include "base/test/test_future.h"
+#include "chrome/browser/compose/compose_enabling.h"
 #include "chrome/common/compose/compose.mojom.h"
 #include "chrome/test/base/browser_with_test_window_test.h"
 #include "components/compose/core/browser/compose_features.h"
@@ -35,6 +36,7 @@ using testing::_;
 namespace {
 
 constexpr char kTypeURL[] = "type.googleapis.com/compose_proto.ComposeResponse";
+constexpr char kExampleURL[] = "https://example.com";
 
 class MockModelExecutor
     : public optimization_guide::OptimizationGuideModelExecutor {
@@ -45,6 +47,36 @@ class MockModelExecutor
                const google::protobuf::MessageLite& request_metadata,
                optimization_guide::OptimizationGuideModelExecutionResultCallback
                    callback));
+};
+
+class MockOptimizationGuideDecider
+    : public optimization_guide::OptimizationGuideDecider {
+ public:
+  MOCK_METHOD(void,
+              CanApplyOptimization,
+              (const GURL& url,
+               optimization_guide::proto::OptimizationType optimization_type,
+               optimization_guide::OptimizationGuideDecisionCallback callback));
+
+  MOCK_METHOD(
+      optimization_guide::OptimizationGuideDecision,
+      CanApplyOptimization,
+      (const GURL& url,
+       optimization_guide::proto::OptimizationType optimization_type,
+       optimization_guide::OptimizationMetadata* optimization_metadata));
+  MOCK_METHOD(void,
+              RegisterOptimizationTypes,
+              (const std::vector<optimization_guide::proto::OptimizationType>&
+                   optimization_types));
+  MOCK_METHOD(
+      void,
+      CanApplyOptimizationOnDemand,
+      (const std::vector<GURL>& urls,
+       const base::flat_set<optimization_guide::proto::OptimizationType>&
+           optimization_types,
+       optimization_guide::proto::RequestContext request_context,
+       optimization_guide::OnDemandOptimizationGuideDecisionRepeatingCallback
+           callback));
 };
 
 }  // namespace
@@ -64,6 +96,7 @@ class ChromeComposeClientTest : public BrowserWithTestWindowTest {
     client_ = ChromeComposeClient::FromWebContents(contents);
     client_->SetModelExecutorForTest(&model_executor_);
     client_->SetSkipShowDialogForTest();
+    client_->SetOptimizationGuideForTest(&opt_guide_);
 
     // Setup Dialog Page Handler.
     mojo::PendingReceiver<compose::mojom::ComposeDialogPageHandler>
@@ -88,6 +121,7 @@ class ChromeComposeClientTest : public BrowserWithTestWindowTest {
 
   ChromeComposeClient& client() { return *client_; }
   MockModelExecutor& model_executor() { return model_executor_; }
+  MockOptimizationGuideDecider& opt_guide() { return opt_guide_; }
   mojo::Remote<compose::mojom::ComposeDialogPageHandler>& page_handler() {
     return page_handler_;
   }
@@ -98,6 +132,10 @@ class ChromeComposeClientTest : public BrowserWithTestWindowTest {
     client_ = nullptr;
     BrowserWithTestWindowTest::TearDown();
   }
+
+  void SetEnabled() { ComposeEnabling::SetEnabledForTesting(); }
+
+  void ClearEnabled() { ComposeEnabling::ClearEnabledForTesting(); }
 
  protected:
   compose_proto::ComposeRequest ComposeRequest(std::string user_input) {
@@ -135,6 +173,7 @@ class ChromeComposeClientTest : public BrowserWithTestWindowTest {
  private:
   raw_ptr<ChromeComposeClient> client_;
   MockModelExecutor model_executor_;
+  MockOptimizationGuideDecider opt_guide_;
 
   mojo::Remote<compose::mojom::ComposeDialogPageHandler> page_handler_;
 };
@@ -220,7 +259,7 @@ TEST_F(ChromeComposeClientTest, TestComposeNoParsedAny) {
 TEST_F(ChromeComposeClientTest, TestOptimizationGuideDisabled) {
   scoped_feature_list_.Reset();
 
-  // Disable optimization guide.
+  // Enable Compose and disable optimization guide model execution.
   scoped_feature_list_.InitWithFeatures(
       {compose::features::kEnableCompose},
       {optimization_guide::features::kOptimizationGuideModelExecution});
@@ -294,4 +333,123 @@ TEST_F(ChromeComposeClientTest, TestSaveAndRestoreWebUIState) {
 
   compose::mojom::OpenMetadataPtr result = test_future.Take();
   EXPECT_EQ("web ui state", result->compose_state->webui_state);
+}
+
+TEST_F(ChromeComposeClientTest, GetOptimizationGuidanceShowNudgeTest) {
+  // Set up a fake metadata to return from the mock.
+  optimization_guide::OptimizationMetadata test_metadata;
+  compose::ComposeHintMetadata compose_hint_metadata;
+  compose_hint_metadata.set_decision(compose::ComposeNudgeDecision::SHOW_NUDGE);
+  test_metadata.SetAnyMetadataForTesting(compose_hint_metadata);
+
+  EXPECT_CALL(opt_guide(),
+              CanApplyOptimization(
+                  GURL(kExampleURL),
+                  optimization_guide::proto::OptimizationType::COMPOSE,
+                  ::testing::An<optimization_guide::OptimizationMetadata*>()))
+      .WillRepeatedly(testing::DoAll(
+          testing::SetArgPointee<2>(test_metadata),
+          testing::Return(
+              optimization_guide::OptimizationGuideDecision::kTrue)));
+  client().SetOptimizationGuideForTest(&opt_guide());
+
+  // Enable the feature so we can get to the optimization guide call.
+  SetEnabled();
+
+  GURL example(kExampleURL);
+  compose::ComposeNudgeDecision decision =
+      client().GetOptimizationGuidanceForUrl(example);
+  ClearEnabled();
+
+  // Verify response from CanApplyOptimization is as we expect.
+  EXPECT_EQ(compose::ComposeNudgeDecision::SHOW_NUDGE, decision);
+}
+
+TEST_F(ChromeComposeClientTest, GetOptimizationGuidanceFeatureOffTest) {
+  // Set up a fake metadata to return from the mock.
+  optimization_guide::OptimizationMetadata test_metadata;
+  compose::ComposeHintMetadata compose_hint_metadata;
+  compose_hint_metadata.set_decision(compose::ComposeNudgeDecision::SHOW_NUDGE);
+  test_metadata.SetAnyMetadataForTesting(compose_hint_metadata);
+
+  EXPECT_CALL(opt_guide(),
+              CanApplyOptimization(
+                  GURL(kExampleURL),
+                  optimization_guide::proto::OptimizationType::COMPOSE,
+                  ::testing::An<optimization_guide::OptimizationMetadata*>()))
+      .WillRepeatedly(testing::DoAll(
+          testing::SetArgPointee<2>(test_metadata),
+          testing::Return(
+              optimization_guide::OptimizationGuideDecision::kTrue)));
+  client().SetOptimizationGuideForTest(&opt_guide());
+
+  // Disable the feature and check the output is as we expect.
+  ClearEnabled();
+
+  GURL example(kExampleURL);
+  compose::ComposeNudgeDecision decision =
+      client().GetOptimizationGuidanceForUrl(example);
+  ClearEnabled();
+
+  // Verify response from CanApplyOptimization is as we expect.
+  EXPECT_EQ(compose::ComposeNudgeDecision::COMPOSE_DISABLED, decision);
+}
+
+TEST_F(ChromeComposeClientTest, GetOptimizationGuidanceNoFeedbackTest) {
+  // Set up a fake metadata to return from the mock.
+  optimization_guide::OptimizationMetadata test_metadata;
+  compose::ComposeHintMetadata compose_hint_metadata;
+  compose_hint_metadata.set_decision(compose::ComposeNudgeDecision::SHOW_NUDGE);
+  test_metadata.SetAnyMetadataForTesting(compose_hint_metadata);
+
+  EXPECT_CALL(opt_guide(),
+              CanApplyOptimization(
+                  GURL(kExampleURL),
+                  optimization_guide::proto::OptimizationType::COMPOSE,
+                  ::testing::An<optimization_guide::OptimizationMetadata*>()))
+      .WillRepeatedly(testing::DoAll(
+          testing::SetArgPointee<2>(test_metadata),
+          testing::Return(
+              optimization_guide::OptimizationGuideDecision::kFalse)));
+  client().SetOptimizationGuideForTest(&opt_guide());
+
+  // Enable the feature so we can get to the optimization guide call.
+  SetEnabled();
+
+  GURL example(kExampleURL);
+  compose::ComposeNudgeDecision decision =
+      client().GetOptimizationGuidanceForUrl(example);
+  ClearEnabled();
+
+  // Verify response from CanApplyOptimization is as we expect.
+  EXPECT_EQ(compose::ComposeNudgeDecision::UNKNOWN, decision);
+}
+
+TEST_F(ChromeComposeClientTest, GetOptimizationGuidanceNoComposeMetadataTest) {
+  // Set up a fake metadata to return from the mock.
+  optimization_guide::OptimizationMetadata test_metadata;
+  compose::ComposeHintMetadata compose_hint_metadata;
+  test_metadata.SetAnyMetadataForTesting(compose_hint_metadata);
+
+  EXPECT_CALL(opt_guide(),
+              CanApplyOptimization(
+                  GURL(kExampleURL),
+                  optimization_guide::proto::OptimizationType::COMPOSE,
+                  ::testing::An<optimization_guide::OptimizationMetadata*>()))
+      .WillRepeatedly(testing::DoAll(
+          testing::SetArgPointee<2>(test_metadata),
+          testing::Return(
+              optimization_guide::OptimizationGuideDecision::kTrue)));
+  client().SetOptimizationGuideForTest(&opt_guide());
+
+  // Enable the feature so we can get to the optimization guide call.
+  SetEnabled();
+
+  GURL example(kExampleURL);
+  compose::ComposeNudgeDecision decision =
+      client().GetOptimizationGuidanceForUrl(example);
+  ClearEnabled();
+
+  // Verify response from CanApplyOptimization is as we expect.
+  EXPECT_EQ(compose::ComposeNudgeDecision::UNKNOWN, decision);
 }
