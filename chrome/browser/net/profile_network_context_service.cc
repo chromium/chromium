@@ -181,11 +181,11 @@ bool IsAmbientAuthAllowedForProfile(Profile* profile) {
           prefs::kAmbientAuthenticationInPrivateModesEnabled));
 
   if (profile->IsGuestSession()) {
-    return type == net::AmbientAuthAllowedProfileTypes::GUEST_AND_REGULAR ||
-           type == net::AmbientAuthAllowedProfileTypes::ALL;
+    return type == net::AmbientAuthAllowedProfileTypes::kGuestAndRegular ||
+           type == net::AmbientAuthAllowedProfileTypes::kAll;
   } else if (profile->IsIncognitoProfile()) {
-    return type == net::AmbientAuthAllowedProfileTypes::INCOGNITO_AND_REGULAR ||
-           type == net::AmbientAuthAllowedProfileTypes::ALL;
+    return type == net::AmbientAuthAllowedProfileTypes::kIncognitoAndRegular ||
+           type == net::AmbientAuthAllowedProfileTypes::kAll;
   }
 
   // Profile type not yet supported.
@@ -375,7 +375,7 @@ void ProfileNetworkContextService::RegisterLocalStatePrefs(
     PrefRegistrySimple* registry) {
   registry->RegisterIntegerPref(
       prefs::kAmbientAuthenticationInPrivateModesEnabled,
-      static_cast<int>(net::AmbientAuthAllowedProfileTypes::REGULAR_ONLY));
+      static_cast<int>(net::AmbientAuthAllowedProfileTypes::kRegularOnly));
 
   // For information about whether to reset the HTTP Cache or not, defaults
   // to the empty string, which does not prompt a reset.

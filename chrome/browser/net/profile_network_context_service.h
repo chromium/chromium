@@ -38,10 +38,10 @@ class ClientCertStore;
 // Enum that specifies which profiles are allowed to do
 // ambient authentication.
 enum class AmbientAuthAllowedProfileTypes {
-  REGULAR_ONLY = 0,
-  INCOGNITO_AND_REGULAR = 1,
-  GUEST_AND_REGULAR = 2,
-  ALL = 3,
+  kRegularOnly = 0,
+  kIncognitoAndRegular = 1,
+  kGuestAndRegular = 2,
+  kAll = 3,
 };
 
 }  // namespace net

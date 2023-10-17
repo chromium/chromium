@@ -582,24 +582,24 @@ class AmbientAuthenticationTestWithPolicy : public policy::PolicyTest {
 };
 
 IN_PROC_BROWSER_TEST_F(AmbientAuthenticationTestWithPolicy, RegularOnly) {
-  EnablePolicyWithValue(net::AmbientAuthAllowedProfileTypes::REGULAR_ONLY);
+  EnablePolicyWithValue(net::AmbientAuthAllowedProfileTypes::kRegularOnly);
   IsAmbientAuthAllowedForProfilesTest();
 }
 
 IN_PROC_BROWSER_TEST_F(AmbientAuthenticationTestWithPolicy,
                        IncognitoAndRegular) {
   EnablePolicyWithValue(
-      net::AmbientAuthAllowedProfileTypes::INCOGNITO_AND_REGULAR);
+      net::AmbientAuthAllowedProfileTypes::kIncognitoAndRegular);
   IsAmbientAuthAllowedForProfilesTest();
 }
 
 IN_PROC_BROWSER_TEST_F(AmbientAuthenticationTestWithPolicy, GuestAndRegular) {
-  EnablePolicyWithValue(net::AmbientAuthAllowedProfileTypes::GUEST_AND_REGULAR);
+  EnablePolicyWithValue(net::AmbientAuthAllowedProfileTypes::kGuestAndRegular);
   IsAmbientAuthAllowedForProfilesTest();
 }
 
 IN_PROC_BROWSER_TEST_F(AmbientAuthenticationTestWithPolicy, All) {
-  EnablePolicyWithValue(net::AmbientAuthAllowedProfileTypes::ALL);
+  EnablePolicyWithValue(net::AmbientAuthAllowedProfileTypes::kAll);
   IsAmbientAuthAllowedForProfilesTest();
 }
 

@@ -2885,9 +2885,9 @@ IN_PROC_BROWSER_TEST_P(AmbientAuthenticationManagedGuestSessionTest,
 INSTANTIATE_TEST_SUITE_P(
     AmbientAuthAllPolicyValuesTest,
     AmbientAuthenticationManagedGuestSessionTest,
-    testing::Values(net::AmbientAuthAllowedProfileTypes::REGULAR_ONLY,
-                    net::AmbientAuthAllowedProfileTypes::INCOGNITO_AND_REGULAR,
-                    net::AmbientAuthAllowedProfileTypes::GUEST_AND_REGULAR,
-                    net::AmbientAuthAllowedProfileTypes::ALL));
+    testing::Values(net::AmbientAuthAllowedProfileTypes::kRegularOnly,
+                    net::AmbientAuthAllowedProfileTypes::kIncognitoAndRegular,
+                    net::AmbientAuthAllowedProfileTypes::kGuestAndRegular,
+                    net::AmbientAuthAllowedProfileTypes::kAll));
 
 }  // namespace policy
