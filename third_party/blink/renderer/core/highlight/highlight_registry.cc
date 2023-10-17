@@ -74,13 +74,12 @@ void HighlightRegistry::ValidateHighlightMarkers() {
   // controller, but they store the highlight name only. The actual highlight
   // style is on the node's style, but we don't know if that has changed since
   // we last computed overflow.
-  HeapHashSet<WeakMember<Text>> nodes_with_overflow;
+  HeapHashSet<WeakMember<const Text>> nodes_with_overflow;
   markers_controller.ApplyToMarkersOfType(
-      [&nodes_with_overflow](WeakMember<Text> node, DocumentMarker* marker) {
-        CustomHighlightMarker* highlight_marker =
-            To<CustomHighlightMarker>(marker);
-        if (highlight_marker->HasVisualOverflow()) {
-          nodes_with_overflow.insert(node);
+      [&nodes_with_overflow](const Text& node, DocumentMarker* marker) {
+        auto& highlight_marker = To<CustomHighlightMarker>(*marker);
+        if (highlight_marker.HasVisualOverflow()) {
+          nodes_with_overflow.insert(&node);
         }
       },
       DocumentMarker::kCustomHighlight);
@@ -115,15 +114,14 @@ void HighlightRegistry::ValidateHighlightMarkers() {
   // so that we know that recalculation will be required when the marker is
   // removed.
   markers_controller.ApplyToMarkersOfType(
-      [&nodes_with_overflow](WeakMember<Text> node, DocumentMarker* marker) {
-        CustomHighlightMarker* highlight_marker =
-            To<CustomHighlightMarker>(marker);
+      [&nodes_with_overflow](const Text& node, DocumentMarker* marker) {
+        auto& highlight_marker = To<CustomHighlightMarker>(*marker);
         bool has_visual_overflow =
             HighlightStyleUtils::CustomHighlightHasVisualOverflow(
-                node, highlight_marker->GetHighlightName());
-        highlight_marker->SetHasVisualOverflow(has_visual_overflow);
+                node, highlight_marker.GetHighlightName());
+        highlight_marker.SetHasVisualOverflow(has_visual_overflow);
         if (has_visual_overflow) {
-          nodes_with_overflow.insert(node);
+          nodes_with_overflow.insert(&node);
         }
       },
       DocumentMarker::kCustomHighlight);

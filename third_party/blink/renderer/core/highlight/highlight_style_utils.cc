@@ -549,9 +549,9 @@ bool HighlightStyleUtils::ShouldInvalidateVisualOverflow(
 }
 
 bool HighlightStyleUtils::CustomHighlightHasVisualOverflow(
-    const Node* node,
+    const Node& node,
     const AtomicString& pseudo_argument) {
-  const ComputedStyle* style = node->GetComputedStyle();
+  const ComputedStyle* style = node.GetComputedStyle();
   if (!style) {
     return false;
   }
