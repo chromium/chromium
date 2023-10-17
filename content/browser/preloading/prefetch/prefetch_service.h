@@ -148,6 +148,14 @@ class CONTENT_EXPORT PrefetchService {
   static void SetNetworkContextForProxyLookupForTesting(
       network::mojom::NetworkContext* network_context);
 
+  // Set a callback for waiting for prefetch completion in tests.
+  using OnPrefetchResponseCompletedForTesting =
+      base::RepeatingCallback<void(base::WeakPtr<PrefetchContainer>)>;
+  void SetOnPrefetchResponseCompletedForTesting(
+      OnPrefetchResponseCompletedForTesting callback) {
+    on_prefetch_response_completed_for_testing_ = std::move(callback);
+  }
+
  private:
   // Checks whether the given |prefetch_container| is eligible for prefetch.
   // Once the eligibility is determined then |result_callback| will be called
@@ -395,6 +403,9 @@ class CONTENT_EXPORT PrefetchService {
 #if DCHECK_IS_ON()
   bool prefetch_reentrancy_guard_ = false;
 #endif
+
+  OnPrefetchResponseCompletedForTesting
+      on_prefetch_response_completed_for_testing_;
 
   SEQUENCE_CHECKER(sequence_checker_);
 

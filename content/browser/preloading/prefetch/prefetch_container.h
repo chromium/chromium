@@ -243,7 +243,7 @@ class CONTENT_EXPORT PrefetchContainer {
   // Returns whether or not this prefetch has been considered to serve for a
   // navigation in the past. If it has, then it shouldn't be used for any future
   // navigations.
-  bool HasPrefetchBeenConsideredToServe() const { return navigated_to_; }
+  bool HasPrefetchBeenConsideredToServe() const;
 
   // Called when |PrefetchService::OnPrefetchComplete| is called for the
   // prefetch. This happens when |loader_| fully downloads the requested
@@ -437,7 +437,7 @@ class CONTENT_EXPORT PrefetchContainer {
   Reader CreateReader();
 
  protected:
-  friend class PrefetchContainerTest;
+  friend class PrefetchContainerTestBase;
 
   // Updates metrics based on the result of the prefetch request.
   void UpdatePrefetchRequestMetrics(

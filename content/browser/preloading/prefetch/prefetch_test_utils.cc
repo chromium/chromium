@@ -31,6 +31,20 @@ net::RedirectInfo SyntheticRedirect(const GURL& new_url) {
 
 }  // namespace
 
+std::ostream& operator<<(std::ostream& ostream, PrefetchReusableForTests v) {
+  switch (v) {
+    case PrefetchReusableForTests::kDisabled:
+      return ostream << "AllowMultipleUses Disabled";
+    case PrefetchReusableForTests::kEnabled:
+      return ostream << "AllowMultipleUses Enabled";
+  }
+}
+
+std::vector<PrefetchReusableForTests> PrefetchReusableValuesForTests() {
+  return std::vector<PrefetchReusableForTests>{
+      PrefetchReusableForTests::kDisabled, PrefetchReusableForTests::kEnabled};
+}
+
 void MakeServableStreamingURLLoaderForTest(
     PrefetchContainer* prefetch_container,
     network::mojom::URLResponseHeadPtr head,

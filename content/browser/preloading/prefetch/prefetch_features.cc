@@ -14,4 +14,11 @@ BASE_FEATURE(kPrefetchRedirects,
              "PrefetchRedirects",
              base::FEATURE_DISABLED_BY_DEFAULT);
 
+BASE_FEATURE(kPrefetchReusable,
+             "PrefetchReusable",
+             base::FEATURE_DISABLED_BY_DEFAULT);
+
+const base::FeatureParam<int> kPrefetchReusableBodySizeLimit{
+    &kPrefetchReusable, "prefetch_reusable_body_size_limit", 65536};
+
 }  // namespace content::features

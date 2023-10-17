@@ -7,6 +7,7 @@
 #include "base/debug/dump_without_crashing.h"
 #include "base/metrics/histogram_functions.h"
 #include "base/task/sequenced_task_runner.h"
+#include "content/browser/preloading/prefetch/prefetch_features.h"
 #include "content/browser/preloading/prefetch/prefetch_streaming_url_loader.h"
 #include "services/network/public/mojom/early_hints.mojom.h"
 #include "services/network/public/mojom/url_response_head.mojom.h"
@@ -30,7 +31,7 @@ bool PrefetchResponseReader::Servable(
       break;
   }
 
-  // If the response hasn't been received yet (meaning response_complete_time_
+  // If the response hasn't been completed yet (meaning response_complete_time_
   // is absl::nullopt), we can still serve the prefetch (depending on |head_|).
   return servable && (!response_complete_time_.has_value() ||
                       base::TimeTicks::Now() <
@@ -103,6 +104,8 @@ PrefetchRequestHandler PrefetchResponseReader::CreateRequestHandler() {
   }
   create_request_handler_called_ = true;
 
+  mojo::ScopedDataPipeConsumerHandle body;
+
   // Returns a null handler if some checks fail here.
   // This is a subset of the checks in `BindAndStart()`, but not identical,
   // because `load_state_` can be transitioned between the two methods. Still
@@ -112,7 +115,14 @@ PrefetchRequestHandler PrefetchResponseReader::CreateRequestHandler() {
     case LoadState::kResponseReceived:
     case LoadState::kCompleted:
     case LoadState::kFailed:
-      if (!body_) {
+      if (base::FeatureList::IsEnabled(features::kPrefetchReusable)) {
+        if (body_tee_) {
+          body = body_tee_->Clone();
+        }
+      } else {
+        body = std::move(body_);
+      }
+      if (!body) {
         // This might be because `CreateRequestHandler()` is called for the
         // second time.
         return {};
@@ -120,6 +130,8 @@ PrefetchRequestHandler PrefetchResponseReader::CreateRequestHandler() {
       break;
 
     case LoadState::kRedirectHandled:
+      CHECK(!body_);
+      CHECK(!body_tee_);
       break;
 
     case LoadState::kStarted:
@@ -132,7 +144,7 @@ PrefetchRequestHandler PrefetchResponseReader::CreateRequestHandler() {
   }
 
   return base::BindOnce(&PrefetchResponseReader::BindAndStart,
-                        base::WrapRefCounted(this), std::move(body_));
+                        base::WrapRefCounted(this), std::move(body));
 }
 
 void PrefetchResponseReader::BindAndStart(
@@ -140,9 +152,10 @@ void PrefetchResponseReader::BindAndStart(
     const network::ResourceRequest& resource_request,
     mojo::PendingReceiver<network::mojom::URLLoader> receiver,
     mojo::PendingRemote<network::mojom::URLLoaderClient> client) {
-  // Currently only one client is allowed.
-  // TODO(crbug.com/1449360): Actually support multiple clients.
-  CHECK(serving_url_loader_clients_.empty());
+  if (!base::FeatureList::IsEnabled(features::kPrefetchReusable)) {
+    // Only one client is allowed if the feature is disabled.
+    CHECK(serving_url_loader_clients_.empty());
+  }
 
   serving_url_loader_receivers_.Add(this, std::move(receiver));
   ServingUrlLoaderClientId client_id =
@@ -370,6 +383,7 @@ void PrefetchResponseReader::OnReceiveResponse(
   CHECK(!head_);
   CHECK(head);
   CHECK(!body_);
+  CHECK(!body_tee_);
   CHECK(serving_url_loader_clients_.empty());
 
   switch (status) {
@@ -412,7 +426,12 @@ void PrefetchResponseReader::OnReceiveResponse(
   }
 
   head_ = std::move(head);
-  body_ = std::move(body);
+  if (base::FeatureList::IsEnabled(features::kPrefetchReusable)) {
+    body_tee_ = base::MakeRefCounted<PrefetchDataPipeTee>(
+        std::move(body), features::kPrefetchReusableBodySizeLimit.Get());
+  } else {
+    body_ = std::move(body);
+  }
   AddEventToQueue(base::BindRepeating(&PrefetchResponseReader::ForwardResponse,
                                       base::Unretained(this)));
 }

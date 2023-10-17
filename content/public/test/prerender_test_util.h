@@ -139,6 +139,8 @@ class PrerenderTestHelper {
       const std::string& target_hint,
       int32_t world_id = ISOLATED_WORLD_ID_GLOBAL);
 
+  void AddPrefetchAsync(const GURL& prefetch_url);
+
   // Starts prerendering and returns a PrerenderHandle that should be kept alive
   // until prerender activation. Note that it returns before the completion of
   // the prerendering navigation.

@@ -1972,6 +1972,23 @@
     "expires": "Jul 1, 2024"
   },
   {
+    "prefix": "prefetch-reusable",
+    "owners": ["hiroshige@chromium.org"],
+    "platforms": ["Linux", "Mac", "Win"],
+    "bases": [
+      "external/wpt/speculation-rules/prefetch",
+      "http/tests/inspector-protocol/prefetch"
+    ],
+    "exclusive_tests": "ALL",
+    "args": [
+      "--enable-blink-features=SpeculationRulesPrefetchProxy,SpeculationRulesFetchFromHeader,SpeculationRulesDocumentRules,NoVarySearchPrefetch,SpeculationRulesNoVarySearchHint,SpeculationRulesEagerness,SpeculationRulesDocumentRulesSelectorMatches",
+      "--enable-features=SpeculationRulesPrefetchProxy,PrefetchUseContentRefactor:block_until_head_eager_prefetch/true,PrefetchRedirects,PrefetchReusable",
+      "--bypass-prefetch-proxy-for-host=not-web-platform.test",
+      "--disable-threaded-compositing", "--disable-threaded-animation"
+    ],
+    "expires": "Jul 1, 2024"
+  },
+  {
     "prefix": "preload-devtools",
     "platforms": ["Linux", "Mac", "Win"],
     "bases": [

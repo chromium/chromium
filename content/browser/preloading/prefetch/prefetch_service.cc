@@ -1338,6 +1338,10 @@ void PrefetchService::OnPrefetchResponseCompleted(
 
   prefetch_container->OnPrefetchComplete();
 
+  if (on_prefetch_response_completed_for_testing_) {
+    on_prefetch_response_completed_for_testing_.Run(prefetch_container);
+  }
+
   if (prefetch_container->IsDecoy()) {
     prefetch_container->SetPrefetchStatus(
         PrefetchStatus::kPrefetchIsPrivacyDecoy);

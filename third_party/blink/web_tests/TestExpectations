@@ -3928,6 +3928,7 @@ crbug.com/851363 http/tests/devtools/sxg/sxg-prefetch.js [ Failure Pass ]
 
 # Prefetching inspector protocol test is flaky
 crbug.com/1347616 virtual/prefetch/http/tests/inspector-protocol/prefetch/request-will-be-sent.https.js [ Failure Pass ]
+crbug.com/1347616 virtual/prefetch-reusable/http/tests/inspector-protocol/prefetch/request-will-be-sent.https.js [ Failure Pass ]
 
 # Sheriff 2018-03-22
 crbug.com/824848 external/wpt/html/semantics/links/following-hyperlinks/activation-behavior.window.html [ Failure Pass ]
@@ -6660,6 +6661,7 @@ crbug.com/1467833 [ Mac12 ] virtual/compositor-threaded-percent-based-scrolling/
 crbug.com/1467833 [ Mac12 ] virtual/percent-based-scrolling/max-percent-delta-pinch-zoom.html [ Crash Failure Pass Timeout ]
 
 crbug.com/1430516 virtual/prefetch/external/wpt/speculation-rules/prefetch/out-of-document-rule-set.https.html?include=* [ Failure Pass Timeout ]
+crbug.com/1430516 virtual/prefetch-reusable/external/wpt/speculation-rules/prefetch/out-of-document-rule-set.https.html?include=* [ Failure Pass Timeout ]
 
 # Gardener 2023-07-27
 crbug.com/1468169 external/wpt/html/canvas/element/manual/drawing-text-to-the-canvas/canvas.2d.disconnected-font-size-math.html [ Failure Pass ]

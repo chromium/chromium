@@ -6,6 +6,7 @@
 #define CONTENT_BROWSER_PRELOADING_PREFETCH_PREFETCH_TEST_UTILS_H_
 
 #include <memory>
+#include <ostream>
 #include <string>
 
 #include "content/browser/preloading/prefetch/prefetch_streaming_url_loader_common_types.h"
@@ -15,6 +16,7 @@
 #include "services/network/public/mojom/url_loader.mojom.h"
 #include "services/network/public/mojom/url_response_head.mojom-forward.h"
 #include "services/network/test/test_url_loader_factory.h"
+#include "testing/gtest/include/gtest/gtest.h"
 #include "url/gurl.h"
 
 namespace base {
@@ -24,6 +26,11 @@ class RunLoop;
 namespace content {
 
 class PrefetchContainer;
+
+enum class PrefetchReusableForTests { kDisabled, kEnabled };
+std::ostream& operator<<(std::ostream& ostream, PrefetchReusableForTests);
+
+std::vector<PrefetchReusableForTests> PrefetchReusableValuesForTests();
 
 void MakeServableStreamingURLLoaderForTest(
     PrefetchContainer* prefetch_container,

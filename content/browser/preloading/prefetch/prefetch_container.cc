@@ -890,6 +890,18 @@ void PrefetchContainer::ResetBlockUntilHeadTimer() {
   block_until_head_timer_.reset();
 }
 
+bool PrefetchContainer::HasPrefetchBeenConsideredToServe() const {
+  // If `kPrefetchReusable` is enabled, we allow multiple navigations
+  // to use a PrefetchContainer, and thus skip the `navigated_to_` check.
+  if (base::FeatureList::IsEnabled(features::kPrefetchReusable)) {
+    return false;
+  }
+
+  // Otherwise, if this prefetch has been considered to serve for a navigation
+  // in the past, then it shouldn't be used for any future navigations.
+  return navigated_to_;
+}
+
 PrefetchContainer::ServableState PrefetchContainer::GetServableState(
     base::TimeDelta cacheable_duration) const {
   // Servable if the non-redirect response (either fully or partially

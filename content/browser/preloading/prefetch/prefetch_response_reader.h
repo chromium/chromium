@@ -6,6 +6,7 @@
 #define CONTENT_BROWSER_PRELOADING_PREFETCH_PREFETCH_RESPONSE_READER_H_
 
 #include "base/time/time.h"
+#include "content/browser/preloading/prefetch/prefetch_data_pipe_tee.h"
 #include "content/browser/preloading/prefetch/prefetch_streaming_url_loader_common_types.h"
 #include "content/common/content_export.h"
 #include "mojo/public/cpp/bindings/receiver.h"
@@ -204,7 +205,10 @@ class CONTENT_EXPORT PrefetchResponseReader final
 
   // The prefetched data and metadata. Not set for a redirect response.
   network::mojom::URLResponseHeadPtr head_;
+  // `body_` is set/used only when `features::kPrefetchReusable` is disabled.
   mojo::ScopedDataPipeConsumerHandle body_;
+  // `body_tee_` is set/used only when `features::kPrefetchReusable` is enabled.
+  scoped_refptr<PrefetchDataPipeTee> body_tee_;
   absl::optional<network::URLLoaderCompletionStatus> completion_status_;
   absl::optional<base::TimeTicks> response_complete_time_;
 
