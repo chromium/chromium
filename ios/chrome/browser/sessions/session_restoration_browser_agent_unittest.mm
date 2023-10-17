@@ -54,6 +54,7 @@ struct TabInfo {
   int opener_index = -1;
   bool pinned = false;
   bool with_navigation = true;
+  NSString* stable_identifier = nil;
 };
 
 // Information about a collection of N tabs that needs to be restored.
@@ -91,7 +92,8 @@ CRWSessionUserData* CreateSessionUserData(TabInfo tab_info) {
 // Creates a CRWSessionStorage* from `tab_info`.
 CRWSessionStorage* CreateSessionStorage(TabInfo tab_info) {
   CRWSessionStorage* session_storage = [[CRWSessionStorage alloc] init];
-  session_storage.stableIdentifier = [[NSUUID UUID] UUIDString];
+  session_storage.stableIdentifier =
+      tab_info.stable_identifier ?: [[NSUUID UUID] UUIDString];
   session_storage.uniqueIdentifier = web::WebStateID::NewUnique();
   if (tab_info.with_navigation) {
     session_storage.lastCommittedItemIndex = 0;
@@ -876,6 +878,25 @@ TEST_F(SessionRestorationBrowserAgentTest,
                     /*background=*/true);
   browser_->GetWebStateList()->CloseAllWebStates(WebStateList::CLOSE_NO_FLAGS);
   EXPECT_EQ(test_session_service_.saveSessionCallsCount, 7);
+}
+
+// Tests that SessionRestorationAgent doesn't restore duplicates in a session.
+TEST_F(SessionRestorationBrowserAgentTest, RestoreSessionFilterOutDuplicates) {
+  CreateSessionRestorationBrowserAgent(true);
+
+  SessionWindowIOS* window = CreateSessionWindow(SessionInfo<2>{
+      .active_index = 1,
+      .tab_infos =
+          {
+              TabInfo{.stable_identifier = @"I have an identical twin"},
+              TabInfo{.stable_identifier = @"I have an identical twin"},
+          },
+  });
+
+  session_restoration_agent_->RestoreSessionWindow(
+      window, SessionRestorationScope::kAll);
+  EXPECT_EQ(1, browser_->GetWebStateList()->count());
+  EXPECT_EQ(0, browser_->GetWebStateList()->active_index());
 }
 
 }  // anonymous namespace
