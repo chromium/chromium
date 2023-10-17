@@ -454,7 +454,6 @@ TEST_F(FormCacheBrowserTest, FillAndClear) {
   // tabindex.
   LoadHTML(R"(
     <input type="text" name="text" id="text">
-    <input type="checkbox" checked name="checkbox" id="checkbox">
     <select name="select" id="select">
       <option value="first">first</option>
       <option value="second" selected>second</option>
@@ -474,22 +473,19 @@ TEST_F(FormCacheBrowserTest, FillAndClear) {
 
   WebDocument doc = GetMainFrame()->GetDocument();
   auto text = GetFormControlElementById(doc, "text");
-  auto checkbox = GetElementById(doc, "checkbox").To<WebInputElement>();
   auto select_element = GetFormControlElementById(doc, "select");
   auto selectlist_element = GetFormControlElementById(doc, "selectlist");
 
   FillAndCheckState(forms.updated_forms[0], text,
                     {{text, u"test"},
                      {select_element, u"first"},
-                     {selectlist_element, u"uno"}},
-                    checkbox, CheckStatus::kCheckableButUnchecked);
+                     {selectlist_element, u"uno"}});
 
   // Validate that clearing works, in particular that the previous values
   // were saved correctly.
   form_cache.ClearSectionWithElement(text);
 
   EXPECT_EQ("", text.Value().Ascii());
-  EXPECT_TRUE(checkbox.IsChecked());
   EXPECT_EQ("second", select_element.Value().Ascii());
   EXPECT_EQ("dos", selectlist_element.Value().Ascii());
 }
