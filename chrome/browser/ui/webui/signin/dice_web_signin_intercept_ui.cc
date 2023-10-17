@@ -109,6 +109,8 @@ void DiceWebSigninInterceptUI::Initialize(
     base::OnceCallback<void(int)> show_widget_with_height_callback,
     base::OnceCallback<void(SigninInterceptionUserChoice)>
         completion_callback) {
+  // TODO(b/301431278): Create a different handler for the Chrome Signin
+  // intercept UI.
   web_ui()->AddMessageHandler(std::make_unique<DiceWebSigninInterceptHandler>(
       bubble_parameters, std::move(show_widget_with_height_callback),
       std::move(completion_callback)));

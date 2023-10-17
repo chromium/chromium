@@ -33,6 +33,7 @@
 #include "components/policy/core/common/management/scoped_management_service_override_for_testing.h"
 #include "components/prefs/pref_service.h"
 #include "components/signin/public/base/signin_pref_names.h"
+#include "components/signin/public/base/signin_switches.h"
 #include "components/signin/public/identity_manager/account_capabilities_test_mutator.h"
 #include "components/signin/public/identity_manager/account_info.h"
 #include "components/signin/public/identity_manager/identity_test_environment.h"
@@ -1582,4 +1583,41 @@ TEST_F(DiceWebSigninInterceptorTest,
                   web_contents(), MatchBubbleParameters(expected_parameters),
                   testing::_));
   task_environment()->FastForwardBy(base::Seconds(5));
+}
+
+class DiceWebSigninInterceptorTestWithUnoEnabled
+    : public DiceWebSigninInterceptorTest {
+ public:
+  DiceWebSigninInterceptorTestWithUnoEnabled() {
+    feature_list_.InitAndEnableFeature(switches::kUnoDesktop);
+  }
+
+ private:
+  base::test::ScopedFeatureList feature_list_;
+};
+
+TEST_F(DiceWebSigninInterceptorTestWithUnoEnabled,
+       InterceptShouldShowChromeSigninBubbleOnAccountSigninAndChromeSignOut) {
+  AccountInfo account_info =
+      identity_test_env()->MakeAccountAvailable("alice@example.com");
+  MakeValidAccountInfo(&account_info);
+  identity_test_env()->UpdateAccountInfoForAccount(account_info);
+
+  // Account is valid.
+  ASSERT_TRUE(account_info.IsValid());
+  // Primary account is not set, Chrome is not signed in.
+  ASSERT_FALSE(identity_test_env()->identity_manager()->HasPrimaryAccount(
+      signin::ConsentLevel::kSignin));
+
+  WebSigninInterceptor::Delegate::BubbleParameters expected_parameters(
+      WebSigninInterceptor::SigninInterceptionType::kChromeSignin,
+      /*intercepted_account=*/account_info,
+      /*primary_account=*/AccountInfo());
+  EXPECT_CALL(*mock_delegate(),
+              ShowSigninInterceptionBubble(
+                  web_contents(), MatchBubbleParameters(expected_parameters),
+                  testing::_));
+  TestSynchronousInterception(
+      account_info, /*is_new_account=*/true, /*is_sync_signin=*/false,
+      SigninInterceptionHeuristicOutcome::kInterceptChromeSignin);
 }

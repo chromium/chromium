@@ -303,6 +303,10 @@ std::string DiceWebSigninInterceptHandler::GetBodyText() {
     case WebSigninInterceptor::SigninInterceptionType::kProfileSwitchForced:
       NOTREACHED() << "This interception type is not handled by a bubble";
       return std::string();
+    case WebSigninInterceptor::SigninInterceptionType::kChromeSignin:
+      // TODO(b/301431278): Add NOTREACHED() when the Chrome Signin UI is
+      // created.
+      return std::string();
   }
 }
 

@@ -118,10 +118,20 @@ void DiceWebSigninInterceptionBubbleView::RecordInterceptionResult(
     case WebSigninInterceptor::SigninInterceptionType::kProfileSwitchForced:
       histogram_base_name.append(".Switch");
       break;
+    case WebSigninInterceptor::SigninInterceptionType::kChromeSignin:
+      histogram_base_name.append(".ChromeSignin");
+      break;
   }
 
   // Record aggregated histogram for each interception type.
   base::UmaHistogramEnumeration(histogram_base_name, result);
+
+  // No further sub histogram to record with Chrome Signin intercept.
+  if (bubble_parameters.interception_type ==
+      WebSigninInterceptor::SigninInterceptionType::kChromeSignin) {
+    return;
+  }
+
   // Record histogram sliced by Sync status.
   signin::IdentityManager* identity_manager =
       IdentityManagerFactory::GetForProfile(profile);
@@ -184,6 +194,7 @@ DiceWebSigninInterceptionBubbleView::DiceWebSigninInterceptionBubbleView(
   // Create the web view in the native bubble.
   std::unique_ptr<views::WebView> web_view =
       std::make_unique<views::WebView>(browser->profile());
+  // TODO(b/301431278): Use the new URL for the Chrome Signin intercept.
   web_view->LoadInitialURL(GURL(chrome::kChromeUIDiceWebSigninInterceptURL));
   web_view->GetWebContents()->SetDelegate(this);
   web_view->SetPreferredSize(

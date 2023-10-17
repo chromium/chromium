@@ -8,6 +8,7 @@
 
 #include "base/check.h"
 #include "base/feature_list.h"
+#include "base/functional/callback_helpers.h"
 #include "base/hash/hash.h"
 #include "base/i18n/case_conversion.h"
 #include "base/metrics/field_trial_params.h"
@@ -37,6 +38,7 @@
 #include "chrome/browser/signin/identity_manager_factory.h"
 #include "chrome/browser/signin/signin_features.h"
 #include "chrome/browser/signin/signin_util.h"
+#include "chrome/browser/signin/web_signin_interceptor.h"
 #include "chrome/browser/themes/theme_service.h"
 #include "chrome/browser/themes/theme_service_factory.h"
 #include "chrome/browser/ui/browser_finder.h"
@@ -56,8 +58,10 @@
 #include "components/pref_registry/pref_registry_syncable.h"
 #include "components/prefs/pref_service.h"
 #include "components/prefs/scoped_user_pref_update.h"
+#include "components/signin/public/base/consent_level.h"
 #include "components/signin/public/base/signin_metrics.h"
 #include "components/signin/public/base/signin_pref_names.h"
+#include "components/signin/public/base/signin_switches.h"
 #include "components/signin/public/identity_manager/account_managed_status_finder.h"
 #include "components/signin/public/identity_manager/accounts_mutator.h"
 #include "components/signin/public/identity_manager/identity_manager.h"
@@ -95,6 +99,40 @@ AccountInfo GetPrimaryAccountInfo(signin::IdentityManager* manager) {
   account_info.email = primary_core_account_info.email;
   account_info.account_id = primary_core_account_info.account_id;
   return account_info;
+}
+
+bool IsFirstAccount(signin::IdentityManager* manager,
+                    const std::string& email) {
+  std::vector<CoreAccountInfo> accounts_in_chrome =
+      manager->GetAccountsWithRefreshTokens();
+  // There is not guarantee that the added email/account have a refresh token
+  // yet.
+  // So we either check that no account exists, or that the only account that
+  // has a refresh token is the account we are interested in, to make sure it is
+  // the first account.
+  return accounts_in_chrome.size() == 0 ||
+         (accounts_in_chrome.size() == 1 &&
+          gaia::AreEmailsSame(email, accounts_in_chrome[0].email));
+}
+
+bool ShouldShowChromeSigninBubble(signin::IdentityManager* manager,
+                                  const std::string& email) {
+  // The Chrome Signin Bubble is part of the Uno Desktop project.
+  if (!base::FeatureList::IsEnabled(switches::kUnoDesktop)) {
+    return false;
+  }
+
+  // Check if an account is already signed in to Chrome.
+  if (manager->HasPrimaryAccount(signin::ConsentLevel::kSignin)) {
+    return false;
+  }
+
+  // Only show the Chrome Sign in bubble for the first account being signed in.
+  if (!IsFirstAccount(manager, email)) {
+    return false;
+  }
+
+  return true;
 }
 
 }  // namespace
@@ -153,8 +191,9 @@ DiceWebSigninInterceptor::GetHeuristicOutcome(
   // If we do not have all the information to enforce or not enterprise profile
   // separation, return `absl::nullopt` so that we can try and get more info on
   // the intercepted account.
-  if (!enforce_enterprise_separation)
+  if (!enforce_enterprise_separation) {
     return absl::nullopt;
+  }
 
   if (!enforce_enterprise_separation.value()) {
     // If interception is disabled abort, unless we need to enforce enterprise
@@ -185,17 +224,19 @@ DiceWebSigninInterceptor::GetHeuristicOutcome(
 
   DCHECK(signin_interception_enabled && !enforce_enterprise_separation.value());
 
+  bool is_first_account = IsFirstAccount(identity_manager_, email);
+  if (is_first_account &&
+      ShouldShowChromeSigninBubble(identity_manager_, email)) {
+    return SigninInterceptionHeuristicOutcome::kInterceptChromeSignin;
+  }
+
   // From this point the remaining possible interceptions involve creating a new
   // profile.
   if (!profiles::IsProfileCreationAllowed()) {
     return SigninInterceptionHeuristicOutcome::kAbortProfileCreationDisallowed;
   }
 
-  std::vector<CoreAccountInfo> accounts_in_chrome =
-      identity_manager_->GetAccountsWithRefreshTokens();
-  if (accounts_in_chrome.size() == 0 ||
-      (accounts_in_chrome.size() == 1 &&
-       gaia::AreEmailsSame(email, accounts_in_chrome[0].email))) {
+  if (is_first_account) {
     // Enterprise and multi-user bubbles are only shown if there are multiple
     // accounts. The intercepted account may not be added to chrome yet.
     return SigninInterceptionHeuristicOutcome::kAbortSingleAccount;
@@ -614,6 +655,11 @@ void DiceWebSigninInterceptor::OnInterceptionReadyToBeProcessed(
         WebSigninInterceptor::SigninInterceptionType::kProfileSwitch;
     RecordSigninInterceptionHeuristicOutcome(
         SigninInterceptionHeuristicOutcome::kInterceptProfileSwitch);
+  } else if (ShouldShowChromeSigninBubble(identity_manager_, info.email)) {
+    interception_type =
+        WebSigninInterceptor::SigninInterceptionType::kChromeSignin;
+    RecordSigninInterceptionHeuristicOutcome(
+        SigninInterceptionHeuristicOutcome::kInterceptChromeSignin);
   } else if (ShouldShowEnterpriseBubble(info)) {
     interception_type =
         WebSigninInterceptor::SigninInterceptionType::kEnterprise;
@@ -666,6 +712,10 @@ void DiceWebSigninInterceptor::OnInterceptionReadyToBeProcessed(
       callback =
           base::BindOnce(&DiceWebSigninInterceptor::OnProfileCreationChoice,
                          base::Unretained(this), info, profile_color);
+      break;
+    case WebSigninInterceptor::SigninInterceptionType::kChromeSignin:
+      // TODO(b/301431278): Attach the right callback here.
+      callback = base::DoNothing();
       break;
   }
   ShowSigninInterceptionBubble(bubble_parameters, std::move(callback));

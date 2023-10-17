@@ -4,11 +4,7 @@
 
 #include "chrome/browser/signin/web_signin_interceptor.h"
 
-#include <string>
-
-#include "base/metrics/histogram_functions.h"
 #include "components/signin/public/identity_manager/account_info.h"
-#include "components/signin/public/identity_manager/identity_manager.h"
 
 ScopedWebSigninInterceptionBubbleHandle::
     ~ScopedWebSigninInterceptionBubbleHandle() = default;
@@ -22,7 +18,8 @@ bool SigninInterceptionHeuristicOutcomeIsSuccess(
          outcome ==
              SigninInterceptionHeuristicOutcome::kInterceptEnterpriseForced ||
          outcome == SigninInterceptionHeuristicOutcome::
-                        kInterceptEnterpriseForcedProfileSwitch;
+                        kInterceptEnterpriseForcedProfileSwitch ||
+         outcome == SigninInterceptionHeuristicOutcome::kInterceptChromeSignin;
 }
 
 WebSigninInterceptor::Delegate::BubbleParameters::BubbleParameters(

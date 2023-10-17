@@ -4997,6 +4997,7 @@ chromium-metrics-reviews@google.com.
 </histogram_suffixes>
 
 <histogram_suffixes name="SigninInterceptType" separator=".">
+  <suffix name="ChromeSignin" label="ChromeSignin bubble."/>
   <suffix name="Enterprise" label="Enterprise bubble."/>
   <suffix name="MultiUser" label="MultiUser bubble."/>
   <suffix name="Switch" label="Profile-switch bubble."/>

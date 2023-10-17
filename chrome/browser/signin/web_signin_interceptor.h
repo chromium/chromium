@@ -78,7 +78,13 @@ enum class SigninInterceptionHeuristicOutcome {
   // The interceptor is not triggered if the tab has already been closed.
   kAbortTabClosed = 18,
 
-  kMaxValue = kAbortTabClosed,
+  // Interception succeeded:
+  // Interception happens when the first account signs in to the web and no
+  // account is yet signed in to the Chrome Profile, the prompt suggests signing
+  // in to Chrome.
+  kInterceptChromeSignin = 19,
+
+  kMaxValue = kInterceptChromeSignin,
 };
 
 // User selection in the interception bubble.
@@ -124,7 +130,8 @@ class WebSigninInterceptor {
     kMultiUser,
     kEnterpriseForced,
     kEnterpriseAcceptManagement,
-    kProfileSwitchForced
+    kProfileSwitchForced,
+    kChromeSignin,
   };
 
   // Delegate class responsible for showing the various interception UIs.
