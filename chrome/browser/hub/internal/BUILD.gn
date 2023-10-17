@@ -10,6 +10,8 @@ android_library("java") {
   sources = [
     "android/java/src/org/chromium/chrome/browser/hub/DelegateButtonData.java",
     "android/java/src/org/chromium/chrome/browser/hub/HubCoordinator.java",
+    "android/java/src/org/chromium/chrome/browser/hub/HubLayoutAnimationRunnerFactory.java",
+    "android/java/src/org/chromium/chrome/browser/hub/HubLayoutAnimationRunnerImpl.java",
     "android/java/src/org/chromium/chrome/browser/hub/HubManagerFactory.java",
     "android/java/src/org/chromium/chrome/browser/hub/HubManagerImpl.java",
     "android/java/src/org/chromium/chrome/browser/hub/HubPaneHostCoordinator.java",
@@ -46,6 +48,7 @@ robolectric_library("junit") {
   sources = [
     "android/java/src/org/chromium/chrome/browser/hub/DelegateButtonDataUnitTest.java",
     "android/java/src/org/chromium/chrome/browser/hub/HubCoordinatorUnitTest.java",
+    "android/java/src/org/chromium/chrome/browser/hub/HubLayoutAnimationRunnerImplUnitTest.java",
     "android/java/src/org/chromium/chrome/browser/hub/HubManagerImplUnitTest.java",
     "android/java/src/org/chromium/chrome/browser/hub/PaneManagerImplUnitTest.java",
     "android/java/src/org/chromium/chrome/browser/hub/ResourceButtonDataUnitTest.java",

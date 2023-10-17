@@ -15,6 +15,7 @@ android_library("java") {
     "android/java/src/org/chromium/chrome/browser/hub/HubController.java",
     "android/java/src/org/chromium/chrome/browser/hub/HubFieldTrial.java",
     "android/java/src/org/chromium/chrome/browser/hub/HubLayoutAnimationListener.java",
+    "android/java/src/org/chromium/chrome/browser/hub/HubLayoutAnimationRunner.java",
     "android/java/src/org/chromium/chrome/browser/hub/HubLayoutAnimationType.java",
     "android/java/src/org/chromium/chrome/browser/hub/HubLayoutAnimator.java",
     "android/java/src/org/chromium/chrome/browser/hub/HubLayoutAnimatorProvider.java",
@@ -40,7 +41,10 @@ android_library("java") {
 android_library_factory("factory_java") {
   deps = [ ":java" ]
 
-  sources = [ "internal/android/java/src/org/chromium/chrome/browser/hub/HubManagerFactory.java" ]
+  sources = [
+    "internal/android/java/src/org/chromium/chrome/browser/hub/HubLayoutAnimationRunnerFactory.java",
+    "internal/android/java/src/org/chromium/chrome/browser/hub/HubManagerFactory.java",
+  ]
 }
 
 robolectric_library("junit") {
