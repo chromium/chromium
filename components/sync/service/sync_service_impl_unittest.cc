@@ -66,6 +66,22 @@ MATCHER_P(ContainsDataType, type, "") {
 
 constexpr char kTestUser[] = "test_user@gmail.com";
 
+SyncCycleSnapshot MakeDefaultSyncCycleSnapshot() {
+  // It doesn't matter what exactly we set here, it's only relevant that the
+  // SyncCycleSnapshot is initialized at all.
+  return SyncCycleSnapshot(
+      /*birthday=*/std::string(), /*bag_of_chips=*/std::string(),
+      syncer::ModelNeutralState(), syncer::ProgressMarkerMap(),
+      /*is_silenced=*/false,
+      /*num_server_conflicts=*/0,
+      /*notifications_enabled=*/true,
+      /*sync_start_time=*/base::Time::Now(),
+      /*poll_finish_time=*/base::Time::Now(),
+      sync_pb::SyncEnums::UNKNOWN_ORIGIN,
+      /*poll_interval=*/base::Minutes(1),
+      /*has_remaining_local_changes=*/false);
+}
+
 class MockSyncServiceObserver : public SyncServiceObserver {
  public:
   MOCK_METHOD(void, OnStateChanged, (SyncService * sync), (override));
@@ -1779,6 +1795,12 @@ TEST_F(SyncServiceImplTest, ShouldWaitForPollRequest) {
                                     /*expected_count=*/1);
   histogram_tester.ExpectTotalCount("Sync.ModelTypeUpToDateTime",
                                     /*expected_count=*/1);
+
+  // Ignore following poll requests once the first sync cycle is completed.
+  service()->OnSyncCycleCompleted(MakeDefaultSyncCycleSnapshot());
+  engine()->SetPollIntervalElapsed(true);
+  EXPECT_EQ(service()->GetDownloadStatusFor(syncer::BOOKMARKS),
+            SyncService::ModelTypeDownloadStatus::kUpToDate);
 }
 
 TEST_F(SyncServiceImplTest, ShouldReturnErrorOnSyncPaused) {

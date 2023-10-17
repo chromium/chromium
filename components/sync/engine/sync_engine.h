@@ -183,7 +183,9 @@ class SyncEngine : public ModelTypeConfigurer {
 
   // Returns whether the poll interval elapsed since the last known poll time.
   // If returns true, there will likely be the next PERIODIC sync cycle soon but
-  // it's not guaranteed, see SyncSchedulerImpl for details.
+  // it's not guaranteed, see SyncSchedulerImpl for details. Note that this may
+  // diverge from a real scheduled poll time because this method uses base::Time
+  // while scheduler uses base::TimeTicks (which may be paused in sleep mode).
   virtual bool IsNextPollTimeInThePast() const = 0;
 
   // Returns a Value::List representing Nigori node.

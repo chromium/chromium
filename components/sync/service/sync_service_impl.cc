@@ -2045,7 +2045,13 @@ SyncService::ModelTypeDownloadStatus SyncServiceImpl::GetDownloadStatusForImpl(
     return ModelTypeDownloadStatus::kWaitingForUpdates;
   }
 
-  if (engine_->IsNextPollTimeInThePast()) {
+  // Wait for the poll request only during browser startup (i.e. when there were
+  // not completed sync cycles). IsNextPollTimeInThePast() uses base::Time which
+  // while poll scheduler uses base::TimeTicks. They may diverge in sleep mode
+  // (TimeTicks may be paused) and it's possible that the actual timer for
+  // polling will take longer. This might result in a long-standing
+  // `kWaitingForUpdates` status.
+  if (!HasCompletedSyncCycle() && engine_->IsNextPollTimeInThePast()) {
     DVLOG(1) << "Waiting for updates due an upcoming poll request";
     LogWaitingForUpdatesReasonIfNeeded(
         DownloadStatusWaitingForUpdatesReason::kPollRequestScheduled, type,
