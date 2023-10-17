@@ -220,8 +220,16 @@ IN_PROC_BROWSER_TEST_F(MetricIntegrationTest, LargestContentfulPaint) {
       lcp_timestamps[2].value());
 }
 
+// TODO(https://crbug.com/1493285): This test is flaky on ChromeOS.
+#if BUILDFLAG(IS_CHROMEOS)
+#define MAYBE_LargestContentfulPaint_SubframeInput \
+  DISABLED_LargestContentfulPaint_SubframeInput
+#else
+#define MAYBE_LargestContentfulPaint_SubframeInput \
+  LargestContentfulPaint_SubframeInput
+#endif
 IN_PROC_BROWSER_TEST_F(MetricIntegrationTest,
-                       LargestContentfulPaint_SubframeInput) {
+                       MAYBE_LargestContentfulPaint_SubframeInput) {
   Start();
   Load("/lcp_subframe_input.html");
   auto* sub = ChildFrameAt(web_contents()->GetPrimaryMainFrame(), 0);
