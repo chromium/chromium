@@ -31,6 +31,7 @@
 #include "third_party/blink/renderer/core/dom/dom_exception.h"
 #include "third_party/blink/renderer/core/typed_arrays/dom_array_buffer.h"
 #include "third_party/blink/renderer/modules/webcodecs/array_buffer_util.h"
+#include "third_party/blink/renderer/modules/webcodecs/decrypt_config_util.h"
 #include "third_party/blink/renderer/modules/webcodecs/encoded_video_chunk.h"
 #include "third_party/blink/renderer/modules/webcodecs/gpu_factories_retriever.h"
 #include "third_party/blink/renderer/modules/webcodecs/video_color_space.h"
@@ -510,12 +511,22 @@ VideoDecoder::MakeMediaVideoDecoderConfigInternal(
     media_color_space = color_space->ToMediaColorSpace();
   }
 
+  auto encryption_scheme = media::EncryptionScheme::kUnencrypted;
+  if (config.hasEncryptionScheme()) {
+    auto scheme = ToMediaEncryptionScheme(config.encryptionScheme());
+    if (!scheme) {
+      *js_error_message = "Unsupported encryption scheme";
+      return absl::nullopt;
+    }
+    encryption_scheme = scheme.value();
+  }
+
   media::VideoDecoderConfig media_config;
   media_config.Initialize(video_type.codec, video_type.profile,
                           media::VideoDecoderConfig::AlphaMode::kIsOpaque,
                           media_color_space, media::kNoTransformation,
                           coded_size, visible_rect, natural_size, extra_data,
-                          media::EncryptionScheme::kUnencrypted);
+                          encryption_scheme);
   media_config.set_aspect_ratio(aspect_ratio);
   if (!media_config.IsValidConfig()) {
     *js_error_message = "Unsupported config.";

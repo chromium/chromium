@@ -6,7 +6,9 @@
 
 #include <utility>
 
+#include "third_party/blink/renderer/bindings/modules/v8/v8_decrypt_config.h"
 #include "third_party/blink/renderer/bindings/modules/v8/v8_encoded_audio_chunk_init.h"
+#include "third_party/blink/renderer/modules/webcodecs/decrypt_config_util.h"
 #include "third_party/blink/renderer/platform/bindings/script_state.h"
 #include "third_party/blink/renderer/platform/wtf/text/wtf_string.h"
 
@@ -60,6 +62,17 @@ EncodedAudioChunk* EncodedAudioChunk::Create(ScriptState* script_state,
           : media::kNoTimestamp);
 
   buffer->set_is_key_frame(init->type() == "key");
+
+  if (init->hasDecryptConfig()) {
+    auto decrypt_config = CreateMediaDecryptConfig(*init->decryptConfig());
+    if (!decrypt_config) {
+      exception_state.ThrowDOMException(DOMExceptionCode::kNotSupportedError,
+                                        "Unsupported decryptConfig");
+      return nullptr;
+    }
+    buffer->set_decrypt_config(std::move(decrypt_config));
+  }
+
   return MakeGarbageCollected<EncodedAudioChunk>(std::move(buffer));
 }
 

@@ -190,6 +190,11 @@ scoped_refptr<media::StreamParserBuffer> MakeVideoStreamParserBuffer(
   // or decode errors.
   DCHECK(video_chunk.duration().has_value());
   stream_parser_buffer->set_duration(video_chunk.buffer()->duration());
+
+  if (video_chunk.buffer()->decrypt_config()) {
+    stream_parser_buffer->set_decrypt_config(
+        video_chunk.buffer()->decrypt_config()->Clone());
+  }
   return stream_parser_buffer;
 }
 

@@ -10,5 +10,7 @@ dictionary EncodedVideoChunkInit {
   [EnforceRange] unsigned long long duration;  // microseconds
   required AllowSharedBufferSource data;
 
+  [RuntimeEnabled=MediaSourceExtensionsForWebCodecs] DecryptConfig decryptConfig;
+
   sequence<ArrayBuffer> transfer = [];
 };
