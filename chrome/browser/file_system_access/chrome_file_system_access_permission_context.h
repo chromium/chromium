@@ -202,9 +202,19 @@ class ChromeFileSystemAccessPermissionContext
       const url::Origin& origin) {
     return GetExtendedPersistedObjects(origin);
   }
+
   PersistedGrantType GetPersistedGrantTypeForTesting(
       const url::Origin& origin) {
     return GetPersistedGrantType(origin);
+  }
+
+  bool HasExtendedPermissionForTesting(const url::Origin& origin,
+                                       const base::FilePath& path,
+                                       HandleType handle_type,
+                                       GrantType grant_type) {
+    // TODO(crbug/1011533): Clean up this usage in test.
+    return CanAutoGrantViaPersistentPermission(origin, path, handle_type,
+                                               grant_type);
   }
 
   // Converts permissions objects into a snapshot of grants categorized by
@@ -261,10 +271,6 @@ class ChromeFileSystemAccessPermissionContext
   GetExtendedWritePermissionGrantForTesting(const url::Origin& origin,
                                             const base::FilePath& path,
                                             HandleType handle_type);
-  bool HasExtendedPermissionForTesting(const url::Origin& origin,
-                                       const base::FilePath& path,
-                                       HandleType handle_type,
-                                       GrantType grant_type);
 
   HostContentSettingsMap* content_settings() { return content_settings_.get(); }
 
@@ -385,11 +391,24 @@ class ChromeFileSystemAccessPermissionContext
                                HandleType handle_type,
                                GrantType grant_type);
 
-  // Returns whether the origin has extended permission for a specific file.
-  bool HasExtendedPermission(const url::Origin& origin,
-                             const base::FilePath& path,
-                             HandleType handle_type,
-                             GrantType grant_type);
+  // Returns whether a permission object value has matching fields.
+  bool HasMatchingValue(const base::Value::Dict& value,
+                        const base::FilePath& file_path,
+                        HandleType handle_type,
+                        GrantType grant_type);
+
+  // Returns whether a file or directory can be auto-granted via persistent
+  // permission.
+  bool CanAutoGrantViaPersistentPermission(const url::Origin& origin,
+                                           const base::FilePath& path,
+                                           HandleType handle_type,
+                                           GrantType grant_type);
+
+  // Returns whether a file or directory can be auto-granted by having
+  // ancestor with persistent permission.
+  bool CanAutoGrantViaAncestorPersistentPermission(const url::Origin& origin,
+                                                   const base::FilePath& path,
+                                                   GrantType grant_type);
 
   // Returns whether the origin has extended permission enabled via user
   // opt-in or by having an actively installed PWA.
