@@ -16,6 +16,7 @@ import org.chromium.chrome.browser.omnibox.OmniboxFeatures;
 import org.chromium.chrome.browser.omnibox.R;
 import org.chromium.chrome.browser.omnibox.styles.OmniboxResourceProvider;
 import org.chromium.chrome.browser.omnibox.suggestions.querytiles.QueryTileView;
+import org.chromium.chrome.browser.omnibox.suggestions.querytiles.QueryTileViewBinder;
 import org.chromium.chrome.browser.ui.theme.BrandedColorScheme;
 import org.chromium.components.browser_ui.widget.tile.TileView;
 import org.chromium.components.browser_ui.widget.tile.TileViewBinder;
@@ -58,7 +59,7 @@ public class BaseCarouselSuggestionItemViewBuilder {
         adapter.registerType(
                 ViewType.QUERY_TILE,
                 BaseCarouselSuggestionItemViewBuilder::createQueryTile,
-                (m, v, p) -> {});
+                QueryTileViewBinder::bind);
         return new BaseCarouselSuggestionView(parent.getContext(), adapter);
     }
 
@@ -91,8 +92,8 @@ public class BaseCarouselSuggestionItemViewBuilder {
      * @param parent ViewGroup that will host the QueryTile.
      * @return A View element hosting QueryTile.
      */
-    private static View createQueryTile(ViewGroup parent) {
-        View tile = new QueryTileView(parent.getContext());
+    private static QueryTileView createQueryTile(ViewGroup parent) {
+        var tile = new QueryTileView(parent.getContext());
         applyViewBackground(tile);
         return tile;
     }

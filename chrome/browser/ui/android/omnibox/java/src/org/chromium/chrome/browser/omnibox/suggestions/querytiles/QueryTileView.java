@@ -5,16 +5,26 @@
 package org.chromium.chrome.browser.omnibox.suggestions.querytiles;
 
 import android.content.Context;
+import android.graphics.drawable.Drawable;
 import android.view.LayoutInflater;
 import android.widget.FrameLayout;
+import android.widget.TextView;
 
 import org.chromium.components.browser_ui.widget.R;
+import org.chromium.components.browser_ui.widget.RoundedCornerImageView;
 
 /** The view for a QueryTile. */
 public class QueryTileView extends FrameLayout {
+    private final RoundedCornerImageView mThumbnail;
+    private final TextView mTitle;
+
     public QueryTileView(Context context) {
         super(context);
+
         LayoutInflater.from(context).inflate(R.layout.query_tile_view, this, true);
+
+        mThumbnail = findViewById(R.id.thumbnail);
+        mTitle = findViewById(R.id.title);
     }
 
     /**
@@ -24,5 +34,13 @@ public class QueryTileView extends FrameLayout {
     @Override
     public boolean isFocused() {
         return super.isFocused() || (isSelected() && !isInTouchMode());
+    }
+
+    /* package */ void setImage(Drawable d) {
+        mThumbnail.setImageDrawable(d);
+    }
+
+    /* package */ void setTitle(String t) {
+        mTitle.setText(t);
     }
 }

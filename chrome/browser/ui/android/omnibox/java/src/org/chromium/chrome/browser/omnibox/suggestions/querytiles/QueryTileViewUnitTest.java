@@ -4,11 +4,17 @@
 
 package org.chromium.chrome.browser.omnibox.suggestions.querytiles;
 
+import static org.junit.Assert.assertEquals;
 import static org.junit.Assert.assertFalse;
 import static org.junit.Assert.assertTrue;
 
 import android.content.Context;
+import android.graphics.drawable.ColorDrawable;
+import android.graphics.drawable.Drawable;
+import android.text.TextUtils;
 import android.view.ContextThemeWrapper;
+import android.widget.ImageView;
+import android.widget.TextView;
 
 import org.junit.Before;
 import org.junit.Test;
@@ -41,5 +47,35 @@ public class QueryTileViewUnitTest {
 
         mView.setSelected(false);
         assertFalse(mView.isFocused());
+    }
+
+    @Test
+    public void setImage() {
+        Drawable d1 = new ColorDrawable();
+        Drawable d2 = new ColorDrawable();
+        ImageView thumbnail = mView.findViewById(R.id.thumbnail);
+
+        mView.setImage(d1);
+        assertEquals(d1, thumbnail.getDrawable());
+
+        mView.setImage(d2);
+        assertEquals(d2, thumbnail.getDrawable());
+
+        mView.setImage(null);
+        assertEquals(null, thumbnail.getDrawable());
+    }
+
+    @Test
+    public void setText() {
+        TextView title = mView.findViewById(R.id.title);
+
+        mView.setTitle("aa");
+        assertEquals("aa", title.getText());
+
+        mView.setTitle("title");
+        assertEquals("title", title.getText());
+
+        mView.setTitle(null);
+        assertTrue(TextUtils.isEmpty(title.getText()));
     }
 }
