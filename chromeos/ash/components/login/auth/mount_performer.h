@@ -10,6 +10,8 @@
 #include "base/component_export.h"
 #include "base/functional/callback.h"
 #include "base/memory/weak_ptr.h"
+#include "base/time/clock.h"
+#include "base/time/default_clock.h"
 #include "chromeos/ash/components/dbus/cryptohome/UserDataAuth.pb.h"
 #include "chromeos/ash/components/login/auth/public/auth_callbacks.h"
 #include "chromeos/ash/components/login/auth/public/authentication_error.h"
@@ -24,7 +26,8 @@ class UserContext;
 // This implementation is only compatible with AuthSession-based API.
 class COMPONENT_EXPORT(CHROMEOS_ASH_COMPONENTS_LOGIN_AUTH) MountPerformer {
  public:
-  MountPerformer();
+  explicit MountPerformer(
+      const base::Clock* clock = base::DefaultClock::GetInstance());
 
   MountPerformer(const MountPerformer&) = delete;
   MountPerformer& operator=(const MountPerformer&) = delete;
@@ -100,6 +103,7 @@ class COMPONENT_EXPORT(CHROMEOS_ASH_COMPONENTS_LOGIN_AUTH) MountPerformer {
  private:
   // Callbacks for UserDataAuthClient operations:
   void OnCreatePersistentUser(
+      base::Time request_start,
       std::unique_ptr<UserContext> context,
       AuthOperationCallback callback,
       absl::optional<user_data_auth::CreatePersistentUserReply> reply);
@@ -108,6 +112,7 @@ class COMPONENT_EXPORT(CHROMEOS_ASH_COMPONENTS_LOGIN_AUTH) MountPerformer {
       AuthOperationCallback callback,
       absl::optional<user_data_auth::PrepareGuestVaultReply> reply);
   void OnPrepareEphemeralVault(
+      base::Time request_start,
       std::unique_ptr<UserContext> context,
       AuthOperationCallback callback,
       absl::optional<user_data_auth::PrepareEphemeralVaultReply> reply);
@@ -135,6 +140,7 @@ class COMPONENT_EXPORT(CHROMEOS_ASH_COMPONENTS_LOGIN_AUTH) MountPerformer {
       AuthOperationCallback callback,
       absl::optional<user_data_auth::StartMigrateToDircryptoReply> reply);
 
+  const raw_ptr<const base::Clock> clock_;
   base::WeakPtrFactory<MountPerformer> weak_factory_{this};
 };
 

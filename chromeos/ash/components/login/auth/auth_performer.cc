@@ -15,6 +15,7 @@
 #include "chromeos/ash/components/cryptohome/auth_factor.h"
 #include "chromeos/ash/components/cryptohome/auth_factor_conversions.h"
 #include "chromeos/ash/components/cryptohome/common_types.h"
+#include "chromeos/ash/components/cryptohome/constants.h"
 #include "chromeos/ash/components/cryptohome/cryptohome_util.h"
 #include "chromeos/ash/components/cryptohome/system_salt_getter.h"
 #include "chromeos/ash/components/cryptohome/userdataauth_util.h"
@@ -73,8 +74,11 @@ absl::optional<AuthSessionIntent> DeserializeIntent(
 
 }  // namespace
 
-AuthPerformer::AuthPerformer(UserDataAuthClient* client) : client_(client) {
+AuthPerformer::AuthPerformer(UserDataAuthClient* client,
+                             const base::Clock* clock)
+    : client_(client), clock_(clock) {
   CHECK(client_);
+  CHECK(clock_);
 }
 
 AuthPerformer::~AuthPerformer() = default;
@@ -89,6 +93,7 @@ base::WeakPtr<AuthPerformer> AuthPerformer::AsWeakPtr() {
 
 // static
 void AuthPerformer::FillAuthenticationData(
+    const base::Time& reference_time,
     const user_data_auth::AuthSessionProperties& session_properties,
     UserContext& out_context) {
   DCHECK(session_properties.authorized_for_size() > 0);
@@ -101,7 +106,7 @@ void AuthPerformer::FillAuthenticationData(
     }
   }
   out_context.SetSessionLifetime(
-      base::Time::Now() + base::Seconds(session_properties.seconds_left()));
+      reference_time + base::Seconds(session_properties.seconds_left()));
 }
 
 void AuthPerformer::StartAuthSession(std::unique_ptr<UserContext> context,
@@ -243,11 +248,12 @@ void AuthPerformer::AuthenticateUsingKnowledgeKey(
   client_->AuthenticateAuthFactor(
       request,
       base::BindOnce(&AuthPerformer::MaybeRecordKnowledgeFactorAuthFailure,
-                     weak_factory_.GetWeakPtr(), std::move(context),
-                     std::move(callback)));
+                     weak_factory_.GetWeakPtr(), clock_->Now(),
+                     std::move(context), std::move(callback)));
 }
 
 void AuthPerformer::MaybeRecordKnowledgeFactorAuthFailure(
+    base::Time request_start,
     std::unique_ptr<UserContext> context,
     AuthOperationCallback callback,
     absl::optional<user_data_auth::AuthenticateAuthFactorReply> reply) {
@@ -255,8 +261,8 @@ void AuthPerformer::MaybeRecordKnowledgeFactorAuthFailure(
       error == user_data_auth::CRYPTOHOME_ERROR_KEY_NOT_FOUND) {
     AuthEventsRecorder::Get()->OnKnowledgeFactorAuthFailue();
   }
-  OnAuthenticateAuthFactor(std::move(context), std::move(callback),
-                           std::move(reply));
+  OnAuthenticateAuthFactor(request_start, std::move(context),
+                           std::move(callback), std::move(reply));
 }
 
 void AuthPerformer::HashKeyAndAuthenticate(std::unique_ptr<UserContext> context,
@@ -292,8 +298,8 @@ void AuthPerformer::AuthenticateUsingChallengeResponseKey(
   request.set_auth_factor_label(ref.label().value());
   client_->AuthenticateAuthFactor(
       request, base::BindOnce(&AuthPerformer::OnAuthenticateAuthFactor,
-                              weak_factory_.GetWeakPtr(), std::move(context),
-                              std::move(callback)));
+                              weak_factory_.GetWeakPtr(), clock_->Now(),
+                              std::move(context), std::move(callback)));
 }
 
 void AuthPerformer::AuthenticateWithPassword(
@@ -390,8 +396,8 @@ void AuthPerformer::AuthenticateAsKiosk(std::unique_ptr<UserContext> context,
   request.set_auth_factor_label(existing_factor->ref().label().value());
   client_->AuthenticateAuthFactor(
       request, base::BindOnce(&AuthPerformer::OnAuthenticateAuthFactor,
-                              weak_factory_.GetWeakPtr(), std::move(context),
-                              std::move(callback)));
+                              weak_factory_.GetWeakPtr(), clock_->Now(),
+                              std::move(context), std::move(callback)));
 }
 
 void AuthPerformer::GetAuthSessionStatus(std::unique_ptr<UserContext> context,
@@ -406,8 +412,27 @@ void AuthPerformer::GetAuthSessionStatus(std::unique_ptr<UserContext> context,
 
   client_->GetAuthSessionStatus(
       request, base::BindOnce(&AuthPerformer::OnGetAuthSessionStatus,
-                              weak_factory_.GetWeakPtr(), std::move(context),
-                              std::move(callback)));
+                              weak_factory_.GetWeakPtr(), clock_->Now(),
+                              std::move(context), std::move(callback)));
+}
+
+void AuthPerformer::ExtendAuthSessionLifetime(
+    std::unique_ptr<UserContext> context,
+    AuthOperationCallback callback) {
+  if (context->GetAuthSessionId().empty()) {
+    NOTREACHED() << "Auth session should exist";
+  }
+  LOGIN_LOG(EVENT) << "Requesting authsession lifetime extension";
+  user_data_auth::ExtendAuthSessionRequest request;
+
+  request.set_auth_session_id(context->GetAuthSessionId());
+  request.set_extension_duration(
+      cryptohome::kAuthsessionExtensionPeriod.InSeconds());
+
+  client_->ExtendAuthSession(
+      request, base::BindOnce(&AuthPerformer::OnExtendAuthSession,
+                              weak_factory_.GetWeakPtr(), clock_->Now(),
+                              std::move(context), std::move(callback)));
 }
 
 void AuthPerformer::GetRecoveryRequest(
@@ -478,8 +503,8 @@ void AuthPerformer::AuthenticateWithRecovery(
 
   client_->AuthenticateAuthFactor(
       request, base::BindOnce(&AuthPerformer::OnAuthenticateAuthFactor,
-                              weak_factory_.GetWeakPtr(), std::move(context),
-                              std::move(callback)));
+                              weak_factory_.GetWeakPtr(), clock_->Now(),
+                              std::move(context), std::move(callback)));
 }
 
 /// ---- private callbacks ----
@@ -576,6 +601,7 @@ void AuthPerformer::OnTerminateAuthFactor(
 }
 
 void AuthPerformer::OnAuthenticateAuthFactor(
+    base::Time request_start,
     std::unique_ptr<UserContext> context,
     AuthOperationCallback callback,
     absl::optional<user_data_auth::AuthenticateAuthFactorReply> reply) {
@@ -589,13 +615,14 @@ void AuthPerformer::OnAuthenticateAuthFactor(
   }
   CHECK(reply.has_value());
   CHECK(reply->has_auth_properties());
-  FillAuthenticationData(reply->auth_properties(), *context);
+  FillAuthenticationData(request_start, reply->auth_properties(), *context);
 
   LOGIN_LOG(EVENT) << "Authenticated successfully";
   std::move(callback).Run(std::move(context), absl::nullopt);
 }
 
 void AuthPerformer::OnGetAuthSessionStatus(
+    base::Time request_start,
     std::unique_ptr<UserContext> context,
     AuthSessionStatusCallback callback,
     absl::optional<user_data_auth::GetAuthSessionStatusReply> reply) {
@@ -639,8 +666,26 @@ void AuthPerformer::OnGetAuthSessionStatus(
     default:
       NOTREACHED();
   }
-  FillAuthenticationData(reply->auth_properties(), *context);
+  FillAuthenticationData(request_start, reply->auth_properties(), *context);
   std::move(callback).Run(status, lifetime, std::move(context),
+                          /*cryptohome_error=*/absl::nullopt);
+}
+
+void AuthPerformer::OnExtendAuthSession(
+    base::Time request_start,
+    std::unique_ptr<UserContext> context,
+    AuthOperationCallback callback,
+    absl::optional<user_data_auth::ExtendAuthSessionReply> reply) {
+  auto error = user_data_auth::ReplyToCryptohomeError(reply);
+  if (error != user_data_auth::CRYPTOHOME_ERROR_NOT_SET) {
+    LOGIN_LOG(EVENT) << "Failed to extend authsession lifetime " << error;
+    std::move(callback).Run(std::move(context), AuthenticationError{error});
+    return;
+  }
+  CHECK(reply.has_value());
+  context->SetSessionLifetime(request_start +
+                              base::Seconds(reply->seconds_left()));
+  std::move(callback).Run(std::move(context),
                           /*cryptohome_error=*/absl::nullopt);
 }
 

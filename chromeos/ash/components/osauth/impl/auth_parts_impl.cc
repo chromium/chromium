@@ -10,6 +10,7 @@
 #include "base/check.h"
 #include "base/check_is_test.h"
 #include "base/check_op.h"
+#include "base/time/default_clock.h"
 #include "chromeos/ash/components/dbus/userdataauth/userdataauth_client.h"
 #include "chromeos/ash/components/osauth/impl/auth_hub_impl.h"
 #include "chromeos/ash/components/osauth/impl/auth_session_storage_impl.h"
@@ -59,8 +60,8 @@ AuthPartsImpl::~AuthPartsImpl() {
 }
 
 void AuthPartsImpl::CreateDefaultComponents(PrefService* local_state) {
-  session_storage_ =
-      std::make_unique<AuthSessionStorageImpl>(UserDataAuthClient::Get());
+  session_storage_ = std::make_unique<AuthSessionStorageImpl>(
+      UserDataAuthClient::Get(), base::DefaultClock::GetInstance());
   factors_cache_ = std::make_unique<AuthFactorPresenceCache>(local_state);
   auth_hub_ = std::make_unique<AuthHubImpl>(factors_cache_.get());
   cryptohome_core_ =

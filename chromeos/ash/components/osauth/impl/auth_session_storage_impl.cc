@@ -20,8 +20,10 @@
 namespace ash {
 
 AuthSessionStorageImpl::AuthSessionStorageImpl(
-    UserDataAuthClient* user_data_auth) {
-  auth_performer_ = std::make_unique<AuthPerformer>(user_data_auth);
+    UserDataAuthClient* user_data_auth,
+    const base::Clock* clock)
+    : clock_(clock) {
+  auth_performer_ = std::make_unique<AuthPerformer>(user_data_auth, clock_);
 }
 
 AuthSessionStorageImpl::~AuthSessionStorageImpl() = default;

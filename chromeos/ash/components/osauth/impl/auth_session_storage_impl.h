@@ -12,6 +12,8 @@
 #include "base/containers/flat_map.h"
 #include "base/functional/callback.h"
 #include "base/location.h"
+#include "base/time/clock.h"
+#include "base/time/default_clock.h"
 #include "chromeos/ash/components/login/auth/public/auth_callbacks.h"
 #include "chromeos/ash/components/osauth/public/auth_session_storage.h"
 #include "chromeos/ash/components/osauth/public/common_types.h"
@@ -40,7 +42,9 @@ class UserDataAuthClient;
 class COMPONENT_EXPORT(CHROMEOS_ASH_COMPONENTS_OSAUTH) AuthSessionStorageImpl
     : public AuthSessionStorage {
  public:
-  explicit AuthSessionStorageImpl(UserDataAuthClient* user_data_auth);
+  AuthSessionStorageImpl(
+      UserDataAuthClient* user_data_auth,
+      const base::Clock* clock = base::DefaultClock::GetInstance());
   ~AuthSessionStorageImpl() override;
 
   // AuthSessionStorage implementation:
@@ -94,6 +98,8 @@ class COMPONENT_EXPORT(CHROMEOS_ASH_COMPONENTS_OSAUTH) AuthSessionStorageImpl
   base::flat_map<AuthProofToken, std::unique_ptr<TokenData>> tokens_;
 
   std::unique_ptr<AuthPerformer> auth_performer_;
+
+  const raw_ptr<const base::Clock> clock_;
 
   base::WeakPtrFactory<AuthSessionStorageImpl> weak_factory_{this};
 };
