@@ -91,7 +91,6 @@ import org.chromium.url.JUnitTestGURLs;
 @RunWith(BaseRobolectricTestRunner.class)
 @Config(manifest = Config.NONE,
         shadows = {ShadowHomepageManager.class, ShadowHomepagePolicyManager.class})
-@EnableFeatures({ChromeFeatureList.START_SURFACE_WITH_ACCESSIBILITY})
 @CommandLineFlags.Add({BaseSwitches.DISABLE_LOW_END_DEVICE_MODE})
 public class ReturnToChromeUtilUnitTest {
     /** Shadow for {@link HomepageManager}. */

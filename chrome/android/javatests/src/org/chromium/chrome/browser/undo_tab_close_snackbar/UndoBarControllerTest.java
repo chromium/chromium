@@ -17,7 +17,6 @@ import org.junit.runner.RunWith;
 
 import org.chromium.base.test.util.CommandLineFlags;
 import org.chromium.base.test.util.Restriction;
-import org.chromium.chrome.browser.flags.ChromeFeatureList;
 import org.chromium.chrome.browser.flags.ChromeSwitches;
 import org.chromium.chrome.browser.tabmodel.TabModel;
 import org.chromium.chrome.browser.ui.messages.snackbar.Snackbar;
@@ -27,7 +26,6 @@ import org.chromium.chrome.test.ChromeJUnit4ClassRunner;
 import org.chromium.chrome.test.ChromeTabbedActivityTestRule;
 import org.chromium.chrome.test.R;
 import org.chromium.chrome.test.util.ChromeTabUtils;
-import org.chromium.chrome.test.util.browser.Features.EnableFeatures;
 import org.chromium.content_public.browser.test.util.TestThreadUtils;
 import org.chromium.ui.test.util.UiRestriction;
 
@@ -139,12 +137,6 @@ public class UndoBarControllerTest {
 
     @Test
     @SmallTest
-    // When both START_SURFACE_ANDROID and START_SURFACE_WITH_ACCESSIBILITY are enabled, changing
-    // accessibility status won't recreate ChromeTabbedActivity.
-    @EnableFeatures({
-        ChromeFeatureList.START_SURFACE_ANDROID,
-        ChromeFeatureList.START_SURFACE_WITH_ACCESSIBILITY
-    })
     public void testUndoSnackbarDisabled_AccessibilityEnabled() throws Exception {
         TestThreadUtils.runOnUiThreadBlocking(
                 () -> ChromeAccessibilityUtil.get().setAccessibilityEnabledForTesting(true));
@@ -164,7 +156,6 @@ public class UndoBarControllerTest {
     @Test
     @SmallTest
     @Restriction(UiRestriction.RESTRICTION_TYPE_PHONE)
-    @EnableFeatures({ChromeFeatureList.START_SURFACE_WITH_ACCESSIBILITY})
     public void testUndoSnackbarEnabled_AccessibilityEnabled() throws Exception {
         TestThreadUtils.runOnUiThreadBlocking(
                 () -> ChromeAccessibilityUtil.get().setAccessibilityEnabledForTesting(true));

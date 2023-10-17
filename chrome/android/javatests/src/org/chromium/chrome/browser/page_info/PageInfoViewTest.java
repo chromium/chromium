@@ -901,12 +901,6 @@ public class PageInfoViewTest {
      */
     @Test
     @MediumTest
-    // When both START_SURFACE_ANDROID and START_SURFACE_WITH_ACCESSIBILITY are enabled, changing
-    // accessibility status won't recreate ChromeTabbedActivity.
-    @EnableFeatures({
-        ChromeFeatureList.START_SURFACE_ANDROID,
-        ChromeFeatureList.START_SURFACE_WITH_ACCESSIBILITY
-    })
     public void testCloseButton() {
         TestThreadUtils.runOnUiThreadBlocking(
                 () -> {

@@ -1775,10 +1775,7 @@ public class TabSwitcherAndStartSurfaceLayoutTest {
     @Test
     @MediumTest
     @UseMethodParameter(RefactorTestParams.class)
-    @EnableFeatures({
-        ChromeFeatureList.TAB_TO_GTS_ANIMATION + "<Study",
-        ChromeFeatureList.START_SURFACE_WITH_ACCESSIBILITY
-    })
+    @EnableFeatures({ChromeFeatureList.TAB_TO_GTS_ANIMATION})
     public void testUndoClosure_AccessibilityMode(boolean isStartSurfaceRefactorEnabled)
             throws Exception {
         TestThreadUtils.runOnUiThreadBlocking(

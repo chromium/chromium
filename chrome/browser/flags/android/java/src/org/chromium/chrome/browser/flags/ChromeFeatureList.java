@@ -623,7 +623,7 @@ public abstract class ChromeFeatureList {
     public static final CachedFlag sAccountReauthenticationRecentTimeWindow =
             new CachedFlag(ACCOUNT_REAUTHENTICATION_RECENT_TIME_WINDOW, true);
     public static final CachedFlag sStartSurfaceWithAccessibility =
-            new CachedFlag(START_SURFACE_WITH_ACCESSIBILITY, false);
+            new CachedFlag(START_SURFACE_WITH_ACCESSIBILITY, true);
     public static final CachedFlag sStoreHoursAndroid = new CachedFlag(STORE_HOURS, false);
     public static final CachedFlag sSurfacePolish = new CachedFlag(SURFACE_POLISH, false);
     public static final CachedFlag sTabDragDropAsWindowAndroid =
