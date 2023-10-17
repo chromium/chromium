@@ -24,8 +24,7 @@ namespace {
 class IMEDetailedViewPixelTest : public AshTestBase {
  public:
   IMEDetailedViewPixelTest() {
-    feature_list_.InitWithFeatures(
-        {features::kQsRevamp, chromeos::features::kJelly}, {});
+    feature_list_.InitWithFeatures({chromeos::features::kJelly}, {});
   }
 
   // AshTestBase:

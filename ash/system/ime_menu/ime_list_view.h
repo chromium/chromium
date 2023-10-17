@@ -116,8 +116,7 @@ class ImeListView : public TrayDetailedView {
   raw_ptr<views::View, DanglingUntriaged | ExperimentalAsh> current_ime_view_ =
       nullptr;
 
-  // The container for the IME list. Either a ScrollView (pre-QsRevamp) or a
-  // RoundedContainer (post-QsRevamp).
+  // The container for the IME list.
   raw_ptr<views::View, DanglingUntriaged | ExperimentalAsh> container_ =
       nullptr;
 };

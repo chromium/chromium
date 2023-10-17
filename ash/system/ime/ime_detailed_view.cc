@@ -7,7 +7,6 @@
 #include <memory>
 #include <vector>
 
-#include "ash/constants/ash_features.h"
 #include "ash/ime/ime_controller_impl.h"
 #include "ash/public/cpp/system_tray_client.h"
 #include "ash/resources/vector_icons/vector_icons.h"
@@ -56,19 +55,14 @@ void IMEDetailedView::ResetImeListView() {
 
 void IMEDetailedView::CreateExtraTitleRowButtons() {
   if (ime_controller_->managed_by_policy()) {
-    const bool is_qs_revamp = features::IsQsRevampEnabled();
     controlled_setting_icon_ = TrayPopupUtils::CreateMainImageView(
-        /*use_wide_layout=*/is_qs_revamp);
-    if (is_qs_revamp) {
-      // Match the size of the settings button. This size matches IconButton
-      // kSmall, but IconButton doesn't expose that value, so we inline it here.
-      controlled_setting_icon_->SetPreferredSize(gfx::Size(32, 32));
-    }
+        /*use_wide_layout=*/true);
+    // Match the size of the settings button. This size matches IconButton
+    // kSmall, but IconButton doesn't expose that value, so we inline it here.
+    controlled_setting_icon_->SetPreferredSize(gfx::Size(32, 32));
     controlled_setting_icon_->SetImage(ui::ImageModel::FromVectorIcon(
         kSystemMenuBusinessIcon,
-        chromeos::features::IsJellyEnabled()
-            ? static_cast<ui::ColorId>(cros_tokens::kCrosSysOnSurface)
-            : kColorAshIconColorPrimary));
+        static_cast<ui::ColorId>(cros_tokens::kCrosSysOnSurface)));
     controlled_setting_icon_->SetTooltipText(
         l10n_util::GetStringUTF16(IDS_ASH_STATUS_TRAY_IME_MANAGED));
     tri_view()->AddView(TriView::Container::END, controlled_setting_icon_);
@@ -84,7 +78,7 @@ void IMEDetailedView::CreateExtraTitleRowButtons() {
 
 void IMEDetailedView::ShowSettings() {
   base::RecordAction(base::UserMetricsAction("StatusArea_IME_Detailed"));
-  CloseBubble();  // Deletes |this|.
+  CloseBubble();  // Deletes `this`.
   Shell::Get()->system_tray_model()->client()->ShowIMESettings();
 }
 

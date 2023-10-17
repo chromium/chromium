@@ -95,8 +95,8 @@ class ASH_EXPORT ImeMenuTray : public TrayBackgroundView,
   void CreateLabel();
   void CreateImageView();
 
-  // For Jelly: Updates the color of `image_view_` if `is_image` is true or the
-  // color of `label_` otherwise.
+  // Updates the color of `image_view_` if `is_image` is true or the color of
+  // `label_` otherwise.
   void UpdateTrayImageOrLabelColor(bool is_image);
 
   raw_ptr<ImeControllerImpl, ExperimentalAsh> ime_controller_;
