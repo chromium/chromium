@@ -843,7 +843,8 @@ IN_PROC_BROWSER_TEST_P(SelectFileDialogHeadlessBrowserTest, SelectFileDialog) {
   EXPECT_EQ(select_file_dialog_type_, expected_type());
 }
 
-IN_PROC_BROWSER_TEST_F(HeadlessBrowserTest, NetworkServiceCrash) {
+// TODO(crbug.com/1493208): Flaky on all builders.
+IN_PROC_BROWSER_TEST_F(HeadlessBrowserTest, DISABLED_NetworkServiceCrash) {
   ASSERT_TRUE(embedded_test_server()->Start());
 
   HeadlessBrowserContext* browser_context =
