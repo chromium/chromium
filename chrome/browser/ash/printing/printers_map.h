@@ -82,14 +82,17 @@ class PrintersMap {
       const chromeos::CupsPrinterStatus& cups_printer_status);
 
  private:
-  // Returns true if |printer_class| exists and contains at least 1 printer.
-  bool HasPrintersInClass(chromeos::PrinterClass printer_class) const;
+  using PrintersInClassMap = std::unordered_map<std::string, chromeos::Printer>;
+  using PrinterClassesMap =
+      std::unordered_map<chromeos::PrinterClass, PrintersInClassMap>;
 
   // Returns true if |printer_id| exists in any class. Used only for DCHECKs.
   bool IsExistingPrinter(const std::string& printer_id) const;
 
-  absl::optional<chromeos::CupsPrinterStatus> GetPrinterStatus(
-      const std::string& printer_id) const;
+  // Returns a const pointer to the map of all printers for a particular
+  // |printer_class|, or nullptr if it doesn't exist.
+  const PrintersInClassMap* FindPrintersInClassOrNull(
+      chromeos::PrinterClass printer_class) const;
 
   // Returns set of printer id's for printers in class |printer_class|.
   std::set<std::string> GetPrinterIdsInClass(
@@ -97,9 +100,7 @@ class PrintersMap {
 
   // Categorized printers. Outer map keyed on PrinterClass, inner map keyed on
   // PrinterId.
-  std::unordered_map<chromeos::PrinterClass,
-                     std::unordered_map<std::string, chromeos::Printer>>
-      printers_;
+  PrinterClassesMap printers_;
 
   // Stores printer statuses returned from performing printer status queries.
   // This map is used to persist the printer statuses so when |printers_| map is
