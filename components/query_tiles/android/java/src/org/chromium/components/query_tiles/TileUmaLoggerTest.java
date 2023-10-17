@@ -15,9 +15,7 @@ import org.chromium.base.metrics.RecordHistogram;
 import org.chromium.base.metrics.UmaRecorderHolder;
 import org.chromium.base.test.BaseRobolectricTestRunner;
 
-/**
- * Tests for TileUmaLogger.
- */
+/** Tests for TileUmaLogger. */
 @RunWith(BaseRobolectricTestRunner.class)
 @Config(manifest = Config.NONE)
 public class TileUmaLoggerTest {
@@ -36,31 +34,34 @@ public class TileUmaLoggerTest {
 
     @Test
     public void testTileClicked() {
-        mTileProvider.getQueryTiles(null, tiles -> {
-            mTileUmaLogger.recordTilesLoaded(tiles);
+        mTileProvider.getQueryTiles(
+                null,
+                tiles -> {
+                    mTileUmaLogger.recordTilesLoaded(tiles);
 
-            // Click top level tiles.
-            mTileUmaLogger.recordTileClicked(mTileProvider.getTileAt(0));
-            mTileUmaLogger.recordTileClicked(mTileProvider.getTileAt(11));
-            assertHistogramClicked(0, 1);
-            assertHistogramClicked(1, 0);
-            assertHistogramClicked(11, 1);
-            assertHistogramClicked(100, 0);
-            assertHistogramClicked(111, 0);
-            assertHistogramClicked(1200, 0);
+                    // Click top level tiles.
+                    mTileUmaLogger.recordTileClicked(mTileProvider.getTileAt(0));
+                    mTileUmaLogger.recordTileClicked(mTileProvider.getTileAt(11));
+                    assertHistogramClicked(0, 1);
+                    assertHistogramClicked(1, 0);
+                    assertHistogramClicked(11, 1);
+                    assertHistogramClicked(100, 0);
+                    assertHistogramClicked(111, 0);
+                    assertHistogramClicked(1200, 0);
 
-            // Click next level tiles.
-            mTileUmaLogger.recordTileClicked(mTileProvider.getTileAt(2, 3));
-            mTileUmaLogger.recordTileClicked(mTileProvider.getTileAt(2, 3));
-            assertHistogramClicked(0, 1);
-            assertHistogramClicked(303, 2);
-            assertHistogramClicked(11, 1);
-        });
+                    // Click next level tiles.
+                    mTileUmaLogger.recordTileClicked(mTileProvider.getTileAt(2, 3));
+                    mTileUmaLogger.recordTileClicked(mTileProvider.getTileAt(2, 3));
+                    assertHistogramClicked(0, 1);
+                    assertHistogramClicked(303, 2);
+                    assertHistogramClicked(11, 1);
+                });
     }
 
     private void assertHistogramClicked(int tileHistogramIndex, int expected) {
-        int actual = RecordHistogram.getHistogramValueCountForTesting(
-                "Search.TestUiSurface.Tile.Clicked", tileHistogramIndex);
+        int actual =
+                RecordHistogram.getHistogramValueCountForTesting(
+                        "Search.TestUiSurface.Tile.Clicked", tileHistogramIndex);
         Assert.assertEquals(expected, actual);
     }
 }

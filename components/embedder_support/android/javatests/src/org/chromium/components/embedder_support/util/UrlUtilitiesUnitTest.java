@@ -16,9 +16,7 @@ import org.chromium.base.test.util.Batch;
 import org.chromium.content_public.browser.test.NativeLibraryTestUtils;
 import org.chromium.url.GURL;
 
-/**
- * Unit tests for {@link UrlUtilities}.
- */
+/** Unit tests for {@link UrlUtilities}. */
 @RunWith(BaseJUnit4ClassRunner.class)
 @Batch(Batch.UNIT_TESTS)
 @SuppressWarnings(value = "AuthLeak")
@@ -53,8 +51,9 @@ public class UrlUtilitiesUnitTest {
         Assert.assertFalse(UrlUtilities.isHttpOrHttps("ftp://https:password@example.com/"));
         Assert.assertFalse(
                 UrlUtilities.isHttpOrHttps("ftp://https:password@example.com/?http:#http:"));
-        Assert.assertFalse(UrlUtilities.isHttpOrHttps(
-                "google-search://https:password@example.com/?http:#http:"));
+        Assert.assertFalse(
+                UrlUtilities.isHttpOrHttps(
+                        "google-search://https:password@example.com/?http:#http:"));
         Assert.assertFalse(UrlUtilities.isHttpOrHttps("chrome://http://version"));
         Assert.assertFalse(UrlUtilities.isHttpOrHttps(""));
     }
@@ -62,9 +61,11 @@ public class UrlUtilitiesUnitTest {
     @Test
     @SmallTest
     public void testStripPath() {
-        Assert.assertEquals("https://example.com:9000",
+        Assert.assertEquals(
+                "https://example.com:9000",
                 UrlUtilities.stripPath("https://user:pass@example.com:9000/path/#extra"));
-        Assert.assertEquals("http://awesome.example.com",
+        Assert.assertEquals(
+                "http://awesome.example.com",
                 UrlUtilities.stripPath("http://awesome.example.com/?query"));
         Assert.assertEquals("http://localhost", UrlUtilities.stripPath("http://localhost/"));
         Assert.assertEquals("http://", UrlUtilities.stripPath("http:"));
@@ -79,8 +80,9 @@ public class UrlUtilitiesUnitTest {
         // If there is no scheme, nothing changes.
         Assert.assertEquals("cs.chromium.org", UrlUtilities.stripScheme("cs.chromium.org"));
         // Path is not touched/changed.
-        String urlWithPath = "code.google.com/p/chromium/codesearch#search"
-                + "/&q=testStripScheme&sq=package:chromium&type=cs";
+        String urlWithPath =
+                "code.google.com/p/chromium/codesearch#search"
+                        + "/&q=testStripScheme&sq=package:chromium&type=cs";
         Assert.assertEquals(urlWithPath, UrlUtilities.stripScheme("https://" + urlWithPath));
         // Beginning and ending spaces get trimmed.
         Assert.assertEquals(
@@ -92,8 +94,9 @@ public class UrlUtilitiesUnitTest {
     public void testIsAcceptedScheme() {
         Assert.assertTrue(UrlUtilities.isAcceptedScheme(new GURL("about:awesome")));
         Assert.assertTrue(UrlUtilities.isAcceptedScheme(new GURL("data:data")));
-        Assert.assertTrue(UrlUtilities.isAcceptedScheme(
-                new GURL("https://user:pass@awesome.com:9000/bad-scheme/#fake")));
+        Assert.assertTrue(
+                UrlUtilities.isAcceptedScheme(
+                        new GURL("https://user:pass@awesome.com:9000/bad-scheme/#fake")));
         Assert.assertTrue(UrlUtilities.isAcceptedScheme(new GURL("http://awesome.example.com/")));
         Assert.assertTrue(UrlUtilities.isAcceptedScheme(new GURL("file://hostname/path/to/file")));
         Assert.assertTrue(UrlUtilities.isAcceptedScheme(new GURL("inline:skates.co.uk")));
@@ -104,10 +107,12 @@ public class UrlUtilitiesUnitTest {
         Assert.assertFalse(UrlUtilities.isAcceptedScheme(new GURL("super:awesome")));
         Assert.assertFalse(
                 UrlUtilities.isAcceptedScheme(new GURL("ftp://https:password@example.com/")));
-        Assert.assertFalse(UrlUtilities.isAcceptedScheme(
-                new GURL("ftp://https:password@example.com/?http:#http:")));
-        Assert.assertFalse(UrlUtilities.isAcceptedScheme(
-                new GURL("google-search://https:password@example.com/?http:#http:")));
+        Assert.assertFalse(
+                UrlUtilities.isAcceptedScheme(
+                        new GURL("ftp://https:password@example.com/?http:#http:")));
+        Assert.assertFalse(
+                UrlUtilities.isAcceptedScheme(
+                        new GURL("google-search://https:password@example.com/?http:#http:")));
         Assert.assertFalse(UrlUtilities.isAcceptedScheme(new GURL("chrome://http://version")));
         Assert.assertFalse(UrlUtilities.isAcceptedScheme(GURL.emptyGURL()));
     }
@@ -116,12 +121,14 @@ public class UrlUtilitiesUnitTest {
     @SmallTest
     public void testIsDownloadableScheme() {
         Assert.assertTrue(UrlUtilities.isDownloadableScheme(new GURL("data:data")));
-        Assert.assertTrue(UrlUtilities.isDownloadableScheme(
-                new GURL("https://user:pass@awesome.com:9000/bad-scheme:#fake:")));
+        Assert.assertTrue(
+                UrlUtilities.isDownloadableScheme(
+                        new GURL("https://user:pass@awesome.com:9000/bad-scheme:#fake:")));
         Assert.assertTrue(
                 UrlUtilities.isDownloadableScheme(new GURL("http://awesome.example.com/")));
-        Assert.assertTrue(UrlUtilities.isDownloadableScheme(
-                new GURL("filesystem:https://user:pass@google.com:99/t/foo;bar?q=a#ref")));
+        Assert.assertTrue(
+                UrlUtilities.isDownloadableScheme(
+                        new GURL("filesystem:https://user:pass@google.com:99/t/foo;bar?q=a#ref")));
         Assert.assertTrue(
                 UrlUtilities.isDownloadableScheme(new GURL("blob:https://awesome.example.com/")));
         Assert.assertTrue(
@@ -133,10 +140,12 @@ public class UrlUtilitiesUnitTest {
         Assert.assertFalse(UrlUtilities.isDownloadableScheme(new GURL("super:awesome")));
         Assert.assertFalse(
                 UrlUtilities.isDownloadableScheme(new GURL("ftp://https:password@example.com/")));
-        Assert.assertFalse(UrlUtilities.isDownloadableScheme(
-                new GURL("ftp://https:password@example.com/?http:#http:")));
-        Assert.assertFalse(UrlUtilities.isDownloadableScheme(
-                new GURL("google-search://https:password@example.com/?http:#http:")));
+        Assert.assertFalse(
+                UrlUtilities.isDownloadableScheme(
+                        new GURL("ftp://https:password@example.com/?http:#http:")));
+        Assert.assertFalse(
+                UrlUtilities.isDownloadableScheme(
+                        new GURL("google-search://https:password@example.com/?http:#http:")));
         Assert.assertFalse(UrlUtilities.isDownloadableScheme(new GURL("chrome://http://version")));
         Assert.assertFalse(UrlUtilities.isDownloadableScheme(GURL.emptyGURL()));
     }
@@ -154,8 +163,9 @@ public class UrlUtilitiesUnitTest {
         Assert.assertFalse(UrlUtilities.isUrlWithinScope(scope + "/this", scope + "/different"));
         Assert.assertFalse(
                 UrlUtilities.isUrlWithinScope("http://awesome.example.com", "http://example.com"));
-        Assert.assertFalse(UrlUtilities.isUrlWithinScope(
-                "https://www.google.com.evil.com", "https://www.google.com"));
+        Assert.assertFalse(
+                UrlUtilities.isUrlWithinScope(
+                        "https://www.google.com.evil.com", "https://www.google.com"));
     }
 
     @Test
@@ -166,11 +176,12 @@ public class UrlUtilitiesUnitTest {
         Assert.assertTrue(UrlUtilities.urlsMatchIgnoringFragments(url + "#fragment", url));
         Assert.assertTrue(
                 UrlUtilities.urlsMatchIgnoringFragments(url + "#fragment", url + "#fragment2"));
-        Assert.assertTrue(UrlUtilities.urlsMatchIgnoringFragments("HTTP://www.example.com/path"
-                        + "#fragment",
-                url + "#fragment2"));
-        Assert.assertFalse(UrlUtilities.urlsMatchIgnoringFragments(
-                url + "#fragment", "http://example.com:443/path#fragment"));
+        Assert.assertTrue(
+                UrlUtilities.urlsMatchIgnoringFragments(
+                        "HTTP://www.example.com/path" + "#fragment", url + "#fragment2"));
+        Assert.assertFalse(
+                UrlUtilities.urlsMatchIgnoringFragments(
+                        url + "#fragment", "http://example.com:443/path#fragment"));
     }
 
     @Test

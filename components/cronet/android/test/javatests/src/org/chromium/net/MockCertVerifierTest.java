@@ -24,16 +24,14 @@ import org.chromium.base.test.util.DoNotBatch;
 import org.chromium.net.CronetTestRule.CronetImplementation;
 import org.chromium.net.CronetTestRule.IgnoreFor;
 
-/**
- * Unit tests for {@code MockCertVerifier}.
- */
+/** Unit tests for {@code MockCertVerifier}. */
 @RunWith(AndroidJUnit4.class)
 @DoNotBatch(reason = "crbug/1459563")
-@IgnoreFor(implementations = {CronetImplementation.FALLBACK},
+@IgnoreFor(
+        implementations = {CronetImplementation.FALLBACK},
         reason = "The fallback implementation doesn't support MockCertVerifier")
 public class MockCertVerifierTest {
-    @Rule
-    public final CronetTestRule mTestRule = CronetTestRule.withManualEngineStartup();
+    @Rule public final CronetTestRule mTestRule = CronetTestRule.withManualEngineStartup();
 
     @Before
     public void setUp() throws Exception {
@@ -63,10 +61,13 @@ public class MockCertVerifierTest {
     @SmallTest
     public void testRequest_passesWithMockVerifierBeforeNougat() {
         assume().that(Build.VERSION.SDK_INT).isLessThan(Build.VERSION_CODES.N);
-        mTestRule.getTestFramework().applyEngineBuilderPatch(
-                (builder)
-                        -> CronetTestUtil.setMockCertVerifierForTesting(
-                                builder, MockCertVerifier.createFreeForAllMockCertVerifier()));
+        mTestRule
+                .getTestFramework()
+                .applyEngineBuilderPatch(
+                        (builder) ->
+                                CronetTestUtil.setMockCertVerifierForTesting(
+                                        builder,
+                                        MockCertVerifier.createFreeForAllMockCertVerifier()));
 
         String url = Http2TestServer.getEchoAllHeadersUrl();
         TestUrlRequestCallback callback = startAndWaitForComplete(url);
@@ -85,8 +86,10 @@ public class MockCertVerifierTest {
     private TestUrlRequestCallback startAndWaitForComplete(String url) {
         TestUrlRequestCallback callback = new TestUrlRequestCallback();
         UrlRequest.Builder builder =
-                mTestRule.getTestFramework().startEngine().newUrlRequestBuilder(
-                        url, callback, callback.getExecutor());
+                mTestRule
+                        .getTestFramework()
+                        .startEngine()
+                        .newUrlRequestBuilder(url, callback, callback.getExecutor());
         builder.build().start();
         callback.blockForDone();
         return callback;

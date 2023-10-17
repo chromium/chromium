@@ -35,14 +35,15 @@ import org.chromium.ui.base.WindowAndroid;
 import java.lang.ref.WeakReference;
 
 @RunWith(BaseRobolectricTestRunner.class)
-@Config(manifest = Config.NONE,
-        shadows = {AuthenticatorIncognitoConfirmationBottomsheetTest
-                           .ShadowBottomSheetControllerProvider.class})
+@Config(
+        manifest = Config.NONE,
+        shadows = {
+            AuthenticatorIncognitoConfirmationBottomsheetTest.ShadowBottomSheetControllerProvider
+                    .class
+        })
 public class AuthenticatorIncognitoConfirmationBottomsheetTest {
-    @Rule
-    public MockitoRule mMockitoRule = MockitoJUnit.rule().strictness(Strictness.WARN);
-    @Rule
-    public JniMocker mJniMocker = new JniMocker();
+    @Rule public MockitoRule mMockitoRule = MockitoJUnit.rule().strictness(Strictness.WARN);
+    @Rule public JniMocker mJniMocker = new JniMocker();
 
     @Mock(answer = Answers.RETURNS_DEEP_STUBS)
     private WebContents mWebContents;
@@ -77,17 +78,19 @@ public class AuthenticatorIncognitoConfirmationBottomsheetTest {
                 .when(windowAndroid)
                 .getContext();
 
-        mPositiveCallback = () -> {
-            mUserResponded = true;
-            mUserPositive = true;
-        };
-        mNegativeCallback = () -> {
-            mUserResponded = true;
-            mUserPositive = false;
-        };
+        mPositiveCallback =
+                () -> {
+                    mUserResponded = true;
+                    mUserPositive = true;
+                };
+        mNegativeCallback =
+                () -> {
+                    mUserResponded = true;
+                    mUserPositive = false;
+                };
 
         ShadowBottomSheetControllerProvider.setBottomSheetController(
-                createBottomSheetController(/*requestShowContentResponse=*/true));
+                createBottomSheetController(/* requestShowContentResponse= */ true));
     }
 
     @After
@@ -108,7 +111,7 @@ public class AuthenticatorIncognitoConfirmationBottomsheetTest {
     }
 
     private boolean show() {
-        return show(/*enableOptOut=*/false);
+        return show(/* enableOptOut= */ false);
     }
 
     private boolean show(boolean enableOptOut) {

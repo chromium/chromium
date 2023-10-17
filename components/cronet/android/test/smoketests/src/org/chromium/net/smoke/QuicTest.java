@@ -23,20 +23,18 @@ import org.chromium.net.UrlRequest;
 
 import java.net.URL;
 
-/**
- * QUIC Tests.
- */
+/** QUIC Tests. */
 @RunWith(AndroidJUnit4.class)
 public class QuicTest {
     private TestSupport.TestServer mServer;
 
-    @Rule
-    public NativeCronetTestRule mRule = new NativeCronetTestRule();
+    @Rule public NativeCronetTestRule mRule = new NativeCronetTestRule();
 
     @Before
     public void setUp() throws Exception {
-        mServer = mRule.getTestSupport().createTestServer(
-                ApplicationProvider.getApplicationContext(), QUIC);
+        mServer =
+                mRule.getTestSupport()
+                        .createTestServer(ApplicationProvider.getApplicationContext(), QUIC);
     }
 
     @After
@@ -68,8 +66,8 @@ public class QuicTest {
         for (int i = 0; i < 5; i++) {
             SmokeTestRequestCallback callback = new SmokeTestRequestCallback();
             UrlRequest.Builder requestBuilder =
-                    mRule.getCronetEngine().newUrlRequestBuilder(
-                            urlString, callback, callback.getExecutor());
+                    mRule.getCronetEngine()
+                            .newUrlRequestBuilder(urlString, callback, callback.getExecutor());
             requestBuilder.build().start();
             callback.blockForDone();
             NativeCronetTestRule.assertSuccessfulNonEmptyResponse(callback, urlString);

@@ -29,7 +29,9 @@ import org.chromium.ui.widget.ToastManager;
 
 /** Tests of {@link ManagedPreferencesUtils}. */
 @RunWith(BaseRobolectricTestRunner.class)
-@Config(manifest = Config.NONE, shadows = {ShadowToast.class})
+@Config(
+        manifest = Config.NONE,
+        shadows = {ShadowToast.class})
 @Batch(Batch.PER_CLASS)
 public class ManagedPreferencesUtilsTest {
     private Activity mActivity;
@@ -48,11 +50,13 @@ public class ManagedPreferencesUtilsTest {
     @Test
     @SmallTest
     public void testShowManagedByAdministratorToast() {
-        TestThreadUtils.runOnUiThreadBlockingNoException(() -> {
-            return ManagedPreferencesUtils.showManagedByAdministratorToast(mActivity);
-        });
+        TestThreadUtils.runOnUiThreadBlockingNoException(
+                () -> {
+                    return ManagedPreferencesUtils.showManagedByAdministratorToast(mActivity);
+                });
 
-        assertTrue("Toast is not as expected",
+        assertTrue(
+                "Toast is not as expected",
                 ShadowToast.showedCustomToast(
                         mActivity.getResources().getString(R.string.managed_by_your_organization),
                         R.id.toast_text));
@@ -61,11 +65,13 @@ public class ManagedPreferencesUtilsTest {
     @Test
     @SmallTest
     public void testShowManagedByParentToastNullDelegate() {
-        TestThreadUtils.runOnUiThreadBlockingNoException(() -> {
-            return ManagedPreferencesUtils.showManagedByParentToast(mActivity, null);
-        });
+        TestThreadUtils.runOnUiThreadBlockingNoException(
+                () -> {
+                    return ManagedPreferencesUtils.showManagedByParentToast(mActivity, null);
+                });
 
-        assertTrue("Toast is not as expected",
+        assertTrue(
+                "Toast is not as expected",
                 ShadowToast.showedCustomToast(
                         mActivity.getResources().getString(R.string.managed_by_your_parent),
                         R.id.toast_text));
@@ -74,12 +80,14 @@ public class ManagedPreferencesUtilsTest {
     @Test
     @SmallTest
     public void testShowManagedByParentToastSingleCustodian() {
-        TestThreadUtils.runOnUiThreadBlockingNoException(() -> {
-            return ManagedPreferencesUtils.showManagedByParentToast(
-                    mActivity, ManagedPreferenceTestDelegates.SINGLE_CUSTODIAN_DELEGATE);
-        });
+        TestThreadUtils.runOnUiThreadBlockingNoException(
+                () -> {
+                    return ManagedPreferencesUtils.showManagedByParentToast(
+                            mActivity, ManagedPreferenceTestDelegates.SINGLE_CUSTODIAN_DELEGATE);
+                });
 
-        assertTrue("Toast is not as expected",
+        assertTrue(
+                "Toast is not as expected",
                 ShadowToast.showedCustomToast(
                         mActivity.getResources().getString(R.string.managed_by_your_parent),
                         R.id.toast_text));
@@ -88,12 +96,14 @@ public class ManagedPreferencesUtilsTest {
     @Test
     @SmallTest
     public void testShowManagedByParentToastMultipleCustodians() {
-        TestThreadUtils.runOnUiThreadBlockingNoException(() -> {
-            return ManagedPreferencesUtils.showManagedByParentToast(
-                    mActivity, ManagedPreferenceTestDelegates.MULTI_CUSTODIAN_DELEGATE);
-        });
+        TestThreadUtils.runOnUiThreadBlockingNoException(
+                () -> {
+                    return ManagedPreferencesUtils.showManagedByParentToast(
+                            mActivity, ManagedPreferenceTestDelegates.MULTI_CUSTODIAN_DELEGATE);
+                });
 
-        assertTrue("Toast is not as expected",
+        assertTrue(
+                "Toast is not as expected",
                 ShadowToast.showedCustomToast(
                         mActivity.getResources().getString(R.string.managed_by_your_parents),
                         R.id.toast_text));
@@ -102,13 +112,17 @@ public class ManagedPreferencesUtilsTest {
     @Test
     @SmallTest
     public void testShowManagedSettingsCannotBeResetToast() {
-        TestThreadUtils.runOnUiThreadBlockingNoException(() -> {
-            return ManagedPreferencesUtils.showManagedSettingsCannotBeResetToast(mActivity);
-        });
+        TestThreadUtils.runOnUiThreadBlockingNoException(
+                () -> {
+                    return ManagedPreferencesUtils.showManagedSettingsCannotBeResetToast(mActivity);
+                });
 
-        assertTrue("Toast is not as expected",
-                ShadowToast.showedCustomToast(mActivity.getResources().getString(
-                                                      R.string.managed_settings_cannot_be_reset),
+        assertTrue(
+                "Toast is not as expected",
+                ShadowToast.showedCustomToast(
+                        mActivity
+                                .getResources()
+                                .getString(R.string.managed_settings_cannot_be_reset),
                         R.id.toast_text));
     }
 
@@ -125,8 +139,9 @@ public class ManagedPreferencesUtilsTest {
     public void testGetManagedIconIdPolicy() {
         Preference pref = new Preference(mActivity);
         int expected = ManagedPreferencesUtils.getManagedByEnterpriseIconId();
-        int actual = ManagedPreferencesUtils.getManagedIconResId(
-                ManagedPreferenceTestDelegates.POLICY_DELEGATE, pref);
+        int actual =
+                ManagedPreferencesUtils.getManagedIconResId(
+                        ManagedPreferenceTestDelegates.POLICY_DELEGATE, pref);
         Assert.assertEquals(expected, actual);
     }
 
@@ -135,8 +150,9 @@ public class ManagedPreferencesUtilsTest {
     public void testGetManagedIconIdCustodian() {
         Preference pref = new Preference(mActivity);
         int expected = ManagedPreferencesUtils.getManagedByCustodianIconId();
-        int actual = ManagedPreferencesUtils.getManagedIconResId(
-                ManagedPreferenceTestDelegates.SINGLE_CUSTODIAN_DELEGATE, pref);
+        int actual =
+                ManagedPreferencesUtils.getManagedIconResId(
+                        ManagedPreferenceTestDelegates.SINGLE_CUSTODIAN_DELEGATE, pref);
         Assert.assertEquals(expected, actual);
     }
 }

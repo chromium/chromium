@@ -30,25 +30,25 @@ import org.chromium.ui.modelutil.PropertyModel;
 @RunWith(BaseRobolectricTestRunner.class)
 @LooperMode(PAUSED)
 public class MessageDispatcherUnitTest {
-    @Rule
-    public MockitoRule mMockitoRule = MockitoJUnit.rule();
+    @Rule public MockitoRule mMockitoRule = MockitoJUnit.rule();
 
-    @Mock
-    private MessageQueueManager mQueueManager;
-    @Mock
-    private MessageAnimationCoordinator mAnimationCoordinator;
+    @Mock private MessageQueueManager mQueueManager;
+    @Mock private MessageAnimationCoordinator mAnimationCoordinator;
 
     @Test
     public void testEnqueueWindowScopedMessage() {
         doReturn(mAnimationCoordinator).when(mQueueManager).getAnimationCoordinator();
-        MessageDispatcherImpl dispatcher = new MessageDispatcherImpl(
-                null, () -> 1, () -> 1, (x, v) -> 1L, null, mQueueManager);
+        MessageDispatcherImpl dispatcher =
+                new MessageDispatcherImpl(
+                        null, () -> 1, () -> 1, (x, v) -> 1L, null, mQueueManager);
         dispatcher.enqueueWindowScopedMessage(getModel(), false);
         ArgumentCaptor<ScopeKey> captor = ArgumentCaptor.forClass(ScopeKey.class);
         verify(mQueueManager).enqueueMessage(any(), any(), captor.capture(), anyBoolean());
         Assert.assertEquals(
-                "The message should be of window scope if it is enqueued by #enqueueWindowScopedMessage.",
-                MessageScopeType.WINDOW, captor.getValue().scopeType);
+                "The message should be of window scope if it is enqueued by"
+                        + " #enqueueWindowScopedMessage.",
+                MessageScopeType.WINDOW,
+                captor.getValue().scopeType);
     }
 
     private PropertyModel getModel() {
@@ -57,7 +57,8 @@ public class MessageDispatcherUnitTest {
                 .with(MessageBannerProperties.TITLE, "test")
                 .with(MessageBannerProperties.DESCRIPTION, "Description")
                 .with(MessageBannerProperties.ICON, null)
-                .with(MessageBannerProperties.ON_PRIMARY_ACTION,
+                .with(
+                        MessageBannerProperties.ON_PRIMARY_ACTION,
                         () -> PrimaryActionClickBehavior.DISMISS_IMMEDIATELY)
                 .with(MessageBannerProperties.ON_DISMISSED, (dismissReason) -> {})
                 .build();

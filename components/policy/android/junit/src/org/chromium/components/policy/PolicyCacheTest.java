@@ -33,7 +33,7 @@ import java.util.Arrays;
 import java.util.List;
 import java.util.Map;
 
-/** Robolectric test for PolicyCache.  */
+/** Robolectric test for PolicyCache. */
 @RunWith(BaseRobolectricTestRunner.class)
 @Config(manifest = Config.NONE)
 public final class PolicyCacheTest {
@@ -47,15 +47,15 @@ public final class PolicyCacheTest {
 
     private PolicyCache mPolicyCache;
 
-    @Mock
-    private PolicyMap mPolicyMap;
+    @Mock private PolicyMap mPolicyMap;
 
     @Before
     public void setUp() {
         MockitoAnnotations.initMocks(this);
         mPolicyCache = PolicyCache.get();
-        mSharedPreferences = ContextUtils.getApplicationContext().getSharedPreferences(
-                PolicyCache.POLICY_PREF, Context.MODE_PRIVATE);
+        mSharedPreferences =
+                ContextUtils.getApplicationContext()
+                        .getSharedPreferences(PolicyCache.POLICY_PREF, Context.MODE_PRIVATE);
 
         initPolicyMap();
     }
@@ -136,12 +136,13 @@ public final class PolicyCacheTest {
 
     @Test
     public void testCachePolicies() {
-        cachePolicies(CollectionUtil.newHashMap(
-                Pair.create(POLICY_NAME, Pair.create(PolicyCache.Type.Integer, 1)),
-                Pair.create(POLICY_NAME_2, Pair.create(PolicyCache.Type.Boolean, true)),
-                Pair.create(POLICY_NAME_3, Pair.create(PolicyCache.Type.String, "2")),
-                Pair.create(POLICY_NAME_4, Pair.create(PolicyCache.Type.List, "[1]")),
-                Pair.create(POLICY_NAME_5, Pair.create(PolicyCache.Type.Dict, "{1:2}"))));
+        cachePolicies(
+                CollectionUtil.newHashMap(
+                        Pair.create(POLICY_NAME, Pair.create(PolicyCache.Type.Integer, 1)),
+                        Pair.create(POLICY_NAME_2, Pair.create(PolicyCache.Type.Boolean, true)),
+                        Pair.create(POLICY_NAME_3, Pair.create(PolicyCache.Type.String, "2")),
+                        Pair.create(POLICY_NAME_4, Pair.create(PolicyCache.Type.List, "[1]")),
+                        Pair.create(POLICY_NAME_5, Pair.create(PolicyCache.Type.Dict, "{1:2}"))));
 
         Assert.assertEquals(1, mSharedPreferences.getInt(POLICY_NAME, 0));
         Assert.assertEquals(true, mSharedPreferences.getBoolean(POLICY_NAME_2, false));
@@ -152,10 +153,12 @@ public final class PolicyCacheTest {
 
     @Test
     public void testCacheUpdated() {
-        cachePolicies(CollectionUtil.newHashMap(
-                Pair.create(POLICY_NAME, Pair.create(PolicyCache.Type.Integer, 1))));
-        cachePolicies(CollectionUtil.newHashMap(
-                Pair.create(POLICY_NAME_2, Pair.create(PolicyCache.Type.Boolean, true))));
+        cachePolicies(
+                CollectionUtil.newHashMap(
+                        Pair.create(POLICY_NAME, Pair.create(PolicyCache.Type.Integer, 1))));
+        cachePolicies(
+                CollectionUtil.newHashMap(
+                        Pair.create(POLICY_NAME_2, Pair.create(PolicyCache.Type.Boolean, true))));
 
         Assert.assertFalse(mSharedPreferences.contains(POLICY_NAME));
         Assert.assertEquals(true, mSharedPreferences.getBoolean(POLICY_NAME_2, false));
@@ -177,8 +180,10 @@ public final class PolicyCacheTest {
     public void testNotCachingUnavailablePolicy() {
         when(mPolicyMap.getBooleanValue(eq(POLICY_NAME_2))).thenReturn(true);
 
-        mPolicyCache.cachePolicies(mPolicyMap,
-                Arrays.asList(Pair.create(POLICY_NAME, PolicyCache.Type.Integer),
+        mPolicyCache.cachePolicies(
+                mPolicyMap,
+                Arrays.asList(
+                        Pair.create(POLICY_NAME, PolicyCache.Type.Integer),
                         Pair.create(POLICY_NAME_2, PolicyCache.Type.Boolean)));
 
         Assert.assertFalse(mSharedPreferences.contains(POLICY_NAME));
@@ -187,7 +192,8 @@ public final class PolicyCacheTest {
 
     @Test
     public void testWriteOnlyAfterCacheUpdate() {
-        mSharedPreferences.edit()
+        mSharedPreferences
+                .edit()
                 .putInt(POLICY_NAME, 1)
                 .putBoolean(POLICY_NAME_2, true)
                 .putString(POLICY_NAME_3, "a")
@@ -196,12 +202,13 @@ public final class PolicyCacheTest {
                 .apply();
         Assert.assertTrue(mPolicyCache.isReadable());
 
-        cachePolicies(CollectionUtil.newHashMap(
-                Pair.create(POLICY_NAME, Pair.create(PolicyCache.Type.Integer, 1)),
-                Pair.create(POLICY_NAME_2, Pair.create(PolicyCache.Type.Boolean, true)),
-                Pair.create(POLICY_NAME_3, Pair.create(PolicyCache.Type.String, "2")),
-                Pair.create(POLICY_NAME_4, Pair.create(PolicyCache.Type.List, "[1]")),
-                Pair.create(POLICY_NAME_5, Pair.create(PolicyCache.Type.Dict, "{1:2}"))));
+        cachePolicies(
+                CollectionUtil.newHashMap(
+                        Pair.create(POLICY_NAME, Pair.create(PolicyCache.Type.Integer, 1)),
+                        Pair.create(POLICY_NAME_2, Pair.create(PolicyCache.Type.Boolean, true)),
+                        Pair.create(POLICY_NAME_3, Pair.create(PolicyCache.Type.String, "2")),
+                        Pair.create(POLICY_NAME_4, Pair.create(PolicyCache.Type.List, "[1]")),
+                        Pair.create(POLICY_NAME_5, Pair.create(PolicyCache.Type.Dict, "{1:2}"))));
 
         Assert.assertFalse(mPolicyCache.isReadable());
         if (BuildConfig.ENABLE_ASSERTS) {
@@ -214,9 +221,9 @@ public final class PolicyCacheTest {
     }
 
     /**
-     * @param policies A Map for policies that needs to be cached. Each policy
-     *                 name is mapped to a pair of policy type and policy value.
-     * Setting up {@link #mPolicyCache} mock and call {@link PolicyCache#cachePolicies}.
+     * @param policies A Map for policies that needs to be cached. Each policy name is mapped to a
+     *     pair of policy type and policy value. Setting up {@link #mPolicyCache} mock and call
+     *     {@link PolicyCache#cachePolicies}.
      */
     private void cachePolicies(Map<String, Pair<PolicyCache.Type, Object>> policies) {
         List<Pair<String, PolicyCache.Type>> cachedPolicies = new ArrayList();

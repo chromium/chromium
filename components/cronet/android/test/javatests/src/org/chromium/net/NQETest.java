@@ -42,13 +42,13 @@ import java.util.concurrent.ThreadFactory;
 /** Test Network Quality Estimator. */
 @DoNotBatch(reason = "crbug/1459563")
 @RunWith(AndroidJUnit4.class)
-@IgnoreFor(implementations = {CronetImplementation.FALLBACK},
+@IgnoreFor(
+        implementations = {CronetImplementation.FALLBACK},
         reason = "The fallback implementation doesn't support network quality estimating")
 public class NQETest {
     private static final String TAG = NQETest.class.getSimpleName();
 
-    @Rule
-    public final CronetTestRule mTestRule = CronetTestRule.withManualEngineStartup();
+    @Rule public final CronetTestRule mTestRule = CronetTestRule.withManualEngineStartup();
 
     private EmbeddedTestServer mTestServer;
     private String mUrl;
@@ -71,22 +71,26 @@ public class NQETest {
     private class ExecutorThreadFactory implements ThreadFactory {
         @Override
         public Thread newThread(final Runnable r) {
-            mNetworkQualityThread = new Thread(new Runnable() {
-                @Override
-                public void run() {
-                    StrictMode.ThreadPolicy threadPolicy = StrictMode.getThreadPolicy();
-                    try {
-                        StrictMode.setThreadPolicy(new StrictMode.ThreadPolicy.Builder()
-                                                           .detectNetwork()
-                                                           .penaltyLog()
-                                                           .penaltyDeath()
-                                                           .build());
-                        r.run();
-                    } finally {
-                        StrictMode.setThreadPolicy(threadPolicy);
-                    }
-                }
-            });
+            mNetworkQualityThread =
+                    new Thread(
+                            new Runnable() {
+                                @Override
+                                public void run() {
+                                    StrictMode.ThreadPolicy threadPolicy =
+                                            StrictMode.getThreadPolicy();
+                                    try {
+                                        StrictMode.setThreadPolicy(
+                                                new StrictMode.ThreadPolicy.Builder()
+                                                        .detectNetwork()
+                                                        .penaltyLog()
+                                                        .penaltyDeath()
+                                                        .build());
+                                        r.run();
+                                    } finally {
+                                        StrictMode.setThreadPolicy(threadPolicy);
+                                    }
+                                }
+                            });
             return mNetworkQualityThread;
         }
     }
@@ -101,7 +105,8 @@ public class NQETest {
         TestNetworkQualityThroughputListener throughputListener =
                 new TestNetworkQualityThroughputListener(networkQualityExecutor);
         assertThrows(IllegalStateException.class, () -> cronetEngine.addRttListener(rttListener));
-        assertThrows(IllegalStateException.class,
+        assertThrows(
+                IllegalStateException.class,
                 () -> cronetEngine.addThroughputListener(throughputListener));
         TestUrlRequestCallback callback = new TestUrlRequestCallback();
         UrlRequest.Builder builder =
@@ -117,8 +122,9 @@ public class NQETest {
     @Test
     @SmallTest
     public void testListenerRemoved() throws Exception {
-        mTestRule.getTestFramework().applyEngineBuilderPatch(
-                (builder) -> builder.enableNetworkQualityEstimator(true));
+        mTestRule
+                .getTestFramework()
+                .applyEngineBuilderPatch((builder) -> builder.enableNetworkQualityEstimator(true));
         ExperimentalCronetEngine cronetEngine = mTestRule.getTestFramework().startEngine();
 
         TestExecutor networkQualityExecutor = new TestExecutor();
@@ -141,8 +147,10 @@ public class NQETest {
 
     // Returns whether a file contains a particular string.
     private boolean prefsFileContainsString(String content) throws IOException {
-        File file = new File(getTestStorage(mTestRule.getTestFramework().getContext())
-                + "/prefs/local_prefs.json");
+        File file =
+                new File(
+                        getTestStorage(mTestRule.getTestFramework().getContext())
+                                + "/prefs/local_prefs.json");
         FileInputStream fileInputStream = new FileInputStream(file);
         byte[] data = new byte[(int) file.length()];
         fileInputStream.read(data);
@@ -157,36 +165,48 @@ public class NQETest {
         // HistogramWatcher takes a snapshot of the starting sample count and uses the delta of this
         // and the count at assertExpected() call time to confirm that new samples are logged.
         UmaRecorderHolder.onLibraryLoaded(); // Hackish workaround to crbug.com/1338919
-        var writeCountHistogram = HistogramWatcher.newBuilder()
-                                          .expectIntRecord("NQE.Prefs.WriteCount", 1)
-                                          .allowExtraRecordsForHistogramsAbove()
-                                          .build();
-        var readCountHistogram = HistogramWatcher.newBuilder()
-                                         .expectIntRecord("NQE.Prefs.ReadCount", 1)
-                                         .allowExtraRecordsForHistogramsAbove()
-                                         .build();
+        var writeCountHistogram =
+                HistogramWatcher.newBuilder()
+                        .expectIntRecord("NQE.Prefs.WriteCount", 1)
+                        .allowExtraRecordsForHistogramsAbove()
+                        .build();
+        var readCountHistogram =
+                HistogramWatcher.newBuilder()
+                        .expectIntRecord("NQE.Prefs.ReadCount", 1)
+                        .allowExtraRecordsForHistogramsAbove()
+                        .build();
         assertThat(RttThroughputValues.INVALID_RTT_THROUGHPUT).isLessThan(0);
         Executor listenersExecutor = Executors.newSingleThreadExecutor(new ExecutorThreadFactory());
         TestNetworkQualityRttListener rttListener =
                 new TestNetworkQualityRttListener(listenersExecutor);
         TestNetworkQualityThroughputListener throughputListener =
                 new TestNetworkQualityThroughputListener(listenersExecutor);
-        mTestRule.getTestFramework().applyEngineBuilderPatch((builder) -> {
-            builder.enableNetworkQualityEstimator(true).enableHttp2(true).enableQuic(false);
+        mTestRule
+                .getTestFramework()
+                .applyEngineBuilderPatch(
+                        (builder) -> {
+                            builder.enableNetworkQualityEstimator(true)
+                                    .enableHttp2(true)
+                                    .enableQuic(false);
 
-            // The pref may not be written if the computed Effective Connection Type (ECT) matches
-            // the default ECT for the current connection type. Force the ECT to "Slow-2G". Since
-            // "Slow-2G" is not the default ECT for any connection type, this ensures that the
-            // pref
-            // is written to.
-            JSONObject nqeOptions =
-                    new JSONObject().put("force_effective_connection_type", "Slow-2G");
-            JSONObject experimentalOptions =
-                    new JSONObject().put("NetworkQualityEstimator", nqeOptions);
+                            // The pref may not be written if the computed Effective Connection Type
+                            // (ECT) matches
+                            // the default ECT for the current connection type. Force the ECT to
+                            // "Slow-2G". Since
+                            // "Slow-2G" is not the default ECT for any connection type, this
+                            // ensures that the
+                            // pref
+                            // is written to.
+                            JSONObject nqeOptions =
+                                    new JSONObject()
+                                            .put("force_effective_connection_type", "Slow-2G");
+                            JSONObject experimentalOptions =
+                                    new JSONObject().put("NetworkQualityEstimator", nqeOptions);
 
-            builder.setExperimentalOptions(experimentalOptions.toString());
-            builder.setStoragePath(getTestStorage(mTestRule.getTestFramework().getContext()));
-        });
+                            builder.setExperimentalOptions(experimentalOptions.toString());
+                            builder.setStoragePath(
+                                    getTestStorage(mTestRule.getTestFramework().getContext()));
+                        });
 
         ExperimentalCronetEngine cronetEngine = mTestRule.getTestFramework().startEngine();
         cronetEngine.configureNetworkQualityEstimatorForTesting(true, true, true);
@@ -273,22 +293,25 @@ public class NQETest {
             // HistogramWatcher takes a snapshot of the starting sample count and uses the delta of
             // this and the count at assertExpected() call time to confirm that new samples are
             // logged.
-            HistogramWatcher readCountHistogram = HistogramWatcher.newBuilder()
-                                                          .expectIntRecord("NQE.Prefs.ReadCount", 1)
-                                                          .allowExtraRecordsForHistogramsAbove()
-                                                          .build();
+            HistogramWatcher readCountHistogram =
+                    HistogramWatcher.newBuilder()
+                            .expectIntRecord("NQE.Prefs.ReadCount", 1)
+                            .allowExtraRecordsForHistogramsAbove()
+                            .build();
 
             // Stored network quality in the pref should be read in the second iteration.
             HistogramWatcher readPrefsSizeHistogram;
             if (i == 0) {
-                readPrefsSizeHistogram = HistogramWatcher.newBuilder()
-                                                 .expectIntRecord("NQE.Prefs.ReadSize", 0)
-                                                 .build();
+                readPrefsSizeHistogram =
+                        HistogramWatcher.newBuilder()
+                                .expectIntRecord("NQE.Prefs.ReadSize", 0)
+                                .build();
             } else {
-                readPrefsSizeHistogram = HistogramWatcher.newBuilder()
-                                                 .expectIntRecord("NQE.Prefs.ReadSize", 1)
-                                                 .allowExtraRecordsForHistogramsAbove()
-                                                 .build();
+                readPrefsSizeHistogram =
+                        HistogramWatcher.newBuilder()
+                                .expectIntRecord("NQE.Prefs.ReadSize", 1)
+                                .allowExtraRecordsForHistogramsAbove()
+                                .build();
             }
 
             // NETWORK_QUALITY_OBSERVATION_SOURCE_HTTP_CACHED_ESTIMATE: 3
@@ -305,8 +328,10 @@ public class NQETest {
                     Executors.newSingleThreadExecutor(new ExecutorThreadFactory());
             TestNetworkQualityRttListener rttListener =
                     new TestNetworkQualityRttListener(listenersExecutor);
-            cronetEngineBuilder.enableNetworkQualityEstimator(true).enableHttp2(true).enableQuic(
-                    false);
+            cronetEngineBuilder
+                    .enableNetworkQualityEstimator(true)
+                    .enableHttp2(true)
+                    .enableQuic(false);
 
             // The pref may not be written if the computed Effective Connection Type (ECT) matches
             // the default ECT for the current connection type. Force the ECT to "Slow-2G". Since
@@ -372,20 +397,26 @@ public class NQETest {
         TestNetworkQualityThroughputListener throughputListener =
                 new TestNetworkQualityThroughputListener(listenersExecutor);
 
-        mTestRule.getTestFramework().applyEngineBuilderPatch((builder) -> {
-            // Force the effective connection type to "2G".
-            JSONObject nqeOptions =
-                    new JSONObject().put("force_effective_connection_type", "Slow-2G");
-            // Add one more extra param two times to ensure robustness.
-            nqeOptions.put("some_other_param_1", "value1");
-            nqeOptions.put("some_other_param_2", "value2");
-            JSONObject experimentalOptions =
-                    new JSONObject().put("NetworkQualityEstimator", nqeOptions);
-            experimentalOptions.put("SomeOtherFieldTrialName", new JSONObject());
+        mTestRule
+                .getTestFramework()
+                .applyEngineBuilderPatch(
+                        (builder) -> {
+                            // Force the effective connection type to "2G".
+                            JSONObject nqeOptions =
+                                    new JSONObject()
+                                            .put("force_effective_connection_type", "Slow-2G");
+                            // Add one more extra param two times to ensure robustness.
+                            nqeOptions.put("some_other_param_1", "value1");
+                            nqeOptions.put("some_other_param_2", "value2");
+                            JSONObject experimentalOptions =
+                                    new JSONObject().put("NetworkQualityEstimator", nqeOptions);
+                            experimentalOptions.put("SomeOtherFieldTrialName", new JSONObject());
 
-            builder.enableNetworkQualityEstimator(true).enableHttp2(true).enableQuic(false);
-            builder.setExperimentalOptions(experimentalOptions.toString());
-        });
+                            builder.enableNetworkQualityEstimator(true)
+                                    .enableHttp2(true)
+                                    .enableQuic(false);
+                            builder.setExperimentalOptions(experimentalOptions.toString());
+                        });
 
         ExperimentalCronetEngine cronetEngine = mTestRule.getTestFramework().startEngine();
 

@@ -21,9 +21,7 @@ import java.util.ArrayList;
 import java.util.List;
 import java.util.concurrent.TimeoutException;
 
-/**
- * Tests for LanguageProfileController.
- */
+/** Tests for LanguageProfileController. */
 @RunWith(BaseRobolectricTestRunner.class)
 @Config(manifest = Config.NONE)
 public class LanguageProfileControllerUnitTest {
@@ -34,17 +32,19 @@ public class LanguageProfileControllerUnitTest {
         mController = new LanguageProfileController(mDelegate);
     }
 
-    LanguageProfileDelegate mDelegate = new LanguageProfileDelegate() {
-        @Override
-        public boolean isULPSupported() {
-            return true;
-        }
+    LanguageProfileDelegate mDelegate =
+            new LanguageProfileDelegate() {
+                @Override
+                public boolean isULPSupported() {
+                    return true;
+                }
 
-        @Override
-        public List<String> getLanguagePreferences(String accountName, int timeoutInSeconds) {
-            return new ArrayList<String>();
-        }
-    };
+                @Override
+                public List<String> getLanguagePreferences(
+                        String accountName, int timeoutInSeconds) {
+                    return new ArrayList<String>();
+                }
+            };
     LanguageProfileController mController;
 
     @Test
@@ -52,22 +52,27 @@ public class LanguageProfileControllerUnitTest {
     public void testSuccess() {
         mController.getLanguagePreferences("myaccount");
 
-        Assert.assertEquals(1,
+        Assert.assertEquals(
+                1,
                 RecordHistogram.getHistogramTotalCountForTesting(
                         LanguageProfileMetricsLogger.INITIATION_STATUS_HISTOGRAM));
-        Assert.assertEquals(1,
+        Assert.assertEquals(
+                1,
                 RecordHistogram.getHistogramValueCountForTesting(
                         LanguageProfileMetricsLogger.INITIATION_STATUS_HISTOGRAM,
                         LanguageProfileMetricsLogger.ULPInitiationStatus.SUCCESS));
         // Ensure that only the signed-in histograms are populated.
-        Assert.assertEquals(1,
+        Assert.assertEquals(
+                1,
                 RecordHistogram.getHistogramTotalCountForTesting(
                         LanguageProfileMetricsLogger.SIGNED_IN_INITIATION_STATUS_HISTOGRAM));
-        Assert.assertEquals(1,
+        Assert.assertEquals(
+                1,
                 RecordHistogram.getHistogramValueCountForTesting(
                         LanguageProfileMetricsLogger.SIGNED_IN_INITIATION_STATUS_HISTOGRAM,
                         LanguageProfileMetricsLogger.ULPInitiationStatus.SUCCESS));
-        Assert.assertEquals(0,
+        Assert.assertEquals(
+                0,
                 RecordHistogram.getHistogramTotalCountForTesting(
                         LanguageProfileMetricsLogger.SIGNED_OUT_INITIATION_STATUS_HISTOGRAM));
     }
@@ -77,22 +82,27 @@ public class LanguageProfileControllerUnitTest {
     public void testSignedOut() {
         mController.getLanguagePreferences(null);
 
-        Assert.assertEquals(1,
+        Assert.assertEquals(
+                1,
                 RecordHistogram.getHistogramTotalCountForTesting(
                         LanguageProfileMetricsLogger.INITIATION_STATUS_HISTOGRAM));
-        Assert.assertEquals(1,
+        Assert.assertEquals(
+                1,
                 RecordHistogram.getHistogramValueCountForTesting(
                         LanguageProfileMetricsLogger.INITIATION_STATUS_HISTOGRAM,
                         LanguageProfileMetricsLogger.ULPInitiationStatus.SUCCESS));
         // Ensure that only the signed-out histograms are populated.
-        Assert.assertEquals(1,
+        Assert.assertEquals(
+                1,
                 RecordHistogram.getHistogramTotalCountForTesting(
                         LanguageProfileMetricsLogger.SIGNED_OUT_INITIATION_STATUS_HISTOGRAM));
-        Assert.assertEquals(1,
+        Assert.assertEquals(
+                1,
                 RecordHistogram.getHistogramValueCountForTesting(
                         LanguageProfileMetricsLogger.SIGNED_OUT_INITIATION_STATUS_HISTOGRAM,
                         LanguageProfileMetricsLogger.ULPInitiationStatus.SUCCESS));
-        Assert.assertEquals(0,
+        Assert.assertEquals(
+                0,
                 RecordHistogram.getHistogramTotalCountForTesting(
                         LanguageProfileMetricsLogger.SIGNED_IN_INITIATION_STATUS_HISTOGRAM));
     }
@@ -100,24 +110,29 @@ public class LanguageProfileControllerUnitTest {
     @Test
     @SmallTest
     public void testNotAvailable() {
-        mController = new LanguageProfileController(new LanguageProfileDelegate() {
-            @Override
-            public boolean isULPSupported() {
-                return false;
-            }
+        mController =
+                new LanguageProfileController(
+                        new LanguageProfileDelegate() {
+                            @Override
+                            public boolean isULPSupported() {
+                                return false;
+                            }
 
-            @Override
-            public List<String> getLanguagePreferences(String accountName, int timeoutInSeconds) {
-                return new ArrayList<String>();
-            }
-        });
+                            @Override
+                            public List<String> getLanguagePreferences(
+                                    String accountName, int timeoutInSeconds) {
+                                return new ArrayList<String>();
+                            }
+                        });
 
         mController.getLanguagePreferences("myaccount");
 
-        Assert.assertEquals(1,
+        Assert.assertEquals(
+                1,
                 RecordHistogram.getHistogramTotalCountForTesting(
                         LanguageProfileMetricsLogger.INITIATION_STATUS_HISTOGRAM));
-        Assert.assertEquals(1,
+        Assert.assertEquals(
+                1,
                 RecordHistogram.getHistogramValueCountForTesting(
                         LanguageProfileMetricsLogger.INITIATION_STATUS_HISTOGRAM,
                         LanguageProfileMetricsLogger.ULPInitiationStatus.NOT_SUPPORTED));
@@ -126,25 +141,30 @@ public class LanguageProfileControllerUnitTest {
     @Test
     @SmallTest
     public void testTimeout() {
-        mController = new LanguageProfileController(new LanguageProfileDelegate() {
-            @Override
-            public boolean isULPSupported() {
-                return true;
-            }
+        mController =
+                new LanguageProfileController(
+                        new LanguageProfileDelegate() {
+                            @Override
+                            public boolean isULPSupported() {
+                                return true;
+                            }
 
-            @Override
-            public List<String> getLanguagePreferences(String accountName, int timeoutInSeconds)
-                    throws TimeoutException {
-                throw new TimeoutException("error!");
-            }
-        });
+                            @Override
+                            public List<String> getLanguagePreferences(
+                                    String accountName, int timeoutInSeconds)
+                                    throws TimeoutException {
+                                throw new TimeoutException("error!");
+                            }
+                        });
 
         mController.getLanguagePreferences("myaccount");
 
-        Assert.assertEquals(1,
+        Assert.assertEquals(
+                1,
                 RecordHistogram.getHistogramTotalCountForTesting(
                         LanguageProfileMetricsLogger.INITIATION_STATUS_HISTOGRAM));
-        Assert.assertEquals(1,
+        Assert.assertEquals(
+                1,
                 RecordHistogram.getHistogramValueCountForTesting(
                         LanguageProfileMetricsLogger.INITIATION_STATUS_HISTOGRAM,
                         LanguageProfileMetricsLogger.ULPInitiationStatus.TIMED_OUT));
@@ -153,25 +173,30 @@ public class LanguageProfileControllerUnitTest {
     @Test
     @SmallTest
     public void testFailure() {
-        mController = new LanguageProfileController(new LanguageProfileDelegate() {
-            @Override
-            public boolean isULPSupported() {
-                return true;
-            }
+        mController =
+                new LanguageProfileController(
+                        new LanguageProfileDelegate() {
+                            @Override
+                            public boolean isULPSupported() {
+                                return true;
+                            }
 
-            @Override
-            public List<String> getLanguagePreferences(String accountName, int timeoutInSeconds)
-                    throws InterruptedException {
-                throw new InterruptedException("error!");
-            }
-        });
+                            @Override
+                            public List<String> getLanguagePreferences(
+                                    String accountName, int timeoutInSeconds)
+                                    throws InterruptedException {
+                                throw new InterruptedException("error!");
+                            }
+                        });
 
         mController.getLanguagePreferences("myaccount");
 
-        Assert.assertEquals(1,
+        Assert.assertEquals(
+                1,
                 RecordHistogram.getHistogramTotalCountForTesting(
                         LanguageProfileMetricsLogger.INITIATION_STATUS_HISTOGRAM));
-        Assert.assertEquals(1,
+        Assert.assertEquals(
+                1,
                 RecordHistogram.getHistogramValueCountForTesting(
                         LanguageProfileMetricsLogger.INITIATION_STATUS_HISTOGRAM,
                         LanguageProfileMetricsLogger.ULPInitiationStatus.FAILURE));

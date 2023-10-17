@@ -34,9 +34,7 @@ import org.chromium.ui.test.util.RenderTestRule;
 import java.io.IOException;
 import java.util.List;
 
-/**
- * Render tests for {@link BasicListMenu}.
- */
+/** Render tests for {@link BasicListMenu}. */
 @RunWith(ParameterizedRunner.class)
 @UseRunnerDelegate(BaseJUnit4RunnerDelegate.class)
 @Batch(Batch.UNIT_TESTS)
@@ -61,28 +59,43 @@ public class ListMenuRenderTest extends BlankUiTestActivityTestCase {
     @Override
     public void setUpTest() throws Exception {
         super.setUpTest();
-        TestThreadUtils.runOnUiThreadBlocking(() -> {
-            Activity activity = getActivity();
-            ModelList data = new ModelList();
-            data.add(BasicListMenu.buildMenuListItem(
-                    R.string.test_primary_1, 0, R.drawable.ic_check_googblue_24dp));
-            data.add(BasicListMenu.buildMenuListItem(
-                    R.string.test_primary_1, 0, R.drawable.ic_check_googblue_24dp, false));
-            data.add(BasicListMenu.buildMenuListItemWithEndIcon(
-                    R.string.test_primary_1, 0, R.drawable.ic_check_googblue_24dp, true));
-            data.add(BasicListMenu.buildMenuListItemWithEndIcon(
-                    R.string.test_primary_1, 0, R.drawable.ic_check_googblue_24dp, false));
-            data.add(BasicListMenu.buildMenuListItem(R.string.test_primary_1, 0, 0));
-            data.add(BasicListMenu.buildMenuListItem(R.string.test_primary_1, 0, 0, false));
-            data.add(BasicListMenu.buildMenuDivider());
+        TestThreadUtils.runOnUiThreadBlocking(
+                () -> {
+                    Activity activity = getActivity();
+                    ModelList data = new ModelList();
+                    data.add(
+                            BasicListMenu.buildMenuListItem(
+                                    R.string.test_primary_1, 0, R.drawable.ic_check_googblue_24dp));
+                    data.add(
+                            BasicListMenu.buildMenuListItem(
+                                    R.string.test_primary_1,
+                                    0,
+                                    R.drawable.ic_check_googblue_24dp,
+                                    false));
+                    data.add(
+                            BasicListMenu.buildMenuListItemWithEndIcon(
+                                    R.string.test_primary_1,
+                                    0,
+                                    R.drawable.ic_check_googblue_24dp,
+                                    true));
+                    data.add(
+                            BasicListMenu.buildMenuListItemWithEndIcon(
+                                    R.string.test_primary_1,
+                                    0,
+                                    R.drawable.ic_check_googblue_24dp,
+                                    false));
+                    data.add(BasicListMenu.buildMenuListItem(R.string.test_primary_1, 0, 0));
+                    data.add(BasicListMenu.buildMenuListItem(R.string.test_primary_1, 0, 0, false));
+                    data.add(BasicListMenu.buildMenuDivider());
 
-            BasicListMenu listMenu = new BasicListMenu(activity, data, null);
-            mView = listMenu.getContentView();
-            mView.setBackground(
-                    AppCompatResources.getDrawable(activity, R.drawable.menu_bg_tinted));
-            int width = activity.getResources().getDimensionPixelSize(R.dimen.list_menu_width);
-            activity.setContentView(mView, new LayoutParams(width, WRAP_CONTENT));
-        });
+                    BasicListMenu listMenu = new BasicListMenu(activity, data, null);
+                    mView = listMenu.getContentView();
+                    mView.setBackground(
+                            AppCompatResources.getDrawable(activity, R.drawable.menu_bg_tinted));
+                    int width =
+                            activity.getResources().getDimensionPixelSize(R.dimen.list_menu_width);
+                    activity.setContentView(mView, new LayoutParams(width, WRAP_CONTENT));
+                });
     }
 
     @Override

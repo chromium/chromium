@@ -23,9 +23,7 @@ import org.chromium.base.test.BaseJUnit4ClassRunner;
 import org.chromium.base.test.util.Feature;
 import org.chromium.ui.base.Clipboard.ImageFileProvider.ClipboardFileMetadata;
 
-/**
- * Tests for ClipboardImageFileProvider.
- */
+/** Tests for ClipboardImageFileProvider. */
 @RunWith(BaseJUnit4ClassRunner.class)
 public class ClipboardImageFileProviderUnitTest {
     private static final Uri CONTENT_URI = Uri.parse("content://package/path/image.png");

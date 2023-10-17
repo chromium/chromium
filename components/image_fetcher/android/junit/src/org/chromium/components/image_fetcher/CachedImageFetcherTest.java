@@ -16,6 +16,8 @@ import static org.mockito.Mockito.verifyNoMoreInteractions;
 
 import android.graphics.Bitmap;
 
+import jp.tomorrowkey.android.gifplayer.BaseGifImage;
+
 import org.junit.Assert;
 import org.junit.Before;
 import org.junit.Test;
@@ -33,13 +35,11 @@ import org.chromium.base.test.BaseRobolectricTestRunner;
 import org.chromium.url.GURL;
 import org.chromium.url.JUnitTestGURLs;
 
-import jp.tomorrowkey.android.gifplayer.BaseGifImage;
-
-/**
- * Unit tests for CachedImageFetcher.
- */
+/** Unit tests for CachedImageFetcher. */
 @RunWith(BaseRobolectricTestRunner.class)
-@Config(manifest = Config.NONE, shadows = {ShadowPostTask.class})
+@Config(
+        manifest = Config.NONE,
+        shadows = {ShadowPostTask.class})
 public class CachedImageFetcherTest {
     private static final String UMA_CLIENT_NAME = "TestUmaClient";
     private static final String URL = JUnitTestGURLs.RED_1.getSpec();
@@ -47,28 +47,25 @@ public class CachedImageFetcherTest {
     private static final int WIDTH_PX = 10;
     private static final int HEIGHT_PX = 20;
 
-    @Mock
-    ImageFetcherBridge mBridge;
-    @Mock
-    CachedImageFetcher.ImageLoader mImageLoader;
-    @Mock
-    BaseGifImage mGif;
-    @Mock
-    Callback<Bitmap> mBitmapCallback;
-    @Mock
-    Callback<BaseGifImage> mGifCallback;
+    @Mock ImageFetcherBridge mBridge;
+    @Mock CachedImageFetcher.ImageLoader mImageLoader;
+    @Mock BaseGifImage mGif;
+    @Mock Callback<Bitmap> mBitmapCallback;
+    @Mock Callback<BaseGifImage> mGifCallback;
 
     CachedImageFetcher mCachedImageFetcher;
     Bitmap mBitmap;
 
     @Before
     public void setUp() {
-        ShadowPostTask.setTestImpl(new ShadowPostTask.TestImpl() {
-            @Override
-            public void postDelayedTask(@TaskTraits int taskTraits, Runnable task, long delay) {
-                task.run();
-            }
-        });
+        ShadowPostTask.setTestImpl(
+                new ShadowPostTask.TestImpl() {
+                    @Override
+                    public void postDelayedTask(
+                            @TaskTraits int taskTraits, Runnable task, long delay) {
+                        task.run();
+                    }
+                });
 
         MockitoAnnotations.initMocks(this);
 
@@ -78,21 +75,25 @@ public class CachedImageFetcherTest {
         mBitmap = Bitmap.createBitmap(WIDTH_PX, HEIGHT_PX, Bitmap.Config.ARGB_8888);
         ArgumentCaptor<Callback<Bitmap>> bitmapCallbackCaptor =
                 ArgumentCaptor.forClass(Callback.class);
-        doAnswer((InvocationOnMock invocation) -> {
-            bitmapCallbackCaptor.getValue().onResult(mBitmap);
-            return null;
-        })
+        doAnswer(
+                        (InvocationOnMock invocation) -> {
+                            bitmapCallbackCaptor.getValue().onResult(mBitmap);
+                            return null;
+                        })
                 .when(mBridge)
                 .fetchImage(anyInt(), any(), bitmapCallbackCaptor.capture());
 
         ArgumentCaptor<Callback<BaseGifImage>> gifCallbackCaptor =
                 ArgumentCaptor.forClass(Callback.class);
-        doAnswer((InvocationOnMock invocation) -> {
-            gifCallbackCaptor.getValue().onResult(mGif);
-            return null;
-        })
+        doAnswer(
+                        (InvocationOnMock invocation) -> {
+                            gifCallbackCaptor.getValue().onResult(mGif);
+                            return null;
+                        })
                 .when(mBridge)
-                .fetchGif(anyInt(), eq(ImageFetcher.Params.create(URL, UMA_CLIENT_NAME)),
+                .fetchGif(
+                        anyInt(),
+                        eq(ImageFetcher.Params.create(URL, UMA_CLIENT_NAME)),
                         gifCallbackCaptor.capture());
     }
 
@@ -111,8 +112,9 @@ public class CachedImageFetcherTest {
     public void testFetchImage_fileFoundOnDisk_imageNotResized() {
         doReturn(mBitmap).when(mImageLoader).tryToLoadImageFromDisk(PATH);
 
-        ImageFetcher.Params params = ImageFetcher.Params.createNoResizing(
-                new GURL(URL), UMA_CLIENT_NAME, WIDTH_PX + 1, HEIGHT_PX + 1);
+        ImageFetcher.Params params =
+                ImageFetcher.Params.createNoResizing(
+                        new GURL(URL), UMA_CLIENT_NAME, WIDTH_PX + 1, HEIGHT_PX + 1);
         mCachedImageFetcher.fetchImage(params, mBitmapCallback);
 
         // Unresized bitmap should be returned.
@@ -142,7 +144,8 @@ public class CachedImageFetcherTest {
         Assert.assertEquals(HEIGHT_PX + 1, actual.getHeight());
 
         verify(mBridge, never())
-                .fetchImage(eq(ImageFetcherConfig.DISK_CACHE_ONLY),
+                .fetchImage(
+                        eq(ImageFetcherConfig.DISK_CACHE_ONLY),
                         eq(ImageFetcher.Params.create(URL, UMA_CLIENT_NAME, WIDTH_PX, HEIGHT_PX)),
                         any());
         verify(mBridge).reportEvent(UMA_CLIENT_NAME, ImageFetcherEvent.JAVA_DISK_CACHE_HIT);

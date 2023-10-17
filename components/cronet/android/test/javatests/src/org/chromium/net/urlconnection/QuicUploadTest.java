@@ -32,11 +32,11 @@ import java.util.Arrays;
 /** Tests HttpURLConnection upload using QUIC. */
 @Batch(Batch.UNIT_TESTS)
 @RunWith(AndroidJUnit4.class)
-@IgnoreFor(implementations = {CronetImplementation.FALLBACK},
+@IgnoreFor(
+        implementations = {CronetImplementation.FALLBACK},
         reason = "The fallback implementation doesn't support QUIC")
 public class QuicUploadTest {
-    @Rule
-    public final CronetTestRule mTestRule = CronetTestRule.withManualEngineStartup();
+    @Rule public final CronetTestRule mTestRule = CronetTestRule.withManualEngineStartup();
 
     private CronetEngine mCronetEngine;
 
@@ -44,19 +44,25 @@ public class QuicUploadTest {
     public void setUp() throws Exception {
         QuicTestServer.startQuicTestServer(mTestRule.getTestFramework().getContext());
 
-        mTestRule.getTestFramework().applyEngineBuilderPatch((builder) -> {
-            builder.enableQuic(true);
-            JSONObject hostResolverParams = CronetTestUtil.generateHostResolverRules();
-            JSONObject experimentalOptions =
-                    new JSONObject().put("HostResolverRules", hostResolverParams);
-            builder.setExperimentalOptions(experimentalOptions.toString());
+        mTestRule
+                .getTestFramework()
+                .applyEngineBuilderPatch(
+                        (builder) -> {
+                            builder.enableQuic(true);
+                            JSONObject hostResolverParams =
+                                    CronetTestUtil.generateHostResolverRules();
+                            JSONObject experimentalOptions =
+                                    new JSONObject().put("HostResolverRules", hostResolverParams);
+                            builder.setExperimentalOptions(experimentalOptions.toString());
 
-            builder.addQuicHint(QuicTestServer.getServerHost(), QuicTestServer.getServerPort(),
-                    QuicTestServer.getServerPort());
+                            builder.addQuicHint(
+                                    QuicTestServer.getServerHost(),
+                                    QuicTestServer.getServerPort(),
+                                    QuicTestServer.getServerPort());
 
-            CronetTestUtil.setMockCertVerifierForTesting(
-                    builder, QuicTestServer.createMockCertVerifier());
-        });
+                            CronetTestUtil.setMockCertVerifierForTesting(
+                                    builder, QuicTestServer.createMockCertVerifier());
+                        });
 
         mCronetEngine = mTestRule.getTestFramework().startEngine();
     }

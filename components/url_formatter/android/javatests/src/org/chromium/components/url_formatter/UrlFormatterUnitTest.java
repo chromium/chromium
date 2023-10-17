@@ -24,7 +24,7 @@ import java.util.function.Function;
 /**
  * Unit tests for {@link UrlFormatter}.
  *
- * These tests are basic sanity checks to ensure the plumbing is working correctly. The wrapped
+ * <p>These tests are basic sanity checks to ensure the plumbing is working correctly. The wrapped
  * functions are tested much more thoroughly elsewhere.
  */
 @RunWith(BaseJUnit4ClassRunner.class)
@@ -41,7 +41,8 @@ public class UrlFormatterUnitTest {
     public void testFixupUrl() {
         assertEquals("http://google.com/", UrlFormatter.fixupUrl("google.com").getSpec());
         assertEquals("chrome://version/", UrlFormatter.fixupUrl("about:").getSpec());
-        assertEquals("file:///mail.google.com:/",
+        assertEquals(
+                "file:///mail.google.com:/",
                 UrlFormatter.fixupUrl("//mail.google.com:/").getSpec());
         Assert.assertFalse(UrlFormatter.fixupUrl("0x100.0").isValid());
     }
@@ -49,12 +50,15 @@ public class UrlFormatterUnitTest {
     @Test
     @SmallTest
     public void testFormatUrlForDisplayOmitUsernamePassword() {
-        assertEquals("http://google.com/path",
+        assertEquals(
+                "http://google.com/path",
                 UrlFormatter.formatUrlForDisplayOmitUsernamePassword("http://google.com/path"));
-        assertEquals("http://google.com",
+        assertEquals(
+                "http://google.com",
                 UrlFormatter.formatUrlForDisplayOmitUsernamePassword(
                         "http://user:pass@google.com"));
-        assertEquals("http://google.com",
+        assertEquals(
+                "http://google.com",
                 UrlFormatter.formatUrlForDisplayOmitUsernamePassword("http://user@google.com"));
     }
 

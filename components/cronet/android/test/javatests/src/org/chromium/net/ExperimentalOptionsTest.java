@@ -50,15 +50,19 @@ import java.util.concurrent.CountDownLatch;
 @DoNotBatch(reason = "crbug/1459563")
 @RunWith(AndroidJUnit4.class)
 @JNINamespace("cronet")
-@OptIn(markerClass = {ConnectionMigrationOptions.Experimental.class, DnsOptions.Experimental.class,
-               QuicOptions.Experimental.class, QuicOptions.QuichePassthroughOption.class})
-@IgnoreFor(implementations = {CronetImplementation.FALLBACK},
+@OptIn(
+        markerClass = {
+            ConnectionMigrationOptions.Experimental.class,
+            DnsOptions.Experimental.class,
+            QuicOptions.Experimental.class,
+            QuicOptions.QuichePassthroughOption.class
+        })
+@IgnoreFor(
+        implementations = {CronetImplementation.FALLBACK},
         reason = "The fallback implementation doesn't support experimental options")
 public class ExperimentalOptionsTest {
-    @Rule
-    public final CronetTestRule mTestRule = CronetTestRule.withManualEngineStartup();
-    @Rule
-    public ExpectedException expectedException = ExpectedException.none();
+    @Rule public final CronetTestRule mTestRule = CronetTestRule.withManualEngineStartup();
+    @Rule public ExpectedException expectedException = ExpectedException.none();
 
     private static final String TAG = ExperimentalOptionsTest.class.getSimpleName();
     private CountDownLatch mHangingUrlLatch;
@@ -68,13 +72,16 @@ public class ExperimentalOptionsTest {
         mHangingUrlLatch = new CountDownLatch(1);
         // TODO(crbug/1490552): Fallback to MockCertVerifier when custom CAs are not supported.
         if (Build.VERSION.SDK_INT <= Build.VERSION_CODES.M) {
-            mTestRule.getTestFramework().applyEngineBuilderPatch(
-                    (builder)
-                            -> CronetTestUtil.setMockCertVerifierForTesting(
-                                    builder, QuicTestServer.createMockCertVerifier()));
+            mTestRule
+                    .getTestFramework()
+                    .applyEngineBuilderPatch(
+                            (builder) ->
+                                    CronetTestUtil.setMockCertVerifierForTesting(
+                                            builder, QuicTestServer.createMockCertVerifier()));
         }
-        assertThat(Http2TestServer.startHttp2TestServer(
-                           mTestRule.getTestFramework().getContext(), mHangingUrlLatch))
+        assertThat(
+                        Http2TestServer.startHttp2TestServer(
+                                mTestRule.getTestFramework().getContext(), mHangingUrlLatch))
                 .isTrue();
     }
 
@@ -92,12 +99,16 @@ public class ExperimentalOptionsTest {
         File directory = new File(PathUtils.getDataDirectory());
         File logfile = File.createTempFile("cronet", "json", directory);
 
-        mTestRule.getTestFramework().applyEngineBuilderPatch((builder) -> {
-            JSONObject hostResolverParams = CronetTestUtil.generateHostResolverRules();
-            JSONObject experimentalOptions =
-                    new JSONObject().put("HostResolverRules", hostResolverParams);
-            builder.setExperimentalOptions(experimentalOptions.toString());
-        });
+        mTestRule
+                .getTestFramework()
+                .applyEngineBuilderPatch(
+                        (builder) -> {
+                            JSONObject hostResolverParams =
+                                    CronetTestUtil.generateHostResolverRules();
+                            JSONObject experimentalOptions =
+                                    new JSONObject().put("HostResolverRules", hostResolverParams);
+                            builder.setExperimentalOptions(experimentalOptions.toString());
+                        });
         CronetEngine cronetEngine = mTestRule.getTestFramework().startEngine();
 
         cronetEngine.startNetLogToFile(logfile.getPath(), false);
@@ -119,10 +130,14 @@ public class ExperimentalOptionsTest {
     @Test
     @MediumTest
     public void testEnableTelemetryFalse() throws Exception {
-        mTestRule.getTestFramework().applyEngineBuilderPatch((builder) -> {
-            JSONObject experimentalOptions = new JSONObject().put("enable_telemetry", false);
-            builder.setExperimentalOptions(experimentalOptions.toString());
-        });
+        mTestRule
+                .getTestFramework()
+                .applyEngineBuilderPatch(
+                        (builder) -> {
+                            JSONObject experimentalOptions =
+                                    new JSONObject().put("enable_telemetry", false);
+                            builder.setExperimentalOptions(experimentalOptions.toString());
+                        });
 
         CronetUrlRequestContext context =
                 (CronetUrlRequestContext) mTestRule.getTestFramework().startEngine();
@@ -144,11 +159,14 @@ public class ExperimentalOptionsTest {
         File dir = new File(PathUtils.getDataDirectory());
         File file = File.createTempFile("ssl_key_log_file", "", dir);
 
-        mTestRule.getTestFramework().applyEngineBuilderPatch((builder) -> {
-            JSONObject experimentalOptions =
-                    new JSONObject().put("ssl_key_log_file", file.getPath());
-            builder.setExperimentalOptions(experimentalOptions.toString());
-        });
+        mTestRule
+                .getTestFramework()
+                .applyEngineBuilderPatch(
+                        (builder) -> {
+                            JSONObject experimentalOptions =
+                                    new JSONObject().put("ssl_key_log_file", file.getPath());
+                            builder.setExperimentalOptions(experimentalOptions.toString());
+                        });
 
         CronetEngine cronetEngine = mTestRule.getTestFramework().startEngine();
 
@@ -221,26 +239,28 @@ public class ExperimentalOptionsTest {
         String testUrl = new URL("http", testHost, realPort, javaUrl.getPath()).toString();
 
         ExperimentalCronetEngine.Builder builder =
-                mTestRule.getTestFramework().createNewSecondaryBuilder(
-                        mTestRule.getTestFramework().getContext());
+                mTestRule
+                        .getTestFramework()
+                        .createNewSecondaryBuilder(mTestRule.getTestFramework().getContext());
 
         builder.setStoragePath(getTestStorage(mTestRule.getTestFramework().getContext()))
                 .enableHttpCache(CronetEngine.Builder.HTTP_CACHE_DISK, 0);
 
         // Set a short delay so the pref gets written quickly.
-        JSONObject staleDns = new JSONObject()
-                                      .put("enable", true)
-                                      .put("delay_ms", 0)
-                                      .put("allow_other_network", true)
-                                      .put("persist_to_disk", true)
-                                      .put("persist_delay_ms", 0);
+        JSONObject staleDns =
+                new JSONObject()
+                        .put("enable", true)
+                        .put("delay_ms", 0)
+                        .put("allow_other_network", true)
+                        .put("persist_to_disk", true)
+                        .put("persist_delay_ms", 0);
         JSONObject experimentalOptions = new JSONObject().put("StaleDNS", staleDns);
         builder.setExperimentalOptions(experimentalOptions.toString());
         CronetUrlRequestContext context = (CronetUrlRequestContext) builder.build();
 
         // Create a HostCache entry for "host-cache-test-host".
-        ExperimentalOptionsTestJni.get().writeToHostCache(
-                context.getUrlRequestContextAdapter(), realHost);
+        ExperimentalOptionsTestJni.get()
+                .writeToHostCache(context.getUrlRequestContextAdapter(), realHost);
 
         // Do a request for the test URL to make sure it's cached.
         TestUrlRequestCallback callback = new TestUrlRequestCallback();
@@ -270,33 +290,46 @@ public class ExperimentalOptionsTest {
     // Experimental options should be specified through a JSON compliant string. When that is not
     // the case building a Cronet engine should fail.
     public void testWrongJsonExperimentalOptions() throws Exception {
-        IllegalArgumentException e = assertThrows(IllegalArgumentException.class,
-                ()
-                        -> mTestRule.getTestFramework().applyEngineBuilderPatch(
-                                (builder)
-                                        -> builder.setExperimentalOptions(
-                                                "Not a serialized JSON object")));
+        IllegalArgumentException e =
+                assertThrows(
+                        IllegalArgumentException.class,
+                        () ->
+                                mTestRule
+                                        .getTestFramework()
+                                        .applyEngineBuilderPatch(
+                                                (builder) ->
+                                                        builder.setExperimentalOptions(
+                                                                "Not a serialized JSON object")));
         // The top level exception is a side effect of using applyEngineBuilderPatch
         assertThat(e).hasCauseThat().isInstanceOf(IllegalArgumentException.class);
-        assertThat(e).hasCauseThat().hasMessageThat().contains(
-                "Experimental options parsing failed");
+        assertThat(e)
+                .hasCauseThat()
+                .hasMessageThat()
+                .contains("Experimental options parsing failed");
     }
 
     @Test
     @MediumTest
     public void testDetectBrokenConnection() throws Exception {
         String url = Http2TestServer.getEchoMethodUrl();
-        mTestRule.getTestFramework().applyEngineBuilderPatch((builder) -> {
-            int heartbeatIntervalSecs = 1;
-            JSONObject experimentalOptions = new JSONObject().put(
-                    "bidi_stream_detect_broken_connection", heartbeatIntervalSecs);
-            builder.setExperimentalOptions(experimentalOptions.toString());
-        });
+        mTestRule
+                .getTestFramework()
+                .applyEngineBuilderPatch(
+                        (builder) -> {
+                            int heartbeatIntervalSecs = 1;
+                            JSONObject experimentalOptions =
+                                    new JSONObject()
+                                            .put(
+                                                    "bidi_stream_detect_broken_connection",
+                                                    heartbeatIntervalSecs);
+                            builder.setExperimentalOptions(experimentalOptions.toString());
+                        });
         ExperimentalCronetEngine cronetEngine = mTestRule.getTestFramework().startEngine();
 
         TestBidirectionalStreamCallback callback = new TestBidirectionalStreamCallback();
         ExperimentalBidirectionalStream.Builder builder =
-                cronetEngine.newBidirectionalStreamBuilder(url, callback, callback.getExecutor())
+                cronetEngine
+                        .newBidirectionalStreamBuilder(url, callback, callback.getExecutor())
                         .setHttpMethod("GET");
         BidirectionalStream stream = builder.build();
         stream.start();
@@ -315,12 +348,18 @@ public class ExperimentalOptionsTest {
         TestBidirectionalStreamCallback callback = new TestBidirectionalStreamCallback();
         TestRequestFinishedListener requestFinishedListener = new TestRequestFinishedListener();
 
-        mTestRule.getTestFramework().applyEngineBuilderPatch((builder) -> {
-            int heartbeatIntervalSecs = 1;
-            JSONObject experimentalOptions = new JSONObject().put(
-                    "bidi_stream_detect_broken_connection", heartbeatIntervalSecs);
-            builder.setExperimentalOptions(experimentalOptions.toString());
-        });
+        mTestRule
+                .getTestFramework()
+                .applyEngineBuilderPatch(
+                        (builder) -> {
+                            int heartbeatIntervalSecs = 1;
+                            JSONObject experimentalOptions =
+                                    new JSONObject()
+                                            .put(
+                                                    "bidi_stream_detect_broken_connection",
+                                                    heartbeatIntervalSecs);
+                            builder.setExperimentalOptions(experimentalOptions.toString());
+                        });
 
         ExperimentalCronetEngine cronetEngine = mTestRule.getTestFramework().startEngine();
         cronetEngine.addRequestFinishedListener(requestFinishedListener);

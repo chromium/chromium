@@ -55,17 +55,13 @@ public class PageZoomUtilsUnitTest {
     private static final String SHOULD_SHOW_ZOOM_MENU_ITEM_FAILURE_EXPECTED_FALSE =
             "Failure in should show zoom menu item method. Expected false but returned true.";
 
-    @Rule
-    public JniMocker mJniMocker = new JniMocker();
+    @Rule public JniMocker mJniMocker = new JniMocker();
 
-    @Mock
-    private WebContents mWebContentsMock;
+    @Mock private WebContents mWebContentsMock;
 
-    @Mock
-    private HostZoomMapImpl.Natives mHostZoomMapMock;
+    @Mock private HostZoomMapImpl.Natives mHostZoomMapMock;
 
-    @Mock
-    private BrowserContextHandle mContextMock;
+    @Mock private BrowserContextHandle mContextMock;
 
     private PropertyModel mModel;
 
@@ -79,42 +75,60 @@ public class PageZoomUtilsUnitTest {
     @Test
     public void testConvertSeekBarValueToZoomFactor() {
         // Cached zoom factor
-        Assert.assertEquals(SEEKBAR_VALUE_TO_ZOOM_FACTOR_FAILURE, 2.22,
-                PageZoomUtils.convertSeekBarValueToZoomFactor(100), 0.0001);
+        Assert.assertEquals(
+                SEEKBAR_VALUE_TO_ZOOM_FACTOR_FAILURE,
+                2.22,
+                PageZoomUtils.convertSeekBarValueToZoomFactor(100),
+                0.0001);
 
         // Non-cached zoom factor
-        Assert.assertEquals(SEEKBAR_VALUE_TO_ZOOM_FACTOR_FAILURE, 2.26,
-                PageZoomUtils.convertSeekBarValueToZoomFactor(101), 0.0001);
+        Assert.assertEquals(
+                SEEKBAR_VALUE_TO_ZOOM_FACTOR_FAILURE,
+                2.26,
+                PageZoomUtils.convertSeekBarValueToZoomFactor(101),
+                0.0001);
     }
 
     @Test
     public void testConvertZoomFactorToSeekBarValue() {
         // Cached zoom factor
-        Assert.assertEquals(ZOOM_FACTOR_TO_SEEKBAR_VALUE_FAILURE, 100,
+        Assert.assertEquals(
+                ZOOM_FACTOR_TO_SEEKBAR_VALUE_FAILURE,
+                100,
                 PageZoomUtils.convertZoomFactorToSeekBarValue(2.22));
 
         // Non-cached zoom factor
-        Assert.assertEquals(ZOOM_FACTOR_TO_SEEKBAR_VALUE_FAILURE, 101,
+        Assert.assertEquals(
+                ZOOM_FACTOR_TO_SEEKBAR_VALUE_FAILURE,
+                101,
                 PageZoomUtils.convertZoomFactorToSeekBarValue(2.26));
     }
 
     @Test
     public void testConvertSeekBarValueToZoomLevel() {
         // Cached zoom level
-        Assert.assertEquals(SEEKBAR_VALUE_TO_ZOOM_LEVEL_FAILURE, 1.5,
-                PageZoomUtils.convertSeekBarValueToZoomLevel(100), 0.0001);
+        Assert.assertEquals(
+                SEEKBAR_VALUE_TO_ZOOM_LEVEL_FAILURE,
+                1.5,
+                PageZoomUtils.convertSeekBarValueToZoomLevel(100),
+                0.0001);
 
         // Non-cached zoom level
-        Assert.assertEquals(SEEKBAR_VALUE_TO_ZOOM_FACTOR_FAILURE, 1.51,
-                PageZoomUtils.convertSeekBarValueToZoomLevel(101), 0.0001);
+        Assert.assertEquals(
+                SEEKBAR_VALUE_TO_ZOOM_FACTOR_FAILURE,
+                1.51,
+                PageZoomUtils.convertSeekBarValueToZoomLevel(101),
+                0.0001);
     }
 
     @Test
     public void testShouldSnapSeekBarValueToDefaultZoom() {
-        Assert.assertTrue(SHOULD_SNAP_SEEKBAR_VALUE_TO_DEFAULT_ZOOM_FAILURE,
+        Assert.assertTrue(
+                SHOULD_SNAP_SEEKBAR_VALUE_TO_DEFAULT_ZOOM_FAILURE,
                 PageZoomUtils.shouldSnapSeekBarValueToDefaultZoom(47, 0.0));
 
-        Assert.assertFalse(SHOULD_SNAP_SEEKBAR_VALUE_TO_DEFAULT_ZOOM_FAILURE,
+        Assert.assertFalse(
+                SHOULD_SNAP_SEEKBAR_VALUE_TO_DEFAULT_ZOOM_FAILURE,
                 PageZoomUtils.shouldSnapSeekBarValueToDefaultZoom(45, 0.0));
     }
 
@@ -128,22 +142,30 @@ public class PageZoomUtilsUnitTest {
     @Test
     public void testGetDefaultZoomBySeekbarValue() {
         when(mHostZoomMapMock.getDefaultZoomLevel(mContextMock)).thenReturn(2.58);
-        Assert.assertEquals(GET_DEFAULT_FAILURE, 110,
-                PageZoomUtils.getDefaultZoomAsSeekBarValue(mContextMock), 0.0001);
+        Assert.assertEquals(
+                GET_DEFAULT_FAILURE,
+                110,
+                PageZoomUtils.getDefaultZoomAsSeekBarValue(mContextMock),
+                0.0001);
         verify(mHostZoomMapMock, times(1).description(GET_DEFAULT_FAILURE_NO_JNI))
                 .getDefaultZoomLevel(mContextMock);
     }
 
     @Test
     public void testShouldAlwaysShowZoomMenuItem_defaultIsFalse() {
-        Assert.assertEquals(SHOULD_SHOW_ZOOM_MENU_ITEM_FAILURE_EXPECTED_FALSE, false,
+        Assert.assertEquals(
+                SHOULD_SHOW_ZOOM_MENU_ITEM_FAILURE_EXPECTED_FALSE,
+                false,
                 PageZoomUtils.shouldAlwaysShowZoomMenuItem());
     }
 
     @Test
     public void testGetNextIndexIncrease() {
-        Assert.assertEquals(GET_NEXT_INDEX_INCREASE_FAILURE, 7,
-                PageZoomUtils.getNextIndex(false, 1.00), 0.0001);
+        Assert.assertEquals(
+                GET_NEXT_INDEX_INCREASE_FAILURE,
+                7,
+                PageZoomUtils.getNextIndex(false, 1.00),
+                0.0001);
     }
 
     @Test(expected = IllegalArgumentException.class)

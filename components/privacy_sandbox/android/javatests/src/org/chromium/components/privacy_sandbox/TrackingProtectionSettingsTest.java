@@ -31,9 +31,7 @@ import org.chromium.components.browser_ui.site_settings.WebsitePreferenceBridge;
 import org.chromium.components.browser_ui.site_settings.WebsitePreferenceBridgeJni;
 import org.chromium.content_public.browser.BrowserContextHandle;
 
-/**
- * Tests for TrackingProtectionSettings.
- */
+/** Tests for TrackingProtectionSettings. */
 @RunWith(BaseJUnit4ClassRunner.class)
 @Batch(Batch.PER_CLASS)
 public class TrackingProtectionSettingsTest {
@@ -41,17 +39,13 @@ public class TrackingProtectionSettingsTest {
     public final BlankUiTestActivitySettingsTestRule mSettingsRule =
             new BlankUiTestActivitySettingsTestRule();
 
-    @Rule
-    public JniMocker mJniMocker = new JniMocker();
+    @Rule public JniMocker mJniMocker = new JniMocker();
 
-    @Mock
-    private WebsitePreferenceBridge.Natives mBridgeMock;
+    @Mock private WebsitePreferenceBridge.Natives mBridgeMock;
 
-    @Mock
-    private BrowserContextHandle mContextHandleMock;
+    @Mock private BrowserContextHandle mContextHandleMock;
 
-    @Mock
-    private TrackingProtectionDelegate mDelegate;
+    @Mock private TrackingProtectionDelegate mDelegate;
 
     private TrackingProtectionSettings mFragment;
 
@@ -65,9 +59,13 @@ public class TrackingProtectionSettingsTest {
     public void setUp() {
         MockitoAnnotations.initMocks(this);
         mJniMocker.mock(WebsitePreferenceBridgeJni.TEST_HOOKS, mBridgeMock);
-        mSettingsRule.launchPreference(TrackingProtectionSettings.class, null, (fragment) -> {
-            ((TrackingProtectionSettings) fragment).setTrackingProtectionDelegate(mDelegate);
-        });
+        mSettingsRule.launchPreference(
+                TrackingProtectionSettings.class,
+                null,
+                (fragment) -> {
+                    ((TrackingProtectionSettings) fragment)
+                            .setTrackingProtectionDelegate(mDelegate);
+                });
         mFragment = (TrackingProtectionSettings) mSettingsRule.getPreferenceFragment();
 
         when(mDelegate.getBrowserContext()).thenReturn(mContextHandleMock);

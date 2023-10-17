@@ -64,9 +64,11 @@ public class WebApkVerifySignatureTest {
                 bytes, WebApkVerifySignature.parseCommentSignature("XXXwebapk:0000:decafbadXXX"));
         assertArrayEquals(
                 bytes, WebApkVerifySignature.parseCommentSignature("\n\nwebapk:0000:decafbad\n\n"));
-        assertArrayEquals(bytes,
+        assertArrayEquals(
+                bytes,
                 WebApkVerifySignature.parseCommentSignature("chrome-webapk:000:decafbad\n\n"));
-        assertArrayEquals(bytes,
+        assertArrayEquals(
+                bytes,
                 WebApkVerifySignature.parseCommentSignature(
                         "prefixed: chrome-webapk:000:decafbad :suffixed"));
     }
@@ -85,31 +87,31 @@ public class WebApkVerifySignatureTest {
     public void testBadVerifyFiles() throws Exception {
         PublicKey pub = readPublicKey(testFilePath("public.der"));
         FileResult[] tests = {
-                new FileResult("example.apk", Error.OK),
-                new FileResult("java-example.apk", Error.OK),
-                new FileResult("v2-signed-ok.apk", Error.OK),
-                new FileResult("bad-sig.apk", Error.INCORRECT_SIGNATURE),
-                new FileResult("bad-utf8-fname.apk", Error.INCORRECT_SIGNATURE),
-                new FileResult("empty.apk", Error.BAD_APK),
-                new FileResult("extra-field-too-large.apk", Error.EXTRA_FIELD_TOO_LARGE),
-                new FileResult("extra-len-too-large.apk", Error.BAD_APK),
-                new FileResult("no-cd.apk", Error.BAD_APK),
-                new FileResult("no-comment.apk", Error.SIGNATURE_NOT_FOUND),
-                new FileResult("no-eocd.apk", Error.BAD_APK),
-                new FileResult("no-lfh.apk", Error.BAD_APK),
-                new FileResult("not-an.apk", Error.BAD_APK),
-                new FileResult("too-many-metainf.apk", Error.TOO_MANY_META_INF_FILES),
-                new FileResult("truncated.apk", Error.BAD_APK),
-                new FileResult("zeros.apk", Error.BAD_APK),
-                new FileResult("zeros-at-end.apk", Error.BAD_APK),
-                new FileResult("block-before-first.apk", Error.BAD_BLANK_SPACE),
-                new FileResult("block-at-end.apk", Error.BAD_BLANK_SPACE),
-                new FileResult("block-before-eocd.apk", Error.BAD_BLANK_SPACE),
-                new FileResult("block-before-cd.apk", Error.BAD_BLANK_SPACE),
-                new FileResult("block-middle.apk", Error.BAD_BLANK_SPACE),
-                new FileResult("v2-signed-too-large.apk", Error.BAD_V2_SIGNING_BLOCK),
-                // This badly fuzzed file should return Error.FILE_COMMENT_TOO_LARGE.
-                new FileResult("fcomment-too-large.apk", Error.BAD_APK),
+            new FileResult("example.apk", Error.OK),
+            new FileResult("java-example.apk", Error.OK),
+            new FileResult("v2-signed-ok.apk", Error.OK),
+            new FileResult("bad-sig.apk", Error.INCORRECT_SIGNATURE),
+            new FileResult("bad-utf8-fname.apk", Error.INCORRECT_SIGNATURE),
+            new FileResult("empty.apk", Error.BAD_APK),
+            new FileResult("extra-field-too-large.apk", Error.EXTRA_FIELD_TOO_LARGE),
+            new FileResult("extra-len-too-large.apk", Error.BAD_APK),
+            new FileResult("no-cd.apk", Error.BAD_APK),
+            new FileResult("no-comment.apk", Error.SIGNATURE_NOT_FOUND),
+            new FileResult("no-eocd.apk", Error.BAD_APK),
+            new FileResult("no-lfh.apk", Error.BAD_APK),
+            new FileResult("not-an.apk", Error.BAD_APK),
+            new FileResult("too-many-metainf.apk", Error.TOO_MANY_META_INF_FILES),
+            new FileResult("truncated.apk", Error.BAD_APK),
+            new FileResult("zeros.apk", Error.BAD_APK),
+            new FileResult("zeros-at-end.apk", Error.BAD_APK),
+            new FileResult("block-before-first.apk", Error.BAD_BLANK_SPACE),
+            new FileResult("block-at-end.apk", Error.BAD_BLANK_SPACE),
+            new FileResult("block-before-eocd.apk", Error.BAD_BLANK_SPACE),
+            new FileResult("block-before-cd.apk", Error.BAD_BLANK_SPACE),
+            new FileResult("block-middle.apk", Error.BAD_BLANK_SPACE),
+            new FileResult("v2-signed-too-large.apk", Error.BAD_V2_SIGNING_BLOCK),
+            // This badly fuzzed file should return Error.FILE_COMMENT_TOO_LARGE.
+            new FileResult("fcomment-too-large.apk", Error.BAD_APK),
         };
         for (FileResult test : tests) {
             RandomAccessFile file = new RandomAccessFile(testFilePath(test.filename), "r");
@@ -119,8 +121,7 @@ public class WebApkVerifySignatureTest {
             buf.load();
             WebApkVerifySignature v = new WebApkVerifySignature(buf);
             try {
-                @WebApkVerifySignature.Error
-                int readError = v.read();
+                @WebApkVerifySignature.Error int readError = v.read();
                 if (readError == WebApkVerifySignature.Error.OK) {
                     assertEquals(test.filename, test.want, v.verifySignature(pub));
                 } else {

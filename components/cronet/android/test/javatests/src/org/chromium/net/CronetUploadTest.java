@@ -32,11 +32,11 @@ import java.util.concurrent.Executors;
  */
 @DoNotBatch(reason = "crbug/1459563")
 @RunWith(AndroidJUnit4.class)
-@IgnoreFor(implementations = {CronetImplementation.FALLBACK},
+@IgnoreFor(
+        implementations = {CronetImplementation.FALLBACK},
         reason = "Testing internals of the native implementation")
 public class CronetUploadTest {
-    @Rule
-    public final CronetTestRule mTestRule = CronetTestRule.withAutomaticEngineStartup();
+    @Rule public final CronetTestRule mTestRule = CronetTestRule.withAutomaticEngineStartup();
 
     private TestDrivenDataProvider mDataProvider;
     private CronetUploadDataStream mUploadDataStream;
@@ -51,14 +51,20 @@ public class CronetUploadTest {
 
         // Creates a no-op CronetUrlRequest, which is not used to drive CronetUploadDataStream.
         TestUrlRequestCallback callback = new TestUrlRequestCallback();
-        UrlRequest.Builder builder = mTestRule.getTestFramework().getEngine().newUrlRequestBuilder(
-                "https://no-op.url", callback, callback.getExecutor());
+        UrlRequest.Builder builder =
+                mTestRule
+                        .getTestFramework()
+                        .getEngine()
+                        .newUrlRequestBuilder(
+                                "https://no-op.url", callback, callback.getExecutor());
         UrlRequest urlRequest = builder.build();
 
         mUploadDataStream =
                 new CronetUploadDataStream(mDataProvider, executor, (CronetUrlRequest) urlRequest);
-        mHandler = new TestUploadDataStreamHandler(mTestRule.getTestFramework().getContext(),
-                mUploadDataStream.createUploadDataStreamForTesting());
+        mHandler =
+                new TestUploadDataStreamHandler(
+                        mTestRule.getTestFramework().getContext(),
+                        mUploadDataStream.createUploadDataStreamForTesting());
     }
 
     @After

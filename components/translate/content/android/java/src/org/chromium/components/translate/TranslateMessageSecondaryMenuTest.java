@@ -57,9 +57,7 @@ import org.chromium.ui.modelutil.PropertyModel;
 import org.chromium.ui.test.util.BlankUiTestActivity;
 import org.chromium.ui.test.util.DisableAnimationsTestRule;
 
-/**
- * Instrumentation tests for the secondary menu functionality of TranslateMessage.
- */
+/** Instrumentation tests for the secondary menu functionality of TranslateMessage. */
 @RunWith(BaseJUnit4ClassRunner.class)
 @Batch(Batch.UNIT_TESTS)
 public final class TranslateMessageSecondaryMenuTest {
@@ -68,16 +66,33 @@ public final class TranslateMessageSecondaryMenuTest {
     private static final int LIST_MENU_BUTTON_ID = View.generateViewId();
 
     private static final MenuItem MENU_ITEM =
-            new MenuItem(/*title=*/"title of basic menu item", /*subtitle=*/"",
-                    /*hasCheckmark=*/false, /*overflowMenuItemId=*/0, /*languageCode=*/"lang0");
-    private static final MenuItem MENU_ITEM_WITH_SUBTITLE = new MenuItem(
-            /*title=*/"title of subtitled menu item", /*subtitle=*/"menu item subtitle",
-            /*hasCheckmark=*/false, /*overflowMenuItemId=*/1, /*languageCode=*/"lang1");
+            new MenuItem(
+                    /* title= */ "title of basic menu item",
+                    /* subtitle= */ "",
+                    /* hasCheckmark= */ false,
+                    /* overflowMenuItemId= */ 0,
+                    /* languageCode= */ "lang0");
+    private static final MenuItem MENU_ITEM_WITH_SUBTITLE =
+            new MenuItem(
+                    /* title= */ "title of subtitled menu item",
+                    /* subtitle= */ "menu item subtitle",
+                    /* hasCheckmark= */ false,
+                    /* overflowMenuItemId= */ 1,
+                    /* languageCode= */ "lang1");
     private static final MenuItem MENU_ITEM_WITH_CHECKMARK =
-            new MenuItem(/*title=*/"title of checked menu item", /*subtitle=*/"",
-                    /*hasCheckmark=*/true, /*overflowMenuItemId=*/2, /*languageCode=*/"lang2");
-    private static final MenuItem MENU_ITEM_DIVIDER = new MenuItem(/*title=*/"", /*subtitle=*/"",
-            /*hasCheckmark=*/false, /*overflowMenuItemId=*/3, /*languageCode=*/"lang3");
+            new MenuItem(
+                    /* title= */ "title of checked menu item",
+                    /* subtitle= */ "",
+                    /* hasCheckmark= */ true,
+                    /* overflowMenuItemId= */ 2,
+                    /* languageCode= */ "lang2");
+    private static final MenuItem MENU_ITEM_DIVIDER =
+            new MenuItem(
+                    /* title= */ "",
+                    /* subtitle= */ "",
+                    /* hasCheckmark= */ false,
+                    /* overflowMenuItemId= */ 3,
+                    /* languageCode= */ "lang3");
 
     @ClassRule
     public static DisableAnimationsTestRule sDisableAnimationsRule =
@@ -90,46 +105,51 @@ public final class TranslateMessageSecondaryMenuTest {
     private static Activity sActivity;
     private static ViewGroup sContentView;
 
-    @Rule
-    public MockitoRule mMockitoRule = MockitoJUnit.rule();
-    @Rule
-    public JniMocker mJniMocker = new JniMocker();
+    @Rule public MockitoRule mMockitoRule = MockitoJUnit.rule();
+    @Rule public JniMocker mJniMocker = new JniMocker();
 
-    @Mock
-    TranslateMessage.Natives mMockJni;
-    @Mock
-    WebContents mWebContents;
-    @Mock
-    MessageDispatcher mMessageDispatcher;
+    @Mock TranslateMessage.Natives mMockJni;
+    @Mock WebContents mWebContents;
+    @Mock MessageDispatcher mMessageDispatcher;
 
-    @Captor
-    ArgumentCaptor<PropertyModel> mPropertyModelCaptor;
+    @Captor ArgumentCaptor<PropertyModel> mPropertyModelCaptor;
 
     @BeforeClass
     public static void setupSuite() {
         sActivityTestRule.launchActivity(null);
-        TestThreadUtils.runOnUiThreadBlocking(() -> {
-            sActivity = sActivityTestRule.getActivity();
-            sContentView = new FrameLayout(sActivity);
-            sActivity.setContentView(sContentView);
-        });
+        TestThreadUtils.runOnUiThreadBlocking(
+                () -> {
+                    sActivity = sActivityTestRule.getActivity();
+                    sContentView = new FrameLayout(sActivity);
+                    sActivity.setContentView(sContentView);
+                });
     }
 
     @Before
     public void setupTest() throws Exception {
         mJniMocker.mock(TranslateMessageJni.TEST_HOOKS, mMockJni);
 
-        TestThreadUtils.runOnUiThreadBlocking(() -> { sContentView.removeAllViews(); });
+        TestThreadUtils.runOnUiThreadBlocking(
+                () -> {
+                    sContentView.removeAllViews();
+                });
     }
 
     @Test
     @MediumTest
     public void testShowMultipleMenuItems() {
         TestThreadUtils.runOnUiThreadBlocking(
-                () -> { prepareListMenuButtonForTranslateMessageOnUiThread(); });
+                () -> {
+                    prepareListMenuButtonForTranslateMessageOnUiThread();
+                });
 
-        doReturn(new MenuItem[] {MENU_ITEM, MENU_ITEM_DIVIDER, MENU_ITEM_WITH_SUBTITLE,
-                         MENU_ITEM_WITH_CHECKMARK})
+        doReturn(
+                        new MenuItem[] {
+                            MENU_ITEM,
+                            MENU_ITEM_DIVIDER,
+                            MENU_ITEM_WITH_SUBTITLE,
+                            MENU_ITEM_WITH_CHECKMARK
+                        })
                 .when(mMockJni)
                 .buildOverflowMenu(NATIVE_TRANSLATE_MESSAGE);
         onView(withId(LIST_MENU_BUTTON_ID)).perform(click());
@@ -137,46 +157,84 @@ public final class TranslateMessageSecondaryMenuTest {
         DataInteraction interaction = onData(instanceOf(MenuItem.class));
 
         // Basic titled menu item.
-        interaction.atPosition(0).check(
-                matches(allOf(hasDescendant(allOf(withId(R.id.menu_item_text),
-                                      withText(MENU_ITEM.title), isDisplayed())),
-                        not(hasDescendant(withId(R.id.menu_item_secondary_text))),
-                        not(hasDescendant(withId(R.id.menu_item_icon))))));
+        interaction
+                .atPosition(0)
+                .check(
+                        matches(
+                                allOf(
+                                        hasDescendant(
+                                                allOf(
+                                                        withId(R.id.menu_item_text),
+                                                        withText(MENU_ITEM.title),
+                                                        isDisplayed())),
+                                        not(hasDescendant(withId(R.id.menu_item_secondary_text))),
+                                        not(hasDescendant(withId(R.id.menu_item_icon))))));
 
         // Divider.
-        interaction.atPosition(1).check(
-                matches(allOf(not(hasDescendant(withId(R.id.menu_item_text))),
-                        not(hasDescendant(withId(R.id.menu_item_secondary_text))),
-                        not(hasDescendant(withId(R.id.menu_item_icon))))));
+        interaction
+                .atPosition(1)
+                .check(
+                        matches(
+                                allOf(
+                                        not(hasDescendant(withId(R.id.menu_item_text))),
+                                        not(hasDescendant(withId(R.id.menu_item_secondary_text))),
+                                        not(hasDescendant(withId(R.id.menu_item_icon))))));
 
         // Subtitled menu item.
-        interaction.atPosition(2).check(
-                matches(allOf(hasDescendant(allOf(withId(R.id.menu_item_text),
-                                      withText(MENU_ITEM_WITH_SUBTITLE.title), isDisplayed())),
-                        hasDescendant(allOf(withId(R.id.menu_item_secondary_text),
-                                withText(MENU_ITEM_WITH_SUBTITLE.subtitle), isDisplayed())),
-                        not(hasDescendant(withId(R.id.menu_item_icon))))));
+        interaction
+                .atPosition(2)
+                .check(
+                        matches(
+                                allOf(
+                                        hasDescendant(
+                                                allOf(
+                                                        withId(R.id.menu_item_text),
+                                                        withText(MENU_ITEM_WITH_SUBTITLE.title),
+                                                        isDisplayed())),
+                                        hasDescendant(
+                                                allOf(
+                                                        withId(R.id.menu_item_secondary_text),
+                                                        withText(MENU_ITEM_WITH_SUBTITLE.subtitle),
+                                                        isDisplayed())),
+                                        not(hasDescendant(withId(R.id.menu_item_icon))))));
 
         // Checkmarked menu item.
-        interaction.atPosition(3).check(
-                matches(allOf(hasDescendant(allOf(withId(R.id.menu_item_text),
-                                      withText(MENU_ITEM_WITH_CHECKMARK.title), isDisplayed())),
-                        not(hasDescendant(withId(R.id.menu_item_secondary_text))),
-                        hasDescendant(allOf(withId(R.id.menu_item_icon), isDisplayed())))));
+        interaction
+                .atPosition(3)
+                .check(
+                        matches(
+                                allOf(
+                                        hasDescendant(
+                                                allOf(
+                                                        withId(R.id.menu_item_text),
+                                                        withText(MENU_ITEM_WITH_CHECKMARK.title),
+                                                        isDisplayed())),
+                                        not(hasDescendant(withId(R.id.menu_item_secondary_text))),
+                                        hasDescendant(
+                                                allOf(
+                                                        withId(R.id.menu_item_icon),
+                                                        isDisplayed())))));
     }
 
     @Test
     @MediumTest
     public void testMenuItemViewReUse() {
         TestThreadUtils.runOnUiThreadBlocking(
-                () -> { prepareListMenuButtonForTranslateMessageOnUiThread(); });
+                () -> {
+                    prepareListMenuButtonForTranslateMessageOnUiThread();
+                });
 
         // Use a very large list of MenuItems, such that views have an opportunity to be re-used.
         final int numBasicMenuItems = 100;
         MenuItem[] menuItems = new MenuItem[numBasicMenuItems + 1];
         for (int i = 0; i < numBasicMenuItems; ++i) {
-            menuItems[i] = new MenuItem(/*title=*/"title " + i, /*subtitle=*/"",
-                    /*hasCheckmark=*/false, /*overflowMenuItemId=*/0, /*languageCode=*/"");
+            menuItems[i] =
+                    new MenuItem(
+                            /* title= */ "title " + i,
+                            /* subtitle= */ "",
+                            /* hasCheckmark= */ false,
+                            /* overflowMenuItemId= */ 0,
+                            /* languageCode= */ "");
         }
         // Add a subtitled MenuItem to the end, which should not re-use an earlier menu item view
         // since it should have a different view layout.
@@ -194,21 +252,39 @@ public final class TranslateMessageSecondaryMenuTest {
         DataInteraction interaction = onData(instanceOf(MenuItem.class));
 
         for (int i = 0; i < numBasicMenuItems; ++i) {
-            interaction.atPosition(i).check(
-                    matches(allOf(hasDescendant(allOf(withId(R.id.menu_item_text),
-                                          withText(menuItems[i].title), isDisplayed())),
-                            not(hasDescendant(withId(R.id.menu_item_secondary_text))),
-                            not(hasDescendant(withId(R.id.menu_item_icon))))));
+            interaction
+                    .atPosition(i)
+                    .check(
+                            matches(
+                                    allOf(
+                                            hasDescendant(
+                                                    allOf(
+                                                            withId(R.id.menu_item_text),
+                                                            withText(menuItems[i].title),
+                                                            isDisplayed())),
+                                            not(
+                                                    hasDescendant(
+                                                            withId(R.id.menu_item_secondary_text))),
+                                            not(hasDescendant(withId(R.id.menu_item_icon))))));
         }
 
         // Scroll to and verify that the subtitled menu item is displayed correctly.
-        interaction.atPosition(numBasicMenuItems)
-                .check(matches(
-                        allOf(hasDescendant(allOf(withId(R.id.menu_item_text),
-                                      withText(MENU_ITEM_WITH_SUBTITLE.title), isDisplayed())),
-                                hasDescendant(allOf(withId(R.id.menu_item_secondary_text),
-                                        withText(MENU_ITEM_WITH_SUBTITLE.subtitle), isDisplayed())),
-                                not(hasDescendant(withId(R.id.menu_item_icon))))));
+        interaction
+                .atPosition(numBasicMenuItems)
+                .check(
+                        matches(
+                                allOf(
+                                        hasDescendant(
+                                                allOf(
+                                                        withId(R.id.menu_item_text),
+                                                        withText(MENU_ITEM_WITH_SUBTITLE.title),
+                                                        isDisplayed())),
+                                        hasDescendant(
+                                                allOf(
+                                                        withId(R.id.menu_item_secondary_text),
+                                                        withText(MENU_ITEM_WITH_SUBTITLE.subtitle),
+                                                        isDisplayed())),
+                                        not(hasDescendant(withId(R.id.menu_item_icon))))));
 
         // The topmost view should have been scrolled off screen by this point.
         onView(withText(menuItems[0].title)).check(doesNotExist());
@@ -218,18 +294,29 @@ public final class TranslateMessageSecondaryMenuTest {
     @MediumTest
     public void testClickMenuItem() {
         TestThreadUtils.runOnUiThreadBlocking(
-                () -> { prepareListMenuButtonForTranslateMessageOnUiThread(); });
+                () -> {
+                    prepareListMenuButtonForTranslateMessageOnUiThread();
+                });
 
         doReturn(new MenuItem[] {MENU_ITEM})
                 .when(mMockJni)
                 .buildOverflowMenu(NATIVE_TRANSLATE_MESSAGE);
         onView(withId(LIST_MENU_BUTTON_ID)).perform(click());
 
-        doReturn(null).when(mMockJni).handleSecondaryMenuItemClicked(NATIVE_TRANSLATE_MESSAGE,
-                MENU_ITEM.overflowMenuItemId, MENU_ITEM.languageCode, MENU_ITEM.hasCheckmark);
+        doReturn(null)
+                .when(mMockJni)
+                .handleSecondaryMenuItemClicked(
+                        NATIVE_TRANSLATE_MESSAGE,
+                        MENU_ITEM.overflowMenuItemId,
+                        MENU_ITEM.languageCode,
+                        MENU_ITEM.hasCheckmark);
         onView(withText(MENU_ITEM.title)).perform(click());
-        verify(mMockJni).handleSecondaryMenuItemClicked(NATIVE_TRANSLATE_MESSAGE,
-                MENU_ITEM.overflowMenuItemId, MENU_ITEM.languageCode, MENU_ITEM.hasCheckmark);
+        verify(mMockJni)
+                .handleSecondaryMenuItemClicked(
+                        NATIVE_TRANSLATE_MESSAGE,
+                        MENU_ITEM.overflowMenuItemId,
+                        MENU_ITEM.languageCode,
+                        MENU_ITEM.hasCheckmark);
 
         onView(withText(MENU_ITEM.title)).check(doesNotExist());
     }
@@ -238,7 +325,9 @@ public final class TranslateMessageSecondaryMenuTest {
     @MediumTest
     public void testClickMenuItemWithNestedMenu() {
         TestThreadUtils.runOnUiThreadBlocking(
-                () -> { prepareListMenuButtonForTranslateMessageOnUiThread(); });
+                () -> {
+                    prepareListMenuButtonForTranslateMessageOnUiThread();
+                });
 
         doReturn(new MenuItem[] {MENU_ITEM})
                 .when(mMockJni)
@@ -247,22 +336,35 @@ public final class TranslateMessageSecondaryMenuTest {
 
         doReturn(new MenuItem[] {MENU_ITEM_WITH_SUBTITLE})
                 .when(mMockJni)
-                .handleSecondaryMenuItemClicked(NATIVE_TRANSLATE_MESSAGE,
-                        MENU_ITEM.overflowMenuItemId, MENU_ITEM.languageCode,
+                .handleSecondaryMenuItemClicked(
+                        NATIVE_TRANSLATE_MESSAGE,
+                        MENU_ITEM.overflowMenuItemId,
+                        MENU_ITEM.languageCode,
                         MENU_ITEM.hasCheckmark);
         onView(withText(MENU_ITEM.title)).perform(click());
-        verify(mMockJni).handleSecondaryMenuItemClicked(NATIVE_TRANSLATE_MESSAGE,
-                MENU_ITEM.overflowMenuItemId, MENU_ITEM.languageCode, MENU_ITEM.hasCheckmark);
+        verify(mMockJni)
+                .handleSecondaryMenuItemClicked(
+                        NATIVE_TRANSLATE_MESSAGE,
+                        MENU_ITEM.overflowMenuItemId,
+                        MENU_ITEM.languageCode,
+                        MENU_ITEM.hasCheckmark);
 
         onView(withText(MENU_ITEM.title)).check(doesNotExist());
 
-        doReturn(null).when(mMockJni).handleSecondaryMenuItemClicked(NATIVE_TRANSLATE_MESSAGE,
-                MENU_ITEM_WITH_SUBTITLE.overflowMenuItemId, MENU_ITEM_WITH_SUBTITLE.languageCode,
-                MENU_ITEM_WITH_SUBTITLE.hasCheckmark);
+        doReturn(null)
+                .when(mMockJni)
+                .handleSecondaryMenuItemClicked(
+                        NATIVE_TRANSLATE_MESSAGE,
+                        MENU_ITEM_WITH_SUBTITLE.overflowMenuItemId,
+                        MENU_ITEM_WITH_SUBTITLE.languageCode,
+                        MENU_ITEM_WITH_SUBTITLE.hasCheckmark);
         onView(withText(MENU_ITEM_WITH_SUBTITLE.title)).perform(click());
-        verify(mMockJni).handleSecondaryMenuItemClicked(NATIVE_TRANSLATE_MESSAGE,
-                MENU_ITEM_WITH_SUBTITLE.overflowMenuItemId, MENU_ITEM_WITH_SUBTITLE.languageCode,
-                MENU_ITEM_WITH_SUBTITLE.hasCheckmark);
+        verify(mMockJni)
+                .handleSecondaryMenuItemClicked(
+                        NATIVE_TRANSLATE_MESSAGE,
+                        MENU_ITEM_WITH_SUBTITLE.overflowMenuItemId,
+                        MENU_ITEM_WITH_SUBTITLE.languageCode,
+                        MENU_ITEM_WITH_SUBTITLE.hasCheckmark);
 
         onView(withText(MENU_ITEM_WITH_SUBTITLE.title)).check(doesNotExist());
     }
@@ -270,10 +372,11 @@ public final class TranslateMessageSecondaryMenuTest {
     @Test
     @MediumTest
     public void testOpenMenuAfterClearNativePointer() {
-        TestThreadUtils.runOnUiThreadBlocking(() -> {
-            // Immediately clear the native object pointer from the TranslateMessage.
-            prepareListMenuButtonForTranslateMessageOnUiThread().clearNativePointer();
-        });
+        TestThreadUtils.runOnUiThreadBlocking(
+                () -> {
+                    // Immediately clear the native object pointer from the TranslateMessage.
+                    prepareListMenuButtonForTranslateMessageOnUiThread().clearNativePointer();
+                });
 
         onView(withId(LIST_MENU_BUTTON_ID)).perform(click());
 
@@ -287,17 +390,25 @@ public final class TranslateMessageSecondaryMenuTest {
      * Must be run on the UI thread.
      *
      * @return The newly created TranslateMessage.
-     * */
+     */
     private TranslateMessage prepareListMenuButtonForTranslateMessageOnUiThread() {
-        TranslateMessage translateMessage = new TranslateMessage(sActivity, mMessageDispatcher,
-                mWebContents, NATIVE_TRANSLATE_MESSAGE, DISMISSAL_DURATION_SECONDS);
+        TranslateMessage translateMessage =
+                new TranslateMessage(
+                        sActivity,
+                        mMessageDispatcher,
+                        mWebContents,
+                        NATIVE_TRANSLATE_MESSAGE,
+                        DISMISSAL_DURATION_SECONDS);
 
         translateMessage.showMessage(
-                "Translate Page?", "French to English", "Translate", /*hasOverflowMenu=*/true);
+                "Translate Page?", "French to English", "Translate", /* hasOverflowMenu= */ true);
 
         verify(mMessageDispatcher)
-                .enqueueMessage(mPropertyModelCaptor.capture(), eq(mWebContents),
-                        eq(MessageScopeType.NAVIGATION), /*highPriority=*/eq(false));
+                .enqueueMessage(
+                        mPropertyModelCaptor.capture(),
+                        eq(mWebContents),
+                        eq(MessageScopeType.NAVIGATION),
+                        /* highPriority= */ eq(false));
         PropertyModel messageProperties = mPropertyModelCaptor.getValue();
 
         ListMenuButton listMenuButton = new ListMenuButton(sActivity, null);

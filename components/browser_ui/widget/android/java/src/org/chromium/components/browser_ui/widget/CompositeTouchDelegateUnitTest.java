@@ -21,22 +21,17 @@ import org.robolectric.annotation.Config;
 
 import org.chromium.base.test.BaseRobolectricTestRunner;
 
-/**
- * Tests for CompositeTouchDelegate.
- */
+/** Tests for CompositeTouchDelegate. */
 @RunWith(BaseRobolectricTestRunner.class)
 @Config(manifest = Config.NONE)
 public final class CompositeTouchDelegateUnitTest {
     CompositeTouchDelegate mCompositeTouchDelegate;
 
-    @Mock
-    TouchDelegate mMockTouchDelegate;
+    @Mock TouchDelegate mMockTouchDelegate;
 
-    @Mock
-    TouchDelegate mMockOtherTouchDelegate;
+    @Mock TouchDelegate mMockOtherTouchDelegate;
 
-    @Mock
-    MotionEvent mMockMotionEvent;
+    @Mock MotionEvent mMockMotionEvent;
 
     @Before
     public void setUp() {

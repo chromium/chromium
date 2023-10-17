@@ -15,9 +15,7 @@ import org.chromium.base.test.BaseRobolectricTestRunner;
 import org.chromium.ui.modelutil.PropertyModel;
 import org.chromium.ui.modelutil.PropertyModelChangeProcessor;
 
-/**
- * Tests for the {@link AddToHomescreenViewBinder} class.
- */
+/** Tests for the {@link AddToHomescreenViewBinder} class. */
 @RunWith(BaseRobolectricTestRunner.class)
 public class AddToHomescreenViewBinderTest {
     @Test

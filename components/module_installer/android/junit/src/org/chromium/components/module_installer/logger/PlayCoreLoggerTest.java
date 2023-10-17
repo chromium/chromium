@@ -19,19 +19,14 @@ import org.mockito.MockitoAnnotations;
 
 import org.chromium.base.test.BaseRobolectricTestRunner;
 
-/**
- * Test suite for the PlayCoreLogger class.
- */
+/** Test suite for the PlayCoreLogger class. */
 @RunWith(BaseRobolectricTestRunner.class)
 public class PlayCoreLoggerTest {
-    @Mock
-    private SplitInstallFailureLogger mFailureLogger;
+    @Mock private SplitInstallFailureLogger mFailureLogger;
 
-    @Mock
-    private SplitInstallStatusLogger mStatusLogger;
+    @Mock private SplitInstallStatusLogger mStatusLogger;
 
-    @Mock
-    private SplitAvailabilityLogger mAvailabilityLogger;
+    @Mock private SplitAvailabilityLogger mAvailabilityLogger;
 
     private PlayCoreLogger mPlayCoreLogger;
 

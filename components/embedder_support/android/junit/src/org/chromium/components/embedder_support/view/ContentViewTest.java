@@ -34,10 +34,8 @@ import org.chromium.ui.base.EventOffsetHandler;
  */
 @RunWith(BaseRobolectricTestRunner.class)
 public class ContentViewTest {
-    @Mock
-    private EventOffsetHandler.EventOffsetHandlerDelegate mEventOffsetHandlerDelegate;
-    @Mock
-    private WebContents mWebContents;
+    @Mock private EventOffsetHandler.EventOffsetHandlerDelegate mEventOffsetHandlerDelegate;
+    @Mock private WebContents mWebContents;
 
     private Context mContext;
     private ContentView mContentView;
@@ -46,8 +44,11 @@ public class ContentViewTest {
     public void setUp() {
         openMocks(this);
         mContext = InstrumentationRegistry.getInstrumentation().getTargetContext();
-        mContentView = new ContentView(
-                mContext, new EventOffsetHandler(mEventOffsetHandlerDelegate), mWebContents);
+        mContentView =
+                new ContentView(
+                        mContext,
+                        new EventOffsetHandler(mEventOffsetHandlerDelegate),
+                        mWebContents);
     }
 
     @Test

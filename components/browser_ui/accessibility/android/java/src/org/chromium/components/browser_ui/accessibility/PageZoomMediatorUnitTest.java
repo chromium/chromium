@@ -62,14 +62,11 @@ public class PageZoomMediatorUnitTest {
             "Failure in seekbar value method. Expected 1 JNI call but none occurred.";
     private static final String RESET_ZOOM_FAILURE = "Failure to reset to the default zoom level.";
 
-    @Rule
-    public JniMocker mJniMocker = new JniMocker();
+    @Rule public JniMocker mJniMocker = new JniMocker();
 
-    @Mock
-    private WebContents mWebContentsMock;
+    @Mock private WebContents mWebContentsMock;
 
-    @Mock
-    private HostZoomMapImpl.Natives mHostZoomMapMock;
+    @Mock private HostZoomMapImpl.Natives mHostZoomMapMock;
 
     private PropertyModel mModel;
     private PageZoomMediator mMediator;
@@ -80,8 +77,10 @@ public class PageZoomMediatorUnitTest {
 
         FeatureList.TestValues testValues = new FeatureList.TestValues();
         testValues.addFeatureFlagOverride(ContentFeatureList.ACCESSIBILITY_PAGE_ZOOM, true);
-        testValues.addFieldTrialParamOverride(ContentFeatureList.ACCESSIBILITY_PAGE_ZOOM,
-                ContentFeatureList.ACCESSIBILITY_PAGE_ZOOM_PARAM, "true");
+        testValues.addFieldTrialParamOverride(
+                ContentFeatureList.ACCESSIBILITY_PAGE_ZOOM,
+                ContentFeatureList.ACCESSIBILITY_PAGE_ZOOM_PARAM,
+                "true");
         FeatureList.setTestValues(testValues);
 
         mJniMocker.mock(HostZoomMapImplJni.TEST_HOOKS, mHostZoomMapMock);
@@ -218,7 +217,8 @@ public class PageZoomMediatorUnitTest {
                 CURRENT_ZOOM_FAILURE, 100, mModel.get(PageZoomProperties.CURRENT_SEEK_VALUE));
         mMediator.handleSeekBarValueChanged(108);
         verify(mHostZoomMapMock, times(1).description(SEEKBAR_VALUE_FAILURE_NO_JNI))
-                .setZoomLevel(eq(mWebContentsMock),
+                .setZoomLevel(
+                        eq(mWebContentsMock),
                         ArgumentMatchers.doubleThat(argument -> Math.abs(2.51 - argument) <= 0.001),
                         ArgumentMatchers.doubleThat(
                                 argument -> Math.abs(2.51 - argument) <= 0.001));

@@ -46,51 +46,51 @@ import org.chromium.ui.base.WindowAndroid;
 
 import java.util.Map;
 
-/**
- * Unit tests for MessageQueueManager.
- */
+/** Unit tests for MessageQueueManager. */
 @RunWith(BaseRobolectricTestRunner.class)
 @Config(manifest = Config.NONE)
 public class MessageQueueManagerTest {
-    private MessageQueueDelegate mEmptyDelegate = new MessageQueueDelegate() {
-        boolean mIsReadyForShowing;
-        @Override
-        public void onRequestShowing(Runnable callback) {
-            mIsReadyForShowing = true;
-            callback.run();
-        }
+    private MessageQueueDelegate mEmptyDelegate =
+            new MessageQueueDelegate() {
+                boolean mIsReadyForShowing;
 
-        @Override
-        public void onFinishHiding() {
-            mIsReadyForShowing = false;
-        }
+                @Override
+                public void onRequestShowing(Runnable callback) {
+                    mIsReadyForShowing = true;
+                    callback.run();
+                }
 
-        @Override
-        public void onAnimationStart() {}
+                @Override
+                public void onFinishHiding() {
+                    mIsReadyForShowing = false;
+                }
 
-        @Override
-        public void onAnimationEnd() {}
+                @Override
+                public void onAnimationStart() {}
 
-        @Override
-        public boolean isReadyForShowing() {
-            return mIsReadyForShowing;
-        }
+                @Override
+                public void onAnimationEnd() {}
 
-        @Override
-        public boolean isPendingShow() {
-            return false;
-        }
+                @Override
+                public boolean isReadyForShowing() {
+                    return mIsReadyForShowing;
+                }
 
-        @Override
-        public boolean isDestroyed() {
-            return false;
-        }
+                @Override
+                public boolean isPendingShow() {
+                    return false;
+                }
 
-        @Override
-        public boolean isSwitchingScope() {
-            return false;
-        }
-    };
+                @Override
+                public boolean isDestroyed() {
+                    return false;
+                }
+
+                @Override
+                public boolean isSwitchingScope() {
+                    return false;
+                }
+            };
 
     private class EmptyMessageStateHandler implements MessageStateHandler {
         @Override
@@ -154,11 +154,12 @@ public class MessageQueueManagerTest {
                 MessageFeatureList.MESSAGES_FOR_ANDROID_STACKING_ANIMATION, false);
         FeatureList.setTestValues(testValues);
         MessageContainer container = Mockito.mock(MessageContainer.class);
-        doAnswer(invocation -> {
-            Runnable runnable = invocation.getArgument(0);
-            runnable.run();
-            return null;
-        })
+        doAnswer(
+                        invocation -> {
+                            Runnable runnable = invocation.getArgument(0);
+                            runnable.run();
+                            return null;
+                        })
                 .when(container)
                 .runAfterInitialMessageLayout(any(Runnable.class));
         doReturn(false).when(container).isIsInitializingLayout();
@@ -167,9 +168,8 @@ public class MessageQueueManagerTest {
     }
 
     /**
-     * Tests lifecycle of a single message:
-     *   - enqueueMessage() calls show()
-     *   - dismissMessage() calls hide() and dismiss()
+     * Tests lifecycle of a single message: - enqueueMessage() calls show() - dismissMessage() calls
+     * hide() and dismiss()
      */
     @Test
     @SmallTest
@@ -179,10 +179,12 @@ public class MessageQueueManagerTest {
         MessageStateHandler m1 = Mockito.spy(new EmptyMessageStateHandler());
         MessageStateHandler m2 = Mockito.spy(new EmptyMessageStateHandler());
 
-        var enqueued = HistogramWatcher.newSingleRecordWatcher(
-                "Android.Messages.Enqueued", MessageIdentifier.TEST_MESSAGE);
-        var dismissed = HistogramWatcher.newSingleRecordWatcher(
-                "Android.Messages.Dismissed.TestMessage", DismissReason.TIMER);
+        var enqueued =
+                HistogramWatcher.newSingleRecordWatcher(
+                        "Android.Messages.Enqueued", MessageIdentifier.TEST_MESSAGE);
+        var dismissed =
+                HistogramWatcher.newSingleRecordWatcher(
+                        "Android.Messages.Dismissed.TestMessage", DismissReason.TIMER);
         queueManager.enqueueMessage(m1, m1, SCOPE_INSTANCE_ID, false);
         enqueued.assertExpected();
         verify(m1).show(eq(Position.INVISIBLE), eq(Position.FRONT));
@@ -191,10 +193,12 @@ public class MessageQueueManagerTest {
         verify(m1).dismiss(DismissReason.TIMER);
         dismissed.assertExpected();
 
-        enqueued = HistogramWatcher.newSingleRecordWatcher(
-                "Android.Messages.Enqueued", MessageIdentifier.TEST_MESSAGE);
-        dismissed = HistogramWatcher.newSingleRecordWatcher(
-                "Android.Messages.Dismissed.TestMessage", DismissReason.TIMER);
+        enqueued =
+                HistogramWatcher.newSingleRecordWatcher(
+                        "Android.Messages.Enqueued", MessageIdentifier.TEST_MESSAGE);
+        dismissed =
+                HistogramWatcher.newSingleRecordWatcher(
+                        "Android.Messages.Dismissed.TestMessage", DismissReason.TIMER);
         queueManager.enqueueMessage(m2, m2, SCOPE_INSTANCE_ID, false);
         enqueued.assertExpected();
         verify(m2).show(eq(Position.INVISIBLE), eq(Position.FRONT));
@@ -205,9 +209,8 @@ public class MessageQueueManagerTest {
     }
 
     /**
-     * Tests lifecycle of a single message:
-     *   - enqueueMessage() calls show()
-     *   - dismissMessage() calls hide() and dismiss()
+     * Tests lifecycle of a single message: - enqueueMessage() calls show() - dismissMessage() calls
+     * hide() and dismiss()
      */
     @Test
     @SmallTest
@@ -217,9 +220,7 @@ public class MessageQueueManagerTest {
         testEnqueueMessage();
     }
 
-    /**
-     * Test method {@link MessageQueueManager#dismissAllMessages(int)}.
-     */
+    /** Test method {@link MessageQueueManager#dismissAllMessages(int)}. */
     @Test
     @SmallTest
     public void testDismissAllMessages() {
@@ -233,17 +234,21 @@ public class MessageQueueManagerTest {
         queueManager.enqueueMessage(m2, m2, SCOPE_INSTANCE_ID, false);
         queueManager.enqueueMessage(m3, m3, SCOPE_INSTANCE_ID_A, false);
 
-        var dismissed = HistogramWatcher.newBuilder()
-                                .expectIntRecordTimes("Android.Messages.Dismissed.TestMessage",
-                                        DismissReason.ACTIVITY_DESTROYED, 3)
-                                .build();
+        var dismissed =
+                HistogramWatcher.newBuilder()
+                        .expectIntRecordTimes(
+                                "Android.Messages.Dismissed.TestMessage",
+                                DismissReason.ACTIVITY_DESTROYED,
+                                3)
+                        .build();
         queueManager.dismissAllMessages(DismissReason.ACTIVITY_DESTROYED);
         dismissed.assertExpected();
         verify(m1).dismiss(DismissReason.ACTIVITY_DESTROYED);
         verify(m2).dismiss(DismissReason.ACTIVITY_DESTROYED);
         verify(m3).dismiss(DismissReason.ACTIVITY_DESTROYED);
 
-        Assert.assertTrue("#dismissAllMessages should clear the message queue.",
+        Assert.assertTrue(
+                "#dismissAllMessages should clear the message queue.",
                 queueManager.getMessagesForTesting().isEmpty());
     }
 
@@ -255,7 +260,8 @@ public class MessageQueueManagerTest {
         queueManager.setDelegate(mEmptyDelegate);
         MessageStateHandler m1 = Mockito.spy(new EmptyMessageStateHandler());
         when(m1.shouldShow())
-                .thenReturn(true, true,
+                .thenReturn(
+                        true, true,
                         true, // This is called by #getNextMessage after a message is shown.
                         true, false);
 
@@ -279,9 +285,7 @@ public class MessageQueueManagerTest {
         verify(m1).dismiss(DismissReason.TIMER);
     }
 
-    /**
-     * Tests that, with multiple enqueued messages, only one message is shown at a time.
-     */
+    /** Tests that, with multiple enqueued messages, only one message is shown at a time. */
     @Test
     @SmallTest
     public void testOneMessageShownAtATime() {
@@ -351,9 +355,7 @@ public class MessageQueueManagerTest {
                 new MessageScopeChange(SCOPE_TYPE, SCOPE_INSTANCE_ID, ChangeType.ACTIVE));
     }
 
-    /**
-     * Tests that dismissing a message more than once is handled correctly.
-     */
+    /** Tests that dismissing a message more than once is handled correctly. */
     @Test
     @SmallTest
     public void testDismissMessageTwice() {
@@ -366,10 +368,7 @@ public class MessageQueueManagerTest {
         verify(m1, times(1)).dismiss(DismissReason.TIMER);
     }
 
-    /**
-     * Tests that delegate methods are properly called when queue is suspended
-     * and resumed.
-     */
+    /** Tests that delegate methods are properly called when queue is suspended and resumed. */
     @Test
     @SmallTest
     public void testSuspendAndResumeQueue() {
@@ -394,8 +393,7 @@ public class MessageQueueManagerTest {
     }
 
     /**
-     * Tests that delegate methods are properly called to show/hide message
-     * when queue is suspended.
+     * Tests that delegate methods are properly called to show/hide message when queue is suspended.
      */
     @Test
     @SmallTest
@@ -442,9 +440,11 @@ public class MessageQueueManagerTest {
                 new MessageScopeChange(SCOPE_TYPE, inactiveScopeKey, ChangeType.ACTIVE));
         verify(m1, never().description("A message should not be shown on another scope instance."))
                 .show(eq(Position.INVISIBLE), eq(Position.FRONT));
-        verify(m1,
-                never().description(
-                        "A message should never have been shown or hidden before its target scope is activated."))
+        verify(
+                        m1,
+                        never().description(
+                                        "A message should never have been shown or hidden before"
+                                                + " its target scope is activated."))
                 .hide(eq(Position.FRONT), eq(Position.INVISIBLE), anyBoolean());
 
         verify(m2, description("A message should show on its target scope instance."))
@@ -455,22 +455,27 @@ public class MessageQueueManagerTest {
         queueManager.onScopeChange(
                 new MessageScopeChange(SCOPE_TYPE, inactiveScopeKey2, ChangeType.ACTIVE));
 
-        verify(m2,
-                description(
-                        "The message should hide when its target scope instance is deactivated."))
+        verify(
+                        m2,
+                        description(
+                                "The message should hide when its target scope instance is"
+                                        + " deactivated."))
                 .hide(eq(Position.FRONT), eq(Position.INVISIBLE), anyBoolean());
-        verify(m1,
-                description("The message should show when its target scope instance is activated."))
+        verify(
+                        m1,
+                        description(
+                                "The message should show when its target scope instance is"
+                                        + " activated."))
                 .show(eq(Position.INVISIBLE), eq(Position.FRONT));
-        verify(m1,
-                never().description(
-                        "The message should stay on the screen when its target scope instance is activated."))
+        verify(
+                        m1,
+                        never().description(
+                                        "The message should stay on the screen when its target"
+                                                + " scope instance is activated."))
                 .hide(eq(Position.FRONT), eq(Position.INVISIBLE), anyBoolean());
     }
 
-    /**
-     * Test that messages of multiple scope types can be correctly shown.
-     */
+    /** Test that messages of multiple scope types can be correctly shown. */
     @Test
     @SmallTest
     public void testMessageOnMultipleScopeTypes() {
@@ -490,17 +495,23 @@ public class MessageQueueManagerTest {
 
         verify(m1, description("A message should be shown when the associated scope is active"))
                 .show(eq(Position.INVISIBLE), eq(Position.FRONT));
-        verify(m1,
-                never().description(
-                        "The message should not be hidden when its scope is still active"))
+        verify(
+                        m1,
+                        never().description(
+                                        "The message should not be hidden when its scope is still"
+                                                + " active"))
                 .hide(eq(Position.FRONT), eq(Position.INVISIBLE), anyBoolean());
 
-        verify(m2,
-                never().description("The message should not be visible when its scope is inactive"))
+        verify(
+                        m2,
+                        never().description(
+                                        "The message should not be visible when its scope is"
+                                                + " inactive"))
                 .show(eq(Position.INVISIBLE), eq(Position.FRONT));
 
-        queueManager.onScopeChange(new MessageScopeChange(
-                MessageScopeType.NAVIGATION, navScopeKey, ChangeType.DESTROY));
+        queueManager.onScopeChange(
+                new MessageScopeChange(
+                        MessageScopeType.NAVIGATION, navScopeKey, ChangeType.DESTROY));
 
         verify(m1, description("The message should be hidden when its scope is inactive"))
                 .hide(eq(Position.FRONT), eq(Position.INVISIBLE), anyBoolean());
@@ -511,8 +522,9 @@ public class MessageQueueManagerTest {
         verify(m2, description("A message should be shown when the associated scope is active"))
                 .show(eq(Position.INVISIBLE), eq(Position.FRONT));
 
-        queueManager.onScopeChange(new MessageScopeChange(
-                MessageScopeType.WINDOW, windowScopeKey, ChangeType.DESTROY));
+        queueManager.onScopeChange(
+                new MessageScopeChange(
+                        MessageScopeType.WINDOW, windowScopeKey, ChangeType.DESTROY));
 
         verify(m2, description("The message should be hidden when its scope is inactive"))
                 .hide(eq(Position.FRONT), eq(Position.INVISIBLE), anyBoolean());
@@ -535,15 +547,15 @@ public class MessageQueueManagerTest {
         queueManager.onScopeChange(
                 new MessageScopeChange(SCOPE_TYPE, SCOPE_INSTANCE_ID, ChangeType.INACTIVE));
 
-        verify(m1,
-                description(
-                        "A message should be hidden with animation when animationTransition is set true."))
+        verify(
+                        m1,
+                        description(
+                                "A message should be hidden with animation when animationTransition"
+                                        + " is set true."))
                 .hide(eq(Position.FRONT), eq(Position.INVISIBLE), eq(true));
     }
 
-    /**
-     * Test that the message is correctly dismissed when the scope is destroyed.
-     */
+    /** Test that the message is correctly dismissed when the scope is destroyed. */
     @Test
     @SmallTest
     public void testMessageDismissedOnScopeDestroy() {
@@ -553,18 +565,26 @@ public class MessageQueueManagerTest {
         MessageStateHandler m1 = Mockito.spy(new EmptyMessageStateHandler());
 
         queueManager.enqueueMessage(m1, m1, SCOPE_INSTANCE_ID, false);
-        verify(m1,
-                description("The message should show when its target scope instance is activated."))
+        verify(
+                        m1,
+                        description(
+                                "The message should show when its target scope instance is"
+                                        + " activated."))
                 .show(eq(Position.INVISIBLE), eq(Position.FRONT));
 
         queueManager.onScopeChange(
                 new MessageScopeChange(SCOPE_TYPE, SCOPE_INSTANCE_ID, ChangeType.DESTROY));
-        verify(m1,
-                description("The message should hide when its target scope instance is destroyed."))
+        verify(
+                        m1,
+                        description(
+                                "The message should hide when its target scope instance is"
+                                        + " destroyed."))
                 .hide(eq(Position.FRONT), eq(Position.INVISIBLE), anyBoolean());
-        verify(m1,
-                description(
-                        "Message should be dismissed when its target scope instance is destroyed."))
+        verify(
+                        m1,
+                        description(
+                                "Message should be dismissed when its target scope instance is"
+                                        + " destroyed."))
                 .dismiss(anyInt());
     }
 
@@ -630,17 +650,17 @@ public class MessageQueueManagerTest {
         // Suspend queue before onStartShowing is finished.
         queueManager.suspend();
 
-        verify(m1,
-                times(1).description(
-                        "Message should not show again before onStartShowing is finished"))
+        verify(
+                        m1,
+                        times(1).description(
+                                        "Message should not show again before onStartShowing is"
+                                                + " finished"))
                 .show(eq(Position.INVISIBLE), eq(Position.FRONT));
         verify(m1, times(1).description("Message should not call #hide if it is not shown before"))
                 .hide(eq(Position.FRONT), eq(Position.INVISIBLE), anyBoolean());
     }
 
-    /**
-     * Test scope change controller is properly called when message is enqueued and dismissed.
-     */
+    /** Test scope change controller is properly called when message is enqueued and dismissed. */
     @Test
     @SmallTest
     public void testScopeChangeControllerInvoked() {
@@ -652,52 +672,66 @@ public class MessageQueueManagerTest {
         MessageStateHandler m3 = Mockito.spy(new EmptyMessageStateHandler());
 
         queueManager.enqueueMessage(m1, m1, SCOPE_INSTANCE_ID, false);
-        verify(controller,
-                description(
-                        "ScopeChangeController should be notified when the queue of scope gets its first message"))
+        verify(
+                        controller,
+                        description(
+                                "ScopeChangeController should be notified when the queue of scope"
+                                        + " gets its first message"))
                 .firstMessageEnqueued(SCOPE_INSTANCE_ID);
 
         queueManager.enqueueMessage(m2, m2, SCOPE_INSTANCE_ID, false);
-        verify(controller,
-                times(1).description(
-                        "ScopeChangeController should be notified **only** when the queue of scope gets its first message"))
+        verify(
+                        controller,
+                        times(1).description(
+                                        "ScopeChangeController should be notified **only** when the"
+                                                + " queue of scope gets its first message"))
                 .firstMessageEnqueued(SCOPE_INSTANCE_ID);
 
         queueManager.enqueueMessage(m3, m3, SCOPE_INSTANCE_ID_A, false);
-        verify(controller,
-                times(1).description(
-                        "ScopeChangeController should be notified **only** when the queue of scope gets its first message"))
+        verify(
+                        controller,
+                        times(1).description(
+                                        "ScopeChangeController should be notified **only** when the"
+                                                + " queue of scope gets its first message"))
                 .firstMessageEnqueued(SCOPE_INSTANCE_ID);
-        verify(controller,
-                description(
-                        "ScopeChangeController should be notified when the queue of scope gets its first message"))
+        verify(
+                        controller,
+                        description(
+                                "ScopeChangeController should be notified when the queue of scope"
+                                        + " gets its first message"))
                 .firstMessageEnqueued(SCOPE_INSTANCE_ID_A);
 
         queueManager.dismissMessage(m3, DismissReason.TIMER);
-        verify(controller,
-                never().description(
-                        "ScopeChangeController should not be notified when the queue of scope is not empty."))
+        verify(
+                        controller,
+                        never().description(
+                                        "ScopeChangeController should not be notified when the"
+                                                + " queue of scope is not empty."))
                 .lastMessageDismissed(SCOPE_INSTANCE_ID);
-        verify(controller,
-                description(
-                        "ScopeChangeController should be notified when the queue of scope becomes empty."))
+        verify(
+                        controller,
+                        description(
+                                "ScopeChangeController should be notified when the queue of scope"
+                                        + " becomes empty."))
                 .lastMessageDismissed(SCOPE_INSTANCE_ID_A);
 
         queueManager.dismissMessage(m1, DismissReason.TIMER);
-        verify(controller,
-                never().description(
-                        "ScopeChangeController should not be notified when the queue of scope is not empty."))
+        verify(
+                        controller,
+                        never().description(
+                                        "ScopeChangeController should not be notified when the"
+                                                + " queue of scope is not empty."))
                 .lastMessageDismissed(SCOPE_INSTANCE_ID);
         queueManager.dismissMessage(m2, DismissReason.TIMER);
-        verify(controller,
-                description(
-                        "ScopeChangeController should be notified when the queue of scope is empty."))
+        verify(
+                        controller,
+                        description(
+                                "ScopeChangeController should be notified when the queue of scope"
+                                        + " is empty."))
                 .lastMessageDismissed(SCOPE_INSTANCE_ID);
     }
 
-    /**
-     * Test that the higher priority message is displayed when being enqueued.
-     */
+    /** Test that the higher priority message is displayed when being enqueued. */
     @Test
     @SmallTest
     public void testEnqueueHigherPriorityMessage() {
@@ -718,9 +752,7 @@ public class MessageQueueManagerTest {
         verify(m1, times(2)).show(eq(Position.INVISIBLE), eq(Position.FRONT));
     }
 
-    /**
-     * Test that {@link MessageQueueManager#getNextMessages()} returns correct list.
-     */
+    /** Test that {@link MessageQueueManager#getNextMessages()} returns correct list. */
     @Test
     @SmallTest
     public void testGetNextTwoMessages() {
@@ -753,42 +785,50 @@ public class MessageQueueManagerTest {
     public void testIsLowerPriority() {
         MessageQueueManager queueManager = new MessageQueueManager(mAnimationCoordinator);
         // highPriority first but id is larger.
-        Assert.assertFalse("High-priority message has a higher priority.",
+        Assert.assertFalse(
+                "High-priority message has a higher priority.",
                 queueManager.isLowerPriority(
                         buildMessageState(true, 2), buildMessageState(false, 1)));
 
         // highPriority first but id is smaller.
-        Assert.assertFalse("High-priority message has a higher priority.",
+        Assert.assertFalse(
+                "High-priority message has a higher priority.",
                 queueManager.isLowerPriority(
                         buildMessageState(true, 2), buildMessageState(false, 3)));
 
         // highPriority second but id is larger.
-        Assert.assertTrue("High-priority message has a higher priority.",
+        Assert.assertTrue(
+                "High-priority message has a higher priority.",
                 queueManager.isLowerPriority(
                         buildMessageState(false, 2), buildMessageState(true, 3)));
 
         // highPriority second but id is smaller.
-        Assert.assertTrue("High-priority message has a higher priority.",
+        Assert.assertTrue(
+                "High-priority message has a higher priority.",
                 queueManager.isLowerPriority(
                         buildMessageState(false, 2), buildMessageState(true, 1)));
 
         // both high priority. Smaller id has a higher priority
-        Assert.assertTrue("Message with a smaller id has a higher priority.",
+        Assert.assertTrue(
+                "Message with a smaller id has a higher priority.",
                 queueManager.isLowerPriority(
                         buildMessageState(true, 2), buildMessageState(true, 1)));
 
         // both high priority. Smaller id has a higher priority
-        Assert.assertFalse("Message with a smaller id has a higher priority.",
+        Assert.assertFalse(
+                "Message with a smaller id has a higher priority.",
                 queueManager.isLowerPriority(
                         buildMessageState(true, 2), buildMessageState(true, 3)));
 
         // both normal priority. Smaller id has a higher priority
-        Assert.assertTrue("Message with a smaller id has a higher priority.",
+        Assert.assertTrue(
+                "Message with a smaller id has a higher priority.",
                 queueManager.isLowerPriority(
                         buildMessageState(false, 2), buildMessageState(false, 1)));
 
         // both normal priority. Smaller id has a higher priority
-        Assert.assertFalse("Message with a smaller id has a higher priority.",
+        Assert.assertFalse(
+                "Message with a smaller id has a higher priority.",
                 queueManager.isLowerPriority(
                         buildMessageState(false, 2), buildMessageState(false, 3)));
     }

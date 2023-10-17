@@ -21,22 +21,22 @@ import org.junit.runner.RunWith;
 
 import org.chromium.net.UrlRequest;
 
-/**
- * Tests scenario when an app doesn't contain the native Cronet implementation.
- */
+/** Tests scenario when an app doesn't contain the native Cronet implementation. */
 @RunWith(AndroidJUnit4.class)
 public class PlatformOnlyEngineTest {
     private String mURL;
     private TestSupport.TestServer mServer;
 
-    @Rule
-    public CronetSmokeTestRule mRule = new CronetSmokeTestRule();
+    @Rule public CronetSmokeTestRule mRule = new CronetSmokeTestRule();
 
     @Before
     public void setUp() throws Exception {
         // Java-only implementation of the Cronet engine only supports Http/1 protocol.
-        mServer = mRule.getTestSupport().createTestServer(
-                ApplicationProvider.getApplicationContext(), TestSupport.Protocol.HTTP1);
+        mServer =
+                mRule.getTestSupport()
+                        .createTestServer(
+                                ApplicationProvider.getApplicationContext(),
+                                TestSupport.Protocol.HTTP1);
         assertThat(mServer.start()).isTrue();
         mURL = mServer.getSuccessURL();
     }
@@ -46,17 +46,16 @@ public class PlatformOnlyEngineTest {
         mServer.shutdown();
     }
 
-    /**
-     * Test a successful response when a request is sent by the Java Cronet Engine.
-     */
+    /** Test a successful response when a request is sent by the Java Cronet Engine. */
     @Test
     @SmallTest
     public void testSuccessfulResponse() {
         mRule.initCronetEngine();
         assertJavaEngine(mRule.getCronetEngine());
         SmokeTestRequestCallback callback = new SmokeTestRequestCallback();
-        UrlRequest.Builder requestBuilder = mRule.getCronetEngine().newUrlRequestBuilder(
-                mURL, callback, callback.getExecutor());
+        UrlRequest.Builder requestBuilder =
+                mRule.getCronetEngine()
+                        .newUrlRequestBuilder(mURL, callback, callback.getExecutor());
         requestBuilder.build().start();
         callback.blockForDone();
         assertSuccessfulNonEmptyResponse(callback, mURL);

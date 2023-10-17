@@ -29,6 +29,7 @@ import java.util.Objects;
 @Config(manifest = Config.NONE)
 public class LegalMessageLineTest {
     private static final String EXAMPLE = "example";
+
     @Test
     public void testConstructor_setsText() {
         LegalMessageLine line = new LegalMessageLine(EXAMPLE);
@@ -45,10 +46,12 @@ public class LegalMessageLineTest {
 
     @Test
     public void testConstructorWithLinks_addsLinks() {
-        LegalMessageLine line = new LegalMessageLine(
-                EXAMPLE, Arrays.asList(new Link(/*start=*/1, /*end=*/2, /*url=*/"3")));
+        LegalMessageLine line =
+                new LegalMessageLine(
+                        EXAMPLE,
+                        Arrays.asList(new Link(/* start= */ 1, /* end= */ 2, /* url= */ "3")));
 
-        assertThat(line.links, contains(equalToLink(/*start=*/1, /*end=*/2, /*url=*/"3")));
+        assertThat(line.links, contains(equalToLink(/* start= */ 1, /* end= */ 2, /* url= */ "3")));
     }
 
     @Test
@@ -72,7 +75,7 @@ public class LegalMessageLineTest {
                 LegalMessageLine.addToList_createListIfNull(null, "example");
 
         assertThat(list, notNullValue());
-        assertThat(list, contains(equalToLegalMessageLine("example", /*link=*/null)));
+        assertThat(list, contains(equalToLegalMessageLine("example", /* link= */ null)));
     }
 
     @Test
@@ -83,9 +86,11 @@ public class LegalMessageLineTest {
         list = LegalMessageLine.addToList_createListIfNull(list, "second");
 
         assertThat(list, notNullValue());
-        assertThat(list,
-                contains(equalToLegalMessageLine("first", /*link=*/null),
-                        equalToLegalMessageLine("second", /*link=*/null)));
+        assertThat(
+                list,
+                contains(
+                        equalToLegalMessageLine("first", /* link= */ null),
+                        equalToLegalMessageLine("second", /* link= */ null)));
     }
 
     @Test
@@ -96,9 +101,11 @@ public class LegalMessageLineTest {
         LegalMessageLine.addLinkToLastInList(list, 0, 1, "https://example.test");
 
         assertThat(list, notNullValue());
-        assertThat(list,
-                contains(equalToLegalMessageLine(
-                        "example", new Link(0, 1, "https://example.test"))));
+        assertThat(
+                list,
+                contains(
+                        equalToLegalMessageLine(
+                                "example", new Link(0, 1, "https://example.test"))));
     }
 
     private static Matcher<Link> equalToLink(int start, int end, String url) {
@@ -126,7 +133,8 @@ public class LegalMessageLineTest {
 
                 if (line.links.size() != 1) return false;
 
-                return link.start == line.links.get(0).start && link.end == line.links.get(0).end
+                return link.start == line.links.get(0).start
+                        && link.end == line.links.get(0).end
                         && Objects.equals(link.url, line.links.get(0).url);
             }
 
@@ -135,8 +143,10 @@ public class LegalMessageLineTest {
                 if (link == null) {
                     description.appendText(String.format("LegalMessageLine(%s)", text));
                 } else {
-                    description.appendText(String.format("LegalMessageLine(%s, Link(%s, %s, %s))",
-                            text, link.start, link.end, link.url));
+                    description.appendText(
+                            String.format(
+                                    "LegalMessageLine(%s, Link(%s, %s, %s))",
+                                    text, link.start, link.end, link.url));
                 }
             }
         };

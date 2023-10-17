@@ -42,19 +42,19 @@ import java.lang.ref.WeakReference;
 
 /** A test for SecurePaymentConfirmationNoMatchingCred. */
 @RunWith(BaseRobolectricTestRunner.class)
-@Config(manifest = Config.NONE,
-        shadows = {SecurePaymentConfirmationNoMatchingCredTest.ShadowBottomSheetControllerProvider
-                           .class})
+@Config(
+        manifest = Config.NONE,
+        shadows = {
+            SecurePaymentConfirmationNoMatchingCredTest.ShadowBottomSheetControllerProvider.class
+        })
 public class SecurePaymentConfirmationNoMatchingCredTest {
     private static final long IGNORED_INPUT_DELAY =
             InputProtector.POTENTIALLY_UNINTENDED_INPUT_THRESHOLD - 100;
     private static final long SAFE_INPUT_DELAY =
             InputProtector.POTENTIALLY_UNINTENDED_INPUT_THRESHOLD;
 
-    @Rule
-    public MockitoRule mMockitoRule = MockitoJUnit.rule().strictness(Strictness.WARN);
-    @Rule
-    public JniMocker mJniMocker = new JniMocker();
+    @Rule public MockitoRule mMockitoRule = MockitoJUnit.rule().strictness(Strictness.WARN);
+    @Rule public JniMocker mJniMocker = new JniMocker();
 
     @Mock(answer = Answers.RETURNS_DEEP_STUBS)
     private WebContents mWebContents;
@@ -98,15 +98,17 @@ public class SecurePaymentConfirmationNoMatchingCredTest {
                 .formatStringUrlForSecurityDisplay(
                         Mockito.any(), Mockito.eq(SchemeDisplay.OMIT_CRYPTOGRAPHIC));
 
-        mResponseCallback = () -> {
-            mUserResponded = true;
-        };
-        mOptOutCallback = () -> {
-            mUserOptedOut = true;
-        };
+        mResponseCallback =
+                () -> {
+                    mUserResponded = true;
+                };
+        mOptOutCallback =
+                () -> {
+                    mUserOptedOut = true;
+                };
 
         ShadowBottomSheetControllerProvider.setBottomSheetController(
-                createBottomSheetController(/*requestShowContentResponse=*/true));
+                createBottomSheetController(/* requestShowContentResponse= */ true));
 
         mClock = new FakeClock();
     }
@@ -134,7 +136,7 @@ public class SecurePaymentConfirmationNoMatchingCredTest {
     }
 
     private boolean show() {
-        return show(/*enableOptOut=*/false);
+        return show(/* enableOptOut= */ false);
     }
 
     private boolean show(boolean enableOptOut) {
@@ -173,7 +175,7 @@ public class SecurePaymentConfirmationNoMatchingCredTest {
     @Feature({"Payments"})
     public void testShowRendersOptOutWhenRequested() {
         createNoMatchingCredController();
-        show(/*enableOptOut=*/true);
+        show(/* enableOptOut= */ true);
         SecurePaymentConfirmationNoMatchingCredView view = mNoMatchingCredController.getView();
         Assert.assertNotNull(view);
         Assert.assertEquals(View.VISIBLE, view.mOptOutText.getVisibility());
@@ -195,7 +197,7 @@ public class SecurePaymentConfirmationNoMatchingCredTest {
     @Feature({"Payments"})
     public void testShowOnOptOut() {
         createNoMatchingCredController();
-        show(/*enableOptOut=*/true);
+        show(/* enableOptOut= */ true);
         mClock.advanceCurrentTimeMillis(SAFE_INPUT_DELAY);
         SecurePaymentConfirmationNoMatchingCredView credView = mNoMatchingCredController.getView();
         credView.mOptOutText.getClickableSpans()[0].onClick(credView.mOptOutText);
@@ -207,7 +209,7 @@ public class SecurePaymentConfirmationNoMatchingCredTest {
     @Feature({"Payments"})
     public void testUnintentedInput() {
         createNoMatchingCredController();
-        show(/*enableOptOut=*/true);
+        show(/* enableOptOut= */ true);
 
         // Clicking immediately is prevented.
         mNoMatchingCredController.getView().mOkButton.performClick();
@@ -242,7 +244,7 @@ public class SecurePaymentConfirmationNoMatchingCredTest {
     public void testRequestShowContentFalse() {
         createNoMatchingCredController();
         ShadowBottomSheetControllerProvider.setBottomSheetController(
-                createBottomSheetController(/*requestShowContentResponse=*/false));
+                createBottomSheetController(/* requestShowContentResponse= */ false));
         Assert.assertFalse(show());
         Assert.assertTrue(mNoMatchingCredController.isHidden());
     }

@@ -35,20 +35,19 @@ import org.chromium.ui.test.util.DisableAnimationsTestRule;
 
 import java.util.concurrent.Callable;
 
-/**
- * Tests for the PromoDialog and PromoDialogLayout.
- */
+/** Tests for the PromoDialog and PromoDialogLayout. */
 @RunWith(BaseJUnit4ClassRunner.class)
 @Batch(Batch.UNIT_TESTS)
 public class PromoDialogTest {
     @ClassRule
     public static DisableAnimationsTestRule disableAnimationsRule = new DisableAnimationsTestRule();
+
     @ClassRule
     public static BaseActivityTestRule<BlankUiTestActivity> activityTestRule =
             new BaseActivityTestRule<>(BlankUiTestActivity.class);
 
     /**
-     * Creates a PromoDialog.  Doesn't call {@link PromoDialog#show} because there is no Window to
+     * Creates a PromoDialog. Doesn't call {@link PromoDialog#show} because there is no Window to
      * attach them to, but it does create them and inflate the layouts.
      */
     private static class PromoDialogWrapper {
@@ -62,53 +61,62 @@ public class PromoDialogTest {
         PromoDialogWrapper(final Activity activity, final DialogParams dialogParams)
                 throws Exception {
             mDialogParams = dialogParams;
-            dialog = TestThreadUtils.runOnUiThreadBlocking(new Callable<PromoDialog>() {
-                @Override
-                public PromoDialog call() {
-                    PromoDialog dialog = new PromoDialog(activity) {
-                        @Override
-                        public DialogParams getDialogParams() {
-                            return mDialogParams;
-                        }
+            dialog =
+                    TestThreadUtils.runOnUiThreadBlocking(
+                            new Callable<PromoDialog>() {
+                                @Override
+                                public PromoDialog call() {
+                                    PromoDialog dialog =
+                                            new PromoDialog(activity) {
+                                                @Override
+                                                public DialogParams getDialogParams() {
+                                                    return mDialogParams;
+                                                }
 
-                        @Override
-                        public void onDismiss(DialogInterface dialog) {}
+                                                @Override
+                                                public void onDismiss(DialogInterface dialog) {}
 
-                        @Override
-                        public void onClick(View view) {
-                            if (view.getId() == R.id.button_primary) {
-                                primaryCallback.notifyCalled();
-                            } else if (view.getId() == R.id.button_secondary) {
-                                secondaryCallback.notifyCalled();
-                            }
-                        }
-                    };
-                    dialog.onCreate(null);
-                    return dialog;
-                }
-            });
-            dialogLayout = TestThreadUtils.runOnUiThreadBlocking(new Callable<PromoDialogLayout>() {
-                @Override
-                public PromoDialogLayout call() {
-                    PromoDialogLayout promoDialogLayout =
-                            (PromoDialogLayout) dialog.getWindow().getDecorView().findViewById(
-                                    R.id.promo_dialog_layout);
-                    return promoDialogLayout;
-                }
-            });
+                                                @Override
+                                                public void onClick(View view) {
+                                                    if (view.getId() == R.id.button_primary) {
+                                                        primaryCallback.notifyCalled();
+                                                    } else if (view.getId()
+                                                            == R.id.button_secondary) {
+                                                        secondaryCallback.notifyCalled();
+                                                    }
+                                                }
+                                            };
+                                    dialog.onCreate(null);
+                                    return dialog;
+                                }
+                            });
+            dialogLayout =
+                    TestThreadUtils.runOnUiThreadBlocking(
+                            new Callable<PromoDialogLayout>() {
+                                @Override
+                                public PromoDialogLayout call() {
+                                    PromoDialogLayout promoDialogLayout =
+                                            (PromoDialogLayout)
+                                                    dialog.getWindow()
+                                                            .getDecorView()
+                                                            .findViewById(R.id.promo_dialog_layout);
+                                    return promoDialogLayout;
+                                }
+                            });
             // Measure the PromoDialogLayout so that the controls have some size.
             triggerDialogLayoutMeasure(500, 1000);
         }
 
-        /**
-         * Trigger a {@link View#measure(int, int)} on the promo dialog layout.
-         */
+        /** Trigger a {@link View#measure(int, int)} on the promo dialog layout. */
         public void triggerDialogLayoutMeasure(final int width, final int height) {
-            TestThreadUtils.runOnUiThreadBlocking(() -> {
-                int widthMeasureSpec = MeasureSpec.makeMeasureSpec(width, MeasureSpec.EXACTLY);
-                int heightMeasureSpec = MeasureSpec.makeMeasureSpec(height, MeasureSpec.EXACTLY);
-                dialogLayout.measure(widthMeasureSpec, heightMeasureSpec);
-            });
+            TestThreadUtils.runOnUiThreadBlocking(
+                    () -> {
+                        int widthMeasureSpec =
+                                MeasureSpec.makeMeasureSpec(width, MeasureSpec.EXACTLY);
+                        int heightMeasureSpec =
+                                MeasureSpec.makeMeasureSpec(height, MeasureSpec.EXACTLY);
+                        dialogLayout.measure(widthMeasureSpec, heightMeasureSpec);
+                    });
         }
     }
 
@@ -118,7 +126,9 @@ public class PromoDialogTest {
     public static void setupSuite() {
         activityTestRule.launchActivity(null);
         TestThreadUtils.runOnUiThreadBlocking(
-                () -> { sActivity = activityTestRule.getActivity(); });
+                () -> {
+                    sActivity = activityTestRule.getActivity();
+                });
     }
 
     @Test
@@ -234,19 +244,21 @@ public class PromoDialogTest {
                 (LinearLayout) promoDialogLayout.findViewById(R.id.full_promo_content);
 
         // Tall screen should keep the illustration above everything else.
-        TestThreadUtils.runOnUiThreadBlocking(() -> {
-            int widthMeasureSpec = MeasureSpec.makeMeasureSpec(500, MeasureSpec.EXACTLY);
-            int heightMeasureSpec = MeasureSpec.makeMeasureSpec(1000, MeasureSpec.EXACTLY);
-            promoDialogLayout.measure(widthMeasureSpec, heightMeasureSpec);
-        });
+        TestThreadUtils.runOnUiThreadBlocking(
+                () -> {
+                    int widthMeasureSpec = MeasureSpec.makeMeasureSpec(500, MeasureSpec.EXACTLY);
+                    int heightMeasureSpec = MeasureSpec.makeMeasureSpec(1000, MeasureSpec.EXACTLY);
+                    promoDialogLayout.measure(widthMeasureSpec, heightMeasureSpec);
+                });
         Assert.assertEquals(LinearLayout.VERTICAL, flippableLayout.getOrientation());
 
         // Wide screen should move the image left.
-        TestThreadUtils.runOnUiThreadBlocking(() -> {
-            int widthMeasureSpec = MeasureSpec.makeMeasureSpec(1000, MeasureSpec.EXACTLY);
-            int heightMeasureSpec = MeasureSpec.makeMeasureSpec(500, MeasureSpec.EXACTLY);
-            promoDialogLayout.measure(widthMeasureSpec, heightMeasureSpec);
-        });
+        TestThreadUtils.runOnUiThreadBlocking(
+                () -> {
+                    int widthMeasureSpec = MeasureSpec.makeMeasureSpec(1000, MeasureSpec.EXACTLY);
+                    int heightMeasureSpec = MeasureSpec.makeMeasureSpec(500, MeasureSpec.EXACTLY);
+                    promoDialogLayout.measure(widthMeasureSpec, heightMeasureSpec);
+                });
         Assert.assertEquals(LinearLayout.HORIZONTAL, flippableLayout.getOrientation());
     }
 
@@ -267,13 +279,17 @@ public class PromoDialogTest {
 
         // Only the primary button should register a click.
         TestThreadUtils.runOnUiThreadBlocking(
-                () -> { promoDialogLayout.findViewById(R.id.button_primary).performClick(); });
+                () -> {
+                    promoDialogLayout.findViewById(R.id.button_primary).performClick();
+                });
         Assert.assertEquals(1, wrapper.primaryCallback.getCallCount());
         Assert.assertEquals(0, wrapper.secondaryCallback.getCallCount());
 
         // Only the secondary button should register a click.
         TestThreadUtils.runOnUiThreadBlocking(
-                () -> { promoDialogLayout.findViewById(R.id.button_secondary).performClick(); });
+                () -> {
+                    promoDialogLayout.findViewById(R.id.button_secondary).performClick();
+                });
         Assert.assertEquals(1, wrapper.primaryCallback.getCallCount());
         Assert.assertEquals(1, wrapper.secondaryCallback.getCallCount());
     }

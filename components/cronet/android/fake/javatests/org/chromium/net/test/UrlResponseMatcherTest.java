@@ -14,16 +14,16 @@ import androidx.test.filters.SmallTest;
 import org.junit.Test;
 import org.junit.runner.RunWith;
 
-/**
- * Test functionality of UrlResponseMatcher.
- */
+/** Test functionality of UrlResponseMatcher. */
 @RunWith(AndroidJUnit4.class)
 public class UrlResponseMatcherTest {
     @Test
     @SmallTest
     public void testCheckUrlNotNull() {
-        NullPointerException e = assertThrows(NullPointerException.class,
-                () -> new UrlResponseMatcher(null, new FakeUrlResponse.Builder().build()));
+        NullPointerException e =
+                assertThrows(
+                        NullPointerException.class,
+                        () -> new UrlResponseMatcher(null, new FakeUrlResponse.Builder().build()));
         assertThat(e).hasMessageThat().isEqualTo("URL is required.");
     }
 

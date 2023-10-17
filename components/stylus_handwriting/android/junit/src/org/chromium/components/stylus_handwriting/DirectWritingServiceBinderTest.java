@@ -27,20 +27,14 @@ import org.robolectric.annotation.Config;
 import org.chromium.base.test.BaseRobolectricTestRunner;
 import org.chromium.base.test.util.Feature;
 
-/**
- * Unit tests for {@link DirectWritingServiceBinder}.
- */
+/** Unit tests for {@link DirectWritingServiceBinder}. */
 @RunWith(BaseRobolectricTestRunner.class)
 @Config(manifest = Config.NONE)
 public class DirectWritingServiceBinderTest {
-    @Spy
-    private DirectWritingServiceBinder mDwServiceBinder;
-    @Mock
-    private DirectWritingServiceBinder.DirectWritingTriggerCallback mTriggerCallback;
-    @Mock
-    private IDirectWritingService mRemoteDwService;
-    @Mock
-    private DirectWritingServiceCallback mDwCallback;
+    @Spy private DirectWritingServiceBinder mDwServiceBinder;
+    @Mock private DirectWritingServiceBinder.DirectWritingTriggerCallback mTriggerCallback;
+    @Mock private IDirectWritingService mRemoteDwService;
+    @Mock private DirectWritingServiceCallback mDwCallback;
 
     private Context mContext;
 
@@ -74,7 +68,8 @@ public class DirectWritingServiceBinderTest {
         mDwServiceBinder.setRemoteServiceForTest(mRemoteDwService);
         mDwServiceBinder.registerCallback();
         verify(mRemoteDwService)
-                .registerCallback(eq(mDwCallback),
+                .registerCallback(
+                        eq(mDwCallback),
                         contains(IDirectWritingService.VALUE_SERVICE_HOST_SOURCE_WEBVIEW));
     }
 

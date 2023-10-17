@@ -3,6 +3,7 @@
 // found in the LICENSE file.
 
 package org.chromium.components.browser_ui.widget;
+
 import static org.mockito.ArgumentMatchers.any;
 import static org.mockito.Mockito.doReturn;
 import static org.mockito.Mockito.never;
@@ -38,9 +39,7 @@ import org.chromium.components.browser_ui.widget.InsetObserverView.WindowInsetsC
 
 import java.util.Collections;
 
-/**
- * Tests for {@link InsetObserverView} class.
- */
+/** Tests for {@link InsetObserverView} class. */
 @RunWith(BaseRobolectricTestRunner.class)
 @Config(manifest = Config.NONE)
 public class InsetObserverViewTest {
@@ -50,15 +49,11 @@ public class InsetObserverViewTest {
     /** The rect values if there is no cutout. */
     private static final Rect NO_CUTOUT_RECT = new Rect(0, 0, 0, 0);
 
-    @Mock
-    private InsetObserverView.WindowInsetObserver mObserver;
+    @Mock private InsetObserverView.WindowInsetObserver mObserver;
 
-    @Mock
-    private WindowInsets mInsets;
-    @Mock
-    private WindowInsetsConsumer mInsetsConsumer;
-    @Mock
-    private WindowInsetsAnimationListener mInsetsAnimationListener;
+    @Mock private WindowInsets mInsets;
+    @Mock private WindowInsetsConsumer mInsetsConsumer;
+    @Mock private WindowInsetsAnimationListener mInsetsAnimationListener;
 
     private Activity mActivity;
 
@@ -132,7 +127,8 @@ public class InsetObserverViewTest {
                 .onApplyWindowInsets(
                         mView, WindowInsetsCompat.toWindowInsetsCompat(windowInsets, mView));
         verify(mObserver, times(1))
-                .onInsetChanged(modifiedInsets.getSystemWindowInsetLeft(),
+                .onInsetChanged(
+                        modifiedInsets.getSystemWindowInsetLeft(),
                         modifiedInsets.getSystemWindowInsetTop(),
                         modifiedInsets.getSystemWindowInsetRight(),
                         modifiedInsets.getSystemWindowInsetBottom());

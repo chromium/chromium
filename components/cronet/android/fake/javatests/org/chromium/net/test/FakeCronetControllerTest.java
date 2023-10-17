@@ -27,9 +27,7 @@ import java.util.AbstractMap;
 import java.util.List;
 import java.util.Map;
 
-/**
- * Test functionality of {@link FakeCronetController}.
- */
+/** Test functionality of {@link FakeCronetController}. */
 @RunWith(AndroidJUnit4.class)
 public class FakeCronetControllerTest {
     Context mContext;
@@ -102,10 +100,13 @@ public class FakeCronetControllerTest {
     public void testAddNonFakeCronetEngineNotAllowed() {
         CronetEngine javaEngine = new JavaCronetEngineBuilderImpl(mContext).build();
 
-        IllegalArgumentException e = assertThrows(IllegalArgumentException.class,
-                () -> FakeCronetController.getControllerForFakeEngine(javaEngine));
-        assertThat(e).hasMessageThat().isEqualTo(
-                "Provided CronetEngine is not a fake CronetEngine");
+        IllegalArgumentException e =
+                assertThrows(
+                        IllegalArgumentException.class,
+                        () -> FakeCronetController.getControllerForFakeEngine(javaEngine));
+        assertThat(e)
+                .hasMessageThat()
+                .isEqualTo("Provided CronetEngine is not a fake CronetEngine");
     }
 
     @Test
@@ -220,10 +221,13 @@ public class FakeCronetControllerTest {
     @SmallTest
     public void testAddErrorResponseWithNonErrorCodeThrowsException() {
         int nonErrorCode = 200;
-        IllegalArgumentException e = assertThrows(IllegalArgumentException.class,
-                () -> mFakeCronetController.addHttpErrorResponse(nonErrorCode, "url"));
-        assertThat(e).hasMessageThat().isEqualTo(
-                "Expected HTTP error code (code >= 400), but was: " + nonErrorCode);
+        IllegalArgumentException e =
+                assertThrows(
+                        IllegalArgumentException.class,
+                        () -> mFakeCronetController.addHttpErrorResponse(nonErrorCode, "url"));
+        assertThat(e)
+                .hasMessageThat()
+                .isEqualTo("Expected HTTP error code (code >= 400), but was: " + nonErrorCode);
     }
 
     @Test

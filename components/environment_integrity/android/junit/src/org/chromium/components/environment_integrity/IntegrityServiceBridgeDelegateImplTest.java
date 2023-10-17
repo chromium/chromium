@@ -46,7 +46,8 @@ public class IntegrityServiceBridgeDelegateImplTest {
         } catch (ExecutionException e) {
             Assert.assertNotNull(e.getCause());
             Assert.assertTrue(e.getCause() instanceof IntegrityException);
-            Assert.assertEquals(IntegrityResponse.API_NOT_AVAILABLE,
+            Assert.assertEquals(
+                    IntegrityResponse.API_NOT_AVAILABLE,
                     ((IntegrityException) e.getCause()).getErrorCode());
         } catch (InterruptedException | TimeoutException e) {
             Assert.fail(e.getMessage());
@@ -64,7 +65,8 @@ public class IntegrityServiceBridgeDelegateImplTest {
         } catch (ExecutionException e) {
             Assert.assertNotNull(e.getCause());
             Assert.assertTrue(e.getCause() instanceof IntegrityException);
-            Assert.assertEquals(IntegrityResponse.API_NOT_AVAILABLE,
+            Assert.assertEquals(
+                    IntegrityResponse.API_NOT_AVAILABLE,
                     ((IntegrityException) e.getCause()).getErrorCode());
         } catch (InterruptedException | TimeoutException e) {
             Assert.fail(e.getMessage());

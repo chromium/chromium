@@ -34,11 +34,11 @@ import java.util.concurrent.Executors;
 /** Tests making requests using QUIC. */
 @DoNotBatch(reason = "crbug/1459563")
 @RunWith(AndroidJUnit4.class)
-@IgnoreFor(implementations = {CronetImplementation.FALLBACK},
+@IgnoreFor(
+        implementations = {CronetImplementation.FALLBACK},
         reason = "The fallback implementation doesn't support QUIC")
 public class QuicTest {
-    @Rule
-    public final CronetTestRule mTestRule = CronetTestRule.withManualEngineStartup();
+    @Rule public final CronetTestRule mTestRule = CronetTestRule.withManualEngineStartup();
 
     @Before
     public void setUp() throws Exception {
@@ -46,39 +46,53 @@ public class QuicTest {
         System.loadLibrary("cronet_tests");
         QuicTestServer.startQuicTestServer(mTestRule.getTestFramework().getContext());
 
-        mTestRule.getTestFramework().applyEngineBuilderPatch((builder) -> {
-            builder.enableNetworkQualityEstimator(true).enableQuic(true);
-            builder.addQuicHint(QuicTestServer.getServerHost(), QuicTestServer.getServerPort(),
-                    QuicTestServer.getServerPort());
+        mTestRule
+                .getTestFramework()
+                .applyEngineBuilderPatch(
+                        (builder) -> {
+                            builder.enableNetworkQualityEstimator(true).enableQuic(true);
+                            builder.addQuicHint(
+                                    QuicTestServer.getServerHost(),
+                                    QuicTestServer.getServerPort(),
+                                    QuicTestServer.getServerPort());
 
-            // The pref may not be written if the computed Effective Connection Type (ECT) matches
-            // the default ECT for the current connection type. Force the ECT to "Slow-2G". Since
-            // "Slow-2G" is not the default ECT for any connection type, this ensures that the
-            // pref
-            // is written to.
-            JSONObject nqeParams =
-                    new JSONObject().put("force_effective_connection_type", "Slow-2G");
+                            // The pref may not be written if the computed Effective Connection Type
+                            // (ECT) matches
+                            // the default ECT for the current connection type. Force the ECT to
+                            // "Slow-2G". Since
+                            // "Slow-2G" is not the default ECT for any connection type, this
+                            // ensures that the
+                            // pref
+                            // is written to.
+                            JSONObject nqeParams =
+                                    new JSONObject()
+                                            .put("force_effective_connection_type", "Slow-2G");
 
-            // TODO(mgersh): Enable connection migration once it works, see
-            // http://crbug.com/634910
-            JSONObject quicParams = new JSONObject()
+                            // TODO(mgersh): Enable connection migration once it works, see
+                            // http://crbug.com/634910
+                            JSONObject quicParams =
+                                    new JSONObject()
                                             .put("connection_options", "PACE,IW10,FOO,DEADBEEF")
                                             .put("max_server_configs_stored_in_properties", 2)
                                             .put("idle_connection_timeout_seconds", 300)
                                             .put("migrate_sessions_on_network_change_v2", false)
                                             .put("migrate_sessions_early_v2", false)
                                             .put("race_cert_verification", true);
-            JSONObject hostResolverParams = CronetTestUtil.generateHostResolverRules();
-            JSONObject experimentalOptions = new JSONObject()
-                                                     .put("QUIC", quicParams)
-                                                     .put("HostResolverRules", hostResolverParams)
-                                                     .put("NetworkQualityEstimator", nqeParams);
-            builder.setExperimentalOptions(experimentalOptions.toString());
-            builder.setStoragePath(getTestStorage(mTestRule.getTestFramework().getContext()));
-            builder.enableHttpCache(CronetEngine.Builder.HTTP_CACHE_DISK_NO_HTTP, 1000 * 1024);
-            CronetTestUtil.setMockCertVerifierForTesting(
-                    builder, QuicTestServer.createMockCertVerifier());
-        });
+                            JSONObject hostResolverParams =
+                                    CronetTestUtil.generateHostResolverRules();
+                            JSONObject experimentalOptions =
+                                    new JSONObject()
+                                            .put("QUIC", quicParams)
+                                            .put("HostResolverRules", hostResolverParams)
+                                            .put("NetworkQualityEstimator", nqeParams);
+                            builder.setExperimentalOptions(experimentalOptions.toString());
+                            builder.setStoragePath(
+                                    getTestStorage(mTestRule.getTestFramework().getContext()));
+                            builder.enableHttpCache(
+                                    CronetEngine.Builder.HTTP_CACHE_DISK_NO_HTTP, 1000 * 1024);
+                            CronetTestUtil.setMockCertVerifierForTesting(
+                                    builder, QuicTestServer.createMockCertVerifier());
+                        });
         mTestRule.getTestFramework().startEngine();
     }
 
@@ -113,8 +127,12 @@ public class QuicTest {
                 .hasReceivedByteCountThat()
                 .isGreaterThan((long) expectedContent.length());
         CronetTestUtil.nativeFlushWritePropertiesForTesting(cronetEngine);
-        assertThat(fileContainsString("local_prefs.json",
-                           QuicTestServer.getServerHost() + ":" + QuicTestServer.getServerPort()))
+        assertThat(
+                        fileContainsString(
+                                "local_prefs.json",
+                                QuicTestServer.getServerHost()
+                                        + ":"
+                                        + QuicTestServer.getServerPort()))
                 .isTrue();
         cronetEngine.shutdown();
 
@@ -149,8 +167,11 @@ public class QuicTest {
 
     // Returns whether a file contains a particular string.
     private boolean fileContainsString(String filename, String content) throws IOException {
-        File file = new File(
-                getTestStorage(mTestRule.getTestFramework().getContext()) + "/prefs/" + filename);
+        File file =
+                new File(
+                        getTestStorage(mTestRule.getTestFramework().getContext())
+                                + "/prefs/"
+                                + filename);
         FileInputStream fileInputStream = new FileInputStream(file);
         byte[] data = new byte[(int) file.length()];
         fileInputStream.read(data);

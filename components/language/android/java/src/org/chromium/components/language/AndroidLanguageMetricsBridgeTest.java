@@ -21,15 +21,26 @@ import org.chromium.content_public.browser.test.util.TestThreadUtils;
 
 import java.util.Map;
 
-/**
- * Tests for the AndroidLanguageMetricsBridge class.
- */
+/** Tests for the AndroidLanguageMetricsBridge class. */
 @RunWith(ChromeJUnit4ClassRunner.class)
 @CommandLineFlags.Add({ChromeSwitches.DISABLE_FIRST_RUN_EXPERIENCE})
 public class AndroidLanguageMetricsBridgeTest {
     private static final Map<String, Integer> NAME_HASHES =
-            Map.of("en", -74147910, "af", 357286655, "hmn", 1110169461, "yue-HK", 632444664, "und",
-                    350748440, "it-CH", 1708437566, "", -1895779836);
+            Map.of(
+                    "en",
+                    -74147910,
+                    "af",
+                    357286655,
+                    "hmn",
+                    1110169461,
+                    "yue-HK",
+                    632444664,
+                    "und",
+                    350748440,
+                    "it-CH",
+                    1708437566,
+                    "",
+                    -1895779836);
 
     @Rule
     public ChromeTabbedActivityTestRule mActivityTestRule = new ChromeTabbedActivityTestRule();
@@ -43,16 +54,20 @@ public class AndroidLanguageMetricsBridgeTest {
     @Test
     @SmallTest
     public void testReportingAppOverrideLangauge() {
-        TestThreadUtils.runOnUiThreadBlocking(() -> {
-            for (Map.Entry<String, Integer> entry : NAME_HASHES.entrySet()) {
-                int initialCount = RecordHistogram.getHistogramValueCountForTesting(
-                        AndroidLanguageMetricsBridge.OVERRIDE_LANGUAGE_HISTOGRAM, entry.getValue());
-                AndroidLanguageMetricsBridge.reportAppOverrideLanguage(entry.getKey());
-                Assert.assertEquals(initialCount + 1,
-                        RecordHistogram.getHistogramValueCountForTesting(
-                                AndroidLanguageMetricsBridge.OVERRIDE_LANGUAGE_HISTOGRAM,
-                                entry.getValue()));
-            }
-        });
+        TestThreadUtils.runOnUiThreadBlocking(
+                () -> {
+                    for (Map.Entry<String, Integer> entry : NAME_HASHES.entrySet()) {
+                        int initialCount =
+                                RecordHistogram.getHistogramValueCountForTesting(
+                                        AndroidLanguageMetricsBridge.OVERRIDE_LANGUAGE_HISTOGRAM,
+                                        entry.getValue());
+                        AndroidLanguageMetricsBridge.reportAppOverrideLanguage(entry.getKey());
+                        Assert.assertEquals(
+                                initialCount + 1,
+                                RecordHistogram.getHistogramValueCountForTesting(
+                                        AndroidLanguageMetricsBridge.OVERRIDE_LANGUAGE_HISTOGRAM,
+                                        entry.getValue()));
+                    }
+                });
     }
 }

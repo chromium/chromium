@@ -29,19 +29,14 @@ import org.chromium.url.JUnitTestGURLs;
 
 import java.util.HashSet;
 
-/**
- * Tests for InputContext.
- */
+/** Tests for InputContext. */
 @RunWith(BaseRobolectricTestRunner.class)
 public class InputContextTest {
-    @Rule
-    public JniMocker mJniMocker = new JniMocker();
+    @Rule public JniMocker mJniMocker = new JniMocker();
 
-    @Rule
-    public FakeTimeTestRule mFakeTimeTestRule = new FakeTimeTestRule();
+    @Rule public FakeTimeTestRule mFakeTimeTestRule = new FakeTimeTestRule();
 
-    @Mock
-    InputContext.Natives mNativeMock;
+    @Mock InputContext.Natives mNativeMock;
 
     @Before
     public void setUp() {
@@ -67,13 +62,24 @@ public class InputContextTest {
         inputContext.fillNativeInputContext(0x12345678);
 
         Mockito.verify(mNativeMock)
-                .fillNative(0x12345678, new String[] {"boolean_param"}, new boolean[] {true},
-                        new String[] {"int param"}, new int[] {-4}, new String[] {"float_param"},
-                        new float[] {13.37f}, new String[] {"double_value"}, new double[] {13.38d},
-                        new String[] {"string_value"}, new String[] {"Hello, World!"},
-                        new String[] {"time_value"}, new long[] {TimeUtils.currentTimeMillis()},
-                        new String[] {"int64 value"}, new long[] {Long.MIN_VALUE},
-                        new String[] {"url_value"}, new GURL[] {JUnitTestGURLs.EXAMPLE_URL});
+                .fillNative(
+                        0x12345678,
+                        new String[] {"boolean_param"},
+                        new boolean[] {true},
+                        new String[] {"int param"},
+                        new int[] {-4},
+                        new String[] {"float_param"},
+                        new float[] {13.37f},
+                        new String[] {"double_value"},
+                        new double[] {13.38d},
+                        new String[] {"string_value"},
+                        new String[] {"Hello, World!"},
+                        new String[] {"time_value"},
+                        new long[] {TimeUtils.currentTimeMillis()},
+                        new String[] {"int64 value"},
+                        new long[] {Long.MIN_VALUE},
+                        new String[] {"url_value"},
+                        new GURL[] {JUnitTestGURLs.EXAMPLE_URL});
     }
 
     @Test
@@ -85,11 +91,24 @@ public class InputContextTest {
         inputContext.fillNativeInputContext(0x12345678);
 
         Mockito.verify(mNativeMock)
-                .fillNative(0x12345678, new String[] {}, new boolean[] {}, new String[] {},
-                        new int[] {}, new String[] {}, new float[] {}, new String[] {},
-                        new double[] {}, new String[] {"null_string"}, new String[] {""},
-                        new String[] {}, new long[] {}, new String[] {}, new long[] {},
-                        new String[] {"null_url"}, new GURL[] {GURL.emptyGURL()});
+                .fillNative(
+                        0x12345678,
+                        new String[] {},
+                        new boolean[] {},
+                        new String[] {},
+                        new int[] {},
+                        new String[] {},
+                        new float[] {},
+                        new String[] {},
+                        new double[] {},
+                        new String[] {"null_string"},
+                        new String[] {""},
+                        new String[] {},
+                        new long[] {},
+                        new String[] {},
+                        new long[] {},
+                        new String[] {"null_url"},
+                        new GURL[] {GURL.emptyGURL()});
     }
 
     @Test
@@ -107,10 +126,24 @@ public class InputContextTest {
         inputContext.fillNativeInputContext(0x12345678);
 
         Mockito.verify(mNativeMock)
-                .fillNative(eq(0x12345678L), any(), any(),
+                .fillNative(
+                        eq(0x12345678L),
+                        any(),
+                        any(),
                         (String[]) stringArrayArgumentCaptor.capture(),
-                        (int[]) integerArrayArgumentCaptor.capture(), any(), any(), any(), any(),
-                        any(), any(), any(), any(), any(), any(), any(), any());
+                        (int[]) integerArrayArgumentCaptor.capture(),
+                        any(),
+                        any(),
+                        any(),
+                        any(),
+                        any(),
+                        any(),
+                        any(),
+                        any(),
+                        any(),
+                        any(),
+                        any(),
+                        any());
 
         String[] keys = (String[]) stringArrayArgumentCaptor.getValue();
         int[] values = (int[]) integerArrayArgumentCaptor.getValue();

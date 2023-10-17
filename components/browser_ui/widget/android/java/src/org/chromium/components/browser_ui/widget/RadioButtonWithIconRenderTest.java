@@ -31,9 +31,7 @@ import org.chromium.ui.test.util.RenderTestRule;
 
 import java.util.List;
 
-/**
- * Render test for {@link RadioButtonWithDescription} with the icon.
- */
+/** Render test for {@link RadioButtonWithDescription} with the icon. */
 @RunWith(ParameterizedRunner.class)
 @UseRunnerDelegate(BaseJUnit4RunnerDelegate.class)
 @Batch(Batch.UNIT_TESTS)
@@ -73,19 +71,24 @@ public class RadioButtonWithIconRenderTest extends BlankUiTestActivityTestCase {
     public void setUpTest() throws Exception {
         super.setUpTest();
         Activity activity = getActivity();
-        TestThreadUtils.runOnUiThreadBlocking(() -> {
-            View content = LayoutInflater.from(activity).inflate(
-                    R.layout.radio_button_with_icon_render_test, null, false);
-            activity.setContentView(content);
+        TestThreadUtils.runOnUiThreadBlocking(
+                () -> {
+                    View content =
+                            LayoutInflater.from(activity)
+                                    .inflate(
+                                            R.layout.radio_button_with_icon_render_test,
+                                            null,
+                                            false);
+                    activity.setContentView(content);
 
-            mLayout = content.findViewById(R.id.test_radio_button_layout);
-            mLayout.setBackgroundColor(mFakeBgColor);
+                    mLayout = content.findViewById(R.id.test_radio_button_layout);
+                    mLayout.setBackgroundColor(mFakeBgColor);
 
-            mRadioButtonWithIcon1 = content.findViewById(R.id.icon_primary_only);
-            mRadioButtonWithIcon2 = content.findViewById(R.id.icon_primary_description);
-            mRadioButtonWithIcon3 = content.findViewById(R.id.icon_bg_override);
-            mRadioButtonWithIcon4 = content.findViewById(R.id.icon_disabled);
-        });
+                    mRadioButtonWithIcon1 = content.findViewById(R.id.icon_primary_only);
+                    mRadioButtonWithIcon2 = content.findViewById(R.id.icon_primary_description);
+                    mRadioButtonWithIcon3 = content.findViewById(R.id.icon_bg_override);
+                    mRadioButtonWithIcon4 = content.findViewById(R.id.icon_disabled);
+                });
 
         Assert.assertNotNull(mLayout);
         Assert.assertNotNull(mRadioButtonWithIcon1);

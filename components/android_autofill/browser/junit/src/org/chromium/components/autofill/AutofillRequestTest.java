@@ -26,19 +26,17 @@ import org.chromium.base.test.util.Features;
 
 import java.util.Arrays;
 
-/**
- * Unit test for {@link AutofillRequest}.
- */
+/** Unit test for {@link AutofillRequest}. */
 @RunWith(BaseRobolectricTestRunner.class)
 @Config(manifest = Config.NONE)
-@Features.DisableFeatures(
-        {AndroidAutofillFeatures.ANDROID_AUTOFILL_VIEW_STRUCTURE_WITH_FORM_HIERARCHY_LAYER_NAME})
+@Features.DisableFeatures({
+    AndroidAutofillFeatures.ANDROID_AUTOFILL_VIEW_STRUCTURE_WITH_FORM_HIERARCHY_LAYER_NAME
+})
 public class AutofillRequestTest {
     private static final String FORM_DOMAIN = "https://example.com";
     private static final String FORM_NAME = "sample-form-name";
 
-    @Rule
-    public TestRule mFeaturesProcessorRule = new Features.JUnitProcessor();
+    @Rule public TestRule mFeaturesProcessorRule = new Features.JUnitProcessor();
 
     private static FormFieldDataBuilder createTextFieldBuilder() {
         FormFieldDataBuilder builder = new FormFieldDataBuilder();
@@ -72,7 +70,7 @@ public class AutofillRequestTest {
     private static AutofillRequest createRequest(FormFieldData... fields) {
         FormData formData = new FormData(FORM_NAME, FORM_DOMAIN, Arrays.asList(fields));
 
-        return new AutofillRequest(formData, null, /*hasServerPrediction=*/false);
+        return new AutofillRequest(formData, null, /* hasServerPrediction= */ false);
     }
 
     private static AutofillRequest createSampleRequest() {
@@ -108,15 +106,14 @@ public class AutofillRequestTest {
         assertEquals(2, structure.getChildCount());
     }
 
-    @Features.
-    EnableFeatures({AndroidAutofillFeatures
-                            .ANDROID_AUTOFILL_VIEW_STRUCTURE_WITH_FORM_HIERARCHY_LAYER_NAME})
+    @Features.EnableFeatures({
+        AndroidAutofillFeatures.ANDROID_AUTOFILL_VIEW_STRUCTURE_WITH_FORM_HIERARCHY_LAYER_NAME
+    })
     @Test
     // Tests that there is an additional hierarchy level if the feature
     // ANDROID_AUTOFILL_VIEW_STRUCTURE_WITH_FORM_HIERARCHY_LAYER is enabled, i.e. the form
     // is a child node of the ViewStructure filled by the AutofillRequest.
-    public void
-    testFormInformationIsInSeparateNode() {
+    public void testFormInformationIsInSeparateNode() {
         TestViewStructure structure = fillStructureForRequest(createSampleRequest());
 
         assertEquals(1, structure.getChildCount());
@@ -177,7 +174,8 @@ public class AutofillRequestTest {
         // The default type is a text field.
         assertEquals(View.AUTOFILL_TYPE_TEXT, child.getAutofillType());
         assertEquals(AutofillValue.forText(fieldBuilder.mValue), child.getAutofillValue());
-        assertEquals(Integer.toString(fieldBuilder.mMaxLength),
+        assertEquals(
+                Integer.toString(fieldBuilder.mMaxLength),
                 child.getHtmlInfo().getAttribute("maxlength"));
     }
 

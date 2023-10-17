@@ -24,9 +24,7 @@ import org.mockito.MockitoAnnotations;
 import org.chromium.base.Callback;
 import org.chromium.base.test.BaseRobolectricTestRunner;
 
-/**
- * Tests for the {@link PlayerFrameScaleController} class.
- */
+/** Tests for the {@link PlayerFrameScaleController} class. */
 @RunWith(BaseRobolectricTestRunner.class)
 public class PlayerFrameScaleControllerTest {
     private static final int CONTENT_WIDTH = 500;
@@ -36,8 +34,7 @@ public class PlayerFrameScaleControllerTest {
     private Matrix mBitmapScaleMatrix;
     private PlayerFrameViewport mViewport;
     private PlayerFrameScaleController mScaleController;
-    @Mock
-    private PlayerFrameMediatorDelegate mMediatorDelegateMock;
+    @Mock private PlayerFrameMediatorDelegate mMediatorDelegateMock;
     private boolean mDidScale;
 
     private class MatrixMatcher implements ArgumentMatcher<Matrix> {
@@ -64,15 +61,14 @@ public class PlayerFrameScaleControllerTest {
         when(mMediatorDelegateMock.getViewport()).thenReturn(mViewport);
         when(mMediatorDelegateMock.getContentSize()).thenReturn(contentSize);
         when(mMediatorDelegateMock.getMinScaleFactor()).thenReturn(1f);
-        mScaleController = new PlayerFrameScaleController(
-                mBitmapScaleMatrix, mMediatorDelegateMock, null, mScaleListener);
+        mScaleController =
+                new PlayerFrameScaleController(
+                        mBitmapScaleMatrix, mMediatorDelegateMock, null, mScaleListener);
         mViewport.setScale(1f);
         mViewport.setSize(100, 100);
     }
 
-    /**
-     * Tests the limits of scaling.
-     */
+    /** Tests the limits of scaling. */
     @Test
     public void testScaleLimits() {
         Assert.assertTrue(mScaleController.scaleBy(10f, 0, 0));
@@ -84,9 +80,7 @@ public class PlayerFrameScaleControllerTest {
         Assert.assertEquals(1f, mViewport.getScale(), TOLERANCE);
     }
 
-    /**
-     * Scales the viewport in and out in the middle so no correction occurs.
-     */
+    /** Scales the viewport in and out in the middle so no correction occurs. */
     @Test
     public void testZoomInAndOutAtMiddle() {
         mViewport.setTrans(100, 150);
@@ -137,9 +131,7 @@ public class PlayerFrameScaleControllerTest {
         inOrder.verify(mMediatorDelegateMock).forceRedrawVisibleSubframes();
     }
 
-    /**
-     * Scales the viewport in and out in the top left so correction occurs.
-     */
+    /** Scales the viewport in and out in the top left so correction occurs. */
     @Test
     public void testZoomInAndOutAtTopLeft() {
         InOrder inOrder = inOrder(mMediatorDelegateMock);
@@ -190,9 +182,7 @@ public class PlayerFrameScaleControllerTest {
         inOrder.verify(mMediatorDelegateMock).forceRedrawVisibleSubframes();
     }
 
-    /**
-     * Scales the viewport in and out in the bottom right so correction occurs.
-     */
+    /** Scales the viewport in and out in the bottom right so correction occurs. */
     @Test
     public void testZoomInAndOutAtBottomRight() {
         InOrder inOrder = inOrder(mMediatorDelegateMock);
@@ -225,7 +215,8 @@ public class PlayerFrameScaleControllerTest {
         float scale = mViewport.getScale();
         float scaledContentWidth = scale * CONTENT_WIDTH;
         float scaledContentHeight = scale * CONTENT_HEIGHT;
-        mViewport.setTrans(scaledContentWidth - mViewport.getWidth(),
+        mViewport.setTrans(
+                scaledContentWidth - mViewport.getWidth(),
                 scaledContentHeight - mViewport.getHeight());
 
         // Zoom out.
@@ -256,9 +247,7 @@ public class PlayerFrameScaleControllerTest {
         inOrder.verify(mMediatorDelegateMock).forceRedrawVisibleSubframes();
     }
 
-    /**
-     * Scales the viewport without a reset of the bitmap scale matrix.
-     */
+    /** Scales the viewport without a reset of the bitmap scale matrix. */
     @Test
     public void testZoomInAndOutWithoutReset() {
         mViewport.setTrans(100, 150);

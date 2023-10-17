@@ -36,9 +36,7 @@ import org.chromium.ui.test.util.RenderTestRule;
 
 import java.util.List;
 
-/**
- * Render test for {@link PwaRestoreBottomSheetView}.
- */
+/** Render test for {@link PwaRestoreBottomSheetView}. */
 @RunWith(ParameterizedRunner.class)
 @UseRunnerDelegate(BaseJUnit4RunnerDelegate.class)
 @Batch(Batch.UNIT_TESTS)
@@ -64,7 +62,9 @@ public class PwaRestoreBottomSheetViewRenderTest {
     public static void setupSuite() {
         sActivityTestRule.launchActivity(null);
         TestThreadUtils.runOnUiThreadBlocking(
-                () -> { sActivity = sActivityTestRule.getActivity(); });
+                () -> {
+                    sActivity = sActivityTestRule.getActivity();
+                });
     }
 
     public PwaRestoreBottomSheetViewRenderTest(boolean nightModeEnabled) {
@@ -79,22 +79,26 @@ public class PwaRestoreBottomSheetViewRenderTest {
     private final boolean mNightModeEnabled;
 
     private void initializeBottomSheet() {
-        mCoordinator = new PwaRestoreBottomSheetCoordinator(
-                sActivity, null, R.drawable.ic_arrow_back_24dp);
+        mCoordinator =
+                new PwaRestoreBottomSheetCoordinator(
+                        sActivity, null, R.drawable.ic_arrow_back_24dp);
         PropertyModel model = mCoordinator.getModelForTesting();
         model.set(PwaRestoreProperties.VIEW_STATE, PwaRestoreProperties.ViewState.PREVIEW);
 
-        TestThreadUtils.runOnUiThreadBlocking(() -> {
-            LinearLayout content = new LinearLayout(sActivity);
-            sActivity.setContentView(content);
-            View view = mCoordinator.getBottomSheetToolbarViewForTesting();
-            View root = view.getRootView();
-            root.setBackgroundColor(mNightModeEnabled ? Color.BLACK : Color.WHITE);
+        TestThreadUtils.runOnUiThreadBlocking(
+                () -> {
+                    LinearLayout content = new LinearLayout(sActivity);
+                    sActivity.setContentView(content);
+                    View view = mCoordinator.getBottomSheetToolbarViewForTesting();
+                    View root = view.getRootView();
+                    root.setBackgroundColor(mNightModeEnabled ? Color.BLACK : Color.WHITE);
 
-            content.addView(view,
-                    new LayoutParams(ViewGroup.LayoutParams.WRAP_CONTENT,
-                            ViewGroup.LayoutParams.WRAP_CONTENT));
-        });
+                    content.addView(
+                            view,
+                            new LayoutParams(
+                                    ViewGroup.LayoutParams.WRAP_CONTENT,
+                                    ViewGroup.LayoutParams.WRAP_CONTENT));
+                });
     }
 
     @Test

@@ -33,15 +33,13 @@ import java.util.Collections;
 import java.util.List;
 
 /**
- * Tests for {@link IntegrityServiceBridge}, asserting that JNI callback methods
- * are called correctly, with the correct callback ID.
+ * Tests for {@link IntegrityServiceBridge}, asserting that JNI callback methods are called
+ * correctly, with the correct callback ID.
  */
 @RunWith(BaseRobolectricTestRunner.class)
 public class IntegrityServiceBridgeTest {
-    @Rule
-    public JniMocker mocker = new JniMocker();
-    @Mock
-    private IntegrityServiceBridge.Natives mIntegrityServiceBridgeNativesMock;
+    @Rule public JniMocker mocker = new JniMocker();
+    @Mock private IntegrityServiceBridge.Natives mIntegrityServiceBridgeNativesMock;
 
     private ShadowLooper mShadowLooper;
 
@@ -113,8 +111,11 @@ public class IntegrityServiceBridgeTest {
         mTestBridge.resolveHandle(HANDLE);
         waitForCallback();
         Mockito.verify(mIntegrityServiceBridgeNativesMock)
-                .onCreateHandleResult(eq(NATIVE_CALLBACK_ID), eq(IntegrityResponse.SUCCESS),
-                        eq(HANDLE), eq(null));
+                .onCreateHandleResult(
+                        eq(NATIVE_CALLBACK_ID),
+                        eq(IntegrityResponse.SUCCESS),
+                        eq(HANDLE),
+                        eq(null));
     }
 
     @Test
@@ -159,8 +160,11 @@ public class IntegrityServiceBridgeTest {
                 new IntegrityException("Error", IntegrityResponse.API_NOT_AVAILABLE));
         waitForCallback();
         Mockito.verify(mIntegrityServiceBridgeNativesMock)
-                .onCreateHandleResult(eq(NATIVE_CALLBACK_ID),
-                        eq(IntegrityResponse.API_NOT_AVAILABLE), eq(0L), anyString());
+                .onCreateHandleResult(
+                        eq(NATIVE_CALLBACK_ID),
+                        eq(IntegrityResponse.API_NOT_AVAILABLE),
+                        eq(0L),
+                        anyString());
     }
 
     @Test
@@ -180,8 +184,11 @@ public class IntegrityServiceBridgeTest {
         mTestBridge.resolveHandleWithException(new RuntimeException());
         waitForCallback();
         Mockito.verify(mIntegrityServiceBridgeNativesMock)
-                .onCreateHandleResult(eq(NATIVE_CALLBACK_ID), eq(IntegrityResponse.UNKNOWN_ERROR),
-                        eq(0L), anyString());
+                .onCreateHandleResult(
+                        eq(NATIVE_CALLBACK_ID),
+                        eq(IntegrityResponse.UNKNOWN_ERROR),
+                        eq(0L),
+                        anyString());
     }
 
     @Test
@@ -203,8 +210,11 @@ public class IntegrityServiceBridgeTest {
                 new IntegrityException("", IntegrityResponse.TIMEOUT));
         waitForCallback();
         Mockito.verify(mIntegrityServiceBridgeNativesMock)
-                .onGetIntegrityTokenResult(eq(NATIVE_CALLBACK_ID), eq(IntegrityResponse.TIMEOUT),
-                        eq(null), anyString());
+                .onGetIntegrityTokenResult(
+                        eq(NATIVE_CALLBACK_ID),
+                        eq(IntegrityResponse.TIMEOUT),
+                        eq(null),
+                        anyString());
     }
 
     @Test
@@ -215,8 +225,11 @@ public class IntegrityServiceBridgeTest {
                 new IntegrityException("", IntegrityResponse.INVALID_HANDLE));
         waitForCallback();
         Mockito.verify(mIntegrityServiceBridgeNativesMock)
-                .onGetIntegrityTokenResult(eq(NATIVE_CALLBACK_ID),
-                        eq(IntegrityResponse.INVALID_HANDLE), eq(null), anyString());
+                .onGetIntegrityTokenResult(
+                        eq(NATIVE_CALLBACK_ID),
+                        eq(IntegrityResponse.INVALID_HANDLE),
+                        eq(null),
+                        anyString());
     }
 
     @Test
@@ -227,8 +240,11 @@ public class IntegrityServiceBridgeTest {
                 new IntegrityException("", IntegrityResponse.TIMEOUT));
         waitForCallback();
         Mockito.verify(mIntegrityServiceBridgeNativesMock)
-                .onGetIntegrityTokenResult(eq(NATIVE_CALLBACK_ID), eq(IntegrityResponse.TIMEOUT),
-                        eq(null), anyString());
+                .onGetIntegrityTokenResult(
+                        eq(NATIVE_CALLBACK_ID),
+                        eq(IntegrityResponse.TIMEOUT),
+                        eq(null),
+                        anyString());
     }
 
     @Test
@@ -238,8 +254,11 @@ public class IntegrityServiceBridgeTest {
         mTestBridge.resolveIntegrityWithException(new RuntimeException());
         waitForCallback();
         Mockito.verify(mIntegrityServiceBridgeNativesMock)
-                .onGetIntegrityTokenResult(eq(NATIVE_CALLBACK_ID),
-                        eq(IntegrityResponse.UNKNOWN_ERROR), eq(null), anyString());
+                .onGetIntegrityTokenResult(
+                        eq(NATIVE_CALLBACK_ID),
+                        eq(IntegrityResponse.UNKNOWN_ERROR),
+                        eq(null),
+                        anyString());
     }
 
     private void waitForCallback() {

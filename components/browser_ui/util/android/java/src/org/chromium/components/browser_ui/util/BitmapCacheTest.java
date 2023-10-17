@@ -15,9 +15,7 @@ import org.robolectric.annotation.Config;
 import org.chromium.base.DiscardableReferencePool;
 import org.chromium.base.test.BaseRobolectricTestRunner;
 
-/**
- * Unit tests for {@link BitmapCache}.
- */
+/** Unit tests for {@link BitmapCache}. */
 @RunWith(BaseRobolectricTestRunner.class)
 @Config(manifest = Config.NONE)
 public class BitmapCacheTest {
@@ -98,13 +96,12 @@ public class BitmapCacheTest {
     }
 
     /**
-     * {@link BitmapCache#clearDedupCacheForTesting} is supposed to be called in
-     * setUp() only, and should not be called inside a @Test, or it would leak
-     * too much implementation details. However, it is required to do it to
-     * properly test the cache eviction without relying on GC. In order to make
-     * sure {@link #testLowCapacity} tests what we want to test, this test verifies
-     * that calling {@link BitmapCache#clearDedupCacheForTesting} is not the reason
-     * the cache returns null.
+     * {@link BitmapCache#clearDedupCacheForTesting} is supposed to be called in setUp() only, and
+     * should not be called inside a @Test, or it would leak too much implementation details.
+     * However, it is required to do it to properly test the cache eviction without relying on GC.
+     * In order to make sure {@link #testLowCapacity} tests what we want to test, this test verifies
+     * that calling {@link BitmapCache#clearDedupCacheForTesting} is not the reason the cache
+     * returns null.
      */
     @Test
     public void testLowCapacityRef() {
@@ -124,8 +121,9 @@ public class BitmapCacheTest {
 
     @Test
     public void testLru() {
-        BitmapCache cache = new BitmapCache(
-                mReferencePool, mBitmap.getByteCount() + mBitmap2.getByteCount() - 1);
+        BitmapCache cache =
+                new BitmapCache(
+                        mReferencePool, mBitmap.getByteCount() + mBitmap2.getByteCount() - 1);
 
         cache.putBitmap(KEY, mBitmap);
         BitmapCache.clearDedupCacheForTesting();

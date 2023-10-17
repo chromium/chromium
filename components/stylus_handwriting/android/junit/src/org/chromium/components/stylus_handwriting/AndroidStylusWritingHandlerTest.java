@@ -37,19 +37,16 @@ import org.chromium.content_public.browser.WebContents;
 
 import java.util.List;
 
-/**
- * Unit tests for {@link AndroidStylusWritingHandler}.
- */
+/** Unit tests for {@link AndroidStylusWritingHandler}. */
 @RunWith(BaseRobolectricTestRunner.class)
-@Config(manifest = Config.NONE, sdk = Build.VERSION_CODES.TIRAMISU,
+@Config(
+        manifest = Config.NONE,
+        sdk = Build.VERSION_CODES.TIRAMISU,
         shadows = {ShadowGlobalSettings.class, ShadowSecureSettings.class})
 public class AndroidStylusWritingHandlerTest {
-    @Mock
-    private Context mContext;
-    @Mock
-    private InputMethodManager mInputMethodManager;
-    @Mock
-    private InputMethodInfo mInputMethodInfo;
+    @Mock private Context mContext;
+    @Mock private InputMethodManager mInputMethodManager;
+    @Mock private InputMethodInfo mInputMethodInfo;
 
     private AndroidStylusWritingHandler mHandler;
 
@@ -59,8 +56,9 @@ public class AndroidStylusWritingHandlerTest {
         when(mContext.getSystemService(InputMethodManager.class)).thenReturn(mInputMethodManager);
         when(mInputMethodManager.getInputMethodList()).thenReturn(List.of(mInputMethodInfo));
         when(mInputMethodInfo.getComponent())
-                .thenReturn(ComponentName.unflattenFromString(
-                        ShadowSecureSettings.DEFAULT_IME_PACKAGE));
+                .thenReturn(
+                        ComponentName.unflattenFromString(
+                                ShadowSecureSettings.DEFAULT_IME_PACKAGE));
         mHandler = new AndroidStylusWritingHandler(mContext);
     }
 
@@ -105,8 +103,9 @@ public class AndroidStylusWritingHandlerTest {
         // onEditElementFocusedForStylusWriting receives coordinates in pixels and should convert
         // them to DIPs. It does not use the contentOffset as this is taken into account by
         // CursorAnchorInfo's matrix.
-        EditorBoundsInfo editorBoundsInfo = mHandler.onEditElementFocusedForStylusWriting(
-                boundsInPix, cursorPositionInPix, 4, 10);
+        EditorBoundsInfo editorBoundsInfo =
+                mHandler.onEditElementFocusedForStylusWriting(
+                        boundsInPix, cursorPositionInPix, 4, 10);
         assertEquals(new RectF(5, 5, 20, 20), editorBoundsInfo.getEditorBounds());
         assertEquals(new RectF(5, 5, 20, 20), editorBoundsInfo.getHandwritingBounds());
     }
@@ -125,8 +124,9 @@ public class AndroidStylusWritingHandlerTest {
 
     @Test
     public void testStylusHandwritingLogsApiOption() {
-        HistogramWatcher histogramWatcher = HistogramWatcher.newSingleRecordWatcher(
-                "InputMethod.StylusHandwriting.Triggered", StylusApiOption.Api.ANDROID);
+        HistogramWatcher histogramWatcher =
+                HistogramWatcher.newSingleRecordWatcher(
+                        "InputMethod.StylusHandwriting.Triggered", StylusApiOption.Api.ANDROID);
         mHandler.requestStartStylusWriting(null);
         histogramWatcher.assertExpected();
     }

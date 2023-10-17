@@ -44,11 +44,11 @@ import org.chromium.components.signin.test.util.FakeAccountManagerFacade;
 
 import java.util.List;
 
-/**
- * Robolectric tests for {@link AccountTrackerService}.
- */
+/** Robolectric tests for {@link AccountTrackerService}. */
 @RunWith(BaseRobolectricTestRunner.class)
-@Config(manifest = Config.NONE, shadows = {CustomShadowAsyncTask.class})
+@Config(
+        manifest = Config.NONE,
+        shadows = {CustomShadowAsyncTask.class})
 @LooperMode(LooperMode.Mode.LEGACY)
 public class AccountTrackerServiceTest {
     private static final long ACCOUNT_TRACKER_SERVICE_NATIVE = 10001L;
@@ -57,28 +57,22 @@ public class AccountTrackerServiceTest {
     @Rule
     public final MockitoRule mMockitoRule = MockitoJUnit.rule().strictness(Strictness.STRICT_STUBS);
 
-    @Rule
-    public final JniMocker mocker = new JniMocker();
+    @Rule public final JniMocker mocker = new JniMocker();
 
     // TODO(https://crbug.com/1336704): Use mock instead of spy.
     @Spy
     private final FakeAccountManagerFacade mFakeAccountManagerFacade =
             new FakeAccountManagerFacade();
 
-    @Mock
-    private AccountTrackerService.Natives mNativeMock;
+    @Mock private AccountTrackerService.Natives mNativeMock;
 
-    @Mock
-    private Runnable mRunnableMock;
+    @Mock private Runnable mRunnableMock;
 
-    @Mock
-    private AccountTrackerService.Observer mObserverMock;
+    @Mock private AccountTrackerService.Observer mObserverMock;
 
-    @Captor
-    private ArgumentCaptor<CoreAccountInfo[]> mCoreAccountInfosArrayCaptor;
+    @Captor private ArgumentCaptor<CoreAccountInfo[]> mCoreAccountInfosArrayCaptor;
 
-    @Captor
-    private ArgumentCaptor<List<CoreAccountInfo>> mCoreAccountInfosListCaptor;
+    @Captor private ArgumentCaptor<List<CoreAccountInfo>> mCoreAccountInfosListCaptor;
 
     private AccountTrackerService mService;
     private CoreAccountInfo mCoreAccountInfo;
@@ -89,8 +83,9 @@ public class AccountTrackerServiceTest {
         mocker.mock(AccountTrackerServiceJni.TEST_HOOKS, mNativeMock);
         mFakeAccountManagerFacade.addAccount(AccountUtils.createAccountFromName(ACCOUNT_EMAIL));
         mService = new AccountTrackerService(ACCOUNT_TRACKER_SERVICE_NATIVE);
-        mCoreAccountInfo = CoreAccountInfo.createFromEmailAndGaiaId(
-                ACCOUNT_EMAIL, mFakeAccountManagerFacade.getAccountGaiaId(ACCOUNT_EMAIL));
+        mCoreAccountInfo =
+                CoreAccountInfo.createFromEmailAndGaiaId(
+                        ACCOUNT_EMAIL, mFakeAccountManagerFacade.getAccountGaiaId(ACCOUNT_EMAIL));
     }
 
     @After
@@ -186,11 +181,15 @@ public class AccountTrackerServiceTest {
         // Verify the observer is invoked with correct arguments
         verify(mObserverMock)
                 .legacyOnAccountsSeeded(mCoreAccountInfosListCaptor.capture(), eq(true));
-        final CoreAccountInfo coreAccountInfo = CoreAccountInfo.createFromEmailAndGaiaId(
-                ACCOUNT_EMAIL, mFakeAccountManagerFacade.getAccountGaiaId(ACCOUNT_EMAIL));
-        final CoreAccountInfo newCoreAccountInfo = CoreAccountInfo.createFromEmailAndGaiaId(
-                newAccount.name, mFakeAccountManagerFacade.getAccountGaiaId(newAccount.name));
-        Assert.assertArrayEquals(new CoreAccountInfo[] {coreAccountInfo, newCoreAccountInfo},
+        final CoreAccountInfo coreAccountInfo =
+                CoreAccountInfo.createFromEmailAndGaiaId(
+                        ACCOUNT_EMAIL, mFakeAccountManagerFacade.getAccountGaiaId(ACCOUNT_EMAIL));
+        final CoreAccountInfo newCoreAccountInfo =
+                CoreAccountInfo.createFromEmailAndGaiaId(
+                        newAccount.name,
+                        mFakeAccountManagerFacade.getAccountGaiaId(newAccount.name));
+        Assert.assertArrayEquals(
+                new CoreAccountInfo[] {coreAccountInfo, newCoreAccountInfo},
                 mCoreAccountInfosListCaptor.getValue().toArray(new CoreAccountInfo[0]));
     }
 
@@ -203,9 +202,11 @@ public class AccountTrackerServiceTest {
 
         verify(mObserverMock)
                 .legacyOnAccountsSeeded(mCoreAccountInfosListCaptor.capture(), eq(false));
-        final CoreAccountInfo account = CoreAccountInfo.createFromEmailAndGaiaId(
-                ACCOUNT_EMAIL, mFakeAccountManagerFacade.getAccountGaiaId(ACCOUNT_EMAIL));
-        Assert.assertArrayEquals(new CoreAccountInfo[] {account},
+        final CoreAccountInfo account =
+                CoreAccountInfo.createFromEmailAndGaiaId(
+                        ACCOUNT_EMAIL, mFakeAccountManagerFacade.getAccountGaiaId(ACCOUNT_EMAIL));
+        Assert.assertArrayEquals(
+                new CoreAccountInfo[] {account},
                 mCoreAccountInfosListCaptor.getValue().toArray(new CoreAccountInfo[0]));
     }
 

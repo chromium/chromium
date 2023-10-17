@@ -29,14 +29,11 @@ import org.chromium.base.test.BaseJUnit4ClassRunner;
 import org.chromium.base.test.util.Batch;
 import org.chromium.components.browser_ui.widget.test.R;
 
-/**
- * Tests the utility methods for highlighting of a view.
- */
+/** Tests the utility methods for highlighting of a view. */
 @RunWith(BaseJUnit4ClassRunner.class)
 @Batch(Batch.UNIT_TESTS)
 public class ViewHighlighterTest {
-    @Mock
-    Canvas mCanvas;
+    @Mock Canvas mCanvas;
 
     private Context mContext;
     private final ViewHighlighter.HighlightParams mCircleParams =
@@ -46,8 +43,10 @@ public class ViewHighlighterTest {
 
     @Before
     public void setUp() {
-        mContext = new ContextThemeWrapper(
-                InstrumentationRegistry.getTargetContext(), R.style.Theme_BrowserUI_DayNight);
+        mContext =
+                new ContextThemeWrapper(
+                        InstrumentationRegistry.getTargetContext(),
+                        R.style.Theme_BrowserUI_DayNight);
         MockitoAnnotations.initMocks(this);
     }
 
@@ -105,14 +104,21 @@ public class ViewHighlighterTest {
         checkHighlightOn(tintedImageButton);
 
         Rect viewBounds = tintedImageButton.getBackground().getBounds();
-        RectF expectedBounds = new RectF(viewBounds.left - highlightExtension,
-                viewBounds.top - highlightExtension, viewBounds.right + highlightExtension,
-                viewBounds.bottom + highlightExtension);
+        RectF expectedBounds =
+                new RectF(
+                        viewBounds.left - highlightExtension,
+                        viewBounds.top - highlightExtension,
+                        viewBounds.right + highlightExtension,
+                        viewBounds.bottom + highlightExtension);
 
         ViewHighlighterTestUtils.drawPulseDrawable(tintedImageButton, mCanvas);
 
-        Mockito.verify(mCanvas).drawRoundRect(
-                Mockito.eq(expectedBounds), Mockito.anyFloat(), Mockito.anyFloat(), Mockito.any());
+        Mockito.verify(mCanvas)
+                .drawRoundRect(
+                        Mockito.eq(expectedBounds),
+                        Mockito.anyFloat(),
+                        Mockito.anyFloat(),
+                        Mockito.any());
     }
 
     /**

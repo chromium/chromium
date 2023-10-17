@@ -39,9 +39,7 @@ import org.chromium.ui.display.DisplayAndroid;
 
 import java.util.Arrays;
 
-/**
- * The unit tests for AutofillProvider.
- */
+/** The unit tests for AutofillProvider. */
 @RunWith(BaseRobolectricTestRunner.class)
 @Config(manifest = Config.NONE)
 public class AutofillProviderTest {
@@ -62,18 +60,13 @@ public class AutofillProviderTest {
     // Virtual Id of the field with focus.
     private int mFocusVirtualId;
 
-    @Rule
-    public JniMocker mJniMocker = new JniMocker();
+    @Rule public JniMocker mJniMocker = new JniMocker();
 
-    @Mock
-    private AutofillProviderJni mAutofillProviderJni;
+    @Mock private AutofillProviderJni mAutofillProviderJni;
 
-    @Mock
-    private RenderCoordinatesImpl mRenderCoordinates;
+    @Mock private RenderCoordinatesImpl mRenderCoordinates;
 
-    /**
-     * AutofillManagerWrapper which keeps track of the virtual id of the field with focus.
-     */
+    /** AutofillManagerWrapper which keeps track of the virtual id of the field with focus. */
     private class TestAutofillManagerWrapper extends AutofillManagerWrapper {
         public TestAutofillManagerWrapper(Context context) {
             super(context);
@@ -96,31 +89,35 @@ public class AutofillProviderTest {
         mContainerView = Mockito.mock(ViewGroup.class);
 
         AutofillProvider.setAutofillManagerWrapperFactoryForTesting(
-                (context) -> { return new TestAutofillManagerWrapper(context); });
+                (context) -> {
+                    return new TestAutofillManagerWrapper(context);
+                });
 
-        mAutofillProvider = new AutofillProvider(
-                mContext, mContainerView, mWebContents, "AutofillProviderTest") {
-            @Override
-            protected void initializeNativeAutofillProvider(WebContents webContents) {
-                setNativeAutofillProvider(mMockedNativeAutofillProviderAndroid);
-            }
-        };
+        mAutofillProvider =
+                new AutofillProvider(
+                        mContext, mContainerView, mWebContents, "AutofillProviderTest") {
+                    @Override
+                    protected void initializeNativeAutofillProvider(WebContents webContents) {
+                        setNativeAutofillProvider(mMockedNativeAutofillProviderAndroid);
+                    }
+                };
 
         when(mWebContents.getTopLevelNativeWindow()).thenReturn(mWindowAndroid);
         when(mWindowAndroid.getDisplay()).thenReturn(mDisplayAndroid);
         when(mDisplayAndroid.getDipScale()).thenReturn(EXPECTED_DIP_SCALE);
         when(mContainerView.getScrollX()).thenReturn(SCROLL_X);
         when(mContainerView.getScrollY()).thenReturn(SCROLL_Y);
-        doAnswer(new Answer<Void>() {
-            @Override
-            public Void answer(InvocationOnMock invocation) {
-                Object[] args = invocation.getArguments();
-                int[] location = (int[]) args[0];
-                location[0] = LOCATION_X;
-                location[1] = LOCATION_Y;
-                return null;
-            }
-        })
+        doAnswer(
+                        new Answer<Void>() {
+                            @Override
+                            public Void answer(InvocationOnMock invocation) {
+                                Object[] args = invocation.getArguments();
+                                int[] location = (int[]) args[0];
+                                location[0] = LOCATION_X;
+                                location[1] = LOCATION_Y;
+                                return null;
+                            }
+                        })
                 .when(mContainerView)
                 .getLocationOnScreen(ArgumentMatchers.any());
 
@@ -133,12 +130,15 @@ public class AutofillProviderTest {
     @Test
     public void testTransformFormFieldToContainViewCoordinates() {
         FormFieldDataBuilder field1Builder = new FormFieldDataBuilder();
-        field1Builder.mBounds = new RectF(/*left=*/10, /*top=*/20, /*right=*/300, /*bottom=*/60);
+        field1Builder.mBounds =
+                new RectF(/* left= */ 10, /* top= */ 20, /* right= */ 300, /* bottom= */ 60);
         FormFieldDataBuilder field2Builder = new FormFieldDataBuilder();
-        field2Builder.mBounds = new RectF(/*left=*/20, /*top=*/100, /*right=*/400, /*bottom=*/200);
+        field2Builder.mBounds =
+                new RectF(/* left= */ 20, /* top= */ 100, /* right= */ 400, /* bottom= */ 200);
 
-        FormData formData = new FormData(
-                null, null, Arrays.asList(field1Builder.build(), field2Builder.build()));
+        FormData formData =
+                new FormData(
+                        null, null, Arrays.asList(field1Builder.build(), field2Builder.build()));
         mAutofillProvider.transformFormFieldToContainViewCoordinates(formData);
         RectF result = formData.mFields.get(0).getBoundsInContainerViewCoordinates();
         assertEquals(10 * EXPECTED_DIP_SCALE + SCROLL_X, result.left, 0);
@@ -176,11 +176,23 @@ public class AutofillProviderTest {
         field2Builder.mIsAutofilled = false;
         FormFieldDataBuilder field3Builder = new FormFieldDataBuilder();
         field3Builder.mIsAutofilled = false;
-        FormData formData = new FormData(null, null,
-                Arrays.asList(field1Builder.build(), field2Builder.build(), field3Builder.build()));
+        FormData formData =
+                new FormData(
+                        null,
+                        null,
+                        Arrays.asList(
+                                field1Builder.build(),
+                                field2Builder.build(),
+                                field3Builder.build()));
 
-        mAutofillProvider.startAutofillSession(formData, /*focus=*/1, /*x=*/0, /*y=*/0, /*width=*/0,
-                /*height=*/0, /*hasServerPrediction=*/false);
+        mAutofillProvider.startAutofillSession(
+                formData,
+                /* focus= */ 1,
+                /* x= */ 0,
+                /* y= */ 0,
+                /* width= */ 0,
+                /* height= */ 0,
+                /* hasServerPrediction= */ false);
 
         assertTrue(formData.mFields.get(0).isAutofilled());
         assertFalse(formData.mFields.get(1).isAutofilled());

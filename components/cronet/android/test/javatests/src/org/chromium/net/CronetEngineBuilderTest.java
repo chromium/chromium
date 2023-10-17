@@ -30,20 +30,16 @@ import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.List;
 
-/**
- * Tests {@link CronetEngine.Builder}.
- */
+/** Tests {@link CronetEngine.Builder}. */
 @RunWith(AndroidJUnit4.class)
-@IgnoreFor(implementations = {CronetImplementation.FALLBACK},
+@IgnoreFor(
+        implementations = {CronetImplementation.FALLBACK},
         reason = "These tests don't depend on Cronet's impl")
 @Batch(Batch.UNIT_TESTS)
 public class CronetEngineBuilderTest {
-    @Rule
-    public final CronetTestRule mTestRule = CronetTestRule.withManualEngineStartup();
+    @Rule public final CronetTestRule mTestRule = CronetTestRule.withManualEngineStartup();
 
-    /**
-     * Tests the comparison of two strings that contain versions.
-     */
+    /** Tests the comparison of two strings that contain versions. */
     @Test
     @SmallTest
     public void testVersionComparison() {
@@ -58,25 +54,35 @@ public class CronetEngineBuilderTest {
     }
 
     /**
-     * Tests the correct ordering of the providers. The platform provider should be
-     * the last in the list. Other providers should be ordered by placing providers
-     * with the higher version first.
+     * Tests the correct ordering of the providers. The platform provider should be the last in the
+     * list. Other providers should be ordered by placing providers with the higher version first.
      */
     @Test
     @SmallTest
     public void testProviderOrdering() {
-        final CronetProvider[] availableProviders = new CronetProvider[] {
-                new FakeProvider(mTestRule.getTestFramework().getContext(),
-                        PROVIDER_NAME_APP_PACKAGED, "99.77", true),
-                new FakeProvider(mTestRule.getTestFramework().getContext(), PROVIDER_NAME_FALLBACK,
-                        "99.99", true),
-                new FakeProvider(mTestRule.getTestFramework().getContext(), "Some other provider",
-                        "99.88", true),
-        };
+        final CronetProvider[] availableProviders =
+                new CronetProvider[] {
+                    new FakeProvider(
+                            mTestRule.getTestFramework().getContext(),
+                            PROVIDER_NAME_APP_PACKAGED,
+                            "99.77",
+                            true),
+                    new FakeProvider(
+                            mTestRule.getTestFramework().getContext(),
+                            PROVIDER_NAME_FALLBACK,
+                            "99.99",
+                            true),
+                    new FakeProvider(
+                            mTestRule.getTestFramework().getContext(),
+                            "Some other provider",
+                            "99.88",
+                            true),
+                };
 
         ArrayList<CronetProvider> providers = new ArrayList<>(Arrays.asList(availableProviders));
-        List<CronetProvider> orderedProviders = CronetEngine.Builder.getEnabledCronetProviders(
-                mTestRule.getTestFramework().getContext(), providers);
+        List<CronetProvider> orderedProviders =
+                CronetEngine.Builder.getEnabledCronetProviders(
+                        mTestRule.getTestFramework().getContext(), providers);
 
         // Check the result
         assertThat(orderedProviders)
@@ -92,21 +98,33 @@ public class CronetEngineBuilderTest {
     @Test
     @SmallTest
     public void testThatDisabledProvidersAreExcluded() {
-        final CronetProvider[] availableProviders = new CronetProvider[] {
-                new FakeProvider(mTestRule.getTestFramework().getContext(), PROVIDER_NAME_FALLBACK,
-                        "99.99", true),
-                new FakeProvider(mTestRule.getTestFramework().getContext(),
-                        PROVIDER_NAME_APP_PACKAGED, "99.77", true),
-                new FakeProvider(mTestRule.getTestFramework().getContext(), "Some other provider",
-                        "99.88", false),
-        };
+        final CronetProvider[] availableProviders =
+                new CronetProvider[] {
+                    new FakeProvider(
+                            mTestRule.getTestFramework().getContext(),
+                            PROVIDER_NAME_FALLBACK,
+                            "99.99",
+                            true),
+                    new FakeProvider(
+                            mTestRule.getTestFramework().getContext(),
+                            PROVIDER_NAME_APP_PACKAGED,
+                            "99.77",
+                            true),
+                    new FakeProvider(
+                            mTestRule.getTestFramework().getContext(),
+                            "Some other provider",
+                            "99.88",
+                            false),
+                };
 
         ArrayList<CronetProvider> providers = new ArrayList<>(Arrays.asList(availableProviders));
-        List<CronetProvider> orderedProviders = CronetEngine.Builder.getEnabledCronetProviders(
-                mTestRule.getTestFramework().getContext(), providers);
+        List<CronetProvider> orderedProviders =
+                CronetEngine.Builder.getEnabledCronetProviders(
+                        mTestRule.getTestFramework().getContext(), providers);
 
-        Correspondence<CronetProvider, String> providerName = Correspondence.transforming(
-                provider -> provider.getName(), "The name of the provider");
+        Correspondence<CronetProvider, String> providerName =
+                Correspondence.transforming(
+                        provider -> provider.getName(), "The name of the provider");
 
         assertThat(orderedProviders)
                 .comparingElementsUsing(providerName)

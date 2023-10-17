@@ -32,15 +32,11 @@ import java.util.ArrayList;
 import java.util.List;
 import java.util.Map;
 
-/**
- * Tests for the {@link PlayerFrameBitmapPainter} class.
- */
+/** Tests for the {@link PlayerFrameBitmapPainter} class. */
 @RunWith(BaseRobolectricTestRunner.class)
 @Config(shadows = {PlayerFrameBitmapPainterTest.FakeShadowBitmapFactory.class})
 public class PlayerFrameBitmapPainterTest {
-    /**
-     * A fake {@link BitmapFactory} used to avoid native for decoding.
-     */
+    /** A fake {@link BitmapFactory} used to avoid native for decoding. */
     @Implements(BitmapFactory.class)
     public static class FakeShadowBitmapFactory {
         private static Map<Integer, Bitmap> sBitmaps;
@@ -58,17 +54,20 @@ public class PlayerFrameBitmapPainterTest {
 
     static byte[] toByteArray(int value) {
         return new byte[] {
-                (byte) (value >> 24), (byte) (value >> 16), (byte) (value >> 8), (byte) (value)};
+            (byte) (value >> 24), (byte) (value >> 16), (byte) (value >> 8), (byte) (value)
+        };
     }
 
     static int fromByteArray(byte[] bytes) {
-        return ((bytes[0] & 0xFF) << 24) | ((bytes[1] & 0xFF) << 16) | ((bytes[2] & 0xFF) << 8)
+        return ((bytes[0] & 0xFF) << 24)
+                | ((bytes[1] & 0xFF) << 16)
+                | ((bytes[2] & 0xFF) << 8)
                 | ((bytes[3] & 0xFF));
     }
 
     /**
-     * Mocks {@link Canvas} and holds all calls to
-     * {@link Canvas#drawBitmap(Bitmap, Rect, Rect, Paint)}.
+     * Mocks {@link Canvas} and holds all calls to {@link Canvas#drawBitmap(Bitmap, Rect, Rect,
+     * Paint)}.
      */
     private class MockCanvas extends Canvas {
         private List<DrawnBitmap> mDrawnBitmaps = new ArrayList<>();
@@ -98,23 +97,23 @@ public class PlayerFrameBitmapPainterTest {
         }
 
         @Override
-        public void drawBitmap(@NonNull Bitmap bitmap, @Nullable Rect src, @NonNull Rect dst,
+        public void drawBitmap(
+                @NonNull Bitmap bitmap,
+                @Nullable Rect src,
+                @NonNull Rect dst,
                 @Nullable Paint paint) {
             mDrawnBitmaps.add(new DrawnBitmap(bitmap, src, dst));
         }
 
-        /**
-         * Asserts if a portion of a given bitmap has been drawn on this canvas.
-         */
+        /** Asserts if a portion of a given bitmap has been drawn on this canvas. */
         private void assertDrawBitmap(
                 @NonNull Bitmap bitmap, @Nullable Rect src, @NonNull Rect dst) {
-            Assert.assertTrue(bitmap + " has not been drawn from " + src + " to " + dst,
+            Assert.assertTrue(
+                    bitmap + " has not been drawn from " + src + " to " + dst,
                     mDrawnBitmaps.contains(new DrawnBitmap(bitmap, src, dst)));
         }
 
-        /**
-         * Asserts the number of bitmap draw operations on this canvas.
-         */
+        /** Asserts the number of bitmap draw operations on this canvas. */
         private void assertNumberOfBitmapDraws(int expected) {
             Assert.assertEquals(expected, mDrawnBitmaps.size());
         }
@@ -130,9 +129,7 @@ public class PlayerFrameBitmapPainterTest {
         return matrix;
     }
 
-    /**
-     * Verifies no draw operations are performed on the canvas if the view port is invalid.
-     */
+    /** Verifies no draw operations are performed on the canvas if the view port is invalid. */
     @Test
     public void testDrawFaultyViewPort() {
         PlayerFrameBitmapPainter painter =
@@ -152,9 +149,7 @@ public class PlayerFrameBitmapPainterTest {
         canvas.assertNumberOfBitmapDraws(2);
     }
 
-    /**
-     * Verifies no draw operations are performed on the canvas if the bitmap matrix is invalid.
-     */
+    /** Verifies no draw operations are performed on the canvas if the bitmap matrix is invalid. */
     @Test
     public void testDrawFaultyBitmapMatrix() {
         PlayerFrameBitmapPainter painter =
@@ -222,8 +217,8 @@ public class PlayerFrameBitmapPainterTest {
     public void testFirstPaintListener() {
         Runnable invalidator = Mockito.mock(Runnable.class);
         CallbackHelper firstPaintCallback = new CallbackHelper();
-        PlayerFrameBitmapPainter painter = new PlayerFrameBitmapPainter(invalidator,
-                firstPaintCallback::notifyCalled);
+        PlayerFrameBitmapPainter painter =
+                new PlayerFrameBitmapPainter(invalidator, firstPaintCallback::notifyCalled);
         MockCanvas canvas = new MockCanvas();
 
         // Prepare the bitmap matrix.
@@ -234,15 +229,21 @@ public class PlayerFrameBitmapPainterTest {
         painter.updateTileDimensions(new Size(10, 15));
         painter.updateViewPort(5, 10, 15, 25);
 
-        Assert.assertEquals("First paint listener shouldn't have been called", 0,
+        Assert.assertEquals(
+                "First paint listener shouldn't have been called",
+                0,
                 firstPaintCallback.getCallCount());
 
         painter.onDraw(canvas);
-        Assert.assertEquals("First paint listener should have been called", 1,
+        Assert.assertEquals(
+                "First paint listener should have been called",
+                1,
                 firstPaintCallback.getCallCount());
 
         painter.onDraw(canvas);
-        Assert.assertEquals("First paint listener should have been called only once", 1,
+        Assert.assertEquals(
+                "First paint listener should have been called only once",
+                1,
                 firstPaintCallback.getCallCount());
     }
 }

@@ -25,19 +25,15 @@ import org.chromium.net.ExperimentalCronetEngine;
 import java.util.List;
 
 /**
- *  Tests scenarios when the native shared library file is missing in the APK or was built for a
- *  wrong architecture.
+ * Tests scenarios when the native shared library file is missing in the APK or was built for a
+ * wrong architecture.
  */
 @RunWith(AndroidJUnit4.class)
 public class MissingNativeLibraryTest {
-    @Rule
-    public CronetSmokeTestRule mRule = new CronetSmokeTestRule();
-    @Rule
-    public ExpectedException thrown = ExpectedException.none();
+    @Rule public CronetSmokeTestRule mRule = new CronetSmokeTestRule();
+    @Rule public ExpectedException thrown = ExpectedException.none();
 
-    /**
-     * If the ".so" file is missing, instantiating the Cronet engine should throw an exception.
-     */
+    /** If the ".so" file is missing, instantiating the Cronet engine should throw an exception. */
     @Test
     @SmallTest
     public void testExceptionWhenSoFileIsAbsent() throws Exception {
@@ -48,8 +44,8 @@ public class MissingNativeLibraryTest {
     }
 
     /**
-     * Tests the embedder ability to select Java (platform) based implementation when
-     * the native library is missing or doesn't load for some reason,
+     * Tests the embedder ability to select Java (platform) based implementation when the native
+     * library is missing or doesn't load for some reason,
      */
     @Test
     @SmallTest
@@ -78,13 +74,15 @@ public class MissingNativeLibraryTest {
         CronetEngine engine = builder.build();
         assertJavaEngine(engine);
 
-        assertWithMessage("It should be always possible to cast the created builder to"
-                + " ExperimentalCronetEngine.Builder")
+        assertWithMessage(
+                        "It should be always possible to cast the created builder to"
+                                + " ExperimentalCronetEngine.Builder")
                 .that(builder)
                 .isInstanceOf(ExperimentalCronetEngine.Builder.class);
 
-        assertWithMessage("It should be always possible to cast the created engine to"
-                + " ExperimentalCronetEngine.Builder")
+        assertWithMessage(
+                        "It should be always possible to cast the created engine to"
+                                + " ExperimentalCronetEngine.Builder")
                 .that(engine)
                 .isInstanceOf(ExperimentalCronetEngine.class);
     }

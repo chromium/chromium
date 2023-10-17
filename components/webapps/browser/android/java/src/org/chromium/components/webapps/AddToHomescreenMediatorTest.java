@@ -24,18 +24,13 @@ import org.chromium.base.test.util.JniMocker;
 import org.chromium.ui.base.WindowAndroid;
 import org.chromium.ui.modelutil.PropertyModel;
 
-/**
- * Tests for the {@link AddToHomescreenMediator} class.
- */
+/** Tests for the {@link AddToHomescreenMediator} class. */
 @RunWith(BaseRobolectricTestRunner.class)
 public class AddToHomescreenMediatorTest {
-    @Rule
-    public JniMocker mocker = new JniMocker();
+    @Rule public JniMocker mocker = new JniMocker();
 
-    @Mock
-    private AddToHomescreenMediator.Natives mNativeMock;
-    @Mock
-    private WindowAndroid mWindowAndroid;
+    @Mock private AddToHomescreenMediator.Natives mNativeMock;
+    @Mock private WindowAndroid mWindowAndroid;
 
     private PropertyModel mPropertyModel =
             new PropertyModel.Builder(AddToHomescreenProperties.ALL_KEYS).build();
@@ -71,7 +66,8 @@ public class AddToHomescreenMediatorTest {
         Assert.assertEquals(
                 3.4f, mPropertyModel.get(AddToHomescreenProperties.NATIVE_APP_RATING), .01);
         Assert.assertEquals(true, mPropertyModel.get(AddToHomescreenProperties.CAN_SUBMIT));
-        Assert.assertEquals("Install",
+        Assert.assertEquals(
+                "Install",
                 mPropertyModel.get(AddToHomescreenProperties.NATIVE_INSTALL_BUTTON_TEXT));
     }
 

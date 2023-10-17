@@ -21,21 +21,18 @@ import java.io.File;
 import java.io.FileReader;
 import java.io.IOException;
 
-/**
- * Unittests for {@link PureJavaExceptionReporter}.
- */
+/** Unittests for {@link PureJavaExceptionReporter}. */
 @RunWith(BaseRobolectricTestRunner.class)
 @Batch(Batch.UNIT_TESTS)
 public class PureJavaExceptionReporterTest {
-    @Rule
-    public CrashTestRule mTestRule = new CrashTestRule();
+    @Rule public CrashTestRule mTestRule = new CrashTestRule();
 
     private class TestPureJavaExceptionReporter extends PureJavaExceptionReporter {
         private boolean mReportUploaded;
         private File mMinidump;
 
         public TestPureJavaExceptionReporter() {
-            super(/*attachLogcat=*/true);
+            super(/* attachLogcat= */ true);
         }
 
         @Override
@@ -70,16 +67,26 @@ public class PureJavaExceptionReporterTest {
 
     private static final String EXCEPTION_NAME = "EXCEPTION_NAME";
 
-    private static final String[] REPORT_FIELDS = {PureJavaExceptionReporter.CHANNEL,
-            PureJavaExceptionReporter.VERSION, PureJavaExceptionReporter.PRODUCT,
-            PureJavaExceptionReporter.ANDROID_BUILD_ID, PureJavaExceptionReporter.ANDROID_BUILD_FP,
-            PureJavaExceptionReporter.SDK, PureJavaExceptionReporter.ANDROID_SDK_INT,
-            PureJavaExceptionReporter.DEVICE, PureJavaExceptionReporter.GMS_CORE_VERSION,
-            PureJavaExceptionReporter.INSTALLER_PACKAGE_NAME, PureJavaExceptionReporter.ABI_NAME,
-            PureJavaExceptionReporter.PACKAGE, PureJavaExceptionReporter.MODEL,
-            PureJavaExceptionReporter.BRAND, PureJavaExceptionReporter.BOARD,
-            PureJavaExceptionReporter.EXCEPTION_INFO, PureJavaExceptionReporter.PROCESS_TYPE,
-            PureJavaExceptionReporter.EARLY_JAVA_EXCEPTION};
+    private static final String[] REPORT_FIELDS = {
+        PureJavaExceptionReporter.CHANNEL,
+        PureJavaExceptionReporter.VERSION,
+        PureJavaExceptionReporter.PRODUCT,
+        PureJavaExceptionReporter.ANDROID_BUILD_ID,
+        PureJavaExceptionReporter.ANDROID_BUILD_FP,
+        PureJavaExceptionReporter.SDK,
+        PureJavaExceptionReporter.ANDROID_SDK_INT,
+        PureJavaExceptionReporter.DEVICE,
+        PureJavaExceptionReporter.GMS_CORE_VERSION,
+        PureJavaExceptionReporter.INSTALLER_PACKAGE_NAME,
+        PureJavaExceptionReporter.ABI_NAME,
+        PureJavaExceptionReporter.PACKAGE,
+        PureJavaExceptionReporter.MODEL,
+        PureJavaExceptionReporter.BRAND,
+        PureJavaExceptionReporter.BOARD,
+        PureJavaExceptionReporter.EXCEPTION_INFO,
+        PureJavaExceptionReporter.PROCESS_TYPE,
+        PureJavaExceptionReporter.EARLY_JAVA_EXCEPTION
+    };
 
     private String readFileToString(File file) {
         StringBuilder sb = new StringBuilder();
@@ -94,8 +101,11 @@ public class PureJavaExceptionReporterTest {
     }
 
     private void verifyField(String minidumpString, String field) {
-        Assert.assertTrue("Report field \"" + field
-                        + "\" is not included in the report. Minidump string is \"" + minidumpString
+        Assert.assertTrue(
+                "Report field \""
+                        + field
+                        + "\" is not included in the report. Minidump string is \""
+                        + minidumpString
                         + "\"",
                 minidumpString.contains(field));
     }
@@ -125,7 +135,9 @@ public class PureJavaExceptionReporterTest {
     @SmallTest
     public void verifyCrashKeys() {
         TestThreadUtils.runOnUiThreadBlocking(
-                () -> { CrashKeys.getInstance().set(CrashKeyIndex.LOADED_DYNAMIC_MODULE, "foo"); });
+                () -> {
+                    CrashKeys.getInstance().set(CrashKeyIndex.LOADED_DYNAMIC_MODULE, "foo");
+                });
 
         TestPureJavaExceptionReporter reporter = new TestPureJavaExceptionReporter();
         reporter.createAndUploadReport(new RuntimeException());
