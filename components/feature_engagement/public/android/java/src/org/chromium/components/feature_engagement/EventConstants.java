@@ -201,6 +201,10 @@ public final class EventConstants {
     public static final String READ_LATER_BOOKMARK_FOLDER_OPENED =
             "read_later_bookmark_folder_opened";
 
+    /** The request desktop site window setting IPH was shown. */
+    public static final String REQUEST_DESKTOP_SITE_WINDOW_SETTING_IPH_SHOWN =
+            "request_desktop_site_window_setting_iph_shown";
+
     /** Video tutorial related events. */
     public static final String VIDEO_TUTORIAL_DISMISSED_SUMMARY =
             "video_tutorial_iph_dismissed_summary";

@@ -741,8 +741,12 @@ public class TabbedRootUiCoordinator extends RootUiCoordinator {
                         getToolbarManager().getMenuButtonView(),
                         mAppMenuCoordinator.getAppMenuHandler(), R.id.manage_all_windows_menu_id);
             }
-            DesktopSiteSettingsIPHController.create(mActivity, mWindowAndroid, mActivityTabProvider,
-                    Profile.getLastUsedRegularProfile(), getToolbarManager().getMenuButtonView(),
+            DesktopSiteSettingsIPHController.create(
+                    mActivity,
+                    mWindowAndroid,
+                    mActivityTabProvider,
+                    Profile.getLastUsedRegularProfile(),
+                    getToolbarManager().getMenuButtonView(),
                     mAppMenuCoordinator.getAppMenuHandler());
         }
         mPromoShownOneshotSupplier.set(didTriggerPromo);

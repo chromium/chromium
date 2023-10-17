@@ -531,18 +531,26 @@ public class BaseCustomTabRootUiCoordinator extends RootUiCoordinator {
      * Runs a set of deferred startup tasks.
      */
     void onDeferredStartup() {
-        new OneShotCallback<>(mProfileSupplier, mCallbackController.makeCancelable((profile) -> {
-            Profile regularProfile = profile.getOriginalProfile();
+        new OneShotCallback<>(
+                mProfileSupplier,
+                mCallbackController.makeCancelable(
+                        (profile) -> {
+                            Profile regularProfile = profile.getOriginalProfile();
 
-            boolean didShowPrompt = RequestDesktopUtils.maybeShowDefaultEnableGlobalSettingMessage(
-                    regularProfile, mMessageDispatcher, mActivity);
-            if (!didShowPrompt && mAppMenuCoordinator != null) {
-                mDesktopSiteSettingsIPHController = DesktopSiteSettingsIPHController.create(
-                        mActivity, mWindowAndroid, mActivityTabProvider, regularProfile,
-                        getToolbarManager().getMenuButtonView(),
-                        mAppMenuCoordinator.getAppMenuHandler());
-            }
-        }));
+                            boolean didShowPrompt =
+                                    RequestDesktopUtils.maybeShowDefaultEnableGlobalSettingMessage(
+                                            regularProfile, mMessageDispatcher, mActivity);
+                            if (!didShowPrompt && mAppMenuCoordinator != null) {
+                                mDesktopSiteSettingsIPHController =
+                                        DesktopSiteSettingsIPHController.create(
+                                                mActivity,
+                                                mWindowAndroid,
+                                                mActivityTabProvider,
+                                                regularProfile,
+                                                getToolbarManager().getMenuButtonView(),
+                                                mAppMenuCoordinator.getAppMenuHandler());
+                            }
+                        }));
     }
 
     CustomTabHeightStrategy getCustomTabSizeStrategyForTesting() {

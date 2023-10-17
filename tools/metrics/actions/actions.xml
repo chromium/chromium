@@ -39663,6 +39663,8 @@ should be able to be added at any place in this file.
       label="For the RequestDesktopSiteExceptionsGeneric feature."/>
   <suffix name="RequestDesktopSiteOptIn"
       label="For the RequestDesktopSiteOptIn feature."/>
+  <suffix name="RequestDesktopSiteWindowSetting"
+      label="For the RequestDesktopSiteWindowSetting feature."/>
   <suffix name="RestoreTabsOnFRE" label="For the RestoreTabsOnFRE feature."/>
   <suffix name="ScalableIphGaming"
       label="For a variant of Scalable Iph feature."/>

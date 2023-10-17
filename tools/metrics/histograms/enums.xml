@@ -72968,6 +72968,7 @@ Called by update_use_counter_css.py.-->
   <int value="38" label="DEPRECATED: UndoCustomTabRestoration"/>
   <int value="39" label="CvcSave"/>
   <int value="40" label="TrackingProtectionNotice"/>
+  <int value="41" label="DesktopSiteWindowSetting"/>
 </enum>
 
 <enum name="MessageLoopProblems">
