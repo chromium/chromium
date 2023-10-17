@@ -81,11 +81,6 @@ def _ValidateDelta(root, delta):
     generated_files_to_skip = {
         ('third_party/blink/public/mojom/runtime_feature_state/'
          'runtime_feature.mojom'),
-        # TODO: Remove the following file. We need to skip the old file because
-        # it's still in the rename delta. Compatibility checker will try to
-        # read it and fail.
-        ('third_party/blink/public/mojom/runtime_feature_state/'
-         'runtime_feature_state.mojom'),
         ('third_party/blink/public/mojom/origin_trial_feature/'
          'origin_trial_feature.mojom'),
     }
