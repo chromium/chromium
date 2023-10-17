@@ -32,11 +32,33 @@
   }
 
   #body {
+    --scrollbar-width_: 4px;
     box-sizing: border-box;
     display: flex;
     flex-direction: column;
     gap: 8px;
+    max-height: 220px;
+    overflow: auto;
     padding: 0 20px;
+    padding-inline-end: calc(20px - var(--scrollbar-width_));
+    scrollbar-gutter: stable;
+  }
+
+  #body.is-scrolled {
+    border-top: solid 1px var(--color-compose-dialog-divider);
+  }
+
+  #body.can-scroll:not(.scrolled-to-bottom) {
+    border-bottom: solid 1px var(--color-compose-dialog-divider);
+  }
+
+  #body::-webkit-scrollbar {
+    background: transparent;
+    width: var(--scrollbar-width_);
+  }
+
+  #body::-webkit-scrollbar-thumb {
+    background: var(--color-compose-dialog-scrollbar-thumb);
   }
 
   #loading {
@@ -116,7 +138,7 @@
   <cr-icon-button iron-icon="cr:close"></cr-icon-button>
 </div>
 
-<div id="body">
+<div id="body" scrollable>
   <compose-textarea id="textarea"
       on-value-changed="onTextareaValueChanged_"
       readonly="[[submitted_]]"

@@ -11,6 +11,7 @@ import '//resources/cr_elements/md_select.css.js';
 
 import {ColorChangeUpdater} from '//resources/cr_components/color_change_listener/colors_css_updater.js';
 import {CrButtonElement} from '//resources/cr_elements/cr_button/cr_button.js';
+import {CrScrollableMixin} from '//resources/cr_elements/cr_scrollable_mixin.js';
 import {PolymerElement} from '//resources/polymer/v3_0/polymer/polymer_bundled.min.js';
 
 import {getTemplate} from './app.html.js';
@@ -20,6 +21,7 @@ import {ComposeTextareaElement} from './textarea.js';
 
 export interface ComposeAppElement {
   $: {
+    body: HTMLElement,
     insertButton: CrButtonElement,
     loading: HTMLElement,
     refreshButton: HTMLElement,
@@ -29,7 +31,8 @@ export interface ComposeAppElement {
   };
 }
 
-export class ComposeAppElement extends PolymerElement {
+const ComposeAppElementBase = CrScrollableMixin(PolymerElement);
+export class ComposeAppElement extends ComposeAppElementBase {
   static get is() {
     return 'compose-app';
   }
@@ -112,6 +115,7 @@ export class ComposeAppElement extends PolymerElement {
         this.input_);
     this.result_ = response.result || 'error';
     this.loading_ = false;
+    this.requestUpdateScroll();
   }
 }
 

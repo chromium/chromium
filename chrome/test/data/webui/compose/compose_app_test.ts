@@ -10,7 +10,7 @@ import {ComposeApiProxy, ComposeApiProxyImpl} from 'chrome://compose/compose_api
 import {assertEquals, assertFalse, assertTrue} from 'chrome://webui-test/chai_assert.js';
 import {flushTasks} from 'chrome://webui-test/polymer_test_util.js';
 import {TestBrowserProxy} from 'chrome://webui-test/test_browser_proxy.js';
-import {isVisible} from 'chrome://webui-test/test_util.js';
+import {isVisible, whenCheck} from 'chrome://webui-test/test_util.js';
 
 
 class TestingApiProxy extends TestBrowserProxy implements ComposeApiProxy {
@@ -104,5 +104,23 @@ suite('ComposeApp', () => {
     assertTrue(isVisible(app.$.resultContainer));
     assertTrue(
         app.$.resultContainer.textContent!.includes('Refreshed output.'));
+  });
+
+  test('UpdatesScrollableBodyAfterResults', async () => {
+    assertTrue(app.$.body.hasAttribute('scrollable'));
+
+    mockInput('Some fake input.');
+    app.$.submitButton.click();
+
+    // Mock a height on results to get body to scroll. The body should not yet
+    // be scrollable though because result has not been fetched yet.
+    app.$.resultContainer.style.minHeight = '500px';
+    assertFalse(app.$.body.classList.contains('can-scroll'));
+
+    await testProxy.whenCalled('compose');
+    await whenCheck(
+        app.$.body, () => app.$.body.classList.contains('can-scroll'));
+    assertEquals(220, app.$.body.offsetHeight);
+    assertTrue(220 < app.$.body.scrollHeight);
   });
 });

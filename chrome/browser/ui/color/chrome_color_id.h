@@ -709,12 +709,14 @@
   E_CPONLY(kColorPreviousReadAloudHighlightYellow) \
   /* Compose colors */ \
   E_CPONLY(kColorComposeDialogBackground) \
+  E_CPONLY(kColorComposeDialogDivider) \
   E_CPONLY(kColorComposeDialogError) \
   E_CPONLY(kColorComposeDialogForegroundSubtle) \
   E_CPONLY(kColorComposeDialogLink) \
   E_CPONLY(kColorComposeDialogResultBackground) \
   E_CPONLY(kColorComposeDialogResultForeground) \
   E_CPONLY(kColorComposeDialogResultIcon) \
+  E_CPONLY(kColorComposeDialogScrollbarThumb) \
   E_CPONLY(kColorComposeDialogTitle) \
   E_CPONLY(kColorComposeDialogTextarea) \
   E_CPONLY(kColorComposeDialogTextareaOutline) \
