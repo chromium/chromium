@@ -27,8 +27,7 @@ constexpr uint64_t kInternalMicId = 10003;
 class AudioDetailedViewPixelTest : public AshTestBase {
  public:
   AudioDetailedViewPixelTest() {
-    feature_list_.InitWithFeatures(
-        {features::kQsRevamp, chromeos::features::kJelly}, {});
+    feature_list_.InitWithFeatures({chromeos::features::kJelly}, {});
   }
 
   // AshTestBase:

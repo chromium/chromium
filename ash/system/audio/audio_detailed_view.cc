@@ -69,24 +69,20 @@
 namespace ash {
 namespace {
 
-const int kLabelFontSizeDelta = 1;
-const int kToggleButtonRowViewSpacing = 18;
 const int kToggleButtonRowRightPadding = 16;
 const int kNbsWarningMinHeight = 80;
 constexpr auto kLiveCaptionContainerMargins = gfx::Insets::TLBR(0, 0, 8, 0);
-constexpr auto kToggleButtonRowLabelPadding = gfx::Insets::TLBR(16, 0, 15, 0);
-constexpr auto kToggleButtonRowViewPadding = gfx::Insets::TLBR(0, 56, 8, 0);
-constexpr auto kQsToggleButtonRowViewPadding =
+constexpr auto kToggleButtonRowViewPadding =
     gfx::Insets::TLBR(0, 32, 0, kToggleButtonRowRightPadding);
-constexpr auto kQsToggleButtonRowPreferredSize = gfx::Size(0, 32);
-constexpr auto kQsToggleButtonRowLabelPadding = gfx::Insets::VH(8, 12);
-constexpr auto kQsToggleButtonRowMargins = gfx::Insets::VH(4, 0);
+constexpr auto kToggleButtonRowPreferredSize = gfx::Size(0, 32);
+constexpr auto kToggleButtonRowLabelPadding = gfx::Insets::VH(8, 12);
+constexpr auto kToggleButtonRowMargins = gfx::Insets::VH(4, 0);
 constexpr auto kSeparatorMargins = gfx::Insets::TLBR(4, 32, 12, 32);
 constexpr auto kTextRowInsets = gfx::Insets::VH(8, 24);
 constexpr auto kDevicesNameViewPreferredSize = gfx::Size(0, 44);
 constexpr auto kDevicesTriViewInsets = gfx::Insets::TLBR(0, 24, 0, 32);
 constexpr auto kDevicesTriViewBorder = gfx::Insets::VH(0, 4);
-constexpr auto kQsSubsectionMargins = gfx::Insets::TLBR(0, 0, 4, 0);
+constexpr auto kSubsectionMargins = gfx::Insets::TLBR(0, 0, 4, 0);
 
 // This callback is only used for tests.
 AudioDetailedView::NoiseCancellationCallback*
@@ -261,23 +257,13 @@ void AudioDetailedView::Update() {
 void AudioDetailedView::OnAccessibilityStatusChanged() {
   AccessibilityControllerImpl* controller =
       Shell::Get()->accessibility_controller();
-  if (features::IsQsRevampEnabled()) {
-    // The live caption state has been updated.
-    UpdateLiveCaptionView(controller->live_caption().enabled());
-  } else if (live_caption_view_ &&
-             controller->IsLiveCaptionSettingVisibleInTray()) {
-    TrayPopupUtils::UpdateCheckMarkVisibility(
-        live_caption_view_, controller->live_caption().enabled());
-  }
+  // The live caption state has been updated.
+  UpdateLiveCaptionView(controller->live_caption().enabled());
 }
 
 void AudioDetailedView::OnCapabilityAccessUpdate(
     const apps::CapabilityAccessUpdate& update) {
-  if (!features::IsQsRevampEnabled()) {
-    UpdateAgcInfoRow();
-  } else {
-    UpdateQsAgcInfoRow();
-  }
+  UpdateAgcInfoRow();
 }
 
 void AudioDetailedView::OnAppCapabilityAccessCacheWillBeDestroyed(
@@ -324,23 +310,12 @@ void AudioDetailedView::OnSessionStateChanged(
 void AudioDetailedView::AddAudioSubHeader(views::View* container,
                                           const gfx::VectorIcon& icon,
                                           const int text_id) {
-  if (!features::IsQsRevampEnabled()) {
-    TriView* header = AddScrollListSubHeader(container, icon, text_id);
-    header->SetContainerVisible(TriView::Container::END, /*visible=*/false);
-    return;
-  }
-
   auto* sub_header_label_ = TrayPopupUtils::CreateDefaultLabel();
   sub_header_label_->SetText(l10n_util::GetStringUTF16(text_id));
   sub_header_label_->SetEnabledColorId(cros_tokens::kCrosSysOnSurfaceVariant);
-  if (chromeos::features::IsJellyEnabled()) {
-    sub_header_label_->SetAutoColorReadabilityEnabled(false);
-    TypographyProvider::Get()->StyleLabel(TypographyToken::kCrosBody2,
-                                          *sub_header_label_);
-  } else {
-    TrayPopupUtils::SetLabelFontList(sub_header_label_,
-                                     TrayPopupUtils::FontStyle::kSubHeader);
-  }
+  sub_header_label_->SetAutoColorReadabilityEnabled(false);
+  TypographyProvider::Get()->StyleLabel(TypographyToken::kCrosBody2,
+                                        *sub_header_label_);
   sub_header_label_->SetBorder(views::CreateEmptyBorder(kTextRowInsets));
   container->AddChildView(sub_header_label_);
   return;
@@ -361,10 +336,8 @@ views::View* AudioDetailedView::AddDeviceSlider(
           ? CrasAudioHandler::Get()->IsOutputMutedForDevice(device.id)
           : CrasAudioHandler::Get()->IsInputMutedForDevice(device.id);
   UpdateDeviceContainerColor(device_name_container, is_muted);
-  if (chromeos::features::IsJellyEnabled()) {
-    TypographyProvider::Get()->StyleLabel(TypographyToken::kCrosButton2,
-                                          *device_name_container->text_label());
-  }
+  TypographyProvider::Get()->StyleLabel(TypographyToken::kCrosButton2,
+                                        *device_name_container->text_label());
   device_name_container->SetPaintToLayer();
   // If this device is the active one, disables event handling on
   // `device_name_container` so that `slider` can handle the events.
@@ -417,14 +390,8 @@ views::View* AudioDetailedView::AddDeviceSlider(
 
 void AudioDetailedView::CreateItems() {
   CreateScrollableList();
-  if (features::IsQsRevampEnabled()) {
-    CreateTitleRow(IDS_ASH_STATUS_TRAY_AUDIO_QS_REVAMP);
-    // `live_caption_view_` will always shows up in the revamped
-    // `AudioDetailedView`.
-    CreateLiveCaptionView();
-  } else {
-    CreateTitleRow(IDS_ASH_STATUS_TRAY_AUDIO);
-  }
+  CreateTitleRow(IDS_ASH_STATUS_TRAY_AUDIO_TITLE);
+  CreateLiveCaptionView();
 
   mic_gain_controller_ = std::make_unique<MicGainSliderController>();
   unified_volume_slider_controller_ =
@@ -455,12 +422,10 @@ void AudioDetailedView::CreateLiveCaptionView() {
   live_caption_view_->AddViewAndLabel(
       std::move(toggle_icon),
       l10n_util::GetStringUTF16(IDS_ASH_STATUS_TRAY_LIVE_CAPTION));
-  if (chromeos::features::IsJellyEnabled()) {
-    live_caption_view_->text_label()->SetEnabledColorId(
-        cros_tokens::kCrosSysOnSurface);
-    TypographyProvider::Get()->StyleLabel(TypographyToken::kCrosButton1,
-                                          *live_caption_view_->text_label());
-  }
+  live_caption_view_->text_label()->SetEnabledColorId(
+      cros_tokens::kCrosSysOnSurface);
+  TypographyProvider::Get()->StyleLabel(TypographyToken::kCrosButton1,
+                                        *live_caption_view_->text_label());
 
   // Creates a toggle button on the right.
   auto toggle = std::make_unique<Switch>(base::BindRepeating(
@@ -487,69 +452,17 @@ void AudioDetailedView::CreateLiveCaptionView() {
       gfx::Insets::TLBR(8, 24, 8, kToggleButtonRowRightPadding));
 }
 
-std::unique_ptr<views::View>
-AudioDetailedView::CreateNoiseCancellationToggleRow(const AudioDevice& device) {
-  CrasAudioHandler* audio_handler = CrasAudioHandler::Get();
-  auto noise_cancellation_toggle = std::make_unique<TrayToggleButton>(
-      base::BindRepeating(
-          &AudioDetailedView::OnInputNoiseCancellationTogglePressed,
-          base::Unretained(this)),
-      IDS_ASH_STATUS_TRAY_AUDIO_INPUT_NOISE_CANCELLATION);
-
-  noise_cancellation_toggle->SetIsOn(
-      audio_handler->GetNoiseCancellationState());
-
-  auto noise_cancellation_toggle_row = std::make_unique<views::View>();
-
-  auto* row_layout = noise_cancellation_toggle_row->SetLayoutManager(
-      std::make_unique<views::BoxLayout>(
-          views::BoxLayout::Orientation::kHorizontal,
-          kToggleButtonRowViewPadding, kToggleButtonRowViewSpacing));
-
-  noise_cancellation_toggle->SetFlipCanvasOnPaintForRTLUI(false);
-
-  auto noise_cancellation_label =
-      std::make_unique<views::Label>(l10n_util::GetStringUTF16(
-          IDS_ASH_STATUS_TRAY_AUDIO_INPUT_NOISE_CANCELLATION));
-
-  noise_cancellation_label->SetEnabledColorId(kColorAshTextColorPrimary);
-  noise_cancellation_label->SetHorizontalAlignment(gfx::ALIGN_LEFT);
-  noise_cancellation_label->SetFontList(
-      gfx::FontList().DeriveWithSizeDelta(kLabelFontSizeDelta));
-  noise_cancellation_label->SetAutoColorReadabilityEnabled(false);
-  noise_cancellation_label->SetSubpixelRenderingEnabled(false);
-  noise_cancellation_label->SetBorder(
-      views::CreateEmptyBorder(kToggleButtonRowLabelPadding));
-
-  auto* label_ptr = noise_cancellation_toggle_row->AddChildView(
-      std::move(noise_cancellation_label));
-  row_layout->SetFlexForView(label_ptr, 1);
-
-  noise_cancellation_toggle_row->AddChildView(
-      std::move(noise_cancellation_toggle));
-
-  // This is only used for testing.
-  if (g_noise_cancellation_toggle_callback) {
-    g_noise_cancellation_toggle_callback->Run(
-        device.id, noise_cancellation_toggle_row.get());
-  }
-
-  return noise_cancellation_toggle_row;
-}
-
 std::unique_ptr<TriView> AudioDetailedView::CreateNbsWarningView() {
-  const bool is_qs_revamp = features::IsQsRevampEnabled();
-
   std::unique_ptr<TriView> nbs_warning_view(
       TrayPopupUtils::CreateDefaultRowView(
-          /*use_wide_layout=*/is_qs_revamp));
+          /*use_wide_layout=*/true));
   nbs_warning_view->SetMinHeight(kNbsWarningMinHeight);
   nbs_warning_view->SetContainerVisible(TriView::Container::END, false);
   nbs_warning_view->SetID(AudioDetailedViewID::kNbsWarningView);
 
   std::unique_ptr<views::ImageView> image_view =
       base::WrapUnique(TrayPopupUtils::CreateMainImageView(
-          /*use_wide_layout=*/is_qs_revamp));
+          /*use_wide_layout=*/true));
   image_view->SetImage(
       ui::ImageModel::FromVectorIcon(vector_icons::kNotificationWarningIcon,
                                      kColorAshIconColorWarning, kMenuIconSize));
@@ -562,20 +475,15 @@ std::unique_ptr<TriView> AudioDetailedView::CreateNbsWarningView() {
   label->SetMultiLine(/*multi_line=*/true);
   label->SetBackground(views::CreateSolidBackground(SK_ColorTRANSPARENT));
   label->SetEnabledColorId(kColorAshTextColorWarning);
-  if (chromeos::features::IsJellyEnabled()) {
-    label->SetAutoColorReadabilityEnabled(false);
-    TypographyProvider::Get()->StyleLabel(TypographyToken::kCrosBody2, *label);
-  } else {
-    TrayPopupUtils::SetLabelFontList(
-        label.get(), TrayPopupUtils::FontStyle::kDetailedViewLabel);
-  }
+  label->SetAutoColorReadabilityEnabled(false);
+  TypographyProvider::Get()->StyleLabel(TypographyToken::kCrosBody2, *label);
+
   nbs_warning_view->AddView(TriView::Container::CENTER, std::move(label));
   return nbs_warning_view;
 }
 
 std::unique_ptr<HoverHighlightView>
-AudioDetailedView::CreateQsNoiseCancellationToggleRow(
-    const AudioDevice& device) {
+AudioDetailedView::CreateNoiseCancellationToggleRow(const AudioDevice& device) {
   bool noise_cancellation_state =
       CrasAudioHandler::Get()->GetNoiseCancellationState();
 
@@ -592,13 +500,11 @@ AudioDetailedView::CreateQsNoiseCancellationToggleRow(
       std::move(toggle_icon),
       l10n_util::GetStringUTF16(
           IDS_ASH_STATUS_TRAY_AUDIO_INPUT_NOISE_CANCELLATION));
-  if (chromeos::features::IsJellyEnabled()) {
-    views::Label* noise_cancellation_label =
-        noise_cancellation_view->text_label();
-    noise_cancellation_label->SetEnabledColorId(cros_tokens::kCrosSysOnSurface);
-    TypographyProvider::Get()->StyleLabel(TypographyToken::kCrosButton2,
-                                          *noise_cancellation_label);
-  }
+  views::Label* noise_cancellation_label =
+      noise_cancellation_view->text_label();
+  noise_cancellation_label->SetEnabledColorId(cros_tokens::kCrosSysOnSurface);
+  TypographyProvider::Get()->StyleLabel(TypographyToken::kCrosButton2,
+                                        *noise_cancellation_label);
 
   // Create a non-clickable non-focusable toggle button on the right. The events
   // and focus behavior should be handled by `noise_cancellation_view_` instead.
@@ -613,14 +519,14 @@ AudioDetailedView::CreateQsNoiseCancellationToggleRow(
   noise_cancellation_button_ = toggle.get();
   noise_cancellation_view->AddRightView(toggle.release());
 
-  noise_cancellation_view->tri_view()->SetInsets(kQsToggleButtonRowViewPadding);
+  noise_cancellation_view->tri_view()->SetInsets(kToggleButtonRowViewPadding);
   noise_cancellation_view->tri_view()->SetContainerLayout(
       TriView::Container::CENTER, std::make_unique<views::BoxLayout>(
                                       views::BoxLayout::Orientation::kVertical,
-                                      kQsToggleButtonRowLabelPadding));
-  noise_cancellation_view->SetPreferredSize(kQsToggleButtonRowPreferredSize);
+                                      kToggleButtonRowLabelPadding));
+  noise_cancellation_view->SetPreferredSize(kToggleButtonRowPreferredSize);
   noise_cancellation_view->SetProperty(views::kMarginsKey,
-                                       kQsToggleButtonRowMargins);
+                                       kToggleButtonRowMargins);
   noise_cancellation_view->SetAccessibilityState(
       noise_cancellation_state
           ? HoverHighlightView::AccessibilityState::CHECKED_CHECKBOX
@@ -635,40 +541,7 @@ AudioDetailedView::CreateQsNoiseCancellationToggleRow(
   return noise_cancellation_view;
 }
 
-views::Builder<views::BoxLayoutView> AudioDetailedView::CreateAgcInfoRow(
-    const AudioDevice& device) {
-  return views::Builder<views::BoxLayoutView>()
-      .SetID(AudioDetailedViewID::kAgcInfoRow)
-      .SetFocusBehavior(FocusBehavior::NEVER)
-      .SetDefaultFlex(1)
-      .SetLayoutManager(std::make_unique<views::BoxLayout>(
-          views::BoxLayout::Orientation::kHorizontal,
-          kToggleButtonRowViewPadding, kToggleButtonRowViewSpacing))
-      .AddChild(views::Builder<views::ImageView>().SetImage(
-          ui::ImageModel::FromVectorIcon(kUnifiedMenuInfoIcon,
-                                         cros_tokens::kCrosSysOnSurface,
-                                         kQsSliderIconSize)))
-      .AddChild(
-          views::Builder<views::Label>()
-              .SetText(std::u16string())
-              .SetEnabledColorId(kColorAshTextColorPrimary)
-              .SetHorizontalAlignment(gfx::ALIGN_LEFT)
-              .SetFontList(
-                  gfx::FontList().DeriveWithSizeDelta(kLabelFontSizeDelta))
-              .SetAutoColorReadabilityEnabled(false)
-              .SetSubpixelRenderingEnabled(false)
-              .SetBorder(views::CreateEmptyBorder(kToggleButtonRowLabelPadding))
-              .SetFocusBehavior(FocusBehavior::ACCESSIBLE_ONLY)
-              .SetID(AudioDetailedViewID::kAgcInfoLabel))
-      .AddChild(views::Builder<views::LabelButton>(
-          std::make_unique<views::LabelButton>(
-              base::BindRepeating(&AudioDetailedView::OnSettingsButtonClicked,
-                                  weak_factory_.GetWeakPtr()),
-              l10n_util::GetStringUTF16(
-                  IDS_ASH_STATUS_TRAY_AUDIO_SETTINGS_SHORT_STRING))));
-}
-
-std::unique_ptr<HoverHighlightView> AudioDetailedView::CreateQsAgcInfoRow(
+std::unique_ptr<HoverHighlightView> AudioDetailedView::CreateAgcInfoRow(
     const AudioDevice& device) {
   auto agc_info_view = std::make_unique<HoverHighlightView>(/*listener=*/this);
   agc_info_view->SetID(AudioDetailedViewID::kAgcInfoView);
@@ -696,13 +569,13 @@ std::unique_ptr<HoverHighlightView> AudioDetailedView::CreateQsAgcInfoRow(
   }
   agc_info_view->AddRightView(settings.release());
 
-  agc_info_view->tri_view()->SetInsets(kQsToggleButtonRowViewPadding);
+  agc_info_view->tri_view()->SetInsets(kToggleButtonRowViewPadding);
   agc_info_view->tri_view()->SetContainerLayout(
       TriView::Container::CENTER, std::make_unique<views::BoxLayout>(
                                       views::BoxLayout::Orientation::kVertical,
-                                      kQsToggleButtonRowLabelPadding));
-  agc_info_view->SetPreferredSize(kQsToggleButtonRowPreferredSize);
-  agc_info_view->SetProperty(views::kMarginsKey, kQsToggleButtonRowMargins);
+                                      kToggleButtonRowLabelPadding));
+  agc_info_view->SetPreferredSize(kToggleButtonRowPreferredSize);
+  agc_info_view->SetProperty(views::kMarginsKey, kToggleButtonRowMargins);
   agc_info_view->SetFocusBehavior(FocusBehavior::NEVER);
 
   return agc_info_view;
@@ -713,8 +586,6 @@ void AudioDetailedView::MaybeShowSodaMessage(speech::LanguageCode language_code,
   AccessibilityControllerImpl* controller =
       Shell::Get()->accessibility_controller();
   const bool is_live_caption_enabled = controller->live_caption().enabled();
-  const bool is_live_caption_in_tray =
-      live_caption_view_ && controller->IsLiveCaptionSettingVisibleInTray();
   // Only show updates for this feature if the language code applies to the SODA
   // binary (encoded by `LanguageCode::kNone`) or the language pack matching
   // the feature locale.
@@ -722,8 +593,7 @@ void AudioDetailedView::MaybeShowSodaMessage(speech::LanguageCode language_code,
       language_code == speech::LanguageCode::kNone ||
       language_code == GetLiveCaptionLocale();
 
-  if (live_caption_has_update && is_live_caption_enabled &&
-      (features::IsQsRevampEnabled() || is_live_caption_in_tray)) {
+  if (live_caption_has_update && is_live_caption_enabled) {
     live_caption_view_->SetSubText(message);
   }
 }
@@ -733,9 +603,7 @@ void AudioDetailedView::OnInputNoiseCancellationTogglePressed() {
   const bool new_state = !audio_handler->GetNoiseCancellationState();
   audio_handler->SetNoiseCancellationState(
       new_state, CrasAudioHandler::AudioSettingsChangeSource::kSystemTray);
-  if (features::IsQsRevampEnabled()) {
-    noise_cancellation_button_->SetIsOn(new_state);
-  }
+  noise_cancellation_button_->SetIsOn(new_state);
 }
 
 void AudioDetailedView::OnSettingsButtonClicked() {
@@ -835,28 +703,12 @@ void AudioDetailedView::UpdateScrollableList() {
   device_map_.clear();
   scroll_content()->RemoveAllChildViews();
 
-  const bool is_qs_revamp = features::IsQsRevampEnabled();
-
-  // Uses the `RoundedContainer` for QsRevamp.
   views::View* container = scroll_content();
-  if (is_qs_revamp) {
-    container =
-        scroll_content()->AddChildView(std::make_unique<RoundedContainer>());
-  }
+  container =
+      scroll_content()->AddChildView(std::make_unique<RoundedContainer>());
 
   // Adds the live caption toggle.
-  AccessibilityControllerImpl* controller =
-      Shell::Get()->accessibility_controller();
-  if (is_qs_revamp) {
-    CreateLiveCaptionView();
-  } else if (controller->IsLiveCaptionSettingVisibleInTray()) {
-    live_caption_view_ = AddScrollListCheckableItem(
-        container, vector_icons::kLiveCaptionOnIcon,
-        l10n_util::GetStringUTF16(IDS_ASH_STATUS_TRAY_LIVE_CAPTION),
-        controller->live_caption().enabled(),
-        controller->IsEnterpriseIconVisibleForLiveCaption());
-    container->AddChildView(TrayPopupUtils::CreateListSubHeaderSeparator());
-  }
+  CreateLiveCaptionView();
 
   // Adds audio output devices.
   const bool has_output_devices = output_devices_.size() > 0;
@@ -871,24 +723,18 @@ void AudioDetailedView::UpdateScrollableList() {
         container, gfx::kNoneIcon, GetAudioDeviceName(device), device.active);
     device_map_[device_name_container] = device;
 
-    if (is_qs_revamp) {
-      // Sets this flag to false to make the assigned color id effective.
-      // Otherwise it will use `color_utils::BlendForMinContrast()` to improve
-      // label readability over the background.
-      device_name_container->text_label()->SetAutoColorReadabilityEnabled(
-          /*enabled=*/false);
-      last_output_device =
-          AddDeviceSlider(container, device, device_name_container,
-                          /*is_output_device=*/true);
-    }
+    // Sets this flag to false to make the assigned color id effective.
+    // Otherwise it will use `color_utils::BlendForMinContrast()` to improve
+    // label readability over the background.
+    device_name_container->text_label()->SetAutoColorReadabilityEnabled(
+        /*enabled=*/false);
+    last_output_device =
+        AddDeviceSlider(container, device, device_name_container,
+                        /*is_output_device=*/true);
   }
 
   if (has_output_devices) {
-    if (is_qs_revamp) {
-      last_output_device->SetProperty(views::kMarginsKey, kQsSubsectionMargins);
-    } else {
-      container->AddChildView(TrayPopupUtils::CreateListSubHeaderSeparator());
-    }
+    last_output_device->SetProperty(views::kMarginsKey, kSubsectionMargins);
   }
 
   // Adds audio input devices.
@@ -905,55 +751,33 @@ void AudioDetailedView::UpdateScrollableList() {
         container, gfx::kNoneIcon, GetAudioDeviceName(device), device.active);
     device_map_[device_name_container] = device;
 
-    if (is_qs_revamp) {
-      // Sets this flag to false to make the assigned color id effective.
-      device_name_container->text_label()->SetAutoColorReadabilityEnabled(
-          /*enabled=*/false);
-      AddDeviceSlider(container, device, device_name_container,
-                      /*is_output_device=*/false);
-    }
+    // Sets this flag to false to make the assigned color id effective.
+    device_name_container->text_label()->SetAutoColorReadabilityEnabled(
+        /*enabled=*/false);
+    AddDeviceSlider(container, device, device_name_container,
+                    /*is_output_device=*/false);
 
     // AGC info row is only meaningful when UI gains is going to be ignored.
     if (base::FeatureList::IsEnabled(media::kIgnoreUiGains)) {
       if (audio_handler->GetPrimaryActiveInputNode() == device.id) {
-        if (features::IsQsRevampEnabled()) {
-          container->AddChildView(
-              AudioDetailedView::CreateQsAgcInfoRow(device));
-          UpdateQsAgcInfoRow();
-        }
+        container->AddChildView(AudioDetailedView::CreateAgcInfoRow(device));
+        UpdateAgcInfoRow();
       }
     }
 
     // Adds the input noise cancellation toggle.
     if (audio_handler->GetPrimaryActiveInputNode() == device.id &&
         audio_handler->IsNoiseCancellationSupportedForDevice(device.id)) {
-      if (is_qs_revamp) {
-        noise_cancellation_view_ = container->AddChildView(
-            AudioDetailedView::CreateQsNoiseCancellationToggleRow(device));
+      noise_cancellation_view_ = container->AddChildView(
+          AudioDetailedView::CreateNoiseCancellationToggleRow(device));
 
-        // Adds a `Separator` if this input device is not the last one.
-        if (&device != &input_devices_.back()) {
-          auto* separator =
-              container->AddChildView(std::make_unique<views::Separator>());
-          separator->SetColorId(cros_tokens::kCrosSysSeparator);
-          separator->SetOrientation(views::Separator::Orientation::kHorizontal);
-          separator->SetProperty(views::kMarginsKey, kSeparatorMargins);
-        }
-      } else {
-        container->AddChildView(
-            AudioDetailedView::CreateNoiseCancellationToggleRow(device));
-      }
-    }
-
-    if (!features::IsQsRevampEnabled()) {
-      scroll_content()->AddChildView(mic_gain_controller_->CreateMicGainSlider(
-          device.id, device.IsInternalMic()));
-      // AGC info row is only meaningful when UI gains is going to be ignored.
-      if (base::FeatureList::IsEnabled(media::kIgnoreUiGains)) {
-        if (audio_handler->GetPrimaryActiveInputNode() == device.id) {
-          container->AddChildView(CreateAgcInfoRow(device).Build());
-          UpdateAgcInfoRow();
-        }
+      // Adds a `Separator` if this input device is not the last one.
+      if (&device != &input_devices_.back()) {
+        auto* separator =
+            container->AddChildView(std::make_unique<views::Separator>());
+        separator->SetColorId(cros_tokens::kCrosSysSeparator);
+        separator->SetOrientation(views::Separator::Orientation::kHorizontal);
+        separator->SetProperty(views::kMarginsKey, kSeparatorMargins);
       }
     }
 
@@ -1005,32 +829,6 @@ void AudioDetailedView::UpdateActiveDeviceColor(bool is_input, bool is_muted) {
 }
 
 void AudioDetailedView::UpdateAgcInfoRow() {
-  if (!base::FeatureList::IsEnabled(media::kIgnoreUiGains)) {
-    return;
-  }
-  if (!scroll_content()) {
-    return;
-  }
-  views::Label* label = static_cast<views::Label*>(
-      scroll_content()->GetViewByID(AudioDetailedViewID::kAgcInfoLabel));
-  if (!label) {
-    return;
-  }
-
-  std::vector<std::string> app_names = GetNamesOfAppsAccessingMic(
-      app_registry_cache_, app_capability_access_cache_);
-
-  std::u16string agc_info_text = GetTextForAgcInfo(app_names);
-  label->SetText(agc_info_text);
-
-  views::View* agc_info_row =
-      scroll_content()->GetViewByID(AudioDetailedViewID::kAgcInfoRow);
-  CHECK(agc_info_row);
-  agc_info_row->SetAccessibleName(agc_info_text);
-  agc_info_row->SetVisible(ShowAgcInfoRow() && !app_names.empty());
-}
-
-void AudioDetailedView::UpdateQsAgcInfoRow() {
   if (!base::FeatureList::IsEnabled(media::kIgnoreUiGains)) {
     return;
   }
@@ -1169,11 +967,7 @@ void AudioDetailedView::OnInputMutedByMicrophoneMuteSwitchChanged(bool muted) {
 
 void AudioDetailedView::OnNumStreamIgnoreUiGainsChanged(int32_t num) {
   num_stream_ignore_ui_gains_ = num;
-  if (!features::IsQsRevampEnabled()) {
-    UpdateAgcInfoRow();
-  } else {
-    UpdateQsAgcInfoRow();
-  }
+  UpdateAgcInfoRow();
 }
 
 BEGIN_METADATA(AudioDetailedView, TrayDetailedView)

@@ -6,7 +6,6 @@
 
 #include <memory>
 
-#include "ash/constants/ash_features.h"
 #include "ash/public/cpp/test/test_system_tray_client.h"
 #include "ash/shell.h"
 #include "ash/system/tray/fake_detailed_view_delegate.h"
@@ -75,12 +74,11 @@ TEST_F(AudioDetailedViewTest, PressingSettingsButtonOpensSettings) {
 
 class AudioDetailedViewAgcInfoTest
     : public AudioDetailedViewTest,
-      public testing::WithParamInterface<testing::tuple<bool, bool, bool>> {
+      public testing::WithParamInterface<testing::tuple<bool, bool>> {
  public:
   void SetUp() override {
     scoped_feature_list_.InitWithFeatureStates(
-        {{media::kIgnoreUiGains, IsIgnoreUiGainsEnabled()},
-         {features::kQsRevamp, IsQsRevampEnabled()}});
+        {{media::kIgnoreUiGains, IsIgnoreUiGainsEnabled()}});
 
     AudioDetailedViewTest::SetUp();
 
@@ -110,16 +108,10 @@ class AudioDetailedViewAgcInfoTest
 
   bool IsIgnoreUiGainsEnabled() { return std::get<0>(GetParam()); }
   bool IsForceRespectUiGainsEnabled() { return std::get<1>(GetParam()); }
-  bool IsQsRevampEnabled() { return std::get<2>(GetParam()); }
 
   views::View* GetAgcInfoView() {
-    if (IsQsRevampEnabled()) {
-      return audio_detailed_view_->GetViewByID(
-          AudioDetailedView::AudioDetailedViewID::kAgcInfoView);
-    } else {
-      return audio_detailed_view_->GetViewByID(
-          AudioDetailedView::AudioDetailedViewID::kAgcInfoRow);
-    }
+    return audio_detailed_view_->GetViewByID(
+        AudioDetailedView::AudioDetailedViewID::kAgcInfoView);
   }
 
   static apps::AppPtr MakeApp(const char* app_id, const char* name) {
@@ -204,7 +196,6 @@ TEST_P(AudioDetailedViewAgcInfoTest, AgcInfoRowShowInProperConditions) {
 INSTANTIATE_TEST_SUITE_P(AudioDetailedViewAgcInfoVisibleTest,
                          AudioDetailedViewAgcInfoTest,
                          testing::Combine(testing::Bool(),
-                                          testing::Bool(),
                                           testing::Bool()));
 
 }  // namespace ash

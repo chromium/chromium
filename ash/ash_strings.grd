@@ -3323,7 +3323,7 @@ Some features are limited to increase battery life.
       <message name="IDS_ASH_STATUS_TRAY_AUDIO" desc="The label used in audio detailed page bottom header of ash tray pop up.">
         Audio settings
       </message>
-      <message name="IDS_ASH_STATUS_TRAY_AUDIO_QS_REVAMP" desc="The label used in audio detailed page bottom header of ash tray pop up.">
+      <message name="IDS_ASH_STATUS_TRAY_AUDIO_TITLE" desc="The label used in audio detailed page bottom header of ash tray pop up.">
         Audio
       </message>
       <message name="IDS_ASH_STATUS_TRAY_AUDIO_OUTPUT" desc="The label used in audio detailed page for audio output section of ash tray pop up.">
