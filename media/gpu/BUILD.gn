@@ -172,6 +172,12 @@ component("gpu") {
       "android/video_frame_factory_impl.cc",
       "android/video_frame_factory_impl.h",
     ]
+    if (proprietary_codecs) {
+      sources += [
+        "android/ndk_audio_encoder.cc",
+        "android/ndk_audio_encoder.h",
+      ]
+    }
     defines += [
       # We need to reference functions and constants from NDK API levels
       # beyond the one Chromium compiles with by default.
