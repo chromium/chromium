@@ -8,6 +8,7 @@
 
 #include <utility>
 
+#include "base/mac/mac_util.h"
 #include "base/strings/sys_string_conversions.h"
 #include "ui/base/l10n/l10n_util.h"
 #include "ui/strings/grit/ui_strings.h"
@@ -69,7 +70,8 @@ TextServicesContextMenu::TextServicesContextMenu(Delegate* delegate)
 
 namespace ui {
 
-// We do this as well, for two reasons:
+// When running on an OS release earlier than macOS 14, do this as well, for two
+// reasons:
 //
 // 1. Interoperability with the other parts of the system that use this same
 //    speech synthesizer.
@@ -77,17 +79,65 @@ namespace ui {
 // 2. Working around a bug in `AVSpeechSynthesizer` which does not provide the
 //    correct voice when a specific voice is chosen in the system accessibility
 //    settings (see https://crbug.com/1484940#c9, FB13197951).
+//
+// However, for macOS 14, directly use the deprecated NSSpeechSynthesizer class,
+// as there is a bug with the NSApplication provided methods that causes
+// occasional hiccups in the audio (see https://crbug.com/1489906, FB13261400).
+
+#pragma clang diagnostic push
+#pragma clang diagnostic ignored "-Wdeprecated-declarations"
+
+namespace FB13261400Workaround {
+
+NSSpeechSynthesizer* SharedNSSpeechSynthesizer() {
+  static NSSpeechSynthesizer* speech_synthesizer =
+      [[NSSpeechSynthesizer alloc] initWithVoice:nil];
+  return speech_synthesizer;
+}
+
+bool IsSpeaking() {
+  return SharedNSSpeechSynthesizer().speaking;
+}
+
+void StopSpeaking() {
+  [SharedNSSpeechSynthesizer() stopSpeaking];
+}
+
+void SpeakText(const std::u16string& text) {
+  if (IsSpeaking()) {
+    StopSpeaking();
+  }
+
+  [SharedNSSpeechSynthesizer()
+      startSpeakingString:base::SysUTF16ToNSString(text)];
+}
+
+}  // namespace FB13261400Workaround
+
+#pragma clang diagnostic pop
 
 void TextServicesContextMenu::SpeakText(const std::u16string& text) {
-  [NSApp speakString:base::SysUTF16ToNSString(text)];
+  if (base::mac::MacOSVersion() >= 14'00'00) {
+    FB13261400Workaround::SpeakText(text);
+  } else {
+    [NSApp speakString:base::SysUTF16ToNSString(text)];
+  }
 }
 
 void TextServicesContextMenu::StopSpeaking() {
-  [NSApp stopSpeaking:nil];
+  if (base::mac::MacOSVersion() >= 14'00'00) {
+    FB13261400Workaround::StopSpeaking();
+  } else {
+    [NSApp stopSpeaking:nil];
+  }
 }
 
 bool TextServicesContextMenu::IsSpeaking() {
-  return [NSApp isSpeaking];
+  if (base::mac::MacOSVersion() >= 14'00'00) {
+    return FB13261400Workaround::IsSpeaking();
+  } else {
+    return [NSApp isSpeaking];
+  }
 }
 
 void TextServicesContextMenu::AppendToContextMenu(SimpleMenuModel* model) {
