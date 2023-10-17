@@ -1,19 +1,23 @@
-// This is a manually maintained file with a list of known android cronet's breakages
-// Each line represents a breakage and consists of:
-// the bad gerrit changeId ie the gerrit change that introduced the breakage
-// optionally the good changeId ie the commit that fixed the breakage, typically a revert or fix forward
-// the bug associated with the breakage
-// a comment with a short description of the breakage
-
-// Add new breakages to the top of the list
-
-// TODO(b/304215720): add change id verifier test/presubmit
-[
-  {
-    "bad_change_id": "I9e28d3a0617e27614451e3b2d8e4cf3e2e6d3145",
-    "good_change_id": "Icc888cec884c77a12f47f4cd2b0fcdb3046a02b2",
-    "bug": "crbug/1449478",
-    "comment": "Connection migration crash"
-  }
-  // Add new breakages to the top of the list
-]
+{
+  "_comment": [
+    "This is a manually maintained file with a list of known android cronet breakages.",
+    "Each line represents a breakage and consists of:",
+    "  - the bad gerrit changeId ie the gerrit change that introduced the breakage.",
+    "  - the good changeId ie the commit that fixed the breakage, typically a revert or fix forward",
+    "  - the bug associated with the breakage",
+    "  - a comment with a short description of the breakage",
+    "The change id keys may be omitted for scenarios where we want to stop",
+    "the release and may not have the root causes yet.",
+    "** Note:",
+    "- Add new breakages to the top of the list."
+    ],
+  "breakages": [
+    {
+      "bad_change_id": "I9e28d3a0617e27614451e3b2d8e4cf3e2e6d3145",
+      "good_change_id": "Icc888cec884c77a12f47f4cd2b0fcdb3046a02b2",
+      "bug": "crbug/1449478",
+      "comment": "Connection migration crash"
+    }
+  ],
+  "_end_comment": "Add new breakages to the top of the list"
+}
