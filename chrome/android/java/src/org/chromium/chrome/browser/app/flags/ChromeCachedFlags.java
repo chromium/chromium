@@ -29,6 +29,7 @@ import org.chromium.chrome.browser.flags.CachedFlagUtils;
 import org.chromium.chrome.browser.flags.CachedFlagsSafeMode;
 import org.chromium.chrome.browser.flags.ChromeFeatureList;
 import org.chromium.chrome.browser.hub.HubFieldTrial;
+import org.chromium.chrome.browser.new_tab_url.DseNewTabUrlManager;
 import org.chromium.chrome.browser.notifications.chime.ChimeFeatures;
 import org.chromium.chrome.browser.omaha.VersionNumberGetter;
 import org.chromium.chrome.browser.omnibox.OmniboxFeatures;
@@ -103,6 +104,7 @@ public class ChromeCachedFlags {
                 CustomTabIntentDataProvider.THIRD_PARTIES_DEFAULT_POLICY,
                 CustomTabIntentDataProvider.DENYLIST_ENTRIES,
                 CustomTabIntentDataProvider.ALLOWLIST_ENTRIES,
+                DseNewTabUrlManager.SWAP_OUT_NTP,
                 WarmupManager.SPARE_TAB_INITIALIZE_RENDERER,
                 RestoreTabsFeatureHelper.RESTORE_TABS_PROMO_SKIP_FEATURE_ENGAGEMENT,
                 StartSurfaceConfiguration.IS_DOODLE_SUPPORTED,

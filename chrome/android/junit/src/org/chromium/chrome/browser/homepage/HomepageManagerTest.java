@@ -207,6 +207,8 @@ public class HomepageManagerTest {
     @EnableFeatures({ChromeFeatureList.NEW_TAB_SEARCH_ENGINE_URL_ANDROID})
     public void testOverrideNtpHomepage() {
         ShadowHomepagePolicyManager.sHomepageUrl = GURL.emptyGURL();
+        DseNewTabUrlManager.SWAP_OUT_NTP.setForTesting(true);
+        Assert.assertTrue(DseNewTabUrlManager.SWAP_OUT_NTP.getValue());
 
         Assert.assertNull(DseNewTabUrlManager.getDSENewTabUrl(null));
         Assert.assertEquals(ChromeUrlConstants.nativeNtpGurl(), HomepageManager.getHomepageGurl());

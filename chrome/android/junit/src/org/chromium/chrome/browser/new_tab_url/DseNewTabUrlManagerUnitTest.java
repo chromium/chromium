@@ -108,7 +108,7 @@ public class DseNewTabUrlManagerUnitTest {
     @Test
     @DisableFeatures({ChromeFeatureList.NEW_TAB_SEARCH_ENGINE_URL_ANDROID})
     public void testShouldOverrideUrlWithNewTabSearchEngineUrlDisabled() {
-        // Verifies that shouldn't override the URL if the feature flag is disabled.
+        // Verifies that the URL is not overridden when the feature flag is disabled.
         assertFalse(DseNewTabUrlManager.isNewTabSearchEngineUrlAndroidEnabled());
         assertEquals(JUnitTestGURLs.NTP_URL,
                 mDseNewTabUrlManager.maybeGetOverrideUrl(
@@ -127,16 +127,16 @@ public class DseNewTabUrlManagerUnitTest {
     public void testShouldOverrideUrlWithNewTabSearchEngineUrlEnabled() {
         assertTrue(DseNewTabUrlManager.isNewTabSearchEngineUrlAndroidEnabled());
 
-        // Verifies that don't override the URL when the DSE is Google.
-        assertEquals(JUnitTestGURLs.NTP_URL,
-                mDseNewTabUrlManager.maybeGetOverrideUrl(
-                        /* gurl= */ JUnitTestGURLs.NTP_URL));
+        // Verifies that the URL is not overridden when the DSE is Google.
+        assertEquals(
+                JUnitTestGURLs.NTP_URL,
+                mDseNewTabUrlManager.maybeGetOverrideUrl(/* gurl= */ JUnitTestGURLs.NTP_URL));
 
         assertEquals(JUnitTestGURLs.SEARCH_URL,
                 mDseNewTabUrlManager.maybeGetOverrideUrl(
                         /* gurl= */ JUnitTestGURLs.SEARCH_URL));
 
-        // Verifies that don't override the URL when it is in incognito mode.
+        // Verifies that the URL is not overridden when it is in incognito mode.
         doReturn(false).when(mTemplateUrlService).isDefaultSearchEngineGoogle();
         doReturn(true).when(mProfile).isOffTheRecord();
         mProfileSupplier.set(mProfile);
@@ -144,8 +144,16 @@ public class DseNewTabUrlManagerUnitTest {
                 mDseNewTabUrlManager.maybeGetOverrideUrl(
                         /* gurl= */ JUnitTestGURLs.NTP_URL));
 
-        // Verifies the case that should override a NTP URL.
+        // Verifies that the URL is not overridden when {@link DseNewTabUrlManager.SWAP_OUT_NTP} is
+        // false.
         doReturn(false).when(mProfile).isOffTheRecord();
+        assertFalse(DseNewTabUrlManager.SWAP_OUT_NTP.getValue());
+        assertEquals(
+                JUnitTestGURLs.NTP_URL,
+                mDseNewTabUrlManager.maybeGetOverrideUrl(/* gurl= */ JUnitTestGURLs.NTP_URL));
+
+        // Verifies that the NTP URL should be overridden.
+        DseNewTabUrlManager.SWAP_OUT_NTP.setForTesting(true);
         assertEquals(NEW_TAB_URL,
                 mDseNewTabUrlManager
                         .maybeGetOverrideUrl(
