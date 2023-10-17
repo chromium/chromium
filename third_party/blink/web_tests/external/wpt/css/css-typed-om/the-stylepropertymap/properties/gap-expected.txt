@@ -1,68 +1,70 @@
 This is a testharness.js-based test.
 Found 64 tests; 62 PASS, 2 FAIL, 0 TIMEOUT, 0 NOTRUN.
-PASS Can set 'column-gap' to CSS-wide keywords: initial
-PASS Can set 'column-gap' to CSS-wide keywords: inherit
-PASS Can set 'column-gap' to CSS-wide keywords: unset
-PASS Can set 'column-gap' to CSS-wide keywords: revert
-PASS Can set 'column-gap' to var() references:  var(--A)
-PASS Can set 'column-gap' to the 'normal' keyword: normal
-PASS Can set 'column-gap' to a length: 0px
-PASS Can set 'column-gap' to a length: -3.14em
-PASS Can set 'column-gap' to a length: 3.14cm
-PASS Can set 'column-gap' to a length: calc(0px + 0em)
-PASS Can set 'column-gap' to a percent: 0%
-FAIL Can set 'column-gap' to a percent: -3.14% assert_approx_equals: expected 0 +/- 0.000001 but got -3.140000104904175
-PASS Can set 'column-gap' to a percent: 3.14%
-PASS Can set 'column-gap' to a percent: calc(0% + 0%)
-PASS Setting 'column-gap' to a time: 0s throws TypeError
-PASS Setting 'column-gap' to a time: -3.14ms throws TypeError
-PASS Setting 'column-gap' to a time: 3.14s throws TypeError
-PASS Setting 'column-gap' to a time: calc(0s + 0ms) throws TypeError
-PASS Setting 'column-gap' to an angle: 0deg throws TypeError
-PASS Setting 'column-gap' to an angle: 3.14rad throws TypeError
-PASS Setting 'column-gap' to an angle: -3.14deg throws TypeError
-PASS Setting 'column-gap' to an angle: calc(0rad + 0deg) throws TypeError
-PASS Setting 'column-gap' to a flexible length: 0fr throws TypeError
-PASS Setting 'column-gap' to a flexible length: 1fr throws TypeError
-PASS Setting 'column-gap' to a flexible length: -3.14fr throws TypeError
-PASS Setting 'column-gap' to a number: 0 throws TypeError
-PASS Setting 'column-gap' to a number: -3.14 throws TypeError
-PASS Setting 'column-gap' to a number: 3.14 throws TypeError
-PASS Setting 'column-gap' to a number: calc(2 + 3) throws TypeError
-PASS Setting 'column-gap' to a transform: translate(50%, 50%) throws TypeError
-PASS Setting 'column-gap' to a transform: perspective(10em) throws TypeError
-PASS Setting 'column-gap' to a transform: translate3d(0px, 1px, 2px) translate(0px, 1px) rotate3d(1, 2, 3, 45deg) rotate(45deg) scale3d(1, 2, 3) scale(1, 2) skew(1deg, 1deg) skewX(1deg) skewY(45deg) perspective(1px) matrix3d(1, 2, 3, 4, 5, 6, 7, 8, 9, 10, 11, 12, 13, 14, 15, 16) matrix(1, 2, 3, 4, 5, 6) throws TypeError
-PASS Can set 'row-gap' to CSS-wide keywords: initial
-PASS Can set 'row-gap' to CSS-wide keywords: inherit
-PASS Can set 'row-gap' to CSS-wide keywords: unset
-PASS Can set 'row-gap' to CSS-wide keywords: revert
-PASS Can set 'row-gap' to var() references:  var(--A)
-PASS Can set 'row-gap' to the 'normal' keyword: normal
-PASS Can set 'row-gap' to a length: 0px
-PASS Can set 'row-gap' to a length: -3.14em
-PASS Can set 'row-gap' to a length: 3.14cm
-PASS Can set 'row-gap' to a length: calc(0px + 0em)
-PASS Can set 'row-gap' to a percent: 0%
-FAIL Can set 'row-gap' to a percent: -3.14% assert_approx_equals: expected 0 +/- 0.000001 but got -3.140000104904175
-PASS Can set 'row-gap' to a percent: 3.14%
-PASS Can set 'row-gap' to a percent: calc(0% + 0%)
-PASS Setting 'row-gap' to a time: 0s throws TypeError
-PASS Setting 'row-gap' to a time: -3.14ms throws TypeError
-PASS Setting 'row-gap' to a time: 3.14s throws TypeError
-PASS Setting 'row-gap' to a time: calc(0s + 0ms) throws TypeError
-PASS Setting 'row-gap' to an angle: 0deg throws TypeError
-PASS Setting 'row-gap' to an angle: 3.14rad throws TypeError
-PASS Setting 'row-gap' to an angle: -3.14deg throws TypeError
-PASS Setting 'row-gap' to an angle: calc(0rad + 0deg) throws TypeError
-PASS Setting 'row-gap' to a flexible length: 0fr throws TypeError
-PASS Setting 'row-gap' to a flexible length: 1fr throws TypeError
-PASS Setting 'row-gap' to a flexible length: -3.14fr throws TypeError
-PASS Setting 'row-gap' to a number: 0 throws TypeError
-PASS Setting 'row-gap' to a number: -3.14 throws TypeError
-PASS Setting 'row-gap' to a number: 3.14 throws TypeError
-PASS Setting 'row-gap' to a number: calc(2 + 3) throws TypeError
-PASS Setting 'row-gap' to a transform: translate(50%, 50%) throws TypeError
-PASS Setting 'row-gap' to a transform: perspective(10em) throws TypeError
-PASS Setting 'row-gap' to a transform: translate3d(0px, 1px, 2px) translate(0px, 1px) rotate3d(1, 2, 3, 45deg) rotate(45deg) scale3d(1, 2, 3) scale(1, 2) skew(1deg, 1deg) skewX(1deg) skewY(45deg) perspective(1px) matrix3d(1, 2, 3, 4, 5, 6, 7, 8, 9, 10, 11, 12, 13, 14, 15, 16) matrix(1, 2, 3, 4, 5, 6) throws TypeError
+[PASS] Can set 'column-gap' to CSS-wide keywords: initial
+[PASS] Can set 'column-gap' to CSS-wide keywords: inherit
+[PASS] Can set 'column-gap' to CSS-wide keywords: unset
+[PASS] Can set 'column-gap' to CSS-wide keywords: revert
+[PASS] Can set 'column-gap' to var() references:  var(--A)
+[PASS] Can set 'column-gap' to the 'normal' keyword: normal
+[PASS] Can set 'column-gap' to a length: 0px
+[PASS] Can set 'column-gap' to a length: -3.14em
+[PASS] Can set 'column-gap' to a length: 3.14cm
+[PASS] Can set 'column-gap' to a length: calc(0px + 0em)
+[PASS] Can set 'column-gap' to a percent: 0%
+[FAIL] Can set 'column-gap' to a percent: -3.14%
+  assert_approx_equals: expected 0 +/- 0.000001 but got -3.140000104904175
+[PASS] Can set 'column-gap' to a percent: 3.14%
+[PASS] Can set 'column-gap' to a percent: calc(0% + 0%)
+[PASS] Setting 'column-gap' to a time: 0s throws TypeError
+[PASS] Setting 'column-gap' to a time: -3.14ms throws TypeError
+[PASS] Setting 'column-gap' to a time: 3.14s throws TypeError
+[PASS] Setting 'column-gap' to a time: calc(0s + 0ms) throws TypeError
+[PASS] Setting 'column-gap' to an angle: 0deg throws TypeError
+[PASS] Setting 'column-gap' to an angle: 3.14rad throws TypeError
+[PASS] Setting 'column-gap' to an angle: -3.14deg throws TypeError
+[PASS] Setting 'column-gap' to an angle: calc(0rad + 0deg) throws TypeError
+[PASS] Setting 'column-gap' to a flexible length: 0fr throws TypeError
+[PASS] Setting 'column-gap' to a flexible length: 1fr throws TypeError
+[PASS] Setting 'column-gap' to a flexible length: -3.14fr throws TypeError
+[PASS] Setting 'column-gap' to a number: 0 throws TypeError
+[PASS] Setting 'column-gap' to a number: -3.14 throws TypeError
+[PASS] Setting 'column-gap' to a number: 3.14 throws TypeError
+[PASS] Setting 'column-gap' to a number: calc(2 + 3) throws TypeError
+[PASS] Setting 'column-gap' to a transform: translate(50%, 50%) throws TypeError
+[PASS] Setting 'column-gap' to a transform: perspective(10em) throws TypeError
+[PASS] Setting 'column-gap' to a transform: translate3d(0px, 1px, 2px) translate(0px, 1px) rotate3d(1, 2, 3, 45deg) rotate(45deg) scale3d(1, 2, 3) scale(1, 2) skew(1deg, 1deg) skewX(1deg) skewY(45deg) perspective(1px) matrix3d(1, 2, 3, 4, 5, 6, 7, 8, 9, 10, 11, 12, 13, 14, 15, 16) matrix(1, 2, 3, 4, 5, 6) throws TypeError
+[PASS] Can set 'row-gap' to CSS-wide keywords: initial
+[PASS] Can set 'row-gap' to CSS-wide keywords: inherit
+[PASS] Can set 'row-gap' to CSS-wide keywords: unset
+[PASS] Can set 'row-gap' to CSS-wide keywords: revert
+[PASS] Can set 'row-gap' to var() references:  var(--A)
+[PASS] Can set 'row-gap' to the 'normal' keyword: normal
+[PASS] Can set 'row-gap' to a length: 0px
+[PASS] Can set 'row-gap' to a length: -3.14em
+[PASS] Can set 'row-gap' to a length: 3.14cm
+[PASS] Can set 'row-gap' to a length: calc(0px + 0em)
+[PASS] Can set 'row-gap' to a percent: 0%
+[FAIL] Can set 'row-gap' to a percent: -3.14%
+  assert_approx_equals: expected 0 +/- 0.000001 but got -3.140000104904175
+[PASS] Can set 'row-gap' to a percent: 3.14%
+[PASS] Can set 'row-gap' to a percent: calc(0% + 0%)
+[PASS] Setting 'row-gap' to a time: 0s throws TypeError
+[PASS] Setting 'row-gap' to a time: -3.14ms throws TypeError
+[PASS] Setting 'row-gap' to a time: 3.14s throws TypeError
+[PASS] Setting 'row-gap' to a time: calc(0s + 0ms) throws TypeError
+[PASS] Setting 'row-gap' to an angle: 0deg throws TypeError
+[PASS] Setting 'row-gap' to an angle: 3.14rad throws TypeError
+[PASS] Setting 'row-gap' to an angle: -3.14deg throws TypeError
+[PASS] Setting 'row-gap' to an angle: calc(0rad + 0deg) throws TypeError
+[PASS] Setting 'row-gap' to a flexible length: 0fr throws TypeError
+[PASS] Setting 'row-gap' to a flexible length: 1fr throws TypeError
+[PASS] Setting 'row-gap' to a flexible length: -3.14fr throws TypeError
+[PASS] Setting 'row-gap' to a number: 0 throws TypeError
+[PASS] Setting 'row-gap' to a number: -3.14 throws TypeError
+[PASS] Setting 'row-gap' to a number: 3.14 throws TypeError
+[PASS] Setting 'row-gap' to a number: calc(2 + 3) throws TypeError
+[PASS] Setting 'row-gap' to a transform: translate(50%, 50%) throws TypeError
+[PASS] Setting 'row-gap' to a transform: perspective(10em) throws TypeError
+[PASS] Setting 'row-gap' to a transform: translate3d(0px, 1px, 2px) translate(0px, 1px) rotate3d(1, 2, 3, 45deg) rotate(45deg) scale3d(1, 2, 3) scale(1, 2) skew(1deg, 1deg) skewX(1deg) skewY(45deg) perspective(1px) matrix3d(1, 2, 3, 4, 5, 6, 7, 8, 9, 10, 11, 12, 13, 14, 15, 16) matrix(1, 2, 3, 4, 5, 6) throws TypeError
 Harness: the test ran to completion.
 

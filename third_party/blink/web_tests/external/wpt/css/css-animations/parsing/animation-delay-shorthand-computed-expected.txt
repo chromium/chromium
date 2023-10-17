@@ -1,10 +1,13 @@
 This is a testharness.js-based test.
-PASS Property animation-delay value '1s'
-PASS Property animation-delay value '-1s'
-FAIL Property animation-delay value '1s 2s' assert_true: '1s 2s' is a supported value for animation-delay. expected true got false
-PASS Property animation-delay value '1s, 2s'
-FAIL Property animation-delay value '1s 2s, 3s' assert_true: '1s 2s, 3s' is a supported value for animation-delay. expected true got false
-FAIL Property animation-delay value '1s, 2s 3s' assert_true: '1s, 2s 3s' is a supported value for animation-delay. expected true got false
-PASS Property animation-delay value '1s, 2s, 3s'
+[PASS] Property animation-delay value '1s'
+[PASS] Property animation-delay value '-1s'
+[FAIL] Property animation-delay value '1s 2s'
+  assert_true: '1s 2s' is a supported value for animation-delay. expected true got false
+[PASS] Property animation-delay value '1s, 2s'
+[FAIL] Property animation-delay value '1s 2s, 3s'
+  assert_true: '1s 2s, 3s' is a supported value for animation-delay. expected true got false
+[FAIL] Property animation-delay value '1s, 2s 3s'
+  assert_true: '1s, 2s 3s' is a supported value for animation-delay. expected true got false
+[PASS] Property animation-delay value '1s, 2s, 3s'
 Harness: the test ran to completion.
 

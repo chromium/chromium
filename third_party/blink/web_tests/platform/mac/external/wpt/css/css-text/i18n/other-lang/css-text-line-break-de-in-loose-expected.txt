@@ -1,8 +1,13 @@
 This is a testharness.js-based test.
-FAIL 2024  ONE DOT LEADER may appear at line start if de and loose assert_approx_equals: expected 47.53125 +/- 1 but got 77.53125
-FAIL 2025  TWO DOT LEADER may appear at line start if de and loose assert_approx_equals: expected 69 +/- 1 but got 99
-FAIL 2026  HORIZONTAL ELLIPSIS may appear at line start if de and loose assert_approx_equals: expected 69 +/- 1 but got 99
-FAIL 22EF  MIDLINE HORIZONTAL ELLIPSIS may appear at line start if de and loose assert_approx_equals: expected 69 +/- 1 but got 99
-FAIL FE19  PRESENTATION FORM FOR VERTICAL HORIZONTAL ELLIPSIS may appear at line start if de and loose assert_approx_equals: expected 69 +/- 1 but got 99
+[FAIL] 2024  ONE DOT LEADER may appear at line start if de and loose
+  assert_approx_equals: expected 47.53125 +/- 1 but got 77.53125
+[FAIL] 2025  TWO DOT LEADER may appear at line start if de and loose
+  assert_approx_equals: expected 69 +/- 1 but got 99
+[FAIL] 2026  HORIZONTAL ELLIPSIS may appear at line start if de and loose
+  assert_approx_equals: expected 69 +/- 1 but got 99
+[FAIL] 22EF  MIDLINE HORIZONTAL ELLIPSIS may appear at line start if de and loose
+  assert_approx_equals: expected 69 +/- 1 but got 99
+[FAIL] FE19  PRESENTATION FORM FOR VERTICAL HORIZONTAL ELLIPSIS may appear at line start if de and loose
+  assert_approx_equals: expected 69 +/- 1 but got 99
 Harness: the test ran to completion.
 

@@ -1,6 +1,7 @@
 This is a testharness.js-based test.
-PASS Normalizing a valid <url> returns a CSSImageValue
-PASS Normalizing a bad <url> returns a CSSImageValue
-FAIL Normalizing a <gradient> returns a CSSImageValue assert_equals: expected "CSSImageValue" but got "CSSStyleValue"
+[PASS] Normalizing a valid <url> returns a CSSImageValue
+[PASS] Normalizing a bad <url> returns a CSSImageValue
+[FAIL] Normalizing a <gradient> returns a CSSImageValue
+  assert_equals: expected "CSSImageValue" but got "CSSStyleValue"
 Harness: the test ran to completion.
 

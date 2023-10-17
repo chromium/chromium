@@ -1,9 +1,15 @@
 This is a testharness.js-based test.
-FAIL Test native font matching on "CSSTest Weights W2569" for weight 375 assert_approx_equals: @font-face should be mapped to "CSSTest Weights W2569". expected 90 +/- 2 but got 78
-FAIL Test native font matching on "CSSTest Weights Full" for weight 375 assert_approx_equals: @font-face should be mapped to "CSSTest Weights Full". expected 90 +/- 2 but got 78
-FAIL Test native font matching on "CSSTest Weights W1479" for weight 475 assert_approx_equals: @font-face should be mapped to "CSSTest Weights W1479". expected 90 +/- 2 but got 78
-FAIL Test native font matching on "CSSTest Weights Full" for weight 425 assert_approx_equals: @font-face should be mapped to "CSSTest Weights Full". expected 90 +/- 2 but got 78
-FAIL Test native font matching on "CSSTest Weights Full" for weight 525 assert_approx_equals: @font-face should be mapped to "CSSTest Weights Full". expected 90 +/- 2 but got 78
-FAIL Test native font matching on "CSSTest Weights Full" for weight 675 assert_approx_equals: @font-face should be mapped to "CSSTest Weights Full". expected 90 +/- 2 but got 78
+[FAIL] Test native font matching on "CSSTest Weights W2569" for weight 375
+  assert_approx_equals: @font-face should be mapped to "CSSTest Weights W2569". expected 90 +/- 2 but got 78
+[FAIL] Test native font matching on "CSSTest Weights Full" for weight 375
+  assert_approx_equals: @font-face should be mapped to "CSSTest Weights Full". expected 90 +/- 2 but got 78
+[FAIL] Test native font matching on "CSSTest Weights W1479" for weight 475
+  assert_approx_equals: @font-face should be mapped to "CSSTest Weights W1479". expected 90 +/- 2 but got 78
+[FAIL] Test native font matching on "CSSTest Weights Full" for weight 425
+  assert_approx_equals: @font-face should be mapped to "CSSTest Weights Full". expected 90 +/- 2 but got 78
+[FAIL] Test native font matching on "CSSTest Weights Full" for weight 525
+  assert_approx_equals: @font-face should be mapped to "CSSTest Weights Full". expected 90 +/- 2 but got 78
+[FAIL] Test native font matching on "CSSTest Weights Full" for weight 675
+  assert_approx_equals: @font-face should be mapped to "CSSTest Weights Full". expected 90 +/- 2 but got 78
 Harness: the test ran to completion.
 

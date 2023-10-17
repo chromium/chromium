@@ -1,5 +1,6 @@
 This is a testharness.js-based test.
-PASS 'fill' does not support 'black'
-FAIL 'fill' does not support 'red gray' assert_not_equals: Unsupported value must not be null got disallowed value null
+[PASS] 'fill' does not support 'black'
+[FAIL] 'fill' does not support 'red gray'
+  assert_not_equals: Unsupported value must not be null got disallowed value null
 Harness: the test ran to completion.
 

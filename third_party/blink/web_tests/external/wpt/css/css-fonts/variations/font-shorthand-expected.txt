@@ -1,25 +1,34 @@
 This is a testharness.js-based test.
-PASS Font shorthand: Font size specified as calc()
-PASS Font shorthand: Font weight specified as number
-PASS Font shorthand: Font weight specified as number, value less than 1
-PASS Font shorthand: Font weight specified as number, value greater than 1000
-PASS Font shorthand: Font weight specified as calc()
-FAIL Font shorthand: Font weight specified as calc(), value smaller than 1 assert_equals: Font shorthand expected weight: Font weight specified as calc(), value smaller than 1 expected "1" but got "400"
-FAIL Font shorthand: Font weight specified as calc(), value greater than 1000 assert_equals: Font shorthand expected weight: Font weight specified as calc(), value greater than 1000 expected "1000" but got "400"
-PASS Font shorthand: 'oblique' with positive angle
-PASS Font shorthand: 'oblique' with negative angle
-FAIL Font shorthand: 'oblique' without slant angle assert_equals: Font shorthand expected style: 'oblique' without slant angle expected "oblique" but got "italic"
-PASS Font shorthand: 'oblique' with positive angle, value out of range
-PASS Font shorthand: 'oblique' with negative angle, value out of range
-FAIL Font shorthand: 'oblique' followed by valid small weight assert_equals: Font shorthand expected style: 'oblique' followed by valid small weight expected "oblique" but got "italic"
-FAIL Font shorthand: 'oblique' followed by valid large weight assert_equals: Font shorthand expected style: 'oblique' followed by valid large weight expected "oblique" but got "italic"
-PASS Font shorthand: 'oblique' with positive angle followed by valid weight
-PASS Font shorthand: 'oblique' with negative angle followed by valid weight
-FAIL Font shorthand: 'oblique' followed by valid calc() weight assert_equals: Font shorthand expected style: 'oblique' followed by valid calc() weight expected "oblique" but got "italic"
-PASS Font shorthand: 'oblique' with angle followed by valid calc() weight
-FAIL Font shorthand: 'oblique' followed by a to-be-clamped calc() weight assert_equals: Font shorthand expected style: 'oblique' followed by a to-be-clamped calc() weight expected "oblique" but got "italic"
-FAIL Font shorthand: calc() weight folowed by 'oblique' assert_equals: Font shorthand expected style: calc() weight folowed by 'oblique' expected "oblique" but got "italic"
-PASS Font shorthand: calc() weight folowed by 'oblique' and slant angle
-FAIL Font shorthand: To-be-clamped calc() weight folowed by 'oblique' and slant angle assert_equals: Font shorthand: To-be-clamped calc() weight folowed by 'oblique' and slant angle expected true but got false
+[PASS] Font shorthand: Font size specified as calc()
+[PASS] Font shorthand: Font weight specified as number
+[PASS] Font shorthand: Font weight specified as number, value less than 1
+[PASS] Font shorthand: Font weight specified as number, value greater than 1000
+[PASS] Font shorthand: Font weight specified as calc()
+[FAIL] Font shorthand: Font weight specified as calc(), value smaller than 1
+  assert_equals: Font shorthand expected weight: Font weight specified as calc(), value smaller than 1 expected "1" but got "400"
+[FAIL] Font shorthand: Font weight specified as calc(), value greater than 1000
+  assert_equals: Font shorthand expected weight: Font weight specified as calc(), value greater than 1000 expected "1000" but got "400"
+[PASS] Font shorthand: 'oblique' with positive angle
+[PASS] Font shorthand: 'oblique' with negative angle
+[FAIL] Font shorthand: 'oblique' without slant angle
+  assert_equals: Font shorthand expected style: 'oblique' without slant angle expected "oblique" but got "italic"
+[PASS] Font shorthand: 'oblique' with positive angle, value out of range
+[PASS] Font shorthand: 'oblique' with negative angle, value out of range
+[FAIL] Font shorthand: 'oblique' followed by valid small weight
+  assert_equals: Font shorthand expected style: 'oblique' followed by valid small weight expected "oblique" but got "italic"
+[FAIL] Font shorthand: 'oblique' followed by valid large weight
+  assert_equals: Font shorthand expected style: 'oblique' followed by valid large weight expected "oblique" but got "italic"
+[PASS] Font shorthand: 'oblique' with positive angle followed by valid weight
+[PASS] Font shorthand: 'oblique' with negative angle followed by valid weight
+[FAIL] Font shorthand: 'oblique' followed by valid calc() weight
+  assert_equals: Font shorthand expected style: 'oblique' followed by valid calc() weight expected "oblique" but got "italic"
+[PASS] Font shorthand: 'oblique' with angle followed by valid calc() weight
+[FAIL] Font shorthand: 'oblique' followed by a to-be-clamped calc() weight
+  assert_equals: Font shorthand expected style: 'oblique' followed by a to-be-clamped calc() weight expected "oblique" but got "italic"
+[FAIL] Font shorthand: calc() weight folowed by 'oblique'
+  assert_equals: Font shorthand expected style: calc() weight folowed by 'oblique' expected "oblique" but got "italic"
+[PASS] Font shorthand: calc() weight folowed by 'oblique' and slant angle
+[FAIL] Font shorthand: To-be-clamped calc() weight folowed by 'oblique' and slant angle
+  assert_equals: Font shorthand: To-be-clamped calc() weight folowed by 'oblique' and slant angle expected true but got false
 Harness: the test ran to completion.
 

@@ -1,26 +1,42 @@
 This is a testharness.js-based test.
-FAIL supports(display:block) is a valid import condition assert_equals: expected "rgb(0, 128, 0)" but got "rgb(255, 0, 0)"
-FAIL supports((display:flex)) is a valid import condition assert_equals: expected "rgb(0, 128, 0)" but got "rgb(255, 0, 0)"
-FAIL supports((display:block) and (display:flex)) is a valid import condition assert_equals: expected "rgb(0, 128, 0)" but got "rgb(255, 0, 0)"
-PASS supports((display:block) and (foo:bar)) is not a valid import condition
-FAIL supports((display:block) or (display:flex)) is a valid import condition assert_equals: expected "rgb(0, 128, 0)" but got "rgb(255, 0, 0)"
-FAIL supports((display:block) or (foo:bar)) is a valid import condition assert_equals: expected "rgb(0, 128, 0)" but got "rgb(255, 0, 0)"
-PASS supports(not (display: flex)) is not a valid import condition
-FAIL supports(display: block !important) is a valid import condition assert_equals: expected "rgb(0, 128, 0)" but got "rgb(255, 0, 0)"
-PASS supports(foo:bar) is not a valid import condition
-FAIL supports(display:block) (width >= 0px) is a valid import condition assert_equals: expected "rgb(0, 128, 0)" but got "rgb(255, 0, 0)"
-PASS (width >= 0px) supports(foo:bar) is not a valid import condition
-PASS (width >= 0px) supports(display:block) is not a valid import condition
-FAIL supports(selector(a)) is a valid import condition assert_equals: expected "rgb(0, 128, 0)" but got "rgb(255, 0, 0)"
-FAIL supports(selector(p a)) is a valid import condition assert_equals: expected "rgb(0, 128, 0)" but got "rgb(255, 0, 0)"
-FAIL supports(selector(p > a)) is a valid import condition assert_equals: expected "rgb(0, 128, 0)" but got "rgb(255, 0, 0)"
-FAIL supports(selector(p + a)) is a valid import condition assert_equals: expected "rgb(0, 128, 0)" but got "rgb(255, 0, 0)"
-FAIL supports(font-tech(color-COLRv1)) is a valid import condition assert_equals: expected "rgb(0, 128, 0)" but got "rgb(255, 0, 0)"
-PASS supports(font-tech(invalid)) is not a valid import condition
-FAIL supports(font-format(opentype)) is a valid import condition assert_equals: expected "rgb(0, 128, 0)" but got "rgb(255, 0, 0)"
-FAIL supports(font-format(woff)) is a valid import condition assert_equals: expected "rgb(0, 128, 0)" but got "rgb(255, 0, 0)"
-PASS supports(font-format(invalid)) is not a valid import condition
-FAIL layer(A.B) supports(font-format(opentype)) is a valid import condition assert_equals: expected "rgb(0, 128, 0)" but got "rgb(255, 0, 0)"
-FAIL layer supports(selector(a)) is a valid import condition assert_equals: expected "rgb(0, 128, 0)" but got "rgb(255, 0, 0)"
+[FAIL] supports(display:block) is a valid import condition
+  assert_equals: expected "rgb(0, 128, 0)" but got "rgb(255, 0, 0)"
+[FAIL] supports((display:flex)) is a valid import condition
+  assert_equals: expected "rgb(0, 128, 0)" but got "rgb(255, 0, 0)"
+[FAIL] supports((display:block) and (display:flex)) is a valid import condition
+  assert_equals: expected "rgb(0, 128, 0)" but got "rgb(255, 0, 0)"
+[PASS] supports((display:block) and (foo:bar)) is not a valid import condition
+[FAIL] supports((display:block) or (display:flex)) is a valid import condition
+  assert_equals: expected "rgb(0, 128, 0)" but got "rgb(255, 0, 0)"
+[FAIL] supports((display:block) or (foo:bar)) is a valid import condition
+  assert_equals: expected "rgb(0, 128, 0)" but got "rgb(255, 0, 0)"
+[PASS] supports(not (display: flex)) is not a valid import condition
+[FAIL] supports(display: block !important) is a valid import condition
+  assert_equals: expected "rgb(0, 128, 0)" but got "rgb(255, 0, 0)"
+[PASS] supports(foo:bar) is not a valid import condition
+[FAIL] supports(display:block) (width >= 0px) is a valid import condition
+  assert_equals: expected "rgb(0, 128, 0)" but got "rgb(255, 0, 0)"
+[PASS] (width >= 0px) supports(foo:bar) is not a valid import condition
+[PASS] (width >= 0px) supports(display:block) is not a valid import condition
+[FAIL] supports(selector(a)) is a valid import condition
+  assert_equals: expected "rgb(0, 128, 0)" but got "rgb(255, 0, 0)"
+[FAIL] supports(selector(p a)) is a valid import condition
+  assert_equals: expected "rgb(0, 128, 0)" but got "rgb(255, 0, 0)"
+[FAIL] supports(selector(p > a)) is a valid import condition
+  assert_equals: expected "rgb(0, 128, 0)" but got "rgb(255, 0, 0)"
+[FAIL] supports(selector(p + a)) is a valid import condition
+  assert_equals: expected "rgb(0, 128, 0)" but got "rgb(255, 0, 0)"
+[FAIL] supports(font-tech(color-COLRv1)) is a valid import condition
+  assert_equals: expected "rgb(0, 128, 0)" but got "rgb(255, 0, 0)"
+[PASS] supports(font-tech(invalid)) is not a valid import condition
+[FAIL] supports(font-format(opentype)) is a valid import condition
+  assert_equals: expected "rgb(0, 128, 0)" but got "rgb(255, 0, 0)"
+[FAIL] supports(font-format(woff)) is a valid import condition
+  assert_equals: expected "rgb(0, 128, 0)" but got "rgb(255, 0, 0)"
+[PASS] supports(font-format(invalid)) is not a valid import condition
+[FAIL] layer(A.B) supports(font-format(opentype)) is a valid import condition
+  assert_equals: expected "rgb(0, 128, 0)" but got "rgb(255, 0, 0)"
+[FAIL] layer supports(selector(a)) is a valid import condition
+  assert_equals: expected "rgb(0, 128, 0)" but got "rgb(255, 0, 0)"
 Harness: the test ran to completion.
 

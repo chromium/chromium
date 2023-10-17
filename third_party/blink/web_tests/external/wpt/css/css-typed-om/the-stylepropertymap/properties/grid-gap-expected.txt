@@ -1,8 +1,13 @@
 This is a testharness.js-based test.
-FAIL 'grid-gap' does not support '20px' assert_not_equals: Unsupported value must not be null got disallowed value null
-FAIL 'grid-gap' does not support '16%' assert_not_equals: Unsupported value must not be null got disallowed value null
-FAIL 'grid-gap' does not support '20px 10px' assert_not_equals: Unsupported value must not be null got disallowed value null
-FAIL 'grid-gap' does not support '15% 100%' assert_not_equals: Unsupported value must not be null got disallowed value null
-FAIL 'grid-gap' does not support '21px 82%' assert_not_equals: Unsupported value must not be null got disallowed value null
+[FAIL] 'grid-gap' does not support '20px'
+  assert_not_equals: Unsupported value must not be null got disallowed value null
+[FAIL] 'grid-gap' does not support '16%'
+  assert_not_equals: Unsupported value must not be null got disallowed value null
+[FAIL] 'grid-gap' does not support '20px 10px'
+  assert_not_equals: Unsupported value must not be null got disallowed value null
+[FAIL] 'grid-gap' does not support '15% 100%'
+  assert_not_equals: Unsupported value must not be null got disallowed value null
+[FAIL] 'grid-gap' does not support '21px 82%'
+  assert_not_equals: Unsupported value must not be null got disallowed value null
 Harness: the test ran to completion.
 

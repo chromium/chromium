@@ -1,25 +1,29 @@
 This is a testharness.js-based test.
-PASS var() references work with registered properties
-PASS References to registered var()-properties work in registered lists
-PASS References to mixed registered and unregistered var()-properties work in registered lists
-PASS Registered lists may be concatenated
-PASS Font-relative units are absolutized when substituting
-PASS Calc expressions are resolved when substituting
-PASS Lists with relative units are absolutized when substituting
-PASS Values are absolutized when substituting into properties with universal syntax
-FAIL Invalid values for registered properties are serialized as the empty string assert_equals: expected "" but got "0px"
-PASS Valid fallback does not invalidate var()-reference [<length>, 10px]
-PASS Valid fallback does not invalidate var()-reference [<length> | <color>, red]
-PASS Valid fallback does not invalidate var()-reference [<length> | none, none]
-PASS Invalid fallback invalidates var()-reference [<length>, red]
-PASS Invalid fallback invalidates var()-reference [<length> | none, nolength]
-PASS Invalid fallback invalidates var()-reference [<length>, var(--novar)]
-FAIL Fallback must adhere to registered syntax [<length>, 10px] assert_equals: expected "10px" but got "0px"
-FAIL Fallback must adhere to registered syntax [<length> | none, none] assert_equals: expected "none" but got "0px"
-FAIL Fallback must adhere to registered syntax [<length>, var(--length-1)] assert_equals: expected "20px" but got "0px"
-PASS Invalid fallback is not used [<length>, red]
-PASS Invalid fallback is not used [<length> | none, nolength]
-PASS Invalid fallback is not used [<color>, var(--length-1)]
-PASS Empty universal custom property can be substituted with var()
+[PASS] var() references work with registered properties
+[PASS] References to registered var()-properties work in registered lists
+[PASS] References to mixed registered and unregistered var()-properties work in registered lists
+[PASS] Registered lists may be concatenated
+[PASS] Font-relative units are absolutized when substituting
+[PASS] Calc expressions are resolved when substituting
+[PASS] Lists with relative units are absolutized when substituting
+[PASS] Values are absolutized when substituting into properties with universal syntax
+[FAIL] Invalid values for registered properties are serialized as the empty string
+  assert_equals: expected "" but got "0px"
+[PASS] Valid fallback does not invalidate var()-reference [<length>, 10px]
+[PASS] Valid fallback does not invalidate var()-reference [<length> | <color>, red]
+[PASS] Valid fallback does not invalidate var()-reference [<length> | none, none]
+[PASS] Invalid fallback invalidates var()-reference [<length>, red]
+[PASS] Invalid fallback invalidates var()-reference [<length> | none, nolength]
+[PASS] Invalid fallback invalidates var()-reference [<length>, var(--novar)]
+[FAIL] Fallback must adhere to registered syntax [<length>, 10px]
+  assert_equals: expected "10px" but got "0px"
+[FAIL] Fallback must adhere to registered syntax [<length> | none, none]
+  assert_equals: expected "none" but got "0px"
+[FAIL] Fallback must adhere to registered syntax [<length>, var(--length-1)]
+  assert_equals: expected "20px" but got "0px"
+[PASS] Invalid fallback is not used [<length>, red]
+[PASS] Invalid fallback is not used [<length> | none, nolength]
+[PASS] Invalid fallback is not used [<color>, var(--length-1)]
+[PASS] Empty universal custom property can be substituted with var()
 Harness: the test ran to completion.
 

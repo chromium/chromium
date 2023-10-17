@@ -1,7 +1,8 @@
 This is a testharness.js-based test.
-PASS 'transition' does not support 'none'
-FAIL 'transition' does not support 'none, none' assert_not_equals: Unsupported value must not be null got disallowed value null
-PASS 'transition' does not support 'margin-right 4s'
-PASS 'transition' does not support 'all 0.5s ease-out, color 1s'
+[PASS] 'transition' does not support 'none'
+[FAIL] 'transition' does not support 'none, none'
+  assert_not_equals: Unsupported value must not be null got disallowed value null
+[PASS] 'transition' does not support 'margin-right 4s'
+[PASS] 'transition' does not support 'all 0.5s ease-out, color 1s'
 Harness: the test ran to completion.
 

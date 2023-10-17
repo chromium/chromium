@@ -1,55 +1,56 @@
 This is a testharness.js-based test.
 Found 51 tests; 50 PASS, 1 FAIL, 0 TIMEOUT, 0 NOTRUN.
-PASS @supports: 100 - only percentages, not numbers allowed
-PASS @supports: -1% - negative values are illegal
-PASS @supports: 0% - zero is legal
-PASS @getComputedStyle: 0% - zero is legal
-PASS @supports: 1% - legal percentage
-PASS @getComputedStyle: 1% - legal percentage
-PASS @supports: 10% - legal percentage
-PASS @getComputedStyle: 10% - legal percentage
-PASS @supports: 100% - legal percentage
-PASS @getComputedStyle: 100% - legal percentage
-PASS @supports: 1000% - legal percentage
-PASS @getComputedStyle: 1000% - legal percentage
-PASS @supports: 1e9% - huge legal percentage
-FAIL @getComputedStyle: 1e9% - huge legal percentage assert_equals: huge legal percentage expected "1e+009%" but got "8191.75%"
-PASS @supports: ultra-condensed - legal enum
-PASS @getComputedStyle: ultra-condensed - legal enum
-PASS @supports: extra-condensed - legal enum
-PASS @getComputedStyle: extra-condensed - legal enum
-PASS @supports: condensed - legal enum
-PASS @getComputedStyle: condensed - legal enum
-PASS @supports: semi-condensed - legal enum
-PASS @getComputedStyle: semi-condensed - legal enum
-PASS @supports: normal - legal enum
-PASS @getComputedStyle: normal - legal enum
-PASS @supports: semi-expanded - legal enum
-PASS @getComputedStyle: semi-expanded - legal enum
-PASS @supports: expanded - legal enum
-PASS @getComputedStyle: expanded - legal enum
-PASS @supports: extra-expanded - legal enum
-PASS @getComputedStyle: extra-expanded - legal enum
-PASS @supports: ultra-expanded - legal enum
-PASS @getComputedStyle: ultra-expanded - legal enum
-PASS @supports: narrower - deprecated
-PASS @supports: wider - deprecated
-PASS @supports: calc(200.5%) - Simple calc value
-PASS @getComputedStyle: calc(200.5%) - Simple calc value
-PASS @supports: calc(50%*2 - 20%) - Valid calc expression
-PASS @getComputedStyle: calc(50%*2 - 20%) - Valid calc expression
-PASS @supports: calc(-100%) - Negative calc value (to be clamped)
-PASS @getComputedStyle: calc(-100%) - Negative calc value (to be clamped)
-PASS @supports: calc(50% - 50%*2) - Negative calc expression (to be clamped)
-PASS @getComputedStyle: calc(50% - 50%*2) - Negative calc expression (to be clamped)
-PASS @supports: calc(100) - Unit-less calc value
-PASS @supports: calc(100px) - Calc value with units
-PASS @supports: 100% 700% - Extra percentage after numeric value
-PASS @supports: 100% 100 - Extra content after numeric value
-PASS @supports: condensed expanded - Extra content after keyword value
-PASS @supports: calc(100%) 100% - Extra content after calc value
-PASS Test font-stretch for overridden number condensed
-PASS Test font-stretch for overridden enum name resolved to number condensed
-PASS Test font-stretch for inherited named enum resolved to number condensed
+[PASS] @supports: 100 - only percentages, not numbers allowed
+[PASS] @supports: -1% - negative values are illegal
+[PASS] @supports: 0% - zero is legal
+[PASS] @getComputedStyle: 0% - zero is legal
+[PASS] @supports: 1% - legal percentage
+[PASS] @getComputedStyle: 1% - legal percentage
+[PASS] @supports: 10% - legal percentage
+[PASS] @getComputedStyle: 10% - legal percentage
+[PASS] @supports: 100% - legal percentage
+[PASS] @getComputedStyle: 100% - legal percentage
+[PASS] @supports: 1000% - legal percentage
+[PASS] @getComputedStyle: 1000% - legal percentage
+[PASS] @supports: 1e9% - huge legal percentage
+[FAIL] @getComputedStyle: 1e9% - huge legal percentage
+  assert_equals: huge legal percentage expected "1e+009%" but got "8191.75%"
+[PASS] @supports: ultra-condensed - legal enum
+[PASS] @getComputedStyle: ultra-condensed - legal enum
+[PASS] @supports: extra-condensed - legal enum
+[PASS] @getComputedStyle: extra-condensed - legal enum
+[PASS] @supports: condensed - legal enum
+[PASS] @getComputedStyle: condensed - legal enum
+[PASS] @supports: semi-condensed - legal enum
+[PASS] @getComputedStyle: semi-condensed - legal enum
+[PASS] @supports: normal - legal enum
+[PASS] @getComputedStyle: normal - legal enum
+[PASS] @supports: semi-expanded - legal enum
+[PASS] @getComputedStyle: semi-expanded - legal enum
+[PASS] @supports: expanded - legal enum
+[PASS] @getComputedStyle: expanded - legal enum
+[PASS] @supports: extra-expanded - legal enum
+[PASS] @getComputedStyle: extra-expanded - legal enum
+[PASS] @supports: ultra-expanded - legal enum
+[PASS] @getComputedStyle: ultra-expanded - legal enum
+[PASS] @supports: narrower - deprecated
+[PASS] @supports: wider - deprecated
+[PASS] @supports: calc(200.5%) - Simple calc value
+[PASS] @getComputedStyle: calc(200.5%) - Simple calc value
+[PASS] @supports: calc(50%*2 - 20%) - Valid calc expression
+[PASS] @getComputedStyle: calc(50%*2 - 20%) - Valid calc expression
+[PASS] @supports: calc(-100%) - Negative calc value (to be clamped)
+[PASS] @getComputedStyle: calc(-100%) - Negative calc value (to be clamped)
+[PASS] @supports: calc(50% - 50%*2) - Negative calc expression (to be clamped)
+[PASS] @getComputedStyle: calc(50% - 50%*2) - Negative calc expression (to be clamped)
+[PASS] @supports: calc(100) - Unit-less calc value
+[PASS] @supports: calc(100px) - Calc value with units
+[PASS] @supports: 100% 700% - Extra percentage after numeric value
+[PASS] @supports: 100% 100 - Extra content after numeric value
+[PASS] @supports: condensed expanded - Extra content after keyword value
+[PASS] @supports: calc(100%) 100% - Extra content after calc value
+[PASS] Test font-stretch for overridden number condensed
+[PASS] Test font-stretch for overridden enum name resolved to number condensed
+[PASS] Test font-stretch for inherited named enum resolved to number condensed
 Harness: the test ran to completion.
 

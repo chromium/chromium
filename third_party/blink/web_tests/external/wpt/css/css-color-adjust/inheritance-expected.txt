@@ -1,11 +1,15 @@
 This is a testharness.js-based test.
-PASS Property color-scheme has initial value normal
-PASS Property color-scheme inherits
-FAIL Property color-adjust has initial value economy assert_true: color-adjust doesn't seem to be supported in the computed style expected true got false
-FAIL Property color-adjust inherits assert_true: color-adjust doesn't seem to be supported in the computed style expected true got false
-PASS Property forced-color-adjust has initial value auto
-PASS Property forced-color-adjust inherits
-FAIL Property print-color-adjust has initial value economy assert_true: print-color-adjust doesn't seem to be supported in the computed style expected true got false
-FAIL Property print-color-adjust inherits assert_true: print-color-adjust doesn't seem to be supported in the computed style expected true got false
+[PASS] Property color-scheme has initial value normal
+[PASS] Property color-scheme inherits
+[FAIL] Property color-adjust has initial value economy
+  assert_true: color-adjust doesn't seem to be supported in the computed style expected true got false
+[FAIL] Property color-adjust inherits
+  assert_true: color-adjust doesn't seem to be supported in the computed style expected true got false
+[PASS] Property forced-color-adjust has initial value auto
+[PASS] Property forced-color-adjust inherits
+[FAIL] Property print-color-adjust has initial value economy
+  assert_true: print-color-adjust doesn't seem to be supported in the computed style expected true got false
+[FAIL] Property print-color-adjust inherits
+  assert_true: print-color-adjust doesn't seem to be supported in the computed style expected true got false
 Harness: the test ran to completion.
 

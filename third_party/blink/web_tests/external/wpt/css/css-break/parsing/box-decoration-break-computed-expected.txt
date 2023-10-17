@@ -1,5 +1,7 @@
 This is a testharness.js-based test.
-FAIL Property box-decoration-break value 'slice' assert_true: box-decoration-break doesn't seem to be supported in the computed style expected true got false
-FAIL Property box-decoration-break value 'clone' assert_true: box-decoration-break doesn't seem to be supported in the computed style expected true got false
+[FAIL] Property box-decoration-break value 'slice'
+  assert_true: box-decoration-break doesn't seem to be supported in the computed style expected true got false
+[FAIL] Property box-decoration-break value 'clone'
+  assert_true: box-decoration-break doesn't seem to be supported in the computed style expected true got false
 Harness: the test ran to completion.
 

@@ -1,9 +1,14 @@
 This is a testharness.js-based test.
 Harness Error. harness_status.status = 1 , harness_status.message = Uncaught Error: '<position>' is not a valid CSS component
-FAIL Can set 'background-position' to CSS-wide keywords: initial assert_equals: expected "CSSKeywordValue" but got "CSSStyleValue"
-FAIL Can set 'background-position' to CSS-wide keywords: inherit assert_equals: expected "CSSKeywordValue" but got "CSSStyleValue"
-FAIL Can set 'background-position' to CSS-wide keywords: unset assert_equals: expected "CSSKeywordValue" but got "CSSStyleValue"
-FAIL Can set 'background-position' to CSS-wide keywords: revert assert_equals: expected "CSSKeywordValue" but got "CSSStyleValue"
-FAIL Can set 'background-position' to var() references:  var(--A) assert_equals: expected "CSSUnparsedValue" but got "CSSStyleValue"
+[FAIL] Can set 'background-position' to CSS-wide keywords: initial
+  assert_equals: expected "CSSKeywordValue" but got "CSSStyleValue"
+[FAIL] Can set 'background-position' to CSS-wide keywords: inherit
+  assert_equals: expected "CSSKeywordValue" but got "CSSStyleValue"
+[FAIL] Can set 'background-position' to CSS-wide keywords: unset
+  assert_equals: expected "CSSKeywordValue" but got "CSSStyleValue"
+[FAIL] Can set 'background-position' to CSS-wide keywords: revert
+  assert_equals: expected "CSSKeywordValue" but got "CSSStyleValue"
+[FAIL] Can set 'background-position' to var() references:  var(--A)
+  assert_equals: expected "CSSUnparsedValue" but got "CSSStyleValue"
 Harness: the test ran to completion.
 

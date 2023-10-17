@@ -1,8 +1,0 @@
-This is a testharness.js-based test.
-PASS Property text-autospace value 'normal'
-PASS Property text-autospace value 'no-autospace'
-FAIL Property text-autospace value 'auto' assert_true: 'auto' is a supported value for text-autospace. expected true got false
-FAIL Property text-autospace value 'ideograph-alpha' assert_true: 'ideograph-alpha' is a supported value for text-autospace. expected true got false
-FAIL Property text-autospace value 'ideograph-numeric' assert_true: 'ideograph-numeric' is a supported value for text-autospace. expected true got false
-Harness: the test ran to completion.
-

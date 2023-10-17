@@ -1,42 +1,66 @@
 This is a testharness.js-based test.
-PASS valid: @keyframes  foo  { }
-PASS valid: @keyframes   foo { }
-PASS valid: @keyframes -foo { }
-PASS valid: @keyframes _bar { }
-PASS valid: @keyframes __bar { }
-PASS valid: @keyframes __bar__ { }
-PASS valid: @keyframes ease-out { }
-PASS valid: @keyframes example { }
-PASS valid: @keyframes EXAMPLE { }
-PASS valid: @keyframes not { }
-PASS valid: @keyframes and { }
-PASS valid: @keyframes all { }
-PASS valid: @keyframes or { }
-PASS valid: @keyframes auto { }
-PASS valid: @keyframes normal { }
-FAIL valid: @keyframes " foo " { } assert_equals: expected 1 but got 0
-FAIL valid: @keyframes "  foo" { } assert_equals: expected 1 but got 0
-FAIL valid: @keyframes "-foo" { } assert_equals: expected 1 but got 0
-FAIL valid: @keyframes "_bar" { } assert_equals: expected 1 but got 0
-FAIL valid: @keyframes "__bar" { } assert_equals: expected 1 but got 0
-FAIL valid: @keyframes "__bar__" { } assert_equals: expected 1 but got 0
-FAIL valid: @keyframes "ease-out" { } assert_equals: expected 1 but got 0
-FAIL valid: @keyframes "example" { } assert_equals: expected 1 but got 0
-FAIL valid: @keyframes "EXAMPLE" { } assert_equals: expected 1 but got 0
-FAIL valid: @keyframes "one two" { } assert_equals: expected 1 but got 0
-FAIL valid: @keyframes "one, two" { } assert_equals: expected 1 but got 0
-FAIL valid: @keyframes "not" { } assert_equals: expected 1 but got 0
-FAIL valid: @keyframes "and" { } assert_equals: expected 1 but got 0
-FAIL valid: @keyframes "all" { } assert_equals: expected 1 but got 0
-FAIL valid: @keyframes "or" { } assert_equals: expected 1 but got 0
-FAIL valid: @keyframes "auto" { } assert_equals: expected 1 but got 0
-FAIL valid: @keyframes "normal" { } assert_equals: expected 1 but got 0
-FAIL valid: @keyframes "none" { } assert_equals: expected 1 but got 0
-FAIL valid: @keyframes "default" { } assert_equals: expected 1 but got 0
-FAIL valid: @keyframes "initial" { } assert_equals: expected 1 but got 0
-FAIL valid: @keyframes "inherit" { } assert_equals: expected 1 but got 0
-FAIL valid: @keyframes "unset" { } assert_equals: expected 1 but got 0
-FAIL valid: @keyframes "revert" { } assert_equals: expected 1 but got 0
-FAIL valid: @keyframes "revert-layer" { } assert_equals: expected 1 but got 0
+[PASS] valid: @keyframes  foo  { }
+[PASS] valid: @keyframes   foo { }
+[PASS] valid: @keyframes -foo { }
+[PASS] valid: @keyframes _bar { }
+[PASS] valid: @keyframes __bar { }
+[PASS] valid: @keyframes __bar__ { }
+[PASS] valid: @keyframes ease-out { }
+[PASS] valid: @keyframes example { }
+[PASS] valid: @keyframes EXAMPLE { }
+[PASS] valid: @keyframes not { }
+[PASS] valid: @keyframes and { }
+[PASS] valid: @keyframes all { }
+[PASS] valid: @keyframes or { }
+[PASS] valid: @keyframes auto { }
+[PASS] valid: @keyframes normal { }
+[FAIL] valid: @keyframes " foo " { }
+  assert_equals: expected 1 but got 0
+[FAIL] valid: @keyframes "  foo" { }
+  assert_equals: expected 1 but got 0
+[FAIL] valid: @keyframes "-foo" { }
+  assert_equals: expected 1 but got 0
+[FAIL] valid: @keyframes "_bar" { }
+  assert_equals: expected 1 but got 0
+[FAIL] valid: @keyframes "__bar" { }
+  assert_equals: expected 1 but got 0
+[FAIL] valid: @keyframes "__bar__" { }
+  assert_equals: expected 1 but got 0
+[FAIL] valid: @keyframes "ease-out" { }
+  assert_equals: expected 1 but got 0
+[FAIL] valid: @keyframes "example" { }
+  assert_equals: expected 1 but got 0
+[FAIL] valid: @keyframes "EXAMPLE" { }
+  assert_equals: expected 1 but got 0
+[FAIL] valid: @keyframes "one two" { }
+  assert_equals: expected 1 but got 0
+[FAIL] valid: @keyframes "one, two" { }
+  assert_equals: expected 1 but got 0
+[FAIL] valid: @keyframes "not" { }
+  assert_equals: expected 1 but got 0
+[FAIL] valid: @keyframes "and" { }
+  assert_equals: expected 1 but got 0
+[FAIL] valid: @keyframes "all" { }
+  assert_equals: expected 1 but got 0
+[FAIL] valid: @keyframes "or" { }
+  assert_equals: expected 1 but got 0
+[FAIL] valid: @keyframes "auto" { }
+  assert_equals: expected 1 but got 0
+[FAIL] valid: @keyframes "normal" { }
+  assert_equals: expected 1 but got 0
+[FAIL] valid: @keyframes "none" { }
+  assert_equals: expected 1 but got 0
+[FAIL] valid: @keyframes "default" { }
+  assert_equals: expected 1 but got 0
+[FAIL] valid: @keyframes "initial" { }
+  assert_equals: expected 1 but got 0
+[FAIL] valid: @keyframes "inherit" { }
+  assert_equals: expected 1 but got 0
+[FAIL] valid: @keyframes "unset" { }
+  assert_equals: expected 1 but got 0
+[FAIL] valid: @keyframes "revert" { }
+  assert_equals: expected 1 but got 0
+[FAIL] valid: @keyframes "revert-layer" { }
+  assert_equals: expected 1 but got 0
 Harness: the test ran to completion.
 

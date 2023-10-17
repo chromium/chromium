@@ -1,47 +1,63 @@
 This is a testharness.js-based test.
-PASS Test that logical margin-* properties are supported.
-PASS Test that margin-inline shorthand sets longhands and serializes correctly.
-PASS Test that margin-block shorthand sets longhands and serializes correctly.
-PASS Test that margin shorthand sets longhands and serializes correctly.
-PASS Test that logical margin-* properties share computed values with their physical associates, with 'writing-mode: horizontal-tb; direction: ltr; '.
-PASS Test that margin-* shorthands set the computed value of both logical and physical longhands, with 'writing-mode: horizontal-tb; direction: ltr; '.
-PASS Test that margin-* properties honor order of appearance when both logical and physical associates are declared, with 'writing-mode: horizontal-tb; direction: ltr; '.
-PASS Test that margin-* properties honor selector specificty when both logical and physical associates are declared, with 'writing-mode: horizontal-tb; direction: ltr; '.
-PASS Test that logical margin-* properties share computed values with their physical associates, with 'writing-mode: horizontal-tb; direction: rtl; '.
-PASS Test that margin-* shorthands set the computed value of both logical and physical longhands, with 'writing-mode: horizontal-tb; direction: rtl; '.
-PASS Test that margin-* properties honor order of appearance when both logical and physical associates are declared, with 'writing-mode: horizontal-tb; direction: rtl; '.
-PASS Test that margin-* properties honor selector specificty when both logical and physical associates are declared, with 'writing-mode: horizontal-tb; direction: rtl; '.
-PASS Test that logical margin-* properties share computed values with their physical associates, with 'writing-mode: vertical-rl; direction: rtl; '.
-PASS Test that margin-* shorthands set the computed value of both logical and physical longhands, with 'writing-mode: vertical-rl; direction: rtl; '.
-PASS Test that margin-* properties honor order of appearance when both logical and physical associates are declared, with 'writing-mode: vertical-rl; direction: rtl; '.
-PASS Test that margin-* properties honor selector specificty when both logical and physical associates are declared, with 'writing-mode: vertical-rl; direction: rtl; '.
-FAIL Test that logical margin-* properties share computed values with their physical associates, with 'writing-mode: sideways-rl; direction: rtl; '. assert_equals: logical properties on one declaration, writing mode properties on another, 'writing-mode: sideways-rl; direction: rtl; ', margin-bottom expected "1px" but got "4px"
-FAIL Test that margin-* shorthands set the computed value of both logical and physical longhands, with 'writing-mode: sideways-rl; direction: rtl; '. assert_equals: shorthand properties on one declaration, writing mode properties on another, 'writing-mode: sideways-rl; direction: rtl; ', margin-bottom expected "1px" but got "0px"
-FAIL Test that margin-* properties honor order of appearance when both logical and physical associates are declared, with 'writing-mode: sideways-rl; direction: rtl; '. assert_equals: 'margin-inline-start' last on single declaration, 'writing-mode: sideways-rl; direction: rtl; ', margin-block-end expected "1px" but got "4px"
-FAIL Test that margin-* properties honor selector specificty when both logical and physical associates are declared, with 'writing-mode: sideways-rl; direction: rtl; '. assert_equals: 'margin-inline-start', two declarations, 'writing-mode: sideways-rl; direction: rtl; ', margin-block-end expected "1px" but got "4px"
-PASS Test that logical margin-* properties share computed values with their physical associates, with 'writing-mode: vertical-rl; direction: ltr; '.
-PASS Test that margin-* shorthands set the computed value of both logical and physical longhands, with 'writing-mode: vertical-rl; direction: ltr; '.
-PASS Test that margin-* properties honor order of appearance when both logical and physical associates are declared, with 'writing-mode: vertical-rl; direction: ltr; '.
-PASS Test that margin-* properties honor selector specificty when both logical and physical associates are declared, with 'writing-mode: vertical-rl; direction: ltr; '.
-FAIL Test that logical margin-* properties share computed values with their physical associates, with 'writing-mode: sideways-rl; direction: ltr; '. assert_equals: logical properties on one declaration, writing mode properties on another, 'writing-mode: sideways-rl; direction: ltr; ', margin-top expected "1px" but got "3px"
-FAIL Test that margin-* shorthands set the computed value of both logical and physical longhands, with 'writing-mode: sideways-rl; direction: ltr; '. assert_equals: shorthand properties on one declaration, writing mode properties on another, 'writing-mode: sideways-rl; direction: ltr; ', margin-top expected "1px" but got "0px"
-FAIL Test that margin-* properties honor order of appearance when both logical and physical associates are declared, with 'writing-mode: sideways-rl; direction: ltr; '. assert_equals: 'margin-inline-start' last on single declaration, 'writing-mode: sideways-rl; direction: ltr; ', margin-left expected "1px" but got "5px"
-FAIL Test that margin-* properties honor selector specificty when both logical and physical associates are declared, with 'writing-mode: sideways-rl; direction: ltr; '. assert_equals: 'margin-inline-start', two declarations, 'writing-mode: sideways-rl; direction: ltr; ', margin-left expected "1px" but got "5px"
-PASS Test that logical margin-* properties share computed values with their physical associates, with 'writing-mode: vertical-lr; direction: rtl; '.
-PASS Test that margin-* shorthands set the computed value of both logical and physical longhands, with 'writing-mode: vertical-lr; direction: rtl; '.
-PASS Test that margin-* properties honor order of appearance when both logical and physical associates are declared, with 'writing-mode: vertical-lr; direction: rtl; '.
-PASS Test that margin-* properties honor selector specificty when both logical and physical associates are declared, with 'writing-mode: vertical-lr; direction: rtl; '.
-FAIL Test that logical margin-* properties share computed values with their physical associates, with 'writing-mode: sideways-lr; direction: ltr; '. assert_equals: logical properties on one declaration, writing mode properties on another, 'writing-mode: sideways-lr; direction: ltr; ', margin-bottom expected "1px" but got "4px"
-FAIL Test that margin-* shorthands set the computed value of both logical and physical longhands, with 'writing-mode: sideways-lr; direction: ltr; '. assert_equals: shorthand properties on one declaration, writing mode properties on another, 'writing-mode: sideways-lr; direction: ltr; ', margin-bottom expected "1px" but got "0px"
-FAIL Test that margin-* properties honor order of appearance when both logical and physical associates are declared, with 'writing-mode: sideways-lr; direction: ltr; '. assert_equals: 'margin-inline-start' last on single declaration, 'writing-mode: sideways-lr; direction: ltr; ', margin-left expected "1px" but got "5px"
-FAIL Test that margin-* properties honor selector specificty when both logical and physical associates are declared, with 'writing-mode: sideways-lr; direction: ltr; '. assert_equals: 'margin-inline-start', two declarations, 'writing-mode: sideways-lr; direction: ltr; ', margin-left expected "1px" but got "5px"
-PASS Test that logical margin-* properties share computed values with their physical associates, with 'writing-mode: vertical-lr; direction: ltr; '.
-PASS Test that margin-* shorthands set the computed value of both logical and physical longhands, with 'writing-mode: vertical-lr; direction: ltr; '.
-PASS Test that margin-* properties honor order of appearance when both logical and physical associates are declared, with 'writing-mode: vertical-lr; direction: ltr; '.
-PASS Test that margin-* properties honor selector specificty when both logical and physical associates are declared, with 'writing-mode: vertical-lr; direction: ltr; '.
-FAIL Test that logical margin-* properties share computed values with their physical associates, with 'writing-mode: sideways-lr; direction: rtl; '. assert_equals: logical properties on one declaration, writing mode properties on another, 'writing-mode: sideways-lr; direction: rtl; ', margin-top expected "1px" but got "3px"
-FAIL Test that margin-* shorthands set the computed value of both logical and physical longhands, with 'writing-mode: sideways-lr; direction: rtl; '. assert_equals: shorthand properties on one declaration, writing mode properties on another, 'writing-mode: sideways-lr; direction: rtl; ', margin-top expected "1px" but got "0px"
-FAIL Test that margin-* properties honor order of appearance when both logical and physical associates are declared, with 'writing-mode: sideways-lr; direction: rtl; '. assert_equals: 'margin-inline-start' last on single declaration, 'writing-mode: sideways-lr; direction: rtl; ', margin-block-start expected "1px" but got "3px"
-FAIL Test that margin-* properties honor selector specificty when both logical and physical associates are declared, with 'writing-mode: sideways-lr; direction: rtl; '. assert_equals: 'margin-inline-start', two declarations, 'writing-mode: sideways-lr; direction: rtl; ', margin-block-start expected "1px" but got "3px"
+[PASS] Test that logical margin-* properties are supported.
+[PASS] Test that margin-inline shorthand sets longhands and serializes correctly.
+[PASS] Test that margin-block shorthand sets longhands and serializes correctly.
+[PASS] Test that margin shorthand sets longhands and serializes correctly.
+[PASS] Test that logical margin-* properties share computed values with their physical associates, with 'writing-mode: horizontal-tb; direction: ltr; '.
+[PASS] Test that margin-* shorthands set the computed value of both logical and physical longhands, with 'writing-mode: horizontal-tb; direction: ltr; '.
+[PASS] Test that margin-* properties honor order of appearance when both logical and physical associates are declared, with 'writing-mode: horizontal-tb; direction: ltr; '.
+[PASS] Test that margin-* properties honor selector specificty when both logical and physical associates are declared, with 'writing-mode: horizontal-tb; direction: ltr; '.
+[PASS] Test that logical margin-* properties share computed values with their physical associates, with 'writing-mode: horizontal-tb; direction: rtl; '.
+[PASS] Test that margin-* shorthands set the computed value of both logical and physical longhands, with 'writing-mode: horizontal-tb; direction: rtl; '.
+[PASS] Test that margin-* properties honor order of appearance when both logical and physical associates are declared, with 'writing-mode: horizontal-tb; direction: rtl; '.
+[PASS] Test that margin-* properties honor selector specificty when both logical and physical associates are declared, with 'writing-mode: horizontal-tb; direction: rtl; '.
+[PASS] Test that logical margin-* properties share computed values with their physical associates, with 'writing-mode: vertical-rl; direction: rtl; '.
+[PASS] Test that margin-* shorthands set the computed value of both logical and physical longhands, with 'writing-mode: vertical-rl; direction: rtl; '.
+[PASS] Test that margin-* properties honor order of appearance when both logical and physical associates are declared, with 'writing-mode: vertical-rl; direction: rtl; '.
+[PASS] Test that margin-* properties honor selector specificty when both logical and physical associates are declared, with 'writing-mode: vertical-rl; direction: rtl; '.
+[FAIL] Test that logical margin-* properties share computed values with their physical associates, with 'writing-mode: sideways-rl; direction: rtl; '.
+  assert_equals: logical properties on one declaration, writing mode properties on another, 'writing-mode: sideways-rl; direction: rtl; ', margin-bottom expected "1px" but got "4px"
+[FAIL] Test that margin-* shorthands set the computed value of both logical and physical longhands, with 'writing-mode: sideways-rl; direction: rtl; '.
+  assert_equals: shorthand properties on one declaration, writing mode properties on another, 'writing-mode: sideways-rl; direction: rtl; ', margin-bottom expected "1px" but got "0px"
+[FAIL] Test that margin-* properties honor order of appearance when both logical and physical associates are declared, with 'writing-mode: sideways-rl; direction: rtl; '.
+  assert_equals: 'margin-inline-start' last on single declaration, 'writing-mode: sideways-rl; direction: rtl; ', margin-block-end expected "1px" but got "4px"
+[FAIL] Test that margin-* properties honor selector specificty when both logical and physical associates are declared, with 'writing-mode: sideways-rl; direction: rtl; '.
+  assert_equals: 'margin-inline-start', two declarations, 'writing-mode: sideways-rl; direction: rtl; ', margin-block-end expected "1px" but got "4px"
+[PASS] Test that logical margin-* properties share computed values with their physical associates, with 'writing-mode: vertical-rl; direction: ltr; '.
+[PASS] Test that margin-* shorthands set the computed value of both logical and physical longhands, with 'writing-mode: vertical-rl; direction: ltr; '.
+[PASS] Test that margin-* properties honor order of appearance when both logical and physical associates are declared, with 'writing-mode: vertical-rl; direction: ltr; '.
+[PASS] Test that margin-* properties honor selector specificty when both logical and physical associates are declared, with 'writing-mode: vertical-rl; direction: ltr; '.
+[FAIL] Test that logical margin-* properties share computed values with their physical associates, with 'writing-mode: sideways-rl; direction: ltr; '.
+  assert_equals: logical properties on one declaration, writing mode properties on another, 'writing-mode: sideways-rl; direction: ltr; ', margin-top expected "1px" but got "3px"
+[FAIL] Test that margin-* shorthands set the computed value of both logical and physical longhands, with 'writing-mode: sideways-rl; direction: ltr; '.
+  assert_equals: shorthand properties on one declaration, writing mode properties on another, 'writing-mode: sideways-rl; direction: ltr; ', margin-top expected "1px" but got "0px"
+[FAIL] Test that margin-* properties honor order of appearance when both logical and physical associates are declared, with 'writing-mode: sideways-rl; direction: ltr; '.
+  assert_equals: 'margin-inline-start' last on single declaration, 'writing-mode: sideways-rl; direction: ltr; ', margin-left expected "1px" but got "5px"
+[FAIL] Test that margin-* properties honor selector specificty when both logical and physical associates are declared, with 'writing-mode: sideways-rl; direction: ltr; '.
+  assert_equals: 'margin-inline-start', two declarations, 'writing-mode: sideways-rl; direction: ltr; ', margin-left expected "1px" but got "5px"
+[PASS] Test that logical margin-* properties share computed values with their physical associates, with 'writing-mode: vertical-lr; direction: rtl; '.
+[PASS] Test that margin-* shorthands set the computed value of both logical and physical longhands, with 'writing-mode: vertical-lr; direction: rtl; '.
+[PASS] Test that margin-* properties honor order of appearance when both logical and physical associates are declared, with 'writing-mode: vertical-lr; direction: rtl; '.
+[PASS] Test that margin-* properties honor selector specificty when both logical and physical associates are declared, with 'writing-mode: vertical-lr; direction: rtl; '.
+[FAIL] Test that logical margin-* properties share computed values with their physical associates, with 'writing-mode: sideways-lr; direction: ltr; '.
+  assert_equals: logical properties on one declaration, writing mode properties on another, 'writing-mode: sideways-lr; direction: ltr; ', margin-bottom expected "1px" but got "4px"
+[FAIL] Test that margin-* shorthands set the computed value of both logical and physical longhands, with 'writing-mode: sideways-lr; direction: ltr; '.
+  assert_equals: shorthand properties on one declaration, writing mode properties on another, 'writing-mode: sideways-lr; direction: ltr; ', margin-bottom expected "1px" but got "0px"
+[FAIL] Test that margin-* properties honor order of appearance when both logical and physical associates are declared, with 'writing-mode: sideways-lr; direction: ltr; '.
+  assert_equals: 'margin-inline-start' last on single declaration, 'writing-mode: sideways-lr; direction: ltr; ', margin-left expected "1px" but got "5px"
+[FAIL] Test that margin-* properties honor selector specificty when both logical and physical associates are declared, with 'writing-mode: sideways-lr; direction: ltr; '.
+  assert_equals: 'margin-inline-start', two declarations, 'writing-mode: sideways-lr; direction: ltr; ', margin-left expected "1px" but got "5px"
+[PASS] Test that logical margin-* properties share computed values with their physical associates, with 'writing-mode: vertical-lr; direction: ltr; '.
+[PASS] Test that margin-* shorthands set the computed value of both logical and physical longhands, with 'writing-mode: vertical-lr; direction: ltr; '.
+[PASS] Test that margin-* properties honor order of appearance when both logical and physical associates are declared, with 'writing-mode: vertical-lr; direction: ltr; '.
+[PASS] Test that margin-* properties honor selector specificty when both logical and physical associates are declared, with 'writing-mode: vertical-lr; direction: ltr; '.
+[FAIL] Test that logical margin-* properties share computed values with their physical associates, with 'writing-mode: sideways-lr; direction: rtl; '.
+  assert_equals: logical properties on one declaration, writing mode properties on another, 'writing-mode: sideways-lr; direction: rtl; ', margin-top expected "1px" but got "3px"
+[FAIL] Test that margin-* shorthands set the computed value of both logical and physical longhands, with 'writing-mode: sideways-lr; direction: rtl; '.
+  assert_equals: shorthand properties on one declaration, writing mode properties on another, 'writing-mode: sideways-lr; direction: rtl; ', margin-top expected "1px" but got "0px"
+[FAIL] Test that margin-* properties honor order of appearance when both logical and physical associates are declared, with 'writing-mode: sideways-lr; direction: rtl; '.
+  assert_equals: 'margin-inline-start' last on single declaration, 'writing-mode: sideways-lr; direction: rtl; ', margin-block-start expected "1px" but got "3px"
+[FAIL] Test that margin-* properties honor selector specificty when both logical and physical associates are declared, with 'writing-mode: sideways-lr; direction: rtl; '.
+  assert_equals: 'margin-inline-start', two declarations, 'writing-mode: sideways-lr; direction: rtl; ', margin-block-start expected "1px" but got "3px"
 Harness: the test ran to completion.
 

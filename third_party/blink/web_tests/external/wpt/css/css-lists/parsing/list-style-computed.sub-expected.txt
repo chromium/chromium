@@ -1,8 +1,12 @@
 This is a testharness.js-based test.
-FAIL Property list-style value 'outside none none' assert_equals: expected "none" but got "outside none none"
-FAIL Property list-style value 'inside none disc' assert_equals: expected "inside" but got "inside none disc"
-FAIL Property list-style value 'outside url("https://web-platform.test/") disc' assert_equals: expected "url(\"https://web-platform.test/\")" but got "outside url(\"https://web-platform.test/\") disc"
-FAIL Property list-style value 'outside none square' assert_equals: expected "square" but got "outside none square"
-PASS Property list-style value 'inside url("https://web-platform.test/") square'
+[FAIL] Property list-style value 'outside none none'
+  assert_equals: expected "none" but got "outside none none"
+[FAIL] Property list-style value 'inside none disc'
+  assert_equals: expected "inside" but got "inside none disc"
+[FAIL] Property list-style value 'outside url("https://web-platform.test/") disc'
+  assert_equals: expected "url(\"https://web-platform.test/\")" but got "outside url(\"https://web-platform.test/\") disc"
+[FAIL] Property list-style value 'outside none square'
+  assert_equals: expected "square" but got "outside none square"
+[PASS] Property list-style value 'inside url("https://web-platform.test/") square'
 Harness: the test ran to completion.
 

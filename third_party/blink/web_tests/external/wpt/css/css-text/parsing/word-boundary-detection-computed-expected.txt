@@ -1,5 +1,0 @@
-This is a testharness.js-based test.
-FAIL Property word-boundary-detection value 'normal' computes to 'normal' assert_true: word-boundary-detection doesn't seem to be supported in the computed style expected true got false
-FAIL Property word-boundary-detection value 'manual' computes to 'manual' assert_true: word-boundary-detection doesn't seem to be supported in the computed style expected true got false
-Harness: the test ran to completion.
-

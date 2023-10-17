@@ -1,5 +1,7 @@
 This is a testharness.js-based test.
-FAIL @supports doesn't use unsupported -webkit-user-modify property assert_not_equals: got disallowed value "rgb(255, 0, 0)"
-FAIL CSS.supports doesn't use unsupported -webkit-user-modify property assert_equals: expected false but got true
+[FAIL] @supports doesn't use unsupported -webkit-user-modify property
+  assert_not_equals: got disallowed value "rgb(255, 0, 0)"
+[FAIL] CSS.supports doesn't use unsupported -webkit-user-modify property
+  assert_equals: expected false but got true
 Harness: the test ran to completion.
 

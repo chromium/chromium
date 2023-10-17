@@ -1,4 +1,5 @@
 This is a testharness.js-based test.
-FAIL A custom property can yield a CSS Transition with transition-property: all assert_equals: A single animation is running expected 1 but got 0
+[FAIL] A custom property can yield a CSS Transition with transition-property: all
+  assert_equals: A single animation is running expected 1 but got 0
 Harness: the test ran to completion.
 

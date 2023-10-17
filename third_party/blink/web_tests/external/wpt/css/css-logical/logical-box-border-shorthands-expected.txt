@@ -1,47 +1,63 @@
 This is a testharness.js-based test.
-PASS Test that logical border-* properties are supported.
-PASS Test that border-inline shorthand sets longhands and serializes correctly.
-PASS Test that border-block shorthand sets longhands and serializes correctly.
-PASS Test that border shorthand sets longhands and serializes correctly.
-PASS Test that logical border-* properties share computed values with their physical associates, with 'writing-mode: horizontal-tb; direction: ltr; '.
-PASS Test that border-* shorthands set the computed value of both logical and physical longhands, with 'writing-mode: horizontal-tb; direction: ltr; '.
-PASS Test that border-* properties honor order of appearance when both logical and physical associates are declared, with 'writing-mode: horizontal-tb; direction: ltr; '.
-PASS Test that border-* properties honor selector specificty when both logical and physical associates are declared, with 'writing-mode: horizontal-tb; direction: ltr; '.
-PASS Test that logical border-* properties share computed values with their physical associates, with 'writing-mode: horizontal-tb; direction: rtl; '.
-PASS Test that border-* shorthands set the computed value of both logical and physical longhands, with 'writing-mode: horizontal-tb; direction: rtl; '.
-PASS Test that border-* properties honor order of appearance when both logical and physical associates are declared, with 'writing-mode: horizontal-tb; direction: rtl; '.
-PASS Test that border-* properties honor selector specificty when both logical and physical associates are declared, with 'writing-mode: horizontal-tb; direction: rtl; '.
-PASS Test that logical border-* properties share computed values with their physical associates, with 'writing-mode: vertical-rl; direction: rtl; '.
-PASS Test that border-* shorthands set the computed value of both logical and physical longhands, with 'writing-mode: vertical-rl; direction: rtl; '.
-PASS Test that border-* properties honor order of appearance when both logical and physical associates are declared, with 'writing-mode: vertical-rl; direction: rtl; '.
-PASS Test that border-* properties honor selector specificty when both logical and physical associates are declared, with 'writing-mode: vertical-rl; direction: rtl; '.
-FAIL Test that logical border-* properties share computed values with their physical associates, with 'writing-mode: sideways-rl; direction: rtl; '. assert_equals: logical properties on one declaration, writing mode properties on another, 'writing-mode: sideways-rl; direction: rtl; ', border-bottom expected "1px solid rgb(1, 1, 1)" but got "4px double rgb(4, 4, 4)"
-FAIL Test that border-* shorthands set the computed value of both logical and physical longhands, with 'writing-mode: sideways-rl; direction: rtl; '. assert_equals: shorthand properties on one declaration, writing mode properties on another, 'writing-mode: sideways-rl; direction: rtl; ', border-bottom expected "1px solid rgb(1, 1, 1)" but got "0px none rgb(0, 0, 0)"
-FAIL Test that border-* properties honor order of appearance when both logical and physical associates are declared, with 'writing-mode: sideways-rl; direction: rtl; '. assert_equals: 'border-inline-start' last on single declaration, 'writing-mode: sideways-rl; direction: rtl; ', border-block-end expected "1px solid rgb(1, 1, 1)" but got "4px double rgb(4, 4, 4)"
-FAIL Test that border-* properties honor selector specificty when both logical and physical associates are declared, with 'writing-mode: sideways-rl; direction: rtl; '. assert_equals: 'border-inline-start', two declarations, 'writing-mode: sideways-rl; direction: rtl; ', border-block-end expected "1px solid rgb(1, 1, 1)" but got "4px double rgb(4, 4, 4)"
-PASS Test that logical border-* properties share computed values with their physical associates, with 'writing-mode: vertical-rl; direction: ltr; '.
-PASS Test that border-* shorthands set the computed value of both logical and physical longhands, with 'writing-mode: vertical-rl; direction: ltr; '.
-PASS Test that border-* properties honor order of appearance when both logical and physical associates are declared, with 'writing-mode: vertical-rl; direction: ltr; '.
-PASS Test that border-* properties honor selector specificty when both logical and physical associates are declared, with 'writing-mode: vertical-rl; direction: ltr; '.
-FAIL Test that logical border-* properties share computed values with their physical associates, with 'writing-mode: sideways-rl; direction: ltr; '. assert_equals: logical properties on one declaration, writing mode properties on another, 'writing-mode: sideways-rl; direction: ltr; ', border-top expected "1px solid rgb(1, 1, 1)" but got "3px dotted rgb(3, 3, 3)"
-FAIL Test that border-* shorthands set the computed value of both logical and physical longhands, with 'writing-mode: sideways-rl; direction: ltr; '. assert_equals: shorthand properties on one declaration, writing mode properties on another, 'writing-mode: sideways-rl; direction: ltr; ', border-top expected "1px solid rgb(1, 1, 1)" but got "0px none rgb(0, 0, 0)"
-FAIL Test that border-* properties honor order of appearance when both logical and physical associates are declared, with 'writing-mode: sideways-rl; direction: ltr; '. assert_equals: 'border-inline-start' last on single declaration, 'writing-mode: sideways-rl; direction: ltr; ', border-left expected "1px solid rgb(1, 1, 1)" but got "5px groove rgb(5, 5, 5)"
-FAIL Test that border-* properties honor selector specificty when both logical and physical associates are declared, with 'writing-mode: sideways-rl; direction: ltr; '. assert_equals: 'border-inline-start', two declarations, 'writing-mode: sideways-rl; direction: ltr; ', border-left expected "1px solid rgb(1, 1, 1)" but got "5px groove rgb(5, 5, 5)"
-PASS Test that logical border-* properties share computed values with their physical associates, with 'writing-mode: vertical-lr; direction: rtl; '.
-PASS Test that border-* shorthands set the computed value of both logical and physical longhands, with 'writing-mode: vertical-lr; direction: rtl; '.
-PASS Test that border-* properties honor order of appearance when both logical and physical associates are declared, with 'writing-mode: vertical-lr; direction: rtl; '.
-PASS Test that border-* properties honor selector specificty when both logical and physical associates are declared, with 'writing-mode: vertical-lr; direction: rtl; '.
-FAIL Test that logical border-* properties share computed values with their physical associates, with 'writing-mode: sideways-lr; direction: ltr; '. assert_equals: logical properties on one declaration, writing mode properties on another, 'writing-mode: sideways-lr; direction: ltr; ', border-bottom expected "1px solid rgb(1, 1, 1)" but got "4px double rgb(4, 4, 4)"
-FAIL Test that border-* shorthands set the computed value of both logical and physical longhands, with 'writing-mode: sideways-lr; direction: ltr; '. assert_equals: shorthand properties on one declaration, writing mode properties on another, 'writing-mode: sideways-lr; direction: ltr; ', border-bottom expected "1px solid rgb(1, 1, 1)" but got "0px none rgb(0, 0, 0)"
-FAIL Test that border-* properties honor order of appearance when both logical and physical associates are declared, with 'writing-mode: sideways-lr; direction: ltr; '. assert_equals: 'border-inline-start' last on single declaration, 'writing-mode: sideways-lr; direction: ltr; ', border-left expected "1px solid rgb(1, 1, 1)" but got "5px groove rgb(5, 5, 5)"
-FAIL Test that border-* properties honor selector specificty when both logical and physical associates are declared, with 'writing-mode: sideways-lr; direction: ltr; '. assert_equals: 'border-inline-start', two declarations, 'writing-mode: sideways-lr; direction: ltr; ', border-left expected "1px solid rgb(1, 1, 1)" but got "5px groove rgb(5, 5, 5)"
-PASS Test that logical border-* properties share computed values with their physical associates, with 'writing-mode: vertical-lr; direction: ltr; '.
-PASS Test that border-* shorthands set the computed value of both logical and physical longhands, with 'writing-mode: vertical-lr; direction: ltr; '.
-PASS Test that border-* properties honor order of appearance when both logical and physical associates are declared, with 'writing-mode: vertical-lr; direction: ltr; '.
-PASS Test that border-* properties honor selector specificty when both logical and physical associates are declared, with 'writing-mode: vertical-lr; direction: ltr; '.
-FAIL Test that logical border-* properties share computed values with their physical associates, with 'writing-mode: sideways-lr; direction: rtl; '. assert_equals: logical properties on one declaration, writing mode properties on another, 'writing-mode: sideways-lr; direction: rtl; ', border-top expected "1px solid rgb(1, 1, 1)" but got "3px dotted rgb(3, 3, 3)"
-FAIL Test that border-* shorthands set the computed value of both logical and physical longhands, with 'writing-mode: sideways-lr; direction: rtl; '. assert_equals: shorthand properties on one declaration, writing mode properties on another, 'writing-mode: sideways-lr; direction: rtl; ', border-top expected "1px solid rgb(1, 1, 1)" but got "0px none rgb(0, 0, 0)"
-FAIL Test that border-* properties honor order of appearance when both logical and physical associates are declared, with 'writing-mode: sideways-lr; direction: rtl; '. assert_equals: 'border-inline-start' last on single declaration, 'writing-mode: sideways-lr; direction: rtl; ', border-block-start expected "1px solid rgb(1, 1, 1)" but got "3px dotted rgb(3, 3, 3)"
-FAIL Test that border-* properties honor selector specificty when both logical and physical associates are declared, with 'writing-mode: sideways-lr; direction: rtl; '. assert_equals: 'border-inline-start', two declarations, 'writing-mode: sideways-lr; direction: rtl; ', border-block-start expected "1px solid rgb(1, 1, 1)" but got "3px dotted rgb(3, 3, 3)"
+[PASS] Test that logical border-* properties are supported.
+[PASS] Test that border-inline shorthand sets longhands and serializes correctly.
+[PASS] Test that border-block shorthand sets longhands and serializes correctly.
+[PASS] Test that border shorthand sets longhands and serializes correctly.
+[PASS] Test that logical border-* properties share computed values with their physical associates, with 'writing-mode: horizontal-tb; direction: ltr; '.
+[PASS] Test that border-* shorthands set the computed value of both logical and physical longhands, with 'writing-mode: horizontal-tb; direction: ltr; '.
+[PASS] Test that border-* properties honor order of appearance when both logical and physical associates are declared, with 'writing-mode: horizontal-tb; direction: ltr; '.
+[PASS] Test that border-* properties honor selector specificty when both logical and physical associates are declared, with 'writing-mode: horizontal-tb; direction: ltr; '.
+[PASS] Test that logical border-* properties share computed values with their physical associates, with 'writing-mode: horizontal-tb; direction: rtl; '.
+[PASS] Test that border-* shorthands set the computed value of both logical and physical longhands, with 'writing-mode: horizontal-tb; direction: rtl; '.
+[PASS] Test that border-* properties honor order of appearance when both logical and physical associates are declared, with 'writing-mode: horizontal-tb; direction: rtl; '.
+[PASS] Test that border-* properties honor selector specificty when both logical and physical associates are declared, with 'writing-mode: horizontal-tb; direction: rtl; '.
+[PASS] Test that logical border-* properties share computed values with their physical associates, with 'writing-mode: vertical-rl; direction: rtl; '.
+[PASS] Test that border-* shorthands set the computed value of both logical and physical longhands, with 'writing-mode: vertical-rl; direction: rtl; '.
+[PASS] Test that border-* properties honor order of appearance when both logical and physical associates are declared, with 'writing-mode: vertical-rl; direction: rtl; '.
+[PASS] Test that border-* properties honor selector specificty when both logical and physical associates are declared, with 'writing-mode: vertical-rl; direction: rtl; '.
+[FAIL] Test that logical border-* properties share computed values with their physical associates, with 'writing-mode: sideways-rl; direction: rtl; '.
+  assert_equals: logical properties on one declaration, writing mode properties on another, 'writing-mode: sideways-rl; direction: rtl; ', border-bottom expected "1px solid rgb(1, 1, 1)" but got "4px double rgb(4, 4, 4)"
+[FAIL] Test that border-* shorthands set the computed value of both logical and physical longhands, with 'writing-mode: sideways-rl; direction: rtl; '.
+  assert_equals: shorthand properties on one declaration, writing mode properties on another, 'writing-mode: sideways-rl; direction: rtl; ', border-bottom expected "1px solid rgb(1, 1, 1)" but got "0px none rgb(0, 0, 0)"
+[FAIL] Test that border-* properties honor order of appearance when both logical and physical associates are declared, with 'writing-mode: sideways-rl; direction: rtl; '.
+  assert_equals: 'border-inline-start' last on single declaration, 'writing-mode: sideways-rl; direction: rtl; ', border-block-end expected "1px solid rgb(1, 1, 1)" but got "4px double rgb(4, 4, 4)"
+[FAIL] Test that border-* properties honor selector specificty when both logical and physical associates are declared, with 'writing-mode: sideways-rl; direction: rtl; '.
+  assert_equals: 'border-inline-start', two declarations, 'writing-mode: sideways-rl; direction: rtl; ', border-block-end expected "1px solid rgb(1, 1, 1)" but got "4px double rgb(4, 4, 4)"
+[PASS] Test that logical border-* properties share computed values with their physical associates, with 'writing-mode: vertical-rl; direction: ltr; '.
+[PASS] Test that border-* shorthands set the computed value of both logical and physical longhands, with 'writing-mode: vertical-rl; direction: ltr; '.
+[PASS] Test that border-* properties honor order of appearance when both logical and physical associates are declared, with 'writing-mode: vertical-rl; direction: ltr; '.
+[PASS] Test that border-* properties honor selector specificty when both logical and physical associates are declared, with 'writing-mode: vertical-rl; direction: ltr; '.
+[FAIL] Test that logical border-* properties share computed values with their physical associates, with 'writing-mode: sideways-rl; direction: ltr; '.
+  assert_equals: logical properties on one declaration, writing mode properties on another, 'writing-mode: sideways-rl; direction: ltr; ', border-top expected "1px solid rgb(1, 1, 1)" but got "3px dotted rgb(3, 3, 3)"
+[FAIL] Test that border-* shorthands set the computed value of both logical and physical longhands, with 'writing-mode: sideways-rl; direction: ltr; '.
+  assert_equals: shorthand properties on one declaration, writing mode properties on another, 'writing-mode: sideways-rl; direction: ltr; ', border-top expected "1px solid rgb(1, 1, 1)" but got "0px none rgb(0, 0, 0)"
+[FAIL] Test that border-* properties honor order of appearance when both logical and physical associates are declared, with 'writing-mode: sideways-rl; direction: ltr; '.
+  assert_equals: 'border-inline-start' last on single declaration, 'writing-mode: sideways-rl; direction: ltr; ', border-left expected "1px solid rgb(1, 1, 1)" but got "5px groove rgb(5, 5, 5)"
+[FAIL] Test that border-* properties honor selector specificty when both logical and physical associates are declared, with 'writing-mode: sideways-rl; direction: ltr; '.
+  assert_equals: 'border-inline-start', two declarations, 'writing-mode: sideways-rl; direction: ltr; ', border-left expected "1px solid rgb(1, 1, 1)" but got "5px groove rgb(5, 5, 5)"
+[PASS] Test that logical border-* properties share computed values with their physical associates, with 'writing-mode: vertical-lr; direction: rtl; '.
+[PASS] Test that border-* shorthands set the computed value of both logical and physical longhands, with 'writing-mode: vertical-lr; direction: rtl; '.
+[PASS] Test that border-* properties honor order of appearance when both logical and physical associates are declared, with 'writing-mode: vertical-lr; direction: rtl; '.
+[PASS] Test that border-* properties honor selector specificty when both logical and physical associates are declared, with 'writing-mode: vertical-lr; direction: rtl; '.
+[FAIL] Test that logical border-* properties share computed values with their physical associates, with 'writing-mode: sideways-lr; direction: ltr; '.
+  assert_equals: logical properties on one declaration, writing mode properties on another, 'writing-mode: sideways-lr; direction: ltr; ', border-bottom expected "1px solid rgb(1, 1, 1)" but got "4px double rgb(4, 4, 4)"
+[FAIL] Test that border-* shorthands set the computed value of both logical and physical longhands, with 'writing-mode: sideways-lr; direction: ltr; '.
+  assert_equals: shorthand properties on one declaration, writing mode properties on another, 'writing-mode: sideways-lr; direction: ltr; ', border-bottom expected "1px solid rgb(1, 1, 1)" but got "0px none rgb(0, 0, 0)"
+[FAIL] Test that border-* properties honor order of appearance when both logical and physical associates are declared, with 'writing-mode: sideways-lr; direction: ltr; '.
+  assert_equals: 'border-inline-start' last on single declaration, 'writing-mode: sideways-lr; direction: ltr; ', border-left expected "1px solid rgb(1, 1, 1)" but got "5px groove rgb(5, 5, 5)"
+[FAIL] Test that border-* properties honor selector specificty when both logical and physical associates are declared, with 'writing-mode: sideways-lr; direction: ltr; '.
+  assert_equals: 'border-inline-start', two declarations, 'writing-mode: sideways-lr; direction: ltr; ', border-left expected "1px solid rgb(1, 1, 1)" but got "5px groove rgb(5, 5, 5)"
+[PASS] Test that logical border-* properties share computed values with their physical associates, with 'writing-mode: vertical-lr; direction: ltr; '.
+[PASS] Test that border-* shorthands set the computed value of both logical and physical longhands, with 'writing-mode: vertical-lr; direction: ltr; '.
+[PASS] Test that border-* properties honor order of appearance when both logical and physical associates are declared, with 'writing-mode: vertical-lr; direction: ltr; '.
+[PASS] Test that border-* properties honor selector specificty when both logical and physical associates are declared, with 'writing-mode: vertical-lr; direction: ltr; '.
+[FAIL] Test that logical border-* properties share computed values with their physical associates, with 'writing-mode: sideways-lr; direction: rtl; '.
+  assert_equals: logical properties on one declaration, writing mode properties on another, 'writing-mode: sideways-lr; direction: rtl; ', border-top expected "1px solid rgb(1, 1, 1)" but got "3px dotted rgb(3, 3, 3)"
+[FAIL] Test that border-* shorthands set the computed value of both logical and physical longhands, with 'writing-mode: sideways-lr; direction: rtl; '.
+  assert_equals: shorthand properties on one declaration, writing mode properties on another, 'writing-mode: sideways-lr; direction: rtl; ', border-top expected "1px solid rgb(1, 1, 1)" but got "0px none rgb(0, 0, 0)"
+[FAIL] Test that border-* properties honor order of appearance when both logical and physical associates are declared, with 'writing-mode: sideways-lr; direction: rtl; '.
+  assert_equals: 'border-inline-start' last on single declaration, 'writing-mode: sideways-lr; direction: rtl; ', border-block-start expected "1px solid rgb(1, 1, 1)" but got "3px dotted rgb(3, 3, 3)"
+[FAIL] Test that border-* properties honor selector specificty when both logical and physical associates are declared, with 'writing-mode: sideways-lr; direction: rtl; '.
+  assert_equals: 'border-inline-start', two declarations, 'writing-mode: sideways-lr; direction: rtl; ', border-block-start expected "1px solid rgb(1, 1, 1)" but got "3px dotted rgb(3, 3, 3)"
 Harness: the test ran to completion.
 

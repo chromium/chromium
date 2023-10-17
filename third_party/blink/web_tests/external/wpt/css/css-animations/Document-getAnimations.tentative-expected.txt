@@ -1,21 +1,22 @@
 This is a testharness.js-based test.
-PASS getAnimations for non-animated content
-PASS getAnimations for CSS Animations
-PASS Order of CSS Animations - within an element unaffected by start time
-PASS Order of CSS Animations - within an element
-PASS Order of CSS Animations - across elements
-PASS Order of CSS Animations - across and within elements
-PASS Order of CSS Animations - markup-bound vs free animations
-PASS Order of CSS Animations - free animation vs CSS Transitions
-FAIL Order of CSS Animations - free animations assert_equals: Free animations are returned in the order they are started expected object "[object CSSAnimation]" but got object "[object CSSAnimation]"
-PASS Order of CSS Animations and CSS Transitions
-PASS Finished but filling CSS Animations are returned
-PASS Finished but not filling CSS Animations are not returned
-PASS Yet-to-start CSS Animations are returned
-PASS CSS Animations canceled via the API are not returned
-PASS CSS Animations canceled and restarted via the API are returned
-PASS pseudo element with replaced target does not affect animation ordering
-PASS CSS Animations targetting (pseudo-)elements should have correct order after sorting
-PASS CSS Animations targetting (pseudo-)elements should have correct order after sorting (::marker)
+[PASS] getAnimations for non-animated content
+[PASS] getAnimations for CSS Animations
+[PASS] Order of CSS Animations - within an element unaffected by start time
+[PASS] Order of CSS Animations - within an element
+[PASS] Order of CSS Animations - across elements
+[PASS] Order of CSS Animations - across and within elements
+[PASS] Order of CSS Animations - markup-bound vs free animations
+[PASS] Order of CSS Animations - free animation vs CSS Transitions
+[FAIL] Order of CSS Animations - free animations
+  assert_equals: Free animations are returned in the order they are started expected object "[object CSSAnimation]" but got object "[object CSSAnimation]"
+[PASS] Order of CSS Animations and CSS Transitions
+[PASS] Finished but filling CSS Animations are returned
+[PASS] Finished but not filling CSS Animations are not returned
+[PASS] Yet-to-start CSS Animations are returned
+[PASS] CSS Animations canceled via the API are not returned
+[PASS] CSS Animations canceled and restarted via the API are returned
+[PASS] pseudo element with replaced target does not affect animation ordering
+[PASS] CSS Animations targetting (pseudo-)elements should have correct order after sorting
+[PASS] CSS Animations targetting (pseudo-)elements should have correct order after sorting (::marker)
 Harness: the test ran to completion.
 

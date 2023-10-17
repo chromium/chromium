@@ -1,4 +1,5 @@
 This is a testharness.js-based test.
-FAIL content that cannot be justified should be centered when text-align-last is justify assert_equals: expected 399 but got 8
+[FAIL] content that cannot be justified should be centered when text-align-last is justify
+  assert_equals: expected 399 but got 8
 Harness: the test ran to completion.
 

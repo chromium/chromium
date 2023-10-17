@@ -1,97 +1,133 @@
 This is a testharness.js-based test.
 Found 93 tests; 57 PASS, 36 FAIL, 0 TIMEOUT, 0 NOTRUN.
-PASS Test that logical sizing properties are supported.
-PASS Test that logical sizing properties share computed values with their physical associates, with 'writing-mode: horizontal-tb; direction: ltr; '.
-PASS Test that sizing properties honor order of appearance when both logical and physical associates are declared, with 'writing-mode: horizontal-tb; direction: ltr; '.
-PASS Test that sizing properties honor selector specificty when both logical and physical associates are declared, with 'writing-mode: horizontal-tb; direction: ltr; '.
-PASS Test that logical sizing properties share computed values with their physical associates, with 'writing-mode: horizontal-tb; direction: rtl; '.
-PASS Test that sizing properties honor order of appearance when both logical and physical associates are declared, with 'writing-mode: horizontal-tb; direction: rtl; '.
-PASS Test that sizing properties honor selector specificty when both logical and physical associates are declared, with 'writing-mode: horizontal-tb; direction: rtl; '.
-PASS Test that logical sizing properties share computed values with their physical associates, with 'writing-mode: vertical-rl; direction: rtl; '.
-PASS Test that sizing properties honor order of appearance when both logical and physical associates are declared, with 'writing-mode: vertical-rl; direction: rtl; '.
-PASS Test that sizing properties honor selector specificty when both logical and physical associates are declared, with 'writing-mode: vertical-rl; direction: rtl; '.
-FAIL Test that logical sizing properties share computed values with their physical associates, with 'writing-mode: sideways-rl; direction: rtl; '. assert_equals: logical properties on one declaration, writing mode properties on another, 'writing-mode: sideways-rl; direction: rtl; ', height expected "1px" but got "2px"
-FAIL Test that sizing properties honor order of appearance when both logical and physical associates are declared, with 'writing-mode: sideways-rl; direction: rtl; '. assert_equals: 'inline-size' last on single declaration, 'writing-mode: sideways-rl; direction: rtl; ', width expected "1px" but got "3px"
-FAIL Test that sizing properties honor selector specificty when both logical and physical associates are declared, with 'writing-mode: sideways-rl; direction: rtl; '. assert_equals: 'inline-size', two declarations, 'writing-mode: sideways-rl; direction: rtl; ', width expected "1px" but got "3px"
-PASS Test that logical sizing properties share computed values with their physical associates, with 'writing-mode: vertical-rl; direction: ltr; '.
-PASS Test that sizing properties honor order of appearance when both logical and physical associates are declared, with 'writing-mode: vertical-rl; direction: ltr; '.
-PASS Test that sizing properties honor selector specificty when both logical and physical associates are declared, with 'writing-mode: vertical-rl; direction: ltr; '.
-FAIL Test that logical sizing properties share computed values with their physical associates, with 'writing-mode: sideways-rl; direction: ltr; '. assert_equals: logical properties on one declaration, writing mode properties on another, 'writing-mode: sideways-rl; direction: ltr; ', height expected "1px" but got "2px"
-FAIL Test that sizing properties honor order of appearance when both logical and physical associates are declared, with 'writing-mode: sideways-rl; direction: ltr; '. assert_equals: 'inline-size' last on single declaration, 'writing-mode: sideways-rl; direction: ltr; ', width expected "1px" but got "3px"
-FAIL Test that sizing properties honor selector specificty when both logical and physical associates are declared, with 'writing-mode: sideways-rl; direction: ltr; '. assert_equals: 'inline-size', two declarations, 'writing-mode: sideways-rl; direction: ltr; ', width expected "1px" but got "3px"
-PASS Test that logical sizing properties share computed values with their physical associates, with 'writing-mode: vertical-lr; direction: rtl; '.
-PASS Test that sizing properties honor order of appearance when both logical and physical associates are declared, with 'writing-mode: vertical-lr; direction: rtl; '.
-PASS Test that sizing properties honor selector specificty when both logical and physical associates are declared, with 'writing-mode: vertical-lr; direction: rtl; '.
-FAIL Test that logical sizing properties share computed values with their physical associates, with 'writing-mode: sideways-lr; direction: ltr; '. assert_equals: logical properties on one declaration, writing mode properties on another, 'writing-mode: sideways-lr; direction: ltr; ', height expected "1px" but got "2px"
-FAIL Test that sizing properties honor order of appearance when both logical and physical associates are declared, with 'writing-mode: sideways-lr; direction: ltr; '. assert_equals: 'inline-size' last on single declaration, 'writing-mode: sideways-lr; direction: ltr; ', width expected "1px" but got "3px"
-FAIL Test that sizing properties honor selector specificty when both logical and physical associates are declared, with 'writing-mode: sideways-lr; direction: ltr; '. assert_equals: 'inline-size', two declarations, 'writing-mode: sideways-lr; direction: ltr; ', width expected "1px" but got "3px"
-PASS Test that logical sizing properties share computed values with their physical associates, with 'writing-mode: vertical-lr; direction: ltr; '.
-PASS Test that sizing properties honor order of appearance when both logical and physical associates are declared, with 'writing-mode: vertical-lr; direction: ltr; '.
-PASS Test that sizing properties honor selector specificty when both logical and physical associates are declared, with 'writing-mode: vertical-lr; direction: ltr; '.
-FAIL Test that logical sizing properties share computed values with their physical associates, with 'writing-mode: sideways-lr; direction: rtl; '. assert_equals: logical properties on one declaration, writing mode properties on another, 'writing-mode: sideways-lr; direction: rtl; ', height expected "1px" but got "2px"
-FAIL Test that sizing properties honor order of appearance when both logical and physical associates are declared, with 'writing-mode: sideways-lr; direction: rtl; '. assert_equals: 'inline-size' last on single declaration, 'writing-mode: sideways-lr; direction: rtl; ', width expected "1px" but got "3px"
-FAIL Test that sizing properties honor selector specificty when both logical and physical associates are declared, with 'writing-mode: sideways-lr; direction: rtl; '. assert_equals: 'inline-size', two declarations, 'writing-mode: sideways-lr; direction: rtl; ', width expected "1px" but got "3px"
-PASS Test that logical max sizing properties are supported.
-PASS Test that logical max sizing properties share computed values with their physical associates, with 'writing-mode: horizontal-tb; direction: ltr; '.
-PASS Test that max sizing properties honor order of appearance when both logical and physical associates are declared, with 'writing-mode: horizontal-tb; direction: ltr; '.
-PASS Test that max sizing properties honor selector specificty when both logical and physical associates are declared, with 'writing-mode: horizontal-tb; direction: ltr; '.
-PASS Test that logical max sizing properties share computed values with their physical associates, with 'writing-mode: horizontal-tb; direction: rtl; '.
-PASS Test that max sizing properties honor order of appearance when both logical and physical associates are declared, with 'writing-mode: horizontal-tb; direction: rtl; '.
-PASS Test that max sizing properties honor selector specificty when both logical and physical associates are declared, with 'writing-mode: horizontal-tb; direction: rtl; '.
-PASS Test that logical max sizing properties share computed values with their physical associates, with 'writing-mode: vertical-rl; direction: rtl; '.
-PASS Test that max sizing properties honor order of appearance when both logical and physical associates are declared, with 'writing-mode: vertical-rl; direction: rtl; '.
-PASS Test that max sizing properties honor selector specificty when both logical and physical associates are declared, with 'writing-mode: vertical-rl; direction: rtl; '.
-FAIL Test that logical max sizing properties share computed values with their physical associates, with 'writing-mode: sideways-rl; direction: rtl; '. assert_equals: logical properties on one declaration, writing mode properties on another, 'writing-mode: sideways-rl; direction: rtl; ', max-height expected "1px" but got "2px"
-FAIL Test that max sizing properties honor order of appearance when both logical and physical associates are declared, with 'writing-mode: sideways-rl; direction: rtl; '. assert_equals: 'max-inline-size' last on single declaration, 'writing-mode: sideways-rl; direction: rtl; ', max-width expected "1px" but got "3px"
-FAIL Test that max sizing properties honor selector specificty when both logical and physical associates are declared, with 'writing-mode: sideways-rl; direction: rtl; '. assert_equals: 'max-inline-size', two declarations, 'writing-mode: sideways-rl; direction: rtl; ', max-width expected "1px" but got "3px"
-PASS Test that logical max sizing properties share computed values with their physical associates, with 'writing-mode: vertical-rl; direction: ltr; '.
-PASS Test that max sizing properties honor order of appearance when both logical and physical associates are declared, with 'writing-mode: vertical-rl; direction: ltr; '.
-PASS Test that max sizing properties honor selector specificty when both logical and physical associates are declared, with 'writing-mode: vertical-rl; direction: ltr; '.
-FAIL Test that logical max sizing properties share computed values with their physical associates, with 'writing-mode: sideways-rl; direction: ltr; '. assert_equals: logical properties on one declaration, writing mode properties on another, 'writing-mode: sideways-rl; direction: ltr; ', max-height expected "1px" but got "2px"
-FAIL Test that max sizing properties honor order of appearance when both logical and physical associates are declared, with 'writing-mode: sideways-rl; direction: ltr; '. assert_equals: 'max-inline-size' last on single declaration, 'writing-mode: sideways-rl; direction: ltr; ', max-width expected "1px" but got "3px"
-FAIL Test that max sizing properties honor selector specificty when both logical and physical associates are declared, with 'writing-mode: sideways-rl; direction: ltr; '. assert_equals: 'max-inline-size', two declarations, 'writing-mode: sideways-rl; direction: ltr; ', max-width expected "1px" but got "3px"
-PASS Test that logical max sizing properties share computed values with their physical associates, with 'writing-mode: vertical-lr; direction: rtl; '.
-PASS Test that max sizing properties honor order of appearance when both logical and physical associates are declared, with 'writing-mode: vertical-lr; direction: rtl; '.
-PASS Test that max sizing properties honor selector specificty when both logical and physical associates are declared, with 'writing-mode: vertical-lr; direction: rtl; '.
-FAIL Test that logical max sizing properties share computed values with their physical associates, with 'writing-mode: sideways-lr; direction: ltr; '. assert_equals: logical properties on one declaration, writing mode properties on another, 'writing-mode: sideways-lr; direction: ltr; ', max-height expected "1px" but got "2px"
-FAIL Test that max sizing properties honor order of appearance when both logical and physical associates are declared, with 'writing-mode: sideways-lr; direction: ltr; '. assert_equals: 'max-inline-size' last on single declaration, 'writing-mode: sideways-lr; direction: ltr; ', max-width expected "1px" but got "3px"
-FAIL Test that max sizing properties honor selector specificty when both logical and physical associates are declared, with 'writing-mode: sideways-lr; direction: ltr; '. assert_equals: 'max-inline-size', two declarations, 'writing-mode: sideways-lr; direction: ltr; ', max-width expected "1px" but got "3px"
-PASS Test that logical max sizing properties share computed values with their physical associates, with 'writing-mode: vertical-lr; direction: ltr; '.
-PASS Test that max sizing properties honor order of appearance when both logical and physical associates are declared, with 'writing-mode: vertical-lr; direction: ltr; '.
-PASS Test that max sizing properties honor selector specificty when both logical and physical associates are declared, with 'writing-mode: vertical-lr; direction: ltr; '.
-FAIL Test that logical max sizing properties share computed values with their physical associates, with 'writing-mode: sideways-lr; direction: rtl; '. assert_equals: logical properties on one declaration, writing mode properties on another, 'writing-mode: sideways-lr; direction: rtl; ', max-height expected "1px" but got "2px"
-FAIL Test that max sizing properties honor order of appearance when both logical and physical associates are declared, with 'writing-mode: sideways-lr; direction: rtl; '. assert_equals: 'max-inline-size' last on single declaration, 'writing-mode: sideways-lr; direction: rtl; ', max-width expected "1px" but got "3px"
-FAIL Test that max sizing properties honor selector specificty when both logical and physical associates are declared, with 'writing-mode: sideways-lr; direction: rtl; '. assert_equals: 'max-inline-size', two declarations, 'writing-mode: sideways-lr; direction: rtl; ', max-width expected "1px" but got "3px"
-PASS Test that logical min sizing properties are supported.
-PASS Test that logical min sizing properties share computed values with their physical associates, with 'writing-mode: horizontal-tb; direction: ltr; '.
-PASS Test that min sizing properties honor order of appearance when both logical and physical associates are declared, with 'writing-mode: horizontal-tb; direction: ltr; '.
-PASS Test that min sizing properties honor selector specificty when both logical and physical associates are declared, with 'writing-mode: horizontal-tb; direction: ltr; '.
-PASS Test that logical min sizing properties share computed values with their physical associates, with 'writing-mode: horizontal-tb; direction: rtl; '.
-PASS Test that min sizing properties honor order of appearance when both logical and physical associates are declared, with 'writing-mode: horizontal-tb; direction: rtl; '.
-PASS Test that min sizing properties honor selector specificty when both logical and physical associates are declared, with 'writing-mode: horizontal-tb; direction: rtl; '.
-PASS Test that logical min sizing properties share computed values with their physical associates, with 'writing-mode: vertical-rl; direction: rtl; '.
-PASS Test that min sizing properties honor order of appearance when both logical and physical associates are declared, with 'writing-mode: vertical-rl; direction: rtl; '.
-PASS Test that min sizing properties honor selector specificty when both logical and physical associates are declared, with 'writing-mode: vertical-rl; direction: rtl; '.
-FAIL Test that logical min sizing properties share computed values with their physical associates, with 'writing-mode: sideways-rl; direction: rtl; '. assert_equals: logical properties on one declaration, writing mode properties on another, 'writing-mode: sideways-rl; direction: rtl; ', min-height expected "1px" but got "2px"
-FAIL Test that min sizing properties honor order of appearance when both logical and physical associates are declared, with 'writing-mode: sideways-rl; direction: rtl; '. assert_equals: 'min-inline-size' last on single declaration, 'writing-mode: sideways-rl; direction: rtl; ', min-width expected "1px" but got "3px"
-FAIL Test that min sizing properties honor selector specificty when both logical and physical associates are declared, with 'writing-mode: sideways-rl; direction: rtl; '. assert_equals: 'min-inline-size', two declarations, 'writing-mode: sideways-rl; direction: rtl; ', min-width expected "1px" but got "3px"
-PASS Test that logical min sizing properties share computed values with their physical associates, with 'writing-mode: vertical-rl; direction: ltr; '.
-PASS Test that min sizing properties honor order of appearance when both logical and physical associates are declared, with 'writing-mode: vertical-rl; direction: ltr; '.
-PASS Test that min sizing properties honor selector specificty when both logical and physical associates are declared, with 'writing-mode: vertical-rl; direction: ltr; '.
-FAIL Test that logical min sizing properties share computed values with their physical associates, with 'writing-mode: sideways-rl; direction: ltr; '. assert_equals: logical properties on one declaration, writing mode properties on another, 'writing-mode: sideways-rl; direction: ltr; ', min-height expected "1px" but got "2px"
-FAIL Test that min sizing properties honor order of appearance when both logical and physical associates are declared, with 'writing-mode: sideways-rl; direction: ltr; '. assert_equals: 'min-inline-size' last on single declaration, 'writing-mode: sideways-rl; direction: ltr; ', min-width expected "1px" but got "3px"
-FAIL Test that min sizing properties honor selector specificty when both logical and physical associates are declared, with 'writing-mode: sideways-rl; direction: ltr; '. assert_equals: 'min-inline-size', two declarations, 'writing-mode: sideways-rl; direction: ltr; ', min-width expected "1px" but got "3px"
-PASS Test that logical min sizing properties share computed values with their physical associates, with 'writing-mode: vertical-lr; direction: rtl; '.
-PASS Test that min sizing properties honor order of appearance when both logical and physical associates are declared, with 'writing-mode: vertical-lr; direction: rtl; '.
-PASS Test that min sizing properties honor selector specificty when both logical and physical associates are declared, with 'writing-mode: vertical-lr; direction: rtl; '.
-FAIL Test that logical min sizing properties share computed values with their physical associates, with 'writing-mode: sideways-lr; direction: ltr; '. assert_equals: logical properties on one declaration, writing mode properties on another, 'writing-mode: sideways-lr; direction: ltr; ', min-height expected "1px" but got "2px"
-FAIL Test that min sizing properties honor order of appearance when both logical and physical associates are declared, with 'writing-mode: sideways-lr; direction: ltr; '. assert_equals: 'min-inline-size' last on single declaration, 'writing-mode: sideways-lr; direction: ltr; ', min-width expected "1px" but got "3px"
-FAIL Test that min sizing properties honor selector specificty when both logical and physical associates are declared, with 'writing-mode: sideways-lr; direction: ltr; '. assert_equals: 'min-inline-size', two declarations, 'writing-mode: sideways-lr; direction: ltr; ', min-width expected "1px" but got "3px"
-PASS Test that logical min sizing properties share computed values with their physical associates, with 'writing-mode: vertical-lr; direction: ltr; '.
-PASS Test that min sizing properties honor order of appearance when both logical and physical associates are declared, with 'writing-mode: vertical-lr; direction: ltr; '.
-PASS Test that min sizing properties honor selector specificty when both logical and physical associates are declared, with 'writing-mode: vertical-lr; direction: ltr; '.
-FAIL Test that logical min sizing properties share computed values with their physical associates, with 'writing-mode: sideways-lr; direction: rtl; '. assert_equals: logical properties on one declaration, writing mode properties on another, 'writing-mode: sideways-lr; direction: rtl; ', min-height expected "1px" but got "2px"
-FAIL Test that min sizing properties honor order of appearance when both logical and physical associates are declared, with 'writing-mode: sideways-lr; direction: rtl; '. assert_equals: 'min-inline-size' last on single declaration, 'writing-mode: sideways-lr; direction: rtl; ', min-width expected "1px" but got "3px"
-FAIL Test that min sizing properties honor selector specificty when both logical and physical associates are declared, with 'writing-mode: sideways-lr; direction: rtl; '. assert_equals: 'min-inline-size', two declarations, 'writing-mode: sideways-lr; direction: rtl; ', min-width expected "1px" but got "3px"
+[PASS] Test that logical sizing properties are supported.
+[PASS] Test that logical sizing properties share computed values with their physical associates, with 'writing-mode: horizontal-tb; direction: ltr; '.
+[PASS] Test that sizing properties honor order of appearance when both logical and physical associates are declared, with 'writing-mode: horizontal-tb; direction: ltr; '.
+[PASS] Test that sizing properties honor selector specificty when both logical and physical associates are declared, with 'writing-mode: horizontal-tb; direction: ltr; '.
+[PASS] Test that logical sizing properties share computed values with their physical associates, with 'writing-mode: horizontal-tb; direction: rtl; '.
+[PASS] Test that sizing properties honor order of appearance when both logical and physical associates are declared, with 'writing-mode: horizontal-tb; direction: rtl; '.
+[PASS] Test that sizing properties honor selector specificty when both logical and physical associates are declared, with 'writing-mode: horizontal-tb; direction: rtl; '.
+[PASS] Test that logical sizing properties share computed values with their physical associates, with 'writing-mode: vertical-rl; direction: rtl; '.
+[PASS] Test that sizing properties honor order of appearance when both logical and physical associates are declared, with 'writing-mode: vertical-rl; direction: rtl; '.
+[PASS] Test that sizing properties honor selector specificty when both logical and physical associates are declared, with 'writing-mode: vertical-rl; direction: rtl; '.
+[FAIL] Test that logical sizing properties share computed values with their physical associates, with 'writing-mode: sideways-rl; direction: rtl; '.
+  assert_equals: logical properties on one declaration, writing mode properties on another, 'writing-mode: sideways-rl; direction: rtl; ', height expected "1px" but got "2px"
+[FAIL] Test that sizing properties honor order of appearance when both logical and physical associates are declared, with 'writing-mode: sideways-rl; direction: rtl; '.
+  assert_equals: 'inline-size' last on single declaration, 'writing-mode: sideways-rl; direction: rtl; ', width expected "1px" but got "3px"
+[FAIL] Test that sizing properties honor selector specificty when both logical and physical associates are declared, with 'writing-mode: sideways-rl; direction: rtl; '.
+  assert_equals: 'inline-size', two declarations, 'writing-mode: sideways-rl; direction: rtl; ', width expected "1px" but got "3px"
+[PASS] Test that logical sizing properties share computed values with their physical associates, with 'writing-mode: vertical-rl; direction: ltr; '.
+[PASS] Test that sizing properties honor order of appearance when both logical and physical associates are declared, with 'writing-mode: vertical-rl; direction: ltr; '.
+[PASS] Test that sizing properties honor selector specificty when both logical and physical associates are declared, with 'writing-mode: vertical-rl; direction: ltr; '.
+[FAIL] Test that logical sizing properties share computed values with their physical associates, with 'writing-mode: sideways-rl; direction: ltr; '.
+  assert_equals: logical properties on one declaration, writing mode properties on another, 'writing-mode: sideways-rl; direction: ltr; ', height expected "1px" but got "2px"
+[FAIL] Test that sizing properties honor order of appearance when both logical and physical associates are declared, with 'writing-mode: sideways-rl; direction: ltr; '.
+  assert_equals: 'inline-size' last on single declaration, 'writing-mode: sideways-rl; direction: ltr; ', width expected "1px" but got "3px"
+[FAIL] Test that sizing properties honor selector specificty when both logical and physical associates are declared, with 'writing-mode: sideways-rl; direction: ltr; '.
+  assert_equals: 'inline-size', two declarations, 'writing-mode: sideways-rl; direction: ltr; ', width expected "1px" but got "3px"
+[PASS] Test that logical sizing properties share computed values with their physical associates, with 'writing-mode: vertical-lr; direction: rtl; '.
+[PASS] Test that sizing properties honor order of appearance when both logical and physical associates are declared, with 'writing-mode: vertical-lr; direction: rtl; '.
+[PASS] Test that sizing properties honor selector specificty when both logical and physical associates are declared, with 'writing-mode: vertical-lr; direction: rtl; '.
+[FAIL] Test that logical sizing properties share computed values with their physical associates, with 'writing-mode: sideways-lr; direction: ltr; '.
+  assert_equals: logical properties on one declaration, writing mode properties on another, 'writing-mode: sideways-lr; direction: ltr; ', height expected "1px" but got "2px"
+[FAIL] Test that sizing properties honor order of appearance when both logical and physical associates are declared, with 'writing-mode: sideways-lr; direction: ltr; '.
+  assert_equals: 'inline-size' last on single declaration, 'writing-mode: sideways-lr; direction: ltr; ', width expected "1px" but got "3px"
+[FAIL] Test that sizing properties honor selector specificty when both logical and physical associates are declared, with 'writing-mode: sideways-lr; direction: ltr; '.
+  assert_equals: 'inline-size', two declarations, 'writing-mode: sideways-lr; direction: ltr; ', width expected "1px" but got "3px"
+[PASS] Test that logical sizing properties share computed values with their physical associates, with 'writing-mode: vertical-lr; direction: ltr; '.
+[PASS] Test that sizing properties honor order of appearance when both logical and physical associates are declared, with 'writing-mode: vertical-lr; direction: ltr; '.
+[PASS] Test that sizing properties honor selector specificty when both logical and physical associates are declared, with 'writing-mode: vertical-lr; direction: ltr; '.
+[FAIL] Test that logical sizing properties share computed values with their physical associates, with 'writing-mode: sideways-lr; direction: rtl; '.
+  assert_equals: logical properties on one declaration, writing mode properties on another, 'writing-mode: sideways-lr; direction: rtl; ', height expected "1px" but got "2px"
+[FAIL] Test that sizing properties honor order of appearance when both logical and physical associates are declared, with 'writing-mode: sideways-lr; direction: rtl; '.
+  assert_equals: 'inline-size' last on single declaration, 'writing-mode: sideways-lr; direction: rtl; ', width expected "1px" but got "3px"
+[FAIL] Test that sizing properties honor selector specificty when both logical and physical associates are declared, with 'writing-mode: sideways-lr; direction: rtl; '.
+  assert_equals: 'inline-size', two declarations, 'writing-mode: sideways-lr; direction: rtl; ', width expected "1px" but got "3px"
+[PASS] Test that logical max sizing properties are supported.
+[PASS] Test that logical max sizing properties share computed values with their physical associates, with 'writing-mode: horizontal-tb; direction: ltr; '.
+[PASS] Test that max sizing properties honor order of appearance when both logical and physical associates are declared, with 'writing-mode: horizontal-tb; direction: ltr; '.
+[PASS] Test that max sizing properties honor selector specificty when both logical and physical associates are declared, with 'writing-mode: horizontal-tb; direction: ltr; '.
+[PASS] Test that logical max sizing properties share computed values with their physical associates, with 'writing-mode: horizontal-tb; direction: rtl; '.
+[PASS] Test that max sizing properties honor order of appearance when both logical and physical associates are declared, with 'writing-mode: horizontal-tb; direction: rtl; '.
+[PASS] Test that max sizing properties honor selector specificty when both logical and physical associates are declared, with 'writing-mode: horizontal-tb; direction: rtl; '.
+[PASS] Test that logical max sizing properties share computed values with their physical associates, with 'writing-mode: vertical-rl; direction: rtl; '.
+[PASS] Test that max sizing properties honor order of appearance when both logical and physical associates are declared, with 'writing-mode: vertical-rl; direction: rtl; '.
+[PASS] Test that max sizing properties honor selector specificty when both logical and physical associates are declared, with 'writing-mode: vertical-rl; direction: rtl; '.
+[FAIL] Test that logical max sizing properties share computed values with their physical associates, with 'writing-mode: sideways-rl; direction: rtl; '.
+  assert_equals: logical properties on one declaration, writing mode properties on another, 'writing-mode: sideways-rl; direction: rtl; ', max-height expected "1px" but got "2px"
+[FAIL] Test that max sizing properties honor order of appearance when both logical and physical associates are declared, with 'writing-mode: sideways-rl; direction: rtl; '.
+  assert_equals: 'max-inline-size' last on single declaration, 'writing-mode: sideways-rl; direction: rtl; ', max-width expected "1px" but got "3px"
+[FAIL] Test that max sizing properties honor selector specificty when both logical and physical associates are declared, with 'writing-mode: sideways-rl; direction: rtl; '.
+  assert_equals: 'max-inline-size', two declarations, 'writing-mode: sideways-rl; direction: rtl; ', max-width expected "1px" but got "3px"
+[PASS] Test that logical max sizing properties share computed values with their physical associates, with 'writing-mode: vertical-rl; direction: ltr; '.
+[PASS] Test that max sizing properties honor order of appearance when both logical and physical associates are declared, with 'writing-mode: vertical-rl; direction: ltr; '.
+[PASS] Test that max sizing properties honor selector specificty when both logical and physical associates are declared, with 'writing-mode: vertical-rl; direction: ltr; '.
+[FAIL] Test that logical max sizing properties share computed values with their physical associates, with 'writing-mode: sideways-rl; direction: ltr; '.
+  assert_equals: logical properties on one declaration, writing mode properties on another, 'writing-mode: sideways-rl; direction: ltr; ', max-height expected "1px" but got "2px"
+[FAIL] Test that max sizing properties honor order of appearance when both logical and physical associates are declared, with 'writing-mode: sideways-rl; direction: ltr; '.
+  assert_equals: 'max-inline-size' last on single declaration, 'writing-mode: sideways-rl; direction: ltr; ', max-width expected "1px" but got "3px"
+[FAIL] Test that max sizing properties honor selector specificty when both logical and physical associates are declared, with 'writing-mode: sideways-rl; direction: ltr; '.
+  assert_equals: 'max-inline-size', two declarations, 'writing-mode: sideways-rl; direction: ltr; ', max-width expected "1px" but got "3px"
+[PASS] Test that logical max sizing properties share computed values with their physical associates, with 'writing-mode: vertical-lr; direction: rtl; '.
+[PASS] Test that max sizing properties honor order of appearance when both logical and physical associates are declared, with 'writing-mode: vertical-lr; direction: rtl; '.
+[PASS] Test that max sizing properties honor selector specificty when both logical and physical associates are declared, with 'writing-mode: vertical-lr; direction: rtl; '.
+[FAIL] Test that logical max sizing properties share computed values with their physical associates, with 'writing-mode: sideways-lr; direction: ltr; '.
+  assert_equals: logical properties on one declaration, writing mode properties on another, 'writing-mode: sideways-lr; direction: ltr; ', max-height expected "1px" but got "2px"
+[FAIL] Test that max sizing properties honor order of appearance when both logical and physical associates are declared, with 'writing-mode: sideways-lr; direction: ltr; '.
+  assert_equals: 'max-inline-size' last on single declaration, 'writing-mode: sideways-lr; direction: ltr; ', max-width expected "1px" but got "3px"
+[FAIL] Test that max sizing properties honor selector specificty when both logical and physical associates are declared, with 'writing-mode: sideways-lr; direction: ltr; '.
+  assert_equals: 'max-inline-size', two declarations, 'writing-mode: sideways-lr; direction: ltr; ', max-width expected "1px" but got "3px"
+[PASS] Test that logical max sizing properties share computed values with their physical associates, with 'writing-mode: vertical-lr; direction: ltr; '.
+[PASS] Test that max sizing properties honor order of appearance when both logical and physical associates are declared, with 'writing-mode: vertical-lr; direction: ltr; '.
+[PASS] Test that max sizing properties honor selector specificty when both logical and physical associates are declared, with 'writing-mode: vertical-lr; direction: ltr; '.
+[FAIL] Test that logical max sizing properties share computed values with their physical associates, with 'writing-mode: sideways-lr; direction: rtl; '.
+  assert_equals: logical properties on one declaration, writing mode properties on another, 'writing-mode: sideways-lr; direction: rtl; ', max-height expected "1px" but got "2px"
+[FAIL] Test that max sizing properties honor order of appearance when both logical and physical associates are declared, with 'writing-mode: sideways-lr; direction: rtl; '.
+  assert_equals: 'max-inline-size' last on single declaration, 'writing-mode: sideways-lr; direction: rtl; ', max-width expected "1px" but got "3px"
+[FAIL] Test that max sizing properties honor selector specificty when both logical and physical associates are declared, with 'writing-mode: sideways-lr; direction: rtl; '.
+  assert_equals: 'max-inline-size', two declarations, 'writing-mode: sideways-lr; direction: rtl; ', max-width expected "1px" but got "3px"
+[PASS] Test that logical min sizing properties are supported.
+[PASS] Test that logical min sizing properties share computed values with their physical associates, with 'writing-mode: horizontal-tb; direction: ltr; '.
+[PASS] Test that min sizing properties honor order of appearance when both logical and physical associates are declared, with 'writing-mode: horizontal-tb; direction: ltr; '.
+[PASS] Test that min sizing properties honor selector specificty when both logical and physical associates are declared, with 'writing-mode: horizontal-tb; direction: ltr; '.
+[PASS] Test that logical min sizing properties share computed values with their physical associates, with 'writing-mode: horizontal-tb; direction: rtl; '.
+[PASS] Test that min sizing properties honor order of appearance when both logical and physical associates are declared, with 'writing-mode: horizontal-tb; direction: rtl; '.
+[PASS] Test that min sizing properties honor selector specificty when both logical and physical associates are declared, with 'writing-mode: horizontal-tb; direction: rtl; '.
+[PASS] Test that logical min sizing properties share computed values with their physical associates, with 'writing-mode: vertical-rl; direction: rtl; '.
+[PASS] Test that min sizing properties honor order of appearance when both logical and physical associates are declared, with 'writing-mode: vertical-rl; direction: rtl; '.
+[PASS] Test that min sizing properties honor selector specificty when both logical and physical associates are declared, with 'writing-mode: vertical-rl; direction: rtl; '.
+[FAIL] Test that logical min sizing properties share computed values with their physical associates, with 'writing-mode: sideways-rl; direction: rtl; '.
+  assert_equals: logical properties on one declaration, writing mode properties on another, 'writing-mode: sideways-rl; direction: rtl; ', min-height expected "1px" but got "2px"
+[FAIL] Test that min sizing properties honor order of appearance when both logical and physical associates are declared, with 'writing-mode: sideways-rl; direction: rtl; '.
+  assert_equals: 'min-inline-size' last on single declaration, 'writing-mode: sideways-rl; direction: rtl; ', min-width expected "1px" but got "3px"
+[FAIL] Test that min sizing properties honor selector specificty when both logical and physical associates are declared, with 'writing-mode: sideways-rl; direction: rtl; '.
+  assert_equals: 'min-inline-size', two declarations, 'writing-mode: sideways-rl; direction: rtl; ', min-width expected "1px" but got "3px"
+[PASS] Test that logical min sizing properties share computed values with their physical associates, with 'writing-mode: vertical-rl; direction: ltr; '.
+[PASS] Test that min sizing properties honor order of appearance when both logical and physical associates are declared, with 'writing-mode: vertical-rl; direction: ltr; '.
+[PASS] Test that min sizing properties honor selector specificty when both logical and physical associates are declared, with 'writing-mode: vertical-rl; direction: ltr; '.
+[FAIL] Test that logical min sizing properties share computed values with their physical associates, with 'writing-mode: sideways-rl; direction: ltr; '.
+  assert_equals: logical properties on one declaration, writing mode properties on another, 'writing-mode: sideways-rl; direction: ltr; ', min-height expected "1px" but got "2px"
+[FAIL] Test that min sizing properties honor order of appearance when both logical and physical associates are declared, with 'writing-mode: sideways-rl; direction: ltr; '.
+  assert_equals: 'min-inline-size' last on single declaration, 'writing-mode: sideways-rl; direction: ltr; ', min-width expected "1px" but got "3px"
+[FAIL] Test that min sizing properties honor selector specificty when both logical and physical associates are declared, with 'writing-mode: sideways-rl; direction: ltr; '.
+  assert_equals: 'min-inline-size', two declarations, 'writing-mode: sideways-rl; direction: ltr; ', min-width expected "1px" but got "3px"
+[PASS] Test that logical min sizing properties share computed values with their physical associates, with 'writing-mode: vertical-lr; direction: rtl; '.
+[PASS] Test that min sizing properties honor order of appearance when both logical and physical associates are declared, with 'writing-mode: vertical-lr; direction: rtl; '.
+[PASS] Test that min sizing properties honor selector specificty when both logical and physical associates are declared, with 'writing-mode: vertical-lr; direction: rtl; '.
+[FAIL] Test that logical min sizing properties share computed values with their physical associates, with 'writing-mode: sideways-lr; direction: ltr; '.
+  assert_equals: logical properties on one declaration, writing mode properties on another, 'writing-mode: sideways-lr; direction: ltr; ', min-height expected "1px" but got "2px"
+[FAIL] Test that min sizing properties honor order of appearance when both logical and physical associates are declared, with 'writing-mode: sideways-lr; direction: ltr; '.
+  assert_equals: 'min-inline-size' last on single declaration, 'writing-mode: sideways-lr; direction: ltr; ', min-width expected "1px" but got "3px"
+[FAIL] Test that min sizing properties honor selector specificty when both logical and physical associates are declared, with 'writing-mode: sideways-lr; direction: ltr; '.
+  assert_equals: 'min-inline-size', two declarations, 'writing-mode: sideways-lr; direction: ltr; ', min-width expected "1px" but got "3px"
+[PASS] Test that logical min sizing properties share computed values with their physical associates, with 'writing-mode: vertical-lr; direction: ltr; '.
+[PASS] Test that min sizing properties honor order of appearance when both logical and physical associates are declared, with 'writing-mode: vertical-lr; direction: ltr; '.
+[PASS] Test that min sizing properties honor selector specificty when both logical and physical associates are declared, with 'writing-mode: vertical-lr; direction: ltr; '.
+[FAIL] Test that logical min sizing properties share computed values with their physical associates, with 'writing-mode: sideways-lr; direction: rtl; '.
+  assert_equals: logical properties on one declaration, writing mode properties on another, 'writing-mode: sideways-lr; direction: rtl; ', min-height expected "1px" but got "2px"
+[FAIL] Test that min sizing properties honor order of appearance when both logical and physical associates are declared, with 'writing-mode: sideways-lr; direction: rtl; '.
+  assert_equals: 'min-inline-size' last on single declaration, 'writing-mode: sideways-lr; direction: rtl; ', min-width expected "1px" but got "3px"
+[FAIL] Test that min sizing properties honor selector specificty when both logical and physical associates are declared, with 'writing-mode: sideways-lr; direction: rtl; '.
+  assert_equals: 'min-inline-size', two declarations, 'writing-mode: sideways-lr; direction: rtl; ', min-width expected "1px" but got "3px"
 Harness: the test ran to completion.
 

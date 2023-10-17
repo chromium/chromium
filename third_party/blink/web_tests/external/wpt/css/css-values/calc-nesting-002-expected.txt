@@ -1,9 +1,10 @@
 This is a testharness.js-based test.
-PASS testing calc(20px + calc(80px))
-PASS testing calc(calc(100px))
-PASS testing calc(calc(2) * calc(50px)
-PASS testing calc(calc(150px*2/3)
-PASS testing calc(calc(2 * calc(calc(3)) + 4) * 10px)
-FAIL testing calc(50px + calc(40%)) assert_equals: expected "calc(40% + 50px)" but got "calc(50px + 40%)"
+[PASS] testing calc(20px + calc(80px))
+[PASS] testing calc(calc(100px))
+[PASS] testing calc(calc(2) * calc(50px)
+[PASS] testing calc(calc(150px*2/3)
+[PASS] testing calc(calc(2 * calc(calc(3)) + 4) * 10px)
+[FAIL] testing calc(50px + calc(40%))
+  assert_equals: expected "calc(40% + 50px)" but got "calc(50px + 40%)"
 Harness: the test ran to completion.
 
