@@ -2362,6 +2362,12 @@
       name: "MediaCaptureBackgroundBlur",
       origin_trial_feature_name: "MediaCaptureBackgroundBlur",
       status: "experimental",
+      implied_by: ["MediaCaptureCameraControls"],
+      base_feature: "none",
+    },
+    {
+      name: "MediaCaptureCameraControls",
+      status: "experimental",
       base_feature: "none",
     },
     {
