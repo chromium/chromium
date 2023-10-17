@@ -49,6 +49,14 @@ const CGFloat kUnitTitlePadding = 4;
 NSString* kUnitTypeCellIdentifier = @"UnitTypeCell";
 NSString* kUnitTypeFieldCellIdentifier = @"UnitTypeValueFieldCell";
 
+// Accessibility identifiers.
+NSString* kUnitConversionTableViewIdentifier =
+    @"UnitConversionTableViewIdentifier";
+NSString* kSourceUnitLabelIdentifier = @"sourceUnitLabelIdentifier";
+NSString* kTargetUnitLabelIdentifier = @"targetUnitLabelIdentifier";
+NSString* kSourceUnitFieldIdentifier = @"sourceUnitFieldIdentifier";
+NSString* kTargetUnitFieldIdentifier = @"targetUnitFieldIdentifier";
+
 // Source and target sections indexes.
 const NSInteger kSourceSection = 0;
 const NSInteger kTargetSection = 1;
@@ -225,6 +233,8 @@ ios::provider::UnitType TypeByUnit(NSUnit* unit) {
         constraintEqualToAnchor:_tableViewFooterView.leadingAnchor
                        constant:kReportAnIssueButtonLeadingOffset],
   ]];
+
+  self.tableView.accessibilityIdentifier = kUnitConversionTableViewIdentifier;
 }
 
 #pragma mark - Private
@@ -452,8 +462,10 @@ ios::provider::UnitType TypeByUnit(NSUnit* unit) {
     cell.unitMenuButton.showsMenuAsPrimaryAction = YES;
     if (indexPath.section == kSourceSection) {
       cell.unitTypeLabel.text = _formattedSourceUnit;
+      cell.unitTypeLabel.accessibilityIdentifier = kSourceUnitLabelIdentifier;
     } else if (indexPath.section == kTargetSection) {
       cell.unitTypeLabel.text = _formattedTargetUnit;
+      cell.unitTypeLabel.accessibilityIdentifier = kTargetUnitLabelIdentifier;
     } else {
       NOTREACHED_NORETURN();
     }
@@ -466,11 +478,15 @@ ios::provider::UnitType TypeByUnit(NSUnit* unit) {
     cell.unitValueTextField.delegate = self;
     if (indexPath.section == kSourceSection) {
       cell.unitValueTextField.text = _sourceUnitValueField;
+      cell.unitValueTextField.accessibilityIdentifier =
+          kSourceUnitFieldIdentifier;
       [cell.unitValueTextField addTarget:self
                                   action:@selector(textFieldDidChange:)
                         forControlEvents:UIControlEventEditingChanged];
     } else if (indexPath.section == kTargetSection) {
       cell.unitValueTextField.text = _targetUnitValueField;
+      cell.unitValueTextField.accessibilityIdentifier =
+          kTargetUnitFieldIdentifier;
       cell.unitValueTextField.enabled = NO;
     } else {
       NOTREACHED_NORETURN();
