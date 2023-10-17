@@ -60,11 +60,16 @@ ScopedBOMapping::ScopedBOMapping(ScopedBOMapping&& other)
     : scoped_bo_mapping_factory_(std::move(other.scoped_bo_mapping_factory_)),
       planes_(std::move(other.planes_)),
       bo_import_(std::move(other.bo_import_)) {
+  // Note: we explicitly set these members to nullptr because a raw_ptr<T> may
+  // or may not be zeroed out on move (it depends on the build configuration).
   other.scoped_bo_mapping_factory_ = nullptr;
   other.bo_import_ = nullptr;
 }
 
 ScopedBOMapping& ScopedBOMapping::operator=(ScopedBOMapping&& other) {
+  // Note: we explicitly set |other.scoped_bo_mapping_factory_| and
+  // |other.bo_import_| to nullptr because a raw_ptr<T> may or may not be zeroed
+  // out on move (it depends on the build configuration).
   scoped_bo_mapping_factory_ = std::move(other.scoped_bo_mapping_factory_);
   other.scoped_bo_mapping_factory_ = nullptr;
 
@@ -89,10 +94,7 @@ ScopedBOMapping::Plane::Plane(uint32_t stride,
                               void* addr,
                               void* mmap_data,
                               int prime_fd)
-    : stride(stride),
-      addr(std::move(addr)),
-      mmap_data(std::move(mmap_data)),
-      prime_fd(std::move(prime_fd)) {}
+    : stride(stride), addr(addr), mmap_data(mmap_data), prime_fd(prime_fd) {}
 
 ScopedBOMapping::Plane::Plane(Plane&& other)
     : stride(other.stride),
@@ -100,6 +102,9 @@ ScopedBOMapping::Plane::Plane(Plane&& other)
       mmap_data(std::move(other.mmap_data)),
       prime_fd(std::move(other.prime_fd)) {
   other.stride = 0u;
+
+  // Note: we explicitly set these members to nullptr because a raw_ptr<T> may
+  // or may not be zeroed out on move (it depends on the build configuration).
   other.addr = nullptr;
   other.mmap_data = nullptr;
 }
@@ -109,10 +114,13 @@ ScopedBOMapping::Plane& ScopedBOMapping::Plane::operator=(
   stride = other.stride;
   other.stride = 0u;
 
-  addr = other.addr;
+  // Note: we explicitly set |other.addr| and |other.mmap_data| to nullptr
+  // because a raw_ptr<T> may or may not be zeroed out on move (it depends on
+  // the build configuration).
+  addr = std::move(other.addr);
   other.addr = nullptr;
 
-  mmap_data = other.mmap_data;
+  mmap_data = std::move(other.mmap_data);
   other.mmap_data = nullptr;
 
   prime_fd = std::move(other.prime_fd);
@@ -138,8 +146,8 @@ ScopedBOMappingFactory::~ScopedBOMappingFactory() {
 
 ScopedBOMapping ScopedBOMappingFactory::Create(
     gbm_import_fd_modifier_data import_data) {
-  base::AutoLock lock(lock_);
 #if defined(MINIGBM)
+  base::AutoLock lock(lock_);
   struct gbm_bo* bo_import =
       gbm_bo_import(gbm_device_, GBM_BO_IMPORT_FD_MODIFIER, &import_data,
                     GBM_BO_USE_SW_READ_OFTEN | GBM_BO_USE_SW_WRITE_OFTEN);
@@ -160,8 +168,7 @@ ScopedBOMapping ScopedBOMappingFactory::Create(
     const int prime_fd = gbm_bo_get_fd_for_plane(bo_import, plane);
     CHECK_GE(prime_fd, 0);
 
-    planes.emplace_back(
-        ScopedBOMapping::Plane(stride, addr, mmap_data, prime_fd));
+    planes.emplace_back(stride, addr, mmap_data, prime_fd);
   }
   return ScopedBOMapping(this, std::move(planes), bo_import);
 #else
