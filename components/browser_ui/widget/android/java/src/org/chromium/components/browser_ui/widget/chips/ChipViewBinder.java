@@ -17,8 +17,8 @@ public class ChipViewBinder {
             chip.setOnClickListener((v) -> model.get(ChipProperties.CLICK_HANDLER).onResult(model));
 
         } else if (ChipProperties.CONTENT_DESCRIPTION == key) {
-            chip.getPrimaryTextView().setContentDescription(
-                    model.get(ChipProperties.CONTENT_DESCRIPTION));
+            chip.getPrimaryTextView()
+                    .setContentDescription(model.get(ChipProperties.CONTENT_DESCRIPTION));
 
         } else if (ChipProperties.ENABLED == key) {
             chip.setEnabled(model.get(ChipProperties.ENABLED));
@@ -29,9 +29,11 @@ public class ChipViewBinder {
                 // TODO: Revisit the logic below:
                 // - avoid overriding supplied icon, make no assumptions about how this is used.
                 // - override won't work if SELECTED property is applied after ICON.
-                boolean isSelected = model.getAllSetProperties().contains(ChipProperties.SELECTED)
-                        && model.get(ChipProperties.SELECTED);
-                chip.setIcon(isSelected ? R.drawable.ic_check_googblue_24dp : iconId,
+                boolean isSelected =
+                        model.getAllSetProperties().contains(ChipProperties.SELECTED)
+                                && model.get(ChipProperties.SELECTED);
+                chip.setIcon(
+                        isSelected ? R.drawable.ic_check_googblue_24dp : iconId,
                         model.get(ChipProperties.APPLY_ICON_TINT));
             } else {
                 chip.setIcon(ChipProperties.INVALID_ICON_ID, false);
