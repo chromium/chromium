@@ -22,6 +22,7 @@
 #include "chrome/browser/ash/extensions/dictionary_event_router.h"
 #include "chrome/browser/ash/extensions/ime_menu_event_router.h"
 #include "chrome/browser/ash/extensions/input_method_event_router.h"
+#include "chrome/browser/ash/extensions/language_packs/language_packs_extensions_util.h"
 #include "chrome/browser/ash/input_method/autocorrect_manager.h"
 #include "chrome/browser/ash/input_method/native_input_method_engine.h"
 #include "chrome/browser/ash/os_url_handler.h"
@@ -113,31 +114,6 @@ InputMethodEngine* GetEngineIfActive(content::BrowserContext* browser_context,
   InputMethodEngine* engine =
       event_router->GetEngineIfActive(extension_id, error);
   return engine;
-}
-
-input_method_private::LanguagePackStatus ResultToStatus(
-    const ash::language_packs::PackResult& result) {
-  using ash::language_packs::PackResult;
-  if (result.operation_error != PackResult::ErrorCode::kNone) {
-    if (result.operation_error == PackResult::ErrorCode::kNeedReboot) {
-      return input_method_private::LANGUAGE_PACK_STATUS_ERRORNEEDSREBOOT;
-    } else {
-      return input_method_private::LANGUAGE_PACK_STATUS_ERROROTHER;
-    }
-  }
-
-  switch (result.pack_state) {
-    case PackResult::StatusCode::kUnknown:
-      return input_method_private::LANGUAGE_PACK_STATUS_UNKNOWN;
-    case PackResult::StatusCode::kNotInstalled:
-      return input_method_private::LANGUAGE_PACK_STATUS_NOTINSTALLED;
-    case PackResult::StatusCode::kInProgress:
-      return input_method_private::LANGUAGE_PACK_STATUS_INPROGRESS;
-    case PackResult::StatusCode::kInstalled:
-      return input_method_private::LANGUAGE_PACK_STATUS_INSTALLED;
-  }
-  LOG(ERROR) << "Unexpected PackResult pack_state.";
-  return input_method_private::LANGUAGE_PACK_STATUS_UNKNOWN;
 }
 
 }  // namespace
@@ -586,7 +562,7 @@ InputMethodPrivateGetLanguagePackStatusFunction::Run() {
       // this class which has a language pack type in its function signature,
       // which would cause language packs to be included in this file's headers,
       // which would cause a slew of dependency issues.
-      base::BindOnce(&ResultToStatus)
+      base::BindOnce(&chromeos::LanguagePackResultToExtensionStatus)
           .Then(
               base::BindOnce(&InputMethodPrivateGetLanguagePackStatusFunction::
                                  OnGetLanguagePackStatusComplete,

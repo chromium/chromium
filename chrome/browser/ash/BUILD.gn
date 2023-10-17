@@ -1100,6 +1100,8 @@ source_set("ash") {
     "extensions/install_limiter.h",
     "extensions/install_limiter_factory.cc",
     "extensions/install_limiter_factory.h",
+    "extensions/language_packs/language_packs_extensions_util.cc",
+    "extensions/language_packs/language_packs_extensions_util.h",
     "extensions/media_player_event_router.cc",
     "extensions/media_player_event_router.h",
     "extensions/signin_screen_extensions_external_loader.cc",
