@@ -832,14 +832,6 @@
             "_bug_id": "crbug.com/1245351"
           },
           {
-            "match": "android.webkit.cts.PacProcessorTest#testSetNetwork",
-            "_bug_id": "crbug.com/1368663"
-          },
-          {
-            "match": "android.webkit.cts.WebViewTest#testSetNetworkAvailable",
-            "_bug_id": "crbug.com/1368663"
-          },
-          {
             "match": "android.webkit.cts.WebViewTest#testLoadUrl",
             "_bug_id": "crbug.com/1450170"
           }

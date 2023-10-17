@@ -428,7 +428,9 @@ def GetDevice(args):
       # Start the emulator w/ -writable-system s.t. we can remount the system
       # partition r/w and install our own webview provider. Require fast start
       # to avoid startup regressions.
-      emulator_instance.Start(writable_system=True, require_fast_start=True)
+      emulator_instance.Start(writable_system=True,
+                              require_fast_start=True,
+                              enable_network=True)
 
     devices = script_common.GetDevices(args.devices, args.denylist_file)
     device = devices[0]
