@@ -1759,6 +1759,15 @@
   <message name="IDS_SETTINGS_PRIVACY_GUIDE_COMPLETION_CARD_WAA_LABEL" desc="Text of the Web and App Activity label in the completion card of the 'Privacy Guide'.">
     Web &#38; App Activity
   </message>
+  <message name="IDS_SETTINGS_PRIVACY_GUIDE_COMPOSE_HEADERIDS__ADDITIONAL_SETTINGS" translateable="false" desc="sub header label for compose in the 'Privacy Guide'.">
+   Additional settings
+  </message>
+  <message name="IDS_SETTINGS_PRIVACY_GUIDE_COMPOSE_HEADER" translateable="false" desc="Header for compose in the 'Privacy Guide'.">
+   Compose
+  </message>
+  <message name="IDS_SETTINGS_PRIVACY_GUIDE_COMPOSE_DESCRIPTION" translateable="false" desc="a descitpion of compose in the 'Privacy Guide'.">
+   Offer Autofill assistance in eligible fields
+  </message>
   <message name="IDS_SETTINGS_PRIVACY_GUIDE_MSBB_CARD_HEADER" desc="Header of the 'make searches and browsing better' card in the 'Privacy Guide'.">
     Choose your search and browsing quality
   </message>
