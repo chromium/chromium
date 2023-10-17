@@ -10,10 +10,7 @@
 #include "ash/test/ash_test_base.h"
 #include "base/memory/raw_ptr.h"
 #include "base/test/scoped_feature_list.h"
-#include "chrome/browser/ash/app_list/arc/arc_app_test.h"
 #include "chrome/browser/ash/arc/input_overlay/constants.h"
-
-class TestingProfile;
 
 namespace arc::input_overlay {
 
@@ -42,10 +39,6 @@ class GameControlsTestBase : public ash::AshTestBase {
   std::unique_ptr<views::Widget> widget_;
   raw_ptr<TouchInjector, DanglingUntriaged> touch_injector_;
   raw_ptr<DisplayOverlayController, DanglingUntriaged> controller_;
-
- private:
-  ArcAppTest arc_app_test_;
-  std::unique_ptr<TestingProfile> profile_;
 };
 
 }  // namespace arc::input_overlay

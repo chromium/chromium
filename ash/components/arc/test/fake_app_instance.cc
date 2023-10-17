@@ -479,18 +479,6 @@ void FakeAppInstance::GetAppCategory(const std::string& package_name,
   std::move(callback).Run(category);
 }
 
-void FakeAppInstance::IsGameControlsApplicable(
-    const std::string& package_name,
-    IsGameControlsApplicableCallback callback) {
-  bool applicable = false;
-  if (std::find(game_control_applicable_pkgs_.begin(),
-                game_control_applicable_pkgs_.end(),
-                package_name) != game_control_applicable_pkgs_.end()) {
-    applicable = true;
-  }
-  std::move(callback).Run(applicable);
-}
-
 void FakeAppInstance::LaunchIntentWithWindowInfo(
     const std::string& intent_uri,
     arc::mojom::WindowInfoPtr window_info) {
