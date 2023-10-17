@@ -172,12 +172,14 @@ bool CanCreateGpuMemoryBufferForSinglePlaneSharedImageFormat(
           // plumbed and known by clients requesting shared images as overlay
           // candidate.
           format == SinglePlaneFormat::kR_8 ||
+          format == SinglePlaneFormat::kRG_88 ||
 #endif
 #if BUILDFLAG(IS_APPLE)
           format == SinglePlaneFormat::kBGRX_8888 ||
           format == SinglePlaneFormat::kRGBX_8888 ||
-#endif
           format == SinglePlaneFormat::kR_16 ||
+          format == SinglePlaneFormat::kRG_1616 ||
+#endif
           format == SinglePlaneFormat::kRGBA_4444 ||
           format == SinglePlaneFormat::kRGBA_8888 ||
           format == SinglePlaneFormat::kRGBA_1010102 ||

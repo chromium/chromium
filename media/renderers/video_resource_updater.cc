@@ -845,8 +845,10 @@ viz::SharedImageFormat VideoResourceUpdater::YuvSharedImageFormat(
            caps.texture_rg);
     return GetSingleChannel8BitFormat(caps, shared_image_caps);
   }
-  if (use_r16_texture_ && caps.texture_norm16)
+  if (caps.texture_norm16 &&
+      (shared_image_caps.supports_r16_shared_images || use_r16_texture_)) {
     return viz::SinglePlaneFormat::kR_16;
+  }
   if (caps.texture_half_float_linear &&
       shared_image_caps.supports_luminance_shared_images) {
     return viz::SinglePlaneFormat::kLUMINANCE_F16;

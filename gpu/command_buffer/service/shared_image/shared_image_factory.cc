@@ -864,9 +864,15 @@ gpu::SharedImageCapabilities SharedImageFactory::MakeCapabilities() {
   shared_image_caps.supports_scanout_shared_images =
       SharedImageManager::SupportsScanoutImages();
   const bool is_angle_metal =
-      (gl::GetGLImplementation() == gl::kGLImplementationEGLANGLE &&
-       gl::GetANGLEImplementation() == gl::ANGLEImplementation::kMetal);
-  shared_image_caps.supports_luminance_shared_images = !is_angle_metal;
+      gl::GetGLImplementation() == gl::kGLImplementationEGLANGLE &&
+      gl::GetANGLEImplementation() == gl::ANGLEImplementation::kMetal;
+  const bool is_skia_graphite =
+      gr_context_type_ == GrContextType::kGraphiteDawn ||
+      gr_context_type_ == GrContextType::kGraphiteMetal;
+  shared_image_caps.supports_luminance_shared_images =
+      !is_angle_metal && !is_skia_graphite;
+  shared_image_caps.supports_r16_shared_images =
+      is_angle_metal || is_skia_graphite;
   shared_image_caps.disable_r8_shared_images =
       workarounds_.r8_egl_images_broken;
 
