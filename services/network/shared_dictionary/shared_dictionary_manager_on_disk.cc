@@ -365,6 +365,23 @@ class SharedDictionaryManagerOnDisk::CacheEvictionTask
     if (result.has_value()) {
       manager_->OnDictionaryDeleted(result.value(),
                                     /*need_to_doom_disk_cache_entries=*/true);
+    } else if (result.error() == net::SQLitePersistentSharedDictionaryStore::
+                                     Error::kFailedToGetTotalDictSize) {
+      // Assume the database gets corrupted for some reason, so call
+      // ClearAllDictionaries() to reset the database.
+      manager_->metadata_store().ClearAllDictionaries(
+          base::BindOnce(&CacheEvictionTask::OnClearAllDictionariesFinished,
+                         weak_factory_.GetWeakPtr()));
+      return;
+    }
+    manager_->OnFinishSerializedTask();
+  }
+  void OnClearAllDictionariesFinished(
+      net::SQLitePersistentSharedDictionaryStore::UnguessableTokenSetOrError
+          result) {
+    if (result.has_value()) {
+      manager_->OnDictionaryDeleted(result.value(),
+                                    /*need_to_doom_disk_cache_entries=*/true);
     }
     manager_->OnFinishSerializedTask();
   }

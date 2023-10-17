@@ -126,7 +126,8 @@ class COMPONENT_EXPORT(NET_EXTRAS) SQLitePersistentSharedDictionaryStore {
   void GetOriginsBetween(const base::Time start_time,
                          const base::Time end_time,
                          base::OnceCallback<void(OriginListOrError)> callback);
-  void ClearAllDictionaries(base::OnceCallback<void(Error)> callback);
+  void ClearAllDictionaries(
+      base::OnceCallback<void(UnguessableTokenSetOrError)> callback);
   void ClearDictionaries(
       const base::Time start_time,
       const base::Time end_time,

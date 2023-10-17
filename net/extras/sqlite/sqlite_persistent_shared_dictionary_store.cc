@@ -275,7 +275,7 @@ class SQLitePersistentSharedDictionaryStore::Backend
   UsageInfoOrError GetUsageInfoImpl();
   OriginListOrError GetOriginsBetweenImpl(const base::Time start_time,
                                           const base::Time end_time);
-  Error ClearAllDictionariesImpl();
+  UnguessableTokenSetOrError ClearAllDictionariesImpl();
   UnguessableTokenSetOrError ClearDictionariesImpl(
       base::Time start_time,
       base::Time end_time,
@@ -969,36 +969,47 @@ SQLitePersistentSharedDictionaryStore::Backend::GetOriginsBetweenImpl(
   return base::ok(std::vector<url::Origin>(origins.begin(), origins.end()));
 }
 
-SQLitePersistentSharedDictionaryStore::Error
+SQLitePersistentSharedDictionaryStore::UnguessableTokenSetOrError
 SQLitePersistentSharedDictionaryStore::Backend::ClearAllDictionariesImpl() {
   CHECK(background_task_runner()->RunsTasksInCurrentSequence());
 
   if (!InitializeDatabase()) {
-    return Error::kFailedToInitializeDatabase;
+    return base::unexpected(Error::kFailedToInitializeDatabase);
   }
 
   sql::Transaction transaction(db());
   if (!transaction.Begin()) {
-    return Error::kFailedToBeginTransaction;
+    return base::unexpected(Error::kFailedToBeginTransaction);
   }
 
-  static constexpr char kQuery[] = "DELETE FROM dictionaries";
+  static constexpr char kQuery[] =
+      "DELETE FROM dictionaries RETURNING token_high, token_low";
   if (!db()->IsSQLValid(kQuery)) {
-    return Error::kInvalidSql;
+    return base::unexpected(Error::kInvalidSql);
   }
   sql::Statement statement(db()->GetCachedStatement(SQL_FROM_HERE, kQuery));
-  if (!statement.Run()) {
-    return Error::kFailedToExecuteSql;
+
+  std::vector<base::UnguessableToken> tokens;
+  while (statement.Step()) {
+    const int64_t token_high = statement.ColumnInt64(0);
+    const int64_t token_low = statement.ColumnInt64(1);
+    absl::optional<base::UnguessableToken> disk_cache_key_token =
+        ToUnguessableToken(token_high, token_low);
+    if (!disk_cache_key_token) {
+      continue;
+    }
+    tokens.emplace_back(*disk_cache_key_token);
   }
 
   if (!meta_table()->SetValue(kTotalDictSizeKey, 0)) {
-    return Error::kFailedToSetTotalDictSize;
+    return base::unexpected(Error::kFailedToSetTotalDictSize);
   }
 
   if (!transaction.Commit()) {
-    return Error::kFailedToCommitTransaction;
+    return base::unexpected(Error::kFailedToCommitTransaction);
   }
-  return Error::kOk;
+  return base::ok(
+      std::set<base::UnguessableToken>(tokens.begin(), tokens.end()));
 }
 
 SQLitePersistentSharedDictionaryStore::UnguessableTokenSetOrError
@@ -1701,7 +1712,7 @@ void SQLitePersistentSharedDictionaryStore::GetOriginsBetween(
 }
 
 void SQLitePersistentSharedDictionaryStore::ClearAllDictionaries(
-    base::OnceCallback<void(Error)> callback) {
+    base::OnceCallback<void(UnguessableTokenSetOrError)> callback) {
   DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
   backend_->ClearAllDictionaries(
       WrapCallbackWithWeakPtrCheck(GetWeakPtr(), std::move(callback)));
