@@ -516,9 +516,9 @@ gfx::RectF OverviewItem::GetTargetBoundsInScreen() const {
 }
 
 gfx::RectF OverviewItem::GetTargetBoundsWithInsets() const {
-  gfx::RectF window_target_bounds = target_bounds_;
-  window_target_bounds.Inset(gfx::InsetsF::TLBR(kHeaderHeightDp, 0, 0, 0));
-  return window_target_bounds;
+  gfx::RectF target_bounds = target_bounds_;
+  target_bounds.Inset(gfx::InsetsF::TLBR(kHeaderHeightDp, 0, 0, 0));
+  return target_bounds;
 }
 
 gfx::RectF OverviewItem::GetTransformedBounds() const {

@@ -14,6 +14,8 @@
 #include "ash/wm/window_util.h"
 #include "base/check_op.h"
 #include "base/containers/unique_ptr_adapters.h"
+#include "base/functional/callback_helpers.h"
+#include "base/memory/weak_ptr.h"
 #include "base/trace_event/trace_event.h"
 #include "ui/gfx/geometry/rect_f.h"
 #include "ui/gfx/geometry/rounded_corners_f.h"
@@ -104,6 +106,15 @@ void OverviewGroupItem::RestoreWindow(bool reset_transform, bool animate) {}
 
 void OverviewGroupItem::SetBounds(const gfx::RectF& target_bounds,
                                   OverviewAnimationType animation_type) {
+  // Run at the exit of this function to `UpdateRoundedCornersAndShadow()`.
+  base::ScopedClosureRunner exit_runner(base::BindOnce(
+      [](base::WeakPtr<OverviewGroupItem> overview_group_item) {
+        if (overview_group_item) {
+          overview_group_item->UpdateRoundedCornersAndShadow();
+        }
+      },
+      weak_ptr_factory_.GetWeakPtr()));
+
   target_bounds_ = target_bounds;
 
   const int size = overview_items_.size();
@@ -127,7 +138,6 @@ void OverviewGroupItem::SetBounds(const gfx::RectF& target_bounds,
       gfx::SizeF(target_bounds.width() / 2.f, target_bounds.height()));
   sub_bounds2.Inset(kRightItemBoundsInsets);
   overview_items_[1]->SetBounds(sub_bounds2, animation_type);
-  UpdateRoundedCornersAndShadow();
 }
 
 gfx::Transform OverviewGroupItem::ComputeTargetTransform(

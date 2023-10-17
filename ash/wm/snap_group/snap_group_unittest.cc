@@ -69,6 +69,7 @@
 #include "ui/gfx/geometry/point_conversions.h"
 #include "ui/gfx/geometry/rect.h"
 #include "ui/gfx/geometry/rounded_corners_f.h"
+#include "ui/gfx/geometry/size_conversions.h"
 #include "ui/gfx/geometry/vector2d.h"
 #include "ui/gfx/image/image_skia.h"
 #include "ui/gfx/image/image_unittest_util.h"
@@ -1276,10 +1277,40 @@ TEST_F(SnapGroupEntryPointArm1Test, OverviewGroupItemShadow) {
     const auto shadow_content_bounds =
         overview_item->get_shadow_content_bounds_for_testing();
     ASSERT_TRUE(!shadow_content_bounds.IsEmpty());
-    const auto widget_bounds =
-        overview_item->item_widget()->GetNativeWindow()->GetBoundsInScreen();
-    EXPECT_EQ(shadow_content_bounds.size(), widget_bounds.size());
+    EXPECT_EQ(shadow_content_bounds.size(),
+              gfx::ToRoundedSize(overview_item->target_bounds().size()));
   }
+}
+
+// Tests that when one of the windows in the snap group gets destroyed in
+// overview the shadow contents bounds on the remaining item get updated
+// correctly.
+TEST_F(SnapGroupEntryPointArm1Test,
+       CorrectShadowBoundsOnRemainingItemInOverview) {
+  std::unique_ptr<aura::Window> w0(CreateAppWindow());
+  std::unique_ptr<aura::Window> w1(CreateAppWindow());
+  SnapTwoTestWindowsInArm1(w0.get(), w1.get());
+
+  OverviewController* overview_controller = Shell::Get()->overview_controller();
+  overview_controller->StartOverview(OverviewStartAction::kTests,
+                                     OverviewEnterExitType::kImmediateEnter);
+  ASSERT_TRUE(overview_controller->overview_session());
+  const auto* overview_grid =
+      GetOverviewGridForRoot(Shell::GetPrimaryRootWindow());
+  ASSERT_TRUE(overview_grid);
+  const auto& window_list = overview_grid->window_list();
+  ASSERT_EQ(window_list.size(), 1u);
+
+  w0.reset();
+  EXPECT_EQ(window_list.size(), 1u);
+
+  // Verify that the shadow bounds will be refreshed to fit with the remaining
+  // item.
+  auto& overview_item = window_list[0];
+  const auto shadow_content_bounds =
+      overview_item->get_shadow_content_bounds_for_testing();
+  EXPECT_EQ(shadow_content_bounds.size(),
+            gfx::ToRoundedSize(overview_item->target_bounds().size()));
 }
 
 // Tests the basic functionality of focus cycling in overview through tabbing,

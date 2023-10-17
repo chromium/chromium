@@ -6,7 +6,6 @@
 
 #include <vector>
 
-#include "ash/constants/ash_features.h"
 #include "ash/public/cpp/window_properties.h"
 #include "ash/shell.h"
 #include "ash/wm/desks/desks_util.h"
@@ -79,17 +78,8 @@ void OverviewItemBase::RefreshShadowVisuals(bool shadow_visible) {
 
   shadow_layer->SetVisible(true);
 
-  const bool continuous_scroll =
-      features::IsContinuousOverviewScrollAnimationEnabled() &&
-      Shell::Get()->overview_controller()->is_continuous_scroll_in_progress();
-  gfx::Rect shadow_content_bounds =
-      gfx::Rect(item_widget_->GetNativeWindow()->GetTargetBounds().size());
-  if (!is_jellyroll_enabled || continuous_scroll) {
-    shadow_content_bounds.Inset(gfx::Insets::TLBR(kHeaderHeightDp, 0, 0, 0));
-  }
-
-  shadow_content_bounds.ClampToCenteredSize(
-      gfx::ToRoundedSize(shadow_bounds_in_screen.size()));
+  gfx::Rect shadow_content_bounds(
+      gfx::ToRoundedRect(shadow_bounds_in_screen).size());
   shadow_->SetContentBounds(shadow_content_bounds);
   shadow_->SetRoundedCornerRadius(
       is_jellyroll_enabled ? kOverviewItemCornerRadius : 0);

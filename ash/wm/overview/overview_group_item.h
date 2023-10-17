@@ -10,6 +10,7 @@
 #include "ash/wm/overview/overview_item.h"
 #include "ash/wm/overview/overview_item_base.h"
 #include "base/memory/raw_ptr.h"
+#include "base/memory/weak_ptr.h"
 
 namespace aura {
 class Window;
@@ -97,6 +98,8 @@ class OverviewGroupItem : public OverviewItemBase,
 
   // The contents view of the `item_widget_`.
   raw_ptr<OverviewGroupContainerView> overview_group_container_view_ = nullptr;
+
+  base::WeakPtrFactory<OverviewGroupItem> weak_ptr_factory_{this};
 };
 
 }  // namespace ash

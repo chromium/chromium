@@ -180,7 +180,7 @@ class ASH_EXPORT OverviewItemBase {
   // of the window returned by `GetWindows()`).
   virtual gfx::RectF GetTargetBoundsInScreen() const = 0;
 
-  // Returns the `target_bounds_` of the `this` with insets.
+  // Returns the `target_bounds_` of the `this` with insets of the header.
   virtual gfx::RectF GetTargetBoundsWithInsets() const = 0;
 
   // Returns the transformed bound of `this`.
