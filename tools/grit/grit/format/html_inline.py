@@ -397,6 +397,13 @@ def DoInline(
       return None
 
     filename = filename.replace('%DISTRIBUTION%', distribution)
+
+    if filename.startswith("%ROOT_GEN_DIR%"):
+      # Expand %ROOT_GEN_DIR%  placeholder to allow inlining generated files.
+      filename = filename.replace(
+          '%ROOT_GEN_DIR%', os.path.relpath(os.environ['root_gen_dir'],
+                                            base_path))
+
     if filename_expansion_function:
       filename = filename_expansion_function(filename)
     return os.path.normpath(os.path.join(base_path, filename))

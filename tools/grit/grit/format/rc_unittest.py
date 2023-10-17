@@ -48,6 +48,10 @@ class DummyOutput:
 
 
 class FormatRcUnittest(unittest.TestCase):
+  @classmethod
+  def setUpClass(cls):
+    os.environ["root_gen_dir"] = "gen"
+
   def testMessages(self):
     root = util.ParseGrdForUnittest("""
       <messages>

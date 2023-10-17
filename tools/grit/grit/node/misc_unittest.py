@@ -49,6 +49,10 @@ def _MakeTempPredeterminedIdsFile(content):
 
 
 class GritNodeUnittest(unittest.TestCase):
+  @classmethod
+  def setUpClass(cls):
+    os.environ["root_gen_dir"] = "gen"
+
   def testUniqueNameAttribute(self):
     try:
       restree = grd_reader.Parse(

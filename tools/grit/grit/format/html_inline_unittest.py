@@ -26,6 +26,10 @@ class FakeGrdNode:
 class HtmlInlineUnittest(unittest.TestCase):
   '''Unit tests for HtmlInline.'''
 
+  @classmethod
+  def setUpClass(cls):
+    os.environ["root_gen_dir"] = "gen"
+
   def testGetResourceFilenames(self):
     '''Tests that all included files are returned by GetResourceFilenames.'''
 
@@ -42,6 +46,8 @@ class HtmlInlineUnittest(unittest.TestCase):
           <include src='test.html'>
           <include
               src="really-long-long-long-long-long-test-file-omg-so-long.html">
+          <script src="foo.js"></script>
+          <script src="%ROOT_GEN_DIR%/generated.js"></script>
         </body>
       </html>
       ''',
@@ -71,10 +77,18 @@ class HtmlInlineUnittest(unittest.TestCase):
       ''',
 
       'test.png': 'PNG DATA',
+
+      'foo.js': '''
+      console.log('hello foo');
+      ''',
     }
+    files[os.path.join('gen', 'generated.js')] = \
+        '''console.log('hello generated');'''
 
     source_resources = set()
     tmp_dir = util.TempDir(files)
+    os.environ["root_gen_dir"] = os.path.join(tmp_dir.GetPath(), 'gen')
+
     for filename in files:
       source_resources.add(tmp_dir.GetPath(filename))
 
@@ -405,6 +419,41 @@ class HtmlInlineUnittest(unittest.TestCase):
     self.assertEqual(expected_inlined,
                          util.FixLineEnd(result.inlined_data, '\n'))
     tmp_dir.CleanUp()
+
+  def testFilenameRootGenDirExpansion(self):
+    '''Tests that %ROOT_GEN_DIR tokens in filenames are properly expanded'''
+
+    files = {
+      'index.html': '''
+      <html>
+      <body>
+      <script src="%ROOT_GEN_DIR%/foo/bar/generated.js"></script>
+      </body>
+      </html>
+      ''',
+    }
+    files[os.path.join('gen', 'foo', 'bar', 'generated.js')] = \
+        '''console.log('hello generated');'''
+
+    expected_inlined = '''
+      <html>
+      <body>
+      <script>console.log('hello generated');</script>
+      </body>
+      </html>
+      '''
+
+    source_resources = set()
+    tmp_dir = util.TempDir(files)
+    os.environ["root_gen_dir"] = os.path.join(tmp_dir.GetPath(), 'gen')
+    for filename in files:
+      source_resources.add(tmp_dir.GetPath(filename))
+
+    result = html_inline.DoInline(tmp_dir.GetPath('index.html'), None)
+    resources = result.inlined_files
+    resources.add(tmp_dir.GetPath('index.html'))
+    self.assertEqual(resources, source_resources)
+    self.assertMultiLineEqual(expected_inlined, result.inlined_data)
 
   def testFilenameVariableExpansion(self):
     '''Tests that variables are expanded in filenames before inlining.'''
