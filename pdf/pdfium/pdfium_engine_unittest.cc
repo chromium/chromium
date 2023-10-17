@@ -924,6 +924,69 @@ TEST_P(PDFiumEngineTest, SelectTextWithNonPrintableCharacter) {
   EXPECT_EQ("Hello, world!", engine->GetSelectedText());
 }
 
+TEST_P(PDFiumEngineTest, RotateAfterSelectedText) {
+  NiceMock<MockTestClient> client;
+  std::unique_ptr<PDFiumEngine> engine =
+      InitializeEngine(&client, FILE_PATH_LITERAL("hello_world2.pdf"));
+  ASSERT_TRUE(engine);
+
+  // Plugin size chosen so all pages of the document are visible.
+  engine->PluginSizeUpdated({1024, 4096});
+
+  EXPECT_THAT(engine->GetSelectedText(), IsEmpty());
+
+  constexpr gfx::PointF kPosition(100, 120);
+  EXPECT_TRUE(engine->HandleInputEvent(
+      CreateLeftClickWebMouseEventAtPositionWithClickCount(kPosition, 2)));
+  EXPECT_EQ("Goodbye", engine->GetSelectedText());
+
+  DocumentLayout::Options options;
+  EXPECT_CALL(client, ProposeDocumentLayout(LayoutWithSize(276, 556)))
+      .WillOnce(Return());
+  engine->RotateClockwise();
+  options.RotatePagesClockwise();
+  engine->ApplyDocumentLayout(options);
+  EXPECT_EQ("Goodbye", engine->GetSelectedText());
+
+  EXPECT_CALL(client, ProposeDocumentLayout(LayoutWithSize(276, 556)))
+      .WillOnce(Return());
+  engine->RotateCounterclockwise();
+  options.RotatePagesCounterclockwise();
+  engine->ApplyDocumentLayout(options);
+  EXPECT_EQ("Goodbye", engine->GetSelectedText());
+}
+
+TEST_P(PDFiumEngineTest, MultiPagesPdfInTwoUpViewAfterSelectedText) {
+  NiceMock<MockTestClient> client;
+  std::unique_ptr<PDFiumEngine> engine =
+      InitializeEngine(&client, FILE_PATH_LITERAL("hello_world2.pdf"));
+  ASSERT_TRUE(engine);
+  // Plugin size chosen so all pages of the document are visible.
+  engine->PluginSizeUpdated({1024, 4096});
+
+  EXPECT_THAT(engine->GetSelectedText(), IsEmpty());
+
+  constexpr gfx::PointF kPosition(100, 120);
+  EXPECT_TRUE(engine->HandleInputEvent(
+      CreateLeftClickWebMouseEventAtPositionWithClickCount(kPosition, 2)));
+  EXPECT_EQ("Goodbye", engine->GetSelectedText());
+
+  DocumentLayout::Options options;
+  options.set_page_spread(DocumentLayout::PageSpread::kTwoUpOdd);
+  EXPECT_CALL(client, ProposeDocumentLayout(LayoutWithOptions(options)))
+      .WillOnce(Return());
+  engine->SetDocumentLayout(DocumentLayout::PageSpread::kTwoUpOdd);
+  engine->ApplyDocumentLayout(options);
+  EXPECT_EQ("Goodbye", engine->GetSelectedText());
+
+  options.set_page_spread(DocumentLayout::PageSpread::kOneUp);
+  EXPECT_CALL(client, ProposeDocumentLayout(LayoutWithOptions(options)))
+      .WillOnce(Return());
+  engine->SetDocumentLayout(DocumentLayout::PageSpread::kOneUp);
+  engine->ApplyDocumentLayout(options);
+  EXPECT_EQ("Goodbye", engine->GetSelectedText());
+}
+
 INSTANTIATE_TEST_SUITE_P(All, PDFiumEngineTest, testing::Bool());
 
 using PDFiumEngineDeathTest = PDFiumEngineTest;

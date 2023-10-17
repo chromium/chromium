@@ -612,6 +612,9 @@ class PDFiumEngine : public PDFEngine,
   void SetSelection(const PageCharacterIndex& selection_start_index,
                     const PageCharacterIndex& selection_end_index);
 
+  void SaveSelection();
+  void RestoreSelection();
+
   // Scroll the current focused annotation into view if not already in view.
   void ScrollFocusedAnnotationIntoView();
 
@@ -707,6 +710,11 @@ class PDFiumEngine : public PDFEngine,
   // Used for text selection, but does not include text within form text areas.
   // There could be more than one range if selection spans more than one page.
   std::vector<PDFiumRange> selection_;
+
+  // When rotating the page or updating the PageSpread mode, used to store the
+  // contents of `selection_`. After the page change is completed, the contents
+  // of `selection_` are restored.
+  std::vector<PDFiumRange> saved_selection_;
 
   // True if we're in the middle of text selection.
   bool selecting_ = false;
