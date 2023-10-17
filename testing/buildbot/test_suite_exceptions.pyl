@@ -1617,8 +1617,8 @@
           'dimensions': {
             'device_type': 'crosshatch',
           },
-          # TODO(crbug.com/1462745): Temporarily increase the shard to 3 for the network issue.
-          'shards': 3,
+          # TODO(crbug.com/1462745): Temporarily increase the shard to 5 for the network issue.
+          'shards': 5,
         },
       },
       # Keep this same as android-oreo-x86-rel above
