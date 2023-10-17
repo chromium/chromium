@@ -63,7 +63,7 @@ class NGScoreLineBreakerTest : public RenderingTest {
     NGConstraintSpace space = ConstraintSpaceForAvailableSize(width);
     NGLineWidths line_widths(width);
     const NGInlineBreakToken* break_token = nullptr;
-    NGExclusionSpace exclusion_space;
+    ExclusionSpace exclusion_space;
     NGScoreLineBreaker optimizer(node, space, line_widths, break_token,
                                  &exclusion_space);
     Vector<float> scores;
@@ -102,7 +102,7 @@ TEST_F(NGScoreLineBreakerTest, LastLines) {
   NGScoreLineBreakContextOf<kMaxLinesForOptimal> context;
   NGLineInfoList& line_info_list = context.LineInfoList();
   const NGInlineBreakToken* break_token = nullptr;
-  NGExclusionSpace exclusion_space;
+  ExclusionSpace exclusion_space;
   NGScoreLineBreaker optimizer(node, space, line_widths, break_token,
                                &exclusion_space);
 
@@ -200,7 +200,7 @@ TEST_P(BlockInInlineTest, BeforeAfter) {
   NGScoreLineBreakContextOf<kMaxLinesForOptimal> context;
   NGLineInfoList& line_info_list = context.LineInfoList();
   NGLineBreakPoints& break_points = context.LineBreakPoints();
-  NGExclusionSpace exclusion_space;
+  ExclusionSpace exclusion_space;
   NGScoreLineBreaker optimizer(node, space, line_widths,
                                /*break_token*/ nullptr, &exclusion_space);
   // The `NGScoreLineBreaker` should suspend at before the block-in-inline.
@@ -259,7 +259,7 @@ TEST_F(NGScoreLineBreakerTest, ForcedBreak) {
   NGLineInfoList& line_info_list = context.LineInfoList();
   NGLineBreakPoints& break_points = context.LineBreakPoints();
   const NGInlineBreakToken* break_token = nullptr;
-  NGExclusionSpace exclusion_space;
+  ExclusionSpace exclusion_space;
   NGScoreLineBreaker optimizer(node, space, line_widths, break_token,
                                &exclusion_space);
 
@@ -390,7 +390,7 @@ TEST_P(DisabledByLineBreakerTest, Data) {
   NGLineWidths line_widths(width);
   NGScoreLineBreakContextOf<kMaxLinesForOptimal> context;
   const NGInlineBreakToken* break_token = nullptr;
-  NGExclusionSpace exclusion_space;
+  ExclusionSpace exclusion_space;
   NGScoreLineBreaker optimizer(node, space, line_widths, break_token,
                                &exclusion_space);
   NGLeadingFloats empty_leading_floats;

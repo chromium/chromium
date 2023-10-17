@@ -31,9 +31,9 @@
 
 namespace blink {
 
+class ExclusionSpace;
 class NGBoxFragmentBuilder;
 class NGColumnSpannerPath;
-class NGExclusionSpace;
 class NGFragmentBuilder;
 class NGLineBoxFragmentBuilder;
 
@@ -224,13 +224,13 @@ class CORE_EXPORT NGLayoutResult final
     return rare_data_->early_break;
   }
 
-  const NGExclusionSpace& ExclusionSpace() const {
+  const ExclusionSpace& GetExclusionSpace() const {
     if (bitfields_.has_rare_data_exclusion_space) {
       DCHECK(rare_data_);
       return rare_data_->exclusion_space;
     }
 
-    return space_.ExclusionSpace();
+    return space_.GetExclusionSpace();
   }
 
   EStatus Status() const { return static_cast<EStatus>(bitfields_.status); }
@@ -605,9 +605,9 @@ class CORE_EXPORT NGLayoutResult final
  private:
   friend class MutableForOutOfFlow;
 
-  static NGExclusionSpace MergeExclusionSpaces(
+  static ExclusionSpace MergeExclusionSpaces(
       const NGLayoutResult& other,
-      const NGExclusionSpace& new_input_exclusion_space,
+      const ExclusionSpace& new_input_exclusion_space,
       LayoutUnit bfc_line_offset,
       LayoutUnit block_offset_delta);
 
@@ -910,7 +910,7 @@ class CORE_EXPORT NGLayoutResult final
       LayoutUnit minimal_space_shortage = kIndefiniteSize;
     };
     LayoutUnit block_size_for_fragmentation = kIndefiniteSize;
-    NGExclusionSpace exclusion_space;
+    ExclusionSpace exclusion_space;
     scoped_refptr<SerializedScriptValue> custom_layout_data;
 
     LayoutUnit annotation_overflow;

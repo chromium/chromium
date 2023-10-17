@@ -19,9 +19,9 @@ class NGLineBreakCandidateTest : public RenderingTest {
                          LayoutUnit available_width,
                          NGLineBreakCandidates& candidates) {
     NGConstraintSpace space = ConstraintSpaceForAvailableSize(available_width);
-    NGExclusionSpace exclusion_space;
+    ExclusionSpace exclusion_space;
     NGLeadingFloats leading_floats;
-    NGLineLayoutOpportunity line_opportunity(available_width);
+    LineLayoutOpportunity line_opportunity(available_width);
     const NGInlineBreakToken* break_token = nullptr;
     NGLineInfo line_info;
     NGLineBreakCandidateContext context(candidates);

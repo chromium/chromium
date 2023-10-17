@@ -11,11 +11,11 @@
 namespace blink {
 
 bool NGLineWidths::Set(const NGInlineNode& node,
-                       base::span<const NGLayoutOpportunity> opportunities,
+                       base::span<const LayoutOpportunity> opportunities,
                        const NGInlineBreakToken* break_token) {
   // Set the default width if no exclusions.
   DCHECK_GE(opportunities.size(), 1u);
-  const NGLayoutOpportunity& first_opportunity = opportunities.front();
+  const LayoutOpportunity& first_opportunity = opportunities.front();
   if (opportunities.size() == 1 && !node.HasFloats()) {
     DCHECK(!first_opportunity.HasShapeExclusions());
     default_width_ = first_opportunity.rect.InlineSize();
@@ -129,7 +129,7 @@ bool NGLineWidths::Set(const NGInlineNode& node,
     return false;
   }
   DCHECK_GE(opportunities.size(), 2u);
-  const NGLayoutOpportunity& last_opportunity = opportunities.back();
+  const LayoutOpportunity& last_opportunity = opportunities.back();
   DCHECK(!last_opportunity.HasShapeExclusions());
   default_width_ = last_opportunity.rect.InlineSize();
   const LayoutUnit exclusion_block_size =

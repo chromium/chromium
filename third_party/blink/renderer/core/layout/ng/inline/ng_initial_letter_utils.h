@@ -12,9 +12,9 @@ namespace blink {
 class NGLineInfo;
 class NGLogicalLineItems;
 struct BfcOffset;
-struct FontHeight;
 struct BoxStrut;
-struct NGExclusion;
+struct ExclusionArea;
+struct FontHeight;
 
 // Adjust text position of texts in inline text box and returns adjusted
 // `FontHeight` to fit initial letter box in block direction.
@@ -25,9 +25,9 @@ FontHeight AdjustInitialLetterInTextPosition(const FontHeight& line_box_metrics,
 // Calculate inline size of initial letter text.
 LayoutUnit CalculateInitialLetterBoxInlineSize(const NGLineInfo& line_info);
 
-// Places initial letter box and returns `NGExclusion` contains initial letter
+// Places initial letter box and returns `ExclusionArea` contains initial letter
 // box. `initial_letter_box_origin` holds left/right edge.
-const NGExclusion* PostPlaceInitialLetterBox(
+const ExclusionArea* PostPlaceInitialLetterBox(
     const FontHeight& line_box_metrics,
     const BoxStrut& initial_letter_box_margins,
     NGLogicalLineItems* line_box,

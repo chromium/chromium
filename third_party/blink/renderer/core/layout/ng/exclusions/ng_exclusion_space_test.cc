@@ -21,7 +21,7 @@ struct ExclusionSpaceForTesting {
   explicit ExclusionSpaceForTesting(float available_inline_size)
       : available_inline_size(available_inline_size) {}
 
-  NGExclusionSpace exclusion_space;
+  ExclusionSpace exclusion_space;
   LayoutUnit available_inline_size;
 
   Vector<LayoutUnit> InitialLetterClearanceOffset() const {
@@ -30,14 +30,14 @@ struct ExclusionSpaceForTesting {
             exclusion_space.InitialLetterClearanceOffset(EClear::kRight)};
   }
 
-  void Add(const NGExclusion* exclusion) { exclusion_space.Add(exclusion); }
+  void Add(const ExclusionArea* exclusion) { exclusion_space.Add(exclusion); }
 
   void AddForFloat(float inline_start,
                    float block_start,
                    float inline_end,
                    float block_end,
                    EFloat float_type = EFloat::kLeft) {
-    exclusion_space.Add(NGExclusion::Create(
+    exclusion_space.Add(ExclusionArea::Create(
         BfcRect(BfcOffset(LayoutUnit(inline_start), LayoutUnit(block_start)),
                 BfcOffset(LayoutUnit(inline_end), LayoutUnit(block_end))),
         EFloat::kLeft));
@@ -48,7 +48,7 @@ struct ExclusionSpaceForTesting {
                               float inline_end,
                               float block_end,
                               EFloat float_type = EFloat::kLeft) {
-    exclusion_space.Add(NGExclusion::CreateForInitialLetterBox(
+    exclusion_space.Add(ExclusionArea::CreateForInitialLetterBox(
         BfcRect(BfcOffset(LayoutUnit(inline_start), LayoutUnit(block_start)),
                 BfcOffset(LayoutUnit(inline_end), LayoutUnit(block_end))),
         EFloat::kLeft));
@@ -61,28 +61,28 @@ struct ExclusionSpaceForTesting {
         available_inline_size);
   }
 
-  NGLayoutOpportunity FindLayoutOpportunity(float inline_offset,
-                                            float block_offset,
-                                            float minimal_inline_size) {
+  LayoutOpportunity FindLayoutOpportunity(float inline_offset,
+                                          float block_offset,
+                                          float minimal_inline_size) {
     return exclusion_space.FindLayoutOpportunity(
         BfcOffset(LayoutUnit(inline_offset), LayoutUnit(block_offset)),
         available_inline_size, LayoutUnit(minimal_inline_size));
   }
 };
 
-NGLayoutOpportunity LayoutOpportunity(float inline_start,
-                                      float block_start,
-                                      float inline_end,
-                                      float block_end = LayoutUnit::Max()) {
-  return NGLayoutOpportunity(
+LayoutOpportunity CreateLayoutOpportunity(float inline_start,
+                                          float block_start,
+                                          float inline_end,
+                                          float block_end = LayoutUnit::Max()) {
+  return LayoutOpportunity(
       BfcRect(BfcOffset(LayoutUnit(inline_start), LayoutUnit(block_start)),
               BfcOffset(LayoutUnit(inline_end), LayoutUnit(block_end))));
 }
 
 // Tests that an empty exclusion space returns exactly one layout opportunity
 // each one, and sized appropriately given the area.
-TEST(NGExclusionSpaceTest, Empty) {
-  NGExclusionSpace exclusion_space;
+TEST(ExclusionSpaceTest, Empty) {
+  ExclusionSpace exclusion_space;
 
   LayoutOpportunityVector opportunites = exclusion_space.AllLayoutOpportunities(
       /* offset */ {LayoutUnit(), LayoutUnit()},
@@ -110,13 +110,13 @@ TEST(NGExclusionSpaceTest, Empty) {
                    BfcOffset(LayoutUnit(80), LayoutUnit::Max()));
 }
 
-TEST(NGExclusionSpaceTest, SingleExclusion) {
-  NGExclusionSpace exclusion_space;
+TEST(ExclusionSpaceTest, SingleExclusion) {
+  ExclusionSpace exclusion_space;
 
   exclusion_space.Add(
-      NGExclusion::Create(BfcRect(BfcOffset(LayoutUnit(10), LayoutUnit(20)),
-                                  BfcOffset(LayoutUnit(60), LayoutUnit(90))),
-                          EFloat::kLeft));
+      ExclusionArea::Create(BfcRect(BfcOffset(LayoutUnit(10), LayoutUnit(20)),
+                                    BfcOffset(LayoutUnit(60), LayoutUnit(90))),
+                            EFloat::kLeft));
 
   LayoutOpportunityVector opportunites = exclusion_space.AllLayoutOpportunities(
       /* offset */ {LayoutUnit(), LayoutUnit()},
@@ -172,17 +172,17 @@ TEST(NGExclusionSpaceTest, SingleExclusion) {
                    BfcOffset(LayoutUnit(59), LayoutUnit::Max()));
 }
 
-TEST(NGExclusionSpaceTest, TwoExclusions) {
-  NGExclusionSpace exclusion_space;
+TEST(ExclusionSpaceTest, TwoExclusions) {
+  ExclusionSpace exclusion_space;
 
   exclusion_space.Add(
-      NGExclusion::Create(BfcRect(BfcOffset(LayoutUnit(), LayoutUnit()),
-                                  BfcOffset(LayoutUnit(150), LayoutUnit(75))),
-                          EFloat::kLeft));
-  exclusion_space.Add(
-      NGExclusion::Create(BfcRect(BfcOffset(LayoutUnit(100), LayoutUnit(75)),
-                                  BfcOffset(LayoutUnit(400), LayoutUnit(150))),
-                          EFloat::kRight));
+      ExclusionArea::Create(BfcRect(BfcOffset(LayoutUnit(), LayoutUnit()),
+                                    BfcOffset(LayoutUnit(150), LayoutUnit(75))),
+                            EFloat::kLeft));
+  exclusion_space.Add(ExclusionArea::Create(
+      BfcRect(BfcOffset(LayoutUnit(100), LayoutUnit(75)),
+              BfcOffset(LayoutUnit(400), LayoutUnit(150))),
+      EFloat::kRight));
 
   LayoutOpportunityVector opportunites = exclusion_space.AllLayoutOpportunities(
       /* offset */ {LayoutUnit(), LayoutUnit()},
@@ -212,25 +212,25 @@ TEST(NGExclusionSpaceTest, TwoExclusions) {
 // 30   |xxx|   |NEW|
 //      |xxx|   +---+
 // 40   +---+
-TEST(NGExclusionSpaceTest, SolidEdges) {
-  NGExclusionSpace exclusion_space;
+TEST(ExclusionSpaceTest, SolidEdges) {
+  ExclusionSpace exclusion_space;
 
   exclusion_space.Add(
-      NGExclusion::Create(BfcRect(BfcOffset(LayoutUnit(), LayoutUnit()),
-                                  BfcOffset(LayoutUnit(20), LayoutUnit(15))),
-                          EFloat::kLeft));
+      ExclusionArea::Create(BfcRect(BfcOffset(LayoutUnit(), LayoutUnit()),
+                                    BfcOffset(LayoutUnit(20), LayoutUnit(15))),
+                            EFloat::kLeft));
   exclusion_space.Add(
-      NGExclusion::Create(BfcRect(BfcOffset(LayoutUnit(65), LayoutUnit()),
-                                  BfcOffset(LayoutUnit(85), LayoutUnit(15))),
-                          EFloat::kRight));
+      ExclusionArea::Create(BfcRect(BfcOffset(LayoutUnit(65), LayoutUnit()),
+                                    BfcOffset(LayoutUnit(85), LayoutUnit(15))),
+                            EFloat::kRight));
   exclusion_space.Add(
-      NGExclusion::Create(BfcRect(BfcOffset(LayoutUnit(10), LayoutUnit(25)),
-                                  BfcOffset(LayoutUnit(30), LayoutUnit(40))),
-                          EFloat::kLeft));
+      ExclusionArea::Create(BfcRect(BfcOffset(LayoutUnit(10), LayoutUnit(25)),
+                                    BfcOffset(LayoutUnit(30), LayoutUnit(40))),
+                            EFloat::kLeft));
   exclusion_space.Add(
-      NGExclusion::Create(BfcRect(BfcOffset(LayoutUnit(50), LayoutUnit(25)),
-                                  BfcOffset(LayoutUnit(70), LayoutUnit(35))),
-                          EFloat::kRight));
+      ExclusionArea::Create(BfcRect(BfcOffset(LayoutUnit(50), LayoutUnit(25)),
+                                    BfcOffset(LayoutUnit(70), LayoutUnit(35))),
+                            EFloat::kRight));
 
   LayoutOpportunityVector opportunites = exclusion_space.AllLayoutOpportunities(
       /* offset */ {LayoutUnit(), LayoutUnit()},
@@ -263,21 +263,21 @@ TEST(NGExclusionSpaceTest, SolidEdges) {
 //                  +---+
 // 30               |NEW|
 //                  +---+
-TEST(NGExclusionSpaceTest, OverlappingWithShelf) {
-  NGExclusionSpace exclusion_space;
+TEST(ExclusionSpaceTest, OverlappingWithShelf) {
+  ExclusionSpace exclusion_space;
 
   exclusion_space.Add(
-      NGExclusion::Create(BfcRect(BfcOffset(LayoutUnit(), LayoutUnit()),
-                                  BfcOffset(LayoutUnit(20), LayoutUnit(15))),
-                          EFloat::kLeft));
+      ExclusionArea::Create(BfcRect(BfcOffset(LayoutUnit(), LayoutUnit()),
+                                    BfcOffset(LayoutUnit(20), LayoutUnit(15))),
+                            EFloat::kLeft));
   exclusion_space.Add(
-      NGExclusion::Create(BfcRect(BfcOffset(LayoutUnit(65), LayoutUnit()),
-                                  BfcOffset(LayoutUnit(85), LayoutUnit(15))),
-                          EFloat::kRight));
+      ExclusionArea::Create(BfcRect(BfcOffset(LayoutUnit(65), LayoutUnit()),
+                                    BfcOffset(LayoutUnit(85), LayoutUnit(15))),
+                            EFloat::kRight));
   exclusion_space.Add(
-      NGExclusion::Create(BfcRect(BfcOffset(LayoutUnit(70), LayoutUnit(25)),
-                                  BfcOffset(LayoutUnit(90), LayoutUnit(35))),
-                          EFloat::kRight));
+      ExclusionArea::Create(BfcRect(BfcOffset(LayoutUnit(70), LayoutUnit(25)),
+                                    BfcOffset(LayoutUnit(90), LayoutUnit(35))),
+                            EFloat::kRight));
 
   LayoutOpportunityVector opportunites = exclusion_space.AllLayoutOpportunities(
       /* offset */ {LayoutUnit(), LayoutUnit()},
@@ -310,21 +310,21 @@ TEST(NGExclusionSpaceTest, OverlappingWithShelf) {
 //    X-----------X|xxx|
 // 30              |xxx|
 //    X----------------X
-TEST(NGExclusionSpaceTest, InsertBetweenShelves) {
-  NGExclusionSpace exclusion_space;
+TEST(ExclusionSpaceTest, InsertBetweenShelves) {
+  ExclusionSpace exclusion_space;
 
   exclusion_space.Add(
-      NGExclusion::Create(BfcRect(BfcOffset(LayoutUnit(), LayoutUnit()),
-                                  BfcOffset(LayoutUnit(30), LayoutUnit(10))),
-                          EFloat::kLeft));
+      ExclusionArea::Create(BfcRect(BfcOffset(LayoutUnit(), LayoutUnit()),
+                                    BfcOffset(LayoutUnit(30), LayoutUnit(10))),
+                            EFloat::kLeft));
   exclusion_space.Add(
-      NGExclusion::Create(BfcRect(BfcOffset(LayoutUnit(65), LayoutUnit()),
-                                  BfcOffset(LayoutUnit(85), LayoutUnit(35))),
-                          EFloat::kRight));
+      ExclusionArea::Create(BfcRect(BfcOffset(LayoutUnit(65), LayoutUnit()),
+                                    BfcOffset(LayoutUnit(85), LayoutUnit(35))),
+                            EFloat::kRight));
   exclusion_space.Add(
-      NGExclusion::Create(BfcRect(BfcOffset(LayoutUnit(10), LayoutUnit(15)),
-                                  BfcOffset(LayoutUnit(30), LayoutUnit(25))),
-                          EFloat::kLeft));
+      ExclusionArea::Create(BfcRect(BfcOffset(LayoutUnit(10), LayoutUnit(15)),
+                                    BfcOffset(LayoutUnit(30), LayoutUnit(25))),
+                            EFloat::kLeft));
 
   LayoutOpportunityVector opportunites = exclusion_space.AllLayoutOpportunities(
       /* offset */ {LayoutUnit(30), LayoutUnit(15)},
@@ -344,7 +344,7 @@ TEST(NGExclusionSpaceTest, InsertBetweenShelves) {
                    BfcOffset(LayoutUnit(60), LayoutUnit::Max()));
 }
 
-TEST(NGExclusionSpaceTest, InitialLetterBasic) {
+TEST(ExclusionSpaceTest, InitialLetterBasic) {
   constexpr LayoutUnit kAvailableInlineSize = LayoutUnit(300);
   ExclusionSpaceForTesting exclusion_space(kAvailableInlineSize);
 
@@ -370,23 +370,23 @@ TEST(NGExclusionSpaceTest, InitialLetterBasic) {
   exclusion_space.AddForInitialLetterBox(9, 9, 73, 73);
 
   EXPECT_THAT(exclusion_space.AllLayoutOpportunities(9, 32),
-              ElementsAre(LayoutOpportunity(73, 32, 309),
-                          LayoutOpportunity(9, 73, 309)));
+              ElementsAre(CreateLayoutOpportunity(73, 32, 309),
+                          CreateLayoutOpportunity(9, 73, 309)));
   EXPECT_THAT(exclusion_space.AllLayoutOpportunities(9, 55),
-              ElementsAre(LayoutOpportunity(73, 55, 309),
-                          LayoutOpportunity(9, 73, 309)));
+              ElementsAre(CreateLayoutOpportunity(73, 55, 309),
+                          CreateLayoutOpportunity(9, 73, 309)));
   EXPECT_THAT(exclusion_space.AllLayoutOpportunities(9, 78),
-              ElementsAre(LayoutOpportunity(9, 78, 309)));
+              ElementsAre(CreateLayoutOpportunity(9, 78, 309)));
   EXPECT_THAT(exclusion_space.AllLayoutOpportunities(9, 101),
-              ElementsAre(LayoutOpportunity(9, 101, 309)));
+              ElementsAre(CreateLayoutOpportunity(9, 101, 309)));
   EXPECT_THAT(exclusion_space.AllLayoutOpportunities(9, 124),
-              ElementsAre(LayoutOpportunity(9, 124, 309)));
+              ElementsAre(CreateLayoutOpportunity(9, 124, 309)));
 
   EXPECT_THAT(exclusion_space.InitialLetterClearanceOffset(),
               ElementsAre(LayoutUnit(73), LayoutUnit(73), LayoutUnit::Min()));
 }
 
-TEST(NGExclusionSpaceTest, InitialLetterDirectionRight) {
+TEST(ExclusionSpaceTest, InitialLetterDirectionRight) {
   constexpr LayoutUnit kAvailableInlineSize = LayoutUnit(300);
   ExclusionSpaceForTesting exclusion_space(kAvailableInlineSize);
 
@@ -414,34 +414,34 @@ TEST(NGExclusionSpaceTest, InitialLetterDirectionRight) {
   exclusion_space.AddForFloat(9, 9, 59, 59);
 
   EXPECT_THAT(exclusion_space.FindLayoutOpportunity(9, 9, 100),
-              LayoutOpportunity(59, 9, 309));
+              CreateLayoutOpportunity(59, 9, 309));
   exclusion_space.AddForFloat(209, 9, 309, 59, EFloat::kRight);
 
   EXPECT_THAT(exclusion_space.AllLayoutOpportunities(9, 9),
-              ElementsAre(LayoutOpportunity(309, 9, 309),
-                          LayoutOpportunity(9, 59, 309)));
+              ElementsAre(CreateLayoutOpportunity(309, 9, 309),
+                          CreateLayoutOpportunity(9, 59, 309)));
   exclusion_space.AddForInitialLetterBox(117, 9, 182, 73, EFloat::kRight);
 
   EXPECT_THAT(exclusion_space.AllLayoutOpportunities(9, 32),
-              ElementsAre(LayoutOpportunity(309, 32, 309),
-                          LayoutOpportunity(182, 59, 309),
-                          LayoutOpportunity(9, 73, 309)));
+              ElementsAre(CreateLayoutOpportunity(309, 32, 309),
+                          CreateLayoutOpportunity(182, 59, 309),
+                          CreateLayoutOpportunity(9, 73, 309)));
   EXPECT_THAT(exclusion_space.AllLayoutOpportunities(9, 55),
-              ElementsAre(LayoutOpportunity(309, 55, 309),
-                          LayoutOpportunity(182, 59, 309),
-                          LayoutOpportunity(9, 73, 309)));
+              ElementsAre(CreateLayoutOpportunity(309, 55, 309),
+                          CreateLayoutOpportunity(182, 59, 309),
+                          CreateLayoutOpportunity(9, 73, 309)));
   EXPECT_THAT(exclusion_space.AllLayoutOpportunities(9, 78),
-              ElementsAre(LayoutOpportunity(9, 78, 309)));
+              ElementsAre(CreateLayoutOpportunity(9, 78, 309)));
   EXPECT_THAT(exclusion_space.AllLayoutOpportunities(9, 101),
-              ElementsAre(LayoutOpportunity(9, 101, 309)));
+              ElementsAre(CreateLayoutOpportunity(9, 101, 309)));
   EXPECT_THAT(exclusion_space.AllLayoutOpportunities(9, 124),
-              ElementsAre(LayoutOpportunity(9, 124, 309)));
+              ElementsAre(CreateLayoutOpportunity(9, 124, 309)));
 
   EXPECT_THAT(exclusion_space.InitialLetterClearanceOffset(),
               ElementsAre(LayoutUnit(73), LayoutUnit(73), LayoutUnit::Min()));
 }
 
-TEST(NGExclusionSpaceTest, InitialLetterFloatLeft1) {
+TEST(ExclusionSpaceTest, InitialLetterFloatLeft1) {
   constexpr LayoutUnit kAvailableInlineSize = LayoutUnit(300);
   ExclusionSpaceForTesting exclusion_space(kAvailableInlineSize);
 
@@ -475,25 +475,25 @@ TEST(NGExclusionSpaceTest, InitialLetterFloatLeft1) {
   exclusion_space.AddForInitialLetterBox(59, 9, 73, 73);
 
   EXPECT_THAT(exclusion_space.AllLayoutOpportunities(9, 32),
-              ElementsAre(LayoutOpportunity(73, 32, 309),
-                          LayoutOpportunity(73, 59, 309),
-                          LayoutOpportunity(9, 73, 309)));
+              ElementsAre(CreateLayoutOpportunity(73, 32, 309),
+                          CreateLayoutOpportunity(73, 59, 309),
+                          CreateLayoutOpportunity(9, 73, 309)));
   EXPECT_THAT(exclusion_space.AllLayoutOpportunities(9, 55),
-              ElementsAre(LayoutOpportunity(73, 55, 309),
-                          LayoutOpportunity(73, 59, 309),
-                          LayoutOpportunity(9, 73, 309)));
+              ElementsAre(CreateLayoutOpportunity(73, 55, 309),
+                          CreateLayoutOpportunity(73, 59, 309),
+                          CreateLayoutOpportunity(9, 73, 309)));
   EXPECT_THAT(exclusion_space.AllLayoutOpportunities(9, 78),
-              ElementsAre(LayoutOpportunity(9, 78, 309)));
+              ElementsAre(CreateLayoutOpportunity(9, 78, 309)));
   EXPECT_THAT(exclusion_space.AllLayoutOpportunities(9, 101),
-              ElementsAre(LayoutOpportunity(9, 101, 309)));
+              ElementsAre(CreateLayoutOpportunity(9, 101, 309)));
   EXPECT_THAT(exclusion_space.AllLayoutOpportunities(9, 124),
-              ElementsAre(LayoutOpportunity(9, 124, 309)));
+              ElementsAre(CreateLayoutOpportunity(9, 124, 309)));
 
   EXPECT_THAT(exclusion_space.InitialLetterClearanceOffset(),
               ElementsAre(LayoutUnit(73), LayoutUnit(73), LayoutUnit::Min()));
 }
 
-TEST(NGExclusionSpaceTest, InitialLetterFloatLeft2) {
+TEST(ExclusionSpaceTest, InitialLetterFloatLeft2) {
   constexpr LayoutUnit kAvailableInlineSize = LayoutUnit(300);
   ExclusionSpaceForTesting exclusion_space(kAvailableInlineSize);
 
@@ -529,25 +529,25 @@ TEST(NGExclusionSpaceTest, InitialLetterFloatLeft2) {
   exclusion_space.AddForInitialLetterBox(159, 9, 223, 73);
 
   EXPECT_THAT(exclusion_space.AllLayoutOpportunities(9, 32),
-              ElementsAre(LayoutOpportunity(223, 32, 309),
-                          LayoutOpportunity(223, 59, 309),
-                          LayoutOpportunity(9, 73, 309)));
+              ElementsAre(CreateLayoutOpportunity(223, 32, 309),
+                          CreateLayoutOpportunity(223, 59, 309),
+                          CreateLayoutOpportunity(9, 73, 309)));
   EXPECT_THAT(exclusion_space.AllLayoutOpportunities(9, 55),
-              ElementsAre(LayoutOpportunity(223, 55, 309),
-                          LayoutOpportunity(223, 59, 309),
-                          LayoutOpportunity(9, 73, 309)));
+              ElementsAre(CreateLayoutOpportunity(223, 55, 309),
+                          CreateLayoutOpportunity(223, 59, 309),
+                          CreateLayoutOpportunity(9, 73, 309)));
   EXPECT_THAT(exclusion_space.AllLayoutOpportunities(9, 78),
-              ElementsAre(LayoutOpportunity(9, 78, 309)));
+              ElementsAre(CreateLayoutOpportunity(9, 78, 309)));
   EXPECT_THAT(exclusion_space.AllLayoutOpportunities(9, 101),
-              ElementsAre(LayoutOpportunity(9, 101, 309)));
+              ElementsAre(CreateLayoutOpportunity(9, 101, 309)));
   EXPECT_THAT(exclusion_space.AllLayoutOpportunities(9, 124),
-              ElementsAre(LayoutOpportunity(9, 124, 309)));
+              ElementsAre(CreateLayoutOpportunity(9, 124, 309)));
 
   EXPECT_THAT(exclusion_space.InitialLetterClearanceOffset(),
               ElementsAre(LayoutUnit(73), LayoutUnit(73), LayoutUnit::Min()));
 }
 
-TEST(NGExclusionSpaceTest, InitialLetterFloatLeft2ClearLeft) {
+TEST(ExclusionSpaceTest, InitialLetterFloatLeft2ClearLeft) {
   constexpr LayoutUnit kAvailableInlineSize = LayoutUnit(300);
   ExclusionSpaceForTesting exclusion_space(kAvailableInlineSize);
 
@@ -583,27 +583,27 @@ TEST(NGExclusionSpaceTest, InitialLetterFloatLeft2ClearLeft) {
   exclusion_space.AddForInitialLetterBox(109, 9, 223, 73);
 
   EXPECT_THAT(exclusion_space.AllLayoutOpportunities(9, 32),
-              ElementsAre(LayoutOpportunity(223, 32, 309),
-                          LayoutOpportunity(109, 73, 309),
-                          LayoutOpportunity(9, 109, 309)));
+              ElementsAre(CreateLayoutOpportunity(223, 32, 309),
+                          CreateLayoutOpportunity(109, 73, 309),
+                          CreateLayoutOpportunity(9, 109, 309)));
   EXPECT_THAT(exclusion_space.AllLayoutOpportunities(9, 55),
-              ElementsAre(LayoutOpportunity(223, 55, 309),
-                          LayoutOpportunity(109, 73, 309),
-                          LayoutOpportunity(9, 109, 309)));
+              ElementsAre(CreateLayoutOpportunity(223, 55, 309),
+                          CreateLayoutOpportunity(109, 73, 309),
+                          CreateLayoutOpportunity(9, 109, 309)));
   EXPECT_THAT(exclusion_space.AllLayoutOpportunities(9, 78),
-              ElementsAre(LayoutOpportunity(109, 78, 309),
-                          LayoutOpportunity(9, 109, 309)));
+              ElementsAre(CreateLayoutOpportunity(109, 78, 309),
+                          CreateLayoutOpportunity(9, 109, 309)));
   EXPECT_THAT(exclusion_space.AllLayoutOpportunities(9, 101),
-              ElementsAre(LayoutOpportunity(109, 101, 309),
-                          LayoutOpportunity(9, 109, 309)));
+              ElementsAre(CreateLayoutOpportunity(109, 101, 309),
+                          CreateLayoutOpportunity(9, 109, 309)));
   EXPECT_THAT(exclusion_space.AllLayoutOpportunities(9, 124),
-              ElementsAre(LayoutOpportunity(9, 124, 309)));
+              ElementsAre(CreateLayoutOpportunity(9, 124, 309)));
 
   EXPECT_THAT(exclusion_space.InitialLetterClearanceOffset(),
               ElementsAre(LayoutUnit(73), LayoutUnit(73), LayoutUnit::Min()));
 }
 
-TEST(NGExclusionSpaceTest, InitialLetterFloatLeftAndRight) {
+TEST(ExclusionSpaceTest, InitialLetterFloatLeftAndRight) {
   constexpr LayoutUnit kAvailableInlineSize = LayoutUnit(300);
   ExclusionSpaceForTesting exclusion_space(kAvailableInlineSize);
 
@@ -637,38 +637,38 @@ TEST(NGExclusionSpaceTest, InitialLetterFloatLeftAndRight) {
   exclusion_space.AddForFloat(9, 59, 59, 59);
 
   EXPECT_THAT(exclusion_space.FindLayoutOpportunity(9, 9, 100),
-              LayoutOpportunity(9, 9, 309, 59));
+              CreateLayoutOpportunity(9, 9, 309, 59));
 
   exclusion_space.AddForFloat(9, 59, 109, 109, EFloat::kRight);
 
   EXPECT_THAT(exclusion_space.AllLayoutOpportunities(9, 9),
-              ElementsAre(LayoutOpportunity(9, 9, 309, 59),
-                          LayoutOpportunity(109, 9, 309),
-                          LayoutOpportunity(9, 109, 309)));
+              ElementsAre(CreateLayoutOpportunity(9, 9, 309, 59),
+                          CreateLayoutOpportunity(109, 9, 309),
+                          CreateLayoutOpportunity(9, 109, 309)));
   exclusion_space.AddForInitialLetterBox(59, 9, 123, 73);
 
   EXPECT_THAT(exclusion_space.AllLayoutOpportunities(9, 32),
-              ElementsAre(LayoutOpportunity(123, 32, 309),
-                          LayoutOpportunity(109, 73, 309),
-                          LayoutOpportunity(9, 109, 309)));
+              ElementsAre(CreateLayoutOpportunity(123, 32, 309),
+                          CreateLayoutOpportunity(109, 73, 309),
+                          CreateLayoutOpportunity(9, 109, 309)));
   EXPECT_THAT(exclusion_space.AllLayoutOpportunities(9, 55),
-              ElementsAre(LayoutOpportunity(123, 55, 309),
-                          LayoutOpportunity(109, 73, 309),
-                          LayoutOpportunity(9, 109, 309)));
+              ElementsAre(CreateLayoutOpportunity(123, 55, 309),
+                          CreateLayoutOpportunity(109, 73, 309),
+                          CreateLayoutOpportunity(9, 109, 309)));
   EXPECT_THAT(exclusion_space.AllLayoutOpportunities(9, 78),
-              ElementsAre(LayoutOpportunity(109, 78, 309),
-                          LayoutOpportunity(9, 109, 309)));
+              ElementsAre(CreateLayoutOpportunity(109, 78, 309),
+                          CreateLayoutOpportunity(9, 109, 309)));
   EXPECT_THAT(exclusion_space.AllLayoutOpportunities(9, 101),
-              ElementsAre(LayoutOpportunity(109, 101, 309),
-                          LayoutOpportunity(9, 109, 309)));
+              ElementsAre(CreateLayoutOpportunity(109, 101, 309),
+                          CreateLayoutOpportunity(9, 109, 309)));
   EXPECT_THAT(exclusion_space.AllLayoutOpportunities(9, 124),
-              ElementsAre(LayoutOpportunity(9, 124, 309)));
+              ElementsAre(CreateLayoutOpportunity(9, 124, 309)));
 
   EXPECT_THAT(exclusion_space.InitialLetterClearanceOffset(),
               ElementsAre(LayoutUnit(73), LayoutUnit(73), LayoutUnit::Min()));
 }
 
-TEST(NGExclusionSpaceTest, InitialLetterFloatLeftAfterBreak) {
+TEST(ExclusionSpaceTest, InitialLetterFloatLeftAfterBreak) {
   constexpr LayoutUnit kAvailableInlineSize = LayoutUnit(300);
   ExclusionSpaceForTesting exclusion_space(kAvailableInlineSize);
 
@@ -701,31 +701,31 @@ TEST(NGExclusionSpaceTest, InitialLetterFloatLeftAfterBreak) {
   exclusion_space.AddForInitialLetterBox(9, 9, 223, 73);
 
   EXPECT_THAT(exclusion_space.AllLayoutOpportunities(9, 32),
-              ElementsAre(LayoutOpportunity(223, 32, 309),
-                          LayoutOpportunity(9, 73, 309)));
+              ElementsAre(CreateLayoutOpportunity(223, 32, 309),
+                          CreateLayoutOpportunity(9, 73, 309)));
 
   EXPECT_THAT(exclusion_space.FindLayoutOpportunity(9, 73, 50),
-              LayoutOpportunity(9, 73, 309));
+              CreateLayoutOpportunity(9, 73, 309));
   exclusion_space.AddForFloat(9, 73, 59, 123);
 
   EXPECT_THAT(exclusion_space.AllLayoutOpportunities(9, 55),
-              ElementsAre(LayoutOpportunity(223, 55, 309),
-                          LayoutOpportunity(59, 73, 309),
-                          LayoutOpportunity(9, 123, 309)));
+              ElementsAre(CreateLayoutOpportunity(223, 55, 309),
+                          CreateLayoutOpportunity(59, 73, 309),
+                          CreateLayoutOpportunity(9, 123, 309)));
   EXPECT_THAT(exclusion_space.AllLayoutOpportunities(9, 78),
-              ElementsAre(LayoutOpportunity(59, 78, 309),
-                          LayoutOpportunity(9, 123, 309)));
+              ElementsAre(CreateLayoutOpportunity(59, 78, 309),
+                          CreateLayoutOpportunity(9, 123, 309)));
   EXPECT_THAT(exclusion_space.AllLayoutOpportunities(9, 101),
-              ElementsAre(LayoutOpportunity(59, 101, 309),
-                          LayoutOpportunity(9, 123, 309)));
+              ElementsAre(CreateLayoutOpportunity(59, 101, 309),
+                          CreateLayoutOpportunity(9, 123, 309)));
   EXPECT_THAT(exclusion_space.AllLayoutOpportunities(9, 124),
-              ElementsAre(LayoutOpportunity(9, 124, 309)));
+              ElementsAre(CreateLayoutOpportunity(9, 124, 309)));
 
   EXPECT_THAT(exclusion_space.InitialLetterClearanceOffset(),
               ElementsAre(LayoutUnit(73), LayoutUnit(73), LayoutUnit::Min()));
 }
 
-TEST(NGExclusionSpaceTest, InitialLetterFloatRight2) {
+TEST(ExclusionSpaceTest, InitialLetterFloatRight2) {
   constexpr LayoutUnit kAvailableInlineSize = LayoutUnit(300);
   ExclusionSpaceForTesting exclusion_space(kAvailableInlineSize);
 
@@ -758,40 +758,40 @@ TEST(NGExclusionSpaceTest, InitialLetterFloatRight2) {
   //  </div>
   exclusion_space.AddForFloat(259, 9, 309, 59, EFloat::kRight);
   EXPECT_THAT(exclusion_space.FindLayoutOpportunity(9, 9, 200),
-              LayoutOpportunity(9, 59, 309));
+              CreateLayoutOpportunity(9, 59, 309));
 
   exclusion_space.AddForFloat(59, 9, 259, 59, EFloat::kRight);
 
   EXPECT_THAT(exclusion_space.AllLayoutOpportunities(9, 9),
-              ElementsAre(LayoutOpportunity(309, 9, 309),
-                          LayoutOpportunity(9, 59, 309)));
+              ElementsAre(CreateLayoutOpportunity(309, 9, 309),
+                          CreateLayoutOpportunity(9, 59, 309)));
 
   exclusion_space.AddForInitialLetterBox(9, 59, 73, 123);
 
   EXPECT_THAT(exclusion_space.AllLayoutOpportunities(9, 82),
-              ElementsAre(LayoutOpportunity(73, 82, 309),
-                          LayoutOpportunity(9, 123, 309)));
+              ElementsAre(CreateLayoutOpportunity(73, 82, 309),
+                          CreateLayoutOpportunity(9, 123, 309)));
   EXPECT_THAT(exclusion_space.AllLayoutOpportunities(9, 105),
-              ElementsAre(LayoutOpportunity(73, 105, 309),
-                          LayoutOpportunity(9, 123, 309)));
+              ElementsAre(CreateLayoutOpportunity(73, 105, 309),
+                          CreateLayoutOpportunity(9, 123, 309)));
   EXPECT_THAT(exclusion_space.AllLayoutOpportunities(9, 128),
-              ElementsAre(LayoutOpportunity(9, 128, 309)));
+              ElementsAre(CreateLayoutOpportunity(9, 128, 309)));
   EXPECT_THAT(exclusion_space.AllLayoutOpportunities(9, 151),
-              ElementsAre(LayoutOpportunity(9, 151, 309)));
+              ElementsAre(CreateLayoutOpportunity(9, 151, 309)));
   EXPECT_THAT(exclusion_space.AllLayoutOpportunities(9, 174),
-              ElementsAre(LayoutOpportunity(9, 174, 309)));
+              ElementsAre(CreateLayoutOpportunity(9, 174, 309)));
 
   EXPECT_THAT(exclusion_space.InitialLetterClearanceOffset(),
               ElementsAre(LayoutUnit(123), LayoutUnit(123), LayoutUnit::Min()));
 }
 
-TEST(NGExclusionSpaceTest, ZeroInlineSizeOpportunity) {
-  NGExclusionSpace exclusion_space;
+TEST(ExclusionSpaceTest, ZeroInlineSizeOpportunity) {
+  ExclusionSpace exclusion_space;
 
   exclusion_space.Add(
-      NGExclusion::Create(BfcRect(BfcOffset(LayoutUnit(), LayoutUnit()),
-                                  BfcOffset(LayoutUnit(100), LayoutUnit(10))),
-                          EFloat::kLeft));
+      ExclusionArea::Create(BfcRect(BfcOffset(LayoutUnit(), LayoutUnit()),
+                                    BfcOffset(LayoutUnit(100), LayoutUnit(10))),
+                            EFloat::kLeft));
 
   LayoutOpportunityVector opportunites = exclusion_space.AllLayoutOpportunities(
       /* offset */ {LayoutUnit(), LayoutUnit()},
@@ -804,13 +804,13 @@ TEST(NGExclusionSpaceTest, ZeroInlineSizeOpportunity) {
                    BfcOffset(LayoutUnit(100), LayoutUnit::Max()));
 }
 
-TEST(NGExclusionSpaceTest, NegativeInlineSizeOpportunityLeft) {
-  NGExclusionSpace exclusion_space;
+TEST(ExclusionSpaceTest, NegativeInlineSizeOpportunityLeft) {
+  ExclusionSpace exclusion_space;
 
   exclusion_space.Add(
-      NGExclusion::Create(BfcRect(BfcOffset(LayoutUnit(), LayoutUnit()),
-                                  BfcOffset(LayoutUnit(120), LayoutUnit(10))),
-                          EFloat::kLeft));
+      ExclusionArea::Create(BfcRect(BfcOffset(LayoutUnit(), LayoutUnit()),
+                                    BfcOffset(LayoutUnit(120), LayoutUnit(10))),
+                            EFloat::kLeft));
 
   LayoutOpportunityVector opportunites = exclusion_space.AllLayoutOpportunities(
       /* offset */ {LayoutUnit(), LayoutUnit()},
@@ -823,13 +823,13 @@ TEST(NGExclusionSpaceTest, NegativeInlineSizeOpportunityLeft) {
                    BfcOffset(LayoutUnit(100), LayoutUnit::Max()));
 }
 
-TEST(NGExclusionSpaceTest, NegativeInlineSizeOpportunityRight) {
-  NGExclusionSpace exclusion_space;
+TEST(ExclusionSpaceTest, NegativeInlineSizeOpportunityRight) {
+  ExclusionSpace exclusion_space;
 
   exclusion_space.Add(
-      NGExclusion::Create(BfcRect(BfcOffset(LayoutUnit(-20), LayoutUnit()),
-                                  BfcOffset(LayoutUnit(100), LayoutUnit(10))),
-                          EFloat::kRight));
+      ExclusionArea::Create(BfcRect(BfcOffset(LayoutUnit(-20), LayoutUnit()),
+                                    BfcOffset(LayoutUnit(100), LayoutUnit(10))),
+                            EFloat::kRight));
 
   LayoutOpportunityVector opportunites = exclusion_space.AllLayoutOpportunities(
       /* offset */ {LayoutUnit(), LayoutUnit()},
@@ -842,145 +842,145 @@ TEST(NGExclusionSpaceTest, NegativeInlineSizeOpportunityRight) {
                    BfcOffset(LayoutUnit(100), LayoutUnit::Max()));
 }
 
-TEST(NGExclusionSpaceTest, PreInitialization) {
-  NGExclusionSpace original_exclusion_space;
+TEST(ExclusionSpaceTest, PreInitialization) {
+  ExclusionSpace original_exclusion_space;
 
   original_exclusion_space.Add(
-      NGExclusion::Create(BfcRect(BfcOffset(LayoutUnit(), LayoutUnit()),
-                                  BfcOffset(LayoutUnit(20), LayoutUnit(15))),
-                          EFloat::kLeft));
+      ExclusionArea::Create(BfcRect(BfcOffset(LayoutUnit(), LayoutUnit()),
+                                    BfcOffset(LayoutUnit(20), LayoutUnit(15))),
+                            EFloat::kLeft));
   original_exclusion_space.Add(
-      NGExclusion::Create(BfcRect(BfcOffset(LayoutUnit(65), LayoutUnit()),
-                                  BfcOffset(LayoutUnit(85), LayoutUnit(15))),
-                          EFloat::kRight));
+      ExclusionArea::Create(BfcRect(BfcOffset(LayoutUnit(65), LayoutUnit()),
+                                    BfcOffset(LayoutUnit(85), LayoutUnit(15))),
+                            EFloat::kRight));
 
-  NGExclusionSpace exclusion_space1;
+  ExclusionSpace exclusion_space1;
   exclusion_space1.PreInitialize(original_exclusion_space);
   EXPECT_NE(original_exclusion_space, exclusion_space1);
 
   exclusion_space1.Add(
-      NGExclusion::Create(BfcRect(BfcOffset(LayoutUnit(), LayoutUnit()),
-                                  BfcOffset(LayoutUnit(20), LayoutUnit(15))),
-                          EFloat::kLeft));
+      ExclusionArea::Create(BfcRect(BfcOffset(LayoutUnit(), LayoutUnit()),
+                                    BfcOffset(LayoutUnit(20), LayoutUnit(15))),
+                            EFloat::kLeft));
   EXPECT_NE(original_exclusion_space, exclusion_space1);
 
   // Adding the same exclusions will make the spaces equal.
   exclusion_space1.Add(
-      NGExclusion::Create(BfcRect(BfcOffset(LayoutUnit(65), LayoutUnit()),
-                                  BfcOffset(LayoutUnit(85), LayoutUnit(15))),
-                          EFloat::kRight));
+      ExclusionArea::Create(BfcRect(BfcOffset(LayoutUnit(65), LayoutUnit()),
+                                    BfcOffset(LayoutUnit(85), LayoutUnit(15))),
+                            EFloat::kRight));
   EXPECT_EQ(original_exclusion_space, exclusion_space1);
 
   // Adding a third exclusion will make the spaces non-equal.
   exclusion_space1.Add(
-      NGExclusion::Create(BfcRect(BfcOffset(LayoutUnit(10), LayoutUnit(25)),
-                                  BfcOffset(LayoutUnit(30), LayoutUnit(40))),
-                          EFloat::kLeft));
+      ExclusionArea::Create(BfcRect(BfcOffset(LayoutUnit(10), LayoutUnit(25)),
+                                    BfcOffset(LayoutUnit(30), LayoutUnit(40))),
+                            EFloat::kLeft));
   EXPECT_NE(original_exclusion_space, exclusion_space1);
 
-  NGExclusionSpace exclusion_space2;
+  ExclusionSpace exclusion_space2;
   exclusion_space2.PreInitialize(original_exclusion_space);
   EXPECT_NE(original_exclusion_space, exclusion_space2);
 
   exclusion_space2.Add(
-      NGExclusion::Create(BfcRect(BfcOffset(LayoutUnit(), LayoutUnit()),
-                                  BfcOffset(LayoutUnit(20), LayoutUnit(15))),
-                          EFloat::kLeft));
+      ExclusionArea::Create(BfcRect(BfcOffset(LayoutUnit(), LayoutUnit()),
+                                    BfcOffset(LayoutUnit(20), LayoutUnit(15))),
+                            EFloat::kLeft));
   EXPECT_NE(original_exclusion_space, exclusion_space2);
 
   // Adding a different second exclusion will make the spaces non-equal.
   exclusion_space2.Add(
-      NGExclusion::Create(BfcRect(BfcOffset(LayoutUnit(10), LayoutUnit(25)),
-                                  BfcOffset(LayoutUnit(30), LayoutUnit(40))),
-                          EFloat::kLeft));
+      ExclusionArea::Create(BfcRect(BfcOffset(LayoutUnit(10), LayoutUnit(25)),
+                                    BfcOffset(LayoutUnit(30), LayoutUnit(40))),
+                            EFloat::kLeft));
   EXPECT_NE(original_exclusion_space, exclusion_space2);
 }
 
-TEST(NGExclusionSpaceTest, MergeExclusionSpacesNoPreviousExclusions) {
-  NGExclusionSpace old_input;
-  NGExclusionSpace old_output = old_input;
+TEST(ExclusionSpaceTest, MergeExclusionSpacesNoPreviousExclusions) {
+  ExclusionSpace old_input;
+  ExclusionSpace old_output = old_input;
 
   old_output.Add(
-      NGExclusion::Create(BfcRect(BfcOffset(LayoutUnit(10), LayoutUnit(25)),
-                                  BfcOffset(LayoutUnit(30), LayoutUnit(40))),
-                          EFloat::kLeft));
+      ExclusionArea::Create(BfcRect(BfcOffset(LayoutUnit(10), LayoutUnit(25)),
+                                    BfcOffset(LayoutUnit(30), LayoutUnit(40))),
+                            EFloat::kLeft));
 
-  NGExclusionSpace new_input;
+  ExclusionSpace new_input;
 
-  NGExclusionSpace new_output = NGExclusionSpace::MergeExclusionSpaces(
+  ExclusionSpace new_output = ExclusionSpace::MergeExclusionSpaces(
       old_output, old_input, new_input,
       /* offset_delta */ {LayoutUnit(10), LayoutUnit(20)});
 
   // To check the equality pre-initialize a new exclusion space with the
   // |new_output|, and add the expected exclusions.
-  NGExclusionSpace expected;
+  ExclusionSpace expected;
   expected.PreInitialize(new_output);
   expected.Add(
-      NGExclusion::Create(BfcRect(BfcOffset(LayoutUnit(20), LayoutUnit(45)),
-                                  BfcOffset(LayoutUnit(40), LayoutUnit(60))),
-                          EFloat::kLeft));
+      ExclusionArea::Create(BfcRect(BfcOffset(LayoutUnit(20), LayoutUnit(45)),
+                                    BfcOffset(LayoutUnit(40), LayoutUnit(60))),
+                            EFloat::kLeft));
 
   EXPECT_EQ(expected, new_output);
 }
 
-TEST(NGExclusionSpaceTest, MergeExclusionSpacesPreviousExclusions) {
-  NGExclusionSpace old_input;
+TEST(ExclusionSpaceTest, MergeExclusionSpacesPreviousExclusions) {
+  ExclusionSpace old_input;
   old_input.Add(
-      NGExclusion::Create(BfcRect(BfcOffset(LayoutUnit(20), LayoutUnit(45)),
-                                  BfcOffset(LayoutUnit(40), LayoutUnit(60))),
-                          EFloat::kLeft));
+      ExclusionArea::Create(BfcRect(BfcOffset(LayoutUnit(20), LayoutUnit(45)),
+                                    BfcOffset(LayoutUnit(40), LayoutUnit(60))),
+                            EFloat::kLeft));
 
-  NGExclusionSpace old_output = old_input;
+  ExclusionSpace old_output = old_input;
   old_output.Add(
-      NGExclusion::Create(BfcRect(BfcOffset(LayoutUnit(100), LayoutUnit(45)),
-                                  BfcOffset(LayoutUnit(140), LayoutUnit(60))),
-                          EFloat::kRight));
+      ExclusionArea::Create(BfcRect(BfcOffset(LayoutUnit(100), LayoutUnit(45)),
+                                    BfcOffset(LayoutUnit(140), LayoutUnit(60))),
+                            EFloat::kRight));
 
-  NGExclusionSpace new_input;
+  ExclusionSpace new_input;
   new_input.Add(
-      NGExclusion::Create(BfcRect(BfcOffset(LayoutUnit(20), LayoutUnit(45)),
-                                  BfcOffset(LayoutUnit(40), LayoutUnit(50))),
-                          EFloat::kLeft));
+      ExclusionArea::Create(BfcRect(BfcOffset(LayoutUnit(20), LayoutUnit(45)),
+                                    BfcOffset(LayoutUnit(40), LayoutUnit(50))),
+                            EFloat::kLeft));
 
-  NGExclusionSpace new_output = NGExclusionSpace::MergeExclusionSpaces(
+  ExclusionSpace new_output = ExclusionSpace::MergeExclusionSpaces(
       old_output, old_input, new_input,
       /* offset_delta */ {LayoutUnit(10), LayoutUnit(20)});
 
   // To check the equality pre-initialize a new exclusion space with the
   // |new_output|, and add the expected exclusions.
-  NGExclusionSpace expected;
+  ExclusionSpace expected;
   expected.PreInitialize(new_output);
   expected.Add(
-      NGExclusion::Create(BfcRect(BfcOffset(LayoutUnit(20), LayoutUnit(45)),
-                                  BfcOffset(LayoutUnit(40), LayoutUnit(50))),
-                          EFloat::kLeft));
+      ExclusionArea::Create(BfcRect(BfcOffset(LayoutUnit(20), LayoutUnit(45)),
+                                    BfcOffset(LayoutUnit(40), LayoutUnit(50))),
+                            EFloat::kLeft));
   expected.Add(
-      NGExclusion::Create(BfcRect(BfcOffset(LayoutUnit(110), LayoutUnit(65)),
-                                  BfcOffset(LayoutUnit(150), LayoutUnit(80))),
-                          EFloat::kRight));
+      ExclusionArea::Create(BfcRect(BfcOffset(LayoutUnit(110), LayoutUnit(65)),
+                                    BfcOffset(LayoutUnit(150), LayoutUnit(80))),
+                            EFloat::kRight));
 
   EXPECT_EQ(expected, new_output);
 }
 
-TEST(NGExclusionSpaceTest, MergeExclusionSpacesNoOutputExclusions) {
-  NGExclusionSpace old_input;
+TEST(ExclusionSpaceTest, MergeExclusionSpacesNoOutputExclusions) {
+  ExclusionSpace old_input;
   old_input.Add(
-      NGExclusion::Create(BfcRect(BfcOffset(LayoutUnit(20), LayoutUnit(45)),
-                                  BfcOffset(LayoutUnit(40), LayoutUnit(60))),
-                          EFloat::kLeft));
+      ExclusionArea::Create(BfcRect(BfcOffset(LayoutUnit(20), LayoutUnit(45)),
+                                    BfcOffset(LayoutUnit(40), LayoutUnit(60))),
+                            EFloat::kLeft));
   old_input.Add(
-      NGExclusion::Create(BfcRect(BfcOffset(LayoutUnit(100), LayoutUnit(45)),
-                                  BfcOffset(LayoutUnit(140), LayoutUnit(60))),
-                          EFloat::kRight));
+      ExclusionArea::Create(BfcRect(BfcOffset(LayoutUnit(100), LayoutUnit(45)),
+                                    BfcOffset(LayoutUnit(140), LayoutUnit(60))),
+                            EFloat::kRight));
 
-  NGExclusionSpace old_output = old_input;
+  ExclusionSpace old_output = old_input;
 
-  NGExclusionSpace new_input;
-  NGExclusionSpace new_output = NGExclusionSpace::MergeExclusionSpaces(
+  ExclusionSpace new_input;
+  ExclusionSpace new_output = ExclusionSpace::MergeExclusionSpaces(
       old_output, old_input, new_input,
       /* offset_delta */ {LayoutUnit(10), LayoutUnit(20)});
 
-  NGExclusionSpace expected;
+  ExclusionSpace expected;
   EXPECT_EQ(expected, new_output);
 }
 

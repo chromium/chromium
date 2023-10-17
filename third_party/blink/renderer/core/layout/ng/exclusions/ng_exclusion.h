@@ -16,13 +16,13 @@ namespace blink {
 
 class LayoutBox;
 
-struct CORE_EXPORT NGExclusionShapeData final
-    : public GarbageCollected<NGExclusionShapeData> {
-  NGExclusionShapeData(const LayoutBox* layout_box,
-                       const BoxStrut& margins,
-                       const BoxStrut& shape_insets)
+struct CORE_EXPORT ExclusionShapeData final
+    : public GarbageCollected<ExclusionShapeData> {
+  ExclusionShapeData(const LayoutBox* layout_box,
+                     const BoxStrut& margins,
+                     const BoxStrut& shape_insets)
       : layout_box(layout_box), margins(margins), shape_insets(shape_insets) {}
-  NGExclusionShapeData(const NGExclusionShapeData& other)
+  ExclusionShapeData(const ExclusionShapeData& other)
       : layout_box(other.layout_box),
         margins(other.margins),
         shape_insets(other.shape_insets) {}
@@ -35,32 +35,33 @@ struct CORE_EXPORT NGExclusionShapeData final
 };
 
 // Struct that represents an exclusion for float and initial letter box.
-struct CORE_EXPORT NGExclusion final : public GarbageCollected<NGExclusion> {
+struct CORE_EXPORT ExclusionArea final
+    : public GarbageCollected<ExclusionArea> {
   enum Kind {
     kFloat,
     kInitialLetterBox,
   };
 
-  NGExclusion(const BfcRect& rect,
-              const EFloat type,
-              const Kind kind,
-              const NGExclusionShapeData* shape_data)
+  ExclusionArea(const BfcRect& rect,
+                const EFloat type,
+                const Kind kind,
+                const ExclusionShapeData* shape_data)
       : rect(rect), type(type), kind(kind), shape_data(std::move(shape_data)) {}
 
-  static const NGExclusion* Create(const BfcRect& rect,
-                                   const EFloat type,
-                                   NGExclusionShapeData* shape_data = nullptr) {
-    return MakeGarbageCollected<NGExclusion>(rect, type, kFloat,
-                                             std::move(shape_data));
+  static const ExclusionArea* Create(const BfcRect& rect,
+                                     const EFloat type,
+                                     ExclusionShapeData* shape_data = nullptr) {
+    return MakeGarbageCollected<ExclusionArea>(rect, type, kFloat,
+                                               std::move(shape_data));
   }
 
-  static const NGExclusion* CreateForInitialLetterBox(const BfcRect& rect,
-                                                      const EFloat type) {
-    return MakeGarbageCollected<NGExclusion>(rect, type, kInitialLetterBox,
-                                             nullptr);
+  static const ExclusionArea* CreateForInitialLetterBox(const BfcRect& rect,
+                                                        const EFloat type) {
+    return MakeGarbageCollected<ExclusionArea>(rect, type, kInitialLetterBox,
+                                               nullptr);
   }
 
-  const NGExclusion* CopyWithOffset(const BfcDelta& offset_delta) const {
+  const ExclusionArea* CopyWithOffset(const BfcDelta& offset_delta) const {
     if (!offset_delta.line_offset_delta && !offset_delta.block_offset_delta)
       return this;
 
@@ -68,9 +69,9 @@ struct CORE_EXPORT NGExclusion final : public GarbageCollected<NGExclusion> {
     new_rect.start_offset += offset_delta;
     new_rect.end_offset += offset_delta;
 
-    return MakeGarbageCollected<NGExclusion>(
+    return MakeGarbageCollected<ExclusionArea>(
         new_rect, type, kind,
-        shape_data ? MakeGarbageCollected<NGExclusionShapeData>(*shape_data)
+        shape_data ? MakeGarbageCollected<ExclusionShapeData>(*shape_data)
                    : nullptr);
   }
 
@@ -82,16 +83,18 @@ struct CORE_EXPORT NGExclusion final : public GarbageCollected<NGExclusion> {
   const EFloat type;
   const Kind kind;
   bool is_past_other_exclusions = false;
-  const Member<const NGExclusionShapeData> shape_data;
+  const Member<const ExclusionShapeData> shape_data;
 
-  bool operator==(const NGExclusion& other) const;
-  bool operator!=(const NGExclusion& other) const { return !(*this == other); }
+  bool operator==(const ExclusionArea& other) const;
+  bool operator!=(const ExclusionArea& other) const {
+    return !(*this == other);
+  }
 };
 
-using NGExclusionPtrArray = HeapVector<Member<const NGExclusion>>;
+using ExclusionAreaPtrArray = HeapVector<Member<const ExclusionArea>>;
 
-std::ostream& operator<<(std::ostream& os, const NGExclusion& exclusion);
-std::ostream& operator<<(std::ostream& os, const NGExclusion* exclusion);
+std::ostream& operator<<(std::ostream& os, const ExclusionArea& exclusion);
+std::ostream& operator<<(std::ostream& os, const ExclusionArea* exclusion);
 
 }  // namespace blink
 

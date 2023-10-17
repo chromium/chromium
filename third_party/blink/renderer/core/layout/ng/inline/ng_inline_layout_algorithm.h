@@ -19,9 +19,9 @@
 
 namespace blink {
 
+class ExclusionSpace;
 class NGColumnSpannerPath;
 class NGConstraintSpace;
-class NGExclusionSpace;
 class NGInlineBreakToken;
 class NGInlineChildLayoutContext;
 class NGInlineNode;
@@ -50,7 +50,7 @@ class CORE_EXPORT NGInlineLayoutAlgorithm final
                           NGInlineChildLayoutContext* context);
   ~NGInlineLayoutAlgorithm() override;
 
-  void CreateLine(const NGLineLayoutOpportunity&,
+  void CreateLine(const LineLayoutOpportunity&,
                   NGLineInfo*,
                   NGLogicalLineItems* line_box);
 
@@ -64,10 +64,10 @@ class CORE_EXPORT NGInlineLayoutAlgorithm final
  private:
   friend class NGLineWidthsTest;
 
-  void PositionLeadingFloats(NGExclusionSpace&, NGLeadingFloats&);
+  void PositionLeadingFloats(ExclusionSpace&, NGLeadingFloats&);
   NGPositionedFloat PositionFloat(LayoutUnit origin_block_bfc_offset,
                                   LayoutObject* floating_object,
-                                  NGExclusionSpace*);
+                                  ExclusionSpace*);
 
   void PrepareBoxStates(const NGLineInfo&, const NGInlineBreakToken*);
   void RebuildBoxStates(const NGLineInfo&,
@@ -117,7 +117,7 @@ class CORE_EXPORT NGInlineLayoutAlgorithm final
                              const FontHeight&,
                              NGLogicalLineItems* line_box);
   void PlaceFloatingObjects(const FontHeight&,
-                            const NGLineLayoutOpportunity&,
+                            const LineLayoutOpportunity&,
                             LayoutUnit ruby_block_start_adjust,
                             NGLineInfo*,
                             NGLogicalLineItems* line_box);

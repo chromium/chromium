@@ -140,8 +140,8 @@ class CORE_EXPORT NGLayoutAlgorithm : public NGLayoutAlgorithmOperations {
     return container_builder_.ChildAvailableSize();
   }
 
-  NGExclusionSpace& ExclusionSpace() {
-    return container_builder_.ExclusionSpace();
+  ExclusionSpace& GetExclusionSpace() {
+    return container_builder_.GetExclusionSpace();
   }
 
   // Lay out again, this time with a predefined good breakpoint that we

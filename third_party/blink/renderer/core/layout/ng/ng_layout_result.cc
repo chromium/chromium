@@ -165,14 +165,14 @@ NGLayoutResult::NGLayoutResult(const NGLayoutResult& other,
     oof_insets_for_get_computed_style_ = BoxStrut();
   }
 
-  NGExclusionSpace new_exclusion_space = MergeExclusionSpaces(
-      other, space_.ExclusionSpace(), bfc_line_offset, block_offset_delta);
+  ExclusionSpace new_exclusion_space = MergeExclusionSpaces(
+      other, space_.GetExclusionSpace(), bfc_line_offset, block_offset_delta);
 
-  if (new_exclusion_space != space_.ExclusionSpace()) {
+  if (new_exclusion_space != space_.GetExclusionSpace()) {
     bitfields_.has_rare_data_exclusion_space = true;
     EnsureRareData()->exclusion_space = std::move(new_exclusion_space);
   } else {
-    space_.ExclusionSpace().MoveDerivedGeometry(new_exclusion_space);
+    space_.GetExclusionSpace().MoveDerivedGeometry(new_exclusion_space);
   }
 
   if (new_end_margin_strut != MarginStrut() || rare_data_) {
@@ -231,11 +231,11 @@ NGLayoutResult::NGLayoutResult(const NGPhysicalFragment* physical_fragment,
     EnsureRareData()->block_end_annotation_space =
         builder->block_end_annotation_space_;
   }
-  if (builder->exclusion_space_ != space_.ExclusionSpace()) {
+  if (builder->exclusion_space_ != space_.GetExclusionSpace()) {
     bitfields_.has_rare_data_exclusion_space = true;
     EnsureRareData()->exclusion_space = std::move(builder->exclusion_space_);
   } else {
-    space_.ExclusionSpace().MoveDerivedGeometry(builder->exclusion_space_);
+    space_.GetExclusionSpace().MoveDerivedGeometry(builder->exclusion_space_);
   }
   if (builder->lines_until_clamp_)
     EnsureRareData()->lines_until_clamp = *builder->lines_until_clamp_;
@@ -280,17 +280,17 @@ NGLayoutResult::NGLayoutResult(const NGPhysicalFragment* physical_fragment,
       !builder->bfc_block_offset_.has_value();
 }
 
-NGExclusionSpace NGLayoutResult::MergeExclusionSpaces(
+ExclusionSpace NGLayoutResult::MergeExclusionSpaces(
     const NGLayoutResult& other,
-    const NGExclusionSpace& new_input_exclusion_space,
+    const ExclusionSpace& new_input_exclusion_space,
     LayoutUnit bfc_line_offset,
     LayoutUnit block_offset_delta) {
   BfcDelta offset_delta = {bfc_line_offset - other.BfcLineOffset(),
                            block_offset_delta};
 
-  return NGExclusionSpace::MergeExclusionSpaces(
-      /* old_output */ other.ExclusionSpace(),
-      /* old_input */ other.space_.ExclusionSpace(),
+  return ExclusionSpace::MergeExclusionSpaces(
+      /* old_output */ other.GetExclusionSpace(),
+      /* old_input */ other.space_.GetExclusionSpace(),
       /* new_input */ new_input_exclusion_space, offset_delta);
 }
 
@@ -324,7 +324,7 @@ void NGLayoutResult::CheckSameForSimplifiedLayout(
           check_same_block_size, check_no_fragmentation);
 
   DCHECK(LinesUntilClamp() == other.LinesUntilClamp());
-  ExclusionSpace().CheckSameForSimplifiedLayout(other.ExclusionSpace());
+  GetExclusionSpace().CheckSameForSimplifiedLayout(other.GetExclusionSpace());
 
   // We ignore |BfcBlockOffset|, and |BfcLineOffset| as "simplified" layout
   // will move the layout result if required.

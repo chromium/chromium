@@ -131,7 +131,7 @@ LogicalRect ComputeTextInkBounds(const ShapeResultView& shape_result,
 }
 
 // `origin` holds left-top for LTR, right-top for RTL.
-const NGExclusion* CreateExclusionSpaceForInitialLetterBox(
+const ExclusionArea* CreateExclusionSpaceForInitialLetterBox(
     EFloat float_type,
     BfcOffset origin,
     const BfcOffset& border_box_offset,
@@ -177,7 +177,7 @@ const NGExclusion* CreateExclusionSpaceForInitialLetterBox(
       origin.block_offset + local_start_offset.block_offset +
           margin_box_size.block_size);
 
-  return NGExclusion::CreateForInitialLetterBox(
+  return ExclusionArea::CreateForInitialLetterBox(
       BfcRect(start_offset, end_offset), float_type);
 }
 
@@ -244,7 +244,7 @@ LayoutUnit CalculateInitialLetterBoxInlineSize(const NGLineInfo& line_info) {
   return inline_size;
 }
 
-const NGExclusion* PostPlaceInitialLetterBox(
+const ExclusionArea* PostPlaceInitialLetterBox(
     const FontHeight& line_box_metrics,
     const BoxStrut& initial_letter_box_margins,
     NGLogicalLineItems* line_box,
@@ -310,7 +310,7 @@ const NGExclusion* PostPlaceInitialLetterBox(
                 initial_letter_box_size.inline_size,
       line_origin.block_offset);
 
-  const NGExclusion* exclusion = CreateExclusionSpaceForInitialLetterBox(
+  const ExclusionArea* exclusion = CreateExclusionSpaceForInitialLetterBox(
       writing_direction_mode.IsLtr() ? EFloat::kLeft : EFloat::kRight,
       initial_letter_box_origin,
       BfcOffset(initial_letter_border_box_inline_offset,

@@ -14,14 +14,14 @@ namespace blink {
 
 class NGConstraintSpace;
 class NGInlineNode;
-struct NGLineLayoutOpportunity;
+struct LineLayoutOpportunity;
 
 class CORE_EXPORT NGParagraphLineBreaker {
  public:
   static absl::optional<LayoutUnit> AttemptParagraphBalancing(
       const NGInlineNode& node,
       const NGConstraintSpace& space,
-      const NGLineLayoutOpportunity& line_opportunity);
+      const LineLayoutOpportunity& line_opportunity);
 };
 
 }  // namespace blink

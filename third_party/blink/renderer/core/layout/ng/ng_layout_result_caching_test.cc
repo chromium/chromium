@@ -124,7 +124,7 @@ TEST_F(NGLayoutResultCachingTest, HitDifferentBFCOffset) {
 
   // Also check that the exclusion(s) got moved correctly.
   LayoutOpportunityVector opportunities =
-      result->ExclusionSpace().AllLayoutOpportunities(
+      result->GetExclusionSpace().AllLayoutOpportunities(
           /* offset */ {LayoutUnit(), LayoutUnit()},
           /* available_inline_size */ LayoutUnit(100));
 

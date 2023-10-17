@@ -16,22 +16,21 @@ namespace blink {
 // As shapes are relatively uncommon we store these as a separate struct, and
 // allocate only when necessary.
 //
-// This struct can belong to either a NGShelf within the exclusion space, or on
-// NGLayoutOpportunity. Outside these classes normal code shouldn't interact
+// This struct can belong to either a Shelf within the exclusion space, or on
+// LayoutOpportunity. Outside these classes normal code shouldn't interact
 // with this class.
-class CORE_EXPORT NGShapeExclusions
-    : public GarbageCollected<NGShapeExclusions> {
+class CORE_EXPORT ShapeExclusions : public GarbageCollected<ShapeExclusions> {
  public:
-  NGShapeExclusions() {}
-  NGShapeExclusions(const NGShapeExclusions& other)
+  ShapeExclusions() = default;
+  ShapeExclusions(const ShapeExclusions& other)
       : line_left_shapes(other.line_left_shapes),
         line_right_shapes(other.line_right_shapes) {}
   void Trace(Visitor* visitor) const {
     visitor->Trace(line_left_shapes);
     visitor->Trace(line_right_shapes);
   }
-  NGExclusionPtrArray line_left_shapes;
-  NGExclusionPtrArray line_right_shapes;
+  ExclusionAreaPtrArray line_left_shapes;
+  ExclusionAreaPtrArray line_right_shapes;
 };
 
 }  // namespace blink

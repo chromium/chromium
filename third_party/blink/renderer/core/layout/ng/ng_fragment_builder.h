@@ -134,8 +134,8 @@ class CORE_EXPORT NGFragmentBuilder {
     may_have_descendant_above_block_start_ = b;
   }
 
-  NGExclusionSpace& ExclusionSpace() { return exclusion_space_; }
-  void SetExclusionSpace(const NGExclusionSpace& exclusion_space) {
+  ExclusionSpace& GetExclusionSpace() { return exclusion_space_; }
+  void SetExclusionSpace(const ExclusionSpace& exclusion_space) {
     exclusion_space_ = exclusion_space;
   }
 
@@ -561,7 +561,7 @@ class CORE_EXPORT NGFragmentBuilder {
   LayoutUnit bfc_line_offset_;
   absl::optional<LayoutUnit> bfc_block_offset_;
   MarginStrut end_margin_strut_;
-  NGExclusionSpace exclusion_space_;
+  ExclusionSpace exclusion_space_;
   absl::optional<int> lines_until_clamp_;
 
   ScrollStartTargetCandidates* scroll_start_targets_ = nullptr;

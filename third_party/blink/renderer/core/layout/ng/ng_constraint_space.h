@@ -165,7 +165,7 @@ class CORE_EXPORT NGConstraintSpace final {
       delete rare_data_;
   }
 
-  const NGExclusionSpace& ExclusionSpace() const { return exclusion_space_; }
+  const ExclusionSpace& GetExclusionSpace() const { return exclusion_space_; }
 
   TextDirection Direction() const {
     return static_cast<TextDirection>(bitfields_.direction);
@@ -729,7 +729,7 @@ class CORE_EXPORT NGConstraintSpace final {
 
   // Return true if there were any earlier floats that may affect the current
   // layout.
-  bool HasFloats() const { return !ExclusionSpace().IsEmpty(); }
+  bool HasFloats() const { return !GetExclusionSpace().IsEmpty(); }
 
   bool HasClearanceOffset() const {
     return HasRareData() && rare_data_->ClearanceOffset() != LayoutUnit::Min();
@@ -1656,7 +1656,7 @@ class CORE_EXPORT NGConstraintSpace final {
     RareData* rare_data_;
   };
 
-  NGExclusionSpace exclusion_space_;
+  ExclusionSpace exclusion_space_;
   Bitfields bitfields_;
 };
 

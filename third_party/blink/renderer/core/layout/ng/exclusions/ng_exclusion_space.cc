@@ -20,8 +20,8 @@ namespace {
 // We don't explicitly check the inline-size/block-size of the opportunity as
 // they are always produced in the order.
 void InsertClosedArea(
-    const NGExclusionSpaceInternal::NGClosedArea area,
-    HeapVector<NGExclusionSpaceInternal::NGClosedArea, 4>& areas) {
+    const ExclusionSpaceInternal::ClosedArea area,
+    HeapVector<ExclusionSpaceInternal::ClosedArea, 4>& areas) {
   if (areas.empty()) {
     areas.emplace_back(area);
     return;
@@ -30,7 +30,7 @@ void InsertClosedArea(
   // We go backwards through the list as there is a higher probability that a
   // new area will be at the end of the list.
   for (wtf_size_t i = areas.size(); i--;) {
-    const NGExclusionSpaceInternal::NGClosedArea& other = areas.at(i);
+    const ExclusionSpaceInternal::ClosedArea& other = areas.at(i);
     if (other.opportunity.rect.BlockStartOffset() <=
         area.opportunity.rect.BlockStartOffset()) {
 #if DCHECK_IS_ON()
@@ -63,7 +63,7 @@ void InsertClosedArea(
 }
 
 // Returns true if there is at least one edge between block_start and block_end.
-bool HasSolidEdges(const Vector<NGExclusionSpaceInternal::NGShelfEdge>& edges,
+bool HasSolidEdges(const Vector<ExclusionSpaceInternal::ShelfEdge>& edges,
                    LayoutUnit block_start,
                    LayoutUnit block_end) {
   // If there aren't any adjacent exclusions, we must be the initial shelf.
@@ -83,10 +83,9 @@ bool HasSolidEdges(const Vector<NGExclusionSpaceInternal::NGShelfEdge>& edges,
 // (block_offset, LayoutUnit::Max())
 // to the given out_edges vector.
 // edges will be invalid after this call.
-void CollectSolidEdges(
-    Vector<NGExclusionSpaceInternal::NGShelfEdge>* edges,
-    LayoutUnit block_offset,
-    Vector<NGExclusionSpaceInternal::NGShelfEdge>* out_edges) {
+void CollectSolidEdges(Vector<ExclusionSpaceInternal::ShelfEdge>* edges,
+                       LayoutUnit block_offset,
+                       Vector<ExclusionSpaceInternal::ShelfEdge>* out_edges) {
   *out_edges = std::move(*edges);
   for (auto* it = out_edges->begin(); it != out_edges->end();) {
     if ((*it).block_end <= block_offset) {
@@ -102,7 +101,7 @@ void CollectSolidEdges(
 //
 // We only need to check the block-end of the opportunity is below the given
 // offset, as the given area extends to a block-end of infinity.
-bool Intersects(const NGLayoutOpportunity& opportunity,
+bool Intersects(const LayoutOpportunity& opportunity,
                 const BfcOffset& offset,
                 const LayoutUnit inline_size) {
   return opportunity.rect.LineEndOffset() >= offset.line_offset &&
@@ -113,9 +112,9 @@ bool Intersects(const NGLayoutOpportunity& opportunity,
 
 // Creates a new layout opportunity. The given layout opportunity *must*
 // intersect with the given area (defined by offset and inline_size).
-NGLayoutOpportunity CreateLayoutOpportunity(const NGLayoutOpportunity& other,
-                                            const BfcOffset& offset,
-                                            const LayoutUnit inline_size) {
+LayoutOpportunity CreateLayoutOpportunity(const LayoutOpportunity& other,
+                                          const BfcOffset& offset,
+                                          const LayoutUnit inline_size) {
   DCHECK(Intersects(other, offset, inline_size));
 
   BfcOffset start_offset(
@@ -126,17 +125,17 @@ NGLayoutOpportunity CreateLayoutOpportunity(const NGLayoutOpportunity& other,
       std::min(other.rect.LineEndOffset(), offset.line_offset + inline_size),
       other.rect.BlockEndOffset());
 
-  return NGLayoutOpportunity(
+  return LayoutOpportunity(
       BfcRect(start_offset, end_offset),
       other.shape_exclusions
-          ? MakeGarbageCollected<NGShapeExclusions>(*other.shape_exclusions)
+          ? MakeGarbageCollected<ShapeExclusions>(*other.shape_exclusions)
           : nullptr);
 }
 
 // Creates a new layout opportunity. The given shelf *must* intersect with the
 // given area (defined by offset and inline_size).
-NGLayoutOpportunity CreateLayoutOpportunity(
-    const NGExclusionSpaceInternal::NGShelf& shelf,
+LayoutOpportunity CreateLayoutOpportunity(
+    const ExclusionSpaceInternal::Shelf& shelf,
     const BfcOffset& offset,
     const LayoutUnit inline_size) {
   BfcOffset start_offset(std::max(shelf.line_left, offset.line_offset),
@@ -149,25 +148,25 @@ NGLayoutOpportunity CreateLayoutOpportunity(
                start_offset.line_offset),
       LayoutUnit::Max());
 
-  return NGLayoutOpportunity(
+  return LayoutOpportunity(
       BfcRect(start_offset, end_offset),
       shelf.has_shape_exclusions
-          ? MakeGarbageCollected<NGShapeExclusions>(*shelf.shape_exclusions)
+          ? MakeGarbageCollected<ShapeExclusions>(*shelf.shape_exclusions)
           : nullptr);
 }
 
 }  // namespace
 
-NGExclusionSpaceInternal::NGExclusionSpaceInternal()
-    : exclusions_(MakeGarbageCollected<NGExclusionPtrArray>()),
+ExclusionSpaceInternal::ExclusionSpaceInternal()
+    : exclusions_(MakeGarbageCollected<ExclusionAreaPtrArray>()),
       track_shape_exclusions_(false),
       has_break_before_left_float_(false),
       has_break_before_right_float_(false),
       has_break_inside_left_float_(false),
       has_break_inside_right_float_(false) {}
 
-NGExclusionSpaceInternal::NGExclusionSpaceInternal(
-    const NGExclusionSpaceInternal& other)
+ExclusionSpaceInternal::ExclusionSpaceInternal(
+    const ExclusionSpaceInternal& other)
     : exclusions_(other.exclusions_),
       num_exclusions_(other.num_exclusions_),
       left_clear_offset_(other.left_clear_offset_),
@@ -188,8 +187,8 @@ NGExclusionSpaceInternal::NGExclusionSpaceInternal(
   other.derived_geometry_ = nullptr;
 }
 
-NGExclusionSpaceInternal& NGExclusionSpaceInternal::operator=(
-    const NGExclusionSpaceInternal& other) {
+ExclusionSpaceInternal& ExclusionSpaceInternal::operator=(
+    const ExclusionSpaceInternal& other) {
   exclusions_ = other.exclusions_;
   num_exclusions_ = other.num_exclusions_;
   left_clear_offset_ = other.left_clear_offset_;
@@ -207,7 +206,7 @@ NGExclusionSpaceInternal& NGExclusionSpaceInternal::operator=(
   return *this;
 }
 
-NGExclusionSpaceInternal::DerivedGeometry::DerivedGeometry(
+ExclusionSpaceInternal::DerivedGeometry::DerivedGeometry(
     LayoutUnit block_offset_limit,
     bool track_shape_exclusions)
     : block_offset_limit_(block_offset_limit),
@@ -217,7 +216,7 @@ NGExclusionSpaceInternal::DerivedGeometry::DerivedGeometry(
                         track_shape_exclusions_);
 }
 
-void NGExclusionSpaceInternal::Add(const NGExclusion* exclusion) {
+void ExclusionSpaceInternal::Add(const ExclusionArea* exclusion) {
   DCHECK_LE(num_exclusions_, exclusions_->size());
 
   bool already_exists = false;
@@ -229,8 +228,7 @@ void NGExclusionSpaceInternal::Add(const NGExclusion* exclusion) {
     } else {
       // Perform a copy-on-write if the number of exclusions has gone out of
       // sync.
-      NGExclusionPtrArray* exclusions =
-          MakeGarbageCollected<NGExclusionPtrArray>();
+      auto* exclusions = MakeGarbageCollected<ExclusionAreaPtrArray>();
       exclusions->AppendRange(exclusions_->begin(),
                               exclusions_->begin() + num_exclusions_);
       exclusions_ = exclusions;
@@ -248,7 +246,7 @@ void NGExclusionSpaceInternal::Add(const NGExclusion* exclusion) {
 
   // We can safely mutate the exclusion here as an exclusion will never be
   // reused if this invariant doesn't hold.
-  const_cast<NGExclusion*>(exclusion)->is_past_other_exclusions =
+  const_cast<ExclusionArea*>(exclusion)->is_past_other_exclusions =
       exclusion_block_offset >=
       std::max({left_clear_offset_, exclusion_block_offset, right_clear_offset_,
                 exclusion_block_offset, initial_letter_left_clear_offset_,
@@ -269,7 +267,7 @@ void NGExclusionSpaceInternal::Add(const NGExclusion* exclusion) {
       // Perform a copy-on-write if the number of exclusions has gone out of
       // sync.
       const auto& source_exclusions = *exclusions_;
-      exclusions_ = MakeGarbageCollected<NGExclusionPtrArray>();
+      exclusions_ = MakeGarbageCollected<ExclusionAreaPtrArray>();
       exclusions_->resize(num_exclusions_ + 1);
       const auto* const source_end =
           source_exclusions.begin() + num_exclusions_;
@@ -315,8 +313,8 @@ void NGExclusionSpaceInternal::Add(const NGExclusion* exclusion) {
   num_exclusions_++;
 }
 
-void NGExclusionSpaceInternal::DerivedGeometry::Add(
-    const NGExclusion& exclusion) {
+void ExclusionSpaceInternal::DerivedGeometry::Add(
+    const ExclusionArea& exclusion) {
   DCHECK_GE(exclusion.rect.BlockStartOffset(), block_offset_limit_);
 
   // If the exclusion takes up no inline space, we shouldn't pay any further
@@ -337,13 +335,13 @@ void NGExclusionSpaceInternal::DerivedGeometry::Add(
   for (wtf_size_t i = 0; i < shelves_.size(); ++i) {
     // We modify the current shelf in-place. However we need to keep a copy of
     // the shelf if we need to insert a new shelf later in the loop.
-    absl::optional<NGShelf> shelf_copy;
+    absl::optional<Shelf> shelf_copy;
 
     bool is_between_shelves;
 
     // A new scope is created as shelf may be removed.
     {
-      NGShelf& shelf = shelves_[i];
+      Shelf& shelf = shelves_[i];
 
       // Check if we need to insert a new shelf between two other shelves. E.g.
       //
@@ -456,18 +454,18 @@ void NGExclusionSpaceInternal::DerivedGeometry::Add(
 
         // Insert a closed-off layout opportunity if needed.
         if (has_solid_edges && is_overlapping) {
-          NGLayoutOpportunity opportunity(
+          LayoutOpportunity opportunity(
               BfcRect(
                   /* start_offset */ {shelf.line_left, shelf.block_offset},
                   /* end_offset */ {shelf.line_right,
                                     exclusion.rect.BlockStartOffset()}),
               shelf.has_shape_exclusions
-                  ? MakeGarbageCollected<NGShapeExclusions>(
+                  ? MakeGarbageCollected<ShapeExclusions>(
                         *shelf.shape_exclusions)
                   : nullptr);
 
-          InsertClosedArea(NGClosedArea(opportunity, shelf.line_left_edges,
-                                        shelf.line_right_edges),
+          InsertClosedArea(ClosedArea(opportunity, shelf.line_left_edges,
+                                      shelf.line_right_edges),
                            areas_);
         }
       }
@@ -572,8 +570,8 @@ void NGExclusionSpaceInternal::DerivedGeometry::Add(
 
       // We only want to add the shelf if it's at a different block offset.
       if (exclusion_end_offset != shelf_copy->block_offset) {
-        NGShelf new_shelf(/* block_offset */ exclusion_end_offset,
-                          track_shape_exclusions_);
+        Shelf new_shelf(/* block_offset */ exclusion_end_offset,
+                        track_shape_exclusions_);
 
         // shelf_copy->line_{left,right}_edges will not valid after these calls.
         CollectSolidEdges(&shelf_copy->line_left_edges, new_shelf.block_offset,
@@ -612,19 +610,19 @@ void NGExclusionSpaceInternal::DerivedGeometry::Add(
 #endif
 }
 
-NGLayoutOpportunity
-NGExclusionSpaceInternal::DerivedGeometry::FindLayoutOpportunity(
+LayoutOpportunity
+ExclusionSpaceInternal::DerivedGeometry::FindLayoutOpportunity(
     const BfcOffset& offset,
     const LayoutUnit available_inline_size,
     const LayoutUnit minimum_inline_size) const {
   // TODO(ikilpatrick): Determine what to do for a -ve available_inline_size.
   DCHECK_GE(offset.block_offset, block_offset_limit_);
 
-  NGLayoutOpportunity return_opportunity;
+  LayoutOpportunity return_opportunity;
   IterateAllLayoutOpportunities(
       offset, available_inline_size,
       [&return_opportunity, &offset, &available_inline_size,
-       &minimum_inline_size](const NGLayoutOpportunity opportunity) -> bool {
+       &minimum_inline_size](const LayoutOpportunity opportunity) -> bool {
         // Determine if this opportunity will fit the given size.
         //
         // NOTE: There are cases where the |available_inline_size| may be
@@ -645,7 +643,7 @@ NGExclusionSpaceInternal::DerivedGeometry::FindLayoutOpportunity(
 }
 
 LayoutOpportunityVector
-NGExclusionSpaceInternal::DerivedGeometry::AllLayoutOpportunities(
+ExclusionSpaceInternal::DerivedGeometry::AllLayoutOpportunities(
     const BfcOffset& offset,
     const LayoutUnit available_inline_size) const {
   DCHECK_GE(offset.block_offset, block_offset_limit_);
@@ -654,7 +652,7 @@ NGExclusionSpaceInternal::DerivedGeometry::AllLayoutOpportunities(
   // This method is only used for determining the position of line-boxes.
   IterateAllLayoutOpportunities(
       offset, available_inline_size,
-      [&opportunities](const NGLayoutOpportunity opportunity) -> bool {
+      [&opportunities](const LayoutOpportunity opportunity) -> bool {
         opportunities.push_back(std::move(opportunity));
         return false;
       });
@@ -663,7 +661,7 @@ NGExclusionSpaceInternal::DerivedGeometry::AllLayoutOpportunities(
 }
 
 template <typename LambdaFunc>
-void NGExclusionSpaceInternal::DerivedGeometry::IterateAllLayoutOpportunities(
+void ExclusionSpaceInternal::DerivedGeometry::IterateAllLayoutOpportunities(
     const BfcOffset& offset,
     const LayoutUnit available_inline_size,
     const LambdaFunc& lambda) const {
@@ -677,10 +675,10 @@ void NGExclusionSpaceInternal::DerivedGeometry::IterateAllLayoutOpportunities(
     // We should never exhaust the opportunities list before the shelves list,
     // as there is always an infinitely sized shelf at the very end.
     DCHECK_NE(shelves_it, shelves_end);
-    const NGShelf& shelf = *shelves_it;
+    const Shelf& shelf = *shelves_it;
 
     if (areas_it != areas_end) {
-      const NGClosedArea& area = *areas_it;
+      const ClosedArea& area = *areas_it;
 
       if (!Intersects(area.opportunity, offset, available_inline_size)) {
         ++areas_it;
@@ -726,8 +724,8 @@ void NGExclusionSpaceInternal::DerivedGeometry::IterateAllLayoutOpportunities(
   }
 }
 
-const NGExclusionSpaceInternal::DerivedGeometry&
-NGExclusionSpaceInternal::GetDerivedGeometry(
+const ExclusionSpaceInternal::DerivedGeometry&
+ExclusionSpaceInternal::GetDerivedGeometry(
     LayoutUnit block_offset_limit) const {
   // We might have a geometry, but built at a lower block-offset limit.
   if (derived_geometry_ &&
@@ -781,8 +779,8 @@ NGExclusionSpaceInternal::GetDerivedGeometry(
   return *derived_geometry_;
 }
 
-bool NGExclusionSpaceInternal::operator==(
-    const NGExclusionSpaceInternal& other) const {
+bool ExclusionSpaceInternal::operator==(
+    const ExclusionSpaceInternal& other) const {
   if (num_exclusions_ == 0 && other.num_exclusions_ == 0)
     return true;
   return num_exclusions_ == other.num_exclusions_ &&

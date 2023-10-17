@@ -1654,9 +1654,9 @@ static LayoutUnit ComputeContentSize(
   LayoutUnit available_inline_size =
       mode == NGLineBreakerMode::kMaxContent ? LayoutUnit::Max() : LayoutUnit();
 
-  NGExclusionSpace empty_exclusion_space;
+  ExclusionSpace empty_exclusion_space;
   NGLeadingFloats empty_leading_floats;
-  NGLineLayoutOpportunity line_opportunity(available_inline_size);
+  LineLayoutOpportunity line_opportunity(available_inline_size);
   LayoutUnit result;
   NGLineBreaker line_breaker(
       node, mode, space, line_opportunity, empty_leading_floats,

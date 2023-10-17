@@ -15,11 +15,11 @@ namespace {
 // Returns how far a line can "fit" into a given exclusion based on its shape
 // area. If the exclusion does not obstruct the line, then the returned
 // LineSegment will be "invalid".
-LineSegment ExcludedSegment(const NGExclusion& exclusion,
+LineSegment ExcludedSegment(const ExclusionArea& exclusion,
                             LayoutUnit bfc_block_offset,
                             LayoutUnit line_block_size) {
   DCHECK(exclusion.shape_data);
-  const NGExclusionShapeData& shape_data = *exclusion.shape_data;
+  const ExclusionShapeData& shape_data = *exclusion.shape_data;
   const Shape& shape =
       shape_data.layout_box->GetShapeOutsideInfo()->ComputedShape();
 
@@ -68,7 +68,7 @@ LineSegment ExcludedSegment(const NGExclusion& exclusion,
 
 // Returns if the given line block-size and offset intersects with the given
 // exclusion.
-bool IntersectsExclusion(const NGExclusion& exclusion,
+bool IntersectsExclusion(const ExclusionArea& exclusion,
                          LayoutUnit bfc_block_offset,
                          LayoutUnit line_block_size) {
   return bfc_block_offset < exclusion.rect.BlockEndOffset() &&
@@ -77,8 +77,7 @@ bool IntersectsExclusion(const NGExclusion& exclusion,
 
 }  // namespace
 
-bool NGLayoutOpportunity::IsBlockDeltaBelowShapes(
-    LayoutUnit block_delta) const {
+bool LayoutOpportunity::IsBlockDeltaBelowShapes(LayoutUnit block_delta) const {
   DCHECK(shape_exclusions);
 
   for (const auto& exclusion : shape_exclusions->line_left_shapes) {
@@ -96,7 +95,7 @@ bool NGLayoutOpportunity::IsBlockDeltaBelowShapes(
   return true;
 }
 
-LayoutUnit NGLayoutOpportunity::ComputeLineLeftOffset(
+LayoutUnit LayoutOpportunity::ComputeLineLeftOffset(
     const NGConstraintSpace& space,
     LayoutUnit line_block_size,
     LayoutUnit block_delta) const {
@@ -128,7 +127,7 @@ LayoutUnit NGLayoutOpportunity::ComputeLineLeftOffset(
   return std::min(line_left, rect.LineEndOffset());
 }
 
-LayoutUnit NGLayoutOpportunity::ComputeLineRightOffset(
+LayoutUnit LayoutOpportunity::ComputeLineRightOffset(
     const NGConstraintSpace& space,
     LayoutUnit line_block_size,
     LayoutUnit block_delta) const {
@@ -162,12 +161,12 @@ LayoutUnit NGLayoutOpportunity::ComputeLineRightOffset(
   return std::max(line_right, rect.LineStartOffset());
 }
 
-bool NGLayoutOpportunity::operator==(const NGLayoutOpportunity& other) const {
+bool LayoutOpportunity::operator==(const LayoutOpportunity& other) const {
   return rect == other.rect && shape_exclusions == other.shape_exclusions;
 }
 
 std::ostream& operator<<(std::ostream& ostream,
-                         const NGLayoutOpportunity& opportunity) {
+                         const LayoutOpportunity& opportunity) {
   if (opportunity.HasShapeExclusions())
     return ostream << "ShapeExclusion@";
   return ostream << opportunity.rect;

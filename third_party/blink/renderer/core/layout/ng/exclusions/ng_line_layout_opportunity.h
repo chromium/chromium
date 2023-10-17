@@ -14,19 +14,19 @@ namespace blink {
 
 // This struct represents a 1D-area where a line can fit. It is only used for
 // representing the inline size.
-struct CORE_EXPORT NGLineLayoutOpportunity {
+struct CORE_EXPORT LineLayoutOpportunity {
   STACK_ALLOCATED();
 
  public:
-  NGLineLayoutOpportunity() {}
-  NGLineLayoutOpportunity(LayoutUnit inline_size)
+  LineLayoutOpportunity() = default;
+  explicit LineLayoutOpportunity(LayoutUnit inline_size)
       : line_right_offset(inline_size), float_line_right_offset(inline_size) {}
-  NGLineLayoutOpportunity(LayoutUnit line_left_offset,
-                          LayoutUnit line_right_offset,
-                          LayoutUnit float_line_left_offset,
-                          LayoutUnit float_line_right_offset,
-                          LayoutUnit bfc_block_offset,
-                          LayoutUnit line_block_size)
+  LineLayoutOpportunity(LayoutUnit line_left_offset,
+                        LayoutUnit line_right_offset,
+                        LayoutUnit float_line_left_offset,
+                        LayoutUnit float_line_right_offset,
+                        LayoutUnit bfc_block_offset,
+                        LayoutUnit line_block_size)
       : line_left_offset(line_left_offset),
         line_right_offset(line_right_offset),
         float_line_left_offset(float_line_left_offset),

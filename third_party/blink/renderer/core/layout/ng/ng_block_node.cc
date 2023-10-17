@@ -322,8 +322,8 @@ const NGLayoutResult* NGBlockNode::Layout(
   // pointer to the value previous shared vector.
   if (const NGLayoutResult* previous_result =
           box_->GetCachedLayoutResult(break_token)) {
-    constraint_space.ExclusionSpace().PreInitialize(
-        previous_result->GetConstraintSpaceForCaching().ExclusionSpace());
+    constraint_space.GetExclusionSpace().PreInitialize(
+        previous_result->GetConstraintSpaceForCaching().GetExclusionSpace());
   }
 
   NGLayoutCacheStatus cache_status;

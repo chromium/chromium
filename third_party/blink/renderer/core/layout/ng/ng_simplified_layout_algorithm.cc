@@ -67,7 +67,7 @@ NGSimplifiedLayoutAlgorithm::NGSimplifiedLayoutAlgorithm(
     if (result.LinesUntilClamp())
       container_builder_.SetLinesUntilClamp(result.LinesUntilClamp());
 
-    container_builder_.SetExclusionSpace(result.ExclusionSpace());
+    container_builder_.SetExclusionSpace(result.GetExclusionSpace());
 
     if (result.IsSelfCollapsing())
       container_builder_.SetIsSelfCollapsing();
@@ -98,7 +98,7 @@ NGSimplifiedLayoutAlgorithm::NGSimplifiedLayoutAlgorithm(
 
     DCHECK(!result.LinesUntilClamp());
 
-    DCHECK(result.ExclusionSpace().IsEmpty());
+    DCHECK(result.GetExclusionSpace().IsEmpty());
 
     DCHECK(!result.IsSelfCollapsing());
     DCHECK(!result.IsPushedByFloats());

@@ -47,7 +47,7 @@ class CORE_EXPORT NGScoreLineBreaker {
                      const NGConstraintSpace& space,
                      const NGLineWidths& line_widths,
                      const NGInlineBreakToken* break_token,
-                     NGExclusionSpace* exclusion_space)
+                     ExclusionSpace* exclusion_space)
       : node_(node),
         space_(space),
         line_widths_(line_widths),
@@ -111,7 +111,7 @@ class CORE_EXPORT NGScoreLineBreaker {
   const NGInlineNode node_;
   const NGConstraintSpace& space_;
   const NGLineWidths& line_widths_;
-  NGExclusionSpace* exclusion_space_;
+  ExclusionSpace* exclusion_space_;
   const NGInlineBreakToken* break_token_;
   LayoutUnit first_line_indent_;
   float hyphen_penalty_ = .0f;

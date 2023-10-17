@@ -36,7 +36,7 @@ class CORE_EXPORT NGLineWidths {
 
   // Compute the line widths. Returns `false` if the `node` is not _simple_.
   bool Set(const NGInlineNode& node,
-           base::span<const NGLayoutOpportunity> opportunities,
+           base::span<const LayoutOpportunity> opportunities,
            const NGInlineBreakToken* break_token = nullptr);
 
  private:

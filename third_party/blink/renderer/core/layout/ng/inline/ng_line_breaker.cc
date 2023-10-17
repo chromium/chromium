@@ -366,11 +366,11 @@ void NGLineBreaker::UpdateAvailableWidth() {
 NGLineBreaker::NGLineBreaker(NGInlineNode node,
                              NGLineBreakerMode mode,
                              const NGConstraintSpace& space,
-                             const NGLineLayoutOpportunity& line_opportunity,
+                             const LineLayoutOpportunity& line_opportunity,
                              const NGLeadingFloats& leading_floats,
                              const NGInlineBreakToken* break_token,
                              const NGColumnSpannerPath* column_spanner_path,
-                             NGExclusionSpace* exclusion_space)
+                             ExclusionSpace* exclusion_space)
     : line_opportunity_(line_opportunity),
       node_(node),
       mode_(mode),
@@ -442,7 +442,7 @@ NGLineBreaker::NGLineBreaker(NGInlineNode node,
 NGLineBreaker::~NGLineBreaker() = default;
 
 void NGLineBreaker::SetLineOpportunity(
-    const NGLineLayoutOpportunity& line_opportunity) {
+    const LineLayoutOpportunity& line_opportunity) {
   line_opportunity_ = line_opportunity;
   UpdateAvailableWidth();
 }
@@ -2698,8 +2698,8 @@ void NGLineBreaker::HandleBlockInInline(
     // The exclusion spaces *must* match. If they don't we'll have an incorrect
     // layout (as it will potentially won't consider some preceeding floats).
     // Move the derived geometry for performance.
-    DCHECK(*exclusion_space_ == constraint_space_.ExclusionSpace());
-    constraint_space_.ExclusionSpace().MoveAndUpdateDerivedGeometry(
+    DCHECK(*exclusion_space_ == constraint_space_.GetExclusionSpace());
+    constraint_space_.GetExclusionSpace().MoveAndUpdateDerivedGeometry(
         *exclusion_space_);
 
     NGBlockNode block_node(To<LayoutBox>(item.GetLayoutObject()));
@@ -2886,7 +2886,7 @@ void NGLineBreaker::HandleFloat(const NGInlineItem& item,
     }
   }
 
-  NGLayoutOpportunity opportunity = exclusion_space_->FindLayoutOpportunity(
+  LayoutOpportunity opportunity = exclusion_space_->FindLayoutOpportunity(
       {constraint_space_.GetBfcOffset().line_offset, bfc_block_offset},
       constraint_space_.AvailableSize().inline_size);
 

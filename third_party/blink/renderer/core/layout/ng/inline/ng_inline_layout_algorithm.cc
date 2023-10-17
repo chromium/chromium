@@ -97,11 +97,11 @@ class NGLineBreakStrategy {
   void Prepare(NGInlineChildLayoutContext* context,
                const NGInlineNode& node,
                const NGConstraintSpace& space,
-               base::span<const NGLayoutOpportunity> opportunities,
-               const NGLineLayoutOpportunity& line_opportunity,
+               base::span<const LayoutOpportunity> opportunities,
+               const LineLayoutOpportunity& line_opportunity,
                const NGLeadingFloats& leading_floats,
                const NGInlineBreakToken* break_token,
-               NGExclusionSpace* exclusion_space) {
+               ExclusionSpace* exclusion_space) {
     if (initiate_balancing_) {
       Balance(context, node, space, opportunities, line_opportunity,
               leading_floats, break_token, exclusion_space);
@@ -137,11 +137,11 @@ class NGLineBreakStrategy {
   void Balance(NGInlineChildLayoutContext* context,
                const NGInlineNode& node,
                const NGConstraintSpace& space,
-               const base::span<const NGLayoutOpportunity>& opportunities,
-               const NGLineLayoutOpportunity& line_opportunity,
+               const base::span<const LayoutOpportunity>& opportunities,
+               const LineLayoutOpportunity& line_opportunity,
                const NGLeadingFloats& leading_floats,
                const NGInlineBreakToken* break_token,
-               NGExclusionSpace* exclusion_space) {
+               ExclusionSpace* exclusion_space) {
     // `initiate_balancing` should have checked these conditions.
     DCHECK(!context->BalancedAvailableWidth());
     DCHECK_GT(opportunities.size(), 0u);
@@ -190,10 +190,10 @@ class NGLineBreakStrategy {
 
   void Optimize(const NGInlineNode& node,
                 const NGConstraintSpace& space,
-                const base::span<const NGLayoutOpportunity>& opportunities,
+                const base::span<const LayoutOpportunity>& opportunities,
                 const NGLeadingFloats& leading_floats,
                 const NGInlineBreakToken* break_token,
-                NGExclusionSpace* exclusion_space) {
+                ExclusionSpace* exclusion_space) {
     DCHECK(score_line_break_context_->LineBreakPoints().empty());
     DCHECK_EQ(score_line_break_context_->LineBreakPointsIndex(), 0u);
     if (UNLIKELY(!score_line_break_context_->IsActive())) {
@@ -389,7 +389,7 @@ void NGInlineLayoutAlgorithm::CheckBoxStates(
 #endif
 
 void NGInlineLayoutAlgorithm::CreateLine(
-    const NGLineLayoutOpportunity& opportunity,
+    const LineLayoutOpportunity& opportunity,
     NGLineInfo* line_info,
     NGLogicalLineItems* line_box) {
   // Needs MutableResults to move ShapeResult out of the NGLineInfo.
@@ -629,12 +629,12 @@ void NGInlineLayoutAlgorithm::CreateLine(
     //      +V------------------+          +----V---------------+
     //  LTR | this is line 1.   |     RTL  |     this is line 1.|
     //
-    // Margins should be `NGBoxStrut` instead of `NGLineBoxStrut` for
-    // calculating block offset. Test[1], for flipped line writing mode,
-    // verifies differences between them.
+    // Margins should be `BoxStrut` instead of `LineBoxStrut` for calculating
+    // block offset. Test[1], for flipped line writing mode, verifies
+    // differences between them.
     // [1]
     // https://wpt.live/css/css-inline/initial-letter/initial-letter-block-position-margins-vlr.html
-    const NGExclusion* exclusion = PostPlaceInitialLetterBox(
+    const ExclusionArea* exclusion = PostPlaceInitialLetterBox(
         line_box_metrics,
         BoxStrut(initial_letter_item_result->margins,
                  line_info->LineStyle().IsFlippedLinesWritingMode()),
@@ -642,7 +642,7 @@ void NGInlineLayoutAlgorithm::CreateLine(
         BfcOffset(container_builder_.BfcLineOffset(),
                   line_info->GetBfcOffset().block_offset),
         line_info);
-    ExclusionSpace().Add(exclusion);
+    GetExclusionSpace().Add(exclusion);
   }
 
   // Place out-of-flow positioned objects.
@@ -877,7 +877,7 @@ void NGInlineLayoutAlgorithm::PlaceBlockInInline(
   }
 
   end_margin_strut_ = result.EndMarginStrut();
-  container_builder_.SetExclusionSpace(result.ExclusionSpace());
+  container_builder_.SetExclusionSpace(result.GetExclusionSpace());
   container_builder_.SetAdjoiningObjectTypes(result.AdjoiningObjectTypes());
   lines_until_clamp_ = result.LinesUntilClamp();
   if (UNLIKELY(box_fragment.MayHaveDescendantAboveBlockStart()))
@@ -1008,7 +1008,7 @@ void NGInlineLayoutAlgorithm::PlaceOutOfFlowObjects(
 
 void NGInlineLayoutAlgorithm::PlaceFloatingObjects(
     const FontHeight& line_box_metrics,
-    const NGLineLayoutOpportunity& opportunity,
+    const LineLayoutOpportunity& opportunity,
     LayoutUnit ruby_block_start_adjust,
     NGLineInfo* line_info,
     NGLogicalLineItems* line_box) {
@@ -1043,8 +1043,9 @@ void NGInlineLayoutAlgorithm::PlaceFloatingObjects(
       // should not leave any unpositioned floats behind.
       DCHECK(!BreakToken() || !BreakToken()->IsInParallelBlockFlow());
 
-      NGPositionedFloat positioned_float = PositionFloat(
-          origin_bfc_block_offset, child.unpositioned_float, &ExclusionSpace());
+      NGPositionedFloat positioned_float =
+          PositionFloat(origin_bfc_block_offset, child.unpositioned_float,
+                        &GetExclusionSpace());
       const NGBlockBreakToken* break_token = positioned_float.BreakToken();
       if (break_token) {
         const auto* parallel_token =
@@ -1335,7 +1336,7 @@ bool NGInlineLayoutAlgorithm::AddAnyClearanceAfterLine(
     LayoutUnit block_end_offset_without_clearence = bfc_offset.block_offset;
     const auto clear_type = item.Style()->Clear(Style());
     if (clear_type != EClear::kNone) {
-      AdjustToClearance(ExclusionSpace().ClearanceOffset(clear_type),
+      AdjustToClearance(GetExclusionSpace().ClearanceOffset(clear_type),
                         &bfc_offset);
 
       // Unlike regular CSS clearance (which adds space *before* content), BR
@@ -1347,14 +1348,15 @@ bool NGInlineLayoutAlgorithm::AddAnyClearanceAfterLine(
     }
 
     if (ConstraintSpace().HasBlockFragmentation() &&
-        ExclusionSpace().NeedsClearancePastFragmentainer(clear_type))
+        GetExclusionSpace().NeedsClearancePastFragmentainer(clear_type)) {
       return false;
+    }
   }
   return true;
 }
 
 const NGLayoutResult* NGInlineLayoutAlgorithm::Layout() {
-  NGExclusionSpace initial_exclusion_space(ConstraintSpace().ExclusionSpace());
+  ExclusionSpace initial_exclusion_space(ConstraintSpace().GetExclusionSpace());
 
   // Clear break tokens (for fragmented floats) propagated from the previous
   // line (or even the *current* line, in cases where we retry layout after
@@ -1401,7 +1403,7 @@ const NGLayoutResult* NGInlineLayoutAlgorithm::Layout() {
             ? EClear::kBoth
             : Node().Style().Clear(ConstraintSpace().Direction());
     const LayoutUnit initial_letter_clearance =
-        ConstraintSpace().ExclusionSpace().InitialLetterClearanceOffset(
+        ConstraintSpace().GetExclusionSpace().InitialLetterClearanceOffset(
             clear_type);
     if (initial_letter_clearance > bfc_block_offset) {
       // The initial letter box causes container separation to reuse layout
@@ -1442,7 +1444,7 @@ const NGLayoutResult* NGInlineLayoutAlgorithm::Layout() {
   LayoutUnit block_delta;
   const auto* opportunities_it = opportunities.begin();
   while (opportunities_it != opportunities.end()) {
-    const NGLayoutOpportunity& opportunity = *opportunities_it;
+    const LayoutOpportunity& opportunity = *opportunities_it;
 
 #if DCHECK_IS_ON()
     // Make sure the last opportunity has the correct properties.
@@ -1467,14 +1469,14 @@ const NGLayoutResult* NGInlineLayoutAlgorithm::Layout() {
     container_builder_.SetExclusionSpace(initial_exclusion_space);
     is_line_created = false;
 
-    NGLineLayoutOpportunity line_opportunity =
+    LineLayoutOpportunity line_opportunity =
         opportunity.ComputeLineLayoutOpportunity(ConstraintSpace(),
                                                  line_block_size, block_delta);
     if (UNLIKELY(line_break_strategy.NeedsToPrepare())) {
       line_break_strategy.Prepare(
           context_, Node(), ConstraintSpace(),
           base::make_span(opportunities_it, opportunities.end()),
-          line_opportunity, leading_floats, break_token, &ExclusionSpace());
+          line_opportunity, leading_floats, break_token, &GetExclusionSpace());
     }
     bool is_line_info_cached = false;
     NGLineInfo& line_info =
@@ -1488,7 +1490,7 @@ const NGLayoutResult* NGInlineLayoutAlgorithm::Layout() {
       NGLineBreaker line_breaker(Node(), NGLineBreakerMode::kContent,
                                  ConstraintSpace(), line_opportunity,
                                  leading_floats, break_token,
-                                 column_spanner_path_, &ExclusionSpace());
+                                 column_spanner_path_, &GetExclusionSpace());
       line_break_strategy.SetupLineBreaker(context_, line_breaker);
       line_breaker.NextLine(&line_info);
     }
@@ -1631,7 +1633,7 @@ const NGLayoutResult* NGInlineLayoutAlgorithm::Layout() {
     // this logic.
     if (UNLIKELY(opportunity.HasShapeExclusions() &&
                  !line_info.IsEmptyLine())) {
-      NGLineLayoutOpportunity line_opportunity_with_height =
+      LineLayoutOpportunity line_opportunity_with_height =
           opportunity.ComputeLineLayoutOpportunity(
               ConstraintSpace(), total_block_size, block_delta);
 
@@ -1720,7 +1722,7 @@ const NGLayoutResult* NGInlineLayoutAlgorithm::Layout() {
 // This positions any "leading" floats within the given exclusion space.
 // If we are also an empty inline, it will add any out-of-flow descendants.
 void NGInlineLayoutAlgorithm::PositionLeadingFloats(
-    NGExclusionSpace& exclusion_space,
+    ExclusionSpace& exclusion_space,
     NGLeadingFloats& leading_floats) {
   if (BreakToken() && BreakToken()->IsInParallelBlockFlow()) {
     // Bail, and let the line breaker deal with any kind of parallel flow.
@@ -1774,7 +1776,7 @@ void NGInlineLayoutAlgorithm::PositionLeadingFloats(
 NGPositionedFloat NGInlineLayoutAlgorithm::PositionFloat(
     LayoutUnit origin_bfc_block_offset,
     LayoutObject* floating_object,
-    NGExclusionSpace* exclusion_space) {
+    ExclusionSpace* exclusion_space) {
   BfcOffset origin_bfc_offset = {ConstraintSpace().GetBfcOffset().line_offset,
                                  origin_bfc_block_offset};
 

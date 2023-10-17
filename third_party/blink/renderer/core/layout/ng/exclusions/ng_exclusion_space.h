@@ -22,25 +22,25 @@
 
 namespace blink {
 
-typedef HeapVector<NGLayoutOpportunity, 8> LayoutOpportunityVector;
+typedef HeapVector<LayoutOpportunity, 8> LayoutOpportunityVector;
 
 // This class is an implementation detail. For use of the exclusion space,
-// see NGExclusionSpace below. NGExclusionSpace was designed to be cheap
+// see ExclusionSpace below. ExclusionSpace was designed to be cheap
 // to construct and cheap to copy if empty.
-class CORE_EXPORT NGExclusionSpaceInternal final {
-  USING_FAST_MALLOC(NGExclusionSpaceInternal);
+class CORE_EXPORT ExclusionSpaceInternal final {
+  USING_FAST_MALLOC(ExclusionSpaceInternal);
 
  public:
-  NGExclusionSpaceInternal();
-  NGExclusionSpaceInternal(const NGExclusionSpaceInternal&);
-  NGExclusionSpaceInternal(NGExclusionSpaceInternal&&) noexcept;
-  NGExclusionSpaceInternal& operator=(const NGExclusionSpaceInternal&);
-  NGExclusionSpaceInternal& operator=(NGExclusionSpaceInternal&&) noexcept;
-  ~NGExclusionSpaceInternal() = default;
+  ExclusionSpaceInternal();
+  ExclusionSpaceInternal(const ExclusionSpaceInternal&);
+  ExclusionSpaceInternal(ExclusionSpaceInternal&&) noexcept;
+  ExclusionSpaceInternal& operator=(const ExclusionSpaceInternal&);
+  ExclusionSpaceInternal& operator=(ExclusionSpaceInternal&&) noexcept;
+  ~ExclusionSpaceInternal() = default;
 
-  void Add(const NGExclusion* exclusion);
+  void Add(const ExclusionArea* exclusion);
 
-  NGLayoutOpportunity FindLayoutOpportunity(
+  LayoutOpportunity FindLayoutOpportunity(
       const BfcOffset& offset,
       const LayoutUnit available_inline_size,
       const LayoutUnit minimum_inline_size) const {
@@ -54,7 +54,7 @@ class CORE_EXPORT NGExclusionSpaceInternal final {
       BfcOffset end_offset(
           offset.line_offset + available_inline_size.ClampNegativeToZero(),
           LayoutUnit::Max());
-      return NGLayoutOpportunity(BfcRect(offset, end_offset), nullptr);
+      return LayoutOpportunity(BfcRect(offset, end_offset), nullptr);
     }
 
     return GetDerivedGeometry(offset.block_offset)
@@ -76,7 +76,7 @@ class CORE_EXPORT NGExclusionSpaceInternal final {
           offset.line_offset + available_inline_size.ClampNegativeToZero(),
           LayoutUnit::Max());
       return LayoutOpportunityVector(
-          {NGLayoutOpportunity(BfcRect(offset, end_offset), nullptr)});
+          {LayoutOpportunity(BfcRect(offset, end_offset), nullptr)});
     }
 
     return GetDerivedGeometry(offset.block_offset)
@@ -197,15 +197,15 @@ class CORE_EXPORT NGExclusionSpaceInternal final {
 
   // Pre-initializes the exclusions vector to something used in a previous
   // layout pass, however keeps the number of exclusions as zero.
-  void PreInitialize(const NGExclusionSpaceInternal& other) {
+  void PreInitialize(const ExclusionSpaceInternal& other) {
     DCHECK(exclusions_->empty());
     DCHECK_GT(other.exclusions_->size(), 0u);
 
     exclusions_ = other.exclusions_;
   }
 
-  // See |NGExclusionSpace::MoveAndUpdateDerivedGeometry|.
-  void MoveAndUpdateDerivedGeometry(const NGExclusionSpaceInternal& other) {
+  // See |ExclusionSpace::MoveAndUpdateDerivedGeometry|.
+  void MoveAndUpdateDerivedGeometry(const ExclusionSpaceInternal& other) {
     if (!other.derived_geometry_)
       return;
 
@@ -214,7 +214,7 @@ class CORE_EXPORT NGExclusionSpaceInternal final {
     // Iterate through all the exclusions which were added by the layout, and
     // update the DerivedGeometry.
     for (wtf_size_t i = other.num_exclusions_; i < num_exclusions_; ++i) {
-      const NGExclusion& exclusion = *exclusions_->at(i);
+      const ExclusionArea& exclusion = *exclusions_->at(i);
 
       // If we come across an exclusion with shape data, we opt-out of this
       // optimization.
@@ -228,8 +228,8 @@ class CORE_EXPORT NGExclusionSpaceInternal final {
     }
   }
 
-  // See |NGExclusionSpace::MoveDerivedGeometry|.
-  void MoveDerivedGeometry(const NGExclusionSpaceInternal& other) {
+  // See |ExclusionSpace::MoveDerivedGeometry|.
+  void MoveDerivedGeometry(const ExclusionSpaceInternal& other) {
     if (!other.derived_geometry_)
       return;
 
@@ -238,10 +238,10 @@ class CORE_EXPORT NGExclusionSpaceInternal final {
     other.derived_geometry_ = nullptr;
   }
 
-  // See |NGExclusionSpace::MergeExclusionSpaces|.
+  // See |ExclusionSpace::MergeExclusionSpaces|.
   void MergeExclusionSpaces(const BfcDelta& offset_delta,
-                            const NGExclusionSpaceInternal& previous_output,
-                            const NGExclusionSpaceInternal* previous_input) {
+                            const ExclusionSpaceInternal& previous_output,
+                            const ExclusionSpaceInternal* previous_input) {
     // We need to copy all the exclusions over which were added by the cached
     // layout result.
     for (wtf_size_t i = previous_input ? previous_input->num_exclusions_ : 0;
@@ -250,14 +250,13 @@ class CORE_EXPORT NGExclusionSpaceInternal final {
     }
   }
 
-  bool operator==(const NGExclusionSpaceInternal& other) const;
-  bool operator!=(const NGExclusionSpaceInternal& other) const {
+  bool operator==(const ExclusionSpaceInternal& other) const;
+  bool operator!=(const ExclusionSpaceInternal& other) const {
     return !(*this == other);
   }
 
 #if DCHECK_IS_ON()
-  void CheckSameForSimplifiedLayout(
-      const NGExclusionSpaceInternal& other) const {
+  void CheckSameForSimplifiedLayout(const ExclusionSpaceInternal& other) const {
     DCHECK_EQ(num_exclusions_, other.num_exclusions_);
     for (wtf_size_t i = 0; i < num_exclusions_; ++i) {
       const auto& exclusion = *exclusions_->at(i);
@@ -270,8 +269,8 @@ class CORE_EXPORT NGExclusionSpaceInternal final {
 #endif
 
   // This struct represents the side of a float against the "edge" of a shelf.
-  struct NGShelfEdge {
-    NGShelfEdge(LayoutUnit block_start, LayoutUnit block_end)
+  struct ShelfEdge {
+    ShelfEdge(LayoutUnit block_start, LayoutUnit block_end)
         : block_start(block_start), block_end(block_end) {}
 
     LayoutUnit block_start;
@@ -309,28 +308,28 @@ class CORE_EXPORT NGExclusionSpaceInternal final {
   //  - When we create an opportunity, making sure it has "solid" edges.
   //  - The opportunity also holds onto a list of these edges to support
   //    css-shapes.
-  struct NGShelf final {
+  struct Shelf final {
     DISALLOW_NEW();
 
    public:
-    NGShelf(LayoutUnit block_offset, bool track_shape_exclusions)
+    Shelf(LayoutUnit block_offset, bool track_shape_exclusions)
         : block_offset(block_offset),
           line_left(LayoutUnit::Min()),
           line_right(LayoutUnit::Max()),
           shape_exclusions(track_shape_exclusions
-                               ? MakeGarbageCollected<NGShapeExclusions>()
+                               ? MakeGarbageCollected<ShapeExclusions>()
                                : nullptr),
           has_shape_exclusions(false) {}
 
     // The copy constructor explicitly copies the shape_exclusions member.
-    NGShelf(const NGShelf& other)
+    Shelf(const Shelf& other)
         : block_offset(other.block_offset),
           line_left(other.line_left),
           line_right(other.line_right),
           line_left_edges(other.line_left_edges),
           line_right_edges(other.line_right_edges),
           shape_exclusions(other.shape_exclusions
-                               ? MakeGarbageCollected<NGShapeExclusions>(
+                               ? MakeGarbageCollected<ShapeExclusions>(
                                      *other.shape_exclusions)
                                : nullptr),
           has_shape_exclusions(other.has_shape_exclusions) {}
@@ -343,20 +342,20 @@ class CORE_EXPORT NGExclusionSpaceInternal final {
 
     // TODO(crbug.com/1195345): restore inline buffer removed in
     // https://crrev.com/c/2801713
-    Vector<NGShelfEdge> line_left_edges;
-    Vector<NGShelfEdge> line_right_edges;
+    Vector<ShelfEdge> line_left_edges;
+    Vector<ShelfEdge> line_right_edges;
 
     // shape_exclusions contains all the floats which sit below this shelf. The
     // has_shape_exclusions member will be true if shape_exclusions contains an
     // exclusion with shape-outside specified (and therefore should be copied
     // to any layout opportunity).
-    Member<NGShapeExclusions> shape_exclusions;
+    Member<ShapeExclusions> shape_exclusions;
     bool has_shape_exclusions;
   };
 
   // The closed-off area is an internal data-structure representing an area
   // above a float. It contains a layout opportunity, and two vectors of
-  // |NGShelfEdge|. E.g.
+  // |ShelfEdge|. E.g.
   //
   //    0 1 2 3 4 5 6 7 8
   // 0  +---+.      .+---+
@@ -384,30 +383,30 @@ class CORE_EXPORT NGExclusionSpaceInternal final {
   //
   // Once a closed-off area has been created, it can never be changed due to
   // the property that floats always align their block-start edges.
-  struct NGClosedArea {
+  struct ClosedArea {
     DISALLOW_NEW();
 
    public:
-    NGClosedArea(NGLayoutOpportunity opportunity,
-                 const Vector<NGShelfEdge>& line_left_edges,
-                 const Vector<NGShelfEdge>& line_right_edges)
+    ClosedArea(LayoutOpportunity opportunity,
+               const Vector<ShelfEdge>& line_left_edges,
+               const Vector<ShelfEdge>& line_right_edges)
         : opportunity(opportunity),
           line_left_edges(line_left_edges),
           line_right_edges(line_right_edges) {}
 
     void Trace(Visitor* visitor) const { visitor->Trace(opportunity); }
 
-    const NGLayoutOpportunity opportunity;
+    const LayoutOpportunity opportunity;
 
     // TODO(crbug.com/1195345): restore inline buffer removed in
     // https://crrev.com/c/2801713
-    const Vector<NGShelfEdge> line_left_edges;
-    const Vector<NGShelfEdge> line_right_edges;
+    const Vector<ShelfEdge> line_left_edges;
+    const Vector<ShelfEdge> line_right_edges;
   };
 
  private:
   // In order to reduce the amount of Vector copies, instances of a
-  // NGExclusionSpaceInternal can share the same exclusions_ Vector. See the
+  // ExclusionSpaceInternal can share the same exclusions_ Vector. See the
   // copy constructor.
   //
   // We implement a copy-on-write behaviour when adding an exclusion (if
@@ -416,8 +415,9 @@ class CORE_EXPORT NGExclusionSpaceInternal final {
   // num_exclusions_ is how many exclusions *this* instance of an exclusion
   // space has, which may differ to the number of exclusions in the Vector.
   //
-  // `exclusions_` contains `NGExclusion` in ascent order of block start offset.
-  Persistent<NGExclusionPtrArray> exclusions_;
+  // `exclusions_` contains `ExclusionArea` in ascent order of block start
+  // offset.
+  Persistent<ExclusionAreaPtrArray> exclusions_;
   wtf_size_t num_exclusions_ = 0;
 
   // These members are used for keeping track of the "lowest" offset for each
@@ -456,11 +456,11 @@ class CORE_EXPORT NGExclusionSpaceInternal final {
   // and num_exclusions_. This is mutable as it is passed down a chain of
   // exclusion spaces inside the copy constructor. E.g.
   //
-  // NGExclusionSpace space1;
+  // ExclusionSpace space1;
   // space1.Add(exclusion1);
   // space1.FindLayoutOpportunity(); // Builds derived_geometry_.
   //
-  // NGExclusionSpace space2(space1); // Moves derived_geometry_ to space2.
+  // ExclusionSpace space2(space1); // Moves derived_geometry_ to space2.
   // space2.Add(exclusion2); // Modifies derived_geometry_.
   //
   // space1.FindLayoutOpportunity(); // Re-builds derived_geometry_.
@@ -475,7 +475,7 @@ class CORE_EXPORT NGExclusionSpaceInternal final {
     // |block_offset_limit| represents the highest block-offset for which the
     // geometry is valid. |FindLayoutOpportunity| and |AllLayoutOpportunities|
     // should not be called for a block-offset higher than this.
-    // If |NGExclusionSpaceInternal::GetDerivedGeometry| is called with a
+    // If |ExclusionSpaceInternal::GetDerivedGeometry| is called with a
     // higher limit the geometry is rebuilt.
     //
     // |track_shape_exclusions| is used to tell the geometry to track shape
@@ -484,9 +484,9 @@ class CORE_EXPORT NGExclusionSpaceInternal final {
     // this.
     DerivedGeometry(LayoutUnit block_offset_limit, bool track_shape_exclusions);
 
-    void Add(const NGExclusion& exclusion);
+    void Add(const ExclusionArea& exclusion);
 
-    NGLayoutOpportunity FindLayoutOpportunity(
+    LayoutOpportunity FindLayoutOpportunity(
         const BfcOffset& offset,
         const LayoutUnit available_inline_size,
         const LayoutUnit minimum_inline_size) const;
@@ -505,7 +505,7 @@ class CORE_EXPORT NGExclusionSpaceInternal final {
       visitor->Trace(areas_);
     }
 
-    // See |NGShelf| for a broad description of what shelves are. We always
+    // See |Shelf| for a broad description of what shelves are. We always
     // begin with one, which has the internal value of:
     // {
     //   block_offset: LayoutUnit::Min(),
@@ -513,17 +513,17 @@ class CORE_EXPORT NGExclusionSpaceInternal final {
     //   line_right: LayoutUnit::Max(),
     // }
     //
-    HeapVector<NGShelf, 4> shelves_;
+    HeapVector<Shelf, 4> shelves_;
 
-    // See |NGClosedArea| for a broad description of what closed-off areas are.
+    // See |ClosedArea| for a broad description of what closed-off areas are.
     //
     // Floats always align their block-start edges. We exploit this property by
     // keeping a list of closed-off areas. Once a closed-off area has been
     // created, it can never change.
-    HeapVector<NGClosedArea, 4> areas_;
+    HeapVector<ClosedArea, 4> areas_;
 
     // This represents the highest block-offset for which the geometry is valid
-    // for. If |NGExclusionSpaceInternal::GetDerivedGeometry| is called with a
+    // for. If |ExclusionSpaceInternal::GetDerivedGeometry| is called with a
     // higher limit it is rebuilt.
     LayoutUnit block_offset_limit_;
 
@@ -544,30 +544,30 @@ class CORE_EXPORT NGExclusionSpaceInternal final {
 //
 // The space is mutated simply by adding exclusions, and various information
 // can be queried based on the exclusions.
-class CORE_EXPORT NGExclusionSpace {
+class CORE_EXPORT ExclusionSpace {
   DISALLOW_NEW();
 
  public:
-  NGExclusionSpace() = default;
-  NGExclusionSpace(const NGExclusionSpace& other)
+  ExclusionSpace() = default;
+  ExclusionSpace(const ExclusionSpace& other)
       : exclusion_space_(other.exclusion_space_
-                             ? std::make_unique<NGExclusionSpaceInternal>(
+                             ? std::make_unique<ExclusionSpaceInternal>(
                                    *other.exclusion_space_)
                              : nullptr) {}
-  NGExclusionSpace(NGExclusionSpace&& other) noexcept = default;
+  ExclusionSpace(ExclusionSpace&& other) noexcept = default;
 
-  NGExclusionSpace& operator=(const NGExclusionSpace& other) {
-    exclusion_space_ = other.exclusion_space_
-                           ? std::make_unique<NGExclusionSpaceInternal>(
-                                 *other.exclusion_space_)
-                           : nullptr;
+  ExclusionSpace& operator=(const ExclusionSpace& other) {
+    exclusion_space_ =
+        other.exclusion_space_
+            ? std::make_unique<ExclusionSpaceInternal>(*other.exclusion_space_)
+            : nullptr;
     return *this;
   }
-  NGExclusionSpace& operator=(NGExclusionSpace&& other) = default;
+  ExclusionSpace& operator=(ExclusionSpace&& other) = default;
 
-  void Add(const NGExclusion* exclusion) {
+  void Add(const ExclusionArea* exclusion) {
     if (!exclusion_space_)
-      exclusion_space_ = std::make_unique<NGExclusionSpaceInternal>();
+      exclusion_space_ = std::make_unique<ExclusionSpaceInternal>();
     exclusion_space_->Add(std::move(exclusion));
   }
 
@@ -603,7 +603,7 @@ class CORE_EXPORT NGExclusionSpace {
   // The area to search for layout opportunities is defined by the given offset,
   // and |available_inline_size|. The layout opportunity must be greater than
   // the given |minimum_inline_size|.
-  NGLayoutOpportunity FindLayoutOpportunity(
+  LayoutOpportunity FindLayoutOpportunity(
       const BfcOffset& offset,
       const LayoutUnit available_inline_size,
       const LayoutUnit minimum_inline_size = LayoutUnit()) const {
@@ -611,7 +611,7 @@ class CORE_EXPORT NGExclusionSpace {
       BfcOffset end_offset(
           offset.line_offset + available_inline_size.ClampNegativeToZero(),
           LayoutUnit::Max());
-      return NGLayoutOpportunity(BfcRect(offset, end_offset), nullptr);
+      return LayoutOpportunity(BfcRect(offset, end_offset), nullptr);
     }
     return exclusion_space_->FindLayoutOpportunity(
         offset, available_inline_size, minimum_inline_size);
@@ -626,7 +626,7 @@ class CORE_EXPORT NGExclusionSpace {
           offset.line_offset + available_inline_size.ClampNegativeToZero(),
           LayoutUnit::Max());
       return LayoutOpportunityVector(
-          {NGLayoutOpportunity(BfcRect(offset, end_offset), nullptr)});
+          {LayoutOpportunity(BfcRect(offset, end_offset), nullptr)});
     }
     return exclusion_space_->AllLayoutOpportunities(offset,
                                                     available_inline_size);
@@ -669,8 +669,8 @@ class CORE_EXPORT NGExclusionSpace {
     return !exclusion_space_ || exclusion_space_->IsEmpty();
   }
 
-  // See |NGExclusionSpaceInternal::PreInitialize|.
-  void PreInitialize(const NGExclusionSpace& other) const {
+  // See |ExclusionSpaceInternal::PreInitialize|.
+  void PreInitialize(const ExclusionSpace& other) const {
     // Don't pre-initialize if we've already got an exclusions vector.
     if (exclusion_space_)
       return;
@@ -680,13 +680,13 @@ class CORE_EXPORT NGExclusionSpace {
     if (!other.exclusion_space_)
       return;
 
-    exclusion_space_ = std::make_unique<NGExclusionSpaceInternal>();
+    exclusion_space_ = std::make_unique<ExclusionSpaceInternal>();
     exclusion_space_->PreInitialize(*other.exclusion_space_);
   }
 
   // Shifts the |DerivedGeometry| data-structure to this exclusion space, and
   // adds any new exclusions.
-  void MoveAndUpdateDerivedGeometry(const NGExclusionSpace& other) const {
+  void MoveAndUpdateDerivedGeometry(const ExclusionSpace& other) const {
     if (!exclusion_space_ || !other.exclusion_space_)
       return;
 
@@ -694,7 +694,7 @@ class CORE_EXPORT NGExclusionSpace {
   }
 
   // Shifts the |DerivedGeometry| data-structure to this exclusion space.
-  void MoveDerivedGeometry(const NGExclusionSpace& other) const {
+  void MoveDerivedGeometry(const ExclusionSpace& other) const {
     DCHECK(*this == other);
     if (!exclusion_space_ || !other.exclusion_space_)
       return;
@@ -724,14 +724,13 @@ class CORE_EXPORT NGExclusionSpace {
   //
   // This produces the correct exclusion space "new_output" for the new reused
   // layout result.
-  static NGExclusionSpace MergeExclusionSpaces(
-      const NGExclusionSpace& old_output,
-      const NGExclusionSpace& old_input,
-      const NGExclusionSpace& new_input,
-      const BfcDelta& offset_delta) {
+  static ExclusionSpace MergeExclusionSpaces(const ExclusionSpace& old_output,
+                                             const ExclusionSpace& old_input,
+                                             const ExclusionSpace& new_input,
+                                             const BfcDelta& offset_delta) {
     // We start building the new exclusion space from the new input, this
     // (should) have the derived geometry which will move to |new_output|.
-    NGExclusionSpace new_output = new_input;
+    ExclusionSpace new_output = new_input;
 
     // If we didn't have any floats previously, we don't need to add any new
     // ones, just return the new output.
@@ -744,8 +743,7 @@ class CORE_EXPORT NGExclusionSpace {
       return new_output;
 
     if (!new_output.exclusion_space_) {
-      new_output.exclusion_space_ =
-          std::make_unique<NGExclusionSpaceInternal>();
+      new_output.exclusion_space_ = std::make_unique<ExclusionSpaceInternal>();
     }
 
     new_output.exclusion_space_->MergeExclusionSpaces(
@@ -755,19 +753,19 @@ class CORE_EXPORT NGExclusionSpace {
     return new_output;
   }
 
-  bool operator==(const NGExclusionSpace& other) const {
+  bool operator==(const ExclusionSpace& other) const {
     if (exclusion_space_ == other.exclusion_space_)
       return true;
     if (exclusion_space_ && other.exclusion_space_)
       return *exclusion_space_ == *other.exclusion_space_;
     return false;
   }
-  bool operator!=(const NGExclusionSpace& other) const {
+  bool operator!=(const ExclusionSpace& other) const {
     return !(*this == other);
   }
 
 #if DCHECK_IS_ON()
-  void CheckSameForSimplifiedLayout(const NGExclusionSpace& other) const {
+  void CheckSameForSimplifiedLayout(const ExclusionSpace& other) const {
     DCHECK_EQ((bool)exclusion_space_, (bool)other.exclusion_space_);
     if (exclusion_space_)
       exclusion_space_->CheckSameForSimplifiedLayout(*other.exclusion_space_);
@@ -775,16 +773,16 @@ class CORE_EXPORT NGExclusionSpace {
 #endif
 
  private:
-  mutable std::unique_ptr<NGExclusionSpaceInternal> exclusion_space_;
+  mutable std::unique_ptr<ExclusionSpaceInternal> exclusion_space_;
 };
 
 }  // namespace blink
 
 WTF_ALLOW_MOVE_INIT_AND_COMPARE_WITH_MEM_FUNCTIONS(
-    blink::NGExclusionSpaceInternal::NGShelfEdge)
+    blink::ExclusionSpaceInternal::ShelfEdge)
 WTF_ALLOW_CLEAR_UNUSED_SLOTS_WITH_MEM_FUNCTIONS(
-    blink::NGExclusionSpaceInternal::NGShelf)
+    blink::ExclusionSpaceInternal::Shelf)
 WTF_ALLOW_CLEAR_UNUSED_SLOTS_WITH_MEM_FUNCTIONS(
-    blink::NGExclusionSpaceInternal::NGClosedArea)
+    blink::ExclusionSpaceInternal::ClosedArea)
 
 #endif  // THIRD_PARTY_BLINK_RENDERER_CORE_LAYOUT_NG_EXCLUSIONS_NG_EXCLUSION_SPACE_H_

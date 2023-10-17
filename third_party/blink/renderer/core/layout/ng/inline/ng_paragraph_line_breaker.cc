@@ -58,9 +58,9 @@ struct LineBreakResults {
                     wtf_size_t max_lines,
                     const NGInlineBreakToken* stop_at = nullptr) {
     DCHECK(lines_.empty());
-    const NGLineLayoutOpportunity line_opportunity(available_width);
+    const LineLayoutOpportunity line_opportunity(available_width);
     NGLeadingFloats leading_floats;
-    NGExclusionSpace exclusion_space;
+    ExclusionSpace exclusion_space;
     NGLineInfo line_info;
     for (;;) {
       NGLineBreaker line_breaker(node_, NGLineBreakerMode::kContent, space_,
@@ -144,7 +144,7 @@ wtf_size_t EstimateNumLines(const String& text_content,
 absl::optional<LayoutUnit> NGParagraphLineBreaker::AttemptParagraphBalancing(
     const NGInlineNode& node,
     const NGConstraintSpace& space,
-    const NGLineLayoutOpportunity& line_opportunity) {
+    const LineLayoutOpportunity& line_opportunity) {
   if (node.IsBisectLineBreakDisabled()) {
     return absl::nullopt;
   }

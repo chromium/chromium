@@ -19,16 +19,15 @@ class NGConstraintSpace;
 // calling FindLayoutOpportunity, or AllLayoutOpportunities.
 //
 // Its coordinates are relative to the BFC.
-struct CORE_EXPORT NGLayoutOpportunity final {
+struct CORE_EXPORT LayoutOpportunity final {
   DISALLOW_NEW();
 
  public:
-  NGLayoutOpportunity()
+  LayoutOpportunity()
       : rect(BfcOffset(LayoutUnit::Min(), LayoutUnit::Min()),
              BfcOffset(LayoutUnit::Max(), LayoutUnit::Max())) {}
-  explicit NGLayoutOpportunity(
-      const BfcRect& rect,
-      const NGShapeExclusions* shape_exclusions = nullptr)
+  explicit LayoutOpportunity(const BfcRect& rect,
+                             const ShapeExclusions* shape_exclusions = nullptr)
       : rect(rect), shape_exclusions(shape_exclusions) {}
 
   void Trace(Visitor* visitor) const { visitor->Trace(shape_exclusions); }
@@ -39,7 +38,7 @@ struct CORE_EXPORT NGLayoutOpportunity final {
   // The shape exclusions hold all of the adjacent exclusions which may affect
   // the line layout opportunity when queried. May be null if no shapes are
   // present.
-  Member<const NGShapeExclusions> shape_exclusions;
+  Member<const ShapeExclusions> shape_exclusions;
 
   // Returns if the opportunity has any shapes which may affect a line layout
   // opportunity.
@@ -51,19 +50,19 @@ struct CORE_EXPORT NGLayoutOpportunity final {
 
   // Calculates a line layout opportunity which takes into account any shapes
   // which may affect the available inline size for the line breaker.
-  NGLineLayoutOpportunity ComputeLineLayoutOpportunity(
+  LineLayoutOpportunity ComputeLineLayoutOpportunity(
       const NGConstraintSpace& space,
       LayoutUnit line_block_size,
       LayoutUnit block_delta) const {
-    return NGLineLayoutOpportunity(
+    return LineLayoutOpportunity(
         ComputeLineLeftOffset(space, line_block_size, block_delta),
         ComputeLineRightOffset(space, line_block_size, block_delta),
         rect.LineStartOffset(), rect.LineEndOffset(),
         rect.BlockStartOffset() + block_delta, line_block_size);
   }
 
-  bool operator==(const NGLayoutOpportunity& other) const;
-  bool operator!=(const NGLayoutOpportunity& other) const {
+  bool operator==(const LayoutOpportunity& other) const;
+  bool operator!=(const LayoutOpportunity& other) const {
     return !operator==(other);
   }
 
@@ -77,10 +76,10 @@ struct CORE_EXPORT NGLayoutOpportunity final {
 };
 
 CORE_EXPORT std::ostream& operator<<(std::ostream& os,
-                                     const NGLayoutOpportunity& opportunity);
+                                     const LayoutOpportunity& opportunity);
 
 }  // namespace blink
 
-WTF_ALLOW_CLEAR_UNUSED_SLOTS_WITH_MEM_FUNCTIONS(blink::NGLayoutOpportunity)
+WTF_ALLOW_CLEAR_UNUSED_SLOTS_WITH_MEM_FUNCTIONS(blink::LayoutOpportunity)
 
 #endif  // THIRD_PARTY_BLINK_RENDERER_CORE_LAYOUT_NG_EXCLUSIONS_NG_LAYOUT_OPPORTUNITY_H_

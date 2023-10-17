@@ -82,7 +82,7 @@ void NGScoreLineBreaker::OptimalBreakPoints(
   LayoutUnit line_width = line_widths_[line_index];
   NGLineBreaker line_breaker(
       node_, NGLineBreakerMode::kContent, ConstraintSpace(),
-      NGLineLayoutOpportunity(line_width), leading_floats, break_token_,
+      LineLayoutOpportunity(line_width), leading_floats, break_token_,
       /* column_spanner_path */ nullptr, exclusion_space_);
   const int lines_until_clamp = space_.LinesUntilClamp().value_or(0);
   for (;;) {
@@ -109,7 +109,7 @@ void NGScoreLineBreaker::OptimalBreakPoints(
     const LayoutUnit next_line_width = line_widths_[++line_index];
     if (next_line_width != line_width) {
       line_width = next_line_width;
-      line_breaker.SetLineOpportunity(NGLineLayoutOpportunity(line_width));
+      line_breaker.SetLineOpportunity(LineLayoutOpportunity(line_width));
     }
   }
   DCHECK(!line_info_list.IsEmpty());

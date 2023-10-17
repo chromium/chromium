@@ -177,9 +177,9 @@ LayoutUnit UnpositionedListMarker::ComputeIntrudedFloatOffset(
       *container_builder->BfcBlockOffset() + marker_block_offset};
   const LayoutUnit available_size =
       container_builder->ChildAvailableSize().inline_size;
-  NGLayoutOpportunity opportunity =
-      space.ExclusionSpace().FindLayoutOpportunity(origin_offset,
-                                                   available_size);
+  LayoutOpportunity opportunity =
+      space.GetExclusionSpace().FindLayoutOpportunity(origin_offset,
+                                                      available_size);
   DCHECK(marker_layout_object_);
   const TextDirection direction = marker_layout_object_->StyleRef().Direction();
   if (direction == TextDirection::kLtr) {

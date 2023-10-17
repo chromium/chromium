@@ -7,11 +7,11 @@
 
 namespace blink {
 
-void NGExclusionShapeData::Trace(Visitor* visitor) const {
+void ExclusionShapeData::Trace(Visitor* visitor) const {
   visitor->Trace(layout_box);
 }
 
-bool NGExclusion::operator==(const NGExclusion& other) const {
+bool ExclusionArea::operator==(const ExclusionArea& other) const {
   return type == other.type && kind == other.kind && rect == other.rect &&
          shape_data == other.shape_data;
 }
@@ -34,8 +34,8 @@ std::ostream& operator<<(std::ostream& os, const PrintableEFloat& printable) {
 }
 
 struct PrintableKind {
-  explicit PrintableKind(NGExclusion::Kind value) : value(value) {}
-  NGExclusion::Kind value;
+  explicit PrintableKind(ExclusionArea::Kind value) : value(value) {}
+  ExclusionArea::Kind value;
 };
 
 std::ostream& operator<<(std::ostream& os, const PrintableKind& printable) {
@@ -51,12 +51,12 @@ std::ostream& operator<<(std::ostream& os, const PrintableKind& printable) {
 
 }  // namespace
 
-std::ostream& operator<<(std::ostream& os, const NGExclusion& exclusion) {
-  return os << "NGExclusion(" << PrintableKind(exclusion.kind) << ", "
+std::ostream& operator<<(std::ostream& os, const ExclusionArea& exclusion) {
+  return os << "ExclusionArea(" << PrintableKind(exclusion.kind) << ", "
             << PrintableEFloat(exclusion.type) << ", " << exclusion.rect << ")";
 }
 
-std::ostream& operator<<(std::ostream& os, const NGExclusion* exclusion) {
+std::ostream& operator<<(std::ostream& os, const ExclusionArea* exclusion) {
   if (!exclusion)
     return os << "(nullptr)";
   return os << *exclusion;

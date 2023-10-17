@@ -20,7 +20,7 @@
 
 namespace blink {
 
-class NGExclusionSpace;
+class ExclusionSpace;
 
 class CORE_EXPORT NGConstraintSpaceBuilder final {
   STACK_ALLOCATED();
@@ -440,7 +440,7 @@ class CORE_EXPORT NGConstraintSpaceBuilder final {
     space_.bitfields_.is_restricted_block_size_table_cell_child = true;
   }
 
-  void SetExclusionSpace(const NGExclusionSpace& exclusion_space) {
+  void SetExclusionSpace(const ExclusionSpace& exclusion_space) {
     if (!is_new_fc_)
       space_.exclusion_space_ = exclusion_space;
   }

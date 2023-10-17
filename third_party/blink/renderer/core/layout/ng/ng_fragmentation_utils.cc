@@ -598,7 +598,7 @@ NGBreakStatus FinishFragmentation(NGBlockNode node,
 
   bool was_broken_by_child = builder->HasInflowChildBreakInside();
   if (!was_broken_by_child && space.IsNewFormattingContext())
-    was_broken_by_child = builder->ExclusionSpace().HasFragmentainerBreak();
+    was_broken_by_child = builder->GetExclusionSpace().HasFragmentainerBreak();
 
   if (space_left == kIndefiniteSize) {
     // We don't know how space is available (initial column balancing pass), so
@@ -984,9 +984,10 @@ bool MovePastBreakpoint(const NGConstraintSpace& space,
 
     // If clearance forces the child to the next fragmentainer, we cannot move
     // past the breakpoint, but rather retry in the next fragmentainer.
-    if (builder && builder->ExclusionSpace().NeedsClearancePastFragmentainer(
-                       child.Style().Clear(space.Direction())))
+    if (builder && builder->GetExclusionSpace().NeedsClearancePastFragmentainer(
+                       child.Style().Clear(space.Direction()))) {
       return false;
+    }
   }
 
   if (!space.HasKnownFragmentainerBlockSize() &&
