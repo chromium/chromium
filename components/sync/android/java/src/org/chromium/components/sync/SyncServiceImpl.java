@@ -31,7 +31,7 @@ import java.util.concurrent.CopyOnWriteArrayList;
  * UI thread. See components/sync/service/sync_service_impl.h for more details.
  * TODO(crbug.com/1451811): Update to no reference UI thread.
  */
-public class SyncServiceImpl extends SyncService {
+public class SyncServiceImpl implements SyncService {
     private final long mSyncServiceAndroidBridge;
 
     private int mSetupInProgressCounter;

@@ -26,7 +26,7 @@ import java.util.Set;
  *
  * Only what has been needed for tests so far has been faked.
  */
-public class FakeSyncServiceImpl extends SyncService {
+public class FakeSyncServiceImpl implements SyncService {
     private final SyncService mDelegate;
 
     private boolean mEngineInitialized;
