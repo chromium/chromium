@@ -113,9 +113,6 @@ extern const char kCdmStorageDatabaseDescription[];
 extern const char kCdmStorageDatabaseMigrationName[];
 extern const char kCdmStorageDatabaseMigrationDescription[];
 
-extern const char kChromeRootStoreEnabledName[];
-extern const char kChromeRootStoreEnabledDescription[];
-
 extern const char kClickToCallName[];
 extern const char kClickToCallDescription[];
 

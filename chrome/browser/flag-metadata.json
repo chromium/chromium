@@ -1165,11 +1165,6 @@
     "expiry_milestone": 120
   },
   {
-    "name": "chrome-root-store-enabled",
-    "owners": ["hchao", "mattm", "davidben", "chrome-trusty-transport-core@google.com"],
-    "expiry_milestone": 120
-  },
-  {
     "name": "chrome-webui-refresh-2023",
     "owners":["dpapad", "johntlee"],
     "expiry_milestone": 120

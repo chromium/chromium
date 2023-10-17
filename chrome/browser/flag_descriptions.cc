@@ -148,11 +148,6 @@ const char kClipboardWellFormedHtmlSanitizationWriteDescription[] =
     "New sanitization routine when writing HTML to clipboard with the async "
     "clipboard web API.";
 
-const char kChromeRootStoreEnabledName[] = "Chrome Root Store";
-const char kChromeRootStoreEnabledDescription[] =
-    "Enable use of Chrome Root Store over platform roots. "
-    "On some platforms this may also enable Chrome Cert Verifier.";
-
 const char kContentLanguagesInLanguagePickerName[] =
     "Content languages in language picker";
 const char kContentLanguagesInLanguagePickerDescription[] =

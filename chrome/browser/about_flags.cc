@@ -10056,14 +10056,6 @@ const FeatureEntry kFeatureEntries[] = {
          password_manager::features::kEnablePasswordsAccountStorage)},
 #endif  // BUILDFLAG(IS_CHROMEOS_ASH)
 
-#if BUILDFLAG(CHROME_ROOT_STORE_OPTIONAL)
-    {"chrome-root-store-enabled",
-     flag_descriptions::kChromeRootStoreEnabledName,
-     flag_descriptions::kChromeRootStoreEnabledDescription,
-     kOsAndroid | kOsLinux | kOsCrOS | kOsLacros,
-     FEATURE_VALUE_TYPE(net::features::kChromeRootStoreUsed)},
-#endif  // BUILDFLAG(CHROME_ROOT_STORE_OPTIONAL)
-
 #if BUILDFLAG(IS_ANDROID)
     {"policy-logs-page-android", flag_descriptions::kPolicyLogsPageAndroidName,
      flag_descriptions::kPolicyLogsPageAndroidDescription, kOsAndroid,
