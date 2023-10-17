@@ -4677,6 +4677,7 @@ static_library("ui") {
       "side_panel/history_clusters/history_clusters_tab_helper.cc",
       "side_panel/history_clusters/history_clusters_tab_helper.h",
       "side_panel/read_anything/read_anything_side_panel_controller_utils.h",
+      "side_panel/side_panel_entry_id.cc",
       "side_panel/side_panel_entry_id.h",
       "side_panel/side_panel_entry_key.cc",
       "side_panel/side_panel_entry_key.h",

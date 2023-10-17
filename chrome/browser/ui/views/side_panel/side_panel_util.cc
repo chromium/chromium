@@ -40,38 +40,6 @@
 #include "extensions/common/extension_features.h"
 #endif
 
-namespace {
-
-std::string GetHistogramNameForId(SidePanelEntry::Id id) {
-  static constexpr auto id_to_histogram_name_map =
-      // Note: once provided the histogram name should not be changed since it
-      // is persisted to logs. When adding a new Id please add actions to
-      // tools/metrics/actions/actions.xml for "SidePanel.[new id name].Shown"
-      // since we cannot autogenerate this in actions.xml.
-      base::MakeFixedFlatMap<SidePanelEntry::Id, const char*>(
-          {{SidePanelEntry::Id::kReadingList, "ReadingList"},
-           {SidePanelEntry::Id::kBookmarks, "Bookmarks"},
-           {SidePanelEntry::Id::kHistoryClusters, "HistoryClusters"},
-           {SidePanelEntry::Id::kReadAnything, "ReadAnything"},
-           {SidePanelEntry::Id::kUserNote, "UserNotes"},
-           {SidePanelEntry::Id::kFeed, "Feed"},
-           {SidePanelEntry::Id::kPerformance, "Performance"},
-           {SidePanelEntry::Id::kSideSearch, "SideSearch"},
-           {SidePanelEntry::Id::kLens, "Lens"},
-           {SidePanelEntry::Id::kAssistant, "Assistant"},
-           {SidePanelEntry::Id::kAboutThisSite, "AboutThisSite"},
-           {SidePanelEntry::Id::kCustomizeChrome, "CustomizeChrome"},
-           {SidePanelEntry::Id::kWebView, "WebView"},
-           {SidePanelEntry::Id::kSearchCompanion, "Companion"},
-           {SidePanelEntry::Id::kShoppingInsights, "ShoppingInsights"},
-           {SidePanelEntry::Id::kExtension, "Extension"}});
-  auto* i = id_to_histogram_name_map.find(id);
-  DCHECK(i != id_to_histogram_name_map.cend());
-  return {i->second};
-}
-
-}  // namespace
-
 // static
 void SidePanelUtil::PopulateGlobalEntries(Browser* browser,
                                           SidePanelRegistry* global_registry) {
@@ -183,7 +151,7 @@ void SidePanelUtil::RecordSidePanelClosed(base::TimeTicks opened_timestamp) {
 void SidePanelUtil::RecordSidePanelResizeMetrics(SidePanelEntry::Id id,
                                                  int side_panel_contents_width,
                                                  int browser_window_width) {
-  std::string entry_name = GetHistogramNameForId(id);
+  std::string entry_name = SidePanelEntryIdToHistogramName(id);
 
   // Metrics per-id and overall for side panel width after resize.
   base::UmaHistogramCounts10000(
@@ -203,18 +171,19 @@ void SidePanelUtil::RecordSidePanelResizeMetrics(SidePanelEntry::Id id,
 }
 
 void SidePanelUtil::RecordNewTabButtonClicked(SidePanelEntry::Id id) {
-  base::RecordComputedAction(base::StrCat(
-      {"SidePanel.", GetHistogramNameForId(id), ".NewTabButtonClicked"}));
+  base::RecordComputedAction(
+      base::StrCat({"SidePanel.", SidePanelEntryIdToHistogramName(id),
+                    ".NewTabButtonClicked"}));
 }
 
 void SidePanelUtil::RecordEntryShownMetrics(
     SidePanelEntry::Id id,
     base::TimeTicks load_started_timestamp) {
-  base::RecordComputedAction(
-      base::StrCat({"SidePanel.", GetHistogramNameForId(id), ".Shown"}));
+  base::RecordComputedAction(base::StrCat(
+      {"SidePanel.", SidePanelEntryIdToHistogramName(id), ".Shown"}));
   if (load_started_timestamp != base::TimeTicks()) {
     base::UmaHistogramLongTimes(
-        base::StrCat({"SidePanel.", GetHistogramNameForId(id),
+        base::StrCat({"SidePanel.", SidePanelEntryIdToHistogramName(id),
                       ".TimeFromEntryTriggerToShown"}),
         base::TimeTicks::Now() - load_started_timestamp);
   }
@@ -223,7 +192,8 @@ void SidePanelUtil::RecordEntryShownMetrics(
 void SidePanelUtil::RecordEntryHiddenMetrics(SidePanelEntry::Id id,
                                              base::TimeTicks shown_timestamp) {
   base::UmaHistogramLongTimes(
-      base::StrCat({"SidePanel.", GetHistogramNameForId(id), ".ShownDuration"}),
+      base::StrCat({"SidePanel.", SidePanelEntryIdToHistogramName(id),
+                    ".ShownDuration"}),
       base::TimeTicks::Now() - shown_timestamp);
 }
 
@@ -233,8 +203,8 @@ void SidePanelUtil::RecordEntryShowTriggeredMetrics(
     absl::optional<SidePanelUtil::SidePanelOpenTrigger> trigger) {
   if (trigger.has_value()) {
     base::UmaHistogramEnumeration(
-        base::StrCat(
-            {"SidePanel.", GetHistogramNameForId(id), ".ShowTriggered"}),
+        base::StrCat({"SidePanel.", SidePanelEntryIdToHistogramName(id),
+                      ".ShowTriggered"}),
         trigger.value());
   }
 
