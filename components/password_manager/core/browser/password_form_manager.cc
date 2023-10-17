@@ -223,6 +223,20 @@ void SetUsernameValueFromOutsideOfForm(const std::u16string& value,
   form.username_element.clear();
 }
 
+// Checks whether username found outside of the password form was found using
+// more reliable signal than the username found inside the password form.
+bool UsernameOutsideOfFormHasHigherPriority(
+    UsernameFoundOutsideOfFormType possible_username_type,
+    FormDataParser::UsernameDetectionMethod
+        username_in_the_password_form_type) {
+  return possible_username_type ==
+             UsernameFoundOutsideOfFormType::kSingleUsernameOverride ||
+         (possible_username_type ==
+              UsernameFoundOutsideOfFormType::kSingleUsernamePrediction &&
+          username_in_the_password_form_type !=
+              FormDataParser::UsernameDetectionMethod::kServerSidePrediction);
+}
+
 }  // namespace
 
 PasswordFormManager::PasswordFormManager(
@@ -910,12 +924,10 @@ bool PasswordFormManager::ProvisionallySave(
     if (IsPasswordFormWithoutUsername(
             parsed_submitted_form_.get()) ||                      // Case (1).
         possible_username.password_form_had_matching_username ||  // Case (2).
-        possible_username.priority ==                             // Case (3).
-            UsernameFoundOutsideOfFormType::kSingleUsernameOverride ||
-        (possible_username.priority ==  // Case (4).
-             UsernameFoundOutsideOfFormType::kSingleUsernamePrediction &&
-         username_detection_method !=
-             FormDataParser::UsernameDetectionMethod::kServerSidePrediction)) {
+        UsernameOutsideOfFormHasHigherPriority(
+            possible_username.priority,
+            username_detection_method)  // Case (3) & (4).
+    ) {
       HandleUsernameFirstFlow(possible_username);
     }
   }
