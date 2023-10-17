@@ -7,6 +7,7 @@
 
 #include "base/observer_list_types.h"
 #include "base/time/time.h"
+#include "components/content_settings/core/common/cookie_blocking_3pcd_status.h"
 #include "components/content_settings/core/common/cookie_controls_breakage_confidence_level.h"
 #include "components/content_settings/core/common/cookie_controls_enforcement.h"
 #include "components/content_settings/core/common/cookie_controls_status.h"
@@ -38,6 +39,8 @@ class CookieControlsObserver : public base::CheckedObserver {
       CookieControlsStatus status,
       // Represents if cookie settings are enforced (ex. by policy).
       CookieControlsEnforcement enforcement,
+      // 3PC blocking status for 3PCD: whether 3PC are limited or all blocked.
+      CookieBlocking3pcdStatus blocking_status,
       // The expiration time of the active UB exception if it is present.
       base::Time expiration) = 0;
 

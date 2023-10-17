@@ -12,6 +12,7 @@
 #include "chrome/browser/ui/views/page_action/page_action_icon_view.h"
 #include "components/content_settings/browser/ui/cookie_controls_controller.h"
 #include "components/content_settings/browser/ui/cookie_controls_view.h"
+#include "components/content_settings/core/common/cookie_blocking_3pcd_status.h"
 #include "components/content_settings/core/common/cookie_controls_breakage_confidence_level.h"
 #include "components/content_settings/core/common/cookie_controls_status.h"
 #include "ui/base/metadata/metadata_header_macros.h"
@@ -33,6 +34,7 @@ class CookieControlsIconView : public PageActionIconView,
   // CookieControlsObserver:
   void OnStatusChanged(CookieControlsStatus status,
                        CookieControlsEnforcement enforcement,
+                       CookieBlocking3pcdStatus blocking_status,
                        base::Time expiration) override;
   void OnSitesCountChanged(int allowed_third_party_sites_count,
                            int blocked_third_party_sites_count) override;

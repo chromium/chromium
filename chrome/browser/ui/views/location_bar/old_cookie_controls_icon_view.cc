@@ -51,7 +51,8 @@ void OldCookieControlsIconView::UpdateImpl() {
               profile->IsOffTheRecord() ? CookieSettingsFactory::GetForProfile(
                                               profile->GetOriginalProfile())
                                         : nullptr,
-              HostContentSettingsMapFactory::GetForProfile(profile));
+              HostContentSettingsMapFactory::GetForProfile(profile),
+              /*tracking_protection_settings=*/nullptr);
       old_controller_observation_.Observe(controller_.get());
     }
     controller_->Update(web_contents);
