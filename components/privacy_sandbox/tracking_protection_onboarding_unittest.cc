@@ -121,7 +121,7 @@ TEST_F(TrackingProtectionOnboardingTest,
   EXPECT_CALL(observer, OnShouldShowNoticeUpdated()).Times(1);
 
   // Action
-  tracking_protection_onboarding()->NoticeActionTaken(
+  tracking_protection_onboarding()->OnboardingNoticeActionTaken(
       TrackingProtectionOnboarding::NoticeAction::kSettings);
 
   // Verification
@@ -138,7 +138,7 @@ TEST_F(TrackingProtectionOnboardingTest,
   EXPECT_CALL(observer, OnShouldShowNoticeUpdated()).Times(0);
 
   // Action
-  tracking_protection_onboarding()->NoticeShown();
+  tracking_protection_onboarding()->OnboardingNoticeShown();
 
   // Verification
   testing::Mock::VerifyAndClearExpectations(&observer);
@@ -221,7 +221,7 @@ TEST_F(TrackingProtectionOnboardingTest,
       static_cast<int>(TrackingProtectionOnboardingStatus::kIneligible));
 
   // Action
-  tracking_protection_onboarding()->NoticeShown();
+  tracking_protection_onboarding()->OnboardingNoticeShown();
 
   // Verification
   EXPECT_EQ(static_cast<TrackingProtectionOnboardingStatus>(prefs()->GetInteger(
@@ -237,7 +237,7 @@ TEST_F(TrackingProtectionOnboardingTest,
       static_cast<int>(TrackingProtectionOnboardingStatus::kEligible));
 
   // Action
-  tracking_protection_onboarding()->NoticeShown();
+  tracking_protection_onboarding()->OnboardingNoticeShown();
 
   // Verification
   EXPECT_EQ(static_cast<TrackingProtectionOnboardingStatus>(prefs()->GetInteger(
@@ -254,11 +254,11 @@ TEST_F(TrackingProtectionOnboardingTest, UpdatesLastNoticeShownCorrectly) {
       static_cast<int>(TrackingProtectionOnboardingStatus::kEligible));
 
   // Action
-  tracking_protection_onboarding()->NoticeShown();
+  tracking_protection_onboarding()->OnboardingNoticeShown();
   auto delay = base::Seconds(15);
   task_env_.FastForwardBy(delay);
   // Show the notice again.
-  tracking_protection_onboarding()->NoticeShown();
+  tracking_protection_onboarding()->OnboardingNoticeShown();
 
   // Verification
   EXPECT_EQ(static_cast<TrackingProtectionOnboardingStatus>(prefs()->GetInteger(
@@ -274,10 +274,10 @@ TEST_F(TrackingProtectionOnboardingTest, UpdatesLastNoticeShownCorrectly) {
 TEST_F(TrackingProtectionOnboardingTest,
        PreviouslyAcknowledgedDoesntReacknowledge) {
   // Ack with GotIt
-  tracking_protection_onboarding()->NoticeActionTaken(
+  tracking_protection_onboarding()->OnboardingNoticeActionTaken(
       TrackingProtectionOnboarding::NoticeAction::kGotIt);
   // Action: Re Ack with Learnmore
-  tracking_protection_onboarding()->NoticeActionTaken(
+  tracking_protection_onboarding()->OnboardingNoticeActionTaken(
       TrackingProtectionOnboarding::NoticeAction::kLearnMore);
 
   // Verification: LearnMore doesn't persit.
@@ -340,31 +340,31 @@ TEST_F(TrackingProtectionOnboardingTest,
 TEST_F(TrackingProtectionOnboardingTest, UserActionMetrics) {
   base::UserActionTester user_action_tester;
 
-  tracking_protection_onboarding()->NoticeShown();
+  tracking_protection_onboarding()->OnboardingNoticeShown();
   EXPECT_EQ(
       1, user_action_tester.GetActionCount("TrackingProtection.Notice.Shown"));
 
-  tracking_protection_onboarding()->NoticeActionTaken(
+  tracking_protection_onboarding()->OnboardingNoticeActionTaken(
       TrackingProtectionOnboarding::NoticeAction::kOther);
   EXPECT_EQ(1, user_action_tester.GetActionCount(
                    "TrackingProtection.Notice.DismissedOther"));
 
-  tracking_protection_onboarding()->NoticeActionTaken(
+  tracking_protection_onboarding()->OnboardingNoticeActionTaken(
       TrackingProtectionOnboarding::NoticeAction::kGotIt);
   EXPECT_EQ(1, user_action_tester.GetActionCount(
                    "TrackingProtection.Notice.GotItClicked"));
 
-  tracking_protection_onboarding()->NoticeActionTaken(
+  tracking_protection_onboarding()->OnboardingNoticeActionTaken(
       TrackingProtectionOnboarding::NoticeAction::kSettings);
   EXPECT_EQ(1, user_action_tester.GetActionCount(
                    "TrackingProtection.Notice.SettingsClicked"));
 
-  tracking_protection_onboarding()->NoticeActionTaken(
+  tracking_protection_onboarding()->OnboardingNoticeActionTaken(
       TrackingProtectionOnboarding::NoticeAction::kLearnMore);
   EXPECT_EQ(1, user_action_tester.GetActionCount(
                    "TrackingProtection.Notice.LearnMoreClicked"));
 
-  tracking_protection_onboarding()->NoticeActionTaken(
+  tracking_protection_onboarding()->OnboardingNoticeActionTaken(
       TrackingProtectionOnboarding::NoticeAction::kClosed);
   EXPECT_EQ(
       1, user_action_tester.GetActionCount("TrackingProtection.Notice.Closed"));
@@ -404,7 +404,8 @@ class TrackingProtectionOnboardingAckActionTest
 TEST_P(TrackingProtectionOnboardingAckActionTest,
        UserNoticeActionTakenAcknowledgedCorrectly) {
   // Action
-  tracking_protection_onboarding()->NoticeActionTaken(std::get<0>(GetParam()));
+  tracking_protection_onboarding()->OnboardingNoticeActionTaken(
+      std::get<0>(GetParam()));
 
   // Verification
   EXPECT_EQ(prefs()->GetBoolean(prefs::kTrackingProtectionOnboardingAcked),

@@ -164,7 +164,7 @@ IN_PROC_BROWSER_TEST_F(TrackingProtectionNoticeBrowserTest,
       WindowOpenDisposition::NEW_FOREGROUND_TAB,
       ui_test_utils::BROWSER_TEST_WAIT_FOR_LOAD_STOP);
   // Simulate backend ack
-  onboarding_service()->NoticeActionTaken(
+  onboarding_service()->OnboardingNoticeActionTaken(
       privacy_sandbox::TrackingProtectionOnboarding::NoticeAction::kGotIt);
   // Then navigate to another eligible page.
   ui_test_utils::NavigateToURLWithDispositionBlockUntilNavigationsComplete(
@@ -383,7 +383,7 @@ IN_PROC_BROWSER_TEST_F(TrackingProtectionNoticeBrowserTest, OnboardedNotAck) {
   onboarding_service()->MaybeMarkEligible();
   // Telling the OnboardingService that the notice has been shown so it marks
   // the profile as Onboarded.
-  onboarding_service()->NoticeShown();
+  onboarding_service()->OnboardingNoticeShown();
 
   // Action: Navigate to an HTTPS eligible page in current tab.
   browser()->window()->Activate();

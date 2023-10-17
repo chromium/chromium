@@ -170,7 +170,8 @@ public class TrackingProtectionNoticeController {
                         .with(
                                 MessageBannerProperties.ON_PRIMARY_ACTION,
                                 () -> {
-                                    TrackingProtectionBridge.noticeActionTaken(NoticeAction.GOT_IT);
+                                    TrackingProtectionBridge.onboardingNoticeActionTaken(
+                                            NoticeAction.GOT_IT);
                                     return PrimaryActionClickBehavior.DISMISS_IMMEDIATELY;
                                 })
                         .with(MessageBannerProperties.ON_DISMISSED, onNoticeDismissed())
@@ -188,17 +189,17 @@ public class TrackingProtectionNoticeController {
         return (dismissReason) -> {
             switch (dismissReason) {
                 case DismissReason.GESTURE:
-                    TrackingProtectionBridge.noticeShown();
-                    TrackingProtectionBridge.noticeActionTaken(NoticeAction.CLOSED);
+                    TrackingProtectionBridge.onboardingNoticeShown();
+                    TrackingProtectionBridge.onboardingNoticeActionTaken(NoticeAction.CLOSED);
                     break;
                 case DismissReason.PRIMARY_ACTION:
                 case DismissReason.SECONDARY_ACTION:
                     // TODO(b/295927778): Move Shown action recording to the proper callback when
                     // implemented in crbug.com/1491318.
-                    TrackingProtectionBridge.noticeShown();
+                    TrackingProtectionBridge.onboardingNoticeShown();
                     break;
                 default:
-                    TrackingProtectionBridge.noticeActionTaken(NoticeAction.OTHER);
+                    TrackingProtectionBridge.onboardingNoticeActionTaken(NoticeAction.OTHER);
             }
         };
     }
@@ -291,11 +292,11 @@ public class TrackingProtectionNoticeController {
                 if (clickedItemID == SETTINGS_ITEM_ID) {
                     mSettingsLauncher.launchSettingsActivity(
                             mContext, TrackingProtectionSettings.class);
-                    TrackingProtectionBridge.noticeActionTaken(
+                    TrackingProtectionBridge.onboardingNoticeActionTaken(
                             org.chromium.chrome.browser.privacy_sandbox.NoticeAction.SETTINGS);
                 } else if (clickedItemID == LEARN_MORE_ITEM_ID) {
                     openUrlInCct(TRACKING_PROTECTION_HELP_CENTER);
-                    TrackingProtectionBridge.noticeActionTaken(
+                    TrackingProtectionBridge.onboardingNoticeActionTaken(
                             org.chromium.chrome.browser.privacy_sandbox.NoticeAction.LEARN_MORE);
                 }
 

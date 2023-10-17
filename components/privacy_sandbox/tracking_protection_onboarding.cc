@@ -145,7 +145,7 @@ void TrackingProtectionOnboarding::MaybeMarkIneligible() {
           TrackingProtectionOnboarding::OnboardingStatus::kIneligible));
 }
 
-void TrackingProtectionOnboarding::NoticeShown() {
+void TrackingProtectionOnboarding::OnboardingNoticeShown() {
   base::RecordAction(
       base::UserMetricsAction("TrackingProtection.Notice.Shown"));
 
@@ -164,7 +164,7 @@ void TrackingProtectionOnboarding::NoticeShown() {
           TrackingProtectionOnboarding::OnboardingStatus::kOnboarded));
 }
 
-void TrackingProtectionOnboarding::NoticeActionTaken(
+void TrackingProtectionOnboarding::OnboardingNoticeActionTaken(
     TrackingProtectionOnboarding::NoticeAction action) {
   RecordActionMetrics(action);
 

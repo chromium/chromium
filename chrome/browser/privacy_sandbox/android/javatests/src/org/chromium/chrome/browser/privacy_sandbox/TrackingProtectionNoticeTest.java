@@ -251,11 +251,11 @@ public final class TrackingProtectionNoticeTest {
         assertEquals(
                 "Last notice action",
                 action,
-                (int) mFakeTrackingProtectionBridge.getLastNoticeAction());
+                (int) mFakeTrackingProtectionBridge.getLastOnboardingNoticeAction());
     }
 
     private void assertNoticeShownActionIsRecorded() {
-        assertTrue(mFakeTrackingProtectionBridge.wasNoticeShown());
+        assertTrue(mFakeTrackingProtectionBridge.wasOnboardingNoticeShown());
     }
 
     private void setConnectionSecurityLevel(int connectionSecurityLevel) {

@@ -100,19 +100,19 @@ void TrackingProtectionNoticeService::OnNoticeClosed(
   }
   switch (close_reason) {
     case user_education::FeaturePromoStorageService::kDismiss:
-      onboarding_service_->NoticeActionTaken(
+      onboarding_service_->OnboardingNoticeActionTaken(
           TrackingProtectionOnboarding::NoticeAction::kGotIt);
       return;
     case user_education::FeaturePromoStorageService::kAction:
-      onboarding_service_->NoticeActionTaken(
+      onboarding_service_->OnboardingNoticeActionTaken(
           TrackingProtectionOnboarding::NoticeAction::kSettings);
       return;
     case user_education::FeaturePromoStorageService::kCancel:
-      onboarding_service_->NoticeActionTaken(
+      onboarding_service_->OnboardingNoticeActionTaken(
           TrackingProtectionOnboarding::NoticeAction::kClosed);
       return;
     default:
-      onboarding_service_->NoticeActionTaken(
+      onboarding_service_->OnboardingNoticeActionTaken(
           TrackingProtectionOnboarding::NoticeAction::kOther);
       return;
   }
@@ -173,7 +173,7 @@ void TrackingProtectionNoticeService::MaybeUpdateNoticeVisibility(
       &TrackingProtectionNoticeService::OnNoticeClosed, base::Unretained(this),
       shown_when, browser->window()->GetFeaturePromoController());
   if (browser->window()->MaybeShowFeaturePromo(std::move(params))) {
-    onboarding_service_->NoticeShown();
+    onboarding_service_->OnboardingNoticeShown();
     // TODO(b/302008359) Emit metrics
   } else {
     // TODO(b/302008359) Emit metrics

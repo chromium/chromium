@@ -80,10 +80,10 @@ class TrackingProtectionOnboarding : public KeyedService {
   bool IsOffboarded() const;
 
   // To be Called by UI code when the user has been shown the notice.
-  void NoticeShown();
+  void OnboardingNoticeShown();
 
   // To be called by UI code when the user has taken action on the notice.
-  void NoticeActionTaken(NoticeAction action);
+  void OnboardingNoticeActionTaken(NoticeAction action);
 
   // Called by UI code to determine if we should show the onboarding notice to
   // the user.

@@ -7,8 +7,8 @@ package org.chromium.chrome.browser.privacy_sandbox;
 /** Java implementation of TrackingProtectionBridge for testing. */
 public class FakeTrackingProtectionBridge implements TrackingProtectionBridge.Natives {
     private boolean mShouldShowOnboardingNotice;
-    private Integer mLastNoticeAction;
-    private boolean mNoticeShown;
+    private Integer mLastOnboardingNoticeAction;
+    private boolean mOnboardingNoticeShown;
 
     @Override
     public boolean shouldShowOnboardingNotice() {
@@ -16,24 +16,24 @@ public class FakeTrackingProtectionBridge implements TrackingProtectionBridge.Na
     }
 
     @Override
-    public void noticeShown() {
-        mNoticeShown = true;
+    public void onboardingNoticeShown() {
+        mOnboardingNoticeShown = true;
     }
 
     @Override
-    public void noticeActionTaken(@NoticeAction int action) {
-        mLastNoticeAction = action;
+    public void onboardingNoticeActionTaken(@NoticeAction int action) {
+        mLastOnboardingNoticeAction = action;
     }
 
     public void setShouldShowOnboardingNotice(boolean shouldShowOnboardingNotice) {
         mShouldShowOnboardingNotice = shouldShowOnboardingNotice;
     }
 
-    public boolean wasNoticeShown() {
-        return mNoticeShown;
+    public boolean wasOnboardingNoticeShown() {
+        return mOnboardingNoticeShown;
     }
 
-    public Integer getLastNoticeAction() {
-        return mLastNoticeAction;
+    public Integer getLastOnboardingNoticeAction() {
+        return mLastOnboardingNoticeAction;
     }
 }
