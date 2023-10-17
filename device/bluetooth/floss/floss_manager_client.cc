@@ -256,6 +256,7 @@ void FlossManagerClient::RemoveManager() {
 void FlossManagerClient::Init(dbus::Bus* bus,
                               const std::string& service_name,
                               const int adapter_index,
+                              base::Version version,
                               base::OnceClosure on_ready) {
   init_ = false;
   bus_ = bus;

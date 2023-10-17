@@ -23,6 +23,7 @@ class DEVICE_BLUETOOTH_EXPORT FakeFlossLEScanClient : public FlossLEScanClient {
   void Init(dbus::Bus* bus,
             const std::string& service_name,
             const int adapter_index,
+            base::Version version,
             base::OnceClosure on_ready) override;
   void RegisterScanner(
       ResponseCallback<device::BluetoothUUID> callback) override;

@@ -533,11 +533,13 @@ void FlossGattManagerClient::ServerSendNotification(
 void FlossGattManagerClient::Init(dbus::Bus* bus,
                                   const std::string& service_name,
                                   const int adapter_index,
+                                  base::Version version,
                                   base::OnceClosure on_ready) {
   // Set field variables.
   bus_ = bus;
   service_name_ = service_name;
   gatt_adapter_path_ = GenerateGattPath(adapter_index);
+  version_ = version;
 
   // Initialize DBus object proxy.
   dbus::ObjectProxy* object_proxy =

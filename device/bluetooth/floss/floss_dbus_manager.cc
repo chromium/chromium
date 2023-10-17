@@ -198,7 +198,7 @@ void FlossDBusManager::InitAdapterClientsIfReady() {
   if (adapter_interface_present_ && HasActiveAdapter() && client_on_ready_ &&
       !client_on_ready_->Finished()) {
     GetAdapterClient()->Init(GetSystemBus(), kAdapterService, active_adapter_,
-                             client_on_ready_->CreateReadyClosure());
+                             version_, client_on_ready_->CreateReadyClosure());
   }
 }
 
@@ -206,7 +206,7 @@ void FlossDBusManager::InitAdapterLoggingClientsIfReady() {
   if (adapter_logging_interface_present_ && HasActiveAdapter() &&
       client_on_ready_ && !client_on_ready_->Finished()) {
     GetLoggingClient()->Init(GetSystemBus(), kAdapterService, active_adapter_,
-                             client_on_ready_->CreateReadyClosure());
+                             version_, client_on_ready_->CreateReadyClosure());
   }
 }
 
@@ -215,7 +215,7 @@ void FlossDBusManager::InitAdminClientsIfReady() {
   if (admin_interface_present_ && HasActiveAdapter() && client_on_ready_ &&
       !client_on_ready_->Finished()) {
     GetAdminClient()->Init(GetSystemBus(), kAdapterService, active_adapter_,
-                           client_on_ready_->CreateReadyClosure());
+                           version_, client_on_ready_->CreateReadyClosure());
   }
 }
 #endif  // BUILDFLAG(IS_CHROMEOS)
@@ -223,7 +223,7 @@ void FlossDBusManager::InitAdminClientsIfReady() {
 void FlossDBusManager::InitBatteryClientsIfReady() {
   if (battery_interface_present_ && HasActiveAdapter() && client_on_ready_) {
     GetBatteryManagerClient()->Init(GetSystemBus(), kAdapterService,
-                                    active_adapter_,
+                                    active_adapter_, version_,
                                     client_on_ready_->CreateReadyClosure());
   }
 }
@@ -232,7 +232,7 @@ void FlossDBusManager::InitTelephonyClientsIfReady() {
   if (telephony_interface_present_ && HasActiveAdapter() && client_on_ready_ &&
       !client_on_ready_->Finished()) {
     GetBluetoothTelephonyClient()->Init(GetSystemBus(), kAdapterService,
-                                        active_adapter_,
+                                        active_adapter_, version_,
                                         client_on_ready_->CreateReadyClosure());
   }
 }
@@ -241,12 +241,12 @@ void FlossDBusManager::InitGattClientsIfReady() {
   if (gatt_interface_present_ && HasActiveAdapter() && client_on_ready_ &&
       !client_on_ready_->Finished()) {
     GetGattManagerClient()->Init(GetSystemBus(), kAdapterService,
-                                 active_adapter_,
+                                 active_adapter_, version_,
                                  client_on_ready_->CreateReadyClosure());
     GetLEScanClient()->Init(GetSystemBus(), kAdapterService, active_adapter_,
-                            client_on_ready_->CreateReadyClosure());
+                            version_, client_on_ready_->CreateReadyClosure());
     GetAdvertiserClient()->Init(GetSystemBus(), kAdapterService,
-                                active_adapter_,
+                                active_adapter_, version_,
                                 client_on_ready_->CreateReadyClosure());
   }
 }
@@ -255,7 +255,7 @@ void FlossDBusManager::InitSocketManagerClientsIfReady() {
   if (socket_manager_interface_present_ && HasActiveAdapter() &&
       client_on_ready_ && !client_on_ready_->Finished()) {
     GetSocketManager()->Init(GetSystemBus(), kAdapterService, active_adapter_,
-                             client_on_ready_->CreateReadyClosure());
+                             version_, client_on_ready_->CreateReadyClosure());
   }
 }
 
@@ -351,7 +351,7 @@ void FlossDBusManager::OnObjectManagerSupported(dbus::Response* response) {
   // Initialize the manager client (which doesn't depend on any specific
   // adapter being present)
   client_bundle_->manager_client()->Init(
-      GetSystemBus(), kManagerInterface, kInvalidAdapter,
+      GetSystemBus(), kManagerInterface, kInvalidAdapter, base::Version(),
       base::BindOnce(&FlossDBusManager::OnManagerClientInitComplete,
                      weak_ptr_factory_.GetWeakPtr()));
 
@@ -473,6 +473,9 @@ void FlossDBusManager::InitializeAdapterClients(int adapter,
     std::move(on_ready).Run();
     return;
   }
+
+  // Set current Floss API version.
+  version_ = client_bundle_->manager_client()->GetFlossApiVersion();
 
   // Initialize callback readiness. If clients aren't ready within a certain
   // period, we will time out and send the ready signal anyway.

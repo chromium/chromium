@@ -27,6 +27,7 @@
 #include "dbus/object_proxy.h"
 #include "device/bluetooth/bluetooth_device.h"
 #include "device/bluetooth/bluetooth_export.h"
+#include "device/bluetooth/floss/floss_version.h"
 #include "third_party/abseil-cpp/absl/types/optional.h"
 
 namespace floss {
@@ -833,6 +834,7 @@ class DEVICE_BLUETOOTH_EXPORT FlossDBusClient {
   virtual void Init(dbus::Bus* bus,
                     const std::string& bluetooth_service_name,
                     const int adapter_index,
+                    base::Version version,
                     base::OnceClosure on_ready) = 0;
 
  protected:
@@ -878,6 +880,9 @@ class DEVICE_BLUETOOTH_EXPORT FlossDBusClient {
   void DefaultResponse(const std::string& caller,
                        dbus::Response* response,
                        dbus::ErrorResponse* error_response);
+
+  // API version.
+  base::Version version_;
 
  private:
   base::WeakPtrFactory<FlossDBusClient> weak_ptr_factory_{this};

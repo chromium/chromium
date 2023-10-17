@@ -72,6 +72,10 @@ class FlossLEScanClientTest : public testing::Test,
  public:
   FlossLEScanClientTest() = default;
 
+  base::Version GetCurrVersion() {
+    return floss::version::GetMaximalSupportedVersion();
+  }
+
   void SetUp() override {
     ::dbus::Bus::Options options;
     options.bus_type = ::dbus::Bus::BusType::SYSTEM;
@@ -308,7 +312,7 @@ TEST_F(FlossLEScanClientTest, TestInitExportRegisterScanner) {
         std::move(*cb).Run(response.get(), /*err=*/nullptr);
       });
 
-  client_->Init(bus_.get(), kAdapterInterface, adapter_index_,
+  client_->Init(bus_.get(), kAdapterInterface, adapter_index_, GetCurrVersion(),
                 base::DoNothing());
 
   // Test exported callbacks are correctly parsed
@@ -387,7 +391,7 @@ TEST_F(FlossLEScanClientTest, TestInitExportRegisterScanner) {
 }
 
 TEST_F(FlossLEScanClientTest, TestStartStopScan) {
-  client_->Init(bus_.get(), kAdapterInterface, adapter_index_,
+  client_->Init(bus_.get(), kAdapterInterface, adapter_index_, GetCurrVersion(),
                 base::DoNothing());
 
   // Method of 3 parameters with no return.

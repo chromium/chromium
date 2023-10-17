@@ -26,5 +26,4 @@ base::Version DEVICE_BLUETOOTH_EXPORT GetMinimalSupportedVersion();
 base::Version DEVICE_BLUETOOTH_EXPORT GetMaximalSupportedVersion();
 
 }  // namespace floss::version
-
 #endif  // DEVICE_BLUETOOTH_FLOSS_FLOSS_FEATURES_H_

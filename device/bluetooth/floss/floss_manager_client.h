@@ -137,6 +137,7 @@ class DEVICE_BLUETOOTH_EXPORT FlossManagerClient
   void Init(dbus::Bus* bus,
             const std::string& service_name,
             const int adapter_index,
+            base::Version version,
             base::OnceClosure on_ready) override;
 
   // Whether the manager client has been initialized successfully.
@@ -239,9 +240,6 @@ class DEVICE_BLUETOOTH_EXPORT FlossManagerClient
 
   // List of observers interested in event notifications from this client.
   base::ObserverList<Observer> observers_;
-
-  // Floss API version.
-  base::Version version_;
 
   // Whether the manager client has been initialized successfully.
   bool init_ = false;

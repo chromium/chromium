@@ -66,10 +66,12 @@ FlossLEScanClient::~FlossLEScanClient() {
 void FlossLEScanClient::Init(dbus::Bus* bus,
                              const std::string& service_name,
                              const int adapter_index,
+                             base::Version version,
                              base::OnceClosure on_ready) {
   bus_ = bus;
   object_path_ = FlossDBusClient::GenerateGattPath(adapter_index);
   service_name_ = service_name;
+  version_ = version;
 
   exported_scanner_callback_manager_.Init(bus);
 

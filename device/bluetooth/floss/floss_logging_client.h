@@ -33,6 +33,7 @@ class DEVICE_BLUETOOTH_EXPORT FlossLoggingClient : public FlossDBusClient {
   void Init(dbus::Bus* bus,
             const std::string& service_name,
             const int adapter_index,
+            base::Version version,
             base::OnceClosure on_ready) override;
 
  protected:

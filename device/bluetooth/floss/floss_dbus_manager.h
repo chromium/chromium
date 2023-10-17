@@ -17,6 +17,7 @@
 #include "base/time/time.h"
 #include "dbus/object_manager.h"
 #include "device/bluetooth/bluetooth_export.h"
+#include "device/bluetooth/floss/floss_version.h"
 
 namespace base {
 class Thread;
@@ -284,6 +285,10 @@ class DEVICE_BLUETOOTH_EXPORT FlossDBusManager
 
   // Currently active Bluetooth adapter
   int active_adapter_ = kInvalidAdapter;
+
+  // Floss API version exported by Floss daemon or
+  // specified by a test stub for unit tests.
+  base::Version version_;
 
   // Callback for when adapter clients are ready after init.
   std::unique_ptr<ClientInitializer> client_on_ready_;
