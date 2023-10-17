@@ -648,6 +648,7 @@ void BrowsingDataRemoverImpl::RemoveImpl(
     storage_partition->GetNetworkContext()->ClearHttpAuthCache(
         delete_begin_.is_null() ? base::Time::Min() : delete_begin_,
         delete_end_.is_null() ? base::Time::Max() : delete_end_,
+        filter_builder->BuildNetworkServiceFilter(),
         CreateTaskCompletionClosureForMojo(TracingDataType::kAuthCache));
   }
 

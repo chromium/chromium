@@ -298,6 +298,19 @@ base::RepeatingCallback<bool(const url::Origin&)> BuildOriginFilter(
                              std::move(filter_origins));
 }
 
+// Builds a generic URL-matching predicate function based on |filter|.
+// If |filter| is null, creates an always-true predicate.
+base::RepeatingCallback<bool(const GURL&)> BuildUrlFilter(
+    mojom::ClearDataFilterPtr filter) {
+  return filter ? base::BindRepeating(
+                      &DoesUrlMatchFilter, filter->type,
+                      std::set<url::Origin>(filter->origins.begin(),
+                                            filter->origins.end()),
+                      std::set<std::string>(filter->domains.begin(),
+                                            filter->domains.end()))
+                : base::NullCallback();
+}
+
 #if BUILDFLAG(IS_ANDROID)
 class NetworkContextApplicationStatusListener
     : public base::android::ApplicationStatusListener {
@@ -1138,13 +1151,14 @@ void NetworkContext::ClearHostCache(mojom::ClearDataFilterPtr filter,
 
 void NetworkContext::ClearHttpAuthCache(base::Time start_time,
                                         base::Time end_time,
+                                        mojom::ClearDataFilterPtr filter,
                                         ClearHttpAuthCacheCallback callback) {
   net::HttpNetworkSession* http_session =
       url_request_context_->http_transaction_factory()->GetSession();
   DCHECK(http_session);
 
-  http_session->http_auth_cache()->ClearEntriesAddedBetween(start_time,
-                                                            end_time);
+  http_session->http_auth_cache()->ClearEntriesAddedBetween(
+      start_time, end_time, BuildUrlFilter(std::move(filter)));
   // TODO(mmenke): Use another error code for this, as ERR_ABORTED has somewhat
   // magical handling with respect to navigations.
   http_session->CloseAllConnections(net::ERR_ABORTED, "Clearing auth cache");
@@ -3093,16 +3107,9 @@ void NetworkContext::ClearSharedDictionaryCache(
     std::move(callback).Run();
     return;
   }
-  shared_dictionary_manager_->ClearData(
-      start_time, end_time,
-      filter
-          ? base::BindRepeating(&DoesUrlMatchFilter, filter->type,
-                                std::set<url::Origin>(filter->origins.begin(),
-                                                      filter->origins.end()),
-                                std::set<std::string>(filter->domains.begin(),
-                                                      filter->domains.end()))
-          : base::RepeatingCallback<bool(const GURL&)>(),
-      std::move(callback));
+  shared_dictionary_manager_->ClearData(start_time, end_time,
+                                        BuildUrlFilter(std::move(filter)),
+                                        std::move(callback));
 }
 
 void NetworkContext::ClearSharedDictionaryCacheForIsolationKey(

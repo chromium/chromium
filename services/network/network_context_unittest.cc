@@ -2211,8 +2211,8 @@ TEST_F(NetworkContextTest, ClearHttpAuthCache) {
     base::RunLoop run_loop;
     base::Time test_time;
     ASSERT_TRUE(base::Time::FromString("30 May 2018 12:30:00", &test_time));
-    network_context->ClearHttpAuthCache(base::Time(), test_time,
-                                        run_loop.QuitClosure());
+    network_context->ClearHttpAuthCache(
+        base::Time(), test_time, /*filter=*/nullptr, run_loop.QuitClosure());
     run_loop.Run();
 
     EXPECT_EQ(1u, cache->GetEntriesSizeForTesting());
@@ -2230,6 +2230,7 @@ TEST_F(NetworkContextTest, ClearHttpAuthCache) {
     base::Time test_time;
     ASSERT_TRUE(base::Time::FromString("30 May 2018 12:30:00", &test_time));
     network_context->ClearHttpAuthCache(test_time, base::Time::Max(),
+                                        /*filter=*/nullptr,
                                         run_loop.QuitClosure());
     run_loop.Run();
 
@@ -2281,6 +2282,7 @@ TEST_F(NetworkContextTest, ClearAllHttpAuthCache) {
 
   base::RunLoop run_loop;
   network_context->ClearHttpAuthCache(base::Time(), base::Time::Max(),
+                                      /*filter=*/nullptr,
                                       run_loop.QuitClosure());
   run_loop.Run();
 
@@ -2305,7 +2307,7 @@ TEST_F(NetworkContextTest, ClearEmptyHttpAuthCache) {
 
   base::RunLoop run_loop;
   network_context->ClearHttpAuthCache(base::Time::UnixEpoch(),
-                                      base::Time::Max(),
+                                      base::Time::Max(), /*filter=*/nullptr,
                                       base::BindOnce(run_loop.QuitClosure()));
   run_loop.Run();
 

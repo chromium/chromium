@@ -1086,8 +1086,14 @@ interface NetworkContext {
 
   // Clears all entries from the HTTP Auth cache that were between |start_time|
   // and |end_time|, with |start_time| being inclusive and |end_time| exclusive.
+  //
+  // If a non-null |filter| is specified, ClearHttpAuthCache will clear only
+  // AuthCache entries for URLs matching the filter. Filtering by both origins
+  // and domains is supported. If |filter| is non-null, you must provide either
+  // |filter.origins| or |filter.domains|, or both to define the filtering.
   ClearHttpAuthCache(mojo_base.mojom.Time start_time,
-                     mojo_base.mojom.Time end_time) => ();
+                     mojo_base.mojom.Time end_time,
+                     ClearDataFilter? filter) => ();
 
   // Clears entries from the Preflight Cache according to the specified filter.
   // Clear browsing history supports time ranges for the last 1hr, 24hr, 7d, 4w,

@@ -296,6 +296,7 @@ class COMPONENT_EXPORT(NETWORK_SERVICE) NetworkContext
                       ClearHostCacheCallback callback) override;
   void ClearHttpAuthCache(base::Time start_time,
                           base::Time end_time,
+                          mojom::ClearDataFilterPtr filter,
                           ClearHttpAuthCacheCallback callback) override;
   void ClearReportingCacheReports(
       mojom::ClearDataFilterPtr filter,
