@@ -18,6 +18,7 @@
 #include "base/strings/utf_string_conversions.h"
 #include "base/test/bind.h"
 #include "base/test/gmock_move_support.h"
+#include "base/test/mock_callback.h"
 #include "base/test/scoped_feature_list.h"
 #include "components/autofill/content/browser/content_autofill_driver_factory_test_api.h"
 #include "components/autofill/content/browser/content_autofill_driver_test_api.h"
@@ -59,10 +60,13 @@ using ::testing::_;
 using ::testing::AllOf;
 using ::testing::DoAll;
 using ::testing::ElementsAre;
+using ::testing::Eq;
 using ::testing::Field;
 using ::testing::Gt;
 using ::testing::Invoke;
 using ::testing::IsEmpty;
+using ::testing::Optional;
+using ::testing::Property;
 using ::testing::Return;
 using ::testing::SaveArg;
 using ::testing::SizeIs;
@@ -159,7 +163,6 @@ class FakeAutofillAgent : public mojom::AutofillAgent {
               TriggerFormExtractionWithResponse,
               (base::OnceCallback<void(bool)>),
               (override));
-
   MOCK_METHOD(void,
               GetPotentialLastFourCombinationsForStandaloneCvc,
               (base::OnceCallback<void(const std::vector<std::string>&)>),
@@ -307,6 +310,27 @@ class MockBrowserAutofillManager : public BrowserAutofillManager {
               ());
 };
 
+class ContentAutofillDriverWithFakeAutofillAgent
+    : public ContentAutofillDriver {
+ public:
+  ContentAutofillDriverWithFakeAutofillAgent(
+      content::RenderFrameHost* render_frame_host,
+      ContentAutofillDriverFactory* owner)
+      : ContentAutofillDriver(render_frame_host, owner) {
+    blink::AssociatedInterfaceProvider* remote_interfaces =
+        render_frame_host->GetRemoteAssociatedInterfaces();
+    remote_interfaces->OverrideBinderForTesting(
+        mojom::AutofillAgent::Name_,
+        base::BindRepeating(&FakeAutofillAgent::BindPendingReceiver,
+                            base::Unretained(&agent_)));
+  }
+
+  FakeAutofillAgent& agent() { return agent_; }
+
+ private:
+  FakeAutofillAgent agent_;
+};
+
 class ContentAutofillDriverTest : public content::RenderViewHostTestHarness {
  public:
   enum class NavigationType {
@@ -320,14 +344,7 @@ class ContentAutofillDriverTest : public content::RenderViewHostTestHarness {
     content::RenderViewHostTestHarness::SetUp();
     // This needed to keep the WebContentsObserverConsistencyChecker checks
     // happy for when AppendChild is called.
-    NavigateAndCommit(GURL("about:blank"));
-
-    blink::AssociatedInterfaceProvider* remote_interfaces =
-        web_contents()->GetPrimaryMainFrame()->GetRemoteAssociatedInterfaces();
-    remote_interfaces->OverrideBinderForTesting(
-        mojom::AutofillAgent::Name_,
-        base::BindRepeating(&FakeAutofillAgent::BindPendingReceiver,
-                            base::Unretained(&fake_agent_)));
+    NavigateAndCommit(GURL("https://foo.com/"));
   }
 
   void Navigate(NavigationType type) {
@@ -350,17 +367,6 @@ class ContentAutofillDriverTest : public content::RenderViewHostTestHarness {
   }
 
  protected:
-  FormData SeeAddressFormData() {
-    FormData form;
-    test::CreateTestAddressFormData(&form);
-    std::vector<FormData> augmented_forms;
-    EXPECT_CALL(manager(), OnFormsSeen(_, _))
-        .WillOnce(DoAll(SaveArg<0>(&augmented_forms)));
-    driver().renderer_events().FormsSeen(/*updated_forms=*/{form},
-                                         /*removed_forms=*/{});
-    return augmented_forms.front();
-  }
-
   TestContentAutofillClient* client() {
     return autofill_client_injector_[web_contents()];
   }
@@ -371,28 +377,73 @@ class ContentAutofillDriverTest : public content::RenderViewHostTestHarness {
 
   AutofillDriverRouter& router() { return factory().router(); }
 
-  ContentAutofillDriver& driver() {
-    return *autofill_driver_injector_[web_contents()];
+  ContentAutofillDriver& driver(content::RenderFrameHost* rfh = nullptr) {
+    return *autofill_driver_injector_[rfh ? rfh : main_frame()];
   }
 
-  MockBrowserAutofillManager& manager() {
-    return static_cast<MockBrowserAutofillManager&>(
-        driver().GetAutofillManager());
+  FakeAutofillAgent& agent(content::RenderFrameHost* rfh = nullptr) {
+    return autofill_driver_injector_[rfh ? rfh : main_frame()]->agent();
   }
 
-  LocalFrameToken frame_token() {
-    return LocalFrameToken(
-        web_contents()->GetPrimaryMainFrame()->GetFrameToken().value());
+  MockBrowserAutofillManager& manager(content::RenderFrameHost* rfh = nullptr) {
+    return *autofill_manager_injector_[rfh ? rfh : main_frame()];
+  }
+
+  LocalFrameToken frame_token(content::RenderFrameHost* rfh = nullptr) {
+    return LocalFrameToken((rfh ? rfh : main_frame())->GetFrameToken().value());
+  }
+
+  content::RenderFrameHost* main_frame() {
+    return web_contents()->GetPrimaryMainFrame();
+  }
+
+  // `source_rfh` represents the render frame the form comes from.
+  // `target_rfh` is the frame the form is routed to by AutofillDriverRouter,
+  // i.e., it's either `source_rfh` itself (or `nullptr` as a shorthand) or an
+  // ancester of `source_rfh`.
+  FormData SeeForm(content::RenderFrameHost* source_rfh,
+                   FormData form,
+                   content::RenderFrameHost* target_rfh = nullptr) {
+    if (!target_rfh) {
+      target_rfh = source_rfh;
+    }
+    std::vector<FormData> augmented_forms;
+    EXPECT_CALL(manager(target_rfh), OnFormsSeen(_, _))
+        .WillOnce(DoAll(SaveArg<0>(&augmented_forms)));
+    driver(source_rfh)
+        .renderer_events()
+        .FormsSeen(/*updated_forms=*/{std::move(form)},
+                   /*removed_forms=*/{});
+    // The augmented form has its metadata set
+    // (ContentAutofillDriver::SetFrameAndFormMetaData().
+    // It may be flattened.
+    return augmented_forms.front();
   }
 
   test::AutofillUnitTestEnvironment autofill_test_environment_;
 
   TestAutofillClientInjector<TestContentAutofillClient>
       autofill_client_injector_;
-  TestAutofillDriverInjector<ContentAutofillDriver> autofill_driver_injector_;
+  TestAutofillDriverInjector<ContentAutofillDriverWithFakeAutofillAgent>
+      autofill_driver_injector_;
   TestAutofillManagerInjector<MockBrowserAutofillManager>
       autofill_manager_injector_;
-  FakeAutofillAgent fake_agent_;
+};
+
+class ContentAutofillDriverTestWithAddressForm
+    : public ContentAutofillDriverTest {
+ public:
+  void SetUp() override {
+    ContentAutofillDriverTest::SetUp();
+    FormData form;
+    test::CreateTestAddressFormData(&form);
+    address_form_ = SeeForm(main_frame(), std::move(form));
+  }
+
+  FormData& address_form() { return address_form_; }
+
+ private:
+  FormData address_form_;
 };
 
 TEST_F(ContentAutofillDriverTest, NavigatedMainFrameDifferentDocument) {
@@ -577,52 +628,52 @@ TEST_F(ContentAutofillDriverTest, FormsSeen_UpdatedAndRemovedForm) {
       /*removed_forms=*/{other_form_renderer_id});
 }
 
-TEST_F(ContentAutofillDriverTest, FormDataSentToRenderer_FillForm) {
+TEST_F(ContentAutofillDriverTestWithAddressForm,
+       FormDataSentToRenderer_FillForm) {
   url::Origin triggered_origin;
-  FormData input_form_data = SeeAddressFormData();
-  for (FormFieldData& field : input_form_data.fields) {
+  for (FormFieldData& field : address_form().fields) {
     field.origin = triggered_origin;
     field.value = u"dummy_value";
   }
   base::RunLoop run_loop;
-  fake_agent_.SetQuitLoopClosure(run_loop.QuitClosure());
+  agent().SetQuitLoopClosure(run_loop.QuitClosure());
   driver().browser_events().ApplyFormAction(
-      mojom::ActionType::kFill, mojom::ActionPersistence::kFill,
-      input_form_data, triggered_origin, {});
+      mojom::ActionType::kFill, mojom::ActionPersistence::kFill, address_form(),
+      triggered_origin, {});
 
   run_loop.RunUntilIdle();
 
-  EXPECT_FALSE(fake_agent_.GetAutofillPreviewFormMessage());
+  EXPECT_FALSE(agent().GetAutofillPreviewFormMessage());
   absl::optional<FormData> output_form_data =
-      fake_agent_.GetAutofillFillFormMessage();
+      agent().GetAutofillFillFormMessage();
   ASSERT_TRUE(output_form_data.has_value());
-  EXPECT_TRUE(test::WithoutUnserializedData(input_form_data)
+  EXPECT_TRUE(test::WithoutUnserializedData(address_form())
                   .SameFormAs(*output_form_data));
 }
 
-TEST_F(ContentAutofillDriverTest, FormDataSentToRenderer_PreviewForm) {
+TEST_F(ContentAutofillDriverTestWithAddressForm,
+       FormDataSentToRenderer_PreviewForm) {
   url::Origin triggered_origin;
-  FormData input_form_data = SeeAddressFormData();
-  for (FormFieldData& field : input_form_data.fields) {
+  for (FormFieldData& field : address_form().fields) {
     field.origin = triggered_origin;
     field.value = u"dummy_value";
   }
-  ASSERT_TRUE(base::ranges::all_of(input_form_data.fields,
+  ASSERT_TRUE(base::ranges::all_of(address_form().fields,
                                    base::not_fn(&std::u16string::empty),
                                    &FormFieldData::value));
   base::RunLoop run_loop;
-  fake_agent_.SetQuitLoopClosure(run_loop.QuitClosure());
+  agent().SetQuitLoopClosure(run_loop.QuitClosure());
   driver().browser_events().ApplyFormAction(
       mojom::ActionType::kFill, mojom::ActionPersistence::kPreview,
-      input_form_data, triggered_origin, {});
+      address_form(), triggered_origin, {});
 
   run_loop.RunUntilIdle();
 
-  EXPECT_FALSE(fake_agent_.GetAutofillFillFormMessage());
+  EXPECT_FALSE(agent().GetAutofillFillFormMessage());
   absl::optional<FormData> output_form_data =
-      fake_agent_.GetAutofillPreviewFormMessage();
+      agent().GetAutofillPreviewFormMessage();
   ASSERT_TRUE(output_form_data);
-  EXPECT_TRUE(test::WithoutUnserializedData(input_form_data)
+  EXPECT_TRUE(test::WithoutUnserializedData(address_form())
                   .SameFormAs(*output_form_data));
 }
 
@@ -649,97 +700,96 @@ TEST_F(ContentAutofillDriverTest, TypePredictionsSentToRendererWhenEnabled) {
       FormStructure::GetFieldTypePredictions(form_structures);
 
   base::RunLoop run_loop;
-  fake_agent_.SetQuitLoopClosure(run_loop.QuitClosure());
+  agent().SetQuitLoopClosure(run_loop.QuitClosure());
   driver().browser_events().SendAutofillTypePredictionsToRenderer(
       form_structures);
   run_loop.RunUntilIdle();
 
   EXPECT_EQ(expected_type_predictions,
-            fake_agent_.GetFieldTypePredictionsAvailable());
+            agent().GetFieldTypePredictionsAvailable());
 }
 
-TEST_F(ContentAutofillDriverTest, AcceptDataListSuggestion) {
-  FieldGlobalId field = SeeAddressFormData().fields.front().global_id();
+TEST_F(ContentAutofillDriverTestWithAddressForm, AcceptDataListSuggestion) {
+  FieldGlobalId field = address_form().fields.front().global_id();
   std::u16string input_value(u"barfoo");
 
   base::RunLoop run_loop;
-  fake_agent_.SetQuitLoopClosure(run_loop.QuitClosure());
+  agent().SetQuitLoopClosure(run_loop.QuitClosure());
   driver().browser_events().RendererShouldAcceptDataListSuggestion(field,
                                                                    input_value);
   run_loop.RunUntilIdle();
 
-  EXPECT_EQ(input_value,
-            fake_agent_.GetString16AcceptDataListSuggestion(field));
+  EXPECT_EQ(input_value, agent().GetString16AcceptDataListSuggestion(field));
 }
 
-TEST_F(ContentAutofillDriverTest, ClearFilledSectionSentToRenderer) {
-  SeeAddressFormData();
+TEST_F(ContentAutofillDriverTestWithAddressForm,
+       ClearFilledSectionSentToRenderer) {
   base::RunLoop run_loop;
-  fake_agent_.SetQuitLoopClosure(run_loop.QuitClosure());
+  agent().SetQuitLoopClosure(run_loop.QuitClosure());
   driver().browser_events().RendererShouldClearFilledSection();
   run_loop.RunUntilIdle();
 
-  EXPECT_TRUE(fake_agent_.GetCalledClearSection());
+  EXPECT_TRUE(agent().GetCalledClearSection());
 }
 
-TEST_F(ContentAutofillDriverTest, ClearPreviewedFormSentToRenderer) {
-  SeeAddressFormData();
+TEST_F(ContentAutofillDriverTestWithAddressForm,
+       ClearPreviewedFormSentToRenderer) {
   base::RunLoop run_loop;
-  fake_agent_.SetQuitLoopClosure(run_loop.QuitClosure());
+  agent().SetQuitLoopClosure(run_loop.QuitClosure());
   driver().browser_events().RendererShouldClearPreviewedForm();
   run_loop.RunUntilIdle();
 
-  EXPECT_TRUE(fake_agent_.GetCalledClearPreviewedForm());
+  EXPECT_TRUE(agent().GetCalledClearPreviewedForm());
 }
 
 // Tests that `AutofillDriver::RendererShouldTriggerSuggestions()` calls make
 // it to AutofillAgent.
-TEST_F(ContentAutofillDriverTest, TriggerSuggestions) {
-  const FieldGlobalId field = SeeAddressFormData().fields.front().global_id();
+TEST_F(ContentAutofillDriverTestWithAddressForm, TriggerSuggestions) {
+  const FieldGlobalId field = address_form().fields.front().global_id();
   const auto input_source =
       AutofillSuggestionTriggerSource::kFormControlElementClicked;
 
   base::RunLoop run_loop;
-  fake_agent_.SetQuitLoopClosure(run_loop.QuitClosure());
+  agent().SetQuitLoopClosure(run_loop.QuitClosure());
   driver().browser_events().RendererShouldTriggerSuggestions(field,
                                                              input_source);
   run_loop.RunUntilIdle();
 
-  EXPECT_EQ(input_source, fake_agent_.GetCalledTriggerSuggestionsSource(field));
+  EXPECT_EQ(input_source, agent().GetCalledTriggerSuggestionsSource(field));
 }
 
-TEST_F(ContentAutofillDriverTest, ApplyFieldAction_Fill) {
-  FieldGlobalId field = SeeAddressFormData().fields.front().global_id();
+TEST_F(ContentAutofillDriverTestWithAddressForm, ApplyFieldAction_Fill) {
+  FieldGlobalId field = address_form().fields.front().global_id();
   std::u16string input_value(u"barqux");
 
   base::RunLoop run_loop;
-  fake_agent_.SetQuitLoopClosure(run_loop.QuitClosure());
+  agent().SetQuitLoopClosure(run_loop.QuitClosure());
   driver().browser_events().ApplyFieldAction(mojom::ActionPersistence::kFill,
                                              field, input_value);
   run_loop.RunUntilIdle();
 
-  EXPECT_EQ(input_value, fake_agent_.GetString16FillFieldWithValue(field));
+  EXPECT_EQ(input_value, agent().GetString16FillFieldWithValue(field));
 }
 
-TEST_F(ContentAutofillDriverTest, ApplyFieldAction_Preview) {
-  FieldGlobalId field = SeeAddressFormData().fields.front().global_id();
+TEST_F(ContentAutofillDriverTestWithAddressForm, ApplyFieldAction_Preview) {
+  FieldGlobalId field = address_form().fields.front().global_id();
   std::u16string input_value(u"barqux");
 
   base::RunLoop run_loop;
-  fake_agent_.SetQuitLoopClosure(run_loop.QuitClosure());
+  agent().SetQuitLoopClosure(run_loop.QuitClosure());
   driver().browser_events().ApplyFieldAction(mojom::ActionPersistence::kPreview,
                                              field, input_value);
   run_loop.RunUntilIdle();
 
-  EXPECT_EQ(input_value, fake_agent_.GetString16PreviewFieldWithValue(field));
+  EXPECT_EQ(input_value, agent().GetString16PreviewFieldWithValue(field));
 }
 
 TEST_F(ContentAutofillDriverTest, TriggerFormExtractionInAllFrames) {
   base::RunLoop run_loop;
-  fake_agent_.SetQuitLoopClosure(run_loop.QuitClosure());
+  agent().SetQuitLoopClosure(run_loop.QuitClosure());
   base::OnceCallback<void(bool)> form_extraction_finished_callback;
 
-  EXPECT_CALL(fake_agent_, TriggerFormExtractionWithResponse)
+  EXPECT_CALL(agent(), TriggerFormExtractionWithResponse)
       .WillOnce(MoveArg<0>(&form_extraction_finished_callback));
   driver().browser_events().TriggerFormExtractionInAllFrames(base::BindOnce(
       [](base::RunLoop* run_loop, bool success) { run_loop->Quit(); },
@@ -757,7 +807,7 @@ TEST_F(ContentAutofillDriverTest, GetFourDigitCombinationsFromDOM_NoMatches) {
         std::vector<std::string> matches;
         std::move(callback).Run(matches);
       };
-  EXPECT_CALL(fake_agent_, GetPotentialLastFourCombinationsForStandaloneCvc)
+  EXPECT_CALL(agent(), GetPotentialLastFourCombinationsForStandaloneCvc)
       .WillOnce(WithArg<0>(Invoke(cb)));
 
   std::vector<std::string> matches = {"dummy data"};
@@ -778,7 +828,7 @@ TEST_F(ContentAutofillDriverTest,
         std::vector<std::string> matches = {"1234"};
         std::move(callback).Run(matches);
       };
-  EXPECT_CALL(fake_agent_, GetPotentialLastFourCombinationsForStandaloneCvc)
+  EXPECT_CALL(agent(), GetPotentialLastFourCombinationsForStandaloneCvc)
       .WillOnce(WithArg<0>(Invoke(cb)));
   std::vector<std::string> matches;
   driver().browser_events().GetFourDigitCombinationsFromDOM(
