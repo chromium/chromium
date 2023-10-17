@@ -83,20 +83,50 @@ absl::optional<ArcFeatures> ParseFeaturesJson(base::StringPiece input_json) {
     arc_features.unavailable_features.emplace_back(feature_item.GetString());
   }
 
-  // Parse each item under properties.
+  // Parse each item under build_props.
   const base::Value::Dict* properties = dict.FindDict("properties");
   if (!properties) {
     LOG(ERROR) << "No properties in JSON.";
     return absl::nullopt;
   }
-  for (const auto item : *properties) {
-    if (!item.second.is_string()) {
-      LOG(ERROR) << "Item in the properties mapping is not a string.";
-      return absl::nullopt;
-    }
 
-    arc_features.build_props.emplace(item.first, item.second.GetString());
+  constexpr char kFingerprintProperty[] = "ro.build.fingerprint";
+  const std::string* fingerprint = properties->FindString(kFingerprintProperty);
+  if (!fingerprint) {
+    LOG(ERROR) << "Missing required build property " << kFingerprintProperty;
+    return absl::nullopt;
   }
+  arc_features.build_props.fingerprint = *fingerprint;
+
+  constexpr char kSdkProperty[] = "ro.build.version.sdk";
+  const std::string* sdk_version = properties->FindString(kSdkProperty);
+  if (!sdk_version) {
+    LOG(ERROR) << "Missing required build property " << kSdkProperty;
+    return absl::nullopt;
+  }
+  arc_features.build_props.sdk_version = *sdk_version;
+
+  constexpr char kReleaseProperty[] = "ro.build.version.release";
+  const std::string* release_version = properties->FindString(kReleaseProperty);
+  if (!release_version) {
+    LOG(ERROR) << "Missing required build property " << kReleaseProperty;
+    return absl::nullopt;
+  }
+  arc_features.build_props.release_version = *release_version;
+
+  constexpr char kAbiListProperty[] = "ro.product.cpu.abilist";
+  constexpr char kSystemAbiListProperty[] = "ro.system.product.cpu.abilist";
+  const std::string* abi_list = properties->FindString(kAbiListProperty);
+  // On ARC T+, supported ABIs are listed in the "system" version of the
+  // property.
+  if (!abi_list) {
+    abi_list = properties->FindString(kSystemAbiListProperty);
+  }
+  if (!abi_list) {
+    LOG(ERROR) << "Missing required abilist build property";
+    return absl::nullopt;
+  }
+  arc_features.build_props.abi_list = *abi_list;
 
   // Parse the Play Store version
   const std::string* play_version = dict.FindString("play_store_version");
@@ -132,6 +162,15 @@ absl::optional<ArcFeatures> ReadOnFileThread(const base::FilePath& file_path) {
 }
 
 }  // namespace
+
+BuildPropsMapping::BuildPropsMapping() = default;
+BuildPropsMapping::BuildPropsMapping(const BuildPropsMapping&) = default;
+BuildPropsMapping& BuildPropsMapping::operator=(const BuildPropsMapping&) =
+    default;
+BuildPropsMapping::BuildPropsMapping(BuildPropsMapping&& other) = default;
+BuildPropsMapping& BuildPropsMapping::operator=(BuildPropsMapping&& other) =
+    default;
+BuildPropsMapping::~BuildPropsMapping() = default;
 
 ArcFeatures::ArcFeatures() = default;
 ArcFeatures::ArcFeatures(ArcFeatures&& other) = default;

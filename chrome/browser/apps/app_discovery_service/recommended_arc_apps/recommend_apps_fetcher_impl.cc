@@ -199,25 +199,17 @@ gfx::ExtensionSet GetGLExtensions(const gpu::GPUInfo& gpu_info) {
 }
 
 const std::string& GetDeviceFingerprint(const arc::ArcFeatures& arc_features) {
-  return arc_features.build_props.at("ro.build.fingerprint");
+  return arc_features.build_props.fingerprint;
 }
 
 const std::string& GetAndroidSdkVersion(const arc::ArcFeatures& arc_features) {
-  return arc_features.build_props.at("ro.build.version.sdk");
+  return arc_features.build_props.sdk_version;
 }
 
 std::vector<std::string> GetCpuAbiList(const arc::ArcFeatures& arc_features) {
-  auto abi_list = arc_features.build_props.find("ro.product.cpu.abilist");
-  // ARC T+ uses a different property for the ABI List.
-  if (abi_list == arc_features.build_props.end()) {
-    abi_list = arc_features.build_props.find("ro.system.product.cpu.abilist");
-  }
-
-  CHECK(abi_list != arc_features.build_props.end()) << "ARC must have an ABI";
-
   // The property value will be a comma separated list, e.g. "x86_64,x86".
-  return base::SplitString(abi_list->second, ",", base::TRIM_WHITESPACE,
-                           base::SPLIT_WANT_ALL);
+  return base::SplitString(arc_features.build_props.abi_list, ",",
+                           base::TRIM_WHITESPACE, base::SPLIT_WANT_ALL);
 }
 
 std::string CompressAndEncodeProtoMessageOnBlockingThread(

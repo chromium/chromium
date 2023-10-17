@@ -56,12 +56,6 @@ constexpr char kProtoMimeType[] = "application/x-protobuf";
 
 constexpr char kRequesterPackageName[] = "org.chromium.arc.webapk";
 
-// Android property containing the list of supported ABIs.
-constexpr char kAbiListPropertyName[] = "ro.product.cpu.abilist";
-// Alternative property containing the list of supported ABIs, used on Android
-// T+.
-constexpr char kSystemAbiListPropertyName[] = "ro.system.product.cpu.abilist";
-
 const char kMinimumIconSize = 64;
 
 // The seed to use when taking the murmur2 hash of the icon.
@@ -245,17 +239,10 @@ absl::optional<std::string> AddIconDataAndSerializeProto(
 }
 
 std::string GetArcAbi(const arc::ArcFeatures& arc_features) {
-  auto property = arc_features.build_props.find(kAbiListPropertyName);
-  if (property == arc_features.build_props.end()) {
-    property = arc_features.build_props.find(kSystemAbiListPropertyName);
-  }
-
-  CHECK(property != arc_features.build_props.end()) << "ARC must have an ABI";
-
   // The property value will be a comma separated list, e.g. "x86_64,x86". The
   // highest priority will be listed first.
-  return base::SplitString(property->second, ",", base::KEEP_WHITESPACE,
-                           base::SPLIT_WANT_NONEMPTY)[0];
+  return base::SplitString(arc_features.build_props.abi_list, ",",
+                           base::KEEP_WHITESPACE, base::SPLIT_WANT_NONEMPTY)[0];
 }
 
 }  // namespace
