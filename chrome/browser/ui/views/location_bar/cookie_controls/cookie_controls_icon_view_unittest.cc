@@ -30,6 +30,15 @@ std::u16string BlockedLabel() {
       IDS_COOKIE_CONTROLS_PAGE_ACTION_COOKIES_BLOCKED_LABEL);
 }
 
+std::u16string TrackingProtectionLabel() {
+  return l10n_util::GetStringUTF16(IDS_TRACKING_PROTECTION_PAGE_ACTION_LABEL);
+}
+
+std::u16string SiteNotWorkingLabel() {
+  return l10n_util::GetStringUTF16(
+      IDS_TRACKING_PROTECTION_PAGE_ACTION_SITE_NOT_WORKING_LABEL);
+}
+
 const char kUMAHighConfidenceShown[] = "CookieControls.HighConfidence.Shown";
 const char kUMAHighConfidenceOpened[] = "CookieControls.HighConfidence.Opened";
 const char kUMAMediumConfidenceShown[] =
@@ -57,7 +66,9 @@ class MockCookieControlsBubbleCoordinator
 
 }  // namespace
 
-class CookieControlsIconViewUnitTest : public TestWithBrowserView {
+class CookieControlsIconViewUnitTest
+    : public TestWithBrowserView,
+      public testing::WithParamInterface<CookieBlocking3pcdStatus> {
  protected:
   CookieControlsIconViewUnitTest()
       : a11y_counter_(views::AXEventManager::Get()) {}
@@ -85,6 +96,8 @@ class CookieControlsIconViewUnitTest : public TestWithBrowserView {
     TestWithBrowserView::TearDown();
   }
 
+  bool In3pcd() { return GetParam() != CookieBlocking3pcdStatus::kNotIn3pcd; }
+
   bool LabelShown() { return view_->ShouldShowLabel(); }
 
   bool Visible() { return view_->ShouldBeVisible(); }
@@ -110,9 +123,14 @@ class CookieControlsIconViewUnitTest : public TestWithBrowserView {
   raw_ptr<LocationBarView> delegate_;
 };
 
+INSTANTIATE_TEST_SUITE_P(All,
+                         CookieControlsIconViewUnitTest,
+                         testing::Values(CookieBlocking3pcdStatus::kNotIn3pcd,
+                                         CookieBlocking3pcdStatus::kAll));
+
 /// Enabled third-party cookie blocking.
 
-TEST_F(CookieControlsIconViewUnitTest, DefaultNotVisible) {
+TEST_P(CookieControlsIconViewUnitTest, DefaultNotVisible) {
   EXPECT_FALSE(Visible());
   EXPECT_FALSE(LabelShown());
   // Execute a improperly initialized icon view.
@@ -122,17 +140,17 @@ TEST_F(CookieControlsIconViewUnitTest, DefaultNotVisible) {
   EXPECT_EQ(user_actions_.GetActionCount(kUMABubbleOpenedAllowed), 0);
 }
 
-TEST_F(CookieControlsIconViewUnitTest, HighConfidenceEnabled) {
+TEST_P(CookieControlsIconViewUnitTest, HighConfidenceEnabled) {
   view_->OnStatusChanged(CookieControlsStatus::kEnabled,
                          CookieControlsEnforcement::kEnforcedByCookieSetting,
-                         CookieBlocking3pcdStatus::kNotIn3pcd,
-                         base::Time::Now() + base::Days(10));
+                         GetParam(), base::Time::Now() + base::Days(10));
   view_->OnBreakageConfidenceLevelChanged(
       CookieControlsBreakageConfidenceLevel::kHigh);
   EXPECT_TRUE(Visible());
   EXPECT_TRUE(LabelShown());  // Animation for high confidence
-  EXPECT_EQ(TooltipText(), BlockedLabel());
-  EXPECT_EQ(LabelText(), BlockedLabel());
+  EXPECT_EQ(TooltipText(),
+            In3pcd() ? TrackingProtectionLabel() : BlockedLabel());
+  EXPECT_EQ(LabelText(), In3pcd() ? SiteNotWorkingLabel() : BlockedLabel());
 // TODO(crbug.com/1446230): Fix screenreader tests on ChromeOS and Mac.
 #if !OS_MAC && !BUILDFLAG(IS_CHROMEOS_ASH)
   EXPECT_EQ(a11y_counter_.GetCount(ax::mojom::Event::kAlert), 1);
@@ -143,18 +161,18 @@ TEST_F(CookieControlsIconViewUnitTest, HighConfidenceEnabled) {
   EXPECT_EQ(user_actions_.GetActionCount(kUMABubbleOpenedBlocked), 1);
 }
 
-TEST_F(CookieControlsIconViewUnitTest,
+TEST_P(CookieControlsIconViewUnitTest,
        LowConfidenceDoesNotRetriggerA11yReadOut) {
   view_->OnStatusChanged(CookieControlsStatus::kEnabled,
                          CookieControlsEnforcement::kEnforcedByCookieSetting,
-                         CookieBlocking3pcdStatus::kNotIn3pcd,
-                         base::Time::Now() + base::Days(10));
+                         GetParam(), base::Time::Now() + base::Days(10));
   view_->OnBreakageConfidenceLevelChanged(
       CookieControlsBreakageConfidenceLevel::kHigh);
   EXPECT_TRUE(Visible());
   EXPECT_TRUE(LabelShown());  // Animation for high confidence
-  EXPECT_EQ(TooltipText(), BlockedLabel());
-  EXPECT_EQ(LabelText(), BlockedLabel());
+  EXPECT_EQ(TooltipText(),
+            In3pcd() ? TrackingProtectionLabel() : BlockedLabel());
+  EXPECT_EQ(LabelText(), In3pcd() ? SiteNotWorkingLabel() : BlockedLabel());
 // TODO(crbug.com/1446230): Fix screenreader tests on ChromeOS and Mac.
 #if !OS_MAC && !BUILDFLAG(IS_CHROMEOS_ASH)
   EXPECT_EQ(a11y_counter_.GetCount(ax::mojom::Event::kAlert), 1);
@@ -164,25 +182,26 @@ TEST_F(CookieControlsIconViewUnitTest,
       CookieControlsBreakageConfidenceLevel::kLow);
   EXPECT_FALSE(Visible());
   EXPECT_FALSE(LabelShown());  // Hidden for low confidence
-  EXPECT_EQ(TooltipText(), BlockedLabel());
-  EXPECT_EQ(LabelText(), BlockedLabel());
+  EXPECT_EQ(TooltipText(),
+            In3pcd() ? TrackingProtectionLabel() : BlockedLabel());
+  EXPECT_EQ(LabelText(), In3pcd() ? SiteNotWorkingLabel() : BlockedLabel());
   // We don't read out the label again when the icon becomes hidden.
 #if !OS_MAC && !BUILDFLAG(IS_CHROMEOS_ASH)
   EXPECT_EQ(a11y_counter_.GetCount(ax::mojom::Event::kAlert), 1);
 #endif
 }
 
-TEST_F(CookieControlsIconViewUnitTest, MediumConfidenceEnabled) {
+TEST_P(CookieControlsIconViewUnitTest, MediumConfidenceEnabled) {
   view_->OnStatusChanged(CookieControlsStatus::kEnabled,
                          CookieControlsEnforcement::kEnforcedByCookieSetting,
-                         CookieBlocking3pcdStatus::kNotIn3pcd,
-                         base::Time::Now() + base::Days(10));
+                         GetParam(), base::Time::Now() + base::Days(10));
   view_->OnBreakageConfidenceLevelChanged(
       CookieControlsBreakageConfidenceLevel::kMedium);
   EXPECT_TRUE(Visible());
   EXPECT_FALSE(LabelShown());
-  EXPECT_EQ(TooltipText(), BlockedLabel());
-  EXPECT_EQ(LabelText(), BlockedLabel());
+  EXPECT_EQ(TooltipText(),
+            In3pcd() ? TrackingProtectionLabel() : BlockedLabel());
+  EXPECT_EQ(LabelText(), In3pcd() ? TrackingProtectionLabel() : BlockedLabel());
 #if !BUILDFLAG(IS_CHROMEOS_ASH)
   EXPECT_EQ(a11y_counter_.GetCount(ax::mojom::Event::kAlert), 0);
 #endif
@@ -192,17 +211,17 @@ TEST_F(CookieControlsIconViewUnitTest, MediumConfidenceEnabled) {
   EXPECT_EQ(user_actions_.GetActionCount(kUMABubbleOpenedBlocked), 1);
 }
 
-TEST_F(CookieControlsIconViewUnitTest, LowConfidenceEnabled) {
+TEST_P(CookieControlsIconViewUnitTest, LowConfidenceEnabled) {
   view_->OnStatusChanged(CookieControlsStatus::kEnabled,
                          CookieControlsEnforcement::kEnforcedByCookieSetting,
-                         CookieBlocking3pcdStatus::kNotIn3pcd,
-                         base::Time::Now() + base::Days(10));
+                         GetParam(), base::Time::Now() + base::Days(10));
   view_->OnBreakageConfidenceLevelChanged(
       CookieControlsBreakageConfidenceLevel::kLow);
   EXPECT_FALSE(Visible());
   EXPECT_FALSE(LabelShown());
-  EXPECT_TRUE(TooltipText().empty());
-  EXPECT_TRUE(LabelText().empty());
+  EXPECT_EQ(TooltipText(),
+            In3pcd() ? TrackingProtectionLabel() : BlockedLabel());
+  EXPECT_EQ(LabelText(), In3pcd() ? TrackingProtectionLabel() : BlockedLabel());
 #if !BUILDFLAG(IS_CHROMEOS_ASH)
   EXPECT_EQ(a11y_counter_.GetCount(ax::mojom::Event::kAlert), 0);
 #endif
@@ -215,17 +234,17 @@ TEST_F(CookieControlsIconViewUnitTest, LowConfidenceEnabled) {
 
 //// Default third-party cookie blocking disabled.
 
-TEST_F(CookieControlsIconViewUnitTest, HighConfidenceDisabled) {
+TEST_P(CookieControlsIconViewUnitTest, HighConfidenceDisabled) {
   view_->OnStatusChanged(CookieControlsStatus::kDisabled,
                          CookieControlsEnforcement::kEnforcedByCookieSetting,
-                         CookieBlocking3pcdStatus::kNotIn3pcd,
-                         base::Time::Now() + base::Days(10));
+                         GetParam(), base::Time::Now() + base::Days(10));
   view_->OnBreakageConfidenceLevelChanged(
       CookieControlsBreakageConfidenceLevel::kHigh);
   EXPECT_FALSE(Visible());
   EXPECT_FALSE(LabelShown());
-  EXPECT_TRUE(TooltipText().empty());
-  EXPECT_TRUE(LabelText().empty());
+  EXPECT_EQ(TooltipText(),
+            In3pcd() ? TrackingProtectionLabel() : AllowedLabel());
+  EXPECT_EQ(LabelText(), In3pcd() ? TrackingProtectionLabel() : AllowedLabel());
 #if !BUILDFLAG(IS_CHROMEOS_ASH)
   EXPECT_EQ(a11y_counter_.GetCount(ax::mojom::Event::kAlert), 0);
 #endif
@@ -236,17 +255,17 @@ TEST_F(CookieControlsIconViewUnitTest, HighConfidenceDisabled) {
   EXPECT_EQ(user_actions_.GetActionCount(kUMABubbleOpenedBlocked), 0);
 }
 
-TEST_F(CookieControlsIconViewUnitTest, MediumConfidenceDisabled) {
+TEST_P(CookieControlsIconViewUnitTest, MediumConfidenceDisabled) {
   view_->OnStatusChanged(CookieControlsStatus::kDisabled,
                          CookieControlsEnforcement::kEnforcedByCookieSetting,
-                         CookieBlocking3pcdStatus::kNotIn3pcd,
-                         base::Time::Now() + base::Days(10));
+                         GetParam(), base::Time::Now() + base::Days(10));
   view_->OnBreakageConfidenceLevelChanged(
       CookieControlsBreakageConfidenceLevel::kMedium);
   EXPECT_FALSE(Visible());
   EXPECT_FALSE(LabelShown());
-  EXPECT_TRUE(TooltipText().empty());
-  EXPECT_TRUE(LabelText().empty());
+  EXPECT_EQ(TooltipText(),
+            In3pcd() ? TrackingProtectionLabel() : AllowedLabel());
+  EXPECT_EQ(LabelText(), In3pcd() ? TrackingProtectionLabel() : AllowedLabel());
 #if !BUILDFLAG(IS_CHROMEOS_ASH)
   EXPECT_EQ(a11y_counter_.GetCount(ax::mojom::Event::kAlert), 0);
 #endif
@@ -256,17 +275,17 @@ TEST_F(CookieControlsIconViewUnitTest, MediumConfidenceDisabled) {
   EXPECT_EQ(user_actions_.GetActionCount(kUMABubbleOpenedAllowed), 1);
 }
 
-TEST_F(CookieControlsIconViewUnitTest, LowConfidenceDisabled) {
+TEST_P(CookieControlsIconViewUnitTest, LowConfidenceDisabled) {
   view_->OnStatusChanged(CookieControlsStatus::kDisabled,
                          CookieControlsEnforcement::kEnforcedByCookieSetting,
-                         CookieBlocking3pcdStatus::kNotIn3pcd,
-                         base::Time::Now() + base::Days(10));
+                         GetParam(), base::Time::Now() + base::Days(10));
   view_->OnBreakageConfidenceLevelChanged(
       CookieControlsBreakageConfidenceLevel::kLow);
   EXPECT_FALSE(Visible());
   EXPECT_FALSE(LabelShown());
-  EXPECT_TRUE(TooltipText().empty());
-  EXPECT_TRUE(LabelText().empty());
+  EXPECT_EQ(TooltipText(),
+            In3pcd() ? TrackingProtectionLabel() : AllowedLabel());
+  EXPECT_EQ(LabelText(), In3pcd() ? TrackingProtectionLabel() : AllowedLabel());
 #if !BUILDFLAG(IS_CHROMEOS_ASH)
   EXPECT_EQ(a11y_counter_.GetCount(ax::mojom::Event::kAlert), 0);
 #endif
@@ -278,16 +297,16 @@ TEST_F(CookieControlsIconViewUnitTest, LowConfidenceDisabled) {
 
 /// Disabled third-party cookie blocking for site.
 
-TEST_F(CookieControlsIconViewUnitTest, HighConfidenceDisabledForSite) {
+TEST_P(CookieControlsIconViewUnitTest, HighConfidenceDisabledForSite) {
   view_->OnStatusChanged(CookieControlsStatus::kDisabledForSite,
                          CookieControlsEnforcement::kEnforcedByCookieSetting,
-                         CookieBlocking3pcdStatus::kNotIn3pcd,
-                         base::Time::Now() + base::Days(10));
+                         GetParam(), base::Time::Now() + base::Days(10));
   view_->OnBreakageConfidenceLevelChanged(
       CookieControlsBreakageConfidenceLevel::kHigh);
   EXPECT_TRUE(Visible());
   EXPECT_TRUE(LabelShown());
-  EXPECT_EQ(TooltipText(), AllowedLabel());
+  EXPECT_EQ(TooltipText(),
+            In3pcd() ? TrackingProtectionLabel() : AllowedLabel());
   EXPECT_EQ(LabelText(), AllowedLabel());
 #if !OS_MAC && !BUILDFLAG(IS_CHROMEOS_ASH)
   EXPECT_EQ(a11y_counter_.GetCount(ax::mojom::Event::kAlert), 1);
@@ -297,17 +316,17 @@ TEST_F(CookieControlsIconViewUnitTest, HighConfidenceDisabledForSite) {
   EXPECT_EQ(user_actions_.GetActionCount(kUMABubbleOpenedAllowed), 1);
 }
 
-TEST_F(CookieControlsIconViewUnitTest, MediumConfidenceDisabledForSite) {
+TEST_P(CookieControlsIconViewUnitTest, MediumConfidenceDisabledForSite) {
   view_->OnStatusChanged(CookieControlsStatus::kDisabledForSite,
                          CookieControlsEnforcement::kEnforcedByCookieSetting,
-                         CookieBlocking3pcdStatus::kNotIn3pcd,
-                         base::Time::Now() + base::Days(10));
+                         GetParam(), base::Time::Now() + base::Days(10));
   view_->OnBreakageConfidenceLevelChanged(
       CookieControlsBreakageConfidenceLevel::kMedium);
   EXPECT_TRUE(Visible());
   EXPECT_FALSE(LabelShown());
-  EXPECT_EQ(TooltipText(), AllowedLabel());
-  EXPECT_EQ(LabelText(), AllowedLabel());
+  EXPECT_EQ(TooltipText(),
+            In3pcd() ? TrackingProtectionLabel() : AllowedLabel());
+  EXPECT_EQ(LabelText(), In3pcd() ? TrackingProtectionLabel() : AllowedLabel());
 #if !BUILDFLAG(IS_CHROMEOS_ASH)
   EXPECT_EQ(a11y_counter_.GetCount(ax::mojom::Event::kAlert), 0);
 #endif
@@ -316,17 +335,17 @@ TEST_F(CookieControlsIconViewUnitTest, MediumConfidenceDisabledForSite) {
   EXPECT_EQ(user_actions_.GetActionCount(kUMABubbleOpenedAllowed), 1);
 }
 
-TEST_F(CookieControlsIconViewUnitTest, LowConfidenceDisabledForSite) {
+TEST_P(CookieControlsIconViewUnitTest, LowConfidenceDisabledForSite) {
   view_->OnStatusChanged(CookieControlsStatus::kDisabledForSite,
                          CookieControlsEnforcement::kEnforcedByCookieSetting,
-                         CookieBlocking3pcdStatus::kNotIn3pcd,
-                         base::Time::Now() + base::Days(10));
+                         GetParam(), base::Time::Now() + base::Days(10));
   view_->OnBreakageConfidenceLevelChanged(
       CookieControlsBreakageConfidenceLevel::kLow);
   EXPECT_FALSE(Visible());
   EXPECT_FALSE(LabelShown());
-  EXPECT_TRUE(TooltipText().empty());
-  EXPECT_TRUE(LabelText().empty());
+  EXPECT_EQ(TooltipText(),
+            In3pcd() ? TrackingProtectionLabel() : AllowedLabel());
+  EXPECT_EQ(LabelText(), In3pcd() ? TrackingProtectionLabel() : AllowedLabel());
 #if !BUILDFLAG(IS_CHROMEOS_ASH)
   EXPECT_EQ(a11y_counter_.GetCount(ax::mojom::Event::kAlert), 0);
 #endif

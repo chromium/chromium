@@ -3958,6 +3958,12 @@ are declared in tools/grit/grit_rule.gni.
       <message name="IDS_COOKIE_CONTROLS_PAGE_ACTION_COOKIES_BLOCKED_LABEL" desc="Label in the Page Action (omnibox) icon indicating that cookies are blocked on the current site.">
         Third-party cookies blocked
       </message>
+      <message name="IDS_TRACKING_PROTECTION_PAGE_ACTION_SITE_NOT_WORKING_LABEL" desc="Label for the Page Action (omnibox) icon that highlights the Tracking Protection bubble entrypoint when cookies are blocked and we have high confidence that this is breaking the current site.">
+        Site not working?
+      </message>
+      <message name="IDS_TRACKING_PROTECTION_PAGE_ACTION_LABEL" desc="Tooltip for the Page Action (omnibox) icon for the Tracking Protection bubble entrypoint.">
+        Tracking Protection
+      </message>
       <message name="IDS_COOKIE_CONTROLS_PROMO_TITLE" desc="Title of the in-product-help bubble shown for the cookie controls bubble. Indicates that cookies are blocked on the current site.">
         Third-party cookies blocked
       </message>
@@ -3977,7 +3983,7 @@ are declared in tools/grit/grit_rule.gni.
         If a site you visit isn't working as expected, try temporarily allowing third-party cookies for that site. That will mean less protection but site features are more likely to work as expected.
       </message>
       <message name="IDS_3PCD_USER_BYPASS_PROMO_SCREENREADER" desc="Text announced with the in-product-help bubble shown for the user bypass feature. Explains how to temporarily enable third-party cookies if a site isn't working.">
-        If a site isn't working as expected, you can enable third-party cookies for it by selecting third-party cookie blocking in the search and address bar.
+        If a site isn't working as expected, you can enable third-party cookies for it through the Tracking Protection option in the address bar.
       </message>
 
       <!-- Win certificate selector dialog strings.  -->

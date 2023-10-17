@@ -72,8 +72,11 @@ class CookieControlsIconView : public PageActionIconView,
   // even if the icon is already visible.
   void UpdateVisibilityAndAnimate(bool confidence_changed = false);
   absl::optional<int> GetLabelForStatus() const;
+  void SetLabelAndTooltip();
 
   CookieControlsStatus status_ = CookieControlsStatus::kUninitialized;
+  CookieBlocking3pcdStatus blocking_status_ =
+      CookieBlocking3pcdStatus::kNotIn3pcd;
 
   CookieControlsBreakageConfidenceLevel confidence_ =
       CookieControlsBreakageConfidenceLevel::kUninitialized;

@@ -5,6 +5,7 @@
 #include "chrome/browser/ui/views/location_bar/cookie_controls/cookie_controls_icon_view.h"
 
 #include <memory>
+#include <optional>
 
 #include "base/check_is_test.h"
 #include "base/metrics/user_metrics.h"
@@ -17,6 +18,7 @@
 #include "chrome/browser/ui/browser_window.h"
 #include "chrome/grit/generated_resources.h"
 #include "components/content_settings/browser/ui/cookie_controls_controller.h"
+#include "components/content_settings/core/common/cookie_blocking_3pcd_status.h"
 #include "components/content_settings/core/common/cookie_controls_breakage_confidence_level.h"
 #include "components/content_settings/core/common/cookie_controls_status.h"
 #include "components/feature_engagement/public/event_constants.h"
@@ -138,16 +140,8 @@ bool CookieControlsIconView::MaybeShowIPH() {
   // Need to make element visible or calls to show IPH will fail.
   SetVisible(true);
 
-  auto* const web_contents = delegate()->GetWebContentsForPageActionIconView();
-  if (!web_contents) {
-    return false;
-  }
-  Profile* const profile =
-      Profile::FromBrowserContext(web_contents->GetBrowserContext());
-
   const base::Feature* feature = nullptr;
-  if (TrackingProtectionSettingsFactory::GetForProfile(profile)
-          ->IsTrackingProtection3pcdEnabled()) {
+  if (blocking_status_ != CookieBlocking3pcdStatus::kNotIn3pcd) {
     // Only show the reminder IPH if cookies are blocked on the current site.
     if (status_ != CookieControlsStatus::kEnabled) {
       return false;
@@ -177,15 +171,33 @@ void CookieControlsIconView::OnIPHClosed() {
   SetHighlighted(false);
 }
 
+void CookieControlsIconView::SetLabelAndTooltip() {
+  auto icon_label = GetLabelForStatus().value_or(IDS_COOKIE_CONTROLS_TOOLTIP);
+  if (blocking_status_ != CookieBlocking3pcdStatus::kNotIn3pcd) {
+    // Set the accessible description to whatever the 3PC blocking state is.
+    SetAccessibleDescription(l10n_util::GetStringUTF16(icon_label));
+    // Don't show "Tracking Protection" if the label is visible.
+    if (!label()->GetVisible()) {
+      icon_label = IDS_TRACKING_PROTECTION_PAGE_ACTION_LABEL;
+    }
+  }
+  SetTooltipText(l10n_util::GetStringUTF16(icon_label));
+  SetLabel(l10n_util::GetStringUTF16(icon_label));
+}
+
 void CookieControlsIconView::UpdateVisibilityAndAnimate(
     bool confidence_changed) {
-  UpdateIconImage();
-  if (ShouldBeVisible()) {
-    auto label = GetLabelForStatus();
+  bool should_be_visible = ShouldBeVisible();
+  if (should_be_visible) {
     // TODO(crbug.com/1446230): Don't animate when the LHS toggle is used.
     if (!GetAssociatedBubble() && (!GetVisible() || confidence_changed)) {
       if (!MaybeShowIPH() &&
           confidence_ == CookieControlsBreakageConfidenceLevel::kHigh) {
+        auto label = GetLabelForStatus();
+        if (blocking_status_ != CookieBlocking3pcdStatus::kNotIn3pcd &&
+            status_ == CookieControlsStatus::kEnabled) {
+          label = IDS_TRACKING_PROTECTION_PAGE_ACTION_SITE_NOT_WORKING_LABEL;
+        }
         AnimateIn(label);
 // VoiceOver on Mac already announces this text.
 #if !BUILDFLAG(IS_MAC)
@@ -202,15 +214,16 @@ void CookieControlsIconView::UpdateVisibilityAndAnimate(
       }
       RecordShownActionForConfidence(confidence_);
     }
-    SetVisible(true);
-    SetLabel(
-        l10n_util::GetStringUTF16(label.value_or(IDS_COOKIE_CONTROLS_TOOLTIP)));
-    SetTooltipText(
-        l10n_util::GetStringUTF16(label.value_or(IDS_COOKIE_CONTROLS_TOOLTIP)));
   } else {
     UnpauseAnimation();
     ResetSlideAnimation(false);
-    SetVisible(false);
+  }
+  UpdateIconImage();
+  SetVisible(should_be_visible);
+  // The icon label should never change in response to confidence,
+  // other than to animate the label (handled above).
+  if (!confidence_changed) {
+    SetLabelAndTooltip();
   }
 }
 
@@ -233,8 +246,9 @@ void CookieControlsIconView::OnStatusChanged(
     CookieControlsEnforcement enforcement,
     CookieBlocking3pcdStatus blocking_status,
     base::Time expiration) {
-  if (status_ != status) {
+  if (status_ != status || blocking_status_ != blocking_status) {
     status_ = status;
+    blocking_status_ = blocking_status;
     UpdateVisibilityAndAnimate();
   }
 }
