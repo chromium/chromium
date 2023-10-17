@@ -182,6 +182,9 @@ void CookieControlsBubbleViewController::OnStatusChanged(
       bubble_view_->GetContentView()->SetToggleVisible(true);
       bubble_view_->GetContentView()->SetEnforcedIconVisible(false);
       break;
+    case CookieControlsEnforcement::kEnforcedByTpcdGrant:
+      bubble_view_->CloseWidget();
+      break;
     case CookieControlsEnforcement::kEnforcedByPolicy:
     case CookieControlsEnforcement::kEnforcedByExtension:
     case CookieControlsEnforcement::kEnforcedByCookieSetting:

@@ -284,6 +284,9 @@ CookieSettingsBase::GetCookieSettingInternal(
     block_third = false;
     FireStorageAccessHistogram(net::cookie_util::StorageAccessResult::
                                    ACCESS_ALLOWED_3PCD_METADATA_GRANT);
+    if (info) {
+      info->source = SETTING_SOURCE_TPCD_GRANT;
+    }
   }
 
   if (block_third && ShouldConsider3pcdSupportSettings() &&
@@ -293,6 +296,9 @@ CookieSettingsBase::GetCookieSettingInternal(
     block_third = false;
     FireStorageAccessHistogram(
         net::cookie_util::StorageAccessResult::ACCESS_ALLOWED_3PCD);
+    if (info) {
+      info->source = SETTING_SOURCE_TPCD_GRANT;
+    }
   }
 
   if (block_third &&

@@ -100,6 +100,8 @@ std::ostream& operator<<(std::ostream& os,
       return os << "kEnforcedByExtension";
     case CookieControlsEnforcement::kEnforcedByPolicy:
       return os << "kEnforcedByPolicy";
+    case CookieControlsEnforcement::kEnforcedByTpcdGrant:
+      return os << "kEnforcedByTpcdGrant";
   }
 }
 

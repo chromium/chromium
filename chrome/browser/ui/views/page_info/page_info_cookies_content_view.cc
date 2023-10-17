@@ -139,7 +139,7 @@ void PageInfoCookiesContentView::CookiesSettingsLinkClicked(
 
 void PageInfoCookiesContentView::SetCookieInfo(
     const CookiesNewInfo& cookie_info) {
-  SetDescriptionLabel(cookie_info.blocking_status);
+  SetDescriptionLabel(cookie_info.blocking_status, cookie_info.enforcement);
 
   if (base::FeatureList::IsEnabled(content_settings::features::kUserBypassUI)) {
     SetThirdPartyCookiesInfo(cookie_info);
@@ -321,7 +321,8 @@ void PageInfoCookiesContentView::SetThirdPartyCookiesToggle(
 }
 
 void PageInfoCookiesContentView::SetDescriptionLabel(
-    CookieBlocking3pcdStatus blocking_status) {
+    CookieBlocking3pcdStatus blocking_status,
+    CookieControlsEnforcement enforcement) {
   // Text on cookies description label has an embedded link to cookies settings.
   std::u16string settings_text_for_link = l10n_util::GetStringUTF16(
       blocking_status != CookieBlocking3pcdStatus::kNotIn3pcd
@@ -330,7 +331,9 @@ void PageInfoCookiesContentView::SetDescriptionLabel(
 
   size_t offset;
   int description;
-  if (blocking_status == CookieBlocking3pcdStatus::kLimited) {
+  if (enforcement == CookieControlsEnforcement::kEnforcedByTpcdGrant) {
+    description = IDS_PAGE_INFO_TRACKING_PROTECTION_SITE_GRANT_DESCRIPTION;
+  } else if (blocking_status == CookieBlocking3pcdStatus::kLimited) {
     description = IDS_PAGE_INFO_TRACKING_PROTECTION_DESCRIPTION;
   } else if (blocking_status == CookieBlocking3pcdStatus::kAll) {
     description = IDS_PAGE_INFO_TRACKING_PROTECTION_BLOCKED_COOKIES_DESCRIPTION;
@@ -350,8 +353,12 @@ void PageInfoCookiesContentView::SetDescriptionLabel(
 
 void PageInfoCookiesContentView::SetThirdPartyCookiesInfo(
     const CookiesNewInfo& cookie_info) {
-  bool show_control = cookie_info.confidence !=
-                      CookieControlsBreakageConfidenceLevel::kUninitialized;
+  bool show_control =
+      cookie_info.confidence !=
+          CookieControlsBreakageConfidenceLevel::kUninitialized &&
+      cookie_info.enforcement !=
+          CookieControlsEnforcement::kEnforcedByTpcdGrant;
+
   third_party_cookies_container_->SetVisible(show_control);
   if (!show_control) {
     return;
@@ -421,6 +428,7 @@ void PageInfoCookiesContentView::InitBlockingThirdPartyCookiesToggleOrIcon(
           IDS_PAGE_INFO_BLOCK_THIRD_PARTY_COOKIES_MANAGED_BY_SETTINGS_TOOLTIP;
       enforced = true;
       break;
+    case CookieControlsEnforcement::kEnforcedByTpcdGrant:
     case CookieControlsEnforcement::kNoEnforcement:
       break;
   }

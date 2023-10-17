@@ -108,6 +108,7 @@ enum SettingSource {
   SETTING_SOURCE_ALLOWLIST,
   SETTING_SOURCE_SUPERVISED,
   SETTING_SOURCE_INSTALLED_WEBAPP,
+  SETTING_SOURCE_TPCD_GRANT,
 };
 
 // |SettingInfo| provides meta data for content setting values. |source|

@@ -190,6 +190,7 @@ void SetupManagedTestConditions(
     case content_settings::SETTING_SOURCE_USER:
     case content_settings::SETTING_SOURCE_NONE:
     case content_settings::SETTING_SOURCE_ALLOWLIST:
+    case content_settings::SETTING_SOURCE_TPCD_GRANT:
     case content_settings::SETTING_SOURCE_INSTALLED_WEBAPP:
       provider_type = HostContentSettingsMap::DEFAULT_PROVIDER;
   }
