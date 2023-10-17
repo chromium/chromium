@@ -14506,8 +14506,8 @@ TEST_F(WebFrameSimTest, SetModifiedFeaturesInOverrideContext) {
 
   // Create a modified features value map and give it a value that we can check.
   auto modified_features =
-      base::flat_map<::blink::mojom::RuntimeFeatureState, bool>();
-  modified_features[blink::mojom::RuntimeFeatureState::kTestFeature] = true;
+      base::flat_map<::blink::mojom::RuntimeFeature, bool>();
+  modified_features[blink::mojom::RuntimeFeature::kTestFeature] = true;
   params->modified_runtime_features = modified_features;
 
   // Commit the navigation
@@ -14522,9 +14522,8 @@ TEST_F(WebFrameSimTest, SetModifiedFeaturesInOverrideContext) {
   // Do the same thing for a value of "false"
   params = std::make_unique<WebNavigationParams>();
   params->url = url_test_helpers::ToKURL("http://www.example2.com");
-  modified_features =
-      base::flat_map<::blink::mojom::RuntimeFeatureState, bool>();
-  modified_features[blink::mojom::RuntimeFeatureState::kTestFeature] = false;
+  modified_features = base::flat_map<::blink::mojom::RuntimeFeature, bool>();
+  modified_features[blink::mojom::RuntimeFeature::kTestFeature] = false;
   params->modified_runtime_features = modified_features;
   frame->CommitNavigation(std::move(params), nullptr);
   override_context =

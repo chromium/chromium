@@ -16,7 +16,7 @@
 namespace blink {
 
 void RuntimeFeatureStateOverrideContext::ApplyOverrideValuesFromParams(
-    const base::flat_map<mojom::RuntimeFeatureState, bool>&
+    const base::flat_map<mojom::RuntimeFeature, bool>&
         values_from_params) {
   for(const auto& override_value : values_from_params) {
     override_values_[override_value.first] = override_value.second;
@@ -27,7 +27,7 @@ void RuntimeFeatureStateOverrideContext::ApplyOverrideValuesFromParams(
 bool RuntimeFeatureStateOverrideContext::
     Is{{feature.name}}ForceDisabled() const {
   auto it = override_values_.find(
-      mojom::RuntimeFeatureState::k{{feature.name}});
+      mojom::RuntimeFeature::k{{feature.name}});
   if (it != override_values_.end() && it->second == false)
     return true;
 
@@ -36,26 +36,19 @@ bool RuntimeFeatureStateOverrideContext::
 
 bool RuntimeFeatureStateOverrideContext::
     Is{{feature.name}}ForceEnabled() const {
-  auto it = override_values_.find(
-      mojom::RuntimeFeatureState::k{{feature.name}});
+  auto it = override_values_.find(mojom::RuntimeFeature::k{{feature.name}});
   if(it != override_values_.end() && it->second == true)
     return true;
 
   return false;
 }
 
-void RuntimeFeatureStateOverrideContext::
-    Set{{feature.name}}ForceDisabled() {
-  override_values_
-      [mojom::RuntimeFeatureState::k{{feature.name}}] =
-          false;
+void RuntimeFeatureStateOverrideContext::Set{{feature.name}}ForceDisabled() {
+  override_values_[mojom::RuntimeFeature::k{{feature.name}}] = false;
 }
 
-void RuntimeFeatureStateOverrideContext::
-    Set{{feature.name}}ForceEnabled() {
-  override_values_
-      [mojom::RuntimeFeatureState::k{{feature.name}}] =
-          true;
+void RuntimeFeatureStateOverrideContext::Set{{feature.name}}ForceEnabled() {
+  override_values_[mojom::RuntimeFeature::k{{feature.name}}] = true;
 }
 
 {% if feature in origin_trial_controlled_features %}
@@ -77,16 +70,15 @@ bool RuntimeFeatureStateOverrideContext::
   // in the override_values_ map. Return whether the override was
   // successful.
   if(!override_values_.contains(
-      mojom::RuntimeFeatureState::k{{feature.name}})) {
+      mojom::RuntimeFeature::k{{feature.name}})) {
     // Update the state of all feature overrides in this class.
     override_values_
-      [mojom::RuntimeFeatureState::k{{feature.name}}] = true;
+      [mojom::RuntimeFeature::k{{feature.name}}] = true;
     // Add successful overrides to the list of features we sent back
     // to the browser process.
     auto value = mojom::blink::OriginTrialFeatureState::New(true, tokens);
     origin_trial_overrides_[
-      mojom::RuntimeFeatureState::k{{feature.name}}] =
-      std::move(value);
+      mojom::RuntimeFeature::k{{feature.name}}] = std::move(value);
     return true;
   }
   return false;
@@ -112,7 +104,7 @@ void RuntimeFeatureStateOverrideContext::ApplyOriginTrialOverride(
     // We must convert from std:: types to WTF:: types.
     // TODO(https://crbug.com/1377000): make origin_trial_overrides_ a
     // WTF:: type in a follow-up CL.
-    WTF::HashMap<mojom::blink::RuntimeFeatureState,
+    WTF::HashMap<mojom::blink::RuntimeFeature,
                  mojom::blink::OriginTrialFeatureStatePtr>
         blink_overrides;
     for (auto& o : origin_trial_overrides_){

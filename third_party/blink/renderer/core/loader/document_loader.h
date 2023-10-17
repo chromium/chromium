@@ -54,7 +54,7 @@
 #include "third_party/blink/public/mojom/navigation/navigation_params.mojom-shared.h"
 #include "third_party/blink/public/mojom/page/page.mojom-blink-forward.h"
 #include "third_party/blink/public/mojom/page_state/page_state.mojom-blink.h"
-#include "third_party/blink/public/mojom/runtime_feature_state/runtime_feature_state.mojom-blink-forward.h"
+#include "third_party/blink/public/mojom/runtime_feature_state/runtime_feature.mojom-blink-forward.h"
 #include "third_party/blink/public/mojom/service_worker/controller_service_worker_mode.mojom-blink.h"
 #include "third_party/blink/public/mojom/timing/resource_timing.mojom-blink-forward.h"
 #include "third_party/blink/public/platform/scheduler/web_scoped_virtual_time_pauser.h"
@@ -830,7 +830,7 @@ class CORE_EXPORT DocumentLoader : public GarbageCollected<DocumentLoader>,
 
   // Runtime feature state override is applied to the document. They are applied
   // before JavaScript context creation (i.e. CreateParserPostCommit).
-  const base::flat_map<mojom::blink::RuntimeFeatureState, bool>
+  const base::flat_map<mojom::blink::RuntimeFeature, bool>
       modified_runtime_features_;
 };
 

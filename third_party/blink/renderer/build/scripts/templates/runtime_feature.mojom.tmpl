@@ -5,8 +5,12 @@
 
 module blink.mojom;
 
+
+// A RuntimeFeature represents a Blink runtime feature whose enablement state
+// are tracked in both the browser and the renderer.
+//
 // These enum values should not be persisted nor logged to histograms.
-enum RuntimeFeatureState {
+enum RuntimeFeature {
   {% for feature in overridable_features %}
   k{{feature.name}},
   {% endfor %}

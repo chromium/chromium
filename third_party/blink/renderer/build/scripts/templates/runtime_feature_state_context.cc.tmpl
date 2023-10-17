@@ -6,7 +6,7 @@
 #include "third_party/blink/public/common/runtime_feature_state/runtime_feature_state_context.h"
 
 #include "base/containers/flat_map.h"
-#include "third_party/blink/public/mojom/runtime_feature_state/runtime_feature_state.mojom-shared.h"
+#include "third_party/blink/public/mojom/runtime_feature_state/runtime_feature.mojom-shared.h"
 #include "third_party/blink/public/common/runtime_feature_state/runtime_feature_state_read_context.h"
 #include "third_party/blink/public/common/storage_key/storage_key.h"
 
@@ -18,8 +18,7 @@ void RuntimeFeatureStateContext::PopulateInitialValues() {
 
   {% for feature in browser_read_access_features %}
   initial_values_.insert(
-      {blink::mojom::RuntimeFeatureState::k{{feature.name}},
-        false});
+      {blink::mojom::RuntimeFeature::k{{feature.name}}, false});
   {% endfor %}
 }
 

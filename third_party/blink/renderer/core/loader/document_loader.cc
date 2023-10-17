@@ -324,7 +324,7 @@ struct SameSizeAsDocumentLoader
   bool has_storage_access;
   mojom::blink::ParentResourceTimingAccess parent_resource_timing_access;
   const absl::optional<BrowsingContextGroupInfo> browsing_context_group_info;
-  const base::flat_map<mojom::blink::RuntimeFeatureState, bool>
+  const base::flat_map<mojom::blink::RuntimeFeature, bool>
       modified_runtime_features;
 };
 

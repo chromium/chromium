@@ -1021,7 +1021,7 @@ IN_PROC_BROWSER_TEST_F(RenderFrameHostImplWithTokensBrowserTest,
   // Before ApplyFeatureDiffForOriginTrial() is called, we expect that the
   // feature overrides will be empty.
   auto expected_overrides =
-      base::flat_map<blink::mojom::RuntimeFeatureState, bool>();
+      base::flat_map<blink::mojom::RuntimeFeature, bool>();
   RuntimeFeatureStateDocumentData* actual_document_data =
       RuntimeFeatureStateDocumentData::GetForCurrentDocument(
           web_contents()->GetPrimaryMainFrame());
@@ -1031,19 +1031,20 @@ IN_PROC_BROWSER_TEST_F(RenderFrameHostImplWithTokensBrowserTest,
 
   // Simulate receiving a feature diff from the renderer process.
   auto overrides_with_tokens =
-      base::flat_map<blink::mojom::RuntimeFeatureState,
+      base::flat_map<blink::mojom::RuntimeFeature,
                      blink::mojom::OriginTrialFeatureStatePtr>();
   std::string raw_token(kValidFirstPartyToken);
   std::vector<std::string> raw_tokens_vector{raw_token};
-  overrides_with_tokens[blink::mojom::RuntimeFeatureState::
-                            kDisableThirdPartyStoragePartitioning] =
-      blink::mojom::OriginTrialFeatureState::New(true, raw_tokens_vector);
+  overrides_with_tokens
+      [blink::mojom::RuntimeFeature::kDisableThirdPartyStoragePartitioning] =
+          blink::mojom::OriginTrialFeatureState::New(true, raw_tokens_vector);
   origin_trial_state_host_remote.get()->ApplyFeatureDiffForOriginTrial(
       std::move(overrides_with_tokens));
 
   // Create the set of expected overrides without the corresponding tokens.
-  expected_overrides[blink::mojom::RuntimeFeatureState::
-                         kDisableThirdPartyStoragePartitioning] = true;
+  expected_overrides
+      [blink::mojom::RuntimeFeature::kDisableThirdPartyStoragePartitioning] =
+          true;
 
   // Verify that the document data was altered with the correct overrides.
   origin_trial_state_host_remote.FlushForTesting();
@@ -1072,7 +1073,7 @@ IN_PROC_BROWSER_TEST_F(RenderFrameHostImplWithTokensBrowserTest,
   // Before ApplyFeatureDiffForOriginTrial() is called, we expect that the
   // feature overrides will be empty.
   auto expected_overrides =
-      base::flat_map<blink::mojom::RuntimeFeatureState, bool>();
+      base::flat_map<blink::mojom::RuntimeFeature, bool>();
   RuntimeFeatureStateDocumentData* actual_document_data =
       RuntimeFeatureStateDocumentData::GetForCurrentDocument(
           web_contents()->GetPrimaryMainFrame());
@@ -1082,13 +1083,13 @@ IN_PROC_BROWSER_TEST_F(RenderFrameHostImplWithTokensBrowserTest,
 
   // Simulate receiving a feature diff from the renderer process.
   auto overrides_with_tokens =
-      base::flat_map<blink::mojom::RuntimeFeatureState,
+      base::flat_map<blink::mojom::RuntimeFeature,
                      blink::mojom::OriginTrialFeatureStatePtr>();
   std::string raw_token(kInvalidToken);
   std::vector<std::string> raw_tokens_vector{raw_token};
-  overrides_with_tokens[blink::mojom::RuntimeFeatureState::
-                            kDisableThirdPartyStoragePartitioning] =
-      blink::mojom::OriginTrialFeatureState::New(true, raw_tokens_vector);
+  overrides_with_tokens
+      [blink::mojom::RuntimeFeature::kDisableThirdPartyStoragePartitioning] =
+          blink::mojom::OriginTrialFeatureState::New(true, raw_tokens_vector);
   origin_trial_state_host_remote.get()->ApplyFeatureDiffForOriginTrial(
       std::move(overrides_with_tokens));
 
