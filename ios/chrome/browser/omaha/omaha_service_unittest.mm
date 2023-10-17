@@ -185,7 +185,7 @@ TEST_F(OmahaServiceTest, PingMessageTestWithUnknownInstallDate) {
 }
 
 TEST_F(OmahaServiceTest, InstallEventMessageTest) {
-  const char* kExpectedResultFormat =
+  static constexpr char kExpectedResultFormat[] =
       "<request protocol=\"3.0\" updater=\"iOS\" updaterversion=\"[^\"]*\""
       " updaterchannel=\"[^\"]*\" ismachine=\"1\" requestid=\"requestId\""
       " sessionid=\"sessionId\" hardware_class=\"[^\"]*\">"
