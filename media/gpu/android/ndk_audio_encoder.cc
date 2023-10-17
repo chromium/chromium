@@ -9,8 +9,6 @@
 #include <media/NdkMediaError.h>
 #include <media/NdkMediaFormat.h>
 
-#include <cstdint>
-#include <cstring>
 #include <memory>
 
 #include "base/logging.h"
@@ -65,6 +63,13 @@ MediaFormatPtr CreateAudioParams(const AudioEncoder::Options& options,
                         options.channels);
   AMediaFormat_setInt32(result.get(), AMEDIAFORMAT_KEY_SAMPLE_RATE,
                         options.sample_rate);
+
+  // AMediaCodec uses signed 16 bits input by default.
+  const int input_size =
+      sizeof(int16_t) * kAacFramesPerBuffer * options.channels;
+
+  AMediaFormat_setInt32(result.get(), AMEDIAFORMAT_KEY_MAX_INPUT_SIZE,
+                        input_size);
 
   // TODO(crbug.com/1421301) Consider adding HE-AAC profile support.
 
