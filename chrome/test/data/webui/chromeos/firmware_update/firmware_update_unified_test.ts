@@ -13,7 +13,7 @@ import {updateCardTest} from './update_card_test.js';
 
 window.test_suites_list = [];
 
-function runSuite(suiteName, testFn) {
+function runSuite(suiteName: string, testFn: () => void): void {
   window.test_suites_list.push(suiteName);
   suite(suiteName, testFn);
 }
@@ -24,3 +24,9 @@ runSuite('FirmwareUpdateApp', firmwareUpdateAppTest);
 runSuite('FirmwareUpdateDialog', firmwareUpdateDialogTest);
 runSuite('PeripheralUpdatesListTest', peripheralUpdatesListTest);
 runSuite('UpdateCardTest', updateCardTest);
+
+declare global {
+  interface Window {
+    test_suites_list: string[];
+  }
+}
