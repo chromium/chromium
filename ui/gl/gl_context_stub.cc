@@ -18,8 +18,8 @@ GLContextStub::GLContextStub(GLShareGroup* share_group)
   SetExtensionsString("GL_EXT_framebuffer_object");
 }
 
-bool GLContextStub::Initialize(GLSurface* compatible_surface,
-                               const GLContextAttribs& attribs) {
+bool GLContextStub::InitializeImpl(GLSurface* compatible_surface,
+                                   const GLContextAttribs& attribs) {
   return true;
 }
 

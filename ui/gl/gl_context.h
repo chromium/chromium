@@ -143,12 +143,16 @@ class GL_EXPORT GLContext : public base::RefCounted<GLContext>,
   // Initializes the GL context to be compatible with the given surface. The GL
   // context can be made with other surface's of the same type. The compatible
   // surface is only needed for certain platforms like WGL and GLX. It
-  // should be specific for all platforms though.
-  virtual bool Initialize(GLSurface* compatible_surface,
-                          const GLContextAttribs& attribs) = 0;
+  // should be specific for all platforms though. If the compatible surface is
+  // an offscreen one, it is stored by the context and can be accessed via
+  // |default_surface|.
+  bool Initialize(GLSurface* compatible_surface,
+                  const GLContextAttribs& attribs);
 
   // Makes the GL context and a surface current on the current thread.
   bool MakeCurrent(GLSurface* surface);
+  // Same as above, but uses the stored offscreen surface (named as default).
+  bool MakeCurrentDefault();
 
   // Releases this GL context and surface as current on the current thread.
   virtual void ReleaseCurrent(GLSurface* surface) = 0;
@@ -269,6 +273,8 @@ class GL_EXPORT GLContext : public base::RefCounted<GLContext>,
   virtual void FlushForDriverCrashWorkaround();
 #endif
 
+  gl::GLSurface* default_surface() const { return default_surface_.get(); }
+
  protected:
   virtual ~GLContext();
 
@@ -303,6 +309,8 @@ class GL_EXPORT GLContext : public base::RefCounted<GLContext>,
   virtual bool MakeCurrentImpl(GLSurface* surface) = 0;
   virtual unsigned int CheckStickyGraphicsResetStatusImpl();
   virtual void ResetExtensions() = 0;
+  virtual bool InitializeImpl(GLSurface* compatible_surface,
+                              const GLContextAttribs& attribs) = 0;
 
   GLApi* gl_api() { return gl_api_wrapper_->api(); }
 
@@ -345,6 +353,8 @@ class GL_EXPORT GLContext : public base::RefCounted<GLContext>,
   // This bit allows us to avoid virtual context state restoration in the case
   // where this underlying context becomes lost.  https://crbug.com/1061442
   bool context_lost_ = false;
+  // The offscreen surface that has been used to initialize this context.
+  scoped_refptr<gl::GLSurface> default_surface_;
 
 #if BUILDFLAG(IS_APPLE)
   using GLFenceAndMetalSharedEvents = std::pair<

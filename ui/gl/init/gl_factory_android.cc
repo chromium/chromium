@@ -35,8 +35,8 @@ class GLNonOwnedContext : public GLContextReal {
   GLNonOwnedContext& operator=(const GLNonOwnedContext&) = delete;
 
   // Implement GLContext.
-  bool Initialize(GLSurface* compatible_surface,
-                  const GLContextAttribs& attribs) override;
+  bool InitializeImpl(GLSurface* compatible_surface,
+                      const GLContextAttribs& attribs) override;
   bool MakeCurrentImpl(GLSurface* surface) override;
   void ReleaseCurrent(GLSurface* surface) override {}
   bool IsCurrent(GLSurface* surface) override;
@@ -52,8 +52,8 @@ class GLNonOwnedContext : public GLContextReal {
 GLNonOwnedContext::GLNonOwnedContext(GLShareGroup* share_group)
     : GLContextReal(share_group), display_(nullptr) {}
 
-bool GLNonOwnedContext::Initialize(GLSurface* compatible_surface,
-                                   const GLContextAttribs& attribs) {
+bool GLNonOwnedContext::InitializeImpl(GLSurface* compatible_surface,
+                                       const GLContextAttribs& attribs) {
   display_ = eglGetDisplay(EGL_DEFAULT_DISPLAY);
   return true;
 }

@@ -103,12 +103,30 @@ void GLContext::SetSwitchableGPUsSupported() {
   switchable_gpus_supported_ = true;
 }
 
+bool GLContext::Initialize(GLSurface* compatible_surface,
+                           const GLContextAttribs& attribs) {
+  DCHECK(compatible_surface && !default_surface_);
+  if (compatible_surface->IsOffscreen()) {
+    default_surface_ = compatible_surface;
+  }
+  return InitializeImpl(compatible_surface, attribs);
+}
+
 bool GLContext::MakeCurrent(GLSurface* surface) {
   if (context_lost_) {
     LOG(ERROR) << "Failed to make current since context is marked as lost";
     return false;
   }
   return MakeCurrentImpl(surface);
+}
+
+bool GLContext::MakeCurrentDefault() {
+  if (!default_surface()) {
+    LOG(ERROR) << "Failed to make current offscreen since the context was not "
+                  "initialized with an offscreen surface.";
+    return false;
+  }
+  return MakeCurrent(default_surface());
 }
 
 GLApi* GLContext::CreateGLApi(DriverGL* driver) {
