@@ -586,11 +586,13 @@ absl::optional<base::Value::List> SearchSuggestionParser::DeserializeJsonData(
 // static
 bool SearchSuggestionParser::ParseSuggestResults(
     const base::Value::List& root_list,
-    const std::u16string& input_text,
+    const AutocompleteInput& input,
     const AutocompleteSchemeClassifier& scheme_classifier,
     int default_result_relevance,
     bool is_keyword_result,
     Results* results) {
+  const std::u16string input_text = input.IsZeroSuggest() ? u"" : input.text();
+
   // 1st element: query.
   if (root_list.empty() || !root_list[0].is_string())
     return false;
