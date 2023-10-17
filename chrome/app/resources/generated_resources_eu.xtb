@@ -69,7 +69,6 @@
 <translation id="1054048317165655285">Amaitu konfigurazioa telefonoan</translation>
 <translation id="1054153489933238809">Ireki jatorrizko &amp;irudia beste fitxa batean</translation>
 <translation id="1055274863771110134">{NUM_WEEKS,plural, =1{Eguneratu <ph name="DEVICE_TYPE" /> gailua astebeteko epean}other{Eguneratu <ph name="DEVICE_TYPE" /> gailua {NUM_WEEKS} asteko epean}}</translation>
-<translation id="1056398434290692818">Nabigatu atzera eta aurrera hatza pasatzeko keinua erabilita</translation>
 <translation id="1056898198331236512">Abisua</translation>
 <translation id="1056980582064308040">Ezarpenak aldatuz gero, wifi-gunea berrabiaraziko da. Hura erabiltzen ari diren gailuak deskonektatuko dira.</translation>
 <translation id="1058262162121953039">PUK kodea</translation>
@@ -591,7 +590,7 @@ Baliteke aplikazioei emandako baimenak kontu honi aplikatzea. <ph name="APPS_LIN
 <translation id="1471034383866732283">Irakurtzeko moduak ezin du aurkitu eduki nagusia orrian</translation>
 <translation id="1472675084647422956">Erakutsi gehiago</translation>
 <translation id="1473223074251193484">Ezarri konexioa partekatzeko aukeraren konfigurazioa</translation>
-<translation id="1474785664565228650">Mikrofonoaren ezarpenean egindako aldaketa gauzatzeko, berrabiarazi egin behar da Parallels Desktop. Aurrera egiteko, berrabiarazi Parallels Desktop.</translation>
+<translation id="1474785664565228650">Mikrofonoaren ezarpenean egindako aldaketa gauzatzeko, Parallels Desktop berriro exekutatu behar da. Aurrera egiteko, exekutatu Parallels Desktop berriro.</translation>
 <translation id="1474893630593443211">Ikusten dituzun iragarkien gaineko kontrol handiagoa</translation>
 <translation id="1475502736924165259">Beste kategorietarako egokiak ez diren ziurtagiriak dituzu erregistratuta</translation>
 <translation id="1476088332184200792">Kopiatu zure gailuan</translation>
@@ -2610,7 +2609,7 @@ Txartel adimenduna sartuta edukitzea eskatzen du <ph name="DOMAIN" /> domeinuak.
 <translation id="3012917896646559015">Jarri harremanetan berehala hardware-fabrikatzailearekin ordenagailua konpontze-lantegi batera bidaltzeko.</translation>
 <translation id="3013652227108802944">Desaktibatuta • Luzapenak Chrome Web Store-ren gidalerroak urratzen ditu</translation>
 <translation id="301525898020410885">Erakundeak ezartzen du hizkuntza</translation>
-<translation id="3015639418649705390">Berrabiarazi</translation>
+<translation id="3015639418649705390">Exekutatu berriro</translation>
 <translation id="3016381065346027039">Ez dago sarrerarik erregistroan</translation>
 <translation id="3016641847947582299">Osagaia eguneratu da</translation>
 <translation id="3017079585324758401">Atzeko planoa</translation>
@@ -4421,7 +4420,7 @@ Besteak beste, instalatutako softwareari, fitxategiei, arakatzaileari eta sistem
 <translation id="450867954911715010">Erabilerraztasun-ezarpenak</translation>
 <translation id="4508765956121923607">Ikusi I&amp;turburua</translation>
 <translation id="4509277363725254222"><ph name="BEGIN_BOLD_USERNAME" />Erabiltzaile-izenaren<ph name="END_BOLD_USERNAME" /> eta <ph name="BEGIN_BOLD_PASSWORD" />pasahitzaren<ph name="END_BOLD_PASSWORD" /> kopia bat partekatzen baduzu, familiako kideak Google-ren Pasahitz-kudeatzailea erabilita bete ditzake</translation>
-<translation id="4509421746503122514">Eguneratzeko, abiarazi berriro Chrome</translation>
+<translation id="4509421746503122514">Eguneratzeko, exekutatu Chrome berriro</translation>
 <translation id="4510195992002502722">Ezin izan dira bidali oharrak. Berriro saiatzen…</translation>
 <translation id="4510479820467554003">Guraso-kontuen zerrenda</translation>
 <translation id="451102079304155829">saskiak</translation>
@@ -4596,7 +4595,7 @@ Besteak beste, instalatutako softwareari, fitxategiei, arakatzaileari eta sistem
 <translation id="4650591383426000695">Deskonektatu telefonoa <ph name="DEVICE_TYPE" /> gailutik</translation>
 <translation id="4651484272688821107">Ezin izan da kargatu sareko osagaia demo moduko baliabideekin.</translation>
 <translation id="4651921906638302153">Ezin da hasi saioa kontu honekin</translation>
-<translation id="4652935475563630866">Kameraren ezarpenean egindako aldaketa gauzatzeko, berrabiarazi egin behar da Parallels Desktop. Aurrera egiteko, berrabiarazi Parallels Desktop.</translation>
+<translation id="4652935475563630866">Kameraren ezarpenean egindako aldaketa gauzatzeko, Parallels Desktop berriro exekutatu behar da. Aurrera egiteko, exekutatu Parallels Desktop berriro.</translation>
 <translation id="4653116291358041820">Itzal txikia</translation>
 <translation id="4653405415038586100">Errore bat gertatu da Linux konfiguratzean</translation>
 <translation id="465406513924180949">Sareko erosketa-saskietan utzitako produktuetara erraz itzul zaitezen ari zara ikusten saskiak.
@@ -9007,7 +9006,7 @@ Gorde gakoen fitxategia leku seguru batean. Zure luzapenaren bertsio berriak sor
 <translation id="8264024885325823677">Administratzaileak kudeatzen du ezarpen hau.</translation>
 <translation id="8264718194193514834">"<ph name="EXTENSION_NAME" />" luzapenak pantaila osoa abiarazi du.</translation>
 <translation id="826511437356419340">Leihoen ikuspegi orokorraren moduan sartu zara. Pasatu hatza nabigatzeko edo, teklatu bat erabiltzen ari bazara, sakatu tabuladorea.</translation>
-<translation id="8265671588726449108">{COUNT,plural, =1{Berriro abiarazi ondoren, ezkutuko moduko leihoa ez da irekiko}other{Berriro abiarazi ondoren, ezkutuko moduko {COUNT} leihoak ez dira irekiko}}</translation>
+<translation id="8265671588726449108">{COUNT,plural, =1{Berriro exekutatu ondoren, ezkutuko moduko leihoa ez da irekiko}other{Berriro exekutatu ondoren, ezkutuko moduko {COUNT} leihoak ez dira irekiko}}</translation>
 <translation id="8266947622852630193">Idazketa-metodo guztiak</translation>
 <translation id="8267539814046467575">Gehitu inprimagailu bat</translation>
 <translation id="8267961145111171918"><ph name="BEGIN_PARAGRAPH1" />Gailuari eta hura erabiltzeko moduari buruzko informazio orokorra da (adibidez, bateria-maila, sistemako eta aplikazioetako jarduerak, eta erroreak). Android hobetzeko erabiliko dira datuok. Gainera, multzokatutako datu batzuk oso baliagarriak dira Google-ren aplikazioak hobetzeko eta bazkideei (adibidez, Android garatzaileei) euren aplikazio eta produktuak hobetzen laguntzeko.<ph name="END_PARAGRAPH1" />
@@ -10246,6 +10245,7 @@ Baliteke webguneei eta aplikazioei emandako baimenak kontu honi aplikatzea. Goog
 <translation id="956500788634395331">Luzapen kaltegarrien aurka babestuta zaude</translation>
 <translation id="957179356621191750">6 puntu</translation>
 <translation id="957960681186851048">Hainbat fitxategi automatikoki deskargatzen saiatu da webgunea</translation>
+<translation id="958571289841636277">Nabigatu atzera eta aurrera hatza pasatzeko keinua erabilita</translation>
 <translation id="960987915827980018">Gutxi gorabehera, ordubete falta da</translation>
 <translation id="962802172452141067">Laster-marken karpetaren zuhaitza</translation>
 <translation id="963000966785016697">Bilatu irudia <ph name="VISUAL_SEARCH_PROVIDER" /> bidez</translation>

@@ -1733,6 +1733,15 @@ Se questo criterio non viene impostato, la Schermata sulla privacy verrà inizia
       Se questo criterio non viene impostato, la funzionalità Click-to-call sarà attiva per impostazione predefinita.</translation>
 <translation id="2482676533225429905">Messaggi nativi</translation>
 <translation id="2483146640187052324">Prevedi le azioni di rete su qualsiasi connessione di rete</translation>
+<translation id="2487495476672607707">La funzionalità di sincronizzazione file di <ph name="PRODUCT_OS_NAME" /> rende automaticamente disponibili offline i file di <ph name="GOOGLE_DRIVE_NAME" /> presenti nella sezione "Il mio Drive" di un utente (se lo spazio lo consente) sui dispositivi <ph name="CHROMEBOOK_PLUS_NAME" />.
+
+Una volta attivata la funzionalità, tutti i nuovi file verranno automaticamente resi disponibili offline. Se in un secondo momento lo spazio non sarà sufficiente, tutti i nuovi file non verranno più resi disponibili offline automaticamente. Tuttavia, l'utente può comunque rendere disponibili offline gli elementi manualmente.
+
+Se il criterio viene impostato su <ph name="POLICY_VALUE_VISIBLE" />, la funzionalità di sincronizzazione file viene mostrata nell'app File e nelle Impostazioni. L'utente può attivare o disattivare la sincronizzazione file.
+
+Se il criterio viene impostato su <ph name="POLICY_VALUE_DISABLEDE" />, la funzionalità di sincronizzazione file viene disattivata se era stata precedentemente attivata dall'utente. Consente di nascondere la funzionalità nell'app File e nelle Impostazioni in modo che l'utente non possa riattivarla. I file esistenti che sono stati resi disponibili offline dall'utente rimarranno disponibili offline. L'utente può comunque rendere disponibili offline gli elementi manualmente.
+
+Se il criterio non viene configurato, <ph name="POLICY_VALUE_VISIBLE" /> è la selezione predefinita.</translation>
 <translation id="2489558694350871332">Consenti al dispositivo di eseguire macchine virtuali</translation>
 <translation id="2492240920793040106">Attiva la segnalazione di informazioni di sistema e contenuti della pagina per migliorare Navigazione sicura</translation>
 <translation id="2496180316473517155">Cronologia di navigazione</translation>
@@ -2661,7 +2670,6 @@ Se non viene configurato, verrà utilizzato il nuovo comportamento, esattamente 
 <translation id="3240609035816615922">Norma di accesso alla configurazione delle stampanti.</translation>
 <translation id="324062325008698789">Consente di configurare un elenco di stampanti</translation>
 <translation id="3240655340884151271">Indirizzo MAC NIC integrato del dock</translation>
-<translation id="3242480111684005642">L'utente può utilizzare la funzionalità di sincronizzazione file di <ph name="GOOGLE_DRIVE_NAME" />.</translation>
 <translation id="3242756958360374888">Contiene un elenco di pattern che possono essere usati per controllare la visibilità degli account in <ph name="PRODUCT_NAME" />.
 
       Ogni Account Google sul dispositivo viene messo a confronto con i pattern memorizzati in questo criterio per stabilirne la visibilità in <ph name="PRODUCT_NAME" />. L'account sarà visibile se il nome soddisfa uno qualsiasi dei pattern nell'elenco. In caso contrario, l'account non sarà visibile.
@@ -2721,7 +2729,6 @@ Queste limitazioni vengono applicate ai download attivati dai contenuti delle pa
 Su <ph name="MS_WIN_NAME" />, questo criterio è disponibile soltanto per le istanze che sono aggiunte a un dominio <ph name="MS_AD_NAME" />, aggiunte a <ph name="MS_AAD_NAME" /> o registrate in <ph name="CHROME_BROWSER_CLOUD_MANAGEMENT_NAME" />.</translation>
 <translation id="3300784749135986828">Attiva o disattiva la funzionalità <ph name="USER_AGENT_REDUCTION_FEATURE_NAME" />.</translation>
 <translation id="3301698868852716692">Attiva estensione Insights</translation>
-<translation id="3302723130703323097">Rendi visibile e disponibile la funzionalità di sincronizzazione file di <ph name="GOOGLE_DRIVE_NAME" /> per attivare/disattivare i dispositivi supportati nell'app File di <ph name="PRODUCT_OS_NAME" /></translation>
 <translation id="3302829897293005699">Se il criterio viene impostato su Attivato o se non viene configurato, i dispositivi registrati segnalano informazioni relative alla sessione kiosk attiva quali ID applicazione e versione.
 
       Se il criterio viene impostato su Disattivato, i dispositivi registrati non segnalano informazioni relative alla sessione kiosk.</translation>
@@ -2813,28 +2820,6 @@ Se viene disattivato, la funzionalità di scrittura predittiva sulla tastiera fi
       Se il criterio viene impostato su "hidden", le funzionalità disattivate saranno inutilizzabili e non visibili per gli utenti.
 
       Se il criterio non viene configurato o presenta un valore non valido, la modalità di disattivazione delle funzionalità di sistema sarà "blocked".</translation>
-<translation id="3410963889229735344">La sincronizzazione dei file di <ph name="GOOGLE_DRIVE_NAME" /> rende
-automaticamente disponibili offline i file nella cartella Il mio Drive di un utente (se lo spazio lo consente) sui dispositivi
-supportati. Dopo aver reso inizialmente disponibili tutti i file offline, tutti i nuovi file
-verranno automaticamente resi disponibili offline. Una volta attivata la funzionalità, se
-in un secondo momento lo spazio non sarà sufficiente per mantenere attiva la funzionalità, tutti i nuovi file non saranno
-più resi disponibili offline automaticamente. L'utente potrà comunque
-attivare/disattivare manualmente gli elementi.
-
-Se il criterio viene impostato su <ph name="POLICY_VALUE_VISIBLE" />, la funzionalità
-di sincronizzazione file viene mostrata nell'app File e nella pagina Impostazioni. Gli utenti devono
-comunque attivare/disattivare autonomamente la funzionalità di sincronizzazione file.
-
-Se il criterio viene impostato su <ph name="POLICY_VALUE_DISABLED" />, la funzionalità
-di sincronizzazione file verrà disattivata se in precedenza era stata attivata dall'utente e
-verrà nascosta dalle impostazioni e dall'app File in modo che l'utente non possa
-riattivarla. Se sono presenti file resi disponibili offline
-dall'utente, questi rimarranno disponibili offline e l'utente potrà rendere
- disponibili offline i singoli file manualmente (non verranno resi automaticamente
-disponibili offline).
-
-Se il criterio non viene configurato, utilizzerà
-<ph name="POLICY_VALUE_VISIBLE" /> come valore predefinito.</translation>
 <translation id="341285788698114069">Questo criterio consente di stabilire la priorità del processo audio su Windows.
       Se il criterio viene attivato, il processo audio verrà eseguito con priorità sopra la norma.
       Se il criterio viene disattivato, il processo audio verrà eseguito con priorità normale.
@@ -3332,6 +3317,7 @@ Questo criterio è una soluzione alternativa temporanea e verrà rimosso dopo il
 
       Se il criterio non viene configurato o se viene lasciato vuoto, non vengono applicate limitazioni.</translation>
 <translation id="3799417300383048419">Mantieni i dati del profilo su disco al termine della sessione utente</translation>
+<translation id="3799436555130241393">Sincronizzazione file di <ph name="PRODUCT_OS_NAME" /></translation>
 <translation id="3803171355925844705">Non consentire il caricamento di contenuti misti in nessun sito</translation>
 <translation id="3808945828600697669">Specifica un elenco dei plug-in disattivati</translation>
 <translation id="3810642039169532482">Consente di attivare la funzione di accessibilità di dettatura nella schermata di accesso.
@@ -3659,6 +3645,7 @@ Per informazioni dettagliate sui pattern <ph name="URL_LABEL" /> validi, visita 
 <translation id="4098920079809952737">Consenti la stampa con e senza immagini di sfondo</translation>
 <translation id="410061592404122032">Chiedi ogni volta che un sito vuole ottenere l'autorizzazione per la gestione delle finestre</translation>
 <translation id="410068710490553233">Consenti l'accesso ad altri Account Google</translation>
+<translation id="4101222634611892813">L'utente può utilizzare la funzionalità di sincronizzazione file di <ph name="PRODUCT_OS_NAME" />.</translation>
 <translation id="4101282687722389021">Timestamp UTC relativo all'ultimo aggiornamento della voce. Viene inviato sotto forma di stringa perché non rientrerebbe in un numero intero.</translation>
 <translation id="4102347680024644994">Segnala eventi di rilevamento e risposta estesi (XDR)</translation>
 <translation id="4105989332710272578">Disattiva l'imposizione di Certificate Transparency per un elenco di URL</translation>
@@ -3685,6 +3672,7 @@ Se questo criterio non viene configurato, tutte le origini richiederanno un gest
 
 Se il criterio non viene impostato, viene applicata la velocità predefinita di 1 giorno.</translation>
 <translation id="4121350739760194865">Impedisci la visualizzazione delle promozioni di applicazioni nella pagina Nuova scheda</translation>
+<translation id="4122432898152851612">L'utente non può vedere nessun elemento della UI relativa alla funzionalità di sincronizzazione file di <ph name="PRODUCT_OS_NAME" />.</translation>
 <translation id="4122473079291425973">La pagina Nuova scheda mostra le schede se sono disponibili contenuti, ma consente all'utente di modificare l'impostazione</translation>
 <translation id="4122565688998751716">Questo criterio è deprecato. Utilizza il criterio "<ph name="ALLOW_SYSTEM_NOTIFICATIONS_POLICY_NAME" />".
 
@@ -4668,7 +4656,6 @@ Questo criterio viene applicato soltanto se la macchina viene registrata con <ph
 <translation id="5039110755072335605">Supporto delle intestazioni delle richieste CORS senza caratteri jolly</translation>
 <translation id="504116558738617678">Mostra gli avvisi relativi allo spazio su disco in esaurimento soltanto se il dispositivo non è gestito o se esiste 1 solo utente</translation>
 <translation id="5041315457555330432">Consenti a <ph name="PRODUCT_NAME" /> di connettersi solo a dispositivi su indirizzi IP privati, a meno che la funzionalità CastAllowAllIPs non sia attiva.</translation>
-<translation id="5046376406561077773">L'utente non può vedere nessuna delle UI relative alla funzionalità di sincronizzazione file di <ph name="GOOGLE_DRIVE_NAME" />.</translation>
 <translation id="5055474681190962362">Il giorno del mese [1-31] in cui dovrebbe essere eseguito il riavvio, nel fuso orario locale del dispositivo. Questo criterio viene usato soltanto se il valore del criterio "frequency" è "MONTHLY". Se questo numero supera il numero di giorni massimo presente in un mese specifico, verrà scelto l'ultimo giorno del mese.</translation>
 <translation id="5056708224511062314">Ingrandimento dello schermo disattivato</translation>
 <translation id="5058573563327660283">Seleziona la strategia da utilizzare per liberare spazio su disco durante la pulizia automatica (obsoleta)</translation>

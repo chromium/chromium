@@ -69,7 +69,6 @@
 <translation id="1054048317165655285">ඔබගේ දුරකථනයෙහි පිහිටුවීම අවසන් කරන්න</translation>
 <translation id="1054153489933238809">මුල් පින්තූරය නව පටිත්තක විවෘත කරන්න</translation>
 <translation id="1055274863771110134">{NUM_WEEKS,plural, =1{සති 1ක් ඇතුළත <ph name="DEVICE_TYPE" /> යාවත්කාලීන කරන්න}one{සති {NUM_WEEKS}ක් ඇතුළත <ph name="DEVICE_TYPE" /> යාවත්කාලීන කරන්න}other{සති {NUM_WEEKS}ක් ඇතුළත <ph name="DEVICE_TYPE" /> යාවත්කාලීන කරන්න}}</translation>
-<translation id="1056398434290692818">ස්වයිප් අභිනයෙන් පසුපසට සහ ඉදිරියට සංචාලනය කරන්න</translation>
 <translation id="1056898198331236512">අවවාදයයි</translation>
 <translation id="1056980582064308040">සැකසීම් වෙනස් කිරීම හොට්ස්පොට් යළි අරඹනු ඇත. හොට්ස්පොට් භාවිතා කරන උපාංග විසන්ධි වනු ඇත.</translation>
 <translation id="1058262162121953039">PUK</translation>
@@ -10275,6 +10274,7 @@ Linux ස්ථාපනය කිරීම දත්තවලින් <ph name
 <translation id="956500788634395331">හානිකර විය හැකි දිගුවලින් ඔබ ආරක්‍ෂා කෙරේ</translation>
 <translation id="957179356621191750">තිත් 6</translation>
 <translation id="957960681186851048">මෙම අඩවිය ගොනු කිහිපයක් ස්වයංක්‍රීයව බාගැනීමට උත්සාහ කළේය</translation>
+<translation id="958571289841636277">ස්වයිප් අභිනයකින් පසුපසට සහ ඉදිරියට සංචලන කරන්න</translation>
 <translation id="960987915827980018">පැය 1ක් පමණ ඉතිරියි</translation>
 <translation id="962802172452141067">පිටුසන් ෆෝල්ඩර වෘක්ෂය</translation>
 <translation id="963000966785016697"><ph name="VISUAL_SEARCH_PROVIDER" /> සමගින් රූපය සොයන්න</translation>

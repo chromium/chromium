@@ -69,7 +69,6 @@
 <translation id="1054048317165655285">Gorffennwch osod ar eich ffôn</translation>
 <translation id="1054153489933238809">Agorwch y Llun &amp;Gwreiddiol mewn Tab Newydd</translation>
 <translation id="1055274863771110134">{NUM_WEEKS,plural, =1{Diweddarwch <ph name="DEVICE_TYPE" /> o fewn 1 wythnos}zero{Diweddarwch <ph name="DEVICE_TYPE" /> o fewn {NUM_WEEKS} wythnos}two{Diweddarwch <ph name="DEVICE_TYPE" /> o fewn {NUM_WEEKS} wythnos}few{Diweddarwch <ph name="DEVICE_TYPE" /> o fewn {NUM_WEEKS} wythnos}many{Diweddarwch <ph name="DEVICE_TYPE" /> o fewn {NUM_WEEKS} wythnos}other{Diweddarwch <ph name="DEVICE_TYPE" /> o fewn {NUM_WEEKS} wythnos}}</translation>
-<translation id="1056398434290692818">Llywiwch yn ôl ag ymlaen gydag ystum sweipio</translation>
 <translation id="1056898198331236512">Rhybudd</translation>
 <translation id="1056980582064308040">Bydd newid gosodiadau yn ailgychwyn y poethfan. Bydd dyfeisiau sy'n defnyddio'r poethfan yn datgysylltu.</translation>
 <translation id="1058262162121953039">PUK</translation>
@@ -10300,6 +10299,7 @@ Mae'n bosib y bydd caniatadau rydych eisoes wedi'u rhoi i wefannau ac apiau yn b
 <translation id="956500788634395331">Rydych y cael eich amddiffyn rhag estyniadau a allai fod yn niweidiol</translation>
 <translation id="957179356621191750">6-dot</translation>
 <translation id="957960681186851048">Gwnaeth y wefan hon geisio lawrlwytho mwy nag un ffeil yn awtomatig</translation>
+<translation id="958571289841636277">Llywiwch yn ôl ac ymlaen gydag ystum sweipio</translation>
 <translation id="960987915827980018">Tua 1 awr ar ôl</translation>
 <translation id="962802172452141067">Coeden ffolderi nodau tudalen</translation>
 <translation id="963000966785016697">Chwilio llun gyda <ph name="VISUAL_SEARCH_PROVIDER" /></translation>

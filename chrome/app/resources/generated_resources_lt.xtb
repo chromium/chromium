@@ -69,7 +69,6 @@
 <translation id="1054048317165655285">Nustatymo proceso užbaigimas telefonu</translation>
 <translation id="1054153489933238809">Atidaryti originalų &amp;vaizdą naujame skirtuke</translation>
 <translation id="1055274863771110134">{NUM_WEEKS,plural, =1{Atnaujinkite „<ph name="DEVICE_TYPE" />“ įrenginį per savaitę}one{Atnaujinkite „<ph name="DEVICE_TYPE" />“ įrenginį per {NUM_WEEKS} savaitę}few{Atnaujinkite „<ph name="DEVICE_TYPE" />“ įrenginį per {NUM_WEEKS} savaites}many{Atnaujinkite „<ph name="DEVICE_TYPE" />“ įrenginį per {NUM_WEEKS} savaitės}other{Atnaujinkite „<ph name="DEVICE_TYPE" />“ įrenginį per {NUM_WEEKS} savaičių}}</translation>
-<translation id="1056398434290692818">Eikite atgal ir pirmyn naudodami perbraukimo gestą</translation>
 <translation id="1056898198331236512">Įspėjimas</translation>
 <translation id="1056980582064308040">Pakeitus nustatymus viešosios interneto prieigos taškas bus paleistas iš naujo. Įrenginiai, naudojantys viešosios interneto prieigos tašką, bus atjungti.</translation>
 <translation id="1058262162121953039">PUK</translation>
@@ -10300,6 +10299,7 @@ Leidimai, kuriuos jau esate suteikę svetainėms ir programoms, gali būti taiko
 <translation id="956500788634395331">Esate apsaugoti nuo potencialiai žalingų plėtinių</translation>
 <translation id="957179356621191750">6 taškų</translation>
 <translation id="957960681186851048">Ši svetainė bandė automatiškai atsisiųsti kelis failus</translation>
+<translation id="958571289841636277">Eikite atgal ir pirmyn naudodami perbraukimo gestą</translation>
 <translation id="960987915827980018">Liko apie 1 val.</translation>
 <translation id="962802172452141067">Žymių aplanko medis</translation>
 <translation id="963000966785016697">Ieškoti vaizdo naudojant „<ph name="VISUAL_SEARCH_PROVIDER" />“</translation>

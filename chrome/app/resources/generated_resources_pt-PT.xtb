@@ -69,7 +69,6 @@
 <translation id="1054048317165655285">Conclua a configuração no telemóvel</translation>
 <translation id="1054153489933238809">Abrir &amp;imagem original num Novo separador</translation>
 <translation id="1055274863771110134">{NUM_WEEKS,plural, =1{Atualize o <ph name="DEVICE_TYPE" /> dentro de 1 semana}other{Atualize o <ph name="DEVICE_TYPE" /> dentro de {NUM_WEEKS} semanas}}</translation>
-<translation id="1056398434290692818">Navegue para a frente e para trás com o gesto de deslizar rapidamente</translation>
 <translation id="1056898198331236512">Aviso</translation>
 <translation id="1056980582064308040">Ao alterar as definições, reinicia a zona Wi-Fi. Os dispositivos que usam a zona Wi-Fi perdem a ligação.</translation>
 <translation id="1058262162121953039">PUK</translation>
@@ -10273,6 +10272,7 @@ As autorizações que já concedeu aos Websites e apps podem aplicar-se a esta c
 <translation id="956500788634395331">Tem proteção contra extensões potencialmente prejudiciais.</translation>
 <translation id="957179356621191750">6 pontos</translation>
 <translation id="957960681186851048">Este site tentou transferir vários ficheiros automaticamente</translation>
+<translation id="958571289841636277">Navegue para a frente e para trás com um gesto de deslizar rapidamente</translation>
 <translation id="960987915827980018">Falta cerca de 1 hora</translation>
 <translation id="962802172452141067">Árvore de pastas de marcadores</translation>
 <translation id="963000966785016697">Pesquisar imagem com o <ph name="VISUAL_SEARCH_PROVIDER" /></translation>

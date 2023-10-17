@@ -69,7 +69,6 @@
 <translation id="1054048317165655285">तुमच्या फोनवर सेटअप पूर्ण करा</translation>
 <translation id="1054153489933238809">नवीन टॅबमध्‍ये मूळ &amp;प्रतिमा उघडा</translation>
 <translation id="1055274863771110134">{NUM_WEEKS,plural, =1{एका आठवड्याच्‍या आत <ph name="DEVICE_TYPE" /> अपडेट करा}other{{NUM_WEEKS} आठवड्यांच्‍या आत <ph name="DEVICE_TYPE" /> अपडेट करा}}</translation>
-<translation id="1056398434290692818">स्‍वाइप करण्याशी संबंधित जेश्चर वापरून मागे आणि पुढे नेव्हिगेट करा</translation>
 <translation id="1056898198331236512">चेतावणी</translation>
 <translation id="1056980582064308040">सेटिंग्ज बदलल्याने हॉटस्पॉट रीस्टार्ट होईल. हॉटस्पॉट वापरणारी डिव्हाइस डिस्कनेक्ट होतील.</translation>
 <translation id="1058262162121953039">PUK</translation>
@@ -10284,6 +10283,7 @@
 <translation id="956500788634395331">हानीकारक असू शकणार्‍या एक्स्टेंशनपासून तुम्ही संरक्षित आहात</translation>
 <translation id="957179356621191750">सहा बिंदू</translation>
 <translation id="957960681186851048">या साइटने एकाहून अधिक फाइल आपोआप डाउनलोड करण्याचा प्रयत्न केला</translation>
+<translation id="958571289841636277">स्‍वाइप जेश्चर वापरून मागे आणि पुढे नेव्हिगेट करा</translation>
 <translation id="960987915827980018">सुमारे 1 तास बाकी</translation>
 <translation id="962802172452141067">फोल्डर ट्री बुकमार्क करा</translation>
 <translation id="963000966785016697"><ph name="VISUAL_SEARCH_PROVIDER" /> वापरून इमेज शोधा</translation>

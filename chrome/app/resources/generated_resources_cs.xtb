@@ -69,7 +69,6 @@
 <translation id="1054048317165655285">Dokončete nastavení na telefonu</translation>
 <translation id="1054153489933238809">Otevřít původní &amp;obrázek na nové kartě</translation>
 <translation id="1055274863771110134">{NUM_WEEKS,plural, =1{Do 1 týdne zařízení <ph name="DEVICE_TYPE" /> aktualizujte}few{Do {NUM_WEEKS} týdnů zařízení <ph name="DEVICE_TYPE" /> aktualizujte}many{Do {NUM_WEEKS} týdne zařízení <ph name="DEVICE_TYPE" /> aktualizujte}other{Do {NUM_WEEKS} týdnů zařízení <ph name="DEVICE_TYPE" /> aktualizujte}}</translation>
-<translation id="1056398434290692818">Přecházet zpět a vpřed gestem přejetí prstem</translation>
 <translation id="1056898198331236512">Upozornění</translation>
 <translation id="1056980582064308040">Při změně nastavení se hotspot restartuje. Zařízení, která ho využívají, budou odpojena.</translation>
 <translation id="1058262162121953039">PUK</translation>
@@ -10273,6 +10272,7 @@ Informace o tom, jaká data Google shromažďuje a proč je shromažďuje, naj
 <translation id="956500788634395331">Jste chráněni před potenciálně škodlivými rozšířenými</translation>
 <translation id="957179356621191750">Šestibodové</translation>
 <translation id="957960681186851048">Tento web se pokusil automaticky stáhnout několik souborů</translation>
+<translation id="958571289841636277">Přecházet zpět a vpřed gestem přejetí prstem</translation>
 <translation id="960987915827980018">Zbývá přibližně hodina</translation>
 <translation id="962802172452141067">Strom seznamu záložek</translation>
 <translation id="963000966785016697">Vyhledat obrázek pomocí: <ph name="VISUAL_SEARCH_PROVIDER" /></translation>

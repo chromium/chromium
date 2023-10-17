@@ -69,7 +69,6 @@
 <translation id="1054048317165655285">Complete setup on your phone</translation>
 <translation id="1054153489933238809">Open Original &amp;Image in New Tab</translation>
 <translation id="1055274863771110134">{NUM_WEEKS,plural, =1{Update <ph name="DEVICE_TYPE" /> within 1 week}other{Update <ph name="DEVICE_TYPE" /> within {NUM_WEEKS} weeks}}</translation>
-<translation id="1056398434290692818">Navigate back and forward with swipe gesture</translation>
 <translation id="1056898198331236512">Warning</translation>
 <translation id="1056980582064308040">Changing settings will restart the hotspot. Devices using the hotspot will disconnect.</translation>
 <translation id="1058262162121953039">PUK</translation>
@@ -10287,6 +10286,7 @@ Permissions that you've already given to websites and apps may apply to this acc
 <translation id="956500788634395331">You're protected from potentially harmful extensions</translation>
 <translation id="957179356621191750">6-dot</translation>
 <translation id="957960681186851048">This site attempted to download multiple files automatically</translation>
+<translation id="958571289841636277">Navigate back and forward with a swipe gesture</translation>
 <translation id="960987915827980018">About 1 hour left</translation>
 <translation id="962802172452141067">Bookmark folder tree</translation>
 <translation id="963000966785016697">Search image with <ph name="VISUAL_SEARCH_PROVIDER" /></translation>

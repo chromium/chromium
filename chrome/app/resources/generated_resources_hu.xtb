@@ -69,7 +69,6 @@
 <translation id="1054048317165655285">Fejezze be a beállítást a telefonon</translation>
 <translation id="1054153489933238809">Az eredeti &amp;kép megnyitása új lapon</translation>
 <translation id="1055274863771110134">{NUM_WEEKS,plural, =1{A(z) <ph name="DEVICE_TYPE" /> frissítését 1 héten belül el kell végezni}other{A(z) <ph name="DEVICE_TYPE" /> frissítését {NUM_WEEKS} héten belül el kell végezni}}</translation>
-<translation id="1056398434290692818">Navigálás vissza és előre gyors csúsztatással</translation>
 <translation id="1056898198331236512">Figyelmeztetés</translation>
 <translation id="1056980582064308040">A beállítások módosításával újraindítja a hotspotot. A hotspotot használó eszközök kapcsolata megszakad.</translation>
 <translation id="1058262162121953039">PUK-kód</translation>
@@ -10286,6 +10285,7 @@ A webhelyek és alkalmazások számára már megadott engedélyek erre a fiókra
 <translation id="956500788634395331">Védelmet élvez a potenciálisan kártékony bővítményekkel szemben</translation>
 <translation id="957179356621191750">6 pontos</translation>
 <translation id="957960681186851048">Ez a webhely megpróbált automatikusan letölteni több fájlt</translation>
+<translation id="958571289841636277">Navigálás vissza és előre gyors csúsztatással</translation>
 <translation id="960987915827980018">Körülbelül 1 óra van hátra</translation>
 <translation id="962802172452141067">Könyvjelzők mapparendszere</translation>
 <translation id="963000966785016697">Képkeresés a következővel: <ph name="VISUAL_SEARCH_PROVIDER" /></translation>

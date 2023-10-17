@@ -2715,7 +2715,6 @@ Jika kebijakan ini tidak disetel, perilaku baru akan digunakan seperti pengguna 
 <translation id="3240609035816615922">Kebijakan akses konfigurasi untuk printer.</translation>
 <translation id="324062325008698789">Mengonfigurasi daftar printer</translation>
 <translation id="3240655340884151271">Alamat MAC NIC bawaan dok</translation>
-<translation id="3242480111684005642">Pengguna dapat menggunakan fitur Sinkronisasi File <ph name="GOOGLE_DRIVE_NAME" />.</translation>
 <translation id="3242756958360374888">Berisi daftar pola yang digunakan untuk mengontrol visibilitas akun di <ph name="PRODUCT_NAME" />.
 
       Setiap akun Google pada perangkat akan dibandingkan dengan pola yang tersimpan di kebijakan ini untuk menentukan visibilitas akun di <ph name="PRODUCT_NAME" />. Akun tersebut akan terlihat jika namanya cocok dengan pola mana pun pada daftar. Jika tidak, akun akan disembunyikan.
@@ -2775,7 +2774,6 @@ Batasan ini berlaku untuk download yang dipicu dari konten halaman web, serta da
 Di <ph name="MS_WIN_NAME" />, kebijakan ini hanya tersedia pada instance yang dihubungkan ke domain <ph name="MS_AD_NAME" />, dihubungkan ke <ph name="MS_AAD_NAME" />, atau didaftarkan di <ph name="CHROME_BROWSER_CLOUD_MANAGEMENT_NAME" />.</translation>
 <translation id="3300784749135986828">Mengaktifkan atau menonaktifkan <ph name="USER_AGENT_REDUCTION_FEATURE_NAME" />.</translation>
 <translation id="3301698868852716692">Aktifkan ekstensi insight</translation>
-<translation id="3302723130703323097">Membuat fitur Sinkronisasi File <ph name="GOOGLE_DRIVE_NAME" /> terlihat dan tersedia untuk mengaktifkan perangkat yang didukung di aplikasi File <ph name="PRODUCT_OS_NAME" /></translation>
 <translation id="3302829897293005699">Jika kebijakan disetel ke Aktif atau tidak disetel, perangkat yang terdaftar akan melaporkan informasi sesi kios yang aktif seperti ID dan versi aplikasi.
 
       Jika kebijakan disetel ke Nonaktif, perangkat yang terdaftar tidak akan melaporkan informasi sesi kios.</translation>
@@ -2867,28 +2865,6 @@ Jika disetel ke Nonaktif, fitur penulisan prediktif tidak akan diizinkan di keyb
       Jika kebijakan ini disetel ke "tersembunyi", fitur yang dinonaktifkan tidak akan dapat digunakan dan tidak terlihat oleh pengguna.
 
       Jika kebijakan in tidak disetel atau disetel ke nilai yang tidak valid, mode nonaktif dari fitur sistem akan menjadi "diblokir".</translation>
-<translation id="3410963889229735344">Sinkronisasi file <ph name="GOOGLE_DRIVE_NAME" /> secara otomatis membuat
-file di Drive Saya milik pengguna tersedia secara offline (jika ruang penyimpanan cukup) di perangkat
-yang didukung. Setelah awalnya membuat semua file tersedia secara offline, semua file baru
-juga akan otomatis tersedia secara offline. Setelah fitur tersebut diaktifkan, jika
-nantinya tidak ada cukup ruang untuk tetap mengaktifkan fitur tersebut, semua file baru akan
-otomatis berhenti tersedia secara offline. Namun, pengguna masih dapat
-beralih item secara manual.
-
-Jika kebijakan ini disetel ke <ph name="POLICY_VALUE_VISIBLE" />,
-fungsi sinkronisasi file akan ditampilkan di aplikasi File dan di halaman Setelan. Pengguna
-masih harus mengaktifkan fungsi sinkronisasi file sendiri.
-
-Jika kebijakan ini disetel ke <ph name="POLICY_VALUE_DISABLED" />,
-fungsi sinkronisasi file akan dinonaktifkan jika sebelumnya diaktifkan oleh pengguna dan fitur juga akan
-disembunyikan dari aplikasi File dan halaman Setelan sehingga pengguna tidak dapat mengaktifkannya
-kembali. Jika ada file yang dibuat tersedia secara offline oleh
-pengguna, file tersebut akan tetap tersedia secara offline dan pengguna dapat secara manual membuat
-setiap file tersedia secara offline (file tidak akan otomatis tersedia
-secara offline).
-
-Jika kebijakan ini tidak disetel, kebijakan akan menggunakan
-<ph name="POLICY_VALUE_VISIBLE" /> sebagai nilai default.</translation>
 <translation id="341285788698114069">Kebijakan ini mengontrol prioritas proses audio di Windows.
       Jika kebijakan ini diaktifkan, proses audio akan berjalan dengan prioritas di atas normal.
       Jika kebijakan ini dinonaktifkan, proses audio akan berjalan dengan prioritas normal.
@@ -4783,7 +4759,6 @@ Kebijakan ini hanya berlaku saat perangkat didaftarkan dengan <ph name="CLOUD_MA
 <translation id="5039110755072335605">Dukungan header permintaan non-karakter pengganti CORS</translation>
 <translation id="504116558738617678">Hanya tampilkan peringatan ruang penyimpanan hampir penuh jika perangkat tidak dikelola atau hanya terdapat 1 pengguna</translation>
 <translation id="5041315457555330432">Izinkan <ph name="PRODUCT_NAME" /> untuk hanya terhubung ke perangkat di alamat IP pribadi, kecuali jika fitur CastAllowAllIPs diaktifkan.</translation>
-<translation id="5046376406561077773">Pengguna tidak dapat melihat UI yang terkait dengan fitur Sinkronisasi File <ph name="GOOGLE_DRIVE_NAME" />.</translation>
 <translation id="5055474681190962362">Hari dalam sebulan [1-31] saat mulai ulang harus dilakukan, disesuaikan dengan zona waktu lokal perangkat. Hanya digunakan saat 'frequency'-nya 'MONTHLY'. Jika lebih dari jumlah hari maksimum dalam bulan tertentu, hari terakhir bulan itu akan dipilih.</translation>
 <translation id="5056708224511062314">Lup dinonaktifkan</translation>
 <translation id="5058573563327660283">Pilih strategi yang digunakan untuk mengosongkan ruang disk selama pembersihan otomatis (tidak digunakan lagi)</translation>

@@ -69,7 +69,6 @@
 <translation id="1054048317165655285">Telefonunuzda ayarlamanı tamamlayın</translation>
 <translation id="1054153489933238809">Orijinal Təsviri Yeni Paneldə Açın</translation>
 <translation id="1055274863771110134">{NUM_WEEKS,plural, =1{<ph name="DEVICE_TYPE" /> cihazını 1 həftə ərzində güncəlləyin}other{<ph name="DEVICE_TYPE" /> cihazını {NUM_WEEKS} həftə ərzində güncəlləyin}}</translation>
-<translation id="1056398434290692818">Sürüşdürmə jesti ilə geri və irəli hərəkət edin</translation>
 <translation id="1056898198331236512">Xəbərdarlıq</translation>
 <translation id="1056980582064308040">Ayarların dəyişdirilməsi hotspotu yenidən başladacaq. Hotspot istifadə edən cihazlar ayrılacaq.</translation>
 <translation id="1058262162121953039">PUK</translation>
@@ -10262,6 +10261,7 @@ Artıq veb-sayt və tətbiqlərə verdiyiniz icazələr bu hesaba tətbiq oluna 
 <translation id="956500788634395331">Potensial zərərli artırmalardan qorunursunuz</translation>
 <translation id="957179356621191750">6 nöqtə</translation>
 <translation id="957960681186851048">Bu sayt çoxsaylı faylları avtomatik endirməyə cəhd etdi</translation>
+<translation id="958571289841636277">Sürüşdürmə jesti ilə geri və irəli hərəkət edin</translation>
 <translation id="960987915827980018">Təxminən 1 saat qalıb</translation>
 <translation id="962802172452141067">Əlfəcin qovluğu ağacı</translation>
 <translation id="963000966785016697"><ph name="VISUAL_SEARCH_PROVIDER" /> ilə şəkil axtarın</translation>

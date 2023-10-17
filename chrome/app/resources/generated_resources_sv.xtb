@@ -69,7 +69,6 @@
 <translation id="1054048317165655285">Slutför konfigurationen på telefonen</translation>
 <translation id="1054153489933238809">Öppna originalbilden i en ny flik</translation>
 <translation id="1055274863771110134">{NUM_WEEKS,plural, =1{Uppdatera <ph name="DEVICE_TYPE" /> inom 1 vecka}other{Uppdatera <ph name="DEVICE_TYPE" /> inom {NUM_WEEKS} veckor}}</translation>
-<translation id="1056398434290692818">Navigera framåt och bakåt med sveprörelser</translation>
 <translation id="1056898198331236512">Varning</translation>
 <translation id="1056980582064308040">Om du ändrar inställningarna startas surfzonen om. Enheter som använder surfzonen kopplas från.</translation>
 <translation id="1058262162121953039">PUK-kod</translation>
@@ -10287,6 +10286,7 @@ Behörigheter som du redan har gett webbplatser och appar kan gälla för det h�
 <translation id="956500788634395331">Du är skyddad från tillägg som kan vara skadliga</translation>
 <translation id="957179356621191750">6-punkters</translation>
 <translation id="957960681186851048">Den här webbplatsen försökte ladda ned flera filer automatiskt</translation>
+<translation id="958571289841636277">Navigera framåt och bakåt med en sveprörelse</translation>
 <translation id="960987915827980018">Ca 1 timme kvar</translation>
 <translation id="962802172452141067">Mappstruktur för bokmärken</translation>
 <translation id="963000966785016697">Bildsökning med <ph name="VISUAL_SEARCH_PROVIDER" /></translation>

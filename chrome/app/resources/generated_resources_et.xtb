@@ -69,7 +69,6 @@
 <translation id="1054048317165655285">Viige seadistamine telefonis lõpule</translation>
 <translation id="1054153489933238809">Ava &amp;algkujutis uuel vahelehel</translation>
 <translation id="1055274863771110134">{NUM_WEEKS,plural, =1{Värskendage seadet (<ph name="DEVICE_TYPE" />) ühe nädala jooksul}other{Värskendage seadet (<ph name="DEVICE_TYPE" />) {NUM_WEEKS} nädala jooksul}}</translation>
-<translation id="1056398434290692818">Pühkimisliigutusega edasi ja tagasi navigeerimine</translation>
 <translation id="1056898198331236512">Hoiatus</translation>
 <translation id="1056980582064308040">Selle seade muutmisel taaskäivitatakse kuumkoht. Kuumkohta kasutavate seadmete ühendus katkestatakse.</translation>
 <translation id="1058262162121953039">PUK-kood</translation>
@@ -10277,6 +10276,7 @@ Load, mille olete veebisaitidele ja rakendustele juba andnud, võivad kehtida ka
 <translation id="956500788634395331">Olete potentsiaalselt ohtlike laienduste eest kaitstud</translation>
 <translation id="957179356621191750">6-punktiline</translation>
 <translation id="957960681186851048">Sait püüdis automaatselt mitut faili alla laadida</translation>
+<translation id="958571289841636277">Pühkimisliigutusega edasi ja tagasi navigeerimine</translation>
 <translation id="960987915827980018">Jäänud on umbes 1 tund</translation>
 <translation id="962802172452141067">Järjehoidjate kausta puu</translation>
 <translation id="963000966785016697">Otsi pilti teenusega <ph name="VISUAL_SEARCH_PROVIDER" /></translation>

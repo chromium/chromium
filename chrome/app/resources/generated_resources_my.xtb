@@ -69,7 +69,6 @@
 <translation id="1054048317165655285">သင့်ဖုန်းတွင် စနစ်ထည့်သွင်းခြင်းကို အပြီးသတ်ပါ</translation>
 <translation id="1054153489933238809">မူရင်းနှင့် ရုပ်ပုံကို တဲဘ်အသစ်တွင် ဖွင့်ရန်</translation>
 <translation id="1055274863771110134">{NUM_WEEKS,plural, =1{<ph name="DEVICE_TYPE" /> ကို 1 ပတ်အတွင်း အပ်ဒိတ်လုပ်ပါ}other{<ph name="DEVICE_TYPE" /> ကို {NUM_WEEKS} ပတ်အတွင်း အပ်ဒိတ်လုပ်ပါ}}</translation>
-<translation id="1056398434290692818">ပွတ်ဆွဲသည့်လက်ဟန်ဖြင့် အရှေ့၊ အနောက် သွားပါ</translation>
 <translation id="1056898198331236512">သတိပေးချက်</translation>
 <translation id="1056980582064308040">ဆက်တင်များပြောင်းလဲခြင်းဖြင့် ဟော့စပေါ့ ပြန်စပါမည်။ ဟော့စပေါ့သုံးနေသည့်စက်များ ချိတ်ဆက်မှု ပြုတ်သွားမည်။</translation>
 <translation id="1058262162121953039">PUK</translation>
@@ -10280,6 +10279,7 @@
 <translation id="956500788634395331">အန္တရာယ်ရှိနိုင်သော နောက်ဆက်တွဲများ၏ရန်မှ သင့်ကို ကာကွယ်ပေးထားသည်</translation>
 <translation id="957179356621191750">၆ ဒေါ့(တ်)</translation>
 <translation id="957960681186851048">ဤဝဘ်ဆိုက်သည် ဖိုင်အမြောက်အများကို အလိုအလျောက် ဒေါင်းလုဒ်လုပ်ရန် ကြိုးပမ်းခဲ့သည်</translation>
+<translation id="958571289841636277">ပွတ်ဆွဲသည့်လက်ဟန်ဖြင့် ရှေ့နောက် ရွှေ့ပါ</translation>
 <translation id="960987915827980018">၁ နာရီ ခန့် ကျန်နေ</translation>
 <translation id="962802172452141067">လိပ်စာအကန့် မြေပုံဇယား</translation>
 <translation id="963000966785016697"><ph name="VISUAL_SEARCH_PROVIDER" /> ဖြင့် ပုံရှာခြင်း</translation>

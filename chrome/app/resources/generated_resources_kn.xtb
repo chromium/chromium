@@ -69,7 +69,6 @@
 <translation id="1054048317165655285">ನಿಮ್ಮ ಫೋನ್‌ನಲ್ಲಿ ಸೆಟಪ್ ಅನ್ನು ಪೂರ್ಣಗೊಳಿಸಿ</translation>
 <translation id="1054153489933238809">ಹೊಸ ಟ್ಯಾಬ್‌ನಲ್ಲಿ ಮೂಲ &amp;ಚಿತ್ರವನ್ನು ತೆರೆಯಿರಿ</translation>
 <translation id="1055274863771110134">{NUM_WEEKS,plural, =1{1 ವಾರದ ಒಳಗಾಗಿ <ph name="DEVICE_TYPE" /> ಅನ್ನು ಅಪ್‌ಡೇಟ್‌ ಮಾಡಿ}one{{NUM_WEEKS} ವಾರಗಳ ಒಳಗಾಗಿ <ph name="DEVICE_TYPE" /> ಅನ್ನು ಅಪ್‌ಡೇಟ್‌ ಮಾಡಿ}other{{NUM_WEEKS} ವಾರಗಳ ಒಳಗಾಗಿ <ph name="DEVICE_TYPE" /> ಅನ್ನು ಅಪ್‌ಡೇಟ್‌ ಮಾಡಿ}}</translation>
-<translation id="1056398434290692818">ಸ್ವೈಪ್ ಗೆಸ್ಚರ್ ಮೂಲಕ ಹಿಂದಕ್ಕೆ ಮತ್ತು ಮುಂದಕ್ಕೆ ನ್ಯಾವಿಗೇಟ್ ಮಾಡಿ</translation>
 <translation id="1056898198331236512">ಎಚ್ಚರಿಕೆ</translation>
 <translation id="1056980582064308040">ಸೆಟ್ಟಿಂಗ್‌ಗಳನ್ನು ಬದಲಾಯಿಸುವುದರಿಂದ ಹಾಟ್‌ಸ್ಪಾಟ್ ಅನ್ನು ಮರುಪ್ರಾರಂಭಿಸುತ್ತದೆ. ಹಾಟ್‌ಸ್ಪಾಟ್ ಬಳಸುವ ಸಾಧನಗಳು ಡಿಸ್‌ಕನೆಕ್ಟ್ ಆಗುತ್ತವೆ.</translation>
 <translation id="1058262162121953039">PUK</translation>
@@ -10282,6 +10281,7 @@
 <translation id="956500788634395331">ಹಾನಿಕಾರಕ ವಿಸ್ತರಣೆಗಳಿಂದ ನಿಮ್ಮನ್ನು ರಕ್ಷಿಸಲಾಗಿದೆ</translation>
 <translation id="957179356621191750">6-ಡಾಟ್‌</translation>
 <translation id="957960681186851048">ಈ ಸೈಟ್‌ ಬಹು ಫೈಲ್‌ಗಳನ್ನು ಸ್ವಯಂಚಾಲಿತವಾಗಿ ಡೌನ್‌ಲೋಡ್‌ ಮಾಡಲು ಯತ್ನಿಸಿದೆ</translation>
+<translation id="958571289841636277">ಸ್ವೈಪ್ ಗೆಸ್ಚರ್ ಮೂಲಕ ಹಿಂದಕ್ಕೆ ಮತ್ತು ಮುಂದಕ್ಕೆ ನ್ಯಾವಿಗೇಟ್ ಮಾಡಿ</translation>
 <translation id="960987915827980018">ಸುಮಾರು 1 ಗಂಟೆ ಉಳಿದಿದೆ</translation>
 <translation id="962802172452141067">ಬುಕ್‌ಮಾರ್ಕ್ ಫೋಲ್ಡರ್ ಟ್ರೀ</translation>
 <translation id="963000966785016697"><ph name="VISUAL_SEARCH_PROVIDER" /> ಮೂಲಕ ಚಿತ್ರವನ್ನು ಹುಡುಕಿ</translation>

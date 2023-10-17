@@ -69,7 +69,6 @@
 <translation id="1054048317165655285">Zakończ konfigurację na telefonie</translation>
 <translation id="1054153489933238809">Otwórz oryginalny &amp;obraz w nowej karcie</translation>
 <translation id="1055274863771110134">{NUM_WEEKS,plural, =1{Zaktualizuj urządzenie <ph name="DEVICE_TYPE" /> w ciągu tygodnia}few{Zaktualizuj urządzenie <ph name="DEVICE_TYPE" /> w ciągu {NUM_WEEKS} tygodni}many{Zaktualizuj urządzenie <ph name="DEVICE_TYPE" /> w ciągu {NUM_WEEKS} tygodni}other{Zaktualizuj urządzenie <ph name="DEVICE_TYPE" /> w ciągu {NUM_WEEKS} tygodnia}}</translation>
-<translation id="1056398434290692818">Poruszanie się wstecz i do przodu za pomocą gestu przesuwania</translation>
 <translation id="1056898198331236512">Ostrzeżenie</translation>
 <translation id="1056980582064308040">Zmiana ustawień spowoduje ponowne uruchomienie hotspota. Korzystające z niego urządzenia zostaną rozłączone.</translation>
 <translation id="1058262162121953039">PUK</translation>
@@ -10252,6 +10251,7 @@ Na tym koncie mogą obowiązywać uprawnienia przyznane stronom i aplikacjom. K
 <translation id="956500788634395331">Masz ochronę przed potencjalnie niebezpiecznymi rozszerzeniami</translation>
 <translation id="957179356621191750">6-punktowa</translation>
 <translation id="957960681186851048">Ta strona próbowała pobrać automatycznie wiele plików</translation>
+<translation id="958571289841636277">Poruszanie się wstecz i do przodu za pomocą gestu przesuwania</translation>
 <translation id="960987915827980018">Zostało około 1 godziny</translation>
 <translation id="962802172452141067">Drzewo folderów zakładek</translation>
 <translation id="963000966785016697">Przeszukaj obraz za pomocą narzędzia <ph name="VISUAL_SEARCH_PROVIDER" /></translation>

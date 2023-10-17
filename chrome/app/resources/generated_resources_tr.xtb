@@ -69,7 +69,6 @@
 <translation id="1054048317165655285">Kurulumu telefonunuzda tamamlayın</translation>
 <translation id="1054153489933238809">Orijinal &amp;Resmi Yeni Sekmede Aç</translation>
 <translation id="1055274863771110134">{NUM_WEEKS,plural, =1{<ph name="DEVICE_TYPE" /> cihazı, 1 hafta içinde güncelleyin}other{<ph name="DEVICE_TYPE" /> cihazı, {NUM_WEEKS} hafta içinde güncelleyin}}</translation>
-<translation id="1056398434290692818">Kaydırma hareketiyle geri ve ileri gitme</translation>
 <translation id="1056898198331236512">Uyarı</translation>
 <translation id="1056980582064308040">Ayarlar değiştirildiğinde hotspot yeniden başlatılır. Bu durumda, hotspot kullanan cihazların bağlantısı kesilir.</translation>
 <translation id="1058262162121953039">PUK</translation>
@@ -10269,6 +10268,7 @@ Web sitelerine ve uygulamalara verdiğiniz izinler, bu hesap için geçerli olab
 <translation id="956500788634395331">Zararlı olabilecek uzantılardan korunuyorsunuz</translation>
 <translation id="957179356621191750">6 nokta</translation>
 <translation id="957960681186851048">Bu site birden fazla dosyayı otomatik olarak indirmeye çalıştı</translation>
+<translation id="958571289841636277">Kaydırma hareketiyle geri ve ileri gitme</translation>
 <translation id="960987915827980018">Yaklaşık 1 saat kaldı</translation>
 <translation id="962802172452141067">Yer işareti klasör ağacı</translation>
 <translation id="963000966785016697">Resmi <ph name="VISUAL_SEARCH_PROVIDER" /> ile ara</translation>

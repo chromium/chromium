@@ -69,7 +69,6 @@
 <translation id="1054048317165655285">Gennemfør konfigurationen på din telefon</translation>
 <translation id="1054153489933238809">Åbn originalbillede på ny fane</translation>
 <translation id="1055274863771110134">{NUM_WEEKS,plural, =1{Opdater <ph name="DEVICE_TYPE" /> inden for 1 uge}one{Opdater <ph name="DEVICE_TYPE" /> inden for {NUM_WEEKS} uge}other{Opdater <ph name="DEVICE_TYPE" /> inden for {NUM_WEEKS} uger}}</translation>
-<translation id="1056398434290692818">Naviger frem og tilbage ved at stryge</translation>
 <translation id="1056898198331236512">Advarsel</translation>
 <translation id="1056980582064308040">Hvis du ændrer indstillingerne, genstarter hotspottet. Forbindelsen til enheder, der bruger hotspottet, afbrydes.</translation>
 <translation id="1058262162121953039">PUK-kode</translation>
@@ -10291,6 +10290,7 @@ De tilladelser, du har givet til websites og apps, gælder muligvis for denne ko
 <translation id="956500788634395331">Du er beskyttet mod potentielt skadelige udvidelser</translation>
 <translation id="957179356621191750">6-punkts</translation>
 <translation id="957960681186851048">Dette website har forsøgt at downloade flere filer automatisk</translation>
+<translation id="958571289841636277">Naviger frem og tilbage med strygebevægelser</translation>
 <translation id="960987915827980018">Omkring én time tilbage</translation>
 <translation id="962802172452141067">Bogmærkemappe i trævisning</translation>
 <translation id="963000966785016697">Søg på billedet med <ph name="VISUAL_SEARCH_PROVIDER" /></translation>

@@ -69,7 +69,6 @@
 <translation id="1054048317165655285">Completa la configurazione sul telefono</translation>
 <translation id="1054153489933238809">Apri &amp;originale in nuova scheda</translation>
 <translation id="1055274863771110134">{NUM_WEEKS,plural, =1{Aggiorna questo <ph name="DEVICE_TYPE" /> entro 1 settimana}other{Aggiorna questo <ph name="DEVICE_TYPE" /> entro {NUM_WEEKS} settimane}}</translation>
-<translation id="1056398434290692818">Vai avanti e indietro usando il gesto di scorrimento</translation>
 <translation id="1056898198331236512">Avviso</translation>
 <translation id="1056980582064308040">Se modifichi le impostazioni, l'hotspot verrà riavviato. I dispositivi che usano l'hotspot verranno disconnessi.</translation>
 <translation id="1058262162121953039">PUK</translation>
@@ -10268,6 +10267,7 @@ A questo account potrebbero essere applicate le autorizzazioni già concesse a s
 <translation id="956500788634395331">È attiva la protezione da estensioni potenzialmente dannose</translation>
 <translation id="957179356621191750">a 6 punti</translation>
 <translation id="957960681186851048">Questo sito ha tentato di scaricare automaticamente più file</translation>
+<translation id="958571289841636277">Vai avanti e indietro usando il gesto di scorrimento</translation>
 <translation id="960987915827980018">Circa un'ora rimanente</translation>
 <translation id="962802172452141067">Struttura ad albero della cartella dei preferiti</translation>
 <translation id="963000966785016697">Cerca immagine con <ph name="VISUAL_SEARCH_PROVIDER" /></translation>

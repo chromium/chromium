@@ -69,7 +69,6 @@
 <translation id="1054048317165655285">Voltooi die opstelling op jou foon</translation>
 <translation id="1054153489933238809">Maak oorspronklike prent in nuwe oortjie oop</translation>
 <translation id="1055274863771110134">{NUM_WEEKS,plural, =1{Dateer <ph name="DEVICE_TYPE" /> binne 1 week op}other{Dateer <ph name="DEVICE_TYPE" /> binne {NUM_WEEKS} weke op}}</translation>
-<translation id="1056398434290692818">Navigeer terug en vorentoe met swiepgebaar</translation>
 <translation id="1056898198331236512">Waarskuwing</translation>
 <translation id="1056980582064308040">Die warmkol sal herbegin word wanneer instellings verander word. Toestelle wat die warmkol gebruik, sal ontkoppel word.</translation>
 <translation id="1058262162121953039">PUK</translation>
@@ -10286,6 +10285,7 @@ Toestemmings wat jy reeds aan webwerwe en apps gegee het, kan op hierdie rekenin
 <translation id="956500788634395331">Jy word teen potensieel skadelike uitbreidings beskerm</translation>
 <translation id="957179356621191750">6-knoppie</translation>
 <translation id="957960681186851048">Hierdie werf het probeer om veelvuldige lêers outomaties af te laai</translation>
+<translation id="958571289841636277">Navigeer terug en vorentoe met ’n swiepgebaar</translation>
 <translation id="960987915827980018">Ongeveer 1 uur oor</translation>
 <translation id="962802172452141067">Boekmerkvouerboom</translation>
 <translation id="963000966785016697">Deursoek prent met <ph name="VISUAL_SEARCH_PROVIDER" /></translation>

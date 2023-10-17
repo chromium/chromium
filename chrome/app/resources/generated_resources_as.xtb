@@ -69,7 +69,6 @@
 <translation id="1054048317165655285">আপোনাৰ ফ’নত ছেটআপ সম্পূৰ্ণ কৰক</translation>
 <translation id="1054153489933238809">নতুন টেবত প্ৰকৃত &amp;প্ৰতিচ্ছবি খোলক</translation>
 <translation id="1055274863771110134">{NUM_WEEKS,plural, =1{১ সপ্তাহৰ ভিতৰত <ph name="DEVICE_TYPE" /> আপডে’ট কৰক}one{{NUM_WEEKS} সপ্তাহৰ ভিতৰত <ph name="DEVICE_TYPE" /> আপডে’ট কৰক}other{{NUM_WEEKS} সপ্তাহৰ ভিতৰত <ph name="DEVICE_TYPE" /> আপডে’ট কৰক}}</translation>
-<translation id="1056398434290692818">ছোৱাইপ নিৰ্দেশৰ জৰিয়তে পিছলৈ আৰু আগলৈ নেভিগে’ট কৰক</translation>
 <translation id="1056898198331236512">সতর্কবার্তা</translation>
 <translation id="1056980582064308040">ছেটিং সলনি কৰিলে হটস্পটটো ৰিষ্টাৰ্ট হ’ব। হটস্পটটো ব্যৱহাৰ কৰি থকা ডিভাইচসমূহৰ সৈতে সংযোগ বিচ্ছিন্ন হ’ব।</translation>
 <translation id="1058262162121953039">PUK</translation>
@@ -10285,6 +10284,7 @@
 <translation id="956500788634395331">আপুনি সম্ভাব্য ক্ষতিকাৰক এক্সটেনশ্বনসমূহৰ পৰা সুৰক্ষিত</translation>
 <translation id="957179356621191750">৬ টা বিন্দু</translation>
 <translation id="957960681186851048">এই ছাইটটোৱে স্বয়ংক্ৰিয়ভাৱে একাধিক ফাইল ডাউনল’ড কৰাৰ চেষ্টা কৰিছিল</translation>
+<translation id="958571289841636277">ছোৱাইপ নিৰ্দেশৰ জৰিয়তে পিছলৈ আৰু আগলৈ নেভিগে’ট কৰক</translation>
 <translation id="960987915827980018">প্ৰায় ১ ঘণ্টা বাকী আছে</translation>
 <translation id="962802172452141067">বুকমার্ক ফ’ল্ডাৰৰ ট্ৰী</translation>
 <translation id="963000966785016697"><ph name="VISUAL_SEARCH_PROVIDER" />ৰ জৰিয়তে প্ৰতিচ্ছবি সন্ধান কৰক</translation>

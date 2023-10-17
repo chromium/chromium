@@ -69,7 +69,6 @@
 <translation id="1054048317165655285">Završite postavljanje na telefonu</translation>
 <translation id="1054153489933238809">Otvori originalnu sl&amp;iku u novoj kartici</translation>
 <translation id="1055274863771110134">{NUM_WEEKS,plural, =1{Ažurirajte <ph name="DEVICE_TYPE" /> u roku od 1 sedmice}one{Ažurirajte <ph name="DEVICE_TYPE" /> u roku od {NUM_WEEKS} sedmice}few{Ažurirajte <ph name="DEVICE_TYPE" /> u roku od {NUM_WEEKS} sedmice}other{Ažurirajte <ph name="DEVICE_TYPE" /> u roku od {NUM_WEEKS} sedmica}}</translation>
-<translation id="1056398434290692818">Krećite se nazad i naprijed pokretom prevlačenja</translation>
 <translation id="1056898198331236512">Upozorenje</translation>
 <translation id="1056980582064308040">Promjena postavki će ponovo pokrenuti pristupnu tačku. Veza s uređajima koji koriste pristupnu tačku će se prekinuti.</translation>
 <translation id="1058262162121953039">PUK</translation>
@@ -10292,6 +10291,7 @@ Odobrenja koja ste već dali web lokacijama i aplikacijama se mogu primjenjivati
 <translation id="956500788634395331">Zaštićeni ste od potencijalno štetnih ekstenzija</translation>
 <translation id="957179356621191750">Od 6 tačaka</translation>
 <translation id="957960681186851048">Ova web lokacija je pokušala automatski preuzeti više fajlova</translation>
+<translation id="958571289841636277">Krećite se nazad i naprijed pokretom prevlačenja</translation>
 <translation id="960987915827980018">Preostao je još otprilike 1 sat</translation>
 <translation id="962802172452141067">Stablo foldera za oznake</translation>
 <translation id="963000966785016697">Traži sliku pomoću <ph name="VISUAL_SEARCH_PROVIDER" /></translation>

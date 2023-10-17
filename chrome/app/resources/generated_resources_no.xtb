@@ -69,7 +69,6 @@
 <translation id="1054048317165655285">Fullfør konfigureringen på telefonen din</translation>
 <translation id="1054153489933238809">Åpne det opprinnelige &amp;bildet i en ny fane</translation>
 <translation id="1055274863771110134">{NUM_WEEKS,plural, =1{Oppdater <ph name="DEVICE_TYPE" /> innen én uke}other{Oppdater <ph name="DEVICE_TYPE" /> innen {NUM_WEEKS} uker}}</translation>
-<translation id="1056398434290692818">Naviger frem og tilbake med sveipebevegelser</translation>
 <translation id="1056898198331236512">Advarsel</translation>
 <translation id="1056980582064308040">Hvis du endrer innstillingene, starter wifi-sonen på nytt. Enheter som bruker wifi-sonen kobles fra.</translation>
 <translation id="1058262162121953039">PUK</translation>
@@ -10278,6 +10277,7 @@ Tillatelser du allerede har gitt nettsteder og apper, kan gjelde for denne konto
 <translation id="956500788634395331">Du er beskyttet mot potensielt skadelige utvidelser</translation>
 <translation id="957179356621191750">6-punkts</translation>
 <translation id="957960681186851048">Dette nettstedet prøvde å laste ned flere filer automatisk</translation>
+<translation id="958571289841636277">Naviger frem og tilbake med sveipebevegelser</translation>
 <translation id="960987915827980018">Omtrent én time igjen</translation>
 <translation id="962802172452141067">Trestrukturen for bokmerkemappen</translation>
 <translation id="963000966785016697">Søk etter bildet med <ph name="VISUAL_SEARCH_PROVIDER" /></translation>

@@ -69,7 +69,6 @@
 <translation id="1054048317165655285">Завершите настройку на телефоне</translation>
 <translation id="1054153489933238809">Открыть оригинальное изображение в новой вкладке</translation>
 <translation id="1055274863771110134">{NUM_WEEKS,plural, =1{Обновите <ph name="DEVICE_TYPE" /> в течение 1 недели}one{Обновите <ph name="DEVICE_TYPE" /> в течение {NUM_WEEKS} недели}few{Обновите <ph name="DEVICE_TYPE" /> в течение {NUM_WEEKS} недель}many{Обновите <ph name="DEVICE_TYPE" /> в течение {NUM_WEEKS} недель}other{Обновите <ph name="DEVICE_TYPE" /> в течение {NUM_WEEKS} недели}}</translation>
-<translation id="1056398434290692818">Переходите вперед или назад, проводя по экрану влево или вправо</translation>
 <translation id="1056898198331236512">Внимание</translation>
 <translation id="1056980582064308040">После изменения настроек произойдет перезагрузка точки доступа. Использующие ее устройства будут отключены.</translation>
 <translation id="1058262162121953039">PUK</translation>
@@ -10281,6 +10280,7 @@
 <translation id="956500788634395331">Включена защита от потенциально опасных расширений.</translation>
 <translation id="957179356621191750">6-точечный</translation>
 <translation id="957960681186851048">Этот сайт попытался автоматически скачать несколько файлов</translation>
+<translation id="958571289841636277">Переходите вперед или назад, проводя по экрану влево или вправо</translation>
 <translation id="960987915827980018">Осталось около часа</translation>
 <translation id="962802172452141067">Дерево папок с закладками</translation>
 <translation id="963000966785016697">Найти через <ph name="VISUAL_SEARCH_PROVIDER" /></translation>

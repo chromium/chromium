@@ -69,7 +69,6 @@
 <translation id="1054048317165655285">Завършване на настройването на телефона ви</translation>
 <translation id="1054153489933238809">Отваряне на оригиналното изображение в нов раздел</translation>
 <translation id="1055274863771110134">{NUM_WEEKS,plural, =1{Актуализирайте <ph name="DEVICE_TYPE" /> в рамките на 1 седмица}other{Актуализирайте <ph name="DEVICE_TYPE" /> в рамките на {NUM_WEEKS} седмици}}</translation>
-<translation id="1056398434290692818">Навигиране назад и напред с прекарване на пръст</translation>
 <translation id="1056898198331236512">Предупреждение</translation>
 <translation id="1056980582064308040">Промяната на настройките ще доведе до рестартиране на точката за достъп. Връзката на устройствата, които я използват, ще бъде прекратена.</translation>
 <translation id="1058262162121953039">PUK</translation>
@@ -10285,6 +10284,7 @@ https://www.chromium.org/chromium-os/how-tos-and-troubleshooting/debugging-featu
 <translation id="956500788634395331">Защитени сте от потенциално опасни разширения</translation>
 <translation id="957179356621191750">6 точки</translation>
 <translation id="957960681186851048">Този сайт опита да изтегли автоматично няколко файла</translation>
+<translation id="958571289841636277">Навигиране назад и напред с прекарване на пръст</translation>
 <translation id="960987915827980018">Остава около 1 час</translation>
 <translation id="962802172452141067">Дърво на папките с отметки</translation>
 <translation id="963000966785016697">Търсене на изображението с <ph name="VISUAL_SEARCH_PROVIDER" /></translation>

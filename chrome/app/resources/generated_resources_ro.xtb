@@ -69,7 +69,6 @@
 <translation id="1054048317165655285">Finalizează configurarea pe telefon</translation>
 <translation id="1054153489933238809">Deschide &amp;imaginea originală într-o filă nouă</translation>
 <translation id="1055274863771110134">{NUM_WEEKS,plural, =1{Actualizează acest <ph name="DEVICE_TYPE" /> în cel mult o săptămână}few{Actualizează acest <ph name="DEVICE_TYPE" /> în cel mult {NUM_WEEKS} săptămâni}other{Actualizează acest <ph name="DEVICE_TYPE" /> în cel mult {NUM_WEEKS} de săptămâni}}</translation>
-<translation id="1056398434290692818">Navighează înainte și înapoi folosind gestul de glisare</translation>
 <translation id="1056898198331236512">Avertisment</translation>
 <translation id="1056980582064308040">Dacă modifici setările, hotspotul va reporni. Dispozitivele care folosesc hotspotul se vor deconecta.</translation>
 <translation id="1058262162121953039">Codul PUK</translation>
@@ -10275,6 +10274,7 @@ Permisiunile pe care le-ai acordat deja site-urilor și aplicațiilor se pot apl
 <translation id="956500788634395331">Beneficiezi de protecție împotriva extensiilor potențial dăunătoare</translation>
 <translation id="957179356621191750">6 puncte</translation>
 <translation id="957960681186851048">Acest site a încercat să descarce automat mai multe fișiere</translation>
+<translation id="958571289841636277">Navighează înainte și înapoi folosind gestul de glisare</translation>
 <translation id="960987915827980018">A mai rămas aproape 1 oră</translation>
 <translation id="962802172452141067">Arborele cu dosarele de marcaje</translation>
 <translation id="963000966785016697">Caută imaginea cu <ph name="VISUAL_SEARCH_PROVIDER" /></translation>

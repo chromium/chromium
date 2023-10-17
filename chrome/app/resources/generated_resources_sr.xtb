@@ -69,7 +69,6 @@
 <translation id="1054048317165655285">Довршите подешавање на телефону</translation>
 <translation id="1054153489933238809">Отвори оригиналну сл&amp;ику на новој картици</translation>
 <translation id="1055274863771110134">{NUM_WEEKS,plural, =1{Ажурирајте <ph name="DEVICE_TYPE" /> у року од 1 недеље}one{Ажурирајте <ph name="DEVICE_TYPE" /> у року од {NUM_WEEKS} недеље}few{Ажурирајте <ph name="DEVICE_TYPE" /> у року од {NUM_WEEKS} недеље}other{Ажурирајте <ph name="DEVICE_TYPE" /> у року од {NUM_WEEKS} недеља}}</translation>
-<translation id="1056398434290692818">Померајте уназад и унапред помоћу покрета превлачења</translation>
 <translation id="1056898198331236512">Упозорење</translation>
 <translation id="1056980582064308040">Ако промените подешавања, хотспот ће се рестартовати. Веза уређаја са хотспотом биће прекинута.</translation>
 <translation id="1058262162121953039">PUK</translation>
@@ -10275,6 +10274,7 @@
 <translation id="956500788634395331">Штитимо вас од потенцијално штетних додатака</translation>
 <translation id="957179356621191750">Са 6 тачка</translation>
 <translation id="957960681186851048">Овај сајт је покушао да аутоматски преузме више датотека</translation>
+<translation id="958571289841636277">Померајте уназад и унапред помоћу покрета превлачења</translation>
 <translation id="960987915827980018">Остало је око сат времена</translation>
 <translation id="962802172452141067">Стабло директоријума обележивача</translation>
 <translation id="963000966785016697">Тражи слику уз: <ph name="VISUAL_SEARCH_PROVIDER" /></translation>

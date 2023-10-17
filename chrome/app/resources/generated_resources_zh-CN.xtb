@@ -69,7 +69,6 @@
 <translation id="1054048317165655285">在您的手机上完成设置</translation>
 <translation id="1054153489933238809">在新标签页中打开原始图片(&amp;I)</translation>
 <translation id="1055274863771110134">{NUM_WEEKS,plural, =1{请在 1 周内更新 <ph name="DEVICE_TYPE" />}other{请在 {NUM_WEEKS} 周内更新 <ph name="DEVICE_TYPE" />}}</translation>
-<translation id="1056398434290692818">使用滑动手势向后/向前导航</translation>
 <translation id="1056898198331236512">警告</translation>
 <translation id="1056980582064308040">更改设置会重启此热点。使用此热点的设备将断开连接。</translation>
 <translation id="1058262162121953039">PUK</translation>
@@ -10257,6 +10256,7 @@
 <translation id="956500788634395331">系统会保护您免受可能有害的扩展程序的威胁</translation>
 <translation id="957179356621191750">6 点式</translation>
 <translation id="957960681186851048">此网站试图自动下载多个文件</translation>
+<translation id="958571289841636277">使用滑动手势向后/向前导航</translation>
 <translation id="960987915827980018">约剩 1 小时</translation>
 <translation id="962802172452141067">书签文件夹树</translation>
 <translation id="963000966785016697">使用 <ph name="VISUAL_SEARCH_PROVIDER" />搜索图片</translation>

@@ -69,7 +69,6 @@
 <translation id="1054048317165655285">Телефонуңузда жөндөп бүтүрүңүз</translation>
 <translation id="1054153489933238809">Түпнуска &amp;сүрөттү жаңы өтмөктө ачуу</translation>
 <translation id="1055274863771110134">{NUM_WEEKS,plural, =1{<ph name="DEVICE_TYPE" /> түзмөгүн 1 аптанын ичинде жаңыртыңыз}other{<ph name="DEVICE_TYPE" /> түзмөгүн {NUM_WEEKS} аптанын ичинде жаңыртыңыз}}</translation>
-<translation id="1056398434290692818">Экранды сүрүп, артка же алдыга өтүңүз</translation>
 <translation id="1056898198331236512">Эскертүү</translation>
 <translation id="1056980582064308040">Параметрди өзгөртсөңүз, байланыш түйүнү өчүп күйөт. Байланыш түйүнүн колдонгон түзмөктөр андан ажыратылат.</translation>
 <translation id="1058262162121953039">PUK</translation>
@@ -10285,6 +10284,7 @@ Family Link колдонмосун түзмөгүңүзгө орнотуп, бу
 <translation id="956500788634395331">Мүмкүн болгон кооптуу кеңейтүүлөрдөн корголуп турасыз</translation>
 <translation id="957179356621191750">6 чекиттүү</translation>
 <translation id="957960681186851048">Бул сайт бир нече файлды автоматтык түрдө жүктөп алууга аракет кылды</translation>
+<translation id="958571289841636277">Экранды сүрүп, артка же алдыга өтүңүз</translation>
 <translation id="960987915827980018">1 сааттай убакыт калды</translation>
 <translation id="962802172452141067">Кыстарма папкасынын даракчасы</translation>
 <translation id="963000966785016697">Сүрөттү <ph name="VISUAL_SEARCH_PROVIDER" /> менен издөө</translation>

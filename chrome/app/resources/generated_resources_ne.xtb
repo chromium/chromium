@@ -69,7 +69,6 @@
 <translation id="1054048317165655285">आफ्नो फोनमा सेटअप प्रक्रिया पूरा गर्नुहोस्</translation>
 <translation id="1054153489933238809">नयाँ ट्याबमा मूल छविलाई खोल्नुहोस्</translation>
 <translation id="1055274863771110134">{NUM_WEEKS,plural, =1{एक हप्ताभित्र <ph name="DEVICE_TYPE" /> अपडेट गर्नुहोस्}other{{NUM_WEEKS} हप्ताभित्र <ph name="DEVICE_TYPE" /> अपडेट गर्नुहोस्}}</translation>
-<translation id="1056398434290692818">स्वाइप जेस्चर प्रयोग गरेर पछाडि र अगाडि जानुहोस्</translation>
 <translation id="1056898198331236512">चेतावनी</translation>
 <translation id="1056980582064308040">तपाईंले सेटिङ बदल्नुभयो भने यो हटस्पट रिस्टार्ट हुने छ। यो हटस्पट प्रयोग गरिरहेका डिभाइसहरू डिस्कनेक्ट हुने छन्।</translation>
 <translation id="1058262162121953039">PUK</translation>
@@ -10265,6 +10264,7 @@
 <translation id="956500788634395331">तपाईं हानिकारक हुन सक्ने एक्स्टेन्सनहरूबाट सुरक्षित हुनुहुन्छ</translation>
 <translation id="957179356621191750">६ वटा डट भएको</translation>
 <translation id="957960681186851048">यो साइटले स्वतः एकभन्दा बढी फाइलहरू डाउनलोड गर्ने प्रयास गर्‍यो</translation>
+<translation id="958571289841636277">स्वाइप जेस्चर प्रयोग गरेर पछाडि र अगाडि जानुहोस्</translation>
 <translation id="960987915827980018">लगभग 1 घन्टा बाँकी</translation>
 <translation id="962802172452141067">पुस्तक चिन्ह भएको फोल्डरको ट्री</translation>
 <translation id="963000966785016697"><ph name="VISUAL_SEARCH_PROVIDER" /> मार्फत फोटो खोज्नुहोस्</translation>

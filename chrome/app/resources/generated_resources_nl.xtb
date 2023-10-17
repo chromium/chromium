@@ -69,7 +69,6 @@
 <translation id="1054048317165655285">Voltooi het instellen op je telefoon</translation>
 <translation id="1054153489933238809">Oorspronkelijke &amp;afbeelding openen op nieuw tabblad</translation>
 <translation id="1055274863771110134">{NUM_WEEKS,plural, =1{Update <ph name="DEVICE_TYPE" /> binnen 1 week}other{Update <ph name="DEVICE_TYPE" /> binnen {NUM_WEEKS} weken}}</translation>
-<translation id="1056398434290692818">Vooruit- en terugnavigeren met een swipegebaar</translation>
 <translation id="1056898198331236512">Waarschuwing</translation>
 <translation id="1056980582064308040">Als je de instellingen wijzigt, wordt de hotspot opnieuw opgestart. De verbinding van apparaten die de hotspot gebruiken, wordt verbroken.</translation>
 <translation id="1058262162121953039">Pukcode</translation>
@@ -10262,6 +10261,7 @@ Op <ph name="BEGIN_LINK2" />policies.google.com<ph name="END_LINK2" /> vind je m
 <translation id="956500788634395331">Je bent beschermd tegen potentieel schadelijke extensies</translation>
 <translation id="957179356621191750">6-punts</translation>
 <translation id="957960681186851048">Deze site heeft geprobeerd automatisch meerdere bestanden te downloaden</translation>
+<translation id="958571289841636277">Vooruit- en terugnavigeren met een swipegebaar</translation>
 <translation id="960987915827980018">Ongeveer 1 uur resterend</translation>
 <translation id="962802172452141067">Mappenstructuur voor bookmarks</translation>
 <translation id="963000966785016697">Afbeelding zoeken met <ph name="VISUAL_SEARCH_PROVIDER" /></translation>

@@ -69,7 +69,6 @@
 <translation id="1054048317165655285">Ljúka uppsetningu í símanum</translation>
 <translation id="1054153489933238809">Opna upprunalega &amp;mynd á nýjum flipa</translation>
 <translation id="1055274863771110134">{NUM_WEEKS,plural, =1{Uppfærðu <ph name="DEVICE_TYPE" /> tækið innan 1 viku}one{Uppfærðu <ph name="DEVICE_TYPE" /> tækið innan {NUM_WEEKS} viku}other{Uppfærðu <ph name="DEVICE_TYPE" /> tækið innan {NUM_WEEKS} vikna}}</translation>
-<translation id="1056398434290692818">Flettu til baka og áfram með strokbendingu</translation>
 <translation id="1056898198331236512">Viðvörun</translation>
 <translation id="1056980582064308040">Ef breytingar eru gerðar á stillingum verður heiti reiturinn endurræstur. Tæki sem eru að nota heita reitinn munu aftengjast.</translation>
 <translation id="1058262162121953039">PUK-númer</translation>
@@ -10289,6 +10288,7 @@ Heimildir sem þú hefur þegar veitt vefsvæðum og forritum kunna að gilda á
 <translation id="956500788634395331">Tækið er varið gegn viðbótum sem gætu verið hættulegar</translation>
 <translation id="957179356621191750">6 punkta</translation>
 <translation id="957960681186851048">Þetta vefsvæði reyndi að sækja margar skrár sjálfkrafa</translation>
+<translation id="958571289841636277">Flettu til baka og áfram með strokbendingu</translation>
 <translation id="960987915827980018">Um 1 klukkustund eftir</translation>
 <translation id="962802172452141067">Möpputré bókamerkja</translation>
 <translation id="963000966785016697">Leita að mynd með <ph name="VISUAL_SEARCH_PROVIDER" /></translation>

@@ -69,7 +69,6 @@
 <translation id="1054048317165655285">Sozlashni telefonda yakunlang</translation>
 <translation id="1054153489933238809">Asl &amp;tasvirni yangi tabda ochish</translation>
 <translation id="1055274863771110134">{NUM_WEEKS,plural, =1{<ph name="DEVICE_TYPE" /> qurilmasini 1 hafta ichida yangilang}other{<ph name="DEVICE_TYPE" /> qurilmasini {NUM_WEEKS} hafta ichida yangilang}}</translation>
-<translation id="1056398434290692818">Orqaga yoki oldinga qaytish uchun yonga suring</translation>
 <translation id="1056898198331236512">Ogohlantirish</translation>
 <translation id="1056980582064308040">Sozlamalarni oʻzgartirgandan keyin hotspot qayta ishga tushadi. Undan foydalanadigan qurilmalar uziladi.</translation>
 <translation id="1058262162121953039">PUK</translation>
@@ -10271,6 +10270,7 @@ Sayt va ilovalarga berilgan ruxsatlar bu hisobga tatbiq etilishi mumkin. Google 
 <translation id="956500788634395331">Zararli kengaytmalardan himoyalangansiz</translation>
 <translation id="957179356621191750">6 nuqtali</translation>
 <translation id="957960681186851048">Bu sayt bir necha fayllarni avtomatik yuklab olishga urinib ko‘rdi</translation>
+<translation id="958571289841636277">Orqaga yoki oldinga qaytish uchun yonga suring</translation>
 <translation id="960987915827980018">1 soatcha qoldi</translation>
 <translation id="962802172452141067">Xatcho‘plar javoni</translation>
 <translation id="963000966785016697">Rasmni <ph name="VISUAL_SEARCH_PROVIDER" /> orqali qidirish</translation>

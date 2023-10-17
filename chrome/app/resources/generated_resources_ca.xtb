@@ -69,7 +69,6 @@
 <translation id="1054048317165655285">Completa la configuració al telèfon</translation>
 <translation id="1054153489933238809">Obre la &amp;imatge original en una pestanya nova</translation>
 <translation id="1055274863771110134">{NUM_WEEKS,plural, =1{Actualitza el dispositiu <ph name="DEVICE_TYPE" /> en un termini d'1 setmana}other{Actualitza el dispositiu <ph name="DEVICE_TYPE" /> en un termini de {NUM_WEEKS} setmanes}}</translation>
-<translation id="1056398434290692818">Navega enrere i endavant amb el gest de lliscar</translation>
 <translation id="1056898198331236512">Advertiment</translation>
 <translation id="1056980582064308040">En canviar la configuració, es reiniciarà el punt d'accés Wi‐Fi. Els dispositius que utilitzen el punt d'accés Wi‐Fi es desconnectaran.</translation>
 <translation id="1058262162121953039">PUK</translation>
@@ -10270,6 +10269,7 @@ Obtén informació sobre les dades que Google recull i sobre el motiu pel qual h
 <translation id="956500788634395331">Tens protecció contra les extensions potencialment perjudicials</translation>
 <translation id="957179356621191750">6 punts</translation>
 <translation id="957960681186851048">Aquest lloc web ha provat de baixar diversos fitxers automàticament</translation>
+<translation id="958571289841636277">Navega enrere i endavant amb el gest de lliscar</translation>
 <translation id="960987915827980018">Queda cosa d'una hora</translation>
 <translation id="962802172452141067">Arbre de carpetes d'adreces d'interès</translation>
 <translation id="963000966785016697">Cerca la imatge amb <ph name="VISUAL_SEARCH_PROVIDER" /></translation>

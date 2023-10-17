@@ -69,7 +69,6 @@
 <translation id="1054048317165655285">Terminez la configuration sur votre téléphone</translation>
 <translation id="1054153489933238809">Ouvrir l'&amp;image originale dans un nouvel onglet</translation>
 <translation id="1055274863771110134">{NUM_WEEKS,plural, =1{Mettre à jour ce <ph name="DEVICE_TYPE" /> d'ici une semaine}one{Mettre à jour ce <ph name="DEVICE_TYPE" /> d'ici {NUM_WEEKS} semaine}other{Mettre à jour ce <ph name="DEVICE_TYPE" /> d'ici {NUM_WEEKS} semaines}}</translation>
-<translation id="1056398434290692818">Passez à la page suivante ou précédente avec un geste de balayage</translation>
 <translation id="1056898198331236512">Avertissement</translation>
 <translation id="1056980582064308040">Modifier les paramètres redémarrera le point d'accès. Les appareils utilisant ce point d'accès seront déconnectés.</translation>
 <translation id="1058262162121953039">Clé PUK</translation>
@@ -10276,6 +10275,7 @@ Les autorisations que vous avez déjà accordées aux sites Web et aux applis pe
 <translation id="956500788634395331">Vous êtes protégé contre les extensions potentiellement dangereuses</translation>
 <translation id="957179356621191750">6 points</translation>
 <translation id="957960681186851048">Une tentative de téléchargement automatique de plusieurs fichiers a été initiée via ce site</translation>
+<translation id="958571289841636277">Passez à la page suivante ou précédente avec un geste de balayage</translation>
 <translation id="960987915827980018">Environ 1 heure restante</translation>
 <translation id="962802172452141067">Arborescence de dossiers des favoris</translation>
 <translation id="963000966785016697">Rechercher l'image avec <ph name="VISUAL_SEARCH_PROVIDER" /></translation>

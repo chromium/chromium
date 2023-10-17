@@ -69,7 +69,6 @@
 <translation id="1054048317165655285">יש להשלים את ההגדרה בטלפון</translation>
 <translation id="1054153489933238809">פתיחת ה&amp;תמונה המקורית בכרטיסייה חדשה</translation>
 <translation id="1055274863771110134">{NUM_WEEKS,plural, =1{יש לעדכן את <ph name="DEVICE_TYPE" /> בתוך שבוע}one{יש לעדכן את <ph name="DEVICE_TYPE" /> בתוך {NUM_WEEKS} שבועות}two{יש לעדכן את <ph name="DEVICE_TYPE" /> בתוך שבועיים ({NUM_WEEKS})}other{יש לעדכן את <ph name="DEVICE_TYPE" /> בתוך {NUM_WEEKS} שבועות}}</translation>
-<translation id="1056398434290692818">ניתן לנווט קדימה ואחורה באמצעות תנועת החלקה</translation>
 <translation id="1056898198331236512">אזהרה</translation>
 <translation id="1056980582064308040">שינוי ההגדרות יגרום להפעלה מחדש של הנקודה לשיתוף אינטרנט. מכשירים שמחוברים לנקודה לשיתוף האינטרנט ינותקו.</translation>
 <translation id="1058262162121953039">PUK</translation>
@@ -10294,6 +10293,7 @@
 <translation id="956500788634395331">המערכת מגינה עליך מפני תוספים שעשויים להיות מזיקים</translation>
 <translation id="957179356621191750">6 נקודות</translation>
 <translation id="957960681186851048">האתר הזה ניסה להוריד קבצים מרובים באופן אוטומטי</translation>
+<translation id="958571289841636277">ניתן לנווט קדימה ואחורה באמצעות תנועת החלקה</translation>
 <translation id="960987915827980018">נותרה בערך שעה אחת</translation>
 <translation id="962802172452141067">עץ תיקיות של סימניות</translation>
 <translation id="963000966785016697">חיפוש התמונה באמצעות <ph name="VISUAL_SEARCH_PROVIDER" /></translation>

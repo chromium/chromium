@@ -69,7 +69,6 @@
 <translation id="1054048317165655285">Ολοκληρώστε τη ρύθμιση με το τηλέφωνό σας</translation>
 <translation id="1054153489933238809">Άνοιγμα αρχικής εικόνας σε νέα καρτέλα</translation>
 <translation id="1055274863771110134">{NUM_WEEKS,plural, =1{Ενημέρωση συσκευής (<ph name="DEVICE_TYPE" />) εντός 1 εβδομάδας}other{Ενημέρωση συσκευής (<ph name="DEVICE_TYPE" />) εντός {NUM_WEEKS} εβδομάδων}}</translation>
-<translation id="1056398434290692818">Πλοήγηση προς τα πίσω και προς τα εμπρός με κίνηση ολίσθησης</translation>
 <translation id="1056898198331236512">Προειδοποίηση</translation>
 <translation id="1056980582064308040">Με την αλλαγή των ρυθμίσεων θα γίνει επανεκκίνηση του σημείου πρόσβασης Wi-Fi. Οι συσκευές που χρησιμοποιούν το σημείο πρόσβασης Wi-Fi θα αποσυνδεθούν.</translation>
 <translation id="1058262162121953039">Κωδικός PUK</translation>
@@ -10286,6 +10285,7 @@
 <translation id="956500788634395331">Είστε προστατευμένοι από δυνητικά επιβλαβείς επεκτάσεις.</translation>
 <translation id="957179356621191750">6 κουκκίδων</translation>
 <translation id="957960681186851048">Αυτός ο ιστότοπος επιχείρησε να κατεβάσει αυτόματα πολλά αρχεία</translation>
+<translation id="958571289841636277">Πλοήγηση προς τα πίσω και προς τα εμπρός με κίνηση σάρωσης</translation>
 <translation id="960987915827980018">Απομένει περίπου 1 ώρα</translation>
 <translation id="962802172452141067">Δέντρο φακέλου σελιδοδεικτών</translation>
 <translation id="963000966785016697">Αναζήτηση εικόνας με το <ph name="VISUAL_SEARCH_PROVIDER" /></translation>

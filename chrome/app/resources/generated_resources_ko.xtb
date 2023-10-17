@@ -69,7 +69,6 @@
 <translation id="1054048317165655285">휴대전화에서 설정 완료</translation>
 <translation id="1054153489933238809">새 탭에서 원본 이미지 열기</translation>
 <translation id="1055274863771110134">{NUM_WEEKS,plural, =1{1주일 이내에 <ph name="DEVICE_TYPE" /> 업데이트}other{{NUM_WEEKS}주일 이내에 <ph name="DEVICE_TYPE" /> 업데이트}}</translation>
-<translation id="1056398434290692818">스와이프 동작으로 앞뒤로 이동</translation>
 <translation id="1056898198331236512">경고</translation>
 <translation id="1056980582064308040">설정을 변경하면 핫스팟이 다시 시작됩니다. 핫스팟을 사용하는 기기의 연결이 해제됩니다.</translation>
 <translation id="1058262162121953039">PUK</translation>
@@ -10287,6 +10286,7 @@ https://support.google.com/chromebook/?p=sm</translation>
 <translation id="956500788634395331">잠재적으로 위험한 확장 프로그램으로부터 사용자를 보호합니다.</translation>
 <translation id="957179356621191750">6점</translation>
 <translation id="957960681186851048">이 사이트에서 여러 파일을 자동으로 다운로드하려고 함</translation>
+<translation id="958571289841636277">스와이프 동작으로 앞뒤로 이동</translation>
 <translation id="960987915827980018">약 1시간 남음</translation>
 <translation id="962802172452141067">북마크 폴더 구조</translation>
 <translation id="963000966785016697"><ph name="VISUAL_SEARCH_PROVIDER" />로 이미지 검색</translation>

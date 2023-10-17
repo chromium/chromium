@@ -2709,7 +2709,6 @@ Quando a política é deixada sem definição, o novo comportamento é usado, as
 <translation id="3240609035816615922">Política de acesso à configuração de impressoras.</translation>
 <translation id="324062325008698789">Configura uma lista de impressoras</translation>
 <translation id="3240655340884151271">Endereço MAC da placa de rede integrada da base</translation>
-<translation id="3242480111684005642">O usuário pode usar o recurso de sincronização de arquivos do <ph name="GOOGLE_DRIVE_NAME" />.</translation>
 <translation id="3242756958360374888">Contém uma lista de padrões que são usados para controlar a visibilidade das contas no <ph name="PRODUCT_NAME" />.
 
       Cada Conta do Google no dispositivo será comparada com os padrões armazenados nessa política para determinar a visibilidade da conta no <ph name="PRODUCT_NAME" />. A conta ficará visível se o nome dela corresponder a algum padrão na lista. Caso contrário, a conta será ocultada.
@@ -2769,7 +2768,6 @@ Essas restrições são aplicadas a downloads acionados em conteúdos de página
 No <ph name="MS_WIN_NAME" />, essa política só está disponível em instâncias associadas a um domínio do <ph name="MS_AD_NAME" />, associadas ao <ph name="MS_AAD_NAME" /> ou registradas em <ph name="CHROME_BROWSER_CLOUD_MANAGEMENT_NAME" />.</translation>
 <translation id="3300784749135986828">Ativar ou desativar a <ph name="USER_AGENT_REDUCTION_FEATURE_NAME" />.</translation>
 <translation id="3301698868852716692">Ativar extensão de insights</translation>
-<translation id="3302723130703323097">Deixar o recurso "Sincronização de arquivos" do <ph name="GOOGLE_DRIVE_NAME" /> visível e disponível para ativação em dispositivos com suporte no app Arquivos do <ph name="PRODUCT_OS_NAME" /></translation>
 <translation id="3302829897293005699">Se a política for definida como "Ativada" ou não for definida, as informações da sessão de quiosque ativa, como versão e ID do aplicativo, serão comunicadas pelos dispositivos registrados.
 
       Se a política for definida como "Desativada", os dispositivos registrados não comunicarão as informações da sessão de quiosque.</translation>
@@ -2857,28 +2855,6 @@ Se esta política for definida como desativada, o recurso de escrita preditiva n
       Se ela for ocultada, os recursos desativados não poderão ser usados e vão ficar invisíveis para os usuários.
 
       Se a política for deixada sem definição ou tiver um valor inválido, o modo de desativação de recursos do sistema vai ser "bloqueado".</translation>
-<translation id="3410963889229735344">A sincronização de arquivos do <ph name="GOOGLE_DRIVE_NAME" /> disponibiliza automaticamente
-os arquivos na pasta "Meu Drive" de um usuário off-line (se houver espaço) em dispositivos
-com suporte. Depois de disponibilizar todos os arquivos disponíveis off-line, os novos
-também serão disponibilizados off-line automaticamente. Quando o recurso estiver ativado, se
-não houver espaço suficiente para mantê-lo ativado, todos os novos arquivos
-deixarão de ser disponibilizados off-line automaticamente. No entanto, o usuário ainda poderá
-alternar os itens manualmente.
-
-Se a política for definida como <ph name="POLICY_VALUE_VISIBLE" />, a
-funcionalidade de sincronização será mostrada no app Arquivos e na página de configurações. Os usuários ainda
-precisam ativar essa funcionalidade por conta própria.
-
-Se a política for definida como <ph name="POLICY_VALUE_DISABLED" />
-a funcionalidade será desativada se ela tiver sido ativada anteriormente pelo usuário.
-O recurso também será desativado no app Arquivos e nas configurações para que o usuário não possa
-reativá-lo. Se houver arquivos disponibilizados off-line pelo
-usuário, eles vão continuar disponíveis off-line e o usuário poderá disponibilizar
-arquivos individuais off-line manualmente. Eles não serão disponibilizados
-automaticamente.
-
-Se a política não for definida,
-<ph name="POLICY_VALUE_VISIBLE" /> será usado como o valor padrão.</translation>
 <translation id="341285788698114069">Esta política controla a prioridade do processo de áudio no Windows.
       Se ela for ativada, o processo de áudio será executado com prioridade acima do normal.
       Se ela for desativada, o processo de áudio será executado com prioridade normal.
@@ -4770,7 +4746,6 @@ Esta política só é eficaz quando a máquina está registrada na <ph name="CLO
 <translation id="5039110755072335605">Suporte a cabeçalhos de solicitação de CORS sem caractere curinga</translation>
 <translation id="504116558738617678">Mostrar alertas de pouco espaço no disco apenas quando o dispositivo não tiver gerenciamento ou quando houver apenas um usuário</translation>
 <translation id="5041315457555330432">Permitir que o <ph name="PRODUCT_NAME" /> se conecte apenas a dispositivos em endereços IP particulares, a menos que o recurso CastAllowAllIPs esteja ativado.</translation>
-<translation id="5046376406561077773">O usuário tem acesso à interface relacionada ao recurso de sincronização de arquivos do <ph name="GOOGLE_DRIVE_NAME" />.</translation>
 <translation id="5055474681190962362">Dia do mês [1-31] em que a reinicialização acontecerá, interpretado no fuso horário local do dispositivo. Usado apenas quando "frequency" for definido como "MONTHLY". Caso seja maior que o número máximo de dias de um mês específico, o último dia do mês será usado.</translation>
 <translation id="5056708224511062314">Lupa desativada</translation>
 <translation id="5058573563327660283">Selecionar a estratégia usada para liberar espaço em disco durante a limpeza automática (obsoleta)</translation>

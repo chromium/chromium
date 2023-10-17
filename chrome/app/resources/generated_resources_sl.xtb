@@ -69,7 +69,6 @@
 <translation id="1054048317165655285">Dokončajte nastavitev v telefonu</translation>
 <translation id="1054153489933238809">Odpri izvirno &amp;sliko na novem zavihku</translation>
 <translation id="1055274863771110134">{NUM_WEEKS,plural, =1{Napravo <ph name="DEVICE_TYPE" /> posodobite v 1 tednu}one{Napravo <ph name="DEVICE_TYPE" /> posodobite v {NUM_WEEKS} tednu}two{Napravo <ph name="DEVICE_TYPE" /> posodobite v {NUM_WEEKS} tednih}few{Napravo <ph name="DEVICE_TYPE" /> posodobite v {NUM_WEEKS} tednih}other{Napravo <ph name="DEVICE_TYPE" /> posodobite v {NUM_WEEKS} tednih}}</translation>
-<translation id="1056398434290692818">Pomikanje nazaj in naprej s potezo vlečenja</translation>
 <translation id="1056898198331236512">Opozorilo</translation>
 <translation id="1056980582064308040">Če spremenite nastavitve, boste dostopno točko znova zagnali. Povezava naprav, ki uporabljajo dostopno točko, bo prekinjena.</translation>
 <translation id="1058262162121953039">PUK</translation>
@@ -10301,6 +10300,7 @@ Dovoljenja, ki ste jih že odobrili spletnim mestom in aplikacijam, morda veljaj
 <translation id="956500788634395331">Zaščiteni ste pred morebiti škodljivimi razširitvami</translation>
 <translation id="957179356621191750">6 pik</translation>
 <translation id="957960681186851048">Spletno mesto je poskušalo samodejno prenesti več datotek</translation>
+<translation id="958571289841636277">Pomikanje nazaj in naprej s potezo vlečenja</translation>
 <translation id="960987915827980018">Še približno ena ura</translation>
 <translation id="962802172452141067">Drevo mape z zaznamki</translation>
 <translation id="963000966785016697">Iskanje slike s tem: <ph name="VISUAL_SEARCH_PROVIDER" /></translation>

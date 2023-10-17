@@ -2650,7 +2650,6 @@
 <translation id="3240609035816615922">打印机配置访问政策。</translation>
 <translation id="324062325008698789">配置打印机列表</translation>
 <translation id="3240655340884151271">基座的内置 NIC MAC 地址</translation>
-<translation id="3242480111684005642">用户可以使用 <ph name="GOOGLE_DRIVE_NAME" />的文件同步功能。</translation>
 <translation id="3242756958360374888">包含一系列用于控制在 <ph name="PRODUCT_NAME" /> 中显示哪些账号的格式。
 
       系统会将设备上的每个 Google 账号与此政策中存储的格式进行比对，以确定是否在 <ph name="PRODUCT_NAME" /> 中显示各个账号。只要账号名称与该列表内的任一格式匹配，系统即会显示相应账号。如果账号名称与该列表内的任一格式均不匹配，系统便会隐藏相应账号。
@@ -2710,7 +2709,6 @@
 在 <ph name="MS_WIN_NAME" /> 上，此政策仅适用于已加入 <ph name="MS_AD_NAME" /> 网域的实例、已加入 <ph name="MS_AAD_NAME" /> 的实例，或已注册 <ph name="CHROME_BROWSER_CLOUD_MANAGEMENT_NAME" />的实例。</translation>
 <translation id="3300784749135986828">启用或停用“<ph name="USER_AGENT_REDUCTION_FEATURE_NAME" />”功能。</translation>
 <translation id="3301698868852716692">启用数据洞见扩展程序</translation>
-<translation id="3302723130703323097">在支持的设备上，将 <ph name="GOOGLE_DRIVE_NAME" />的文件同步功能设为在 <ph name="PRODUCT_OS_NAME" /> 的“文件”应用中可见并可由用户开启/关闭</translation>
 <translation id="3302829897293005699">如果此政策已启用或未设置，已注册的设备将会报告当前自助服务终端会话的相关信息（例如应用 ID 和版本）。
 
       如果此政策已停用，已注册的设备将不会报告自助服务终端会话信息。</translation>
@@ -2798,13 +2796,6 @@
       如果此政策设为“已隐藏”，已停用的功能会不可用，并且对用户不可见。
 
       如果此政策未设置或包含无效值，系统功能的停用模式将会是“已禁用”。</translation>
-<translation id="3410963889229735344">在支持的设备上，<ph name="GOOGLE_DRIVE_NAME" />的文件同步功能会自动将用户的“我的云端硬盘”中的文件设为可离线使用（在空间允许的情况下）。在最初将所有文件设为可离线使用后，所有新文件也会自动设为可离线使用。如果开启了该功能，但以后因空间不足而无法使该功能保持开启状态，系统会停止将所有新文件自动设为可离线使用，但用户仍可手动将文件设为可离线使用。
-
-如果此政策设为“<ph name="POLICY_VALUE_VISIBLE" />”，“文件”应用和“设置”页面中会显示文件同步功能。用户仍需要自行开启文件同步功能。
-
-如果此政策设为“<ph name="POLICY_VALUE_DISABLED" />”，系统将关闭文件同步功能（如果用户之前已开启该功能），并且还会在“文件”应用和“设置”中隐藏该功能，这样用户就无法重新启用它。如果有任何现有文件已被用户设为可离线使用，这些文件仍可离线使用，而且用户可以手动将各个文件设为可离线使用（这些文件不会自动设为可离线使用）。
-
-如果未设置此政策，它将使用“<ph name="POLICY_VALUE_VISIBLE" />”作为默认值。</translation>
 <translation id="341285788698114069">此政策用于控制音频进程在 Windows 上的优先级。
       如果已启用，音频进程将以高于普通优先级的优先级运行。
       如果已停用，音频进程将以普通优先级运行。
@@ -4616,7 +4607,6 @@
 <translation id="5039110755072335605">对 CORS 非通配符式请求标头的支持情况</translation>
 <translation id="504116558738617678">仅在相应设备不受管理或只有 1 个用户时显示磁盘空间不足警告</translation>
 <translation id="5041315457555330432">允许 <ph name="PRODUCT_NAME" /> 仅连接到位于专用 IP 地址的设备，除非 CastAllowAllIPs 功能已开启。</translation>
-<translation id="5046376406561077773">用户看不到与 <ph name="GOOGLE_DRIVE_NAME" />的文件同步功能相关的任何界面。</translation>
 <translation id="5055474681190962362">应在每月的哪一天 [1-31]（以设备的本地时区表示）重新启动设备。仅在“频率”设为“MONTHLY”时使用。如果此值超出给定月份的天数上限，系统将选择该月的最后一天。</translation>
 <translation id="5056708224511062314">放大镜已停用</translation>
 <translation id="5058573563327660283">选择在自动清理期间释放磁盘空间时采用的策略（已弃用）</translation>

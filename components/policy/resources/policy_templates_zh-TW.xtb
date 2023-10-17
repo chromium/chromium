@@ -2633,7 +2633,6 @@
 <translation id="3240609035816615922">印表機設定存取權政策。</translation>
 <translation id="324062325008698789">設定印表機清單。</translation>
 <translation id="3240655340884151271">座架的內建 NIC MAC 位址</translation>
-<translation id="3242480111684005642">使用者可以使用 <ph name="GOOGLE_DRIVE_NAME" />「同步處理檔案」功能。</translation>
 <translation id="3242756958360374888">這項政策包含的模式清單可用於控管 <ph name="PRODUCT_NAME" /> 中帳戶的顯示設定。
 
       系統會將裝置上的每個 Google 帳戶與這項政策中儲存的模式互相比對，藉此判定是否要在 <ph name="PRODUCT_NAME" /> 中顯示帳戶。如果帳戶名稱符合清單中的任何模式，系統即會顯示帳戶；反之則會隱藏帳戶。
@@ -2691,7 +2690,6 @@
 在 <ph name="MS_WIN_NAME" /> 上，這項政策適用的執行個體必須加入 <ph name="MS_AD_NAME" /> 網域或 <ph name="MS_AAD_NAME" />，或者註冊 <ph name="CHROME_BROWSER_CLOUD_MANAGEMENT_NAME" />。</translation>
 <translation id="3300784749135986828">啟用或停用「<ph name="USER_AGENT_REDUCTION_FEATURE_NAME" />」。</translation>
 <translation id="3301698868852716692">啟用深入分析擴充功能</translation>
-<translation id="3302723130703323097">允許顯示 <ph name="GOOGLE_DRIVE_NAME" />「同步處理檔案」功能，並讓使用者可在支援的裝置上，透過<ph name="PRODUCT_OS_NAME" />「檔案」應用程式切換此功能</translation>
 <translation id="3302829897293005699">如果將這項政策設為啟用或不設定，已註冊的裝置會回報運作中資訊站工作階段相關資訊，例如應用程式 ID 和版本。
 
       如果將這項政策設為停用，已註冊的裝置不會回報資訊站工作階段相關資訊。</translation>
@@ -2779,27 +2777,6 @@
       如果將這項政策設為「已隱藏」，已停用的功能將無法使用，而且不會顯示在畫面上。
 
       如果未設定這項政策或設定的值無效，系統功能的停用模式將設為「已封鎖」。</translation>
-<translation id="3410963889229735344"><ph name="GOOGLE_DRIVE_NAME" />「同步處理檔案」功能會
-自動在支援的裝置上，讓使用者「我的雲端硬碟」中的檔案能夠離線
-存取 (在空間允許的前提下)。啟動讓所有檔案可以離線存取的功能後，
-系統也會將所有新檔案設為可以離線存取。啟用這項功能後，
-如果日後因空間不足而無法繼續使用這項功能，
-所有新檔案都將停止自動設為可離線使用，
-但使用者仍可手動切換項目。
-
-如果將這項政策設為「<ph name="POLICY_VALUE_VISIBLE" />」，
-「檔案」應用程式和「設定」頁面就會顯示「同步處理檔案」功能。使用者
-仍需自行切換「同步處理檔案」功能。
-
-如果將這項政策設為「<ph name="POLICY_VALUE_DISABLED" />」，
-系統會關閉「同步處理檔案」功能 (如果先前已由使用者開啟)，
-並且會在「檔案」應用程式和「設定」頁面中隱藏該功能，讓使用者無法重新啟用這項
-功能。如果有任何現有檔案已由使用者設為可離線存取，
-這些檔案仍可離線使用，使用者也可以手動將個別檔案
-設為可離線存取 (這些檔案不會自動設為
-可離線存取)。
-
-如果不設定這項政策，系統會使用「<ph name="POLICY_VALUE_VISIBLE" />」做為預設值。</translation>
 <translation id="341285788698114069">這項政策可控管音訊程序在 Windows 系統上的優先順序。
       如果啟用這項政策，系統將以高於一般優先順序的次序執行音訊程序。
       如果停用這項政策，系統將以一般優先順序執行音訊程序。
@@ -4592,7 +4569,6 @@
 <translation id="5039110755072335605">CORS 非萬用字元要求標頭支援</translation>
 <translation id="504116558738617678">只有在裝置未受管理或只有一位使用者時，才顯示磁碟空間不足的警告</translation>
 <translation id="5041315457555330432">除非開啟 CastAllowAllIPs 功能，否則僅允許 <ph name="PRODUCT_NAME" /> 透過私人 IP 位址連線到裝置。</translation>
-<translation id="5046376406561077773">使用者看不到任何與 <ph name="GOOGLE_DRIVE_NAME" />「同步處理檔案」功能相關的使用者介面。</translation>
 <translation id="5055474681190962362">每月應重新啟動的日期 [1-31] (根據裝置當地時區)，僅適用於「frequency」設為「MONTHLY」的情況。如果這個值大於指定月份的天數上限，系統會選擇當月的最後一天。</translation>
 <translation id="5056708224511062314">已停用螢幕放大鏡</translation>
 <translation id="5058573563327660283">選取自動清理時用來釋出磁碟空間的策略 (已不適用)</translation>

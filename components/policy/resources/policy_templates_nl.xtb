@@ -2659,7 +2659,6 @@ Als je dit beleid niet instelt, wordt het nieuwe gedrag gebruikt, net als bij de
 <translation id="3240609035816615922">Toegangsbeleid voor printerconfiguratie.</translation>
 <translation id="324062325008698789">Hiermee wordt een lijst met printers geconfigureerd</translation>
 <translation id="3240655340884151271">MAC-adres van ingebouwde NIC van dock</translation>
-<translation id="3242480111684005642">De gebruiker kan de functie Bestandssynchronisatie van <ph name="GOOGLE_DRIVE_NAME" /> gebruiken.</translation>
 <translation id="3242756958360374888">Bevat een lijst met patronen die worden gebruikt om de zichtbaarheid van accounts in <ph name="PRODUCT_NAME" /> te beheren.
 
       Elk Google-account op het apparaat wordt vergeleken met patronen die in dit beleid zijn opgeslagen om de accountzichtbaarheid in <ph name="PRODUCT_NAME" /> te bepalen. Het account is zichtbaar als de bijbehorende naam overeenkomt met een patroon in de lijst. Anders wordt het account verborgen.
@@ -2719,7 +2718,6 @@ Deze beperkingen gelden zowel voor downloads die via de webpaginacontent als voo
 In <ph name="MS_WIN_NAME" /> is dit beleid alleen beschikbaar voor instanties die zijn gekoppeld aan een <ph name="MS_AD_NAME" />-domein, aan <ph name="MS_AAD_NAME" /> of zijn ingeschreven voor <ph name="CHROME_BROWSER_CLOUD_MANAGEMENT_NAME" />.</translation>
 <translation id="3300784749135986828">De functie <ph name="USER_AGENT_REDUCTION_FEATURE_NAME" /> aan- of uitzetten.</translation>
 <translation id="3301698868852716692">Extensie voor inzichten aanzetten</translation>
-<translation id="3302723130703323097">De functie Bestandssynchronisatie van <ph name="GOOGLE_DRIVE_NAME" /> zichtbaar en beschikbaar maken om aan te zetten op ondersteunde apparaten in de app Bestanden van <ph name="PRODUCT_OS_NAME" /></translation>
 <translation id="3302829897293005699">Als je het beleid toepast of niet instelt, rapporteren ingeschreven apparaten informatie over de actieve kiosksessies, zoals de app-ID en -versie.
 
       Als je het beleid niet toepast, rapporteren ingeschreven apparaten geen informatie over kiosksessies.</translation>
@@ -2807,13 +2805,6 @@ Als je dit beleid niet toepast, is de functie voor voorspellend schrijven op het
       Als je dit beleid instelt op Verborgen, kunnen gebruikers de uitgezette functies niet gebruiken en niet zien.
 
       Als je dit beleid niet instelt of instelt op een ongeldige waarde, wordt de stand voor het uitzetten van systeemfuncties geblokkeerd.</translation>
-<translation id="3410963889229735344">Met de bestandssynchronisatie van <ph name="GOOGLE_DRIVE_NAME" /> worden bestanden in de Mijn Drive van een gebruiker automatisch offline beschikbaar gemaakt (als er genoeg ruimte is) op ondersteunde apparaten. Nadat je alle bestanden offline beschikbaar hebt gemaakt, worden alle nieuwe bestanden ook automatisch offline beschikbaar gemaakt. Als er later onvoldoende ruimte is om de functie aan te laten, worden alle nieuwe bestanden niet meer automatisch offline beschikbaar gemaakt. Een gebruiker kan de items nog wel handmatig aan- of uitzetten.
-
-Als je het beleid instelt op <ph name="POLICY_VALUE_VISIBLE" />, wordt de functie voor bestandssynchronisatie getoond in de app Bestanden en op de pagina Instellingen. Gebruikers moeten de functie voor bestandssynchronisatie nog steeds zelf aan- of uitzetten.
-
-Als je het beleid instelt op <ph name="POLICY_VALUE_DISABLED" />, wordt de functie voor bestandssynchronisatie uitgezet als deze eerder is aangezet door de gebruiker. De functie wordt ook verborgen in de app Bestanden en op de pagina Instellingen, zodat de gebruiker deze niet opnieuw kan aanzetten. Als de gebruiker bestaande bestanden offline beschikbaar heeft gemaakt, blijven deze offline beschikbaar. De gebruiker kan dan handmatig afzonderlijke bestanden offline beschikbaar maken (ze worden niet automatisch offline beschikbaar gemaakt).
-
-Als je het beleid niet instelt, wordt <ph name="POLICY_VALUE_VISIBLE" /> gebruikt als de standaardwaarde.</translation>
 <translation id="341285788698114069">Met dit beleid bepaal je de prioriteit van het audioproces in Windows.
       Als je dit beleid toepast, wordt het audioproces uitgevoerd met een hogere prioriteit dan normaal.
       Als je dit beleid niet toepast, wordt het audioproces uitgevoerd met normale prioriteit.
@@ -4624,7 +4615,6 @@ Dit beleid is alleen van kracht als de machine is ingeschreven met <ph name="CLO
 <translation id="5039110755072335605">Ondersteuning voor CORS-verzoekheaders zonder jokertekens</translation>
 <translation id="504116558738617678">Waarschuwingen voor weinig schijfruimte alleen tonen als het apparaat onbeheerd is of er slechts 1 gebruiker is</translation>
 <translation id="5041315457555330432">Toestaan dat <ph name="PRODUCT_NAME" /> alleen verbinding maakt met apparaten op privé-IP-adressen, tenzij de functie CastAllowAllIPs aanstaat.</translation>
-<translation id="5046376406561077773">De gebruiker kan de UI voor de functie Bestandssynchronisatie van <ph name="GOOGLE_DRIVE_NAME" /> niet zien.</translation>
 <translation id="5055474681190962362">Dag van de maand [1-31] waarop opnieuw moet worden opgestart, geïnterpreteerd in de lokale tijdzone van het apparaat. Alleen gebruikt als 'frequency' is ingesteld op MONTHLY. Is dit meer dan het maximumaantal dagen in een bepaalde maand, dan wordt de laatste dag van de maand gekozen.</translation>
 <translation id="5056708224511062314">Vergrootglas staat uit</translation>
 <translation id="5058573563327660283">De strategie selecteren die wordt gebruikt om schijfruimte vrij te maken tijdens het automatisch opschonen (verouderd)</translation>

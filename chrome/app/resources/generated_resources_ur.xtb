@@ -69,7 +69,6 @@
 <translation id="1054048317165655285">اپنے فون پر سیٹ اپ مکمل کریں</translation>
 <translation id="1054153489933238809">اصل &amp;تصویر نئے ٹیب میں کھولیں</translation>
 <translation id="1055274863771110134">{NUM_WEEKS,plural, =1{<ph name="DEVICE_TYPE" /> 1 ہفتہ کے اندر اپ ڈیٹ کریں}other{<ph name="DEVICE_TYPE" /> {NUM_WEEKS} ہفتوں کے اندر اپ ڈیٹ کریں}}</translation>
-<translation id="1056398434290692818">سوائپ کے اشارے کے ساتھ پیچھے اور آگے نیویگیٹ کریں</translation>
 <translation id="1056898198331236512">وارننگ</translation>
 <translation id="1056980582064308040">ترتیبات کو تبدیل کرنے سے ہاٹ اسپاٹ ری اسٹارٹ ہو جائے گا۔ ہاٹ اسپاٹ استعمال کرنے والے آلات غیر منسلک ہو جائیں گے۔</translation>
 <translation id="1058262162121953039">PUK</translation>
@@ -10270,6 +10269,7 @@
 <translation id="956500788634395331">آپ ممکنہ طور پر نقصان دہ ایکسٹینشنز سے محفوظ ہیں</translation>
 <translation id="957179356621191750">6 نقطہ</translation>
 <translation id="957960681186851048">اس سائٹ نے متعدد فائلز کو خودکار طور پر ڈاؤن لوڈ کرنے کی کوشش کی ہے</translation>
+<translation id="958571289841636277">سوائپ کے اشارے سے پیچھے اور آگے نیویگیٹ کریں</translation>
 <translation id="960987915827980018">قریب 1 گھنٹہ باقی ہے</translation>
 <translation id="962802172452141067">بُک مارک فولڈر کا درخت</translation>
 <translation id="963000966785016697"><ph name="VISUAL_SEARCH_PROVIDER" /> کے ساتھ تصویر تلاش کریں</translation>

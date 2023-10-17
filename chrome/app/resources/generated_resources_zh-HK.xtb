@@ -69,7 +69,6 @@
 <translation id="1054048317165655285">在手機上完成設定</translation>
 <translation id="1054153489933238809">在新分頁中開啟原始圖片(&amp;I)</translation>
 <translation id="1055274863771110134">{NUM_WEEKS,plural, =1{請在 1 星期內更新 <ph name="DEVICE_TYPE" />}other{請在 {NUM_WEEKS} 星期內更新 <ph name="DEVICE_TYPE" />}}</translation>
-<translation id="1056398434290692818">使用滑動手勢瀏覽上一個或下一個頁面</translation>
 <translation id="1056898198331236512">警告</translation>
 <translation id="1056980582064308040">如果變更設定，系統將重新啟動熱點，屆時裝置與熱點的連線將會解除連結。</translation>
 <translation id="1058262162121953039">PUK</translation>
@@ -10280,6 +10279,7 @@
 <translation id="956500788634395331">保護您免受可能有害的擴充程式影響</translation>
 <translation id="957179356621191750">6 點</translation>
 <translation id="957960681186851048">此網站曾嘗試自動下載多個檔案</translation>
+<translation id="958571289841636277">使用滑動手勢瀏覽上一個或下一個頁面</translation>
 <translation id="960987915827980018">還有約 1 個小時</translation>
 <translation id="962802172452141067">樹狀分枝書籤</translation>
 <translation id="963000966785016697">透過「<ph name="VISUAL_SEARCH_PROVIDER" />」搜尋圖片</translation>

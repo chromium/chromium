@@ -69,7 +69,6 @@
 <translation id="1054048317165655285">Dovršite podešavanje na telefonu</translation>
 <translation id="1054153489933238809">Otvori originalnu sl&amp;iku na novoj kartici</translation>
 <translation id="1055274863771110134">{NUM_WEEKS,plural, =1{Ažurirajte <ph name="DEVICE_TYPE" /> u roku od 1 nedelje}one{Ažurirajte <ph name="DEVICE_TYPE" /> u roku od {NUM_WEEKS} nedelje}few{Ažurirajte <ph name="DEVICE_TYPE" /> u roku od {NUM_WEEKS} nedelje}other{Ažurirajte <ph name="DEVICE_TYPE" /> u roku od {NUM_WEEKS} nedelja}}</translation>
-<translation id="1056398434290692818">Pomerajte unazad i unapred pomoću pokreta prevlačenja</translation>
 <translation id="1056898198331236512">Upozorenje</translation>
 <translation id="1056980582064308040">Ako promenite podešavanja, hotspot će se restartovati. Veza uređaja sa hotspotom biće prekinuta.</translation>
 <translation id="1058262162121953039">PUK</translation>
@@ -10275,6 +10274,7 @@ Dozvole koje ste već dali veb-sajtovima i aplikacijama mogu da važe za ovaj n
 <translation id="956500788634395331">Štitimo vas od potencijalno štetnih dodataka</translation>
 <translation id="957179356621191750">Sa 6 tačka</translation>
 <translation id="957960681186851048">Ovaj sajt je pokušao da automatski preuzme više datoteka</translation>
+<translation id="958571289841636277">Pomerajte unazad i unapred pomoću pokreta prevlačenja</translation>
 <translation id="960987915827980018">Ostalo je oko sat vremena</translation>
 <translation id="962802172452141067">Stablo direktorijuma obeleživača</translation>
 <translation id="963000966785016697">Traži sliku uz: <ph name="VISUAL_SEARCH_PROVIDER" /></translation>

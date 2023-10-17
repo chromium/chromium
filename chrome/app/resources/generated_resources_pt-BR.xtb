@@ -69,7 +69,6 @@
 <translation id="1054048317165655285">Concluir a configuração no smartphone</translation>
 <translation id="1054153489933238809">Abrir &amp;imagem original em uma nova guia</translation>
 <translation id="1055274863771110134">{NUM_WEEKS,plural, =1{Atualize o <ph name="DEVICE_TYPE" /> em até 1 semana}one{Atualize o <ph name="DEVICE_TYPE" /> em até {NUM_WEEKS} semana}other{Atualize o <ph name="DEVICE_TYPE" /> em até {NUM_WEEKS} semanas}}</translation>
-<translation id="1056398434290692818">Volte e avance usando o gesto de deslizar</translation>
 <translation id="1056898198331236512">Aviso</translation>
 <translation id="1056980582064308040">A mudança das configurações vai reiniciar o ponto de acesso. Os dispositivos que usam o ponto de acesso serão desconectados.</translation>
 <translation id="1058262162121953039">PUK</translation>
@@ -10292,6 +10291,7 @@ As permissões que você já concedeu a sites e apps podem ser aplicadas a essa 
 <translation id="956500788634395331">Você tem proteção contra extensões possivelmente nocivas</translation>
 <translation id="957179356621191750">6 pontos</translation>
 <translation id="957960681186851048">Este site tentou fazer o download de vários arquivos automaticamente</translation>
+<translation id="958571289841636277">Volte e avance usando o gesto de deslizar</translation>
 <translation id="960987915827980018">Cerca de 1 hora restante</translation>
 <translation id="962802172452141067">Árvore de pastas de favoritos</translation>
 <translation id="963000966785016697">Pesquisar imagem com o <ph name="VISUAL_SEARCH_PROVIDER" /></translation>

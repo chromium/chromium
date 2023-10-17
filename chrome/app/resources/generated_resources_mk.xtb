@@ -69,7 +69,6 @@
 <translation id="1054048317165655285">Завршето го поставувањето на телефонот</translation>
 <translation id="1054153489933238809">Отвори оригинална &amp;слика во нова картичка</translation>
 <translation id="1055274863771110134">{NUM_WEEKS,plural, =1{Ажурирајте го <ph name="DEVICE_TYPE" /> во рок од 1 седмица}one{Ажурирајте го <ph name="DEVICE_TYPE" /> во рок од {NUM_WEEKS} седмица}other{Ажурирајте го <ph name="DEVICE_TYPE" /> во рок од {NUM_WEEKS} седмици}}</translation>
-<translation id="1056398434290692818">Движете се назад и напред со движење со повлекување</translation>
 <translation id="1056898198331236512">Предупредување</translation>
 <translation id="1056980582064308040">Ако ги промените посатвките, точката на пристап ќе се рестартира. Врската на уредите што ја користат точката на пристап ќе се прекине.</translation>
 <translation id="1058262162121953039">Личен код за деблокирање (PUK)</translation>
@@ -10292,6 +10291,7 @@
 <translation id="956500788634395331">Заштитени сте од потенцијално штетни екстензии</translation>
 <translation id="957179356621191750">Со 6 точки</translation>
 <translation id="957960681186851048">Сајтов се обиде автоматски да преземе повеќе датотеки</translation>
+<translation id="958571289841636277">Движете се назад и напред со движење со повлекување</translation>
 <translation id="960987915827980018">Преостанува околу 1 час</translation>
 <translation id="962802172452141067">Дрво на папката за обележувачи</translation>
 <translation id="963000966785016697">Пребарајте ја сликата со <ph name="VISUAL_SEARCH_PROVIDER" /></translation>

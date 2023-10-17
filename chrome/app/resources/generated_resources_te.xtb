@@ -69,7 +69,6 @@
 <translation id="1054048317165655285">మీ ఫోన్‌లో సెటప్‌ను పూర్తి చేయండి</translation>
 <translation id="1054153489933238809">అసలు &amp;చిత్రాన్ని కొత్త ట్యాబ్‌లో తెరువు</translation>
 <translation id="1055274863771110134">{NUM_WEEKS,plural, =1{1 వారంలోపు <ph name="DEVICE_TYPE" />ని అప్‌డేట్ చేయండి}other{{NUM_WEEKS} వారాలలోపు <ph name="DEVICE_TYPE" />ని అప్‌డేట్ చేయండి}}</translation>
-<translation id="1056398434290692818">స్వైప్ సంజ్ఞతో వెనుకకు, ముందుకు నావిగేట్ చేయండి</translation>
 <translation id="1056898198331236512">హెచ్చరిక</translation>
 <translation id="1056980582064308040">సెట్టింగ్‌లను మార్చడం వలన హాట్‌స్పాట్ రీస్టార్ట్ అవుతుంది. హాట్‌స్పాట్‌ను ఉపయోగించే పరికరాలు డిస్‌కనెక్ట్ అవుతాయి.</translation>
 <translation id="1058262162121953039">PUK</translation>
@@ -10281,6 +10280,7 @@
 <translation id="956500788634395331">మీకు హానికరమైన ఎక్స్‌టెన్షన్‌ల నుండి రక్షణ ఉంది</translation>
 <translation id="957179356621191750">6-డాట్</translation>
 <translation id="957960681186851048">ఈ సైట్ ఆటోమెటిక్‌గా పలు ఫైళ్లను డౌన్‌లోడ్ చేయడానికి ప్రయత్నించింది</translation>
+<translation id="958571289841636277">స్వైప్ సంజ్ఞను ఉపయోగించి వెనుకకు, ముందుకు నావిగేట్ చేయండి</translation>
 <translation id="960987915827980018">సుమారు 1 గంట మిగిలి ఉంది</translation>
 <translation id="962802172452141067">బుక్‌మార్క్ ఫోల్డర్‌ ట్రీ</translation>
 <translation id="963000966785016697"><ph name="VISUAL_SEARCH_PROVIDER" />‌తో ఇమేజ్‌ను సెర్చ్ చేయండి</translation>

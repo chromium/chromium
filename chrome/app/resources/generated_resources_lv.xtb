@@ -69,7 +69,6 @@
 <translation id="1054048317165655285">Pabeidziet iestatīšanu tālrunī</translation>
 <translation id="1054153489933238809">Atvērt sākotnējo &amp;attēlu jaunā cilnē</translation>
 <translation id="1055274863771110134">{NUM_WEEKS,plural, =1{<ph name="DEVICE_TYPE" /> ierīce ir jāatjaunina vienas nedēļas laikā}zero{<ph name="DEVICE_TYPE" /> ierīce ir jāatjaunina {NUM_WEEKS} nedēļu laikā}one{<ph name="DEVICE_TYPE" /> ierīce ir jāatjaunina {NUM_WEEKS} nedēļas laikā}other{<ph name="DEVICE_TYPE" /> ierīce ir jāatjaunina {NUM_WEEKS} nedēļu laikā}}</translation>
-<translation id="1056398434290692818">Pārejiet atpakaļ un uz priekšu, izmantojot vilkšanas žestu.</translation>
 <translation id="1056898198331236512">Brīdinājums</translation>
 <translation id="1056980582064308040">Ja iestatījumi tiks mainīti, tīklājs tiks restartēts. Tiks pārtraukts savienojums ar ierīcēm, kurās tīklājs tiek izmantots.</translation>
 <translation id="1058262162121953039">PUK</translation>
@@ -10275,6 +10274,7 @@ Uz šo kontu var attiekties atļaujas, ko esat jau piešķīris vietnēm un liet
 <translation id="956500788634395331">Jūs esat aizsargāts pret potenciāli kaitīgiem paplašinājumiem.</translation>
 <translation id="957179356621191750">6 punkti</translation>
 <translation id="957960681186851048">Šī vietne mēģināja automātiski lejupielādēt vairākus failus</translation>
+<translation id="958571289841636277">Pārejiet atpakaļ un uz priekšu, izmantojot vilkšanas žestu.</translation>
 <translation id="960987915827980018">Atlikusi apmēram 1 stunda</translation>
 <translation id="962802172452141067">Grāmatzīmju mapju koks</translation>
 <translation id="963000966785016697">Meklēt attēlu, izmantojot <ph name="VISUAL_SEARCH_PROVIDER" /></translation>

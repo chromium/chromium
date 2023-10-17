@@ -69,7 +69,6 @@
 <translation id="1054048317165655285">Тохируулгыг утсан дээрээ дуусгана уу</translation>
 <translation id="1054153489933238809">Эх зургийг шинэ цонхонд нээх</translation>
 <translation id="1055274863771110134">{NUM_WEEKS,plural, =1{<ph name="DEVICE_TYPE" />-г 1 долоо хоногийн дотор шинэчлэх}other{<ph name="DEVICE_TYPE" />-г {NUM_WEEKS} долоо хоногийн дотор шинэчлэх}}</translation>
-<translation id="1056398434290692818">Шудрах зангаагаар арагш болон урагш шилжээрэй</translation>
 <translation id="1056898198331236512">Анхааруулга</translation>
 <translation id="1056980582064308040">Тохиргоог өөрчлөх нь сүлжээний цэгийг дахин эхлүүлэх болно. Сүлжээний цэгийг ашиглаж байгаа төхөөрөмжүүдийг салгана.</translation>
 <translation id="1058262162121953039">PUK</translation>
@@ -10276,6 +10275,7 @@
 <translation id="956500788634395331">Таныг аюултай байж болзошгүй өргөтгөлөөс хамгаалж байна</translation>
 <translation id="957179356621191750">6 цэг</translation>
 <translation id="957960681186851048">Энэ сайт автоматаар олон файл татахаар оролдсон</translation>
+<translation id="958571289841636277">Шудрах зангаагаар арагш болон урагш шилжээрэй</translation>
 <translation id="960987915827980018">Ойролцоогоор 1 цаг үлдсэн байна</translation>
 <translation id="962802172452141067">Хавчуургын фолдерын хажуугийн хэсэг</translation>
 <translation id="963000966785016697"><ph name="VISUAL_SEARCH_PROVIDER" />-р зураг хайх</translation>

@@ -69,7 +69,6 @@
 <translation id="1054048317165655285">அமைவை மொபைலில் நிறைவுசெய்தல்</translation>
 <translation id="1054153489933238809">அசல் &amp;படத்தைப் புதிய தாவலில் திற</translation>
 <translation id="1055274863771110134">{NUM_WEEKS,plural, =1{1 வாரத்திற்குள் <ph name="DEVICE_TYPE" /> சாதனத்தைப் புதுப்பிக்கவும்}other{{NUM_WEEKS} வாரங்களுக்குள் <ph name="DEVICE_TYPE" /> சாதனத்தைப் புதுப்பிக்கவும்}}</translation>
-<translation id="1056398434290692818">ஸ்வைப் சைகை மூலம் முன்னோக்கியும் பின்னோக்கியும் செல்லலாம்</translation>
 <translation id="1056898198331236512">எச்சரிக்கை</translation>
 <translation id="1056980582064308040">அமைப்புகளை மாற்றுவது ஹாட்ஸ்பாட்டை மீண்டும் தொடங்கும். ஹாட்ஸ்பாட்டைப் பயன்படுத்தும் சாதனங்களின் இணைப்பு துண்டிக்கப்படும்.</translation>
 <translation id="1058262162121953039">PUK</translation>
@@ -10288,6 +10287,7 @@
 <translation id="956500788634395331">தீங்கிழைக்க சாத்தியமுள்ள நீட்டிப்புகளில் இருந்து பாதுகாக்கப்படுகிறீர்கள்</translation>
 <translation id="957179356621191750">6 புள்ளி</translation>
 <translation id="957960681186851048">இந்தத் தளம் பல ஃபைல்களைத் தானாகப் பதிவிறக்க முயன்றது</translation>
+<translation id="958571289841636277">ஸ்வைப் சைகை மூலம் முன்னோக்கியும் பின்னோக்கியும் செல்லலாம்</translation>
 <translation id="960987915827980018">1 மணிநேரம் உள்ளது</translation>
 <translation id="962802172452141067">புத்தகக்குறி ஃபோல்டர் ட்ரீ</translation>
 <translation id="963000966785016697"><ph name="VISUAL_SEARCH_PROVIDER" /> மூலம் படத்தைத் தேடு</translation>

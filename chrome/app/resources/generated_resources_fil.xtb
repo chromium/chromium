@@ -69,7 +69,6 @@
 <translation id="1054048317165655285">Kumpletuhin ang pag-set up sa iyong telepono</translation>
 <translation id="1054153489933238809">Buksan ang Or&amp;ihinal na Larawan sa Bagong Tab</translation>
 <translation id="1055274863771110134">{NUM_WEEKS,plural, =1{I-update ang <ph name="DEVICE_TYPE" /> sa loob ng 1 linggo}one{I-update ang <ph name="DEVICE_TYPE" /> sa loob ng {NUM_WEEKS} linggo}other{I-update ang <ph name="DEVICE_TYPE" /> sa loob ng {NUM_WEEKS} na linggo}}</translation>
-<translation id="1056398434290692818">Mag-navigate pabalik at pasulong sa pamamagitan ng pag-swipe</translation>
 <translation id="1056898198331236512">Babala</translation>
 <translation id="1056980582064308040">Kapag binago ang mga setting, mare-restart ang hotspot. Madidiskonekta ang mga device na gumagamit ng hotspot.</translation>
 <translation id="1058262162121953039">PUK</translation>
@@ -10293,6 +10292,7 @@ Posibleng malapat sa account na ito ang mga pahintulot na naibigay mo na sa mga 
 <translation id="956500788634395331">Protektado ka mula sa mga potensyal na mapaminsalang extension</translation>
 <translation id="957179356621191750">6-dot</translation>
 <translation id="957960681186851048">Sinubukan ng site na ito na awtomatikong mag-download ng maraming file</translation>
+<translation id="958571289841636277">Mag-navigate pabalik at pasulong sa pamamagitan ng pag-swipe</translation>
 <translation id="960987915827980018">Mga 1 oras ang natitira</translation>
 <translation id="962802172452141067">Folder tree ng bookmark</translation>
 <translation id="963000966785016697">Hanapin ang larawan gamit ang <ph name="VISUAL_SEARCH_PROVIDER" /></translation>

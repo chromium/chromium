@@ -69,7 +69,6 @@
 <translation id="1054048317165655285">તમારા ફોન પર સેટઅપ પૂર્ણ કરો</translation>
 <translation id="1054153489933238809">નવા ટેબમાં મૂળ &amp;છબી ખોલો</translation>
 <translation id="1055274863771110134">{NUM_WEEKS,plural, =1{1 અઠવાડિયાની અંદર <ph name="DEVICE_TYPE" /> અપડેટ કરો}one{{NUM_WEEKS} અઠવાડિયાંમાં <ph name="DEVICE_TYPE" /> અપડેટ કરો}other{{NUM_WEEKS} અઠવાડિયાંમાં <ph name="DEVICE_TYPE" /> અપડેટ કરો}}</translation>
-<translation id="1056398434290692818">સ્વાઇપ સંકેત વડે આગળ અને પાછળ નૅવિગેટ કરો</translation>
 <translation id="1056898198331236512">ચેતવણી</translation>
 <translation id="1056980582064308040">સેટિંગમાં ફેરફાર કરવાથી હૉટસ્પૉટ ફરી શરૂ થશે. હૉટસ્પૉટનો ઉપયોગ કરી રહેલા ડિવાઇસ ડિસ્કનેક્ટ થઈ જશે.</translation>
 <translation id="1058262162121953039">PUK</translation>
@@ -10268,6 +10267,7 @@ USB ડિવાઇસ</translation>
 <translation id="956500788634395331">તમને નુકસાન પહોંચાડવાની સંભાવના હોય એવા એક્સ્ટેંશનથી સુરક્ષિત કર્યા છે</translation>
 <translation id="957179356621191750">6-ડૉટ</translation>
 <translation id="957960681186851048">આ સાઇટે એકથી વધુ ફાઇલોને ઑટોમૅટિક રીતે ડાઉનલોડ કરવાનો પ્રયાસ કર્યો</translation>
+<translation id="958571289841636277">સ્વાઇપ સંકેત વડે આગળ અને પાછળ નૅવિગેટ કરો</translation>
 <translation id="960987915827980018">લગભગ 1 કલાક બાકી</translation>
 <translation id="962802172452141067">બુકમાર્ક ફોલ્ડર વૃક્ષ</translation>
 <translation id="963000966785016697"><ph name="VISUAL_SEARCH_PROVIDER" /> વડે છબી શોધો</translation>

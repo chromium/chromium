@@ -69,7 +69,6 @@
 <translation id="1054048317165655285">ตั้งค่าในโทรศัพท์ให้เสร็จสมบูรณ์</translation>
 <translation id="1054153489933238809">เ&amp;ปิดภาพต้นฉบับในแท็บใหม่</translation>
 <translation id="1055274863771110134">{NUM_WEEKS,plural, =1{อัปเดต <ph name="DEVICE_TYPE" /> ภายใน 1 สัปดาห์}other{อัปเดต <ph name="DEVICE_TYPE" /> ภายใน {NUM_WEEKS} สัปดาห์}}</translation>
-<translation id="1056398434290692818">นำทางกลับและไปข้างหน้าด้วยท่าทางสัมผัสการปัด</translation>
 <translation id="1056898198331236512">คำเตือน</translation>
 <translation id="1056980582064308040">การเปลี่ยนการตั้งค่าจะรีสตาร์ทฮอตสปอต อุปกรณ์ที่ใช้ฮอตสปอตจะขาดจากการเชื่อมต่อ</translation>
 <translation id="1058262162121953039">PUK</translation>
@@ -10267,6 +10266,7 @@
 <translation id="956500788634395331">คุณได้รับการปกป้องจากส่วนขยายที่อาจเป็นอันตราย</translation>
 <translation id="957179356621191750">6 จุด</translation>
 <translation id="957960681186851048">เว็บไซต์นี้พยายามดาวน์โหลดไฟล์หลายไฟล์โดยอัตโนมัติ</translation>
+<translation id="958571289841636277">กลับไปที่หน้าก่อนหน้าและไปยังหน้าถัดไปด้วยท่าทางสัมผัสการปัด</translation>
 <translation id="960987915827980018">เหลือเวลาอีกประมาณ 1 ชั่วโมง</translation>
 <translation id="962802172452141067">แผนผังของโฟลเดอร์บุ๊กมาร์ก</translation>
 <translation id="963000966785016697">ค้นหารูปภาพด้วย <ph name="VISUAL_SEARCH_PROVIDER" /></translation>

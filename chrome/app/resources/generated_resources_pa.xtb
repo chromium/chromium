@@ -69,7 +69,6 @@
 <translation id="1054048317165655285">ਆਪਣੇ ਫ਼ੋਨ 'ਤੇ ਸੈੱਟਅੱਪ ਪੂਰਾ ਕਰੋ</translation>
 <translation id="1054153489933238809">ਨਵੀਂ ਟੈਬ ਵਿੱਚ ਮੂਲ &amp;ਚਿੱਤਰ ਖੋਲ੍ਹੋ</translation>
 <translation id="1055274863771110134">{NUM_WEEKS,plural, =1{<ph name="DEVICE_TYPE" /> ਨੂੰ 1 ਹਫ਼ਤੇ ਦੇ ਅੰਦਰ ਅੱਪਡੇਟ ਕਰੋ}one{<ph name="DEVICE_TYPE" /> ਨੂੰ {NUM_WEEKS} ਹਫ਼ਤੇ ਦੇ ਅੰਦਰ ਅੱਪਡੇਟ ਕਰੋ}other{<ph name="DEVICE_TYPE" /> ਨੂੰ {NUM_WEEKS} ਹਫ਼ਤਿਆਂ ਦੇ ਅੰਦਰ ਅੱਪਡੇਟ ਕਰੋ}}</translation>
-<translation id="1056398434290692818">ਸਵਾਈਪ ਇਸ਼ਾਰੇ ਨਾਲ ਪਿੱਛੇ ਅਤੇ ਅੱਗੇ ਨੈਵੀਗੇਟ ਕਰੋ</translation>
 <translation id="1056898198331236512">ਚਿਤਾਵਨੀ</translation>
 <translation id="1056980582064308040">ਸੈਟਿੰਗਾਂ ਨੂੰ ਬਦਲਣ ਨਾਲ ਹੌਟਸਪੌਟ ਮੁੜ-ਸ਼ੁਰੂ ਹੋ ਜਾਵੇਗਾ। ਹੌਟਸਪੌਟ ਨੂੰ ਵਰਤ ਰਹੇ ਡੀਵਾਈਸ ਡਿਸਕਨੈਕਟ ਹੋ ਜਾਣਗੇ।</translation>
 <translation id="1058262162121953039">PUK</translation>
@@ -10288,6 +10287,7 @@
 <translation id="956500788634395331">ਤੁਸੀਂ ਸੰਭਾਵੀ ਤੌਰ 'ਤੇ ਨੁਕਸਾਨਦੇਹ ਐਕਸਟੈਂਸ਼ਨਾਂ ਤੋਂ ਸੁਰੱਖਿਅਤ ਹੋ</translation>
 <translation id="957179356621191750">6-ਬਿੰਦੂ</translation>
 <translation id="957960681186851048">ਇਸ ਸਾਈਟ ਨੇ ਸਵੈਚਲਿਤ ਤੌਰ 'ਤੇ ਇੱਕ ਤੋਂ ਵੱਧ ਫ਼ਾਈਲਾਂ ਡਾਊਨਲੋਡ ਕਰਨ ਦੀ ਕੋਸ਼ਿਸ਼ ਕੀਤੀ</translation>
+<translation id="958571289841636277">ਸਵਾਈਪ ਇਸ਼ਾਰੇ ਨਾਲ ਪਿੱਛੇ ਅਤੇ ਅੱਗੇ ਨੈਵੀਗੇਟ ਕਰੋ</translation>
 <translation id="960987915827980018">ਲਗਭਗ 1 ਘੰਟਾ ਬਾਕੀ</translation>
 <translation id="962802172452141067">ਬੁੱਕਮਾਰਕ ਫੋਲਡਰ ਰੁੱਖ</translation>
 <translation id="963000966785016697"><ph name="VISUAL_SEARCH_PROVIDER" /> ਨਾਲ ਚਿੱਤਰ ਖੋਜੋ</translation>

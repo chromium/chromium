@@ -69,7 +69,6 @@
 <translation id="1054048317165655285">Viimeistele käyttöönotto puhelimella</translation>
 <translation id="1054153489933238809">Avaa alkuperäinen &amp;kuva uudessa välilehdessä</translation>
 <translation id="1055274863771110134">{NUM_WEEKS,plural, =1{Päivitä <ph name="DEVICE_TYPE" /> viikon sisällä}other{Päivitä <ph name="DEVICE_TYPE" /> {NUM_WEEKS} viikon sisällä}}</translation>
-<translation id="1056398434290692818">Siirry taakse- ja eteenpäin pyyhkäisyeleellä</translation>
 <translation id="1056898198331236512">Varoitus</translation>
 <translation id="1056980582064308040">Asetusten muuttaminen käynnistää hotspotin uudelleen. Hotspotia käyttävien laitteiden yhteys katkeaa.</translation>
 <translation id="1058262162121953039">PUK-koodi</translation>
@@ -10282,6 +10281,7 @@ Sivustoille ja sovelluksille myöntämäsi luvat saattavat koskea tätä tiliä.
 <translation id="956500788634395331">Sinut on suojattu mahdollisesti haitallisilta laajennuksilta</translation>
 <translation id="957179356621191750">6-pisteinen</translation>
 <translation id="957960681186851048">Tämä sivusto yrittää ladata useita tiedostoja automaattisesti</translation>
+<translation id="958571289841636277">Siirry taakse- ja eteenpäin pyyhkäisyeleellä</translation>
 <translation id="960987915827980018">Noin tunti jäljellä</translation>
 <translation id="962802172452141067">Kirjanmerkkien kansiopuu</translation>
 <translation id="963000966785016697">Hae kuvaa: <ph name="VISUAL_SEARCH_PROVIDER" /></translation>

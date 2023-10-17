@@ -69,7 +69,6 @@
 <translation id="1054048317165655285">ເຮັດສຳເລັດການຕັ້ງຄ່າໃນໂທລະສັບຂອງທ່ານ</translation>
 <translation id="1054153489933238809">ເປີດຮູບ&amp;ເດີມຢູ່ໃນແຖບໃໝ່</translation>
 <translation id="1055274863771110134">{NUM_WEEKS,plural, =1{ອັບເດດ <ph name="DEVICE_TYPE" /> ພາຍໃນ 1 ອາທິດ}other{ອັບເດດ <ph name="DEVICE_TYPE" /> ພາຍໃນ {NUM_WEEKS} ອາທິດ}}</translation>
-<translation id="1056398434290692818">ກັບຫຼັງ ແລະ ໄປໜ້າດ້ວຍທ່າທາງການປັດ</translation>
 <translation id="1056898198331236512">ຄໍາເຕືອນ</translation>
 <translation id="1056980582064308040">ການປ່ຽນແປງການຕັ້ງຄ່າຈະຣີສະຕາດຮັອດສະປອດ. ອຸປະກອນທີ່ໃຊ້ຮັອດສະປອດຈະຕັດການເຊື່ອມຕໍ່.</translation>
 <translation id="1058262162121953039">PUK</translation>
@@ -10281,6 +10280,7 @@
 <translation id="956500788634395331">ທ່ານໄດ້ຮັບການປົກປ້ອງຈາກສ່ວນຂະຫຍາຍທີ່ອາດຈະເປັນອັນຕະລາຍ</translation>
 <translation id="957179356621191750">6 ຈຸດ</translation>
 <translation id="957960681186851048">ເວັບໄຊນີ້ໄດ້ພະຍາຍາມດາວໂຫຼດຫຼາຍໄຟລ໌ໂດຍອັດຕະໂນມັດ</translation>
+<translation id="958571289841636277">ກັບຫຼັງ ແລະ ໄປໜ້າດ້ວຍທ່າທາງການປັດ</translation>
 <translation id="960987915827980018">ຍັງເຫຼືອປະ​ມານ 1 ຊົ່ວ​ໂມງ</translation>
 <translation id="962802172452141067">ໂຄງສ້າງໂຟນເດີບຸກມາກ</translation>
 <translation id="963000966785016697">ຊອກຫາຮູບດ້ວຍ <ph name="VISUAL_SEARCH_PROVIDER" /></translation>

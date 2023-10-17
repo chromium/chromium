@@ -2655,7 +2655,6 @@ Wenn diese Richtlinie nicht konfiguriert ist, wird genau wie bei den anderen Chr
 <translation id="3240609035816615922">Richtlinie für den Zugriff auf die Konfiguration von Druckern.</translation>
 <translation id="324062325008698789">Hiermit wird eine Liste von Druckern konfiguriert</translation>
 <translation id="3240655340884151271">MAC-Adresse der im Dock verbauten NIC</translation>
-<translation id="3242480111684005642">Der Nutzer kann die <ph name="GOOGLE_DRIVE_NAME" />-Dateisynchronisierungsfunktion verwenden.</translation>
 <translation id="3242756958360374888">Diese Richtlinie enthält eine Liste von Mustern, mit denen die Sichtbarkeit von Konten in <ph name="PRODUCT_NAME" /> gesteuert wird.
 
       Alle Google-Konten auf dem Gerät werden mit den in dieser Richtlinie gespeicherten Mustern abgeglichen, um zu ermitteln, welche Konten in <ph name="PRODUCT_NAME" /> angezeigt werden sollen. Konten sind sichtbar, wenn ihr Name mit einem Muster in der Liste übereinstimmt. Andernfalls werden sie ausgeblendet.
@@ -2715,7 +2714,6 @@ Diese Einschränkungen gelten für Downloads, die durch Websiteinhalte ausgelös
 Unter <ph name="MS_WIN_NAME" /> steht diese Richtlinie nur bei Instanzen zur Verfügung, die Teil einer <ph name="MS_AD_NAME" />-Domain oder von <ph name="MS_AAD_NAME" /> sind oder die in<ph name="CHROME_BROWSER_CLOUD_MANAGEMENT_NAME" /> angemeldet sind.</translation>
 <translation id="3300784749135986828">Aktiviere oder deaktiviere die Funktion <ph name="USER_AGENT_REDUCTION_FEATURE_NAME" />.</translation>
 <translation id="3301698868852716692">Erweiterung „Insights“ aktivieren</translation>
-<translation id="3302723130703323097">Die <ph name="GOOGLE_DRIVE_NAME" />-Dateisynchronisierungsfunktion auf unterstützten Geräten in der App „Dateien“ von <ph name="PRODUCT_OS_NAME" /> sichtbar und zum Aktivieren/Deaktivieren verfügbar machen</translation>
 <translation id="3302829897293005699">Wenn die Richtlinie aktiviert oder nicht konfiguriert ist, werden über registrierte Geräte Informationen zur aktiven Kiosksitzung gemeldet, z. B. die Anwendungs-ID und -version.
 
       Ist sie deaktiviert, senden registrierte Geräte keine Informationen zur Kiosksitzung.</translation>
@@ -2807,13 +2805,6 @@ Ist die Richtlinie deaktiviert, sind keine Wortvorschläge bei Nutzung der physi
       Wenn die Richtlinie auf „ausgeblendet“ gesetzt ist, können die deaktivierten Funktionen nicht mehr verwendet werden und sind nicht für Nutzer sichtbar.
 
       Wenn sie nicht konfiguriert ist oder einen ungültigen Wert enthält, ist der Deaktivierungsmodus in den Systemfunktionen auf „blockiert“ gesetzt.</translation>
-<translation id="3410963889229735344">Mit der <ph name="GOOGLE_DRIVE_NAME" />-Dateisynchronisierung sind Dateien eines Nutzers in „Meine Ablage“ auf unterstützten Geräten automatisch offline verfügbar (sofern genügend Speicherplatz vorhanden ist). Nachdem anfangs alle Dateien offline verfügbar gemacht werden, werden später automatisch alle neuen Dateien ebenfalls offline verfügbar gemacht. Wenn die Funktion aktiviert wurde und später nicht mehr genügend Speicherplatz vorhanden ist, werden nicht mehr alle neuen Dateien automatisch offline verfügbar gemacht, jedoch können Nutzer weiterhin manuell Dateien speichern.
-
-Wenn die Richtlinie auf „<ph name="POLICY_VALUE_VISIBLE" />“ gesetzt ist, wird die Dateisynchronisierungsfunktion in der App „Dateien“ und auf der Seite „Einstellungen“ angezeigt. Nutzer müssen die Dateisynchronisierungsfunktion weiterhin selbst aktivieren.
-
-Ist die Richtlinie auf „<ph name="POLICY_VALUE_DISABLED" />“ gesetzt, so wird die Dateisynchronisierungsfunktion deaktiviert, wenn sie zuvor vom Nutzer aktiviert wurde, und außerdem in der App „Dateien“ und in den Einstellungen ausgeblendet, sodass der Nutzer sie nicht wieder aktivieren kann. Vorhandene Dateien, die vom Nutzer offline verfügbar gemacht wurden, bleiben offline verfügbar, und der Nutzer kann einzelne Dateien manuell offline verfügbar machen (sie sind nicht automatisch offline verfügbar).
-
-Wenn die Richtlinie nicht konfiguriert ist, wird „<ph name="POLICY_VALUE_VISIBLE" />“ als Standardwert verwendet.</translation>
 <translation id="341285788698114069">Diese Richtlinie steuert die Priorität des Audioprozesses unter Windows.
       Wenn diese Richtlinie aktiviert ist, wird der Audioprozess mit einer Priorität ausgeführt, die über der normalen liegt.
       Wird sie deaktiviert, erfolgt die Ausführung des Audioprozesses mit normaler Priorität.
@@ -4628,7 +4619,6 @@ Diese Richtlinie wird nur angewendet, wenn das Gerät für <ph name="PRODUCT_NAM
 <translation id="5039110755072335605">Unterstützung für CORS-Anfrageheader ohne Platzhalter</translation>
 <translation id="504116558738617678">Warnungen bei wenig Speicherplatz nur anzeigen, wenn das Gerät nicht verwaltet wird oder es nur einen Nutzer gibt</translation>
 <translation id="5041315457555330432"><ph name="PRODUCT_NAME" /> nur erlauben, Verbindungen zu Geräten unter privaten IP-Adressen herzustellen, es sei denn, die Funktion „CastAllowAllIPs“ ist aktiviert.</translation>
-<translation id="5046376406561077773">Der Nutzer kann die Elemente der Benutzeroberfläche im Zusammenhang mit der <ph name="GOOGLE_DRIVE_NAME" />-Dateisynchronisierungsfunktion nicht sehen.</translation>
 <translation id="5055474681190962362">Tag im Monat (1–31), an dem der Neustart ausgeführt werden soll, angegeben in der lokalen Zeit des Geräts. Diese Richtlinie wird nur verwendet, wenn „frequency“ auf „MONTHLY“ gesetzt ist. Falls der Wert höher ist als die maximale Anzahl von Tagen in einem bestimmten Monat, wird der jeweils letzte Tag des Monats gewählt.</translation>
 <translation id="5056708224511062314">Lupe deaktiviert</translation>
 <translation id="5058573563327660283">Strategie auswählen, die bei der automatischen Bereinigung zur Freigabe von Festplattenspeicher verwendet wird (eingestellt)</translation>

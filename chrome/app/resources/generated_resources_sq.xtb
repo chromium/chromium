@@ -69,7 +69,6 @@
 <translation id="1054048317165655285">Përfundo konfigurimin në telefon</translation>
 <translation id="1054153489933238809">Hap imazhin &amp;origjinal në skedë të re</translation>
 <translation id="1055274863771110134">{NUM_WEEKS,plural, =1{Pëditësoje pajisjen <ph name="DEVICE_TYPE" /> brenda 1 jave}other{Përditësoje pajisjen <ph name="DEVICE_TYPE" /> brenda {NUM_WEEKS} javësh}}</translation>
-<translation id="1056398434290692818">Navigo prapa dhe përpara me gjestin e rrëshqitjes së shpejtë</translation>
 <translation id="1056898198331236512">Paralajmërim</translation>
 <translation id="1056980582064308040">Ndryshimi i cilësimeve do të rinisë zonën e qasjes për internet. Pajisjet që përdorin zonën e qasjes për internet do të shkëputen.</translation>
 <translation id="1058262162121953039">PUK</translation>
@@ -10266,6 +10265,7 @@ Lejet që u ke dhënë sajteve të uebit dhe aplikacioneve mund të zbatohen pë
 <translation id="956500788634395331">Je i mbrojtur nga shtesat që mund të jenë të dëmshme</translation>
 <translation id="957179356621191750">Me 6 pikë</translation>
 <translation id="957960681186851048">Ky sajt u përpoq të shkarkonte automatikisht shumë skedarë</translation>
+<translation id="958571289841636277">Navigo prapa dhe përpara me gjestin e rrëshqitjes së shpejtë</translation>
 <translation id="960987915827980018">Rreth 1 orë e mbetur</translation>
 <translation id="962802172452141067">Pema e dosjes së faqeshënuesve</translation>
 <translation id="963000966785016697">Kërko për imazhin me: <ph name="VISUAL_SEARCH_PROVIDER" /></translation>

@@ -69,7 +69,6 @@
 <translation id="1054048317165655285">Selesaikan persediaan pada telefon anda</translation>
 <translation id="1054153489933238809">Buka &amp;Imej Asal dalam Tab Baharu</translation>
 <translation id="1055274863771110134">{NUM_WEEKS,plural, =1{Kemas kini <ph name="DEVICE_TYPE" /> dalam masa 1 minggu}other{Kemas kini <ph name="DEVICE_TYPE" /> dalam masa {NUM_WEEKS} minggu}}</translation>
-<translation id="1056398434290692818">Navigasi ke belakang dan ke hadapan dengan gerak isyarat leret</translation>
 <translation id="1056898198331236512">Amaran</translation>
 <translation id="1056980582064308040">Menukar tetapan akan memulakan semula tempat liputan. Peranti yang menggunakan tempat liputan akan terputus sambungan.</translation>
 <translation id="1058262162121953039">PUK</translation>
@@ -10288,6 +10287,7 @@ Kebenaran yang telah anda berikan kepada laman web dan apl mungkin dikenakan pad
 <translation id="956500788634395331">Anda dilindungi daripada sambungan yang mungkin berbahaya</translation>
 <translation id="957179356621191750">6 titik</translation>
 <translation id="957960681186851048">Tapak ini cuba memuat turun berbilang fail secara automatik</translation>
+<translation id="958571289841636277">Navigasi ke belakang dan ke hadapan dengan gerak isyarat leret</translation>
 <translation id="960987915827980018">Tinggal kira-kira 1jam</translation>
 <translation id="962802172452141067">Pohon folder penanda halaman</translation>
 <translation id="963000966785016697">Cari Imej dengan <ph name="VISUAL_SEARCH_PROVIDER" /></translation>

@@ -69,7 +69,6 @@
 <translation id="1054048317165655285">Maliza kuweka mipangilio kwenye simu yako</translation>
 <translation id="1054153489933238809">Fungua Picha Asili katika Kichupo Kipya</translation>
 <translation id="1055274863771110134">{NUM_WEEKS,plural, =1{Sasisha <ph name="DEVICE_TYPE" /> ndani ya wiki moja}other{Sasisha <ph name="DEVICE_TYPE" /> ndani ya wiki {NUM_WEEKS}}}</translation>
-<translation id="1056398434290692818">Sogeza mbele na nyuma ukitumia ishara ya kutelezesha kidole</translation>
 <translation id="1056898198331236512">Ilani</translation>
 <translation id="1056980582064308040">Hatua ya kubadilisha mipangilio itazima kisha kuwasha mtandao pepe. Vifaa vinavyotumia mtandao pepe vitatenganishwa.</translation>
 <translation id="1058262162121953039">PUK</translation>
@@ -10283,6 +10282,7 @@ Huenda ruhusa ambazo tayari umezipa tovuti na programu zikatumika kwenye akaunti
 <translation id="956500788634395331">Umelindwa dhidi ya viendelezi ambavyo huenda ni hatari</translation>
 <translation id="957179356621191750">Nukta 6</translation>
 <translation id="957960681186851048">Tovuti hii imejaribu kupakua faili nyingi kiotomatiki</translation>
+<translation id="958571289841636277">Sogeza mbele na nyuma ukitumia ishara ya kutelezesha kidole</translation>
 <translation id="960987915827980018">Takriban saa 1 imesalia</translation>
 <translation id="962802172452141067">Kielelezo cha folda ya alamisho</translation>
 <translation id="963000966785016697">Tafuta picha ukitumia <ph name="VISUAL_SEARCH_PROVIDER" /></translation>

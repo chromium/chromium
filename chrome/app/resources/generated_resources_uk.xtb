@@ -69,7 +69,6 @@
 <translation id="1054048317165655285">Завершіть налаштування на телефоні</translation>
 <translation id="1054153489933238809">Відкрити оригінальне зображення в новій вкладці</translation>
 <translation id="1055274863771110134">{NUM_WEEKS,plural, =1{Оновіть пристрій <ph name="DEVICE_TYPE" /> упродовж 1 тижня}one{Оновіть пристрій <ph name="DEVICE_TYPE" /> упродовж {NUM_WEEKS} тижня}few{Оновіть пристрій <ph name="DEVICE_TYPE" /> упродовж {NUM_WEEKS} тижнів}many{Оновіть пристрій <ph name="DEVICE_TYPE" /> упродовж {NUM_WEEKS} тижнів}other{Оновіть пристрій <ph name="DEVICE_TYPE" /> упродовж {NUM_WEEKS} тижня}}</translation>
-<translation id="1056398434290692818">Переходьте вперед і назад за допомогою жесту гортання</translation>
 <translation id="1056898198331236512">Застереження</translation>
 <translation id="1056980582064308040">Якщо змінити налаштування, точка доступу перезапуститься. Пристрої, які використовують її, буде від’єднано.</translation>
 <translation id="1058262162121953039">PUK-код</translation>
@@ -10295,6 +10294,7 @@
 <translation id="956500788634395331">Пристрій захищено від потенційно шкідливих розширень</translation>
 <translation id="957179356621191750">з 6 крапками</translation>
 <translation id="957960681186851048">Цей сайт намагався автоматично завантажити декілька файлів</translation>
+<translation id="958571289841636277">Переходьте вперед і назад за допомогою жесту гортання</translation>
 <translation id="960987915827980018">Залишилася приблизно 1 год.</translation>
 <translation id="962802172452141067">Дерево папок із закладками</translation>
 <translation id="963000966785016697">Пошук зображення через <ph name="VISUAL_SEARCH_PROVIDER" /></translation>

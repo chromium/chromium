@@ -69,7 +69,6 @@
 <translation id="1054048317165655285">Einrichtung auf dem Smartphone abschließen</translation>
 <translation id="1054153489933238809">&amp;Original in neuem Tab öffnen</translation>
 <translation id="1055274863771110134">{NUM_WEEKS,plural, =1{<ph name="DEVICE_TYPE" /> innerhalb von 1 Woche aktualisieren}other{<ph name="DEVICE_TYPE" /> innerhalb von {NUM_WEEKS} Wochen aktualisieren}}</translation>
-<translation id="1056398434290692818">Mit Wisch-Touch-Geste vorwärts und rückwärts navigieren</translation>
 <translation id="1056898198331236512">Warnung</translation>
 <translation id="1056980582064308040">Durch das Ändern der Einstellungen wird der Hotspot neu gestartet. Die Verbindung der Geräte, die ihn verwenden, wird dadurch getrennt.</translation>
 <translation id="1058262162121953039">PUK</translation>
@@ -10265,6 +10264,7 @@ Informationen dazu, welche Daten von Google erhoben werden und warum, findest du
 <translation id="956500788634395331">Du bist vor potenziell schädlichen Erweiterungen geschützt</translation>
 <translation id="957179356621191750">6-Punkt</translation>
 <translation id="957960681186851048">Diese Website hat versucht, automatisch mehrere Dateien herunterzuladen</translation>
+<translation id="958571289841636277">Mit Wisch-Touch-Geste vorwärts und rückwärts navigieren</translation>
 <translation id="960987915827980018">Noch etwa 1 Stunde</translation>
 <translation id="962802172452141067">Lesezeichenordnerstruktur</translation>
 <translation id="963000966785016697">Bild an <ph name="VISUAL_SEARCH_PROVIDER" /> senden</translation>

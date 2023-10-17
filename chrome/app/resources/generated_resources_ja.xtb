@@ -69,7 +69,6 @@
 <translation id="1054048317165655285">スマートフォンの設定を完了する</translation>
 <translation id="1054153489933238809">元の画像を新しいタブで開く(&amp;I)</translation>
 <translation id="1055274863771110134">{NUM_WEEKS,plural, =1{1 週間以内に <ph name="DEVICE_TYPE" />を更新してください}other{{NUM_WEEKS} 週間以内に <ph name="DEVICE_TYPE" />を更新してください}}</translation>
-<translation id="1056398434290692818">スワイプ操作で前後に移動する</translation>
 <translation id="1056898198331236512">警告</translation>
 <translation id="1056980582064308040">設定を変更すると、アクセス ポイントが再起動します。アクセス ポイントを使用しているデバイスでは接続が切断されます。</translation>
 <translation id="1058262162121953039">PUK</translation>
@@ -10238,6 +10237,7 @@
 <translation id="956500788634395331">有害な可能性がある拡張機能から保護されています</translation>
 <translation id="957179356621191750">6 点式</translation>
 <translation id="957960681186851048">このサイトで複数ファイルの自動ダウンロードが試行されました</translation>
+<translation id="958571289841636277">スワイプ操作で前後に移動する</translation>
 <translation id="960987915827980018">あと約 1 時間</translation>
 <translation id="962802172452141067">ブックマーク フォルダ ツリー</translation>
 <translation id="963000966785016697"><ph name="VISUAL_SEARCH_PROVIDER" /> で画像を検索</translation>

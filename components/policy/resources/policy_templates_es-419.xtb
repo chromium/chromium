@@ -2712,7 +2712,6 @@ Si no se establece, se usará el comportamiento nuevo al igual que en el resto d
 <translation id="3240609035816615922">Política de acceso para la configuración de las impresoras</translation>
 <translation id="324062325008698789">Configura una lista de impresoras</translation>
 <translation id="3240655340884151271">Dirección MAC para el NIC incorporado del dispositivo</translation>
-<translation id="3242480111684005642">El usuario puede utilizar la función de Sincronización de archivos de <ph name="GOOGLE_DRIVE_NAME" />.</translation>
 <translation id="3242756958360374888">Contiene una lista de patrones que se usan para controlar la visibilidad de las cuentas en <ph name="PRODUCT_NAME" />.
 
       Para determinar la visibilidad de la cuenta en <ph name="PRODUCT_NAME" />, cada Cuenta de Google del dispositivo se comparará con los patrones almacenados en esta política. La cuenta será visible si el nombre coincide con alguno de los patrones de la lista. De lo contrario, se ocultará la cuenta.
@@ -2772,7 +2771,6 @@ Estas restricciones se aplican a las descargas que se inician desde el contenido
 En <ph name="MS_WIN_NAME" />, esta política solo está disponible en instancias que están vinculadas a un dominio de <ph name="MS_AD_NAME" />, vinculadas a <ph name="MS_AAD_NAME" /> o inscritas en <ph name="CHROME_BROWSER_CLOUD_MANAGEMENT_NAME" />.</translation>
 <translation id="3300784749135986828">Habilitar o inhabilitar la función <ph name="USER_AGENT_REDUCTION_FEATURE_NAME" /></translation>
 <translation id="3301698868852716692">Habilitar la extensión de estadísticas</translation>
-<translation id="3302723130703323097">Permitir que la función de Sincronización de archivos de <ph name="GOOGLE_DRIVE_NAME" /> sea visible y esté disponible para activar o desactivar los dispositivos compatibles en la app de Archivos de <ph name="PRODUCT_OS_NAME" /></translation>
 <translation id="3302829897293005699">Si habilitas la política o no la estableces, los dispositivos inscritos informarán sobre la sesión de kiosco activa, como el ID de aplicación y la versión.
 
       Si inhabilitas la política, los dispositivos inscritos no informarán sobre la sesión de kiosco.</translation>
@@ -2864,28 +2862,6 @@ Si la inhabilitas, no se permitirá la escritura predictiva en el teclado físic
       Si la estableces como oculta, las funciones inhabilitadas estarán inutilizables y los usuarios no podrán verlas.
 
       Si no estableces esta política o tiene un valor no válido, el modo de inhabilitación de las funciones del sistema estará bloqueado.</translation>
-<translation id="3410963889229735344">La sincronización de archivos <ph name="GOOGLE_DRIVE_NAME" /> permite automáticamente
-que los archivos de la sección Mi unidad de un usuario estén disponibles sin conexión (si el espacio lo permite) en los dispositivos
-compatibles. Después de habilitar inicialmente todos los archivos sin conexión, todos los archivos nuevos
-también estarán disponibles sin conexión automáticamente. Cuando la función esté activada, si
-no hay suficiente espacio para mantenerla activada, todos los archivos nuevos dejarán
-de estar disponibles sin conexión automáticamente. Sin embargo, el usuario aún podrá
-activar o desactivar los elementos de forma manual.
-
-Si estableces la política como <ph name="POLICY_VALUE_VISIBLE" />, se mostrará la
-función de sincronización de archivos en la app de Archivos y en la página Configuración. De todos modos, los usuarios
-deben activar o desactivar la función de sincronización de archivos por su cuenta.
-
-Si estableces la política como<ph name="POLICY_VALUE_DISABLED" />, se
-desactivará la función de sincronización de archivos si el usuario la activó anteriormente, y también
-la ocultará de la app de Archivos y de la Configuración para que el usuario no pueda volver a
-habilitarla. Si hay archivos que el usuario puso como disponibles sin
-conexión, permanecerán de ese modo y el usuario podrá habilitar
-el acceso sin conexión a archivos individuales manualmente (no estarán
-disponibles sin conexión automáticamente).
-
-Si no estableces la política, se usará
-<ph name="POLICY_VALUE_VISIBLE" /> como valor predeterminado.</translation>
 <translation id="341285788698114069">Esta política controla la prioridad del proceso de audio en Windows.
       Si habilitas la política, se ejecutará el proceso de audio con prioridad por encima de la normal.
       Si la inhabilitas, se ejecutará el proceso de audio con prioridad normal.
@@ -4776,7 +4752,6 @@ Esta política solo será válida si la máquina está inscrita en <ph name="CLO
 <translation id="5039110755072335605">Admisión de encabezados de solicitudes sin comodín CORS</translation>
 <translation id="504116558738617678">Solo mostrar advertencias de poco espacio en el disco si el dispositivo no está administrado o si solo hay 1 solo usuario</translation>
 <translation id="5041315457555330432">Permitir que <ph name="PRODUCT_NAME" /> solo se conecte a dispositivos con direcciones IP privadas, a menos que la función CastAllowAllIPs esté activada</translation>
-<translation id="5046376406561077773">El usuario no puede ver ninguna de las IU relacionadas con la función de Sincronización de archivos de <ph name="GOOGLE_DRIVE_NAME" />.</translation>
 <translation id="5055474681190962362">El día del mes [1-31] en el que debe reiniciarse el dispositivo (según su zona horaria local). Solo se utiliza cuando la frecuencia ("frequency") es mensual ("MONTHLY"). Si se supera el número máximo de días de un mes, se elegirá el último día.</translation>
 <translation id="5056708224511062314">La lupa está inhabilitada.</translation>
 <translation id="5058573563327660283">Seleccionar la estrategia utilizada para liberar espacio en el disco durante el proceso de limpieza automática (dejó de estar disponible)</translation>

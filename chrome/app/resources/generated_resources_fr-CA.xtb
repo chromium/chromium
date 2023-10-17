@@ -69,7 +69,6 @@
 <translation id="1054048317165655285">Terminer la configuration sur votre téléphone</translation>
 <translation id="1054153489933238809">Ouvrir l'&amp;image d'origine dans un nouvel onglet</translation>
 <translation id="1055274863771110134">{NUM_WEEKS,plural, =1{Mettre à jour l'appareil <ph name="DEVICE_TYPE" /> d'ici 1 semaine}one{Mettre à jour l'appareil <ph name="DEVICE_TYPE" /> d'ici {NUM_WEEKS} semaine}other{Mettre à jour l'appareil <ph name="DEVICE_TYPE" /> d'ici {NUM_WEEKS} semaines}}</translation>
-<translation id="1056398434290692818">Revenez en arrière et avancez avec un geste de balayage</translation>
 <translation id="1056898198331236512">Avertissement</translation>
 <translation id="1056980582064308040">La modification des paramètres redémarrera le point d’accès. Les appareils qui utilisent le point d’accès seront déconnectés.</translation>
 <translation id="1058262162121953039">Clé PUK</translation>
@@ -3891,7 +3890,7 @@ Cela peut inclure des renseignements sur les fichiers, les logiciels installés,
 <translation id="4046655456159965535">Supprimer les données affichées?</translation>
 <translation id="4047345532928475040">S. O.</translation>
 <translation id="4047581153955375979">USB4</translation>
-<translation id="4047726037116394521">Accéder à la page d'accueil</translation>
+<translation id="4047726037116394521">Retour à la page d'accueil</translation>
 <translation id="4048384495227695211">Afficher <ph name="FILE_NAME" /> dans le dossier</translation>
 <translation id="404894744863342743">Une fois que vous avez terminé d'utiliser le fichier téléchargé, supprimez-le afin que les autres utilisateurs de cet appareil ne puissent pas voir vos mots de passe.</translation>
 <translation id="4049783682480068824">{COUNT,plural, =1{# contact n'est pas accessible. Pour utiliser la fonctionnalité Partage à proximité avec cette personne, ajoutez l'adresse de courriel associée à son compte Google dans vos contacts.}one{# contact n'est pas accessible. Pour utiliser la fonctionnalité Partage à proximité avec cette personne, ajoutez l'adresse de courriel associée à son compte Google dans vos contacts.}other{# contacts ne sont pas accessibles. Pour utiliser la fonctionnalité Partage à proximité avec ces personnes, ajoutez l'adresse de courriel associée à leur compte Google dans vos contacts.}}</translation>
@@ -10272,6 +10271,7 @@ Les autorisations que vous avez déjà accordées à des sites Web et à des app
 <translation id="956500788634395331">Vous êtes protégé contre les extensions potentiellement nuisibles</translation>
 <translation id="957179356621191750">6 points</translation>
 <translation id="957960681186851048">Ce site a tenté de télécharger plusieurs fichiers automatiquement</translation>
+<translation id="958571289841636277">Revenez en arrière et avancez avec un geste de balayage</translation>
 <translation id="960987915827980018">Il reste environ 1 heure</translation>
 <translation id="962802172452141067">Arborescence des dossiers de favoris</translation>
 <translation id="963000966785016697">Rechercher une image avec <ph name="VISUAL_SEARCH_PROVIDER" /></translation>

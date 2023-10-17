@@ -69,7 +69,6 @@
 <translation id="1054048317165655285">Телефоныңыздағы реттеуді аяқтаңыз</translation>
 <translation id="1054153489933238809">Жаңа қойындыда түпнұсқалық &amp;кескінді ашу</translation>
 <translation id="1055274863771110134">{NUM_WEEKS,plural, =1{<ph name="DEVICE_TYPE" /> құрылғысын 1 апта ішінде жаңарту}other{<ph name="DEVICE_TYPE" /> құрылғысын {NUM_WEEKS} апта ішінде жаңарту}}</translation>
-<translation id="1056398434290692818">Сырғыту қимылымен артқа және алға жылжу</translation>
 <translation id="1056898198331236512">Ескерту</translation>
 <translation id="1056980582064308040">Параметрлерді өзгерту хотспотты қайта іске қосады. Хотспотты пайдаланатын құрылғылар ажыратылады.</translation>
 <translation id="1058262162121953039">PUK</translation>
@@ -10262,6 +10261,7 @@
 <translation id="956500788634395331">Сіз зиянды кеңейтімдерден қорғалғансыз.</translation>
 <translation id="957179356621191750">6 нүктелі</translation>
 <translation id="957960681186851048">Бұл сайт бірнеше файлды автоматты түрде жүктеп алғысы келді</translation>
+<translation id="958571289841636277">Сырғыту қимылымен артқа және алға өту</translation>
 <translation id="960987915827980018">Шамамен 1 сағат қалды</translation>
 <translation id="962802172452141067">Бетбелгі қалтасының құрылымы</translation>
 <translation id="963000966785016697">Суретті <ph name="VISUAL_SEARCH_PROVIDER" /> көмегімен іздеу</translation>
