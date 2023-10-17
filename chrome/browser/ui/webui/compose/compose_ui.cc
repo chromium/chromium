@@ -52,7 +52,11 @@ void ComposeUI::CreateComposeDialogPageHandler(
     mojo::PendingReceiver<compose::mojom::ComposeDialogPageHandler> handler,
     mojo::PendingRemote<compose::mojom::ComposeDialog> dialog) {
   DCHECK(dialog.is_valid());
-  ChromeComposeClient::FromWebContents(web_ui()->GetWebContents())
+
+  content::WebContents* web_contents = triggering_web_contents_
+                                           ? triggering_web_contents_.get()
+                                           : web_ui()->GetWebContents();
+  ChromeComposeClient::FromWebContents(web_contents)
       ->BindComposeDialog(std::move(handler), std::move(dialog));
 }
 

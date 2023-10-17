@@ -7,7 +7,9 @@
 
 #include <memory>
 
+#include "base/memory/weak_ptr.h"
 #include "chrome/common/compose/compose.mojom.h"
+#include "content/public/browser/web_contents.h"
 #include "content/public/browser/web_ui_controller.h"
 #include "mojo/public/cpp/bindings/pending_receiver.h"
 #include "mojo/public/cpp/bindings/pending_remote.h"
@@ -35,6 +37,10 @@ class ComposeUI : public ui::MojoBubbleWebUIController,
       mojo::PendingReceiver<color_change_listener::mojom::PageHandler>
           pending_receiver);
 
+  void set_triggering_web_contents(content::WebContents* web_contents) {
+    triggering_web_contents_ = web_contents->GetWeakPtr();
+  }
+
  private:
   void CreateComposeDialogPageHandler(
       mojo::PendingReceiver<compose::mojom::ComposeDialogPageHandler> handler,
@@ -43,6 +49,7 @@ class ComposeUI : public ui::MojoBubbleWebUIController,
       dialog_handler_factory_{this};
 
   std::unique_ptr<ui::ColorChangeHandler> color_provider_handler_;
+  base::WeakPtr<content::WebContents> triggering_web_contents_;
 
   WEB_UI_CONTROLLER_TYPE_DECL();
 };
