@@ -487,6 +487,11 @@ config("compiler") {
       asmflags += [ "-femit-dwarf-unwind=no-compact-unwind" ]
       cflags += [ "-femit-dwarf-unwind=no-compact-unwind" ]
     }
+
+    # dsymutil is not available in the system, on bots, for rustc to call. Our
+    # linker_driver.py script runs dsymutil itself, which is set to be the
+    # linker for Rust targets as well.
+    rustflags += [ "-Csplit-debuginfo=unpacked" ]
   }
 
   # Linux/Android/Fuchsia common flags setup.
