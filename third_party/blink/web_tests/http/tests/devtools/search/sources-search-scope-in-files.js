@@ -12,7 +12,6 @@ import * as Persistence from 'devtools/models/persistence/persistence.js';
 
 (async function() {
   TestRunner.addResult(`Tests that ScriptSearchScope performs search across all sources correctly.\n`);
-  await TestRunner.loadLegacyModule('search');
   await TestRunner.showPanel('sources');
 
   const workspace = Workspace.Workspace.WorkspaceImpl.instance();

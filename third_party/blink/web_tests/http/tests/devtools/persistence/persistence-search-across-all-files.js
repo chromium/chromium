@@ -12,7 +12,6 @@ import * as Persistence from 'devtools/models/persistence/persistence.js';
 
 (async function() {
   TestRunner.addResult(`Verify that search across all files omits filesystem uiSourceCodes with binding to network.\n`);
-  await TestRunner.loadLegacyModule('search');
   await TestRunner.addScriptTag('resources/foo.js');
 
   var testMapping = BindingsTestRunner.initializeTestMapping();
