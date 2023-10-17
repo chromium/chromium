@@ -1051,7 +1051,6 @@ public class VideoCaptureCamera2 extends VideoCapture {
                 "Error starting or restarting preview");
     }
 
-    @SuppressWarnings("WrongConstant") // https://crbug.com/1410903 mCaptureFormat.getPixelFormat
     private boolean createPreviewObjectsAndStartPreview() {
         assert mCameraThreadHandler.getLooper() == Looper.myLooper() : "called on wrong thread";
         if (mCameraDevice == null) return false;

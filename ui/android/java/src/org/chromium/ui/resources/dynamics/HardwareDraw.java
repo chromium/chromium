@@ -119,12 +119,6 @@ public class HardwareDraw implements CaptureMechanism {
             init(width, height);
         }
 
-        // This needs PixelFormat.RGBA_8888, because the bitmap uses Bitmap.Config.ARGB_888
-        // this is supported by the android docs which states " This must be one of the
-        // ImageFormat or PixelFormat constants.". It does state that not all formats are
-        // supported, but this seems to work and has worked for quite awhile. This comment
-        // exists because of a lint error that we suppress below.
-        @SuppressWarnings("WrongConstant")
         private void init(int width, int height) {
             try (TraceEvent e = TraceEvent.scoped("AcceleratedImageReader::init")) {
                 // Due to how ImageReader works, it is an error to attempt to acquire more than
