@@ -81,11 +81,11 @@ bool RunGetAllScreensMediaAndGetIds(content::WebContents* tab,
 
 bool CheckScreenDetailedExists(content::WebContents* tab,
                                const std::string& track_id) {
-  const char* video_track_contains_screen_details_call =
+  static constexpr char kVideoTrackContainsScreenDetailsCall[] =
       R"JS(videoTrackContainsScreenDetailed("%s"))JS";
   return content::EvalJs(
              tab->GetPrimaryMainFrame(),
-             base::StringPrintf(video_track_contains_screen_details_call,
+             base::StringPrintf(kVideoTrackContainsScreenDetailsCall,
                                 track_id.c_str()))
              .ExtractString() == "success-screen-detailed";
 }

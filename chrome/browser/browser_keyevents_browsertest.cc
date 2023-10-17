@@ -29,16 +29,16 @@ using content::NavigationController;
 
 namespace {
 
-const char kTestingPage[] = "/keyevents_test.html";
-const char kSuppressEventJS[] = "setDefaultAction('%ls', %ls);";
-const char kGetResultJS[] = "keyEventResult[%d];";
-const char kGetResultLengthJS[] = "keyEventResult.length;";
-const char kGetFocusedElementJS[] = "focusedElement;";
-const char kSetFocusedElementJS[] = "setFocusedElement('%ls');";
-const char kGetTextBoxValueJS[] = "document.getElementById('%ls').value;";
-const char kSetTextBoxValueJS[] =
+constexpr char kTestingPage[] = "/keyevents_test.html";
+constexpr char kSuppressEventJS[] = "setDefaultAction('%ls', %ls);";
+constexpr char kGetResultJS[] = "keyEventResult[%d];";
+constexpr char kGetResultLengthJS[] = "keyEventResult.length;";
+constexpr char kGetFocusedElementJS[] = "focusedElement;";
+constexpr char kSetFocusedElementJS[] = "setFocusedElement('%ls');";
+constexpr char kGetTextBoxValueJS[] = "document.getElementById('%ls').value;";
+constexpr char kSetTextBoxValueJS[] =
     "document.getElementById('%ls').value = '%ls';";
-const char kStartTestJS[] = "startTest(%d);";
+constexpr char kStartTestJS[] = "startTest(%d);";
 
 // Maximum length of the result array in KeyEventTestData structure.
 constexpr size_t kMaxResultLength = 10;

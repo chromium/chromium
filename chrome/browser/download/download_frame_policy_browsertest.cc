@@ -158,14 +158,14 @@ class DownloadFramePolicyBrowserTest
                                 DownloadSource source,
                                 bool initiate_with_gesture,
                                 std::string file_name = "allow.zip") {
-    const char kADownloadScript[] = R"(
+    static constexpr char kADownloadScript[] = R"(
       var a = document.createElement('a');
       a.setAttribute('href', '%s');
       a.download = '';
       document.body.appendChild(a);
       a.click();
     )";
-    const char kNavDownloadScript[] = "window.location = '%s'";
+    static constexpr char kNavDownloadScript[] = "window.location = '%s'";
 
     std::string script = base::StringPrintf(
         source == DownloadSource::kAnchorAttribute ? kADownloadScript

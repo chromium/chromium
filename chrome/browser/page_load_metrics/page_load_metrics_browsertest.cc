@@ -3606,7 +3606,7 @@ IN_PROC_BROWSER_TEST_F(PageLoadMetricsBrowserTest, DISABLED_PortalActivation) {
 
   // Create a portal to a.com.
   GURL a_url(embedded_test_server()->GetURL("a.com", "/title1.html"));
-  std::string script = R"(
+  static constexpr char kScript[] = R"(
     var portal = document.createElement('portal');
     portal.src = '%s';
     document.body.appendChild(portal);
@@ -3615,7 +3615,7 @@ IN_PROC_BROWSER_TEST_F(PageLoadMetricsBrowserTest, DISABLED_PortalActivation) {
   content::TestNavigationObserver portal_nav_observer(a_url);
   portal_nav_observer.StartWatchingNewWebContents();
   EXPECT_TRUE(ExecJs(outer_contents,
-                     base::StringPrintf(script.c_str(), a_url.spec().c_str())));
+                     base::StringPrintf(kScript, a_url.spec().c_str())));
   portal_nav_observer.WaitForNavigationFinished();
   content::WebContents* portal_contents = contents_observer.GetWebContents();
 
