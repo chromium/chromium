@@ -51,6 +51,9 @@
 #if !BUILDFLAG(IS_ANDROID)
 #include "chrome/browser/ui/profiles/profile_colors_util.h"
 #endif
+#if BUILDFLAG(IS_CHROMEOS_ASH)
+#include "chrome/browser/ash/settings/scoped_cros_settings_test_helper.h"
+#endif
 
 using ::testing::Mock;
 using ::testing::_;
@@ -173,7 +176,13 @@ std::u16string ConcatenateGaiaAndProfileNames(
 class ProfileAttributesStorageTest : public testing::Test {
  public:
   ProfileAttributesStorageTest()
-      : testing_profile_manager_(TestingBrowserProcess::GetGlobal()) {}
+      : testing_profile_manager_(TestingBrowserProcess::GetGlobal()) {
+#if BUILDFLAG(IS_CHROMEOS_ASH)
+    scoped_cros_settings_test_helper_ =
+        std::make_unique<ash::ScopedCrosSettingsTestHelper>();
+#endif
+  }
+
   ~ProfileAttributesStorageTest() override {}
 
  protected:
@@ -286,6 +295,10 @@ class ProfileAttributesStorageTest : public testing::Test {
  private:
   content::BrowserTaskEnvironment task_environment_;
   TestingProfileManager testing_profile_manager_;
+#if BUILDFLAG(IS_CHROMEOS_ASH)
+  std::unique_ptr<ash::ScopedCrosSettingsTestHelper>
+      scoped_cros_settings_test_helper_;
+#endif
   ProfileAttributesTestObserver observer_;
   base::ScopedObservation<ProfileAttributesStorage,
                           ProfileAttributesStorage::Observer>

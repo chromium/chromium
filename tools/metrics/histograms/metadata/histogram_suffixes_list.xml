@@ -986,13 +986,16 @@ chromium-metrics-reviews@google.com.
   <suffix name="Ask" label="Ask"/>
   <suffix name="Block" label="Block"/>
   <suffix name="DetectImportantContent" label="Detect important content"/>
-  <suffix name="DomainWildcardAllowThirdParty" label="Third-party cookies allowed for a site group using a domain wildcard"/>
+  <suffix name="DomainWildcardAllowThirdParty"
+      label="Third-party cookies allowed for a site group using a domain
+             wildcard"/>
   <suffix name="MaxRequester"
       label="Maximum number of exceptions per requester"/>
   <suffix name="MaxTopLevel"
       label="Maximum number of exceptions per top-level"/>
   <suffix name="SessionOnly" label="Session only"/>
-  <suffix name="TemporaryAllowThirdParty" label="Third-party cookies temporarily allowed on a domain"/>
+  <suffix name="TemporaryAllowThirdParty"
+      label="Third-party cookies temporarily allowed on a domain"/>
   <affected-histogram name="ContentSettings.Exceptions.cookies">
     <obsolete>
       Removed in M109. See ContentSettings.RegularProfile.Exceptions.cookies
@@ -4253,6 +4256,10 @@ chromium-metrics-reviews@google.com.
       label="Recorded only for users with &gt;=2 active profiles; recorded
              for all their profiles."/>
   <suffix name="All" label="Recorded for every profile of every user."/>
+  <suffix name="AllManagedDevice"
+      label="Recorded for every profile of every user on managed devices."/>
+  <suffix name="AllUnmanagedDevice"
+      label="Recorded for every profile of every user on unmanaged devices."/>
   <suffix name="LatentMultiProfile"
       label="Recorded only for users with &gt;=2 profiles but only one
              active; recorded for all their profiles."/>
@@ -4986,12 +4993,14 @@ chromium-metrics-reviews@google.com.
   <suffix name="PrimaryIsEnterprise"
       label="The primary account is enterprise."/>
   <affected-histogram name="Signin.InterceptResult.Enterprise"/>
+  <affected-histogram name="Signin.InterceptResult.EnterpriseForced"/>
 </histogram_suffixes>
 
 <histogram_suffixes name="SigninInterceptSyncState" separator=".">
   <suffix name="NoSync" label="User has not opted in to Sync."/>
   <suffix name="Sync" label="User has opted in to Sync."/>
   <affected-histogram name="Signin.InterceptResult.Enterprise"/>
+  <affected-histogram name="Signin.InterceptResult.EnterpriseForced"/>
   <affected-histogram name="Signin.InterceptResult.MultiUser"/>
   <affected-histogram name="Signin.InterceptResult.Switch"/>
 </histogram_suffixes>
@@ -4999,6 +5008,7 @@ chromium-metrics-reviews@google.com.
 <histogram_suffixes name="SigninInterceptType" separator=".">
   <suffix name="ChromeSignin" label="ChromeSignin bubble."/>
   <suffix name="Enterprise" label="Enterprise bubble."/>
+  <suffix name="EnterpriseForced" label="Enterprise dialog."/>
   <suffix name="MultiUser" label="MultiUser bubble."/>
   <suffix name="Switch" label="Profile-switch bubble."/>
   <affected-histogram name="Signin.InterceptResult"/>

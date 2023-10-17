@@ -29,6 +29,7 @@
 #include "base/values.h"
 #include "build/build_config.h"
 #include "build/chromeos_buildflags.h"
+#include "chrome/browser/enterprise/browser_management/management_service_factory.h"
 #include "chrome/browser/profiles/profile_avatar_downloader.h"
 #include "chrome/browser/profiles/profile_avatar_icon_util.h"
 #include "chrome/browser/profiles/profile_metrics.h"
@@ -846,6 +847,14 @@ void ProfileAttributesStorage::RecordProfilesState() {
 
   for (ProfileAttributesEntry* entry : entries) {
     RecordProfileState(entry, profile_metrics::StateSuffix::kAll);
+
+    if (policy::ManagementServiceFactory::GetForPlatform()->IsManaged()) {
+      RecordProfileState(entry,
+                         profile_metrics::StateSuffix::kAllManagedDevice);
+    } else {
+      RecordProfileState(entry,
+                         profile_metrics::StateSuffix::kAllUnmanagedDevice);
+    }
 
     switch (type) {
       case MultiProfileUserType::kSingleProfile:
