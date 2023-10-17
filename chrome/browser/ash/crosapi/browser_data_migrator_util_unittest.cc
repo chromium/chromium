@@ -25,6 +25,7 @@
 #include "components/sync/base/storage_type.h"
 #include "components/sync/model/blocking_model_type_store_impl.h"
 #include "testing/gtest/include/gtest/gtest.h"
+#include "third_party/abseil-cpp/absl/types/optional.h"
 #include "third_party/leveldatabase/env_chromium.h"
 #include "third_party/leveldatabase/src/include/leveldb/write_batch.h"
 
@@ -975,6 +976,12 @@ TEST(BrowserDataMigratorUtilTest, MigratePreferences) {
                          kLacrosOnlyPreferencesKeys[0]));
   EXPECT_EQ("test3",
             *lacros_root_dict->FindStringByDottedPath("unrelated.key"));
+
+  absl::optional<bool> sync_feature_setup_completed =
+      lacros_root_dict->FindBoolByDottedPath(
+          kSyncInitialSyncFeatureSetupCompletePrefName);
+  ASSERT_NE(absl::nullopt, sync_feature_setup_completed);
+  EXPECT_TRUE(*sync_feature_setup_completed);
 }
 
 }  // namespace ash::browser_data_migrator_util

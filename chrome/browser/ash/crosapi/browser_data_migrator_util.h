@@ -241,6 +241,12 @@ constexpr char kCopySwitchValue[] =
     "copy";  // Corresponds to kCopy. No longer in use.
 constexpr char kMoveSwitchValue[] = "move";  // Corresponds to KMove.
 
+// Preference that indicates that sync setup has been completed at least once.
+// Doesn't exist in Ash and need to be set explicitly during the migration.
+// Exposed for testing.
+constexpr char kSyncInitialSyncFeatureSetupCompletePrefName[] =
+    "sync.has_setup_completed";
+
 // The type of LevelDB schema.
 enum class LevelDBType {
   kLocalStorage = 0,
