@@ -174,6 +174,23 @@ TEST_F(CrosStateSenderTest, CrosStateMessageIncludesAttestationIfEcheEnabled) {
   EXPECT_EQ(1u, fake_message_sender_->GetCrosStateCallCount());
 }
 
+TEST_F(CrosStateSenderTest, ResendOnNewAttestationCertificate) {
+  feature_list_.InitWithFeatures(/* enabled_features= */ {features::kEcheSWA},
+                                 /* disabled_features= */ {});
+  // Set notification feature to be enabled.
+  fake_multidevice_setup_client_->SetFeatureState(
+      Feature::kPhoneHubNotifications, FeatureState::kEnabledByUser);
+  // Set camera roll feature to be enabled.
+  fake_multidevice_setup_client_->SetFeatureState(Feature::kPhoneHubCameraRoll,
+                                                  FeatureState::kEnabledByUser);
+  fake_connection_manager_->SetStatus(
+      secure_channel::ConnectionManager::Status::kConnected);
+  EXPECT_EQ(1u, fake_message_sender_->GetCrosStateCallCount());
+
+  fake_attestation_certificate_generator_->RetrieveCertificate();
+  EXPECT_EQ(2u, fake_message_sender_->GetCrosStateCallCount());
+}
+
 TEST_F(CrosStateSenderTest, NotificationFeatureStateChanged) {
   // Set connection state to be connected.
   fake_connection_manager_->SetStatus(
