@@ -56,15 +56,13 @@ let internalsInfo = {};
 
 // Replace the displayed values with the latest fetched ones.
 function refreshSigninInfo(signinInfo) {
-  if (!signinInfo) {
-    return;
-  }
-
+  // Process templates even against an empty `signinInfo` to hide some sections.
   internalsInfo = signinInfo;
   jstProcess(new JsEvalContext(signinInfo), $('signin-info'));
   jstProcess(new JsEvalContext(signinInfo), $('token-info'));
   jstProcess(new JsEvalContext(signinInfo), $('account-info'));
   jstProcess(new JsEvalContext(signinInfo), $('refresh-token-events'));
+  jstProcess(new JsEvalContext(signinInfo), $('bound-session-info'));
   document.querySelectorAll('td[jsvalues=".textContent: status"]')
       .forEach(td => {
         if (td.textContent.includes('Expired at')) {
