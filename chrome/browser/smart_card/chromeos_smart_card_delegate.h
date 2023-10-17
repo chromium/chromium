@@ -14,7 +14,6 @@ class ChromeOsSmartCardDelegate : public content::SmartCardDelegate {
   // `content::SmartCardDelegate` overrides:
   mojo::PendingRemote<device::mojom::SmartCardContextFactory>
   GetSmartCardContextFactory(content::BrowserContext& browser_context) override;
-  bool SupportsReaderAddedRemovedNotifications() const override;
 };
 
 #endif  // CHROME_BROWSER_SMART_CARD_CHROMEOS_SMART_CARD_DELEGATE_H_

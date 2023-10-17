@@ -13,8 +13,3 @@ ChromeOsSmartCardDelegate::GetSmartCardContextFactory(
   return extensions::SmartCardProviderPrivateAPI::Get(browser_context)
       .GetSmartCardContextFactory();
 }
-
-bool ChromeOsSmartCardDelegate::SupportsReaderAddedRemovedNotifications()
-    const {
-  return true;
-}

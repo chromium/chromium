@@ -26,11 +26,6 @@ class CONTENT_EXPORT SmartCardDelegate {
 
   virtual mojo::PendingRemote<device::mojom::SmartCardContextFactory>
   GetSmartCardContextFactory(BrowserContext& browser_context) = 0;
-
-  // Whether the implementation supports notifying when a smart card
-  // reader device is added or removed from the system.
-  // Platform dependent.
-  virtual bool SupportsReaderAddedRemovedNotifications() const = 0;
 };
 
 }  // namespace content
