@@ -2316,6 +2316,7 @@
     },
     {
       name: "MachineLearningModelLoader",
+      public: true,
       status: "experimental",
       base_feature: "none",
     },
