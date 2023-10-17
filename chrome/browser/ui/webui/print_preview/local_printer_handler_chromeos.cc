@@ -144,6 +144,9 @@ base::Value::Dict LocalPrinterHandlerChromeos::PrinterToValue(
   value.Set(kSettingPrinterName, printer.name);
   value.Set(kSettingPrinterDescription, printer.description);
   value.Set(kCUPSEnterprisePrinter, printer.configured_via_policy);
+  value.Set(kPrinterStatus, printer.printer_status
+                                ? StatusToValue(*printer.printer_status)
+                                : base::Value::Dict());
   return value;
 }
 

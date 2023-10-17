@@ -12,7 +12,7 @@ import "url/mojom/url.mojom";
 
 // This structure holds basic information about a printer.
 // It corresponds to the LocalDestinationInfo object in
-// chrome/browser/resources/print_preview/data/local_parsers.js.
+// chrome/browser/resources/print_preview/data/local_parsers.ts.
 [Stable]
 struct LocalDestinationInfo {
   // Printer id.
@@ -27,12 +27,14 @@ struct LocalDestinationInfo {
   bool configured_via_policy@3;
   // The GURL class cannot be used as it does not support the ipp/ipps scheme.
   [MinVersion=3] string? uri@4;
+  // The current printer status if any exists for the associated printer.
+  [MinVersion=4] PrinterStatus? printer_status@5;
 };
 
 // A container for the results of a printer status query. A printer status
 // query can return multiple errors so PrinterStatus contains multiple
 // StatusReasons. This struct corresponds to the PrinterStatus object in
-// chrome/browser/resources/print_preview/data/printer_status_cros.js.
+// chrome/browser/resources/print_preview/data/printer_status_cros.ts.
 [Stable]
 struct PrinterStatus {
   // Printer id.
@@ -303,7 +305,7 @@ interface LocalPrinter {
   GetPrinters@0() => (array<LocalDestinationInfo> printers);
 
   // Gets capabilities for a printer as a CapabilitiesResponse object.
-  // See chrome/browser/resources/print_preview/native_layer.js for a
+  // See chrome/browser/resources/print_preview/native_layer.ts for a
   // detailed description of the CapabilitiesResponse object as well as
   // chrome/browser/resources/print_preview/data/ for descriptions of
   // the various sub-objects (such as the Cloud Device Description object).

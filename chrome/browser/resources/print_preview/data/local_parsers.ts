@@ -8,6 +8,7 @@ import {isChromeOS, isLacros} from 'chrome://resources/js/platform.js';
 import {Destination, DestinationOptionalParams, DestinationOrigin, PrinterType} from './destination.js';
 // <if expr="is_chromeos">
 import {DestinationProvisionalType} from './destination.js';
+import {PrinterStatus} from './printer_status_cros.js';
 // </if>
 
 interface ObjectMap {
@@ -20,6 +21,9 @@ export interface LocalDestinationInfo {
   printerDescription?: string;
   cupsEnterprisePrinter?: boolean;
   printerOptions?: ObjectMap;
+  // <if expr="is_chromeos">
+  printerStatus?: PrinterStatus;
+  // </if>
 }
 
 export interface ExtensionDestinationInfo {

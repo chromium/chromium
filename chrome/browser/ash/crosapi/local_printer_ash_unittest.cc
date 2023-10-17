@@ -1123,6 +1123,10 @@ TEST(LocalPrinterAsh, PrinterToMojom) {
   Printer printer("id");
   printer.set_display_name("name");
   printer.set_description("description");
+  chromeos::CupsPrinterStatus status("id");
+  status.AddStatusReason(crosapi::mojom::StatusReason::Reason::kOutOfInk,
+                         crosapi::mojom::StatusReason::Severity::kWarning);
+  printer.set_printer_status(status);
   crosapi::mojom::LocalDestinationInfoPtr mojom =
       crosapi::LocalPrinterAsh::PrinterToMojom(printer);
   ASSERT_TRUE(mojom);
@@ -1130,6 +1134,8 @@ TEST(LocalPrinterAsh, PrinterToMojom) {
   EXPECT_EQ("name", mojom->name);
   EXPECT_EQ("description", mojom->description);
   EXPECT_FALSE(mojom->configured_via_policy);
+  EXPECT_EQ(crosapi::LocalPrinterAsh::StatusToMojom(status),
+            mojom->printer_status);
 }
 
 TEST(LocalPrinterAsh, PrinterToMojom_ConfiguredViaPolicy) {

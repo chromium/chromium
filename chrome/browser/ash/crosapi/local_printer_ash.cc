@@ -278,7 +278,8 @@ mojom::LocalDestinationInfoPtr LocalPrinterAsh::PrinterToMojom(
   return mojom::LocalDestinationInfo::New(
       printer.id(), printer.display_name(), printer.description(),
       printer.source() == chromeos::Printer::SRC_POLICY,
-      printer.uri().GetNormalized(/*always_print_port=*/true));
+      printer.uri().GetNormalized(/*always_print_port=*/true),
+      StatusToMojom(printer.printer_status()));
 }
 
 // static
