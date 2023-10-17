@@ -71,7 +71,9 @@ public class RemotingSessionControllerTest {
         mController.onSessionStarted();
         assertSame(mRequestInfo, mController.getRouteCreationInfo());
 
-        RemotingMediaSource source2 = RemotingMediaSource.from("remote-playback://");
+        RemotingMediaSource source2 =
+                RemotingMediaSource.from(
+                        "remote-playback:media-element?source=123&video_codec=vp8&audio_codec=mp3");
         mController.updateMediaSource(source2);
         assertSame(mRequestInfo.getMediaSource(), source2);
         verify(mProvider).updateRouteMediaSource(mRequestInfo.routeId, source2.getSourceId());

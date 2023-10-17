@@ -62,7 +62,11 @@ public class RemotingSessionController extends BaseSessionController {
     public void onSessionStarted() {
         super.onSessionStarted();
         RemotingMediaSource source = (RemotingMediaSource) getSource();
-        mFlingingControllerAdapter = new FlingingControllerAdapter(this, source.getMediaUrl());
+        if (source != null) {
+            mFlingingControllerAdapter = new FlingingControllerAdapter(this, source.getMediaUrl());
+        } else {
+            throw new AssertionError("Remoting Session started with an invalid source.");
+        }
     }
 
     @Override

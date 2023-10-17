@@ -142,6 +142,7 @@ robolectric_library("junit") {
     "junit/src/org/chromium/components/media_router/caf/ShadowCastMediaSource.java",
     "junit/src/org/chromium/components/media_router/caf/ShadowMediaRouter.java",
     "junit/src/org/chromium/components/media_router/caf/remoting/CafRemotingMediaRouteProviderTest.java",
+    "junit/src/org/chromium/components/media_router/caf/remoting/RemotingMediaSourceTest.java",
     "junit/src/org/chromium/components/media_router/caf/remoting/RemotingSessionControllerTest.java",
   ]
 

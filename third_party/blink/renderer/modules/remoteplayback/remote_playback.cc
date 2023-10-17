@@ -75,7 +75,7 @@ KURL GetAvailabilityUrl(const WebURL& source,
   }
 
   // The URL for each media element's source looks like the following:
-  // remote-playback://<encoded-data>?video_codec=<video_codec>&audio_codec=<audio_codec>
+  // remote-playback:media-element?source=<encoded-data>&video_codec=<video_codec>&audio_codec=<audio_codec>
   // where |encoded-data| is base64 URL encoded string representation of the
   // source URL. |video_codec| and |audio_codec| are used for device capability
   // filter for Media Remoting based Remote Playback on Desktop. The codec
@@ -85,19 +85,10 @@ KURL GetAvailabilityUrl(const WebURL& source,
       source_string.data(),
       base::checked_cast<unsigned>(source_string.length()));
 
-// TODO(crbug.com/1353987): Remove the special case for Android after the
-// RemotingMediaSource on Android has been updated to parse the new Remote
-// Playback URL format.
-#if BUILDFLAG(IS_ANDROID)
-  return KURL(
-      base::StrCat({kRemotePlaybackPresentationUrlScheme, "://"}).c_str() +
-      encoded_source);
-#else
-  return KURL(StringView(kRemotePlaybackPresentationUrlScheme) + "://" +
-              encoded_source +
-              "?video_codec=" + media::GetCodecName(video_codec).c_str() +
+  return KURL(StringView(kRemotePlaybackPresentationUrlPath) +
+              "?source=" + encoded_source +
+              "&video_codec=" + media::GetCodecName(video_codec).c_str() +
               "&audio_codec=" + media::GetCodecName(audio_codec).c_str());
-#endif
 }
 
 bool IsBackgroundAvailabilityMonitoringDisabled() {
