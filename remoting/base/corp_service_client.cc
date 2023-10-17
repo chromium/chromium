@@ -38,9 +38,24 @@ void CorpServiceClient::ProvisionCorpMachine(
             "User runs the start-host tool with the corp-user flag. Note that "
             "this functionality is not available outside of the corp network "
             "so external users will never need to make this service request."
+          user_data {
+            type: EMAIL
+            type: OTHER
+          }
           data:
-            "Machine owner's email address and FQDN"
+            "The email address of the account to configure CRD for and the "
+            "fully-qualified domain name of the machine being configured for "
+            "remote access."
           destination: GOOGLE_OWNED_SERVICE
+          internal {
+            contacts { email: "garykac@chromium.org" }
+            contacts { email: "jamiewalch@chromium.org" }
+            contacts { email: "joedow@chromium.org" }
+            contacts { email: "lambroslambrou@chromium.org" }
+            contacts { email: "rkjnsn@chromium.org" }
+            contacts { email: "yuweih@chromium.org" }
+          }
+          last_reviewed: "2023-10-17"
         }
         policy {
           cookies_allowed: NO
