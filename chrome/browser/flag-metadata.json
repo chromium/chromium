@@ -2517,7 +2517,7 @@
   {
     "name": "enable-desks-templates",
     "owners": [ "dandersson", "janetmac", "richui", "yongshun" ],
-    "expiry_milestone": 120
+    "expiry_milestone": 130
   },
   {
     "name": "enable-desktop-pwas-additional-windowing-controls",
@@ -3284,7 +3284,7 @@
   {
     "name": "enable-per-desk-z-order",
     "owners": [ "dandersson", "janetmac" ],
-    "expiry_milestone": 120
+    "expiry_milestone": 130
   },
   {
     "name": "enable-perfetto-system-tracing",
@@ -4522,7 +4522,7 @@
   {
     "name": "focus-follows-cursor",
     "owners": [ "dandersson", "tclaiborne" ],
-    "expiry_milestone": 120
+    "expiry_milestone": 130
   },
   {
     "name": "following-feed-sidepanel",
