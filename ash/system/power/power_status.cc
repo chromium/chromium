@@ -335,6 +335,14 @@ void PowerStatus::CalculateBatteryImageInfo(BatteryImageInfo* info) const {
 }
 
 // static
+ui::ImageModel PowerStatus::GetBatteryImageModel(const BatteryImageInfo& info,
+                                                 int height) {
+  return ui::ImageModel::FromImageGenerator(
+      base::BindRepeating(&PowerStatus::GetBatteryImage, info, height),
+      gfx::Size(height, height));
+}
+
+// static
 gfx::ImageSkia PowerStatus::GetBatteryImage(
     const BatteryImageInfo& info,
     int height,
