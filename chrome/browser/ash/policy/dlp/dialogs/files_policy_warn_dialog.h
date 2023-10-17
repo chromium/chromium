@@ -16,12 +16,15 @@
 #include "third_party/abseil-cpp/absl/types/optional.h"
 #include "ui/base/metadata/metadata_impl_macros.h"
 #include "ui/gfx/native_widget_types.h"
+#include "ui/views/controls/textarea/textarea.h"
+#include "ui/views/controls/textfield/textfield_controller.h"
 
 namespace policy {
 
 // FilesPolicyWarnDialog is a window modal dialog used to show detailed overview
 // of file warnings caused by by data protection policies.
-class FilesPolicyWarnDialog : public FilesPolicyDialog {
+class FilesPolicyWarnDialog : public FilesPolicyDialog,
+                              public views::TextfieldController {
  public:
   METADATA_HEADER(FilesPolicyWarnDialog);
 
@@ -54,12 +57,24 @@ class FilesPolicyWarnDialog : public FilesPolicyDialog {
   // Called when the user cancels the warning.
   void CancelWarning(OnDlpRestrictionCheckedWithJustificationCallback callback);
 
+  // Sets up view elements to handle user justification if required.
+  void MaybeAddJustificationPanel();
+
+  // views::TextfieldController overrides:
+  void ContentsChanged(views::Textfield* sender,
+                       const std::u16string& new_contents) override;
+
+  std::vector<DlpConfidentialFile> files_;
+
   // TODO(b/290329012): Remove.
   absl::optional<DlpFileDestination> destination_;
 
   // Holds the information that allow to populate the dialog UI such as the list
   // of warned files and the message shown.
   Info dialog_info_;
+
+  raw_ptr<views::Textarea> justification_field_ = nullptr;
+  raw_ptr<views::Label> justification_field_length_label_ = nullptr;
 
   base::WeakPtrFactory<FilesPolicyWarnDialog> weak_ptr_factory_{this};
 };

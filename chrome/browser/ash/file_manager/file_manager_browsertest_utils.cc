@@ -165,6 +165,11 @@ TestCase& TestCase::FileTransferConnectorReportOnlyMode() {
   return *this;
 }
 
+TestCase& TestCase::BypassRequiresJustification() {
+  options.bypass_requires_justification = true;
+  return *this;
+}
+
 TestCase& TestCase::EnableSearchV2() {
   options.enable_search_v2 = true;
   return *this;

@@ -703,6 +703,10 @@ async function verifyAfterPasteBlocking(
   const expectedNumberOfWarnedFilesByConnectors = await sendTestMessage(
       {name: 'getExpectedNumberOfWarnedFilesByConnectors'});
 
+  const bypassRequireJustification =
+      await sendTestMessage({name: 'doesBypassRequireJustification'}) ===
+      'true';
+
   if (usesNewFileTransferConnectorUI &&
       expectedNumberOfWarnedFilesByConnectors > 0) {
     // Check that the warning appears in the feedback panel.
@@ -724,11 +728,13 @@ async function verifyAfterPasteBlocking(
         expect_proceed_warning_reports: true,
       });
 
-      // Proceed the warning (single file warning) / open the warning dialog
-      // (multiple file warning).
+      // Proceed the warning (single file warning without user justification
+      // required) / open the warning dialog (multiple file warning or user
+      // justification required).
       await verifyPanelButtonsAndClick(appId, 'cancel', 'primary');
 
-      if (expectedNumberOfWarnedFilesByConnectors > 1) {
+      if (expectedNumberOfWarnedFilesByConnectors > 1 ||
+          bypassRequireJustification) {
         await sendTestMessage({
           name: 'verifyFileTransferWarningDialogAndProceed',
           app_id: appId,
@@ -1090,6 +1096,20 @@ testcase.transferConnectorFromUsbToDownloadsFlatWarnProceedNewUX = () => {
       SINGLE_FILE_WARN_MESSAGE,
   );
 };
+testcase
+    .transferConnectorFromUsbToDownloadsFlatWarnProceedWithJustificationNewUX =
+    () => {
+      return transferBetweenVolumes(
+          new TransferInfo({
+            source: TRANSFER_LOCATIONS.usb,
+            destination: TRANSFER_LOCATIONS.downloads,
+            proceedOnWarning: true,
+          }),
+          CONNECTOR_ENTRIES_FLAT_WARNED,
+          NEW_COPY_FAIL_MESSAGE,
+          SINGLE_FILE_WARN_MESSAGE,
+      );
+    };
 testcase.transferConnectorFromUsbToDownloadsDeepWarnProceedNewUX = () => {
   return transferBetweenVolumes(
       new TransferInfo({
@@ -1102,6 +1122,20 @@ testcase.transferConnectorFromUsbToDownloadsDeepWarnProceedNewUX = () => {
       TWO_FILES_WARN_MESSAGE,
   );
 };
+testcase
+    .transferConnectorFromUsbToDownloadsDeepWarnProceedWithJustificationNewUX =
+    () => {
+      return transferBetweenVolumes(
+          new TransferInfo({
+            source: TRANSFER_LOCATIONS.usb,
+            destination: TRANSFER_LOCATIONS.downloads,
+            proceedOnWarning: true,
+          }),
+          CONNECTOR_ENTRIES_DEEP_WARNED,
+          TWO_FILES_COPY_FAIL_MESSAGE,
+          TWO_FILES_WARN_MESSAGE,
+      );
+    };
 testcase.transferConnectorFromUsbToDownloadsFlatWarnCancelNewUX = () => {
   return transferBetweenVolumes(
       new TransferInfo({

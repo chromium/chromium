@@ -90,6 +90,8 @@ struct TestCase {
 
   TestCase& FileTransferConnectorReportOnlyMode();
 
+  TestCase& BypassRequiresJustification();
+
   TestCase& EnableSearchV2();
 
   TestCase& EnableLocalImageSearch();

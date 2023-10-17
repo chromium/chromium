@@ -36,6 +36,7 @@
 #include "components/policy/core/common/cloud/mock_cloud_policy_client.h"
 #include "components/signin/public/identity_manager/identity_test_environment.h"
 #include "content/public/test/browser_test.h"
+#include "ui/views/controls/textarea/textarea.h"
 
 namespace file_manager {
 namespace {
@@ -355,26 +356,40 @@ class DlpFilesAppBrowserTestBase {
   }
 };
 
-constexpr char kFileTransferConnectorSettingsForDlp[] = R"(
-{
-  "service_provider": "google",
-  "enable": [
-    {
-      "source_destination_list": [
-        {
-          "sources": [{
-            "file_system_type": "%s"
-          }],
-          "destinations": [{
-            "file_system_type": "%s"
-          }]
-        }
-      ],
-      "tags": ["dlp"]
-    }
-  ],
-  "block_until_verdict": %s
-})";
+// Returns a file transfer connectors policy for DLP with the given settings.
+std::string GetFileTransferConnectorsPolicyForDlp(
+    const std::string& source,
+    const std::string& destination,
+    bool report_only,
+    bool require_user_justification) {
+  auto sources = base::Value::List().Append(
+      base::Value::Dict().Set("file_system_type", source));
+
+  auto destinations = base::Value::List().Append(
+      base::Value::Dict().Set("file_system_type", destination));
+
+  auto source_destination_list = base::Value::List().Append(
+      base::Value::Dict()
+          .Set("sources", std::move(sources))
+          .Set("destinations", std::move(destinations)));
+
+  auto enable = base::Value::List().Append(
+      base::Value::Dict()
+          .Set("source_destination_list", std::move(source_destination_list))
+          .Set("tags", base::Value::List().Append("dlp")));
+
+  auto settings = base::Value::Dict();
+  settings.Set("service_provider", "google");
+  settings.Set("enable", std::move(enable));
+  settings.Set("block_until_verdict", report_only ? 0 : 1);
+
+  if (require_user_justification) {
+    settings.Set("require_justification_tags",
+                 base::Value::List().Append("dlp"));
+  }
+
+  return settings.DebugString();
+}
 
 base::TimeDelta kResponseDelay = base::Seconds(0);
 
@@ -501,10 +516,10 @@ class FileTransferConnectorFilesAppBrowserTestBase {
                 << " to " << *destination;
       enterprise_connectors::test::SetAnalysisConnector(
           profile->GetPrefs(), enterprise_connectors::FILE_TRANSFER,
-          base::StringPrintf(
-              kFileTransferConnectorSettingsForDlp, source->c_str(),
-              destination->c_str(),
-              options.file_transfer_connector_report_only ? "0" : "1"));
+          GetFileTransferConnectorsPolicyForDlp(
+              *source, *destination,
+              options.file_transfer_connector_report_only,
+              options.bypass_requires_justification));
 
       // Create a FakeFilesRequestHandler that intercepts uploads and fakes
       // responses.
@@ -564,6 +579,10 @@ class FileTransferConnectorFilesAppBrowserTestBase {
     }
     if (name == "getExpectedNumberOfWarnedFilesByConnectors") {
       *output = base::NumberToString(expected_warned_files_.size());
+      return true;
+    }
+    if (name == "doesBypassRequireJustification") {
+      *output = options.bypass_requires_justification ? "true" : "false";
       return true;
     }
     if (name == "setupScanningRunLoop") {
@@ -882,7 +901,8 @@ class FileTransferConnectorFilesAppBrowserTest
     if (name == "verifyFileTransferWarningDialogAndProceed") {
       const std::string* app_id = value.FindString("app_id");
       CHECK_NE(app_id, nullptr);
-      VerifyFileTransferWarningDialogAndProceed(*app_id);
+      VerifyFileTransferWarningDialogAndProceed(
+          *app_id, GetOptions().bypass_requires_justification);
       return true;
     } else {
       return FileTransferConnectorFilesAppBrowserTestBase::
@@ -945,7 +965,9 @@ class FileTransferConnectorFilesAppBrowserTest
     EXPECT_TRUE(widget->IsClosed());
   }
 
-  void VerifyFileTransferWarningDialogAndProceed(const std::string& app_id) {
+  void VerifyFileTransferWarningDialogAndProceed(
+      const std::string& app_id,
+      bool bypass_requires_justification) {
     DCHECK_CURRENTLY_ON(content::BrowserThread::UI);
     content::WebContents* web_contents = GetWebContentsForId(app_id);
     CHECK_NE(web_contents, nullptr);
@@ -976,9 +998,32 @@ class FileTransferConnectorFilesAppBrowserTest
     EXPECT_THAT(displayed_files,
                 ::testing::UnorderedElementsAreArray(expected_warned_files_));
 
+    policy::FilesPolicyWarnDialog* dialog =
+        static_cast<policy::FilesPolicyWarnDialog*>(
+            widget->widget_delegate()->AsDialogDelegate());
+    ASSERT_TRUE(dialog);
+
+    // Verify that the dialog has a text area where the user can enter a
+    // justification if required.
+    views::Textarea* justification_area =
+        static_cast<views::Textarea*>(widget->GetRootView()->GetViewByID(
+            policy::PolicyDialogBase::
+                kEnterpriseConnectorsJustificationTextareaId));
+    if (bypass_requires_justification) {
+      EXPECT_NE(justification_area, nullptr);
+      EXPECT_FALSE(dialog->IsDialogButtonEnabled(ui::DIALOG_BUTTON_OK));
+
+      justification_area->InsertText(
+          u"User justification",
+          ui::TextInputClient::InsertTextCursorBehavior::kMoveCursorAfterText);
+      EXPECT_TRUE(dialog->IsDialogButtonEnabled(ui::DIALOG_BUTTON_OK));
+
+    } else {
+      EXPECT_EQ(justification_area, nullptr);
+      EXPECT_TRUE(dialog->IsDialogButtonEnabled(ui::DIALOG_BUTTON_OK));
+    }
+
     // Close the dialog.
-    auto* dialog = static_cast<policy::FilesPolicyWarnDialog*>(
-        widget->widget_delegate()->AsDialogDelegate());
     dialog->AcceptDialog();
 
     // Verify that the dialog is closed.
@@ -1154,8 +1199,14 @@ WRAPPED_INSTANTIATE_TEST_SUITE_P(
             "transferConnectorFromUsbToDownloadsFlatMoveNewUX"),
         FILE_TRANSFER_TEST_CASE_NEW_UX(
             "transferConnectorFromUsbToDownloadsFlatWarnProceedNewUX"),
+        FILE_TRANSFER_TEST_CASE_NEW_UX("transferConnectorFromUsbToDownloadsFlat"
+                                       "WarnProceedWithJustificationNewUX")
+            .BypassRequiresJustification(),
         FILE_TRANSFER_TEST_CASE_NEW_UX(
             "transferConnectorFromUsbToDownloadsDeepWarnProceedNewUX"),
+        FILE_TRANSFER_TEST_CASE_NEW_UX("transferConnectorFromUsbToDownloadsDeep"
+                                       "WarnProceedWithJustificationNewUX")
+            .BypassRequiresJustification(),
         FILE_TRANSFER_TEST_CASE_NEW_UX(
             "transferConnectorFromUsbToDownloadsFlatWarnCancelNewUX"),
         FILE_TRANSFER_TEST_CASE_NEW_UX(

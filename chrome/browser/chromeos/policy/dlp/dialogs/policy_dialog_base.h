@@ -59,6 +59,10 @@ class PolicyDialogBase : public views::DialogDelegateView {
     kEnterpriseConnectorsEncryptedFileSectionId,
     kEnterpriseConnectorsLargeFileSectionId,
     kEnterpriseConnectorsSectionId,
+
+    // ID of the textarea used in the warning dialog when the user is required
+    // to provide a justification to bypass the warning.
+    kEnterpriseConnectorsJustificationTextareaId,
   };
 
   PolicyDialogBase();
