@@ -121,6 +121,7 @@ export class SettingsAudioElement extends SettingsAudioElementBase {
 
       isAllowAGCEnabled: {
         type: Boolean,
+        value: true,
         observer: SettingsAudioElement.prototype.onAllowAGCEnabledChanged,
       },
     };
