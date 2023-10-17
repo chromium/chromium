@@ -127,7 +127,9 @@ public class InstantStartFeedTest {
 
     @Test
     @LargeTest
-    @CommandLineFlags.Add({INSTANT_START_TEST_BASE_PARAMS})
+    @CommandLineFlags.Add({INSTANT_START_TEST_BASE_PARAMS,
+            // TODO(crbug.com/1491942): This fails with the field trial testing config.
+            "disable-field-trial-config"})
     public void testCachedFeedVisibility() {
         StartSurfaceTestUtils.startMainActivityFromLauncher(mActivityTestRule);
         mActivityTestRule.waitForActivityNativeInitializationComplete();

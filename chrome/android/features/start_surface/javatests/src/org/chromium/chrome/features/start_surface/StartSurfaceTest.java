@@ -120,8 +120,9 @@ import java.util.List;
         {UiRestriction.RESTRICTION_TYPE_PHONE, Restriction.RESTRICTION_TYPE_NON_LOW_END_DEVICE})
 @EnableFeatures(
         {ChromeFeatureList.START_SURFACE_ANDROID + "<Study", ChromeFeatureList.EMPTY_STATES})
-@CommandLineFlags.
-Add({ChromeSwitches.DISABLE_FIRST_RUN_EXPERIENCE, "force-fieldtrials=Study/Group"})
+@CommandLineFlags.Add({ChromeSwitches.DISABLE_FIRST_RUN_EXPERIENCE, "force-fieldtrials=Study/Group",
+        // TODO(crbug.com/1491942): This fails with the field trial testing config.
+        "disable-field-trial-config"})
 @DoNotBatch(reason = "This test suite tests startup behaviors.")
 public class StartSurfaceTest {
     @ParameterAnnotations.ClassParameter
