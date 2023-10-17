@@ -68,6 +68,7 @@ static_library("core") {
     "//ui/base",
     "//url",
   ]
+  configs += [ "//build/config/compiler:wexit_time_destructors" ]
 
   if (is_android) {
     sources += [

@@ -19,4 +19,6 @@ source_set("ios") {
     "//ios/web/public/js_messaging",
     "//url",
   ]
+
+  configs += [ "//build/config/compiler:wexit_time_destructors" ]
 }
