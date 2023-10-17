@@ -565,11 +565,13 @@ class CONTENT_EXPORT BidderWorklet : public mojom::BidderWorklet,
     const absl::optional<GURL> wasm_helper_url_;
     const absl::optional<GURL> trusted_bidding_signals_url_;
 
+    // This must be above the ContextRecyclers, since they own
+    // SharedStorageBindings, which have raw pointers to it.
+    mojo::Remote<mojom::AuctionSharedStorageHost> shared_storage_host_remote_;
+
     std::unique_ptr<ContextRecycler> context_recycler_for_origin_group_mode_;
     url::Origin join_origin_for_origin_group_mode_;
     std::unique_ptr<ContextRecycler> context_recycler_for_frozen_context_;
-
-    mojo::Remote<mojom::AuctionSharedStorageHost> shared_storage_host_remote_;
 
     SEQUENCE_CHECKER(v8_sequence_checker_);
   };
