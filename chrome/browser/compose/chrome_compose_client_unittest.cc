@@ -80,6 +80,10 @@ class ChromeComposeClientTest : public BrowserWithTestWindowTest {
     // Bind mojo to client.
     client_->BindComposeDialog(std::move(page_handler_pending_receiver),
                                std::move(callback_router_pending_remote));
+
+    client_->ShowComposeDialog(
+        autofill::AutofillComposeDelegate::UiEntryPoint::kAutofillPopup,
+        autofill::FormFieldData(), std::nullopt, base::NullCallback());
   }
 
   ChromeComposeClient& client() { return *client_; }
@@ -253,10 +257,6 @@ TEST_F(ChromeComposeClientTest, TestRestoreStateAfterRequestResponse) {
                 OptimizationGuideResponse(ComposeResponse(true)));
           })));
 
-  client().ShowComposeDialog(
-      autofill::AutofillComposeDelegate::UiEntryPoint::kAutofillPopup,
-      autofill::FormFieldData(), std::nullopt, base::NullCallback());
-
   base::test::TestFuture<compose::mojom::ComposeResponsePtr> test_future;
   auto style_modifiers = compose::mojom::StyleModifiers::New();
   style_modifiers->tone = compose::mojom::Tone::kCasual;
@@ -268,29 +268,30 @@ TEST_F(ChromeComposeClientTest, TestRestoreStateAfterRequestResponse) {
   page_handler()->RequestInitialState(open_test_future.GetCallback());
 
   compose::mojom::OpenMetadataPtr result = open_test_future.Take();
-  EXPECT_EQ("a user typed this", result->compose_state->input);
-  EXPECT_EQ(compose::mojom::Tone::kCasual, result->compose_state->style->tone);
-  EXPECT_EQ(compose::mojom::Length::kLonger,
-            result->compose_state->style->length);
-  EXPECT_EQ(false, result->compose_state->response.is_null());
+  EXPECT_EQ("", result->compose_state->webui_state);
+  EXPECT_FALSE(result->compose_state->response.is_null());
   EXPECT_EQ(compose::mojom::ComposeStatus::kOk,
             result->compose_state->response->status);
   EXPECT_EQ("Cucumbers", result->compose_state->response->result);
-  EXPECT_EQ(false, result->compose_state->has_pending_request);
+  EXPECT_FALSE(result->compose_state->has_pending_request);
 }
 
 TEST_F(ChromeComposeClientTest, TestRestoreEmptyState) {
-  client().ShowComposeDialog(
-      autofill::AutofillComposeDelegate::UiEntryPoint::kAutofillPopup,
-      autofill::FormFieldData(), std::nullopt, base::NullCallback());
-
   base::test::TestFuture<compose::mojom::OpenMetadataPtr> open_test_future;
   page_handler()->RequestInitialState(open_test_future.GetCallback());
 
   compose::mojom::OpenMetadataPtr result = open_test_future.Take();
-  EXPECT_EQ("", result->compose_state->input);
-  EXPECT_EQ(compose::mojom::Tone::kUnset, result->compose_state->style->tone);
-  EXPECT_EQ(compose::mojom::Length::kUnset,
-            result->compose_state->style->length);
-  EXPECT_EQ(true, result->compose_state->response.is_null());
+  EXPECT_EQ("", result->compose_state->webui_state);
+  EXPECT_TRUE(result->compose_state->response.is_null());
+  EXPECT_FALSE(result->compose_state->has_pending_request);
+}
+
+TEST_F(ChromeComposeClientTest, TestSaveAndRestoreWebUIState) {
+  base::test::TestFuture<compose::mojom::OpenMetadataPtr> test_future;
+
+  page_handler()->SaveWebUIState("web ui state");
+  page_handler()->RequestInitialState(test_future.GetCallback());
+
+  compose::mojom::OpenMetadataPtr result = test_future.Take();
+  EXPECT_EQ("web ui state", result->compose_state->webui_state);
 }

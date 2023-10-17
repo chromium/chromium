@@ -49,9 +49,11 @@ struct ComposeResponse {
 // Snapshot of state that can describe current state or be used to
 // fully restore a previous state.
 struct ComposeState {
-  // User-provided input string. If this state has a compose response,
-  // then this is the input that was used to generate the response.
-  string input;
+  // TODO(crbug.com/1493364): Change this field to a type that's opaque and
+  // non-trivial to use from untrustworthy processes.
+  // State for the WebUI session. This should be considered opaque and is
+  // unsafe to parse in the browser process.
+  string webui_state;
   // Modifiers used in the response captured in this state.
   StyleModifiers style;
   // Response from compose service. This is not present if the request
@@ -73,11 +75,20 @@ struct OpenMetadata {
 
 // Interface for calls from Compose dialog JS into the native handler.
 interface ComposeDialogPageHandler {
-  // Asks the Browser to compose `input` with `stye` applied. Response contains
-  // the modified output.
+  // Asks the native handler to compose `input` with `stye` applied. Response
+  // contains the modified output.
   Compose(StyleModifiers style, string input) => (ComposeResponse response);
 
-  // Asks the Browser for information needed for opening the Compose dialog.
+  // Asks the native handler to store `webui_state` for the last field the user
+  // selected compose on.
+  // TODO(crbug.com/1493364): Change this field to a type that's opaque and
+  // non-trivial to use from untrustworthy processes.
+  // State for the WebUI session. This should be considered opaque and is
+  // unsafe to parse in the browser process.
+  SaveWebUIState(string webui_state);
+
+  // Asks the native handler for state information needed for opening the
+  // compose dialog for the last field the user selected compose on.
   RequestInitialState() => (OpenMetadata initial_state);
 };
 

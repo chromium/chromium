@@ -49,7 +49,7 @@ void ChromeComposeClient::BindComposeDialog(
 void ChromeComposeClient::Compose(compose::mojom::StyleModifiersPtr style,
                                   const std::string& input,
                                   ComposeCallback callback) {
-  SaveNewComposeRequest(input, std::move(style));
+  SaveNewComposeRequest(std::move(style));
   // TODO(b/300974056): Move this to the overall feature-enabled check.
   auto* model_executor = GetModelExecutor();
   if (!model_executor ||
@@ -125,6 +125,11 @@ void ChromeComposeClient::ShowComposeDialog(
   }
 }
 
+void ChromeComposeClient::SaveWebUIState(const std::string& webui_state) {
+  auto& compose_state = field_states_.at(last_compose_field_id_);
+  compose_state->webui_state = webui_state;
+}
+
 void ChromeComposeClient::RequestInitialState(
     RequestInitialStateCallback callback) {
   compose::mojom::ComposeStatePtr compose_state =
@@ -143,7 +148,6 @@ void ChromeComposeClient::SaveFieldAndCreateComposeStateIfEmpty(
 }
 
 void ChromeComposeClient::SaveNewComposeRequest(
-    const std::string& input,
     compose::mojom::StyleModifiersPtr style) {
   MaybeSaveCurrentStateInUndoStack();
   // Overwrite the existing state, after we save it for undo.
@@ -151,7 +155,6 @@ void ChromeComposeClient::SaveNewComposeRequest(
 
   auto& compose_state = field_states_.at(last_compose_field_id_);
   compose_state->has_pending_request = true;
-  compose_state->input = input;
   compose_state->style = std::move(style);
 }
 

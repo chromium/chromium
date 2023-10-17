@@ -52,9 +52,7 @@ class ChromeComposeClient
   void Compose(compose::mojom::StyleModifiersPtr style,
                const std::string& input,
                ComposeCallback callback) override;
-
-  // Retrieves and returns (through `callback`) state information for the last
-  // field the user selected compose on.
+  void SaveWebUIState(const std::string& webui_state) override;
   void RequestInitialState(RequestInitialStateCallback callback) override;
 
   void SetModelExecutorForTest(
@@ -76,8 +74,7 @@ class ChromeComposeClient
       const autofill::FieldGlobalId& field_id);
   // Saves the compose request in the current state, and saves the previous
   // state for undo.
-  void SaveNewComposeRequest(const std::string& input,
-                             compose::mojom::StyleModifiersPtr style);
+  void SaveNewComposeRequest(compose::mojom::StyleModifiersPtr style);
   // Saves the current state in the undo stack if it contains a valid
   // response. States with no response, or with error will not be stored for
   // undo.
