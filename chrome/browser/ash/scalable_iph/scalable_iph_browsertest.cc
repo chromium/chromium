@@ -29,11 +29,13 @@
 #include "chrome/browser/ash/scalable_iph/customizable_test_env_browser_test_base.h"
 #include "chrome/browser/ash/scalable_iph/scalable_iph_browser_test_base.h"
 #include "chrome/browser/ash/scalable_iph/scalable_iph_delegate_impl.h"
+#include "chrome/browser/ash/system_web_apps/system_web_app_manager.h"
 #include "chrome/browser/scalable_iph/scalable_iph_factory.h"
 #include "chrome/browser/ui/ash/system_web_apps/system_web_app_ui_utils.h"
 #include "chrome/browser/ui/browser.h"
 #include "chrome/browser/web_applications/web_app_id_constants.h"
 #include "chrome/common/chrome_switches.h"
+#include "chrome/common/pref_names.h"
 #include "chrome/test/base/ui_test_utils.h"
 #include "chromeos/ash/components/phonehub/fake_feature_status_provider.h"
 #include "chromeos/ash/components/phonehub/feature_status.h"
@@ -214,6 +216,32 @@ class ScalableIphBrowserTestPreinstallApps : public ScalableIphBrowserTest {
     command_line->RemoveSwitch(switches::kDisableDefaultApps);
     command_line->AppendSwitch(
         ash::switches::kAllowDefaultShelfPinLayoutIgnoringSync);
+  }
+};
+
+class ScalableIphBrowserTestHelpApp
+    : public ScalableIphBrowserTestPreinstallApps {
+ public:
+  void InitializeScopedFeatureList() override {
+    base::FieldTrialParams params;
+    AppendVersionNumber(params);
+    base::test::FeatureRefAndParams test_config(TestIphFeature(), params);
+
+    base::test::FeatureRefAndParams scalable_iph_feature(
+        ash::features::kScalableIph, {});
+
+    base::test::FeatureRefAndParams help_app_feature(
+        ash::features::kHelpAppWelcomeTips, {});
+
+    scoped_feature_list_.InitWithFeaturesAndParameters(
+        {scalable_iph_feature, help_app_feature, test_config}, {});
+  }
+
+  void SetUpOnMainThread() override {
+    ScalableIphBrowserTestPreinstallApps::SetUpOnMainThread();
+
+    ash::SystemWebAppManager::GetForTest(browser()->profile())
+        ->InstallSystemAppsForTesting();
   }
 };
 
@@ -936,6 +964,16 @@ IN_PROC_BROWSER_TEST_F(ScalableIphBrowserTestPreinstallApps,
               NotifyEvent(scalable_iph::kEventNameShelfItemActivationYouTube));
   ash::Shelf::ActivateShelfItem(ash::ShelfModel::Get()->ItemIndexByAppID(
       scalable_iph::kWebAppYouTubeAppId));
+}
+
+IN_PROC_BROWSER_TEST_F(ScalableIphBrowserTestHelpApp, HelpAppPinnedToShelf) {
+  if (!IsGoogleChrome()) {
+    GTEST_SKIP()
+        << "Google Chrome is required for preinstall apps used by this test";
+    return;
+  }
+
+  EXPECT_TRUE(ash::ShelfModel::Get()->IsAppPinned(web_app::kHelpAppId));
 }
 
 IN_PROC_BROWSER_TEST_F(ScalableIphBrowserTestOobe, SessionState) {
