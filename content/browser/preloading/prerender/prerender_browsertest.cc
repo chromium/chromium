@@ -2338,6 +2338,78 @@ IN_PROC_BROWSER_TEST_F(PrerenderBrowserTest, SessionHistoryAfterActivation) {
   }
 }
 
+class PrerenderOopsifBrowserTest : public PrerenderBrowserTest {
+ public:
+  PrerenderOopsifBrowserTest() {
+    feature_list_.InitWithFeaturesAndParameters(
+        {{blink::features::kIsolateSandboxedIframes,
+          {{"grouping", "per-origin"}}}},
+        {/* disabled_features */});
+  }
+
+ private:
+  base::test::ScopedFeatureList feature_list_;
+};
+
+// Test for crbug.com/1470312.
+// Prior to the CL that introduced this test, if IsolatedSandboxedIframes are
+// enabled, and an isolated frame sends the parent a postMessage, then the
+// proxies were attached to the active page and not the prerendered  mainframe.
+// These were proxies that were created on demand when processing the
+// postMessage. (to ensure the recipient can reply to the sender frame, or to a
+// frame that the sender could reach). This led to a CHECK failure in
+// ~BrowsingContextInstance(). This test verifies that problem has been
+// resolved.
+IN_PROC_BROWSER_TEST_F(PrerenderOopsifBrowserTest,
+                       OopsifSrcdocSandboxIframeWithPostmessage) {
+  // Navigate to an initial page.
+  const GURL kInitialUrl =
+      GetUrl("/prerender/cross_origin_prerender.html?initial");
+  ASSERT_TRUE(NavigateToURL(shell(), kInitialUrl));
+  EXPECT_TRUE(AddTestUtilJS(current_frame_host()));
+
+  // Start a prerender.
+  const GURL kPrerenderingUrl =
+      GetUrl("/prerender/cross_origin_srcdoc_sandboxed_postmessage.html");
+  int host_id = AddPrerender(kPrerenderingUrl);
+  RenderFrameHost* prerender_frame_host = GetPrerenderedMainFrameHost(host_id);
+  EXPECT_TRUE(AddTestUtilJS(prerender_frame_host));
+  // Create a srcdoc iframe in the prerendered page.
+  EXPECT_TRUE(ExecJs(prerender_frame_host, "createSrcdoc();"));
+  base::RunLoop().RunUntilIdle();
+
+  // Load another same-origin iframe to ensure loading the srcdoc iframe
+  // starts and then it's deferred until activation.
+  const GURL kSameOriginSubframeUrl =
+      GetUrl("/prerender/cross_origin_prerender.html");
+  ASSERT_EQ("LOADED",
+            EvalJs(prerender_frame_host,
+                   JsReplace("add_iframe($1)", kSameOriginSubframeUrl)));
+
+  // Activate.
+  NavigatePrimaryPage(kPrerenderingUrl);
+  ASSERT_EQ(web_contents()->GetLastCommittedURL(), kPrerenderingUrl);
+
+  // Verify postMessage from srcdoc to mainframe completed.
+  RenderFrameHostImpl* main_frame =
+      static_cast<RenderFrameHostImpl*>(web_contents()->GetPrimaryMainFrame());
+  EXPECT_TRUE(ExecJs(
+      main_frame,
+      "Promise.all([child_response_promise, prerender_handler_promise]);"));
+
+  // OOPSIFs only process-isolate if the parent gets site isolation, which in
+  // this case doesn't happen on Android.
+  if (AreAllSitesIsolatedForTesting()) {
+    RenderFrameHostImpl* sandboxed_render_frame_host =
+        main_frame->child_at(0)->current_frame_host();
+    EXPECT_TRUE(sandboxed_render_frame_host->GetSiteInstance()
+                    ->GetSiteInfo()
+                    .is_sandboxed());
+    ASSERT_NE(main_frame->GetProcess(),
+              sandboxed_render_frame_host->GetProcess());
+  }
+}
+
 // Makes sure that cross-origin subframe navigations are deferred during
 // prerendering.
 IN_PROC_BROWSER_TEST_F(PrerenderBrowserTest,

@@ -251,6 +251,10 @@ void NavigationThrottleRunner::
   AddThrottle(
       SubframeHistoryNavigationThrottle::MaybeCreateThrottleFor(request));
 
+  // Defer cross-origin about:srcdoc subframe loading during prerendering state.
+  AddThrottle(
+      PrerenderSubframeNavigationThrottle::MaybeCreateThrottleFor(request));
+
   // Insert all testing NavigationThrottles last.
   throttles_.insert(throttles_.end(),
                     std::make_move_iterator(testing_throttles.begin()),

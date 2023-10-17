@@ -152,6 +152,20 @@ void PrerenderSubframeNavigationThrottle::DidFinishNavigation(
 }
 
 NavigationThrottle::ThrottleCheckResult
+PrerenderSubframeNavigationThrottle::WillCommitWithoutUrlLoader() {
+  auto* navigation_request = NavigationRequest::From(navigation_handle());
+  if (navigation_request->GetUrlInfo().is_sandboxed) {
+    FrameTreeNode* frame_tree_node = navigation_request->frame_tree_node();
+    // Although main frames can be in sandboxed SiteInfo's, we don't encounter
+    // that here since this throttle check should never occur for a mainframe.
+    CHECK(!frame_tree_node->IsMainFrame());
+    return DeferOrCancelCrossOriginSubframeNavigation(*frame_tree_node);
+  }
+
+  return NavigationThrottle::PROCEED;
+}
+
+NavigationThrottle::ThrottleCheckResult
 PrerenderSubframeNavigationThrottle::DeferOrCancelCrossOriginSubframeNavigation(
     const FrameTreeNode& frame_tree_node) {
   CHECK(frame_tree_node.frame_tree().is_prerendering());
