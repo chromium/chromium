@@ -119,6 +119,12 @@ void ScrollbarAnimationController::StopAnimation() {
 
 void ScrollbarAnimationController::PostDelayedAnimation(
     AnimationChange animation_change) {
+  // If fade duration is zero we are in a test environment and should not
+  // animate.
+  if (fade_duration_.is_zero()) {
+    return;
+  }
+
   animation_change_ = animation_change;
   delayed_scrollbar_animation_.Cancel();
   delayed_scrollbar_animation_.Reset(

@@ -5,6 +5,7 @@
 #ifndef THIRD_PARTY_BLINK_RENDERER_CORE_SCROLL_SCROLLBAR_THEME_FLUENT_H_
 #define THIRD_PARTY_BLINK_RENDERER_CORE_SCROLL_SCROLLBAR_THEME_FLUENT_H_
 
+#include "third_party/blink/public/platform/web_theme_engine.h"
 #include "third_party/blink/renderer/core/core_export.h"
 #include "third_party/blink/renderer/core/scroll/scrollbar_theme.h"
 #include "third_party/blink/renderer/core/scroll/scrollbar_theme_aura.h"
@@ -39,6 +40,8 @@ class CORE_EXPORT ScrollbarThemeFluent : public ScrollbarThemeAura {
                    const Scrollbar& scrollbar,
                    const gfx::Rect& rect,
                    ScrollbarPart part) override;
+  base::TimeDelta OverlayScrollbarFadeOutDelay() const override;
+  base::TimeDelta OverlayScrollbarFadeOutDuration() const override;
 
  private:
   friend class ScrollbarThemeFluentMock;
@@ -60,6 +63,7 @@ class CORE_EXPORT ScrollbarThemeFluent : public ScrollbarThemeAura {
   // Overlay scrollbar-related variables.
   int scrollbar_track_inset_ = 0;
   bool is_fluent_overlay_scrollbar_enabled_ = false;
+  WebThemeEngine::ScrollbarStyle style_;
 };
 
 }  // namespace blink

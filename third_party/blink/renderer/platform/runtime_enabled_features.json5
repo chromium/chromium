@@ -1824,6 +1824,10 @@
       status: "test",
     },
     {
+      name: "FluentOverlayScrollbars",
+      base_feature: "none",
+    },
+    {
       name: "FluentScrollbars",
       base_feature: "none",
     },

@@ -27,6 +27,7 @@
 #include "third_party/blink/public/common/switches.h"
 #include "third_party/blink/public/platform/platform.h"
 #include "third_party/blink/renderer/platform/runtime_enabled_features.h"
+#include "third_party/blink/renderer/platform/web_test_support.h"
 #include "ui/base/ui_base_features.h"
 #include "ui/base/ui_base_switches.h"
 #include "ui/native_theme/native_theme_features.h"
@@ -610,6 +611,13 @@ cc::LayerTreeSettings GenerateLayerTreeSettings(
         ui::kOverlayScrollbarThinningDuration;
     settings.scrollbar_flash_after_any_scroll_update =
         !settings.enable_fluent_overlay_scrollbar;
+    // Avoid animating in web tests to improve reliability.
+    if (settings.enable_fluent_overlay_scrollbar &&
+        WebTestSupport::IsRunningWebTest()) {
+      settings.scrollbar_thinning_duration = base::Milliseconds(0);
+      settings.scrollbar_fade_delay = base::Milliseconds(0);
+      settings.scrollbar_fade_duration = base::Milliseconds(0);
+    }
   }
 #endif  // BUILDFLAG(IS_ANDROID)
 

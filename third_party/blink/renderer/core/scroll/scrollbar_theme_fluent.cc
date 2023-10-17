@@ -41,6 +41,13 @@ ScrollbarThemeFluent::ScrollbarThemeFluent() {
   // Hit testable invisible border around the scrollbar's track.
   scrollbar_track_inset_ = theme_engine->GetPaintedScrollbarTrackInset();
   scrollbar_track_thickness_ -= 2 * scrollbar_track_inset_;
+
+  WebThemeEngineHelper::GetNativeThemeEngine()->GetOverlayScrollbarStyle(
+      &style_);
+  if (WebTestSupport::IsRunningWebTest()) {
+    style_.fade_out_delay = base::TimeDelta();
+    style_.fade_out_duration = base::TimeDelta();
+  }
 }
 
 int ScrollbarThemeFluent::ScrollbarThickness(float scale_from_dip,
@@ -116,6 +123,14 @@ gfx::Size ScrollbarThemeFluent::ButtonSize(const Scrollbar& scrollbar) const {
 
 bool ScrollbarThemeFluent::UsesOverlayScrollbars() const {
   return is_fluent_overlay_scrollbar_enabled_;
+}
+
+base::TimeDelta ScrollbarThemeFluent::OverlayScrollbarFadeOutDelay() const {
+  return style_.fade_out_delay;
+}
+
+base::TimeDelta ScrollbarThemeFluent::OverlayScrollbarFadeOutDuration() const {
+  return style_.fade_out_duration;
 }
 
 void ScrollbarThemeFluent::PaintTrack(GraphicsContext& context,
