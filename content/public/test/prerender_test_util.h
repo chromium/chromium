@@ -9,6 +9,7 @@
 #include "base/test/scoped_feature_list.h"
 #include "content/public/browser/prerender_trigger_type.h"
 #include "content/public/browser/render_frame_host.h"
+#include "content/public/browser/web_contents.h"
 #include "content/public/common/isolated_world_ids.h"
 #include "content/public/test/browser_test_utils.h"
 #include "net/test/embedded_test_server/embedded_test_server.h"
@@ -18,8 +19,6 @@
 #include "url/gurl.h"
 
 namespace content {
-
-class WebContents;
 
 namespace test {
 
