@@ -4,9 +4,9 @@
 
 #include <type_traits>
 
-#include "base/time/time.h"
 #include "chrome/browser/ash/login/app_mode/test/kiosk_apps_mixin.h"
 #include "chrome/browser/ash/login/app_mode/test/kiosk_base_test.h"
+#include "chrome/browser/ash/login/app_mode/test/managed_guest_session_test_helpers.h"
 #include "chrome/browser/ash/login/app_mode/test/web_kiosk_base_test.h"
 #include "chrome/browser/ash/login/login_manager_test.h"
 #include "chrome/browser/ash/login/test/device_state_mixin.h"
@@ -62,6 +62,8 @@ class DeviceCommandRebootJobAutoLaunchKioskBrowserTest
     em::ChromeDeviceSettingsProto& proto(device_policy()->payload());
     ash::KioskAppsMixin::AppendAutoLaunchKioskAccount(&proto);
     policy_helper()->RefreshDevicePolicy();
+    device_state_.RequestDeviceLocalAccountPolicyUpdate(
+        ash::KioskAppsMixin::kEnterpriseKioskAccountId);
   }
 
  private:
@@ -125,6 +127,45 @@ IN_PROC_BROWSER_TEST_F(DeviceCommandRebootJobWebKioskBrowserTest,
 
   em::RemoteCommandResult result = SendRemoteCommand(
       RemoteCommandBuilder().SetType(em::RemoteCommand::DEVICE_REBOOT).Build());
+
+  EXPECT_EQ(result.result(), em::RemoteCommandResult::RESULT_SUCCESS);
+  EXPECT_EQ(
+      chromeos::FakePowerManagerClient::Get()->num_request_restart_calls(), 1);
+}
+
+class DeviceCommandRebootJobAutoLaunchManagedGuestSessionBrowserTest
+    : public DeviceCommandRebootBaseTest<ash::LoginManagerTest> {
+ protected:
+  void SetUpInProcessBrowserTestFixture() override {
+    DeviceCommandRebootBaseTest::SetUpInProcessBrowserTestFixture();
+
+    // Set up MGS auto-launch mode.
+    em::ChromeDeviceSettingsProto& proto(device_policy()->payload());
+    ash::AppendAutoLaunchManagedGuestSessionAccount(&proto);
+
+    policy_helper()->RefreshDevicePolicy();
+    device_state_.RequestDeviceLocalAccountPolicyUpdate(
+        ash::kManagedGuestSessionAccountId);
+  }
+
+ private:
+  ash::DeviceStateMixin device_state_{
+      &mixin_host_,
+      ash::DeviceStateMixin::State::OOBE_COMPLETED_CLOUD_ENROLLED};
+};
+
+IN_PROC_BROWSER_TEST_F(
+    DeviceCommandRebootJobAutoLaunchManagedGuestSessionBrowserTest,
+    RebootsManagedGuestSessionInstantlyWithZeroDelay) {
+  ASSERT_TRUE(ash::LoginState::Get()->IsManagedGuestSessionUser());
+  ASSERT_EQ(
+      chromeos::FakePowerManagerClient::Get()->num_request_restart_calls(), 0);
+
+  em::RemoteCommandResult result =
+      SendRemoteCommand(RemoteCommandBuilder()
+                            .SetType(em::RemoteCommand::DEVICE_REBOOT)
+                            .SetPayload(R"({"user_session_delay_seconds": 0})")
+                            .Build());
 
   EXPECT_EQ(result.result(), em::RemoteCommandResult::RESULT_SUCCESS);
   EXPECT_EQ(
