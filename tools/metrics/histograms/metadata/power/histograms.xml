@@ -250,7 +250,9 @@ chromium-metrics-reviews@google.com.
   <summary>
     See definition of PerformanceMonitor.EnergyImpact2.ProcessName. This is
     recorded every 2 minutes for {UsageScenario} (see
-    go/chrome_power_use_per_scenario).
+    go/chrome_power_use_per_scenario). *NB: This metric will be recorded as all
+    zeros starting in mid-October 2023 as an intermediate step towards
+    retirement.*
   </summary>
   <token key="UsageScenario" variants="UsageScenario"/>
 </histogram>
@@ -272,7 +274,8 @@ chromium-metrics-reviews@google.com.
     that short lived processes will rarely be included in the data. Furthermore,
     we know that short-lived processes are very common (see
     Renderer.ProcessLifetime). A future version of this metric will address this
-    limitation.
+    limitation. *NB: This metric will be recorded as all zeros starting in
+    mid-October 2023 as an intermediate step towards retirement.*
   </summary>
   <token key="ProcessName" variants="ProcessName"/>
 </histogram>
