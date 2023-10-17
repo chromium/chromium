@@ -23,6 +23,14 @@
 #include "components/origin_trials/browser/leveldb_persistence_provider.h"
 #include "components/origin_trials/browser/origin_trials.h"
 #include "components/origin_trials/common/features.h"
+#include "components/pref_registry/pref_registry_syncable.h"
+#include "components/prefs/in_memory_pref_store.h"
+#include "components/prefs/json_pref_store.h"
+#include "components/prefs/pref_registry_simple.h"
+#include "components/prefs/pref_service.h"
+#include "components/prefs/pref_service_factory.h"
+#include "components/prefs/segregated_pref_store.h"
+#include "components/user_prefs/user_prefs.h"
 #include "content/public/browser/browser_task_traits.h"
 #include "content/public/browser/browser_thread.h"
 #include "content/public/browser/origin_trials_controller_delegate.h"
@@ -86,6 +94,38 @@ void WolvicBrowserContext::InitWhileIOAllowed() {
 void WolvicBrowserContext::FinishInitWhileIOAllowed() {
   key_ = std::make_unique<SimpleFactoryKey>(path_, off_the_record_);
   SimpleKeyMap::GetInstance()->Associate(this, key_.get());
+  CreateUserPrefService();
+}
+
+base::FilePath WolvicBrowserContext::GetPrefStorePath() {
+  // TODO(zvoit): Assign path based on profile
+  base::FilePath pref_store_path;
+  base::PathService::Get(base::DIR_ANDROID_APP_DATA, &pref_store_path);
+  pref_store_path =
+      pref_store_path.Append(FILE_PATH_LITERAL("Default/Preferences"));
+
+  return pref_store_path;
+}
+
+void WolvicBrowserContext::CreateUserPrefService() {
+  auto pref_registry = base::MakeRefCounted<user_prefs::PrefRegistrySyncable>();
+
+  PrefNameSet persistent_prefs;
+  RegisterPrefs(pref_registry.get(), &persistent_prefs);
+  PrefServiceFactory pref_service_factory;
+
+  pref_service_factory.set_user_prefs(base::MakeRefCounted<SegregatedPrefStore>(
+      base::MakeRefCounted<InMemoryPrefStore>(),
+      base::MakeRefCounted<JsonPrefStore>(GetPrefStorePath()),
+      std::move(persistent_prefs)));
+
+  user_pref_service_ = pref_service_factory.Create(pref_registry);
+
+  user_prefs::UserPrefs::Set(this, user_pref_service_.get());
+}
+
+void WolvicBrowserContext::RegisterPrefs(PrefRegistrySimple* registry, PrefNameSet* persistent_prefs) {
+  // TODO(zvoit): Register any prefs used by Wolvic here
 }
 
 std::unique_ptr<ZoomLevelDelegate>
