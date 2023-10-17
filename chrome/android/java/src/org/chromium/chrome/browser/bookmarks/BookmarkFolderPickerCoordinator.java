@@ -136,7 +136,6 @@ public class BookmarkFolderPickerCoordinator implements BackPressHandler {
     View buildFolderRow(ViewGroup parent) {
         ImprovedBookmarkRow row = ImprovedBookmarkRow.buildView(parent.getContext(),
                 mBookmarkUiPrefs.getBookmarkRowDisplayPref() == BookmarkRowDisplayPref.VISUAL);
-        row.setSelectionDelegate(mEmptySelectionDelegate);
         return row;
     }
 

@@ -21,20 +21,15 @@ import androidx.annotation.Nullable;
 import androidx.annotation.VisibleForTesting;
 
 import org.chromium.chrome.R;
-import org.chromium.components.bookmarks.BookmarkId;
 import org.chromium.components.browser_ui.widget.RoundedCornerOutlineProvider;
 import org.chromium.components.browser_ui.widget.listmenu.ListMenuButton;
 import org.chromium.components.browser_ui.widget.listmenu.ListMenuButton.PopupMenuShownListener;
 import org.chromium.components.browser_ui.widget.listmenu.ListMenuButtonDelegate;
-import org.chromium.components.browser_ui.widget.selectable_list.SelectableItemViewBase;
 import org.chromium.components.browser_ui.widget.selectable_list.SelectableListUtils;
+import org.chromium.ui.widget.ViewLookupCachingFrameLayout;
 
-/**
- * Common logic for improved bookmark and folder rows.
- */
-// TODO(crbug.com/): Make selection delegate optional for this class and remove
-// SelectableItemViewBase inheritance. It's no longer needed.
-public class ImprovedBookmarkRow extends SelectableItemViewBase<BookmarkId> {
+/** Common logic for improved bookmark and folder rows. */
+public class ImprovedBookmarkRow extends ViewLookupCachingFrameLayout {
     /**
      * The base duration of the settling animation of the sheet. 218 ms is a spec for material
      * design (this is the minimum time a user is guaranteed to pay attention to something).
@@ -64,6 +59,7 @@ public class ImprovedBookmarkRow extends SelectableItemViewBase<BookmarkId> {
     private boolean mBookmarkIdEditable;
     private boolean mMoreButtonVisible;
     private boolean mSelectionEnabled;
+    private boolean mIsSelected;
 
     /**
      * Factory constructor for building the view programmatically.
@@ -187,7 +183,8 @@ public class ImprovedBookmarkRow extends SelectableItemViewBase<BookmarkId> {
     }
 
     void setIsSelected(boolean selected) {
-        setChecked(selected);
+        mIsSelected = selected;
+        updateView();
     }
 
     void setSelectionEnabled(boolean selectionEnabled) {
@@ -197,16 +194,18 @@ public class ImprovedBookmarkRow extends SelectableItemViewBase<BookmarkId> {
         mMoreButton.setImportantForAccessibility(!selectionEnabled
                         ? IMPORTANT_FOR_ACCESSIBILITY_YES
                         : IMPORTANT_FOR_ACCESSIBILITY_NO);
-        updateView(false);
+        updateView();
     }
 
+    // TODO: Maybe this can be removed.
     void setDragEnabled(boolean dragEnabled) {
         mDragEnabled = dragEnabled;
     }
 
+    // TODO: Maybe this can be removed.
     void setBookmarkIdEditable(boolean bookmarkIdEditable) {
         mBookmarkIdEditable = bookmarkIdEditable;
-        updateView(false);
+        updateView();
     }
 
     void setFolderCoordinator(ImprovedBookmarkFolderViewCoordinator folderCoordinator) {
@@ -228,28 +227,23 @@ public class ImprovedBookmarkRow extends SelectableItemViewBase<BookmarkId> {
     void setEndMenuVisible(boolean visible) {
         mMoreButtonVisible = visible;
         mMoreButton.setVisibility(visible ? View.VISIBLE : View.GONE);
-        updateView(false);
     }
 
     void setEndImageRes(int res) {
         mEndImageView.setImageResource(res);
     }
 
-    // SelectableItemViewBase implementation.
+    void updateView() {
+        mContainer.setBackgroundResource(
+                mIsSelected
+                        ? R.drawable.rounded_rectangle_surface_1
+                        : R.drawable.rounded_rectangle_surface_0);
 
-    @Override
-    protected void updateView(boolean animate) {
-        boolean selected = isChecked();
-        mContainer.setBackgroundResource(selected ? R.drawable.rounded_rectangle_surface_1
-                                                  : R.drawable.rounded_rectangle_surface_0);
-
-        boolean checkVisible = mSelectionEnabled && selected;
-        boolean moreVisible = mMoreButtonVisible && !selected && mBookmarkIdEditable;
+        boolean checkVisible = mSelectionEnabled && mIsSelected;
+        boolean moreVisible = mMoreButtonVisible && !mIsSelected && mBookmarkIdEditable;
         mCheckImageView.setVisibility(checkVisible ? View.VISIBLE : View.GONE);
         mMoreButton.setVisibility(moreVisible ? View.VISIBLE : View.GONE);
     }
-    @Override
-    protected void onClick() {}
 
     ImprovedBookmarkFolderView getFolderView() {
         return mFolderIconView;

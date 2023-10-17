@@ -832,6 +832,28 @@ public class BookmarkManagerMediatorTest {
 
     @Test
     @EnableFeatures(ChromeFeatureList.ANDROID_IMPROVED_BOOKMARKS)
+    public void testBuildImprovedBookmarkRow_SelectionStateCarriedOver() {
+        doReturn(true).when(mSelectionDelegate).isItemSelected(mBookmarkItem21.getId());
+        ListItem item =
+                mMediator.buildImprovedBookmarkRow(
+                        BookmarkListEntry.createBookmarkEntry(
+                                mBookmarkItem21,
+                                null,
+                                mBookmarkUiPrefs.getBookmarkRowDisplayPref()));
+        assertTrue(item.model.get(ImprovedBookmarkRowProperties.SELECTED));
+
+        doReturn(false).when(mSelectionDelegate).isItemSelected(mBookmarkItem21.getId());
+        item =
+                mMediator.buildImprovedBookmarkRow(
+                        BookmarkListEntry.createBookmarkEntry(
+                                mBookmarkItem21,
+                                null,
+                                mBookmarkUiPrefs.getBookmarkRowDisplayPref()));
+        assertFalse(item.model.get(ImprovedBookmarkRowProperties.SELECTED));
+    }
+
+    @Test
+    @EnableFeatures(ChromeFeatureList.ANDROID_IMPROVED_BOOKMARKS)
     public void testBuildImprovedBookmarkRow_Shopping() {
         ShoppingSpecifics specifics = ShoppingSpecifics.newBuilder()
                                               .setCurrentPrice(ProductPrice.newBuilder()
@@ -1483,6 +1505,13 @@ public class BookmarkManagerMediatorTest {
 
         assertTrue(mModelList.get(1).model.get(ImprovedBookmarkRowProperties.SELECTION_ACTIVE));
         assertTrue(mModelList.get(2).model.get(ImprovedBookmarkRowProperties.SELECTION_ACTIVE));
+
+        mModelList.get(1).model.set(ImprovedBookmarkRowProperties.SELECTED, true);
+        mMediator.changeSelectionMode(false);
+
+        assertFalse(mModelList.get(1).model.get(ImprovedBookmarkRowProperties.SELECTION_ACTIVE));
+        assertFalse(mModelList.get(2).model.get(ImprovedBookmarkRowProperties.SELECTED));
+        assertFalse(mModelList.get(2).model.get(ImprovedBookmarkRowProperties.SELECTION_ACTIVE));
     }
 
     @Test

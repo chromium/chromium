@@ -302,7 +302,6 @@ public class BookmarkEditActivity extends SynchronousInitializationActivity {
 
         mFolderSelectRow =
                 ImprovedBookmarkRow.buildView(this, displayPref == BookmarkRowDisplayPref.VISUAL);
-        mFolderSelectRow.setSelectionDelegate(mEmptySelectionDelegate);
         PropertyModelChangeProcessor.create(
                 propertyModel, mFolderSelectRow, ImprovedBookmarkRowViewBinder::bind);
 

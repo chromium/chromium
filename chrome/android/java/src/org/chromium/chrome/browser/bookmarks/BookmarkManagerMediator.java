@@ -1238,7 +1238,9 @@ class BookmarkManagerMediator
         propertyModel.set(ImprovedBookmarkRowProperties.LIST_MENU_BUTTON_DELEGATE,
                 () -> createListMenuForBookmark(propertyModel));
         propertyModel.set(ImprovedBookmarkRowProperties.SELECTION_ACTIVE, mIsSelectionEnabled);
-        propertyModel.set(ImprovedBookmarkRowProperties.SELECTED, false);
+        propertyModel.set(
+                ImprovedBookmarkRowProperties.SELECTED,
+                mSelectionDelegate.isItemSelected(bookmarkId));
 
         propertyModel.set(ImprovedBookmarkRowProperties.ROW_CLICK_LISTENER,
                 (v) -> { bookmarkRowClicked(bookmarkId); });
@@ -1496,6 +1498,10 @@ class BookmarkManagerMediator
             // TODO(crbug.com/1473108): Consider using RecyclerView decorations for section headers.
             if (mModelList.get(i).type == ViewType.SECTION_HEADER) continue;
             PropertyModel model = mModelList.get(i).model;
+
+            BookmarkId id = model.get(BookmarkManagerProperties.BOOKMARK_ID);
+            model.set(
+                    ImprovedBookmarkRowProperties.SELECTED, mSelectionDelegate.isItemSelected(id));
             model.set(ImprovedBookmarkRowProperties.SELECTION_ACTIVE, mIsSelectionEnabled);
         }
     }

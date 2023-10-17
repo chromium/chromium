@@ -54,8 +54,6 @@ public class ImprovedBookmarkRowViewBinder {
         } else if (key == ImprovedBookmarkRowProperties.ROW_LONG_CLICK_LISTENER) {
             row.setRowLongClickListener(
                     model.get(ImprovedBookmarkRowProperties.ROW_LONG_CLICK_LISTENER));
-        } else if (key == BookmarkManagerProperties.BOOKMARK_ID) {
-            row.setItem(model.get(BookmarkManagerProperties.BOOKMARK_ID));
         } else if (key == ImprovedBookmarkRowProperties.END_IMAGE_VISIBILITY) {
             int endImageVisibility = model.get(ImprovedBookmarkRowProperties.END_IMAGE_VISIBILITY);
             assert endImageVisibility != ImageVisibility.FOLDER_DRAWABLE;

@@ -220,12 +220,18 @@ public class BookmarkManagerCoordinator
         dragReorderableRecyclerViewAdapter.registerType(ViewType.SHOPPING_FILTER,
                 BookmarkManagerCoordinator::buildShoppingFilterView,
                 BookmarkManagerViewBinder::bindShoppingFilterView);
-        dragReorderableRecyclerViewAdapter.registerDraggableType(ViewType.IMPROVED_BOOKMARK_VISUAL,
-                this::buildAndInitVisualImprovedBookmarkRow, ImprovedBookmarkRowViewBinder::bind,
-                (viewHolder, itemTouchHelper) -> {}, mMediator.getDraggabilityProvider());
-        dragReorderableRecyclerViewAdapter.registerDraggableType(ViewType.IMPROVED_BOOKMARK_COMPACT,
-                this::buildAndInitCompactImprovedBookmarkRow, ImprovedBookmarkRowViewBinder::bind,
-                (viewHolder, itemTouchHelper) -> {}, mMediator.getDraggabilityProvider());
+        dragReorderableRecyclerViewAdapter.registerDraggableType(
+                ViewType.IMPROVED_BOOKMARK_VISUAL,
+                this::buildVisualImprovedBookmarkRow,
+                ImprovedBookmarkRowViewBinder::bind,
+                (viewHolder, itemTouchHelper) -> {},
+                mMediator.getDraggabilityProvider());
+        dragReorderableRecyclerViewAdapter.registerDraggableType(
+                ViewType.IMPROVED_BOOKMARK_COMPACT,
+                this::buildCompactImprovedBookmarkRow,
+                ImprovedBookmarkRowViewBinder::bind,
+                (viewHolder, itemTouchHelper) -> {},
+                mMediator.getDraggabilityProvider());
         dragReorderableRecyclerViewAdapter.registerType(ViewType.SEARCH_BOX,
                 this::buildSearchBoxRow, BookmarkSearchBoxRowViewBinder.createViewBinder());
 
@@ -371,15 +377,13 @@ public class BookmarkManagerCoordinator
         return inflate(parent, R.layout.shopping_filter_row);
     }
 
-    ImprovedBookmarkRow buildAndInitCompactImprovedBookmarkRow(ViewGroup parent) {
+    ImprovedBookmarkRow buildCompactImprovedBookmarkRow(ViewGroup parent) {
         ImprovedBookmarkRow row = ImprovedBookmarkRow.buildView(parent.getContext(), false);
-        row.setSelectionDelegate(mSelectionDelegate);
         return row;
     }
 
-    ImprovedBookmarkRow buildAndInitVisualImprovedBookmarkRow(ViewGroup parent) {
+    ImprovedBookmarkRow buildVisualImprovedBookmarkRow(ViewGroup parent) {
         ImprovedBookmarkRow row = ImprovedBookmarkRow.buildView(parent.getContext(), true);
-        row.setSelectionDelegate(mSelectionDelegate);
         return row;
     }
 
