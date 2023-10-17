@@ -44,6 +44,14 @@ class TrackingProtectionOnboarding : public KeyedService {
     kMaxValue = kClosed,
   };
 
+  enum class NoticeType {
+    kNone,
+    // The notice in question is an Onboarding Notice.
+    kOnboarding,
+    // The notice in question is an offboarding/rollback notice.
+    kOffboarding
+  };
+
   class Observer {
    public:
     // Fired when a profile is onboarded (shown the TrackingProtection
@@ -80,10 +88,20 @@ class TrackingProtectionOnboarding : public KeyedService {
   bool IsOffboarded() const;
 
   // To be Called by UI code when the user has been shown the notice.
-  void OnboardingNoticeShown();
+  void NoticeShown(NoticeType notice_type);
 
   // To be called by UI code when the user has taken action on the notice.
+  void NoticeActionTaken(NoticeType notice_type, NoticeAction action);
+
+  // Called by UI code to determine what type of notice is required.
+  NoticeType GetRequiredNotice();
+
+  // To be called by UI code when the user has taken action on the onboarding
+  // notice.
   void OnboardingNoticeActionTaken(NoticeAction action);
+
+  // To be Called by UI code when the user has been shown the onboarding notice.
+  void OnboardingNoticeShown();
 
   // Called by UI code to determine if we should show the onboarding notice to
   // the user.

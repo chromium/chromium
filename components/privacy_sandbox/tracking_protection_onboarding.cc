@@ -21,6 +21,8 @@ using ::privacy_sandbox::tracking_protection::
 using ::privacy_sandbox::tracking_protection::
     TrackingProtectionOnboardingStatus;
 
+using NoticeType = privacy_sandbox::TrackingProtectionOnboarding::NoticeType;
+
 TrackingProtectionOnboardingStatus GetInternalOnboardingStatus(
     PrefService* pref_service) {
   return static_cast<TrackingProtectionOnboardingStatus>(
@@ -146,6 +148,13 @@ void TrackingProtectionOnboarding::MaybeMarkIneligible() {
 }
 
 void TrackingProtectionOnboarding::OnboardingNoticeShown() {
+  NoticeShown(NoticeType::kOnboarding);
+}
+
+void TrackingProtectionOnboarding::NoticeShown(NoticeType notice_type) {
+  if (notice_type != NoticeType::kOnboarding) {
+    return;
+  }
   base::RecordAction(
       base::UserMetricsAction("TrackingProtection.Notice.Shown"));
 
@@ -165,7 +174,15 @@ void TrackingProtectionOnboarding::OnboardingNoticeShown() {
 }
 
 void TrackingProtectionOnboarding::OnboardingNoticeActionTaken(
-    TrackingProtectionOnboarding::NoticeAction action) {
+    NoticeAction action) {
+  NoticeActionTaken(NoticeType::kOnboarding, action);
+}
+
+void TrackingProtectionOnboarding::NoticeActionTaken(NoticeType notice_type,
+                                                     NoticeAction action) {
+  if (notice_type != NoticeType::kOnboarding) {
+    return;
+  }
   RecordActionMetrics(action);
 
   if (pref_service_->GetBoolean(prefs::kTrackingProtectionOnboardingAcked)) {
@@ -178,15 +195,21 @@ void TrackingProtectionOnboarding::OnboardingNoticeActionTaken(
 }
 
 bool TrackingProtectionOnboarding::ShouldShowOnboardingNotice() {
+  return GetRequiredNotice() == NoticeType::kOnboarding;
+}
+
+NoticeType TrackingProtectionOnboarding::GetRequiredNotice() {
   auto onboarding_status = GetInternalOnboardingStatus(pref_service_);
   switch (onboarding_status) {
     case TrackingProtectionOnboardingStatus::kIneligible:
-      return false;
+      return NoticeType::kNone;
     case TrackingProtectionOnboardingStatus::kEligible:
-      return true;
+      return NoticeType::kOnboarding;
     case TrackingProtectionOnboardingStatus::kOnboarded:
-      return !pref_service_->GetBoolean(
-          prefs::kTrackingProtectionOnboardingAcked);
+      return pref_service_->GetBoolean(
+                 prefs::kTrackingProtectionOnboardingAcked)
+                 ? NoticeType::kNone
+                 : NoticeType::kOnboarding;
   }
 }
 
