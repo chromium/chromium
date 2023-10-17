@@ -353,6 +353,11 @@ def _TestTargetsFromGnRefs(targets):
   return ret
 
 
+# TODO(b/305968611) remove when goma is deprecated.
+def _IsGomaNotice(target):
+  return target.startswith('The gn arg use_goma=true will be deprecated')
+
+
 def FindTestTargets(target_cache, out_dir, paths, run_all):
   # Normalize paths, so they can be cached.
   paths = [os.path.realpath(p) for p in paths]
@@ -383,6 +388,7 @@ def FindTestTargets(target_cache, out_dir, paths, run_all):
         f' one of the following targets to _TEST_TARGET_ALLOWLIST within '
         f'{__file__}: \n' + '\n'.join(targets))
 
+  test_targets = [t for t in test_targets if not _IsGomaNotice(t)]
   test_targets.sort()
   target_cache.Store(paths, test_targets)
   target_cache.Save()
