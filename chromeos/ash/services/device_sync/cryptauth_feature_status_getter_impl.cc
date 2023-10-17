@@ -32,15 +32,13 @@ namespace {
 constexpr base::TimeDelta kWaitingForBatchGetFeatureStatusesResponseTimeout =
     kMaxAsyncExecutionTime;
 
-constexpr std::array<multidevice::SoftwareFeature, 16> kAllSoftwareFeatures = {
+constexpr std::array<multidevice::SoftwareFeature, 14> kAllSoftwareFeatures = {
     multidevice::SoftwareFeature::kBetterTogetherHost,
     multidevice::SoftwareFeature::kBetterTogetherClient,
     multidevice::SoftwareFeature::kSmartLockHost,
     multidevice::SoftwareFeature::kSmartLockClient,
     multidevice::SoftwareFeature::kInstantTetheringHost,
     multidevice::SoftwareFeature::kInstantTetheringClient,
-    multidevice::SoftwareFeature::kMessagesForWebHost,
-    multidevice::SoftwareFeature::kMessagesForWebClient,
     multidevice::SoftwareFeature::kPhoneHubHost,
     multidevice::SoftwareFeature::kPhoneHubClient,
     multidevice::SoftwareFeature::kWifiSyncHost,

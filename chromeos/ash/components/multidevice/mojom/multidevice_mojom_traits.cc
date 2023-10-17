@@ -173,10 +173,6 @@ EnumTraits<ash::multidevice::mojom::SoftwareFeature,
       return ash::multidevice::mojom::SoftwareFeature::MAGIC_TETHER_HOST;
     case ash::multidevice::SoftwareFeature::kInstantTetheringClient:
       return ash::multidevice::mojom::SoftwareFeature::MAGIC_TETHER_CLIENT;
-    case ash::multidevice::SoftwareFeature::kMessagesForWebHost:
-      return ash::multidevice::mojom::SoftwareFeature::SMS_CONNECT_HOST;
-    case ash::multidevice::SoftwareFeature::kMessagesForWebClient:
-      return ash::multidevice::mojom::SoftwareFeature::SMS_CONNECT_CLIENT;
     case ash::multidevice::SoftwareFeature::kPhoneHubHost:
       return ash::multidevice::mojom::SoftwareFeature::PHONE_HUB_HOST;
     case ash::multidevice::SoftwareFeature::kPhoneHubClient:
@@ -223,12 +219,6 @@ bool EnumTraits<ash::multidevice::mojom::SoftwareFeature,
       return true;
     case ash::multidevice::mojom::SoftwareFeature::MAGIC_TETHER_CLIENT:
       *out = ash::multidevice::SoftwareFeature::kInstantTetheringClient;
-      return true;
-    case ash::multidevice::mojom::SoftwareFeature::SMS_CONNECT_HOST:
-      *out = ash::multidevice::SoftwareFeature::kMessagesForWebHost;
-      return true;
-    case ash::multidevice::mojom::SoftwareFeature::SMS_CONNECT_CLIENT:
-      *out = ash::multidevice::SoftwareFeature::kMessagesForWebClient;
       return true;
     case ash::multidevice::mojom::SoftwareFeature::PHONE_HUB_HOST:
       *out = ash::multidevice::SoftwareFeature::kPhoneHubHost;

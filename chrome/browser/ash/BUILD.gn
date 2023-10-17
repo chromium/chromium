@@ -4958,7 +4958,6 @@ source_set("unit_tests") {
     "account_manager/account_manager_edu_coexistence_controller_unittest.cc",
     "android_sms/android_sms_app_manager_impl_unittest.cc",
     "android_sms/android_sms_app_setup_controller_impl_unittest.cc",
-    "android_sms/connection_manager_unittest.cc",
     "android_sms/fcm_connection_establisher_unittest.cc",
     "app_list/app_context_menu_unittest.cc",
     "app_list/app_list_sort_unittest.cc",

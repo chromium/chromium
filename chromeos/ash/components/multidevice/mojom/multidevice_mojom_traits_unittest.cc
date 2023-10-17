@@ -91,8 +91,6 @@ TEST(DeviceSyncMojomEnumTraitsTest, SoftwareFeature) {
       ash::multidevice::SoftwareFeature::kSmartLockClient,
       ash::multidevice::SoftwareFeature::kInstantTetheringHost,
       ash::multidevice::SoftwareFeature::kInstantTetheringClient,
-      ash::multidevice::SoftwareFeature::kMessagesForWebHost,
-      ash::multidevice::SoftwareFeature::kMessagesForWebClient,
       ash::multidevice::SoftwareFeature::kPhoneHubHost,
       ash::multidevice::SoftwareFeature::kPhoneHubClient,
       ash::multidevice::SoftwareFeature::kWifiSyncHost,

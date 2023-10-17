@@ -28,8 +28,7 @@ namespace {
 // Software features which, when enabled, represent a verified host.
 constexpr const multidevice::SoftwareFeature kPotentialHostFeatures[] = {
     multidevice::SoftwareFeature::kSmartLockHost,
-    multidevice::SoftwareFeature::kInstantTetheringHost,
-    multidevice::SoftwareFeature::kMessagesForWebHost};
+    multidevice::SoftwareFeature::kInstantTetheringHost};
 
 // Name of the preference containing the time (in milliseconds since Unix
 // epoch) at which a verification attempt should be retried. If the preference

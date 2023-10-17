@@ -43,8 +43,7 @@ const int64_t kTestTimeMs = 1500000000000;
 
 constexpr const multidevice::SoftwareFeature kPotentialHostSoftwareFeatures[] =
     {multidevice::SoftwareFeature::kSmartLockHost,
-     multidevice::SoftwareFeature::kInstantTetheringHost,
-     multidevice::SoftwareFeature::kMessagesForWebHost};
+     multidevice::SoftwareFeature::kInstantTetheringHost};
 
 const char kRetryTimestampPrefName[] =
     "multidevice_setup.current_retry_timestamp_ms";

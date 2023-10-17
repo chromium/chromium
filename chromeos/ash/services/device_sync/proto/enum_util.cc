@@ -79,12 +79,6 @@ std::ostream& operator<<(std::ostream& stream,
     case cryptauth::SoftwareFeature::MAGIC_TETHER_CLIENT:
       stream << "[Instant Tethering client]";
       break;
-    case cryptauth::SoftwareFeature::SMS_CONNECT_HOST:
-      stream << "[SMS Connect host]";
-      break;
-    case cryptauth::SoftwareFeature::SMS_CONNECT_CLIENT:
-      stream << "[SMS Connect client]";
-      break;
     case cryptauth::SoftwareFeature::PHONE_HUB_HOST:
       stream << "[Phone Hub host]";
       break;
@@ -130,10 +124,6 @@ cryptauth::SoftwareFeature SoftwareFeatureStringToEnum(
     return cryptauth::SoftwareFeature::MAGIC_TETHER_HOST;
   if (software_feature_as_string == "magicTetherClient")
     return cryptauth::SoftwareFeature::MAGIC_TETHER_CLIENT;
-  if (software_feature_as_string == "smsConnectHost")
-    return cryptauth::SoftwareFeature::SMS_CONNECT_HOST;
-  if (software_feature_as_string == "smsConnectClient")
-    return cryptauth::SoftwareFeature::SMS_CONNECT_CLIENT;
   if (software_feature_as_string == "phoneHubHost")
     return cryptauth::SoftwareFeature::PHONE_HUB_HOST;
   if (software_feature_as_string == "phoneHubClient")
@@ -165,10 +155,6 @@ std::string SoftwareFeatureEnumToString(
       return "magicTetherHost";
     case cryptauth::SoftwareFeature::MAGIC_TETHER_CLIENT:
       return "magicTetherClient";
-    case cryptauth::SoftwareFeature::SMS_CONNECT_HOST:
-      return "smsConnectHost";
-    case cryptauth::SoftwareFeature::SMS_CONNECT_CLIENT:
-      return "smsConnectClient";
     case cryptauth::SoftwareFeature::PHONE_HUB_HOST:
       return "phoneHubHost";
     case cryptauth::SoftwareFeature::PHONE_HUB_CLIENT:
@@ -201,10 +187,6 @@ std::string SoftwareFeatureEnumToStringAllCaps(
       return "MAGIC_TETHER_HOST";
     case cryptauth::SoftwareFeature::MAGIC_TETHER_CLIENT:
       return "MAGIC_TETHER_CLIENT";
-    case cryptauth::SoftwareFeature::SMS_CONNECT_HOST:
-      return "SMS_CONNECT_HOST";
-    case cryptauth::SoftwareFeature::SMS_CONNECT_CLIENT:
-      return "SMS_CONNECT_CLIENT";
     case cryptauth::SoftwareFeature::PHONE_HUB_HOST:
       return "PHONE_HUB_HOST";
     case cryptauth::SoftwareFeature::PHONE_HUB_CLIENT:

@@ -23,10 +23,6 @@ SoftwareFeature FromCryptAuthFeature(
       return SoftwareFeature::kInstantTetheringHost;
     case cryptauth::SoftwareFeature::MAGIC_TETHER_CLIENT:
       return SoftwareFeature::kInstantTetheringClient;
-    case cryptauth::SoftwareFeature::SMS_CONNECT_HOST:
-      return SoftwareFeature::kMessagesForWebHost;
-    case cryptauth::SoftwareFeature::SMS_CONNECT_CLIENT:
-      return SoftwareFeature::kMessagesForWebClient;
     case cryptauth::SoftwareFeature::PHONE_HUB_HOST:
       return SoftwareFeature::kPhoneHubHost;
     case cryptauth::SoftwareFeature::PHONE_HUB_CLIENT:
@@ -67,10 +63,6 @@ cryptauth::SoftwareFeature ToCryptAuthFeature(
       return cryptauth::SoftwareFeature::MAGIC_TETHER_HOST;
     case SoftwareFeature::kInstantTetheringClient:
       return cryptauth::SoftwareFeature::MAGIC_TETHER_CLIENT;
-    case SoftwareFeature::kMessagesForWebHost:
-      return cryptauth::SoftwareFeature::SMS_CONNECT_HOST;
-    case SoftwareFeature::kMessagesForWebClient:
-      return cryptauth::SoftwareFeature::SMS_CONNECT_CLIENT;
     case SoftwareFeature::kPhoneHubHost:
       return cryptauth::SoftwareFeature::PHONE_HUB_HOST;
     case SoftwareFeature::kPhoneHubClient:
@@ -112,12 +104,6 @@ std::ostream& operator<<(std::ostream& stream, const SoftwareFeature& feature) {
       break;
     case SoftwareFeature::kInstantTetheringClient:
       stream << "[Instant Tethering client]";
-      break;
-    case SoftwareFeature::kMessagesForWebHost:
-      stream << "[Messages for Web host]";
-      break;
-    case SoftwareFeature::kMessagesForWebClient:
-      stream << "[Messages for Web client]";
       break;
     case SoftwareFeature::kPhoneHubHost:
       stream << "[Phone Hub host]";

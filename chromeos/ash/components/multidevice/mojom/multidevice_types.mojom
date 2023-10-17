@@ -29,10 +29,7 @@ enum SoftwareFeature {
   MAGIC_TETHER_HOST = 5,
   MAGIC_TETHER_CLIENT = 6,
 
-  // SMS Connect gives users the ability to read and reply to their text
-  // messages from their Chromebooks.
-  SMS_CONNECT_HOST = 7,
-  SMS_CONNECT_CLIENT = 8,
+  // 7 and 8 are deprecated.
 
   // Phone Hub allows users to view phone metadata and send commands to their
   // phone directly from the Chrome OS UI.

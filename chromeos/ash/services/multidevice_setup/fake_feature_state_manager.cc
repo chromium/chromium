@@ -18,8 +18,6 @@ FeatureStateManager::FeatureStatesMap GenerateInitialDefaultCachedStateMap() {
        mojom::FeatureState::kUnavailableNoVerifiedHost_NoEligibleHosts},
       {mojom::Feature::kInstantTethering,
        mojom::FeatureState::kUnavailableNoVerifiedHost_NoEligibleHosts},
-      {mojom::Feature::kMessages,
-       mojom::FeatureState::kUnavailableNoVerifiedHost_NoEligibleHosts},
       {mojom::Feature::kSmartLock,
        mojom::FeatureState::kUnavailableNoVerifiedHost_NoEligibleHosts}};
 }

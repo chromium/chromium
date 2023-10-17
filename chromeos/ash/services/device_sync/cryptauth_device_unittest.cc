@@ -35,9 +35,7 @@ TEST(DeviceSyncCryptAuthDevice, ToAndFromDictionary) {
           {multidevice::SoftwareFeature::kBetterTogetherClient,
            multidevice::SoftwareFeatureState::kEnabled},
           {multidevice::SoftwareFeature::kBetterTogetherHost,
-           multidevice::SoftwareFeatureState::kNotSupported},
-          {multidevice::SoftwareFeature::kMessagesForWebClient,
-           multidevice::SoftwareFeatureState::kSupported}};
+           multidevice::SoftwareFeatureState::kNotSupported}};
 
   CryptAuthDevice expected_device(
       kFakeInstanceId, kFakeDeviceName, kFakeDeviceBetterTogetherPublicKey,

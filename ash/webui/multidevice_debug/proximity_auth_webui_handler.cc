@@ -36,8 +36,6 @@ constexpr const multidevice::SoftwareFeature kAllSoftareFeatures[] = {
     multidevice::SoftwareFeature::kSmartLockClient,
     multidevice::SoftwareFeature::kInstantTetheringHost,
     multidevice::SoftwareFeature::kInstantTetheringClient,
-    multidevice::SoftwareFeature::kMessagesForWebHost,
-    multidevice::SoftwareFeature::kMessagesForWebClient,
     multidevice::SoftwareFeature::kPhoneHubHost,
     multidevice::SoftwareFeature::kPhoneHubClient,
     multidevice::SoftwareFeature::kWifiSyncHost,

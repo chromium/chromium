@@ -37,10 +37,7 @@ enum class SoftwareFeature {
   kInstantTetheringHost = 5,
   kInstantTetheringClient = 6,
 
-  // Messages for Web, which gives the user the ability to sync messages (e.g.,
-  // SMS) between an Android phone and a Chromebook.
-  kMessagesForWebHost = 7,
-  kMessagesForWebClient = 8,
+  // 7 and 8 are deprecated.
 
   // Phone Hub, which allows users to view phone metadata and send commands to
   // their phone directly from the Chrome OS UI.
