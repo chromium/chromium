@@ -74,7 +74,7 @@ source_set("model") {
     "//ios/chrome/browser/metrics:google_groups_updater",
     "//ios/chrome/browser/passwords/model:sharing_factory",
     "//ios/chrome/browser/passwords/model:store_factory",
-    "//ios/chrome/browser/power_bookmarks",
+    "//ios/chrome/browser/power_bookmarks/model",
     "//ios/chrome/browser/reading_list/model",
     "//ios/chrome/browser/search_engines",
     "//ios/chrome/browser/sessions",

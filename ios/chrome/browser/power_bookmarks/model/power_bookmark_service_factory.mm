@@ -2,7 +2,7 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#import "ios/chrome/browser/power_bookmarks/power_bookmark_service_factory.h"
+#import "ios/chrome/browser/power_bookmarks/model/power_bookmark_service_factory.h"
 
 #import "base/task/thread_pool.h"
 #import "components/keyed_service/ios/browser_state_dependency_manager.h"

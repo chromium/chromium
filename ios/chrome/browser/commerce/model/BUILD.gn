@@ -48,7 +48,7 @@ static_library("shopping_service") {
     "//ios/chrome/browser/bookmarks/model",
     "//ios/chrome/browser/history",
     "//ios/chrome/browser/optimization_guide",
-    "//ios/chrome/browser/power_bookmarks",
+    "//ios/chrome/browser/power_bookmarks/model",
     "//ios/chrome/browser/shared/model/application_context",
     "//ios/chrome/browser/shared/model/browser_state",
     "//ios/chrome/browser/signin:signin",
