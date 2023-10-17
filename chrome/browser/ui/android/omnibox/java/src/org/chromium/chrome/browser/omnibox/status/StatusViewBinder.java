@@ -12,9 +12,7 @@ import org.chromium.ui.modelutil.PropertyKey;
 import org.chromium.ui.modelutil.PropertyModel;
 import org.chromium.ui.modelutil.PropertyModelChangeProcessor.ViewBinder;
 
-/**
- * StatusViewBinder observes StatusModel changes and triggers StatusView updates.
- */
+/** StatusViewBinder observes StatusModel changes and triggers StatusView updates. */
 class StatusViewBinder implements ViewBinder<PropertyModel, StatusView, PropertyKey> {
     StatusViewBinder() {}
 
@@ -44,7 +42,7 @@ class StatusViewBinder implements ViewBinder<PropertyModel, StatusView, Property
             view.setStatusAccessibilityToast(
                     model.get(StatusProperties.STATUS_ACCESSIBILITY_TOAST_RES));
         } else if (StatusProperties.STATUS_ACCESSIBILITY_DOUBLE_TAP_DESCRIPTION_RES.equals(
-                           propertyKey)) {
+                propertyKey)) {
             view.setStatusAccessibilityDoubleTapDescription(
                     model.get(StatusProperties.STATUS_ACCESSIBILITY_DOUBLE_TAP_DESCRIPTION_RES));
         } else if (StatusProperties.STATUS_ICON_ALPHA.equals(propertyKey)) {
@@ -57,8 +55,10 @@ class StatusViewBinder implements ViewBinder<PropertyModel, StatusView, Property
                 view.setStatusIconResources(null, StatusView.IconTransitionType.CROSSFADE, null);
                 return;
             }
-            view.setStatusIconResources(res.getDrawable(view.getContext(), view.getResources()),
-                    res.getTransitionType(), res.getAnimationFinishedCallback());
+            view.setStatusIconResources(
+                    res.getDrawable(view.getContext(), view.getResources()),
+                    res.getTransitionType(),
+                    res.getAnimationFinishedCallback());
         } else if (StatusProperties.TRANSLATION_X.equals(propertyKey)) {
             view.setTranslationX(model.get(StatusProperties.TRANSLATION_X));
         } else if (StatusProperties.VERBOSE_STATUS_TEXT_COLOR.equals(propertyKey)) {

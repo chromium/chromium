@@ -70,13 +70,17 @@ public class StatusProperties {
             mTint = tint;
         }
 
-        /** @return The tint associated with this resource. */
+        /**
+         * @return The tint associated with this resource.
+         */
         @ColorRes
         int getTint() {
             return mTint;
         }
 
-        /** @return The icon res. */
+        /**
+         * @return The icon res.
+         */
         @DrawableRes
         int getIconResForTesting() {
             if (mIconRes == null) return 0;
@@ -88,13 +92,17 @@ public class StatusProperties {
             mIconTransitionType = type;
         }
 
-        /** @return The animation transition type for this icon. */
+        /**
+         * @return The animation transition type for this icon.
+         */
         @StatusView.IconTransitionType
         int getTransitionType() {
             return mIconTransitionType;
         }
 
-        /** @return The {@link Drawable} for this StatusIconResource. */
+        /**
+         * @return The {@link Drawable} for this StatusIconResource.
+         */
         Drawable getDrawable(Context context, Resources resources) {
             if (mBitmap != null) {
                 Drawable drawable = new BitmapDrawable(resources, mBitmap);
@@ -115,7 +123,9 @@ public class StatusProperties {
             }
         }
 
-        /** @return The icon identifier, used for testing. */
+        /**
+         * @return The icon identifier, used for testing.
+         */
         @Nullable
         String getIconIdentifierForTesting() {
             return mIconIdentifier;
@@ -136,14 +146,17 @@ public class StatusProperties {
 
         /**
          * Sets the callback to be run after this icon has been set.
-         * @param callback  The Runnable to be called. Only works for the ROTATE transition and
-         *                  called if the animation has run to completion.
+         *
+         * @param callback The Runnable to be called. Only works for the ROTATE transition and
+         *     called if the animation has run to completion.
          */
         void setAnimationFinishedCallback(Runnable callback) {
             mCallback = callback;
         }
 
-        /** @return the callback to be run after this icon has been set, if any. */
+        /**
+         * @return the callback to be run after this icon has been set, if any.
+         */
         @Nullable
         Runnable getAnimationFinishedCallback() {
             return mCallback;
@@ -203,9 +216,10 @@ public class StatusProperties {
             float radius = 0.5f * canvas.getWidth();
             Paint paint = new Paint();
             // Use the dark mode color if in incognito mode.
-            final @ColorInt int color = mIsIncognito
-                    ? context.getColor(R.color.toolbar_background_primary_dark)
-                    : SemanticColorUtils.getToolbarBackgroundPrimary(context);
+            final @ColorInt int color =
+                    mIsIncognito
+                            ? context.getColor(R.color.toolbar_background_primary_dark)
+                            : SemanticColorUtils.getToolbarBackgroundPrimary(context);
             paint.setColor(color);
             paint.setAntiAlias(true);
             canvas.drawCircle(radius, radius, radius, paint);
@@ -278,27 +292,28 @@ public class StatusProperties {
     static final WritableIntPropertyKey VERBOSE_STATUS_TEXT_WIDTH = new WritableIntPropertyKey();
 
     @VisibleForTesting(otherwise = VisibleForTesting.PACKAGE_PRIVATE)
-    public static final PropertyKey[] ALL_KEYS = new PropertyKey[] {
-            ALPHA,
-            ANIMATIONS_ENABLED,
-            INCOGNITO_BADGE_VISIBLE,
-            SEPARATOR_COLOR,
-            SHOW_STATUS_ICON,
-            SHOW_STATUS_ICON_BACKGROUND,
-            STATUS_CLICK_LISTENER,
-            STATUS_ACCESSIBILITY_TOAST_RES,
-            STATUS_ACCESSIBILITY_DOUBLE_TAP_DESCRIPTION_RES,
-            STATUS_ICON_ALPHA,
-            STATUS_ICON_DESCRIPTION_RES,
-            STATUS_ICON_RESOURCE,
-            STATUS_VIEW_TOOLTIP_TEXT,
-            STATUS_VIEW_HOVER_HIGHLIGHT,
-            TRANSLATION_X,
-            VERBOSE_STATUS_TEXT_COLOR,
-            VERBOSE_STATUS_TEXT_STRING_RES,
-            VERBOSE_STATUS_TEXT_VISIBLE,
-            VERBOSE_STATUS_TEXT_WIDTH,
-    };
+    public static final PropertyKey[] ALL_KEYS =
+            new PropertyKey[] {
+                ALPHA,
+                ANIMATIONS_ENABLED,
+                INCOGNITO_BADGE_VISIBLE,
+                SEPARATOR_COLOR,
+                SHOW_STATUS_ICON,
+                SHOW_STATUS_ICON_BACKGROUND,
+                STATUS_CLICK_LISTENER,
+                STATUS_ACCESSIBILITY_TOAST_RES,
+                STATUS_ACCESSIBILITY_DOUBLE_TAP_DESCRIPTION_RES,
+                STATUS_ICON_ALPHA,
+                STATUS_ICON_DESCRIPTION_RES,
+                STATUS_ICON_RESOURCE,
+                STATUS_VIEW_TOOLTIP_TEXT,
+                STATUS_VIEW_HOVER_HIGHLIGHT,
+                TRANSLATION_X,
+                VERBOSE_STATUS_TEXT_COLOR,
+                VERBOSE_STATUS_TEXT_STRING_RES,
+                VERBOSE_STATUS_TEXT_VISIBLE,
+                VERBOSE_STATUS_TEXT_WIDTH,
+            };
 
     private StatusProperties() {}
 }
