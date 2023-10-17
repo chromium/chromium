@@ -315,10 +315,6 @@ BASE_FEATURE(kEvictOnAXEvents,
              "EvictOnAXEvents",
              base::FEATURE_DISABLED_BY_DEFAULT);
 
-BASE_FEATURE(kUnblockSpeechSynthesisForBFCache,
-             "UnblockSpeechSynthesisForBFCache",
-             base::FEATURE_ENABLED_BY_DEFAULT);
-
 }  // namespace features
 
 namespace content {
@@ -11977,13 +11973,6 @@ void RenderFrameHostImpl::GetSpeechSynthesis(
         GetProcess()->GetBrowserContext(), this);
   }
   speech_synthesis_impl_->AddReceiver(std::move(receiver));
-
-  if (!base::FeatureList::IsEnabled(
-          features::kUnblockSpeechSynthesisForBFCache)) {
-    // Blocklist SpeechSynthesis for BackForwardCache when the flag is off.
-    OnBackForwardCacheDisablingFeatureUsed(
-        BackForwardCacheDisablingFeature::kSpeechSynthesis);
-  }
 }
 
 void RenderFrameHostImpl::GetSensorProvider(
