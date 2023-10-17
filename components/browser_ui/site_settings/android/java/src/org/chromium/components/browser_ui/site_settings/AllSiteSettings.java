@@ -294,7 +294,8 @@ public class AllSiteSettings extends BaseSiteSettingsFragment
                         Formatter.formatShortFileSize(getContext(), totalUsage));
         message.setText(dialogFormattedText);
         builder.setView(dialogView);
-        builder.setPositiveButton(R.string.storage_delete_dialog_clear_storage_option,
+        builder.setPositiveButton(
+                R.string.storage_delete_dialog_clear_storage_option,
                 new DialogInterface.OnClickListener() {
                     @Override
                     public void onClick(DialogInterface dialog, int id) {
@@ -365,22 +366,15 @@ public class AllSiteSettings extends BaseSiteSettingsFragment
         return false;
     }
 
-    private int getNavigationSource() {
-        return getArguments().getInt(
-                SettingsNavigationSource.EXTRA_KEY, SettingsNavigationSource.OTHER);
-    }
-
     @Override
     public boolean onPreferenceTreeClick(Preference preference) {
         // Store in a local variable; otherwise the linter complains.
-        final String extraKey = SettingsNavigationSource.EXTRA_KEY;
         if (preference instanceof WebsitePreference) {
             WebsitePreference website = (WebsitePreference) preference;
             website.setFragment(SingleWebsiteSettings.class.getName());
             // EXTRA_SITE re-uses already-fetched permissions, which we can only use if the Website
             // was populated with data for all permission types.
             website.putSiteIntoExtras(SingleWebsiteSettings.EXTRA_SITE);
-            website.getExtras().putInt(extraKey, getNavigationSource());
         } else if (preference instanceof WebsiteRowPreference) {
             ((WebsiteRowPreference) preference).handleClick(getArguments(), /*fromGrouped=*/false);
         }

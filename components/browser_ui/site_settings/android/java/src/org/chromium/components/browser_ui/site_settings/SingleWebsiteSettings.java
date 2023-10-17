@@ -1281,11 +1281,6 @@ public class SingleWebsiteSettings extends BaseSiteSettingsFragment
         SiteDataCleaner.clearData(
                 getSiteSettingsDelegate().getBrowserContextHandle(), mSite, mDataClearedCallback);
 
-        int navigationSource = getArguments().getInt(
-                SettingsNavigationSource.EXTRA_KEY, SettingsNavigationSource.OTHER);
-        RecordHistogram.recordEnumeratedHistogram("SingleWebsitePreferences.NavigatedFromToReset",
-                navigationSource, SettingsNavigationSource.NUM_ENTRIES);
-
         // Deletion horizontal product metrics
         RecordHistogram.recordEnumeratedHistogram("Privacy.DeleteBrowsingData.Action",
                 DeleteBrowsingDataAction.SITES_SETTINGS_PAGE, DeleteBrowsingDataAction.MAX_VALUE);

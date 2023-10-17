@@ -79,8 +79,6 @@ public class WebsiteRowPreference extends ChromeImageViewPreference {
         }
         setFragment(mSiteEntry instanceof Website ? SingleWebsiteSettings.class.getName()
                                                   : GroupedWebsitesSettings.class.getName());
-        getExtras().putInt(SettingsNavigationSource.EXTRA_KEY,
-                args.getInt(SettingsNavigationSource.EXTRA_KEY, SettingsNavigationSource.OTHER));
     }
 
     @Override

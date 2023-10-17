@@ -98858,12 +98858,6 @@ https://www.dmtf.org/sites/default/files/standards/documents/DSP0134_2.7.1.pdf
   <int value="7" label="Open 'Learn more' link about language packs"/>
 </enum>
 
-<enum name="SettingsNavigationSources">
-  <int value="0" label="Other"/>
-  <int value="1" label="From TWA clear data dialog"/>
-  <int value="2" label="From TWA manage space activity"/>
-</enum>
-
 <enum name="SettingsOverriddenDialogResult">
   <int value="0" label="Change settings back"/>
   <int value="1" label="Keep new settings"/>

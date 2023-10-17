@@ -541,10 +541,6 @@ public class SingleCategorySettings extends BaseSiteSettingsFragment
                 websitePreference.setFragment(SingleWebsiteSettings.class.getName());
                 websitePreference.putSiteAddressIntoExtras(
                         SingleWebsiteSettings.EXTRA_SITE_ADDRESS);
-                int navigationSource = getArguments().getInt(
-                        SettingsNavigationSource.EXTRA_KEY, SettingsNavigationSource.OTHER);
-                websitePreference.getExtras().putInt(
-                        SettingsNavigationSource.EXTRA_KEY, navigationSource);
             } else if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.O
                     && mCategory.getType() == SiteSettingsCategory.Type.NOTIFICATIONS) {
                 // In  Android O+, users can manage Notification channels through App Info. If this
