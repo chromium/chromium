@@ -79,32 +79,20 @@ public class SingleTabSwitcherOnTabletMediatorUnitTest {
     private final String mTitle2 = "test2";
     private PropertyModel mPropertyModel;
 
-    @Mock
-    private TabModelSelector mTabModelSelector;
-    @Mock
-    private TabModel mNormalTabModel;
-    @Mock
-    private Tab mTab;
-    @Mock
-    private Tab mTab2;
-    @Mock
-    private Tab mTab3;
-    @Mock
-    private TabListFaviconProvider mTabListFaviconProvider;
-    @Mock
-    private TabContentManager mTabContentManager;
-    @Mock
-    private BrowserControlsStateProvider mBrowserControlsStateProvider;
-    @Captor
-    private ArgumentCaptor<Callback<Drawable>> mFaviconCallbackCaptor;
-    @Captor
-    private ArgumentCaptor<TabObserver> mTabObserverCaptor;
-    @Mock
-    private ActivityLifecycleDispatcher mActivityLifecycleDispatcher;
+    @Mock private TabModelSelector mTabModelSelector;
+    @Mock private TabModel mNormalTabModel;
+    @Mock private Tab mTab;
+    @Mock private Tab mTab2;
+    @Mock private Tab mTab3;
+    @Mock private TabListFaviconProvider mTabListFaviconProvider;
+    @Mock private TabContentManager mTabContentManager;
+    @Mock private BrowserControlsStateProvider mBrowserControlsStateProvider;
+    @Captor private ArgumentCaptor<Callback<Drawable>> mFaviconCallbackCaptor;
+    @Captor private ArgumentCaptor<TabObserver> mTabObserverCaptor;
+    @Mock private ActivityLifecycleDispatcher mActivityLifecycleDispatcher;
     @Mock private UiConfig mUiConfig;
     @Captor private ArgumentCaptor<DisplayStyleObserver> mDisplayStyleObserverCaptor;
-    @Captor
-    private ArgumentCaptor<ConfigurationChangedObserver> mConfigurationChangedObserver;
+    @Captor private ArgumentCaptor<ConfigurationChangedObserver> mConfigurationChangedObserver;
 
     @Before
     public void setUp() {
@@ -185,8 +173,11 @@ public class SingleTabSwitcherOnTabletMediatorUnitTest {
         assertFalse(mPropertyModel.get(IS_VISIBLE));
 
         mediator.setVisibility(true);
-        int width = ContextUtils.getApplicationContext().getResources().getDimensionPixelSize(
-                org.chromium.chrome.R.dimen.single_tab_module_tab_thumbnail_size);
+        int width =
+                ContextUtils.getApplicationContext()
+                        .getResources()
+                        .getDimensionPixelSize(
+                                org.chromium.chrome.R.dimen.single_tab_module_tab_thumbnail_size);
         int height = width;
         Size thumbnailSize = new Size(width, height);
 
@@ -314,11 +305,13 @@ public class SingleTabSwitcherOnTabletMediatorUnitTest {
         verify(mActivityLifecycleDispatcher).register(mConfigurationChangedObserver.capture());
 
         Resources resources = ContextUtils.getApplicationContext().getResources();
-        int marginLandscape = resources.getDimensionPixelSize(
-                R.dimen.single_tab_card_lateral_margin_landscape_tablet);
-        int marginPortrait = resources.getDimensionPixelSize(R.dimen.tile_grid_layout_bleed) / 2
-                + resources.getDimensionPixelSize(
-                        R.dimen.single_tab_card_lateral_margin_portrait_tablet);
+        int marginLandscape =
+                resources.getDimensionPixelSize(
+                        R.dimen.single_tab_card_lateral_margin_landscape_tablet);
+        int marginPortrait =
+                resources.getDimensionPixelSize(R.dimen.tile_grid_layout_bleed) / 2
+                        + resources.getDimensionPixelSize(
+                                R.dimen.single_tab_card_lateral_margin_portrait_tablet);
         // Verifies the start margins are initialized.
         assertEquals(marginLandscape, mediator.getMarginDefaultForTesting());
         assertEquals(marginPortrait, mediator.getMarginSmallPortraitForTesting());
@@ -355,8 +348,10 @@ public class SingleTabSwitcherOnTabletMediatorUnitTest {
         verify(mActivityLifecycleDispatcher).register(mConfigurationChangedObserver.capture());
 
         int lateralMargin =
-                ContextUtils.getApplicationContext().getResources().getDimensionPixelSize(
-                        R.dimen.single_tab_card_lateral_margin_landscape_tablet);
+                ContextUtils.getApplicationContext()
+                        .getResources()
+                        .getDimensionPixelSize(
+                                R.dimen.single_tab_card_lateral_margin_landscape_tablet);
         // Verifies the start margins are initialized.
         assertEquals(lateralMargin, mediator.getMarginDefaultForTesting());
 

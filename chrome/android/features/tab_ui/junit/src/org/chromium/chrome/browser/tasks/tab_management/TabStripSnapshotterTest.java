@@ -44,21 +44,19 @@ import java.util.List;
 @Config(manifest = Config.NONE)
 public class TabStripSnapshotterTest {
     private static final PropertyKey[] PROPERTY_KEYS =
-            new PropertyKey[] {TabProperties.FAVICON_FETCHER, TabProperties.FAVICON_FETCHED,
-                    TabProperties.IS_SELECTED};
+            new PropertyKey[] {
+                TabProperties.FAVICON_FETCHER,
+                TabProperties.FAVICON_FETCHED,
+                TabProperties.IS_SELECTED
+            };
 
-    @Captor
-    private ArgumentCaptor<OnScrollListener> mOnScrollListenerCaptor;
+    @Captor private ArgumentCaptor<OnScrollListener> mOnScrollListenerCaptor;
 
-    @Mock
-    private RecyclerView mRecyclerView;
+    @Mock private RecyclerView mRecyclerView;
 
-    @Mock
-    private TabFaviconFetcher mTabFaviconFetcherA;
-    @Mock
-    private TabFaviconFetcher mTabFaviconFetcherB;
-    @Mock
-    private TabFaviconFetcher mTabFaviconFetcherC;
+    @Mock private TabFaviconFetcher mTabFaviconFetcherA;
+    @Mock private TabFaviconFetcher mTabFaviconFetcherB;
+    @Mock private TabFaviconFetcher mTabFaviconFetcherC;
 
     private final List<Object> mTokenList = new ArrayList<>();
 

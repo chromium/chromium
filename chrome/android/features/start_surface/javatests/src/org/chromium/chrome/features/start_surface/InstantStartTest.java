@@ -94,24 +94,31 @@ import java.util.concurrent.CountDownLatch;
  * InstantStartTabSwitcherTest}, {@link InstantStartNewTabFromLauncherTest} for more tests.
  */
 @RunWith(ChromeJUnit4ClassRunner.class)
-@CommandLineFlags.
-    Add({ChromeSwitches.DISABLE_FIRST_RUN_EXPERIENCE, "force-fieldtrials=Study/Group"})
-@EnableFeatures({ChromeFeatureList.START_SURFACE_ANDROID, ChromeFeatureList.INSTANT_START,
-    ChromeFeatureList.EMPTY_STATES})
-@Restriction({Restriction.RESTRICTION_TYPE_NON_LOW_END_DEVICE,
-    UiRestriction.RESTRICTION_TYPE_PHONE})
+@CommandLineFlags.Add({
+    ChromeSwitches.DISABLE_FIRST_RUN_EXPERIENCE,
+    "force-fieldtrials=Study/Group"
+})
+@EnableFeatures({
+    ChromeFeatureList.START_SURFACE_ANDROID,
+    ChromeFeatureList.INSTANT_START,
+    ChromeFeatureList.EMPTY_STATES
+})
+@Restriction({
+    Restriction.RESTRICTION_TYPE_NON_LOW_END_DEVICE,
+    UiRestriction.RESTRICTION_TYPE_PHONE
+})
 @DoNotBatch(reason = "InstantStartTest tests startup behaviours and thus can't be batched.")
 public class InstantStartTest {
-    private static final String IMMEDIATE_RETURN_PARAMS = "force-fieldtrial-params=Study.Group:"
-            + StartSurfaceConfiguration.START_SURFACE_RETURN_TIME_SECONDS_PARAM + "/0";
+    private static final String IMMEDIATE_RETURN_PARAMS =
+            "force-fieldtrial-params=Study.Group:"
+                    + StartSurfaceConfiguration.START_SURFACE_RETURN_TIME_SECONDS_PARAM
+                    + "/0";
     private Bitmap mBitmap;
     private int mThumbnailFetchCount;
 
-    @Rule
-    public JniMocker mJniMocker = new JniMocker();
+    @Rule public JniMocker mJniMocker = new JniMocker();
 
-    @Rule
-    public MockitoRule mMockitoRule = MockitoJUnit.rule();
+    @Rule public MockitoRule mMockitoRule = MockitoJUnit.rule();
 
     @Rule
     public ChromeTabbedActivityTestRule mActivityTestRule = new ChromeTabbedActivityTestRule();
@@ -123,14 +130,11 @@ public class InstantStartTest {
                     .setBugComponent(ChromeRenderTestRule.Component.UI_BROWSER_MOBILE_START)
                     .build();
 
-    @Rule
-    public ErrorCollector collector = new ErrorCollector();
+    @Rule public ErrorCollector collector = new ErrorCollector();
 
-    @Rule
-    public SuggestionsDependenciesRule mSuggestionsDeps = new SuggestionsDependenciesRule();
+    @Rule public SuggestionsDependenciesRule mSuggestionsDeps = new SuggestionsDependenciesRule();
 
-    @Mock
-    public BrowserControlsStateProvider mBrowserControlsStateProvider;
+    @Mock public BrowserControlsStateProvider mBrowserControlsStateProvider;
 
     @Before
     public void setUp() {
@@ -157,21 +161,24 @@ public class InstantStartTest {
 
         int tabId = 0;
         mThumbnailFetchCount = 0;
-        Callback<Bitmap> thumbnailFetchListener = (bitmap) -> {
-            mThumbnailFetchCount++;
-            mBitmap = bitmap;
-        };
+        Callback<Bitmap> thumbnailFetchListener =
+                (bitmap) -> {
+                    mThumbnailFetchCount++;
+                    mBitmap = bitmap;
+                };
 
-        CriteriaHelper.pollUiThread(() -> {
-            Criteria.checkThat(
-                    mActivityTestRule.getActivity().getTabContentManager(), notNullValue());
-        });
+        CriteriaHelper.pollUiThread(
+                () -> {
+                    Criteria.checkThat(
+                            mActivityTestRule.getActivity().getTabContentManager(), notNullValue());
+                });
 
         TabContentManager tabContentManager =
                 mActivityTestRule.getActivity().getTabContentManager();
 
-        final Bitmap thumbnailBitmap = StartSurfaceTestUtils.createThumbnailBitmapAndWriteToFile(
-                tabId, mActivityTestRule.getActivity().getBrowserControlsManager());
+        final Bitmap thumbnailBitmap =
+                StartSurfaceTestUtils.createThumbnailBitmapAndWriteToFile(
+                        tabId, mActivityTestRule.getActivity().getBrowserControlsManager());
         tabContentManager.getTabThumbnailWithCallback(
                 tabId, new Size(0, 0), thumbnailFetchListener, false, false);
         CriteriaHelper.pollInstrumentationThread(
@@ -201,20 +208,25 @@ public class InstantStartTest {
         Assert.assertFalse(LibraryLoader.getInstance().isInitialized());
         assertThat(cta.getLayoutManager()).isInstanceOf(LayoutManagerChromePhone.class);
         TabUiTestHelper.verifyTabSwitcherLayoutType(cta);
-        Assert.assertEquals(1,
+        Assert.assertEquals(
+                1,
                 RecordHistogram.getHistogramTotalCountForTesting(
                         "Startup.Android.IsHomepagePolicyManagerInitialized"));
     }
 
     @Test
     @SmallTest
-    @EnableFeatures({ChromeFeatureList.START_SURFACE_RETURN_TIME + "<Study,",
-            ChromeFeatureList.START_SURFACE_ANDROID + "<Study"})
+    @EnableFeatures({
+        ChromeFeatureList.START_SURFACE_RETURN_TIME + "<Study,",
+        ChromeFeatureList.START_SURFACE_ANDROID + "<Study"
+    })
     // TODO(https://crbug.com/1315676): Removes this test once the start surface refactoring is
     // done, since the secondary tasks surface will go away.
     @DisableFeatures(ChromeFeatureList.START_SURFACE_REFACTOR)
-    @CommandLineFlags.Add({ChromeSwitches.DISABLE_NATIVE_INITIALIZATION,
-        INSTANT_START_TEST_BASE_PARAMS + "/enable_launch_polish/true"})
+    @CommandLineFlags.Add({
+        ChromeSwitches.DISABLE_NATIVE_INITIALIZATION,
+        INSTANT_START_TEST_BASE_PARAMS + "/enable_launch_polish/true"
+    })
     public void startSurfaceSinglePanePreNativeAndWithNativeTest() {
         StartSurfaceTestUtils.startMainActivityFromLauncher(mActivityTestRule);
         ChromeTabbedActivity cta = mActivityTestRule.getActivity();
@@ -235,9 +247,11 @@ public class InstantStartTest {
         Assert.assertFalse(startSurfaceCoordinator.isInitializedWithNativeForTesting());
         Assert.assertFalse(startSurfaceCoordinator.isSecondaryTaskInitPendingForTesting());
 
-        TestThreadUtils.runOnUiThreadBlocking(() -> {
-            startSurfaceCoordinator.setStartSurfaceState(StartSurfaceState.SHOWN_TABSWITCHER);
-        });
+        TestThreadUtils.runOnUiThreadBlocking(
+                () -> {
+                    startSurfaceCoordinator.setStartSurfaceState(
+                            StartSurfaceState.SHOWN_TABSWITCHER);
+                });
         CriteriaHelper.pollUiThread(startSurfaceCoordinator::isSecondaryTaskInitPendingForTesting);
 
         // Initializes native.
@@ -257,7 +271,9 @@ public class InstantStartTest {
         Assert.assertTrue(ChromeFeatureList.sInstantStart.isEnabled());
 
         CriteriaHelper.pollUiThread(
-                () -> { Criteria.checkThat(cta.getLayoutManager(), notNullValue()); });
+                () -> {
+                    Criteria.checkThat(cta.getLayoutManager(), notNullValue());
+                });
 
         Assert.assertTrue(LibraryLoader.getInstance().isInitialized());
         assertThat(cta.getLayoutManager()).isInstanceOf(LayoutManagerChromeTablet.class);
@@ -273,9 +289,10 @@ public class InstantStartTest {
         Assert.assertFalse(HomepageManager.getHomepageGurl().isEmpty());
 
         TestThreadUtils.runOnUiThreadBlocking(
-                (Runnable) ()
-                        -> ReturnToChromeUtil.shouldShowStartSurfaceAsTheHomePage(
-                                mActivityTestRule.getActivity()));
+                (Runnable)
+                        () ->
+                                ReturnToChromeUtil.shouldShowStartSurfaceAsTheHomePage(
+                                        mActivityTestRule.getActivity()));
     }
 
     @Test
@@ -324,17 +341,22 @@ public class InstantStartTest {
         ReturnToChromeUtil.isStartSurfaceEnabled(mActivityTestRule.getActivity());
         PseudoTab.getAllPseudoTabsFromStateFile(mActivityTestRule.getActivity());
 
-        Assert.assertFalse("There should be no GURL usages triggering native library loading",
+        Assert.assertFalse(
+                "There should be no GURL usages triggering native library loading",
                 NativeLibraryLoadedStatus.getProviderForTesting().areNativeMethodsReady());
     }
 
     @Test
     @MediumTest
     @Feature({"RenderTest"})
-    @EnableFeatures({ChromeFeatureList.START_SURFACE_RETURN_TIME + "<Study,",
-            ChromeFeatureList.START_SURFACE_ANDROID + "<Study"})
-    @CommandLineFlags.Add({ChromeSwitches.DISABLE_NATIVE_INITIALIZATION,
-        INSTANT_START_TEST_BASE_PARAMS})
+    @EnableFeatures({
+        ChromeFeatureList.START_SURFACE_RETURN_TIME + "<Study,",
+        ChromeFeatureList.START_SURFACE_ANDROID + "<Study"
+    })
+    @CommandLineFlags.Add({
+        ChromeSwitches.DISABLE_NATIVE_INITIALIZATION,
+        INSTANT_START_TEST_BASE_PARAMS
+    })
     public void renderSingleAsHomepage_Landscape() throws IOException {
         StartSurfaceTestUtils.setMVTiles(mSuggestionsDeps);
 
@@ -347,18 +369,22 @@ public class InstantStartTest {
         onViewWaiting(allOf(withId(R.id.feed_stream_recycler_view), isDisplayed()));
 
         cta.setRequestedOrientation(ActivityInfo.SCREEN_ORIENTATION_LANDSCAPE);
-        CriteriaHelper.pollUiThread(() -> {
-            Criteria.checkThat(
-                    cta.getResources().getConfiguration().orientation, is(ORIENTATION_LANDSCAPE));
-        });
+        CriteriaHelper.pollUiThread(
+                () -> {
+                    Criteria.checkThat(
+                            cta.getResources().getConfiguration().orientation,
+                            is(ORIENTATION_LANDSCAPE));
+                });
         View surface = cta.findViewById(R.id.primary_tasks_surface_view);
         mRenderTestRule.render(surface, "singlePane_landscapeV2");
     }
 
     @Test
     @MediumTest
-    @EnableFeatures({ChromeFeatureList.START_SURFACE_RETURN_TIME + "<Study,",
-        ChromeFeatureList.START_SURFACE_ANDROID + "<Study"})
+    @EnableFeatures({
+        ChromeFeatureList.START_SURFACE_RETURN_TIME + "<Study,",
+        ChromeFeatureList.START_SURFACE_ANDROID + "<Study"
+    })
     public void testShowLastTabWhenHomepageDisabledNoImmediateReturn() throws IOException {
         Assert.assertTrue(ChromeFeatureList.sInstantStart.isEnabled());
         Assert.assertEquals(
@@ -374,11 +400,13 @@ public class InstantStartTest {
 
     @Test
     @MediumTest
-    @EnableFeatures({ChromeFeatureList.START_SURFACE_RETURN_TIME + "<Study,",
-        ChromeFeatureList.START_SURFACE_ANDROID + "<Study"})
+    @EnableFeatures({
+        ChromeFeatureList.START_SURFACE_RETURN_TIME + "<Study,",
+        ChromeFeatureList.START_SURFACE_ANDROID + "<Study"
+    })
     @DisableFeatures(ChromeFeatureList.INSTANT_START)
     public void testShowLastTabWhenHomepageDisabledNoImmediateReturn_NoInstant()
-          throws IOException {
+            throws IOException {
         Assert.assertFalse(ChromeFeatureList.sInstantStart.isEnabled());
         Assert.assertEquals(
                 StartSurfaceConfiguration.START_SURFACE_RETURN_TIME_SECONDS.getDefaultValue(),
@@ -405,10 +433,12 @@ public class InstantStartTest {
         Assert.assertFalse(cta.getLayoutManager().isLayoutVisible(LayoutType.TAB_SWITCHER));
         StartSurfaceCoordinator startSurfaceCoordinator =
                 StartSurfaceTestUtils.getStartSurfaceFromUIThread(cta);
-        TestThreadUtils.runOnUiThreadBlocking(() -> {
-            Assert.assertEquals(
-                    startSurfaceCoordinator.getStartSurfaceState(), StartSurfaceState.NOT_SHOWN);
-        });
+        TestThreadUtils.runOnUiThreadBlocking(
+                () -> {
+                    Assert.assertEquals(
+                            startSurfaceCoordinator.getStartSurfaceState(),
+                            StartSurfaceState.NOT_SHOWN);
+                });
     }
 
     private static List<Tile> createFakeSiteSuggestionTiles(List<SiteSuggestion> siteSuggestions) {

@@ -77,8 +77,7 @@ public class TasksViewBinderUnitTest {
     public ActivityScenarioRule<TestActivity> mActivityScenarioRule =
             new ActivityScenarioRule<>(TestActivity.class);
 
-    @Mock
-    private IncognitoCookieControlsManager mCookieControlsManager;
+    @Mock private IncognitoCookieControlsManager mCookieControlsManager;
 
     @Before
     public void setUp() throws Exception {
@@ -126,19 +125,22 @@ public class TasksViewBinderUnitTest {
         assertTrue(isViewVisible(R.id.search_box));
 
         AtomicBoolean textChanged = new AtomicBoolean();
-        TextWatcher textWatcher = new EmptyTextWatcher() {
-            @Override
-            public void onTextChanged(CharSequence s, int start, int before, int count) {
-                textChanged.set(true);
-            }
-        };
+        TextWatcher textWatcher =
+                new EmptyTextWatcher() {
+                    @Override
+                    public void onTextChanged(CharSequence s, int start, int before, int count) {
+                        textChanged.set(true);
+                    }
+                };
 
         mViewClicked.set(false);
         mTasksView.findViewById(R.id.search_box_text).performClick();
         assertFalse(mViewClicked.get());
-        TestThreadUtils.runOnUiThreadBlocking(() -> {
-            mTasksViewPropertyModel.set(FAKE_SEARCH_BOX_CLICK_LISTENER, mViewOnClickListener);
-        });
+        TestThreadUtils.runOnUiThreadBlocking(
+                () -> {
+                    mTasksViewPropertyModel.set(
+                            FAKE_SEARCH_BOX_CLICK_LISTENER, mViewOnClickListener);
+                });
         mTasksView.findViewById(R.id.search_box_text).performClick();
         assertTrue(mViewClicked.get());
 
@@ -161,18 +163,21 @@ public class TasksViewBinderUnitTest {
     @Test
     @SmallTest
     public void testSetVoiceSearchButtonVisibilityAndClickListener() {
-        TestThreadUtils.runOnUiThreadBlocking(() -> {
-            mTasksViewPropertyModel.set(IS_FAKE_SEARCH_BOX_VISIBLE, true);
-            mTasksViewPropertyModel.set(IS_VOICE_RECOGNITION_BUTTON_VISIBLE, true);
-        });
+        TestThreadUtils.runOnUiThreadBlocking(
+                () -> {
+                    mTasksViewPropertyModel.set(IS_FAKE_SEARCH_BOX_VISIBLE, true);
+                    mTasksViewPropertyModel.set(IS_VOICE_RECOGNITION_BUTTON_VISIBLE, true);
+                });
         assertTrue(isViewVisible(R.id.voice_search_button));
 
         mViewClicked.set(false);
         mTasksView.findViewById(R.id.voice_search_button).performClick();
         assertFalse(mViewClicked.get());
-        TestThreadUtils.runOnUiThreadBlocking(() -> {
-            mTasksViewPropertyModel.set(VOICE_SEARCH_BUTTON_CLICK_LISTENER, mViewOnClickListener);
-        });
+        TestThreadUtils.runOnUiThreadBlocking(
+                () -> {
+                    mTasksViewPropertyModel.set(
+                            VOICE_SEARCH_BUTTON_CLICK_LISTENER, mViewOnClickListener);
+                });
         mTasksView.findViewById(R.id.voice_search_button).performClick();
         assertTrue(mViewClicked.get());
 
@@ -184,18 +189,20 @@ public class TasksViewBinderUnitTest {
     @Test
     @SmallTest
     public void testSetLensButtonVisibilityAndClickListener() {
-        TestThreadUtils.runOnUiThreadBlocking(() -> {
-            mTasksViewPropertyModel.set(IS_FAKE_SEARCH_BOX_VISIBLE, true);
-            mTasksViewPropertyModel.set(IS_LENS_BUTTON_VISIBLE, true);
-        });
+        TestThreadUtils.runOnUiThreadBlocking(
+                () -> {
+                    mTasksViewPropertyModel.set(IS_FAKE_SEARCH_BOX_VISIBLE, true);
+                    mTasksViewPropertyModel.set(IS_LENS_BUTTON_VISIBLE, true);
+                });
         assertTrue(isViewVisible(R.id.lens_camera_button));
 
         mViewClicked.set(false);
         mTasksView.findViewById(R.id.lens_camera_button).performClick();
         assertFalse(mViewClicked.get());
-        TestThreadUtils.runOnUiThreadBlocking(() -> {
-            mTasksViewPropertyModel.set(LENS_BUTTON_CLICK_LISTENER, mViewOnClickListener);
-        });
+        TestThreadUtils.runOnUiThreadBlocking(
+                () -> {
+                    mTasksViewPropertyModel.set(LENS_BUTTON_CLICK_LISTENER, mViewOnClickListener);
+                });
         mTasksView.findViewById(R.id.lens_camera_button).performClick();
         assertTrue(mViewClicked.get());
 
@@ -246,16 +253,20 @@ public class TasksViewBinderUnitTest {
     public void testSetIncognitoDescriptionVisibilityAndClickListener() {
         assertFalse(isViewVisible(R.id.incognito_description_container_layout_stub));
 
-        TestThreadUtils.runOnUiThreadBlocking(() -> {
-            mTasksViewPropertyModel.set(INCOGNITO_LEARN_MORE_CLICK_LISTENER, mViewOnClickListener);
-        });
+        TestThreadUtils.runOnUiThreadBlocking(
+                () -> {
+                    mTasksViewPropertyModel.set(
+                            INCOGNITO_LEARN_MORE_CLICK_LISTENER, mViewOnClickListener);
+                });
         assertFalse(isViewVisible(R.id.incognito_description_container_layout_stub));
 
-        TestThreadUtils.runOnUiThreadBlocking(() -> {
-            mTasksViewPropertyModel.set(INCOGNITO_COOKIE_CONTROLS_MANAGER, mCookieControlsManager);
-            mTasksViewPropertyModel.set(IS_INCOGNITO_DESCRIPTION_INITIALIZED, true);
-            mTasksViewPropertyModel.set(IS_INCOGNITO_DESCRIPTION_VISIBLE, true);
-        });
+        TestThreadUtils.runOnUiThreadBlocking(
+                () -> {
+                    mTasksViewPropertyModel.set(
+                            INCOGNITO_COOKIE_CONTROLS_MANAGER, mCookieControlsManager);
+                    mTasksViewPropertyModel.set(IS_INCOGNITO_DESCRIPTION_INITIALIZED, true);
+                    mTasksViewPropertyModel.set(IS_INCOGNITO_DESCRIPTION_VISIBLE, true);
+                });
         assertTrue(isViewVisible(R.id.new_tab_incognito_container));
     }
 
@@ -275,8 +286,8 @@ public class TasksViewBinderUnitTest {
     @SmallTest
     public void testSetMVTilesContainerTopMargin() {
         ViewGroup.MarginLayoutParams params =
-                (ViewGroup.MarginLayoutParams) mTasksView.findViewById(R.id.mv_tiles_container)
-                        .getLayoutParams();
+                (ViewGroup.MarginLayoutParams)
+                        mTasksView.findViewById(R.id.mv_tiles_container).getLayoutParams();
         assertEquals(0, params.topMargin);
 
         mTasksViewPropertyModel.set(MV_TILES_CONTAINER_TOP_MARGIN, 16);
@@ -288,8 +299,8 @@ public class TasksViewBinderUnitTest {
     @SmallTest
     public void testSetMVTilesContainerLeftAndRightMargin() {
         ViewGroup.MarginLayoutParams params =
-                (ViewGroup.MarginLayoutParams) mTasksView.findViewById(R.id.mv_tiles_container)
-                        .getLayoutParams();
+                (ViewGroup.MarginLayoutParams)
+                        mTasksView.findViewById(R.id.mv_tiles_container).getLayoutParams();
         assertEquals(0, params.leftMargin);
         assertEquals(0, params.rightMargin);
 
@@ -302,14 +313,19 @@ public class TasksViewBinderUnitTest {
     @Test
     @SmallTest
     public void testSetSingleTabTopMargin() {
-        SingleTabView singleTabView = (SingleTabView) mActivity.getLayoutInflater().inflate(
-                R.layout.single_tab_view_layout, mTasksView.getCarouselTabSwitcherContainer(),
-                false);
+        SingleTabView singleTabView =
+                (SingleTabView)
+                        mActivity
+                                .getLayoutInflater()
+                                .inflate(
+                                        R.layout.single_tab_view_layout,
+                                        mTasksView.getCarouselTabSwitcherContainer(),
+                                        false);
         mTasksView.getCarouselTabSwitcherContainer().addView(singleTabView);
 
         ViewGroup.MarginLayoutParams params =
-                (ViewGroup.MarginLayoutParams) mTasksView.findViewById(R.id.single_tab_view)
-                        .getLayoutParams();
+                (ViewGroup.MarginLayoutParams)
+                        mTasksView.findViewById(R.id.single_tab_view).getLayoutParams();
         // The initial top margin of single_tab_view_layout is 24.
         assertEquals(24, params.topMargin);
 
@@ -322,8 +338,8 @@ public class TasksViewBinderUnitTest {
     @SmallTest
     public void testSetTabSwitcherTitleTopMargin() {
         ViewGroup.MarginLayoutParams params =
-                (ViewGroup.MarginLayoutParams) mTasksView.findViewById(R.id.tab_switcher_title)
-                        .getLayoutParams();
+                (ViewGroup.MarginLayoutParams)
+                        mTasksView.findViewById(R.id.tab_switcher_title).getLayoutParams();
         assertEquals(0, params.topMargin);
 
         mTasksViewPropertyModel.set(TAB_SWITCHER_TITLE_TOP_MARGIN, 16);

@@ -61,38 +61,24 @@ import org.chromium.components.prefs.PrefService;
 import org.chromium.components.user_prefs.UserPrefs;
 import org.chromium.components.user_prefs.UserPrefsJni;
 
-/**
- * Robolectric tests for {@link IncognitoReauthPromoMessageService}.
- */
+/** Robolectric tests for {@link IncognitoReauthPromoMessageService}. */
 @RunWith(BaseRobolectricTestRunner.class)
 @Config(manifest = Config.NONE, sdk = VERSION_CODES.R)
 @LooperMode(Mode.PAUSED)
 public class IncognitoReauthPromoMessageServiceUnitTest {
-    @Rule
-    public JniMocker mJniMocker = new JniMocker();
+    @Rule public JniMocker mJniMocker = new JniMocker();
 
-    @Mock
-    private Profile mProfileMock;
-    @Mock
-    private Context mContextMock;
-    @Mock
-    private Resources mResourcesMock;
-    @Mock
-    private SnackbarManager mSnackbarManagerMock;
-    @Mock
-    private ActivityLifecycleDispatcher mActivityLifecycleDispatcherMock;
-    @Mock
-    private UserPrefs.Natives mUserPrefsJniMock;
-    @Mock
-    private PrefService mPrefServiceMock;
-    @Mock
-    private MessageService.MessageObserver mMessageObserverMock;
-    @Mock
-    private ReauthenticatorBridge mReauthenticatorBridgeMock;
-    @Captor
-    private ArgumentCaptor<LifecycleObserver> mLifecycleObserverArgumentCaptor;
-    @Captor
-    private ArgumentCaptor<Snackbar> mSnackbarArgumentCaptor;
+    @Mock private Profile mProfileMock;
+    @Mock private Context mContextMock;
+    @Mock private Resources mResourcesMock;
+    @Mock private SnackbarManager mSnackbarManagerMock;
+    @Mock private ActivityLifecycleDispatcher mActivityLifecycleDispatcherMock;
+    @Mock private UserPrefs.Natives mUserPrefsJniMock;
+    @Mock private PrefService mPrefServiceMock;
+    @Mock private MessageService.MessageObserver mMessageObserverMock;
+    @Mock private ReauthenticatorBridge mReauthenticatorBridgeMock;
+    @Captor private ArgumentCaptor<LifecycleObserver> mLifecycleObserverArgumentCaptor;
+    @Captor private ArgumentCaptor<Snackbar> mSnackbarArgumentCaptor;
 
     private SharedPreferencesManager mSharedPreferenceManager;
     private IncognitoReauthPromoMessageService mIncognitoReauthPromoMessageService;
@@ -113,10 +99,16 @@ public class IncognitoReauthPromoMessageServiceUnitTest {
 
     private void createIncognitoReauthPromoMessageService() {
         mIncognitoReauthManager = new IncognitoReauthManager(mReauthenticatorBridgeMock);
-        mIncognitoReauthPromoMessageService = new IncognitoReauthPromoMessageService(
-                MessageType.FOR_TESTING, mProfileMock, mContextMock, mSharedPreferenceManager,
-                mIncognitoReauthManager, mSnackbarManagerMock,
-                () -> mIsTabToGTSAnimationEnabled, mActivityLifecycleDispatcherMock);
+        mIncognitoReauthPromoMessageService =
+                new IncognitoReauthPromoMessageService(
+                        MessageType.FOR_TESTING,
+                        mProfileMock,
+                        mContextMock,
+                        mSharedPreferenceManager,
+                        mIncognitoReauthManager,
+                        mSnackbarManagerMock,
+                        () -> mIsTabToGTSAnimationEnabled,
+                        mActivityLifecycleDispatcherMock);
         verify(mActivityLifecycleDispatcherMock, times(1))
                 .register(mLifecycleObserverArgumentCaptor.capture());
         mPauseResumeWithNativeObserver =
@@ -133,9 +125,11 @@ public class IncognitoReauthPromoMessageServiceUnitTest {
     public void testDismissMessage_SendsInvalidNotification_AndDisablesPromo() {
         createIncognitoReauthPromoMessageService();
         mIncognitoReauthPromoMessageService.addObserver(mMessageObserverMock);
-        assertTrue("Observer was not added.",
-                mIncognitoReauthPromoMessageService.getObserversForTesting().hasObserver(
-                        mMessageObserverMock));
+        assertTrue(
+                "Observer was not added.",
+                mIncognitoReauthPromoMessageService
+                        .getObserversForTesting()
+                        .hasObserver(mMessageObserverMock));
         doNothing().when(mMessageObserverMock).messageInvalidate(MessageType.FOR_TESTING);
 
         mIncognitoReauthPromoMessageService.increasePromoShowCountAndMayDisableIfCountExceeds();
@@ -150,8 +144,9 @@ public class IncognitoReauthPromoMessageServiceUnitTest {
     @SmallTest
     public void testDismissMessageWhenGTSEnabled_RecordsCorrectImpressionMetric() {
         mIsTabToGTSAnimationEnabled = true;
-        HistogramWatcher histogramWatcher = HistogramWatcher.newSingleRecordWatcher(
-                "Android.IncognitoReauth.PromoImpressionAfterActionCount", 1);
+        HistogramWatcher histogramWatcher =
+                HistogramWatcher.newSingleRecordWatcher(
+                        "Android.IncognitoReauth.PromoImpressionAfterActionCount", 1);
 
         createIncognitoReauthPromoMessageService();
 
@@ -170,9 +165,11 @@ public class IncognitoReauthPromoMessageServiceUnitTest {
         createIncognitoReauthPromoMessageService();
         when(mPrefServiceMock.getBoolean(Pref.INCOGNITO_REAUTHENTICATION_FOR_ANDROID))
                 .thenReturn(true);
-        assertFalse("Promo message shouldn't be prepared when the re-auth setting is on.",
+        assertFalse(
+                "Promo message shouldn't be prepared when the re-auth setting is on.",
                 mIncognitoReauthPromoMessageService.preparePromoMessage());
-        assertFalse("Preference should also show disabled for the promo",
+        assertFalse(
+                "Preference should also show disabled for the promo",
                 mSharedPreferenceManager.readBoolean(INCOGNITO_REAUTH_PROMO_CARD_ENABLED, false));
     }
 
@@ -183,12 +180,13 @@ public class IncognitoReauthPromoMessageServiceUnitTest {
         when(mPrefServiceMock.getBoolean(Pref.INCOGNITO_REAUTHENTICATION_FOR_ANDROID))
                 .thenReturn(false);
         IncognitoReauthManager.setIsIncognitoReauthFeatureAvailableForTesting(
-                /*isAvailable=*/false);
+                /* isAvailable= */ false);
 
         assertFalse(
                 "Promo message shouldn't be prepared when the re-auth feature is not available.",
                 mIncognitoReauthPromoMessageService.preparePromoMessage());
-        assertFalse("Preference should also show disabled for the promo",
+        assertFalse(
+                "Preference should also show disabled for the promo",
                 mSharedPreferenceManager.readBoolean(INCOGNITO_REAUTH_PROMO_CARD_ENABLED, false));
     }
 
@@ -198,12 +196,15 @@ public class IncognitoReauthPromoMessageServiceUnitTest {
         createIncognitoReauthPromoMessageService();
         when(mPrefServiceMock.getBoolean(Pref.INCOGNITO_REAUTHENTICATION_FOR_ANDROID))
                 .thenReturn(false);
-        IncognitoReauthManager.setIsIncognitoReauthFeatureAvailableForTesting(/*isAvailable=*/true);
-        IncognitoReauthSettingUtils.setIsDeviceScreenLockEnabledForTesting(/*value=*/false);
+        IncognitoReauthManager.setIsIncognitoReauthFeatureAvailableForTesting(
+                /* isAvailable= */ true);
+        IncognitoReauthSettingUtils.setIsDeviceScreenLockEnabledForTesting(/* value= */ false);
 
-        assertFalse("Promo message shouldn't be prepared if screen lock is not set-up.",
+        assertFalse(
+                "Promo message shouldn't be prepared if screen lock is not set-up.",
                 mIncognitoReauthPromoMessageService.preparePromoMessage());
-        assertFalse("Preference should be disabled for the promo",
+        assertFalse(
+                "Preference should be disabled for the promo",
                 mSharedPreferenceManager.readBoolean(INCOGNITO_REAUTH_PROMO_CARD_ENABLED, false));
     }
 
@@ -215,9 +216,10 @@ public class IncognitoReauthPromoMessageServiceUnitTest {
                 .thenReturn(false);
 
         IncognitoReauthManager.setIsIncognitoReauthFeatureAvailableForTesting(
-                /*isAvailable=*/true);
-        IncognitoReauthSettingUtils.setIsDeviceScreenLockEnabledForTesting(/*value=*/true);
-        assertTrue("Promo message should have been prepared.",
+                /* isAvailable= */ true);
+        IncognitoReauthSettingUtils.setIsDeviceScreenLockEnabledForTesting(/* value= */ true);
+        assertTrue(
+                "Promo message should have been prepared.",
                 mIncognitoReauthPromoMessageService.preparePromoMessage());
     }
 
@@ -229,15 +231,17 @@ public class IncognitoReauthPromoMessageServiceUnitTest {
                 .thenReturn(false);
 
         IncognitoReauthManager.setIsIncognitoReauthFeatureAvailableForTesting(
-                /*isAvailable=*/true);
-        IncognitoReauthSettingUtils.setIsDeviceScreenLockEnabledForTesting(/*value=*/true);
+                /* isAvailable= */ true);
+        IncognitoReauthSettingUtils.setIsDeviceScreenLockEnabledForTesting(/* value= */ true);
         doNothing().when(mMessageObserverMock).messageReady(eq(MessageType.FOR_TESTING), any());
 
         mIncognitoReauthPromoMessageService.addObserver(mMessageObserverMock);
 
-        assertTrue("Observer was not added.",
-                mIncognitoReauthPromoMessageService.getObserversForTesting().hasObserver(
-                        mMessageObserverMock));
+        assertTrue(
+                "Observer was not added.",
+                mIncognitoReauthPromoMessageService
+                        .getObserversForTesting()
+                        .hasObserver(mMessageObserverMock));
         verify(mMessageObserverMock, times(1)).messageReady(eq(MessageType.FOR_TESTING), any());
     }
 
@@ -256,7 +260,8 @@ public class IncognitoReauthPromoMessageServiceUnitTest {
     @SmallTest
     public void testIncreasePromoCount_DisablesCardIfCountExceeds() {
         createIncognitoReauthPromoMessageService();
-        mSharedPreferenceManager.writeInt(INCOGNITO_REAUTH_PROMO_SHOW_COUNT,
+        mSharedPreferenceManager.writeInt(
+                INCOGNITO_REAUTH_PROMO_SHOW_COUNT,
                 mIncognitoReauthPromoMessageService.mMaxPromoMessageCount + 1);
         mIncognitoReauthPromoMessageService.increasePromoShowCountAndMayDisableIfCountExceeds();
         assertFalse(
@@ -279,15 +284,15 @@ public class IncognitoReauthPromoMessageServiceUnitTest {
     public void testPreparePromoMessage_Fails_AfterMaxShowCountReached_TabToGTSEnabled() {
         mIsTabToGTSAnimationEnabled = true;
         createIncognitoReauthPromoMessageService();
-        assert mIncognitoReauthPromoMessageService.mMaxPromoMessageCount
-                == 10
-            : "When animation is enabled, then the max count should be set to 20, because of double counting.";
+        assert mIncognitoReauthPromoMessageService.mMaxPromoMessageCount == 10
+                : "When animation is enabled, then the max count should be set to 20, because of"
+                        + " double counting.";
 
         when(mPrefServiceMock.getBoolean(Pref.INCOGNITO_REAUTHENTICATION_FOR_ANDROID))
                 .thenReturn(false);
         IncognitoReauthManager.setIsIncognitoReauthFeatureAvailableForTesting(
-                /*isAvailable=*/true);
-        IncognitoReauthSettingUtils.setIsDeviceScreenLockEnabledForTesting(/*value=*/true);
+                /* isAvailable= */ true);
+        IncognitoReauthSettingUtils.setIsDeviceScreenLockEnabledForTesting(/* value= */ true);
 
         // Mocking the maximum limit.
         final int initialShowCount = mIncognitoReauthPromoMessageService.getPromoShowCount();
@@ -295,13 +300,17 @@ public class IncognitoReauthPromoMessageServiceUnitTest {
         // When TabToGTS is enabled we call the preparePromoMessage twice for each promo.
         final int maxShowCount = mIncognitoReauthPromoMessageService.mMaxPromoMessageCount * 2;
         for (int i = initialShowCount; i < maxShowCount; ++i) {
-            assertTrue("Promo message should have been prepared as the current count: " + i
-                            + ", is less than the max count: " + maxShowCount,
+            assertTrue(
+                    "Promo message should have been prepared as the current count: "
+                            + i
+                            + ", is less than the max count: "
+                            + maxShowCount,
                     mIncognitoReauthPromoMessageService.preparePromoMessage());
             mIncognitoReauthPromoMessageService.increasePromoShowCountAndMayDisableIfCountExceeds();
         }
         assertFalse(
-                "We shouldn't prepare the message since the max limit was reached in the previous step.",
+                "We shouldn't prepare the message since the max limit was reached in the previous"
+                        + " step.",
                 mIncognitoReauthPromoMessageService.preparePromoMessage());
     }
 
@@ -310,29 +319,32 @@ public class IncognitoReauthPromoMessageServiceUnitTest {
     public void testPreparePromoMessage_Fails_AfterMaxShowCountReached_TabToGTSDisabled() {
         mIsTabToGTSAnimationEnabled = false;
         createIncognitoReauthPromoMessageService();
-        assert mIncognitoReauthPromoMessageService.mMaxPromoMessageCount
-                == 10
-            : "When animation is disabled, then the max count should be set to 10, as there's no"
-              + " double counting anymore.";
+        assert mIncognitoReauthPromoMessageService.mMaxPromoMessageCount == 10
+                : "When animation is disabled, then the max count should be set to 10, as there's"
+                        + " no double counting anymore.";
 
         when(mPrefServiceMock.getBoolean(Pref.INCOGNITO_REAUTHENTICATION_FOR_ANDROID))
                 .thenReturn(false);
         IncognitoReauthManager.setIsIncognitoReauthFeatureAvailableForTesting(
-                /*isAvailable=*/true);
-        IncognitoReauthSettingUtils.setIsDeviceScreenLockEnabledForTesting(/*value=*/true);
+                /* isAvailable= */ true);
+        IncognitoReauthSettingUtils.setIsDeviceScreenLockEnabledForTesting(/* value= */ true);
 
         // Mocking the maximum limit.
         final int initialShowCount = mIncognitoReauthPromoMessageService.getPromoShowCount();
         final int maxShowCount = mIncognitoReauthPromoMessageService.mMaxPromoMessageCount;
         for (int i = initialShowCount; i < maxShowCount; ++i) {
-            assertTrue("Promo message should have been prepared as the current count: " + i
-                            + ", is less than the max count: " + maxShowCount,
+            assertTrue(
+                    "Promo message should have been prepared as the current count: "
+                            + i
+                            + ", is less than the max count: "
+                            + maxShowCount,
                     mIncognitoReauthPromoMessageService.preparePromoMessage());
             mIncognitoReauthPromoMessageService.increasePromoShowCountAndMayDisableIfCountExceeds();
         }
 
         assertFalse(
-                "We shouldn't prepare the message since the max limit was reached in the previous step.",
+                "We shouldn't prepare the message since the max limit was reached in the previous"
+                        + " step.",
                 mIncognitoReauthPromoMessageService.preparePromoMessage());
     }
 
@@ -341,7 +353,8 @@ public class IncognitoReauthPromoMessageServiceUnitTest {
     public void testPreparePromoMessage_DismissesCard_WhenShowCountExceeds() {
         createIncognitoReauthPromoMessageService();
         // Exceed the max count.
-        mSharedPreferenceManager.writeInt(INCOGNITO_REAUTH_PROMO_SHOW_COUNT,
+        mSharedPreferenceManager.writeInt(
+                INCOGNITO_REAUTH_PROMO_SHOW_COUNT,
                 mIncognitoReauthPromoMessageService.mMaxPromoMessageCount + 1);
         // Ensure that promo can be shown.
         IncognitoReauthPromoMessageService.setIsPromoEnabledForTesting(true);
@@ -358,22 +371,26 @@ public class IncognitoReauthPromoMessageServiceUnitTest {
     @Test
     @SmallTest
     public void
-    testReviewActionProvider_triggersIncognitoReauth_Success_EnablesPref_And_Dismisses() {
+            testReviewActionProvider_triggersIncognitoReauth_Success_EnablesPref_And_Dismisses() {
         createIncognitoReauthPromoMessageService();
 
         mIncognitoReauthPromoMessageService.addObserver(mMessageObserverMock);
-        assertTrue("Observer was not added.",
-                mIncognitoReauthPromoMessageService.getObserversForTesting().hasObserver(
-                        mMessageObserverMock));
+        assertTrue(
+                "Observer was not added.",
+                mIncognitoReauthPromoMessageService
+                        .getObserversForTesting()
+                        .hasObserver(mMessageObserverMock));
         doNothing().when(mMessageObserverMock).messageInvalidate(MessageType.FOR_TESTING);
-        IncognitoReauthManager.setIsIncognitoReauthFeatureAvailableForTesting(/*isAvailable=*/true);
+        IncognitoReauthManager.setIsIncognitoReauthFeatureAvailableForTesting(
+                /* isAvailable= */ true);
         when(mReauthenticatorBridgeMock.canUseAuthenticationWithBiometricOrScreenLock())
                 .thenReturn(true);
-        doAnswer(invocation -> {
-            Callback<Boolean> callback = invocation.getArgument(0);
-            callback.onResult(true);
-            return true;
-        })
+        doAnswer(
+                        invocation -> {
+                            Callback<Boolean> callback = invocation.getArgument(0);
+                            callback.onResult(true);
+                            return true;
+                        })
                 .when(mReauthenticatorBridgeMock)
                 .reauthenticate(notNull());
 
@@ -411,9 +428,11 @@ public class IncognitoReauthPromoMessageServiceUnitTest {
     public void testReviewActionProvider_Dismisses_IfReauthIsEnabled() {
         createIncognitoReauthPromoMessageService();
         mIncognitoReauthPromoMessageService.addObserver(mMessageObserverMock);
-        assertTrue("Observer was not added.",
-                mIncognitoReauthPromoMessageService.getObserversForTesting().hasObserver(
-                        mMessageObserverMock));
+        assertTrue(
+                "Observer was not added.",
+                mIncognitoReauthPromoMessageService
+                        .getObserversForTesting()
+                        .hasObserver(mMessageObserverMock));
         doNothing().when(mMessageObserverMock).messageInvalidate(MessageType.FOR_TESTING);
 
         // Enable the Chrome Incognito lock setting.
@@ -432,12 +451,14 @@ public class IncognitoReauthPromoMessageServiceUnitTest {
     @Test
     @SmallTest
     public void
-    testReviewActionProvider_SendsInvalidNotification_ButDoNotDisable_IfAnyOtherIssue() {
+            testReviewActionProvider_SendsInvalidNotification_ButDoNotDisable_IfAnyOtherIssue() {
         createIncognitoReauthPromoMessageService();
         mIncognitoReauthPromoMessageService.addObserver(mMessageObserverMock);
-        assertTrue("Observer was not added.",
-                mIncognitoReauthPromoMessageService.getObserversForTesting().hasObserver(
-                        mMessageObserverMock));
+        assertTrue(
+                "Observer was not added.",
+                mIncognitoReauthPromoMessageService
+                        .getObserversForTesting()
+                        .hasObserver(mMessageObserverMock));
         doNothing().when(mMessageObserverMock).messageInvalidate(MessageType.FOR_TESTING);
 
         // Promo disabled.
@@ -459,9 +480,11 @@ public class IncognitoReauthPromoMessageServiceUnitTest {
         createIncognitoReauthPromoMessageService();
 
         mIncognitoReauthPromoMessageService.addObserver(mMessageObserverMock);
-        assertTrue("Observer was not added.",
-                mIncognitoReauthPromoMessageService.getObserversForTesting().hasObserver(
-                        mMessageObserverMock));
+        assertTrue(
+                "Observer was not added.",
+                mIncognitoReauthPromoMessageService
+                        .getObserversForTesting()
+                        .hasObserver(mMessageObserverMock));
         doNothing().when(mMessageObserverMock).messageInvalidate(MessageType.FOR_TESTING);
         // Promo disabled.
         IncognitoReauthPromoMessageService.setIsPromoEnabledForTesting(false);
@@ -486,9 +509,11 @@ public class IncognitoReauthPromoMessageServiceUnitTest {
         createIncognitoReauthPromoMessageService();
 
         mIncognitoReauthPromoMessageService.addObserver(mMessageObserverMock);
-        assertTrue("Observer was not added.",
-                mIncognitoReauthPromoMessageService.getObserversForTesting().hasObserver(
-                        mMessageObserverMock));
+        assertTrue(
+                "Observer was not added.",
+                mIncognitoReauthPromoMessageService
+                        .getObserversForTesting()
+                        .hasObserver(mMessageObserverMock));
         doNothing().when(mMessageObserverMock).messageInvalidate(MessageType.FOR_TESTING);
         // Disable promo
         IncognitoReauthPromoMessageService.setIsPromoEnabledForTesting(false);
@@ -510,9 +535,11 @@ public class IncognitoReauthPromoMessageServiceUnitTest {
         createIncognitoReauthPromoMessageService();
 
         mIncognitoReauthPromoMessageService.addObserver(mMessageObserverMock);
-        assertTrue("Observer was not added.",
-                mIncognitoReauthPromoMessageService.getObserversForTesting().hasObserver(
-                        mMessageObserverMock));
+        assertTrue(
+                "Observer was not added.",
+                mIncognitoReauthPromoMessageService
+                        .getObserversForTesting()
+                        .hasObserver(mMessageObserverMock));
         doNothing().when(mMessageObserverMock).messageInvalidate(MessageType.FOR_TESTING);
         doNothing().when(mMessageObserverMock).messageReady(eq(MessageType.FOR_TESTING), any());
 

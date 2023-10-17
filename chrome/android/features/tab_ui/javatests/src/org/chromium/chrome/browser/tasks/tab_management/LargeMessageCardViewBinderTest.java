@@ -41,9 +41,7 @@ import org.chromium.ui.widget.ChromeImageView;
 
 import java.util.concurrent.atomic.AtomicBoolean;
 
-/**
- * Tests for {@link LargeMessageCardViewBinder}.
- */
+/** Tests for {@link LargeMessageCardViewBinder}. */
 @RunWith(ChromeJUnit4ClassRunner.class)
 @Batch(UNIT_TESTS)
 public class LargeMessageCardViewBinderTest extends BlankUiTestActivityTestCase {
@@ -89,34 +87,43 @@ public class LargeMessageCardViewBinderTest extends BlankUiTestActivityTestCase 
 
         ViewGroup view = new FrameLayout(getActivity());
 
-        TestThreadUtils.runOnUiThreadBlocking(() -> {
-            getActivity().setContentView(view);
+        TestThreadUtils.runOnUiThreadBlocking(
+                () -> {
+                    getActivity().setContentView(view);
 
-            mItemView = (LargeMessageCardView) getActivity().getLayoutInflater().inflate(
-                    R.layout.large_message_card_item, null);
-            view.addView(mItemView);
+                    mItemView =
+                            (LargeMessageCardView)
+                                    getActivity()
+                                            .getLayoutInflater()
+                                            .inflate(R.layout.large_message_card_item, null);
+                    view.addView(mItemView);
 
-            mPriceInfoBox = mItemView.findViewById(R.id.price_info_box);
-            mIcon = mItemView.findViewById(R.id.icon);
-            mTitle = mItemView.findViewById(R.id.title);
-            mDescription = mItemView.findViewById(R.id.description);
-            mActionButton = mItemView.findViewById(R.id.action_button);
-            mSecondaryActionButton = mItemView.findViewById(R.id.secondary_action_button);
-            mCloseButton = mItemView.findViewById(R.id.close_button);
+                    mPriceInfoBox = mItemView.findViewById(R.id.price_info_box);
+                    mIcon = mItemView.findViewById(R.id.icon);
+                    mTitle = mItemView.findViewById(R.id.title);
+                    mDescription = mItemView.findViewById(R.id.description);
+                    mActionButton = mItemView.findViewById(R.id.action_button);
+                    mSecondaryActionButton = mItemView.findViewById(R.id.secondary_action_button);
+                    mCloseButton = mItemView.findViewById(R.id.close_button);
 
-            mItemViewModel =
-                    new PropertyModel.Builder(MessageCardViewProperties.ALL_KEYS)
-                            .with(MessageCardViewProperties.TITLE_TEXT, TITLE_TEXT)
-                            .with(MessageCardViewProperties.ACTION_TEXT, ACTION_TEXT)
-                            .with(MessageCardViewProperties.DESCRIPTION_TEXT, DESCRIPTION_TEXT)
-                            .with(MessageCardViewProperties.DISMISS_BUTTON_CONTENT_DESCRIPTION,
-                                    DISMISS_BUTTON_CONTENT_DESCRIPTION)
-                            .with(MessageCardViewProperties.SHOULD_KEEP_AFTER_REVIEW, false)
-                            .build();
+                    mItemViewModel =
+                            new PropertyModel.Builder(MessageCardViewProperties.ALL_KEYS)
+                                    .with(MessageCardViewProperties.TITLE_TEXT, TITLE_TEXT)
+                                    .with(MessageCardViewProperties.ACTION_TEXT, ACTION_TEXT)
+                                    .with(
+                                            MessageCardViewProperties.DESCRIPTION_TEXT,
+                                            DESCRIPTION_TEXT)
+                                    .with(
+                                            MessageCardViewProperties
+                                                    .DISMISS_BUTTON_CONTENT_DESCRIPTION,
+                                            DISMISS_BUTTON_CONTENT_DESCRIPTION)
+                                    .with(MessageCardViewProperties.SHOULD_KEEP_AFTER_REVIEW, false)
+                                    .build();
 
-            mItemMCP = PropertyModelChangeProcessor.create(
-                    mItemViewModel, mItemView, LargeMessageCardViewBinder::bind);
-        });
+                    mItemMCP =
+                            PropertyModelChangeProcessor.create(
+                                    mItemViewModel, mItemView, LargeMessageCardViewBinder::bind);
+                });
     }
 
     @Test
@@ -127,9 +134,13 @@ public class LargeMessageCardViewBinderTest extends BlankUiTestActivityTestCase 
         assertEquals(ACTION_TEXT, mActionButton.getText().toString());
         assertEquals(DESCRIPTION_TEXT, mDescription.getText().toString());
         assertEquals(DISMISS_BUTTON_CONTENT_DESCRIPTION, mCloseButton.getContentDescription());
-        assertEquals("Secondary action button should be gone by default.", GONE,
+        assertEquals(
+                "Secondary action button should be gone by default.",
+                GONE,
                 mSecondaryActionButton.getVisibility());
-        assertEquals("Close button should be visible by default.", VISIBLE,
+        assertEquals(
+                "Close button should be visible by default.",
+                VISIBLE,
                 mCloseButton.getVisibility());
     }
 
@@ -170,9 +181,13 @@ public class LargeMessageCardViewBinderTest extends BlankUiTestActivityTestCase 
     @SmallTest
     public void testSecondaryActionText() {
         mItemViewModel.set(MessageCardViewProperties.SECONDARY_ACTION_TEXT, SECONDARY_ACTION_TEXT);
-        assertEquals("Fail to set secondary action text.", SECONDARY_ACTION_TEXT,
+        assertEquals(
+                "Fail to set secondary action text.",
+                SECONDARY_ACTION_TEXT,
                 mSecondaryActionButton.getText());
-        assertEquals("Secondary action text should be visible.", View.VISIBLE,
+        assertEquals(
+                "Secondary action text should be visible.",
+                View.VISIBLE,
                 mSecondaryActionButton.getVisibility());
     }
 
@@ -182,7 +197,8 @@ public class LargeMessageCardViewBinderTest extends BlankUiTestActivityTestCase 
     public void testSecondaryActionOnClickListenerTest() {
         mSecondaryActionButtonClicked.set(false);
         mItemViewModel.set(MessageCardViewProperties.SECONDARY_ACTION_TEXT, SECONDARY_ACTION_TEXT);
-        mItemViewModel.set(MessageCardViewProperties.SECONDARY_ACTION_BUTTON_CLICK_HANDLER,
+        mItemViewModel.set(
+                MessageCardViewProperties.SECONDARY_ACTION_BUTTON_CLICK_HANDLER,
                 mSecondaryActionButtonClickListener);
         mSecondaryActionButton.performClick();
         assertTrue("Secondary button didn't fire properly.", mSecondaryActionButtonClicked.get());
@@ -194,12 +210,15 @@ public class LargeMessageCardViewBinderTest extends BlankUiTestActivityTestCase 
     public void testSetupPriceInfoBox() {
         assertEquals(GONE, mPriceInfoBox.getVisibility());
 
-        mItemViewModel.set(MessageCardViewProperties.PRICE_DROP,
+        mItemViewModel.set(
+                MessageCardViewProperties.PRICE_DROP,
                 new ShoppingPersistedTabData.PriceDrop(PRICE, PREVIOUS_PRICE));
         assertEquals(VISIBLE, mPriceInfoBox.getVisibility());
-        assertEquals(PRICE,
+        assertEquals(
+                PRICE,
                 ((TextView) mItemView.findViewById(R.id.current_price)).getText().toString());
-        assertEquals(PREVIOUS_PRICE,
+        assertEquals(
+                PREVIOUS_PRICE,
                 ((TextView) mItemView.findViewById(R.id.previous_price)).getText().toString());
 
         mItemViewModel.set(MessageCardViewProperties.PRICE_DROP, null);
@@ -214,7 +233,8 @@ public class LargeMessageCardViewBinderTest extends BlankUiTestActivityTestCase 
         mMessageServiceReviewCallbackRan.set(false);
         mDismissButtonClicked.set(false);
         mItemViewModel.set(MessageCardViewProperties.UI_ACTION_PROVIDER, mUiReviewHandler);
-        mItemViewModel.set(MessageCardViewProperties.MESSAGE_SERVICE_ACTION_PROVIDER,
+        mItemViewModel.set(
+                MessageCardViewProperties.MESSAGE_SERVICE_ACTION_PROVIDER,
                 mMessageServiceActionHandler);
         mItemViewModel.set(MessageCardViewProperties.UI_DISMISS_ACTION_PROVIDER, mUiDismissHandler);
         mItemViewModel.set(MessageCardViewProperties.ACTION_TEXT, ACTION_TEXT);
@@ -232,9 +252,11 @@ public class LargeMessageCardViewBinderTest extends BlankUiTestActivityTestCase 
         mDismissButtonClicked.set(false);
         mMessageServiceDismissCallbackRan.set(false);
         mItemViewModel.set(MessageCardViewProperties.UI_DISMISS_ACTION_PROVIDER, mUiDismissHandler);
-        mItemViewModel.set(MessageCardViewProperties.MESSAGE_SERVICE_DISMISS_ACTION_PROVIDER,
+        mItemViewModel.set(
+                MessageCardViewProperties.MESSAGE_SERVICE_DISMISS_ACTION_PROVIDER,
                 mMessageServiceDismissHandler);
-        mItemViewModel.set(MessageCardViewProperties.DISMISS_BUTTON_CONTENT_DESCRIPTION,
+        mItemViewModel.set(
+                MessageCardViewProperties.DISMISS_BUTTON_CONTENT_DESCRIPTION,
                 DISMISS_BUTTON_CONTENT_DESCRIPTION);
 
         mCloseButton.performClick();
@@ -253,8 +275,12 @@ public class LargeMessageCardViewBinderTest extends BlankUiTestActivityTestCase 
         assertEquals(0, mItemView.getPaddingRight());
         assertEquals(0, mItemView.getPaddingBottom());
 
-        int landscapeSidePadding = (int) getActivity().getResources().getDimension(
-                R.dimen.tab_grid_large_message_side_padding_landscape);
+        int landscapeSidePadding =
+                (int)
+                        getActivity()
+                                .getResources()
+                                .getDimension(
+                                        R.dimen.tab_grid_large_message_side_padding_landscape);
         mItemView.setPadding(0, 0, 0, 0);
         mItemView.updateWidthWithOrientation(Configuration.ORIENTATION_LANDSCAPE);
         assertEquals(landscapeSidePadding, mItemView.getPaddingLeft());

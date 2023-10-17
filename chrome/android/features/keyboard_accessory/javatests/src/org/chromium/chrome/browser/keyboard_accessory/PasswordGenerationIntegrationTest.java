@@ -61,22 +61,21 @@ import java.util.ArrayList;
 import java.util.concurrent.TimeoutException;
 import java.util.concurrent.atomic.AtomicReference;
 
-/**
- * Integration tests for password generation.
- */
+/** Integration tests for password generation. */
 @RunWith(ChromeJUnit4ClassRunner.class)
-@DoNotBatch(reason = "TODO(crbug.com/1346583): add resetting logic for"
-                + "FakePasswordStoreAndroidBackend to allow batching")
+@DoNotBatch(
+        reason =
+                "TODO(crbug.com/1346583): add resetting logic for"
+                        + "FakePasswordStoreAndroidBackend to allow batching")
 @CommandLineFlags.Add({ChromeSwitches.DISABLE_FIRST_RUN_EXPERIENCE, "show-autofill-signatures"})
 public class PasswordGenerationIntegrationTest {
     /**
-     * The number of buttons currently available in the keyboard accessory bar.
-     * The offered options are: passwords, addresses and payments.
-     * */
+     * The number of buttons currently available in the keyboard accessory bar. The offered options
+     * are: passwords, addresses and payments.
+     */
     public static final int KEYBOARD_ACCESSORY_BAR_ITEM_COUNT = 3;
 
-    @Rule
-    public SyncTestRule mSyncTestRule = new SyncTestRule();
+    @Rule public SyncTestRule mSyncTestRule = new SyncTestRule();
 
     private static final String PASSWORD_NODE_ID = "password_field";
     private static final String PASSWORD_NODE_ID_MANUAL = "password_field_manual";
@@ -99,19 +98,25 @@ public class PasswordGenerationIntegrationTest {
     public void setUp() throws InterruptedException {
         PasswordStoreAndroidBackendFactory.setFactoryInstanceForTesting(
                 new FakePasswordStoreAndroidBackendFactoryImpl());
-        TestThreadUtils.runOnUiThreadBlocking(() -> {
-            ((FakePasswordStoreAndroidBackend) PasswordStoreAndroidBackendFactory.getInstance()
-                            .createBackend())
-                    .setSyncingAccount(
-                            AccountUtils.createAccountFromName(SigninTestRule.TEST_ACCOUNT_EMAIL));
-        });
+        TestThreadUtils.runOnUiThreadBlocking(
+                () -> {
+                    ((FakePasswordStoreAndroidBackend)
+                                    PasswordStoreAndroidBackendFactory.getInstance()
+                                            .createBackend())
+                            .setSyncingAccount(
+                                    AccountUtils.createAccountFromName(
+                                            SigninTestRule.TEST_ACCOUNT_EMAIL));
+                });
         PasswordSyncControllerDelegateFactory.setFactoryInstanceForTesting(
                 new FakePasswordSyncControllerDelegateFactoryImpl());
 
         mSyncTestRule.setUpAccountAndEnableSyncForTesting();
         ManualFillingTestHelper.disableServerPredictions();
 
-        runOnUiThreadBlocking(() -> { mPasswordStoreBridge = new PasswordStoreBridge(); });
+        runOnUiThreadBlocking(
+                () -> {
+                    mPasswordStoreBridge = new PasswordStoreBridge();
+                });
 
         mHelper = new ManualFillingTestHelper(mSyncTestRule);
         mHelper.loadTestPage(FORM_URL, false);
@@ -129,20 +134,24 @@ public class PasswordGenerationIntegrationTest {
         waitForGenerationLabel();
         focusField(PASSWORD_NODE_ID);
         mHelper.waitForKeyboardAccessoryToBeShown(true);
-        TestThreadUtils.runOnUiThreadBlocking(() -> {
-            ButtonCompat suggestStrongPassword =
-                    (ButtonCompat) mHelper.getFirstAccessorySuggestion();
-            Assert.assertNotNull(suggestStrongPassword);
-            suggestStrongPassword.performClick();
-        });
+        TestThreadUtils.runOnUiThreadBlocking(
+                () -> {
+                    ButtonCompat suggestStrongPassword =
+                            (ButtonCompat) mHelper.getFirstAccessorySuggestion();
+                    Assert.assertNotNull(suggestStrongPassword);
+                    suggestStrongPassword.performClick();
+                });
         waitForGenerationDialog();
         onView(withId(R.id.negative_button)).perform(click());
         assertPasswordTextEmpty(PASSWORD_NODE_ID);
         assertNoInfobarsAreShown();
-        CriteriaHelper.pollUiThread(() -> {
-            PasswordStoreCredential[] credentials = mPasswordStoreBridge.getAllCredentials();
-            Criteria.checkThat("Should have added no passwords.", credentials.length, is(0));
-        });
+        CriteriaHelper.pollUiThread(
+                () -> {
+                    PasswordStoreCredential[] credentials =
+                            mPasswordStoreBridge.getAllCredentials();
+                    Criteria.checkThat(
+                            "Should have added no passwords.", credentials.length, is(0));
+                });
     }
 
     @Test
@@ -157,10 +166,13 @@ public class PasswordGenerationIntegrationTest {
         onView(withId(R.id.negative_button)).perform(click());
         assertPasswordTextEmpty(PASSWORD_NODE_ID_MANUAL);
         assertNoInfobarsAreShown();
-        CriteriaHelper.pollUiThread(() -> {
-            PasswordStoreCredential[] credentials = mPasswordStoreBridge.getAllCredentials();
-            Criteria.checkThat("Should have added no passwords.", credentials.length, is(0));
-        });
+        CriteriaHelper.pollUiThread(
+                () -> {
+                    PasswordStoreCredential[] credentials =
+                            mPasswordStoreBridge.getAllCredentials();
+                    Criteria.checkThat(
+                            "Should have added no passwords.", credentials.length, is(0));
+                });
     }
 
     @Test
@@ -169,12 +181,13 @@ public class PasswordGenerationIntegrationTest {
         waitForGenerationLabel();
         focusField(PASSWORD_NODE_ID);
         mHelper.waitForKeyboardAccessoryToBeShown(true);
-        TestThreadUtils.runOnUiThreadBlocking(() -> {
-            ButtonCompat suggestStrongPassword =
-                    (ButtonCompat) mHelper.getFirstAccessorySuggestion();
-            Assert.assertNotNull(suggestStrongPassword);
-            suggestStrongPassword.performClick();
-        });
+        TestThreadUtils.runOnUiThreadBlocking(
+                () -> {
+                    ButtonCompat suggestStrongPassword =
+                            (ButtonCompat) mHelper.getFirstAccessorySuggestion();
+                    Assert.assertNotNull(suggestStrongPassword);
+                    suggestStrongPassword.performClick();
+                });
         waitForGenerationDialog();
         String generatedPassword = getTextFromTextView(R.id.generated_password);
         onView(withId(R.id.positive_button)).perform(click());
@@ -182,14 +195,18 @@ public class PasswordGenerationIntegrationTest {
                 () -> !mHelper.getFieldText(PASSWORD_NODE_ID).isEmpty());
         assertPasswordText(PASSWORD_NODE_ID, generatedPassword);
         clickNode(SUBMIT_NODE_ID);
-        ChromeTabUtils.waitForTabPageLoaded(mSyncTestRule.getActivity().getActivityTab(),
+        ChromeTabUtils.waitForTabPageLoaded(
+                mSyncTestRule.getActivity().getActivityTab(),
                 mHelper.getOrCreateTestServer().getURL(DONE_URL));
         waitForMessageShown();
-        CriteriaHelper.pollUiThread(() -> {
-            PasswordStoreCredential[] credentials = mPasswordStoreBridge.getAllCredentials();
-            Criteria.checkThat("Should have added one password.", credentials.length, is(1));
-            Criteria.checkThat(credentials[0].getUsername(), is(USERNAME_TEXT));
-        });
+        CriteriaHelper.pollUiThread(
+                () -> {
+                    PasswordStoreCredential[] credentials =
+                            mPasswordStoreBridge.getAllCredentials();
+                    Criteria.checkThat(
+                            "Should have added one password.", credentials.length, is(1));
+                    Criteria.checkThat(credentials[0].getUsername(), is(USERNAME_TEXT));
+                });
     }
 
     @Test
@@ -207,48 +224,63 @@ public class PasswordGenerationIntegrationTest {
                 () -> !mHelper.getFieldText(PASSWORD_NODE_ID_MANUAL).isEmpty());
         assertPasswordText(PASSWORD_NODE_ID_MANUAL, generatedPassword);
         clickNode(SUBMIT_NODE_ID_MANUAL);
-        ChromeTabUtils.waitForTabPageLoaded(mSyncTestRule.getActivity().getActivityTab(),
+        ChromeTabUtils.waitForTabPageLoaded(
+                mSyncTestRule.getActivity().getActivityTab(),
                 mHelper.getOrCreateTestServer().getURL(DONE_URL));
         waitForMessageShown();
-        CriteriaHelper.pollUiThread(() -> {
-            PasswordStoreCredential[] credentials = mPasswordStoreBridge.getAllCredentials();
-            Criteria.checkThat("Should have added one password.", credentials.length, is(1));
-            Criteria.checkThat(credentials[0].getUsername(), is(USERNAME_TEXT));
-        });
+        CriteriaHelper.pollUiThread(
+                () -> {
+                    PasswordStoreCredential[] credentials =
+                            mPasswordStoreBridge.getAllCredentials();
+                    Criteria.checkThat(
+                            "Should have added one password.", credentials.length, is(1));
+                    Criteria.checkThat(credentials[0].getUsername(), is(USERNAME_TEXT));
+                });
     }
 
     private void pressManualGenerationSuggestion() {
         CriteriaHelper.pollUiThread(
-                () -> { return mActivity.findViewById(R.id.passwords_sheet) != null; });
+                () -> {
+                    return mActivity.findViewById(R.id.passwords_sheet) != null;
+                });
         ArrayList<View> selectedViews = new ArrayList();
         (mActivity.findViewById(R.id.passwords_sheet))
-                .findViewsWithText(selectedViews,
-                        mActivity.getResources().getString(
-                                R.string.password_generation_accessory_button),
+                .findViewsWithText(
+                        selectedViews,
+                        mActivity
+                                .getResources()
+                                .getString(R.string.password_generation_accessory_button),
                         View.FIND_VIEWS_WITH_TEXT);
         View generationButton = selectedViews.get(0);
         runOnUiThreadBlockingNoException(generationButton::callOnClick);
     }
 
     private void toggleAccessorySheet() {
-        CriteriaHelper.pollUiThread(() -> {
-            mKeyboardAccessoryBarItems = (RecyclerView) mActivity.findViewById(R.id.bar_items_view);
-            return mKeyboardAccessoryBarItems != null;
-        });
-        CriteriaHelper.pollUiThread(() -> {
-            return mKeyboardAccessoryBarItems.findViewHolderForLayoutPosition(0) != null;
-        });
+        CriteriaHelper.pollUiThread(
+                () -> {
+                    mKeyboardAccessoryBarItems =
+                            (RecyclerView) mActivity.findViewById(R.id.bar_items_view);
+                    return mKeyboardAccessoryBarItems != null;
+                });
+        CriteriaHelper.pollUiThread(
+                () -> {
+                    return mKeyboardAccessoryBarItems.findViewHolderForLayoutPosition(0) != null;
+                });
         KeyboardAccessoryButtonGroupView keyboardAccessoryView =
-                (KeyboardAccessoryButtonGroupView) mKeyboardAccessoryBarItems
-                        .findViewHolderForLayoutPosition(0)
-                        .itemView;
-        CriteriaHelper.pollUiThread(() -> {
-            return keyboardAccessoryView.getButtons().size() == KEYBOARD_ACCESSORY_BAR_ITEM_COUNT;
-        });
+                (KeyboardAccessoryButtonGroupView)
+                        mKeyboardAccessoryBarItems.findViewHolderForLayoutPosition(0).itemView;
+        CriteriaHelper.pollUiThread(
+                () -> {
+                    return keyboardAccessoryView.getButtons().size()
+                            == KEYBOARD_ACCESSORY_BAR_ITEM_COUNT;
+                });
         ArrayList<ChromeImageButton> buttons = keyboardAccessoryView.getButtons();
         ChromeImageButton keyButton = buttons.get(0);
         InstrumentationRegistry.getInstrumentation().waitForIdleSync();
-        runOnUiThreadBlocking(() -> { keyButton.callOnClick(); });
+        runOnUiThreadBlocking(
+                () -> {
+                    keyButton.callOnClick();
+                });
         InstrumentationRegistry.getInstrumentation().waitForIdleSync();
     }
 
@@ -260,7 +292,9 @@ public class PasswordGenerationIntegrationTest {
         // behavior better.
         DOMUtils.focusNode(mHelper.getWebContents(), node);
         TestThreadUtils.runOnUiThreadBlocking(
-                () -> { mHelper.getWebContents().scrollFocusedEditableNodeIntoView(); });
+                () -> {
+                    mHelper.getWebContents().scrollFocusedEditableNodeIntoView();
+                });
     }
 
     private void clickNode(String node) throws InterruptedException, TimeoutException {
@@ -278,37 +312,48 @@ public class PasswordGenerationIntegrationTest {
     }
 
     private void waitForGenerationLabel() {
-        CriteriaHelper.pollInstrumentationThread(() -> {
-            String attribute = mHelper.getAttribute(PASSWORD_NODE_ID, PASSWORD_ATTRIBUTE_NAME);
-            return ELIGIBLE_FOR_GENERATION.equals(attribute);
-        });
+        CriteriaHelper.pollInstrumentationThread(
+                () -> {
+                    String attribute =
+                            mHelper.getAttribute(PASSWORD_NODE_ID, PASSWORD_ATTRIBUTE_NAME);
+                    return ELIGIBLE_FOR_GENERATION.equals(attribute);
+                });
     }
 
     private void waitForGenerationDialog() {
         waitForModalDialogPresenter();
-        ModalDialogManager manager = TestThreadUtils.runOnUiThreadBlockingNoException(
-                mSyncTestRule.getActivity()::getModalDialogManager);
-        CriteriaHelper.pollUiThread(() -> {
-            Window window = ((AppModalPresenter) manager.getCurrentPresenterForTest()).getWindow();
-            mGeneratedPasswordTextView =
-                    window.getDecorView().getRootView().findViewById(R.id.generated_password);
-            return mGeneratedPasswordTextView != null;
-        });
+        ModalDialogManager manager =
+                TestThreadUtils.runOnUiThreadBlockingNoException(
+                        mSyncTestRule.getActivity()::getModalDialogManager);
+        CriteriaHelper.pollUiThread(
+                () -> {
+                    Window window =
+                            ((AppModalPresenter) manager.getCurrentPresenterForTest()).getWindow();
+                    mGeneratedPasswordTextView =
+                            window.getDecorView()
+                                    .getRootView()
+                                    .findViewById(R.id.generated_password);
+                    return mGeneratedPasswordTextView != null;
+                });
     }
 
     private void waitForModalDialogPresenter() {
-        CriteriaHelper.pollUiThread(()
-                                            -> mSyncTestRule.getActivity()
-                                                       .getModalDialogManager()
-                                                       .getCurrentPresenterForTest()
-                        != null);
+        CriteriaHelper.pollUiThread(
+                () ->
+                        mSyncTestRule
+                                        .getActivity()
+                                        .getModalDialogManager()
+                                        .getCurrentPresenterForTest()
+                                != null);
     }
 
     private void assertNoInfobarsAreShown() {
-        TestThreadUtils.runOnUiThreadBlocking(() -> {
-            Assert.assertFalse(InfoBarContainer.from(mSyncTestRule.getActivity().getActivityTab())
-                                       .hasInfoBars());
-        });
+        TestThreadUtils.runOnUiThreadBlocking(
+                () -> {
+                    Assert.assertFalse(
+                            InfoBarContainer.from(mSyncTestRule.getActivity().getActivityTab())
+                                    .hasInfoBars());
+                });
     }
 
     private static String getTextFromTextView(int id) {
@@ -320,9 +365,12 @@ public class PasswordGenerationIntegrationTest {
 
     private void waitForMessageShown() {
         WindowAndroid window = mSyncTestRule.getActivity().getWindowAndroid();
-        CriteriaHelper.pollUiThread(() -> {
-            Criteria.checkThat("Message is not enqueued.",
-                    MessagesTestHelper.getMessageCount(window), Matchers.is(1));
-        });
+        CriteriaHelper.pollUiThread(
+                () -> {
+                    Criteria.checkThat(
+                            "Message is not enqueued.",
+                            MessagesTestHelper.getMessageCount(window),
+                            Matchers.is(1));
+                });
     }
 }

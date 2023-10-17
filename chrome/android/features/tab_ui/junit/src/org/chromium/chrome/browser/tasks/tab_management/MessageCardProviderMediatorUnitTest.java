@@ -30,9 +30,7 @@ import org.chromium.ui.modelutil.PropertyModel;
 
 import java.util.List;
 
-/**
- * Unit tests for {@link MessageCardProviderMediator}.
- */
+/** Unit tests for {@link MessageCardProviderMediator}. */
 @RunWith(BaseRobolectricTestRunner.class)
 public class MessageCardProviderMediatorUnitTest {
     private static final int SUGGESTED_TAB_COUNT = 2;
@@ -40,30 +38,23 @@ public class MessageCardProviderMediatorUnitTest {
 
     private MessageCardProviderMediator mMediator;
 
-    @Mock
-    private MessageCardView.DismissActionProvider mUiDismissActionProvider;
+    @Mock private MessageCardView.DismissActionProvider mUiDismissActionProvider;
+
+    @Mock private Context mContext;
+
+    @Mock private Resources mResourcesMock;
+
+    @Mock private TabSuggestionMessageService.TabSuggestionMessageData mTabSuggestionMessageData;
+
+    @Mock private PriceMessageService.PriceMessageData mPriceMessageData;
+
+    @Mock private Supplier<Boolean> mIsIncognitoSupplier;
+
+    @Mock private IphMessageService.IphMessageData mIphMessageData;
 
     @Mock
-    private Context mContext;
-
-    @Mock
-    private Resources mResourcesMock;
-
-    @Mock
-    private TabSuggestionMessageService.TabSuggestionMessageData mTabSuggestionMessageData;
-
-    @Mock
-    private PriceMessageService.PriceMessageData mPriceMessageData;
-
-    @Mock
-    private Supplier<Boolean> mIsIncognitoSupplier;
-
-    @Mock
-    private IphMessageService.IphMessageData mIphMessageData;
-
-    @Mock
-    private IncognitoReauthPromoMessageService
-            .IncognitoReauthMessageData mIncognitoReauthMessageData;
+    private IncognitoReauthPromoMessageService.IncognitoReauthMessageData
+            mIncognitoReauthMessageData;
 
     @Before
     public void setUp() {
@@ -71,8 +62,9 @@ public class MessageCardProviderMediatorUnitTest {
 
         doReturn(false).when(mIsIncognitoSupplier).get();
         doNothing().when(mUiDismissActionProvider).dismiss(anyInt());
-        mMediator = new MessageCardProviderMediator(
-                mContext, mIsIncognitoSupplier, mUiDismissActionProvider);
+        mMediator =
+                new MessageCardProviderMediator(
+                        mContext, mIsIncognitoSupplier, mUiDismissActionProvider);
     }
 
     private void enqueueMessageItem(@MessageService.MessageType int type, int tabSuggestionAction) {
@@ -146,10 +138,14 @@ public class MessageCardProviderMediatorUnitTest {
         Assert.assertEquals(MessageService.MessageType.FOR_TESTING, messages.get(1).type);
 
         Assert.assertEquals(2, mMediator.getShownMessageItemsForTesting().size());
-        Assert.assertTrue(mMediator.getShownMessageItemsForTesting().containsKey(
-                MessageService.MessageType.TAB_SUGGESTION));
-        Assert.assertTrue(mMediator.getShownMessageItemsForTesting().containsKey(
-                MessageService.MessageType.FOR_TESTING));
+        Assert.assertTrue(
+                mMediator
+                        .getShownMessageItemsForTesting()
+                        .containsKey(MessageService.MessageType.TAB_SUGGESTION));
+        Assert.assertTrue(
+                mMediator
+                        .getShownMessageItemsForTesting()
+                        .containsKey(MessageService.MessageType.FOR_TESTING));
     }
 
     @Test
@@ -158,8 +154,9 @@ public class MessageCardProviderMediatorUnitTest {
         enqueueMessageItem(MessageService.MessageType.FOR_TESTING, TESTING_ACTION);
 
         List<MessageCardProviderMediator.Message> messages =
-                mMediator.getReadyMessageItemsForTesting().get(
-                        MessageService.MessageType.FOR_TESTING);
+                mMediator
+                        .getReadyMessageItemsForTesting()
+                        .get(MessageService.MessageType.FOR_TESTING);
         Assert.assertEquals(2, messages.size());
         final MessageCardProviderMediator.Message testingMessage1 = messages.get(0);
         final MessageCardProviderMediator.Message testingMessage2 = messages.get(1);
@@ -169,13 +166,17 @@ public class MessageCardProviderMediatorUnitTest {
         Assert.assertEquals(testingMessage1, messages.get(0));
 
         Assert.assertEquals(1, mMediator.getShownMessageItemsForTesting().size());
-        Assert.assertEquals(testingMessage1,
-                mMediator.getShownMessageItemsForTesting().get(
-                        MessageService.MessageType.FOR_TESTING));
+        Assert.assertEquals(
+                testingMessage1,
+                mMediator
+                        .getShownMessageItemsForTesting()
+                        .get(MessageService.MessageType.FOR_TESTING));
 
         Assert.assertEquals(1, mMediator.getShownMessageItemsForTesting().size());
-        Assert.assertEquals(testingMessage2,
-                mMediator.getReadyMessageItemsForTesting()
+        Assert.assertEquals(
+                testingMessage2,
+                mMediator
+                        .getReadyMessageItemsForTesting()
                         .get(MessageService.MessageType.FOR_TESTING)
                         .get(0));
     }
@@ -186,8 +187,9 @@ public class MessageCardProviderMediatorUnitTest {
         enqueueMessageItem(MessageService.MessageType.FOR_TESTING, TESTING_ACTION);
 
         List<MessageCardProviderMediator.Message> messages =
-                mMediator.getReadyMessageItemsForTesting().get(
-                        MessageService.MessageType.FOR_TESTING);
+                mMediator
+                        .getReadyMessageItemsForTesting()
+                        .get(MessageService.MessageType.FOR_TESTING);
         Assert.assertEquals(2, messages.size());
         final MessageCardProviderMediator.Message testingMessage1 = messages.get(0);
 
@@ -217,8 +219,9 @@ public class MessageCardProviderMediatorUnitTest {
         enqueueMessageItem(MessageService.MessageType.FOR_TESTING, TESTING_ACTION);
 
         List<MessageCardProviderMediator.Message> messages =
-                mMediator.getReadyMessageItemsForTesting().get(
-                        MessageService.MessageType.FOR_TESTING);
+                mMediator
+                        .getReadyMessageItemsForTesting()
+                        .get(MessageService.MessageType.FOR_TESTING);
         Assert.assertEquals(2, messages.size());
         final MessageCardProviderMediator.Message testingMessage1 = messages.get(0);
         final MessageCardProviderMediator.Message testingMessage2 = messages.get(1);
@@ -244,20 +247,28 @@ public class MessageCardProviderMediatorUnitTest {
 
         mMediator.messageInvalidate(MessageService.MessageType.TAB_SUGGESTION);
 
-        Assert.assertFalse(mMediator.getReadyMessageItemsForTesting().containsKey(
-                MessageService.MessageType.TAB_SUGGESTION));
-        Assert.assertFalse(mMediator.getShownMessageItemsForTesting().containsKey(
-                MessageService.MessageType.TAB_SUGGESTION));
+        Assert.assertFalse(
+                mMediator
+                        .getReadyMessageItemsForTesting()
+                        .containsKey(MessageService.MessageType.TAB_SUGGESTION));
+        Assert.assertFalse(
+                mMediator
+                        .getShownMessageItemsForTesting()
+                        .containsKey(MessageService.MessageType.TAB_SUGGESTION));
 
         // Testing multiple Messages has the same type.
         enqueueMessageItem(MessageService.MessageType.FOR_TESTING, TESTING_ACTION);
         enqueueMessageItem(MessageService.MessageType.FOR_TESTING, TESTING_ACTION);
 
         mMediator.messageInvalidate(MessageService.MessageType.FOR_TESTING);
-        Assert.assertFalse(mMediator.getReadyMessageItemsForTesting().containsKey(
-                MessageService.MessageType.FOR_TESTING));
-        Assert.assertFalse(mMediator.getShownMessageItemsForTesting().containsKey(
-                MessageService.MessageType.FOR_TESTING));
+        Assert.assertFalse(
+                mMediator
+                        .getReadyMessageItemsForTesting()
+                        .containsKey(MessageService.MessageType.FOR_TESTING));
+        Assert.assertFalse(
+                mMediator
+                        .getShownMessageItemsForTesting()
+                        .containsKey(MessageService.MessageType.FOR_TESTING));
     }
 
     @Test
@@ -269,10 +280,14 @@ public class MessageCardProviderMediatorUnitTest {
         mMediator.invalidateShownMessage(MessageService.MessageType.TAB_SUGGESTION);
 
         verify(mUiDismissActionProvider).dismiss(anyInt());
-        Assert.assertFalse(mMediator.getShownMessageItemsForTesting().containsKey(
-                MessageService.MessageType.TAB_SUGGESTION));
-        Assert.assertFalse(mMediator.getReadyMessageItemsForTesting().containsKey(
-                MessageService.MessageType.TAB_SUGGESTION));
+        Assert.assertFalse(
+                mMediator
+                        .getShownMessageItemsForTesting()
+                        .containsKey(MessageService.MessageType.TAB_SUGGESTION));
+        Assert.assertFalse(
+                mMediator
+                        .getReadyMessageItemsForTesting()
+                        .containsKey(MessageService.MessageType.TAB_SUGGESTION));
 
         // Testing multiple Messages has the same type.
         enqueueMessageItem(MessageService.MessageType.FOR_TESTING, TESTING_ACTION);
@@ -280,10 +295,14 @@ public class MessageCardProviderMediatorUnitTest {
 
         mMediator.getMessageItems();
         mMediator.invalidateShownMessage(MessageService.MessageType.FOR_TESTING);
-        Assert.assertFalse(mMediator.getShownMessageItemsForTesting().containsKey(
-                MessageService.MessageType.FOR_TESTING));
-        Assert.assertTrue(mMediator.getReadyMessageItemsForTesting().containsKey(
-                MessageService.MessageType.FOR_TESTING));
+        Assert.assertFalse(
+                mMediator
+                        .getShownMessageItemsForTesting()
+                        .containsKey(MessageService.MessageType.FOR_TESTING));
+        Assert.assertTrue(
+                mMediator
+                        .getReadyMessageItemsForTesting()
+                        .containsKey(MessageService.MessageType.FOR_TESTING));
     }
 
     @Test
@@ -296,13 +315,17 @@ public class MessageCardProviderMediatorUnitTest {
         enqueueMessageItem(
                 MessageService.MessageType.TAB_SUGGESTION, TabSuggestion.TabSuggestionAction.CLOSE);
 
-        PropertyModel model = mMediator.getReadyMessageItemsForTesting()
-                                      .get(MessageService.MessageType.TAB_SUGGESTION)
-                                      .get(0)
-                                      .model;
-        Assert.assertEquals(MessageService.MessageType.TAB_SUGGESTION,
+        PropertyModel model =
+                mMediator
+                        .getReadyMessageItemsForTesting()
+                        .get(MessageService.MessageType.TAB_SUGGESTION)
+                        .get(0)
+                        .model;
+        Assert.assertEquals(
+                MessageService.MessageType.TAB_SUGGESTION,
                 model.get(MessageCardViewProperties.MESSAGE_TYPE));
-        Assert.assertEquals(closingTabSuggestionMessage,
+        Assert.assertEquals(
+                closingTabSuggestionMessage,
                 model.get(MessageCardViewProperties.DESCRIPTION_TEXT_TEMPLATE));
     }
 
@@ -316,13 +339,17 @@ public class MessageCardProviderMediatorUnitTest {
         enqueueMessageItem(
                 MessageService.MessageType.TAB_SUGGESTION, TabSuggestion.TabSuggestionAction.GROUP);
 
-        PropertyModel model = mMediator.getReadyMessageItemsForTesting()
-                                      .get(MessageService.MessageType.TAB_SUGGESTION)
-                                      .get(0)
-                                      .model;
-        Assert.assertEquals(MessageService.MessageType.TAB_SUGGESTION,
+        PropertyModel model =
+                mMediator
+                        .getReadyMessageItemsForTesting()
+                        .get(MessageService.MessageType.TAB_SUGGESTION)
+                        .get(0)
+                        .model;
+        Assert.assertEquals(
+                MessageService.MessageType.TAB_SUGGESTION,
                 model.get(MessageCardViewProperties.MESSAGE_TYPE));
-        Assert.assertEquals(groupingTabSuggestionMessage,
+        Assert.assertEquals(
+                groupingTabSuggestionMessage,
                 model.get(MessageCardViewProperties.DESCRIPTION_TEXT_TEMPLATE));
     }
 
@@ -333,11 +360,14 @@ public class MessageCardProviderMediatorUnitTest {
 
         enqueueMessageItem(MessageService.MessageType.PRICE_MESSAGE, -1);
 
-        PropertyModel model = mMediator.getReadyMessageItemsForTesting()
-                                      .get(MessageService.MessageType.PRICE_MESSAGE)
-                                      .get(0)
-                                      .model;
-        Assert.assertEquals(MessageService.MessageType.PRICE_MESSAGE,
+        PropertyModel model =
+                mMediator
+                        .getReadyMessageItemsForTesting()
+                        .get(MessageService.MessageType.PRICE_MESSAGE)
+                        .get(0)
+                        .model;
+        Assert.assertEquals(
+                MessageService.MessageType.PRICE_MESSAGE,
                 model.get(MessageCardViewProperties.MESSAGE_TYPE));
         Assert.assertEquals(titleText, model.get(MessageCardViewProperties.TITLE_TEXT));
     }
@@ -346,10 +376,12 @@ public class MessageCardProviderMediatorUnitTest {
     public void buildModel_ForIphMessage() {
         enqueueMessageItem(MessageService.MessageType.IPH, -1);
 
-        PropertyModel model = mMediator.getReadyMessageItemsForTesting()
-                                      .get(MessageService.MessageType.IPH)
-                                      .get(0)
-                                      .model;
+        PropertyModel model =
+                mMediator
+                        .getReadyMessageItemsForTesting()
+                        .get(MessageService.MessageType.IPH)
+                        .get(0)
+                        .model;
         Assert.assertEquals(
                 MessageService.MessageType.IPH, model.get(MessageCardViewProperties.MESSAGE_TYPE));
     }
@@ -359,21 +391,23 @@ public class MessageCardProviderMediatorUnitTest {
         final int height = 1;
         final int width = 2;
         when(mResourcesMock.getDimensionPixelSize(
-                     R.dimen.incognito_reauth_promo_message_icon_height))
+                        R.dimen.incognito_reauth_promo_message_icon_height))
                 .thenReturn(height);
         when(mResourcesMock.getDimensionPixelSize(
-                     R.dimen.incognito_reauth_promo_message_icon_width))
+                        R.dimen.incognito_reauth_promo_message_icon_width))
                 .thenReturn(width);
         when(mContext.getResources()).thenReturn(mResourcesMock);
 
         enqueueMessageItem(MessageService.MessageType.INCOGNITO_REAUTH_PROMO_MESSAGE, -1);
 
         PropertyModel model =
-                mMediator.getReadyMessageItemsForTesting()
+                mMediator
+                        .getReadyMessageItemsForTesting()
                         .get(MessageService.MessageType.INCOGNITO_REAUTH_PROMO_MESSAGE)
                         .get(0)
                         .model;
-        Assert.assertEquals(MessageService.MessageType.INCOGNITO_REAUTH_PROMO_MESSAGE,
+        Assert.assertEquals(
+                MessageService.MessageType.INCOGNITO_REAUTH_PROMO_MESSAGE,
                 model.get(MessageCardViewProperties.MESSAGE_TYPE));
         verify(mResourcesMock, times(1))
                 .getDimensionPixelSize(R.dimen.incognito_reauth_promo_message_icon_height);
@@ -414,15 +448,18 @@ public class MessageCardProviderMediatorUnitTest {
 
     @Test
     public void isMessageShownTest() {
-        Assert.assertFalse(mMediator.isMessageShown(
-                MessageService.MessageType.PRICE_MESSAGE, PriceMessageType.PRICE_WELCOME));
+        Assert.assertFalse(
+                mMediator.isMessageShown(
+                        MessageService.MessageType.PRICE_MESSAGE, PriceMessageType.PRICE_WELCOME));
         enqueueMessageItem(MessageService.MessageType.PRICE_MESSAGE, -1);
         // Mock pulling this message, which will move the message from mMessageItems to
         // mShownMessageItems.
         mMediator.getNextMessageItemForType(MessageService.MessageType.PRICE_MESSAGE);
-        Assert.assertTrue(mMediator.isMessageShown(
-                MessageService.MessageType.PRICE_MESSAGE, PriceMessageType.PRICE_WELCOME));
-        Assert.assertFalse(mMediator.isMessageShown(
-                MessageService.MessageType.PRICE_MESSAGE, PriceMessageType.PRICE_ALERTS));
+        Assert.assertTrue(
+                mMediator.isMessageShown(
+                        MessageService.MessageType.PRICE_MESSAGE, PriceMessageType.PRICE_WELCOME));
+        Assert.assertFalse(
+                mMediator.isMessageShown(
+                        MessageService.MessageType.PRICE_MESSAGE, PriceMessageType.PRICE_ALERTS));
     }
 }

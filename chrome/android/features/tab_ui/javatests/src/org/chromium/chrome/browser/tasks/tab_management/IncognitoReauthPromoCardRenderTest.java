@@ -45,9 +45,7 @@ import org.chromium.ui.test.util.UiRestriction;
 
 import java.io.IOException;
 
-/**
- * Render tests for incognito re-auth promo message card.
- */
+/** Render tests for incognito re-auth promo message card. */
 @RunWith(ChromeJUnit4ClassRunner.class)
 @CommandLineFlags.Add(ChromeSwitches.DISABLE_FIRST_RUN_EXPERIENCE)
 @Restriction({UiRestriction.RESTRICTION_TYPE_PHONE, RESTRICTION_TYPE_NON_LOW_END_DEVICE})

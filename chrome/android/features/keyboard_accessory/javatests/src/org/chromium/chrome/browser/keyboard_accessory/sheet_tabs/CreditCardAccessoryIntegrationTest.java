@@ -45,10 +45,7 @@ import org.chromium.ui.test.util.UiDisableIf;
 
 import java.util.concurrent.TimeoutException;
 
-/**
- * Integration tests for credit card accessory views.
- */
-
+/** Integration tests for credit card accessory views. */
 @RunWith(ChromeJUnit4ClassRunner.class)
 @CommandLineFlags.Add({ChromeSwitches.DISABLE_FIRST_RUN_EXPERIENCE})
 public class CreditCardAccessoryIntegrationTest {
@@ -65,8 +62,11 @@ public class CreditCardAccessoryIntegrationTest {
 
     private void loadTestPage(ChromeWindow.KeyboardVisibilityDelegateFactory keyboardDelegate)
             throws TimeoutException {
-        mHelper.loadTestPage("/chrome/test/data/autofill/autofill_creditcard_form.html", false,
-                false, keyboardDelegate);
+        mHelper.loadTestPage(
+                "/chrome/test/data/autofill/autofill_creditcard_form.html",
+                false,
+                false,
+                keyboardDelegate);
         CreditCard card = new CreditCard();
         card.setName("Kirby Puckett");
         card.setNumber("4111111111111111");
@@ -82,9 +82,11 @@ public class CreditCardAccessoryIntegrationTest {
     public void testCreditCardSheetAvailable_whenManualFallbackEnabled() {
         mHelper.loadTestPage(false);
 
-        CriteriaHelper.pollUiThread(() -> {
-            return mHelper.getOrCreateCreditCardAccessorySheet() != null;
-        }, "Credit Card sheet should be bound to accessory sheet.");
+        CriteriaHelper.pollUiThread(
+                () -> {
+                    return mHelper.getOrCreateCreditCardAccessorySheet() != null;
+                },
+                "Credit Card sheet should be bound to accessory sheet.");
     }
 
     @Test
@@ -99,8 +101,10 @@ public class CreditCardAccessoryIntegrationTest {
 
         // Click the tab to show the sheet and hide the keyboard.
         whenDisplayed(withId(R.id.bar_items_view))
-                .perform(scrollTo(isKeyboardAccessoryTabLayout()),
-                        actionOnItem(isKeyboardAccessoryTabLayout(),
+                .perform(
+                        scrollTo(isKeyboardAccessoryTabLayout()),
+                        actionOnItem(
+                                isKeyboardAccessoryTabLayout(),
                                 selectTabWithDescription(
                                         R.string.credit_card_accessory_sheet_toggle)));
 
@@ -120,8 +124,10 @@ public class CreditCardAccessoryIntegrationTest {
 
         // Scroll to last element and click the first icon:
         whenDisplayed(withId(R.id.bar_items_view))
-                .perform(scrollTo(isKeyboardAccessoryTabLayout()),
-                        actionOnItem(isKeyboardAccessoryTabLayout(),
+                .perform(
+                        scrollTo(isKeyboardAccessoryTabLayout()),
+                        actionOnItem(
+                                isKeyboardAccessoryTabLayout(),
                                 selectTabWithDescription(
                                         R.string.credit_card_accessory_sheet_toggle)));
 
@@ -131,8 +137,9 @@ public class CreditCardAccessoryIntegrationTest {
         // Click a suggestion.
         whenDisplayed(withId(R.id.cc_number)).perform(click());
 
-        CriteriaHelper.pollInstrumentationThread(() -> {
-            return mHelper.getFieldText("CREDIT_CARD_NAME_FULL").equals("4111111111111111");
-        });
+        CriteriaHelper.pollInstrumentationThread(
+                () -> {
+                    return mHelper.getFieldText("CREDIT_CARD_NAME_FULL").equals("4111111111111111");
+                });
     }
 }

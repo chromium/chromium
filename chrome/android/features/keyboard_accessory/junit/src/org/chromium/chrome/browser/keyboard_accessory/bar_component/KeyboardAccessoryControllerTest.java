@@ -66,28 +66,20 @@ import org.chromium.ui.test.util.modelutil.FakeViewProvider;
 
 import java.util.HashMap;
 
-/**
- * Controller tests for the keyboard accessory component.
- */
+/** Controller tests for the keyboard accessory component. */
 @RunWith(BaseRobolectricTestRunner.class)
-@Config(manifest = Config.NONE, shadows = {CustomShadowAsyncTask.class})
+@Config(
+        manifest = Config.NONE,
+        shadows = {CustomShadowAsyncTask.class})
 public class KeyboardAccessoryControllerTest {
-    @Mock
-    private PropertyObserver<PropertyKey> mMockPropertyObserver;
-    @Mock
-    private ListObservable.ListObserver<Void> mMockActionListObserver;
-    @Mock
-    private KeyboardAccessoryCoordinator.BarVisibilityDelegate mMockBarVisibilityDelegate;
-    @Mock
-    private AccessorySheetCoordinator.SheetVisibilityDelegate mMockSheetVisibilityDelegate;
-    @Mock
-    private KeyboardAccessoryModernView mMockView;
-    @Mock
-    private KeyboardAccessoryTabLayoutCoordinator mMockTabLayout;
-    @Mock
-    private KeyboardAccessoryCoordinator.TabSwitchingDelegate mMockTabSwitchingDelegate;
-    @Mock
-    private AutofillDelegate mMockAutofillDelegate;
+    @Mock private PropertyObserver<PropertyKey> mMockPropertyObserver;
+    @Mock private ListObservable.ListObserver<Void> mMockActionListObserver;
+    @Mock private KeyboardAccessoryCoordinator.BarVisibilityDelegate mMockBarVisibilityDelegate;
+    @Mock private AccessorySheetCoordinator.SheetVisibilityDelegate mMockSheetVisibilityDelegate;
+    @Mock private KeyboardAccessoryModernView mMockView;
+    @Mock private KeyboardAccessoryTabLayoutCoordinator mMockTabLayout;
+    @Mock private KeyboardAccessoryCoordinator.TabSwitchingDelegate mMockTabSwitchingDelegate;
+    @Mock private AutofillDelegate mMockAutofillDelegate;
 
     private final KeyboardAccessoryData.Tab mTestTab =
             new KeyboardAccessoryData.Tab("Passwords", null, null, 0, 0, null);
@@ -103,8 +95,12 @@ public class KeyboardAccessoryControllerTest {
         setAutofillFeature(false);
         when(mMockView.getTabLayout()).thenReturn(mock(TabLayout.class));
         when(mMockTabLayout.getTabSwitchingDelegate()).thenReturn(mMockTabSwitchingDelegate);
-        mCoordinator = new KeyboardAccessoryCoordinator(mMockTabLayout, mMockBarVisibilityDelegate,
-                mMockSheetVisibilityDelegate, new FakeViewProvider<>(mMockView));
+        mCoordinator =
+                new KeyboardAccessoryCoordinator(
+                        mMockTabLayout,
+                        mMockBarVisibilityDelegate,
+                        mMockSheetVisibilityDelegate,
+                        new FakeViewProvider<>(mMockView));
         mMediator = mCoordinator.getMediatorForTesting();
         mModel = mMediator.getModelForTesting();
     }
@@ -422,7 +418,8 @@ public class KeyboardAccessoryControllerTest {
 
         // assertThat(getAutofillItemAt(0).getFeatureForIPH(), is(nullValue()));
         // mCoordinator.prepareUserEducation();
-        assertThat(getAutofillItemAt(0).getFeatureForIPH(),
+        assertThat(
+                getAutofillItemAt(0).getFeatureForIPH(),
                 is(FeatureConstants.KEYBOARD_ACCESSORY_ADDRESS_FILL_FEATURE));
         assertThat(getAutofillItemAt(1).getFeatureForIPH(), is(nullValue()));
         assertThat(getAutofillItemAt(2).getFeatureForIPH(), is(nullValue()));
@@ -446,7 +443,8 @@ public class KeyboardAccessoryControllerTest {
 
         // assertThat(getAutofillItemAt(0).getFeatureForIPH(), is(nullValue()));
         // mCoordinator.prepareUserEducation();
-        assertThat(getAutofillItemAt(0).getFeatureForIPH(),
+        assertThat(
+                getAutofillItemAt(0).getFeatureForIPH(),
                 is(FeatureConstants.KEYBOARD_ACCESSORY_PAYMENT_FILLING_FEATURE));
         assertThat(getAutofillItemAt(1).getFeatureForIPH(), is(nullValue()));
         assertThat(getAutofillItemAt(2).getFeatureForIPH(), is(nullValue()));
@@ -471,7 +469,8 @@ public class KeyboardAccessoryControllerTest {
 
         // assertThat(getAutofillItemAt(0).getFeatureForIPH(), is(nullValue()));
         // mCoordinator.prepareUserEducation();
-        assertThat(getAutofillItemAt(0).getFeatureForIPH(),
+        assertThat(
+                getAutofillItemAt(0).getFeatureForIPH(),
                 is(FeatureConstants.KEYBOARD_ACCESSORY_PAYMENT_VIRTUAL_CARD_FEATURE));
         // Other suggestions also have explicit IPH strings, but only the first suggestion's string
         // is shown.
@@ -500,13 +499,16 @@ public class KeyboardAccessoryControllerTest {
                         .setFeatureForIPH("")
                         .build();
         mCoordinator.registerAutofillProvider(autofillSuggestionProvider, mMockAutofillDelegate);
-        autofillSuggestionProvider.notifyObservers(new AutofillSuggestion[] {
-                passwordSuggestion1, passwordSuggestion2, passwordSuggestion2});
+        autofillSuggestionProvider.notifyObservers(
+                new AutofillSuggestion[] {
+                    passwordSuggestion1, passwordSuggestion2, passwordSuggestion2
+                });
 
         // assertThat(getAutofillItemAt(0).getFeatureForIPH(), is(nullValue()));
         // mCoordinator.prepareUserEducation();
         assertThat(getAutofillItemAt(0).getFeatureForIPH(), is(nullValue()));
-        assertThat(getAutofillItemAt(1).getFeatureForIPH(),
+        assertThat(
+                getAutofillItemAt(1).getFeatureForIPH(),
                 is(FeatureConstants.KEYBOARD_ACCESSORY_PASSWORD_FILLING_FEATURE));
         assertThat(getAutofillItemAt(2).getFeatureForIPH(), is(nullValue()));
     }
@@ -532,7 +534,8 @@ public class KeyboardAccessoryControllerTest {
 
         // assertThat(getAutofillItemAt(0).getFeatureForIPH(), is(nullValue()));
         // mCoordinator.prepareUserEducation();
-        assertThat(getAutofillItemAt(0).getFeatureForIPH(),
+        assertThat(
+                getAutofillItemAt(0).getFeatureForIPH(),
                 is(FeatureConstants.KEYBOARD_ACCESSORY_EXTERNAL_ACCOUNT_PROFILE_FEATURE));
         assertThat(getAutofillItemAt(1).getFeatureForIPH(), is(nullValue()));
         assertThat(getAutofillItemAt(2).getFeatureForIPH(), is(nullValue()));

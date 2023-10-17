@@ -62,20 +62,25 @@ import org.chromium.ui.test.util.ViewUtils;
  * Clank startup.
  */
 @RunWith(ChromeJUnit4ClassRunner.class)
-@CommandLineFlags.
-    Add({ChromeSwitches.DISABLE_FIRST_RUN_EXPERIENCE, "force-fieldtrials=Study/Group"})
-@EnableFeatures({ChromeFeatureList.START_SURFACE_RETURN_TIME + "<Study,",
-    ChromeFeatureList.START_SURFACE_ANDROID + "<Study", ChromeFeatureList.INSTANT_START})
-@Restriction({Restriction.RESTRICTION_TYPE_NON_LOW_END_DEVICE,
-    UiRestriction.RESTRICTION_TYPE_PHONE})
+@CommandLineFlags.Add({
+    ChromeSwitches.DISABLE_FIRST_RUN_EXPERIENCE,
+    "force-fieldtrials=Study/Group"
+})
+@EnableFeatures({
+    ChromeFeatureList.START_SURFACE_RETURN_TIME + "<Study,",
+    ChromeFeatureList.START_SURFACE_ANDROID + "<Study",
+    ChromeFeatureList.INSTANT_START
+})
+@Restriction({
+    Restriction.RESTRICTION_TYPE_NON_LOW_END_DEVICE,
+    UiRestriction.RESTRICTION_TYPE_PHONE
+})
 public class InstantStartFeedTest {
     private static final int ARTICLE_SECTION_HEADER_POSITION = 0;
 
-    @Rule
-    public JniMocker mJniMocker = new JniMocker();
+    @Rule public JniMocker mJniMocker = new JniMocker();
 
-    @Rule
-    public MockitoRule mMockitoRule = MockitoJUnit.rule();
+    @Rule public MockitoRule mMockitoRule = MockitoJUnit.rule();
 
     @Rule
     public ChromeTabbedActivityTestRule mActivityTestRule = new ChromeTabbedActivityTestRule();
@@ -94,8 +99,10 @@ public class InstantStartFeedTest {
 
     @Test
     @SmallTest
-    @CommandLineFlags.Add({ChromeSwitches.DISABLE_NATIVE_INITIALIZATION,
-        INSTANT_START_TEST_BASE_PARAMS})
+    @CommandLineFlags.Add({
+        ChromeSwitches.DISABLE_NATIVE_INITIALIZATION,
+        INSTANT_START_TEST_BASE_PARAMS
+    })
     public void testFeedPlaceholderFromColdStart() {
         StartSurfaceTestUtils.startMainActivityFromLauncher(mActivityTestRule);
         Assert.assertFalse(mActivityTestRule.getActivity().isTablet());
@@ -110,39 +117,47 @@ public class InstantStartFeedTest {
         StartSurfaceTestUtils.startAndWaitNativeInitialization(mActivityTestRule);
         // Feed background should be non-transparent finally.
         ViewUtils.onViewWaiting(
-                AllOf.allOf(withId(org.chromium.chrome.test.R.id.feed_stream_recycler_view),
+                AllOf.allOf(
+                        withId(org.chromium.chrome.test.R.id.feed_stream_recycler_view),
                         matchesBackgroundAlpha(255)));
 
         StartSurfaceCoordinator startSurfaceCoordinator =
                 StartSurfaceTestUtils.getStartSurfaceFromUIThread(cta);
-        TestThreadUtils.runOnUiThreadBlocking(() -> {
-            Assert.assertFalse(
-                    startSurfaceCoordinator.getMediatorForTesting().shouldShowFeedPlaceholder());
-        });
+        TestThreadUtils.runOnUiThreadBlocking(
+                () -> {
+                    Assert.assertFalse(
+                            startSurfaceCoordinator
+                                    .getMediatorForTesting()
+                                    .shouldShowFeedPlaceholder());
+                });
     }
 
     @Test
     @LargeTest
-    @CommandLineFlags.Add({INSTANT_START_TEST_BASE_PARAMS,
-            // TODO(crbug.com/1491942): This fails with the field trial testing config.
-            "disable-field-trial-config"})
+    @CommandLineFlags.Add({
+        INSTANT_START_TEST_BASE_PARAMS,
+        // TODO(crbug.com/1491942): This fails with the field trial testing config.
+        "disable-field-trial-config"
+    })
     public void testCachedFeedVisibility() {
         StartSurfaceTestUtils.startMainActivityFromLauncher(mActivityTestRule);
         mActivityTestRule.waitForActivityNativeInitializationComplete();
         // FEED_ARTICLES_LIST_VISIBLE should equal to ARTICLES_LIST_VISIBLE.
-        CriteriaHelper.pollUiThread(()
-                                            -> UserPrefs.get(Profile.getLastUsedRegularProfile())
-                                                       .getBoolean(Pref.ARTICLES_LIST_VISIBLE)
-                        == ReturnToChromeUtil.getFeedArticlesVisibility());
+        CriteriaHelper.pollUiThread(
+                () ->
+                        UserPrefs.get(Profile.getLastUsedRegularProfile())
+                                        .getBoolean(Pref.ARTICLES_LIST_VISIBLE)
+                                == ReturnToChromeUtil.getFeedArticlesVisibility());
 
         // Hide articles and verify that FEED_ARTICLES_LIST_VISIBLE and ARTICLES_LIST_VISIBLE are
         // both false.
         toggleHeader(false);
         CriteriaHelper.pollUiThread(() -> !ReturnToChromeUtil.getFeedArticlesVisibility());
         TestThreadUtils.runOnUiThreadBlocking(
-                ()
-                        -> Assert.assertEquals(UserPrefs.get(Profile.getLastUsedRegularProfile())
-                                                       .getBoolean(Pref.ARTICLES_LIST_VISIBLE),
+                () ->
+                        Assert.assertEquals(
+                                UserPrefs.get(Profile.getLastUsedRegularProfile())
+                                        .getBoolean(Pref.ARTICLES_LIST_VISIBLE),
                                 ReturnToChromeUtil.getFeedArticlesVisibility()));
 
         // Show articles and verify that FEED_ARTICLES_LIST_VISIBLE and ARTICLES_LIST_VISIBLE are
@@ -150,16 +165,19 @@ public class InstantStartFeedTest {
         toggleHeader(true);
         CriteriaHelper.pollUiThread(ReturnToChromeUtil::getFeedArticlesVisibility);
         TestThreadUtils.runOnUiThreadBlocking(
-                ()
-                        -> Assert.assertEquals(UserPrefs.get(Profile.getLastUsedRegularProfile())
-                                                       .getBoolean(Pref.ARTICLES_LIST_VISIBLE),
+                () ->
+                        Assert.assertEquals(
+                                UserPrefs.get(Profile.getLastUsedRegularProfile())
+                                        .getBoolean(Pref.ARTICLES_LIST_VISIBLE),
                                 ReturnToChromeUtil.getFeedArticlesVisibility()));
     }
 
     @Test
     @SmallTest
-    @CommandLineFlags.Add({ChromeSwitches.DISABLE_NATIVE_INITIALIZATION,
-        INSTANT_START_TEST_BASE_PARAMS})
+    @CommandLineFlags.Add({
+        ChromeSwitches.DISABLE_NATIVE_INITIALIZATION,
+        INSTANT_START_TEST_BASE_PARAMS
+    })
     public void testHideFeedPlaceholder() {
         StartSurfaceConfiguration.setFeedVisibilityForTesting(false);
         StartSurfaceTestUtils.startMainActivityFromLauncher(mActivityTestRule);
@@ -170,8 +188,10 @@ public class InstantStartFeedTest {
 
     @Test
     @SmallTest
-    @CommandLineFlags.Add({ChromeSwitches.DISABLE_NATIVE_INITIALIZATION,
-        INSTANT_START_TEST_BASE_PARAMS})
+    @CommandLineFlags.Add({
+        ChromeSwitches.DISABLE_NATIVE_INITIALIZATION,
+        INSTANT_START_TEST_BASE_PARAMS
+    })
     public void testShowFeedPlaceholder() {
         StartSurfaceConfiguration.setFeedVisibilityForTesting(true);
         StartSurfaceTestUtils.startMainActivityFromLauncher(mActivityTestRule);
@@ -187,17 +207,25 @@ public class InstantStartFeedTest {
      * @param expanded Whether the header should be expanded.
      */
     private void toggleHeader(boolean expanded) {
-        onView(allOf(instanceOf(RecyclerView.class),
-                       withId(org.chromium.chrome.test.R.id.feed_stream_recycler_view)))
+        onView(
+                        allOf(
+                                instanceOf(RecyclerView.class),
+                                withId(org.chromium.chrome.test.R.id.feed_stream_recycler_view)))
                 .perform(RecyclerViewActions.scrollToPosition(ARTICLE_SECTION_HEADER_POSITION));
         onView(withId(org.chromium.chrome.test.R.id.header_menu)).perform(click());
 
-        onView(withText(expanded ? org.chromium.chrome.test.R.string.ntp_turn_on_feed
-                                 : org.chromium.chrome.test.R.string.ntp_turn_off_feed))
+        onView(
+                        withText(
+                                expanded
+                                        ? org.chromium.chrome.test.R.string.ntp_turn_on_feed
+                                        : org.chromium.chrome.test.R.string.ntp_turn_off_feed))
                 .perform(click());
 
-        onView(withText(expanded ? org.chromium.chrome.test.R.string.ntp_discover_on
-                                 : org.chromium.chrome.test.R.string.ntp_discover_off))
+        onView(
+                        withText(
+                                expanded
+                                        ? org.chromium.chrome.test.R.string.ntp_discover_on
+                                        : org.chromium.chrome.test.R.string.ntp_discover_off))
                 .check(matches(isDisplayed()));
     }
 
@@ -215,11 +243,15 @@ public class InstantStartFeedTest {
                 mActualAlpha = item.getBackground().getAlpha();
                 return mActualAlpha == expectedAlpha;
             }
+
             @Override
             public void describeTo(final Description description) {
                 if (expectedAlpha != mActualAlpha) {
-                    mMessage = "Background alpha did not match: Expected " + expectedAlpha + " was "
-                            + mActualAlpha;
+                    mMessage =
+                            "Background alpha did not match: Expected "
+                                    + expectedAlpha
+                                    + " was "
+                                    + mActualAlpha;
                 }
                 description.appendText(mMessage);
             }

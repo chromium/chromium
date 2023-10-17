@@ -75,12 +75,9 @@ public class AllPasswordsBottomSheetViewTest {
     private static final boolean IS_PASSWORD_FIELD = true;
     private static final String EXAMPLE_ORIGIN = "https://m.example.com/";
 
-    @Mock
-    private Callback<Integer> mDismissHandler;
-    @Mock
-    private Callback<CredentialFillRequest> mCredentialFillRequestCallback;
-    @Mock
-    private Callback<String> mSearchQueryCallback;
+    @Mock private Callback<Integer> mDismissHandler;
+    @Mock private Callback<CredentialFillRequest> mCredentialFillRequestCallback;
+    @Mock private Callback<String> mSearchQueryCallback;
 
     private PropertyModel mModel;
     private AllPasswordsBottomSheetView mAllPasswordsBottomSheetView;
@@ -93,17 +90,21 @@ public class AllPasswordsBottomSheetViewTest {
     public void setUp() throws InterruptedException {
         MockitoAnnotations.initMocks(this);
         mActivityTestRule.startMainActivityOnBlankPage();
-        TestThreadUtils.runOnUiThreadBlocking(() -> {
-            mModel = AllPasswordsBottomSheetProperties.createDefaultModel(
-                    EXAMPLE_ORIGIN, mDismissHandler, mSearchQueryCallback);
-            mBottomSheetController = mActivityTestRule.getActivity()
-                                             .getRootUiCoordinatorForTesting()
-                                             .getBottomSheetController();
-            mAllPasswordsBottomSheetView =
-                    new AllPasswordsBottomSheetView(getActivity(), mBottomSheetController);
-            AllPasswordsBottomSheetCoordinator.setUpModelChangeProcessor(
-                    mModel, mAllPasswordsBottomSheetView);
-        });
+        TestThreadUtils.runOnUiThreadBlocking(
+                () -> {
+                    mModel =
+                            AllPasswordsBottomSheetProperties.createDefaultModel(
+                                    EXAMPLE_ORIGIN, mDismissHandler, mSearchQueryCallback);
+                    mBottomSheetController =
+                            mActivityTestRule
+                                    .getActivity()
+                                    .getRootUiCoordinatorForTesting()
+                                    .getBottomSheetController();
+                    mAllPasswordsBottomSheetView =
+                            new AllPasswordsBottomSheetView(getActivity(), mBottomSheetController);
+                    AllPasswordsBottomSheetCoordinator.setUpModelChangeProcessor(
+                            mModel, mAllPasswordsBottomSheetView);
+                });
     }
 
     @Test
@@ -126,7 +127,8 @@ public class AllPasswordsBottomSheetViewTest {
         TestThreadUtils.runOnUiThreadBlocking(() -> mModel.set(VISIBLE, true));
         pollUiThread(() -> getBottomSheetState() == SheetState.FULL);
         assertThat(mAllPasswordsBottomSheetView.getContentView().isShown(), is(true));
-        assertEquals(mAllPasswordsBottomSheetView.getWarningText().toString(),
+        assertEquals(
+                mAllPasswordsBottomSheetView.getWarningText().toString(),
                 String.format(
                         getString(R.string.all_passwords_bottom_sheet_subtitle), "m.example.com"));
     }
@@ -137,75 +139,114 @@ public class AllPasswordsBottomSheetViewTest {
         addDefaultCredentialsToTheModel();
 
         pollUiThread(() -> getBottomSheetState() == SheetState.FULL);
-        onView(withId(R.id.sheet_item_list)).perform(scrollToPosition(0)).check((view, e) -> {
-            View child = ((RecyclerView) view).findViewHolderForAdapterPosition(0).itemView;
-            assertThat(getCredentialOrigin(child).getText(), is("example.com"));
-            assertThat(getCredentialName(child).getPrimaryTextView().getText(),
-                    is(ANA.getFormattedUsername()));
-            assertThat(getCredentialPassword(child).getPrimaryTextView().getText(),
-                    is(ANA.getPassword()));
-            assertThat(getCredentialPassword(child).getPrimaryTextView().getTransformationMethod(),
-                    instanceOf(PasswordTransformationMethod.class));
-            assertThat(getCredentialName(child).isEnabled(), is(true));
-            assertThat(getCredentialName(child).isClickable(), is(true));
-            assertThat(getCredentialPassword(child).isEnabled(), is(true));
-            assertThat(getCredentialPassword(child).isClickable(), is(true));
-        });
+        onView(withId(R.id.sheet_item_list))
+                .perform(scrollToPosition(0))
+                .check(
+                        (view, e) -> {
+                            View child =
+                                    ((RecyclerView) view)
+                                            .findViewHolderForAdapterPosition(0)
+                                            .itemView;
+                            assertThat(getCredentialOrigin(child).getText(), is("example.com"));
+                            assertThat(
+                                    getCredentialName(child).getPrimaryTextView().getText(),
+                                    is(ANA.getFormattedUsername()));
+                            assertThat(
+                                    getCredentialPassword(child).getPrimaryTextView().getText(),
+                                    is(ANA.getPassword()));
+                            assertThat(
+                                    getCredentialPassword(child)
+                                            .getPrimaryTextView()
+                                            .getTransformationMethod(),
+                                    instanceOf(PasswordTransformationMethod.class));
+                            assertThat(getCredentialName(child).isEnabled(), is(true));
+                            assertThat(getCredentialName(child).isClickable(), is(true));
+                            assertThat(getCredentialPassword(child).isEnabled(), is(true));
+                            assertThat(getCredentialPassword(child).isClickable(), is(true));
+                        });
 
-        onView(withId(R.id.sheet_item_list)).perform(scrollToPosition(1)).check((view, e) -> {
-            View child = ((RecyclerView) view).findViewHolderForAdapterPosition(1).itemView;
-            assertThat(getCredentialOrigin(child).getText(), is("m.example.xyz"));
-            assertThat(getCredentialName(child).getPrimaryTextView().getText(),
-                    is(NO_ONE.getFormattedUsername()));
-            assertThat(getCredentialPassword(child).getPrimaryTextView().getText(),
-                    is(NO_ONE.getPassword()));
-            assertThat(getCredentialPassword(child).getPrimaryTextView().getTransformationMethod(),
-                    instanceOf(PasswordTransformationMethod.class));
-            assertThat(getCredentialName(child).isEnabled(), is(false));
-            assertThat(getCredentialName(child).isClickable(), is(false));
-            assertThat(getCredentialPassword(child).isEnabled(), is(true));
-            assertThat(getCredentialPassword(child).isClickable(), is(true));
-        });
+        onView(withId(R.id.sheet_item_list))
+                .perform(scrollToPosition(1))
+                .check(
+                        (view, e) -> {
+                            View child =
+                                    ((RecyclerView) view)
+                                            .findViewHolderForAdapterPosition(1)
+                                            .itemView;
+                            assertThat(getCredentialOrigin(child).getText(), is("m.example.xyz"));
+                            assertThat(
+                                    getCredentialName(child).getPrimaryTextView().getText(),
+                                    is(NO_ONE.getFormattedUsername()));
+                            assertThat(
+                                    getCredentialPassword(child).getPrimaryTextView().getText(),
+                                    is(NO_ONE.getPassword()));
+                            assertThat(
+                                    getCredentialPassword(child)
+                                            .getPrimaryTextView()
+                                            .getTransformationMethod(),
+                                    instanceOf(PasswordTransformationMethod.class));
+                            assertThat(getCredentialName(child).isEnabled(), is(false));
+                            assertThat(getCredentialName(child).isClickable(), is(false));
+                            assertThat(getCredentialPassword(child).isEnabled(), is(true));
+                            assertThat(getCredentialPassword(child).isClickable(), is(true));
+                        });
 
-        onView(withId(R.id.sheet_item_list)).perform(scrollToPosition(2)).check((view, e) -> {
-            View child = ((RecyclerView) view).findViewHolderForAdapterPosition(2).itemView;
-            assertThat(getCredentialOrigin(child).getText(), is("facebook"));
-            assertThat(getCredentialName(child).getPrimaryTextView().getText(),
-                    is(BOB.getFormattedUsername()));
-            assertThat(getCredentialPassword(child).getPrimaryTextView().getText(),
-                    is(BOB.getPassword()));
-            assertThat(getCredentialPassword(child).getPrimaryTextView().getTransformationMethod(),
-                    instanceOf(PasswordTransformationMethod.class));
-            assertThat(getCredentialName(child).isEnabled(), is(true));
-            assertThat(getCredentialName(child).isClickable(), is(true));
-            assertThat(getCredentialPassword(child).isEnabled(), is(true));
-            assertThat(getCredentialPassword(child).isClickable(), is(true));
-        });
+        onView(withId(R.id.sheet_item_list))
+                .perform(scrollToPosition(2))
+                .check(
+                        (view, e) -> {
+                            View child =
+                                    ((RecyclerView) view)
+                                            .findViewHolderForAdapterPosition(2)
+                                            .itemView;
+                            assertThat(getCredentialOrigin(child).getText(), is("facebook"));
+                            assertThat(
+                                    getCredentialName(child).getPrimaryTextView().getText(),
+                                    is(BOB.getFormattedUsername()));
+                            assertThat(
+                                    getCredentialPassword(child).getPrimaryTextView().getText(),
+                                    is(BOB.getPassword()));
+                            assertThat(
+                                    getCredentialPassword(child)
+                                            .getPrimaryTextView()
+                                            .getTransformationMethod(),
+                                    instanceOf(PasswordTransformationMethod.class));
+                            assertThat(getCredentialName(child).isEnabled(), is(true));
+                            assertThat(getCredentialName(child).isClickable(), is(true));
+                            assertThat(getCredentialPassword(child).isEnabled(), is(true));
+                            assertThat(getCredentialPassword(child).isClickable(), is(true));
+                        });
     }
 
     @Test
     @MediumTest
     public void testFillingPasswordInNonPasswordFieldShowsWarningDialog()
             throws ExecutionException {
-        TestThreadUtils.runOnUiThreadBlocking(() -> {
-            mAllPasswordsBottomSheetView.setVisible(true);
-            mModel.get(SHEET_ITEMS)
-                    .add(new ListItem(AllPasswordsBottomSheetProperties.ItemType.CREDENTIAL,
-                            AllPasswordsBottomSheetProperties.CredentialProperties
-                                    .createCredentialModel(
-                                            ANA, mCredentialFillRequestCallback, false)));
-        });
+        TestThreadUtils.runOnUiThreadBlocking(
+                () -> {
+                    mAllPasswordsBottomSheetView.setVisible(true);
+                    mModel.get(SHEET_ITEMS)
+                            .add(
+                                    new ListItem(
+                                            AllPasswordsBottomSheetProperties.ItemType.CREDENTIAL,
+                                            AllPasswordsBottomSheetProperties.CredentialProperties
+                                                    .createCredentialModel(
+                                                            ANA,
+                                                            mCredentialFillRequestCallback,
+                                                            false)));
+                });
 
         pollUiThread(() -> getBottomSheetState() == SheetState.FULL);
 
         onView(allOf(withId(R.id.password_text), isDescendantOfA(withId(R.id.sheet_item_list))))
                 .perform(click());
 
-        pollInstrumentationThread(() -> {
-            onView(withText(R.string.passwords_not_secure_filling))
-                    .inRoot(isDialog())
-                    .check(matches(isDisplayed()));
-        });
+        pollInstrumentationThread(
+                () -> {
+                    onView(withText(R.string.passwords_not_secure_filling))
+                            .inRoot(isDialog())
+                            .check(matches(isDisplayed()));
+                });
     }
 
     @Test
@@ -230,25 +271,39 @@ public class AllPasswordsBottomSheetViewTest {
 
     // Adds three credential items to the model.
     private void addDefaultCredentialsToTheModel() {
-        TestThreadUtils.runOnUiThreadBlocking(() -> {
-            mAllPasswordsBottomSheetView.setVisible(true);
-            mModel.get(SHEET_ITEMS)
-                    .add(new ListItem(AllPasswordsBottomSheetProperties.ItemType.CREDENTIAL,
-                            AllPasswordsBottomSheetProperties.CredentialProperties
-                                    .createCredentialModel(ANA, mCredentialFillRequestCallback,
-                                            IS_PASSWORD_FIELD)));
-            mModel.get(SHEET_ITEMS)
-                    .add(new ListItem(AllPasswordsBottomSheetProperties.ItemType.CREDENTIAL,
-                            AllPasswordsBottomSheetProperties.CredentialProperties
-                                    .createCredentialModel(NO_ONE, mCredentialFillRequestCallback,
-                                            IS_PASSWORD_FIELD)));
-            mModel.get(SHEET_ITEMS)
-                    .add(new ListItem(AllPasswordsBottomSheetProperties.ItemType.CREDENTIAL,
-                            AllPasswordsBottomSheetProperties.CredentialProperties
-                                    .createCredentialModel(BOB, mCredentialFillRequestCallback,
-                                            IS_PASSWORD_FIELD)));
-        });
+        TestThreadUtils.runOnUiThreadBlocking(
+                () -> {
+                    mAllPasswordsBottomSheetView.setVisible(true);
+                    mModel.get(SHEET_ITEMS)
+                            .add(
+                                    new ListItem(
+                                            AllPasswordsBottomSheetProperties.ItemType.CREDENTIAL,
+                                            AllPasswordsBottomSheetProperties.CredentialProperties
+                                                    .createCredentialModel(
+                                                            ANA,
+                                                            mCredentialFillRequestCallback,
+                                                            IS_PASSWORD_FIELD)));
+                    mModel.get(SHEET_ITEMS)
+                            .add(
+                                    new ListItem(
+                                            AllPasswordsBottomSheetProperties.ItemType.CREDENTIAL,
+                                            AllPasswordsBottomSheetProperties.CredentialProperties
+                                                    .createCredentialModel(
+                                                            NO_ONE,
+                                                            mCredentialFillRequestCallback,
+                                                            IS_PASSWORD_FIELD)));
+                    mModel.get(SHEET_ITEMS)
+                            .add(
+                                    new ListItem(
+                                            AllPasswordsBottomSheetProperties.ItemType.CREDENTIAL,
+                                            AllPasswordsBottomSheetProperties.CredentialProperties
+                                                    .createCredentialModel(
+                                                            BOB,
+                                                            mCredentialFillRequestCallback,
+                                                            IS_PASSWORD_FIELD)));
+                });
     }
+
     private ChromeActivity getActivity() {
         return mActivityTestRule.getActivity();
     }
@@ -262,8 +317,8 @@ public class AllPasswordsBottomSheetViewTest {
     }
 
     private RecyclerView getCredentials() {
-        return (RecyclerView) mAllPasswordsBottomSheetView.getContentView().findViewById(
-                R.id.sheet_item_list);
+        return (RecyclerView)
+                mAllPasswordsBottomSheetView.getContentView().findViewById(R.id.sheet_item_list);
     }
 
     private TextView getCredentialOrigin(View parent) {

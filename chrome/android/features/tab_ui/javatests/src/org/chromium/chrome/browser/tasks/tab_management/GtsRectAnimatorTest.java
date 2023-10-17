@@ -64,16 +64,19 @@ public class GtsRectAnimatorTest extends BlankUiTestActivityTestCase {
         Activity activity = getActivity();
 
         CallbackHelper onFirstLayout = new CallbackHelper();
-        TestThreadUtils.runOnUiThreadBlocking(() -> {
-            mRootView = new FrameLayout(activity);
-            activity.setContentView(mRootView,
-                    new ViewGroup.LayoutParams(ViewGroup.LayoutParams.MATCH_PARENT,
-                            ViewGroup.LayoutParams.MATCH_PARENT));
+        TestThreadUtils.runOnUiThreadBlocking(
+                () -> {
+                    mRootView = new FrameLayout(activity);
+                    activity.setContentView(
+                            mRootView,
+                            new ViewGroup.LayoutParams(
+                                    ViewGroup.LayoutParams.MATCH_PARENT,
+                                    ViewGroup.LayoutParams.MATCH_PARENT));
 
-            mView = new TabImageView(activity);
-            mRootView.addView(mView);
-            mView.setOnNextLayoutRunnable(onFirstLayout::notifyCalled);
-        });
+                    mView = new TabImageView(activity);
+                    mRootView.addView(mView);
+                    mView.setOnNextLayoutRunnable(onFirstLayout::notifyCalled);
+                });
 
         // Ensure layout has completed so getWidth() and getHeight() are non-zero.
         onFirstLayout.waitForFirst();
@@ -92,8 +95,12 @@ public class GtsRectAnimatorTest extends BlankUiTestActivityTestCase {
         // Center of screen
         int startX = Math.round(mRootView.getWidth() / 2.0f - thumbnailSize.getWidth() / 2.0f);
         int startY = Math.round(mRootView.getHeight() / 2.0f - thumbnailSize.getHeight() / 2.0f);
-        Rect startValue = new Rect(startX, startY, startX + thumbnailSize.getWidth(),
-                startY + thumbnailSize.getHeight());
+        Rect startValue =
+                new Rect(
+                        startX,
+                        startY,
+                        startX + thumbnailSize.getWidth(),
+                        startY + thumbnailSize.getHeight());
 
         setupTabImageView(startValue);
         GtsRectAnimator animator = createAnimator(startValue, endValue, thumbnailSize);
@@ -113,8 +120,12 @@ public class GtsRectAnimatorTest extends BlankUiTestActivityTestCase {
 
         // Center top of screen
         int startX = Math.round(mRootView.getWidth() / 2.0f - thumbnailSize.getWidth() / 2.0f);
-        Rect startValue = new Rect(startX, 0, startX + thumbnailSize.getWidth(),
-                Math.round(thumbnailSize.getHeight() / 2.0f));
+        Rect startValue =
+                new Rect(
+                        startX,
+                        0,
+                        startX + thumbnailSize.getWidth(),
+                        Math.round(thumbnailSize.getHeight() / 2.0f));
 
         setupTabImageView(startValue);
         GtsRectAnimator animator = createAnimator(startValue, endValue, thumbnailSize);
@@ -136,8 +147,12 @@ public class GtsRectAnimatorTest extends BlankUiTestActivityTestCase {
         // Center of screen
         int endX = Math.round(mRootView.getWidth() / 2.0f - thumbnailSize.getWidth() / 2.0f);
         int endY = Math.round(mRootView.getHeight() / 2.0f - thumbnailSize.getHeight() / 2.0f);
-        Rect endValue = new Rect(
-                endX, endY, endX + thumbnailSize.getWidth(), endY + thumbnailSize.getHeight());
+        Rect endValue =
+                new Rect(
+                        endX,
+                        endY,
+                        endX + thumbnailSize.getWidth(),
+                        endY + thumbnailSize.getHeight());
 
         setupTabImageView(startValue);
         GtsRectAnimator animator = createAnimator(startValue, endValue, thumbnailSize);
@@ -147,12 +162,13 @@ public class GtsRectAnimatorTest extends BlankUiTestActivityTestCase {
 
     private GtsRectAnimator createAnimator(
             Rect startValue, Rect endValue, @Nullable Size thumbnailSize) {
-        return TestThreadUtils.runOnUiThreadBlockingNoException(() -> {
-            GtsRectAnimator animator = new GtsRectAnimator(mView, startValue, endValue);
-            animator.setThumbnailSizeForOffset(thumbnailSize);
-            animator.setRect(startValue);
-            return animator;
-        });
+        return TestThreadUtils.runOnUiThreadBlockingNoException(
+                () -> {
+                    GtsRectAnimator animator = new GtsRectAnimator(mView, startValue, endValue);
+                    animator.setThumbnailSizeForOffset(thumbnailSize);
+                    animator.setRect(startValue);
+                    return animator;
+                });
     }
 
     /** Returns a thumbnail size 1/4 the size of {@link mRootView}. */
@@ -163,30 +179,45 @@ public class GtsRectAnimatorTest extends BlankUiTestActivityTestCase {
 
     /**
      * Steps through an animation.
+     *
      * @param testcaseName The base name for the render test results.
      * @param rectAnimator The animator to drive the animation of.
      * @param startValue The initial react.
      * @param endValue The final rect.
      * @param steps The number of steps to take. Must be 2 or more.
      */
-    private void stepThroughAnimation(String testcaseName, GtsRectAnimator rectAnimator,
-            Rect startValue, Rect endValue, int steps) throws Exception {
+    private void stepThroughAnimation(
+            String testcaseName,
+            GtsRectAnimator rectAnimator,
+            Rect startValue,
+            Rect endValue,
+            int steps)
+            throws Exception {
         assert steps >= 2;
         float fractionPerStep = 1.0f / (steps - 1);
 
-        ObjectAnimator animator = TestThreadUtils.runOnUiThreadBlockingNoException(() -> {
-            return ObjectAnimator.ofObject(
-                    rectAnimator, GtsRectAnimator.RECT, new RectEvaluator(), startValue, endValue);
-        });
+        ObjectAnimator animator =
+                TestThreadUtils.runOnUiThreadBlockingNoException(
+                        () -> {
+                            return ObjectAnimator.ofObject(
+                                    rectAnimator,
+                                    GtsRectAnimator.RECT,
+                                    new RectEvaluator(),
+                                    startValue,
+                                    endValue);
+                        });
 
         // Manually drive the animation instead of using an ObjectAnimator for exact control over
         // step size and timing.
         for (int step = 0; step < steps; step++) {
             final float animationFraction = fractionPerStep * step;
             TestThreadUtils.runOnUiThreadBlocking(
-                    () -> { animator.setCurrentFraction(animationFraction); });
+                    () -> {
+                        animator.setCurrentFraction(animationFraction);
+                    });
 
-            mRenderTestRule.render(mRootView,
+            mRenderTestRule.render(
+                    mRootView,
                     testcaseName
                             + String.format(Locale.ENGLISH, "_step_%d_of_%d", step + 1, steps));
         }
@@ -194,25 +225,27 @@ public class GtsRectAnimatorTest extends BlankUiTestActivityTestCase {
 
     /**
      * Sets the initial position of the image view.
+     *
      * @param startValue The rect to position the image view at.
      */
     private void setupTabImageView(Rect startValue) throws Exception {
         CallbackHelper onNextLayout = new CallbackHelper();
-        TestThreadUtils.runOnUiThreadBlocking(() -> {
-            FrameLayout.LayoutParams layoutParams =
-                    (FrameLayout.LayoutParams) mView.getLayoutParams();
-            layoutParams.width = startValue.width();
-            layoutParams.height = startValue.height();
-            layoutParams.setMargins(startValue.left, startValue.top, 0, 0);
-            mView.setLayoutParams(layoutParams);
-            mView.setImageBitmap(createBitmap());
-            mView.setScaleX(1.0f);
-            mView.setScaleY(1.0f);
-            mView.setTranslationX(0.0f);
-            mView.setTranslationY(0.0f);
-            mView.setVisibility(View.VISIBLE);
-            mView.setOnNextLayoutRunnable(onNextLayout::notifyCalled);
-        });
+        TestThreadUtils.runOnUiThreadBlocking(
+                () -> {
+                    FrameLayout.LayoutParams layoutParams =
+                            (FrameLayout.LayoutParams) mView.getLayoutParams();
+                    layoutParams.width = startValue.width();
+                    layoutParams.height = startValue.height();
+                    layoutParams.setMargins(startValue.left, startValue.top, 0, 0);
+                    mView.setLayoutParams(layoutParams);
+                    mView.setImageBitmap(createBitmap());
+                    mView.setScaleX(1.0f);
+                    mView.setScaleY(1.0f);
+                    mView.setTranslationX(0.0f);
+                    mView.setTranslationY(0.0f);
+                    mView.setVisibility(View.VISIBLE);
+                    mView.setOnNextLayoutRunnable(onNextLayout::notifyCalled);
+                });
 
         // Wait for a layout to make sure the TabImageView is positioned correctly before starting
         // to step through the animation.

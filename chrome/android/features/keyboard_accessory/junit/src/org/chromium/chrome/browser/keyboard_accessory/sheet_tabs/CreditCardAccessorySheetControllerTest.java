@@ -47,18 +47,15 @@ import org.chromium.chrome.browser.util.ChromeAccessibilityUtil;
 import org.chromium.chrome.test.util.browser.Features;
 import org.chromium.ui.modelutil.ListObservable;
 
-/**
- * Controller tests for the credit card accessory sheet.
- */
+/** Controller tests for the credit card accessory sheet. */
 @RunWith(BaseRobolectricTestRunner.class)
-@Config(manifest = Config.NONE, shadows = {CustomShadowAsyncTask.class})
+@Config(
+        manifest = Config.NONE,
+        shadows = {CustomShadowAsyncTask.class})
 public class CreditCardAccessorySheetControllerTest {
-    @Rule
-    public TestRule mFeaturesProcessorRule = new Features.JUnitProcessor();
-    @Mock
-    private AccessorySheetTabView mMockView;
-    @Mock
-    private ListObservable.ListObserver<Void> mMockItemListObserver;
+    @Rule public TestRule mFeaturesProcessorRule = new Features.JUnitProcessor();
+    @Mock private AccessorySheetTabView mMockView;
+    @Mock private ListObservable.ListObserver<Void> mMockItemListObserver;
 
     private CreditCardAccessorySheetCoordinator mCoordinator;
     private AccessorySheetTabItemsModel mSheetDataPieces;
@@ -144,15 +141,21 @@ public class CreditCardAccessorySheetControllerTest {
         final AccessorySheetData testData =
                 new AccessorySheetData(AccessoryTabType.CREDIT_CARDS, "Payments", "");
         testData.getUserInfoList().add(new UserInfo("", false));
-        testData.getUserInfoList().get(0).addField(
-                new UserInfoField("Todd", "Todd", "", false, field -> {}));
-        testData.getUserInfoList().get(0).addField(
-                new UserInfoField("**** 9219", "**** 9219", "", true, field -> {}));
+        testData.getUserInfoList()
+                .get(0)
+                .addField(new UserInfoField("Todd", "Todd", "", false, field -> {}));
+        testData.getUserInfoList()
+                .get(0)
+                .addField(new UserInfoField("**** 9219", "**** 9219", "", true, field -> {}));
         testData.getPromoCodeInfoList().add(new PromoCodeInfo());
-        testData.getPromoCodeInfoList().get(0).setPromoCode(
-                new UserInfoField("50$OFF", "Promo Code for Todd Tester", "", false, field -> {}));
-        testData.getPromoCodeInfoList().get(0).setDetailsText(
-                "Get $50 off when you use this code at checkout.");
+        testData.getPromoCodeInfoList()
+                .get(0)
+                .setPromoCode(
+                        new UserInfoField(
+                                "50$OFF", "Promo Code for Todd Tester", "", false, field -> {}));
+        testData.getPromoCodeInfoList()
+                .get(0)
+                .setDetailsText("Get $50 off when you use this code at checkout.");
 
         mCoordinator.registerDataProvider(testProvider);
         testProvider.notifyObservers(testData);
@@ -181,10 +184,12 @@ public class CreditCardAccessorySheetControllerTest {
 
         // As soon UserInfo is available, discard the title.
         testData.getUserInfoList().add(new UserInfo("", false));
-        testData.getUserInfoList().get(0).addField(
-                new UserInfoField("Todd", "Todd", "", false, field -> {}));
-        testData.getUserInfoList().get(0).addField(
-                new UserInfoField("**** 9219", "**** 9219", "", true, field -> {}));
+        testData.getUserInfoList()
+                .get(0)
+                .addField(new UserInfoField("Todd", "Todd", "", false, field -> {}));
+        testData.getUserInfoList()
+                .get(0)
+                .addField(new UserInfoField("**** 9219", "**** 9219", "", true, field -> {}));
         testProvider.notifyObservers(testData);
 
         assertThat(mSheetDataPieces.size(), is(1));
@@ -198,10 +203,14 @@ public class CreditCardAccessorySheetControllerTest {
                 new AccessorySheetData(AccessoryTabType.CREDIT_CARDS, "No payment methods", "");
 
         testData.getPromoCodeInfoList().add(new PromoCodeInfo());
-        testData.getPromoCodeInfoList().get(0).setPromoCode(
-                new UserInfoField("50$OFF", "Promo Code for Todd Tester", "", false, field -> {}));
-        testData.getPromoCodeInfoList().get(0).setDetailsText(
-                "Get $50 off when you use this code at checkout.");
+        testData.getPromoCodeInfoList()
+                .get(0)
+                .setPromoCode(
+                        new UserInfoField(
+                                "50$OFF", "Promo Code for Todd Tester", "", false, field -> {}));
+        testData.getPromoCodeInfoList()
+                .get(0)
+                .setDetailsText("Get $50 off when you use this code at checkout.");
 
         mCoordinator.registerDataProvider(testProvider);
         testProvider.notifyObservers(testData);

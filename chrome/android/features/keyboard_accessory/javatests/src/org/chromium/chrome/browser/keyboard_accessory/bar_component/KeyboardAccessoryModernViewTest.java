@@ -101,10 +101,7 @@ import java.util.concurrent.TimeoutException;
 import java.util.concurrent.atomic.AtomicInteger;
 import java.util.concurrent.atomic.AtomicReference;
 
-/**
- * View tests for the keyboard accessory component.
- *
- */
+/** View tests for the keyboard accessory component. */
 @RunWith(ChromeJUnit4ClassRunner.class)
 @CommandLineFlags.Add({ChromeSwitches.DISABLE_FIRST_RUN_EXPERIENCE})
 @SuppressWarnings("DoNotMock") // Mocks GURL
@@ -118,8 +115,7 @@ public class KeyboardAccessoryModernViewTest {
     @Rule
     public ChromeTabbedActivityTestRule mActivityTestRule = new ChromeTabbedActivityTestRule();
 
-    @Mock
-    PersonalDataManager mMockPersonalDataManager;
+    @Mock PersonalDataManager mMockPersonalDataManager;
 
     private static class TestTracker implements Tracker {
         private boolean mWasDismissed;
@@ -210,31 +206,37 @@ public class KeyboardAccessoryModernViewTest {
         MockitoAnnotations.initMocks(this);
         mActivityTestRule.startMainActivityOnBlankPage();
         PersonalDataManager.setInstanceForTesting(mMockPersonalDataManager);
-        TestThreadUtils.runOnUiThreadBlocking(() -> {
-            mModel = KeyboardAccessoryProperties.defaultModelBuilder()
-                             .with(SHEET_OPENER_ITEM,
-                                     new SheetOpenerBarItem(
-                                             new KeyboardAccessoryTabLayoutCoordinator
-                                                     .SheetOpenerCallbacks() {
-                                                         @Override
-                                                         public void onViewBound(View buttons) {}
-                                                         @Override
-                                                         public void onViewUnbound(View buttons) {}
-                                                     }))
-                             .with(DISABLE_ANIMATIONS_FOR_TESTING, true)
-                             .with(OBFUSCATED_CHILD_AT_CALLBACK, unused -> {})
-                             .with(SHOW_SWIPING_IPH, false)
-                             .build();
-            AsyncViewStub viewStub =
-                    mActivityTestRule.getActivity().findViewById(R.id.keyboard_accessory_stub);
+        TestThreadUtils.runOnUiThreadBlocking(
+                () -> {
+                    mModel =
+                            KeyboardAccessoryProperties.defaultModelBuilder()
+                                    .with(
+                                            SHEET_OPENER_ITEM,
+                                            new SheetOpenerBarItem(
+                                                    new KeyboardAccessoryTabLayoutCoordinator
+                                                            .SheetOpenerCallbacks() {
+                                                        @Override
+                                                        public void onViewBound(View buttons) {}
 
-            mKeyboardAccessoryView = new ArrayBlockingQueue<>(1);
-            ViewProvider<KeyboardAccessoryModernView> provider =
-                    AsyncViewProvider.of(viewStub, R.id.keyboard_accessory);
-            LazyConstructionPropertyMcp.create(
-                    mModel, VISIBLE, provider, KeyboardAccessoryModernViewBinder::bind);
-            provider.whenLoaded(mKeyboardAccessoryView::add);
-        });
+                                                        @Override
+                                                        public void onViewUnbound(View buttons) {}
+                                                    }))
+                                    .with(DISABLE_ANIMATIONS_FOR_TESTING, true)
+                                    .with(OBFUSCATED_CHILD_AT_CALLBACK, unused -> {})
+                                    .with(SHOW_SWIPING_IPH, false)
+                                    .build();
+                    AsyncViewStub viewStub =
+                            mActivityTestRule
+                                    .getActivity()
+                                    .findViewById(R.id.keyboard_accessory_stub);
+
+                    mKeyboardAccessoryView = new ArrayBlockingQueue<>(1);
+                    ViewProvider<KeyboardAccessoryModernView> provider =
+                            AsyncViewProvider.of(viewStub, R.id.keyboard_accessory);
+                    LazyConstructionPropertyMcp.create(
+                            mModel, VISIBLE, provider, KeyboardAccessoryModernViewBinder::bind);
+                    provider.whenLoaded(mKeyboardAccessoryView::add);
+                });
     }
 
     @Test
@@ -244,12 +246,18 @@ public class KeyboardAccessoryModernViewTest {
         assertNull(mKeyboardAccessoryView.poll());
 
         // After setting the visibility to true, the view should exist and be visible.
-        TestThreadUtils.runOnUiThreadBlocking(() -> { mModel.set(VISIBLE, true); });
+        TestThreadUtils.runOnUiThreadBlocking(
+                () -> {
+                    mModel.set(VISIBLE, true);
+                });
         KeyboardAccessoryModernView view = mKeyboardAccessoryView.take();
         assertEquals(view.getVisibility(), View.VISIBLE);
 
         // After hiding the view, the view should still exist but be invisible.
-        TestThreadUtils.runOnUiThreadBlocking(() -> { mModel.set(VISIBLE, false); });
+        TestThreadUtils.runOnUiThreadBlocking(
+                () -> {
+                    mModel.set(VISIBLE, false);
+                });
         assertNotEquals(view.getVisibility(), View.VISIBLE);
     }
 
@@ -257,11 +265,14 @@ public class KeyboardAccessoryModernViewTest {
     @MediumTest
     public void testAddsClickableAutofillSuggestions() {
         AtomicReference<Boolean> clickRecorded = new AtomicReference<>();
-        TestThreadUtils.runOnUiThreadBlocking(() -> {
-            mModel.set(VISIBLE, true);
-            mModel.get(BAR_ITEMS).set(
-                    createAutofillChipAndTab("Johnathan", result -> clickRecorded.set(true)));
-        });
+        TestThreadUtils.runOnUiThreadBlocking(
+                () -> {
+                    mModel.set(VISIBLE, true);
+                    mModel.get(BAR_ITEMS)
+                            .set(
+                                    createAutofillChipAndTab(
+                                            "Johnathan", result -> clickRecorded.set(true)));
+                });
 
         onViewWaiting(withText("Johnathan")).perform(click());
 
@@ -302,10 +313,11 @@ public class KeyboardAccessoryModernViewTest {
     @Test
     @MediumTest
     public void testUpdatesKeyPaddingAfterRotation() throws InterruptedException {
-        TestThreadUtils.runOnUiThreadBlocking(() -> {
-            mModel.set(VISIBLE, true);
-            mModel.get(BAR_ITEMS).set(createAutofillChipAndTab("John", null));
-        });
+        TestThreadUtils.runOnUiThreadBlocking(
+                () -> {
+                    mModel.set(VISIBLE, true);
+                    mModel.get(BAR_ITEMS).set(createAutofillChipAndTab("John", null));
+                });
         KeyboardAccessoryModernView view = mKeyboardAccessoryView.take();
         CriteriaHelper.pollUiThread(
                 () -> view.mBarItemsView.isShown() && view.mBarItemsView.getChildAt(1) != null);
@@ -317,8 +329,9 @@ public class KeyboardAccessoryModernViewTest {
         CriteriaHelper.pollUiThread(viewsAreRightAligned(view, view.mBarItemsView.getChildAt(1)));
 
         // Reset device orientation.
-        mActivityTestRule.getActivity().setRequestedOrientation(
-                ActivityInfo.SCREEN_ORIENTATION_UNSPECIFIED);
+        mActivityTestRule
+                .getActivity()
+                .setRequestedOrientation(ActivityInfo.SCREEN_ORIENTATION_UNSPECIFIED);
     }
 
     @Test
@@ -339,10 +352,11 @@ public class KeyboardAccessoryModernViewTest {
         TestTracker tracker = new TestTracker();
         TrackerFactory.setTrackerForTests(tracker);
 
-        TestThreadUtils.runOnUiThreadBlocking(() -> {
-            mModel.set(VISIBLE, true);
-            mModel.get(BAR_ITEMS).set(new BarItem[] {itemWithIPH, createSheetOpener()});
-        });
+        TestThreadUtils.runOnUiThreadBlocking(
+                () -> {
+                    mModel.set(VISIBLE, true);
+                    mModel.get(BAR_ITEMS).set(new BarItem[] {itemWithIPH, createSheetOpener()});
+                });
 
         onViewWaiting(withText("Johnathan"));
         waitForHelpBubble(withText(R.string.iph_keyboard_accessory_fill_with_chrome));
@@ -350,7 +364,8 @@ public class KeyboardAccessoryModernViewTest {
         onView(withText("Johnathan")).perform(click());
 
         assertThat(tracker.wasDismissed(), is(true));
-        assertThat(tracker.getLastEmittedEvent(),
+        assertThat(
+                tracker.getLastEmittedEvent(),
                 is(EventConstants.KEYBOARD_ACCESSORY_PASSWORD_AUTOFILLED));
         onView(withChild(withText("Johnathan"))).check(matches(not(isSelected())));
     }
@@ -373,17 +388,19 @@ public class KeyboardAccessoryModernViewTest {
         TestTracker tracker = new TestTracker();
         TrackerFactory.setTrackerForTests(tracker);
 
-        TestThreadUtils.runOnUiThreadBlocking(() -> {
-            mModel.set(VISIBLE, true);
-            mModel.get(BAR_ITEMS).set(new BarItem[] {itemWithIPH, createSheetOpener()});
-        });
+        TestThreadUtils.runOnUiThreadBlocking(
+                () -> {
+                    mModel.set(VISIBLE, true);
+                    mModel.get(BAR_ITEMS).set(new BarItem[] {itemWithIPH, createSheetOpener()});
+                });
 
         onViewWaiting(withText("Johnathan"));
         waitForHelpBubble(withText(R.string.iph_keyboard_accessory_fill_with_chrome));
         onView(withText("Johnathan")).perform(click());
 
         assertThat(tracker.wasDismissed(), is(true));
-        assertThat(tracker.getLastEmittedEvent(),
+        assertThat(
+                tracker.getLastEmittedEvent(),
                 is(EventConstants.KEYBOARD_ACCESSORY_ADDRESS_AUTOFILLED));
     }
 
@@ -405,17 +422,19 @@ public class KeyboardAccessoryModernViewTest {
         TestTracker tracker = new TestTracker();
         TrackerFactory.setTrackerForTests(tracker);
 
-        TestThreadUtils.runOnUiThreadBlocking(() -> {
-            mModel.set(VISIBLE, true);
-            mModel.get(BAR_ITEMS).set(new BarItem[] {itemWithIPH, createSheetOpener()});
-        });
+        TestThreadUtils.runOnUiThreadBlocking(
+                () -> {
+                    mModel.set(VISIBLE, true);
+                    mModel.get(BAR_ITEMS).set(new BarItem[] {itemWithIPH, createSheetOpener()});
+                });
 
         onViewWaiting(withText("Johnathan"));
         waitForHelpBubble(withText(R.string.iph_keyboard_accessory_fill_with_chrome));
         onView(withText("Johnathan")).perform(click());
 
         assertThat(tracker.wasDismissed(), is(true));
-        assertThat(tracker.getLastEmittedEvent(),
+        assertThat(
+                tracker.getLastEmittedEvent(),
                 is(EventConstants.KEYBOARD_ACCESSORY_PAYMENT_AUTOFILLED));
     }
 
@@ -423,22 +442,26 @@ public class KeyboardAccessoryModernViewTest {
     @MediumTest
     @DisabledTest(message = "https://crbug.com/1432551")
     public void testDismissesSwipingEducationBubbleOnTap() {
-        TestTracker tracker = new TestTracker() {
-            @Override
-            public int getTriggerState(String feature) {
-                // Pretend that an autofill IPH was shown already.
-                return feature.equals(FeatureConstants.KEYBOARD_ACCESSORY_PASSWORD_FILLING_FEATURE)
-                        ? TriggerState.HAS_BEEN_DISPLAYED
-                        : TriggerState.HAS_NOT_BEEN_DISPLAYED;
-            }
-        };
+        TestTracker tracker =
+                new TestTracker() {
+                    @Override
+                    public int getTriggerState(String feature) {
+                        // Pretend that an autofill IPH was shown already.
+                        return feature.equals(
+                                        FeatureConstants
+                                                .KEYBOARD_ACCESSORY_PASSWORD_FILLING_FEATURE)
+                                ? TriggerState.HAS_BEEN_DISPLAYED
+                                : TriggerState.HAS_NOT_BEEN_DISPLAYED;
+                    }
+                };
         TrackerFactory.setTrackerForTests(tracker);
 
         // Render a keyboard accessory bar and wait for completion.
-        TestThreadUtils.runOnUiThreadBlocking(() -> {
-            mModel.set(VISIBLE, true);
-            mModel.get(BAR_ITEMS).set(createAutofillChipAndTab("Johnathan", null));
-        });
+        TestThreadUtils.runOnUiThreadBlocking(
+                () -> {
+                    mModel.set(VISIBLE, true);
+                    mModel.get(BAR_ITEMS).set(createAutofillChipAndTab("Johnathan", null));
+                });
         onViewWaiting(withText("Johnathan"));
 
         // Pretend an item is offscreen, so swiping is possible and an IPH could be shown.
@@ -470,17 +493,19 @@ public class KeyboardAccessoryModernViewTest {
         TestTracker tracker = new TestTracker();
         TrackerFactory.setTrackerForTests(tracker);
 
-        TestThreadUtils.runOnUiThreadBlocking(() -> {
-            mModel.set(VISIBLE, true);
-            mModel.get(BAR_ITEMS).set(new BarItem[] {itemWithIPH, createSheetOpener()});
-        });
+        TestThreadUtils.runOnUiThreadBlocking(
+                () -> {
+                    mModel.set(VISIBLE, true);
+                    mModel.get(BAR_ITEMS).set(new BarItem[] {itemWithIPH, createSheetOpener()});
+                });
 
         onViewWaiting(withText("Johnathan"));
         waitForHelpBubble(withText(itemTag));
         onView(withText("Johnathan")).perform(click());
 
         assertThat(tracker.wasDismissed(), is(true));
-        assertThat(tracker.getLastEmittedEvent(),
+        assertThat(
+                tracker.getLastEmittedEvent(),
                 is(EventConstants.KEYBOARD_ACCESSORY_PAYMENT_AUTOFILLED));
     }
 
@@ -489,25 +514,31 @@ public class KeyboardAccessoryModernViewTest {
     public void testNotifiesAboutPartiallyVisibleSuggestions() throws InterruptedException {
         // Ensure that the callback isn't triggered while all items are visible:
         AtomicInteger obfuscatedChildAt = new AtomicInteger(-1);
-        TestThreadUtils.runOnUiThreadBlocking(() -> {
-            mModel.set(OBFUSCATED_CHILD_AT_CALLBACK, obfuscatedChildAt::set);
-            mModel.set(VISIBLE, true);
-            mModel.get(BAR_ITEMS).set(createAutofillChipAndTab("John", null));
-        });
+        TestThreadUtils.runOnUiThreadBlocking(
+                () -> {
+                    mModel.set(OBFUSCATED_CHILD_AT_CALLBACK, obfuscatedChildAt::set);
+                    mModel.set(VISIBLE, true);
+                    mModel.get(BAR_ITEMS).set(createAutofillChipAndTab("John", null));
+                });
         KeyboardAccessoryModernView view = mKeyboardAccessoryView.take();
         CriteriaHelper.pollUiThread(() -> view.mBarItemsView.getChildCount() > 0);
         assertThat(obfuscatedChildAt.get(), is(-1));
 
         // As soon as at least one item can't be displayed in full, trigger the swiping callback.
-        TestThreadUtils.runOnUiThreadBlocking(() -> {
-            mModel.get(BAR_ITEMS).set(new BarItem[] {createAutofillBarItem("JohnathanSmith", null),
-                    createAutofillBarItem("TroyMcSpartanGregor", null),
-                    createAutofillBarItem("SomeOtherRandomLongName", null),
-                    createAutofillBarItem("ToddTester", null),
-                    createAutofillBarItem("MayaPark", null),
-                    createAutofillBarItem("ThisChipIsProbablyHiddenNow", null),
-                    createSheetOpener()});
-        });
+        TestThreadUtils.runOnUiThreadBlocking(
+                () -> {
+                    mModel.get(BAR_ITEMS)
+                            .set(
+                                    new BarItem[] {
+                                        createAutofillBarItem("JohnathanSmith", null),
+                                        createAutofillBarItem("TroyMcSpartanGregor", null),
+                                        createAutofillBarItem("SomeOtherRandomLongName", null),
+                                        createAutofillBarItem("ToddTester", null),
+                                        createAutofillBarItem("MayaPark", null),
+                                        createAutofillBarItem("ThisChipIsProbablyHiddenNow", null),
+                                        createSheetOpener()
+                                    });
+                });
         onViewWaiting(withText("JohnathanSmith"));
         CriteriaHelper.pollUiThread(() -> obfuscatedChildAt.get() > -1);
     }
@@ -533,20 +564,22 @@ public class KeyboardAccessoryModernViewTest {
                                 .build(),
                         new KeyboardAccessoryData.Action(AUTOFILL_SUGGESTION, unused -> {}));
 
-        TestThreadUtils.runOnUiThreadBlocking(() -> {
-            mModel.set(VISIBLE, true);
-            mModel.get(BAR_ITEMS).set(new BarItem[] {customIconItem, createSheetOpener()});
-        });
+        TestThreadUtils.runOnUiThreadBlocking(
+                () -> {
+                    mModel.set(VISIBLE, true);
+                    mModel.get(BAR_ITEMS).set(new BarItem[] {customIconItem, createSheetOpener()});
+                });
         KeyboardAccessoryModernView view = mKeyboardAccessoryView.take();
 
         CriteriaHelper.pollUiThread(() -> view.mBarItemsView.getChildCount() > 0);
-        CriteriaHelper.pollUiThread(() -> {
-            ChipView chipView = (ChipView) view.mBarItemsView.getChildAt(0);
-            ChromeImageView iconImageView = (ChromeImageView) chipView.getChildAt(0);
-            return ((BitmapDrawable) iconImageView.getDrawable())
-                    .getBitmap()
-                    .equals(TEST_CARD_ART_IMAGE);
-        });
+        CriteriaHelper.pollUiThread(
+                () -> {
+                    ChipView chipView = (ChipView) view.mBarItemsView.getChildAt(0);
+                    ChromeImageView iconImageView = (ChromeImageView) chipView.getChildAt(0);
+                    return ((BitmapDrawable) iconImageView.getDrawable())
+                            .getBitmap()
+                            .equals(TEST_CARD_ART_IMAGE);
+                });
     }
 
     @Test
@@ -567,20 +600,22 @@ public class KeyboardAccessoryModernViewTest {
                                 .build(),
                         new KeyboardAccessoryData.Action(AUTOFILL_SUGGESTION, unused -> {}));
 
-        TestThreadUtils.runOnUiThreadBlocking(() -> {
-            mModel.set(VISIBLE, true);
-            mModel.get(BAR_ITEMS).set(new BarItem[] {customIconItem, createSheetOpener()});
-        });
+        TestThreadUtils.runOnUiThreadBlocking(
+                () -> {
+                    mModel.set(VISIBLE, true);
+                    mModel.get(BAR_ITEMS).set(new BarItem[] {customIconItem, createSheetOpener()});
+                });
         KeyboardAccessoryModernView view = mKeyboardAccessoryView.take();
 
         CriteriaHelper.pollUiThread(() -> view.mBarItemsView.getChildCount() > 0);
-        CriteriaHelper.pollUiThread(() -> {
-            ChipView chipView = (ChipView) view.mBarItemsView.getChildAt(0);
-            ChromeImageView iconImageView = (ChromeImageView) chipView.getChildAt(0);
-            Drawable expectedIcon =
-                    mActivityTestRule.getActivity().getDrawable(R.drawable.visa_card);
-            return getBitmap(expectedIcon).sameAs(getBitmap(iconImageView.getDrawable()));
-        });
+        CriteriaHelper.pollUiThread(
+                () -> {
+                    ChipView chipView = (ChipView) view.mBarItemsView.getChildAt(0);
+                    ChromeImageView iconImageView = (ChromeImageView) chipView.getChildAt(0);
+                    Drawable expectedIcon =
+                            mActivityTestRule.getActivity().getDrawable(R.drawable.visa_card);
+                    return getBitmap(expectedIcon).sameAs(getBitmap(iconImageView.getDrawable()));
+                });
     }
 
     @Test
@@ -592,21 +627,23 @@ public class KeyboardAccessoryModernViewTest {
                         getDefaultAutofillSuggestionBuilder().build(),
                         new KeyboardAccessoryData.Action(AUTOFILL_SUGGESTION, unused -> {}));
 
-        TestThreadUtils.runOnUiThreadBlocking(() -> {
-            mModel.set(VISIBLE, true);
-            mModel.get(BAR_ITEMS).set(
-                    new BarItem[] {itemWithoutCustomIconUrl, createSheetOpener()});
-        });
+        TestThreadUtils.runOnUiThreadBlocking(
+                () -> {
+                    mModel.set(VISIBLE, true);
+                    mModel.get(BAR_ITEMS)
+                            .set(new BarItem[] {itemWithoutCustomIconUrl, createSheetOpener()});
+                });
         KeyboardAccessoryModernView view = mKeyboardAccessoryView.take();
 
         CriteriaHelper.pollUiThread(() -> view.mBarItemsView.getChildCount() > 0);
-        CriteriaHelper.pollUiThread(() -> {
-            ChipView chipView = (ChipView) view.mBarItemsView.getChildAt(0);
-            ChromeImageView iconImageView = (ChromeImageView) chipView.getChildAt(0);
-            Drawable expectedIcon =
-                    mActivityTestRule.getActivity().getDrawable(R.drawable.visa_card);
-            return getBitmap(expectedIcon).sameAs(getBitmap(iconImageView.getDrawable()));
-        });
+        CriteriaHelper.pollUiThread(
+                () -> {
+                    ChipView chipView = (ChipView) view.mBarItemsView.getChildAt(0);
+                    ChromeImageView iconImageView = (ChromeImageView) chipView.getChildAt(0);
+                    Drawable expectedIcon =
+                            mActivityTestRule.getActivity().getDrawable(R.drawable.visa_card);
+                    return getBitmap(expectedIcon).sameAs(getBitmap(iconImageView.getDrawable()));
+                });
     }
 
     private static AutofillSuggestion.Builder getDefaultAutofillSuggestionBuilder() {
@@ -619,8 +656,11 @@ public class KeyboardAccessoryModernViewTest {
 
     // Convert a drawable to a Bitmap for comparison.
     private static Bitmap getBitmap(Drawable drawable) {
-        Bitmap bitmap = Bitmap.createBitmap(drawable.getIntrinsicWidth(),
-                drawable.getIntrinsicHeight(), Bitmap.Config.ARGB_8888);
+        Bitmap bitmap =
+                Bitmap.createBitmap(
+                        drawable.getIntrinsicWidth(),
+                        drawable.getIntrinsicHeight(),
+                        Bitmap.Config.ARGB_8888);
         Canvas canvas = new Canvas(bitmap);
         drawable.setBounds(0, 0, canvas.getWidth(), canvas.getHeight());
         drawable.draw(canvas);
@@ -635,18 +675,21 @@ public class KeyboardAccessoryModernViewTest {
     }
 
     private void rotateActivityToLandscape() {
-        mActivityTestRule.getActivity().setRequestedOrientation(
-                ActivityInfo.SCREEN_ORIENTATION_LANDSCAPE);
-        CriteriaHelper.pollInstrumentationThread(() -> {
-            try {
-                String result = JavaScriptUtils.executeJavaScriptAndWaitForResult(
-                        mActivityTestRule.getWebContents(),
-                        "screen.orientation.type.split('-')[0]");
-                Criteria.checkThat(result, is("\"landscape\""));
-            } catch (TimeoutException ex) {
-                throw new CriteriaNotSatisfiedException(ex);
-            }
-        });
+        mActivityTestRule
+                .getActivity()
+                .setRequestedOrientation(ActivityInfo.SCREEN_ORIENTATION_LANDSCAPE);
+        CriteriaHelper.pollInstrumentationThread(
+                () -> {
+                    try {
+                        String result =
+                                JavaScriptUtils.executeJavaScriptAndWaitForResult(
+                                        mActivityTestRule.getWebContents(),
+                                        "screen.orientation.type.split('-')[0]");
+                        Criteria.checkThat(result, is("\"landscape\""));
+                    } catch (TimeoutException ex) {
+                        throw new CriteriaNotSatisfiedException(ex);
+                    }
+                });
     }
 
     private Runnable viewsAreRightAligned(View staticView, View changingView) {
@@ -684,8 +727,9 @@ public class KeyboardAccessoryModernViewTest {
                             return;
                         }
                         ((KeyboardAccessoryButtonGroupView) buttons)
-                                .addButton(buttons.getContext().getDrawable(
-                                                   R.drawable.ic_vpn_key_grey),
+                                .addButton(
+                                        buttons.getContext()
+                                                .getDrawable(R.drawable.ic_vpn_key_grey),
                                         "Key Icon");
                     }
 

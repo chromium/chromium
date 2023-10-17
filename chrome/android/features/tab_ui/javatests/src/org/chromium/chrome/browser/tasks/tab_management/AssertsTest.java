@@ -17,7 +17,7 @@ import org.chromium.chrome.test.ChromeJUnit4ClassRunner;
 /**
  * Test that ensures Java asserts are working in tab_management feature module.
  *
- * Not a robolectric test because we want to make sure asserts are enabled after dexing.
+ * <p>Not a robolectric test because we want to make sure asserts are enabled after dexing.
  */
 @RunWith(ChromeJUnit4ClassRunner.class)
 public class AssertsTest {

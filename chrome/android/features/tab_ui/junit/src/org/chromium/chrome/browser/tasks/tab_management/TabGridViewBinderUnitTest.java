@@ -51,24 +51,16 @@ import org.chromium.ui.widget.ViewLookupCachingFrameLayout;
 public final class TabGridViewBinderUnitTest {
     private static final int INIT_WIDTH = 100;
     private static final int INIT_HEIGHT = 200;
-    @Rule
-    public TestRule mFeaturesProcessorRule = new Features.JUnitProcessor();
-    @Mock
-    private ViewLookupCachingFrameLayout mViewGroup;
-    @Mock
-    private TabListMediator.ThumbnailFetcher mFetcher;
+    @Rule public TestRule mFeaturesProcessorRule = new Features.JUnitProcessor();
+    @Mock private ViewLookupCachingFrameLayout mViewGroup;
+    @Mock private TabListMediator.ThumbnailFetcher mFetcher;
     @Mock private TabThumbnailView mThumbnailView;
-    @Mock
-    private ImageView mFaviconView;
-    @Captor
-    private ArgumentCaptor<Callback<Bitmap>> mCallbackCaptor;
-    @Mock
-    private TypedArray mTypedArray;
+    @Mock private ImageView mFaviconView;
+    @Captor private ArgumentCaptor<Callback<Bitmap>> mCallbackCaptor;
+    @Mock private TypedArray mTypedArray;
 
-    @Mock
-    private TabFavicon mTabFavicon;
-    @Mock
-    private Drawable mDrawable;
+    @Mock private TabFavicon mTabFavicon;
+    @Mock private Drawable mDrawable;
 
     private Context mContext;
     private PropertyModel mModel;
@@ -80,12 +72,13 @@ public final class TabGridViewBinderUnitTest {
         MockitoAnnotations.initMocks(this);
         mContext = RuntimeEnvironment.application;
 
-        mModel = new PropertyModel.Builder(TabProperties.ALL_KEYS_TAB_GRID)
-                         .with(TabProperties.THUMBNAIL_FETCHER, mFetcher)
-                         .with(TabProperties.IS_INCOGNITO, false)
-                         .with(TabProperties.IS_SELECTED, true)
-                         .with(TabProperties.GRID_CARD_SIZE, new Size(INIT_WIDTH, INIT_HEIGHT))
-                         .build();
+        mModel =
+                new PropertyModel.Builder(TabProperties.ALL_KEYS_TAB_GRID)
+                        .with(TabProperties.THUMBNAIL_FETCHER, mFetcher)
+                        .with(TabProperties.IS_INCOGNITO, false)
+                        .with(TabProperties.IS_SELECTED, true)
+                        .with(TabProperties.GRID_CARD_SIZE, new Size(INIT_WIDTH, INIT_HEIGHT))
+                        .build();
         when(mViewGroup.fastFindViewById(R.id.tab_thumbnail)).thenReturn(mThumbnailView);
         when(mViewGroup.fastFindViewById(R.id.tab_favicon)).thenReturn(mFaviconView);
         when(mFaviconView.getContext()).thenReturn(mContext);
@@ -257,12 +250,13 @@ public final class TabGridViewBinderUnitTest {
     public void testBindFaviconFetcher() {
         doReturn(mDrawable).when(mTabFavicon).getSelectedDrawable();
 
-        TabFaviconFetcher fetcher = new TabFaviconFetcher() {
-            @Override
-            public void fetch(Callback<TabFavicon> callback) {
-                callback.onResult(mTabFavicon);
-            }
-        };
+        TabFaviconFetcher fetcher =
+                new TabFaviconFetcher() {
+                    @Override
+                    public void fetch(Callback<TabFavicon> callback) {
+                        callback.onResult(mTabFavicon);
+                    }
+                };
         mModel.set(TabProperties.FAVICON_FETCHER, fetcher);
         TabGridViewBinder.bindClosableTab(mModel, mViewGroup, TabProperties.FAVICON_FETCHER);
 

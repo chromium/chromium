@@ -34,9 +34,7 @@ import org.chromium.ui.modelutil.PropertyModel;
 import org.chromium.ui.test.util.BlankUiTestActivity;
 import org.chromium.ui.test.util.BlankUiTestActivityTestCase;
 
-/**
- * View tests for the keyboard accessory tab layout component.
- */
+/** View tests for the keyboard accessory tab layout component. */
 @RunWith(BaseJUnit4ClassRunner.class)
 @Batch(Batch.UNIT_TESTS)
 public class KeyboardAccessoryTabLayoutViewTest extends BlankUiTestActivityTestCase {
@@ -44,8 +42,10 @@ public class KeyboardAccessoryTabLayoutViewTest extends BlankUiTestActivityTestC
     private KeyboardAccessoryTabLayoutView mView;
 
     private KeyboardAccessoryData.Tab createTestTab(String contentDescription) {
-        return new KeyboardAccessoryData.Tab("Passwords",
-                getActivity().getDrawable(android.R.drawable.ic_lock_lock), contentDescription,
+        return new KeyboardAccessoryData.Tab(
+                "Passwords",
+                getActivity().getDrawable(android.R.drawable.ic_lock_lock),
+                contentDescription,
                 R.layout.empty_accessory_sheet, // Unused.
                 AccessoryTabType.ALL,
                 null); // Unused.
@@ -66,25 +66,34 @@ public class KeyboardAccessoryTabLayoutViewTest extends BlankUiTestActivityTestC
     public void setUpTest() throws Exception {
         super.setUpTest();
 
-        ThreadUtils.runOnUiThreadBlocking(() -> {
-            mModel = new PropertyModel.Builder(TABS, ACTIVE_TAB, TAB_SELECTION_CALLBACKS)
-                             .with(TABS, new ListModel<>())
-                             .with(ACTIVE_TAB, null)
-                             .build();
-            mView = (KeyboardAccessoryTabLayoutView) ((FrameLayout) getActivity().findViewById(
-                                                              android.R.id.content))
-                            .getChildAt(0);
-            KeyboardAccessoryTabLayoutCoordinator.createTabViewBinder(mModel, mView);
-        });
+        ThreadUtils.runOnUiThreadBlocking(
+                () -> {
+                    mModel =
+                            new PropertyModel.Builder(TABS, ACTIVE_TAB, TAB_SELECTION_CALLBACKS)
+                                    .with(TABS, new ListModel<>())
+                                    .with(ACTIVE_TAB, null)
+                                    .build();
+                    mView =
+                            (KeyboardAccessoryTabLayoutView)
+                                    ((FrameLayout) getActivity().findViewById(android.R.id.content))
+                                            .getChildAt(0);
+                    KeyboardAccessoryTabLayoutCoordinator.createTabViewBinder(mModel, mView);
+                });
     }
 
     @Test
     @MediumTest
     public void testRemovesTabs() {
-        ThreadUtils.runOnUiThreadBlocking(() -> {
-            mModel.get(TABS).set(new KeyboardAccessoryData.Tab[] {createTestTab("FirstTab"),
-                    createTestTab("SecondTab"), createTestTab("ThirdTab")});
-        });
+        ThreadUtils.runOnUiThreadBlocking(
+                () -> {
+                    mModel.get(TABS)
+                            .set(
+                                    new KeyboardAccessoryData.Tab[] {
+                                        createTestTab("FirstTab"),
+                                        createTestTab("SecondTab"),
+                                        createTestTab("ThirdTab")
+                                    });
+                });
 
         CriteriaHelper.pollUiThread(() -> mView.getTabCount() == 3);
 
@@ -102,10 +111,14 @@ public class KeyboardAccessoryTabLayoutViewTest extends BlankUiTestActivityTestC
     @Test
     @MediumTest
     public void testAddsTabs() {
-        ThreadUtils.runOnUiThreadBlocking(() -> {
-            mModel.get(TABS).set(new KeyboardAccessoryData.Tab[] {
-                    createTestTab("FirstTab"), createTestTab("SecondTab")});
-        });
+        ThreadUtils.runOnUiThreadBlocking(
+                () -> {
+                    mModel.get(TABS)
+                            .set(
+                                    new KeyboardAccessoryData.Tab[] {
+                                        createTestTab("FirstTab"), createTestTab("SecondTab")
+                                    });
+                });
 
         CriteriaHelper.pollUiThread(() -> mView.getTabCount() == 2);
         assertThat(getTabDescriptionAt(0), is("FirstTab"));

@@ -25,24 +25,18 @@ import org.chromium.chrome.browser.tasks.tab_management.MessageService.MessageTy
 import org.chromium.components.feature_engagement.FeatureConstants;
 import org.chromium.components.feature_engagement.Tracker;
 
-/**
- * Unit tests for {@link IphMessageService}.
- */
+/** Unit tests for {@link IphMessageService}. */
 @SuppressWarnings({"ResultOfMethodCallIgnored", "ArraysAsListWithZeroOrOneArgument"})
 @RunWith(BaseRobolectricTestRunner.class)
 @Batch(Batch.UNIT_TESTS)
 public class IphMessageServiceUnitTest {
-    @Mock
-    private TabSwitcherCoordinator.IphController mIphController;
+    @Mock private TabSwitcherCoordinator.IphController mIphController;
 
-    @Mock
-    private Profile mProfile;
+    @Mock private Profile mProfile;
 
-    @Mock
-    private Tracker mTracker;
+    @Mock private Tracker mTracker;
 
-    @Mock
-    private MessageService.MessageObserver mMessageObserver;
+    @Mock private MessageService.MessageObserver mMessageObserver;
 
     private IphMessageService mIphMessageService;
 
@@ -79,8 +73,9 @@ public class IphMessageServiceUnitTest {
 
     @Test
     public void testCallbackWouldTriggerDragDrop() {
-        doReturn(true).when(mTracker).wouldTriggerHelpUI(
-                eq(FeatureConstants.TAB_GROUPS_DRAG_AND_DROP_FEATURE));
+        doReturn(true)
+                .when(mTracker)
+                .wouldTriggerHelpUI(eq(FeatureConstants.TAB_GROUPS_DRAG_AND_DROP_FEATURE));
         doReturn(true).when(mTracker).isInitialized();
         mIphMessageService.addObserver(mMessageObserver);
         mIphMessageService.getInitializedCallbackForTesting().onResult(true);
@@ -90,8 +85,9 @@ public class IphMessageServiceUnitTest {
 
     @Test
     public void testCallbackWouldNotTriggerDragDrop() {
-        doReturn(false).when(mTracker).wouldTriggerHelpUI(
-                eq(FeatureConstants.TAB_GROUPS_DRAG_AND_DROP_FEATURE));
+        doReturn(false)
+                .when(mTracker)
+                .wouldTriggerHelpUI(eq(FeatureConstants.TAB_GROUPS_DRAG_AND_DROP_FEATURE));
         mIphMessageService.addObserver(mMessageObserver);
         mIphMessageService.getInitializedCallbackForTesting().onResult(true);
         verify(mMessageObserver, times(0))

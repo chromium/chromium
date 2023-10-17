@@ -23,16 +23,12 @@ import org.chromium.chrome.tab_ui.R;
 import org.chromium.ui.modelutil.PropertyModel;
 import org.chromium.ui.modelutil.PropertyModelChangeProcessor;
 
-/**
- * Tests for {@link TabGridDialogMenuItemBinder}.
- */
+/** Tests for {@link TabGridDialogMenuItemBinder}. */
 @RunWith(BaseRobolectricTestRunner.class)
 public class TabGridDialogMenuItemBinderUnitTest {
-    @Mock
-    private TextView mMockTextView;
+    @Mock private TextView mMockTextView;
 
-    @Mock
-    private TextView mMockRootView;
+    @Mock private TextView mMockRootView;
 
     private static final String FAKE_ITEM_TITLE_TEXT = "FAKE TITLE";
     private PropertyModel mModel;

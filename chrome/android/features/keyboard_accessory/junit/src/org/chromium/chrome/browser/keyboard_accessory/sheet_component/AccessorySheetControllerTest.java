@@ -50,42 +50,40 @@ import org.chromium.ui.modelutil.PropertyModel;
 import org.chromium.ui.modelutil.PropertyObservable;
 import org.chromium.ui.test.util.modelutil.FakeViewProvider;
 
-/**
- * Controller tests for the keyboard accessory bottom sheet component.
- */
+/** Controller tests for the keyboard accessory bottom sheet component. */
 @RunWith(BaseRobolectricTestRunner.class)
-@Config(manifest = Config.NONE, shadows = {CustomShadowAsyncTask.class})
+@Config(
+        manifest = Config.NONE,
+        shadows = {CustomShadowAsyncTask.class})
 public class AccessorySheetControllerTest {
-    @Mock
-    private PropertyObservable.PropertyObserver<PropertyKey> mMockPropertyObserver;
-    @Mock
-    private ListObservable.ListObserver<Void> mTabListObserver;
-    @Mock
-    private AccessorySheetView mMockView;
-    @Mock
-    private RecyclerView mMockRecyclerView;
-    @Mock
-    private SheetVisibilityDelegate mSheetVisibilityDelegate;
+    @Mock private PropertyObservable.PropertyObserver<PropertyKey> mMockPropertyObserver;
+    @Mock private ListObservable.ListObserver<Void> mTabListObserver;
+    @Mock private AccessorySheetView mMockView;
+    @Mock private RecyclerView mMockRecyclerView;
+    @Mock private SheetVisibilityDelegate mSheetVisibilityDelegate;
 
-    private final Tab[] mTabs = new Tab[] {new Tab("Passwords", null, null, 0, 0, null),
-            new Tab("Passwords", null, null, 0, 0, null),
-            new Tab("Passwords", null, null, 0, 0, null),
-            new Tab("Passwords", null, null, 0, 0, null)};
+    private final Tab[] mTabs =
+            new Tab[] {
+                new Tab("Passwords", null, null, 0, 0, null),
+                new Tab("Passwords", null, null, 0, 0, null),
+                new Tab("Passwords", null, null, 0, 0, null),
+                new Tab("Passwords", null, null, 0, 0, null)
+            };
 
     private AccessorySheetCoordinator mCoordinator;
     private AccessorySheetMediator mMediator;
     private PropertyModel mModel;
 
-    @Rule
-    public TestRule mFeaturesProcessor = new Features.JUnitProcessor();
+    @Rule public TestRule mFeaturesProcessor = new Features.JUnitProcessor();
 
     @Before
     public void setUp() {
         UmaRecorderHolder.resetForTesting();
         MockitoAnnotations.initMocks(this);
         when(mMockView.getLayoutParams()).thenReturn(new ViewGroup.LayoutParams(0, 0));
-        mCoordinator = new AccessorySheetCoordinator(
-                new FakeViewProvider<>(mMockView), mSheetVisibilityDelegate);
+        mCoordinator =
+                new AccessorySheetCoordinator(
+                        new FakeViewProvider<>(mMockView), mSheetVisibilityDelegate);
         mMediator = mCoordinator.getMediatorForTesting();
         mModel = mMediator.getModelForTesting();
     }
@@ -186,8 +184,9 @@ public class AccessorySheetControllerTest {
 
     @Test
     public void testRecordsSheetClosure() {
-        assertThat(RecordHistogram.getHistogramTotalCountForTesting(
-                           ManualFillingMetricsRecorder.UMA_KEYBOARD_ACCESSORY_SHEET_TRIGGERED),
+        assertThat(
+                RecordHistogram.getHistogramTotalCountForTesting(
+                        ManualFillingMetricsRecorder.UMA_KEYBOARD_ACCESSORY_SHEET_TRIGGERED),
                 is(0));
 
         // Although sheets must be opened manually as of now, don't assume that every opened sheet

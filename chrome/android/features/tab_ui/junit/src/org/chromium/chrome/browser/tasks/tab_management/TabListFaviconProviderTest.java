@@ -55,12 +55,10 @@ public class TabListFaviconProviderTest {
     private GURL mUrl2;
 
     private Activity mActivity;
-    @Mock
-    private Profile mProfile;
-    @Mock
-    private FaviconHelper mMockFaviconHelper;
-    @Captor
-    private ArgumentCaptor<FaviconImageCallback> mFaviconImageCallbackCaptor;
+    @Mock private Profile mProfile;
+    @Mock private FaviconHelper mMockFaviconHelper;
+    @Captor private ArgumentCaptor<FaviconImageCallback> mFaviconImageCallbackCaptor;
+
     @Captor
     private ArgumentCaptor<ComposedFaviconImageCallback> mComposedFaviconImageCallbackCaptor;
 
@@ -102,7 +100,8 @@ public class TabListFaviconProviderTest {
         Assert.assertEquals(urlTabFavicon, new UrlTabFavicon(newDrawable(), mUrl1));
         Assert.assertNotEquals(urlTabFavicon, new UrlTabFavicon(newDrawable(), mUrl2));
         Assert.assertNotEquals(urlTabFavicon, null);
-        Assert.assertNotEquals(urlTabFavicon,
+        Assert.assertNotEquals(
+                urlTabFavicon,
                 new ResourceTabFavicon(newDrawable(), StaticTabFaviconType.ROUNDED_GLOBE));
     }
 
@@ -111,20 +110,24 @@ public class TabListFaviconProviderTest {
         TabFavicon composedTabFavicon = new ComposedTabFavicon(newDrawable(), new GURL[] {mUrl1});
         Assert.assertEquals(
                 composedTabFavicon, new ComposedTabFavicon(newDrawable(), new GURL[] {mUrl1}));
-        Assert.assertNotEquals(composedTabFavicon,
+        Assert.assertNotEquals(
+                composedTabFavicon,
                 new ComposedTabFavicon(newDrawable(), new GURL[] {mUrl1, mUrl2}));
         Assert.assertNotEquals(
                 composedTabFavicon, new ComposedTabFavicon(newDrawable(), new GURL[] {mUrl2}));
         Assert.assertNotEquals(
                 composedTabFavicon, new ComposedTabFavicon(newDrawable(), new GURL[] {}));
-        Assert.assertNotEquals(composedTabFavicon,
+        Assert.assertNotEquals(
+                composedTabFavicon,
                 new ResourceTabFavicon(newDrawable(), StaticTabFaviconType.ROUNDED_GLOBE));
 
         TabFavicon composedTabFavicon2 =
                 new ComposedTabFavicon(newDrawable(), new GURL[] {mUrl1, mUrl2});
-        Assert.assertEquals(composedTabFavicon2,
+        Assert.assertEquals(
+                composedTabFavicon2,
                 new ComposedTabFavicon(newDrawable(), new GURL[] {mUrl1, mUrl2}));
-        Assert.assertNotEquals(composedTabFavicon2,
+        Assert.assertNotEquals(
+                composedTabFavicon2,
                 new ComposedTabFavicon(newDrawable(), new GURL[] {mUrl2, mUrl1}));
         Assert.assertNotEquals(
                 composedTabFavicon2, new ComposedTabFavicon(newDrawable(), new GURL[] {mUrl1}));
@@ -134,9 +137,11 @@ public class TabListFaviconProviderTest {
     public void testResourceTabFavicon() {
         TabFavicon resourceTabFavicon =
                 new ResourceTabFavicon(newDrawable(), StaticTabFaviconType.ROUNDED_GLOBE);
-        Assert.assertEquals(resourceTabFavicon,
+        Assert.assertEquals(
+                resourceTabFavicon,
                 new ResourceTabFavicon(newDrawable(), StaticTabFaviconType.ROUNDED_GLOBE));
-        Assert.assertNotEquals(resourceTabFavicon,
+        Assert.assertNotEquals(
+                resourceTabFavicon,
                 new ResourceTabFavicon(newDrawable(), StaticTabFaviconType.ROUNDED_CHROME));
         Assert.assertNotEquals(resourceTabFavicon, new UrlTabFavicon(newDrawable(), mUrl1));
     }
@@ -153,7 +158,8 @@ public class TabListFaviconProviderTest {
     public void testDefaultFaviconFetcher_Incognito() {
         TabFaviconFetcher fetcher = mTabListFaviconProvider.getDefaultFaviconFetcher(true);
         TabFavicon favicon = (ResourceTabFavicon) doFetchFavicon(fetcher);
-        Assert.assertEquals(favicon,
+        Assert.assertEquals(
+                favicon,
                 new ResourceTabFavicon(
                         newDrawable(), StaticTabFaviconType.ROUNDED_GLOBE_INCOGNITO));
     }
@@ -169,12 +175,21 @@ public class TabListFaviconProviderTest {
     @Test
     public void testFaviconForUrlFetcher() {
         TabFaviconFetcher fetcher = mTabListFaviconProvider.getFaviconForUrlFetcher(mUrl1, false);
-        TabFavicon favicon = (UrlTabFavicon) doFetchFavicon(() -> {
-            verify(mMockFaviconHelper)
-                    .getLocalFaviconImageForURL(eq(mProfile), eq(mUrl1), anyInt(),
-                            mFaviconImageCallbackCaptor.capture());
-            mFaviconImageCallbackCaptor.getValue().onFaviconAvailable(newBitmap(), mUrl1);
-        }, fetcher);
+        TabFavicon favicon =
+                (UrlTabFavicon)
+                        doFetchFavicon(
+                                () -> {
+                                    verify(mMockFaviconHelper)
+                                            .getLocalFaviconImageForURL(
+                                                    eq(mProfile),
+                                                    eq(mUrl1),
+                                                    anyInt(),
+                                                    mFaviconImageCallbackCaptor.capture());
+                                    mFaviconImageCallbackCaptor
+                                            .getValue()
+                                            .onFaviconAvailable(newBitmap(), mUrl1);
+                                },
+                                fetcher);
         Assert.assertEquals(favicon, new UrlTabFavicon(newDrawable(), mUrl1));
     }
 
@@ -183,21 +198,30 @@ public class TabListFaviconProviderTest {
         GURL[] urls = new GURL[] {mUrl1, mUrl2};
         TabFaviconFetcher fetcher =
                 mTabListFaviconProvider.getComposedFaviconImageFetcher(Arrays.asList(urls), false);
-        TabFavicon favicon = (ComposedTabFavicon) doFetchFavicon(() -> {
-            verify(mMockFaviconHelper)
-                    .getComposedFaviconImage(eq(mProfile), eq(Arrays.asList(urls)), anyInt(),
-                            mComposedFaviconImageCallbackCaptor.capture());
-            mComposedFaviconImageCallbackCaptor.getValue().onComposedFaviconAvailable(
-                    newBitmap(), urls);
-        }, fetcher);
+        TabFavicon favicon =
+                (ComposedTabFavicon)
+                        doFetchFavicon(
+                                () -> {
+                                    verify(mMockFaviconHelper)
+                                            .getComposedFaviconImage(
+                                                    eq(mProfile),
+                                                    eq(Arrays.asList(urls)),
+                                                    anyInt(),
+                                                    mComposedFaviconImageCallbackCaptor.capture());
+                                    mComposedFaviconImageCallbackCaptor
+                                            .getValue()
+                                            .onComposedFaviconAvailable(newBitmap(), urls);
+                                },
+                                fetcher);
         Assert.assertEquals(favicon, new ComposedTabFavicon(newDrawable(), urls));
     }
 
     private TabFavicon doFetchFavicon(Runnable after, TabFaviconFetcher fetcher) {
         TabFavicon[] faviconHolder = new TabFavicon[1];
-        Callback<TabFavicon> callback = tabFavicon -> {
-            faviconHolder[0] = tabFavicon;
-        };
+        Callback<TabFavicon> callback =
+                tabFavicon -> {
+                    faviconHolder[0] = tabFavicon;
+                };
         fetcher.fetch(callback);
         after.run();
         return faviconHolder[0];

@@ -150,93 +150,59 @@ public class StartSurfaceMediatorUnitTest {
     private PropertyModel mPropertyModel;
     private PropertyModel mSecondaryTasksSurfacePropertyModel;
 
-    @Rule
-    public JniMocker mJniMocker = new JniMocker();
-    @Rule
-    public TestRule mProcessor = new Features.JUnitProcessor();
-    @Mock
-    private TabSwitcher.Controller mCarouselOrSingleTabSwitcherModuleController;
-    @Mock
-    private TabModelSelector mTabModelSelector;
-    @Mock
-    private Tab mTab;
-    @Mock
-    private TabModel mNormalTabModel;
-    @Mock
-    private TabModel mIncognitoTabModel;
-    @Mock
-    private List<TabModel> mTabModels;
-    @Mock
-    private TabModelFilterProvider mTabModelFilterProvider;
-    @Mock
-    private TabModelFilter mNormalTabModelFilter;
-    @Mock
-    private OmniboxStub mOmniboxStub;
-    @Mock
-    private ExploreSurfaceCoordinator mExploreSurfaceCoordinator;
-    @Mock
-    private ExploreSurfaceCoordinatorFactory mExploreSurfaceCoordinatorFactory;
-    @Mock
-    private NightModeStateProvider mNightModeStateProvider;
-    @Mock
-    private BrowserControlsStateProvider mBrowserControlsStateProvider;
-    @Mock
-    private StartSurfaceMediator.ActivityStateChecker mActivityStateChecker;
-    @Mock
-    private VoiceRecognitionHandler mVoiceRecognitionHandler;
-    @Mock
-    private SecondaryTasksSurfaceInitializer mSecondaryTasksSurfaceInitializer;
-    @Mock
-    private TabSwitcher.Controller mSecondaryTasksSurfaceController;
-    @Mock
-    private PrefService mPrefService;
-    @Mock
-    private OneshotSupplier<StartSurface> mStartSurfaceSupplier;
-    @Mock
-    private Runnable mInitializeMVTilesRunnable;
-    @Mock
-    private FeedReliabilityLogger mFeedReliabilityLogger;
-    @Mock
-    private BackPressManager mBackPressManager;
-    @Mock
-    private Supplier<Tab> mParentTabSupplier;
-    @Mock
-    private View mLogoContainerView;
-    @Mock
-    private LogoView mLogoView;
-    @Mock
-    LogoBridge.Natives mLogoBridge;
-    @Mock
-    private Profile mProfile;
-    @Mock
-    private TemplateUrlService mTemplateUrlService;
-    @Mock
-    private ActivityLifecycleDispatcher mActivityLifecycleDispatcher;
-    @Mock
-    private OnClickListener mTabSwitcherClickHandler;
-    @Mock
-    private TabSwitcher mTabSwitcherModule;
-    @Mock
-    private TabListDelegate mTabListDelegate;
-    @Mock
-    private TabSwitcher.Controller mSingleTabSwitcherModuleController;
-    @Captor
-    private ArgumentCaptor<TabModelSelectorObserver> mTabModelSelectorObserverCaptor;
-    @Captor
-    private ArgumentCaptor<TabModelObserver> mTabModelObserverCaptor;
+    @Rule public JniMocker mJniMocker = new JniMocker();
+    @Rule public TestRule mProcessor = new Features.JUnitProcessor();
+    @Mock private TabSwitcher.Controller mCarouselOrSingleTabSwitcherModuleController;
+    @Mock private TabModelSelector mTabModelSelector;
+    @Mock private Tab mTab;
+    @Mock private TabModel mNormalTabModel;
+    @Mock private TabModel mIncognitoTabModel;
+    @Mock private List<TabModel> mTabModels;
+    @Mock private TabModelFilterProvider mTabModelFilterProvider;
+    @Mock private TabModelFilter mNormalTabModelFilter;
+    @Mock private OmniboxStub mOmniboxStub;
+    @Mock private ExploreSurfaceCoordinator mExploreSurfaceCoordinator;
+    @Mock private ExploreSurfaceCoordinatorFactory mExploreSurfaceCoordinatorFactory;
+    @Mock private NightModeStateProvider mNightModeStateProvider;
+    @Mock private BrowserControlsStateProvider mBrowserControlsStateProvider;
+    @Mock private StartSurfaceMediator.ActivityStateChecker mActivityStateChecker;
+    @Mock private VoiceRecognitionHandler mVoiceRecognitionHandler;
+    @Mock private SecondaryTasksSurfaceInitializer mSecondaryTasksSurfaceInitializer;
+    @Mock private TabSwitcher.Controller mSecondaryTasksSurfaceController;
+    @Mock private PrefService mPrefService;
+    @Mock private OneshotSupplier<StartSurface> mStartSurfaceSupplier;
+    @Mock private Runnable mInitializeMVTilesRunnable;
+    @Mock private FeedReliabilityLogger mFeedReliabilityLogger;
+    @Mock private BackPressManager mBackPressManager;
+    @Mock private Supplier<Tab> mParentTabSupplier;
+    @Mock private View mLogoContainerView;
+    @Mock private LogoView mLogoView;
+    @Mock LogoBridge.Natives mLogoBridge;
+    @Mock private Profile mProfile;
+    @Mock private TemplateUrlService mTemplateUrlService;
+    @Mock private ActivityLifecycleDispatcher mActivityLifecycleDispatcher;
+    @Mock private OnClickListener mTabSwitcherClickHandler;
+    @Mock private TabSwitcher mTabSwitcherModule;
+    @Mock private TabListDelegate mTabListDelegate;
+    @Mock private TabSwitcher.Controller mSingleTabSwitcherModuleController;
+    @Captor private ArgumentCaptor<TabModelSelectorObserver> mTabModelSelectorObserverCaptor;
+    @Captor private ArgumentCaptor<TabModelObserver> mTabModelObserverCaptor;
+
     @Captor
     private ArgumentCaptor<TabSwitcherViewObserver>
             mCarouselTabSwitcherModuleVisibilityObserverCaptor;
-    @Captor
-    private ArgumentCaptor<UrlFocusChangeListener> mUrlFocusChangeListenerCaptor;
+
+    @Captor private ArgumentCaptor<UrlFocusChangeListener> mUrlFocusChangeListenerCaptor;
+
     @Captor
     private ArgumentCaptor<BrowserControlsStateProvider.Observer>
             mBrowserControlsStateProviderCaptor;
+
     @Captor
     private ArgumentCaptor<PauseResumeWithNativeObserver>
             mPauseResumeWithNativeObserverArgumentCaptor;
-    @Captor
-    private ArgumentCaptor<TemplateUrlServiceObserver> mTemplateUrlServiceObserverCaptor;
+
+    @Captor private ArgumentCaptor<TemplateUrlServiceObserver> mTemplateUrlServiceObserverCaptor;
 
     private ObservableSupplierImpl<Boolean>
             mCarouselTabSwitcherModuleControllerBackPressStateSupplier =
@@ -650,7 +616,8 @@ public class StartSurfaceMediatorUnitTest {
         assertThat(mPropertyModel.get(IS_TAB_CAROUSEL_VISIBLE), equalTo(false));
         assertThat(mPropertyModel.get(IS_TAB_CAROUSEL_TITLE_VISIBLE), equalTo(false));
         assertThat(mPropertyModel.get(IS_SECONDARY_SURFACE_VISIBLE), equalTo(true));
-        assertThat(mSecondaryTasksSurfacePropertyModel.get(IS_FAKE_SEARCH_BOX_VISIBLE),
+        assertThat(
+                mSecondaryTasksSurfacePropertyModel.get(IS_FAKE_SEARCH_BOX_VISIBLE),
                 equalTo(false));
         assertThat(mSecondaryTasksSurfacePropertyModel.get(IS_INCOGNITO), equalTo(false));
 
@@ -692,7 +659,8 @@ public class StartSurfaceMediatorUnitTest {
         assertThat(mPropertyModel.get(IS_TAB_CAROUSEL_VISIBLE), equalTo(false));
         assertThat(mPropertyModel.get(IS_TAB_CAROUSEL_TITLE_VISIBLE), equalTo(false));
         assertThat(mPropertyModel.get(IS_SECONDARY_SURFACE_VISIBLE), equalTo(true));
-        assertThat(mSecondaryTasksSurfacePropertyModel.get(IS_FAKE_SEARCH_BOX_VISIBLE),
+        assertThat(
+                mSecondaryTasksSurfacePropertyModel.get(IS_FAKE_SEARCH_BOX_VISIBLE),
                 equalTo(false));
         assertThat(mSecondaryTasksSurfacePropertyModel.get(IS_INCOGNITO), equalTo(true));
 
@@ -727,13 +695,15 @@ public class StartSurfaceMediatorUnitTest {
 
         doReturn(true).when(mTabModelSelector).isIncognitoSelected();
         mTabModelSelector.selectModel(true);
-        mTabModelSelectorObserverCaptor.getValue().onTabModelSelected(
-                mIncognitoTabModel, mNormalTabModel);
+        mTabModelSelectorObserverCaptor
+                .getValue()
+                .onTabModelSelected(mIncognitoTabModel, mNormalTabModel);
 
         doReturn(false).when(mTabModelSelector).isIncognitoSelected();
         mTabModelSelector.selectModel(false);
-        mTabModelSelectorObserverCaptor.getValue().onTabModelSelected(
-                mNormalTabModel, mIncognitoTabModel);
+        mTabModelSelectorObserverCaptor
+                .getValue()
+                .onTabModelSelected(mNormalTabModel, mIncognitoTabModel);
         assertTrue(mediator.isHomepageShown());
         assertThat(mPropertyModel.get(IS_SHOWING_OVERVIEW), equalTo(true));
         assertThat(mPropertyModel.get(IS_INCOGNITO), equalTo(false));
@@ -781,7 +751,8 @@ public class StartSurfaceMediatorUnitTest {
         assertThat(mPropertyModel.get(IS_TAB_CAROUSEL_VISIBLE), equalTo(false));
         assertThat(mPropertyModel.get(IS_TAB_CAROUSEL_TITLE_VISIBLE), equalTo(false));
         assertThat(mPropertyModel.get(IS_SECONDARY_SURFACE_VISIBLE), equalTo(true));
-        assertThat(mSecondaryTasksSurfacePropertyModel.get(IS_FAKE_SEARCH_BOX_VISIBLE),
+        assertThat(
+                mSecondaryTasksSurfacePropertyModel.get(IS_FAKE_SEARCH_BOX_VISIBLE),
                 equalTo(false));
         assertThat(mSecondaryTasksSurfacePropertyModel.get(IS_INCOGNITO), equalTo(false));
         assertThat(mPropertyModel.get(EXPLORE_SURFACE_COORDINATOR), equalTo(null));
@@ -851,15 +822,18 @@ public class StartSurfaceMediatorUnitTest {
 
         doReturn(true).when(mTabModelSelector).isIncognitoSelected();
         mTabModelSelector.selectModel(true);
-        mTabModelSelectorObserverCaptor.getValue().onTabModelSelected(
-                mIncognitoTabModel, mNormalTabModel);
+        mTabModelSelectorObserverCaptor
+                .getValue()
+                .onTabModelSelected(mIncognitoTabModel, mNormalTabModel);
         assertThat(mSecondaryTasksSurfacePropertyModel.get(IS_INCOGNITO), equalTo(true));
 
         showHomepageAndVerify(mediator, StartSurfaceState.SHOWN_HOMEPAGE);
         assertThat(mSecondaryTasksSurfacePropertyModel.get(IS_INCOGNITO), equalTo(true));
-        assertThat(mSecondaryTasksSurfacePropertyModel.get(IS_FAKE_SEARCH_BOX_VISIBLE),
+        assertThat(
+                mSecondaryTasksSurfacePropertyModel.get(IS_FAKE_SEARCH_BOX_VISIBLE),
                 equalTo(false));
-        assertThat(mSecondaryTasksSurfacePropertyModel.get(IS_VOICE_RECOGNITION_BUTTON_VISIBLE),
+        assertThat(
+                mSecondaryTasksSurfacePropertyModel.get(IS_VOICE_RECOGNITION_BUTTON_VISIBLE),
                 equalTo(false));
         assertThat(mSecondaryTasksSurfacePropertyModel.get(IS_INCOGNITO), equalTo(true));
     }
@@ -922,25 +896,33 @@ public class StartSurfaceMediatorUnitTest {
             return;
         }
 
-        assertThat(mSecondaryTasksSurfacePropertyModel.get(IS_INCOGNITO_DESCRIPTION_INITIALIZED),
+        assertThat(
+                mSecondaryTasksSurfacePropertyModel.get(IS_INCOGNITO_DESCRIPTION_INITIALIZED),
                 equalTo(false));
-        assertThat(mSecondaryTasksSurfacePropertyModel.get(IS_INCOGNITO_DESCRIPTION_VISIBLE),
+        assertThat(
+                mSecondaryTasksSurfacePropertyModel.get(IS_INCOGNITO_DESCRIPTION_VISIBLE),
                 equalTo(false));
 
         mediator.setSecondaryTasksSurfacePropertyModel(mSecondaryTasksSurfacePropertyModel);
         doReturn(0).when(mIncognitoTabModel).getCount();
-        mTabModelSelectorObserverCaptor.getValue().onTabModelSelected(
-                mIncognitoTabModel, mNormalTabModel);
-        assertThat(mSecondaryTasksSurfacePropertyModel.get(IS_INCOGNITO_DESCRIPTION_INITIALIZED),
+        mTabModelSelectorObserverCaptor
+                .getValue()
+                .onTabModelSelected(mIncognitoTabModel, mNormalTabModel);
+        assertThat(
+                mSecondaryTasksSurfacePropertyModel.get(IS_INCOGNITO_DESCRIPTION_INITIALIZED),
                 equalTo(true));
-        assertThat(mSecondaryTasksSurfacePropertyModel.get(IS_INCOGNITO_DESCRIPTION_VISIBLE),
+        assertThat(
+                mSecondaryTasksSurfacePropertyModel.get(IS_INCOGNITO_DESCRIPTION_VISIBLE),
                 equalTo(true));
 
-        mTabModelSelectorObserverCaptor.getValue().onTabModelSelected(
-                mNormalTabModel, mIncognitoTabModel);
-        assertThat(mSecondaryTasksSurfacePropertyModel.get(IS_INCOGNITO_DESCRIPTION_INITIALIZED),
+        mTabModelSelectorObserverCaptor
+                .getValue()
+                .onTabModelSelected(mNormalTabModel, mIncognitoTabModel);
+        assertThat(
+                mSecondaryTasksSurfacePropertyModel.get(IS_INCOGNITO_DESCRIPTION_INITIALIZED),
                 equalTo(true));
-        assertThat(mSecondaryTasksSurfacePropertyModel.get(IS_INCOGNITO_DESCRIPTION_VISIBLE),
+        assertThat(
+                mSecondaryTasksSurfacePropertyModel.get(IS_INCOGNITO_DESCRIPTION_VISIBLE),
                 equalTo(false));
 
         mediator.hideTabSwitcherView(true);
@@ -959,25 +941,33 @@ public class StartSurfaceMediatorUnitTest {
 
         assertThat(mPropertyModel.get(IS_INCOGNITO_DESCRIPTION_INITIALIZED), equalTo(false));
         assertThat(mPropertyModel.get(IS_INCOGNITO_DESCRIPTION_VISIBLE), equalTo(false));
-        assertThat(mSecondaryTasksSurfacePropertyModel.get(IS_INCOGNITO_DESCRIPTION_INITIALIZED),
+        assertThat(
+                mSecondaryTasksSurfacePropertyModel.get(IS_INCOGNITO_DESCRIPTION_INITIALIZED),
                 equalTo(false));
-        assertThat(mSecondaryTasksSurfacePropertyModel.get(IS_INCOGNITO_DESCRIPTION_VISIBLE),
+        assertThat(
+                mSecondaryTasksSurfacePropertyModel.get(IS_INCOGNITO_DESCRIPTION_VISIBLE),
                 equalTo(false));
 
         mediator.setSecondaryTasksSurfacePropertyModel(mSecondaryTasksSurfacePropertyModel);
         doReturn(1).when(mIncognitoTabModel).getCount();
-        mTabModelSelectorObserverCaptor.getValue().onTabModelSelected(
-                mIncognitoTabModel, mNormalTabModel);
-        assertThat(mSecondaryTasksSurfacePropertyModel.get(IS_INCOGNITO_DESCRIPTION_INITIALIZED),
+        mTabModelSelectorObserverCaptor
+                .getValue()
+                .onTabModelSelected(mIncognitoTabModel, mNormalTabModel);
+        assertThat(
+                mSecondaryTasksSurfacePropertyModel.get(IS_INCOGNITO_DESCRIPTION_INITIALIZED),
                 equalTo(false));
-        assertThat(mSecondaryTasksSurfacePropertyModel.get(IS_INCOGNITO_DESCRIPTION_VISIBLE),
+        assertThat(
+                mSecondaryTasksSurfacePropertyModel.get(IS_INCOGNITO_DESCRIPTION_VISIBLE),
                 equalTo(false));
 
-        mTabModelSelectorObserverCaptor.getValue().onTabModelSelected(
-                mNormalTabModel, mIncognitoTabModel);
-        assertThat(mSecondaryTasksSurfacePropertyModel.get(IS_INCOGNITO_DESCRIPTION_INITIALIZED),
+        mTabModelSelectorObserverCaptor
+                .getValue()
+                .onTabModelSelected(mNormalTabModel, mIncognitoTabModel);
+        assertThat(
+                mSecondaryTasksSurfacePropertyModel.get(IS_INCOGNITO_DESCRIPTION_INITIALIZED),
                 equalTo(false));
-        assertThat(mSecondaryTasksSurfacePropertyModel.get(IS_INCOGNITO_DESCRIPTION_VISIBLE),
+        assertThat(
+                mSecondaryTasksSurfacePropertyModel.get(IS_INCOGNITO_DESCRIPTION_VISIBLE),
                 equalTo(false));
 
         mediator.hideTabSwitcherView(true);
@@ -1020,9 +1010,11 @@ public class StartSurfaceMediatorUnitTest {
         assertThat(mediator.shouldShowTabSwitcherToolbar(), equalTo(true));
 
         doReturn(true).when(mTabModelSelector).isIncognitoSelected();
-        mTabModelSelectorObserverCaptor.getValue().onTabModelSelected(
-                mIncognitoTabModel, mNormalTabModel);
-        assertThat(mSecondaryTasksSurfacePropertyModel.get(IS_FAKE_SEARCH_BOX_VISIBLE),
+        mTabModelSelectorObserverCaptor
+                .getValue()
+                .onTabModelSelected(mIncognitoTabModel, mNormalTabModel);
+        assertThat(
+                mSecondaryTasksSurfacePropertyModel.get(IS_FAKE_SEARCH_BOX_VISIBLE),
                 equalTo(false));
         assertThat(mediator.shouldShowTabSwitcherToolbar(), equalTo(true));
     }
@@ -1125,7 +1117,8 @@ public class StartSurfaceMediatorUnitTest {
         assertThat(mediator.shouldShowTabSwitcherToolbar(), equalTo(true));
 
         mediator.setStartSurfaceState(StartSurfaceState.SHOWN_TABSWITCHER);
-        assertThat(mSecondaryTasksSurfacePropertyModel.get(IS_FAKE_SEARCH_BOX_VISIBLE),
+        assertThat(
+                mSecondaryTasksSurfacePropertyModel.get(IS_FAKE_SEARCH_BOX_VISIBLE),
                 equalTo(false));
         assertThat(mediator.shouldShowTabSwitcherToolbar(), equalTo(true));
     }
@@ -1144,7 +1137,8 @@ public class StartSurfaceMediatorUnitTest {
                 createStartSurfaceMediator(/* isStartSurfaceEnabled= */ true);
         InOrder carouselTabSwitcherModuleController =
                 inOrder(mCarouselOrSingleTabSwitcherModuleController);
-        carouselTabSwitcherModuleController.verify(mCarouselOrSingleTabSwitcherModuleController)
+        carouselTabSwitcherModuleController
+                .verify(mCarouselOrSingleTabSwitcherModuleController)
                 .addTabSwitcherViewObserver(
                         mCarouselTabSwitcherModuleVisibilityObserverCaptor.capture());
 
@@ -1152,10 +1146,12 @@ public class StartSurfaceMediatorUnitTest {
 
         mediator.setSecondaryTasksSurfacePropertyModel(mSecondaryTasksSurfacePropertyModel);
         showHomepageAndVerify(mediator, StartSurfaceState.SHOWING_PREVIOUS);
-        carouselTabSwitcherModuleController.verify(mCarouselOrSingleTabSwitcherModuleController)
+        carouselTabSwitcherModuleController
+                .verify(mCarouselOrSingleTabSwitcherModuleController)
                 .showTabSwitcherView(eq(false));
         InOrder omniboxStub = inOrder(mOmniboxStub);
-        omniboxStub.verify(mOmniboxStub, times(2))
+        omniboxStub
+                .verify(mOmniboxStub, times(2))
                 .addUrlFocusChangeListener(mUrlFocusChangeListenerCaptor.capture());
         assertThat(mPropertyModel.get(IS_FAKE_SEARCH_BOX_VISIBLE), equalTo(true));
         assertThat(mediator.shouldShowTabSwitcherToolbar(), equalTo(true));
@@ -1165,15 +1161,18 @@ public class StartSurfaceMediatorUnitTest {
         mCarouselTabSwitcherModuleVisibilityObserverCaptor.getValue().finishedHiding();
 
         showHomepageAndVerify(mediator, StartSurfaceState.SHOWING_PREVIOUS);
-        carouselTabSwitcherModuleController.verify(mCarouselOrSingleTabSwitcherModuleController)
+        carouselTabSwitcherModuleController
+                .verify(mCarouselOrSingleTabSwitcherModuleController)
                 .showTabSwitcherView(eq(false));
-        omniboxStub.verify(mOmniboxStub, times(2))
+        omniboxStub
+                .verify(mOmniboxStub, times(2))
                 .addUrlFocusChangeListener(mUrlFocusChangeListenerCaptor.capture());
         assertThat(mPropertyModel.get(IS_FAKE_SEARCH_BOX_VISIBLE), equalTo(true));
         assertThat(mediator.shouldShowTabSwitcherToolbar(), equalTo(true));
 
         mediator.setStartSurfaceState(StartSurfaceState.SHOWN_TABSWITCHER);
-        assertThat(mSecondaryTasksSurfacePropertyModel.get(IS_FAKE_SEARCH_BOX_VISIBLE),
+        assertThat(
+                mSecondaryTasksSurfacePropertyModel.get(IS_FAKE_SEARCH_BOX_VISIBLE),
                 equalTo(false));
         assertThat(mediator.shouldShowTabSwitcherToolbar(), equalTo(true));
         assertThat(mediator.getStartSurfaceState(), equalTo(StartSurfaceState.SHOWN_TABSWITCHER));
@@ -1184,7 +1183,8 @@ public class StartSurfaceMediatorUnitTest {
 
         mediator.setStartSurfaceState(StartSurfaceState.SHOWING_PREVIOUS);
         mediator.showOverview(false);
-        assertThat(mSecondaryTasksSurfacePropertyModel.get(IS_FAKE_SEARCH_BOX_VISIBLE),
+        assertThat(
+                mSecondaryTasksSurfacePropertyModel.get(IS_FAKE_SEARCH_BOX_VISIBLE),
                 equalTo(false));
         assertThat(mediator.shouldShowTabSwitcherToolbar(), equalTo(true));
         assertThat(mediator.getStartSurfaceState(), equalTo(StartSurfaceState.SHOWN_TABSWITCHER));
@@ -1200,7 +1200,8 @@ public class StartSurfaceMediatorUnitTest {
                 createStartSurfaceMediator(/* isStartSurfaceEnabled= */ true);
         InOrder carouselTabSwitcherModuleController =
                 inOrder(mCarouselOrSingleTabSwitcherModuleController);
-        carouselTabSwitcherModuleController.verify(mCarouselOrSingleTabSwitcherModuleController)
+        carouselTabSwitcherModuleController
+                .verify(mCarouselOrSingleTabSwitcherModuleController)
                 .addTabSwitcherViewObserver(
                         mCarouselTabSwitcherModuleVisibilityObserverCaptor.capture());
         assertThat(mediator.getStartSurfaceState(), equalTo(StartSurfaceState.NOT_SHOWN));
@@ -1209,9 +1210,11 @@ public class StartSurfaceMediatorUnitTest {
         when(mExploreSurfaceCoordinatorFactory.create(anyBoolean(), anyBoolean(), anyInt()))
                 .thenReturn(mExploreSurfaceCoordinator);
         showHomepageAndVerify(mediator, StartSurfaceState.SHOWING_HOMEPAGE);
-        carouselTabSwitcherModuleController.verify(mCarouselOrSingleTabSwitcherModuleController)
+        carouselTabSwitcherModuleController
+                .verify(mCarouselOrSingleTabSwitcherModuleController)
                 .showTabSwitcherView(eq(false));
-        assertThat(mPropertyModel.get(EXPLORE_SURFACE_COORDINATOR),
+        assertThat(
+                mPropertyModel.get(EXPLORE_SURFACE_COORDINATOR),
                 equalTo(mExploreSurfaceCoordinator));
 
         doReturn(TabLaunchType.FROM_START_SURFACE).when(mTab).getLaunchType();
@@ -1221,7 +1224,8 @@ public class StartSurfaceMediatorUnitTest {
         assertNull(mPropertyModel.get(EXPLORE_SURFACE_COORDINATOR));
 
         showHomepageAndVerify(mediator, StartSurfaceState.SHOWING_PREVIOUS);
-        assertThat(mPropertyModel.get(EXPLORE_SURFACE_COORDINATOR),
+        assertThat(
+                mPropertyModel.get(EXPLORE_SURFACE_COORDINATOR),
                 equalTo(mExploreSurfaceCoordinator));
 
         doReturn(TabLaunchType.FROM_LINK).when(mTab).getLaunchType();
@@ -1255,10 +1259,10 @@ public class StartSurfaceMediatorUnitTest {
         verify(mBrowserControlsStateProvider).addObserver(ArgumentMatchers.any());
         assertEquals("Wrong top content offset on homepage.", 10, mPropertyModel.get(TOP_MARGIN));
 
-        onControlsOffsetChanged(/*topOffset=*/100, /*topControlsMinHeightOffset=*/20);
+        onControlsOffsetChanged(/* topOffset= */ 100, /* topControlsMinHeightOffset= */ 20);
         assertEquals("Wrong top content offset on homepage.", 20, mPropertyModel.get(TOP_MARGIN));
 
-        onControlsOffsetChanged(/*topOffset=*/130, /*topControlsMinHeightOffset=*/50);
+        onControlsOffsetChanged(/* topOffset= */ 130, /* topControlsMinHeightOffset= */ 50);
         assertEquals("Wrong top content offset on homepage.", 50, mPropertyModel.get(TOP_MARGIN));
 
         if (ChromeFeatureList.sStartSurfaceRefactor.isEnabled()) {
@@ -1273,15 +1277,21 @@ public class StartSurfaceMediatorUnitTest {
         mediator.setStartSurfaceState(StartSurfaceState.SHOWING_TABSWITCHER);
         mediator.showOverview(false);
 
-        assertEquals("Wrong top content offset on tab switcher surface.", 15,
+        assertEquals(
+                "Wrong top content offset on tab switcher surface.",
+                15,
                 mPropertyModel.get(TOP_MARGIN));
 
-        onControlsOffsetChanged(/*topOffset=*/100, /*topControlsMinHeightOffset=*/20);
-        assertEquals("Wrong top content offset on tab switcher surface.", 100,
+        onControlsOffsetChanged(/* topOffset= */ 100, /* topControlsMinHeightOffset= */ 20);
+        assertEquals(
+                "Wrong top content offset on tab switcher surface.",
+                100,
                 mPropertyModel.get(TOP_MARGIN));
 
-        onControlsOffsetChanged(/*topOffset=*/130, /*topControlsMinHeightOffset=*/50);
-        assertEquals("Wrong top content offset on tab switcher surface.", 130,
+        onControlsOffsetChanged(/* topOffset= */ 130, /* topControlsMinHeightOffset= */ 50);
+        assertEquals(
+                "Wrong top content offset on tab switcher surface.",
+                130,
                 mPropertyModel.get(TOP_MARGIN));
     }
 
@@ -1291,10 +1301,12 @@ public class StartSurfaceMediatorUnitTest {
         doReturn(mVoiceRecognitionHandler).when(mOmniboxStub).getVoiceRecognitionHandler();
         doReturn(true).when(mVoiceRecognitionHandler).isVoiceSearchEnabled();
 
-        StartSurfaceMediator mediator = createStartSurfaceMediatorWithoutInit(
-                /* isStartSurfaceEnabled= */ true,
-                /* isRefactorEnabled */ false, /* hadWarmStart= */ false,
-                /* useMagicSpace*/ false);
+        StartSurfaceMediator mediator =
+                createStartSurfaceMediatorWithoutInit(
+                        /* isStartSurfaceEnabled= */ true,
+                        /* isRefactorEnabled */ false,
+                        /* hadWarmStart= */ false,
+                        /* useMagicSpace*/ false);
         verify(mCarouselOrSingleTabSwitcherModuleController)
                 .addTabSwitcherViewObserver(
                         mCarouselTabSwitcherModuleVisibilityObserverCaptor.capture());
@@ -1324,14 +1336,19 @@ public class StartSurfaceMediatorUnitTest {
         int tabSwitcherTitleTopMargin =
                 resources.getDimensionPixelSize(R.dimen.tab_switcher_title_top_margin);
 
-        createStartSurfaceMediatorWithoutInit(/* isStartSurfaceEnabled= */ true,
-                /* isRefactorEnabled */ false, /* hadWarmStart= */ false,
+        createStartSurfaceMediatorWithoutInit(
+                /* isStartSurfaceEnabled= */ true,
+                /* isRefactorEnabled */ false,
+                /* hadWarmStart= */ false,
                 /* useMagicSpace*/ false);
-        assertThat(mPropertyModel.get(TASKS_SURFACE_BODY_TOP_MARGIN),
+        assertThat(
+                mPropertyModel.get(TASKS_SURFACE_BODY_TOP_MARGIN),
                 equalTo(tasksSurfaceBodyTopMargin));
-        assertThat(mPropertyModel.get(MV_TILES_CONTAINER_TOP_MARGIN),
+        assertThat(
+                mPropertyModel.get(MV_TILES_CONTAINER_TOP_MARGIN),
                 equalTo(mvTilesContainerTopMargin));
-        assertThat(mPropertyModel.get(TAB_SWITCHER_TITLE_TOP_MARGIN),
+        assertThat(
+                mPropertyModel.get(TAB_SWITCHER_TITLE_TOP_MARGIN),
                 equalTo(tabSwitcherTitleTopMargin));
 
         assertThat(mPropertyModel.get(MV_TILES_CONTAINER_LEFT_RIGHT_MARGIN), equalTo(0));
@@ -1346,13 +1363,17 @@ public class StartSurfaceMediatorUnitTest {
         int tabSwitcherTitleTopMargin =
                 resources.getDimensionPixelSize(R.dimen.tab_switcher_title_top_margin);
 
-        createStartSurfaceMediatorWithoutInit(/* isStartSurfaceEnabled= */ true,
-                /* isRefactorEnabled */ false, /* hadWarmStart= */ false,
+        createStartSurfaceMediatorWithoutInit(
+                /* isStartSurfaceEnabled= */ true,
+                /* isRefactorEnabled */ false,
+                /* hadWarmStart= */ false,
                 /* useMagicSpace*/ false);
-        assertThat(mPropertyModel.get(TASKS_SURFACE_BODY_TOP_MARGIN),
+        assertThat(
+                mPropertyModel.get(TASKS_SURFACE_BODY_TOP_MARGIN),
                 equalTo(tasksSurfaceBodyTopMarginPolished));
         assertThat(mPropertyModel.get(MV_TILES_CONTAINER_TOP_MARGIN), equalTo(0));
-        assertThat(mPropertyModel.get(TAB_SWITCHER_TITLE_TOP_MARGIN),
+        assertThat(
+                mPropertyModel.get(TAB_SWITCHER_TITLE_TOP_MARGIN),
                 equalTo(tabSwitcherTitleTopMargin));
 
         assertThat(mPropertyModel.get(MV_TILES_CONTAINER_LEFT_RIGHT_MARGIN), equalTo(0));
@@ -1362,8 +1383,8 @@ public class StartSurfaceMediatorUnitTest {
     @Test
     @EnableFeatures(ChromeFeatureList.START_SURFACE_DISABLED_FEED_IMPROVEMENT)
     public void testStartSurfaceTopMarginsWhenFeedGoneImprovementEnabled() {
-        ChromeSharedPreferences.getInstance().writeBoolean(
-                ChromePreferenceKeys.FEED_ARTICLES_LIST_VISIBLE, false);
+        ChromeSharedPreferences.getInstance()
+                .writeBoolean(ChromePreferenceKeys.FEED_ARTICLES_LIST_VISIBLE, false);
         Context context = ContextUtils.getApplicationContext();
         Assert.assertTrue(ReturnToChromeUtil.shouldImproveStartWhenFeedIsDisabled(context));
         doReturn(TabSwitcherType.SINGLE)
@@ -1377,21 +1398,27 @@ public class StartSurfaceMediatorUnitTest {
                 resources.getDimensionPixelSize(R.dimen.tile_grid_layout_bottom_margin);
         int mvTilesContainerTopMargin =
                 resources.getDimensionPixelOffset(R.dimen.tile_grid_layout_top_margin)
-                + resources.getDimensionPixelOffset(R.dimen.ntp_search_box_bottom_margin);
+                        + resources.getDimensionPixelOffset(R.dimen.ntp_search_box_bottom_margin);
         int tabSwitcherTitleTopMargin =
                 resources.getDimensionPixelSize(R.dimen.tab_switcher_title_top_margin);
-        int singleTopMargin = resources.getDimensionPixelSize(
-                R.dimen.single_tab_view_top_margin_for_feed_improvement);
+        int singleTopMargin =
+                resources.getDimensionPixelSize(
+                        R.dimen.single_tab_view_top_margin_for_feed_improvement);
 
         StartSurfaceMediator mediator =
-                createStartSurfaceMediatorWithoutInit(/* isStartSurfaceEnabled= */ true,
-                        /* isRefactorEnabled */ false, /* hadWarmStart= */ false,
+                createStartSurfaceMediatorWithoutInit(
+                        /* isStartSurfaceEnabled= */ true,
+                        /* isRefactorEnabled */ false,
+                        /* hadWarmStart= */ false,
                         /* useMagicSpace*/ false);
-        assertThat(mPropertyModel.get(TASKS_SURFACE_BODY_TOP_MARGIN),
+        assertThat(
+                mPropertyModel.get(TASKS_SURFACE_BODY_TOP_MARGIN),
                 equalTo(tasksSurfaceBodyTopMarginWithTab));
-        assertThat(mPropertyModel.get(MV_TILES_CONTAINER_TOP_MARGIN),
+        assertThat(
+                mPropertyModel.get(MV_TILES_CONTAINER_TOP_MARGIN),
                 equalTo(mvTilesContainerTopMargin));
-        assertThat(mPropertyModel.get(TAB_SWITCHER_TITLE_TOP_MARGIN),
+        assertThat(
+                mPropertyModel.get(TAB_SWITCHER_TITLE_TOP_MARGIN),
                 equalTo(tabSwitcherTitleTopMargin));
         assertThat(mPropertyModel.get(SINGLE_TAB_TOP_MARGIN), equalTo(singleTopMargin));
 
@@ -1401,13 +1428,15 @@ public class StartSurfaceMediatorUnitTest {
         doReturn(true).when(mTabModelSelector).isTabStateInitialized();
         showHomepageAndVerify(mediator, StartSurfaceState.SHOWING_HOMEPAGE);
         assertThat(mPropertyModel.get(IS_TAB_CAROUSEL_VISIBLE), equalTo(false));
-        assertThat(mPropertyModel.get(TASKS_SURFACE_BODY_TOP_MARGIN),
+        assertThat(
+                mPropertyModel.get(TASKS_SURFACE_BODY_TOP_MARGIN),
                 equalTo(tasksSurfaceBodyTopMarginWithoutTab));
 
         doReturn(2).when(mNormalTabModel).getCount();
         showHomepageAndVerify(mediator, StartSurfaceState.SHOWING_HOMEPAGE);
         assertThat(mPropertyModel.get(IS_TAB_CAROUSEL_VISIBLE), equalTo(true));
-        assertThat(mPropertyModel.get(TASKS_SURFACE_BODY_TOP_MARGIN),
+        assertThat(
+                mPropertyModel.get(TASKS_SURFACE_BODY_TOP_MARGIN),
                 equalTo(tasksSurfaceBodyTopMarginWithTab));
     }
 
@@ -1418,10 +1447,12 @@ public class StartSurfaceMediatorUnitTest {
         doReturn(mVoiceRecognitionHandler).when(mOmniboxStub).getVoiceRecognitionHandler();
         doReturn(true).when(mVoiceRecognitionHandler).isVoiceSearchEnabled();
 
-        StartSurfaceMediator mediator = createStartSurfaceMediator(
-                /* isStartSurfaceEnabled= */ true,
-                /* isRefactorEnabled */ false, /* hadWarmStart= */ true,
-                /* useMagicSpace*/ false);
+        StartSurfaceMediator mediator =
+                createStartSurfaceMediator(
+                        /* isStartSurfaceEnabled= */ true,
+                        /* isRefactorEnabled */ false,
+                        /* hadWarmStart= */ true,
+                        /* useMagicSpace*/ false);
         assertFalse(mediator.shouldShowFeedPlaceholder());
 
         mPropertyModel.set(IS_EXPLORE_SURFACE_VISIBLE, true);
@@ -1429,7 +1460,8 @@ public class StartSurfaceMediatorUnitTest {
                 .thenReturn(mExploreSurfaceCoordinator);
         showHomepageAndVerify(mediator, StartSurfaceState.SHOWING_HOMEPAGE);
 
-        assertThat(mPropertyModel.get(EXPLORE_SURFACE_COORDINATOR),
+        assertThat(
+                mPropertyModel.get(EXPLORE_SURFACE_COORDINATOR),
                 equalTo(mExploreSurfaceCoordinator));
     }
 
@@ -1519,16 +1551,20 @@ public class StartSurfaceMediatorUnitTest {
     @EnableFeatures(ChromeFeatureList.START_SURFACE_DISABLED_FEED_IMPROVEMENT)
     public void testInitializeLogoWhenShownHomepageWithFeedDisabled() throws Exception {
         doReturn(mVoiceRecognitionHandler).when(mOmniboxStub).getVoiceRecognitionHandler();
-        ChromeSharedPreferences.getInstance().writeBoolean(
-                ChromePreferenceKeys.FEED_ARTICLES_LIST_VISIBLE, false);
+        ChromeSharedPreferences.getInstance()
+                .writeBoolean(ChromePreferenceKeys.FEED_ARTICLES_LIST_VISIBLE, false);
         when(mTemplateUrlService.doesDefaultSearchEngineHaveLogo()).thenReturn(true);
 
-        Assert.assertTrue(ReturnToChromeUtil.shouldImproveStartWhenFeedIsDisabled(
-                ContextUtils.getApplicationContext()));
+        Assert.assertTrue(
+                ReturnToChromeUtil.shouldImproveStartWhenFeedIsDisabled(
+                        ContextUtils.getApplicationContext()));
 
-        StartSurfaceMediator mediator = createStartSurfaceMediator(/*isStartSurfaceEnabled=*/true,
-                /* isRefactorEnabled */ false, /* hadWarmStart= */ false,
-                /* useMagicSpace*/ false);
+        StartSurfaceMediator mediator =
+                createStartSurfaceMediator(
+                        /* isStartSurfaceEnabled= */ true,
+                        /* isRefactorEnabled */ false,
+                        /* hadWarmStart= */ false,
+                        /* useMagicSpace*/ false);
         showHomepageAndVerify(mediator, StartSurfaceState.SHOWN_HOMEPAGE);
 
         verify(mLogoContainerView).setVisibility(View.VISIBLE);
@@ -1540,16 +1576,20 @@ public class StartSurfaceMediatorUnitTest {
     @EnableFeatures(ChromeFeatureList.START_SURFACE_DISABLED_FEED_IMPROVEMENT)
     public void testNotInitializeLogoWhenShownHomepageWithFeedEnabled() throws Exception {
         doReturn(mVoiceRecognitionHandler).when(mOmniboxStub).getVoiceRecognitionHandler();
-        ChromeSharedPreferences.getInstance().writeBoolean(
-                ChromePreferenceKeys.FEED_ARTICLES_LIST_VISIBLE, true);
+        ChromeSharedPreferences.getInstance()
+                .writeBoolean(ChromePreferenceKeys.FEED_ARTICLES_LIST_VISIBLE, true);
         when(mTemplateUrlService.doesDefaultSearchEngineHaveLogo()).thenReturn(true);
 
-        Assert.assertFalse(ReturnToChromeUtil.shouldImproveStartWhenFeedIsDisabled(
-                ContextUtils.getApplicationContext()));
+        Assert.assertFalse(
+                ReturnToChromeUtil.shouldImproveStartWhenFeedIsDisabled(
+                        ContextUtils.getApplicationContext()));
 
-        StartSurfaceMediator mediator = createStartSurfaceMediator(/*isStartSurfaceEnabled=*/true,
-                /* isRefactorEnabled */ false, /* hadWarmStart= */ false,
-                /* useMagicSpace*/ false);
+        StartSurfaceMediator mediator =
+                createStartSurfaceMediator(
+                        /* isStartSurfaceEnabled= */ true,
+                        /* isRefactorEnabled */ false,
+                        /* hadWarmStart= */ false,
+                        /* useMagicSpace*/ false);
         showHomepageAndVerify(mediator, StartSurfaceState.SHOWN_HOMEPAGE);
 
         verify(mLogoContainerView, times(0)).setVisibility(View.VISIBLE);
@@ -1565,9 +1605,12 @@ public class StartSurfaceMediatorUnitTest {
         StartSurfaceConfiguration.SURFACE_POLISH_MOVE_DOWN_LOGO.setForTesting(true);
         Assert.assertTrue(ReturnToChromeUtil.moveDownLogo());
 
-        StartSurfaceMediator mediator = createStartSurfaceMediator(/*isStartSurfaceEnabled=*/true,
-                /* isRefactorEnabled */ false, /* hadWarmStart= */ false,
-                /* useMagicSpace*/ false);
+        StartSurfaceMediator mediator =
+                createStartSurfaceMediator(
+                        /* isStartSurfaceEnabled= */ true,
+                        /* isRefactorEnabled */ false,
+                        /* hadWarmStart= */ false,
+                        /* useMagicSpace*/ false);
         showHomepageAndVerify(mediator, StartSurfaceState.SHOWN_HOMEPAGE);
 
         verify(mLogoContainerView).setVisibility(View.VISIBLE);
@@ -1583,9 +1626,12 @@ public class StartSurfaceMediatorUnitTest {
 
         Assert.assertFalse(ReturnToChromeUtil.moveDownLogo());
 
-        StartSurfaceMediator mediator = createStartSurfaceMediator(/*isStartSurfaceEnabled=*/true,
-                /* isRefactorEnabled */ false, /* hadWarmStart= */ false,
-                /* useMagicSpace*/ false);
+        StartSurfaceMediator mediator =
+                createStartSurfaceMediator(
+                        /* isStartSurfaceEnabled= */ true,
+                        /* isRefactorEnabled */ false,
+                        /* hadWarmStart= */ false,
+                        /* useMagicSpace*/ false);
         showHomepageAndVerify(mediator, StartSurfaceState.SHOWN_HOMEPAGE);
 
         verify(mLogoContainerView, times(0)).setVisibility(View.VISIBLE);
@@ -1596,12 +1642,13 @@ public class StartSurfaceMediatorUnitTest {
     public void testFeedReliabilityLoggerPageLoadStarted() {
         doReturn(mVoiceRecognitionHandler).when(mOmniboxStub).getVoiceRecognitionHandler();
 
-        StartSurfaceMediator mediator = createStartSurfaceMediator(/*isStartSurfaceEnabled=*/true);
+        StartSurfaceMediator mediator =
+                createStartSurfaceMediator(/* isStartSurfaceEnabled= */ true);
         showHomepageAndVerify(mediator, StartSurfaceState.SHOWN_HOMEPAGE);
 
         verify(mNormalTabModel).addObserver(mTabModelObserverCaptor.capture());
         assertThat(mPropertyModel.get(IS_EXPLORE_SURFACE_VISIBLE), equalTo(true));
-        mTabModelObserverCaptor.getValue().willAddTab(/*tab=*/null, TabLaunchType.FROM_LINK);
+        mTabModelObserverCaptor.getValue().willAddTab(/* tab= */ null, TabLaunchType.FROM_LINK);
         verify(mFeedReliabilityLogger, times(1)).onPageLoadStarted();
     }
 
@@ -1609,7 +1656,8 @@ public class StartSurfaceMediatorUnitTest {
     public void testFeedReliabilityLoggerObservesUrlFocus() {
         doReturn(mVoiceRecognitionHandler).when(mOmniboxStub).getVoiceRecognitionHandler();
 
-        StartSurfaceMediator mediator = createStartSurfaceMediator(/*isStartSurfaceEnabled=*/true);
+        StartSurfaceMediator mediator =
+                createStartSurfaceMediator(/* isStartSurfaceEnabled= */ true);
         verify(mCarouselOrSingleTabSwitcherModuleController)
                 .addTabSwitcherViewObserver(
                         mCarouselTabSwitcherModuleVisibilityObserverCaptor.capture());
@@ -1634,7 +1682,8 @@ public class StartSurfaceMediatorUnitTest {
     @Test
     public void testFeedReliabilityLoggerBackPressed() {
         doReturn(mVoiceRecognitionHandler).when(mOmniboxStub).getVoiceRecognitionHandler();
-        StartSurfaceMediator mediator = createStartSurfaceMediator(/*isStartSurfaceEnabled=*/true);
+        StartSurfaceMediator mediator =
+                createStartSurfaceMediator(/* isStartSurfaceEnabled= */ true);
         showHomepageAndVerify(mediator, StartSurfaceState.SHOWN_HOMEPAGE);
         mediator.onBackPressed();
         verify(mFeedReliabilityLogger).onNavigateBack();
@@ -1657,7 +1706,8 @@ public class StartSurfaceMediatorUnitTest {
                 .when(mSecondaryTasksSurfaceController)
                 .isDialogVisible();
 
-        StartSurfaceMediator mediator = createStartSurfaceMediator(/*isStartSurfaceEnabled=*/true);
+        StartSurfaceMediator mediator =
+                createStartSurfaceMediator(/* isStartSurfaceEnabled= */ true);
         mediator.setSecondaryTasksSurfacePropertyModel(mSecondaryTasksSurfacePropertyModel);
         mediator.setSecondaryTasksSurfaceController(mSecondaryTasksSurfaceController);
 
@@ -1679,22 +1729,29 @@ public class StartSurfaceMediatorUnitTest {
         doReturn(true).when(mSecondaryTasksSurfaceController).onBackPressed();
         mediator.onBackPressed();
         verify(mCarouselOrSingleTabSwitcherModuleController).onBackPressed();
-        verify(mSecondaryTasksSurfaceController,
-                description("Secondary task surface has a higher priority of handling back press"))
+        verify(
+                        mSecondaryTasksSurfaceController,
+                        description(
+                                "Secondary task surface has a higher priority of handling back"
+                                        + " press"))
                 .onBackPressed();
 
         mSecondaryControllerDialogVisibleSupplier.set(false);
         mCarouselTabSwitcherModuleControllerDialogVisibleSupplier.set(false);
-        verify(mSecondaryTasksSurfaceController,
-                description(
-                        "Secondary task surface consumes back press when no dialog is visible."))
+        verify(
+                        mSecondaryTasksSurfaceController,
+                        description(
+                                "Secondary task surface consumes back press when no dialog is"
+                                        + " visible."))
                 .onBackPressed();
 
         mediator.setStartSurfaceState(StartSurfaceState.SHOWN_HOMEPAGE);
         mediator.setStartSurfaceState(StartSurfaceState.SHOWN_TABSWITCHER);
         Assert.assertTrue(mediator.onBackPressed());
-        Assert.assertEquals("Should return to home page on back press.",
-                StartSurfaceState.SHOWN_HOMEPAGE, mediator.getStartSurfaceState());
+        Assert.assertEquals(
+                "Should return to home page on back press.",
+                StartSurfaceState.SHOWN_HOMEPAGE,
+                mediator.getStartSurfaceState());
     }
 
     /**
@@ -1720,7 +1777,8 @@ public class StartSurfaceMediatorUnitTest {
         doReturn(false).when(mTabModelSelector).isIncognitoSelected();
         doReturn(mVoiceRecognitionHandler).when(mOmniboxStub).getVoiceRecognitionHandler();
         doReturn(true).when(mVoiceRecognitionHandler).isVoiceSearchEnabled();
-        StartSurfaceMediator mediator = createStartSurfaceMediator(/*isStartSurfaceEnabled=*/true);
+        StartSurfaceMediator mediator =
+                createStartSurfaceMediator(/* isStartSurfaceEnabled= */ true);
 
         showHomepageAndVerify(mediator, state);
 
@@ -1747,7 +1805,8 @@ public class StartSurfaceMediatorUnitTest {
         doReturn(mVoiceRecognitionHandler).when(mOmniboxStub).getVoiceRecognitionHandler();
         doReturn(true).when(mVoiceRecognitionHandler).isVoiceSearchEnabled();
 
-        StartSurfaceMediator mediator = createStartSurfaceMediator(/*isStartSurfaceEnabled=*/true);
+        StartSurfaceMediator mediator =
+                createStartSurfaceMediator(/* isStartSurfaceEnabled= */ true);
         mediator.setSecondaryTasksSurfacePropertyModel(mSecondaryTasksSurfacePropertyModel);
         mediator.setSecondaryTasksSurfaceController(mSecondaryTasksSurfaceController);
 
@@ -1775,7 +1834,8 @@ public class StartSurfaceMediatorUnitTest {
         doReturn(mVoiceRecognitionHandler).when(mOmniboxStub).getVoiceRecognitionHandler();
         doReturn(true).when(mVoiceRecognitionHandler).isVoiceSearchEnabled();
 
-        StartSurfaceMediator mediator = createStartSurfaceMediator(/*isStartSurfaceEnabled=*/true);
+        StartSurfaceMediator mediator =
+                createStartSurfaceMediator(/* isStartSurfaceEnabled= */ true);
 
         showHomepageAndVerify(mediator, null);
 
@@ -1799,7 +1859,8 @@ public class StartSurfaceMediatorUnitTest {
         doReturn(mVoiceRecognitionHandler).when(mOmniboxStub).getVoiceRecognitionHandler();
         doReturn(true).when(mVoiceRecognitionHandler).isVoiceSearchEnabled();
 
-        StartSurfaceMediator mediator = createStartSurfaceMediator(/*isStartSurfaceEnabled=*/true);
+        StartSurfaceMediator mediator =
+                createStartSurfaceMediator(/* isStartSurfaceEnabled= */ true);
         mediator.setSecondaryTasksSurfacePropertyModel(mSecondaryTasksSurfacePropertyModel);
         mediator.setSecondaryTasksSurfaceController(mSecondaryTasksSurfaceController);
 
@@ -1810,8 +1871,9 @@ public class StartSurfaceMediatorUnitTest {
 
         doReturn(true).when(mSecondaryTasksSurfaceController).isDialogVisible();
         doReturn(true).when(mSecondaryTasksSurfaceController).onBackPressed();
-        var histogramWatcher = HistogramWatcher.newSingleRecordWatcher(
-                "Android.BackPress.Intercept", 4); // START_SURFACE enum value
+        var histogramWatcher =
+                HistogramWatcher.newSingleRecordWatcher(
+                        "Android.BackPress.Intercept", 4); // START_SURFACE enum value
         Assert.assertTrue(mediator.onBackPressed());
         verify(mCarouselOrSingleTabSwitcherModuleController, never()).onBackPressed();
         verify(mSecondaryTasksSurfaceController).onBackPressed();
@@ -1819,26 +1881,28 @@ public class StartSurfaceMediatorUnitTest {
 
         doReturn(false).when(mSecondaryTasksSurfaceController).isDialogVisible();
         doReturn(false).when(mSecondaryTasksSurfaceController).onBackPressed();
-        histogramWatcher = HistogramWatcher.newBuilder()
-                                   .expectNoRecords("Android.BackPress.Intercept")
-                                   .build();
+        histogramWatcher =
+                HistogramWatcher.newBuilder()
+                        .expectNoRecords("Android.BackPress.Intercept")
+                        .build();
         Assert.assertFalse(verify(mSecondaryTasksSurfaceController).onBackPressed());
         histogramWatcher.assertExpected();
 
-        histogramWatcher = HistogramWatcher.newSingleRecordWatcher(
-                "Android.BackPress.Intercept", 4); // START_SURFACE enum value
+        histogramWatcher =
+                HistogramWatcher.newSingleRecordWatcher(
+                        "Android.BackPress.Intercept", 4); // START_SURFACE enum value
         mediator.setStartSurfaceState(StartSurfaceState.SHOWN_HOMEPAGE);
         mediator.setStartSurfaceState(StartSurfaceState.SHOWN_TABSWITCHER);
         Assert.assertEquals(StartSurfaceState.SHOWN_TABSWITCHER, mediator.getStartSurfaceState());
         Assert.assertTrue(mediator.onBackPressed());
-        Assert.assertEquals("Should return to home page on back press.",
-                StartSurfaceState.SHOWN_HOMEPAGE, mediator.getStartSurfaceState());
+        Assert.assertEquals(
+                "Should return to home page on back press.",
+                StartSurfaceState.SHOWN_HOMEPAGE,
+                mediator.getStartSurfaceState());
         histogramWatcher.assertExpected();
     }
 
-    /**
-     * Tests the logic of recording time spend in start surface.
-     */
+    /** Tests the logic of recording time spend in start surface. */
     @Test
     public void testRecordTimeSpendInStart() {
         doReturn(false).when(mTabModelSelector).isIncognitoSelected();
@@ -1886,8 +1950,9 @@ public class StartSurfaceMediatorUnitTest {
                 .getTabSwitcherType();
         doReturn(true).when(mOmniboxStub).isLensEnabled(LensEntryPoint.TASKS_SURFACE);
 
-        StartSurfaceMediator mediator = createStartSurfaceMediator(/*isStartSurfaceEnabled=*/true,
-                /* isRefactorEnabled */ true);
+        StartSurfaceMediator mediator =
+                createStartSurfaceMediator(
+                        /* isStartSurfaceEnabled= */ true, /* isRefactorEnabled */ true);
         assertEquals(mInitializeMVTilesRunnable, mediator.getInitializeMVTilesRunnableForTesting());
         assertEquals(mTabSwitcherModule, mediator.getTabSwitcherModuleForTesting());
 
@@ -1916,9 +1981,12 @@ public class StartSurfaceMediatorUnitTest {
         doReturn(mVoiceRecognitionHandler).when(mOmniboxStub).getVoiceRecognitionHandler();
 
         mProfileSupplier = new ObservableSupplierImpl<>();
-        StartSurfaceMediator mediator = createStartSurfaceMediator(/*isStartSurfaceEnabled=*/true,
-                /* isRefactorEnabled */ false, /* hadWarmStart= */ false,
-                /* useMagicSpace*/ false);
+        StartSurfaceMediator mediator =
+                createStartSurfaceMediator(
+                        /* isStartSurfaceEnabled= */ true,
+                        /* isRefactorEnabled */ false,
+                        /* hadWarmStart= */ false,
+                        /* useMagicSpace*/ false);
         showHomepageAndVerify(mediator, StartSurfaceState.SHOWN_HOMEPAGE);
 
         mProfileSupplier.set(mProfile);
@@ -1948,9 +2016,12 @@ public class StartSurfaceMediatorUnitTest {
         doReturn(mTabModelFilterProvider).when(mTabModelSelector).getTabModelFilterProvider();
         doReturn(true).when(mOmniboxStub).isLensEnabled(LensEntryPoint.TASKS_SURFACE);
 
-        StartSurfaceMediator mediator = createStartSurfaceMediator(/*isStartSurfaceEnabled=*/true,
-                /* isRefactorEnabled */ true, /* hadWarmStart= */ false,
-                /* useMagicSpace */ true);
+        StartSurfaceMediator mediator =
+                createStartSurfaceMediator(
+                        /* isStartSurfaceEnabled= */ true,
+                        /* isRefactorEnabled */ true,
+                        /* hadWarmStart= */ false,
+                        /* useMagicSpace */ true);
         assertEquals(mInitializeMVTilesRunnable, mediator.getInitializeMVTilesRunnableForTesting());
         assertNull(mediator.getTabSwitcherModuleForTesting());
         assertNull(mediator.getControllerForTesting());
@@ -1976,14 +2047,16 @@ public class StartSurfaceMediatorUnitTest {
 
         doReturn(true).when(mTabModelSelector).isIncognitoSelected();
         mTabModelSelector.selectModel(true);
-        mTabModelSelectorObserverCaptor.getValue().onTabModelSelected(
-                mIncognitoTabModel, mNormalTabModel);
+        mTabModelSelectorObserverCaptor
+                .getValue()
+                .onTabModelSelected(mIncognitoTabModel, mNormalTabModel);
         assertTrue(mPropertyModel.get(IS_INCOGNITO));
 
         doReturn(false).when(mTabModelSelector).isIncognitoSelected();
         mTabModelSelector.selectModel(false);
-        mTabModelSelectorObserverCaptor.getValue().onTabModelSelected(
-                mNormalTabModel, mIncognitoTabModel);
+        mTabModelSelectorObserverCaptor
+                .getValue()
+                .onTabModelSelected(mNormalTabModel, mIncognitoTabModel);
         assertFalse(mPropertyModel.get(IS_INCOGNITO));
 
         int lastId = 1;
@@ -2016,9 +2089,12 @@ public class StartSurfaceMediatorUnitTest {
         doReturn(mTabModelFilterProvider).when(mTabModelSelector).getTabModelFilterProvider();
         doReturn(true).when(mOmniboxStub).isLensEnabled(LensEntryPoint.TASKS_SURFACE);
 
-        StartSurfaceMediator mediator = createStartSurfaceMediator(/*isStartSurfaceEnabled=*/true,
-                /* isRefactorEnabled */ true, /* hadWarmStart= */ false,
-                /* useMagicSpace */ true);
+        StartSurfaceMediator mediator =
+                createStartSurfaceMediator(
+                        /* isStartSurfaceEnabled= */ true,
+                        /* isRefactorEnabled */ true,
+                        /* hadWarmStart= */ false,
+                        /* useMagicSpace */ true);
         assertEquals(mInitializeMVTilesRunnable, mediator.getInitializeMVTilesRunnableForTesting());
         assertNull(mediator.getTabSwitcherModuleForTesting());
         assertNull(mediator.getControllerForTesting());
@@ -2061,59 +2137,89 @@ public class StartSurfaceMediatorUnitTest {
         // Make sure the background color is not set.
         assertEquals(0, mPropertyModel.get(BACKGROUND_COLOR));
 
-        StartSurfaceMediator mediator = createStartSurfaceMediator(/*isStartSurfaceEnabled=*/true,
-                /* isRefactorEnabled= */ false, /* hadWarmStart= */ false, false);
+        StartSurfaceMediator mediator =
+                createStartSurfaceMediator(
+                        /* isStartSurfaceEnabled= */ true,
+                        /* isRefactorEnabled= */ false,
+                        /* hadWarmStart= */ false,
+                        false);
         @ColorInt
-        int backgroundColor = ChromeColors.getSurfaceColor(
-                mActivity, R.dimen.home_surface_background_color_elevation);
+        int backgroundColor =
+                ChromeColors.getSurfaceColor(
+                        mActivity, R.dimen.home_surface_background_color_elevation);
         assertNotEquals(backgroundColor, 0);
         assertEquals(backgroundColor, mPropertyModel.get(BACKGROUND_COLOR));
 
         mediator.setIsIncognitoForTesting(true);
         mediator.updateBackgroundColor(mPropertyModel);
-        @ColorInt
-        int newBackgroundColor = ChromeColors.getPrimaryBackgroundColor(mActivity, true);
+        @ColorInt int newBackgroundColor = ChromeColors.getPrimaryBackgroundColor(mActivity, true);
         assertNotEquals(newBackgroundColor, backgroundColor);
         assertEquals(newBackgroundColor, mPropertyModel.get(BACKGROUND_COLOR));
     }
 
     private StartSurfaceMediator createStartSurfaceMediator(boolean isStartSurfaceEnabled) {
-        return createStartSurfaceMediator(isStartSurfaceEnabled, /* isRefactorEnabled */ false,
-                /* hadWarmStart= */ false, /* useMagicSpace= */ false);
+        return createStartSurfaceMediator(
+                isStartSurfaceEnabled, /* isRefactorEnabled */
+                false,
+                /* hadWarmStart= */ false,
+                /* useMagicSpace= */ false);
     }
 
     private StartSurfaceMediator createStartSurfaceMediator(
             boolean isStartSurfaceEnabled, boolean isRefactorEnabled) {
-        return createStartSurfaceMediator(isStartSurfaceEnabled, isRefactorEnabled,
-                /* hadWarmStart= */ false, /* useMagicSpace= */ false);
+        return createStartSurfaceMediator(
+                isStartSurfaceEnabled,
+                isRefactorEnabled,
+                /* hadWarmStart= */ false,
+                /* useMagicSpace= */ false);
     }
 
-    private StartSurfaceMediator createStartSurfaceMediator(boolean isStartSurfaceEnabled,
-            boolean isRefactorEnabled, boolean hadWarmStart, boolean useMagicSpace) {
-        StartSurfaceMediator mediator = createStartSurfaceMediatorWithoutInit(
-                isStartSurfaceEnabled, isRefactorEnabled, hadWarmStart, useMagicSpace);
-        mediator.initWithNative(mOmniboxStub,
-                isStartSurfaceEnabled ? mExploreSurfaceCoordinatorFactory : null, mPrefService,
+    private StartSurfaceMediator createStartSurfaceMediator(
+            boolean isStartSurfaceEnabled,
+            boolean isRefactorEnabled,
+            boolean hadWarmStart,
+            boolean useMagicSpace) {
+        StartSurfaceMediator mediator =
+                createStartSurfaceMediatorWithoutInit(
+                        isStartSurfaceEnabled, isRefactorEnabled, hadWarmStart, useMagicSpace);
+        mediator.initWithNative(
+                mOmniboxStub,
+                isStartSurfaceEnabled ? mExploreSurfaceCoordinatorFactory : null,
+                mPrefService,
                 null);
         return mediator;
     }
 
     private StartSurfaceMediator createStartSurfaceMediatorWithoutInit(
-            boolean isStartSurfaceEnabled, boolean isRefactorEnabled, boolean hadWarmStart,
+            boolean isStartSurfaceEnabled,
+            boolean isRefactorEnabled,
+            boolean hadWarmStart,
             boolean useMagicSpace) {
         boolean hasTasksView = isStartSurfaceEnabled && !isRefactorEnabled;
         boolean hasTabSwitcherModule = isStartSurfaceEnabled && isRefactorEnabled && !useMagicSpace;
         return new StartSurfaceMediator(
                 useMagicSpace ? null : mCarouselOrSingleTabSwitcherModuleController,
-                null /* tabSwitcherContainer */, hasTabSwitcherModule ? mTabSwitcherModule : null,
-                mTabModelSelector, !isStartSurfaceEnabled ? null : mPropertyModel,
-                hasTasksView ? mSecondaryTasksSurfaceInitializer : null, isStartSurfaceEnabled,
-                mActivity, mBrowserControlsStateProvider, mActivityStateChecker,
-                null /* TabCreatorManager */, true /* excludeQueryTiles */, mStartSurfaceSupplier,
-                hadWarmStart, isStartSurfaceEnabled ? mInitializeMVTilesRunnable : null,
-                mParentTabSupplier, mLogoContainerView, mBackPressManager,
-                null /* feedPlaceholderParentView */, mActivityLifecycleDispatcher,
-                mTabSwitcherClickHandler, mProfileSupplier);
+                null /* tabSwitcherContainer */,
+                hasTabSwitcherModule ? mTabSwitcherModule : null,
+                mTabModelSelector,
+                !isStartSurfaceEnabled ? null : mPropertyModel,
+                hasTasksView ? mSecondaryTasksSurfaceInitializer : null,
+                isStartSurfaceEnabled,
+                mActivity,
+                mBrowserControlsStateProvider,
+                mActivityStateChecker,
+                null /* TabCreatorManager */,
+                true /* excludeQueryTiles */,
+                mStartSurfaceSupplier,
+                hadWarmStart,
+                isStartSurfaceEnabled ? mInitializeMVTilesRunnable : null,
+                mParentTabSupplier,
+                mLogoContainerView,
+                mBackPressManager,
+                null /* feedPlaceholderParentView */,
+                mActivityLifecycleDispatcher,
+                mTabSwitcherClickHandler,
+                mProfileSupplier);
     }
 
     private void onControlsOffsetChanged(int topOffset, int topControlsMinHeightOffset) {
@@ -2121,8 +2227,9 @@ public class StartSurfaceMediatorUnitTest {
         doReturn(topControlsMinHeightOffset)
                 .when(mBrowserControlsStateProvider)
                 .getTopControlsMinHeightOffset();
-        mBrowserControlsStateProviderCaptor.getValue().onControlsOffsetChanged(
-                topOffset, topControlsMinHeightOffset, 0, 0, false);
+        mBrowserControlsStateProviderCaptor
+                .getValue()
+                .onControlsOffsetChanged(topOffset, topControlsMinHeightOffset, 0, 0, false);
     }
 
     private void showHomepageAndVerify(

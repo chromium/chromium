@@ -37,8 +37,7 @@ public class TabImageViewUnitTest {
     private FrameLayout mRootView;
 
     private TabImageView mTabImageView;
-    @Mock
-    private Runnable mRunnable;
+    @Mock private Runnable mRunnable;
 
     @Before
     public void setUp() {
@@ -65,7 +64,8 @@ public class TabImageViewUnitTest {
     @Test
     @SmallTest
     public void testRunsImmediatelyIfNotWaitingForLayout() {
-        mRootView.addView(mTabImageView,
+        mRootView.addView(
+                mTabImageView,
                 new LayoutParams(LayoutParams.MATCH_PARENT, LayoutParams.MATCH_PARENT));
         ShadowLooper.runUiThreadTasks();
         mRootView.layout(0, 0, 100, 100);
@@ -79,7 +79,8 @@ public class TabImageViewUnitTest {
     @Test
     @SmallTest
     public void testRunsOnNextLayout() {
-        mRootView.addView(mTabImageView,
+        mRootView.addView(
+                mTabImageView,
                 new LayoutParams(LayoutParams.MATCH_PARENT, LayoutParams.MATCH_PARENT));
         ShadowLooper.runUiThreadTasks();
         assertTrue(mTabImageView.isAttachedToWindow());
@@ -118,7 +119,8 @@ public class TabImageViewUnitTest {
     @Test
     @SmallTest
     public void testEmulateForceAnimationToFinish() {
-        mRootView.addView(mTabImageView,
+        mRootView.addView(
+                mTabImageView,
                 new LayoutParams(LayoutParams.MATCH_PARENT, LayoutParams.MATCH_PARENT));
         ShadowLooper.runUiThreadTasks();
         assertTrue(mTabImageView.isAttachedToWindow());
@@ -135,7 +137,8 @@ public class TabImageViewUnitTest {
     @Test
     @SmallTest
     public void testAvoidsReentrantCalls() {
-        mRootView.addView(mTabImageView,
+        mRootView.addView(
+                mTabImageView,
                 new LayoutParams(LayoutParams.MATCH_PARENT, LayoutParams.MATCH_PARENT));
         ShadowLooper.runUiThreadTasks();
         assertTrue(mTabImageView.isAttachedToWindow());
@@ -145,10 +148,11 @@ public class TabImageViewUnitTest {
         // This validates that the runnable is cleared before invocation. If the runnable was not
         // cleared this implementation would recursively iterate until a timeout or the stack limit
         // was hit.
-        mTabImageView.setOnNextLayoutRunnable(() -> {
-            mRunnable.run();
-            mTabImageView.runOnNextLayoutRunnable();
-        });
+        mTabImageView.setOnNextLayoutRunnable(
+                () -> {
+                    mRunnable.run();
+                    mTabImageView.runOnNextLayoutRunnable();
+                });
         verify(mRunnable, never()).run();
 
         mTabImageView.runOnNextLayoutRunnable();

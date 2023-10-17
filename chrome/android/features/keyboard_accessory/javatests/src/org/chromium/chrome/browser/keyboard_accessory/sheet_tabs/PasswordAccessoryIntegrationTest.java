@@ -54,9 +54,8 @@ import org.chromium.ui.test.util.UiDisableIf;
 import org.chromium.url.GURL;
 
 import java.util.concurrent.TimeoutException;
-/**
- * Integration tests for password accessory views.
- */
+
+/** Integration tests for password accessory views. */
 @RunWith(ChromeJUnit4ClassRunner.class)
 @CommandLineFlags.Add({ChromeSwitches.DISABLE_FIRST_RUN_EXPERIENCE, "show-autofill-signatures"})
 public class PasswordAccessoryIntegrationTest {
@@ -77,19 +76,25 @@ public class PasswordAccessoryIntegrationTest {
     public void testPasswordSheetIsAvailable() {
         mHelper.loadTestPage(false);
 
-        CriteriaHelper.pollUiThread(() -> {
-            return mHelper.getOrCreatePasswordAccessorySheet() != null;
-        }, " Password Sheet should be bound to accessory sheet.");
+        CriteriaHelper.pollUiThread(
+                () -> {
+                    return mHelper.getOrCreatePasswordAccessorySheet() != null;
+                },
+                " Password Sheet should be bound to accessory sheet.");
     }
 
     @Test
     @MediumTest
     public void testPasswordSheetDisplaysProvidedItems() throws TimeoutException {
         preparePasswordBridge();
-        TestThreadUtils.runOnUiThreadBlocking(() -> {
-            mPasswordStoreBridge.insertPasswordCredential(new PasswordStoreCredential(
-                    new GURL(mTestServer.getURL("/")), "mayapark@gmail.com", "SomeHiddenPassword"));
-        });
+        TestThreadUtils.runOnUiThreadBlocking(
+                () -> {
+                    mPasswordStoreBridge.insertPasswordCredential(
+                            new PasswordStoreCredential(
+                                    new GURL(mTestServer.getURL("/")),
+                                    "mayapark@gmail.com",
+                                    "SomeHiddenPassword"));
+                });
         mActivityTestRule.loadUrl(
                 mTestServer.getURL("/chrome/test/data/password/password_form.html"));
         mHelper.focusPasswordField(false);
@@ -111,7 +116,9 @@ public class PasswordAccessoryIntegrationTest {
         mActivityTestRule.startMainActivityOnBlankPage();
         mTestServer = mActivityTestRule.getTestServer();
         TestThreadUtils.runOnUiThreadBlocking(
-                () -> { mPasswordStoreBridge = new PasswordStoreBridge(); });
+                () -> {
+                    mPasswordStoreBridge = new PasswordStoreBridge();
+                });
     }
 
     @Test
@@ -138,10 +145,14 @@ public class PasswordAccessoryIntegrationTest {
     @DisableFeatures({ChromeFeatureList.UNIFIED_PASSWORD_MANAGER_LOCAL_PWD_MIGRATION_WARNING})
     public void testFillsPasswordOnTap() throws TimeoutException {
         preparePasswordBridge();
-        TestThreadUtils.runOnUiThreadBlocking(() -> {
-            mPasswordStoreBridge.insertPasswordCredential(new PasswordStoreCredential(
-                    new GURL(mTestServer.getURL("/")), "mpark@abc.com", "ShorterPassword"));
-        });
+        TestThreadUtils.runOnUiThreadBlocking(
+                () -> {
+                    mPasswordStoreBridge.insertPasswordCredential(
+                            new PasswordStoreCredential(
+                                    new GURL(mTestServer.getURL("/")),
+                                    "mpark@abc.com",
+                                    "ShorterPassword"));
+                });
         mHelper.loadUrl("/chrome/test/data/password/password_form.html");
         mHelper.focusPasswordField(false);
         mHelper.waitForKeyboardAccessoryToBeShown();
@@ -181,7 +192,9 @@ public class PasswordAccessoryIntegrationTest {
         preparePasswordBridge();
         String url = mTestServer.getURL("/chrome/test/data/password/password_form.html");
         TestThreadUtils.runOnUiThreadBlocking(
-                () -> { mPasswordStoreBridge.blocklistForTesting(url); });
+                () -> {
+                    mPasswordStoreBridge.blocklistForTesting(url);
+                });
         mActivityTestRule.loadUrl(url);
         mHelper.focusPasswordField(false);
         mHelper.waitForKeyboardAccessoryToBeShown();
