@@ -600,7 +600,7 @@ chromium-metrics-reviews@google.com.
   <owner>chrome-ads-histograms@google.com</owner>
   <summary>
     Count of database entries queued to be sent to the async iterator. Recorded
-    in `SharedStorageIterator::DidReadEntries()`.
+    in `SharedStorage::IterationSource::DidReadEntries()`.
   </summary>
 </histogram>
 
@@ -612,7 +612,7 @@ chromium-metrics-reviews@google.com.
   <summary>
     For each of a set of benchmark percentages, we record that benchmark when
     the async iterator first iterates through at least that percentage of queued
-    entries. Recorded in `SharedStorageIterator::NextHelper()`.
+    entries. Recorded in `SharedStorage::IterationSource::TryResolvePromise()`.
   </summary>
 </histogram>
 
@@ -624,7 +624,8 @@ chromium-metrics-reviews@google.com.
   <summary>
     For each of a set of benchmark percentages, we record that benchmark when
     the async iterator first receives from the database at least that percentage
-    of queued entries. Recorded in `SharedStorageIterator::DidReadEntries()`.
+    of queued entries. Recorded in
+    `SharedStorage::IterationSource::DidReadEntries()`.
   </summary>
 </histogram>
 
@@ -1074,10 +1075,10 @@ chromium-metrics-reviews@google.com.
   <owner>chrome-ads-histograms@google.com</owner>
   <summary>
     Measures the time from the start of the call to
-    `shared_storage_worklet::SharedStorageiterator::Next()` to just before the
-    promise is returned, for the iterator in `Mode::kKeyValue`. Includes only
-    calls where `has_error_` is false. Recorded in
-    `shared_storage_worklet::SharedStorageIterator::NextHelper()` via
+    `SharedStorage::IterationSource::GetNextIterationResult()` to just before
+    the promise is returned, for a key-value pair iterator. Includes only calls
+    where promises are successfully resolved. Recorded in
+    `SharedStorage::IterationSource::TryResolvePromise()` via
     `LogElapsedTime()`.
   </summary>
 </histogram>
@@ -1117,10 +1118,10 @@ chromium-metrics-reviews@google.com.
   <owner>chrome-ads-histograms@google.com</owner>
   <summary>
     Measures the time from the start of the call to
-    `shared_storage_worklet::SharedStorageiterator::Next()` to just before the
-    promise is returned, for the iterator in `Mode::kKey`. Includes only calls
-    where `has_error_` is false. Recorded in
-    `shared_storage_worklet::SharedStorageIterator::NextHelper()` via
+    `SharedStorage::IterationSource::GetNextIterationResult()` to just before
+    the promise is returned, for a key iterator. Includes only calls where
+    promises are successfully resolved. Recorded in
+    `SharedStorage::IterationSource::TryResolvePromise()` via
     `LogElapsedTime()`.
   </summary>
 </histogram>
@@ -1180,6 +1181,21 @@ chromium-metrics-reviews@google.com.
     time of its last finished operation. For worklets that are destroyed before
     completing their outstanding operations, we record 100. Recorded in the
     destructor of `SharedStorageWorkletHost`.
+  </summary>
+</histogram>
+
+<histogram name="Storage.SharedStorage.Worklet.Timing.Values.Next" units="ms"
+    expires_after="2024-01-31">
+  <owner>cammie@chromium.org</owner>
+  <owner>yaoxia@chromium.org</owner>
+  <owner>chrome-ads-histograms@google.com</owner>
+  <summary>
+    Measures the time from the start of the call to
+    `SharedStorage::IterationSource::GetNextIterationResult()` to just before
+    the promise is returned, for a value iterator. Includes only calls where
+    promises are successfully resolved. Recorded in
+    `SharedStorage::IterationSource::TryResolvePromise()` via
+    `LogElapsedTime()`.
   </summary>
 </histogram>
 

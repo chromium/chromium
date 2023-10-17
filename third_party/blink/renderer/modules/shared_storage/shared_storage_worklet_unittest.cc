@@ -2445,16 +2445,16 @@ TEST_F(SharedStorageWorkletTest, Keys_ManuallyCallNext) {
           keys_iterator.next(); // result1 skipped
 
           const result2 = await keys_iterator.next();
-          console.log(JSON.stringify(result2, Object.keys(result2).sort()));
+          console.log(JSON.stringify(result2));
 
           const result3 = await keys_iterator.next();
-          console.log(JSON.stringify(result3, Object.keys(result3).sort()));
+          console.log(JSON.stringify(result3));
 
           const result4 = await keys_iterator.next();
-          console.log(JSON.stringify(result4, Object.keys(result4).sort()));
+          console.log(JSON.stringify(result4));
 
           const result5 = await keys_iterator.next();
-          console.log(JSON.stringify(result5, Object.keys(result5).sort()));
+          console.log(JSON.stringify(result5));
         }
       }
 
@@ -2503,6 +2503,79 @@ TEST_F(SharedStorageWorkletTest, Keys_ManuallyCallNext) {
   EXPECT_EQ(test_client_->observed_console_log_messages_.size(), 4u);
   EXPECT_EQ(test_client_->observed_console_log_messages_[1],
             "{\"done\":false,\"value\":\"key3\"}");
+  EXPECT_EQ(test_client_->observed_console_log_messages_[2], "{\"done\":true}");
+  EXPECT_EQ(test_client_->observed_console_log_messages_[3], "{\"done\":true}");
+}
+
+TEST_F(SharedStorageWorkletTest, Values_ManuallyCallNext) {
+  AddModuleResult add_module_result = AddModule(/*script_content=*/R"(
+      class TestClass {
+        async run() {
+          const values_iterator = (
+            sharedStorage.values()[Symbol.asyncIterator]());
+
+          values_iterator.next(); // result0 skipped
+          values_iterator.next(); // result1 skipped
+
+          const result2 = await values_iterator.next();
+          console.log(JSON.stringify(result2));
+
+          const result3 = await values_iterator.next();
+          console.log(JSON.stringify(result3));
+
+          const result4 = await values_iterator.next();
+          console.log(JSON.stringify(result4));
+
+          const result5 = await values_iterator.next();
+          console.log(JSON.stringify(result5));
+        }
+      }
+
+      register("test-operation", TestClass);
+  )");
+
+  base::test::TestFuture<bool, const std::string&> run_future;
+  shared_storage_worklet_service_->RunOperation(
+      "test-operation", CreateSerializedUndefined(), MaybeInitNewRemotePAHost(),
+      run_future.GetCallback());
+  shared_storage_worklet_service_.FlushForTesting();
+
+  EXPECT_FALSE(run_future.IsReady());
+  EXPECT_EQ(test_client_->pending_entries_listeners_.size(), 1u);
+
+  mojo::Remote<blink::mojom::SharedStorageEntriesListener> listener =
+      test_client_->TakeEntriesListenerAtFront();
+  listener->DidReadEntries(
+      /*success=*/true, /*error_message=*/{},
+      CreateBatchResult({{u"key0", u"value0"}}),
+      /*has_more_entries=*/true, /*total_queued_to_send=*/4);
+  shared_storage_worklet_service_.FlushForTesting();
+
+  EXPECT_FALSE(run_future.IsReady());
+  EXPECT_EQ(test_client_->observed_console_log_messages_.size(), 0u);
+
+  listener->DidReadEntries(
+      /*success=*/true, /*error_message=*/{},
+      CreateBatchResult({{u"key1", u"value1"}, {u"key2", u"value2"}}),
+      /*has_more_entries=*/true, /*total_queued_to_send=*/4);
+  shared_storage_worklet_service_.FlushForTesting();
+
+  EXPECT_FALSE(run_future.IsReady());
+  EXPECT_EQ(test_client_->observed_console_log_messages_.size(), 1u);
+  EXPECT_EQ(test_client_->observed_console_log_messages_[0],
+            "{\"done\":false,\"value\":\"value2\"}");
+
+  listener->DidReadEntries(
+      /*success=*/true, /*error_message=*/{},
+      CreateBatchResult({{u"key3", u"value3"}}),
+      /*has_more_entries=*/false, /*total_queued_to_send=*/4);
+
+  RunResult run_result{run_future.Get<0>(), run_future.Get<1>()};
+  EXPECT_TRUE(run_result.success);
+
+  EXPECT_EQ(test_client_->observed_console_log_messages_.size(), 4u);
+  EXPECT_EQ(test_client_->observed_console_log_messages_[1],
+            "{\"done\":false,\"value\":\"value3\"}");
   EXPECT_EQ(test_client_->observed_console_log_messages_[2], "{\"done\":true}");
   EXPECT_EQ(test_client_->observed_console_log_messages_[3], "{\"done\":true}");
 }

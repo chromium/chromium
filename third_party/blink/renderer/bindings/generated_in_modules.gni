@@ -9,6 +9,8 @@ import("//third_party/blink/renderer/config.gni")
 generated_async_iterator_sources_in_modules = [
   "$root_gen_dir/third_party/blink/renderer/bindings/modules/v8/v8_async_iterator_file_system_directory_handle.cc",
   "$root_gen_dir/third_party/blink/renderer/bindings/modules/v8/v8_async_iterator_file_system_directory_handle.h",
+  "$root_gen_dir/third_party/blink/renderer/bindings/modules/v8/v8_async_iterator_shared_storage.cc",
+  "$root_gen_dir/third_party/blink/renderer/bindings/modules/v8/v8_async_iterator_shared_storage.h",
 ]
 
 generated_callback_function_sources_in_modules = [
@@ -2520,8 +2522,6 @@ generated_interface_sources_in_modules = [
   "$root_gen_dir/third_party/blink/renderer/bindings/modules/v8/v8_service_worker_registration.h",
   "$root_gen_dir/third_party/blink/renderer/bindings/modules/v8/v8_shared_storage.cc",
   "$root_gen_dir/third_party/blink/renderer/bindings/modules/v8/v8_shared_storage.h",
-  "$root_gen_dir/third_party/blink/renderer/bindings/modules/v8/v8_shared_storage_iterator.cc",
-  "$root_gen_dir/third_party/blink/renderer/bindings/modules/v8/v8_shared_storage_iterator.h",
   "$root_gen_dir/third_party/blink/renderer/bindings/modules/v8/v8_shared_storage_worklet.cc",
   "$root_gen_dir/third_party/blink/renderer/bindings/modules/v8/v8_shared_storage_worklet.h",
   "$root_gen_dir/third_party/blink/renderer/bindings/modules/v8/v8_shared_storage_worklet_global_scope.cc",

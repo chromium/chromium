@@ -9259,7 +9259,6 @@ interface ShadowRoot : DocumentFragment
     setter innerHTML
     setter onslotchange
 interface SharedStorage
-    attribute @@asyncIterator
     attribute @@toStringTag
     getter worklet
     method append

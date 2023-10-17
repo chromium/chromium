@@ -35,16 +35,18 @@
 #include "third_party/blink/renderer/core/frame/local_dom_window.h"
 #include "third_party/blink/renderer/core/html/fenced_frame/fenced_frame_config.h"
 #include "third_party/blink/renderer/core/probe/core_probes.h"
-#include "third_party/blink/renderer/modules/shared_storage/shared_storage_iterator.h"
 #include "third_party/blink/renderer/modules/shared_storage/shared_storage_worklet.h"
 #include "third_party/blink/renderer/modules/shared_storage/shared_storage_worklet_global_scope.h"
 #include "third_party/blink/renderer/modules/shared_storage/util.h"
 #include "third_party/blink/renderer/platform/bindings/exception_state.h"
+#include "third_party/blink/renderer/platform/heap/collection_support/heap_deque.h"
 #include "third_party/blink/renderer/platform/heap/garbage_collected.h"
 #include "third_party/blink/renderer/platform/heap/persistent.h"
 #include "third_party/blink/renderer/platform/instrumentation/use_counter.h"
+#include "third_party/blink/renderer/platform/mojo/heap_mojo_receiver.h"
 #include "third_party/blink/renderer/platform/weborigin/security_origin.h"
 #include "third_party/blink/renderer/platform/wtf/allocator/allocator.h"
+#include "third_party/blink/renderer/platform/wtf/deque.h"
 #include "third_party/blink/renderer/platform/wtf/text/wtf_string.h"
 
 namespace blink {
@@ -170,6 +172,197 @@ bool StringFromV8(v8::Isolate* isolate, v8::Local<v8::Value> val, String* out) {
 }
 
 }  // namespace
+
+class SharedStorage::IterationSource final
+    : public PairAsyncIterable<SharedStorage>::IterationSource,
+      public mojom::blink::SharedStorageEntriesListener {
+ public:
+  IterationSource(ScriptState* script_state,
+                  ExecutionContext* execution_context,
+                  Kind kind,
+                  mojom::blink::SharedStorageWorkletServiceClient* client)
+      : PairAsyncIterable<SharedStorage>::IterationSource(script_state, kind),
+        receiver_(this, execution_context) {
+    if (GetKind() == Kind::kKey) {
+      client->SharedStorageKeys(receiver_.BindNewPipeAndPassRemote(
+          execution_context->GetTaskRunner(TaskType::kMiscPlatformAPI)));
+    } else {
+      client->SharedStorageEntries(receiver_.BindNewPipeAndPassRemote(
+          execution_context->GetTaskRunner(TaskType::kMiscPlatformAPI)));
+    }
+
+    base::UmaHistogramExactLinear(
+        "Storage.SharedStorage.AsyncIterator.IteratedEntriesBenchmarks", 0,
+        101);
+  }
+
+  void DidReadEntries(
+      bool success,
+      const String& error_message,
+      Vector<mojom::blink::SharedStorageKeyAndOrValuePtr> entries,
+      bool has_more_entries,
+      int total_queued_to_send) override {
+    CHECK(is_waiting_for_more_entries_);
+    CHECK(error_message_.IsNull());
+    CHECK(!(success && entries.empty() && has_more_entries));
+
+    if (!success) {
+      if (error_message.IsNull()) {
+        error_message_ = g_empty_string;
+      } else {
+        error_message_ = error_message;
+      }
+    }
+
+    for (auto& entry : entries) {
+      shared_storage_entry_queue_.push_back(std::move(entry));
+    }
+    is_waiting_for_more_entries_ = has_more_entries;
+
+    // Benchmark
+    if (!total_entries_queued_) {
+      total_entries_queued_ = total_queued_to_send;
+      base::UmaHistogramCounts10000(
+          "Storage.SharedStorage.AsyncIterator.EntriesQueuedCount",
+          total_entries_queued_);
+    }
+    base::CheckedNumeric<int> count = entries_received_;
+    count += entries.size();
+    entries_received_ = count.ValueOrDie();
+    while (next_benchmark_for_receipt_ <= 100 &&
+           MeetsBenchmark(entries_received_, next_benchmark_for_receipt_)) {
+      base::UmaHistogramExactLinear(
+          "Storage.SharedStorage.AsyncIterator.ReceivedEntriesBenchmarks",
+          next_benchmark_for_receipt_, 101);
+      next_benchmark_for_receipt_ += kBenchmarkStep;
+    }
+
+    ScriptState::Scope script_state_scope(GetScriptState());
+    TryResolvePromise();
+  }
+
+  void Trace(Visitor* visitor) const override {
+    visitor->Trace(receiver_);
+    PairAsyncIterable<SharedStorage>::IterationSource::Trace(visitor);
+  }
+
+ protected:
+  void GetNextIterationResult() override {
+    DCHECK(!next_start_time_);
+    next_start_time_ = base::TimeTicks::Now();
+
+    TryResolvePromise();
+  }
+
+ private:
+  void TryResolvePromise() {
+    if (!HasPendingPromise()) {
+      return;
+    }
+
+    if (!shared_storage_entry_queue_.empty()) {
+      mojom::blink::SharedStorageKeyAndOrValuePtr entry =
+          shared_storage_entry_queue_.TakeFirst();
+      TakePendingPromiseResolver()->Resolve(
+          MakeIterationResult(entry->key, entry->value));
+      LogElapsedTime();
+
+      base::CheckedNumeric<int> count = entries_iterated_;
+      entries_iterated_ = (++count).ValueOrDie();
+
+      while (next_benchmark_for_iteration_ <= 100 &&
+             MeetsBenchmark(entries_iterated_, next_benchmark_for_iteration_)) {
+        base::UmaHistogramExactLinear(
+            "Storage.SharedStorage.AsyncIterator.IteratedEntriesBenchmarks",
+            next_benchmark_for_iteration_, 101);
+        next_benchmark_for_iteration_ += kBenchmarkStep;
+      }
+
+      return;
+    }
+
+    if (!error_message_.IsNull()) {
+      TakePendingPromiseResolver()->Reject(V8ThrowDOMException::CreateOrEmpty(
+          GetScriptState()->GetIsolate(), DOMExceptionCode::kOperationError,
+          error_message_));
+      // We only record timing histograms when there is no error. Discard the
+      // start time for this call.
+      DCHECK(next_start_time_);
+      next_start_time_.reset();
+      return;
+    }
+
+    if (!is_waiting_for_more_entries_) {
+      TakePendingPromiseResolver()->Resolve(MakeEndOfIteration());
+      LogElapsedTime();
+      return;
+    }
+  }
+
+  bool MeetsBenchmark(int value, int benchmark) {
+    CHECK_GE(benchmark, 0);
+    CHECK_LE(benchmark, 100);
+    CHECK_EQ(benchmark % kBenchmarkStep, 0);
+    CHECK_GE(total_entries_queued_, 0);
+
+    if (benchmark == 0 || (total_entries_queued_ == 0 && value == 0)) {
+      return true;
+    }
+
+    CHECK_GT(total_entries_queued_, 0);
+    return (100 * value) / total_entries_queued_ >= benchmark;
+  }
+
+  void LogElapsedTime() {
+    CHECK(next_start_time_);
+    base::TimeDelta elapsed_time = base::TimeTicks::Now() - *next_start_time_;
+    next_start_time_.reset();
+    switch (GetKind()) {
+      case Kind::kKey:
+        base::UmaHistogramMediumTimes(
+            "Storage.SharedStorage.Worklet.Timing.Keys.Next", elapsed_time);
+        break;
+      case Kind::kValue:
+        base::UmaHistogramMediumTimes(
+            "Storage.SharedStorage.Worklet.Timing.Values.Next", elapsed_time);
+        break;
+      case Kind::kKeyValue:
+        base::UmaHistogramMediumTimes(
+            "Storage.SharedStorage.Worklet.Timing.Entries.Next", elapsed_time);
+        break;
+    }
+  }
+
+  HeapMojoReceiver<mojom::blink::SharedStorageEntriesListener, IterationSource>
+      receiver_;
+  // Queue of the successful results.
+  Deque<mojom::blink::SharedStorageKeyAndOrValuePtr>
+      shared_storage_entry_queue_;
+  String error_message_;  // Non-null string means error.
+  bool is_waiting_for_more_entries_ = true;
+
+  // Benchmark
+  //
+  // The total number of entries that the database has queued to send via this
+  // iterator.
+  int total_entries_queued_ = 0;
+  // The number of entries that the iterator has received from the database so
+  // far.
+  int entries_received_ = 0;
+  // The number of entries that the iterator has iterated through.
+  int entries_iterated_ = 0;
+  // The lowest benchmark for received entries that is currently unmet and so
+  // has not been logged.
+  int next_benchmark_for_receipt_ = 0;
+  // The lowest benchmark for iterated entries that is currently unmet and so
+  // has not been logged.
+  int next_benchmark_for_iteration_ = kBenchmarkStep;
+  // The step size of received / iterated entries.
+  static constexpr int kBenchmarkStep = 10;
+  // Start time of each call to GetTheNextIterationResult. Used to record a
+  // timing histogram.
+  absl::optional<base::TimeTicks> next_start_time_;
+};
 
 SharedStorage::SharedStorage() = default;
 SharedStorage::~SharedStorage() = default;
@@ -496,34 +689,6 @@ ScriptPromise SharedStorage::length(ScriptState* script_state,
           WrapPersistent(resolver), WrapPersistent(this), start_time));
 
   return promise;
-}
-
-SharedStorageIterator* SharedStorage::keys(ScriptState* script_state,
-                                           ExceptionState& exception_state) {
-  ExecutionContext* execution_context = ExecutionContext::From(script_state);
-  CHECK(execution_context->IsSharedStorageWorkletGlobalScope());
-
-  if (!CheckBrowsingContextIsValid(*script_state, exception_state)) {
-    return nullptr;
-  }
-
-  return MakeGarbageCollected<SharedStorageIterator>(
-      SharedStorageIterator::Mode::kKey, execution_context,
-      GetSharedStorageWorkletServiceClient(execution_context));
-}
-
-SharedStorageIterator* SharedStorage::entries(ScriptState* script_state,
-                                              ExceptionState& exception_state) {
-  ExecutionContext* execution_context = ExecutionContext::From(script_state);
-  CHECK(execution_context->IsSharedStorageWorkletGlobalScope());
-
-  if (!CheckBrowsingContextIsValid(*script_state, exception_state)) {
-    return nullptr;
-  }
-
-  return MakeGarbageCollected<SharedStorageIterator>(
-      SharedStorageIterator::Mode::kKeyValue, execution_context,
-      GetSharedStorageWorkletServiceClient(execution_context));
 }
 
 ScriptPromise SharedStorage::remainingBudget(ScriptState* script_state,
@@ -940,6 +1105,22 @@ SharedStorage::GetSharedStorageWorkletServiceClient(
   CHECK(execution_context->IsSharedStorageWorkletGlobalScope());
   return To<SharedStorageWorkletGlobalScope>(execution_context)
       ->GetSharedStorageWorkletServiceClient();
+}
+
+PairAsyncIterable<SharedStorage>::IterationSource*
+SharedStorage::CreateIterationSource(
+    ScriptState* script_state,
+    typename PairAsyncIterable<SharedStorage>::IterationSource::Kind kind,
+    ExceptionState& exception_state) {
+  ExecutionContext* execution_context = ExecutionContext::From(script_state);
+
+  if (!CheckBrowsingContextIsValid(*script_state, exception_state)) {
+    return nullptr;
+  }
+
+  return MakeGarbageCollected<IterationSource>(
+      script_state, execution_context, kind,
+      GetSharedStorageWorkletServiceClient(execution_context));
 }
 
 }  // namespace blink

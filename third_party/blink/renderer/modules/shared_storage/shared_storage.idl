@@ -7,6 +7,8 @@ typedef (USVString or FencedFrameConfig) SharedStorageResponse;
   RuntimeEnabled=SharedStorageAPI,
   Exposed=(Window, SharedStorageWorklet)
 ] interface SharedStorage {
+  [Exposed=SharedStorageWorklet] async iterable<DOMString, DOMString>;
+
   [
     CallWith=ScriptState,
     RaisesException,
@@ -43,18 +45,6 @@ typedef (USVString or FencedFrameConfig) SharedStorageResponse;
     CallWith=ScriptState,
     RaisesException
   ] Promise<unsigned long> length();
-
-  [
-    Exposed=SharedStorageWorklet,
-    CallWith=ScriptState,
-    RaisesException
-  ] SharedStorageIterator keys();
-
-  [
-    Exposed=SharedStorageWorklet,
-    CallWith=ScriptState,
-    RaisesException
-  ] SharedStorageIterator entries();
 
   [
     Exposed=SharedStorageWorklet,
