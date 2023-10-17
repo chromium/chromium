@@ -3237,15 +3237,14 @@ void AXObjectCacheImpl::FireAXEventImmediately(
 }
 
 bool AXObjectCacheImpl::IsAriaOwned(const AXObject* object) const {
-  CHECK(relation_cache_);
-  return relation_cache_->IsAriaOwned(object);
+  return relation_cache_ ? relation_cache_->IsAriaOwned(object) : false;
 }
 
 AXObject* AXObjectCacheImpl::ValidatedAriaOwner(const AXObject* object) const {
   DCHECK(GetDocument().Lifecycle().GetState() >=
          DocumentLifecycle::kLayoutClean);
-  CHECK(relation_cache_);
-  return relation_cache_->ValidatedAriaOwner(object);
+  return relation_cache_ ? relation_cache_->ValidatedAriaOwner(object)
+                         : nullptr;
 }
 
 void AXObjectCacheImpl::ValidatedAriaOwnedChildren(
@@ -3253,15 +3252,18 @@ void AXObjectCacheImpl::ValidatedAriaOwnedChildren(
     HeapVector<Member<AXObject>>& owned_children) {
   DCHECK(GetDocument().Lifecycle().GetState() >=
          DocumentLifecycle::kLayoutClean);
-  CHECK(relation_cache_);
-  relation_cache_->ValidatedAriaOwnedChildren(owner, owned_children);
+  if (relation_cache_) {
+    relation_cache_->ValidatedAriaOwnedChildren(owner, owned_children);
+  }
 }
 
 bool AXObjectCacheImpl::MayHaveHTMLLabel(const HTMLElement& elem) {
   CHECK(elem.GetDocument().Lifecycle().GetState() >=
         DocumentLifecycle::kLayoutClean)
       << "Unclean document at lifecycle " << elem.GetDocument().ToString();
-  CHECK(relation_cache_);
+  if (!relation_cache_) {
+    return false;
+  }
 
   // Return false if this type of element will not accept a <label for> label.
   if (!elem.IsLabelable())
