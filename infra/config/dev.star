@@ -28,6 +28,7 @@ lucicfg.config(
         "luci/luci-milo-dev.cfg",
         "luci/luci-scheduler-dev.cfg",
         "luci/realms-dev.cfg",
+        "luci/testhaus-staging.cfg",
     ],
     fail_on_warnings = True,
 )
@@ -36,6 +37,12 @@ lucicfg.config(
 lucicfg.emit(
     dest = "luci/luci-analysis-dev.cfg",
     data = io.read_file("luci-analysis-dev.cfg"),
+)
+
+# Just copy Testhaus config to generated outputs.
+lucicfg.emit(
+    dest = "luci/testhaus-staging.cfg",
+    data = io.read_file("testhaus-staging.cfg"),
 )
 
 branches.exec("//dev/dev.star")
