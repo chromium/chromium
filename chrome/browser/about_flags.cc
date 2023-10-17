@@ -166,7 +166,6 @@
 #include "components/translate/core/browser/translate_ranker_impl.h"
 #include "components/translate/core/common/translate_util.h"
 #include "components/ui_devtools/switches.h"
-#include "components/variations/service/google_groups_updater_service.h"
 #include "components/variations/variations_switches.h"
 #include "components/version_info/version_info.h"
 #include "components/viz/common/features.h"
@@ -10360,11 +10359,6 @@ const FeatureEntry kFeatureEntries[] = {
      flag_descriptions::kEnablePreferencesAccountStorageName,
      flag_descriptions::kEnablePreferencesAccountStorageDescription, kOsAll,
      FEATURE_VALUE_TYPE(syncer::kEnablePreferencesAccountStorage)},
-
-    {"enable-variations-google-group-filtering",
-     flag_descriptions::kEnableVariationsGoogleGroupFilteringName,
-     flag_descriptions::kEnableVariationsGoogleGroupFilteringDescription,
-     kOsAll, FEATURE_VALUE_TYPE(kVariationsGoogleGroupFiltering)},
 
 #if BUILDFLAG(IS_CHROMEOS_ASH)
     {"app-launch-automation", flag_descriptions::kAppLaunchAutomationName,

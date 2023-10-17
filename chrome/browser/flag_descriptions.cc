@@ -3692,13 +3692,6 @@ const char kUseIDNA2008NonTransitionalDescription[] =
     "Enables IDNA 2008 in Non-Transitional Mode in URL processing, allowing "
     "deviation characters in domain names.";
 
-const char kEnableVariationsGoogleGroupFilteringName[] =
-    "Enables filtering experiments by Google group membership";
-const char kEnableVariationsGoogleGroupFilteringDescription[] =
-    "Enables filtering of experiments by Google group membership. This feature "
-    "is experimental and is used only for dogfooding, and only for users who "
-    "are signed in and have Chrome Sync enabled.";
-
 const char kEnablePasswordSharingName[] = "Enables password sharing";
 const char kEnablePasswordSharingDescription[] =
     "Enables sharing of password between members of the same family.";

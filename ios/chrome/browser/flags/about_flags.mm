@@ -69,7 +69,6 @@
 #import "components/sync/base/pref_names.h"
 #import "components/translate/core/browser/translate_prefs.h"
 #import "components/translate/core/common/translate_util.h"
-#import "components/variations/service/google_groups_updater_service.h"
 #import "ios/chrome/app/background_mode_buildflags.h"
 #import "ios/chrome/browser/browsing_data/model/browsing_data_features.h"
 #import "ios/chrome/browser/crash_report/model/features.h"
@@ -1416,10 +1415,6 @@ const flags_ui::FeatureEntry kFeatureEntries[] = {
      flags_ui::kOsIos,
      FEATURE_VALUE_TYPE(
          autofill::features::kAutofillUseTwoDotsForLastFourDigits)},
-    {"enable-variations-google-group-filtering",
-     flag_descriptions::kEnableVariationsGoogleGroupFilteringName,
-     flag_descriptions::kEnableVariationsGoogleGroupFilteringDescription,
-     flags_ui::kOsIos, FEATURE_VALUE_TYPE(kVariationsGoogleGroupFiltering)},
     {"autofill-disable-profile-updates",
      flag_descriptions::kAutofillDisableProfileUpdatesName,
      flag_descriptions::kAutofillDisableProfileUpdatesDescription,
