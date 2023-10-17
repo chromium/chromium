@@ -12,11 +12,10 @@ namespace blink {
 using CharacterPropertyType = uint8_t;
 
 enum class CharacterProperty : CharacterPropertyType {
-  kIsCJKIdeographOrSymbol = 0x0001,
-  kIsUprightInMixedVertical = 0x0002,
-  kIsPotentialCustomElementNameChar = 0x0004,
-  kIsBidiControl = 0x0008,
-  kIsHangul = 0x0010
+  kIsCJKIdeographOrSymbol = 1 << 0,
+  kIsPotentialCustomElementNameChar = 1 << 1,
+  kIsBidiControl = 1 << 2,
+  kIsHangul = 1 << 3,
 };
 
 inline CharacterProperty operator|(CharacterProperty a, CharacterProperty b) {
