@@ -71,30 +71,6 @@ class TabStatsDataStore : public TabStatsObserver {
         tab_reload_counts;
   };
 
-  // Structure describing the state of a tab during an interval of time.
-  struct TabStateDuringInterval {
-    // Indicates if the tab exists at the beginning of the interval.
-    bool existed_before_interval;
-    // Indicates if the tab still exists.
-    bool exists_currently;
-    // Indicates if the tab has been visible or audible at any moment during the
-    // interval.
-    bool visible_or_audible_during_interval;
-    // Indicates if the tab has been interacted with or active at any moment
-    // during the interval. See the |OnTabInteraction| for the list of possible
-    // interactions.
-    bool interacted_during_interval;
-  };
-
-  // A TabID is used instead of a WebContents* because:
-  //   - The WebContents of a tab can change during its lifetime.
-  //   - A WebContents* can be reused for a separate tab after a tab has been
-  //     closed.
-  using TabID = size_t;
-  // Represents the state of a set of tabs during an interval of time.
-  using TabsStateDuringIntervalMap =
-      base::flat_map<TabID, TabStateDuringInterval>;
-
   explicit TabStatsDataStore(PrefService* pref_service);
 
   TabStatsDataStore(const TabStatsDataStore&) = delete;
@@ -107,11 +83,6 @@ class TabStatsDataStore : public TabStatsObserver {
   void OnWindowRemoved() override;
   void OnTabAdded(content::WebContents* web_contents) override;
   void OnTabRemoved(content::WebContents* web_contents) override;
-  void OnTabReplaced(content::WebContents* old_contents,
-                     content::WebContents* new_contents) override;
-  void OnTabInteraction(content::WebContents* web_contents) override;
-  void OnTabIsAudibleChanged(content::WebContents* web_contents) override;
-  void OnTabVisibilityChanged(content::WebContents* web_contents) override;
 
   // Update the maximum number of tabs in a single window if |value| exceeds
   // this.
@@ -122,12 +93,6 @@ class TabStatsDataStore : public TabStatsObserver {
   // Reset all the maximum values to the current state, to be used once the
   // metrics have been reported.
   void ResetMaximumsToCurrentState();
-
-  // Creates a new interval map. The returned pointer is owned by |this|.
-  TabsStateDuringIntervalMap* AddInterval();
-
-  // Reset |interval_map| with the list of current tabs.
-  void ResetIntervalData(TabsStateDuringIntervalMap* interval_map);
 
   // Updates discard/reload counts when the discarded state of a tab changes.
   // Updates the discard count when is_discarded is true. Updates the reload
@@ -140,10 +105,6 @@ class TabStatsDataStore : public TabStatsObserver {
   void ClearTabDiscardAndReloadCounts();
 
   const TabsStats& tab_stats() const { return tab_stats_; }
-  absl::optional<TabID> GetTabIDForTesting(content::WebContents* web_contents);
-  base::flat_map<content::WebContents*, TabID>* existing_tabs_for_testing() {
-    return &existing_tabs_;
-  }
 
  protected:
   FRIEND_TEST_ALL_PREFIXES(TabStatsTrackerBrowserTest,
@@ -153,18 +114,7 @@ class TabStatsDataStore : public TabStatsObserver {
   void UpdateTotalTabCountMaxIfNeeded();
   void UpdateWindowCountMaxIfNeeded();
 
-  // Adds a tab to an interval map.
-  void AddTabToIntervalMap(content::WebContents* web_contents,
-                           TabID tab_id,
-                           bool existed_before_interval,
-                           TabsStateDuringIntervalMap* interval_map);
-
-  // Returns the TabID associated with a tab.
-  TabID GetTabID(content::WebContents* web_contents);
-
  private:
-  void OnTabAudibleOrVisible(content::WebContents* web_contents);
-
   // Record the stack sampling meta data with the current tab count;
   void RecordSamplingMetaData();
 
@@ -177,12 +127,6 @@ class TabStatsDataStore : public TabStatsObserver {
 
   // A raw pointer to the PrefService used to read and write the statistics.
   raw_ptr<PrefService> pref_service_;
-
-  // The interval maps, one per period of time that we want to observe.
-  std::vector<std::unique_ptr<TabsStateDuringIntervalMap>> interval_maps_;
-
-  // The tabs that currently exist.
-  base::flat_map<content::WebContents*, TabID> existing_tabs_;
 
   SEQUENCE_CHECKER(sequence_checker_);
 };

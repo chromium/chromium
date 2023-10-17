@@ -118,10 +118,6 @@ class TabStatsTracker : public TabStripModelObserver,
   UmaStatsReportingDelegate* reporting_delegate_for_testing() {
     return reporting_delegate_.get();
   }
-  std::vector<std::unique_ptr<base::RepeatingTimer>>*
-  usage_interval_timers_for_testing() {
-    return &usage_interval_timers_;
-  }
   base::RepeatingTimer* heartbeat_timer_for_testing() {
     return &heartbeat_timer_;
   }
@@ -163,10 +159,6 @@ class TabStatsTracker : public TabStripModelObserver,
   void OnAutoDiscardableStateChange(content::WebContents* contents,
                                     bool is_auto_discardable) override;
 
-  // Callback when an interval timer triggers.
-  void OnInterval(base::TimeDelta interval,
-                  TabStatsDataStore::TabsStateDuringIntervalMap* interval_map);
-
   // Functions to call to start tracking a new tab.
   void OnInitialOrInsertedTab(content::WebContents* web_contents);
 
@@ -203,10 +195,6 @@ class TabStatsTracker : public TabStripModelObserver,
   // triggered.
   base::RepeatingTimer daily_event_timer_;
 
-  // The timers used to analyze how tabs are used during a given interval of
-  // time.
-  std::vector<std::unique_ptr<base::RepeatingTimer>> usage_interval_timers_;
-
   // The timer used to report the heartbeat metrics at regular interval.
   base::RepeatingTimer heartbeat_timer_;
 
@@ -235,14 +223,6 @@ class TabStatsTracker::UmaStatsReportingDelegate {
   // The name of the histogram that records the maximum number of windows
   // opened in a day.
   static const char kMaxWindowsInADayHistogramName[];
-
-  // The name of the histograms that records how tabs have been used during a
-  // given period of time. Will be appended with '_T' with T being the interval
-  // window (in seconds).
-  static const char kUnusedAndClosedInIntervalHistogramNameBase[];
-  static const char kUnusedTabsInIntervalHistogramNameBase[];
-  static const char kUsedAndClosedInIntervalHistogramNameBase[];
-  static const char kUsedTabsInIntervalHistogramNameBase[];
 
   // The name of the histograms that records the current number of tabs/windows.
   static const char kTabCountHistogramName[];
@@ -277,18 +257,7 @@ class TabStatsTracker::UmaStatsReportingDelegate {
   // Report the tab heartbeat metrics.
   void ReportHeartbeatMetrics(const TabStatsDataStore::TabsStats& tab_stats);
 
-  // Report some information about how tabs have been used during a given
-  // interval of time.
-  void ReportUsageDuringInterval(
-      const TabStatsDataStore::TabsStateDuringIntervalMap& interval_map,
-      base::TimeDelta interval);
-
  protected:
-  // Generates the name of the histograms that will track tab usage during a
-  // given period of time.
-  static std::string GetIntervalHistogramName(const char* base_name,
-                                              base::TimeDelta interval);
-
   // Checks if Chrome is running in background with no visible windows, virtual
   // for unittesting.
   virtual bool IsChromeBackgroundedWithoutWindows();
