@@ -4262,6 +4262,12 @@
   <message name="IDS_ASSISTANT_RELATED_INFO_SCREEN_EXAMPLE_CHILD" desc="Message to illustrate the use cases for assistant related info, when a child account is in use.">
     Try “Hey Google, what song is this?” or “Hey Google, what's on my screen?”
   </message>
+  <message name="IDS_ASSISTANT_RELATED_INFO_SCREEN_EXAMPLE_NEW" desc="Message to illustrate the use cases for assistant related info.">
+    You could ask “Hey Google, what song is this?”
+  </message>
+  <message name="IDS_ASSISTANT_RELATED_INFO_SCREEN_EXAMPLE_CHILD_NEW" desc="Message to illustrate the use cases for assistant related info, when a child account is in use.">
+    Try “Hey Google, what song is this?”
+  </message>
   <message name="IDS_ASSISTANT_CONTINUE_BUTTON" desc="Continue button for asssitant optin flow.">
     Continue
   </message>
