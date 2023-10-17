@@ -7,6 +7,7 @@
 #include <string>
 #include <vector>
 
+#include "base/check_op.h"
 #include "base/debug/crash_logging.h"
 #include "base/debug/dump_without_crashing.h"
 #include "base/feature_list.h"
@@ -39,15 +40,13 @@ namespace {
 // sizes in ricea@'s cache on 3 Aug 2023.
 constexpr size_t kExpectedRawHeaderSize = 4035;
 
-void AddSpdyHeader(const std::string& name,
-                   const std::string& value,
-                   spdy::Http2HeaderBlock* headers) {
-  if (headers->find(name) == headers->end()) {
-    (*headers)[name] = value;
-  } else {
-    (*headers)[name] = base::StrCat(
-        {(*headers)[name].as_string(), base::StringPiece("\0", 1), value});
-  }
+// Add header `name` with `value` to `headers`. `name` must not already exist in
+// `headers`.
+void AddUniqueSpdyHeader(base::StringPiece name,
+                         base::StringPiece value,
+                         spdy::Http2HeaderBlock* headers) {
+  auto insert_result = headers->insert({name, value});
+  CHECK_EQ(insert_result, spdy::Http2HeaderBlock::InsertResult::kInserted);
 }
 
 // Tries both the old and new implementations of
@@ -237,13 +236,14 @@ void CreateSpdyHeadersFromHttpRequest(const HttpRequestInfo& info,
                                       absl::optional<RequestPriority> priority,
                                       const HttpRequestHeaders& request_headers,
                                       spdy::Http2HeaderBlock* headers) {
-  (*headers)[spdy::kHttp2MethodHeader] = info.method;
+  headers->insert({spdy::kHttp2MethodHeader, info.method});
   if (info.method == "CONNECT") {
-    (*headers)[spdy::kHttp2AuthorityHeader] = GetHostAndPort(info.url);
+    headers->insert({spdy::kHttp2AuthorityHeader, GetHostAndPort(info.url)});
   } else {
-    (*headers)[spdy::kHttp2AuthorityHeader] = GetHostAndOptionalPort(info.url);
-    (*headers)[spdy::kHttp2SchemeHeader] = info.url.scheme();
-    (*headers)[spdy::kHttp2PathHeader] = info.url.PathForRequest();
+    headers->insert(
+        {spdy::kHttp2AuthorityHeader, GetHostAndOptionalPort(info.url)});
+    headers->insert({spdy::kHttp2SchemeHeader, info.url.scheme()});
+    headers->insert({spdy::kHttp2PathHeader, info.url.PathForRequest()});
   }
 
   HttpRequestHeaders::Iterator it(request_headers);
@@ -254,7 +254,7 @@ void CreateSpdyHeadersFromHttpRequest(const HttpRequestInfo& info,
         name == "host") {
       continue;
     }
-    AddSpdyHeader(name, it.value(), headers);
+    AddUniqueSpdyHeader(name, it.value(), headers);
   }
 
   // Add the priority header if there is not already one set. This uses the
@@ -266,8 +266,9 @@ void CreateSpdyHeadersFromHttpRequest(const HttpRequestInfo& info,
     uint8_t urgency = ConvertRequestPriorityToQuicPriority(priority.value());
     bool incremental = info.priority_incremental;
     quic::HttpStreamPriority quic_priority{urgency, incremental};
-    AddSpdyHeader(kHttp2PriorityHeader,
-                  quic::SerializePriorityFieldValue(quic_priority), headers);
+    AddUniqueSpdyHeader(kHttp2PriorityHeader,
+                        quic::SerializePriorityFieldValue(quic_priority),
+                        headers);
   }
 }
 
@@ -275,11 +276,11 @@ void CreateSpdyHeadersFromHttpRequestForWebSocket(
     const GURL& url,
     const HttpRequestHeaders& request_headers,
     spdy::Http2HeaderBlock* headers) {
-  (*headers)[spdy::kHttp2MethodHeader] = "CONNECT";
-  (*headers)[spdy::kHttp2AuthorityHeader] = GetHostAndOptionalPort(url);
-  (*headers)[spdy::kHttp2SchemeHeader] = "https";
-  (*headers)[spdy::kHttp2PathHeader] = url.PathForRequest();
-  (*headers)[spdy::kHttp2ProtocolHeader] = "websocket";
+  headers->insert({spdy::kHttp2MethodHeader, "CONNECT"});
+  headers->insert({spdy::kHttp2AuthorityHeader, GetHostAndOptionalPort(url)});
+  headers->insert({spdy::kHttp2SchemeHeader, "https"});
+  headers->insert({spdy::kHttp2PathHeader, url.PathForRequest()});
+  headers->insert({spdy::kHttp2ProtocolHeader, "websocket"});
 
   HttpRequestHeaders::Iterator it(request_headers);
   while (it.GetNext()) {
@@ -289,7 +290,7 @@ void CreateSpdyHeadersFromHttpRequestForWebSocket(
         name == "transfer-encoding" || name == "host") {
       continue;
     }
-    AddSpdyHeader(name, it.value(), headers);
+    AddUniqueSpdyHeader(name, it.value(), headers);
   }
 }
 
