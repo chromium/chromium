@@ -801,20 +801,18 @@ const char kEventRemappedToRightClick[] =
 
 // Deprecated 05/2023.
 #if BUILDFLAG(IS_CHROMEOS_ASH)
-constexpr char kSupervisedUserSyncId[] = "ManagedUserSyncId";
-constexpr char kSupervisedUserManagers[] = "ManagedUserManagers";
-constexpr char kSupervisedUserManagerNames[] = "ManagedUserManagerNames";
-constexpr char kSupervisedUserManagerDisplayEmails[] =
+const char kSupervisedUserSyncId[] = "ManagedUserSyncId";
+const char kSupervisedUserManagers[] = "ManagedUserManagers";
+const char kSupervisedUserManagerNames[] = "ManagedUserManagerNames";
+const char kSupervisedUserManagerDisplayEmails[] =
     "ManagedUserManagerDisplayEmails";
-constexpr char kSupervisedUsersFirstRun[] = "LocallyManagedUsersFirstRun";
-constexpr char kSupervisedUserPasswordSchema[] = "SupervisedUserPasswordSchema";
-constexpr char kSupervisedUserPasswordSalt[] = "SupervisedUserPasswordSalt";
-constexpr char kSupervisedUserPasswordRevision[] =
-    "SupervisedUserPasswordRevision";
-constexpr char kSupervisedUserNeedPasswordUpdate[] =
+const char kSupervisedUsersFirstRun[] = "LocallyManagedUsersFirstRun";
+const char kSupervisedUserPasswordSchema[] = "SupervisedUserPasswordSchema";
+const char kSupervisedUserPasswordSalt[] = "SupervisedUserPasswordSalt";
+const char kSupervisedUserPasswordRevision[] = "SupervisedUserPasswordRevision";
+const char kSupervisedUserNeedPasswordUpdate[] =
     "SupervisedUserNeedPasswordUpdate";
-constexpr char kSupervisedUserIncompleteKey[] =
-    "SupervisedUserHasIncompleteKey";
+const char kSupervisedUserIncompleteKey[] = "SupervisedUserHasIncompleteKey";
 #endif
 
 // Deprecated 06/2023.
@@ -828,7 +826,7 @@ const char kWebAppsExtensionIDs[] = "web_apps.extension_ids";
 
 // Deprecated 06/2023.
 #if BUILDFLAG(IS_CHROMEOS_ASH)
-constexpr char kOsSyncPrefsMigrated[] = "sync.os_sync_prefs_migrated";
+const char kOsSyncPrefsMigrated[] = "sync.os_sync_prefs_migrated";
 #endif  // BUILDFLAG(IS_CHROMEOS_ASH)
 
 // Deprecated 06/2023
@@ -941,7 +939,7 @@ const char kShouldAttemptReenable[] = "android_sms.should_attempt_reenable";
 
 // Deprecated 10/2023.
 #if BUILDFLAG(IS_CHROMEOS)
-constexpr char kSupportedLinksAppPrefsKey[] = "supported_links_infobar.apps";
+const char kSupportedLinksAppPrefsKey[] = "supported_links_infobar.apps";
 #endif  // BUILDFLAG(IS_CHROMEOS)
 
 // Register local state used only for migration (clearing or moving to a new
