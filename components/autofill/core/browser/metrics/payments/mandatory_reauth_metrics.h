@@ -105,14 +105,17 @@ enum class MandatoryReauthOptInOrOutSource {
   kUnknown = 0,
   // The OptIn or OptOut process is triggered from the settings page.
   kSettingsPage = 1,
-  // The OptIn is triggered after using local card during checkout.
+  // The OptIn is triggered after using a local card during checkout.
   kCheckoutLocalCard = 2,
-  // The OptIn is triggered after using green pathed virtual card during
+  // The OptIn is triggered after using a green-pathed virtual card during
   // checkout.
   kCheckoutVirtualCard = 3,
   // The OptIn is triggered after filling a full server card.
   kCheckoutFullServerCard = 4,
-  kMaxValue = kCheckoutFullServerCard,
+  // The OptIn is triggered after using a green-pathed masked server card during
+  // checkout.
+  kCheckoutMaskedServerCard = 5,
+  kMaxValue = kCheckoutMaskedServerCard,
 };
 
 void LogMandatoryReauthOfferOptInDecision(

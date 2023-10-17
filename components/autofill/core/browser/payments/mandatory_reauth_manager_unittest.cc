@@ -150,6 +150,8 @@ TEST_F(MandatoryReauthManagerTest, GetAuthenticationMethod_UnsupportedMethod) {
 TEST_F(MandatoryReauthManagerTest, ShouldOfferOptin_LocalCard) {
 #if BUILDFLAG(IS_ANDROID)
   if (base::android::BuildInfo::GetInstance()->is_automotive()) {
+    // Skip the test for automotive as Mandatory Re-auth should always be turned
+    // on for automotive users.
     GTEST_SKIP() << "This test should not run on automotive.";
   }
 #endif  // BUILDFLAG(IS_ANDROID)
@@ -201,6 +203,8 @@ TEST_F(MandatoryReauthManagerTest, ShouldOfferOptin_Incognito) {
 TEST_F(MandatoryReauthManagerTest, ShouldOfferOptin_VirtualCard) {
 #if BUILDFLAG(IS_ANDROID)
   if (base::android::BuildInfo::GetInstance()->is_automotive()) {
+    // Skip the test for automotive as Mandatory Re-auth should always be turned
+    // on for automotive users.
     GTEST_SKIP() << "This test should not run on automotive.";
   }
 #endif  // BUILDFLAG(IS_ANDROID)
@@ -213,12 +217,33 @@ TEST_F(MandatoryReauthManagerTest, ShouldOfferOptin_VirtualCard) {
   ExpectUniqueOfferOptInDecision(MandatoryReauthOfferOptInDecision::kOffered);
 }
 
+// Test that the MandatoryReauthManager returns that we should offer re-auth
+// opt-in if the conditions for offering it are all met for masked server cards.
+TEST_F(MandatoryReauthManagerTest, ShouldOfferOptin_MaskedServerCard) {
+#if BUILDFLAG(IS_ANDROID)
+  if (base::android::BuildInfo::GetInstance()->is_automotive()) {
+    // Skip the test for automotive as Mandatory Re-auth should always be turned
+    // on for automotive users.
+    GTEST_SKIP() << "This test should not run on automotive.";
+  }
+#endif  // BUILDFLAG(IS_ANDROID)
+
+  base::test::ScopedFeatureList feature_list(
+      features::kAutofillEnablePaymentsMandatoryReauth);
+
+  EXPECT_TRUE(mandatory_reauth_manager_->ShouldOfferOptin(
+      CreditCard::RecordType::kMaskedServerCard));
+  ExpectUniqueOfferOptInDecision(MandatoryReauthOfferOptInDecision::kOffered);
+}
+
 // Test that the MandatoryReauthManager returns that we should not offer re-auth
 // opt-in if the user has already made a decision on opting in or out of
 // re-auth.
 TEST_F(MandatoryReauthManagerTest, ShouldOfferOptin_UserAlreadyMadeDecision) {
 #if BUILDFLAG(IS_ANDROID)
   if (base::android::BuildInfo::GetInstance()->is_automotive()) {
+    // Skip the test for automotive as Mandatory Re-auth should always be turned
+    // on for automotive users.
     GTEST_SKIP() << "This test should not run on automotive.";
   }
 #endif  // BUILDFLAG(IS_ANDROID)
@@ -242,6 +267,8 @@ TEST_F(MandatoryReauthManagerTest,
        ShouldOfferOptin_AuthenticationNotAvailable) {
 #if BUILDFLAG(IS_ANDROID)
   if (base::android::BuildInfo::GetInstance()->is_automotive()) {
+    // Skip the test for automotive as Mandatory Re-auth should always be turned
+    // on for automotive users.
     GTEST_SKIP() << "This test should not run on automotive.";
   }
 #endif  // BUILDFLAG(IS_ANDROID)
@@ -270,6 +297,8 @@ TEST_F(
     ShouldOfferOptin_FilledCardWentThroughInteractiveAuthenticationOrNoAutofill) {
 #if BUILDFLAG(IS_ANDROID)
   if (base::android::BuildInfo::GetInstance()->is_automotive()) {
+    // Skip the test for automotive as Mandatory Re-auth should always be turned
+    // on for automotive users.
     GTEST_SKIP() << "This test should not run on automotive.";
   }
 #endif  // BUILDFLAG(IS_ANDROID)
@@ -295,6 +324,8 @@ TEST_F(
     ShouldOfferOptin_ServerCardWithMatchingLocalCard_LastFilledCardWasLocalCard) {
 #if BUILDFLAG(IS_ANDROID)
   if (base::android::BuildInfo::GetInstance()->is_automotive()) {
+    // Skip the test for automotive as Mandatory Re-auth should always be turned
+    // on for automotive users.
     GTEST_SKIP() << "This test should not run on automotive.";
   }
 #endif  // BUILDFLAG(IS_ANDROID)
@@ -373,6 +404,8 @@ TEST_F(MandatoryReauthManagerTest, OnUserAcceptedOptInPrompt) {
 TEST_F(MandatoryReauthManagerTest, OnUserCancelledOptInPrompt) {
 #if BUILDFLAG(IS_ANDROID)
   if (base::android::BuildInfo::GetInstance()->is_automotive()) {
+    // Skip the test for automotive as Mandatory Re-auth should always be turned
+    // on for automotive users.
     GTEST_SKIP() << "This test should not run on automotive.";
   }
 #endif  // BUILDFLAG(IS_ANDROID)
@@ -393,6 +426,8 @@ TEST_F(MandatoryReauthManagerTest, OnUserCancelledOptInPrompt) {
 TEST_F(MandatoryReauthManagerTest, OnUserClosedOptInPrompt) {
 #if BUILDFLAG(IS_ANDROID)
   if (base::android::BuildInfo::GetInstance()->is_automotive()) {
+    // Skip the test for automotive as Mandatory Re-auth should always be turned
+    // on for automotive users.
     GTEST_SKIP() << "This test should not run on automotive.";
   }
 #endif  // BUILDFLAG(IS_ANDROID)
@@ -426,8 +461,7 @@ class MandatoryReauthManagerOptInFlowTest
       case CreditCard::RecordType::kVirtualCard:
         return "CheckoutVirtualCard";
       case CreditCard::RecordType::kMaskedServerCard:
-        NOTREACHED();
-        return "Unknown";
+        return "CheckoutMaskedServerCard";
     }
   }
 
@@ -445,6 +479,8 @@ class MandatoryReauthManagerOptInFlowTest
 TEST_P(MandatoryReauthManagerOptInFlowTest, OptInSuccess) {
 #if BUILDFLAG(IS_ANDROID)
   if (base::android::BuildInfo::GetInstance()->is_automotive()) {
+    // Skip the test for automotive as Mandatory Re-auth should always be turned
+    // on for automotive users.
     GTEST_SKIP() << "This test should not run on automotive.";
   }
 #endif  // BUILDFLAG(IS_ANDROID)
@@ -497,6 +533,8 @@ TEST_P(MandatoryReauthManagerOptInFlowTest, OptInSuccess) {
 TEST_P(MandatoryReauthManagerOptInFlowTest, OptInShownButAuthFailure) {
 #if BUILDFLAG(IS_ANDROID)
   if (base::android::BuildInfo::GetInstance()->is_automotive()) {
+    // Skip the test for automotive as Mandatory Re-auth should always be turned
+    // on for automotive users.
     GTEST_SKIP() << "This test should not run on automotive.";
   }
 #endif  // BUILDFLAG(IS_ANDROID)
@@ -551,6 +589,7 @@ INSTANTIATE_TEST_SUITE_P(
     MandatoryReauthManagerOptInFlowTest,
     testing::Values(CreditCard::RecordType::kLocalCard,
                     CreditCard::RecordType::kFullServerCard,
-                    CreditCard::RecordType::kVirtualCard));
+                    CreditCard::RecordType::kVirtualCard,
+                    CreditCard::RecordType::kMaskedServerCard));
 
 }  // namespace autofill::payments

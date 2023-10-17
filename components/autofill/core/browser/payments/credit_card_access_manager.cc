@@ -1242,10 +1242,13 @@ void CreditCardAccessManager::OnVirtualCardUnmaskResponseReceived(
         accessor_->OnCreditCardFetched(CreditCardFetchResult::kSuccess,
                                        card_.get());
 
-        // If the server responded with success and the real pan, no interactive
-        // authentication happened. It's also possible that the server does not
-        // provide the real pan but requests an authentication which is handled
-        // below.
+        // If the server returned a successful response along with the card's
+        // real PAN without requiring interactive authentication, set the
+        // `card_record_type_if_non_interactive_authentication_flow_completed_`
+        // field in FormDataImporter so that MandatoryReauthManager can decide
+        // whether to offer mandatory re-auth opt-in for this user. It's also
+        // possible that the server does not provide the real PAN but requests
+        // an authentication which is handled below.
         client_->GetFormDataImporter()
             ->SetCardRecordTypeIfNonInteractiveAuthenticationFlowCompleted(
                 card_->record_type());
@@ -1334,16 +1337,42 @@ void CreditCardAccessManager::OnRiskBasedAuthenticationResponseReceived(
   // If the card is not empty, then complete card information has been
   // fetched from the server (this is ensured in PaymentsClient). Pass the
   // unmasked card to `accessor_` and end the session.
-  // TODO(crbug.com/1470933): Authenticate the user before filling the card
-  // if mandatory re-auth is enabled.
   CHECK(response.card.has_value());
-  client_->CloseAutofillProgressDialog(
-      /*show_confirmation_before_closing=*/true);
   card_ = std::make_unique<CreditCard>(response.card.value());
-  accessor_->OnCreditCardFetched(CreditCardFetchResult::kSuccess, card_.get());
+  // Check if the user needs to be authenticated before filling the card.
+  if (personal_data_manager_->IsPaymentMethodsMandatoryReauthEnabled()) {
+    // On some operating systems (for example, macOS and Windows), the
+    // device authentication prompt freezes Chrome. Thus the prompt will only
+    // be triggered after the progress dialog has been closed, which can be
+    // done by using the `no_interactive_authentication_callback` parameter in
+    // `AutofillClient::CloseAutofillProgressDialog()`.
+    client_->CloseAutofillProgressDialog(
+        /*show_confirmation_before_closing=*/false,
+        /*no_interactive_authentication_callback=*/base::BindOnce(
+            // `StartDeviceAuthenticationForFilling()` will asynchronously
+            // trigger the re-authentication flow, so calling `Reset()` should
+            // be avoided until the re-authentication flow is complete.
+            &CreditCardAccessManager::StartDeviceAuthenticationForFilling,
+            weak_ptr_factory_.GetWeakPtr(), accessor_, card_.get(),
+            card_->cvc()));
+  } else {
+    client_->CloseAutofillProgressDialog(
+        /*show_confirmation_before_closing=*/true);
+    accessor_->OnCreditCardFetched(CreditCardFetchResult::kSuccess,
+                                   card_.get());
 
-  // TODO(crbug.com/1470933): Log the unmask result.
-  Reset();
+    // If the server returned a successful response along with the card's real
+    // PAN without requiring interactive authentication, set the
+    // `card_record_type_if_non_interactive_authentication_flow_completed_`
+    // field in FormDataImporter so that MandatoryReauthManager can decide
+    // whether to offer mandatory re-auth opt-in for this user.
+    client_->GetFormDataImporter()
+        ->SetCardRecordTypeIfNonInteractiveAuthenticationFlowCompleted(
+            CreditCard::RecordType::kMaskedServerCard);
+
+    // TODO(crbug.com/1470933): Log the unmask result.
+    Reset();
+  }
 }
 
 void CreditCardAccessManager::OnStopWaitingForUnmaskDetails(
