@@ -291,7 +291,9 @@ async def test_add_intercept_type_pattern_port_empty_invalid(websocket):
                              "string and pattern",
                          ])
 async def test_add_intercept_blocks_use_cdp_events(websocket, context_id,
-                                                   url_patterns, example_url):
+                                                   url_patterns):
+    # TODO: make offline
+    example_url = "https://www.example.com/"
     await subscribe(websocket, ["cdp.Fetch.requestPaused"])
 
     result = await execute_command(
@@ -372,7 +374,9 @@ async def test_add_intercept_blocks_use_cdp_events(websocket, context_id,
                              "string and pattern",
                          ])
 async def test_add_intercept_blocks_use_bidi_events(websocket, context_id,
-                                                    url_patterns, example_url):
+                                                    url_patterns):
+    # TODO: make offline
+    example_url = "https://www.example.com/"
     await subscribe(websocket, ["network.beforeRequestSent"])
 
     result = await execute_command(

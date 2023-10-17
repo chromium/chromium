@@ -76,20 +76,44 @@ class LocalHttpServer:
         self.__http_server.expect_request(self.__path_hang_forever) \
             .respond_with_handler(hang_forever)
 
-    def url_200(self) -> str:
+    def _url_for(self, suffix: str, host: str = 'localhost') -> str:
+        """
+        Return an url for a given suffix.
+
+        Implementation is the same as the original one, but with a customizable
+        host: https://github.com/csernazs/pytest-httpserver/blob/8110d9d543de3b7c151bc1b5c8e85c01b05b226d/pytest_httpserver/httpserver.py#L665
+        :param suffix: the suffix which will be added to the base url. It can
+            start with ``/`` (slash) or not, the url will be the same.
+        :param host: the host to use in the url. Default is ``localhost``.
+        :return: the full url which refers to the server
+        """
+        if self.__http_server.ssl_context is None:
+            protocol = "http"
+        else:
+            protocol = "https"
+
+        if not suffix.startswith("/"):
+            suffix = "/" + suffix
+
+        host = self.__http_server.format_host(host)
+
+        return "{}://{}:{}{}".format(protocol, host, self.__http_server.port,
+                                     suffix)
+
+    def url_200(self, host='localhost') -> str:
         """Returns the url for the 200 page with the `default_200_page_content`.
         """
-        return self.__http_server.url_for(self.__path_200)
+        return self._url_for(self.__path_200, host)
 
     def url_permanent_redirect(self) -> str:
         """Returns the url for the permanent redirect page, redirecting to the
         200 page."""
-        return self.__http_server.url_for(self.__path_permanent_redirect)
+        return self._url_for(self.__path_permanent_redirect)
 
     def url_basic_auth(self) -> str:
         """Returns the url for the page with a basic auth."""
-        return self.__http_server.url_for(self.__path_basic_auth)
+        return self._url_for(self.__path_basic_auth)
 
     def url_hang_forever(self) -> str:
         """Returns the url for the page, request to which will never be finished."""
-        return self.__http_server.url_for(self.__path_hang_forever)
+        return self._url_for(self.__path_hang_forever)

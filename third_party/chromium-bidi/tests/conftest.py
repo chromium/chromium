@@ -41,10 +41,6 @@ async def websocket():
     url = f"ws://localhost:{port}"
     async with websockets.connect(url) as connection:
         yield connection
-        await execute_command(connection, {
-            "method": "browser.close",
-            "params": {}
-        })
 
 
 @pytest_asyncio.fixture
@@ -135,42 +131,39 @@ def url_cross_origin(request):
     'data:text/html,<h2>child page</h2>',  # Data URL: Cross-origin
 ])
 def url_all_origins(request):
-    """Return an URL exhaustively, including same-origin and cross-origin."""
+    """Return a URL exhaustively, including same-origin and cross-origin."""
     return request.param
 
 
 @pytest.fixture
-def example_url():
+def example_url(local_server: LocalHttpServer):
     """Return a generic example URL with status code 200."""
-    # TODO: Switch to a local server so that it works off-line.
-    # Alternatively: https://www.example.org/
-    return "https://www.example.com/"
+    return local_server.url_200()
 
 
 @pytest.fixture
-def another_example_url():
-    # TODO: Switch to a local server so that it works off-line.
-    """Return a generic example URL with status code 200, in a domain other than the example_url fixture."""
-    return "https://www.example.org/"
+def another_example_url(local_server: LocalHttpServer):
+    """Return a generic example URL with status code 200, in a domain other than
+    the example_url fixture."""
+    return local_server.url_200('127.0.0.1')
 
 
 @pytest.fixture
-def auth_required_url():
+def auth_required_url(local_server: LocalHttpServer):
     """Return a URL that requires authentication (status code 401)."""
-    # TODO: Switch to a local server so that it works off-line.
     # All of these URLs work, just pick one.
     # url = "https://authenticationtest.com/HTTPAuth/"
     # url = "http://the-internet.herokuapp.com/basic_auth"
+    # url = "http://httpstat.us/401"
     pytest.skip(reason='TODO: Use our own test server.')
-    return "http://httpstat.us/401"
+    return local_server.url_basic_auth()
 
 
 @pytest.fixture
-def hang_url():
-    # TODO: Start a local server alongside tests that use this fixture.
+def hang_url(local_server: LocalHttpServer):
     """Return a URL that hangs forever."""
     pytest.skip(reason='TODO: Use our own test server.')
-    return "http://127.0.0.1:5000/hang"
+    return local_server.url_hang_forever()
 
 
 @pytest.fixture
