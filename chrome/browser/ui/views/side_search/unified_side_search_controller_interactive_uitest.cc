@@ -869,6 +869,12 @@ class SideSearchIPHAndTutorialBrowserTest
     });
   }
 
+  // TODO(crbug.com/1491942): This fails with the field trial testing config.
+  void SetUpCommandLine(base::CommandLine* command_line) override {
+    InteractiveBrowserTestT::SetUpCommandLine(command_line);
+    command_line->AppendSwitch("disable-field-trial-config");
+  }
+
   void SetUp() override {
     set_open_about_blank_on_browser_launch(true);
     InteractiveBrowserTestT::SetUp();
