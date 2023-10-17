@@ -13,6 +13,7 @@
 #include "base/memory/ref_counted.h"
 #include "base/win/scoped_handle.h"
 #include "ui/gfx/gfx_export.h"
+#include "ui/gfx/gpu_memory_buffer.h"
 
 namespace gfx {
 
@@ -28,10 +29,17 @@ class GFX_EXPORT D3DSharedFence : public base::RefCounted<D3DSharedFence> {
   static scoped_refptr<D3DSharedFence> CreateForD3D11(
       Microsoft::WRL::ComPtr<ID3D11Device> d3d11_device);
 
+  // Create from existing scoped shared handle e.g. from IPC. The ID3D11Fence
+  // is lazily created on Wait or Signal for the device provided to those calls.
+  static scoped_refptr<D3DSharedFence> CreateFromScopedHandle(
+      base::win::ScopedHandle fence_handle,
+      const DXGIHandleToken& fence_token);
+
   // Create from existing shared handle e.g. from Dawn. Doesn't take ownership
   // of |shared_handle| and duplicates it instead. The ID3D11Fence is lazily
   // created on Wait or Signal for the device provided to those calls.
-  static scoped_refptr<D3DSharedFence> CreateFromHandle(HANDLE shared_handle);
+  static scoped_refptr<D3DSharedFence> CreateFromUnownedHandle(
+      HANDLE shared_handle);
 
   // Returns true if fences are supported i.e. if ID3D11Device5 is supported.
   static bool IsSupported(ID3D11Device* d3d11_device);
@@ -39,9 +47,15 @@ class GFX_EXPORT D3DSharedFence : public base::RefCounted<D3DSharedFence> {
   // Return the shared handle for the fence.
   HANDLE GetSharedHandle() const;
 
+  // Clone the shared handle for IPC.
+  base::win::ScopedHandle CloneSharedHandle();
+
   // Returns the fence value that was last known to be signaled on this fence,
   // and should be used for waiting.
   uint64_t GetFenceValue() const;
+
+  // Returns unique identifier for this fence when used across processes.
+  const DXGIHandleToken& GetDXGIHandleToken() const;
 
   // Returns the D3D11 device if this fence was created using CreateForD3D11.
   Microsoft::WRL::ComPtr<ID3D11Device> GetD3D11Device() const;
@@ -67,7 +81,9 @@ class GFX_EXPORT D3DSharedFence : public base::RefCounted<D3DSharedFence> {
   // 5 D3D11 devices ought to be enough for anybody.
   static constexpr size_t kMaxD3D11FenceMapSize = 5;
 
-  explicit D3DSharedFence(base::win::ScopedHandle shared_handle);
+  explicit D3DSharedFence(base::win::ScopedHandle shared_handle,
+                          const DXGIHandleToken& dxgi_token);
+
   ~D3DSharedFence();
 
   // Owned shared handle corresponding to the fence.
@@ -75,6 +91,9 @@ class GFX_EXPORT D3DSharedFence : public base::RefCounted<D3DSharedFence> {
 
   // Value last known to be signaled for this fence to be used for future waits.
   uint64_t fence_value_ = 0;
+
+  // Unique identifier for this fence when used across processes.
+  DXGIHandleToken dxgi_token_;
 
   // If present, this is the D3D11 device that the fence was created on, and
   // used to signal |d3d11_fence_|.
