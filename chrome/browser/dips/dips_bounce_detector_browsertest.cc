@@ -1422,8 +1422,15 @@ IN_PROC_BROWSER_TEST_F(DIPSBounceDetectorBrowserTest,
 
 // Verifies server redirects that occur while opening a link in a new tab are
 // properly detected.
+// TODO(crbug.com/1493269): Flaky on Chrome OS and Linux.
+#if BUILDFLAG(IS_CHROMEOS) || BUILDFLAG(IS_LINUX)
+#define MAYBE_OpenServerRedirectURLInNewTab \
+  DISABLED_OpenServerRedirectURLInNewTab
+#else
+#define MAYBE_OpenServerRedirectURLInNewTab OpenServerRedirectURLInNewTab
+#endif
 IN_PROC_BROWSER_TEST_F(DIPSBounceDetectorBrowserTest,
-                       OpenServerRedirectURLInNewTab) {
+                       MAYBE_OpenServerRedirectURLInNewTab) {
   WebContents* original_tab = chrome_test_utils::GetActiveWebContents(this);
   GURL original_tab_url(
       embedded_test_server()->GetURL("a.test", "/title1.html"));
