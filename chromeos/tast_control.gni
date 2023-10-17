@@ -48,9 +48,6 @@ tast_disabled_tests_from_chrome_all = [
   "ui.ChromeCrashLoggedIn.browser_crashpad",
   "ui.ChromeCrashLoggedIn.browser_crashpad_mock_consent",
 
-  # https://crbug.com/1279285: Flaky.
-  "policy.AllowWakeLocks",
-
   # https://crbug.com/1311242
   "policy.ImagesForURLCheck.allowlist",
 
