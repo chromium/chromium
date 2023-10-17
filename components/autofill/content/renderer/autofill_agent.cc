@@ -93,7 +93,10 @@ using blink::WebVector;
 namespace autofill {
 
 using form_util::ExtractMask;
+using form_util::FindContentEditableByRendererId;
 using form_util::FindFormAndFieldForFormControlElement;
+using form_util::FindFormByRendererId;
+using form_util::FindFormForContentEditable;
 using form_util::IsElementEditable;
 using form_util::MaybeWasOwnedByFrame;
 using form_util::TraverseDomForFourDigitCombinations;
@@ -869,7 +872,8 @@ void AutofillAgent::PreviewPasswordGenerationSuggestion(
   password_generation_agent_->PreviewGenerationSuggestion(password);
 }
 
-bool AutofillAgent::CollectFormlessElements(FormData* output) const {
+bool AutofillAgent::CollectFormlessElements(FormData* output,
+                                            ExtractMask extract_mask) const {
   if (!unsafe_render_frame()) {
     return false;
   }
@@ -884,9 +888,6 @@ bool AutofillAgent::CollectFormlessElements(FormData* output) const {
 
   std::vector<WebElement> iframe_elements =
       form_util::GetUnownedIframeElements(document);
-
-  const ExtractMask extract_mask = static_cast<ExtractMask>(
-      form_util::EXTRACT_VALUE | form_util::EXTRACT_OPTIONS);
 
   return form_util::UnownedFormElementsToFormData(
       control_elements, iframe_elements, nullptr, document,
@@ -1074,6 +1075,44 @@ void AutofillAgent::TriggerFormExtractionWithResponse(
     base::OnceCallback<void(bool)> callback) {
   ExtractForms(process_forms_form_extraction_with_response_timer_,
                std::move(callback));
+}
+
+void AutofillAgent::ExtractForm(
+    FormRendererId form_id,
+    base::OnceCallback<void(const std::optional<FormData>&)> callback) {
+  if (!unsafe_render_frame()) {
+    std::move(callback).Run(std::nullopt);
+    return;
+  }
+  form_util::ExtractMask extract_mask = static_cast<form_util::ExtractMask>(
+      GetExtractDatalistMask() | form_util::EXTRACT_BOUNDS |
+      form_util::EXTRACT_OPTIONS | form_util::EXTRACT_OPTION_TEXT |
+      form_util::EXTRACT_VALUE);
+  if (!form_id) {
+    FormData form;
+    if (CollectFormlessElements(&form, extract_mask)) {
+      std::move(callback).Run(std::move(form));
+      return;
+    }
+  }
+  WebDocument doc = unsafe_render_frame()->GetWebFrame()->GetDocument();
+  if (WebFormElement fe = FindFormByRendererId(doc, form_id); !fe.IsNull()) {
+    FormData form;
+    if (WebFormElementToFormData(fe, WebFormControlElement(),
+                                 field_data_manager_.get(), extract_mask, &form,
+                                 nullptr)) {
+      std::move(callback).Run(std::move(form));
+      return;
+    }
+  }
+  if (base::FeatureList::IsEnabled(features::kAutofillContentEditables)) {
+    FieldRendererId field(*form_id);
+    if (WebElement ce = FindContentEditableByRendererId(field); !ce.IsNull()) {
+      std::move(callback).Run(FindFormForContentEditable(ce));
+      return;
+    }
+  }
+  std::move(callback).Run(std::nullopt);
 }
 
 std::vector<blink::WebAutofillClient::FormIssue>

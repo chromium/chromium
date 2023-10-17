@@ -451,6 +451,37 @@ void AutofillDriverRouter::ApplyFieldAction(
   }
 }
 
+void AutofillDriverRouter::ExtractForm(
+    AutofillDriver* source,
+    FormGlobalId form,
+    base::OnceCallback<void(const std::optional<FormData>&)> response_callback,
+    void (*callback)(AutofillDriver* target,
+                     const FormRendererId& form,
+                     base::OnceCallback<void(const std::optional<FormData>&)>
+                         response_callback)) {
+  if (auto* target = DriverOfFrame(form.frame_token)) {
+    callback(
+        target, form.renderer_id,
+        base::BindOnce(
+            [](raw_ref<AutofillDriverRouter> self,
+               raw_ref<AutofillDriver> target,
+               base::OnceCallback<void(const std::optional<FormData>&)>
+                   response_callback,
+               const std::optional<FormData>& form) {
+              if (!form) {
+                std::move(response_callback).Run(std::nullopt);
+                return;
+              }
+              self->form_forest_.UpdateTreeOfRendererForm(*form, &*target);
+              std::move(response_callback)
+                  .Run(self->form_forest_.GetBrowserForm(form->global_id()));
+            },
+            raw_ref(*this), raw_ref(*target), std::move(response_callback)));
+  } else {
+    std::move(response_callback).Run(std::nullopt);
+  }
+}
+
 void AutofillDriverRouter::SendAutofillTypePredictionsToRenderer(
     AutofillDriver* source,
     const std::vector<FormDataPredictions>& browser_fdps,

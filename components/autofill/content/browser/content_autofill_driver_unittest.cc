@@ -206,6 +206,10 @@ class FakeAutofillAgent : public mojom::AutofillAgent {
     CallDone();
   }
 
+  void ExtractForm(FormRendererId form,
+                   base::OnceCallback<void(const std::optional<FormData>&)>
+                       callback) override {}
+
   void FieldTypePredictionsAvailable(
       const std::vector<FormDataPredictions>& forms) override {
     predictions_ = forms;

@@ -18,6 +18,7 @@
 #include "base/timer/timer.h"
 #include "components/autofill/content/common/mojom/autofill_agent.mojom.h"
 #include "components/autofill/content/common/mojom/autofill_driver.mojom.h"
+#include "components/autofill/content/renderer/form_autofill_util.h"
 #include "components/autofill/content/renderer/form_tracker.h"
 #include "components/autofill/core/common/mojom/autofill_types.mojom-shared.h"
 #include "content/public/renderer/render_frame_observer.h"
@@ -107,6 +108,12 @@ class AutofillAgent : public content::RenderFrameObserver,
   void ApplyFormAction(mojom::ActionType action_type,
                        mojom::ActionPersistence action_persistence,
                        const FormData& form) override;
+  void ApplyFieldAction(mojom::ActionPersistence action_persistence,
+                        FieldRendererId field_id,
+                        const std::u16string& value) override;
+  void ExtractForm(FormRendererId form,
+                   base::OnceCallback<void(const std::optional<FormData>&)>
+                       callback) override;
   void FieldTypePredictionsAvailable(
       const std::vector<FormDataPredictions>& forms) override;
   void ClearSection() override;
@@ -118,9 +125,6 @@ class AutofillAgent : public content::RenderFrameObserver,
   void TriggerSuggestions(
       FieldRendererId field_id,
       AutofillSuggestionTriggerSource trigger_source) override;
-  void ApplyFieldAction(mojom::ActionPersistence action_persistence,
-                        FieldRendererId field_id,
-                        const std::u16string& value) override;
   void SetSuggestionAvailability(FieldRendererId field_id,
                                  const mojom::AutofillState state) override;
   void AcceptDataListSuggestion(FieldRendererId field_id,
@@ -278,7 +282,10 @@ class AutofillAgent : public content::RenderFrameObserver,
   // Helper method which collects unowned elements (i.e., those not inside a
   // form tag) and writes them into |output|. Returns true if the process is
   // successful, and all conditions for firing events are true.
-  bool CollectFormlessElements(FormData* output) const;
+  bool CollectFormlessElements(
+      FormData* output,
+      form_util::ExtractMask extract_mask = static_cast<form_util::ExtractMask>(
+          form_util::EXTRACT_VALUE | form_util::EXTRACT_OPTIONS)) const;
   FRIEND_TEST_ALL_PREFIXES(FormAutocompleteTest, CollectFormlessElements);
 
   void OnTextFieldDidChange(const blink::WebInputElement& element);

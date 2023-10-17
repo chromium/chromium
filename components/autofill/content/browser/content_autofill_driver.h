@@ -238,6 +238,9 @@ class ContentAutofillDriver : public AutofillDriver,
   void ApplyFieldAction(mojom::ActionPersistence action_persistence,
                         const FieldGlobalId& field_id,
                         const std::u16string& value) override;
+  void ExtractForm(FormGlobalId form,
+                   base::OnceCallback<void(const std::optional<FormData>&)>
+                       response_callback) override;
   void RendererShouldAcceptDataListSuggestion(
       const FieldGlobalId& field_id,
       const std::u16string& value) override;

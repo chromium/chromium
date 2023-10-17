@@ -253,6 +253,20 @@ void ContentAutofillDriver::ApplyFieldAction(
       });
 }
 
+void ContentAutofillDriver::ExtractForm(
+    FormGlobalId form,
+    base::OnceCallback<void(const std::optional<FormData>&)>
+        response_callback) {
+  router().ExtractForm(
+      this, form, std::move(response_callback),
+      [](autofill::AutofillDriver* target, const FormRendererId& form,
+         base::OnceCallback<void(const std::optional<FormData>&)>
+             response_callback) {
+        cast(target)->GetAutofillAgent()->ExtractForm(
+            form, std::move(response_callback));
+      });
+}
+
 void ContentAutofillDriver::SendAutofillTypePredictionsToRenderer(
     const std::vector<FormStructure*>& forms) {
   std::vector<FormDataPredictions> type_predictions =

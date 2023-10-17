@@ -119,6 +119,11 @@ class AutofillDriver {
       base::OnceCallback<void(bool success)>
           form_extraction_finished_callback) = 0;
 
+  virtual void ExtractForm(
+      FormGlobalId form,
+      base::OnceCallback<void(const std::optional<FormData>&)>
+          response_callback) = 0;
+
   // Returns true iff the renderer is available for communication.
   virtual bool RendererIsAvailable() = 0;
 

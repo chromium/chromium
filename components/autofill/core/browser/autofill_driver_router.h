@@ -266,6 +266,15 @@ class AutofillDriverRouter {
                        mojom::ActionPersistence action_persistence,
                        const FieldRendererId& field,
                        const std::u16string& value));
+  void ExtractForm(
+      AutofillDriver* source,
+      FormGlobalId form,
+      base::OnceCallback<void(const std::optional<FormData>&)>
+          response_callback,
+      void (*callback)(AutofillDriver* target,
+                       const FormRendererId& form,
+                       base::OnceCallback<void(const std::optional<FormData>&)>
+                           response_callback));
   void RendererShouldAcceptDataListSuggestion(
       AutofillDriver* source,
       const FieldGlobalId& field,

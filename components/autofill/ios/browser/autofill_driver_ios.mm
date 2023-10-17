@@ -113,6 +113,14 @@ void AutofillDriverIOS::ApplyFieldAction(
     const FieldGlobalId& field,
     const std::u16string& value) {}
 
+void AutofillDriverIOS::ExtractForm(
+    FormGlobalId form,
+    base::OnceCallback<void(const std::optional<FormData>&)>
+        response_callback) {
+  // TODO(crbug.com/1490670): Implement ExtractForm().
+  NOTIMPLEMENTED();
+}
+
 void AutofillDriverIOS::HandleParsedForms(const std::vector<FormData>& forms) {
   const std::map<FormGlobalId, std::unique_ptr<FormStructure>>& map =
       browser_autofill_manager_->form_structures();

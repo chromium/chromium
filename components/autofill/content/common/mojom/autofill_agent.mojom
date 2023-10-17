@@ -35,6 +35,10 @@ interface AutofillAgent {
                    FieldRendererId field,
                    mojo_base.mojom.String16 value);
 
+  // Extracts the given form and responds with the FormData if that form can
+  // be found and extracted.
+  ExtractForm(FormRendererId form) => (FormData? form);
+
   // Sends the heuristic and server field type predictions to the renderer.
   FieldTypePredictionsAvailable(array<FormDataPredictions> forms);
 
