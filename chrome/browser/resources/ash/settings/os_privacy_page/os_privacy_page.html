@@ -13,6 +13,17 @@
 <os-settings-animated-pages id="pages" section="[[section_]]">
   <div route-path="default">
     <settings-card header-text="$i18n{privacyPageTitle}">
+      <template is="dom-if" if="[[showPrivacyHubPage_]]" restamp>
+        <template is="dom-if" if="[[isRevampWayfindingEnabled_]]">
+          <cr-link-row id="privacyHubSubpageTrigger"
+              on-click="onPrivacyHubClick_"
+              label="$i18n{privacyHubTitle}"
+              sub-label="$i18n{privacyHubSubtext}"
+              role-description="$i18n{subpageArrowRoleDescription}">
+          </cr-link-row>
+          <div class="hr"></div>
+        </template>
+      </template>
       <template is="dom-if" if="[[!isGuestMode_]]" restamp>
         <template is="dom-if" if="[[isRevampWayfindingEnabled_]]">
           <cr-link-row id="syncSetupRow"
@@ -85,13 +96,15 @@
           deep-link-focus-id$="[[Setting.kVerifiedAccess]]">
       </settings-toggle-button>
       <template is="dom-if" if="[[showPrivacyHubPage_]]" restamp>
-        <div class="hr"></div>
-        <cr-link-row id="privacyHubSubpageTrigger"
-            on-click="onPrivacyHubClick_"
-            label="$i18n{privacyHubTitle}"
-            sub-label="$i18n{privacyHubSubtext}"
-            role-description="$i18n{subpageArrowRoleDescription}">
-        </cr-link-row>
+        <template is="dom-if" if="[[!isRevampWayfindingEnabled_]]">
+          <cr-link-row id="privacyHubSubpageTrigger"
+              class="hr"
+              on-click="onPrivacyHubClick_"
+              label="$i18n{privacyHubTitle}"
+              sub-label="$i18n{privacyHubSubtext}"
+              role-description="$i18n{subpageArrowRoleDescription}">
+          </cr-link-row>
+        </template>
       </template>
       <template is="dom-if" if="[[isThunderboltSupported_]]">
         <div class="hr"></div>
