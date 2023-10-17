@@ -564,9 +564,11 @@ void TreeView::TreeNodeRemoved(TreeModel* model,
   bool reset_active_node = false;
   InternalNode* child_removing = parent_node->children()[index].get();
   if (selected_node_ && selected_node_->HasAncestor(child_removing)) {
+    selected_node_ = nullptr;
     reset_selected_node = true;
   }
   if (active_node_ && active_node_->HasAncestor(child_removing)) {
+    active_node_ = nullptr;
     reset_active_node = true;
   }
 
@@ -580,15 +582,6 @@ void TreeView::TreeNodeRemoved(TreeModel* model,
   }
 
   if (reset_selected_node || reset_active_node) {
-    // selected_node_ or active_node_ or both were no longer valid (i.e. the
-    // model_node() was likely deleted by the time we entered this function).
-    // Explicitly set to nullptr before continuing; otherwise, we might try to
-    // use a deleted value.
-    if (reset_selected_node)
-      selected_node_ = nullptr;
-    if (reset_active_node)
-      active_node_ = nullptr;
-
     // Replace invalidated states with the nearest valid node.
     const auto& children = model_->GetChildren(parent);
     TreeModelNode* nearest_node = nullptr;

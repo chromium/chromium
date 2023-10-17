@@ -469,10 +469,10 @@ class VIEWS_EXPORT TreeView : public View,
   InternalNode root_;
 
   // The selected node, may be null.
-  raw_ptr<InternalNode, DanglingUntriaged> selected_node_ = nullptr;
+  raw_ptr<InternalNode> selected_node_ = nullptr;
 
   // The current active node, may be null.
-  raw_ptr<InternalNode, DanglingUntriaged> active_node_ = nullptr;
+  raw_ptr<InternalNode> active_node_ = nullptr;
 
   bool editing_ = false;
 
