@@ -42,12 +42,6 @@ std::string_view ToOrcaModeParamValue(MakoEditorMode mode) {
   return mode == MakoEditorMode::kWrite ? kOrcaWriteMode : kOrcaRewriteMode;
 }
 
-const ui::TextInputClient* GetTextInputClient() {
-  const ui::InputMethod* input_method =
-      IMEBridge::Get()->GetInputContextHandler()->GetInputMethod();
-  return input_method ? input_method->GetTextInputClient() : nullptr;
-}
-
 class MakoRewriteView : public WebUIBubbleDialogView {
  public:
   METADATA_HEADER(MakoRewriteView);
@@ -119,10 +113,6 @@ MakoBubbleCoordinator::~MakoBubbleCoordinator() {
 }
 
 void MakoBubbleCoordinator::LoadConsentUI(Profile* profile) {
-  if (!GetTextInputClient()) {
-    return;
-  }
-
   contents_wrapper_ = std::make_unique<BubbleContentsWrapperT<MakoUntrustedUI>>(
       GURL(kChromeUIMakoPrivacyURL), profile, kMakoTaskManagerStringID);
   contents_wrapper_->ReloadWebContents();
@@ -177,8 +167,11 @@ bool MakoBubbleCoordinator::IsShowingUI() const {
 }
 
 void MakoBubbleCoordinator::CacheContextCaretBounds() {
-  if (const auto* text_input_client = GetTextInputClient()) {
-    context_caret_bounds_ = text_input_client->GetCaretBounds();
+  const ui::InputMethod* input_method =
+      IMEBridge::Get()->GetInputContextHandler()->GetInputMethod();
+  if (input_method && input_method->GetTextInputClient()) {
+    context_caret_bounds_ =
+        input_method->GetTextInputClient()->GetCaretBounds();
   }
 }
 
