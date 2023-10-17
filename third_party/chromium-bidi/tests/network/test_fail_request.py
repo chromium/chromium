@@ -476,6 +476,7 @@ async def test_fail_request_completes_new_request_still_blocks(
             "params": {
                 "url": example_url,
                 "context": context_id,
+                "wait": "complete",
             }
         })
 
@@ -542,6 +543,7 @@ async def test_fail_request_completes_new_request_still_blocks(
             "params": {
                 "url": example_url,
                 "context": context_id,
+                "wait": "complete",
             }
         })
 
