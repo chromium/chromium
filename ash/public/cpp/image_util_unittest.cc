@@ -14,6 +14,7 @@
 #include "base/location.h"
 #include "base/run_loop.h"
 #include "base/strings/string_piece.h"
+#include "base/task/thread_pool.h"
 #include "base/test/bind.h"
 #include "base/test/scoped_run_loop_timeout.h"
 #include "base/test/task_environment.h"
@@ -132,13 +133,16 @@ class ImageUtilTest : public ::testing::Test {
         });
   }
 
-  gfx::ImageSkia DecodeImageFile(base::FilePath::StringPieceType file_name,
-                                 data_decoder::mojom::ImageCodec codec) {
+  gfx::ImageSkia DecodeImageFile(
+      base::FilePath::StringPieceType file_name,
+      data_decoder::mojom::ImageCodec codec,
+      scoped_refptr<base::SequencedTaskRunner> file_task_runner = nullptr) {
     base::test::ScopedRunLoopTimeout timeout(FROM_HERE, kDecodeImageTimeout);
     base::RunLoop run_loop;
     gfx::ImageSkia image_out;
     image_util::DecodeImageFile(CreateDecodeImageCallback(run_loop, image_out),
-                                CreateFilePath(file_name), codec);
+                                CreateFilePath(file_name), codec,
+                                std::move(file_task_runner));
     run_loop.Run();
     return image_out;
   }
@@ -187,6 +191,17 @@ TEST_F(ImageUtilTest, DecodeImageFileDefaultCodec) {
                               EncodeAsJpeg(original_image)));
   gfx::ImageSkia decoded_image = DecodeImageFile(
       "test_image.jpg", data_decoder::mojom::ImageCodec::kDefault);
+  EXPECT_TRUE(gfx::test::AreImagesEqual(gfx::Image(decoded_image),
+                                        gfx::Image(original_image)));
+}
+
+TEST_F(ImageUtilTest, DecodeImageFileCustomTaskRunner) {
+  gfx::ImageSkia original_image = CreateTestImage(200, 100, SK_ColorYELLOW);
+  ASSERT_TRUE(base::WriteFile(CreateFilePath("test_image.jpg"),
+                              EncodeAsJpeg(original_image)));
+  gfx::ImageSkia decoded_image = DecodeImageFile(
+      "test_image.jpg", data_decoder::mojom::ImageCodec::kDefault,
+      base::ThreadPool::CreateSequencedTaskRunner({base::MayBlock()}));
   EXPECT_TRUE(gfx::test::AreImagesEqual(gfx::Image(decoded_image),
                                         gfx::Image(original_image)));
 }
