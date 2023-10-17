@@ -227,13 +227,13 @@ BASE_FEATURE(kGpuInfoCollectionSeparatePrefetch,
              base::FEATURE_ENABLED_BY_DEFAULT);
 #endif
 
-// Supports proxying thread type changes of renderer processes to browser
+// Supports proxying thread type changes of child processes to the browser
 // process and having browser process handle adjusting thread properties (nice
-// value, c-group, latency sensitivity...) for renderers which have sandbox
+// value, c-group, latency sensitivity...) for children which have sandbox
 // restrictions.
 #if BUILDFLAG(IS_LINUX) || BUILDFLAG(IS_CHROMEOS)
-BASE_FEATURE(kHandleRendererThreadTypeChangesInBrowser,
-             "HandleRendererThreadTypeChangesInBrowser",
+BASE_FEATURE(kHandleChildThreadTypeChangesInBrowser,
+             "HandleChildThreadTypeChangesInBrowser",
              base::FEATURE_ENABLED_BY_DEFAULT);
 #endif
 

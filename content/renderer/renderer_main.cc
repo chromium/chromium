@@ -267,7 +267,7 @@ int RendererMain(MainFunctionParams parameters) {
     // Thread type delegate of the process should be registered before
     // first thread type change in ChildProcess constructor.
     if (base::FeatureList::IsEnabled(
-            features::kHandleRendererThreadTypeChangesInBrowser)) {
+            features::kHandleChildThreadTypeChangesInBrowser)) {
       SandboxedProcessThreadTypeHandler::Create();
 
       // Change the main thread type. On Linux and ChromeOS this needs to be

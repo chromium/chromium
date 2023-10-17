@@ -32,6 +32,10 @@
 #include "mojo/public/cpp/bindings/service_factory.h"
 #include "third_party/abseil-cpp/absl/types/optional.h"
 
+#if BUILDFLAG(IS_LINUX) || BUILDFLAG(IS_CHROMEOS)
+#include "content/child/sandboxed_process_thread_type_handler.h"
+#endif
+
 namespace content {
 
 namespace {
@@ -247,6 +251,10 @@ void UtilityThreadImpl::Init() {
   ChildProcess::current()->AddRefProcess();
 
   GetContentClient()->utility()->UtilityThreadStarted();
+
+#if BUILDFLAG(IS_LINUX) || BUILDFLAG(IS_CHROMEOS)
+  SandboxedProcessThreadTypeHandler::NotifyMainChildThreadCreated();
+#endif
 
   // NOTE: Do not add new interfaces directly within this method. Instead,
   // modify the definition of |ExposeUtilityInterfacesToBrowser()| to ensure
