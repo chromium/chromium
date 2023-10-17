@@ -60,19 +60,20 @@ class WebStateList;
 // WebState.
 @property(nonatomic, assign) WebStateList* webStateList;
 
-// Dispatcher.
-@property(nonatomic, weak) id<ActivityServiceCommands,
-                              ApplicationCommands,
-                              BrowserCoordinatorCommands,
-                              FindInPageCommands,
-                              OverflowMenuCustomizationCommands,
-                              PriceNotificationsCommands,
-                              TextZoomCommands>
-    dispatcher;
-
-@property(nonatomic, weak) id<BookmarksCommands> bookmarksCommandsHandler;
-@property(nonatomic, weak) id<PopupMenuCommands> popupMenuCommandsHandler;
-@property(nonatomic, weak) id<PageInfoCommands> pageInfoCommandsHandler;
+// Command Handlers.
+@property(nonatomic, weak) id<ActivityServiceCommands> activityServiceHandler;
+@property(nonatomic, weak) id<ApplicationCommands> applicationHandler;
+@property(nonatomic, weak) id<BookmarksCommands> bookmarksHandler;
+@property(nonatomic, weak) id<BrowserCoordinatorCommands>
+    browserCoordinatorHandler;
+@property(nonatomic, weak) id<FindInPageCommands> findInPageHandler;
+@property(nonatomic, weak) id<OverflowMenuCustomizationCommands>
+    overflowMenuCustomizationHandler;
+@property(nonatomic, weak) id<PageInfoCommands> pageInfoHandler;
+@property(nonatomic, weak) id<PopupMenuCommands> popupMenuHandler;
+@property(nonatomic, weak) id<PriceNotificationsCommands>
+    priceNotificationHandler;
+@property(nonatomic, weak) id<TextZoomCommands> textZoomHandler;
 
 // Navigation agent for reloading pages.
 @property(nonatomic, assign) WebNavigationBrowserAgent* navigationAgent;
