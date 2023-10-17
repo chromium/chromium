@@ -26,7 +26,7 @@ namespace {
 constexpr char kFcmCertProvisioningPublicTopicPrefix[] = "cert-";
 
 // Shall be expanded to cert.[scope].[topic]
-const char* kOwnerNameFormat = "cert.%s.%s";
+constexpr char kOwnerNameFormat[] = "cert.%s.%s";
 
 const char* CertScopeToString(CertScope scope) {
   switch (scope) {

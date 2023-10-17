@@ -17,8 +17,6 @@ namespace ash {
 // Kerberos defaults for canonicalization SPN. (see
 // https://web.mit.edu/kerberos/krb5-1.12/doc/admin/conf_files/krb5_conf.html)
 // Exported for browsertests.
-extern const char kKrb5CnameSettings[];
-
 // Environment variable pointing to credential cache file.
 extern const char kKrb5CCEnvName[];
 // Environment variable pointing to Kerberos config file.

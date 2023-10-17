@@ -153,7 +153,9 @@ class ServicesCustomizationDocument : public CustomizationDocument {
   static void RegisterPrefs(PrefRegistrySimple* registry);
   static void RegisterProfilePrefs(user_prefs::PrefRegistrySyncable* registry);
 
-  static const char kManifestUrl[];
+  // Template URL where to fetch OEM services customization manifest from.
+  static constexpr char kManifestUrl[] =
+      "https://ssl.gstatic.com/chrome/chromeos-customization/%s.json";
 
   // Return true if the customization was applied. Customization is applied only
   // once per machine.

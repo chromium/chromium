@@ -35,42 +35,44 @@ constexpr int kCpuOnlineStatus = 1;
 
 // The base of the path to the files and directories which contain CPU data in
 // the sysfs.
-const char kCpuDataPathBase[] = "/sys/devices/system/cpu";
+constexpr char kCpuDataPathBase[] = "/sys/devices/system/cpu";
 
 // Suffix of the path to the file listing the range of possible CPUs on the
 // system.
-const char kPossibleCpuPathSuffix[] = "/possible";
+constexpr char kPossibleCpuPathSuffix[] = "/possible";
 
 // Format of the suffix of the path to the file which contains information
 // about a particular CPU being online or offline.
-const char kCpuOnlinePathSuffixFormat[] = "/cpu%d/online";
+constexpr char kCpuOnlinePathSuffixFormat[] = "/cpu%d/online";
 
 // Format of the suffix of the path to the file which contains freq state
 // information of a CPU.
-const char kCpuFreqTimeInStatePathSuffixFormat[] =
+constexpr char kCpuFreqTimeInStatePathSuffixFormat[] =
     "/cpu%d/cpufreq/stats/time_in_state";
 
 // Format of the suffix of the path to the folder which contains time in state
 // file. If the folder does not exist, current platform does not produce
 // discrete CPU frequency data.
-const char kCpuFreqStatsPathSuffixFormat[] = "/cpu%d/cpufreq/stats";
+constexpr char kCpuFreqStatsPathSuffixFormat[] = "/cpu%d/cpufreq/stats";
 
 // The path to the file which contains cpu freq state information of a CPU
 // in 3.14.0 or newer kernels.
-const char kCpuFreqAllTimeInStatePath[] =
+constexpr char kCpuFreqAllTimeInStatePath[] =
     "/sys/devices/system/cpu/cpufreq/all_time_in_state";
 
 // Format of the suffix of the path to the directory which contains information
 // about an idle state of a CPU on the system.
-const char kCpuIdleStateDirPathSuffixFormat[] = "/cpu%d/cpuidle/state%d";
+constexpr char kCpuIdleStateDirPathSuffixFormat[] = "/cpu%d/cpuidle/state%d";
 
 // Format of the suffix of the path to the file which contains the name of an
 // idle state of a CPU.
-const char kCpuIdleStateNamePathSuffixFormat[] = "/cpu%d/cpuidle/state%d/name";
+constexpr char kCpuIdleStateNamePathSuffixFormat[] =
+    "/cpu%d/cpuidle/state%d/name";
 
 // Format of the suffix of the path which contains information about time spent
 // in an idle state on a CPU.
-const char kCpuIdleStateTimePathSuffixFormat[] = "/cpu%d/cpuidle/state%d/time";
+constexpr char kCpuIdleStateTimePathSuffixFormat[] =
+    "/cpu%d/cpuidle/state%d/time";
 
 // Returns the index at which |str| is in |vector|. If |str| is not present in
 // |vector|, then it is added to it before its index is returned.

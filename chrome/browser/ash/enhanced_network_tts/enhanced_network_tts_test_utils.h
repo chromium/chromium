@@ -15,19 +15,66 @@ namespace ash {
 namespace enhanced_network_tts {
 
 // The accuracy used to compare two doubles.
-constexpr double kDoubleCompareAccuracy = 0.000001;
+inline constexpr double kDoubleCompareAccuracy = 0.000001;
 
 // The template for a full request that contains utterance, rate, voice name,
 // and language. See https://goto.google.com/readaloud-proto for more
 // information.
-extern const char kFullRequestTemplate[];
+inline constexpr char kFullRequestTemplate[] =
+    R"({
+        "advanced_options": {
+          "audio_generation_options": {"speed_factor": %.1f},
+          "force_language": "%s"
+        },
+        "text": {
+          "text_parts": ["%s"]
+        },
+        "voice_settings": {
+          "voice_criteria_and_selections": [{
+            "criteria": {"language": "%s"},
+            "selection": {"default_voice": "%s"}
+          }]
+        }
+      })";
 
 // The template for a simple request that only contains utterance and rate.
 // See https://goto.google.com/readaloud-proto for more information.
-extern const char kSimpleRequestTemplate[];
+inline constexpr char kSimpleRequestTemplate[] =
+    R"({"advanced_options": {
+          "audio_generation_options": {"speed_factor": %.1f}
+        },
+        "text": {"text_parts": ["%s"]}})";
 
 // Template for a server response.
-extern const char kTemplateResponse[];
+inline constexpr char kTemplateResponse[] =
+    R"([
+        {"metadata": {}},
+        {"text": {
+          "timingInfo": [
+            {
+              "text": "test1",
+              "location": {
+                "textLocation": {"length": 5},
+                "timeLocation": {
+                  "timeOffset": "0.01s",
+                  "duration": "0.14s"
+                }
+              }
+            },
+            {
+              "text": "test2",
+              "location": {
+                "textLocation": {"length": 5, "offset": 6},
+                "timeLocation": {
+                  "timeOffset": "0.16s",
+                  "duration": "0.17s"
+                }
+              }
+            }
+          ]}
+        },
+        {"audio": {"bytes": "%s"}}
+      ])";
 
 // Create a correct request based on the |kFullRequestTemplate|.
 std::string CreateCorrectRequest(const std::string& input_text,

@@ -79,6 +79,10 @@ absl::optional<std::string> MaybeAdjustConfig(
     bool is_dns_cname_enabled) {
   if (!config.has_value())
     return absl::nullopt;
+  static constexpr char kKrb5CnameSettings[] =
+      "[libdefaults]\n"
+      "\tdns_canonicalize_hostname = %s\n"
+      "\trdns = false\n";
   std::string adjusted_config = base::StringPrintf(
       kKrb5CnameSettings, is_dns_cname_enabled ? "true" : "false");
   adjusted_config.append(config.value());
@@ -87,10 +91,6 @@ absl::optional<std::string> MaybeAdjustConfig(
 
 }  // namespace
 
-const char kKrb5CnameSettings[] =
-    "[libdefaults]\n"
-    "\tdns_canonicalize_hostname = %s\n"
-    "\trdns = false\n";
 const char kKrb5CCEnvName[] = "KRB5CCNAME";
 const char kKrb5ConfEnvName[] = "KRB5_CONFIG";
 const char kKrb5CCFilePrefix[] = "FILE:";
