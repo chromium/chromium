@@ -29,7 +29,6 @@
 #include "ui/gfx/geometry/insets.h"
 #include "ui/gfx/geometry/rect.h"
 #include "ui/views/accessibility/view_accessibility.h"
-#include "ui/views/animation/ink_drop.h"
 #include "ui/views/background.h"
 #include "ui/views/badge_painter.h"
 #include "ui/views/controls/button/image_button.h"
@@ -53,8 +52,6 @@ namespace {
 constexpr char kWidgetName[] = "EditorMenuViewWidget";
 
 constexpr gfx::Insets kTitleContainerInsets = gfx::Insets::TLBR(12, 16, 12, 14);
-
-constexpr int kSettingsIconSizeDip = 20;
 
 // Spacing to apply between and around chips.
 constexpr int kChipsHorizontalPadding = 8;
@@ -204,20 +201,11 @@ void EditorMenuView::AddTitleContainer() {
   layout->SetFlexForView(spacer, 1);
 
   settings_button_ =
-      title_container_->AddChildView(std::make_unique<views::ImageButton>(
+      title_container_->AddChildView(views::ImageButton::CreateIconButton(
           base::BindRepeating(&EditorMenuView::OnSettingsButtonPressed,
-                              weak_factory_.GetWeakPtr())));
-  settings_button_->SetTooltipText(
-      l10n_util::GetStringUTF16(IDS_EDITOR_MENU_SETTINGS_TOOLTIP));
-  settings_button_->SetImageModel(
-      views::Button::STATE_NORMAL,
-      ui::ImageModel::FromVectorIcon(vector_icons::kSettingsOutlineIcon,
-                                     ui::kColorSysOnSurface,
-                                     kSettingsIconSizeDip));
-  views::InkDrop::Get(settings_button_)
-      ->SetMode(views::InkDropHost::InkDropMode::ON);
-  views::InkDrop::Get(settings_button_)->SetBaseColorId(ui::kColorIcon);
-  settings_button_->SetHasInkDropActionOnClick(true);
+                              weak_factory_.GetWeakPtr()),
+          vector_icons::kSettingsOutlineIcon,
+          l10n_util::GetStringUTF16(IDS_EDITOR_MENU_SETTINGS_TOOLTIP)));
 
   title_container_->SetProperty(views::kMarginsKey, kTitleContainerInsets);
 }
