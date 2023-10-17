@@ -464,7 +464,9 @@ void PrimaryAccountManager::OnSignoutDecisionReached(
                                       /*commit_on_destroy*/ false);
   switch (remove_option) {
     case RemoveAccountsOption::kRemoveAllAccounts:
-      VLOG(0) << "Revoking all refresh tokens on server. Reason: sign out";
+      VLOG(0)
+          << "Revoking all refresh tokens on server. Reason: sign out; source: "
+          << static_cast<int>(signout_source_metric);
       SetPrimaryAccountInternal(CoreAccountInfo(), /*consented_to_sync=*/false,
                                 scoped_pref_commit);
       token_service_->RevokeAllCredentials(
