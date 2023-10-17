@@ -35,9 +35,7 @@ import java.lang.annotation.RetentionPolicy;
 import java.util.HashMap;
 import java.util.Map;
 
-/**
- * Collection of shared code for displaying search engine logos.
- */
+/** Collection of shared code for displaying search engine logos. */
 public class SearchEngineLogoUtils {
     // Note: shortened to account for the 20 character limit.
     private static final String TAG = "SearchLogoUtils";
@@ -65,13 +63,18 @@ public class SearchEngineLogoUtils {
     private RoundedIconGenerator mRoundedIconGenerator;
 
     /**
-     * AndroidSearchEngineLogoEvents defined in tools/metrics/histograms/enums.xml. These values
-     * are persisted to logs. Entries should not be renumbered and numeric values should never be
+     * AndroidSearchEngineLogoEvents defined in tools/metrics/histograms/enums.xml. These values are
+     * persisted to logs. Entries should not be renumbered and numeric values should never be
      * reused.
      */
-    @IntDef({Events.FETCH_NON_GOOGLE_LOGO_REQUEST, Events.FETCH_FAILED_NULL_URL,
-            Events.FETCH_FAILED_FAVICON_HELPER_ERROR, Events.FETCH_FAILED_RETURNED_BITMAP_NULL,
-            Events.FETCH_SUCCESS_CACHE_HIT, Events.FETCH_SUCCESS})
+    @IntDef({
+        Events.FETCH_NON_GOOGLE_LOGO_REQUEST,
+        Events.FETCH_FAILED_NULL_URL,
+        Events.FETCH_FAILED_FAVICON_HELPER_ERROR,
+        Events.FETCH_FAILED_RETURNED_BITMAP_NULL,
+        Events.FETCH_SUCCESS_CACHE_HIT,
+        Events.FETCH_SUCCESS
+    })
     @Retention(RetentionPolicy.SOURCE)
     public @interface Events {
         int FETCH_NON_GOOGLE_LOGO_REQUEST = 0;
@@ -89,6 +92,7 @@ public class SearchEngineLogoUtils {
 
     /**
      * Encapsulates the check for if the search engine logo should be shown.
+     *
      * @param isOffTheRecord True if the user is currently using an incognito tab.
      * @return True if we should show the search engine logo.
      */
@@ -98,7 +102,7 @@ public class SearchEngineLogoUtils {
 
     /**
      * @param templateUrlService The TemplateUrlService to use to derive the logo url.
-     * Returns the search URL of the current DSE or null if one cannot be found.
+     * @return the search URL of the current DSE or null if one cannot be found.
      */
     public @Nullable String getSearchLogoUrl(@Nullable TemplateUrlService templateUrlService) {
         if (templateUrlService == null) return null;
@@ -118,8 +122,9 @@ public class SearchEngineLogoUtils {
      */
     public int getSearchEngineLogoSizePixels(@NonNull Resources resources) {
         if (sSearchEngineLogoTargetSizePixels == 0) {
-            sSearchEngineLogoTargetSizePixels = resources.getDimensionPixelSize(
-                    R.dimen.omnibox_search_engine_logo_favicon_size);
+            sSearchEngineLogoTargetSizePixels =
+                    resources.getDimensionPixelSize(
+                            R.dimen.omnibox_search_engine_logo_favicon_size);
         }
 
         return sSearchEngineLogoTargetSizePixels;
@@ -131,8 +136,9 @@ public class SearchEngineLogoUtils {
      */
     public static int getSearchEngineLogoComposedSizePixels(@NonNull Resources resources) {
         if (sSearchEngineLogoComposedSizePixels == 0) {
-            sSearchEngineLogoComposedSizePixels = resources.getDimensionPixelSize(
-                    R.dimen.omnibox_search_engine_logo_composed_size);
+            sSearchEngineLogoComposedSizePixels =
+                    resources.getDimensionPixelSize(
+                            R.dimen.omnibox_search_engine_logo_composed_size);
         }
 
         return sSearchEngineLogoComposedSizePixels;
@@ -146,10 +152,12 @@ public class SearchEngineLogoUtils {
      * @param brandedColorScheme The {@link BrandedColorScheme}, used to tint icons.
      * @param profile The current profile. When null, falls back to locally-provided icons.
      * @param templateUrlService The current templateUrlService. When null, falls back to
-     *         locally-provided icons.
+     *     locally-provided icons.
      */
-    public Promise<StatusIconResource> getSearchEngineLogo(@NonNull Resources resources,
-            @BrandedColorScheme int brandedColorScheme, @Nullable Profile profile,
+    public Promise<StatusIconResource> getSearchEngineLogo(
+            @NonNull Resources resources,
+            @BrandedColorScheme int brandedColorScheme,
+            @Nullable Profile profile,
             @Nullable TemplateUrlService templateUrlService) {
         // In the following cases, we fallback to the search loupe:
         // - Either of the nullable dependencies are null.
@@ -183,17 +191,21 @@ public class SearchEngineLogoUtils {
 
         Promise<StatusIconResource> promise = new Promise<>();
         final int logoSizePixels = getSearchEngineLogoSizePixels(resources);
-        boolean willCallbackBeCalled = mFaviconHelper.getLocalFaviconImageForURL(
-                profile, new GURL(logoUrl), logoSizePixels, (image, iconUrl) -> {
-                    if (image == null) {
-                        promise.fulfill(getSearchLoupeResource(brandedColorScheme));
-                        recordEvent(Events.FETCH_FAILED_RETURNED_BITMAP_NULL);
-                        return;
-                    }
+        boolean willCallbackBeCalled =
+                mFaviconHelper.getLocalFaviconImageForURL(
+                        profile,
+                        new GURL(logoUrl),
+                        logoSizePixels,
+                        (image, iconUrl) -> {
+                            if (image == null) {
+                                promise.fulfill(getSearchLoupeResource(brandedColorScheme));
+                                recordEvent(Events.FETCH_FAILED_RETURNED_BITMAP_NULL);
+                                return;
+                            }
 
-                    processReturnedLogo(logoUrl, image, resources, promise);
-                    recordEvent(Events.FETCH_SUCCESS);
-                });
+                            processReturnedLogo(logoUrl, image, resources, promise);
+                            recordEvent(Events.FETCH_SUCCESS);
+                        });
         if (!willCallbackBeCalled) {
             promise.fulfill(getSearchLoupeResource(brandedColorScheme));
             recordEvent(Events.FETCH_FAILED_FAVICON_HELPER_ERROR);
@@ -249,27 +261,40 @@ public class SearchEngineLogoUtils {
      * circle background. This looks better and also has more predictable behavior than rounding the
      * edges of the full size icon. The circle background is a solid color made up of the result
      * from a call to getMostCommonEdgeColor(...).
+     *
      * @param logoUrl The url for the given logo.
      * @param image The logo to process.
      * @param resources Android resources object used to access dimensions.
      * @param promise The promise encapsulating the processed logo.
      */
-    private void processReturnedLogo(String logoUrl, Bitmap image, Resources resources,
+    private void processReturnedLogo(
+            String logoUrl,
+            Bitmap image,
+            Resources resources,
             Promise<StatusIconResource> promise) {
         // Scale the logo up to the desired size.
         int logoSizePixels = getSearchEngineLogoSizePixels(resources);
         Bitmap scaledIcon =
-                Bitmap.createScaledBitmap(image, getSearchEngineLogoSizePixels(resources),
-                        getSearchEngineLogoSizePixels(resources), true);
+                Bitmap.createScaledBitmap(
+                        image,
+                        getSearchEngineLogoSizePixels(resources),
+                        getSearchEngineLogoSizePixels(resources),
+                        true);
 
         int composedSizePixels = getSearchEngineLogoComposedSizePixels(resources);
         if (mRoundedIconGenerator == null) {
-            mRoundedIconGenerator = new RoundedIconGenerator(composedSizePixels, composedSizePixels,
-                    composedSizePixels, Color.TRANSPARENT, 0);
+            mRoundedIconGenerator =
+                    new RoundedIconGenerator(
+                            composedSizePixels,
+                            composedSizePixels,
+                            composedSizePixels,
+                            Color.TRANSPARENT,
+                            0);
         }
-        int color = (image.getWidth() == 0 || image.getHeight() == 0)
-                ? Color.TRANSPARENT
-                : getMostCommonEdgeColor(image);
+        int color =
+                (image.getWidth() == 0 || image.getHeight() == 0)
+                        ? Color.TRANSPARENT
+                        : getMostCommonEdgeColor(image);
         mRoundedIconGenerator.setBackgroundColor(color);
 
         // Generate a rounded background with no text.
@@ -288,6 +313,7 @@ public class SearchEngineLogoUtils {
 
     /**
      * Samples the edges of given bitmap and returns the most common color.
+     *
      * @param icon Bitmap to be sampled.
      */
     @VisibleForTesting
@@ -336,6 +362,7 @@ public class SearchEngineLogoUtils {
     /**
      * Records an event to the search engine logo histogram. See {@link Events} and histograms.xml
      * for more details.
+     *
      * @param event The {@link Events} to be reported.
      */
     @VisibleForTesting

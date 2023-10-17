@@ -23,9 +23,9 @@ import java.util.List;
 /**
  * Class that, while attached, consumes all IME window insets and listens for insets animation
  * updates. This combination lets it selectively defer the application of IME insets until the
- * animation process is complete, avoiding premature layout at a shortened height. Since
- * animation isn't guaranteed to occur in practice, deferred application is only practiced when
- * an animation is known to be running.
+ * animation process is complete, avoiding premature layout at a shortened height. Since animation
+ * isn't guaranteed to occur in practice, deferred application is only practiced when an animation
+ * is known to be running.
  */
 class DeferredIMEWindowInsetApplicationCallback
         implements WindowInsetsConsumer, WindowInsetsAnimationListener {
@@ -39,6 +39,7 @@ class DeferredIMEWindowInsetApplicationCallback
 
     /**
      * Constructs a new DeferredIMEWindowInsetApplicationCallback.
+     *
      * @param onUpdateCallback Callback to be invoked when the keyboard height changes.
      */
     public DeferredIMEWindowInsetApplicationCallback(@NonNull Runnable onUpdateCallback) {
@@ -46,16 +47,15 @@ class DeferredIMEWindowInsetApplicationCallback
     }
 
     /**
-     * Attaches this callback to the root of the given window, activating interception of its
-     * IME window insets and listening for IME animation updates.
+     * Attaches this callback to the root of the given window, activating interception of its IME
+     * window insets and listening for IME animation updates.
      */
     public void attach(WindowAndroid windowAndroid) {
         InsetObserverView insetObserverView =
                 InsetObserverViewSupplier.getValueOrNullFrom(windowAndroid);
-        assert insetObserverView
-                != null
-            : "DeferredIMEWindowInsetApplicationCallback can only be used in activities with an"
-              + " InsetObserverView";
+        assert insetObserverView != null
+                : "DeferredIMEWindowInsetApplicationCallback can only be used in activities with an"
+                        + " InsetObserverView";
         mInsetObserverView = insetObserverView;
         insetObserverView.addInsetsConsumer(this);
         insetObserverView.addWindowInsetsAnimationListener(this);
@@ -90,7 +90,8 @@ class DeferredIMEWindowInsetApplicationCallback
 
     @NonNull
     @Override
-    public void onProgress(@NonNull WindowInsetsCompat windowInsetsCompat,
+    public void onProgress(
+            @NonNull WindowInsetsCompat windowInsetsCompat,
             @NonNull List<WindowInsetsAnimationCompat> list) {}
 
     @Override
