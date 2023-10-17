@@ -840,12 +840,12 @@
   {
     "name": "bluetooth-floss-availability-check",
     "owners": [ "howardchung@google.com", "chromeos-bt-team@google.com" ],
-    "expiry_milestone": 120
+    "expiry_milestone": 124
   },
   {
     "name": "bluetooth-floss-coredump",
     "owners": ["mmandlik", "chromeos-bt-team@google.com"],
-    "expiry_milestone": 120
+    "expiry_milestone": 124
   },
   {
     "name": "bluetooth-floss-telephony",
@@ -865,7 +865,7 @@
   {
     "name": "bluetooth-use-floss",
     "owners": ["sonnysasaka", "abhishekpandit", "chromeos-bt-champs@google.com"],
-    "expiry_milestone": 120
+    "expiry_milestone": 124
   },
   {
     "name": "bluetooth-use-llprivacy",
