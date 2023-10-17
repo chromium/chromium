@@ -6824,3 +6824,4 @@ crbug.com/626703 virtual/css-masking-disabled/external/wpt/css/css-masking/mask-
 # Gardener 2023-10-17
 crbug.com/1493342 [ Mac10.15 ] external/wpt/html/canvas/element/manual/wide-gamut-canvas/canvas-display-p3-drawImage-video.html [ Failure ]
 crbug.com/1493342 [ Mac10.15 ] external/wpt/html/canvas/element/manual/wide-gamut-canvas/canvas-display-p3-drawImage-ImageBitmap-video.html [ Failure ]
+crbug.com/1493455 external/wpt/pointerevents/pointerevent_pointerrawupdate.html [ Failure ]
