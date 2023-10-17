@@ -6,9 +6,7 @@ package org.chromium.components.omnibox;
 
 import org.chromium.base.annotations.CalledByNative;
 
-/**
- * Dumb wrapper around the pointer to the C++ class AutocompleteSchemeClassifier.
- */
+/** Dumb wrapper around the pointer to the C++ class AutocompleteSchemeClassifier. */
 public class AutocompleteSchemeClassifier {
     private long mNativePtr;
 

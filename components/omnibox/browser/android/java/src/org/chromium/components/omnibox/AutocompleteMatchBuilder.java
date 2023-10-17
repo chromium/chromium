@@ -69,9 +69,7 @@ public class AutocompleteMatchBuilder {
         this(AutocompleteMatch.INVALID_TYPE);
     }
 
-    /**
-     * Reset the Builder to its default state.
-     */
+    /** Reset the Builder to its default state. */
     public void reset() {
         mType = AutocompleteMatch.INVALID_TYPE;
         mSubtypes = new ArraySet<>();
@@ -104,17 +102,36 @@ public class AutocompleteMatchBuilder {
     }
 
     /**
-     * Construct AutocompleteMatch from user set parameters.
-     * Default/fallback values for not explicitly initialized fields are supplied by the builder.
+     * Construct AutocompleteMatch from user set parameters. Default/fallback values for not
+     * explicitly initialized fields are supplied by the builder.
      *
      * @return New AutocompleteMatch.
      */
     public AutocompleteMatch build() {
-        return new AutocompleteMatch(mType, mSubtypes, mIsSearchType, mRelevance, mTransition,
-                mDisplayText, mDisplayTextClassifications, mDescription,
-                mDescriptionClassifications, mAnswer, mFillIntoEdit, mUrl, mImageUrl,
-                mImageDominantColor, mIsDeletable, mPostContentType, mPostData, mGroupId,
-                mQueryTiles, mClipboardImageData, mHasTabMatch, mSuggestTiles, mActions);
+        return new AutocompleteMatch(
+                mType,
+                mSubtypes,
+                mIsSearchType,
+                mRelevance,
+                mTransition,
+                mDisplayText,
+                mDisplayTextClassifications,
+                mDescription,
+                mDescriptionClassifications,
+                mAnswer,
+                mFillIntoEdit,
+                mUrl,
+                mImageUrl,
+                mImageDominantColor,
+                mIsDeletable,
+                mPostContentType,
+                mPostData,
+                mGroupId,
+                mQueryTiles,
+                mClipboardImageData,
+                mHasTabMatch,
+                mSuggestTiles,
+                mActions);
     }
 
     /**
