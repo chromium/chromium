@@ -366,7 +366,13 @@ void SoftNavigationHeuristics::Trace(Visitor* visitor) const {
 
 void SoftNavigationHeuristics::OnCreateTaskScope(
     scheduler::TaskAttributionInfo& task) {
-  task.SetObserver(this);
+  ThreadScheduler* scheduler = ThreadScheduler::Current();
+  CHECK(scheduler);
+  auto* tracker = scheduler->GetTaskAttributionTracker();
+  if (!tracker) {
+    return;
+  }
+  tracker->SetObserverForTaskDisposal(task.Id(), this);
   // We're inside a click event handler, so need to add this task to the set of
   // potential soft navigation root tasks.
   TRACE_EVENT1("scheduler", "SoftNavigationHeuristics::OnCreateTaskScope",

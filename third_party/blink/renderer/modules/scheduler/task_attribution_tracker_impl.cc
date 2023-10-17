@@ -199,6 +199,23 @@ TaskAttributionTrackerImpl::GetCurrentTaskContinuationData(
   return ScriptWrappableTaskState::GetCurrent(script_state);
 }
 
+TaskAttributionTracker::Observer*
+TaskAttributionTrackerImpl::GetObserverForTaskDisposal(TaskAttributionId id) {
+  auto it = task_id_observers_.find(id.value());
+  if (it == task_id_observers_.end()) {
+    return nullptr;
+  }
+  auto* observer = it->value.Get();
+  task_id_observers_.erase(it);
+  return observer;
+}
+
+void TaskAttributionTrackerImpl::SetObserverForTaskDisposal(
+    TaskAttributionId id,
+    Observer* observer) {
+  task_id_observers_.insert(id.value(), observer);
+}
+
 // TaskScope's implementation
 //////////////////////////////////////
 TaskAttributionTrackerImpl::TaskScopeImpl::TaskScopeImpl(

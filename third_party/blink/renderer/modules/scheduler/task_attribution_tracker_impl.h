@@ -90,6 +90,9 @@ class MODULES_EXPORT TaskAttributionTrackerImpl
   virtual ScriptWrappableTaskState* GetCurrentTaskContinuationData(
       ScriptState*) const;
 
+  Observer* GetObserverForTaskDisposal(TaskAttributionId) override;
+  void SetObserverForTaskDisposal(TaskAttributionId, Observer*) override;
+
  private:
   struct TaskAttributionIdPair {
     TaskAttributionIdPair() = default;
@@ -151,6 +154,9 @@ class MODULES_EXPORT TaskAttributionTrackerImpl
   Persistent<TaskAttributionInfo> running_task_ = nullptr;
 
   WTF::HashSet<WeakPersistent<TaskAttributionTracker::Observer>> observers_;
+  WTF::HashMap<TaskAttributionIdType,
+               WeakPersistent<TaskAttributionTracker::Observer>>
+      task_id_observers_;
 
   // A queue of TaskAttributionInfo objects representing tasks that initiated a
   // same-document navigation that was sent to the browser side. They are kept
