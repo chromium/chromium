@@ -94,9 +94,4 @@ const char ServiceWorkerConsts::kServiceWorkerCopyScriptError[] =
 const char ServiceWorkerConsts::kServiceWorkerInvalidVersionError[] =
     "Service worker went to a bad state unexpectedly.";
 
-const int ServiceWorkerConsts::kInvalidEmbeddedWorkerThreadId = -1;
-
-// static
-constexpr base::TimeDelta ServiceWorkerConsts::kServiceWorkerScriptMaxCacheAge;
-
 }  // namespace content

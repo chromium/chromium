@@ -24,14 +24,14 @@ namespace ash {
 namespace {
 // The sampling of CPU idle or CPU freq data should not take more than this
 // limit.
-const int kSamplingDurationLimitMs = 500;
+constexpr int kSamplingDurationLimitMs = 500;
 
 // The CPU data is sampled every |kCpuDataSamplePeriodSec| seconds.
-const int kCpuDataSamplePeriodSec = 30;
+constexpr int kCpuDataSamplePeriodSec = 30;
 
 // The value in the file /sys/devices/system/cpu/cpu<n>/online which indicates
 // that CPU-n is online.
-const int kCpuOnlineStatus = 1;
+constexpr int kCpuOnlineStatus = 1;
 
 // The base of the path to the files and directories which contain CPU data in
 // the sysfs.

@@ -42,7 +42,7 @@ class COMPONENT_EXPORT(NET_EXTRAS) SQLitePersistentCookieStore
 
   // Port number to use for cookies whose source port is unknown at the time of
   // database migration to V13. The value -1 comes from url::PORT_UNSPECIFIED.
-  static const int kDefaultUnknownPort = -1;
+  static constexpr int kDefaultUnknownPort = -1;
 
   // All blocking database accesses will be performed on
   // |background_task_runner|, while |client_task_runner| is used to invoke

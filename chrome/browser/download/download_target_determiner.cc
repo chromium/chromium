@@ -1087,7 +1087,7 @@ DownloadTargetDeterminer::Result
   // 'Unconfirmed <random>.crdownload'.
   const char kUnconfirmedFormatSuffix[] = " %d.crdownload";
   // Range of the <random> uniquifier.
-  const int kUnconfirmedUniquifierRange = 1000000;
+  constexpr int kUnconfirmedUniquifierRange = 1000000;
   std::string unconfirmed_format =
       l10n_util::GetStringUTF8(IDS_DOWNLOAD_UNCONFIRMED_PREFIX);
   unconfirmed_format.append(kUnconfirmedFormatSuffix);

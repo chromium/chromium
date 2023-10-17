@@ -45,12 +45,11 @@ struct ServiceWorkerConsts {
   static const char kServiceWorkerInvalidVersionError[];
 
   // Constants for invalid identifiers.
-  static const int kInvalidEmbeddedWorkerThreadId;
+  static constexpr int kInvalidEmbeddedWorkerThreadId = -1;
 
   // The HTTP cache is bypassed for Service Worker scripts if the last network
   // fetch occurred over 24 hours ago.
-  static constexpr base::TimeDelta kServiceWorkerScriptMaxCacheAge =
-      base::Hours(24);
+  static constexpr auto kServiceWorkerScriptMaxCacheAge = base::Hours(24);
 };
 
 }  // namespace content

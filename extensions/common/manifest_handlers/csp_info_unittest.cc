@@ -188,10 +188,10 @@ TEST_F(CSPInfoUnitTest, ObjectSrcRequirements) {
         base::StringPrintf(manifest_template, input));
   };
 
-  struct {
+  static constexpr struct {
     const char* manifest_template;
     const char* csp;
-  } passing_testcases[] = {
+  } kPassingTestcases[] = {
       // object-src doesn't need to be explicitly specified in manifest V3.
       {kManifestV3Template, "script-src 'self'"},
       {kManifestV3Template, "default-src 'self'"},
@@ -211,7 +211,7 @@ TEST_F(CSPInfoUnitTest, ObjectSrcRequirements) {
        "script-src 'self'; default-src https://google.com"},
 
       // In Manifest V2, object-src must be specified (if it's omitted, we add
-      // it; see `warning_testcases` below).
+      // it; see `kWarningTestcases` below).
       // Note: in MV2, our parsing will implicitly also add a trailing semicolon
       // if one isn't provided, so we always add one here so that the final CSP
       // matches.
@@ -227,7 +227,7 @@ TEST_F(CSPInfoUnitTest, ObjectSrcRequirements) {
        "script-src 'self'; default-src https://google.com;"},
   };
 
-  for (const auto& testcase : passing_testcases) {
+  for (const auto& testcase : kPassingTestcases) {
     SCOPED_TRACE(testcase.csp);
     ManifestData manifest_data(
         get_manifest(testcase.manifest_template, testcase.csp));
@@ -237,30 +237,30 @@ TEST_F(CSPInfoUnitTest, ObjectSrcRequirements) {
     EXPECT_EQ(testcase.csp, CSPInfo::GetExtensionPagesCSP(extension.get()));
   }
 
-  struct {
+  static constexpr struct {
     const char* manifest_template;
     const char* csp;
     const char* expected_error;
-  } failing_testcases[] = {
+  } kFailingTestcases[] = {
       // If an object-src *is* specified, it must be secure and must not allow
       // remotely-hosted code (in MV3).
       {kManifestV3Template, "script-src 'self'; object-src https://google.com",
        "*Insecure CSP value \"https://google.com\" in directive 'object-src'."},
   };
 
-  for (const auto& testcase : failing_testcases) {
+  for (const auto& testcase : kFailingTestcases) {
     SCOPED_TRACE(testcase.csp);
     ManifestData manifest_data(
         get_manifest(testcase.manifest_template, testcase.csp));
     LoadAndExpectError(manifest_data, testcase.expected_error);
   }
 
-  struct {
+  static constexpr struct {
     const char* manifest_template;
     const char* csp;
     const char* expected_warning;
     const char* effective_csp;
-  } warning_testcases[] = {
+  } kWarningTestcases[] = {
       // In MV2, if an object-src is not provided, we will warn and synthesize
       // one.
       {kManifestV2Template, "script-src 'self'",
@@ -275,7 +275,7 @@ TEST_F(CSPInfoUnitTest, ObjectSrcRequirements) {
         "\"http://google.com\" in directive 'object-src'."),
        "script-src 'self'; object-src;"}};
 
-  for (const auto& testcase : warning_testcases) {
+  for (const auto& testcase : kWarningTestcases) {
     // Special case: In MV2, if the developer doesn't provide an object-src, we
     // insert one ('self') and emit a warning.
     ManifestData manifest_data(
