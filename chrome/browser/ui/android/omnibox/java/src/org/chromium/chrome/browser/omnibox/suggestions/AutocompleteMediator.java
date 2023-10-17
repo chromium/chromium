@@ -440,17 +440,20 @@ class AutocompleteMediator implements OnSuggestionsReceivedListener,
     @Override
     public void onSuggestionClicked(
             @NonNull AutocompleteMatch suggestion, int matchIndex, @NonNull GURL url) {
-        if (mAutocompleteResult.isFromCachedResult()
-                && (!mNativeInitialized || mAutocomplete == null)) {
-            // clang-format off
-            mDeferredLoadAction = () -> loadUrlForOmniboxMatch(
-                            matchIndex, suggestion, url, mLastActionUpTimestamp, true, /*openInNewTab=*/false);
-            // clang-format on
+        if (!mNativeInitialized || mAutocomplete == null) {
+            mDeferredLoadAction =
+                    () ->
+                            loadUrlForOmniboxMatch(
+                                    matchIndex,
+                                    suggestion,
+                                    url,
+                                    mLastActionUpTimestamp,
+                                    /* openInNewTab= */ false);
             return;
         }
 
-        loadUrlForOmniboxMatch(matchIndex, suggestion, url, mLastActionUpTimestamp, true,
-                /*openInNewTab=*/false);
+        loadUrlForOmniboxMatch(
+                matchIndex, suggestion, url, mLastActionUpTimestamp, /* openInNewTab= */ false);
     }
 
     /**
@@ -684,11 +687,10 @@ class AutocompleteMediator implements OnSuggestionsReceivedListener,
      * @param suggestion The chosen omnibox suggestion.
      * @param matchIndex The index of the chosen omnibox suggestion.
      * @param url The URL associated with the suggestion to navigate to.
-     * @param skipCheck Whether to skip an out of bounds check.
      * @return The url to navigate to.
      */
-    private GURL updateSuggestionUrlIfNeeded(@NonNull AutocompleteMatch suggestion, int matchIndex,
-            @NonNull GURL url, boolean skipCheck) {
+    private GURL updateSuggestionUrlIfNeeded(
+            @NonNull AutocompleteMatch suggestion, int matchIndex, @NonNull GURL url) {
         if (!mNativeInitialized || mAutocomplete == null) return url;
         // TODO(crbug/1474087): this should exclude TILE variants when horizontal render group is
         // ready.
@@ -805,7 +807,6 @@ class AutocompleteMediator implements OnSuggestionsReceivedListener,
      */
     private void findMatchAndLoadUrl(String urlText, long inputStart, boolean openInNewTab) {
         AutocompleteMatch suggestionMatch;
-        boolean inSuggestionList = true;
 
         if (getSuggestionCount() > 0
                 && urlText.trim().equals(mUrlTextAfterSuggestionsReceived.trim())) {
@@ -819,15 +820,12 @@ class AutocompleteMediator implements OnSuggestionsReceivedListener,
             // from the autocomplete controller.
             if (!mNativeInitialized || mAutocomplete == null) return;
             suggestionMatch = mAutocomplete.classify(urlText, mDelegate.didFocusUrlFromFakebox());
-            // Classify matches don't propagate to java, so skip the OOB check.
-            inSuggestionList = false;
-
             // If urlText couldn't be classified, bail.
             if (suggestionMatch == null) return;
         }
 
-        loadUrlForOmniboxMatch(0, suggestionMatch, suggestionMatch.getUrl(), inputStart,
-                inSuggestionList, openInNewTab);
+        loadUrlForOmniboxMatch(
+                0, suggestionMatch, suggestionMatch.getUrl(), inputStart, openInNewTab);
     }
 
     /**
@@ -837,13 +835,15 @@ class AutocompleteMediator implements OnSuggestionsReceivedListener,
      * @param suggestion The suggestion selected.
      * @param url The URL to load.
      * @param inputStart The timestamp the input was started.
-     * @param inVisibleSuggestionList Whether the suggestion is in the visible suggestion list.
      * @param openInNewTab Whether the suggestion will be loaded in a new tab. If {@code true}, the
-     *         suggestion will be loaded in a new tab. If {@code false}, the suggestion will be
-     *         loaded in the current tab.
+     *     suggestion will be loaded in a new tab. If {@code false}, the suggestion will be loaded
+     *     in the current tab.
      */
-    private void loadUrlForOmniboxMatch(int matchIndex, @NonNull AutocompleteMatch suggestion,
-            @NonNull GURL url, long inputStart, boolean inVisibleSuggestionList,
+    private void loadUrlForOmniboxMatch(
+            int matchIndex,
+            @NonNull AutocompleteMatch suggestion,
+            @NonNull GURL url,
+            long inputStart,
             boolean openInNewTab) {
         try (TraceEvent e = TraceEvent.scoped("AutocompleteMediator.loadUrlFromOmniboxMatch")) {
             OmniboxMetrics.recordFocusToOpenTime(System.currentTimeMillis() - mUrlFocusTime);
@@ -852,8 +852,7 @@ class AutocompleteMediator implements OnSuggestionsReceivedListener,
             mDeferredLoadAction = null;
 
             mOmniboxFocusResultedInNavigation = true;
-            url = updateSuggestionUrlIfNeeded(
-                    suggestion, matchIndex, url, !inVisibleSuggestionList);
+            url = updateSuggestionUrlIfNeeded(suggestion, matchIndex, url);
 
             // loadUrl modifies AutocompleteController's state clearing the native
             // AutocompleteResults needed by onSuggestionsSelected. Therefore,

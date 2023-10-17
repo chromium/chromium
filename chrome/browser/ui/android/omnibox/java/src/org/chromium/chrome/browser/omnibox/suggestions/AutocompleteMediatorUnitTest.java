@@ -13,6 +13,7 @@ import static org.mockito.ArgumentMatchers.anyLong;
 import static org.mockito.ArgumentMatchers.eq;
 import static org.mockito.Mockito.doAnswer;
 import static org.mockito.Mockito.doReturn;
+import static org.mockito.Mockito.mock;
 import static org.mockito.Mockito.never;
 import static org.mockito.Mockito.reset;
 import static org.mockito.Mockito.times;
@@ -580,6 +581,38 @@ public class AutocompleteMediatorUnitTest {
         // Verify that the URL is not loaded in a new tab.
         verify(mAutocompleteDelegate)
                 .loadUrl(eq(url.getSpec()), anyInt(), anyLong(), /*openInNewTab*/ eq(false));
+    }
+
+    @Test
+    public void onSuggestionClicked_deferLoadingUntilNativeLibrariesLoaded() {
+        var url = new GURL("http://test");
+        var match =
+                AutocompleteMatchBuilder.searchWithType(OmniboxSuggestionType.SEARCH_SUGGEST)
+                        .build();
+
+        // Simulate interaction with match before native initialization completed.
+        mMediator.onSuggestionClicked(match, 0, url);
+        ShadowLooper.runUiThreadTasksIncludingDelayedTasks();
+        verifyNoMoreInteractions(mAutocompleteDelegate);
+
+        // Simulate native initialization complete, but still no profile.
+        mMediator.onNativeInitialized();
+        ShadowLooper.runUiThreadTasksIncludingDelayedTasks();
+        verifyNoMoreInteractions(mAutocompleteDelegate);
+
+        // Simulate profile loaded.
+        mMediator.setAutocompleteProfile(mProfile);
+        ShadowLooper.runUiThreadTasksIncludingDelayedTasks();
+        verify(mAutocompleteDelegate)
+                .loadUrl(eq(url.getSpec()), anyInt(), anyLong(), /*openInNewTab*/ eq(false));
+        verify(mAutocompleteDelegate).clearOmniboxFocus();
+        verifyNoMoreInteractions(mAutocompleteDelegate);
+
+        // Verify no reload on profile change.
+        Profile newProfile = mock(Profile.class);
+        mMediator.setAutocompleteProfile(newProfile);
+        ShadowLooper.runUiThreadTasksIncludingDelayedTasks();
+        verifyNoMoreInteractions(mAutocompleteDelegate);
     }
 
     @Test
