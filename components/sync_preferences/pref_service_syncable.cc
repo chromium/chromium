@@ -147,11 +147,13 @@ PrefServiceSyncable::CreateIncognitoPrefService(
     incognito_pref_store->RegisterPersistentPref(persistent_pref_name);
   }
 
+  // Only the primary profile can configure the standalone_browser_store.
+  auto standalone_browser_store = base::MakeRefCounted<InMemoryPrefStore>();
+
   auto pref_value_store = pref_value_store_->CloneAndSpecialize(
       nullptr,  // managed
       nullptr,  // supervised_user
-      incognito_extension_pref_store,
-      nullptr,  // standalone_browser_prefs
+      incognito_extension_pref_store, standalone_browser_store.get(),
       nullptr,  // command_line_prefs
       incognito_pref_store.get(),
       nullptr,  // recommended
