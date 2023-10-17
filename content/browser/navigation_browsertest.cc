@@ -4663,7 +4663,7 @@ class SubresourceLoadingTest : public NavigationBrowserTest {
     GURL image_url = embedded_test_server()->GetURL(
         base::Uuid::GenerateRandomV4().AsLowercaseString() + ".com",
         "/blank.jpg");
-    const char kScriptTemplate[] = R"(
+    static constexpr char kScriptTemplate[] = R"(
         new Promise(resolve => {
             let img = document.createElement('img');
             img.src = $1;  // `$1` is replaced with the value of `image_url`.

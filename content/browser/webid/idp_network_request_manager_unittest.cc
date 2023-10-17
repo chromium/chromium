@@ -487,8 +487,8 @@ TEST_F(IdpNetworkRequestManagerTest, ParseAccountPictureUrl) {
 TEST_F(IdpNetworkRequestManagerTest, ParseAccountUnicode) {
   auto TestAccountWithKeyValue = [](const std::string& key,
                                     const std::string& value) {
-    const auto* json = R"({
-     "accounts" : [
+    static constexpr char kJson[] = R"({
+      "accounts" : [
         {
           "id" : "1234",
           "email": "ken@idp.test",
@@ -496,7 +496,7 @@ TEST_F(IdpNetworkRequestManagerTest, ParseAccountUnicode) {
         }
       ]
     })";
-    return base::StringPrintf(json, key.c_str(), value.c_str());
+    return base::StringPrintf(kJson, key.c_str(), value.c_str());
   };
 
   std::array<std::string, 3> test_values{"ascii", "🦖", "مجید"};

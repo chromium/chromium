@@ -2035,7 +2035,6 @@ source_set("browser") {
     "service_worker/service_worker_cache_writer.h",
     "service_worker/service_worker_client_utils.cc",
     "service_worker/service_worker_client_utils.h",
-    "service_worker/service_worker_consts.cc",
     "service_worker/service_worker_consts.h",
     "service_worker/service_worker_container_host.cc",
     "service_worker/service_worker_container_host.h",

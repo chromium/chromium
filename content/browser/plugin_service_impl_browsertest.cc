@@ -160,7 +160,7 @@ IN_PROC_BROWSER_TEST_F(PluginServiceImplBrowserTest, NoForkBombs) {
   PluginServiceImpl* service = PluginServiceImpl::GetInstance();
   service->SetMaxPpapiProcessesPerProfileForTesting(4);
 
-  const char* kFakeURLTemplate = "https://foo.fake%d.com/";
+  static constexpr char kFakeURLTemplate[] = "https://foo.fake%d.com/";
   TestPluginClient client;
   for (int i = 0; i < 4; ++i) {
     std::string url = base::StringPrintf(kFakeURLTemplate, i);
