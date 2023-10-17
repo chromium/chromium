@@ -1731,6 +1731,12 @@ def make_v8_set_return_value(cg_context):
                 if cg_context.member_like.identifier == "frameElement" else
                 "${blink_receiver}->contentWindow()->GetFrame()"),
             T("DCHECK(IsA<LocalFrame>(blink_frame));"),
+            CxxUnlikelyIfNode(
+                cond=T("UNLIKELY(!blink_frame->IsAttached())"),
+                body=[
+                    T("bindings::V8SetReturnValue(${info}, nullptr);"),
+                    T("return;")
+                ]),
             T("v8::Local<v8::Value> v8_value;"),
             CxxUnlikelyIfNode(cond=F(
                 "!ToV8Traits<{}>::ToV8("
