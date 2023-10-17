@@ -121,7 +121,7 @@ TestingProfile* StartSessionOfTypeWithProfile(
   AccountId account_id = CreateUserOfType(session_type, user_manager);
   user_manager.LoginUser(account_id);
   return profile_manager.CreateTestingProfile(account_id.GetUserEmail(),
-                                              /* is_main_profile= */ true);
+                                              /*is_main_profile=*/true);
 }
 
 }  // namespace policy::test

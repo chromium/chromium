@@ -423,6 +423,8 @@ bool CrdAdminSessionController::IsCurrentSessionCurtained() const {
 void CrdAdminSessionController::RegisterLocalStatePrefs(
     PrefRegistrySimple* registry) {
   registry->RegisterBooleanPref(prefs::kRemoteAdminWasPresent, false);
+  registry->RegisterBooleanPref(
+      prefs::kRemoteAccessHostAllowEnterpriseRemoteSupportConnections, true);
 }
 
 }  // namespace policy

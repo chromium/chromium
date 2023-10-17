@@ -9,6 +9,7 @@
 #include <string>
 #include <vector>
 
+#include "base/check_deref.h"
 #include "base/strings/stringprintf.h"
 #include "base/test/test_future.h"
 #include "base/test/values_test_util.h"
@@ -20,6 +21,8 @@
 #include "chrome/browser/ash/policy/remote_commands/fake_cros_network_config.h"
 #include "chrome/browser/ash/policy/remote_commands/user_session_type_test_util.h"
 #include "chrome/browser/ash/settings/device_settings_test_helper.h"
+#include "chrome/common/pref_names.h"
+#include "chrome/test/base/testing_browser_process.h"
 #include "components/policy/proto/device_management_backend.pb.h"
 #include "testing/gtest/include/gtest/gtest.h"
 #include "ui/base/user_activity/user_activity_detector.h"
@@ -40,6 +43,7 @@ using test::TestSessionType;
 using testing::Not;
 
 constexpr int64_t kUniqueID = 111222333444;
+constexpr TestSessionType kAnySessionType = TestSessionType::kGuestSession;
 
 RemoteCommand GenerateCommandProto() {
   RemoteCommand command_proto;
@@ -102,6 +106,8 @@ class DeviceCommandFetchCrdAvailabilityInfoJobTest
   void SetUp() override {
     DeviceSettingsTestBase::SetUp();
 
+    ASSERT_TRUE(profile_manager_.SetUp());
+
     user_activity_detector_ = std::make_unique<ui::UserActivityDetector>();
     arc_kiosk_app_manager_ = std::make_unique<ash::ArcKioskAppManager>();
     web_kiosk_app_manager_ = std::make_unique<ash::WebKioskAppManager>();
@@ -161,6 +167,14 @@ class DeviceCommandFetchCrdAvailabilityInfoJobTest
             .SetOncSource(OncSource::kDevicePolicy));
   }
 
+  void StartSessionOfType(TestSessionType user_session_type) {
+    test::StartSessionOfType(user_session_type, user_manager());
+  }
+
+  void DisablePref(const char* pref_name) {
+    profile_manager_.local_state()->Get()->SetBoolean(pref_name, false);
+  }
+
  private:
   std::unique_ptr<ash::ArcKioskAppManager> arc_kiosk_app_manager_;
   std::unique_ptr<ash::WebKioskAppManager> web_kiosk_app_manager_;
@@ -170,6 +184,8 @@ class DeviceCommandFetchCrdAvailabilityInfoJobTest
   std::unique_ptr<ui::UserActivityDetector> user_activity_detector_;
 
   test::ScopedFakeCrosNetworkConfig fake_cros_network_config_;
+
+  TestingProfileManager profile_manager_{TestingBrowserProcess::GetGlobal()};
 };
 
 // Fixture for tests parameterized over the possible session types
@@ -231,13 +247,27 @@ TEST_F(DeviceCommandFetchCrdAvailabilityInfoJobTest,
               DictionaryHasValue("isInManagedEnvironment", base::Value(false)));
 }
 
+TEST_F(DeviceCommandFetchCrdAvailabilityInfoJobTest,
+       ShouldRespectDisabledByPolicy) {
+  StartSessionOfType(kAnySessionType);
+
+  DisablePref(prefs::kRemoteAccessHostAllowEnterpriseRemoteSupportConnections);
+
+  Result result = CreateAndRunJob();
+
+  EXPECT_EQ(ParseJsonDict(result.payload).FindInt("remoteAccessAvailability"),
+            CrdSessionAvailability::UNAVAILABLE_DISABLED_BY_POLICY);
+  EXPECT_EQ(ParseJsonDict(result.payload).FindInt("remoteSupportAvailability"),
+            CrdSessionAvailability::UNAVAILABLE_DISABLED_BY_POLICY);
+}
+
 TEST_P(DeviceCommandFetchCrdAvailabilityInfoJobTestParameterizedOverSessionType,
        ShouldReturnUserSessionType) {
   TestSessionType session_type = GetParam();
   SCOPED_TRACE(base::StringPrintf("Testing session type %s",
                                   SessionTypeToString(session_type)));
 
-  StartSessionOfType(session_type, user_manager());
+  StartSessionOfType(session_type);
 
   Result result = CreateAndRunJob();
 
@@ -275,7 +305,7 @@ TEST_P(DeviceCommandFetchCrdAvailabilityInfoJobTestParameterizedOverSessionType,
   SCOPED_TRACE(base::StringPrintf("Testing session type %s",
                                   SessionTypeToString(session_type)));
 
-  StartSessionOfType(session_type, user_manager());
+  StartSessionOfType(session_type);
 
   AddActiveManagedNetwork();
   Result result = CreateAndRunJob();
@@ -317,7 +347,7 @@ TEST_P(DeviceCommandFetchCrdAvailabilityInfoJobTestParameterizedOverSessionType,
   fake_cros_network_config().SetActiveNetworks(
       {CreateNetwork().SetOncSource(OncSource::kNone)});
 
-  StartSessionOfType(session_type, user_manager());
+  StartSessionOfType(session_type);
 
   Result result = CreateAndRunJob();
 
@@ -336,7 +366,7 @@ TEST_P(DeviceCommandFetchCrdAvailabilityInfoJobTestParameterizedOverSessionType,
   SCOPED_TRACE(base::StringPrintf("Testing session type %s",
                                   SessionTypeToString(session_type)));
 
-  StartSessionOfType(session_type, user_manager());
+  StartSessionOfType(session_type);
 
   Result result = CreateAndRunJob();
 
@@ -371,7 +401,7 @@ TEST_P(DeviceCommandFetchCrdAvailabilityInfoJobTestParameterizedOverSessionType,
                                   SessionTypeToString(session_type)));
 
   AddActiveManagedNetwork();
-  StartSessionOfType(session_type, user_manager());
+  StartSessionOfType(session_type);
 
   Result result = CreateAndRunJob();
 

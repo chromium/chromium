@@ -708,7 +708,45 @@
     "reason_for_missing_test": "Not used by the browser, handled by CRD host."
   },
   "RemoteAccessHostAllowEnterpriseRemoteSupportConnections": {
-    "reason_for_missing_test": "Not used by the browser, handled by CRD host."
+    "os": [
+      "chromeos_ash"
+    ],
+    "policy_pref_mapping_tests": [
+      {
+        "note": "Check default value (no policies set)",
+        "policies": {},
+        "prefs": {
+          "enterprise_remote_support_connections_allowed": {
+            "location": "local_state",
+            "default_value": true
+          }
+        }
+      },
+      {
+        "note": "Check true policy value",
+        "policies": {
+          "RemoteAccessHostAllowEnterpriseRemoteSupportConnections": true
+        },
+        "prefs": {
+          "enterprise_remote_support_connections_allowed": {
+            "location": "local_state",
+            "value": true
+          }
+        }
+      },
+      {
+        "note": "Check false policy value",
+        "policies": {
+          "RemoteAccessHostAllowEnterpriseRemoteSupportConnections": false
+        },
+        "prefs": {
+          "enterprise_remote_support_connections_allowed": {
+            "location": "local_state",
+            "value": false
+          }
+        }
+      }
+    ]
   },
   "PrintingEnabled": {
     "os": [
