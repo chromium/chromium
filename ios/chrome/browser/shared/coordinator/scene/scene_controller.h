@@ -26,15 +26,10 @@
 - (instancetype)initWithSceneState:(SceneState*)sceneState
     NS_DESIGNATED_INITIALIZER;
 
-// The state of the scene controlled by this object.
-@property(nonatomic, weak, readonly) SceneState* sceneState;
 
 // The interface provider for this scene.
 @property(nonatomic, strong, readonly) id<BrowserProviderInterface>
     browserProviderInterface;
-
-// YES if incognito mode is forced by enterprise policy.
-@property(nonatomic, readonly, getter=isIncognitoForced) BOOL incognitoForced;
 
 // YES if the tab grid is the main user interface at the moment.
 @property(nonatomic, readonly, getter=isTabGridVisible) BOOL tabGridVisible;

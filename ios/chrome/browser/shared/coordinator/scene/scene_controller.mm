@@ -359,6 +359,9 @@ void InjectNTP(Browser* browser) {
 // YES if the Settings view is being dismissed.
 @property(nonatomic, assign) BOOL dismissingSettings;
 
+// The state of the scene controlled by this object.
+@property(nonatomic, weak, readonly) SceneState* sceneState;
+
 @end
 
 @implementation SceneController
@@ -1353,6 +1356,7 @@ void InjectNTP(Browser* browser) {
       self.mainInterface.browser->GetBrowserState()->GetPrefs());
 }
 
+// YES if incognito mode is forced by enterprise policy.
 - (BOOL)isIncognitoForced {
   return IsIncognitoModeForced(
       self.incognitoInterface.browser->GetBrowserState()->GetPrefs());
