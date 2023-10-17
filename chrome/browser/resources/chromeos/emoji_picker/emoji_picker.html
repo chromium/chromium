@@ -105,6 +105,10 @@
     width: 100%;
   }
 
+  #list-container {
+    margin-top: -6px;
+  }
+
   #search-container {
     flex-grow: 0;
   }
@@ -115,8 +119,8 @@
     grid-template-columns: repeat(18,1fr);
     left: var(--emoji-group-tabs-left);
     overflow-x: hidden;
+    padding-top: 6px;
     padding-bottom: 6px;
-    padding-top: 0; /* Search field also has some padding below which adds to this. */
     scroll-behavior: smooth;
     scroll-padding: var(--emoji-size);
     scroll-snap-type: x mandatory;
