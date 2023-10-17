@@ -8,6 +8,7 @@
 #include <utility>
 
 #include "base/containers/contains.h"
+#include "base/feature_list.h"
 #include "base/functional/bind.h"
 #include "base/memory/raw_ptr.h"
 #include "base/notreached.h"
@@ -95,7 +96,7 @@ class ExtensionMessagePort::FrameTracker : public content::WebContentsObserver,
     // 4. Restoring a cached frame from back-forward cache - This is similar to
     // (3) in that the navigation changes RFH, with the difference that the RFH
     // is not new and so may be registered. Don't unregister the frame in this
-    // case since it may stil use the port.
+    // case since it may still use the port.
 
     // Note that we don't just disconnect channels when a frame is bf-cached
     // since when such a document is later restored, there is no "load" and so a
@@ -112,6 +113,21 @@ class ExtensionMessagePort::FrameTracker : public content::WebContentsObserver,
       // previous document being sent to the new document. If the navigated-to
       // RFH is served from cache, keep the port alive.
       port_->UnregisterFrame(navigation_handle->GetRenderFrameHost());
+    }
+
+    if (base::FeatureList::IsEnabled(
+            features::kDisconnectExtensionMessagePortWhenPageEntersBFCache) &&
+        navigation_handle->HasCommitted()) {
+      // Close the channel and force all the ports from the channel to be
+      // closed when the old RFH is going to be stored in BFCache. They will
+      // not be able to receive any message sent through the port.
+      content::RenderFrameHost* previous_rfh = content::RenderFrameHost::FromID(
+          navigation_handle->GetPreviousRenderFrameHostId());
+      if (previous_rfh &&
+          previous_rfh->GetLifecycleState() ==
+              content::RenderFrameHost::LifecycleState::kInBackForwardCache) {
+        port_->CloseChannel();
+      }
     }
   }
 
@@ -525,22 +541,30 @@ void ExtensionMessagePort::SendToPort(IPCBuilderCallback ipc_builder) {
     // unlikely they will see the same one every time and if they do, when they
     // fix that one, they will see the others.
     //
-    // TODO (crbug.com/1382623): currently we only make use of the base URL,
+    // TODO(crbug.com/1382623): currently we only make use of the base URL,
     // it's also possible to get the full URL from extension ID so it could
     // provide more useful context.
     if (target.render_frame_host &&
         target.render_frame_host->IsInLifecycleState(
             content::RenderFrameHost::LifecycleState::kInBackForwardCache)) {
-      content::BackForwardCache::DisableForRenderFrameHost(
-          target.render_frame_host,
-          back_forward_cache::DisabledReason(
-              back_forward_cache::DisabledReasonId::
-                  kExtensionSentMessageToCachedFrame,
-              /*context=*/extension_id_),
-          ukm::UkmRecorder::GetSourceIdForExtensionUrl(
-              base::PassKey<ExtensionMessagePort>(),
-              Extension::GetBaseURLFromExtensionId(extension_id_)));
-
+      // The ExtensionMessagePort should be disconnected when the page enters
+      // BFCache if `kDisconnectExtensionMessagePortWhenPageEntersBFCache` is
+      // enabled, so no message will be sent to the BFCached target. There could
+      // be some messages that were created before the ExtensionMessagePort is
+      // disconnected, and they should be discarded.
+      // TODO(crbug.com/1488379): clean up the flag.
+      if (!base::FeatureList::IsEnabled(
+              features::kDisconnectExtensionMessagePortWhenPageEntersBFCache)) {
+        content::BackForwardCache::DisableForRenderFrameHost(
+            target.render_frame_host,
+            back_forward_cache::DisabledReason(
+                back_forward_cache::DisabledReasonId::
+                    kExtensionSentMessageToCachedFrame,
+                /*context=*/extension_id_),
+            ukm::UkmRecorder::GetSourceIdForExtensionUrl(
+                base::PassKey<ExtensionMessagePort>(),
+                Extension::GetBaseURLFromExtensionId(extension_id_)));
+      }
       continue;
     }
 
