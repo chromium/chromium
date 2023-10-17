@@ -45,6 +45,9 @@ class ContentSuggestionsViewControllerTest : public PlatformTest {
     pref_service_.registry()->RegisterIntegerPref(
         prefs::kIosMagicStackSegmentationShortcutsImpressionsSinceFreshness,
         -1);
+    pref_service_.registry()->RegisterIntegerPref(
+        prefs::kIosMagicStackSegmentationSafetyCheckImpressionsSinceFreshness,
+        -1);
     view_controller_.contentSuggestionsMetricsRecorder = metrics_recorder_;
     histogram_tester_ = std::make_unique<base::HistogramTester>();
   }
@@ -560,4 +563,43 @@ TEST_F(ContentSuggestionsViewControllerTest,
       (MagicStackModuleContainer*)subviews[1];
   EXPECT_EQ(ContentSuggestionsModuleType::kParcelTrackingSeeMore,
             parcelTrackingModule.type);
+}
+
+// Tests the Safety Check module correctly displays when the existing module
+// state and current module state differ ([a] multi-row to [b] single-row
+// state).
+TEST_F(ContentSuggestionsViewControllerTest, TestFooBar) {
+  scoped_feature_list_.Reset();
+  scoped_feature_list_.InitWithFeatures({kMagicStack, kSafetyCheckMagicStack},
+                                        {});
+
+  // Trigger viewDidLoad.
+  [view_controller_ loadViewIfNeeded];
+
+  [view_controller_ setMagicStackOrder:@[
+    @(int(ContentSuggestionsModuleType::kSafetyCheckMultiRow)),
+  ]];
+
+  // Single-row Safety Check state.
+  SafetyCheckState* safetyCheckState = [[SafetyCheckState alloc]
+      initWithUpdateChromeState:UpdateChromeSafetyCheckState::kUpToDate
+                  passwordState:PasswordSafetyCheckState::kSafe
+              safeBrowsingState:SafeBrowsingSafetyCheckState::kSafe
+                   runningState:RunningSafetyCheckState::kDefault];
+
+  [view_controller_ showSafetyCheck:safetyCheckState];
+
+  UIStackView* magicStack = FindMagicStack();
+
+  // Assert order is correct.
+  NSArray<UIView*>* subviews = magicStack.arrangedSubviews;
+
+  // One module should exist.
+  ASSERT_EQ(1u, [subviews count]);
+
+  MagicStackModuleContainer* safetyCheckModule =
+      (MagicStackModuleContainer*)subviews[0];
+
+  // Should be kSafetyCheck now, instead of kSafetyCheckMultiRow.
+  EXPECT_EQ(ContentSuggestionsModuleType::kSafetyCheck, safetyCheckModule.type);
 }

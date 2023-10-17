@@ -5,6 +5,7 @@
 #import "ios/chrome/browser/ui/content_suggestions/content_suggestions_view_controller.h"
 
 #import "base/apple/foundation_util.h"
+#import "base/metrics/histogram_macros.h"
 #import "base/metrics/user_metrics.h"
 #import "base/metrics/user_metrics_action.h"
 #import "base/time/time.h"
@@ -745,11 +746,7 @@ const base::TimeDelta kSetUpListHideAnimationDuration = base::Milliseconds(250);
 
   __block NSUInteger safetyCheckModuleIndex = NSNotFound;
 
-  BOOL existingSafetyCheckModule = NO;
-
   if (self.safetyCheckModuleContainer) {
-    existingSafetyCheckModule = YES;
-
     // If there's an existing Safety Check module, find its current index.
     [_magicStack.arrangedSubviews
         enumerateObjectsUsingBlock:^(MagicStackModuleContainer* moduleContainer,
@@ -775,13 +772,17 @@ const base::TimeDelta kSetUpListHideAnimationDuration = base::Milliseconds(250);
 
   [self createSafetyCheck:state];
 
-  if (existingSafetyCheckModule) {
+  UMA_HISTOGRAM_BOOLEAN("IOS.SafetyCheck.MagicStack.ModuleExistsInModuleOrder",
+                        safetyCheckModuleOrderIndex != NSNotFound);
+
+  if (safetyCheckModuleOrderIndex != NSNotFound) {
     _magicStackModuleOrder[safetyCheckModuleOrderIndex] =
         @(int(self.safetyCheckModuleContainer.type));
-  }
 
-  [self logTopModuleImpressionForType:self.safetyCheckModuleContainer.type];
-  [self insertModuleIntoMagicStack:self.safetyCheckModuleContainer];
+    [self logTopModuleImpressionForType:self.safetyCheckModuleContainer.type];
+
+    [self insertModuleIntoMagicStack:self.safetyCheckModuleContainer];
+  }
 }
 
 - (CGFloat)contentSuggestionsHeight {
