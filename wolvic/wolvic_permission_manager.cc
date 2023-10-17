@@ -12,12 +12,20 @@
 #include "url/origin.h"
 
 // TODO(zvoit): Current implementation automatically denies any requested
-// permissions. This code should show Wolvic's permission request dialog
-// instead.
+// permissions except for PROTECTED_MEDIA_IDENTIFIER. This code should show
+// Wolvic's permission request dialog instead.
 
 namespace {
 
 bool IsAllowlistedPermissionType(blink::PermissionType permission) {
+  switch (permission) {
+    case blink::PermissionType::PROTECTED_MEDIA_IDENTIFIER:
+      return true;
+    default:
+      return false;
+  }
+
+  NOTREACHED();
   return false;
 }
 

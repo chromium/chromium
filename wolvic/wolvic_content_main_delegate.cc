@@ -60,6 +60,7 @@
 #include "ui/base/resource/resource_bundle.h"
 #include "wolvic/wolvic_browser_context.h"
 #include "wolvic/wolvic_content_browser_client.h"
+#include "wolvic/wolvic_content_renderer_client.h"
 #include "wolvic/wolvic_content_client.h"
 
 #if BUILDFLAG(IPC_MESSAGE_LOG_ENABLED)
@@ -307,7 +308,7 @@ ContentGpuClient* WolvicContentMainDelegate::CreateContentGpuClient() {
 
 ContentRendererClient*
 WolvicContentMainDelegate::CreateContentRendererClient() {
-  renderer_client_ = std::make_unique<ContentRendererClient>();
+  renderer_client_ = std::make_unique<wolvic::WolvicContentRendererClient>();
   return renderer_client_.get();
 }
 
