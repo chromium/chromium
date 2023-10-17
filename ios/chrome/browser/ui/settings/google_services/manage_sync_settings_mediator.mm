@@ -579,9 +579,15 @@ constexpr CGFloat kBatchUploadSymbolPointSize = 22.;
   }
   // Creates the sign-out item and its section.
   TableViewModel* model = self.consumer.tableViewModel;
+  // TODO(crbug.com/1492132): During some auth error flows, it can happen that
+  // the UI doesn't load correctly and thus the data types section will not
+  // exist at this point. In that case, do not load the following section to
+  // avoid crashing.
+  if (![model hasSectionForSectionIdentifier:SyncDataTypeSectionIdentifier]) {
+    return;
+  }
   NSInteger syncDataTypeSectionIndex =
       [model sectionForSectionIdentifier:SyncDataTypeSectionIdentifier];
-  DCHECK_NE(NSNotFound, syncDataTypeSectionIndex);
   [model insertSectionWithIdentifier:SignOutSectionIdentifier
                              atIndex:syncDataTypeSectionIndex + 1];
   TableViewTextItem* item =
@@ -656,7 +662,13 @@ constexpr CGFloat kBatchUploadSymbolPointSize = 22.;
           ? [model
                 sectionForSectionIdentifier:AdvancedSettingsSectionIdentifier]
           : [model sectionForSectionIdentifier:SyncDataTypeSectionIdentifier];
-  DCHECK_NE(NSNotFound, previousSection);
+  // TODO(crbug.com/1492132): During some auth error flows, it can happen that
+  // the UI doesn't load correctly and thus the previous section will not exist
+  // at this point. In that case, do not load the following section to avoid
+  // crashing.
+  if (previousSection == NSNotFound) {
+    return;
+  }
   [model insertSectionWithIdentifier:SignOutSectionIdentifier
                              atIndex:previousSection + 1];
 
