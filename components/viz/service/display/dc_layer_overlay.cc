@@ -64,6 +64,13 @@ enum DCLayerResult {
   kMaxValue = DC_LAYER_FAILED_YUV_VIDEO_QUAD_NO_P010_VIDEO_PROCESSOR_SUPPORT,
 };
 
+bool IsCompatibleHDRMetadata(
+    const absl::optional<gfx::HDRMetadata>& hdr_metadata) {
+  return hdr_metadata && hdr_metadata->smpte_st_2086 &&
+         hdr_metadata->smpte_st_2086->IsValid() && hdr_metadata->cta_861_3 &&
+         hdr_metadata->cta_861_3->IsValid();
+}
+
 DCLayerResult ValidateYUVOverlay(
     const gfx::ProtectedVideoType& protected_video_type,
     const gfx::ColorSpace& video_color_space,
@@ -97,8 +104,11 @@ DCLayerResult ValidateYUVOverlay(
   }
 
   // Otherwise, it could be a parser bug like https://crbug.com/1362288 if the
-  // hdr metadata is still missing. We shouldn't promote too for that case.
-  if (video_color_space.IsHDR() && !hdr_metadata.has_value()) {
+  // hdr metadata is still missing. Missing `smpte_st_2086` and `cta_861_3`
+  // could always cause intel driver crash when in HDR overlay mode, and
+  // technically as long as one of the `smpte_st_2086` or `cta_861_3` exists
+  // could solve the crash issue, but for safe reason, validate both here.
+  if (video_color_space.IsHDR() && !IsCompatibleHDRMetadata(hdr_metadata)) {
     return DC_LAYER_FAILED_YUV_VIDEO_QUAD_NO_HDR_METADATA;
   }
 
@@ -163,8 +173,12 @@ DCLayerResult ValidateYUVQuad(
   }
 
   // Otherwise, it could be a parser bug like https://crbug.com/1362288 if the
-  // hdr metadata is still missing. We shouldn't promote too for that case.
-  if (quad->video_color_space.IsHDR() && !quad->hdr_metadata.has_value()) {
+  // hdr metadata is still missing. Missing `smpte_st_2086` and `cta_861_3`
+  // could always cause intel driver crash when in HDR overlay mode, and
+  // technically as long as one of the `smpte_st_2086` or `cta_861_3` exists
+  // could solve the crash issue, but for safe reason, validate both here.
+  if (quad->video_color_space.IsHDR() &&
+      !IsCompatibleHDRMetadata(quad->hdr_metadata)) {
     return DC_LAYER_FAILED_YUV_VIDEO_QUAD_NO_HDR_METADATA;
   }
 

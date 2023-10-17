@@ -768,11 +768,6 @@ void D3D11VideoDecoder::CreatePictureBuffers() {
                           ? accelerated_video_decoder_->GetHDRMetadata()
                           : config_.hdr_metadata();
 
-  gfx::HDRMetadata stream_metadata;
-  if (hdr_metadata)
-    stream_metadata = *hdr_metadata;
-  // else leave |stream_metadata| default-initialized.  We might use it anyway.
-
   absl::optional<DXGI_HDR_METADATA_HDR10> display_metadata;
   if (decoder_configurator_->TextureFormat() == DXGI_FORMAT_P010) {
     // For HDR formats, try to get the display metadata.  This may fail, which
@@ -863,11 +858,11 @@ void D3D11VideoDecoder::CreatePictureBuffers() {
       // If system hdr is not enabled, don't set metadata can help us avoid
       // video processor's tone mapping (if gpu vendor is intel), since we
       // always want to use gfx::ColorTransform do PQ tone-mapping.
-      if ((config_.hdr_metadata() && system_hdr_enabled_) ||
+      if ((hdr_metadata && system_hdr_enabled_) ||
           gpu_workarounds_.use_empty_video_hdr_metadata) {
         // It's okay if this has an empty-initialized metadata.
         picture_buffers_[i]->texture_wrapper()->SetStreamHDRMetadata(
-            stream_metadata);
+            hdr_metadata.value_or(gfx::HDRMetadata()));
       }
       picture_buffers_[i]->texture_wrapper()->SetDisplayHDRMetadata(
           *display_metadata);
