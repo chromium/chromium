@@ -45,8 +45,12 @@ std::ostream& operator<<(std::ostream& os, const Metric<MetricType>& metric) {
   os << metric.state;
   if (metric.state != MetricState::kCorrectlyNotLogged &&
       metric.state != MetricState::kIncorrectlyNotLogged) {
-    os << " as ";
+    os << ", value: ";
     os << metric.value;
+    if (metric.state == MetricState::kIncorrectlyLoggedMultipleTimes) {
+      os << ", old value: ";
+      os << metric.old_value;
+    }
   }
   return os;
 }

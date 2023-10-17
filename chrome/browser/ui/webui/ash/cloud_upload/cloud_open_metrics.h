@@ -50,6 +50,7 @@ class Metric {
     } else {
       state = MetricState::kIncorrectlyLoggedMultipleTimes;
     }
+    old_value = value;
     value = new_value;
   }
 
@@ -90,6 +91,7 @@ class Metric {
   const std::string metric_name;
   MetricState state = MetricState::kCorrectlyNotLogged;
   MetricType value;
+  MetricType old_value;
 
  private:
   void LogMetric(MetricType new_value);
