@@ -2,7 +2,7 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#import "ios/chrome/browser/external_files/external_file_remover_impl.h"
+#import "ios/chrome/browser/external_files/model/external_file_remover_impl.h"
 
 #import <utility>
 

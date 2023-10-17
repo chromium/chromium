@@ -2,8 +2,8 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#ifndef IOS_CHROME_BROWSER_EXTERNAL_FILES_EXTERNAL_FILE_REMOVER_IMPL_H_
-#define IOS_CHROME_BROWSER_EXTERNAL_FILES_EXTERNAL_FILE_REMOVER_IMPL_H_
+#ifndef IOS_CHROME_BROWSER_EXTERNAL_FILES_MODEL_EXTERNAL_FILE_REMOVER_IMPL_H_
+#define IOS_CHROME_BROWSER_EXTERNAL_FILES_MODEL_EXTERNAL_FILE_REMOVER_IMPL_H_
 
 #include <vector>
 
@@ -12,7 +12,7 @@
 #include "base/memory/weak_ptr.h"
 #include "base/time/time.h"
 #include "components/sessions/core/tab_restore_service_observer.h"
-#import "ios/chrome/browser/external_files/external_file_remover.h"
+#import "ios/chrome/browser/external_files/model/external_file_remover.h"
 
 class ChromeBrowserState;
 
@@ -77,4 +77,4 @@ class ExternalFileRemoverImpl : public ExternalFileRemover,
   base::WeakPtrFactory<ExternalFileRemoverImpl> weak_ptr_factory_;
 };
 
-#endif  // IOS_CHROME_BROWSER_EXTERNAL_FILES_EXTERNAL_FILE_REMOVER_IMPL_H_
+#endif  // IOS_CHROME_BROWSER_EXTERNAL_FILES_MODEL_EXTERNAL_FILE_REMOVER_IMPL_H_

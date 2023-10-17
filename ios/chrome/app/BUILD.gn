@@ -478,7 +478,7 @@ source_set("app_internal") {
     "//ios/chrome/browser/default_browser/model:utils",
     "//ios/chrome/browser/download",
     "//ios/chrome/browser/download/background_service:background_service",
-    "//ios/chrome/browser/external_files",
+    "//ios/chrome/browser/external_files/model",
     "//ios/chrome/browser/favicon",
     "//ios/chrome/browser/feature_engagement/model",
     "//ios/chrome/browser/first_run",
