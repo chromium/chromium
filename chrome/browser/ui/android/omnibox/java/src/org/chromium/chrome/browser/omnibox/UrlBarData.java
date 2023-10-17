@@ -18,9 +18,7 @@ import org.chromium.url.GURL;
 
 import java.util.Set;
 
-/**
- * Encapsulates all data that is necessary for the URL bar to display its contents.
- */
+/** Encapsulates all data that is necessary for the URL bar to display its contents. */
 public class UrlBarData {
     /** The URL schemes that don't need to be displayed complete with path. */
     public static final Set<String> SCHEMES_TO_SPLIT =
@@ -154,8 +152,8 @@ public class UrlBarData {
     public final CharSequence displayText;
 
     /**
-     * The text that should replace the display text when editing the contents of the URL bar,
-     * or null to use the {@link #displayText} when editing.
+     * The text that should replace the display text when editing the contents of the URL bar, or
+     * null to use the {@link #displayText} when editing.
      */
     public final @Nullable String editingText;
 
@@ -166,8 +164,8 @@ public class UrlBarData {
     public final int originStartIndex;
 
     /**
-     * The character index in {@link #displayText} where the origin ends. This is required to
-     * ensure that the end of the origin is not scrolled out of view for long hostnames.
+     * The character index in {@link #displayText} where the origin ends. This is required to ensure
+     * that the end of the origin is not scrolled out of view for long hostnames.
      */
     public final int originEndIndex;
 

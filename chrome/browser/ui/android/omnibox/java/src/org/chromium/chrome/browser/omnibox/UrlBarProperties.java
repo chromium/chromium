@@ -21,13 +21,9 @@ import org.chromium.ui.modelutil.PropertyModel.WritableObjectPropertyKey;
 
 import java.util.Locale;
 
-/**
- * The model properties for the URL bar text component.
- */
+/** The model properties for the URL bar text component. */
 class UrlBarProperties {
-    /**
-     * Contains the necessary information to update the text shown in the UrlBar.
-     */
+    /** Contains the necessary information to update the text shown in the UrlBar. */
     static class UrlBarTextState {
         /** Text to be shown. */
         public final CharSequence text;
@@ -44,8 +40,12 @@ class UrlBarProperties {
         /** Specifies how the text should be selected in the focused state. */
         public final @SelectionState int selectionState;
 
-        public UrlBarTextState(CharSequence text, CharSequence textForAutofillServices,
-                @ScrollType int scrollType, int scrollToIndex, @SelectionState int selectionState) {
+        public UrlBarTextState(
+                CharSequence text,
+                CharSequence textForAutofillServices,
+                @ScrollType int scrollType,
+                int scrollToIndex,
+                @SelectionState int selectionState) {
             this.text = text;
             this.textForAutofillServices = textForAutofillServices;
             this.scrollType = scrollType;
@@ -55,14 +55,17 @@ class UrlBarProperties {
 
         @Override
         public String toString() {
-            return String.format(Locale.US, "%s: text: %s; scrollType: %d; selectionState: %d",
-                    getClass().getSimpleName(), text, scrollType, selectionState);
+            return String.format(
+                    Locale.US,
+                    "%s: text: %s; scrollType: %d; selectionState: %d",
+                    getClass().getSimpleName(),
+                    text,
+                    scrollType,
+                    selectionState);
         }
     }
 
-    /**
-     * Contains the necessary information to display inline autocomplete text.
-     */
+    /** Contains the necessary information to display inline autocomplete text. */
     static class AutocompleteText {
         /** The text preceding the autocomplete text (typically entered by the user). */
         public final String userText;
@@ -77,8 +80,12 @@ class UrlBarProperties {
 
         @Override
         public String toString() {
-            return String.format(Locale.US, "%s: user text: %s; autocomplete text: %s",
-                    getClass().getSimpleName(), userText, autocompleteText);
+            return String.format(
+                    Locale.US,
+                    "%s: user text: %s; autocomplete text: %s",
+                    getClass().getSimpleName(),
+                    userText,
+                    autocompleteText);
         }
     }
 
@@ -120,25 +127,19 @@ class UrlBarProperties {
     public static final WritableObjectPropertyKey<UrlTextChangeListener> URL_TEXT_CHANGE_LISTENER =
             new WritableObjectPropertyKey<>();
 
-    /**
-     * Specifies the typeface for url bar text.
-     */
+    /** Specifies the typeface for url bar text. */
     public static final WritableObjectPropertyKey<Typeface> TYPEFACE =
             new WritableObjectPropertyKey<>();
 
-    /**
-     * Specifies the color for url bar text.
-     */
+    /** Specifies the color for url bar text. */
     public static final WritableIntPropertyKey TEXT_COLOR = new WritableIntPropertyKey();
 
-    /**
-     * Specifies the color for url bar hint text.
-     */
+    /** Specifies the color for url bar hint text. */
     public static final WritableIntPropertyKey HINT_TEXT_COLOR = new WritableIntPropertyKey();
 
     /**
      * Specifies whether incognito colors should be used in the view, meaning baseline dark theme
-     *  without dynamic colors.
+     * without dynamic colors.
      */
     public static final WritableBooleanPropertyKey INCOGNITO_COLORS_ENABLED =
             new WritableBooleanPropertyKey();
@@ -152,8 +153,22 @@ class UrlBarProperties {
             new WritableBooleanPropertyKey();
 
     public static final PropertyKey[] ALL_KEYS =
-            new PropertyKey[] {ACTION_MODE_CALLBACK, ALLOW_FOCUS, AUTOCOMPLETE_TEXT, DELEGATE,
-                    FOCUS_CHANGE_CALLBACK, SHOW_CURSOR, TEXT_CONTEXT_MENU_DELEGATE, TEXT_STATE,
-                    URL_DIRECTION_LISTENER, URL_TEXT_CHANGE_LISTENER, INCOGNITO_COLORS_ENABLED,
-                    WINDOW_DELEGATE, HAS_URL_SUGGESTIONS, TYPEFACE, TEXT_COLOR, HINT_TEXT_COLOR};
+            new PropertyKey[] {
+                ACTION_MODE_CALLBACK,
+                ALLOW_FOCUS,
+                AUTOCOMPLETE_TEXT,
+                DELEGATE,
+                FOCUS_CHANGE_CALLBACK,
+                SHOW_CURSOR,
+                TEXT_CONTEXT_MENU_DELEGATE,
+                TEXT_STATE,
+                URL_DIRECTION_LISTENER,
+                URL_TEXT_CHANGE_LISTENER,
+                INCOGNITO_COLORS_ENABLED,
+                WINDOW_DELEGATE,
+                HAS_URL_SUGGESTIONS,
+                TYPEFACE,
+                TEXT_COLOR,
+                HINT_TEXT_COLOR
+            };
 }

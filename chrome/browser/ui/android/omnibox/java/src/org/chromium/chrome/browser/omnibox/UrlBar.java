@@ -57,9 +57,7 @@ import org.chromium.ui.display.DisplayUtil;
 import java.lang.annotation.Retention;
 import java.lang.annotation.RetentionPolicy;
 
-/**
- * The URL text entry view for the Omnibox.
- */
+/** The URL text entry view for the Omnibox. */
 public abstract class UrlBar extends AutocompleteEditText {
     private static final String TAG = "UrlBar";
 
@@ -88,7 +86,7 @@ public abstract class UrlBar extends AutocompleteEditText {
     /**
      * The text direction of the URL or query: LAYOUT_DIRECTION_LOCALE, LAYOUT_DIRECTION_LTR, or
      * LAYOUT_DIRECTION_RTL.
-     * */
+     */
     private int mUrlDirection;
 
     private UrlBarDelegate mUrlBarDelegate;
@@ -108,8 +106,7 @@ public abstract class UrlBar extends AutocompleteEditText {
     private boolean mPendingScroll;
     private int mPreviousWidth;
 
-    @ScrollType
-    private int mPreviousScrollType;
+    @ScrollType private int mPreviousScrollType;
     private String mPreviousScrollText;
     private int mPreviousScrollViewWidth;
     private int mPreviousScrollResultXPosition;
@@ -124,8 +121,8 @@ public abstract class UrlBar extends AutocompleteEditText {
     private boolean mDidEllipsizeTextHint;
 
     /**
-     * The character index in the displayed text where the origin ends. This is required to
-     * ensure that the end of the origin is not scrolled out of view for long hostnames.
+     * The character index in the displayed text where the origin ends. This is required to ensure
+     * that the end of the origin is not scrolled out of view for long hostnames.
      */
     private int mOriginEndIndex;
 
@@ -139,10 +136,9 @@ public abstract class UrlBar extends AutocompleteEditText {
     Editable mScrollToTLDPrevUrl;
     int mScrollToTLDPrevEndIndex;
 
-    @ScrollType
-    private int mScrollType;
+    @ScrollType private int mScrollType;
 
-    /** What scrolling action should be taken after the URL bar text changes. **/
+    /** What scrolling action should be taken after the URL bar text changes. * */
     @IntDef({ScrollType.NO_SCROLL, ScrollType.SCROLL_TO_TLD, ScrollType.SCROLL_TO_BEGINNING})
     @Retention(RetentionPolicy.SOURCE)
     public @interface ScrollType {
@@ -152,16 +148,15 @@ public abstract class UrlBar extends AutocompleteEditText {
     }
 
     /**
-     * An optional string to use with AccessibilityNodeInfo to report text content.
-     * This is particularly important for auto-fill applications, such as password managers, that
-     * rely on AccessibilityNodeInfo data to apply related form-fill data.
+     * An optional string to use with AccessibilityNodeInfo to report text content. This is
+     * particularly important for auto-fill applications, such as password managers, that rely on
+     * AccessibilityNodeInfo data to apply related form-fill data.
      */
     private CharSequence mTextForAutofillServices;
+
     protected boolean mRequestingAutofillStructure;
 
-    /**
-     * Delegate used to communicate with the content side and the parent layout.
-     */
+    /** Delegate used to communicate with the content side and the parent layout. */
     public interface UrlBarDelegate {
         /**
          * @return The view to be focused on a backward focus traversal.
@@ -174,19 +169,13 @@ public abstract class UrlBar extends AutocompleteEditText {
          */
         boolean allowKeyboardLearning();
 
-        /**
-         * Called to notify that back key has been pressed while the URL bar has focus.
-         */
+        /** Called to notify that back key has been pressed while the URL bar has focus. */
         void backKeyPressed();
 
-        /**
-         * Called to notify that UrlBar has been focused by touch.
-         */
+        /** Called to notify that UrlBar has been focused by touch. */
         void onFocusByTouch();
 
-        /**
-         * Called to notify that UrlBar has been touched after focus.
-         */
+        /** Called to notify that UrlBar has been touched after focus. */
         void onTouchAfterFocus();
     }
 
@@ -194,6 +183,7 @@ public abstract class UrlBar extends AutocompleteEditText {
     public interface UrlTextChangeListener {
         /**
          * Called when the text state has changed.
+         *
          * @param textWithoutAutocomplete The url bar text without autocompletion.
          */
         void onTextChanged(String textWithoutAutocomplete);
@@ -201,13 +191,15 @@ public abstract class UrlBar extends AutocompleteEditText {
 
     /** Delegate that provides the additional functionality to the textual context menus. */
     interface UrlBarTextContextMenuDelegate {
-        /** @return The text to be pasted into the UrlBar. */
+        /**
+         * @return The text to be pasted into the UrlBar.
+         */
         @NonNull
         String getTextToPaste();
 
         /**
          * Gets potential replacement text to be used instead of the current selected text for
-         * cut/copy actions.  If null is returned, the existing text will be cut or copied.
+         * cut/copy actions. If null is returned, the existing text will be cut or copied.
          *
          * @param currentText The current displayed text.
          * @param selectionStart The selection start in the display text.
@@ -231,20 +223,26 @@ public abstract class UrlBar extends AutocompleteEditText {
         setFocusable(false);
         setFocusableInTouchMode(false);
         // Use a global draw instead of View#onDraw in case this View is not visible.
-        FirstDrawDetector.waitForFirstDraw(this, () -> {
-            // We have now avoided the first draw problem (see the comments above) so we want to
-            // make the URL bar focusable so that touches etc. activate it.
-            setFocusable(mAllowFocus);
-            setFocusableInTouchMode(mAllowFocus);
-        });
+        FirstDrawDetector.waitForFirstDraw(
+                this,
+                () -> {
+                    // We have now avoided the first draw problem (see the comments above) so we
+                    // want to
+                    // make the URL bar focusable so that touches etc. activate it.
+                    setFocusable(mAllowFocus);
+                    setFocusableInTouchMode(mAllowFocus);
+                });
 
         setInputType(InputType.TYPE_CLASS_TEXT | InputType.TYPE_TEXT_FLAG_NO_SUGGESTIONS);
 
-        mKeyboardHideHelper = new KeyboardHideHelper(this, () -> {
-            if (mUrlBarDelegate != null && !BackPressManager.isEnabled()) {
-                mUrlBarDelegate.backKeyPressed();
-            }
-        });
+        mKeyboardHideHelper =
+                new KeyboardHideHelper(
+                        this,
+                        () -> {
+                            if (mUrlBarDelegate != null && !BackPressManager.isEnabled()) {
+                                mUrlBarDelegate.backKeyPressed();
+                            }
+                        });
 
         ApiCompatibilityUtils.disableSmartSelectionTextClassifier(this);
         if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.UPSIDE_DOWN_CAKE) {
@@ -260,16 +258,12 @@ public abstract class UrlBar extends AutocompleteEditText {
         mUrlTextChangeListener = null;
     }
 
-    /**
-     * Initialize the delegate that allows interaction with the Window.
-     */
+    /** Initialize the delegate that allows interaction with the Window. */
     public void setWindowDelegate(WindowDelegate windowDelegate) {
         mKeyboardHideHelper.setWindowDelegate(windowDelegate);
     }
 
-    /**
-     * Set the delegate to be used for text context menu actions.
-     */
+    /** Set the delegate to be used for text context menu actions. */
     public void setTextContextMenuDelegate(UrlBarTextContextMenuDelegate delegate) {
         mTextContextMenuDelegate = delegate;
     }
@@ -288,8 +282,8 @@ public abstract class UrlBar extends AutocompleteEditText {
 
     /**
      * See {@link AutocompleteEditText#setIgnoreTextChangesForAutocomplete(boolean)}.
-     * <p>
-     * {@link #setDelegate(UrlBarDelegate)} must be called with a non-null instance prior to
+     *
+     * <p>{@link #setDelegate(UrlBarDelegate)} must be called with a non-null instance prior to
      * enabling autocomplete.
      */
     @Override
@@ -315,9 +309,7 @@ public abstract class UrlBar extends AutocompleteEditText {
         setPrivateImeOptions(IME_OPTION_RESTRICT_STYLUS_WRITING_AREA);
     }
 
-    /**
-     * Sets whether this {@link UrlBar} should be focusable.
-     */
+    /** Sets whether this {@link UrlBar} should be focusable. */
     public void setAllowFocus(boolean allowFocus) {
         mAllowFocus = allowFocus;
         setFocusable(allowFocus);
@@ -335,7 +327,7 @@ public abstract class UrlBar extends AutocompleteEditText {
     /**
      * Sets the {@link UrlBar}'s text direction based on focus and contents.
      *
-     * Should be called whenever focus or text contents change.
+     * <p>Should be called whenever focus or text contents change.
      */
     private void fixupTextDirection() {
         // When unfocused, force left-to-right rendering at the paragraph level (which is desired
@@ -362,19 +354,21 @@ public abstract class UrlBar extends AutocompleteEditText {
                 // Without the call to post(..), the keyboard was not getting shown when the
                 // window regained focus despite this being the final call in the view system
                 // flow.
-                post(new Runnable() {
-                    @Override
-                    public void run() {
-                        KeyboardVisibilityDelegate.getInstance().showKeyboard(UrlBar.this);
-                    }
-                });
+                post(
+                        new Runnable() {
+                            @Override
+                            public void run() {
+                                KeyboardVisibilityDelegate.getInstance().showKeyboard(UrlBar.this);
+                            }
+                        });
             }
         }
     }
 
     @Override
     public View focusSearch(int direction) {
-        if (mUrlBarDelegate != null && direction == View.FOCUS_BACKWARD
+        if (mUrlBarDelegate != null
+                && direction == View.FOCUS_BACKWARD
                 && mUrlBarDelegate.getViewForUrlBackFocus() != null) {
             return mUrlBarDelegate.getViewForUrlBackFocus();
         } else {
@@ -472,6 +466,7 @@ public abstract class UrlBar extends AutocompleteEditText {
 
     /**
      * Set the url delegate to handle communication from the {@link UrlBar} to the rest of the UI.
+     *
      * @param delegate The {@link UrlBarDelegate} to be used.
      */
     public void setDelegate(UrlBarDelegate delegate) {
@@ -480,15 +475,14 @@ public abstract class UrlBar extends AutocompleteEditText {
 
     /**
      * Set the listener to be notified when the URL text has changed.
+     *
      * @param listener The listener to be notified.
      */
     public void setUrlTextChangeListener(UrlTextChangeListener listener) {
         mUrlTextChangeListener = listener;
     }
 
-    /**
-     * Set the text to report to Autofill services upon call to onProvideAutofillStructure.
-     */
+    /** Set the text to report to Autofill services upon call to onProvideAutofillStructure. */
     public void setTextForAutofillServices(CharSequence text) {
         mTextForAutofillServices = text;
     }
@@ -525,8 +519,9 @@ public abstract class UrlBar extends AutocompleteEditText {
                 RecordUserAction.record("Omnibox.LongPress.Copy");
             }
             String currentText = getText().toString();
-            String replacementCutCopyText = mTextContextMenuDelegate.getReplacementCutCopyText(
-                    currentText, getSelectionStart(), getSelectionEnd());
+            String replacementCutCopyText =
+                    mTextContextMenuDelegate.getReplacementCutCopyText(
+                            currentText, getSelectionStart(), getSelectionEnd());
             if (replacementCutCopyText == null) return super.onTextContextMenuItem(id);
 
             setIgnoreTextChangesForAutocomplete(true);
@@ -556,19 +551,23 @@ public abstract class UrlBar extends AutocompleteEditText {
 
         return super.onTextContextMenuItem(id);
     }
+
     /**
      * Estimates how many characters fit in the viewport and truncates {@link text} before calling
      * setText({@link text}.
      *
      * @param text The text to set.
      * @param scrollType What type of scroll should be applied to the text.
-     * @param scrollToIndex The index that should be scrolled to, which only applies to
-     *                      {@link ScrollType#SCROLL_TO_TLD}.
+     * @param scrollToIndex The index that should be scrolled to, which only applies to {@link
+     *     ScrollType#SCROLL_TO_TLD}.
      */
     public void setTextWithTruncation(
             CharSequence text, @ScrollType int scrollType, int scrollToIndex) {
-        if (mFocused || TextUtils.isEmpty(text) || text.length() < MIN_LENGTH_FOR_TRUNCATION
-                || getLayoutParams().width == LayoutParams.WRAP_CONTENT || containsRtl(text)) {
+        if (mFocused
+                || TextUtils.isEmpty(text)
+                || text.length() < MIN_LENGTH_FOR_TRUNCATION
+                || getLayoutParams().width == LayoutParams.WRAP_CONTENT
+                || containsRtl(text)) {
             mIsTextTruncated = false;
             mDidJustTruncate = false;
             setText(text);
@@ -611,8 +610,8 @@ public abstract class UrlBar extends AutocompleteEditText {
      * Specified how text should be scrolled within the UrlBar.
      *
      * @param scrollType What type of scroll should be applied to the text.
-     * @param scrollToIndex The index that should be scrolled to, which only applies to
-     *                      {@link ScrollType#SCROLL_TO_TLD}.
+     * @param scrollToIndex The index that should be scrolled to, which only applies to {@link
+     *     ScrollType#SCROLL_TO_TLD}.
      */
     public void setScrollState(@ScrollType int scrollType, int scrollToIndex) {
         if (scrollType == ScrollType.SCROLL_TO_TLD) {
@@ -627,15 +626,16 @@ public abstract class UrlBar extends AutocompleteEditText {
     /**
      * Return a hint of the currently visible text displayed on screen.
      *
-     * The hint represents the substring of the full text from the first character to the last
+     * <p>The hint represents the substring of the full text from the first character to the last
      * visible character displayed on screen. Depending on the length of this prefix, not all of the
      * characters will e displayed on screen.
      *
-     * This will null if:
+     * <p>This will null if:
+     *
      * <ul>
-     *     <li>The width constraints have changed since the hint was calculated.</li>
-     *     <li>The hint could not be correctly calculated.</li>
-     *     <li>The visible text is narrower than the viewport.</li>
+     *   <li>The width constraints have changed since the hint was calculated.
+     *   <li>The hint could not be correctly calculated.
+     *   <li>The visible text is narrower than the viewport.
      * </ul>
      */
     public @Nullable CharSequence getVisibleTextPrefixHint() {
@@ -675,10 +675,9 @@ public abstract class UrlBar extends AutocompleteEditText {
     /**
      * Scrolls the omnibox text to the position specified, based on the {@link ScrollType}.
      *
-     * @param scrollType What type of scroll to perform.
-     *                   SCROLL_TO_TLD: Scrolls the omnibox text to bring the TLD into view.
-     *                   SCROLL_TO_BEGINNING: Scrolls text that's too long to fit in the omnibox
-     *                                        to the beginning so we can see the first character.
+     * @param scrollType What type of scroll to perform. SCROLL_TO_TLD: Scrolls the omnibox text to
+     *     bring the TLD into view. SCROLL_TO_BEGINNING: Scrolls text that's too long to fit in the
+     *     omnibox to the beginning so we can see the first character.
      */
     private void scrollDisplayTextInternal(@ScrollType int scrollType) {
         mPendingScroll = false;
@@ -701,7 +700,8 @@ public abstract class UrlBar extends AutocompleteEditText {
                 // Font size is float but it changes in discrete range (eg small font, big font),
                 // therefore false negative using regular equality is unlikely.
                 && currentTextSize == mPreviousScrollFontSize
-                && currentIsRtl == mPreviousScrollWasRtl && isVisibleTextTheSame(text)) {
+                && currentIsRtl == mPreviousScrollWasRtl
+                && isVisibleTextTheSame(text)) {
             scrollTo(mPreviousScrollResultXPosition, getScrollY());
             return;
         }
@@ -729,9 +729,7 @@ public abstract class UrlBar extends AutocompleteEditText {
         mPreviousScrollWasRtl = currentIsRtl;
     }
 
-    /**
-     * Scrolls the omnibox text to show the very beginning of the text entered.
-     */
+    /** Scrolls the omnibox text to show the very beginning of the text entered. */
     private void scrollToBeginning() {
         // Clearly the visible text hint as this path is not used for normal browser navigation.
         // If that changes in the future, update this to actually calculate the visible text hints.
@@ -777,8 +775,17 @@ public abstract class UrlBar extends AutocompleteEditText {
             int finalVisibleCharIndex;
             if (sScrollToTLDOptimizationsFlag.isEnabled()) {
                 // getOffsetForHorizontal is very slow. getOffsetForAdvance is much faster.
-                finalVisibleCharIndex = textLayout.getPaint().getOffsetForAdvance(
-                        url, 0, urlTextLength, 0, urlTextLength, false, measuredWidth);
+                finalVisibleCharIndex =
+                        textLayout
+                                .getPaint()
+                                .getOffsetForAdvance(
+                                        url,
+                                        0,
+                                        urlTextLength,
+                                        0,
+                                        urlTextLength,
+                                        false,
+                                        measuredWidth);
             } else {
                 finalVisibleCharIndex = textLayout.getOffsetForHorizontal(0, measuredWidth);
             }
@@ -801,11 +808,11 @@ public abstract class UrlBar extends AutocompleteEditText {
                             textLayout.getPrimaryHorizontal(finalVisibleCharIndexExclusive);
                     float width = (float) measuredWidth;
 
-                    assert MathUtils.areFloatsEqual(horizontal, width)
-                            || horizontal > width
-                        : "finalVisibleCharIndex is too small: "
-                          + String.valueOf(finalVisibleCharIndexExclusive)
-                          + ". If discovered locally please update crbug.com/1465967 with the url.";
+                    assert MathUtils.areFloatsEqual(horizontal, width) || horizontal > width
+                            : "finalVisibleCharIndex is too small: "
+                                    + String.valueOf(finalVisibleCharIndexExclusive)
+                                    + ". If discovered locally please update crbug.com/1465967 with"
+                                    + " the url.";
                 }
 
                 // To avoid issues where a small portion of the character following
@@ -820,9 +827,7 @@ public abstract class UrlBar extends AutocompleteEditText {
         }
     }
 
-    /**
-     * Scrolls the omnibox text to bring the TLD into view.
-     */
+    /** Scrolls the omnibox text to bring the TLD into view. */
     private void scrollToTLD() {
         Editable url = getText();
         int measuredWidth = getVisibleMeasuredViewportWidth();
@@ -836,16 +841,23 @@ public abstract class UrlBar extends AutocompleteEditText {
             if (mScrollToTLDPrevUrl != null) {
                 boolean hadBlobScheme = mScrollToTLDPrevUrl.toString().startsWith("blob");
                 int prevLength = mScrollToTLDPrevUrl.length();
-                errorMessage += " Previous url was blob: " + String.valueOf(hadBlobScheme)
-                        + " previous url length: " + String.valueOf(prevLength)
-                        + " prev end index: " + String.valueOf(mScrollToTLDPrevEndIndex);
+                errorMessage +=
+                        " Previous url was blob: "
+                                + String.valueOf(hadBlobScheme)
+                                + " previous url length: "
+                                + String.valueOf(prevLength)
+                                + " prev end index: "
+                                + String.valueOf(mScrollToTLDPrevEndIndex);
             } else {
                 boolean isBlobScheme = url.toString().startsWith("blob");
                 errorMessage += " First time. Url is blob: " + String.valueOf(isBlobScheme);
             }
 
-            errorMessage += " url length: " + String.valueOf(urlTextLength)
-                    + " mOriginEndIndex: " + String.valueOf(mOriginEndIndex);
+            errorMessage +=
+                    " url length: "
+                            + String.valueOf(urlTextLength)
+                            + " mOriginEndIndex: "
+                            + String.valueOf(mOriginEndIndex);
 
             // If discovered locally, please update crbug.com/859219 with the steps to reproduce.
             assert false : errorMessage;
@@ -857,9 +869,10 @@ public abstract class UrlBar extends AutocompleteEditText {
         float endPointX = textLayout.getPrimaryHorizontal(originEndIndex);
         // Compare the position offset of the last character and the character prior to determine
         // the LTR-ness of the final component of the URL.
-        float priorToEndPointX = urlTextLength == 1
-                ? 0
-                : textLayout.getPrimaryHorizontal(Math.max(0, originEndIndex - 1));
+        float priorToEndPointX =
+                urlTextLength == 1
+                        ? 0
+                        : textLayout.getPrimaryHorizontal(Math.max(0, originEndIndex - 1));
 
         float scrollPos;
         if (priorToEndPointX < endPointX) {
@@ -921,8 +934,12 @@ public abstract class UrlBar extends AutocompleteEditText {
                     break;
                 }
             }
-            float width = textLayout.getPaint().measureText(
-                    url.subSequence(rtlStartIndexForEndingRun, originEndIndex).toString());
+            float width =
+                    textLayout
+                            .getPaint()
+                            .measureText(
+                                    url.subSequence(rtlStartIndexForEndingRun, originEndIndex)
+                                            .toString());
             if (width < measuredWidth) {
                 scrollPos = Math.max(0, endPointX + width - measuredWidth);
             } else {
@@ -996,8 +1013,8 @@ public abstract class UrlBar extends AutocompleteEditText {
                 RecordHistogram.recordBooleanHistogram(
                         "Omnibox.setText.TruncatedTooMuch", truncatedTooMuch);
                 assert !truncatedTooMuch
-                    : "Url was truncated too much. If discovered locally, please update "
-                      + "crbug.com/1476013 with steps to reproduce.";
+                        : "Url was truncated too much. If discovered locally, please update "
+                                + "crbug.com/1476013 with steps to reproduce.";
             }
 
             mIsTextTruncated = mDidJustTruncate;
@@ -1034,7 +1051,10 @@ public abstract class UrlBar extends AutocompleteEditText {
         if (spanLeft != textLength) return;
 
         spanLeft = maxLength / 2;
-        text.setSpan(EllipsisSpan.INSTANCE, spanLeft, textLength - spanLeft,
+        text.setSpan(
+                EllipsisSpan.INSTANCE,
+                spanLeft,
+                textLength - spanLeft,
                 Editable.SPAN_INCLUSIVE_EXCLUSIVE);
     }
 
@@ -1087,8 +1107,8 @@ public abstract class UrlBar extends AutocompleteEditText {
     }
 
     /**
-     * Span that displays ellipsis instead of the text. Used to hide portion of
-     * very large string to get decent performance from TextView.
+     * Span that displays ellipsis instead of the text. Used to hide portion of very large string to
+     * get decent performance from TextView.
      */
     private static class EllipsisSpan extends ReplacementSpan {
         private static final String ELLIPSIS = "...";
@@ -1102,8 +1122,16 @@ public abstract class UrlBar extends AutocompleteEditText {
         }
 
         @Override
-        public void draw(Canvas canvas, CharSequence text, int start, int end, float x, int top,
-                int y, int bottom, Paint paint) {
+        public void draw(
+                Canvas canvas,
+                CharSequence text,
+                int start,
+                int end,
+                float x,
+                int top,
+                int y,
+                int bottom,
+                Paint paint) {
             canvas.drawText(ELLIPSIS, x, y, paint);
         }
     }

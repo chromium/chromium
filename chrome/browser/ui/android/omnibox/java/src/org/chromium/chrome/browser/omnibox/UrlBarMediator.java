@@ -31,9 +31,7 @@ import org.chromium.ui.modelutil.PropertyModel;
 import java.util.ArrayList;
 import java.util.List;
 
-/**
- * Handles collecting and pushing state information to the UrlBar model.
- */
+/** Handles collecting and pushing state information to the UrlBar model. */
 class UrlBarMediator implements UrlBar.UrlBarTextContextMenuDelegate, UrlBar.UrlTextChangeListener {
     private final Context mContext;
     private final PropertyModel mModel;
@@ -57,9 +55,11 @@ class UrlBarMediator implements UrlBar.UrlBarTextContextMenuDelegate, UrlBar.Url
      * @param context The current Android's context.
      * @param model MVC property model to write changes to.
      * @param focusChangeCallback The callback that will be notified when focus changes on the
-     *         UrlBar.
+     *     UrlBar.
      */
-    public UrlBarMediator(Context context, @NonNull PropertyModel model,
+    public UrlBarMediator(
+            Context context,
+            @NonNull PropertyModel model,
             @NonNull Callback<Boolean> focusChangeCallback) {
         mContext = context;
         mModel = model;
@@ -98,7 +98,8 @@ class UrlBarMediator implements UrlBar.UrlBarTextContextMenuDelegate, UrlBar.Url
         }
 
         // Do not scroll to the end of the host for URLs such as data:, javascript:, etc...
-        if (data.url != null && data.displayText != null
+        if (data.url != null
+                && data.displayText != null
                 && data.originEndIndex == data.displayText.length()) {
             String scheme = data.url.getScheme();
             if (!TextUtils.isEmpty(scheme) && !UrlBarData.SCHEMES_TO_SPLIT.contains(scheme)) {
@@ -106,7 +107,8 @@ class UrlBarMediator implements UrlBar.UrlBarTextContextMenuDelegate, UrlBar.Url
             }
         }
 
-        if (!mHasFocus && isNewTextEquivalentToExistingText(mUrlBarData, data)
+        if (!mHasFocus
+                && isNewTextEquivalentToExistingText(mUrlBarData, data)
                 && mScrollType == scrollType) {
             return false;
         }
@@ -131,12 +133,16 @@ class UrlBarMediator implements UrlBar.UrlBarTextContextMenuDelegate, UrlBar.Url
             textForAutofillServices = mUrlBarData.url.getSpec();
         }
 
-        @ScrollType
-        int scrollType = mHasFocus ? UrlBar.ScrollType.NO_SCROLL : mScrollType;
+        @ScrollType int scrollType = mHasFocus ? UrlBar.ScrollType.NO_SCROLL : mScrollType;
         if (text == null) text = "";
 
-        UrlBarTextState state = new UrlBarTextState(text, textForAutofillServices, scrollType,
-                mUrlBarData.originEndIndex, mSelectionState);
+        UrlBarTextState state =
+                new UrlBarTextState(
+                        text,
+                        textForAutofillServices,
+                        scrollType,
+                        mUrlBarData.originEndIndex,
+                        mSelectionState);
         mModel.set(UrlBarProperties.TEXT_STATE, state);
     }
 
@@ -197,7 +203,8 @@ class UrlBarMediator implements UrlBar.UrlBarTextContextMenuDelegate, UrlBar.Url
             assert false : "Should not update autocomplete text when not focused";
             return;
         }
-        mModel.set(UrlBarProperties.AUTOCOMPLETE_TEXT,
+        mModel.set(
+                UrlBarProperties.AUTOCOMPLETE_TEXT,
                 new AutocompleteText(userText, autocompleteText));
     }
 
@@ -249,9 +256,7 @@ class UrlBarMediator implements UrlBar.UrlBarTextContextMenuDelegate, UrlBar.Url
         mModel.set(UrlBarProperties.INCOGNITO_COLORS_ENABLED, incognitoColorsEnabled);
     }
 
-    /**
-     * Sets whether the view allows user focus.
-     */
+    /** Sets whether the view allows user focus. */
     public void setAllowFocus(boolean allowFocus) {
         mModel.set(UrlBarProperties.ALLOW_FOCUS, allowFocus);
         if (allowFocus) {
@@ -259,9 +264,7 @@ class UrlBarMediator implements UrlBar.UrlBarTextContextMenuDelegate, UrlBar.Url
         }
     }
 
-    /**
-     * Set the listener to be notified for URL direction changes.
-     */
+    /** Set the listener to be notified for URL direction changes. */
     public void setUrlDirectionListener(Callback<Integer> listener) {
         mModel.set(UrlBarProperties.URL_DIRECTION_LISTENER, listener);
     }
@@ -330,7 +333,9 @@ class UrlBarMediator implements UrlBar.UrlBarTextContextMenuDelegate, UrlBar.Url
         return stringToPaste;
     }
 
-    /** @param hasSuggestions Whether suggestions are showing in the URL bar. */
+    /**
+     * @param hasSuggestions Whether suggestions are showing in the URL bar.
+     */
     public void onUrlBarSuggestionsChanged(boolean hasSuggestions) {
         mModel.set(UrlBarProperties.HAS_URL_SUGGESTIONS, hasSuggestions);
     }
@@ -345,8 +350,8 @@ class UrlBarMediator implements UrlBar.UrlBarTextContextMenuDelegate, UrlBar.Url
      *
      * @param url The url to be used to find the preceding portion.
      * @param host The host to be located in the URL to determine the location of the path.
-     * @return The URL contents that precede the path (or the passed in URL if the host is
-     *         not found).
+     * @return The URL contents that precede the path (or the passed in URL if the host is not
+     *     found).
      */
     private static String getUrlContentsPrePath(String url, String host) {
         int hostIndex = url.indexOf(host);
@@ -358,7 +363,9 @@ class UrlBarMediator implements UrlBar.UrlBarTextContextMenuDelegate, UrlBar.Url
         return url.substring(0, pathIndex);
     }
 
-    /** @see UrlTextChangeListener */
+    /**
+     * @see UrlTextChangeListener
+     */
     @Override
     public void onTextChanged(String textWithoutAutocomplete) {
         for (int i = 0; i < mUrlTextChangeListeners.size(); i++) {
@@ -369,30 +376,34 @@ class UrlBarMediator implements UrlBar.UrlBarTextContextMenuDelegate, UrlBar.Url
     /**
      * Sets the color of the hint text in the search box to be colorOnSurface or
      * colorOnPrimaryContainer based on whether useColorfulOmniboxType is true or not.
-     * @param useColorfulOmniboxType True if the surface polish flag and omnibox
-     *         color variant are both enabled and we need to use the colorful type for the url bar
-     *         hint color.
+     *
+     * @param useColorfulOmniboxType True if the surface polish flag and omnibox color variant are
+     *     both enabled and we need to use the colorful type for the url bar hint color.
      * @param usePreviousHintTextColor True if we leave the Start Surface or NTP and return to the
-     *         value set originally.
+     *     value set originally.
      * @param brandedColorScheme The {@link @BrandedColorScheme}.
      */
-    void setUrlBarHintTextColorForSurfacePolish(boolean useColorfulOmniboxType,
-            boolean usePreviousHintTextColor, @BrandedColorScheme int brandedColorScheme) {
+    void setUrlBarHintTextColorForSurfacePolish(
+            boolean useColorfulOmniboxType,
+            boolean usePreviousHintTextColor,
+            @BrandedColorScheme int brandedColorScheme) {
         if (usePreviousHintTextColor) {
             mIsHintTextFixedForStartOrNtp = false;
             setBrandedColorScheme(brandedColorScheme);
             return;
         }
 
-        final @ColorInt int hintTextColor = useColorfulOmniboxType
-                ? SemanticColorUtils.getDefaultTextColorOnAccent1Container(mContext)
-                : SemanticColorUtils.getDefaultTextColor(mContext);
+        final @ColorInt int hintTextColor =
+                useColorfulOmniboxType
+                        ? SemanticColorUtils.getDefaultTextColorOnAccent1Container(mContext)
+                        : SemanticColorUtils.getDefaultTextColor(mContext);
         mModel.set(UrlBarProperties.HINT_TEXT_COLOR, hintTextColor);
         mIsHintTextFixedForStartOrNtp = true;
     }
 
     /**
      * Sets the typeface and style of the search text in the search box.
+     *
      * @param typeface The typeface for the search text in the search box.
      */
     void setUrlBarTypeface(Typeface typeface) {
