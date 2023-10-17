@@ -528,11 +528,6 @@ void RecordEncoderStatusUMA(const media::EncoderStatus& status,
   base::UmaHistogramEnumeration(histogram_name, status.code());
 }
 
-bool SupportGpuMemoryBufferEncoding() {
-  return base::CommandLine::ForCurrentProcess()->HasSwitch(
-      switches::kVideoCaptureUseGpuMemoryBuffer);
-}
-
 bool IsZeroCopyEnabled(webrtc::VideoContentType content_type) {
   if (content_type == webrtc::VideoContentType::SCREENSHARE) {
     // Zero copy screen capture.
@@ -1933,8 +1928,7 @@ int32_t RTCVideoEncoder::Encode(
     return WEBRTC_VIDEO_CODEC_FALLBACK_SOFTWARE;
 
   if (IsCodecInitializationPending()) {
-    if (IsNV12GpuMemoryBufferVideoFrame(input_image) &&
-        SupportGpuMemoryBufferEncoding()) {
+    if (IsNV12GpuMemoryBufferVideoFrame(input_image)) {
       vea_config_->input_format = media::PIXEL_FORMAT_NV12;
       vea_config_->storage_type =
           media::VideoEncodeAccelerator::Config::StorageType::kGpuMemoryBuffer;
