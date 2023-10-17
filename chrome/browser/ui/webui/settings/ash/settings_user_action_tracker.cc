@@ -8,7 +8,7 @@
 #include <utility>
 
 #include "base/metrics/histogram_functions.h"
-#include "chrome/browser/ui/webui/settings/ash/hierarchy.h"
+#include "chrome/browser/ui/webui/ash/settings/search/hierarchy.h"
 #include "chrome/browser/ui/webui/settings/ash/os_settings_sections.h"
 
 namespace ash::settings {

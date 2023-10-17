@@ -5,7 +5,7 @@
 #ifndef CHROME_BROWSER_UI_WEBUI_ASH_SETTINGS_TEST_SUPPORT_FAKE_HIERARCHY_H_
 #define CHROME_BROWSER_UI_WEBUI_ASH_SETTINGS_TEST_SUPPORT_FAKE_HIERARCHY_H_
 
-#include "chrome/browser/ui/webui/settings/ash/hierarchy.h"
+#include "chrome/browser/ui/webui/ash/settings/search/hierarchy.h"
 #include "third_party/abseil-cpp/absl/types/optional.h"
 
 namespace ash::settings {
