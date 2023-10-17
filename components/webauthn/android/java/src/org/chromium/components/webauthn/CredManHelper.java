@@ -649,7 +649,7 @@ public class CredManHelper {
     }
 
     private void notifyBrowserOnCredManClosed(boolean success) {
-        if (mConditionalUiState == ConditionalUiState.NONE) return;
+        if (mBridgeProvider.getBridge() == null) return;
         mBridgeProvider.getBridge().onCredManUiClosed(mFrameHost, success);
     }
 
@@ -806,7 +806,18 @@ public class CredManHelper {
 
     private static void logDeserializationException(Throwable e) {
         // clang-format off
-        Log.e(TAG, "Failed to parse Mojo object. If this is happening in a test, and authenticator.mojom was updated, then you'll need to update the fake Mojo structures in Fido2ApiTestHelper. Robolectric doesn't support JNI calls so the JNI calls to translate from JSON -> serialized Mojo are mocked out and the responses are hard-coded. If the Mojo structure is updated then the responses also need to be updated. Flip `kUpdateRobolectricTests` in `value_conversions_unittest.cc`, run `component_unittests --gtest_filter=\"WebAuthnentication*\"` and it'll print out updated Java literals for `Fido2ApiTestHelper.java`.", e);
+        Log.e(
+                TAG,
+                "Failed to parse Mojo object. If this is happening in a test, and"
+                    + " authenticator.mojom was updated, then you'll need to update the fake Mojo"
+                    + " structures in Fido2ApiTestHelper. Robolectric doesn't support JNI calls so"
+                    + " the JNI calls to translate from JSON -> serialized Mojo are mocked out and"
+                    + " the responses are hard-coded. If the Mojo structure is updated then the"
+                    + " responses also need to be updated. Flip `kUpdateRobolectricTests` in"
+                    + " `value_conversions_unittest.cc`, run `component_unittests"
+                    + " --gtest_filter=\"WebAuthnentication*\"` and it'll print out updated Java"
+                    + " literals for `Fido2ApiTestHelper.java`.",
+                e);
        // clang-format on
     }
 }

@@ -227,7 +227,7 @@ public class CredManHelperRobolectricTest {
                 .isFalse();
         assertThat(option.isSystemProviderRequired()).isFalse();
         assertThat(mCallback.getStatus()).isEqualTo(Integer.valueOf(AuthenticatorStatus.SUCCESS));
-        verify(mBrowserBridge, never()).onCredManUiClosed(any(), anyBoolean());
+        verify(mBrowserBridge, times(1)).onCredManUiClosed(any(), anyBoolean());
         verify(mMetricsHelper, times(1))
                 .reportGetCredentialMetrics(eq(CredManGetRequestEnum.SENT_REQUEST), any());
         verify(mMetricsHelper, times(1))
@@ -273,7 +273,7 @@ public class CredManHelperRobolectricTest {
                         "androidx.credentials.BUNDLE_KEY_PREFER_IMMEDIATELY_AVAILABLE_CREDENTIALS"))
                 .isTrue();
         verify(noCredentialsFallback, times(1)).run();
-        verify(mBrowserBridge, times(0)).onCredManUiClosed(any(), anyBoolean());
+        verify(mBrowserBridge, times(1)).onCredManUiClosed(any(), anyBoolean());
     }
 
     @Test
@@ -289,7 +289,7 @@ public class CredManHelperRobolectricTest {
 
         assertThat(result).isEqualTo(AuthenticatorStatus.SUCCESS);
         verify(mErrorCallback, times(1)).onResult(AuthenticatorStatus.NOT_ALLOWED_ERROR);
-        verify(mBrowserBridge, times(0)).onCredManUiClosed(any(), anyBoolean());
+        verify(mBrowserBridge, times(1)).onCredManUiClosed(any(), anyBoolean());
         verify(mMetricsHelper, times(1))
                 .reportGetCredentialMetrics(eq(CredManGetRequestEnum.CANCELLED), any());
     }
@@ -307,7 +307,7 @@ public class CredManHelperRobolectricTest {
 
         assertThat(result).isEqualTo(AuthenticatorStatus.SUCCESS);
         verify(mErrorCallback, times(1)).onResult(AuthenticatorStatus.UNKNOWN_ERROR);
-        verify(mBrowserBridge, never()).onCredManUiClosed(any(), anyBoolean());
+        verify(mBrowserBridge, times(1)).onCredManUiClosed(any(), anyBoolean());
         verify(mMetricsHelper, times(1))
                 .reportGetCredentialMetrics(eq(CredManGetRequestEnum.FAILURE), any());
     }

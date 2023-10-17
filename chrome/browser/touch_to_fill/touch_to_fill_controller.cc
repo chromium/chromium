@@ -153,7 +153,7 @@ void TouchToFillController::OnShowCredManSelected() {
 }
 
 void TouchToFillController::OnCredManUiClosed(bool success) {
-  OnDismiss();
+  ActionCompleted();
 }
 
 void TouchToFillController::OnDismiss() {
