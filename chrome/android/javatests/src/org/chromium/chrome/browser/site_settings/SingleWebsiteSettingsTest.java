@@ -117,9 +117,7 @@ public class SingleWebsiteSettingsTest {
     @SmallTest
     @DisableIf.Build(sdk_is_less_than = Build.VERSION_CODES.O,
             message = "Notification does not have a toggle when disabled.")
-    // clang-format off
     public void testNotificationException() {
-        // clang-format on
         SettingsActivity settingsActivity = SiteSettingsTestUtils.startSingleWebsitePreferences(
                 createWebsiteWithContentSettingException(
                         ContentSettingsType.NOTIFICATIONS, ContentSettingValues.BLOCK));

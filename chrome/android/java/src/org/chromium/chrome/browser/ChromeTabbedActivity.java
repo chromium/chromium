@@ -473,7 +473,6 @@ public class ChromeTabbedActivity extends ChromeActivity<ChromeActivityComponent
 
         // AppLaunchDrawBlocker may block drawing the Activity content until the initial tab is
         // available.
-        // clang-format off
         mAppLaunchDrawBlocker = new AppLaunchDrawBlocker(getLifecycleDispatcher(),
             () -> findViewById(android.R.id.content),
             this::getIntent, this::shouldIgnoreIntent, this::isTablet,
@@ -481,7 +480,6 @@ public class ChromeTabbedActivity extends ChromeActivity<ChromeActivityComponent
             mTabModelProfileSupplier,
             new IncognitoRestoreAppLaunchDrawBlockerFactory(this::getSavedInstanceState,
                 getTabModelSelectorSupplier()));
-        // clang-format on
     }
 
     @Override
@@ -679,7 +677,6 @@ public class ChromeTabbedActivity extends ChromeActivity<ChromeActivityComponent
             // We should inline createStartSurface() (if enabled) once the refactor is launched.
             createTabSwitcherOrStartSurface(compositorViewHolder, compositorViewHolder);
 
-            // clang-format off
             mLayoutManager = new LayoutManagerChromePhone(compositorViewHolder, mContentContainer,
                 mStartSurfaceSupplier, mTabSwitcherSupplier, getBrowserControlsManager(),
                 getTabContentManagerSupplier(), mRootUiCoordinator::getTopUiThemeColorProvider,
@@ -688,7 +685,6 @@ public class ChromeTabbedActivity extends ChromeActivity<ChromeActivityComponent
                     return compositorViewHolder;
                 });
             mLayoutStateProviderSupplier.set(mLayoutManager);
-            // clang-format on
         }
     }
 
@@ -699,7 +695,6 @@ public class ChromeTabbedActivity extends ChromeActivity<ChromeActivityComponent
                      "ChromeTabbedActivity.setupCompositorContentPreNativeForTablet")) {
             CompositorViewHolder compositorViewHolder = getCompositorViewHolderSupplier().get();
 
-            // clang-format off
             ViewGroup tabSwitcherViewHolder = findViewById(R.id.tab_switcher_view_holder);
             ViewStub tabHoverCardViewStub = (ViewStub) findViewById(R.id.tab_hover_card_holder_stub);
             View toolbarContainerView = findViewById(R.id.toolbar_container);
@@ -726,7 +721,6 @@ public class ChromeTabbedActivity extends ChromeActivity<ChromeActivityComponent
                             toolbarContainerView,
                             tabHoverCardViewStub);
             mLayoutStateProviderSupplier.set(mLayoutManager);
-            // clang-format on
         }
     }
 

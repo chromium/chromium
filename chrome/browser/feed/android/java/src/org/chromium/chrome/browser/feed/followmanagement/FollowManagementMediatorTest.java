@@ -115,12 +115,10 @@ public class FollowManagementMediatorTest {
                 new WebFeedMetadata(ID2, "Title2", URL2, WebFeedSubscriptionStatus.NOT_SUBSCRIBED,
                         WebFeedAvailabilityStatus.INACTIVE, false, FAVICON2)}));
 
-        // clang-format off
         assertEquals(
           "ID1 title=Title1 url=https://www.one.com/ subscribed\n"
         + "ID2 title=Title2 url=https://www.two.com/ status=Updates Unavailable not-subscribed",
                 modelListToString());
-        // clang-format on
     }
 
     @Test
@@ -133,12 +131,10 @@ public class FollowManagementMediatorTest {
 
         mFollowManagementMediator.clickHandler(mModelList.get(0).model);
 
-        // clang-format off
         assertEquals(
           "ID1 title=Title1 url=https://www.one.com/ not-subscribed disabled\n"
         + "ID2 title=Title2 url=https://www.two.com/ not-subscribed",
                 modelListToString());
-        // clang-format on
     }
 
     @Test

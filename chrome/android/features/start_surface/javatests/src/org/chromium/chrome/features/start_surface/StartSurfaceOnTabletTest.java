@@ -286,9 +286,7 @@ public class StartSurfaceOnTabletTest {
         ChromeFeatureList.START_SURFACE_ON_TABLET
     })
     @DisableFeatures(ChromeFeatureList.SURFACE_POLISH)
-    // clang-format off
     public void testFakeSearchBoxWidthShortenedWith1RowMvTitles() {
-        // clang-format on
         mActivityTestRule.startMainActivityWithURL(UrlConstants.NTP_URL);
         ChromeTabbedActivity cta = mActivityTestRule.getActivity();
         StartSurfaceTestUtils.waitForTabModel(cta);
@@ -322,9 +320,7 @@ public class StartSurfaceOnTabletTest {
         ChromeFeatureList.SURFACE_POLISH
     })
     @EnableFeatures({ChromeFeatureList.START_SURFACE_ON_TABLET})
-    // clang-format off
     public void testFakeSearchBoxWidthShortenedWith2RowMvTitles() {
-        // clang-format on
         mActivityTestRule.startMainActivityWithURL(UrlConstants.NTP_URL);
         ChromeTabbedActivity cta = mActivityTestRule.getActivity();
         StartSurfaceTestUtils.waitForTabModel(cta);
@@ -351,9 +347,7 @@ public class StartSurfaceOnTabletTest {
     @MediumTest
     @Feature({"StartSurface"})
     @EnableFeatures(ChromeFeatureList.START_SURFACE_ON_TABLET)
-    // clang-format off
     public void testLogoSizeShrink() {
-        // clang-format on
         mActivityTestRule.startMainActivityWithURL(UrlConstants.NTP_URL);
         ChromeTabbedActivity cta = mActivityTestRule.getActivity();
         StartSurfaceTestUtils.waitForTabModel(cta);
@@ -380,9 +374,7 @@ public class StartSurfaceOnTabletTest {
     @MediumTest
     @Feature({"StartSurface"})
     @DisableFeatures(ChromeFeatureList.START_SURFACE_ON_TABLET)
-    // clang-format off
     public void testDefaultLogoSize() {
-        // clang-format on
         mActivityTestRule.startMainActivityWithURL(UrlConstants.NTP_URL);
         ChromeTabbedActivity cta = mActivityTestRule.getActivity();
         StartSurfaceTestUtils.waitForTabModel(cta);
@@ -409,9 +401,7 @@ public class StartSurfaceOnTabletTest {
     @CommandLineFlags.Add({START_SURFACE_ON_TABLET_TEST_PARAMS})
     @EnableFeatures({ChromeFeatureList.SHOW_SCROLLABLE_MVT_ON_NTP_ANDROID,
             ChromeFeatureList.START_SURFACE_ON_TABLET})
-    // clang-format off
     public void test1RowMvtMarginOnNtpHomePage() throws IOException{
-        // clang-format on
         StartSurfaceTestUtils.prepareTabStateMetadataFile(new int[] {0}, new String[] {TAB_URL}, 0);
         StartSurfaceTestUtils.startMainActivityFromLauncher(mActivityTestRule);
         ChromeTabbedActivity cta = mActivityTestRule.getActivity();
@@ -458,9 +448,7 @@ public class StartSurfaceOnTabletTest {
     @Feature({"StartSurface"})
     @EnableFeatures({ChromeFeatureList.SHOW_SCROLLABLE_MVT_ON_NTP_ANDROID,
             ChromeFeatureList.START_SURFACE_ON_TABLET})
-    // clang-format off
     public void test1RowMvtMarginOnEmptyNtp() {
-        // clang-format on
         mActivityTestRule.startMainActivityWithURL(UrlConstants.NTP_URL);
         ChromeTabbedActivity cta = mActivityTestRule.getActivity();
         StartSurfaceTestUtils.waitForTabModel(cta);
@@ -482,9 +470,7 @@ public class StartSurfaceOnTabletTest {
     @CommandLineFlags.Add({START_SURFACE_ON_TABLET_TEST_PARAMS})
     @EnableFeatures(ChromeFeatureList.START_SURFACE_ON_TABLET)
     @DisableFeatures(ChromeFeatureList.SHOW_SCROLLABLE_MVT_ON_NTP_ANDROID)
-    // clang-format off
     public void test2RowMvtMarginOnNtpHomePage() throws IOException {
-        // clang-format on
         StartSurfaceTestUtils.prepareTabStateMetadataFile(new int[] {0}, new String[] {TAB_URL}, 0);
         StartSurfaceTestUtils.startMainActivityFromLauncher(mActivityTestRule);
         ChromeTabbedActivity cta = mActivityTestRule.getActivity();
@@ -527,9 +513,7 @@ public class StartSurfaceOnTabletTest {
     @MediumTest
     @Feature({"StartSurface"})
     @CommandLineFlags.Add({START_SURFACE_ON_TABLET_TEST_PARAMS})
-    // clang-format off
     public void testClickSingleTabCardCloseNtpHomeSurface() throws IOException {
-        // clang-format on
         StartSurfaceTestUtils.prepareTabStateMetadataFile(new int[] {0}, new String[] {TAB_URL}, 0);
         StartSurfaceTestUtils.startMainActivityFromLauncher(mActivityTestRule);
         ChromeTabbedActivity cta = mActivityTestRule.getActivity();
@@ -613,9 +597,7 @@ public class StartSurfaceOnTabletTest {
     @Feature({"StartSurface"})
     @EnableFeatures({ChromeFeatureList.SHOW_SCROLLABLE_MVT_ON_NTP_ANDROID,
             ChromeFeatureList.START_SURFACE_ON_TABLET, ChromeFeatureList.SURFACE_POLISH})
-    // clang-format off
     public void testFakeSearchBoxWidthWith1RowMvTitlesForSurfacePolish() {
-        // clang-format on
         mActivityTestRule.startMainActivityWithURL(UrlConstants.NTP_URL);
         ChromeTabbedActivity cta = mActivityTestRule.getActivity();
         StartSurfaceTestUtils.waitForTabModel(cta);
@@ -642,9 +624,7 @@ public class StartSurfaceOnTabletTest {
     @CommandLineFlags.Add({START_SURFACE_ON_TABLET_TEST_PARAMS})
     @EnableFeatures({ChromeFeatureList.SHOW_SCROLLABLE_MVT_ON_NTP_ANDROID,
             ChromeFeatureList.START_SURFACE_ON_TABLET, ChromeFeatureList.SURFACE_POLISH})
-    // clang-format off
     public void test1RowMvtMarginOnNtpHomePageForSurfacePolish(){
-        // clang-format on
         mActivityTestRule.startMainActivityWithURL(UrlConstants.NTP_URL);
         ChromeTabbedActivity cta = mActivityTestRule.getActivity();
         StartSurfaceTestUtils.waitForTabModel(cta);

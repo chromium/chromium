@@ -89,7 +89,6 @@ import java.util.Set;
 @RunWith(BaseRobolectricTestRunner.class)
 @Config(manifest = Config.NONE, shadows = {ShadowApplicationStatus.class})
 public class MultiInstanceManagerApi31UnitTest {
-    // clang-format on
     @Rule
     public TestRule mFeaturesProcessorRule = new Features.JUnitProcessor();
 

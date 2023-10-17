@@ -163,7 +163,6 @@ public abstract class BaseCustomTabActivity extends ChromeActivity<BaseCustomTab
 
     @Override
     protected RootUiCoordinator createRootUiCoordinator() {
-        // clang-format off
         mBaseCustomTabRootUiCoordinator = new BaseCustomTabRootUiCoordinator(this,
                 getShareDelegateSupplier(), getActivityTabProvider(), mTabModelProfileSupplier,
                 mBookmarkModelSupplier, mTabBookmarkerSupplier,
@@ -180,7 +179,6 @@ public abstract class BaseCustomTabActivity extends ChromeActivity<BaseCustomTab
                 () -> mToolbarCoordinator, () -> mNavigationController, () -> mIntentDataProvider,
                 () -> mDelegateFactory.getEphemeralTabCoordinator(), mBackPressManager,
                 () -> mTabController);
-        // clang-format on
         return mBaseCustomTabRootUiCoordinator;
     }
 

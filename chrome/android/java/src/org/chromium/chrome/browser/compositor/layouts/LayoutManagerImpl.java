@@ -314,7 +314,6 @@ public class LayoutManagerImpl
         mTopUiThemeColorProvider = topUiThemeColorProvider;
         mContext = host.getContext();
 
-        // clang-format off
         // Overlays are ordered back (closest to the web content) to front.
         Class[] overlayOrder = new Class[] {
                 HistoryNavigationCoordinator.getSceneOverlayClass(),
@@ -326,7 +325,6 @@ public class LayoutManagerImpl
                 ScrollingBottomViewSceneLayer.class,
                 StatusIndicatorCoordinator.getSceneOverlayClass(),
                 ContextualSearchPanel.class};
-        // clang-format on
 
         for (int i = 0; i < overlayOrder.length; i++) mOverlayOrderMap.put(overlayOrder[i], i);
 

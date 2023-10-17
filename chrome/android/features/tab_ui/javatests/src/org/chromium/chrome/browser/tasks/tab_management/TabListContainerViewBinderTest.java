@@ -161,10 +161,8 @@ public class TabListContainerViewBinderTest extends BlankUiTestActivityTestCase 
 
     @Test
     @MediumTest
-    // clang-format off
     @EnableFeatures(ChromeFeatureList.TAB_TO_GTS_ANIMATION)
     public void testShowWithAnimation() {
-        // clang-format on
         TestThreadUtils.runOnUiThreadBlocking(() -> {
             mContainerModel.set(
                     TabListContainerProperties.VISIBILITY_LISTENER, mMockVisibilityListener);
@@ -203,10 +201,8 @@ public class TabListContainerViewBinderTest extends BlankUiTestActivityTestCase 
 
     @Test
     @MediumTest
-    // clang-format off
     @EnableFeatures(ChromeFeatureList.TAB_TO_GTS_ANIMATION)
     public void testShowWithAnimation_showShadow() {
-        // clang-format on
         mShouldShowShadow = true;
         TestThreadUtils.runOnUiThreadBlocking(() -> {
             mContainerModel.set(TabListContainerProperties.IS_INCOGNITO, false);

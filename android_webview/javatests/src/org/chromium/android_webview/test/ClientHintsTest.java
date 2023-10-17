@@ -121,7 +121,6 @@ public class ClientHintsTest {
                 InstrumentationRegistry.getInstrumentation().getTargetContext());
 
         // Please keep these here (and below) in the same order as web_client_hints_types.mojom.
-        // clang-format off
         final String[] activeClientHints = {
                 "device-memory",
                 "dpr",
@@ -154,7 +153,6 @@ public class ClientHintsTest {
                 // Add client hints above. The final row should have a trailing comma for cleaner
                 // diffs.
         };
-        // clang-format on
         final String url = server.getURL(
                 "/client-hints-header?accept-ch=" + String.join(",", activeClientHints));
 

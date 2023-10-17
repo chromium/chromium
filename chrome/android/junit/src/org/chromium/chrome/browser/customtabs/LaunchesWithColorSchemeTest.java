@@ -36,7 +36,6 @@ import org.chromium.chrome.test.util.browser.Features.DisableFeatures;
 /**
  * Tests that {@link CustomTabActivity} launches into the correct color scheme.
  */
-// clang-format off
 @RunWith(ChromeRobolectricTestRunner.class)
 @Config(manifest = Config.NONE)
 @DisableFeatures(ChromeFeatureList.SUPPRESS_TOOLBAR_CAPTURES)
@@ -44,7 +43,6 @@ import org.chromium.chrome.test.util.browser.Features.DisableFeatures;
     ChromeSwitches.DISABLE_FIRST_RUN_EXPERIENCE,
     ChromeSwitches.DISABLE_NATIVE_INITIALIZATION
 })
-// clang-format on
 public class LaunchesWithColorSchemeTest {
     private ActivityScenario<CustomTabActivity> mActivityScenario;
 

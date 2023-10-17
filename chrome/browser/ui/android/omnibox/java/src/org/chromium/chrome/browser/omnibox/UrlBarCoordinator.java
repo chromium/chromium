@@ -243,12 +243,10 @@ public class UrlBarCoordinator implements UrlBarEditingTextStateProvider, UrlFoc
         } else {
             // The animation rendering may not yet be 100% complete and hiding the keyboard makes
             // the animation quite choppy.
-            // clang-format off
             mKeyboardHideTask = () -> {
                 mKeyboardVisibilityDelegate.hideKeyboard(mUrlBar);
                 mKeyboardHideTask = NO_OP_RUNNABLE;
             };
-            // clang-format on
             mUrlBar.postDelayed(mKeyboardHideTask, shouldDelayHiding ? KEYBOARD_HIDE_DELAY_MS : 0);
             // Convert the keyboard back to resize mode (delay the change for an arbitrary amount
             // of time in hopes the keyboard will be completely hidden before making this change).

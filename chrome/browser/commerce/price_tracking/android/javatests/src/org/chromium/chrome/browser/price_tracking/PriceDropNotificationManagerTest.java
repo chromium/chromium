@@ -66,14 +66,12 @@ import org.chromium.components.commerce.core.ShoppingService;
  * Tests for  {@link PriceDropNotificationManager}.
  */
 @RunWith(ChromeJUnit4ClassRunner.class)
-// clang-format off
 @CommandLineFlags.Add({ChromeSwitches.DISABLE_FIRST_RUN_EXPERIENCE,
         "enable-features=" + ChromeFeatureList.COMMERCE_PRICE_TRACKING + "<Study",
         "force-fieldtrials=Study/Group",
         "force-fieldtrial-params=Study.Group:user_managed_notification_max_number/2"})
 @DisableFeatures({ChromeFeatureList.START_SURFACE_ANDROID})
 public class PriceDropNotificationManagerTest {
-    // clang-format on
     private static final String ACTION_APP_NOTIFICATION_SETTINGS =
             "android.settings.APP_NOTIFICATION_SETTINGS";
     private static final String EXTRA_APP_PACKAGE = "app_package";

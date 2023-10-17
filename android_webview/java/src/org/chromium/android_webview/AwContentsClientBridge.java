@@ -373,13 +373,11 @@ public class AwContentsClientBridge {
                         method, requestHeaderNames, requestHeaderValues);
 
         // TODO(ntfschr): remove clang-format directives once crbug/764582 is resolved
-        // clang-format off
         Callback<AwSafeBrowsingResponse> callback =
                 response -> PostTask.runOrPostTask(TaskTraits.UI_DEFAULT,
                         () -> AwContentsClientBridgeJni.get().takeSafeBrowsingAction(
                                 mNativeContentsClientBridge, AwContentsClientBridge.this,
                                 response.action(), response.reporting(), requestId));
-        // clang-format on
 
         int webViewThreatType = AwSafeBrowsingConversionHelper.convertThreatType(threatType);
         mClient.getCallbackHelper().postOnSafeBrowsingHit(request, webViewThreatType, callback);

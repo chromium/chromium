@@ -41,12 +41,10 @@ import java.lang.annotation.RetentionPolicy;
 @RunWith(ChromeJUnit4ClassRunner.class)
 @MediumTest
 @CommandLineFlags.Add({ChromeSwitches.DISABLE_FIRST_RUN_EXPERIENCE})
-// clang-format off
 @ParameterizedCommandLineFlags({
   @Switches(),
   @Switches("enable-features=" + ChromeFeatureList.CAPTIVE_PORTAL_CERTIFICATE_LIST),
 })
-// clang-format on
 public class CaptivePortalTest {
     private static final String CAPTIVE_PORTAL_INTERSTITIAL_TITLE_PREFIX = "Connect to";
     private static final String SSL_INTERSTITIAL_TITLE = "Privacy error";

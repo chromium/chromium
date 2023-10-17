@@ -965,7 +965,6 @@ public final class ChromePreferenceKeys {
      */
     @CheckDiscard("Validation is performed in tests and in debug builds.")
     static List<String> getKeysInUse() {
-        // clang-format off
         return Arrays.asList(
                 ADAPTIVE_TOOLBAR_CUSTOMIZATION_ENABLED,
                 ADAPTIVE_TOOLBAR_CUSTOMIZATION_SETTINGS,
@@ -1104,7 +1103,6 @@ public final class ChromePreferenceKeys {
                 WEB_FEED_INTRO_WEB_FEED_ID_SHOWN_TIME_MS_PREFIX.pattern(),
                 WEB_FEED_INTRO_WEB_FEED_ID_SHOWN_COUNT_PREFIX.pattern(),
                 WEB_SIGNIN_ACCOUNT_PICKER_ACTIVE_DISMISSAL_COUNT);
-        // clang-format on
     }
 
     private ChromePreferenceKeys() {}

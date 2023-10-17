@@ -88,11 +88,9 @@ public class TabSelectionEditorMenu implements ListMenu, OnItemClickListener,
     }
 
     private void registerItemTypes() {
-        // clang-format off
         mAdapter.registerType(ListItemType.MENU_ITEM,
             new LayoutViewBuilder(R.layout.list_menu_item),
             TabSelectionEditorMenuAdapter::bindMenuItem);
-        // clang-format on
     }
 
     private ListItem buildListItem(int menuItemId) {

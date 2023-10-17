@@ -74,12 +74,10 @@ import java.util.concurrent.atomic.AtomicBoolean;
 @UseRunnerDelegate(ChromeJUnit4RunnerDelegate.class)
 @EnableFeatures({ChromeFeatureList.START_SURFACE_RETURN_TIME + "<Study",
         ChromeFeatureList.START_SURFACE_ANDROID + "<Study"})
-// clang-format off
 @CommandLineFlags.Add({ChromeSwitches.DISABLE_FIRST_RUN_EXPERIENCE,
         "force-fieldtrials=Study/Group"})
 @DoNotBatch(reason = "This test suite tests Clank's startup.")
 public class ReturnToChromeUtilTest {
-    // clang-format on
     @ParameterAnnotations.ClassParameter
     private static List<ParameterSet> sClassParams =
             Arrays.asList(new ParameterSet().value(false).name("NoInstant"),
@@ -136,11 +134,9 @@ public class ReturnToChromeUtilTest {
     @Test
     @SmallTest
     @Feature({"ReturnToChrome"})
-    // clang-format off
     @CommandLineFlags.Add({BASE_PARAMS})
     @DisableIf.Device(type = {UiDisableIf.TABLET}) // See https://crbug.com/1081754.
     public void testTabSwitcherModeTriggeredWithinThreshold_WarmStart_FromIncognito_NON_V2() throws Exception {
-        // clang-format on
 
         // TODO(crbug.com/1095637): Make it work for instant start.
         assumeFalse(ChromeFeatureList.sInstantStart.isEnabled());
@@ -179,12 +175,10 @@ public class ReturnToChromeUtilTest {
     @Test
     @SmallTest
     @Feature({"ReturnToChrome", "RenderTest"})
-    // clang-format off
     @CommandLineFlags.Add({BASE_PARAMS})
     @Restriction(UiRestriction.RESTRICTION_TYPE_PHONE)
     @DisabledTest(message = "https://crbug.com/1023079, crbug.com/1063984")
     public void testInitialScrollIndex() throws Exception {
-        // clang-format on
         // Instant start is not applicable since we need to create tabs and restart.
         assumeTrue(!mUseInstantStart);
 

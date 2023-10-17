@@ -192,7 +192,6 @@ public class BaseCustomTabRootUiCoordinator extends RootUiCoordinator {
             @NonNull Supplier<EphemeralTabCoordinator> ephemeralTabCoordinatorSupplier,
             @NonNull BackPressManager backPressManager,
             @NonNull Supplier<CustomTabActivityTabController> tabController) {
-        // clang-format off
         super(activity, null, shareDelegateSupplier, tabProvider,
                 profileSupplier, bookmarkModelSupplier, tabBookmarkerSupplier,
                 contextualSearchManagerSupplier, tabModelSelectorSupplier,
@@ -207,7 +206,6 @@ public class BaseCustomTabRootUiCoordinator extends RootUiCoordinator {
                 isInOverviewModeSupplier, isWarmOnResumeSupplier, appMenuDelegate,
                 statusBarColorProvider, intentRequestTracker, new OneshotSupplierImpl<>(),
                 ephemeralTabCoordinatorSupplier, false, backPressManager, null);
-        // clang-format on
         mToolbarCoordinator = customTabToolbarCoordinator;
         mNavigationController = customTabNavigationController;
         mIntentDataProvider = intentDataProvider;

@@ -82,7 +82,6 @@ import java.util.concurrent.TimeoutException;
 /** Tests for the {@link TabSwitcherAndStartSurfaceLayout}, mainly for animation performance. */
 @RunWith(ParameterizedRunner.class)
 @UseRunnerDelegate(ChromeJUnit4RunnerDelegate.class)
-// clang-format off
 @CommandLineFlags.Add({ChromeSwitches.DISABLE_FIRST_RUN_EXPERIENCE,
         "enable-features=" + ChromeFeatureList.TAB_TO_GTS_ANIMATION + "<Study",
         "force-fieldtrials=Study/Group"})
@@ -90,7 +89,6 @@ import java.util.concurrent.TimeoutException;
         {UiRestriction.RESTRICTION_TYPE_PHONE, Restriction.RESTRICTION_TYPE_NON_LOW_END_DEVICE})
 @EnableFeatures({ChromeFeatureList.DEFER_TAB_SWITCHER_LAYOUT_CREATION})
 public class TabSwitcherAndStartSurfaceLayoutPerfTest {
-    // clang-format on
     private static final String TAG = "SSLayoutPerfTest";
     private static final String BASE_PARAMS = "force-fieldtrial-params="
             + "Study.Group:skip-slow-zooming/false/zooming-min-memory-mb/512";
@@ -374,22 +372,18 @@ public class TabSwitcherAndStartSurfaceLayoutPerfTest {
             // back to that tab.
             if (fixPendingReadbacks) {
                 int lastIndex = i;
-                // clang-format off
                 TestThreadUtils.runOnUiThreadBlocking(() ->
                         mActivityTestRule.getActivity().getCurrentTabModel().setIndex(
                                 lastIndex, TabSelectionType.FROM_USER, false)
                 );
-                // clang-format on
             }
             checkThumbnailsExist(previousTab);
             if (fixPendingReadbacks) {
                 int currentIndex = i + 1;
-                // clang-format off
                 TestThreadUtils.runOnUiThreadBlocking(() ->
                         mActivityTestRule.getActivity().getCurrentTabModel().setIndex(
                                 currentIndex, TabSelectionType.FROM_USER, false)
                 );
-                // clang-format on
             }
         }
         ChromeTabUtils.waitForTabPageLoaded(mActivityTestRule.getActivity().getActivityTab(), null,

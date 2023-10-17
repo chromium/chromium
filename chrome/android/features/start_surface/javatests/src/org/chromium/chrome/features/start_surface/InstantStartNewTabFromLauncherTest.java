@@ -47,7 +47,6 @@ import java.io.IOException;
  * initialization for Clank startup.
  */
 @RunWith(ChromeJUnit4ClassRunner.class)
-// clang-format off
 @CommandLineFlags.
     Add({ChromeSwitches.DISABLE_FIRST_RUN_EXPERIENCE, "force-fieldtrials=Study/Group"})
 @EnableFeatures({ChromeFeatureList.START_SURFACE_RETURN_TIME + "<Study,",
@@ -55,7 +54,6 @@ import java.io.IOException;
 @Restriction({Restriction.RESTRICTION_TYPE_NON_LOW_END_DEVICE,
     UiRestriction.RESTRICTION_TYPE_PHONE})
 public class InstantStartNewTabFromLauncherTest {
-    // clang-format on
     @Rule
     public ChromeTabbedActivityTestRule mActivityTestRule = new ChromeTabbedActivityTestRule();
 

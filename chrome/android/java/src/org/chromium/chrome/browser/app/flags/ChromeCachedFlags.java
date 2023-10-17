@@ -134,7 +134,6 @@ public class ChromeCachedFlags {
                 MinimizeAppAndCloseTabBackPressHandler.SYSTEM_BACK,
                 BackPressManager.TAB_HISTORY_RECOVER);
 
-        // clang-format on
         tryToCatchMissingParameters(fieldTrialsToCache);
         CachedFlagUtils.cacheFieldTrialParameters(fieldTrialsToCache);
 

@@ -952,7 +952,6 @@ public class FakeUrlRequestTest {
         request.start();
         callback.waitForNextStep();
 
-        // clang-format off
         // crbug/866014: clang-format doesn't handle java lambda well
         IllegalStateException e = assertThrows(IllegalStateException.class, () -> {
             synchronized (request.mLock) { request.mFakeDataSink.onReadSucceeded(false); }
@@ -961,7 +960,6 @@ public class FakeUrlRequestTest {
         assertThat(e).hasMessageThat().isEqualTo(
                 "onReadSucceeded() called when not awaiting a read result; in state: 2");
 
-        request.cancel(); // clang-format on
     }
 
     @Test
@@ -987,7 +985,6 @@ public class FakeUrlRequestTest {
         request.start();
         callback.waitForNextStep();
 
-        // clang-format off
         // crbug/866014: clang-format doesn't handle java lambda well
         IllegalStateException e = assertThrows(IllegalStateException.class, () -> {
             synchronized (request.mLock) { request.mFakeDataSink.onRewindSucceeded(); }
@@ -995,7 +992,6 @@ public class FakeUrlRequestTest {
         assertThat(e).hasMessageThat().isEqualTo(
                 "onRewindSucceeded() called when not awaiting a rewind; in state: 2");
 
-        request.cancel(); // clang-format on
     }
 
     @Test

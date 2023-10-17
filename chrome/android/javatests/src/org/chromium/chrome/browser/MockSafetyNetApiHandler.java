@@ -38,11 +38,9 @@ public class MockSafetyNetApiHandler implements SafetyNetApiHandler {
     @Override
     public void startUriLookup(final long callbackId, String uri, int[] threatsOfInterest) {
         final String metadata = getMetadata(uri, threatsOfInterest);
-        // clang-format off
         PostTask.runOrPostTask(TaskTraits.UI_DEFAULT,
                 (Runnable) () -> mObserver.onUrlCheckDone(
                         callbackId, SafeBrowsingResult.SUCCESS, metadata, DEFAULT_CHECK_DELTA_US));
-        // clang-format on
     }
 
     @Override

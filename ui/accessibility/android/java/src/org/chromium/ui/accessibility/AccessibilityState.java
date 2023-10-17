@@ -871,7 +871,6 @@ public class AccessibilityState {
     }
 
     // ForTesting methods.
-    // clang-format off
 
     public static void setIsScreenReaderEnabledForTesting(boolean enabled) {
         if (!sInitialized) initializeForTesting();
@@ -1015,5 +1014,4 @@ public class AccessibilityState {
         sIsInTestingMode = true;
     }
 
-    // clang-format on
 }

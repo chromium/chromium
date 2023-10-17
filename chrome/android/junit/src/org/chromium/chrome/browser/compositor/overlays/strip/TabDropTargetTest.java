@@ -49,10 +49,8 @@ import org.chromium.ui.base.LocalizationUtils;
 
 /** Tests for {@link TabDropTarget}. */
 @RunWith(BaseRobolectricTestRunner.class)
-// clang-format off
 @EnableFeatures({ChromeFeatureList.TAB_DRAG_DROP_ANDROID})
 public class TabDropTargetTest {
-    // clang-format on
     @Rule
     public TestRule mFeaturesProcessorRule = new Features.JUnitProcessor();
     @Mock

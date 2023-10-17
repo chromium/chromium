@@ -82,12 +82,10 @@ import java.util.concurrent.atomic.AtomicReference;
 
 /** End-to-end tests for TabGroupUi component. */
 @RunWith(ChromeJUnit4ClassRunner.class)
-// clang-format off
 @CommandLineFlags.Add({ChromeSwitches.DISABLE_FIRST_RUN_EXPERIENCE})
 @Restriction(UiRestriction.RESTRICTION_TYPE_PHONE)
 @Batch(Batch.PER_CLASS)
 public class TabGroupUiTest {
-    // clang-format on
 
     @ClassRule
     public static ChromeTabbedActivityTestRule sActivityTestRule =
@@ -241,7 +239,6 @@ public class TabGroupUiTest {
 
     @Test
     @MediumTest
-    // clang-format off
     @CommandLineFlags.Add({
             "enable-features=IPH_TabGroupsTapToSeeAnotherTab<TabGroupsTapToSeeAnotherTab",
             "force-fieldtrials=TabGroupsTapToSeeAnotherTab/Enabled/",
@@ -254,7 +251,6 @@ public class TabGroupUiTest {
                     "name%3Aiph_tabgroups_strip;comparator%3A==0;window%3A365;storage%3A365/" +
                     "session_rate/<1"})
     public void testIphBottomSheetSuppression() throws Exception {
-        // clang-format on
 
         // Create a tab group with 2 tabs, and turn on enable_launch_bug_fix variation.
         finishActivity(sActivityTestRule.getActivity());

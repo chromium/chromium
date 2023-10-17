@@ -55,10 +55,8 @@ public class LocationBarFocusScrimHandlerTest {
         MockitoAnnotations.initMocks(this);
         doReturn(mResources).when(mContext).getResources();
         doReturn(mConfiguration).when(mResources).getConfiguration();
-        // clang-format off
         mScrimHandler = new LocationBarFocusScrimHandler(mScrimCoordinator, (visible) -> {},
                 mContext, mLocationBarDataProvider, mClickDelegate, mScrimTarget);
-        // clang-format on
     }
 
     @Test

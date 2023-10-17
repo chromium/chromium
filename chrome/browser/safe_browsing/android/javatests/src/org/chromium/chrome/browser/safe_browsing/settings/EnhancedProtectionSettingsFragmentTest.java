@@ -27,9 +27,7 @@ import org.chromium.content_public.browser.test.util.TestThreadUtils;
  * Tests for {@link EnhancedProtectionSettingsFragment}.
  */
 @RunWith(ChromeJUnit4ClassRunner.class)
-// clang-format off
 public class EnhancedProtectionSettingsFragmentTest {
-    // clang-format on
     @Rule
     public final ChromeBrowserTestRule mBrowserTestRule = new ChromeBrowserTestRule();
     @Rule

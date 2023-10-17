@@ -144,7 +144,6 @@ public class LocationBarModelUnitTest {
                 }
             };
 
-    // clang-format off
     private static class TestIncognitoLocationBarModel extends LocationBarModel {
         public TestIncognitoLocationBarModel(Tab tab, SearchEngineLogoUtils searchEngineLogoUtils) {
             super(new ContextThemeWrapper(
@@ -166,7 +165,6 @@ public class LocationBarModelUnitTest {
             setTab(tab, /*incognito=*/false);
         }
     }
-    // clang-format on
 
     @Test
     @MediumTest

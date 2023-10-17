@@ -55,7 +55,6 @@ import java.util.concurrent.TimeoutException;
  * End-to-end tests for TabSuggestion.
  */
 @RunWith(ChromeJUnit4ClassRunner.class)
-// clang-format off
 @Restriction({UiRestriction.RESTRICTION_TYPE_PHONE, RESTRICTION_TYPE_NON_LOW_END_DEVICE})
 @EnableFeatures({ChromeFeatureList.CLOSE_TAB_SUGGESTIONS+"<Study"})
 // Disable TAB_TO_GTS_ANIMATION to make it less flaky. When animation is enabled, the suggestion
@@ -67,7 +66,6 @@ import java.util.concurrent.TimeoutException;
 @CommandLineFlags.Add({ChromeSwitches.DISABLE_FIRST_RUN_EXPERIENCE,
         "force-fieldtrials=Study/Group"})
 public class TabSuggestionMessageCardTest {
-    // clang-format on
     private static final String BASE_PARAMS = "force-fieldtrial-params="
             + "Study.Group:baseline_tab_suggestions/true/enable_launch_polish/true"
             + "/min_time_between_prefetches/0/thumbnail_aspect_ratio/1.0";
@@ -221,13 +219,11 @@ public class TabSuggestionMessageCardTest {
 
     @Test
     @MediumTest
-    // clang-format off
     @CommandLineFlags.Add({BASE_PARAMS + ENABLE_GROUP_SUGGESTION_PARAM +
             ENABLE_CLOSE_SUGGESTION_PARAM})
     @DisabledTest(message = "crbug.com/1085452 Enable this test and remove the one below if the" +
             "bug is resolved")
     public void groupAndCloseTabSuggestionDismissedAndShowNext() {
-        // clang-format on
         CriteriaHelper.pollUiThread(TabSuggestionMessageService::isSuggestionAvailableForTesting);
 
         enteringTabSwitcherAndVerifySuggestionIsShown(mGroupingSuggestionMessage);

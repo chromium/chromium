@@ -200,14 +200,12 @@ public class ToolbarPhoneTest {
 
         TestThreadUtils.runOnUiThreadBlocking(() -> {
             // Has to be created on the main thread.
-            // clang-format off
             MenuButtonCoordinator realMenuButtonCoordinator = new MenuButtonCoordinator(
                     new OneshotSupplierImpl<AppMenuCoordinator>(),
                     new TestControlsVisibilityDelegate(),
                     mActivityTestRule.getActivity().getWindowAndroid(), mFocusFunction,
                     mRequestRenderRunnable, true, () -> false, mThemeColorProvider,
                     () -> null, () -> {}, R.id.menu_button_wrapper);
-            // clang-format on
             mToolbar.setMenuButtonCoordinatorForTesting(realMenuButtonCoordinator);
             mToolbar.updateOptionalButton(new ButtonDataImpl(false, drawable, null,
                     mActivityTestRule.getActivity().getString(R.string.share), false, null, false,

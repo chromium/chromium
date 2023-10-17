@@ -173,13 +173,11 @@ public class TrustedWebActivityUmaRecorder {
      * Uses {@link TaskTraits#BEST_EFFORT} in order to not get in the way of loading the page.
      */
     public void recordSplashScreenUsage(boolean wasShown) {
-        // clang-format off
         mDeferredTaskHandler.doWhenNativeLoaded(() ->
                 PostTask.postTask(TaskTraits.BEST_EFFORT, () ->
                         RecordHistogram.recordBooleanHistogram(
                                 "TrustedWebActivity.SplashScreenShown", wasShown)
                 ));
-        // clang-format on
     }
 
     /**

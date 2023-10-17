@@ -126,12 +126,10 @@ public final class ToolbarSecurityIconTest {
 
         Context context = new ContextThemeWrapper(
                 ContextUtils.getApplicationContext(), R.style.Theme_BrowserUI_DayNight);
-        // clang-format off
         mLocationBarModel = spy(
                 new LocationBarModel(context, NewTabPageDelegate.EMPTY,
                         (url) -> url.getSpec(), (window) -> null, ToolbarUnitTestUtils.OFFLINE_STATUS,
                         mSearchEngineLogoUtils));
-        // clang-format on
         Profile.setLastUsedProfileForTesting(mMockProfile);
         TestThreadUtils.runOnUiThreadBlocking(() -> {
             mLocationBarModel.initializeWithNative();

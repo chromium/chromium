@@ -111,10 +111,8 @@ public class SharedStatics {
         try (TraceEvent event = TraceEvent.scoped(
                      "WebView.APICall.Framework.CLEAR_CLIENT_CERT_PREFERENCES")) {
             recordStaticApiCall(ApiCall.CLEAR_CLIENT_CERT_PREFERENCES);
-            // clang-format off
         PostTask.runOrPostTask(TaskTraits.UI_DEFAULT, () ->
                 AwContentsStatics.clearClientCertPreferences(onCleared));
-            // clang-format on
         }
     }
 
@@ -147,17 +145,13 @@ public class SharedStatics {
      * successful. The callback will be run on the UI thread.
      */
     public void initSafeBrowsing(Context context, Callback<Boolean> callback) {
-        // clang-format off
         PostTask.runOrPostTask(TaskTraits.UI_DEFAULT,
                 () -> AwContentsStatics.initSafeBrowsing(context, callback));
-        // clang-format on
     }
 
     public void setSafeBrowsingAllowlist(List<String> urls, Callback<Boolean> callback) {
-        // clang-format off
         PostTask.runOrPostTask(TaskTraits.UI_DEFAULT,
                 () -> AwContentsStatics.setSafeBrowsingAllowlist(urls, callback));
-        // clang-format on
     }
 
     /**

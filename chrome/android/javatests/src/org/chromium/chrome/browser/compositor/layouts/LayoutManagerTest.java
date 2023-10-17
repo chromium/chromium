@@ -397,10 +397,8 @@ public class LayoutManagerTest implements MockTabModelDelegate {
     @MediumTest
     @Restriction({UiRestriction.RESTRICTION_TYPE_PHONE, RESTRICTION_TYPE_NON_LOW_END_DEVICE})
     @Feature({"Android-TabSwitcher"})
-    // clang-format off
     @CommandLineFlags.Add({ChromeSwitches.DISABLE_FIRST_RUN_EXPERIENCE})
     public void testTabSwitcherLayout_Enabled_HighEndPhone() throws Exception {
-        // clang-format on
         verifyTabSwitcherLayoutEnable(TabListCoordinator.TabListMode.GRID);
     }
 
@@ -408,11 +406,9 @@ public class LayoutManagerTest implements MockTabModelDelegate {
     @MediumTest
     @Restriction({UiRestriction.RESTRICTION_TYPE_PHONE, RESTRICTION_TYPE_LOW_END_DEVICE})
     @Feature({"Android-TabSwitcher"})
-    // clang-format off
     @CommandLineFlags.Add({ChromeSwitches.DISABLE_FIRST_RUN_EXPERIENCE})
     @DisableFeatures(ChromeFeatureList.TAB_TO_GTS_ANIMATION)
     public void testTabSwitcherLayout_Enabled_LowEndPhone() throws Exception {
-        // clang-format on
         verifyTabSwitcherLayoutEnable(TabListCoordinator.TabListMode.LIST);
     }
 

@@ -417,9 +417,7 @@ public class FeedV2NewTabPageTest {
     @EnableFeatures(ChromeFeatureList.SURFACE_POLISH)
     @Restriction({UiRestriction.RESTRICTION_TYPE_PHONE})
     @DisabledTest(message = "crbug.com/1467377")
-    // clang-format off
     public void testFakeOmniboxPolishOnNtp() throws IOException{
-        // clang-format on
         openNewTabPage();
 
         ChromeTabbedActivity cta = mActivityTestRule.getActivity();

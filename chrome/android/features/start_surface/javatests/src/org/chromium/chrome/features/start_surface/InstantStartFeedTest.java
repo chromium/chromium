@@ -62,7 +62,6 @@ import org.chromium.ui.test.util.ViewUtils;
  * Clank startup.
  */
 @RunWith(ChromeJUnit4ClassRunner.class)
-// clang-format off
 @CommandLineFlags.
     Add({ChromeSwitches.DISABLE_FIRST_RUN_EXPERIENCE, "force-fieldtrials=Study/Group"})
 @EnableFeatures({ChromeFeatureList.START_SURFACE_RETURN_TIME + "<Study,",
@@ -70,7 +69,6 @@ import org.chromium.ui.test.util.ViewUtils;
 @Restriction({Restriction.RESTRICTION_TYPE_NON_LOW_END_DEVICE,
     UiRestriction.RESTRICTION_TYPE_PHONE})
 public class InstantStartFeedTest {
-    // clang-format on
     private static final int ARTICLE_SECTION_HEADER_POSITION = 0;
 
     @Rule
@@ -96,11 +94,9 @@ public class InstantStartFeedTest {
 
     @Test
     @SmallTest
-    // clang-format off
     @CommandLineFlags.Add({ChromeSwitches.DISABLE_NATIVE_INITIALIZATION,
         INSTANT_START_TEST_BASE_PARAMS})
     public void testFeedPlaceholderFromColdStart() {
-        // clang-format on
         StartSurfaceTestUtils.startMainActivityFromLauncher(mActivityTestRule);
         Assert.assertFalse(mActivityTestRule.getActivity().isTablet());
         Assert.assertTrue(ChromeFeatureList.sInstantStart.isEnabled());
@@ -162,11 +158,9 @@ public class InstantStartFeedTest {
 
     @Test
     @SmallTest
-    // clang-format off
     @CommandLineFlags.Add({ChromeSwitches.DISABLE_NATIVE_INITIALIZATION,
         INSTANT_START_TEST_BASE_PARAMS})
     public void testHideFeedPlaceholder() {
-        // clang-format on
         StartSurfaceConfiguration.setFeedVisibilityForTesting(false);
         StartSurfaceTestUtils.startMainActivityFromLauncher(mActivityTestRule);
 
@@ -176,11 +170,9 @@ public class InstantStartFeedTest {
 
     @Test
     @SmallTest
-    // clang-format off
     @CommandLineFlags.Add({ChromeSwitches.DISABLE_NATIVE_INITIALIZATION,
         INSTANT_START_TEST_BASE_PARAMS})
     public void testShowFeedPlaceholder() {
-        // clang-format on
         StartSurfaceConfiguration.setFeedVisibilityForTesting(true);
         StartSurfaceTestUtils.startMainActivityFromLauncher(mActivityTestRule);
 

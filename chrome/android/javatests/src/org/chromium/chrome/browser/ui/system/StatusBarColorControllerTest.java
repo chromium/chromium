@@ -73,10 +73,8 @@ import java.util.concurrent.TimeoutException;
  */
 @RunWith(ChromeJUnit4ClassRunner.class)
 @Batch(Batch.PER_CLASS)
-// clang-format off
 @CommandLineFlags.Add({ChromeSwitches.DISABLE_FIRST_RUN_EXPERIENCE})
 public class StatusBarColorControllerTest {
-    // clang-format on
     @ClassRule
     public static DisableAnimationsTestRule sEnableAnimationsRule =
             new DisableAnimationsTestRule(false);

@@ -181,11 +181,9 @@ public class SafeBrowsingTest {
                 metadata = SAFE_METADATA;
             }
 
-            // clang-format off
             PostTask.runOrPostTask(TaskTraits.UI_DEFAULT,
                     (Runnable) () -> mObserver.onUrlCheckDone(
                         callbackId, SafeBrowsingResult.SUCCESS, metadata, CHECK_DELTA_US));
-            // clang-format on
         }
 
         @Override
@@ -941,11 +939,9 @@ public class SafeBrowsingTest {
         mContentsClient.getOnPageFinishedHelper().waitForCallback(pageFinishedCount);
 
         // Wait for the onSafeBrowsingHit to call BACK_TO_SAFETY and navigate back
-        // clang-format off
         mActivityTestRule.pollUiThread(() -> colorToString(GREEN_PAGE_BACKGROUND_COLOR).equals(
                 colorToString(GraphicsTestUtils.getPixelColorAtCenterOfView(mAwContents,
                         mContainerView))));
-        // clang-format on
 
         // Check onSafeBrowsingHit arguments
         Assert.assertFalse(mContentsClient.getLastRequest().isOutermostMainFrame);
@@ -995,13 +991,11 @@ public class SafeBrowsingTest {
      * JS.
      */
     private boolean getVisibilityByIdOnInterstitial(String domNodeId) throws Exception {
-        // clang-format off
         final String script =
                   "(function isNodeVisible(node) {"
                 + "  if (!node) return 'node not found';"
                 + "  return !node.classList.contains('hidden');"
                 + "})(document.getElementById('" + domNodeId + "'))";
-        // clang-format on
 
         String value = mActivityTestRule.executeJavaScriptAndWaitForResult(
                 mAwContents, mContentsClient, script);

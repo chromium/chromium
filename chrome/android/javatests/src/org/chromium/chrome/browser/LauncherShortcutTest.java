@@ -54,7 +54,6 @@ import java.util.concurrent.TimeoutException;
 /**
  * Tests for Android NMR1 launcher shortcuts.
  */
-// clang-format off
 @RunWith(ParameterizedRunner.class)
 @ParameterAnnotations.UseRunnerDelegate(ChromeJUnit4RunnerDelegate.class)
 @CommandLineFlags.Add({ChromeSwitches.DISABLE_FIRST_RUN_EXPERIENCE})
@@ -62,7 +61,6 @@ import java.util.concurrent.TimeoutException;
 @MinAndroidSdkLevel(Build.VERSION_CODES.N_MR1)
 @DoNotBatch(reason = "This class tests activity start behavior and thus cannot be batched.")
 public class LauncherShortcutTest {
-    // clang-format on
 
     /**
      * Used for parameterized tests to toggle whether an incognito or regular tab is created.

@@ -373,12 +373,10 @@ public class LocationBarMediatorTest {
     @Test
     public void testLoadUrl_NativeNotInitialized() {
         if (BuildConfig.ENABLE_ASSERTS) {
-            // clang-format off
             try {
                 mMediator.loadUrl(TEST_URL, PageTransition.TYPED, 0, false);
                 throw new Error("Expected an assert to be triggered.");
             } catch (AssertionError e) {}
-            // clang-format on
         }
     }
 

@@ -95,7 +95,6 @@ public class InMemoryCachedImageFetcherTest {
     private void answerFetch(Bitmap bitmap, boolean deleteBitmapCacheOnFetch) {
         mInMemoryCachedImageFetcher =
                 new InMemoryCachedImageFetcher(mMockImageFetcher, mBitmapCache);
-        // clang-format off
         doAnswer((InvocationOnMock invocation) -> {
             if (deleteBitmapCacheOnFetch) {
                 mInMemoryCachedImageFetcher.destroy();
@@ -107,7 +106,6 @@ public class InMemoryCachedImageFetcherTest {
         }).when(mMockImageFetcher)
                 .fetchImage(any(),
                         mCallbackCaptor.capture());
-        // clang-format on
     }
 
     // Use with junit.Assume to turn assertions on/off for specific test.

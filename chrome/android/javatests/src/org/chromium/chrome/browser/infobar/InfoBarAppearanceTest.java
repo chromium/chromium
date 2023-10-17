@@ -31,12 +31,10 @@ import java.util.concurrent.TimeoutException;
 /**
  * Tests for the appearance of InfoBars.
  */
-// clang-format off
 @RunWith(ChromeJUnit4ClassRunner.class)
 @CommandLineFlags.Add({ChromeSwitches.DISABLE_FIRST_RUN_EXPERIENCE})
 @Batch(Batch.PER_CLASS)
 public class InfoBarAppearanceTest {
-    // clang-format on
 
     @ClassRule
     public static ChromeTabbedActivityTestRule sActivityTestRule =

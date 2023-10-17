@@ -93,7 +93,6 @@ import java.util.concurrent.atomic.AtomicReference;
  * Instrumentation tests for the context menu.
  */
 @RunWith(ChromeJUnit4ClassRunner.class)
-// clang-format off
 @CommandLineFlags.Add({ChromeSwitches.DISABLE_FIRST_RUN_EXPERIENCE,
         ChromeSwitches.GOOGLE_BASE_URL + "=http://example.com/"})
 public class ContextMenuTest implements DownloadTestRule.CustomMainActivityStart {
@@ -103,7 +102,6 @@ public class ContextMenuTest implements DownloadTestRule.CustomMainActivityStart
     @Mock
     private ShareDelegate mShareDelegate;
 
-    // clang-format on
     @Rule
     public DownloadTestRule mDownloadTestRule = new DownloadTestRule(this);
 

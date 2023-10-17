@@ -224,21 +224,17 @@ public class StartSurfaceBackButtonTest {
     @Test
     @MediumTest
     @Feature({"StartSurface"})
-    // clang-format off
     @CommandLineFlags.Add({START_SURFACE_TEST_SINGLE_ENABLED_PARAMS})
     public void testShow_SingleAsHomepage_BackButtonWithTabSwitcher() {
-        // clang-format on
         singleAsHomepage_BackButtonWithTabSwitcher();
     }
 
     @Test
     @MediumTest
     @Feature({"StartSurface"})
-    // clang-format off
     @CommandLineFlags.Add({START_SURFACE_TEST_BASE_PARAMS +
         "open_ntp_instead_of_start/false/open_start_as_homepage/true"})
     public void testShow_SingleAsHomepageV2_BackButtonWithTabSwitcher() {
-        // clang-format on
         singleAsHomepage_BackButtonWithTabSwitcher();
     }
 
@@ -324,9 +320,7 @@ public class StartSurfaceBackButtonTest {
     @Feature({"StartSurface"})
     @CommandLineFlags.Add({START_SURFACE_TEST_BASE_PARAMS
             + "open_ntp_instead_of_start/false/open_start_as_homepage/true"})
-    // clang-format off
     public void testUserActionLoggedWhenBackToStartSurfaceHomePage() throws ExecutionException {
-        // clang-format on
         ChromeTabbedActivity cta = mActivityTestRule.getActivity();
         if (!mImmediateReturn) StartSurfaceTestUtils.pressHomePageButton(cta);
         StartSurfaceTestUtils.waitForStartSurfaceVisible(
@@ -350,12 +344,10 @@ public class StartSurfaceBackButtonTest {
     @Test
     @MediumTest
     @Feature({"StartSurface"})
-    // clang-format off
     @CommandLineFlags.Add({START_SURFACE_TEST_SINGLE_ENABLED_PARAMS})
     @DisabledTest(message = "https://crbug.com/1246457")
     @DisableFeatures(ChromeFeatureList.BACK_GESTURE_REFACTOR)
     public void testSwipeBackOnStartSurfaceHomePage() throws ExecutionException {
-        // clang-format on
         verifySwipeBackOnStartSurfaceHomePage();
     }
 

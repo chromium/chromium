@@ -74,7 +74,6 @@ import java.io.IOException;
 
 /** End-to-end tests for TabGridIph component. */
 @RunWith(ChromeJUnit4ClassRunner.class)
-// clang-format off
 @CommandLineFlags.Add({ChromeSwitches.DISABLE_FIRST_RUN_EXPERIENCE,
         "enable-features=IPH_TabGroupsDragAndDrop<TabGroupsDragAndDrop",
         "force-fieldtrials=TabGroupsDragAndDrop/Enabled",
@@ -93,7 +92,6 @@ import java.io.IOException;
 @DisableFeatures({
     ChromeFeatureList.CLOSE_TAB_SUGGESTIONS, ChromeFeatureList.START_SURFACE_ANDROID})
 public class TabGridIphTest {
-    // clang-format on
     private ModalDialogManager mModalDialogManager;
 
     @Rule

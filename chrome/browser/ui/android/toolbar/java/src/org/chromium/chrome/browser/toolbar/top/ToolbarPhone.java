@@ -125,14 +125,12 @@ public class ToolbarPhone extends ToolbarLayout
     protected static final int ENTERING_TAB_SWITCHER = 2;
     protected static final int EXITING_TAB_SWITCHER = 3;
 
-    // clang-format off
     @ViewDebug.ExportedProperty(category = "chrome", mapping = {
             @ViewDebug.IntToString(from = STATIC_TAB, to = "STATIC_TAB"),
             @ViewDebug.IntToString(from = TAB_SWITCHER, to = "TAB_SWITCHER"),
             @ViewDebug.IntToString(from = ENTERING_TAB_SWITCHER, to = "ENTERING_TAB_SWITCHER"),
             @ViewDebug.IntToString(from = EXITING_TAB_SWITCHER, to = "EXITING_TAB_SWITCHER")
             })
-    // clang-format on
 
     static final int LOCATION_BAR_TRANSPARENT_BACKGROUND_ALPHA = 51;
 

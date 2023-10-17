@@ -166,7 +166,6 @@ public class AutocompleteMediatorUnitTest {
                 mTabWindowManagerSupplier,
                 url -> false, mOmniboxActionDelegate, mOpenHistoryClustersDelegate);
 
-        // clang-format on
         mMediator.getDropdownItemViewInfoListBuilderForTest().registerSuggestionProcessor(
                 mMockProcessor);
         mMediator.getDropdownItemViewInfoListBuilderForTest().setHeaderProcessorForTest(

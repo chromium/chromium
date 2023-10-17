@@ -35,11 +35,9 @@ public class ChromeActionModeHandlerTest {
     public ChromeTabbedActivityTestRule mActivityTestRule = new ChromeTabbedActivityTestRule();
 
     private void assertActionModeIsReady() {
-        // clang-format off
         TestThreadUtils.runOnUiThreadBlocking(
                 () -> Assert.assertTrue(WebContentsUtils.isActionModeSupported(
                         mActivityTestRule.getWebContents())));
-        // clang-format on
     }
 
     @Test
@@ -54,13 +52,11 @@ public class ChromeActionModeHandlerTest {
 
         LoadUrlParams urlParams = new LoadUrlParams(ContentUrlConstants.ABOUT_BLANK_DISPLAY_URL);
         // Assert that a new tab has an action mode callback set as expected.
-        // clang-format off
         TestThreadUtils.runOnUiThreadBlockingNoException(() -> {
             Tab tab = mActivityTestRule.getActivity().getActivityTabProvider().get();
             return mActivityTestRule.getActivity().getTabModelSelector().openNewTab(
                         urlParams, TabLaunchType.FROM_LONGPRESS_FOREGROUND, tab, true);
         });
-        // clang-format on
         assertActionModeIsReady();
     }
 }

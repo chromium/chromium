@@ -145,7 +145,6 @@ import java.util.ArrayList;
 import java.util.concurrent.ExecutionException;
 
 /** End-to-end tests for TabGridDialog component. */
-// clang-format off
 @RunWith(ParameterizedRunner.class)
 @ParameterAnnotations.UseRunnerDelegate(ChromeJUnit4RunnerDelegate.class)
 @CommandLineFlags.Add({ChromeSwitches.DISABLE_FIRST_RUN_EXPERIENCE})
@@ -153,7 +152,6 @@ import java.util.concurrent.ExecutionException;
 @EnableFeatures({DEFER_TAB_SWITCHER_LAYOUT_CREATION, START_SURFACE_REFACTOR})
 @Batch(Batch.PER_CLASS)
 public class TabGridDialogTest {
-    // clang-format on
     private static final String CUSTOMIZED_TITLE1 = "wfh tips";
     private static final String CUSTOMIZED_TITLE2 = "wfh funs";
     private static final String PAGE_WITH_HTTPS_CANONICAL_URL =
@@ -489,9 +487,7 @@ public class TabGridDialogTest {
 
     @Test
     @MediumTest
-    // clang-format off
     public void testDialogToolbarSelectionEditor() throws ExecutionException {
-        // clang-format on
         final ChromeTabbedActivity cta = sActivityTestRule.getActivity();
         createTabs(cta, false, 2);
         enterTabSwitcher(cta);
@@ -869,12 +865,10 @@ public class TabGridDialogTest {
 
     @Test
     @MediumTest
-    // clang-format off
     // TODO(crbug.com/1380489): Re-enable once test is no longer flaky locally.
     @DisableFeatures({ContentFeatures.SURFACE_SYNC_FULLSCREEN_KILLSWITCH})
     @Restriction(DeviceRestriction.RESTRICTION_TYPE_NON_AUTO)
     public void testSelectionEditorPosition() {
-        // clang-format on;
         final ChromeTabbedActivity cta = sActivityTestRule.getActivity();
 
         // Position in portrait mode.

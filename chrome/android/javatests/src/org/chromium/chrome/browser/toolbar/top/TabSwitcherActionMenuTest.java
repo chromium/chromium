@@ -37,7 +37,6 @@ import org.chromium.ui.test.util.UiRestriction;
  * Instrumentation tests for tab switcher long-press menu popup
  */
 @RunWith(ChromeJUnit4ClassRunner.class)
-// clang-format off
 @CommandLineFlags.Add({ChromeSwitches.DISABLE_FIRST_RUN_EXPERIENCE})
 @Restriction(UiRestriction.RESTRICTION_TYPE_PHONE)
 public class TabSwitcherActionMenuTest {

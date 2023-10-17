@@ -98,7 +98,6 @@ import java.util.concurrent.atomic.AtomicInteger;
  */
 @RunWith(ParameterizedRunner.class)
 @ParameterAnnotations.UseRunnerDelegate(ChromeJUnit4RunnerDelegate.class)
-// clang-format off
 @CommandLineFlags.
     Add({ChromeSwitches.DISABLE_FIRST_RUN_EXPERIENCE, "force-fieldtrials=Study/Group"})
 @EnableFeatures({ChromeFeatureList.START_SURFACE_RETURN_TIME + "<Study,",
@@ -108,7 +107,6 @@ import java.util.concurrent.atomic.AtomicInteger;
     UiRestriction.RESTRICTION_TYPE_PHONE})
 @DoNotBatch(reason = "This test suite tests startup behaviours and thus can't be batched.")
 public class InstantStartTabSwitcherTest {
-    // clang-format on
     private static final String SHADOW_VIEW_TAG = "TabListViewShadow";
 
     @Rule
@@ -191,11 +189,9 @@ public class InstantStartTabSwitcherTest {
     @Test
     @SmallTest
     @Feature({"RenderTest"})
-    // clang-format off
     @CommandLineFlags.Add({ChromeSwitches.DISABLE_NATIVE_INITIALIZATION,
         INSTANT_START_TEST_BASE_PARAMS + "/show_last_active_tab_only/false"})
     public void renderTabSwitcher() throws IOException, InterruptedException {
-        // clang-format on
         StartSurfaceTestUtils.createTabStateFile(new int[] {0, 1, 2});
         StartSurfaceTestUtils.createThumbnailBitmapAndWriteToFile(0, mBrowserControlsStateProvider);
         StartSurfaceTestUtils.createThumbnailBitmapAndWriteToFile(1, mBrowserControlsStateProvider);
@@ -226,13 +222,11 @@ public class InstantStartTabSwitcherTest {
     @Test
     @SmallTest
     @Feature({"RenderTest"})
-    // clang-format off
     @CommandLineFlags.Add({ChromeSwitches.DISABLE_NATIVE_INITIALIZATION,
         INSTANT_START_TEST_BASE_PARAMS + "/show_last_active_tab_only/false"})
     @DisableIf.Build(message = "Flaky. See https://crbug.com/1091311",
         sdk_is_greater_than = Build.VERSION_CODES.O)
     public void renderTabGroups() throws IOException {
-        // clang-format on
         StartSurfaceTestUtils.createThumbnailBitmapAndWriteToFile(0, mBrowserControlsStateProvider);
         StartSurfaceTestUtils.createThumbnailBitmapAndWriteToFile(1, mBrowserControlsStateProvider);
         StartSurfaceTestUtils.createThumbnailBitmapAndWriteToFile(2, mBrowserControlsStateProvider);
@@ -278,13 +272,11 @@ public class InstantStartTabSwitcherTest {
     @Test
     @SmallTest
     @Feature({"RenderTest"})
-    // clang-format off
     @CommandLineFlags.Add({ChromeSwitches.DISABLE_NATIVE_INITIALIZATION,
         INSTANT_START_TEST_BASE_PARAMS + "/show_last_active_tab_only/false"})
     @DisableIf.Build(message = "Flaky. See https://crbug.com/1091311",
         sdk_is_greater_than = Build.VERSION_CODES.O)
     public void renderTabGroups_ThemeRefactor() throws IOException {
-        // clang-format on
         StartSurfaceTestUtils.createThumbnailBitmapAndWriteToFile(0, mBrowserControlsStateProvider);
         StartSurfaceTestUtils.createThumbnailBitmapAndWriteToFile(1, mBrowserControlsStateProvider);
         StartSurfaceTestUtils.createThumbnailBitmapAndWriteToFile(2, mBrowserControlsStateProvider);
@@ -318,12 +310,10 @@ public class InstantStartTabSwitcherTest {
 
     @Test
     @MediumTest
-    // clang-format off
     @CommandLineFlags.Add({ChromeSwitches.DISABLE_NATIVE_INITIALIZATION,
         INSTANT_START_TEST_BASE_PARAMS + "/show_last_active_tab_only/false"})
     public void testSingleAsHomepage_CloseTabInCarouselTabSwitcher()
             throws IOException, ExecutionException {
-        // clang-format on
         StartSurfaceTestUtils.createTabStateFile(new int[] {0});
         StartSurfaceTestUtils.createThumbnailBitmapAndWriteToFile(0, mBrowserControlsStateProvider);
         TabAttributeCache.setTitleForTesting(0, "Google");
@@ -356,12 +346,10 @@ public class InstantStartTabSwitcherTest {
 
     @Test
     @LargeTest
-    // clang-format off
     @CommandLineFlags.Add({ChromeSwitches.DISABLE_NATIVE_INITIALIZATION,
         INSTANT_START_TEST_BASE_PARAMS,
         FeedPlaceholderLayout.DISABLE_ANIMATION_SWITCH})
     public void testScrollToSelectedTab() throws Exception {
-        // clang-format on
         StartSurfaceTestUtils.createTabStateFile(new int[] {0, 1, 2, 3, 4, 5, 6, 7, 8, 9}, null, 5);
         StartSurfaceTestUtils.startMainActivityFromLauncher(mActivityTestRule);
         ChromeTabbedActivity cta = mActivityTestRule.getActivity();
@@ -407,7 +395,6 @@ public class InstantStartTabSwitcherTest {
     @CommandLineFlags.Add({ChromeSwitches.DISABLE_NATIVE_INITIALIZATION,
             INSTANT_START_TEST_BASE_PARAMS + "/show_last_active_tab_only/false"
                     + "/open_ntp_instead_of_start/false/open_start_as_homepage/true"})
-    // clang-format off
     public void testSingleAsHomepage_Landscape_TabSize() throws IOException {
      testSingleAsHomepage_Landscape_TabSize_impl();
     }
@@ -418,13 +405,11 @@ public class InstantStartTabSwitcherTest {
     @CommandLineFlags.Add({ChromeSwitches.DISABLE_NATIVE_INITIALIZATION,
         INSTANT_START_TEST_BASE_PARAMS + "/show_last_active_tab_only/false"
             + "/open_ntp_instead_of_start/false/open_start_as_homepage/true"})
-    // clang-format off
     public void testSingleAsHomepage_Landscape_TabSize_RefactorEnabled() throws IOException {
         testSingleAsHomepage_Landscape_TabSize_impl();
     }
 
    private void testSingleAsHomepage_Landscape_TabSize_impl() throws IOException {
-        // clang-format on
         StartSurfaceTestUtils.startMainActivityFromLauncher(mActivityTestRule);
         ChromeTabbedActivity cta = mActivityTestRule.getActivity();
         StartSurfaceTestUtils.waitForStartSurfaceVisible(cta);
@@ -461,7 +446,6 @@ public class InstantStartTabSwitcherTest {
     @MediumTest
     @CommandLineFlags.Add({INSTANT_START_TEST_BASE_PARAMS})
     public void testShowStartWhenHomepageDisabledWithImmediateReturn() throws IOException {
-        // clang-format on
         Assert.assertTrue(ChromeFeatureList.sInstantStart.isEnabled());
         Assert.assertEquals(
                 0, StartSurfaceConfiguration.START_SURFACE_RETURN_TIME_SECONDS.getValue());
@@ -511,10 +495,8 @@ public class InstantStartTabSwitcherTest {
     @Test
     @MediumTest
     @UseMethodParameter(LastVisitedTabIsSRPTestParams.class)
-    // clang-format off
     @CommandLineFlags.Add({ChromeSwitches.DISABLE_NATIVE_INITIALIZATION,
         INSTANT_START_TEST_BASE_PARAMS})
-    // clang-format on
     public void testRecordLastVisitedTabIsSRPHistogram_Instant(
             boolean isSingleTabSwitcher, boolean isSRP) throws IOException {
         testRecordLastVisitedTabIsSRPHistogram(isSingleTabSwitcher, isSRP);
@@ -524,10 +506,8 @@ public class InstantStartTabSwitcherTest {
     @MediumTest
     @DisableFeatures(ChromeFeatureList.INSTANT_START)
     @UseMethodParameter(LastVisitedTabIsSRPTestParams.class)
-    // clang-format off
     @CommandLineFlags.Add({ChromeSwitches.DISABLE_NATIVE_INITIALIZATION,
         INSTANT_START_TEST_BASE_PARAMS})
-    // clang-format on
     public void testRecordLastVisitedTabIsSRPHistogram_NoInstant(
             boolean isSingleTabSwitcher, boolean isSRP) throws IOException {
         testRecordLastVisitedTabIsSRPHistogram(isSingleTabSwitcher, isSRP);
@@ -536,10 +516,8 @@ public class InstantStartTabSwitcherTest {
     @Test
     @MediumTest
     @DisableFeatures(ChromeFeatureList.INSTANT_START)
-    // clang-format off
     @CommandLineFlags.Add({ChromeSwitches.DISABLE_NATIVE_INITIALIZATION,
         INSTANT_START_TEST_BASE_PARAMS})
-    // clang-format on
     @DisableIf.Build(message = "https://crbug.com/1470412", sdk_is_greater_than = VERSION_CODES.M,
             sdk_is_less_than = VERSION_CODES.Q)
     public void

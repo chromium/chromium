@@ -51,14 +51,12 @@ import java.util.concurrent.atomic.AtomicReference;
  * Checking if enabling HomepageLocation policy will reflect the expected behaviors for
  * {@link HomepageSettings} and {@link org.chromium.chrome.browser.toolbar.HomeButton}
  */
-// clang-format off
 @RunWith(ChromeJUnit4ClassRunner.class)
 @CommandLineFlags.Add({ChromeSwitches.DISABLE_FIRST_RUN_EXPERIENCE})
 @Policies.Add({
     @Policies.Item(key = "HomepageLocation", string = HomepagePolicyIntegrationTest.TEST_URL)
 })
 public class HomepagePolicyIntegrationTest {
-    // clang-format on
     public static final String TEST_URL = "http://127.0.0.1:8000/foo.html";
     public static final String GOOGLE_HTML = "/chrome/test/data/android/google.html";
 

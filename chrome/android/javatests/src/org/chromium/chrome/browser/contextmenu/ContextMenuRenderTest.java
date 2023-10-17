@@ -90,7 +90,6 @@ public class ContextMenuRenderTest extends BlankUiTestActivityTestCase {
             ContextMenuListView listView = mView.findViewById(R.id.context_menu_list_view);
             listView.setAdapter(mAdapter);
 
-            // clang-format off
             mAdapter.registerType(
                     ListItemType.HEADER,
                     new LayoutViewBuilder(R.layout.context_menu_header),
@@ -108,7 +107,6 @@ public class ContextMenuRenderTest extends BlankUiTestActivityTestCase {
                     ListItemType.CONTEXT_MENU_ITEM_WITH_ICON_BUTTON,
                     new LayoutViewBuilder(R.layout.context_menu_share_row),
                     ContextMenuItemWithIconButtonViewBinder::bind);
-            // clang-format on
         });
     }
 

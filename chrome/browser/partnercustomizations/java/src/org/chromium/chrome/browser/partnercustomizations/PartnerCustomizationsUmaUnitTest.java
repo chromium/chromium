@@ -260,7 +260,6 @@ public class PartnerCustomizationsUmaUnitTest {
     //  Note that "Partner" and "Other" only apply when Ntp is false, and omitted otherwise.
     //==============================================================================================
 
-    // clang-format off
 
     @Test
     public void testOutcomeMadeNtpForCertainNowPartnerNtp() {
@@ -454,7 +453,6 @@ public class PartnerCustomizationsUmaUnitTest {
         histograms.assertExpected();
     }
 
-    // clang-format on
 
     //==============================================================================================
     // Helpers.

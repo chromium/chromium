@@ -292,12 +292,10 @@ public class BookmarkEditTest {
                                     instanceof BookmarkFolderSelectActivity);
             sBookmarkModel.deleteBookmark(sBookmarkId);
         });
-        // clang-format off
         CriteriaHelper.pollUiThread(() ->
                 !(ApplicationStatus.getLastTrackedFocusedActivity()
                       instanceof BookmarkFolderSelectActivity),
                 "Timed out waiting for BookmarkFolderSelectActivity to close");
-        // clang-format on
     }
 
     private BookmarkItem getBookmarkItem(BookmarkId bookmarkId) throws ExecutionException {
@@ -321,21 +319,17 @@ public class BookmarkEditTest {
     }
 
     private void waitForMoveFolderActivity() {
-        // clang-format off
         CriteriaHelper.pollUiThread(()->
                 ApplicationStatus.getLastTrackedFocusedActivity()
                     instanceof BookmarkFolderSelectActivity,
                 "Timed out waiting for BookmarkFolderSelectActivity");
-        // clang-format on
         InstrumentationRegistry.getInstrumentation().waitForIdleSync();
     }
 
     private void waitForEditActivity() {
-        // clang-format off
         CriteriaHelper.pollUiThread(()->
                 ApplicationStatus.getLastTrackedFocusedActivity() instanceof BookmarkEditActivity,
                 "Timed out waiting for BookmarkEditActivity");
-        // clang-format on
         sBookmarkEditActivity =
                 (BookmarkEditActivity) ApplicationStatus.getLastTrackedFocusedActivity();
         InstrumentationRegistry.getInstrumentation().waitForIdleSync();

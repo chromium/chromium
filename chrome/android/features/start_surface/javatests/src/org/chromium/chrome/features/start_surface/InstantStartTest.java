@@ -94,7 +94,6 @@ import java.util.concurrent.CountDownLatch;
  * InstantStartTabSwitcherTest}, {@link InstantStartNewTabFromLauncherTest} for more tests.
  */
 @RunWith(ChromeJUnit4ClassRunner.class)
-// clang-format off
 @CommandLineFlags.
     Add({ChromeSwitches.DISABLE_FIRST_RUN_EXPERIENCE, "force-fieldtrials=Study/Group"})
 @EnableFeatures({ChromeFeatureList.START_SURFACE_ANDROID, ChromeFeatureList.INSTANT_START,
@@ -103,7 +102,6 @@ import java.util.concurrent.CountDownLatch;
     UiRestriction.RESTRICTION_TYPE_PHONE})
 @DoNotBatch(reason = "InstantStartTest tests startup behaviours and thus can't be batched.")
 public class InstantStartTest {
-    // clang-format on
     private static final String IMMEDIATE_RETURN_PARAMS = "force-fieldtrial-params=Study.Group:"
             + StartSurfaceConfiguration.START_SURFACE_RETURN_TIME_SECONDS_PARAM + "/0";
     private Bitmap mBitmap;
@@ -152,11 +150,9 @@ public class InstantStartTest {
      */
     @Test
     @SmallTest
-    // clang-format off
     @Restriction({Restriction.RESTRICTION_TYPE_NON_LOW_END_DEVICE})
     @CommandLineFlags.Add({ChromeSwitches.DISABLE_NATIVE_INITIALIZATION})
     public void fetchThumbnailsPreNativeTest() {
-        // clang-format on
         StartSurfaceTestUtils.startMainActivityFromLauncher(mActivityTestRule);
 
         int tabId = 0;
@@ -191,11 +187,9 @@ public class InstantStartTest {
 
     @Test
     @SmallTest
-    // clang-format off
     @EnableFeatures({ChromeFeatureList.START_SURFACE_RETURN_TIME + "<Study"})
     @CommandLineFlags.Add({ChromeSwitches.DISABLE_NATIVE_INITIALIZATION, IMMEDIATE_RETURN_PARAMS})
     public void layoutManagerChromePhonePreNativeTest() {
-        // clang-format on
         StartSurfaceTestUtils.startMainActivityFromLauncher(mActivityTestRule);
         ChromeTabbedActivity cta = mActivityTestRule.getActivity();
         Assert.assertFalse(cta.isTablet());
@@ -214,7 +208,6 @@ public class InstantStartTest {
 
     @Test
     @SmallTest
-    // clang-format off
     @EnableFeatures({ChromeFeatureList.START_SURFACE_RETURN_TIME + "<Study,",
             ChromeFeatureList.START_SURFACE_ANDROID + "<Study"})
     // TODO(https://crbug.com/1315676): Removes this test once the start surface refactoring is
@@ -223,7 +216,6 @@ public class InstantStartTest {
     @CommandLineFlags.Add({ChromeSwitches.DISABLE_NATIVE_INITIALIZATION,
         INSTANT_START_TEST_BASE_PARAMS + "/enable_launch_polish/true"})
     public void startSurfaceSinglePanePreNativeAndWithNativeTest() {
-        // clang-format on
         StartSurfaceTestUtils.startMainActivityFromLauncher(mActivityTestRule);
         ChromeTabbedActivity cta = mActivityTestRule.getActivity();
         Assert.assertFalse(cta.isTablet());
@@ -274,10 +266,8 @@ public class InstantStartTest {
     @Test
     @SmallTest
     @EnableFeatures({ChromeFeatureList.START_SURFACE_ANDROID + "<Study"})
-    // clang-format off
     @CommandLineFlags.Add({ChromeSwitches.DISABLE_NATIVE_INITIALIZATION})
     public void testShouldShowStartSurfaceAsTheHomePagePreNative() {
-        // clang-format on
         StartSurfaceTestUtils.startMainActivityFromLauncher(mActivityTestRule);
         Assert.assertTrue(StartSurfaceConfiguration.isStartSurfaceFlagEnabled());
         Assert.assertFalse(HomepageManager.getHomepageGurl().isEmpty());
@@ -311,9 +301,7 @@ public class InstantStartTest {
     @Test
     @SmallTest
     @CommandLineFlags.Add(BaseSwitches.ENABLE_LOW_END_DEVICE_MODE)
-    // clang-format off
     public void testInstantStartDisabledOnLowEndDevice() throws IOException {
-        // clang-format on
         StartSurfaceTestUtils.createTabStateFile(new int[] {123});
         mActivityTestRule.startMainActivityFromLauncher();
 
@@ -324,10 +312,8 @@ public class InstantStartTest {
     @Test
     @SmallTest
     @EnableFeatures({ChromeFeatureList.START_SURFACE_ANDROID + "<Study"})
-    // clang-format off
     @CommandLineFlags.Add({ChromeSwitches.DISABLE_NATIVE_INITIALIZATION})
     public void testNoGURLPreNative() {
-        // clang-format on
         if (!BuildConfig.ENABLE_ASSERTS) return;
         StartSurfaceTestUtils.startMainActivityFromLauncher(mActivityTestRule);
         collector.checkThat(StartSurfaceConfiguration.isStartSurfaceFlagEnabled(), is(true));
@@ -345,13 +331,11 @@ public class InstantStartTest {
     @Test
     @MediumTest
     @Feature({"RenderTest"})
-    // clang-format off
     @EnableFeatures({ChromeFeatureList.START_SURFACE_RETURN_TIME + "<Study,",
             ChromeFeatureList.START_SURFACE_ANDROID + "<Study"})
     @CommandLineFlags.Add({ChromeSwitches.DISABLE_NATIVE_INITIALIZATION,
         INSTANT_START_TEST_BASE_PARAMS})
     public void renderSingleAsHomepage_Landscape() throws IOException {
-        // clang-format on
         StartSurfaceTestUtils.setMVTiles(mSuggestionsDeps);
 
         StartSurfaceTestUtils.startMainActivityFromLauncher(mActivityTestRule);
@@ -373,11 +357,9 @@ public class InstantStartTest {
 
     @Test
     @MediumTest
-    // clang-format off
     @EnableFeatures({ChromeFeatureList.START_SURFACE_RETURN_TIME + "<Study,",
         ChromeFeatureList.START_SURFACE_ANDROID + "<Study"})
     public void testShowLastTabWhenHomepageDisabledNoImmediateReturn() throws IOException {
-        // clang-format on
         Assert.assertTrue(ChromeFeatureList.sInstantStart.isEnabled());
         Assert.assertEquals(
                 StartSurfaceConfiguration.START_SURFACE_RETURN_TIME_SECONDS.getDefaultValue(),
@@ -392,13 +374,11 @@ public class InstantStartTest {
 
     @Test
     @MediumTest
-    // clang-format off
     @EnableFeatures({ChromeFeatureList.START_SURFACE_RETURN_TIME + "<Study,",
         ChromeFeatureList.START_SURFACE_ANDROID + "<Study"})
     @DisableFeatures(ChromeFeatureList.INSTANT_START)
     public void testShowLastTabWhenHomepageDisabledNoImmediateReturn_NoInstant()
           throws IOException {
-        // clang-format on
         Assert.assertFalse(ChromeFeatureList.sInstantStart.isEnabled());
         Assert.assertEquals(
                 StartSurfaceConfiguration.START_SURFACE_RETURN_TIME_SECONDS.getDefaultValue(),

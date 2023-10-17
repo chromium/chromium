@@ -57,13 +57,11 @@ import org.chromium.ui.test.util.UiRestriction;
  * Integration tests for status indicator covering related code in
  * {@link StatusIndicatorCoordinator} and {@link TabbedRootUiCoordinator}.
  */
-// clang-format off
 @RunWith(ChromeJUnit4ClassRunner.class)
 @CommandLineFlags.Add({ChromeSwitches.DISABLE_FIRST_RUN_EXPERIENCE})
 // TODO(crbug.com/1035584): Enable for tablets once we support them.
 @Restriction({UiRestriction.RESTRICTION_TYPE_PHONE})
 public class StatusIndicatorTest {
-    // clang-format on
 
     @Rule
     public ChromeTabbedActivityTestRule mActivityTestRule = new ChromeTabbedActivityTestRule();
@@ -198,14 +196,12 @@ public class StatusIndicatorTest {
 
     @Test
     @MediumTest
-    // clang-format off
     @Restriction(Restriction.RESTRICTION_TYPE_NON_LOW_END_DEVICE)
     // TODO(https://crbug.com/1315676): Remove this test once the Start surface refactor is done.
     // This is because the "secondary_tasks_surface_view" will go away, and testShowAfterHide() will
     // cover the testing of grid tab switcher directly.
     @DisableFeatures(ChromeFeatureList.START_SURFACE_REFACTOR)
     public void testShowAndHideOnStartSurface() {
-        // clang-format on
         TabUiTestHelper.enterTabSwitcher(mActivityTestRule.getActivity());
 
         StartSurfaceTestUtils.waitForTabSwitcherVisible(mActivityTestRule.getActivity());

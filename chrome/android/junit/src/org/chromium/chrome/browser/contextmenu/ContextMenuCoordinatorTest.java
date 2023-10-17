@@ -308,7 +308,6 @@ public class ContextMenuCoordinatorTest {
         Assert.assertEquals("rect.bottom does not match.", centerY, rect.bottom);
     }
 
-    // clang-format off
     @Test
     @DisabledTest(message = "crbug.com/1444964")
     @DisableFeatures(ContentFeatures.TOUCH_DRAG_AND_CONTEXT_MENU)
@@ -316,7 +315,6 @@ public class ContextMenuCoordinatorTest {
                     ShadowProfile.class},
             qualifiers = "mdpi")
     public void testDisplayMenu() {
-        // clang-format on
         final int triggeringTouchXDp = 100;
         final int triggeringTouchYDp = 200;
         ContextMenuDialog dialog =

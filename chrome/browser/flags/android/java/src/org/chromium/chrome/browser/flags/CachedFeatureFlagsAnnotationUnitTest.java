@@ -38,11 +38,9 @@ public class CachedFeatureFlagsAnnotationUnitTest {
     }
 
     @Test
-    // clang-format off
     @DisableFeatures({ChromeFeatureList.TEST_DEFAULT_DISABLED,
             ChromeFeatureList.TEST_DEFAULT_ENABLED})
     public void testFeatureAnnotationOnMethod() {
-        // clang-format on
         Assert.assertFalse(ChromeFeatureList.sTestDefaultDisabled.isEnabled());
         Assert.assertFalse(ChromeFeatureList.sTestDefaultEnabled.isEnabled());
     }

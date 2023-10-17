@@ -985,10 +985,8 @@ public class CrashesListFragmentTest {
     @Test
     @LargeTest
     @Feature({"AndroidWebView"})
-    // clang-format off
     @DisableIf.Build(sdk_is_greater_than = Build.VERSION_CODES.R,
         message = "https://crbug.com/1292197")
-    // clang-format on
     public void testLongPressCopy() throws Throwable {
         Context context = ContextUtils.getApplicationContext();
         final long systemTime = System.currentTimeMillis();

@@ -87,11 +87,9 @@ public class HomeButtonCoordinatorTest {
     }
 
     private HomeButtonCoordinator newHomeButtonCoordinator(View view) {
-        // clang-format off
         return new HomeButtonCoordinator(mContext, view, mUserEducationHelper, () -> mIsIncognito,
                 mPromoShownOneshotSupplier,
                 () -> mIsHomepageNonNtp, () -> mIsFeedEnabled, new ObservableSupplierImpl<>());
-        // clang-format on
     }
 
     private void verifyIphNotShown() {

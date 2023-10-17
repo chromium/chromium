@@ -72,9 +72,7 @@ public class AwNetworkConfigurationTest {
     @Test
     @SmallTest
     @Feature({"AndroidWebView", "Network"})
-    // clang-format off+
     public void testSHA1LocalAnchorsAllowed() throws Throwable {
-        // clang-format on
         mTestServer = EmbeddedTestServer.createAndStartHTTPSServer(
                 InstrumentationRegistry.getInstrumentation().getContext(),
                 ServerCertificate.CERT_SHA1_LEAF);

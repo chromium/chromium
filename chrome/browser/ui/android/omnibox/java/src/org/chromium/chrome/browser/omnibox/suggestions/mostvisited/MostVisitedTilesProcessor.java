@@ -105,7 +105,6 @@ public class MostVisitedTilesProcessor extends BaseCarouselSuggestionProcessor {
                                                                  : match.getDisplayText();
         int tileIndex = tileList.size();
 
-        // clang-format off
         var tileModel = createTile(title, match.getUrl(), match.isSearchSuggestion(),
                 v -> {
                     OmniboxMetrics.recordSuggestTileTypeUsed(tileIndex, match.isSearchSuggestion());
@@ -115,7 +114,6 @@ public class MostVisitedTilesProcessor extends BaseCarouselSuggestionProcessor {
                     mSuggestionHost.onDeleteMatch(match, title);
                     return true;
                 });
-        // clang-format on
 
         tileList.add(
                 new ListItem(BaseCarouselSuggestionItemViewBuilder.ViewType.TILE_VIEW, tileModel));
@@ -133,7 +131,6 @@ public class MostVisitedTilesProcessor extends BaseCarouselSuggestionProcessor {
             // Use website host text when the website title is empty (for example: gmail.com).
             String title = TextUtils.isEmpty(tile.title) ? tile.url.getHost() : tile.title;
 
-            // clang-format off
             PropertyModel tileModel = createTile(title, tile.url, tile.isSearch,
                     v -> {
                         OmniboxMetrics.recordSuggestTileTypeUsed(index, tile.isSearch);
@@ -143,7 +140,6 @@ public class MostVisitedTilesProcessor extends BaseCarouselSuggestionProcessor {
                         mSuggestionHost.onDeleteMatchElement(match, title, index);
                         return true;
                     });
-            // clang-format on
 
             tileList.add(new ListItem(
                     BaseCarouselSuggestionItemViewBuilder.ViewType.TILE_VIEW, tileModel));

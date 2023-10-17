@@ -55,7 +55,6 @@ import java.util.concurrent.TimeoutException;
 /**
  * Integration tests for drag interactions with context menu.
  */
-// clang-format off
 @RunWith(ChromeJUnit4ClassRunner.class)
 @MinAndroidSdkLevel(value = VERSION_CODES.O)
 @CommandLineFlags.Add(ChromeSwitches.DISABLE_FIRST_RUN_EXPERIENCE)
@@ -63,7 +62,6 @@ import java.util.concurrent.TimeoutException;
                           ChromeFeatureList.CONTEXT_MENU_POPUP_FOR_ALL_SCREEN_SIZES})
 @Batch(Batch.PER_CLASS)
 public class ContextMenuDragTest {
-    // clang-format on
 
     // Test distance
     private static final int TEST_MIN_DIST = 10;

@@ -36,13 +36,11 @@ public class TestListInstrumentationRunListenerTest {
     private static class ChildClass extends ParentClass {}
 
     private static class Groups {
-        // clang-format off
         @ParameterizedCommandLineFlags({
             @Switches({"c1", "c2"}),
             @Switches({"c3", "c4"}),
         })
         public void testA() {}
-        // clang-format on
         @ParameterizedCommandLineFlags
         public void testB() {}
     }
@@ -61,14 +59,12 @@ public class TestListInstrumentationRunListenerTest {
                 ParentClass.class, "testA",
                 ParentClass.class.getMethod("testA").getAnnotations());
         JSONObject json = TestListInstrumentationRunListener.getTestMethodJSON(desc);
-        // clang-format off
         String expectedJsonString = makeJSON(
             "{",
             " 'method': 'testA',",
             " 'annotations': {}",
             "}"
         );
-        // clang-format on
         Assert.assertEquals(expectedJsonString, json.toString());
     }
 
@@ -78,7 +74,6 @@ public class TestListInstrumentationRunListenerTest {
                 ParentClass.class, "testB",
                 ParentClass.class.getMethod("testB").getAnnotations());
         JSONObject json = TestListInstrumentationRunListener.getTestMethodJSON(desc);
-        // clang-format off
         String expectedJsonString = makeJSON(
             "{",
             " 'method': 'testB',",
@@ -89,7 +84,6 @@ public class TestListInstrumentationRunListenerTest {
             " }",
             "}"
         );
-        // clang-format on
         Assert.assertEquals(expectedJsonString, json.toString());
     }
 
@@ -100,7 +94,6 @@ public class TestListInstrumentationRunListenerTest {
                 ChildClass.class, "testB",
                 ChildClass.class.getMethod("testB").getAnnotations());
         JSONObject json = TestListInstrumentationRunListener.getTestMethodJSON(desc);
-        // clang-format off
         String expectedJsonString = makeJSON(
             "{",
             " 'method': 'testB',",
@@ -111,7 +104,6 @@ public class TestListInstrumentationRunListenerTest {
             "  }",
             "}"
         );
-        // clang-format on
         Assert.assertEquals(expectedJsonString, json.toString());
     }
 
@@ -119,7 +111,6 @@ public class TestListInstrumentationRunListenerTest {
     public void testGetAnnotationJSONForParentClass() throws Throwable {
         JSONObject json = TestListInstrumentationRunListener.getAnnotationJSON(
                 Arrays.asList(ParentClass.class.getAnnotations()));
-        // clang-format off
         String expectedJsonString = makeJSON(
             "{",
             " 'CommandLineFlags$Add': {",
@@ -127,7 +118,6 @@ public class TestListInstrumentationRunListenerTest {
             " }",
             "}"
         );
-        // clang-format on
         Assert.assertEquals(expectedJsonString, json.toString());
     }
 
@@ -135,7 +125,6 @@ public class TestListInstrumentationRunListenerTest {
     public void testGetAnnotationJSONForChildClass() throws Throwable {
         JSONObject json = TestListInstrumentationRunListener.getAnnotationJSON(
                 Arrays.asList(ChildClass.class.getAnnotations()));
-        // clang-format off
         String expectedJsonString = makeJSON(
             "{",
             " 'CommandLineFlags$Add': {",
@@ -146,7 +135,6 @@ public class TestListInstrumentationRunListenerTest {
             " }",
             "}"
         );
-        // clang-format on
         Assert.assertEquals(expectedJsonString, json.toString());
     }
 
@@ -155,7 +143,6 @@ public class TestListInstrumentationRunListenerTest {
         Description desc = Description.createTestDescription(
                 Groups.class, "testA", Groups.class.getMethod("testA").getAnnotations());
         JSONObject json = TestListInstrumentationRunListener.getTestMethodJSON(desc);
-        // clang-format off
         String expectedJsonString = makeJSON(
             "{",
             " 'method': 'testA',",
@@ -177,7 +164,6 @@ public class TestListInstrumentationRunListenerTest {
             " }",
             "}"
         );
-        // clang-format on
         Assert.assertEquals(expectedJsonString, json.toString());
     }
 
@@ -186,7 +172,6 @@ public class TestListInstrumentationRunListenerTest {
         Description desc = Description.createTestDescription(
                 Groups.class, "testB", Groups.class.getMethod("testB").getAnnotations());
         JSONObject json = TestListInstrumentationRunListener.getTestMethodJSON(desc);
-        // clang-format off
         String expectedJsonString = makeJSON(
             "{",
             " 'method': 'testB',",
@@ -197,7 +182,6 @@ public class TestListInstrumentationRunListenerTest {
             " }",
             "}"
         );
-        // clang-format on
         Assert.assertEquals(expectedJsonString, json.toString());
     }
 }

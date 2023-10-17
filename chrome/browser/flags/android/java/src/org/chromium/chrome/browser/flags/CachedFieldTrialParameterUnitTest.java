@@ -78,13 +78,11 @@ public class CachedFieldTrialParameterUnitTest {
 
     private static final String FEATURE_B = "FeatureB";
 
-    // clang-format off
     private static final Map<String, String> ALL_PARAM_TEST_OVERRIDE = Map.of(
             STRING_PARAM_NAME, STRING_PARAM_TEST_OVERRIDE,
             BOOLEAN_PARAM_NAME, BOOLEAN_PARAM_TEST_OVERRIDE_STRING,
             INT_PARAM_NAME, INT_PARAM_TEST_OVERRIDE_STRING,
             DOUBLE_PARAM_NAME, DOUBLE_PARAM_TEST_OVERRIDE_STRING);
-    // clang-format on
 
     private static final AllCachedFieldTrialParameters ALL_PARAM =
             new AllCachedFieldTrialParameters(FEATURE_B);

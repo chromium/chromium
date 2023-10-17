@@ -37,9 +37,7 @@ import org.chromium.content_public.browser.test.util.TestThreadUtils;
  */
 @RunWith(ChromeJUnit4ClassRunner.class)
 @DoNotBatch(reason = "This test launches a Settings activity")
-// clang-format off
 public class StandardProtectionSettingsFragmentTest {
-    // clang-format on
     private static final String ASSERT_MESSAGE_PREFIX = "Incorrect state: ";
     private static final String EXTENDED_REPORTING = "extended reporting ";
     private static final String LEAK_DETECTION = "leak detection ";

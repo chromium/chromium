@@ -106,12 +106,10 @@ public class MenuButtonCoordinatorTest {
         doReturn(new WeakReference<>(mActivityMock)).when(mWindowAndroid).getActivity();
         doReturn(mKeyboardDelegate).when(mWindowAndroid).getKeyboardDelegate();
 
-        // clang-format off
         mMenuButtonCoordinator = new MenuButtonCoordinator(mAppMenuSupplier,
                 mControlsVisibilityDelegate, mWindowAndroid, mFocusFunction, mRequestRenderRunnable,
                 true, () -> false, mThemeColorProvider, () -> null, () -> {},
                 R.id.menu_button_wrapper);
-        // clang-format on
     }
 
     @Test

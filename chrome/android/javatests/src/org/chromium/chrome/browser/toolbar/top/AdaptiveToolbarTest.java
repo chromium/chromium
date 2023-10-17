@@ -37,12 +37,10 @@ import org.chromium.ui.test.util.UiRestriction;
 
 /** End-to-end tests for adaptive toolbar. */
 @RunWith(ChromeJUnit4ClassRunner.class)
-// clang-format off
 @CommandLineFlags.Add({ChromeSwitches.DISABLE_FIRST_RUN_EXPERIENCE})
 @Restriction(UiRestriction.RESTRICTION_TYPE_PHONE)
 @DisableFeatures({ChromeFeatureList.START_SURFACE_ANDROID})
 public class AdaptiveToolbarTest {
-    // clang-format on
     @Rule
     public ChromeTabbedActivityTestRule mActivityTestRule = new ChromeTabbedActivityTestRule();
 

@@ -77,14 +77,12 @@ import java.io.IOException;
 
 /** End-to-end tests for PriceAlertsMessageCard. */
 @RunWith(ChromeJUnit4ClassRunner.class)
-// clang-format off
 @CommandLineFlags.Add({ChromeSwitches.DISABLE_FIRST_RUN_EXPERIENCE,
         "enable-features=" + ChromeFeatureList.COMMERCE_PRICE_TRACKING + "<Study",
         "force-fieldtrials=Study/Group"})
 @Restriction({UiRestriction.RESTRICTION_TYPE_PHONE, RESTRICTION_TYPE_NON_LOW_END_DEVICE})
 @DisableFeatures({ChromeFeatureList.CLOSE_TAB_SUGGESTIONS})
 public class PriceAlertsMessageCardTest {
-    // clang-format on
     private static final String BASE_PARAMS =
             "force-fieldtrial-params=Study.Group:implicit_subscriptions_enabled/true";
     private static final String ACTION_APP_NOTIFICATION_SETTINGS =

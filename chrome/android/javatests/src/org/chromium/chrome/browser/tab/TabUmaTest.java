@@ -78,7 +78,6 @@ public class TabUmaTest {
                 new BrowserControlsVisibilityDelegate(BrowserControlsState.BOTH) {};
         ChromeTabbedActivity cta = sActivityTestRule.getActivity();
         RootUiCoordinator rootUiCoordinator = cta.getRootUiCoordinatorForTesting();
-        // clang-format off
         return new TabbedModeTabDelegateFactory(sActivityTestRule.getActivity(), visibilityDelegate,
                 new ObservableSupplierImpl<ShareDelegate>(), null,
                 () -> {}, rootUiCoordinator.getBottomSheetController(),
@@ -90,7 +89,6 @@ public class TabUmaTest {
                 cta.getBrowserControlsManager(), cta.getActivityTabProvider(),
                 cta.getLifecycleDispatcher(), cta.getWindowAndroid(), new PlaceholderJankTracker(),
                 rootUiCoordinator.getToolbarManager()::getToolbar, null, null);
-        // clang-format on
     }
 
     private Tab createLazilyLoadedTab(boolean show) throws ExecutionException {

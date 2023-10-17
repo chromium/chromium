@@ -98,9 +98,7 @@ public class StartSurfaceNoTabsTest {
     @Test
     @LargeTest
     @Feature({"StartSurface"})
-    // clang-format off
     public void testShow_SingleAsHomepage_NoTabs() {
-        // clang-format on
         ChromeTabbedActivity cta = mActivityTestRule.getActivity();
         StartSurfaceTestUtils.waitForStartSurfaceVisible(cta);
 

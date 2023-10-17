@@ -65,14 +65,12 @@ import java.util.List;
 
 /** Tests for reordering tabs in grid tab switcher in accessibility mode. */
 @RunWith(ChromeJUnit4ClassRunner.class)
-// clang-format off
 @CommandLineFlags.Add({ChromeSwitches.DISABLE_FIRST_RUN_EXPERIENCE})
 @Restriction(UiRestriction.RESTRICTION_TYPE_PHONE)
 // START_SURFACE_REFACTOR is required to have stable parent id logic.
 @EnableFeatures({ChromeFeatureList.DEFER_TAB_SWITCHER_LAYOUT_CREATION, ChromeFeatureList.START_SURFACE_REFACTOR})
 @Batch(Batch.PER_CLASS)
 public class TabGridAccessibilityHelperTest {
-    // clang-format on
     @IntDef({TabMovementDirection.LEFT, TabMovementDirection.RIGHT, TabMovementDirection.UP,
             TabMovementDirection.DOWN})
     @Retention(RetentionPolicy.SOURCE)

@@ -64,10 +64,8 @@ import org.chromium.ui.dragdrop.DropDataAndroid;
 
 /** Tests for {@link TabDragSource}. */
 @RunWith(BaseRobolectricTestRunner.class)
-// clang-format off
 @EnableFeatures({ChromeFeatureList.TAB_DRAG_DROP_ANDROID})
 public class TabDragSourceTest {
-    // clang-format on
     @Rule
     public TestRule mFeaturesProcessorRule = new Features.JUnitProcessor();
     @Mock

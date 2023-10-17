@@ -102,7 +102,6 @@ class MultiInstanceManagerApi31 extends MultiInstanceManager implements Activity
 
     @Override
     public boolean handleMenuOrKeyboardAction(int id, boolean fromMenu) {
-        // clang-format off
         if (id == org.chromium.chrome.R.id.manage_all_windows_menu_id) {
             List<InstanceInfo> info = getInstanceInfo();
             InstanceSwitcherCoordinator.showDialog(mActivity, mModalDialogManagerSupplier.get(),
@@ -117,7 +116,6 @@ class MultiInstanceManagerApi31 extends MultiInstanceManager implements Activity
             tracker.notifyEvent(EventConstants.INSTANCE_SWITCHER_IPH_USED);
             return true;
         }
-        // clang-format on
         return super.handleMenuOrKeyboardAction(id, fromMenu);
     }
 

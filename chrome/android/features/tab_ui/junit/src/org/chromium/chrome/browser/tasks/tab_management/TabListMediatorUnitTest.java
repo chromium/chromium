@@ -170,11 +170,9 @@ import java.util.concurrent.TimeoutException;
                         "androidx.recyclerview.widget.RecyclerView" // required to mock final
                 })
 @LooperMode(LooperMode.Mode.LEGACY)
-// clang-format off
 @EnableFeatures(ChromeFeatureList.TAB_TO_GTS_ANIMATION)
 @DisableFeatures({START_SURFACE_ANDROID})
 public class TabListMediatorUnitTest {
-    // clang-format on
     @Rule
     public TestRule mProcessor = new Features.JUnitProcessor();
 

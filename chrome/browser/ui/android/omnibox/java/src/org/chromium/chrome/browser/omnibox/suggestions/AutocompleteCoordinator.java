@@ -203,7 +203,6 @@ public class AutocompleteCoordinator implements UrlFocusChangeListener, UrlTextC
                 new OmniboxSuggestionsDropdownAdapter(listItems);
 
         // Note: clang-format does a bad job formatting lambdas so we turn it off here.
-        // clang-format off
         // Register a view type for a default omnibox suggestion.
         adapter.registerType(
             OmniboxSuggestionUiType.DEFAULT,
@@ -267,7 +266,6 @@ public class AutocompleteCoordinator implements UrlFocusChangeListener, UrlTextC
                 BaseCarouselSuggestionItemViewBuilder::createView,
                 BaseCarouselSuggestionViewBinder::bind);
 
-        // clang-format on
         return adapter;
     }
 

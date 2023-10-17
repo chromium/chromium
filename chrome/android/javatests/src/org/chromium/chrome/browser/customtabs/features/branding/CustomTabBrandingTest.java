@@ -114,9 +114,7 @@ public class CustomTabBrandingTest {
     @Test
     @SmallTest
     @EnableFeatures(ChromeFeatureList.CCT_INCOGNITO_AVAILABLE_TO_THIRD_PARTY)
-    // clang-format off
     public void doesntStoreBrandingInfoForIncognito() {
-        // clang-format on
         mIntent.putExtra(IntentHandler.EXTRA_OPEN_NEW_INCOGNITO_TAB, true);
         mCctActivityTestRule.startCustomTabActivityWithIntent(mIntent);
         Assert.assertEquals("Branding info should not be stored in Incognito mode.", 0,

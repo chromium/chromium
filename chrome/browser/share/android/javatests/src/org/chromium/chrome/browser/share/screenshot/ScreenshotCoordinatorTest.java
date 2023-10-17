@@ -39,7 +39,6 @@ import org.chromium.url.JUnitTestGURLs;
 
 import java.lang.ref.WeakReference;
 
-// clang-format off
 /**
  * Tests for {@link ScreenshotCoordinator}.
  */
@@ -49,7 +48,6 @@ public class ScreenshotCoordinatorTest {
     public ActivityScenarioRule<FragmentActivity> mActivityScenarioRule =
         new ActivityScenarioRule<>(FragmentActivity.class);
 
-    // clang-format on
     @Mock
     private ChromeOptionShareCallback mChromeOptionShareCallback;
 

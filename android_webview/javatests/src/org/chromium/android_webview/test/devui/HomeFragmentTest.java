@@ -209,10 +209,8 @@ public class HomeFragmentTest {
     @Test
     @MediumTest
     @Feature({"AndroidWebView"})
-    // clang-format off
     @DisableIf.Build(sdk_is_greater_than = Build.VERSION_CODES.R,
         message = "https://crbug.com/1292197")
-    // clang-format on
     public void testLongPressCopy() throws Throwable {
         Context context = ContextUtils.getApplicationContext();
         // Inject a fake PackageInfo as the current WebView package to make sure it will always be

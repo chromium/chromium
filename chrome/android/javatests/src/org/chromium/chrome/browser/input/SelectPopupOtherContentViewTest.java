@@ -56,10 +56,8 @@ public class SelectPopupOtherContentViewTest {
 
     private boolean isSelectPopupVisibleOnUiThread() {
         try {
-            // clang-format off
             return TestThreadUtils.runOnUiThreadBlocking(() ->
                     WebContentsUtils.isSelectPopupVisible(mActivityTestRule.getWebContents()));
-            // clang-format on
         } catch (ExecutionException e) {
             throw new RuntimeException(e);
         }

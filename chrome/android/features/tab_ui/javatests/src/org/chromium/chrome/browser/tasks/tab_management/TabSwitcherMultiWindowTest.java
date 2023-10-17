@@ -54,13 +54,11 @@ import org.chromium.ui.test.util.UiRestriction;
 
 /** Tests for Multi-window related behavior in grid tab switcher. */
 @RunWith(ChromeJUnit4ClassRunner.class)
-// clang-format off
 @CommandLineFlags.Add({ChromeSwitches.DISABLE_FIRST_RUN_EXPERIENCE,
         ChromeSwitches.DISABLE_TAB_MERGING_FOR_TESTING})
 @Restriction({UiRestriction.RESTRICTION_TYPE_PHONE, RESTRICTION_TYPE_NON_LOW_END_DEVICE})
 @Batch(Batch.PER_CLASS)
 public class TabSwitcherMultiWindowTest {
-    // clang-format on
     @ClassRule
     public static ChromeTabbedActivityTestRule sActivityTestRule =
             new ChromeTabbedActivityTestRule();
@@ -260,9 +258,7 @@ public class TabSwitcherMultiWindowTest {
 
     @Test
     @MediumTest
-    // clang-format off
     public void testMoveLastIncognitoTab() {
-        // clang-format on
         // Initially, we have 1 normal tab (created in #setup()) and 1 incognito tab in mCta1.
         TabUiTestHelper.addBlankTabs(mCta1, true, 1);
         verifyTabModelTabCount(mCta1, 1, 1);

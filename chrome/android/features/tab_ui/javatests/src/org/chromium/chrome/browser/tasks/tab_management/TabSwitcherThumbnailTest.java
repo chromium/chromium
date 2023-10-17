@@ -40,7 +40,6 @@ import org.chromium.components.embedder_support.util.UrlConstants;
 import org.chromium.ui.test.util.UiRestriction;
 import org.chromium.ui.widget.ViewLookupCachingFrameLayout;
 
-// clang-format off
 
 /**
  * Tests for the thumbnail view in Grid Tab Switcher.
@@ -52,7 +51,6 @@ import org.chromium.ui.widget.ViewLookupCachingFrameLayout;
 @Restriction(
     {UiRestriction.RESTRICTION_TYPE_PHONE, Restriction.RESTRICTION_TYPE_NON_LOW_END_DEVICE})
 public class TabSwitcherThumbnailTest {
-    // clang-format on
     private static final String BASE_PARAMS = "force-fieldtrial-params="
             + "Study.Group:skip-slow-zooming/false"
             + "/zooming-min-memory-mb/512/enable_launch_polish/true";

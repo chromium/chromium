@@ -255,12 +255,10 @@ public class LocationBarModelTest {
 
     private class TestLocationBarModel extends LocationBarModel {
         public TestLocationBarModel(Context context) {
-            // clang-format off
             super(context, NewTabPageDelegate.EMPTY,
                 DomDistillerTabUtils::getFormattedUrlFromOriginalDistillerUrl,
                 window -> null, new LocationBarModel.OfflineStatus() {},
                 SearchEngineLogoUtils.getInstance());
-            // clang-format on
             initializeWithNative();
 
             Tab tab = new MockTab(0, false) {

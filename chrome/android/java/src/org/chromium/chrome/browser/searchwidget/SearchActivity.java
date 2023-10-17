@@ -233,7 +233,6 @@ public class SearchActivity extends AsyncInitializationActivity
 
         BackPressManager backPressManager = new BackPressManager();
         getOnBackPressedDispatcher().addCallback(this, backPressManager.getCallback());
-        // clang-format off
         mLocationBarCoordinator = new LocationBarCoordinator(mSearchBox, mAnchorView,
             mProfileSupplier, PrivacyPreferencesManagerImpl.getInstance(),
             mSearchBoxDataProvider, null, new WindowDelegate(getWindow()), getWindowAndroid(),
@@ -276,7 +275,6 @@ public class SearchActivity extends AsyncInitializationActivity
                 @Override
                 public void openHistoryClustersUi(String query) {}
             }, /*tabModelSelectorSupplier=*/null);
-        // clang-format on
         mLocationBarCoordinator.setUrlBarFocusable(true);
         mLocationBarCoordinator.setShouldShowMicButtonWhenUnfocused(true);
         mLocationBarCoordinator.getOmniboxStub().addUrlFocusChangeListener(this);

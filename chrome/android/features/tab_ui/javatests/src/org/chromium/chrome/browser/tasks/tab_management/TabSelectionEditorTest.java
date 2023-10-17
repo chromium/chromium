@@ -97,7 +97,6 @@ import java.util.Map;
 /**
  * End-to-end test for TabSelectionEditor.
  */
-// clang-format off
 @RunWith(ChromeJUnit4ClassRunner.class)
 @CommandLineFlags.Add({ChromeSwitches.DISABLE_FIRST_RUN_EXPERIENCE, "force-fieldtrials=Study/Group",
         "force-fieldtrial-params=Study.Group:enable_launch_polish/true"})
@@ -112,7 +111,6 @@ public class TabSelectionEditorTest {
             "/chrome/test/data/android/share/link_share_http_canonical.html";
     private static final String PAGE_WITH_NO_CANONICAL_URL =
             "/chrome/test/data/android/share/link_share_no_canonical.html";
-    // clang-format on
 
     @ClassRule
     public static ChromeTabbedActivityTestRule sActivityTestRule =
@@ -1023,7 +1021,6 @@ public class TabSelectionEditorTest {
     @Test
     @LargeTest
     public void testShowTabsWithPreSelectedTabs_6Tabs() {
-        // clang-format on
         prepareBlankTab(7, false);
         int preSelectedTabCount = 6;
         List<Tab> tabs = getTabsInCurrentTabModel();

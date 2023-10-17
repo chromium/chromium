@@ -89,11 +89,9 @@ public class TabGridDialogMenuCoordinator {
             }
         };
         listView.setAdapter(adapter);
-        // clang-format off
         adapter.registerType(ListItemType.MENU_ITEM,
                 new LayoutViewBuilder(R.layout.list_menu_item),
                 TabGridDialogMenuItemBinder::bind);
-        // clang-format on
         listView.setOnItemClickListener((p, v, pos, id) -> {
             if (mOnItemClickedCallback != null) {
                 mOnItemClickedCallback.onResult((int) id);

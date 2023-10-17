@@ -1083,9 +1083,7 @@ public class NewTabPageTest {
         "force-fieldtrials=Study/Group",
         SURFACE_POLISH_PARAMS + "scrollable_mvt/true"
     })
-    // clang-format off
     public void test1RowMvtOnNtpAfterPolish() {
-        // clang-format on
         verifyMostVisitedTileMarginPolish();
 
         Resources res = mActivityTestRule.getActivity().getResources();
@@ -1106,9 +1104,7 @@ public class NewTabPageTest {
     @Feature({"NewTabPage"})
     @EnableFeatures(ChromeFeatureList.SURFACE_POLISH)
     @DisableFeatures({ChromeFeatureList.FEED_POSITION_ANDROID})
-    // clang-format off
     public void test2RowMvtOnNtpAfterPolish() {
-        // clang-format on
         verifyMostVisitedTileMarginPolish();
 
         Resources res = mActivityTestRule.getActivity().getResources();

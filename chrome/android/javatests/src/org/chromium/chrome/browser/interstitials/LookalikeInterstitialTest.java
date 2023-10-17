@@ -32,12 +32,10 @@ import org.chromium.net.test.EmbeddedTestServer;
 @MediumTest
 @CommandLineFlags.Add({ChromeSwitches.DISABLE_FIRST_RUN_EXPERIENCE,
         ContentSwitches.HOST_RESOLVER_RULES + "=MAP * 127.0.0.1"})
-// clang-format off
 @ParameterizedCommandLineFlags({
   @Switches(),
   @Switches("enable-features=" + ChromeFeatureList.LOOKALIKE_NAVIGATION_URL_SUGGESTIONS_UI),
 })
-// clang-format on
 public class LookalikeInterstitialTest {
     private static final String INTERSTITIAL_TITLE_PREFIX = "Continue to ";
 

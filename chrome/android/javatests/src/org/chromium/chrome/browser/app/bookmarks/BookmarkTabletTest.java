@@ -40,14 +40,12 @@ import org.chromium.ui.accessibility.AccessibilityState;
 import org.chromium.ui.test.util.UiRestriction;
 
 /** Tests for the bookmark manager on tablet. */
-// clang-format off
 @RunWith(ChromeJUnit4ClassRunner.class)
 @CommandLineFlags.Add({ChromeSwitches.DISABLE_FIRST_RUN_EXPERIENCE})
 @Restriction({UiRestriction.RESTRICTION_TYPE_TABLET})
 // TODO(crbug.com/1426138): Investigate batching.
 @DoNotBatch(reason = "Test has side-effects (bookmarks, pageloads) and thus can't be batched.")
 public class BookmarkTabletTest {
-    // clang-format on
     @Rule
     public ChromeTabbedActivityTestRule mActivityTestRule = new ChromeTabbedActivityTestRule();
     @Rule

@@ -805,7 +805,6 @@ public class CredManHelper {
     }
 
     private static void logDeserializationException(Throwable e) {
-        // clang-format off
         Log.e(
                 TAG,
                 "Failed to parse Mojo object. If this is happening in a test, and"
@@ -818,6 +817,5 @@ public class CredManHelper {
                     + " --gtest_filter=\"WebAuthnentication*\"` and it'll print out updated Java"
                     + " literals for `Fido2ApiTestHelper.java`.",
                 e);
-       // clang-format on
     }
 }

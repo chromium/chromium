@@ -37,7 +37,6 @@ import org.chromium.chrome.test.util.browser.Features.EnableFeatures;
 /**
  * Tests {@link CustomTabActivity} filters touch events from overlay activity.
  */
-// clang-format off
 @RunWith(BaseRobolectricTestRunner.class)
 @Batch(Batch.UNIT_TESTS)
 @EnableFeatures(ChromeFeatureList.CCT_PREVENT_TOUCHES)
@@ -45,7 +44,6 @@ import org.chromium.chrome.test.util.browser.Features.EnableFeatures;
     ChromeSwitches.DISABLE_FIRST_RUN_EXPERIENCE,
     ChromeSwitches.DISABLE_NATIVE_INITIALIZATION
 })
-// clang-format on
 public class CustomTabsFilterTouchUnitTest {
     @Rule
     public ActivityScenarioRule<CustomTabActivity> mActivityScenarioRule =

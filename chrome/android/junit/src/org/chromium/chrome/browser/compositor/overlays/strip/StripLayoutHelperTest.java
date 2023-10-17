@@ -93,7 +93,6 @@ import java.util.List;
 
 /** Tests for {@link StripLayoutHelper}. */
 @RunWith(BaseRobolectricTestRunner.class)
-// clang-format off
 @EnableFeatures({ChromeFeatureList.TAB_STRIP_REDESIGN})
 @Config(
         manifest = Config.NONE,
@@ -101,7 +100,6 @@ import java.util.List;
         shadows = {ShadowAppCompatResources.class})
 @LooperMode(Mode.LEGACY)
 public class StripLayoutHelperTest {
-    // clang-format on
     @Rule
     public TestRule mFeaturesProcessorRule = new Features.JUnitProcessor();
     @Mock

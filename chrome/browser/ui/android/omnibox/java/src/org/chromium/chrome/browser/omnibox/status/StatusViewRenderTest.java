@@ -92,11 +92,9 @@ public class StatusViewRenderTest extends BlankUiTestActivityTestCase {
                                   .inflate(R.layout.location_status, view, true)
                                   .findViewById(R.id.location_bar_status);
             mStatusView.setCompositeTouchDelegate(new CompositeTouchDelegate(view));
-            // clang-format off
             mLocationBarModel = new LocationBarModel(mStatusView.getContext(),
                     NewTabPageDelegate.EMPTY, url -> url.getSpec(), window -> null,
                     ToolbarUnitTestUtils.OFFLINE_STATUS, mSearchEngineLogoUtils);
-            // clang-format on
             mLocationBarModel.setTab(null, /*  incognito= */ false);
             mStatusModel = new PropertyModel.Builder(StatusProperties.ALL_KEYS).build();
             PropertyModelChangeProcessor.create(mStatusModel, mStatusView, new StatusViewBinder());

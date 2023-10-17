@@ -57,7 +57,6 @@ import java.io.IOException;
  * startup.
  */
 @RunWith(ChromeJUnit4ClassRunner.class)
-// clang-format off
 @CommandLineFlags.
     Add({ChromeSwitches.DISABLE_NATIVE_INITIALIZATION, ChromeSwitches.DISABLE_FIRST_RUN_EXPERIENCE,
     "force-fieldtrials=Study/Group"})
@@ -66,7 +65,6 @@ import java.io.IOException;
 @Restriction({Restriction.RESTRICTION_TYPE_NON_LOW_END_DEVICE,
     UiRestriction.RESTRICTION_TYPE_PHONE})
 public class InstantStartToolbarTest {
-    // clang-format on
     @Rule
     public ChromeTabbedActivityTestRule mActivityTestRule = new ChromeTabbedActivityTestRule();
 

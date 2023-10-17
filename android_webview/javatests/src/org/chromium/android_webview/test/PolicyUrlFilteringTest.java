@@ -96,7 +96,6 @@ public class PolicyUrlFilteringTest {
     }
 
     // Tests getting a successful navigation with an allowlist.
-    // clang-format off
     @Test
     @MediumTest
     @Feature({"AndroidWebView", "Policy"})
@@ -113,7 +112,6 @@ public class PolicyUrlFilteringTest {
         Assert.assertEquals(WebviewErrorCode.ERROR_CONNECT,
                 mContentsClient.getOnReceivedErrorHelper().getError().errorCode);
     }
-    // clang-format on
 
     // Tests that bad policy values are properly handled
     @Test

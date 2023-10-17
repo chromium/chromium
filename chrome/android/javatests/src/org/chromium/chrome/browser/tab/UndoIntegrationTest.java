@@ -55,7 +55,6 @@ public class UndoIntegrationTest {
     public BlankCTATabInitialStateRule mBlankCTATabInitialStateRule =
             new BlankCTATabInitialStateRule(sActivityTestRule, false);
 
-    // clang-format off
     private static final String WINDOW_OPEN_BUTTON_URL = UrlUtils.encodeHtmlDataUri(
             "<html>"
             + "  <head>"
@@ -70,7 +69,6 @@ public class UndoIntegrationTest {
             + "  </body>"
             + "</html>"
     );
-    // clang-format on
 
     @Before
     public void setUp() throws InterruptedException {

@@ -103,12 +103,10 @@ public class ToggleTabStackButtonCoordinatorTest {
 
     private ToggleTabStackButtonCoordinator newToggleTabStackButtonCoordinator(
             ToggleTabStackButton toggleTabStackButton) {
-        // clang-format off
         return new ToggleTabStackButtonCoordinator(mContext, toggleTabStackButton,
                 mUserEducationHelper, () -> mIsIncognito,
                 mPromoShownOneshotSupplier, mLayoutSateProviderOneshotSupplier,
                 mSetNewTabButtonHighlightCallback, new ObservableSupplierImpl<>());
-        // clang-format on
     }
 
     private void showOverviewMode() {

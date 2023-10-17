@@ -37,7 +37,6 @@ class SupportLibWebViewChromiumFactory implements WebViewProviderFactoryBoundary
     // SupportLibWebkitToCompatConverterAdapter
     private final InvocationHandler mCompatConverterAdapter;
     private final WebViewChromiumAwInit mAwInit;
-    // clang-format off
     private final String[] mWebViewSupportedFeatures =
             new String[] {
                     Features.VISUAL_STATE_CALLBACK,
@@ -308,7 +307,6 @@ class SupportLibWebViewChromiumFactory implements WebViewProviderFactoryBoundary
         // Remember to update AndroidXWebkitApiCall in enums.xml when adding new values here
         int COUNT = 97;
     }
-    // clang-format on
 
     public static void recordApiCall(@ApiCall int apiCall) {
         RecordHistogram.recordEnumeratedHistogram(

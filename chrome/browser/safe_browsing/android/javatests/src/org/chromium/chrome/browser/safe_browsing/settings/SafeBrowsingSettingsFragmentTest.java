@@ -47,9 +47,7 @@ import org.chromium.content_public.browser.test.util.TestThreadUtils;
  */
 @RunWith(ChromeJUnit4ClassRunner.class)
 @DoNotBatch(reason = "This test launches a Settings activity")
-// clang-format off
 public class SafeBrowsingSettingsFragmentTest {
-    // clang-format on
     private static final String ASSERT_SAFE_BROWSING_STATE_RADIO_BUTTON_GROUP =
             "Incorrect Safe Browsing state in the radio button group.";
     private static final String ASSERT_RADIO_BUTTON_CHECKED =

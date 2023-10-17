@@ -84,10 +84,8 @@ public class IPHInfoBarSupportTest {
         when(mItem.getInfoBarIdentifier()).thenReturn(1);
         when(mDelegate.createStateForInfoBar(mView, 1)).thenReturn(state);
         when(infoBar.getView()).thenReturn(mView);
-        // clang-format off
         // TODO(crbug.com/782796): Clang formatted this incorrectly.
         doAnswer((invocation) -> { support.onDismiss(); return null; }).when(bubble).dismiss();
-        // clang-format on
 
         support.notifyAllAnimationsFinished(mItem);
 

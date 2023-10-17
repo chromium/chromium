@@ -21,7 +21,6 @@ import java.util.List;
 @CheckDiscard("Validation is performed in tests and in debug builds.")
 public class DeprecatedChromePreferenceKeys {
     static List<String> getKeysForTesting() {
-        // clang-format off
         return Arrays.asList(
                 "AUTOFILL_ASSISTANT_SKIP_INIT_SCREEN",
                 "BANDWIDTH_REDUCTION_PROXY_ENABLED",
@@ -153,7 +152,6 @@ public class DeprecatedChromePreferenceKeys {
                 "tab_persistent_store_task_runner_enabled",
                 "webapk_number_of_uninstalls",
                 "website_settings_filter");
-        // clang-format on
     }
 
     static List<KeyPrefix> getPrefixesForTesting() {

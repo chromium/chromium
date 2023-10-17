@@ -40,9 +40,7 @@ import org.chromium.url.JUnitTestGURLs;
  */
 @RunWith(BaseRobolectricTestRunner.class)
 @Config(manifest = Config.NONE)
-// clang-format off
 public class ScreenshotShareSheetMediatorUnitTest {
-    // clang-format on
     @Rule
     public TestRule mProcessor = new Features.JUnitProcessor();
 

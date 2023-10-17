@@ -49,13 +49,11 @@ import org.chromium.ui.test.util.UiRestriction;
  * Tests for the "Languages" settings screen.
  */
 @RunWith(ChromeJUnit4ClassRunner.class)
-// clang-format off
 @CommandLineFlags.Add({ChromeSwitches.DISABLE_FIRST_RUN_EXPERIENCE,
 "disable-features=" + ChromeFeatureList.DETAILED_LANGUAGE_SETTINGS
 })
 @Restriction(UiRestriction.RESTRICTION_TYPE_PHONE)
 public class LanguageSettingsTest {
-    // clang-format on
     @Rule
     public final SettingsActivityTestRule<LanguageSettings> mSettingsActivityTestRule =
             new SettingsActivityTestRule<>(LanguageSettings.class);

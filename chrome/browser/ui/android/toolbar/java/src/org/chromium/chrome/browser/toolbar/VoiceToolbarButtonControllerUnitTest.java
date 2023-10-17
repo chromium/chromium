@@ -89,11 +89,9 @@ public final class VoiceToolbarButtonControllerUnitTest {
 
         doReturn(mContext).when(mTab).getContext();
         AdaptiveToolbarFeatures.clearParsedParamsForTesting();
-        // clang-format off
         mVoiceToolbarButtonController = new VoiceToolbarButtonController(mContext, mDrawable,
                 () -> mTab, () -> mTracker, mModalDialogManager,
                 mVoiceSearchDelegate);
-        // clang-format on
 
         TrackerFactory.setTrackerForTests(mTracker);
     }
@@ -130,9 +128,7 @@ public final class VoiceToolbarButtonControllerUnitTest {
 
     @Test
     @EnableFeatures(ChromeFeatureList.ADAPTIVE_BUTTON_IN_TOP_TOOLBAR_CUSTOMIZATION_V2)
-    // clang-format off
     public void isToolbarMicEnabled_toolbarMic() {
-        // clang-format on
         assertTrue(VoiceToolbarButtonController.isToolbarMicEnabled());
     }
 }

@@ -140,18 +140,14 @@ public class BookmarkFolderPickerActivityTest {
     private void startFolderPickerActivity(BookmarkId... ids) {
         // TODO(crbug.com/): Move this code to a shared ActivityTestUtils location.
         BookmarkUtils.startFolderPickerActivity(sActivityTestRule.getActivity(), ids);
-        // clang-format off
         CriteriaHelper.pollUiThread(()->
                 ApplicationStatus.getLastTrackedFocusedActivity()
                     instanceof BookmarkFolderPickerActivity,
                 "Timed out waiting for BookmarkFolderPickerActivity");
-        // clang-format on
         mActivity =
                 (BookmarkFolderPickerActivity) ApplicationStatus.getLastTrackedFocusedActivity();
-        // clang-format off
         CriteriaHelper.pollUiThread(() ->
                 ApplicationStatus.getStateForActivity(mActivity) == ActivityState.RESUMED,
                 "Timed out waiting for activity to enter the RESUMED state.");
-        // clang-format on
     }
 }

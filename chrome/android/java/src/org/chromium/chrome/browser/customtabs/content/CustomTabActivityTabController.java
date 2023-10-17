@@ -357,11 +357,9 @@ public class CustomTabActivityTabController implements InflationObserver {
 
     private Tab createTab() {
         WebContents webContents = takeWebContents();
-        // clang-format off
         Tab tab = mTabFactory.createTab(webContents, mCustomTabDelegateFactory.get(),
                 (preInitTab) -> TabAssociatedApp.from(preInitTab).setAppId(
                                 mConnection.getClientPackageNameForSession(mSession)));
-        // clang-format on
 
         initializeTab(tab);
 

@@ -45,11 +45,9 @@ public final class FieldTrialsInstrumentationTest {
 
     @Test
     @SmallTest
-    // clang-format off
     @CommandLineFlags.Add({"enable-features=" + sFeature1 + "<Study",
             "force-fieldtrials=Study/Group", "force-fieldtrial-params=Study.Group:a1/b1"})
     public void testOneFeatureTrialGroup() {
-        // clang-format on
         Assert.assertTrue(ChromeFeatureList.sTestDefaultDisabled.isEnabled());
         Assert.assertEquals("b1", ChromeFeatureList.getFieldTrialParamByFeature(sFeature1, "a1"));
 
@@ -61,11 +59,9 @@ public final class FieldTrialsInstrumentationTest {
 
     @Test
     @SmallTest
-    // clang-format off
     @CommandLineFlags.Add({"enable-features=" + sFeature1 + "<Study,"  + sFeature2 + "<Study",
             "force-fieldtrials=Study/Group", "force-fieldtrial-params=Study.Group:a1/b1/a2/b2"})
     public void testTwoFeaturesWithSameTrialGroup() {
-        // clang-format on
         Assert.assertTrue(ChromeFeatureList.isEnabled(sFeature1));
         Assert.assertEquals("b1", ChromeFeatureList.getFieldTrialParamByFeature(sFeature1, "a1"));
         Assert.assertTrue(ChromeFeatureList.isEnabled(sFeature1));
@@ -96,12 +92,10 @@ public final class FieldTrialsInstrumentationTest {
 
     @Test
     @SmallTest
-    // clang-format off
     @CommandLineFlags.Add({"enable-features=" + sFeature1 + "<Study1,"  + sFeature2 + "<Study2",
             "force-fieldtrials=Study1/Group1/Study2/Group2",
             "force-fieldtrial-params=Study1.Group1:a1/0.5/a2/100,Study2.Group2:a3/true"})
     public void testTwoFeaturesWithDifferentTrialGroupsAndMutipleTypesOfValues() {
-        // clang-format on
         Assert.assertTrue(ChromeFeatureList.isEnabled(sFeature1));
         Assert.assertTrue(ChromeFeatureList.isEnabled(sFeature2));
         Assert.assertEquals("0.5", ChromeFeatureList.getFieldTrialParamByFeature(sFeature1, "a1"));
@@ -125,22 +119,18 @@ public final class FieldTrialsInstrumentationTest {
 
     @Test
     @SmallTest
-    // clang-format off
     @CommandLineFlags.Add({"enable-features=" + sFeature1 + "<Study",
             "force-fieldtrials=Study/Group"})
     public void testFeatureWithoutParams() {
-        // clang-format on
         Assert.assertTrue(ChromeFeatureList.isEnabled(sFeature1));
         Assert.assertTrue(ChromeFeatureList.sTestDefaultDisabled.isEnabled());
     }
 
     @Test
     @SmallTest
-    // clang-format off
     @CommandLineFlags.Add({"enable-features=" + sFeature1 + "<Study",
             "force-fieldtrials=Study/Group"})
     public void testRuntimeParams() {
-        // clang-format on
         StringCachedFieldTrialParameter parameter =
                 new StringCachedFieldTrialParameter(sFeature1, "a1", "default");
         parameter.setForTesting("b1");
@@ -153,7 +143,6 @@ public final class FieldTrialsInstrumentationTest {
 
     @Test
     @SmallTest
-    // clang-format off
     @CommandLineFlags.Add({"enable-features=" + sFeature2 + "<Study",
             "force-fieldtrials=Study/Group",
             "force-fieldtrial-params=Study.Group:101/x/y/99"})

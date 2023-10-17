@@ -537,7 +537,6 @@ public abstract class ChromeActivity<C extends ChromeActivityComponent>
         // to the RootUiCoordinator, passing the activity is an easy way to get access to a
         // number of objects that will ultimately be owned by the RootUiCoordinator. This is not
         // a recommended pattern.
-        // clang-format off
         return new RootUiCoordinator(this, null, getShareDelegateSupplier(),
                 getActivityTabProvider(), mTabModelProfileSupplier, mBookmarkModelSupplier,
                 mTabBookmarkerSupplier, getContextualSearchManagerSupplier(),
@@ -555,7 +554,6 @@ public abstract class ChromeActivity<C extends ChromeActivityComponent>
                 mTabReparentingControllerSupplier,
                 /*ephemeralTabCoordinatorSupplier=*/new ObservableSupplierImpl<>(),
                 false, mBackPressManager, null);
-        // clang-format on
     }
 
     private NotificationManagerProxy getNotificationManagerProxy() {

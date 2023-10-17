@@ -318,11 +318,9 @@ public class SettingsActivity extends ChromeBaseAppCompatActivity
                     }
                 }, (ViewGroup) sheetContainer.getParent(), getColor(R.color.default_scrim_color));
 
-        // clang-format off
         mBottomSheetController = BottomSheetControllerFactory.createBottomSheetController(
                 () -> mScrim, (sheet) -> {}, getWindow(),
                 KeyboardVisibilityDelegate.getInstance(), () -> sheetContainer);
-        // clang-format on
 
         mBottomSheetControllerSupplier.set(mBottomSheetController);
     }

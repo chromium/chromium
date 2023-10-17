@@ -104,12 +104,10 @@ public class MenuButtonMediatorTest {
         doReturn(new WeakReference<>(mActivity)).when(mWindowAndroid).getActivity();
         doReturn(mKeyboardDelegate).when(mWindowAndroid).getKeyboardDelegate();
 
-        // clang-format off
         mMenuButtonMediator = new MenuButtonMediator(mPropertyModel, true, () -> false,
                 mRequestRenderRunnable, mThemeColorProvider, () -> false,
                 mControlsVisibilityDelegate, mFocusFunction, mAppMenuSupplier, mWindowAndroid,
                 () -> mMenuUiState.buttonState, mOnMenuButtonClicked);
-        // clang-format on
     }
 
     @Test
@@ -178,12 +176,10 @@ public class MenuButtonMediatorTest {
 
     @Test
     public void testAppMenuUpdateBadge_activityShouldNotShow() {
-        // clang-format off
         MenuButtonMediator newMediator = new MenuButtonMediator(mPropertyModel, false, () -> false,
                 mRequestRenderRunnable, mThemeColorProvider, () -> false,
                 mControlsVisibilityDelegate, mFocusFunction, mAppMenuSupplier, mWindowAndroid,
                 () -> mMenuUiState.buttonState, mOnMenuButtonClicked);
-        // clang-format on
 
         doReturn(true).when(mActivity).isDestroyed();
         newMediator.updateStateChanged();
