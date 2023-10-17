@@ -755,7 +755,8 @@ class PasswordManagerTest : public testing::Test {
   const GURL test_form_url_{"https://www.google.com/a/LoginAuth"};
   const GURL test_form_action_{"https://www.google.com/a/Login"};
   const std::string test_signon_realm_ = "https://www.google.com/";
-  base::test::SingleThreadTaskEnvironment task_environment_;
+  base::test::SingleThreadTaskEnvironment task_environment_{
+      base::test::SingleThreadTaskEnvironment::TimeSource::MOCK_TIME};
   FakeAffiliationService fake_affiliation_service_;
   scoped_refptr<TestPasswordStore> store_;
   scoped_refptr<TestPasswordStore> account_store_;
@@ -4251,6 +4252,71 @@ TEST_F(PasswordManagerTest,
   expected_form.username_value = single_username;
   expected_form.username_element.clear();
   expected_form.username_element_renderer_id = FieldRendererId();
+  EXPECT_THAT(
+      store_->stored_passwords(),
+      ElementsAre(Pair(expected_form.signon_realm,
+                       UnorderedElementsAre(FormMatches(expected_form)))));
+}
+
+// This test simulates the user journey consisting of single username form that
+// user typed in a long time ago, followed by sign-in form (without a username
+// field). Checks that for the simulated user journey password manager will not
+// show username in save password prompt.
+TEST_F(PasswordManagerTest,
+       UsernameFirstFlowSavingSignInFormWithStaleServerOverride) {
+  feature_list_.InitWithFeatures(
+      /*enabled_features=*/
+      {password_manager::features::kUsernameFirstFlowStoreSeveralValues,
+       password_manager::features::kUsernameFirstFlowWithIntermediateValues},
+      /*disabled_features=*/{});
+
+  // Simulate that user typed into a text field outside of the password form.
+  PasswordForm stale_username_form(MakeSimpleFormWithOnlyUsernameField());
+  const std::u16string stale_single_username = u"stale_single_username";
+  EXPECT_CALL(driver_, GetLastCommittedURL())
+      .WillRepeatedly(ReturnRef(stale_username_form.url));
+  manager()->OnUserModifiedNonPasswordField(
+      &driver_, stale_username_form.form_data.fields[0].unique_renderer_id,
+      /*value=*/stale_single_username,
+      /*autocomplete_attribute_has_username=*/false,
+      /*is_likely_otp=*/false);
+
+  // Make single username form stale by fast forwarding time.
+  task_environment_.FastForwardBy(kPossibleUsernameExtendedExpirationTimeout +
+                                  base::Seconds(5));
+  EXPECT_TRUE(manager()->possible_usernames().begin()->second.IsStale());
+
+  // Simulate that a password form which contains no username, but other text
+  // field, that can be parsed as username.
+  PasswordForm signin_form(MakeSimpleFormWithOnlyPasswordField());
+
+  manager()->OnPasswordFormsParsed(&driver_, {signin_form.form_data});
+  manager()->OnPasswordFormsRendered(&driver_, {signin_form.form_data});
+  EXPECT_CALL(client_, IsSavingAndFillingEnabled(signin_form.url))
+      .WillRepeatedly(Return(true));
+
+  // Set up an override prediction for the stale single username field.
+  manager()->ProcessAutofillPredictions(
+      &driver_, stale_username_form.form_data,
+      CreateServerPredictions(stale_username_form.form_data,
+                              {{0, ServerFieldType::SINGLE_USERNAME}},
+                              /*is_override=*/true));
+
+  // Simulate successful submission and expect a save prompt.
+  task_environment_.RunUntilIdle();
+  OnPasswordFormSubmitted(signin_form.form_data);
+  std::unique_ptr<PasswordFormManagerForUI> form_manager;
+  EXPECT_CALL(client_, PromptUserToSaveOrUpdatePassword)
+      .WillOnce(MoveArgAndReturn<0>(&form_manager, false));
+  manager()->OnPasswordFormsRendered(&driver_, /*visible_forms_data=*/{});
+  ASSERT_TRUE(form_manager);
+
+  // Simulate accepting the prompt and expect saving the new credential.
+  form_manager->Save();
+  task_environment_.RunUntilIdle();
+
+  PasswordForm expected_form(signin_form);
+  EXPECT_THAT(expected_form.username_value, IsEmpty());
   EXPECT_THAT(
       store_->stored_passwords(),
       ElementsAre(Pair(expected_form.signon_realm,
