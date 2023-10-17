@@ -6,9 +6,10 @@ package org.chromium.device.screen_orientation;
 
 import android.provider.Settings;
 
+import org.jni_zero.CalledByNative;
+import org.jni_zero.JNINamespace;
+
 import org.chromium.base.ContextUtils;
-import org.chromium.base.annotations.CalledByNative;
-import org.chromium.base.annotations.JNINamespace;
 
 /**
  * Android implementation details for device::ScreenOrientationListenerAndroid.

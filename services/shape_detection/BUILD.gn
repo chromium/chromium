@@ -127,7 +127,6 @@ if (is_android) {
       "$google_play_services_package:google_play_services_vision_common_java",
       "$google_play_services_package:google_play_services_vision_java",
       "//base:base_java",
-      "//base:jni_java",
       "//mojo/public/java:base_java",
       "//mojo/public/java:bindings_java",
       "//mojo/public/java:system_java",
@@ -136,6 +135,7 @@ if (is_android) {
       "//services/shape_detection/public/mojom:mojom_java",
       "//skia/public/mojom:mojom_java",
       "//third_party/android_deps:chromium_play_services_availability_java",
+      "//third_party/jni_zero:jni_zero_java",
       "//ui/gfx/geometry/mojom:mojom_java",
     ]
   }

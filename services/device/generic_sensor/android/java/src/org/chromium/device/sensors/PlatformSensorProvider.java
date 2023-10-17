@@ -11,9 +11,10 @@ import android.os.Build;
 import android.os.Handler;
 import android.os.HandlerThread;
 
+import org.jni_zero.CalledByNative;
+import org.jni_zero.JNINamespace;
+
 import org.chromium.base.ContextUtils;
-import org.chromium.base.annotations.CalledByNative;
-import org.chromium.base.annotations.JNINamespace;
 import org.chromium.device.mojom.SensorType;
 
 import java.util.HashSet;

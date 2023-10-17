@@ -18,8 +18,8 @@ generate_jni("media_session_jni_headers") {
 if (current_toolchain == default_toolchain) {
   android_library("media_session_java") {
     deps = [
-      "//base:jni_java",
       "//third_party/androidx:androidx_annotation_annotation_java",
+      "//third_party/jni_zero:jni_zero_java",
       "//url:gurl_java",
     ]
     sources = _jni_sources

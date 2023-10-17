@@ -178,7 +178,7 @@ if (is_android) {
 
   android_library("tracing_test_helper_java") {
     testonly = true
-    deps = [ "//base:jni_java" ]
+    deps = [ "//third_party/jni_zero:jni_zero_java" ]
     sources = [ "android/test/src/org/chromium/tracing/UnwindTestHelper.java" ]
   }
 }

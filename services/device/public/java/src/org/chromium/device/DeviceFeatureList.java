@@ -4,7 +4,7 @@
 
 package org.chromium.device;
 
-import org.chromium.base.annotations.JNINamespace;
+import org.jni_zero.JNINamespace;
 
 /**
  * Lists //services/device features that can be accessed through {@link DeviceFeatureMap}.

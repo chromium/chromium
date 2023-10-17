@@ -464,7 +464,6 @@ if (is_android) {
     ]
     srcjar_deps = [ ":device_service_jni_headers" ]
     deps = [
-      "//base:jni_java",
       "//mojo/public/java:bindings_java",
       "//mojo/public/java:system_java",
       "//mojo/public/java/system:system_impl_java",
@@ -481,6 +480,7 @@ if (is_android) {
       "//services/device/wake_lock/power_save_blocker:java",
       "//services/service_manager/public/java:service_manager_java",
       "//services/service_manager/public/mojom:mojom_java",
+      "//third_party/jni_zero:jni_zero_java",
     ]
   }
 }
