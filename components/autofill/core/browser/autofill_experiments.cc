@@ -33,6 +33,7 @@
 #include "components/device_reauth/device_authenticator.h"
 #include "components/prefs/pref_service.h"
 #include "components/strings/grit/components_strings.h"
+#include "components/sync/base/features.h"
 #include "components/sync/service/sync_service.h"
 #include "components/sync/service/sync_service_utils.h"
 #include "components/sync/service/sync_user_settings.h"
@@ -156,7 +157,7 @@ bool IsCreditCardUploadEnabled(
   // from the codebase.
   if (sync_service->IsSyncFeatureActive() ||
       base::FeatureList::IsEnabled(
-          features::kAutofillDecoupleAddressPaymentSyncSettings)) {
+          syncer::kSyncDecoupleAddressPaymentSettings)) {
     if (!sync_service->GetActiveDataTypes().Has(syncer::AUTOFILL_PROFILE)) {
       // In full sync mode, we only allow card upload when addresses are also
       // active, because we upload potential billing addresses with the card.
