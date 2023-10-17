@@ -1138,7 +1138,8 @@ void PopulateChromeWebUIFrameBinders(
 #endif
       NewTabPageUI, OmniboxPopupUI, BookmarksSidePanelUI, CustomizeChromeUI,
       InternalsUI, ReadingListUI, TabSearchUI, WebuiGalleryUI,
-      HistoryClustersSidePanelUI, PerformanceSidePanelUI>(map);
+      HistoryClustersSidePanelUI, PerformanceSidePanelUI,
+      ShoppingInsightsSidePanelUI>(map);
 
   RegisterWebUIControllerInterfaceBinder<
       new_tab_page::mojom::PageHandlerFactory, NewTabPageUI>(map);

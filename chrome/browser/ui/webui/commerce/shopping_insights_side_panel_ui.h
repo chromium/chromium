@@ -16,6 +16,10 @@
 #include "ui/webui/mojo_bubble_web_ui_controller.h"
 #include "ui/webui/resources/cr_components/color_change_listener/color_change_listener.mojom.h"
 
+namespace ui {
+class ColorChangeHandler;
+}
+
 namespace commerce {
 class ShoppingListHandler;
 }  // namespace commerce
@@ -31,6 +35,10 @@ class ShoppingInsightsSidePanelUI
   ~ShoppingInsightsSidePanelUI() override;
 
   void BindInterface(
+      mojo::PendingReceiver<color_change_listener::mojom::PageHandler>
+          pending_receiver);
+
+  void BindInterface(
       mojo::PendingReceiver<shopping_list::mojom::ShoppingListHandlerFactory>
           receiver);
 
@@ -41,6 +49,7 @@ class ShoppingInsightsSidePanelUI
       mojo::PendingReceiver<shopping_list::mojom::ShoppingListHandler> receiver)
       override;
 
+  std::unique_ptr<ui::ColorChangeHandler> color_provider_handler_;
   std::unique_ptr<commerce::ShoppingListHandler> shopping_list_handler_;
   mojo::Receiver<shopping_list::mojom::ShoppingListHandlerFactory>
       shopping_list_factory_receiver_{this};
