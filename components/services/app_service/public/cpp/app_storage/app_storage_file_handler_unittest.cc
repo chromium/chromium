@@ -30,6 +30,8 @@ constexpr AppType kAppType2 = AppType::kWeb;
 constexpr char kAppName1[] = "AAA";
 constexpr char kAppName2[] = "BBB";
 
+constexpr char kAppShortName[] = "b";
+
 }  // namespace
 
 class AppStorageFileHandlerTest : public testing::Test {
@@ -89,13 +91,19 @@ class AppStorageFileHandlerTest : public testing::Test {
     std::vector<AppPtr> apps;
 
     AppPtr app1 = std::make_unique<App>(kAppType1, kAppId1);
-    app1->name = kAppName1;
     app1->readiness = Readiness::kReady;
+    app1->name = kAppName1;
     apps.push_back(std::move(app1));
 
     AppPtr app2 = std::make_unique<App>(kAppType2, kAppId2);
-    app2->name = kAppName2;
     app2->readiness = Readiness::kDisabledByUser;
+    app2->name = kAppName2;
+    app2->short_name = kAppShortName;
+    app2->install_reason = InstallReason::kUser;
+    app2->install_source = InstallSource::kBrowser;
+    app2->is_platform_app = false;
+    app2->recommendable = true;
+    app2->searchable = true;
     apps.push_back(std::move(app2));
 
     // TODO(crbug.com/1385932): Add other files in the App structure.

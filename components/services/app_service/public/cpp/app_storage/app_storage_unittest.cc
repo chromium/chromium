@@ -33,7 +33,26 @@ constexpr char kAppName2[] = "BBB";
 constexpr Readiness kReadiness1 = Readiness::kReady;
 constexpr Readiness kReadiness2 = Readiness::kDisabledByUser;
 
+constexpr char kAppShortName1[] = "a";
+constexpr char kAppShortName2[] = "b";
+
 }  // namespace
+
+#define MODIFY_FIELD(FIELD, VALUE)                                   \
+  void Modify##FIELD() {                                             \
+    AppPtr app = std::make_unique<App>(kAppType1, kAppId1);          \
+    app->FIELD = VALUE;                                              \
+    std::vector<AppPtr> apps;                                        \
+    apps.push_back(std::move(app));                                  \
+    app_registry_cache_.OnApps(std::move(apps), kAppType1,           \
+                               /*should_notify_initialized=*/false); \
+  }
+
+#define VERIFY_MODIFY_FIELD(FIELD, VALUE)                     \
+  Modify##FIELD();                                            \
+  app_storage()->WaitForSaveFinished(/*expect_app_count=*/2); \
+  apps[0]->FIELD = VALUE;                                     \
+  VerifySavedApps(apps);
 
 // This fake AppStorage is used to test and track all calls to AppStorage.
 class FakeAppStorage : public AppStorage {
@@ -120,20 +139,25 @@ class AppStorageTest : public testing::Test {
     AppPtr app2 = std::make_unique<App>(kAppType2, kAppId2);
     app2->readiness = kReadiness2;
     app2->name = kAppName2;
+    app2->short_name = kAppShortName1;
+    app2->install_reason = InstallReason::kUser;
+    app2->install_source = InstallSource::kBrowser;
+    app2->is_platform_app = false;
+    app2->recommendable = true;
+    app2->searchable = true;
     apps.push_back(std::move(app2));
 
     // TODO(crbug.com/1385932): Add other files in the App structure.
     return apps;
   }
 
-  void ModifyOneApp() {
-    AppPtr app = std::make_unique<App>(kAppType1, kAppId1);
-    app->name = kAppName2;
-    std::vector<AppPtr> apps;
-    apps.push_back(std::move(app));
-    app_registry_cache_.OnApps(std::move(apps), kAppType1,
-                               /*should_notify_initialized=*/false);
-  }
+  MODIFY_FIELD(name, kAppName2)
+  MODIFY_FIELD(short_name, kAppShortName2)
+  MODIFY_FIELD(install_reason, InstallReason::kDefault)
+  MODIFY_FIELD(install_source, InstallSource::kSync)
+  MODIFY_FIELD(is_platform_app, true)
+  MODIFY_FIELD(recommendable, false)
+  MODIFY_FIELD(searchable, false)
 
   void RemoveOneApp(AppType app_type, const std::string& app_id) {
     AppPtr app = std::make_unique<App>(app_type, app_id);
@@ -226,12 +250,13 @@ TEST_F(AppStorageTest, ReadAndWriteMultipleApps) {
   auto apps = CreateTwoApps();
   VerifySavedApps(apps);
 
-  ModifyOneApp();
-  app_storage()->WaitForSaveFinished(/*expect_app_count=*/2);
-
-  // Verify the apps are saved correctly.
-  apps[0]->name = kAppName2;
-  VerifySavedApps(apps);
+  VERIFY_MODIFY_FIELD(name, kAppName2);
+  VERIFY_MODIFY_FIELD(short_name, kAppShortName2);
+  VERIFY_MODIFY_FIELD(install_reason, InstallReason::kDefault);
+  VERIFY_MODIFY_FIELD(install_source, InstallSource::kSync);
+  VERIFY_MODIFY_FIELD(is_platform_app, true);
+  VERIFY_MODIFY_FIELD(recommendable, false);
+  VERIFY_MODIFY_FIELD(searchable, false);
 
   RemoveOneApp(kAppType1, kAppId1);
   app_storage()->WaitForSaveFinished(/*expect_app_count=*/2);
@@ -261,7 +286,7 @@ TEST_F(AppStorageTest, ReadAndWriteMultipleAppsAtSameTime) {
   OnApps(CreateOneApp(kAppType1, kAppId3), kAppType1,
          /*should_notify_initialized=*/false);
 
-  ModifyOneApp();
+  Modifyname();
   app_storage()->WaitForSaveFinished(/*expect_app_count=*/3);
 
   // Verify the apps are saved correctly.

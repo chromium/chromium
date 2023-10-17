@@ -16,6 +16,16 @@
 
 namespace apps {
 
+#define IS_APP_VALUE_CHANGED(FIELD)                                \
+  if (app->FIELD.has_value() && app->FIELD != it->second->FIELD) { \
+    return true;                                                   \
+  }
+
+#define IS_APP_VALUE_CHANGED_FOR_ENUM(FIELD, DEFAULT_VALUE)             \
+  if (app->FIELD != DEFAULT_VALUE && app->FIELD != it->second->FIELD) { \
+    return true;                                                        \
+  }
+
 AppStorage::AppStorage(const base::FilePath& base_path,
                        apps::AppRegistryCache& app_registry_cache)
     : app_registry_cache_(app_registry_cache) {
@@ -108,16 +118,17 @@ bool AppStorage::IsAppChanged(const apps::AppUpdate& update) {
     return true;
   }
 
-  if (app->readiness != Readiness::kUnknown &&
-      app->readiness != it->second->readiness) {
-    return true;
-  }
+  IS_APP_VALUE_CHANGED_FOR_ENUM(readiness, Readiness::kUnknown)
 
-  if (app->name.has_value() &&
-      (!it->second->name.has_value() ||
-       app->name.value() != it->second->name.value())) {
-    return true;
-  }
+  IS_APP_VALUE_CHANGED(name);
+  IS_APP_VALUE_CHANGED(short_name);
+
+  IS_APP_VALUE_CHANGED_FOR_ENUM(install_reason, InstallReason::kUnknown)
+  IS_APP_VALUE_CHANGED_FOR_ENUM(install_source, InstallSource::kUnknown)
+
+  IS_APP_VALUE_CHANGED(is_platform_app);
+  IS_APP_VALUE_CHANGED(recommendable);
+  IS_APP_VALUE_CHANGED(searchable);
 
   // TODO(crbug.com/1385932): Add other files in the App structure.
   return false;
