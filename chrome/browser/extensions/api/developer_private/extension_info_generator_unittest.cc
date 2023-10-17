@@ -301,7 +301,7 @@ TEST_F(ExtensionInfoGeneratorUnitTest, BasicInfoTest) {
       StackTrace(1, StackFrame(1, 1, u"source", u"function")), kContextUrl,
       logging::LOGGING_ERROR, 1, 1));
   error_console->ReportError(std::make_unique<ManifestError>(
-      extension->id(), u"message", u"key", std::u16string()));
+      extension->id(), u"message", "key", std::u16string()));
   error_console->ReportError(std::make_unique<RuntimeError>(
       extension->id(), false, u"source", u"message",
       StackTrace(1, StackFrame(1, 1, u"source", u"function")), kContextUrl,

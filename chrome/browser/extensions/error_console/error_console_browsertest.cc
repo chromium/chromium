@@ -122,7 +122,7 @@ void CheckManifestError(const ExtensionError* error,
 
   const ManifestError* manifest_error =
       static_cast<const ManifestError*>(error);
-  EXPECT_EQ(base::UTF8ToUTF16(manifest_key), manifest_error->manifest_key());
+  EXPECT_EQ(manifest_key, manifest_error->manifest_key());
   EXPECT_EQ(base::UTF8ToUTF16(manifest_specific),
             manifest_error->manifest_specific());
 }
@@ -310,12 +310,13 @@ IN_PROC_BROWSER_TEST_F(ErrorConsoleBrowserTest, ReportManifestErrors) {
   const char kFakeKey[] = "not_a_real_key";
   for (const auto& error : errors) {
     ASSERT_EQ(ExtensionError::MANIFEST_ERROR, error->type());
-    std::string utf8_key = base::UTF16ToUTF8(
-        (static_cast<const ManifestError*>(error.get()))->manifest_key());
-    if (utf8_key == manifest_keys::kPermissions)
+    const std::string& key =
+        (static_cast<const ManifestError*>(error.get()))->manifest_key();
+    if (key == manifest_keys::kPermissions) {
       permissions_error = error.get();
-    else if (utf8_key == kFakeKey)
+    } else if (key == kFakeKey) {
       unknown_key_error = error.get();
+    }
   }
   ASSERT_TRUE(permissions_error);
   ASSERT_TRUE(unknown_key_error);

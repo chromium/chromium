@@ -55,7 +55,7 @@ bool ExtensionError::IsEqual(const ExtensionError* rhs) const {
 
 ManifestError::ManifestError(const std::string& extension_id,
                              const std::u16string& message,
-                             const std::u16string& manifest_key,
+                             const std::string& manifest_key,
                              const std::u16string& manifest_specific)
     : ExtensionError(ExtensionError::MANIFEST_ERROR,
                      extension_id,

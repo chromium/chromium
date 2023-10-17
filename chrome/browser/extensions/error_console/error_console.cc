@@ -255,9 +255,9 @@ void ErrorConsole::AddManifestErrorsForExtension(const Extension* extension) {
   const std::vector<InstallWarning>& warnings =
       extension->install_warnings();
   for (auto iter = warnings.begin(); iter != warnings.end(); ++iter) {
-    ReportError(std::unique_ptr<ExtensionError>(new ManifestError(
-        extension->id(), base::UTF8ToUTF16(iter->message),
-        base::UTF8ToUTF16(iter->key), base::UTF8ToUTF16(iter->specific))));
+    ReportError(std::unique_ptr<ExtensionError>(
+        new ManifestError(extension->id(), base::UTF8ToUTF16(iter->message),
+                          iter->key, base::UTF8ToUTF16(iter->specific))));
   }
 }
 

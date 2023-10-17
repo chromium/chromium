@@ -83,7 +83,7 @@ class ManifestError : public ExtensionError {
  public:
   ManifestError(const std::string& extension_id,
                 const std::u16string& message,
-                const std::u16string& manifest_key,
+                const std::string& manifest_key,
                 const std::u16string& manifest_specific);
 
   ManifestError(const ManifestError&) = delete;
@@ -93,7 +93,7 @@ class ManifestError : public ExtensionError {
 
   std::string GetDebugString() const override;
 
-  const std::u16string& manifest_key() const { return manifest_key_; }
+  const std::string& manifest_key() const { return manifest_key_; }
   const std::u16string& manifest_specific() const { return manifest_specific_; }
 
  private:
@@ -101,7 +101,7 @@ class ManifestError : public ExtensionError {
 
   // If present, this indicates the feature in the manifest which caused the
   // error.
-  std::u16string manifest_key_;
+  std::string manifest_key_;
   // If present, this is a more-specific location of the error - for instance,
   // a specific permission which is incorrect, rather than simply "permissions".
   std::u16string manifest_specific_;

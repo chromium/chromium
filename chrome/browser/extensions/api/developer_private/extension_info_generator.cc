@@ -132,7 +132,7 @@ void PopulateErrorBase(const ExtensionError& error, ErrorType* out) {
 developer::ManifestError ConstructManifestError(const ManifestError& error) {
   developer::ManifestError result;
   PopulateErrorBase(error, &result);
-  result.manifest_key = base::UTF16ToUTF8(error.manifest_key());
+  result.manifest_key = error.manifest_key();
   if (!error.manifest_specific().empty()) {
     result.manifest_specific = base::UTF16ToUTF8(error.manifest_specific());
   }
