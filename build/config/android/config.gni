@@ -329,8 +329,7 @@ if (is_android || is_chromeos) {
          "incremental_install=true && is_java_debug=false is not supported.")
 
   # We overwrite system_webview_apk_target if it is an alias
-  # TODO(smaier): Remove downstream_64bit_aliased_targets once safe to do so.
-  if (android_64bit_target_cpu && defined(downstream_64bit_aliased_targets)) {
+  if (android_64bit_target_cpu) {
     system_webview_apk_target =
         string_replace(system_webview_apk_target,
                        "system_webview_google_apk",
