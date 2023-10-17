@@ -1171,6 +1171,7 @@ policies:
   1170: PasswordSharingEnabled
   1171: ZstdContentEncodingEnabled
   1172: IPv6ReachabilityOverrideEnabled
+  1173: UserFeedbackWithLowLevelDebugDataAllowed
 atomic_groups:
   1: Homepage
   2: RemoteAccess

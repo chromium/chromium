@@ -1376,6 +1376,11 @@ inline constexpr char kSendFunctionKeys[] =
 inline constexpr char kDeviceSwitchFunctionKeysBehaviorEnabled[] =
     "ash.settings.switch_function_keys_behavior_enabled";
 
+// A string-enum-list pref that controls if the WiFi firmware dump is allowed to
+// be included in user feedback report.
+inline constexpr char kUserFeedbackWithLowLevelDebugDataAllowed[] =
+    "ash.user_feedback_with_low_level_debug_data_allowed";
+
 // A boolean pref which is true if touchpad reverse scroll is enabled.
 inline constexpr char kNaturalScroll[] = "settings.touchpad.natural_scroll";
 // A boolean pref which is true if mouse reverse scroll is enabled.

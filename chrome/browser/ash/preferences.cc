@@ -606,6 +606,7 @@ void Preferences::RegisterProfilePrefs(
 
   registry->RegisterBooleanPref(prefs::kShowHumanPresenceSensorScreenEnabled,
                                 true);
+  registry->RegisterListPref(prefs::kUserFeedbackWithLowLevelDebugDataAllowed);
 }
 
 void Preferences::InitUserPrefs(sync_preferences::PrefServiceSyncable* prefs) {
