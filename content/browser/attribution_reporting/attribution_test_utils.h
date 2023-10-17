@@ -25,7 +25,6 @@
 #include "content/browser/attribution_reporting/attribution_info.h"
 #include "content/browser/attribution_reporting/attribution_report.h"
 #include "content/browser/attribution_reporting/attribution_storage_delegate.h"
-#include "content/browser/attribution_reporting/common_source_info.h"
 #include "content/browser/attribution_reporting/create_report_result.h"
 #include "content/browser/attribution_reporting/send_result.h"
 #include "content/browser/attribution_reporting/storable_source.h"
@@ -51,6 +50,7 @@ namespace content {
 
 class AttributionManager;
 class AttributionTrigger;
+class CommonSourceInfo;
 
 enum class RateLimitResult : int;
 
@@ -122,8 +122,6 @@ class SourceBuilder {
   StorableSource Build() const;
 
   StoredSource BuildStored() const;
-
-  CommonSourceInfo BuildCommonInfo() const;
 
  private:
   base::Time source_time_;
@@ -394,10 +392,6 @@ std::vector<AttributionReport> GetAttributionReportsForTesting(
 
 MATCHER_P(SourceRegistrationIs, matcher, "") {
   return ExplainMatchResult(matcher, arg.registration(), result_listener);
-}
-
-MATCHER_P(CommonSourceInfoIs, matcher, "") {
-  return ExplainMatchResult(matcher, arg.common_info(), result_listener);
 }
 
 MATCHER_P(SourceEventIdIs, matcher, "") {

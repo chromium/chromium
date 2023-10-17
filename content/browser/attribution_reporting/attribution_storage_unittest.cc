@@ -209,31 +209,28 @@ TEST_F(AttributionStorageTest,
 
 TEST_F(AttributionStorageTest, ImpressionStoredAndRetrieved_ValuesIdentical) {
   storage()->StoreSource(SourceBuilder().Build());
-  EXPECT_THAT(
-      storage()->GetActiveSources(),
-      ElementsAre(CommonSourceInfoIs(SourceBuilder().BuildCommonInfo())));
+  EXPECT_THAT(storage()->GetActiveSources(),
+              ElementsAre(SourceBuilder().BuildStored()));
 }
 
 TEST_F(AttributionStorageTest, UniqueReportWindowsStored_ValuesIdentical) {
-  storage()->StoreSource(
-      SourceBuilder()
-          .SetExpiry(base::Days(30))
-          .SetEventReportWindows(
-              *attribution_reporting::EventReportWindows::Create(
-                  /*start_time=*/base::Days(3),
-                  /*end_times=*/{base::Days(15)}))
-          .SetAggregatableReportWindow(base::Days(5))
-          .Build());
-  EXPECT_THAT(storage()->GetActiveSources(),
-              ElementsAre(CommonSourceInfoIs(
-                  SourceBuilder()
-                      .SetExpiry(base::Days(30))
-                      .SetEventReportWindows(
-                          *attribution_reporting::EventReportWindows::Create(
-                              /*start_time=*/base::Days(3),
-                              /*end_times=*/{base::Days(15)}))
-                      .SetAggregatableReportWindow(base::Days(5))
-                      .BuildCommonInfo())));
+  base::Time source_time = base::Time::Now();
+  auto event_report_windows =
+      *attribution_reporting::EventReportWindows::Create(
+          /*start_time=*/base::Days(3),
+          /*end_times=*/{base::Days(15)});
+  storage()->StoreSource(SourceBuilder()
+                             .SetExpiry(base::Days(30))
+                             .SetEventReportWindows(event_report_windows)
+                             .SetAggregatableReportWindow(base::Days(5))
+                             .Build());
+  EXPECT_THAT(
+      storage()->GetActiveSources(),
+      ElementsAre(AllOf(
+          Property(&StoredSource::expiry_time, source_time + base::Days(30)),
+          EventReportWindowsIs(event_report_windows),
+          Property(&StoredSource::aggregatable_report_window_time,
+                   source_time + base::Days(5)))));
 }
 
 TEST_F(AttributionStorageTest,

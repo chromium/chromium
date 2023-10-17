@@ -212,9 +212,6 @@ SourceBuilder& SourceBuilder::SetMaxEventLevelReports(
   return *this;
 }
 
-CommonSourceInfo SourceBuilder::BuildCommonInfo() const {
-  return CommonSourceInfo(source_origin_, reporting_origin_, source_type_);
-}
 
 StorableSource SourceBuilder::Build() const {
   return StorableSource(reporting_origin_, registration_, source_origin_,
@@ -224,9 +221,9 @@ StorableSource SourceBuilder::Build() const {
 StoredSource SourceBuilder::BuildStored() const {
   base::Time expiry_time = source_time_ + registration_.expiry;
   StoredSource source = *StoredSource::Create(
-      BuildCommonInfo(), registration_.source_event_id,
-      registration_.destination_set, source_time_, expiry_time,
-      registration_.event_report_windows,
+      CommonSourceInfo(source_origin_, reporting_origin_, source_type_),
+      registration_.source_event_id, registration_.destination_set,
+      source_time_, expiry_time, registration_.event_report_windows,
       source_time_ + registration_.aggregatable_report_window,
       registration_.max_event_level_reports, registration_.priority,
       registration_.filter_data, registration_.debug_key,
