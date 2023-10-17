@@ -12,7 +12,9 @@ import org.jni_zero.NativeMethods;
 
 import org.chromium.base.Callback;
 import org.chromium.base.JNIUtils;
+import org.chromium.base.lifetime.Destroyable;
 import org.chromium.chrome.browser.profiles.Profile;
+import org.chromium.chrome.browser.profiles.ProfileKeyedMap;
 import org.chromium.net.NetworkTrafficAnnotationTag;
 import org.chromium.url.GURL;
 
@@ -23,17 +25,19 @@ import java.util.function.Consumer;
 /**
  * A very simple http client
  *
- * This client only supports small (<4MB) one way requests/responses. No
- * bidirectional connections or streams support. Only use this if you need a
- * small network request for a java feature with no other native code.
+ * <p>This client only supports small (<4MB) one way requests/responses. No bidirectional
+ * connections or streams support. Only use this if you need a small network request for a java
+ * feature with no other native code.
  *
- * If your feature already has a native component, it might be better for you to
- * use chrome's network stack from native within your own native code instead.
+ * <p>If your feature already has a native component, it might be better for you to use chrome's
+ * network stack from native within your own native code instead.
  */
 @JNINamespace("httpclient")
-public class SimpleHttpClient {
+public class SimpleHttpClient implements Destroyable {
+    private static final ProfileKeyedMap<SimpleHttpClient> sClients =
+            ProfileKeyedMap.createMapOfDestroyables();
+
     private long mNativeBridge;
-    private static SimpleHttpClient sInstance;
 
     /**
      * Data structure representing HTTP response. Used between native and Java.
@@ -69,17 +73,15 @@ public class SimpleHttpClient {
         mNativeBridge = SimpleHttpClientJni.get().init(profile);
     }
 
-    public static SimpleHttpClient get() {
-        if (sInstance == null) {
-            sInstance = new SimpleHttpClient(Profile.getLastUsedRegularProfile());
-        }
-        return sInstance;
+    public static SimpleHttpClient getForProfile(Profile profile) {
+        return sClients.getForProfile(profile, () -> new SimpleHttpClient((profile)));
     }
 
     /**
      * Destroy the HTTP client. If there are pending requests sent through this client, the response
      * will be ignored and no callback will be invoked.
      */
+    @Override
     public void destroy() {
         SimpleHttpClientJni.get().destroy(mNativeBridge);
     }
