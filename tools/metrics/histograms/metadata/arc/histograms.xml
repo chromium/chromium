@@ -411,6 +411,17 @@ chromium-metrics-reviews@google.com.
   </token>
 </histogram>
 
+<histogram name="Arc.App.GmsCoreKill.{ArcBootType}" enum="ArcAppGmsKillType"
+    expires_after="2024-09-25">
+  <owner>batoon@google.com</owner>
+  <owner>arc-core@google.com</owner>
+  <summary>
+    Counts the types of app kills caused by GMS core updates {ArcBootType}. See
+    go/gmscore-killed-my-app. Emitted when the GMS core update is done.
+  </summary>
+  <token key="ArcBootType" variants="ArcBootTypes"/>
+</histogram>
+
 <histogram name="Arc.App.LowMemoryKills.{ArcAppKillType}Count10Minutes"
     units="Apps" expires_after="2024-02-20">
   <owner>cwd@google.com</owner>

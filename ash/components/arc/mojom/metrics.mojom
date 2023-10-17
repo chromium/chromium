@@ -203,6 +203,8 @@ enum ArcNetworkError {
 enum AppKillType {
   LMKD_KILL = 0,
   OOM_KILL = 1,
+  [MinVersion=30] GMS_UPDATE_KILL = 2,
+  [MinVersion=30] GMS_START_KILL = 3,
 };
 
 // Describes an app kill from ARC instance.

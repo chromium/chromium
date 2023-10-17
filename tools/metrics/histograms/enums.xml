@@ -4267,6 +4267,12 @@ Unknown properties are collapsed to zero. -->
   <int value="7" label="BackgroundService">ANR in background service.</int>
 </enum>
 
+<enum name="ArcAppGmsKillType">
+  <summary>Defines ARC app kill types by GMS Core.</summary>
+  <int value="2" label="GMS Core update"/>
+  <int value="3" label="GMS Core start failure"/>
+</enum>
+
 <enum name="ArcAppShortcutStatus">
   <summary>Defines ARC app shortcut result</summary>
   <int value="0" label="Empty Icon"/>
