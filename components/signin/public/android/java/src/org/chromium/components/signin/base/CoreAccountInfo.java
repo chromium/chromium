@@ -9,8 +9,7 @@ import android.accounts.Account;
 import androidx.annotation.NonNull;
 import androidx.annotation.Nullable;
 
-import org.jni_zero.CalledByNative;
-
+import org.chromium.base.annotations.CalledByNative;
 import org.chromium.components.signin.AccountUtils;
 
 /**

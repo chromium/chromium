@@ -6,8 +6,8 @@ package org.chromium.components.omnibox.action;
 
 import androidx.annotation.NonNull;
 
-import org.jni_zero.CalledByNative;
-import org.jni_zero.NativeMethods;
+import org.chromium.base.annotations.CalledByNative;
+import org.chromium.base.annotations.NativeMethods;
 
 /**
  * An interface for creation of the OmniboxAction instances.

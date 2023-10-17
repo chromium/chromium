@@ -6,9 +6,8 @@ package org.chromium.components.webauthn;
 
 import android.os.Build;
 
-import org.jni_zero.CalledByNative;
-
 import org.chromium.base.PackageUtils;
+import org.chromium.base.annotations.CalledByNative;
 import org.chromium.device.DeviceFeatureList;
 import org.chromium.device.DeviceFeatureMap;
 

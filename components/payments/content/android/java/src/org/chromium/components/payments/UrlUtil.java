@@ -4,9 +4,8 @@
 
 package org.chromium.components.payments;
 
-import org.jni_zero.JNINamespace;
-import org.jni_zero.NativeMethods;
-
+import org.chromium.base.annotations.JNINamespace;
+import org.chromium.base.annotations.NativeMethods;
 import org.chromium.components.embedder_support.util.UrlConstants;
 import org.chromium.url.GURL;
 

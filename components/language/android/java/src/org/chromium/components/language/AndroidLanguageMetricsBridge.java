@@ -6,7 +6,7 @@ package org.chromium.components.language;
 
 import androidx.annotation.VisibleForTesting;
 
-import org.jni_zero.NativeMethods;
+import org.chromium.base.annotations.NativeMethods;
 
 /**
  * A bridge to language metrics functions that require access to native code.

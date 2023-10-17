@@ -11,9 +11,8 @@ import android.os.RemoteException;
 import android.os.SystemClock;
 import android.util.Pair;
 
-import org.jni_zero.NativeMethods;
-
 import org.chromium.base.Log;
+import org.chromium.base.annotations.NativeMethods;
 
 import java.io.FileDescriptor;
 import java.io.IOException;

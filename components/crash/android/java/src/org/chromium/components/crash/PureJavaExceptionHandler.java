@@ -4,7 +4,7 @@
 
 package org.chromium.components.crash;
 
-import org.jni_zero.CalledByNative;
+import org.chromium.base.annotations.CalledByNative;
 
 /**
  * This UncaughtExceptionHandler will upload the stacktrace when there is an uncaught exception.

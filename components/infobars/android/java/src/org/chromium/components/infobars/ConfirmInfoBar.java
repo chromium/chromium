@@ -8,9 +8,8 @@ import android.graphics.Bitmap;
 
 import androidx.annotation.ColorRes;
 
-import org.jni_zero.CalledByNative;
-import org.jni_zero.JNINamespace;
-
+import org.chromium.base.annotations.CalledByNative;
+import org.chromium.base.annotations.JNINamespace;
 import org.chromium.chrome.browser.infobar.ActionType;
 
 /**

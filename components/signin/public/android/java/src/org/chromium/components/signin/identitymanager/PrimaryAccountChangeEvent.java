@@ -7,7 +7,7 @@ package org.chromium.components.signin.identitymanager;
 import androidx.annotation.IntDef;
 import androidx.annotation.VisibleForTesting;
 
-import org.jni_zero.CalledByNative;
+import org.chromium.base.annotations.CalledByNative;
 
 import java.lang.annotation.Retention;
 import java.lang.annotation.RetentionPolicy;

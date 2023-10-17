@@ -6,8 +6,8 @@ package org.chromium.components.embedder_support.util;
 
 import android.util.Log;
 
-import org.jni_zero.CalledByNative;
-import org.jni_zero.JNINamespace;
+import org.chromium.base.annotations.CalledByNative;
+import org.chromium.base.annotations.JNINamespace;
 
 import java.io.IOException;
 import java.io.InputStream;

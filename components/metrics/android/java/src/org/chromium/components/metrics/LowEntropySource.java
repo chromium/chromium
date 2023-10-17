@@ -8,10 +8,9 @@ import android.content.SharedPreferences;
 
 import androidx.annotation.MainThread;
 
-import org.jni_zero.CalledByNative;
-
 import org.chromium.base.ContextUtils;
 import org.chromium.base.ThreadUtils;
+import org.chromium.base.annotations.CalledByNative;
 
 import java.util.Random;
 

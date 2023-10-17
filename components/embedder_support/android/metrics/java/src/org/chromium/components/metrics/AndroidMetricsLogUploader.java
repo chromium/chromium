@@ -4,8 +4,8 @@
 
 package org.chromium.components.metrics;
 
-import org.jni_zero.CalledByNative;
-import org.jni_zero.JNINamespace;
+import org.chromium.base.annotations.CalledByNative;
+import org.chromium.base.annotations.JNINamespace;
 
 /**
  * Passes UMA logs from native to a java uploader.

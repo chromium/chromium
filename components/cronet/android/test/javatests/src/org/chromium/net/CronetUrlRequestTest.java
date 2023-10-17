@@ -22,7 +22,6 @@ import android.os.StrictMode;
 import androidx.test.ext.junit.runners.AndroidJUnit4;
 import androidx.test.filters.SmallTest;
 
-import org.jni_zero.NativeMethods;
 import org.junit.After;
 import org.junit.Before;
 import org.junit.Rule;
@@ -30,6 +29,7 @@ import org.junit.Test;
 import org.junit.runner.RunWith;
 
 import org.chromium.base.Log;
+import org.chromium.base.annotations.NativeMethods;
 import org.chromium.base.test.util.DoNotBatch;
 import org.chromium.net.CronetTestRule.CronetImplementation;
 import org.chromium.net.CronetTestRule.IgnoreFor;

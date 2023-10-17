@@ -7,8 +7,7 @@ package org.chromium.components.signin.base;
 import androidx.annotation.NonNull;
 import androidx.annotation.VisibleForTesting;
 
-import org.jni_zero.CalledByNative;
-
+import org.chromium.base.annotations.CalledByNative;
 import org.chromium.components.signin.AccountCapabilitiesConstants;
 import org.chromium.components.signin.AccountManagerDelegate;
 import org.chromium.components.signin.Tribool;

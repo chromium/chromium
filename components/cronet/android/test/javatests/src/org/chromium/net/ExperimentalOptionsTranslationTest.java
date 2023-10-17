@@ -13,12 +13,12 @@ import androidx.annotation.OptIn;
 import androidx.test.ext.junit.runners.AndroidJUnit4;
 import androidx.test.filters.MediumTest;
 
-import org.jni_zero.JNINamespace;
 import org.json.JSONException;
 import org.json.JSONObject;
 import org.junit.Test;
 import org.junit.runner.RunWith;
 
+import org.chromium.base.annotations.JNINamespace;
 import org.chromium.base.test.util.DoNotBatch;
 import org.chromium.net.DnsOptions.StaleDnsOptions;
 

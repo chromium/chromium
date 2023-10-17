@@ -4,8 +4,8 @@
 
 package org.chromium.components.webxr;
 
-import org.jni_zero.JNINamespace;
-import org.jni_zero.NativeMethods;
+import org.chromium.base.annotations.JNINamespace;
+import org.chromium.base.annotations.NativeMethods;
 
 /**
  * Helper class for interacting with Cardboard SDK from Java code.

@@ -8,8 +8,8 @@ import com.google.android.gms.cast.MediaInfo;
 import com.google.android.gms.cast.MediaMetadata;
 import com.google.android.gms.cast.MediaStatus;
 
-import org.jni_zero.CalledByNative;
-import org.jni_zero.JNINamespace;
+import org.chromium.base.annotations.CalledByNative;
+import org.chromium.base.annotations.JNINamespace;
 
 /**
  * Wrapper layer that exposes a gms.cast.MediaStatus to native code.

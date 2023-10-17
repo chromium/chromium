@@ -9,7 +9,7 @@ import android.text.TextUtils;
 import androidx.annotation.VisibleForTesting;
 import androidx.core.util.ObjectsCompat;
 
-import org.jni_zero.CalledByNative;
+import org.chromium.base.annotations.CalledByNative;
 
 import java.util.ArrayList;
 import java.util.Arrays;

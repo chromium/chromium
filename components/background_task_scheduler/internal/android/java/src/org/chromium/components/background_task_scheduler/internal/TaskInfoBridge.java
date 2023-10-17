@@ -6,8 +6,7 @@ package org.chromium.components.background_task_scheduler.internal;
 
 import android.os.PersistableBundle;
 
-import org.jni_zero.CalledByNative;
-
+import org.chromium.base.annotations.CalledByNative;
 import org.chromium.components.background_task_scheduler.TaskInfo;
 
 /**

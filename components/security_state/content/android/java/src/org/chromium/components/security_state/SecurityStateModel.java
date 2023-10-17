@@ -6,8 +6,7 @@ package org.chromium.components.security_state;
 
 import androidx.annotation.VisibleForTesting;
 
-import org.jni_zero.NativeMethods;
-
+import org.chromium.base.annotations.NativeMethods;
 import org.chromium.content_public.browser.WebContents;
 
 /**
