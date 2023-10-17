@@ -29,8 +29,6 @@ class PreviewTab final : public content::WebContentsDelegate {
   PreviewTab(const PreviewTab&) = delete;
   PreviewTab& operator=(const PreviewTab&) = delete;
 
-  void Show();
-
  private:
   class WebContentsObserver;
 

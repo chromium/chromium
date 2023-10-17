@@ -55,6 +55,8 @@ enum class PreloadingType {
 
   // Link-Preview loads a page with prerendering infrastructures in a dedicated
   // mini tab so that users can take a look at the content before visiting it.
+  // TODO(b:291867362): This is not used by the current implementation,
+  // but might be reused in the future.
   kLinkPreview = 6,
 };
 

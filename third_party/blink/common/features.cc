@@ -1088,6 +1088,9 @@ BASE_FEATURE(kLightweightNoStatePrefetch,
 );
 
 BASE_FEATURE(kLinkPreview, "LinkPreview", base::FEATURE_DISABLED_BY_DEFAULT);
+BASE_FEATURE(kLinkPreviewNavigation,
+             "LinkPreviewNavigation",
+             base::FEATURE_DISABLED_BY_DEFAULT);
 
 // A feature to control whether the loading phase should be extended beyond
 // First Meaningful Paint by a configurable buffer.

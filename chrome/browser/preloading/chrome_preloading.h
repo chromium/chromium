@@ -106,6 +106,8 @@ static constexpr content::PreloadingPredictor kOmniboxTouchDownPredictor(
     "OmniboxTouchDownPredirector");
 
 // When the Link-Preview loads a page with prerendering infrastractures.
+// TODO(b:291867362): This is not used by the current implementation, but might
+// be reused in the future.
 static constexpr content::PreloadingPredictor kLinkPreview(112, "LinkPreview");
 
 // TODO(crbug.com/1309934): Integrate more Preloading predictors with
