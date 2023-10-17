@@ -71,6 +71,8 @@ class CorpHostStarter : public HostStarter,
  private:
   void StartHostProcess();
 
+  void OnExistingConfigLoaded(absl::optional<base::Value::Dict> config);
+
   void OnProvisionCorpMachineResponse(
       const ProtobufHttpStatus& status,
       std::unique_ptr<internal::RemoteAccessHostV1Proto> response);
@@ -117,12 +119,28 @@ void CorpHostStarter::StartHost(Params params, CompletionCallback on_done) {
   on_done_ = std::move(on_done);
   key_pair_ = RsaKeyPair::Generate();
 
-  // TODO(joedow): Add code to look for an existing host_id and provide it in
-  // the request.
+  // Check to see if there is an existing host instance on this machine which
+  // needs to be cleaned up before we can create and start a new host instance.
+  daemon_controller_->GetConfig(
+      base::BindOnce(&CorpHostStarter::OnExistingConfigLoaded, weak_ptr_));
+}
+
+void CorpHostStarter::OnExistingConfigLoaded(
+    absl::optional<base::Value::Dict> config) {
+  absl::optional<std::string> existing_host_id;
+  if (config.has_value()) {
+    std::string* host_id = config->FindString("host_id");
+    if (host_id) {
+      existing_host_id.emplace(*host_id);
+      LOG(INFO) << "Found existing host: `" << *existing_host_id << "`. This "
+                << "instance will be deleted from the Directory before "
+                << "creating and starting a new host instance.";
+    }
+  }
 
   corp_service_client_->ProvisionCorpMachine(
       start_host_params_.owner_email, start_host_params_.name,
-      key_pair_->GetPublicKey(), /*existing_host_id=*/absl::nullopt,
+      key_pair_->GetPublicKey(), std::move(existing_host_id),
       base::BindOnce(&CorpHostStarter::OnProvisionCorpMachineResponse,
                      weak_ptr_));
 }
