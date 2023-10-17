@@ -30,6 +30,7 @@ namespace update_client {
 CrxDownloader::DownloadMetrics::DownloadMetrics()
     : downloader(kNone),
       error(0),
+      extra_code1(0),
       downloaded_bytes(-1),
       total_bytes(-1),
       download_time_ms(0) {}

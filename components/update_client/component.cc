@@ -707,6 +707,9 @@ base::Value::Dict Component::MakeEventDownloadMetrics(
   if (dm.error) {
     event.Set("errorcode", dm.error);
   }
+  if (dm.extra_code1) {
+    event.Set("extracode1", dm.extra_code1);
+  }
   event.Set("url", dm.url.spec());
 
   // -1 means that the  byte counts are not known.

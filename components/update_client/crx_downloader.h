@@ -42,6 +42,7 @@ class CrxDownloader : public base::RefCountedThreadSafe<CrxDownloader> {
     Downloader downloader;
 
     int error;
+    int extra_code1;
 
     int64_t downloaded_bytes;  // -1 means that the byte count is unknown.
     int64_t total_bytes;
