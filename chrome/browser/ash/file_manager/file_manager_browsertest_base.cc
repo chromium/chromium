@@ -2623,7 +2623,7 @@ void FileManagerBrowserTestBase::StartTest() {
   const std::string full_test_name = GetFullTestCaseName();
   LOG(INFO) << "FileManagerBrowserTest::StartTest " << full_test_name;
   static const base::FilePath test_extension_dir = base::FilePath(
-      FILE_PATH_LITERAL("ui/file_manager/integration_tests/preprocessed"));
+      FILE_PATH_LITERAL("ui/file_manager/integration_tests/tsc"));
   LaunchExtension(base::DIR_GEN_TEST_DATA_ROOT, test_extension_dir,
                   GetTestExtensionManifestName());
   RunTestMessageLoop();

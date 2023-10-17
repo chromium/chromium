@@ -48,6 +48,9 @@ declare global {
       }
 
       export function getManifest(): SerializedManifest;
+
+      export function getBackgroundPage(
+          callback: (backgroundPage?: Window) => void): void;
     }
   }
 }

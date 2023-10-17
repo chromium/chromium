@@ -6,27 +6,24 @@ import {CHOOSE_ENTRY_PROPERTY} from './choose_entry_const.js';
 
 /**
  * Extracts parameters used by chooseEntry function.
- * @return {!chrome.fileSystem.ChooseEntryOptions}
  */
-function getDialogParams() {
+function getDialogParams(): chrome.fileSystem.ChooseEntryOptions {
   const queryStr = window.location.search;
   const params = new URLSearchParams(queryStr);
-  return /** @type {!chrome.fileSystem.ChooseEntryOptions} */ (
-      JSON.parse(params.get('value')));
+  return JSON.parse(params.get('value')!);
 }
 
 /**
  * Opens a file dialog. The type of the dialog is dicated by the params.
- * @param {!chrome.fileSystem.ChooseEntryOptions} params
  */
-function chooseEntry() {
+async function chooseEntry(): Promise<Entry> {
   const params = getDialogParams();
   return new Promise((resolve, reject) => {
     chrome.fileSystem.chooseEntry(params, (entry) => {
       if (chrome.runtime.lastError) {
         reject(chrome.runtime.lastError);
       } else {
-        resolve(entry);
+        resolve(entry!);
       }
     });
   });
@@ -36,7 +33,10 @@ function chooseEntry() {
 // This is done with the help of chooseEntry() function that returns a promise
 // fulfilled once the name of the entry was selected. The entry is then set on
 // the "global" variable of the background page.
-chrome.runtime.getBackgroundPage(async (bgPage) => {
+chrome.runtime.getBackgroundPage(async (bgPage: Window|undefined) => {
+  if (!bgPage) {
+    throw Error('Failed to get the background page for `choose_entry`');
+  }
   // Clean up anything left over by the previous calls.
   delete bgPage[CHOOSE_ENTRY_PROPERTY];
   // Assign new entry resulting from chooseEntry() call. If the user cancels

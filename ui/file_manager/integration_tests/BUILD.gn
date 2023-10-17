@@ -3,6 +3,7 @@
 # found in the LICENSE file.
 
 import("//third_party/closure_compiler/compile_js.gni")
+import("//tools/typescript/ts_library.gni")
 
 js_type_check("closure_compile") {
   testonly = true
@@ -79,6 +80,7 @@ js_library("testcase") {
 }
 
 preprocess_folder = "$target_gen_dir/preprocessed"
+tsc_folder = "$target_gen_dir/tsc"
 
 # TODO: Replace allowed_paths, dialog_type, files_app_state, metadata_stats_type
 # and volume_manager_common_volume_type with definitions from Files app.
@@ -98,8 +100,6 @@ js_files = [
   "file_manager/android_photos.js",
   "file_manager/background.js",
   "file_manager/breadcrumbs.js",
-  "file_manager/choose_entry.js",
-  "file_manager/choose_entry_const.js",
   "file_manager/context_menu.js",
   "file_manager/copy_between_windows.js",
   "file_manager/create_new_folder.js",
@@ -154,9 +154,14 @@ js_files = [
   "file_manager/page_objects/directory_tree.js",
 ]
 
+ts_files = [
+  "file_manager/choose_entry.ts",
+  "file_manager/choose_entry_const.ts",
+]
+
 # TS/JS files.
 copy("copy_src") {
-  sources = js_files
+  sources = js_files + ts_files
   outputs = [ "$preprocess_folder/{{source_target_relative}}" ]
 }
 
@@ -167,19 +172,36 @@ copy("copy_app") {
     "file_manager/choose_entry.html",
     "file_manager_test_manifest.json",
   ]
-  outputs = [ "$preprocess_folder/{{source_target_relative}}" ]
+  outputs = [ "$tsc_folder/{{source_target_relative}}" ]
+}
+
+ts_library("build_ts") {
+  root_dir = preprocess_folder
+  out_dir = tsc_folder
+  tsconfig_base = "tsconfig_base.json"
+  composite = true
+
+  definitions = [
+    "//tools/typescript/definitions/runtime.d.ts",
+    "//tools/typescript/definitions/file_system.d.ts",
+    "definitions.d.ts",
+  ]
+
+  extra_deps = [ ":copy_src" ]
+
+  in_files = js_files + ts_files
 }
 
 group("build") {
   deps = [
+    ":build_ts",
     ":copy_app",
-    ":copy_src",
   ]
 
   # Also as data_deps to make the files available at runtime to the
   # browser_tests binary, see `gn help runtime_deps` for more info.
   data_deps = [
+    ":build_ts",
     ":copy_app",
-    ":copy_src",
   ]
 }
