@@ -12088,6 +12088,11 @@ Called by update_bad_message_reasons.py.-->
   <int value="1" label="No exception"/>
 </enum>
 
+<enum name="BooleanBackoff">
+  <int value="0" label="No backoff"/>
+  <int value="1" label="Backoff mode enabled"/>
+</enum>
+
 <enum name="BooleanBlocked">
   <int value="0" label="Not Blocked"/>
   <int value="1" label="Blocked"/>

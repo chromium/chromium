@@ -1117,7 +1117,7 @@ chromium-metrics-reviews@google.com.
   </summary>
 </histogram>
 
-<histogram name="SafeBrowsing.HPRT.BackoffState" enum="BooleanEnabled"
+<histogram name="SafeBrowsing.HPRT.BackoffState" enum="BooleanBackoff"
     expires_after="2024-02-04">
   <owner>thefrog@chromium.org</owner>
   <owner>chrome-counter-abuse-alerts@google.com</owner>
@@ -1346,7 +1346,7 @@ chromium-metrics-reviews@google.com.
 </histogram>
 
 <histogram name="SafeBrowsing.HPRT.OhttpKeyService.BackoffState"
-    enum="BooleanEnabled" expires_after="2024-02-04">
+    enum="BooleanBackoff" expires_after="2024-02-04">
   <owner>xinghuilu@chromium.org</owner>
   <owner>chrome-counter-abuse-alerts@google.com</owner>
   <summary>
@@ -2001,7 +2001,7 @@ chromium-metrics-reviews@google.com.
   </summary>
 </histogram>
 
-<histogram name="SafeBrowsing.RT.Backoff.State" enum="BooleanEnabled"
+<histogram name="SafeBrowsing.RT.Backoff.State" enum="BooleanBackoff"
     expires_after="2024-02-11">
   <owner>vakh@chromium.org</owner>
   <owner>chrome-counter-abuse-alerts@google.com</owner>
