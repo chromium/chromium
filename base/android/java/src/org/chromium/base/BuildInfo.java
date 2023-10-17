@@ -78,6 +78,10 @@ public class BuildInfo {
     public final boolean isTV;
     /** Whether we're running on an Android Automotive OS device or not. */
     public final boolean isAutomotive;
+
+    /** Whether we're running on an Android Foldable OS device or not. */
+    public final boolean isFoldable;
+
     /**
      * version of the FEATURE_VULKAN_DEQP_LEVEL, if available. Queried only on Android T or above
      */
@@ -320,6 +324,11 @@ public class BuildInfo {
             isAutomotive = false;
         }
         this.isAutomotive = isAutomotive;
+
+        // Detect whether device is foldable.
+        this.isFoldable =
+                Build.VERSION.SDK_INT >= VERSION_CODES.R
+                        && pm.hasSystemFeature(PackageManager.FEATURE_SENSOR_HINGE_ANGLE);
 
         int vulkanLevel = 0;
         if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.TIRAMISU) {
