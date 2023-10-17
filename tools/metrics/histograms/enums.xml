@@ -111221,6 +111221,14 @@ Full version information for the fingerprint enum values:
   <int value="14" label="Forcing flag has an invalid name"/>
 </enum>
 
+<enum name="VariationsLogInvalidValue">
+  <summary>
+    All values in this enum are invalid, this enum exists only so we have a nice
+    UI.
+  </summary>
+  <int value="0" label="dummy enum value"/>
+</enum>
+
 <enum name="VariationsPermanentConsistencyCountryResult">
   <int value="0" label="Saved pref missing and no country code in seed"/>
   <int value="1" label="Saved pref missing and country code in seed"/>
