@@ -400,7 +400,7 @@ BASE_FEATURE(kPrefetchNoVarySearch,
 //     decompresses the response body using the dictionary.
 BASE_FEATURE(kCompressionDictionaryTransportBackend,
              "CompressionDictionaryTransportBackend",
-             base::FEATURE_DISABLED_BY_DEFAULT);
+             base::FEATURE_ENABLED_BY_DEFAULT);
 
 // When both this feature and the kCompressionDictionaryTransportBackend feature
 // are enabled, the following will happen:
