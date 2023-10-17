@@ -3250,6 +3250,34 @@ TEST_F(FormParserTest, UsernameFoundByServerPredictions) {
             UsernameDetectionMethod::kServerSidePrediction);
 }
 
+// Tests that password server predictions are taken into account during saving
+// if kUseServerPredictionsOnSaveParsing feature is enabled.
+TEST_F(FormParserTest, UsePasswordServerPredictionsOnSaving) {
+  base::test::ScopedFeatureList feature_list;
+  feature_list.InitAndEnableFeature(
+      password_manager::features::kUseServerPredictionsOnSaveParsing);
+  CheckTestData({
+      {
+          .description_for_logging = "Password predictions used during saving.",
+          .fields =
+              {
+                  {.role = ElementRole::USERNAME,
+                   .value = u"testusername",
+                   .name = u"username",
+                   .form_control_type = FormControlType::kInputText},
+                  {.value = u"mysteriousstring",
+                   .name = u"mysteriousfield",
+                   .form_control_type = FormControlType::kInputPassword},
+                  {.role = ElementRole::CURRENT_PASSWORD,
+                   .value = u"strongpassword",
+                   .name = u"likelypassword",
+                   .form_control_type = FormControlType::kInputPassword,
+                   .prediction = {.type = autofill::PASSWORD}},
+              },
+      },
+  });
+}
+
 }  // namespace
 
 }  // namespace password_manager

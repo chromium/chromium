@@ -413,9 +413,9 @@ void ParseUsingPredictions(std::vector<ProcessedField>* processed_fields,
 
     CredentialFieldType field_type = DeriveFromServerFieldType(prediction.type);
     bool is_password_prediction = IsPasswordPrediction(field_type);
-    if (mode == FormDataParser::Mode::kSaving && is_password_prediction) {
-      // TODO(crbug.com/913965): Consider server predictions for password fields
-      // in SAVING mode when the server predictions become complete.
+    if (mode == FormDataParser::Mode::kSaving && is_password_prediction &&
+        !base::FeatureList::IsEnabled(
+            password_manager::features::kUseServerPredictionsOnSaveParsing)) {
       continue;
     }
     switch (field_type) {
