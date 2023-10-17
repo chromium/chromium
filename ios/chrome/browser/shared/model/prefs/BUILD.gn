@@ -105,7 +105,7 @@ source_set("browser_prefs") {
     "//ios/chrome/browser/ui/first_run:field_trial",
     "//ios/chrome/browser/ui/incognito_reauth:incognito_reauth_scene_agent",
     "//ios/chrome/browser/ui/ntp:field_trial",
-    "//ios/chrome/browser/ui/ntp/metrics",
+    "//ios/chrome/browser/ui/ntp/metrics:constants",
     "//ios/chrome/browser/ui/reading_list:reading_list_constants",
     "//ios/chrome/browser/voice/model:prefs",
     "//ios/chrome/browser/web",

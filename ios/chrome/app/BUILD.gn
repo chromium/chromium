@@ -381,6 +381,7 @@ source_set("feed_app_agent") {
     "//ios/chrome/browser/shared/model/browser_state",
     "//ios/chrome/browser/signin",
     "//ios/chrome/browser/ui/ntp/metrics",
+    "//ios/chrome/browser/ui/ntp/metrics:constants",
   ]
   frameworks = [
     "BackgroundTasks.framework",

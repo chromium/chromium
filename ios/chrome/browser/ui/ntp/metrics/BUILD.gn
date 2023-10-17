@@ -4,8 +4,6 @@
 
 source_set("metrics") {
   sources = [
-    "feed_metrics_constants.h",
-    "feed_metrics_constants.mm",
     "feed_metrics_recorder+testing.h",
     "feed_metrics_recorder.h",
     "feed_metrics_recorder.mm",
@@ -40,10 +38,12 @@ source_set("metrics") {
 
 source_set("constants") {
   sources = [
+    "feed_metrics_constants.h",
+    "feed_metrics_constants.mm",
     "new_tab_page_metrics_constants.h",
     "new_tab_page_metrics_constants.mm",
   ]
-  deps = []
+  deps = [ "//base" ]
 }
 
 source_set("home_metrics") {
@@ -69,6 +69,7 @@ source_set("unit_tests") {
     "feed_session_recorder_unittest.mm",
   ]
   deps = [
+    ":constants",
     ":metrics",
     "//base",
     "//base/test:test_support",
