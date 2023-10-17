@@ -242,17 +242,16 @@ TEST_F(AnnotationStorageTest, MaxResult) {
   storage_->Initialize();
   task_environment_.RunUntilIdle();
 
+  auto time = base::Time::Now();
   ImageInfo document_image1({"test", "bar", "test1"},
-                            test_directory_.AppendASCII("document1.jpg"),
-                            base::Time::Now(), /*file_size=*/1);
-  ImageInfo document_image2({"bar", "test1"},
-                            test_directory_.AppendASCII("document2.jpg"),
-                            base::Time::Now(), 2);
-  ImageInfo document_image3({"bar", "test1"},
-                            test_directory_.AppendASCII("document3.jpg"),
-                            base::Time::Now(), 3);
-  ImageInfo foo_image({"test1"}, test_directory_.AppendASCII("foo.png"),
-                      base::Time::Now(), 4);
+                            test_directory_.AppendASCII("document1.jpg"), time,
+                            /*file_size=*/1);
+  ImageInfo document_image2(
+      {"bar", "test1"}, test_directory_.AppendASCII("document2.jpg"), time, 2);
+  ImageInfo document_image3(
+      {"bar", "test1"}, test_directory_.AppendASCII("document3.jpg"), time, 3);
+  ImageInfo foo_image({"test1"}, test_directory_.AppendASCII("foo.png"), time,
+                      4);
 
   storage_->Insert(document_image1);
   storage_->Insert(document_image2);
@@ -262,7 +261,7 @@ TEST_F(AnnotationStorageTest, MaxResult) {
   EXPECT_THAT(
       storage_->Search(base::UTF8ToUTF16(std::string("bar test")),
                        /*max_num_results=*/4),
-      testing::UnorderedElementsAreArray(
+      testing::ElementsAreArray(
           {FileSearchResult(document_image1.path, document_image1.last_modified,
                             2 / 2),
            FileSearchResult(document_image2.path, document_image2.last_modified,
@@ -272,7 +271,7 @@ TEST_F(AnnotationStorageTest, MaxResult) {
 
   EXPECT_THAT(
       storage_->Search(base::UTF8ToUTF16(std::string("bar test")), 3),
-      testing::UnorderedElementsAreArray(
+      testing::ElementsAreArray(
           {FileSearchResult(document_image1.path, document_image1.last_modified,
                             2 / 2),
            FileSearchResult(document_image2.path, document_image2.last_modified,
@@ -282,7 +281,7 @@ TEST_F(AnnotationStorageTest, MaxResult) {
 
   EXPECT_THAT(
       storage_->Search(base::UTF8ToUTF16(std::string("bar test")), 2),
-      testing::UnorderedElementsAreArray(
+      testing::ElementsAreArray(
           {FileSearchResult(document_image1.path, document_image1.last_modified,
                             2 / 2),
            FileSearchResult(document_image2.path, document_image2.last_modified,
@@ -290,12 +289,11 @@ TEST_F(AnnotationStorageTest, MaxResult) {
 
   EXPECT_THAT(
       storage_->Search(base::UTF8ToUTF16(std::string("bar test")), 1),
-      testing::UnorderedElementsAreArray({FileSearchResult(
+      testing::ElementsAreArray({FileSearchResult(
           document_image1.path, document_image1.last_modified, 2 / 2)}));
 
-  EXPECT_THAT(
-      storage_->Search(base::UTF8ToUTF16(std::string("bar test")), 0),
-      testing::UnorderedElementsAreArray(std::vector<FileSearchResult>()));
+  EXPECT_THAT(storage_->Search(base::UTF8ToUTF16(std::string("bar test")), 0),
+              testing::ElementsAreArray(std::vector<FileSearchResult>()));
 
   task_environment_.RunUntilIdle();
 }

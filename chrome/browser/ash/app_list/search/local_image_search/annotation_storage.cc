@@ -313,16 +313,21 @@ std::vector<FileSearchResult> AnnotationStorage::Search(
   }
 
   if (results.size() <= max_num_results) {
-    std::sort(results.begin(), results.end(),
-              [](const FileSearchResult& a, const FileSearchResult& b) {
-                return a.relevance > b.relevance;
-              });
+    std::sort(
+        results.begin(), results.end(),
+        [](const FileSearchResult& a, const FileSearchResult& b) {
+          // Sort in descending order by relevance and last_modified, then in
+          // ascending order by file_path
+          return std::tie(a.relevance, a.last_modified, b.file_path.value()) >
+                 std::tie(b.relevance, b.last_modified, a.file_path.value());
+        });
   } else {
-    std::partial_sort(results.begin(), results.begin() + max_num_results,
-                      results.end(),
-                      [](const FileSearchResult& a, const FileSearchResult& b) {
-                        return a.relevance > b.relevance;
-                      });
+    std::partial_sort(
+        results.begin(), results.begin() + max_num_results, results.end(),
+        [](const FileSearchResult& a, const FileSearchResult& b) {
+          return std::tie(a.relevance, a.last_modified, b.file_path.value()) >
+                 std::tie(b.relevance, b.last_modified, a.file_path.value());
+        });
     results = std::vector<FileSearchResult>(results.begin(),
                                             results.begin() + max_num_results);
   }
