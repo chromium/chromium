@@ -137,6 +137,7 @@ source_set("base") {
 
   if (is_win) {
     sources += [ "scoped_sc_handle_win.h" ]
+    libs = [ "crypt32.lib" ]  # For CryptoAPI functions in certificate_helpers
   } else if (is_linux || is_chromeos) {
     sources += [
       "file_path_util_linux.cc",

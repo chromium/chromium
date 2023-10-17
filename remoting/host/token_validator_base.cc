@@ -16,8 +16,6 @@
 #include "base/strings/string_util.h"
 #include "base/task/single_thread_task_runner.h"
 #include "base/values.h"
-#include "build/build_config.h"
-#include "crypto/crypto_buildflags.h"
 #include "net/base/io_buffer.h"
 #include "net/base/request_priority.h"
 #include "net/base/upload_bytes_element_reader.h"
@@ -33,14 +31,6 @@
 #include "remoting/protocol/authenticator.h"
 #include "url/gurl.h"
 
-#if BUILDFLAG(USE_NSS_CERTS)
-#include "net/ssl/client_cert_store_nss.h"
-#elif BUILDFLAG(IS_WIN)
-#include "net/ssl/client_cert_store_win.h"
-#elif BUILDFLAG(IS_APPLE)
-#include "net/ssl/client_cert_store_mac.h"
-#endif
-
 namespace remoting {
 
 namespace {
@@ -51,14 +41,6 @@ constexpr int kBufferSize = 4096;
 constexpr char kJsonSafetyPrefix[] = ")]}'\n";
 constexpr char kForbiddenExceptionToken[] = "ForbiddenException: ";
 constexpr char kLocationAuthzError[] = "Error Code 23:";
-
-#if BUILDFLAG(IS_WIN)
-crypto::ScopedHCERTSTORE OpenLocalMachineCertStore() {
-  return crypto::ScopedHCERTSTORE(::CertOpenStore(
-      CERT_STORE_PROV_SYSTEM, 0, NULL,
-      CERT_SYSTEM_STORE_LOCAL_MACHINE | CERT_STORE_READONLY_FLAG, L"MY"));
-}
-#endif
 
 }  // namespace
 
@@ -155,36 +137,21 @@ void TokenValidatorBase::OnCertificateRequested(
     net::SSLCertRequestInfo* cert_request_info) {
   DCHECK_EQ(request_.get(), source);
 
-  net::ClientCertStore* client_cert_store;
-#if BUILDFLAG(USE_NSS_CERTS)
-  client_cert_store = new net::ClientCertStoreNSS(
-      net::ClientCertStoreNSS::PasswordDelegateFactory());
-#elif BUILDFLAG(IS_WIN)
-  // The network process is running as "Local Service" whose "Current User"
-  // cert store doesn't contain any certificates. Use the "Local Machine"
-  // store instead.
-  // The ACL on the private key of the machine certificate in the "Local
-  // Machine" cert store needs to allow access by "Local Service".
-  client_cert_store = new net::ClientCertStoreWin(
-      base::BindRepeating(&OpenLocalMachineCertStore));
-#elif BUILDFLAG(IS_APPLE)
-  client_cert_store = new net::ClientCertStoreMac();
-#else
-  // OpenSSL does not use the ClientCertStore infrastructure.
-  client_cert_store = nullptr;
-#endif
-  // The callback is uncancellable, and GetClientCert requires
-  // client_cert_store to stay alive until the callback is called. So we must
-  // give it a WeakPtr for |this|, and ownership of the other parameters.
-  client_cert_store->GetClientCerts(
+  std::unique_ptr<net::ClientCertStore> client_cert_store =
+      CreateClientCertStoreInstance();
+  net::ClientCertStore* const temp_client_cert_store = client_cert_store.get();
+
+  // The callback is uncancellable, and GetClientCert requires client_cert_store
+  // to stay alive until the callback is called. So we must give it a WeakPtr
+  // for |this|, and ownership of the other parameters.
+  temp_client_cert_store->GetClientCerts(
       *cert_request_info,
       base::BindOnce(&TokenValidatorBase::OnCertificatesSelected,
-                     weak_factory_.GetWeakPtr(),
-                     base::Owned(client_cert_store)));
+                     weak_factory_.GetWeakPtr(), std::move(client_cert_store)));
 }
 
 void TokenValidatorBase::OnCertificatesSelected(
-    net::ClientCertStore* unused,
+    std::unique_ptr<net::ClientCertStore> unused,
     net::ClientCertIdentityList selected_certs) {
   const std::string& issuer =
       third_party_auth_config_.token_validation_cert_issuer;

@@ -6,6 +6,7 @@
 #define REMOTING_HOST_TOKEN_VALIDATOR_BASE_H_
 
 #include <memory>
+#include <string>
 
 #include "base/functional/callback.h"
 #include "base/memory/weak_ptr.h"
@@ -54,7 +55,7 @@ class TokenValidatorBase : public net::URLRequest::Delegate,
       net::SSLCertRequestInfo* cert_request_info) override;
 
  protected:
-  void OnCertificatesSelected(net::ClientCertStore* unused,
+  void OnCertificatesSelected(std::unique_ptr<net::ClientCertStore> unused,
                               net::ClientCertIdentityList selected_certs);
 
   virtual void StartValidateRequest(const std::string& token) = 0;

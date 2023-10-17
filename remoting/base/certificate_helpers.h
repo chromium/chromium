@@ -12,6 +12,10 @@
 #include "net/cert/x509_certificate.h"
 #include "net/ssl/client_cert_identity.h"
 
+namespace net {
+class ClientCertStore;
+}
+
 namespace remoting {
 
 // Returns a value from the issuer field for certificate selection, in order of
@@ -35,6 +39,9 @@ extern std::unique_ptr<net::ClientCertIdentity> GetBestMatchFromCertificateList(
     const std::string& issuer,
     const base::Time& now,
     net::ClientCertIdentityList& client_certs);
+
+// Returns a platform-specific ClientCertStore instance.
+extern std::unique_ptr<net::ClientCertStore> CreateClientCertStoreInstance();
 
 }  // namespace remoting
 
