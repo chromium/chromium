@@ -2,8 +2,8 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#ifndef BASE_ANDROID_JNI_GENERATOR_JNI_GENERATOR_HELPER_H_
-#define BASE_ANDROID_JNI_GENERATOR_JNI_GENERATOR_HELPER_H_
+#ifndef JNI_ZERO_JNI_ZERO_HELPER_H_
+#define JNI_ZERO_JNI_ZERO_HELPER_H_
 
 #include <jni.h>
 
@@ -127,4 +127,4 @@ static_assert(sizeof(JniJavaCallContextChecked) ==
 
 }  // namespace jni_generator
 
-#endif  // BASE_ANDROID_JNI_GENERATOR_JNI_GENERATOR_HELPER_H_
+#endif  // JNI_ZERO_JNI_ZERO_HELPER_H_
