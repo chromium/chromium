@@ -197,6 +197,8 @@ public final class ProductionSupportedFlagList {
             Flag.baseFeature(AutofillFeatures.AUTOFILL_ENABLE_SUPPORT_FOR_PHONE_NUMBER_TRUNK_TYPES,
                     "Rationalizes city-and-number and city-code fields to the "
                             + "correct trunk-prefix types."),
+            Flag.baseFeature(AutofillFeatures.AUTOFILL_DONT_PRESERVE_AUTOFILL_STATE,
+                    "Retrieves is_autofilled state from blink instead of the cache"),
             Flag.baseFeature(AutofillFeatures.AUTOFILL_PARSE_ASYNC,
                     "Parse forms asynchronously outside of the UI thread."),
             Flag.baseFeature(AutofillFeatures.AUTOFILL_PARSING_PATTERN_PROVIDER,
