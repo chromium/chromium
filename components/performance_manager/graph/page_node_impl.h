@@ -19,7 +19,6 @@
 #include "components/performance_manager/graph/node_base.h"
 #include "components/performance_manager/public/freezing/freezing.h"
 #include "components/performance_manager/public/graph/page_node.h"
-#include "components/performance_manager/public/resource_attribution/resource_contexts.h"
 #include "components/performance_manager/public/web_contents_proxy.h"
 #include "third_party/abseil-cpp/absl/types/optional.h"
 #include "url/gurl.h"

@@ -25,7 +25,6 @@
 #include "base/test/test_waitable_event.h"
 #include "base/time/time.h"
 #include "chrome/test/base/chrome_render_view_host_test_harness.h"
-#include "components/performance_manager/embedder/graph_features.h"
 #include "components/performance_manager/graph/frame_node_impl.h"
 #include "components/performance_manager/graph/page_node_impl.h"
 #include "components/performance_manager/graph/process_node_impl.h"
@@ -200,9 +199,6 @@ class PageTimelineCPUMonitorTest : public GraphTestHarness,
   }
 
   void SetUp() override {
-    if (features::kUseResourceAttributionCPUMonitor.Get()) {
-      GetGraphFeatures().EnableResourceAttributionRegistries();
-    }
     Super::SetUp();
 
     mock_graph_ =
@@ -682,9 +678,6 @@ class PageTimelineCPUMonitorTimingTest
 
   void SetUp() override {
     Super::SetUp();
-    if (features::kUseResourceAttributionCPUMonitor.Get()) {
-      pm_helper_.GetGraphFeatures().EnableResourceAttributionRegistries();
-    }
     pm_helper_.SetUp();
     RunOnPMSequence(base::BindLambdaForTesting([&](Graph* graph) {
       cpu_monitor_ = std::make_unique<PageTimelineCPUMonitor>();

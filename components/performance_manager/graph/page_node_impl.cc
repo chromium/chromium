@@ -14,7 +14,6 @@
 #include "components/performance_manager/graph/graph_impl_operations.h"
 #include "components/performance_manager/graph/process_node_impl.h"
 #include "components/performance_manager/public/graph/graph_operations.h"
-#include "components/performance_manager/public/resource_attribution/resource_contexts.h"
 #include "content/public/browser/browser_thread.h"
 
 namespace performance_manager {
@@ -276,8 +275,7 @@ FrameNodeImpl* PageNodeImpl::embedder_frame_node() const {
 
 resource_attribution::PageContext PageNodeImpl::resource_context() const {
   DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
-  // Re-use the PageToken as the ResourceContext token.
-  return resource_attribution::PageContext(page_token_.value());
+  return resource_attribution::PageContext::FromPageNode(this);
 }
 
 PageNodeImpl::EmbeddingType PageNodeImpl::embedding_type() const {

@@ -21,7 +21,6 @@
 #include "components/performance_manager/public/decorators/tab_page_decorator.h"
 #include "components/performance_manager/public/graph/graph.h"
 #include "components/performance_manager/public/metrics/metrics_collector.h"
-#include "components/performance_manager/resource_attribution/resource_context_registry_storage.h"
 #include "components/performance_manager/v8_memory/v8_context_tracker.h"
 
 #if !BUILDFLAG(IS_ANDROID)
@@ -58,11 +57,6 @@ void GraphFeatures::ConfigureGraph(Graph* graph) const {
     Install<PageLoadTrackerDecorator>(graph);
   if (flags_.process_hosted_content_types_aggregator)
     Install<ProcessHostedContentTypesAggregator>(graph);
-  if (flags_.resource_attribution_registries) {
-    // ResourceContextRegistryStorage owns the facades for each ResourceContext
-    // type.
-    Install<resource_attribution::ResourceContextRegistryStorage>(graph);
-  }
 
 #if !BUILDFLAG(IS_ANDROID)
   if (flags_.site_data_recorder)

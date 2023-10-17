@@ -5,13 +5,12 @@
 #ifndef COMPONENTS_PERFORMANCE_MANAGER_PUBLIC_RESOURCE_ATTRIBUTION_RESOURCE_CONTEXTS_H_
 #define COMPONENTS_PERFORMANCE_MANAGER_PUBLIC_RESOURCE_ATTRIBUTION_RESOURCE_CONTEXTS_H_
 
-#include "base/types/token_type.h"
 #include "components/performance_manager/public/resource_attribution/frame_context.h"
+#include "components/performance_manager/public/resource_attribution/page_context.h"
 #include "components/performance_manager/public/resource_attribution/process_context.h"
 #include "components/performance_manager/public/resource_attribution/type_helpers.h"
 #include "components/performance_manager/public/resource_attribution/worker_context.h"
 #include "third_party/abseil-cpp/absl/types/variant.h"
-#include "third_party/blink/public/common/tokens/tokens.h"
 
 namespace performance_manager::resource_attribution {
 
@@ -44,11 +43,6 @@ namespace performance_manager::resource_attribution {
 
 // Contexts for PerformanceManager nodes. There is one *Context type for each
 // node type.
-
-// TODO(crbug.com/1471683): These are still implemented as tokens with a
-// corresponding registry class to look up live objects. Rewrite them as wrapper
-// classes similar to FrameContext.
-using PageContext = base::TokenType<class PageContextTag>;
 
 // A variant holding any type of resource context.
 using ResourceContext =

@@ -24,7 +24,6 @@
 #include "base/test/test_timeouts.h"
 #include "base/test/test_waitable_event.h"
 #include "base/time/time.h"
-#include "components/performance_manager/embedder/graph_features.h"
 #include "components/performance_manager/graph/frame_node_impl.h"
 #include "components/performance_manager/graph/page_node_impl.h"
 #include "components/performance_manager/graph/process_node_impl.h"
@@ -158,7 +157,6 @@ class CPUMeasurementMonitorTest : public GraphTestHarness {
   using Super = GraphTestHarness;
 
   void SetUp() override {
-    GetGraphFeatures().EnableResourceAttributionRegistries();
     Super::SetUp();
     cpu_monitor_.SetCPUMeasurementDelegateFactoryForTesting(base::BindRepeating(
         &CPUMeasurementMonitorTest::CPUMeasurementDelegateFactory,
@@ -1240,7 +1238,6 @@ class CPUMeasurementMonitorTimingTest : public PerformanceManagerTestHarness {
   using Super = PerformanceManagerTestHarness;
 
   void SetUp() override {
-    GetGraphFeatures().EnableResourceAttributionRegistries();
     Super::SetUp();
     RunOnPMSequence(base::BindLambdaForTesting([&](Graph* graph) {
       cpu_monitor_ = std::make_unique<CPUMeasurementMonitor>();

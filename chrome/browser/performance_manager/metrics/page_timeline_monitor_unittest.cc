@@ -19,7 +19,6 @@
 #include "base/time/time.h"
 #include "build/build_config.h"
 #include "chrome/browser/performance_manager/metrics/page_timeline_cpu_monitor.h"
-#include "components/performance_manager/embedder/graph_features.h"
 #include "components/performance_manager/public/decorators/page_live_state_decorator.h"
 #include "components/performance_manager/public/decorators/tab_page_decorator.h"
 #include "components/performance_manager/public/features.h"
@@ -168,12 +167,7 @@ class PageTimelineMonitorWithFeatureTest
         {});
   }
 
-  void SetUp() override {
-    if (features::kUseResourceAttributionCPUMonitor.Get()) {
-      GetGraphFeatures().EnableResourceAttributionRegistries();
-    }
-    PageTimelineMonitorUnitTest::SetUp();
-  }
+  void SetUp() override { PageTimelineMonitorUnitTest::SetUp(); }
 
   void TearDown() override {
     // Destroy `monitor_` before `scoped_feature_list_` so that the feature flag
