@@ -496,10 +496,19 @@ void AutofillExternalDelegate::DidAcceptSuggestion(
       plus_addresses::PlusAddressMetrics::RecordAutofillSuggestionEvent(
           plus_addresses::PlusAddressMetrics::
               PlusAddressAutofillSuggestionEvent::kCreateNewPlusAddressChosen);
+      plus_addresses::PlusAddressCallback callback = base::BindOnce(
+          [](base::WeakPtr<AutofillManager> manager, FieldGlobalId field,
+             const std::string& plus_address) {
+            if (manager) {
+              manager->driver().ApplyFieldAction(
+                  mojom::ActionPersistence::kFill, field,
+                  base::UTF8ToUTF16(plus_address));
+            }
+          },
+          manager_->GetWeakPtr(), query_field_.global_id());
       manager_->client().OfferPlusAddressCreation(
           manager_->client().GetLastCommittedPrimaryMainFrameOrigin(),
-          base::BindOnce(&AutofillExternalDelegate::OnPlusAddressCreated,
-                         GetWeakPtr()));
+          std::move(callback));
       break;
     }
     case PopupItemId::kCompose:
@@ -695,13 +704,6 @@ void AutofillExternalDelegate::OnCreditCardScanned(
   manager_->FillCreditCardFormImpl(query_form_, query_field_, card,
                                    std::u16string(),
                                    {.trigger_source = trigger_source});
-}
-
-void AutofillExternalDelegate::OnPlusAddressCreated(
-    const std::string& plus_address) {
-  manager_->driver().ApplyFieldAction(mojom::ActionPersistence::kFill,
-                                      query_field_.global_id(),
-                                      base::UTF8ToUTF16(plus_address));
 }
 
 void AutofillExternalDelegate::FillAutofillFormData(
