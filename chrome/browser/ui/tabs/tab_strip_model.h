@@ -22,6 +22,7 @@
 #include "base/scoped_observation.h"
 #include "build/build_config.h"
 #include "chrome/browser/ui/tabs/tab_group_controller.h"
+#include "chrome/browser/ui/tabs/tab_model.h"
 #include "chrome/browser/ui/tabs/tab_strip_scrubbing_metrics.h"
 #include "chrome/browser/ui/tabs/tab_strip_user_gesture_details.h"
 #include "components/sessions/core/session_id.h"
@@ -40,7 +41,6 @@ class Profile;
 class TabGroupModel;
 class TabStripModelDelegate;
 class TabStripModelObserver;
-class TabModel;
 
 namespace content {
 class WebContents;
@@ -164,6 +164,9 @@ class TabStripModel : public TabGroupController {
   // Retrieve the number of WebContentses/emptiness of the TabStripModel.
   int count() const { return static_cast<int>(contents_data_.size()); }
   bool empty() const { return contents_data_.empty(); }
+
+  int GetIndexOfTab(TabHandle tab) const;
+  TabHandle GetTabHandleAt(int index) const;
 
   // Retrieve the Profile associated with this TabStripModel.
   Profile* profile() const { return profile_; }

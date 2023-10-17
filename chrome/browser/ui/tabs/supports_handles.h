@@ -218,7 +218,8 @@ SupportsHandles<T, V>::~SupportsHandles() {
 }
 
 template <typename T, std::integral V>
-SupportsHandles<T, V>::Handle SupportsHandles<T, V>::GetHandle() const {
+typename SupportsHandles<T, V>::Handle SupportsHandles<T, V>::GetHandle()
+    const {
   return Handle(handle_value_);
 }
 

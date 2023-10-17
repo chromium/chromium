@@ -8,15 +8,16 @@
 #include <memory>
 
 #include "base/memory/raw_ptr.h"
+#include "chrome/browser/ui/tabs/supports_handles.h"
 #include "components/tab_groups/tab_group_id.h"
 #include "content/public/browser/web_contents.h"
 #include "third_party/abseil-cpp/absl/types/optional.h"
 #include "third_party/perfetto/include/perfetto/tracing/traced_value_forward.h"
 
-class TabModel {
+class TabModel final : public SupportsHandles<const TabModel> {
  public:
   explicit TabModel(std::unique_ptr<content::WebContents> contents);
-  ~TabModel();
+  ~TabModel() override;
 
   TabModel(const TabModel&) = delete;
   TabModel& operator=(const TabModel&) = delete;
@@ -60,5 +61,7 @@ class TabModel {
   bool blocked_ = false;
   absl::optional<tab_groups::TabGroupId> group_ = absl::nullopt;
 };
+
+using TabHandle = TabModel::Handle;
 
 #endif  // CHROME_BROWSER_UI_TABS_TAB_MODEL_H_

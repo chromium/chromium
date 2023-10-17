@@ -294,6 +294,30 @@ void TabStripModel::RemoveObserver(TabStripModelObserver* observer) {
   observers_.RemoveObserver(observer);
 }
 
+int TabStripModel::GetIndexOfTab(TabHandle tab_handle) const {
+  const TabModel* tab_model = tab_handle.Get();
+  if (tab_model == nullptr) {
+    return kNoTab;
+  }
+
+  const auto is_same_tab = [tab_model](const std::unique_ptr<TabModel>& other) {
+    return other.get() == tab_model;
+  };
+
+  const auto iter =
+      std::find_if(contents_data_.cbegin(), contents_data_.cend(), is_same_tab);
+  if (iter == contents_data_.cend()) {
+    return kNoTab;
+  }
+  return iter - contents_data_.begin();
+}
+
+TabHandle TabStripModel::GetTabHandleAt(int index) const {
+  CHECK(ContainsIndex(index));
+
+  return contents_data_[index]->GetHandle();
+}
+
 bool TabStripModel::ContainsIndex(int index) const {
   return index >= 0 && index < count();
 }
