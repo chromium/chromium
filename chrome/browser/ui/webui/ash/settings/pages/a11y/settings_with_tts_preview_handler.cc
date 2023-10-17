@@ -2,7 +2,7 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#include "chrome/browser/ui/webui/settings/ash/settings_with_tts_preview_handler.h"
+#include "chrome/browser/ui/webui/ash/settings/pages/a11y/settings_with_tts_preview_handler.h"
 
 #include "base/functional/bind.h"
 #include "base/json/json_reader.h"

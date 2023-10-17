@@ -26,6 +26,9 @@ specific_include_rules = {
   'select_to_speak_handler\.cc': [
     '+content/public/browser/tts_controller.h',
   ],
+  'settings_with_tts_preview_handler\.(cc|h)': [
+    '+content/public/browser/tts_controller.h',
+  ],
   'tts_handler\.(cc|h)': [
     '+content/public/browser/tts_controller.h',
   ],

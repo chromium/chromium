@@ -6,7 +6,7 @@
 #define CHROME_BROWSER_UI_WEBUI_ASH_SETTINGS_PAGES_A11Y_TTS_HANDLER_H_
 
 #include "base/memory/weak_ptr.h"
-#include "chrome/browser/ui/webui/settings/ash/settings_with_tts_preview_handler.h"
+#include "chrome/browser/ui/webui/ash/settings/pages/a11y/settings_with_tts_preview_handler.h"
 #include "content/public/browser/tts_controller.h"
 
 namespace ash::settings {
