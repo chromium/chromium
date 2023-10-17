@@ -88,6 +88,7 @@ static_library("ui") {
     "blocked_content/chrome_popup_navigation_delegate.h",
     "blocked_content/tab_under_navigation_throttle.cc",
     "blocked_content/tab_under_navigation_throttle.h",
+    "bluetooth/bluetooth_dialogs.h",
     "browser_dialogs.cc",
     "browser_dialogs.h",
     "browser_element_identifiers.cc",
