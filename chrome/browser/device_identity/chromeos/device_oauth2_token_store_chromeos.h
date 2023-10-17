@@ -6,9 +6,9 @@
 #define CHROME_BROWSER_DEVICE_IDENTITY_CHROMEOS_DEVICE_OAUTH2_TOKEN_STORE_CHROMEOS_H_
 
 #include "base/memory/raw_ptr.h"
-#include "chrome/browser/device_identity/device_oauth2_token_store.h"
-
 #include "chrome/browser/ash/settings/cros_settings.h"
+#include "chrome/browser/device_identity/device_oauth2_token_store.h"
+#include "third_party/abseil-cpp/absl/types/optional.h"
 
 class PrefRegistrySimple;
 
@@ -53,6 +53,12 @@ class DeviceOAuth2TokenStoreChromeOS : public DeviceOAuth2TokenStore {
   // Encrypts and saves the refresh token. Should only be called when the system
   // salt is available.
   void EncryptAndSaveToken();
+
+  // Attempt to load a refresh token from the local state. This will return null
+  // if an error occurs while loading the token, otherwise the token will be
+  // returned. Note that not having a token at all is not considered an error:
+  // an empty token is returned in this
+  absl::optional<std::string> LoadAndDecryptToken();
 
   // Handles completion of the system salt input. Will invoke |callback| since
   // this function is what happens at the end of the initialization process.

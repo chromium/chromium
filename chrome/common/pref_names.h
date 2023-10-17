@@ -2702,9 +2702,12 @@ inline constexpr char kRebootAfterUpdate[] =
 // An any-api scoped refresh token for enterprise-enrolled devices.  Allows
 // for connection to Google APIs when the user isn't logged in.  Currently used
 // for for getting a cloudprint scoped token to allow printing in Guest mode,
-// Public Accounts and kiosks.
-inline constexpr char kDeviceRobotAnyApiRefreshToken[] =
+// Public Accounts and kiosks. The versions are used to distinguish different
+// token formats.
+inline constexpr char kDeviceRobotAnyApiRefreshTokenV1[] =
     "device_robot_refresh_token.any-api";
+inline constexpr char kDeviceRobotAnyApiRefreshTokenV2[] =
+    "device_robot_refresh_token_v2.any-api";
 
 // Device requisition for enterprise enrollment.
 inline constexpr char kDeviceEnrollmentRequisition[] =
