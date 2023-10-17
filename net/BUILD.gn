@@ -2856,15 +2856,6 @@ test("net_unittests") {
     "url_request/view_cache_helper_unittest.cc",
   ]
 
-  if (!is_cronet_build) {
-    sources += [
-      "extras/shared_dictionary/shared_dictionary_isolation_key_unittest.cc",
-      "extras/sqlite/sqlite_persistent_cookie_store_unittest.cc",
-      "extras/sqlite/sqlite_persistent_shared_dictionary_store_unittest.cc",
-      "log/trace_net_log_observer_unittest.cc",
-    ]
-  }
-
   if (is_android) {
     sources += [
       "android/dummy_spnego_authenticator.cc",
@@ -2965,19 +2956,24 @@ test("net_unittests") {
     "//url:buildflags",
   ]
 
-  if (enable_websockets) {
-    deps += [ "//net/server:tests" ]
-  }
+  if (!is_cronet_build) {
+    sources += [
+      "extras/shared_dictionary/shared_dictionary_isolation_key_unittest.cc",
+      "extras/sqlite/sqlite_persistent_cookie_store_unittest.cc",
+      "extras/sqlite/sqlite_persistent_shared_dictionary_store_unittest.cc",
+      "log/trace_net_log_observer_unittest.cc",
+    ]
 
-  if (is_cronet_build) {
-    deps += [ "//third_party/perfetto/include/perfetto/test:test_support" ]
-  } else {
     deps += [
       ":extras",
       "//components/sqlite_proto",
       "//sql",
       "//sql:test_support",
     ]
+  }
+
+  if (enable_websockets) {
+    deps += [ "//net/server:tests" ]
   }
 
   if (is_posix) {
