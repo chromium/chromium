@@ -208,6 +208,12 @@ void FlossManagerClient::RegisterWithManager() {
   // Get Floss API version of the daemon.
   DoGetFlossApiVersion();
 
+  // Register for callbacks before Get* calls so we won't miss any state change.
+  CallManagerMethod<Void>(
+      base::BindOnce(&FlossManagerClient::HandleRegisterCallback,
+                     weak_ptr_factory_.GetWeakPtr()),
+      manager::kRegisterCallback, dbus::ObjectPath(kExportedCallbacksPath));
+
   // Get the default adapter.
   CallManagerMethod<int>(
       base::BindOnce(&FlossManagerClient::HandleGetDefaultAdapter,
@@ -219,12 +225,6 @@ void FlossManagerClient::RegisterWithManager() {
       base::BindOnce(&FlossManagerClient::HandleGetAvailableAdapters,
                      weak_ptr_factory_.GetWeakPtr()),
       manager::kGetAvailableAdapters);
-
-  // Register for callbacks.
-  CallManagerMethod<Void>(
-      base::BindOnce(&FlossManagerClient::HandleRegisterCallback,
-                     weak_ptr_factory_.GetWeakPtr()),
-      manager::kRegisterCallback, dbus::ObjectPath(kExportedCallbacksPath));
 
   manager_available_ = true;
   for (auto& observer : observers_) {
