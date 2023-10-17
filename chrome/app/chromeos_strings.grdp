@@ -289,8 +289,11 @@
   <message name="IDS_CELLULAR_SETUP_ESIM_PAGE_CONFIRMATION_CODE_INPUT" desc="Label for the input used to enter the confirmation code to activate an eSIM profile.">
     Confirmation code
   </message>
-  <message name="IDS_CELLULAR_SETUP_ESIM_PAGE_CONFIRMATION_CODE_ERROR" desc="Message, informing the user the confirmation code entered to activate an eSIM profile is invalid and to contact their carrier.">
+  <message name="IDS_CELLULAR_SETUP_ESIM_PAGE_CONFIRMATION_CODE_ERROR_LEGACY" desc="Message, informing the user the confirmation code entered to activate an eSIM profile is invalid and to contact their carrier.">
     Unable to connect to this profile. For technical support, please contact your carrier.
+  </message>
+  <message name="IDS_CELLULAR_SETUP_ESIM_PAGE_CONFIRMATION_CODE_ERROR" desc="Message, informing the user the confirmation code entered to activate an eSIM profile is invalid and to contact their carrier.">
+    Unable to install this profile. For technical support, please contact your carrier.
   </message>
   <message name="IDS_CELLULAR_SETUP_ESIM_PAGE_CONFIRMATION_CODE_LOADING" desc="Message, informing the user the confirmation code entered to activate an eSIM profile is currently being verified.">
     Verifying confirmation code...

@@ -88,6 +88,8 @@ constexpr webui::LocalizedString kLocalizedStringsWithoutPlaceholders[] = {
      IDS_CELLULAR_SETUP_ESIM_PAGE_CONFIRMATION_CODE_MESSAGE},
     {"confirmationCodeInput",
      IDS_CELLULAR_SETUP_ESIM_PAGE_CONFIRMATION_CODE_INPUT},
+    {"confirmationCodeErrorLegacy",
+     IDS_CELLULAR_SETUP_ESIM_PAGE_CONFIRMATION_CODE_ERROR_LEGACY},
     {"confirmationCodeError",
      IDS_CELLULAR_SETUP_ESIM_PAGE_CONFIRMATION_CODE_ERROR},
     {"confirmationCodeLoading",
