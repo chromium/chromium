@@ -11,7 +11,6 @@
 #include "base/containers/fixed_flat_map.h"
 #include "base/functional/bind.h"
 #include "base/memory/raw_ptr.h"
-#include "base/strings/string_number_conversions.h"
 #include "base/system/sys_info.h"
 #include "base/test/metrics/histogram_tester.h"
 #include "base/test/scoped_feature_list.h"
@@ -53,23 +52,27 @@ class FixedCPUMeasurementDelegate final
   ~FixedCPUMeasurementDelegate() final = default;
 
   base::TimeDelta GetCumulativeCPUUsage() final {
-    return (base::TimeTicks::Now() - creation_time_) / cpu_divisor_;
+    return (base::TimeTicks::Now() - creation_time_) * cpu_scale_factor_;
   }
 
   static std::unique_ptr<CPUMeasurementDelegate> Create(const ProcessNode*) {
     return std::make_unique<FixedCPUMeasurementDelegate>();
   }
 
-  static void SetCPUDivisor(int divisor) {
-    FixedCPUMeasurementDelegate::cpu_divisor_ = divisor;
+  static void SetCPUScaleFactor(double scale_factor) {
+    FixedCPUMeasurementDelegate::cpu_scale_factor_ = scale_factor;
+  }
+
+  static void ResetCPUScaleFactor() {
+    FixedCPUMeasurementDelegate::cpu_scale_factor_ = 0.5;
   }
 
  private:
   base::TimeTicks creation_time_ = base::TimeTicks::Now();
-  static int cpu_divisor_;
+  static double cpu_scale_factor_;
 };
 
-int FixedCPUMeasurementDelegate::cpu_divisor_ = 2;
+double FixedCPUMeasurementDelegate::cpu_scale_factor_ = 0.5;
 
 }  // namespace
 
@@ -157,17 +160,15 @@ class PageTimelineMonitorWithFeatureTest
  public:
   PageTimelineMonitorWithFeatureTest() {
     scoped_feature_list_.InitWithFeaturesAndParameters(
-        {{features::kPageTimelineMonitor,
-          {{"use_resource_attribution_cpu_monitor",
-            GetParam() ? "true" : "false"}}},
-         {performance_manager::features::kCPUInterventionEvaluationLogging,
-          {{"threshold_chrome_cpu_percent",
-            base::NumberToString(
-                int(100 / base::SysInfo::NumberOfProcessors() / 2))}}}},
+        {
+            {features::kPageTimelineMonitor,
+             {{"use_resource_attribution_cpu_monitor",
+               GetParam() ? "true" : "false"}}},
+            {performance_manager::features::kCPUInterventionEvaluationLogging,
+             {{"threshold_chrome_cpu_percent", "50"}}},
+        },
         {});
   }
-
-  void SetUp() override { PageTimelineMonitorUnitTest::SetUp(); }
 
   void TearDown() override {
     // Destroy `monitor_` before `scoped_feature_list_` so that the feature flag
@@ -694,6 +695,12 @@ TEST_F(PageTimelineMonitorUnitTest, TestResourceUsageBackgroundState) {
 
 #if !BUILDFLAG(IS_ANDROID)
 TEST_P(PageTimelineMonitorWithFeatureTest, TestCPUInterventionMetrics) {
+  // The intervention metrics measure total CPU, not percentage of each core, so
+  // set the measurement delegate to return half of the total available CPU
+  // (100% per processor).
+  FixedCPUMeasurementDelegate::SetCPUScaleFactor(
+      base::SysInfo::NumberOfProcessors() / 2);
+
   MockMultiplePagesWithMultipleProcessesGraph mock_graph(graph());
   const ukm::SourceId mock_source_id = ukm::AssignNewSourceId();
   mock_graph.page->SetType(performance_manager::PageType::kTab);
@@ -711,7 +718,7 @@ TEST_P(PageTimelineMonitorWithFeatureTest, TestCPUInterventionMetrics) {
   histogram_tester_.ExpectUniqueSample(
       "PerformanceManager.PerformanceInterventions.CPU.TotalBackgroundCPU."
       "Immediate",
-      0.75 * 100 / base::SysInfo::NumberOfProcessors(), 1);
+      75, 1);
   histogram_tester_.ExpectUniqueSample(
       "PerformanceManager.PerformanceInterventions.CPU.TotalBackgroundTabCount."
       "Immediate",
@@ -719,12 +726,12 @@ TEST_P(PageTimelineMonitorWithFeatureTest, TestCPUInterventionMetrics) {
   histogram_tester_.ExpectUniqueSample(
       "PerformanceManager.PerformanceInterventions.CPU.AverageBackgroundCPU."
       "Immediate",
-      0.75 * 100 / base::SysInfo::NumberOfProcessors(), 1);
+      75, 1);
 
   histogram_tester_.ExpectUniqueSample(
       "PerformanceManager.PerformanceInterventions.CPU.TotalForegroundCPU."
       "Immediate",
-      0.25 * 100 / base::SysInfo::NumberOfProcessors(), 1);
+      25, 1);
   histogram_tester_.ExpectUniqueSample(
       "PerformanceManager.PerformanceInterventions.CPU.TotalForegroundTabCount."
       "Immediate",
@@ -732,7 +739,7 @@ TEST_P(PageTimelineMonitorWithFeatureTest, TestCPUInterventionMetrics) {
   histogram_tester_.ExpectUniqueSample(
       "PerformanceManager.PerformanceInterventions.CPU.AverageForegroundCPU."
       "Immediate",
-      0.25 * 100 / base::SysInfo::NumberOfProcessors(), 1);
+      25, 1);
 
   histogram_tester_.ExpectUniqueSample(
       "PerformanceManager.PerformanceInterventions.CPU."
@@ -743,12 +750,12 @@ TEST_P(PageTimelineMonitorWithFeatureTest, TestCPUInterventionMetrics) {
       "PerformanceManager.PerformanceInterventions.CPU."
       "TopNBackgroundCPU.1."
       "Immediate",
-      0.75 * 100 / base::SysInfo::NumberOfProcessors(), 1);
+      75, 1);
   histogram_tester_.ExpectUniqueSample(
       "PerformanceManager.PerformanceInterventions.CPU."
       "TopNBackgroundCPU.2."
       "Immediate",
-      0.75 * 100 / base::SysInfo::NumberOfProcessors(), 1);
+      75, 1);
 
   // Fast forward for Delayed UMA to be logged.
   task_env().FastForwardBy(base::Minutes(1));
@@ -757,7 +764,7 @@ TEST_P(PageTimelineMonitorWithFeatureTest, TestCPUInterventionMetrics) {
     histogram_tester_.ExpectUniqueSample(
         "PerformanceManager.PerformanceInterventions.CPU.TotalBackgroundCPU."
         "Delayed",
-        0.75 * 100 / base::SysInfo::NumberOfProcessors(), 1);
+        75, 1);
     histogram_tester_.ExpectUniqueSample(
         "PerformanceManager.PerformanceInterventions.CPU."
         "TotalBackgroundTabCount."
@@ -766,12 +773,12 @@ TEST_P(PageTimelineMonitorWithFeatureTest, TestCPUInterventionMetrics) {
     histogram_tester_.ExpectUniqueSample(
         "PerformanceManager.PerformanceInterventions.CPU.AverageBackgroundCPU."
         "Delayed",
-        0.75 * 100 / base::SysInfo::NumberOfProcessors(), 1);
+        75, 1);
 
     histogram_tester_.ExpectUniqueSample(
         "PerformanceManager.PerformanceInterventions.CPU.TotalForegroundCPU."
         "Delayed",
-        0.25 * 100 / base::SysInfo::NumberOfProcessors(), 1);
+        25, 1);
     histogram_tester_.ExpectUniqueSample(
         "PerformanceManager.PerformanceInterventions.CPU."
         "TotalForegroundTabCount."
@@ -780,7 +787,7 @@ TEST_P(PageTimelineMonitorWithFeatureTest, TestCPUInterventionMetrics) {
     histogram_tester_.ExpectUniqueSample(
         "PerformanceManager.PerformanceInterventions.CPU.AverageForegroundCPU."
         "Delayed",
-        0.25 * 100 / base::SysInfo::NumberOfProcessors(), 1);
+        25, 1);
 
     histogram_tester_.ExpectUniqueSample(
         "PerformanceManager.PerformanceInterventions.CPU."
@@ -791,16 +798,17 @@ TEST_P(PageTimelineMonitorWithFeatureTest, TestCPUInterventionMetrics) {
         "PerformanceManager.PerformanceInterventions.CPU."
         "TopNBackgroundCPU.1."
         "Delayed",
-        0.75 * 100 / base::SysInfo::NumberOfProcessors(), 1);
+        75, 1);
     histogram_tester_.ExpectUniqueSample(
         "PerformanceManager.PerformanceInterventions.CPU."
         "TopNBackgroundCPU.2."
         "Delayed",
-        0.75 * 100 / base::SysInfo::NumberOfProcessors(), 1);
+        75, 1);
   }
 
   // Lower CPU measurement so the duration is logged.
-  FixedCPUMeasurementDelegate::SetCPUDivisor(6);
+  FixedCPUMeasurementDelegate::SetCPUScaleFactor(
+      base::SysInfo::NumberOfProcessors() / 6);
   task_env().FastForwardBy(base::Minutes(1));
   TriggerCollectPageResourceUsage();
 
@@ -808,6 +816,8 @@ TEST_P(PageTimelineMonitorWithFeatureTest, TestCPUInterventionMetrics) {
       "PerformanceManager.PerformanceInterventions.CPU."
       "DurationOverThreshold",
       base::Minutes(2).InMilliseconds(), 1);
+
+  FixedCPUMeasurementDelegate::ResetCPUScaleFactor();
 }
 #endif
 
