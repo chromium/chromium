@@ -6,7 +6,9 @@ package org.chromium.chrome.browser.customtabs.features.minimizedcustomtab;
 
 import static org.junit.Assert.assertEquals;
 import static org.mockito.ArgumentMatchers.any;
+import static org.mockito.ArgumentMatchers.anyInt;
 import static org.mockito.ArgumentMatchers.eq;
+import static org.mockito.Mockito.never;
 import static org.mockito.Mockito.spy;
 import static org.mockito.Mockito.verify;
 import static org.mockito.Mockito.when;
@@ -20,6 +22,7 @@ import android.widget.TextView;
 
 import androidx.appcompat.app.AppCompatActivity;
 import androidx.core.app.PictureInPictureModeChangedInfo;
+import androidx.lifecycle.Lifecycle.State;
 import androidx.test.ext.junit.rules.ActivityScenarioRule;
 
 import org.junit.Before;
@@ -118,5 +121,17 @@ public class CustomTabMinimizationManagerUnitTest {
 
         verify(mTab).show(eq(FROM_USER), eq(ON_ACTIVITY_SHOWN_THEN_SHOW));
         verify(mWebContents).setAudioMuted(false);
+    }
+
+    @Test
+    public void testDismiss() {
+        mManager.minimize();
+        // Simulate Activity entering PiP.
+        mManager.accept(new PictureInPictureModeChangedInfo(true));
+        // Now, simulate PiP being dismissed.
+        mActivityScenarioRule.getScenario().moveToState(State.CREATED);
+        mManager.accept(new PictureInPictureModeChangedInfo(false));
+
+        verify(mTab, never()).show(anyInt(), anyInt());
     }
 }

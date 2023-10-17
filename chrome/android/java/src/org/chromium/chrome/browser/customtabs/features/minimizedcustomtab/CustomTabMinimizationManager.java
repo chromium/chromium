@@ -23,6 +23,7 @@ import androidx.core.app.PictureInPictureModeChangedInfo;
 import androidx.core.util.Consumer;
 import androidx.fragment.app.DialogFragment;
 import androidx.fragment.app.FragmentTransaction;
+import androidx.lifecycle.Lifecycle.State;
 
 import org.chromium.chrome.browser.ActivityTabProvider;
 import org.chromium.chrome.browser.tab.Tab;
@@ -69,6 +70,11 @@ public class CustomTabMinimizationManager
         if (pictureInPictureModeChangedInfo.isInPictureInPictureMode()) {
             updateTabForMinimization(tab);
         } else {
+            // We receive an update here when PiP is dismissed and the Activity is being stopped
+            // before destruction. In that case, the state will be CREATED.
+            var state = mActivity.getLifecycle().getCurrentState();
+            if (state == State.CREATED || state == State.DESTROYED) return;
+
             updateTabForMaximization(tab);
         }
     }
